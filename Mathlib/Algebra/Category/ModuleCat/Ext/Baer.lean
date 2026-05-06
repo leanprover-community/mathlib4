@@ -27,7 +27,6 @@ open CategoryTheory Abelian
 
 namespace ModuleCat
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ext_quotient_one_subsingleton_iff [Small.{v} R] (M : ModuleCat.{v} R) (I : Ideal R) :
     Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M 1) ↔
     ∀ g : I →ₗ[R] M, ∃ g' : R →ₗ[R] M, ∀ (x : R) (mem : x ∈ I), g' x = g ⟨x, mem⟩ := by
@@ -39,12 +38,12 @@ lemma ext_quotient_one_subsingleton_iff [Small.{v} R] (M : ModuleCat.{v} R) (I :
   have : Projective S.X₂ := by dsimp [S]; infer_instance
   have : Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M 1) ↔
     Function.Surjective ((Ext.mk₀ S.f).precomp M (add_zero 0)) := by
-    apply Iff.trans _ ((Ext.contravariant_sequence_exact₁' S_exact M 0 1 rfl).epi_f_iff.symm.trans
-      (AddCommGrpCat.epi_iff_surjective _))
-    refine ⟨fun h ↦ ((@AddCommGrpCat.isZero_of_subsingleton _ h).eq_zero_of_tgt _), fun h ↦ ?_⟩
-    exact AddCommGrpCat.subsingleton_of_isZero ((Ext.contravariant_sequence_exact₃' S_exact M 0 1
-      rfl).isZero_X₂ h ((@AddCommGrpCat.isZero_of_subsingleton _
-      (Ext.subsingleton_of_projective S.X₂ M 0)).eq_zero_of_tgt _))
+    refine Iff.trans ⟨fun h ↦ ?_, fun h ↦ ?_⟩ ((Ext.contravariant_sequence_exact₁' S_exact M 0 1
+      rfl).epi_f_iff.symm.trans (AddCommGrpCat.epi_iff_surjective _))
+    · exact (AddCommGrpCat.of (Ext S.X₃ M 1)).isZero_of_subsingleton.eq_zero_of_tgt _
+    · exact AddCommGrpCat.subsingleton_of_isZero ((Ext.contravariant_sequence_exact₃' S_exact M 0 1
+        rfl).isZero_X₂ h ((@AddCommGrpCat.isZero_of_subsingleton _
+          (Ext.subsingleton_of_projective S.X₂ M 0)).eq_zero_of_tgt _))
   refine this.trans ⟨fun h ↦ fun g ↦ ?_, fun h ↦ fun e ↦ ?_⟩
   · obtain ⟨f', hf'⟩ := h (Ext.mk₀ (ModuleCat.ofHom (g.comp (Shrink.linearEquiv R I).toLinearMap)))
     rw [Ext.bilinearComp_apply_apply, ← Ext.mk₀_addEquiv₀_apply f', Ext.mk₀_comp_mk₀] at hf'
