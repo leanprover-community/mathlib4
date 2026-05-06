@@ -277,7 +277,7 @@ theorem sub_projection_mem (h : IsCompl p q) (x : E) : x - p.projection q h x �
 variable (p q) in
 /-- If `q` is a complement of `p`, then `M ⧸ p ≃ q`. The forward direction sends a quotient class
 to its projection onto `q` along `p`; the backward direction sends an element of `q` to its class
-in `M ⧸ p` -/
+in `M ⧸ p`. -/
 @[simps!]
 def quotientEquivOfIsCompl (h : IsCompl p q) : (E ⧸ p) ≃ₗ[R] q :=
   .ofLinear
