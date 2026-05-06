@@ -14,14 +14,14 @@ public import Mathlib.Analysis.RCLike.Lemmas
 
 Given a nonempty subspace `K` of an inner product space `E` such that `K`
 admits an orthogonal projection, this file constructs
-`K.orthogonalProjection : E →L[𝕜] K`, the orthogonal projection of `E` onto `K`. This map
-satisfies: for any point `u` in `E`, the point `v = K.orthogonalProjection u` in `K` minimizes the
-distance `‖u - v‖` to `u`.
+`K.orthogonalProjectionOnto : E →L[𝕜] K`, the orthogonal projection of `E` onto `K`. This map
+satisfies: for any point `u` in `E`, the point `v = K.orthogonalProjectionOnto u` in `K`
+minimizes the distance `‖u - v‖` to `u`.
 
 This file also defines `K.starProjection : E →L[𝕜] E` which is the
 orthogonal projection of `E` onto `K` but as a map from `E` to `E` instead of `E` to `K`.
 
-Basic API for `orthogonalProjection` and `starProjection` is developed.
+Basic API for `orthogonalProjectionOnto` and `starProjection` is developed.
 
 ## References
 
@@ -178,7 +178,7 @@ theorem orthogonalProjectionFn_eq (v : E) :
   rfl
 
 /-- The orthogonal projection onto a subspace as a map from the full space to itself,
-as opposed to `Submodule.orthogonalProjection`, which maps into the subtype. This
+as opposed to `Submodule.orthogonalProjectionOnto`, which maps into the subtype. This
 version is important as it satisfies `IsStarProjection`. -/
 def starProjection (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
     E →L[𝕜] E := U.subtypeL ∘L U.orthogonalProjectionOnto
@@ -466,15 +466,17 @@ theorem exists_add_mem_mem_orthogonal [K.HasOrthogonalProjection] (v : E) :
     sub_starProjection_mem_orthogonal _, by simp⟩
 
 /-- The orthogonal projection onto `K` of an element of `Kᗮ` is zero. -/
-theorem orthogonalProjectionOnto_mem_subspace_orthogonalComplement_eq_zero
+theorem orthogonalProjectionOnto_apply_of_mem_orthogonal
     [K.HasOrthogonalProjection] {v : E} (hv : v ∈ Kᗮ) : K.orthogonalProjectionOnto v = 0 :=
   orthogonalProjectionOnto_eq_zero_iff.mpr hv
+
+@[deprecated (since := "2026-05-06")] alias orthogonalProjection_apply_of_mem_orthogonal :=
+  orthogonalProjectionOnto_apply_of_mem_orthogonal
 
 /-- The projection into `U` from an orthogonal submodule `V` is the zero map. -/
 theorem IsOrtho.orthogonalProjectionOnto_comp_subtypeL {U V : Submodule 𝕜 E}
     [U.HasOrthogonalProjection] (h : U ⟂ V) : U.orthogonalProjectionOnto ∘L V.subtypeL = 0 :=
-  ContinuousLinearMap.ext fun v =>
-    orthogonalProjectionOnto_mem_subspace_orthogonalComplement_eq_zero <| h.symm v.prop
+  ContinuousLinearMap.ext fun v ↦ orthogonalProjectionOnto_apply_of_mem_orthogonal <| h.symm v.prop
 
 @[deprecated (since := "2026-05-05")]
 alias IsOrtho.orthogonalProjection_comp_subtypeL := IsOrtho.orthogonalProjectionOnto_comp_subtypeL
@@ -512,7 +514,10 @@ theorem starProjection_comp_starProjection_eq_zero_iff {U V : Submodule 𝕜 E}
 /-- The orthogonal projection onto `Kᗮ` of an element of `K` is zero. -/
 theorem orthogonalProjectionOnto_orthogonal_apply_eq_zero
     [Kᗮ.HasOrthogonalProjection] {v : E} (hv : v ∈ K) : Kᗮ.orthogonalProjectionOnto v = 0 :=
-  orthogonalProjectionOnto_mem_subspace_orthogonalComplement_eq_zero (K.le_orthogonal_orthogonal hv)
+  orthogonalProjectionOnto_apply_of_mem_orthogonal (K.le_orthogonal_orthogonal hv)
+
+@[deprecated (since := "2026-05-06")] alias orthogonalProjection_orthogonal_apply_eq_zero :=
+  orthogonalProjectionOnto_orthogonal_apply_eq_zero
 
 theorem starProjection_orthogonal_apply_eq_zero
     [Kᗮ.HasOrthogonalProjection] {v : E} (hv : v ∈ K) :
@@ -526,7 +531,7 @@ theorem orthogonalProjectionOnto_starProjection_of_le {U V : Submodule 𝕜 E}
     U.orthogonalProjectionOnto (V.starProjection x) = U.orthogonalProjectionOnto x :=
   Eq.symm <| by
     simpa only [sub_eq_zero, map_sub] using
-      orthogonalProjectionOnto_mem_subspace_orthogonalComplement_eq_zero
+      orthogonalProjectionOnto_apply_of_mem_orthogonal
         (Submodule.orthogonal_le h (sub_starProjection_mem_orthogonal x))
 
 @[deprecated (since := "2026-05-05")]
@@ -671,8 +676,7 @@ theorem starProjection_apply_eq_zero_iff [K.HasOrthogonalProjection] {v : E} :
   refine ⟨fun h w hw => ?_, fun hv => ?_⟩
   · rw [← starProjection_eq_self_iff.mpr hw, inner_starProjection_left_eq_right, h,
       inner_zero_right]
-  · simp [starProjection_apply,
-      orthogonalProjectionOnto_mem_subspace_orthogonalComplement_eq_zero hv]
+  · simp [starProjection_apply, orthogonalProjectionOnto_apply_of_mem_orthogonal hv]
 
 open RCLike
 
