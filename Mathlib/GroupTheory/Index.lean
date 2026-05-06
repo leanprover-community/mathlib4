@@ -423,7 +423,7 @@ lemma relIndex_inter_ne_zero {J K : Subgroup G} (hJK : J.relIndex K ≠ 0) (L : 
 @[to_additive]
 theorem relIndex_inf_le : (H ⊓ K).relIndex L ≤ H.relIndex L * K.relIndex L := by
   by_cases h : H.relIndex L = 0
-  · exact (le_of_eq (relIndex_eq_zero_of_le_left inf_le_left h)).trans (zero_le _)
+  · simp [relIndex_eq_zero_of_le_left inf_le_left h]
   rw [← inf_relIndex_right, inf_assoc, ← relIndex_mul_relIndex _ _ L inf_le_right inf_le_right,
     inf_relIndex_right, inf_relIndex_right]
   grw [relIndex_le_of_le_right inf_le_right h]
@@ -811,7 +811,7 @@ end Subgroup
 
 section Pointwise
 
-open Pointwise
+open scoped Pointwise
 
 variable {G H : Type*} [Group H] (h : H)
 
