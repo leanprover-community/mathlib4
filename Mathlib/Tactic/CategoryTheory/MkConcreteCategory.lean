@@ -380,11 +380,9 @@ private meta def elabMkConcreteCategoryCore (mods : Syntax) (cat FC idTerm compT
 
   elabCommand <| ← set_option hygiene false in `(command|
     initialize_simps_projections Hom (hom' → hom))
-  match addHom? with
-  | some addHom =>
-      elabCommand <| ← set_option hygiene false in `(command|
-        initialize_simps_projections $addHom:ident (hom' → hom))
-  | none => pure ()
+  if let some addHom := addHom? then
+    elabCommand <| ← set_option hygiene false in `(command|
+      initialize_simps_projections $addHom:ident (hom' → hom))
 
   elabCommand <| ← set_option hygiene false in `(command|
     lemma hom_id {X : $cat} :
