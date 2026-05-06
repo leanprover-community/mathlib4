@@ -246,66 +246,6 @@ theorem IsTranscendenceBasis.isAlgebraic_field {F E : Type*} {x : ι → E}
     IsScalarTower.of_algebraMap_eq (congrFun rfl)
   exact Algebra.IsAlgebraic.extendScalars (R := adjoin F S) (Subalgebra.inclusion_injective _)
 
-theorem Algebra.EssFiniteType.of_isScalarTower
-    (F K L : Type*) [Field F] [Field K] [Field L] [Algebra F K] [Algebra K L]
-    [Algebra F L] [IsScalarTower F K L] [Algebra.EssFiniteType F L] :
-    Algebra.EssFiniteType F K := by
-  obtain ⟨bFK, hbFK⟩ := exists_isTranscendenceBasis F K
-  obtain ⟨bKL, hbKL⟩ := exists_isTranscendenceBasis K L
-  let bFKL := algebraMap K L '' bFK
-  let bFL := bKL ∪ bFKL
-  have : Algebra.IsAlgebraic (IntermediateField.adjoin F bFL) L := by
-    suffices bFL = range (Sum.elim Subtype.val (algebraMap K L ∘ Subtype.val)) by
-      rw [this]
-      exact (hbFK.sumElim_comp hbKL).isAlgebraic_field
-    simp [range_comp, bFL, bFKL]
-  have : EssFiniteType (IntermediateField.adjoin F bFL) L :=
-    .of_comp F (IntermediateField.adjoin F bFL) L
-  have : FiniteDimensional (IntermediateField.adjoin F bFL) L :=
-    finite_of_essFiniteType_of_isAlgebraic
-  -- todo: K adjoin bKL is finite dimensional over F adjoint bFL
-  have : Algebra.IsAlgebraic (IntermediateField.adjoin F bFK) K := by
-    suffices bFK = range Subtype.val by
-      rw [this]
-      exact hbFK.isAlgebraic_field
-    simp
-
-
-
-  have h1 : IntermediateField.adjoin F bFL ≤ (IntermediateField.adjoin K bKL).restrictScalars F := by
-    sorry
-  -- figure out the best places for these things to live
-  -- and locate "adjoining transcendental elements won't affect the degree"
-  let f : IntermediateField.adjoin F bFL →ₐ[F] IntermediateField.adjoin K bKL :=
-    IntermediateField.inclusion h1
-  let := f.toAlgebra
-  have : FiniteDimensional (IntermediateField.adjoin F bFL) (IntermediateField.adjoin K bKL) := by
-    sorry
-  -- idea: L is finite over F adjoin hbFK ∪ hbKL (done)
-  -- K adjoin hbKL is finite over F adjoin hbFK ∪ hbKL
-  -- K is algebraic over F adjoin hbFK
-  -- but adjoining transcendental elements won't affect the degree
-  -- so K is finite over F adjoin hbFK
-  -- so K is finitely generated over F
-  sorry
-
-theorem Algebra.EssFiniteType.of_algHom
-    {F K L : Type*} [Field F] [Field K] [Field L] [Algebra F K] [Algebra F L]
-    (f : K →ₐ[F] L) [Algebra.EssFiniteType F L] : Algebra.EssFiniteType F K := by
-  let := RingHom.toAlgebra f.toRingHom
-  exact Algebra.EssFiniteType.of_isScalarTower F K L
-
-theorem IntermediateField.fg_of_le
-    {K L : Type*} [Field K] [Field L] [Algebra K L] (F E : IntermediateField K L)
-    (hFE : F ≤ E) (hE : E.FG) : F.FG := by
-  rw [← IntermediateField.essFiniteType_iff] at hE ⊢
-  exact Algebra.EssFiniteType.of_algHom (IntermediateField.inclusion hFE)
-
-theorem Field.fg_of_algebra (K L : Type*) [Field K] [Field L] [Algebra K L] [Field.FG L] :
-    Field.FG K := by
-  rw [Field.fg_iff_fg_top_bot] at *
-  sorry
-
 namespace AlgebraicIndependent
 
 variable (R A) [FaithfulSMul R A]
