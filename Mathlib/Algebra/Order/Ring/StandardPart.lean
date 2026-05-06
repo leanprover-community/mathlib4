@@ -124,13 +124,11 @@ variable (K) in
 which makes it into a linearly ordered Archimedean field. -/
 def FiniteResidueField : Type _ :=
   IsLocalRing.ResidueField (FiniteElement K)
+deriving Field
 
 namespace FiniteResidueField
 
-instance : Field (FiniteResidueField K) :=
-  inferInstanceAs% Field (IsLocalRing.ResidueField _)
-
-private theorem ordConnected_preimage_mk' : ∀ x, Set.OrdConnected <| Quotient.mk
+instance ordConnected_preimage_mk' : ∀ x, Set.OrdConnected <| Quotient.mk
     (Submodule.quotientRel (IsLocalRing.maximalIdeal (FiniteElement K))) ⁻¹' {x} := by
   refine fun x ↦ ⟨?_⟩
   rintro x rfl y hy z ⟨hxz, hzy⟩
@@ -140,7 +138,10 @@ private theorem ordConnected_preimage_mk' : ∀ x, Set.OrdConnected <| Quotient.
   apply hy.trans_le (mk_antitoneOn _ _ _) <;> simpa
 
 instance : LinearOrder (FiniteResidueField K) :=
-  @Quotient.instLinearOrder _ _ _ (by exact ordConnected_preimage_mk') (Classical.decRel _)
+  haveI := Classical.decRel fun x y : FiniteElement K ↦
+    letI := Submodule.quotientRel (IsLocalRing.maximalIdeal (FiniteElement K))
+    x ≈ y
+  inferInstanceAs <| LinearOrder (Quotient _)
 
 /-- The quotient map from finite elements on the field to the associated residue field. -/
 def mk : FiniteElement K →+*o FiniteResidueField K where

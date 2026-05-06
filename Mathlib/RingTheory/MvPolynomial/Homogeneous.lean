@@ -284,8 +284,9 @@ lemma eval₂ (hφ : φ.IsHomogeneous m) (f : R →+* MvPolynomial τ S) (g : σ
   · rintro k -
     apply (hg k).pow
 
-lemma map (hφ : φ.IsHomogeneous n) (f : R →+* S) : (map f φ).IsHomogeneous n := by
-  simpa only [one_mul] using hφ.eval₂ _ _ (fun r ↦ isHomogeneous_C _ (f r)) (isHomogeneous_X _)
+protected lemma map (hφ : φ.IsHomogeneous n) (f : R →+* S) : (map f φ).IsHomogeneous n := by
+  rw [map_eq_eval₂Hom_C_comp]
+  simpa [one_mul] using hφ.eval₂ _ _ (fun r ↦ isHomogeneous_C _ (f r)) (isHomogeneous_X _)
 
 lemma of_map {f : R →+* S} (hf : Function.Injective f)
     (h : (MvPolynomial.map f φ).IsHomogeneous n) : φ.IsHomogeneous n :=
@@ -385,7 +386,7 @@ lemma exists_eval_ne_zero_of_coeff_finSuccEquiv_ne_zero_aux
     {N : ℕ} {F : MvPolynomial (Fin (Nat.succ N)) R} {n : ℕ} (hF : IsHomogeneous F n)
     (hFn : ((finSuccEquiv R N) F).coeff n ≠ 0) :
     ∃ r, eval r F ≠ 0 := by
-  have hF₀ : F ≠ 0 := by contrapose! hFn; simp [hFn]
+  have hF₀ : F ≠ 0 := by contrapose hFn; simp [hFn]
   have hdeg : natDegree (finSuccEquiv R N F) < n + 1 := by
     linarith [natDegree_finSuccEquiv F, degreeOf_le_totalDegree F 0, hF.totalDegree hF₀]
   use Fin.cons 1 0
@@ -398,7 +399,7 @@ lemma exists_eval_ne_zero_of_coeff_finSuccEquiv_ne_zero_aux
     exact hi.symm
   simp_rw [eval_eq_eval_mv_eval', eval_one_map, Polynomial.eval_eq_sum_range' hdeg,
     eval_zero, one_pow, mul_one, map_sum, Finset.sum_range_succ, Finset.sum_eq_zero aux, zero_add]
-  contrapose! hFn
+  contrapose hFn
   ext d
   rw [coeff_zero]
   obtain rfl | hd := eq_or_ne d 0
@@ -427,7 +428,7 @@ lemma exists_eval_ne_zero_of_totalDegree_le_card_aux {N : ℕ} {F : MvPolynomial
   induction N generalizing n with
   | zero =>
     use 0
-    contrapose! hF₀
+    contrapose hF₀
     ext d
     simpa only [Subsingleton.elim d 0, eval_zero, coeff_zero] using hF₀
   | succ N IH =>
@@ -575,6 +576,11 @@ theorem homogeneousComponent_of_mem {m n : ℕ} {p : MvPolynomial σ R}
     homogeneousComponent m p = if m = n then p else 0 :=
   weightedHomogeneousComponent_of_mem h
 
+lemma support_homogeneousComponent (n : ℕ) (p : MvPolynomial σ R) :
+    (homogeneousComponent n p).support = {c ∈ p.support | c.degree = n} := by
+  rw [degree_eq_weight_one]
+  exact support_weightedHomogeneousComponent n p
+
 end HomogeneousComponent
 
 end
@@ -590,7 +596,7 @@ lemma HomogeneousSubmodule.gradedMonoid :
 /-- The decomposition of `MvPolynomial σ R` into homogeneous submodules. -/
 abbrev decomposition :
     DirectSum.Decomposition (homogeneousSubmodule σ R) :=
-  weightedDecomposition R (1 : σ → ℕ)
+  fast_instance% weightedDecomposition R (1 : σ → ℕ)
 
 /-- `MvPolynomial σ R` as a graded algebra, graded by the degree.
 We do not make this a global instance because one may want to consider a different
@@ -599,7 +605,7 @@ To make it a local instance, you may use
 `attribute [local instance] MvPolynomial.gradedAlgebra`.
 -/
 abbrev gradedAlgebra : GradedAlgebra (homogeneousSubmodule σ R) :=
-  weightedGradedAlgebra R (1 : σ → ℕ)
+  fast_instance% weightedGradedAlgebra R (1 : σ → ℕ)
 
 theorem decomposition.decompose'_apply (φ : MvPolynomial σ R) (i : ℕ) :
     (decomposition.decompose' φ i : MvPolynomial σ R) = homogeneousComponent i φ :=

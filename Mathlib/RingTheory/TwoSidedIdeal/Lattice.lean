@@ -11,7 +11,7 @@ public import Mathlib.RingTheory.TwoSidedIdeal.Basic
 # The complete lattice structure on two-sided ideals
 -/
 
-@[expose] public section
+public section
 
 namespace TwoSidedIdeal
 
