@@ -781,9 +781,9 @@ lemma toENNReal_lt_toENNReal {x y : EReal} (hx : 0 ≤ x) (hxy : x < y) :
 
 theorem coe_coe_eq_natCast (n : ℕ) : (n : ℝ) = (n : EReal) := rfl
 
-theorem natCast_ne_bot (n : ℕ) : (n : EReal) ≠ ⊥ := Ne.symm (ne_of_beq_false rfl)
+theorem natCast_ne_bot (n : ℕ) : (n : EReal) ≠ ⊥ := Ne.symm nofun
 
-theorem natCast_ne_top (n : ℕ) : (n : EReal) ≠ ⊤ := Ne.symm (ne_of_beq_false rfl)
+theorem natCast_ne_top (n : ℕ) : (n : EReal) ≠ ⊤ := Ne.symm nofun
 
 @[norm_cast]
 theorem natCast_eq_iff {m n : ℕ} : (m : EReal) = (n : EReal) ↔ m = n := by
