@@ -405,7 +405,6 @@ open Real Complex
 
 variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {p : Measure Ω} {μ : ℝ} {v : ℝ≥0} {X : Ω → ℝ}
 
-set_option backward.isDefEq.respectTransparency false in
 -- see https://github.com/leanprover-community/mathlib4/issues/29041
 set_option linter.unusedSimpArgs false in
 /-- The complex moment-generating function of a Gaussian distribution with mean `μ` and variance `v`

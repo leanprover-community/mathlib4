@@ -458,7 +458,6 @@ theorem integrable_rnDeriv (c : ComplexMeasure α) (μ : Measure α) : Integrabl
     ⟨memLp_one_iff_integrable.2 (SignedMeasure.integrable_rnDeriv _ _),
       memLp_one_iff_integrable.2 (SignedMeasure.integrable_rnDeriv _ _)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem singularPart_add_withDensity_rnDeriv_eq [c.HaveLebesgueDecomposition μ] :
     c.singularPart μ + μ.withDensityᵥ (c.rnDeriv μ) = c := by
   conv_rhs => rw [← c.toComplexMeasure_to_signedMeasure]
