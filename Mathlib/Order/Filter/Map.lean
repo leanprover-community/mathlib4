@@ -779,7 +779,7 @@ protected theorem push_pull (f : α → β) (F : Filter α) (G : Filter β) :
     calc
       f '' V ∩ Z = f '' (V ∩ f ⁻¹' Z) := by rw [image_inter_preimage]
       _ ⊆ f '' (V ∩ W) := by gcongr
-      _ = f '' (f ⁻¹' U) := by rw [h]
+      _ = f '' f ⁻¹' U := by rw [h]
       _ ⊆ U := image_preimage_subset f U
 
 protected theorem push_pull' (f : α → β) (F : Filter α) (G : Filter β) :
@@ -859,7 +859,7 @@ theorem le_seq {f : Filter (α → β)} {g : Filter α} {h : Filter β}
     (hh : ∀ t ∈ f, ∀ u ∈ g, Set.seq t u ∈ h) : h ≤ seq f g := fun _ ⟨_, ht, _, hu, hs⟩ =>
   mem_of_superset (hh _ ht _ hu) fun _ ⟨_, hm, _, ha, eq⟩ => eq ▸ hs _ hm _ ha
 
-@[mono]
+@[gcongr, mono]
 theorem seq_mono {f₁ f₂ : Filter (α → β)} {g₁ g₂ : Filter α} (hf : f₁ ≤ f₂) (hg : g₁ ≤ g₂) :
     f₁.seq g₁ ≤ f₂.seq g₂ :=
   le_seq fun _ hs _ ht => seq_mem_seq (hf hs) (hg ht)
@@ -968,7 +968,7 @@ theorem bind_le {f : Filter α} {g : α → Filter β} {l : Filter β} (h : ∀�
     f.bind g ≤ l :=
   join_le <| eventually_map.2 h
 
-@[mono]
+@[gcongr, mono]
 theorem bind_mono {f₁ f₂ : Filter α} {g₁ g₂ : α → Filter β} (hf : f₁ ≤ f₂) (hg : g₁ ≤ᶠ[f₁] g₂) :
     bind f₁ g₁ ≤ bind f₂ g₂ := by
   refine le_trans (fun s hs => ?_) (join_mono <| map_mono hf)
