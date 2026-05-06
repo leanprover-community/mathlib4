@@ -881,7 +881,7 @@ noncomputable def isoOverPullback {P : C} {fst : P ⟶ X} {snd : P ⟶ Y}
     Over.mk fst ≅ Over.mk (pullback.fst f g) :=
   Over.isoMk (h.isoIsPullback _ _ (IsPullback.of_hasPullback f g)) (by simp)
 
-@[simp]
+@[reassoc (attr := simp)]
 lemma isoOverPullback_hom_left_comp_snd {P : C} {fst : P ⟶ X} {snd : P ⟶ Y}
     (h : IsPullback fst snd f g) :
     dsimp% h.isoOverPullback.hom.left ≫ pullback.snd f g = snd :=
