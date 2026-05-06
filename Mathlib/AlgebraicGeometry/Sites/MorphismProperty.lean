@@ -81,7 +81,7 @@ def precoverage : Precoverage Scheme.{u} :=
 lemma ofArrows_mem_precoverage_iff {S : Scheme.{u}} {ι : Type*} {X : ι → Scheme.{u}}
     {f : ∀ i, X i ⟶ S} :
     .ofArrows X f ∈ precoverage P S ↔ (∀ x, ∃ i, x ∈ Set.range (f i)) ∧ ∀ i, P (f i) := by
-  simp_rw [← Scheme.forget_map, ← Scheme.forget_obj,
+  simp_rw [← Scheme.forget_map', ← Scheme.forget_obj,
     ← Presieve.ofArrows_mem_comap_jointlySurjectivePrecoverage_iff]
   exact ⟨fun hmem ↦ ⟨hmem.1, fun i ↦ hmem.2 ⟨i⟩⟩, fun h ↦ ⟨h.1, fun {Y} g ⟨i⟩ ↦ h.2 i⟩⟩
 

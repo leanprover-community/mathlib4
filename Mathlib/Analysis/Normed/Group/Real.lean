@@ -17,7 +17,7 @@ We equip `ℝ`, `ℝ≥0`, and `ℝ≥0∞` with their natural norms / enorms.
 normed group
 -/
 
-@[expose] public section
+public section
 
 
 variable {𝓕 α ι κ E F G : Type*}
@@ -84,7 +84,6 @@ lemma nnnorm_two : ‖(2 : ℝ)‖₊ = 2 := NNReal.eq <| by simp
 @[simp 1100, norm_cast]
 lemma norm_nnratCast (q : ℚ≥0) : ‖(q : ℝ)‖ = q := norm_of_nonneg q.cast_nonneg
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp 1100, norm_cast]
 lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : ℝ)‖₊ = q := by
   simp [nnnorm]

@@ -306,7 +306,7 @@ theorem isGLB_sInf (s : Set (GrothendieckTopology C)) : IsGLB s (sInf s) := by
 definitionally equal to the bottom and top respectively.
 -/
 instance : CompleteLattice (GrothendieckTopology C) :=
-  CompleteLattice.copy (completeLatticeOfInf _ isGLB_sInf) _ rfl (discrete C)
+  fast_instance% CompleteLattice.copy (completeLatticeOfInf _ isGLB_sInf) _ rfl (discrete C)
     (by
       apply le_antisymm
       · exact (completeLatticeOfInf _ isGLB_sInf).le_top (discrete C)
@@ -347,7 +347,6 @@ theorem bot_covers (S : Sieve X) (f : Y ⟶ X) : (⊥ : GrothendieckTopology C).
 theorem top_covers (S : Sieve X) (f : Y ⟶ X) : (⊤ : GrothendieckTopology C).Covers S f := by
   simp [covers_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma eq_top_iff (J : GrothendieckTopology C) : J = ⊤ ↔ ∀ X, ⊥ ∈ J X := by
   refine ⟨fun h ↦ h ▸ by simp, fun h ↦ ?_⟩
   rw [_root_.eq_top_iff]
