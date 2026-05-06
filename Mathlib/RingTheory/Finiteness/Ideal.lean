@@ -55,7 +55,7 @@ theorem fg_of_fg_map_of_fg_inf_ker_of_surjective {R S : Type*} [CommRing R] [Com
     have : RingHomSurjective f := ⟨hf⟩
     simp [map_eq_submodule_map]
   refine Submodule.fg_of_fg_map_of_fg_inf_ker (Module.compHom.toLinearMap f) ?_ hk
-  simpa [h] using Submodule.FG.restrictScalars_of_surjective hmap hf
+  simp [h, Submodule.FG.restrictScalars_of_surjective hmap hf]
 
 theorem exists_radical_pow_le_of_fg {R : Type*} [CommSemiring R] (I : Ideal R) (h : I.radical.FG) :
     ∃ n : ℕ, I.radical ^ n ≤ I := by
