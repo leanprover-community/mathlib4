@@ -262,7 +262,7 @@ theorem support_esymm'' [DecidableEq σ] [Nontrivial R] (n : ℕ) :
   have := congr_arg Finsupp.support h
   rw [Finsupp.support_sum_eq_biUnion _ (by simp), Finsupp.support_sum_eq_biUnion _ (by simp)]
     at this
-  simp_all [Finsupp.support_single]
+  simp_all
 
 theorem support_esymm' [DecidableEq σ] [Nontrivial R] (n : ℕ) : (esymm σ R n).support =
     (powersetCard n (univ : Finset σ)).biUnion fun t => {∑ i ∈ t, Finsupp.single i 1} := by
