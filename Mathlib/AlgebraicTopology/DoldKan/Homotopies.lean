@@ -130,8 +130,7 @@ def homotopyHσToZero (q : ℕ) : Homotopy (Hσ q : K[X] ⟶ K[X]) 0 :=
 
 /-- In degree `0`, the null homotopic map `Hσ` is zero. -/
 theorem Hσ_eq_zero (q : ℕ) : (Hσ q : K[X] ⟶ K[X]).f 0 = 0 := by
-  unfold Hσ
-  rw [nullHomotopicMap'_f_of_not_rel_left (c_mk 1 0 rfl) cs_down_0_not_rel_left]
+  rw [Hσ, nullHomotopicMap'_f_of_not_rel_left (c_mk 1 0 rfl) cs_down_0_not_rel_left]
   rcases q with (_ | q)
   · rw [hσ'_eq (show 0 = 0 + 0 by rfl) (c_mk 1 0 rfl)]
     suffices X.σ 0 ≫ X.δ 0 + -X.σ 0 ≫ X.δ 1 = 0 by simpa

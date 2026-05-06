@@ -93,7 +93,7 @@ variable [Monoid M]
 /-- `a` semiconjugates `x` to `a * x * a⁻¹`. -/
 @[to_additive /-- `a` semiconjugates `x` to `a + x + -a`. -/]
 lemma mk_semiconjBy (u : Mˣ) (x : M) : SemiconjBy (↑u) x (u * x * ↑u⁻¹) := by
-  unfold SemiconjBy; rw [Units.inv_mul_cancel_right]
+  rw [SemiconjBy, Units.inv_mul_cancel_right]
 
 lemma conj_pow (u : Mˣ) (x : M) (n : ℕ) :
     ((↑u : M) * x * (↑u⁻¹ : M)) ^ n = (u : M) * x ^ n * (↑u⁻¹ : M) :=

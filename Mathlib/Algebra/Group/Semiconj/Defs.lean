@@ -56,17 +56,15 @@ then it semiconjugates `x * x'` to `y * y'`. -/
 then it semiconjugates `x + x'` to `y + y'`. -/]
 theorem mul_right (h : SemiconjBy a x y) (h' : SemiconjBy a x' y') :
     SemiconjBy a (x * x') (y * y') := by
-  unfold SemiconjBy
   -- TODO this could be done using `assoc_rw` if/when this is ported to mathlib4
-  rw [← mul_assoc, h.eq, mul_assoc, h'.eq, ← mul_assoc]
+  rw [SemiconjBy, ← mul_assoc, h.eq, mul_assoc, h'.eq, ← mul_assoc]
 
 /-- If `b` semiconjugates `x` to `y` and `a` semiconjugates `y` to `z`, then `a * b`
 semiconjugates `x` to `z`. -/
 @[to_additive /-- If `b` semiconjugates `x` to `y` and `a` semiconjugates `y` to `z`, then `a + b`
 semiconjugates `x` to `z`. -/]
 theorem mul_left (ha : SemiconjBy a y z) (hb : SemiconjBy b x y) : SemiconjBy (a * b) x z := by
-  unfold SemiconjBy
-  rw [mul_assoc, hb.eq, ← mul_assoc, ha.eq, mul_assoc]
+  rw [SemiconjBy, mul_assoc, hb.eq, ← mul_assoc, ha.eq, mul_assoc]
 
 /-- The relation “there exists an element that semiconjugates `a` to `b`” on a semigroup
 is transitive. -/
@@ -129,7 +127,7 @@ variable [Group G]
 /-- `a` semiconjugates `x` to `a * x * a⁻¹`. -/
 @[to_additive /-- `a` semiconjugates `x` to `a + x + -a`. -/]
 theorem conj_mk (a x : G) : SemiconjBy a x (a * x * a⁻¹) := by
-  unfold SemiconjBy; rw [mul_assoc, inv_mul_cancel, mul_one]
+  rw [SemiconjBy, mul_assoc, inv_mul_cancel, mul_one]
 
 @[to_additive (attr := simp)]
 theorem conj_iff {a x y b : G} :

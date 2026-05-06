@@ -218,8 +218,7 @@ end
 
 theorem derivWithin_zero_of_not_differentiableWithinAt (h : ¬DifferentiableWithinAt 𝕜 f s x) :
     derivWithin f s x = 0 := by
-  unfold derivWithin
-  rw [fderivWithin_zero_of_not_differentiableWithinAt h]
+  rw [derivWithin, fderivWithin_zero_of_not_differentiableWithinAt h]
   simp
 
 theorem differentiableWithinAt_of_derivWithin_ne_zero (h : derivWithin f s x ≠ 0) :
@@ -248,8 +247,7 @@ theorem derivWithin_zero_of_notMem_closure (h : x ∉ closure s) : derivWithin f
   rw [derivWithin, fderivWithin_zero_of_notMem_closure h, ContinuousLinearMap.zero_apply]
 
 theorem deriv_zero_of_not_differentiableAt (h : ¬DifferentiableAt 𝕜 f x) : deriv f x = 0 := by
-  unfold deriv
-  rw [fderiv_zero_of_not_differentiableAt h]
+  rw [deriv, fderiv_zero_of_not_differentiableAt h]
   simp
 
 theorem differentiableAt_of_deriv_ne_zero (h : deriv f x ≠ 0) : DifferentiableAt 𝕜 f x :=
@@ -475,8 +473,7 @@ theorem norm_deriv_eq_norm_fderiv : ‖deriv f x‖ = ‖fderiv 𝕜 f x‖ := b
 
 theorem DifferentiableAt.derivWithin (h : DifferentiableAt 𝕜 f x) (hxs : UniqueDiffWithinAt 𝕜 s x) :
     derivWithin f s x = deriv f x := by
-  unfold _root_.derivWithin deriv
-  rw [h.fderivWithin hxs]
+  rw [_root_.derivWithin, deriv, h.fderivWithin hxs]
 
 theorem HasDerivWithinAt.deriv_eq_zero (hd : HasDerivWithinAt f 0 s x)
     (H : UniqueDiffWithinAt 𝕜 s x) : deriv f x = 0 :=
@@ -500,8 +497,7 @@ theorem derivWithin_congr_set (h : s =ᶠ[𝓝 x] t) : derivWithin f s x = deriv
 @[simp]
 theorem derivWithin_univ : derivWithin f univ = deriv f := by
   ext
-  unfold derivWithin deriv
-  rw [fderivWithin_univ]
+  rw [derivWithin, deriv, fderivWithin_univ]
 
 theorem derivWithin_inter (ht : t ∈ 𝓝 x) : derivWithin f (s ∩ t) x = derivWithin f s x := by
   unfold derivWithin

@@ -72,8 +72,7 @@ theorem roots_zero : (0 : R[X]).roots = 0 :=
 
 theorem card_roots (hp0 : p ≠ 0) : (Multiset.card (roots p) : WithBot ℕ) ≤ degree p := by
   classical
-  unfold roots
-  rw [dif_neg hp0]
+  rw [roots, dif_neg hp0]
   exact (Classical.choose_spec (exists_multiset_roots hp0)).1
 
 theorem card_roots' (p : R[X]) : Multiset.card p.roots ≤ natDegree p := by

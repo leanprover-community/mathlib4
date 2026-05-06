@@ -554,17 +554,14 @@ def eval₂ : R[T;T⁻¹] →+* S :=
 
 @[simp]
 theorem eval₂_toLaurent (p : R[X]) : eval₂ f x (toLaurent p) = Polynomial.eval₂ f x p := by
-  unfold eval₂
-  rw [← algebraMap_eq_toLaurent, IsLocalization.lift_eq, coe_eval₂RingHom]
+  rw [eval₂, ← algebraMap_eq_toLaurent, IsLocalization.lift_eq, coe_eval₂RingHom]
 
 theorem eval₂_T_n (n : ℕ) : eval₂ f x (T n) = x ^ n := by
   rw [← Polynomial.toLaurent_X_pow, eval₂_toLaurent, eval₂_X_pow]
 
 theorem eval₂_T_neg_n (n : ℕ) : eval₂ f x (T (-n)) = x⁻¹ ^ n := by
-  rw [← mk'_one_X_pow]
-  unfold eval₂
-  rw [IsLocalization.lift_mk'_spec, map_one, coe_eval₂RingHom, eval₂_X_pow, ← mul_pow,
-    Units.mul_inv, one_pow]
+  rw [← mk'_one_X_pow, eval₂, IsLocalization.lift_mk'_spec, map_one, coe_eval₂RingHom, eval₂_X_pow,
+    ← mul_pow, Units.mul_inv, one_pow]
 
 @[simp]
 theorem eval₂_T (n : ℤ) : eval₂ f x (T n) = (x ^ n).val := by

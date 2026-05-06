@@ -42,8 +42,7 @@ theorem AnalyticOn.hasFPowerSeriesOnSubball
   apply hg' (Metric.isConnected_eball hr_pos).isPreconnected (show x ∈ Metric.eball x r by simpa) ?_
   have hf : AnalyticAt 𝕜 f x := h _ (by simp [hr_pos])
   apply AnalyticAt.hasFPowerSeriesAt at hf
-  unfold Filter.EventuallyEq Filter.Eventually
-  rw [EMetric.mem_nhds_iff]
+  rw [Filter.EventuallyEq, Filter.Eventually, EMetric.mem_nhds_iff]
   obtain ⟨ε, hf⟩ := hf
   exact ⟨ε, hf.r_pos, hf.unique (hg.mono hf.r_pos hf.r_le)⟩
 

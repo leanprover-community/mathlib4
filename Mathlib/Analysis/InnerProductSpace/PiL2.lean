@@ -87,7 +87,6 @@ instance PiLp.innerProductSpace {ι : Type*} [Fintype ι] (f : ι → Type*)
     simp only [PiLp.norm_sq_eq_of_L2, map_sum, ← norm_sq_eq_re_inner]
   conj_inner_symm := by
     intro x y
-    unfold inner
     rw [map_sum]
     apply Finset.sum_congr rfl
     rintro z -

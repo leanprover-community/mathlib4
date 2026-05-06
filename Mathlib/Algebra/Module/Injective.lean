@@ -323,8 +323,8 @@ theorem ExtensionOfMaxAdjoin.extensionToFun_wd (h : Module.Baer R Q) {y : N}
     ExtensionOfMaxAdjoin.extendIdealTo_eq i f h (r - ExtensionOfMaxAdjoin.snd i x)
       (by rw [← eq2]; exact Submodule.sub_mem _ (ExtensionOfMaxAdjoin.fst i x).2 ha)
   simp only [map_sub, sub_smul, sub_eq_iff_eq_add] at eq3
-  unfold ExtensionOfMaxAdjoin.extensionToFun
-  rw [eq3, ← add_assoc, ← (extensionOfMax i f).toLinearPMap.map_add, AddMemClass.mk_add_mk]
+  rw [ExtensionOfMaxAdjoin.extensionToFun, eq3, ← add_assoc,
+    ← (extensionOfMax i f).toLinearPMap.map_add, AddMemClass.mk_add_mk]
   congr
   ext
   dsimp
