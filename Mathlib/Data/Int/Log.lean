@@ -96,8 +96,7 @@ theorem log_of_right_le_zero (b : ℕ) {r : R} (hr : r ≤ 0) : log b r = 0 := b
 theorem zpow_log_le_self {b : ℕ} {r : R} (hb : 1 < b) (hr : 0 < r) : (b : R) ^ log b r ≤ r := by
   rcases le_total 1 r with hr1 | hr1
   · rw [log_of_one_le_right _ hr1]
-    norm_cast
-    rw [← Nat.le_floor_iff hr.le]
+    rw [zpow_natCast, ← Nat.cast_pow, ← Nat.le_floor_iff hr.le]
     exact Nat.pow_log_le_self b (Nat.floor_pos.mpr hr1).ne'
   · rw [log_of_right_le_one _ hr1, zpow_neg]
     exact_mod_cast inv_le_of_inv_le₀ hr (Nat.ceil_le.1 <| Nat.le_pow_clog hb _)

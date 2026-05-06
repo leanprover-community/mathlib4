@@ -277,8 +277,7 @@ theorem summable_nat_rpow_inv {p : ℝ} :
   /- Cauchy condensation test applies only to antitone sequences, so we consider the
     cases `0 ≤ p` and `p < 0` separately. -/
   · rw [← summable_condensed_iff_of_nonneg]
-    · push_cast
-      simp_rw [← rpow_natCast, ← rpow_mul zero_lt_two.le, mul_comm _ p,
+    · simp_rw [Nat.cast_pow, Nat.cast_two, ← rpow_natCast, ← rpow_mul zero_lt_two.le, mul_comm _ p,
         rpow_mul zero_lt_two.le, rpow_natCast, ← inv_pow, ← mul_pow,
         summable_geometric_iff_norm_lt_one]
       nth_rw 1 [← rpow_one 2]
