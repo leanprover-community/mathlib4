@@ -36,9 +36,11 @@ private lemma qExpansion_eq_qExpansion_discriminant_mul
     (hcusp : (qExpansion 1 f).coeff 0 = 0) :
     qExpansion 1 f = qExpansion 1 discriminant *
       qExpansion 1 (discriminantEquiv (toCuspForm f hcusp)) := by
-  rw [show (f : ℍ → ℂ) = discriminant *
-      (CuspForm.discriminantEquiv (toCuspForm f hcusp) : ℍ → ℂ) from funext fun z ↦ by
-    simp [CuspForm.discriminantEquiv, mul_div_cancel₀ _ (discriminant_ne_zero z)]]
+  have hfun : (f : ℍ → ℂ) = discriminant *
+      (CuspForm.discriminantEquiv (toCuspForm f hcusp) : ℍ → ℂ) := by
+    funext z
+    simp [CuspForm.discriminantEquiv, mul_div_cancel₀ _ (discriminant_ne_zero z)]
+  rw [hfun]
   exact UpperHalfPlane.qExpansion_mul
     (CuspForm.coe_discriminant ▸ ModularFormClass.analyticAt_cuspFunction_zero
       (CuspForm.discriminant : CuspForm 𝒮ℒ 12) one_pos one_mem_strictPeriods_SL)
