@@ -494,6 +494,7 @@ theorem theta_ge' {x : ℝ} (hx : 1 ≤ x) :
 
 theorem theta_eq_sum_log (n : ℕ) : theta n = ∑ p ∈ primesLE n, log p := by
   rw [theta_eq_sum_Icc, floor_natCast, primesLE_eq_filter_Icc_zero]
+
 section PrimeCounting
 
 /-! ## Relation to prime counting
