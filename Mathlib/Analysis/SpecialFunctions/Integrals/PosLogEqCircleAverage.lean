@@ -127,7 +127,7 @@ theorem circleAverage_log_norm_sub_const₁ (h : ‖a‖ = 1) :
   _ = ∫ x in 0..(2 * π), log (4 * sin (x / 2) ^ 2) / 2 := by
     apply integral_congr
     intro x hx
-    beta_reduce
+    simp only []
     rw [Complex.norm_def, log_sqrt (circleMap 0 1 x - 1).normSq_nonneg]
     congr
     calc Complex.normSq (circleMap 0 1 x - 1)
