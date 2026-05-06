@@ -16,7 +16,7 @@ This file contains the results concerning the interaction of finset big operator
 zero, where order is involved.
 -/
 
-@[expose] public section
+public section
 
 variable {ι R S : Type*}
 
