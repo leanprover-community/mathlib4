@@ -13,6 +13,9 @@ public import Mathlib.NumberTheory.PrimeCounting
 public import Mathlib.NumberTheory.Primorial
 public import Mathlib.NumberTheory.ArithmeticFunction.VonMangoldt
 
+import Mathlib.Algebra.GCDMonoid.FinsetLemmas
+import Mathlib.Data.Nat.Prime.Factorial
+import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Analysis.SpecialFunctions.Log.InvLog
 import Mathlib.Data.Nat.Prime.Int
 
@@ -26,15 +29,23 @@ These give logarithmically weighted sums of primes and prime powers.
 
 - `Chebyshev.psi` gives the sum of `ArithmeticFunction.vonMangoldt`
 - `Chebyshev.theta` gives the sum of `log p` over primes
+- `Chebyshev.lcmUpto n` gives the least common multiple of `{1,...,n}`
 
 ## Main results
 
 - `Chebyshev.theta_eq_log_primorial` shows that `θ x` is the log of the product of primes up to x
 - `Chebyshev.theta_le_log4_mul_x` gives Chebyshev's upper bound on `θ`
+- `Chebyshev.theta_ge` gives Chebyshev's lower bound on `θ`.
+- `Chebyshev.psi_eq_log_lcmUpto` shows that `ψ n` is the log of the lcm of `{1,...,n}`
 - `Chebyshev.psi_eq_sum_theta` and `Chebyshev.psi_eq_theta_add_sum_theta` relate `psi` to `theta`.
 - `Chebyshev.psi_le_const_mul_self` gives Chebyshev's upper bound on `ψ`.
+- `Chebyshev.psi_ge` gives Chebyshev's lower bound on `ψ`.
 - `Chebyshev.primeCounting_eq_theta_div_log_add_integral` relates the prime counting function to `θ`
-- `Chebyshev.eventually_primeCounting_le` gives an upper bound on the prime counting function.
+- `Chebyshev.eventually_primeCounting_le` gives an asymptotic upper bound on the
+  prime counting function.
+- `Chebyshev.pi_le_log4_mul_div` gives an explicit upper bound on the prime counting function.
+- `Chebyshev.pi_ge` gives an explicit lower bound on the prime counting function.
+
 
 ## Notation
 
@@ -45,9 +56,6 @@ functions.
 
 Parts of this file were upstreamed from the PrimeNumberTheoremAnd project by Kontorovich et al, https://github.com/alexKontorovich/PrimeNumberTheoremAnd.
 
-## TODOS
-
-- Prove Chebyshev's lower bound.
 -/
 @[expose] public section
 
@@ -99,6 +107,12 @@ theorem psi_eq_zero_of_lt_two {x : ℝ} (hx : x < 2) : ψ x = 0 := by
   norm_cast at this
   linarith
 
+@[simp]
+theorem psi_zero : ψ 0 = 0 := psi_eq_zero_of_lt_two zero_lt_two
+
+@[simp]
+theorem psi_one : ψ 1 = 0 := psi_eq_zero_of_lt_two one_lt_two
+
 theorem theta_eq_zero_of_lt_two {x : ℝ} (hx : x < 2) : θ x = 0 := by
   apply sum_eq_zero fun n hn ↦ ?_
   convert log_one
@@ -106,6 +120,12 @@ theorem theta_eq_zero_of_lt_two {x : ℝ} (hx : x < 2) : θ x = 0 := by
   have := lt_of_le_of_lt (le_floor_iff' hn.1.1.ne.symm |>.mp hn.1.2) hx
   norm_cast at ⊢ this
   linarith
+
+@[simp]
+theorem theta_zero : θ 0 = 0 := theta_eq_zero_of_lt_two zero_lt_two
+
+@[simp]
+theorem theta_one : θ 1 = 0 := theta_eq_zero_of_lt_two one_lt_two
 
 theorem psi_eq_psi_coe_floor (x : ℝ) : ψ x = ψ ⌊x⌋₊ := by
   unfold psi
@@ -121,12 +141,20 @@ theorem psi_mono : Monotone ψ := by
   · exact Ioc_subset_Ioc (by rfl) <| floor_le_floor hxy
   · simp
 
+theorem log_prime_pos {p : ℕ} (hp : p.Prime) : 0 < log p := by
+  rw [Real.log_pos_iff (mod_cast p.zero_le)]
+  exact_mod_cast hp.one_lt
+
+theorem log_prime_ne {p : ℕ} (hp : p.Prime) : log p ≠ 0 := ne_of_gt (log_prime_pos hp)
+
+theorem log_prime_nonneg {p : ℕ} (hp : p.Prime) : 0 ≤ log p := le_of_lt (log_prime_pos hp)
+
 theorem theta_mono : Monotone θ := by
   intro x y hxy
   apply sum_le_sum_of_subset_of_nonneg
   · exact filter_subset_filter _ <| Ioc_subset_Ioc_right <| floor_mono hxy
   · simp only [mem_filter]
-    exact fun p hp _ ↦ log_nonneg (mod_cast hp.2.one_le)
+    exact fun p hp _ ↦ log_prime_nonneg hp.2
 
 /-- `θ x` is the log of the product of the primes up to `x`. -/
 theorem theta_eq_log_primorial (x : ℝ) : θ x = log (primorial ⌊x⌋₊) := by
@@ -144,6 +172,159 @@ theorem theta_le_log4_mul_x {x : ℝ} (hx : 0 ≤ x) : θ x ≤ log 4 * x := by
   rw [Real.log_pow, mul_comm]
   gcongr
   exact floor_le hx
+
+/-!
+## Least common multiple of `{1,...,n}`
+
+Basic facts about the least common multiple of the first `n` natural numbers
+-/
+
+/-- Least common multiple of $\{1, \dots, n\}$. -/
+abbrev lcmUpto (n : ℕ) : ℕ := (Icc 1 n).lcm _root_.id
+
+theorem lcmUpto_ne_zero (n : ℕ) : lcmUpto n ≠ 0 := by
+  simp
+
+theorem lcmUpto_pos (n : ℕ) : 0 < lcmUpto n := pos_of_ne_zero <| lcmUpto_ne_zero n
+
+theorem factorization_lcmUpto (n : ℕ) {p : ℕ} (hp : p.Prime) :
+  (lcmUpto n).factorization p = p.log n := calc
+  _ = (Icc 1 n).sup (fun k => k.factorization p) :=
+    Finset.factorization_lcm (fun k hk => by aesop) p
+  _ = _ := by
+    have := hp.one_lt
+    refine le_antisymm ?_ ?_
+    · simp only [Finset.sup_le_iff, mem_Icc, and_imp]
+      intro m h1 h2
+      exact le_log_of_pow_le this
+        (le_of_dvd (Order.one_le_iff_pos.mp h1) (ordProj_dvd m p) |>.trans h2)
+    rcases le_or_gt p n with _ | h
+    · have := pow_log_le_self p (x := n) (by linarith)
+      grw [← le_sup (b := p ^ p.log n) (by grind)]
+      simp [hp]
+    simp [log_of_lt h]
+
+theorem lcmUpto_dvd_factorial (n : ℕ) : lcmUpto n ∣ n ! := by
+  simp +contextual [dvd_factorial, Order.one_le_iff_pos]
+
+theorem primeFactors_lcmUpto (n : ℕ) : primeFactors (lcmUpto n) = primesLE n := by
+  ext p
+  constructor
+  · intro h
+    have := prime_of_mem_primeFactors h
+    rw [←support_factorization, Finsupp.mem_support_iff, factorization_lcmUpto _ this] at h
+    simp_all
+  intro h
+  simp_all only [mem_filter, mem_range, Order.lt_add_one_iff, lcmUpto, mem_primeFactors, ne_eq,
+    Finset.lcm_eq_zero_iff, mem_Icc, id_eq, exists_eq_right, nonpos_iff_eq_zero, one_ne_zero,
+    _root_.zero_le, and_true, not_false_eq_true, true_and]
+  convert dvd_lcm (b := p) ?_ <;> simp_all [h.2.one_le]
+
+theorem primorial_dvd_lcmUpto (n : ℕ) : primorial n ∣ lcmUpto n := by
+  simp only [primorial]
+  convert prod_primeFactors_dvd _
+  rw [primeFactors_lcmUpto]
+
+theorem lcmUpto_eq_prod (n : ℕ) :
+  lcmUpto n = ∏ p ∈ primesLE n, p ^ ((lcmUpto n).factorization p) := by
+  symm; convert prod_factorization_pow_eq_self (lcmUpto_ne_zero n)
+  rw [Finsupp.prod_of_support_subset _ _ _ (by simp)]
+  simp +contextual only [support_factorization, subset_iff, mem_primeFactors, ne_eq,
+    Finset.lcm_eq_zero_iff, mem_Icc, id_eq, exists_eq_right, nonpos_iff_eq_zero, one_ne_zero,
+    _root_.zero_le, and_true, not_false_eq_true, mem_filter, mem_range, Order.lt_add_one_iff,
+    and_imp]
+  intro p pp dp
+  rw [← pp.dvd_factorial]
+  exact dp.trans <| lcmUpto_dvd_factorial n
+
+theorem lcmUpto_eq_prod_pow_log (n : ℕ) : lcmUpto n = ∏ p ∈ primesLE n, p ^ p.log n := by
+  convert lcmUpto_eq_prod n using 3 with p hp
+  simp only [mem_filter, mem_range, Order.lt_add_one_iff] at hp
+  exact factorization_lcmUpto n hp.2 |>.symm
+
+theorem lcmUpto_eq_prod_pow_floor (n : ℕ) : lcmUpto n = ∏ p ∈ primesLE n, p ^ ⌊log n / log p⌋₊ := by
+  convert lcmUpto_eq_prod_pow_log n using 3
+  rw [← natFloor_logb_natCast, ← log_div_log]
+
+theorem psi_eq_sum_mul_log_prime (n : ℕ) : ψ n = ∑ p ∈ primesLE n, p.log n * log p := calc
+  _ = ∑ m ∈ Icc 1 n, vonMangoldt m := by unfold psi; aesop
+  _ = ∑ m ∈ Finset.biUnion (filter Nat.Prime (Icc 1 n))
+    (fun p => image (fun k => p ^ k) (Icc 1 (p.log n))), vonMangoldt m := by
+    symm; apply sum_subset
+    · intro q
+      simp only [mem_biUnion, mem_filter, mem_Icc, mem_image, forall_exists_index, and_imp]
+      intro p _ _ _ m _ hm rfl
+      exact ⟨by grind, pow_le_of_le_log (by linarith) hm⟩
+    intro x hx
+    simp only [mem_biUnion, mem_filter, mem_Icc, mem_image, not_exists, not_and, and_imp,
+      vonMangoldt_eq_zero_iff, isPrimePow_nat_iff]
+    contrapose!
+    rintro ⟨p, k, hp, hk, rfl⟩
+    simp only [mem_Icc] at hx
+    refine ⟨p, ⟨hp.one_le, ?_, hp, ⟨k, ⟨by linarith, ?_, rfl⟩⟩⟩⟩
+    · linarith [le_of_dvd (by linarith) (dvd_pow_self p hk.ne')]
+    exact le_log_of_pow_le hp.one_lt hx.2
+  _ = ∑ p ∈ Icc 1 n with Nat.Prime p, ∑ q ∈ image (fun k ↦ p ^ k) (Icc 1 (p.log n)), Λ q := by
+    convert sum_biUnion ?_
+    intros p hp q hq hpq
+    simp_all only [ne_eq, coe_filter, mem_Icc, Set.mem_setOf_eq, disjoint_left, mem_image,
+      not_exists, not_and, and_imp, forall_exists_index, one_le_iff_ne_zero]
+    intro a n hn _ rfl m hm _ h
+    apply hpq
+    exact Nat.Prime.pow_inj' hp.2 hq.2 hn hm h.symm |>.1
+  _ = ∑ p ∈ primesLE n, ∑ k ∈ Icc 1 (p.log n), vonMangoldt (p ^ k) := by
+    apply sum_congr (primesLE_eq_filter_Icc_one n).symm
+    intro p hp
+    apply sum_image
+    intro a _ b _ hab
+    exact Nat.pow_right_injective (ge_of_mem_primesLE hp) hab
+  _ = ∑ p ∈ primesLE n, ∑ k ∈ Icc 1 (p.log n), log p := by
+    apply sum_congr rfl; intro p hp
+    apply sum_congr rfl; intro k hk
+    simp only [primesLE, mem_filter, mem_range, Order.lt_add_one_iff, mem_Icc] at hp hk
+    rw [vonMangoldt_apply_pow (by linarith), vonMangoldt_apply_prime hp.2]
+  _ = _ := by simp
+
+theorem psi_le_primeCounting_mul_log (n : ℕ) : ψ n ≤ (π n) * log n := calc
+  _ ≤ ∑ p ∈ primesLE n, log n := by
+    rw [psi_eq_sum_mul_log_prime n]
+    apply sum_le_sum; intro p hp; simp only [mem_filter, mem_range, Order.lt_add_one_iff] at hp
+    rw [← natFloor_logb_natCast, ← log_div_log]
+    grw [floor_le]
+    · have : log p ≠ 0 := log_prime_ne hp.2
+      field_simp; simp
+    positivity
+  _ = _ := by
+    simp [primesLE_card_eq_primeCounting]
+
+theorem psi_le_primeCounting_mul_log' (x : ℝ) : ψ x ≤ (π ⌊x⌋₊) * log x := by
+  grw [psi_eq_psi_coe_floor, psi_le_primeCounting_mul_log]
+  rcases lt_or_ge x 1 with h | h
+  · simp [floor_eq_zero.mpr h]
+  gcongr
+  · contrapose! h; simp_all
+  exact floor_le (by positivity)
+
+/-- $\psi(n) = \log(\mathrm{lcm}(1, \dots, n))$. -/
+theorem psi_eq_log_lcmUpto (n : ℕ) : ψ n = log (lcmUpto n) := by
+  rw [lcmUpto_eq_prod_pow_log, Nat.cast_prod, log_prod]
+  · simp [psi_eq_sum_mul_log_prime]
+  · simp +contextual
+
+/-- $\mathrm{lcm}(1, \dots, n)$ is divisible by $\binom{n}{k}$ for all $k \le n$. -/
+theorem choose_dvd_lcmUpto {n k : ℕ} (hkn : k ≤ n) : choose n k ∣ lcmUpto n := by
+  rw [← factorization_prime_le_iff_dvd (choose_ne_zero hkn) (lcmUpto_ne_zero n)]
+  intro p hp
+  rw [factorization_lcmUpto n hp]
+  exact factorization_choose_le_log
+
+theorem two_pow_le_mul_lcmUpto (n : ℕ) : 2 ^ n ≤ (n + 1) * lcmUpto n := calc
+  _ = ∑ m ∈ range (n + 1), n.choose m := (sum_range_choose _).symm
+  _ ≤ ∑ k ∈ Finset.range (n + 1), lcmUpto n := by
+    refine sum_le_sum fun k hk => ?_
+    simp only [mem_range, Order.lt_add_one_iff] at hk
+    exact Nat.le_of_dvd (lcmUpto_pos n) (choose_dvd_lcmUpto hk)
+  _ = _ := by simp
 
 /-!
 ## Relating `ψ` and `θ`
@@ -281,6 +462,38 @@ theorem psi_sub_theta_eq_sum_not_prime (x : ℝ) :
   · simp [h, vonMangoldt_apply_prime]
   · simp
 
+/-- The Chebyshev lower bound for $\psi$. -/
+theorem psi_ge (n : ℕ) : n * log 2 - log (n + 1) ≤ psi n := by
+  have : log (2 ^ n) ≤ log ((n + 1) * lcmUpto n) := by
+    apply log_le_log (by positivity)
+    exact_mod_cast two_pow_le_mul_lcmUpto n
+  rwa [Real.log_pow, Real.log_mul (by positivity) (by simp), ← psi_eq_log_lcmUpto,
+   ← sub_le_iff_le_add'] at this
+
+theorem psi_ge' {x : ℝ} (hx : 0 ≤ x) : (x-1) * log 2 - log (x + 2) ≤ psi x := by
+  grw [psi_eq_psi_coe_floor, ←psi_ge]
+  gcongr
+  · linarith [abs_le.mp (abs_sub_floor_le hx)]
+  · exact floor_le hx
+  exact one_le_two
+
+theorem psi_sub_theta_le {x : ℝ} (hx : 1 ≤ x) : psi x - theta x ≤ 2 * √x * log x := by
+  grw [← abs_psi_sub_theta_le_sqrt_mul_log hx]
+  exact le_abs_self _
+
+/-- The Chebyshev lower bound for $\theta$. -/
+theorem theta_ge (n : ℕ) : n * log 2 - log (n + 1) - 2 * √n * log n ≤ theta n:= by
+  rcases n.eq_zero_or_pos with rfl | hn
+  · simp
+  linarith [psi_ge n, psi_sub_theta_le (x := n) (mod_cast (one_le_of_lt hn))]
+
+theorem theta_ge' {x : ℝ} (hx : 1 ≤ x) :
+  (x-1) * log 2 - log (x + 2) - 2 * √x * log x ≤ theta x := by
+  grw [psi_ge' (by linarith)]
+  linarith [psi_sub_theta_le hx]
+
+theorem theta_eq_sum_log (n : ℕ) : theta n = ∑ p ∈ primesLE n, log p := by
+  rw [theta_eq_sum_Icc, floor_natCast, primesLE_eq_filter_Icc_zero]
 section PrimeCounting
 
 /-! ## Relation to prime counting
@@ -472,6 +685,59 @@ theorem eventually_primeCounting_le {ε : ℝ} (εpos : 0 < ε) :
   rw [norm_of_nonneg (show 0 ≤ x / log x by bound), ← mul_div_assoc] at hx2
   grw [theta_le_log4_mul_x (by linarith), ← hx2]
   grind [le_norm_self]
+
+theorem pi_ge (n : ℕ) : (n * log 2 - log (n + 1))/ log n ≤ π n := by
+  rcases (show n=0 ∨ n=1 ∨ 1<n by omega) with rfl | rfl | h
+  · simp
+  · simp
+  grw [div_le_iff₀ (log_pos (mod_cast h)), ←psi_le_primeCounting_mul_log, psi_ge]
+
+theorem pi_ge' {x : ℝ} (hx : 1 < x) :
+  ((x-1) * log 2 - log (x + 2))/ log x ≤ π ⌊x⌋₊ := by
+  grw [div_le_iff₀ (log_pos hx), ←psi_le_primeCounting_mul_log', psi_ge']
+  positivity
+
+theorem theta_le_pi_mul_log (n : ℕ) : θ n ≤ (π n) * log n :=
+  (theta_le_psi n).trans (psi_le_primeCounting_mul_log n)
+
+theorem theta_le_pi_mul_log' (x : ℝ) : θ x ≤ (π ⌊x⌋₊) * log x := by
+  grw [←psi_le_primeCounting_mul_log', theta_le_psi]
+
+private theorem pi_mul_log_sqrt_le {x : ℝ} (hx : 1 ≤ x) :
+  (π ⌊x⌋₊) * log √x ≤ log 4 * x + √x * log √x := calc
+  _ = ∑ p ∈ primesLE ⌊x⌋₊, log √x := by simp
+  _ ≤ ∑ p ∈ primesLE ⌊x⌋₊, (log p + (if p ≤ √x then log √x else 0)) := by
+    apply sum_le_sum; intro p hp
+    split_ifs with h
+    · simp [log_prime_nonneg (prime_of_mem_primesLE hp)]
+    have : log √x < log p := by
+      apply log_lt_log (by positivity) (not_le.mp h)
+    nth_grw 1 [this]
+    simp
+  _ ≤ _ := by
+    grw [← theta_le_log4_mul_x (by positivity)]
+    rw [sum_add_distrib, theta_eq_theta_coe_floor, theta_eq_sum_log, ←sum_filter]
+    simp only [sum_const, nsmul_eq_mul, add_le_add_iff_left]
+    gcongr
+    · exact log_nonneg (one_le_sqrt.mpr hx)
+    calc
+      _ ≤ ((Icc 1 ⌊√x⌋₊).card : ℝ) := by
+        norm_cast; apply Finset.card_mono
+        intro p
+        simp only [mem_filter, mem_range, Order.lt_add_one_iff, and_imp]
+        intro _ hp h; simp only [mem_Icc]
+        exact ⟨ hp.one_le, le_floor h⟩
+      _ ≤ _ := by
+        simp only [card_Icc, add_tsub_cancel_right]
+        apply floor_le
+        positivity
+
+/-- A weak but completely explicit upper bound on $\pi(x)$. -/
+theorem pi_le_log4_mul_div {x : ℝ} (hx : 1 < x) : π ⌊x⌋₊ ≤ log 4 * x / log √x + √x := by
+  have : 0 < log √x := Real.log_pos (lt_sqrt_of_sq_lt (by simp [hx]))
+  apply le_of_mul_le_mul_right _ this
+  convert pi_mul_log_sqrt_le (le_of_lt hx) using 1
+  field_simp
 
 end PrimeCounting
 end Chebyshev
