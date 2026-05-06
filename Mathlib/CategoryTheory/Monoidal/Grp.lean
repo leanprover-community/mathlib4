@@ -350,7 +350,7 @@ lemma ext {X : C} (h₁ h₂ : GrpObj X) (H : h₁.toMonObj = h₂.toMonObj) : h
 @[implicit_reducible]
 def ofInvertible (G : C) [MonObj G] (h : ∀ X (f : X ⟶ G), Invertible f) : GrpObj G where
   inv := Yoneda.fullyFaithful.preimage
-    ⟨fun X ↦ TypeCat.ofHom (fun f ↦ (h X.unop f).invOf), fun X Y f ↦ by
+    ⟨fun X ↦ ↾fun f ↦ (h X.unop f).invOf, fun X Y f ↦ by
       ext g
       simp only [yoneda_obj_obj, yoneda_obj_map, TypeCat.Fun.toFun_apply, comp_apply,
         ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk, invOf_eq_iff_left]
@@ -457,14 +457,25 @@ instance uniqueHomFromTrivial (A : Grp C) : Unique (trivial C ⟶ A) :=
 instance uniqueHomToTrivial (A : Grp C) : Unique (A ⟶ trivial C) :=
   (show _ ≃ (A.toMon ⟶ Mon.trivial C) from InducedCategory.homEquiv).unique
 
+variable (C) in
 @[to_additive]
-instance : HasZeroObject (Grp C) where
-  zero := ⟨Grp.trivial C,
-    fun A ↦ nonempty_unique (Grp.trivial C ⟶ A),
-    fun A ↦ nonempty_unique (A ⟶ Grp.trivial C)⟩
+lemma isZero_trivial : IsZero (trivial C) where
+  unique_to A := nonempty_unique (trivial C ⟶ A)
+  unique_from A := nonempty_unique (A ⟶ trivial C)
 
 @[to_additive]
-noncomputable instance : HasZeroMorphisms (Grp C) := HasZeroObject.zeroMorphismsOfZeroObject
+instance : HasZeroObject (Grp C) where
+  zero := ⟨Grp.trivial C, isZero_trivial C⟩
+
+@[to_additive]
+noncomputable instance (G H : Grp C) : Zero (G ⟶ H) where
+  zero := Grp.homMk (toUnit _ ≫ η)
+
+@[to_additive (attr := simp)]
+lemma zero_hom (G H : Grp C) : (0 : G ⟶ H).hom = 0 := rfl
+
+@[to_additive]
+noncomputable instance : HasZeroMorphisms (Grp C) where
 
 /-! ### `Grp C` is cartesian-monoidal -/
 
