@@ -172,7 +172,7 @@ immersion at `x` includes a choice of linear isomorphism between `E × F` and `E
 where the choice of `F` enters.
 If you need stronger control over the complement `F`, use `IsImmersionAtOfComplement` instead.
 -/
-irreducible_def IsImmersionAt (f : M → N) (x : M) : Prop :=
+@[no_expose] def IsImmersionAt (f : M → N) (x : M) : Prop :=
   ∃ (F : Type u) (_ : NormedAddCommGroup F) (_ : NormedSpace 𝕜 F),
     IsImmersionAtOfComplement F I J n f x
 
@@ -367,7 +367,6 @@ the model normed space of `N`. This is solved by `smallComplement` and `smallEqu
 -/
 lemma isImmersionAt (h : IsImmersionAtOfComplement F I J n f x) :
     IsImmersionAt I J n f x := by
-  rw [IsImmersionAt_def]
   use h.smallComplement, by infer_instance, by infer_instance
   exact (IsImmersionAtOfComplement.congr_F h.smallEquiv).mp h
 
@@ -396,7 +395,6 @@ lemma mk_of_charts (equiv : (E × F) ≃L[𝕜] E'')
     (hsource : domChart.source ⊆ f ⁻¹' codChart.source)
     (hwrittenInExtend : EqOn ((codChart.extend J) ∘ f ∘ (domChart.extend I).symm) (equiv ∘ (·, 0))
       (domChart.extend I).target) : IsImmersionAt I J n f x := by
-  rw [IsImmersionAt_def]
   have aux : IsImmersionAtOfComplement F I J n f x := by
     apply IsImmersionAtOfComplement.mk_of_charts <;> assumption
   use aux.smallComplement, by infer_instance, by infer_instance
@@ -413,7 +411,6 @@ lemma mk_of_continuousAt {f : M → N} {x : M} (hf : ContinuousAt f x) (equiv : 
     (hcodChart : codChart ∈ IsManifold.maximalAtlas J n N)
     (hwrittenInExtend : EqOn ((codChart.extend J) ∘ f ∘ (domChart.extend I).symm) (equiv ∘ (·, 0))
       (domChart.extend I).target) : IsImmersionAt I J n f x := by
-  rw [IsImmersionAt_def]
   have aux : IsImmersionAtOfComplement F I J n f x := by
     apply IsImmersionAtOfComplement.mk_of_continuousAt <;> assumption
   use aux.smallComplement, by infer_instance, by infer_instance
@@ -421,22 +418,19 @@ lemma mk_of_continuousAt {f : M → N} {x : M} (hf : ContinuousAt f x) (equiv : 
 
 /-- A choice of complement of the model normed space `E` of `M` in the model normed space
 `E'` of `N` -/
-def complement (h : IsImmersionAt I J n f x) : Type u := by
-  rw [IsImmersionAt_def] at h
+@[no_expose] def complement (h : IsImmersionAt I J n f x) : Type u := by
   exact Classical.choose h
 
-instance (h : IsImmersionAt I J n f x) : NormedAddCommGroup h.complement := by
-  rw [IsImmersionAt_def] at h
+@[no_expose] instance (h : IsImmersionAt I J n f x) : NormedAddCommGroup h.complement := by
   exact Classical.choose <| Classical.choose_spec h
 
+@[no_expose]
 instance (h : IsImmersionAt I J n f x) : NormedSpace 𝕜 h.complement := by
-  rw [IsImmersionAt_def] at h
   exact Classical.choose <| Classical.choose_spec <| Classical.choose_spec h
 
 lemma isImmersionAtOfComplement_complement (h : IsImmersionAt I J n f x) :
-    IsImmersionAtOfComplement h.complement I J n f x := by
-  rw [IsImmersionAt_def] at h
-  exact Classical.choose_spec <| Classical.choose_spec <| Classical.choose_spec h
+    IsImmersionAtOfComplement h.complement I J n f x :=
+  Classical.choose_spec <| Classical.choose_spec <| Classical.choose_spec h
 
 /-- A choice of chart on the domain `M` of an immersion `f` at `x`:
 w.r.t. this chart and the data `h.codChart` and `h.equiv`,
@@ -521,7 +515,6 @@ lemma target_subset_preimage_target (h : IsImmersionAt I J n f x) :
 then `g` is an immersion at `x`. -/
 lemma congr_of_eventuallyEq (hf : IsImmersionAt I J n f x) (hfg : f =ᶠ[𝓝 x] g) :
     IsImmersionAt I J n g x := by
-  rw [IsImmersionAt_def]
   use hf.complement, by infer_instance, by infer_instance
   exact hf.isImmersionAtOfComplement_complement.congr_of_eventuallyEq hfg
 
@@ -551,7 +544,6 @@ theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
 /- The inclusion of an open subset `s` of a smooth manifold `M` is an immersion at every point. -/
 lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) (hx : x ∈ s) :
     IsImmersionAt I I n (Subtype.val : s → M) ⟨x, hx⟩ := by
-  rw [IsImmersionAt_def]
   use PUnit, by infer_instance, by infer_instance
   apply Manifold.IsImmersionAtOfComplement.of_opens
 
