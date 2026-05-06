@@ -14,7 +14,26 @@ public import Mathlib.CategoryTheory.Abelian.Injective.Resolution
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-!
+
 # Category Language Baer Criterion
+
+The Baer criterion describes that an `R`-module `M` is injective iff any ideal `I` of `R`,
+any `I →ₗ[R] M` can be extended to `R →ₗ[R] M`. The later condition has an equivalent
+charaterization using the vanishing of `Ext (R ⧸ I) M 1`, which is introduced in this file.
+This characterization is also useful for proving injective dimension not exceeding `n` only
+needs to check vanishing of all `Ext (R ⧸ I) M (n + 1)` for all ideals `I`.
+
+# Main Results
+
+* `ModuleCat.ext_quotient_one_subsingleton_iff` : `Ext (R ⧸ I) M 1 = 0` iff
+  any linear map `I →ₗ[R] M` can be extended to `R →ₗ[R] M`.
+
+* `ModuleCat.injective_of_subsingleton_ext_quotient_one` : An `R`-module `M` is injective iff
+  `Ext (R ⧸ I) M 1 = 0` for all ideals `I`.
+
+* `ModuleCat.hasInjectiveDimensionLT_of_quotients` : An `R`-module `M` has injective dimension
+  strictly less than `n` iff `Ext (R ⧸ I) M n = 0` for all ideals `I`.
+
 -/
 
 @[expose] public section
