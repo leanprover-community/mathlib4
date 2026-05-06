@@ -75,7 +75,7 @@ theorem restrictScalars_inj {V₁ V₂ : Submodule R M} :
 
 /-- Even though `p.restrictScalars S` has type `Submodule S M`, it is still an `R`-module. -/
 instance restrictScalars.origModule (p : Submodule R M) : Module R (p.restrictScalars S) :=
-  (by infer_instance : Module R p)
+  inferInstanceAs <| Module R p
 
 instance restrictScalars.isScalarTower (p : Submodule R M) :
     IsScalarTower S R (p.restrictScalars S) where
@@ -99,7 +99,7 @@ def restrictScalarsEmbedding : Submodule R M ↪o Submodule S M where
   inj' := restrictScalars_injective S R M
   map_rel_iff' := restrictScalars_le S
 
-@[mono]
+@[gcongr, mono]
 lemma restrictScalars_monotone : Monotone (restrictScalars S : Submodule R M → Submodule S M) :=
   (restrictScalarsEmbedding S R M).monotone
 

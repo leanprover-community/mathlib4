@@ -64,7 +64,7 @@ lemma tendstoInMeasure_of_ne_top [EDist E] {f : ι → α → E} {l : Filter ι}
   intro ε hε
   by_cases hε_top : ε = ∞
   · have h1 : Tendsto (fun n ↦ μ {ω | 1 ≤ edist (f n ω) (g ω)}) l (𝓝 0) := h 1 (by simp) (by simp)
-    refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds h1 (fun _ ↦ zero_le _) ?_
+    refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds h1 (fun _ ↦ zero_le) ?_
     intro n
     simp only [hε_top]
     gcongr
