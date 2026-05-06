@@ -20,8 +20,6 @@ of `Δ`, landing eventually in negative weight where everything is zero.
 
 ## Main results
 
-* `ModularForm.eq_zero_of_qExpansion_coeff_zero_lt`: the auxiliary form of the Sturm bound, stated
-  in terms of an integer bound `n` with `k < 12 * n`.
 * `ModularForm.sturm_bound_levelOne`: the Sturm bound stated in the standard form: if every
   coefficient of `q^i` in `qExpansion 1 f` with `12 * i ≤ k` is zero, then `f = 0`.
 -/
@@ -33,10 +31,9 @@ open UpperHalfPlane ModularForm CuspForm MatrixGroups
 namespace ModularForm
 
 private lemma analyticAt_cuspFunction_discriminant :
-    AnalyticAt ℂ (cuspFunction 1 ModularForm.discriminant) 0 := by
-  have h := ModularFormClass.analyticAt_cuspFunction_zero
+    AnalyticAt ℂ (cuspFunction 1 ModularForm.discriminant) 0 :=
+  CuspForm.coe_discriminant ▸ ModularFormClass.analyticAt_cuspFunction_zero
     (CuspForm.discriminant : CuspForm 𝒮ℒ 12) one_pos one_mem_strictPeriods_SL
-  rwa [CuspForm.coe_discriminant] at h
 
 private lemma qExpansion_eq_qExpansion_discriminant_mul {k : ℤ} (f : ModularForm 𝒮ℒ k)
     (hcusp : (qExpansion 1 f).coeff 0 = 0) :
@@ -44,14 +41,12 @@ private lemma qExpansion_eq_qExpansion_discriminant_mul {k : ℤ} (f : ModularFo
       qExpansion 1 (CuspForm.discriminantEquiv (toCuspForm f hcusp)) := by
   set g := CuspForm.discriminantEquiv (toCuspForm f hcusp) with hg_def
   have hsymm : CuspForm.discriminantEquiv.symm g = toCuspForm f hcusp := by simp [hg_def]
-  have hfun_z : ∀ z, (f : ℍ → ℂ) z = ModularForm.discriminant z * g z := by
-    intro z
-    have hCD : CuspForm.ofMulDiscriminant g = toCuspForm f hcusp := hsymm
-    have h1 := CuspForm.ofMulDiscriminant_apply g z
-    rw [hCD, toCuspForm_apply] at h1
-    exact h1
   have hfun : (f : ℍ → ℂ) = ModularForm.discriminant * (g : ℍ → ℂ) := by
-    funext z; rw [Pi.mul_apply]; exact hfun_z z
+    funext z
+    have h1 := CuspForm.ofMulDiscriminant_apply g z
+    rw [show CuspForm.ofMulDiscriminant g = toCuspForm f hcusp from hsymm,
+      toCuspForm_apply] at h1
+    exact h1
   rw [hfun]
   exact UpperHalfPlane.qExpansion_mul analyticAt_cuspFunction_discriminant
     (ModularFormClass.analyticAt_cuspFunction_zero g one_pos one_mem_strictPeriods_SL)
@@ -84,29 +79,21 @@ private lemma eq_zero_of_qExpansion_coeff_zero_lt :
     intro k f hk hcoeff
     have h0 : (qExpansion 1 f).coeff 0 = 0 := hcoeff 0 (Nat.zero_lt_succ n)
     set g := CuspForm.discriminantEquiv (toCuspForm f h0) with hg_def
-    have hqE : qExpansion 1 f =
-        qExpansion 1 ModularForm.discriminant * qExpansion 1 g :=
-      qExpansion_eq_qExpansion_discriminant_mul f h0
-    have hf_order : ↑(n + 1 : ℕ) ≤ (qExpansion 1 f).order :=
-      PowerSeries.nat_le_order _ _ hcoeff
     have hg_order : ↑(n : ℕ) ≤ (qExpansion 1 g).order := by
       have hmul : (qExpansion 1 f).order = 1 + (qExpansion 1 g).order := by
-        rw [hqE, PowerSeries.order_mul, orderOf_qExpansion_discriminant]
-      rw [hmul] at hf_order
-      have h1 : (1 : ℕ∞) + ↑n ≤ 1 + (qExpansion 1 g).order := by
+        rw [qExpansion_eq_qExpansion_discriminant_mul f h0, PowerSeries.order_mul,
+          orderOf_qExpansion_discriminant]
+      have hf_order : (1 : ℕ∞) + ↑n ≤ 1 + (qExpansion 1 g).order := by
         have heq : ((n + 1 : ℕ) : ℕ∞) = 1 + ↑n := by push_cast; ring
-        rw [← heq]; exact hf_order
-      exact (WithTop.add_le_add_iff_left (by simp : (1 : ℕ∞) ≠ ⊤)).mp h1
-    have hgcoeff : ∀ i < n, (qExpansion 1 g).coeff i = 0 := fun i hi =>
+        rw [← heq, ← hmul]
+        exact PowerSeries.nat_le_order _ _ hcoeff
+      exact (WithTop.add_le_add_iff_left (by simp : (1 : ℕ∞) ≠ ⊤)).mp hf_order
+    have hg_zero : g = 0 := ih g (by push_cast at hk; linarith) fun i hi =>
       PowerSeries.coeff_of_lt_order _ (lt_of_lt_of_le (by exact_mod_cast hi) hg_order)
-    have hk' : k - 12 < 12 * (n : ℤ) := by push_cast at hk; linarith
-    have hg_zero : g = 0 := ih g hk' hgcoeff
-    have hf' : toCuspForm f h0 = 0 := by
-      apply CuspForm.discriminantEquiv.injective
-      simpa [← hg_def] using hg_zero
+    have hf' : toCuspForm f h0 = 0 :=
+      CuspForm.discriminantEquiv.injective (by simpa [← hg_def] using hg_zero)
     ext z
-    have hz := DFunLike.congr_fun hf' z
-    simpa [toCuspForm_apply] using hz
+    simpa [toCuspForm_apply] using DFunLike.congr_fun hf' z
 
 /-- **Sturm bound for level-1 modular forms.** If a modular form `f` of weight `k` for `SL(2, ℤ)`
 has zero coefficient on `q^i` in its q-expansion for every `i ≥ 0` with `12 * i ≤ k`, then
@@ -118,10 +105,8 @@ theorem sturm_bound_levelOne {k : ℤ} (f : ModularForm 𝒮ℒ k)
     exact ModularFormClass.levelOne_neg_weight_eq_zero hk_neg f
   push Not at hk_neg
   refine eq_zero_of_qExpansion_coeff_zero_lt (k.toNat / 12 + 1) f ?_ fun i hi => h i ?_
-  · have hkn : (k : ℤ) = k.toNat := (Int.toNat_of_nonneg hk_neg).symm
-    omega
-  · have hkn : (k : ℤ) = k.toNat := (Int.toNat_of_nonneg hk_neg).symm
-    omega
+  · omega
+  · omega
 
 end ModularForm
 
