@@ -385,18 +385,14 @@ section SymmDiff
 
 open scoped symmDiff
 
-lemma iUnion_symmDiff_subset {s : Set α} [Nonempty ι] {f : ι → Set α} :
-    (⋃ n, f n) ∆ s ⊆ ⋃ n, f n ∆ s := by
-  intro; simp [symmDiff]; aesop
-
-lemma iUnion_symmDiff_iUnion_subset {f g : ι → Set α} :
-    (⋃ n, f n) ∆ ⋃ n, g n ⊆ ⋃ n, f n ∆ g n := by
-  intro; simp [symmDiff]; grind
-
 lemma sUnion_symmDiff_subset {s : Set α} {S : Set (Set α)} (hS : S.Nonempty) :
     (⋃₀ S) ∆ s ⊆ ⋃ t ∈ S, t ∆ s := by
   obtain ⟨t₀, ht₀⟩ := hS
   intro; simp [symmDiff]; aesop
+
+lemma symmDiff_sUnion_subset {s : Set α} {S : Set (Set α)} (hS : S.Nonempty) :
+    s ∆ (⋃₀ S) ⊆ ⋃ t ∈ S, s ∆ t := by
+  simpa only [symmDiff_comm s] using sUnion_symmDiff_subset (s := s) hS
 
 lemma sUnion_symmDiff_sUnion_subset {S T : Set (Set α)} (hS : S.Nonempty)
     (hT : T.Nonempty) : (⋃₀ S) ∆ ⋃₀ T ⊆ ⋃ s ∈ S, ⋃ t ∈ T, s ∆ t := by
