@@ -229,9 +229,11 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
           (zero.eq_zero_of_src _) (hom_zero (i + 1))
         exact (finte_free_ext_vanish_iff S.X₁ K (i + 1)).mp this
     · have zero1 : IsZero (AddCommGrpCat.of (Ext K S.X₂ i)) :=
-        AddCommGrpCat.isZero_of_iff_subsingleton.mpr ((finte_free_ext_vanish_iff _ _ i).mpr h1)
+        AddCommGrpCat.isZero_of_iff_subsingleton.mpr
+          ((finte_free_ext_vanish_iff _ _ i).mpr h1)
       have zero3 : IsZero (AddCommGrpCat.of (Ext K S.X₁ (i + 1))) :=
-        AddCommGrpCat.isZero_of_iff_subsingleton.mpr ((finte_free_ext_vanish_iff _ _ (i + 1)).mpr h3)
+        AddCommGrpCat.isZero_of_iff_subsingleton.mpr
+          ((finte_free_ext_vanish_iff _ _ (i + 1)).mpr h3)
       exact AddCommGrpCat.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
         (Ext.covariant_sequence_exact₃' K S_exact i (i + 1) rfl)
         (zero1.eq_zero_of_src _) (zero3.eq_zero_of_tgt _)
