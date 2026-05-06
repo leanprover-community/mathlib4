@@ -25,11 +25,11 @@ namespace Walk
 
 variable {α : Type*} {G : SimpleGraph α}
 
-/-- Build a walk of length `n` from `x` to `f^[n] x` following `f`,
+/-- Build a walk of length `n` from `v` to `f^[n] v` following `f`,
 given that each step is adjacent in `G`. -/
-def iterate (f : α → α) (hadj : ∀ x, G.Adj x (f x)) (x : α) (n : ℕ) : G.Walk x (f^[n] x) :=
-  (Walk.ofSupport _ (by simp) (List.IsChain.iterate x hadj (n + 1))).copy rfl
-    (List.getLast_iterate f x (n + 1) (by simp))
+def iterate (f : V → V) (hadj : ∀ v, G.Adj v (f v)) (v : α) (n : ℕ) : G.Walk v (f^[n] v) :=
+  (Walk.ofSupport _ (by simp) <| .iterate v hadj <| n + 1).copy rfl <|
+    List.getLast_iterate f v (n + 1) <| by simp
 
 /-- The walk built by `Walk.iterate` has length `n`. -/
 @[simp]
