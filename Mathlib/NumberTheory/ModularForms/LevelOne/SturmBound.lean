@@ -35,6 +35,9 @@ private lemma analyticAt_cuspFunction_discriminant :
   CuspForm.coe_discriminant ▸ ModularFormClass.analyticAt_cuspFunction_zero
     (CuspForm.discriminant : CuspForm 𝒮ℒ 12) one_pos one_mem_strictPeriods_SL
 
+private lemma eq_zero_of_neg_weight {k : ℤ} (hk : k < 0) (f : ModularForm 𝒮ℒ k) : f = 0 :=
+  coe_eq_zero_iff f |>.mp <| ModularFormClass.levelOne_neg_weight_eq_zero hk f
+
 private lemma qExpansion_eq_qExpansion_discriminant_mul {k : ℤ} (f : ModularForm 𝒮ℒ k)
     (hcusp : (qExpansion 1 f).coeff 0 = 0) :
     qExpansion 1 f = qExpansion 1 ModularForm.discriminant *
@@ -57,11 +60,9 @@ private lemma orderOf_qExpansion_discriminant :
   · rw [ModularForm.discriminant_qExpansion_coeff_one]
     exact one_ne_zero
   · intro i hi
-    interval_cases i
-    have hcusp : IsCuspForm ((CuspForm.discriminant : ModularForm 𝒮ℒ 12)) :=
-      ⟨CuspForm.discriminant, rfl⟩
+    obtain rfl : i = 0 := by omega
     have h0 := (isCuspForm_iff_coeffZero_eq_zero
-      ((CuspForm.discriminant : ModularForm 𝒮ℒ 12))).mp hcusp
+      ((CuspForm.discriminant : ModularForm 𝒮ℒ 12))).mp ⟨CuspForm.discriminant, rfl⟩
     rwa [show ((CuspForm.discriminant : ModularForm 𝒮ℒ 12) : ℍ → ℂ) =
       ModularForm.discriminant from CuspForm.coe_discriminant] at h0
 
@@ -73,8 +74,7 @@ private lemma eq_zero_of_qExpansion_coeff_zero_lt :
   | zero =>
     intro k f hk _
     push_cast at hk
-    rw [← coe_eq_zero_iff]
-    exact ModularFormClass.levelOne_neg_weight_eq_zero (by omega) f
+    exact eq_zero_of_neg_weight (by omega) f
   | succ n ih =>
     intro k f hk hcoeff
     have h0 : (qExpansion 1 f).coeff 0 = 0 := hcoeff 0 (Nat.zero_lt_succ n)
@@ -87,7 +87,7 @@ private lemma eq_zero_of_qExpansion_coeff_zero_lt :
         have heq : ((n + 1 : ℕ) : ℕ∞) = 1 + ↑n := by push_cast; ring
         rw [← heq, ← hmul]
         exact PowerSeries.nat_le_order _ _ hcoeff
-      exact (WithTop.add_le_add_iff_left (by simp : (1 : ℕ∞) ≠ ⊤)).mp hf_order
+      exact (ENat.add_le_add_iff_left (by simp : (1 : ℕ∞) ≠ ⊤)).mp hf_order
     have hg_zero : g = 0 := ih g (by push_cast at hk; linarith) fun i hi =>
       PowerSeries.coeff_of_lt_order _ (lt_of_lt_of_le (by exact_mod_cast hi) hg_order)
     have hf' : toCuspForm f h0 = 0 :=
@@ -101,8 +101,7 @@ has zero coefficient on `q^i` in its q-expansion for every `i ≥ 0` with `12 * 
 theorem sturm_bound_levelOne {k : ℤ} (f : ModularForm 𝒮ℒ k)
     (h : ∀ i : ℕ, 12 * (i : ℤ) ≤ k → (qExpansion 1 f).coeff i = 0) : f = 0 := by
   by_cases hk_neg : k < 0
-  · rw [← coe_eq_zero_iff]
-    exact ModularFormClass.levelOne_neg_weight_eq_zero hk_neg f
+  · exact eq_zero_of_neg_weight hk_neg f
   push Not at hk_neg
   refine eq_zero_of_qExpansion_coeff_zero_lt (k.toNat / 12 + 1) f ?_ fun i hi => h i ?_
   · omega
