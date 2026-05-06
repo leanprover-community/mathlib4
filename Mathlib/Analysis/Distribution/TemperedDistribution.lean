@@ -342,7 +342,7 @@ variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [Norm
 /-- The partial derivative (or directional derivative) in the direction `m : E` as a
 continuous linear map on tempered distributions. -/
 instance instLineDeriv : LineDeriv E 𝓢'(E, F) 𝓢'(E, F) where
-  lineDerivOp m f := PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m) f
+  lineDerivOp m := PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)
 
 @[simp]
 theorem lineDerivOp_apply_apply (f : 𝓢'(E, F)) (g : 𝓢(E, ℂ)) (m : E) :
