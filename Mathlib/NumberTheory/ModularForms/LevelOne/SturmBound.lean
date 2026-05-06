@@ -30,11 +30,13 @@ open UpperHalfPlane ModularForm CuspForm MatrixGroups
 
 namespace ModularForm
 
-private lemma qExpansion_eq_qExpansion_discriminant_mul {k : ℤ} (f : ModularForm 𝒮ℒ k)
+variable {k : ℤ}
+
+private lemma qExpansion_eq_qExpansion_discriminant_mul (f : ModularForm 𝒮ℒ k)
     (hcusp : (qExpansion 1 f).coeff 0 = 0) :
-    qExpansion 1 f = qExpansion 1 ModularForm.discriminant *
-      qExpansion 1 (CuspForm.discriminantEquiv (toCuspForm f hcusp)) := by
-  rw [show (f : ℍ → ℂ) = ModularForm.discriminant *
+    qExpansion 1 f = qExpansion 1 discriminant *
+      qExpansion 1 (discriminantEquiv (toCuspForm f hcusp)) := by
+  rw [show (f : ℍ → ℂ) = discriminant *
       (CuspForm.discriminantEquiv (toCuspForm f hcusp) : ℍ → ℂ) from funext fun z ↦ by
     simp [CuspForm.discriminantEquiv, mul_div_cancel₀ _ (discriminant_ne_zero z)]]
   exact UpperHalfPlane.qExpansion_mul
@@ -51,18 +53,14 @@ private lemma orderOf_qExpansion_discriminant :
     ((CuspForm.discriminant : ModularForm 𝒮ℒ 12))).mp ⟨CuspForm.discriminant, rfl⟩
   simpa using h0
 
-private lemma eq_zero_of_qExpansion_coeff_zero_lt :
-    ∀ (n : ℕ) {k : ℤ} (f : ModularForm 𝒮ℒ k),
-    k < 12 * n → (∀ i < n, (qExpansion 1 f).coeff i = 0) → f = 0 := by
-  intro n
-  induction n with
+private lemma eq_zero_of_qExpansion_coeff_zero_lt (n : ℕ) (f : ModularForm 𝒮ℒ k)
+    (hk : k < 12 * n) (hcoeff : ∀ i < n, (qExpansion 1 f).coeff i = 0) : f = 0 := by
+  induction n generalizing k f with
   | zero =>
-    intro k f hk _
     push_cast at hk
     exact rank_zero_iff_forall_zero.mp
       (ModularForm.levelOne_neg_weight_rank_zero (by omega)) f
   | succ n ih =>
-    intro k f hk hcoeff
     have h0 : (qExpansion 1 f).coeff 0 = 0 := hcoeff 0 (Nat.zero_lt_succ n)
     set g := CuspForm.discriminantEquiv (toCuspForm f h0) with hg_def
     have hg_order : ↑(n : ℕ) ≤ (qExpansion 1 g).order := by
@@ -81,7 +79,7 @@ private lemma eq_zero_of_qExpansion_coeff_zero_lt :
 /-- **Sturm bound for level-1 modular forms.** If a modular form `f` of weight `k` for `SL(2, ℤ)`
 has zero coefficient on `q^i` in its q-expansion for every `i ≥ 0` with `12 * i ≤ k`, then
 `f` is identically zero. -/
-theorem sturm_bound_levelOne {k : ℤ} (f : ModularForm 𝒮ℒ k)
+theorem sturm_bound_levelOne (f : ModularForm 𝒮ℒ k)
     (h : ∀ i : ℕ, 12 * (i : ℤ) ≤ k → (qExpansion 1 f).coeff i = 0) : f = 0 := by
   by_cases hk_neg : k < 0
   · exact rank_zero_iff_forall_zero.mp (ModularForm.levelOne_neg_weight_rank_zero hk_neg) f
