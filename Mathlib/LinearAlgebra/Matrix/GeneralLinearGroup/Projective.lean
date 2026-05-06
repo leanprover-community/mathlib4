@@ -12,9 +12,9 @@ import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
 /-!
 # Projective general linear group
 
-In this file we define `Matrix.ProjGenLinGroup n R` as the quotient of `GL n R` modulo its center.
+In this file we define `Matrix.ProjGenLinGroup n R` as the quotient of `GL n R` by its center.
 We introduce notation `PGL(n, R)` for this group,
-which works both for `n` being a finite type and for `n` being a number.
+which works if `n` is either a finite type or a natural number.
 If `n` is a number, then `PGL(n, R)` is interpreted as `PGL(Fin n, R)`.
 -/
 
@@ -64,7 +64,8 @@ theorem induction_on {motive : PGL(n, R) → Prop} (g : PGL(n, R))
 
 variable {M : Type*} [Monoid M]
 
-/-- Lift a group homomorphism ` -/
+/-- Lift a monoid homomorphism `f : GL n R →* M` that vanishes on all scalar matrices
+to a homomorphism from `PGL(n, R)`. -/
 def lift (f : GL n R →* M) (hf : f.comp (GeneralLinearGroup.scalar n) = 1) :
     PGL(n, R) →* M :=
   QuotientGroup.lift _ f <| by

@@ -313,9 +313,8 @@ theorem finAddFlip_apply_natAdd (k : Fin n) (m : ℕ) :
     finAddFlip (Fin.natAdd m k) = Fin.castAdd m k := by simp [finAddFlip]
 
 @[simp]
-theorem finAddFlip_apply_mk_left {k : ℕ} (h : k < m) (hk : k < m + n := Nat.lt_add_right n h)
-    (hnk : n + k < n + m := Nat.add_lt_add_left h n) :
-    finAddFlip (⟨k, hk⟩ : Fin (m + n)) = ⟨n + k, hnk⟩ := by
+theorem finAddFlip_apply_mk_left {k : ℕ} (h : k < m) :
+    finAddFlip (⟨k, Nat.lt_add_right n h⟩ : Fin (m + n)) = ⟨n + k, Nat.add_lt_add_left h n⟩ := by
   convert finAddFlip_apply_castAdd ⟨k, h⟩ n
 
 @[simp]
@@ -323,6 +322,25 @@ theorem finAddFlip_apply_mk_right {k : ℕ} (h₁ : m ≤ k) (h₂ : k < m + n) 
     finAddFlip (⟨k, h₂⟩ : Fin (m + n)) = ⟨k - m, by lia⟩ := by
   convert @finAddFlip_apply_natAdd n ⟨k - m, by lia⟩ m
   simp [Nat.add_sub_cancel' h₁]
+
+theorem coe_finAddFlip_apply (k : Fin (m + n)) : (finAddFlip k : ℕ) = (k + n) % (m + n) := by
+  cases k using Fin.addCases with
+  | left i => simp [Nat.mod_eq_of_lt, i.isLt, n.add_comm]
+  | right i => simp (disch := lia) [Nat.add_right_comm m _ n, Nat.mod_eq_of_lt]
+
+@[simp]
+theorem symm_finAddFlip : (@finAddFlip m n).symm = finAddFlip := by
+  ext1 i
+  cases i using Fin.addCases <;> simp [Equiv.symm_apply_eq]
+
+@[simp]
+theorem finAddFlip_zero_left (n : ℕ) : @finAddFlip 0 n = finCongr (Nat.add_comm 0 n) := by
+  ext ⟨i, hi⟩
+  rw [finAddFlip_apply_mk_right] <;> simp
+
+@[simp]
+theorem finAddFlip_zero_right (n : ℕ) : @finAddFlip n 0 = finCongr (Nat.add_comm n 0) := by
+  rw [← symm_finAddFlip, finAddFlip_zero_left, finCongr_symm]
 
 /-- Equivalence between `Fin m × Fin n` and `Fin (m * n)` -/
 @[simps]

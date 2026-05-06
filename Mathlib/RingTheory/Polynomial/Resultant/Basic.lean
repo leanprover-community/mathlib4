@@ -70,8 +70,7 @@ variable (f g : R[X]) (m n : ℕ)
     split_ifs <;> simp_all [Fin.ext_iff]
 
 lemma sylvester_comm :
-    sylvester f g m n = (sylvester g f n m).reindex (finCongr (add_comm n m))
-      (finSumFinEquiv.symm.trans <| (Equiv.sumComm _ _).trans finSumFinEquiv) := by
+    sylvester f g m n = (sylvester g f n m).reindex (finCongr (add_comm n m)) finAddFlip := by
   ext i j
   induction j using Fin.addCases <;> simp [sylvester]
 
@@ -155,18 +154,12 @@ theorem resultant_C_zero_left : resultant (C r) g 0 m = r ^ m := by simp
 /-- `Res(f, g) = (-1)ᵐⁿ Res(g, f)` -/
 lemma resultant_comm : resultant f g m n = (-1) ^ (m * n) * resultant g f n m := by
   classical
-  rw [resultant, resultant, sylvester_comm, Matrix.det_reindex, Equiv.Perm.sign_eq_prod_prod_Ioi]
+  rw [resultant, resultant, sylvester_comm, Matrix.det_reindex, finCongr_symm,
+    finAddFlip_trans_finCongr, map_pow, sign_finRotate, ← pow_mul']
   congr 1
-  dsimp
-  simp only [Fin.cast_lt_cast, Units.coe_prod, apply_ite, Units.val_one, Units.val_neg,
-    Int.reduceNeg, Int.cast_prod, Int.cast_one, Int.cast_neg]
-  simp_rw [← finSumFinEquiv.prod_comp, ← Finset.prod_map_equiv finSumFinEquiv.symm]
-  simp only [Equiv.symm_apply_apply, ← Fin.val_fin_lt, Equiv.symm_symm, Function.comp_apply,
-    ← Finset.prod_ite_mem_eq (Finset.map _ _), Finset.mem_map_equiv, Finset.mem_Ioi,
-    Fintype.prod_sum_type, finSumFinEquiv_apply_left, Fin.val_castAdd, Sum.swap_inl,
-    finSumFinEquiv_apply_right, Fin.val_natAdd, Sum.swap_inr, add_lt_add_iff_left,
-    ← ite_not (α := R) (p := _ < _) (y := 1), ← ite_and, and_not_self]
-  simp [(Fin.isLt _).trans_le, (Fin.isLt _).le.trans, pow_mul]
+  push_cast
+  apply neg_one_pow_congr
+  grind
 
 @[simp] theorem resultant_zero_right_deg : resultant f g m 0 = g.coeff 0 ^ m := by
   rw [resultant_comm]; simp
@@ -974,6 +967,15 @@ lemma discr_of_degree_eq_two {f : R[X]} (hf : f.degree = 2) :
 @[deprecated (since := "2025-10-20")] alias disc_C := discr_C
 @[deprecated (since := "2025-10-20")] alias disc_of_degree_eq_one := discr_of_degree_eq_one
 @[deprecated (since := "2025-10-20")] alias disc_of_degree_eq_two := discr_of_degree_eq_two
+
+lemma sylvesterDeriv_comp_neg_X (f : R[X]) :
+    (f.comp (-X)).sylvesterDeriv =
+      f.sylvesterDeriv.reindex (finCongr <| by simp) (finCongr <| by simp) := by
+
+  sorry
+
+lemma discr_comp_neg_X (f : R[X]) : (f.comp (-X)).discr = f.discr := by
+
 
 /-- Relation between the resultant and the discriminant.
 

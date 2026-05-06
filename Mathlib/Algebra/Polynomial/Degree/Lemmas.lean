@@ -448,6 +448,10 @@ lemma degree_comp [Semiring R] [NoZeroDivisors R] {p q : R[X]} (hq : 0 < q.degre
   rw [degree_eq_natDegree (by simp [hp]), degree_eq_natDegree hp, Nat.cast_inj,
     natDegree_comp_eq_of_mul_ne_zero (by simp [hp]), natDegree_neg, natDegree_X, mul_one]
 
+@[simp]
+theorem natDegree_comp_neg_X [Ring R] (p : R[X]) : (p.comp (-X)).natDegree = p.natDegree := by
+  simp [natDegree]
+
 section DivisionRing
 
 variable {K : Type*} [DivisionRing K]

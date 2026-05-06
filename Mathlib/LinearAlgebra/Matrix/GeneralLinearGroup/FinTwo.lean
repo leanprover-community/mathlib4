@@ -44,10 +44,10 @@ variable {m}
 section conjugation
 
 @[simp] lemma discr_conj : (g.val * m * g.val⁻¹).discr = m.discr := by
-  simp only [discr_fin_two, ← Matrix.coe_units_inv, trace_units_conj, det_units_conj]
+  simp [discr]
 
 @[simp] lemma discr_conj' : (g.val⁻¹ * m * g.val).discr = m.discr := by
-  simpa using discr_conj g⁻¹
+  simp [discr]
 
 @[deprecated (since := "2025-10-20")] alias disc_conj := discr_conj
 @[deprecated (since := "2025-10-20")] alias disc_conj' := discr_conj'

@@ -624,28 +624,12 @@ section Ring
 variable [Ring R]
 
 /-- The evaluation map is not generally multiplicative when the coefficient ring is noncommutative,
-but nevertheless any polynomial of the form `p * (X - monomial 0 r)` is sent to zero
-when evaluated at `r`.
+but nevertheless any polynomial of the form `p * (X - C r)` is sent to zero when evaluated at `r`.
 
 This is the key step in our proof of the Cayley-Hamilton theorem.
 -/
 theorem eval_mul_X_sub_C {p : R[X]} (r : R) : (p * (X - C r)).eval r = 0 := by
-  simp only [eval, eval₂_eq_sum, RingHom.id_apply]
-  have bound :=
-    calc
-      (p * (X - C r)).natDegree ≤ p.natDegree + (X - C r).natDegree := natDegree_mul_le
-      _ ≤ p.natDegree + 1 := by grw [natDegree_X_sub_C_le]
-      _ < p.natDegree + 2 := lt_add_one _
-  rw [sum_over_range' _ _ (p.natDegree + 2) bound]
-  swap
-  · simp
-  rw [sum_range_succ']
-  conv_lhs =>
-    congr
-    arg 2
-    simp [coeff_mul_X_sub_C, sub_mul, mul_assoc, ← pow_succ']
-  rw [sum_range_sub']
-  simp
+  rw [mul_sub, eval_sub, eval_mul_X, eval_mul_C_of_commute] <;> simp
 
 theorem not_isUnit_X_sub_C [Nontrivial R] (r : R) : ¬IsUnit (X - C r) :=
   fun ⟨⟨_, g, _hfg, hgf⟩, rfl⟩ => zero_ne_one' R <| by rw [← eval_mul_X_sub_C, hgf, eval_one]

@@ -63,6 +63,10 @@ theorem charmatrix_apply_ne (h : i ≠ j) : charmatrix M i j = -C (M i j) := by
   simp only [charmatrix, RingHom.mapMatrix_apply, sub_apply, scalar_apply, diagonal_apply_ne _ h,
     map_apply, sub_eq_neg_self]
 
+theorem charmatrix_neg : charmatrix (-M) = -M.charmatrix.map (·.comp (-X)) := by
+  ext1 i j
+  rcases eq_or_ne i j with rfl | h <;> simp [*, add_comm]
+
 @[simp]
 theorem charmatrix_zero : charmatrix (0 : Matrix n n R) = Matrix.scalar n (X : R[X]) := by
   simp [charmatrix]
@@ -110,7 +114,7 @@ theorem charmatrix_reindex (e : n ≃ m) :
 lemma charmatrix_map (M : Matrix n n R) (f : R →+* S) :
     charmatrix (M.map f) = (charmatrix M).map (Polynomial.map f) := by
   ext i j
-  by_cases h : i = j <;> simp [h, charmatrix, diagonal]
+  by_cases h : i = j <;> simp [h]
 
 lemma charmatrix_fromBlocks :
     charmatrix (fromBlocks M₁₁ M₁₂ M₂₁ M₂₂) =
@@ -164,6 +168,11 @@ theorem charpoly_ofNat (k : ℕ) [k.AtLeastTwo] :
 @[simp]
 theorem charpoly_transpose (M : Matrix n n R) : (Mᵀ).charpoly = M.charpoly := by
   simp [charpoly]
+
+theorem charpoly_neg (M : Matrix n n R) :
+    (-M).charpoly = (-1) ^ Fintype.card n * M.charpoly.comp (-X) := by
+  simp only [charpoly, charmatrix_neg, det_neg, ← coe_compRingHom_apply, ← RingHom.mapMatrix_apply,
+    ← RingHom.map_det]
 
 theorem charpoly_reindex (e : n ≃ m)
     (M : Matrix n n R) : (reindex e e M).charpoly = M.charpoly := by
@@ -276,14 +285,16 @@ theorem charpoly_vecMulVec (u v : n → R) :
     rw [vecMulVec_eq (ι := Unit), charpoly_mul_comm_of_le (n := Unit) _ _ h, charpoly, charmatrix]
     simp [-Matrix.map_mul, mul_sub, ← pow_succ, h, dotProduct_comm, smul_eq_C_mul]
 
+@[simp]
 theorem charpoly_units_conj (M : (Matrix n n R)ˣ) (N : Matrix n n R) :
-    (M.val * N * M⁻¹.val).charpoly = N.charpoly := by
+    (M.val * N * M.val⁻¹).charpoly = N.charpoly := by
   rw [Matrix.charpoly_mul_comm, ← mul_assoc]
   simp
 
+@[simp]
 theorem charpoly_units_conj' (M : (Matrix n n R)ˣ) (N : Matrix n n R) :
-    (M⁻¹.val * N * M.val).charpoly = N.charpoly :=
-  charpoly_units_conj M⁻¹ N
+    (M.val⁻¹ * N * M.val).charpoly = N.charpoly := by
+  simpa using charpoly_units_conj M⁻¹ N
 
 theorem charpoly_sub_scalar (M : Matrix n n R) (μ : R) :
     (M - scalar n μ).charpoly = M.charpoly.comp (X + C μ) := by
