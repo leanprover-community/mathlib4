@@ -113,8 +113,7 @@ theorem OrthogonalFamily.inner_right_dfinsupp
     _ = l.sum fun j => fun w => ite (i = j) ⟪V i v, V j w⟫ 0 :=
       (congr_arg l.sum <| funext fun _ => funext <| hV.eq_ite v)
     _ = ⟪v, l i⟫ := by
-      simp only [DFinsupp.sum, Finset.sum_ite_eq,
-        DFinsupp.mem_support_toFun]
+      simp only [DFinsupp.sum, DirectSum.funLike_eq, Finset.sum_ite_eq, DFinsupp.mem_support_toFun]
       split_ifs with h
       · simp only [LinearIsometry.inner_map_map]
       · simp only [of_not_not h, inner_zero_right]
