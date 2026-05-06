@@ -194,7 +194,7 @@ instance :
   Functor.isLocalization_of_essSurj_of_full_of_exists_cylinders _ _
     (fun _ _ f hf ↦ by
       simpa [← isIso_iff_of_reflects_iso _ (HomotopyCategory.Plus.ι C),
-        ← isIso_quotient_map_iff_homotopyEquivalences] using hf) (by
+        ← inverseImage_quotient_isomorphisms] using hf) (by
     rintro K L f₀ f₁ hf
     obtain ⟨f₀, rfl⟩ := ObjectProperty.homMk_surjective f₀
     obtain ⟨f₁, rfl⟩ := ObjectProperty.homMk_surjective f₁
