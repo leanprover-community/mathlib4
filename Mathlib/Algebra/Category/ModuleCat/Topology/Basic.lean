@@ -421,7 +421,7 @@ def freeMap {X Y : TopCat.{v}} (f : X ⟶ Y) : freeObj R X ⟶ freeObj R Y :=
     ext x
     simp [coe_freeObj]⟩
 
-lemma freeMap_map {X Y : TopCat} (f : X ⟶ Y) (v : X →₀ R) :
+lemma freeMap_map {X Y : TopCat.{v}} (f : X ⟶ Y) (v : X →₀ R) :
     (freeMap R f : (X →₀ R) → (Y →₀ R)) v = Finsupp.mapDomain f.hom v := rfl
 
 /-- The free topological module over a topological space as a functor.

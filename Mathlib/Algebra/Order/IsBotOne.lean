@@ -42,6 +42,14 @@ theorem one_le {a : α} : 1 ≤ a :=
 
 @[deprecated (since := "2026-04-28")] alias zero_le' := zero_le
 
+variable (α) in
+/-- Create an `OrderBot` instance, setting `1` as the bottom element. -/
+@[to_additive (attr := implicit_reducible)
+/-- Create an `OrderBot` instance, setting `0` as the bottom element. -/]
+def IsBotOneClass.toOrderBot : OrderBot α where
+  bot := 1
+  bot_le _ := one_le
+
 end LE
 
 -- See note [lower instance priority]
@@ -99,11 +107,12 @@ theorem one_lt_iff_ne_one : 1 < a ↔ a ≠ 1 :=
 @[to_additive] alias Ne.one_lt := one_lt_of_ne_one
 
 @[to_additive]
-theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := one_le.eq_or_lt.imp_left Eq.symm
+theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := one_le.eq_or_lt'
 
 @[to_additive]
-lemma one_notMem_iff [OrderBot α] {s : Set α} : 1 ∉ s ↔ ∀ x ∈ s, 1 < x :=
-  bot_eq_one (α := α) ▸ bot_notMem_iff
+lemma one_notMem_iff {s : Set α} : 1 ∉ s ↔ ∀ x ∈ s, 1 < x :=
+  let := IsBotOneClass.toOrderBot α
+  bot_notMem_iff
 
 @[deprecated (since := "2026-02-17")] alias NE.ne.pos := Ne.pos
 @[deprecated (since := "2026-02-17")] alias NE.ne.one_lt := Ne.one_lt
@@ -113,11 +122,11 @@ end PartialOrder
 section LinearOrder
 variable [LinearOrder α] [One α] [IsBotOneClass α]
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem one_min (a : α) : min 1 a = 1 :=
   min_eq_left one_le
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem min_one (a : α) : min a 1 = 1 :=
   min_eq_right one_le
 

@@ -85,7 +85,7 @@ theorem measurable_measure_prodMk_left_finite [IsFiniteMeasure ν] {s : Set (α 
     have (a : α) : ν (Prod.mk a ⁻¹' ⋃ i, f i) = ∑' i, ν (Prod.mk a ⁻¹' f i) := by
       rw [preimage_iUnion, measure_iUnion]
       exacts [hfd.mono fun _ _ ↦ .preimage _, fun i ↦ measurable_prodMk_left (hfm i)]
-    simpa only [this] using Measurable.ennreal_tsum ihf
+    simpa only [this] using Measurable.tsum ihf
 
 /-- If `ν` is an s-finite measure, and `s ⊆ α × β` is measurable, then `x ↦ ν { y | (x, y) ∈ s }`
 is a measurable function.
@@ -98,7 +98,7 @@ theorem measurable_measure_prodMk_left [SFinite ν] {s : Set (α × β)} (hs : M
     Measurable fun x => ν (Prod.mk x ⁻¹' s) := by
   rw [← sum_sfiniteSeq ν]
   simp_rw [Measure.sum_apply_of_countable]
-  exact Measurable.ennreal_tsum (fun i ↦ measurable_measure_prodMk_left_finite hs)
+  exact Measurable.tsum (fun i ↦ measurable_measure_prodMk_left_finite hs)
 
 /-- If `μ` is an s-finite measure, and `s ⊆ α × β` is measurable, then `y ↦ μ { x | (x, y) ∈ s }` is
   a measurable function. -/

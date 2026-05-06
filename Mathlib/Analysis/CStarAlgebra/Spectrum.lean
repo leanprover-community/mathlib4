@@ -99,7 +99,6 @@ end UnitarySpectrum
 
 section Quasispectrum
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped NNReal in
 lemma CStarAlgebra.le_nnnorm_of_mem_quasispectrum {A : Type*} [NonUnitalCStarAlgebra A]
     {a : A} {x : ℝ≥0} (hx : x ∈ quasispectrum ℝ≥0 a) : x ≤ ‖a‖₊ := by
