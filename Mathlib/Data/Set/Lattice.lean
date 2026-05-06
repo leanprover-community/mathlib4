@@ -983,7 +983,7 @@ theorem iUnion_eq_range_psigma (s : ι → Set β) : ⋃ i, s i = range fun a : 
   simp [Set.ext_iff]
 
 theorem iUnion_image_preimage_sigma_mk_eq_self {ι : Type*} {σ : ι → Type*} (s : Set (Sigma σ)) :
-    ⋃ i, Sigma.mk i '' (Sigma.mk i ⁻¹' s) = s := by
+    ⋃ i, Sigma.mk i '' Sigma.mk i ⁻¹' s = s := by
   ext x
   simp only [mem_iUnion, mem_image, mem_preimage]
   grind

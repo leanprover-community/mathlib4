@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Category.Grp.Basic
 
-/-! The cohomology of a sheaf of groups in degree 1
+/-! # The cohomology of a sheaf of groups in degree 1
 
 In this file, we shall define the cohomology in degree 1 of a sheaf
 of groups (TODO).

@@ -110,7 +110,12 @@ def spawnLeanTarDecompress (config : Array Lean.Json) (force : Bool) : IO UInt32
 
 /-- Bump this number to invalidate the cache, in case the existing hashing inputs are insufficient.
 It is not a global counter, and can be reset to 0 as long as the lean githash or lake manifest has
-changed since the last time this counter was touched. -/
+changed since the last time this counter was touched.
+
+NOTE: making changes to the generated `.ltar` files invalidates them while it *does not* change
+the file hash! This means any such change needs to be accompanied by a change
+to the root hash affecting *all* files
+(e.g. any modification to lakefile, lean-toolchain or manifest). -/
 def rootHashGeneration : UInt64 := 4
 
 /--
@@ -417,6 +422,43 @@ def ModuleHashMap.filterNeedsDecompression (hashMap : ModuleHashMap) : CacheM Mo
     else
       return acc
 
+/-- Build the leantar JSON config array from a module hash map.
+    Each entry is either a plain path string, or an object with `"file"` and `"base"` fields
+    for mathlib dependency files that need path redirection. -/
+def mkLeanTarConfig (hashMap : ModuleHashMap) : CacheM (Array Lean.Json) := do
+  let isMathlibRoot ← isMathlibRoot
+  let mathlibDepPath := (← read).mathlibDepPath.toString
+  return hashMap.fold (init := #[]) fun config mod hash =>
+    let pathStr := s!"{CACHEDIR / hash.asLTar}"
+    if isMathlibRoot || !isFromMathlib mod then
+      config.push <| .str pathStr
+    else
+      config.push <| .mkObj [("file", pathStr), ("base", mathlibDepPath)]
+
+/-- A plan for decompressing cached files, computed by `prepareDecompConfig`. -/
+structure DecompPlan where
+  /-- The leantar JSON config for files that need decompression. -/
+  config : Array Lean.Json
+  /-- Number of cached files that need decompression. -/
+  needsDecomp : Nat
+  /-- Number of cached files already decompressed (skipped). -/
+  alreadyDecompressed : Nat
+
+/-- Determine which cached files need decompression and build a plan.
+    Returns `none` if no cached files need decompression. -/
+def prepareDecompConfig (hashMap : ModuleHashMap) (force : Bool) :
+    CacheM (Option DecompPlan) := do
+  let cached ← hashMap.filterExists true
+  if cached.isEmpty then return none
+  let toDecomp ← if force then pure cached else cached.filterNeedsDecompression
+  if toDecomp.isEmpty then return none
+  let config ← mkLeanTarConfig toDecomp
+  return some {
+    config
+    needsDecomp := toDecomp.size
+    alreadyDecompressed := cached.size - toDecomp.size
+  }
+
 /-- Decompresses build files into their respective folders -/
 def unpackCache (hashMap : ModuleHashMap) (force : Bool) : CacheM Unit := do
   let hashMap ← hashMap.filterExists true
@@ -431,30 +473,7 @@ def unpackCache (hashMap : ModuleHashMap) (force : Bool) : CacheM Unit := do
       IO.println s!"Decompressing {size} file(s) ({skipped} already decompressed)"
     else
       IO.println s!"Decompressing {size} file(s)"
-    /-
-    TODO: The case distinction below could be avoided by making use of the `leantar` option `-C`
-    (rsp the `"base"` field in JSON format, see below) here and in `packCache`.
-
-    See also https://github.com/leanprover-community/mathlib4/pull/8767#discussion_r1422077498
-
-    Doing this, one could avoid that the package directory path (for dependencies) appears
-    inside the leantar files, but unless `cache` is upstreamed to work on upstream packages
-    themselves (without `Mathlib`), this might not be too useful to change.
-
-    NOTE: making changes to the generated .ltar files invalidates them while it *DOES NOT* change
-    the file hash! This means any such change needs to be accompanied by a change
-    to the root hash affecting *ALL* files
-    (e.g. any modification to lakefile, lean-toolchain or manifest)
-    -/
-    let isMathlibRoot ← isMathlibRoot
-    let mathlibDepPath := (← read).mathlibDepPath.toString
-    let config : Array Lean.Json := hashMap.fold (init := #[]) fun config mod hash =>
-      let pathStr := s!"{CACHEDIR / hash.asLTar}"
-      if isMathlibRoot || !isFromMathlib mod then
-        config.push <| .str pathStr
-      else
-        -- only mathlib files, when not in the mathlib4 repo, need to be redirected
-        config.push <| .mkObj [("file", pathStr), ("base", mathlibDepPath)]
+    let config ← mkLeanTarConfig hashMap
     let exitCode ← spawnLeanTarDecompress config force
     if exitCode != 0 then throw <| IO.userError s!"leantar failed with error code {exitCode}"
     IO.println s!"Decompressed in {(← IO.monoMsNow) - now} ms"
