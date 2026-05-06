@@ -148,7 +148,7 @@ theorem log_prime_pos {p : ℕ} (hp : p.Prime) : 0 < log p := by
 
 theorem log_prime_ne {p : ℕ} (hp : p.Prime) : log p ≠ 0 := (log_prime_pos hp).ne'
 
-theorem log_prime_nonneg {p : ℕ} (hp : p.Prime) : 0 ≤ log p := le_of_lt (log_prime_pos hp)
+theorem log_prime_nonneg {p : ℕ} (hp : p.Prime) : 0 ≤ log p := (log_prime_pos hp).le
 
 @[gcongr]
 theorem theta_mono : Monotone θ := by
