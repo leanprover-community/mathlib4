@@ -10,9 +10,9 @@ public import Mathlib.Geometry.Manifold.Algebra.Monoid
 /-!
 # Cⁿ monoid actions
 
-In this file we define Cⁿ actions on manifolds: we say `ContMDiffSMul I I' n G M` if `G` acts
-multiplicatively on `M` and the action map `fun p : G × M ↦ p.1 • p.2` is Cⁿ. We also provide API
-for additive actions using `@[to_additive]`.
+In this file we define Cⁿ actions (e.g. by Lie groups or monoids) on manifolds: we say
+`ContMDiffSMul I I' n G M` if `G` acts multiplicatively on `M` and the action map
+`fun p : G × M ↦ p.1 • p.2` is Cⁿ. We also provide API for additive actions using `@[to_additive]`.
 
 We also provide `ContMDiffSMul` instances for scalar multiplication in normed spaces and for
 the action of the monoid `E →L[𝕜] E` of continuous linear maps on any normed space `E`.
