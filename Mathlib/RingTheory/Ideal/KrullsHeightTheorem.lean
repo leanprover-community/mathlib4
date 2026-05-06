@@ -126,7 +126,7 @@ theorem Ideal.map_height_le_one_of_mem_minimalPrimes {I p : Ideal R} {x : R}
           (comap_mono hrp).trans <| Eq.le <|
             (p.comap_map_of_surjective _ Quotient.mk_surjective).trans <| sup_eq_left.mpr hfp⟩
 
-/-- In a Noetherian ring, the height of a non-unit principal ideal is at most one. -/
+/-- In a Noetherian ring, the height of a principal ideal spanned by a non-unit is at most one. -/
 lemma Ideal.height_span_singleton_le_one {x : R} (hx' : ¬ IsUnit x) :
     (span {x}).height ≤ 1 := by
   obtain ⟨p, hp⟩ := (span {x}).nonempty_minimalPrimes (by simpa)
