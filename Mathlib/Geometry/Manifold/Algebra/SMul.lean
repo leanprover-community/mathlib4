@@ -5,8 +5,7 @@ Authors: Ben Eltschig
 -/
 module
 
-public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
-public import Mathlib.Geometry.Manifold.Notation
+public import Mathlib.Geometry.Manifold.Algebra.Monoid
 
 /-!
 # Cⁿ monoid actions
@@ -18,6 +17,11 @@ for additive actions using `@[to_additive]`.
 We also provide `ContMDiffSMul` instances for scalar multiplication in normed spaces and for
 the action of the monoid `E →L[𝕜] E` of continuous linear maps on any normed space `E`.
 
+See also:
+* `ContMDiffMul I n G` for continuous differentiability of multiplication `G × G → G` in a single
+  type `G`,
+* `ContinuousSMul G M` for continuity of an action `G × M → M`.
+
 Unlike for continuous actions, we do not have a class `ContMDiffConstSMul` yet.
 -/
 
@@ -25,11 +29,12 @@ open scoped Manifold ContDiff
 
 public section
 
-/-- Basic typeclass stating that the additive action of `G` on `M` has smoothness degree `n`.
-Unlike with `ContMDiffAdd`, we do not extend `IsManifold` because `ContMDiffVAdd` contains more
+/-- Basic typeclass stating that the additive action of `G` on `M` is Cⁿ as a function `G × M → M`.
+Unlike with `ContMDiffAdd` (the class stating that addition `G × G → G` within a single type `G` is
+Cⁿ), we do not extend `IsManifold` because `ContMDiffVAdd` contains more
 explicit arguments than `IsManifold` and so `ContMDiffVAdd.toIsManifold` could not be an instance
-anyway: this means that in order for `ContMDiffVAdd` to be meaningful, smoothness of `G` and `M` has
-to be required separately. For example, to state that `G` is a Cⁿ additive Lie group with a Cⁿ
+anyway: this means that in order for `ContMDiffVAdd` to be meaningful, smoothness of `G` and `M`
+have to be required separately. For example, to state that `G` is a Cⁿ additive Lie group with a Cⁿ
 additive action on a Cⁿ manifold `M`, one can use the typeclasses
 `[LieAddGroup I n G] [IsManifold I' n M] [ContMDiffVAdd I I' n G M]`. -/
 class ContMDiffVAdd {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
@@ -40,12 +45,13 @@ class ContMDiffVAdd {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [T
     (M : Type*) [TopologicalSpace M] [ChartedSpace H' M] [VAdd G M] : Prop where
   contMDiff_vadd : CMDiff n fun p : G × M ↦ p.1 +ᵥ p.2
 
-/-- Basic typeclass stating that the action of `G` on `M` has smoothness degree `n`.
-Unlike with `ContMDiffMul`, we do not extend `IsManifold` because `ContMDiffSMul` contains more
+/-- Basic typeclass stating that the action of `G` on `M` is Cⁿ as a function `G × M → M`.
+Unlike with `ContMDiffMul` (the class stating that multiplication `G × G → G` within a single type
+`G` is Cⁿ), we do not extend `IsManifold` because `ContMDiffSMul` contains more
 explicit arguments than `IsManifold` and so `ContMDiffSMul.toIsManifold` could not be an instance
-anyway: this means that in order for `ContMDiffSMul` to be meaningful, smoothness of `G` and `M` has
-to be required separately. For example, to state that `G` is a Cⁿ Lie group with a Cⁿ action on a Cⁿ
-manifold `M`, one can use the typeclasses
+anyway: this means that in order for `ContMDiffSMul` to be meaningful, smoothness of `G` and `M`
+have to be required separately. For example, to state that `G` is a Cⁿ Lie group with a Cⁿ action on
+a Cⁿ manifold `M`, one can use the typeclasses
 `[LieGroup I n G] [IsManifold I' n M] [ContMDiffSMul I I' n G M]`. -/
 @[to_additive]
 class ContMDiffSMul {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
@@ -98,14 +104,20 @@ lemma ContMDiffSMul.continuousSMul [SMul G M] (n : ℕ∞ω) [ContMDiffSMul I I'
     ContinuousSMul G M :=
   ⟨(contMDiff_smul (I := I) (I' := I') (n := n)).continuous⟩
 
+/-- For any `G` in which multiplication is Cⁿ, the action of `G` on itself via left multiplication
+is Cⁿ too. -/
+instance ContMDiffMul.contMDiffSMul [Mul G] {n : ℕ∞ω} [ContMDiffMul I n G] :
+    ContMDiffSMul I I n G G where
+  contMDiff_smul := contMDiff_mul
+
 section
 
 variable [SMul G M] {n : ℕ∞ω} [ContMDiffSMul I I' n G M]
   {f : N → G} {g : N → M} {s : Set N} {x : N}
 
 @[to_additive]
-theorem ContMDiffWithinAt.smul (hf : CMDiffAt[s] n f x)
-    (hg : CMDiffAt[s] n g x) : CMDiffAt[s] n (f • g) x :=
+theorem ContMDiffWithinAt.smul (hf : CMDiffAt[s] n f x) (hg : CMDiffAt[s] n g x) :
+    CMDiffAt[s] n (f • g) x :=
   (contMDiff_smul (I := I) (I' := I')).contMDiffAt.comp_contMDiffWithinAt x (hf.prodMk hg)
 
 @[to_additive]
@@ -124,7 +136,7 @@ theorem ContMDiff.smul (hf : CMDiff n f) (hg : CMDiff n g) :
 end
 
 @[to_additive prod]
-instance ContMDiffSMul.prod [SMul G M] [SMul G N] {n : ℕ∞ω} [ContMDiffSMul I I' n G M]
+instance Prod.contMDiffSMul [SMul G M] [SMul G N] {n : ℕ∞ω} [ContMDiffSMul I I' n G M]
     [ContMDiffSMul I I'' n G N] : ContMDiffSMul I (I'.prod I'') n G (M × N) where
   contMDiff_smul := (contMDiff_fst.smul <| contMDiff_fst.comp contMDiff_snd).prodMk <|
       contMDiff_fst.smul <| contMDiff_snd.comp contMDiff_snd
@@ -138,8 +150,8 @@ lemma IsScalarTower.contMDiffSMul (G' : Type*) [TopologicalSpace G'] [ChartedSpa
     suffices CMDiff n (fun p : G × M ↦ (p.1 • (1 : G')) • p.2) by simpa
     exact (contMDiff_fst.smul contMDiff_const).smul (I := I'') contMDiff_snd
 
-/-- If an action is continuously differentiable, then composing this action with a continuously
-differentiable homomorphism gives again a continuous action. -/
+/-- If an action is continuously differentiable, then post-composing this action with a continuously
+differentiable homomorphism gives again a continuously differentiable action. -/
 @[to_additive]
 theorem MulAction.contMDiffSMul_compHom [Monoid G] [MulAction G M] {n : ℕ∞ω}
     [ContMDiffSMul I I' n G M] {G' : Type*} [TopologicalSpace G'] [ChartedSpace H'' G'] [Monoid G']
