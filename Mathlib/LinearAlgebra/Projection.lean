@@ -275,7 +275,10 @@ theorem sub_projection_mem (h : IsCompl p q) (x : E) : x - p.projection q h x �
   exact projection_apply_mem h.symm x
 
 variable (p q) in
-/-- If `q` is a complement of `p`, then `M/p ≃ q`. -/
+/-- If `q` is a complement of `p`, then `M ⧸ p ≃ q`. The forward direction sends a quotient class
+to its projection onto `q` along `p`; the backward direction sends an element of `q` to its class
+in `M ⧸ p` -/
+@[simps!]
 def quotientEquivOfIsCompl (h : IsCompl p q) : (E ⧸ p) ≃ₗ[R] q :=
   .ofLinear
     (p.liftQ (q.projectionOnto p h.symm) (by simp))
@@ -283,13 +286,6 @@ def quotientEquivOfIsCompl (h : IsCompl p q) : (E ⧸ p) ≃ₗ[R] q :=
     (by ext; simp)
     (by ext; simp [Quotient.eq, sub_mem_comm_iff, sub_projection_mem])
 
-@[simp]
-theorem quotientEquivOfIsCompl_symm_apply (h : IsCompl p q) (x : q) :
-    -- Porting note: type ascriptions needed on the RHS
-    (quotientEquivOfIsCompl p q h).symm x = (Quotient.mk x : E ⧸ p) := rfl
-
-/-- The composition of `quotientEquivOfIsCompl` with `mkQ` agrees with the projection
-`linearProjOfIsCompl` onto `q` along `p`. -/
 @[simp]
 theorem quotientEquivOfIsCompl_apply_mk (h : IsCompl p q) (x : E) :
     quotientEquivOfIsCompl p q h (Quotient.mk x) = q.projectionOnto p h.symm x :=
@@ -306,6 +302,16 @@ alias quotientEquivOfIsCompl_apply_mk_coe := quotientEquivOfIsCompl_apply_mk_rig
 theorem mk_quotientEquivOfIsCompl_apply (h : IsCompl p q) (x : E ⧸ p) :
     (Quotient.mk (quotientEquivOfIsCompl p q h x) : E ⧸ p) = x :=
   (quotientEquivOfIsCompl p q h).symm_apply_apply x
+
+@[simp]
+lemma toLinearMap_quotientEquivOfIsCompl (h : IsCompl p q) :
+    (p.quotientEquivOfIsCompl q h).toLinearMap = p.liftQ (q.projectionOnto p h.symm) (by simp) :=
+  rfl
+
+@[simp]
+lemma toLinearMap_symm_quotientEquivOfIsCompl (h : IsCompl p q) :
+    (p.quotientEquivOfIsCompl q h).symm.toLinearMap = p.mkQ ∘ₗ q.subtype :=
+  rfl
 
 end Submodule
 
