@@ -5,7 +5,7 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon_
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon
 public import Mathlib.GroupTheory.GroupAction.Hom
 
 /-!
