@@ -10,7 +10,7 @@ public import Mathlib.Analysis.Normed.Ring.InfiniteProd
 public import Mathlib.NumberTheory.ModularForms.DedekindEta
 public import Mathlib.NumberTheory.ModularForms.Basic
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Transform
-public import Mathlib.NumberTheory.ModularForms.LevelOne
+public import Mathlib.NumberTheory.ModularForms.LevelOne.Basic
 public import Mathlib.NumberTheory.ModularForms.QExpansion
 
 /-!
@@ -211,15 +211,13 @@ lemma discriminant_qExpansion_coeff_one : (qExpansion 1 Δ).coeff 1 = 1 := by
   have hmem : (0 : ℂ) ∈ Metric.ball (0 : ℂ) 1 := Metric.mem_ball_self one_pos
   calc (qExpansion 1 Δ).coeff 1
       = derivWithin (cuspFunction 1 Δ) (Metric.ball 0 1) 0 := by
-        simp [qExpansion_coeff, iteratedDeriv_succ, iteratedDeriv_zero,
-          ← derivWithin_of_isOpen Metric.isOpen_ball hmem]
+        simp [qExpansion_coeff, ← derivWithin_of_isOpen Metric.isOpen_ball hmem]
     _ = derivWithin (fun q ↦ q * ∏' i, (1 - q ^ (i + 1)) ^ 24) (Metric.ball 0 1) 0 :=
         derivWithin_congr discriminant_cuspFunction_eqOn (discriminant_cuspFunction_eqOn hmem)
     _ = 1 := by
-        rw [derivWithin_fun_mul (s := Metric.ball 0 1) differentiableWithinAt_id'
+        simp [derivWithin_fun_mul differentiableWithinAt_id'
           (differentiableOn_tprod_one_sub_pow_pow 24 _ hmem),
           derivWithin_id' _ _ (Metric.isOpen_ball.uniqueDiffWithinAt hmem)]
-        simp
 
 end
 

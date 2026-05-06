@@ -5,7 +5,7 @@ Authors: Chris Birkbeck
 -/
 module
 
-public import Mathlib.NumberTheory.ModularForms.DimensionFormulas.LevelOne
+public import Mathlib.NumberTheory.ModularForms.LevelOne.DimensionFormula
 
 /-!
 # The graded ring of level-1 modular forms
@@ -21,7 +21,7 @@ level-1 modular forms, beyond those that fall out of the dimension formula direc
   ring `⨁ k, ModularForm 𝒮ℒ k`.
 -/
 
-@[expose] public noncomputable section
+public noncomputable section
 
 open UpperHalfPlane ModularForm ModularFormClass MatrixGroups EisensteinSeries
 
@@ -33,26 +33,19 @@ private noncomputable def E₄CubeSubE₆SqForm : ModularForm 𝒮ℒ 12 :=
 
 private lemma E₄CubeSubE₆SqForm_apply (z : ℍ) :
     E₄CubeSubE₆SqForm z = E₄ z ^ 3 - E₆ z ^ 2 := by
-  change ⇑(E₄.pow 3) z - ⇑(E₆.pow 2) z = _
-  rw [coe_pow, coe_pow]
-  rfl
+  simp only [E₄CubeSubE₆SqForm, coe_mcast, coe_pow, sub_apply, Pi.pow_apply]
 
 private lemma E₄CubeSubE₆SqForm_qExpansion_eq :
     qExpansion 1 E₄CubeSubE₆SqForm = qExpansion 1 E₄ * qExpansion 1 E₄ * qExpansion 1 E₄ -
       qExpansion 1 E₆ * qExpansion 1 E₆ := by
-  rw [show qExpansion 1 E₄CubeSubE₆SqForm =
-        qExpansion 1 (E₄.pow 3) - qExpansion 1 (E₆.pow 2) from
-      ModularForm.qExpansion_sub one_pos one_mem_strictPeriods_SL
-        (ModularForm.mcast (by decide) (E₄.pow 3))
-        (ModularForm.mcast (by decide) (E₆.pow 2)),
-    ModularForm.qExpansion_pow one_pos one_mem_strictPeriods_SL E₄ 3,
-    ModularForm.qExpansion_pow one_pos one_mem_strictPeriods_SL E₆ 2]
+  simp only [E₄CubeSubE₆SqForm, coe_sub, coe_mcast,
+    ModularForm.qExpansion_sub one_pos one_mem_strictPeriods_SL,
+    ModularForm.qExpansion_pow one_pos one_mem_strictPeriods_SL]
   ring
 
 private lemma E₄CubeSubE₆SqForm_isCuspForm : IsCuspForm E₄CubeSubE₆SqForm := by
-  refine (isCuspForm_iff_coeffZero_eq_zero _).mpr ?_
-  rw [E₄CubeSubE₆SqForm_qExpansion_eq]
-  simp [PowerSeries.coeff_mul, -PowerSeries.coeff_zero_eq_constantCoeff,
+  simp [isCuspForm_iff_coeffZero_eq_zero, E₄CubeSubE₆SqForm_qExpansion_eq,
+    PowerSeries.coeff_mul, -PowerSeries.coeff_zero_eq_constantCoeff,
     E_qExpansion_coeff_zero _ ⟨2, rfl⟩, E_qExpansion_coeff_zero _ ⟨3, rfl⟩]
 
 private lemma E₄CubeSubE₆SqForm_qExpansion_coeff_one :
@@ -64,7 +57,7 @@ private lemma E₄CubeSubE₆SqForm_qExpansion_coeff_one :
 
 /-- The modular discriminant equals `(E₄³ - E₆²) / 1728`. -/
 theorem discriminant_eq_E₄_cube_sub_E₆_sq (z : ℍ) :
-    discriminant z = (1 / 1728) * (E₄ z ^ 3 - E₆ z ^ 2) := by
+    discriminant z = (E₄ z ^ 3 - E₆ z ^ 2) / 1728 := by
   obtain ⟨g, hg⟩ := E₄CubeSubE₆SqForm_isCuspForm
   obtain ⟨c, hc⟩ := CuspForm.exists_smul_discriminant_of_weight_eq_twelve g
   have hgE : (g : ℍ → ℂ) = E₄CubeSubE₆SqForm := congrArg DFunLike.coe hg
