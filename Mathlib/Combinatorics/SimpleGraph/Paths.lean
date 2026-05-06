@@ -152,19 +152,17 @@ theorem reverse_isTrail_iff {u v : V} (p : G.Walk u v) : p.reverse.IsTrail ↔ p
       convert h.reverse _
       try rw [reverse_reverse]
 
-theorem IsTrail.of_append_left {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
-    (h : (p.append q).IsTrail) : p.IsTrail := by
-  rw [isTrail_def, edges_append, List.nodup_append] at h
-  exact ⟨h.1⟩
-
-theorem IsTrail.of_append_right {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
-    (h : (p.append q).IsTrail) : q.IsTrail := by
-  rw [isTrail_def, edges_append, List.nodup_append] at h
-  exact ⟨h.2.1⟩
-
 @[simp] theorem isTrail_append {u v w : V} (p : G.Walk u v) (q : G.Walk v w) :
     (p.append q).IsTrail ↔ p.IsTrail ∧ q.IsTrail ∧ p.edges.Disjoint q.edges := by
   simp [Walk.isTrail_def, List.nodup_append']
+
+theorem IsTrail.of_append_left {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
+    (h : (p.append q).IsTrail) : p.IsTrail := by
+  simp_all
+
+theorem IsTrail.of_append_right {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
+    (h : (p.append q).IsTrail) : q.IsTrail := by
+  simp_all
 
 theorem IsTrail.count_edges_le_one [DecidableEq V] {u v : V} {p : G.Walk u v} (h : p.IsTrail)
     (e : Sym2 V) : p.edges.count e ≤ 1 :=
@@ -711,7 +709,7 @@ lemma isPath_append_isCycle {u v} {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPa
     (h : p.support.tail.Disjoint q.support.tail) (hn : 1 < p.length ⊔ q.length) :
     (p.append q).IsCycle := by
   rw [isCycle_def]
-  refine ⟨isTrail_append_iff_disjoint_edges .. |>.mpr ⟨hp.isTrail, hq.isTrail, ?_⟩, ?_, ?_⟩
+  refine ⟨isTrail_append .. |>.mpr ⟨hp.isTrail, hq.isTrail, ?_⟩, ?_, ?_⟩
   · rintro ⟨⟩ h₁ h₂
     cases lt_sup_iff.mp hn
     · exact hp.disjoint_edges_of_disjoint_support h (Nat.ne_of_gt ‹_›) h₁ h₂
