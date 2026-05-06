@@ -72,6 +72,7 @@ theorem primaryComponent_map_mem (φ : M₁ →ₗ[A] M₂) (c : primaryComponen
 
 /-- Given an A-linear map between M₁ and M₂, `primaryComponent.map` is the
 restriction to the I-primaryComponent components of M₁ and M₂. -/
+@[simps!]
 def primaryComponent.map (φ : M₁ →ₗ[A] M₂) : primaryComponent M₁ I →ₗ[A] primaryComponent M₂ I :=
   (φ.domRestrict (primaryComponent M₁ I)).codRestrict (primaryComponent M₂ I) (fun c ↦
     by simpa only [LinearMap.domRestrict_apply] using primaryComponent_map_mem I φ c)
@@ -198,7 +199,7 @@ theorem primaryComponent.map_surjective {M₁ M₂ : Type*}
       (primaryComponent M₁ i.asIdeal).subtype) f = b := by
     simp only [← mem_iSup_iff_exists_dfinsupp, iSup_primaryComponent_eq_top hM₁, mem_top]
   refine ⟨f P, Subtype.ext ?_⟩
-  change φ (f P) = φ b
+  simp only [map_apply_coe]
   rw [eq_comm, ← sub_eq_zero]
   refine (Submodule.disjoint_def.mp (iSupIndep_primaryComponent A M₂ P)) _ ?_ ?_
   · exact Submodule.sub_mem _ hy (primaryComponent_map_mem _ _ _)
