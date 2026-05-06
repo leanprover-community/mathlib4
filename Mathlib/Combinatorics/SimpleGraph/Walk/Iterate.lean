@@ -43,17 +43,13 @@ theorem support_iterate (f : V → V) (hadj : ∀ v, G.Adj v (f v)) (v : V) (n :
     (iterate f hadj v n).support = List.iterate f v (n + 1) := by
   simp [iterate, -List.iterate]
 
-/-- The edges of `Walk.iterate` are `s(f^[i] x, f^[i+1] x)` for `i < n`. -/
-theorem edges_iterate (f : α → α) (hadj : ∀ x, G.Adj x (f x)) (x : α) (n : ℕ) :
-    (iterate f hadj x n).edges = (List.range n).map fun i ↦ s(f^[i] x, f^[i + 1] x) := by
-  simp only [edges_eq_zipWith_support, support_iterate]
-  induction n generalizing x with
+/-- The edges of `Walk.iterate` are `s(f^[i] v, f^[i+1] v)` for `i < n`. -/
+theorem edges_iterate (f : V → V) (hadj : ∀ v, G.Adj v (f v)) (v : V) (n : ℕ) :
+    (iterate f hadj v n).edges = (List.range n).map fun i ↦ s(f^[i] v, f^[i + 1] v) := by
+  rw [edges_eq_zipWith_support, support_iterate]
+  induction n generalizing v with
   | zero => simp
-  | succ n ih =>
-    simp only [List.iterate, List.zipWith, List.tail_cons, List.range_succ_eq_map,
-      List.map_cons, iterate_zero, id_eq, List.map_map]
-    congr 1
-    convert ih (f x) using 1
+  | succ n ih => simpa [List.range_succ_eq_map] using congr(s(v, f v) :: $(ih <| f v))
 
 end Walk
 
