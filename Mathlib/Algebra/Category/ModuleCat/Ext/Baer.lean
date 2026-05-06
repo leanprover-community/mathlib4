@@ -7,17 +7,33 @@ module
 
 public import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
-public import Mathlib.Algebra.Category.ModuleCat.Ext.DimensionShifting
-public import Mathlib.Algebra.Category.ModuleCat.Projective
-public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
-public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
+public import Mathlib.Algebra.Category.ModuleCat.Ext.HasExt
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.CategoryTheory.Abelian.Injective.Dimension
 public import Mathlib.CategoryTheory.Abelian.Injective.Resolution
-public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-!
+
 # Category Language Baer Criterion
+
+The Baer criterion describes that an `R`-module `M` is injective iff any ideal `I` of `R`,
+any `I →ₗ[R] M` can be extended to `R →ₗ[R] M`. The later condition has an equivalent
+charaterization using the vanishing of `Ext (R ⧸ I) M 1`, which is introduced in this file.
+This characterization is also useful for proving injective dimension not exceeding `n` only
+needs to check vanishing of all `Ext (R ⧸ I) M (n + 1)` for all ideals `I`.
+
+# Main Results
+
+* `ModuleCat.ext_quotient_one_subsingleton_iff` : `Ext (R ⧸ I) M 1 = 0` iff
+  any linear map `I →ₗ[R] M` can be extended to `R →ₗ[R] M`.
+
+* `ModuleCat.injective_of_subsingleton_ext_quotient_one` : An `R`-module `M` is injective iff
+  `Ext (R ⧸ I) M 1 = 0` for all ideals `I`.
+
+* `ModuleCat.hasInjectiveDimensionLT_of_quotients` : An `R`-module `M` has injective dimension
+  strictly less than `n` iff `Ext (R ⧸ I) M n = 0` for all ideals `I`.
+
 -/
 
 @[expose] public section
@@ -30,7 +46,6 @@ open CategoryTheory Abelian
 
 namespace ModuleCat
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ext_quotient_one_subsingleton_iff [Small.{v} R] (M : ModuleCat.{v} R) (I : Ideal R) :
     Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M 1) ↔
     ∀ g : I →ₗ[R] M, ∃ g' : R →ₗ[R] M, ∀ (x : R) (mem : x ∈ I), g' x = g ⟨x, mem⟩ := by
@@ -42,12 +57,12 @@ lemma ext_quotient_one_subsingleton_iff [Small.{v} R] (M : ModuleCat.{v} R) (I :
   have : Projective S.X₂ := by dsimp [S]; infer_instance
   have : Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M 1) ↔
     Function.Surjective ((Ext.mk₀ S.f).precomp M (add_zero 0)) := by
-    apply Iff.trans _ ((Ext.contravariant_sequence_exact₁' S_exact M 0 1 rfl).epi_f_iff.symm.trans
-      (AddCommGrpCat.epi_iff_surjective _))
-    refine ⟨fun h ↦ ((@AddCommGrpCat.isZero_of_subsingleton _ h).eq_zero_of_tgt _), fun h ↦ ?_⟩
-    exact AddCommGrpCat.subsingleton_of_isZero ((Ext.contravariant_sequence_exact₃' S_exact M 0 1
-      rfl).isZero_X₂ h ((@AddCommGrpCat.isZero_of_subsingleton _
-      (Ext.subsingleton_of_projective S.X₂ M 0)).eq_zero_of_tgt _))
+    refine Iff.trans ⟨fun h ↦ ?_, fun h ↦ ?_⟩ ((Ext.contravariant_sequence_exact₁' S_exact M 0 1
+      rfl).epi_f_iff.symm.trans (AddCommGrpCat.epi_iff_surjective _))
+    · exact (AddCommGrpCat.of (Ext S.X₃ M 1)).isZero_of_subsingleton.eq_zero_of_tgt _
+    · exact AddCommGrpCat.subsingleton_of_isZero ((Ext.contravariant_sequence_exact₃' S_exact M 0 1
+        rfl).isZero_X₂ h ((@AddCommGrpCat.isZero_of_subsingleton _
+          (Ext.subsingleton_of_projective S.X₂ M 0)).eq_zero_of_tgt _))
   refine this.trans ⟨fun h ↦ fun g ↦ ?_, fun h ↦ fun e ↦ ?_⟩
   · obtain ⟨f', hf'⟩ := h (Ext.mk₀ (ModuleCat.ofHom (g.comp (Shrink.linearEquiv R I).toLinearMap)))
     rw [Ext.bilinearComp_apply_apply, ← Ext.mk₀_addEquiv₀_apply f', Ext.mk₀_comp_mk₀] at hf'
