@@ -35,7 +35,7 @@ class IsOneApplyEqSelf (F : Type*) (α : outParam Type*) [FunLike F α α] [One 
   one_apply_eq_self (x : α) : (1 : F) x = x
 
 @[simp, grind =]
-alias one_apply_eq_id := IsOneApplyEqSelf.one_apply_eq_self
+alias one_apply_eq_self := IsOneApplyEqSelf.one_apply_eq_self
 
 end Zero
 
@@ -109,6 +109,8 @@ class IsSMulApply (M F : Type*) (α β : outParam Type*) [FunLike F α β] [SMul
 class IsPowApply (M F : Type*) (α β : outParam Type*) [FunLike F α β] [Pow β M] [Pow F M] where
   pow_apply (f : F) (n : M) (x : α) : (f ^ n) x = (f x) ^ n
 
+-- Note that `smul_apply` is defined already, so we create an alias using `to_additive`,
+-- but we do not declare it a `simp` lemma
 @[to_additive] alias pow_apply := IsPowApply.pow_apply
 
 attribute [simp, grind =] pow_apply
