@@ -141,9 +141,7 @@ theorem coe_mks {f : A → B} (h₁ h₂ h₃ h₄ h₅) : ⇑(⟨⟨⟨⟨f, h�
 theorem coe_toRingHom_mk {f : A →+* B} (h) : ((⟨f, h⟩ : A →ₐ[R] B) : A →+* B) = f :=
   rfl
 
-@[deprecated coe_toRingHom_mk (since := "2026-05-05")]
-theorem coe_ringHom_mk {f : A →+* B} (h) : ((⟨f, h⟩ : A →ₐ[R] B) : A →+* B) = f :=
-  rfl
+@[deprecated (since := "2026-05-05")] alias coe_ringHom_mk := coe_toRingHom_mk
 
 -- make the coercion the simp-normal form
 @[simp]
