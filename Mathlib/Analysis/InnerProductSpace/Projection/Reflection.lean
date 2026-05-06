@@ -137,8 +137,7 @@ theorem reflection_bot : reflection (⊥ : Submodule 𝕜 E) = LinearIsometryEqu
 /-- The reflection in `K` of an element of `Kᗮ` is its negation. -/
 theorem reflection_mem_subspace_orthogonalComplement_eq_neg {v : E}
     (hv : v ∈ Kᗮ) : K.reflection v = -v := by
-  simp [starProjection_apply, reflection_apply,
-    orthogonalProjectionOnto_mem_subspace_orthogonalComplement_eq_zero hv]
+  simp [starProjection_apply, reflection_apply, orthogonalProjectionOnto_apply_of_mem_orthogonal hv]
 
 /-- The reflection in `Kᗮ` of an element of `K` is its negation. -/
 theorem reflection_mem_subspace_orthogonal_precomplement_eq_neg {v : E}

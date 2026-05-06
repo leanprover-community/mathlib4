@@ -173,8 +173,7 @@ theorem orthogonalProjectionOnto_apply_eq_projectionOnto [K.HasOrthogonalProject
   conv_lhs => rw [← projection_add_projection_eq_self this x]
   simp_rw [projection_apply]
   rw [map_add, orthogonalProjectionOnto_mem_subspace_eq_self,
-    orthogonalProjectionOnto_mem_subspace_orthogonalComplement_eq_zero (Submodule.coe_mem _),
-    add_zero]
+    orthogonalProjectionOnto_apply_of_mem_orthogonal (Submodule.coe_mem _), add_zero]
 
 @[deprecated (since := "2026-05-05")]
 alias orthogonalProjection_apply_eq_linearProjOfIsCompl :=
