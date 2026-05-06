@@ -746,6 +746,44 @@ initialize_simps_projections Equiv
 
 end ManualUniverses
 
+namespace CustomProjectionTypeCompatibility
+
+structure C where
+  α : Type
+
+structure Hom (X Y : C) where
+  hom' : X.α → Y.α
+
+abbrev Hom.hom {X Y : C} (f : Hom X Y) : X.α → Y.α := f.hom'
+
+/-- Same projection with a different binder style: this should be accepted. -/
+def Hom.Simps.hom (X Y : C) (f : Hom X Y) : X.α → Y.α := Hom.hom f
+
+initialize_simps_projections Hom (hom' → hom)
+
+@[simps hom] def idHom (X : C) : Hom X X := ⟨id⟩
+
+example (X : C) : (idHom X).hom = id := rfl
+
+end CustomProjectionTypeCompatibility
+
+namespace CustomProjectionTypeMismatch
+
+structure C where
+  α : Type
+
+structure Hom (X Y : C) where
+  hom' : X.α → Y.α
+
+/-- Wrong codomain after full application: this should still be rejected. -/
+def Hom.Simps.hom (X Y : C) (f : Hom X Y) : Option (X.α → Y.α) := some f.hom'
+
+run_cmd liftTermElabM do
+  successIfFail (getRawProjections .missing `CustomProjectionTypeMismatch.Hom false
+    #[.rename `hom' .missing `hom .missing])
+
+end CustomProjectionTypeMismatch
+
 namespace ManualProjectionNames
 
 structure Equiv (α : Sort _) (β : Sort _) where
