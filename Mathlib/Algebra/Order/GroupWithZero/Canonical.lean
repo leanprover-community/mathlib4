@@ -244,8 +244,8 @@ instance instBoundedOrder [OrderTop α] : BoundedOrder (WithZero α) :=
 instance : IsBotZeroClass (WithZero α) where
   isBot_zero _ := bot_le
 
--- TODO: deprecate
-lemma zero_le (a : WithZero α) : 0 ≤ a := by simp
+@[deprecated _root_.zero_le (since := "2026-05-06")]
+protected lemma zero_le (a : WithZero α) : 0 ≤ a := by simp
 
 /-- There is a general version `le_zero_iff`, but this lemma does not require a `PartialOrder`. -/
 @[simp]
@@ -308,8 +308,8 @@ instance instPreorder : Preorder (WithZero α) := inferInstanceAs <| Preorder (W
 instance instMulLeftMono [Mul α] [MulLeftMono α] :
     MulLeftMono (WithZero α) := by
   refine ⟨fun a b c hbc => ?_⟩
-  induction a; · exact zero_le _
-  induction b; · exact zero_le _
+  induction a; · exact zero_le
+  induction b; · exact zero_le
   rcases WithZero.coe_le_iff.1 hbc with ⟨c, rfl, hbc'⟩
   rw [← coe_mul _ c, ← coe_mul, coe_le_coe]
   exact mul_le_mul_right hbc' _
@@ -398,7 +398,7 @@ instance instPartialOrder : PartialOrder (WithZero α) :=
 instance instMulLeftReflectLT [Mul α] [MulLeftReflectLT α] :
     MulLeftReflectLT (WithZero α) := by
   refine ⟨fun a b c h => ?_⟩
-  have := ((zero_le _).trans_lt h).ne'
+  have := h.ne_zero
   induction a
   · simp at this
   induction c
@@ -511,7 +511,7 @@ instance instCanonicallyOrderedAdd [AddZeroClass α] [Preorder α] [CanonicallyO
 
 instance instLinearOrderedCommMonoidWithZero [CommMonoid α] [LinearOrder α]
     [IsOrderedCancelMonoid α] : LinearOrderedCommMonoidWithZero (WithZero α) where
-  isBot_zero := WithZero.zero_le
+  isBot_zero _ := zero_le
   mul_lt_mul_of_pos_left
   | (a : α), _, 0, (c : α), _ => by simp [← WithZero.coe_mul]
   | (a : α), _, (b : α), (c : α), hbc => by norm_cast at *; exact mul_lt_mul_right hbc _
