@@ -180,22 +180,22 @@ alias inftyValuation.X_inv := RatFunc.inftyValuation.X_inv
 alias inftyValuation.polynomial := RatFunc.inftyValuation.polynomial
 
 @[deprecated RatFunc.inftyValued (since := "2026-04-14")]
-alias inftyValuedFt := RatFunc.inftyValued
+alias inftyValuedFqt := RatFunc.inftyValued
 
 @[deprecated RatFunc.inftyValued.def (since := "2026-04-14")]
-alias inftyValuedFt.def := RatFunc.inftyValued.def
+alias inftyValuedFqt.def := RatFunc.inftyValued.def
 
 @[deprecated RatFunc.CompletionAtInfty (since := "2026-04-14")]
-alias FtInfty := RatFunc.CompletionAtInfty
+alias FqtInfty := RatFunc.CompletionAtInfty
 
 @[deprecated "Use the anonymous `Valued` instance on `RatFunc.CompletionAtInfty`"
 (since := "2026-04-14")]
-instance valuedFtInfty [DecidableEq F⟮X⟯] :
+instance valuedFqtInfty [DecidableEq F⟮X⟯] :
     Valued (RatFunc.CompletionAtInfty F) ℤᵐ⁰ :=
   inferInstance
 
 @[deprecated RatFunc.valuedCompletionAtInfty.def (since := "2026-04-14")]
-alias valuedFtInfty.def := RatFunc.valuedCompletionAtInfty.def
+alias valuedFqtInfty.def := RatFunc.valuedCompletionAtInfty.def
 
 end deprecated
 
