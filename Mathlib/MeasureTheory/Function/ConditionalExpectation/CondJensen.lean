@@ -33,9 +33,9 @@ open MeasureTheory Function Set Filter
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
   {α : Type*} {f : α → E} {φ : E → ℝ} {m mα : MeasurableSpace α} {μ : Measure α} {s : Set E}
 
-/-- If `f` lies in a closed convex set `s` a.e., then `μ[f | m]` lies in `s` a.e. -/
-lemma Convex.condExp_mem [IsFiniteMeasure μ] [HereditarilyLindelofSpace E] (hm : m ≤ mα)
-    (hf_int : Integrable f μ) (hs : IsClosed s) (hc : Convex ℝ s) (hf : ∀ᵐ a ∂μ, f a ∈ s) :
+private lemma Convex.condExp_mem_of_hereditarilyLindelofSpace [IsFiniteMeasure μ]
+    [HereditarilyLindelofSpace E] (hm : m ≤ mα) (hf_int : Integrable f μ) (hs : IsClosed s)
+    (hc : Convex ℝ s) (hf : ∀ᵐ a ∂μ, f a ∈ s) :
     ∀ᵐ a ∂μ, μ[f | m] a ∈ s := by
   obtain ⟨L, c, hLc⟩ := RCLike.iInter_countable_halfSpaces_eq (𝕜 := ℝ) hc hs
   simp_all only [← hLc, RCLike.re_to_real, mem_iInter, ae_all_iff]
@@ -45,6 +45,56 @@ lemma Convex.condExp_mem [IsFiniteMeasure μ] [HereditarilyLindelofSpace E] (hm 
   filter_upwards [h1, h2] with a ha hb
   simp_all only [condExp_const, comp_apply]
   exact hb
+
+private lemma Convex.condExp_mem_of_isFiniteMeasure [IsFiniteMeasure μ] (hm : m ≤ mα)
+    (hf_int : Integrable f μ) (hs : IsClosed s) (hc : Convex ℝ s) (hf : ∀ᵐ a ∂μ, f a ∈ s) :
+    ∀ᵐ a ∂μ, μ[f | m] a ∈ s := by
+  borelize E
+  obtain ⟨t, ht, htt⟩ := hf_int.aestronglyMeasurable.isSeparable_ae_range
+  let Y := (Submodule.span ℝ t).topologicalClosure
+  have : CompleteSpace Y := (Submodule.isClosed_topologicalClosure _).completeSpace_coe
+  have : SecondCountableTopology Y := ht.span.closure.secondCountableTopology
+  classical
+  let fY : α → Y := fun a => if h : f a ∈ Y then ⟨f a, h⟩ else 0
+  let fX : α → E := Y.subtypeL ∘ fY
+  have lem0 : ∀ᵐ a ∂μ, f a ∈ Y := by
+    filter_upwards [htt] with a ha using
+      (Submodule.closure_subset_topologicalClosure_span t) (subset_closure ha)
+  have lem1 : f =ᵐ[μ] fX := by
+    filter_upwards [lem0] with a ha
+    simp_all [fX, fY]
+  have lem2 : ∀ᵐ a ∂μ, fY a ∈ Y.subtypeL ⁻¹' s := by
+    filter_upwards [lem0, hf] with a ha hs
+    simpa [fY, ha]
+  have hfY_int : Integrable fY μ := by
+    refine (hf_int.congr lem1).mono ?_ (by simp [fX])
+    obtain ⟨g, hg1, hg2, hg3⟩ := hf_int.1.exists_stronglyMeasurable_range_subset
+      ((Submodule.isClosed_topologicalClosure _).measurableSet) Nonempty.of_subtype lem0
+    refine ⟨codRestrict g Y hg2, (hg1.measurable.codRestrict hg2).stronglyMeasurable, ?_⟩
+    filter_upwards [hg3] with a ha
+    have : g a ∈ Y := hg2 a
+    simp_all [fY, codRestrict]
+  have lem3 : μ[f | m] =ᵐ[μ] Y.subtypeL ∘ μ[fY | m] := calc
+    _ =ᵐ[μ] μ[fX | m] := condExp_congr_ae lem1
+    _ =ᵐ[μ] _ := (Y.subtypeL.comp_condExp_comm hfY_int).symm
+  filter_upwards [(hc.linear_preimage Y.subtype).condExp_mem_of_hereditarilyLindelofSpace
+    hm hfY_int (hs.preimage Y.subtypeL.continuous) lem2, lem3] with a ha hb
+  simp_all
+
+/-- If `f` lies in a closed convex set `s` a.e., then `μ[f | m]` lies in `s` a.e. -/
+lemma Convex.condExp_mem (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
+    (hf_int : Integrable f μ) (hs : IsClosed s) (hc : Convex ℝ s) (hf : ∀ᵐ a ∂μ, f a ∈ s) :
+    ∀ᵐ a ∂μ, μ[f | m] a ∈ s := by
+  apply (isCountablySpanning_spanningSets (μ.trim hm)).null_of_forall_restrict_null <;>
+    rintro - ⟨n, rfl⟩
+  · exact hm _ (measurableSet_spanningSets (μ.trim hm) n)
+  have h1 := condExp_restrict_ae_eq_restrict hm (measurableSet_spanningSets (μ.trim hm) n) hf_int
+  have : IsFiniteMeasure (μ.restrict (spanningSets (μ.trim hm) n)) := isFiniteMeasure_restrict.2
+    ((le_trim hm).trans_lt (measure_spanningSets_lt_top (μ.trim hm) n)).ne
+  have h2 := hc.condExp_mem_of_isFiniteMeasure (μ := μ.restrict (spanningSets (μ.trim hm) n)) hm
+    hf_int.restrict hs (ae_restrict_of_ae hf)
+  filter_upwards [h1, h2] with a ha hb
+  simp_all
 
 /-- Conditional Jensen's inequality for hereditarily Lindelof Spaces. -/
 private lemma ConvexOn.map_condExp_le_of_hereditarilyLindelofSpace [IsFiniteMeasure μ]
@@ -62,7 +112,6 @@ private lemma ConvexOn.map_condExp_le_of_hereditarilyLindelofSpace [IsFiniteMeas
   rw [show φ (μ[f | m] a) = s.restrict φ ⟨μ[f | m] a, hq⟩ by simp, ← hLc2]
   simpa [iSup_congr hp] using ciSup_le hw
 
-set_option backward.isDefEq.respectTransparency false
 /-- Conditional Jensen's inequality for finite measures. -/
 private theorem ConvexOn.map_condExp_le_of_isFiniteMeasure [IsFiniteMeasure μ] (hm : m ≤ mα)
     (hφ_cvx : ConvexOn ℝ s φ) (hφ_cont : LowerSemicontinuousOn φ s) (hf : ∀ᵐ a ∂μ, f a ∈ s)
@@ -120,9 +169,9 @@ theorem ConvexOn.map_condExp_le (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
     (hφ_cvx : ConvexOn ℝ s φ) (hφ_cont : LowerSemicontinuousOn φ s) (hf : ∀ᵐ a ∂μ, f a ∈ s)
     (hs : IsClosed s) (hf_int : Integrable f μ) (hφ_int : Integrable (φ ∘ f) μ) :
     φ ∘ μ[f | m] ≤ᵐ[μ] μ[φ ∘ f | m] := by
-  refine (isCountablySpanning_spanningSets (μ.trim hm)).null_of_forall_restrict_null
-    (fun t ⟨n, hn⟩ => ?_) fun t ⟨n, hn⟩ => hn ▸ ?_
-  · exact hn ▸ hm _ (measurableSet_spanningSets (μ.trim hm) n)
+  apply (isCountablySpanning_spanningSets (μ.trim hm)).null_of_forall_restrict_null <;>
+    rintro - ⟨n, rfl⟩
+  · exact hm _ (measurableSet_spanningSets (μ.trim hm) n)
   have h1 := condExp_restrict_ae_eq_restrict hm (measurableSet_spanningSets (μ.trim hm) n) hf_int
   have h2 := condExp_restrict_ae_eq_restrict hm (measurableSet_spanningSets (μ.trim hm) n) hφ_int
   have : IsFiniteMeasure (μ.restrict (spanningSets (μ.trim hm) n)) := isFiniteMeasure_restrict.2
@@ -158,18 +207,17 @@ theorem ConcaveOn.condExp_map_le_univ (hm : m ≤ mα) [SigmaFinite (μ.trim hm)
     condExp_neg (φ ∘ f) m] with a h ha
   simp_all [Pi.neg_comp]
 
-/-- In a Banach space `E` with a measure `μ`, then for any `μ`-a.e. strongly measurable function
-`f : α → E`, we have `‖𝔼[f | m])‖ ≤ᵐ[μ] 𝔼[‖f‖ | m]`. -/
-theorem AEStronglyMeasurable.norm_condExp_le (hf : AEStronglyMeasurable f μ) :
-    (‖μ[f | m] ·‖) ≤ᵐ[μ] μ[(‖f ·‖) | m] := by
+/-- In a Banach space `E` with a measure `μ`, then for any `f : α → E`, we have
+`‖𝔼[f | m]‖ ≤ᵐ[μ] 𝔼[‖f‖ | m]`. -/
+theorem norm_condExp_le : (‖μ[f | m] ·‖) ≤ᵐ[μ] μ[(‖f ·‖) | m] := by
   by_cases! hm : ¬ m ≤ mα
-  · simp_all [condExp_of_not_le hm]; aesop
+  · simp [condExp_of_not_le hm]; aesop
   by_cases! hμm : ¬ SigmaFinite (μ.trim hm)
   · simp [condExp_of_not_sigmaFinite hm hμm]; aesop
   by_cases! hf_int : ¬ Integrable f μ
-  · have : ¬ Integrable (‖f ·‖) μ := by simpa [integrable_norm_iff hf]
-    simp [condExp_of_not_integrable hf_int, condExp_of_not_integrable this]
-    aesop
+  · simp only [condExp_of_not_integrable hf_int, Pi.zero_apply, norm_zero]
+    apply condExp_nonneg
+    filter_upwards with a; positivity
   exact convexOn_univ_norm.map_condExp_le_univ hm continuous_norm.lowerSemicontinuous hf_int
     hf_int.norm
 

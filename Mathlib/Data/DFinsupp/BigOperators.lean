@@ -58,14 +58,18 @@ def evalAddMonoidHom [∀ i, AddZeroClass (β i)] (i : ι) : (Π₀ i, β i) →
   (Pi.evalAddMonoidHom β i).comp coeFnAddMonoidHom
 
 @[simp, norm_cast]
-theorem coe_finset_sum {α} [∀ i, AddCommMonoid (β i)] (s : Finset α) (g : α → Π₀ i, β i) :
+theorem coe_finsetSum {α} [∀ i, AddCommMonoid (β i)] (s : Finset α) (g : α → Π₀ i, β i) :
     ⇑(∑ a ∈ s, g a) = ∑ a ∈ s, ⇑(g a) :=
   map_sum coeFnAddMonoidHom g s
 
+@[deprecated (since := "2026-04-08")] alias coe_finset_sum := coe_finsetSum
+
 @[simp]
-theorem finset_sum_apply {α} [∀ i, AddCommMonoid (β i)] (s : Finset α) (g : α → Π₀ i, β i) (i : ι) :
+theorem finsetSum_apply {α} [∀ i, AddCommMonoid (β i)] (s : Finset α) (g : α → Π₀ i, β i) (i : ι) :
     (∑ a ∈ s, g a) i = ∑ a ∈ s, g a i :=
   map_sum (evalAddMonoidHom i) g s
+
+@[deprecated (since := "2026-04-08")] alias finset_sum_apply := finsetSum_apply
 
 end Algebra
 
@@ -334,7 +338,7 @@ theorem sumAddHom_comm {ι₁ ι₂ : Sort _} {β₁ : ι₁ → Type*} {β₂ :
     sumAddHom (fun i₂ => sumAddHom (fun i₁ => h i₁ i₂) f₁) f₂ =
       sumAddHom (fun i₁ => sumAddHom (fun i₂ => (h i₁ i₂).flip) f₂) f₁ := by
   obtain ⟨⟨f₁, s₁, h₁⟩, ⟨f₂, s₂, h₂⟩⟩ := f₁, f₂
-  simpa [sumAddHom, sumZeroHom, AddMonoidHom.finset_sum_apply, AddMonoidHom.coe_mk,
+  simpa [sumAddHom, sumZeroHom, AddMonoidHom.finsetSum_apply, AddMonoidHom.coe_mk,
       AddMonoidHom.flip_apply, Trunc.lift, toFun_eq_coe, ZeroHom.coe_mk, coe_mk']
     using Finset.sum_comm
 
@@ -396,7 +400,7 @@ theorem sum_sub_index [∀ i, AddGroup (β i)] [∀ (i) (x : β i), Decidable (x
   exact this
 
 @[to_additive]
-theorem prod_finset_sum_index {γ : Type w} {α : Type x} [∀ i, AddCommMonoid (β i)]
+theorem prod_finsetSum_index {γ : Type w} {α : Type x} [∀ i, AddCommMonoid (β i)]
     [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMonoid γ] {s : Finset α} {g : α → Π₀ i, β i}
     {h : ∀ i, β i → γ} (h_zero : ∀ i, h i 0 = 1)
     (h_add : ∀ i b₁ b₂, h i (b₁ + b₂) = h i b₁ * h i b₂) :
@@ -405,6 +409,11 @@ theorem prod_finset_sum_index {γ : Type w} {α : Type x} [∀ i, AddCommMonoid 
   exact Finset.induction_on s (by simp [prod_zero_index])
         (by simp +contextual [prod_add_index, h_zero, h_add])
 
+@[deprecated (since := "2026-04-08")] alias sum_finset_sum_index := sum_finsetSum_index
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias prod_finset_sum_index := prod_finsetSum_index
+
 @[to_additive]
 theorem prod_sum_index {ι₁ : Type u₁} [DecidableEq ι₁] {β₁ : ι₁ → Type v₁} [∀ i₁, Zero (β₁ i₁)]
     [∀ (i) (x : β₁ i), Decidable (x ≠ 0)] [∀ i, AddCommMonoid (β i)]
@@ -412,7 +421,7 @@ theorem prod_sum_index {ι₁ : Type u₁} [DecidableEq ι₁] {β₁ : ι₁ �
     {g : ∀ i₁, β₁ i₁ → Π₀ i, β i} {h : ∀ i, β i → γ} (h_zero : ∀ i, h i 0 = 1)
     (h_add : ∀ i b₁ b₂, h i (b₁ + b₂) = h i b₁ * h i b₂) :
     (f.sum g).prod h = f.prod fun i b => (g i b).prod h :=
-  (prod_finset_sum_index h_zero h_add).symm
+  (prod_finsetSum_index h_zero h_add).symm
 
 @[simp]
 theorem sum_single [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] {f : Π₀ i, β i} :
@@ -445,8 +454,8 @@ end DFinsupp
 
 /-! ### Product and sum lemmas for bundled morphisms.
 
-In this section, we provide analogues of `AddMonoidHom.map_sum`, `AddMonoidHom.coe_finset_sum`,
-and `AddMonoidHom.finset_sum_apply` for `DFinsupp.sum` and `DFinsupp.sumAddHom` instead of
+In this section, we provide analogues of `AddMonoidHom.map_sum`, `AddMonoidHom.coe_finsetSum`,
+and `AddMonoidHom.finsetSum_apply` for `DFinsupp.sum` and `DFinsupp.sumAddHom` instead of
 `Finset.sum`.
 
 We provide these for `AddMonoidHom`, `MonoidHom`, `RingHom`, `AddEquiv`, and `MulEquiv`.
@@ -467,12 +476,12 @@ variable [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_dfinsuppProd [MulOneClass R] [CommMonoid S] (f : Π₀ i, β i) (g : ∀ i, β i → R →* S) :
     ⇑(f.prod g) = f.prod fun a b => ⇑(g a b) :=
-  coe_finset_prod _ _
+  coe_finsetProd _ _
 
 @[to_additive]
 theorem dfinsuppProd_apply [MulOneClass R] [CommMonoid S] (f : Π₀ i, β i) (g : ∀ i, β i → R →* S)
     (r : R) : (f.prod g) r = f.prod fun a b => (g a b) r :=
-  finset_prod_apply _ _ _
+  finsetProd_apply _ _ _
 
 end MonoidHom
 

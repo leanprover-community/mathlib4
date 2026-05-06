@@ -87,9 +87,7 @@ def RegularMono.ofArrowIso {X'} {Y'} {f : X ⟶ Y} {g : X' ⟶ Y'}
   Z := h.Z
   left := e.inv.right ≫ h.left
   right := e.inv.right ≫ h.right
-  w := by
-    have := Arrow.mk_hom g ▸ Arrow.w_mk_right e.inv
-    simp_rw [← reassoc_of% this, h.w]
+  w := by simp only [← (Arrow.w_mk_assoc e.inv), h.w]
   isLimit := Fork.isLimitOfIsos _ h.isLimit _
     (Arrow.rightFunc.mapIso e) (Iso.refl _) (Arrow.leftFunc.mapIso e)
 

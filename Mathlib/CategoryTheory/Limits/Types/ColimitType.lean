@@ -88,6 +88,7 @@ def precompose (c : CoconeTypes.{w₁} F) {G : J ⥤ Type w₀'} (app : ∀ j, G
   ι_naturality f := by
     rw [Function.comp_assoc, naturality, ← Function.comp_assoc, ι_naturality]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `F : J ⥤ w₀`, `c : F.CoconeTypes` and `G : J' ⥤ J`, this is
 the induced cocone in `(G ⋙ F).CoconeTypes`. -/
 @[simps]

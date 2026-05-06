@@ -283,9 +283,9 @@ theorem MemLp.eLpNorm_indicator_norm_ge_le (hf : MemLp f p μ) (hmeas : Strongly
   refine ⟨M ^ (1 / p.toReal), ?_⟩
   rw [eLpNorm_eq_lintegral_rpow_enorm_toReal hp_ne_zero hp_ne_top, ← ENNReal.rpow_one (.ofReal ε)]
   conv_rhs => rw [← mul_one_div_cancel (ENNReal.toReal_pos hp_ne_zero hp_ne_top).ne.symm]
-  rw [ENNReal.rpow_mul,
-    ENNReal.rpow_le_rpow_iff (one_div_pos.2 <| ENNReal.toReal_pos hp_ne_zero hp_ne_top),
-    ENNReal.ofReal_rpow_of_pos hε]
+  rw [ENNReal.rpow_mul]
+  gcongr
+  rw [ENNReal.ofReal_rpow_of_pos hε]
   convert hM using 3 with x
   rw [enorm_indicator_eq_indicator_enorm, enorm_indicator_eq_indicator_enorm]
   have hiff : M ^ (1 / p.toReal) ≤ ‖f x‖₊ ↔ M ≤ ‖‖f x‖ ^ p.toReal‖₊ := by
@@ -338,8 +338,9 @@ theorem eLpNorm_indicator_le_of_bound {f : α → β} (hp_top : p ≠ ∞) {ε :
     ← ENNReal.le_div_iff_mul_le (Or.inl _) (Or.inl ENNReal.ofReal_ne_top)]
   · rw [ENNReal.rpow_inv_le_iff (ENNReal.toReal_pos hp hp_top)]
     refine le_trans hμ ?_
-    rw [← ENNReal.ofReal_rpow_of_pos (div_pos hε hM),
-      ENNReal.rpow_le_rpow_iff (ENNReal.toReal_pos hp hp_top), ENNReal.ofReal_div_of_pos hM]
+    rw [← ENNReal.ofReal_rpow_of_pos (div_pos hε hM)]
+    gcongr
+    rw [ENNReal.ofReal_div_of_pos hM]
   · simpa only [ENNReal.ofReal_eq_zero, not_le, Ne]
 
 section
@@ -501,8 +502,8 @@ theorem tendsto_Lp_finite_of_tendsto_ae_of_meas [IsFiniteMeasure μ] (hp : 1 ≤
       ENNReal.ofReal_rpow_of_nonneg ENNReal.toReal_nonneg hdivp, ← ENNReal.ofReal_mul, mul_assoc]
     · refine ENNReal.ofReal_le_ofReal (mul_le_of_le_one_right hε'.le ?_)
       rw [mul_comm, mul_one_div, div_le_one]
-      · refine Real.rpow_le_rpow ENNReal.toReal_nonneg
-          (ENNReal.toReal_le_of_le_ofReal (measureUnivNNReal_pos hμ).le ?_) hdivp
+      · gcongr
+        refine (ENNReal.toReal_le_of_le_ofReal (measureUnivNNReal_pos hμ).le ?_)
         rw [ENNReal.ofReal_coe_nnreal, coe_measureUnivNNReal]
         exact measure_mono (Set.subset_univ _)
       · exact Real.rpow_pos_of_pos (measureUnivNNReal_pos hμ) _
