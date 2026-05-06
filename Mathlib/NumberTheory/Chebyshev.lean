@@ -323,7 +323,7 @@ theorem choose_dvd_lcmUpto {n k : ℕ} (hkn : k ≤ n) : choose n k ∣ lcmUpto 
 theorem two_pow_le_mul_lcmUpto (n : ℕ) : 2 ^ n ≤ (n + 1) * lcmUpto n := calc
   _ = ∑ m ∈ range (n + 1), n.choose m := (sum_range_choose _).symm
   _ ≤ ∑ k ∈ Finset.range (n + 1), lcmUpto n := by
-    refine sum_le_sum fun k hk => ?_
+    gcongr with k hk
     simp only [mem_range, Order.lt_add_one_iff] at hk
     exact Nat.le_of_dvd (lcmUpto_pos n) (choose_dvd_lcmUpto hk)
   _ = _ := by simp
