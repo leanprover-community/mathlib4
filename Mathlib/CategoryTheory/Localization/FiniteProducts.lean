@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.Localization.HasLocalization
 public import Mathlib.CategoryTheory.Localization.Pi
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
-/-! The localized category has finite products
+/-! # The localized category has finite products
 
 In this file, it is shown that if `L : C ⥤ D` is
 a localization functor for `W : MorphismProperty C` and that

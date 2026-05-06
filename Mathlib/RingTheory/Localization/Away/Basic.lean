@@ -413,7 +413,7 @@ section
 
 variable {S T : Type*} [CommRing S] [CommRing T] [Algebra S T]
 
-open Pointwise in
+open scoped Pointwise in
 /-- Suppose `I` is an ideal of `R`, then `R / I` is the localization away from `r : R`
 if `r - 1 ∈ I` and for some `n`, `r ^ n • I = ⊥`.
 For sake of usability, we state this for surjective ring maps instead of ideals.
@@ -428,7 +428,7 @@ lemma Away.of_surjective (h₁ : Function.Surjective (algebraMap S T))
   · rw [← sub_eq_zero, ← mul_sub]
     exact hn ⟨x - y, by simp [h]⟩
 
-open Pointwise in
+open scoped Pointwise in
 /-- Suppose `J ≤ I` are ideals of `R`, then `R / I` is the localization away from `r : R / J`
 if `r - 1 ∈ I` and for some `n`, `r ^ n • I ≤ J`.
 For sake of usability, we state this for surjective ring maps instead of ideals. -/
