@@ -108,11 +108,22 @@ instance {K L : CochainComplex C ℤ} (f : K ⟶ L) [QuasiIso f] :
 def Qh : HomotopyCategory C (ComplexShape.up ℤ) ⥤ DerivedCategory C :=
   HomologicalComplexUpToQuasiIso.Qh
 
-variable (C)
-
+variable (C) in
 /-- The natural isomorphism `HomotopyCategory.quotient C (ComplexShape.up ℤ) ⋙ Qh ≅ Q`. -/
 def quotientCompQhIso : HomotopyCategory.quotient C (ComplexShape.up ℤ) ⋙ Qh ≅ Q :=
   HomologicalComplexUpToQuasiIso.quotientCompQhIso C (ComplexShape.up ℤ)
+
+@[reassoc (attr := simp)]
+lemma quotientCompQhIso_hom_naturality {K L : CochainComplex C ℤ} (f : K ⟶ L) :
+    dsimp% Qh.map ((HomotopyCategory.quotient _ _).map f) ≫ (quotientCompQhIso C).hom.app L =
+      (quotientCompQhIso C).hom.app K ≫ Q.map f :=
+  (quotientCompQhIso C).hom.naturality f
+
+@[reassoc]
+lemma quotientCompQhIso_inv_naturality {K L : CochainComplex C ℤ} (f : K ⟶ L) :
+    dsimp% Q.map f ≫ (quotientCompQhIso C).inv.app L =
+      (quotientCompQhIso C).inv.app K ≫ Qh.map ((HomotopyCategory.quotient _ _).map f) :=
+  (quotientCompQhIso C).inv.naturality f
 
 instance : Qh.IsLocalization (HomotopyCategory.quasiIso C (ComplexShape.up ℤ)) := by
   dsimp [Qh, DerivedCategory]
@@ -180,7 +191,6 @@ instance : (Qh : _ ⥤ DerivedCategory C).EssSurj :=
 instance : (Q : _ ⥤ DerivedCategory C).EssSurj :=
   Localization.essSurj _ (HomologicalComplex.quasiIso _ _)
 
-variable {C} in
 lemma mem_distTriang_iff (T : Triangle (DerivedCategory C)) :
     (T ∈ distTriang (DerivedCategory C)) ↔ ∃ (X Y : CochainComplex C ℤ) (f : X ⟶ Y),
       Nonempty (T ≅ Q.mapTriangle.obj (CochainComplex.mappingCone.triangle f)) := by
@@ -200,7 +210,7 @@ section
 
 open CochainComplex
 
-variable {C} {K L : CochainComplex C ℤ} (φ : K ⟶ L)
+variable {K L : CochainComplex C ℤ} (φ : K ⟶ L)
 
 lemma mappingCone_triangle_distinguished :
     DerivedCategory.Q.mapTriangle.obj (mappingCone.triangle φ) ∈ distTriang _ := by
@@ -215,6 +225,8 @@ lemma mappingCocone_triangle_distinguished :
     DerivedCategory.Q.mapTriangle.mapIso (mappingCocone.rotateTriangleIso φ))
 
 end
+
+variable (C)
 
 /-- The single functors `C ⥤ DerivedCategory C` for all `n : ℤ` along with
 their compatibilities with shifts. -/
@@ -231,7 +243,11 @@ instance (n : ℤ) : (singleFunctor C n).Additive := by
 
 -- The object level definitional equality underlying `singleFunctorsPostcompQhIso`.
 @[simp] theorem Qh_obj_singleFunctors_obj (n : ℤ) (X : C) :
-    Qh.obj (((HomotopyCategory.singleFunctors C).functor n).obj X) = (singleFunctor C n).obj X := by
+    Qh.obj (((HomotopyCategory.singleFunctors C).functor n).obj X) = (singleFunctor C n).obj X :=
+  rfl
+
+@[simp] theorem Q_obj_single_obj (n : ℤ) (X : C) :
+    Q.obj ((HomologicalComplex.single C _ n).obj X) = (singleFunctor C n).obj X :=
   rfl
 
 /-- The isomorphism
@@ -260,7 +276,6 @@ lemma singleFunctorsPostcompQIso_hom_hom (n : ℤ) :
   erw [Category.id_comp]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma singleFunctorsPostcompQIso_inv_hom (n : ℤ) :
     (singleFunctorsPostcompQIso C).inv.hom n = 𝟙 _ := by
   ext X

@@ -38,7 +38,9 @@ theorem iff_span_pair_isPrincipal :
       constructor
       apply Submodule.fg_induction
       · exact fun _ => ⟨⟨_, rfl⟩⟩
-      · rintro _ _ ⟨⟨x, rfl⟩⟩ ⟨⟨y, rfl⟩⟩; rw [← Submodule.span_insert]; exact H _ _
+      · rintro _ _ _ _ ⟨⟨x, rfl⟩⟩ ⟨⟨y, rfl⟩⟩
+        rw [← Submodule.span_insert]
+        exact H _ _
 
 theorem _root_.Function.Surjective.isBezout {S : Type v} [CommRing S] (f : R →+* S)
     (hf : Function.Surjective f) [IsBezout R] : IsBezout S := by
@@ -48,7 +50,7 @@ theorem _root_.Function.Surjective.isBezout {S : Type v} [CommRing S] (f : R →
   use f (gcd x y)
   trans Ideal.map f (Ideal.span {gcd x y})
   · rw [span_gcd, Ideal.map_span, Set.image_insert_eq, Set.image_singleton]
-  · rw [Ideal.map_span, Set.image_singleton]; rfl
+  · rw [Ideal.map_span, Set.image_singleton]
 
 theorem TFAE [IsBezout R] [IsDomain R] :
     List.TFAE

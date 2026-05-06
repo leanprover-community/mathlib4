@@ -546,8 +546,6 @@ theorem continuous_toLp [∀ i, TopologicalSpace (β i)] : Continuous (@toLp p (
 /-- `WithLp.equiv` as a homeomorphism. -/
 def homeomorph [∀ i, TopologicalSpace (β i)] : PiLp p β ≃ₜ (Π i, β i) where
   toEquiv := WithLp.equiv p (Π i, β i)
-  continuous_toFun := continuous_ofLp p β
-  continuous_invFun := continuous_toLp p β
 
 @[simp]
 lemma toEquiv_homeomorph [∀ i, TopologicalSpace (β i)] :
@@ -1025,8 +1023,7 @@ theorem nnnorm_single (i : ι) (b : β i) : ‖single p i b‖₊ = ‖b‖₊ :
       ciSup_eq_of_forall_le_of_forall_lt_exists_gt (fun j => ?_) fun n hn => ⟨i, hn.trans_eq ?_⟩
     · obtain rfl | hij := Decidable.eq_or_ne i j
       · rw [single_eq_same]
-      · rw [single_eq_of_ne' _ hij, nnnorm_zero]
-        exact zero_le _
+      · simp [hij]
     · rw [single_eq_same]
   | coe p =>
     have hp0 : (p : ℝ) ≠ 0 :=

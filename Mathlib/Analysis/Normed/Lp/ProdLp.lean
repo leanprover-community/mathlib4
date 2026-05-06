@@ -486,8 +486,6 @@ lemma prod_continuous_ofLp : Continuous (@ofLp p (α × β)) := continuous_induc
 /-- `WithLp.equiv` as a homeomorphism. -/
 def homeomorphProd : WithLp p (α × β) ≃ₜ α × β where
   toEquiv := WithLp.equiv p (α × β)
-  continuous_toFun := prod_continuous_ofLp p α β
-  continuous_invFun := prod_continuous_toLp p α β
 
 @[simp]
 lemma toEquiv_homeomorphProd : (homeomorphProd p α β).toEquiv = WithLp.equiv p (α × β) := rfl
@@ -908,9 +906,7 @@ instance instProdIsBoundedSMul : IsBoundedSMul 𝕜 (WithLp p (α × β)) :=
       rw [prod_nnnorm_eq_add hpt, prod_nnnorm_eq_add hpt, one_div, NNReal.rpow_inv_le_iff hp0,
         NNReal.mul_rpow, ← NNReal.rpow_mul, inv_mul_cancel₀ hp0.ne', NNReal.rpow_one, mul_add,
         ← NNReal.mul_rpow, ← NNReal.mul_rpow]
-      exact add_le_add
-        (NNReal.rpow_le_rpow (nnnorm_smul_le _ _) hp0.le)
-        (NNReal.rpow_le_rpow (nnnorm_smul_le _ _) hp0.le)
+      gcongr <;> exact nnnorm_smul_le _ _
 
 variable {𝕜 p α β}
 

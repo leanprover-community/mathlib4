@@ -16,7 +16,7 @@ of presheaves of modules.
 
 -/
 
-@[expose] public section
+public section
 
 universe w' w v v' u' u
 
