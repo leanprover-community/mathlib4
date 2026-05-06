@@ -359,11 +359,18 @@ noncomputable def equivHeightOneSpectrum :
   left_inv := mk_maximalIdeal
   right_inv := maximalIdeal_mk
 
+lemma equivHeightOneSpectrum_apply (v : FinitePlace K) :
+    v.equivHeightOneSpectrum = v.maximalIdeal := rfl
+
 lemma maximalIdeal_injective : (fun w : FinitePlace K ↦ maximalIdeal w).Injective :=
   equivHeightOneSpectrum.injective
 
 lemma maximalIdeal_inj (w₁ w₂ : FinitePlace K) : maximalIdeal w₁ = maximalIdeal w₂ ↔ w₁ = w₂ :=
   equivHeightOneSpectrum.injective.eq_iff
+
+lemma asIdeal_maximalIdeal_injective :
+    (fun v : FinitePlace K ↦ v.maximalIdeal.asIdeal).Injective :=
+  fun ⦃_ _⦄ h ↦ (FinitePlace.maximalIdeal_inj ..).mp <| HeightOneSpectrum.ext h
 
 @[fun_prop]
 theorem hasFiniteMulSupport_int {x : 𝓞 K} (h_x_nezero : x ≠ 0) :
@@ -413,6 +420,17 @@ alias IsDedekindDomain.HeightOneSpectrum.equivHeightOneSpectrum_symm_apply :=
   equivHeightOneSpectrum_symm_apply
 @[deprecated (since := "2026-03-11")]
 alias IsDedekindDomain.HeightOneSpectrum.embedding_mul_absNorm := embedding_mul_absNorm
+
+lemma finprod_finitePlace_pow_multiplicity {I : Ideal (𝓞 K)} (hI : I ≠ 0) :
+    ∏ᶠ v : FinitePlace K, v.maximalIdeal.asIdeal ^ multiplicity v.maximalIdeal.asIdeal I = I := by
+  conv_rhs => rw [← finprod_heightOneSpectrum_pow_multiplicity hI]
+  simp only [← finprod_comp_equiv (equivHeightOneSpectrum (K := K)), equivHeightOneSpectrum_apply]
+
+lemma apply_mul_absNorm_pow_eq_one (v : FinitePlace K) {x : 𝓞 K} (hx : x ≠ 0) :
+    v x * v.maximalIdeal.asIdeal.absNorm ^ multiplicity v.maximalIdeal.asIdeal (span {x}) = 1 := by
+  have hnz : span {x} ≠ ⊥ := mt Submodule.span_singleton_eq_bot.mp hx
+  rw [← norm_embedding_eq v x, ← Nat.cast_pow, ← map_pow, ← maxPowDividing_eq_pow_multiplicity hnz]
+  exact HeightOneSpectrum.embedding_mul_absNorm K v.maximalIdeal hx
 
 end FinitePlace
 

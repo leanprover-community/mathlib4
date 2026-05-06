@@ -59,6 +59,10 @@ variable (K L : Type*) [Field K] [Field L]
 -- See note [lower instance priority]
 attribute [instance] NumberField.to_charZero NumberField.to_finiteDimensional
 
+lemma one_le_finrank_rat [NumberField K] : 1 ≤ Module.finrank ℚ K := by
+  rw [Nat.one_le_iff_ne_zero, Ne, Module.finrank_eq_zero_iff_of_free]
+  exact not_subsingleton K
+
 protected theorem isAlgebraic [NumberField K] : Algebra.IsAlgebraic ℚ K :=
   Algebra.IsAlgebraic.of_finite _ _
 
