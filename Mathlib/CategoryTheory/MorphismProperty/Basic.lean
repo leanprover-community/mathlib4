@@ -83,8 +83,8 @@ lemma sSup_iff (S : Set (MorphismProperty C)) {X Y : C} (f : X ⟶ Y) :
 
 @[simp]
 lemma iSup_iff {ι : Sort*} (W : ι → MorphismProperty C) {X Y : C} (f : X ⟶ Y) :
-    iSup W f ↔ ∃ i, W i f :=
-  (sSup_iff (Set.range W) f).trans (by simp)
+    iSup W f ↔ ∃ i, W i f := by
+  simp [← sSup_range]
 
 @[simp]
 lemma inf_iff (W W' : MorphismProperty C) {X Y : C} (f : X ⟶ Y) : (W ⊓ W') f ↔ W f ∧ W' f :=
@@ -99,8 +99,8 @@ lemma sInf_iff (S : Set (MorphismProperty C)) {X Y : C} (f : X ⟶ Y) :
 
 @[simp]
 lemma iInf_iff {ι : Type*} (W : ι → MorphismProperty C) {X Y : C} (f : X ⟶ Y) :
-    iInf W f ↔ ∀ i, W i f :=
-  (sInf_iff (Set.range W) f).trans (by simp)
+    iInf W f ↔ ∀ i, W i f := by
+  simp [← sInf_range]
 
 /-- The morphism property in `Cᵒᵖ` associated to a morphism property in `C` -/
 @[simp]
