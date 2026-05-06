@@ -158,7 +158,7 @@ variable (𝕜 E)
 
 /-- If `M` is a normed space over `𝕜`, then the space of maps `𝕜 →L[𝕜] M` is linearly isometrically
 equivalent to `M`. -/
-def toSpanSingletonₗᵢ : E ≃ₗᵢ[𝕜] (𝕜 →L[𝕜] E) where
+def toSpanSingletonLIE : E ≃ₗᵢ[𝕜] (𝕜 →L[𝕜] E) where
   toLinearEquiv := toSpanSingletonLE 𝕜 𝕜 E
   norm_map' _ := by simp
 

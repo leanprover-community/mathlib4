@@ -1097,7 +1097,8 @@ variable (R S M : Type*) [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M
   [TopologicalSpace R] [ContinuousSMul R M]
 
 /-- `ContinuousLinearMap.toSpanSingleton` as a linear equivalence. See
-`ContinuousLinearMap.toSpanSingletonₗᵢ` for a stronger statement. -/
+`ContinuousLinearMap.toSpanSingletonLIE` for the isometric version
+and `ContinuousLinearMap.toSpanSingletonCLE` for the continuous version. -/
 @[simps -fullyApplied]
 def toSpanSingletonLE : M ≃ₗ[S] (R →L[R] M) where
   toFun := toSpanSingleton R
