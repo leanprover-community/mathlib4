@@ -667,6 +667,12 @@ instance IsStarNormal.one_sub [NonAssocRing R] [StarRing R] {a : R}
     [ha : IsStarNormal a] : IsStarNormal (1 - a) :=
   Commute.one_left (star a) |>.isStarNormal_sub
 
+lemma IsSelfAdjoint.commute_of_mul_eq_zero [NonUnitalNonAssocRing R] [StarRing R]
+    {a b : R} (ha : IsSelfAdjoint a) (hb : IsSelfAdjoint b) (hab : a * b = 0) :
+    Commute a b := by
+  have : b * a = 0 := by simpa [ha.star_eq, hb.star_eq] using congr(star $hab)
+  grind [commute_iff_eq]
+
 namespace Pi
 variable {ι : Type*} {α : ι → Type*} [∀ i, Star (α i)] {f : ∀ i, α i}
 
