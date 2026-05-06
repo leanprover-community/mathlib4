@@ -18,7 +18,7 @@ to facilitate a refactor.
 
 -/
 
-@[expose] public section
+public section
 
 namespace IsValuativeTopology
 
@@ -59,7 +59,7 @@ instance (priority := low) {R : Type*} [CommRing R] [ValuativeRel R] [UniformSpa
     simp_rw [Valuation.restrict_lt_iff_lt_embedding]
     convert mem_nhds_zero_iff (R := R)
     simpa [← Valuation.restrict_lt_iff_lt_embedding] using
-        (valuation R).exists_setOf_restrict_le_iff 0 _
+      (valuation R).exists_setOf_restrict_le_iff 0 _
 
 lemma v_eq_valuation {R : Type*} [CommRing R] [ValuativeRel R] [UniformSpace R]
     [IsUniformAddGroup R] [IsValuativeTopology R] :

@@ -48,6 +48,11 @@ variable [Monoid M] [AddMonoid A]
 lemma coe_mul_coe [SetLike S M] [SubmonoidClass S M] (H : S) : H * H = (H : Set M) := by
   aesop (add simp mem_mul)
 
+@[to_additive]
+lemma Set.subtype_smul_set {S α β : Type*} [SMul α β] [SetLike S α] {s : S} (x : s) (t : Set β) :
+    (x • t : Set β) = (x : α) • t :=
+  rfl
+
 @[to_additive (attr := simp)]
 lemma coe_set_pow [SetLike S M] [SubmonoidClass S M] :
     ∀ {n} (_ : n ≠ 0) (H : S), (H ^ n : Set M) = H
@@ -61,9 +66,13 @@ namespace Submonoid
 
 variable {s t u : Set M}
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem mul_subset {S : Submonoid M} (hs : s ⊆ S) (ht : t ⊆ S) : s * t ⊆ S :=
   mul_subset_iff.2 fun _x hx _y hy ↦ mul_mem (hs hx) (ht hy)
+
+@[to_additive (attr := simp)]
+lemma pow_subset {S : Submonoid M} {n : ℕ} (hs : s ⊆ S) : s ^ n ⊆ S := by
+  induction n <;> simp [pow_succ, *]
 
 @[to_additive]
 theorem mul_subset_closure (hs : s ⊆ u) (ht : t ⊆ u) : s * t ⊆ Submonoid.closure u :=
@@ -79,20 +88,16 @@ theorem closure_mul_le (S T : Set M) : closure (S * T) ≤ closure S ⊔ closure
     (closure S ⊔ closure T).mul_mem (SetLike.le_def.mp le_sup_left <| subset_closure hs)
       (SetLike.le_def.mp le_sup_right <| subset_closure ht)
 
+@[to_additive] lemma closure_pow_le {n : ℕ} : closure (s ^ n) ≤ closure s := by simp
+
 @[to_additive]
-lemma closure_pow_le : ∀ {n}, n ≠ 0 → closure (s ^ n) ≤ closure s
-  | 1, _ => by simp
-  | n + 2, _ =>
-    calc
-      closure (s ^ (n + 2))
-      _ = closure (s ^ (n + 1) * s) := by rw [pow_succ]
-      _ ≤ closure (s ^ (n + 1)) ⊔ closure s := closure_mul_le ..
-      _ ≤ closure s ⊔ closure s := by gcongr ?_ ⊔ _; exact closure_pow_le n.succ_ne_zero
-      _ = closure s := sup_idem _
+lemma closure_pow_anti {m n : ℕ} (hmn : m ∣ n) : closure (s ^ n) ≤ closure (s ^ m) := by
+  obtain ⟨k, rfl⟩ := hmn
+  simp [pow_mul]
 
 @[to_additive]
 lemma closure_pow {n : ℕ} (hs : 1 ∈ s) (hn : n ≠ 0) : closure (s ^ n) = closure s :=
-  (closure_pow_le hn).antisymm <| by gcongr; exact subset_pow hs hn
+  closure_pow_le.antisymm <| by grw [← subset_pow hs hn]
 
 @[to_additive]
 theorem sup_eq_closure_mul (H K : Submonoid M) : H ⊔ K = closure ((H : Set M) * (K : Set M)) :=
