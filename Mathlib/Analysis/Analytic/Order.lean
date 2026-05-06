@@ -6,7 +6,6 @@ Authors: Vincent Beffara, Stefan Kebekus
 module
 
 public import Mathlib.Analysis.Analytic.IsolatedZeros
-public import Mathlib.Analysis.Calculus.Deriv.Mul
 public import Mathlib.Analysis.Calculus.Deriv.Pow
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Analytic
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
