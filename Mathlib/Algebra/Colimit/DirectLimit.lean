@@ -223,7 +223,7 @@ arbitrary stage from a family of additive monoid homs to the stages of the direc
 No compatibility condition is assumed.
 If the family of maps into the directed system is compatible with the maps of the directed system,
 then more can be done. -/]
-def map₀MonoidHom (x : ∀ i, C →* (G i)) : C →*(DirectLimit G f) where
+def map₀MonoidHom (x : ∀ i, C →* G i) : C →* DirectLimit G f where
   toFun r := map₀ _ fun _ ↦ x _ r
   map_one' := by rw [map₀, map_one, one_def]
   map_mul' r s := by simp_rw [map₀, mul_def, map_mul]
