@@ -28,10 +28,10 @@ section AddCommMonoid
 
 variable [AddCommMonoid k] {a : G} {b : k}
 
-theorem support_single_of_ne_zero (a : G) (h : b ≠ 0) : (single a b).support = {a} :=
-  Finsupp.support_single_of_ne_zero _ h
+theorem support_single (a : G) (h : b ≠ 0) : (single a b).support = {a} :=
+  Finsupp.support_single _ h
 
-@[deprecated (since := "2026-05-05")] alias support_single_ne_zero := support_single_of_ne_zero
+@[deprecated (since := "2026-05-05")] alias support_single_ne_zero := support_single
 
 theorem support_single_subset : (single a b).support ⊆ {a} := Finsupp.support_single_subset
 
@@ -61,7 +61,7 @@ lemma support_one_subset : (1 : SkewMonoidAlgebra k G).support ⊆ 1 :=
 
 @[simp]
 lemma support_one [NeZero (1 : k)] : (1 : SkewMonoidAlgebra k G).support = 1 :=
-  Finsupp.support_single_of_ne_zero _ one_ne_zero
+  Finsupp.support_single _ one_ne_zero
 
 end AddCommMonoidWithOne
 

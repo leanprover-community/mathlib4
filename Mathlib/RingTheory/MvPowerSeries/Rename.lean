@@ -269,7 +269,7 @@ theorem killCompl_X (i : σ) : killCompl (R := R) e (X (e i)) = X i := by
 theorem killCompl_X_eq_zero {t : τ} (h : t ∉ Set.range e) :
     killCompl (R := R) e (X t) = 0 := by
   replace h : single t 1 ∉ Set.range (embDomain e) := by
-    rwa [mem_range_embDomain_iff, support_single_of_ne_zero _ (by simp), Finset.coe_singleton,
+    rwa [mem_range_embDomain_iff, support_single _ (by simp), Finset.coe_singleton,
       Set.singleton_subset_iff]
   simpa using killCompl_monomial_eq_zero (1 : R) h
 

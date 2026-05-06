@@ -39,7 +39,7 @@ public def convexCombination (s : StdSimplex R P) : P :=
 public theorem convexCombination_single (x : P) :
     convexCombination (StdSimplex.single x : StdSimplex R P) = x := by
   simp only [convexCombination, StdSimplex.single]
-  rw [Finsupp.support_single_of_ne_zero _ one_ne_zero]
+  rw [Finsupp.support_single _ one_ne_zero]
   exact ({x} : Finset P).affineCombination_of_eq_one_of_eq_zero _ _
     (Finset.mem_singleton_self x) Finsupp.single_eq_same fun j _ hne => Finsupp.single_eq_of_ne hne
 

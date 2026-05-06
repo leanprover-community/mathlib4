@@ -91,7 +91,7 @@ lemma support_one_subset [One G] : (1 : k[G]).support ⊆ 1 :=
 
 @[to_additive (dont_translate := k) (attr := simp) support_one]
 lemma support_one [One G] [NeZero (1 : k)] : (1 : k[G]).support = 1 :=
-  Finsupp.support_single_of_ne_zero _ one_ne_zero
+  Finsupp.support_single _ one_ne_zero
 
 section Span
 

@@ -880,10 +880,10 @@ theorem support_subset_iff {s : Set ι} {f : Π₀ i, β i} : ↑f.support ⊆ s
   simpa [Set.subset_def] using forall_congr' fun i => not_imp_comm
 
 @[simp]
-theorem support_single_of_ne_zero {i : ι} {b : β i} (hb : b ≠ 0) : (single i b).support = {i} := by
+theorem support_single {i : ι} {b : β i} (hb : b ≠ 0) : (single i b).support = {i} := by
   grind
 
-@[deprecated (since := "2026-05-05")] alias support_single_ne_zero := support_single_of_ne_zero
+@[deprecated (since := "2026-05-05")] alias support_single_ne_zero := support_single
 
 theorem support_single_subset {i : ι} {b : β i} : (single i b).support ⊆ {i} :=
   support_mk'_subset

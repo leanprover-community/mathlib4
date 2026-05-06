@@ -255,21 +255,21 @@ theorem support_esymm'' [DecidableEq σ] [Nontrivial R] (n : ℕ) :
   simp only [← single_eq_monomial]
   refine Finsupp.support_sum_eq_biUnion (powersetCard n (univ : Finset σ)) ?_
   intro s t hst
-  rw [disjoint_left, Finsupp.support_single_of_ne_zero _ one_ne_zero]
-  rw [Finsupp.support_single_of_ne_zero _ one_ne_zero]
+  rw [disjoint_left, Finsupp.support_single _ one_ne_zero]
+  rw [Finsupp.support_single _ one_ne_zero]
   simp only [mem_singleton]
   rintro a h rfl
   have := congr_arg Finsupp.support h
   rw [Finsupp.support_sum_eq_biUnion _ (by simp), Finsupp.support_sum_eq_biUnion _ (by simp)]
     at this
-  simp_all [Finsupp.support_single_of_ne_zero]
+  simp_all [Finsupp.support_single]
 
 theorem support_esymm' [DecidableEq σ] [Nontrivial R] (n : ℕ) : (esymm σ R n).support =
     (powersetCard n (univ : Finset σ)).biUnion fun t => {∑ i ∈ t, Finsupp.single i 1} := by
   rw [support_esymm'']
   congr
   funext
-  exact Finsupp.support_single_of_ne_zero _ one_ne_zero
+  exact Finsupp.support_single _ one_ne_zero
 
 theorem support_esymm [DecidableEq σ] [Nontrivial R] (n : ℕ) : (esymm σ R n).support =
     (powersetCard n (univ : Finset σ)).image fun t => ∑ i ∈ t, Finsupp.single i 1 := by

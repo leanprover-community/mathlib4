@@ -158,7 +158,7 @@ theorem Module.Basis.le_span {J : Set M} (v : Basis ι R M) (hJ : span R J = ⊤
         span_le.2 fun j hj x hx => ⟨_, ⟨⟨j, hj⟩, rfl⟩, hx⟩
       rw [hJ] at this
       replace : v.repr (v i) ∈ Finsupp.supported R R (⋃ j, S j) := this trivial
-      rw [v.repr_self, Finsupp.mem_supported, Finsupp.support_single_of_ne_zero _ one_ne_zero]
+      rw [v.repr_self, Finsupp.mem_supported, Finsupp.support_single _ one_ne_zero]
         at this
       · subst b
         rcases mem_iUnion.1 (this (Finset.mem_singleton_self _)) with ⟨j, hj⟩

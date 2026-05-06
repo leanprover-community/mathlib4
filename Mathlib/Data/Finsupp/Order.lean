@@ -154,7 +154,7 @@ theorem single_le_sum {α M N : Type*} [Zero M] [AddCommMonoid N]
   rcases eq_or_ne (f a) 0 with H | H
   · rw [H, single_zero, sum_zero_index]
     exact sum_nonneg' (fun i ↦ h i (f i))
-  · rw [sum, support_single_of_ne_zero _ H, sum_singleton, single_eq_same]
+  · rw [sum, support_single _ H, sum_singleton, single_eq_same]
     apply Finset.single_le_sum (fun i hi ↦ h i (f i))
     simpa [mem_support_iff, ne_eq] using H
 
