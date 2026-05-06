@@ -144,6 +144,9 @@ theorem wellFoundedLT_iff_exists_minimal [Preorder α] :
     WellFoundedLT α ↔ ∀ s : Set α, s.Nonempty → ∃ m, Minimal (· ∈ s) m := by
   simp only [isWellFounded_iff, wellFounded_iff_has_min, not_lt_iff_le_imp_ge, Minimal]
 
+@[to_dual]
+alias ⟨_root_.WellFoundedLT.exists_minimal, _⟩ := wellFoundedLT_iff_exists_minimal
+
 theorem isWellOrder_iff_exists_not_lt_and_eq_or_gt :
     IsWellOrder α r ↔ ∀ s : Set α, s.Nonempty → ∃ m ∈ s, ∀ x ∈ s, ¬r x m ∧ (m = x ∨ r m x) := by
   refine ⟨fun h s hs ↦ ?_, fun h ↦ { wf := ?_, trichotomous a b := ?_ }⟩
