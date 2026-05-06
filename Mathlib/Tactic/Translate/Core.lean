@@ -881,9 +881,9 @@ def warnParametricAttr {β : Type} [Inhabited β] (stx : Syntax) (attr : Paramet
 /-- `translateLemmas names argInfo desc t` runs `t` on all elements of `names`
 and adds translations between the generated lemmas (the output of `t`).
 `names` must be non-empty. -/
-def translateLemmas {m : Type → Type} [Monad m] [MonadError m] [MonadLiftT CoreM m]
+def translateLemmas
     (t : TranslateData) (names : Array Name) (reorder : Reorder) (relevantArg : RelevantArg)
-    (desc : String) (ref : Syntax) (runAttr : Name → m (Array Name)) : m Unit := do
+    (desc : String) (ref : Syntax) (runAttr : Name → CoreM (Array Name)) : CoreM Unit := do
   let auxLemmas ← names.mapM runAttr
   let nLemmas := auxLemmas[0]!.size
   for nm in names, lemmas in auxLemmas do
@@ -891,7 +891,8 @@ def translateLemmas {m : Type → Type} [Monad m] [MonadError m] [MonadLiftT Cor
       throwError "{names[0]!} and {nm} do not generate the same number of {desc}."
   for srcLemmas in auxLemmas, tgtLemmas in auxLemmas.eraseIdx! 0 do
     for srcLemma in srcLemmas, tgtLemma in tgtLemmas do
-      insertTranslation t srcLemma tgtLemma reorder relevantArg ref
+      if (findTranslation? (← getEnv) t srcLemma).isNone then
+        insertTranslation t srcLemma tgtLemma reorder relevantArg ref
 
 /-- Return the provided target name or autogenerate one if one was not provided. -/
 def targetName (t : TranslateData) (cfg : Config) (src : Name) : CoreM Name := do
