@@ -252,8 +252,26 @@ theorem Algebra.EssFiniteType.of_isScalarTower
     Algebra.EssFiniteType F K := by
   obtain ⟨bFK, hbFK⟩ := exists_isTranscendenceBasis F K
   obtain ⟨bKL, hbKL⟩ := exists_isTranscendenceBasis K L
-  have := hbFK.sumElim_comp hbKL
-  -- idea: L is finite over F adjoin hbFK ∪ hbKL
+  let bFKL := algebraMap K L '' bFK
+  let bFL := bKL ∪ bFKL
+  have : Algebra.IsAlgebraic (IntermediateField.adjoin F bFL) L := by
+    suffices bFL = range (Sum.elim Subtype.val (algebraMap K L ∘ Subtype.val)) by
+      convert IsTranscendenceBasis.isAlgebraic_field (hbFK.sumElim_comp hbKL)
+    simp_rw [Sum.elim_range, range_comp, Subtype.range_coe_subtype, setOf_mem_eq, bFL, bFKL]
+  have : EssFiniteType (IntermediateField.adjoin F bFL) L :=
+    .of_comp F (IntermediateField.adjoin F bFL) L
+  have : FiniteDimensional (IntermediateField.adjoin F bFL) L :=
+    finite_of_essFiniteType_of_isAlgebraic
+  have h1 : IntermediateField.adjoin F bFL ≤ (IntermediateField.adjoin K bKL).restrictScalars F := by
+    sorry
+  -- figure out the best places for these things to live
+  -- and locate "adjoining transcendental elements won't affect the degree"
+  let f : IntermediateField.adjoin F bFL →ₐ[F] IntermediateField.adjoin K bKL :=
+    IntermediateField.inclusion h1
+  let := f.toAlgebra
+  have : FiniteDimensional (IntermediateField.adjoin F bFL) (IntermediateField.adjoin K bKL) := by
+    sorry
+  -- idea: L is finite over F adjoin hbFK ∪ hbKL (done)
   -- K adjoin hbKL is finite over F adjoin hbFK ∪ hbKL
   -- K is algebraic over F adjoin hbFK
   -- but adjoining transcendental elements won't affect the degree
