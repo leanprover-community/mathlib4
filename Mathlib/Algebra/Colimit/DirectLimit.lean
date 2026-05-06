@@ -45,6 +45,7 @@ So far we only show that `DirectLimit` is the colimit in the following categorie
 * non-unital semirings
 * rings
 * (non-unital) star rings
+* R-algebras
 
 but for the other algebraic structures the constructions and proofs will be easy following
 the same pattern. Since any two colimits are isomorphic, this allows us to golf proofs of
