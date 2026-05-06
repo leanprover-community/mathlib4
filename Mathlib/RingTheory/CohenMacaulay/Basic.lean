@@ -109,7 +109,7 @@ lemma associated_prime_minimal_of_isCohenMacaulay (M : ModuleCat.{v} R)
       Module.supportDim_eq_ringKrullDim_quotient_annihilator] at eq
     have le := ringKrullDim_le_of_surjective _ (Ideal.Quotient.factor_surjective hp'.1.2)
     rcases Set.exists_of_ssubset lt with ⟨x, mem, nmem⟩
-    have := Ideal.minimalPrimes_isPrime hp'
+    have := Ideal.IsPrime.of_mem_minimalPrimes hp'
     have nz : Ideal.Quotient.mk p' x ∈ nonZeroDivisors (R ⧸ p') := by
       simpa [Ideal.Quotient.eq_zero_iff_mem] using nmem
     have succ_le := ringKrullDim_succ_le_of_surjective _ (Ideal.Quotient.factor_surjective lt.le)

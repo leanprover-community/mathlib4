@@ -35,7 +35,7 @@ instance forget₂_addCommGroup_full : (forget₂ (ModuleCat ℤ) AddCommGrpCat.
             { toFun := f,
               map_add' := map_add f.hom }
             (fun n x => by
-              convert AddMonoidHom.map_zsmul f.hom x n <;>
+              convert AddMonoidHom.map_zsmul f.hom n x <;>
                 ext <;> apply int_smul_eq_zsmul), rfl⟩
 
 /-- The forgetful functor from `ℤ` modules to `AddCommGrpCat` is essentially surjective. -/
