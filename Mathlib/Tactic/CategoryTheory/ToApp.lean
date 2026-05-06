@@ -43,7 +43,7 @@ def catAppSimp (e : Expr) : MetaM Simp.Result :=
     ``Cat.leftUnitor_hom_app, ``Cat.leftUnitor_inv_app, ``Cat.rightUnitor_hom_app,
     ``Cat.rightUnitor_inv_app, ``Cat.associator_hom_app, ``Cat.associator_inv_app, ``eqToHom_refl,
     ``Category.comp_id, ``Category.id_comp] e
-    (config := { decide := false })
+    (config := { decide := false, dsimp := false })
 
 /--
 Given a term of type `∀ ..., η = θ`, where `η θ : f ⟶ g` are 2-morphisms in some bicategory
