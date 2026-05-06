@@ -22,6 +22,7 @@ The main definitions for this file are
 
 - `Nat.primeCounting`: The prime counting function π
 - `Nat.primeCounting'`: π(n - 1)
+- `Nat.primesLE`: The finset of primes less than or equal to n
 
 We then prove that these are monotone in `Nat.monotone_primeCounting` and
 `Nat.monotone_primeCounting'`. The last main theorem `Nat.primeCounting'_add_le` is an upper
@@ -140,5 +141,53 @@ theorem primeCounting'_add_le {a k : ℕ} (h0 : a ≠ 0) (h1 : a < k) (n : ℕ) 
     _ ≤ π' k + totient a * (n / a + 1) := by
       rw [add_le_add_iff_left]
       exact Ico_filter_coprime_le k n h0
+
+/-- The primes up to $n$. -/
+abbrev primesLE (n : ℕ) : Finset ℕ := filter Nat.Prime (range (n + 1))
+
+theorem mem_primesLE {p n : ℕ} : p ∈ primesLE n ↔ p.Prime ∧ p ≤ n := by grind
+
+theorem prime_of_mem_primesLE {p n : ℕ} (hp : p ∈ primesLE n) : p.Prime := by simp_all
+
+theorem le_of_mem_primesLE {p n : ℕ} (hp : p ∈ primesLE n) : p ≤ n := by simp_all
+
+theorem gt_of_mem_primesLE {p n : ℕ} (hp : p ∈ primesLE n) : 1 < p :=
+  (prime_of_mem_primesLE hp).one_lt
+
+theorem ge_of_mem_primesLE {p n : ℕ} (hp : p ∈ primesLE n) : 2 ≤ p :=
+  (prime_of_mem_primesLE hp).two_le
+
+theorem primesLE_mono : Monotone primesLE := by
+  intros n m _ p
+  simp; grind
+
+theorem primesLE_eq_filter_Icc_zero (n : ℕ) : primesLE n = filter Nat.Prime (Icc 0 n) := by
+  ext p
+  simp
+
+theorem primesLE_eq_filter_Icc_one (n : ℕ) : primesLE n = filter Nat.Prime (Icc 1 n) := by
+  ext p
+  simp +contextual [Nat.Prime.one_le]
+
+theorem primesLE_eq_filter_Icc_two (n : ℕ) : primesLE n = filter Nat.Prime (Icc 2 n) := by
+  ext p
+  simp +contextual [Nat.Prime.two_le]
+
+/-- The cardinality of the finset `primesLE n` equals the counting function
+`primeCounting` at `n`. -/
+@[simp]
+theorem primesLE_card_eq_primeCounting (n : ℕ) : (primesLE n).card = primeCounting n := by
+  simp only [primesLE, primeCounting, primeCounting', count_eq_card_filter_range]
+
+@[simp]
+theorem primesLE_zero : primesLE 0 = ∅ := by simp [primesLE, not_prime_zero]
+
+@[simp]
+theorem primesLE_one : primesLE 1 = ∅ := by
+  grind [not_prime_zero, not_prime_one]
+
+theorem primesLE_eq_primesBelow_succ (n : ℕ) : primesLE n = primesBelow (n + 1) := by
+  ext p
+  simp [primesBelow, primesLE]
 
 end Nat
