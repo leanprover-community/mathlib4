@@ -72,30 +72,6 @@ namespace Submodule
 
 open LinearMap
 
-/-- If `q` is a complement of `p`, then `M/p ≃ q`. -/
-def quotientEquivOfIsCompl (h : IsCompl p q) : (E ⧸ p) ≃ₗ[R] q :=
-  LinearEquiv.symm <|
-    LinearEquiv.ofBijective (p.mkQ.comp q.subtype)
-      ⟨by rw [← ker_eq_bot, ker_comp, ker_mkQ, disjoint_iff_comap_eq_bot.1 h.symm.disjoint], by
-        rw [← range_eq_top, range_comp, range_subtype, map_mkQ_eq_top, h.sup_eq_top]⟩
-
-@[simp]
-theorem quotientEquivOfIsCompl_symm_apply (h : IsCompl p q) (x : q) :
-    -- Porting note: type ascriptions needed on the RHS
-    (quotientEquivOfIsCompl p q h).symm x = (Quotient.mk x : E ⧸ p) := rfl
-
-theorem quotientEquivOfIsCompl_apply_mk_right (h : IsCompl p q) (x : q) :
-    quotientEquivOfIsCompl p q h (Quotient.mk x) = x :=
-  (quotientEquivOfIsCompl p q h).apply_symm_apply x
-
-@[deprecated (since := "2026-05-06")]
-alias quotientEquivOfIsCompl_apply_mk_coe := quotientEquivOfIsCompl_apply_mk_right
-
-@[simp]
-theorem mk_quotientEquivOfIsCompl_apply (h : IsCompl p q) (x : E ⧸ p) :
-    (Quotient.mk (quotientEquivOfIsCompl p q h x) : E ⧸ p) = x :=
-  (quotientEquivOfIsCompl p q h).symm_apply_apply x
-
 /-- If `q` is a complement of `p`, then `p × q` is isomorphic to `E`. -/
 def prodEquivOfIsCompl (h : IsCompl p q) : (p × q) ≃ₗ[R] E := by
   apply LinearEquiv.ofBijective (p.subtype.coprod q.subtype)
@@ -298,13 +274,38 @@ theorem sub_projection_mem (h : IsCompl p q) (x : E) : x - p.projection q h x �
   rw [← projection_eq_self_sub_projection h]
   exact projection_apply_mem h.symm x
 
+variable (p q) in
+/-- If `q` is a complement of `p`, then `M/p ≃ q`. -/
+def quotientEquivOfIsCompl (h : IsCompl p q) : (E ⧸ p) ≃ₗ[R] q :=
+  .ofLinear
+    (p.liftQ (q.projectionOnto p h.symm) (by simp))
+    (p.mkQ ∘ₗ q.subtype)
+    (by ext; simp)
+    (by ext; simp [Quotient.eq, sub_mem_comm_iff, sub_projection_mem])
+
+@[simp]
+theorem quotientEquivOfIsCompl_symm_apply (h : IsCompl p q) (x : q) :
+    -- Porting note: type ascriptions needed on the RHS
+    (quotientEquivOfIsCompl p q h).symm x = (Quotient.mk x : E ⧸ p) := rfl
+
 /-- The composition of `quotientEquivOfIsCompl` with `mkQ` agrees with the projection
-`linearProjOfIsCompl` onto `q` parallel to `p`. -/
+`linearProjOfIsCompl` onto `q` along `p`. -/
 @[simp]
 theorem quotientEquivOfIsCompl_apply_mk (h : IsCompl p q) (x : E) :
-    quotientEquivOfIsCompl p q h (Submodule.Quotient.mk x) = q.projectionOnto p h.symm x := by
-  rw [(Quotient.eq _).mpr (sub_projection_mem h.symm x)]
-  exact quotientEquivOfIsCompl_apply_mk_right p q h _
+    quotientEquivOfIsCompl p q h (Quotient.mk x) = q.projectionOnto p h.symm x :=
+  rfl
+
+theorem quotientEquivOfIsCompl_apply_mk_right (h : IsCompl p q) (x : q) :
+    quotientEquivOfIsCompl p q h (Quotient.mk x) = x :=
+  (quotientEquivOfIsCompl p q h).apply_symm_apply x
+
+@[deprecated (since := "2026-05-06")]
+alias quotientEquivOfIsCompl_apply_mk_coe := quotientEquivOfIsCompl_apply_mk_right
+
+@[simp]
+theorem mk_quotientEquivOfIsCompl_apply (h : IsCompl p q) (x : E ⧸ p) :
+    (Quotient.mk (quotientEquivOfIsCompl p q h x) : E ⧸ p) = x :=
+  (quotientEquivOfIsCompl p q h).symm_apply_apply x
 
 end Submodule
 
