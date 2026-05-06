@@ -84,7 +84,7 @@ instance : CoeSort (ModuleTestCat.{v} R) (Type v) :=
 attribute [coe] ModuleTestCat.carrier
 
 variable {R} in
-mk_concrete_category (ModuleTestCat R) (· →ₗ[R] ·) (@LinearMap.id R ·) LinearMap.comp
+mk_concrete_category (ModuleTestCat.{v} R) (· →ₗ[R] ·) (@LinearMap.id R ·) LinearMap.comp
   with_of_hom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y]
   hom_type (X →ₗ[R] Y) from (of R X) to (of R Y)
 ```
@@ -133,10 +133,10 @@ end MultiplicativeTestCat
 attribute [coe] AdditiveTestCat.carrier MultiplicativeTestCat.carrier
 
 @[to_additive AdditiveTestCat]
-mk_concrete_category MultiplicativeTestCat (· →* ·) MonoidHom.id MonoidHom.comp
+mk_concrete_category MultiplicativeTestCat.{u} (· →* ·) MonoidHom.id MonoidHom.comp
   with_of_hom {X Y : Type u} [Monoid X] [Monoid Y]
   hom_type (X →* Y) from (MultiplicativeTestCat.of X) to (MultiplicativeTestCat.of Y)
-  to_additive AdditiveTestCat (· →+ ·) AddMonoidHom.id AddMonoidHom.comp
+  to_additive AdditiveTestCat.{u} (· →+ ·) AddMonoidHom.id AddMonoidHom.comp
   with_of_hom {X Y : Type u} [AddMonoid X] [AddMonoid Y]
   hom_type (X →+ Y) from (AdditiveTestCat.of X) to (AdditiveTestCat.of Y)
 ```
