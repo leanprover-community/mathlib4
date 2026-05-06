@@ -251,11 +251,14 @@ private theorem exists_substructure_embedding_of_agree_qf
   exact ⟨S, g, a, ha, hg⟩
 
 
+----------- TODO: move to correct file
+def isEquivQF (T : L.Theory) {m : ℕ} (φ : L.Formula (Fin m)) :=
+    (∃ ψ : L.Formula (Fin m), ψ.IsQF ∧ φ ⇔[T] ψ)
 
 
 theorem marker_314
     {T : L.Theory} {m : ℕ} (φ : L.Formula (Fin m)) :
-    (∃ ψ : L.Formula (Fin m), ψ.IsQF ∧ φ ⇔[T] ψ) ↔
+    T.isEquivQF φ ↔
       (∀ {M N A : Type (max u v)} [L.Structure M] [L.Structure N] [L.Structure A]
         [T.Model M] [T.Model N] [Nonempty M] [Nonempty N]
         (f : A ↪[L] M) (g : A ↪[L] N)
@@ -606,10 +609,9 @@ private theorem exists_qf_equiv_ex_of_qf
         change ψ'.Realize v' ↔ ψ'.Realize v'
         rfl
 
-theorem marker_315
+theorem hasQuantifierElimination_of_ex_isEquivQF_of_isQF
   {T : L.Theory} :
-  ((∀ {m : ℕ} (θ : L.BoundedFormula (Fin m) 1), θ.IsQF →
-  ∃ (ψ : L.Formula (Fin m)), ψ.IsQF ∧ θ.ex ⇔[T] ψ))
+  (∀ {m : ℕ} (θ : L.BoundedFormula (Fin m) 1), θ.IsQF → T.isEquivQF θ.ex)
   → HasQuantifierElimination T := by
   intro h m φ
   let P : ∀ {n : ℕ}, L.BoundedFormula (Fin m) n → Prop :=
@@ -648,7 +650,7 @@ theorem marker_316 {T : L.Theory} :
     (∃ (c : N), φ.Realize (Fin.snoc (g ∘ a) c))) →
   T.HasQuantifierElimination := by
   intro h
-  apply marker_315
+  apply hasQuantifierElimination_of_ex_isEquivQF_of_isQF
   intro m θ hθ
   refine (marker_314 (T := T) (φ := θ.ex)).2 ?_
   intro M N A _ _ _ _ _ _ _ f g a
@@ -713,6 +715,8 @@ private theorem isQF_realize_partialEquiv
 substructures of models of `T` can be extended, after passing to an elementary extension of the
 codomain model, to include any prescribed element of the domain model, then `T` has quantifier
 elimination. -/
+
+----- TODO: define isElementaryExtensionPair for hyp
 theorem henson_711
     {T : L.Theory}
     (h :
@@ -828,8 +832,8 @@ theorem henson_711_prime
         (f : L.Sub₀ M N) (a : M),
         ∃ (N' : Type (max u v)) (_ : L.Structure N')
           (e : N ↪ₑ[L] N') (g : L.Sub₀ M N'),
-          a ∈ (g : L.Sub M N').dom ∧
-            (f : L.Sub M N).ExtendsAlong e (g : L.Sub M N')) :
+          a ∈ g.1.dom ∧
+            f.1.ExtendsAlong e g) :
     T.HasQuantifierElimination := by
   classical
   refine marker_316 (T := T) ?_
@@ -945,12 +949,17 @@ theorem henson_711_prime
 /-- The theory of dense linear orders without endpoints has quantifier elimination. -/
 theorem order_dlo_hasQuantifierElimination :
     Language.order.dlo.HasQuantifierElimination := by
-  classical
-  refine henson_711_prime ?_
-  intro M N _ _ _ _ _ _ f a
+  apply henson_711_prime
+  intro M N _ iN _ _ _ _ f a
   obtain ⟨g, ha, hfg⟩ := Language.dlo_isExtensionPair M N f a
-  refine ⟨N, inferInstance, ElementaryEmbedding.refl Language.order N, g, ha, ?_⟩
-  simpa [PartialEquiv.ExtendsAlong, PartialEquiv.codMap] using hfg
+  use N
+  use iN
+  use ElementaryEmbedding.refl Language.order N
+  use g
+  constructor
+  · exact ha
+  · simpa [PartialEquiv.ExtendsAlong, PartialEquiv.codMap] using hfg
+
 
 
 -----------------------------------------------------------------------------------------
