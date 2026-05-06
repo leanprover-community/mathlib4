@@ -146,7 +146,7 @@ theorem log_prime_pos {p : ℕ} (hp : p.Prime) : 0 < log p := by
   rw [Real.log_pos_iff (mod_cast p.zero_le)]
   exact_mod_cast hp.one_lt
 
-theorem log_prime_ne {p : ℕ} (hp : p.Prime) : log p ≠ 0 := ne_of_gt (log_prime_pos hp)
+theorem log_prime_ne {p : ℕ} (hp : p.Prime) : log p ≠ 0 := (log_prime_pos hp).ne'
 
 theorem log_prime_nonneg {p : ℕ} (hp : p.Prime) : 0 ≤ log p := le_of_lt (log_prime_pos hp)
 
