@@ -694,7 +694,7 @@ lemma mem_divisors_self (hz : z ≠ 0) : z ∈ divisors z :=
 @[simp]
 lemma mem_divisorsAntidiag : xy ∈ divisorsAntidiag z ↔ xy.fst * xy.snd = z ∧ z ≠ 0 := by
   rcases z, xy with ⟨_ | _, ⟨_ | _, _ | _⟩⟩
-  --  splitting this case takes about 1770 heartbeats less i.e. 12.5% faster
+  -- splitting this case saves about 1770 heartbeats i.e. 12.5% faster
   case ofNat.negSucc.negSucc =>
     simp [divisorsAntidiag]
     grind [Nat.cast_inj]
