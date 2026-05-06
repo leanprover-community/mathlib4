@@ -120,6 +120,7 @@ lemma pi_of_finite {ι : Type*} (R : Type*) (S : ι → Type*) [CommSemiring R]
 
 variable (T : Type*) [CommSemiring T]
 
+attribute [local instance] isScalarTower_localizationAlgebra in
 variable (R S) in
 /-- Local isomorphisms are stable under composition. -/
 lemma trans [Algebra S T] [Algebra R T] [IsScalarTower R S T]
