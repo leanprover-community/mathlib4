@@ -85,7 +85,9 @@ theorem equiv (iso : G ≃* H) (h : IsFinitelyPresented G) : IsFinitelyPresented
 /-- A group is finitely presented if there exists a surjective homomorphism from
 a free group on an arbitrary finite type such that the kernel is finitely generated as
 a normal subgroup. -/
-@[to_additive]
+@[to_additive /-- An additive group is finitely presented if there exists a surjective homomorphism
+from a free additive group on an arbitrary finite type such that the kernel is finitely generated as
+a normal additive subgroup. -/]
 theorem of_hom_surj_finite {α : Type*} [Finite α] (f : FreeGroup α →* G)
     (hf_surj : Function.Surjective f) (hf_ker : (MonoidHom.ker f).IsNormalClosureFG) :
     IsFinitelyPresented G := by
@@ -93,6 +95,9 @@ theorem of_hom_surj_finite {α : Type*} [Finite α] (f : FreeGroup α →* G)
 
 /-- A group is finitely presented if there exists a `Set G` such that the canonical inclusion map
 is surjective and the kernel is finitely generated as a normal subgroup. -/
+@[to_additive /-- An additive group is finitely presented if there exists a `Set G` such that the
+canonical inclusion map is surjective and the kernel is finitely generated as a normal additive
+subgroup. -/]
 theorem iff_hom_surj_set_G :
     IsFinitelyPresented G ↔ ∃ (S : Set G) (_ : S.Finite),
       Function.Surjective (FreeGroup.lift ((↑) : S → G)) ∧
