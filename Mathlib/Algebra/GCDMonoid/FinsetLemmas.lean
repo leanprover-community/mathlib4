@@ -16,7 +16,7 @@ public import Mathlib.Data.Nat.Factorization.Basic
 
 ## Tags
 
-finset, lcm, prod, coprime
+finset, lcm, prod, coprime, Rat.den
 -/
 
 public section
@@ -47,5 +47,31 @@ theorem factorization_lcm {β : Type*} {f : β → ℕ} {s : Finset β}
     simp [lcm, fold_empty, factorization_one, Finsupp.coe_zero, sup_empty]
   | insert _ _ _ _ =>
     simp_all [lcm_eq_nat_lcm, Nat.factorization_lcm]
+    
+namespace Rat
+
+theorem den_sum_dvd_lcm_den {ι : Type*} (s : Finset ι) (f : ι → ℚ) :
+    (∑ i ∈ s, f i).den ∣ s.lcm (fun i ↦ (f i).den) := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert _ _ has ih =>
+    rw [Finset.sum_insert has, Finset.lcm_insert]
+    exact (Rat.add_den_dvd_lcm _ _).trans (lcm_dvd_lcm dvd_rfl ih)
+
+theorem den_sum_dvd_prod_den {ι : Type*} (s : Finset ι) (f : ι → ℚ) :
+    (∑ i ∈ s, f i).den ∣ ∏ i ∈ s, (f i).den :=
+  (den_sum_dvd_lcm_den s f).trans <| s.lcm_dvd_prod _
+
+theorem den_prod_dvd_prod_den {ι : Type*} (s : Finset ι) (f : ι → ℚ) :
+    (∏ i ∈ s, f i).den ∣ ∏ i ∈ s, (f i).den := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert _ _ has ih =>
+    simp_rw [Finset.prod_insert has]
+    exact (Rat.mul_den_dvd ..).trans <| mul_dvd_mul_left _ ih
+
+end Rat
 
 end Finset
