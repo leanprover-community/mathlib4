@@ -105,7 +105,7 @@ alias zero_lt_iff := pos_iff_ne_zero
 @[to_additive] alias Ne.one_lt := one_lt_of_ne_one
 
 @[to_additive]
-theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := one_le.eq_or_lt.imp_left Eq.symm
+theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := one_le.eq_or_lt'
 
 @[to_additive]
 lemma one_notMem_iff [OrderBot α] {s : Set α} : 1 ∉ s ↔ ∀ x ∈ s, 1 < x :=
