@@ -450,18 +450,15 @@ instance [∀ i, NonAssocSemiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G
 instance [∀ i, Semiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
     Semiring (DirectLimit G f) where
 
-/-TODO: this could more generally be done for non-associative semirings, but would need to either
-repeat the definitions for map_one' and map_mul' from map₀MonoidHom,
-or maybe define map₀MulHom and map₀OneHom.
--/
 variable (f) in
 /-- `map₀` as a `RingHom`. -/
 @[simps]
-def map₀RingHom [∀ i, Semiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
+def map₀RingHom [∀ i, NonAssocSemiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
     (∀ i, G i) →+* DirectLimit G f where
   toFun r := map₀ _ r
   __ := map₀AddMonoidHom f
-  __ := map₀MonoidHom f
+  map_one' := map₀_one
+  map_mul' := map₀_mul
 
 instance [∀ i, NonUnitalNonAssocCommSemiring (G i)]
     [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)] :
