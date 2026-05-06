@@ -268,8 +268,7 @@ theorem OrthogonalFamily.sum_projection_of_mem_iSup [Fintype ι] {V : ι → Sub
     refine
       (Finset.sum_eq_single_of_mem i (Finset.mem_univ _) fun j _ hij => ?_).trans
         (starProjection_eq_self_iff.mpr hx)
-    rw [starProjection_apply, orthogonalProjectionOnto_mem_subspace_orthogonalComplement_eq_zero,
-      Submodule.coe_zero]
+    rw [starProjection_apply, orthogonalProjectionOnto_apply_of_mem_orthogonal, Submodule.coe_zero]
     exact hV.isOrtho hij.symm hx
   | zero =>
     simp_rw [map_zero, Finset.sum_const_zero]
@@ -292,8 +291,7 @@ theorem OrthogonalFamily.projection_directSum_coeAddHom [DecidableEq ι] {V : ι
       DirectSum, DFinsupp.singleAddHom_apply]
     obtain rfl | hij := Decidable.eq_or_ne i j
     · rw [orthogonalProjectionOnto_mem_subspace_eq_self, DFinsupp.single_eq_same]
-    · rw [orthogonalProjectionOnto_mem_subspace_orthogonalComplement_eq_zero,
-        DFinsupp.single_eq_of_ne hij]
+    · rw [orthogonalProjectionOnto_apply_of_mem_orthogonal, DFinsupp.single_eq_of_ne hij]
       exact hV.isOrtho hij.symm x.prop
   | add x y hx hy =>
     simp_rw [map_add]
