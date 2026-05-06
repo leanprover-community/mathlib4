@@ -221,7 +221,7 @@ theorem norm_condExp_le : (‖μ[f | m] ·‖) ≤ᵐ[μ] μ[(‖f ·‖) | m] :
   exact convexOn_univ_norm.map_condExp_le_univ hm continuous_norm.lowerSemicontinuous hf_int
     hf_int.norm
 
-theorem Integrable.norm_rpow_condExp_le {p : ℝ} (hp : 1 ≤ p)
+theorem Integrable.norm_condExp_rpow_le {p : ℝ} (hp : 1 ≤ p)
     (hfint : Integrable (fun x => ‖f x‖ ^ p) μ) :
     (‖μ[f | m] ·‖ ^ p) ≤ᵐ[μ] μ[(‖f ·‖ ^ p) | m] := by
   have hp' : 0 < p := by linarith
