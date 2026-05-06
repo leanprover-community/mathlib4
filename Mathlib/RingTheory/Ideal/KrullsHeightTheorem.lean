@@ -133,8 +133,8 @@ lemma Ideal.height_span_singleton_le_one {x : R} (hx' : ¬ IsUnit x) :
   refine le_trans (height_mono hp.1.2) ?_
   exact Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes (span {x}) _ hp
 
-/-- In a Noetherian integral domain, the height of a non-unit non-zero-divisor
-principal ideal is one. -/
+/-- In a Noetherian ring, the height of a principal ideal spanned by a non-unit non-zero-divisor
+is one. -/
 lemma Ideal.height_span_singleton_eq_one_of_mem_nonZeroDivisors {x : R}
     (hx : x ∈ nonZeroDivisors R) (hx' : ¬ IsUnit x) : (span {x}).height = 1 :=
   le_antisymm (height_span_singleton_le_one hx')
