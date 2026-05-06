@@ -154,6 +154,14 @@ theorem isWellOrder_iff_exists_not_lt_and_eq_or_gt :
   · grind [wellFounded_iff_has_min]
   · grind [h {a, b} <| by simp]
 
+/-- The minimum of `f '' s` is `f` applied to the minimum of `s`. -/
+theorem min_image {r : β → β → Prop} [Std.Trichotomous r] (wf : WellFounded r) (f : α → β)
+    {s : Set α} (hne : s.Nonempty) :
+    wf.min (f '' s) (hne.image f) = f (wf.onFun (f := f).min s hne) := by
+  apply min_eq_of_forall_not_lt wf <| Set.mem_image_of_mem f <| min_mem wf.onFun s hne
+  rintro _ ⟨a, has, rfl⟩
+  exact wf.onFun.not_lt_min s has
+
 theorem not_rel_apply_succ [h : IsWellFounded α r] (f : ℕ → α) : ∃ n, ¬ r (f (n + 1)) (f n) := by
   by_contra! hf
   exact (wellFounded_iff_isEmpty_descending_chain.1 h.wf).elim ⟨f, hf⟩
