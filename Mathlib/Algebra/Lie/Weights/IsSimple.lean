@@ -564,8 +564,8 @@ namespace LieAlgebra
 open LieModule
 
 variable {K L : Type*} [Field K] [CharZero K]
-    [LieRing L] [LieAlgebra K L] [FiniteDimensional K L]
-    {H : LieSubalgebra K L} [H.IsCartanSubalgebra] [IsTriangularizable K H L]
+  [LieRing L] [LieAlgebra K L] [FiniteDimensional K L]
+  {H : LieSubalgebra K L} [H.IsCartanSubalgebra] [IsTriangularizable K H L]
 
 instance instIsIrreducibleRootSystem_of_isSimple [IsSimple K L] :
     (IsKilling.rootSystem H).IsIrreducible :=

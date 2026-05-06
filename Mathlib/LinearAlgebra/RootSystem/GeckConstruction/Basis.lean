@@ -5,8 +5,8 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Lie.CartanCriterion
 public import Mathlib.Algebra.Lie.Basis
+public import Mathlib.Algebra.Lie.CartanCriterion
 public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Semisimple
 public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Relations
 
