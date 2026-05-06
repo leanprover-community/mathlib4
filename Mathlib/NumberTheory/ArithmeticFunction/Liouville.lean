@@ -14,8 +14,8 @@ This file defines the Liouville function `λ(n)`.
 
 ## Main Definitions
 
-* `ArithmeticFunction.liouville` is the Liouville function `λ(n)` defined to be `1` is `n` has an
-even number of prime factors (counting multiplicity) and `-1` otherwise.
+* `ArithmeticFunction.liouville` is the Liouville function `λ(n)` defined to be `1` if `n` has an
+  even number of prime factors (counting multiplicity) and `-1` otherwise.
 -/
 
 @[expose] public section
