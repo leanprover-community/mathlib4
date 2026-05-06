@@ -28,9 +28,6 @@ of graph structures including `SimpleGraph`, `Graph`, and `Digraph`.
   hypergraphs are formalized, they can also use this typeclass.
 * `GraphLike V (V × V) E Gr` generalizes `SimpleGraph` and `Digraph` but not `Graph`.
 
-## TODO
-* Migrate from `SimpleGraph` all the results that only depend on the adjacency relation.
-* Define the degree of a graph.
 -/
 
 public section
@@ -84,6 +81,8 @@ variable {V D E Gr : Type*} {G : Gr} {u u' v v' w : V} {d : D} {e : E}
 section GraphLike
 
 variable [HasSourceTarget V D] [HasEdge D E] [GraphLike V D E Gr]
+
+@[ext] theorem darts_ext (d₁ d₂ : darts G) (h : d₁.val = d₂.val) : d₁ = d₂ := Subtype.ext h
 
 lemma adj_of_mem_darts (hd : d ∈ D(G)) : Adj G (src d) (tgt d) :=
   exists_darts_iff_adj.mp ⟨d, hd, rfl, rfl⟩
@@ -169,7 +168,9 @@ lemma step.adj (h : step G u v) : Adj G u v := by
   obtain ⟨d, hd, rfl, rfl⟩ := h
   exact ⟨d, hd, rfl, rfl⟩
 
-@[ext] theorem darts_ext (d₁ d₂ : darts G) (h : d₁.val = d₂.val) : d₁ = d₂ := Subtype.ext h
+/-- If `u` and `v` are adjacent, then there exists a step from `u` to `v`. -/
+noncomputable def Adj.chooseStep (h : Adj G u v) : step G u v :=
+  ⟨(exists_darts_iff_adj.mpr h).choose, (exists_darts_iff_adj.mpr h).choose_spec⟩
 
 /-- Convert a dart to a step. -/
 @[expose] def dartStep (d : darts G) : step G (src d.val) (tgt d.val) := ⟨d.val, d.prop, rfl, rfl⟩
@@ -177,9 +178,8 @@ lemma step.adj (h : step G u v) : Adj G u v := by
 @[simp]
 lemma val_dartStep (d : darts G) : (dartStep d).val = d.val := by simp [dartStep]
 
-/-- Two darts are said to be adjacent if they could be consecutive
-darts in a walk -- that is, the first dart's second vertex is equal to
-the second dart's first vertex. -/
+/-- Two darts are said to be adjacent if they could be consecutive darts in a walk -- that is, the
+first dart's target is equal to the second dart's source. -/
 @[expose] def DartAdj (d d' : darts G) : Prop := (tgt d.val : V) = (src d'.val : V)
 
 section GraphLikeProd
@@ -188,7 +188,7 @@ section GraphLikeProd
 ### For `GraphLike V (V × V) (Sym2 V) Gr`
 
 Some graph-like structures, such as `SimpleGraph` and `Digraph`, have `V × V`-valued darts.
-This section assumes `GraphLike V (V × V) (Sym2 V) Gr` to proves lemmas for `V × V`-valued darts.
+This section assumes `GraphLike V (V × V) E Gr` where `E` maybe `Sym2 V`, `V × V`, or other types.
 -/
 
 variable {d : V × V}
@@ -230,6 +230,8 @@ instance : Subsingleton (step G u v) where
     rintro ⟨p₁, h₁, rfl, rfl⟩ ⟨p₂, h₂, h1, h2⟩
     obtain rfl := Prod.ext h1 h2
     exact Subtype.ext rfl
+
+@[simp] lemma Adj.chooseStep_eq (h : Adj G u v) : h.chooseStep = h.toStep := Subsingleton.elim ..
 
 lemma Adj.toStep_adj (h : Adj G u v) : (h.toStep).adj = h := rfl
 
