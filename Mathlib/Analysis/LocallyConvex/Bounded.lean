@@ -274,9 +274,7 @@ theorem IsVonNBounded.closure [T1Space E] [RegularSpace E] [ContinuousConstSMul 
   rcases exists_mem_nhds_isClosed_subset hV with ⟨W, hW₁, hW₂, hW₃⟩
   specialize ha hW₁
   filter_upwards [ha] with b ha'
-  grw [closure_mono ha', closure_smul₀ b]
-  apply smul_set_mono
-  grw [closure_subset_iff_isClosed.mpr hW₂, hW₃]
+  grw [ha', closure_smul₀ b, closure_subset_iff_isClosed.mpr hW₂, hW₃]
 
 variable [ContinuousSMul 𝕜 E]
 
