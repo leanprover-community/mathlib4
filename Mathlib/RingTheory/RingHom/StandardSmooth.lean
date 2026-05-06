@@ -227,7 +227,7 @@ theorem _root_.Algebra.IsStandardSmoothOfRelativeDimension.exists_etale_mvPolyno
       exact congr($H)
     relation := e.symm ∘ P.relation
     span_range_relation_eq_ker := by
-      rw [Set.range_comp, ← AlgEquiv.coe_ringEquiv e.symm, AlgEquiv.symm_toRingEquiv,
+      rw [Set.range_comp, ← AlgEquiv.coe_toRingEquiv e.symm, AlgEquiv.symm_toRingEquiv,
         ← Ideal.map_span, P.span_range_relation_eq_ker, Ideal.map_symm]
       exact congr(RingHom.ker $H).symm
     map := _

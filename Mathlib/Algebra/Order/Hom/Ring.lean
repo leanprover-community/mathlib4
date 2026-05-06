@@ -370,8 +370,10 @@ theorem refl_apply (x : α) : OrderRingIso.refl α x = x := by
   rfl
 
 @[simp]
-theorem coe_ringEquiv_refl : (OrderRingIso.refl α : α ≃+* α) = RingEquiv.refl α :=
+theorem coe_toRingEquiv_refl : (OrderRingIso.refl α : α ≃+* α) = RingEquiv.refl α :=
   rfl
+
+@[deprecated (since := "2026-05-05")] alias coe_ringEquiv_refl := coe_toRingEquiv_refl
 
 @[simp]
 theorem coe_orderIso_refl : (OrderRingIso.refl α : α ≃o α) = OrderIso.refl α :=
