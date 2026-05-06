@@ -214,7 +214,7 @@ theorem primeFactors_lcmUpto (n : ℕ) : primeFactors (lcmUpto n) = primesLE n :
   constructor
   · intro h
     have := prime_of_mem_primeFactors h
-    rw [←support_factorization, Finsupp.mem_support_iff, factorization_lcmUpto _ this] at h
+    rw [← support_factorization, Finsupp.mem_support_iff, factorization_lcmUpto _ this] at h
     simp_all
   intro h
   simp_all only [mem_filter, mem_range, Order.lt_add_one_iff, lcmUpto, mem_primeFactors, ne_eq,
