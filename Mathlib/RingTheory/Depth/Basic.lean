@@ -243,7 +243,8 @@ lemma moduleDepth_ge_min_of_shortExact_trd_fst
   apply le_sSup
   simp only [Set.mem_setOf_eq, lt_inf_iff, and_imp]
   intro i hi2 hi1
-  have zero2 := AddCommGrpCat.isZero_of_iff_subsingleton.mpr (ext_subsingleton_of_lt_moduleDepth hi2)
+  have zero2 :=
+    AddCommGrpCat.isZero_of_iff_subsingleton.mpr (ext_subsingleton_of_lt_moduleDepth hi2)
   match i with
   | 0 =>
     simp only [AddCommGrpCat.isZero_iff_subsingleton] at zero2 ⊢
