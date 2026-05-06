@@ -142,13 +142,11 @@ theorem psi_mono : Monotone ψ := by
   · exact Ioc_subset_Ioc (by rfl) (by gcongr)
   · simp
 
-theorem log_prime_pos {p : ℕ} (hp : p.Prime) : 0 < log p := by
+theorem _root_.Nat.Prime.log_pos {p : ℕ} (hp : p.Prime) : 0 < log p := by
   rw [Real.log_pos_iff (mod_cast p.zero_le)]
   exact_mod_cast hp.one_lt
 
-theorem log_prime_ne {p : ℕ} (hp : p.Prime) : log p ≠ 0 := (log_prime_pos hp).ne'
-
-theorem log_prime_nonneg {p : ℕ} (hp : p.Prime) : 0 ≤ log p := (log_prime_pos hp).le
+theorem _root_.Nat.Prime.log_ne {p : ℕ} (hp : p.Prime) : log p ≠ 0 := hp.log_pos.ne'
 
 @[gcongr]
 theorem theta_mono : Monotone θ := by
@@ -156,7 +154,7 @@ theorem theta_mono : Monotone θ := by
   apply sum_le_sum_of_subset_of_nonneg
   · exact filter_subset_filter _ <| Ioc_subset_Ioc_right (by gcongr)
   · simp only [mem_filter]
-    exact fun p hp _ ↦ log_prime_nonneg hp.2
+    exact fun p _ _ ↦ log_natCast_nonneg p
 
 /-- `θ x` is the log of the product of the primes up to `x`. -/
 theorem theta_eq_log_primorial (x : ℝ) : θ x = log (primorial ⌊x⌋₊) := by
@@ -182,10 +180,10 @@ Basic facts about the least common multiple of the first `n` natural numbers
 -/
 
 /-- Least common multiple of $\{1, \dots, n\}$. -/
-abbrev lcmUpto (n : ℕ) : ℕ := (Icc 1 n).lcm _root_.id
+def lcmUpto (n : ℕ) : ℕ := (Icc 1 n).lcm _root_.id
 
 theorem lcmUpto_ne_zero (n : ℕ) : lcmUpto n ≠ 0 := by
-  simp
+  simp [lcmUpto]
 
 theorem lcmUpto_pos (n : ℕ) : 0 < lcmUpto n := pos_of_ne_zero <| lcmUpto_ne_zero n
 
@@ -207,7 +205,7 @@ theorem factorization_lcmUpto (n : ℕ) {p : ℕ} (hp : p.Prime) :
     simp [log_of_lt h]
 
 theorem lcmUpto_dvd_factorial (n : ℕ) : lcmUpto n ∣ n ! := by
-  simp +contextual [dvd_factorial, Order.one_le_iff_pos]
+  simp +contextual [lcmUpto, dvd_factorial, Order.one_le_iff_pos]
 
 theorem primeFactors_lcmUpto (n : ℕ) : primeFactors (lcmUpto n) = primesLE n := by
   ext p
@@ -220,7 +218,7 @@ theorem primeFactors_lcmUpto (n : ℕ) : primeFactors (lcmUpto n) = primesLE n :
   simp_all only [mem_filter, mem_range, Order.lt_add_one_iff, lcmUpto, mem_primeFactors, ne_eq,
     Finset.lcm_eq_zero_iff, mem_Icc, id_eq, exists_eq_right, nonpos_iff_eq_zero, one_ne_zero,
     _root_.zero_le, and_true, not_false_eq_true, true_and]
-  apply dvd_lcm (b := p) 
+  apply dvd_lcm (b := p)
   simp_all [h.2.one_le]
 
 theorem primorial_dvd_lcmUpto (n : ℕ) : primorial n ∣ lcmUpto n := by
@@ -232,7 +230,7 @@ theorem lcmUpto_eq_prod (n : ℕ) :
   lcmUpto n = ∏ p ∈ primesLE n, p ^ ((lcmUpto n).factorization p) := by
   symm; convert prod_factorization_pow_eq_self (lcmUpto_ne_zero n)
   rw [Finsupp.prod_of_support_subset _ _ _ (by simp)]
-  simp +contextual only [support_factorization, subset_iff, mem_primeFactors, ne_eq,
+  simp +contextual only [lcmUpto, support_factorization, subset_iff, mem_primeFactors, ne_eq,
     Finset.lcm_eq_zero_iff, mem_Icc, id_eq, exists_eq_right, nonpos_iff_eq_zero, one_ne_zero,
     _root_.zero_le, and_true, not_false_eq_true, mem_filter, mem_range, Order.lt_add_one_iff,
     and_imp]
@@ -280,7 +278,7 @@ theorem psi_eq_sum_mul_log_prime (n : ℕ) : ψ n = ∑ p ∈ primesLE n, p.log 
     intro p hp
     apply sum_image
     intro a _ b _ hab
-    exact Nat.pow_right_injective (ge_of_mem_primesLE hp) hab
+    exact Nat.pow_right_injective (two_le_of_mem_primesLE hp) hab
   _ = ∑ p ∈ primesLE n, ∑ k ∈ Icc 1 (p.log n), log p := by
     apply sum_congr rfl; intro p hp
     apply sum_congr rfl; intro k hk
@@ -294,7 +292,7 @@ theorem psi_le_primeCounting_mul_log (n : ℕ) : ψ n ≤ (π n) * log n := calc
     gcongr with p hp
     grw [← natFloor_logb_natCast, ← log_div_log, floor_le]
     · simp only [mem_filter, mem_range, Order.lt_add_one_iff] at hp
-      simp [field, log_prime_ne hp.2]
+      simp [field, hp.2.log_ne]
     positivity
   _ = _ := by
     simp [primesLE_card_eq_primeCounting]
@@ -470,7 +468,7 @@ theorem psi_ge (n : ℕ) : n * log 2 - log (n + 1) ≤ psi n := by
   have : log (2 ^ n) ≤ log ((n + 1) * lcmUpto n) := by
     gcongr
     exact_mod_cast two_pow_le_mul_lcmUpto n
-  rwa [Real.log_pow, Real.log_mul (by positivity) (by simp), ← psi_eq_log_lcmUpto,
+  rwa [Real.log_pow, Real.log_mul (by positivity) (by simp [lcmUpto_ne_zero]), ← psi_eq_log_lcmUpto,
    ← sub_le_iff_le_add'] at this
 
 theorem psi_ge' {x : ℝ} (hx : 0 ≤ x) : (x-1) * log 2 - log (x + 2) ≤ psi x := by
@@ -713,7 +711,7 @@ private theorem pi_mul_log_sqrt_le {x : ℝ} (hx : 1 ≤ x) :
   _ ≤ ∑ p ∈ primesLE ⌊x⌋₊, (log p + (if p ≤ √x then log √x else 0)) := by
     apply sum_le_sum; intro p hp
     split_ifs with h
-    · simp [log_prime_nonneg (prime_of_mem_primesLE hp)]
+    · simp [log_natCast_nonneg]
     have : log √x < log p := by
       apply log_lt_log (by positivity) (not_le.mp h)
     nth_grw 1 [this]

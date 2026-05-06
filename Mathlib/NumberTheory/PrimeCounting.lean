@@ -151,10 +151,10 @@ theorem prime_of_mem_primesLE {p n : ℕ} (hp : p ∈ primesLE n) : p.Prime := b
 
 theorem le_of_mem_primesLE {p n : ℕ} (hp : p ∈ primesLE n) : p ≤ n := by simp_all
 
-theorem gt_of_mem_primesLE {p n : ℕ} (hp : p ∈ primesLE n) : 1 < p :=
+theorem one_lt_of_mem_primesLE {p n : ℕ} (hp : p ∈ primesLE n) : 1 < p :=
   (prime_of_mem_primesLE hp).one_lt
 
-theorem ge_of_mem_primesLE {p n : ℕ} (hp : p ∈ primesLE n) : 2 ≤ p :=
+theorem two_le_of_mem_primesLE {p n : ℕ} (hp : p ∈ primesLE n) : 2 ≤ p :=
   (prime_of_mem_primesLE hp).two_le
 
 theorem primesLE_mono : Monotone primesLE := by
