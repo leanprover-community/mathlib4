@@ -213,12 +213,10 @@ theorem isHamiltonian_copy {u v u' v' : α} (p : G.Walk u v) (hu : u = u') (hv :
 
 /-- A Hamiltonian path closed into a cycle by an edge outside its support is a Hamiltonian cycle,
 and conversely. -/
-theorem cons_isHamiltonianCycle_iff {x y : α} (h : G.Adj x y) (p : G.Walk y x) :
-    (Walk.cons h p).IsHamiltonianCycle ↔ p.IsHamiltonian ∧ s(x, y) ∉ p.edges := by
-  have htail : (cons h p).tail.IsHamiltonian ↔ p.IsHamiltonian := by
-    simp [IsHamiltonian, tail_cons, support_copy]
-  rw [isHamiltonianCycle_isCycle_and_isHamiltonian_tail, cons_isCycle_iff, htail]
-  exact ⟨fun ⟨⟨_, hedge⟩, hp⟩ ↦ ⟨hp, hedge⟩, fun ⟨hp, hedge⟩ ↦ ⟨⟨hp.isPath, hedge⟩, hp⟩⟩
+theorem isHamiltonianCycle_cons_iff {x y : α} (h : G.Adj x y) (p : G.Walk y x) :
+    (p.cons h).IsHamiltonianCycle ↔ p.IsHamiltonian ∧ s(x, y) ∉ p.edges := by
+  rw [isHamiltonianCycle_isCycle_and_isHamiltonian_tail, cons_isCycle_iff, tail_cons]
+  grind [IsHamiltonian.isPath, isHamiltonian_copy, getVert_cons_succ]
 
 @[simp]
 lemma isHamiltonianCycle_rotate (hv : v ∈ p.support) :
