@@ -429,8 +429,8 @@ lemma moduleDepth_quotSMulTop_succ_eq_moduleDepth (N M : ModuleCat.{v} R) (x : R
         (Ext.smul_id_postcomp_eq_zero_of_mem_annihilator mem (i + 1)))
     · exact AddCommGrpCat.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
         (Ext.covariant_sequence_exact₃' N reg.smulShortComplex_shortExact i (i + 1) rfl)
-        ((AddCommGrpCat.isZero_iff_subsingleton'.mpr h1).eq_zero_of_src _)
-        ((AddCommGrpCat.isZero_iff_subsingleton'.mpr h3).eq_zero_of_tgt _)
+        ((AddCommGrpCat.isZero_of_iff_subsingleton.mpr h1).eq_zero_of_src _)
+        ((AddCommGrpCat.isZero_of_iff_subsingleton.mpr h3).eq_zero_of_tgt _)
   apply le_antisymm
   · rw [ENat.add_sSup ⟨0, by simp⟩]
     apply iSup_le (fun n ↦ iSup_le (fun hn ↦ ?_))
