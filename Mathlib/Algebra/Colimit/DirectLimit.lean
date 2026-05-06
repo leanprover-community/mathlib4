@@ -215,6 +215,7 @@ theorem lift_npow (g : ∀ i, H i) (h) (x : DirectLimit G f) (n : ℕ) :
     DirectLimit.lift f (g ·) h (x ^ n) = DirectLimit.lift f (g ·) h x ^ n :=
   x.induction _ fun i x ↦ by simp_rw [npow_def, lift_def, map_pow (g i)]
 
+variable (f) in
 /-- `map₀` as a `MonoidHom`. -/
 @[to_additive (attr := simps) /-- `map₀` as an `AddMonoidHom`. -/]
 def map₀MonoidHom : (∀ i, G i) →* DirectLimit G f where
@@ -446,13 +447,14 @@ instance [∀ i, Semiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
 repeat the definitions for map_one' and map_mul' from map₀MonoidHom,
 or maybe define map₀MulHom and map₀OneHom.
 -/
+variable (f) in
 /-- `map₀` as a `RingHom`. -/
 @[simps]
 def map₀RingHom [∀ i, Semiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
     (∀ i, G i) →+* DirectLimit G f where
   toFun r := map₀ _ r
-  __ := map₀AddMonoidHom (f := f)
-  __ := map₀MonoidHom (f := f)
+  __ := map₀AddMonoidHom f
+  __ := map₀MonoidHom f
 
 instance [∀ i, NonUnitalNonAssocCommSemiring (G i)]
     [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)] :
