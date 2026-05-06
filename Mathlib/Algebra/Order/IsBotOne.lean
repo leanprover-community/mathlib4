@@ -43,6 +43,14 @@ theorem one_le {a : α} : 1 ≤ a :=
 -- TODO: deprecate
 alias zero_le' := zero_le
 
+variable (α) in
+/-- Create an `OrderBot` instance, setting `1` as the bottom element. -/
+@[to_additive (attr := implicit_reducible)
+/-- Create an `OrderBot` instance, setting `0` as the bottom element. -/]
+def IsBotOneClass.toOrderBot : OrderBot α where
+  bot := 1
+  bot_le _ := one_le
+
 end LE
 
 -- See note [lower instance priority]
@@ -108,8 +116,9 @@ alias zero_lt_iff := pos_iff_ne_zero
 theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := one_le.eq_or_lt'
 
 @[to_additive]
-lemma one_notMem_iff [OrderBot α] {s : Set α} : 1 ∉ s ↔ ∀ x ∈ s, 1 < x :=
-  bot_eq_one (α := α) ▸ bot_notMem_iff
+lemma one_notMem_iff {s : Set α} : 1 ∉ s ↔ ∀ x ∈ s, 1 < x := by
+  let := IsBotOneClass.toOrderBot α
+  exact bot_notMem_iff
 
 @[deprecated (since := "2026-02-17")] alias NE.ne.pos := Ne.pos
 @[deprecated (since := "2026-02-17")] alias NE.ne.one_lt := Ne.one_lt
