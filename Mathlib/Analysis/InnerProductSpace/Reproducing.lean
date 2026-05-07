@@ -90,10 +90,9 @@ lemma coe_neg (f : H) : ⇑(-f) = -f := (coeCLM 𝕜).map_neg (M₂ := X → V) 
 lemma coe_smul (f : H) (c : 𝕜) : ⇑(c • f) = c • f := (coeCLM 𝕜).map_smul ..
 
 variable (H) in
-/-- `fun f ↦ f x` formed using the projection `(X→V)→L[𝕜] V`,`(x,f x)↦ f x` after the
-  coercion `H→L[𝕜] (X→V)`. -/
-def eval (x : X) : H →L[𝕜] V :=
-  (ContinuousLinearMap.proj (φ := fun _ : X => V) x).comp (RKHS.coeCLM 𝕜)
+/-- Point evaluation `fun f ↦ f x` formed using the projection `(X→V)→L[𝕜] V`,`(x,f x)↦ f x` after
+the coercion `H→L[𝕜] (X→V)`. -/
+def eval (x : X) : H →L[𝕜] V := .proj x ∘L coeCLM 𝕜
 
 @[simp]
 lemma continuous_eval (x : X) : Continuous (fun (f : H) ↦ f x) := by
@@ -328,10 +327,98 @@ def generator : WithLp 2 (H × H₁) →L[𝕜] (X → V) :=
     (WithLp.prodContinuousLinearEquiv 2 𝕜 H H₁).toContinuousLinearMap
 
 variable (H H₁) in
-abbrev Sum := (generator H H₁).range
+@[simp]
+lemma generator_apply (f : H) (g : H₁) (x : X) :
+    generator H H₁ (WithLp.toLp 2 (f,g)) x = f x + g x := by
+  simp [generator]
 
 instance : IsClosed ((generator H H₁).ker : Set (WithLp 2 (H × H₁))) :=
   (generator H H₁).isClosed_ker
+
+-- ROUTE 2:
+
+variable (H H₁) in
+abbrev Sum' := WithLp 2 (H × H₁) ⧸ (generator H H₁).ker
+
+variable [CompleteSpace H] [CompleteSpace H₁] [CompleteSpace V] in
+instance : RKHS 𝕜 (Sum' H H₁) X V where
+  coeCLM := {
+    toLinearMap := (generator H H₁).ker.liftQ (generator H H₁).toLinearMap (le_refl _)
+    cont := Continuous.quotient_lift (generator H H₁).continuous
+      (fun a b hab => by
+        have hker : -a + b ∈ (generator H H₁).ker := QuotientAddGroup.leftRel_apply.mp hab
+        simp only [LinearMap.mem_ker, coe_coe, map_add, map_neg] at hker
+        rw [← neg_add_eq_zero]
+        exact hker) }
+  coeCLM_injective := fun f g hfg => by
+    have hinj : Function.Injective
+        ((generator H H₁).ker.liftQ (generator H H₁).toLinearMap (le_refl _)) := by
+      rw [← LinearMap.ker_eq_bot]
+      exact Submodule.ker_liftQ_eq_bot _ _ (le_refl _) (le_refl _)
+    exact hinj hfg
+
+/-- The RKHS generator with its range restricted to the RKHS. -/
+def generatorRestricted : WithLp 2 (H × H₁) →L[𝕜] Sum' H H₁ :=
+  ((generator H H₁).ker.mkQ).mkContinuous 1
+    (fun x => by rw [one_mul]; exact Submodule.Quotient.norm_mk_le _ x)
+
+variable (𝕜 H H₁) in
+variable [CompleteSpace H] [CompleteSpace H₁] in
+@[simp]
+lemma generatorRestricted_apply (f : WithLp 2 (H × H₁)) (x : X) :
+    generatorRestricted f x = (generator H H₁) f x := by
+  rw [generatorRestricted]
+  rfl
+
+variable (𝕜 H H₁) in
+/-- Embedding of `H` into the RKHS `Sum' H H₁` -/
+def coeL' : H →L[𝕜] (Sum' H H₁) := generatorRestricted
+  ∘L (WithLp.prodContinuousLinearEquiv 2 𝕜 H H₁).symm.toContinuousLinearMap
+  ∘L ContinuousLinearMap.prod (ContinuousLinearMap.id 𝕜 H) 0
+
+variable (𝕜 H H₁) in
+/-- Embedding of `H₁` into the RKHS `Sum' H H₁` -/
+def coeR' : H₁ →L[𝕜] (Sum' H H₁) := generatorRestricted
+  ∘L (WithLp.prodContinuousLinearEquiv 2 𝕜 H H₁).symm.toContinuousLinearMap
+  ∘L ContinuousLinearMap.prod 0 (ContinuousLinearMap.id 𝕜 H₁)
+
+variable (𝕜 H H₁) in
+variable [CompleteSpace H] [CompleteSpace H₁] in
+lemma coeL'_apply (f : H) (x : X) : (coeL' 𝕜 H H₁) f x = f x := by simp [coeL']
+
+variable (𝕜 H H₁) in
+variable [CompleteSpace H] [CompleteSpace H₁] in
+lemma coeR'_apply (f : H₁) (x : X) : (coeR' 𝕜 H H₁) f x = f x := by simp [coeR']
+
+variable [CompleteSpace H] [CompleteSpace H₁] [CompleteSpace V] in
+lemma adjoint_coeL_add_adjoint_coeR_eq (f : Sum' H H₁) (x : X) :
+    (adjoint (coeL' 𝕜 H H₁) f) x + (adjoint (coeR' 𝕜 H H₁) f) x = f x := by
+  rw [ext_iff_inner_left (𝕜 := 𝕜)]
+  intro v
+  rw [inner_add_right]
+  simp_rw [← kerFun_inner, adjoint_inner_right]
+  rw [kerFun_inner x v f]
+
+variable [CompleteSpace H] [CompleteSpace H₁] [CompleteSpace V] in
+theorem kerFun_sum_eq_sum_of_kerFun' (x : X) :
+    kerFun (Sum' H H₁) x = (coeL' 𝕜 H H₁) ∘L kerFun H x + (coeR' 𝕜 H H₁) ∘L kerFun H₁ x := by
+  apply ContinuousLinearMap.ext
+  intro v
+  ext
+  simp
+  rw [coeL'_apply, coeR'_apply]
+  -- rw [ext_iff_inner_left (𝕜 := 𝕜)]
+  -- intro f
+  -- simp
+  -- rw [inner_add_right, ← adjoint_inner_left, inner_kerFun, ← adjoint_inner_left, inner_kerFun,
+  --   ← adjoint_coeL_add_adjoint_coeR_eq, inner_add_left]
+
+
+-- ROUTE 1:
+
+
+variable (H H₁) in
+abbrev Sum := (generator H H₁).range
 
 /-- Norm on `Sum H H₁` by pulling back to the quotient. -/
 instance : NormedAddCommGroup (Sum H H₁) :=
@@ -477,6 +564,7 @@ theorem kernel_sum_eq_sum_of_kernel : kernel (Sum H H₁) = kernel H + kernel H�
   simp_rw [← kerFun_apply]
   rw [kerFun_sum_eq_sum_of_kerFun]
   sorry
+
 
 end Sum
 
