@@ -346,7 +346,7 @@ lemma house_bound_c₁α :
   refine Bound.pow_le_pow_right_of_le_one_or_one_le (Or.inl ⟨one_le_house_of_isIntegral
     (isIntegral_c₁α α' β' γ') (c₁α_ne_zero α β σ α' β' γ' hirr htriv habc), ?_⟩)
   simpa [mul_comm] using mul_le_mul (((finProdFinEquiv.symm.toFun t).1).isLt)
-    (((finProdFinEquiv.symm.toFun u).1).isLt) (zero_le _) (zero_le _)
+    (((finProdFinEquiv.symm.toFun u).1).isLt) (zero_le) (zero_le)
 
 lemma isInt_β_bound : IsIntegral ℤ (c₁ α' β' γ' • (↑q + q • β')) := by
   simpa [smul_add, zsmul_eq_mul, nsmul_eq_mul, mul_assoc, mul_left_comm, mul_comm] using
@@ -649,13 +649,13 @@ lemma house_matrixA_le : house ((algebraMap (𝓞 K) K) ((A α' β' γ' q) u t))
             (c₁α_ne_zero α β σ α' β' γ' hirr htriv habc) , ?_⟩)
         · rw [mul_comm (m (K := K)) q]
           apply mul_le_mul (((finProdFinEquiv.symm.toFun t).1).isLt)
-           (((finProdFinEquiv.symm.toFun u).1).isLt) (zero_le _) (zero_le _)
+           (((finProdFinEquiv.symm.toFun u).1).isLt) (zero_le) (zero_le)
     · apply Bound.pow_le_pow_right_of_le_one_or_one_le
         (Or.inl ⟨one_le_house_of_isIntegral (isIntegral_c₁γ α' β' γ')
           (c₁γ_ne_zero α β σ α' β' γ' hirr htriv habc), ?_⟩)
       · rw [mul_comm (m (K := K)) q]
         apply (mul_le_mul (((finProdFinEquiv.symm.toFun t).2).isLt)
-          (((finProdFinEquiv.symm.toFun u).1).isLt) (zero_le _) (zero_le _))
+          (((finProdFinEquiv.symm.toFun u).1).isLt) (zero_le) (zero_le))
   · apply mul_le_mul ?_ ?_ (by positivity) (by positivity)
     · apply mul_le_mul ?_ ?_ (by positivity) (by positivity)
       · apply mul_le_mul ?_ ?_ (by positivity) (by positivity)
