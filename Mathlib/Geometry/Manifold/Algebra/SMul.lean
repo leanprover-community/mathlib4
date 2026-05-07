@@ -22,7 +22,11 @@ See also:
   type `G`,
 * `ContinuousSMul G M` for continuity of an action `G × M → M`.
 
-Unlike for continuous actions, we do not have a class `ContMDiffConstSMul` yet.
+Unlike for continuous actions, we do not currently have a class `ContMDiffConstSMul`. If there are
+interesting examples satisfying `ContMDiffConstSMul` but not `ContMDiffSMul`, this can be added
+later. (Note that such examples may be harder to find: in fact, a continuous action of a
+Lie group `G` on a finite-dimensional manifold `M` is `C^n` provided it is `C^n` in the
+second variable.)
 -/
 
 open scoped Manifold ContDiff
