@@ -134,6 +134,13 @@ lemma continuousOn_integral_Icc {a t : ℝ} {f : ℝ → ℝ} (h : a ≤ t)
   exact intervalIntegral.continuousOn_primitive_interval hf_int
 
 
+private lemma integral_split {μ : ℝ → ℝ} {a s t : ℝ}
+    (has : IntervalIntegrable μ volume a s)
+    (hst : IntervalIntegrable μ volume s t) :
+    (∫ τ in a..t, μ τ) - ∫ τ in a..s, μ τ = ∫ τ in s..t, μ τ := by
+  linarith [intervalIntegral.integral_add_adjacent_intervals has hst]
+
+
 /-! ### Inequality and corollaries -/
 
 /-
@@ -161,93 +168,63 @@ theorem gronwall_bellman_inequality {a b : ℝ} {Λ μ y : ℝ → ℝ}
     ∀ t ∈ Icc a b,
       y t ≤ Λ t + ∫ s in a..t, Λ s * μ s * exp (∫ τ in s..t, μ τ) := by
   intro t ht
-  -- ── Auxiliary functions ─────────────────────────────────────────
+  -- ── Labelling and Continuity properties ──────────────────────────
   let z : ℝ → ℝ := fun t => ∫ s in a..t, μ s * y s
   let M : ℝ → ℝ := fun t => ∫ τ in a..t, μ τ
-  let w : ℝ → ℝ := fun t => exp (-M t) * z t
-  -- ── Consolidated Domain Properties for [a, t] ───────────────────
-  have hat : a ≤ t := by grind
-  have hIcc_t : Icc a t ⊆ Icc a b := by grind
-  have hIoo_t : Ioo a t ⊆ Ioo a b := by grind
-  -- ── Continuity and Integrability ───────────────────
-  have hμ_t : ContinuousOn μ (Icc a t) := hμ.mono hIcc_t
-  have hΛ_t : ContinuousOn Λ (Icc a t) := hΛ.mono hIcc_t
-  have hy_t : ContinuousOn y (Icc a t) := hy.mono hIcc_t
-  have hμy_cont : ContinuousOn (fun s => μ s * y s) (Icc a t) := by fun_prop
-  have hμ_int : IntegrableOn μ (Icc a t) volume := hμ_t.integrableOn_compact isCompact_Icc
+  have hμ_t : ContinuousOn μ (Icc a t) := hμ.mono (by grind)
+  have hΛ_t : ContinuousOn Λ (Icc a t) := hΛ.mono (by grind)
+  have hy_t : ContinuousOn y (Icc a t) := hy.mono (by grind)
   have hμy_int : IntegrableOn (fun s => μ s * y s) (Icc a t) volume :=
-    hμy_cont.integrableOn_compact isCompact_Icc
-  have hM_cont : ContinuousOn M (Icc a t) := continuousOn_integral_Icc hat hμ_int
-  have hz_cont : ContinuousOn z (Icc a t) := continuousOn_integral_Icc hat hμy_int
-  have hexp_M : ContinuousOn (fun s ↦ rexp (-M s)) (Icc a t) := by fun_prop
-  -- ── Non-negativity & Boundaries ──────────────────────────────────
-  have hv_nn : ∀ s ∈ Icc a t, 0 ≤ z s + Λ s - y s := fun s hs => by
-    have := hineq s (hIcc_t hs); linarith
-  have hz_a : z a = 0 := by simp [z]
-  have hM_a : M a = 0 := by simp [M]
-  have hw_a : w a = 0 := by simp [w, hM_a, hz_a]
-  -- ── FTC derivatives on (a, t) ───────────────────────────────────
-  have hM_deriv : ∀ s ∈ Ioo a t, HasDerivAt M (μ s) s :=
-    fun s hs => hasDerivAt_integral hμ s (hIoo_t hs)
-  have hz_deriv : ∀ s ∈ Ioo a t, HasDerivAt z (μ s * y s) s :=
-    fun s hs => hasDerivAt_integral (hμ.mul hy) s (hIoo_t hs)
-  have hw_deriv : ∀ s ∈ Ioo a t,
-      HasDerivAt w (exp (-M s) * (μ s * Λ s - μ s * (z s + Λ s - y s))) s := by
-    intro s hs
-    convert ((hM_deriv s hs).neg.exp.mul (hz_deriv s hs)) using 1
-    dsimp; ring
+    (by fun_prop : ContinuousOn (fun s => μ s * y s) (Icc a t)).integrableOn_compact isCompact_Icc
+  have hz_cont : ContinuousOn z (Icc a t) := continuousOn_integral_Icc ht.1 hμy_int
+  have hexp_M : ContinuousOn (fun s ↦ rexp (-M s)) (Icc a t) := by
+    have hM_cont := continuousOn_integral_Icc ht.1 (hμ_t.integrableOn_compact isCompact_Icc)
+    fun_prop
   -- ── Integrate the bound to get an estimate on w ─────────────────
-  have hw_bound : w t ≤ ∫ s in a..t, exp (-M s) * (μ s * Λ s) := by
-    let w' := fun s ↦ rexp (-M s) * (μ s * Λ s - μ s * (z s + Λ s - y s))
-    let g' := fun s ↦ rexp (-M s) * (μ s * Λ s)
-    have hw'_cont : ContinuousOn w' (Icc a t) := by fun_prop
-    have hg'_cont : ContinuousOn g' (Icc a t) := by fun_prop
+  have hw_bound : exp (-M t) * ∫ s in a..t, μ s * y s ≤ ∫ s in a..t, exp (-M s) * (μ s * Λ s) := by
     calc
-      w t = w t - w a := by rw [hw_a, sub_zero]
-      _ = ∫ s in a..t, w' s := by
-        symm
-        apply integral_eq_sub_of_hasDerivAt_of_le hat
-        · exact hexp_M.mul hz_cont
-        · exact hw_deriv
-        · exact hw'_cont.intervalIntegrable_of_Icc hat
-      _ ≤ ∫ s in a..t, g' s := by
-        apply intervalIntegral.integral_mono_on hat
-        · exact hw'_cont.intervalIntegrable_of_Icc hat
-        · exact hg'_cont.intervalIntegrable_of_Icc hat
+      exp (-M t) * z t = exp (-M t) * z t - exp (-M a) * z a := by simp [z]
+      _ = ∫ s in a..t, rexp (-M s) * (μ s * Λ s - μ s * (z s + Λ s - y s)) := by
+        symm; apply integral_eq_sub_of_hasDerivAt_of_le ht.1
+        · exact hexp_M.mul (continuousOn_integral_Icc ht.1 hμy_int)
         · intro s hs
-          dsimp [w', g']
+          convert ((hasDerivAt_integral hμ s (by grind : s ∈ Ioo a b)).neg.exp.mul
+            (hasDerivAt_integral (hμ.mul hy) s (by grind : s ∈ Ioo a b))) using 1
+          dsimp; ring
+        · exact (by fun_prop : ContinuousOn _ (Icc a t)).intervalIntegrable_of_Icc ht.1
+      _ ≤ ∫ s in a..t, rexp (-M s) * (μ s * Λ s) := by
+        apply intervalIntegral.integral_mono_on ht.1
+        · exact ContinuousOn.intervalIntegrable_of_Icc ht.1 (by fun_prop)
+        · exact ContinuousOn.intervalIntegrable_of_Icc ht.1 (by fun_prop)
+        · intro s hs
           apply mul_le_mul_of_nonneg_left _ (le_of_lt (Real.exp_pos _))
-          have := hμ_nn s (hIcc_t hs)
-          have := hv_nn s hs
+          have := hμ_nn s (by grind : s ∈ Icc a b)
+          have := hineq s (by grind : s ∈ Icc a b)
           nlinarith
   have h_interval_diff : ∀ s ∈ Icc a t, M t - M s = ∫ τ in s..t, μ τ := by
     intro s hs
-    have h_int_as : IntervalIntegrable μ volume a s :=
-      (hμ_t.mono (Icc_subset_Icc_right hs.2)).intervalIntegrable_of_Icc hs.1
-    have h_int_st : IntervalIntegrable μ volume s t :=
-      (hμ_t.mono (Icc_subset_Icc_left hs.1)).intervalIntegrable_of_Icc hs.2
-    dsimp [M]
-    linarith [intervalIntegral.integral_add_adjacent_intervals h_int_as h_int_st]
+    exact integral_split
+      ((hμ_t.mono (Icc_subset_Icc_right hs.2)).intervalIntegrable_of_Icc hs.1)
+      ((hμ_t.mono (Icc_subset_Icc_left hs.1)).intervalIntegrable_of_Icc hs.2)
   -- ── Multiply by exp(M t) ────────────────────────────────────────
   have hzt_bound : z t ≤ ∫ s in a..t, Λ s * μ s * exp (∫ τ in s..t, μ τ) := by
     calc
-      z t = rexp (M t) * w t := by
-        dsimp [w]; rw [← mul_assoc, ← Real.exp_add]; simp
+      z t = rexp (M t) * exp (-M t) * ∫ s in a..t, μ s * y s := by
+        simp[z, ← Real.exp_add]
       _ ≤ rexp (M t) * ∫ s in a..t, rexp (-M s) * (μ s * Λ s) := by
-        apply mul_le_mul_of_nonneg_left hw_bound (le_of_lt (Real.exp_pos _))
+        nlinarith [hw_bound, Real.exp_pos (M t)]
       _ = ∫ s in a..t, rexp (M t) * (rexp (-M s) * (μ s * Λ s)) := by
-        rw [← smul_eq_mul]
-        rw [← intervalIntegral.integral_smul]
+        rw [← smul_eq_mul, ← intervalIntegral.integral_smul]
         simp_rw [smul_eq_mul]
       _ = ∫ s in a..t, Λ s * μ s * rexp (∫ τ in s..t, μ τ) := by
         apply intervalIntegral.integral_congr
         intro s hs
-        have hs_Icc : s ∈ Icc a t := by simpa [hat] using hs
         dsimp only
-        rw [← h_interval_diff s hs_Icc]
+        rw [← h_interval_diff s (by simpa [ht.1] using hs)]
         rw [← mul_assoc, ← Real.exp_add]
         ring_nf
   linarith [hineq t ht, hzt_bound]
+
 
 
 
