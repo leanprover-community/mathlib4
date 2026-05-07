@@ -58,18 +58,17 @@ def eraseInstances (e : Expr) : MetaM Expr := do
 /-- Compute the parent classes of `cls`, excluding parent classes that have a parent themselves.
 The reason to exclude such classes is that if there is a duplication in such a class,
 then there will necessarily also be a duplication in its parent.
-If `cls` carries data, then only consider parents that carry data.
 If `cls` is a non-structure class, this simply returns `#[cls]`.
 
 The resulting expressions contain bound variables that correspond to the parameters of `cls`.
 The universe levels and bound variables need to be instantiated to get concrete data projections. -/
 partial def getAbstractProjections (cls : Name) : CoreM (Array Expr) := do
   let cinfo ← getConstInfo cls
-  MetaM.run' <| forallTelescope cinfo.type fun xs type ↦ do
+  MetaM.run' <| forallTelescope cinfo.type fun xs _ ↦ do
     withLocalDeclD `self (mkAppN (.const cls (cinfo.levelParams.map .param)) xs) fun inst ↦ do
-      go cls inst #[] xs type.isProp |>.run' {}
+      go cls inst #[] xs |>.run' {}
 where
-  go (cls : Name) (inst : Expr) (acc : Array Expr) (xs : Array Expr) (isProp : Bool) :
+  go (cls : Name) (inst : Expr) (acc : Array Expr) (xs : Array Expr) :
       StateRefT NameSet MetaM (Array Expr) := do
     let type ← whnf (← inferType inst)
     let mut acc := acc
@@ -82,7 +81,7 @@ where
         modify (·.insert parent)
         unless ← isInstance info.projFn do continue
         let proj := Expr.app (mkAppN (.const info.projFn us) type.getAppArgs) inst
-        acc ← go parent proj acc xs isProp
+        acc ← go parent proj acc xs
         anyParent := true
     if !anyParent then
       acc := acc.push (← eraseInstances (type.abstract xs))
