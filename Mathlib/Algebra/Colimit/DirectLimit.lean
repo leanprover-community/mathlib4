@@ -383,6 +383,36 @@ instance [Semiring R] [∀ i, AddCommMonoid (G i)] [∀ i, Module R (G i)]
   { add_smul _ _ := DirectLimit.induction _ fun i _ ↦ by simp_rw [smul_def, add_smul, add_def],
     zero_smul := DirectLimit.induction _ fun i _ ↦ by simp_rw [smul_def, zero_smul, zero_def i] }
 
+instance [∀ i, Mul (G i)] [∀ i, SMul R (G i)] [∀ i, IsScalarTower R (G i) (G i)]
+    [∀ i j h, MulHomClass (T h) (G i) (G j)] [∀ i j h, MulActionHomClass (T h) R (G i) (G j)] :
+    IsScalarTower R (DirectLimit G f) (DirectLimit G f) where
+  smul_assoc r := DirectLimit.induction₂ _ fun i _ _ ↦ by
+    simp_rw [smul_eq_mul, smul_def, mul_def, smul_def, smul_mul_assoc]
+
+instance [∀ i, Mul (G i)] [∀ i, SMul R (G i)] [∀ i, SMulCommClass R (G i) (G i)]
+    [∀ i j h, MulHomClass (T h) (G i) (G j)] [∀ i j h, MulActionHomClass (T h) R (G i) (G j)] :
+    SMulCommClass R (DirectLimit G f) (DirectLimit G f) where
+  smul_comm r := DirectLimit.induction₂ _ fun i _ _ ↦ by
+    simp_rw [smul_eq_mul, smul_def, mul_def, smul_def, mul_smul_comm]
+
+instance [∀ i, Mul (G i)] [∀ i, SMul R (G i)] [∀ i, IsScalarTower R (G i) (G i)]
+    [∀ i j h, MulHomClass (T h) (G i) (G j)] [∀ i j h, MulActionHomClass (T h) R (G i) (G j)] :
+    IsScalarTower R (DirectLimit G f) (DirectLimit G f) where
+  smul_assoc r := DirectLimit.induction₂ _ fun i _ _ ↦ by
+    simp_rw [smul_eq_mul, smul_def, mul_def, smul_def, smul_mul_assoc]
+
+instance [∀ i, Mul (G i)] [∀ i, SMul R (G i)] [∀ i, SMulCommClass R (G i) (G i)]
+    [∀ i j h, MulHomClass (T h) (G i) (G j)] [∀ i j h, MulActionHomClass (T h) R (G i) (G j)] :
+    SMulCommClass R (DirectLimit G f) (DirectLimit G f) where
+  smul_comm r := DirectLimit.induction₂ _ fun i _ _ ↦ by
+    simp_rw [smul_eq_mul, smul_def, mul_def, smul_def, mul_smul_comm]
+
+instance [∀ i, Mul (G i)] [∀ i, SMul R (G i)] [∀ i, SMulCommClass (G i) R (G i)]
+    [∀ i j h, MulHomClass (T h) (G i) (G j)] [∀ i j h, MulActionHomClass (T h) R (G i) (G j)] :
+    SMulCommClass (DirectLimit G f) R (DirectLimit G f) :=
+  have _ (i) : SMulCommClass R (G i) (G i) := SMulCommClass.symm _ _ _
+  SMulCommClass.symm _ _ _
+
 end Action
 
 section DivisionSemiring
