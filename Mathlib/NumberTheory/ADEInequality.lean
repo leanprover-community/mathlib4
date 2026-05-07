@@ -99,7 +99,7 @@ This solution is related to the Dynkin diagrams $E_8$. -/
 def E8 : Multiset ℕ+ :=
   E' 5
 
-/-- `sum_inv pqr` for a `pqr : Multiset ℕ+` is the sum of the inverses
+/-- `sumInv pqr` for a `pqr : Multiset ℕ+` is the sum of the inverses
 of the elements of `pqr`, as rational number.
 
 The intended argument is a multiset `{p,q,r}` of cardinality `3`. -/
