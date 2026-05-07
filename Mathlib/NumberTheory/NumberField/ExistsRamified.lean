@@ -73,7 +73,7 @@ lemma NumberField.exists_not_isUnramifiedAt_int_of_isGalois [IsGalois ℚ K]
   have := CharZero.of_module (R := 𝒪) K
   let : MulSemiringAction Gal(K/ℚ) 𝒪 := IsIntegralClosure.MulSemiringAction ℤ ℚ K 𝒪
   have := IsGaloisGroup.of_isFractionRing Gal(K/ℚ) ℤ 𝒪 ℚ K
-  obtain ⟨P, _, hP'⟩ := NumberField.exists_not_isUramifiedAt_int (𝒪 := 𝒪) H.ne'
+  obtain ⟨P, _, hP'⟩ := NumberField.exists_not_isUnramifiedAt_int (𝒪 := 𝒪) H.ne'
   obtain ⟨p, hp : _ = Ideal.span _⟩ := IsPrincipalIdealRing.principal (P.under ℤ)
   have hp0 : p ≠ 0 := fun hp0 ↦ Ideal.IsMaximal.ne_bot_of_isIntegral_int _
     (Ideal.eq_bot_of_comap_eq_bot (hp.trans (by aesop)))
