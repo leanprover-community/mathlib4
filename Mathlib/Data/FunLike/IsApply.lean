@@ -11,7 +11,60 @@ public import Mathlib.Data.FunLike.Basic
 /-! # Group structure for `FunLike`
 In this file we provide typeclasses for the compatibility of algebraic structures and`FunLike`
 instances.
+
+These instances encode the property that algebraic operations such as addition, subtraction, and
+negation are given by the pointwise operations, and moreover we provide classes for multiplication
+is given by composition.
+
+The algebraic `FunLike` typeclasses provide a `simp` lemma of the form `add_apply` and a `norm_cast`
+lemma `coe_add`.
+
+The following `Is*Apply` typeclasses are available:
+* `IsZeroApply`, `IsOneApply`: `0 x = 0` and `1 x = 1`, respectively
+* `IsOneApplyEqSelf`: `1 x = x`
+* `IsAddApply`, `IsMulApply`: `(f + g) x = f x + g x` and `(f * g) x = f x * g x`, respectively
+* `IsMulApplyEqComp`: `(f * g) x = f (g x)`
+* `IsSubApply`, `IsDivApply`: `(f - g) x = f x - g x` and `(f / g) x = f x / g x`, respectively
+* `IsNegApply`, `IsInvApply`: `(-f) x = -(f x)` and `(f⁻¹) x = (f x)⁻¹`, respectively
+* `IsVAddApply`, `IsSMulApply` `IsPowApply`: `(n +ᵥ f) x = n +ᵥ f x`, `(n • f) x = n • f x`, and
+  `(f ^ n) x = (f x) ^ n`, respectively
+* `IsNatCastApply`, `IsIntCastApply`: `(n : F) x = n • x` for `n : ℕ` and `n : ℤ`, respectively
+
+For every type that declares a `FunLike` instance and an `Add` instance in general there should be
+a `IsAddApply` instance with the proof usually being `rfl`.
+So for instance for the continuous linear maps equipped with the uniform convergence topology,
+we have the instance
+```
+instance instIsAddApply [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
+    IsAddApply (E →SLᵤ[σ, 𝔖] F) E F where
+  add_apply _ _ _ := rfl
+```
+etc.
+
+
+There are a few lemmas that apply to any function space as long as they have an `IsAddApply`
+instance. Then it is now possible to define generic lemmas as follows:
+
+```
+section FunLike
+
+variable {F α β : Type*} [CommMonoid β] [CommMonoid F]
+  [FunLike F α β] [IsOneApply F α β] [IsMulApply F α β]
+
+open Classical in
+@[to_additive (attr := simp)]
+theorem prod_apply {ι : Type*} (s : Finset ι) (f : ι → F) (x : α) :
+    (∏ i ∈ s, f i) x = ∏ i ∈ s, f i x := by
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert i s his h => simp [his, h]
+
+end FunLike
+```
+
+
 -/
+
 
 public section
 
