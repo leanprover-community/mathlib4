@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Category.CommAlgCat.Basic
 public import Mathlib.LinearAlgebra.Isomorphisms
 public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 public import Mathlib.RingTheory.TensorProduct.Finite
-public import Mathlib.LinearAlgebra.TensorProduct.Quotient
 
 /-!
 # Grassmannians
@@ -100,7 +99,9 @@ def map (N : G(k, (A ⊗[R] M); A)) : G(k, (B ⊗[R] M); B) :=
   letI : Algebra A B := f.toAlgebra
   letI : IsScalarTower R A B := IsScalarTower.of_algebraMap_eq' <| IsScalarTower.algebraMap_eq R A B
   letI f' := N.toSubmodule.mkQ.baseChange B ∘ₗ (cancelBaseChange R A B B M).symm.toLinearMap
-  haveI equiv := f'.quotKerEquivOfSurjective N.toSubmodule.baseChange_mkQ_surjective
+  haveI equiv := f'.quotKerEquivOfSurjective <|
+    (LinearMap.baseChange_surjective B (Submodule.mkQ_surjective _)).comp
+      (cancelBaseChange R A B B M).symm.surjective
   { toSubmodule := f'.ker
     finite_quotient := Module.Finite.equiv equiv.symm
     projective_quotient := Module.Projective.of_equiv equiv.symm
@@ -112,6 +113,14 @@ def map (N : G(k, (A ⊗[R] M); A)) : G(k, (B ⊗[R] M); B) :=
             (PrimeSpectrum.comap (algebraMap A B) p) := by
           simpa using Module.rankAtStalk_baseChange ..
         _ = k := N.rankAtStalk_eq _ }
+
+theorem map_toSubmodule (N : G(k, A ⊗[R] M; A)) :
+    letI : Algebra A B := f.toAlgebra
+    letI : IsScalarTower R A B := IsScalarTower.of_algebraMap_eq' <|
+      IsScalarTower.algebraMap_eq R A B
+    (map f N).toSubmodule = LinearMap.ker
+      (N.toSubmodule.mkQ.baseChange B ∘ₗ (cancelBaseChange R A B B M).symm.toLinearMap) :=
+  rfl
 
 variable (k)
 
@@ -127,18 +136,23 @@ variable (g : B →ₐ[R] C)
 theorem map_comp (N : G(k, A ⊗[R] M; A)) :
     map (g.comp f) N = map g (map f N) := by
   algebraize [f.toRingHom, g.toRingHom, (g.comp f).toRingHom]
-  letI : IsScalarTower A B C := by apply IsScalarTower.of_algebraMap_eq'; rfl
-  ext x
+  let : IsScalarTower A B C := by apply IsScalarTower.of_algebraMap_eq'; rfl
   let fAB := N.toSubmodule.mkQ.baseChange B ∘ₗ
-    (cancelBaseChange _ _ _ _ _).symm.toLinearMap
+    (cancelBaseChange R A B B M).symm.toLinearMap
   let fAC := N.toSubmodule.mkQ.baseChange C ∘ₗ
-    (cancelBaseChange _ _ _ _ _).symm.toLinearMap
+    (cancelBaseChange R A C C M).symm.toLinearMap
   let fBC := fAB.ker.mkQ.baseChange C ∘ₗ
-    (cancelBaseChange _ _ _ _ _).symm.toLinearMap
-  let e := (fAB.quotKerEquivOfSurjective
-    N.toSubmodule.baseChange_mkQ_surjective).baseChange _ _ ≪≫ₗ
-    cancelBaseChange _ _ _ C _
-  have hcomp : e.toLinearMap.comp fBC = fAC := by
+    (cancelBaseChange R B C C M).symm.toLinearMap
+  have hfAB : Function.Surjective fAB :=
+    (LinearMap.baseChange_surjective B (Submodule.mkQ_surjective _)).comp
+      (cancelBaseChange R A B B M).symm.surjective
+  let e := (fAB.quotKerEquivOfSurjective hfAB).baseChange B C ≪≫ₗ
+    cancelBaseChange A B C C (A ⊗[R] M ⧸ N.toSubmodule)
+  ext x
+  have hfAC_ker_eq : (map (g.comp f) N).toSubmodule = fAC.ker := map_toSubmodule (g.comp f) N
+  have hfBC_ker_eq : (map g (map f N)).toSubmodule = fBC.ker := by
+    rw [map_toSubmodule g (map f N), map_toSubmodule f N]
+  have hcomp : fAC = e.toLinearMap.comp fBC := by
     apply LinearMap.ext
     intro z
     induction z using TensorProduct.induction_on with
@@ -152,11 +166,10 @@ theorem map_comp (N : G(k, A ⊗[R] M; A)) :
       simp only [LinearMap.coe_comp, LinearEquiv.coe_coe,
         Function.comp_apply, map_add] at *
       rw [hx, hy]
-  rw [show (map (g.comp f) N).toSubmodule = fAC.ker from rfl,
-    show (map g (map f N)).toSubmodule = fBC.ker from rfl,
-    show fAC = e.toLinearMap.comp fBC from hcomp.symm, LinearEquiv.ker_comp]
+  rw [hfAC_ker_eq, hfBC_ker_eq, hcomp, LinearEquiv.ker_comp]
 
 /-- The Grassmannian functor sends an `R`-algebra `A` to `G(k, A ⊗[R] M; A)`. -/
+@[simps]
 def functor : CommAlgCat.{w, u} R ⥤ Type (max v w) where
   obj A := G(k, (A ⊗[R] M); A)
   map f := map f.hom
