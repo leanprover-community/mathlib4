@@ -703,9 +703,8 @@ private theorem pi_mul_log_sqrt_le {x : ℝ} (hx : 1 ≤ x) :
 /-- A weak but completely explicit upper bound on $\pi(x)$. -/
 theorem pi_le_log4_mul_div {x : ℝ} (hx : 1 < x) : π ⌊x⌋₊ ≤ log 4 * x / log √x + √x := by
   have : 0 < log √x := Real.log_pos (lt_sqrt_of_sq_lt (by simp [hx]))
-  apply le_of_mul_le_mul_right _ this
-  convert pi_mul_log_sqrt_le (le_of_lt hx) using 1
   field_simp
+  grind [pi_mul_log_sqrt_le hx.le]
 
 end PrimeCounting
 end Chebyshev
