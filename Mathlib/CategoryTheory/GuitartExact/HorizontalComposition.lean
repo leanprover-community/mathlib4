@@ -122,7 +122,7 @@ lemma of_hComp' {T₁₂ : C₁ ⥤ C₃} {B₁₂ : D₁ ⥤ D₃} (eT : T₁ �
   rw [whiskerHorizontal_iff] at h
   exact of_hComp w w'
 
-def hComp_iff_of_equivalences (eT : C₂ ≌ C₃) (eB : D₂ ≌ D₃)
+lemma hComp_iff_of_equivalences (eT : C₂ ≌ C₃) (eB : D₂ ≌ D₃)
     (w' : eT.functor ⋙ V₃ ≅ V₂ ⋙ eB.functor) :
     (w ≫ₕ w'.hom).GuitartExact ↔ w.GuitartExact := by
   let w'' : V₂.op ⋙ eB.op.functor ≅ eT.op.functor ⋙ V₃.op := NatIso.op w'
