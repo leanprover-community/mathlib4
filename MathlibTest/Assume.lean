@@ -10,6 +10,16 @@ example {α β γ} {g : β → γ} {f : α → β} (hg : g.Injective) (hf : f.In
   guard_hyp h :ₛ g (f x) = g (f y)
   exact hf (hg ‹_›)
 
+/- A nice "teaching" example -/
+open Function
+example {α β γ} {g : β → γ} {f : α → β} (hg : Injective g) (hf :  Injective f) :
+    Injective (g ∘ f) := by
+  intro x y
+  assume g (f x) = g (f y)
+  have : f x = f y := by grind
+  show x = y
+  grind
+
 example {α β γ} {g : β → γ} {f : α → β} (hg : g.Injective) (hf : f.Injective) :
     (g ∘ f).Injective := by
   intro x y
