@@ -130,7 +130,7 @@ instance : Qh.IsLocalization (HomotopyCategory.quasiIso C (ComplexShape.up ℤ))
   infer_instance
 
 instance : Qh.IsLocalization (HomotopyCategory.subcategoryAcyclic C).trW := by
-  rw [← HomotopyCategory.quasiIso_eq_subcategoryAcyclic_W]
+  rw [← HomotopyCategory.quasiIso_eq_trW_subcategoryAcyclic]
   infer_instance
 
 instance : Preadditive (DerivedCategory C) :=
