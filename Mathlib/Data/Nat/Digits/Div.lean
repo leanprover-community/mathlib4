@@ -30,7 +30,7 @@ theorem modEq_nine_digits_sum (n : ℕ) : n ≡ (digits 10 n).sum [MOD 9] :=
 
 theorem modEq_eleven_digits_sum (n : ℕ) :
     n ≡ ((digits 10 n).map fun n : ℕ => (n : ℤ)).alternatingSum [ZMOD 11] := by
-  have t := zmodeq_ofDigits_digits 11 10 (-1 : ℤ) (by unfold Int.ModEq; rfl) n
+  have t := zmodeq_ofDigits_digits 11 10 (-1 : ℤ) (by rfl) n
   rwa [ofDigits_neg_one] at t
 
 /-! ## Divisibility  -/
