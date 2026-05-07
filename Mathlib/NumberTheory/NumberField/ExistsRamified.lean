@@ -99,7 +99,7 @@ instance {K : Type*} [Field K] [NumberField K]
     Algebra.IsSeparable (ℤ ⧸ p) ((𝓞 K) ⧸ q) := by
   sorry
 
--- 38377
+-- #38377
 theorem fixingSubgroup_range_algebraMap (G : Type*) [Group G] [Finite G] (A B C : Type*) [CommRing A]
     [CommRing C] [IsDomain C] [Algebra A C] [FaithfulSMul A C] [MulSemiringAction G C]
     (H : Subgroup G) [hGAC : IsGaloisGroup G A C] [CommRing B] [Algebra B C] [FaithfulSMul B C]
@@ -119,15 +119,74 @@ protected theorem IsGaloisGroup.top (G R S : Type*) [Group G] [CommRing R] [Comm
     IsGaloisGroup (⊤ : Subgroup G) R S :=
   .of_mulEquiv Subgroup.topEquiv fun _ _ ↦ rfl
 
+#check IsGaloisGroup.to_isFractionRing
+
+/-- Existing construction with `Finite G` replaced by `IsIntegral A B` -/
+theorem IsGaloisGroup.to_isFractionRing'
+    (G A B K L : Type*) [Group G] [CommRing A]
+    [CommRing B] [MulSemiringAction G B] [Algebra A B] [Field K] [Field L]
+    [Algebra K L] [Algebra A K] [Algebra B L] [Algebra A L] [IsFractionRing A K]
+    [IsFractionRing B L] [IsScalarTower A K L] [IsScalarTower A B L] [MulSemiringAction G L]
+    [SMulDistribClass G B L]
+    [Algebra.IsIntegral A B] [hGAB : IsGaloisGroup G A B] :
+    IsGaloisGroup G K L := by
+  have hc (a : A) : (algebraMap K L) (algebraMap A K a) = (algebraMap B L) (algebraMap A B a) := by
+    simp_rw [← IsScalarTower.algebraMap_apply]
+  refine ⟨⟨fun h ↦ ?_⟩, ⟨fun g x y ↦ ?_⟩, ⟨fun x h ↦ ?_⟩⟩
+  · have := hGAB.faithful
+    exact eq_of_smul_eq_smul fun y ↦ by simpa [← algebraMap.coe_smul'] using h (algebraMap B L y)
+  · obtain ⟨a, b, hb, rfl⟩ := IsFractionRing.div_surjective A x
+    obtain ⟨c, d, hd, rfl⟩ := IsFractionRing.div_surjective B y
+    simp [Algebra.smul_def, smul_mul', smul_div₀', hc, ← algebraMap.coe_smul']
+  · have : Nontrivial A := (IsFractionRing.nontrivial_iff_nontrivial A K).mpr inferInstance
+    have : Nontrivial B := (IsFractionRing.nontrivial_iff_nontrivial B L).mpr inferInstance
+    obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective B x
+    have hy' : algebraMap B L y ≠ 0 := by simpa using nonZeroDivisors.ne_zero hy
+    obtain ⟨b, a, ha, hb⟩ := (Algebra.IsAlgebraic.isAlgebraic (R := A) y).exists_smul_eq_mul x hy
+    rw [mul_comm, Algebra.smul_def, mul_comm] at hb
+    replace ha : (algebraMap B L) (algebraMap A B a) ≠ 0 := by simpa [← hc]
+    have hxy : algebraMap B L x / algebraMap B L y =
+      algebraMap B L b / algebraMap B L (algebraMap A B a) := by
+      rw [div_eq_div_iff hy' ha, ← map_mul, hb, map_mul]
+    obtain ⟨b, rfl⟩ := hGAB.isInvariant.isInvariant b
+      (by simpa [ha, hxy, smul_div₀', ← algebraMap.coe_smul'] using h)
+    use algebraMap A K b / algebraMap A K a
+    simp [hc, div_eq_div_iff ha hy', ← map_mul, ← map_mul, hb]
+
+theorem Algebra.formallyUnramified_iff_forall
+    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] :
+    FormallyUnramified R S ↔ ∀ q : PrimeSpectrum S, IsUnramifiedAt R q.1 :=
+  unramifiedLocus_eq_univ_iff.symm.trans Set.eq_univ_iff_forall
+
+theorem Algebra.unramified_iff_forall
+    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [FiniteType R S] :
+    Unramified R S ↔ ∀ q : PrimeSpectrum S, IsUnramifiedAt R q.1 :=
+  .trans ⟨fun h ↦ h.formallyUnramified, fun h ↦ ⟨h, inferInstance⟩⟩ formallyUnramified_iff_forall
+
 theorem NumberField.supr_inertia_eq_top (S G : Type*) [CommRing S] [Module.Finite ℤ S]
     [IsDomain S] [FaithfulSMul ℤ S] [Group G] [MulSemiringAction G S] [IsGaloisGroup G ℤ S] :
     ⨆ m : MaximalSpectrum S, m.asIdeal.toAddSubgroup.inertia G = ⊤ := by
-  have : Finite G := by
-    sorry
+  have : Finite G := by -- general fact
+    let : Algebra (FractionRing ℤ) (FractionRing S) := FractionRing.liftAlgebra ℤ (FractionRing S)
+    -- will be better after #38377
+    let : MulSemiringAction G (FractionRing S) :=
+      MulSemiringAction.compHom (FractionRing S) ((IsFractionRing.fieldEquivOfAlgEquivHom
+        (FractionRing ℤ) (FractionRing S)).comp (MulSemiringAction.toAlgAut G ℤ S))
+    let : SMulDistribClass G S (FractionRing S) :=
+        ⟨fun g b x ↦ by
+          rw [Algebra.smul_def', Algebra.smul_def', smul_mul']
+          congr
+          apply IsFractionRing.fieldEquivOfAlgEquiv_algebraMap⟩
+    have : IsGaloisGroup G (FractionRing ℤ) (FractionRing S) :=
+      IsGaloisGroup.to_isFractionRing' G ℤ S (FractionRing ℤ) (FractionRing S)
+    exact IsGaloisGroup.finite G (FractionRing ℤ) (FractionRing S)
   let H : Subgroup G := ⨆ m : MaximalSpectrum S, m.asIdeal.toAddSubgroup.inertia G
   let R : Subalgebra ℤ S := FixedPoints.subalgebra ℤ S H
   have : Module.Finite ℤ R := Module.IsNoetherian.finite ℤ R.toSubmodule
   have h5 : Algebra.Unramified ℤ R := by
+    rw [Algebra.unramified_iff_forall]
+    intro p
+    -- maybe there's a nice way to get from here to ramification index without Dedekind domain?
     sorry
   have h4 : Function.Bijective (algebraMap ℤ R) := by
     exact @bijective_algebraMap_int_of_finite_of_unramified R _ _ h5 _ _
