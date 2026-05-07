@@ -262,14 +262,6 @@ lemma equiv_of_fromSpecStalkOfMem_eq [IrreducibleSpace X]
 
 instance (U : X.Opens) [IsReduced X] : IsReduced U := isReduced_of_isOpenImmersion U.ι
 
-lemma Opens.isDominant_ι {U : X.Opens} (hU : Dense (X := X) U) : IsDominant U.ι :=
-  ⟨by simpa [DenseRange] using hU⟩
-
-lemma Opens.isDominant_homOfLE {U V : X.Opens} (hU : Dense (X := X) U) (hU' : U ≤ V) :
-    IsDominant (X.homOfLE hU') :=
-  have : IsDominant (X.homOfLE hU' ≫ Opens.ι _) := by simpa using Opens.isDominant_ι hU
-  IsDominant.of_comp_of_isOpenImmersion (g := Opens.ι _) _
-
 set_option backward.isDefEq.respectTransparency false in
 /-- Two partial maps from reduced schemes to separated schemes are equivalent if and only if
 they are equal on **any** open dense subset. -/
