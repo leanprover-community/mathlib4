@@ -250,22 +250,18 @@ theorem lcmUpto_eq_prod_pow_floor (n : ℕ) : lcmUpto n = ∏ p ∈ primesLE n, 
 
 theorem psi_eq_sum_mul_log_prime (n : ℕ) : ψ n = ∑ p ∈ primesLE n, p.log n * log p := calc
   _ = ∑ m ∈ Icc 1 n, Λ m := by simp [psi, ← Icc_add_one_left_eq_Ioc]
-  _ = ∑ m ∈ Finset.biUnion (filter Nat.Prime (Icc 1 n))
-    (fun p => image (fun k => p ^ k) (Icc 1 (p.log n))), vonMangoldt m := by
-    symm; apply sum_subset
-    · intro q
-      simp only [mem_biUnion, mem_filter, mem_Icc, mem_image, forall_exists_index, and_imp]
-      intro p _ _ _ m _ hm rfl
-      exact ⟨by grind, pow_le_of_le_log (by linarith) hm⟩
-    intro x hx
-    simp only [mem_biUnion, mem_filter, mem_Icc, mem_image, not_exists, not_and, and_imp,
-      vonMangoldt_eq_zero_iff, isPrimePow_nat_iff]
-    contrapose!
-    rintro ⟨p, k, hp, hk, rfl⟩
-    simp only [mem_Icc] at hx
-    refine ⟨p, ⟨hp.one_le, ?_, hp, ⟨k, ⟨by linarith, ?_, rfl⟩⟩⟩⟩
-    · linarith [le_of_dvd (by linarith) (dvd_pow_self p hk.ne')]
-    exact le_log_of_pow_le hp.one_lt hx.2
+  _ = ∑ m ∈ ((Icc 1 n).filter Nat.Prime).biUnion fun p ↦ image (p ^ ·) (Icc 1 (p.log n)), Λ m := by
+    refine (sum_subset (fun q hq ↦ ?_) fun x hx ↦ ?_).symm
+    · simp only [mem_biUnion, mem_filter, mem_Icc, mem_image] at hq ⊢
+      obtain ⟨p, _, k, ⟨_, hk⟩, rfl⟩ := hq
+      exact ⟨by grind, pow_le_of_le_log (by linarith) hk⟩
+    · simp only [mem_biUnion, mem_filter, mem_Icc, mem_image, not_exists, not_and, and_imp,
+        vonMangoldt_eq_zero_iff, isPrimePow_nat_iff]
+      contrapose!
+      rintro ⟨p, k, hp, hk, rfl⟩
+      simp only [mem_Icc] at hx
+      have hpn : p ≤ n := (le_of_dvd (by lia) (dvd_pow_self p hk.ne')).trans hx.2
+      exact ⟨p, ⟨hp.one_le, hpn, hp, ⟨k, ⟨by lia, le_log_of_pow_le hp.one_lt hx.2, rfl⟩⟩⟩⟩
   _ = ∑ p ∈ Icc 1 n with Nat.Prime p, ∑ q ∈ image (fun k ↦ p ^ k) (Icc 1 (p.log n)), Λ q := by
     convert sum_biUnion ?_
     intros p hp q hq hpq
