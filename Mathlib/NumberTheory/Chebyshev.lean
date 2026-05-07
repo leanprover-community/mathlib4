@@ -444,11 +444,9 @@ theorem psi_sub_theta_eq_sum_not_prime (x : ℝ) :
 
 /-- The Chebyshev lower bound for $\psi$. -/
 theorem psi_ge (n : ℕ) : n * log 2 - log (n + 1) ≤ psi n := by
-  have : log (2 ^ n) ≤ log ((n + 1) * lcmUpto n) := by
-    gcongr
-    exact_mod_cast two_pow_le_mul_lcmUpto n
-  rwa [Real.log_pow, Real.log_mul (by positivity) (by simp [lcmUpto_ne_zero]), ← psi_eq_log_lcmUpto,
-   ← sub_le_iff_le_add'] at this
+  rw [tsub_le_iff_left, psi_eq_log_lcmUpto, ← log_pow 2,
+    ← log_mul (by positivity) (by simp [lcmUpto_ne_zero])]
+  exact log_le_log (by positivity) <| mod_cast two_pow_le_mul_lcmUpto n
 
 theorem psi_ge' {x : ℝ} (hx : 0 ≤ x) : (x - 1) * log 2 - log (x + 2) ≤ psi x := by
   grw [psi_eq_psi_coe_floor, ← psi_ge]
