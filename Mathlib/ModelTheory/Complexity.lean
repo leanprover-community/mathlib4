@@ -103,6 +103,21 @@ protected theorem liftAt {k m : ℕ} (h : IsQF φ) : (φ.liftAt k m).IsQF :=
 protected theorem castLE {h : l ≤ n} (hφ : IsQF φ) : (φ.castLE h).IsQF :=
   IsQF.recOn hφ isQF_bot (fun ih => ih.castLE.isQF) fun _ _ ih1 ih2 => ih1.imp ih2
 
+theorem toFormula {φ : L.BoundedFormula α n} (hφ : φ.IsQF) :
+    φ.toFormula.IsQF := by
+  induction hφ with
+  | falsum => exact IsQF.falsum
+  | of_isAtomic hφ =>
+      cases hφ with
+      | equal t₁ t₂ =>
+          simpa [BoundedFormula.toFormula, Term.equal] using
+            (IsAtomic.equal ((t₁).relabel Sum.inl) ((t₂).relabel Sum.inl)).isQF
+      | rel R ts =>
+          simpa [BoundedFormula.toFormula, Relations.formula] using
+            (IsAtomic.rel R (fun i => (ts i).relabel Sum.inl)).isQF
+  | imp _ _ ih₁ ih₂ =>
+      simpa [BoundedFormula.toFormula] using ih₁.imp ih₂
+
 end IsQF
 
 theorem not_all_isQF (φ : L.BoundedFormula α (n + 1)) : ¬φ.all.IsQF := fun con => by

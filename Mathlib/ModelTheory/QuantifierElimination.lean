@@ -463,26 +463,6 @@ theorem isEquivQF_iff_realize_iff_of_embeddings
       exact False.elim (hnotφv0 (by simpa [M0, N0, A0, f0, g0, a0, ha] using hsame.mpr hφga))
 
 
------------------------------------------------------------------------------------------
-
-private theorem isQF_toFormula
-    {α : Type*} {n : ℕ} {φ : L.BoundedFormula α n} (hφ : φ.IsQF) :
-    φ.toFormula.IsQF := by
-  induction hφ with
-  | falsum => exact BoundedFormula.IsQF.falsum
-  | of_isAtomic hφ =>
-      cases hφ with
-      | equal t₁ t₂ =>
-          simpa [BoundedFormula.toFormula, Term.equal] using
-            (BoundedFormula.IsAtomic.equal
-              ((t₁).relabel Sum.inl) ((t₂).relabel Sum.inl)).isQF
-      | rel R ts =>
-          simpa [BoundedFormula.toFormula, Relations.formula] using
-            (BoundedFormula.IsAtomic.rel R
-              (fun i => (ts i).relabel Sum.inl)).isQF
-  | imp _ _ ih₁ ih₂ =>
-      simpa [BoundedFormula.toFormula] using ih₁.imp ih₂
-
 private theorem exists_qf_equiv_ex_of_isQF
     {T : L.Theory}
     (h :
@@ -499,7 +479,7 @@ private theorem exists_qf_equiv_ex_of_isQF
   let θ' : L.BoundedFormula (Fin (m + n)) 1 :=
     BoundedFormula.relabel (L := L) (β := Fin (m + n)) (n := 1) toOne θ.toFormula
   have hθ' : θ'.IsQF := by
-    exact (isQF_toFormula hθ).relabel _
+    exact hθ.toFormula.relabel _
   obtain ⟨ψ', hψ', hθψ'⟩ := h θ' hθ'
   let ψ : L.BoundedFormula (Fin m) n :=
     BoundedFormula.relabel (L := L) (β := Fin m) (n := n)
@@ -600,7 +580,7 @@ theorem hasQuantifierElimination_of_exists_realize_of_embeddings {T : L.Theory} 
   intro M N A _ _ _ _ _ _ _ f g a
   let φ : L.Formula (Fin m.succ) := θ.toFormula.relabel finSumFinEquiv
   have hφQF : φ.IsQF := by
-    exact (isQF_toFormula hθ).relabel _
+    exact hθ.toFormula.relabel _
   have hreal :
       ∀ {X : Type (max u v)} [L.Structure X] (x : Fin m → X) (b : X),
         φ.Realize (Fin.snoc x b) ↔ θ.Realize x (Fin.snoc default b) := by
