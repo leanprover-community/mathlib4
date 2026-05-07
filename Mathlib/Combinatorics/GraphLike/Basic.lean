@@ -52,10 +52,10 @@ class GraphLike (V D E : outParam Type*) (Gr : Type*) where
   /-- The target vertex of a dart. -/
   tgt : D → V
   /-- The edge of a dart. -/
-  edgeOf : D → E
+  edge : D → E
   src_mem_of_darts : ∀ ⦃G d⦄, d ∈ darts G → src d ∈ verts G
   tgt_mem_of_darts : ∀ ⦃G d⦄, d ∈ darts G → tgt d ∈ verts G
-  edge_mem_of_darts : ∀ ⦃G d⦄, d ∈ darts G → edgeOf d ∈ edges G
+  edge_mem_of_darts : ∀ ⦃G d⦄, d ∈ darts G → edge d ∈ edges G
   /-- The adjacency relation of a graph-like structure. -/
   Adj : Gr → V → V → Prop := fun G u v ↦ ∃ d ∈ darts G, src d = u ∧ tgt d = v
   /-- Two vertices are adjacent if and only if there is a dart between them. -/
