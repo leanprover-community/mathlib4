@@ -264,12 +264,9 @@ theorem psi_eq_sum_mul_log_prime (n : ℕ) : ψ n = ∑ p ∈ primesLE n, p.log 
       exact ⟨p, ⟨hp.one_le, hpn, hp, ⟨k, ⟨by lia, le_log_of_pow_le hp.one_lt hx.2, rfl⟩⟩⟩⟩
   _ = ∑ p ∈ Icc 1 n with p.Prime, ∑ q ∈ image (fun k ↦ p ^ k) (Icc 1 (p.log n)), Λ q := by
       rw [sum_biUnion <| by rw [pairwiseDisjoint_iff]; grind [Nat.Prime.pow_inj']]
-  _ = ∑ p ∈ primesLE n, ∑ k ∈ Icc 1 (p.log n), vonMangoldt (p ^ k) := by
-    apply sum_congr (primesLE_eq_filter_Icc_one n).symm
-    intro p hp
-    apply sum_image
-    intro a _ b _ hab
-    exact Nat.pow_right_injective (two_le_of_mem_primesLE hp) hab
+  _ = ∑ p ∈ primesLE n, ∑ k ∈ Icc 1 (p.log n), Λ (p ^ k) := by
+      refine sum_congr (primesLE_eq_filter_Icc_one n).symm fun p hp ↦ ?_
+      exact sum_image fun a _ b _ hab ↦ Nat.pow_right_injective (two_le_of_mem_primesLE hp) hab
   _ = ∑ p ∈ primesLE n, ∑ k ∈ Icc 1 (p.log n), log p := by
     apply sum_congr rfl; intro p hp
     apply sum_congr rfl; intro k hk
