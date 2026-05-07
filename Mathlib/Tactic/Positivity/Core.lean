@@ -509,7 +509,7 @@ def solve (t : Q(Prop)) : MetaM Expr := do
     let throw (a b : String) : MetaM Expr := throwError
       "failed to prove {a}, but it would be possible to prove {b} if desired"
     if let some _ := pα? then
-      let p ← show MetaM Expr from match relDesired, r with
+      let p ← match relDesired, r with
       | .lt, .positive p
       | .le, .nonnegative p
       | .ne, .nonzero p => pure p
@@ -525,7 +525,7 @@ def solve (t : Q(Prop)) : MetaM Expr := do
       | _, .none => throwError "failed to prove positivity/nonnegativity/nonzeroness"
       pure p
     else
-      let p ← show MetaM Expr from match relDesired, r with
+      let p ← match relDesired, r with
       | .ne, .nonzero p => pure p
       | .ne', .nonzero p => pure q(Ne.symm $p)
       | .lt, .nonzero _ => throw "strict positivity" "nonzeroness"
