@@ -44,7 +44,7 @@ lemma NumberField.exists_not_isUnramifiedAt_int (H : Module.finrank ℚ K ≠ 1)
 lemma NumberField.finrank_eq_one_of_unramified [Algebra.Unramified ℤ 𝒪] :
     Module.finrank ℚ K = 1 := by
   by_contra H
-  obtain ⟨P, _, H⟩ := NumberField.exists_not_isUramifiedAt_int (𝒪 := 𝒪) H
+  obtain ⟨P, _, H⟩ := NumberField.exists_not_isUnramifiedAt_int (𝒪 := 𝒪) H
   exact H inferInstance
 
 /-- If `𝒪` is a domain that is a finite and unramified extension of `ℤ`, then `𝒪 = ℤ`. -/
