@@ -222,7 +222,7 @@ theorem primeFactors_lcmUpto (n : ℕ) : primeFactors (lcmUpto n) = primesLE n :
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · have := prime_of_mem_primeFactors h
     rw [← support_factorization, Finsupp.mem_support_iff, factorization_lcmUpto _ this] at h
-    simp_all
+    simp_all [mem_primesLE]
   · refine Prime.mem_primeFactors (prime_of_mem_primesLE h) (dvd_lcm ?_) <| lcmUpto_ne_zero n
     exact mem_Icc.mpr ⟨(prime_of_mem_primesLE h).one_le, le_of_mem_primesLE h⟩
 
