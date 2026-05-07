@@ -206,4 +206,44 @@ def encodingPair {α β Γ₁ Γ₂ : Type*} (ea : Encoding α Γ₁) (eb : Enco
       (eb.decode (x.filterMap Sum.getRight?))
   decode_encode x := by simp
 
+/-! ### Deprecated aliases for `FinEncoding` and unbundled `Γ` -/
+
+@[deprecated "Use `Encoding α Γ` along with `[Fintype Γ]` instead" (since := "2026-05-07")]
+abbrev FinEncoding (α : Type u) {Γ : Type v} [Fintype Γ] := Encoding α Γ
+
+@[deprecated "Γ is now an explicit parameter of `Encoding`" (since := "2026-05-07")]
+abbrev Encoding.Γ {α : Type u} {Γ : Type v} (_ : Encoding α Γ) : Type v := Γ
+
+@[deprecated "Use `inferInstanceAs (Fintype Γ)` instead" (since := "2026-05-07")]
+abbrev FinEncoding.ΓFin {α : Type u} {Γ : Type v} [h : Fintype Γ]
+    (_ : Encoding α Γ) : Fintype Γ := h
+
+@[deprecated "Use the encoding directly" (since := "2026-05-07")]
+abbrev FinEncoding.toEncoding {α : Type u} {Γ : Type v} [Fintype Γ]
+    (e : Encoding α Γ) : Encoding α Γ := e
+
+@[deprecated encodingNatBool (since := "2026-05-07")]
+abbrev finEncodingNatBool := encodingNatBool
+
+@[deprecated encodingNatΓ' (since := "2026-05-07")]
+abbrev finEncodingNatΓ' := encodingNatΓ'
+
+@[deprecated unaryEncodingNat (since := "2026-05-07")]
+abbrev unaryFinEncodingNat := unaryEncodingNat
+
+@[deprecated encodingBoolBool (since := "2026-05-07")]
+abbrev finEncodingBoolBool := encodingBoolBool
+
+@[deprecated encodingList (since := "2026-05-07")]
+abbrev finEncodingList (α : Type) [Fintype α] := encodingList α
+
+@[deprecated encodingPair (since := "2026-05-07")]
+abbrev finEncodingPair {α β Γ₁ Γ₂ : Type*} [Fintype Γ₁] [Fintype Γ₂]
+    (ea : Encoding α Γ₁) (eb : Encoding β Γ₂) :=
+  encodingPair ea eb
+
+@[deprecated Encoding.card_le_aleph0 (since := "2026-05-07")]
+theorem FinEncoding.card_le_aleph0 {α Γ} [Countable Γ] (e : Encoding α Γ) : #α ≤ ℵ₀ :=
+  e.card_le_aleph0
+
 end Computability
