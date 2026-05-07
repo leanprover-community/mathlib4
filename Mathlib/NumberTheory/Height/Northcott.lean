@@ -29,7 +29,7 @@ In number theory, the height function `h` satisfies the *Northcott property* tha
 
 @[expose] public noncomputable section
 
-variable {α β : Type*} (h : α → β)
+variable {α β γ : Type*} (h : α → β) (h' : β → γ)
 
 /-- A function `h : α → β` is Northcott if the sets `{a : α | h a ≤ b}` are all finite. -/
 @[mk_iff]
@@ -44,9 +44,28 @@ theorem northcott_iff_tendsto [LinearOrder β] [NoMaxOrder β] :
   obtain ⟨b', hc⟩ := exists_gt b
   exact (H b').subset fun x hx ↦ lt_of_le_of_lt hx hc
 
-theorem Northcott.exists_min_image [LinearOrder β] [Northcott h] (s : Set α) (hs : s.Nonempty) :
+namespace Northcott
+
+theorem exists_min_image [LinearOrder β] [Northcott h] (s : Set α) (hs : s.Nonempty) :
     ∃ a ∈ s, ∀ a' ∈ s, h a ≤ h a' := by
   obtain ⟨a₁, h₁⟩ := hs
   obtain ⟨a₂, h₂, h₃⟩ := Set.exists_min_image ({a | h a ≤ h a₁} ∩ s) h
     ((finite_le (h a₁)).inter_of_left s) ⟨a₁, le_rfl, h₁⟩
   grind
+
+/-- A composition `h' ∘ h` is Northcott when `h` is Northcott and preimages of bounded above sets
+under `h'` are bounded above. -/
+lemma comp_of_bddAbove [Preorder β] [LE γ] [Northcott h] (H : ∀ c, BddAbove (h' ⁻¹' {x | x ≤ c})) :
+    Northcott (h' ∘ h) where
+  finite_le c := by
+    obtain ⟨b, hb⟩ := bddAbove_def.mp (H c)
+    exact (finite_le (h := h) b).subset <| by grind
+
+/-- A composition `h' ∘ h` is Northcott when `h'` is Northcott and the fibers of `h` are finite. -/
+lemma comp_of_finite_fibers [LE γ] [Northcott h'] (H : ∀ b, (h ⁻¹' {b}).Finite) :
+    Northcott (h' ∘ h) where
+  finite_le c := by
+    refine Set.Finite.of_finite_fibers h ?_ fun x _ ↦ (H x).inter_of_right _
+    exact (finite_le (h := h') c).subset <| by grind
+
+end Northcott
