@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.Unramified.Dedekind
 # Every number field has a ramified prime over `ℚ`
 ...except `ℚ` itself.
 
-This is a trivial corollary of `NumberField.not_dvd_discr_iff_forall_pow_mem` and
+This is a trivial corollary of `NumberField.not_dvd_discr_iff_forall_mem` and
 `NumberField.abs_discr_gt_two` but is placed in a separate file to avoid large imports.
 
 -/
@@ -27,7 +27,7 @@ variable [IsIntegralClosure 𝒪 ℤ K]
 
 /-- If `K` is a number field with positive rank, then there exists some maximal ideal of `𝓞 K`
 that is ramified over `ℤ`. -/
-lemma NumberField.exists_not_isUramifiedAt_int (H : Module.finrank ℚ K ≠ 1) :
+lemma NumberField.exists_not_isUnramifiedAt_int (H : Module.finrank ℚ K ≠ 1) :
     ∃ (P : Ideal 𝒪) (_ : P.IsMaximal), ¬ Algebra.IsUnramifiedAt ℤ P := by
   have := (IsIntegralClosure.algebraMap_injective 𝒪 ℤ K).isDomain
   have := IsIntegralClosure.isDedekindDomain ℤ ℚ K 𝒪
@@ -62,7 +62,7 @@ lemma bijective_algebraMap_int_of_finite_of_unramified
   exact bijective_algebraMap_of_linearEquiv (IsIntegralClosure.equiv ℤ ℤ K 𝒪).toLinearEquiv
 
 /-- If `K` is a number field with positive rank such that `K/ℚ` is galois, then there exists
-some rational prime `p : ℕ` such that every prime of `K` over `P` is ramified. -/
+some rational prime `p : ℕ` such that every prime of `K` over `p` is ramified. -/
 lemma NumberField.exists_not_isUramifiedAt_int_of_isGalois [IsGalois ℚ K]
     (H : 1 < Module.finrank ℚ K) :
     ∃ p : ℕ, p.Prime ∧ ∀ (P : Ideal 𝒪) (_ : P.IsPrime), ↑p ∈ P → ¬ Algebra.IsUnramifiedAt ℤ P := by
