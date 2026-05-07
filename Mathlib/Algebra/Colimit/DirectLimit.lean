@@ -203,6 +203,15 @@ variable [Nonempty ι]
   one_mul := DirectLimit.induction _ fun i _ ↦ by simp_rw [one_def i, mul_def, one_mul]
   mul_one := DirectLimit.induction _ fun i _ ↦ by simp_rw [one_def i, mul_def, mul_one]
 
+variable (f) in
+/-- `map₀` as a `MonoidHom`. -/
+@[to_additive (attr := simps) /-- `map₀` as an `AddMonoidHom`. -/]
+def map₀MonoidHom [∀ i, MulOneClass (G i)] [∀ i j h, MonoidHomClass (T h) (G i) (G j)] :
+    (∀ i, G i) →* DirectLimit G f where
+  toFun x := map₀ _ x
+  map_one' := map₀_one
+  map_mul' := map₀_mul
+
 section Monoid
 variable [∀ i, Monoid (G i)] [Monoid C]
 variable [∀ i j h, MonoidHomClass (T h) (G i) (G j)] [∀ i, MonoidHomClass (H i) (G i) C]
@@ -221,14 +230,6 @@ variable [∀ i j h, MonoidHomClass (T h) (G i) (G j)] [∀ i, MonoidHomClass (H
 theorem lift_npow (g : ∀ i, H i) (h) (x : DirectLimit G f) (n : ℕ) :
     DirectLimit.lift f (g ·) h (x ^ n) = DirectLimit.lift f (g ·) h x ^ n :=
   x.induction _ fun i x ↦ by simp_rw [npow_def, lift_def, map_pow (g i)]
-
-variable (f) in
-/-- `map₀` as a `MonoidHom`. -/
-@[to_additive (attr := simps) /-- `map₀` as an `AddMonoidHom`. -/]
-def map₀MonoidHom : (∀ i, G i) →* DirectLimit G f where
-  toFun x := map₀ _ x
-  map_one' := map₀_one
-  map_mul' := map₀_mul
 
 end Monoid
 
@@ -457,8 +458,7 @@ def map₀RingHom [∀ i, NonAssocSemiring (G i)] [∀ i j h, RingHomClass (T h)
     (∀ i, G i) →+* DirectLimit G f where
   toFun r := map₀ _ r
   __ := map₀AddMonoidHom f
-  map_one' := map₀_one
-  map_mul' := map₀_mul
+  __ := map₀MonoidHom f
 
 instance [∀ i, NonUnitalNonAssocCommSemiring (G i)]
     [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)] :
