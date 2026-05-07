@@ -155,12 +155,8 @@ lemma isLeftDerivabilityStructure_iff_of_equivalences
         isoWhiskerLeft _ (associator _ _ _) ≪≫
         isoWhiskerLeft _ (isoWhiskerLeft _ R.functor.asEquivalence.unitIso.symm) ≪≫
         (associator _ _ _).symm ≪≫ rightUnitor _
-    have : W₁.RespectsIso := by
-      rw [← L.inverseImage_eq]
-      infer_instance
-    have : W₂.RespectsIso := by
-      rw [← R.inverseImage_eq]
-      infer_instance
+    have : W₁.RespectsIso := by rw [← L.inverseImage_eq]; infer_instance
+    have : W₂.RespectsIso := by rw [← R.inverseImage_eq]; infer_instance
     exact isLeftDerivabilityStructure_of_equivalences e⟩
 
 lemma isRightDerivabilityStructure_iff_of_equivalences
