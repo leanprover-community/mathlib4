@@ -41,7 +41,7 @@ lemma uncurry_ihomCurry (x y z : C) [Closed x] [Closed y] [Closed (x ⊗ y)] :
 
 lemma uncurry_uncurry_ihomCurry (x y z : C) [Closed x] [Closed y] [Closed (x ⊗ y)] :
     uncurry (uncurry (ihomCurry x y z)) = (α_ x y _).inv ≫ (ihom.ev _).app z := by
-  simp only [uncurry_ihomCurry, uncurry_curry]
+  simp [uncurry_ihomCurry]
 
 /-- The uncurrying operation taking a morphism `y ⟶ C(x, z)` to a morphism `(x ⊗ y) ⟶ z`,
   constructed as a morphism in `C` between internal homs. -/
@@ -61,18 +61,19 @@ theorem ihomUncurry_ihomCurry (x y z : C) [Closed x] [Closed y] [Closed (x ⊗ y
     ihomUncurry x y z ≫ ihomCurry x y z = 𝟙 _ := by
   apply uncurry_injective
   apply uncurry_injective
-  simp only [uncurry_natural_left, uncurry_id_eq_ev, uncurry_uncurry_ihomCurry]
-  rw [associator_inv_naturality_right_assoc, ← uncurry_eq, uncurry_ihomUncurry,
-    Iso.inv_hom_id_assoc]
-  exact rfl
+  simp only [uncurry_natural_left, uncurry_uncurry_ihomCurry, Functor.id_obj, uncurry_id_eq_ev]
+  rw [associator_inv_naturality_right_assoc, ← dsimp% uncurry_eq, uncurry_ihomUncurry]
+  simp
+  rfl
 
 @[reassoc (attr := simp)]
 theorem ihomCurry_ihomUncurry (x y z : C) [Closed x] [Closed y] [Closed (x ⊗ y)] :
     ihomCurry x y z ≫ ihomUncurry x y z = 𝟙 _ := by
   apply uncurry_injective
-  rw [uncurry_natural_left, uncurry_id_eq_ev, uncurry_ihomUncurry,
-    associator_naturality_right_assoc, ← MonoidalCategory.whiskerLeft_comp_assoc, ← uncurry_eq,
-    ← uncurry_eq, uncurry_uncurry_ihomCurry, Iso.hom_inv_id_assoc _ _]
+  rw [uncurry_natural_left, uncurry_id_eq_ev, uncurry_ihomUncurry]
+  dsimp
+  rw [associator_naturality_right_assoc, ← MonoidalCategory.whiskerLeft_comp_assoc]
+  simp [← dsimp% uncurry_eq, uncurry_uncurry_ihomCurry]
 
 /-- The internal currying-uncurrying isomorphism `C(x ⊗ y, z) ≅ C(y, C(x, z))`. -/
 @[simps]
