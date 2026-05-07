@@ -72,14 +72,16 @@ may depend on `i`. -/
     (i : ι) → α i × β i := fun i => Prod.mk (f i) (g i)
 
 /-- The first component of a map into a product. -/
-@[inline] def fstComp {ι} {α β : ι → Type*} (h : (i : ι) → α i × β i) (i : ι) :
-    α i := (h i).1
+@[inline] def fstComp {ι} {α β : ι → Type*} (h : (i : ι) → α i × β i) :
+    ∀ i, α i := (h ·|>.1)
 
 /-- The second component of a map into a product. -/
 @[inline] def sndComp {ι} {α β : ι → Type*} (h : (i : ι) → α i × β i) (i : ι) :
     β i := (h i).2
 
 @[inherit_doc] infixr:95 " ×ᶠ " => prod
+@[inherit_doc] notation:max x:max "₍₁₎" => fstComp x
+@[inherit_doc] notation:max x:max "₍₂₎" => sndComp x
 
 section
 
@@ -87,26 +89,26 @@ variable {ι κ} {α β : ι → Type*} (f f' : ∀ i, α i) (g g' : ∀ i, β i
   (i : ι)
 
 @[simp, grind =] theorem prod_apply : (f ×ᶠ g) i = (f i, g i) := rfl
-@[simp, grind =] theorem fstComp_apply : fstComp h i = (h i).1 := rfl
-@[simp, grind =] theorem sndComp_apply : sndComp h i = (h i).2 := rfl
+@[simp, grind =] theorem fstComp_apply : h₍₁₎ i = (h i).1 := rfl
+@[simp, grind =] theorem sndComp_apply : h₍₂₎ i = (h i).2 := rfl
 
 theorem prod_def : f ×ᶠ g = fun i => (f i, g i) := rfl
 
-theorem fst_dcomp : Prod.fst ∘' h = fstComp h := rfl
-theorem snd_dcomp : Prod.snd ∘' h = sndComp h := rfl
+theorem fst_dcomp : Prod.fst ∘' h = h₍₁₎ := rfl
+theorem snd_dcomp : Prod.snd ∘' h = h₍₂₎ := rfl
 
 @[simp, grind! .] theorem fstComp_prod {f : ∀ i, α i} {g : ∀ i, β i} :
-    fstComp (f ×ᶠ g) = f := rfl
+    (f ×ᶠ g)₍₁₎ = f := by grind
 @[simp, grind! .] theorem sndComp_prod {f : ∀ i, α i} {g : ∀ i, β i} :
-    sndComp (f ×ᶠ g) = g := rfl
+    (f ×ᶠ g)₍₂₎ = g := rfl
 @[simp, grind! .] theorem fstComp_prod_sndComp {h : ∀ i, α i × β i} :
-  fstComp h ×ᶠ sndComp h = h := rfl
+  h₍₁₎ ×ᶠ h₍₂₎ = h := rfl
 
-theorem fstComp_sndComp_ext {h h' : ∀ i, α i × β i} (H₁ : fstComp h = fstComp h')
-    (H₂ : sndComp h = sndComp h') : h = h' := by grind
+theorem fstComp_sndComp_ext {h h' : ∀ i, α i × β i} (H₁ : h₍₁₎ = h'₍₁₎)
+    (H₂ : h₍₂₎ = h'₍₂₎) : h = h' := by grind
 
 theorem fstComp_sndComp_ext_iff {h h' : ∀ i, α i × β i} :
-    h = h' ↔ fstComp h = fstComp h' ∧ sndComp h = sndComp h' := by grind
+    h = h' ↔ h₍₁₎ = h'₍₁₎ ∧ h₍₂₎ = h'₍₂₎ := by grind
 
 theorem left_eq_of_prod_eq (H : f ×ᶠ g = f' ×ᶠ g') : f = f' := by grind
 theorem right_eq_of_prod_eq (H : f ×ᶠ g = f' ×ᶠ g') : g = g' := by grind
@@ -114,8 +116,8 @@ theorem right_eq_of_prod_eq (H : f ×ᶠ g = f' ×ᶠ g') : g = g' := by grind
 @[simp] theorem prod_inj {f f' : ∀ i, α i} {g g' : ∀ i, β i} :
     f ×ᶠ g = f' ×ᶠ g' ↔ f = f' ∧ g = g' := by grind
 
-theorem prod_eq_iff : f ×ᶠ g = h ↔ f = fstComp h ∧ g = sndComp h := by grind
-theorem eq_prod_iff : h = f ×ᶠ g ↔ fstComp h = f ∧ sndComp h = g := by grind
+theorem prod_eq_iff : f ×ᶠ g = h ↔ f = h₍₁₎ ∧ g = h₍₂₎ := by grind
+theorem eq_prod_iff : h = f ×ᶠ g ↔ h₍₁₎ = f ∧ h₍₂₎ = g := by grind
 
 theorem prod_dcomp (h : κ → ι) : (f ×ᶠ g) ∘' h = (f ∘' h) ×ᶠ (g ∘' h) := rfl
 
@@ -152,14 +154,14 @@ section
 variable {α β γ δ : Type*} {ι κ : Sort*} (f : ι → α) (g : ι → β)
   (a : α) (b : β) (p : α × β)
 
-theorem fst_comp (h : ι → α × β) : Prod.fst ∘ h = fstComp h := rfl
-theorem snd_comp (h : ι → α × β) : Prod.snd ∘ h = sndComp h := rfl
+theorem fst_comp (h : ι → α × β) : Prod.fst ∘ h = h₍₁₎ := rfl
+theorem snd_comp (h : ι → α × β) : Prod.snd ∘ h = h₍₂₎ := rfl
 
-@[simp] theorem fstComp_mk : fstComp (Prod.mk a : β → α × β) = const β a := rfl
-@[simp] theorem sndComp_mk : sndComp (Prod.mk a : β → α × β) = id := rfl
+@[simp] theorem fstComp_mk : (Prod.mk a : β → α × β)₍₁₎ = const β a := rfl
+@[simp] theorem sndComp_mk : (Prod.mk a : β → α × β)₍₂₎ = id := rfl
 
-@[simp] theorem fstComp_mk_flip : fstComp ((Prod.mk · b) : α → α × β) = id := rfl
-@[simp] theorem sndComp_mk_flip : sndComp ((Prod.mk · b) : α → α × β) = const α b := rfl
+@[simp] theorem fstComp_mk_flip : ((Prod.mk · b) : α → α × β)₍₁₎ = id := rfl
+@[simp] theorem sndComp_mk_flip : ((Prod.mk · b) : α → α × β)₍₂₎ = const α b := rfl
 
 @[simp] theorem fst_prod_snd : (Prod.fst : _ → α) ×ᶠ (Prod.snd : _ → β) = id := rfl
 @[simp] theorem snd_prod_fst : (Prod.snd : _ → β) ×ᶠ (Prod.fst : _ → α) = .swap := rfl
@@ -192,8 +194,8 @@ variable {α β γ} (f : α → β) (g : α → γ) (a b : α)
 @[simp, grind =] theorem diag_apply : △(a) = (a, a) := rfl
 
 @[simp] theorem id_prod_id : id ×ᶠ id = diag (α := α) := rfl
-@[simp] theorem fstComp_diag : fstComp (diag (α := α)) = id := rfl
-@[simp] theorem sndComp_diag : sndComp (diag (α := α)) = id := rfl
+@[simp] theorem fstComp_diag : (diag (α := α))₍₁₎ = id := rfl
+@[simp] theorem sndComp_diag : (diag (α := α))₍₂₎ = id := rfl
 
 @[simp] theorem diag_comp : diag ∘ f = f ×ᶠ f := rfl
 
