@@ -372,8 +372,7 @@ instance : (id W₁).IsInduced where
 instance (Ψ : LocalizerMorphism W₂ W₃) [Φ.IsInduced] [Ψ.IsInduced] :
     (Φ.comp Ψ).IsInduced where
   inverseImage_eq := by
-    simp only [← Φ.inverseImage_eq, ← Ψ.inverseImage_eq]
-    rfl
+    simp [← Φ.inverseImage_eq, ← Ψ.inverseImage_eq]
 
 section
 
