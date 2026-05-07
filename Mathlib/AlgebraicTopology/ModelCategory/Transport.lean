@@ -43,14 +43,11 @@ def ModelCategory.transport
   have h₂' : trivialFibrations C = (trivialFibrations D).inverseImage e.functor := by
     simp [trivialFibrations, h₂, h₃]
   have {X Y : C} (f : X ⟶ Y) [hf : Cofibration f] : Cofibration (e.functor.map f) := by
-    rw [cofibration_iff] at hf ⊢
-    rwa [h₁] at hf
+    simpa [cofibration_iff, h₁] using hf
   have {X Y : C} (f : X ⟶ Y) [hf : Fibration f] : Fibration (e.functor.map f) := by
-    rw [fibration_iff] at hf ⊢
-    rwa [h₂] at hf
+    simpa [fibration_iff, h₂] using hf
   have {X Y : C} (f : X ⟶ Y) [hf : WeakEquivalence f] : WeakEquivalence (e.functor.map f) := by
-    rw [weakEquivalence_iff] at hf ⊢
-    rwa [h₃] at hf
+    simpa [weakEquivalence_iff, h₃] using hf
   exact {
     cm1a := ⟨fun _ _ _ ↦ Adjunction.hasLimitsOfShape_of_equivalence e.functor⟩
     cm1b := ⟨fun _ _ _ ↦ Adjunction.hasColimitsOfShape_of_equivalence e.functor⟩
