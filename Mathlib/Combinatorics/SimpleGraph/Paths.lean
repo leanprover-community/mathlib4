@@ -152,7 +152,8 @@ theorem reverse_isTrail_iff {u v : V} (p : G.Walk u v) : p.reverse.IsTrail ↔ p
       convert h.reverse _
       try rw [reverse_reverse]
 
-@[simp] theorem isTrail_append {u v w : V} (p : G.Walk u v) (q : G.Walk v w) :
+@[simp]
+theorem isTrail_append {u v w : V} (p : G.Walk u v) (q : G.Walk v w) :
     (p.append q).IsTrail ↔ p.IsTrail ∧ q.IsTrail ∧ p.edges.Disjoint q.edges := by
   simp [Walk.isTrail_def, List.nodup_append']
 
@@ -705,46 +706,52 @@ theorem IsPath.disjoint_edges_of_disjoint_support {p : G.Walk u v} {q : G.Walk v
   · grind [length_eq_one_of_mem_edges]
   · grind [p.adj_of_mem_edges hep |>.ne]
 
-lemma isPath_append_isCycle {u v} {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPath) (hq : q.IsPath)
+lemma IsPath.isCycle_append {u v} {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPath) (hq : q.IsPath)
     (h : p.support.tail.Disjoint q.support.tail) (hn : 1 < p.length ⊔ q.length) :
     (p.append q).IsCycle := by
-  rw [isCycle_def]
-  refine ⟨isTrail_append .. |>.mpr ⟨hp.isTrail, hq.isTrail, ?_⟩, ?_, ?_⟩
-  · rintro ⟨⟩ h₁ h₂
-    cases lt_sup_iff.mp hn
-    · exact hp.disjoint_edges_of_disjoint_support h (Nat.ne_of_gt ‹_›) h₁ h₂
-    · exact hq.disjoint_edges_of_disjoint_support h.symm (Nat.ne_of_gt ‹_›) h₂ h₁
+  rw [isCycle_def, isTrail_append]
+  refine ⟨⟨hp.isTrail, hq.isTrail, ?_⟩, ?_, ?_⟩
+  · grind [IsPath.disjoint_edges_of_disjoint_support, List.Disjoint.symm]
   · grind [nil_append_iff, nil_iff_length_eq]
   · rw [tail_support_append, List.nodup_append']
     exact ⟨hp.support_nodup.tail, hq.support_nodup.tail, h⟩
 
-theorem cycle_from_two_paths {u v : V} {p q : G.Walk u v} (hp : p.IsPath) (hq : q.IsPath)
+theorem IsPath.exists_isCycle_of_ne {u v : V} {p q : G.Walk u v} (hp : p.IsPath) (hq : q.IsPath)
     (h : p ≠ q) :
-    ∃ w, w ∈ p.support ∧ w ∈ q.support ∧
-    ∃ c : G.Walk w w, c.IsCycle ∧ c.support.Sublist (p.support ++ q.support.reverse.tail) := by
-  induction hs : p.length using Nat.strong_induction_on generalizing u v with | h s ih =>
+    ∃ (u' v' : V) (p' q' : G.Walk u' v'),
+      p'.IsSubwalk p ∧ q'.IsSubwalk q ∧ (p'.append q'.reverse).IsCycle := by
+  induction hs : p.length using Nat.strongRec generalizing u v with | ind s ih =>
   by_cases! hw : ∃ w, w ∈ p.support ∧ w ∈ q.support ∧ w ≠ u ∧ w ≠ v
   · classical
-    obtain ⟨w, hwp, hwq, hwu, hwv⟩ := hw
-    by_cases! htake : p.takeUntil w hwp ≠ q.takeUntil w hwq
-    · obtain ⟨x, hx₁, hx₂, c, hc₁, hc₂⟩ := ih _ (hs ▸ length_takeUntil_lt hwp hwv)
-        (hp.takeUntil hwp) (hq.takeUntil hwq) htake rfl
-      refine ⟨x, ?_, ?_, c, hc₁, hc₂.trans <| .append ?_ ?_⟩ <;>
-        grind [support_takeUntil_prefix, List.IsPrefix.sublist]
-    · obtain ⟨x, hx₁, hx₂, c, hc₁, hc₂⟩ := ih _ (hs ▸ length_dropUntil_lt hwp hwu)
-        (hp.dropUntil hwp) (hq.dropUntil hwq) (by grind [take_spec]) rfl
-      refine ⟨x, ?_, ?_, c, hc₁, hc₂.trans <| .append ?_ ?_⟩ <;>
-        grind [dropUntil_support_suffix, List.IsSuffix.sublist]
-  · refine ⟨u, by simp, by simp, p.append q.reverse, ?_, by simp [support_append]⟩
-    refine isPath_append_isCycle hp (isPath_reverse_iff q |>.mpr hq) (fun _ ↦ ?_) ?_
+    have ⟨w, hwp, hwq, hwu, hwv⟩ := hw
+    by_cases! p.takeUntil w hwp ≠ q.takeUntil w hwq
+    · have := ih _ (hs ▸ length_takeUntil_lt hwp hwv) (hp.takeUntil hwp) (hq.takeUntil hwq)
+      grind [isSubwalk_takeUntil, IsSubwalk.trans]
+    · have := ih _ (hs ▸ length_dropUntil_lt hwp hwu) (hp.dropUntil hwp) (hq.dropUntil hwq) <| by
+        grind [take_spec]
+      grind [isSubwalk_dropUntil, IsSubwalk.trans]
+  · refine ⟨u, v, p, q, p.isSubwalk_rfl, q.isSubwalk_rfl, ?_⟩
+    refine hp.isCycle_append (isPath_reverse_iff q |>.mpr hq) (fun _ ↦ ?_) ?_
     · grind [dropLast_support_concat, IsPath.support_nodup, support_reverse, cons_tail_support]
     · grind [length_reverse, eq_of_length_le_one]
 
-theorem cycle_from_two_paths_le_length_sum {u v : V} {p q : G.Walk u v}
-    (hp : p.IsPath) (hq : q.IsPath) (h : p ≠ q) :
+theorem IsPath.exists_isCycle_sublist_of_ne {u v : V} {p q : G.Walk u v} (hp : p.IsPath)
+    (hq : q.IsPath) (h : p ≠ q) :
+    ∃ w, w ∈ p.support ∧ w ∈ q.support ∧
+    ∃ c : G.Walk w w, c.IsCycle ∧ c.support.Sublist (p.support ++ q.support.reverse.tail) := by
+  have ⟨u', v', p', q', hp', hq', hcyc⟩ := hp.exists_isCycle_of_ne hq h
+  use u', hp'.support_subset p'.start_mem_support, hq'.support_subset q'.start_mem_support
+  refine ⟨_, hcyc, ?_⟩
+  rw [support_append, support_reverse]
+  refine .append ?_ <| .tail <| .reverse ?_
+  · exact isSubwalk_iff_support_isInfix.mp hp' |>.sublist
+  · exact isSubwalk_iff_support_isInfix.mp hq' |>.sublist
+
+theorem IsPath.exists_isCycle_le_length_sum_of_ne {u v : V} {p q : G.Walk u v} (hp : p.IsPath)
+    (hq : q.IsPath) (h : p ≠ q) :
     ∃ w, w ∈ p.support ∧ w ∈ q.support ∧
     ∃ c : G.Walk w w, c.IsCycle ∧ c.length ≤ p.length + q.length := by
-  obtain ⟨w, hw₁, hw₂, c, hc₁, hc₂⟩ := cycle_from_two_paths hp hq h
+  obtain ⟨w, hw₁, hw₂, c, hc₁, hc₂⟩ := hp.exists_isCycle_sublist_of_ne hq h
   use w, hw₁, hw₂, c, hc₁, by grind [hc₂.length_le]
 
 variable [DecidableEq V] {u' v' : V}
