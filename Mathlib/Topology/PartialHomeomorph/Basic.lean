@@ -167,28 +167,23 @@ def toHomeomorphOfSourceEqUnivTargetEqUniv (h : e.source = (univ : Set X)) (h' :
   continuous_invFun := by
     simpa only [continuousOn_univ, h'] using e.continuousOn_symm
 
-end PartialHomeomorph
-
-/-!
-## Embeddings
--/
-namespace Topology.IsEmbedding
-
-variable (f : X → Y) (h : IsEmbedding f)
-
-lemma random {X Y : Type*} (h : PartialEquiv X Y) :
-    h.toEquiv = codRestrict (h.source.restrict h) h.target (by simp) :=
-  rfl
-
-theorem continuous_codRestrict_iff {f : X → Y} {s : Set Y} (hs : ∀ a, f a ∈ s) :
-    Continuous (codRestrict f s hs) ↔ Continuous f := by
+theorem isEmbedding_restrict : IsEmbedding (e.source.restrict e.toFun) := by
+  rw [isEmbedding_iff]
   constructor
-  · simp_rw [continuous_def]
-    intro hf t ht
-    exact hf (Subtype.val ⁻¹' t) ht.preimage_val
-  · intro hf
-    exact Continuous.codRestrict hf hs
+  · apply Topology.IsInducing.of_codRestrict (t := e.target) (by simp)
+    rw [← PartialEquiv.toEquiv_eq_codRestrict_restrict]
+    exact e.toHomeomorphSourceTarget.isInducing
+  · rw [coe_coe, restrict_eq, e.injOn.injective_iff e.source (by simp)]
+    exact Subtype.val_injective
 
+/-- A partial homeomorphism whose source is all of `X` defines an embedding of `X` into
+`Y`. The converse is also true; see `IsEmbedding.toPartialHomeomorph`. -/
+theorem to_isEmbedding (h : e.source = Set.univ) : IsEmbedding e :=
+  e.isEmbedding_restrict.comp
+    ((Homeomorph.setCongr h).trans <| Homeomorph.Set.univ X).symm.isEmbedding
+
+/-- If a `PartialEquiv` is a homeomorphism when restricted to source and target, then it is a
+`PartialHomeomorph`. -/
 def ofIsHomeomorphToEquiv (f : PartialEquiv X Y) (h : IsHomeomorph (f.toEquiv)) :
     PartialHomeomorph X Y where
   toPartialEquiv := f
@@ -200,25 +195,30 @@ def ofIsHomeomorphToEquiv (f : PartialEquiv X Y) (h : IsHomeomorph (f.toEquiv)) 
       simp [PartialEquiv.toEquiv]
     exact h.continuous
   continuousOn_invFun := by
-    rw [continuousOn_iff_continuous_restrict]
-    rw [← continuous_codRestrict_iff (f := f.target.restrict f.invFun) (s := f.source) (by simp)]
-    have : codRestrict (f.target.restrict f.invFun) f.source (by simp) = f.toEquiv.symm := by
-      ext x
-      simp [PartialEquiv.toEquiv]
-    --rw [Equiv.isHomeomorph_iff] at h
-    --rw [this]
-    --exact?
-    sorry
+    rw [continuousOn_iff_continuous_restrict,
+      ← continuous_codRestrict_iff (s := f.source) (by simp),
+      ← PartialEquiv.toEquiv_eq_codRestrict_restrict_invFun]
+    exact ((Equiv.isHomeomorph_iff _).1 h).2
 
-/-- An open embedding of `X` into `Y`, with `X` nonempty, defines an open partial homeomorphism
+end PartialHomeomorph
+
+/-!
+## Embeddings
+-/
+
+namespace Topology.IsEmbedding
+
+variable (f : X → Y) (h : IsEmbedding f)
+
+/-- An embedding of `X` into `Y`, with `X` nonempty, defines a partial homeomorphism
 whose source is all of `X`. The converse is also true; see
-`OpenPartialHomeomorph.to_isOpenEmbedding`. -/
+`PartialHomeomorph.to_isEmbedding`. -/
 @[simps! -fullyApplied apply source target]
 noncomputable def toPartialHomeomorph [Nonempty X] : PartialHomeomorph X Y :=
-  ofIsHomeomorphToEquiv (h.injective.injOn.toPartialEquiv f univ) (by
+  PartialHomeomorph.ofIsHomeomorphToEquiv (h.injective.injOn.toPartialEquiv f univ) (by
     rw [isHomeomorph_iff_isEmbedding_surjective]
     constructor
-    · rw [random]
+    · rw [PartialEquiv.toEquiv_eq_codRestrict_restrict]
       apply IsEmbedding.codRestrict
       simp only [InjOn.toPartialEquiv.eq_1, BijOn.toPartialEquiv_source, restrict_eq]
       exact h.comp subtypeVal
@@ -226,13 +226,43 @@ noncomputable def toPartialHomeomorph [Nonempty X] : PartialHomeomorph X Y :=
 
 variable [Nonempty X]
 
-lemma toOpenPartialHomeomorph_left_inv {x : X} : (h.toPartialHomeomorph f).symm (f x) = x := by
+lemma toPartialHomeomorph_left_inv {x : X} : (h.toPartialHomeomorph f).symm (f x) = x := by
   rw [← congr_fun (h.toPartialHomeomorph_apply f), PartialHomeomorph.left_inv]
   exact Set.mem_univ _
 
-lemma toOpenPartialHomeomorph_right_inv {x : Y} (hx : x ∈ Set.range f) :
+lemma toPartialHomeomorph_right_inv {x : Y} (hx : x ∈ Set.range f) :
     f ((h.toPartialHomeomorph f).symm x) = x := by
   rw [← congr_fun (h.toPartialHomeomorph_apply f), PartialHomeomorph.right_inv]
   rwa [toPartialHomeomorph_target]
 
 end Topology.IsEmbedding
+
+/-! inclusion of an open set in a topological space -/
+namespace Set
+
+/- `Nonempty s` is not a type class argument because `s`, being a subset, rarely comes with a type
+class instance. Then we'd have to manually provide the instance every time we use the following
+lemmas, tediously using `haveI := ...` or `@foobar _ _ _ ...`. -/
+variable (s : Set X) (hs : Nonempty s)
+
+/-- The inclusion of an open subset `s` of a space `X` into `X` is an open partial homeomorphism
+from the subtype `s` to `X`. -/
+noncomputable def partialHomeomorphSubtypeCoe : PartialHomeomorph s X :=
+  IsEmbedding.subtypeVal.toPartialHomeomorph _
+
+@[simp]
+theorem partialHomeomorphSubtypeCoe_coe :
+    (s.partialHomeomorphSubtypeCoe hs : s → X) = (↑) :=
+  rfl
+
+@[simp, mfld_simps]
+theorem partialHomeomorphSubtypeCoe_source :
+    (s.partialHomeomorphSubtypeCoe hs).source = Set.univ :=
+  rfl
+
+@[simp]
+theorem partialHomeomorphSubtypeCoe_target :
+    (s.partialHomeomorphSubtypeCoe hs).target = s := by
+  simp [partialHomeomorphSubtypeCoe]
+
+end Set

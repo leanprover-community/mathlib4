@@ -43,7 +43,7 @@ variable (e : PartialHomeomorph X Y)
 section IsImage
 
 /-!
-## `OpenPartialHomeomorph.IsImage` relation
+## `PartialHomeomorph.IsImage` relation
 
 We say that `t : Set Y` is an image of `s : Set X` under an open partial homeomorphism `e` if any of
 the following equivalent conditions hold:
@@ -54,10 +54,10 @@ the following equivalent conditions hold:
 
 This definition is a restatement of `PartialEquiv.IsImage` for open partial homeomorphisms.
 In this section we transfer API about `PartialEquiv.IsImage` to open partial homeomorphisms and
-add a few `OpenPartialHomeomorph`-specific lemmas like `OpenPartialHomeomorph.IsImage.closure`.
+add a few `PartialHomeomorph`-specific lemmas like `PartialHomeomorph.IsImage.closure`.
 -/
 
-/-- We say that `t : Set Y` is an image of `s : Set X` under an open partial homeomorphism `e`
+/-- We say that `t : Set Y` is an image of `s : Set X` under a partial homeomorphism `e`
 if any of the following equivalent conditions hold:
 
 * `e '' (e.source ∩ s) = e.target ∩ t`;
