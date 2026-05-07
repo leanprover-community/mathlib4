@@ -123,6 +123,7 @@ lemma Module.exists_isPrincipal_quotient_of_finite :
     Order.Iio_succ_eq_insert (sSup s), ← Set.union_singleton, Set.preimage_union, Set.image_union,
     ← @Set.image_singleton _ _ f, Set.union_comm]
   congr!
+  · rfl
   ext
   simp [Fin.ext_iff]
 

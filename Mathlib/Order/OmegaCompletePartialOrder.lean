@@ -79,7 +79,7 @@ variable [Preorder α] [Preorder β] [Preorder γ]
 
 instance : FunLike (Chain α) ℕ α where
   coe c := c.toOrderHom
-  coe_injective' := by rintro ⟨f, hf⟩; congr!
+  coe_injective' := by rintro ⟨f, hf⟩; congr! (config := { postTransparency := .default })
 
 initialize_simps_projections Chain (toFun → apply)
 

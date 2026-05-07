@@ -181,14 +181,14 @@ theorem iff_adjoin_image (s : Set ι) :
     AlgebraicIndependent R x ↔ AlgebraicIndependent R (fun i : s ↦ x i) ∧
       AlgebraicIndepOn (adjoin R (x '' s)) x sᶜ := by
   rw [show x '' s = range fun i : s ↦ x i by ext; simp]
-  convert! ← sumElim_iff
+  convert ← sumElim_iff
   classical apply algebraicIndependent_equiv' ((Equiv.sumComm ..).trans (Equiv.Set.sumCompl ..))
   ext (_ | _) <;> rfl
 
 theorem iff_adjoin_image_compl (s : Set ι) :
     AlgebraicIndependent R x ↔ AlgebraicIndependent R (fun i : ↥sᶜ ↦ x i) ∧
       AlgebraicIndepOn (adjoin R (x '' sᶜ)) x s := by
-  convert! ← iff_adjoin_image _; apply compl_compl
+  convert ← iff_adjoin_image _; apply compl_compl
 
 theorem iff_transcendental_adjoin_image (i : ι) :
     AlgebraicIndependent R x ↔ AlgebraicIndependent R (fun j : {j // j ≠ i} ↦ x j) ∧

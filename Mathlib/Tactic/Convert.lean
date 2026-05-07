@@ -218,12 +218,14 @@ elab_rules : tactic
         let redGoals ← g.convert e sym.isSome (n.map (·.getNat)) baseConfig patterns
         let defaultGoals ← g.convert e sym.isSome (n.map (·.getNat)) config patterns
         if redGoals.length == defaultGoals.length then
-          let sameGoals ← (redGoals.zip defaultGoals).allM fun (g₁, g₂) => do
-            -- Check that they agree on the set of free variables, otherwise we get errors.
-            -- We assume the context in the `convert` case is a subset of the `convert!` case
-            -- since `convert!` can more agressively unfold and introduce more variables.
-            if !(← g₁.getDecl).lctx.isSubPrefixOf (← g₂.getDecl).lctx then return false
-            g₂.withContext <| withReducible <| isDefEq (← g₁.getType) (← g₂.getType)
+          let sameGoals ← try
+            (redGoals.zip defaultGoals).allM fun (g₁, g₂) => do
+              -- Check that they agree on the set of free variables, otherwise we get errors.
+              -- We assume the context in the `convert` case is a subset of the `convert!` case
+              -- since `convert!` can more agressively unfold and introduce more variables.
+              if !(← g₁.getDecl).lctx.isSubPrefixOf (← g₂.getDecl).lctx then return false
+              g₂.withContext <| withReducible <| isDefEq (← g₁.getType) (← g₂.getType)
+            catch _ => pure false
           if sameGoals then
             let tac ← `(tactic| convert%$tk $cfg $[←%$sym]? $term $[using $n]? $[with $ps?*]?)
             TryThis.addSuggestion tk { suggestion := tac } (origSpan? := ← getRef)
