@@ -122,6 +122,7 @@ section noMultiEdgeGraphLike
 
 variable {d : D} {Gr : Type*} {G : Gr}
 
+/-- A graph-like structure with no multi-edge and symmetric darts. -/
 class noMultiEdgeSymmGraphLike (V D E : outParam Type*) (Gr : Type*) extends
     SymmGraphLike V D E Gr, NoMultiEdgeGraphLike V D E Gr  where
 
