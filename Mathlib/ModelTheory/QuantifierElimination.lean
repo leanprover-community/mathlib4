@@ -29,55 +29,6 @@ namespace FirstOrder
 
 namespace Language
 
-namespace PartialEquiv
-
-noncomputable def codMap
-    {L : Language} {M N N' : Type*}
-    [L.Structure M] [L.Structure N] [L.Structure N']
-    (f : M ≃ₚ[L] N) (e : N ↪[L] N') : M ≃ₚ[L] N' where
-  dom := f.dom
-  cod := f.cod.map e.toHom
-  toEquiv := (e.substructureEquivMap f.cod).comp f.toEquiv
-
-def ExtendsAlong
-    {L : Language} {M N N' : Type*}
-    [L.Structure M] [L.Structure N] [L.Structure N']
-    (e : N ↪ₑ[L] N') (f : M ≃ₚ[L] N) (g : M ≃ₚ[L] N') : Prop :=
-  codMap f e.toEmbedding ≤ g
-
-def ExtendsAlong'
-    {L : Language} {M N N' : Type*}
-    [L.Structure M] [L.Structure N] [L.Structure N']
-    (e : N ↪ₑ[L] N') (f : M ≃ₚ[L] N) (g : M ≃ₚ[L] N') : Prop :=
-  ∃ hdom : f.dom ≤ g.dom, ∀ x : f.dom,
-    e (f.toEquiv x : N) = (g.toEquiv (Substructure.inclusion hdom x) : N')
-
-theorem extendsAlong_iff_extendsAlong'
-    {L : Language} {M N N' : Type*}
-    [L.Structure M] [L.Structure N] [L.Structure N']
-    (e : N ↪ₑ[L] N') (f : M ≃ₚ[L] N) (g : M ≃ₚ[L] N') :
-    f.ExtendsAlong e g ↔ ExtendsAlong' e f g := by
-  constructor
-  · intro h
-    refine ⟨dom_le_dom h, ?_⟩
-    intro x
-    have hx := congrArg (fun y : g.cod => (y : N')) (toEquiv_inclusion_apply h x)
-    have hxmap :
-        ((Substructure.inclusion (cod_le_cod h) ((codMap f e.toEmbedding).toEquiv x) :
-          g.cod) : N') = e (f.toEquiv x : N) := by
-      change ((((e.toEmbedding.substructureEquivMap f.cod).comp f.toEquiv) x) : N') =
-        e (f.toEquiv x : N)
-      rw [Equiv.comp_apply]
-      exact Embedding.substructureEquivMap_apply e.toEmbedding f.cod (f.toEquiv x)
-    exact hxmap.symm.trans hx.symm
-  · rintro ⟨hdom, hmap⟩
-    rw [ExtendsAlong, le_def]
-    refine ⟨hdom, ?_⟩
-    ext x
-    simpa [codMap] using (hmap x).symm
-
-end PartialEquiv
-
 namespace Theory
 
 open Structure
@@ -713,7 +664,7 @@ def IsElementaryExtensionPair (T : L.Theory) : Prop :=
     (f : M ≃ₚ[L] N) (a : M),
     ∃ (N' : Type (max u v)) (_ : L.Structure N')
       (e : N ↪ₑ[L] N') (g : M ≃ₚ[L] N'),
-      a ∈ g.dom ∧ f.ExtendsAlong e g
+      a ∈ g.dom ∧ f.ExtendsAlong e.toEmbedding g
 
 /-- A theory has the finitely generated elementary extension-pair property if every partial
 isomorphism between finitely generated substructures of nonempty models of the theory can be
@@ -725,7 +676,7 @@ def IsElementaryExtensionPairFG (T : L.Theory) : Prop :=
     (f : L.FGEquiv M N) (a : M),
     ∃ (N' : Type (max u v)) (_ : L.Structure N')
       (e : N ↪ₑ[L] N') (g : L.FGEquiv M N'),
-      a ∈ g.1.dom ∧ f.1.ExtendsAlong e g
+      a ∈ g.1.dom ∧ f.1.ExtendsAlong e.toEmbedding g
 
 /-- Henson, Theorem 7.11, direction `(2) → (1)`: if every partial isomorphism between
 substructures of models of `T` can be extended, after passing to an elementary extension of the

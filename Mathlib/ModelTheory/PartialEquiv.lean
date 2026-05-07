@@ -229,6 +229,18 @@ theorem le_codRestrict (f g : M ≃ₚ[L] N) {A : L.Substructure N} (hf : f.cod 
     (hg : A ≤ g.cod) (hfg : f ≤ g) : f ≤ g.codRestrict hg :=
   symm_le_iff.1 (le_domRestrict f.symm g.symm hf hg (monotone_symm hfg))
 
+/-- Maps the codomain of a partial equivalence along an embedding. -/
+noncomputable def codMap {N' : Type*} [L.Structure N'] (f : M ≃ₚ[L] N) (e : N ↪[L] N') :
+    M ≃ₚ[L] N' where
+  dom := f.dom
+  cod := f.cod.map e.toHom
+  toEquiv := (e.substructureEquivMap f.cod).comp f.toEquiv
+
+/-- A partial equivalence `g` extends `f` after mapping the codomain of `f` along `e`. -/
+def ExtendsAlong {N' : Type*} [L.Structure N'] (f : M ≃ₚ[L] N) (e : N ↪[L] N')
+    (g : M ≃ₚ[L] N') : Prop :=
+  f.codMap e ≤ g
+
 /-- A partial equivalence as an embedding from its domain. -/
 def toEmbedding (f : M ≃ₚ[L] N) : f.dom ↪[L] N :=
   (subtype _).comp f.toEquiv.toEmbedding
