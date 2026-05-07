@@ -529,7 +529,7 @@ lemma isDiag_of_subsingleton [Subsingleton α] (z : Sym2 α) : z.IsDiag := z.ind
 variable (z) in
 /-- Computably extract the element when known to be diagonal. -/
 def IsDiag.elem : z.IsDiag → α :=
-  z.rec (fun a b _ => a) fun a b a' b' h => funext fun (hx : a' = b') => by
+  z.rec (fun a b _ => a) fun a b a' b' h => funext fun hx : a' = b' => by
     cases hx
     cases h <;> rfl
 
