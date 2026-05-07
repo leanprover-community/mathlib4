@@ -87,7 +87,7 @@ variable (K : Submodule 𝕜 E) [K.HasOrthogonalProjection] (x : E)
 isometrically isomorphic to the `L²` product of `K` and `Kᗮ`. -/
 @[simps! symm_apply]
 def orthogonalDecomposition : E ≃ₗᵢ[𝕜] WithLp 2 (K × Kᗮ) where
-  __ := (K.prodEquivOfIsCompl Kᗮ isCompl_orthogonal_of_hasOrthogonalProjection).symm
+  __ := (K.prodEquivOfIsCompl Kᗮ K.isCompl_orthogonal).symm
     ≪≫ₗ (WithLp.linearEquiv 2 𝕜 (K × Kᗮ)).symm
   norm_map' _ := by
     rw [← sq_eq_sq₀ (by positivity) (by positivity), WithLp.prod_norm_sq_eq_of_L2,
@@ -102,14 +102,14 @@ theorem orthogonalDecomposition_apply :
 
 theorem toLinearEquiv_orthogonalDecomposition :
     K.orthogonalDecomposition.toLinearEquiv =
-      (K.prodEquivOfIsCompl Kᗮ isCompl_orthogonal_of_hasOrthogonalProjection).symm ≪≫ₗ
+      (K.prodEquivOfIsCompl Kᗮ K.isCompl_orthogonal).symm ≪≫ₗ
         (WithLp.linearEquiv 2 𝕜 (K × Kᗮ)).symm :=
   rfl
 
 theorem toLinearEquiv_orthogonalDecomposition_symm :
     K.orthogonalDecomposition.symm.toLinearEquiv =
       WithLp.linearEquiv 2 𝕜 (K × Kᗮ) ≪≫ₗ
-        K.prodEquivOfIsCompl Kᗮ isCompl_orthogonal_of_hasOrthogonalProjection :=
+        K.prodEquivOfIsCompl Kᗮ K.isCompl_orthogonal :=
   rfl
 
 theorem coe_orthogonalDecomposition :
