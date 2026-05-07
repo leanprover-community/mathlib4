@@ -680,7 +680,7 @@ theorem theta_le_pi_mul_log' (x : ℝ) : θ x ≤ (π ⌊x⌋₊) * log x := by
   grw [← psi_le_primeCounting_mul_log', theta_le_psi]
 
 private theorem pi_mul_log_sqrt_le {x : ℝ} (hx : 1 ≤ x) :
-  (π ⌊x⌋₊) * log √x ≤ log 4 * x + √x * log √x := calc
+    (π ⌊x⌋₊) * log √x ≤ log 4 * x + √x * log √x := calc
   _ = ∑ p ∈ primesLE ⌊x⌋₊, log √x := by simp
   _ ≤ ∑ p ∈ primesLE ⌊x⌋₊, (log p + (if p ≤ √x then log √x else 0)) := by
     refine sum_le_sum fun p hp ↦ ?_
