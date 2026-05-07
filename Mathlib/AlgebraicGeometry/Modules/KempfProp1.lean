@@ -13,7 +13,7 @@ public import Mathlib.AlgebraicGeometry.Modules.Quasicoherent
 
 universe u v
 
-open CategoryTheory TopologicalSpace
+open CategoryTheory TopologicalSpace Opposite
 
 namespace TopCat.Sheaf
 
@@ -62,7 +62,7 @@ theorem prop1 (F : TopCat.Sheaf AddCommGrpCat.{u} X) (n : ℕ) {B : Set (Opens X
       let presᵤ := pres.map (restrict _ U.isOpenEmbedding)
       have : (restrict AddCommGrpCat.{u} U.isOpenEmbedding).IsRightAdjoint := sorry
       have presᵤEx : presᵤ.ShortExact := presEx.map_of_exact _
-      have : Subsingleton (presᵤ.X₁.H (r + 1)) := vanish (r + 1) U sorry sorry hU
+      have : Subsingleton (presᵤ.X₁.H (r + 1)) := vanish (r + 1) U (by omega) (by omega) hU
       obtain ⟨x₂, rfl⟩ :=
         Sheaf.H.longSequence_exact₃ presᵤEx r (r + 1) rfl x (Subsingleton.elim _ _)
       have : Subsingleton (presᵤ.X₂.H r) := by
@@ -73,10 +73,36 @@ theorem prop1 (F : TopCat.Sheaf AddCommGrpCat.{u} X) (n : ℕ) {B : Set (Opens X
       simp) b
     use I, U, hU₁
     refine fun i => ⟨(hU₂ i).left, ?_⟩
-    rw [← hb]
-    let φ := pres.mapNatTrans (toRestrict AddCommGrpCat (U i))
-    dsimp at φ
-    
-    sorry
+    have : (restrict AddCommGrpCat.{u} (U i).isOpenEmbedding).IsRightAdjoint := sorry
+    have : (pres.map (restrict AddCommGrpCat (U i).isOpenEmbedding ⋙ pushforward AddCommGrpCat
+        (U i).inclusion')).ShortExact := by
+      have := (restrict AddCommGrpCat (U i).isOpenEmbedding ⋙ pushforward AddCommGrpCat
+          (U i).inclusion').preservesFiniteLimits_tfae.out 3 1
+      have := this.mp inferInstance pres ⟨presEx.1, presEx.2⟩
+      refine ShortComplex.ShortExact.mk' this.1 this.2 ?_
+      dsimp
+      rw [← isLocallySurjective_iff_epi, Presheaf.isLocallySurjective_iff]
+      intro V s x hx
+      obtain ⟨W, hW⟩ := Opens.isBasis_iff_nbhd.mp hB hx
+      use W, hW.2.2
+      refine ⟨?_, hW.2.1⟩
+      have fs {V : Opens X} (hV : V ∈ B) : Function.Surjective (pres.g.hom.app (op V)) := by
+        have : V.isOpenEmbedding.functor.obj ⊤ = V := by simp only [Opens.isOpenEmbedding_obj_top]
+        erw [← this]
+        let presᵥ := pres.map (restrict _ V.isOpenEmbedding)
+        have : (restrict AddCommGrpCat.{u} V.isOpenEmbedding).IsRightAdjoint := sorry
+        have presᵥEx : presᵥ.ShortExact := presEx.map_of_exact _
+        have : Subsingleton (presᵥ.X₁.H 1) := vanish 1 V (le_refl 1) (by omega) hV
+        exact Sheaf.H.longSequence_surjective_of_subsingleton_H presᵥEx Limits.isTerminalTop
+      have : (U i).isOpenEmbedding.functor.obj ((Opens.map (U i).inclusion').obj W) ∈ B := by
+        rw [func_inc]
+        exact hinter _ _ (hU₂ i).1 hW.1
+      apply fs this
+    have r₁ := Sheaf.H.connectingHom_naturality (n + 1) (n + 1 + 1) rfl presEx this
+      (pres.mapNatTrans (toRestrict AddCommGrpCat (U i))) b
+    have r₂ := (hU₂ i).right
+    dsimp [pres] at r₁ r₂ ⊢
+    rw [← hb, ← r₁, r₂]
+    erw [map_zero]
 
 end TopCat.Sheaf
