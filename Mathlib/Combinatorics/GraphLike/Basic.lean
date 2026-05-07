@@ -182,4 +182,50 @@ lemma val_dartStep (d : darts G) : (dartStep d).val = d.val := by simp [dartStep
 first dart's target is equal to the second dart's source. -/
 @[expose] def DartAdj (d d' : darts G) : Prop := tgt Gr d.val = src Gr d'.val
 
-end GraphLike.GraphLike
+end GraphLike
+
+section noMultiEdgeGraphLike
+
+/-
+### GraphLike with no multi-edge
+
+Some graph-like structures, such as `SimpleGraph` and `Digraph`, does not allow multiple darts/edges
+between the same pair of vertices. This section defines a typeclass `NoMultiEdgeGraphLike` for
+such graph-like structures.
+-/
+class NoMultiEdgeGraphLike (V D E : outParam Type*) (Gr : Type*) extends GraphLike V D E Gr where
+  protected src_tgt_inj : Function.Injective (fun d ↦ (src d, tgt d))
+
+variable [NoMultiEdgeGraphLike V D E Gr]
+
+lemma dart_eq_of_src_tgt_eq {d₁ d₂ : D} (h : src Gr d₁ = src Gr d₂) (h' : tgt Gr d₁ = tgt Gr d₂) :
+    d₁ = d₂ := by
+  apply NoMultiEdgeGraphLike.src_tgt_inj (Gr := Gr)
+  grind
+
+lemma src_tgt_inj (d₁ d₂ : D) : src Gr d₁ = src Gr d₂ ∧ tgt Gr d₁ = tgt Gr d₂ ↔ d₁ = d₂ :=
+  ⟨fun h => dart_eq_of_src_tgt_eq h.1 h.2, by grind⟩
+
+@[simp]
+lemma mem_darts_iff_adj : d ∈ darts G ↔ Adj G (src Gr d) (tgt Gr d) := by
+  rw [← exists_darts_iff_adj]
+  refine ⟨fun h => (by use d), fun ⟨d', hd', hs, ht⟩ => ?_⟩
+  obtain rfl := src_tgt_inj d' d |>.mp ⟨hs, ht⟩
+  exact hd'
+
+instance [DecidableRel (Adj G)] : DecidablePred (· ∈ darts G) :=
+  fun d => decidable_of_iff (Adj G (src Gr d) (tgt Gr d)) (mem_darts_iff_adj.symm)
+
+instance : Subsingleton (step G u v) where
+  allEq := by
+    rintro ⟨p₁, h₁, rfl, rfl⟩ ⟨p₂, h₂, h1, h2⟩
+    exact step.ext_iff.mpr <| dart_eq_of_src_tgt_eq h1.symm h2.symm
+
+@[simp]
+lemma exists_step_iff_adj {P : (step G u v) → Prop} :
+    (∃ s : step G u v, P s) ↔ (∃ h : Adj G u v, P (h.toStep)) := by
+  refine ⟨fun ⟨s, hp⟩ ↦ ⟨s.adj, ?_⟩, fun ⟨h, hp⟩ ↦ ⟨h.toStep, hp⟩⟩
+  rwa [Subsingleton.elim s.adj.toStep s]
+
+end noMultiEdgeGraphLike
+end GraphLike
