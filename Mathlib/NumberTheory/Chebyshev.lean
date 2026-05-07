@@ -284,8 +284,8 @@ theorem psi_le_primeCounting_mul_log' (x : ℝ) : ψ x ≤ (π ⌊x⌋₊) * log
   rcases lt_or_ge x 1 with h | h
   · simp [floor_eq_zero.mpr h]
   gcongr
-  · contrapose! h; simp_all
-  exact floor_le (by positivity)
+  · exact_mod_cast lt_of_add_one_le <| (one_le_floor_iff x).mpr h
+  · exact floor_le (by positivity)
 
 /-- $\psi(n) = \log(\mathrm{lcm}(1, \dots, n))$. -/
 theorem psi_eq_log_lcmUpto (n : ℕ) : ψ n = log (lcmUpto n) := by
