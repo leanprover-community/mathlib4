@@ -204,8 +204,8 @@ theorem card_powersetCard (n : ℕ) (s : Finset α) :
 /-- The `n`-element subsets of `t` containing `s` are exactly the `(n - s.card)`-element
 subsets of `t \ s`, unioned with `s`. -/
 theorem filter_powersetCard_subset [DecidableEq α] (s t : Finset α) (n : ℕ)
-    (hst : s ⊆ t) (hsn : s.card ≤ n) :
-    (t.powersetCard n).filter (s ⊆ ·) = ((t \ s).powersetCard (n - s.card)).image (· ∪ s) := by
+    (hst : s ⊆ t) (hsn : #s ≤ n) :
+    (t.powersetCard n).filter (s ⊆ ·) = ((t \ s).powersetCard (n - #s)).image (· ∪ s) := by
   ext x
   simp only [mem_filter, mem_powersetCard, mem_image]
   constructor
@@ -218,12 +218,11 @@ theorem filter_powersetCard_subset [DecidableEq α] (s t : Finset α) (n : ℕ)
     omega
 
 /-- The number of `n`-element subsets of `t` containing `s` equals
-`Nat.choose (t.card - s.card) (n - s.card)`. -/
+`Nat.choose (#t - #s) (n - #s)`. -/
 lemma card_filter_powersetCard_subset [DecidableEq α] (s t : Finset α) (n : ℕ)
-    (hst : s ⊆ t) (hsn : s.card ≤ n) :
-    ((t.powersetCard n).filter (s ⊆ ·)).card =
-    Nat.choose (t.card - s.card) (n - s.card) := by
-  have hinj : Set.InjOn (· ∪ s) ↑((t \ s).powersetCard (n - s.card)) := fun a ha b hb hab =>
+    (hst : s ⊆ t) (hsn : #s ≤ n) :
+    #((t.powersetCard n).filter (s ⊆ ·)) = Nat.choose (#t - #s) (n - #s) := by
+  have hinj : Set.InjOn (· ∪ s) ↑((t \ s).powersetCard (n - #s)) := fun a ha b hb hab =>
     (union_sdiff_cancel_right
       (disjoint_of_subset_left (mem_powersetCard.mp ha).1 disjoint_sdiff_self_left)).symm.trans
     ((congrArg (· \ s) hab).trans
