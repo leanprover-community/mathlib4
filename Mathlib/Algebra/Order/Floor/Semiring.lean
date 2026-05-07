@@ -386,6 +386,12 @@ variable [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorSemiring R]
 theorem sub_one_lt_floor (a : R) : a - 1 < ⌊a⌋₊ :=
   sub_lt_iff_lt_add.2 <| lt_floor_add_one a
 
+lemma self_sub_floor_lt_one (a : R) : a - ⌊a⌋₊ < 1 :=
+  sub_lt_iff_lt_add'.mpr <| lt_floor_add_one a
+
+lemma zero_le_self_sub_floor {a : R} (ha : 0 ≤ a) : 0 ≤ a - ⌊a⌋₊ :=
+  sub_nonneg.mpr <| Nat.floor_le ha
+
 lemma abs_sub_floor_le {a : R} (ha : 0 ≤ a) : |a - ⌊a⌋₊| ≤ 1 := by
   refine abs_le.mpr ⟨?_, ?_⟩
   · simpa using (floor_le ha).trans (le_add_of_nonneg_right zero_le_one)
