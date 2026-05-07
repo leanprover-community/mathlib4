@@ -689,8 +689,8 @@ private theorem pi_mul_log_sqrt_le {x : ℝ} (hx : 1 ≤ x) :
     grind
   _ ≤ _ := by
     grw [← theta_le_log4_mul_x (by positivity)]
-    rw [sum_add_distrib, theta_eq_theta_coe_floor, theta_eq_sum_log, ←sum_filter]
-    simp only [sum_const, nsmul_eq_mul, add_le_add_iff_left]
+    rw [sum_add_distrib, theta_eq_theta_coe_floor, theta_eq_sum_log, ← sum_filter]
+    simp only [sum_const, nsmul_eq_mul]
     gcongr
     · exact log_nonneg (one_le_sqrt.mpr hx)
     calc
