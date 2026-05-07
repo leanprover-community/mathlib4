@@ -134,6 +134,16 @@ lemma of_vComp' {L₁₂ : C₁ ⥤ C₃} {R₁₂ : D₁ ⥤ D₃} (eL : L₁ �
   rw [whiskerVertical_iff] at h
   exact of_vComp w w'
 
+lemma vComp_iff_of_essSurj [R₁.EssSurj] [w.GuitartExact] :
+    (w ≫ᵥ w').GuitartExact ↔ w'.GuitartExact :=
+  ⟨fun _ ↦ of_vComp w w', fun _ ↦ inferInstance⟩
+
+lemma vComp'_iff_of_essSurj
+    {L₁₂ : C₁ ⥤ C₃} {R₁₂ : D₁ ⥤ D₃} (eL : L₁ ⋙ L₂ ≅ L₁₂) (eR : R₁ ⋙ R₂ ≅ R₁₂)
+    [R₁.EssSurj] [w.GuitartExact] :
+    (w.vComp' w' eL eR).GuitartExact ↔ w'.GuitartExact :=
+  ⟨fun _ ↦ of_vComp' w w' eL eR, fun _ ↦ inferInstance⟩
+
 set_option backward.isDefEq.respectTransparency false in
 lemma vComp_iff_of_equivalences (eL : C₂ ≌ C₃) (eR : D₂ ≌ D₃)
     (w' : H₂ ⋙ eR.functor ≅ eL.functor ⋙ H₃) :

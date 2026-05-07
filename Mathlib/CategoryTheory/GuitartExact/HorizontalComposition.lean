@@ -122,6 +122,16 @@ lemma of_hComp' {T₁₂ : C₁ ⥤ C₃} {B₁₂ : D₁ ⥤ D₃} (eT : T₁ �
   rw [whiskerHorizontal_iff] at h
   exact of_hComp w w'
 
+lemma hComp_iff_of_essSurj [B₁.EssSurj] [w.GuitartExact] :
+    (w ≫ₕ w').GuitartExact ↔ w'.GuitartExact :=
+  ⟨fun _ ↦ of_hComp w w', fun _ ↦ inferInstance⟩
+
+lemma hComp'_iff_of_essSurj
+    {T₁₂ : C₁ ⥤ C₃} {B₁₂ : D₁ ⥤ D₃} (eT : T₁ ⋙ T₂ ≅ T₁₂) (eB : B₁ ⋙ B₂ ≅ B₁₂)
+    [B₁.EssSurj] [w.GuitartExact] :
+    (w.hComp' w' eT eB).GuitartExact ↔ w'.GuitartExact :=
+  ⟨fun _ ↦ of_hComp' w w' eT eB, fun _ ↦ inferInstance⟩
+
 lemma hComp_iff_of_equivalences (eT : C₂ ≌ C₃) (eB : D₂ ≌ D₃)
     (w' : eT.functor ⋙ V₃ ≅ V₂ ⋙ eB.functor) :
     (w ≫ₕ w'.hom).GuitartExact ↔ w.GuitartExact := by
