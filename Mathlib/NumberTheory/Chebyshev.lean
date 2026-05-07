@@ -693,17 +693,12 @@ private theorem pi_mul_log_sqrt_le {x : ℝ} (hx : 1 ≤ x) :
     simp only [sum_const, nsmul_eq_mul]
     gcongr
     · exact log_nonneg (one_le_sqrt.mpr hx)
-    calc
-      _ ≤ ((Icc 1 ⌊√x⌋₊).card : ℝ) := by
-        norm_cast; apply Finset.card_mono
-        intro p
-        simp only [mem_filter, mem_range, Order.lt_add_one_iff, and_imp]
-        intro _ hp h; simp only [mem_Icc]
-        exact ⟨ hp.one_le, le_floor h⟩
-      _ ≤ _ := by
-        simp only [card_Icc, add_tsub_cancel_right]
-        apply floor_le
-        positivity
+    refine le_trans ?_ <| floor_le (sqrt_nonneg x)
+    norm_cast
+    rw [show ⌊√x⌋₊ = #(Icc 1 ⌊√x⌋₊) by simp]
+    refine Finset.card_le_card fun p hp ↦ ?_
+    simp only [mem_filter, mem_Icc] at hp ⊢
+    exact ⟨(one_lt_of_mem_primesLE hp.1).le, le_floor hp.2⟩
 
 /-- A weak but completely explicit upper bound on $\pi(x)$. -/
 theorem pi_le_log4_mul_div {x : ℝ} (hx : 1 < x) : π ⌊x⌋₊ ≤ log 4 * x / log √x + √x := by
