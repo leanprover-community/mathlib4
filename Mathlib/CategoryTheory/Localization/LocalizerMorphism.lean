@@ -378,7 +378,6 @@ section
 
 variable [Φ.functor.IsEquivalence] [Φ.IsInduced] [W₂.RespectsIso]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The inverse of a localizer morphism `Φ : LocalizerMorphism W₁ W₂`,
 when `Φ.functor` is an equivalence, `W₁` is induced by `W₂`
 and `W₂` respects isomorphisms. -/
@@ -391,7 +390,8 @@ noncomputable def inv :
     intro X Y f hf
     exact (W₂.arrow_mk_iso_iff
       (Arrow.isoMk (Φ.functor.asEquivalence.counitIso.app _)
-        (Φ.functor.asEquivalence.counitIso.app _))).2 hf
+        (Φ.functor.asEquivalence.counitIso.app _) (by
+          simp [asEquivalence]))).2 hf
 
 instance : Φ.inv.functor.IsEquivalence := by
   dsimp

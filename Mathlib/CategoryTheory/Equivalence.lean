@@ -641,7 +641,7 @@ noncomputable def inv (F : C ⥤ D) [F.IsEquivalence] : D ⥤ C where
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Interpret a functor that is an equivalence as an equivalence. -/
-@[simps functor, stacks 02C3]
+@[simps functor, simps -isSimp inverse, stacks 02C3]
 noncomputable def asEquivalence (F : C ⥤ D) [F.IsEquivalence] : C ≌ D where
   functor := F
   inverse := F.inv
