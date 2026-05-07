@@ -81,6 +81,11 @@ if there exist charts near `x` and `f x` in which `f` looks like the standard pr
   a local diffeomorphism (at `x`) is a submersion (at `x`)
 * `Diffeomorph.isSubmersion`: in particular, a diffeomorphism is a submersion
 
+## References
+
+* [Alexander Schmeding, *An introduction to infinite-dimensional differential geometry*][schmeding2023]
+* Note that Margelef-Roig and Dominguez have a slightly different definition of submersions.
+
 **Please do not work** on this file without prior discussion with Michael Rothgang.
 This will be the topic of Samantha Naranjo's master's thesis, and it's nice to coordinate.
 
