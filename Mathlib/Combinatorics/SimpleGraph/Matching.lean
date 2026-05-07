@@ -6,8 +6,8 @@ Authors: Alena Gusakov, Arthur Paulino, Kyle Miller, Pim Otte
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Clique
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Finite
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
-public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 public import Mathlib.Combinatorics.SimpleGraph.Operations
 public import Mathlib.Data.Set.Card.Arithmetic
@@ -171,7 +171,7 @@ lemma IsMatching.exists_of_disjoint_sets_of_equiv {s t : Set V} (h : Disjoint s 
       obtain (⟨hv, rfl⟩ | ⟨hw, rfl⟩) := h
       · exact hadj ⟨v, _⟩
       · exact (hadj ⟨w, _⟩).symm
-    edge_vert := by aesop }
+    edge_vert := by grind }
   simp only [Subgraph.IsMatching, Set.mem_union, true_and]
   intro v hv
   rcases hv with hl | hr
@@ -287,8 +287,11 @@ lemma even_card_of_isPerfectMatching [Fintype V] [DecidableEq V] [DecidableRel G
   blocked by the discrimination tree. This can be fixed by redeclaring the instance for `X`
   using the double coercion but the proper fix seems to avoid the double coercion. -/
   letI : DecidablePred fun x ↦ x ∈ (M.induce c.supp).verts := fun a ↦ G.instDecidableMemSupp c a
-  simpa using (hM.induce_connectedComponent_isMatching c).even_card
+  have := (hM.induce_connectedComponent_isMatching c).even_card
+  simp only [Subgraph.induce_verts, Set.toFinset_card] at this
+  exact this
 
+set_option backward.isDefEq.respectTransparency false in
 lemma odd_matches_node_outside [Finite V] {u : Set V}
     (hM : M.IsPerfectMatching) (c : (Subgraph.deleteVerts ⊤ u).coe.oddComponents) :
     ∃ᵉ (w ∈ u) (v : ((⊤ : G.Subgraph).deleteVerts u).verts), M.Adj v w ∧ v ∈ c.val.supp := by
@@ -366,7 +369,7 @@ lemma IsCycles.existsUnique_ne_adj (h : G.IsCycles) (hadj : G.Adj v w) :
   intro y ⟨hwy, hwy'⟩
   obtain ⟨x, y', hxy'⟩ := Set.ncard_eq_two.mp (h ⟨w, hadj⟩)
   simp_rw [← SimpleGraph.mem_neighborSet] at *
-  aesop
+  grind
 
 lemma IsCycles.toSimpleGraph (c : G.ConnectedComponent) (h : G.IsCycles) :
     c.toSimpleGraph.spanningCoe.IsCycles := by
@@ -384,6 +387,7 @@ lemma Walk.IsCycle.isCycles_spanningCoe_toSubgraph {u : V} {p : G.Walk u u} (hpc
   obtain ⟨_, hw⟩ := hv
   exact p.mem_verts_toSubgraph.mp <| p.toSubgraph.edge_vert hw
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Walk.IsPath.isCycles_spanningCoe_toSubgraph_sup_edge {u v} {p : G.Walk u v} (hp : p.IsPath)
     (h : u ≠ v) (hs : s(v, u) ∉ p.edges) : (p.toSubgraph.spanningCoe ⊔ edge v u).IsCycles := by
   let c := (p.mapLe (OrderTop.le_top G)).cons (by simp [h.symm] : (completeGraph V).Adj v u)
@@ -391,7 +395,7 @@ lemma Walk.IsPath.isCycles_spanningCoe_toSubgraph_sup_edge {u v} {p : G.Walk u v
     ext w x
     simp only [sup_adj, Subgraph.spanningCoe_adj, completeGraph_eq_top, edge_adj, c,
       Walk.toSubgraph, Subgraph.sup_adj, subgraphOfAdj_adj, adj_toSubgraph_mapLe]
-    aesop
+    grind
   exact this ▸ IsCycle.isCycles_spanningCoe_toSubgraph (by simp [Walk.cons_isCycle_iff, c, hp, hs])
 
 lemma Walk.IsCycle.adj_toSubgraph_iff_of_isCycles [LocallyFinite G] {u} {p : G.Walk u u}
@@ -524,7 +528,7 @@ lemma IsCycles.exists_cycle_toSubgraph_verts_eq_connectedComponentSupp [Finite V
       rw [← hc', Walk.mem_verts_toSubgraph]
       exact hvp
     simp_all
-  use p.rotate hvp
+  use p.rotate v hvp
   rw [← this]
   exact ⟨hp.1.rotate _, by simp⟩
 
@@ -558,20 +562,19 @@ lemma IsAlternating.sup_edge {u x : V} (halt : G.IsAlternating G') (hnadj : ¬G'
   simp only [sup_adj, edge_adj] at hvw hvv'
   obtain hl | hr := hvw <;> obtain h1 | h2 := hvv'
   · exact halt hww' hl h1
-  · rw [G'.adj_congr_of_sym2 (by aesop : s(v, w') = s(u, x))]
+  · rw [G'.adj_congr_of_sym2 (by grind : s(v, w') = s(u, x))]
     simp only [hnadj, not_false_eq_true, iff_true]
-    rcases h2.1 with ⟨h2l1, h2l2⟩ | ⟨h2r1, h2r2⟩
-    · subst h2l1 h2l2
-      exact (hx' _ hww' hl.symm).symm
+    rcases h2.1 with ⟨rfl, rfl⟩ | ⟨h2r1, h2r2⟩
+    · exact (hx' _ hww' hl.symm).symm
     · simp_all
-  · rw [G'.adj_congr_of_sym2 (by aesop : s(v, w) = s(u, x))]
+  · rw [G'.adj_congr_of_sym2 (by grind : s(v, w) = s(u, x))]
     simp only [hnadj, false_iff, not_not]
-    rcases hr.1 with ⟨hrl1, hrl2⟩ | ⟨hrr1, hrr2⟩
-    · subst hrl1 hrl2
-      exact (hx' _ hww'.symm h1.symm).symm
-    · aesop
-  · aesop
+    rcases hr.1 with ⟨rfl, rfl⟩ | ⟨hrr1, hrr2⟩
+    · exact (hx' _ hww'.symm h1.symm).symm
+    · grind
+  · grind
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Subgraph.IsPerfectMatching.symmDiff_of_isAlternating (hM : M.IsPerfectMatching)
     (hG' : G'.IsAlternating M.spanningCoe) (hG'cyc : G'.IsCycles) :
     (⊤ : Subgraph (M.spanningCoe ∆ G')).IsPerfectMatching := by
@@ -586,7 +589,7 @@ lemma Subgraph.IsPerfectMatching.symmDiff_of_isAlternating (hM : M.IsPerfectMatc
     simp only [Subgraph.top_adj, SimpleGraph.sup_adj, sdiff_adj, Subgraph.spanningCoe_adj,
       hmadj.mp hw.1, hw'.2, not_true_eq_false, and_self, not_false_eq_true, or_true, true_and]
     rintro y (hl | hr)
-    · aesop
+    · grind
     · obtain ⟨w'', hw''⟩ := hG'cyc.other_adj_of_adj hr.1
       by_contra! hc
       simp_all [show M.Adj v y ↔ ¬M.Adj v w' from by simpa using hG' hc hr.1 hw'.2]

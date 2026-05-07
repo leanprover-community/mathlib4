@@ -427,6 +427,7 @@ theorem diophFn_vec_comp1 {S : Set (Vector3 ℕ (succ n))} (d : Dioph S) {f : Ve
     congr 1
     ext x; cases x <;> rfl)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Deleting the first component preserves the Diophantine property. -/
 theorem vec_ex1_dioph (n) {S : Set (Vector3 ℕ (succ n))} (d : Dioph S) :
     Dioph {v : Fin2 n → ℕ | ∃ x, (x::v) ∈ S} :=
@@ -561,17 +562,12 @@ theorem ne_dioph : Dioph {v | f v ≠ g v} :=
 scoped infixl:50 " D≠ " => Dioph.ne_dioph
 
 /-- Diophantine functions are closed under subtraction. -/
-theorem sub_dioph : DiophFn fun v => f v - g v :=
+theorem sub_dioph : DiophFn fun v ↦ f v - g v :=
   diophFn_comp2 df dg <|
     (diophFn_vec _).2 <|
       ext (D&1 D= D&0 D+ D&2 D∨ D&1 D≤ D&2 D∧ D&0 D= D.0) <|
-        (vectorAll_iff_forall _).1 fun x y z =>
-          show y = x + z ∨ y ≤ z ∧ x = 0 ↔ y - z = x from
-            ⟨fun o => by
-              rcases o with (ae | ⟨yz, x0⟩)
-              · rw [ae, add_tsub_cancel_right]
-              · rw [x0, tsub_eq_zero_iff_le.mpr yz], by
-              lia⟩
+        (vectorAll_iff_forall _).1 fun x y z ↦
+          show y = x + z ∨ y ≤ z ∧ x = 0 ↔ y - z = x by grind
 
 @[inherit_doc]
 scoped infixl:80 " D- " => Dioph.sub_dioph
@@ -622,16 +618,10 @@ theorem div_dioph : DiophFn fun v => f v / g v :=
       ext this <|
         (vectorAll_iff_forall _).1 fun z x y =>
           show y = 0 ∧ z = 0 ∨ z * y ≤ x ∧ x < (z + 1) * y ↔ x / y = z by
-            refine Iff.trans ?_ eq_comm
-            exact y.eq_zero_or_pos.elim
-              (fun y0 => by
-                rw [y0, Nat.div_zero]
-                exact ⟨fun o => (o.resolve_right fun ⟨_, h2⟩ => Nat.not_lt_zero _ h2).right,
-                  fun z0 => Or.inl ⟨rfl, z0⟩⟩)
-              fun ypos =>
-                Iff.trans ⟨fun o => o.resolve_left fun ⟨h1, _⟩ => Nat.ne_of_gt ypos h1, Or.inr⟩
-                  (le_antisymm_iff.trans <| and_congr (Nat.le_div_iff_mul_le ypos) <|
-                    Iff.trans ⟨lt_succ_of_le, le_of_lt_succ⟩ (div_lt_iff_lt_mul ypos)).symm
+            rcases y.eq_zero_or_pos with rfl | hy
+            · simp [eq_comm]
+            · rw [Nat.div_eq_iff hy, Nat.succ_mul]
+              grind
 
 end
 

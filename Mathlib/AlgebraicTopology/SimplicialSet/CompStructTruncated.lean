@@ -13,11 +13,11 @@ public import Mathlib.AlgebraicTopology.SimplexCategory.Truncated
 
 Given a `2`-truncated simplicial set `X`, we introduce two types:
 * Given `0`-simplices `x₀` and `x₁`, we define `Edge x₀ x₁`
-which is the type of `1`-simplices with faces `x₁` and `x₀` respectively;
+  which is the type of `1`-simplices with faces `x₁` and `x₀` respectively;
 * Given `0`-simplices `x₀`, `x₁`, `x₂`, edges `e₀₁ : Edge x₀ x₁`, `e₁₂ : Edge x₁ x₂`,
-`e₀₂ : Edge x₀ x₂`, a structure `CompStruct e₀₁ e₁₂ e₀₂` which records the
-data of a `2`-simplex with faces `e₁₂`, `e₀₂` and `e₀₁` respectively. This data
-will allow to obtain relations in the homotopy category of `X`.
+  `e₀₂ : Edge x₀ x₂`, a structure `CompStruct e₀₁ e₁₂ e₀₂` which records the
+  data of a `2`-simplex with faces `e₁₂`, `e₀₂` and `e₀₁` respectively. This data
+  will allow to obtain relations in the homotopy category of `X`.
 
 -/
 
@@ -60,22 +60,22 @@ lemma exists_of_simplex (s : X _⦋1⦌₂) :
 @[simps]
 def id (x : X _⦋0⦌₂) : Edge x x where
   edge := X.map (σ₂ 0).op x
-  src_eq := by simp [← FunctorToTypes.map_comp_apply, ← op_comp]
-  tgt_eq := by simp [← FunctorToTypes.map_comp_apply, ← op_comp]
+  src_eq := by simp [← Functor.map_comp_apply, ← op_comp]
+  tgt_eq := by simp [← Functor.map_comp_apply, ← op_comp]
 
 /-- The image of an edge by a morphism of truncated simplicial sets. -/
 @[simps]
 def map {x₀ x₁ : X _⦋0⦌₂} (e : Edge x₀ x₁) (f : X ⟶ Y) :
     Edge (f.app _ x₀) (f.app _ x₁) where
   edge := f.app _ e.edge
-  src_eq := by simp [← FunctorToTypes.naturality]
-  tgt_eq := by simp [← FunctorToTypes.naturality]
+  src_eq := by simp [← NatTrans.naturality_apply]
+  tgt_eq := by simp [← NatTrans.naturality_apply]
 
 @[simp]
 lemma map_id (x : X _⦋0⦌₂) (f : X ⟶ Y) :
     (Edge.id x).map f = Edge.id (f.app _ x) := by
   ext
-  simp [FunctorToTypes.naturality]
+  simp [NatTrans.naturality_apply]
 
 instance [Subsingleton (X _⦋1⦌₂)] {x y : X _⦋0⦌₂} :
     Subsingleton (X.Edge x y) where
@@ -108,7 +108,7 @@ lemma exists_of_simplex (s : X _⦋2⦌₂) :
     X.map (Hom.tr (SimplexCategory.const _ _ 2)).op s,
     .mk _ ?_ ?_, .mk _ ?_ ?_, .mk _ ?_ ?_, .mk s rfl rfl rfl, rfl⟩
   all_goals
-  · rw [← FunctorToTypes.map_comp_apply, ← op_comp]
+  · rw [← Functor.map_comp_apply, ← op_comp]
     apply congr_fun; congr
     decide
 
@@ -117,13 +117,13 @@ def idComp {x y : X _⦋0⦌₂} (e : Edge x y) :
     CompStruct (.id x) e e where
   simplex := X.map (σ₂ 0).op e.edge
   d₂ := by
-    rw [← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_two_comp_σ₂_zero]
+    rw [← Functor.map_comp_apply, ← op_comp, δ₂_two_comp_σ₂_zero]
     simp
   d₀ := by
-    rw [← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_zero_comp_σ₂_zero]
+    rw [← Functor.map_comp_apply, ← op_comp, δ₂_zero_comp_σ₂_zero]
     simp
   d₁ := by
-    rw [← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_one_comp_σ₂_zero]
+    rw [← Functor.map_comp_apply, ← op_comp, δ₂_one_comp_σ₂_zero]
     simp
 
 /-- `e : Edge x y` is a composition of `e` with `Edge.id y`. -/
@@ -131,13 +131,13 @@ def compId {x y : X _⦋0⦌₂} (e : Edge x y) :
     CompStruct e (.id y) e where
   simplex := X.map (σ₂ 1).op e.edge
   d₂ := by
-    rw [← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_two_comp_σ₂_one]
+    rw [← Functor.map_comp_apply, ← op_comp, δ₂_two_comp_σ₂_one]
     simp
   d₀ := by
-    rw [← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_zero_comp_σ₂_one]
+    rw [← Functor.map_comp_apply, ← op_comp, δ₂_zero_comp_σ₂_one]
     simp
   d₁ := by
-    rw [← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_one_comp_σ₂_one]
+    rw [← Functor.map_comp_apply, ← op_comp, δ₂_one_comp_σ₂_one]
     simp
 
 /-- `Edge.id x` is a composition of `Edge.id x` with `Edge.id x`. -/

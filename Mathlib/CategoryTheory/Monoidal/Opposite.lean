@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.Functor
 public import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
+public import Mathlib.Tactic.CategoryTheory.CancelIso
 
 /-!
 # Monoidal opposites
@@ -341,6 +342,7 @@ instance MonoidalOpposite.mopMopEquivalenceFunctorMonoidal :
   μ_δ X Y := Category.comp_id _
   δ_μ X Y := Category.comp_id _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps!]
 instance MonoidalOpposite.mopMopEquivalenceInverseMonoidal :
     (MonoidalOpposite.mopMopEquivalence C).inverse.Monoidal where

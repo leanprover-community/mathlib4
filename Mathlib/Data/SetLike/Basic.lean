@@ -212,7 +212,7 @@ end SetLike
 
 /-- A class to indicate that the canonical injection between `A` and `Set B` is order-preserving.
 
-An instance of this class is automatically availableon any partial order defined as
+An instance of this class is automatically available on any partial order defined as
 `PartialOrder.ofSetLike`.
 -/
 class IsConcreteLE (A : Type*) (B : outParam Type*) [SetLike A B] [LE A] where
@@ -249,7 +249,7 @@ section LE
 
 variable [LE A] [IsConcreteLE A B] {p q : A}
 
-@[simp, norm_cast] lemma coe_subset_coe {S T : A} : (S : Set B) ⊆ T ↔ S ≤ T :=
+@[simp, norm_cast, gcongr] lemma coe_subset_coe {S T : A} : (S : Set B) ⊆ T ↔ S ≤ T :=
   IsConcreteLE.coe_subset_coe'
 
 theorem le_def {S T : A} : S ≤ T ↔ ∀ ⦃x : B⦄, x ∈ S → x ∈ T := by
@@ -260,8 +260,6 @@ alias ⟨_root_.mem_of_le_of_mem, _⟩ := le_def
 
 @[deprecated (since := "2026-01-07")] alias GCongr.mem_of_le_of_mem := _root_.mem_of_le_of_mem
 
-@[gcongr] protected alias ⟨_, GCongr.coe_subset_coe⟩ := coe_subset_coe
-
 theorem not_le_iff_exists : ¬p ≤ q ↔ ∃ x ∈ p, x ∉ q := by
   simpa [← coe_subset_coe] using Set.not_subset
 
@@ -271,7 +269,7 @@ section Preorder
 
 variable [Preorder A] [IsConcreteLE A B] {p q : A}
 
-@[mono]
+@[gcongr, mono]
 theorem coe_mono : Monotone (SetLike.coe : A → Set B) := fun _ _ => coe_subset_coe.mpr
 
 end Preorder
@@ -280,12 +278,10 @@ section PartialOrder
 
 variable [PartialOrder A] [IsConcreteLE A B] {p q : A}
 
-@[simp, norm_cast] lemma coe_ssubset_coe {S T : A} : (S : Set B) ⊂ T ↔ S < T := by
+@[simp, norm_cast, gcongr] lemma coe_ssubset_coe {S T : A} : (S : Set B) ⊂ T ↔ S < T := by
   rw [ssubset_iff_subset_ne, lt_iff_le_and_ne, coe_subset_coe, SetLike.coe_ne_coe]
 
-@[gcongr] protected alias ⟨_, GCongr.coe_ssubset_coe⟩ := coe_ssubset_coe
-
-@[mono]
+@[gcongr, mono]
 theorem coe_strictMono : StrictMono (SetLike.coe : A → Set B) := fun _ _ => coe_ssubset_coe.mpr
 
 theorem exists_of_lt : p < q → ∃ x ∈ q, x ∉ p := by

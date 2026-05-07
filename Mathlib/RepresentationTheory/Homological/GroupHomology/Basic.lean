@@ -74,7 +74,7 @@ for commutative rings.
 
 noncomputable section
 
-universe u
+universe u v w
 
 open CategoryTheory CategoryTheory.Limits
 
@@ -100,7 +100,7 @@ def Tor (n : ℕ) : Rep k G ⥤ Rep k G ⥤ ModuleCat k where
   obj X := Functor.leftDerived ((coinvariantsTensor k G).obj X) n
   map f := NatTrans.leftDerived ((coinvariantsTensor k G).map f) n
 
-variable {k G} (A : Rep k G)
+variable {k G} (A : Rep.{w} k G)
 
 /-- `Tor` can be computed using a projective resolution. -/
 abbrev torIso (A : Rep k G) {B : Rep k G} (P : ProjectiveResolution B) (n : ℕ) :
@@ -119,7 +119,7 @@ namespace groupHomology
 
 open Rep Finsupp
 
-variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G) (n : ℕ)
+variable {k G : Type u} [CommRing k] [Group G] (A : Rep.{u} k G) (n : ℕ)
 
 namespace inhomogeneousChains
 
@@ -139,16 +139,18 @@ theorem d_single (n : ℕ) (g : Fin (n + 1) → G) (a : A) :
 
 open ModuleCat.MonoidalCategory
 
+set_option backward.isDefEq.respectTransparency false in
 theorem d_eq [DecidableEq G] :
     d A n = (coinvariantsTensorFreeLEquiv A (Fin (n + 1) → G)).toModuleIso.inv ≫
       ((barComplex k G).coinvariantsTensorObj A).d (n + 1) n ≫
       (coinvariantsTensorFreeLEquiv A (Fin n → G)).toModuleIso.hom := by
   ext : 3
-  simp [d_single (k := k), tensorObj_carrier, whiskerLeft_def, TensorProduct.tmul_add,
-    TensorProduct.tmul_sum, barComplex.d_single (k := k)]
+  simp [d_single (k := k), TensorProduct.tmul_add, TensorProduct.tmul_sum,
+    barComplex.d_single (k := k), Representation.IntertwiningMap.toLinearMap_apply]
 
 end inhomogeneousChains
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a `k`-linear `G`-representation `A`, this is the complex of inhomogeneous chains
 $$\dots \to \bigoplus_{G^1} A \to \bigoplus_{G^0} A \to 0$$
 which calculates the group homology of `A`. -/
@@ -157,7 +159,8 @@ noncomputable abbrev inhomogeneousChains :
   ChainComplex.of (fun n => ModuleCat.of k ((Fin n → G) →₀ A))
     (fun n => inhomogeneousChains.d A n) fun n => by
     classical
-    simp only [inhomogeneousChains.d_eq]
+    simp only
+    rw [inhomogeneousChains.d_eq, inhomogeneousChains.d_eq]
     slice_lhs 3 4 => rw [Iso.hom_inv_id]
     slice_lhs 2 4 => rw [Category.id_comp, ((barComplex k G).coinvariantsTensorObj A).d_comp_d]
     simp
@@ -176,8 +179,9 @@ theorem inhomogeneousChains.d_def (n : ℕ) :
 
 theorem inhomogeneousChains.d_comp_d :
     d A (n + 1) ≫ d A n = 0 := by
-  simpa [ChainComplex.of] using ((inhomogeneousChains A).d_comp_d (n + 2) (n + 1) n)
+  simpa [ChainComplex.of.d] using ((inhomogeneousChains A).d_comp_d (n + 2) (n + 1) n)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous chains is isomorphic
 to `(A ⊗[k] P)_G`, where `P` is the bar resolution of `k` as a trivial `G`-representation. -/
 def inhomogeneousChainsIso [DecidableEq G] :
@@ -234,6 +238,7 @@ abbrev groupHomology.π (n : ℕ) :
     cycles A n ⟶ groupHomology A n :=
   (inhomogeneousChains A).homologyπ n
 
+set_option backward.isDefEq.respectTransparency false in
 variable {A} in
 @[elab_as_elim]
 theorem groupHomology_induction_on {n : ℕ}

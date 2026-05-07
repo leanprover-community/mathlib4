@@ -19,7 +19,7 @@ We scope this instance to the `CategoryTheory.Pseudofunctor.StrongTrans` namespa
 potential future conflicts with other bicategory instances on `Pseudofunctor B C`.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.Pseudofunctor
 
@@ -33,6 +33,7 @@ namespace StrongTrans
 
 variable {F G H I : Pseudofunctor B C}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Left whiskering of a strong natural transformation between pseudofunctors
 and a modification. -/
 abbrev whiskerLeft (η : F ⟶ G) {θ ι : G ⟶ H} (Γ : θ ⟶ ι) : η ≫ θ ⟶ η ≫ ι where
@@ -43,6 +44,7 @@ abbrev whiskerLeft (η : F ⟶ G) {θ ι : G ⟶ H} (Γ : θ ⟶ ι) : η ≫ θ
       rw [associator_inv_naturality_right_assoc, whisker_exchange_assoc]
       simp }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Right whiskering of a strong natural transformation between pseudofunctors
 and a modification. -/
 abbrev whiskerRight {η θ : F ⟶ G} (Γ : η ⟶ θ) (ι : G ⟶ H) : η ≫ ι ⟶ θ ≫ ι where
@@ -53,16 +55,19 @@ abbrev whiskerRight {η θ : F ⟶ G} (Γ : η ⟶ θ) (ι : G ⟶ H) : η ≫ �
       simp_rw [Category.assoc, ← associator_inv_naturality_left, whisker_exchange_assoc]
       simp }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Associator for the vertical composition of strong natural transformations
 between pseudofunctors. -/
 abbrev associator (η : F ⟶ G) (θ : G ⟶ H) (ι : H ⟶ I) : (η ≫ θ) ≫ ι ≅ η ≫ θ ≫ ι :=
   isoMk (fun a => α_ (η.app a) (θ.app a) (ι.app a))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Left unitor for the vertical composition of strong natural transformations
 between pseudofunctors. -/
 abbrev leftUnitor (η : F ⟶ G) : 𝟙 F ≫ η ≅ η :=
   isoMk (fun a => λ_ (η.app a))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Right unitor for the vertical composition of strong natural transformations
 between pseudofunctors. -/
 abbrev rightUnitor (η : F ⟶ G) : η ≫ 𝟙 G ≅ η :=
