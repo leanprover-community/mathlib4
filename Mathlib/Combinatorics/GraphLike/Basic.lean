@@ -166,8 +166,10 @@ lemma step.adj (h : step G u v) : Adj G u v := by
   exact ⟨d, hd, rfl, rfl⟩
 
 /-- If `u` and `v` are adjacent, then there exists a step from `u` to `v`. -/
-noncomputable def Adj.chooseStep (h : Adj G u v) : step G u v :=
+noncomputable def Adj.toStep (h : Adj G u v) : step G u v :=
   ⟨(exists_darts_iff_adj.mpr h).choose, (exists_darts_iff_adj.mpr h).choose_spec⟩
+
+lemma Adj.toStep_adj (h : Adj G u v) : (h.toStep).adj = h := rfl
 
 /-- Convert a dart to a step. -/
 @[expose] def dartStep (d : darts G) : step G (src Gr d.val) (tgt Gr d.val) :=
