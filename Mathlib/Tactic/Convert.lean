@@ -132,8 +132,7 @@ pattern-matched, like `rintro` would, using the `with` keyword.
 See also `convert_to t`, where `t` specifies the expected type, instead of a proof term of type `t`.
 In other words, `convert_to t` works like `convert (?_ : t)`. Both tactics use the same options.
 
-* `convert! e` uses default transparency, rather than reducible, when applying congruence lemmas and
-  solving side goals.
+* `convert! e` uses default transparency, rather than reducible, when solving side goals.
 * `convert ← e` creates equality goals in the opposite direction (with the goal type on the right).
 * `convert e using n`, where `n` is a positive numeral, controls the depth with which congruence is
   applied. For example, if the main goal is `⊢ Prime (n + n + 1)` and `e : Prime (2 * n + 1)`, then
@@ -206,8 +205,9 @@ elab_rules : tactic
     let mut config := baseConfig
     if semired.isSome then
       config := { config with
-        transparency := default,
-        preTransparency := default,
+        -- TODO: also enable this in the future? (Not right now, for backwards compatibility).
+        -- transparency := default,
+        -- preTransparency := default,
         postTransparency := default }
     let patterns := (ps?.getD #[]).toList
     let expectedType ← mkFreshExprMVar (mkSort (← getLevel (← getMainTarget)))
@@ -244,8 +244,7 @@ pattern-matched, like `rintro` would, using the `with` keyword.
 `convert e`, where `e` is a term of type `t`, uses `e` to close the new main goal. In other words,
 `convert e` works like `convert_to t; refine e`. Both tactics use the same options.
 
-* `convert_to! t` uses default transparency, rather than reducible, when applying congruence lemmas
-  and solving side goals.
+* `convert_to! t` uses default transparency, rather than reducible, when solving side goals.
 * `convert_to ty at h` changes the type of the local hypothesis `h` to `ty`. If later local
   hypotheses or the goal depend on `h`, then `convert_to t at h` may leave a copy of `h`.
 * `convert_to ← t` creates equality goals in the opposite direction (with the original goal type on
@@ -301,8 +300,7 @@ into new goals, using the hole's name, if any, as the goal case name.
 Like `congr!`, `convert_to` introduces variables while applying congruence rules. These can be
 pattern-matched, like `rintro` would, using the `with` keyword.
 
-* `ac_change! t` uses default transparency, rather than reducible, when applying congruence lemmas
-  and solving side goals.
+* `ac_change! t` uses default transparency, rather than reducible, when solving side goals.
 * `ac_change t using n`, where `n` is a positive numeral, controls the depth with which congruence
   is applied. For example, if the main goal is `⊢ Prime ((a * b + 1) + c)`,
   then `ac_change Prime ((1 + a * b) + c) using 2` solves the side goals, and
