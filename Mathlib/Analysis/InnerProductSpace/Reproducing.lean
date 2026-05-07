@@ -92,8 +92,7 @@ variable (H) in
 def eval (x : X) : H →L[𝕜] V := .proj x ∘L coeCLM 𝕜
 
 @[simp]
-lemma eval_eq (x : X) : eval H x = .proj x ∘L coeCLM 𝕜 := by
-  rw [show eval H x = (proj x).comp (coeCLM 𝕜) from rfl]
+lemma eval_eq (x : X) : eval H x = .proj x ∘L coeCLM 𝕜 := coe_inj.mp rfl
 
 @[simp]
 lemma eval_apply (x : X) (f : H) : eval H x f = f x := (congr_fun rfl x).symm
@@ -108,8 +107,7 @@ the point evaluation.
 def kerFun (x : X) : V →L[𝕜] H := (eval H x).adjoint
 
 variable (H) in
-lemma kerFun_eq_adjoint_eval (x : X) : kerFun H x = (eval H x).adjoint := by
-  rw [show kerFun H x = adjoint (eval H x) from rfl]
+lemma kerFun_eq_adjoint_eval (x : X) : kerFun H x = (eval H x).adjoint := coe_inj.mp rfl
 
 variable (H) in
 /-- The kernel of a reproducing kernel Hilbert space is a matrix of entries given by the
