@@ -227,15 +227,10 @@ theorem primorial_dvd_lcmUpto (n : ℕ) : primorial n ∣ lcmUpto n := by
 
 theorem lcmUpto_eq_prod (n : ℕ) :
   lcmUpto n = ∏ p ∈ primesLE n, p ^ ((lcmUpto n).factorization p) := by
-  symm; convert prod_factorization_pow_eq_self (lcmUpto_ne_zero n)
-  rw [Finsupp.prod_of_support_subset _ _ _ (by simp)]
-  simp +contextual only [lcmUpto, support_factorization, subset_iff, mem_primeFactors, ne_eq,
-    Finset.lcm_eq_zero_iff, mem_Icc, id_eq, exists_eq_right, nonpos_iff_eq_zero, one_ne_zero,
-    _root_.zero_le, and_true, not_false_eq_true, mem_filter, mem_range, Order.lt_add_one_iff,
-    and_imp]
-  intro p pp dp
-  rw [← pp.dvd_factorial]
-  exact dp.trans <| lcmUpto_dvd_factorial n
+  conv_lhs => rw [← prod_factorization_pow_eq_self (lcmUpto_ne_zero n)]
+  rw [prod_factorization_eq_prod_primeFactors]
+  congr
+  exact primeFactors_lcmUpto n
 
 theorem lcmUpto_eq_prod_pow_log (n : ℕ) : lcmUpto n = ∏ p ∈ primesLE n, p ^ p.log n := by
   convert lcmUpto_eq_prod n using 3 with p hp
