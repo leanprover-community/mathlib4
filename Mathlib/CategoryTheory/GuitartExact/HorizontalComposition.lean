@@ -106,13 +106,14 @@ def costructuredArrowRightwardsComp (Y₁ : D₁) :
       (w ≫ₕ w').costructuredArrowRightwards Y₁ :=
   NatIso.ofComponents (fun _ => CostructuredArrow.isoMk (Iso.refl _))
 
-set_option backward.isDefEq.respectTransparency false in
 lemma of_hComp [B₁.EssSurj] [w.GuitartExact] [(w ≫ₕ w').GuitartExact] :
     w'.GuitartExact := by
   rw [guitartExact_iff_final]
   intro Y₂
   rw [costructuredArrowRightwards_final_iff_of_iso _ (B₁.objObjPreimageIso Y₂).symm]
-  have := Functor.final_of_natIso (costructuredArrowRightwardsComp w w' (B₁.objPreimage Y₂)).symm
+  have : (w.costructuredArrowRightwards (B₁.objPreimage Y₂) ⋙
+      w'.costructuredArrowRightwards (B₁.obj (B₁.objPreimage Y₂))).Final :=
+    (Functor.final_of_natIso (costructuredArrowRightwardsComp w w' _).symm :)
   exact Functor.final_of_final_comp (w.costructuredArrowRightwards (B₁.objPreimage Y₂)) _
 
 lemma of_hComp' {T₁₂ : C₁ ⥤ C₃} {B₁₂ : D₁ ⥤ D₃} (eT : T₁ ⋙ T₂ ≅ T₁₂) (eB : B₁ ⋙ B₂ ≅ B₁₂)
