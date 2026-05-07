@@ -168,7 +168,7 @@ theorem gronwall_bellman_inequality {a b : ℝ} {Λ μ y : ℝ → ℝ}
     ∀ t ∈ Icc a b,
       y t ≤ Λ t + ∫ s in a..t, Λ s * μ s * exp (∫ τ in s..t, μ τ) := by
   intro t ht
-  -- ── Labelling and Continuity properties ──────────────────────────
+  -- ── Notation and Continuity properties ──────────────────────────
   let z : ℝ → ℝ := fun t => ∫ s in a..t, μ s * y s
   let M : ℝ → ℝ := fun t => ∫ τ in a..t, μ τ
   have hμ_t : ContinuousOn μ (Icc a t) := hμ.mono (by grind)
