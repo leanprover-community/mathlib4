@@ -191,17 +191,14 @@ lemma exactAt_X₁ (hS : S.ShortExact) (j : ι)
     have := h₂ i hij
     apply (hS.homology_exact₁ i j hij).isZero_X₂
     · simp [← cancel_epi (HomologicalComplex.homologyMap S.g i)]
-    · dsimp
-      rw [← cancel_mono (HomologicalComplex.homologyMap S.g j), zero_comp,
-        ← HomologicalComplex.homologyMap_comp, S.zero,
-        HomologicalComplex.homologyMap_zero]
+    · simp [← cancel_mono (HomologicalComplex.homologyMap S.g j),
+        ← HomologicalComplex.homologyMap_comp]
   · have := hS.mono_f
     have := HomologicalComplex.mono_homologyMap_of_mono_of_not_rel S.f j hj
     rw [IsZero.iff_id_eq_zero,
       ← cancel_mono (HomologicalComplex.homologyMap S.f j),
-      ← cancel_mono (HomologicalComplex.homologyMap S.g j), zero_comp, zero_comp,
-      Category.id_comp, ← HomologicalComplex.homologyMap_comp, S.zero,
-      HomologicalComplex.homologyMap_zero]
+      ← cancel_mono (HomologicalComplex.homologyMap S.g j)]
+    simp [← HomologicalComplex.homologyMap_comp]
 
 lemma exactAt_X₂ (hS : S.ShortExact) (i : ι) (h₁ : S.X₁.ExactAt i) (h₃ : S.X₃.ExactAt i) :
     S.X₂.ExactAt i := by
