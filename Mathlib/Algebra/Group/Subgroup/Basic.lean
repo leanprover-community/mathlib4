@@ -318,24 +318,23 @@ instance topCharacteristic : Characteristic (⊤ : Subgroup G) :=
 
 /-- If `H` is a characteristic subgroup of `G`, then every automorphism of `G` induces an
 automorphism of `H`. -/
-noncomputable def _root_.MulAut.Characteristic [hH : H.Characteristic] : MulAut G →* MulAut H where
-  toFun φ := by
-    have : (φ.toMonoidHom.comp (H.subtype)).range = H := by
-      simpa [MonoidHom.range_eq_map, ← Subgroup.map_map] using characteristic_iff_map_eq.1 hH φ
-    exact (this ▸ (φ.toMonoidHom.comp (H.subtype)).ofInjective) (by simp)
-  map_one' := by
-    ext g; simp; sorry
-  map_mul' _ _ := sorry
+noncomputable def _root_.MulAut.Characteristic [H.Characteristic] : MulAut G →* MulAut H where
+  toFun φ :=
+    { toFun := fun h => ⟨φ h, characteristic_iff_le_comap.mp inferInstance φ h.2⟩
+      invFun := fun h => ⟨φ.symm h, characteristic_iff_le_comap.mp inferInstance φ.symm h.2⟩
+      left_inv h := Subtype.ext (φ.symm_apply_apply h)
+      right_inv h := Subtype.ext (φ.apply_symm_apply h)
+      map_mul' h k := Subtype.ext (map_mul φ (h : G) (k : G)) }
+  map_one' := rfl
+  map_mul' _ _ := rfl
 
-instance characteristic_of_characteristic_of_characteristic [hH : H.Characteristic]
+/-- If `H` is a characteristic subgroup of `G` and `K` is a characteristic subgroup of `H`, then
+`K` is a characteristic subgroup of `G`. -/
+instance characteristic_of_characteristic_of_characteristic [H.Characteristic]
     {K : Subgroup H} [hK : K.Characteristic] : (K.map H.subtype).Characteristic := by
   refine characteristic_iff_map_eq.2 fun φ => ?_
   have := congr_arg (map H.subtype) <| characteristic_iff_map_eq.1 hK (MulAut.Characteristic φ)
-  simp_all [Subgroup.map_map, MulAut.Characteristic]
-  convert this
-  ext x
-  simp
-  sorry
+  simpa [Subgroup.map_map, MulAut.Characteristic] using this
 
 variable (H)
 
