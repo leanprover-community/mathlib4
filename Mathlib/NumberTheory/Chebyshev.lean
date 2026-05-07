@@ -233,9 +233,9 @@ theorem lcmUpto_eq_prod (n : ℕ) :
   exact primeFactors_lcmUpto n
 
 theorem lcmUpto_eq_prod_pow_log (n : ℕ) : lcmUpto n = ∏ p ∈ primesLE n, p ^ p.log n := by
-  convert lcmUpto_eq_prod n using 3 with p hp
-  simp only [mem_filter, mem_range, Order.lt_add_one_iff] at hp
-  exact factorization_lcmUpto n hp.2 |>.symm
+  rw [lcmUpto_eq_prod]
+  exact Finset.prod_congr rfl fun p hp ↦ congrArg (p ^ ·) <|
+    factorization_lcmUpto n <| prime_of_mem_primesLE hp
 
 theorem lcmUpto_eq_prod_pow_floor (n : ℕ) : lcmUpto n = ∏ p ∈ primesLE n, p ^ ⌊log n / log p⌋₊ := by
   convert lcmUpto_eq_prod_pow_log n using 3
