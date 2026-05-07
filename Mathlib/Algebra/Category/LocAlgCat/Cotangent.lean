@@ -113,7 +113,7 @@ lemma mapCotangent_toCotangent (f : A ⟶ B) (a : maximalIdeal A) :
 lemma mapCotangent_comp (f : A ⟶ B) (g : B ⟶ C) :
     mapCotangent (f ≫ g) = mapCotangent g ∘ₗ mapCotangent f := LinearMap.ext fun x ↦ by
   obtain ⟨x, rfl⟩ := (maximalIdeal A).toCotangent_surjective x
-  simp [mapCotangent]
+  simp
 
 @[simp]
 lemma mapCotangent_id (A : LocAlgCat Λ k) : mapCotangent (𝟙 A) = LinearMap.id := by
@@ -238,9 +238,9 @@ theorem range_cotangentComplex_eq :
     range_kerCotangentToTensor _ _ _ A.isSurjective]
 
 lemma exact_cotangentComplex_toKaehler : Exact A.cotangentComplex A.toKaehler :=
-  LinearMap.exact_iff.mpr range_cotangentComplex_eq.symm
+  SetLike.ext_iff.mp range_cotangentComplex_eq.symm
 
-/-- The canonical extension of `k` associated to the object `A`, defined via
+/-- The canonical extension of `k` associated to an object `A`, defined via
 its surjective residue map. -/
 abbrev extension (A : LocAlgCat.{w} Λ k) : Extension Λ k :=
   Extension.ofSurjective A.residue A.residue_surjective
@@ -283,7 +283,7 @@ def cotangentEquiv (A : LocAlgCat.{w} Λ k) : A.extension.Cotangent ≃ₗ[k] Co
   map_smul' r x := by
     simp only [Extension.cotangentEquivCotangentKer_apply, Extension.Cotangent.val_smul,
       RingHom.id_apply]
-    rcases A.extension.ker.toCotangent_surjective x.val with ⟨y, hy⟩
+    obtain ⟨y, hy⟩ := A.extension.ker.toCotangent_surjective x.val
     nth_rw 2 [← residue_σ_apply A r]
     rw [← hy, residue_smul_cotangent, ← map_smul, Ideal.Cotangent.equivOfEq_toCotangent,
       Ideal.Cotangent.equivOfEq_toCotangent, ← map_smul, Ideal.toCotangent_eq]
@@ -296,7 +296,7 @@ def cotangentEquiv (A : LocAlgCat.{w} Λ k) : A.extension.Cotangent ≃ₗ[k] Co
 @[simp]
 lemma cotangentEquiv_mk_apply (A : LocAlgCat.{w} Λ k) (x : A.extension.ker) :
     Extension.cotangentEquiv A (Extension.Cotangent.mk x) =
-      (maximalIdeal A).toCotangent ⟨x.val, by rw [← ker_residue]; exact x.prop⟩ := rfl
+      (maximalIdeal A).toCotangent ⟨x.val, A.ker_residue ▸ x.prop⟩ := rfl
 
 /-- Implementation details of `cotangentSpaceEquiv`. -/
 private def cotangentSpaceEquivAux (A : LocAlgCat.{w} Λ k) :
@@ -372,11 +372,9 @@ theorem surjective_mapCotangent_toSpecialFiber : Surjective (mapCotangent A.toSp
   surjective_mapCotangent_toOfQuot _
 
 /-- The canonical linear map from the cotangent space of `Λ` to the cotangent space of `A`. -/
-def baseCotangentMap (A : LocAlgCat.{w} Λ k) :
-    CotangentSpace Λ →ₗ[ResidueField Λ] CotangentSpace A :=
+def baseCotangentMap (A : LocAlgCat.{w} Λ k) : CotangentSpace Λ →ₗ[Λ] CotangentSpace A :=
   ((maximalIdeal Λ).mapCotangent (maximalIdeal A) (Algebra.ofId Λ A) (by rw [← Ideal.comap_coe,
-    Algebra.toRingHom_ofId, comap_algebraMap_maximalIdeal])).extendScalarsOfSurjective
-      IsLocalRing.residue_surjective
+    Algebra.toRingHom_ofId, comap_algebraMap_maximalIdeal]))
 
 @[simp]
 lemma baseCotangentMap_toCotangent (x : maximalIdeal Λ) :
@@ -384,8 +382,8 @@ lemma baseCotangentMap_toCotangent (x : maximalIdeal Λ) :
       ⟨algebraMap Λ A x, by have := isLocalHom_algebraMap A; rw [← Ideal.mem_comap,
         maximalIdeal_comap]; exact x.prop⟩ := rfl
 
-theorem range_baseCotangentMap_le (A : LocAlgCat Λ k) : A.baseCotangentMap.range ≤
-    (A.cotangentComplex.extendScalarsOfSurjective A.isSurjective).ker.restrictScalars _ := by
+theorem range_baseCotangentMap_le (A : LocAlgCat Λ k) :
+    A.baseCotangentMap.range ≤ A.cotangentComplex.ker.restrictScalars Λ := by
   intro x hx
   obtain ⟨x, rfl⟩ := (maximalIdeal A).toCotangent_surjective x
   rcases hx with ⟨y, hy⟩
@@ -395,13 +393,10 @@ theorem range_baseCotangentMap_le (A : LocAlgCat Λ k) : A.baseCotangentMap.rang
 
 lemma mapCotangent_comp_liftBaseChange_baseCotangentMap (f : A ⟶ B) :
     (mapCotangent f).comp (liftBaseChange k A.baseCotangentMap) =
-      liftBaseChange k B.baseCotangentMap := LinearMap.ext fun z ↦ by
-  induction z using TensorProduct.induction_on with
-  | zero => simp
-  | tmul r a =>
-    rcases (maximalIdeal Λ).toCotangent_surjective a with ⟨a, rfl⟩
-    simp
-  | add x y hx hy => simp_all
+      liftBaseChange k B.baseCotangentMap := by
+  ext x
+  obtain ⟨x, rfl⟩ := (maximalIdeal Λ).toCotangent_surjective x
+  simp
 
 open Submodule in
 theorem range_liftBaseChange_baseCotangentMap :
@@ -412,7 +407,7 @@ theorem range_liftBaseChange_baseCotangentMap :
     clear * -; induction y with
     | zero => simp
     | tmul x y =>
-      rcases (maximalIdeal Λ).toCotangent_surjective y with ⟨y, rfl⟩
+      obtain ⟨y, rfl⟩ := (maximalIdeal Λ).toCotangent_surjective y
       simp [Ideal.toCotangent_eq_zero]
     | add x y hx hy => rw [map_add]; exact add_mem hx hy
   · rcases (maximalIdeal A).toCotangent_surjective x with ⟨⟨x, x_in⟩, rfl⟩
@@ -454,7 +449,7 @@ theorem surjective_mapCotangent_of_surjective_mapCotangent_mapSpecialFiber
     mapCotangent_comp, LinearMap.comp_apply] at hx
   have h_ker : y - mapCotangent f x ∈ LinearMap.ker (mapCotangent B.toSpecialFiber) := by
     rw [LinearMap.mem_ker, map_sub, hx, sub_self]
-  rw [← B.range_liftBaseChange_baseCotangentMap, LinearMap.mem_range] at h_ker
+  rw [← range_liftBaseChange_baseCotangentMap, LinearMap.mem_range] at h_ker
   rcases h_ker with ⟨z, hz⟩
   use x + liftBaseChange k A.baseCotangentMap z
   rw [map_add, ← LinearMap.comp_apply, mapCotangent_comp_liftBaseChange_baseCotangentMap, hz,
