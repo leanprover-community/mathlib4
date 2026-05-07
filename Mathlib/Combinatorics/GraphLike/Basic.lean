@@ -33,7 +33,7 @@ of graph structures including `SimpleGraph`, `Graph`, and `Digraph`.
 public section
 
 /-- `HasSourceTarget V D` is a typeclass with two functions `src : D → V` and `tgt : D → V` that
-  give the source and target of a dart. -/
+give the source and target of a dart. -/
 class HasSourceTarget (V D : Type*) where
   /-- The first vertex of a dart. -/
   src : D → V
@@ -47,9 +47,15 @@ class HasEdge (D E : Type*) where
 
 open HasSourceTarget HasEdge
 
-/-- The `GraphLike` typeclass abstracts over graph-like structures by encoding the minimal structure
-required to reason about directed edges ("darts") and adjacency. The "darts" terminology comes from
-combinatorial maps, and they are also known as "half-edges" or "bonds." -/
+/-- The `GraphLike` typeclass abstracts over graph-like structures including hypergraphs.
+It has vertex and edge sets so subgraph relations can be handled within the same type.
+The "darts" terminology comes from combinatorial maps, and they are also known as "half-edges" or
+"bonds." They represents the ways an edge can be traversed: if `d` is a dart with `edge d = e`,
+`src d = u` and `tgt d = v` then `d` is walk of length 1 from `u` to `v` with edge `e`. In an
+undirected graph, each edge is composed of two darts.
+`Adj` is the adjacency relation of a graph-like structure. Two vertices, `u` & `v`, are adjacent iff
+there is a dart between them and therefore there is an edge that can be traversed from `u` to `v`.
+(See `exists_darts_iff_adj`.) -/
 class GraphLike (V D E : outParam Type*) [HasSourceTarget V D] [HasEdge D E] (Gr : Type*) where
   /-- The set of vertices of a graph-like structure. -/
   verts : Gr → Set V
