@@ -34,15 +34,16 @@ open Ideal
 
 /-- The height of a prime ideal is defined as the supremum of the lengths of strictly decreasing
 chains of prime ideals below it. -/
-noncomputable def Ideal.primeHeight [hI : I.IsPrime] : ℕ∞ :=
+private noncomputable def Ideal.primeHeight [hI : I.IsPrime] : ℕ∞ :=
   Order.height (⟨I, hI⟩ : PrimeSpectrum R)
 
 /-- The height of an ideal is defined as the infimum of the heights of its minimal prime ideals. -/
+@[no_expose]
 noncomputable def Ideal.height : ℕ∞ :=
   ⨅ J ∈ I.minimalPrimes, @Ideal.primeHeight _ _ J (IsPrime.of_mem_minimalPrimes (I := I) ‹_›)
 
 /-- For a prime ideal, its height equals its prime height. -/
-lemma Ideal.height_eq_primeHeight [I.IsPrime] : I.height = I.primeHeight := by
+private lemma Ideal.height_eq_primeHeight [I.IsPrime] : I.height = I.primeHeight := by
   simp [height, primeHeight, Ideal.minimalPrimes_eq_subsingleton_self]
 
 lemma Ideal.height_eq_order_height_of_isPrime [I.IsPrime] : I.height =
@@ -77,7 +78,7 @@ lemma Ideal.height_ne_top_of_isPrime {I : Ideal R} [I.FiniteHeight] [I.IsPrime] 
   Ideal.height_ne_top ‹I.IsPrime›.ne_top
 
 @[deprecated "Use `Ideal.height_ne_top_of_isPrime` instead." (since := "2026-04-04")]
-lemma Ideal.primeHeight_ne_top (I : Ideal R) [I.FiniteHeight] [I.IsPrime] :
+private lemma Ideal.primeHeight_ne_top (I : Ideal R) [I.FiniteHeight] [I.IsPrime] :
     I.primeHeight ≠ ⊤ := by
   rw [← I.height_eq_primeHeight]
   exact Ideal.height_ne_top ‹I.IsPrime›.ne_top
@@ -87,7 +88,7 @@ lemma Ideal.height_lt_top_of_isPrime {I : Ideal R} [I.FiniteHeight] [I.IsPrime] 
   Ideal.height_lt_top ‹I.IsPrime›.ne_top
 
 @[deprecated "Use `Ideal.height_lt_top_of_isPrime` instead." (since := "2026-04-04")]
-lemma Ideal.primeHeight_lt_top (I : Ideal R) [I.FiniteHeight] [I.IsPrime] :
+private lemma Ideal.primeHeight_lt_top (I : Ideal R) [I.FiniteHeight] [I.IsPrime] :
     I.primeHeight < ⊤ := by
   rw [← I.height_eq_primeHeight]
   exact Ideal.height_lt_top ‹I.IsPrime›.ne_top
@@ -109,7 +110,7 @@ private lemma Ideal.height_mono_of_isPrime {I J : Ideal R} [I.IsPrime] [J.IsPrim
   exact h
 
 @[deprecated "Use `Ideal.height_mono_of_isPrime` instead." (since := "2026-04-04")]
-lemma Ideal.primeHeight_mono {I J : Ideal R} [I.IsPrime] [J.IsPrime] (h : I ≤ J) :
+private lemma Ideal.primeHeight_mono {I J : Ideal R} [I.IsPrime] [J.IsPrime] (h : I ≤ J) :
     I.primeHeight ≤ J.primeHeight := by
   simpa [Ideal.height_eq_primeHeight] using Ideal.height_mono_of_isPrime h
 
@@ -119,7 +120,7 @@ lemma Ideal.height_add_one_le_of_lt_of_isPrime {I J : Ideal R} [I.IsPrime] [J.Is
   exact Order.height_add_one_le h
 
 @[deprecated "Use `Ideal.height_add_one_le_of_lt_of_isPrime` instead." (since := "2026-04-04")]
-lemma Ideal.primeHeight_add_one_le_of_lt {I J : Ideal R} [I.IsPrime] [J.IsPrime]
+private lemma Ideal.primeHeight_add_one_le_of_lt {I J : Ideal R} [I.IsPrime] [J.IsPrime]
     (h : I < J) : I.primeHeight + 1 ≤ J.primeHeight := by
   simpa [Ideal.height_eq_primeHeight] using Ideal.height_add_one_le_of_lt_of_isPrime h
 
@@ -160,7 +161,7 @@ alias Ideal.height_strict_mono_of_isPrime_of_is_prime :=
 
 @[deprecated "Use `Ideal.height_strict_mono_of_isPrime_of_isPrime` instead."
   (since := "2026-04-02")]
-lemma Ideal.primeHeight_strict_mono {I J : Ideal R} [I.IsPrime] [J.IsPrime] (h : I < J)
+private lemma Ideal.primeHeight_strict_mono {I J : Ideal R} [I.IsPrime] [J.IsPrime] (h : I < J)
     [J.FiniteHeight] : I.primeHeight < J.primeHeight := by
   simpa [← Ideal.height_eq_primeHeight] using Ideal.height_strict_mono_of_isPrime_of_isPrime h
 
@@ -257,7 +258,7 @@ theorem Ideal.isMaximal_of_height_eq_ringKrullDim {I : Ideal R} [I.IsPrime]
   · exact hM' ▸ hM
 
 @[deprecated "Use `Ideal.isMaximal_of_height_eq_ringKrullDim` instead." (since := "2026-04-02")]
-theorem Ideal.isMaximal_of_primeHeight_eq_ringKrullDim {I : Ideal R} [I.IsPrime]
+private theorem Ideal.isMaximal_of_primeHeight_eq_ringKrullDim {I : Ideal R} [I.IsPrime]
     [FiniteRingKrullDim R] (e : I.primeHeight = ringKrullDim R) : I.IsMaximal :=
   Ideal.isMaximal_of_height_eq_ringKrullDim (by simpa [Ideal.height_eq_primeHeight])
 
@@ -285,8 +286,9 @@ theorem Ideal.height_eq_ringKrullDim_iff [FiniteRingKrullDim R] [IsLocalRing R] 
     exact IsLocalRing.maximalIdeal_height_eq_ringKrullDim
 
 @[deprecated "Use `Ideal.height_eq_ringKrullDim_iff` instead." (since := "2026-04-02")]
-theorem Ideal.primeHeight_eq_ringKrullDim_iff [FiniteRingKrullDim R] [IsLocalRing R] {I : Ideal R}
-    [I.IsPrime] : Ideal.primeHeight I = ringKrullDim R ↔ I = IsLocalRing.maximalIdeal R := by
+private theorem Ideal.primeHeight_eq_ringKrullDim_iff [FiniteRingKrullDim R] [IsLocalRing R]
+    {I : Ideal R} [I.IsPrime] :
+    Ideal.primeHeight I = ringKrullDim R ↔ I = IsLocalRing.maximalIdeal R := by
   rw [← Ideal.height_eq_primeHeight, Ideal.height_eq_ringKrullDim_iff]
 
 lemma Ideal.height_le_iff {p : Ideal R} {n : ℕ} [p.IsPrime] :
@@ -407,7 +409,7 @@ lemma IsLocalization.height_map_of_disjoint {S : Type*} [CommRing S] [Algebra R 
   exact WithBot.coe_eq_coe.mp this
 
 @[deprecated "Use `mem_minimalPrimes_of_height_eq` instead." (since := "2026-04-02")]
-lemma mem_minimalPrimes_of_primeHeight_eq_height {I J : Ideal R} [J.IsPrime] (e : I ≤ J)
+private lemma mem_minimalPrimes_of_primeHeight_eq_height {I J : Ideal R} [J.IsPrime] (e : I ≤ J)
     (e' : J.primeHeight = I.height) [J.FiniteHeight] : J ∈ I.minimalPrimes := by
   rw [← J.height_eq_primeHeight] at e'
   exact mem_minimalPrimes_of_height_eq e (e' ▸ le_refl _)
@@ -490,7 +492,7 @@ lemma Ideal.sup_height_isPrime_eq_ringKrullDim [Nontrivial R] :
       exact iInf_le_of_le P (iInf_le_of_le hP (ge_of_eq (Ideal.height_eq_primeHeight P)))
 
 @[deprecated "Use `Ideal.sup_height_isPrime_eq_ringKrullDim` instead." (since := "2026-04-02")]
-lemma Ideal.sup_primeHeight_eq_ringKrullDim [Nontrivial R] :
+private lemma Ideal.sup_primeHeight_eq_ringKrullDim [Nontrivial R] :
     ↑(⨆ (I : Ideal R) (_ : I.IsPrime), I.primeHeight) = ringKrullDim R := by
   simp [← Ideal.height_eq_primeHeight, Ideal.sup_height_isPrime_eq_ringKrullDim]
 
@@ -508,7 +510,7 @@ lemma Ideal.sup_height_of_maximal_eq_ringKrullDim [Nontrivial R] :
       exact ⟨M, iSup_mono' (fun hI ↦ ⟨hM, height_mono hIM⟩)⟩
 
 @[deprecated "Use `Ideal.sup_height_of_maximal_eq_ringKrullDim` instead." (since := "2026-04-02")]
-lemma Ideal.sup_primeHeight_of_maximal_eq_ringKrullDim [Nontrivial R] :
+private lemma Ideal.sup_primeHeight_of_maximal_eq_ringKrullDim [Nontrivial R] :
     ↑(⨆ (I : Ideal R) (_ : I.IsMaximal), I.primeHeight) = ringKrullDim R := by
   simp_rw [← Ideal.height_eq_primeHeight, Ideal.sup_height_of_maximal_eq_ringKrullDim]
 
