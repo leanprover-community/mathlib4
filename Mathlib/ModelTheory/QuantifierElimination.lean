@@ -12,13 +12,34 @@ public import Mathlib.ModelTheory.PartialEquiv
 /-!
 # Quantifier Elimination
 
-This file defines what it means for a first-order theory to have quantifier elimination.
+This file defines quantifier elimination for first-order theories and proves several standard
+criteria for establishing it.
 
 ## Main Definitions
 
-- `FirstOrder.Language.Theory.HasQuantifierElimination` states that every bounded formula in
-  finitely many free variables is equivalent, over the theory, to a quantifier-free bounded
-  formula.
+- `FirstOrder.Language.Theory.isEquivQF` says that a formula is equivalent over a theory to a
+  quantifier-free formula.
+- `FirstOrder.Language.Theory.HasQuantifierElimination` says that every formula in finitely many
+  free variables is equivalent over the theory to a quantifier-free formula.
+- `FirstOrder.Language.Theory.IsElementaryExtensionPair` and
+  `FirstOrder.Language.Theory.IsElementaryExtensionPairFG` are extension properties for partial
+  isomorphisms, used in criteria for quantifier elimination.
+
+## Main Results
+
+- `FirstOrder.Language.Theory.isEquivQF_iff_realize_iff_of_embeddings` characterizes
+  quantifier-free definability by invariance under embeddings from a common substructure. This
+  corresponds to Marker, Theorem 3.1.4.
+- `FirstOrder.Language.Theory.hasQuantifierElimination_of_ex_isEquivQF_of_isQF` shows that it
+  suffices to eliminate one existential quantifier from quantifier-free formulas. This corresponds
+  to Marker, Theorem 3.1.5.
+- `FirstOrder.Language.Theory.hasQuantifierElimination_of_exists_realize_of_embeddings` is a
+  witness-transfer criterion for quantifier elimination. This corresponds to Marker,
+  Theorem 3.1.6.
+- `FirstOrder.Language.Theory.hasQuantifierElimination_of_isElementaryExtensionPair` and
+  `FirstOrder.Language.Theory.hasQuantifierElimination_of_isElementaryExtensionPairFG` prove
+  quantifier elimination from the extension property appearing in van den Dries--Henson,
+  Theorem 7.11, and from a finitely generated variant.
 -/
 
 @[expose] public section
@@ -40,13 +61,10 @@ variable {M : Type w} {N A : Type*} [L.Structure M] [L.Structure N] [L.Structure
 def isEquivQF (T : L.Theory) {m : ℕ} (φ : L.Formula (Fin m)) :=
   ∃ ψ : L.Formula (Fin m), ψ.IsQF ∧ φ ⇔[T] ψ
 
-/-- A theory has quantifier elimination if every bounded formula is equivalent, over the theory, to
-a quantifier-free bounded formula. -/
+/-- A theory has quantifier elimination if every formula in finitely many free variables is
+equivalent, over the theory, to a quantifier-free formula. -/
 def HasQuantifierElimination (T : L.Theory) : Prop :=
   ∀ {m : ℕ} (φ : L.Formula (Fin m)), T.isEquivQF φ
-
-
------------------------------------------------------------------------------------------
 
 private theorem exists_substructure_embedding_of_agree_qf
     {m : ℕ} {M N : Type*} [L.Structure M] [L.Structure N]
@@ -197,6 +215,10 @@ private theorem exists_substructure_embedding_of_agree_qf
     simpa [g, a, xi] using hEq.trans hwx
   exact ⟨S, g, a, ha, hg⟩
 
+/-- A formula is equivalent over `T` to a quantifier-free formula iff its truth is invariant under
+pairs of embeddings from a common structure into nonempty models of `T`.
+
+This corresponds to Marker, Theorem 3.1.4. -/
 theorem isEquivQF_iff_realize_iff_of_embeddings
     {T : L.Theory} {m : ℕ} (φ : L.Formula (Fin m)) :
     T.isEquivQF φ ↔
@@ -530,10 +552,14 @@ private theorem exists_qf_equiv_ex_of_isQF
         change ψ'.Realize v' ↔ ψ'.Realize v'
         rfl
 
+/-- To prove quantifier elimination, it suffices to eliminate one existential quantifier from
+every quantifier-free formula with one bound variable.
+
+This corresponds to Marker, Theorem 3.1.5. -/
 theorem hasQuantifierElimination_of_ex_isEquivQF_of_isQF
-  {T : L.Theory} :
-  (∀ {m : ℕ} (θ : L.BoundedFormula (Fin m) 1), θ.IsQF → T.isEquivQF θ.ex)
-  → HasQuantifierElimination T := by
+    {T : L.Theory} :
+    (∀ {m : ℕ} (θ : L.BoundedFormula (Fin m) 1), θ.IsQF → T.isEquivQF θ.ex) →
+    HasQuantifierElimination T := by
   intro h m φ
   let P : ∀ {n : ℕ}, L.BoundedFormula (Fin m) n → Prop :=
     fun {n} φ => ∃ ψ : L.BoundedFormula (Fin m) n, ψ.IsQF ∧ φ ⇔[T] ψ
@@ -559,17 +585,19 @@ theorem hasQuantifierElimination_of_ex_isEquivQF_of_isQF
         exact ⟨ψ, hψ, hφ₁φ₂T.trans hφ₂ψ⟩
   exact hP
 
+/-- The witness-transfer criterion for quantifier elimination: if existential witnesses for
+quantifier-free formulas over tuples from a common embedded structure can be transferred between
+nonempty models of `T`, then `T` has quantifier elimination.
 
------------------------------------------------------------------------------------------
-
+This corresponds to Marker, Theorem 3.1.6. -/
 theorem hasQuantifierElimination_of_exists_realize_of_embeddings {T : L.Theory} :
-  (∀ {m : ℕ} (φ : L.Formula (Fin m.succ)) (_ : φ.IsQF)
-    {M N A : Type (max u v)} [L.Structure M] [L.Structure N] [L.Structure A]
-    [T.Model M] [T.Model N] [Nonempty M] [Nonempty N]
-    (f : A ↪[L] M) (g : A ↪[L] N) (a : Fin m → A),
-    (∃ (b : M), φ.Realize (Fin.snoc (f ∘ a) b)) →
-    (∃ (c : N), φ.Realize (Fin.snoc (g ∘ a) c))) →
-  T.HasQuantifierElimination := by
+    (∀ {m : ℕ} (φ : L.Formula (Fin m.succ)) (_ : φ.IsQF)
+      {M N A : Type (max u v)} [L.Structure M] [L.Structure N] [L.Structure A]
+      [T.Model M] [T.Model N] [Nonempty M] [Nonempty N]
+      (f : A ↪[L] M) (g : A ↪[L] N) (a : Fin m → A),
+      (∃ (b : M), φ.Realize (Fin.snoc (f ∘ a) b)) →
+      (∃ (c : N), φ.Realize (Fin.snoc (g ∘ a) c))) →
+    T.HasQuantifierElimination := by
   intro h
   apply hasQuantifierElimination_of_ex_isEquivQF_of_isQF
   intro m θ hθ
@@ -655,10 +683,10 @@ def IsElementaryExtensionPairFG (T : L.Theory) : Prop :=
       (e : N ↪ₑ[L] N') (g : L.FGEquiv M N'),
       a ∈ g.1.dom ∧ f.1.ExtendsAlong e.toEmbedding g
 
-/-- Henson, Theorem 7.11, direction `(2) → (1)`: if every partial isomorphism between
-substructures of models of `T` can be extended, after passing to an elementary extension of the
-codomain model, to include any prescribed element of the domain model, then `T` has quantifier
-elimination. -/
+/-- If a theory has the elementary extension-pair property, then it has quantifier elimination.
+
+The hypothesis is condition (2) in van den Dries--Henson, Theorem 7.11; this theorem proves the
+implication from that extension property to condition (1). -/
 theorem hasQuantifierElimination_of_isElementaryExtensionPair
     {T : L.Theory} (h : T.IsElementaryExtensionPair) :
     T.HasQuantifierElimination := by
@@ -756,9 +784,11 @@ theorem hasQuantifierElimination_of_isElementaryExtensionPair
   rcases hθN with ⟨c, hc⟩
   exact ⟨c, (hθ_realize (g ∘ a) c).1 hc⟩
 
-/-- Henson, Theorem 7.11, finite-generated version of `(2) → (1)`: it suffices to extend
-finitely generated partial isomorphisms, after passing to an elementary extension of the codomain,
-to include any prescribed element of the domain model. -/
+/-- If a theory has the finitely generated elementary extension-pair property, then it has
+quantifier elimination.
+
+The hypothesis is a finitely generated variant of the extension property appearing as condition
+(2) in van den Dries--Henson, Theorem 7.11. -/
 theorem hasQuantifierElimination_of_isElementaryExtensionPairFG
     {T : L.Theory} (h : T.IsElementaryExtensionPairFG) :
     T.HasQuantifierElimination := by
@@ -872,9 +902,6 @@ theorem hasQuantifierElimination_of_isElementaryExtensionPairFG
   rw [BoundedFormula.realize_ex] at hθN
   rcases hθN with ⟨c, hc⟩
   exact ⟨c, (hθ_realize (g ∘ a) c).1 hc⟩
-
------------------------------------------------------------------------------------------
-
 
 end Theory
 

@@ -50,7 +50,8 @@ This file defines ordered first-order languages and structures, as well as their
   theory of linear orders is Fraïssé.
 - `FirstOrder.Language.aleph0_categorical_dlo` shows that the theory of dense linear orders is
   `ℵ₀`-categorical, and thus complete.
-
+- `FirstOrder.Language.Theory.order_dlo_hasQuantifierElimination` shows that the theory of dense
+  linear orders without endpoints has quantifier elimination.
 -/
 
 @[expose] public section
