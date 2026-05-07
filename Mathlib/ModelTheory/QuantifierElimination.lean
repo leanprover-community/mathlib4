@@ -8,7 +8,6 @@ module
 public import Mathlib.ModelTheory.Complexity
 public import Mathlib.ModelTheory.Satisfiability
 public import Mathlib.ModelTheory.PartialEquiv
-public import Mathlib.ModelTheory.Order
 
 /-!
 # Quantifier Elimination
@@ -945,22 +944,6 @@ theorem hasQuantifierElimination_of_isElementaryExtensionPairFG
   rw [BoundedFormula.realize_ex] at hθN
   rcases hθN with ⟨c, hc⟩
   exact ⟨c, (hθ_realize (g ∘ a) c).1 hc⟩
-
-/-- The theory of dense linear orders without endpoints has quantifier elimination. -/
-theorem order_dlo_hasQuantifierElimination :
-    Language.order.dlo.HasQuantifierElimination := by
-  apply hasQuantifierElimination_of_isElementaryExtensionPairFG
-  intro M N _ iN _ _ _ _ f a
-  obtain ⟨g, ha, hfg⟩ := Language.dlo_isExtensionPair M N f a
-  use N
-  use iN
-  use ElementaryEmbedding.refl Language.order N
-  use g
-  constructor
-  · exact ha
-  · simpa [PartialEquiv.ExtendsAlong, PartialEquiv.codMap] using hfg
-
-
 
 -----------------------------------------------------------------------------------------
 

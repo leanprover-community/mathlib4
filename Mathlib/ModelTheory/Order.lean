@@ -10,6 +10,7 @@ public import Mathlib.Data.Rat.Encodable
 public import Mathlib.Data.Finset.Sort
 public import Mathlib.ModelTheory.Complexity
 public import Mathlib.ModelTheory.Fraisse
+public import Mathlib.ModelTheory.QuantifierElimination
 public import Mathlib.Order.CountableDenseLinearOrder
 
 /-!
@@ -546,6 +547,24 @@ theorem dlo_isComplete : Language.order.dlo.IsComplete :=
       letI : Language.order.Structure ℚ := orderStructure ℚ
       exact Theory.ModelType.of _ ℚ⟩
     fun _ => inferInstance
+
+namespace Theory
+
+/-- The theory of dense linear orders without endpoints has quantifier elimination. -/
+theorem order_dlo_hasQuantifierElimination :
+    Language.order.dlo.HasQuantifierElimination := by
+  apply hasQuantifierElimination_of_isElementaryExtensionPairFG
+  intro M N _ iN _ _ _ _ f a
+  obtain ⟨g, ha, hfg⟩ := Language.dlo_isExtensionPair M N f a
+  use N
+  use iN
+  use ElementaryEmbedding.refl Language.order N
+  use g
+  constructor
+  · exact ha
+  · simpa [PartialEquiv.ExtendsAlong, PartialEquiv.codMap] using hfg
+
+end Theory
 
 end Fraisse
 
