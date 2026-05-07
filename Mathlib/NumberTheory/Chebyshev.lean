@@ -198,21 +198,17 @@ theorem lcmUpto_ne_zero (n : ℕ) : lcmUpto n ≠ 0 := by
 theorem lcmUpto_pos (n : ℕ) : 0 < lcmUpto n := pos_of_ne_zero <| lcmUpto_ne_zero n
 
 theorem factorization_lcmUpto (n : ℕ) {p : ℕ} (hp : p.Prime) :
-  (lcmUpto n).factorization p = p.log n := calc
-  _ = (Icc 1 n).sup (fun k => k.factorization p) :=
-    Finset.factorization_lcm (fun k hk => by aesop) p
-  _ = _ := by
-    have := hp.one_lt
-    refine le_antisymm ?_ ?_
-    · simp only [Finset.sup_le_iff, mem_Icc, and_imp]
-      intro m h1 h2
-      exact le_log_of_pow_le this
-        (le_of_dvd (Order.one_le_iff_pos.mp h1) (ordProj_dvd m p) |>.trans h2)
-    rcases le_or_gt p n with _ | h
-    · have := pow_log_le_self p (x := n) (by linarith)
-      grw [← le_sup (b := p ^ p.log n) (by grind)]
-      simp [hp]
-    simp [log_of_lt h]
+  (lcmUpto n).factorization p = p.log n := by
+  rw [lcmUpto, Finset.factorization_lcm (fun _ _ ↦ by grind)]
+  have := hp.one_lt
+  refine le_antisymm ?_ ?_
+  · simp only [Finset.sup_le_iff, mem_Icc, and_imp]
+    exact fun m _ h ↦ le_log_of_pow_le this (le_of_dvd (by grind) (ordProj_dvd m p) |>.trans h)
+  rcases le_or_gt p n with _ | h
+  · have := pow_log_le_self p (x := n) (by linarith)
+    grw [← le_sup (b := p ^ p.log n) (by grind)]
+    simp [hp]
+  simp [log_of_lt h]
 
 theorem lcmUpto_dvd_factorial (n : ℕ) : lcmUpto n ∣ n ! := by
   simp +contextual [lcmUpto, dvd_factorial, Order.one_le_iff_pos]
