@@ -565,37 +565,37 @@ variable [LE α] [LE β] [LE γ] [LE δ]
 
 variable (α) in
 /-- Identity order embedding -/
-def refl : α ↪o α :=
+def id : α ↪o α :=
   RelEmbedding.refl (· ≤ ·)
 
 @[simp]
-theorem coe_refl : ⇑(refl α) = id :=
+theorem coe_id : ⇑(id α) = _root_.id :=
   rfl
 
 @[simp]
-theorem refl_toEmbedding : (refl α).toEmbedding = Function.Embedding.refl α :=
+theorem id_toEmbedding : (id α).toEmbedding = Function.Embedding.refl α :=
   rfl
 
 /-- Composition of two order embeddings is an order embedding -/
-def trans (f : α ↪o β) (g : β ↪o γ) : α ↪o γ :=
+def comp (f : α ↪o β) (g : β ↪o γ) : α ↪o γ :=
   RelEmbedding.trans f g
 
 @[simp]
-theorem coe_trans (f : α ↪o β) (g : β ↪o γ) : f.trans g = g ∘ f :=
+theorem coe_comp (f : α ↪o β) (g : β ↪o γ) : f.comp g = g ∘ f :=
   rfl
 
 @[simp]
-theorem refl_trans (f : α ↪o β) : (refl α).trans f = f := by
+theorem id_comp (f : α ↪o β) : (id α).comp f = f := by
   ext
   rfl
 
 @[simp]
-theorem trans_refl (f : α ↪o β) : f.trans (refl β) = f := by
+theorem comp_id (f : α ↪o β) : f.comp (id β) = f := by
   ext
   rfl
 
-theorem trans_assoc (f : α ↪o β) (g : β ↪o γ) (h : γ ↪o δ) :
-    (f.trans g).trans h = f.trans (g.trans h) :=
+theorem comp_assoc (f : α ↪o β) (g : β ↪o γ) (h : γ ↪o δ) :
+    (f.comp g).comp h = f.comp (g.comp h) :=
   rfl
 
 end OrderEmbedding
