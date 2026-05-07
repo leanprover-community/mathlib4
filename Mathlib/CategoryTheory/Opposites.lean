@@ -736,6 +736,10 @@ lemma unop_associator {E E' : Type*} [Category* E] [Category* E']
 
 end NatIso
 
+instance {D : Type*} [Category* D] {F G : C ⥤ D} (α : F ⟶ G) [IsIso α] :
+    IsIso (NatTrans.op α) :=
+  (NatIso.op (asIso α)).isIso_hom
+
 namespace Equivalence
 
 variable {D : Type u₂} [Category.{v₂} D]

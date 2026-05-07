@@ -27,6 +27,15 @@ In this file, we obtain the lemma
 that if both `L` and `R` are localized equivalences (with `R.functor` essentially surjective),
 then `B` is a right derivability structure when `T` is a right derivability structure,
 the `2`-square above is Guitart exact (and `W₂'` respects isomorphisms).
+In addition, if we require that `L.functor` is also essentially surjective,
+that `R.functor` is full and that `W₂` is induced by `W₂'`, then
+`B` is a right derivability structure iff `T` is.
+
+The dual results for left derivability structures are also obtained.
+
+This will be particularly useful when `L.functor` and `R.functor` are functors
+from a category to a quotient category (e.g. functors from categories of homological
+complexes to homotopy categories).
 
 -/
 
@@ -92,8 +101,7 @@ lemma isLeftDerivabilityStructure_iff_of_isLocalizedEquivalence
           MorphismProperty.inverseImage_iff, Functor.map_preimage]
         refine (W₂'.arrow_mk_iso_iff ?_).2 ρ.hw
         exact Arrow.isoMk (iso.app _ ≪≫ B.functor.mapIso (L.functor.objObjPreimageIso ρ.X₁))
-          (Iso.refl _)
-    }⟩
+          (Iso.refl _) }⟩
   let F := B.localizedFunctor W₁'.Q W₂'.Q
   let e' := CatCommSq.iso B.functor W₁'.Q W₂'.Q F
   let e : T.functor ⋙ R.functor ⋙ W₂'.Q ≅ (L.functor ⋙ W₁'.Q) ⋙ F :=
@@ -132,8 +140,7 @@ lemma isLeftDerivabilityStructure_of_equivalences
     B.IsLeftDerivabilityStructure := by
   have := L.isLocalizedEquivalence_of_isInduced
   have := R.isLocalizedEquivalence_of_isInduced
-  sorry
-  --exact isLeftDerivabilityStructure_of_isLocalizedEquivalence iso
+  exact isLeftDerivabilityStructure_of_isLocalizedEquivalence iso
 
 open Functor in
 lemma isLeftDerivabilityStructure_iff_of_equivalences
