@@ -30,18 +30,12 @@ namespace FirstOrder
 
 namespace Language
 
-abbrev Sub (L : Language) (M N : Type*) [L.Structure M] [L.Structure N] :=
-  M ≃ₚ[L] N
-
-abbrev Sub₀ (L : Language) (M N : Type*) [L.Structure M] [L.Structure N] :=
-  L.FGEquiv M N
-
 namespace PartialEquiv
 
 noncomputable def codMap
     {L : Language} {M N N' : Type*}
     [L.Structure M] [L.Structure N] [L.Structure N']
-    (f : L.Sub M N) (e : N ↪[L] N') : M ≃ₚ[L] N' where
+    (f : M ≃ₚ[L] N) (e : N ↪[L] N') : M ≃ₚ[L] N' where
   dom := f.dom
   cod := f.cod.map e.toHom
   toEquiv := (e.substructureEquivMap f.cod).comp f.toEquiv
@@ -694,7 +688,7 @@ theorem marker_316 {T : L.Theory} :
 
 private theorem isQF_realize_partialEquiv
     {α : Type*} {M N : Type*} [L.Structure M] [L.Structure N]
-    {φ : L.Formula α} (hφ : φ.IsQF) (p : L.Sub M N)
+    {φ : L.Formula α} (hφ : φ.IsQF) (p : M ≃ₚ[L] N)
     {v : α → M} (hv : ∀ i, v i ∈ p.dom) :
     φ.Realize (fun i => (p.toEquiv ⟨v i, hv i⟩ : N)) ↔ φ.Realize v := by
   let vdom : α → p.dom := fun i => ⟨v i, hv i⟩
@@ -722,16 +716,16 @@ theorem henson_711
     (h :
       ∀ {M N : Type (max u v)} [L.Structure M] [L.Structure N]
         [T.Model M] [T.Model N] [Nonempty M] [Nonempty N]
-        (f : L.Sub M N) (a : M),
+        (f : M ≃ₚ[L] N) (a : M),
         ∃ (N' : Type (max u v)) (_ : L.Structure N')
-          (e : N ↪ₑ[L] N') (g : L.Sub M N'),
+          (e : N ↪ₑ[L] N') (g : M ≃ₚ[L] N'),
           a ∈ g.dom ∧ f.ExtendsAlong e g) :
     T.HasQuantifierElimination := by
   classical
   refine marker_316 (T := T) ?_
   intro m φ hφ M N A _ _ _ _ _ _ _ f g a hM
   rcases hM with ⟨b, hb⟩
-  let p : L.Sub M N := {
+  let p : M ≃ₚ[L] N := {
     dom := f.toHom.range
     cod := g.toHom.range
     toEquiv := g.equivRange.comp f.equivRange.symm
@@ -747,7 +741,7 @@ theorem henson_711
     simp
   rcases h p b with ⟨N', hN', e, q, hbq, hpq⟩
   letI : L.Structure N' := hN'
-  let r : L.Sub M N' := PartialEquiv.codMap p e.toEmbedding
+  let r : M ≃ₚ[L] N' := PartialEquiv.codMap p e.toEmbedding
   have hrq : r ≤ q := by
     simpa [PartialEquiv.ExtendsAlong, r] using hpq
   have hqa_dom (i : Fin m) : f (a i) ∈ q.dom :=
@@ -829,9 +823,9 @@ theorem henson_711_prime
     (h :
       ∀ {M N : Type (max u v)} [L.Structure M] [L.Structure N]
         [T.Model M] [T.Model N] [Nonempty M] [Nonempty N]
-        (f : L.Sub₀ M N) (a : M),
+        (f : L.FGEquiv M N) (a : M),
         ∃ (N' : Type (max u v)) (_ : L.Structure N')
-          (e : N ↪ₑ[L] N') (g : L.Sub₀ M N'),
+          (e : N ↪ₑ[L] N') (g : L.FGEquiv M N'),
           a ∈ g.1.dom ∧
             f.1.ExtendsAlong e g) :
     T.HasQuantifierElimination := by
@@ -847,20 +841,20 @@ theorem henson_711_prime
     exact f.toHom.mem_range_self (a i)
   let k : S ↪[L] N :=
     g.comp (f.equivRange.symm.toEmbedding.comp (Substructure.inclusion hSrange))
-  let p : L.Sub M N := {
+  let p : M ≃ₚ[L] N := {
     dom := S
     cod := k.toHom.range
     toEquiv := k.equivRange
   }
-  let p₀ : L.Sub₀ M N :=
+  let p₀ : L.FGEquiv M N :=
     ⟨p, by
       change S.FG
       exact Substructure.fg_closure (Set.finite_range (f ∘ a))⟩
-  have hp_dom (i : Fin m) : f (a i) ∈ (p₀ : L.Sub M N).dom := by
+  have hp_dom (i : Fin m) : f (a i) ∈ (p₀ : M ≃ₚ[L] N).dom := by
     change f (a i) ∈ S
     exact Substructure.subset_closure ⟨i, rfl⟩
   have hp_apply (i : Fin m) :
-      ((p₀ : L.Sub M N).toEquiv ⟨f (a i), hp_dom i⟩ : N) = g (a i) := by
+      ((p₀ : M ≃ₚ[L] N).toEquiv ⟨f (a i), hp_dom i⟩ : N) = g (a i) := by
     change (k.equivRange ⟨f (a i), hp_dom i⟩ : N) = g (a i)
     change g (f.equivRange.symm (Substructure.inclusion hSrange ⟨f (a i), hp_dom i⟩)) =
       g (a i)
@@ -870,8 +864,8 @@ theorem henson_711_prime
     simp
   rcases h p₀ b with ⟨N', hN', e, q₀, hbq, hpq⟩
   letI : L.Structure N' := hN'
-  let q : L.Sub M N' := q₀
-  let r : L.Sub M N' := PartialEquiv.codMap (p₀ : L.Sub M N) e.toEmbedding
+  let q : M ≃ₚ[L] N' := q₀
+  let r : M ≃ₚ[L] N' := PartialEquiv.codMap (p₀ : M ≃ₚ[L] N) e.toEmbedding
   have hrq : r ≤ q := by
     simpa [PartialEquiv.ExtendsAlong, r, q] using hpq
   have hqa_dom (i : Fin m) : f (a i) ∈ q.dom :=
@@ -885,7 +879,7 @@ theorem henson_711_prime
     calc
       (q.toEquiv ⟨f (a i), hqa_dom i⟩ : N') = (r.toEquiv x : N') := hx'
       _ = e (g (a i)) := by
-        change e (((p₀ : L.Sub M N).toEquiv ⟨f (a i), hp_dom i⟩ : N)) =
+        change e (((p₀ : M ≃ₚ[L] N).toEquiv ⟨f (a i), hp_dom i⟩ : N)) =
           e (g (a i))
         rw [hp_apply]
   let vM : Fin m.succ → M := Fin.snoc (f ∘ a) b
