@@ -24,7 +24,7 @@ L|        |R
 ```
 
 If both `T` and `B` are full and `T` is essentially surjective, we show
-that the `2`-square above is Guitart exact if whenever two morphisms
+that the `2`-square above is Guitart exact if, whenever two morphisms
 `f₀` and `f₁` in `L.obj X₀ ⟶ Y` (for `X₀ : C₀` and `Y : C`) become equal
 after applying `B`, there exists a precylinder object `P` of `X₀`
 such that `T.map P.i₀ = T.map i₁` and there exists a left homotopy
