@@ -94,11 +94,9 @@ theorem isCompl_orthogonal [K.HasOrthogonalProjection] : IsCompl K Kᗮ where
 
 theorem norm_projection_orthogonal_le [K.HasOrthogonalProjection] (x : E) :
     ‖K.projection Kᗮ K.isCompl_orthogonal x‖ ≤ ‖x‖ := by
-  have ⟨y, z, hy, hz, hyz⟩ := K.codisjoint_iff_exists_add_eq.mp K.isCompl_orthogonal.codisjoint x
-  simp_rw [← sq_le_sq₀ (norm_nonneg _) (norm_nonneg _), ← inner_self_eq_norm_sq (𝕜 := 𝕜),
-    ← hyz, map_add, projection_apply_of_mem_right _ hz, projection_apply_of_mem_left _ hy]
-  simp only [add_zero, inner_add_left, inner_add_right, hz y hy, ← inner_conj_symm z y]
-  simp
+  conv_rhs => rw [← projection_add_projection_eq_self K.isCompl_orthogonal x]
+  simp [← sq_le_sq₀ (norm_nonneg _), sq, mul_nonneg,
+    norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero _ _ (K.mem_orthogonal _ |>.mp _ _ _)]
 
 theorem isTopCompl_orthogonal [K.HasOrthogonalProjection] : IsTopCompl K Kᗮ where
   isCompl := K.isCompl_orthogonal
@@ -151,10 +149,8 @@ lemma starProjection_apply_mem (U : Submodule 𝕜 E) [U.HasOrthogonalProjection
 /-- The characterization of the orthogonal projection. -/
 @[simp]
 theorem starProjection_inner_eq_zero (v w : E) (hw : w ∈ K) : ⟪v - K.starProjection v, w⟫ = 0 := by
-  have ⟨y, z, hy, hz, hyz⟩ := K.codisjoint_iff_exists_add_eq.mp K.isCompl_orthogonal.codisjoint v
-  simp_rw [← hyz, map_add, starProjection, ContinuousLinearMap.comp_apply, subtypeL_apply]
-  simp [projection_apply_of_mem_left _ hy, projection_apply_of_mem_right _ hz,
-    K.mem_orthogonal' _ |>.mp hz w hw, orthogonalProjectionOnto, projectionOntoL]
+  suffices v - K.projection Kᗮ K.isCompl_orthogonal v ∈ Kᗮ from inner_eq_zero_symm.mp <| this w hw
+  simp [← projection_eq_self_sub_projection]
 
 @[deprecated (since := "2026-05-07")] alias orthogonalProjectionFn_inner_eq_zero :=
   starProjection_inner_eq_zero
