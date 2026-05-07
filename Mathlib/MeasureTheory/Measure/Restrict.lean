@@ -125,11 +125,12 @@ theorem forall_measure_inter_isCountablySpanning_eq_zero {C : Set (Set α)}
   mpr h t _ := measure_inter_null_of_null_left t h
 
 theorem _root_.IsCountablySpanning.null_of_forall_restrict_null {C : Set (Set α)}
-    (hC : IsCountablySpanning C) (hm : C ⊆ MeasurableSet) (ht : ∀ t ∈ C, μ.restrict t s = 0) :
+    (hC : IsCountablySpanning C) (hm : ∀ s ∈ C, MeasurableSet s)
+    (ht : ∀ t ∈ C, μ.restrict t s = 0) :
     μ s = 0 := by
   rw [← forall_measure_inter_isCountablySpanning_eq_zero hC]
   refine fun t htc => ?_
-  simpa [← μ.restrict_apply' (hm htc)] using ht t htc
+  simpa [← μ.restrict_apply' (hm _ htc)] using ht t htc
 
 theorem restrict_apply₀' (hs : NullMeasurableSet s μ) : μ.restrict s t = μ (t ∩ s) := by
   rw [← restrict_congr_set hs.toMeasurable_ae_eq,
@@ -1132,7 +1133,8 @@ lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
         (C : Set ι).encard ≤ {i | x ∈ s i}.encard :=
           encard_le_encard (mem_iInter₂.mp hx.1)
         _ ≤ _ := hs x
-      exact nsmul_le_nsmul_left (zero_le _) <| calc {a ∈ F | a ∈ C}.card
+      gcongr
+      calc {a ∈ F | a ∈ C}.card
         _ ≤ C.card := card_mono <| fun i hi ↦ (F.mem_filter.mp hi).2
         _ = (C : Set ι).ncard := (ncard_coe_finset C).symm
         _ ≤ M := ENat.toNat_le_of_le_coe hCM

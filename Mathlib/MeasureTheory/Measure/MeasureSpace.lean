@@ -559,7 +559,7 @@ theorem measure_iInter_of_ae_monotone [Preorder ι] [IsCodirectedOrder ι]
   obtain ⟨i, hi⟩ := hfin
   have : Nonempty ι := ⟨i⟩
   let t : ι → Set α := fun i ↦ s i ∩ {ω | Monotone (ω ∈ s ·)}
-  have hst (i : ι) : s i =ᵐ[μ] t i := by
+  have hst (i : ι) : s i =ᵐˢ[μ] t i := by
     filter_upwards [hs] with ω hω
     suffices ω ∈ s i ↔ ω ∈ t i from propext this
     simpa [t] using fun _ ↦ hω

@@ -334,6 +334,6 @@ theorem OpenPartialHomeomorph.contMDiffOn_writtenInExtend_iff
   refine forall_mem_image.trans <| forall₂_congr fun x hx ↦ ?_
   refine (contMDiffWithinAt_congr_set ?_).trans
     (contMDiffWithinAt_writtenInExtend_iff hφ hψ (hs hx) (hmaps hx) hmaps)
-  rw [← nhdsWithin_eq_iff_eventuallyEq, ← φ.map_extend_nhdsWithin_eq_image_of_subset,
+  rw [← nhdsWithin_eq_iff_eventuallyEqSet, ← φ.map_extend_nhdsWithin_eq_image_of_subset,
     ← φ.map_extend_nhdsWithin]
   exacts [hs hx, hs hx, hs]

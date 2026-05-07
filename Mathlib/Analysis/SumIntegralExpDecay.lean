@@ -31,7 +31,7 @@ lemma intervalIntegral_pow_mul_exp_neg_le {k : ℕ} {M c : ℝ} (hM : 0 ≤ M) (
     _ = ∫ x in Ioc (0 : ℝ) M, x ^ ((↑k + 1 : ℝ) - 1) * rexp (-(c * x)) := by
         simp [add_sub_cancel_right, rpow_natCast]
     _ ≤ ∫ x in Ioi (0 : ℝ), x ^ ((↑k + 1 : ℝ) - 1) * rexp (-(c * x)) := by
-        apply setIntegral_mono_set hint _ Ioc_subset_Ioi_self.eventuallyLE
+        apply setIntegral_mono_set hint _ Ioc_subset_Ioi_self.eventually
         filter_upwards [ae_restrict_mem measurableSet_Ioi] with x hx
         exact mul_nonneg (rpow_nonneg hx.le _) (exp_nonneg _)
     _ = k ! / c ^ (k + 1) := by

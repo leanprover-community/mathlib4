@@ -111,7 +111,7 @@ theorem IsCountablyCompact.elim_directed_cover [Countable ι] [Nonempty ι]
     iInf_le_of_le ‹Nonempty ι›.some <| principal_mono.mpr diff_subset
   rcases hA hle with ⟨a, ha, hac⟩
   rcases mem_iUnion.mp (hAU ha) with ⟨k, hk⟩
-  exact closure_minimal (fun _ hx => hx.2) (hUo k).isClosed_compl
+  exact closure_minimal (fun _ hx => hx.out.2) (hUo k).isClosed_compl
     (hac.mono (iInf_le _ k)).mem_closure hk
 
 /-- A countably compact set has a finite subcover for any countable open cover. -/

@@ -261,7 +261,7 @@ private theorem cl_cl {X : Compactum} (A : Set X) : cl (cl A) ⊆ cl A := by
   -- Finish
   apply claim4.finiteInter_mem T
   intro t ht
-  exact .basic (@hT t ht)
+  exact subset_finiteInterClosure _ (hT ht)
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in

@@ -47,6 +47,8 @@ inductive MemFiniteInterClosure : Set α → Prop
 def finiteInterClosure (S : Set (Set α)) : Set (Set α) :=
   {s | MemFiniteInterClosure S s}
 
+theorem subset_finiteInterClosure : S ⊆ finiteInterClosure S := fun _s hs ↦ .basic hs
+
 theorem finiteInterClosure_finiteInter : FiniteInter (finiteInterClosure S) :=
   { univ_mem := .univ
     inter_mem := fun _ h _ => .inter h }

@@ -65,7 +65,7 @@ lemma fixingSubgroup_isClosed (L : IntermediateField k K) [IsGalois k K] :
   isOpen_compl := isOpen_iff_forall_mem_open.mpr fun σ h => by
     rw [Set.mem_compl_iff, SetLike.mem_coe, IntermediateField.fixingSubgroup,
       mem_fixingSubgroup_iff] at h
-    push_neg at h
+    push Not at h
     rcases h with ⟨y, yL, ne⟩
     use σ • ((adjoin k {y}).1.fixingSubgroup : Set Gal(K/k))
     constructor

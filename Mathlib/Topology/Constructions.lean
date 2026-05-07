@@ -357,7 +357,7 @@ section Subtype
 variable [TopologicalSpace X] [TopologicalSpace Y] {p : X → Prop}
 
 @[fun_prop]
-lemma Topology.IsInducing.subtypeVal {t : Set Y} : IsInducing ((↑) : t → Y) := ⟨rfl⟩
+lemma Topology.IsInducing.subtypeVal : IsInducing ((↑) : Subtype p → X) := ⟨rfl⟩
 
 lemma Topology.IsInducing.of_codRestrict {f : X → Y} {t : Set Y} (ht : ∀ x, f x ∈ t)
     (h : IsInducing (t.codRestrict f ht)) : IsInducing f := subtypeVal.comp h

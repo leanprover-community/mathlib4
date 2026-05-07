@@ -50,7 +50,8 @@ theorem card_derangements_fin_add_two (n : ℕ) :
   -- get some basic results about the size of Fin (n+1) plus or minus an element
   have h1 : ∀ a : Fin (n + 1), card ({a}ᶜ : Set (Fin (n + 1))) = card (Fin n) := by
     intro a
-    simp [Fintype.card_compl_set]
+    rw [Fintype.card_compl_set]
+    simp
   have h2 : card (Fin (n + 2)) = card (Option (Fin (n + 1))) := by simp only [card_fin, card_option]
   -- rewrite the LHS and substitute in our fintype-level equivalence
   simp only [card_derangements_invariant h2,
