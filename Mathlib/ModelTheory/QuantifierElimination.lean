@@ -36,11 +36,14 @@ open Structure
 variable {L : Language.{u, v}}
 variable {M : Type w} {N A : Type*} [L.Structure M] [L.Structure N] [L.Structure A]
 
+/-- A formula is equivalent to a quantifier-free formula over a theory. -/
+def isEquivQF (T : L.Theory) {m : ℕ} (φ : L.Formula (Fin m)) :=
+  ∃ ψ : L.Formula (Fin m), ψ.IsQF ∧ φ ⇔[T] ψ
+
 /-- A theory has quantifier elimination if every bounded formula is equivalent, over the theory, to
 a quantifier-free bounded formula. -/
 def HasQuantifierElimination (T : L.Theory) : Prop :=
-  ∀ {m : ℕ} (φ : L.Formula (Fin m)),
-    ∃ ψ : L.Formula (Fin m), ψ.IsQF ∧ φ ⇔[T] ψ
+  ∀ {m : ℕ} (φ : L.Formula (Fin m)), T.isEquivQF φ
 
 
 -----------------------------------------------------------------------------------------
@@ -193,12 +196,6 @@ private theorem exists_substructure_embedding_of_agree_qf
     have hwx : w (idx xi) = w i := hvar (hidx xi)
     simpa [g, a, xi] using hEq.trans hwx
   exact ⟨S, g, a, ha, hg⟩
-
-
------------ TODO: move to correct file
-def isEquivQF (T : L.Theory) {m : ℕ} (φ : L.Formula (Fin m)) :=
-    (∃ ψ : L.Formula (Fin m), ψ.IsQF ∧ φ ⇔[T] ψ)
-
 
 theorem isEquivQF_iff_realize_iff_of_embeddings
     {T : L.Theory} {m : ℕ} (φ : L.Formula (Fin m)) :
