@@ -119,6 +119,22 @@ instance vComp' [GuitartExact w] [GuitartExact w'] {L₁₂ : C₁ ⥤ C₃}
   infer_instance
 
 set_option backward.isDefEq.respectTransparency false in
+lemma of_vComp [R₁.EssSurj] [w.GuitartExact] [(w ≫ᵥ w').GuitartExact] :
+    w'.GuitartExact := by
+  rw [guitartExact_iff_initial]
+  intro Y₂
+  rw [structuredArrowDownwards_initial_iff_of_iso _ (R₁.objObjPreimageIso Y₂).symm]
+  have := Functor.initial_of_natIso (structuredArrowDownwardsComp w w' (R₁.objPreimage Y₂)).symm
+  exact Functor.initial_of_initial_comp (w.structuredArrowDownwards (R₁.objPreimage Y₂)) _
+
+lemma of_vComp' {L₁₂ : C₁ ⥤ C₃} {R₁₂ : D₁ ⥤ D₃} (eL : L₁ ⋙ L₂ ≅ L₁₂) (eR : R₁ ⋙ R₂ ≅ R₁₂)
+    [R₁.EssSurj] [w.GuitartExact] [h : (w.vComp' w' eL eR).GuitartExact] :
+    w'.GuitartExact := by
+  dsimp [TwoSquare.vComp'] at h
+  rw [whiskerVertical_iff] at h
+  exact of_vComp w w'
+
+set_option backward.isDefEq.respectTransparency false in
 lemma vComp_iff_of_equivalences (eL : C₂ ≌ C₃) (eR : D₂ ≌ D₃)
     (w' : H₂ ⋙ eR.functor ≅ eL.functor ⋙ H₃) :
     (w ≫ᵥ w'.hom).GuitartExact ↔ w.GuitartExact := by
