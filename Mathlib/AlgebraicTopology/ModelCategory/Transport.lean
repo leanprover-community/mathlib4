@@ -61,11 +61,7 @@ def ModelCategory.transport
     cm4b _ _ _ _ _ := by
       rw [← e.functor.hasLiftingProperty_iff_of_isEquivalence]
       infer_instance
-    cm5a := by
-      rw [h₁', h₂]
-      infer_instance
-    cm5b := by
-      rw [h₁, h₂']
-      infer_instance }
+    cm5a := by rw [h₁', h₂]; infer_instance
+    cm5b := by rw [h₁, h₂']; infer_instance }
 
 end HomotopicalAlgebra
