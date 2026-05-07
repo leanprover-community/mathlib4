@@ -364,8 +364,7 @@ export IsInduced (inverseImage_eq)
 
 instance [Φ.IsInduced] : Φ.op.IsInduced where
   inverseImage_eq := by
-    simp only [← Φ.inverseImage_eq]
-    rfl
+    simp [← Φ.inverseImage_eq]
 
 instance : (id W₁).IsInduced where
   inverseImage_eq := rfl
