@@ -71,7 +71,7 @@ end Nat.Prime
 
 open Nat hiding log
 open Finset Real
-open ArithmeticFunction hiding log
+open ArithmeticFunction hiding log id
 open scoped Nat.Prime
 
 namespace Chebyshev
@@ -108,6 +108,13 @@ theorem psi_eq_sum_Icc (x : ℝ) :
 theorem theta_eq_sum_Icc (x : ℝ) :
     θ x = ∑ p ∈ Icc 0 ⌊x⌋₊ with p.Prime, log p := by
   rw [theta, sum_filter, sum_filter, ← add_sum_Ioc_eq_sum_Icc] <;> simp
+
+theorem theta_eq_sum_primesLE (x : ℝ) :
+    θ x = ∑ p ∈ primesLE ⌊x⌋₊, log p := by
+    simp [theta_eq_sum_Icc, primesLE_eq_filter_Icc_zero]
+
+theorem theta_eq_sum_log (n : ℕ) : theta n = ∑ p ∈ primesLE n, log p := by
+  simp [theta_eq_sum_primesLE]
 
 theorem psi_eq_zero_of_lt_two {x : ℝ} (hx : x < 2) : ψ x = 0 := by
   apply sum_eq_zero fun n hn ↦ ?_
@@ -184,7 +191,7 @@ Basic facts about the least common multiple of the first `n` natural numbers
 -/
 
 /-- Least common multiple of $\{1, \dots, n\}$. -/
-def lcmUpto (n : ℕ) : ℕ := (Icc 1 n).lcm _root_.id
+def lcmUpto (n : ℕ) : ℕ := (Icc 1 n).lcm id
 
 theorem lcmUpto_ne_zero (n : ℕ) : lcmUpto n ≠ 0 := by
   simp [lcmUpto]
@@ -486,10 +493,6 @@ theorem theta_ge' {x : ℝ} (hx : 1 ≤ x) :
   (x - 1) * log 2 - log (x + 2) - 2 * √x * log x ≤ theta x := by
   grw [psi_ge' (by linarith)]
   linarith [psi_sub_theta_le hx]
-
-theorem theta_eq_sum_log (n : ℕ) : theta n = ∑ p ∈ primesLE n, log p := by
-  rw [theta_eq_sum_Icc, floor_natCast, primesLE_eq_filter_Icc_zero]
-
 section PrimeCounting
 
 /-! ## Relation to prime counting
