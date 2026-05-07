@@ -36,8 +36,7 @@ lemma Ext.smul_id_postcomp_eq_zero_of_mem_annihilator {r : R} (mem_ann : r ∈ M
     (n : ℕ) : AddCommGrpCat.ofHom ((Ext.mk₀ (r • (𝟙 M))).postcomp N (add_zero n)) = 0 := by
   ext h
   have : r • (𝟙 N) = 0 := by
-    simp [← ModuleCat.lsmul_eq_smul_id, mem_annihilator_iff_lsmul_eq_zero.mp mem_ann,
-      ModuleCat.ofHom_zero]
+    simp [← ModuleCat.lsmul_eq_smul_id, Module.mem_annihilator_iff_lsmul_eq_zero.mp mem_ann]
   have smul_eq : r • h = (Ext.mk₀ (r • (𝟙 N))).comp h (zero_add n) := by simp [Ext.mk₀_smul]
   simp [Ext.mk₀_smul, this, smul_eq]
 
