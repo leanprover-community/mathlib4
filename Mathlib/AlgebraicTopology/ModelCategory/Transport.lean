@@ -29,6 +29,7 @@ namespace HomotopicalAlgebra
 
 open CategoryTheory Limits
 
+/-- Transport of a model category structure via an equivalence of categories. -/
 @[implicit_reducible]
 def ModelCategory.transport
     {C D : Type*} [Category* C] [Category* D] [ModelCategory D]
