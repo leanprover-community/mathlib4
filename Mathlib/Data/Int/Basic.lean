@@ -47,8 +47,9 @@ lemma inductionOn'_add_one (hz : b ≤ z) :
   rw [show z + 1 - b = zb + 1 by lia]
   have : b + zb = z := by lia
   subst this
-  convert! cast_heq _ _
-  rw [Int.inductionOn', cast_eq_iff_heq, ← hzb]
+  convert! ← cast_heq _ _
+  · rw [Int.inductionOn', cast_eq_iff_heq, ← hzb]
+  · rw [Int.add_assoc]
 
 end inductionOn'
 
