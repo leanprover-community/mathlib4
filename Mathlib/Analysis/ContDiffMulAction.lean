@@ -232,21 +232,25 @@ variable {𝕜' : Type*} [NormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {x : E} {s : Set E}
 
+@[to_fun (attr := fun_prop)]
 theorem ContDiffWithinAt.smul {f : E → 𝕜'} {g : E → F}
     (hf : ContDiffWithinAt 𝕜 n f s x) (hg : ContDiffWithinAt 𝕜 n g s x) :
     ContDiffWithinAt 𝕜 n (f • g) s x :=
   hf.contdiff_smul' hg
 
+@[to_fun (attr := fun_prop)]
 theorem ContDiffAt.smul {f : E → 𝕜'} {g : E → F}
     (hf : ContDiffAt 𝕜 n f x) (hg : ContDiffAt 𝕜 n g x) :
     ContDiffAt 𝕜 n (f • g) x :=
   hf.contdiff_smul hg
 
+@[to_fun (attr := fun_prop)]
 theorem ContDiff.smul {f : E → 𝕜'} {g : E → F}
     (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g) :
     ContDiff 𝕜 n (f • g) :=
   hf.contdiff_smul hg
 
+@[to_fun (attr := fun_prop)]
 theorem ContDiffOn.smul {f : E → 𝕜'} {g : E → F}
     (hf : ContDiffOn 𝕜 n f s) (hg : ContDiffOn 𝕜 n g s) :
     ContDiffOn 𝕜 n (f • g) s :=
