@@ -42,9 +42,14 @@ structure DirichletEigenfunction : Prop where
   vanishing : ∀ x ∈ frontier S, u x = 0
 
 /-- A Dirichlet eigenvalue of a set `S` is a value of `t` for which there exists a nonzero
-real-valued function `u` satisfying `Δ u + λ u = 0` on `S` and `u = 0` on `∂S`. -/
+real-valued function `u` satisfying `Δ u + t u = 0` on `S` and `u = 0` on `∂S`. -/
 def dirichletEigenvalues : Set ℝ :=
-  { t | ∃ u : X → ℝ, DirichletEigenfunction S u t}
+  { t | ∃ u, DirichletEigenfunction S u t}
+
+variable {S t} in
+theorem mem_dirichletEigenvalues_iff :
+    t ∈ dirichletEigenvalues S ↔ ∃ u, DirichletEigenfunction S u t :=
+  .rfl
 
 theorem dirichletEigenvalues_empty : dirichletEigenvalues (∅ : Set X) = ∅ := by
   by_contra! h
