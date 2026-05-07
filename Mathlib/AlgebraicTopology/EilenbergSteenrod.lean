@@ -37,7 +37,6 @@ Note that this closure condition a priori seems weaker than in the literature. H
 that under these assumptions, `U` is actually an isomorphism.
 -/
 
-
 @[expose] public section
 
 open CategoryTheory TopPair ObjectProperty
@@ -178,28 +177,28 @@ instance : IsClosedUnderIsomorphisms (C := HomologyPretheory C c) IsHomotopyInva
     cat_disch⟩
 
 /-- A `HomologyPretheory` has the excision-isomorphism, if cutting out a sufficiently nice subspace
-`U` from a space `X`, yields an isomorphism `Hₚ i X ≅ Hₚ i (X \ U)`. -/
+`U` from a space `X` yields an isomorphism `Hₚ i X ≅ Hₚ i (X \ U)`. -/
 class HasExcisionIso where
-  excision ⦃X U V : TopPair⦄ (f : U ⟶ X) (g : V ⟶ X) (hf : IsEmbedding f) (hg : IsEmbedding g)
+  [excision ⦃X U V : TopPair⦄ (f : U ⟶ X) (g : V ⟶ X) (hf : IsEmbedding f) (hg : IsEmbedding g)
       (hcompl : TopPair.IsCompl f g)
-      (hU : closure (Set.range (Hom.fst f)) ⊆ interior (Set.range X.map)) :
-        ∀ i : ι, IsIso ((HP.Hₚ i).map g) := by intro i; infer_instance
+      (hU : closure (Set.range (Hom.fst f)) ⊆ interior (Set.range X.map)) (i : ι) : IsIso ((HP.Hₚ i).map g)]
+
+attribute [instance] HasExcisionIso.excision
 
 instance : IsClosedUnderIsomorphisms (C := HomologyPretheory C c) HasExcisionIso where
-  of_iso e hHP := ⟨fun _ _ _ _ _ hf hg hcompl hU _ ↦ (NatIso.isIso_map_iff (Iso.hom e _) _).mp
-    (hHP.excision _ _ hf hg hcompl hU _)⟩
+  of_iso e hHP := { excision _ _ _ _ _ hf hg hcompl hU _ :=
+      (NatIso.isIso_map_iff (Iso.hom e _) _).mp (hHP.excision _ _ hf hg hcompl hU _) }
 
 /-- A `HomologyPretheory` is additive if its homology functor preserves coproducts. -/
 class IsAdditive where
   /-- An extraordinary Eilenberg-Steenrod homology functor preserves colimits. -/
-  additive (J : Type u) : ∀ (i : ι), Limits.PreservesColimitsOfShape (Discrete J) (HP.H i) := by
-    intro i
-    infer_instance
+  [additive (J : Type u) (i : ι) : Limits.PreservesColimitsOfShape (Discrete J) (HP.H i)]
+
+attribute [instance] IsAdditive.additive
 
 instance : IsClosedUnderIsomorphisms (C := HomologyPretheory C c) IsAdditive where
-  of_iso {HP HP'} e h := ⟨fun _ _ ↦ @Limits.preservesColimitsOfShape_of_natIso _ _ _ _ _ _ _ _
-    ((HP.iso _) ≪≫ Functor.isoWhiskerLeft incl (Iso.hom e _) ≪≫ (HP'.iso _).symm)
-    (h.additive _ _)⟩
+  of_iso {HP HP'} e _ := { additive _ _ := Limits.preservesColimitsOfShape_of_natIso ((HP.iso _) ≪≫
+    Functor.isoWhiskerLeft incl (Iso.hom e _) ≪≫ (HP'.iso _).symm) }
 
 /-- This imposes that a `HomologyPretheory` has the long exact sequence of topological pairs
 `⋯ ⟶ H (c.next i) X.fst ⟶ Hₚ (c.next i) X) ⟶  H i X.snd ⟶ H i X.fst ⟶ ⋯`. -/
