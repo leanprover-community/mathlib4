@@ -62,9 +62,9 @@ If `cls` is a non-structure class, this simply returns `#[cls]`.
 
 The resulting expressions contain bound variables that correspond to the parameters of `cls`.
 The universe levels and bound variables need to be instantiated to get concrete data projections. -/
-partial def getAbstractProjections (cls : Name) : CoreM (Array Expr) := do
+partial def getAbstractProjections (cls : Name) : MetaM (Array Expr) := do
   let cinfo ← getConstInfo cls
-  MetaM.run' <| forallTelescope cinfo.type fun xs _ ↦ do
+  forallTelescope cinfo.type fun xs _ ↦ do
     withLocalDeclD `self (mkAppN (.const cls (cinfo.levelParams.map .param)) xs) fun inst ↦ do
       go cls inst #[] xs |>.run' {}
 where
@@ -92,7 +92,7 @@ initialize classProjectionsCache : IO.Ref (NameMap (Array Expr)) ← IO.mkRef {}
 
 /-- Return the result of `getAbstractDataProjections`, using a global cache.
 To ensure soundness, the cache is only used for imported declarations. -/
-def getAbstractProjectionsCached (cls : Name) : CoreM (Array Expr) := do
+def getAbstractProjectionsCached (cls : Name) : MetaM (Array Expr) := do
   if (← getEnv).isImportedConst cls then
     if let some result := (← classProjectionsCache.get).find? cls then
       return result
