@@ -378,7 +378,8 @@ section
 
 variable [Φ.functor.IsEquivalence] [Φ.IsInduced] [W₂.RespectsIso]
 
-attribute [local simp] Functor.asEquivalence in
+attribute [local simp] Functor.asEquivalence_counitIso_hom_app
+  Functor.asEquivalence_counitIso_inv_app in
 /-- The inverse of a localizer morphism `Φ : LocalizerMorphism W₁ W₂`,
 when `Φ.functor` is an equivalence, `W₁` is induced by `W₂`
 and `W₂` respects isomorphisms. -/
@@ -397,7 +398,8 @@ instance : Φ.inv.functor.IsEquivalence := by
   dsimp
   infer_instance
 
-attribute [local simp] Functor.asEquivalence in
+attribute [local simp] Functor.asEquivalence_inverse
+  Functor.asEquivalence_counitIso_hom_app Functor.asEquivalence_counitIso_inv_app in
 instance : Φ.inv.IsInduced where
   inverseImage_eq := by
     ext X Y f
