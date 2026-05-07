@@ -88,10 +88,8 @@ lemma coe_neg (f : H) : ⇑(-f) = -f := (coeCLM 𝕜).map_neg (M₂ := X → V) 
 lemma coe_smul (f : H) (c : 𝕜) : ⇑(c • f) = c • f := (coeCLM 𝕜).map_smul ..
 
 variable (H) in
-/-- `fun f ↦ f x` formed using the projection `(X→V)→L[𝕜] V`,`(x,f x)↦ f x` after the
-  coercion `H→L[𝕜] (X→V)`. -/
-def eval (x : X) : H →L[𝕜] V :=
-  (ContinuousLinearMap.proj (φ := fun _ : X => V) x).comp (RKHS.coeCLM 𝕜)
+/-- Point evaluation `fun f ↦ f x`. -/
+def eval (x : X) : H →L[𝕜] V := .proj x ∘L coeCLM 𝕜
 
 @[simp]
 lemma eval_apply (x : X) (f : H) : eval H x f = f x := (congr_fun rfl x).symm
