@@ -21,7 +21,7 @@ In this file we introduce the Eilenberg-Steenrod axioms for homology theories.
 The data for a homology theory is bundled in a structure `HomologyPretheory` consisting of functors
 `Hₚ i : TopPair ⥤ C` and `H i : TopCat ⥤ C` which represent the `i`th relative and regular homology,
 respectively, (indexed by a `ComplexShape`) and a proof that they agree on `TopCat`. They also
-require a boundary morphisms `δ i j :  Hₚ i ⟶ proj₂ ⋙ H j` for the long exact sequence of
+require boundary morphisms `δ i j :  Hₚ i ⟶ proj₂ ⋙ H j` for the long exact sequence of
 topological pairs. These are nonzero only if `c.Rel i j`.
 
 We introduce a type class for each axiom. In addition, there are bundled type classes
