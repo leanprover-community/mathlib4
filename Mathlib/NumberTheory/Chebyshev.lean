@@ -466,7 +466,7 @@ theorem theta_ge (n : ℕ) : n * log 2 - log (n + 1) - 2 * √n * log n ≤ θ n
   linarith [psi_ge n, psi_sub_theta_le (x := n) (mod_cast (one_le_of_lt hn))]
 
 theorem theta_ge' {x : ℝ} (hx : 1 ≤ x) :
-  (x - 1) * log 2 - log (x + 2) - 2 * √x * log x ≤ theta x := by
+    (x - 1) * log 2 - log (x + 2) - 2 * √x * log x ≤ θ x := by
   grw [psi_ge' (by linarith)]
   linarith [psi_sub_theta_le hx]
 section PrimeCounting
