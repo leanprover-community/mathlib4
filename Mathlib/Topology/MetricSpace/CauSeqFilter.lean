@@ -16,7 +16,7 @@ is complete in terms of `Cauchy` filter if and only if it is complete in terms
 of `CauSeq` Cauchy sequences.
 -/
 
-@[expose] public section
+public section
 
 universe u v
 

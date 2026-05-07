@@ -53,6 +53,7 @@ def unramifiedLocus : Set (PrimeSpectrum A) :=
 lemma IsUnramifiedAt.comp
     (p : Ideal A) (P : Ideal B) [P.LiesOver p] [p.IsPrime] [P.IsPrime]
     [IsUnramifiedAt R p] [IsUnramifiedAt A P] : IsUnramifiedAt R P := by
+  let := Localization.AtPrime.algebraOfLiesOver p P
   have : FormallyUnramified (Localization.AtPrime p) (Localization.AtPrime P) :=
     .of_restrictScalars A _ _
   exact FormallyUnramified.comp R (Localization.AtPrime p) _
@@ -62,7 +63,9 @@ lemma IsUnramifiedAt.of_restrictScalars (P : Ideal B) [P.IsPrime]
     [IsUnramifiedAt R P] : IsUnramifiedAt A P :=
   FormallyUnramified.of_restrictScalars R _ _
 
-instance (p : Ideal R) [p.IsPrime] (q : Ideal A) [q.IsPrime] [q.LiesOver p] [IsUnramifiedAt R q] :
+instance (p : Ideal R) [p.IsPrime] (q : Ideal A) [q.IsPrime] [q.LiesOver p] [IsUnramifiedAt R q]
+    [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
+    [Localization.AtPrime.IsLiesOverAlgebra p q] :
     FormallyUnramified (Localization.AtPrime p) (Localization.AtPrime q) :=
   .of_restrictScalars R _ _
 

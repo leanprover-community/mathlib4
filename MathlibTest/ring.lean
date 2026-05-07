@@ -52,6 +52,8 @@ example (a n s : ℕ) : a * (n - s) = (n - s) * a := by ring
 example {α} [CommRing α] (x : α) : (2 : ℕ) • x = x + x := by ring
 example {α} [CommRing α] (x : α) : (2 : ℤ) • x = x + x := by ring
 example {α} [CommRing α] (x : α) : (-2 : ℤ) • x = -x - x := by ring
+example (x y : ℕ) : x • y = y • x := by ring
+example (x y : ℤ) : x • y = y • x := by ring
 
 section Rat
 
@@ -227,9 +229,21 @@ example (x : ℤ) (R : ℤ → ℤ → Prop) : True := by
 
 end
 
+example (n : ℕ) (r : ℝ) : n • r = n * r := by
+  ring
+
+example (n : ℕ) (r : ℝ) : n • r = n * r := by
+  ring_nf
+
+example (n : ℤ) (r : ℝ) : n • r = n * r := by
+  ring
+
+example (n : ℤ) (r : ℝ) : n • r = n * r := by
+  ring_nf
+
 -- new behaviour as of https://github.com/leanprover-community/mathlib4/issues/27562
 -- (Previously, because of a metavariable instantiation issue, the tactic succeeded as a no-op.)
-/-- error: `ring_nf` made no progress at h -/
+/-- error: `ring_nf` made no progress at `h` -/
 #guard_msgs in
 example {R : Type*} [CommSemiring R] {x y : R} : True := by
   have h : x + y = 3 := test_sorry
@@ -244,16 +258,16 @@ example (x : ℝ) (f : ℝ → ℝ) : True := by
   to use `fail_if_success` since the instances could change without warning.
   -/
   have : x = y := by
-    ring_nf -failIfUnchanged
+    ring_nf (ifUnchanged := .silent)
     ring_nf!
   have : x - y = 0 := by
-    ring_nf -failIfUnchanged
+    ring_nf (ifUnchanged := .silent)
     ring_nf!
   have : f x = f y := by
-    ring_nf -failIfUnchanged
+    ring_nf (ifUnchanged := .silent)
     ring_nf!
   have : f x - f y = 0 := by
-    ring_nf -failIfUnchanged
+    ring_nf (ifUnchanged := .silent)
     ring_nf!
   trivial
 

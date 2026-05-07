@@ -51,8 +51,18 @@ def IsSuccPrelimit (a : α) : Prop :=
   ∀ b, ¬b ⋖ a
 
 @[to_dual]
-theorem not_isSuccPrelimit_iff_exists_covBy (a : α) : ¬IsSuccPrelimit a ↔ ∃ b, b ⋖ a := by
+theorem not_isSuccPrelimit_iff {a : α} : ¬IsSuccPrelimit a ↔ ∃ b, b ⋖ a := by
   simp [IsSuccPrelimit]
+
+/-- The lemma formerly named `not_isSuccPrelimit_iff` is now
+`not_isSuccPrelimit_iff_succ_eq` -/
+@[deprecated (since := "2026-04-19")]
+alias not_isSuccPrelimit_iff_exists_covBy := not_isSuccPrelimit_iff
+
+/-- The lemma formerly named `not_isPredPrelimit_iff` is now
+`not_isPredPrelimit_iff_pred_eq` -/
+@[to_dual existing, deprecated (since := "2026-04-19")]
+alias not_isPredPrelimit_iff_exists_covBy := not_isPredPrelimit_iff
 
 @[to_dual (attr := simp)]
 theorem IsSuccPrelimit.of_dense [DenselyOrdered α] (a : α) : IsSuccPrelimit a := fun _ => not_covBy
@@ -95,7 +105,7 @@ theorem isSuccLimit_toDual_iff : IsSuccLimit (toDual a) ↔ IsPredLimit a := by
 @[to_dual]
 protected theorem IsSuccLimit.not_isMin (h : IsSuccLimit a) : ¬ IsMin a := h.1
 
-@[to_dual]
+@[to_dual (attr := simp)]
 protected theorem IsSuccLimit.isSuccPrelimit (h : IsSuccLimit a) : IsSuccPrelimit a := h.2
 
 @[deprecated IsPredLimit.isPredPrelimit (since := "2026-02-22")]
@@ -138,18 +148,21 @@ theorem IsSuccPrelimit.noMaxOrder_Iio (h : IsSuccPrelimit a) : NoMaxOrder (Set.I
   obtain ⟨c, hbc, hca⟩ := (not_covBy_iff hb).1 (h b)
   exact ⟨⟨c, hca⟩, hbc⟩
 
-@[to_dual]
+@[to_dual (attr := simp)]
 theorem isSuccPrelimit_bot [OrderBot α] : IsSuccPrelimit (⊥ : α) :=
   isMin_bot.isSuccPrelimit
 
-@[to_dual]
+@[to_dual (attr := simp)]
 theorem not_isSuccLimit_bot [OrderBot α] : ¬ IsSuccLimit (⊥ : α) :=
   isMin_bot.not_isSuccLimit
 
 @[to_dual]
-theorem IsSuccLimit.ne_bot [OrderBot α] (h : IsSuccLimit a) : a ≠ ⊥ := by
-  rintro rfl
-  exact not_isSuccLimit_bot h
+theorem IsSuccLimit.bot_lt [OrderBot α] (h : IsSuccLimit a) : ⊥ < a :=
+  not_isMin_iff_bot_lt.1 h.not_isMin
+
+@[to_dual]
+theorem IsSuccLimit.ne_bot [OrderBot α] (h : IsSuccLimit a) : a ≠ ⊥ :=
+  h.bot_lt.ne'
 
 @[to_dual]
 theorem not_isSuccLimit_iff : ¬ IsSuccLimit a ↔ IsMin a ∨ ¬ IsSuccPrelimit a := by
@@ -173,6 +186,58 @@ theorem IsSuccLimit.subtypeVal {s : Set α} (hs : IsLowerSet s) {a : s}
   rw [not_isMin_iff] at ⊢ this
   obtain ⟨b, hb⟩ := this
   exact ⟨b, hb⟩
+
+/-- Given `j < i` with `i` a successor pre-limit, `IsSuccPrelimit.mid` picks an arbitrary element
+strictly between `j` and `i`. -/
+@[to_dual
+/-- Given `i < j` with `i` a predecessor pre-limit, `IsSuccPrelimit.mid` picks an arbitrary element
+strictly between `i` and `j`. -/]
+noncomputable def IsSuccPrelimit.mid {i j : α} (hi : IsSuccPrelimit i) (hj : j < i) : Ioo j i :=
+  Classical.indefiniteDescription _ ((not_covBy_iff_nonempty_Ioo hj).mp <| hi j)
+
+@[to_dual]
+theorem _root_.WithTop.isSuccPrelimit_iff [NoMaxOrder α] {x : WithTop α} :
+    IsSuccPrelimit x ↔ x = ⊤ ∨ ∃ y : α, x = y ∧ IsSuccPrelimit y := by
+  cases x with
+  | coe x => simp [IsSuccPrelimit, WithTop.forall]
+  | top => simp [IsSuccPrelimit]
+
+@[to_dual]
+theorem IsSuccPrelimit.withTopCoe {x : α} (h : IsSuccPrelimit x) :
+    IsSuccPrelimit (x : WithTop α) := by
+  simpa [IsSuccPrelimit, WithTop.forall]
+
+@[to_dual (attr := simp)]
+theorem _root_.WithTop.isSuccPrelimit_top [NoMaxOrder α] : IsSuccPrelimit (⊤ : WithTop α) := by
+  simp [WithTop.isSuccPrelimit_iff]
+
+@[to_dual]
+theorem _root_.WithTop.isSuccLimit_iff [Nonempty α] [NoMaxOrder α] {x : WithTop α} :
+    IsSuccLimit x ↔ x = ⊤ ∨ ∃ y : α, x = y ∧ IsSuccLimit y := by
+  cases x with
+  | coe x => simp [IsSuccLimit, WithTop.isSuccPrelimit_iff, WithTop.exists]
+  | top => simp [IsSuccLimit, WithTop.exists]
+
+@[to_dual]
+theorem IsSuccLimit.withTopCoe {x : α} (h : IsSuccLimit x) :
+    IsSuccLimit (x : WithTop α) := by
+  simpa [IsSuccLimit, WithTop.exists, h.isSuccPrelimit.withTopCoe] using h.not_isMin
+
+@[to_dual]
+theorem _root_.WithTop.isSuccLimit_top [Nonempty α] [NoMaxOrder α] :
+    IsSuccLimit (⊤ : WithTop α) := by
+  simp [WithTop.isSuccLimit_iff]
+
+@[to_dual]
+theorem _root_.WithTop.isPredPrelimit_iff {x : WithTop α} :
+    IsPredPrelimit x ↔ x = ⊤ ∨ ∃ y : α, x = y ∧ IsPredLimit y := by
+  cases x with
+  | coe x => simp [IsPredPrelimit, IsPredLimit, WithTop.forall]
+  | top => simp
+
+@[to_dual]
+theorem IsPredLimit.withTopCoe {x : α} (h : IsPredLimit x) : IsPredLimit (x : WithTop α) := by
+  simpa [WithTop.isPredPrelimit_iff, IsPredLimit, WithTop.exists] using h
 
 variable [SuccOrder α]
 
@@ -200,12 +265,6 @@ theorem not_isSuccLimit_succ_of_not_isMax (ha : ¬ IsMax a) : ¬ IsSuccLimit (su
 
 attribute [deprecated IsPredLimit.isMin (since := "2026-03-31")]
 not_isPredLimit_pred_of_not_isMin
-
-/-- Given `j < i` with `i` a prelimit, `IsSuccPrelimit.mid` picks an arbitrary element strictly
-between `j` and `i`. -/
-noncomputable def IsSuccPrelimit.mid {i j : α} (hi : IsSuccPrelimit i) (hj : j < i) :
-    Ioo j i :=
-  Classical.indefiniteDescription _ ((not_covBy_iff hj).mp <| hi j)
 
 section NoMaxOrder
 
@@ -266,10 +325,6 @@ theorem isSuccLimit_iff_of_orderBot [OrderBot α] : IsSuccLimit a ↔ a ≠ ⊥ 
 @[deprecated (since := "2026-03-31")] alias isSuccLimit_iff := isSuccLimit_iff_of_orderBot
 @[deprecated (since := "2026-03-31")] alias isPredLimit_iff := isPredLimit_iff_of_orderTop
 
-@[to_dual lt_top]
-theorem IsSuccLimit.bot_lt [OrderBot α] (h : IsSuccLimit a) : ⊥ < a :=
-  h.ne_bot.bot_lt
-
 variable [SuccOrder α]
 
 @[to_dual]
@@ -277,18 +332,20 @@ theorem isSuccPrelimit_of_succ_ne (h : ∀ b, succ b ≠ a) : IsSuccPrelimit a :
   h b (CovBy.succ_eq hba)
 
 @[to_dual]
-theorem not_isSuccPrelimit_iff : ¬ IsSuccPrelimit a ↔ ∃ b, ¬ IsMax b ∧ succ b = a := by
-  rw [not_isSuccPrelimit_iff_exists_covBy]
-  refine exists_congr fun b => ⟨fun hba => ⟨hba.lt.not_isMax, (CovBy.succ_eq hba)⟩, ?_⟩
+theorem not_isSuccPrelimit_iff_succ_eq : ¬ IsSuccPrelimit a ↔ ∃ b, ¬ IsMax b ∧ succ b = a := by
+  rw [not_isSuccPrelimit_iff]
+  refine exists_congr fun b ↦ ⟨fun hba ↦ ⟨hba.lt.not_isMax, hba.succ_eq⟩, ?_⟩
   rintro ⟨h, rfl⟩
   exact covBy_succ_of_not_isMax h
 
-/-- See `not_isSuccPrelimit_iff` for a version that states that `a` is a successor of a value other
-than itself. -/
-@[to_dual]
+/-- See `not_isSuccPrelimit_iff_succ_eq` for a version that states that `a` is a successor of a
+value other than itself. -/
+@[to_dual
+/-- See `not_isPredPrelimit_iff_pred_eq` for a version that states that `a` is a predecessor of a
+value other than itself. -/]
 theorem mem_range_succ_of_not_isSuccPrelimit (h : ¬ IsSuccPrelimit a) :
     a ∈ range (succ : α → α) := by
-  obtain ⟨b, hb⟩ := not_isSuccPrelimit_iff.1 h
+  obtain ⟨b, hb⟩ := not_isSuccPrelimit_iff_succ_eq.1 h
   exact ⟨b, hb.2⟩
 
 @[to_dual]
@@ -303,8 +360,8 @@ theorem isMin_or_mem_range_succ_or_isSuccLimit (a) :
   tauto
 
 @[to_dual isPredPrelimit_of_lt_pred]
-theorem isSuccPrelimit_of_succ_lt (H : ∀ a < b, succ a < b) : IsSuccPrelimit b := fun a hab =>
-  (H a hab.lt).ne (CovBy.succ_eq hab)
+theorem isSuccPrelimit_of_succ_lt (H : ∀ a < b, succ a < b) : IsSuccPrelimit b :=
+  fun a hab ↦ (H a hab.lt).ne hab.succ_eq
 
 @[deprecated (since := "2025-12-20")]
 alias isPredPrelimit_of_pred_lt := isPredPrelimit_of_lt_pred
@@ -343,8 +400,11 @@ theorem isSuccPrelimit_iff_succ_ne : IsSuccPrelimit a ↔ ∀ b, succ b ≠ a :=
   ⟨IsSuccPrelimit.succ_ne, isSuccPrelimit_of_succ_ne⟩
 
 @[to_dual]
-theorem not_isSuccPrelimit_iff' : ¬ IsSuccPrelimit a ↔ a ∈ range (succ : α → α) := by
+theorem not_isSuccPrelimit_iff_mem_range_succ : ¬ IsSuccPrelimit a ↔ a ∈ range (succ : α → α) := by
   simp_rw [isSuccPrelimit_iff_succ_ne, not_forall, not_ne_iff, mem_range]
+
+@[deprecated (since := "2026-04-19")]
+alias not_isSuccPrelimit_iff' := not_isSuccPrelimit_iff_mem_range_succ
 
 end NoMaxOrder
 
@@ -361,15 +421,30 @@ protected theorem IsSuccPrelimit.isMin (h : IsSuccPrelimit a) : IsMin a := fun b
   exact H hc
 
 @[to_dual (attr := simp)]
-theorem isSuccPrelimit_iff : IsSuccPrelimit a ↔ IsMin a :=
+theorem isSuccPrelimit_iff_isMin : IsSuccPrelimit a ↔ IsMin a :=
   ⟨IsSuccPrelimit.isMin, IsMin.isSuccPrelimit⟩
 
+@[deprecated (since := "2026-04-19")]
+alias isSuccPrelimit_iff := isSuccPrelimit_iff_isMin
+@[deprecated (since := "2026-04-19")]
+alias isPredPrelimit_iff := isPredPrelimit_iff_isMax
+
 @[to_dual (attr := simp)]
-theorem not_isSuccLimit : ¬ IsSuccLimit a :=
+theorem not_isSuccLimit_of_isSuccArchimedean : ¬ IsSuccLimit a :=
   fun h ↦ h.not_isMin <| h.isSuccPrelimit.isMin
 
+@[deprecated (since := "2026-04-19")]
+alias not_isSuccLimit := not_isSuccLimit_of_isSuccArchimedean
+@[deprecated (since := "2026-04-19")]
+alias not_isPredLimit := not_isPredLimit_of_isPredArchimedean
+
 @[to_dual]
-theorem not_isSuccPrelimit [NoMinOrder α] : ¬ IsSuccPrelimit a := by simp
+theorem not_isSuccPrelimit_of_isSuccArchimedean [NoMinOrder α] : ¬ IsSuccPrelimit a := by simp
+
+@[deprecated (since := "2026-04-19")]
+alias not_isSuccPrelimit := not_isSuccPrelimit_of_isSuccArchimedean
+@[deprecated (since := "2026-04-19")]
+alias not_isPredPrelimit := not_isPredPrelimit_of_isPredArchimedean
 
 end IsSuccArchimedean
 
@@ -477,7 +552,7 @@ open Classical in
 /-- A value can be built by building it on predecessors and predecessor pre-limits. -/]
 noncomputable def isSuccPrelimitRecOn : motive b :=
   if hb : IsSuccPrelimit b then isSuccPrelimit b hb else
-    haveI H := Classical.choose_spec (not_isSuccPrelimit_iff.1 hb)
+    haveI H := Classical.choose_spec (not_isSuccPrelimit_iff_succ_eq.1 hb)
     cast (congr_arg motive H.2) (succ _ H.1)
 
 @[to_dual]
@@ -496,7 +571,7 @@ variable [LinearOrder α] [SuccOrder α]
 theorem isSuccPrelimitRecOn_succ_of_not_isMax (hb : ¬IsMax b) :
     isSuccPrelimitRecOn (Order.succ b) succ isSuccPrelimit = succ b hb := by
   have hb' := mt IsSuccPrelimit.isMax hb
-  have H := Classical.choose_spec (not_isSuccPrelimit_iff.1 hb')
+  have H := Classical.choose_spec (not_isSuccPrelimit_iff_succ_eq.1 hb')
   rw [isSuccPrelimitRecOn, dif_neg hb', cast_eq_iff_heq]
   congr!
   exact (succ_eq_succ_iff_of_not_isMax H.1 hb).1 H.2
@@ -584,7 +659,7 @@ open Classical in
 noncomputable def prelimitRecOn : motive b :=
   wellFounded_lt.fix
     (fun a IH ↦ if h : IsSuccPrelimit a then isSuccPrelimit a h IH else
-      haveI H := Classical.choose_spec (not_isSuccPrelimit_iff.1 h)
+      haveI H := Classical.choose_spec (not_isSuccPrelimit_iff_succ_eq.1 h)
       cast (congr_arg motive H.2) (succ _ H.1 <| IH _ <| H.2.subst <| lt_succ_of_not_isMax H.1))
     b
 
@@ -607,7 +682,7 @@ theorem prelimitRecOn_succ_of_not_isMax (hb : ¬IsMax b) :
     prelimitRecOn (Order.succ b) succ isSuccPrelimit =
       succ b hb (prelimitRecOn b succ isSuccPrelimit) := by
   have h := mt IsSuccPrelimit.isMax hb
-  have H := Classical.choose_spec (not_isSuccPrelimit_iff.1 h)
+  have H := Classical.choose_spec (not_isSuccPrelimit_iff_succ_eq.1 h)
   rw [prelimitRecOn, WellFounded.fix_eq, dif_neg h]
   have {a c : α} {ha hc} {x : ∀ a, motive a} (h : a = c) :
     cast (congr_arg (motive ∘ Order.succ) h) (succ a ha (x a)) = succ c hc (x c) := by subst h; rfl

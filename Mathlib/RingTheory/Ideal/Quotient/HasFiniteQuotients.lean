@@ -6,6 +6,7 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Data.ZMod.QuotientRing
+public import Mathlib.NumberTheory.Height.Northcott
 public import Mathlib.RingTheory.DedekindDomain.Basic
 public import Mathlib.RingTheory.IntegralDomain
 public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
@@ -25,7 +26,7 @@ quotient `R ⧸ I` is finite.
 
 -/
 
-@[expose] public section
+public section
 
 /--
 A ring `R` has finite quotients if the quotient `R ⧸ I` is finite for all nonzero ideals of `R`.
@@ -78,7 +79,7 @@ theorem finite_setOf_mem (x : R) (hx : x ≠ 0) : {I : Ideal R | x ∈ I}.Finite
     .of_equiv _ (Ideal.relIsoOfSurjective _ Ideal.Quotient.mk_surjective).toEquiv
   simpa [← RingHom.ker_eq_comap_bot] using this
 
-open Pointwise in
+open scoped Pointwise in
 /-- For every bound `B`, a ring with finite quotients has only finitely many ideals of norm bounded
 by `B`. -/
 theorem finite_cardQuot_le (B : ℕ) : {I : Ideal R | I.cardQuot ≤ B}.Finite := by
@@ -123,6 +124,13 @@ theorem finite_cardQuot_heightOneSpectrum_le (B : ℕ) :
 theorem finite_absNorm_heightOneSpectrum_le [IsDedekindDomain R] [Module.Free ℤ R] (B : ℕ) :
     {p : IsDedekindDomain.HeightOneSpectrum R | p.asIdeal.absNorm ≤ B}.Finite :=
   finite_cardQuot_heightOneSpectrum_le B
+
+instance : Northcott fun p : Ideal R ↦ p.cardQuot :=
+  ⟨Ring.HasFiniteQuotients.finite_cardQuot_le⟩
+
+instance [IsDedekindDomain R] [Module.Free ℤ R] :
+    Northcott fun p : IsDedekindDomain.HeightOneSpectrum R ↦ p.asIdeal.absNorm :=
+  ⟨Ring.HasFiniteQuotients.finite_absNorm_heightOneSpectrum_le⟩
 
 variable (R) in
 /--

@@ -36,7 +36,7 @@ equal, this often confuses the elaborator. Similar problems arise when doing cas
 The disadvantage is that we have to duplicate some instances about `Set.Ici` to this subtype.
 -/
 
-@[expose] public section
+public section
 
 open Set
 
@@ -84,7 +84,7 @@ instance [Nontrivial α] [AddGroup α] [LinearOrder α] [AddLeftMono α] :
 
 instance linearOrderedCommMonoidWithZero [CommSemiring α] [LinearOrder α] [IsStrictOrderedRing α] :
     LinearOrderedCommMonoidWithZero { x : α // 0 ≤ x } where
-  zero_le a := a.2
+  isBot_zero a := a.2
 
 instance canonicallyOrderedAdd [Ring α] [PartialOrder α] [IsOrderedRing α] :
     CanonicallyOrderedAdd { x : α // 0 ≤ x } where
