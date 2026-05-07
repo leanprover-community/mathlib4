@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors:
+Authors: Yağız Kaan Aydoğdu, Yusuf Demir, Salih Erdem Koçak
 -/
 module
 
@@ -40,6 +40,11 @@ criteria for establishing it.
   `FirstOrder.Language.Theory.hasQuantifierElimination_of_isElementaryExtensionPairFG` prove
   quantifier elimination from the extension property appearing in van den Dries--Henson,
   Theorem 7.11, and from a finitely generated variant.
+
+## TODO
+
+- Add bibliography entries for Marker's *Model Theory: An Introduction* and the van den
+  Dries--Henson lecture notes cited above.
 -/
 
 @[expose] public section
