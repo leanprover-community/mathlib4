@@ -278,7 +278,12 @@ def twoStepInduction {motive : ℕ → Sort*} (zero : motive 0) (one : motive 1)
   | 1 => one
   | _ + 2 => more _ (twoStepInduction zero one more _) (twoStepInduction zero one more _)
 
-/-- Induction principle deriving the next case from the `k` previous ones. -/
+/-- Induction principle deriving the next case from the `k` previous ones. Use as
+```
+induction n using stepInduction 3 with
+| base n hn => ...
+| step n ih => ...
+``` -/
 @[elab_as_elim]
 def stepInduction {motive : ℕ → Sort*} (k : ℕ) (base : ∀ i < k, motive i)
     (step : ∀ n, (∀ i < k, motive (n + i)) → motive (n + k)) (a : ℕ) : motive a :=
