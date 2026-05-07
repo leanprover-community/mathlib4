@@ -126,11 +126,13 @@ theorem lt_iff_toList_lt' : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toLis
         · contradiction
 
 attribute [local instance] LT' in
+/-- This used to override an instance in core Lean. -/
 @[implicit_reducible]
 def LE : LE String :=
   ⟨fun s₁ s₂ ↦ ¬s₂ < s₁⟩
 
 attribute [local instance] LE LT decidableLT' in
+/-- This instance has a prime to avoid the name of the corresponding instance in core Lean. -/
 @[implicit_reducible]
 def decidableLE : DecidableLE String := by
   simp +instances only [DecidableLE, LE]
