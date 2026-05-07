@@ -304,9 +304,8 @@ theorem psi_le_primeCounting_mul_log' (x : ℝ) : ψ x ≤ (π ⌊x⌋₊) * log
 
 /-- $\psi(n) = \log(\mathrm{lcm}(1, \dots, n))$. -/
 theorem psi_eq_log_lcmUpto (n : ℕ) : ψ n = log (lcmUpto n) := by
-  rw [lcmUpto_eq_prod_pow_log, Nat.cast_prod, log_prod]
-  · simp [psi_eq_sum_mul_log_prime]
-  · simp +contextual
+  rw [lcmUpto_eq_prod_pow_log, Nat.cast_prod, log_prod (by simp +contextual)]
+  simp [psi_eq_sum_mul_log_prime]
 
 /-- $\mathrm{lcm}(1, \dots, n)$ is divisible by $\binom{n}{k}$ for all $k \le n$. -/
 theorem choose_dvd_lcmUpto {n k : ℕ} (hkn : k ≤ n) : choose n k ∣ lcmUpto n := by
