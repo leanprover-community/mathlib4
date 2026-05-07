@@ -63,7 +63,7 @@ lemma bijective_algebraMap_int_of_finite_of_unramified
 
 /-- If `K` is a number field with positive rank such that `K/ℚ` is galois, then there exists
 some rational prime `p : ℕ` such that every prime of `K` over `p` is ramified. -/
-lemma NumberField.exists_not_isUramifiedAt_int_of_isGalois [IsGalois ℚ K]
+lemma NumberField.exists_not_isUnramifiedAt_int_of_isGalois [IsGalois ℚ K]
     (H : 1 < Module.finrank ℚ K) :
     ∃ p : ℕ, p.Prime ∧ ∀ (P : Ideal 𝒪) (_ : P.IsPrime), ↑p ∈ P → ¬ Algebra.IsUnramifiedAt ℤ P := by
   have := (IsIntegralClosure.algebraMap_injective 𝒪 ℤ K).isDomain
