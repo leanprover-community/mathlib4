@@ -41,7 +41,7 @@ def whiskerHorizontal (α : T' ⟶ T) (β : B ⟶ B') :
 namespace GuitartExact
 
 /-- A 2-square stays Guitart exact if we replace the top and bottom functors
-by isomorphic functors. See also `whiskerVertical_iff`. -/
+by isomorphic functors. See also `whiskerHorizontal_iff`. -/
 lemma whiskerHorizontal [w.GuitartExact] (α : T ≅ T') (β : B ≅ B') :
     (w.whiskerHorizontal α.inv β.hom).GuitartExact := by
   rw [guitartExact_iff_final]
