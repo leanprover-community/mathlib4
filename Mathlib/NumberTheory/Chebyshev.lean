@@ -451,7 +451,7 @@ theorem psi_ge (n : ℕ) : n * log 2 - log (n + 1) ≤ psi n := by
    ← sub_le_iff_le_add'] at this
 
 theorem psi_ge' {x : ℝ} (hx : 0 ≤ x) : (x - 1) * log 2 - log (x + 2) ≤ psi x := by
-  grw [psi_eq_psi_coe_floor, ←psi_ge]
+  grw [psi_eq_psi_coe_floor, ← psi_ge]
   gcongr
   · linarith [abs_le.mp (abs_sub_floor_le hx)]
   · exact floor_le hx
