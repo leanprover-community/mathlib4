@@ -222,8 +222,8 @@ theorem primeFactors_lcmUpto (n : ℕ) : primeFactors (lcmUpto n) = primesLE n :
 
 theorem primorial_dvd_lcmUpto (n : ℕ) : primorial n ∣ lcmUpto n := by
   simp only [primorial]
-  convert prod_primeFactors_dvd _
-  rw [primeFactors_lcmUpto]
+  rw [show (range (n + 1)).filter Nat.Prime = primesLE n from rfl, ← primeFactors_lcmUpto]
+  exact prod_primeFactors_dvd _
 
 theorem lcmUpto_eq_prod (n : ℕ) :
   lcmUpto n = ∏ p ∈ primesLE n, p ^ ((lcmUpto n).factorization p) := by
