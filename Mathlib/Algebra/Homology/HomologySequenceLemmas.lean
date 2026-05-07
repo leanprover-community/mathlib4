@@ -217,18 +217,15 @@ lemma exactAt_X₃ (hS : S.ShortExact) (i : ι)
   · obtain ⟨j, hij⟩ := hi
     have := h₂ j hij
     apply (hS.homology_exact₃ i j hij).isZero_X₂
-    · dsimp
-      rw [← cancel_epi (HomologicalComplex.homologyMap S.f i), comp_zero,
-        ← HomologicalComplex.homologyMap_comp, S.zero,
-        HomologicalComplex.homologyMap_zero]
+    · simp [← cancel_epi (HomologicalComplex.homologyMap S.f i),
+        ← HomologicalComplex.homologyMap_comp]
     · simp [← cancel_mono (HomologicalComplex.homologyMap S.f j)]
   · have := hS.epi_g
     have := HomologicalComplex.epi_homologyMap_of_epi_of_not_rel S.g i hi
     rw [IsZero.iff_id_eq_zero,
       ← cancel_epi (HomologicalComplex.homologyMap S.g i),
-      ← cancel_epi (HomologicalComplex.homologyMap S.f i), comp_zero, comp_zero,
-      Category.comp_id, ← HomologicalComplex.homologyMap_comp, S.zero,
-      HomologicalComplex.homologyMap_zero]
+      ← cancel_epi (HomologicalComplex.homologyMap S.f i)]
+    simp [← HomologicalComplex.homologyMap_comp]
 
 lemma acyclic_X₁ (hS : S.ShortExact) (hg : _root_.QuasiIso S.g) : S.X₁.Acyclic :=
   fun j ↦ hS.exactAt_X₁ j
