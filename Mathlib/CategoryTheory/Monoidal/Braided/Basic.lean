@@ -358,6 +358,20 @@ theorem braiding_inv_tensorUnit_right (X : C) : (β_ X (𝟙_ C)).inv = (λ_ X).
   rw [braiding_tensorUnit_right]
   monoidal
 
+@[reassoc]
+lemma braiding_unit_unit_eq_id : (β_ (𝟙_ C) (𝟙_ C)).hom = 𝟙 _ := by
+  simp only [braiding_tensorUnit_right]
+  monoidal
+
+@[reassoc]
+lemma braiding_inv_unit_unit_eq_id : (β_ (𝟙_ C) (𝟙_ C)).inv = 𝟙 _ := by
+  simp only [braiding_inv_tensorUnit_right]
+  monoidal
+
+@[reassoc]
+lemma braiding_unit_unit_hom_eq_inv : (β_ (𝟙_ C) (𝟙_ C)).hom = (β_ (𝟙_ C) (𝟙_ C)).inv := by
+  rw [braiding_unit_unit_eq_id, braiding_inv_unit_unit_eq_id]
+
 end
 
 /--
@@ -774,6 +788,49 @@ lemma tensorμ_comp_μ_tensorHom_μ_comp_μ (F : C ⥤ D) [F.LaxBraided] (W X Y 
     Iso.inv_hom_id_assoc, ← tensorHom_def_assoc]
   simp only [← Functor.map_comp, whisker_assoc, Category.assoc, pentagon_inv_inv_hom_hom_inv,
     pentagon_inv_hom_hom_hom_inv_assoc]
+
+/-- The isomorphism `tensorμ` which swaps the second and third objects in `(X₁ ⊗ X₂) ⊗ (Y₁ ⊗ Y₂)`,
+viewed as an isomorphism with inverse `tensorδ`. -/
+@[simps]
+def tensorμ_iso (X₁ X₂ Y₁ Y₂ : C) : (X₁ ⊗ X₂) ⊗ Y₁ ⊗ Y₂ ≅ (X₁ ⊗ Y₁) ⊗ X₂ ⊗ Y₂ where
+  hom := tensorμ X₁ X₂ Y₁ Y₂
+  inv := tensorδ X₁ X₂ Y₁ Y₂
+  hom_inv_id := tensorμ_tensorδ X₁ X₂ Y₁ Y₂
+  inv_hom_id := tensorδ_tensorμ X₁ X₂ Y₁ Y₂
+
+@[reassoc]
+lemma tensorμ_unit_unit_eq_id (X Y : C) : tensorμ X (𝟙_ C) (𝟙_ C) Y = 𝟙 _ := by
+  unfold tensorμ
+  simp only [braiding_unit_unit_eq_id, id_whiskerRight, whiskerLeft_id, id_comp,
+    whiskerLeft_inv_hom_assoc, Iso.hom_inv_id]
+
+@[reassoc]
+lemma tensorδ_unit_unit_eq_id (X Y : C) : tensorδ X (𝟙_ C) (𝟙_ C) Y = 𝟙 _ := by
+  unfold tensorδ
+  simp only [braiding_inv_unit_unit_eq_id, id_whiskerRight, whiskerLeft_id, id_comp,
+    whiskerLeft_inv_hom_assoc, Iso.hom_inv_id]
+
+@[reassoc]
+lemma tensorμ_unit_unit_tensorδ (X Y : C) : tensorμ X (𝟙_ C) (𝟙_ C) Y =
+    tensorδ X (𝟙_ C) (𝟙_ C) Y := by
+  rw [tensorμ_unit_unit_eq_id, tensorδ_unit_unit_eq_id]
+
+@[reassoc]
+lemma braiding_tensorμ (X₁ X₂ Y₁ Y₂ : C) : ((β_ X₁ X₂).hom ⊗ₘ (β_ Y₁ Y₂).hom) ≫
+    tensorμ X₂ X₁ Y₂ Y₁ = tensorδ _ _ _ _ ≫ (β_ (_ ⊗ _) (_ ⊗ _)).hom := by
+  unfold tensorμ tensorδ
+  simp only [braiding_tensor_right_hom, braiding_tensor_left_hom, comp_whiskerRight, whisker_assoc,
+    assoc, whiskerLeft_comp, pentagon_assoc, pentagon_inv_hom_hom_hom_inv_assoc,
+    Iso.inv_hom_id_assoc, whiskerLeft_hom_inv_assoc, cancelIso, pentagon_inv_assoc,
+    Iso.hom_inv_id_assoc, tensorHom_def, whiskerRight_tensor, tensor_whiskerLeft]
+
+@[reassoc]
+lemma braiding_inv_tensorμ (X₁ X₂ Y₁ Y₂ : C) : (β_ (Y₁ ⊗ Y₂) (X₁ ⊗ X₂)).inv ≫ tensorμ Y₁ Y₂ X₁ X₂ =
+    tensorδ X₁ Y₁ X₂ Y₂ ≫ ((β_ Y₁ X₁).inv ⊗ₘ (β_ Y₂ X₂).inv) :=
+  ((Iso.inv_eq_inv
+      (((β_ Y₁ X₁) ⊗ᵢ (β_ Y₂ X₂)) ≪≫ tensorμ_iso X₁ Y₁ X₂ Y₂)
+      ((tensorμ_iso Y₁ Y₂ X₁ X₂).symm ≪≫ (β_ (Y₁ ⊗ Y₂) (X₁ ⊗ X₂)))).mpr
+    (braiding_tensorμ Y₁ X₁ Y₂ X₂)).symm
 
 end Tensor
 

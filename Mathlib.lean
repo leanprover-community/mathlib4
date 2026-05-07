@@ -2610,12 +2610,14 @@ public import Mathlib.CategoryTheory.Enriched.Basic
 public import Mathlib.CategoryTheory.Enriched.EnrichedCat
 public import Mathlib.CategoryTheory.Enriched.FunctorCategory
 public import Mathlib.CategoryTheory.Enriched.HomCongr
+public import Mathlib.CategoryTheory.Enriched.Limits.Cotensors
 public import Mathlib.CategoryTheory.Enriched.Limits.HasConicalLimits
 public import Mathlib.CategoryTheory.Enriched.Limits.HasConicalProducts
 public import Mathlib.CategoryTheory.Enriched.Limits.HasConicalPullbacks
 public import Mathlib.CategoryTheory.Enriched.Limits.HasConicalTerminal
 public import Mathlib.CategoryTheory.Enriched.Opposite
 public import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
+public import Mathlib.CategoryTheory.Enriched.TensorProductCategory
 public import Mathlib.CategoryTheory.EpiMono
 public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.CategoryTheory.Equivalence
@@ -3047,6 +3049,7 @@ public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorCategory.Complete
 public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorCategory.Groupoid
 public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorToTypes
 public import Mathlib.CategoryTheory.Monoidal.Closed.Ideal
+public import Mathlib.CategoryTheory.Monoidal.Closed.InternalCurrying
 public import Mathlib.CategoryTheory.Monoidal.Closed.Transport
 public import Mathlib.CategoryTheory.Monoidal.Closed.Types
 public import Mathlib.CategoryTheory.Monoidal.Closed.Zero
