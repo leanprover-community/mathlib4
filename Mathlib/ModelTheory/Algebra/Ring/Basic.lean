@@ -47,7 +47,7 @@ variable {α : Type*}
 namespace FirstOrder
 
 /-- The type of Ring functions, to be used in the definition of the language of rings.
-It contains the operations (+,*,-,0,1) -/
+It contains the operations `(+,*,-,0,1)` -/
 inductive ringFunc : ℕ → Type
   | add : ringFunc 2
   | mul : ringFunc 2
@@ -56,7 +56,7 @@ inductive ringFunc : ℕ → Type
   | one : ringFunc 0
   deriving DecidableEq
 
-/-- The language of rings contains the operations (+,*,-,0,1) -/
+/-- The language of rings contains the operations `(+,*,-,0,1)` -/
 def Language.ring : Language :=
   { Functions := ringFunc
     Relations := fun _ => Empty }
@@ -66,6 +66,7 @@ namespace Ring
 
 open ringFunc Language
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This instance does not get inferred without `instDecidableEqFunctions` in
 `ModelTheory/Basic`. -/
 example (n : ℕ) : DecidableEq (Language.ring.Functions n) := inferInstance
@@ -122,6 +123,7 @@ instance (α : Type*) : Neg (Language.ring.Term α) :=
 theorem neg_def (α : Type*) (t : Language.ring.Term α) :
     -t = negFunc.apply₁ t := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Fintype Language.ring.Symbols :=
   ⟨⟨Multiset.ofList
       [Sum.inl ⟨2, .add⟩,
@@ -218,6 +220,7 @@ This is a `def` and not an `instance`, because the path
 `Ring` => `Language.ring.Structure` => `Ring` cannot be made to
 commute by definition
 -/
+@[instance_reducible]
 def compatibleRingOfRing (R : Type*) [Add R] [Mul R] [Neg R] [One R] [Zero R] :
     CompatibleRing R :=
   { funMap := fun {n} f =>

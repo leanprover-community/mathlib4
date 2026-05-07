@@ -124,6 +124,7 @@ theorem discr_prime_pow_ne_two' [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : 
       (-1) ^ (p ^ k * (p - 1) / 2) * p ^ (p ^ k * ((p - 1) * (k + 1) - 1)) := by
   simpa [totient_prime_pow hp.out (succ_pos k)] using discr_prime_pow_ne_two hζ hirr hk
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `p` is a prime and `IsCyclotomicExtension {p ^ k} K L`, then the discriminant of
 `hζ.powerBasis K` is `(-1) ^ ((p ^ k).totient / 2) * p ^ (p ^ (k - 1) * ((p - 1) * k - 1))`
 if `Irreducible (cyclotomic (p ^ k) K))`. Beware that in the cases `p ^ k = 1` and `p ^ k = 2`
@@ -156,7 +157,10 @@ theorem discr_prime_pow [hcycl : IsCyclotomicExtension {p ^ k} K L] [hp : Fact p
           minpoly.eq_X_sub_C_of_algebraMap_inj _ (FaithfulSMul.algebraMap_injective K L)]
         exact natDegree_X_sub_C (-1)
       rcases Fin.equiv_iff_eq.2 this with ⟨e⟩
-      rw [← Algebra.discr_reindex K (hζ.powerBasis K).basis e, coe_basis, powerBasis_gen]; norm_num
+      rw [← Algebra.discr_reindex K (hζ.powerBasis K).basis e, coe_basis, powerBasis_gen]
+      simp only [powerBasis_dim,
+        zero_add, pow_one, totient_two, reduceDiv, pow_zero, cast_ofNat, tsub_self,
+        Nat.add_one_sub_one, mul_one, mul_zero]
       simp_rw [hζ.eq_neg_one_of_two_right, show (-1 : L) = algebraMap K L (-1) by simp]
       convert_to (discr K fun i : Fin 1 ↦ (algebraMap K L) (-1) ^ ↑i) = _
       · congr 1

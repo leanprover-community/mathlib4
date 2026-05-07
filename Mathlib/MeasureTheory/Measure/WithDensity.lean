@@ -67,6 +67,7 @@ to `+∞` on nonempty sets. Let `s = {x₀}` and `f` the indicator of `sᶜ`. Th
 * `μ.withDensity f s = +∞`. Indeed, this is the infimum of `μ.withDensity f t` over measurable sets
   `t` containing `s`. As `s` is not measurable, such a set `t` contains a point `x ≠ x₀`. Then
   `μ.withDensity f t ≥ μ.withDensity f {x} = ∫⁻ a in {x}, f a ∂μ = μ {x} = +∞`.
+
 One checks that `μ.withDensity f = μ`, while `μ.restrict s` gives zero mass to sets not
 containing `x₀`, and infinite mass to those that contain it. -/
 
@@ -573,7 +574,7 @@ lemma withDensity_absolutelyContinuous' {μ : Measure α} {f : α → ℝ≥0∞
   exact measure_mono_null hle <| nonpos_iff_eq_zero.1 <| le_trans (measure_union_le _ _)
     <| hμs.symm ▸ zero_add _ |>.symm ▸ hf_ne_zero.le
 
-theorem withDensity_ae_eq {β : Type} {f g : α → β} {d : α → ℝ≥0∞}
+theorem withDensity_ae_eq {β : Type*} {f g : α → β} {d : α → ℝ≥0∞}
     (hd : AEMeasurable d μ) (h_ae_nonneg : ∀ᵐ x ∂μ, d x ≠ 0) :
     f =ᵐ[μ.withDensity d] g ↔ f =ᵐ[μ] g :=
   Iff.intro

@@ -59,6 +59,7 @@ variable {m m₁ m₂ : MeasurableSpace α} {m' : MeasurableSpace β} {f : α �
 
 /-- The forward image of a measurable space under a function. `map f m` contains the sets
   `s : Set β` whose preimage under `f` is measurable. -/
+@[implicit_reducible]
 protected def map (f : α → β) (m : MeasurableSpace α) : MeasurableSpace β where
   MeasurableSet' s := MeasurableSet[m] <| f ⁻¹' s
   measurableSet_empty := m.measurableSet_empty
@@ -77,6 +78,7 @@ theorem map_comp {f : α → β} {g : β → γ} : (m.map f).map g = m.map (g �
 
 /-- The reverse image of a measurable space under a function. `comap f m` contains the sets
   `s : Set α` such that `s` is the `f`-preimage of a measurable set in `β`. -/
+@[implicit_reducible]
 protected def comap (f : α → β) (m : MeasurableSpace β) : MeasurableSpace α where
   MeasurableSet' s := ∃ s', MeasurableSet[m] s' ∧ f ⁻¹' s' = s
   measurableSet_empty := ⟨∅, m.measurableSet_empty, rfl⟩
@@ -210,7 +212,6 @@ lemma Measurable.sup_of_right {mα mα' : MeasurableSpace α} {_ : MeasurableSpa
 theorem measurable_id'' {m mα : MeasurableSpace α} (hm : m ≤ mα) : @Measurable α α mα m id :=
   measurable_id.mono le_rfl hm
 
-@[measurability]
 theorem measurable_from_top [MeasurableSpace β] {f : α → β} : Measurable[⊤] f := fun _ _ => trivial
 
 theorem measurable_generateFrom [MeasurableSpace α] {s : Set (Set β)} {f : α → β}
@@ -230,7 +231,7 @@ section TypeclassMeasurableSpace
 
 variable [MeasurableSpace α] [MeasurableSpace β]
 
-@[nontriviality, measurability]
+@[nontriviality]
 theorem Subsingleton.measurable [Subsingleton α] : Measurable f := fun _ _ =>
   @Subsingleton.measurableSet α _ _ _
 

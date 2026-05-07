@@ -50,6 +50,7 @@ section
 variable {A}
 variable (data : FunctorialSurjectiveInjectiveFactorizationData A) [HasWeakSheafify J A]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a functorial surjective/injective factorizations of morphisms in a concrete
 category `A`, this is the induced functorial locally surjective/locally injective
 factorization of morphisms in the category `Sheaf J A`. -/

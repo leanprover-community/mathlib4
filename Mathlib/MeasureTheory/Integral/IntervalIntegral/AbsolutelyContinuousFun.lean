@@ -15,18 +15,18 @@ public import Mathlib.MeasureTheory.Integral.IntervalIntegral.LebesgueDifferenti
 
 This file proves that:
 * `AbsolutelyContinuousOnInterval.integral_deriv_eq_sub`: If `f` is absolutely continuous on
-`uIcc a b`, then *Fundamental Theorem of Calculus* holds for `f'` on `a..b`, i.e.
-`∫ (x : ℝ) in a..b, deriv f x = f b - f a`.
+  `uIcc a b`, then *Fundamental Theorem of Calculus* holds for `f'` on `a..b`, i.e.
+  `∫ (x : ℝ) in a..b, deriv f x = f b - f a`.
 * `AbsolutelyContinuousOnInterval.integral_mul_deriv_eq_deriv_mul`:
-*Integration by Parts* holds for absolutely continuous functions, i.e. if `f` and `g` are
-absolutely continuous on `uIcc a b`, then
-`∫ x in a..b, f x * deriv g x = f b * g b - f a * g a - ∫ x in a..b, deriv f x * g x`.
+  *Integration by Parts* holds for absolutely continuous functions, i.e. if `f` and `g` are
+  absolutely continuous on `uIcc a b`, then
+  `∫ x in a..b, f x * deriv g x = f b * g b - f a * g a - ∫ x in a..b, deriv f x * g x`.
 
 ## Tags
 absolutely continuous, fundamental theorem of calculus, integration by parts
 -/
 
-@[expose] public section
+public section
 
 variable {X F : Type*} [PseudoMetricSpace X] [NormedAddCommGroup F] [NormedSpace ℝ F]
 
@@ -96,7 +96,6 @@ lemma exists_dist_slope_lt_pairwiseDisjoint_hasSum {f f' : ℝ → F} {d b η : 
   apply_fun fun x ↦ x.toReal at vol_sum
   rw [ENNReal.tsum_toReal_eq (by simp), ENNReal.toReal_ofReal (by linarith),
       ← Summable.hasSum_iff (by grind [tsum_def])] at vol_sum
-  convert vol_sum with z
   grind [ENNReal.toReal_ofReal]
 
 /-- If `f` is absolutely continuous on `[d, b]` and there is a collection of pairwise disjoint
@@ -129,7 +128,13 @@ lemma AbsolutelyContinuousOnInterval.dist_le_of_pairwiseDisjoint_hasSum {f : ℝ
   have hT₄ (s : Finset u) := (u_coe s).intervalGapsWithin_pairwiseDisjoint_Ioc rfl (hu₁ s)
   have hT : univ.MapsTo T (disjWithin d b) := by
     intro s _
-    grind [disjWithin, uIcc_of_le]
+    #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+    (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal
+    without the `simp`. It is not yet clear whether this is due to defeq abuse in Mathlib or a
+    problem in the new canonicalizer; a minimization would help. The original proof was:
+    `grind [disjWithin, uIcc_of_le]` -/
+    simp [disjWithin]
+    grind [uIcc_of_le]
   have u_coe_sum (s : Finset u) (g : ℝ → ℝ → ℝ) :
       ∑ b ∈ s, (g b.val.1 b.val.2) = ∑ z ∈ u_coe s, (g z.1 z.2) :=
     Finset.sum_nbij Subtype.val (by simp [u_coe]) (by simp)
@@ -188,7 +193,7 @@ theorem AbsolutelyContinuousOnInterval.const_of_ae_hasDerivAt_zero {f : ℝ → 
   · simp [hr.le]
   replace hf₀ : ∀ᵐ x, x ∈ Ioo d b → HasDerivAt f 0 x := by
     filter_upwards [hf₀] with x _ _ using by grind
-  have hfdb': 0 < r / (b - d) := by apply div_pos <;> linarith
+  have hfdb' : 0 < r / (b - d) := by apply div_pos <;> linarith
   have ⟨u, hu₁, hu₂, hu₃⟩ :=
     exists_dist_slope_lt_pairwiseDisjoint_hasSum hd.right hf₀ hfdb'
   let g := fun (z : u) ↦ dist (f z.val.1) (f z.val.2)

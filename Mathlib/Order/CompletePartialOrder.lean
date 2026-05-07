@@ -5,7 +5,9 @@ Authors: Christopher Hoskin
 -/
 module
 
+public import Mathlib.Order.BoundedOrder.Basic
 public import Mathlib.Order.OmegaCompletePartialOrder
+public import Mathlib.Order.ConditionallyCompletePartialOrder.Defs
 
 /-!
 # Complete Partial Orders
@@ -41,9 +43,23 @@ section CompletePartialOrder
 /--
 Complete partial orders are partial orders where every directed set has a least upper bound.
 -/
-class CompletePartialOrder (α : Type*) extends PartialOrder α, SupSet α where
+class CompletePartialOrder (α : Type*) extends PartialOrder α, SupSet α, OrderBot α where
   /-- For each directed set `d`, `sSup d` is the least upper bound of `d`. -/
   lubOfDirected : ∀ d, DirectedOn (· ≤ ·) d → IsLUB d (sSup d)
+
+/-- Create a `CompletePartialOrder` from a `PartialOrder` and `SupSet`
+such that for every directed set `d`, `sSup d` is the least upper bound of `d`.
+
+The bottom element is defined as `sSup ∅`.
+-/
+@[reducible]
+def CompletePartialOrder.ofLubOfDirected (α : Type*) [H1 : PartialOrder α] [H2 : SupSet α]
+    (lub_of_directed : ∀ d : Set α, DirectedOn (· ≤ ·) d → IsLUB d (sSup d)) :
+    CompletePartialOrder α where
+  __ := H1; __ := H2
+  bot := sSup ∅
+  bot_le := isLUB_empty_iff.mp <| lub_of_directed ∅ IsChain.empty.directedOn
+  lubOfDirected := lub_of_directed
 
 variable [CompletePartialOrder α] [Preorder β] {f : ι → α} {d : Set α} {a : α}
 
@@ -75,14 +91,20 @@ lemma CompletePartialOrder.scottContinuous {f : α → β} :
 open OmegaCompletePartialOrder
 
 /-- A complete partial order is an ω-complete partial order. -/
-instance CompletePartialOrder.toOmegaCompletePartialOrder : OmegaCompletePartialOrder α where
+instance (priority := 100) CompletePartialOrder.toOmegaCompletePartialOrder :
+    OmegaCompletePartialOrder α where
   ωSup c := ⨆ n, c n
   le_ωSup c := c.directed.le_iSup
   ωSup_le c _ := c.directed.iSup_le
 
+/-- A complete partial order is an conditionally complete partial order. -/
+instance (priority := 100) : ConditionallyCompletePartialOrderSup α where
+  isLUB_csSup_of_directed _ h_dir _ _ := h_dir.isLUB_sSup
+
 end CompletePartialOrder
 
 /-- A complete lattice is a complete partial order. -/
-instance CompleteLattice.toCompletePartialOrder [CompleteLattice α] : CompletePartialOrder α where
+instance (priority := 100) CompleteLattice.toCompletePartialOrder [CompleteLattice α] :
+    CompletePartialOrder α where
   sSup := sSup
   lubOfDirected _ _ := isLUB_sSup _

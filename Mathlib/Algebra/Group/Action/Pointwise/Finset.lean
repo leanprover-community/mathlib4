@@ -79,7 +79,7 @@ instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α 
 
 /-- A multiplicative action of a monoid `α` on a type `β` gives a multiplicative action of
 `Finset α` on `Finset β`. -/
-@[to_additive
+@[to_additive (attr := implicit_reducible)
       /-- An additive action of an additive monoid `α` on a type `β` gives an additive action
       of `Finset α` on `Finset β` -/]
 protected def mulAction [DecidableEq α] [Monoid α] [MulAction α β] :
@@ -89,7 +89,7 @@ protected def mulAction [DecidableEq α] [Monoid α] [MulAction α β] :
 
 /-- A multiplicative action of a monoid on a type `β` gives a multiplicative action on `Finset β`.
 -/
-@[to_additive
+@[to_additive (attr := implicit_reducible)
       /-- An additive action of an additive monoid on a type `β` gives an additive action
       on `Finset β`. -/]
 protected def mulActionFinset [Monoid α] [MulAction α β] : MulAction α (Finset β) :=
@@ -140,15 +140,15 @@ theorem op_smul_finset_mul_eq_mul_smul_finset (a : α) (s : Finset α) (t : Fins
 
 end Semigroup
 
-section IsLeftCancelMul
-variable [Mul α] [IsLeftCancelMul α] [DecidableEq α] {s t : Finset α} {a : α}
+section IsLeftCancelSMul
+variable [SMul α β] [IsLeftCancelSMul α β] [DecidableEq β]
 
 @[to_additive]
-theorem pairwiseDisjoint_smul_iff {s : Set α} {t : Finset α} :
-    s.PairwiseDisjoint (· • t) ↔ (s ×ˢ t : Set (α × α)).InjOn fun p => p.1 * p.2 := by
+theorem pairwiseDisjoint_smul_iff {s : Set α} {t : Finset β} :
+    s.PairwiseDisjoint (· • t) ↔ (s ×ˢ t : Set (α × β)).InjOn fun p => p.1 • p.2 := by
   simp_rw [← pairwiseDisjoint_coe, coe_smul_finset, Set.pairwiseDisjoint_smul_iff]
 
-end IsLeftCancelMul
+end IsLeftCancelSMul
 
 @[to_additive]
 theorem image_smul_distrib [DecidableEq α] [DecidableEq β] [Mul α] [Mul β] [FunLike F α β]

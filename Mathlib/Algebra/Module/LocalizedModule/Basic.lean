@@ -120,7 +120,7 @@ theorem induction_on₂ {β : LocalizedModule S M → LocalizedModule S M → Pr
 -/
 def liftOn {α : Type*} (x : LocalizedModule S M) (f : M × S → α)
     (wd : ∀ (p p' : M × S), p ≈ p' → f p = f p') : α :=
-  Quotient.liftOn x f (by simpa only [r.setoid, ← oreEqv_eq_r S M] using wd)
+  Quotient.liftOn x f (by simpa +instances only [r.setoid, ← oreEqv_eq_r S M] using wd)
 
 theorem liftOn_mk {α : Type*} {f : M × S → α} (wd : ∀ (p p' : M × S), p ≈ p' → f p = f p')
     (m : M) (s : S) : liftOn (mk m s) f wd = f ⟨m, s⟩ := by convert Quotient.liftOn_mk f wd ⟨m, s⟩
@@ -130,7 +130,7 @@ theorem liftOn_mk {α : Type*} {f : M × S → α} (wd : ∀ (p p' : M × S), p 
 -/
 def liftOn₂ {α : Type*} (x y : LocalizedModule S M) (f : M × S → M × S → α)
     (wd : ∀ (p q p' q' : M × S), p ≈ p' → q ≈ q' → f p q = f p' q') : α :=
-  Quotient.liftOn₂ x y f (by simpa only [r.setoid, ← oreEqv_eq_r S M] using wd)
+  Quotient.liftOn₂ x y f (by simpa +instances only [r.setoid, ← oreEqv_eq_r S M] using wd)
 
 theorem liftOn₂_mk {α : Type*} (f : M × S → M × S → α)
     (wd : ∀ (p q p' q' : M × S), p ≈ p' → q ≈ q' → f p q = f p' q') (m m' : M)
@@ -172,7 +172,7 @@ protected def mul {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R}
 instance (priority := 900) {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
     Monoid (LocalizedModule S A) :=
   fast_instance%
-  { __ := inferInstanceAs (One (LocalizedModule S A))
+  { __ := (inferInstance : One (LocalizedModule S A))
     mul := LocalizedModule.mul
     one_mul := by
       rintro ⟨a, s⟩
@@ -186,6 +186,7 @@ instance (priority := 900) {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid
       use 1
       simp only [one_mul, smul_smul, ← mul_assoc, mul_right_comm] }
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma example_oreLocalizationInstMonoid_eq_localizedModuleInstMonoid :
     OreLocalization.instMonoid = LocalizedModule.instMonoid (A := R) (S := S) := by
   with_reducible_and_instances rfl
@@ -202,8 +203,8 @@ theorem mk_mul_mk {A : Type*} [Semiring A] [Algebra R A] {a₁ a₂ : A} {s₁ s
 instance (priority := 900) {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
     Semiring (LocalizedModule S A) :=
   fast_instance%
-  { __ := inferInstanceAs (AddCommMonoid (LocalizedModule S A))
-    __ := inferInstanceAs (Monoid (LocalizedModule S A))
+  { __ := (inferInstance : AddCommMonoid (LocalizedModule S A))
+    __ := (inferInstance : Monoid (LocalizedModule S A))
     left_distrib := by
       rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩ ⟨a₃, s₃⟩
       change a₁ /ₒ s₁ * (a₂ /ₒ s₂ + a₃ /ₒ s₃) = a₁ /ₒ s₁ * (a₂ /ₒ s₂) + a₁ /ₒ s₁ * (a₃ /ₒ s₃)
@@ -231,7 +232,7 @@ instance (priority := 900) {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid
 instance (priority := 900) {A : Type*} [CommSemiring A] [Algebra R A] {S : Submonoid R} :
     CommSemiring (LocalizedModule S A) :=
   fast_instance%
-  { __ := inferInstanceAs (Semiring (LocalizedModule S A))
+  { __ := (inferInstance : Semiring (LocalizedModule S A))
     mul_comm := by
       rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩
       exact mk_eq.mpr ⟨1, by simp only [one_smul, mul_comm]⟩ }
@@ -241,17 +242,18 @@ instance (priority := 900) {A : Type*} [CommSemiring A] [Algebra R A] {S : Submo
 instance (priority := 900) {A : Type*} [Ring A] [Algebra R A] {S : Submonoid R} :
     Ring (LocalizedModule S A) :=
   fast_instance%
-  { __ := inferInstanceAs (AddCommGroup (LocalizedModule S A))
-    __ := inferInstanceAs (Semiring (LocalizedModule S A)) }
+  { __ := (inferInstance : AddCommGroup (LocalizedModule S A))
+    __ := (inferInstance : Semiring (LocalizedModule S A)) }
 
 -- For the instance on `Localization S`, we prefer `OreLocalization.instCommRing`.
 -- They are defeq but Lean needs to unfold a bunch to verify it.
 instance (priority := 900) {A : Type*} [CommRing A] [Algebra R A] {S : Submonoid R} :
     CommRing (LocalizedModule S A) :=
   fast_instance%
-  { __ := inferInstanceAs (Ring (LocalizedModule S A))
-    __ := inferInstanceAs (CommSemiring (LocalizedModule S A)) }
+  { __ := (inferInstance : Ring (LocalizedModule S A))
+    __ := (inferInstance : CommSemiring (LocalizedModule S A)) }
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma example_oreLocalizationInstCommRing_eq_localizedModuleInstCommRing
     {R : Type*} [CommRing R] {S : Submonoid R} :
     OreLocalization.instCommRing = (LocalizedModule.instCommRing : CommRing R[S⁻¹]) := by
@@ -453,6 +455,7 @@ noncomputable instance (priority := 900) algebra' {A : Type*} [Semiring A] [Alge
       Function.comp_apply]
     rw [mk_mul_mk, smul'_mk, Algebra.smul_def, one_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma example_oreLocalizationInstAlgebra_eq_localizedModuleAlgebra' :
     OreLocalization.instAlgebra = (algebra' : Algebra R (LocalizedModule S R)) := by
   with_reducible_and_instances rfl
@@ -526,8 +529,6 @@ variable (f : M →ₗ[R] M') (g : M →ₗ[R] M'')
 
 attribute [nolint docBlame] IsLocalizedModule.map_units IsLocalizedModule.surj
   IsLocalizedModule.exists_of_eq
-
-@[deprecated (since := "2025-09-05")] alias IsLocalizedModule.surj' := IsLocalizedModule.surj
 
 lemma IsLocalizedModule.eq_iff_exists [IsLocalizedModule S f] {x₁ x₂} :
     f x₁ = f x₂ ↔ ∃ c : S, c • x₁ = c • x₂ :=

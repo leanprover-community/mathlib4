@@ -33,20 +33,19 @@ variable {R : Type*} [CommRing R] {P : RingPreordering R}
 
 namespace RingPreordering
 
+@[gcongr]
 theorem toSubsemiring_le_toSubsemiring {P₁ P₂ : RingPreordering R} :
     P₁.toSubsemiring ≤ P₂.toSubsemiring ↔ P₁ ≤ P₂ := .rfl
 
+@[gcongr]
 theorem toSubsemiring_lt_toSubsemiring {P₁ P₂ : RingPreordering R} :
     P₁.toSubsemiring < P₂.toSubsemiring ↔ P₁ < P₂ := .rfl
 
-@[gcongr] alias ⟨_, GCongr.toSubsemiring_le_toSubsemiring⟩ := toSubsemiring_le_toSubsemiring
-@[gcongr] alias ⟨_, GCongr.toSubsemiring_lt_toSubsemiring⟩ := toSubsemiring_lt_toSubsemiring
-
-@[mono]
+@[gcongr, mono]
 theorem toSubsemiring_mono : Monotone (toSubsemiring : RingPreordering R → _) :=
   fun _ _ => id
 
-@[mono]
+@[gcongr, mono]
 theorem toSubsemiring_strictMono : StrictMono (toSubsemiring : RingPreordering R → _) :=
   fun _ _ => id
 

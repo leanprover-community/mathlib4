@@ -146,11 +146,10 @@ instance SpecMap_residue {X : Scheme.{u}} (x) : IsClosedImmersion (Spec.map (X.r
   IsClosedImmersion.spec_of_surjective (X.residue x)
     Ideal.Quotient.mk_surjective
 
-@[deprecated (since := "2025-10-07")] alias Spec_map_residue := SpecMap_residue
-
 instance (priority := low) {X Y : Scheme} (f : X ⟶ Y) [IsClosedImmersion f] : IsAffineHom f :=
   isAffineHom_of_isInducing _ f.isClosedEmbedding.isInducing f.isClosedEmbedding.isClosed_range
 
+set_option backward.isDefEq.respectTransparency false in
 instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsClosedImmersion f] :
     IsIso f.toImage := by
   have := @of_comp_isClosedImmersion _ _ _ f.toImage f.imageι inferInstance
@@ -242,7 +241,6 @@ open IsClosedImmersion LocallyRingedSpace
 lemma isDominant_of_of_appTop_injective [CompactSpace X]
     (hfinj : Function.Injective (f.appTop)) :
     IsDominant f := by
-  have : QuasiCompact f := HasAffineProperty.iff_of_isAffine.mpr ‹_›
   have : f.ker = ⊥ := Scheme.IdealSheafData.ext_of_isAffine
     (by simpa [f.ker_apply ⟨⊤, isAffineOpen_top Y⟩, ← RingHom.injective_iff_ker_eq_bot])
   exact ⟨by simpa only [Scheme.Hom.support_ker, Scheme.IdealSheafData.support_bot,
@@ -306,6 +304,7 @@ theorem isIso_of_injective_of_isAffine [IsClosedImmersion f]
 
 variable (f)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is a closed immersion with affine target, the source is affine and
 the induced map on global sections is surjective. -/
 theorem isAffine_surjective_of_isAffine [IsClosedImmersion f] :
@@ -334,7 +333,7 @@ lemma Spec_iff {R : CommRingCat} {f : X ⟶ Spec R} :
       change f = X.isoSpec.hom ≫ Spec.map φ
       simp only [Scheme.isoSpec, asIso_hom, Spec.map_comp, ← Scheme.toSpecΓ_naturality_assoc,
         ← SpecMap_ΓSpecIso_hom, φ]
-      simp only [← Spec.map_comp, Iso.inv_hom_id, Spec.map_id, Category.comp_id]
+      simp
   · rintro ⟨I, e, rfl⟩
     infer_instance
 
@@ -391,7 +390,7 @@ instance (f : X ⟶ Y) (V : Y.Opens) [IsClosedImmersion f] :
 instance (priority := 900) {X Y : Scheme.{u}} (f : X ⟶ Y) [h : IsClosedImmersion f] :
     LocallyOfFiniteType f := by
   rw [HasRingHomProperty.eq_affineLocally @LocallyOfFiniteType,
-    ← and_iff_right (inferInstanceAs (IsAffineHom f)) (b := affineLocally _ _),
+    ← and_iff_right (inferInstance : IsAffineHom f) (b := affineLocally _ _),
     ← targetAffineLocally_affineAnd_iff_affineLocally RingHom.finiteType_isLocal]
   rw [HasAffineProperty.eq_targetAffineLocally @IsClosedImmersion] at h
   exact targetAffineLocally_affineAnd_le (RingHom.FiniteType.of_surjective _) _ h
@@ -412,6 +411,7 @@ lemma isClosed_singleton_iff_isClosedImmersion {X : Scheme} {x : X} :
 
 section Section
 
+set_option backward.isDefEq.respectTransparency false in
 nonrec theorem isClosedImmersion_of_comp_eq_id {X Y : Scheme.{u}} [Subsingleton Y]
     (f : X ⟶ Y) (g : Y ⟶ X) (hg : g ≫ f = 𝟙 Y) :
     IsClosedImmersion g := by

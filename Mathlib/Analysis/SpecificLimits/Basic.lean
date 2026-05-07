@@ -93,12 +93,7 @@ theorem tendsto_natCast_div_add_atTop {𝕜 : Type*} [DivisionSemiring 𝕜] [To
     rw [this]
     refine tendsto_const_nhds.div (tendsto_const_nhds.add ?_) (by simp)
     simp_rw [div_eq_mul_inv]
-    refine tendsto_const_nhds.mul ?_
-    have := ((continuous_algebraMap ℚ≥0 𝕜).tendsto _).comp tendsto_inv_atTop_nhds_zero_nat
-    rw [map_zero, Filter.tendsto_atTop'] at this
-    refine Iff.mpr tendsto_atTop' ?_
-    intros
-    simp_all only [comp_apply, map_inv₀, map_natCast]
+    exact tendsto_const_nhds.mul tendsto_inv_atTop_nhds_zero_nat
 
 theorem tendsto_add_mul_div_add_mul_atTop_nhds {𝕜 : Type*} [Semifield 𝕜] [CharZero 𝕜]
     [TopologicalSpace 𝕜] [ContinuousSMul ℚ≥0 𝕜] [IsTopologicalSemiring 𝕜] [ContinuousInv₀ 𝕜]
@@ -238,23 +233,23 @@ theorem geom_lt {u : ℕ → ℝ} {c : ℝ} (hc : 0 ≤ c) {n : ℕ} (hn : 0 < n
     (h : ∀ k < n, c * u k < u (k + 1)) : c ^ n * u 0 < u n := by
   apply (monotone_mul_left_of_nonneg hc).seq_pos_lt_seq_of_le_of_lt hn _ _ h
   · simp
-  · simp [_root_.pow_succ', mul_assoc, le_refl]
+  · simp [_root_.pow_succ', mul_assoc]
 
 theorem geom_le {u : ℕ → ℝ} {c : ℝ} (hc : 0 ≤ c) (n : ℕ) (h : ∀ k < n, c * u k ≤ u (k + 1)) :
     c ^ n * u 0 ≤ u n := by
   apply (monotone_mul_left_of_nonneg hc).seq_le_seq n _ _ h <;>
-    simp [_root_.pow_succ', mul_assoc, le_refl]
+    simp [_root_.pow_succ', mul_assoc]
 
 theorem lt_geom {u : ℕ → ℝ} {c : ℝ} (hc : 0 ≤ c) {n : ℕ} (hn : 0 < n)
     (h : ∀ k < n, u (k + 1) < c * u k) : u n < c ^ n * u 0 := by
   apply (monotone_mul_left_of_nonneg hc).seq_pos_lt_seq_of_lt_of_le hn _ h _
   · simp
-  · simp [_root_.pow_succ', mul_assoc, le_refl]
+  · simp [_root_.pow_succ', mul_assoc]
 
 theorem le_geom {u : ℕ → ℝ} {c : ℝ} (hc : 0 ≤ c) (n : ℕ) (h : ∀ k < n, u (k + 1) ≤ c * u k) :
     u n ≤ c ^ n * u 0 := by
   apply (monotone_mul_left_of_nonneg hc).seq_le_seq n _ h _ <;>
-    simp [_root_.pow_succ', mul_assoc, le_refl]
+    simp [_root_.pow_succ', mul_assoc]
 
 /-- If a sequence `v` of real numbers satisfies `k * v n ≤ v (n+1)` with `1 < k`,
 then it goes to +∞. -/
@@ -302,7 +297,7 @@ protected theorem ENNReal.tendsto_pow_atTop_nhds_top_iff {r : ℝ≥0∞} :
     specialize h_tends (Ioi_mem_nhds one_lt_top)
     simp only [Filter.mem_map, mem_atTop_sets, ge_iff_le, Set.mem_preimage, Set.mem_Ioi] at h_tends
     obtain ⟨n, hn⟩ := h_tends
-    exact lt_irrefl _ <| lt_of_lt_of_le (hn n le_rfl) <| pow_le_one₀ (zero_le _) r_le_one
+    exact lt_irrefl _ <| lt_of_lt_of_le (hn n le_rfl) <| pow_le_one₀ zero_le r_le_one
   · intro r_gt_one
     have obs := @Tendsto.inv ℝ≥0∞ ℕ _ _ _ (fun n ↦ (r⁻¹) ^ n) atTop 0
     simp only [ENNReal.tendsto_pow_atTop_nhds_zero_iff, inv_zero] at obs
@@ -395,8 +390,10 @@ theorem NNReal.hasSum_geometric {r : ℝ≥0} (hr : r < 1) : HasSum (fun n : ℕ
 theorem NNReal.summable_geometric {r : ℝ≥0} (hr : r < 1) : Summable fun n : ℕ ↦ r ^ n :=
   ⟨_, NNReal.hasSum_geometric hr⟩
 
-theorem tsum_geometric_nnreal {r : ℝ≥0} (hr : r < 1) : ∑' n : ℕ, r ^ n = (1 - r)⁻¹ :=
+theorem NNReal.tsum_geometric {r : ℝ≥0} (hr : r < 1) : ∑' n : ℕ, r ^ n = (1 - r)⁻¹ :=
   (NNReal.hasSum_geometric hr).tsum_eq
+
+@[deprecated (since := "2026-03-18")] alias tsum_geometric_nnreal := NNReal.tsum_geometric
 
 /-- The series `pow r` converges to `(1-r)⁻¹`. For `r < 1` the RHS is a finite number,
 and for `1 ≤ r` the RHS equals `∞`. -/
