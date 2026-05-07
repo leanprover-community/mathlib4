@@ -104,9 +104,8 @@ theorem card_opow_le_of_omega0_le_left {a : Ordinal} (ha : ω ≤ a) (b : Ordina
       rintro ⟨c, (hcb : c < b)⟩
       grw [IH c hcb, hcb]
     · simpa using hb.ne_bot
-    · refine le_ciSup_of_le ?_ ⟨1, one_lt_omega0.trans_le <| omega0_le_of_isSuccLimit hb⟩ ?_
-      · exact Cardinal.bddAbove_of_small _
-      · simpa
+    · exact le_ciSup_of_le Cardinal.bddAbove_of_small
+        ⟨1, one_lt_omega0.trans_le <| omega0_le_of_isSuccLimit hb⟩ (by simpa)
 
 theorem card_opow_le_of_omega0_le_right (a : Ordinal) {b : Ordinal} (hb : ω ≤ b) :
     (a ^ b).card ≤ max a.card b.card := by

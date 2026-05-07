@@ -195,8 +195,9 @@ lemma collapse_modular [ExistsAddOfLE β]
     · refine (add_le_add (h ‹_› ‹_›) <| h ‹_› ‹_›).trans ?_
       rw [collapse_of_mem ‹_› (union_mem_sups ‹_› ‹_›) (union_mem_sups ‹_› ‹_›) rfl
         (union_insert _ _ _), inter_insert_of_notMem ‹_›, ← mul_add]
-      exact mul_le_mul_of_nonneg_right (le_collapse_of_mem ‹_› h₃ rfl <| inter_mem_infs ‹_› ‹_›) <|
-        add_nonneg (h₄ _) <| h₄ _
+      gcongr
+      · exact add_nonneg (h₄ _) (h₄ _)
+      · exact le_collapse_of_mem ‹_› h₃ rfl <| inter_mem_infs ‹_› ‹_›
     · rw [mul_zero, add_zero]
       exact (h ‹_› ‹_›).trans <| mul_le_mul (le_collapse_of_mem ‹_› h₃ rfl <|
         inter_mem_infs ‹_› ‹_›) (le_collapse_of_mem ‹_› h₄ rfl <| union_mem_sups ‹_› ‹_›)
@@ -215,8 +216,10 @@ lemma collapse_modular [ExistsAddOfLE β]
         (insert_inter_of_notMem ‹_›) (insert_inter_distrib _ _ _).symm,
         insert_inter_of_notMem ‹_›, ← insert_inter_distrib, insert_union, insert_union_distrib,
         ← add_mul]
-      exact mul_le_mul_of_nonneg_left (le_collapse_of_insert_mem ‹_› h₄
-        (insert_union_distrib _ _ _).symm <| union_mem_sups ‹_› ‹_›) <| add_nonneg (h₃ _) <| h₃ _
+      gcongr
+      · exact add_nonneg (h₃ _) (h₃ _)
+      · exact le_collapse_of_insert_mem ‹_› h₄
+          (insert_union_distrib _ _ _).symm <| union_mem_sups ‹_› ‹_›
     · rw [mul_zero, add_zero]
       refine (h ‹_› ‹_›).trans <| mul_le_mul (le_collapse_of_mem ‹_› h₃
         (insert_inter_of_notMem ‹_›) <| inter_mem_infs ‹_› ‹_›) (le_collapse_of_insert_mem ‹_› h₄
@@ -392,5 +395,5 @@ lemma Finset.le_card_diffs_mul_card_diffs (s t : Finset α) :
 
 /-- The **Marica-Schönheim Inequality**. -/
 lemma Finset.card_le_card_diffs (s : Finset α) : #s ≤ #(s \\ s) :=
-  le_of_pow_le_pow_left₀ two_ne_zero (zero_le _) <| by
+  le_of_pow_le_pow_left₀ two_ne_zero zero_le <| by
     simpa [← sq] using s.le_card_diffs_mul_card_diffs s

@@ -302,7 +302,7 @@ where
           Unless the original translation was wrong, please remove this `{t.attrName}` attribute."
     modifyEnv (t.translations.addEntry · (src, info))
     trace[translate] "Added translation {src} ↦ {tgt}\
-      {if info.reorder.isEmpty then "" else s!" (reorder := {info.reorder})}"} \
+      {if info.reorder.reorder.isEmpty then "" else s!" (reorder := {info.reorder.reorder})}"} \
       (relevant_arg := {info.relevantArg})"
 
 /-- `Config` is the type of the arguments that can be provided to `to_additive`. -/
@@ -318,7 +318,7 @@ structure Config : Type where
   we check whether the given name can be auto-generated. -/
   allowAutoName : Bool := false
   /-- The arguments that should be reordered when translating, using cycle notation. -/
-  reorder? : Option Reorder := .none
+  reorder? : Option ArgReorder := .none
   /-- The argument used to determine whether this constant should be translated. -/
   relevantArg? : Option RelevantArg := .none
   /-- The attributes which we want to give to the original and translated declaration.
@@ -376,6 +376,7 @@ private unsafe def shouldTranslateUnsafe (env : Environment) (t : TranslateData)
     ReplacementM (Option Expr) := do
   let visitedFVars : IO.Ref (Array FVarId) ← IO.mkRef #[]
   let dontTranslate ← read
+  let lctx ← getLCtx
   let rec visit (e : Expr) : ExceptT Expr (StateT (PtrSet Expr) BaseIO) Unit := do
     if (← get).contains e then
       return
@@ -404,7 +405,10 @@ private unsafe def shouldTranslateUnsafe (env : Environment) (t : TranslateData)
     | .fvar fvarId       =>
       if dontTranslate.contains fvarId then
         throw e
-      visitedFVars.modify (·.push fvarId)
+      if let some value := (lctx.get! fvarId).value? (allowNondep := true) then
+        visit value
+      else
+        visitedFVars.modify (·.push fvarId)
     /- We do not translate the order on `Prop`.
     TODO: We also don't want to translate the category on `Type u`. Unfortunately, replacing
     `.sort 0` with `.sort _` here breaks some uses of `to_additive` on `MonCat`. -/
@@ -449,7 +453,7 @@ where
     checkCache { val := e : ExprStructEq } fun _ => do
     let e ← match e with
       | .forallE .. => visitForall e
-      | .lam ..     => visitLambda e
+      | .lam ..     => visitLambda e []
       | .letE ..    => visitLet e
       | .mdata _ b  => return e.updateMData! (← visit b)
       | .proj ..    => visitApp e
@@ -460,9 +464,6 @@ where
     return e
   visitApp (e : Expr) := e.withApp fun f args ↦ do
     let env ← getEnv
-    if f.isLambda && !args.isEmpty then
-      if ← isProof f then
-        return ← visit (f.beta args)
     match f with
     | .proj n i b =>
       let some info := getStructureInfo? env n |
@@ -495,12 +496,13 @@ where
             trace[translate_detail]
               "The application of {n₀} contains the fixed type {fixed} so it is not changed."
             return mkAppN f (← args.mapM visit)
+      let { univReorder, reorder } := reorder
       -- If the number of arguments is too small for `reorder`, we need to eta expand first
       if args.size < reorder.range then
         let e' ← etaExpandN (reorder.range - args.size) e
         trace[translate_detail] "eta expanded {e} to {e'}"
         return ← visit e'
-      let f' := Expr.const n₁ (reorder.permuteUniv ls₀)
+      let f' := Expr.const n₁ (univReorder.permuteList! ls₀)
       trace[translate_detail]"changing {f} to {f'}"
       unless reorder.perm.isEmpty do
         trace[translate_detail]
@@ -513,16 +515,24 @@ where
         args ← args.modifyM arg (reorderLambda argReorder ·)
       args := reorder.permute! args
       return mkAppN f' (← args.mapM visit)
+    | .lam .. => return mkAppN (← visitLambda f args.toList) (← args.mapM visit)
     | _ => return mkAppN (← visit f) (← args.mapM visit)
   /- In `visitLambda`, `visitForall` and `visitLet`,
   we use a fresh `tmpLCtx : LocalContext` to store the translated types of the free variables.
-  This is because the local context in the `MetaM` monad stores their original types. -/
-  visitLambda (e : Expr) (fvars : Array Expr := #[]) (tmpLCtx : LocalContext := {}) := do
+  This is because the local context in the `MetaM` monad stores their original types.
+
+  In `visitLambda`, we keep track of the value of  variables, which helps in `shouldTranslate`. -/
+  visitLambda (e : Expr) (values : List Expr) (fvars : Array Expr := #[])
+      (tmpLCtx : LocalContext := {}) := do
     if let .lam n d b bi := e then
       let d := d.instantiateRev fvars
       let d' ← visit d
-      withLocalDecl n bi d fun x => do
-        visitLambda b (fvars.push x) (tmpLCtx.addDecl ((← getFVarLocalDecl x).setType d'))
+      if let value :: values := values then
+        withLetDecl n d value fun x =>
+          visitLambda b values (fvars.push x) (tmpLCtx.mkLocalDecl x.fvarId! n d' bi)
+      else
+        withLocalDecl n bi d fun x =>
+          visitLambda b values (fvars.push x) (tmpLCtx.mkLocalDecl x.fvarId! n d' bi)
     else
       let e ← visit (e.instantiateRev fvars)
       return tmpLCtx.mkLambda fvars e
@@ -530,8 +540,8 @@ where
     if let .forallE n d b bi := e then
       let d := d.instantiateRev fvars
       let d' ← visit d
-      withLocalDecl n bi d fun x => do
-        visitForall b (fvars.push x) (tmpLCtx.addDecl ((← getFVarLocalDecl x).setType d'))
+      withLocalDecl n bi d fun x =>
+        visitForall b (fvars.push x) (tmpLCtx.mkLocalDecl x.fvarId! n d' bi)
     else
       let e ← visit (e.instantiateRev fvars)
       return tmpLCtx.mkForall fvars e
@@ -539,9 +549,8 @@ where
     if let .letE n t v b nondep := e then
       let t := t.instantiateRev fvars; let v := v.instantiateRev fvars
       let t' ← visit t; let v' ← visit v
-      withLetDecl n t v (nondep := nondep) fun x => do
-        visitLet b (fvars.push x) (tmpLCtx.addDecl
-          (((← getFVarLocalDecl x).setType t').setValue v'))
+      withLetDecl n t v (nondep := nondep) fun x =>
+        visitLet b (fvars.push x) (tmpLCtx.mkLetDecl x.fvarId! n t' v' nondep)
     else
       let e ← visit (e.instantiateRev fvars)
       -- Note that `mkLambda` will make `let` expressions because it will see the `LocalDecl.ldecl`.
@@ -611,13 +620,13 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
     throwError "`{t.attrName}` does not support mutually recursive declarations."
   let decl := srcDecl.updateName tgt
   let decl := decl.updateAll [tgt]
-  let decl := decl.updateLevelParams (reorder.permuteUniv decl.levelParams)
+  let decl := decl.updateLevelParams (reorder.univReorder.permuteList! decl.levelParams)
   let mut value := decl.value! (allowOpaque := true)
   if let some b := unfoldBoundaries? then
     value ← b.cast (← b.insertBoundaries value t.attrName) decl.type t.attrName
   trace[translate] "Value before translation:{indentExpr value}"
   let (value', relevantArg₁) ← applyReplacementLambda t dont value
-  value ← reorderLambda reorder value'
+  value ← reorderLambda reorder.reorder value'
   if let some b := unfoldBoundaries? then
     value ← b.unfoldInsertions value
   let decl := decl.updateValue value
@@ -625,7 +634,7 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
   if let some b := unfoldBoundaries? then
     type ← b.insertBoundaries decl.type t.attrName
   let (type', relevantArg₂) ← applyReplacementForall t dont <| renameBinderNames t rename type
-  type ← reorderForall reorder type'
+  type ← reorderForall reorder.reorder type'
   if let some b := unfoldBoundaries? then
     type ← b.unfoldInsertions type
   return (decl.updateType type, .merge .min relevantArg₁ relevantArg₂)
@@ -672,13 +681,14 @@ def updateAndAddDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
         {ex.toMessageData}"
     throwError "@[{t.attrName}] failed. Nested error message:\n{ex.toMessageData}"
 
-/-- Unfold `simp` and `gcongr` auxlemmas in the type and value.
+/-- Unfold `simp`, `gcongr` and `hcongr`/`congr_simp` auxlemmas in the type and value.
 The reason why we can't just translate them is that they are generated by the `@[simp]` attribute,
 so it would require a change in the implementation of `@[simp]` to add these translations.
 Additionally, these lemmas have very short proofs, so unfolding them is not costly. -/
 def declUnfoldSimpAuxLemmas (decl : ConstantInfo) : MetaM ConstantInfo := do
   let unfold (e : Expr) := deltaExpand e (allowOpaque := true) fun
-    | .str _ s => "_simp_".isPrefixOf s || "_gcongr_".isPrefixOf s
+    | .str _ s => "_simp_".isPrefixOf s || "_gcongr_".isPrefixOf s ||
+        isHCongrReservedNameSuffix s || s == congrSimpSuffix
     | _ => false
   let mut decl := decl
   decl := decl.updateType <| ← unfold decl.type
@@ -740,10 +750,10 @@ occurring in `src` using the `translations` dictionary.
 
 - `rootSrc` is the declaration that got the translation attribute and `rootTgt` is its target.
 - `src` is assumed to have a value available in the environment.
-- `reorder` is used only for the translation of `src`.
+- `reorder` and `rename` are only used for the translation of `src`.
 -/
 partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt src : Name)
-    (reorder : Reorder := {}) (rename : NameMap Name := {}) : CoreM Unit := do
+    (reorder : ArgReorder := {}) (rename : NameMap Name := {}) : CoreM Unit := do
   let env ← getEnv
   trace[translate_detail] "visiting {src}"
   -- if we have already translated this declaration, we do nothing.
@@ -780,6 +790,7 @@ partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt
       let namesPre := (← getConstInfo rootSrc).type.getForallBinderNames
       let namesSrc := (← getConstInfo src).type.getForallBinderNames
       pure <| cfg.dontTranslate.filterMap (namesPre[·]? >>= namesSrc.idxOf?)
+  let reorder := { reorder, univReorder := guessUnivReorder reorder srcDecl }
   -- now transform the source declaration
   let (tgtDecl, relevantArg?) ←
     MetaM.run' <| updateAndAddDecl t tgt srcDecl reorder dontTranslate rename
@@ -952,6 +963,7 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
       pure reorder
     else
       pure reorder'
+  let univReorder := guessUnivReorder reorder srcDecl
   if cfg.self && reorder.isEmpty then
     Linter.logLintIf linter.translateRedundant cfg.ref m!"\
       `{t.attrName} self` is redundant when none of the arguments are reordered.\n\
@@ -962,12 +974,12 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
   if let some b := unfoldBoundaries? then
     srcType ← b.unfoldInsertions srcType
   srcType := srcType.instantiateLevelParams
-    (reorder.permuteUniv srcDecl.levelParams) (tgtDecl.levelParams.map mkLevelParam)
+    (univReorder.permuteList! srcDecl.levelParams) (tgtDecl.levelParams.map mkLevelParam)
   let tgtType := tgtDecl.type
   unless ← withReducible <| isDefEq srcType tgtType do
     throwError "`{t.attrName}` validation failed: expected{indentExpr srcType}\nbut '{tgt}' has \
       type{indentExpr tgtType}"
-  return (reorder, ← getRelevantArg t cfg relevantArg? src)
+  return ({ univReorder, reorder }, ← getRelevantArg t cfg relevantArg? src)
 
 /-- if `f src = #[a_1, ..., a_n]` and `f tgt = #[b_1, ... b_n]` then `proceedFieldsAux src tgt f`
 will insert translations from `a_i` to `b_i`. -/
@@ -1097,13 +1109,7 @@ def elabTranslationAttr (declName : Name) (stx : Syntax) : CoreM Config := do
         return doc.getString
       | `(docComment|$doc:docComment) => do
         -- TODO: rely on `addDocString`s call to `validateDocComment` after removing `str` support
-        /-
-        #adaptation_note
-        Without understanding the consequences, I am commenting out the next line,
-        as `validateDocComment` is now in `TermElabM` which is not trivial to reach from here.
-        Perhaps the existing comments here suggest it is no longer needed, anyway?
-        -/
-        -- validateDocComment doc
+        validateDocComment doc
         /- Note: the following replicates the behavior of `addDocString`. However, this means that
         trailing whitespace might appear in docstrings added via `docComment` syntax when compared
         to those added via `str` syntax. See this [Zulip thread](https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/Why.20do.20docstrings.20include.20trailing.20whitespace.3F/with/533553356). -/
