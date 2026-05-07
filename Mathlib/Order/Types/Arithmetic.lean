@@ -104,8 +104,8 @@ open Cardinal
 
 /-- The cardinal of an `OrderType` is the cardinality of any type on which a relation
 with that order type is defined. -/
-def card : OrderType → Cardinal :=
-  fun o ↦ o.liftOn (fun α _ ↦ #α)
+def card (o : OrderType) : Cardinal :=
+  o.liftOn (fun α _ ↦ #α)
     fun _ _ _ _ hab ↦ mk_congr (type_eq_type.mp hab).some.toEquiv
 
 @[simp]
