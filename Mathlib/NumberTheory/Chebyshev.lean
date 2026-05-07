@@ -685,10 +685,8 @@ private theorem pi_mul_log_sqrt_le {x : ℝ} (hx : 1 ≤ x) :
     refine sum_le_sum fun p hp ↦ ?_
     split_ifs with h
     · simp [log_natCast_nonneg]
-    have : log √x < log p := by
-      apply log_lt_log (by positivity) (not_le.mp h)
-    nth_grw 1 [this]
-    simp
+    have : log √x < log p := log_lt_log (by positivity) (not_le.mp h)
+    grind
   _ ≤ _ := by
     grw [← theta_le_log4_mul_x (by positivity)]
     rw [sum_add_distrib, theta_eq_theta_coe_floor, theta_eq_sum_log, ←sum_filter]
