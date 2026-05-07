@@ -891,6 +891,8 @@ def translateLemmas
       throwError "{names[0]!} and {nm} do not generate the same number of {desc}."
   for srcLemmas in auxLemmas, tgtLemmas in auxLemmas.eraseIdx! 0 do
     for srcLemma in srcLemmas, tgtLemma in tgtLemmas do
+      -- Only add a translation if one doesn't already exist.
+      -- This happens if `srcLemma` is the `_assoc` lemma from `to_dual (attr := reassoc)`.
       if (findTranslation? (← getEnv) t srcLemma).isNone then
         insertTranslation t srcLemma tgtLemma reorder relevantArg ref
 
