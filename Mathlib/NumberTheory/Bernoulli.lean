@@ -169,7 +169,7 @@ theorem bernoulli'PowerSeries_mul_exp_sub_one :
     simpa [map_sum, Nat.factorial] using congr_arg (algebraMap ℚ A) this
   apply eq_inv_of_mul_eq_one_left
   rw [sum_mul]
-  convert bernoulli'_spec' n using 1
+  convert! bernoulli'_spec' n using 1
   apply sum_congr rfl
   simp_rw [mem_antidiagonal]
   rintro ⟨i, j⟩ rfl
@@ -259,7 +259,7 @@ theorem bernoulli_spec' (n : ℕ) :
   -- massage it to match the structure of the goal, then convert piece by piece
   rw [sum_eq_add_sum_diff_singleton_of_mem h₁] at H ⊢
   apply add_eq_of_eq_sub'
-  convert eq_sub_of_add_eq' H using 1
+  convert! eq_sub_of_add_eq' H using 1
   · refine sum_congr rfl fun p h => ?_
     obtain ⟨h', h''⟩ : p ∈ _ ∧ p ≠ _ := by rwa [mem_sdiff, mem_singleton] at h
     simp [bernoulli_eq_bernoulli'_of_ne_one ((not_congr (antidiagonal_congr h' h₁)).mp h'')]
@@ -367,7 +367,7 @@ theorem sum_Ico_pow (n p : ℕ) :
   cases p with | zero => simp | succ p =>
   let f i := bernoulli i * p.succ.succ.choose i * (n : ℚ) ^ (p.succ.succ - i) / p.succ.succ
   let f' i := bernoulli' i * p.succ.succ.choose i * (n : ℚ) ^ (p.succ.succ - i) / p.succ.succ
-  suffices (∑ k ∈ Ico 1 n.succ, (k : ℚ) ^ p.succ) = ∑ i ∈ range p.succ.succ, f' i by convert this
+  suffices (∑ k ∈ Ico 1 n.succ, (k : ℚ) ^ p.succ) = ∑ i ∈ range p.succ.succ, f' i by convert! this
   -- prove some algebraic facts that will make things easier for us later on
   have hle := Nat.le_add_left 1 n
   have hne : (p + 1 + 1 : ℚ) ≠ 0 := by norm_cast

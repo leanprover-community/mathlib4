@@ -115,7 +115,7 @@ This version works for functions between empty types. -/
 theorem stronglyMeasurable_const' (hf : ∀ x y, f x = f y) : StronglyMeasurable f := by
   nontriviality α
   inhabit α
-  convert stronglyMeasurable_const (β := β) using 1
+  convert! stronglyMeasurable_const (β := β) using 1
   exact funext fun x => hf x default
 
 variable [MeasurableSingletonClass α]
@@ -183,7 +183,7 @@ theorem tendsto_approxBounded_of_norm_le {β} {f : α → β} [NormedAddCommGrou
   · rw [norm_eq_zero] at hfx0
     rw [hfx0] at h_tendsto ⊢
     have h_tendsto_norm : Tendsto (fun n => ‖hf.approx n x‖) atTop (𝓝 0) := by
-      convert h_tendsto.norm
+      convert! h_tendsto.norm
       rw [norm_zero]
     refine squeeze_zero_norm (fun n => ?_) h_tendsto_norm
     calc
@@ -1138,7 +1138,7 @@ protected theorem add [AddZeroClass β] [ContinuousAdd β] (hf : FinStronglyMeas
 protected theorem neg [SubtractionMonoid β] [ContinuousNeg β] (hf : FinStronglyMeasurable f μ) :
     FinStronglyMeasurable (-f) μ := by
   refine ⟨fun n ↦ -hf.approx n, fun n ↦ ?_, fun x ↦ (hf.tendsto_approx x).neg⟩
-  suffices μ (Function.support fun x ↦ -(hf.approx n) x) < ∞ by convert this
+  suffices μ (Function.support fun x ↦ -(hf.approx n) x) < ∞ by convert! this
   rw [Function.support_fun_neg (hf.approx n)]
   exact hf.fin_support_approx n
 

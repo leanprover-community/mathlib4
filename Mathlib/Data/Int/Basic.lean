@@ -47,7 +47,7 @@ lemma inductionOn'_add_one (hz : b ≤ z) :
   rw [show z + 1 - b = zb + 1 by lia]
   have : b + zb = z := by lia
   subst this
-  convert cast_heq _ _
+  convert! cast_heq _ _
   rw [Int.inductionOn', cast_eq_iff_heq, ← hzb]
 
 end inductionOn'
@@ -77,7 +77,7 @@ lemma natAbs_surjective : natAbs.Surjective := fun n => ⟨n, natAbs_natCast n�
 
 lemma pow_right_injective (h : 1 < a.natAbs) : ((a ^ ·) : ℕ → ℤ).Injective := by
   refine (?_ : (natAbs ∘ (a ^ · : ℕ → ℤ)).Injective).of_comp
-  convert Nat.pow_right_injective h using 2
+  convert! Nat.pow_right_injective h using 2
   rw [Function.comp_apply, natAbs_pow]
 
 /-! ### dvd -/

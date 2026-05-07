@@ -1029,7 +1029,7 @@ lemma mem_coeffsIn_iff_coeffs_subset : p ∈ coeffsIn σ M ↔ (p.coeffs : Set S
   refine ⟨fun h x _ ↦ h x, fun h i ↦ ?_⟩
   by_cases hp : i ∈ p.support
   · exact h hp
-  · convert M.zero_mem
+  · convert! M.zero_mem
     simpa using hp
 
 end Module

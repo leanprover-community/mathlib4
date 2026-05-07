@@ -54,12 +54,12 @@ theorem integrable_prod_sub (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {f₁ : E
   have : Integrable (fun x ↦ ((∫ y, ‖f₁ y‖) * ‖f₂ x‖)) := by
     apply hf₂.norm.bdd_mul (by fun_prop) (c := ‖(∫ y, ‖f₁ y‖)‖)
     filter_upwards with; rfl
-  convert this using 1
+  convert! this using 1
   ext x
   simp_rw [norm_mul, norm_norm]
   rw [integral_mul_const]
   congr 1
-  convert integral_sub_right_eq_self _ x (μ := volume)
+  convert! integral_sub_right_eq_self _ x (μ := volume)
   rfl
 
 open FourierTransform
@@ -89,7 +89,7 @@ theorem fourier_bilin_convolution_eq_integral (B : F₁ →L[𝕜] F₂ →L[�
     congr
     ext y
     -- Linear change of variables
-    convert integral_sub_right_eq_self _ y (μ := volume)
+    convert! integral_sub_right_eq_self _ y (μ := volume)
     congr
     simp
 
@@ -215,7 +215,7 @@ theorem convolution_apply (B : F₁ →L[ℂ] F₂ →L[ℂ] F₃) (f : 𝓢(E, 
       exact ⟨SchwartzMap.seminorm ℝ 0 0 g, fun x ⟨y, hy⟩ ↦ hy ▸ norm_le_seminorm ℝ g y⟩
     · exact f.integrable.integrable_convolution B g.integrable
     · have : Integrable (fun ξ ↦ B (𝓕 f ξ) (𝓕 g ξ)) volume := (pairing B (𝓕 f) (𝓕 g)).integrable
-      convert this
+      convert! this
       rw [← fourier_convolution_apply B f g, fourier_convolution, pairing_apply_apply]
 
 

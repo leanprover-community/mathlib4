@@ -175,7 +175,7 @@ private theorem sumNodes_eq_coeff {n : ℕ} {P : ℝ[X]} (hP : P.degree ≤ n) :
     grw [hP]
     norm_cast
     simp
-  convert (Lagrange.coeff_eq_sum (strictAntiOn_node n).injOn this).symm using 2
+  convert! (Lagrange.coeff_eq_sum (strictAntiOn_node n).injOn this).symm using 2
   · exact Eq.symm (Nat.range_succ_eq_Iic n)
   · simp
 
@@ -194,7 +194,7 @@ private theorem negOnePow_mul_leadingCoeffC_pos {n i : ℕ} (hi : i ≤ n) :
 theorem coeff_le_of_forall_abs_le_one {n : ℕ} {P : ℝ[X]}
     (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, |P.eval x| ≤ 1) :
     P.coeff n ≤ 2 ^ (n - 1) := by
-  convert sumNodes_le_sumNodes_T
+  convert! sumNodes_le_sumNodes_T
       (fun i hi => le_of_lt <| negOnePow_mul_leadingCoeffC_pos hi) hPbnd
   · rw [sumNodes_eq_coeff hPdeg]
   · rw [sumNodes_T_eq]
@@ -214,7 +214,7 @@ theorem leadingCoeff_le_of_forall_abs_le_one {n : ℕ} {P : ℝ[X]}
 theorem coeff_eq_iff_of_forall_abs_le_one {n : ℕ} {P : ℝ[X]}
     (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, |P.eval x| ≤ 1) :
     P.coeff n = 2 ^ (n - 1) ↔ P = T ℝ n := by
-  convert sumNodes_eq_sumNodes_T_iff
+  convert! sumNodes_eq_sumNodes_T_iff
       (fun i hi => negOnePow_mul_leadingCoeffC_pos hi) hPdeg hPbnd
   · rw [sumNodes_eq_coeff hPdeg]
   · rw [sumNodes_T_eq]
@@ -249,7 +249,7 @@ private theorem sumNodes_eq_eval_iterate_derivative {n k : ℕ} (hk : k ≤ n) (
   simp_rw [sumNodes, iterateDerivativeC]
   have h₁ : P.degree < (Finset.range (n + 1)).card := by
     rw [Finset.card_range]; grw [hP]; norm_cast; simp
-  convert (Lagrange.eval_iterate_derivative_eq_sum (strictAntiOn_node n).injOn h₁
+  convert! (Lagrange.eval_iterate_derivative_eq_sum (strictAntiOn_node n).injOn h₁
     (show k < _ by simp [hk]) x).symm
   rw [Finset.mul_sum]
   grind [Nat.range_succ_eq_Iic, Nat.card_Iic]
@@ -288,7 +288,7 @@ theorem eval_iterate_derivative_le_of_forall_abs_le_one {n : ℕ} {P : ℝ[X]}
   by_cases! hk : n < k
   · rw [iterate_derivative_eq_zero_of_degree_lt (by grw [hPdeg]; simpa),
       iterate_derivative_eq_zero_of_degree_lt (by simp [hk])]
-  convert sumNodes_le_sumNodes_T
+  convert! sumNodes_le_sumNodes_T
     (fun i hi => negOnePow_mul_iterateDerivativeC_nonneg hi hx) hPbnd using 1
   · rw [sumNodes_eq_eval_iterate_derivative hk x hPdeg]
   · rw [sumNodes_eq_eval_iterate_derivative hk x (le_of_eq (degree_T ℝ n))]
@@ -297,7 +297,7 @@ theorem eval_iterate_derivative_eq_iff_of_bounded {n : ℕ} {P : ℝ[X]}
     {k : ℕ} (hk₁ : 0 < k) (hk₂ : k ≤ n) {x : ℝ} (hx : 1 ≤ x)
     (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, |P.eval x| ≤ 1) :
     (derivative^[k] P).eval x = (derivative^[k] (T ℝ n)).eval x ↔ P = T ℝ n := by
-  convert sumNodes_eq_sumNodes_T_iff
+  convert! sumNodes_eq_sumNodes_T_iff
     (fun i hi => negOnePow_mul_iterateDerivativeC_pos hk₁ hk₂ hi hx) hPdeg hPbnd using 2
   · rw [sumNodes_eq_eval_iterate_derivative hk₂ x hPdeg]
   · rw [sumNodes_eq_eval_iterate_derivative hk₂ x (le_of_eq (degree_T ℝ n))]

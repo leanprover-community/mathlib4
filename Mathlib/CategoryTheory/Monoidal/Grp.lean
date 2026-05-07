@@ -338,7 +338,7 @@ lemma toMonObj_injective {X : C} :
   suffices h₁.inv = h₂.inv by cases h₁; congr!
   apply lift_left_mul_ext (𝟙 _)
   rw [left_inv]
-  convert @left_inv _ _ _ _ h₁ using 2
+  convert! @left_inv _ _ _ _ h₁ using 2
   exacts [congr(($e.symm).mul), congr(($e.symm).one)]
 
 @[to_additive (attr := ext)]

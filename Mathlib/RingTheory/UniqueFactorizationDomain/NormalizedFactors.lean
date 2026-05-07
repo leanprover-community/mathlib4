@@ -41,7 +41,7 @@ if `M` has a trivial group of units. -/
 theorem factors_eq_normalizedFactors {M : Type*} [CommMonoidWithZero M]
     [UniqueFactorizationMonoid M] [Subsingleton Mˣ] (x : M) : factors x = normalizedFactors x := by
   unfold normalizedFactors
-  convert (Multiset.map_id (factors x)).symm
+  convert! (Multiset.map_id (factors x)).symm
   ext p
   exact normalize_eq p
 
@@ -87,13 +87,13 @@ theorem normalizedFactors_irreducible {a : α} (ha : Irreducible a) :
   have p_mem : p ∈ normalizedFactors a := by
     rw [hp]
     exact Multiset.mem_singleton_self _
-  convert hp
+  convert! hp
   rwa [← normalize_normalized_factor p p_mem, normalize_eq_normalize_iff, dvd_dvd_iff_associated]
 
 theorem normalizedFactors_eq_of_dvd (a : α) :
     ∀ᵉ (p ∈ normalizedFactors a) (q ∈ normalizedFactors a), p ∣ q → p = q := by
   intro p hp q hq hdvd
-  convert normalize_eq_normalize hdvd
+  convert! normalize_eq_normalize hdvd
           ((prime_of_normalized_factor _ hp).irreducible.dvd_symm
             (prime_of_normalized_factor _ hq).irreducible hdvd) <;>
     apply (normalize_normalized_factor _ ‹_›).symm
@@ -325,7 +325,7 @@ theorem normalizedFactors_multiset_prod (s : Multiset α) (hs : 0 ∉ s) :
   · obtain rfl : s = 0 := by
       apply Multiset.eq_zero_of_forall_notMem
       intro _
-      convert hs
+      convert! hs
     simp
   induction s using Multiset.induction with
   | empty => simp

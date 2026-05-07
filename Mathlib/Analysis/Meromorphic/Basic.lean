@@ -90,7 +90,7 @@ lemma smul {f : 𝕜 → 𝕜} {g : 𝕜 → E} (hf : MeromorphicAt f x) (hg : M
   rcases hf with ⟨m, hf⟩
   rcases hg with ⟨n, hg⟩
   refine ⟨m + n, ?_⟩
-  convert hf.smul hg using 2 with z
+  convert! hf.smul hg using 2 with z
   simp
   module
 
@@ -100,7 +100,7 @@ lemma mul {f g : 𝕜 → 𝕜'} (hf : MeromorphicAt f x) (hg : MeromorphicAt g 
   rcases hf with ⟨m, hf⟩
   rcases hg with ⟨n, hg⟩
   refine ⟨m + n, ?_⟩
-  convert hf.mul hg using 2 with z
+  convert! hf.mul hg using 2 with z
   simp
   module
 
@@ -122,7 +122,7 @@ theorem prod (hf : ∀ σ ∈ s, MeromorphicAt (F σ) x) :
 @[fun_prop]
 theorem fun_prod (h : ∀ σ ∈ s, MeromorphicAt (F σ) x) :
     MeromorphicAt (fun z ↦ ∏ n ∈ s, F n z) x := by
-  convert prod h (s := s)
+  convert! prod h (s := s)
   simp
 
 /-- Finprods of meromorphic functions are meromorphic. -/
@@ -151,7 +151,7 @@ theorem sum (h : ∀ σ ∈ s, MeromorphicAt (G σ) x) :
 @[fun_prop]
 theorem fun_sum (h : ∀ σ ∈ s, MeromorphicAt (G σ) x) :
     MeromorphicAt (fun z ↦ ∑ n ∈ s, G n z) x := by
-  convert sum h (s := s)
+  convert! sum h (s := s)
   simp
 
 /-- Finsums of meromorphic functions are meromorphic. -/
@@ -164,7 +164,7 @@ theorem finsum (hF : ∀ i, MeromorphicAt (F i) x) :
 
 @[to_fun (attr := fun_prop)]
 lemma neg {f : 𝕜 → E} (hf : MeromorphicAt f x) : MeromorphicAt (-f) x := by
-  convert (MeromorphicAt.const (-1 : 𝕜) x).smul hf using 1
+  convert! (MeromorphicAt.const (-1 : 𝕜) x).smul hf using 1
   ext1 z
   simp only [Pi.neg_apply, Pi.smul_apply', neg_smul, one_smul]
 
@@ -176,7 +176,7 @@ lemma neg_iff {f : 𝕜 → E} :
 @[to_fun (attr := fun_prop)]
 lemma sub {f g : 𝕜 → E} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     MeromorphicAt (f - g) x := by
-  convert hf.add hg.neg using 1
+  convert! hf.add hg.neg using 1
   ext1 z
   simp_rw [Pi.sub_apply, Pi.add_apply, Pi.neg_apply, sub_eq_add_neg]
 

@@ -81,7 +81,7 @@ lemma tendstoInDistribution_of_identDistrib [OpensMeasurableSpace E] (i : ι)
   forall_aemeasurable j := (hX j).aemeasurable_snd
   aemeasurable_limit := hZ.aemeasurable_snd
   tendsto := by
-    convert tendsto_const_nhds with j
+    convert! tendsto_const_nhds with j
     exact (hX j).map_eq.symm.trans hZ.map_eq
 
 protected lemma TendstoInDistribution.congr [OpensMeasurableSpace E] {T : Ω' → E}
@@ -90,7 +90,7 @@ protected lemma TendstoInDistribution.congr [OpensMeasurableSpace E] {T : Ω' �
   forall_aemeasurable i := (h.forall_aemeasurable i).congr (hXY i)
   aemeasurable_limit := h.aemeasurable_limit.congr hZT
   tendsto := by
-    convert h.tendsto using 2 with n
+    convert! h.tendsto using 2 with n
     · simpa using Measure.map_congr (hXY n).symm
     · rw! [Measure.map_congr hZT]
       rfl
@@ -122,7 +122,7 @@ theorem TendstoInDistribution.continuous_comp {F : Type*} [OpensMeasurableSpace 
   forall_aemeasurable := fun n ↦ hg.measurable.comp_aemeasurable (h.forall_aemeasurable n)
   aemeasurable_limit := hg.measurable.comp_aemeasurable h.aemeasurable_limit
   tendsto := by
-    convert ProbabilityMeasure.tendsto_map_of_tendsto_of_continuous _ _ h.tendsto hg
+    convert! ProbabilityMeasure.tendsto_map_of_tendsto_of_continuous _ _ h.tendsto hg
     · simp only [ProbabilityMeasure.map, ProbabilityMeasure.coe_mk, Subtype.mk.injEq]
       rw [AEMeasurable.map_map_of_aemeasurable hg.aemeasurable (h.forall_aemeasurable _)]
     · simp only [ProbabilityMeasure.map, ProbabilityMeasure.coe_mk]
@@ -167,7 +167,7 @@ lemma tendstoInDistribution_of_tendstoInMeasure_sub {X : ι → Ω'' → E}
   simp_rw [Metric.tendsto_nhds, Real.dist_eq]
   suffices ∀ ε > 0, ∀ᶠ n in l, |∫ ω, F ω ∂(μ''.map (Y n)) - ∫ ω, F ω ∂(μ'.map Z)| < L * ε by
     intro ε hε
-    convert this (ε / L) (by positivity)
+    convert! this (ε / L) (by positivity)
     field_simp
   intro ε hε
   -- We cut the difference into three pieces, two of which are small by the convergence assumptions
@@ -215,7 +215,7 @@ lemma tendstoInDistribution_of_tendstoInMeasure_sub {X : ι → Ω'' → E}
         · exact fun x hx ↦ hF_lip.norm_sub_le_of_le hx.le
       · refine setIntegral_mono h_int_sub.integrableOn integrableOn_const fun a ↦ ?_
         rw [← dist_eq_norm]
-        convert hF_bounded _ _
+        convert! hF_bounded _ _
     -- The goal is now a simple computation
     _ = L * (ε / 2) * μ''.real {x | ‖Y n x - X n x‖ < ε / 2}
         + M * μ''.real {ω | ε / 2 ≤ ‖Y n ω - X n ω‖} := by
@@ -291,7 +291,7 @@ theorem TendstoInDistribution.prodMk_of_tendstoInMeasure_const
     simp_rw [ProbabilityMeasure.coe_mk, h_eq' (X _) (hX _), h_eq Z hZ]
     simpa using hXZ Fc
   · suffices TendstoInMeasure μ'' (fun n ω ↦ ((0 : E), Y n ω - c)) l 0 by
-      convert this with n ω
+      convert! this with n ω
       simp
     simpa [tendstoInMeasure_iff_norm] using hY
 

@@ -517,7 +517,7 @@ lemma integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure
                   f.continuous f_nn h_opens
   rw [@integral_eq_lintegral_of_nonneg_ae Ω _ μ f (Eventually.of_forall f_nn)
         f.continuous.measurable.aestronglyMeasurable]
-  convert ENNReal.toReal_mono ?_ same
+  convert! ENNReal.toReal_mono ?_ same
   · simp only [fun i ↦ @integral_eq_lintegral_of_nonneg_ae Ω _ (μs i) f (Eventually.of_forall f_nn)
                         f.continuous.measurable.aestronglyMeasurable]
     let g := BoundedContinuousFunction.comp _ Real.lipschitzWith_toNNReal f
@@ -534,7 +534,7 @@ lemma integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure
     · intro x hx
       obtain ⟨i, hi⟩ := hx.exists
       apply le_trans hi
-      convert obs i with x
+      convert! obs i with x
       have aux := ENNReal.ofReal_eq_coe_nnreal (f_nn x)
       simp only [ContinuousMap.toFun_eq_coe, BoundedContinuousFunction.coe_toContinuousMap] at aux
       rw [aux]
@@ -567,7 +567,7 @@ theorem tendsto_of_forall_isOpen_le_liminf_nat {μ : ProbabilityMeasure Ω}
     · exact ⟨0, by simp⟩
   have obs := ENNReal.coe_mono h_opens
   simp only [ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure, aux] at obs
-  convert obs
+  convert! obs
   simp only [Function.comp_apply, ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure]
 
 /-- One implication of the portmanteau theorem: if for all open sets `G` we have the liminf
@@ -628,7 +628,7 @@ lemma tendsto_of_forall_isClosed_limsup_le_nat {μs : ℕ → ProbabilityMeasure
       ⟨1, by simp⟩ ⟨0, by simp⟩
   have obs := ENNReal.coe_mono h
   simp only [ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure, aux] at obs
-  convert obs
+  convert! obs
   simp
 
 /-- One implication of the portmanteau theorem: if for all closed sets `F` we have the limsup
@@ -790,7 +790,7 @@ lemma ProbabilityMeasure.exists_lt_measure_biUnion_of_isOpen
   rw [← G_eq] at this
   rcases ((tendsto_order.1 this).1 r hr).exists with ⟨n, hn⟩
   refine ⟨(Finset.range (n + 1)).image f, by grind, ?_, ?_⟩
-  · convert hn
+  · convert! hn
     simp [accumulate_def]
   · simpa [G_eq] using fun i _ ↦ subset_iUnion f i
 

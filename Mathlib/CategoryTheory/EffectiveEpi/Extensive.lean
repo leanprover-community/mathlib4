@@ -39,14 +39,14 @@ instance [F.ReflectsEffectiveEpis] : F.ReflectsFiniteEffectiveEpiFamilies where
   reflects {α _ B} X π h := by
     simp only [← effectiveEpi_desc_iff_effectiveEpiFamily]
     apply F.effectiveEpi_of_map
-    convert (inferInstance :
+    convert! (inferInstance :
       EffectiveEpi (inv (sigmaComparison F X) ≫ (Sigma.desc (fun a ↦ F.map (π a)))))
     simp
 
 instance [F.PreservesEffectiveEpis] : F.PreservesFiniteEffectiveEpiFamilies where
   preserves {α _ B} X π h := by
     simp only [← effectiveEpi_desc_iff_effectiveEpiFamily]
-    convert (inferInstance :
+    convert! (inferInstance :
       EffectiveEpi ((sigmaComparison F X) ≫ (F.map (Sigma.desc π))))
     simp
 

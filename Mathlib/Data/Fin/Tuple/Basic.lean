@@ -196,7 +196,7 @@ theorem consCases_cons {motive : (∀ i : Fin n.succ, α i) → Sort v}
 def consInduction {α : Sort*} {motive : ∀ {n : ℕ}, (Fin n → α) → Sort v} (elim0 : motive Fin.elim0)
     (cons : ∀ {n} (x₀) (x : Fin n → α), motive x → motive (Fin.cons x₀ x)) :
     ∀ {n : ℕ} (x : Fin n → α), motive x
-  | 0, x => by convert elim0
+  | 0, x => by convert! elim0
   | _ + 1, x => consCases (fun _ _ ↦ cons _ _ <| consInduction elim0 cons _) x
 
 theorem cons_injective_of_injective {α} {x₀ : α} {x : Fin n → α} (hx₀ : x₀ ∉ Set.range x)
@@ -511,12 +511,12 @@ def snoc (p : ∀ i : Fin n, α i.castSucc) (x : α (last n)) (i : Fin (n + 1)) 
 theorem init_snoc : init (snoc p x) = p := by
   ext i
   simp only [init, snoc, val_castSucc, is_lt, dite_true]
-  convert cast_eq rfl (p i)
+  convert! cast_eq rfl (p i)
 
 @[simp]
 theorem snoc_castSucc : snoc p x i.castSucc = p i := by
   simp only [snoc, val_castSucc, is_lt, dite_true]
-  convert cast_eq rfl (p i)
+  convert! cast_eq rfl (p i)
 
 @[simp]
 theorem snoc_apply_zero [NeZero n] : snoc p x 0 = p 0 := snoc_castSucc x p 0
@@ -729,7 +729,7 @@ def snocInduction {α : Sort*}
     (elim0 : motive Fin.elim0)
     (snoc : ∀ {n} (x : Fin n → α) (x₀), motive x → motive (Fin.snoc x x₀)) :
     ∀ {n : ℕ} (x : Fin n → α), motive x
-  | 0, x => by convert elim0
+  | 0, x => by convert! elim0
   | _ + 1, x => snocCases (fun _ _ ↦ snoc _ _ <| snocInduction elim0 snoc _) x
 
 theorem snoc_injective_of_injective {α} {x₀ : α} {x : Fin n → α}
@@ -802,7 +802,7 @@ theorem forall_fin_add_pi {γ : Fin (m + n) → Sort*} {P : (∀ i, γ i) → Pr
       (∀ (vₘ : ∀ i, γ (castAdd n i)) (vₙ : ∀ j, γ (natAdd m j)), P (addCases vₘ vₙ)) where
   mp hv vm vn := hv (addCases vm vn)
   mpr h v := by
-    convert h (fun i => v (castAdd n i)) (fun j => v (natAdd m j))
+    convert! h (fun i => v (castAdd n i)) (fun j => v (natAdd m j))
     exact (addCases_castAdd_natAdd v).symm
 
 lemma exists_iff_castSucc {P : Fin (n + 1) → Prop} :
@@ -926,7 +926,7 @@ theorem insertNth_zero (x : α 0) (p : ∀ j : Fin n, α (succAbove 0 j)) :
       cons x fun j ↦ _root_.cast (congr_arg α (congr_fun succAbove_zero j)) (p j) := by
   refine insertNth_eq_iff.2 ⟨by simp, ?_⟩
   ext j
-  convert (cons_succ x p j).symm
+  convert! (cons_succ x p j).symm
 
 @[simp]
 theorem insertNth_zero' (x : β) (p : Fin n → β) : @insertNth _ (fun _ ↦ β) 0 x p = cons x p := by

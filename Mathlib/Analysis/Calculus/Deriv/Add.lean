@@ -189,7 +189,7 @@ theorem HasDerivAtFilter.fun_sum (h : ∀ i ∈ u, HasDerivAtFilter (A i) (A' i)
 
 theorem HasDerivAtFilter.sum (h : ∀ i ∈ u, HasDerivAtFilter (A i) (A' i) L) :
     HasDerivAtFilter (∑ i ∈ u, A i) (∑ i ∈ u, A' i) L := by
-  convert HasDerivAtFilter.fun_sum h
+  convert! HasDerivAtFilter.fun_sum h
   simp
 
 theorem HasStrictDerivAt.fun_sum (h : ∀ i ∈ u, HasStrictDerivAt (A i) (A' i) x) :
@@ -321,7 +321,7 @@ theorem differentiableOn_neg : DifferentiableOn 𝕜 (Neg.neg : 𝕜 → 𝕜) s
 lemma differentiableAt_comp_neg {a : 𝕜} :
     DifferentiableAt 𝕜 (fun x ↦ f (-x)) a ↔ DifferentiableAt 𝕜 f (-a) := by
   refine ⟨fun H ↦ ?_, fun H ↦ H.comp a differentiable_neg.differentiableAt⟩
-  convert ((neg_neg a).symm ▸ H).comp (-a) differentiable_neg.differentiableAt
+  convert! ((neg_neg a).symm ▸ H).comp (-a) differentiable_neg.differentiableAt
   ext
   simp only [Function.comp_apply, neg_neg]
 
@@ -442,7 +442,7 @@ lemma differentiableAt_comp_sub_const {a b : 𝕜} :
 lemma differentiableAt_comp_const_sub {a b : 𝕜} :
     DifferentiableAt 𝕜 (fun x ↦ f (b - x)) a ↔ DifferentiableAt 𝕜 f (b - a) := by
   refine ⟨fun H ↦ ?_, fun H ↦ H.comp a (differentiable_id.const_sub _).differentiableAt⟩
-  convert ((sub_sub_cancel _ a).symm ▸ H).comp (b - a)
+  convert! ((sub_sub_cancel _ a).symm ▸ H).comp (b - a)
     (differentiable_id.const_sub _).differentiableAt
   ext
   simp

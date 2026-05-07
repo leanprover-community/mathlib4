@@ -380,7 +380,7 @@ instance neg : Neg (M ⊗[R] N) where
 protected theorem neg_add_cancel (x : M ⊗[R] N) : -x + x = 0 :=
   x.induction_on
     (by rw [add_zero]; apply (Neg.aux R).map_zero)
-    (fun x y => by convert (add_tmul (R := R) (-x) x y).symm; rw [neg_add_cancel, zero_tmul])
+    (fun x y => by convert! (add_tmul (R := R) (-x) x y).symm; rw [neg_add_cancel, zero_tmul])
     fun x y hx hy => by
     suffices -x + x + (-y + y) = 0 by
       rw [← this]

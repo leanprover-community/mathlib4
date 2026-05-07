@@ -441,7 +441,7 @@ theorem nonpos_of_mul_nonpos_right [PosMulStrictMono R]
 @[simp]
 theorem mul_nonneg_iff_of_pos_left [PosMulStrictMono R]
     (h : 0 < c) : 0 ≤ c * b ↔ 0 ≤ b := by
-  convert mul_le_mul_iff_right₀ h
+  convert! mul_le_mul_iff_right₀ h
   simp
 
 @[simp]
@@ -784,7 +784,7 @@ lemma two_mul_le_add_of_sq_eq_mul [ExistsAddOfLE R] [MulPosStrictMono R] [PosMul
     (ha : 0 ≤ a) (hb : 0 ≤ b) (ht : r ^ 2 = a * b) : 2 * r ≤ a + b := by
   apply nonneg_le_nonneg_of_sq_le_sq (Left.add_nonneg ha hb)
   conv_rhs => rw [← pow_two]
-  convert four_mul_le_sq_add a b using 1
+  convert! four_mul_le_sq_add a b using 1
   rw [mul_mul_mul_comm, two_mul, two_add_two_eq_four, ← pow_two, ht, mul_assoc]
 
 end LinearOrderedCommSemiring

@@ -304,7 +304,7 @@ theorem isOpen_setOf_affineIndependent {ι : Type*} [Finite ι] :
     let ι' := { x // x ≠ i₀ }
     cases nonempty_fintype ι
     haveI : Fintype ι' := Subtype.fintype _
-    convert_to
+    convert_to!
       IsOpen ((fun (p : ι → E) (i : ι') ↦ p i -ᵥ p i₀) ⁻¹' {p : ι' → E | LinearIndependent 𝕜 p})
     exact isOpen_setOf_linearIndependent.preimage (by fun_prop)
 
@@ -679,7 +679,7 @@ theorem summable_norm_mul_geometric_of_norm_lt_one' {F : Type*} [NormedRing F]
       simpa [Nat.cast_pow] using
       (isBigO_norm_left.mpr (isBigO_norm_right.mpr hu)).mul (isBigO_refl (fun n ↦ (‖r‖ ^ n)) atTop)
   _ =O[atTop] fun n ↦ ‖r' ^ n‖ := by
-      convert isBigO_norm_right.mpr (isBigO_norm_left.mpr
+      convert! isBigO_norm_right.mpr (isBigO_norm_left.mpr
         (isLittleO_pow_const_mul_const_pow_const_pow_of_norm_lt k hrr').isBigO)
       simp only [norm_pow, norm_mul]
 

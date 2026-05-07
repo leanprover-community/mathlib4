@@ -517,7 +517,7 @@ noncomputable def cotangentEquiv : S ⊗[P.Ring] P.ker ≃ₗ[S] P.Cotangent := 
       · rw [smul_tmul]; rfl
       · simp_all [Algebra.smul_def]
     · intro a ha b hb ha' hb'
-      convert congr($ha' + $hb')
+      convert! congr($ha' + $hb')
       rw [← tmul_add]
       rfl
   · intro x

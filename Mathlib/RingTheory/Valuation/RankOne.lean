@@ -158,7 +158,7 @@ theorem exists_val_lt {γ : ℝ≥0} (hγ : γ ≠ 0) : ∃ x ≠ 0, RankOne.hom
     by_contra h0
     rw [dif_pos (by rw [dif_pos ((zero_iff v).mpr h0)]), eq_comm] at hk
     simp at hk
-  · convert h
+  · convert! h
     simp only [restrict_RankOne_hom_eq, coe_comp, Function.comp_apply, ← hk]
     congr 1
     exact (embedding_restrict₀ k).symm

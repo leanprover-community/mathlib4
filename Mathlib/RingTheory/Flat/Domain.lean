@@ -44,7 +44,7 @@ lemma TensorProduct.map_injective_of_flat_flat_of_isDomain
   have H₆ := Module.Flat.rTensor_preserves_injective_linearMap (M := P ⊗[R] Q)
     (Algebra.linearMap R K) (FaithfulSMul.algebraMap_injective R K)
   have H₇ := (TensorProduct.lid R (P ⊗[R] Q)).symm.injective
-  convert H₅.comp <| H₃.comp <| H₁.comp <| H₂.comp <| H₄.comp <| H₆.comp <| H₇
+  convert! H₅.comp <| H₃.comp <| H₁.comp <| H₂.comp <| H₄.comp <| H₆.comp <| H₇
   dsimp only [← LinearMap.coe_comp, ← LinearEquiv.coe_toLinearMap,
     ← @LinearMap.coe_restrictScalars R K]
   congr! 1
@@ -62,7 +62,7 @@ See `LinearIndependent.tmul_of_flat_left`. -/
 lemma LinearIndependent.tmul_of_isDomain (hv : LinearIndependent R v) (hw : LinearIndependent R w) :
     LinearIndependent R fun i : ι × κ ↦ v i.1 ⊗ₜ[R] w i.2 := by
   rw [LinearIndependent]
-  convert (TensorProduct.map_injective_of_flat_flat_of_isDomain _ _ hv hw).comp
+  convert! (TensorProduct.map_injective_of_flat_flat_of_isDomain _ _ hv hw).comp
     (finsuppTensorFinsupp' _ _ _).symm.injective
   rw [← LinearEquiv.coe_toLinearMap, ← LinearMap.coe_comp]
   congr!

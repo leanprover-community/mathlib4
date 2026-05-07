@@ -239,7 +239,7 @@ lemma exists_forall_mem_corootSpace_smul_add_eq_zero
   subst a b N
   erw [LinearMap.trace_eq_sum_trace_restrict_of_eq_biSup _ h₁ h₂ (genWeightSpaceChain M α χ p q) h₃]
   simp_rw [LieSubmodule.toEnd_restrict_eq_toEnd]
-  convert_to _ =
+  convert_to! _ =
     ∑ k ∈ Finset.Ioo p q, (LinearMap.trace R { x // x ∈ (genWeightSpace M (k • α + χ)) })
       ((toEnd R { x // x ∈ H } { x // x ∈ genWeightSpace M (k • α + χ) }) x)
   simp_rw [trace_toEnd_genWeightSpace, Pi.add_apply, Pi.smul_apply, smul_add,

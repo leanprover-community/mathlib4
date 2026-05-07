@@ -297,7 +297,7 @@ theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringCha
     exact mt FFp.dvd_of_dvd_pow hFF
   -- there is a primitive additive character `ℤ/8ℤ → FF`, sending `a + 8ℤ ↦ τ^a`
   -- with a primitive eighth root of unity `τ`
-  let ψ₈ := primitiveZModChar 8 F (by convert hp2 3 using 1; norm_cast)
+  let ψ₈ := primitiveZModChar 8 F (by convert! hp2 3 using 1; norm_cast)
   -- We cast from `AddChar (ZMod (8 : ℕ+)) FF` to `AddChar (ZMod 8) FF`
   -- This is needed to make `simp_rw [← h₁]` below work.
   let ψ₈char : AddChar (ZMod 8) FF := ψ₈.char
@@ -335,7 +335,7 @@ theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringCha
   have h := Char.card_pow_char_pow (R := ZMod 8) hq ψ₈char (ringChar FF) n hu hFF hg
   rw [ZMod.card, ← hchar, hχ, one_mul, ← hc, ← Nat.cast_pow (ringChar F), ← hc] at h
   -- finally, we change `2` to `8` on the left-hand side
-  convert_to (8 : F) ^ (Fintype.card F / 2) = _
+  convert_to! (8 : F) ^ (Fintype.card F / 2) = _
   · rw [(by norm_num : (8 : F) = 2 ^ 2 * 2), mul_pow,
       (FiniteField.isSquare_iff hF <| hp2 2).mp ⟨2, pow_two 2⟩, one_mul]
   apply (algebraMap F FF).injective

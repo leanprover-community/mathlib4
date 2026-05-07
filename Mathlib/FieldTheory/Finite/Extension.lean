@@ -54,7 +54,7 @@ theorem finrank_zmod_extension [Algebra (ZMod p) k] :
     Module.finrank (ZMod p) (Extension k p n) = Module.finrank (ZMod p) k * n := by
   letI := ZMod.algebra k p
   unfold Extension
-  convert GaloisField.finrank p (n := Module.finrank (ZMod p) k * n) <|
+  convert! GaloisField.finrank p (n := Module.finrank (ZMod p) k * n) <|
     mul_ne_zero Module.finrank_pos.ne' <| NeZero.ne n
   subsingleton
 
@@ -83,7 +83,7 @@ theorem finrank_extension : Module.finrank k (Extension k p n) = n := by
 
 instance : IsSplittingField k (Extension k p n) (X ^ Nat.card k ^ n - X) := by
   have := Fintype.ofFinite (Extension k p n)
-  convert FiniteField.isSplittingField_sub (Extension k p n) k
+  convert! FiniteField.isSplittingField_sub (Extension k p n) k
   · rw [Fintype.card_eq_nat_card, natCard_extension]
 
 example : IsGalois k (Extension k p n) :=

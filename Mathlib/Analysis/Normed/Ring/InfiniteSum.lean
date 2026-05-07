@@ -58,7 +58,7 @@ theorem summable_mul_of_summable_norm' {f : ι → R} {g : ι' → R}
   rw [← prod_atTop_atTop_eq]
   have := Tendsto.prodMap h'f.hasSum h'g.hasSum
   rw [← nhds_prod_eq] at this
-  convert ((continuous_mul (M := R)).continuousAt
+  convert! ((continuous_mul (M := R)).continuousAt
       (x := (∑' (i : ι), f i, ∑' (j : ι'), g j))).tendsto.comp this with p
   simp [sum_product, ← mul_sum, ← sum_mul]
 
@@ -150,7 +150,7 @@ theorem tsum_mul_tsum_eq_tsum_sum_range_of_summable_norm [CompleteSpace R] {f g 
 theorem hasSum_sum_range_mul_of_summable_norm [CompleteSpace R] {f g : ℕ → R}
     (hf : Summable fun x => ‖f x‖) (hg : Summable fun x => ‖g x‖) :
     HasSum (fun n ↦ ∑ k ∈ range (n + 1), f k * g (n - k)) ((∑' n, f n) * ∑' n, g n) := by
-  convert (summable_norm_sum_mul_range_of_summable_norm hf hg).of_norm.hasSum
+  convert! (summable_norm_sum_mul_range_of_summable_norm hf hg).of_norm.hasSum
   exact tsum_mul_tsum_eq_tsum_sum_range_of_summable_norm hf hg
 
 theorem tsum_mul_tsum_eq_tsum_sum_range_of_summable_norm' {f g : ℕ → R}
@@ -164,7 +164,7 @@ theorem hasSum_sum_range_mul_of_summable_norm' {f g : ℕ → R}
     (hf : Summable fun x => ‖f x‖) (h'f : Summable f)
     (hg : Summable fun x => ‖g x‖) (h'g : Summable g) :
     HasSum (fun n ↦ ∑ k ∈ range (n + 1), f k * g (n - k)) ((∑' n, f n) * ∑' n, g n) := by
-  convert (summable_sum_mul_range_of_summable_norm' hf h'f hg h'g).hasSum
+  convert! (summable_sum_mul_range_of_summable_norm' hf h'f hg h'g).hasSum
   exact tsum_mul_tsum_eq_tsum_sum_range_of_summable_norm' hf h'f hg h'g
 
 end Nat

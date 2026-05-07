@@ -464,7 +464,7 @@ theorem exists_orderOf_eq_exponent (hG : ExponentExists G) : ∃ g : G, orderOf 
       rw [hpk', Nat.factorization_div hpk]
       simp [k, hp]
     rw [this]
-    -- Porting note: convert made to_additive complain
+    -- Porting note: convert! made to_additive complain
     exact Nat.pow_succ_factorization_not_dvd (hG.orderOf_pos <| t ^ p ^ k).ne' hp
   rw [(Commute.all _ g).orderOf_mul_eq_mul_orderOf_of_coprime hcoprime, hpk',
     hg, ha, hk, pow_add, pow_add, pow_one, ← mul_assoc, ← mul_assoc,

@@ -108,7 +108,7 @@ theorem IsLindelof.image_of_continuousOn {f : X → Y} (hs : IsLindelof s) (hf :
   haveI := hx.neBot
   use f x, mem_image_of_mem f hxs
   have : Tendsto f (𝓝 x ⊓ (comap f l ⊓ 𝓟 s)) (𝓝 (f x) ⊓ l) := by
-    convert (hf x hxs).inf (@tendsto_comap _ _ f l) using 1
+    convert! (hf x hxs).inf (@tendsto_comap _ _ f l) using 1
     rw [nhdsWithin]
     ac_rfl
   exact this.neBot

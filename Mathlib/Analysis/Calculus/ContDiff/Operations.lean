@@ -79,7 +79,7 @@ theorem hasFTaylorSeriesUpToOn_pi' {n : ℕ∞ω} :
       ∀ i, HasFTaylorSeriesUpToOn n (fun x => Φ x i)
         (fun x m => (@ContinuousLinearMap.proj 𝕜 _ ι F' _ _ _ i).compContinuousMultilinearMap
           (P' x m)) s := by
-  convert hasFTaylorSeriesUpToOn_pi (𝕜 := 𝕜) (φ := fun i x ↦ Φ x i); ext; rfl
+  convert! hasFTaylorSeriesUpToOn_pi (𝕜 := 𝕜) (φ := fun i x ↦ Φ x i); ext; rfl
 
 theorem contDiffWithinAt_pi :
     ContDiffWithinAt 𝕜 n Φ s x ↔ ∀ i, ContDiffWithinAt 𝕜 n (fun x => Φ x i) s x := by
@@ -404,7 +404,7 @@ theorem iteratedFDerivWithin_fun_sum_apply {ι : Type*} {f : ι → E → F} {u 
     {x : E} (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (h : ∀ j ∈ u, ContDiffWithinAt 𝕜 i (f j) s x) :
     iteratedFDerivWithin 𝕜 i (fun z ↦ ∑ j ∈ u, f j z) s x =
       ∑ j ∈ u, iteratedFDerivWithin 𝕜 i (f j) s x := by
-  convert iteratedFDerivWithin_sum_apply hs hx h
+  convert! iteratedFDerivWithin_sum_apply hs hx h
   rw [Finset.sum_apply]
 
 theorem iteratedFDeriv_sum_apply {ι : Type*} {f : ι → E → F} {u : Finset ι} {n : ℕ} {x : E}
@@ -417,7 +417,7 @@ theorem iteratedFDeriv_sum_apply {ι : Type*} {f : ι → E → F} {u : Finset �
 theorem iteratedFDeriv_fun_sum_apply {ι : Type*} {f : ι → E → F} {u : Finset ι} {n : ℕ} {x : E}
     (h : ∀ j ∈ u, ContDiffAt 𝕜 n (f j) x) :
     iteratedFDeriv 𝕜 n (fun z ↦ ∑ j ∈ u, f j z) x = ∑ j ∈ u, iteratedFDeriv 𝕜 n (f j) x := by
-  convert iteratedFDeriv_sum_apply h
+  convert! iteratedFDeriv_sum_apply h
   rw [Finset.sum_apply]
 
 theorem iteratedFDeriv_sum {ι : Type*} {f : ι → E → F} {u : Finset ι} {i : ℕ}
@@ -866,7 +866,7 @@ theorem contDiffAt_map_inverse [CompleteSpace E] (e : E ≃L[𝕜] F) :
   have h₁ : ContDiff 𝕜 n O₁ := contDiff_id.clm_comp contDiff_const
   have h₂ : ContDiff 𝕜 n O₂ := contDiff_const.clm_comp contDiff_id
   refine h₁.contDiffAt.comp _ (ContDiffAt.comp _ ?_ h₂.contDiffAt)
-  convert contDiffAt_ringInverse 𝕜 (1 : (E →L[𝕜] E)ˣ)
+  convert! contDiffAt_ringInverse 𝕜 (1 : (E →L[𝕜] E)ˣ)
   simp [O₂, one_def]
 
 /-- At an invertible map `e : M →L[R] M₂` between Banach spaces, the operation of
@@ -928,7 +928,7 @@ theorem OpenPartialHomeomorph.contDiffAt_symm [CompleteSpace E] (f : OpenPartial
         have h_deriv : HasFDerivAt f (e : E →L[𝕜] F) (f.symm x) := by
           rw [he]
           exact hff' (f.symm x) hxu
-        convert f.hasFDerivAt_symm hx.1 h_deriv
+        convert! f.hasFDerivAt_symm hx.1 h_deriv
         simp [← he]
       · -- Then we check that the formula, being a composition of `ContDiff` pieces, is
         -- itself `ContDiff`

@@ -135,7 +135,7 @@ variable {α} [Primcodable α]
 
 protected lemma ComputablePred.decide {p : α → Prop} [DecidablePred p] (hp : ComputablePred p) :
     Computable (fun a => decide (p a)) := by
-  convert hp.choose_spec
+  convert! hp.choose_spec
 
 lemma Computable.computablePred {p : α → Prop} [DecidablePred p]
     (hp : Computable (fun a => decide (p a))) : ComputablePred p :=

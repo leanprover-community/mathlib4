@@ -551,8 +551,8 @@ lemma affineCombination_mem_setInterior_face_iff_mem (I : Set k) {n : ℕ} (s : 
         (fun i hi ↦ hi0 _ (by simpa using hi)) (fun _ ↦ rfl), hw]
     have hw'01 (i) : w' i ∈ I := hii (fs.orderEmbOfFin h i) (by simp)
     rw [← (s.face h).affineCombination_mem_setInterior_iff hw'] at hw'01
-    convert hw'01
-    convert Finset.univ.affineCombination_map (fs.orderEmbOfFin h).toEmbedding w s.points using 1
+    convert! hw'01
+    convert! Finset.univ.affineCombination_map (fs.orderEmbOfFin h).toEmbedding w s.points using 1
     simp only [map_orderEmbOfFin_univ, Finset.affineCombination_indicator_subset _ _ fs.subset_univ]
     congr
     grind [Set.indicator_eq_self, support_subset_iff]

@@ -206,24 +206,24 @@ theorem openSegment_eq_image (x y : E) :
 
 theorem segment_eq_image' (x y : E) :
     [x -[𝕜] y] = (fun θ : 𝕜 => x + θ • (y - x)) '' Icc (0 : 𝕜) 1 := by
-  convert segment_eq_image 𝕜 x y using 2
+  convert! segment_eq_image 𝕜 x y using 2
   simp only [smul_sub, sub_smul, one_smul]
   abel
 
 theorem openSegment_eq_image' (x y : E) :
     openSegment 𝕜 x y = (fun θ : 𝕜 => x + θ • (y - x)) '' Ioo (0 : 𝕜) 1 := by
-  convert openSegment_eq_image 𝕜 x y using 2
+  convert! openSegment_eq_image 𝕜 x y using 2
   simp only [smul_sub, sub_smul, one_smul]
   abel
 
 theorem segment_eq_image_lineMap (x y : E) : [x -[𝕜] y] =
     AffineMap.lineMap x y '' Icc (0 : 𝕜) 1 := by
-  convert segment_eq_image 𝕜 x y using 2
+  convert! segment_eq_image 𝕜 x y using 2
   exact AffineMap.lineMap_apply_module _ _ _
 
 theorem openSegment_eq_image_lineMap (x y : E) :
     openSegment 𝕜 x y = AffineMap.lineMap x y '' Ioo (0 : 𝕜) 1 := by
-  convert openSegment_eq_image 𝕜 x y using 2
+  convert! openSegment_eq_image 𝕜 x y using 2
   exact AffineMap.lineMap_apply_module _ _ _
 
 theorem lineMap_mem_openSegment (a b : E) {t : 𝕜} (ht : t ∈ Ioo 0 1) :
@@ -293,7 +293,7 @@ lemma segment_inter_subset_endpoint_of_linearIndependent_sub
   have Hy : y = (y - c) + c := by abel
   rw [Hx, Hy, smul_add, smul_add] at H
   have : c + q • (y - c) = c + p • (x - c) := by
-    convert H using 1 <;> simp [sub_smul]
+    convert! H using 1 <;> simp [sub_smul]
   obtain ⟨rfl, rfl⟩ : p = 0 ∧ q = 0 := h.eq_zero_of_pair' ((add_right_inj c).1 this).symm
   simp
 
@@ -320,7 +320,7 @@ lemma segment_inter_eq_endpoint_of_linearIndependent_of_ne
   apply segment_inter_eq_endpoint_of_linearIndependent_sub
   simp only [add_sub_add_left_eq_sub]
   suffices H : LinearIndependent 𝕜 ![(-1 : 𝕜) • x + t • y, (-1 : 𝕜) • x + s • y] by
-    convert H using 1; simp only [neg_smul, one_smul]; abel_nf
+    convert! H using 1; simp only [neg_smul, one_smul]; abel_nf
   nontriviality 𝕜
   rw [LinearIndependent.pair_add_smul_add_smul_iff]
   aesop
@@ -339,7 +339,7 @@ theorem midpoint_mem_segment [Invertible (2 : 𝕜)] (x y : E) : midpoint 𝕜 x
 
 theorem mem_openSegment_sub_add [Invertible (2 : 𝕜)] (x y : E) :
     x ∈ openSegment 𝕜 (x - y) (x + y) := by
-  convert midpoint_mem_openSegment (𝕜 := 𝕜) (x - y) (x + y)
+  convert! midpoint_mem_openSegment (𝕜 := 𝕜) (x - y) (x + y)
   rw [midpoint_sub_add]
 
 theorem mem_segment_sub_add [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x - y -[𝕜] x + y] :=
@@ -347,7 +347,7 @@ theorem mem_segment_sub_add [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x - y -[�
 
 theorem mem_openSegment_add_sub [Invertible (2 : 𝕜)] (x y : E) :
     x ∈ openSegment 𝕜 (x + y) (x - y) := by
-  convert midpoint_mem_openSegment (𝕜 := 𝕜) (x + y) (x - y)
+  convert! midpoint_mem_openSegment (𝕜 := 𝕜) (x + y) (x - y)
   rw [midpoint_add_sub]
 
 theorem mem_segment_add_sub [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x + y -[𝕜] x - y] :=

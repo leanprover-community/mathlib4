@@ -229,7 +229,7 @@ instance [LocallyConnectedSpace X] : OrderBot (DiscreteQuotient X) where
   bot :=
     { toSetoid := connectedComponentSetoid X
       isOpen_setOf_rel := fun x => by
-        convert isOpen_connectedComponent (x := x)
+        convert! isOpen_connectedComponent (x := x)
         ext y
         simpa only [connectedComponentSetoid, ← connectedComponent_eq_iff_mem] using eq_comm }
   bot_le S := fun x y (h : connectedComponent x = connectedComponent y) =>

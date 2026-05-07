@@ -186,7 +186,7 @@ theorem Equiv.iSup_comp {g : ι' → α} (e : ι ≃ ι') : ⨆ x, g (e x) = ⨆
 @[to_dual]
 protected theorem Function.Surjective.iSup_congr {g : ι' → α} (h : ι → ι') (h1 : Surjective h)
     (h2 : ∀ x, g (h x) = f x) : ⨆ x, f x = ⨆ y, g y := by
-  convert h1.iSup_comp g
+  convert! h1.iSup_comp g
   exact (h2 _).symm
 
 @[to_dual]
@@ -661,7 +661,7 @@ theorem iSup_split (f : β → α) (p : β → Prop) :
 
 @[to_dual]
 theorem iSup_split_single (f : β → α) (i₀ : β) : ⨆ i, f i = f i₀ ⊔ ⨆ (i) (_ : i ≠ i₀), f i := by
-  convert iSup_split f (fun i => i = i₀)
+  convert! iSup_split f (fun i => i = i₀)
   simp
 
 @[to_dual]

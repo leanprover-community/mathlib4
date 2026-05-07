@@ -160,7 +160,7 @@ lemma existsUnique_hasMap_of_hasMap_quotient_of_sq_eq_bot
   simp only [map_add, map_mul, map_pow] at e
   obtain ⟨ε, hεI, b, hb⟩ : ∃ ε ∈ I, ∃ b, aeval x (derivative P.f) * b = 1 + ε := by
     refine ⟨_, ?_, (a ^ n * aeval x p₁), sub_eq_iff_eq_add'.mp rfl⟩
-    convert_to (aeval x P.g * a) ^ n - 1 - aeval x P.f * (a ^ n * aeval x p₂) ∈ I
+    convert_to! (aeval x P.g * a) ^ n - 1 - aeval x P.f * (a ^ n * aeval x p₂) ∈ I
     · linear_combination a ^ n * e
     · exact sub_mem (Ideal.mem_of_dvd _ (sub_one_dvd_pow_sub_one _ _) ha) (I.mul_mem_right _ hf)
   have : aeval x P.f ^ 2 = 0 := hI.le (Ideal.pow_mem_pow hf 2)

@@ -113,8 +113,8 @@ private theorem card_nonuniformWitness_sdiff_biUnion_star (hV : V ∈ P.parts) (
     intro B hB
     unfold chunk
     split_ifs with h₁
-    · convert card_parts_equitabilise_subset_le _ (card_aux₁ h₁) hB
-    · convert card_parts_equitabilise_subset_le _ (card_aux₂ hP hU h₁) hB
+    · convert! card_parts_equitabilise_subset_le _ (card_aux₁ h₁) hB
+    · convert! card_parts_equitabilise_subset_le _ (card_aux₂ hP hU h₁) hB
   grw [sum_const, smul_eq_mul, card_filter_atomise_le_two_pow (s := U) hX,
     Finpartition.card_nonuniformWitnesses_le, filter_subset] <;> simp
 
@@ -364,7 +364,7 @@ private theorem abs_density_star_sub_density_le_eps (hPε : ↑100 ≤ ↑4 ^ #P
     (hε₁ : ε ≤ 1) {hU : U ∈ P.parts} {hV : V ∈ P.parts} (hUV' : U ≠ V) (hUV : ¬G.IsUniform ε U V) :
     |(G.edgeDensity ((star hP G ε hU V).biUnion id) ((star hP G ε hV U).biUnion id) : ℝ) -
       G.edgeDensity (G.nonuniformWitness ε U V) (G.nonuniformWitness ε V U)| ≤ ε / 5 := by
-  convert abs_edgeDensity_sub_edgeDensity_le_two_mul G.Adj
+  convert! abs_edgeDensity_sub_edgeDensity_le_two_mul G.Adj
     (biUnion_star_subset_nonuniformWitness hP G ε hU V)
     (biUnion_star_subset_nonuniformWitness hP G ε hV U) (by sz_positivity)
     (one_sub_eps_mul_card_nonuniformWitness_le_card_star hV hUV' hUV hPε hε₁)
@@ -511,6 +511,6 @@ theorem edgeDensity_chunk_uniform [Nonempty α] (hPα : #P.parts * 16 ^ #P.parts
     rw [card_product, cast_mul, card_chunk (m_pos hPα).ne', card_chunk (m_pos hPα).ne', ←
       cast_mul, ← mul_pow]; norm_cast
   simp_rw [key]
-  convert sum_div_card_sq_le_sum_sq_div_card (α := ℝ)
+  convert! sum_div_card_sq_le_sum_sq_div_card (α := ℝ)
 
 end SzemerediRegularity

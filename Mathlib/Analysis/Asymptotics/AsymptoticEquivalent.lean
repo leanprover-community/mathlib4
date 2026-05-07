@@ -76,7 +76,7 @@ nonrec theorem IsEquivalent.isBigO (h : u ~[l] v) : u =O[l] v :=
   (IsBigO.congr_of_sub h.isBigO.symm).mp (isBigO_refl _ _)
 
 theorem IsEquivalent.isBigO_symm (h : u ~[l] v) : v =O[l] u := by
-  convert h.isLittleO.right_isBigO_add
+  convert! h.isLittleO.right_isBigO_add
   simp
 
 theorem IsEquivalent.isTheta (h : u ~[l] v) : u =Θ[l] v :=
@@ -167,7 +167,7 @@ theorem IsLittleO.isEquivalent (huv : (u - v) =o[l] v) : u ~[l] v := huv
 
 theorem IsEquivalent.neg (huv : u ~[l] v) : (fun x ↦ -u x) ~[l] fun x ↦ -v x := by
   rw [IsEquivalent]
-  convert huv.isLittleO.neg_left.neg_right
+  convert! huv.isLittleO.neg_left.neg_right
   simp [neg_add_eq_sub]
 
 end NormedAddCommGroup
@@ -184,10 +184,10 @@ theorem isEquivalent_iff_exists_eq_mul :
   constructor <;> rintro ⟨φ, hφ, h⟩ <;> [refine ⟨φ + 1, ?_, ?_⟩; refine ⟨φ - 1, ?_, ?_⟩]
   · conv in 𝓝 _ => rw [← zero_add (1 : β)]
     exact hφ.add tendsto_const_nhds
-  · convert h.fun_add (EventuallyEq.refl l v) <;> simp [add_mul]
+  · convert! h.fun_add (EventuallyEq.refl l v) <;> simp [add_mul]
   · conv in 𝓝 _ => rw [← sub_self (1 : β)]
     exact hφ.sub tendsto_const_nhds
-  · convert h.fun_sub (EventuallyEq.refl l v); simp [sub_mul]
+  · convert! h.fun_sub (EventuallyEq.refl l v); simp [sub_mul]
 
 theorem IsEquivalent.exists_eq_mul (huv : u ~[l] v) :
     ∃ (φ : α → β) (_ : Tendsto φ l (𝓝 1)), u =ᶠ[l] φ * v :=
@@ -213,7 +213,7 @@ theorem isEquivalent_iff_tendsto_one (hz : ∀ᶠ x in l, v x ≠ 0) :
     simp only [Pi.sub_apply, sub_div] at this
     have key : Tendsto (fun x ↦ v x / v x) l (𝓝 1) :=
       (tendsto_congr' <| hz.mono fun x hnz ↦ @div_self _ _ (v x) hnz).mpr tendsto_const_nhds
-    convert this.add key
+    convert! this.add key
     · simp
     · simp
   · exact isEquivalent_of_tendsto_one
@@ -227,7 +227,7 @@ theorem IsEquivalent.smul {α E 𝕜 : Type*} [NormedField 𝕜] [NormedAddCommG
     (fun x ↦ a x • u x) ~[l] fun x ↦ b x • v x := by
   rcases hab.exists_eq_mul with ⟨φ, hφ, habφ⟩
   have : ((fun x ↦ a x • u x) - (fun x ↦ b x • v x)) =ᶠ[l] fun x ↦ b x • (φ x • u x - v x) := by
-    convert (habφ.comp₂ (· • ·) <| EventuallyEq.refl _ u).fun_sub
+    convert! (habφ.comp₂ (· • ·) <| EventuallyEq.refl _ u).fun_sub
       (EventuallyEq.refl _ fun x ↦ b x • v x) using 1
     ext
     rw [Pi.mul_apply, mul_comm, mul_smul, ← smul_sub]
@@ -286,7 +286,7 @@ protected theorem IsEquivalent.inv (huv : u ~[l] v) : u⁻¹ ~[l] v⁻¹ := by
   rcases huv with ⟨φ, hφ, h⟩
   rw [← inv_one]
   refine ⟨fun x ↦ (φ x)⁻¹, Tendsto.inv₀ hφ (by simp), ?_⟩
-  convert h.fun_inv
+  convert! h.fun_inv
   simp [mul_comm]
 
 protected theorem IsEquivalent.div (htu : t ~[l] u) (hvw : v ~[l] w) :
@@ -321,7 +321,7 @@ theorem IsEquivalent.tendsto_atTop_iff [OrderTopology β] (huv : u ~[l] v) :
 
 theorem IsEquivalent.tendsto_atBot [OrderTopology β] (huv : u ~[l] v) (hu : Tendsto u l atBot) :
     Tendsto v l atBot := by
-  convert tendsto_neg_atTop_atBot.comp (huv.neg.tendsto_atTop <| tendsto_neg_atBot_atTop.comp hu)
+  convert! tendsto_neg_atTop_atBot.comp (huv.neg.tendsto_atTop <| tendsto_neg_atBot_atTop.comp hu)
   ext
   simp
 

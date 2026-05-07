@@ -228,7 +228,7 @@ theorem enum_succ_eq_top {o : Ordinal} :
 theorem has_succ_of_type_succ_lt {α} {r : α → α → Prop} [wo : IsWellOrder α r]
     (h : ∀ a < type r, succ a < type r) (x : α) : ∃ y, r x y := by
   use enum r ⟨succ (typein r x), h _ (typein_lt_type r x)⟩
-  convert enum_lt_enum.mpr _
+  convert! enum_lt_enum.mpr _
   · rw [enum_typein]
   · rw [Subtype.mk_lt_mk, lt_succ_iff]
 
@@ -587,11 +587,11 @@ instance mulRightMono : MulRightMono Ordinal.{u} :=
       · exact Prod.Lex.right _ (f.toRelEmbedding.map_rel_iff.2 h')⟩
 
 theorem le_mul_left (a : Ordinal) {b : Ordinal} (hb : 0 < b) : a ≤ a * b := by
-  convert mul_le_mul_right (one_le_iff_pos.2 hb) a
+  convert! mul_le_mul_right (one_le_iff_pos.2 hb) a
   rw [mul_one a]
 
 theorem le_mul_right (a : Ordinal) {b : Ordinal} (hb : 0 < b) : a ≤ b * a := by
-  convert mul_le_mul_left (one_le_iff_pos.2 hb) a
+  convert! mul_le_mul_left (one_le_iff_pos.2 hb) a
   rw [one_mul a]
 
 private theorem mul_le_of_limit_aux {α β r s} [IsWellOrder α r] [IsWellOrder β s] {c}
@@ -788,7 +788,7 @@ theorem mul_add_div_mul {a c : Ordinal} (hc : c < a) (b d : Ordinal) :
     · grw [← mul_le_iff_le_div H, mul_assoc, mul_div_le b d, ← le_self_add]
 
 theorem mul_div_mul_cancel {a : Ordinal} (ha : a ≠ 0) (b c) : a * b / (a * c) = b / c := by
-  convert mul_add_div_mul (pos_iff_ne_zero.2 ha) b c using 1
+  convert! mul_add_div_mul (pos_iff_ne_zero.2 ha) b c using 1
   rw [add_zero]
 
 @[simp]
@@ -912,7 +912,7 @@ theorem mul_add_mod_mul {w x : Ordinal} (hw : w < x) (y z : Ordinal) :
 theorem mul_mod_mul (x y z : Ordinal) : (x * y) % (x * z) = x * (y % z) := by
   obtain rfl | hx := eq_zero_or_pos x
   · simp
-  · convert mul_add_mod_mul hx y z using 1 <;>
+  · convert! mul_add_mod_mul hx y z using 1 <;>
     rw [add_zero]
 
 theorem mod_mod_of_dvd (a : Ordinal) {b c : Ordinal} (h : c ∣ b) : a % b % c = a % c := by

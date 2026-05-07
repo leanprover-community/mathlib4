@@ -153,7 +153,7 @@ theorem integrable_measure_prodMk_left {s : Set (α × β)} (hs : MeasurableSet 
     (h2s : (μ.prod ν) s ≠ ∞) : Integrable (fun x => ν.real (Prod.mk x ⁻¹' s)) μ := by
   refine ⟨(measurable_measure_prodMk_left hs).ennreal_toReal.aemeasurable.aestronglyMeasurable, ?_⟩
   simp_rw [hasFiniteIntegral_iff_enorm, measureReal_def, enorm_eq_ofReal toReal_nonneg]
-  convert h2s.lt_top using 1
+  convert! h2s.lt_top using 1
   rw [prod_apply hs]
   apply lintegral_congr_ae
   filter_upwards [ae_measure_lt_top hs h2s] with x hx
@@ -287,7 +287,7 @@ theorem integrable_prod_iff' [SFinite μ] ⦃f : α × β → E⦄
     (h1f : AEStronglyMeasurable f (μ.prod ν)) :
     Integrable f (μ.prod ν) ↔
       (∀ᵐ y ∂ν, Integrable (fun x => f (x, y)) μ) ∧ Integrable (fun y => ∫ x, ‖f (x, y)‖ ∂μ) ν := by
-  convert integrable_prod_iff h1f.prod_swap using 1
+  convert! integrable_prod_iff h1f.prod_swap using 1
   rw [funext fun _ => Function.comp_apply.symm, integrable_swap_iff]
 
 theorem Integrable.prod_left_ae [SFinite μ] ⦃f : α × β → E⦄ (hf : Integrable f (μ.prod ν)) :
@@ -506,7 +506,7 @@ theorem integral_prod (f : α × β → E) (hf : Integrable f (μ.prod ν)) :
   · rintro f g - i_f i_g hf hg
     simp_rw [integral_add' i_f i_g, integral_integral_add' i_f i_g, hf, hg]
   · exact isClosed_eq continuous_integral continuous_integral_integral
-  · rintro f g hfg - hf; convert hf using 1
+  · rintro f g hfg - hf; convert! hf using 1
     · exact integral_congr_ae hfg.symm
     · apply integral_congr_ae
       filter_upwards [ae_ae_of_ae_prod hfg] with x hfgx using integral_congr_ae (ae_eq_symm hfgx)

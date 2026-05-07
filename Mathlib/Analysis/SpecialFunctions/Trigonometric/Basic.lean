@@ -969,34 +969,34 @@ theorem tan_int_mul_pi_sub (x : ℝ) (n : ℤ) : tan (n * π - x) = -tan x :=
   tan_neg x ▸ tan_periodic.int_mul_sub_eq n
 
 theorem tendsto_sin_pi_div_two : Tendsto sin (𝓝[<] (π / 2)) (𝓝 1) := by
-  convert continuous_sin.continuousWithinAt.tendsto
+  convert! continuous_sin.continuousWithinAt.tendsto
   simp
 
 theorem tendsto_cos_pi_div_two : Tendsto cos (𝓝[<] (π / 2)) (𝓝[>] 0) := by
   apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within
-  · convert continuous_cos.continuousWithinAt.tendsto
+  · convert! continuous_cos.continuousWithinAt.tendsto
     simp
   · filter_upwards [Ioo_mem_nhdsLT (neg_lt_self pi_div_two_pos)] with x hx
     exact cos_pos_of_mem_Ioo hx
 
 theorem tendsto_tan_pi_div_two : Tendsto tan (𝓝[<] (π / 2)) atTop := by
-  convert tendsto_cos_pi_div_two.inv_tendsto_nhdsGT_zero.atTop_mul_pos zero_lt_one
+  convert! tendsto_cos_pi_div_two.inv_tendsto_nhdsGT_zero.atTop_mul_pos zero_lt_one
     tendsto_sin_pi_div_two using 1
   simp only [Pi.inv_apply, ← div_eq_inv_mul, ← tan_eq_sin_div_cos]
 
 theorem tendsto_sin_neg_pi_div_two : Tendsto sin (𝓝[>] (-(π / 2))) (𝓝 (-1)) := by
-  convert continuous_sin.continuousWithinAt.tendsto using 2
+  convert! continuous_sin.continuousWithinAt.tendsto using 2
   simp
 
 theorem tendsto_cos_neg_pi_div_two : Tendsto cos (𝓝[>] (-(π / 2))) (𝓝[>] 0) := by
   apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within
-  · convert continuous_cos.continuousWithinAt.tendsto
+  · convert! continuous_cos.continuousWithinAt.tendsto
     simp
   · filter_upwards [Ioo_mem_nhdsGT (neg_lt_self pi_div_two_pos)] with x hx
     exact cos_pos_of_mem_Ioo hx
 
 theorem tendsto_tan_neg_pi_div_two : Tendsto tan (𝓝[>] (-(π / 2))) atBot := by
-  convert tendsto_cos_neg_pi_div_two.inv_tendsto_nhdsGT_zero.atTop_mul_neg (by simp)
+  convert! tendsto_cos_neg_pi_div_two.inv_tendsto_nhdsGT_zero.atTop_mul_neg (by simp)
       tendsto_sin_neg_pi_div_two using 1
   simp only [Pi.inv_apply, ← div_eq_inv_mul, ← tan_eq_sin_div_cos]
 

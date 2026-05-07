@@ -52,7 +52,7 @@ for `n = 3` or `n = 4`, this gives an Iwasawa structure of `alternatingGroup α`
 
 ## TODO
 
-This file contains two uncomfortable uses of `convert`:
+This file contains two uncomfortable uses of `convert!`:
 
 * on line 81, to identify `MulAut.conj` and `ConjAct.toConjAct`.
 
@@ -78,7 +78,7 @@ def iwasawaStructure_two [∀ s : Set α, DecidablePred fun x ↦ x ∈ s] :
     have : IsMulCommutative (Perm s) := isMulCommutative_iff_card_le_two.mpr (by simp)
     infer_instance
   is_conj g s := by
-    convert (conj_smul_range_ofSubtype g s).symm
+    convert! (conj_smul_range_ofSubtype g s).symm
   is_generator := by
     rw [eq_top_iff, ← Equiv.Perm.closure_isSwap, Subgroup.closure_le]
     rintro g ⟨a, b, hab, rfl⟩
@@ -145,7 +145,7 @@ theorem mem_map_kleinFour_ofSubtype {s : Finset α} (hs : s.card = 4) (k : alter
     simp only [Set.singleton_union, Set.mem_insert_iff, Set.mem_setOf_eq, OneMemClass.coe_eq_one,
       cycleType_ofSubtype, coe_ofSubtype, map_eq_one_iff _ Perm.ofSubtype_injective]
     apply or_congr_right
-    convert Iff.rfl
+    convert! Iff.rfl
   · simp_rw [hk, false_and, iff_false]
     contrapose! hk
     exact (mem_range_ofSubtype_iff s k).mp (Subgroup.map_le_range _ _ hk)

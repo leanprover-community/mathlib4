@@ -234,7 +234,7 @@ space. This does not need a summability assumption, as otherwise all sums are ze
 theorem tendsto_tsum_compl_atTop_zero {α : Type*} {f : α → ℝ≥0∞} (hf : ∑' x, f x ≠ ∞) :
     Tendsto (fun s : Finset α => ∑' b : { x // x ∉ s }, f b) atTop (𝓝 0) := by
   lift f to α → ℝ≥0 using ENNReal.ne_top_of_tsum_ne_top hf
-  convert ENNReal.tendsto_coe.2 (NNReal.tendsto_tsum_compl_atTop_zero f)
+  convert! ENNReal.tendsto_coe.2 (NNReal.tendsto_tsum_compl_atTop_zero f)
   rw [ENNReal.coe_tsum]
   exact NNReal.summable_comp_injective (tsum_coe_ne_top_iff_summable.1 hf) Subtype.coe_injective
 
@@ -444,7 +444,7 @@ open Finset
 assumption on `f`, as otherwise all sums are zero. -/
 theorem tendsto_sum_nat_add (f : ℕ → ℝ≥0) : Tendsto (fun i => ∑' k, f (k + i)) atTop (𝓝 0) := by
   rw [← tendsto_coe]
-  convert _root_.tendsto_sum_nat_add fun i => (f i : ℝ)
+  convert! _root_.tendsto_sum_nat_add fun i => (f i : ℝ)
   norm_cast
 
 nonrec theorem hasSum_lt {f g : α → ℝ≥0} {sf sg : ℝ≥0} {i : α} (h : ∀ a : α, f a ≤ g a)

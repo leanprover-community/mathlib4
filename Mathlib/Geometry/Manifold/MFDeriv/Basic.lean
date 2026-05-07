@@ -413,14 +413,14 @@ theorem mdifferentiableOn_iff :
     specialize h w this
     have w1 : w ∈ (chartAt H x).source := by simp only [w, hz, mfld_simps]
     have w2 : f w ∈ (chartAt H' y).source := by simp only [w, hz, mfld_simps]
-    convert ((mdifferentiableWithinAt_iff_of_mem_source w1 w2).mp h).2.mono _
+    convert! ((mdifferentiableWithinAt_iff_of_mem_source w1 w2).mp h).2.mono _
     · simp only [w, hz, mfld_simps]
     · mfld_set_tac
   · rintro ⟨hcont, hdiff⟩ x hx
     refine differentiableWithinAt_localInvariantProp.liftPropWithinAt_iff.mpr ?_
     refine ⟨hcont x hx, ?_⟩
     dsimp [DifferentiableWithinAtProp]
-    convert hdiff x (f x) (extChartAt I x x) (by simp only [hx, mfld_simps]) using 1
+    convert! hdiff x (f x) (extChartAt I x x) (by simp only [hx, mfld_simps]) using 1
     mfld_set_tac
 
 /-- One can reformulate smoothness on a set as continuity on this set, and smoothness in any
@@ -437,7 +437,7 @@ theorem mdifferentiableOn_iff_target :
   constructor
   · refine fun h' y => ⟨?_, fun x _ => h' x y⟩
     have h'' : ContinuousOn _ univ := (ModelWithCorners.continuous I').continuousOn
-    convert (h''.comp_inter (chartAt H' y).continuousOn_toFun).comp_inter h
+    convert! (h''.comp_inter (chartAt H' y).continuousOn_toFun).comp_inter h
     simp
   · exact fun h' x y => (h' y).2 x 0
 
@@ -625,7 +625,7 @@ theorem HasMFDerivWithinAt.union (hs : HasMFDerivWithinAt I I' f s x f')
     (ht : HasMFDerivWithinAt I I' f t x f') : HasMFDerivWithinAt I I' f (s ∪ t) x f' := by
   constructor
   · exact ContinuousWithinAt.union hs.1 ht.1
-  · convert HasFDerivWithinAt.union hs.2 ht.2 using 1
+  · convert! HasFDerivWithinAt.union hs.2 ht.2 using 1
     simp only [union_inter_distrib_right, preimage_union]
 
 theorem HasMFDerivWithinAt.mono_of_mem_nhdsWithin

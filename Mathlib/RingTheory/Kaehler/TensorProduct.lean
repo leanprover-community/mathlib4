@@ -224,7 +224,7 @@ then `Ω[B⁄S]` is the base change of `Ω[A⁄R]` along `R → S`.
 -/
 lemma isBaseChange [h : Algebra.IsPushout R S A B] :
     IsBaseChange S ((map R S A B).restrictScalars R) := by
-  convert (TensorProduct.isBaseChange R Ω[A⁄R] S).comp
+  convert! (TensorProduct.isBaseChange R Ω[A⁄R] S).comp
     (IsBaseChange.ofEquiv (tensorKaehlerEquivBase R S A B))
   refine LinearMap.ext fun x ↦ ?_
   simp only [LinearMap.coe_restrictScalars, LinearMap.coe_comp, LinearEquiv.coe_coe,

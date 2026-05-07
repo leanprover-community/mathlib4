@@ -186,7 +186,7 @@ theorem OrthogonalFamily.norm_sq_diff_sum [DecidableEq ι] (f : ∀ i, G i) (s�
       (∑ i ∈ s₁ \ s₂, ‖F i‖ ^ 2) + ∑ i ∈ s₂ \ s₁, ‖F i‖ ^ 2 := by
     have hs : Disjoint (s₁ \ s₂) (s₂ \ s₁) := disjoint_sdiff_sdiff
     simpa only [Finset.sum_union hs] using hV.norm_sum F (s₁ \ s₂ ∪ s₂ \ s₁)
-  convert this using 4
+  convert! this using 4
   · refine Finset.sum_congr rfl fun i hi => ?_
     simp only [hF₁ i hi]
   · refine Finset.sum_congr rfl fun i hi => ?_
@@ -225,13 +225,13 @@ theorem OrthogonalFamily.summable_iff_norm_sq_summable [CompleteSpace E] (f : �
       have has : a ≤ s₁ ⊓ s₂ := le_inf hs₁ hs₂
       rw [hV.norm_sq_diff_sum]
       have Hs₁ : ∑ x ∈ s₁ \ s₂, ‖f x‖ ^ 2 < ε ^ 2 / 2 := by
-        convert H _ hs₁ _ has
+        convert! H _ hs₁ _ has
         have : s₁ ⊓ s₂ ⊆ s₁ := Finset.inter_subset_left
         rw [← Finset.sum_sdiff this, add_tsub_cancel_right, Finset.abs_sum_of_nonneg']
         · simp
         · exact fun i => sq_nonneg _
       have Hs₂ : ∑ x ∈ s₂ \ s₁, ‖f x‖ ^ 2 < ε ^ 2 / 2 := by
-        convert H _ hs₂ _ has
+        convert! H _ hs₂ _ has
         have : s₁ ⊓ s₂ ⊆ s₂ := Finset.inter_subset_right
         rw [← Finset.sum_sdiff this, add_tsub_cancel_right, Finset.abs_sum_of_nonneg']
         · simp

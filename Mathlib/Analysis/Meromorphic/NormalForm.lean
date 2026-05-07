@@ -297,7 +297,7 @@ theorem meromorphicNFAt_fun_prod {x : 𝕜} {ι : Type*} {s : Finset ι} {f : ι
     (h₁f : ∀ i ∈ s, MeromorphicNFAt (f i) x)
     (h₂f : Set.Subsingleton {σ ∈ s | f σ x = 0}) :
     MeromorphicNFAt (fun a ↦ ∏ i ∈ s, f i a) x := by
-  convert meromorphicNFAt_prod h₁f h₂f
+  convert! meromorphicNFAt_prod h₁f h₂f
   exact (Finset.prod_apply _ s f).symm
 
 /--
@@ -610,7 +610,7 @@ theorem meromorphicNFOn_fun_prod {ι : Type*} {s : Finset ι} {f : ι → 𝕜 �
     (h₁f : ∀ i ∈ s, MeromorphicNFOn (f i) U)
     (h₂f : ∀ x ∈ U, Set.Subsingleton {σ ∈ s | f σ x = 0}) :
     MeromorphicNFOn (fun x ↦ ∏ i ∈ s, f i x) U := by
-  convert meromorphicNFOn_prod h₁f h₂f
+  convert! meromorphicNFOn_prod h₁f h₂f
   exact (Finset.prod_apply _ s f).symm
 
 /--

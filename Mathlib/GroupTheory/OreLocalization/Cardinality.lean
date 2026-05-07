@@ -75,14 +75,14 @@ theorem cardinalMk_le_max : #(OreLocalization S X) ≤ max (lift.{v} #S) (lift.{
   · have := lift_mk_le_lift_mk_of_surjective (oreDiv_one_surjective_of_finite_left S X)
     rw [lift_umax.{v, u}, lift_id'] at this
     exact le_max_of_le_right this
-  convert ← mk_le_of_surjective (show Surjective fun x : X × S ↦ x.1 /ₒ x.2 from
+  convert! ← mk_le_of_surjective (show Surjective fun x : X × S ↦ x.1 /ₒ x.2 from
     Quotient.mk''_surjective)
   rw [mk_prod, mul_comm]
   refine mul_eq_max ?_ ?_ <;> simp
 
 @[to_additive]
 theorem cardinalMk_le : #(OreLocalization S R) ≤ #R := by
-  convert ← cardinalMk_le_max S R
+  convert! ← cardinalMk_le_max S R
   simp_rw [lift_id, max_eq_right_iff, mk_subtype_le]
 
 -- TODO: remove the `Commute` assumption

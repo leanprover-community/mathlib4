@@ -261,7 +261,7 @@ lemma injective_of_isLocalization_isMaximal
   apply injective_of_isLocalized_maximal (fun P _ ↦ Rₚ P) (fun P _ ↦ Algebra.linearMap _ _)
     (fun P _ ↦ Sₚ P) (fun P _ ↦ IsScalarTower.toAlgHom R S (Sₚ P)) (Algebra.linearMap R S) _
   intro p hp
-  convert_to Function.Injective ((Algebra.linearMap (Rₚ p) (Sₚ p)).restrictScalars R)
+  convert_to! Function.Injective ((Algebra.linearMap (Rₚ p) (Sₚ p)).restrictScalars R)
   · rw [DFunLike.coe_fn_eq]
     apply IsLocalizedModule.map_linearMap_of_isLocalization
   · exact H p
@@ -272,7 +272,7 @@ lemma surjective_of_isLocalization_isMaximal
   apply surjective_of_isLocalized_maximal (fun P _ ↦ Rₚ P) (fun P _ ↦ Algebra.linearMap _ _)
     (fun P _ ↦ Sₚ P) (fun P _ ↦ IsScalarTower.toAlgHom R S (Sₚ P)) (Algebra.linearMap R S) _
   intro p hp
-  convert_to Function.Surjective ((Algebra.linearMap (Rₚ p) (Sₚ p)).restrictScalars R)
+  convert_to! Function.Surjective ((Algebra.linearMap (Rₚ p) (Sₚ p)).restrictScalars R)
   · rw [DFunLike.coe_fn_eq]
     apply IsLocalizedModule.map_linearMap_of_isLocalization
   · exact H p

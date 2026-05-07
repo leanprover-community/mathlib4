@@ -126,9 +126,9 @@ lemma isClosed_lattice : IsClosed (X := ℂ) L.lattice :=
     (inferInstanceAs (DiscreteTopology L.lattice))
 
 lemma isClosed_of_subset_lattice {s : Set ℂ} (hs : s ⊆ L.lattice) : IsClosed s := by
-  convert L.isClosed_lattice.isClosedMap_subtype_val _
+  convert! L.isClosed_lattice.isClosedMap_subtype_val _
     (isClosed_discrete (α := L.lattice) ((↑) ⁻¹' s))
-  convert Set.image_preimage_eq_inter_range.symm using 1
+  convert! Set.image_preimage_eq_inter_range.symm using 1
   simpa
 
 lemma isOpen_compl_lattice_diff {s : Set ℂ} : IsOpen (L.lattice \ s)ᶜ :=
@@ -287,7 +287,7 @@ lemma weierstrassPExcept_of_notMem (l₀ : ℂ) (hl : l₀ ∉ L.lattice) :
 
 lemma hasSumLocallyUniformly_weierstrassP :
     HasSumLocallyUniformly (fun (l : L.lattice) (z : ℂ) ↦ 1 / (z - ↑l) ^ 2 - 1 / l ^ 2) ℘[L] := by
-  convert L.hasSumLocallyUniformly_weierstrassPExcept (L.ω₁ / 2) using 3 with l
+  convert! L.hasSumLocallyUniformly_weierstrassPExcept (L.ω₁ / 2) using 3 with l
   · rw [if_neg]; exact fun e ↦ L.ω₁_div_two_notMem_lattice (e ▸ l.2)
   · rw [L.weierstrassPExcept_of_notMem _ L.ω₁_div_two_notMem_lattice]
 
@@ -298,7 +298,7 @@ lemma hasSum_weierstrassP (z : ℂ) :
 lemma differentiableOn_weierstrassP :
     DifferentiableOn ℂ ℘[L] L.latticeᶜ := by
   rw [← L.weierstrassPExcept_of_notMem _ L.ω₁_div_two_notMem_lattice]
-  convert L.differentiableOn_weierstrassPExcept _
+  convert! L.differentiableOn_weierstrassPExcept _
   simp [L.ω₁_div_two_notMem_lattice]
 
 @[simp]
@@ -538,7 +538,7 @@ lemma derivWeierstrassPExcept_of_notMem (l₀ : ℂ) (hl : l₀ ∉ L.lattice) :
 
 lemma hasSumLocallyUniformly_derivWeierstrassP :
     HasSumLocallyUniformly (fun (l : L.lattice) (z : ℂ) ↦ - 2 / (z - l) ^ 3) ℘'[L] := by
-  convert L.hasSumLocallyUniformly_derivWeierstrassPExcept (L.ω₁ / 2) using 3 with l z
+  convert! L.hasSumLocallyUniformly_derivWeierstrassPExcept (L.ω₁ / 2) using 3 with l z
   · rw [if_neg, neg_div]; exact fun e ↦ L.ω₁_div_two_notMem_lattice (e ▸ l.2)
   · rw [L.derivWeierstrassPExcept_of_notMem _ L.ω₁_div_two_notMem_lattice]
 
@@ -549,7 +549,7 @@ lemma hasSum_derivWeierstrassP (z : ℂ) :
 lemma differentiableOn_derivWeierstrassP :
     DifferentiableOn ℂ ℘'[L] L.latticeᶜ := by
   rw [← L.derivWeierstrassPExcept_of_notMem _ L.ω₁_div_two_notMem_lattice]
-  convert L.differentiableOn_derivWeierstrassPExcept _
+  convert! L.differentiableOn_derivWeierstrassPExcept _
   simp [L.ω₁_div_two_notMem_lattice]
 
 @[simp]
@@ -734,7 +734,7 @@ lemma hasFPowerSeriesOnBall_weierstrassPExcept (l₀ x : ℂ) (r : NNReal) (hr0 
     HasFPowerSeriesOnBall ℘[L - l₀] (L.weierstrassPExceptSeries l₀ x) x r := by
   constructor
   · apply FormalMultilinearSeries.le_radius_of_tendsto (l := 0)
-    convert tendsto_norm.comp (L.weierstrassPExceptSeries_hasSum l₀ (x + r) x
+    convert! tendsto_norm.comp (L.weierstrassPExceptSeries_hasSum l₀ (x + r) x
       ?_).summable.tendsto_atTop_zero using 2 with i
     · simp
     · simp
@@ -749,7 +749,7 @@ lemma hasFPowerSeriesOnBall_weierstrassPExcept (l₀ x : ℂ) (r : NNReal) (hr0 
     have A (l : ↥L.lattice) (hl : ↑l ≠ l₀) : r < ‖↑l - x‖ := by
       simpa [-Metric.mem_closedBall, mem_closedBall_iff_norm] using
         Set.subset_compl_comm.mp hr ⟨l.2, hl⟩
-    convert this (fun l hl ↦ hz.trans (A l hl)) with i
+    convert! this (fun l hl ↦ hz.trans (A l hl)) with i
     rw [weierstrassPExceptSeries, FormalMultilinearSeries.ofScalars_apply_eq,
       FormalMultilinearSeries.coeff_ofScalars, smul_eq_mul]
 
@@ -797,7 +797,7 @@ lemma hasFPowerSeriesOnBall_derivWeierstrassPExcept (l₀ x : ℂ) (r : NNReal) 
   refine .congr ?_
     ((L.eqOn_deriv_weierstrassPExcept_derivWeierstrassPExcept l₀).mono (.trans ?_ hr))
   · have := (L.hasFPowerSeriesOnBall_weierstrassPExcept l₀ x r hr0 hr).fderiv
-    convert (ContinuousLinearMap.apply ℂ ℂ (1 : ℂ)).comp_hasFPowerSeriesOnBall this
+    convert! (ContinuousLinearMap.apply ℂ ℂ (1 : ℂ)).comp_hasFPowerSeriesOnBall this
     ext n
     simp [weierstrassPExceptSeries, derivWeierstrassPExceptSeries]
     ring
@@ -1045,7 +1045,7 @@ private lemma analyticAt_relation (x : ℂ) : AnalyticAt ℂ L.relation x := by
   · lift x to L.lattice using hx
     have := L.analyticAt_relation_zero
     rw [← sub_self x.1] at this
-    convert this.comp (f := (· - x.1)) (by fun_prop)
+    convert! this.comp (f := (· - x.1)) (by fun_prop)
     ext a
     simp
   · have : AnalyticAt ℂ (fun z ↦ ℘'[L] z ^ 2 - 4 * ℘[L] z ^ 3 + L.g₂ * ℘[L] z + L.g₃) x := by

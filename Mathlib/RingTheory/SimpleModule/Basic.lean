@@ -170,7 +170,7 @@ theorem isSimpleModule_iff_quot_maximal :
     have ⟨m, hm⟩ := exists_ne (0 : M)
     exact ⟨_, ker_toSpanSingleton_isMaximal R hm,
       ⟨(LinearMap.quotKerEquivOfSurjective _ <| toSpanSingleton_surjective R hm).symm⟩⟩
-  · convert congr equiv; rwa [isSimpleModule_iff_isCoatom]
+  · convert! congr equiv; rwa [isSimpleModule_iff_isCoatom]
 
 /-- In general, the annihilator of a simple module is called a primitive ideal, and it is
 always a two-sided prime ideal, but mathlib's `Ideal.IsPrime` is not the correct definition

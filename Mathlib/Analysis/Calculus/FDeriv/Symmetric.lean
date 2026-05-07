@@ -178,7 +178,7 @@ theorem IsSymmSndFDerivWithinAt.iteratedFDerivWithin_cons {x v w : E}
     iteratedFDerivWithin 𝕜 2 f s x ![v, w] = iteratedFDerivWithin 𝕜 2 f s x ![w, v] := by
   simp_rw [isSymmSndFDerivWithinAt_iff_iteratedFDerivWithin hs hx, ContinuousMultilinearMap.ext_iff,
     ContinuousMultilinearMap.domDomCongr_apply] at hf
-  convert hf ![w, v] using 2
+  convert! hf ![w, v] using 2
   ext i
   fin_cases i <;> simp
 
@@ -249,7 +249,7 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
     rw [← smul_smul]
     apply s_conv.interior.add_smul_mem this _ ht
     rw [add_assoc] at hw
-    convert s_conv.add_smul_mem_interior xs hw ⟨hpos, h_lt_1.le⟩ using 1
+    convert! s_conv.add_smul_mem_interior xs hw ⟨hpos, h_lt_1.le⟩ using 1
     module
   -- define a function `g` on `[0,1]` (identified with `[v, v + w]`) such that `g 1 - g 0` is the
   -- quantity to be estimated. We will check that its derivative is given by an explicit
@@ -273,7 +273,7 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
     · apply_rules [HasDerivAt.hasDerivWithinAt, HasDerivAt.smul_const, hasDerivAt_mul_const]
     · suffices H : HasDerivWithinAt (fun u => ((u * h) ^ 2 / 2) • f'' w w)
           ((((2 : ℕ) : ℝ) * (t * h) ^ (2 - 1) * (1 * h) / 2) • f'' w w) (Icc 0 1) t by
-        convert H using 2
+        convert! H using 2
         ring
       apply_rules [HasDerivAt.hasDerivWithinAt, HasDerivAt.smul_const, hasDerivAt_id',
         HasDerivAt.pow, HasDerivAt.mul_const]
@@ -316,7 +316,7 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
   have I : ‖g 1 - g 0‖ ≤ ε * ((‖v‖ + ‖w‖) * ‖w‖) * h ^ 2 := by
     simpa only [mul_one, sub_zero] using
       norm_image_sub_le_of_norm_deriv_le_segment' g_deriv g'_bound 1 (right_mem_Icc.2 zero_le_one)
-  convert I using 1
+  convert! I using 1
   · congr 1
     simp only [g, add_zero, one_mul, zero_div, zero_mul, sub_zero,
       zero_smul, Ne, not_false_iff, zero_pow, reduceCtorEq]
@@ -336,29 +336,29 @@ theorem Convex.isLittleO_alternate_sum_square {v w : E} (h4v : x + (4 : ℝ) •
   have A : (1 : ℝ) / 2 ∈ Ioc (0 : ℝ) 1 := ⟨by simp, by norm_num⟩
   have B : (1 : ℝ) / 2 ∈ Icc (0 : ℝ) 1 := ⟨by simp, by norm_num⟩
   have h2v2w : x + (2 : ℝ) • v + (2 : ℝ) • w ∈ interior s := by
-    convert s_conv.interior.add_smul_sub_mem h4v h4w B using 1
+    convert! s_conv.interior.add_smul_sub_mem h4v h4w B using 1
     module
   have h2vww : x + (2 • v + w) + w ∈ interior s := by
-    convert h2v2w using 1
+    convert! h2v2w using 1
     module
   have h2v : x + (2 : ℝ) • v ∈ interior s := by
-    convert s_conv.add_smul_sub_mem_interior xs h4v A using 1
+    convert! s_conv.add_smul_sub_mem_interior xs h4v A using 1
     module
   have h2w : x + (2 : ℝ) • w ∈ interior s := by
-    convert s_conv.add_smul_sub_mem_interior xs h4w A using 1
+    convert! s_conv.add_smul_sub_mem_interior xs h4w A using 1
     module
   have hvw : x + (v + w) ∈ interior s := by
-    convert s_conv.add_smul_sub_mem_interior xs h2v2w A using 1
+    convert! s_conv.add_smul_sub_mem_interior xs h2v2w A using 1
     module
   have h2vw : x + (2 • v + w) ∈ interior s := by
-    convert s_conv.interior.add_smul_sub_mem h2v h2v2w B using 1
+    convert! s_conv.interior.add_smul_sub_mem h2v h2v2w B using 1
     module
   have hvww : x + (v + w) + w ∈ interior s := by
-    convert s_conv.interior.add_smul_sub_mem h2w h2v2w B using 1
+    convert! s_conv.interior.add_smul_sub_mem h2w h2v2w B using 1
     module
   have TA1 := s_conv.taylor_approx_two_segment hf xs hx h2vw h2vww
   have TA2 := s_conv.taylor_approx_two_segment hf xs hx hvw hvww
-  convert TA1.sub TA2 using 1
+  convert! TA1.sub TA2 using 1
   ext h
   simp only [two_smul, smul_add, ← add_assoc, map_add,
     ContinuousLinearMap.add_apply]
@@ -372,7 +372,7 @@ theorem Convex.second_derivative_within_at_symmetric_of_mem_interior {v w : E}
     (h4v : x + (4 : ℝ) • v ∈ interior s) (h4w : x + (4 : ℝ) • w ∈ interior s) :
     f'' w v = f'' v w := by
   have A : (fun h : ℝ => h ^ 2 • (f'' w v - f'' v w)) =o[𝓝[>] 0] fun h => h ^ 2 := by
-    convert (s_conv.isLittleO_alternate_sum_square hf xs hx h4v h4w).sub
+    convert! (s_conv.isLittleO_alternate_sum_square hf xs hx h4v h4w).sub
       (s_conv.isLittleO_alternate_sum_square hf xs hx h4w h4v) using 1
     ext h
     simp only [add_comm, smul_add, smul_sub]

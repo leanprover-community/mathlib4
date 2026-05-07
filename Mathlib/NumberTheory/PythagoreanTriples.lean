@@ -80,7 +80,7 @@ theorem mul_iff (k : ℤ) (hk : k ≠ 0) :
   simp only [PythagoreanTriple]
   intro h
   rw [← mul_left_inj' (mul_ne_zero hk hk)]
-  convert h using 1 <;> ring
+  convert! h using 1 <;> ring
 
 /-- A Pythagorean triple `x, y, z` is “classified” if there exist integers `k, m, n` such that
 either
@@ -181,7 +181,7 @@ theorem isClassified_of_isPrimitiveClassified (hp : h.IsPrimitiveClassified) : h
 
 theorem isClassified_of_normalize_isPrimitiveClassified (hc : h.normalize.IsPrimitiveClassified) :
     h.IsClassified := by
-  convert h.normalize.mul_isClassified (Int.gcd x y)
+  convert! h.normalize.mul_isClassified (Int.gcd x y)
         (isClassified_of_isPrimitiveClassified h.normalize hc) <;>
     rw [Int.mul_ediv_cancel']
   · exact Int.gcd_dvd_left ..
@@ -252,7 +252,7 @@ def circleEquivGen (hk : ∀ x : K, 1 + x ^ 2 ≠ 0) :
   left_inv x := by
     have h2 : (1 + 1 : K) = 2 := by norm_num
     have h3 : (2 : K) ≠ 0 := by
-      convert hk 1
+      convert! hk 1
       rw [one_pow 2, h2]
     simp [field, hk x, h2, add_assoc, add_comm, add_sub_cancel, mul_comm]
   right_inv := fun ⟨⟨x, y⟩, hxy, hy⟩ => by
@@ -262,7 +262,7 @@ def circleEquivGen (hk : ∀ x : K, 1 + x ^ 2 ≠ 0) :
       rw [(add_neg_eq_iff_eq_add.mpr hxy.symm).symm]
       ring
     have h4 : (2 : K) ≠ 0 := by
-      convert hk 1
+      convert! hk 1
       rw [one_pow 2]
       ring
     simp only [Prod.mk_inj, Subtype.mk_eq_mk]
@@ -291,10 +291,10 @@ private theorem coprime_sq_sub_sq_add_of_even_odd {m n : ℤ} (h : Int.gcd m n =
   obtain ⟨p, hp, hp1, hp2⟩ := Nat.Prime.not_coprime_iff_dvd.mp H
   rw [← Int.natCast_dvd] at hp1 hp2
   have h2m : (p : ℤ) ∣ 2 * m ^ 2 := by
-    convert dvd_add hp2 hp1 using 1
+    convert! dvd_add hp2 hp1 using 1
     ring
   have h2n : (p : ℤ) ∣ 2 * n ^ 2 := by
-    convert dvd_sub hp2 hp1 using 1
+    convert! dvd_sub hp2 hp1 using 1
     ring
   have hmc : p = 2 ∨ p ∣ Int.natAbs m := prime_two_or_dvd_of_dvd_two_mul_pow_self_two hp h2m
   have hnc : p = 2 ∨ p ∣ Int.natAbs n := prime_two_or_dvd_of_dvd_two_mul_pow_self_two hp h2n
@@ -388,10 +388,10 @@ private theorem coprime_sq_sub_sq_sum_of_odd_odd {m n : ℤ} (h : Int.gcd m n = 
   rw [← Int.natCast_dvd] at hp1 hp2
   apply Nat.dvd_gcd
   · apply Int.Prime.dvd_natAbs_of_coe_dvd_sq hp
-    convert dvd_add hp1 hp2
+    convert! dvd_add hp1 hp2
     ring
   · apply Int.Prime.dvd_natAbs_of_coe_dvd_sq hp
-    convert dvd_sub hp2 hp1
+    convert! dvd_sub hp2 hp1
     ring
 
 namespace PythagoreanTriple

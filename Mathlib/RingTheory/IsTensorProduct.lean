@@ -59,7 +59,7 @@ variable (R M N) {f}
 
 theorem TensorProduct.isTensorProduct : IsTensorProduct (TensorProduct.mk R M N) := by
   delta IsTensorProduct
-  convert_to Function.Bijective (LinearMap.id : M ⊗[R] N →ₗ[R] M ⊗[R] N) using 2
+  convert_to! Function.Bijective (LinearMap.id : M ⊗[R] N →ₗ[R] M ⊗[R] N) using 2
   · apply TensorProduct.ext'
     simp
   · exact Function.bijective_id
@@ -350,7 +350,7 @@ noncomputable nonrec def IsBaseChange.lift (g : M →ₗ[R] Q) : N →ₗ[S] Q :
 
 nonrec theorem IsBaseChange.lift_eq (g : M →ₗ[R] Q) (x : M) : h.lift g (f x) = g x := by
   have hF : ∀ (s : S) (m : M), h.lift g (s • f m) = s • g m := h.lift_eq _
-  convert hF 1 x <;> rw [one_smul]
+  convert! hF 1 x <;> rw [one_smul]
 
 theorem IsBaseChange.lift_comp (g : M →ₗ[R] Q) : ((h.lift g).restrictScalars R).comp f = g :=
   LinearMap.ext (h.lift_eq g)
@@ -386,7 +386,7 @@ variable (R M N S)
 
 theorem TensorProduct.isBaseChange : IsBaseChange S (TensorProduct.mk R S M 1) := by
   delta IsBaseChange
-  convert TensorProduct.isTensorProduct R S M using 1
+  convert! TensorProduct.isTensorProduct R S M using 1
   ext s x
   change s • (1 : S) ⊗ₜ[R] x = s ⊗ₜ[R] x
   rw [TensorProduct.smul_tmul']
@@ -434,11 +434,11 @@ lemma IsBaseChange.iff_of_equiv_comm (eM : M ≃ₗ[R] P) (eN : N ≃ₗ[S] Q)
   simp only [IsBaseChange]
   have (m : M) : f' (eM m) = eN (f m) := LinearMap.congr_fun comm m
   refine ⟨fun ist ↦ ?_, fun ist ↦ ?_⟩
-  · convert (ist.compl₂_linearEquiv eM.symm).compr₂_linearEquiv (eN.restrictScalars R)
+  · convert! (ist.compl₂_linearEquiv eM.symm).compr₂_linearEquiv (eN.restrictScalars R)
     ext s m'
     obtain ⟨m, rfl⟩ := eM.surjective m'
     simp [this]
-  · convert (ist.compl₂_linearEquiv eM).compr₂_linearEquiv (eN.symm.restrictScalars R)
+  · convert! (ist.compl₂_linearEquiv eM).compr₂_linearEquiv (eN.symm.restrictScalars R)
     ext s m
     simp [this]
 
@@ -687,7 +687,7 @@ lemma Algebra.IsPushout.tensorProduct_tensorProduct
       Algebra.TensorProduct.includeRight.toRingHom) :
     Algebra.IsPushout A B (A ⊗[R] S) (B ⊗[R] S) := by
   constructor
-  convert isBaseChange_tensorProduct_map (R := R) (P := S) _ (IsBaseChange.linearMap A B)
+  convert! isBaseChange_tensorProduct_map (R := R) (P := S) _ (IsBaseChange.linearMap A B)
   ext s
   simpa using congr($H s)
 

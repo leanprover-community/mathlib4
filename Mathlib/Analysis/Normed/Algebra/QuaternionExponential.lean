@@ -87,10 +87,10 @@ theorem hasSum_expSeries_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) {c s 
   replace hc := hasSum_coe.mpr hc
   replace hs := (hs.div_const ‖q‖).smul_const q
   refine HasSum.even_add_odd ?_ ?_
-  · convert hc using 1
+  · convert! hc using 1
     ext n : 1
     rw [expSeries_even_of_imaginary hq]
-  · convert hs using 1
+  · convert! hs using 1
     ext n : 1
     rw [expSeries_odd_of_imaginary hq]
 

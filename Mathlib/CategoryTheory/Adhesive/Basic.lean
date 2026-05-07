@@ -94,8 +94,8 @@ theorem IsPushout.isVanKampen_iff (H : IsPushout f g h i) :
   · intro H F' c' α fα eα hα
     refine Iff.trans ?_
         ((H (F'.map WalkingSpan.Hom.fst) (F'.map WalkingSpan.Hom.snd) (c'.ι.app _) (c'.ι.app _)
-          (α.app _) (α.app _) (α.app _) fα (by convert hα WalkingSpan.Hom.fst)
-          (by convert hα WalkingSpan.Hom.snd) ?_ ?_ ?_).trans ?_)
+          (α.app _) (α.app _) (α.app _) fα (by convert! hα WalkingSpan.Hom.fst)
+          (by convert! hα WalkingSpan.Hom.snd) ?_ ?_ ?_).trans ?_)
     · have : F'.map WalkingSpan.Hom.fst ≫ c'.ι.app WalkingSpan.left =
           F'.map WalkingSpan.Hom.snd ≫ c'.ι.app WalkingSpan.right := by
         simp only [Cocone.w]

@@ -501,7 +501,7 @@ theorem map_prodMap_coprod_le.{u, v, w, x} {α₁ : Type u} {α₂ : Type v} {β
   intro s
   simp only [mem_map, mem_coprod_iff]
   rintro ⟨⟨u₁, hu₁, h₁⟩, u₂, hu₂, h₂⟩
-  refine ⟨⟨m₁ ⁻¹' u₁, hu₁, fun _ hx => h₁ ?_⟩, ⟨m₂ ⁻¹' u₂, hu₂, fun _ hx => h₂ ?_⟩⟩ <;> convert hx
+  refine ⟨⟨m₁ ⁻¹' u₁, hu₁, fun _ hx => h₁ ?_⟩, ⟨m₂ ⁻¹' u₂, hu₂, fun _ hx => h₂ ?_⟩⟩ <;> convert! hx
 
 /-- Characterization of the coproduct of the `Filter.map`s of two principal filters `𝓟 {a}` and
 `𝓟 {i}`, the first under the constant function `fun a => b` and the second under the identity

@@ -180,7 +180,7 @@ lemma levyProkhorovDist_triangle [OpensMeasurableSpace Ω] (μ ν κ : Measure �
     levyProkhorovDist μ κ ≤ levyProkhorovDist μ ν + levyProkhorovDist ν κ := by
   have dμν_finite := (levyProkhorovEDist_lt_top μ ν).ne
   have dνκ_finite := (levyProkhorovEDist_lt_top ν κ).ne
-  convert ENNReal.toReal_mono ?_ <| levyProkhorovEDist_triangle μ ν κ
+  convert! ENNReal.toReal_mono ?_ <| levyProkhorovEDist_triangle μ ν κ
   · simp only [levyProkhorovDist, ENNReal.toReal_add dμν_finite dνκ_finite]
   · exact ENNReal.add_ne_top.mpr ⟨dμν_finite, dνκ_finite⟩
 
@@ -250,7 +250,7 @@ lemma levyProkhorovDist_le_of_forall_le
     refine (ofReal_lt_ofReal_iff ?_).mp ?_
     · exact ENNReal.toReal_pos ε_gt.bot_lt.ne' ε_lt_top.ne
     · simpa [ofReal_toReal_eq_iff.mpr ε_lt_top.ne] using ε_gt
-  convert h ε.toReal B ε_gt' B_mble
+  convert! h ε.toReal B ε_gt' B_mble
   exact (ENNReal.ofReal_toReal ε_lt_top.ne).symm
 
 /-! ### Equipping measures with the Lévy-Prokhorov metric -/
@@ -393,7 +393,7 @@ lemma BoundedContinuousFunction.integral_le_of_levyProkhorovEDist_lt (μ ν : Me
               ≤ (fun (t : ℝ) ↦ ν.real (thickening ε {a | t ≤ f a}) + ε) := by
     intro t
     simp only [measureReal_def]
-    convert ENNReal.toReal_mono ?_ <| left_measure_le_of_levyProkhorovEDist_lt hμν
+    convert! ENNReal.toReal_mono ?_ <| left_measure_le_of_levyProkhorovEDist_lt hμν
       (B := {a | t ≤ f a}) (f.continuous.measurable measurableSet_Ici)
     · rw [ENNReal.toReal_add (measure_ne_top ν _) ofReal_ne_top, ENNReal.toReal_ofReal ε_pos.le]
     · exact ENNReal.add_ne_top.mpr ⟨measure_ne_top ν _, ofReal_ne_top⟩
@@ -540,7 +540,7 @@ lemma ProbabilityMeasure.toMeasure_add_pos_gt_mem_nhds (P : ProbabilityMeasure �
   filter_upwards [gt_mem_sets_of_limsInf_gt (α := ℝ≥0∞) isBounded_ge_of_bot
       (show P.toMeasure G - ε < limsInf ((𝓝 P).map (fun Q ↦ Q.toMeasure G)) from aux)] with Q hQ
   simp only [preimage_setOf_eq, mem_setOf_eq] at hQ
-  convert ENNReal.add_lt_add_right ε_top hQ
+  convert! ENNReal.add_lt_add_right ε_top hQ
   exact (tsub_add_cancel_of_le easy).symm
 
 variable [SeparableSpace Ω]
@@ -567,10 +567,10 @@ lemma SeparableSpace.exists_measurable_partition_diam_le {ε : ℝ} (ε_pos : 0 
   · exact fun n ↦ Bornology.IsBounded.subset isBounded_ball <| disjointed_subset Bs n
   · intro n
     apply (diam_mono (disjointed_subset Bs n) isBounded_ball).trans
-    convert diam_ball half_ε_pos.le
+    convert! diam_ball half_ε_pos.le
     ring
   · have aux : ⋃ n, Bs n = univ := by
-      convert DenseRange.iUnion_uniformity_ball xs_dense <| Metric.dist_mem_uniformity half_ε_pos
+      convert! DenseRange.iUnion_uniformity_ball xs_dense <| Metric.dist_mem_uniformity half_ε_pos
       exact (ball_eq_ball' _ _).symm
     simpa only [← aux] using iUnion_disjointed
   · exact disjoint_disjointed Bs

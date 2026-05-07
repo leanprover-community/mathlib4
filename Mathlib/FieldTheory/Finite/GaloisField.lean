@@ -137,7 +137,7 @@ theorem card (h : n ≠ 0) : Nat.card (GaloisField p n) = p ^ n := by
 theorem splits_zmod_X_pow_sub_X : Splits (X ^ p - X : (ZMod p)[X]) := by
   have hp : 1 < p := h_prime.out.one_lt
   have h1 : roots (X ^ p - X : (ZMod p)[X]) = Finset.univ.val := by
-    convert FiniteField.roots_X_pow_card_sub_X (ZMod p)
+    convert! FiniteField.roots_X_pow_card_sub_X (ZMod p)
     exact (ZMod.card p).symm
   have h2 := FiniteField.X_pow_card_sub_X_natDegree_eq (ZMod p) hp
   -- We discharge the `p = 0` separately, to avoid typeclass issues on `ZMod p`.
@@ -240,7 +240,7 @@ theorem unitsMap_norm_surjective : Function.Surjective (Units.map <| Algebra.nor
     simp_rw [Nat.card_units]
     classical
     have := Fintype.ofFinite K'ˣ
-    convert IsCyclic.card_pow_eq_one_le (α := K'ˣ) <| Nat.div_pos
+    convert! IsCyclic.card_pow_eq_one_le (α := K'ˣ) <| Nat.div_pos
       (Nat.sub_le_sub_right (Nat.card_le_card_of_injective _ (algebraMap K K').injective) _) <|
       Nat.sub_pos_of_lt Finite.one_lt_card
     rw [← Set.ncard_coe_finset, ← SetLike.coe_sort_coe, Nat.card_coe_set_eq]; congr 1; ext

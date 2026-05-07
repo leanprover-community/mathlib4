@@ -75,7 +75,7 @@ def invAccumulate (n m : ℕ) (s : Fin m → ℕ) (i : Fin n) : ℕ :=
 lemma accumulate_rec {i n m : ℕ} (hin : i < n) (him : i + 1 < m) (t : Fin n → ℕ) :
     accumulate n m t ⟨i, Nat.lt_of_succ_lt him⟩ = t ⟨i, hin⟩ + accumulate n m t ⟨i + 1, him⟩ := by
   simp_rw [accumulate_apply]
-  convert (add_sum_erase _ _ _).symm
+  convert! (add_sum_erase _ _ _).symm
   · ext
     rw [mem_erase]
     simp_rw [mem_filter_univ, i.succ_le_iff, lt_iff_le_and_ne]
@@ -306,11 +306,11 @@ lemma esymmAlgHom_fin_bijective (n : ℕ) :
     · exact accumulate_invAccumulate le_rfl hp.antitone_supDegree
     · rwa [Ne, leadingCoeff_eq_zero toLex.injective]
   obtain he | hne := eq_or_ne p (esymmAlgHomMonomial _ t <| p.leadingCoeff toLex)
-  · convert AlgHom.mem_range_self _ (monomial t <| p.leadingCoeff toLex)
+  · convert! AlgHom.mem_range_self _ (monomial t <| p.leadingCoeff toLex)
   have := (supDegree_sub_lt_of_leadingCoeff_eq toLex.injective hd.symm ?_).resolve_right hne
   · specialize ih _ this _ (Subalgebra.sub_mem _ hp <| isSymmetric_esymmAlgHomMonomial _ _) _ rfl
     · rwa [sub_ne_zero]
-    convert ← Subalgebra.add_mem _ ih ⟨monomial t (p.leadingCoeff toLex), rfl⟩
+    convert! ← Subalgebra.add_mem _ ih ⟨monomial t (p.leadingCoeff toLex), rfl⟩
     apply sub_add_cancel p
   · rw [leadingCoeff_esymmAlgHomMonomial t le_rfl]
 

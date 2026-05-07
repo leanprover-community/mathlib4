@@ -185,7 +185,7 @@ theorem IsTranscendenceBasis.polynomial [Nonempty ι] [Subsingleton ι] :
   have := (nonempty_unique ι).some
   refine (isTranscendenceBasis_equiv (Equiv.equivPUnit.{_, 1} _).symm).mp <|
     (MvPolynomial.uniqueAlgEquiv R PUnit).symm.isTranscendenceBasis_iff.mp ?_
-  convert IsTranscendenceBasis.mvPolynomial PUnit R
+  convert! IsTranscendenceBasis.mvPolynomial PUnit R
   ext; simp
 
 variable {ι R}
@@ -575,7 +575,7 @@ lemma of_isAlgebraic_adjoin_insert_diff (hj : j ∈ insert i s)
     rwa [insert_eq_of_mem hi] at H₂
   obtain eq | ne := eq_or_ne (v i) (v j)
   · classical
-    convert H₁.comp_equiv <| .symm <| ((Equiv.swap j i).image s).trans <|
+    convert! H₁.comp_equiv <| .symm <| ((Equiv.swap j i).image s).trans <|
       .setCongr <| Equiv.image_swap_of_mem_of_notMem hj hi with ⟨x, rfl | hxi, hxj⟩
     · simp [eq]
     · simp [Equiv.swap_apply_of_ne_of_ne hxj (ne_of_mem_of_not_mem hxi hi)]

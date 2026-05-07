@@ -446,6 +446,6 @@ namespace AdjoinRoot
 is a number field. -/
 instance {f : Polynomial ℚ} [hf : Fact (Irreducible f)] : NumberField (AdjoinRoot f) where
   to_charZero := charZero_of_injective_algebraMap (algebraMap ℚ _).injective
-  to_finiteDimensional := by convert (AdjoinRoot.powerBasis hf.out.ne_zero).finite
+  to_finiteDimensional := by convert! (AdjoinRoot.powerBasis hf.out.ne_zero).finite
 
 end AdjoinRoot

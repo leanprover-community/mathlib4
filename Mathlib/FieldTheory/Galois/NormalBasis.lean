@@ -44,7 +44,7 @@ theorem exists_linearIndependent_algEquiv_apply_of_finite [Finite L] :
     .ofBijective _ <| bijective_frobeniusAlgEquivOfAlgebraic_pow K L)]
   /- Therefore, `{Frⁱ | 0 ≤ i < [L : K]}` is linearly independent, which implies that
     `{Frⁱ(x) | 0 ≤ i < [L : K]}` is also linearly independent. -/
-  convert (AdjoinRoot.powerBasis (X_pow_sub_C_ne_zero Module.finrank_pos 1)).basis.linearIndependent
+  convert! (AdjoinRoot.powerBasis (X_pow_sub_C_ne_zero Module.finrank_pos 1)).basis.linearIndependent
     |>.map' ((AEval'.of _).symm.toLinearMap ∘ₗ (liftQ _ _ hx.le).restrictScalars K) <| by
     exact congr($(ker_liftQ_eq_bot' _ _ hx).restrictScalars K)
   ext i

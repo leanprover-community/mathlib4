@@ -67,7 +67,7 @@ theorem Associated.prod {M : Type*} [CommMonoid M] {ι : Type*} (s : Finset ι) 
     rfl
   | insert j s hjs IH =>
     classical
-    convert_to (∏ i ∈ insert j s, f i) ~ᵤ (∏ i ∈ insert j s, g i)
+    convert_to! (∏ i ∈ insert j s, f i) ~ᵤ (∏ i ∈ insert j s, g i)
     grind [Associated.mul_mul]
 
 theorem exists_associated_mem_of_dvd_prod [CommMonoidWithZero M₀] [IsCancelMulZero M₀]

@@ -227,7 +227,7 @@ theorem digits_ofDigits (b : ℕ) (h : 1 < b) (L : List ℕ) (w₁ : ∀ l ∈ L
         exact List.mem_cons_of_mem _ m
       · intro h
         rw [List.getLast_cons h] at w₂
-        convert w₂
+        convert! w₂
     · exact w₁ d List.mem_cons_self
     · by_cases h' : L = []
       · rcases h' with rfl
@@ -275,7 +275,7 @@ theorem digits_eq_nil_iff_eq_zero {b n : ℕ} : digits b n = [] ↔ n = 0 := by
   constructor
   · intro h
     have : ofDigits b (digits b n) = ofDigits b [] := by rw [h]
-    convert this
+    convert! this
     rw [ofDigits_digits]
   · rintro rfl
     simp
@@ -383,7 +383,7 @@ theorem ofDigits_lt_base_pow_length {b : ℕ} {l : List ℕ} (hb : 1 < b) (hl : 
 
 /-- Any number m is less than (b+2)^(number of digits in the base b + 2 representation of m) -/
 theorem lt_base_pow_length_digits' {b m : ℕ} : m < (b + 2) ^ (digits (b + 2) m).length := by
-  convert @ofDigits_lt_base_pow_length' b (digits (b + 2) m) fun _ => digits_lt_base'
+  convert! @ofDigits_lt_base_pow_length' b (digits (b + 2) m) fun _ => digits_lt_base'
   rw [ofDigits_digits (b + 2) m]
 
 /-- Any number m is less than b^(number of digits in the base b representation of m) -/
@@ -455,7 +455,7 @@ lemma ofDigits_div_pow_eq_ofDigits_drop
 -/
 lemma self_div_pow_eq_ofDigits_drop {p : ℕ} (i n : ℕ) (h : 2 ≤ p) :
     n / p ^ i = ofDigits p ((p.digits n).drop i) := by
-  convert ofDigits_div_pow_eq_ofDigits_drop i (zero_lt_of_lt h) (p.digits n)
+  convert! ofDigits_div_pow_eq_ofDigits_drop i (zero_lt_of_lt h) (p.digits n)
     (fun l hl ↦ digits_lt_base h hl)
   exact (ofDigits_digits p n).symm
 
@@ -484,7 +484,7 @@ lemma ofDigits_mod_pow_eq_ofDigits_take
 -/
 lemma self_mod_pow_eq_ofDigits_take {p : ℕ} (i n : ℕ) (h : 2 ≤ p) :
     n % p ^ i = ofDigits p ((p.digits n).take i) := by
-  convert ofDigits_mod_pow_eq_ofDigits_take i (zero_lt_of_lt h) (p.digits n)
+  convert! ofDigits_mod_pow_eq_ofDigits_take i (zero_lt_of_lt h) (p.digits n)
     (fun l hl ↦ digits_lt_base h hl)
   exact (ofDigits_digits p n).symm
 

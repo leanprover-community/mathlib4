@@ -62,7 +62,7 @@ theorem exists_partition {ι : Type*} [Finite ι] {ε : ℝ} (hε : 0 < ε) {b :
   rcases Finite.exists_equiv_fin ι with ⟨n, ⟨e⟩⟩
   obtain ⟨t, ht⟩ := h.exists_partition' n hε hb (A ∘ e.symm)
   refine ⟨t ∘ e, fun i₀ i₁ h ↦ ?_⟩
-  convert (config := { transparency := .default })
+  convert! (config := { transparency := .default })
     ht (e i₀) (e i₁) h <;> simp only [e.symm_apply_apply]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -120,7 +120,7 @@ theorem exists_approx {ι : Type*} [Fintype ι] {ε : ℝ} (hε : 0 < ε) {b : R
   let e := Fintype.equivFin ι
   obtain ⟨i₀, i₁, ne, h⟩ := h.exists_approx_aux (Fintype.card ι) hε hb fun x y ↦ A x (e.symm y)
   refine ⟨i₀, i₁, ne, fun k ↦ ?_⟩
-  convert h (e k) <;> simp only [e.symm_apply_apply]
+  convert! h (e k) <;> simp only [e.symm_apply_apply]
 
 end IsAdmissible
 

@@ -60,7 +60,7 @@ noncomputable def invSelf : S :=
 
 @[simp]
 theorem mul_invSelf : algebraMap R S x * invSelf x = 1 := by
-  convert IsLocalization.mk'_mul_mk'_eq_one (M := Submonoid.powers x) (S := S) _ 1
+  convert! IsLocalization.mk'_mul_mk'_eq_one (M := Submonoid.powers x) (S := S) _ 1
   symm
   apply IsLocalization.mk'_one
 
@@ -274,7 +274,7 @@ lemma mul (T : Type*) [CommSemiring T] [Algebra S T]
     simp only [← map_pow, ← map_mul, ← map_mul] at hn
     obtain ⟨m, hm⟩ := exists_of_eq x hn
     use n + m
-    convert_to y ^ m * x ^ n * (x ^ m * (y ^ n * a)) = y ^ m * x ^ n * (x ^ m * (y ^ n * b))
+    convert_to! y ^ m * x ^ n * (x ^ m * (y ^ n * a)) = y ^ m * x ^ n * (x ^ m * (y ^ n * b))
     · ring
     · ring
     · rw [hm]
@@ -306,7 +306,7 @@ lemma commutes {R : Type*} [CommSemiring R] (S₁ S₂ T : Type*) [CommSemiring 
     [IsLocalization.Away x S₁] [IsLocalization.Away y S₂]
     [IsLocalization.Away (algebraMap R S₂ x) T] :
     IsLocalization.Away (algebraMap R S₁ y) T := by
-  convert IsLocalization.commutes S₁ S₂ T (Submonoid.powers x) (Submonoid.powers y)
+  convert! IsLocalization.commutes S₁ S₂ T (Submonoid.powers x) (Submonoid.powers y)
   ext x
   simp
 

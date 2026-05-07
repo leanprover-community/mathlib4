@@ -327,7 +327,7 @@ instance : SMul α (HomogeneousLocalization 𝒜 x) where
   smul m := Quotient.map' (m • ·) fun c1 c2 (h : Localization.mk _ _ = Localization.mk _ _) => by
     change Localization.mk _ _ = Localization.mk _ _
     simp only [num_smul, den_smul]
-    convert congr_arg (fun z : at x => m • z) h <;> rw [Localization.smul_mk]
+    convert! congr_arg (fun z : at x => m • z) h <;> rw [Localization.smul_mk]
 
 @[simp] lemma mk_smul (i : NumDenSameDeg 𝒜 x) (m : α) : mk (m • i) = m • mk i := rfl
 
@@ -386,7 +386,7 @@ instance hasPow : Pow (HomogeneousLocalization 𝒜 x) ℕ where
     (Quotient.map' (· ^ n) fun c1 c2 (h : Localization.mk _ _ = Localization.mk _ _) => by
           change Localization.mk _ _ = Localization.mk _ _
           simp only [num_pow, den_pow]
-          convert congr_arg (fun z : at x => z ^ n) h <;> rw [Localization.mk_pow] <;> rfl :
+          convert! congr_arg (fun z : at x => z ^ n) h <;> rw [Localization.mk_pow] <;> rfl :
         HomogeneousLocalization 𝒜 x → HomogeneousLocalization 𝒜 x)
       z
 
@@ -399,7 +399,7 @@ instance : Add (HomogeneousLocalization 𝒜 x) where
         (h' : Localization.mk _ _ = Localization.mk _ _) => by
       change Localization.mk _ _ = Localization.mk _ _
       simp only [num_add, den_add]
-      convert congr_arg₂ (· + ·) h h' <;> rw [Localization.add_mk] <;> rfl
+      convert! congr_arg₂ (· + ·) h h' <;> rw [Localization.add_mk] <;> rfl
 
 @[simp] lemma mk_add (i j : NumDenSameDeg 𝒜 x) : mk (i + j) = mk i + mk j := rfl
 
@@ -412,7 +412,7 @@ instance : Mul (HomogeneousLocalization 𝒜 x) where
         (h' : Localization.mk _ _ = Localization.mk _ _) => by
       change Localization.mk _ _ = Localization.mk _ _
       simp only [num_mul, den_mul]
-      convert congr_arg₂ (· * ·) h h' <;> rw [Localization.mk_mul] <;> rfl
+      convert! congr_arg₂ (· * ·) h h' <;> rw [Localization.mk_mul] <;> rfl
 
 @[simp] lemma mk_mul (i j : NumDenSameDeg 𝒜 x) : mk (i * j) = mk i * mk j := rfl
 
@@ -830,7 +830,7 @@ lemma val_awayMap_eq_aux (a) : (awayMap 𝒜 hg hx a).val = awayMapAux 𝒜 ⟨_
   let e := RingEquiv.ofLeftInverse (f := algebraMap (Away 𝒜 x) (Localization.Away x))
     (h := (val_injective _).hasLeftInverse.choose_spec)
   dsimp [awayMap]
-  convert_to (e (e.symm ⟨awayMapAux 𝒜 (f := f) ⟨_, hx⟩ a,
+  convert_to! (e (e.symm ⟨awayMapAux 𝒜 (f := f) ⟨_, hx⟩ a,
     range_awayMapAux_subset 𝒜 hg hx ⟨_, rfl⟩⟩)).1 = _
   rw [e.apply_symm_apply]
 
@@ -844,7 +844,7 @@ lemma awayMap_fromZeroRingHom (a) :
   ext
   simp only [fromZeroRingHom, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
     val_awayMap, val_mk]
-  convert IsLocalization.lift_eq _ _
+  convert! IsLocalization.lift_eq _ _
 
 lemma val_awayMap_mk (n a i hi) : (awayMap 𝒜 hg hx (mk ⟨n, a, ⟨f ^ i, hi⟩, ⟨i, rfl⟩⟩)).val =
     Localization.mk (a * g ^ i) ⟨x ^ i, (Submonoid.mem_powers_iff _ _).mpr ⟨i, rfl⟩⟩ := by
@@ -875,7 +875,7 @@ variable {e d : ℕ} {f : A} (hf : f ∈ 𝒜 d) {g : A} (hg : g ∈ 𝒜 e)
 
 /-- The element `t := g ^ d / f ^ e` such that `A_{(fg)} = A_{(f)}[1/t]`. -/
 abbrev Away.isLocalizationElem : Away 𝒜 f :=
-  Away.mk 𝒜 hf e (g ^ d) (by convert SetLike.pow_mem_graded d hg using 2; exact mul_comm _ _)
+  Away.mk 𝒜 hf e (g ^ d) (by convert! SetLike.pow_mem_graded d hg using 2; exact mul_comm _ _)
 
 variable {x : A} (hx : x = f * g)
 
@@ -889,7 +889,7 @@ theorem Away.isLocalization_mul (hd : d ≠ 0) :
     rw [map_pow, RingHom.algebraMap_toAlgebra]
     let z : Away 𝒜 x := Away.mk 𝒜 (hx ▸ SetLike.mul_mem_graded hf hg) (d + e)
         (g ^ e * f ^ (2 * e + d)) <| by
-      convert SetLike.mul_mem_graded (SetLike.pow_mem_graded e hg)
+      convert! SetLike.mul_mem_graded (SetLike.pow_mem_graded e hg)
         (SetLike.pow_mem_graded (2 * e + d) hf) using 2
       ring
     refine (isUnit_iff_exists_inv.mpr ⟨z, ?_⟩).pow _
@@ -904,7 +904,7 @@ theorem Away.isLocalization_mul (hd : d ≠ 0) :
     rcases d with - | d
     · contradiction
     let t : Away 𝒜 f := Away.mk 𝒜 hf (n * (e + 1)) (s * g ^ (n * d)) <| by
-      convert SetLike.mul_mem_graded hs (SetLike.pow_mem_graded _ hg) using 2; simp; ring
+      convert! SetLike.mul_mem_graded hs (SetLike.pow_mem_graded _ hg) using 2; simp; ring
     refine ⟨⟨t, ⟨_, ⟨n, rfl⟩⟩⟩, ?_⟩
     ext
     simp only [RingHom.algebraMap_toAlgebra, map_pow, awayMap_mk, val_mul, val_mk, val_pow,
@@ -927,7 +927,7 @@ theorem Away.isLocalization_mul (hd : d ≠ 0) :
     rcases d with - | d
     · contradiction
     subst hx
-    convert congr(f ^ (e * (k + m + n)) * g ^ (d * (k + m + n)) * $hc) using 1 <;> ring
+    convert! congr(f ^ (e * (k + m + n)) * g ^ (d * (k + m + n)) * $hc) using 1 <;> ring
 
 end isLocalization
 
@@ -973,20 +973,20 @@ theorem Away.span_mk_prod_pow_eq_top {f : A} {d : ι} (hf : f ∈ 𝒜 d)
         congr
         refine (DirectSum.decompose_of_mem_same _ ?_).symm
         exact H ▸ SetLike.prod_pow_mem_graded _ _ _ _ fun i _ ↦ hxd i
-    · convert zero_mem (Submodule.span (𝒜 0) _)
+    · convert! zero_mem (Submodule.span (𝒜 0) _)
       ext
       have : (DirectSum.decompose 𝒜 (∏ i : ι', v i ^ ai i) n).1 = 0 := by
         refine DirectSum.decompose_of_mem_ne _ ?_ H
         exact SetLike.prod_pow_mem_graded _ _ _ _ fun i _ ↦ hxd i
       simp [this, Localization.mk_zero]
   | zero =>
-    convert zero_mem (Submodule.span (𝒜 0) _)
+    convert! zero_mem (Submodule.span (𝒜 0) _)
     ext; simp [Localization.mk_zero]
   | add s t hs ht hs' ht' =>
-    convert add_mem hs' ht'
+    convert! add_mem hs' ht'
     ext; simp [← Localization.add_mk_self]
   | smul r x hx hx' =>
-    convert Submodule.smul_mem _ r hx'
+    convert! Submodule.smul_mem _ r hx'
     ext
     simp [Algebra.smul_def, algebraMap_eq, fromZeroRingHom, Localization.mk_mul,
       -decompose_mul, coe_decompose_mul_of_left_mem_zero 𝒜 r.2]
@@ -1102,14 +1102,14 @@ lemma Away.finiteType (f : A) (d : ℕ) (hf : f ∈ 𝒜 d) :
     rintro _ ⟨a, ai, hai, hai', rfl⟩
     obtain rfl : ai = 0 := funext <| by simpa [hd, hdx] using hai
     simp only [Finset.univ_eq_attach, Pi.zero_apply, pow_zero, Finset.prod_const_one, mem_coe]
-    convert pow_mem (Algebra.self_mem_adjoin_singleton (𝒜 0) f') a using 1
+    convert! pow_mem (Algebra.self_mem_adjoin_singleton (𝒜 0) f') a using 1
     ext
     simp [f', Localization.mk_pow]
   refine ⟨_, ?_, le_rfl⟩
   let b := ∑ i, dx i
   let s' : Set ((Fin (b + 1)) × (s → Fin (d + 1))) := { ai | ∑ i, (ai.2 i).1 * dx i = ai.1 * d }
   let F : s' → Away 𝒜 f := fun ai ↦ Away.mk 𝒜 hf ai.1.1.1 (∏ i, i ^ (ai.1.2 i).1)
-    (by convert SetLike.prod_pow_mem_graded _ _ _ _ fun i _ ↦ hxd i; exact ai.2.symm)
+    (by convert! SetLike.prod_pow_mem_graded _ _ _ _ fun i _ ↦ hxd i; exact ai.2.symm)
   apply (Set.finite_range F).subset
   rintro _ ⟨a, ai, hai, hai', rfl⟩
   refine ⟨⟨⟨⟨a, ?_⟩, fun i ↦ ⟨ai i, (hai' i).trans_lt d.lt_succ_self⟩⟩, hai⟩, rfl⟩

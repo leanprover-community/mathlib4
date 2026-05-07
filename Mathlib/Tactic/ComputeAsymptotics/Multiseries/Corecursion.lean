@@ -135,7 +135,7 @@ theorem dist_cons_cons (x : α) (s t : Seq α) : dist (cons x s) (cons x t) = 2�
   · contrapose! h'
     apply_fun Subtype.val using Subtype.val_injective
     simpa
-  · convert Nat.find_comp_succ _ _ _
+  · convert! Nat.find_comp_succ _ _ _
     simp [Stream'.cons]
 
 theorem dist_eq_half_of_head {s t : Seq α} (h : s.head = t.head) :
@@ -145,7 +145,7 @@ theorem dist_eq_half_of_head {s t : Seq α} (h : s.head = t.head) :
 set_option backward.isDefEq.respectTransparency false in
 theorem dist_eq_one_of_head {s t : Seq α} (h : s.head ≠ t.head) : dist s t = 1 := by
   rw [Subtype.dist_eq, PiNat.dist_eq_of_ne]
-  · convert pow_zero _
+  · convert! pow_zero _
     simp only [PiNat.firstDiff, ne_eq, Classical.dite_not, dite_eq_left_iff,
       Nat.find_eq_zero]
     intro h'
@@ -197,7 +197,7 @@ theorem FriendlyOperation.comp {op op' : Seq α → Seq α}
     (h : FriendlyOperation op) (h' : FriendlyOperation op') :
     FriendlyOperation (op ∘ op') := by
   rw [FriendlyOperation] at h h' ⊢
-  convert h.comp h'
+  convert! h.comp h'
   simp
 
 theorem FriendlyOperation.const {s : Seq α} : FriendlyOperation (fun _ ↦ s) := by

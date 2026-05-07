@@ -304,7 +304,7 @@ lemma _root_.QuasiSeparatedSpace.of_isOpenCover {ι : Type*} {U : ι → Opens X
     QuasiSeparatedSpace X where
   inter_isCompact V₁ V₂ ho₁ hc₁ ho₂ hc₂ := by
     obtain ⟨t, ht⟩ := hc₁.elim_finite_subcover _ (fun i ↦ (U i).2) (by simp [hU.iSup_set_eq_univ])
-    convert t.isCompact_biUnion fun i _ ↦ h₂ i _ _ Set.inter_subset_left ((U i).2.inter ho₁)
+    convert! t.isCompact_biUnion fun i _ ↦ h₂ i _ _ Set.inter_subset_left ((U i).2.inter ho₁)
       (h₁ i hc₁ ho₁) Set.inter_subset_left ((U i).2.inter ho₂) (h₁ i hc₂ ho₂)
     apply subset_antisymm
     · rintro x ⟨hx₁, hx₂⟩
@@ -477,7 +477,7 @@ lemma IsLocallyConstructible.isConstructible_of_subset_of_isCompact
     ⟨V, hV₁, hV₂, hxV, this⟩
   choose U hU hU' hxU hUs using this
   obtain ⟨σ, hσ, htσ⟩ := ht.elim_nhds_subcover U (fun x _ ↦ (hU x).mem_nhds (hxU x))
-  convert IsConstructible.biUnion σ.finite_toSet (fun x _ ↦ hUs x)
+  convert! IsConstructible.biUnion σ.finite_toSet (fun x _ ↦ hUs x)
   apply subset_antisymm
   · rw [← Set.iUnion₂_inter, Set.subset_inter_iff]
     exact ⟨hst.trans htσ, subset_rfl⟩
@@ -509,7 +509,7 @@ lemma IsLocallyConstructible.of_isOpenCover
   let e : V ≃ₜ Subtype.val '' V :=
     (Equiv.Set.image _ V Subtype.val_injective).toHomeomorphOfIsInducing
       ((U i).2.isOpenEmbedding_subtypeVal.restrict (by simp [MapsTo]) hV).isInducing
-  convert hV'.preimage_of_isOpenEmbedding e.symm.isOpenEmbedding
+  convert! hV'.preimage_of_isOpenEmbedding e.symm.isOpenEmbedding
   ext ⟨_, x, hx, rfl⟩
   simp [e, Equiv.toHomeomorphOfIsInducing]
 

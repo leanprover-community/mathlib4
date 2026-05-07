@@ -19,7 +19,7 @@ These are all elementary from a mathematical point of view, but they require a b
 to be conveniently usable. In particular, to accommodate the need of families `f : X → Y → E` such
 that `f x` is only continuous for *almost every* `x`, we give a variety of results about the
 integrability of `fun x ↦ ContinuousMap.mkD (f x) g` whose assumptions only mention `f` (so that
-users don't have to convert between `f` and `fun x ↦ ContinuousMap.mkD (f x) g` by hand).
+users don't have to convert! between `f` and `fun x ↦ ContinuousMap.mkD (f x) g` by hand).
 
 ## Main results
 

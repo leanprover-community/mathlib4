@@ -105,7 +105,7 @@ theorem Seminorm.continuous_iSup
   refine Seminorm.continuous_of_lowerSemicontinuous _ ?_
   rw [Seminorm.coe_iSup_eq bdd]
   rw [Seminorm.bddAbove_range_iff] at bdd
-  convert lowerSemicontinuous_ciSup (f := fun i x ↦ p i x) bdd (fun i ↦ (hp i).lowerSemicontinuous)
+  convert! lowerSemicontinuous_ciSup (f := fun i x ↦ p i x) bdd (fun i ↦ (hp i).lowerSemicontinuous)
   exact iSup_apply
 
 end defs
@@ -138,7 +138,7 @@ instance BaireSpace.instBarrelledSpace [TopologicalSpace E] [IsTopologicalAddGro
     -- radius `2*n` is a neighborhood of zero.
     refine Seminorm.continuous' (r := n + n) ?_
     rw [p.closedBall_zero_eq] at hxn ⊢
-    have hxn' : p x ≤ n := by convert interior_subset hxn
+    have hxn' : p x ≤ n := by convert! interior_subset hxn
     -- By definition, we have `p x' ≤ n` for `x'` sufficiently close to `x`.
     -- In other words, `p (x + y) ≤ n` for `y` sufficiently close to `0`.
     rw [mem_interior_iff_mem_nhds, ← map_add_left_nhds_zero] at hxn

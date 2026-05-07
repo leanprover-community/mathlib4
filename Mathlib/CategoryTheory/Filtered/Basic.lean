@@ -684,7 +684,7 @@ theorem _root_.CategoryTheory.Functor.ranges_directed (F : C ⥤ Type*) (j : C) 
   let ⟨l, li, lk, e⟩ := cospan ij kj
   refine ⟨⟨l, lk ≫ kj⟩, e ▸ ?_, ?_⟩ <;>
     simp_rw [F.map_comp] <;>
-    convert Set.range_comp_subset_range _ _
+    convert! Set.range_comp_subset_range _ _
 
 /-- Given a "bowtie" of morphisms
 ```

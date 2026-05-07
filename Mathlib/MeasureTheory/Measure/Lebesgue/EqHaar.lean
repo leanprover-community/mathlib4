@@ -78,7 +78,7 @@ theorem parallelepiped_basisFun (ι : Type*) [Fintype ι] :
     (Pi.basisFun ℝ ι).parallelepiped = TopologicalSpace.PositiveCompacts.piIcc01 ι :=
   SetLike.coe_injective <| by
     refine Eq.trans ?_ ((uIcc_of_le ?_).trans (Set.pi_univ_Icc _ _).symm)
-    · classical convert parallelepiped_single (ι := ι) 1
+    · classical convert! parallelepiped_single (ι := ι) 1
     · exact zero_le_one
 
 /-- A parallelepiped can be expressed on the standard basis. -/
@@ -114,12 +114,12 @@ open Measure TopologicalSpace.PositiveCompacts Module
 
 /-- The Haar measure equals the Lebesgue measure on `ℝ`. -/
 theorem addHaarMeasure_eq_volume : addHaarMeasure Icc01 = volume := by
-  convert (addHaarMeasure_unique volume Icc01).symm; simp [Icc01]
+  convert! (addHaarMeasure_unique volume Icc01).symm; simp [Icc01]
 
 /-- The Haar measure equals the Lebesgue measure on `ℝ^ι`. -/
 theorem addHaarMeasure_eq_volume_pi (ι : Type*) [Fintype ι] :
     addHaarMeasure (piIcc01 ι) = volume := by
-  convert (addHaarMeasure_unique volume (piIcc01 ι)).symm
+  convert! (addHaarMeasure_unique volume (piIcc01 ι)).symm
   simp only [piIcc01, volume_pi_pi fun _ => Icc (0 : ℝ) 1, PositiveCompacts.coe_mk,
     Compacts.coe_mk, Finset.prod_const_one, ENNReal.ofReal_one, Real.volume_Icc, one_smul, sub_zero]
 
@@ -189,12 +189,12 @@ theorem addHaar_submodule {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     SetLike.mem_coe]
   intro y hym hyn
   have A : (c ^ n - c ^ m) • x ∈ s := by
-    convert s.sub_mem hym hyn using 1
+    convert! s.sub_mem hym hyn using 1
     simp only [sub_smul, neg_sub_neg, add_sub_add_right_eq_sub]
   have H : c ^ n - c ^ m ≠ 0 := by
     simpa only [sub_eq_zero, Ne] using (pow_right_strictAnti₀ cpos cone).injective.ne hmn.symm
   have : x ∈ s := by
-    convert s.smul_mem (c ^ n - c ^ m)⁻¹ A
+    convert! s.smul_mem (c ^ n - c ^ m)⁻¹ A
     rw [smul_smul, inv_mul_cancel₀ H, one_smul]
   exact hx this
 
@@ -284,7 +284,7 @@ equal to `μ s` times the absolute value of the inverse of the determinant of `f
 theorem addHaar_preimage_linearEquiv (f : E ≃ₗ[ℝ] E) (s : Set E) :
     μ (f ⁻¹' s) = ENNReal.ofReal |LinearMap.det (f.symm : E →ₗ[ℝ] E)| * μ s := by
   have A : LinearMap.det (f : E →ₗ[ℝ] E) ≠ 0 := (LinearEquiv.isUnit_det' f).ne_zero
-  convert addHaar_preimage_linearMap μ A s
+  convert! addHaar_preimage_linearMap μ A s
   simp only [LinearEquiv.det_coe_symm]
 
 /-- The preimage of a set `s` under a continuous linear equiv `f` has measure
@@ -783,7 +783,7 @@ theorem tendsto_addHaar_inter_smul_one_of_density_one_aux (s : Set E) (hs : Meas
     apply B.congr' _
     filter_upwards [self_mem_nhdsWithin]
     rintro r (rpos : 0 < r)
-    convert I (closedBall x r) sᶜ (measure_closedBall_pos μ _ rpos).ne'
+    convert! I (closedBall x r) sᶜ (measure_closedBall_pos μ _ rpos).ne'
       measure_closedBall_lt_top.ne hs.compl
     rw [compl_compl]
   have L' : Tendsto (fun r : ℝ => μ (sᶜ ∩ ({x} + r • t)) / μ ({x} + r • t)) (𝓝[>] 0) (𝓝 0) :=

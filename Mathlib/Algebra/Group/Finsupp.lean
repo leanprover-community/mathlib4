@@ -255,7 +255,7 @@ lemma induction₂ {motive : (ι →₀ M) → Prop} (f : ι →₀ M) (zero : m
       a ∉ f.support → b ≠ 0 → motive f → motive (f + single a b)) : motive f := by
   classical
   refine f.induction zero ?_
-  convert add_single using 7
+  convert! add_single using 7
   apply (addCommute_of_disjoint _).eq
   simp_all
 
@@ -301,7 +301,7 @@ lemma induction_on_max₂ (f : ι →₀ M) (zero : motive 0)
       motive f → motive (f + single a b)) : motive f := by
   classical
   refine f.induction_on_max zero ?_
-  convert add_single using 7 with _ _ _ H
+  convert! add_single using 7 with _ _ _ H
   have := fun c hc ↦ (H c hc).ne
   apply (addCommute_of_disjoint _).eq
   simp_all [not_imp_not]

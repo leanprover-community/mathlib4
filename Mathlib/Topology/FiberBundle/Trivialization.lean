@@ -289,7 +289,7 @@ noncomputable def restrictPreimage' (e : Pretrivialization F proj) (s : Set B)
   right_inv' x hx := Subtype.val_injective.prodMap injective_id <| by
     simp only [mem_preimage, (Prod.map_apply), id_eq] at hx
     simp_rw [Prod.map_apply]; rw [dif_pos hx]
-    convert ← e.right_inv' hx; exact e.proj_toFun _ (e.map_target' hx)
+    convert! ← e.right_inv' hx; exact e.proj_toFun _ (e.map_target' hx)
   open_target := e.open_target.preimage <| by fun_prop
   baseSet := Subtype.val ⁻¹' e.baseSet
   open_baseSet := e.open_baseSet.preimage continuous_subtype_val
@@ -835,11 +835,11 @@ noncomputable def domExtend {s : Set B} (hps : IsOpen (proj ⁻¹' s))
   __ := e.toPretrivialization.domExtend
   open_source := hps.isOpenMap_subtype_val _ e.open_source
   continuousOn_toFun := Topology.IsInducing.subtypeVal.continuousOn_image_iff.mpr <| by
-    convert e.continuousOn_toFun
+    convert! e.continuousOn_toFun
     ext1 ⟨x, (hx : proj x ∈ s)⟩
     simpa [Pretrivialization.domExtend] using dif_pos hx
   continuousOn_invFun := continuous_subtype_val.comp_continuousOn <| by
-    convert e.continuousOn_invFun
+    convert! e.continuousOn_invFun
 
 /-- Extend the base of a trivialization from a set to the whole space. -/
 @[simps! apply source target baseSet]
@@ -850,7 +850,7 @@ noncomputable def codExtend' {s : Set B} (hs : IsOpen s) {proj : Z → s} (e : T
   continuousOn_toFun :=
     (continuous_subtype_val.prodMap continuous_id).comp_continuousOn e.continuousOn_toFun
   continuousOn_invFun := (Topology.IsInducing.subtypeVal.prodMap .id).continuousOn_image_iff.2 <| by
-    convert e.continuousOn_invFun; ext; simp [Pretrivialization.codExtend']; rfl
+    convert! e.continuousOn_invFun; ext; simp [Pretrivialization.codExtend']; rfl
 
 /-- Extend the base of a pretrivialization from a nonempty set to the whole space. -/
 @[simps! apply source target baseSet]

@@ -78,7 +78,7 @@ theorem det_diagonal {d : n → R} : det (diagonal d) = ∏ i, d i := by
   refine (Finset.sum_eq_single 1 ?_ ?_).trans ?_
   · rintro σ - h2
     obtain ⟨x, h3⟩ := not_forall.1 (mt Equiv.ext h2)
-    convert mul_zero (ε σ)
+    convert! mul_zero (ε σ)
     apply Finset.prod_eq_zero (mem_univ x)
     exact if_neg h3
   · simp
@@ -111,7 +111,7 @@ theorem det_unique {n : Type*} [Unique n] [DecidableEq n] [Fintype n] (A : Matri
 theorem det_eq_elem_of_subsingleton [Subsingleton n] (A : Matrix n n R) (k : n) :
     det A = A k k := by
   have := uniqueOfSubsingleton k
-  convert det_unique A
+  convert! det_unique A
 
 theorem det_eq_elem_of_card_eq_one {A : Matrix n n R} (h : Fintype.card n = 1) (k : n) :
     det A = A k k :=
@@ -426,7 +426,7 @@ theorem det_updateRow_sum_aux (M : Matrix n n R) {j : n} (s : Finset n) (hj : j 
 multiplied by the coefficient of that row. -/
 theorem det_updateRow_sum (A : Matrix n n R) (j : n) (c : n → R) :
     (A.updateRow j (∑ k, (c k) • A k)).det = (c j) • A.det := by
-  convert det_updateRow_sum_aux A (Finset.univ.erase j) (Finset.univ.notMem_erase j) c (c j)
+  convert! det_updateRow_sum_aux A (Finset.univ.erase j) (Finset.univ.notMem_erase j) c (c j)
   rw [← Finset.univ.add_sum_erase _ (Finset.mem_univ j)]
 
 /-- If we replace a column of a matrix by a linear combination of its columns, then the determinant
@@ -434,7 +434,7 @@ is multiplied by the coefficient of that column. -/
 theorem det_updateCol_sum (A : Matrix n n R) (j : n) (c : n → R) :
     (A.updateCol j (fun k ↦ ∑ i, (c i) • A k i)).det = (c j) • A.det := by
   rw [← det_transpose, ← updateRow_transpose, ← det_transpose A]
-  convert det_updateRow_sum A.transpose j c
+  convert! det_updateRow_sum A.transpose j c
   simp only [smul_eq_mul, Finset.sum_apply, Pi.smul_apply, transpose_apply]
 
 section DetEq
@@ -674,7 +674,7 @@ theorem det_fromBlocks_zero₂₁ (A : Matrix m m R) (B : Matrix m n R) (D : Mat
     (Matrix.fromBlocks A B 0 D).det = A.det * D.det := by
   classical
     simp_rw [det_apply']
-    convert Eq.symm <|
+    convert! Eq.symm <|
       sum_subset (M := R) (subset_univ ((sumCongrHom m n).range : Set (Perm (m ⊕ n))).toFinset) ?_
     · simp_rw [sum_mul_sum, ← sum_product', univ_product_univ]
       refine sum_nbij (fun σ ↦ σ.fst.sumCongr σ.snd) ?_ ?_ ?_ ?_

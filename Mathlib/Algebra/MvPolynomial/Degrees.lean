@@ -82,7 +82,7 @@ def degrees (p : MvPolynomial σ R) : Multiset σ :=
   p.support.sup fun s : σ →₀ ℕ => toMultiset s
 
 theorem degrees_def [DecidableEq σ] (p : MvPolynomial σ R) :
-    p.degrees = p.support.sup fun s : σ →₀ ℕ => Finsupp.toMultiset s := by rw [degrees]; convert rfl
+    p.degrees = p.support.sup fun s : σ →₀ ℕ => Finsupp.toMultiset s := by rw [degrees]; convert! rfl
 
 theorem degrees_monomial (s : σ →₀ ℕ) (a : R) : degrees (monomial s a) ≤ toMultiset s := by
   classical
@@ -217,7 +217,7 @@ def degreeOf (n : σ) (p : MvPolynomial σ R) : ℕ :=
   p.degrees.count n
 
 theorem degreeOf_def [DecidableEq σ] (n : σ) (p : MvPolynomial σ R) :
-    p.degreeOf n = p.degrees.count n := by rw [degreeOf]; convert rfl
+    p.degreeOf n = p.degrees.count n := by rw [degreeOf]; convert! rfl
 
 theorem degreeOf_eq_sup (n : σ) (f : MvPolynomial σ R) :
     degreeOf n f = f.support.sup fun m => m n := by
@@ -297,7 +297,7 @@ theorem degreeOf_mul_le (i : σ) (f g : MvPolynomial σ R) :
     degreeOf i (f * g) ≤ degreeOf i f + degreeOf i g := by
   classical
   simp only [degreeOf]
-  convert Multiset.count_le_of_le i degrees_mul_le
+  convert! Multiset.count_le_of_le i degrees_mul_le
   rw [Multiset.count_add]
 
 theorem degreeOf_sum_le {ι : Type*} (i : σ) (s : Finset ι) (f : ι → MvPolynomial σ R) :
@@ -335,7 +335,7 @@ theorem degreeOf_mul_X_self (j : σ) (f : MvPolynomial σ R) :
   simp only [degreeOf]
   apply (Multiset.count_le_of_le j degrees_mul_le).trans
   simp only [Multiset.count_add, add_le_add_iff_left]
-  convert Multiset.count_le_of_le j <| degrees_X' j
+  convert! Multiset.count_le_of_le j <| degrees_X' j
   rw [Multiset.count_singleton_self]
 
 theorem degreeOf_X_pow_of_ne {i j : σ} (k : ℕ) (h : i ≠ j) :
@@ -407,13 +407,13 @@ theorem degreeOf_eq_of_degreeOf_add_lt {i : σ} (h : (p + q).degreeOf i < p.degr
 theorem degreeOf_C_mul_le (p : MvPolynomial σ R) (i : σ) (c : R) :
     (C c * p).degreeOf i ≤ p.degreeOf i := by
   unfold degreeOf
-  convert Multiset.count_le_of_le i degrees_mul_le
+  convert! Multiset.count_le_of_le i degrees_mul_le
   simp only [degrees_C, zero_add]
 
 theorem degreeOf_mul_C_le (p : MvPolynomial σ R) (i : σ) (c : R) :
     (p * C c).degreeOf i ≤ p.degreeOf i := by
   unfold degreeOf
-  convert Multiset.count_le_of_le i degrees_mul_le
+  convert! Multiset.count_le_of_le i degrees_mul_le
   simp only [degrees_C, add_zero]
 
 theorem degreeOf_rename_of_injective {p : MvPolynomial σ R} {f : σ → τ} (h : Function.Injective f)

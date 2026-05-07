@@ -223,7 +223,7 @@ lemma rpow_abs_le_mul_max_exp_of_pos (x : ℝ) {t p : ℝ} (hp : 0 ≤ p) (ht : 
   calc |x| ^ p
   _ ≤ ((t / p)⁻¹ * max (exp (t / p * x)) (exp (-t / p * x))) ^ p := by
     gcongr
-    convert h_abs_le (t / p) (div_pos ht (hp.lt_of_ne' hp_zero)) using 5
+    convert! h_abs_le (t / p) (div_pos ht (hp.lt_of_ne' hp_zero)) using 5
     rw [neg_div]
   _ = (p / t) ^ p * max (exp (t * x)) (exp (-t * x)) := by
     rw [mul_rpow (by positivity) (by positivity)]
@@ -237,7 +237,7 @@ lemma rpow_abs_le_mul_max_exp (x : ℝ) {t p : ℝ} (hp : 0 ≤ p) (ht : t ≠ 0
     |x| ^ p ≤ (p / |t|) ^ p * max (exp (t * x)) (exp (-t * x)) := by
   rcases lt_or_gt_of_ne ht with ht_neg | ht_pos
   · rw [abs_of_nonpos ht_neg.le, sup_comm]
-    convert rpow_abs_le_mul_max_exp_of_pos x hp (t := -t) (by simp [ht_neg])
+    convert! rpow_abs_le_mul_max_exp_of_pos x hp (t := -t) (by simp [ht_neg])
     simp
   · rw [abs_of_nonneg ht_pos.le]
     exact rpow_abs_le_mul_max_exp_of_pos x hp ht_pos
@@ -279,7 +279,7 @@ lemma integrable_rpow_abs_mul_exp_add_of_integrable_exp_mul {x : ℝ}
     nth_rw 2 [this]
     rw [add_mul, exp_add, ← mul_assoc]
     gcongr ?_ * _
-    convert rpow_abs_le_mul_exp_abs (X a) hp (t := |t| - x) _ using 4
+    convert! rpow_abs_le_mul_exp_abs (X a) hp (t := |t| - x) _ using 4
     · nth_rw 2 [abs_of_nonneg]
       simp [hx.le]
     · nth_rw 2 [abs_of_nonneg]
@@ -308,7 +308,7 @@ lemma integrable_pow_abs_mul_exp_add_of_integrable_exp_mul {x : ℝ}
     (h_int_neg : Integrable (fun ω ↦ exp ((v - t) * X ω)) μ) (h_nonneg : 0 ≤ x) (hx : x < |t|)
     (n : ℕ) :
     Integrable (fun a ↦ |X a| ^ n * exp (v * X a + x * |X a|)) μ := by
-  convert integrable_rpow_abs_mul_exp_add_of_integrable_exp_mul h_int_pos h_int_neg h_nonneg hx
+  convert! integrable_rpow_abs_mul_exp_add_of_integrable_exp_mul h_int_pos h_int_neg h_nonneg hx
     n.cast_nonneg
   simp
 
@@ -318,7 +318,7 @@ lemma integrable_rpow_abs_mul_exp_of_integrable_exp_mul (ht : t ≠ 0)
     (ht_int_pos : Integrable (fun ω ↦ exp ((v + t) * X ω)) μ)
     (ht_int_neg : Integrable (fun ω ↦ exp ((v - t) * X ω)) μ) {p : ℝ} (hp : 0 ≤ p) :
     Integrable (fun ω ↦ |X ω| ^ p * exp (v * X ω)) μ := by
-  convert integrable_rpow_abs_mul_exp_add_of_integrable_exp_mul ht_int_pos ht_int_neg le_rfl _ hp
+  convert! integrable_rpow_abs_mul_exp_add_of_integrable_exp_mul ht_int_pos ht_int_neg le_rfl _ hp
     using 4
   · simp
   · simp [ht]
@@ -329,7 +329,7 @@ lemma integrable_pow_abs_mul_exp_of_integrable_exp_mul (ht : t ≠ 0)
     (ht_int_pos : Integrable (fun ω ↦ exp ((v + t) * X ω)) μ)
     (ht_int_neg : Integrable (fun ω ↦ exp ((v - t) * X ω)) μ) (n : ℕ) :
     Integrable (fun ω ↦ |X ω| ^ n * exp (v * X ω)) μ := by
-  convert integrable_rpow_abs_mul_exp_of_integrable_exp_mul ht ht_int_pos ht_int_neg
+  convert! integrable_rpow_abs_mul_exp_of_integrable_exp_mul ht ht_int_pos ht_int_neg
     (by positivity : 0 ≤ (n : ℝ)) with ω
   simp
 
@@ -358,7 +358,7 @@ lemma integrable_pow_mul_exp_of_integrable_exp_mul (ht : t ≠ 0)
     (ht_int_pos : Integrable (fun ω ↦ exp ((v + t) * X ω)) μ)
     (ht_int_neg : Integrable (fun ω ↦ exp ((v - t) * X ω)) μ) (n : ℕ) :
     Integrable (fun ω ↦ X ω ^ n * exp (v * X ω)) μ := by
-  convert integrable_rpow_mul_exp_of_integrable_exp_mul ht ht_int_pos ht_int_neg
+  convert! integrable_rpow_mul_exp_of_integrable_exp_mul ht ht_int_pos ht_int_neg
     (by positivity : 0 ≤ (n : ℝ)) with ω
   simp
 
@@ -379,7 +379,7 @@ lemma integrable_pow_abs_of_integrable_exp_mul (ht : t ≠ 0)
     (ht_int_pos : Integrable (fun ω ↦ exp (t * X ω)) μ)
     (ht_int_neg : Integrable (fun ω ↦ exp (-t * X ω)) μ) (n : ℕ) :
     Integrable (fun ω ↦ |X ω| ^ n) μ := by
-  convert integrable_rpow_abs_of_integrable_exp_mul ht ht_int_pos ht_int_neg
+  convert! integrable_rpow_abs_of_integrable_exp_mul ht ht_int_pos ht_int_neg
     (by positivity : 0 ≤ (n : ℝ)) with ω
   simp
 
@@ -400,7 +400,7 @@ lemma integrable_pow_of_integrable_exp_mul (ht : t ≠ 0)
     (ht_int_pos : Integrable (fun ω ↦ exp (t * X ω)) μ)
     (ht_int_neg : Integrable (fun ω ↦ exp (-t * X ω)) μ) (n : ℕ) :
     Integrable (fun ω ↦ X ω ^ n) μ := by
-  convert integrable_rpow_of_integrable_exp_mul ht ht_int_pos ht_int_neg
+  convert! integrable_rpow_of_integrable_exp_mul ht ht_int_pos ht_int_neg
     (by positivity : 0 ≤ (n : ℝ)) with ω
   simp
 
@@ -468,7 +468,7 @@ then `|X| ^ n * exp (v * X)` is integrable for all `n : ℕ`. -/
 lemma integrable_pow_abs_mul_exp_of_mem_interior_integrableExpSet
     (hv : v ∈ interior (integrableExpSet X μ)) (n : ℕ) :
     Integrable (fun ω ↦ |X ω| ^ n * exp (v * X ω)) μ := by
-  convert integrable_rpow_abs_mul_exp_of_mem_interior_integrableExpSet hv
+  convert! integrable_rpow_abs_mul_exp_of_mem_interior_integrableExpSet hv
     (by positivity : 0 ≤ (n : ℝ)) with ω
   simp
 
@@ -491,7 +491,7 @@ then `X ^ n * exp (v * X)` is integrable for all `n : ℕ`. -/
 lemma integrable_pow_mul_exp_of_mem_interior_integrableExpSet
     (hv : v ∈ interior (integrableExpSet X μ)) (n : ℕ) :
     Integrable (fun ω ↦ X ω ^ n * exp (v * X ω)) μ := by
-  convert integrable_rpow_mul_exp_of_mem_interior_integrableExpSet hv
+  convert! integrable_rpow_mul_exp_of_mem_interior_integrableExpSet hv
     (by positivity : 0 ≤ (n : ℝ)) with ω
   simp
 
@@ -500,7 +500,7 @@ then `|X| ^ n` is integrable for all nonnegative `p : ℝ`. -/
 lemma integrable_rpow_abs_of_mem_interior_integrableExpSet
     (h : 0 ∈ interior (integrableExpSet X μ)) {p : ℝ} (hp : 0 ≤ p) :
     Integrable (fun ω ↦ |X ω| ^ p) μ := by
-  convert integrable_rpow_abs_mul_exp_of_mem_interior_integrableExpSet h hp using 1
+  convert! integrable_rpow_abs_mul_exp_of_mem_interior_integrableExpSet h hp using 1
   simp
 
 /-- If 0 belongs to the interior of the interval `integrableExpSet X μ`,
@@ -508,7 +508,7 @@ then `|X| ^ n` is integrable for all `n : ℕ`. -/
 lemma integrable_pow_abs_of_mem_interior_integrableExpSet
     (h : 0 ∈ interior (integrableExpSet X μ)) (n : ℕ) :
     Integrable (fun ω ↦ |X ω| ^ n) μ := by
-  convert integrable_pow_abs_mul_exp_of_mem_interior_integrableExpSet h n
+  convert! integrable_pow_abs_mul_exp_of_mem_interior_integrableExpSet h n
   simp
 
 /-- If 0 belongs to the interior of the interval `integrableExpSet X μ`,
@@ -516,7 +516,7 @@ then `X ^ n` is integrable for all nonnegative `p : ℝ`. -/
 lemma integrable_rpow_of_mem_interior_integrableExpSet
     (h : 0 ∈ interior (integrableExpSet X μ)) {p : ℝ} (hp : 0 ≤ p) :
     Integrable (fun ω ↦ X ω ^ p) μ := by
-  convert integrable_rpow_mul_exp_of_mem_interior_integrableExpSet h hp using 1
+  convert! integrable_rpow_mul_exp_of_mem_interior_integrableExpSet h hp using 1
   simp
 
 /-- If 0 belongs to the interior of the interval `integrableExpSet X μ`,
@@ -524,7 +524,7 @@ then `X ^ n` is integrable for all `n : ℕ`. -/
 lemma integrable_pow_of_mem_interior_integrableExpSet
     (h : 0 ∈ interior (integrableExpSet X μ)) (n : ℕ) :
     Integrable (fun ω ↦ X ω ^ n) μ := by
-  convert integrable_pow_mul_exp_of_mem_interior_integrableExpSet h n
+  convert! integrable_pow_mul_exp_of_mem_interior_integrableExpSet h n
   simp
 
 /-- If 0 belongs to the interior of `integrableExpSet X μ`, then `X` is in `ℒp` for all
@@ -575,7 +575,7 @@ lemma integrable_rpow_abs_mul_cexp_of_re_mem_interior_integrableExpSet
 lemma integrable_pow_abs_mul_cexp_of_re_mem_interior_integrableExpSet
     (hz : z.re ∈ interior (integrableExpSet X μ)) (n : ℕ) :
     Integrable (fun ω ↦ |X ω| ^ n * cexp (z * X ω)) μ := by
-  convert integrable_rpow_abs_mul_cexp_of_re_mem_interior_integrableExpSet hz (Nat.cast_nonneg n)
+  convert! integrable_rpow_abs_mul_cexp_of_re_mem_interior_integrableExpSet hz (Nat.cast_nonneg n)
   simp
 
 lemma integrable_rpow_mul_cexp_of_re_mem_interior_integrableExpSet
@@ -596,7 +596,7 @@ lemma integrable_rpow_mul_cexp_of_re_mem_interior_integrableExpSet
 lemma integrable_pow_mul_cexp_of_re_mem_interior_integrableExpSet
     (hz : z.re ∈ interior (integrableExpSet X μ)) (n : ℕ) :
     Integrable (fun ω ↦ X ω ^ n * cexp (z * X ω)) μ := by
-  convert integrable_rpow_mul_cexp_of_re_mem_interior_integrableExpSet hz (Nat.cast_nonneg n)
+  convert! integrable_rpow_mul_cexp_of_re_mem_interior_integrableExpSet hz (Nat.cast_nonneg n)
   simp
 
 end Complex

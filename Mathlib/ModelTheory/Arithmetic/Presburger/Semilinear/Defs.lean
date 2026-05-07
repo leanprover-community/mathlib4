@@ -203,7 +203,7 @@ theorem IsSemilinearSet.image (hs : IsSemilinearSet s) (f : F) : IsSemilinearSet
 theorem isSemilinearSet_image_iff {F : Type*} [EquivLike F M N] [AddEquivClass F M N] (f : F) :
     IsSemilinearSet (f '' s) ↔ IsSemilinearSet s := by
   constructor <;> intro h
-  · convert h.image (f : M ≃+ N).symm
+  · convert! h.image (f : M ≃+ N).symm
     simp [image_image]
   · exact h.image f
 
@@ -211,7 +211,7 @@ theorem isSemilinearSet_image_iff {F : Type*} [EquivLike F M N] [AddEquivClass F
 the index). It is a special case of `IsSemilinearSet.image`. -/
 theorem IsSemilinearSet.proj {s : Set (ι ⊕ κ → M)} (hs : IsSemilinearSet s) :
     IsSemilinearSet { x | ∃ y, Sum.elim x y ∈ s } := by
-  convert hs.image (LinearMap.funLeft ℕ M Sum.inl)
+  convert! hs.image (LinearMap.funLeft ℕ M Sum.inl)
   ext x
   constructor
   · intro ⟨y, hy⟩
@@ -227,7 +227,7 @@ theorem IsSemilinearSet.proj' {p : (ι → M) → (κ → M) → Prop} :
 
 protected lemma IsLinearSet.closure (hs : IsLinearSet s) : IsSemilinearSet (closure s : Set M) := by
   rcases hs with ⟨a, t, ht, rfl⟩
-  convert (IsSemilinearSet.singleton 0).union (isSemilinearSet ⟨a, {a} ∪ t, by simp [ht], rfl⟩)
+  convert! (IsSemilinearSet.singleton 0).union (isSemilinearSet ⟨a, {a} ∪ t, by simp [ht], rfl⟩)
   ext x
   simp only [SetLike.mem_coe, singleton_union, mem_insert_iff, mem_vadd_set, vadd_eq_add]
   constructor
@@ -345,7 +345,7 @@ lemma IsLinearSet.isProperSemilinearSet [IsCancelAdd M] (hs : IsLinearSet s) :
   rw [not_linearIndepOn_finset_iffₒₛ] at hindep
   rcases hindep with ⟨t', ht', f, heq, i, hi, hfi⟩
   simp only [Function.id_def] at heq
-  convert_to IsProperSemilinearSet (⋃ j ∈ t', ⋃ k ∈ Finset.range (f j),
+  convert_to! IsProperSemilinearSet (⋃ j ∈ t', ⋃ k ∈ Finset.range (f j),
     (a + k • j) +ᵥ (closure (t.erase j : Set M) : Set M))
   · ext x
     simp only [mem_vadd_set, SetLike.mem_coe]
@@ -356,7 +356,7 @@ lemma IsLinearSet.isProperSemilinearSet [IsCancelAdd M] (hs : IsLinearSet s) :
       induction hn : g i using Nat.strong_induction_on generalizing g with | _ n ih'
       subst hn
       by_cases! hfg : ∀ j ∈ t', f j ≤ g j
-      · convert ih' (g i - f i) (Nat.sub_lt_self hfi (hfg i hi))
+      · convert! ih' (g i - f i) (Nat.sub_lt_self hfi (hfg i hi))
           (fun j => if j ∈ t' then g j - f j else g j + f j) (by simp [hi]) using 1
         conv_lhs => rw [← Finset.union_sdiff_of_subset ht']
         simp_rw [vadd_eq_add, add_left_cancel_iff, Finset.sum_union Finset.sdiff_disjoint.symm,
@@ -435,7 +435,7 @@ theorem Nat.isSemilinearSet_iff_ultimately_periodic {s : Set ℕ} :
     have h₁ : {x ∈ s | x < k}.Finite := (Set.finite_lt_nat k).subset (sep_subset_setOf _ _)
     have h₂ : {x ∈ s | k ≤ x ∧ x < k + p}.Finite :=
       (Set.finite_Ico k (k + p)).subset (sep_subset_setOf _ _)
-    convert (IsSemilinearSet.of_finite h₁).union (.add (.of_finite h₂) (.closure_finset {p}))
+    convert! (IsSemilinearSet.of_finite h₁).union (.add (.of_finite h₂) (.closure_finset {p}))
     ext x
     simp only [sep_and, Finset.coe_singleton, mem_union, mem_setOf_eq, mem_add, mem_inter_iff,
       SetLike.mem_coe, AddSubmonoid.mem_closure_singleton, smul_eq_mul, exists_exists_eq_and]

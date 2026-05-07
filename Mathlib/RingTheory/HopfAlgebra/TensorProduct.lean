@@ -49,7 +49,7 @@ instance : HopfAlgebra S (B ⊗[R] A) where
   antipode := AlgebraTensorModule.map (HopfAlgebra.antipode S) (HopfAlgebra.antipode R)
   mul_antipode_rTensor_comul := by
     ext x y
-    convert congr($(mul_antipode_rTensor_comul_apply (R := S) x) ⊗ₜ[R]
+    convert! congr($(mul_antipode_rTensor_comul_apply (R := S) x) ⊗ₜ[R]
       $(mul_antipode_rTensor_comul_apply (R := R) y)) using 1
     · dsimp
       hopf_tensor_induction comul (R := S) x with x₁ x₂
@@ -59,7 +59,7 @@ instance : HopfAlgebra S (B ⊗[R] A) where
       simp [Algebra.algebraMap_eq_smul_one, smul_tmul']
   mul_antipode_lTensor_comul := by
     ext x y
-    convert congr($(mul_antipode_lTensor_comul_apply (R := S) x) ⊗ₜ[R]
+    convert! congr($(mul_antipode_lTensor_comul_apply (R := S) x) ⊗ₜ[R]
       $(mul_antipode_lTensor_comul_apply (R := R) y)) using 1
     · dsimp [Algebra.TensorProduct.one_def]
       hopf_tensor_induction comul (R := S) x with x₁ x₂

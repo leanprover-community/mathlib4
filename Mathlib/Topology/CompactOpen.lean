@@ -338,7 +338,7 @@ theorem compactOpen_eq_iInf_induced :
   refine le_antisymm (le_iInf₂ fun s _ ↦ compactOpen_le_induced s) ?_
   refine le_generateFrom <| forall_mem_image2.2 fun K (hK : IsCompact K) U hU ↦ ?_
   refine TopologicalSpace.le_def.1 (iInf₂_le K hK) _ ?_
-  convert isOpen_induced (isOpen_setOf_mapsTo (isCompact_iff_isCompact_univ.1 hK) hU)
+  convert! isOpen_induced (isOpen_setOf_mapsTo (isCompact_iff_isCompact_univ.1 hK) hU)
   simp [Subtype.forall, MapsTo]
 
 theorem nhds_compactOpen_eq_iInf_nhds_induced (f : C(X, Y)) :

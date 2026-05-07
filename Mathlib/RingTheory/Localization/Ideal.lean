@@ -258,7 +258,7 @@ lemma map_radical (I : Ideal R) :
   obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq M x
   simp only [← IsLocalization.mk'_pow, IsLocalization.mk'_mem_map_algebraMap_iff M] at hn ⊢
   obtain ⟨s, hs, h⟩ := hn
-  refine ⟨s, hs, n + 1, by convert I.mul_mem_left (s ^ n * x) h; ring⟩
+  refine ⟨s, hs, n + 1, by convert! I.mul_mem_left (s ^ n * x) h; ring⟩
 
 theorem ideal_eq_iInf_comap_map_away {S : Finset R} (hS : Ideal.span (α := R) S = ⊤) (I : Ideal R) :
     I = ⨅ f ∈ S, (I.map (algebraMap R (Localization.Away f))).comap
@@ -308,7 +308,7 @@ theorem surjective_quotientMap_of_maximal_of_localization {I : Ideal S} [I.IsPri
   · have : I = ⊤ := by
       rw [Ideal.eq_top_iff_one]
       rw [Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_comap] at hM
-      convert I.mul_mem_right (mk' S (1 : R) ⟨m, hm⟩) hM
+      convert! I.mul_mem_right (mk' S (1 : R) ⟨m, hm⟩) hM
       rw [← mk'_eq_mul_mk'_one, mk'_self]
     exact ⟨0, eq_comm.1 (by simp [Ideal.Quotient.eq_zero_iff_mem, this])⟩
   · rw [Ideal.Quotient.maximal_ideal_iff_isField_quotient] at hI
@@ -337,7 +337,7 @@ theorem bot_lt_comap_prime [IsDomain R] (hM : M ≤ R⁰) (p : Ideal S) [hpp : p
     (hp0 : p ≠ ⊥) : ⊥ < Ideal.comap (algebraMap R S) p := by
   haveI : IsDomain S := isDomain_of_le_nonZeroDivisors _ hM
   rw [← Ideal.comap_bot_of_injective (algebraMap R S) (IsLocalization.injective _ hM)]
-  convert (orderIsoOfPrime M S).lt_iff_lt.mpr (show (⟨⊥, Ideal.isPrime_bot⟩ :
+  convert! (orderIsoOfPrime M S).lt_iff_lt.mpr (show (⟨⊥, Ideal.isPrime_bot⟩ :
     { p : Ideal S // p.IsPrime }) < ⟨p, hpp⟩ from hp0.bot_lt)
 
 variable (R) in

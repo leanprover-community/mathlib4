@@ -236,7 +236,7 @@ theorem zeroLocus_bUnion (s : Set (Set A)) :
 theorem vanishingIdeal_iUnion {γ : Sort*} (t : γ → Set (ProjectiveSpectrum 𝒜)) :
     vanishingIdeal (⋃ i, t i) = ⨅ i, vanishingIdeal (t i) :=
   HomogeneousIdeal.toIdeal_injective <| by
-    convert (gc_ideal 𝒜).u_iInf; exact HomogeneousIdeal.toIdeal_iInf _
+    convert! (gc_ideal 𝒜).u_iInf; exact HomogeneousIdeal.toIdeal_iInf _
 
 theorem zeroLocus_inf (I J : Ideal A) :
     zeroLocus 𝒜 ((I ⊓ J : Ideal A) : Set A) = zeroLocus 𝒜 I ∪ zeroLocus 𝒜 J :=
@@ -287,7 +287,7 @@ instance zariskiTopology : TopologicalSpace (ProjectiveSpectrum 𝒜) :=
       let f : Zs → Set _ := fun i => Classical.choose (h i.2)
       have H : (Set.iInter fun i ↦ zeroLocus 𝒜 (f i)) ∈ Set.range (zeroLocus 𝒜) :=
         ⟨_, zeroLocus_iUnion 𝒜 _⟩
-      convert H using 2
+      convert! H using 2
       funext i
       exact (Classical.choose_spec (h i.2)).symm)
     (by

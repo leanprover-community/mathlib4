@@ -65,7 +65,7 @@ theorem Units.mem [NumberField K] [IsCyclotomicExtension {3} ℚ K] :
   obtain ⟨n, hnpos, hn⟩ := isOfFinOrder_iff_pow_eq_one.1 <| (CommGroup.mem_torsion _ _).1 x.2
   replace hn : (↑u : K) ^ ((⟨n, hnpos⟩ : ℕ+) : ℕ) = 1 := by
     rw [← map_pow]
-    convert map_one (algebraMap (𝓞 K) K)
+    convert! map_one (algebraMap (𝓞 K) K)
     rw_mod_cast [hxu, hn]
     simp
   obtain ⟨r, hr3, hru⟩ := hζ.exists_pow_or_neg_mul_pow_of_isOfFinOrder (by decide)
@@ -187,9 +187,9 @@ lemma lambda_pow_four_dvd_cube_sub_one_of_dvd_sub_one {x : 𝓞 K} (h : λ ∣ x
 lemma lambda_pow_four_dvd_cube_add_one_of_dvd_add_one {x : 𝓞 K} (h : λ ∣ x + 1) :
     λ ^ 4 ∣ x ^ 3 + 1 := by
   replace h : λ ∣ -x - 1 := by
-    convert h.neg_right using 1
+    convert! h.neg_right using 1
     exact (neg_add' x 1).symm
-  convert (lambda_pow_four_dvd_cube_sub_one_of_dvd_sub_one hζ h).neg_right using 1
+  convert! (lambda_pow_four_dvd_cube_sub_one_of_dvd_sub_one hζ h).neg_right using 1
   ring
 
 /-- If `λ` does not divide `x`, then `λ ^ 4` divides `x ^ 3 - 1` or `x ^ 3 + 1`. -/

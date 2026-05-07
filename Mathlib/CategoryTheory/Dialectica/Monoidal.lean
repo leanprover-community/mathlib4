@@ -52,11 +52,11 @@ set_option backward.isDefEq.respectTransparency false in
     · have := (Subobject.pullback (prod.map π₁ π₁ :
         (X₁.src ⨯ Y₁.src) ⨯ X₂.tgt ⨯ Y₂.tgt ⟶ _)).monotone (Hom.le f)
       rw [← Subobject.pullback_comp, ← Subobject.pullback_comp] at this
-      convert this using 3 <;> simp
+      convert! this using 3 <;> simp
     · have := (Subobject.pullback (prod.map π₂ π₂ :
         (X₁.src ⨯ Y₁.src) ⨯ X₂.tgt ⨯ Y₂.tgt ⟶ _)).monotone (Hom.le g)
       rw [← Subobject.pullback_comp, ← Subobject.pullback_comp] at this
-      convert this using 3 <;> simp
+      convert! this using 3 <;> simp
 
 /-- The unit for the tensor `X ⊗ Y` in `Dial C`. -/
 @[simps] def tensorUnitImpl : Dial C := { src := ⊤_ _, tgt := ⊤_ _, rel := ⊤ }

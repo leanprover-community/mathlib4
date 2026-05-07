@@ -400,13 +400,13 @@ end ToList
 @[to_additive]
 theorem _root_.Equiv.Perm.prod_comp (σ : Equiv.Perm ι) (s : Finset ι) (f : ι → M)
     (hs : { a | σ a ≠ a } ⊆ s) : (∏ x ∈ s, f (σ x)) = ∏ x ∈ s, f x := by
-  convert (prod_map s σ.toEmbedding f).symm
+  convert! (prod_map s σ.toEmbedding f).symm
   exact (map_perm hs).symm
 
 @[to_additive]
 theorem _root_.Equiv.Perm.prod_comp' (σ : Equiv.Perm ι) (s : Finset ι) (f : ι → ι → M)
     (hs : { a | σ a ≠ a } ⊆ s) : (∏ x ∈ s, f (σ x) x) = ∏ x ∈ s, f x (σ.symm x) := by
-  convert σ.prod_comp s (fun x => f x (σ.symm x)) hs
+  convert! σ.prod_comp s (fun x => f x (σ.symm x)) hs
   rw [Equiv.symm_apply_apply]
 
 end CommMonoid
@@ -782,7 +782,7 @@ theorem disjoint_sum_right {a : Multiset α} {i : Multiset (Multiset α)} :
 
 theorem disjoint_finsetSum_left {i : Finset ι} {f : ι → Multiset α} {a : Multiset α} :
     Disjoint (i.sum f) a ↔ ∀ b ∈ i, Disjoint (f b) a := by
-  convert @disjoint_sum_left _ a (map f i.val)
+  convert! @disjoint_sum_left _ a (map f i.val)
   simp
 
 @[deprecated (since := "2026-04-08")] alias disjoint_finset_sum_left := disjoint_finsetSum_left

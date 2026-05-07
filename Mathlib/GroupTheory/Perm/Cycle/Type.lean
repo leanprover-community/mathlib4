@@ -529,7 +529,7 @@ theorem _root_.exists_prime_orderOf_dvd_card {G : Type*} [Group G] [Fintype G] (
 order `p` in `G`. This is the additive version of Cauchy's theorem. -/
 theorem _root_.exists_prime_addOrderOf_dvd_card {G : Type*} [AddGroup G] [Fintype G] (p : ℕ)
     [Fact p.Prime] (hdvd : p ∣ Fintype.card G) : ∃ x : G, addOrderOf x = p :=
-  @exists_prime_orderOf_dvd_card (Multiplicative G) _ _ _ _ (by convert hdvd)
+  @exists_prime_orderOf_dvd_card (Multiplicative G) _ _ _ _ (by convert! hdvd)
 
 attribute [to_additive existing] exists_prime_orderOf_dvd_card
 

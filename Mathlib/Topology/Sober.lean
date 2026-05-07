@@ -122,7 +122,7 @@ theorem IsIrreducible.isGenericPoint_genericPoint_closure
 theorem IsIrreducible.isGenericPoint_genericPoint [QuasiSober α] {S : Set α}
     (hS : IsIrreducible S) (hS' : IsClosed S) :
     IsGenericPoint hS.genericPoint S := by
-  convert hS.isGenericPoint_genericPoint_closure; exact hS'.closure_eq.symm
+  convert! hS.isGenericPoint_genericPoint_closure; exact hS'.closure_eq.symm
 
 @[simp]
 theorem IsIrreducible.genericPoint_closure_eq [QuasiSober α] {S : Set α} (hS : IsIrreducible S) :

@@ -301,7 +301,7 @@ theorem changeLevel_primitiveCharacter :
 lemma primitiveCharacter_isPrimitive : IsPrimitive (χ.primitiveCharacter) := by
   by_cases h : χ.conductor = 0
   · rw [isPrimitive_def]
-    convert conductor_eq_zero_iff_level_eq_zero.mpr h
+    convert! conductor_eq_zero_iff_level_eq_zero.mpr h
   · exact le_antisymm (Nat.le_of_dvd (Nat.pos_of_ne_zero h) (conductor_dvd_level _)) <|
       conductor_le_conductor_mem_conductorSet <| conductor_mem_conductorSet χ
 
@@ -421,7 +421,7 @@ def Odd : Prop := ψ (-1) = -1
 def Even : Prop := ψ (-1) = 1
 
 lemma even_or_odd [NoZeroDivisors S] : ψ.Even ∨ ψ.Odd := by
-  suffices ψ (-1) ^ 2 = 1 by convert sq_eq_one_iff.mp this
+  suffices ψ (-1) ^ 2 = 1 by convert! sq_eq_one_iff.mp this
   rw [← map_pow _, neg_one_sq, map_one]
 
 lemma not_even_and_odd [NeZero (2 : S)] : ¬(ψ.Even ∧ ψ.Odd) := by

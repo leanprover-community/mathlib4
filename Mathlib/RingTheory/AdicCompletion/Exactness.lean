@@ -128,7 +128,7 @@ private noncomputable def mapExactAuxDelta {n : ℕ} {d : N}
       | f (yₙ + d) - x (k + n + 1) ∈ (I ^ (k + n + 1) • ⊤ : Submodule R N) } :=
   have h : f (y - yₙ) ∈ (I ^ (k + n) • ⊤ : Submodule R N) := by
     simp only [map_sub, hd]
-    convert_to x (k + n + 1) - x (k + n) - d - (f yₙ - x (k + n)) ∈ I ^ (k + n) • ⊤
+    convert_to! x (k + n + 1) - x (k + n) - d - (f yₙ - x (k + n)) ∈ I ^ (k + n) • ⊤
     · abel
     · refine Submodule.sub_mem _ (Submodule.sub_mem _ ?_ ?_) hyₙ
       · rw [← Submodule.Quotient.eq]
@@ -137,7 +137,7 @@ private noncomputable def mapExactAuxDelta {n : ℕ} {d : N}
   have hincl : I ^ (k + n - k) • (I ^ k • ⊤ ⊓ range f) ≤ I ^ (k + n - k) • (range f) :=
     smul_mono_right _ inf_le_right
   have hyyₙ : y - yₙ ∈ (I ^ n • ⊤ : Submodule R M) := by
-    convert_to y - yₙ ∈ (I ^ (k + n - k) • ⊤ : Submodule R M)
+    convert_to! y - yₙ ∈ (I ^ (k + n - k) • ⊤ : Submodule R M)
     · simp
     · rw [← Submodule.comap_map_eq_of_injective hf (I ^ (k + n - k) • ⊤ : Submodule R M),
         Submodule.map_smul'', Submodule.map_top]

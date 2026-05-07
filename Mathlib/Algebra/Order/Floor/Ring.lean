@@ -271,7 +271,7 @@ theorem mul_fract_eq_one_iff_exists_int {x : R} {k : R} (hk : 1 < k) :
   rw [fract, mul_sub, sub_eq_iff_eq_add']
   refine ⟨fun hx ↦ ⟨⌊x⌋, hx⟩, ?_⟩
   rintro ⟨n, hn⟩
-  convert hn
+  convert! hn
   have hk0 : 0 < (k : R) := zero_le_one.trans_lt hk
   rw [floor_eq_iff, ← mul_le_mul_iff_right₀ hk0, ← mul_lt_mul_iff_right₀ hk0, hn]
   simp [mul_add, hk]
@@ -674,7 +674,7 @@ theorem ceil_sub_intCast (a : R) (z : ℤ) : ⌈a - z⌉ = ⌈a⌉ - z :=
 
 @[simp]
 theorem ceil_sub_natCast (a : R) (n : ℕ) : ⌈a - n⌉ = ⌈a⌉ - n := by
-  convert ceil_sub_intCast a n using 1
+  convert! ceil_sub_intCast a n using 1
   simp
 
 @[simp]
@@ -772,7 +772,7 @@ lemma ceil_div_ceil_inv_sub_one (ha : 1 ≤ a) : ⌈⌈(a - 1)⁻¹⌉ / a⌉ = 
   refine le_antisymm (ceil_le.2 <| div_le_self (by positivity) ha.le) <| ?_
   rw [le_ceil_iff, sub_lt_comm, div_eq_mul_inv, ← mul_one_sub,
     ← lt_div_iff₀ (sub_pos.2 <| inv_lt_one_of_one_lt₀ ha)]
-  convert ceil_lt_add_one (R := k) _ using 1
+  convert! ceil_lt_add_one (R := k) _ using 1
   field
 
 lemma ceil_lt_mul (hb : 1 < b) (hba : ⌈(b - 1)⁻¹⌉ / b < a) : ⌈a⌉ < b * a := by

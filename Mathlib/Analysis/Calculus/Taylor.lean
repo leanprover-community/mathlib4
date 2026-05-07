@@ -140,7 +140,7 @@ theorem monomial_has_deriv_aux (t x : ℝ) (n : ℕ) :
     HasDerivAt (fun y => (x - y) ^ (n + 1)) (-(n + 1) * (x - t) ^ n) t := by
   simp_rw [sub_eq_neg_add]
   rw [← neg_one_mul, mul_comm (-1 : ℝ), mul_assoc, mul_comm (-1 : ℝ), ← mul_assoc]
-  convert ((hasDerivAt_id t).neg.add_const x).pow (n + 1)
+  convert! ((hasDerivAt_id t).neg.add_const x).pow (n + 1)
   simp only [Nat.cast_add, Nat.cast_one]
 
 theorem hasDerivWithinAt_taylor_coeff_within {f : ℝ → E} {x y : ℝ} {k : ℕ} {s t : Set ℝ}
@@ -152,7 +152,7 @@ theorem hasDerivWithinAt_taylor_coeff_within {f : ℝ → E} {x y : ℝ} {k : �
         ((k ! : ℝ)⁻¹ * (x - y) ^ k) • iteratedDerivWithin (k + 1) f s y) t y := by
   replace hf :
     HasDerivWithinAt (iteratedDerivWithin (k + 1) f s) (iteratedDerivWithin (k + 2) f s y) t y := by
-    convert (hf.mono_of_mem_nhdsWithin hs).hasDerivWithinAt using 1
+    convert! (hf.mono_of_mem_nhdsWithin hs).hasDerivWithinAt using 1
     rw [iteratedDerivWithin_succ]
     exact (derivWithin_of_mem_nhdsWithin hs ht hf).symm
   have : HasDerivWithinAt (fun t => ((k + 1 : ℝ) * k !)⁻¹ * (x - t) ^ (k + 1))
@@ -162,7 +162,7 @@ theorem hasDerivWithinAt_taylor_coeff_within {f : ℝ → E} {x y : ℝ} {k : �
       field
     rw [this]
     exact (monomial_has_deriv_aux y x _).hasDerivWithinAt.const_mul _
-  convert this.smul hf using 1
+  convert! this.smul hf using 1
   field_simp
   module
 
@@ -191,7 +191,7 @@ theorem hasDerivWithinAt_taylorWithinEval {f : ℝ → E} {x y : ℝ} {n : ℕ} 
     have hdiff : DifferentiableOn ℝ (iteratedDerivWithin k f s) s' :=
       (hf.differentiableOn_iteratedDerivWithin (mod_cast coe_lt_succ) hs_unique).mono h
     specialize hk hf.of_succ ((hdiff y hy).mono_of_mem_nhdsWithin hs')
-    convert hk.add (hasDerivWithinAt_taylor_coeff_within hs'_unique
+    convert! hk.add (hasDerivWithinAt_taylor_coeff_within hs'_unique
       (nhdsWithin_mono _ h self_mem_nhdsWithin) hf') using 1
     exact (add_sub_cancel _ _).symm
 
@@ -250,7 +250,7 @@ theorem taylor_isLittleO {f : ℝ → E} {x₀ : ℝ} {n : ℕ} {s : Set ℝ}
     · simp
     replace hs' := uniqueDiffOn_convex hs (hs.nontrivial_iff_nonempty_interior.1 hs')
     simp only [Nat.cast_add, Nat.cast_one] at hf
-    convert Convex.isLittleO_pow_succ_real hs hx₀s ?_ (h (hf.derivWithin hs' le_rfl))
+    convert! Convex.isLittleO_pow_succ_real hs hx₀s ?_ (h (hf.derivWithin hs' le_rfl))
       (f := fun x ↦ f x - taylorWithinEval f (n + 1) s x₀ x) using 1
     · simp
     · intro x hx
@@ -281,7 +281,7 @@ theorem Real.taylor_tendsto {f : ℝ → ℝ} {x₀ : ℝ} {n : ℕ} {s : Set �
     (hs : Convex ℝ s) (hx₀s : x₀ ∈ s) (hf : ContDiffOn ℝ n f s) :
     Filter.Tendsto (fun x ↦ (f x - taylorWithinEval f n s x₀ x) / (x - x₀) ^ n)
       (𝓝[s] x₀) (𝓝 0) := by
-  convert _root_.taylor_tendsto hs hx₀s hf using 2 with x
+  convert! _root_.taylor_tendsto hs hx₀s hf using 2 with x
   simp [div_eq_inv_mul]
 
 
@@ -479,7 +479,7 @@ theorem taylor_integral_remainder_aux [NormedAddCommGroup F] [NormedSpace ℝ F]
     rw [sub_add_eq_sub_sub, ih]
     simp only [Nat.factorial, Nat.succ_eq_add_one, Nat.cast_mul, Nat.cast_add, Nat.cast_one]
     have := hf (n + 1) (by rfl)
-    convert this.symm using 1
+    convert! this.symm using 1
     · simp only [sub_self, ne_eq, Nat.add_eq_zero_iff, one_ne_zero, and_false, not_false_eq_true,
         zero_pow, zero_div, zero_smul, zero_sub, deriv_div_const, Nat.factorial]
       apply fun (a b c d : F) (_ : b = c) (_ : a = -d) ↦ show a - b = -c - d by grind

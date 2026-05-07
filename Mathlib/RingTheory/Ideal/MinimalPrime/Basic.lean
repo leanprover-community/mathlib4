@@ -188,7 +188,7 @@ lemma Ideal.map_sup_mem_minimalPrimes_of_map_quotientMk_mem_minimalPrimes
     have h1 : p.map (algebraMap R S) ≤ q := by
       rw [Ideal.map_le_iff_le_comap]
       refine hI.2 ⟨inferInstance, le_trans Ideal.le_comap_map (Ideal.comap_mono hleq.1)⟩ ?_
-      convert Ideal.comap_mono hqle
+      convert! Ideal.comap_mono hqle
       exact Ideal.LiesOver.over
     have h2 : P.map (Ideal.Quotient.mk (p.map (algebraMap R S))) ≤
         q.map (Ideal.Quotient.mk (p.map (algebraMap R S))) :=

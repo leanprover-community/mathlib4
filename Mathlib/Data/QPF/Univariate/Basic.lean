@@ -311,7 +311,7 @@ theorem Fix.ind (p : Fix F → Prop) (h : ∀ x : F (Fix F), Liftp p x → p (Fi
   apply h
   rw [liftp_iff]
   refine ⟨_, _, rfl, ?_⟩
-  convert ih
+  convert! ih
 
 end QPF
 

@@ -86,7 +86,7 @@ theorem apply_firstDiff_ne {x y : ∀ n, E n} (h : x ≠ y) :
 theorem apply_eq_of_lt_firstDiff {x y : ∀ n, E n} {n : ℕ} (hn : n < firstDiff x y) : x n = y n := by
   rw [firstDiff_def] at hn
   split_ifs at hn with h
-  · convert Nat.find_min (ne_iff.1 h) hn
+  · convert! Nat.find_min (ne_iff.1 h) hn
     simp
   · exact (not_lt_zero' hn).elim
 
@@ -1124,7 +1124,7 @@ lemma continuous_distDenseSeq (n : ℕ) : Continuous (distDenseSeq X n) := by
   cases isEmpty_or_nonempty X
   · exact continuous_of_discreteTopology
   refine continuous_projIcc.comp <| Continuous.dist continuous_id' ?_
-  convert continuous_const (y := denseSeq X n)
+  convert! continuous_const (y := denseSeq X n)
 
 lemma separation {x : X} {C : Set X} (hxC : C ∈ 𝓝 x) :
     ∃ (n : ℕ), C ∈ (𝓝 (distDenseSeq X n x)).comap (distDenseSeq X n) := by

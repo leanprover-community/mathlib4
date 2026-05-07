@@ -224,7 +224,7 @@ theorem _root_.Filter.EventuallyEq.mlieBracketWithin_vectorField_eq
     congr 1
   · simp only [mpullbackWithin_apply]
     congr 1
-    convert hxV <;> exact extChartAt_to_inv x
+    convert! hxV <;> exact extChartAt_to_inv x
   · apply nhdsWithin_mono _ inter_subset_left
     filter_upwards [(continuousAt_extChartAt_symm x).continuousWithinAt.preimage_mem_nhdsWithin''
       hW (by simp)] with y hy
@@ -232,7 +232,7 @@ theorem _root_.Filter.EventuallyEq.mlieBracketWithin_vectorField_eq
     congr 1
   · simp only [mpullbackWithin_apply]
     congr 1
-    convert hxW <;> exact extChartAt_to_inv x
+    convert! hxW <;> exact extChartAt_to_inv x
 
 theorem _root_.Filter.EventuallyEq.mlieBracketWithin_vectorField_eq_of_mem
     (hV : V₁ =ᶠ[𝓝[s] x] V) (hW : W₁ =ᶠ[𝓝[s] x] W) (hx : x ∈ s) :
@@ -542,9 +542,9 @@ private lemma mpullbackWithin_mlieBracketWithin_aux [CompleteSpace E']
   have : (mfderiv[range I] (extChartAt I x₀).symm (extChartAt I x₀ x₀)).inverse =
       mfderiv% (extChartAt I x₀) x₀ := by
     apply ContinuousLinearMap.inverse_eq
-    · convert mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt (I := I) (x := x₀)
+    · convert! mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt (I := I) (x := x₀)
         (y := extChartAt I x₀ x₀) (by simp)
-    · convert mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm (I := I) (x := x₀)
+    · convert! mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm (I := I) (x := x₀)
         (y := extChartAt I x₀ x₀) (by simp)
   rw [← this, ← ContinuousLinearMap.IsInvertible.inverse_comp_apply_of_right]; swap
   · exact isInvertible_mfderivWithin_extChartAt_symm (mem_extChartAt_target x₀)
@@ -609,7 +609,7 @@ private lemma mpullbackWithin_mlieBracketWithin_aux [CompleteSpace E']
         (extChartAt I' (f x₀) (f ((extChartAt I x₀).symm y)))) ∘L
         (mfderiv% (extChartAt I' (f x₀)) (f ((extChartAt I x₀).symm y))) =
         ContinuousLinearMap.id _ _ := by
-      convert mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt
+      convert! mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt
         ((PartialEquiv.map_source _ h'y))
     simp only [← ContinuousLinearMap.comp_assoc, this, ContinuousLinearMap.id_comp]
     congr 1
@@ -641,7 +641,7 @@ private lemma mpullbackWithin_mlieBracketWithin_aux [CompleteSpace E']
   · intro z hz
     simp only [comp_apply, mem_inter_iff, mem_preimage, mem_range, F]
     refine ⟨?_, mem_range_self _⟩
-    convert hst hz.1
+    convert! hst hz.1
     exact PartialEquiv.left_inv (extChartAt I' (f x₀)) (ht (hst hz.1))
   · rw [← nhdsWithin_eq_iff_eventuallyEq]
     apply le_antisymm

@@ -914,7 +914,7 @@ lemma HasDerivAt.comp_semilinear (hf : HasDerivAt f f' x) :
   let R : 𝕜 →SL[σ'] 𝕜 := ⟨σ'.toSemilinearMap, σ'.isometry.continuous⟩
   have hR (k : 𝕜) : R k = σ' k := rfl
   rw [hasDerivAt_iff_hasFDerivAt]
-  convert HasFDerivAt.comp_semilinear L R (f' := toSpanSingleton 𝕜 f') ?_
+  convert! HasFDerivAt.comp_semilinear L R (f' := toSpanSingleton 𝕜 f') ?_
   · ext
     simp [R]
   · rwa [← hasDerivAt_iff_hasFDerivAt, hR, RingHomInvPair.comp_apply_eq]

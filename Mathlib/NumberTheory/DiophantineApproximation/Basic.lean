@@ -124,7 +124,7 @@ theorem exists_int_int_abs_mul_sub_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
     refine
       ⟨⌊ξ * y⌋ - ⌊ξ * x⌋, y - x, sub_pos_of_lt x_lt_y,
         sub_le_iff_le_add.mpr <| le_add_of_le_of_nonneg (mem_Icc.mp hy).2 (mem_Icc.mp hx).1, ?_⟩
-    convert_to |fract (ξ * y) * (n + 1) - fract (ξ * x) * (n + 1)| ≤ 1
+    convert_to! |fract (ξ * y) * (n + 1) - fract (ξ * x) * (n + 1)| ≤ 1
     · congr; push_cast; simp only [fract]; ring
     exact (abs_sub_lt_one_of_floor_eq_floor hxy.symm).le
 
@@ -149,7 +149,7 @@ theorem exists_rat_abs_sub_le_and_den_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
   obtain ⟨j, k, hk₀, hk₁, h⟩ := exists_int_int_abs_mul_sub_le ξ n_pos
   have hk₀' : (0 : ℝ) < k := Int.cast_pos.mpr hk₀
   have hden : ((j / k : ℚ).den : ℤ) ≤ k := by
-    convert le_of_dvd hk₀ (Rat.den_dvd j k)
+    convert! le_of_dvd hk₀ (Rat.den_dvd j k)
     exact Rat.intCast_div_eq_divInt _ _
   refine ⟨j / k, ?_, Nat.cast_le.mp (hden.trans hk₁)⟩
   rw [← div_div, le_div_iff₀ (Nat.cast_pos.mpr <| Rat.pos _ : (0 : ℝ) < _)]
@@ -280,7 +280,7 @@ theorem Real.infinite_rat_abs_sub_lt_one_div_den_sq_iff_irrational (ξ : ℝ) :
     ⟨fun h => (irrational_iff_ne_rational ξ).mpr fun a b _ => ?_,
       Real.infinite_rat_abs_sub_lt_one_div_den_sq_of_irrational⟩
   contrapose! h
-  convert Rat.finite_rat_abs_sub_lt_one_div_den_sq ((a : ℚ) / b) with q
+  convert! Rat.finite_rat_abs_sub_lt_one_div_den_sq ((a : ℚ) / b) with q
   rw [h, (by (push_cast; rfl) : (1 : ℝ) / (q.den : ℝ) ^ 2 = (1 / (q.den : ℚ) ^ 2 : ℚ))]
   norm_cast
 
@@ -502,7 +502,7 @@ theorem exists_rat_eq_convergent' {v : ℕ} (h : ContfracLegendre.Ass ξ u v) :
     rcases le_or_gt (u : ℝ) ξ with ht | ht
     · use 0
       rw [convergent_zero, Rat.coe_int_inj, eq_comm, floor_eq_iff]
-      convert And.intro ht (sub_lt_iff_lt_add'.mp (abs_lt.mp h₂).2) <;> norm_num
+      convert! And.intro ht (sub_lt_iff_lt_add'.mp (abs_lt.mp h₂).2) <;> norm_num
     · replace h₁ := lt_sub_iff_add_lt'.mp (h₁ rfl)
       have hξ₁ : ⌊ξ⌋ = u - 1 := by
         rw [floor_eq_iff, cast_sub, cast_one, sub_add_cancel]
@@ -515,7 +515,7 @@ theorem exists_rat_eq_convergent' {v : ℕ} (h : ContfracLegendre.Ass ξ u v) :
             one_add_one_eq_two, inv_lt_comm₀ (fract_pos.mpr Hξ) zero_lt_two]
           refine ⟨(fract_lt_one ξ).le, ?_⟩
           rw [fract, hξ₁, cast_sub, cast_one, lt_sub_iff_add_lt', sub_add]
-          convert h₁ using 1
+          convert! h₁ using 1
           rw [sub_eq_add_neg]
           norm_num
         use 1

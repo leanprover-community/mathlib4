@@ -53,7 +53,7 @@ lemma eq_trivialRel_of_compatible_one [h : ValuativeRel R]
 
 lemma trivialRel_eq_ofValuation_one :
     trivialRel = ValuativeRel.ofValuation (1 : Valuation R Γ) := by
-  convert (eq_trivialRel_of_compatible_one (Γ := Γ)).symm
+  convert! (eq_trivialRel_of_compatible_one (Γ := Γ)).symm
   exact Valuation.Compatible.ofValuation 1
 
 variable (R Γ) in

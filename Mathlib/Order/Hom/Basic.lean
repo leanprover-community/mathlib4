@@ -189,7 +189,7 @@ variable [LE α] [LE β] [EquivLike F α β] [OrderIsoClass F α β]
 
 @[to_dual (attr := simp) le_map_inv_iff]
 theorem map_inv_le_iff (f : F) {a : α} {b : β} : EquivLike.inv f b ≤ a ↔ b ≤ f a := by
-  convert (map_le_map_iff f).symm
+  convert! (map_le_map_iff f).symm
   exact (EquivLike.right_inv f _).symm
 
 @[to_dual self]
@@ -1016,7 +1016,7 @@ def ofCmpEqCmp {α β} [LinearOrder α] [LinearOrder β] (f : α → β) (g : β
     map_rel_iff' := by
       intro a b
       apply le_iff_le_of_cmp_eq_cmp
-      convert (h a (f b)).symm
+      convert! (h a (f b)).symm
       apply gf }
 
 /-- To show that `f : α →o β` and `g : β →o α` make up an order isomorphism it is enough to show

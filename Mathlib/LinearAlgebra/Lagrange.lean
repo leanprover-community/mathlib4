@@ -244,7 +244,7 @@ theorem natDegree_basis (hvs : Set.InjOn v s) (hi : i ∈ s) :
     simp_rw [Ne, mem_erase, basisDivisor_eq_zero_iff]
     exact fun j ⟨hij₁, hj⟩ hij₂ => hij₁ (hvs hj hi hij₂.symm)
   rw [← card_erase_of_mem hi, card_eq_sum_ones]
-  convert natDegree_prod _ _ H using 1
+  convert! natDegree_prod _ _ H using 1
   refine sum_congr rfl fun j hj => (natDegree_basisDivisor_of_ne ?_).symm
   rw [Ne, ← basisDivisor_eq_zero_iff]
   exact H _ hj
@@ -414,7 +414,7 @@ theorem interpolate_eq_sum_interpolate_insert_sdiff (hvt : Set.InjOn v t) (hs : 
         Nat.succ_add_sub_one, zero_add]
     rw [degree_basis (Set.InjOn.mono hst hvt) hi, H, WithBot.coe_add, Nat.cast_withBot,
       WithBot.add_lt_add_iff_right (@WithBot.coe_ne_bot _ (#s - 1))]
-    convert degree_interpolate_lt _
+    convert! degree_interpolate_lt _
         (hvt.mono (coe_subset.mpr (insert_subset_iff.mpr ⟨hst hi, sdiff_subset⟩)))
     rw [card_insert_of_notMem (notMem_sdiff_of_mem_right hi), card_sdiff_of_subset hst, add_comm]
   · simp_rw [eval_finsetSum, eval_mul]

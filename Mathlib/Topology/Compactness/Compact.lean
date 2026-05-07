@@ -113,7 +113,7 @@ theorem IsCompact.image_of_continuousOn {f : X → Y} (hs : IsCompact s) (hf : C
   haveI := hx.neBot
   use f x, mem_image_of_mem f hxs
   have : Tendsto f (𝓝 x ⊓ (comap f l ⊓ 𝓟 s)) (𝓝 (f x) ⊓ l) := by
-    convert (hf x hxs).inf (@tendsto_comap _ _ f l) using 1
+    convert! (hf x hxs).inf (@tendsto_comap _ _ f l) using 1
     rw [nhdsWithin]
     ac_rfl
   exact this.neBot
@@ -152,7 +152,7 @@ lemma IsCompact.le_nhds_of_unique_clusterPt (hs : IsCompact s) {l : Filter X} {y
     (hmem : s ∈ l) (h : ∀ x ∈ s, ClusterPt x l → x = y) : l ≤ 𝓝 y := by
   refine le_iff_ultrafilter.2 fun f hf ↦ ?_
   rcases hs.ultrafilter_le_nhds' f (hf hmem) with ⟨x, hxs, hx⟩
-  convert ← hx
+  convert! ← hx
   exact h x hxs (.mono (.of_le_nhds hx) hf)
 
 /-- If values of `f : Y → X` belong to a compact set `s` eventually along a filter `l`
@@ -1138,7 +1138,7 @@ theorem isCompact_pi_infinite {s : ∀ i, Set (X i)} :
 /-- **Tychonoff's theorem** formulated using `Set.pi`: product of compact sets is compact. -/
 theorem isCompact_univ_pi {s : ∀ i, Set (X i)} (h : ∀ i, IsCompact (s i)) :
     IsCompact (pi univ s) := by
-  convert isCompact_pi_infinite h
+  convert! isCompact_pi_infinite h
   simp only [← mem_univ_pi, setOf_mem_eq]
 
 instance Pi.compactSpace [∀ i, CompactSpace (X i)] : CompactSpace (∀ i, X i) :=
@@ -1197,7 +1197,7 @@ theorem IsClosed.exists_minimal_nonempty_closed_subset [CompactSpace X] {S : Set
         refine ⟨⟨?_, ?_, ?_⟩, fun U hU _ hx => ⟨U, hU, hx⟩⟩
         · exact fun _ hx => ⟨U₀, hU₀, U₀compl hx⟩
         · exact isOpen_sUnion fun _ h => (hc h).2.1
-        · convert_to (⋂ U : { U // U ∈ c }, U.1ᶜ).Nonempty
+        · convert_to! (⋂ U : { U // U ∈ c }, U.1ᶜ).Nonempty
           · ext
             simp only [not_exists, not_and, Set.mem_iInter, Subtype.forall,
               mem_compl_iff, mem_sUnion]

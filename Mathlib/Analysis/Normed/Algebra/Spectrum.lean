@@ -254,7 +254,7 @@ theorem spectralRadius_le_pow_nnnorm_pow_one_div (a : A) (n : ℕ) :
       ENNReal.coe_mul] using coe_mono (Real.toNNReal_mono (norm_le_norm_mul_of_mem pow_mem))
   -- take (n + 1)ᵗʰ roots and clean up the left-hand side
   have hn : 0 < ((n + 1 : ℕ) : ℝ) := mod_cast Nat.succ_pos'
-  convert monotone_rpow_of_nonneg (one_div_pos.mpr hn).le nnnorm_pow_le using 1
+  convert! monotone_rpow_of_nonneg (one_div_pos.mpr hn).le nnnorm_pow_le using 1
   all_goals dsimp
   · rw [one_div, pow_rpow_inv_natCast]
     positivity
@@ -389,7 +389,7 @@ theorem exp_mem_exp [RCLike 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [Complet
     simpa only [pow_succ, Algebra.smul_mul_assoc] using hb.tsum_mul_right (a - ↑ₐ z)
   have h₃ : exp (a - ↑ₐ z) = 1 + (a - ↑ₐ z) * b := by
     rw [exp_eq_tsum 𝕜]
-    convert (expSeries_summable' (𝕂 := 𝕜) (a - ↑ₐ z)).tsum_eq_zero_add
+    convert! (expSeries_summable' (𝕂 := 𝕜) (a - ↑ₐ z)).tsum_eq_zero_add
     · simp only [Nat.factorial_zero, Nat.cast_one, inv_one, pow_zero, one_smul]
     · exact h₀.symm
   rw [spectrum.mem_iff, IsUnit.sub_iff, ← one_mul (↑ₐ (exp z)), hexpmul, ← _root_.sub_mul,
@@ -658,7 +658,7 @@ lemma _root_.NNReal.spectralRadius_mem_spectrum {A : Type*} [NormedRing A] [Norm
   obtain ⟨x, hx₁, hx₂⟩ := spectrum.exists_nnnorm_eq_spectralRadius_of_nonempty ha
   rw [← hx₂, ENNReal.toNNReal_coe, ← spectrum.algebraMap_mem_iff ℝ, NNReal.algebraMap_eq_coe]
   have : 0 ≤ x := ha'.rightInvOn hx₁ ▸ NNReal.zero_le_coe
-  convert hx₁
+  convert! hx₁
   simpa
 
 lemma _root_.Real.spectralRadius_mem_spectrum {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
@@ -733,7 +733,7 @@ theorem upperHemicontinuous_quasispectrum [NontriviallyNormedField 𝕜] [Proper
     [NonUnitalNormedRing A] [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
     [CompleteSpace A] :
     UpperHemicontinuous (quasispectrum 𝕜 : A → Set 𝕜) := by
-  convert upperHemicontinuous_spectrum 𝕜 (WithLp 1 (Unitization 𝕜 A)) |>.comp
+  convert! upperHemicontinuous_spectrum 𝕜 (WithLp 1 (Unitization 𝕜 A)) |>.comp
     unitization_isometry_inr.continuous
   ext1 a
   rw [Unitization.quasispectrum_eq_spectrum_inr,

@@ -384,7 +384,7 @@ theorem HasFTaylorSeriesUpToOn.comp_continuousAffineMap
     rw [map_zero]
     rfl
   · intro m hm x hx
-    convert (hA m).hasFDerivAt.comp_hasFDerivWithinAt x
+    convert! (hA m).hasFDerivAt.comp_hasFDerivWithinAt x
         ((hf.fderivWithin m hm (g x) hx).comp x g.hasFDerivWithinAt (Subset.refl _))
     ext y v
     change p (g x) (Nat.succ m) (g.contLinear ∘ cons y v)
@@ -542,7 +542,7 @@ theorem HasFTaylorSeriesUpToOn.prodMk {n : ℕ∞ω}
   constructor
   · intro x hx; rw [← hf.zero_eq x hx, ← hg.zero_eq x hx]; rfl
   · intro m hm x hx
-    convert (L m).hasFDerivAt.comp_hasFDerivWithinAt x
+    convert! (L m).hasFDerivAt.comp_hasFDerivWithinAt x
         ((hf.fderivWithin m hm x hx).prodMk (hg.fderivWithin m hm x hx))
   · intro m hm
     exact (L m).continuous.comp_continuousOn ((hf.cont m hm).prodMk (hg.cont m hm))

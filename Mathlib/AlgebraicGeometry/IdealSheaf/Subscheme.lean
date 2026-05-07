@@ -174,7 +174,7 @@ lemma ideal_le_ker_glueDataObjι (U V : X.affineOpens) :
   simp only [Scheme.Hom.comp_app, Scheme.Opens.ι_app, Scheme.homOfLE_app, ← Functor.map_comp_assoc,
     Scheme.Hom.app_eq _ H, Scheme.Opens.toScheme_presheaf_map, ← Functor.map_comp, Category.assoc]
   simp only [CommRingCat.hom_comp, RingHom.comp_apply]
-  convert RingHom.map_zero _ using 2
+  convert! RingHom.map_zero _ using 2
   rw [← RingHom.mem_ker, ker_glueDataObjι_appTop, ← Ideal.mem_comap, Ideal.comap_comap,
     ← CommRingCat.hom_comp]
   simp only [Scheme.affineBasicOpen_coe, homOfLE_leOfHom, Scheme.Hom.comp_base,
@@ -198,7 +198,7 @@ noncomputable def glueDataT (U V : X.affineOpens) :
   · intro x hx
     simp only [Hom.comp_app, Hom.comp_base, TopologicalSpace.Opens.map_comp_obj,
       TopologicalSpace.Opens.map_top, homOfLE_app, homOfLE_leOfHom, Category.assoc, RingHom.mem_ker]
-    convert_to (U.1.ι.app V.1 ≫ (F ≫ X.homOfLE inf_le_left).appLE (U.1.ι ⁻¹ᵁ V.1) ⊤
+    convert_to! (U.1.ι.app V.1 ≫ (F ≫ X.homOfLE inf_le_left).appLE (U.1.ι ⁻¹ᵁ V.1) ⊤
       (by rw [← Scheme.Hom.comp_preimage, Category.assoc, X.homOfLE_ι]
           exact fun x _ ↦ by simpa using (F x).2.2)).hom x = 0 using 3
     · simp only [homOfLE_leOfHom, Opens.ι_app, Hom.comp_appLE, homOfLE_app]
@@ -538,7 +538,7 @@ lemma subschemeι_app (U : X.affineOpens) : I.subschemeι.app U =
     Functor.op_obj, Functor.op_map, unop_comp, unop_inv, Quiver.Hom.unop_op,
     Hom.app_appIso_inv_assoc, TopologicalSpace.Opens.carrier_eq_coe, TopologicalSpace.Opens.map_coe,
     homOfLE_leOfHom]
-  convert (Category.comp_id _).symm
+  convert! (Category.comp_id _).symm
   exact CategoryTheory.Functor.map_id _ _
 
 lemma subschemeι_app_surjective (U : X.affineOpens) :
@@ -693,7 +693,7 @@ def Hom.toImage : X ⟶ f.image :=
 @[reassoc (attr := simp)]
 lemma Hom.toImage_imageι :
     f.toImage ≫ f.imageι = f := by
-  convert f.toImageAux_spec using 2
+  convert! f.toImageAux_spec using 2
   exact Scheme.Hom.copyBase_eq _ _ _
 
 instance [QuasiCompact f] : IsDominant f.toImage where

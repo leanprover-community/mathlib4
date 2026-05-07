@@ -230,7 +230,7 @@ theorem _root_.Matrix.mem_range_scalar_iff_commute_transvectionStruct {M : Matri
   refine ⟨fun h t => ?_, mem_range_scalar_of_commute_transvectionStruct⟩
   rw [mem_range_scalar_iff_commute_single] at h
   refine (Commute.one_left M).add_left ?_
-  convert (h _ _ t.hij).smul_left t.c using 1
+  convert! (h _ _ t.hij).smul_left t.c using 1
   rw [smul_single, smul_eq_mul, mul_one]
 
 end

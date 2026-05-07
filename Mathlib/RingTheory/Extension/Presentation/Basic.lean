@@ -133,7 +133,7 @@ lemma exists_presentation_fin [FinitePresentation R S] :
   let v : Fin m → MvPolynomial (Fin n) R := H'.choose_spec.choose
   have hv : Ideal.span (Set.range v) = RingHom.ker f := H'.choose_spec.choose_spec
   ⟨n, m,
-    ⟨{__ := Generators.ofSurjective (fun x ↦ f (.X x)) (by convert hf; ext; simp)
+    ⟨{__ := Generators.ofSurjective (fun x ↦ f (.X x)) (by convert! hf; ext; simp)
       relation := v
       span_range_relation_eq_ker := hv.trans (by congr; ext; simp) }⟩⟩
 
@@ -285,7 +285,7 @@ lemma span_range_relation_eq_ker_baseChange :
       Ideal.comap_symm, ← Ideal.map_coe, ← Ideal.map_coe _ (Ideal.span _), Ideal.map_map,
       Ideal.map_span, ← Set.range_comp, AlgEquiv.toRingEquiv_toRingHom, RingHom.coe_comp,
       RingHom.coe_coe] at H'
-    convert H'
+    convert! H'
     simp [e]
 
 /-- If `P` is a presentation of `S` over `R` and `T` is an `R`-algebra, we

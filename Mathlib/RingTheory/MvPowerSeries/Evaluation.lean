@@ -270,7 +270,7 @@ theorem hasSum_eval₂ (hφ : Continuous φ) (ha : HasEval a) (f : MvPowerSeries
     (fun (d : σ →₀ ℕ) ↦ φ (coeff d f) * (d.prod fun s e => (a s) ^ e))
     (MvPowerSeries.eval₂ φ a f) := by
   rw [← coe_eval₂Hom hφ ha, eval₂Hom_eq_extend hφ ha]
-  convert (hasSum_of_monomials_self f).map (eval₂Hom hφ ha) (?_) with d
+  convert! (hasSum_of_monomials_self f).map (eval₂Hom hφ ha) (?_) with d
   · simp only [Function.comp_apply, coe_eval₂Hom, ← MvPolynomial.coe_monomial,
       eval₂_coe, eval₂_monomial]
   · rw [coe_eval₂Hom]; exact continuous_eval₂ hφ ha

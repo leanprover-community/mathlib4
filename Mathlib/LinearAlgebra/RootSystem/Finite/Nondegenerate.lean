@@ -124,13 +124,13 @@ lemma smul_coroot_eq_of_root_add_root_eq [P.IsAnisotropic] [IsDomain R] [IsTorsi
     rw [h₂, h₃] at h₁
     replace h₁ := congr_arg (fun n ↦ P.pairing j i • n) h₁
     simp only [add_smul, smul_add, ← mul_smul, smul_eq_mul] at h₁
-    convert h₁ using 1
+    convert! h₁ using 1
     · module
     · ring_nf
   simp only [h₄] at h₁
   apply smul_right_injective _ (r := lsq j) (RootPairing.IsAnisotropic.rootForm_root_ne_zero j)
   simp only
-  convert h₁ using 1
+  convert! h₁ using 1
   · module
   · module
 
@@ -281,7 +281,7 @@ lemma isCompl_rootSpan_ker_rootForm :
     rw [P.toPerfPair.finrank_eq, ← P.finrank_corootSpan_eq',
       Subspace.finrank_add_finrank_dualAnnihilator_eq (P.corootSpan R), Subspace.dual_finrank_eq]
   rw [aux, add_le_add_iff_left]
-  convert Submodule.finrank_mono P.corootSpan_dualAnnihilator_le_ker_rootForm
+  convert! Submodule.finrank_mono P.corootSpan_dualAnnihilator_le_ker_rootForm
   exact (LinearEquiv.finrank_map_eq _ _).symm
 
 lemma isCompl_corootSpan_ker_corootForm :

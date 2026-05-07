@@ -87,7 +87,7 @@ theorem tendsto_norm_le_and_mk_eq_div_atTop :
   have h₂ : {x | x ∈ fundamentalCone K ∧ mixedEmbedding.norm x ≤ 1} = normLeOne K := by ext; simp
   obtain ⟨J, hJ⟩ := ClassGroup.mk0_surjective C⁻¹
   have h₃ : (absNorm J.1 : ℝ) ≠ 0 := (Nat.cast_ne_zero.mpr (absNorm_ne_zero_of_nonZeroDivisors J))
-  convert ((ZLattice.covolume.tendsto_card_le_div'
+  convert! ((ZLattice.covolume.tendsto_card_le_div'
     (ZLattice.comap ℝ (mixedEmbedding.idealLattice K (FractionalIdeal.mk0 K J))
       (toMixed K).toLinearMap)
     (F := fun x ↦ mixedEmbedding.norm (toMixed K x))
@@ -128,7 +128,7 @@ theorem tendsto_norm_le_div_atTop₀ :
           (𝓝 ((2 ^ nrRealPlaces K * (2 * π) ^ nrComplexPlaces K * regulator K * classNumber K) /
             (torsionOrder K * Real.sqrt |discr K|))) := by
   classical
-  convert Filter.Tendsto.congr' ?_
+  convert! Filter.Tendsto.congr' ?_
     (tendsto_finsetSum Finset.univ (fun C _ ↦ tendsto_norm_le_and_mk_eq_div_atTop K C))
   · rw [Finset.sum_const, Finset.card_univ, nsmul_eq_mul, classNumber]
     ring

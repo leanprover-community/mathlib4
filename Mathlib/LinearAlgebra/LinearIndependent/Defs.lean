@@ -148,7 +148,7 @@ theorem LinearIndepOn.injOn [Nontrivial R] (hv : LinearIndepOn R v s) : InjOn v 
   injOn_iff_injective.2 <| LinearIndependent.injective hv
 
 theorem LinearIndependent.smul_left_injective (hv : LinearIndependent R v) (i : ι) :
-    Injective fun r : R ↦ r • v i := by convert hv.comp (Finsupp.single_injective i); simp
+    Injective fun r : R ↦ r • v i := by convert! hv.comp (Finsupp.single_injective i); simp
 
 theorem LinearIndependent.ne_zero [Nontrivial R] (i : ι) (hv : LinearIndependent R v) :
     v i ≠ 0 := by
@@ -611,7 +611,7 @@ theorem linearIndependent_iffₒₛ :
         (a := ∑ i ∈ s with g i ≤ f i, g i • v i + ∑ i ∈ s with f i < g i, f i • v i)]
       conv_lhs => rw [← add_assoc, ← Finset.sum_add_distrib]
       conv_rhs => rw [add_left_comm, ← Finset.sum_add_distrib]
-      convert heq
+      convert! heq
         <;> simp_rw [← Finset.sum_filter_add_sum_filter_not s (fun i => g i ≤ f i), not_le]
         <;> congr! 2 with i hi
         <;> simp only [Finset.mem_filter] at hi
@@ -648,7 +648,7 @@ nonrec theorem Fintype.linearIndependent_iffₒₛ [DecidableEq ι] [Fintype ι]
     · exact h.2 i (Finset.mem_compl.2 hi)
   · specialize h t₁ (fun i => if i ∈ t₁ ∨ i ∈ t₂ then f i else 0) ?_
     · rw [← Finset.sum_subset ht₁t₂.le_compl_left]
-      · convert heq using 2 with i hi i hi <;> simp [hi]
+      · convert! heq using 2 with i hi i hi <;> simp [hi]
       · intro i hi hi'
         simp [Finset.mem_compl.1 hi, hi']
     refine ⟨fun i hi => ?_, fun i hi => ?_⟩ <;> simpa [hi] using h i
@@ -732,9 +732,9 @@ theorem linearIndependent_iff' :
       ∀ s : Finset ι, ∀ g : ι → R, ∑ i ∈ s, g i • v i = 0 → ∀ i ∈ s, g i = 0 := by
   rw [linearIndependent_iff'ₛ]
   refine ⟨fun h s f ↦ ?_, fun h s f g ↦ ?_⟩
-  · convert h s f 0; simp_rw [Pi.zero_apply, zero_smul, Finset.sum_const_zero]
+  · convert! h s f 0; simp_rw [Pi.zero_apply, zero_smul, Finset.sum_const_zero]
   · rw [← sub_eq_zero, ← Finset.sum_sub_distrib]
-    convert h s (f - g) using 3; simp only [Pi.sub_apply, sub_smul, sub_eq_zero]
+    convert! h s (f - g) using 3; simp only [Pi.sub_apply, sub_smul, sub_eq_zero]
 
 /-- A version of `linearIndependent_iff` where the linear combination is a `Finset` sum
 of a function with support contained in the `Finset`. -/

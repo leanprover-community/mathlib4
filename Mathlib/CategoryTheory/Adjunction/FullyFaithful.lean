@@ -277,7 +277,7 @@ theorem isIso_map_unit_of_isLeftAdjoint_comp {E : Type*} [Category* E]
   let FF := FullyFaithful.ofFullyFaithful R
   apply isIso_of_coyoneda_map_bijective
   intro Y
-  convert ((adj2.homEquiv (R.obj (L.obj X)) Y).trans <| FF.homEquiv.symm.trans <|
+  convert! ((adj2.homEquiv (R.obj (L.obj X)) Y).trans <| FF.homEquiv.symm.trans <|
     (h.homEquiv X (S.obj Y)).trans (adj2.homEquiv X Y).symm).bijective using 1
   ext x
   have := adj2.counit_naturality x

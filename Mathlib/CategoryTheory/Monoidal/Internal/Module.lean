@@ -49,19 +49,19 @@ def MonObj.toRing (A : ModuleCat.{u} R) [MonObj A] : Ring A :=
     one := η[A] (1 : R)
     mul := fun x y => μ[A] (x ⊗ₜ y)
     one_mul := fun x => by
-      convert LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (one_mul A)) ((1 : R) ⊗ₜ x)
+      convert! LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (one_mul A)) ((1 : R) ⊗ₜ x)
       rw [MonoidalCategory.leftUnitor_hom_apply, one_smul]
     mul_one := fun x => by
-      convert LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (mul_one A)) (x ⊗ₜ (1 : R))
+      convert! LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (mul_one A)) (x ⊗ₜ (1 : R))
       rw [MonoidalCategory.rightUnitor_hom_apply, one_smul]
     mul_assoc := fun x y z => by
-      convert LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (mul_assoc A)) (x ⊗ₜ y ⊗ₜ z)
+      convert! LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (mul_assoc A)) (x ⊗ₜ y ⊗ₜ z)
     left_distrib := fun x y z => by
-      convert μ[A].hom.map_add (x ⊗ₜ y) (x ⊗ₜ z)
+      convert! μ[A].hom.map_add (x ⊗ₜ y) (x ⊗ₜ z)
       rw [← TensorProduct.tmul_add]
       rfl
     right_distrib := fun x y z => by
-      convert μ[A].hom.map_add (x ⊗ₜ z) (y ⊗ₜ z)
+      convert! μ[A].hom.map_add (x ⊗ₜ z) (y ⊗ₜ z)
       rw [← TensorProduct.add_tmul]
       rfl
     zero_mul := fun x => show μ[A] _ = 0 by

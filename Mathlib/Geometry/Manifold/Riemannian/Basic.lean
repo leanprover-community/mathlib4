@@ -119,7 +119,7 @@ noncomputable def riemannianMetricVectorSpace :
   contMDiff := by
     intro x
     rw [contMDiffAt_section]
-    convert contMDiffAt_const (c := innerSL ℝ)
+    convert! contMDiffAt_const (c := innerSL ℝ)
     ext v w
     simp [hom_trivializationAt_apply, ContinuousLinearMap.inCoordinates, TangentSpace]
 
@@ -267,7 +267,7 @@ lemma eventually_norm_mfderivWithin_symm_extChartAt_comp_lt (x : M) :
   rw [TangentBundle.symmL_trivializationAt h'y] at hy
   have A : (extChartAt I x).symm (extChartAt I x y) = y :=
     (extChartAt I x).left_inv (by simpa using h'y)
-  convert hy using 3 <;> congr
+  convert! hy using 3 <;> congr
 
 lemma eventually_norm_mfderivWithin_symm_extChartAt_lt (x : M) :
     ∃ C > 0, ∀ᶠ y in 𝓝[range I] (extChartAt I x x),
@@ -281,7 +281,7 @@ lemma eventually_norm_mfderivWithin_symm_extChartAt_lt (x : M) :
     extChartAt_target_mem_nhdsWithin x] with y hy h'y
   have : y = (extChartAt I x) ((extChartAt I x).symm y) := by simp [-extChartAt, h'y]
   simp only [preimage_setOf_eq, mem_setOf_eq] at hy
-  convert hy
+  convert! hy
 
 lemma eventually_enorm_mfderivWithin_symm_extChartAt_lt (x : M) :
     ∃ C > (0 : ℝ≥0), ∀ᶠ y in 𝓝[range I] (extChartAt I x x),
@@ -484,9 +484,9 @@ lemma setOf_riemannianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
   have : γ' t₁ ∈ (extChartAt I x).symm ⁻¹' v := by
     apply hr
     rw [← Metric.eball_coe, Metric.mem_eball, edist_eq_enorm_sub]
-    convert this
+    convert! this
     simp [γ', hγx]
-  convert mem_preimage.1 this
+  convert! mem_preimage.1 this
   simp only [Function.comp_apply, γ', (extChartAt I x).left_inv <| uc <| t₁_mem
     (right_mem_Icc.mpr ht₁0)]
 

@@ -119,10 +119,10 @@ lemma partialSups_monotone (f : ι → α) :
 def partialSups.gi :
     GaloisInsertion (partialSups : (ι → α) → ι →o α) (↑) where
   choice f h :=
-    ⟨f, by convert (partialSups f).monotone using 1; exact (le_partialSups f).antisymm h⟩
+    ⟨f, by convert! (partialSups f).monotone using 1; exact (le_partialSups f).antisymm h⟩
   gc f g := by
     refine ⟨(le_partialSups f).trans, fun h ↦ ?_⟩
-    convert partialSups_mono h
+    convert! partialSups_mono h
     exact OrderHom.ext _ _ g.monotone.partialSups_eq.symm
   le_l_u f := le_partialSups f
   choice_eq f h := OrderHom.ext _ _ ((le_partialSups f).antisymm h)

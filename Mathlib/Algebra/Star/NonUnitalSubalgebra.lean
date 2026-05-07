@@ -1213,7 +1213,7 @@ lemma adjoin_le_centralizer_centralizer (s : Set A) :
     adjoin R s ≤ centralizer R (centralizer R s) := by
   rw [← toNonUnitalSubalgebra_le_iff, centralizer_toNonUnitalSubalgebra,
     adjoin_toNonUnitalSubalgebra]
-  convert NonUnitalAlgebra.adjoin_le_centralizer_centralizer R (s ∪ star s)
+  convert! NonUnitalAlgebra.adjoin_le_centralizer_centralizer R (s ∪ star s)
   rw [StarMemClass.star_coe_eq]
   simp
 

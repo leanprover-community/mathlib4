@@ -228,8 +228,8 @@ theorem pow_mul_pow_lcm {ζ' : M} {k' : ℕ} (hζ : IsPrimitiveRoot ζ k) (hζ' 
     IsPrimitiveRoot
       (ζ ^ (k / Nat.factorizationLCMLeft k k') * ζ' ^ (k' / Nat.factorizationLCMRight k k'))
       (Nat.lcm k k') := by
-  convert IsPrimitiveRoot.orderOf _
-  convert ((Commute.all ζ ζ').orderOf_mul_pow_eq_lcm
+  convert! IsPrimitiveRoot.orderOf _
+  convert! ((Commute.all ζ ζ').orderOf_mul_pow_eq_lcm
     (by simpa [← hζ.eq_orderOf]) (by simpa [← hζ'.eq_orderOf])).symm using 2
   all_goals simp [hζ.eq_orderOf, hζ'.eq_orderOf]
 
@@ -422,7 +422,7 @@ theorem eq_neg_one_of_two_right [NoZeroDivisors R] {ζ : R} (h : IsPrimitiveRoot
 
 theorem neg_one (p : ℕ) [Nontrivial R] [h : CharP R p] (hp : p ≠ 2) :
     IsPrimitiveRoot (-1 : R) 2 := by
-  convert IsPrimitiveRoot.orderOf (-1 : R)
+  convert! IsPrimitiveRoot.orderOf (-1 : R)
   rw [orderOf_neg_one, if_neg <| by rwa [ringChar.eq_iff.mpr h]]
 
 /-- If `1 < k` then `(∑ i ∈ range k, ζ ^ i) = 0`. -/
@@ -790,7 +790,7 @@ noncomputable def autToPow [NeZero n] : (S ≃ₐ[R] S) →* (ZMod n)ˣ :=
         replace h : μ' = μ' ^ h1.choose :=
           rootsOfUnity.coe_injective (by simpa only [rootsOfUnity.coe_pow] using h)
         nth_rw 1 [← pow_one μ'] at h
-        convert ho ▸ (ZMod.natCast_eq_natCast_iff ..).mpr (pow_eq_pow_iff_modEq.mp h).symm
+        convert! ho ▸ (ZMod.natCast_eq_natCast_iff ..).mpr (pow_eq_pow_iff_modEq.mp h).symm
         exact Nat.cast_one.symm
       map_mul' := by
         intro x y
@@ -804,7 +804,7 @@ noncomputable def autToPow [NeZero n] : (S ≃ₐ[R] S) →* (ZMod n)ˣ :=
         rw [← pow_mul] at hxy
         replace hxy : μ' ^ (hx'.choose * hy'.choose) = μ' ^ hxy'.choose :=
           rootsOfUnity.coe_injective (by simpa only [rootsOfUnity.coe_pow] using hxy)
-        convert ho ▸ (ZMod.natCast_eq_natCast_iff ..).mpr (pow_eq_pow_iff_modEq.mp hxy).symm
+        convert! ho ▸ (ZMod.natCast_eq_natCast_iff ..).mpr (pow_eq_pow_iff_modEq.mp hxy).symm
         exact (Nat.cast_mul ..).symm }
 
 -- We are not using @[simps] in `autToPow` to avoid a timeout.

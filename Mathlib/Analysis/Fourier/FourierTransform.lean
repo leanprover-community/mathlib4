@@ -206,7 +206,7 @@ theorem integral_fourierIntegral_swap
     apply hM.comp_aestronglyMeasurable A' -- `exact` works, but `apply` is 10x faster!
   · filter_upwards with ⟨ξ, x⟩
     simp only [Function.uncurry_apply_pair, norm_mul, norm_norm, ge_iff_le, ← mul_assoc]
-    convert M.le_opNorm₂ (g ξ) (e (-L x ξ) • f x) using 2
+    convert! M.le_opNorm₂ (g ξ) (e (-L x ξ) • f x) using 2
     simp
 
 variable [CompleteSpace E] [CompleteSpace F]

@@ -210,7 +210,7 @@ variable {f g}
 lemma pushoutCocone_inl_eq_inr_imp_of_iso {c c' : PushoutCocone f g} (e : c ≅ c')
     (x₁ : X₁) (x₂ : X₂) (h : c.inl x₁ = c.inr x₂) :
     c'.inl x₁ = c'.inr x₂ := by
-  convert congr_arg e.hom.hom h
+  convert! congr_arg e.hom.hom h
   · exact ConcreteCategory.congr_hom (e.hom.w WalkingSpan.left).symm x₁
   · exact ConcreteCategory.congr_hom (e.hom.w WalkingSpan.right).symm x₂
 

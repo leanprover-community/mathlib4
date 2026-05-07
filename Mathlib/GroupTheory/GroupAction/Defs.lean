@@ -308,7 +308,7 @@ theorem quotient_preimage_image_eq_union_mul (U : Set α) :
     rw [Set.mem_preimage, Set.mem_image]
     refine ⟨g⁻¹ • a, ?_, by simp +instances [f, orbitRel, Quotient.eq']⟩
     rw [← hu₂]
-    convert hu₁
+    convert! hu₁
     simp only [inv_smul_smul]
 
 @[to_additive]
@@ -439,13 +439,13 @@ lemma orbitRel.Quotient.mem_subgroup_orbit_iff' {H : Subgroup G} {x : orbitRel.Q
     {a b : x.orbit} {c : α} (h : (⟦a⟧ : orbitRel.Quotient H x.orbit) = ⟦b⟧) :
     (a : α) ∈ MulAction.orbit H c ↔ (b : α) ∈ MulAction.orbit H c := by
   simp_rw [mem_orbit_symm (a₂ := c)]
-  convert Iff.rfl using 2
+  convert! Iff.rfl using 2
   rw [orbit_eq_iff]
   suffices hb : ↑b ∈ orbitRel.Quotient.orbit (⟦a⟧ : orbitRel.Quotient H x.orbit) by
     rw [orbitRel.Quotient.orbit_eq_orbit_out (⟦a⟧ : orbitRel.Quotient H x.orbit) Quotient.out_eq']
        at hb
     rw [orbitRel.Quotient.mem_subgroup_orbit_iff]
-    convert hb using 1
+    convert! hb using 1
     rw [orbit_eq_iff, ← orbitRel_apply, ← Quotient.eq'', Quotient.out_eq', @Quotient.mk''_eq_mk]
   rw [orbitRel.Quotient.mem_orbit, h, @Quotient.mk''_eq_mk]
 

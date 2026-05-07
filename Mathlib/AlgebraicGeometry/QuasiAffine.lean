@@ -65,7 +65,7 @@ lemma IsQuasiAffine.isBasis_basicOpen (X : Scheme.{u}) [IsQuasiAffine X] :
   refine ⟨_, ⟨r, ?_, rfl⟩, hxr, (Set.preimage_mono hrU).trans_eq
     (Set.preimage_image_eq _ X.toSpecΓ.isEmbedding.injective)⟩
   rw [← Hom.isAffineOpen_iff_of_isOpenImmersion X.toSpecΓ]
-  convert IsAffineOpen.Spec_basicOpen r
+  convert! IsAffineOpen.Spec_basicOpen r
   exact SetLike.coe_injective (Set.image_preimage_eq_of_subset
     (hrU.trans (Set.image_subset_range _ _)))
 
@@ -84,7 +84,7 @@ lemma IsQuasiAffine.of_forall_exists_mem_basicOpen (X : Scheme.{u}) [CompactSpac
   obtain ⟨r, hr, hxr⟩ := H x
   refine ⟨PrimeSpectrum.basicOpen r, (X.toSpecΓ_preimage_basicOpen r).ge hxr, ?_⟩
   suffices IsOpenImmersion ((X.basicOpen r).ι ≫ X.toSpecΓ) by
-    convert this <;> rw [toSpecΓ_preimage_basicOpen]
+    convert! this <;> rw [toSpecΓ_preimage_basicOpen]
   rw [← Opens.toSpecΓ_SpecMap_presheaf_map_top]
   have := isLocalization_basicOpen_of_qcqs isCompact_univ isQuasiSeparated_univ r
   exact MorphismProperty.comp_mem _ hr.isoSpec.hom _ inferInstance (.of_isLocalization r)

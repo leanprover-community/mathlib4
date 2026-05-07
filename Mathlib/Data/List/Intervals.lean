@@ -83,7 +83,7 @@ theorem eq_empty_iff {n m : ℕ} : Ico n m = [] ↔ m ≤ n :=
 theorem append_consecutive {n m l : ℕ} (hnm : n ≤ m) (hml : m ≤ l) :
     Ico n m ++ Ico m l = Ico n l := by
   dsimp only [Ico]
-  convert range'_append using 2
+  convert! range'_append using 2
   · rw [Nat.one_mul, Nat.add_sub_cancel' hnm]
   · lia
 
@@ -99,7 +99,7 @@ theorem inter_consecutive (n m l : ℕ) : Ico n m ∩ Ico m l = [] := by
 @[simp]
 theorem bagInter_consecutive (n m l : Nat) :
     @List.bagInter ℕ instBEqOfDecidableEq (Ico n m) (Ico m l) = [] :=
-  (bagInter_nil_iff_inter_nil _ _).2 (by convert inter_consecutive n m l)
+  (bagInter_nil_iff_inter_nil _ _).2 (by convert! inter_consecutive n m l)
 
 @[simp]
 theorem succ_singleton {n : ℕ} : Ico n (n + 1) = [n] := by

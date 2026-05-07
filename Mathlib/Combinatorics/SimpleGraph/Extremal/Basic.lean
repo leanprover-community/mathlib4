@@ -52,7 +52,7 @@ theorem exists_isExtremal_iff_exists (p : SimpleGraph V → Prop) :
     apply exists_max_image { G | p G } (#·.edgeFinset)
     use G, by simpa using hp
   use G', inferInstanceAs (DecidableRel G'.Adj)
-  exact ⟨by simpa using hp', fun _ _ hp ↦ by convert h _ (by simpa using hp)⟩
+  exact ⟨by simpa using hp', fun _ _ hp ↦ by convert! h _ (by simpa using hp)⟩
 
 /-- If `H` has at least one edge, then there exists an extremal `H.Free` graph. -/
 theorem exists_isExtremal_free {W : Type*} {H : SimpleGraph W} (h : H ≠ ⊥) :
@@ -96,7 +96,7 @@ theorem extremalNumber_of_fintypeCard_eq [Fintype V] (hc : card V = n) :
     rw [mem_filter, ← free_congr .refl (.map e G)]
     simpa using h
   rw [Iso.card_edgeFinset_eq (.map e G)]
-  convert @le_sup _ _ _ _ { G | H.Free G } (#·.edgeFinset) G' h'
+  convert! @le_sup _ _ _ _ { G | H.Free G } (#·.edgeFinset) G' h'
 
 variable [Fintype V] [DecidableRel G.Adj]
 
@@ -104,7 +104,7 @@ variable [Fintype V] [DecidableRel G.Adj]
 theorem card_edgeFinset_le_extremalNumber (h : H.Free G) :
     #G.edgeFinset ≤ extremalNumber (card V) H := by
   rw [extremalNumber_of_fintypeCard_eq rfl]
-  convert @le_sup _ _ _ _ { G | H.Free G } (#·.edgeFinset) G (by simpa using h)
+  convert! @le_sup _ _ _ _ { G | H.Free G } (#·.edgeFinset) G (by simpa using h)
 
 /-- If `G` has more than `extremalNumber (card V) H` edges, then `G` contains a copy of `H`. -/
 theorem IsContained.of_extremalNumber_lt_card_edgeFinset
@@ -118,7 +118,7 @@ theorem extremalNumber_le_iff (H : SimpleGraph W) (m : ℕ) :
     extremalNumber (card V) H ≤ m ↔
       ∀ ⦃G : SimpleGraph V⦄ [DecidableRel G.Adj], H.Free G → #G.edgeFinset ≤ m := by
   simp_rw [extremalNumber_of_fintypeCard_eq rfl, Finset.sup_le_iff, mem_filter_univ]
-  exact ⟨fun h _ _ h' ↦ by convert h _ h', fun h _ h' ↦ by convert h h'⟩
+  exact ⟨fun h _ _ h' ↦ by convert! h _ h', fun h _ h' ↦ by convert! h h'⟩
 
 /-- `extremalNumber (card V) H` is greater than `x` if and only if there exists a `H`-free simple
 graph `G` with more than `x` edges. -/
@@ -126,7 +126,7 @@ theorem lt_extremalNumber_iff (H : SimpleGraph W) (m : ℕ) :
     m < extremalNumber (card V) H ↔
       ∃ G : SimpleGraph V, ∃ _ : DecidableRel G.Adj, H.Free G ∧ m < #G.edgeFinset := by
   simp_rw [extremalNumber_of_fintypeCard_eq rfl, Finset.lt_sup_iff, mem_filter_univ]
-  exact ⟨fun ⟨_, h, h'⟩ ↦ ⟨_, _, h, h'⟩, fun ⟨_, _, h, h'⟩ ↦ ⟨_, h, by convert h'⟩⟩
+  exact ⟨fun ⟨_, h, h'⟩ ↦ ⟨_, _, h, h'⟩, fun ⟨_, _, h, h'⟩ ↦ ⟨_, h, by convert! h'⟩⟩
 
 variable {R : Type*} [Semiring R] [LinearOrder R] [FloorSemiring R]
 

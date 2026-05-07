@@ -135,7 +135,7 @@ lemma tendsto_sigmoid_atBot : Tendsto sigmoid atBot (𝓝 0) :=
 
 lemma hasDerivAt_sigmoid (x : ℝ) :
     HasDerivAt sigmoid (sigmoid x * (1 - sigmoid x)) x := by
-  convert (hasDerivAt_neg' x |>.exp.const_add 1 |>.inv <| by positivity) using 1
+  convert! (hasDerivAt_neg' x |>.exp.const_add 1 |>.inv <| by positivity) using 1
   rw [← sigmoid_neg, ← sigmoid_mul_rexp_neg x, sigmoid_def]
   field [sq]
 

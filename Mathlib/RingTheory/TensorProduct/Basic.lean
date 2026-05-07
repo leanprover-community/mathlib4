@@ -533,7 +533,7 @@ lemma closure_range_union_range_eq_top [CommRing R] [Ring A] [Ring B]
   induction x with
   | zero => exact zero_mem _
   | tmul x y =>
-    convert_to (Algebra.TensorProduct.includeLeftRingHom (R := R) x) *
+    convert_to! (Algebra.TensorProduct.includeLeftRingHom (R := R) x) *
       (Algebra.TensorProduct.includeRight y) ∈ _
     · simp
     · exact mul_mem (Subring.subset_closure (.inl ⟨x, rfl⟩))

@@ -127,7 +127,7 @@ theorem exists_mul_add_sub_mem_of_mem_jacobson {I : Ideal R} (r : R) (h : r ∈ 
 
 theorem exists_mul_sub_mem_of_sub_one_mem_jacobson {I : Ideal R} (r : R) (h : r - 1 ∈ jacobson I) :
     ∃ s, s * r - 1 ∈ I := by
-  convert exists_mul_add_sub_mem_of_mem_jacobson _ h
+  convert! exists_mul_add_sub_mem_of_mem_jacobson _ h
   simp
 
 /-- An ideal equals its Jacobson radical iff it is the intersection of a set of maximal ideals.

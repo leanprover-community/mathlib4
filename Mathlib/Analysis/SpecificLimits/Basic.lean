@@ -38,14 +38,14 @@ theorem NNRat.tendsto_inv_atTop_nhds_zero_nat : Tendsto (fun n : ℕ ↦ (n : �
 theorem NNRat.tendsto_algebraMap_inv_atTop_nhds_zero_nat (𝕜 : Type*) [Semiring 𝕜]
     [Algebra ℚ≥0 𝕜] [TopologicalSpace 𝕜] [ContinuousSMul ℚ≥0 𝕜] :
     Tendsto (algebraMap ℚ≥0 𝕜 ∘ fun n : ℕ ↦ (n : ℚ≥0)⁻¹) atTop (𝓝 0) := by
-  convert (continuous_algebraMap ℚ≥0 𝕜).continuousAt.tendsto.comp
+  convert! (continuous_algebraMap ℚ≥0 𝕜).continuousAt.tendsto.comp
     tendsto_inv_atTop_nhds_zero_nat
   rw [map_zero]
 
 theorem tendsto_inv_atTop_nhds_zero_nat {𝕜 : Type*} [DivisionSemiring 𝕜] [CharZero 𝕜]
     [TopologicalSpace 𝕜] [ContinuousSMul ℚ≥0 𝕜] :
     Tendsto (fun n : ℕ ↦ (n : 𝕜)⁻¹) atTop (𝓝 0) := by
-  convert NNRat.tendsto_algebraMap_inv_atTop_nhds_zero_nat 𝕜
+  convert! NNRat.tendsto_algebraMap_inv_atTop_nhds_zero_nat 𝕜
   simp
 
 theorem tendsto_const_div_atTop_nhds_zero_nat {𝕜 : Type*} [DivisionSemiring 𝕜] [CharZero 𝕜]
@@ -77,7 +77,7 @@ theorem tendsto_algebraMap_inv_atTop_nhds_zero_nat {𝕜 : Type*} (A : Type*)
     [Semifield 𝕜] [CharZero 𝕜] [TopologicalSpace 𝕜] [ContinuousSMul ℚ≥0 𝕜]
     [Semiring A] [Algebra 𝕜 A] [TopologicalSpace A] [ContinuousSMul 𝕜 A] :
     Tendsto (algebraMap 𝕜 A ∘ fun n : ℕ ↦ (n : 𝕜)⁻¹) atTop (𝓝 0) := by
-  convert (continuous_algebraMap 𝕜 A).continuousAt.tendsto.comp tendsto_inv_atTop_nhds_zero_nat
+  convert! (continuous_algebraMap 𝕜 A).continuousAt.tendsto.comp tendsto_inv_atTop_nhds_zero_nat
   rw [map_zero]
 
 /-- The limit of `n / (n + x)` is 1, for any constant `x` (valid in `ℝ` or any topological division
@@ -85,7 +85,7 @@ algebra over `ℚ≥0`, e.g., `ℂ`). -/
 theorem tendsto_natCast_div_add_atTop {𝕜 : Type*} [DivisionSemiring 𝕜] [TopologicalSpace 𝕜]
     [CharZero 𝕜] [ContinuousSMul ℚ≥0 𝕜] [IsTopologicalSemiring 𝕜] [ContinuousInv₀ 𝕜] (x : 𝕜) :
     Tendsto (fun n : ℕ ↦ (n : 𝕜) / (n + x)) atTop (𝓝 1) := by
-  convert Tendsto.congr' ((eventually_ne_atTop 0).mp (Eventually.of_forall fun n hn ↦ _)) _
+  convert! Tendsto.congr' ((eventually_ne_atTop 0).mp (Eventually.of_forall fun n hn ↦ _)) _
   · exact fun n : ℕ ↦ 1 / (1 + x / n)
   · simp [Nat.cast_ne_zero.mpr hn, add_div']
   · have : 𝓝 (1 : 𝕜) = 𝓝 (1 / (1 + x * (0 : 𝕜))) := by
@@ -331,7 +331,7 @@ theorem tsum_geometric_of_lt_one {r : ℝ} (h₁ : 0 ≤ r) (h₂ : r < 1) : ∑
   (hasSum_geometric_of_lt_one h₁ h₂).tsum_eq
 
 theorem hasSum_geometric_two : HasSum (fun n : ℕ ↦ ((1 : ℝ) / 2) ^ n) 2 := by
-  convert hasSum_geometric_of_lt_one _ _ <;> norm_num
+  convert! hasSum_geometric_of_lt_one _ _ <;> norm_num
 
 theorem summable_geometric_two : Summable fun n : ℕ ↦ ((1 : ℝ) / 2) ^ n :=
   ⟨_, hasSum_geometric_two⟩
@@ -348,7 +348,7 @@ theorem sum_geometric_two_le (n : ℕ) : (∑ i ∈ range n, (1 / (2 : ℝ)) ^ i
     intro i
     apply pow_nonneg
     norm_num
-  convert summable_geometric_two.sum_le_tsum (range n) (fun i _ ↦ this i)
+  convert! summable_geometric_two.sum_le_tsum (range n) (fun i _ ↦ this i)
   exact tsum_geometric_two.symm
 
 theorem tsum_geometric_inv_two : (∑' n : ℕ, (2 : ℝ)⁻¹ ^ n) = 2 :=
@@ -367,7 +367,7 @@ theorem tsum_geometric_inv_two_ge (n : ℕ) :
     le_add_iff_nonneg_left, pow_add, _root_.tsum_mul_right, tsum_geometric_inv_two]
 
 theorem hasSum_geometric_two' (a : ℝ) : HasSum (fun n : ℕ ↦ a / 2 / 2 ^ n) a := by
-  convert HasSum.mul_left (a / 2)
+  convert! HasSum.mul_left (a / 2)
       (hasSum_geometric_of_lt_one (le_of_lt one_half_pos) one_half_lt_one) using 1
   · funext n
     simp only [one_div, inv_pow]
@@ -402,7 +402,7 @@ theorem ENNReal.tsum_geometric (r : ℝ≥0∞) : ∑' n : ℕ, r ^ n = (1 - r)�
   rcases lt_or_ge r 1 with hr | hr
   · rcases ENNReal.lt_iff_exists_coe.1 hr with ⟨r, rfl, hr'⟩
     norm_cast at *
-    convert ENNReal.tsum_coe_eq (NNReal.hasSum_geometric hr)
+    convert! ENNReal.tsum_coe_eq (NNReal.hasSum_geometric hr)
     rw [ENNReal.coe_inv <| ne_of_gt <| tsub_pos_iff_lt.2 hr, coe_sub, coe_one]
   · rw [tsub_eq_zero_iff_le.mpr hr, ENNReal.inv_zero, ENNReal.tsum_eq_iSup_nat, iSup_eq_top]
     refine fun a ha ↦
@@ -464,7 +464,7 @@ include hu in
 `f n` to the limit of `f` is bounded above by `C * r^n / (1 - r)`. -/
 theorem edist_le_of_edist_le_geometric_of_tendsto {a : α} (ha : Tendsto f atTop (𝓝 a)) (n : ℕ) :
     edist (f n) a ≤ C * r ^ n / (1 - r) := by
-  convert edist_le_tsum_of_edist_le_of_tendsto _ hu ha _
+  convert! edist_le_tsum_of_edist_le_of_tendsto _ hu ha _
   simp only [pow_add, ENNReal.tsum_mul_left, ENNReal.tsum_geometric, div_eq_mul_inv, mul_assoc]
 
 include hu in
@@ -494,7 +494,7 @@ include hu ha in
 theorem edist_le_of_edist_le_geometric_two_of_tendsto (n : ℕ) : edist (f n) a ≤ 2 * C / 2 ^ n := by
   simp only [div_eq_mul_inv, ENNReal.inv_pow] at *
   rw [mul_assoc, mul_comm]
-  convert edist_le_of_edist_le_geometric_of_tendsto 2⁻¹ C hu ha n using 1
+  convert! edist_le_of_edist_le_geometric_of_tendsto 2⁻¹ C hu ha n using 1
   rw [ENNReal.one_sub_inv_two, div_eq_mul_inv, inv_inv]
 
 include hu ha in
@@ -540,7 +540,7 @@ theorem dist_le_of_le_geometric_of_tendsto₀ {a : α} (ha : Tendsto f atTop (�
 theorem dist_le_of_le_geometric_of_tendsto {a : α} (ha : Tendsto f atTop (𝓝 a)) (n : ℕ) :
     dist (f n) a ≤ C * r ^ n / (1 - r) := by
   have := aux_hasSum_of_le_geometric hr hu
-  convert dist_le_tsum_of_dist_le_of_tendsto _ hu ⟨_, this⟩ ha n
+  convert! dist_le_tsum_of_dist_le_of_tendsto _ hu ⟨_, this⟩ ha n
   simp only [pow_add, mul_left_comm C, mul_div_right_comm]
   rw [mul_comm]
   exact (this.mul_left _).tsum_eq.symm
@@ -564,7 +564,7 @@ theorem dist_le_of_le_geometric_two_of_tendsto₀ {a : α} (ha : Tendsto f atTop
 `f n` to the limit of `f` is bounded above by `C / 2^n`. -/
 theorem dist_le_of_le_geometric_two_of_tendsto {a : α} (ha : Tendsto f atTop (𝓝 a)) (n : ℕ) :
     dist (f n) a ≤ C / 2 ^ n := by
-  convert dist_le_tsum_of_dist_le_of_tendsto _ hu₂ (summable_geometric_two' C) ha n
+  convert! dist_le_tsum_of_dist_le_of_tendsto _ hu₂ (summable_geometric_two' C) ha n
   simp only [add_comm n, pow_add, ← div_div]
   symm
   exact ((hasSum_geometric_two' C).div_const _).tsum_eq

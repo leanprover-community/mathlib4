@@ -210,7 +210,7 @@ protected theorem sum {ι : Type*} (s : Finset ι) {f : ι → ℂ → E}
 theorem fun_sum {c : ℂ} {R : ℝ} {ι : Type*} (s : Finset ι) {f : ι → ℂ → E}
     (h : ∀ i ∈ s, CircleIntegrable (f i) c R) :
     CircleIntegrable (fun z ↦ ∑ i ∈ s, f i z) c R := by
-  convert CircleIntegrable.sum s h
+  convert! CircleIntegrable.sum s h
   simp
 
 /-- `finsum`s of circle integrable functions are circle integrable. -/
@@ -522,7 +522,7 @@ theorem integral_sub_zpow_of_ne {n : ℤ} (hn : n ≠ -1) (c w : ℂ) (R : ℝ) 
   have hd : ∀ z, z ≠ w ∨ -1 ≤ n →
       HasDerivAt (fun z => (z - w) ^ (n + 1) / (n + 1)) ((z - w) ^ n) z := by
     intro z hne
-    convert ((hasDerivAt_zpow (n + 1) _ (hne.imp _ _)).comp z
+    convert! ((hasDerivAt_zpow (n + 1) _ (hne.imp _ _)).comp z
       ((hasDerivAt_id z).sub_const w)).div_const _ using 1
     · have hn' : (n + 1 : ℂ) ≠ 0 := by
         rwa [Ne, ← eq_neg_iff_add_eq_zero, ← Int.cast_one, ← Int.cast_neg, Int.cast_inj]
@@ -611,7 +611,7 @@ theorem hasSum_two_pi_I_cauchyPowerSeries_integral {f : ℂ → E} {c : ℂ} {R 
     simp only [smul_smul]
     refine HasSum.smul_const ?_ _
     have : ‖w / (circleMap c R θ - c)‖ < 1 := by simpa [abs_of_pos hR] using hwR.2
-    convert (hasSum_geometric_of_norm_lt_one this).mul_right _ using 1
+    convert! (hasSum_geometric_of_norm_lt_one this).mul_right _ using 1
     simp [← sub_sub, ← mul_inv, sub_mul, div_mul_cancel₀ _ (circleMap_ne_center hR.ne')]
 
 /-- For any circle integrable function `f`, the power series `cauchyPowerSeries f c R`, `R > 0`,

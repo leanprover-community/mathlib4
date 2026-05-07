@@ -126,7 +126,7 @@ lemma regularTopology.isLocallySurjective_sheaf_of_types [Preregular C] [Finitar
       NatTrans.op_app, Cofan.mk_ι_app, Functor.mapIso_symm, Iso.trans_hom, Iso.symm_hom,
       Functor.mapIso_inv, comp_apply, ← f.naturality_apply (Sigma.ι Z a).op, i']
     have : f.app ⟨Z a⟩ (x a) = G.map (π a).op y := (h' a).choose_spec
-    convert this
+    convert! this
     · rw [← Functor.map_comp_apply, opCoproductIsoProduct_inv_comp_ι, ← piComparison_comp_π]
       change ((PreservesProduct.iso F _).hom ≫ _) _ = _
       have := Types.productIso_hom_comp_eval (fun a ↦ F.obj (op (Z a))) a

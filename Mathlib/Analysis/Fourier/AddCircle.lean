@@ -192,7 +192,7 @@ theorem fourier_add_half_inv_index {n : ℤ} (hn : n ≠ 0) (hT : 0 < T) (x : Ad
     Metric.unitSphere.coe_mul]
   have : (@toCircle T (n • (T / 2 / n) : ℝ) : ℂ) = -1 := by
     rw [zsmul_eq_mul, toCircle, Function.Periodic.lift_coe, Circle.coe_exp]
-    convert Complex.exp_pi_mul_I using 3
+    convert! Complex.exp_pi_mul_I using 3
     field_simp
   rw [this]; simp
 
@@ -277,7 +277,7 @@ theorem orthonormal_fourier : Orthonormal ℂ (@fourierLp T _ 2 _) := by
   · simp [h]
   have hij : j + -i ≠ 0 := by
     exact sub_ne_zero.mpr (Ne.symm h)
-  convert integral_eq_zero_of_add_right_eq_neg (μ := haarAddCircle)
+  convert! integral_eq_zero_of_add_right_eq_neg (μ := haarAddCircle)
     (fourier_add_half_inv_index hij hT.elim)
 
 end Monomials
@@ -462,7 +462,7 @@ theorem hasSum_sq_fourierCoeffOn
   haveI := Fact.mk (by linarith : 0 < b - a)
   rw [← add_sub_cancel a b] at hL2
   have h := hL2.memLp_liftIoc.haarAddCircle
-  convert hasSum_sq_fourierCoeff h.toLp using 1
+  convert! hasSum_sq_fourierCoeff h.toLp using 1
   · simp [fourierCoeff_congr_ae h.coeFn_toLp, fourierCoeff_liftIoc_eq]
   · nth_rw 2 [← add_sub_cancel a b]
     rw [← AddCircle.integral_liftIoc_eq_intervalIntegral, ← Function.comp_def (f := (‖·‖ ^ 2))]
@@ -503,7 +503,7 @@ theorem hasSum_fourier_series_of_summable (h : Summable (fourierCoeff f)) :
 converges everywhere pointwise to `f`. -/
 theorem has_pointwise_sum_fourier_series_of_summable (h : Summable (fourierCoeff f))
     (x : AddCircle T) : HasSum (fun i => fourierCoeff f i • fourier i x) (f x) := by
-  convert (ContinuousMap.evalCLM ℂ x).hasSum (hasSum_fourier_series_of_summable h)
+  convert! (ContinuousMap.evalCLM ℂ x).hasSum (hasSum_fourier_series_of_summable h)
 
 end Convergence
 
@@ -537,7 +537,7 @@ theorem hasDerivAt_fourier (n : ℤ) (x : ℝ) :
   refine (?_ : HasDerivAt (fun y => exp (2 * π * I * n * y / T)) _ _).comp_ofReal
   rw [(fun α β => by ring : ∀ α β : ℂ, α * exp β = exp β * α)]
   refine (hasDerivAt_exp _).comp (x : ℂ) ?_
-  convert hasDerivAt_mul_const (2 * ↑π * I * ↑n / T) using 1
+  convert! hasDerivAt_mul_const (2 * ↑π * I * ↑n / T) using 1
   ext1 y; ring
 
 theorem hasDerivAt_fourier_neg (n : ℤ) (x : ℝ) :
@@ -550,7 +550,7 @@ variable {T}
 theorem has_antideriv_at_fourier_neg (hT : Fact (0 < T)) {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
     HasDerivAt (fun y : ℝ => (T : ℂ) / (-2 * π * I * n) * fourier (-n) (y : AddCircle T))
       (fourier (-n) (x : AddCircle T)) x := by
-  convert (hasDerivAt_fourier_neg T n x).div_const (-2 * π * I * n / T) using 1
+  convert! (hasDerivAt_fourier_neg T n x).div_const (-2 * π * I * n / T) using 1
   · ext1 y; rw [div_div_eq_mul_div]; ring
   · simp [mul_div_cancel_left₀, hn, (Fact.out : 0 < T).ne', Real.pi_pos.ne']
 

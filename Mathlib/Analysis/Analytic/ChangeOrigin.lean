@@ -171,7 +171,7 @@ theorem changeOriginSeries_summable_aux₁ {r r' : ℝ≥0} (hr : (r + r' : ℝ�
         (‖p n‖₊ * (r + r') ^ n) := by
     intro n
     -- TODO: why `simp only [tsub_add_cancel_of_le (card_finset_fin_le _)]` fails?
-    convert_to HasSum (fun s : Finset (Fin n) => ‖p n‖₊ * (r ^ s.card * r' ^ (n - s.card))) _
+    convert_to! HasSum (fun s : Finset (Fin n) => ‖p n‖₊ * (r ^ s.card * r' ^ (n - s.card))) _
     · ext1 s
       rw [tsub_add_cancel_of_le (card_finset_fin_le _), mul_assoc]
     rw [← Fin.sum_pow_mul_eq_add_pow]

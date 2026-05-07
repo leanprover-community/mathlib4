@@ -78,14 +78,14 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
     apply h _ (fun i ↦ S (e i))
     · intro i
       classical
-      convert Hdeg (e i)
+      convert! Hdeg (e i)
       conv_lhs => rw [← e.symm_apply_apply i, degreeOf_rename_of_injective e.symm.injective]
     · intro x hx
       simp only [MvPolynomial.eval_rename]
       apply Heval
       intro s
       simp only [Function.comp_apply]
-      convert hx (e.symm s)
+      convert! hx (e.symm s)
       simp only [Equiv.apply_symm_apply]
   | h_empty =>
     suffices P = C (constantCoeff P) by
@@ -111,7 +111,7 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
         intro d hd
         simp only [hQ]
         rw [MvPolynomial.coeff_eval_eq_eval_coeff]
-        convert map_zero (MvPolynomial.eval x)
+        convert! map_zero (MvPolynomial.eval x)
         ext m
         simp only [coeff_zero]
         set n := (embDomain Function.Embedding.some m).update none d with hn
@@ -121,7 +121,7 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
         apply not_le.mpr hd
         rw [MvPolynomial.degreeOf_eq_sup]
         rw [← ne_eq, ← MvPolynomial.mem_support_iff] at hm
-        convert Finset.le_sup hm
+        convert! Finset.le_sup hm
         exact hn.1.symm
     ext m d
     simp only [Polynomial.coeff_zero, coeff_zero]
@@ -135,7 +135,7 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
       rw [eq_option_embedding_update_none_iff] at hn
       rw [hQ, ← hn.1, ← hn.2, optionEquivLeft_coeff_some_coeff_none, ← ne_eq,
         ← MvPolynomial.mem_support_iff] at he
-      convert Finset.le_sup he
+      convert! Finset.le_sup he
       rw [← hn.2, some_apply]
     · intro x hx
       specialize Heval' x hx
@@ -185,7 +185,7 @@ private lemma Alon.of_mem_P_support {ι : Type*} (i : ι) (S : Finset R) (m : ι
     rw [← Alon.degree_P]
     apply MonomialOrder.le_degree
     rw [mem_support_iff]
-    convert he
+    convert! he
   · rw [← hm]
     ext j
     by_cases hj : j = i
@@ -227,7 +227,7 @@ theorem combinatorial_nullstellensatz_exists_linearCombination
       linearCombination_apply, map_finsuppSum, Finsupp.sum, Finset.sum_eq_zero]
     intro i _
     rw [smul_eq_mul, map_mul]
-    convert mul_zero _
+    convert! mul_zero _
     rw [Alon.P, map_prod]
     apply Finset.prod_eq_zero (hx i)
     simp

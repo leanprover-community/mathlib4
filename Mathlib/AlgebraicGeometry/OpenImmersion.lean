@@ -467,7 +467,7 @@ theorem _root_.AlgebraicGeometry.isIso_iff_isIso_stalkMap {X Y : Scheme.{u}} (f 
     IsOpenImmersion.iff_isIso_stalkMap, and_comm, ← and_assoc]
   refine and_congr ⟨?_, ?_⟩ Iff.rfl
   · rintro ⟨h₁, h₂⟩
-    convert_to
+    convert_to!
       IsIso
         (TopCat.isoOfHomeo
           (Equiv.toHomeomorphOfContinuousOpen
@@ -654,7 +654,7 @@ theorem isPullback_lift_id
     {X U Y : Scheme.{u}} (f : X ⟶ Y) (g : U ⟶ Y) [IsOpenImmersion g]
     (H : Set.range f ⊆ Set.range g) :
     IsPullback (IsOpenImmersion.lift g f H) (𝟙 _) g f := by
-  convert IsPullback.of_id_snd.paste_horiz (IsKernelPair.id_of_mono g)
+  convert! IsPullback.of_id_snd.paste_horiz (IsKernelPair.id_of_mono g)
   · exact (Category.comp_id _).symm
   · simp
 
@@ -704,7 +704,7 @@ lemma isPullback {U V X Y : Scheme.{u}} (g : U ⟶ V) (iU : U ⟶ X) (iV : V ⟶
     (H' : f ⁻¹ᵁ iV.opensRange = iU.opensRange) : IsPullback g iU iV f := by
   let e := IsOpenImmersion.isoOfRangeEq (pullback.snd iV f) iU
     (by simpa [range_pullbackSnd] using congr(($H').1))
-  convert (IsPullback.of_horiz_isIso (show CommSq e.inv iU (pullback.snd iV f) (𝟙 X) from
+  convert! (IsPullback.of_horiz_isIso (show CommSq e.inv iU (pullback.snd iV f) (𝟙 X) from
     ⟨by simp [e]⟩)).paste_horiz (IsPullback.of_hasPullback iV f)
   simp [← cancel_mono iV, e, pullback.condition, H]
 

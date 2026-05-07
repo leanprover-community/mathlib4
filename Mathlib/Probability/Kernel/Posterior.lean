@@ -268,7 +268,7 @@ lemma rnDeriv_posterior_ae_prod (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ)
 lemma rnDeriv_posterior (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ) :
     ∀ᵐ ω ∂μ, ∀ᵐ x ∂(κ ∘ₘ μ),
       (κ†μ).rnDeriv (Kernel.const _ μ) x ω = κ.rnDeriv (Kernel.const _ (κ ∘ₘ μ)) ω x := by
-  convert Measure.ae_ae_of_ae_prod (rnDeriv_posterior_ae_prod h_ac) -- much faster than `exact`
+  convert! Measure.ae_ae_of_ae_prod (rnDeriv_posterior_ae_prod h_ac) -- much faster than `exact`
 
 lemma rnDeriv_posterior_symm (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ) :
     ∀ᵐ x ∂(κ ∘ₘ μ), ∀ᵐ ω ∂μ,

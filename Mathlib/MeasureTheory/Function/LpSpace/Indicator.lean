@@ -48,7 +48,7 @@ theorem exists_eLpNorm_indicator_le (hp : p ≠ ∞) (c : E) {ε : ℝ≥0∞} (
       Filter.Tendsto (fun x : ℝ≥0 => ((‖c‖₊ * x ^ (1 / p.toReal) : ℝ≥0) : ℝ≥0∞)) (𝓝 0)
         (𝓝 (0 : ℝ≥0)) := by
       rw [ENNReal.tendsto_coe]
-      convert (NNReal.continuousAt_rpow_const (Or.inr hp₀')).tendsto.const_mul _
+      convert! (NNReal.continuousAt_rpow_const (Or.inr hp₀')).tendsto.const_mul _
       simp [hp₀''.ne']
     have hε' : 0 < ε := hε.bot_lt
     obtain ⟨δ, hδ, hδε'⟩ := NNReal.nhds_zero_basis.eventually_iff.mp (this.eventually_le_const hε')
@@ -180,7 +180,7 @@ theorem tendsto_indicatorConstLp_set [hp₁ : Fact (1 ≤ p)] {β : Type*} {l : 
   rw [tendsto_iff_dist_tendsto_zero]
   have hp₀ : p ≠ 0 := (one_pos.trans_le hp₁.out).ne'
   simp only [dist_indicatorConstLp_eq_norm, norm_indicatorConstLp hp₀ hp]
-  convert tendsto_const_nhds.mul
+  convert! tendsto_const_nhds.mul
     (((ENNReal.tendsto_toReal ENNReal.zero_ne_top).comp h).rpow_const _)
   · simp [ENNReal.toReal_eq_zero_iff, hp, hp₀]
   · simp

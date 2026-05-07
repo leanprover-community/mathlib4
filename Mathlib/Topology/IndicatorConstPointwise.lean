@@ -76,7 +76,7 @@ lemma tendsto_indicator_const_apply_iff_eventually' (b : β)
   classical
   have heart := @tendsto_ite ι L β (fun i ↦ x ∈ As i) _ (x ∈ A) _ b 0 (𝓝 b) (𝓝 (0 : β))
                 nhds_o nhds_b ?_ ?_
-  · convert heart
+  · convert! heart
     by_cases hxA : x ∈ A <;> simp [hxA]
   · simp only [principal_singleton, le_def, mem_pure]
     exact fun s s_nhds ↦ mem_of_mem_nhds s_nhds

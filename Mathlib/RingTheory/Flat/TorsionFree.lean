@@ -116,7 +116,7 @@ theorem flat_iff_torsion_eq_bot_of_isBezout [IsBezout R] [IsDomain R] :
     rw [← Submodule.isTorsionFree_iff_torsion_eq_bot] at htors
     refine Function.Injective.comp (LinearMap.lsmul_injective this) ?_
     rw [← Equiv.injective_comp (TensorProduct.lid R M).symm.toEquiv]
-    convert Function.injective_id
+    convert! Function.injective_id
     ext
     simp
 

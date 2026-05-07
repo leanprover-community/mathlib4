@@ -112,7 +112,7 @@ theorem toFinsupp_cons_eq_single_add_embDomain {R : Type*} [AddZeroClass R] (x :
     toFinsupp (x::xs) =
       Finsupp.single 0 x + (toFinsupp xs).embDomain (addRightEmbedding 1) := by
   classical
-    convert toFinsupp_append [x] xs using 3
+    convert! toFinsupp_append [x] xs using 3
     · exact (toFinsupp_singleton x).symm
     · ext n
       exact add_comm n 1

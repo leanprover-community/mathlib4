@@ -263,7 +263,7 @@ lemma equation_smul (P : Fin 3 → R) {u : R} (hu : IsUnit u) : W'.Equation (u �
   have hP (u : R) {P : Fin 3 → R} (hP : W'.Equation P) : W'.Equation <| u • P := by
     rw [equation_iff] at hP ⊢
     linear_combination (norm := (simp only [smul_fin3_ext]; ring1)) u ^ 3 * hP
-  ⟨fun h => by convert hP ↑hu.unit⁻¹ h; rw [smul_smul, hu.val_inv_mul, one_smul], hP u⟩
+  ⟨fun h => by convert! hP ↑hu.unit⁻¹ h; rw [smul_smul, hu.val_inv_mul, one_smul], hP u⟩
 
 lemma equation_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : W'.Equation P ↔ W'.Equation Q := by
   rcases h with ⟨u, rfl⟩
@@ -540,7 +540,7 @@ lemma baseChange_polynomial : (W'⁄B).polynomial = .map f (W'⁄A).polynomial :
 
 variable {W'} in
 lemma Equation.baseChange {P : Fin 3 → A} (h : (W'⁄A).Equation P) : (W'⁄B).Equation (f ∘ P) := by
-  convert Equation.map f.toRingHom h using 1
+  convert! Equation.map f.toRingHom h using 1
   rw [AlgHom.toRingHom_eq_coe, map_baseChange]
 
 variable {f} in

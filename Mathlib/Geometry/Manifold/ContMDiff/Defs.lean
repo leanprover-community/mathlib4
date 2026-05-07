@@ -117,7 +117,7 @@ theorem contDiffWithinAt_localInvariantProp_of_le (n m : ℕ∞ω) (hmn : m ≤ 
     rw [this] at h
     have : I (e x) ∈ I.symm ⁻¹' e.target ∩ range I := by simp only [hx, mfld_simps]
     have := (mem_groupoid_of_pregroupoid.2 he).2.contDiffWithinAt this
-    convert (h.comp_inter _ (this.of_le hmn)).mono_of_mem_nhdsWithin _
+    convert! (h.comp_inter _ (this.of_le hmn)).mono_of_mem_nhdsWithin _
       using 1
     · ext y; simp only [mfld_simps]
     refine mem_nhdsWithin.mpr
@@ -135,7 +135,7 @@ theorem contDiffWithinAt_localInvariantProp_of_le (n m : ℕ∞ω) (hmn : m ≤ 
     have A : (I' ∘ f ∘ I.symm) (I x) ∈ I'.symm ⁻¹' e'.source ∩ range I' := by
       simp only [hx, mfld_simps]
     have := (mem_groupoid_of_pregroupoid.2 he').1.contDiffWithinAt A
-    convert (this.of_le hmn).comp _ h _
+    convert! (this.of_le hmn).comp _ h _
     · ext y; simp only [mfld_simps]
     · intro y hy; simp only [mfld_simps] at hy; simpa only [hy, mfld_simps] using hs hy.1
 
@@ -491,14 +491,14 @@ theorem contMDiffOn_iff :
     specialize h w this
     have w1 : w ∈ (chartAt H x).source := by simp only [w, hz, mfld_simps]
     have w2 : f w ∈ (chartAt H' y).source := by simp only [w, hz, mfld_simps]
-    convert ((contMDiffWithinAt_iff_of_mem_source w1 w2).mp h).2.mono _
+    convert! ((contMDiffWithinAt_iff_of_mem_source w1 w2).mp h).2.mono _
     · simp only [w, hz, mfld_simps]
     · mfld_set_tac
   · rintro ⟨hcont, hdiff⟩ x hx
     refine (contDiffWithinAt_localInvariantProp n).liftPropWithinAt_iff.mpr ?_
     refine ⟨hcont x hx, ?_⟩
     dsimp [ContDiffWithinAtProp]
-    convert hdiff x (f x) (extChartAt I x x) (by simp only [hx, mfld_simps]) using 1
+    convert! hdiff x (f x) (extChartAt I x x) (by simp only [hx, mfld_simps]) using 1
     mfld_set_tac
 
 /-- zero-smoothness on a set is equivalent to continuity on this set. -/
@@ -530,7 +530,7 @@ theorem contMDiffOn_iff_target :
   constructor
   · refine fun h' y => ⟨?_, fun x _ => h' x y⟩
     have h'' : ContinuousOn _ univ := (ModelWithCorners.continuous I').continuousOn
-    convert (h''.comp_inter (chartAt H' y).continuousOn_toFun).comp_inter h
+    convert! (h''.comp_inter (chartAt H' y).continuousOn_toFun).comp_inter h
     simp
   · exact fun h' x y => (h' y).2 x 0
 

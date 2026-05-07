@@ -229,7 +229,7 @@ support within `U` is also closed.
 theorem closedSupport [T1Space X] [Zero Y] (D : locallyFinsuppWithin U Y)
     (hU : IsClosed U) :
     IsClosed D.support := by
-  convert isClosed_sdiff_of_codiscreteWithin ((supportDiscreteWithin_iff_locallyFiniteWithin
+  convert! isClosed_sdiff_of_codiscreteWithin ((supportDiscreteWithin_iff_locallyFiniteWithin
     D.supportWithinDomain).2 D.supportLocallyFiniteWithinDomain) hU
   ext x
   constructor <;> intro hx

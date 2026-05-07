@@ -121,7 +121,7 @@ lemma mulHeight_eq {ι : Type*} {x : ι → K} (hx : x ≠ 0) :
 variable (K) in
 lemma totalWeight_eq_sum_mult : totalWeight K = ∑ v : InfinitePlace K, v.mult := by
   simp only [totalWeight]
-  convert sum_archAbsVal_eq (fun _ ↦ (1 : ℕ))
+  convert! sum_archAbsVal_eq (fun _ ↦ (1 : ℕ))
   · rw [← Multiset.sum_map_toList, ← Fin.sum_univ_fun_getElem, ← Multiset.length_toList,
       Fin.sum_const, Multiset.length_toList, smul_eq_mul, mul_one]
   · simp
@@ -210,7 +210,7 @@ lemma mulHeight₁_eq_max (q : ℚ) : mulHeight₁ q = max q.num.natAbs q.den :=
   have : (.univ : Finset (Fin 2)).gcd ![q.num, q.den] = 1 := by
     simpa [Finset.univ_fin2, Int.normalize_coe_nat, ← Int.coe_gcd q.num q.den] using
       Int.isCoprime_iff_gcd_eq_one.mp <| isCoprime_num_den q
-  convert mulHeight_eq_max_abs_of_gcd_eq_one this
+  convert! mulHeight_eq_max_abs_of_gcd_eq_one this
   · ext i; fin_cases i <;> simp
   · rw [← Int.cast_natCast, Int.cast_inj]
     push_cast

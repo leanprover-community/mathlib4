@@ -456,7 +456,7 @@ theorem Filter.Tendsto.conj_nhds_one {ι : Type*} {l : Filter ι} {x : ι → β
   have : Tendsto (fun i ↦ (g i, x i)) l (comap Prod.snd (𝓝 1)) := by
     rwa [tendsto_comap_iff]
   -- `exact` works but is quite slow...
-  convert tendsto_conj_nhds_one.comp this
+  convert! tendsto_conj_nhds_one.comp this
 
 theorem IsUniformGroup.of_left_right : IsUniformGroup β where
   uniformContinuous_div := by

@@ -75,7 +75,7 @@ lemma integral_le_sum_Ico_of_le
     (hab : a ≤ b) (h : ∀ i ∈ Ico a b, ∀ x ∈ Ico (i : ℝ) (i + 1 : ℕ), g x ≤ f i)
     (hg : IntegrableOn g (Set.Ico a b)) :
     ∫ x in a..b, g x ≤ ∑ i ∈ Finset.Ico a b, f i := by
-  convert neg_le_neg (sum_Ico_le_integral_of_le (f := -f) (g := -g) hab
+  convert! neg_le_neg (sum_Ico_le_integral_of_le (f := -f) (g := -g) hab
     (fun i hi x hx ↦ neg_le_neg (h i hi x hx)) hg.neg) <;> simp
 
 theorem AntitoneOn.integral_le_sum (hf : AntitoneOn f (Icc x₀ (x₀ + a))) :
@@ -90,7 +90,7 @@ theorem AntitoneOn.integral_le_sum (hf : AntitoneOn f (Icc x₀ (x₀ + a))) :
     · simp only [add_le_add_iff_left, Nat.cast_le, Nat.le_succ]
   calc
     ∫ x in x₀..x₀ + a, f x = ∑ i ∈ Finset.range a, ∫ x in x₀ + i..x₀ + (i + 1 : ℕ), f x := by
-      convert (intervalIntegral.sum_integral_adjacent_intervals hint).symm
+      convert! (intervalIntegral.sum_integral_adjacent_intervals hint).symm
       simp only [Nat.cast_zero, add_zero]
     _ ≤ ∑ i ∈ Finset.range a, ∫ _ in x₀ + i..x₀ + (i + 1 : ℕ), f (x₀ + i) := by
       gcongr with i hi
@@ -151,7 +151,7 @@ theorem AntitoneOn.sum_le_integral (hf : AntitoneOn f (Icc x₀ (x₀ + a))) :
       · refine mem_Icc.2 ⟨le_add_of_nonneg_right (Nat.cast_nonneg _), ?_⟩
         simp only [add_le_add_iff_left, Nat.cast_le, ia]
     _ = ∫ x in x₀..x₀ + a, f x := by
-      convert intervalIntegral.sum_integral_adjacent_intervals hint
+      convert! intervalIntegral.sum_integral_adjacent_intervals hint
       simp only [Nat.cast_zero, add_zero]
 
 theorem AntitoneOn.sum_le_integral_Ico (hab : a ≤ b) (hf : AntitoneOn f (Set.Icc a b)) :

@@ -336,7 +336,7 @@ variable {α β ι G M N : Type*} [CommMonoid M] [CommMonoid N]
 @[to_additive]
 theorem finprod_eq_mulIndicator_apply (s : Set α) (f : α → M) (a : α) :
     ∏ᶠ _ : a ∈ s, f a = mulIndicator s f a := by
-  classical convert finprod_eq_if (M := M) (p := a ∈ s) (x := f a)
+  classical convert! finprod_eq_if (M := M) (p := a ∈ s) (x := f a)
 
 @[to_additive (attr := simp)]
 theorem finprod_apply_ne_one (f : α → M) (a : α) : ∏ᶠ _ : f a ≠ 1, f a = f a := by
@@ -1065,7 +1065,7 @@ theorem finprod_mem_sUnion {t : Set (Set α)} (h : t.PairwiseDisjoint id) (ht₀
 lemma finprod_option {f : Option α → M} (hf : HasFiniteMulSupport (f ∘ some)) :
     ∏ᶠ o, f o = f none * ∏ᶠ a, f (some a) := by
   replace hf : (mulSupport f).Finite := by simpa [finite_option]
-  convert finprod_mem_insert' f (show none ∉ Set.range Option.some by simp)
+  convert! finprod_mem_insert' f (show none ∉ Set.range Option.some by simp)
     (hf.subset inter_subset_right)
   · simp
   · rw [finprod_mem_range]

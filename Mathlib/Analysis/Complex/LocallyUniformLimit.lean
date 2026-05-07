@@ -185,7 +185,7 @@ theorem hasSum_deriv_of_summable_norm {u : ι → ℝ} (hu : Summable u)
     HasSum (fun i : ι => deriv (F i) z) (deriv (fun w : ℂ => ∑' i : ι, F i w) z) := by
   rw [HasSum]
   have hc := (tendstoUniformlyOn_tsum hu hF_le).tendstoLocallyUniformlyOn
-  convert (hc.deriv (Eventually.of_forall fun s =>
+  convert! (hc.deriv (Eventually.of_forall fun s =>
     DifferentiableOn.fun_sum fun i _ => hf i) hU).tendsto_at hz using 1
   ext1 s
   exact (deriv_fun_sum fun i _ => (hf i).differentiableAt (hU.mem_nhds hz)).symm

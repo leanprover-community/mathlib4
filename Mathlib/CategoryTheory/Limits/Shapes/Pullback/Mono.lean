@@ -165,7 +165,7 @@ instance hasPullback_of_right_factors_mono : HasPullback i (f ≫ i) := by
 instance pullback_snd_iso_of_right_factors_mono :
     IsIso (pullback.snd i (f ≫ i)) := by
   have := limit.isoLimitCone_hom_π ⟨_, pullbackIsPullbackOfCompMono (𝟙 _) f i⟩ WalkingCospan.right
-  convert (congrArg IsIso (show _ ≫ pullback.snd (𝟙 Z) f = _ from this)).mp inferInstance
+  convert! (congrArg IsIso (show _ ≫ pullback.snd (𝟙 Z) f = _ from this)).mp inferInstance
   · exact (Category.id_comp _).symm
   · exact (Category.id_comp _).symm
 
@@ -177,7 +177,7 @@ instance hasPullback_of_left_factors_mono : HasPullback (f ≫ i) i := by
 instance pullback_snd_iso_of_left_factors_mono :
     IsIso (pullback.fst (f ≫ i) i) := by
   have := limit.isoLimitCone_hom_π ⟨_, pullbackIsPullbackOfCompMono f (𝟙 _) i⟩ WalkingCospan.left
-  convert (congrArg IsIso (show _ ≫ pullback.fst f (𝟙 Z) = _ from this)).mp inferInstance
+  convert! (congrArg IsIso (show _ ≫ pullback.fst f (𝟙 Z) = _ from this)).mp inferInstance
   · exact (Category.id_comp _).symm
   · exact (Category.id_comp _).symm
 
@@ -343,7 +343,7 @@ instance hasPushout_of_right_factors_epi : HasPushout h (h ≫ f) := by
 set_option backward.isDefEq.respectTransparency false in
 instance pushout_inr_iso_of_right_factors_epi :
     IsIso (pushout.inr _ _ : _ ⟶ pushout h (h ≫ f)) := by
-  convert (congrArg IsIso (show pushout.inr _ _ ≫ _ = _ from colimit.isoColimitCocone_ι_inv
+  convert! (congrArg IsIso (show pushout.inr _ _ ≫ _ = _ from colimit.isoColimitCocone_ι_inv
     ⟨_, pushoutIsPushoutOfEpiComp (𝟙 _) f h⟩ WalkingSpan.right)).mp
     inferInstance
   · apply (Category.comp_id _).symm
@@ -357,7 +357,7 @@ instance hasPushout_of_left_factors_epi (f : X ⟶ Y) : HasPushout (h ≫ f) h :
 set_option backward.isDefEq.respectTransparency false in
 instance pushout_inl_iso_of_left_factors_epi (f : X ⟶ Y) :
     IsIso (pushout.inl _ _ : _ ⟶ pushout (h ≫ f) h) := by
-  convert (congrArg IsIso (show pushout.inl _ _ ≫ _ = _ from colimit.isoColimitCocone_ι_inv
+  convert! (congrArg IsIso (show pushout.inl _ _ ≫ _ = _ from colimit.isoColimitCocone_ι_inv
     ⟨_, pushoutIsPushoutOfEpiComp f (𝟙 _) h⟩ WalkingSpan.left)).mp
         inferInstance
   · exact (Category.comp_id _).symm

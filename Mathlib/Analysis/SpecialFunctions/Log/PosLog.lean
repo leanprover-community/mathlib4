@@ -199,7 +199,7 @@ lemma posLog_norm_sum_le {E : Type*} [SeminormedAddCommGroup E] {α : Type*} (s 
 Estimate for `log⁺` of a sum. See `Real.posLog_sum` for a variant involving multiple summands.
 -/
 theorem posLog_add : log⁺ (x + y) ≤ log 2 + log⁺ x + log⁺ y := by
-  convert posLog_sum Finset.univ ![x, y] using 1 <;> simp [add_assoc]
+  convert! posLog_sum Finset.univ ![x, y] using 1 <;> simp [add_assoc]
 
 /--
 Variant of `posLog_add` for norms of elements in normed additive commutative groups, using

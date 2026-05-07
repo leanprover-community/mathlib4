@@ -35,6 +35,6 @@ theorem tendsto_fib_succ_div_fib_atTop :
 /-- The limit of `fib n / fib (n + 1)` as `n → ∞` is the negative conjugate of the golden ratio. -/
 theorem tendsto_fib_div_fib_succ_atTop :
     Tendsto (fun n ↦ (fib n / fib (n + 1) : ℝ)) atTop (𝓝 (-ψ)) := by
-  convert tendsto_fib_succ_div_fib_atTop.inv₀ (by positivity) using 2
+  convert! tendsto_fib_succ_div_fib_atTop.inv₀ (by positivity) using 2
   · rw [inv_div]
   · rw [inv_goldenRatio]

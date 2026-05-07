@@ -101,7 +101,7 @@ theorem integerLattice.inter_ball_finite [NumberField K] (r : ℝ) :
   · have heq : ∀ x, canonicalEmbedding K x ∈ Metric.closedBall 0 r ↔
         ∀ φ : K →+* ℂ, ‖φ x‖ ≤ r := by
       intro x; rw [← norm_le_iff, mem_closedBall_zero_iff]
-    convert (Embeddings.finite_of_norm_le K ℂ r).image (canonicalEmbedding K)
+    convert! (Embeddings.finite_of_norm_le K ℂ r).image (canonicalEmbedding K)
     ext; constructor
     · rintro ⟨⟨_, ⟨x, rfl⟩, rfl⟩, hx⟩
       exact ⟨x, ⟨SetLike.coe_mem x, fun φ => (heq _).mp hx φ⟩, rfl⟩
@@ -128,7 +128,7 @@ noncomputable def latticeBasis [NumberField K] :
       RingHom.equivRatAlgHom
     rw [show M = N.transpose by { ext : 2; rfl }]
     rw [Matrix.det_transpose, ← pow_ne_zero_iff two_ne_zero]
-    convert (map_ne_zero_iff _ (algebraMap ℚ ℂ).injective).mpr
+    convert! (map_ne_zero_iff _ (algebraMap ℚ ℂ).injective).mpr
       (Algebra.discr_not_zero_of_basis ℚ (integralBasis K))
     rw [← Algebra.discr_reindex ℚ (integralBasis K) e.symm]
     exact (Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two ℚ ℂ
@@ -247,7 +247,7 @@ theorem volume_eq_zero (w : {w // IsReal w}) :
     volume ({x : mixedSpace K | x.1 w = 0}) = 0 := by
   let A : AffineSubspace ℝ (mixedSpace K) :=
     Submodule.toAffineSubspace (Submodule.mk ⟨⟨{x | x.1 w = 0}, by simp_all⟩, rfl⟩ (by simp_all))
-  convert Measure.addHaar_affineSubspace volume A fun h ↦ ?_
+  convert! Measure.addHaar_affineSubspace volume A fun h ↦ ?_
   simpa [A] using (h ▸ Set.mem_univ _ : 1 ∈ A)
 
 end Measure
@@ -1056,7 +1056,7 @@ theorem iUnion_negAt_plusPart_ae :
 variable {A} in
 theorem measurableSet_plusPart (hm : MeasurableSet A) :
     MeasurableSet (plusPart A) := by
-  convert_to MeasurableSet (A ∩ (⋂ w, {x | 0 < x.1 w}))
+  convert_to! MeasurableSet (A ∩ (⋂ w, {x | 0 < x.1 w}))
   · ext; simp
   · refine hm.inter (MeasurableSet.iInter fun _ ↦ ?_)
     exact measurableSet_lt measurable_const (by fun_prop)
@@ -1105,7 +1105,7 @@ theorem realSpace.volume_eq_zero [NumberField K] (w : InfinitePlace K) :
     volume ({x : realSpace K | x w = 0}) = 0 := by
   let A : AffineSubspace ℝ (realSpace K) :=
     Submodule.toAffineSubspace (Submodule.mk ⟨⟨{x | x w = 0}, by simp_all⟩, rfl⟩ (by simp_all))
-  convert Measure.addHaar_affineSubspace volume A fun h ↦ ?_
+  convert! Measure.addHaar_affineSubspace volume A fun h ↦ ?_
   simpa [A] using (h ▸ Set.mem_univ _ : 1 ∈ A)
 
 /--

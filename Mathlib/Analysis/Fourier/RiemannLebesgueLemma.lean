@@ -180,7 +180,7 @@ variable (f)
 theorem tendsto_integral_exp_inner_smul_cocompact :
     Tendsto (fun w : V => ∫ v, 𝐞 (-⟪v, w⟫) • f v) (cocompact V) (𝓝 0) := by
   by_cases hfi : Integrable f; swap
-  · convert tendsto_const_nhds (x := (0 : E)) with w
+  · convert! tendsto_const_nhds (x := (0 : E)) with w
     apply integral_undef
     rwa [Real.fourierIntegral_convergent_iff]
   refine Metric.tendsto_nhds.mpr fun ε hε => ?_
@@ -261,7 +261,7 @@ theorem tendsto_integral_exp_smul_cocompact (μ : Measure V) [μ.IsAddHaarMeasur
   -- isomorphism between duals derived from A
   let Adual : StrongDual ℝ V ≃L[ℝ] StrongDual ℝ V' := A.arrowCongrSL (.refl _ _)
   have : (μ.map Aₘ).IsAddHaarMeasure := A.isAddHaarMeasure_map _
-  convert (tendsto_integral_exp_smul_cocompact_of_inner_product (f ∘ A.symm) (μ.map Aₘ)).comp
+  convert! (tendsto_integral_exp_smul_cocompact_of_inner_product (f ∘ A.symm) (μ.map Aₘ)).comp
     Adual.toHomeomorph.toCocompactMap.cocompact_tendsto' with w
   suffices ∫ v, 𝐞 (-w v) • f v ∂μ = ∫ (x : V), 𝐞 (-w (A.symm (Aₘ x))) • f (A.symm (Aₘ x)) ∂μ by
     simpa [Function.comp_apply, integral_map_equiv, Adual]

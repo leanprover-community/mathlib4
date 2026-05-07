@@ -378,7 +378,7 @@ theorem locallyIntegrable_map_homeomorph [BorelSpace X] [BorelSpace Y] (e : X �
     refine ⟨e.symm ⁻¹' U, e.symm.continuous.continuousAt.preimage_mem_nhds hU, ?_⟩
     apply (integrableOn_map_equiv e.toMeasurableEquiv).2
     simp only [Homeomorph.toMeasurableEquiv_coe]
-    convert h'U
+    convert! h'U
     ext x
     simp only [mem_preimage, Homeomorph.symm_apply_apply]
 

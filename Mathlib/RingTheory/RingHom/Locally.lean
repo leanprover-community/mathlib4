@@ -317,7 +317,7 @@ lemma locally_localizationAwayPreserves (hPl : LocalizationAwayPreserves P) :
     inferInstanceAs (IsLocalization.Away (rₐ a) (Sₐ a))
   haveI (a : s) : IsLocalization (Algebra.algebraMapSubmonoid (Localization.Away a.val)
     (Submonoid.map f (Submonoid.powers r))) (Sₐ a) := by
-    convert (inferInstance : IsLocalization.Away (rₐ a) (Sₐ a))
+    convert! (inferInstance : IsLocalization.Away (rₐ a) (Sₐ a))
     simp [rₐ, Algebra.algebraMapSubmonoid]
   have H (a : s) : Submonoid.powers (f r) ≤
       (Submonoid.powers (rₐ a)).comap (algebraMap S (Localization.Away a.val)) := by
@@ -329,7 +329,7 @@ lemma locally_localizationAwayPreserves (hPl : LocalizationAwayPreserves P) :
   refine ⟨s, fun a ↦ algebraMap S S' a.val, ?_, Sₐ,
       inferInstance, inferInstance, fun a ↦ ?_, fun a ↦ ?_⟩
   · rw [← Set.image_eq_range, ← Ideal.map_span, hsone, Ideal.map_top]
-  · convert IsLocalization.commutes (T := Sₐ a) (M₁ := (Submonoid.powers r).map f) (S₁ := S')
+  · convert! IsLocalization.commutes (T := Sₐ a) (M₁ := (Submonoid.powers r).map f) (S₁ := S')
       (S₂ := Localization.Away a.val) (M₂ := Submonoid.powers a.val)
     simp [Algebra.algebraMapSubmonoid]
   · rw [algebraMap_toAlgebra, IsLocalization.Away.map, IsLocalization.map_comp_map]
@@ -361,7 +361,7 @@ lemma locally_localizationPreserves (hPl : LocalizationPreserves P) :
   refine ⟨s, fun a ↦ algebraMap S S' a.val, ?_, Sₐ,
       inferInstance, inferInstance, fun a ↦ ?_, fun a ↦ ?_⟩
   · rw [← Set.image_eq_range, ← Ideal.map_span, hsone, Ideal.map_top]
-  · convert IsLocalization.commutes (T := Sₐ a) (M₁ := M.map f) (S₁ := S')
+  · convert! IsLocalization.commutes (T := Sₐ a) (M₁ := M.map f) (S₁ := S')
       (S₂ := Localization.Away a.val) (M₂ := Submonoid.powers a.val)
     simp [Algebra.algebraMapSubmonoid]
   · rw [algebraMap_toAlgebra, IsLocalization.map_comp_map]

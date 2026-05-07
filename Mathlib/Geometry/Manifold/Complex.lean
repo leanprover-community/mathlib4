@@ -73,7 +73,7 @@ theorem Complex.norm_eventually_eq_of_mdifferentiableAt_of_isLocalMax {f : M →
     rw [mdifferentiableAt_iff_of_mem_source hys hfy, hI, differentiableWithinAt_univ,
       e.right_inv hyt] at hy₂
     exact hy₂.2
-  convert norm_eventually_eq_of_isLocalMax hd _
+  convert! norm_eventually_eq_of_isLocalMax hd _
   · exact congr_arg f (extChartAt_to_inv _).symm
   · simpa only [e, IsLocalMax, IsMaxFilter, ← H₂, (· ∘ ·), extChartAt_to_inv] using hc
 

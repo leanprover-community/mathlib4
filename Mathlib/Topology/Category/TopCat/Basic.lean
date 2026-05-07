@@ -246,7 +246,7 @@ theorem isOpenEmbedding_iff_isIso_comp {X Y Z : TopCat.{u}} (f : X ⟶ Y) (g : Y
     IsOpenEmbedding (f ≫ g) ↔ IsOpenEmbedding g := by
   constructor
   · intro h
-    convert h.comp (TopCat.homeoOfIso (asIso f).symm).isOpenEmbedding
+    convert! h.comp (TopCat.homeoOfIso (asIso f).symm).isOpenEmbedding
     exact congr_arg (DFunLike.coe ∘ ConcreteCategory.hom) (IsIso.inv_hom_id_assoc f g).symm
   · exact fun h => h.comp (TopCat.homeoOfIso (asIso f)).isOpenEmbedding
 

@@ -141,7 +141,7 @@ theorem irreducible_minpolyX' (hf : ¬∃ c, f = C c) : Irreducible (f.minpolyX 
     rw [mul_comm]
     rfl
   rw [this, MulEquiv.irreducible_iff]
-  convert irreducible_C_mul_X_add_C (neg_ne_zero.mpr f.denom_ne_zero)
+  convert! irreducible_C_mul_X_add_C (neg_ne_zero.mpr f.denom_ne_zero)
     ((IsCoprime.neg_right_iff _ _).mpr f.isCoprime_num_denom).symm.isRelPrime using 1
   rw [add_comm, X_mul_C, map_neg, neg_mul]
   exact sub_eq_add_neg (Polynomial.C f.num) (Polynomial.C f.denom * Polynomial.X)

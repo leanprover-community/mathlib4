@@ -355,12 +355,12 @@ noncomputable def isColimitCocone : IsColimit (cocone X) :=
       (U.2.isoSpec.hom ≫ colimit.ι F U) <| by
       rw [Pullback.range_fst, Opens.range_ι, ← Hom.coe_opensRange, Hom.opensRange_comp_of_isIso,
         ← Scheme.Hom.coe_preimage]
-      convert congr($(D.toBase_preimage_eq_opensRange_ι U).1)
+      convert! congr($(D.toBase_preimage_eq_opensRange_ι U).1)
       · delta cocone
         congr with U
         simp [D, relativeGluingData, restrictIsoSpec]
       · simp
-    convert (inferInstance : IsIso e.hom)
+    convert! (inferInstance : IsIso e.hom)
     rw [← cancel_mono U.1.ι, ← Iso.inv_comp_eq]
     simp [e, ← pullback.condition, IsAffineOpen.isoSpec_hom]
   .ofPointIso (colimit.isColimit F)

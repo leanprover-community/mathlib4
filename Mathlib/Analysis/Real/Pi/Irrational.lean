@@ -82,24 +82,24 @@ private lemma recursion' (n : ℕ) :
   have hu₁_eval_neg_one : u₁ (-1) = 0 := by simp only [u₁, f]; simp
   have t : u₂ 1 * v₂ 1 - u₂ (-1) * v₂ (-1) = 2 * (0 ^ n * cos θ) := by simp [u₂, v₂, f, ← two_mul]
   have hf (x) : HasDerivAt f (- 2 * x) x := by
-    convert (hasDerivAt_pow 2 x).const_sub 1 using 1
+    convert! (hasDerivAt_pow 2 x).const_sub 1 using 1
     simp
   have hu₁ (x) : HasDerivAt u₁ (u₁' x) x := by
-    convert (hf x).pow _ using 1
+    convert! (hf x).pow _ using 1
     simp only [Nat.add_succ_sub_one, u₁', Nat.cast_add_one]
     ring
   have hv₁ (x) : HasDerivAt v₁ (v₁' x) x := (hasDerivAt_mul_const θ).sin
   have hu₂ (x) : HasDerivAt u₂ (u₂' x) x := by
-    convert (hasDerivAt_id' x).fun_mul ((hf x).fun_pow _) using 1
+    convert! (hasDerivAt_id' x).fun_mul ((hf x).fun_pow _) using 1
     simp only [u₂']
     ring
   have hv₂ (x) : HasDerivAt v₂ (v₂' x) x := (hasDerivAt_mul_const θ).cos
-  convert_to (∫ (x : ℝ) in (-1)..1, u₁ x * v₁' x) * θ = _ using 1
+  convert_to! (∫ (x : ℝ) in (-1)..1, u₁ x * v₁' x) * θ = _ using 1
   · simp_rw [u₁, v₁', f, ← intervalIntegral.integral_mul_const, sq θ, mul_assoc]
   rw [integral_mul_deriv_eq_deriv_mul (fun x _ => hu₁ x) (fun x _ => hv₁ x)
     (hu₁d.intervalIntegrable _ _) (hv₁d.intervalIntegrable _ _), hu₁_eval_one, hu₁_eval_neg_one,
     zero_mul, zero_mul, sub_zero, zero_sub, ← integral_neg, ← integral_mul_const]
-  convert_to ((-2 : ℝ) * (n + 1)) * ∫ (x : ℝ) in (-1)..1, (u₂ x * v₂' x) = _ using 1
+  convert_to! ((-2 : ℝ) * (n + 1)) * ∫ (x : ℝ) in (-1)..1, (u₂ x * v₂' x) = _ using 1
   · rw [← integral_const_mul]
     congr 1 with x
     dsimp [u₁', v₁, u₂, v₂']

@@ -137,7 +137,7 @@ theorem eventuallyEq_toIcoDiv_nhds (hx : ¬x ≡ a [PMOD p]) :
     toIcoDiv hp a =ᶠ[𝓝 x] fun _ ↦ toIcoDiv hp a x := by
   rw [← nhdsLT_sup_nhdsGE, Filter.EventuallyEq, Filter.eventually_sup]
   refine ⟨?_, eventuallyEq_toIcoDiv_nhdsGE hp a x⟩
-  convert (eventuallyEq_toIcoDiv_nhdsLT hp a x).eventually using 3
+  convert! (eventuallyEq_toIcoDiv_nhdsLT hp a x).eventually using 3
   rwa [← not_modEq_iff_toIcoDiv_eq_toIocDiv, AddCommGroup.modEq_comm]
 
 /-- If `x` is not congruent to `a` modulo `p`, then `toIcoDiv` is continuous at `x`.
@@ -156,7 +156,7 @@ theorem eventuallyEq_toIocDiv_nhds (hx : ¬x ≡ a [PMOD p]) :
     toIocDiv hp a =ᶠ[𝓝 x] fun _ ↦ toIocDiv hp a x := by
   rw [← nhdsLE_sup_nhdsGT, Filter.EventuallyEq, Filter.eventually_sup]
   refine ⟨eventuallyEq_toIocDiv_nhdsLE hp a x, ?_⟩
-  convert (eventuallyEq_toIocDiv_nhdsGT hp a x).eventually using 3
+  convert! (eventuallyEq_toIocDiv_nhdsGT hp a x).eventually using 3
   rwa [eq_comm, ← not_modEq_iff_toIcoDiv_eq_toIocDiv, AddCommGroup.modEq_comm]
 
 /-- If `x` is not congruent to `a` modulo `p`, then `toIocDiv` is continuous at `x`.
@@ -266,7 +266,7 @@ theorem finite_torsion_of_isSMulRegular (n : ℕ) (hn : IsSMulRegular 𝕜 n) :
 
 theorem card_torsion_le_of_isSMulRegular_int (n : ℤ) (h0 : n ≠ 0) (hn : IsSMulRegular 𝕜 n) :
     {x : AddCircle p | n • x = 0}.encard ≤ n.natAbs := by
-  convert card_torsion_le_of_isSMulRegular p _
+  convert! card_torsion_le_of_isSMulRegular p _
     (Int.natAbs_ne_zero.mpr h0) (IsSMulRegular.natAbs_iff.mpr hn) using 1
   simp
 
@@ -590,7 +590,7 @@ theorem gcd_mul_addOrderOf_div_eq {n : ℕ} (m : ℕ) (hn : 0 < n) :
 
 theorem addOrderOf_div_of_gcd_eq_one {m n : ℕ} (hn : 0 < n) (h : m.gcd n = 1) :
     addOrderOf (↑(↑m / ↑n * p) : AddCircle p) = n := by
-  convert gcd_mul_addOrderOf_div_eq p m hn
+  convert! gcd_mul_addOrderOf_div_eq p m hn
   rw [h, one_mul]
 
 theorem addOrderOf_div_of_gcd_eq_one' {m : ℤ} {n : ℕ} (hn : 0 < n) (h : m.natAbs.gcd n = 1) :
@@ -635,7 +635,7 @@ theorem addOrderOf_eq_pos_iff {u : AddCircle p} {n : ℕ} (h : 0 < n) :
   obtain ⟨m, hm, hk⟩ := (AddCircle.nsmul_eq_zero_iff h).mp
     (addOrderOf_nsmul_eq_zero (k : AddCircle p))
   refine ⟨m, hm, mul_right_cancel₀ h.ne' ?_, hk⟩
-  convert gcd_mul_addOrderOf_div_eq p m h using 1
+  convert! gcd_mul_addOrderOf_div_eq p m h using 1
   · rw [hk]
   · apply one_mul
 

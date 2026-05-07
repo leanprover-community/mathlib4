@@ -103,7 +103,7 @@ noncomputable def OrthonormalBasis.measurableEquiv (b : OrthonormalBasis ι ℝ 
 /-- The measurable equivalence defined by an orthonormal basis is volume preserving. -/
 theorem OrthonormalBasis.measurePreserving_measurableEquiv (b : OrthonormalBasis ι ℝ F) :
     MeasurePreserving b.measurableEquiv volume volume := by
-  convert (b.measurableEquiv.symm.measurable.measurePreserving _).symm
+  convert! (b.measurableEquiv.symm.measurable.measurePreserving _).symm
   rw [← (EuclideanSpace.basisFun ι ℝ).addHaar_eq_volume]
   erw [MeasurableEquiv.coe_toEquiv_symm, Basis.map_addHaar _ b.repr.symm.toContinuousLinearEquiv]
   exact b.addHaar_eq_volume.symm
@@ -144,7 +144,7 @@ variable [Fintype ι]
 theorem EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp :
     MeasurePreserving (MeasurableEquiv.toLp 2 (ι → ℝ)).symm := by
   suffices volume = map (MeasurableEquiv.toLp 2 (ι → ℝ)) volume by
-    convert ((MeasurableEquiv.toLp 2 (ι → ℝ)).measurable.measurePreserving _).symm
+    convert! ((MeasurableEquiv.toLp 2 (ι → ℝ)).measurable.measurePreserving _).symm
   rw [← addHaarMeasure_eq_volume_pi, ← Basis.parallelepiped_basisFun, ← Basis.addHaar_def,
     MeasurableEquiv.coe_toLp, ← PiLp.coe_symm_continuousLinearEquiv 2 ℝ, Basis.map_addHaar]
   exact (EuclideanSpace.basisFun _ _).addHaar_eq_volume.symm
@@ -209,7 +209,7 @@ private noncomputable def volumePreservingSymmMeasurableEquivToLpProdAux :
 theorem WithLp.volume_preserving_symm_measurableEquiv_toLp_prod :
     MeasurePreserving (MeasurableEquiv.toLp 2 (U × V)).symm := by
   suffices MeasurePreserving (volumePreservingSymmMeasurableEquivToLpProdAux U V) by
-    convert this
+    convert! this
     ext uv
     <;> simp [volumePreservingSymmMeasurableEquivToLpProdAux, MeasurableEquiv.coe_sumPiEquivProdPi,
       LinearEquiv.prodCongr_symm, MeasurableEquiv.prodCongr]
@@ -244,7 +244,7 @@ theorem MeasureTheory.volume_eq_of_finrank_eq_one (h : Module.finrank ℝ E = 1)
     let f : ℝ ≃ₗᵢ[ℝ] E := (LinearIsometryEquiv.toSpanUnitSingleton (‖v‖⁻¹ • v)
       (by simp [norm_smul, hv])).trans (LinearIsometryEquiv.ofTop E _ hv')
     rw [map_map (by fun_prop) (by fun_prop)]
-    convert f.measurePreserving.map_eq.symm
+    convert! f.measurePreserving.map_eq.symm
     ext x
     simp [f, mul_comm, smul_smul]
   _ = ‖v‖ₑ • (volume : Measure ℝ).map (· • v) := by

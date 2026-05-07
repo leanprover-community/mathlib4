@@ -62,7 +62,7 @@ instance algebraOfAlgebra : Algebra R A[X] where
     toFinsupp_injective <| by
       dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply]
       simp_rw [toFinsupp_mul, toFinsupp_C]
-      convert Algebra.commutes' r p.toFinsupp
+      convert! Algebra.commutes' r p.toFinsupp
   algebraMap := C.comp (algebraMap R A)
 
 @[simp]
@@ -613,7 +613,7 @@ theorem dvd_term_of_dvd_eval_of_dvd_terms {z p : S} {f : S[X]} (i : ℕ) (dvd_ev
     apply Finset.dvd_sum
     intro j hj
     exact dvd_terms j (Finset.ne_of_mem_erase hj)
-  · convert dvd_zero p
+  · convert! dvd_zero p
     rw [notMem_support_iff] at hi
     simp [hi]
 
@@ -675,7 +675,7 @@ theorem aeval_endomorphism {M : Type*} [AddCommGroup M] [Module R M] (f : M →�
   exact map_sum (LinearMap.applyₗ v) _ _
 
 lemma X_sub_C_pow_dvd_iff {n : ℕ} : (X - C t) ^ n ∣ p ↔ X ^ n ∣ p.comp (X + C t) := by
-  convert (map_dvd_iff <| algEquivAevalXAddC t).symm using 2
+  convert! (map_dvd_iff <| algEquivAevalXAddC t).symm using 2
   simp [C_eq_algebraMap]
 
 lemma comp_X_add_C_eq_zero_iff : p.comp (X + C t) = 0 ↔ p = 0 :=
@@ -685,7 +685,7 @@ lemma comp_X_add_C_ne_zero_iff : p.comp (X + C t) ≠ 0 ↔ p ≠ 0 := comp_X_ad
 
 lemma dvd_comp_C_mul_X_add_C_iff (p q : R[X]) (a b : R) [Invertible a] :
     p ∣ q.comp (C a * X + C b) ↔ p.comp (C ⅟a * (X - C b)) ∣ q := by
-  convert map_dvd_iff <| algEquivCMulXAddC a b using 2
+  convert! map_dvd_iff <| algEquivCMulXAddC a b using 2
   simp [← comp_eq_aeval, comp_assoc, ← mul_assoc, ← C_mul]
 
 lemma dvd_comp_X_sub_C_iff (p q : R[X]) (a : R) :

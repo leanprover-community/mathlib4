@@ -241,7 +241,7 @@ lemma locallyLinear [ExplicitDisjoint t] [NoAccidental t] : (graph t).LocallyLin
   classical
   refine ⟨?_, fun x y hxy ↦ ?_⟩
   · unfold EdgeDisjointTriangles
-    convert map_toTriangle_disjoint t
+    convert! map_toTriangle_disjoint t
     rw [cliqueSet_eq_image, coe_map]
   · obtain ⟨z, hz, hxy⟩ := exists_mem_toTriangle hxy
     exact ⟨_, toTriangle_is3Clique hz, hxy⟩

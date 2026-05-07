@@ -637,7 +637,7 @@ theorem notMem_support_iff : n ∉ p.support ↔ p.coeff n = 0 := by simp
 
 @[aesop simp]
 theorem coeff_C : coeff (C a) n = ite (n = 0) a 0 := by
-  convert coeff_monomial (a := a) (m := n) (n := 0) using 2
+  convert! coeff_monomial (a := a) (m := n) (n := 0) using 2
   simp [eq_comm]
 
 @[simp]
@@ -808,7 +808,7 @@ theorem smul_X_eq_monomial {n} : a • X ^ n = monomial n (a : R) := by
   rw [X_pow_eq_monomial, smul_monomial, smul_eq_mul, mul_one]
 
 theorem support_X_pow (H : ¬(1 : R) = 0) (n : ℕ) : (X ^ n : R[X]).support = singleton n := by
-  convert support_monomial n H
+  convert! support_monomial n H
   exact X_pow_eq_monomial n
 
 theorem support_X_empty (H : (1 : R) = 0) : (X : R[X]).support = ∅ := by
@@ -915,7 +915,7 @@ protected theorem induction_on {motive : R[X] → Prop} (p : R[X]) (C : ∀ a, m
     | succ n ih => exact monomial _ _ ih
   have B : ∀ s : Finset ℕ, motive (s.sum fun n : ℕ => Polynomial.C (p.coeff n) * X ^ n) := by
     apply Finset.induction
-    · convert C 0
+    · convert! C 0
       exact C_0.symm
     · intro n s ns ih
       rw [sum_insert ns]

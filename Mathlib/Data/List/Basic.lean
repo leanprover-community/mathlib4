@@ -663,7 +663,7 @@ theorem get_reverse' (l : List α) (n) (hn') :
   simp
 
 theorem eq_cons_of_length_one {l : List α} (h : l.length = 1) : l = [l.get ⟨0, by lia⟩] := by
-  refine ext_get (by convert h) (by grind)
+  refine ext_get (by convert! h) (by grind)
 
 end deprecated
 

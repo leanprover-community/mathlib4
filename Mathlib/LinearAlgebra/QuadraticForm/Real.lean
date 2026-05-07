@@ -42,7 +42,7 @@ noncomputable def isometryEquivSignWeightedSumSquares (w : ι → ℝ) :
     by_cases hi : w i = 0
     · simp [hi]
     · simp only [hi, ↓reduceDIte, Units.val_mk0, u]; field_simp; simp
-  convert QuadraticMap.isometryEquivBasisRepr (weightedSumSquares ℝ w)
+  convert! QuadraticMap.isometryEquivBasisRepr (weightedSumSquares ℝ w)
     ((Pi.basisFun ℝ ι).unitsSMul fun i => .mk0 _ (hu i))
   ext1 v
   classical

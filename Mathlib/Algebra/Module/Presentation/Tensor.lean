@@ -82,7 +82,7 @@ noncomputable def isPresentationCoreTensor :
         erw [Finsupp.apply_linearCombination A (LinearMap.applyₗ (solution₂.var g₂))]
         have := s.linearCombination_var_relation (.inl ⟨r₁, g₂⟩)
         erw [Finsupp.linearCombination_embDomain] at this
-        convert this
+        convert! this
         ext g₁
         simp) })
   postcomp_desc _ := by aesop

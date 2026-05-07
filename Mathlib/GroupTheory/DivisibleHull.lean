@@ -143,7 +143,7 @@ theorem nsmul_mk (a : ℕ) (m : M) (s : ℕ+) : a • mk m s = mk (a • m) s :=
 
 theorem nnqsmul_mk (a : ℚ≥0) (m : M) (s : ℕ+) :
     a • mk m s = mk (a.num • m) (⟨a.den, a.den_pos⟩ * s) := by
-  convert LocalizedModule.mk'_smul_mk ℚ≥0 a.num m ⟨a.den, by simp⟩ (↑ⁿ s)
+  convert! LocalizedModule.mk'_smul_mk ℚ≥0 a.num m ⟨a.den, by simp⟩ (↑ⁿ s)
   simp [IsLocalization.eq_mk'_iff_mul_eq]
 
 section TorsionFree
@@ -223,7 +223,7 @@ instance : Module ℚ (DivisibleHull M) where
     use 1
     suffices ((a + b).num * a.den * b.den * (s * s)) • m =
         ((a.num * b.den + b.num * a.den) * (a + b).den * (s * s)) • m by
-      convert this using 1
+      convert! this using 1
       all_goals
       simp [← natCast_zsmul, smul_smul, ← add_smul]
       ring_nf
@@ -233,7 +233,7 @@ instance : Module ℚ (DivisibleHull M) where
     simp_rw [qsmul_mk, mk_eq_mk]
     use 1
     suffices ((a * b).num * a.den * b.den * s) • m = (a.num * b.num * (a * b).den * s) • m by
-      convert this using 1
+      convert! this using 1
       all_goals
       simp [← natCast_zsmul, smul_smul]
       ring_nf
@@ -253,7 +253,7 @@ private theorem lift_aux (m n m' n' : M) (s t s' t' : ℕ+)
     (t.val • m ≤ s.val • n) = (t'.val • m' ≤ s'.val • n') := by
   rw [mk_eq_mk_iff_smul_eq_smul] at h h'
   rw [propext_iff, ← nsmul_le_nsmul_iff_right (mul_ne_zero s'.ne_zero t'.ne_zero)]
-  convert (nsmul_le_nsmul_iff_right (M := M) (mul_ne_zero s.ne_zero t.ne_zero)) using 2
+  convert! (nsmul_le_nsmul_iff_right (M := M) (mul_ne_zero s.ne_zero t.ne_zero)) using 2
   · simp_rw [smul_smul, mul_rotate s'.val, ← smul_smul, h, smul_smul]
     ring_nf
   · simp_rw [smul_smul, ← mul_rotate s'.val, ← smul_smul, ← h', smul_smul]
@@ -310,7 +310,7 @@ instance : IsOrderedCancelAddMonoid (DivisibleHull M) :=
     simp_rw [PNat.mul_coe, mul_smul, smul_add, smul_smul]
     have := add_lt_add_right (nsmul_lt_nsmul_right (sa * sa).ne_zero h) ((sa * sb * sc.val) • ma)
     simp_rw [PNat.mul_coe, smul_smul] at this
-    convert this using 3 <;> ring)
+    convert! this using 3 <;> ring)
 
 instance : IsStrictOrderedModule ℚ≥0 (DivisibleHull M) where
   smul_lt_smul_of_pos_left a ha b c h := by
@@ -324,7 +324,7 @@ instance : IsStrictOrderedModule ℚ≥0 (DivisibleHull M) where
     induction a with | mk m s
     simp_rw [nnqsmul_mk, mk_lt_mk, smul_smul, PNat.mul_coe, PNat.mk_coe]
     refine smul_lt_smul_of_pos_right ?_ ?_
-    · convert mul_lt_mul_of_pos_right (NNRat.lt_def.mp h) (show 0 < s.val by simp) using 1 <;> ring
+    · convert! mul_lt_mul_of_pos_right (NNRat.lt_def.mp h) (show 0 < s.val by simp) using 1 <;> ring
     · rw [← mk_zero 1, mk_lt_mk] at ha
       simpa using ha
 

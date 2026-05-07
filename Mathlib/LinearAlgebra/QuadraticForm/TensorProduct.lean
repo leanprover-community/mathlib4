@@ -75,7 +75,7 @@ theorem associated_tmul [Invertible (2 : A)]
   letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
   rw [QuadraticMap.tmul, BilinMap.tmul]
   have : Subsingleton (Invertible (2 : A)) := inferInstance
-  convert associated_left_inverse A (LinearMap.BilinMap.tmul_isSymm
+  convert! associated_left_inverse A (LinearMap.BilinMap.tmul_isSymm
     (QuadraticMap.associated_isSymm A Q₁) (QuadraticMap.associated_isSymm R Q₂))
 
 end QuadraticMap

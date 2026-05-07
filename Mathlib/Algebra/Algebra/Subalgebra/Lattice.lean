@@ -721,7 +721,7 @@ theorem mem_adjoin_of_map_mul {s} {x : A} {f : A →ₗ[R] B} (hf : ∀ a₁ a�
   | algebraMap r =>
     have : f 1 ∈ adjoin R (f '' (s ∪ {1})) :=
       subset_adjoin ⟨1, ⟨Set.subset_union_right <| Set.mem_singleton 1, rfl⟩⟩
-    convert Subalgebra.smul_mem (adjoin R (f '' (s ∪ {1}))) this r
+    convert! Subalgebra.smul_mem (adjoin R (f '' (s ∪ {1}))) this r
     rw [algebraMap_eq_smul_one]
     exact f.map_smul _ _
   | add y z _ _ hy hz => simpa [hy, hz] using Subalgebra.add_mem _ hy hz
@@ -868,8 +868,8 @@ theorem eqOn_adjoin_iff {φ ψ : A →ₐ[R] B} {s : Set A} :
 theorem adjoin_ext {s : Set A} ⦃φ₁ φ₂ : adjoin R s →ₐ[R] B⦄
     (h : ∀ x hx, φ₁ ⟨x, subset_adjoin hx⟩ = φ₂ ⟨x, subset_adjoin hx⟩) : φ₁ = φ₂ :=
   ext fun ⟨x, hx⟩ ↦ adjoin_induction h (fun _ ↦ φ₂.commutes _ ▸ φ₁.commutes _)
-    (fun _ _ _ _ h₁ h₂ ↦ by convert congr_arg₂ (· + ·) h₁ h₂ <;> rw [← map_add] <;> rfl)
-    (fun _ _ _ _ h₁ h₂ ↦ by convert congr_arg₂ (· * ·) h₁ h₂ <;> rw [← map_mul] <;> rfl) hx
+    (fun _ _ _ _ h₁ h₂ ↦ by convert! congr_arg₂ (· + ·) h₁ h₂ <;> rw [← map_add] <;> rfl)
+    (fun _ _ _ _ h₁ h₂ ↦ by convert! congr_arg₂ (· * ·) h₁ h₂ <;> rw [← map_mul] <;> rfl) hx
 
 theorem ext_of_eq_adjoin {S : Subalgebra R A} {s : Set A} (hS : S = adjoin R s) ⦃φ₁ φ₂ : S →ₐ[R] B⦄
     (h : ∀ x hx, φ₁ ⟨x, hS.ge (subset_adjoin hx)⟩ = φ₂ ⟨x, hS.ge (subset_adjoin hx)⟩) :
@@ -985,7 +985,7 @@ theorem comap_map_eq (f : A →ₐ[R] B) (S : Subalgebra R A) :
 
 theorem comap_map_eq_self {f : A →ₐ[R] B} {S : Subalgebra R A}
     (h : f ⁻¹' {0} ⊆ S) : (S.map f).comap f = S := by
-  convert comap_map_eq f S
+  convert! comap_map_eq f S
   rwa [left_eq_sup, Algebra.adjoin_le_iff]
 
 end Subalgebra

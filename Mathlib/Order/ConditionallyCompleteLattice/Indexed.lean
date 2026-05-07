@@ -327,12 +327,12 @@ theorem csInf_image {s : Set β} {f : β → α}
 
 theorem cbiSup_id {s : Set α} (hs : BddAbove s) (h : sSup ∅ ≤ sSup s) : ⨆ i ∈ s, i = sSup s := by
   rw [← csSup_image (Subtype.range_coe ▸ hs), Set.image_id']
-  · convert h
+  · convert! h
     rw [← sSup_range, Subtype.range_coe]
 
 theorem cbiInf_id {s : Set α} (hs : BddBelow s) (h : sInf s ≤ sInf ∅) : ⨅ i ∈ s, i = sInf s := by
   rw [← csInf_image (Subtype.range_coe ▸ hs), Set.image_id']
-  · convert h
+  · convert! h
     rw [← sInf_range, Subtype.range_coe]
 
 lemma ciSup_image {ι ι' : Type*} {s : Set ι} {f : ι → ι'} {g : ι' → α}

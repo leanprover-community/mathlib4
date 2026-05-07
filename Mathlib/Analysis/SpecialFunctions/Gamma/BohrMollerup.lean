@@ -235,7 +235,7 @@ theorem tendsto_logGammaSeq_of_le_one (hf_conv : ConvexOn ℝ (Ioi 0) f)
     exact Tendsto.sub tendsto_const_nhds (tendsto_log_nat_add_one_sub_log.const_mul _)
   · filter_upwards with n
     rw [sub_le_iff_le_add', sub_le_iff_le_add']
-    convert le_logGammaSeq hf_conv (@hf_feq) hx hx' n using 1
+    convert! le_logGammaSeq hf_conv (@hf_feq) hx hx' n using 1
     ring
   · change ∀ᶠ n : ℕ in atTop, logGammaSeq x n ≤ f x - f 1
     filter_upwards [eventually_ne_atTop 0] with n hn using
@@ -248,7 +248,7 @@ theorem tendsto_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
     refine this ⌈x - 1⌉₊ ?_ ?_
     · rcases lt_or_ge x 1 with ⟨⟩
       · rwa [Nat.ceil_eq_zero.mpr (by linarith : x - 1 ≤ 0), Nat.cast_zero]
-      · convert Nat.ceil_lt_add_one (by linarith : 0 ≤ x - 1)
+      · convert! Nat.ceil_lt_add_one (by linarith : 0 ≤ x - 1)
         abel
     · rw [← sub_le_iff_le_add]; exact Nat.le_ceil _
   intro m
@@ -286,7 +286,7 @@ theorem tendsto_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
       dsimp only [Function.comp_apply]
       rw [sub_add_cancel, Nat.add_sub_cancel]
     rw [this] at hm
-    convert hm.sub (tendsto_log_nat_add_one_sub_log.const_mul x) using 2
+    convert! hm.sub (tendsto_log_nat_add_one_sub_log.const_mul x) using 2
     · ring
     · have := hf_feq ((Nat.cast_nonneg m).trans_lt hy)
       rw [sub_add_cancel] at this

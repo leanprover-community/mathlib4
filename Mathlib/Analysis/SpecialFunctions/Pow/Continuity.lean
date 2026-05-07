@@ -456,11 +456,11 @@ private theorem continuousAt_rpow_const_of_pos {x : ℝ≥0∞} {y : ℝ} (h : 0
     ContinuousAt (fun a : ℝ≥0∞ => a ^ y) x := by
   by_cases hx : x = ⊤
   · rw [hx, ContinuousAt]
-    convert ENNReal.tendsto_rpow_at_top h
+    convert! ENNReal.tendsto_rpow_at_top h
     simp [h]
   lift x to ℝ≥0 using hx
   rw [continuousAt_coe_iff]
-  convert continuous_coe.continuousAt.comp (NNReal.continuousAt_rpow_const (Or.inr h.le)) using 1
+  convert! continuous_coe.continuousAt.comp (NNReal.continuousAt_rpow_const (Or.inr h.le)) using 1
   ext1 x
   simp [← coe_rpow_of_nonneg _ h.le]
 
@@ -478,7 +478,7 @@ theorem continuous_rpow_const {y : ℝ} : Continuous fun a : ℝ≥0∞ => a ^ y
 
 theorem tendsto_const_mul_rpow_nhds_zero_of_pos {c : ℝ≥0∞} (hc : c ≠ ∞) {y : ℝ} (hy : 0 < y) :
     Tendsto (fun x : ℝ≥0∞ => c * x ^ y) (𝓝 0) (𝓝 0) := by
-  convert ENNReal.Tendsto.const_mul (ENNReal.continuous_rpow_const.tendsto 0) _
+  convert! ENNReal.Tendsto.const_mul (ENNReal.continuous_rpow_const.tendsto 0) _
   · simp [hy]
   · exact Or.inr hc
 

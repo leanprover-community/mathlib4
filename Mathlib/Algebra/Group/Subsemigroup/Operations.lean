@@ -21,7 +21,7 @@ In this file we define various operations on `Subsemigroup`s and `MulHom`s.
 
 * `Subsemigroup.toAddSubsemigroup`, `Subsemigroup.toAddSubsemigroup'`,
   `AddSubsemigroup.toSubsemigroup`, `AddSubsemigroup.toSubsemigroup'`:
-  convert between multiplicative and additive subsemigroups of `M`,
+  convert! between multiplicative and additive subsemigroups of `M`,
   `Multiplicative M`, and `Additive M`. These are stated as `OrderIso`s.
 
 ### (Commutative) semigroup structure on a subsemigroup

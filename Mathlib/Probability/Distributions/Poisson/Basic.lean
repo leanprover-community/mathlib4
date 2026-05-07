@@ -47,7 +47,7 @@ lemma poissonMeasure_real_singleton_pos {r : ℝ≥0} (n : ℕ) (hr : 0 < r) :
   positivity
 
 lemma hasSum_one_poissonMeasure (r : ℝ≥0) : HasSum (fun n ↦ exp (-r) * r ^ n / (n)!) 1 := by
-  convert (NormedSpace.expSeries_div_hasSum_exp (r : ℝ)).mul_left (exp (-r)) using 1
+  convert! (NormedSpace.expSeries_div_hasSum_exp (r : ℝ)).mul_left (exp (-r)) using 1
   · simp_rw [mul_div_assoc]
   · simp [← exp_eq_exp_ℝ, ← exp_add]
 
@@ -75,7 +75,7 @@ lemma hasSum_integral_poissonMeasure [CompleteSpace E] {r : ℝ≥0} {f : ℕ �
     ext; rw [ENNReal.toReal_ofReal (by positivity)]
   rw [this]
   apply hasSum_integral_sum_dirac (by simp)
-  convert integrable_poissonMeasure_iff.1 hf
+  convert! integrable_poissonMeasure_iff.1 hf
   rw [ENNReal.toReal_ofReal (by positivity)]
 /-- If a function is integrable with respect to `poissonMeasure r`, then its integral
 against this measure is given by its sum weighted by `exp (-r) * r ^ n / n!`.

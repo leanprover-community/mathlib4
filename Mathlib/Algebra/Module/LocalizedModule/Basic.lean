@@ -123,7 +123,7 @@ def liftOn {α : Type*} (x : LocalizedModule S M) (f : M × S → α)
   Quotient.liftOn x f (by simpa +instances only [r.setoid, ← oreEqv_eq_r S M] using wd)
 
 theorem liftOn_mk {α : Type*} {f : M × S → α} (wd : ∀ (p p' : M × S), p ≈ p' → f p = f p')
-    (m : M) (s : S) : liftOn (mk m s) f wd = f ⟨m, s⟩ := by convert Quotient.liftOn_mk f wd ⟨m, s⟩
+    (m : M) (s : S) : liftOn (mk m s) f wd = f ⟨m, s⟩ := by convert! Quotient.liftOn_mk f wd ⟨m, s⟩
 
 /-- If `f : M × S → M × S → α` respects the equivalence relation `LocalizedModule.r`, then
 `f` descents to a map `LocalizedModule M S → LocalizedModule M S → α`.
@@ -135,7 +135,7 @@ def liftOn₂ {α : Type*} (x y : LocalizedModule S M) (f : M × S → M × S �
 theorem liftOn₂_mk {α : Type*} (f : M × S → M × S → α)
     (wd : ∀ (p q p' q' : M × S), p ≈ p' → q ≈ q' → f p q = f p' q') (m m' : M)
     (s s' : S) : liftOn₂ (mk m s) (mk m' s') f wd = f ⟨m, s⟩ ⟨m', s'⟩ := by
-  convert Quotient.liftOn₂_mk f wd _ _
+  convert! Quotient.liftOn₂_mk f wd _ _
 
 /-- If `S` contains `0` then the localization at `S` is trivial. -/
 theorem subsingleton (h : 0 ∈ S) : Subsingleton (LocalizedModule S M) := by

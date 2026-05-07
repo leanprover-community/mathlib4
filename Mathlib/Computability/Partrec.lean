@@ -578,7 +578,7 @@ theorem bind_decode_iff {f : α → β → Option σ} :
 
 theorem map_decode_iff {f : α → β → σ} :
     (Computable₂ fun a n => (decode (α := β) n).map (f a)) ↔ Computable₂ f := by
-  convert (bind_decode_iff (f := fun a => Option.some ∘ f a)).trans option_some_iff
+  convert! (bind_decode_iff (f := fun a => Option.some ∘ f a)).trans option_some_iff
   apply Option.map_eq_bind
 
 theorem nat_rec {f : α → ℕ} {g : α → σ} {h : α → ℕ × σ → σ} (hf : Computable f) (hg : Computable g)
@@ -608,7 +608,7 @@ theorem option_bind {f : α → Option β} {g : α → β → Option σ} (hf : C
 
 theorem option_map {f : α → Option β} {g : α → β → σ} (hf : Computable f) (hg : Computable₂ g) :
     Computable fun a => (f a).map (g a) := by
-  convert option_bind hf (option_some.comp₂ hg)
+  convert! option_bind hf (option_some.comp₂ hg)
   apply Option.map_eq_bind
 
 theorem option_getD {f : α → Option β} {g : α → β} (hf : Computable f) (hg : Computable g) :

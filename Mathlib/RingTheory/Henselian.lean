@@ -200,7 +200,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         intro n
         haveI := isLocalHom_of_le_jacobson_bot I (IsAdicComplete.le_jacobson_bot I)
         apply IsUnit.of_map (Ideal.Quotient.mk I)
-        convert h₂ using 1
+        convert! h₂ using 1
         exact SModEq.def.mp ((hc_mod n).eval _)
       have hfcI : ∀ n, f.eval (c n) ∈ I ^ (n + 1) := by
         intro n

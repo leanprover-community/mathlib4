@@ -198,7 +198,7 @@ lemma tendsto_measure_biUnion_Ici_zero_of_pairwise_disjoint
   have key := tendsto_measure_iInter_atTop (μ := μ) (fun n ↦ by measurability)
     decr ⟨0, measure_ne_top _ _⟩
   simp only [nothing, measure_empty] at key
-  convert key
+  convert! key
 
 open scoped symmDiff
 
@@ -210,7 +210,7 @@ theorem abs_measureReal_sub_le_measureReal_symmDiff'
   have hts : μ (t \ s) ≠ ∞ := (measure_lt_top_of_subset diff_subset ht').ne
   suffices (μ s).toReal - (μ t).toReal = (μ (s \ t)).toReal - (μ (t \ s)).toReal by
     rw [this, measure_symmDiff_eq hs ht, ENNReal.toReal_add hst hts]
-    convert abs_sub (μ (s \ t)).toReal (μ (t \ s)).toReal <;> simp
+    convert! abs_sub (μ (s \ t)).toReal (μ (t \ s)).toReal <;> simp
   rw [measure_diff' s ht ht', measure_diff' t hs hs',
     ENNReal.toReal_sub_of_le measure_le_measure_union_right (by finiteness),
     ENNReal.toReal_sub_of_le measure_le_measure_union_right (by finiteness),

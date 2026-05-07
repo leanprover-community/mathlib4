@@ -371,7 +371,7 @@ theorem lintegral_image_eq_lintegral_deriv_mul_of_antitoneOn (hs : MeasurableSet
       (fun x hx ↦ hasDerivWithinAt_neg _ _) neg_injective.injOn _
   simp only [abs_neg, abs_one, ENNReal.ofReal_one, one_mul] at B
   rw [A, ← image_comp] at B
-  convert B using 4 with x hx x <;> simp [n, e]
+  convert! B using 4 with x hx x <;> simp [n, e]
 
 /-- Change of variable formula for differentiable functions, set version: if a real function `f` is
 antitone and differentiable on a measurable set `s`, then the measure of `f '' s` is given by the
@@ -399,7 +399,7 @@ theorem integrableOn_image_iff_integrableOn_deriv_smul_of_antitoneOn (hs : Measu
       (fun x hx ↦ hasDerivWithinAt_neg _ _) neg_injective.injOn _
   simp only [abs_neg, abs_one, one_smul] at B
   rw [A, ← image_comp] at B
-  convert B using 3 with x hx x <;> simp [n, e]
+  convert! B using 3 with x hx x <;> simp [n, e]
 
 /-- Change of variable formula for differentiable functions: if a real function `f` is
 antitone and differentiable on a measurable set `s`, then the Bochner integral of a function
@@ -417,7 +417,7 @@ theorem integral_image_eq_integral_deriv_smul_of_antitoneOn (hs : MeasurableSet 
       (fun x hx ↦ hasDerivWithinAt_neg _ _) neg_injective.injOn _
   simp only [abs_neg, abs_one, one_smul] at B
   rw [A, ← image_comp] at B
-  convert B using 3 with x hx x <;> simp [n, e]
+  convert! B using 3 with x hx x <;> simp [n, e]
 
 @[deprecated (since := "2026-03-19")] alias integral_image_eq_integral_deriv_smul_of_antitone :=
   integral_image_eq_integral_deriv_smul_of_antitoneOn

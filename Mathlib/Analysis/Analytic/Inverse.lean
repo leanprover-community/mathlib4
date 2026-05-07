@@ -642,7 +642,7 @@ lemma HasFPowerSeriesAt.eventually_hasSum_of_comp {f : E → F} {g : F → G}
         (partialSum_continuous q a).continuousAt
       apply this.tendsto.comp
       apply Tendsto.sub h'y
-      convert tendsto_const_nhds
+      convert! tendsto_const_nhds
       exact (HasFPowerSeriesAt.coeff_zero hf fun _ ↦ 0).symm
     apply u_closed.mem_of_tendsto this
     filter_upwards [Ici_mem_atTop b₀] with b hb using vu (hab _ _ ha hb)

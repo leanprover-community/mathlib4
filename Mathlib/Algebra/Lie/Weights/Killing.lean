@@ -160,7 +160,7 @@ variable [FiniteDimensional K L] [IsKilling K L]
 instance : InvolutiveNeg (Weight K H L) where
   neg α := ⟨-α, by
     by_cases hα : α.IsZero
-    · convert α.genWeightSpace_ne_bot; rw [hα, neg_zero]
+    · convert! α.genWeightSpace_ne_bot; rw [hα, neg_zero]
     · intro e
       obtain ⟨x, hx, x_ne0⟩ := α.exists_ne_zero
       have := mem_ker_killingForm_of_mem_rootSpace_of_forall_rootSpace_neg K L H hx
@@ -608,7 +608,7 @@ lemma finrank_rootSpace_eq_one (α : Weight K H L) (hα : α.IsNonZero) :
     finrank K (rootSpace H α) = 1 := by
   suffices ¬ 1 < finrank K (rootSpace H α) by
     have h₀ : finrank K (rootSpace H α) ≠ 0 := by
-      convert_to finrank K (rootSpace H α).toSubmodule ≠ 0
+      convert_to! finrank K (rootSpace H α).toSubmodule ≠ 0
       simpa using α.genWeightSpace_ne_bot
     lia
   intro contra

@@ -112,13 +112,13 @@ section Vars
 theorem vars_neg : (-p).vars = p.vars := by simp [vars, degrees_neg]
 
 theorem vars_sub_subset [DecidableEq σ] : (p - q).vars ⊆ p.vars ∪ q.vars := by
-  convert vars_add_subset p (-q) using 2 <;> simp [sub_eq_add_neg]
+  convert! vars_add_subset p (-q) using 2 <;> simp [sub_eq_add_neg]
 
 @[simp]
 theorem vars_sub_of_disjoint [DecidableEq σ] (hpq : Disjoint p.vars q.vars) :
     (p - q).vars = p.vars ∪ q.vars := by
   rw [← vars_neg q] at hpq
-  convert vars_add_of_disjoint hpq using 2 <;> simp [sub_eq_add_neg]
+  convert! vars_add_of_disjoint hpq using 2 <;> simp [sub_eq_add_neg]
 
 end Vars
 

@@ -438,7 +438,7 @@ theorem sSup_add_one_lt_of_lt_cof {s : Set Ordinal.{u}} {a : Ordinal.{u}}
     refine small_of_injective (β := Iio a) (f := fun x ↦ ⟨f x, hs _ (f x).2⟩) fun _ ↦ ?_
     simp [Subtype.val_inj]
   have : range (fun i ↦ (f i).1 + 1) = (· + 1) '' s := by
-    convert range_comp (· + 1) (fun i ↦ (f i).1)
+    convert! range_comp (· + 1) (fun i ↦ (f i).1)
     rw [range_comp', f.range_eq]
     simp
   rw [← this, sSup_range]

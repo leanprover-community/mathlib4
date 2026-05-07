@@ -90,7 +90,7 @@ lemma goursat_surjective : ∃ e : (M ⧸ L.goursatFst) ≃ₗ[R] N ⧸ L.goursa
   -- define the map as an R-linear equiv
   use { e with map_smul' := this }
   rw [← toAddSubgroup_injective.eq_iff]
-  convert he using 1
+  convert! he using 1
   ext v
   rw [mem_toAddSubgroup, mem_graph_iff, Eq.comm]
   rfl
@@ -134,7 +134,7 @@ lemma goursat : ∃ (M' : Submodule R M) (N' : Submodule R N) (M'' : Submodule R
       rintro hm hn m₁ n₁ hm₁n₁ ⟨hP, hQ⟩
       simp only [Subtype.ext_iff] at hP hQ
       rwa [← hP, ← hQ]
-  · convert goursatFst_prod_goursatSnd_le (range <| P.prod Q)
+  · convert! goursatFst_prod_goursatSnd_le (range <| P.prod Q)
     ext ⟨m, n⟩
     simp_rw [mem_ker, coe_prodMap, Prod.map_apply, Submodule.mem_prod, Prod.zero_eq_mk,
       Prod.ext_iff, ← mem_ker, ker_mkQ]

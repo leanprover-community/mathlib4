@@ -320,7 +320,7 @@ theorem relNorm_map_algEquiv {T : Type*} [CommRing T] [IsDedekindDomain T] [IsIn
     [Algebra R T] [Module.Finite R T] [IsTorsionFree R T] (σ : S ≃ₐ[R] T) (I : Ideal S) :
     relNorm R (I.map σ) = relNorm R I := by
   refine le_antisymm (relNorm_map_algEquiv_aux σ I) ?_
-  convert relNorm_map_algEquiv_aux σ.symm (I.map σ)
+  convert! relNorm_map_algEquiv_aux σ.symm (I.map σ)
   change I = map σ.symm.toAlgHom (map σ.toAlgHom I)
   simp [map_mapₐ]
 

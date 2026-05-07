@@ -50,7 +50,7 @@ lemma IsLocalRing.quotient_artinian_of_mem_minimalPrimes_of_isLocalRing
     IsArtinianRing (R ⧸ I) :=
   have : Ring.KrullDimLE 0 (R ⧸ I) := Ring.krullDimLE_zero_iff.mpr fun J prime ↦
     Ideal.isMaximal_of_isIntegral_of_isMaximal_comap _ <| by
-      convert IsLocalRing.maximalIdeal.isMaximal R
+      convert! IsLocalRing.maximalIdeal.isMaximal R
       rw [Ideal.minimalPrimes, Set.mem_setOf] at hp
       have := prime.comap (Ideal.Quotient.mk I)
       exact hp.eq_of_le ⟨this, .trans (by simp) (Ideal.ker_le_comap _)⟩ (le_maximalIdeal this.1)
@@ -214,7 +214,7 @@ nonrec lemma Ideal.height_le_spanRank_toENat_of_mem_minimalPrimes
           simpa using Finset.card_lt_card (Finset.ssubset_insert hxs')).trans_le hn)
         (H _ (tcard.trans_lt n.lt_succ_self) q t hq rfl).trans (by norm_cast)
       rw [Finset.coe_insert] at hp
-      convert mem_minimalPrimes_span_of_mem_minimalPrimes_span_insert hpq _ _ hp _ ht ?_
+      convert! mem_minimalPrimes_span_of_mem_minimalPrimes_span_insert hpq _ _ hp _ ht ?_
       · simp [t]
       refine hspan.trans <| radical_mono ?_
       rw [← Set.union_singleton, span_union]
@@ -241,7 +241,7 @@ lemma Ideal.height_le_spanRank_toENat (I : Ideal R) (hI : I ≠ ⊤) :
     I.height ≤ I.spanRank.toENat := by
   obtain ⟨J, hJ⟩ := nonempty_minimalPrimes hI
   refine (iInf₂_le J hJ).trans ?_
-  convert (I.height_le_spanRank_toENat_of_mem_minimalPrimes J hJ)
+  convert! (I.height_le_spanRank_toENat_of_mem_minimalPrimes J hJ)
   exact Eq.symm (@height_eq_primeHeight _ _ J hJ.1.1)
 
 lemma Ideal.height_le_spanFinrank (I : Ideal R) (hI : I ≠ ⊤) :
@@ -277,7 +277,7 @@ lemma Ideal.exists_spanRank_eq_and_height_eq (I : Ideal R) (hI : I ≠ ⊤) :
   rw [ENat.coe_toNat_eq_self.mpr (Ideal.height_ne_top hI)] at hJ₃
   refine ⟨J, hJ₁, le_antisymm ?_ (le_trans ?_ (J.height_le_spanRank ?_)),
     le_antisymm (Ideal.height_mono hJ₁) hJ₃⟩
-  · convert hJ₂
+  · convert! hJ₂
     exact Cardinal.ofENat_eq_nat.mpr (ENat.coe_toNat (I.height_ne_top hI)).symm
   · exact Cardinal.ofENat_le_ofENat_of_le hJ₃
   · rintro rfl
@@ -308,7 +308,7 @@ lemma Ideal.exists_finset_card_eq_height_of_isNoetherianRing (p : Ideal R) [p.Is
   refine le_antisymm ?_ ?_
   · rw [Submodule.fg_iff_spanRank_eq_spanFinrank.mpr (IsNoetherian.noetherian I)] at hr
     exact Cardinal.nat_le_ofENat.mp hr
-  · convert_to p.height ≤ I.spanRank.toENat
+  · convert_to! p.height ≤ I.spanRank.toENat
     · symm
       simpa [Submodule.fg_iff_spanRank_eq_spanFinrank] using (IsNoetherian.noetherian I)
     · exact I.height_le_spanRank_toENat_of_mem_minimalPrimes _ hI
@@ -340,7 +340,7 @@ lemma Ideal.height_le_height_add_spanFinrank_of_le {I p : Ideal R} [p.IsPrime] (
   rw [Finset.coe_union, Set.Finite.coe_toFinset, span_union, sup_comm, span,
     Submodule.span_generators]
   refine Ideal.mem_minimalPrimes_sup hrp ?_
-  convert hps
+  convert! hps
   simp [Ideal.map_span, ← himgo]
 
 lemma height_le_ringKrullDim_quotient_add_spanFinrank {p I : Ideal R} [p.IsPrime] (h : I ≤ p) :
@@ -378,12 +378,12 @@ lemma Ideal.height_le_ringKrullDim_quotient_add_encard {p : Ideal R} [p.IsPrime]
 
 lemma Ideal.height_le_height_add_one_of_mem {r : R} {p : Ideal R} [p.IsPrime] (hrm : r ∈ p) :
     p.height ≤ (p.map (Quotient.mk (span {r}))).height + 1 := by
-  convert height_le_height_add_encard_of_subset {r} (p := p) (by simpa)
+  convert! height_le_height_add_encard_of_subset {r} (p := p) (by simpa)
   simp
 
 lemma Ideal.height_le_ringKrullDim_quotient_add_one {r : R} {p : Ideal R} [p.IsPrime]
     (hrp : r ∈ p) : p.height ≤ ringKrullDim (R ⧸ span {r}) + 1 := by
-  convert Ideal.height_le_ringKrullDim_quotient_add_encard {r} (by simpa)
+  convert! Ideal.height_le_ringKrullDim_quotient_add_encard {r} (by simpa)
   simp
 
 lemma ringKrullDim_le_ringKrullDim_quotient_add_encard (s : Set R) (hs : s ⊆ Ring.jacobson R) :
@@ -395,7 +395,7 @@ lemma ringKrullDim_le_ringKrullDim_quotient_add_encard (s : Set R) (hs : s ⊆ R
 lemma ringKrullDim_le_ringKrullDim_quotient_add_card (s : Finset R)
     (hs : (s : Set R) ⊆ Ring.jacobson R) :
     ringKrullDim R ≤ ringKrullDim (R ⧸ Ideal.span (s : Set R)) + s.card := by
-  convert ringKrullDim_le_ringKrullDim_quotient_add_encard s hs
+  convert! ringKrullDim_le_ringKrullDim_quotient_add_encard s hs
   norm_cast
 
 section Algebra
@@ -437,7 +437,7 @@ lemma Ideal.height_le_height_add_of_liesOver [IsNoetherianRing S] (p : Ideal R) 
   have : Ideal.span t = Ideal.map (algebraMap R S) (.span s) ⊔ .span o := by
     simp [t, Ideal.map_span]
   refine this ▸ map_sup_mem_minimalPrimes_of_map_quotientMk_mem_minimalPrimes hp (span_le.mpr ho) ?_
-  convert hP'
+  convert! hP'
   simp [Ideal.map_span, ← himgo]
 
 /--

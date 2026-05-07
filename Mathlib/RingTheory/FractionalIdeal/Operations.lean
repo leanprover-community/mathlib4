@@ -263,7 +263,7 @@ theorem canonicalEquiv_coeIdeal (I : Ideal R) : canonicalEquiv S P P' I = I := b
 @[simp]
 theorem canonicalEquiv_self : canonicalEquiv S P P = RingEquiv.refl _ := by
   rw [← canonicalEquiv_trans_canonicalEquiv S P P]
-  convert (canonicalEquiv S P P).symm_trans_self
+  convert! (canonicalEquiv S P P).symm_trans_self
   exact (canonicalEquiv_symm S P P).symm
 
 end
@@ -358,7 +358,7 @@ instance : Nontrivial (FractionalIdeal R₁⁰ K) :=
 theorem ne_zero_of_mul_eq_one (I J : FractionalIdeal R₁⁰ K) (h : I * J = 1) : I ≠ 0 := fun hI =>
   zero_ne_one' (FractionalIdeal R₁⁰ K)
     (by
-      convert h
+      convert! h
       simp [hI])
 
 variable [IsFractionRing R₁ K] [IsDomain R₁]
@@ -382,7 +382,7 @@ theorem _root_.IsFractional.div_of_nonzero {I J : Submodule R₁ K} :
       apply notMem_zero
       simpa
     intro b hb
-    convert hI _ (hb _ (Submodule.smul_mem _ aJ mem_J)) using 1
+    convert! hI _ (hb _ (Submodule.smul_mem _ aJ mem_J)) using 1
     rw [← hy', mul_comm b, ← Algebra.smul_def, mul_smul]
 
 theorem isFractional_div_of_ne_zero {I J : FractionalIdeal R₁⁰ K} (h : J ≠ 0) :
@@ -447,7 +447,7 @@ theorem div_one {I : FractionalIdeal R₁⁰ K} : I / 1 = I := by
   · simpa using mem_div_iff_forall_mul_mem.mp h 1 ((algebraMap R₁ K).map_one ▸ coe_mem_one R₁⁰ 1)
   · apply mem_div_iff_forall_mul_mem.mpr
     rintro y ⟨y', _, rfl⟩
-    convert Submodule.smul_mem _ y' h using 1
+    convert! Submodule.smul_mem _ y' h using 1
     rw [mul_comm, Algebra.linearMap_apply, ← Algebra.smul_def]
 
 theorem eq_one_div_of_mul_eq_one_right (I J : FractionalIdeal R₁⁰ K) (h : I * J = 1) :
@@ -587,7 +587,7 @@ theorem den_mul_self_eq_num' (I : FractionalIdeal S P) :
   apply coeToSubmodule_injective
   dsimp only
   rw [coe_mul, ← smul_eq_mul, coe_spanSingleton, smul_eq_mul, Submodule.span_singleton_mul]
-  convert I.den_mul_self_eq_num using 1
+  convert! I.den_mul_self_eq_num using 1
   ext
   rw [mem_smul_pointwise_iff_exists, mem_smul_pointwise_iff_exists]
   simp [smul_eq_mul, Algebra.smul_def, Submonoid.smul_def]
@@ -960,12 +960,12 @@ noncomputable def ringEquivOfRingEquiv :
     left_inv I := by
       simp only [RingEquiv.symm_symm, val_eq_coe, ← Submodule.map_comp, LinearEquiv.comp_coe,
         coe_ext_iff, coe_mk]
-      convert Submodule.map_id _
+      convert! Submodule.map_id _
       ext; simp [semilinearEquivOfRingEquiv, IsLocalization.map_map]
     right_inv I := by
       simp only [RingEquiv.symm_symm, val_eq_coe, ← Submodule.map_comp, LinearEquiv.comp_coe,
         coe_ext_iff, coe_mk]
-      convert Submodule.map_id _
+      convert! Submodule.map_id _
       ext; simp [semilinearEquivOfRingEquiv, IsLocalization.map_map]}
 
 lemma ringEquivOfRingEquiv_apply (f : R ≃+* S) (I : FractionalIdeal (nonZeroDivisors R) K) :

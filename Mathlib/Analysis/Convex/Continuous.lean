@@ -82,7 +82,7 @@ lemma ConvexOn.exists_lipschitzOnWith_of_isBounded (hf : ConvexOn ℝ (ball x₀
 
 lemma ConcaveOn.exists_lipschitzOnWith_of_isBounded (hf : ConcaveOn ℝ (ball x₀ r) f) (hr : r' < r)
     (hf' : IsBounded (f '' ball x₀ r)) : ∃ K, LipschitzOnWith K f (ball x₀ r') := by
-  replace hf' : IsBounded ((-f) '' ball x₀ r) := by convert hf'.neg; ext; simp [neg_eq_iff_eq_neg]
+  replace hf' : IsBounded ((-f) '' ball x₀ r) := by convert! hf'.neg; ext; simp [neg_eq_iff_eq_neg]
   simpa using hf.neg.exists_lipschitzOnWith_of_isBounded hr hf'
 
 lemma ConvexOn.isBoundedUnder_abs (hf : ConvexOn ℝ C f) {x₀ : E} (hC : C ∈ 𝓝 x₀) :
@@ -168,7 +168,7 @@ lemma ConcaveOn.continuousOn_tfae (hC : IsOpen C) (hC' : C.Nonempty) (hf : Conca
   have := hf.neg.continuousOn_tfae hC hC'
   simp only [locallyLipschitzOn_neg_iff, continuousOn_neg_iff, continuousAt_neg_iff, abs_neg]
     at this
-  convert this using 8 <;> exact (Equiv.neg ℝ).exists_congr (by simp)
+  convert! this using 8 <;> exact (Equiv.neg ℝ).exists_congr (by simp)
 
 lemma ConvexOn.locallyLipschitzOn_iff_continuousOn (hC : IsOpen C) (hf : ConvexOn ℝ C f) :
     LocallyLipschitzOn C f ↔ ContinuousOn f C := by

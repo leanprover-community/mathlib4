@@ -103,7 +103,7 @@ variable (X) in
 lemma PrespectralSpace.isBasis_opens [PrespectralSpace X] :
     TopologicalSpace.Opens.IsBasis { U : Opens X | IsCompact (U : Set X) } := by
   dsimp only [TopologicalSpace.Opens.IsBasis]
-  convert isTopologicalBasis (X := X)
+  convert! isTopologicalBasis (X := X)
   ext s
   exact ⟨fun ⟨V, hV, heq⟩ ↦ heq ▸ ⟨V.2, hV⟩, fun h ↦ ⟨⟨s, h.1⟩, h.2, rfl⟩⟩
 
@@ -153,7 +153,7 @@ lemma IsOpenMap.exists_opens_image_eq_of_prespectralSpace [PrespectralSpace X] {
   · simp only [iSup_mk, carrier_eq_coe, coe_mk]
     exact t.finite_toSet.isCompact_biUnion fun i _ ↦ hUs i.2
   · simp only [iSup_mk, carrier_eq_coe, Set.iUnion_coe_set, coe_mk, Set.image_iUnion]
-    convert_to ⋃ i ∈ t, f '' i.1 = U
+    convert_to! ⋃ i ∈ t, f '' i.1 = U
     · simp
     · refine subset_antisymm (fun x ↦ ?_) ht
       simp_rw [Set.mem_iUnion]

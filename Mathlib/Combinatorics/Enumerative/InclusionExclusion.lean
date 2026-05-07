@@ -105,7 +105,7 @@ variable [DecidableEq α]
 
 lemma prod_indicator_biUnion_finset_sub_indicator (hs : s.Nonempty) (S : ι → Finset α) (a : α) :
     ∏ i ∈ s, (Set.indicator (s.biUnion S) 1 a - Set.indicator (S i) 1 a) = (0 : ℤ) := by
-  convert prod_indicator_biUnion_sub_indicator hs (fun i ↦ S i) a
+  convert! prod_indicator_biUnion_sub_indicator hs (fun i ↦ S i) a
   simp
 
 /-- **Inclusion-exclusion principle** for the sum of a function over a union.

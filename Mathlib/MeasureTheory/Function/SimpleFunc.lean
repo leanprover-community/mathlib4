@@ -1261,7 +1261,7 @@ protected theorem induction {α γ} [MeasurableSpace α] [AddZeroClass γ]
   induction s using Finset.induction generalizing f with
   | empty =>
     rw [Finset.coe_empty, diff_eq_empty, range_subset_singleton] at h
-    convert const 0 MeasurableSet.univ
+    convert! const 0 MeasurableSet.univ
     ext x
     simp [h]
   | insert x s hxs ih =>
@@ -1273,10 +1273,10 @@ protected theorem induction {α γ} [MeasurableSpace α] [AddZeroClass γ]
       rw [image_compl_preimage, union_diff_distrib, diff_diff_comm, h, Finset.coe_insert,
         insert_diff_self_of_notMem, diff_eq_empty.mpr, Set.empty_union]
       · rw [Set.image_subset_iff]
-        convert Set.subset_univ _
+        convert! Set.subset_univ _
         exact preimage_const_of_mem (mem_singleton _)
       · rwa [Finset.mem_coe]
-    convert add _ Pg (const x mx)
+    convert! add _ Pg (const x mx)
     · ext1 y
       by_cases hy : y ∈ f ⁻¹' {x}
       · simpa [g, hy]
@@ -1303,7 +1303,7 @@ protected theorem induction' {α γ} [MeasurableSpace α] [Nonempty γ] {P : Sim
   induction s using Finset.induction generalizing f with
   | empty =>
     rw [Finset.coe_empty, diff_eq_empty, range_subset_singleton] at h
-    convert const c
+    convert! const c
     ext x
     simp [h]
   | insert x s hxs ih =>
@@ -1315,10 +1315,10 @@ protected theorem induction' {α γ} [MeasurableSpace α] [Nonempty γ] {P : Sim
       rw [image_compl_preimage, union_diff_distrib, diff_diff_comm, h, Finset.coe_insert,
         insert_diff_self_of_notMem, diff_eq_empty.mpr, Set.empty_union]
       · rw [Set.image_subset_iff]
-        convert Set.subset_univ _
+        convert! Set.subset_univ _
         exact preimage_const_of_mem (mem_singleton _)
       · rwa [Finset.mem_coe]
-    convert pcw mx.compl Pg (const x)
+    convert! pcw mx.compl Pg (const x)
     · ext1 y
       by_cases hy : y ∈ f ⁻¹' {x}
       · simpa [g, hy]
@@ -1362,7 +1362,7 @@ theorem Measurable.ennreal_induction {motive : (α → ℝ≥0∞) → Prop}
     (iSup : ∀ ⦃f : ℕ → α → ℝ≥0∞⦄, (∀ n, Measurable (f n)) → Monotone f →
       (∀ n, motive (f n)) → motive fun x => ⨆ n, f n x)
     ⦃f : α → ℝ≥0∞⦄ (hf : Measurable f) : motive f := by
-  convert iSup (fun n => (eapprox f n).measurable) (monotone_eapprox f) _ using 2
+  convert! iSup (fun n => (eapprox f n).measurable) (monotone_eapprox f) _ using 2
   · rw [iSup_eapprox_apply hf]
   · exact fun n =>
       SimpleFunc.induction (fun c s hs => indicator c hs)
@@ -1386,7 +1386,7 @@ lemma Measurable.ennreal_sigmaFinite_induction [SigmaFinite μ] {motive : (α �
       (∀ n, motive (f n)) → motive fun x => ⨆ n, f n x)
     ⦃f : α → ℝ≥0∞⦄ (hf : Measurable f) : motive f := by
   refine Measurable.ennreal_induction (fun c s hs ↦ ?_) add iSup hf
-  convert iSup (f := fun n ↦ (s ∩ spanningSets μ n).indicator fun _ ↦ c)
+  convert! iSup (f := fun n ↦ (s ∩ spanningSets μ n).indicator fun _ ↦ c)
     (fun n ↦ measurable_const.indicator (hs.inter (measurableSet_spanningSets ..)))
     (fun m n hmn a ↦ by dsimp; grw [hmn])
     (fun n ↦ indicator _ (hs.inter (measurableSet_spanningSets ..))

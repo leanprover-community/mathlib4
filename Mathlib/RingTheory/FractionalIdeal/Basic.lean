@@ -195,7 +195,7 @@ theorem ext {I J : FractionalIdeal S P} : (∀ x, x ∈ I ↔ x ∈ J) → I = J
 Useful to fix definitional equalities. -/
 protected def copy (p : FractionalIdeal S P) (s : Set P) (hs : s = ↑p) : FractionalIdeal S P :=
   ⟨Submodule.copy p s hs, by
-    convert p.isFractional
+    convert! p.isFractional
     ext
     simp only [hs]
     rfl⟩
@@ -419,7 +419,7 @@ theorem coe_le_coe {I J : FractionalIdeal S P} :
 
 theorem zero_le (I : FractionalIdeal S P) : 0 ≤ I := by
   intro x hx
-  convert zero_mem I
+  convert! zero_mem I
   rw [(mem_zero_iff _).mp hx]
 
 instance orderBot : OrderBot (FractionalIdeal S P) where
@@ -506,7 +506,7 @@ theorem _root_.IsFractional.nsmul {I : Submodule R P} :
     ∀ n : ℕ, IsFractional S I → IsFractional S (n • I : Submodule R P)
   | 0, _ => by
     rw [zero_smul]
-    convert ((0 : Ideal R) : FractionalIdeal S P).isFractional
+    convert! ((0 : Ideal R) : FractionalIdeal S P).isFractional
     simp
   | n + 1, h => by
     rw [succ_nsmul]

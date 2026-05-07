@@ -108,7 +108,7 @@ lemma toList_singleton (x : α) : (singleton r x).toList = [x] := by simp [toLis
 lemma isChain_toList (x : RelSeries r) : x.toList.IsChain (· ~[r] ·) := by
   simp_rw [List.isChain_iff_getElem, length_toList, add_lt_add_iff_right]
   intro i h
-  convert x.step ⟨i, by simpa [toList] using h⟩ <;> apply List.get_ofFn
+  convert! x.step ⟨i, by simpa [toList] using h⟩ <;> apply List.get_ofFn
 
 lemma toList_ne_nil (x : RelSeries r) : x.toList ≠ [] := fun m =>
   List.eq_nil_iff_forall_not_mem.mp m (x 0) <| List.mem_ofFn.mpr ⟨_, rfl⟩
@@ -210,7 +210,7 @@ theorem length_ne_zero [r.IsIrrefl] : s.length ≠ 0 ↔ {x | x ∈ s}.Nontrivia
   refine ⟨fun h ↦ ⟨s 0, by simp [mem_def], s 1, by simp [mem_def],
     fun rid ↦ r.irrefl (s 0) ?_⟩, length_ne_zero_of_nontrivial⟩
   nth_rw 2 [rid]
-  convert s.step ⟨0, by lia⟩
+  convert! s.step ⟨0, by lia⟩
   ext
   simpa [Nat.pos_iff_ne_zero]
 
@@ -296,10 +296,10 @@ def append (p q : RelSeries r) (connect : p.last ~[r] q.head) : RelSeries r wher
   step i := by
     obtain hi | rfl | hi :=
       lt_trichotomy i (Fin.castLE (by lia) (Fin.last _ : Fin (p.length + 1)))
-    · convert p.step ⟨i.1, hi⟩ <;> convert Fin.append_left p q _ <;> rfl
-    · convert connect
-      · convert Fin.append_left p q _
-      · convert Fin.append_right p q _; rfl
+    · convert! p.step ⟨i.1, hi⟩ <;> convert! Fin.append_left p q _ <;> rfl
+    · convert! connect
+      · convert! Fin.append_left p q _
+      · convert! Fin.append_right p q _; rfl
     · set x := _; set y := _
       change Fin.append p q x ~[r] Fin.append p q y
       have hx : x = Fin.natAdd _ ⟨i - (p.length + 1), Nat.sub_lt_left_of_lt_add hi <|
@@ -313,7 +313,7 @@ def append (p q : RelSeries r) (connect : p.last ~[r] q.head) : RelSeries r wher
           Nat.add_sub_cancel' <| le_of_lt (show p.length < i.1 from hi), add_comm]
         rfl
       rw [hx, Fin.append_right, hy, Fin.append_right]
-      convert q.step ⟨i - (p.length + 1), Nat.sub_lt_left_of_lt_add hi <| by lia⟩
+      convert! q.step ⟨i - (p.length + 1), Nat.sub_lt_left_of_lt_add hi <| by lia⟩
       rw [Fin.succ_mk, Nat.sub_eq_iff_eq_add (le_of_lt hi : p.length ≤ i),
         Nat.add_assoc _ 1, add_comm 1, Nat.sub_add_cancel]
       exact hi
@@ -325,7 +325,7 @@ lemma append_apply_left (p q : RelSeries r) (connect : p.last ~[r] q.head)
         = p i := by
   delta append
   simp only [Function.comp_apply]
-  convert Fin.append_left _ _ _
+  convert! Fin.append_left _ _ _
 
 lemma append_apply_right (p q : RelSeries r) (connect : p.last ~[r] q.head)
     (i : Fin (q.length + 1)) :
@@ -341,7 +341,7 @@ lemma append_apply_right (p q : RelSeries r) (connect : p.last ~[r] q.head)
 @[simp] lemma last_append (p q : RelSeries r) (connect : p.last ~[r] q.head) :
     (p.append q connect).last = q.last := by
   delta last
-  convert append_apply_right p q connect (Fin.last _)
+  convert! append_apply_right p q connect (Fin.last _)
   ext1
   dsimp
   lia
@@ -391,7 +391,7 @@ def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
   step m := by
     set x := _; set y := _; change x ~[r] y
     obtain hm | hm | hm := lt_trichotomy m.1 i.1
-    · convert p.step ⟨m, hm.trans i.2⟩
+    · convert! p.step ⟨m, hm.trans i.2⟩
       · change Fin.insertNth _ _ _ _ = _
         rw [Fin.insertNth_apply_below]
         pick_goal 2
@@ -407,14 +407,14 @@ def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
         pick_goal 2
         · change m.1 < i.1 + 1; exact hm ▸ lt_add_one _
         simp]
-      convert prev_connect
+      convert! prev_connect
       · ext; exact hm
       · change Fin.insertNth _ _ _ _ = _
         rw [show m.succ = i.succ.castSucc by ext; change _ + 1 = _ + 1; rw [hm],
           Fin.insertNth_apply_same]
     · rw [Nat.lt_iff_add_one_le, le_iff_lt_or_eq] at hm
       obtain hm | hm := hm
-      · convert p.step ⟨m.1 - 1, Nat.sub_lt_right_of_lt_add (by lia) m.2⟩
+      · convert! p.step ⟨m.1 - 1, Nat.sub_lt_right_of_lt_add (by lia) m.2⟩
         · change Fin.insertNth _ _ _ _ = _
           rw [Fin.insertNth_apply_above (h := hm)]
           aesop
@@ -425,7 +425,7 @@ def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
           simp only [Fin.pred_succ, eq_rec_constant, Fin.succ_mk]
           congr
           exact Fin.ext <| Eq.symm <| Nat.succ_pred_eq_of_pos (lt_trans (Nat.zero_lt_succ _) hm)
-      · convert connect_next
+      · convert! connect_next
         · change Fin.insertNth _ _ _ _ = _
           rw [show m.castSucc = i.succ.castSucc from Fin.ext hm.symm, Fin.insertNth_apply_same]
         · change Fin.insertNth _ _ _ _ = _
@@ -446,7 +446,7 @@ def reverse (p : RelSeries r) : RelSeries r.inv where
   step i := by
     rw [Function.comp_apply, Function.comp_apply, SetRel.mem_inv]
     have hi : i.1 + 1 ≤ p.length := by lia
-    convert p.step ⟨p.length - (i.1 + 1), Nat.sub_lt_self (by lia) hi⟩
+    convert! p.step ⟨p.length - (i.1 + 1), Nat.sub_lt_self (by lia) hi⟩
     · ext; simp
     · ext
       simp only [Fin.val_rev, Fin.val_castSucc, Fin.val_succ]
@@ -610,14 +610,14 @@ def inductionOn (motive : RelSeries r → Sort*)
   let this {n : ℕ} (heq : p.length = n) : motive p := by
     induction n generalizing p with
     | zero =>
-      convert singleton p.head
+      convert! singleton p.head
       ext n
       · exact heq
       simp [show n = 0 by lia, apply_zero]
     | succ d hd =>
       have lq := p.tail_length (heq ▸ d.zero_ne_add_one.symm)
       nth_rw 3 [heq] at lq
-      convert cons (p.tail (heq ▸ d.zero_ne_add_one.symm)) p.head
+      convert! cons (p.tail (heq ▸ d.zero_ne_add_one.symm)) p.head
         (p.3 ⟨0, heq ▸ d.zero_lt_succ⟩) (hd _ lq)
       exact (p.cons_self_tail (heq ▸ d.zero_ne_add_one.symm)).symm
   exact this rfl
@@ -645,7 +645,7 @@ def eraseLast (p : RelSeries r) : RelSeries r where
 lemma eraseLast_last_rel_last (p : RelSeries r) (h : p.length ≠ 0) :
     p.eraseLast.last ~[r] p.last := by
   simp only [last, Fin.last, eraseLast_length, eraseLast_toFun]
-  convert p.step ⟨p.length - 1, by lia⟩
+  convert! p.step ⟨p.length - 1, by lia⟩
   simp only [Fin.succ_mk]; lia
 
 @[simp]
@@ -674,14 +674,14 @@ def inductionOn' (motive : RelSeries r → Sort*)
   let this {n : ℕ} (heq : p.length = n) : motive p := by
     induction n generalizing p with
     | zero =>
-      convert singleton p.head
+      convert! singleton p.head
       ext n
       · exact heq
       · simp [show n = 0 by lia, apply_zero]
     | succ d hd =>
       have ne0 : p.length ≠ 0 := by simp [heq]
       have len : p.eraseLast.length = d := by simp [heq]
-      convert snoc p.eraseLast p.last (p.eraseLast_last_rel_last ne0)
+      convert! snoc p.eraseLast p.last (p.eraseLast_last_rel_last ne0)
         (hd _ len)
       exact (p.snoc_self_eraseLast ne0).symm
   exact this rfl
@@ -697,7 +697,7 @@ def smash (p q : RelSeries r) (connect : p.last = q.head) : RelSeries r where
   step := by
     apply Fin.addCases <;> intro i
     · simp_rw [Fin.castSucc_castAdd, Fin.addCases_left, Fin.succ_castAdd]
-      convert p.step i
+      convert! p.step i
       split_ifs with h
       · rw [Fin.addCases_right, h, ← last, connect, head]
       · apply Fin.addCases_left
@@ -760,7 +760,7 @@ def drop (p : RelSeries r) (i : Fin (p.length + 1)) : RelSeries r where
   length := p.length - i
   toFun := fun ⟨j, h⟩ => p.toFun ⟨j+i, by lia⟩
   step := fun ⟨j, h⟩ => by
-    convert p.step ⟨j+i.1, by lia⟩
+    convert! p.step ⟨j+i.1, by lia⟩
     simp only [Fin.succ_mk]; lia
 
 @[simp]
@@ -987,8 +987,8 @@ theorem exists_relSeries_covBy
         obtain rfl : m = 0 := by simpa [t₃] using (congr_arg Fin.val eq).trans_lt (i j).2
         cases (h (.last _)).ne' (h₂.symm.trans h₁)
     · refine funext (Fin.lastCases ?_ fun j ↦ ?_)
-      · convert h₂; simpa using RelSeries.last_smash ..
-      convert congr_fun ht j using 1
+      · convert! h₂; simpa using RelSeries.last_smash ..
+      convert! congr_fun ht j using 1
       simp [RelSeries.smash_castLE]
     all_goals simp [Fin.snoc, Fin.castPred_zero, hi₁]
 

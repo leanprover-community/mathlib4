@@ -229,7 +229,7 @@ theorem coeff_multiset_prod_of_natDegree_le (n : ℕ) (hl : ∀ p ∈ t, natDegr
 theorem coeff_prod_of_natDegree_le (f : ι → R[X]) (n : ℕ) (h : ∀ p ∈ s, natDegree (f p) ≤ n) :
     coeff (∏ i ∈ s, f i) (#s * n) = ∏ i ∈ s, coeff (f i) n := by
   obtain ⟨l, hl⟩ := s
-  convert coeff_multiset_prod_of_natDegree_le (l.map f) n ?_
+  convert! coeff_multiset_prod_of_natDegree_le (l.map f) n ?_
   · simp
   · simp
   · simpa using h
@@ -266,7 +266,7 @@ theorem prod_X_sub_C_nextCoeff {s : Finset ι} (f : ι → R) :
 theorem multiset_prod_X_sub_C_coeff_card_pred (t : Multiset R) (ht : 0 < Multiset.card t) :
     (t.map fun x => X - C x).prod.coeff ((Multiset.card t) - 1) = -t.sum := by
   nontriviality R
-  convert multiset_prod_X_sub_C_nextCoeff (by assumption)
+  convert! multiset_prod_X_sub_C_nextCoeff (by assumption)
   rw [nextCoeff, if_neg]
   swap
   · rw [natDegree_multiset_prod_of_monic]

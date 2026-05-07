@@ -93,7 +93,7 @@ theorem coeff_invOfUnit [DecidableEq σ] (n : σ →₀ ℕ) (φ : MvPowerSeries
         -↑u⁻¹ *
           ∑ x ∈ antidiagonal n,
             if x.2 < n then coeff x.1 φ * coeff x.2 (invOfUnit φ u) else 0 := by
-  convert coeff_inv_aux n (↑u⁻¹) φ
+  convert! coeff_inv_aux n (↑u⁻¹) φ
 
 @[simp]
 theorem constantCoeff_invOfUnit (φ : MvPowerSeries σ R) (u : Rˣ) :

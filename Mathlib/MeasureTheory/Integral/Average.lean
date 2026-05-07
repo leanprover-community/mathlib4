@@ -446,7 +446,7 @@ theorem integral_sub_average (μ : Measure α) [IsFiniteMeasure μ] (f : α → 
   by_cases hf : Integrable f μ
   · rw [integral_sub hf (integrable_const _), integral_average, sub_self]
   refine integral_undef fun h => hf ?_
-  convert h.add (integrable_const (⨍ a, f a ∂μ))
+  convert! h.add (integrable_const (⨍ a, f a ∂μ))
   exact (sub_add_cancel _ _).symm
 
 theorem setAverage_sub_setAverage (hs : μ s ≠ ∞) (f : α → E) :

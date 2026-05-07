@@ -288,7 +288,7 @@ lemma isSheaf_yoneda_obj [Preregular C] (W : C) :
   obtain ⟨t, t_amalg, t_uniq⟩ :=
     (Sieve.forallYonedaIsSheaf_iff_colimit S).mpr ⟨h_colim⟩ W x_ext hx_ext
   refine ⟨t, ?_, ?_⟩
-  · convert Presieve.isAmalgamation_restrict (Sieve.le_generate
+  · convert! Presieve.isAmalgamation_restrict (Sieve.le_generate
       (Presieve.ofArrows (fun () ↦ Y) (fun () ↦ f))) _ _ t_amalg
     exact (Presieve.restrict_extend hx).symm
   · exact fun y hy ↦ t_uniq y <| Presieve.isAmalgamation_sieveExtend x y hy

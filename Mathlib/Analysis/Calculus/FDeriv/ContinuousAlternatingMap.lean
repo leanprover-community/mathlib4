@@ -86,7 +86,7 @@ theorem HasFDerivAt.continuousAlternatingMapCompContinuousLinearMap
     HasFDerivAt (fun x ↦ (f x).compContinuousLinearMap (g x))
       (compContinuousLinearMapCLM (g x) ∘L f' +
         (f x).fderivCompContinuousLinearMap (g x) ∘L g') x := by
-  convert hasStrictFDerivAt_compContinuousLinearMap (f x, (g x)) |>.hasFDerivAt
+  convert! hasStrictFDerivAt_compContinuousLinearMap (f x, (g x)) |>.hasFDerivAt
     |>.comp x (hf.prodMk hg)
 
 theorem HasFDerivWithinAt.continuousAlternatingMapCompContinuousLinearMap
@@ -94,7 +94,7 @@ theorem HasFDerivWithinAt.continuousAlternatingMapCompContinuousLinearMap
     HasFDerivWithinAt (fun x ↦ (f x).compContinuousLinearMap (g x))
       (compContinuousLinearMapCLM (g x) ∘L f' +
         (f x).fderivCompContinuousLinearMap (g x) ∘L g') s x := by
-  convert hasStrictFDerivAt_compContinuousLinearMap (f x, (g x)) |>.hasFDerivAt
+  convert! hasStrictFDerivAt_compContinuousLinearMap (f x, (g x)) |>.hasFDerivAt
     |>.comp_hasFDerivWithinAt x (hf.prodMk hg)
 
 theorem fderivWithin_continuousAlternatingMapCompContinuousLinearMap

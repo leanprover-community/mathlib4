@@ -542,7 +542,7 @@ protected theorem isOpen [CompleteSpace E] : IsOpen (range ((↑) : (E ≃L[𝕜
   refine fun e => IsOpen.mem_nhds ?_ (mem_range_self _)
   let O : (E →L[𝕜] F) → E →L[𝕜] E := fun f => (e.symm : F →L[𝕜] E).comp f
   have h_O : Continuous O := (isBoundedBilinearMap_comp (𝕜 := 𝕜) (F := F) (G := E)).continuous_right
-  convert show IsOpen (O ⁻¹' { x | IsUnit x }) from Units.isOpen.preimage h_O using 1
+  convert! show IsOpen (O ⁻¹' { x | IsUnit x }) from Units.isOpen.preimage h_O using 1
   ext f'
   constructor
   · rintro ⟨e', rfl⟩

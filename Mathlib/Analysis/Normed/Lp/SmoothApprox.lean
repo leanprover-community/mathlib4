@@ -101,7 +101,7 @@ theorem _root_.MeasureTheory.Lp.dense_hasCompactSupport_contDiff {p : ℝ≥0∞
   use ⟨g, hg₄.coeFn_toLp, hg₁, hg₂⟩
   rw [Metric.mem_closedBall, dist_comm, Lp.dist_def,
     ← le_ofReal_iff_toReal_le ((Lp.memLp f).sub (Lp.memLp hg₄.toLp)).eLpNorm_ne_top hε.le]
-  convert hg₃ using 1
+  convert! hg₃ using 1
   apply eLpNorm_congr_ae
   gcongr
   exact hg₄.coeFn_toLp

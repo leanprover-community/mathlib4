@@ -207,8 +207,8 @@ theorem singularPart_add_withDensity_rnDeriv_eq [s.HaveLebesgueDecomposition μ]
     add_assoc (-(s.toJordanDecomposition.negPart.singularPart μ).toSignedMeasure),
     ← toSignedMeasure_add, add_comm, ← add_assoc, ← neg_add, ← toSignedMeasure_add, add_comm,
     ← sub_eq_add_neg]
-  · convert rfl
-    -- `convert rfl` much faster than `congr`
+  · convert! rfl
+    -- `convert! rfl` much faster than `congr`
     · exact s.toJordanDecomposition.posPart.haveLebesgueDecomposition_add μ
     · rw [add_comm]
       exact s.toJordanDecomposition.negPart.haveLebesgueDecomposition_add μ
@@ -305,7 +305,7 @@ theorem eq_singularPart (t : SignedMeasure α) (f : α → ℝ) (htμ : t ⟂ᵥ
     (hadd : s = t + μ.withDensityᵥ f) : t = s.singularPart μ := by
   by_cases hfi : Integrable f μ
   · refine eq_singularPart' t hfi.1.measurable_mk (hfi.congr hfi.1.ae_eq_mk) htμ ?_
-    convert hadd using 2
+    convert! hadd using 2
     exact WithDensityᵥEq.congr_ae hfi.1.ae_eq_mk.symm
   · rw [withDensityᵥ, dif_neg hfi, add_zero] at hadd
     refine eq_singularPart' t measurable_zero (integrable_zero _ _ μ) htμ ?_
@@ -383,7 +383,7 @@ theorem eq_rnDeriv (t : SignedMeasure α) (f : α → ℝ) (hfi : Integrable f �
     f =ᵐ[μ] s.rnDeriv μ := by
   set f' := hfi.1.mk f
   have hadd' : s = t + μ.withDensityᵥ f' := by
-    convert hadd using 2
+    convert! hadd using 2
     exact WithDensityᵥEq.congr_ae hfi.1.ae_eq_mk.symm
   have := haveLebesgueDecomposition_mk μ hfi.1.measurable_mk htμ hadd'
   refine (Integrable.ae_eq_of_withDensityᵥ_eq (integrable_rnDeriv _ _) hfi ?_).symm

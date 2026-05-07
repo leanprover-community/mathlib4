@@ -95,7 +95,7 @@ theorem Disjoint.inv_right (h : Disjoint f g) : Disjoint f g⁻¹ :=
 @[simp]
 theorem disjoint_inv_left_iff : Disjoint f⁻¹ g ↔ Disjoint f g := by
   refine ⟨fun h => ?_, Disjoint.inv_left⟩
-  convert h.inv_left
+  convert! h.inv_left
 
 @[simp]
 theorem disjoint_inv_right_iff : Disjoint f g⁻¹ ↔ Disjoint f g := by
@@ -459,7 +459,7 @@ theorem support_swap_mul_swap {x y z : α} (h : List.Nodup [x, y, z]) :
     and_self_iff, List.nodup_nil] at h
   push Not at h
   apply le_antisymm
-  · convert support_mul_le (swap x y) (swap y z) using 1
+  · convert! support_mul_le (swap x y) (swap y z) using 1
     rw [support_swap h.left.left, support_swap h.right.left]
     simp [-Finset.union_singleton]
   · intro

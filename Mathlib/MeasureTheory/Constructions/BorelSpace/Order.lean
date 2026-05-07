@@ -302,7 +302,7 @@ theorem Dense.borel_eq_generateFrom_Icc_mem_aux {α : Type*} [TopologicalSpace �
   refine generateFrom_le (forall_mem_range.2 fun a => ?_)
   rcases hd.exists_countable_dense_subset_bot_top with ⟨t, hts, hc, htd, htb, -⟩
   by_cases! ha : ∀ b < a, (Ioo b a).Nonempty
-  · convert_to MeasurableSet (⋃ (l ∈ t) (u ∈ t) (_ : l < u) (_ : u < a), Icc l u)
+  · convert_to! MeasurableSet (⋃ (l ∈ t) (u ∈ t) (_ : l < u) (_ : u < a), Icc l u)
     · ext y
       push _ ∈ _
       constructor
@@ -317,7 +317,7 @@ theorem Dense.borel_eq_generateFrom_Icc_mem_aux {α : Type*} [TopologicalSpace �
       exact .basic _ ⟨a, hts ha, b, hts hb, hab.le, mem_singleton _⟩
   · rcases ha with ⟨b, ba, hb⟩
     have hbs : b ∈ s := hIoo b a ba hb
-    convert_to MeasurableSet (⋃ (l ∈ t) (_ : l ≤ b), Icc l b)
+    convert_to! MeasurableSet (⋃ (l ∈ t) (_ : l ≤ b), Icc l b)
     · ext x
       simp only [mem_Iio, mem_iUnion, mem_Icc, exists_and_left, exists_prop]
       refine ⟨fun h ↦ ?_, fun ⟨y, yx, hy1, hy2, hy⟩ ↦ by order⟩
@@ -363,7 +363,7 @@ theorem Dense.borel_eq_generateFrom_Ico_mem_aux {α : Type*} [TopologicalSpace �
   refine generateFrom_le (forall_mem_range.2 fun a => ?_)
   rcases hd.exists_countable_dense_subset_bot_top with ⟨t, hts, hc, htd, htb, -⟩
   by_cases! ha : ∀ b < a, (Ioo b a).Nonempty
-  · convert_to MeasurableSet (⋃ (l ∈ t) (u ∈ t) (_ : l < u) (_ : u ≤ a), Ico l u)
+  · convert_to! MeasurableSet (⋃ (l ∈ t) (u ∈ t) (_ : l < u) (_ : u ≤ a), Ico l u)
     · ext y
       push _ ∈ _
       constructor
@@ -377,7 +377,7 @@ theorem Dense.borel_eq_generateFrom_Ico_mem_aux {α : Type*} [TopologicalSpace �
       refine MeasurableSet.iUnion fun hab => MeasurableSet.iUnion fun _ => ?_
       exact .basic _ ⟨a, hts ha, b, hts hb, hab, mem_singleton _⟩
   · replace ha : a ∈ s := hIoo ha.choose a ha.choose_spec.1 ha.choose_spec.2
-    convert_to MeasurableSet (⋃ (l ∈ t) (_ : l < a), Ico l a)
+    convert_to! MeasurableSet (⋃ (l ∈ t) (_ : l < a), Ico l a)
     · symm
       simp only [← Ici_inter_Iio, ← iUnion_inter, inter_eq_right, subset_def, mem_iUnion,
         mem_Ici, mem_Iio]
@@ -405,7 +405,7 @@ theorem Dense.borel_eq_generateFrom_Ioc_mem_aux {α : Type*} [TopologicalSpace �
     [OrderTopology α] [SecondCountableTopology α] {s : Set α} (hd : Dense s)
     (hbot : ∀ x, IsTop x → x ∈ s) (hIoo : ∀ x y : α, x < y → Ioo x y = ∅ → x ∈ s) :
     borel α = .generateFrom { S : Set α | ∃ l ∈ s, ∃ u ∈ s, l < u ∧ Ioc l u = S } := by
-  convert hd.orderDual.borel_eq_generateFrom_Ico_mem_aux hbot fun x y hlt he => hIoo y x hlt _
+  convert! hd.orderDual.borel_eq_generateFrom_Ico_mem_aux hbot fun x y hlt he => hIoo y x hlt _
     using 2
   · ext s
     constructor <;> rintro ⟨l, hl, u, hu, hlt, rfl⟩
@@ -642,7 +642,7 @@ section LinearOrder
 variable [LinearOrder α] [OrderTopology α] [SecondCountableTopology α]
 
 theorem measurable_of_Iio {f : δ → α} (hf : ∀ x, MeasurableSet (f ⁻¹' Iio x)) : Measurable f := by
-  convert measurable_generateFrom (α := δ) _
+  convert! measurable_generateFrom (α := δ) _
   · exact BorelSpace.measurable_eq.trans (borel_eq_generateFrom_Iio _)
   · rintro _ ⟨x, rfl⟩; exact hf x
 
@@ -651,7 +651,7 @@ theorem UpperSemicontinuous.measurable [TopologicalSpace δ] [OpensMeasurableSpa
   measurable_of_Iio fun y => (hf.isOpen_preimage y).measurableSet
 
 theorem measurable_of_Ioi {f : δ → α} (hf : ∀ x, MeasurableSet (f ⁻¹' Ioi x)) : Measurable f := by
-  convert measurable_generateFrom (α := δ) _
+  convert! measurable_generateFrom (α := δ) _
   · exact BorelSpace.measurable_eq.trans (borel_eq_generateFrom_Ioi _)
   · rintro _ ⟨x, rfl⟩; exact hf x
 
@@ -717,7 +717,7 @@ theorem Measurable.isLUB_of_mem {ι} [Countable ι] {f : ι → δ → α} {g g'
   classical
   rcases isEmpty_or_nonempty ι with hι | ⟨⟨i⟩⟩
   · rcases eq_empty_or_nonempty s with rfl | ⟨x, hx⟩
-    · convert g'_meas
+    · convert! g'_meas
       rwa [compl_empty, eqOn_univ] at hg'
     · have A : ∀ b ∈ s, IsBot (g b) := by simpa using hg
       have B : ∀ b ∈ s, g b = g x := by

@@ -168,7 +168,7 @@ theorem spineToSimplex_interval (f : Path X m) (j l : ℕ) (hjl : j + l ≤ m) :
   apply sx.spineInjective l
   dsimp only [spineEquiv, Equiv.coe_fn_mk]
   rw [spine_spineToSimplex_apply]
-  convert spine_map_subinterval X m h j l hjl <| sx.spineToSimplex m h f
+  convert! spine_map_subinterval X m h j l hjl <| sx.spineToSimplex m h f
   exact sx.spine_spineToSimplex_apply m h f |>.symm
 
 theorem spineToSimplex_edge (f : Path X m) (j l : ℕ) (hjl : j + l ≤ m) :

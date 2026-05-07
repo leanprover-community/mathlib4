@@ -317,7 +317,7 @@ lemma RingHom.LocalizationAwayPreserves.respectsIso
       IsLocalization.away_of_isUnit_of_bijective _ isUnit_one (Equiv.refl _).bijective
     have : IsLocalization.Away (f 1) T :=
       IsLocalization.away_of_isUnit_of_bijective _ (by simp) e.bijective
-    convert hP f 1 R T hf
+    convert! hP f 1 R T hf
     trans (IsLocalization.Away.map R T f 1).comp (algebraMap R R)
     · rw [IsLocalization.Away.map, IsLocalization.map_comp]; rfl
     · rfl
@@ -327,7 +327,7 @@ lemma RingHom.LocalizationAwayPreserves.respectsIso
       IsLocalization.away_of_isUnit_of_bijective _ isUnit_one e.symm.bijective
     have : IsLocalization.Away (f 1) T :=
       IsLocalization.away_of_isUnit_of_bijective _ (by simp) (Equiv.refl _).bijective
-    convert hP f 1 R T hf
+    convert! hP f 1 R T hf
     have : RingHomInvPair (e : R →+* S) e.symm := RingHomInvPair.of_ringEquiv _
     have : (IsLocalization.Away.map R T f 1).comp e.symm.toRingHom = f :=
       IsLocalization.map_comp ..
@@ -431,7 +431,7 @@ lemma RingHom.OfLocalizationSpanTarget.ofIsLocalization
   apply hP _ s hs
   intro r
   obtain ⟨T, _, _, _, hT⟩ := hT r
-  convert hP'.1 _
+  convert! hP'.1 _
     (Localization.algEquiv (R := S) (Submonoid.powers (r : S)) T).symm.toRingEquiv hT
   rw [← RingHom.comp_assoc, RingEquiv.toRingHom_eq_coe,
     AlgEquiv.toRingEquiv_toRingHom, Localization.coe_algEquiv_symm, IsLocalization.map_comp,

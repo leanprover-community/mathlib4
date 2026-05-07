@@ -158,7 +158,7 @@ theorem IsTrivialBlock.smul_iff {B : Set α} (g : M) :
     IsTrivialBlock (g • B) ↔ IsTrivialBlock B := by
   constructor
   · intro H
-    convert IsTrivialBlock.smul H g⁻¹
+    convert! IsTrivialBlock.smul H g⁻¹
     simp only [inv_smul_smul]
   · intro H
     exact IsTrivialBlock.smul H g

@@ -62,7 +62,7 @@ lemma surjective_localRingHom_iff (P : Ideal S) [P.IsPrime] :
         IsLocalization.mk'_eq_iff_eq, IsLocalization.eq_iff_exists P.primeCompl]
       refine ⟨⟨yc, hyc⟩ * ⟨yt, hyt⟩, ?_⟩
       simp only [Submonoid.coe_mul]
-      convert congr($(ey.symm) * $(et)) using 1 <;> ring
+      convert! congr($(ey.symm) * $(et)) using 1 <;> ring
 
 lemma surjectiveOnStalks_iff_forall_ideal :
     f.SurjectiveOnStalks ↔
@@ -189,7 +189,7 @@ lemma SurjectiveOnStalks.baseChange
 lemma SurjectiveOnStalks.baseChange' [Algebra R T] [Algebra R S]
     (hf : (algebraMap R S).SurjectiveOnStalks) :
     (Algebra.TensorProduct.includeRight (R := R) (A := S) (B := T)).SurjectiveOnStalks := by
-  convert (surjectiveOnStalks_of_surjective (Algebra.TensorProduct.comm R T S).surjective).comp
+  convert! (surjectiveOnStalks_of_surjective (Algebra.TensorProduct.comm R T S).surjective).comp
     (hf.baseChange (S := T))
 
 -- Subsumed by `RingHom.SurjectiveOnStalks.tensorProductMap`.
@@ -200,7 +200,7 @@ private lemma SurjectiveOnStalks.tensorProductMap_id
   letI := f.toRingHom.toAlgebra
   have := IsScalarTower.of_algebraMap_eq' f.comp_algebraMap.symm
   change (Algebra.TensorProduct.map (Algebra.ofId S S') (AlgHom.id R T)).SurjectiveOnStalks
-  convert_to ((Algebra.TensorProduct.cancelBaseChange R S S S' T).toAlgHom.comp
+  convert_to! ((Algebra.TensorProduct.cancelBaseChange R S S S' T).toAlgHom.comp
     Algebra.TensorProduct.includeRight).SurjectiveOnStalks
   · congr; ext; simp
   exact (Algebra.TensorProduct.cancelBaseChange R S S S' T).toRingEquiv.surjectiveOnStalks.comp
@@ -211,7 +211,7 @@ lemma SurjectiveOnStalks.tensorProductMap
     [Algebra R S] [Algebra R T] [Algebra R S'] [Algebra R T']
     {f : S →ₐ[R] S'} (Hf : f.SurjectiveOnStalks) {g : T →ₐ[R] T'} (Hg : g.SurjectiveOnStalks) :
     (Algebra.TensorProduct.map f g).SurjectiveOnStalks := by
-  convert RingHom.SurjectiveOnStalks.tensorProductMap_id (T := T') Hf |>.comp <|
+  convert! RingHom.SurjectiveOnStalks.tensorProductMap_id (T := T') Hf |>.comp <|
     (Algebra.TensorProduct.comm _ _ _).toRingEquiv.surjectiveOnStalks |>.comp <|
     RingHom.SurjectiveOnStalks.tensorProductMap_id (T := S) Hg |>.comp <|
     (Algebra.TensorProduct.comm _ _ _).toRingEquiv.surjectiveOnStalks
