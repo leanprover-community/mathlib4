@@ -119,14 +119,12 @@ lemma isRightDerivabilityStructure_of_isLocalizedEquivalence
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor)
     [TwoSquare.GuitartExact iso.hom] :
     B.IsRightDerivabilityStructure := by
-  /-rw [isRightDerivabilityStructure_iff_op]
+  rw [isRightDerivabilityStructure_iff_op]
   let iso' : T.op.functor ⋙ R.op.functor ≅ L.op.functor ⋙ B.op.functor := NatIso.op iso.symm
-  have : R.op.functor.EssSurj := by
-    dsimp; infer_instance
+  have : R.op.functor.EssSurj := by dsimp; infer_instance
   have : TwoSquare.GuitartExact iso'.inv :=
     inferInstanceAs (TwoSquare.op iso.hom).GuitartExact
-  exact isLeftDerivabilityStructure_of_isLocalizedEquivalence iso'-/
-  sorry
+  exact isLeftDerivabilityStructure_of_isLocalizedEquivalence iso'
 
 end
 
@@ -162,13 +160,11 @@ lemma isLeftDerivabilityStructure_iff_of_equivalences
 lemma isRightDerivabilityStructure_iff_of_equivalences
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor) :
     T.IsRightDerivabilityStructure ↔ B.IsRightDerivabilityStructure := by
-  /-simp only [isRightDerivabilityStructure_iff_op]
-  let e : T.op.functor ⋙ R.op.functor ≅ L.op.functor ⋙ B.op.functor :=
-    NatIso.op iso.symm
+  let e : T.op.functor ⋙ R.op.functor ≅ L.op.functor ⋙ B.op.functor := NatIso.op iso.symm
   have : L.op.functor.IsEquivalence := by dsimp; infer_instance
   have : R.op.functor.IsEquivalence := by dsimp; infer_instance
-  rw [isLeftDerivabilityStructure_iff_of_equivalences e]-/
-  sorry
+  simp only [isRightDerivabilityStructure_iff_op,
+    isLeftDerivabilityStructure_iff_of_equivalences e]
 
 end LocalizerMorphism
 
