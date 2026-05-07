@@ -460,7 +460,7 @@ theorem psi_sub_theta_le {x : ℝ} (hx : 1 ≤ x) : psi x - θ x ≤ 2 * √x * 
   exact le_abs_self _
 
 /-- The Chebyshev lower bound for $\theta$. -/
-theorem theta_ge (n : ℕ) : n * log 2 - log (n + 1) - 2 * √n * log n ≤ theta n := by
+theorem theta_ge (n : ℕ) : n * log 2 - log (n + 1) - 2 * √n * log n ≤ θ n := by
   rcases n.eq_zero_or_pos with rfl | hn
   · simp
   linarith [psi_ge n, psi_sub_theta_le (x := n) (mod_cast (one_le_of_lt hn))]
