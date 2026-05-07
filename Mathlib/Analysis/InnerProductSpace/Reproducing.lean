@@ -92,6 +92,10 @@ variable (H) in
 def eval (x : X) : H →L[𝕜] V := .proj x ∘L coeCLM 𝕜
 
 @[simp]
+lemma eval_eq (x : X) : eval H x = .proj x ∘L coeCLM 𝕜 := by
+  rw [show eval H x = (proj x).comp (coeCLM 𝕜) from rfl]
+
+@[simp]
 lemma eval_apply (x : X) (f : H) : eval H x f = f x := (congr_fun rfl x).symm
 
 variable [CompleteSpace H] [CompleteSpace V]
