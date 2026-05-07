@@ -62,11 +62,6 @@ namespace Ideal
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime]
 
 -- PRed
-instance [Algebra.QuasiFinite R S] (q : Ideal (p.Fiber S)) [q.IsPrime] :
-    Module.Finite p.ResidueField (Localization.AtPrime q) :=
-  Module.Finite.of_quasiFinite
-
--- PRed
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 open Algebra Algebra.TensorProduct in
 /-- `p.Fiber S` is isomorphic to the quotient `Sₚ ⧸ pSₚ`. -/
