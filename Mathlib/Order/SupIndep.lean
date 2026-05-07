@@ -485,7 +485,7 @@ theorem iSupIndep_comp_coe_iff_supIndep {s : Finset ι} {f : ι → α} :
     rw [Finset.supIndep_iff_disjoint_erase]
     refine Subtype.forall.trans (forall₂_congr fun a b => ?_)
     rw [Finset.sup_eq_iSup]
-    congr! 1
+    congr! (config := { postTransparency := .default }) 1
     refine iSup_subtype.trans ?_
     congr! 1
     simp [iSup_and, @iSup_comm _ (_ ∈ s)]

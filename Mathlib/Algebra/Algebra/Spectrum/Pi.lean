@@ -57,12 +57,12 @@ def PreQuasiregular.toProd [NonUnitalSemiring A] [NonUnitalSemiring B] :
 lemma isQuasiregular_pi_iff [∀ i, NonUnitalSemiring (κ i)] (x : ∀ i, κ i) :
     IsQuasiregular x ↔ ∀ i, IsQuasiregular (x i) := by
   simp only [isQuasiregular_iff', ← isUnit_map_iff (PreQuasiregular.toPi κ), Pi.isUnit_iff]
-  congr!
+  congr! (config := { postTransparency := .default })
 
 lemma isQuasiregular_prod_iff [NonUnitalSemiring A] [NonUnitalSemiring B] (a : A) (b : B) :
     IsQuasiregular (⟨a, b⟩ : A × B) ↔ IsQuasiregular a ∧ IsQuasiregular b := by
   simp only [isQuasiregular_iff', ← isUnit_map_iff (PreQuasiregular.toProd A B), Prod.isUnit_iff]
-  congr!
+  congr! (config := { postTransparency := .default })
 
 lemma quasispectrum.mem_iff_of_isUnit [CommSemiring R] [NonUnitalRing A]
     [Module R A] {a : A} {r : R} (hr : IsUnit r) :

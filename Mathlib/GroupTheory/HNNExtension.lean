@@ -449,7 +449,7 @@ noncomputable def unitsSMulEquiv : NormalWord d ≃ NormalWord d :=
   { toFun := unitsSMul φ 1
     invFun := unitsSMul φ (-1),
     left_inv := fun _ => by rw [unitsSMul_neg]
-    right_inv := fun w => by convert! unitsSMul_neg _ _ w; simp }
+    right_inv := fun w => by convert unitsSMul_neg _ _ w; simp }
 
 set_option backward.isDefEq.respectTransparency false in
 theorem unitsSMul_one_group_smul (g : A) (w : NormalWord d) :
