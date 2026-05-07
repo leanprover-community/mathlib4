@@ -705,21 +705,35 @@ private theorem isQF_realize_partialEquiv
       (hφ.realize_embedding (f := p.toEmbedding) (v := vdom) (xs := default))
   exact hcod.trans hdom.symm
 
+/-- A theory has the elementary extension-pair property if every partial isomorphism between
+substructures of nonempty models of the theory can be extended, after passing to an elementary
+extension of the codomain model, to include any prescribed element of the domain model. -/
+def IsElementaryExtensionPair (T : L.Theory) : Prop :=
+  ∀ {M N : Type (max u v)} [L.Structure M] [L.Structure N]
+    [T.Model M] [T.Model N] [Nonempty M] [Nonempty N]
+    (f : M ≃ₚ[L] N) (a : M),
+    ∃ (N' : Type (max u v)) (_ : L.Structure N')
+      (e : N ↪ₑ[L] N') (g : M ≃ₚ[L] N'),
+      a ∈ g.dom ∧ f.ExtendsAlong e g
+
+/-- A theory has the finitely generated elementary extension-pair property if every partial
+isomorphism between finitely generated substructures of nonempty models of the theory can be
+extended, after passing to an elementary extension of the codomain model, to include any prescribed
+element of the domain model. -/
+def IsElementaryExtensionPairFG (T : L.Theory) : Prop :=
+  ∀ {M N : Type (max u v)} [L.Structure M] [L.Structure N]
+    [T.Model M] [T.Model N] [Nonempty M] [Nonempty N]
+    (f : L.FGEquiv M N) (a : M),
+    ∃ (N' : Type (max u v)) (_ : L.Structure N')
+      (e : N ↪ₑ[L] N') (g : L.FGEquiv M N'),
+      a ∈ g.1.dom ∧ f.1.ExtendsAlong e g
+
 /-- Henson, Theorem 7.11, direction `(2) → (1)`: if every partial isomorphism between
 substructures of models of `T` can be extended, after passing to an elementary extension of the
 codomain model, to include any prescribed element of the domain model, then `T` has quantifier
 elimination. -/
-
------ TODO: define isElementaryExtensionPair for hyp
-theorem henson_711
-    {T : L.Theory}
-    (h :
-      ∀ {M N : Type (max u v)} [L.Structure M] [L.Structure N]
-        [T.Model M] [T.Model N] [Nonempty M] [Nonempty N]
-        (f : M ≃ₚ[L] N) (a : M),
-        ∃ (N' : Type (max u v)) (_ : L.Structure N')
-          (e : N ↪ₑ[L] N') (g : M ≃ₚ[L] N'),
-          a ∈ g.dom ∧ f.ExtendsAlong e g) :
+theorem hasQuantifierElimination_of_isElementaryExtensionPair
+    {T : L.Theory} (h : T.IsElementaryExtensionPair) :
     T.HasQuantifierElimination := by
   classical
   refine hasQuantifierElimination_of_exists_realize_of_embeddings (T := T) ?_
@@ -818,16 +832,8 @@ theorem henson_711
 /-- Henson, Theorem 7.11, finite-generated version of `(2) → (1)`: it suffices to extend
 finitely generated partial isomorphisms, after passing to an elementary extension of the codomain,
 to include any prescribed element of the domain model. -/
-theorem henson_711_prime
-    {T : L.Theory}
-    (h :
-      ∀ {M N : Type (max u v)} [L.Structure M] [L.Structure N]
-        [T.Model M] [T.Model N] [Nonempty M] [Nonempty N]
-        (f : L.FGEquiv M N) (a : M),
-        ∃ (N' : Type (max u v)) (_ : L.Structure N')
-          (e : N ↪ₑ[L] N') (g : L.FGEquiv M N'),
-          a ∈ g.1.dom ∧
-            f.1.ExtendsAlong e g) :
+theorem hasQuantifierElimination_of_isElementaryExtensionPairFG
+    {T : L.Theory} (h : T.IsElementaryExtensionPairFG) :
     T.HasQuantifierElimination := by
   classical
   refine hasQuantifierElimination_of_exists_realize_of_embeddings (T := T) ?_
@@ -943,7 +949,7 @@ theorem henson_711_prime
 /-- The theory of dense linear orders without endpoints has quantifier elimination. -/
 theorem order_dlo_hasQuantifierElimination :
     Language.order.dlo.HasQuantifierElimination := by
-  apply henson_711_prime
+  apply hasQuantifierElimination_of_isElementaryExtensionPairFG
   intro M N _ iN _ _ _ _ f a
   obtain ⟨g, ha, hfg⟩ := Language.dlo_isExtensionPair M N f a
   use N
