@@ -439,19 +439,19 @@ theorem psi_sub_theta_eq_sum_not_prime (x : ℝ) :
   · simp
 
 /-- The Chebyshev lower bound for $\psi$. -/
-theorem psi_ge (n : ℕ) : n * log 2 - log (n + 1) ≤ psi n := by
+theorem psi_ge (n : ℕ) : n * log 2 - log (n + 1) ≤ ψ n := by
   rw [tsub_le_iff_left, psi_eq_log_lcmUpto, ← log_pow 2,
     ← log_mul (by positivity) (by simp [lcmUpto_ne_zero])]
   exact log_le_log (by positivity) <| mod_cast two_pow_le_mul_lcmUpto n
 
-theorem psi_ge' {x : ℝ} (hx : 0 ≤ x) : (x - 1) * log 2 - log (x + 2) ≤ psi x := by
+theorem psi_ge' {x : ℝ} (hx : 0 ≤ x) : (x - 1) * log 2 - log (x + 2) ≤ ψ x := by
   grw [psi_eq_psi_coe_floor, ← psi_ge]
   gcongr
   · exact (Nat.sub_one_lt_floor x).le
   · exact floor_le hx
   · exact one_le_two
 
-theorem psi_sub_theta_le {x : ℝ} (hx : 1 ≤ x) : psi x - θ x ≤ 2 * √x * log x := by
+theorem psi_sub_theta_le {x : ℝ} (hx : 1 ≤ x) : ψ x - θ x ≤ 2 * √x * log x := by
   grw [← abs_psi_sub_theta_le_sqrt_mul_log hx]
   exact le_abs_self _
 
@@ -695,7 +695,7 @@ private theorem pi_mul_log_sqrt_le {x : ℝ} (hx : 1 ≤ x) :
     rw [show ⌊√x⌋₊ = #(Icc 1 ⌊√x⌋₊) by simp]
     refine Finset.card_le_card fun p hp ↦ ?_
     simp only [mem_filter, mem_Icc] at hp ⊢
-    exact ⟨(one_lt_of_mem_primesLE hp.1).le, le_floor hp.2⟩
+    exact ⟨hp.1.2.one_le, le_floor hp.2⟩
 
 /-- A weak but completely explicit upper bound on $\pi(x)$. -/
 theorem pi_le_log4_mul_div {x : ℝ} (hx : 1 < x) : π ⌊x⌋₊ ≤ log 4 * x / log √x + √x := by
