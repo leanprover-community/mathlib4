@@ -31,7 +31,7 @@ and provide basic instances.
 The endomorphism `φ` is implemented using some action of `Multiplicative ℕ` on `R`.
 From this action, `φ` is an `abbrev` denoting $(\text{ofAdd } 1) \cdot a := \varphi(a)$.
 
-Users that want to work with a specific map `φ` should introduce an an action of
+Users that want to work with a specific map `φ` should introduce an action of
 `Multiplicative ℕ` on `R`. Specifying that this action is a `MulSemiringAction` amounts
 to saying that `φ` is an endomorphism.
 
@@ -39,20 +39,21 @@ Furthermore, with this notation `φ^[n](a) = (ofAdd n) • a`, see `φ_iterate_a
 
 ## Main definitions
 
-* `monomial n a` is the skew polynomial `a X ^ n`. Note that `monomial n` is defined as an
-  `R`-linear map.
-* `C a` is the constant skew polynomial `a`. Note that `C` is defined as a additive homomorphism.
-* `CRingHom a` is the constant skew polynomial `a`, as a ring homomorphism. This requires
-  to assume `[MulSemiringAction (Multiplicative ℕ) R]`.
-* `X` is the skew polynomial `X`, i.e., `monomial 1 1`.
+* `SkewPolynomial.monomial n a` is the skew polynomial `a X ^ n`. Note that
+  `SkewPolynomial.monomial n` is defined as an `R`-linear map.
+* `SkewPolynomial.C a` is the constant skew polynomial `a`. Note that `C` is defined as an additive
+   homomorphism.
+* `SkewPolynomial.CRingHom a` is the constant skew polynomial `a`, as a ring homomorphism. This
+  requires to assume `[MulSemiringAction (Multiplicative ℕ) R]`.
+* `SkewPolynomial.X` is the skew polynomial `X`, i.e., `SkewPolynomial.monomial 1 1`.
 * `p.sum f` is `∑ n ∈ p.support, f n (p.coeff n)`, i.e., one sums the values of functions applied
   to coefficients of the polynomial `p`.
-* `coeff p n` is the coefficient of `X ^ n` in `p`.
+* `SkewPolynomial.coeff p n` is the coefficient of `X ^ n` in `p`.
 
 ## Implementation notes
 
-The implementation uses `Multiplicative ℕ` instead of `ℕ` as some notion
-of `AddSkewMonoidAlgebra` like the current implementation of `Polynomials` in Mathlib.
+The implementation uses `Multiplicative ℕ` instead of `ℕ`, since Mathlib does not contain an
+additive version of `SkewMonoidAlgebra`.
 
 This decision was made because we use the type class `MulSemiringAction` to specify the properties
 the action needs to respect for associativity. There is no version of this in Mathlib that
@@ -75,7 +76,7 @@ Skew Polynomials, Twisted Polynomials.
   - Add algebra instance
 
 Note that [ore33] proposes a more general definition of skew polynomial ring, where the
-multiplication is determined by  $Xa = \varphi (a)X + δ (a)$, where `ϕ` is as above and
+multiplication is determined by  $Xa = \varphi (a)X + δ (a)$, where `φ` is as above and
 `δ` is a derivation.
 
 -/
@@ -92,7 +93,7 @@ abbrev SkewPolynomial (R : Type*) [AddCommMonoid R] := SkewMonoidAlgebra R (Mult
 
 namespace SkewPolynomial
 
-variable {R : Type*} {a b : R} {m n : ℕ}
+variable {R : Type*} {m n : ℕ}
 
 section Semiring
 
@@ -115,8 +116,8 @@ The set of all `n` such that `X^n` has a non-zero coefficient.
 def support (p : SkewPolynomial R) : Finset ℕ :=
   Finset.map ⟨toAdd, toAdd.injective⟩ (SkewMonoidAlgebra.support p)
 
-/-- Though `SkewPolynomial.support` is not defeq to `SkewMonoidAlgebra.support` we can
-relate them using the following lemma. -/
+/-- Though `SkewPolynomial.support` is not definiyionally equal to `SkewMonoidAlgebra.support` we
+  can relate them using the following lemma. -/
 lemma support_eq_skewMonoidAlgebra_support (p : SkewPolynomial R) :
     p.support = Finset.map (Multiplicative.toAdd (α := ℕ)) (SkewMonoidAlgebra.support p) := by
   simp only [support]
@@ -151,12 +152,9 @@ lemma sum_def' {S : Type*} [AddCommMonoid S] (p : SkewPolynomial R) (f : ℕ →
 
 lemma sum_def {S : Type*} [AddCommMonoid S] (p : SkewPolynomial R) (f : ℕ → R → S) :
     p.sum f = ∑ n ∈ p.support, f n (p.coeff n) := by
-  rw [sum_def', SkewMonoidAlgebra.sum_def, Finsupp.sum]
-  simp only [toFinsupp_apply]
-  apply Finset.sum_of_injOn (toAdd) (Injective.injOn fun ⦃a₁ a₂⦄ a ↦ a)
-  · intro; aesop (add norm coeff)
-  · aesop (add norm coeff)
-  · simp [coeff]
+  simp only [sum_def', SkewMonoidAlgebra.sum_def, Finsupp.sum, toFinsupp_apply]
+  apply Finset.sum_of_injOn (toAdd) (Injective.injOn fun ⦃a₁ a₂⦄ a ↦ a) (fun _ ↦ ?_) <;>
+  simp +contextual [coeff]
 
 lemma sum_sum_index {R' P : Type*} [AddCommMonoid P] [Semiring R']
     {f : SkewPolynomial R} {g : ℕ → R → SkewPolynomial R'} {h : ℕ → R' → P}
@@ -174,24 +172,26 @@ lemma sum_zero {N : Type*} [AddCommMonoid N] {f : SkewPolynomial R} :
 
 section Monomial
 
+variable (n)
+
 /-- `monomial s a` is the monomial `a * X ^ s`. -/
-def monomial (n : ℕ) : R →ₗ[R] SkewPolynomial R := lsingle (ofAdd n)
+def monomial : R →ₗ[R] SkewPolynomial R := lsingle (ofAdd n)
 
-lemma monomial_zero_right (n : ℕ) : monomial n (0 : R) = 0 := single_zero _
+lemma monomial_zero_right : monomial n (0 : R) = 0 := single_zero _
 
-lemma monomial_zero_one [MulSemiringAction (Multiplicative ℕ) R] : monomial (0 : ℕ) (1 : R) = 1 :=
+lemma monomial_zero_one [MulSemiringAction (Multiplicative ℕ) R] : monomial (0 : ℕ) 1 = 1 :=
   rfl
 
-lemma monomial_def (n : ℕ) (a : R) : monomial n a = single (ofAdd n) a := rfl
+lemma monomial_def (a : R) : monomial n a = single (ofAdd n) a := rfl
 
-lemma monomial_add (n : ℕ) (r s : R) :
-    monomial n (r + s) = monomial n r + monomial n s :=
+lemma monomial_add (r s : R) : monomial n (r + s) = monomial n r + monomial n s :=
   single_add ..
 
-lemma smul_monomial {S} [Semiring S] [Module S R] (a : S) (n : ℕ) (b : R) :
+lemma smul_monomial {S} [Semiring S] [Module S R] (a : S) (b : R) :
     a • monomial n b = monomial n (a • b) :=
   smul_single ..
 
+@[simp]
 lemma sum_monomial (f : SkewPolynomial R) : f.sum (fun (a : ℕ) ↦ monomial a) = f :=
  SkewMonoidAlgebra.sum_single _
 
@@ -200,20 +200,21 @@ lemma sum_monomial_index {N} [AddCommMonoid N] {n : ℕ} {b : R} {h : ℕ → R 
     (h_zero : h n 0 = 0) : (monomial n b).sum h = h n b :=
   SkewMonoidAlgebra.sum_single_index h_zero
 
-lemma monomial_injective (n : ℕ) : Function.Injective (monomial n : R → SkewPolynomial R) := by
+lemma monomial_injective : Function.Injective (monomial n : R → SkewPolynomial R) := by
   intro a b h
   simp only [monomial_def] at h
   exact single_injective (ofAdd n) h
 
 @[simp]
-lemma monomial_eq_zero_iff (t : R) (n : ℕ) : monomial n t = 0 ↔ t = 0 :=
+lemma monomial_eq_zero_iff (t : R) : monomial n t = 0 ↔ t = 0 :=
   LinearMap.map_eq_zero_iff _ (SkewPolynomial.monomial_injective n)
 
 lemma monomial_eq_monomial_iff {m n : ℕ} {a b : R} :
     monomial m a = monomial n b ↔ m = n ∧ a = b ∨ a = 0 ∧ b = 0 := by
   rw [← Finsupp.single_eq_single_iff m n a b]
   simp only [monomial_def, ← toFinsupp_single, toFinsupp_inj]
-  rfl -- abuses ℕ ≃ Multiplicative ℕ
+  simp only [single, SkewMonoidAlgebra.ofFinsupp_inj, Finsupp.single_eq_single_iff,
+    EmbeddingLike.apply_eq_iff_eq]
 
 end Monomial
 section phi
@@ -246,6 +247,8 @@ lemma mul_def {f g : SkewPolynomial R} [MulSemiringAction (Multiplicative ℕ) R
   rfl
 
 section Constant
+
+variable {a b : R}
 
 /-- `C a` is the constant SkewPolynomial `a`. `C` is provided as an additive homomorphism. -/
 def C : R →+ SkewPolynomial R := SkewMonoidAlgebra.singleAddHom 1
@@ -341,6 +344,8 @@ end Variable
 
 section Coefficient
 
+variable {a b : R}
+
 lemma coeff_monomial : coeff (monomial n a) m = if n = m then a else 0 :=
   SkewMonoidAlgebra.coeff_single_apply
 
@@ -358,7 +363,7 @@ lemma coeff_one [MulSemiringAction (Multiplicative ℕ) R] (n : ℕ) :
 
 @[simp] lemma coeff_X_zero : coeff (X : SkewPolynomial R) 0 = 0 := coeff_monomial
 
-@[simp] lemma coeff_monomial_succ : coeff (monomial (n+1) a) 0 = 0 := by simp [coeff_monomial]
+@[simp] lemma coeff_monomial_succ : coeff (monomial (n + 1) a) 0 = 0 := by simp [coeff_monomial]
 
 lemma coeff_X : coeff (X : SkewPolynomial R) n = if 1 = n then 1 else 0 := coeff_monomial
 
