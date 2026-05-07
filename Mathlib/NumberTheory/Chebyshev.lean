@@ -268,10 +268,8 @@ theorem psi_eq_sum_mul_log_prime (n : ℕ) : ψ n = ∑ p ∈ primesLE n, p.log 
       refine sum_congr (primesLE_eq_filter_Icc_one n).symm fun p hp ↦ ?_
       exact sum_image fun a _ b _ hab ↦ Nat.pow_right_injective (two_le_of_mem_primesLE hp) hab
   _ = ∑ p ∈ primesLE n, ∑ k ∈ Icc 1 (p.log n), log p := by
-    apply sum_congr rfl; intro p hp
-    apply sum_congr rfl; intro k hk
-    simp only [primesLE, mem_filter, mem_range, Order.lt_add_one_iff, mem_Icc] at hp hk
-    rw [vonMangoldt_apply_pow (by linarith), vonMangoldt_apply_prime hp.2]
+      refine sum_congr rfl fun p hp ↦ sum_congr rfl fun k hk ↦ ?_
+      rw [vonMangoldt_apply_pow (by grind), vonMangoldt_apply_prime <| prime_of_mem_primesLE hp]
   _ = _ := by simp
 
 theorem psi_le_primeCounting_mul_log (n : ℕ) : ψ n ≤ (π n) * log n := by
