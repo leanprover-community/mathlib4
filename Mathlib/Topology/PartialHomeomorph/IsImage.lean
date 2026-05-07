@@ -181,7 +181,7 @@ section restr
 /-- Restricting an open partial homeomorphism `e` to `e.source ∩ s`.
 This is sometimes hard to use, but it has the advantage that when it can be used then its
 `PartialEquiv` is defeq to `PartialEquiv.restr`. -/
-@[simps! (attr := mfld_simps) -fullyApplied apply symm_apply,
+@[simps! -fullyApplied apply symm_apply,
   simps! (attr := grind =) -isSimp source target]
 protected def restr (s : Set X) : PartialHomeomorph X Y :=
   (@IsImage.of_symm_preimage_eq X Y _ _ e s (e.symm ⁻¹' s) rfl).restr
@@ -252,35 +252,35 @@ instance eqOnSourceSetoid : Setoid (PartialHomeomorph X Y) :=
 
 theorem eqOnSource_refl : e ≈ e := Setoid.refl _
 
-/-- If two open partial homeomorphisms are equivalent, so are their inverses. -/
+/-- If two partial homeomorphisms are equivalent, so are their inverses. -/
 theorem EqOnSource.symm' {e e' : PartialHomeomorph X Y} (h : e ≈ e') : e.symm ≈ e'.symm :=
   PartialEquiv.EqOnSource.symm' h
 
-/-- Two equivalent open partial homeomorphisms have the same source. -/
+/-- Two equivalent partial homeomorphisms have the same source. -/
 theorem EqOnSource.source_eq {e e' : PartialHomeomorph X Y} (h : e ≈ e') :
     e.source = e'.source :=
   h.1
 
-/-- Two equivalent open partial homeomorphisms have the same target. -/
+/-- Two equivalent partial homeomorphisms have the same target. -/
 theorem EqOnSource.target_eq {e e' : PartialHomeomorph X Y} (h : e ≈ e') :
     e.target = e'.target :=
   h.symm'.1
 
-/-- Two equivalent open partial homeomorphisms have coinciding `toFun` on the source -/
+/-- Two equivalent partial homeomorphisms have coinciding `toFun` on the source -/
 theorem EqOnSource.eqOn {e e' : PartialHomeomorph X Y} (h : e ≈ e') : EqOn e e' e.source :=
   h.2
 
-/-- Two equivalent open partial homeomorphisms have coinciding `invFun` on the target -/
+/-- Two equivalent partial homeomorphisms have coinciding `invFun` on the target -/
 theorem EqOnSource.symm_eqOn_target {e e' : PartialHomeomorph X Y} (h : e ≈ e') :
     EqOn e.symm e'.symm e.target :=
   h.symm'.2
 
-/-- Restriction of open partial homeomorphisms respects equivalence -/
+/-- Restriction of partial homeomorphisms respects equivalence -/
 theorem EqOnSource.restr {e e' : PartialHomeomorph X Y} (he : e ≈ e') (s : Set X) :
     e.restr s ≈ e'.restr s :=
   PartialEquiv.EqOnSource.restr he _
 
-/-- Two equivalent open partial homeomorphisms are equal when the source and target are `univ`. -/
+/-- Two equivalent partial homeomorphisms are equal when the source and target are `univ`. -/
 theorem Set.EqOn.restr_eqOn_source {e e' : PartialHomeomorph X Y}
     (h : EqOn e e' (e.source ∩ e'.source)) : e.restr e'.source ≈ e'.restr e.source := by
   constructor

@@ -8,6 +8,8 @@ module
 public import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Topology.PartialHomeomorph.Defs
 public import Mathlib.Topology.Sets.Opens
+public import Mathlib.Topology.Homeomorph.Lemmas
+
 /-!
 # Partial homeomorphisms: basic theory
 
@@ -166,3 +168,71 @@ def toHomeomorphOfSourceEqUnivTargetEqUniv (h : e.source = (univ : Set X)) (h' :
     simpa only [continuousOn_univ, h'] using e.continuousOn_symm
 
 end PartialHomeomorph
+
+/-!
+## Embeddings
+-/
+namespace Topology.IsEmbedding
+
+variable (f : X → Y) (h : IsEmbedding f)
+
+lemma random {X Y : Type*} (h : PartialEquiv X Y) :
+    h.toEquiv = codRestrict (h.source.restrict h) h.target (by simp) :=
+  rfl
+
+theorem continuous_codRestrict_iff {f : X → Y} {s : Set Y} (hs : ∀ a, f a ∈ s) :
+    Continuous (codRestrict f s hs) ↔ Continuous f := by
+  constructor
+  · simp_rw [continuous_def]
+    intro hf t ht
+    exact hf (Subtype.val ⁻¹' t) ht.preimage_val
+  · intro hf
+    exact Continuous.codRestrict hf hs
+
+def ofIsHomeomorphToEquiv (f : PartialEquiv X Y) (h : IsHomeomorph (f.toEquiv)) :
+    PartialHomeomorph X Y where
+  toPartialEquiv := f
+  continuousOn_toFun := by
+    rw [continuousOn_iff_continuous_restrict,
+      ← continuous_codRestrict_iff (s := f.target) (by simp)]
+    have : codRestrict (f.target.restrict f.invFun) f.source (by simp) = f.toEquiv.symm := by
+      ext x
+      simp [PartialEquiv.toEquiv]
+    exact h.continuous
+  continuousOn_invFun := by
+    rw [continuousOn_iff_continuous_restrict]
+    rw [← continuous_codRestrict_iff (f := f.target.restrict f.invFun) (s := f.source) (by simp)]
+    have : codRestrict (f.target.restrict f.invFun) f.source (by simp) = f.toEquiv.symm := by
+      ext x
+      simp [PartialEquiv.toEquiv]
+    --rw [Equiv.isHomeomorph_iff] at h
+    --rw [this]
+    --exact?
+    sorry
+
+/-- An open embedding of `X` into `Y`, with `X` nonempty, defines an open partial homeomorphism
+whose source is all of `X`. The converse is also true; see
+`OpenPartialHomeomorph.to_isOpenEmbedding`. -/
+@[simps! -fullyApplied apply source target]
+noncomputable def toPartialHomeomorph [Nonempty X] : PartialHomeomorph X Y :=
+  ofIsHomeomorphToEquiv (h.injective.injOn.toPartialEquiv f univ) (by
+    rw [isHomeomorph_iff_isEmbedding_surjective]
+    constructor
+    · rw [random]
+      apply IsEmbedding.codRestrict
+      simp only [InjOn.toPartialEquiv.eq_1, BijOn.toPartialEquiv_source, restrict_eq]
+      exact h.comp subtypeVal
+    · exact Equiv.surjective _)
+
+variable [Nonempty X]
+
+lemma toOpenPartialHomeomorph_left_inv {x : X} : (h.toPartialHomeomorph f).symm (f x) = x := by
+  rw [← congr_fun (h.toPartialHomeomorph_apply f), PartialHomeomorph.left_inv]
+  exact Set.mem_univ _
+
+lemma toOpenPartialHomeomorph_right_inv {x : Y} (hx : x ∈ Set.range f) :
+    f ((h.toPartialHomeomorph f).symm x) = x := by
+  rw [← congr_fun (h.toPartialHomeomorph_apply f), PartialHomeomorph.right_inv]
+  rwa [toPartialHomeomorph_target]
+
+end Topology.IsEmbedding

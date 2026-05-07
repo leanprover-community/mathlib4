@@ -67,8 +67,8 @@ actually `e.toPartialEquiv.toFun`, so `simp` will apply lemmas about `toPartialE
 While we may want to switch to this behavior later, doing it mid-port will break a lot of proofs. -/
 @[coe] def toFun' : X → Y := e.toFun
 
-/-- Coercion of an `PartialHomeomorph` to function.
-Note that an `PartialHomeomorph` is not `DFunLike`. -/
+/-- Coercion of a `PartialHomeomorph` to function.
+Note that a `PartialHomeomorph` is not `DFunLike`. -/
 instance : CoeFun (PartialHomeomorph X Y) fun _ => X → Y :=
   ⟨fun e => e.toFun'⟩
 

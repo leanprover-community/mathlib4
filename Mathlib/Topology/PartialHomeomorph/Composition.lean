@@ -39,13 +39,12 @@ variable (e' : PartialHomeomorph Y Z)
 the second coincide. -/
 @[simps! apply symm_apply toPartialEquiv, simps! -isSimp source target]
 protected def trans' (h : e.target = e'.source) : PartialHomeomorph X Z where
-  toPartialEquiv := PartialEquiv.trans' e.toPartialEquiv e'.toPartialEquiv h
+  toPartialEquiv := e.toPartialEquiv.trans' e'.toPartialEquiv h
   continuousOn_toFun := e'.continuousOn.comp e.continuousOn <| h ▸ e.mapsTo
   continuousOn_invFun := e.continuousOn_symm.comp e'.continuousOn_symm <| h.symm ▸ e'.symm_mapsTo
 
 /-- Composing two open partial homeomorphisms, by restricting to the maximal domain where their
-composition is well defined.
-Within the `Manifold` namespace, there is the notation `e ≫ₕ f` for this. -/
+composition is well defined. -/
 @[trans]
 protected def trans : PartialHomeomorph X Z :=
   PartialHomeomorph.trans' (e.symm.restr e'.source).symm (e'.restr e.target) (by simp [inter_comm])
@@ -172,8 +171,7 @@ theorem symm_trans_restr (e' : PartialHomeomorph X Y) :
       PartialEquiv.trans_source, PartialEquiv.symm_source, coe_coe_symm, PartialEquiv.restr_source,
       preimage_inter]
     -- Shuffle the intersections, pull e'.target into the interior and use interior_inter.
-    rw [
-      ← inter_assoc, inter_comm e'.target, inter_assoc, inter_assoc]
+    rw [← inter_assoc, inter_comm e'.target, inter_assoc, inter_assoc]
     congr 1
     rw [ ← inter_assoc, inter_self]
   · simp [Set.eqOn_refl]
