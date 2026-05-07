@@ -600,7 +600,6 @@ instance [∀ i, Field (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
   __ : DivisionRing _ := inferInstance
   mul_comm := mul_comm
 
---TODO: add support for non-unital algebras
 section Algebra
 
 variable [CommSemiring R]
