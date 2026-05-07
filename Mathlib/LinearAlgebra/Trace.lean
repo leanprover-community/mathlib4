@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.TensorProduct.Finite
 public import Mathlib.RingTheory.TensorProduct.Free
 
 import Mathlib.LinearAlgebra.GeneralLinearGroup.AlgEquiv
+import Mathlib.RingTheory.SimpleRing.Matrix
 
 /-!
 # Trace of a linear map
@@ -325,11 +326,23 @@ theorem trace_conj' (f : M →ₗ[R] M) (e : M ≃ₗ[R] N) : trace R N (e.conj 
     LinearMap.trace_map ((Matrix.toLinAlgEquiv'.symm.trans
       (AlgEquivClass.toAlgEquiv f)).trans Matrix.toLinAlgEquiv') x.toLin'
 
--- TODO: show `(f x).trace = x.trace` for when `f : Matrix m m K →ₐ[K] Matrix m m K`
--- (using Skolem-Noether)
-proof_wanted _root_.Matrix.trace_map' {K m F : Type*} [Field K] [Fintype m] [DecidableEq m]
-    [FunLike F (Matrix m m K) (Matrix m m K)] [AlgHomClass F K _ _] (f : F) (x : Matrix m m K) :
-    (f x).trace = x.trace
+@[simp]
+theorem _root_.Matrix.trace_map' {K m F : Type*} [Field K] [Fintype m] [DecidableEq m]
+    [FunLike F (Matrix m m K) (Matrix m m K)] [AlgHomClass F K _ _] (f : F)
+    (x : Matrix m m K) :
+    (f x).trace = x.trace := by
+  classical
+  by_cases hm : Nonempty m
+  · haveI := hm
+    let φ : Matrix m m K →ₐ[K] Matrix m m K := AlgHomClass.toAlgHom f
+    have hφinj : Function.Injective φ :=
+      RingHom.injective (φ : Matrix m m K →+* Matrix m m K)
+    have hφsurj : Function.Surjective φ :=
+      (LinearMap.injective_iff_surjective
+        (f := (φ : Matrix m m K →ₗ[K] Matrix m m K))).mp hφinj
+    simpa [φ] using Matrix.trace_map (AlgEquiv.ofBijective φ ⟨hφinj, hφsurj⟩) x
+  · haveI : IsEmpty m := not_nonempty_iff.mp hm
+    simp
 
 theorem IsProj.trace {p : Submodule R M} {f : M →ₗ[R] M} (h : IsProj p f) [Module.Free R p]
     [Module.Finite R p] [Module.Free R (ker f)] [Module.Finite R (ker f)] :

@@ -17,6 +17,7 @@ public import Mathlib.RingTheory.Finiteness.Cardinality
 public import Mathlib.Tactic.FieldSimp
 
 import Mathlib.LinearAlgebra.GeneralLinearGroup.AlgEquiv
+import Mathlib.RingTheory.SimpleRing.Matrix
 
 /-!
 # Determinant of families of vectors
@@ -460,11 +461,23 @@ end LinearEquiv
     LinearMap.det_map ((Matrix.toLinAlgEquiv'.symm.trans
       (AlgEquivClass.toAlgEquiv f)).trans Matrix.toLinAlgEquiv') x.toLin'
 
--- TODO: show `(f x).det = x.det` for when `f : Matrix m m K →ₐ[K] Matrix m m K`
--- (using Skolem-Noether)
-proof_wanted Matrix.det_map' {K m F : Type*} [Field K] [Fintype m] [DecidableEq m]
-    [FunLike F (Matrix m m K) (Matrix m m K)] [AlgHomClass F K _ _] (f : F) (x : Matrix m m K) :
-    (f x).det = x.det
+@[simp]
+theorem Matrix.det_map' {K m F : Type*} [Field K] [Fintype m] [DecidableEq m]
+    [FunLike F (Matrix m m K) (Matrix m m K)] [AlgHomClass F K _ _] (f : F)
+    (x : Matrix m m K) :
+    (f x).det = x.det := by
+  classical
+  by_cases hm : Nonempty m
+  · haveI := hm
+    let φ : Matrix m m K →ₐ[K] Matrix m m K := AlgHomClass.toAlgHom f
+    have hφinj : Function.Injective φ :=
+      RingHom.injective (φ : Matrix m m K →+* Matrix m m K)
+    have hφsurj : Function.Surjective φ :=
+      (LinearMap.injective_iff_surjective
+        (f := (φ : Matrix m m K →ₗ[K] Matrix m m K))).mp hφinj
+    simpa [φ] using Matrix.det_map (AlgEquiv.ofBijective φ ⟨hφinj, hφsurj⟩) x
+  · haveI : IsEmpty m := not_nonempty_iff.mp hm
+    simp
 
 /-- The determinants of a `LinearEquiv` and its inverse multiply to 1. -/
 @[simp]
