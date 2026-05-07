@@ -424,6 +424,7 @@ theorem Measurable.aemeasurable (h : Measurable f) : AEMeasurable f μ :=
 
 namespace AEMeasurable
 
+@[fun_prop]
 lemma of_discrete [DiscreteMeasurableSpace α] : AEMeasurable f μ :=
   Measurable.of_discrete.aemeasurable
 

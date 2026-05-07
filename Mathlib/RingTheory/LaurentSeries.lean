@@ -443,12 +443,12 @@ theorem intValuation_eq_of_coe (P : K[X]) :
     simp only [Ideal.zero_eq_bot, ne_eq, Ideal.span_singleton_eq_bot, coe_eq_zero_iff, hP,
       not_false_eq_true, true_and, (idealX K).3]
   classical
-  rw [count_associates_factors_eq span_ne_zero.1
+  rw [Ideal.count_associates_factors_eq span_ne_zero.1
     (Ideal.span_singleton_prime Polynomial.X_ne_zero |>.mpr prime_X) span_ne_zero.2,
-    count_associates_factors_eq]
+    Ideal.count_associates_factors_eq]
   on_goal 1 => convert (normalized_count_X_eq_of_coe hP).symm
-  exacts [count_span_normalizedFactors_eq_of_normUnit hP Polynomial.normUnit_X prime_X,
-    count_span_normalizedFactors_eq_of_normUnit (by simp [hP]) normUnit_X X_prime,
+  exacts [Ideal.count_span_normalizedFactors_eq_of_normUnit hP Polynomial.normUnit_X prime_X,
+    Ideal.count_span_normalizedFactors_eq_of_normUnit (by simp [hP]) normUnit_X X_prime,
     span_ne_zero'.1, (idealX K).isPrime, span_ne_zero'.2]
 
 /-- The integral valuation of the power series `X : K⟦X⟧` equals `(ofAdd -1) : ℤᵐ⁰`. -/
@@ -515,7 +515,7 @@ theorem coeff_zero_of_lt_intValuation {n d : ℕ} {f : K⟦X⟧}
   apply (PowerSeries.X_pow_dvd_iff).mp _ n hnd
   rwa [← LaurentSeries.coe_algebraMap, valuation_def, valuation_of_algebraMap,
     intValuation_le_pow_iff_dvd (PowerSeries.idealX K) f d, PowerSeries.idealX,
-    Ideal.span_singleton_pow, span_singleton_dvd_span_singleton_iff_dvd] at H
+    Ideal.span_singleton_pow, Ideal.span_singleton_dvd_span_singleton_iff_dvd] at H
 
 /- The valuation of a power series is the order of the first non-zero coefficient. -/
 theorem intValuation_le_iff_coeff_lt_eq_zero {d : ℕ} (f : K⟦X⟧) :
@@ -524,7 +524,7 @@ theorem intValuation_le_iff_coeff_lt_eq_zero {d : ℕ} (f : K⟦X⟧) :
   have : PowerSeries.X ^ d ∣ f ↔ ∀ n : ℕ, n < d → (PowerSeries.coeff n) f = 0 :=
     ⟨PowerSeries.X_pow_dvd_iff.mp, PowerSeries.X_pow_dvd_iff.mpr⟩
   rw [← this, ← LaurentSeries.coe_algebraMap, valuation_def, valuation_of_algebraMap,
-    ← span_singleton_dvd_span_singleton_iff_dvd, ← Ideal.span_singleton_pow]
+    ← Ideal.span_singleton_dvd_span_singleton_iff_dvd, ← Ideal.span_singleton_pow]
   apply intValuation_le_pow_iff_dvd
 
 /- The coefficients of a Laurent series vanish in degree strictly less than its valuation. -/
