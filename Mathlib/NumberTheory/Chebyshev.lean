@@ -61,9 +61,8 @@ Parts of this file were upstreamed from the PrimeNumberTheoremAnd project by Kon
 
 namespace Nat.Prime
 
-theorem log_pos {p : ℕ} (hp : p.Prime) : 0 < Real.log p := by
-  rw [Real.log_pos_iff (mod_cast p.zero_le)]
-  exact_mod_cast hp.one_lt
+theorem log_pos {p : ℕ} (hp : p.Prime) : 0 < Real.log p :=
+  Real.log_pos <| mod_cast hp.one_lt
 
 theorem log_ne {p : ℕ} (hp : p.Prime) : Real.log p ≠ 0 := hp.log_pos.ne'
 
