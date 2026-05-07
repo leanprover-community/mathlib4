@@ -684,7 +684,7 @@ private theorem pi_mul_log_sqrt_le {x : ℝ} (hx : 1 ≤ x) :
   (π ⌊x⌋₊) * log √x ≤ log 4 * x + √x * log √x := calc
   _ = ∑ p ∈ primesLE ⌊x⌋₊, log √x := by simp
   _ ≤ ∑ p ∈ primesLE ⌊x⌋₊, (log p + (if p ≤ √x then log √x else 0)) := by
-    apply sum_le_sum; intro p hp
+    refine sum_le_sum fun p hp ↦ ?_
     split_ifs with h
     · simp [log_natCast_nonneg]
     have : log √x < log p := by
