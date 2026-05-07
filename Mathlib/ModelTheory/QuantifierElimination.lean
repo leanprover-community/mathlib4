@@ -250,7 +250,7 @@ def isEquivQF (T : L.Theory) {m : ℕ} (φ : L.Formula (Fin m)) :=
     (∃ ψ : L.Formula (Fin m), ψ.IsQF ∧ φ ⇔[T] ψ)
 
 
-theorem marker_314
+theorem isEquivQF_iff_realize_iff_of_embeddings
     {T : L.Theory} {m : ℕ} (φ : L.Formula (Fin m)) :
     T.isEquivQF φ ↔
       (∀ {M N A : Type (max u v)} [L.Structure M] [L.Structure N] [L.Structure A]
@@ -533,7 +533,7 @@ private theorem isQF_toFormula
   | imp _ _ ih₁ ih₂ =>
       simpa [BoundedFormula.toFormula] using ih₁.imp ih₂
 
-private theorem exists_qf_equiv_ex_of_qf
+private theorem exists_qf_equiv_ex_of_isQF
     {T : L.Theory}
     (h :
       ∀ {m : ℕ} (θ : L.BoundedFormula (Fin m) 1), θ.IsQF →
@@ -619,7 +619,7 @@ theorem hasQuantifierElimination_of_ex_isEquivQF_of_isQF
       exact ⟨ψ.not, hψ.not, hφψ.not⟩
     · intro n φ hφ
       rcases hφ with ⟨ψ, hψ, hφψ⟩
-      rcases exists_qf_equiv_ex_of_qf h hψ with ⟨χ, hχ, hψχ⟩
+      rcases exists_qf_equiv_ex_of_isQF h hψ with ⟨χ, hχ, hψχ⟩
       exact ⟨χ, hχ, hφψ.ex.trans hψχ⟩
     · intro n φ₁ φ₂ hφ₁φ₂
       have hφ₁φ₂T : φ₁ ⇔[T] φ₂ := by
@@ -635,7 +635,7 @@ theorem hasQuantifierElimination_of_ex_isEquivQF_of_isQF
 
 -----------------------------------------------------------------------------------------
 
-theorem marker_316 {T : L.Theory} :
+theorem hasQuantifierElimination_of_exists_realize_of_embeddings {T : L.Theory} :
   (∀ {m : ℕ} (φ : L.Formula (Fin m.succ)) (_ : φ.IsQF)
     {M N A : Type (max u v)} [L.Structure M] [L.Structure N] [L.Structure A]
     [T.Model M] [T.Model N] [Nonempty M] [Nonempty N]
@@ -646,7 +646,7 @@ theorem marker_316 {T : L.Theory} :
   intro h
   apply hasQuantifierElimination_of_ex_isEquivQF_of_isQF
   intro m θ hθ
-  refine (marker_314 (T := T) (φ := θ.ex)).2 ?_
+  refine (isEquivQF_iff_realize_iff_of_embeddings (T := T) (φ := θ.ex)).2 ?_
   intro M N A _ _ _ _ _ _ _ f g a
   let φ : L.Formula (Fin m.succ) := θ.toFormula.relabel finSumFinEquiv
   have hφQF : φ.IsQF := by
@@ -722,7 +722,7 @@ theorem henson_711
           a ∈ g.dom ∧ f.ExtendsAlong e g) :
     T.HasQuantifierElimination := by
   classical
-  refine marker_316 (T := T) ?_
+  refine hasQuantifierElimination_of_exists_realize_of_embeddings (T := T) ?_
   intro m φ hφ M N A _ _ _ _ _ _ _ f g a hM
   rcases hM with ⟨b, hb⟩
   let p : M ≃ₚ[L] N := {
@@ -830,7 +830,7 @@ theorem henson_711_prime
             f.1.ExtendsAlong e g) :
     T.HasQuantifierElimination := by
   classical
-  refine marker_316 (T := T) ?_
+  refine hasQuantifierElimination_of_exists_realize_of_embeddings (T := T) ?_
   intro m φ hφ M N A _ _ _ _ _ _ _ f g a hM
   rcases hM with ⟨b, hb⟩
   let S : L.Substructure M := Substructure.closure L (Set.range (f ∘ a))
