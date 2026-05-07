@@ -384,6 +384,18 @@ section SymmDiff
 
 open scoped symmDiff
 
+lemma iUnion_symmDiff_subset {s : Set α} [Nonempty ι] {f : ι → Set α} :
+    (⋃ n, f n) ∆ s ⊆ ⋃ n, f n ∆ s :=
+  iSup_symmDiff_le
+
+lemma symmDiff_iUnion_subset {s : Set α} [Nonempty ι] {f : ι → Set α} :
+    s ∆ (⋃ n, f n) ⊆ ⋃ n, s ∆ f n :=
+  symmDiff_iSup_le
+
+lemma iUnion_symmDiff_iUnion_subset {f g : ι → Set α} :
+    (⋃ n, f n) ∆ ⋃ n, g n ⊆ ⋃ n, f n ∆ g n :=
+  iSup_symmDiff_iSup_le
+
 lemma sUnion_symmDiff_subset {s : Set α} {S : Set (Set α)} (hS : S.Nonempty) :
     (⋃₀ S) ∆ s ⊆ ⋃ t ∈ S, t ∆ s := by
   obtain ⟨t₀, ht₀⟩ := hS
