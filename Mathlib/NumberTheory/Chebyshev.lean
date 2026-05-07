@@ -262,14 +262,8 @@ theorem psi_eq_sum_mul_log_prime (n : ℕ) : ψ n = ∑ p ∈ primesLE n, p.log 
       simp only [mem_Icc] at hx
       have hpn : p ≤ n := (le_of_dvd (by lia) (dvd_pow_self p hk.ne')).trans hx.2
       exact ⟨p, ⟨hp.one_le, hpn, hp, ⟨k, ⟨by lia, le_log_of_pow_le hp.one_lt hx.2, rfl⟩⟩⟩⟩
-  _ = ∑ p ∈ Icc 1 n with Nat.Prime p, ∑ q ∈ image (fun k ↦ p ^ k) (Icc 1 (p.log n)), Λ q := by
-    convert sum_biUnion ?_
-    intros p hp q hq hpq
-    simp_all only [ne_eq, coe_filter, mem_Icc, Set.mem_setOf_eq, disjoint_left, mem_image,
-      not_exists, not_and, and_imp, forall_exists_index, one_le_iff_ne_zero]
-    intro a n hn _ rfl m hm _ h
-    apply hpq
-    exact Nat.Prime.pow_inj' hp.2 hq.2 hn hm h.symm |>.1
+  _ = ∑ p ∈ Icc 1 n with p.Prime, ∑ q ∈ image (fun k ↦ p ^ k) (Icc 1 (p.log n)), Λ q := by
+      rw [sum_biUnion <| by rw [pairwiseDisjoint_iff]; grind [Nat.Prime.pow_inj']]
   _ = ∑ p ∈ primesLE n, ∑ k ∈ Icc 1 (p.log n), vonMangoldt (p ^ k) := by
     apply sum_congr (primesLE_eq_filter_Icc_one n).symm
     intro p hp
