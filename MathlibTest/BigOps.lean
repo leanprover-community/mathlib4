@@ -1,4 +1,5 @@
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Data.Fintype.Basic
 
 section
@@ -122,5 +123,67 @@ set_option pp.analyze true in
 #guard_msgs in
 set_option pp.analyze true in
 #check Finset.prod {j | p j} fun i ↦ f i
+
+/-! ### Big operators over ordered sets -/
+
+variable {g : ℕ → M} {q : ℕ → Prop} [DecidablePred q] {n : ℕ} {i₀ : ι}
+
+/-- info: ∏ i < n, g i : M -/
+#guard_msgs in
+#check Finset.prod (Finset.Iio n) fun i ↦ g i
+
+/-- info: ∏ i ≤ n, g i : M -/
+#guard_msgs in
+#check Finset.prod (Finset.Iic n) fun i ↦ g i
+
+/-- info: ∏ i < n with q i, g i : M -/
+#guard_msgs in
+#check Finset.prod ((Finset.Iio n).filter q) fun i ↦ g i
+
+/-- info: ∏ i ≤ n with q i, g i : M -/
+#guard_msgs in
+#check Finset.prod ((Finset.Iic n).filter q) fun i ↦ g i
+
+section Bot
+variable [Preorder ι] [LocallyFiniteOrderBot ι]
+
+/-- info: ∏ i < i₀, f i : M -/
+#guard_msgs in
+#check Finset.prod (Finset.Iio i₀) fun i ↦ f i
+
+/-- info: ∏ i ≤ i₀, f i : M -/
+#guard_msgs in
+#check Finset.prod (Finset.Iic i₀) fun i ↦ f i
+
+/-- info: ∏ i < i₀ with p i, f i : M -/
+#guard_msgs in
+#check Finset.prod ((Finset.Iio i₀).filter p) fun i ↦ f i
+
+/-- info: ∏ i ≤ i₀ with p i, f i : M -/
+#guard_msgs in
+#check Finset.prod ((Finset.Iic i₀).filter p) fun i ↦ f i
+
+end Bot
+
+section Top
+variable [Preorder ι] [LocallyFiniteOrderTop ι]
+
+/-- info: ∏ i > i₀, f i : M -/
+#guard_msgs in
+#check Finset.prod (Finset.Ioi i₀) fun i ↦ f i
+
+/-- info: ∏ i ≥ i₀, f i : M -/
+#guard_msgs in
+#check Finset.prod (Finset.Ici i₀) fun i ↦ f i
+
+/-- info: ∏ i > i₀ with p i, f i : M -/
+#guard_msgs in
+#check Finset.prod ((Finset.Ioi i₀).filter p) fun i ↦ f i
+
+/-- info: ∏ i ≥ i₀ with p i, f i : M -/
+#guard_msgs in
+#check Finset.prod ((Finset.Ici i₀).filter p) fun i ↦ f i
+
+end Top
 
 end
