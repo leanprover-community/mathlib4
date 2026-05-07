@@ -78,6 +78,132 @@ lemma apply_smooth''
   ContMDiffWithinAt.congr h1.2 (fun x _ ↦ (h4 x).symm) (h4 b).symm
   exact h5
 
+#check ContMDiffVectorBundle  -- for ContinuousLinearMap bundle
+
+#check TangentBundle.contMDiffVectorBundle
+#check IsLocalFrameOn
+#check Module.Basis
+
+#check tangentBundleCore
+#check TangentBundle
+
+noncomputable section
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {H : Type*} [TopologicalSpace H]
+  (I : ModelWithCorners 𝕜 E H)
+  (M : Type*) [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 1 M]
+
+open ModelWithCorners
+
+/-
+The fderivWithin of `j ∘ i⁻¹` composed with that of `i ∘ h⁻¹` equals the fderivWithin of
+`j ∘ h⁻¹`, as continuous linear maps. This is the chain rule for extended chart changes.
+-/
+private theorem fderivWithin_extend_comp
+    (h i j : atlas H M) (x : M)
+    (hxh : x ∈ h.1.source) (hxi : x ∈ i.1.source) (hxj : x ∈ j.1.source) :
+    (fderivWithin 𝕜 (j.1.extend I ∘ (i.1.extend I).symm) (range I) (i.1.extend I x)).comp
+      (fderivWithin 𝕜 (i.1.extend I ∘ (h.1.extend I).symm) (range I) (h.1.extend I x)) =
+    fderivWithin 𝕜 (j.1.extend I ∘ (h.1.extend I).symm) (range I) (h.1.extend I x) := by
+  rw [ eq_comm ];
+  have := h.1.extend_preimage_mem_nhds ( I := I ) hxh ( i.1.extend_source_mem_nhds ( I := I ) hxi );
+  convert ( Filter.EventuallyEq.fderivWithin_eq ?_ ?_ ) using 1;
+  rotate_left;
+  · exact ( j.1.extend I ) ∘ ( i.1.extend I ).symm ∘ ( i.1.extend I ) ∘ ( h.1.extend I ).symm;
+  · rw [ Filter.EventuallyEq, eventually_nhdsWithin_iff ];
+    filter_upwards [ this ] with y hy hy' ; aesop;
+  · simp +decide [ hxh, hxi ];
+  · nontriviality;
+    apply_rules [ ContinuousLinearMap.ext, fderivWithin_fderivWithin ];
+    · have foo := (ModelWithCorners.contDiffWithinAt_extendCoordChange'
+            (IsManifold.subset_maximalAtlas (I := I) i.2)
+            (IsManifold.subset_maximalAtlas j.2)
+            hxi hxj).differentiableWithinAt one_ne_zero
+      convert foo using 1
+    · have foo := (ModelWithCorners.contDiffWithinAt_extendCoordChange'
+            (IsManifold.subset_maximalAtlas (I := I) h.2)
+            (IsManifold.subset_maximalAtlas i.2)
+            hxh hxi).differentiableWithinAt one_ne_zero
+      convert foo using 1
+    · intro y hy; aesop;
+    · exact I.uniqueDiffWithinAt_image;
+    · aesop
+
+/-
+The map `x ↦ fderivWithin(j ∘ i⁻¹)(i.extend x)` is continuous on `i.source ∩ j.source`.
+-/
+private theorem continuousOn_fderivWithin_extend
+    (i j : atlas H M) :
+    ContinuousOn
+      (fun x => fderivWithin 𝕜 (j.1.extend I ∘ (i.1.extend I).symm) (range I) (i.1.extend I x))
+      (i.1.source ∩ j.1.source) := by
+  have : IsManifold I (0 + 1) M := by
+    aesop;
+  apply ( contDiffOn_fderiv_coord_change ( n := 0 ) i j ).continuousOn.comp _ _;
+  · exact i.1.continuousOn_extend.mono ( by simp +decide );
+  · simp +decide only [MapsTo, mem_inter_iff, OpenPartialHomeomorph.extend,
+     PartialEquiv.trans_source,
+    PartialEquiv.symm_source, PartialEquiv.trans_target, ModelWithCorners.target_eq,
+     preimage, toPartialEquiv_coe_symm,
+    ModelWithCorners.source_eq, OpenPartialHomeomorph.toFun_eq_coe, mem_univ, setOf_true,
+     inter_univ,
+    PartialEquiv.coe_trans_symm, OpenPartialHomeomorph.coe_coe_symm, Function.comp_apply,
+     PartialEquiv.coe_trans,
+    toPartialEquiv_coe, mem_range, exists_apply_eq_apply, mem_setOf_eq, ModelWithCorners.left_inv,
+     true_and, and_imp]
+    exact fun x hx₁ hx₂ => ⟨ i.1.map_source hx₁, by simpa [ hx₁ ] using hx₂ ⟩
+
+/-
+The frame bundle core for a smooth manifold M. The fiber over p : M is `E →L[𝕜] E`,
+with coordinate changes given by left multiplication by the derivative of the chart
+transition map, acting on frames by precomposition.
+-/
+def frameBundleCore :
+    FiberBundleCore (atlas H M) M (E →L[𝕜] E) where
+  baseSet i := i.1.source
+  isOpen_baseSet i := i.1.open_source
+  indexAt x := ⟨chartAt H x, chart_mem_atlas H x⟩
+  mem_baseSet_at x := mem_chart_source H x
+  coordChange i j x A :=
+    (fderivWithin 𝕜 (j.1.extend I ∘ (i.1.extend I).symm) (range I) (i.1.extend I x)).comp A
+  coordChange_self i x hx A := by
+    -- Apply the fact that the derivative of the identity function is the identity map.
+    have h_id : (fderivWithin 𝕜 (fun x => x) (Set.range I) (i.val.extend I x)).comp A = A := by
+      erw [ fderivWithin_id' ];
+      · rfl;
+      · apply I.uniqueDiffOn _ _;
+        exact Set.mem_range_self _;
+    convert h_id using 1;
+    apply congr_arg₂ _ ( Filter.EventuallyEq.fderivWithin_eq _ _ ) rfl;
+    · exact Filter.eventuallyEq_of_mem ( i.1.extend_target_mem_nhdsWithin hx )
+        fun y hy => ( i.1.extend I ).right_inv hy;
+    · simp +decide [ hx ]
+  coordChange_comp i j k x hx A := by
+    obtain ⟨⟨hxi, hxj⟩, hxk⟩ := hx
+    rw [← ContinuousLinearMap.comp_assoc]
+    congr 1
+    exact fderivWithin_extend_comp I M i j k x hxi hxj hxk
+  continuousOn_coordChange i j := by
+    refine ContinuousOn.clm_comp ?_ continuousOn_snd
+    exact (continuousOn_fderivWithin_extend I M i j).comp continuousOn_fst (fun p hp => hp.1)
+
+omit [IsManifold I 1 M] in
+/-- The coordinate change of the frame bundle core is `C^n` on the model space side when
+the manifold is `C^{n+1}`. Specifically, the map
+`(y, A) ↦ fderivWithin(j ∘ i⁻¹)(y) ∘ A` is `C^n` on the appropriate domain in `E`. -/
+theorem contDiffOn_frameBundleCore_coordChange
+    {n : WithTop ℕ∞} [IsManifold I (n + 1) M]
+    (i j : atlas H M) :
+    ContDiffOn 𝕜 n
+      (fun p : E × (E →L[𝕜] E) =>
+        (fderivWithin 𝕜 (j.1.extend I ∘ (i.1.extend I).symm) (range I) p.1).comp p.2)
+      (((i.1.extend I).symm ≫ j.1.extend I).source ×ˢ Set.univ) := by
+  refine ContDiffOn.clm_comp ?_ contDiffOn_snd
+  exact (contDiffOn_fderiv_coord_change i j).comp contDiffOn_fst fun x hx => hx.1
+
+end
+
 -- Principal bundle total space
 variable
   {P : Type*} [TopologicalSpace P]

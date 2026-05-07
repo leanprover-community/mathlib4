@@ -1077,13 +1077,6 @@ section FrameBundle
 
 variable [IsManifold I 1 M] [CompleteSpace E]
 
-/-- The frame bundle of a smooth manifold `M` is the open subset of the endomorphism bundle
-consisting of invertible continuous linear maps. The fiber over a point `p` is
-`(E →L[𝕜] E)ˣ`. -/
-def FrameBundle (I : ModelWithCorners 𝕜 E H) (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
-    [IsManifold I 1 M] [CompleteSpace E] : Set (EndBundle I M) :=
-  {p : EndBundle I M | IsUnit p.2}
-
 /-
 The tangent bundle coordinate change is invertible as a ContinuousLinearMap.
 -/
@@ -1128,36 +1121,212 @@ lemma endBundleCore_coordChange_isUnit_iff (i j : atlas H M)
   simp only [endBundleCore, compL_apply]
   exact isUnit_comp_iff_of_isUnit (tangentBundleCore_coordChange_isUnit i j x hx) A
 
-theorem frameBundle_isOpen : IsOpen (FrameBundle I M) := by
-  refine isOpen_iff_forall_mem_open.mpr ?_
-  intro p hp;
-  -- Let `i = achart H p.1`. Consider the local trivialization
-  -- `e = (endBundleCore I M).toFiberBundleCore.localTriv i`.
-  -- This is a `Trivialization` which extends to an
-  -- `OpenPartialHomeomorph` via `.toOpenPartialHomeomorph`.
-  set i := achart H p.1
-  set e := (endBundleCore I M).toFiberBundleCore.localTriv i
-  set U := e.source ∩ e ⁻¹' (i.1.source ×ˢ {B : E →L[𝕜] E | IsUnit B});
-  refine ⟨U, ?_, ?_, ?_⟩ <;> simp_all +decide only [FrameBundle, mem_setOf_eq]
-  · intro q hq
-    obtain ⟨hq_source, hq_unit⟩ := hq
-    have hq_coord : IsUnit (e q).2 := hq_unit.2
-    simp_all +decide only [FiberBundleCore.proj, mem_preimage, mem_prod,
-     Trivialization.coe_fst, mem_setOf_eq, and_true]
-    convert endBundleCore_coordChange_isUnit_iff _ _ _ _ _ |>.1 hq_coord using 1;
-    exact ⟨ mem_chart_source H _, hq_unit ⟩;
-  · exact e.toOpenPartialHomeomorph.isOpen_inter_preimage ( e.open_baseSet.prod ( Units.isOpen ) );
-  · constructor;
-    · exact mem_chart_source _ _;
-    · simp +zetaDelta only [FiberBundleCore.proj, coe_achart, mem_preimage,
-       FiberBundleCore.localTriv_apply,
-      VectorBundleCore.toFiberBundleCore_indexAt, VectorBundleCore.coe_coordChange, mem_prod,
-       mem_chart_source,
-      mem_setOf_eq, true_and] at *
-      convert hp using 1;
-      convert ( endBundleCore I M ).coordChange_self i p.proj _ p.snd;
-      exact mem_chart_source H p.proj
+/-- The frame bundle of a smooth manifold `M` is the open subset of the endomorphism bundle
+consisting of invertible continuous linear maps. As an open subset of a smooth manifold, it
+is itself a smooth manifold. -/
+def FrameBundle (I : ModelWithCorners 𝕜 E H) (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
+    [IsManifold I 1 M] [CompleteSpace E] : TopologicalSpace.Opens (EndBundle I M) where
+  carrier := {p : EndBundle I M | IsUnit p.2}
+  is_open' := by
+    refine isOpen_iff_forall_mem_open.mpr ?_
+    intro p hp
+    set i := achart H p.1
+    set e := (endBundleCore I M).toFiberBundleCore.localTriv i
+    set U := e.source ∩ e ⁻¹' (i.1.source ×ˢ {B : E →L[𝕜] E | IsUnit B})
+    refine ⟨U, ?_, ?_, ?_⟩ <;> simp_all +decide only [mem_setOf_eq]
+    · intro q hq
+      obtain ⟨hq_source, hq_unit⟩ := hq
+      have hq_coord : IsUnit (e q).2 := hq_unit.2
+      simp_all +decide only [FiberBundleCore.proj, mem_preimage, mem_prod, Trivialization.coe_fst,
+       mem_setOf_eq, and_true]
+      convert endBundleCore_coordChange_isUnit_iff _ _ _ _ _ |>.1 hq_coord using 1
+      exact ⟨mem_chart_source H _, hq_unit⟩
+    · exact e.toOpenPartialHomeomorph.isOpen_inter_preimage (e.open_baseSet.prod Units.isOpen)
+    · constructor
+      · exact mem_chart_source _ _
+      · simp +zetaDelta only [FiberBundleCore.proj, coe_achart, mem_preimage,
+         FiberBundleCore.localTriv_apply,
+          VectorBundleCore.toFiberBundleCore_indexAt, VectorBundleCore.coe_coordChange, mem_prod,
+           mem_chart_source,
+          mem_setOf_eq, true_and] at *
+        convert hp using 1
+        convert (endBundleCore I M).coordChange_self i p.proj _ p.snd
+        exact mem_chart_source H p.proj
 
 end FrameBundle
+
+instance [IsManifold I 1 M] [CompleteSpace E] :
+  MulAction (E →L[𝕜] E)ˣᵐᵒᵖ ↥(FrameBundle I M) where
+  smul g p := ⟨⟨p.1.1, (show E →L[𝕜] E from p.1.2) ∘L g.unop.val⟩, by
+    exact p.2.mul (Units.isUnit _)⟩
+  one_smul p := by
+    apply Subtype.ext
+    apply TotalSpace.ext
+    · exact rfl
+    · exact heq_of_eq rfl
+  mul_smul g h p := by
+    apply Subtype.ext
+    apply TotalSpace.ext
+    · rfl
+    · exact heq_of_eq rfl
+
+section FrameBundleAction
+
+variable [CompleteSpace E]
+
+omit [CompleteSpace E] in
+/-- The endomorphism bundle trivialization commutes with right composition. -/
+lemma endBundle_triv_comp [IsManifold I 1 M] (b₀ : M)
+    {b : M} (_ : b ∈ (trivializationAt (E →L[𝕜] E) (EndSpace I M) b₀).baseSet)
+    (A g : E →L[𝕜] E) :
+    (trivializationAt (E →L[𝕜] E) (EndSpace I M) b₀
+      (⟨b, (A : EndSpace I M b) ∘L g⟩ : EndBundle I M)).2 =
+    (trivializationAt (E →L[𝕜] E) (EndSpace I M) b₀
+      (⟨b, (A : EndSpace I M b)⟩ : EndBundle I M)).2 ∘L g := by
+  change ((endBundleCore I M).localTrivAt b₀ ⟨b, A.comp g⟩).2 =
+         ((endBundleCore I M).localTrivAt b₀ ⟨b, A⟩).2 ∘L g
+  unfold VectorBundleCore.localTrivAt
+  rw [VectorBundleCore.localTriv_apply, VectorBundleCore.localTriv_apply]
+  exact rfl
+
+/-- The base projection from the frame bundle product is smooth. -/
+lemma contMDiff_action_base {n : WithTop ℕ∞}
+    [IsManifold I (n + 1) M] [IsManifold I 1 M] :
+    ContMDiff ((I.prod 𝓘(𝕜, E →L[𝕜] E)).prod 𝓘(𝕜, E →L[𝕜] E)) I n
+      (fun (pg : ↥(FrameBundle I M) × (E →L[𝕜] E)ˣ) => pg.1.val.proj) := by
+  have h_proj : ContMDiff (I.prod 𝓘(𝕜, E →L[𝕜] E)) I n
+      (fun (pg : EndBundle I M) => pg.proj) := Bundle.contMDiff_proj (EndSpace I M)
+  exact (h_proj.comp contMDiff_subtype_val).comp contMDiff_fst
+
+/-- The trivialized fiber of the frame bundle inclusion is smooth. -/
+lemma contMDiffAt_triv_fiber {n : WithTop ℕ∞}
+    [IsManifold I (n + 1) M] [IsManifold I 1 M]
+    (pg₀ : ↥(FrameBundle I M) × (E →L[𝕜] E)ˣ) :
+    ContMDiffAt ((I.prod 𝓘(𝕜, E →L[𝕜] E)).prod 𝓘(𝕜, E →L[𝕜] E)) 𝓘(𝕜, E →L[𝕜] E) n
+      (fun pg : ↥(FrameBundle I M) × (E →L[𝕜] E)ˣ =>
+        (trivializationAt (E →L[𝕜] E) (EndSpace I M) pg₀.1.val.proj pg.1.val).2)
+      pg₀ := by
+  have h_subtype : ContMDiff (I.prod 𝓘(𝕜, E →L[𝕜] E)) (I.prod 𝓘(𝕜, E →L[𝕜] E)) n
+      (Subtype.val : ↥(FrameBundle I M) → EndBundle I M) := contMDiff_subtype_val
+  have := Bundle.contMDiffAt_totalSpace.mp (h_subtype.contMDiffAt (x := pg₀.1))
+  exact this.2.comp pg₀ contMDiffAt_fst
+
+/-- `Units.val` composed with `snd` is smooth. -/
+lemma contMDiff_units_val_snd {n : WithTop ℕ∞}
+    [IsManifold I (n + 1) M] [IsManifold I 1 M] :
+    ContMDiff ((I.prod 𝓘(𝕜, E →L[𝕜] E)).prod 𝓘(𝕜, E →L[𝕜] E)) 𝓘(𝕜, E →L[𝕜] E) n
+      (fun (pg : ↥(FrameBundle I M) × (E →L[𝕜] E)ˣ) => (pg.2 : E →L[𝕜] E)) :=
+  Units.contMDiff_val.comp contMDiff_snd
+
+/-- The fiber component of the action locally equals the composition of the trivialized fiber
+and the unit value. -/
+lemma action_fiber_eventuallyEq {n : WithTop ℕ∞}
+    [IsManifold I (n + 1) M] [IsManifold I 1 M]
+    (pg₀ : ↥(FrameBundle I M) × (E →L[𝕜] E)ˣ) :
+    (fun pg : ↥(FrameBundle I M) × (E →L[𝕜] E)ˣ =>
+      (trivializationAt (E →L[𝕜] E) (EndSpace I M) pg₀.1.val.proj
+        (⟨pg.1.val.proj, (pg.1.val.snd : E →L[𝕜] E) ∘L pg.2.val⟩ : EndBundle I M)).2)
+    =ᶠ[nhds pg₀]
+    (fun pg : ↥(FrameBundle I M) × (E →L[𝕜] E)ˣ =>
+      (trivializationAt (E →L[𝕜] E) (EndSpace I M) pg₀.1.val.proj pg.1.val).2
+        ∘L (pg.2 : E →L[𝕜] E)) := by
+  have h_baseSet : ∀ᶠ pg : ↥(FrameBundle I M) × (E →L[𝕜] E)ˣ in nhds pg₀,
+      pg.1.val.proj ∈
+        (trivializationAt (E →L[𝕜] E) (EndSpace I M) pg₀.1.val.proj).baseSet := by
+    refine IsOpen.eventually_mem ?_ ?_
+    · refine (trivializationAt (E →L[𝕜] E) (EndSpace I M) pg₀.1.val.proj).open_baseSet.preimage ?_
+      exact ((FiberBundle.continuous_proj (E →L[𝕜] E) (EndSpace I M)).comp
+        continuous_subtype_val).comp continuous_fst
+    · exact mem_baseSet_trivializationAt _ _ _
+  filter_upwards [h_baseSet] with pg hpg
+  exact endBundle_triv_comp pg₀.1.val.proj hpg pg.1.val.snd pg.2.val
+
+/-- The right action of `(E →L[𝕜] E)ˣ` on the frame bundle is smooth. -/
+theorem contMDiff_action {n : WithTop ℕ∞}
+    [IsManifold I (n + 1) M] [IsManifold I 1 M] :
+    ContMDiff ((I.prod 𝓘(𝕜, E →L[𝕜] E)).prod 𝓘(𝕜, E →L[𝕜] E))
+              (I.prod 𝓘(𝕜, E →L[𝕜] E)) n
+              (fun (pg : ↥(FrameBundle I M) × (E →L[𝕜] E)ˣ) =>
+                (⟨pg.1.val.proj,
+                  (pg.1.val.snd : E →L[𝕜] E) ∘L pg.2.val⟩ : EndBundle I M)) := by
+  intro pg₀
+  refine Bundle.contMDiffAt_totalSpace.mpr ⟨contMDiff_action_base.contMDiffAt, ?_⟩
+  refine ContMDiffAt.congr_of_eventuallyEq
+    (ContMDiffAt.clm_comp (contMDiffAt_triv_fiber pg₀)
+      contMDiff_units_val_snd.contMDiffAt) ?_
+  exact (action_fiber_eventuallyEq (n := n) pg₀).symm
+
+end FrameBundleAction
+
+section FrameBundlePrincipal
+
+theorem frameBundle_action_isFree [IsManifold I 1 M] [CompleteSpace E]
+    (g : (E →L[𝕜] E)ˣᵐᵒᵖ) (p : ↥(FrameBundle I M)) (h : g • p = p) : g = 1 := by
+  have h2 : (p.1.2 : E →L[𝕜] E) ∘L g.unop.val = p.1.2 := by
+    have := congrArg (fun (q : ↥(FrameBundle I M)) => (q.1.2 : E →L[𝕜] E)) h
+    simpa using this
+  have hp : IsUnit (p.1.2 : E →L[𝕜] E) := p.2
+  obtain ⟨u, hu⟩ := hp
+  have : g.unop.val = 1 := by
+    have hu_eq := hu ▸ h2
+    have key := congrArg (fun X : E →L[𝕜] E =>
+      (((u⁻¹).val : EndSpace I M p.1.proj) : E →L[𝕜] E) ∘L X) hu_eq
+    simp only [← ContinuousLinearMap.comp_assoc] at key
+    have hinv : ((u⁻¹).val : E →L[𝕜] E) ∘L ((u).val : E →L[𝕜] E) = 1 := by
+      rw [show ((u⁻¹).val : E →L[𝕜] E) ∘L ((u).val : E →L[𝕜] E) =
+              ((u⁻¹ * u : (EndSpace I M p.1.proj)ˣ).val : E →L[𝕜] E) from rfl]
+      simp only [inv_mul_cancel, Units.val_one]
+      exact rfl
+    rw [hinv] at key
+    exact key
+  apply MulOpposite.unop_injective
+  exact Units.ext this
+
+theorem frameBundle_action_isTransitive_val [IsManifold I 1 M] [CompleteSpace E]
+    (p q : ↥(FrameBundle I M)) (h : p.1.proj = q.1.proj) :
+    ∃ g : (E →L[𝕜] E)ˣᵐᵒᵖ, (g • p).val = q.val := by
+  have hp : IsUnit (p.1.snd : E →L[𝕜] E) := p.2
+  obtain ⟨up, hup⟩ : ∃ u : (E →L[𝕜] E)ˣ, (u : E →L[𝕜] E) = p.1.snd := hp
+  have hq : IsUnit (q.1.snd : E →L[𝕜] E) := q.2
+  obtain ⟨uq, huq⟩ : ∃ u : (E →L[𝕜] E)ˣ, (u : E →L[𝕜] E) = q.1.snd := hq
+  refine ⟨MulOpposite.op (up⁻¹ * uq), ?_⟩
+  change (⟨p.1.proj, p.1.snd ∘L (up⁻¹ * uq).val⟩ : EndBundle I M) =
+       (⟨q.1.proj, q.1.snd⟩ : EndBundle I M)
+  congr 1
+  · rw [← hup, ← huq]
+    rw [Units.val_mul]
+    rw [mul_def]
+    rw [← ContinuousLinearMap.comp_assoc]
+    change ((up * up⁻¹ : (E →L[𝕜] E)ˣ).val : E →L[𝕜] E) ∘L uq.val = uq.val
+    simp only [mul_inv_cancel, Units.val_one]
+    exact rfl
+
+theorem frameBundle_triv_equivariant [IsManifold I 1 M] [CompleteSpace E]
+    (b₀ : M) (p : ↥(FrameBundle I M))
+    (hp : p.1.proj ∈ (trivializationAt (E →L[𝕜] E) (EndSpace I M) b₀).baseSet)
+    (g : (E →L[𝕜] E)ˣᵐᵒᵖ) :
+    (trivializationAt (E →L[𝕜] E) (EndSpace I M) b₀ (g • p).val).2 =
+    (trivializationAt (E →L[𝕜] E) (EndSpace I M) b₀ p.val).2 ∘L g.unop.val := by
+  exact endBundle_triv_comp b₀ hp p.1.snd g.unop.val
+
+@[reducible, nolint unusedArguments]
+def FrameSpace (_I : ModelWithCorners 𝕜 E H) (_M : Type*) [TopologicalSpace _M] [ChartedSpace H _M]
+    [IsManifold _I 1 _M] (_ : _M) : Type _ := (E →L[𝕜] E)ˣ
+
+def frameBundleEquiv [IsManifold I 1 M] [CompleteSpace E] :
+    ↥(FrameBundle I M) ≃ Bundle.TotalSpace (E →L[𝕜] E)ˣ (FrameSpace I M) where
+  toFun p := ⟨p.1.proj, p.2.unit⟩
+  invFun q := ⟨⟨q.proj, q.snd.val⟩, q.snd.isUnit⟩
+  left_inv p := by
+    apply Subtype.ext
+    apply Bundle.TotalSpace.ext
+    · rfl
+    · simp [IsUnit.unit_spec]
+  right_inv q := by
+    apply Bundle.TotalSpace.ext
+    · rfl
+    · simp
+
+end FrameBundlePrincipal
 
 end
