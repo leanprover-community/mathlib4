@@ -109,7 +109,7 @@ theorem id_apply {x : ℕ} : ArithmeticFunction.id x = x :=
   rfl
 
 @[arith_mult]
-theorem isMultiplicative_id : IsMultiplicative ArithmeticFunction.id :=
+theorem isMultiplicative_id : IsMultiplicative .id :=
   ⟨rfl, fun _ => rfl⟩
 
 end Id
@@ -128,7 +128,7 @@ theorem pow_zero_eq_zeta : pow 0 = ζ := by
   ext n
   simp
 
-theorem pow_one_eq_id : pow 1 = ArithmeticFunction.id := by
+theorem pow_one_eq_id : pow 1 = .id := by
   ext n
   simp
 
