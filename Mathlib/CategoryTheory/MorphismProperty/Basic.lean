@@ -77,9 +77,7 @@ lemma sup_iff (W W' : MorphismProperty C) {X Y : C} (f : X ⟶ Y) : (W ⊔ W') f
 @[simp]
 lemma sSup_iff (S : Set (MorphismProperty C)) {X Y : C} (f : X ⟶ Y) :
     sSup S f ↔ ∃ W ∈ S, W f := by
-  suffices h : ∀ {S : Set (∀ {X Y : C} (f : X ⟶ Y), Prop)} {X Y : C} {f : X ⟶ Y},
-      sSup S f ↔ ∃ W ∈ S, W f from h
-  simp
+  simp +instances [MorphismProperty]
 
 @[simp]
 lemma iSup_iff {ι : Sort*} (W : ι → MorphismProperty C) {X Y : C} (f : X ⟶ Y) :
@@ -93,9 +91,7 @@ lemma inf_iff (W W' : MorphismProperty C) {X Y : C} (f : X ⟶ Y) : (W ⊓ W') f
 @[simp]
 lemma sInf_iff (S : Set (MorphismProperty C)) {X Y : C} (f : X ⟶ Y) :
     sInf S f ↔ ∀ W ∈ S, W f := by
-  suffices h : ∀ {S : Set (∀ {X Y : C} (f : X ⟶ Y), Prop)} {X Y : C} {f : X ⟶ Y},
-      sInf S f ↔ ∀ W ∈ S, W f from h
-  simp
+  simp +instances [MorphismProperty]
 
 @[simp]
 lemma iInf_iff {ι : Type*} (W : ι → MorphismProperty C) {X Y : C} (f : X ⟶ Y) :
