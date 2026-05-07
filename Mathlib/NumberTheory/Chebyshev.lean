@@ -283,16 +283,13 @@ theorem psi_eq_sum_mul_log_prime (n : ℕ) : ψ n = ∑ p ∈ primesLE n, p.log 
     rw [vonMangoldt_apply_pow (by linarith), vonMangoldt_apply_prime hp.2]
   _ = _ := by simp
 
-theorem psi_le_primeCounting_mul_log (n : ℕ) : ψ n ≤ (π n) * log n := calc
-  _ ≤ ∑ p ∈ primesLE n, log n := by
-    rw [psi_eq_sum_mul_log_prime n]
-    gcongr with p hp
-    grw [← natFloor_logb_natCast, ← log_div_log, floor_le]
-    · simp only [mem_filter, mem_range, Order.lt_add_one_iff] at hp
-      simp [field, hp.2.log_ne]
-    positivity
-  _ = _ := by
-    simp [primesLE_card_eq_primeCounting]
+theorem psi_le_primeCounting_mul_log (n : ℕ) : ψ n ≤ (π n) * log n := by
+  rw [psi_eq_sum_mul_log_prime, ← primesLE_card_eq_primeCounting, ← nsmul_eq_mul, ← sum_const]
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp
+  gcongr with p hp
+  refine le_log_of_pow_le (mod_cast (prime_of_mem_primesLE hp).pos) ?_
+  exact_mod_cast pow_log_le_self p hn
 
 theorem psi_le_primeCounting_mul_log' (x : ℝ) : ψ x ≤ (π ⌊x⌋₊) * log x := by
   grw [psi_eq_psi_coe_floor, psi_le_primeCounting_mul_log]
