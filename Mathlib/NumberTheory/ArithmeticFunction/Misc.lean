@@ -101,11 +101,11 @@ end ProdPrimeFactors
 section Id
 
 /-- The identity on `ℕ` as an `ArithmeticFunction`. -/
-def id : ArithmeticFunction ℕ :=
-  ⟨_root_.id, rfl⟩
+protected def id : ArithmeticFunction ℕ :=
+  ⟨id, rfl⟩
 
 @[simp]
-theorem id_apply {x : ℕ} : id x = x :=
+theorem id_apply {x : ℕ} : ArithmeticFunction.id x = x :=
   rfl
 
 @[arith_mult]
@@ -118,7 +118,7 @@ section Pow
 
 /-- `pow k n = n ^ k`, except `pow 0 0 = 0`. -/
 def pow (k : ℕ) : ArithmeticFunction ℕ :=
-  id.ppow k
+  ArithmeticFunction.id.ppow k
 
 @[simp]
 theorem pow_apply {k n : ℕ} : pow k n = if k = 0 ∧ n = 0 then 0 else n ^ k := by
@@ -128,7 +128,7 @@ theorem pow_zero_eq_zeta : pow 0 = ζ := by
   ext n
   simp
 
-theorem pow_one_eq_id : pow 1 = id := by
+theorem pow_one_eq_id : pow 1 = ArithmeticFunction.id := by
   ext n
   simp
 
