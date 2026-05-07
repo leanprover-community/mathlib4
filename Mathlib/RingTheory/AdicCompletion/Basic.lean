@@ -697,7 +697,7 @@ namespace IsAdicComplete
 open AdicCompletion
 
 theorem map_algebraMap_iff [CommRing S] [Module S M] [Algebra R S]
-    [IsScalarTower R S M] :  IsAdicComplete (I.map (algebraMap R S)) M ↔ IsAdicComplete I M := by
+    [IsScalarTower R S M] : IsAdicComplete (I.map (algebraMap R S)) M ↔ IsAdicComplete I M := by
   simp [isAdicComplete_iff, IsPrecomplete.map_algebraMap_iff, IsHausdorff.map_algebraMap_iff]
 
 section lift

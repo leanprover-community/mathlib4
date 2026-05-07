@@ -165,9 +165,8 @@ section CanonicallyOrderedAddCommMonoid
 variable {M : Type*} [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M]
   [CanonicallyOrderedAdd M] (w : σ → M)
 
-theorem le_weight_of_ne_zero' {s : σ} {f : σ →₀ ℕ} (hs : f s ≠ 0) :
-    w s ≤ weight w f :=
-  le_weight_of_ne_zero (fun _ ↦ zero_le _) hs
+theorem le_weight_of_ne_zero' {s : σ} {f : σ →₀ ℕ} (hs : f s ≠ 0) : w s ≤ weight w f :=
+  le_weight_of_ne_zero (fun _ ↦ zero_le) hs
 
 /-- If `M` is a `CanonicallyOrderedAddCommMonoid`, then `weight f` is zero iff `f = 0`. -/
 theorem weight_eq_zero_iff_eq_zero
@@ -254,6 +253,9 @@ theorem finite_of_degree_le [Finite σ] (n : ℕ) :
   refine finite_of_nat_weight_le (Function.const σ 1) ?_ n
   intro _
   simp only [Function.const_apply, ne_eq, one_ne_zero, not_false_eq_true]
+
+lemma finite_of_degree_lt [Finite σ] (n : ℕ) : {f : σ →₀ ℕ | degree f < n}.Finite :=
+  Set.Finite.subset (finite_of_degree_le n) (by grind)
 
 lemma range_single_one :
     Set.range (fun a : σ ↦ Finsupp.single a 1) = { d | d.degree = 1 } := by

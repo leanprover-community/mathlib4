@@ -134,10 +134,8 @@ noncomputable def eval₂ : PowerSeries R → S :=
 
 @[simp]
 theorem eval₂_coe (f : Polynomial R) : eval₂ φ a f = f.eval₂ φ a := by
-  let g : MvPolynomial Unit R := (MvPolynomial.pUnitAlgEquiv R).symm f
-  have : f = MvPolynomial.pUnitAlgEquiv R g := by
-    simp only [g, ← AlgEquiv.symm_apply_eq]
-  simp only [this, PowerSeries.eval₂, MvPolynomial.eval₂_const_pUnitAlgEquiv]
+  rw [← (MvPolynomial.uniqueAlgEquiv R Unit).apply_symm_apply f]
+  simp only [PowerSeries.eval₂, MvPolynomial.eval₂_const_uniqueAlgEquiv]
   rw [← MvPolynomial.toMvPowerSeries_pUnitAlgEquiv, MvPowerSeries.eval₂_coe]
 
 @[simp]
@@ -194,21 +192,17 @@ theorem eval₂_unique (hφ : Continuous φ) (ha : HasEval a)
     {ε : PowerSeries R → S} (hε : Continuous ε)
     (h : ∀ p : Polynomial R, ε p = Polynomial.eval₂ φ a p) :
     ε = eval₂ φ a := by
-  apply MvPowerSeries.eval₂_unique hφ (hasEval ha) hε
-  intro p
-  rw [MvPolynomial.toMvPowerSeries_pUnitAlgEquiv, h, ← MvPolynomial.eval₂_pUnitAlgEquiv]
+  refine MvPowerSeries.eval₂_unique hφ (hasEval ha) hε (fun p ↦ ?_)
+  rw [MvPolynomial.toMvPowerSeries_pUnitAlgEquiv, h, ← MvPolynomial.eval₂_uniqueAlgEquiv]
 
 theorem comp_eval₂ (hφ : Continuous φ) (ha : HasEval a)
     {T : Type*} [UniformSpace T] [CompleteSpace T] [T2Space T]
     [CommRing T] [IsTopologicalRing T] [IsLinearTopology T T] [IsUniformAddGroup T]
     {ε : S →+* T} (hε : Continuous ε) :
     ε ∘ eval₂ φ a = eval₂ (ε.comp φ) (ε a) := by
-  apply eval₂_unique _ (ha.map hε)
-  · exact Continuous.comp hε (continuous_eval₂ hφ ha)
-  · intro p
-    simp only [Function.comp_apply, eval₂_coe]
-    exact Polynomial.hom_eval₂ p φ ε a
-  · simp only [RingHom.coe_comp, Continuous.comp hε hφ]
+  refine eval₂_unique (by simp only [RingHom.coe_comp, hε.comp hφ]) (ha.map hε)
+    (hε.comp (continuous_eval₂ hφ ha)) (fun p ↦ ?_)
+  simpa [Function.comp_apply, eval₂_coe] using p.hom_eval₂ φ ε a
 
 variable [Algebra R S] [ContinuousSMul R S]
 
