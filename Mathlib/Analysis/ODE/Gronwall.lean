@@ -134,13 +134,6 @@ lemma continuousOn_integral_Icc {a t : ℝ} {f : ℝ → ℝ} (h : a ≤ t)
   exact intervalIntegral.continuousOn_primitive_interval hf_int
 
 
-private lemma integral_split {μ : ℝ → ℝ} {a s t : ℝ}
-    (has : IntervalIntegrable μ volume a s)
-    (hst : IntervalIntegrable μ volume s t) :
-    (∫ τ in a..t, μ τ) - ∫ τ in a..s, μ τ = ∫ τ in s..t, μ τ := by
-  linarith [intervalIntegral.integral_add_adjacent_intervals has hst]
-
-
 /-! ### Inequality and corollaries -/
 
 /-
@@ -203,9 +196,10 @@ theorem gronwall_bellman_inequality {a b : ℝ} {Λ μ y : ℝ → ℝ}
           nlinarith
   have h_interval_diff : ∀ s ∈ Icc a t, M t - M s = ∫ τ in s..t, μ τ := by
     intro s hs
-    exact integral_split
+    dsimp [M]
+    linarith [intervalIntegral.integral_add_adjacent_intervals (μ := volume)
       ((hμ_t.mono (Icc_subset_Icc_right hs.2)).intervalIntegrable_of_Icc hs.1)
-      ((hμ_t.mono (Icc_subset_Icc_left hs.1)).intervalIntegrable_of_Icc hs.2)
+      ((hμ_t.mono (Icc_subset_Icc_left hs.1)).intervalIntegrable_of_Icc hs.2)]
   -- ── Multiply by exp(M t) ────────────────────────────────────────
   have hzt_bound : z t ≤ ∫ s in a..t, Λ s * μ s * exp (∫ τ in s..t, μ τ) := by
     calc
