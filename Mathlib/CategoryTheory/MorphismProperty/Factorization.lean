@@ -39,7 +39,7 @@ namespace CategoryTheory
 
 namespace MorphismProperty
 
-variable {C : Type*} [Category* C] (W₁ W₂ : MorphismProperty C)
+variable {C D : Type*} [Category* C] [Category* D] (W₁ W₂ : MorphismProperty C)
 
 /-- Given two classes of morphisms `W₁` and `W₂` on a category `C`, this is
 the data of the factorization of a morphism `f : X ⟶ Y` as `i ≫ p` with
@@ -245,9 +245,13 @@ instance [HasFunctorialFactorization W₁ W₂] (J : Type*) [Category* J] :
     HasFunctorialFactorization (W₁.functorCategory J) (W₂.functorCategory J) :=
   ⟨⟨(functorialFactorizationData W₁ W₂).functorCategory J⟩⟩
 
-noncomputable def mapFactorizationDataOfEquivalence {D : Type*} [Category D] (F : D ⥤ C)
+variable {W₁ W₂} in
+/-- The term in `MapFactorizationData (W₁.inverseImage F) (W₂.inverseImage F) f`
+deduced from `h : MapFactorizationData W₁ W₂ (F.map f)` when `F` is an equivalence
+of categories and both `W₁` and `W₂` respect isomorphisms. -/
+noncomputable def MapFactorizationData.ofIsEquivalence {F : D ⥤ C}
     [F.IsEquivalence] [W₁.RespectsIso] [W₂.RespectsIso]
-    {X Y : D} (f : X ⟶ Y) (h : MapFactorizationData W₁ W₂ (F.map f)) :
+    {X Y : D} {f : X ⟶ Y} (h : MapFactorizationData W₁ W₂ (F.map f)) :
     MapFactorizationData (W₁.inverseImage F) (W₂.inverseImage F) f where
   Z := F.objPreimage h.Z
   i := F.preimage (h.i ≫ (F.objObjPreimageIso h.Z).inv)
@@ -260,11 +264,11 @@ noncomputable def mapFactorizationDataOfEquivalence {D : Type*} [Category D] (F 
     exact Arrow.isoMk (F.objObjPreimageIso h.Z).symm (Iso.refl _)
   fac := F.map_injective (by simp)
 
-instance {D : Type*} [Category D] (F : D ⥤ C) [F.IsEquivalence]
+instance (F : D ⥤ C) [F.IsEquivalence]
     [W₁.RespectsIso] [W₂.RespectsIso] [HasFactorization W₁ W₂] :
     HasFactorization (W₁.inverseImage F) (W₂.inverseImage F) where
   nonempty_mapFactorizationData f :=
-    ⟨mapFactorizationDataOfEquivalence W₁ W₂ F f <| factorizationData W₁ W₂ (F.map f)⟩
+    ⟨(factorizationData W₁ W₂ (F.map f)).ofIsEquivalence⟩
 
 end MorphismProperty
 

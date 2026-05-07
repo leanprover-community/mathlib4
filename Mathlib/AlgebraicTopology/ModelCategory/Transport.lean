@@ -29,7 +29,12 @@ namespace HomotopicalAlgebra
 
 open CategoryTheory Limits
 
-/-- Transport of a model category structure via an equivalence of categories. -/
+/-- Transport of a model category structure on a category `D` via an equivalence of
+categories `e : C ≌ D`. We assume that the category `C` is already endowed
+with a `CategoryWithFibrations` instance (and similarly for cofibrations and weak
+equivalences), and that the three properties of morphisms (fibrations, cofibrations,
+weak equivalences) in `C` coincide with the inverse images by `e.functor : C ⥤ D`
+of the corresponding properties of morphisms in `D`. -/
 @[implicit_reducible]
 def ModelCategory.transport
     {C D : Type*} [Category* C] [Category* D] [ModelCategory D]
