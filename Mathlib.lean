@@ -1011,6 +1011,7 @@ public import Mathlib.Algebra.Order.Interval.Set.Instances
 public import Mathlib.Algebra.Order.Interval.Set.Monoid
 public import Mathlib.Algebra.Order.Interval.Set.SuccPred
 public import Mathlib.Algebra.Order.Invertible
+public import Mathlib.Algebra.Order.IsBotOne
 public import Mathlib.Algebra.Order.Kleene
 public import Mathlib.Algebra.Order.Module.Algebra
 public import Mathlib.Algebra.Order.Module.Archimedean
@@ -5570,6 +5571,7 @@ public import Mathlib.NumberTheory.ArithmeticFunction
 public import Mathlib.NumberTheory.ArithmeticFunction.Carmichael
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 public import Mathlib.NumberTheory.ArithmeticFunction.LFunction
+public import Mathlib.NumberTheory.ArithmeticFunction.Liouville
 public import Mathlib.NumberTheory.ArithmeticFunction.Misc
 public import Mathlib.NumberTheory.ArithmeticFunction.Moebius
 public import Mathlib.NumberTheory.ArithmeticFunction.VonMangoldt
