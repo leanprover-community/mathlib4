@@ -132,8 +132,8 @@ pattern-matched, like `rintro` would, using the `with` keyword.
 See also `convert_to t`, where `t` specifies the expected type, instead of a proof term of type `t`.
 In other words, `convert_to t` works like `convert (?_ : t)`. Both tactics use the same options.
 
-* `convert! e` uses default transparency when solving side goals. This is currently the same
-  behaviour as `convert`, but `convert` will use reducible transparency in the future.
+* `convert! e` uses default transparency, rather than reducible, when applying congruence lemmas and
+  solving side goals.
 * `convert ← e` creates equality goals in the opposite direction (with the goal type on the right).
 * `convert e using n`, where `n` is a positive numeral, controls the depth with which congruence is
   applied. For example, if the main goal is `⊢ Prime (n + n + 1)` and `e : Prime (2 * n + 1)`, then
@@ -156,6 +156,7 @@ example {n : ℕ} (e : Prime (2 * n + 1)) :
   ring
 
 -- `convert` can fail where `exact` succeeds.
+def p (n : ℕ) := True
 example (h : p 0) : p 1 := by
   fail_if_success
     convert h -- fails, left-over goal 1 = 0
@@ -200,9 +201,14 @@ def elabTermForConvert (term : Syntax) (expectedType? : Option Expr) :
       return t
 
 elab_rules : tactic
-| `(tactic| convert $[!]? $cfg $[←%$sym]? $term $[using $n]? $[with $ps?*]?) =>
+| `(tactic| convert $[!%$semired]? $cfg $[←%$sym]? $term $[using $n]? $[with $ps?*]?) =>
   withMainContext do
-    let config ← Congr!.elabConfig (mkOptionalNode cfg)
+    let mut config ← Congr!.elabConfig (mkOptionalNode cfg)
+    if semired.isSome then
+      config := { config with
+        transparency := default,
+        preTransparency := default,
+        postTransparency := default }
     let patterns := (ps?.getD #[]).toList
     let expectedType ← mkFreshExprMVar (mkSort (← getLevel (← getMainTarget)))
     let (e, gs) ← elabTermForConvert term expectedType
@@ -221,8 +227,8 @@ pattern-matched, like `rintro` would, using the `with` keyword.
 `convert e`, where `e` is a term of type `t`, uses `e` to close the new main goal. In other words,
 `convert e` works like `convert_to t; refine e`. Both tactics use the same options.
 
-* `convert_to! t` uses default transparency when solving side goals. This is currently the same
-  behaviour as `convert_to`, but `convert_to` will use reducible transparency in the future.
+* `convert_to! t` uses default transparency, rather than reducible, when applying congruence lemmas
+  and solving side goals.
 * `convert_to ty at h` changes the type of the local hypothesis `h` to `ty`. If later local
   hypotheses or the goal depend on `h`, then `convert_to t at h` may leave a copy of `h`.
 * `convert_to ← t` creates equality goals in the opposite direction (with the original goal type on
@@ -238,19 +244,18 @@ pattern-matched, like `rintro` would, using the `with` keyword.
 * `convert_to (config := cfg) t` uses the configuration options in `cfg` to control the congruence
   rules (see `Congr!.Config`).
 -/
-syntax (name := convertTo) "convert_to" Lean.Parser.Tactic.optConfig " ←"? ppSpace term
+syntax (name := convertTo) "convert_to" ("!")? Parser.Tactic.optConfig " ←"? ppSpace term
   (" using " num)? (" with" (ppSpace colGt rintroPat)*)? (Parser.Tactic.location)? : tactic
 
-@[tactic_alt convertTo]
 syntax (name := convert_to!) "convert_to!" Lean.Parser.Tactic.optConfig " ←"? ppSpace term
   (" using " num)? (" with" (ppSpace colGt rintroPat)*)? (Parser.Tactic.location)? : tactic
 
 macro_rules
 | `(tactic| convert_to! $cfg $[←%$l]? $t $[using $n]? $[with $w]? $[$loc]?) =>
-    `(tactic| convert_to $cfg $[←%$l]? $t:term $[using $n]? $[with $w]? $[$loc]?)
+    `(tactic| convert_to ! $cfg $[←%$l]? $t:term $[using $n]? $[with $w]? $[$loc]?)
 
 elab_rules : tactic
-| `(tactic| convert_to $cfg $[←%$sym]? $newType $[using $n]?
+| `(tactic| convert_to $[!%$semireducible]? $cfg $[←%$sym]? $newType $[using $n]?
     $[with $ps?*]? $[$loc?:location]?) => do
   let n : ℕ := n |>.map (·.getNat) |>.getD 1
   let config ← Congr!.elabConfig cfg
@@ -279,8 +284,8 @@ into new goals, using the hole's name, if any, as the goal case name.
 Like `congr!`, `convert_to` introduces variables while applying congruence rules. These can be
 pattern-matched, like `rintro` would, using the `with` keyword.
 
-* `ac_change! t` uses default transparency when solving side goals. This is currently the same
-  behaviour as `ac_change`, but `ac_change` will use reducible transparency in the future.
+* `ac_change! t` uses default transparency, rather than reducible, when applying congruence lemmas
+  and solving side goals.
 * `ac_change t using n`, where `n` is a positive numeral, controls the depth with which congruence
   is applied. For example, if the main goal is `⊢ Prime ((a * b + 1) + c)`,
   then `ac_change Prime ((1 + a * b) + c) using 2` solves the side goals, and
@@ -304,6 +309,5 @@ macro_rules
     `(tactic| convert_to $t:term $[using $n]? <;> try ac_rfl)
 | `(tactic| ac_change! $t $[using $n]?) =>
     `(tactic| convert_to! $t:term $[using $n]? <;> try ac_rfl)
-
 
 end Mathlib.Tactic
