@@ -79,7 +79,6 @@ instance : ContinuousMapClass C^n⟮I, M; I', M'⟯ M M' where
 nonrec def id : C^n⟮I, M; I, M⟯ :=
   ⟨id, contMDiff_id⟩
 
-@[simp]
 theorem id_apply (x : M) : (ContMDiffMap.id : C^n⟮I, M; I, M⟯) x = x := rfl
 
 @[simp]
