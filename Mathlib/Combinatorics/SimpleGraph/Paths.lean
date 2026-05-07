@@ -722,28 +722,23 @@ theorem cycle_from_two_paths {u v : V} {p q : G.Walk u v} (hp : p.IsPath) (hq : 
     (h : p ≠ q) :
     ∃ w, w ∈ p.support ∧ w ∈ q.support ∧
     ∃ c : G.Walk w w, c.IsCycle ∧ c.support.Sublist (p.support ++ q.support.reverse.tail) := by
-  induction hs : p.length + q.length using Nat.strong_induction_on generalizing u v with | h s ih =>
-  by_cases! hw : ∃ w ∈ p.support, w ∈ q.support ∧ w ≠ u ∧ w ≠ v
+  induction hs : p.length using Nat.strong_induction_on generalizing u v with | h s ih =>
+  by_cases! hw : ∃ w, w ∈ p.support ∧ w ∈ q.support ∧ w ≠ u ∧ w ≠ v
   · classical
     obtain ⟨w, hwp, hwq, hwu, hwv⟩ := hw
     by_cases! htake : p.takeUntil w hwp ≠ q.takeUntil w hwq
-    · obtain ⟨x, hx₁, hx₂, c, hc₁, hc₂⟩ := ih ((p.takeUntil w _).length + (q.takeUntil w _).length)
-        (hs ▸ Nat.add_lt_add (length_takeUntil_lt hwp hwv) (length_takeUntil_lt hwq hwv))
+    · obtain ⟨x, hx₁, hx₂, c, hc₁, hc₂⟩ := ih _ (hs ▸ length_takeUntil_lt hwp hwv)
         (hp.takeUntil hwp) (hq.takeUntil hwq) htake rfl
-      refine ⟨x, ?_, ?_, c, hc₁, hc₂.trans <| List.Sublist.append ?_ ?_⟩ <;>
-        grind [support_takeUntil_prefix, List.IsPrefix.sublist, support_reverse]
-    · obtain ⟨x, hx₁, hx₂, c, hc₁, hc₂⟩ := ih ((p.dropUntil w _).length + (q.dropUntil w _).length)
-        (hs ▸ Nat.add_lt_add (length_dropUntil_lt hwp hwu) (length_dropUntil_lt hwq hwu))
+      refine ⟨x, ?_, ?_, c, hc₁, hc₂.trans <| .append ?_ ?_⟩ <;>
+        grind [support_takeUntil_prefix, List.IsPrefix.sublist]
+    · obtain ⟨x, hx₁, hx₂, c, hc₁, hc₂⟩ := ih _ (hs ▸ length_dropUntil_lt hwp hwu)
         (hp.dropUntil hwp) (hq.dropUntil hwq) (by grind [take_spec]) rfl
-      refine ⟨x, ?_, ?_, c, hc₁, hc₂.trans <| List.Sublist.append ?_ ?_⟩ <;>
-        grind [support_tail_of_not_nil, dropUntil_support_suffix, List.IsSuffix.sublist]
-  · refine ⟨u, by simp, by simp, p.append q.reverse,
-      isPath_append_isCycle hp ((isPath_reverse_iff q).mpr hq) ?_ ?_, by simp [support_append]⟩
-    · intro
-      grind [dropLast_support_concat, IsPath.support_nodup, support_reverse, cons_tail_support]
-    rw [length_reverse, lt_sup_iff]
-    by_contra! ⟨hpl, hql⟩
-    exact h <| eq_of_length_le_one hpl hql
+      refine ⟨x, ?_, ?_, c, hc₁, hc₂.trans <| .append ?_ ?_⟩ <;>
+        grind [dropUntil_support_suffix, List.IsSuffix.sublist]
+  · refine ⟨u, by simp, by simp, p.append q.reverse, ?_, by simp [support_append]⟩
+    refine isPath_append_isCycle hp (isPath_reverse_iff q |>.mpr hq) (fun _ ↦ ?_) ?_
+    · grind [dropLast_support_concat, IsPath.support_nodup, support_reverse, cons_tail_support]
+    · grind [length_reverse, eq_of_length_le_one]
 
 theorem cycle_from_two_paths_le_length_sum {u v : V} {p q : G.Walk u v}
     (hp : p.IsPath) (hq : q.IsPath) (h : p ≠ q) :
