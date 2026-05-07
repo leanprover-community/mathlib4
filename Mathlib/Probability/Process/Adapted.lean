@@ -182,23 +182,24 @@ end StronglyAdapted
 
 section Progressive
 
-variable {β : Type*} [MeasurableSpace β] {u v : ι → Ω → β}
+variable {β : Type*} {u v : ι → Ω → β}
 
 /-- Progressive process. A sequence of functions `u` is said to be progressive with respect
 to a filtration `f` if at each point in time `i`, `u` restricted to `Set.Iic i × Ω` is measurable
 with respect to the product `MeasurableSpace` structure where the σ-algebra used for `Ω` is `f i`.
 The usual definition uses the interval `[0,i]`, which we replace by `Set.Iic i`. We recover the
 usual definition for index types `ℝ≥0` or `ℕ`. -/
-def IsProgressive [MeasurableSpace ι] (f : Filtration ι m) (u : ι → Ω → β) : Prop :=
+def IsProgressive [MeasurableSpace ι] [MeasurableSpace β] (f : Filtration ι m)
+    (u : ι → Ω → β) : Prop :=
   ∀ i, Measurable[Subtype.instMeasurableSpace.prod (f i)] fun p : Set.Iic i × Ω => u p.1 p.2
 
-theorem isProgressive_const [MeasurableSpace ι] (f : Filtration ι m) (b : β) :
-    IsProgressive f (fun _ _ => b : ι → Ω → β) :=
+theorem isProgressive_const {mi : MeasurableSpace ι} {mβ : MeasurableSpace β} (f : Filtration ι m)
+    (b : β) : IsProgressive f (fun _ _ => b : ι → Ω → β) :=
   fun _ ↦ by exact measurable_const
 
 namespace IsProgressive
 
-variable [MeasurableSpace ι]
+variable {mi : MeasurableSpace ι} {mβ : MeasurableSpace β}
 
 protected theorem adapted (h : IsProgressive f u) : Adapted f u := by
   intro i
@@ -240,8 +241,7 @@ protected theorem div [Group β] [MeasurableDiv₂ β] (hu : IsProgressive f u)
   fun i ↦ Measurable.div (hu i) (hv i)
 
 /-- The norm of a progressive process is progressive. -/
-protected lemma norm {β : Type*} {u : ι → Ω → β} [MeasurableSpace β] [NormedAddCommGroup β]
-    [OpensMeasurableSpace β] (hu : IsProgressive f u) :
+protected lemma norm [NormedAddCommGroup β] [OpensMeasurableSpace β] (hu : IsProgressive f u) :
     IsProgressive f fun t ω ↦ ‖u t ω‖ :=
   fun i ↦ by apply @(hu i).norm; infer_instance
 
@@ -325,12 +325,12 @@ end Arithmetic
 
 end IsStronglyProgressive
 
-lemma IsProgressive.isStronglyProgressive [MeasurableSpace ι] [MeasurableSpace β]
+lemma IsProgressive.isStronglyProgressive {mi : MeasurableSpace ι} {mβ : MeasurableSpace β}
     [PseudoMetrizableSpace β] [SecondCountableTopology β] [OpensMeasurableSpace β]
   (h : IsProgressive f u) : IsStronglyProgressive f u :=
   fun i ↦ (h i).stronglyMeasurable
 
-lemma IsStronglyProgressive.isProgressive [MeasurableSpace ι] [MeasurableSpace β]
+lemma IsStronglyProgressive.isProgressive {mi : MeasurableSpace ι} {mβ : MeasurableSpace β}
     [PseudoMetrizableSpace β] [BorelSpace β] (h : IsStronglyProgressive f u) : IsProgressive f u :=
   fun i ↦ (h i).measurable
 
