@@ -453,7 +453,7 @@ theorem psi_ge' {x : ℝ} (hx : 0 ≤ x) : (x - 1) * log 2 - log (x + 2) ≤ psi
   gcongr
   · exact (Nat.sub_one_lt_floor x).le
   · exact floor_le hx
-  exact one_le_two
+  · exact one_le_two
 
 theorem psi_sub_theta_le {x : ℝ} (hx : 1 ≤ x) : psi x - theta x ≤ 2 * √x * log x := by
   grw [← abs_psi_sub_theta_le_sqrt_mul_log hx]
