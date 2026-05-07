@@ -17,7 +17,8 @@ subcategories of `C`, we define predicates (typeclasses
 saying that `A` is right `B`-localizing (or left `B`-localizing).
 
 ## References
-* [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
+* [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*,
+  Proposition 2.3.5, Chapitre II][verdier1996]
 
 -/
 
