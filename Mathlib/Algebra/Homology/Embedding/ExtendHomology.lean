@@ -431,6 +431,7 @@ lemma quasiIsoAt_extendMap_iff :
 
 end
 
+variable {K L} in
 lemma quasiIso_extendMap_iff [∀ j, K.HasHomology j] [∀ j, L.HasHomology j] :
     QuasiIso (extendMap φ e) ↔ QuasiIso φ := by
   simp only [quasiIso_iff, ← fun j ↦ quasiIsoAt_extendMap_iff φ e (j := j) (hj' := rfl)]

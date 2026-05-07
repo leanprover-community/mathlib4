@@ -300,8 +300,7 @@ def gluedIso : F.obj D.glued ≅ (D.mapGlueData F).glued :=
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem ι_gluedIso_hom (i : D.J) : F.map (D.ι i) ≫ (D.gluedIso F).hom = (D.mapGlueData F).ι i := by
-  erw [ι_preservesColimitIso_hom_assoc]
-  simp [GlueData.ι]
+  simp [gluedIso, GlueData.ι]
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]

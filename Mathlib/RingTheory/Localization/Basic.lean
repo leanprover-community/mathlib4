@@ -534,9 +534,17 @@ noncomputable def localizationAlgebra : Algebra Rₘ Sₘ :=
 noncomputable instance : Algebra (Localization M)
     (Localization (Algebra.algebraMapSubmonoid S M)) := localizationAlgebra M S
 
+-- This is not an instance, because the discrimination tree key is `IsScalarTower _ _ _ _ _ _`, so
+-- it would cause significant slowdowns.
+lemma isScalarTower_localizationAlgebra [Algebra R Sₘ] [IsScalarTower R S Sₘ] :
+    letI : Algebra Rₘ Sₘ := localizationAlgebra M S
+    IsScalarTower R Rₘ Sₘ :=
+  letI : Algebra Rₘ Sₘ := localizationAlgebra M S
+  .of_algebraMap_eq' <| by
+    simp [RingHom.algebraMap_toAlgebra, IsScalarTower.algebraMap_eq R S Sₘ]
+
 instance : IsScalarTower R (Localization M) (Localization (Algebra.algebraMapSubmonoid S M)) :=
-  IsScalarTower.of_algebraMap_eq (fun x ↦
-    (IsLocalization.map_eq (T := (Algebra.algebraMapSubmonoid S M)) M.le_comap_map x).symm)
+  isScalarTower_localizationAlgebra _ _
 
 end
 
