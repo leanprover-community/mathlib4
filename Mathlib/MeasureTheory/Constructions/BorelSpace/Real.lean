@@ -507,15 +507,10 @@ lemma measurable_of_real_real {f : EReal × EReal → β}
 
 private lemma measurable_const_mul (c : EReal) : Measurable fun (x : EReal) ↦ c * x := by
   rcases eq_or_ne c 0 with rfl | hc
-  · simpa only [zero_mul] using (measurable_const : Measurable fun _ : EReal => (0 : EReal))
-  · refine measurable_of_continuousOn_compl_singleton 0 ?_
-    intro x hx
-    have hx0 : x ≠ 0 := by simpa using hx
-    have hcont : ContinuousAt (fun x : EReal ↦ c * x) x :=
-      ContinuousAt.comp_of_eq (g := fun p : EReal × EReal ↦ p.1 * p.2)
-        (continuousAt_mul (Or.inl hc) (Or.inl hc) (Or.inr hx0) (Or.inr hx0))
-        (continuousAt_const.prodMk continuousAt_id) rfl
-    exact hcont.continuousWithinAt
+  · simp
+  · refine measurable_of_continuousOn_compl_singleton 0 fun x (hx : x ≠ 0) ↦ ?_
+    exact (continuousAt_mul (Or.inl hc) (Or.inl hc) (Or.inr hx) (Or.inr hx)).comp_of_eq
+      (continuousAt_const.prodMk continuousAt_id) rfl |>.continuousWithinAt
 
 instance : MeasurableMul₂ EReal := by
   refine ⟨measurable_of_real_real ?_ ?_ ?_ ?_ ?_⟩
