@@ -160,7 +160,6 @@ theorem embedRealFun_zero : embedRealFun (0 : M) = 0 := by
   apply le_antisymm
   · apply csSup_le (ratLt'_nonempty 0)
     intro x
-    unfold ratLt' ratLt
     suffices ∀ (y : ℚ), y.num • (1 : M) < 0 → y = x → x ≤ 0 by simpa using this
     intro y hy hyx
     rw [← hyx, Rat.cast_nonpos, ← Rat.num_nonpos]

@@ -200,10 +200,7 @@ theorem destruct_nil : destruct (nil : Seq α) = none :=
 
 @[simp]
 theorem destruct_cons (a : α) : ∀ s, destruct (cons a s) = some (a, s)
-  | ⟨f, al⟩ => by
-    unfold cons destruct Functor.map
-    apply congr_arg fun s => some (a, s)
-    apply Subtype.ext; dsimp [tail]
+  | ⟨f, al⟩ => congr_arg (fun s => some (a, s)) (Subtype.ext (by dsimp [tail]))
 
 theorem destruct_eq_none {s : Seq α} : destruct s = none → s = nil := by
   dsimp [destruct]
@@ -543,7 +540,7 @@ theorem mem_rec_on {C : Seq α → Prop} {a s} (M : a ∈ s)
   | zero =>
     have TH : s = cons a (tail s) := by
       apply destruct_eq_cons
-      unfold destruct get? Functor.map
+      unfold destruct get?
       rw [← e]
       rfl
     rw [TH]

@@ -361,8 +361,8 @@ theorem head_terminates_of_head_tail_terminates (s : WSeq α) [T : Terminates (h
 theorem destruct_some_of_destruct_tail_some {s : WSeq α} {a} (h : some a ∈ destruct (tail s)) :
     ∃ a', some a' ∈ destruct s := by
   unfold tail Functor.map at h; simp only [destruct_flatten] at h
-  rcases exists_of_mem_bind h with ⟨t, tm, td⟩; clear h
-  rcases Computation.exists_of_mem_map tm with ⟨t', ht', ht2⟩; clear tm
+  rcases exists_of_mem_bind h with ⟨t, tm, td⟩
+  rcases Computation.exists_of_mem_map tm with ⟨t', ht', ht2⟩
   rcases t' with - | t' <;> rw [← ht2] at td <;> simp only [destruct_nil] at td
   · have := mem_unique td (ret_mem _)
     contradiction
@@ -370,9 +370,8 @@ theorem destruct_some_of_destruct_tail_some {s : WSeq α} {a} (h : some a ∈ de
 
 theorem head_some_of_head_tail_some {s : WSeq α} {a} (h : some a ∈ head (tail s)) :
     ∃ a', some a' ∈ head s := by
-  unfold head at h
-  rcases Computation.exists_of_mem_map h with ⟨o, md, e⟩; clear h
-  rcases o with - | o <;> [injection e; injection e with h']; clear h'
+  rcases Computation.exists_of_mem_map h with ⟨o, md, e⟩
+  rcases o with - | o <;> [injection e; injection e with h']
   obtain ⟨a, am⟩ := destruct_some_of_destruct_tail_some md
   exact ⟨_, Computation.mem_map (@Prod.fst α (WSeq α) <$> ·) am⟩
 
