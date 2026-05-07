@@ -42,10 +42,8 @@ theorem factorization_lcm {β : Type*} {f : β → ℕ} {s : Finset β} (hf : �
     (s.lcm f).factorization p = s.sup fun a ↦ (f a).factorization p := by
   classical
   induction s using Finset.induction with
-  | empty =>
-    simp [lcm, fold_empty, Nat.factorization_one, Finsupp.coe_zero, sup_empty]
-  | insert _ _ _ _ =>
-    simp_all [lcm_eq_nat_lcm, Nat.factorization_lcm]
+  | empty => simp
+  | insert _ _ _ _ => simp_all [lcm_eq_nat_lcm, Nat.factorization_lcm]
 
 namespace Rat
 
