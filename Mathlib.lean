@@ -1233,6 +1233,7 @@ public import Mathlib.Algebra.Ring.Idempotent
 public import Mathlib.Algebra.Ring.Identities
 public import Mathlib.Algebra.Ring.InjSurj
 public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Algebra.Ring.Int.Field
 public import Mathlib.Algebra.Ring.Int.Parity
 public import Mathlib.Algebra.Ring.Int.Units
 public import Mathlib.Algebra.Ring.Invertible
@@ -3051,6 +3052,7 @@ public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorCategory.Complete
 public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorCategory.Groupoid
 public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorToTypes
 public import Mathlib.CategoryTheory.Monoidal.Closed.Ideal
+public import Mathlib.CategoryTheory.Monoidal.Closed.InternalCurrying
 public import Mathlib.CategoryTheory.Monoidal.Closed.Transport
 public import Mathlib.CategoryTheory.Monoidal.Closed.Types
 public import Mathlib.CategoryTheory.Monoidal.Closed.Zero
@@ -4531,6 +4533,7 @@ public import Mathlib.Geometry.Group.Growth.QuotientInter
 public import Mathlib.Geometry.Manifold.Algebra.LeftInvariantDerivation
 public import Mathlib.Geometry.Manifold.Algebra.LieGroup
 public import Mathlib.Geometry.Manifold.Algebra.Monoid
+public import Mathlib.Geometry.Manifold.Algebra.SMul
 public import Mathlib.Geometry.Manifold.Algebra.SmoothFunctions
 public import Mathlib.Geometry.Manifold.Algebra.Structures
 public import Mathlib.Geometry.Manifold.Bordism
@@ -5726,6 +5729,7 @@ public import Mathlib.NumberTheory.NumberField.Discriminant.Basic
 public import Mathlib.NumberTheory.NumberField.Discriminant.Defs
 public import Mathlib.NumberTheory.NumberField.Discriminant.Different
 public import Mathlib.NumberTheory.NumberField.EquivReindex
+public import Mathlib.NumberTheory.NumberField.ExistsRamified
 public import Mathlib.NumberTheory.NumberField.FinitePlaces
 public import Mathlib.NumberTheory.NumberField.FractionalIdeal
 public import Mathlib.NumberTheory.NumberField.House

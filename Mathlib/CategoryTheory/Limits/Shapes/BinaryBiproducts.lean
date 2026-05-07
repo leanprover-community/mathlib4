@@ -260,6 +260,7 @@ def ofIso (b : BinaryBicone P Q) (eP : P ≅ P') (eQ : Q ≅ Q') :
   inl := eP.inv ≫ b.inl
   inr := eQ.inv ≫ b.inr
 
+attribute [local simp←] op_comp in
 /-- The opposite of a binary bicone. -/
 @[simps]
 protected def op (b : BinaryBicone P Q) :
@@ -269,10 +270,6 @@ protected def op (b : BinaryBicone P Q) :
   snd := b.inr.op
   inl := b.fst.op
   inr := b.snd.op
-  inl_fst := Quiver.Hom.unop_inj (by simp)
-  inr_fst := Quiver.Hom.unop_inj (by simp)
-  inl_snd := Quiver.Hom.unop_inj (by simp)
-  inr_snd := Quiver.Hom.unop_inj (by simp)
 
 end BinaryBicone
 
