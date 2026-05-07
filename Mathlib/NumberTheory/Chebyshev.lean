@@ -72,7 +72,7 @@ end Nat.Prime
 
 open Nat hiding log
 open Finset Real
-open ArithmeticFunction hiding log
+open ArithmeticFunction hiding log id
 open scoped Nat.Prime
 
 namespace Chebyshev
@@ -192,7 +192,7 @@ Basic facts about the least common multiple of the first `n` natural numbers
 -/
 
 /-- Least common multiple of $\{1, \dots, n\}$. -/
-def lcmUpto (n : ℕ) : ℕ := (Icc 1 n).lcm _root_.id
+def lcmUpto (n : ℕ) : ℕ := (Icc 1 n).lcm id
 
 theorem lcmUpto_ne_zero (n : ℕ) : lcmUpto n ≠ 0 := by
   simp [lcmUpto]

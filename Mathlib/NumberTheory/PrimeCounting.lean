@@ -143,13 +143,20 @@ theorem primeCounting'_add_le {a k : ℕ} (h0 : a ≠ 0) (h1 : a < k) (n : ℕ) 
       exact Ico_filter_coprime_le k n h0
 
 /-- The primes up to $n$. -/
-abbrev primesLE (n : ℕ) : Finset ℕ := filter Nat.Prime (range (n + 1))
+abbrev primesLE (n : ℕ) : Finset ℕ := primesBelow (n + 1)
 
-theorem mem_primesLE {p n : ℕ} : p ∈ primesLE n ↔ p.Prime ∧ p ≤ n := by grind
+theorem primesBelow_eq_primesLE_sub_one (n : ℕ) : primesBelow n = primesLE (n - 1) := by
+  cases n <;> simp
 
-theorem prime_of_mem_primesLE {p n : ℕ} (hp : p ∈ primesLE n) : p.Prime := by simp_all
+theorem primesLE_eq_filter_range (n : ℕ) : primesLE n = filter Nat.Prime (range (n + 1)) := by
+  simp [primesLE, primesBelow]
 
-theorem le_of_mem_primesLE {p n : ℕ} (hp : p ∈ primesLE n) : p ≤ n := by simp_all
+theorem mem_primesLE {p n : ℕ} : p ∈ primesLE n ↔ p.Prime ∧ p ≤ n := by
+  simp [mem_primesBelow]; tauto
+
+theorem prime_of_mem_primesLE {p n : ℕ} (hp : p ∈ primesLE n) : p.Prime := by grind [mem_primesLE]
+
+theorem le_of_mem_primesLE {p n : ℕ} (hp : p ∈ primesLE n) : p ≤ n := by grind [mem_primesLE]
 
 theorem one_lt_of_mem_primesLE {p n : ℕ} (hp : p ∈ primesLE n) : 1 < p :=
   (prime_of_mem_primesLE hp).one_lt
@@ -159,35 +166,39 @@ theorem two_le_of_mem_primesLE {p n : ℕ} (hp : p ∈ primesLE n) : 2 ≤ p :=
 
 theorem primesLE_mono : Monotone primesLE := by
   intros n m _ p
-  simp; grind
+  simp [mem_primesLE]; grind
+
+theorem primesBelow_mono : Monotone primesBelow := by
+  intros n m _ p
+  simp [mem_primesBelow]; grind
 
 theorem primesLE_eq_filter_Icc_zero (n : ℕ) : primesLE n = filter Nat.Prime (Icc 0 n) := by
   ext p
-  simp
+  simp [primesLE_eq_filter_range]
 
 theorem primesLE_eq_filter_Icc_one (n : ℕ) : primesLE n = filter Nat.Prime (Icc 1 n) := by
   ext p
-  simp +contextual [Nat.Prime.one_le]
+  simp +contextual [primesLE_eq_filter_range, Nat.Prime.one_le]
 
 theorem primesLE_eq_filter_Icc_two (n : ℕ) : primesLE n = filter Nat.Prime (Icc 2 n) := by
   ext p
-  simp +contextual [Nat.Prime.two_le]
+  simp +contextual [primesLE_eq_filter_range, Nat.Prime.two_le]
 
 /-- The cardinality of the finset `primesLE n` equals the counting function
 `primeCounting` at `n`. -/
 @[simp]
-theorem primesLE_card_eq_primeCounting (n : ℕ) : (primesLE n).card = primeCounting n := by
-  simp only [primesLE, primeCounting, primeCounting', count_eq_card_filter_range]
+theorem primesLE_card_eq_primeCounting (n : ℕ) : #(primesLE n) = primeCounting n := by
+  simp only [primesLE, primeCounting, primesBelow_card_eq_primeCounting']
 
 @[simp]
-theorem primesLE_zero : primesLE 0 = ∅ := by simp [primesLE, not_prime_zero]
+theorem primesBelow_one : primesBelow 1 = ∅ := by simp [primesLE_eq_filter_range, not_prime_zero]
+
+@[simp]
+theorem primesLE_zero : primesLE 0 = ∅ := primesBelow_one
 
 @[simp]
 theorem primesLE_one : primesLE 1 = ∅ := by
-  grind [not_prime_zero, not_prime_one]
+  grind [primesLE_eq_filter_range, not_prime_zero, not_prime_one]
 
-theorem primesLE_eq_primesBelow_succ (n : ℕ) : primesLE n = primesBelow (n + 1) := by
-  ext p
-  simp [primesBelow, primesLE]
 
 end Nat
