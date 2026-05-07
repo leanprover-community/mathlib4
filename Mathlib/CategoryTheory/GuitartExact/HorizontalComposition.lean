@@ -21,8 +21,8 @@ namespace CategoryTheory
 
 open Category
 
-variable {C₁ C₂ C₃ D₁ D₂ D₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
-  [Category D₁] [Category D₂] [Category D₃]
+variable {C₁ C₂ C₃ D₁ D₂ D₃ : Type*} [Category* C₁] [Category* C₂] [Category* C₃]
+  [Category* D₁] [Category* D₂] [Category* D₃]
 
 namespace TwoSquare
 
