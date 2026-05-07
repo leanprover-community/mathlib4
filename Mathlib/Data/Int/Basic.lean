@@ -47,9 +47,9 @@ lemma inductionOn'_add_one (hz : b ≤ z) :
   rw [show z + 1 - b = zb + 1 by lia]
   have : b + zb = z := by lia
   subst this
-  convert! ← cast_heq _ _
-  · rw [Int.inductionOn', cast_eq_iff_heq, ← hzb]
-  · rw [Int.add_assoc]
+  -- This `convert` is very sensitive to the precise transparency level.
+  convert (config := { postTransparency := default }) cast_heq _ _
+  rw [Int.inductionOn', cast_eq_iff_heq, ← hzb]
 
 end inductionOn'
 

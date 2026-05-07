@@ -179,8 +179,8 @@ syntax (name := convert!) "convert!" Lean.Parser.Tactic.optConfig " ←"? ppSpac
   (" using " num)? (" with" (ppSpace colGt rintroPat)*)? : tactic
 
 macro_rules
-| `(tactic| convert! $cfg $[←%$l]? $t $[using $n]? $[with $w]?) =>
-    `(tactic| convert ! $cfg $[←%$l]? $t:term $[using $n]? $[with $w]?)
+| `(tactic| convert! $cfg $[←%$l]? $t $[using $n]? $[with $[$w]*]?) =>
+    `(tactic| convert ! $cfg $[←%$l]? $t:term $[using $n]? $[with $[$w]*]?)
 
 /--
 Elaborates `term` ensuring the expected type, allowing stuck metavariables.
