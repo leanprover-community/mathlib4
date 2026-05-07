@@ -71,39 +71,24 @@ structure Hom (HP HP' : HomologyPretheory C c) where
   `HomologyPretheory`s. -/
   hom (i : ι) : HP.Hₚ i ⟶ HP'.Hₚ i
   /-- `hom` needs to be compatible with the boundary maps. -/
-  w (i j : ι) : dsimp% HP.δ i j ≫ proj₂.whiskerLeft ((HP.iso j).hom ≫ incl.whiskerLeft (hom j) ≫
-      (HP'.iso j).inv) = hom i ≫ HP'.δ i j := by cat_disch
+  w (i j : ι) : HP.δ i j ≫ proj₂.whiskerLeft (HP.iso j).hom ≫
+      proj₂.whiskerLeft (incl.whiskerLeft (hom j)) =
+      hom i ≫ HP'.δ i j ≫ proj₂.whiskerLeft (HP'.iso j).hom := by cat_disch
 
-attribute [local simp] Hom.w
+attribute [reassoc] Hom.w
 
-@[local simp]
-lemma Hom.w_congr_app' {HP HP' : HomologyPretheory C c} (f : HP.Hom HP') (i j : ι) (X : TopPair) :
-    (HP.δ i j).app X ≫ (proj₂.whiskerLeft ((HP.iso j).hom ≫ incl.whiskerLeft (f.hom j) ≫
-    (HP'.iso j).inv)).app X = (f.hom i).app X ≫ (HP'.δ i j).app X := by
-  simp only [← NatTrans.comp_app]
-  apply NatTrans.congr_app
-  exact f.w i j
-
-@[local simp]
+@[reassoc (attr := simp)]
 lemma Hom.w_congr_app {HP HP' : HomologyPretheory C c} (f : HP.Hom HP') (i j : ι) (X : TopPair) :
-    dsimp% (HP.δ i j).app X ≫ (proj₂.whiskerLeft ((HP.iso j).hom ≫ incl.whiskerLeft (f.hom j) ≫
-    (HP'.iso j).inv)).app X = (f.hom i).app X ≫ (HP'.δ i j).app X := Hom.w_congr_app' f i j X
+    dsimp% (HP.δ i j).app X ≫ (HP.iso j).hom.app X.left ≫ (f.hom j).app (ofTopCat X.left) =
+      (f.hom i).app X ≫ (HP'.δ i j).app X ≫ (HP'.iso j).hom.app X.left :=
+  congr($(f.w i j).app _)
 
 set_option backward.isDefEq.respectTransparency false in
 @[simps]
 instance : Category (HomologyPretheory C c) where
   Hom := HomologyPretheory.Hom
   id _ := { hom _ := NatTrans.id _ }
-  comp f g := {
-    hom i := f.hom i ≫ g.hom i
-    w i j := by
-      have hf := f.w i j
-      have hg := g.w i j
-      simp_all only [Functor.whiskerLeft_comp, ← Category.assoc]
-      rw [← Category.comp_id (incl.whiskerLeft (f.hom j)), ← (iso _ j).inv_hom_id]
-      simp only [Functor.whiskerLeft_comp, ← Category.assoc]
-      simp only [hf, Category.assoc (f.hom i), hg]
-  }
+  comp f g := { hom i := f.hom i ≫ g.hom i }
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given an isomoprhism of `HomologyPretheory`s, we get an isomorphism of the homology functors
