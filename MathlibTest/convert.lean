@@ -128,4 +128,38 @@ example (x y z : Nat) (h : x + y = z) : y + x = z := by
   · rw [Nat.add_comm]
   exact h
 
+/-! Check that we don't unfold at semireducible transparency: although `congr!` (which
+`convert` relies on) applies lemmas at reducible transparency, it used to call
+`assumption`/`rfl` at default transparency and solve too much.
+
+`convert!` uses default transparency throughout, and solves the goals all at once.
+-/
+
+/-- An identity function at default transparency, to test that we don't unfold too much. -/
+def semireducibleId {α : Type*} (a : α) := a
+
+example (P : ℕ → Prop) {a b : ℕ} (h : P a) : P (semireducibleId a) := by
+  convert h
+  guard_target =ₛ semireducibleId a = a
+  rfl
+
+example (P : ℕ → Prop) {a b : ℕ} (h : P a) : P (semireducibleId a) := by
+  convert! h
+
+example (P : ℕ → Prop) {a b : ℕ} (hab : b = a) (h : P a) : P (semireducibleId b) := by
+  convert h
+  guard_target =ₛ semireducibleId b = a
+  exact hab
+
+example (P : ℕ → Prop) {a b : ℕ} (hab : b = a) (h : P (semireducibleId a)) : P b := by
+  convert! h
+
+example (P : ℕ → Prop) {a b : ℕ} (hab : b = a) (h : P a) : P (semireducibleId b) := by
+  convert h
+  guard_target =ₛ semireducibleId b = a
+  exact hab
+
+example (P : ℕ → Prop) {a b : ℕ} (hab : b = a) (h : P (semireducibleId a)) : P b := by
+  convert! h
+
 end Tests
