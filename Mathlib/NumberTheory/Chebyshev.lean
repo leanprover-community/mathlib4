@@ -164,8 +164,7 @@ theorem theta_mono : Monotone θ := by
   intro x y hxy
   apply sum_le_sum_of_subset_of_nonneg
   · exact filter_subset_filter _ <| Ioc_subset_Ioc_right (by gcongr)
-  · simp only [mem_filter]
-    exact fun p _ _ ↦ log_natCast_nonneg p
+  · exact fun p _ _ ↦ log_natCast_nonneg p
 
 /-- `θ x` is the log of the product of the primes up to `x`. -/
 theorem theta_eq_log_primorial (x : ℝ) : θ x = log (primorial ⌊x⌋₊) := by
