@@ -113,7 +113,7 @@ theorem theta_eq_sum_primesLE (x : ℝ) :
     θ x = ∑ p ∈ primesLE ⌊x⌋₊, log p := by
     simp [theta_eq_sum_Icc, primesLE_eq_filter_Icc_zero]
 
-theorem theta_eq_sum_log (n : ℕ) : theta n = ∑ p ∈ primesLE n, log p := by
+theorem theta_eq_sum_log (n : ℕ) : θ n = ∑ p ∈ primesLE n, log p := by
   simp [theta_eq_sum_primesLE]
 
 theorem psi_eq_zero_of_lt_two {x : ℝ} (hx : x < 2) : ψ x = 0 := by
