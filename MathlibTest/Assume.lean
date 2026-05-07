@@ -52,11 +52,6 @@ is not an implication.
 example (p q : Prop) : p → p := by
   assume p, p
 
-example (n : Nat) : n < 5 → Fin 5 := by
-  assume n < 5
-  -- this style is discouraged/disallowed in Mathlib: an explicit name should be given.
-  exact ⟨n, ‹_›⟩
-
 /--
 error: Tactic 'assume' failed: Given type
   Nat
@@ -65,3 +60,12 @@ is not a proposition.
 #guard_msgs in
 example : ∀ n, n < 5 → Fin 5 := by
   assume Nat
+
+example (n : Nat) : n < 5 → Fin 5 := by
+  assume n < 5
+  -- this style is discouraged/disallowed in Mathlib: an explicit name should be given.
+  exact ⟨n, ‹_›⟩
+
+example {p : Prop} (α : p → Type) (α_intro : ∀ h, α h) : ∀ h : p, α h := by
+  assume p
+  apply α_intro
