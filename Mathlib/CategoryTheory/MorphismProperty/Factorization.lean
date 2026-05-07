@@ -245,6 +245,24 @@ instance [HasFunctorialFactorization W₁ W₂] (J : Type*) [Category* J] :
     HasFunctorialFactorization (W₁.functorCategory J) (W₂.functorCategory J) :=
   ⟨⟨(functorialFactorizationData W₁ W₂).functorCategory J⟩⟩
 
+instance {D : Type*} [Category D] (F : D ⥤ C) [F.IsEquivalence]
+    [W₁.RespectsIso] [W₂.RespectsIso]
+    [HasFactorization W₁ W₂] :
+    HasFactorization (W₁.inverseImage F) (W₂.inverseImage F) where
+  nonempty_mapFactorizationData {X Y} f := by
+    let h := factorizationData W₁ W₂ (F.map f)
+    exact ⟨{
+      Z := F.objPreimage h.Z
+      i := F.preimage (h.i ≫ (F.objObjPreimageIso h.Z).inv)
+      p := F.preimage ((F.objObjPreimageIso h.Z).hom ≫ h.p)
+      hi := by
+        refine (W₁.arrow_mk_iso_iff ?_).1 h.hi
+        exact Arrow.isoMk (Iso.refl _) (F.objObjPreimageIso h.Z).symm
+      hp := by
+        refine (W₂.arrow_mk_iso_iff ?_).1 h.hp
+        exact Arrow.isoMk (F.objObjPreimageIso h.Z).symm (Iso.refl _)
+      fac := F.map_injective (by simp) }⟩
+
 end MorphismProperty
 
 end CategoryTheory
