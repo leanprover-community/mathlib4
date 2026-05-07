@@ -245,8 +245,7 @@ theorem lcmUpto_eq_prod_pow_log (n : ℕ) : lcmUpto n = ∏ p ∈ primesLE n, p 
     factorization_lcmUpto n <| prime_of_mem_primesLE hp
 
 theorem lcmUpto_eq_prod_pow_floor (n : ℕ) : lcmUpto n = ∏ p ∈ primesLE n, p ^ ⌊log n / log p⌋₊ := by
-  convert lcmUpto_eq_prod_pow_log n using 3
-  rw [← natFloor_logb_natCast, ← log_div_log]
+  simp_rw [lcmUpto_eq_prod_pow_log, ← natFloor_logb_natCast, ← log_div_log]
 
 theorem psi_eq_sum_mul_log_prime (n : ℕ) : ψ n = ∑ p ∈ primesLE n, p.log n * log p := calc
   _ = ∑ m ∈ Icc 1 n, Λ m := by simp [psi, ← Icc_add_one_left_eq_Ioc]
