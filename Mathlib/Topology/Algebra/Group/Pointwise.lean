@@ -253,12 +253,12 @@ lemma IsOpen.mul_closure_one_eq {U : Set G} (hU : IsOpen U) :
   compl_mul_closure_one_eq_iff.1 (hU.isClosed_compl.mul_closure_one_eq)
 
 @[to_additive]
-theorem IsOpen.closure_subset_mul_self_of_one_mem {U : Set G} (hopen : IsOpen U)
-    (h : 1 ∈ U) : closure U ⊆ U * U := by
+theorem closure_subset_mul_self_of_mem_nhds_one {U : Set G} (hU : U ∈ 𝓝 1) :
+    closure U ⊆ U * U := by
   intro x hx
   rw [mem_closure_iff_nhds] at hx
   have hkey : (fun y => x / y) ⁻¹' U ∈ 𝓝 x :=
-    (hopen.preimage (continuous_const.div' continuous_id)).mem_nhds (by simpa)
+    ContinuousAt.preimage_mem_nhds (by fun_prop) (by simpa)
   obtain ⟨a, ha_mem, ha_s⟩ := hx _ hkey
   exact Set.mem_mul.mpr ⟨x / a, ha_mem, a, ha_s, div_mul_cancel x a⟩
 
