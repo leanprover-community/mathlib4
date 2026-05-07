@@ -395,18 +395,6 @@ instance [∀ i, Mul (G i)] [∀ i, SMul R (G i)] [∀ i, SMulCommClass R (G i) 
   smul_comm r := DirectLimit.induction₂ _ fun i _ _ ↦ by
     simp_rw [smul_eq_mul, smul_def, mul_def, smul_def, mul_smul_comm]
 
-instance [∀ i, Mul (G i)] [∀ i, SMul R (G i)] [∀ i, IsScalarTower R (G i) (G i)]
-    [∀ i j h, MulHomClass (T h) (G i) (G j)] [∀ i j h, MulActionHomClass (T h) R (G i) (G j)] :
-    IsScalarTower R (DirectLimit G f) (DirectLimit G f) where
-  smul_assoc r := DirectLimit.induction₂ _ fun i _ _ ↦ by
-    simp_rw [smul_eq_mul, smul_def, mul_def, smul_def, smul_mul_assoc]
-
-instance [∀ i, Mul (G i)] [∀ i, SMul R (G i)] [∀ i, SMulCommClass R (G i) (G i)]
-    [∀ i j h, MulHomClass (T h) (G i) (G j)] [∀ i j h, MulActionHomClass (T h) R (G i) (G j)] :
-    SMulCommClass R (DirectLimit G f) (DirectLimit G f) where
-  smul_comm r := DirectLimit.induction₂ _ fun i _ _ ↦ by
-    simp_rw [smul_eq_mul, smul_def, mul_def, smul_def, mul_smul_comm]
-
 instance [∀ i, Mul (G i)] [∀ i, SMul R (G i)] [∀ i, SMulCommClass (G i) R (G i)]
     [∀ i j h, MulHomClass (T h) (G i) (G j)] [∀ i j h, MulActionHomClass (T h) R (G i) (G j)] :
     SMulCommClass (DirectLimit G f) R (DirectLimit G f) :=
