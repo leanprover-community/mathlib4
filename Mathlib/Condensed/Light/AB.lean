@@ -16,7 +16,7 @@ The category of light condensed `R`-modules over a ring satisfies the countable 
 Grothendieck's AB4\* axiom
 -/
 
-@[expose] public section
+public section
 
 universe u
 

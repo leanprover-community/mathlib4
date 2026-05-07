@@ -12,7 +12,7 @@ public import Mathlib.Data.Int.Cast.Basic
 # Instances for `grind`.
 -/
 
-@[expose] public section
+public section
 
 open Lean
 

@@ -20,7 +20,7 @@ structure in `Mathlib.CategoryTheory.Monoidal.Arrow`.
 An attribute should be developed to automatically generate lemmas of this form.
 -/
 
-@[expose] public section
+public section
 
 universe v u
 
