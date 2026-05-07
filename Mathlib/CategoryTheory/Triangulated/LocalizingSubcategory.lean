@@ -156,14 +156,22 @@ and `B : ObjectProperty C`, this is the inclusion functor
 `A.ι : A.FullSubcategory ⥤ C`, considered as a localized morphism,
 where `C` is equipped with the property of morphisms `B.trW`
 and `A.FullSubcategory` with the property of morphisms `(B.inverseImage A.ι).trW`. -/
-@[simps]
-def triangulatedLocalizedMorphism [A.IsTriangulated] :
+@[implicit_reducible]
+def triangulatedLocalizerMorphism [A.IsTriangulated] :
     LocalizerMorphism (B.inverseImage A.ι).trW B.trW where
   functor := A.ι
   map X Y f hf := by
     simp only [MorphismProperty.inverseImage_iff, trW_iff] at hf ⊢
     obtain ⟨Z, a, b, hT, hZ⟩ := hf
     exact ⟨_, _, _, A.ι.map_distinguished _ hT, hZ⟩
+
+instance [A.IsTriangulated] :
+    (triangulatedLocalizerMorphism A B).functor.CommShift ℤ :=
+  inferInstanceAs (A.ι.CommShift ℤ)
+
+instance [A.IsTriangulated] :
+    (triangulatedLocalizerMorphism A B).functor.IsTriangulated :=
+  inferInstanceAs A.ι.IsTriangulated
 
 lemma trW_inverseImage_ι_iff [A.IsTriangulated] {X Y : A.FullSubcategory} (f : X ⟶ Y) :
     (B.inverseImage A.ι).trW f ↔ (A ⊓ B).trW f.hom := by
@@ -190,14 +198,14 @@ lemma inverseImage_opEquivalence_inverse_trW_inverseImage_ι_op [A.IsTriangulate
 variable [IsTriangulated C] [A.IsTriangulated] [B.IsTriangulated] [B.IsClosedUnderIsomorphisms]
 
 instance [A.IsVerdierRightLocalizing B] :
-    (A.triangulatedLocalizedMorphism B).IsLocalizedFullyFaithful where
+    (A.triangulatedLocalizerMorphism B).IsLocalizedFullyFaithful where
   nonempty_fullyFaithful := by
     let L₁ := (B.inverseImage A.ι).trW.Q
     let L₂ := B.trW.Q
     let F : (B.inverseImage A.ι).trW.Localization ⥤ B.trW.Localization :=
-      (A.triangulatedLocalizedMorphism B).localizedFunctor L₁ L₂
+      (A.triangulatedLocalizerMorphism B).localizedFunctor L₁ L₂
     let e : A.ι ⋙ L₂ ≅ L₁ ⋙ F :=
-      CatCommSq.iso (A.triangulatedLocalizedMorphism B).functor L₁ L₂ F
+      CatCommSq.iso (A.triangulatedLocalizerMorphism B).functor L₁ L₂ F
     have : F.Full :=
       Functor.full_of_comp_essSurj _ L₁ (fun X₁ X₂ φ ↦ by
         obtain ⟨φ', hφ'⟩ : ∃ φ', φ = e.inv.app X₁ ≫ φ' ≫ e.hom.app X₂ :=
@@ -240,15 +248,15 @@ instance [A.IsVerdierRightLocalizing B] :
 
 instance [A.IsTriangulated] [B.IsTriangulated] [B.IsClosedUnderIsomorphisms]
     [A.IsVerdierLeftLocalizing B] :
-    (A.triangulatedLocalizedMorphism B).IsLocalizedFullyFaithful := by
+    (A.triangulatedLocalizerMorphism B).IsLocalizedFullyFaithful := by
   let L₁ := (B.inverseImage A.ι).trW.Q
   let L₂ := B.trW.Q
   let F : (B.inverseImage A.ι).trW.Localization ⥤ B.trW.Localization :=
-    (A.triangulatedLocalizedMorphism B).localizedFunctor L₁ L₂
-  letI : CatCommSq (A.op.triangulatedLocalizedMorphism B.op).functor
+    (A.triangulatedLocalizerMorphism B).localizedFunctor L₁ L₂
+  letI : CatCommSq (A.op.triangulatedLocalizerMorphism B.op).functor
     (A.opEquivalence.functor ⋙ L₁.op) L₂.op F.op :=
     ⟨Functor.isoWhiskerLeft A.opEquivalence.functor
-      (NatIso.op (CatCommSq.iso (A.triangulatedLocalizedMorphism B).functor L₁ L₂ F).symm)⟩
+      (NatIso.op (CatCommSq.iso (A.triangulatedLocalizerMorphism B).functor L₁ L₂ F).symm)⟩
   have : L₂.op.IsLocalization B.op.trW := by rw [trW_op]; infer_instance
   have : (A.opEquivalence.functor ⋙ L₁.op).IsLocalization (B.op.inverseImage A.op.ι).trW := by
     refine Functor.IsLocalization.of_equivalence_source L₁.op (B.inverseImage A.ι).trW.op
@@ -261,8 +269,8 @@ instance [A.IsTriangulated] [B.IsTriangulated] [B.IsClosedUnderIsomorphisms]
       exact MorphismProperty.le_isoClosure _ _ hf
     · refine fun _ _ _ hf ↦ Localization.inverts L₁.op (B.inverseImage A.ι).trW.op _ ?_
       simpa [trW_inverseImage_ι_iff, ← op_inf, trW_op] using hf
-  exact LocalizerMorphism.IsLocalizedFullyFaithful.mk' (A.triangulatedLocalizedMorphism B)
-    L₁ L₂ F (((A.op.triangulatedLocalizedMorphism B.op).fullyFaithful
+  exact LocalizerMorphism.IsLocalizedFullyFaithful.mk' (A.triangulatedLocalizerMorphism B)
+    L₁ L₂ F (((A.op.triangulatedLocalizerMorphism B.op).fullyFaithful
     (A.opEquivalence.functor ⋙ L₁.op) L₂.op F.op).unop)
 
 end ObjectProperty
