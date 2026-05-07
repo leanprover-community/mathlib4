@@ -80,7 +80,7 @@ open Lean Elab Command
 
 /-- Does nothing. -/
 def Mathlib.Init.nullLinter : Linter where
-  run cmd := pure ()
+  run := withSetOptionIn fun cmd => pure ()
 
 initialize addLinter Mathlib.Init.nullLinter
 
