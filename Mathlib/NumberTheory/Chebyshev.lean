@@ -469,6 +469,7 @@ theorem theta_ge' {x : ℝ} (hx : 1 ≤ x) :
     (x - 1) * log 2 - log (x + 2) - 2 * √x * log x ≤ θ x := by
   grw [psi_ge' (by linarith)]
   linarith [psi_sub_theta_le hx]
+
 section PrimeCounting
 
 /-! ## Relation to prime counting
