@@ -139,7 +139,7 @@ theorem lift_mul (g : ∀ i, H i) (h) (x y : DirectLimit G f) :
       DirectLimit.lift f (g ·) h x * DirectLimit.lift f (g ·) h y :=
   DirectLimit.induction₂ _ (fun i x y ↦ by simp_rw [mul_def, lift_def, map_mul (g i)]) x y
 
-@[to_additive]
+@[to_additive (attr := simp)]
 lemma map₀_mul [Nonempty ι] (r s : ∀ i, G i) : map₀ f (r * s) = map₀ f r * map₀ f s := by
   simp_rw [map₀, Pi.mul_apply, mul_def]
 
