@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Homology.HomotopyCofiber
 public import Mathlib.Algebra.Homology.Opposite
 
-/-! 
+/-!
 # The homotopy fiber of a morphism of homological complexes
 
 In this file, we construct the homotopy fiber of a morphism `φ : F ⟶ G`
