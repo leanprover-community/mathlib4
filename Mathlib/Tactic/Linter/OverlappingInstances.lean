@@ -81,8 +81,6 @@ where
         if (← get).contains parent then continue
         modify (·.insert parent)
         unless ← isInstance info.projFn do continue
-        unless isProp do
-          if (← getConstInfo parent).type.getForallBody.isProp then continue
         let proj := Expr.app (mkAppN (.const info.projFn us) type.getAppArgs) inst
         acc ← go parent proj acc xs isProp
         anyParent := true
@@ -147,8 +145,12 @@ def runLinter (ctx : ContextInfo) (lctx : LocalContext) (expectedType? : Option 
   let overlaps ← findOverlappingInstances
   if overlaps.isEmpty then
     return none
-  let sortedOverlaps : Std.HashMap (Array FVarId) (Array Expr) :=
-    overlaps.fold (init := {}) fun s overlap fvars ↦ s.alter fvars (·.getD #[] |>.push overlap)
+  let sortedOverlaps : Std.HashMap (Array FVarId) (Array Expr) ←
+    overlaps.foldM (init := {}) fun s overlap fvars ↦ do
+      -- Skip prop overlaps among exclusively non-prop classes.
+      if ← isProp overlap <&&> fvars.allM (do notM <| isProp <|← ·.getType) then
+        return s
+      return s.alter fvars (·.getD #[] |>.push overlap)
   -- Sort the suggestions in a (somewhat) deterministic way.
   let sortedOverlaps := sortedOverlaps.toArray.qsort (Array.lex ·.2 ·.2 Expr.lt)
   let mut msgs := #[]
@@ -158,8 +160,8 @@ def runLinter (ctx : ContextInfo) (lctx : LocalContext) (expectedType? : Option 
     if fvarTypes.all (· == fvarTypes[0]!) then
       msgs := msgs.push <| m!"There are {fvarTypes.size} `{.sbracket fvarTypes[0]!}` instances."
     else
-      -- `fvarTypes` are either all propositions, or all non-propositions
-      let isProp ← isProp fvarTypes[0]!
+      -- If any fvars are `Prop` classes, the overlaps are `Prop`s.
+      let isProp ← fvarTypes.anyM isProp
       let localInsts := (← getLCtx).decls.toList.reduceOption
       -- Otherwise, figure out which instances can be synthesized from the other instances
       let mut redundant := #[]

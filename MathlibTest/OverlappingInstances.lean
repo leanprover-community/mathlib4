@@ -170,6 +170,24 @@ class IsBazPlus : Type extends IsBaz
 
 example [IsBarPlus] [IsBazPlus] : True := trivial
 
+/-! Warn when prop class instances are redundant due to data-carrying instances. -/
+
+/--
+warning: Declaration `_example` has overlapping instances:
+
+`[IsBar]` and `[IsBarPlus]` each imply `[IsFoo]`.
+Of these, `[IsBar]` is redundant.
+
+Consider choosing different instance hypotheses.
+
+Note: This linter can be disabled with `set_option linter.overlappingInstances false`
+-/
+#guard_msgs in
+example [IsBar] [IsBarPlus] : True := trivial
+
+-- No warning, since `IsBaz` is not redundant.
+example [IsBaz] [IsBarPlus]  : True := trivial
+
 end prop
 
 section duplicates
