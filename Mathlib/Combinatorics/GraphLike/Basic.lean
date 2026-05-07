@@ -193,6 +193,8 @@ Some graph-like structures, such as `SimpleGraph` and `Digraph`, does not allow 
 between the same pair of vertices. This section defines a typeclass `NoMultiEdgeGraphLike` for
 such graph-like structures.
 -/
+
+/-- A graph-like structure with no multi-edge. This includes `SimpleGraph` and `Digraph`. -/
 class NoMultiEdgeGraphLike (V D E : outParam Type*) (Gr : Type*) extends GraphLike V D E Gr where
   protected src_tgt_inj : Function.Injective (fun d ↦ (src d, tgt d))
 
