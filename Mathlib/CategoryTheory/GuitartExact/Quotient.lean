@@ -73,7 +73,7 @@ lemma quotient_of_nonempty_leftHomotopy (e : T ⋙ R ≅ L ⋙ B)
       CostructuredArrow.homMk (StructuredArrow.homMk P.i₀) (by simp [Z, Z', dsimp% h.h₀])
     let f₁ : Z s₁ ⟶ Z' :=
       CostructuredArrow.homMk (StructuredArrow.homMk P.i₁) (by simp [Z, Z', dsimp% h.h₁])
-    refine (Zigzag.of_hom f₀).trans (Zigzag.of_inv f₁)
+    exact (Zigzag.of_hom f₀).trans (Zigzag.of_inv f₁)
   have H (A : CostructuredArrowDownwards e.hom g) : ∃ s, Nonempty (Z s ⟶ A) := by
     obtain ⟨a, ha⟩ := T.map_surjective (e₀.hom ≫ A.left.hom)
     refine ⟨⟨L.map a ≫ A.hom.right, ?_⟩,
