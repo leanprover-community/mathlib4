@@ -132,6 +132,61 @@ theorem LocallyConvexSpace.convex_open_basis_zero [LocallyConvexSpace 𝕜 E] :
         interior_subset⟩)
     fun s hs => ⟨s, ⟨hs.2.1.mem_nhds hs.1, hs.2.2⟩, subset_rfl⟩
 
+theorem LocallyConvexSpace.convex_open_symm_basis_zero [LocallyConvexSpace 𝕜 E] :
+    (𝓝 0 : Filter E).HasBasis (fun s ↦
+      (0 : E) ∈ s ∧ IsOpen s ∧ Convex 𝕜 s ∧ ∀ y ∈ s, -y ∈ s) id := by
+  refine (LocallyConvexSpace.convex_open_basis_zero 𝕜 E).to_hasBasis ?_
+    (fun t ht ↦ ⟨t, by simp [ht]⟩)
+  · intro t ⟨h₀, ho, hc⟩
+    refine ⟨t ∩ -t, ?_, by simp⟩
+    · refine ⟨by simp [h₀], ho.inter ho.neg, hc.inter hc.neg, ?_⟩
+      intro y ⟨hy, hyneg⟩
+      constructor
+      · rwa [← neg_neg t, Set.neg_mem_neg]
+      · simp [hy]
+
+theorem LocallyConvexSpace.convex_open_symm_add_closure_subset_hasAntitoneBasis_zero
+    [LocallyConvexSpace 𝕜 E] [FirstCountableTopology E] : ∃ x : ℕ → Set E,
+    (∀ n, 0 ∈ x n ∧ IsOpen (x n) ∧ Convex 𝕜 (x n) ∧ (∀ y ∈ x n, -y ∈ x n) ∧
+      (x (n + 1)) + (x (n + 1)) ⊆ x n ∧ closure (x (n + 1)) ⊆ x n) ∧
+      (𝓝 0).HasAntitoneBasis x := by
+  obtain ⟨x₁, hx₁_prop, hx₁_basis⟩ :=
+    (LocallyConvexSpace.convex_open_symm_basis_zero 𝕜 E).exists_antitone_subbasis
+  let Inv (n : ℕ) := { s : Set E // 0 ∈ s ∧ IsOpen s ∧ Convex 𝕜 s ∧ (∀ y ∈ s, -y ∈ s) ∧ s ⊆ x₁ n }
+  have step : ∀ n (p : Inv n), { q : Inv (n + 1) // q.1 + q.1 ⊆ p.1 } := by
+    rintro n ⟨s, h₀, h_open, h_conv, h_symm, _⟩
+    have hexists := hx₁_basis.mem_iff.mp (h_open.mem_nhds h₀)
+    let i := Classical.choose hexists
+    have hi : x₁ i ⊆ s := Classical.choose_spec hexists
+    refine ⟨⟨((2 : 𝕜)⁻¹ • x₁ i) ∩ (x₁ (n + 1)),
+        ⟨⟨0, (hx₁_prop i).1, smul_zero _⟩, (hx₁_prop (n + 1)).1⟩,
+        ((hx₁_prop i).2.1.smul₀ (by norm_num)).inter (hx₁_prop (n + 1)).2.1,
+        ((hx₁_prop i).2.2.1.smul _).inter (hx₁_prop (n + 1)).2.2.1,
+        ?_, Set.inter_subset_right⟩, ?_⟩
+    · rintro y ⟨⟨z, hz, rfl⟩, hy₂⟩
+      exact ⟨⟨-z, (hx₁_prop i).2.2.2 z hz, smul_neg _ _⟩, (hx₁_prop (n + 1)).2.2.2 _ hy₂⟩
+    · rintro y ⟨z, ⟨hz, _⟩, a, ⟨ha, _⟩, rfl⟩
+      exact hi (by rw [← (hx₁_prop i).2.2.1.add_half_self_eq_self]; exact Set.add_mem_add hz ha)
+  let φ : ∀ n, Inv n :=
+    Nat.rec ⟨x₁ 0, (hx₁_prop 0).1, (hx₁_prop 0).2.1, (hx₁_prop 0).2.2.1,
+        (hx₁_prop 0).2.2.2, le_refl _⟩
+      (fun n p => (step n p).1)
+  refine ⟨fun n => (φ n).1, fun n => ⟨(φ n).2.1, (φ n).2.2.1, (φ n).2.2.2.1,
+        (φ n).2.2.2.2.1, (step n (φ n)).2,
+        fun y hy => by
+          obtain ⟨_, ⟨b, hb, rfl⟩, hc⟩ :=
+            mem_closure_iff_nhds.mp hy ((y + ·) '' (φ (n + 1)).1)
+              ((isOpenMap_add_left y (φ (n + 1)).1 (φ (n + 1)).2.2.1).mem_nhds
+                ⟨0, (φ (n + 1)).2.1, add_zero y⟩)
+          have hkey : y = (y + b) + (-b) := by abel
+          exact hkey ▸ (step n (φ n)).2
+            (Set.add_mem_add hc ((φ (n + 1)).2.2.2.2.1 b hb))⟩,
+    hx₁_basis.to_hasBasis (fun i _ ↦ ⟨i, trivial, (φ i).2.2.2.2.2⟩)
+      (fun j _ ↦ hx₁_basis.toHasBasis.mem_iff.mp ((φ j).2.2.1.mem_nhds (φ j).2.1)),
+    antitone_nat_of_succ_le ?_⟩
+  intro n z hz
+  simpa using (step n (φ n)).2 (Set.add_mem_add hz (φ (n + 1)).2.1)
+
 variable {𝕜 E} [LocallyConvexSpace 𝕜 E] {s t : Set E} {x : E}
 
 /-- In a locally convex space, every two disjoint convex sets such that one is compact and the other
