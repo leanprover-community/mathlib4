@@ -208,40 +208,57 @@ def encodingPair {α β Γ₁ Γ₂ : Type*} (ea : Encoding α Γ₁) (eb : Enco
 
 /-! ### Deprecated aliases for `FinEncoding` and unbundled `Γ` -/
 
-@[deprecated "Use `Encoding α Γ` along with `[Fintype Γ]` instead" (since := "2026-05-07")]
-abbrev FinEncoding (α : Type u) {Γ : Type v} [Fintype Γ] := Encoding α Γ
+/-- Deprecated: Use `Encoding α Γ` along with `[Fintype Γ]` instead. -/
+@[reducible, nolint unusedArguments,
+  deprecated "Use `Encoding α Γ` along with `[Fintype Γ]` instead" (since := "2026-05-07")]
+def FinEncoding (α : Type u) {Γ : Type v} [Fintype Γ] := Encoding α Γ
 
-@[deprecated "Γ is now an explicit parameter of `Encoding`" (since := "2026-05-07")]
-abbrev Encoding.Γ {α : Type u} {Γ : Type v} (_ : Encoding α Γ) : Type v := Γ
+/-- Deprecated: `Γ` is now an explicit parameter of `Encoding`. -/
+@[reducible, nolint unusedArguments,
+  deprecated "Γ is now an explicit parameter of `Encoding`" (since := "2026-05-07")]
+def Encoding.Γ {α : Type u} {Γ : Type v} (_ : Encoding α Γ) : Type v := Γ
 
-@[deprecated "Use `inferInstanceAs (Fintype Γ)` instead" (since := "2026-05-07")]
-abbrev FinEncoding.ΓFin {α : Type u} {Γ : Type v} [h : Fintype Γ]
+/-- Deprecated: Use `inferInstanceAs (Fintype Γ)` instead. -/
+@[reducible, nolint unusedArguments,
+  deprecated "Use `inferInstanceAs (Fintype Γ)` instead" (since := "2026-05-07")]
+def FinEncoding.ΓFin {α : Type u} {Γ : Type v} [h : Fintype Γ]
     (_ : Encoding α Γ) : Fintype Γ := h
 
-@[deprecated "Use the encoding directly" (since := "2026-05-07")]
-abbrev FinEncoding.toEncoding {α : Type u} {Γ : Type v} [Fintype Γ]
+/-- Deprecated: Use the encoding directly. -/
+@[reducible, nolint unusedArguments,
+  deprecated "Use the encoding directly" (since := "2026-05-07")]
+def FinEncoding.toEncoding {α : Type u} {Γ : Type v} [Fintype Γ]
     (e : Encoding α Γ) : Encoding α Γ := e
 
+/-- Deprecated alias for `encodingNatBool`. -/
 @[deprecated encodingNatBool (since := "2026-05-07")]
 abbrev finEncodingNatBool := encodingNatBool
 
+/-- Deprecated alias for `encodingNatΓ'`. -/
 @[deprecated encodingNatΓ' (since := "2026-05-07")]
 abbrev finEncodingNatΓ' := encodingNatΓ'
 
+/-- Deprecated alias for `unaryEncodingNat`. -/
 @[deprecated unaryEncodingNat (since := "2026-05-07")]
 abbrev unaryFinEncodingNat := unaryEncodingNat
 
+/-- Deprecated alias for `encodingBoolBool`. -/
 @[deprecated encodingBoolBool (since := "2026-05-07")]
 abbrev finEncodingBoolBool := encodingBoolBool
 
-@[deprecated encodingList (since := "2026-05-07")]
-abbrev finEncodingList (α : Type) [Fintype α] := encodingList α
+/-- Deprecated alias for `encodingList`. -/
+@[reducible, nolint unusedArguments,
+  deprecated encodingList (since := "2026-05-07")]
+def finEncodingList (α : Type) [Fintype α] := encodingList α
 
-@[deprecated encodingPair (since := "2026-05-07")]
-abbrev finEncodingPair {α β Γ₁ Γ₂ : Type*} [Fintype Γ₁] [Fintype Γ₂]
+/-- Deprecated alias for `encodingPair`. -/
+@[reducible, nolint unusedArguments,
+  deprecated encodingPair (since := "2026-05-07")]
+def finEncodingPair {α β Γ₁ Γ₂ : Type*} [Fintype Γ₁] [Fintype Γ₂]
     (ea : Encoding α Γ₁) (eb : Encoding β Γ₂) :=
   encodingPair ea eb
 
+/-- Deprecated alias for `Encoding.card_le_aleph0`. -/
 @[deprecated Encoding.card_le_aleph0 (since := "2026-05-07")]
 theorem FinEncoding.card_le_aleph0 {α Γ} [Countable Γ] (e : Encoding α Γ) : #α ≤ ℵ₀ :=
   e.card_le_aleph0
