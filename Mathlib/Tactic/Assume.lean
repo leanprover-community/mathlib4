@@ -8,6 +8,10 @@ module
 public import Lean.Elab.Tactic.ElabTerm
 public import Mathlib.Init
 
+/-!
+# The `assume` tactic
+-/
+
 /-- The `assume` tactic introduces hypotheses to the context, without giving them a user-facing
 name.
 * Example: `assume f x = f y, 0 < g y`
