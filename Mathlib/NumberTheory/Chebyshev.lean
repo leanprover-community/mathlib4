@@ -677,7 +677,7 @@ theorem theta_le_pi_mul_log (n : ℕ) : θ n ≤ (π n) * log n :=
   (theta_le_psi n).trans (psi_le_primeCounting_mul_log n)
 
 theorem theta_le_pi_mul_log' (x : ℝ) : θ x ≤ (π ⌊x⌋₊) * log x := by
-  grw [←psi_le_primeCounting_mul_log', theta_le_psi]
+  grw [← psi_le_primeCounting_mul_log', theta_le_psi]
 
 private theorem pi_mul_log_sqrt_le {x : ℝ} (hx : 1 ≤ x) :
   (π ⌊x⌋₊) * log √x ≤ log 4 * x + √x * log √x := calc
