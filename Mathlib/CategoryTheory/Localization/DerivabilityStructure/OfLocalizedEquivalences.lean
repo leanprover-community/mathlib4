@@ -11,6 +11,23 @@ public import Mathlib.CategoryTheory.GuitartExact.HorizontalComposition
 /-!
 # Derivability structures deduced from localized equivalences
 
+Assume that we have a diagram of localizer morphisms, in the
+sense that we have an isomorphism `T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor`.
+```
+      T
+ W₁  ---> W₂
+ |        |
+L|        |R
+ v        v
+ W₁' ---> W₂'
+      B
+```
+In this file, we obtain the lemma
+`LocalizerMorphism.isRightDerivabilityStructure_of_isLocalizedEquivalence` which shows
+that if both `L` and `R` are localized equivalences (with `R.functor` essentially surjective),
+then `B` is a right derivability structure when `T` is a right derivability structure,
+the `2`-square above is Guitart exact (and `W₂'` respects isomorphisms).
+
 -/
 
 @[expose] public section

@@ -95,9 +95,7 @@ variable [∀ i, HasBinaryBiproduct (K.X i) (K.X i)]
 instance (i : α) : HasBinaryBiproduct (K.op.X i) (K.op.X i) := by
   dsimp; infer_instance
 
-noncomputable abbrev biprodLiftIdNeg := biprod.lift (𝟙 K.op) (-𝟙 K.op)
-
-abbrev HasPathObject := HasHomotopyCofiber (biprodLiftIdNeg K)
+abbrev HasPathObject := HasHomotopyCofiber (biprod.lift (𝟙 K.op) (-𝟙 K.op))
 
 variable [K.HasPathObject]
 
@@ -158,23 +156,12 @@ variable (F) {D : Type*} [Category* D] [Preadditive D] (H : C ⥤ D) [H.Additive
     (((H.mapHomologicalComplex c).obj K).X i)]
   [((H.mapHomologicalComplex c).obj K).HasPathObject]
 
-instance : H.op.PreservesZeroMorphisms := { }
-
-noncomputable abbrev biprodLiftIdNegMapHomologicalComplexObj
-    [HasBinaryBiproduct ((H.op.mapHomologicalComplex c.symm).obj K.op)
-    ((H.op.mapHomologicalComplex c.symm).obj K.op)] :
-    (H.op.mapHomologicalComplex c.symm).obj K.op ⟶
-    ((H.op.mapHomologicalComplex c.symm).obj K.op) ⊞
-      ((H.op.mapHomologicalComplex c.symm).obj K.op) :=
-  biprod.lift (𝟙 _) (-𝟙 _)
-
 variable
   [∀ (i : α),
     HasBinaryBiproduct (((H.op.mapHomologicalComplex c.symm).obj K.op).X i)
       (((H.op.mapHomologicalComplex c.symm).obj K.op).X i)]
-  [HasBinaryBiproduct ((H.op.mapHomologicalComplex c.symm).obj K.op)
-    ((H.op.mapHomologicalComplex c.symm).obj K.op)]
-  [HasHomotopyCofiber (biprodLiftIdNegMapHomologicalComplexObj K H)]
+  [HasHomotopyCofiber (biprod.lift (𝟙 ((H.op.mapHomologicalComplex c.symm).obj K.op))
+    (-𝟙 ((H.op.mapHomologicalComplex c.symm).obj K.op)))]
   [HasHomotopyCofiber ((H.op.mapHomologicalComplex c.symm).map (biprod.lift (𝟙 K.op) (-𝟙 K.op)))]
   [∀ (i : α), HasBinaryBiproduct (K.op.X i) (K.op.X i)]
 

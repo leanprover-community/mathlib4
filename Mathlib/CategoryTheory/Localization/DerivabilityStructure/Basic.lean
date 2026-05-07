@@ -189,9 +189,6 @@ instance [W₁.ContainsIdentities] : (LocalizerMorphism.id W₁).IsLeftDerivabil
   dsimp
   exact TwoSquare.guitartExact_id' W₁.Q
 
-instance [Φ.IsLeftDerivabilityStructure] : Φ.op.IsRightDerivabilityStructure := by
-  rwa [← isLeftDerivabilityStructure_iff_op]
-
 set_option backward.isDefEq.respectTransparency false in
 lemma isRightDerivabilityStructure_iff_op :
     Φ.IsRightDerivabilityStructure ↔
@@ -211,6 +208,9 @@ lemma isRightDerivabilityStructure_iff_op :
     refine ⟨inferInstance, ?_⟩
     rw [← eq]
     exact Φ.op.guitartExact_of_isLeftDerivabilityStructure' _ _ _ e'
+
+instance [Φ.IsLeftDerivabilityStructure] : Φ.op.IsRightDerivabilityStructure := by
+  rwa [← isLeftDerivabilityStructure_iff_op]
 
 instance [Φ.IsRightDerivabilityStructure] : Φ.op.IsLeftDerivabilityStructure := by
   rwa [← isRightDerivabilityStructure_iff_op]
