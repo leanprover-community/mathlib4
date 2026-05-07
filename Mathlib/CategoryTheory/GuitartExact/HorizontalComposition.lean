@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Joël Riou. All rights reserved.
+Copyright (c) 2026 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
@@ -85,7 +85,7 @@ def hComp' {T₁₂ : C₁ ⥤ C₃} {B₁₂ : D₁ ⥤ D₃} (eT : T₁ ⋙ T�
 
 namespace GuitartExact
 
-instance hComp [hw : w.GuitartExact] [hw' : w'.GuitartExact] :
+instance hComp [w.GuitartExact] [w'.GuitartExact] :
     (w ≫ₕ w').GuitartExact := by
   rw [← guitartExact_op_iff]
   have : (w ≫ₕ w').op = w.op ≫ᵥ w'.op := by ext; simp
