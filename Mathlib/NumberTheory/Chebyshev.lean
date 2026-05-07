@@ -213,17 +213,12 @@ theorem lcmUpto_dvd_factorial (n : ℕ) : lcmUpto n ∣ n ! := by
 
 theorem primeFactors_lcmUpto (n : ℕ) : primeFactors (lcmUpto n) = primesLE n := by
   ext p
-  constructor
-  · intro h
-    have := prime_of_mem_primeFactors h
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · have := prime_of_mem_primeFactors h
     rw [← support_factorization, Finsupp.mem_support_iff, factorization_lcmUpto _ this] at h
     simp_all
-  intro h
-  simp_all only [mem_filter, mem_range, Order.lt_add_one_iff, lcmUpto, mem_primeFactors, ne_eq,
-    Finset.lcm_eq_zero_iff, mem_Icc, id_eq, exists_eq_right, nonpos_iff_eq_zero, one_ne_zero,
-    _root_.zero_le, and_true, not_false_eq_true, true_and]
-  apply dvd_lcm (b := p)
-  simp_all [h.2.one_le]
+  · refine Prime.mem_primeFactors (prime_of_mem_primesLE h) (dvd_lcm ?_) <| lcmUpto_ne_zero n
+    exact mem_Icc.mpr ⟨(prime_of_mem_primesLE h).one_le, le_of_mem_primesLE h⟩
 
 theorem primorial_dvd_lcmUpto (n : ℕ) : primorial n ∣ lcmUpto n := by
   simp only [primorial]
