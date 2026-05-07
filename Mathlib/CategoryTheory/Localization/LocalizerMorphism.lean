@@ -384,8 +384,7 @@ attribute [local simp] Functor.asEquivalence_counitIso_hom_app
 when `Φ.functor` is an equivalence, `W₁` is induced by `W₂`
 and `W₂` respects isomorphisms. -/
 @[simps]
-noncomputable def inv :
-    LocalizerMorphism W₂ W₁ where
+noncomputable def inv : LocalizerMorphism W₂ W₁ where
   functor := Φ.functor.inv
   map := by
     simp only [← Φ.inverseImage_eq]
