@@ -397,14 +397,13 @@ instance : Φ.inv.functor.IsEquivalence := by
   dsimp
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Φ.inv.IsInduced where
   inverseImage_eq := by
     ext X Y f
     simp only [← Φ.inverseImage_eq]
     exact W₂.arrow_mk_iso_iff
       (Arrow.isoMk (Φ.functor.asEquivalence.counitIso.app _)
-        (Φ.functor.asEquivalence.counitIso.app _))
+        (Φ.functor.asEquivalence.counitIso.app _) (by simp [asEquivalence]))
 
 lemma isLocalizedEquivalence_of_isInduced :
     Φ.IsLocalizedEquivalence := by
