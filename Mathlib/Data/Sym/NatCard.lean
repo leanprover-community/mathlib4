@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Set.Card
 public import Mathlib.Data.Sym.Basic
 public import Mathlib.Data.Sym.Sym2
+
 import Mathlib.Data.Sym.Card
 
 /-!
@@ -16,7 +17,7 @@ import Mathlib.Data.Sym.Card
 Each of the lemmas assuming `[Fintype α]` and `Fintype.card` can be restated using `Nat.card` alone.
 -/
 
-@[expose] public section
+public section
 
 open Nat
 
@@ -34,9 +35,7 @@ theorem natCard_sym_eq_multichoose (k : ℕ) :
   · obtain ⟨_⟩ := nonempty_fintype α; letI := Classical.decEq α
     simp_rw [Nat.card_eq_fintype_card]
     exact card_sym_eq_multichoose _ _
-  cases k
-  · simp
-  simp
+  cases k <;> simp
 
 /-- A version of `card_sym_eq_choose` that does not need finiteness. -/
 theorem natCard_sym_eq_choose (k : ℕ) :
@@ -65,12 +64,8 @@ theorem natCard_subtype_diag : Nat.card { a : Sym2 α // a.IsDiag } = Nat.card �
   · simp
 
 theorem natCard_subtype_not_diag :
-    Nat.card { a : Sym2 α // ¬a.IsDiag } = (Nat.card α).choose 2 := by
-  cases finite_or_infinite α
-  · obtain ⟨_⟩ := nonempty_fintype α; letI := Classical.decEq α
-    simp_rw [Nat.card_eq_fintype_card]
-    exact card_subtype_not_diag
-  · simp
+    Nat.card { a : Sym2 α // ¬a.IsDiag } = (Nat.card α).choose 2 :=
+  Nat.card_congr isDiagElemEquiv
 
 lemma ncard_diagSet : (diagSet : Set (Sym2 α)).ncard = Nat.card α :=
   natCard_subtype_diag _
