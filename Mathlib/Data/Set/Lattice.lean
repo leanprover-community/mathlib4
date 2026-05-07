@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Logic.Pairwise
 public import Mathlib.Data.Set.BooleanAlgebra
-public import Mathlib.Order.SymmDiff
 
 /-!
 # The set lattice
