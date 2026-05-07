@@ -131,7 +131,7 @@ instance : IsNontrivial v where
 
 section Restrict
 
-instance isNontrivial_restrict [v.IsNontrivial] : (v.restrict).IsNontrivial where
+instance isNontrivial_restrict : (v.restrict).IsNontrivial where
   exists_val_nontrivial := by
     obtain ⟨x, ⟨hx0, hx1⟩⟩ := IsNontrivial.exists_val_nontrivial (v := v)
     exact ⟨x, by simp [hx0], by grind [restrict_eq_one_iff]⟩
