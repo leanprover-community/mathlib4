@@ -15,6 +15,8 @@ Let `C` be a pretriangulated category. If `A` and `B` are triangulated
 subcategories of `C`, we define predicates (typeclasses
 `IsTriangulatedRightLocalizing` and `IsTriangulatedLeftLocalizing`)
 saying that `A` is right `B`-localizing (or left `B`-localizing).
+When `B` is closed under isomorphisms, we shall show that the functor
+from the Verdier quotient `A/(A ⊓ B)` to `C/B` is fully faithful (TODO @joelriou).
 
 ## References
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*,
