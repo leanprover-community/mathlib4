@@ -88,7 +88,7 @@ theorem lift_one (g : ∀ i, H i) (h) :
   let ⟨i⟩ := ‹Nonempty ι›
   rw [one_def, lift_def, map_one (g i)]
 
-@[to_additive]
+@[to_additive (attr := simp)]
 lemma map₀_one : map₀ f (1 : ∀ i, G i) = 1 := by rw [map₀, Pi.one_apply, one_def]
 
 end ZeroOne
