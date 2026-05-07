@@ -134,7 +134,7 @@ lemma image_val_injective : Function.Injective ((↑) : Set A → Set α) :=
 lemma subset_of_image_val_subset_image_val (h : (↑D : Set α) ⊆ ↑E) : D ⊆ E :=
   (image_subset_image_iff Subtype.val_injective).1 h
 
-@[mono]
+@[gcongr, mono]
 lemma image_val_mono (h : D ⊆ E) : (↑D : Set α) ⊆ ↑E :=
   (image_subset_image_iff Subtype.val_injective).2 h
 

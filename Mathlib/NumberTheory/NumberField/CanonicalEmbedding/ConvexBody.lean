@@ -368,7 +368,6 @@ theorem convexBodySumFactor_ne_zero : convexBodySumFactor K ≠ 0 := by
   exact mul_ne_zero (pow_ne_zero _ two_ne_zero)
     (pow_ne_zero _ (div_ne_zero NNReal.pi_ne_zero two_ne_zero))
 
-set_option backward.isDefEq.respectTransparency false in
 open MeasureTheory MeasureTheory.Measure Real in
 open scoped Classical in
 theorem convexBodySum_volume :
