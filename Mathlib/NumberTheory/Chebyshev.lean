@@ -247,7 +247,7 @@ theorem lcmUpto_eq_prod_pow_floor (n : ℕ) : lcmUpto n = ∏ p ∈ primesLE n, 
   rw [← natFloor_logb_natCast, ← log_div_log]
 
 theorem psi_eq_sum_mul_log_prime (n : ℕ) : ψ n = ∑ p ∈ primesLE n, p.log n * log p := calc
-  _ = ∑ m ∈ Icc 1 n, vonMangoldt m := by unfold psi; aesop
+  _ = ∑ m ∈ Icc 1 n, Λ m := by simp [psi, ← Icc_add_one_left_eq_Ioc]
   _ = ∑ m ∈ Finset.biUnion (filter Nat.Prime (Icc 1 n))
     (fun p => image (fun k => p ^ k) (Icc 1 (p.log n))), vonMangoldt m := by
     symm; apply sum_subset
