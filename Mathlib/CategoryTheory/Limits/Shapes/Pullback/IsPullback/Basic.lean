@@ -409,15 +409,9 @@ lemma paste_twist_right {X Y Z S : C} {f : X ⟶ S} {g : Y ⟶ S} {i : Z ⟶ S}
     (hsndfgr : IsPullback fstsndfgr sndsndfgr sndfg rY)
     {t : Psndfgr ⟶ Pfi} (ht₁ : t ≫ fstfi = fstsndfgr ≫ fstfg) (ht₂ : t ≫ sndfi = sndsndfgr ≫ rZ) :
     IsPullback t sndsndfgr sndfi rZ := by
-  refine ⟨by simp [ht₂],
-      ⟨PullbackCone.IsLimit.mk _ (fun c ↦ ?_) (fun c ↦ ?_) ?_ fun c m hfst hsnd ↦ ?_⟩⟩
-  · exact hsndfgr.lift (hfg.lift (c.fst ≫ fstfi) (c.snd ≫ rY)
-      (by simp [hfi.w, c.condition_assoc, hrw])) c.snd (by simp)
-  · apply hfi.hom_ext <;> simp [c.condition, ht₁, ht₂]
-  · simp
-  · apply hsndfgr.hom_ext
-    · apply hfg.hom_ext <;> simp [← hfst, ← hsnd, hsndfgr.w, ht₁]
-    · simp [hsnd]
+  refine .of_right ?_ ht₂ hfi
+  rw [← hrw, ht₁]
+  exact .paste_horiz hsndfgr hfg
 
 set_option backward.isDefEq.respectTransparency false in
 /-- This is a `HasPullback` variant of `CategoryTheory.IsPullback.paste_twist_right` -/
