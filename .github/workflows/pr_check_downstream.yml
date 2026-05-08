@@ -1,0 +1,137 @@
+name: PR check downstream
+
+# Triggered by a `/check-downstream <name>[, <name>...]` (or `/check-downstream all`)
+# comment on a mathlib4 PR. Validates the request, then dispatches the heavy
+# validation workflow in `leanprover-community/downstream-reports`. The result
+# is posted back as a comment on the same PR by the dispatched workflow.
+#
+# See `docs/internal/pr-validation-workflow.md` in downstream-reports for the
+# full design.
+
+on:
+  issue_comment:
+    types: [created]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        required: true
+        type: string
+      downstreams:
+        required: true
+        type: string  # comma-separated, or "all"
+
+permissions:
+  contents: read
+  pull-requests: write   # ack comment
+  issues: write          # PR comments use the issues API
+  id-token: write        # required for the Azure Key Vault token mint
+
+concurrency:
+  # Do not cancel a running validation on a new comment. Both runs are useful
+  # and the dispatch itself is cheap; the heavy job runs in downstream-reports
+  # under its own concurrency key keyed on (PR, merge SHA).
+  group: pr-check-downstream-${{ github.event.issue.number || inputs.pr_number }}
+  cancel-in-progress: false
+
+jobs:
+  trigger:
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.issue.pull_request &&
+       startsWith(github.event.comment.body, '/check-downstream'))
+    runs-on: ubuntu-latest
+    steps:
+      - name: Authorize commenter
+        if: github.event_name == 'issue_comment'
+        env:
+          ASSOC: ${{ github.event.comment.author_association }}
+        run: |
+          case "$ASSOC" in
+            OWNER|MEMBER|COLLABORATOR) echo "ok" ;;
+            *) echo "::error::author_association=$ASSOC not allowed"; exit 1 ;;
+          esac
+
+      - name: Parse comment
+        id: parse
+        if: github.event_name == 'issue_comment'
+        env:
+          BODY: ${{ github.event.comment.body }}
+        run: |
+          # First line only; strip the directive; the remainder is comma-separated
+          # names (or "all"). Anything after the first line is contextual prose
+          # and is ignored.
+          line="$(printf '%s' "$BODY" | head -n1 | tr -d '\r')"
+          rest="${line#/check-downstream}"
+          rest="$(echo "$rest" | sed -E 's/^[[:space:]]+//;s/[[:space:]]+$//')"
+          if [ -z "$rest" ]; then
+            echo "::error::usage: /check-downstream <name>[, <name>...] | all"
+            exit 1
+          fi
+          # Use a delimiter to safely round-trip values that contain spaces.
+          {
+            echo "downstreams<<__EOF__"
+            echo "$rest"
+            echo "__EOF__"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Checkout local actions
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 1
+          sparse-checkout: .github/actions
+          path: workflow-actions
+
+      - name: Get mathlib-ci
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+
+      - name: Validate downstreams against inventory
+        id: validate
+        env:
+          GH_TOKEN:    ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER:   ${{ github.event.issue.number || inputs.pr_number }}
+          DS:          ${{ steps.parse.outputs.downstreams || inputs.downstreams }}
+          # For workflow_dispatch, author_association is empty; default to OWNER
+          # (triggering a workflow_dispatch requires write access to the repo).
+          ASSOC:       ${{ github.event.comment.author_association || 'OWNER' }}
+        run: |
+          "$CI_SCRIPTS_DIR/pr_check_downstream/validate_names.sh" \
+            --names "$DS" \
+            --author-association "$ASSOC" \
+            --output "$GITHUB_OUTPUT"
+
+      - name: Mint App token (for downstream-reports)
+        id: app_token
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
+        with:
+          app-id: ${{ secrets.DOWNSTREAM_REPORTS_AUTOMATION_APP_ID }}
+          key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
+          key-name: downstream-reports-automation-app-pk
+          azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_DOWNSTREAM_REPORTS_AUTOMATION }}
+          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
+          owner: leanprover-community
+          repositories: downstream-reports
+
+      - name: Dispatch downstream-reports workflow
+        env:
+          GH_TOKEN:     ${{ steps.app_token.outputs.token }}
+          PR_NUMBER:    ${{ github.event.issue.number || inputs.pr_number }}
+          HEAD_REPO:    ${{ steps.validate.outputs.head_repo }}
+          MERGE_SHA:    ${{ steps.validate.outputs.merge_sha }}
+          DOWNSTREAMS:  ${{ steps.validate.outputs.resolved_names }}
+        run: |
+          gh workflow run mathlib-pr-validation.yml \
+            -R leanprover-community/downstream-reports \
+            -f pr_number="$PR_NUMBER" \
+            -f head_repo="$HEAD_REPO" \
+            -f merge_sha="$MERGE_SHA" \
+            -f downstreams="$DOWNSTREAMS"
+
+      - name: Post / update ack comment
+        env:
+          GITHUB_TOKEN:    ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER:       ${{ github.event.issue.number || inputs.pr_number }}
+          DOWNSTREAMS:     ${{ steps.validate.outputs.resolved_names }}
+          MERGE_SHA:       ${{ steps.validate.outputs.merge_sha }}
+        run: |
+          "$CI_SCRIPTS_DIR/pr_check_downstream/post_ack_comment.sh"

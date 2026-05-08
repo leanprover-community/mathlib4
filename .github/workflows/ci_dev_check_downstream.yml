@@ -1,0 +1,112 @@
+name: ci dev — check downstream (trigger test)
+
+# Manual trigger that exercises the full /check-downstream dispatch flow:
+# validate names → mint App token → dispatch downstream-reports → post ack.
+#
+# This is a test shim for pr_check_downstream.yml. Differences from the real
+# workflow:
+#   - workflow_dispatch only (no issue_comment trigger)
+#   - no author-association gate (manual dispatch requires write access anyway)
+#   - accepts mathlib_ci_ref so you can point at a dev branch of mathlib-ci
+#     that has the pr_check_downstream scripts before they land on master
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "mathlib4 PR number to test against."
+        required: true
+        type: string
+      downstreams:
+        description: "Comma-separated downstream names, or 'all'."
+        required: true
+        type: string
+      mathlib_ci_ref:
+        description: "mathlib-ci ref to use (branch/tag/SHA). Defaults to master."
+        required: false
+        type: string
+        default: master
+      post_results:
+        description: "Pass post_results=true to downstream-reports (set false to skip comment posting)."
+        required: false
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  issues: write          # post ack comment
+  id-token: write        # Azure Key Vault token mint
+
+concurrency:
+  group: ci-dev-check-downstream-${{ inputs.pr_number }}
+  cancel-in-progress: false
+
+jobs:
+  trigger:
+    # Guard: only run from ci-dev/* branches on the main repo.
+    if: ${{ github.repository == 'leanprover-community/mathlib4' && startsWith(github.ref_name, 'ci-dev/') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout local actions
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 1
+          sparse-checkout: .github/actions
+          path: workflow-actions
+
+      - name: Get mathlib-ci
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+        with:
+          ref: ${{ inputs.mathlib_ci_ref }}
+
+      - name: Validate downstreams against inventory
+        id: validate
+        env:
+          GH_TOKEN:  ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ inputs.pr_number }}
+          # workflow_dispatch always has write access; treat as OWNER for `all`.
+          ASSOC:     OWNER
+        run: |
+          "$CI_SCRIPTS_DIR/pr_check_downstream/validate_names.sh" \
+            --names "${{ inputs.downstreams }}" \
+            --author-association "$ASSOC" \
+            --output "$GITHUB_OUTPUT"
+
+      - name: Mint App token (for downstream-reports)
+        id: app_token
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
+        with:
+          app-id: ${{ secrets.DOWNSTREAM_REPORTS_AUTOMATION_APP_ID }}
+          key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
+          key-name: downstream-reports-automation-app-pk
+          azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_DOWNSTREAM_REPORTS_AUTOMATION }}
+          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
+          owner: leanprover-community
+          repositories: downstream-reports
+
+      - name: Dispatch downstream-reports workflow
+        env:
+          GH_TOKEN:    ${{ steps.app_token.outputs.token }}
+          PR_NUMBER:   ${{ inputs.pr_number }}
+          HEAD_REPO:   ${{ steps.validate.outputs.head_repo }}
+          MERGE_SHA:   ${{ steps.validate.outputs.merge_sha }}
+          DOWNSTREAMS: ${{ steps.validate.outputs.resolved_names }}
+          POST_RESULTS: ${{ inputs.post_results }}
+        run: |
+          gh workflow run mathlib-pr-validation.yml \
+            -R leanprover-community/downstream-reports \
+            -f pr_number="$PR_NUMBER" \
+            -f head_repo="$HEAD_REPO" \
+            -f merge_sha="$MERGE_SHA" \
+            -f downstreams="$DOWNSTREAMS" \
+            -f post_results="$POST_RESULTS"
+
+      - name: Post / update ack comment
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER:    ${{ inputs.pr_number }}
+          DOWNSTREAMS:  ${{ steps.validate.outputs.resolved_names }}
+          MERGE_SHA:    ${{ steps.validate.outputs.merge_sha }}
+        run: |
+          "$CI_SCRIPTS_DIR/pr_check_downstream/post_ack_comment.sh"
