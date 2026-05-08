@@ -66,8 +66,10 @@ variable {x₀ : X}
 public instance : TopologicalSpace (BasedPath x₀) :=
   inferInstanceAs (TopologicalSpace { γ : C(I, X) // γ 0 = x₀ })
 
-/-- The endpoint of a based path. -/
-@[expose] public def endpoint (γ : BasedPath x₀) : X := γ.1 1
+/-- The endpoint of a based path. This is a thin abbreviation for `γ.1 1` so that the named API
+lemmas (`endpoint_refl`, `endpoint_ofPath`, `endpoint_append`, …) are the canonical simp normal
+form, and there is no separate unfolding lemma to keep in sync. -/
+@[expose] public abbrev endpoint (γ : BasedPath x₀) : X := γ.1 1
 
 /-- View a based path as a path to its endpoint. -/
 @[expose] public def toPath (γ : BasedPath x₀) : Path x₀ (endpoint γ) where
@@ -75,7 +77,6 @@ public instance : TopologicalSpace (BasedPath x₀) :=
   source' := γ.2
   target' := rfl
 
-@[simp] public theorem endpoint_def (γ : BasedPath x₀) : endpoint γ = γ.1 1 := rfl
 @[simp] public theorem toPath_apply (γ : BasedPath x₀) (t : I) : toPath γ t = γ.1 t := rfl
 @[simp] public theorem toPath_source (γ : BasedPath x₀) : toPath γ 0 = x₀ := γ.2
 @[simp] public theorem toPath_target (γ : BasedPath x₀) : toPath γ 1 = endpoint γ := rfl
@@ -217,7 +218,6 @@ public theorem deformTerminal_apply_of_lt {u v : X} (γ : BasedPath x₀) (hu : 
 public theorem endpoint_deformTerminal {u v : X} (γ : BasedPath x₀) (hu : endpoint γ = u)
     (δ : Path u v) {a b : ℝ} (ha : 0 ≤ a) (hab : a < b) (hb : b < 1) :
     endpoint (deformTerminal γ hu δ ha hab hb) = v := by
-  simp only [endpoint_def]
   rw [deformTerminal_apply_of_lt γ hu δ ha hab hb 1 hb]
   have hbne : (1 : ℝ) - b ≠ 0 := sub_ne_zero.mpr hb.ne'
   have hone : (((1 : I) : ℝ) - b) / (1 - b) = 1 := by
