@@ -13,6 +13,8 @@ public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Logic.Equiv.Set
 public import Mathlib.Util.Delaborators
 
+import Mathlib.Tactic.DSimpPercent
+
 /-!
 # (Semi)ring equivs
 
