@@ -147,6 +147,11 @@ theorem add_eq_of_zero_add {a₁ a₂ b₁ b₂ : A}
   subst_vars
   simp
 
+/- ExProd.equateScalarsProd -/
+theorem algebraMap_eq_algebraMap' {r s : R} (h : r = s) :
+    algebraMap R A r = algebraMap R A s := by
+  simp [h]
+
 /- equateScalarsSum -/
 theorem add_eq_of_add_zero {a₁ a₂ b₁ b₂ : A}
     (hb₁ : b₁ = 0) (ha : a₁ + a₂ = b₂) :
