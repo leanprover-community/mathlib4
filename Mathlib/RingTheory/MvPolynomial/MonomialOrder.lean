@@ -108,8 +108,8 @@ section Semiring
 variable {R : Type*} [CommSemiring R]
 
 variable (m) in
-/-- the degree of a multivariate polynomial with respect to a monomial ordering, where the polynomial
-`0` has degree `0`. -/
+/-- the degree of a multivariate polynomial with respect to a monomial ordering, where the
+polynomial `0` has degree `0`. -/
 noncomputable def degree (f : MvPolynomial σ R) : σ →₀ ℕ :=
   m.toSyn.symm (f.support.sup m.toSyn)
 
