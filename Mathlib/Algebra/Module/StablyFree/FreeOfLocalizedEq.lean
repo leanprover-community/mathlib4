@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Module.StablyFree.Basic
 public import Mathlib.LinearAlgebra.Alternating.Uncurry.Fin
 public import Mathlib.LinearAlgebra.Determinant
-public import Mathlib.LinearAlgebra.ExteriorPower.Basic
+public import Mathlib.LinearAlgebra.ExteriorPower.Basis
 public import Mathlib.RingTheory.Finiteness.Prod
 public import Mathlib.RingTheory.PicardGroup
 public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
@@ -41,19 +41,6 @@ private lemma cofactorToLeft_ιMulti_cons (bN : Module.Basis (Fin n) R N) (m : M
   simp [cofactorToLeft, cofactorLinear, AlternatingMap.alternatizeUncurryFin_apply,
     Fin.sum_univ_succ, Module.Basis.det_self]
 
-/-- The linear equivalence from the top exterior power of a finite free module to the base ring
-associated to a chosen basis. -/
-noncomputable def topExteriorLinearEquiv (b : Module.Basis (Fin n) R M) : ⋀[R]^n M ≃ₗ[R] R := by
-  refine LinearEquiv.ofLinear (exteriorPower.alternatingMapLinearEquiv b.det)
-    (LinearMap.id.smulRight (exteriorPower.ιMulti R n b)) ?_ ?_
-  · ext
-    simp [Module.Basis.det_self]
-  · refine exteriorPower.linearMap_ext <| Module.Basis.ext_alternating b (fun v hv ↦ ?_)
-    let e : Equiv.Perm (Fin n) := Equiv.ofBijective v hv.bijective_of_finite
-    have hdet : b.det (fun i ↦ b (v i)) = Equiv.Perm.sign e := by
-      simpa [Units.smul_def, Module.Basis.det_self] using AlternatingMap.map_perm b.det b e
-    simpa [hdet] using (AlternatingMap.map_perm (exteriorPower.ιMulti R n) b e).symm
-
 /-- Let `R` be a commutative ring, `M` be a finite stably free `R`-module.
   Then `M` is free if it is locally free of rank `1`. -/
 theorem Module.free_of_isStablyFree_of_localized_eq_ring [Nontrivial R] [Module.Finite R M]
@@ -69,9 +56,11 @@ theorem Module.free_of_isStablyFree_of_localized_eq_ring [Nontrivial R] [Module.
       Module.rankAtStalk_eq_finrank_of_free.symm.trans (Module.rankAtStalk_prod M N)
   let bN : Module.Basis (Fin n) R N := Module.finBasis R N
   let b : Module.Basis (Fin (n + 1)) R (M × N) := Module.finBasisOfFinrankEq R (M × N) hp
-  let f : R →ₗ[R] M := cofactorToLeft bN ∘ₗ (topExteriorLinearEquiv b).symm
+  let e : R ≃ₗ[R] (⋀[R]^(n + 1) (M × N)) := Classical.choice <|
+    Module.nonempty_linearEquiv_of_finrank_eq_one <| by simp [exteriorPower.finrank_eq, hp]
+  let f : R →ₗ[R] M := cofactorToLeft bN ∘ₗ e
   have hfs : Function.Surjective f := fun x ↦
-    ⟨topExteriorLinearEquiv b (exteriorPower.ιMulti R (n + 1) (Fin.cons (x, 0) fun i ↦ (0, bN i))),
+    ⟨e.symm (exteriorPower.ιMulti R (n + 1) (Fin.cons (x, 0) fun i ↦ (0, bN i))),
       by simp [f, cofactorToLeft_ιMulti_cons]⟩
   exact Module.Free.of_equiv <| LinearEquiv.ofBijective f <| bijective_of_localized_maximal f <| by
     intro m _
