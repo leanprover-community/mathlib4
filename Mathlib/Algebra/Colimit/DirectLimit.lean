@@ -613,10 +613,10 @@ lemma map₀_algebraMap (i : ι) (r : R) :
 instance : Algebra R (DirectLimit G f) where
   algebraMap := map₀RingHom (f := f).comp (algebraMap R (∀ i, G i))
   commutes' r := DirectLimit.induction f fun i _ ↦ by
-    dsimp [Pi.algebraMap_def]
+    dsimp [Pi.algebraMap_def, map₀RingHom]
     rw [map₀_algebraMap i, mul_def, mul_def, Algebra.commutes]
   smul_def' r := DirectLimit.induction _ fun i _ => by
-    dsimp [Pi.algebraMap_def]
+    dsimp [Pi.algebraMap_def, map₀RingHom]
     rw [smul_def, map₀_algebraMap i, mul_def, Algebra.smul_def']
 
 lemma algebraMap_def (i : ι) (r : R) :
