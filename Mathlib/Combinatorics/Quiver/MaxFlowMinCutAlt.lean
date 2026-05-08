@@ -10,10 +10,8 @@ import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring
-import Mathlib.Combinatorics.Quiver.Path
 import Init.Data.List.BasicAux
 import Mathlib.Data.List.Intervals
-
 
 open Finset
 open scoped BigOperators
@@ -72,7 +70,7 @@ structure Cut (V : Type*) [Fintype V] (G : FlowNetwork V) where
   tint : G.t ∈ T
 
 -- ============================================================
--- NO AUGMENTING PATHS
+-- FLOWS
 -- ============================================================
 
 /-- A ValidFlow is a relaxedFlow that also satisfies capacity constraints which are
@@ -324,82 +322,10 @@ lemma max_flow_if_eq_cut {V : Type*} [Fintype V] (G : FlowNetwork V) (C : Cut V 
       apply weak_duality
 
 -- ============================================================
--- CONSTRUCTING THE MINIMUM CUT
--- ============================================================
-
-def ResidualReach {V : Type*} [Fintype V] (G : FlowNetwork V)
-    (F : RelaxedFlow V G.toSTVertices) : V → V → Prop :=
-  Relation.ReflTransGen (fun u v => G.c u v - F.f u v + F.f v u > 0)
-
-def no_augmenting_path {V : Type*} [Fintype V] (G : FlowNetwork V)
-    (F : RelaxedFlow V G.toSTVertices) : Prop :=
-  ¬ ResidualReach G F G.s G.t
-
-open Classical in
-noncomputable def mk_cut_set {V : Type*} [Fintype V] (G : FlowNetwork V)
-    (F : RelaxedFlow V G.toSTVertices) : Finset V :=
-  Finset.univ.filter (fun x => ResidualReach G F G.s x)
-
-open Classical in
-noncomputable def mk_cut_from_S {V : Type*} [Fintype V] (G : FlowNetwork V)
-    (F : RelaxedFlow V G.toSTVertices)
-    (hno : no_augmenting_path G F) : Cut V G :=
-  { S  := mk_cut_set G F
-    T  := Finset.univ \ mk_cut_set G F
-    hT := rfl
-    sins := by
-      simp only [mk_cut_set, mem_filter, mem_univ, true_and]
-      exact Relation.ReflTransGen.refl
-    tint := by
-      simp only [mem_sdiff, mem_univ, true_and, mk_cut_set, mem_filter];
-      exact hno
-  }
-
-lemma saturated_forward_arcs {V : Type*} [Fintype V] (G : FlowNetwork V)
-    (F : RelaxedFlow V G.toSTVertices) (h : ValidFlow V G F) :
-    ∀ v w : V, v ∈ mk_cut_set G F → w ∉ mk_cut_set G F →
-    F.f v w = G.c v w := by
-  intro u v huS hvnS
-  simp_all only [mk_cut_set, mem_filter, mem_univ, true_and]
-  apply le_antisymm (h u v)
-  by_contra hlt
-  have hres : (ResidualNetwork G F h).c u v > 0 := by
-    simp only [ResidualNetwork, gt_iff_lt]; linarith [F.nonneg_flow v u]
-  exact hvnS (huS.trans (Relation.ReflTransGen.single hres))
-
-lemma zero_backward_arcs {V : Type*} [Fintype V] (G : FlowNetwork V)
-    (F : RelaxedFlow V G.toSTVertices) (h : ValidFlow V G F) :
-    ∀ v w : V, v ∉ mk_cut_set G F → w ∈ mk_cut_set G F →
-    F.f v w = 0 := by
-  intro v w hvnS hwS
-  by_contra hne
-  simp only [mk_cut_set, mem_filter, mem_univ, true_and] at hwS hvnS
-  have hpos : F.f v w > 0 :=
-    lt_of_le_of_ne (F.nonneg_flow v w) (Ne.symm hne)
-  have hres : (ResidualNetwork G F h).c w v > 0 := by
-    simp only [ResidualNetwork]
-    linarith [F.nonneg_flow w v, h w v]
-  exact hvnS (hwS.trans (Relation.ReflTransGen.single hres))
-
-lemma flow_eq_cut_cap {V : Type*} [Fintype V] (G : FlowNetwork V)
-    (F : RelaxedFlow V G.toSTVertices) (h : ValidFlow V G F)
-    (hno : no_augmenting_path G F) :
-    let C := mk_cut_from_S G F hno
-    Flow_value G.toSTVertices F = cut_cap C := by
-  classical
-  let C := mk_cut_from_S G F hno
-  rw [flow_value_eq_net_flow G C F]
-  apply Finset.sum_congr rfl; intro v hv
-  apply Finset.sum_congr rfl; intro w hw
-  have hv' : v ∈ mk_cut_set G F := hv
-  have hw' : w ∉ mk_cut_set G F := mem_compl.mp hw
-  rw [zero_backward_arcs G F h w v hw' hv', sub_zero]
-  exact saturated_forward_arcs G F h v w hv hw'
-
--- ============================================================
 -- AUGMENTING PATHS
 -- ============================================================
 
+/-- A simple path from u to v, represented as a nodup list of vertices. -/
 structure uvPath {V : Type*} [Fintype V] (u v : V) where
   verts : List V
   nonempty : verts ≠ []
@@ -407,18 +333,20 @@ structure uvPath {V : Type*} [Fintype V] (u v : V) where
   ustart : verts.head nonempty = u
   vend : verts.getLast nonempty = v
 
+/-- A valid path in a flow network: every consecutive pair has positive capacity. -/
 structure validuvPath {V : Type*} [Fintype V] [DecidableEq V] (G : FlowNetwork V) (u v : V)
   extends uvPath u v where
   valid : ∀ (i : ℕ) (h : i < verts.length - 1), G.c (verts[i]) (verts[i+1]) > 0
 
+/-- An augmenting path is a valid path from s to t. -/
 def augmentingPath {V : Type*} [Fintype V] [DecidableEq V] (G : FlowNetwork V) :=
   validuvPath G G.s G.t
 
-@[simp]
 lemma ge_two_vertices {V : Type*} [Fintype V] {u v : V} (p : uvPath u v) (h : u ≠ v) :
  p.verts.length ≥ 2 := by
   grind [p.ustart, p.vend]
 
+/-- The bottleneck capacity of a path: the minimum edge capacity along it. -/
 def uvPath.bottleneck {V : Type*} [Fintype V] [DecidableEq V]
     (G : FlowNetwork V) {u v : V} (p : uvPath u v) (h : u ≠ v) : ℝ := by
     have : p.verts.length ≥ 2 := by apply ge_two_vertices p h
@@ -427,7 +355,6 @@ def uvPath.bottleneck {V : Type*} [Fintype V] [DecidableEq V]
     have : J.length ≥ 1 := by grind
     exact J.min (by grind)
 
-@[simp]
 lemma lb_bottleneck {V : Type*} [Fintype V] [DecidableEq V] (G : FlowNetwork V)
   {u v : V} (p : uvPath u v) (h : u ≠ v) :
     ∀ (i : ℕ) (h' : i < p.verts.length - 1), p.bottleneck G h ≤ G.c p.verts[i] p.verts[i+1] := by
@@ -438,7 +365,6 @@ lemma lb_bottleneck {V : Type*} [Fintype V] [DecidableEq V] (G : FlowNetwork V)
         by grind
       grind [uvPath.bottleneck]
 
-@[simp]
 lemma ub_bottleneck {V : Type*} [Fintype V] [DecidableEq V] (G : FlowNetwork V) {u v : V}
   (p : uvPath u v) (h : u ≠ v) :
     ∃ (i : ℕ) (h' : i < p.verts.length - 1), p.bottleneck G h = G.c p.verts[i] p.verts[i+1] := by
@@ -455,13 +381,61 @@ lemma ub_bottleneck {V : Type*} [Fintype V] [DecidableEq V] (G : FlowNetwork V) 
   have : G.c p.verts[i] p.verts[i+1] = xs.min (by grind):= by grind
   grind
 
-
+/-- The bottleneck of a valid path is positive. -/
 lemma pos_bottleneck {V : Type*} [Fintype V] [DecidableEq V]
   {G : FlowNetwork V} {u v : V} (p : validuvPath G u v) (h : u ≠ v) :
     p.touvPath.bottleneck G h > 0 := by
     obtain ⟨i, ⟨h', h''⟩⟩ := ub_bottleneck G p.touvPath h
     linarith [h'', lb_bottleneck G p.touvPath h i h', p.valid i h']
 
+/-- Extending a valid path u~>w by a fresh edge w→v yields a valid path u~>v.
+  Requires v not already in the path (to preserve nodup). -/
+lemma validuvPath.snoc {V : Type*} [Fintype V] [DecidableEq V] {G : FlowNetwork V} {u w v : V}
+    (p : validuvPath G u w) (hv : v ∉ p.verts.toFinset) (hedge : G.c w v > 0) :
+    Nonempty (validuvPath G u v) := by
+  let newverts := p.verts ++ [v]
+  refine ⟨⟨⟨newverts, ?nonempty, ?nodup, ?ustart, ?vend⟩, ?valid⟩⟩
+  · exact List.concat_ne_nil v p.verts
+  · simp only [List.nodup_append, List.nodup_cons, List.not_mem_nil, not_false_eq_true,
+    List.nodup_nil, and_self, List.mem_cons, or_false, ne_eq, forall_eq, true_and, newverts]
+    rw [List.mem_toFinset] at hv
+    constructor
+    · exact p.nodup
+    · exact fun a a_1 ↦ ne_of_mem_of_not_mem a_1 hv
+  · grind only [= List.head_append_of_ne_nil, p.ustart]
+  · exact List.getLast_concat
+  · intro i
+    by_cases h' : i < p.verts.length - 1
+    · grind only [= List.getElem_append, p.valid]
+    · grind [p.vend]
+
+/-- Given a path u~>w and a vertex v already on the path, extract the prefix path u~>v. -/
+lemma validuvPath.prefix {V : Type*} [Fintype V] [DecidableEq V] {G : FlowNetwork V} {u w : V}
+    (p : validuvPath G u w) {v : V} (hv : v ∈ p.verts.toFinset) :
+    Nonempty (validuvPath G u v) := by
+  rw [List.mem_toFinset] at hv
+  obtain ⟨i, hi_lt, hi_eq⟩ := List.mem_iff_getElem.mp hv
+  refine ⟨⟨⟨p.verts.take (i + 1), ?_, p.nodup.take, ?_, ?_⟩, ?_⟩⟩
+  · simp only [ne_eq, List.take_eq_nil_iff, Nat.add_eq_zero_iff, one_ne_zero, and_false, false_or];
+    exact p.nonempty
+  · simp [List.head_take, p.ustart]
+  · rw [List.getLast_take]; simp_all only [add_tsub_cancel_right, getElem?_pos, Option.getD_some]
+  · intro j hj
+    have hj' : j < p.verts.length - 1 := by simp [List.length_take] at hj; omega
+    simp only [List.getElem_take, gt_iff_lt]; exact p.valid j hj'
+
+/-- If s can reach u in the residual and there is a residual edge u → v, then s can reach v. -/
+lemma reach_extend {V : Type*} [Fintype V] [DecidableEq V]
+    {G : FlowNetwork V} {F : RelaxedFlow V G.toSTVertices} {h : ValidFlow V G F} {u v : V}
+    (hu : Nonempty (validuvPath (ResidualNetwork G F h) G.s u))
+    (hedge : (ResidualNetwork G F h).c u v > 0) :
+    Nonempty (validuvPath (ResidualNetwork G F h) G.s v) := by
+  obtain ⟨p⟩ := hu
+  by_cases hv : v ∈ p.verts.toFinset
+  · exact p.prefix hv
+  · exact p.snoc hv hedge
+
+/-- The flow induced by an augmenting path: send bottleneck flow along each edge of the path. -/
 def pathFlow {V : Type*} [Fintype V] [DecidableEq V] {G : FlowNetwork V} (p : augmentingPath G) :
   V → V → ℝ := fun a b => if ∃ (i : ℕ) (h : i < p.verts.length - 1),
     a = p.verts[i] ∧ b = p.verts[i+1] then p.bottleneck G G.source_not_sink else 0
@@ -502,12 +476,10 @@ lemma pathlike_flow_out {V : Type*} [Fintype V] [DecidableEq V] {G : FlowNetwork
       simp [hz p.verts[i] (neq_if_nodup p.verts i (i+1) h₁ h₂ h₃ p.nodup)]
     simp only [this, sub_zero]
     have zsum : ∑ y ≠ p.verts[i+1], pathFlow p p.verts[i] y = 0 := by
-      apply sum_eq_zero
-      grind
+      apply sum_eq_zero; grind
     have : ∑ y, pathFlow p p.verts[i] y = pathFlow p p.verts[i] p.verts[i+1] +
       ∑ y ≠ p.verts[i+1], pathFlow p p.verts[i] y := by simp
-    rw [this]
-    simp [zsum]
+    rw [this]; simp [zsum]
   have : pathFlow p p.verts[i] p.verts[i + 1] =
     uvPath.bottleneck G p.touvPath G.source_not_sink := by
     rw [pathFlow]
@@ -542,12 +514,10 @@ lemma pathlike_flow_in {V : Type*} [Fintype V] [DecidableEq V] {G : FlowNetwork 
       simp [hz p.verts[i] (neq_if_nodup p.verts i (i-1) h₁ h₂ h₃ p.nodup)]
     simp only [this, sub_zero]
     have zsum : ∑ y ≠ p.verts[i-1], pathFlow p y p.verts[i] = 0 := by
-      apply sum_eq_zero
-      grind
+      apply sum_eq_zero; grind
     have : ∑ y, pathFlow p y p.verts[i] = pathFlow p p.verts[i-1] p.verts[i] +
       ∑ y ≠ p.verts[i-1], pathFlow p y p.verts[i] := by simp
-    rw [this]
-    simp [zsum]
+    rw [this]; simp [zsum]
   have : pathFlow p p.verts[i - 1] p.verts[i] =
     uvPath.bottleneck G p.touvPath G.source_not_sink := by
     rw [pathFlow]
@@ -557,15 +527,14 @@ lemma pathlike_flow_in {V : Type*} [Fintype V] [DecidableEq V] {G : FlowNetwork 
     simp [this]
   grind
 
+/-- An augmenting path induces a relaxed flow. -/
 def augmentingPath.toFlow {V : Type*} [Fintype V] [DecidableEq V]
     {G : FlowNetwork V} (p : augmentingPath G) : RelaxedFlow V G.toSTVertices where
     f := pathFlow p
     nonneg_flow := by
-      intro u v;
-      rw [pathFlow];
+      intro u v; rw [pathFlow]
       by_cases h : ∃ (i : ℕ) (h : i < p.verts.length - 1), u = p.verts[i] ∧ v = p.verts[i+1]
-      · simp [h]
-        linarith [pos_bottleneck p G.source_not_sink]
+      · simp [h]; linarith [pos_bottleneck p G.source_not_sink]
       · simp [h]
     conservation := by
       intro u gns gnt
@@ -583,28 +552,22 @@ def augmentingPath.toFlow {V : Type*} [Fintype V] [DecidableEq V]
         rw [this]
       · grind [mk_out, mk_in, pathFlow]
     no_edges_in_source := by
-      intro u
-      rw [pathFlow]
+      intro u; rw [pathFlow]
       by_cases h : ∃ (i : ℕ) (h : i < p.verts.length - 1), u = p.verts[i] ∧ G.s = p.verts[i+1]
       · obtain ⟨i, ⟨h', ⟨_, h''⟩⟩⟩ := h
-        have ne : 0 ≠ i+1 := by simp
         have : p.verts[0] = p.verts[i+1] := by grind [p.ustart]
-        have : p.verts[0] ≠ p.verts[i+1] :=
-          neq_if_nodup p.verts 0 (i+1) (by grind) (by grind) ne p.nodup
-        contradiction
+        exact absurd this (neq_if_nodup p.verts 0 (i+1) (by grind) (by grind) (by simp) p.nodup)
       · simp [h]
     no_edges_out_sink := by
-      intro v
-      rw [pathFlow]
+      intro v; rw [pathFlow]
       by_cases h : ∃ (i : ℕ) (h : i < p.verts.length - 1), G.t = p.verts[i] ∧ v = p.verts[i+1]
       · obtain ⟨i, ⟨h', ⟨h'', _⟩⟩⟩ := h
-        have ne : i ≠ p.verts.length - 1 := by grind
         have : p.verts[i] = p.verts[p.verts.length - 1] := by grind [p.vend]
-        have : p.verts[i] ≠ p.verts[p.verts.length - 1] :=
-          neq_if_nodup p.verts i (p.verts.length - 1) (by grind) (by grind) ne p.nodup
-        contradiction
+        exact absurd this (neq_if_nodup p.verts i (p.verts.length - 1)
+          (by grind) (by grind) (by grind) p.nodup)
       · simp [h]
 
+/-- The flow value of an augmenting path's induced flow equals its bottleneck. -/
 lemma bottleneck_eq_flow {V : Type*} [Fintype V] [DecidableEq V]
   {G : FlowNetwork V} (p : augmentingPath G) :
   p.bottleneck G G.source_not_sink = Flow_value G.toSTVertices p.toFlow := by
@@ -615,6 +578,7 @@ lemma bottleneck_eq_flow {V : Type*} [Fintype V] [DecidableEq V]
   have := pathlike_flow_out p 0 (by grind [p.ustart, p.vend, G.source_not_sink])
   rw [this]
 
+/-- The flow induced by an augmenting path is valid. -/
 lemma augmentingPath.valid_toFlow {V : Type*} [Fintype V] [DecidableEq V]
   {G : FlowNetwork V} (p : augmentingPath G) : ValidFlow V G p.toFlow := by
   simp only [ValidFlow, toFlow, pathFlow]
@@ -622,11 +586,10 @@ lemma augmentingPath.valid_toFlow {V : Type*} [Fintype V] [DecidableEq V]
   by_cases h : ∃ i, ∃ (h : i < p.verts.length - 1), u = p.verts[i] ∧ v = p.verts[i + 1]
   · simp only [h, ↓reduceIte]
     obtain ⟨i, ⟨h, ⟨rfl, rfl⟩⟩⟩ := h
-    have := lb_bottleneck G p.touvPath (G.source_not_sink) i h
-    exact this
-  · simp only [h, ↓reduceIte]
-    exact G.nonneg_capacity u v
+    exact lb_bottleneck G p.touvPath G.source_not_sink i h
+  · simp only [h, ↓reduceIte]; exact G.nonneg_capacity u v
 
+/-- If F is a max flow, there is no augmenting path in its residual network. -/
 lemma max_flow_no_augmenting' {V : Type*} [Fintype V] [DecidableEq V]
     {G : FlowNetwork V} (F : RelaxedFlow V G.toSTVertices) (h : is_max_flow F) :
       augmentingPath (ResidualNetwork G F h.1) → False := by
@@ -641,3 +604,96 @@ lemma max_flow_no_augmenting' {V : Type*} [Fintype V] [DecidableEq V]
     have := pos_bottleneck p G.source_not_sink
     grind
   linarith
+
+-- ============================================================
+-- CONSTRUCTING THE MINIMUM CUT
+-- ============================================================
+
+/-- No augmenting path: t is not reachable from s via a valid path in the residual network. -/
+def no_augmenting_path {V : Type*} [Fintype V] [DecidableEq V] (G : FlowNetwork V)
+    (F : RelaxedFlow V G.toSTVertices) (h : ValidFlow V G F) : Prop :=
+  ¬ Nonempty (augmentingPath (ResidualNetwork G F h))
+
+open Classical in
+/-- The set of vertices reachable from s via a valid path in the residual network. -/
+noncomputable def mk_cut_set {V : Type*} [Fintype V] [DecidableEq V] (G : FlowNetwork V)
+    (F : RelaxedFlow V G.toSTVertices) (h : ValidFlow V G F) : Finset V :=
+  Finset.univ.filter (fun x => Nonempty (validuvPath (ResidualNetwork G F h) G.s x))
+
+open Classical in
+/-- Construct a cut from the reachable set when there is no augmenting path. -/
+noncomputable def mk_cut_from_S {V : Type*} [Fintype V] [DecidableEq V] (G : FlowNetwork V)
+    (F : RelaxedFlow V G.toSTVertices) (h : ValidFlow V G F)
+    (hno : no_augmenting_path G F h) : Cut V G :=
+  { S  := mk_cut_set G F h
+    T  := Finset.univ \ mk_cut_set G F h
+    hT := by ext a : 1; simp_all only [mem_sdiff, mem_univ, true_and]
+    sins := by
+      simp only [mk_cut_set, mem_filter, mem_univ, true_and]
+      exact ⟨⟨[G.s], by simp, by simp, by simp, by simp⟩, fun i hi => by simp at hi⟩
+    tint := by
+      simp only [mem_sdiff, mem_univ, true_and, mk_cut_set, mem_filter]
+      exact hno }
+
+/-- Every forward arc from S to T is saturated. -/
+lemma saturated_forward_arcs {V : Type*} [Fintype V] [DecidableEq V] (G : FlowNetwork V)
+    (F : RelaxedFlow V G.toSTVertices) (h : ValidFlow V G F) :
+    ∀ v w : V, v ∈ mk_cut_set G F h → w ∉ mk_cut_set G F h →
+    F.f v w = G.c v w := by
+  intro u v huS hvnS
+  simp only [mk_cut_set, mem_filter, mem_univ, true_and] at huS hvnS
+  apply le_antisymm (h u v)
+  by_contra hlt
+  push Not at hlt
+  have hres : (ResidualNetwork G F h).c u v > 0 := by
+    simp only [ResidualNetwork]; linarith [F.nonneg_flow v u]
+  exact hvnS (reach_extend huS hres)
+
+/-- Every backward arc from T to S carries zero flow. -/
+lemma zero_backward_arcs {V : Type*} [Fintype V] [DecidableEq V] (G : FlowNetwork V)
+    (F : RelaxedFlow V G.toSTVertices) (h : ValidFlow V G F) :
+    ∀ v w : V, v ∉ mk_cut_set G F h → w ∈ mk_cut_set G F h →
+    F.f v w = 0 := by
+  intro v w hvnS hwS
+  by_contra hne
+  simp only [mk_cut_set, mem_filter, mem_univ, true_and] at hwS hvnS
+  have hpos : F.f v w > 0 := lt_of_le_of_ne (F.nonneg_flow v w) (Ne.symm hne)
+  have hres : (ResidualNetwork G F h).c w v > 0 := by
+    simp only [ResidualNetwork]; linarith [F.nonneg_flow w v, h w v]
+  exact hvnS (reach_extend hwS hres)
+
+/-- When there is no augmenting path, the flow value equals the cut capacity. -/
+lemma flow_eq_cut_cap {V : Type*} [Fintype V] [DecidableEq V] (G : FlowNetwork V)
+    (F : RelaxedFlow V G.toSTVertices) (h : ValidFlow V G F)
+    (hno : no_augmenting_path G F h) :
+    let C := mk_cut_from_S G F h hno
+    Flow_value G.toSTVertices F = cut_cap C := by
+  classical
+  let C := mk_cut_from_S G F h hno
+  rw [flow_value_eq_net_flow G C F]
+  apply Finset.sum_congr rfl; intro v hv
+  apply Finset.sum_congr rfl; intro w hw
+  have hv' : v ∈ mk_cut_set G F h := hv
+  have hw' : w ∉ mk_cut_set G F h := by simp_all only [mem_sdiff, mem_univ, true_and, C]; exact hw
+  rw [zero_backward_arcs G F h w v hw' hv', sub_zero]
+  exact saturated_forward_arcs G F h v w hv hw'
+
+/-- If F is a max flow, there is no augmenting path. -/
+lemma max_flow_no_augmenting_path {V : Type*} [Fintype V] [DecidableEq V] (G : FlowNetwork V)
+    (F : RelaxedFlow V G.toSTVertices) (h : is_max_flow F) :
+    no_augmenting_path G F h.1 :=
+  fun ⟨p⟩ => max_flow_no_augmenting' F h p
+
+-- ============================================================
+-- MAX FLOW MIN CUT THEOREM
+-- ============================================================
+
+/-- The max-flow min-cut theorem: the maximum flow value equals the minimum cut capacity. -/
+theorem max_flow_min_cut {V : Type*} [Fintype V] (G : FlowNetwork V)
+    (F : RelaxedFlow V G.toSTVertices) (h : is_max_flow F) :
+    ∃ C : Cut V G, is_min_cut G C ∧ Flow_value G.toSTVertices F = cut_cap C := by
+  classical
+  have hno := max_flow_no_augmenting_path G F h
+  let C := mk_cut_from_S G F h.1 hno
+  exact ⟨C, fun C' => by linarith [flow_eq_cut_cap G F h.1 hno, weak_duality G C' F h.1],
+            flow_eq_cut_cap G F h.1 hno⟩
