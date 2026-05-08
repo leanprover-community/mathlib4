@@ -11,9 +11,10 @@ public import Mathlib.RingTheory.Etale.Descent
 
 /-!
 
-# Etale satisfies fpqc descent
+# Local properties satisfying fpqc descent
 
-In this file we provide instances that show that the following properties satisfy fpqc descent:
+In this file we provide instances that show that the following local properties satisfy fpqc
+descent:
 
 - locally of finite type
 - locally of finite presentation

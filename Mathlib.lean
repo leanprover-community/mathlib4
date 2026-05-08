@@ -1371,7 +1371,6 @@ public import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
 public import Mathlib.AlgebraicGeometry.Morphisms.Constructors
 public import Mathlib.AlgebraicGeometry.Morphisms.Descent
 public import Mathlib.AlgebraicGeometry.Morphisms.Etale
-public import Mathlib.AlgebraicGeometry.Morphisms.EtaleDescent
 public import Mathlib.AlgebraicGeometry.Morphisms.Finite
 public import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
 public import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
@@ -1383,6 +1382,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Immersion
 public import Mathlib.AlgebraicGeometry.Morphisms.Integral
 public import Mathlib.AlgebraicGeometry.Morphisms.IsIso
 public import Mathlib.AlgebraicGeometry.Morphisms.LocalClosure
+public import Mathlib.AlgebraicGeometry.Morphisms.LocalFlatDescent
 public import Mathlib.AlgebraicGeometry.Morphisms.LocalIso
 public import Mathlib.AlgebraicGeometry.Morphisms.OpenImmersion
 public import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
