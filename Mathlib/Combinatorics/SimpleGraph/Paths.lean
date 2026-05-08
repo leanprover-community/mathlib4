@@ -757,7 +757,7 @@ theorem IsPath.exists_isCycle_sublist_of_ne {u v : V} {p q : G.Walk u v} (hp : p
 Given two distinct paths with same endpoints, we can extract a cycle whose length is less than or
 equal to the sum of their lengths.
 -/
-theorem IsPath.exists_isCycle_le_length_sum_of_ne {u v : V} {p q : G.Walk u v} (hp : p.IsPath)
+theorem IsPath.exists_isCycle_length_le_add_of_ne {u v : V} {p q : G.Walk u v} (hp : p.IsPath)
     (hq : q.IsPath) (h : p ≠ q) :
     ∃ w, w ∈ p.support ∧ w ∈ q.support ∧
       ∃ c : G.Walk w w, c.IsCycle ∧ c.length ≤ p.length + q.length := by
