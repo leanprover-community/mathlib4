@@ -20,10 +20,14 @@ This linter warns against instance diamonds in local contexts.
 
 This is a syntax linter. It is run on partially and fully elaborated declarations.
 
-To find diamonds, we compute all parent classes of any given local instance.
-For classes that aren't structures, this returns the class itself.
-If any of these classes is duplicated, we throw a warning.
-This also searches for redundant proposition classes.
+To find diamonds, we compute the parent classes of each local instance.
+For classes that aren't structures, this is just the class itself.
+If any of these parent classes is duplicated, we throw a warning.
+
+This linter also warns on redundant proposition classes, i.e. those that can be synthesized from
+the other instances in the local context. (Note: we do *not* warn on proposition classes that
+merely overlap.) Even though redundant proposition classes cause no meaningful issue, they are
+still undesirable.
 
 A common case where this linter may fire is if the same type class assumption is given in both a
 `variable` statement and a declaration. This kind of variable shadowing does not actually produce
@@ -206,7 +210,6 @@ def overlappingInstances : Linter where
       return
     -- Note: we don't break on errors; we want to lint even on partial declarations
     profileitM Exception "overlappingInstancesLinter" (← getOptions) do
-    withTraceNode `overlappingInstances (fun _ ↦ return "looking for a local context") do
     for t in ← getInfoTrees do
       for (ref, ctx, info) in t.getDeclBodyInfos do
         let some (lctx, expectedType?) := info.getLCtx? | pure ()
