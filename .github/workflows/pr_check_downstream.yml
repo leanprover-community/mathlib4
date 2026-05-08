@@ -1,11 +1,18 @@
 name: PR check downstream
 
-# Triggered by a `/check-downstream <name>[, <name>...]` (or `/check-downstream all`)
-# comment on a mathlib4 PR. Validates the request, then dispatches the heavy
-# validation workflow in `leanprover-community/downstream-reports`. The result
-# is posted back as a comment on the same PR by the dispatched workflow.
+# Triggered by a `/check-downstream …` comment on a mathlib4 PR. Validates
+# the request, then dispatches the heavy validation workflow in
+# `leanprover-community/downstream-reports`. The result is posted back as a
+# comment on the same PR by the dispatched workflow.
 #
-# See `docs/internal/pr-validation-workflow.md` in downstream-reports for the
+# Accepted comment shapes:
+#   /check-downstream <name>[@lkg][, <name>[@lkg]...]
+#   /check-downstream all          — every enabled downstream, merge-SHA mode
+#   /check-downstream all@lkg      — every enabled downstream, LKG mode
+#
+# The optional `@lkg` suffix selects rebase-onto-LKG mode (cherry-pick the
+# PR's commits onto the downstream's last-known-good mathlib commit). See
+# `docs/internal/pr-validation-workflow.md` in downstream-reports for the
 # full design.
 
 on:
@@ -18,7 +25,9 @@ on:
         type: string
       downstreams:
         required: true
-        type: string  # comma-separated, or "all"
+        # Comma-separated names, optionally with `@lkg` per name; also
+        # accepts `all` and `all@lkg`.
+        type: string
 
 permissions:
   contents: read
