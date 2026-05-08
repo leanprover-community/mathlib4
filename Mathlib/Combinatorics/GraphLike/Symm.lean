@@ -46,6 +46,19 @@ variable [SymmGraphLike V D E Gr]
 lemma inv_mem_darts (hd : d ∈ darts G) : inv Gr d ∈ darts G :=
   inv_mem_darts_iff.mpr hd
 
+instance : Std.Symm (Adj G) where
+  symm _ _ h := by
+    rw [← exists_darts_iff_adj] at h ⊢
+    obtain ⟨d, hd, rfl, rfl⟩ := h
+    exact ⟨SymmGraphLike.inv Gr d, inv_mem_darts hd, inv_src d, inv_tgt d⟩
+
+@[symm] lemma Adj.symm (h : Adj G v w) : Adj G w v := symm_of (Adj G) h
+
+lemma adj_comm : Adj G v w ↔ Adj G w v := ⟨symm_of (Adj G), symm_of (Adj G)⟩
+
+lemma adj_tgt_src (hd : d ∈ darts G) : Adj G (tgt Gr d) (src Gr d) :=
+  symm_of (Adj G) (adj_src_tgt hd)
+
 /-- The inverse of a step. -/
 @[symm] def Step.inv (h : Step G u v) : Step G v u where
   val := SymmGraphLike.inv Gr h.val
@@ -59,16 +72,6 @@ lemma Step.inv_inv (h : Step G u v) : h.inv.inv = h := by
   change Step.inv (⟨SymmGraphLike.inv Gr d, inv_mem_darts hd, hv ▸ inv_src d, hu ▸ inv_tgt d⟩ :
     Step G v u) = _
   simp [inv]
-
-instance : Std.Symm (Adj G) where
-  symm _ _ h := by
-    rw [← exists_darts_iff_adj] at h ⊢
-    obtain ⟨d, hd, rfl, rfl⟩ := h
-    exact ⟨SymmGraphLike.inv Gr d, inv_mem_darts hd, inv_src d, inv_tgt d⟩
-
-@[symm] lemma Adj.symm (h : Adj G v w) : Adj G w v := symm_of (Adj G) h
-
-lemma adj_comm : Adj G v w ↔ Adj G w v := ⟨symm_of (Adj G), symm_of (Adj G)⟩
 
 /-- The two vertices of the dart as an unordered pair. -/
 @[expose] def dartSym2 (d : darts G) : Sym2 V := s(src Gr d.val, tgt Gr d.val)
