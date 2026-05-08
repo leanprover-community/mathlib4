@@ -65,6 +65,9 @@ theorem IsGaloisGroup.of_mulEquiv [hG : IsGaloisGroup G A B] {H : Type*} [Group 
     have he' : ∀ (g : G) (x : B), e.symm g • x = g • x := fun g x ↦ by simp [← he]
     hG.isInvariant.isInvariant b (fun g ↦ by simpa [he'] using h (e.symm g))⟩
 
+protected theorem IsGaloisGroup.top [IsGaloisGroup G A B] : IsGaloisGroup (⊤ : Subgroup G) A B :=
+  .of_mulEquiv Subgroup.topEquiv fun _ _ ↦ rfl
+
 attribute [instance low] IsGaloisGroup.commutes IsGaloisGroup.isInvariant
 
 variable [FaithfulSMul A B] [hA : IsGaloisGroup G A B]
