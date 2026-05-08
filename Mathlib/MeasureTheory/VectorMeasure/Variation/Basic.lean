@@ -38,19 +38,6 @@ namespace MeasureTheory.VectorMeasure
 
 variable {X V : Type*} {mX : MeasurableSpace X}
 
--- TODO: relocate `sum_finpartition_parts` near the other `VectorMeasure.of_biUnion_finset`
--- lemmas.
-
-/-- For `μ : VectorMeasure X V`, summing `μ` over the parts of a `Finpartition` of
-`⟨s, hs⟩ : Subtype MeasurableSet` gives `μ s`. -/
-lemma sum_finpartition_parts [AddCommMonoid V] [TopologicalSpace V] [T2Space V]
-    (μ : VectorMeasure X V) {s : Set X} {hs : MeasurableSet s}
-    (P : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet)) :
-    ∑ p ∈ P.parts, μ p.val = μ s := by
-  rw [← μ.of_biUnion_finset (P.pairwiseDisjoint_apply (fun _ _ => rfl) rfl)
-        (fun p _ => p.prop),
-      ← Finset.sup_set_eq_biUnion, P.sup_parts_apply (fun _ _ => rfl) rfl]
-
 section Basic
 
 variable [TopologicalSpace V] [ENormedAddCommMonoid V] [T2Space V]
