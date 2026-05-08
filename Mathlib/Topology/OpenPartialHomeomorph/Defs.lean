@@ -186,11 +186,9 @@ to an open set `s` in the domain and to `t` in the codomain. -/
   simps! -isSimp source target]
 def _root_.Homeomorph.toOpenPartialHomeomorphOfImageEq (e : X ≃ₜ Y) (s : Set X) (hs : IsOpen s)
     (t : Set Y) (h : e '' s = t) : OpenPartialHomeomorph X Y where
-  toPartialEquiv := e.toPartialEquivOfImageEq s t h
+  toPartialHomeomorph := e.toPartialHomeomorphOfImageEq s t h
   open_source := hs
   open_target := by simpa [← h]
-  continuousOn_toFun := e.continuous.continuousOn
-  continuousOn_invFun := e.symm.continuous.continuousOn
 
 /-- A homeomorphism induces an open partial homeomorphism on the whole space -/
 @[simps! (attr := mfld_simps) -fullyApplied]

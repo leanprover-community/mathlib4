@@ -283,11 +283,9 @@ variable {s : Set X} (hs : IsOpen s)
 /-- The identity partial equivalence on a set `s` -/
 @[simps! (attr := mfld_simps) -fullyApplied apply, simps! -isSimp source target]
 def ofSet (s : Set X) (hs : IsOpen s) : OpenPartialHomeomorph X X where
-  toPartialEquiv := PartialEquiv.ofSet s
+  toPartialHomeomorph := PartialHomeomorph.ofSet s
   open_source := hs
   open_target := hs
-  continuousOn_toFun := continuous_id.continuousOn
-  continuousOn_invFun := continuous_id.continuousOn
 
 @[simp, mfld_simps]
 theorem ofSet_toPartialEquiv : (ofSet s hs).toPartialEquiv = PartialEquiv.ofSet s :=

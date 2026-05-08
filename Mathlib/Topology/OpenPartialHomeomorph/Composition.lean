@@ -203,11 +203,9 @@ We modify the source and target to have better definitional behavior. -/
 @[simps! -fullyApplied]
 def transOpenPartialHomeomorph (e : X ≃ₜ Y) (f' : OpenPartialHomeomorph Y Z) :
     OpenPartialHomeomorph X Z where
-  toPartialEquiv := e.toEquiv.transPartialEquiv f'.toPartialEquiv
+  toPartialHomeomorph := e.transPartialHomeomorph f'.toPartialHomeomorph
   open_source := f'.open_source.preimage e.continuous
   open_target := f'.open_target
-  continuousOn_toFun := f'.continuousOn.comp e.continuous.continuousOn fun _ => id
-  continuousOn_invFun := e.symm.continuous.comp_continuousOn f'.symm.continuousOn
 
 theorem transOpenPartialHomeomorph_eq_trans (e : X ≃ₜ Y) (f' : OpenPartialHomeomorph Y Z) :
     e.transOpenPartialHomeomorph f' = e.toOpenPartialHomeomorph.trans f' :=

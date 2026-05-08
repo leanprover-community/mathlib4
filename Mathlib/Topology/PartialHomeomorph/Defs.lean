@@ -25,14 +25,13 @@ instead of `e.toFun x` and `e.invFun x`.
 This file is intentionally kept small; many other constructions of, and lemmas about,
 partial homeomorphisms can be found in other files under `Mathlib/Topology/PartialHomeomorph/`.
 
-* `Homeomorph.toPartialHomeomorph`: associating an open partial homeomorphism to a
+* `Homeomorph.toPartialHomeomorph`: associating a partial homeomorphism to a
   homeomorphism, with `source = target = Set.univ`;
-* `PartialHomeomorph.symm`: the inverse of an open partial homeomorphism
+* `PartialHomeomorph.symm`: the inverse of a partial homeomorphism
 
 ## Implementation notes
 
-Most statements are copied from their `PartialEquiv` versions, although some care is required
-especially when restricting to subsets, as these should be open subsets.
+Most statements are copied from their `PartialEquiv` versions, although some care is required.
 
 For design notes, see `PartialEquiv.lean`.
 
@@ -50,7 +49,7 @@ variable {X X' : Type*} {Y Y' : Type*} {Z Z' : Type*}
   [TopologicalSpace X] [TopologicalSpace X'] [TopologicalSpace Y] [TopologicalSpace Y']
   [TopologicalSpace Z] [TopologicalSpace Z']
 
-/-- Partial homeomorphisms, defined on open subsets of the space -/
+/-- Partial homeomorphisms, defined on subsets of the space -/
 structure PartialHomeomorph (X : Type*) (Y : Type*) [TopologicalSpace X]
     [TopologicalSpace Y] extends PartialEquiv X Y where
   continuousOn_toFun : ContinuousOn toFun source
@@ -62,7 +61,7 @@ variable (e : PartialHomeomorph X Y)
 
 /-! Basic properties; inverse (symm instance) -/
 section Basic
-/-- Coercion of an open partial homeomorphisms to a function. We don't use `e.toFun` because it is
+/-- Coercion of a partial homeomorphisms to a function. We don't use `e.toFun` because it is
 actually `e.toPartialEquiv.toFun`, so `simp` will apply lemmas about `toPartialEquiv`.
 While we may want to switch to this behavior later, doing it mid-port will break a lot of proofs. -/
 @[coe] def toFun' : X → Y := e.toFun
@@ -72,7 +71,7 @@ Note that a `PartialHomeomorph` is not `DFunLike`. -/
 instance : CoeFun (PartialHomeomorph X Y) fun _ => X → Y :=
   ⟨fun e => e.toFun'⟩
 
-/-- The inverse of an open partial homeomorphism -/
+/-- The inverse of a partial homeomorphism -/
 @[symm]
 protected def symm : PartialHomeomorph Y X where
   toPartialEquiv := e.toPartialEquiv.symm
@@ -181,7 +180,7 @@ def _root_.Homeomorph.toPartialHomeomorphOfImageEq (e : X ≃ₜ Y) (s : Set X)
   continuousOn_toFun := e.continuous.continuousOn
   continuousOn_invFun := e.symm.continuous.continuousOn
 
-/-- A homeomorphism induces an open partial homeomorphism on the whole space -/
+/-- A homeomorphism induces a partial homeomorphism on the whole space -/
 @[simps! -fullyApplied]
 def _root_.Homeomorph.toPartialHomeomorph (e : X ≃ₜ Y) : PartialHomeomorph X Y :=
   e.toPartialHomeomorphOfImageEq univ univ <| by rw [image_univ, e.surjective.range_eq]
@@ -199,7 +198,7 @@ theorem replaceEquiv_eq_self (e' : PartialEquiv X Y)
   subst e'
   rfl
 
-/-- Two open partial homeomorphisms are equal when they have equal `toFun`, `invFun` and `source`.
+/-- Two partial homeomorphisms are equal when they have equal `toFun`, `invFun` and `source`.
 It is not sufficient to have equal `toFun` and `source`, as this only determines `invFun` on
 the target. This would only be true for a weaker notion of equality, arguably the right one,
 called `EqOnSource`. -/

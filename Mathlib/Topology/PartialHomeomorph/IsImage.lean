@@ -45,15 +45,15 @@ section IsImage
 /-!
 ## `PartialHomeomorph.IsImage` relation
 
-We say that `t : Set Y` is an image of `s : Set X` under an open partial homeomorphism `e` if any of
+We say that `t : Set Y` is an image of `s : Set X` under a partial homeomorphism `e` if any of
 the following equivalent conditions hold:
 
 * `e '' (e.source ∩ s) = e.target ∩ t`;
 * `e.source ∩ e ⁻¹ t = e.source ∩ s`;
 * `∀ x ∈ e.source, e x ∈ t ↔ x ∈ s` (this one is used in the definition).
 
-This definition is a restatement of `PartialEquiv.IsImage` for open partial homeomorphisms.
-In this section we transfer API about `PartialEquiv.IsImage` to open partial homeomorphisms and
+This definition is a restatement of `PartialEquiv.IsImage` for partial homeomorphisms.
+In this section we transfer API about `PartialEquiv.IsImage` to partial homeomorphisms and
 add a few `PartialHomeomorph`-specific lemmas like `PartialHomeomorph.IsImage.closure`.
 -/
 
@@ -153,7 +153,7 @@ theorem symm_eqOn_of_inter_eq_of_eqOn {e' : PartialHomeomorph X Y} (h : e.IsImag
     EqOn e.symm e'.symm (e.target ∩ t) :=
   h.toPartialEquiv.symm_eq_on_of_inter_eq_of_eqOn hs Heq
 
-/-- Restrict an `PartialHomeomorph` to a pair of corresponding open sets. -/
+/-- Restrict an `PartialHomeomorph` to a pair of corresponding sets. -/
 @[simps! -fullyApplied apply symm_apply toPartialEquiv]
 def restr (h : e.IsImage s t) : PartialHomeomorph X Y where
   toPartialEquiv := h.toPartialEquiv.restr
@@ -178,7 +178,7 @@ section restr
 ## Restriction
 -/
 
-/-- Restricting an open partial homeomorphism `e` to `e.source ∩ s`.
+/-- Restricting a partial homeomorphism `e` to `e.source ∩ s`.
 This is sometimes hard to use, but it has the advantage that when it can be used then its
 `PartialEquiv` is defeq to `PartialEquiv.restr`. -/
 @[simps! -fullyApplied apply symm_apply,
@@ -191,10 +191,10 @@ theorem restr_toPartialEquiv (s : Set X) :
     (e.restr s).toPartialEquiv = e.toPartialEquiv.restr s :=
   rfl
 
-@[simp] theorem coe_restrOpen {s : Set X} : ⇑(e.restr s) = e := rfl
+@[simp] theorem coe_restr {s : Set X} : ⇑(e.restr s) = e := rfl
 
 @[simp]
-theorem coe_restrOpen_symm {s : Set X} : ⇑(e.restr s).symm = e.symm := rfl
+theorem coe_restr_symm {s : Set X} : ⇑(e.restr s).symm = e.symm := rfl
 
 @[simp, grind =]
 theorem restr_source_inter (s : Set X) : e.restr (e.source ∩ s) = e.restr s := by
@@ -210,7 +210,7 @@ The identity on a set `s`
 -/
 section ofSet
 
-variable {s : Set X} (hs : IsOpen s)
+variable {s : Set X}
 
 /-- The identity partial equivalence on a set `s` -/
 @[simps! -fullyApplied apply, simps! -isSimp source target]
@@ -287,7 +287,7 @@ theorem Set.EqOn.restr_eqOn_source {e e' : PartialHomeomorph X Y}
   · rw [restr_source, restr_source]
     exact Set.inter_comm _ _
   · rw [restr_source]
-    refine (EqOn.trans ?_ h).trans ?_ <;> simp only [coe_restrOpen, eqOn_refl]
+    refine (EqOn.trans ?_ h).trans ?_ <;> simp only [coe_restr, eqOn_refl]
 
 theorem eq_of_eqOnSource_univ {e e' : PartialHomeomorph X Y} (h : e ≈ e') (s : e.source = univ)
     (t : e.target = univ) : e = e' :=
@@ -317,7 +317,7 @@ namespace Homeomorph
 
 variable (e : X ≃ₜ Y) (e' : Y ≃ₜ Z)
 
-/- Register as simp lemmas that the fields of an open partial homeomorphism built from a
+/- Register as simp lemmas that the fields of a partial homeomorphism built from a
 homeomorphism correspond to the fields of the original homeomorphism. -/
 @[simp]
 theorem refl_toPartialHomeomorph :

@@ -18,8 +18,8 @@ public import Mathlib.Topology.PartialHomeomorph.Composition
   as a partial homeomorphism on the product space
 * `PartialHomeomorph.pi`: the product of a finite family of partial homeomorphisms
 * `PartialHomeomorph.disjointUnion`: combine two partial homeomorphisms with disjoint
-  sources and disjoint targets
-* `PartialHomeomorph.lift_openEmbedding`: extend a partial homeomorphism `X → Y`
+  closures of sources and disjoint closures of targets
+* `PartialHomeomorph.lift_embedding`: extend a partial homeomorphism `X → Y`
   under an embedding `X → X'`, to a partial homeomorphism `X' → Z`.
 -/
 
@@ -38,7 +38,7 @@ variable (e : PartialHomeomorph X Y)
 /-!
 ## Constants
 
-`PartialEquiv.const` as an open partial homeomorphism
+`PartialEquiv.const` as a partial homeomorphism
 -/
 section const
 
@@ -148,8 +148,8 @@ Combining two partial homeomorphisms using `Set.piecewise`
 -/
 section Piecewise
 
-/-- Combine two `OpenPartialHomeomorph`s using `Set.piecewise`. The source of the new
-`OpenPartialHomeomorph` is `s.ite e.source e'.source = e.source ∩ s ∪ e'.source \ s`, and similarly
+/-- Combine two `PartialHomeomorph`s using `Set.piecewise`. The source of the new
+`PartialHomeomorph` is `s.ite e.source e'.source = e.source ∩ s ∪ e'.source \ s`, and similarly
 for target.  The function sends `e.source ∩ s` to `e.target ∩ t` using `e` and
 `e'.source \ s` to `e'.target \ t` using `e'`, and similarly for the inverse function.
 To ensure the maps `toFun` and `invFun` are inverse of each other on the new `source` and `target`,
@@ -179,9 +179,8 @@ theorem symm_piecewise (e e' : PartialHomeomorph X Y) {s : Set X} {t : Set Y}
       e.symm.piecewise e'.symm t s H.symm H'.symm Hs2 Hs1 Heq2 Heq1 :=
   rfl
 
-/-- Combine two `PartialHomeomorph`s with disjoint sources and disjoint targets. We reuse
-`PartialHomeomorph.piecewise` then override `toPartialEquiv` to `PartialEquiv.disjointUnion`.
-This way we have better definitional equalities for `source` and `target`. -/
+/-- Combine two `PartialHomeomorph`s with disjoint closures of sources and disjoint closures of
+targets. -/
 def disjointUnion (e e' : PartialHomeomorph X Y) [∀ x, Decidable (x ∈ e.source)]
     [∀ y, Decidable (y ∈ e.target)] (Hs : Disjoint (closure e.source) (closure e'.source))
     (Ht : Disjoint (closure e.target) (closure e'.target)) : PartialHomeomorph X Y where
@@ -256,7 +255,7 @@ open TopologicalSpace
 variable (e : PartialHomeomorph X Y)
 variable {s : Set X} (hs : Nonempty s)
 
-/-- The restriction of a partial homeomorphism `e` to an open subset `s` of the domain type
+/-- The restriction of a partial homeomorphism `e` to a subset `s` of the domain type
 produces a partial homeomorphism whose domain is the subtype `s`. -/
 noncomputable def subtypeRestr : PartialHomeomorph s Y :=
   (s.partialHomeomorphSubtypeCoe hs).trans e
@@ -324,7 +323,7 @@ section lift_embedding
 variable {X X' Z : Type*} [TopologicalSpace X] [TopologicalSpace X'] [TopologicalSpace Z]
   [Nonempty Z] {f : X → X'}
 
-/-- Extend an open partial homeomorphism `e : X → Z` to `X' → Z`, using an open embedding
+/-- Extend a partial homeomorphism `e : X → Z` to `X' → Z`, using an embedding
 `ι : X → X'`. On `ι(X)`, the extension is specified by `e`; its value elsewhere is arbitrary
 (and uninteresting). -/
 noncomputable def lift_embedding (e : PartialHomeomorph X Z) (hf : IsEmbedding f) :

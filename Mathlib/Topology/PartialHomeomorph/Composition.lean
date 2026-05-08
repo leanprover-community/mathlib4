@@ -11,7 +11,7 @@ public import Mathlib.Topology.PartialHomeomorph.IsImage
 
 ## Main definitions
 
-* `OpenPartialHomeomorph.trans`: the composition of two open partial homeomorphisms
+* `PartialHomeomorph.trans`: the composition of two partial homeomorphisms
 -/
 
 @[expose] public section
@@ -29,13 +29,13 @@ variable (e : PartialHomeomorph X Y)
 /-!
 ## Composition
 
-`trans`: composition of two open partial homeomorphisms
+`trans`: composition of two partial homeomorphisms
 -/
 section trans
 
 variable (e' : PartialHomeomorph Y Z)
 
-/-- Composition of two open partial homeomorphisms when the target of the first and the source of
+/-- Composition of two partial homeomorphisms when the target of the first and the source of
 the second coincide. -/
 @[simps! apply symm_apply toPartialEquiv, simps! -isSimp source target]
 protected def trans' (h : e.target = e'.source) : PartialHomeomorph X Z where
@@ -43,7 +43,7 @@ protected def trans' (h : e.target = e'.source) : PartialHomeomorph X Z where
   continuousOn_toFun := e'.continuousOn.comp e.continuousOn <| h ▸ e.mapsTo
   continuousOn_invFun := e.continuousOn_symm.comp e'.continuousOn_symm <| h.symm ▸ e'.symm_mapsTo
 
-/-- Composing two open partial homeomorphisms, by restricting to the maximal domain where their
+/-- Composing two partial homeomorphisms, by restricting to the maximal domain where their
 composition is well defined. -/
 @[trans]
 protected def trans : PartialHomeomorph X Z :=
@@ -131,12 +131,12 @@ theorem restr_trans (s : Set X) : (e.restr s).trans e' = (e.trans e').restr s :=
 
 end trans
 
-/-- Composition of open partial homeomorphisms respects equivalence. -/
+/-- Composition of partial homeomorphisms respects equivalence. -/
 theorem EqOnSource.trans' {e e' : PartialHomeomorph X Y} {f f' : PartialHomeomorph Y Z}
     (he : e ≈ e') (hf : f ≈ f') : e.trans f ≈ e'.trans f' :=
   PartialEquiv.EqOnSource.trans' he hf
 
-/-- Composition of an open partial homeomorphism and its inverse is equivalent to the restriction of
+/-- Composition of a partial homeomorphism and its inverse is equivalent to the restriction of
 the identity to the source -/
 theorem self_trans_symm : e.trans e.symm ≈ PartialHomeomorph.ofSet e.source :=
   PartialEquiv.self_trans_symm _
@@ -187,7 +187,7 @@ theorem trans_toPartialHomeomorph : (e.trans e').toPartialHomeomorph =
     e.toPartialHomeomorph.trans e'.toPartialHomeomorph :=
   PartialHomeomorph.toPartialEquiv_injective <| Equiv.trans_toPartialEquiv _ _
 
-/-- Precompose an open partial homeomorphism with a homeomorphism.
+/-- Precompose a partial homeomorphism with a homeomorphism.
 We modify the source and target to have better definitional behavior. -/
 @[simps! -fullyApplied]
 def transPartialHomeomorph (e : X ≃ₜ Y) (f' : PartialHomeomorph Y Z) :

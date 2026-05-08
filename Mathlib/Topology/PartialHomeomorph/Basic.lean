@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Topology.PartialHomeomorph.Defs
-public import Mathlib.Topology.Sets.Opens
-public import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Partial homeomorphisms: basic theory
@@ -16,7 +14,7 @@ public import Mathlib.Topology.Homeomorph.Lemmas
 
 ## Main definitions
 
-* `PartialHomeomorph.refl`: the identity open partial homeomorphism
+* `PartialHomeomorph.refl`: the identity partial homeomorphism
 -/
 
 @[expose] public section
@@ -29,7 +27,7 @@ variable {X X' : Type*} {Y Y' : Type*} {Z Z' : Type*}
 
 namespace PartialHomeomorph
 
-/-- The identity on the whole space as an open partial homeomorphism. -/
+/-- The identity on the whole space as a partial homeomorphism. -/
 @[simps! -fullyApplied apply, simps! -isSimp source target]
 protected def refl (X : Type*) [TopologicalSpace X] : PartialHomeomorph X X :=
   (Homeomorph.refl X).toPartialHomeomorph
@@ -121,7 +119,7 @@ theorem coe_ofContinuousOpen_symm (e : PartialEquiv X Y) (hc : ContinuousOn e e.
     ⇑(ofContinuousOpen e hc ho hs).symm = e.symm :=
   rfl
 
-/-- The homeomorphism obtained by restricting an `OpenPartialHomeomorph` to a subset of the source.
+/-- The homeomorphism obtained by restricting a `PartialHomeomorph` to a subset of the source.
 -/
 @[simps]
 def homeomorphOfImageSubsetSource {s : Set X} {t : Set Y} (hs : s ⊆ e.source) (ht : e '' s = t) :
@@ -137,7 +135,7 @@ def homeomorphOfImageSubsetSource {s : Set X} {t : Set Y} (hs : s ⊆ e.source) 
     continuous_toFun := (e.continuousOn.mono hs).mapsToRestrict h₁
     continuous_invFun := (e.continuousOn_symm.mono h₂).mapsToRestrict h₃ }
 
-/-- An open partial homeomorphism defines a homeomorphism between its source and target. -/
+/-- A partial homeomorphism defines a homeomorphism between its source and target. -/
 @[simps!]
 def toHomeomorphSourceTarget : e.source ≃ₜ e.target :=
   e.homeomorphOfImageSubsetSource subset_rfl e.image_source_eq_target
@@ -146,7 +144,7 @@ theorem secondCountableTopology_source [SecondCountableTopology Y] :
     SecondCountableTopology e.source :=
   e.toHomeomorphSourceTarget.secondCountableTopology
 
-/-- If an open partial homeomorphism has source and target equal to univ, then it induces a
+/-- If a partial homeomorphism has source and target equal to univ, then it induces a
 homeomorphism between the whole spaces, expressed in this definition. -/
 @[simps -fullyApplied apply symm_apply]
 -- TODO: add a `PartialEquiv` version
@@ -237,7 +235,7 @@ lemma toPartialHomeomorph_right_inv {x : Y} (hx : x ∈ Set.range f) :
 
 end Topology.IsEmbedding
 
-/-! inclusion of an open set in a topological space -/
+/-! inclusion of a set in a topological space -/
 namespace Set
 
 /- `Nonempty s` is not a type class argument because `s`, being a subset, rarely comes with a type
@@ -245,7 +243,7 @@ class instance. Then we'd have to manually provide the instance every time we us
 lemmas, tediously using `haveI := ...` or `@foobar _ _ _ ...`. -/
 variable (s : Set X) (hs : Nonempty s)
 
-/-- The inclusion of an open subset `s` of a space `X` into `X` is an open partial homeomorphism
+/-- The inclusion of an subset `s` of a space `X` into `X` is a partial homeomorphism
 from the subtype `s` to `X`. -/
 noncomputable def partialHomeomorphSubtypeCoe : PartialHomeomorph s X :=
   IsEmbedding.subtypeVal.toPartialHomeomorph _
@@ -255,7 +253,7 @@ theorem partialHomeomorphSubtypeCoe_coe :
     (s.partialHomeomorphSubtypeCoe hs : s → X) = (↑) :=
   rfl
 
-@[simp, mfld_simps]
+@[simp]
 theorem partialHomeomorphSubtypeCoe_source :
     (s.partialHomeomorphSubtypeCoe hs).source = Set.univ :=
   rfl
