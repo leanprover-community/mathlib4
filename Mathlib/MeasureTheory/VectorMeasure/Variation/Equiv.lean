@@ -75,26 +75,18 @@ open VectorMeasure in
 theorem totalVariation_eq_variation (μ : SignedMeasure X) : μ.totalVariation = μ.variation := by
   ext r hr
   obtain ⟨s, hsm, hs, hsc, hpos, hneg⟩ := μ.toJordanDecomposition_spec
-  have hd : Disjoint (s ∩ r) (sᶜ ∩ r) :=
-    Disjoint.mono Set.inter_subset_left Set.inter_subset_left disjoint_compl_right
-  have hcov : (s ∩ r) ∪ (sᶜ ∩ r) = r := by
-    rw [← Set.union_inter_distrib_right, Set.union_compl_self, Set.univ_inter]
-  have htotal : μ.totalVariation r = ‖μ (s ∩ r)‖ₑ + ‖μ (sᶜ ∩ r)‖ₑ := by
-    rw [totalVariation, Measure.add_apply, hpos, hneg,
-      μ.toMeasureOfZeroLE_apply_eq_enorm hsm hs hr,
-      μ.toMeasureOfLEZero_apply_eq_enorm hsm.compl hsc hr]
-  refine le_antisymm ?_ ?_
-  · -- (≤): bound each enorm by the corresponding `μ.variation`, then use additivity of
-    -- `μ.variation` as a measure on the disjoint pair `(s ∩ r), (sᶜ ∩ r)`.
-    calc μ.totalVariation r
-        = ‖μ (s ∩ r)‖ₑ + ‖μ (sᶜ ∩ r)‖ₑ := htotal
+  apply le_antisymm
+  · calc μ.totalVariation r
+      _ = ‖μ (s ∩ r)‖ₑ + ‖μ (sᶜ ∩ r)‖ₑ := by
+        grind [totalVariation, Measure.add_apply, μ.toMeasureOfZeroLE_apply_eq_enorm,
+          μ.toMeasureOfLEZero_apply_eq_enorm]
       _ ≤ μ.variation (s ∩ r) + μ.variation (sᶜ ∩ r) :=
-          add_le_add (μ.enorm_measure_le_variation _) (μ.enorm_measure_le_variation _)
-      _ = μ.variation ((s ∩ r) ∪ (sᶜ ∩ r)) := (measure_union hd (hsm.compl.inter hr)).symm
-      _ = μ.variation r := by rw [hcov]
-  · -- (≥): for each `Finpartition` of `⟨r, hr⟩ : Subtype MeasurableSet`, sum termwise via
-    -- `enorm_le_totalVariation`, then use additivity of `μ.totalVariation` on the partition.
-    simp only [variation_apply, preVariation_apply, ennrealToMeasure_apply hr,
+        add_le_add (μ.enorm_measure_le_variation _) (μ.enorm_measure_le_variation _)
+      _ = μ.variation ((s ∩ r) ∪ (sᶜ ∩ r)) :=
+        (measure_union (by grind) (hsm.compl.inter hr)).symm
+      _ = μ.variation r := by
+        rw [← Set.union_inter_distrib_right, Set.union_compl_self, Set.univ_inter]
+  · simp only [variation_apply, preVariation_apply, ennrealToMeasure_apply hr,
       ennrealPreVariation_apply, preVariationFun, hr, ↓reduceDIte]
     refine iSup_le fun P => ?_
     have hcov' : ⋃ p ∈ P.parts, p.val = r := by
