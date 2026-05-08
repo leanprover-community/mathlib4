@@ -306,7 +306,7 @@ theorem subset_of_specializes {s t : Set α} [T1Space α] (h : s ⤳ t) : s ⊆ 
 
 theorem specializes_of_subset_closure {s t : Set α} (hst : s ⊆ t) (hts : t ⊆ closure s) :
     s ⤳ t := by
-  grind [specializes_iff, specializes_rfl]
+  aesop (add simp specializes_iff)
 
 theorem specializes_closure {s : Set α} : s ⤳ closure s :=
   specializes_of_subset_closure subset_closure .rfl
