@@ -88,17 +88,10 @@ lemma toMeasureOfLEZero_apply_eq_enorm {i j : Set X} (him : MeasurableSet i)
   · refine neg_nonneg.mpr <| μ.nonpos_of_restrict_le_zero ?_
     exact μ.restrict_le_zero_subset him Set.inter_subset_left hi
 
-end MeasureTheory.SignedMeasure
-
-namespace MeasureTheory.VectorMeasure
-
-open SignedMeasure
-
-variable {X : Type*} {mX : MeasurableSpace X}
-
+open VectorMeasure in
 /-- For signed measures, the Hahn–Jordan-based `totalVariation` agrees with the supremum-based
 `variation`. -/
-theorem _root_.MeasureTheory.SignedMeasure.totalVariation_eq_variation (μ : SignedMeasure X) :
+theorem totalVariation_eq_variation (μ : SignedMeasure X) :
     μ.totalVariation = μ.variation := by
   ext r hr
   obtain ⟨s, hsm, hs, hsc, hpos, hneg⟩ := μ.toJordanDecomposition_spec
@@ -136,4 +129,4 @@ theorem _root_.MeasureTheory.SignedMeasure.totalVariation_eq_variation (μ : Sig
           (measure_biUnion_finset hdisj fun p _ => p.prop).symm
       _ = μ.totalVariation r := by rw [hcov']
 
-end MeasureTheory.VectorMeasure
+end MeasureTheory.SignedMeasure
