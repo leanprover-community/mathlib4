@@ -151,7 +151,7 @@ theorem single_mul_single_apply_zero_ne_zero_iff [CharZero F] [NoZeroDivisors R]
   have : IsAddTorsionFree R := .of_isTorsionFree F R
   simp_rw [Finsupp.indicator_eq_sum_single, AddMonoidAlgebra.ofCoeff_sum,
     sum_mul, mul_sum, AddMonoidAlgebra.ofCoeff, AddMonoidAlgebra.single_mul_single,
-    toFinsupp_mk_apply_zero_eq, AddMonoidAlgebra.coeff_sum, Finsupp.coe_finset_sum, sum_apply,
+    toFinsupp_mk_apply_zero_eq, AddMonoidAlgebra.coeff_sum, Finsupp.coe_finsetSum, sum_apply,
     AddMonoidAlgebra.coeff, AddMonoidAlgebra.single_apply, ← sum_product',
     sum_ite, sum_const_zero, add_zero, sum_const, smul_ne_zero_iff, mul_ne_zero_iff,
     iff_true_intro ha, iff_true_intro hb, and_true, Ne, card_eq_zero, filter_eq_empty_iff,
@@ -174,7 +174,7 @@ theorem lift_eq_sum_toFinsupp (A : Type*) [Semiring A] [Algebra R A]
       ((Finsupp.indicator s' fun _ _ => b).sum fun a c => c • φ (.ofAdd a)) =
         ∑ a ∈ s', b • φ (.ofAdd a) :=
     Finsupp.sum_indicator_index _ fun i _ => by rw [zero_smul]
-  conv_lhs => rw [Finsupp.sum, AddSubmonoidClass.coe_finset_sum]
+  conv_lhs => rw [Finsupp.sum, AddSubmonoidClass.coe_finsetSum]
   simp_rw [map_sum, AddMonoidAlgebra.lift_apply]
   change (∑ i ∈ (toFinsupp x).support, Finsupp.sum (AddMonoidAlgebra.coeff _) _) = _
   simp_rw [mapDomainFixed.single, AddMonoidAlgebra.coeff_ofCoeff, this, smul_sum, Finsupp.sum]
@@ -258,7 +258,7 @@ theorem linearIndependent_exp_aux2_2 {F K S : Type*}
     convert_to (mapDomainFixed.toFinsupp (mapDomainFixed.single i (mapDomainFixed.toFinsupp x i) *
       mapDomainFixed.single (-i) 1) 0 + 0 : F) ≠ 0
     · congr 1
-      rw [map_sum, Finsupp.finset_sum_apply]
+      rw [map_sum, Finsupp.finsetSum_apply]
       refine sum_eq_zero fun j hj => ?_
       rw [mem_erase, Finsupp.mem_support_iff] at hj
       rw [mapDomainFixed.single_mul_single_apply_zero_eq_zero_iff _ hj.2]
