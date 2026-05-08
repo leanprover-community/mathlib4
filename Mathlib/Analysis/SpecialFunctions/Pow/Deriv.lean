@@ -743,6 +743,10 @@ theorem deriv_const_rpow (ha : 0 < a) (hf : DifferentiableAt ℝ f x) :
     deriv (a ^ f ·) x = Real.log a * deriv f x * a ^ f x :=
   (hf.hasDerivAt.const_rpow ha).deriv
 
+@[simp]
+theorem deriv_const_rpow_id (ha : 0 < a) :
+    deriv (a ^ ·) x = Real.log a * a ^ x := by
+  rw [deriv_const_rpow ha differentiableAt_fun_id, deriv_id'', mul_one]
 
 end deriv
 

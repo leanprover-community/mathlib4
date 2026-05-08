@@ -339,9 +339,7 @@ lemma deriv2_qaryEntropy :
       · rw [deriv.log differentiableAt_fun_id xne0]
         simp only [deriv_id'', one_div]
         · have {q : ℝ} (p : ℝ) : DifferentiableAt ℝ (fun p => q - p) p := by fun_prop
-          have d_oneminus (p : ℝ) : deriv (fun (y : ℝ) ↦ 1 - y) p = -1 := by
-            rw [deriv_const_sub 1, deriv_id'']
-          simp [field, sub_ne_zero_of_ne xne1.symm, this, d_oneminus]
+          simp [field, sub_ne_zero_of_ne xne1.symm, this, deriv_const_sub_id]
           ring
       · apply DifferentiableAt.add
         · simp only [differentiableAt_const]

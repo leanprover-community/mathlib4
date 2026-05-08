@@ -12,6 +12,18 @@ example (x : ℝ) :
     deriv (fun x ↦ cos (sin x) * exp x) x = (cos (sin x) - sin (sin x) * cos x) * exp x := by
   simp; ring
 
+example (x : ℝ) : deriv (HAdd.hAdd 3) x = 1 := by
+  simp
+
+example (x : ℝ) : deriv (HMul.hMul 3) x = 3 := by
+  simp
+
+example (x : ℝ) : deriv (HDiv.hDiv 3) x = -3 / x ^ 2 := by
+  simp
+
+example (x : ℝ) : deriv (HPow.hPow 3) x = log 3 * 3 ^ x := by
+  simp
+
 /- for more complicated examples (with more nested functions) you need to increase the
 `maxDischargeDepth`. -/
 
