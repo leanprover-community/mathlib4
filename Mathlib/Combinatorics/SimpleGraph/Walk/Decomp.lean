@@ -132,7 +132,7 @@ lemma support_takeUntil_prefix {u v w : V} (p : G.Walk v w) (h : u ∈ p.support
     (p.takeUntil u h).support <+: p.support := by
   grw [takeUntil_eq_take, support_copy, take_support_eq_support_take_succ, List.take_prefix]
 
-lemma dropUntil_support_suffix {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
+lemma support_dropUntil_suffix {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
     (p.dropUntil u h).support <:+ p.support := by
   grw [dropUntil_eq_drop, support_copy, drop_support_eq_support_drop_min, List.drop_suffix]
 

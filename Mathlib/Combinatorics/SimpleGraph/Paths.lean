@@ -707,7 +707,7 @@ theorem IsPath.disjoint_edges_of_disjoint_support {p : G.Walk u v} {q : G.Walk v
   · grind [p.adj_of_mem_edges hep |>.ne]
 
 lemma IsPath.isCycle_append {u v} {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPath) (hq : q.IsPath)
-    (h : p.support.tail.Disjoint q.support.tail) (hn : 1 < p.length ⊔ q.length) :
+    (h : p.support.tail.Disjoint q.support.tail) (hn : 1 < p.length ∨ 1 < q.length) :
     (p.append q).IsCycle := by
   rw [isCycle_def, isTrail_append]
   refine ⟨⟨hp.isTrail, hq.isTrail, ?_⟩, ?_, ?_⟩
@@ -738,7 +738,7 @@ theorem IsPath.exists_isCycle_of_ne {u v : V} {p q : G.Walk u v} (hp : p.IsPath)
 theorem IsPath.exists_isCycle_sublist_of_ne {u v : V} {p q : G.Walk u v} (hp : p.IsPath)
     (hq : q.IsPath) (h : p ≠ q) :
     ∃ w, w ∈ p.support ∧ w ∈ q.support ∧
-    ∃ c : G.Walk w w, c.IsCycle ∧ c.support.Sublist (p.support ++ q.support.reverse.tail) := by
+      ∃ c : G.Walk w w, c.IsCycle ∧ c.support.Sublist (p.support ++ q.support.reverse.tail) := by
   have ⟨u', v', p', q', hp', hq', hcyc⟩ := hp.exists_isCycle_of_ne hq h
   use u', hp'.support_subset p'.start_mem_support, hq'.support_subset q'.start_mem_support
   refine ⟨_, hcyc, ?_⟩
@@ -750,7 +750,7 @@ theorem IsPath.exists_isCycle_sublist_of_ne {u v : V} {p q : G.Walk u v} (hp : p
 theorem IsPath.exists_isCycle_le_length_sum_of_ne {u v : V} {p q : G.Walk u v} (hp : p.IsPath)
     (hq : q.IsPath) (h : p ≠ q) :
     ∃ w, w ∈ p.support ∧ w ∈ q.support ∧
-    ∃ c : G.Walk w w, c.IsCycle ∧ c.length ≤ p.length + q.length := by
+      ∃ c : G.Walk w w, c.IsCycle ∧ c.length ≤ p.length + q.length := by
   obtain ⟨w, hw₁, hw₂, c, hc₁, hc₂⟩ := hp.exists_isCycle_sublist_of_ne hq h
   use w, hw₁, hw₂, c, hc₁, by grind [hc₂.length_le]
 
