@@ -39,7 +39,7 @@ deterministic, the positivity equation fails.
 
 public section
 
-open CategoryTheory MeasureTheory ProbabilityTheory Kernel
+open CategoryTheory ProbabilityTheory Kernel
 
 open scoped MonoidalCategory SFinKer ComonObj
 
