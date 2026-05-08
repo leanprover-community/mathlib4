@@ -112,7 +112,9 @@ variable [K.HasOrthogonalProjection]
 /-- The orthogonal projection onto a complete subspace. -/
 def orthogonalProjectionOnto : E →L[𝕜] K := K.projectionOntoL Kᗮ K.isTopCompl_orthogonal
 
-@[deprecated (since := "2026-05-05")] alias orthogonalProjection := orthogonalProjectionOnto
+/-- The orthogonal projection onto a subspace. -/
+@[deprecated orthogonalProjectionOnto (since := "2026-05-05")] abbrev orthogonalProjection :
+    E →L[𝕜] K := K.orthogonalProjectionOnto
 
 variable {K}
 
@@ -122,7 +124,12 @@ version is important as it satisfies `IsStarProjection`. -/
 def starProjection (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
     E →L[𝕜] E := U.subtypeL ∘L U.orthogonalProjectionOnto
 
-@[deprecated (since := "2026-05-07")] alias orthogonalProjectionFn := starProjection
+/-- The orthogonal projection onto a complete subspace, as an
+unbundled function. This definition is only intended for use in
+setting up the bundled version `orthogonalProjection` and should not
+be used once that is defined. -/
+@[deprecated starProjection (since := "2026-05-07")] abbrev orthogonalProjectionFn
+    (x : E) : E := (HasOrthogonalProjection.exists_orthogonal (K := K) v).choose
 
 set_option linter.deprecated false in
 @[deprecated "Please use `orthogonalProjectionOnto` and `starProjection`" (since := "2026-05-07")]
