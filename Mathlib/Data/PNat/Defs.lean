@@ -132,11 +132,11 @@ theorem coe_toPNat' (n : ℕ+) : (n : ℕ).toPNat' = n :=
   eq (toPNat'_coe n.pos)
 
 @[deprecated "use `one_le`" (since := "2026-05-07")]
-theorem one_le (n : ℕ+) : (1 : ℕ+) ≤ n :=
+protected theorem one_le (n : ℕ+) : (1 : ℕ+) ≤ n :=
   n.2
 
 @[deprecated "use `not_lt_one`" (since := "2026-05-07")]
-theorem not_lt_one (n : ℕ+) : ¬n < 1 :=
+protected theorem not_lt_one (n : ℕ+) : ¬n < 1 :=
   not_lt_of_ge n.2
 
 instance : Inhabited ℕ+ :=
