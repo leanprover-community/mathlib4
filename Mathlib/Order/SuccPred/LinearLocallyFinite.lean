@@ -388,7 +388,7 @@ def orderIsoNatOfLinearSuccPredArch [NoMaxOrder ι] [OrderBot ι] : ι ≃o ℕ 
   map_rel_iff' := by
     intro i j
     simp only [Equiv.coe_fn_mk, Int.toNat_le]
-    rw [← @toZ_le_iff ι _ _ _ _ ⊥, Int.toNat_of_nonneg (toZ_nonneg bot_le)]
+    rw [← toZ_le_toZ (i0 := (⊥ : ι)), Int.toNat_of_nonneg (toZ_nonneg bot_le)]
 
 /-- If the order has both a bot and a top, `toZ` gives an `OrderIso` between `ι` and
 `Finset.range n` for some `n`. -/
@@ -396,7 +396,7 @@ def orderIsoRangeOfLinearSuccPredArch [OrderBot ι] [OrderTop ι] :
     ι ≃o Finset.range ((toZ ⊥ (⊤ : ι)).toNat + 1) where
   toFun i :=
     ⟨(toZ ⊥ i).toNat,
-      Finset.mem_range_succ_iff.mpr (Int.toNat_le_toNat (toZ_le_iff.mpr le_top))⟩
+      Finset.mem_range_succ_iff.mpr (Int.toNat_le_toNat (toZ_le_toZ.mpr le_top))⟩
   invFun n := succ^[n] ⊥
   left_inv i := iterate_succ_toZ i bot_le
   right_inv n := by
@@ -414,7 +414,7 @@ def orderIsoRangeOfLinearSuccPredArch [OrderBot ι] [OrderTop ι] :
   map_rel_iff' := by
     intro i j
     simp only [Equiv.coe_fn_mk, Subtype.mk_le_mk, Int.toNat_le]
-    rw [← @toZ_le_iff ι _ _ _ _ ⊥, Int.toNat_of_nonneg (toZ_nonneg bot_le)]
+    rw [← toZ_le_toZ (i0 := (⊥ : ι)), Int.toNat_of_nonneg (toZ_nonneg bot_le)]
 
 end OrderIso
 
