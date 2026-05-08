@@ -34,9 +34,6 @@ related basic results.
 continuous representation, algebra
 -/
 
--- This file needs to import `Mathlib.Algebra.Category.ModuleCat.Topology.Basic` for the definitions
-set_option linter.directoryDependency false
-
 @[expose] public section
 
 variable (R G V W : Type*) [Monoid G]
