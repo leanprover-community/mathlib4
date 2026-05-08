@@ -173,7 +173,7 @@ end Module
 
 section CommMonoid
 
-variable (G) [CommMonoid G]
+variable (G) [CommMonoid G] [CommMonoid H]
 
 namespace CommMonoid
 
@@ -186,6 +186,13 @@ def torsion : Submonoid G where
   carrier := { x | IsOfFinOrder x }
   one_mem' := IsOfFinOrder.one
   mul_mem' hx hy := hx.mul hy
+
+@[to_additive]
+theorem mem_torsion (g : G) : g ∈ torsion G ↔ IsOfFinOrder g := Iff.rfl
+
+@[to_additive]
+lemma torsion_prod : torsion (G × H) = (torsion G).prod (torsion H) := by
+  simp [Submonoid.ext_iff, Submonoid.mem_prod, mem_torsion, IsOfFinOrder.prod_iff]
 
 variable {G}
 
