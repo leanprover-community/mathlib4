@@ -450,6 +450,16 @@ theorem isLittleO_const_log_atTop {c : ℝ} : (fun _ => c) =o[atTop] log := by
 
 end Real
 
+namespace Nat.Prime
+
+/-- The logarithm of a prime number is positive. -/
+theorem log_pos {p : ℕ} (hp : p.Prime) : 0 < Real.log p :=
+  Real.log_pos <| mod_cast hp.one_lt
+
+theorem log_ne_zero {p : ℕ} (hp : p.Prime) : Real.log p ≠ 0 := hp.log_pos.ne'
+
+end Nat.Prime
+
 section Continuity
 
 open Real

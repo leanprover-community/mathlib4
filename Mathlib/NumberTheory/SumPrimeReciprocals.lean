@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Group.Indicator
 public import Mathlib.Analysis.PSeries
-public import Mathlib.NumberTheory.SmoothNumbers
+public import Mathlib.NumberTheory.PrimeCounting
 
 /-!
 # The sum of the reciprocals of the primes diverges
