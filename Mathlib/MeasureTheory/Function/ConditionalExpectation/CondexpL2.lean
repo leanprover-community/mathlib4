@@ -85,7 +85,6 @@ theorem integrable_condExpL2_of_isFiniteMeasure (hm : m ≤ m0) [IsFiniteMeasure
     Integrable (ε := E) (condExpL2 E 𝕜 hm f) μ :=
   integrableOn_univ.mp <| integrableOn_condExpL2_of_measure_ne_top hm (measure_ne_top _ _) f
 
-set_option backward.isDefEq.respectTransparency false in
 theorem norm_condExpL2_le_one (hm : m ≤ m0) : ‖@condExpL2 α E 𝕜 _ _ _ _ _ _ μ hm‖ ≤ 1 :=
   haveI : Fact (m ≤ m0) := ⟨hm⟩
   Submodule.orthogonalProjection_norm_le _
@@ -177,7 +176,7 @@ theorem condExpL2_ae_eq_zero_of_ae_eq_zero (hs : MeasurableSet[m] s) (hμs : μ 
       · rwa [ENNReal.coe_eq_zero, nnnorm_eq_zero] at hx
     · refine Measurable.coe_nnreal_ennreal (Measurable.nnnorm ?_)
       exact (Lp.stronglyMeasurable _).measurable
-  refine le_antisymm ?_ (zero_le _)
+  rw [← nonpos_iff_eq_zero]
   refine (lintegral_nnnorm_condExpL2_le hs hμs f).trans (le_of_eq ?_)
   rw [lintegral_eq_zero_iff]
   · refine hf.mono fun x hx => ?_

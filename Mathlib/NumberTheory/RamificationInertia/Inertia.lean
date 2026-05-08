@@ -64,6 +64,8 @@ We do not assume `P` lies over `p` in the definition; we return `0` instead.
 
 See `inertiaDeg_algebraMap` for the common case where `f = algebraMap R S`
 and there is an algebra structure `R / p → S / P`.
+
+Note: This definition of inertia degree will eventually be replaced by `Ideal.inertiaDeg'`.
 -/
 noncomputable def inertiaDeg : ℕ :=
   if hPp : comap f P = p then
@@ -104,7 +106,7 @@ lemma inertiaDeg_comap_eq (e : S ≃ₐ[R] S₁) (P : Ideal S₁) :
 lemma inertiaDeg_map_eq (P : Ideal S)
     {E : Type*} [EquivLike E S S₁] [AlgEquivClass E R S S₁] (e : E) :
     inertiaDeg p (P.map e) = inertiaDeg p P := by
-  rw [show P.map e = _ from map_comap_of_equiv (e : S ≃+* S₁)]
+  rw [show P.map e = _ from map_comap_of_equiv (RingEquivClass.toRingEquiv e : S ≃+* S₁)]
   exact p.inertiaDeg_comap_eq (AlgEquivClass.toAlgEquiv e).symm P
 
 theorem inertiaDeg_bot [Nontrivial R] [IsDomain S] [Algebra.IsIntegral R S]
@@ -138,7 +140,6 @@ lemma absNorm_eq_pow_inertiaDeg_of_liesOver {S : Type*} [CommRing S] [IsDedekind
   let _ : Field (S ⧸ p) := Quotient.field p
   simpa [absNorm_apply, Submodule.cardQuot_apply] using Module.natCard_eq_pow_finrank (K := S ⧸ p)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The absolute norm of an ideal `P` above a rational prime `p` is
 `|p| ^ ((span {p}).inertiaDeg P)`.
 See `absNorm_eq_pow_inertiaDeg'` for a version with `p` of type `ℕ`. -/
