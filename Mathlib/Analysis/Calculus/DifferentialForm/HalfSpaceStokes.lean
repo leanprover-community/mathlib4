@@ -8,8 +8,8 @@ import Mathlib.Analysis.Calculus.FDeriv.Const
 import Mathlib.Analysis.Normed.Module.Alternating.Basic
 import Mathlib.Topology.MetricSpace.ProperSpace
 import Mathlib.Topology.Algebra.Support
-import Mathlib.MeasureTheory.Integral.Bochner
-import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.MeasureTheory.Integral.Bochner.Set
+import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
 /-!
 # Stokes' theorem on the half-space `ℝⁿ₊ = {x : x_m ≥ 0}`
