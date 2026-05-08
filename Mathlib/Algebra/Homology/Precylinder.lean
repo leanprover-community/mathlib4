@@ -8,7 +8,12 @@ module
 public import Mathlib.Algebra.Homology.HomotopyFiber
 public import Mathlib.AlgebraicTopology.ModelCategory.PathObject
 
-/-! Precylinder and prepath objects in the category of cochain complexes
+/-!
+# Precylinder and pre-path objects in the category of homological complexes
+
+In this file, we upgrade the definitions `HomologicalComplex.cylinder` and
+`HomologicalComplex.pathObject` to pre-cylinder objects and pre-path
+objects in the sense of homotopical algebra.
 
 -/
 
