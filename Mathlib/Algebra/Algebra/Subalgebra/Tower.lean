@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.RingTheory.Ideal.Defs
+
 /-!
 # Subalgebras in towers of algebras
 

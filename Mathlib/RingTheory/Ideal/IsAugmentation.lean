@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Algebra.Subalgebra.Tower
 /-! # Augmentation ideals
 
 * `Ideal.IsAugmentation` :  An ideal `I` of an `A`-algebra `S` is an augmentation ideal
-  if its underlying submodule a complement of `1 : Submodule A S`.
+  if its underlying submodule is a complement of `1 : Submodule A S`.
 
 * `Ideal.isAugmentation_subalgebra_iff` : If `S` is a subalgebra of an `R`-algebra `A`,
   then an ideal `I`of `A` is an augmentation ideal for the `R`-algebra structure if and only if
@@ -30,6 +30,9 @@ open Submodule Subalgebra
 if its underlying module is a complement to `1 : Submodule R A`. -/
 def IsAugmentation [Semiring A] [Algebra R A] (I : Ideal A) : Prop :=
   IsCompl 1 (I.restrictScalars R)
+
+lemma isAugmentation_iff [Semiring A] [Algebra R A] (I : Ideal A) :
+    I.IsAugmentation R ↔ IsCompl 1 (I.restrictScalars R) := Iff.rfl
 
 /-- If `S` is a subalgebra of an `R`-algebra `A`, then an ideal `I`of `A` is an augmentation ideal
 for the `R`-algebra structure
