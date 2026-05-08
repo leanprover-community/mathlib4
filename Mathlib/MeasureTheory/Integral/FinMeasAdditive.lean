@@ -68,6 +68,16 @@ theorem add (hT : FinMeasAdditive μ T) (hT' : FinMeasAdditive μ T') :
   simp only [hT s t hs ht hμs hμt hst, hT' s t hs ht hμs hμt hst, Pi.add_apply]
   abel
 
+theorem add_measure {ν : Measure α} (hT : FinMeasAdditive μ T) (hT' : FinMeasAdditive ν T') :
+    FinMeasAdditive (μ + ν) (T + T') := by
+  intro s t hms hmt hs ht hst
+  have hμs : μ s ≠ ∞ := ((Measure.le_add_right le_rfl s).trans_lt hs.lt_top).ne
+  have hμt : μ t ≠ ∞ := ((Measure.le_add_right le_rfl t).trans_lt ht.lt_top).ne
+  have hνs : ν s ≠ ∞ := ((Measure.le_add_left le_rfl s).trans_lt hs.lt_top).ne
+  have hνt : ν t ≠ ∞ := ((Measure.le_add_left le_rfl t).trans_lt ht.lt_top).ne
+  simp [hT s t hms hmt hμs hμt hst, hT' s t hms hmt hνs hνt hst]
+  abel
+
 theorem smul [DistribSMul 𝕜 β] (hT : FinMeasAdditive μ T) (c : 𝕜) :
     FinMeasAdditive μ fun s => c • T s := fun s t hs ht hμs hμt hst => by
   simp [hT s t hs ht hμs hμt hst]
@@ -166,6 +176,11 @@ theorem add (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditi
   rw [Pi.add_apply, add_mul]
   exact (norm_add_le _ _).trans (add_le_add (hT.2 s hs hμs) (hT'.2 s hs hμs))
 
+theorem mono_bound (hT : DominatedFinMeasAdditive μ T C) (hCC' : C ≤ C') :
+    DominatedFinMeasAdditive μ T C' :=
+  ⟨hT.1, fun s hs hμs =>
+    (hT.2 s hs hμs).trans (mul_le_mul_of_nonneg_right hCC' measureReal_nonneg)⟩
+
 theorem smul [SeminormedAddGroup 𝕜] [DistribSMul 𝕜 β] [IsBoundedSMul 𝕜 β]
     (hT : DominatedFinMeasAdditive μ T C) (c : 𝕜) :
     DominatedFinMeasAdditive μ (fun s => c • T s) (‖c‖ * C) := by
@@ -185,6 +200,21 @@ theorem of_measure_le {μ' : Measure α} (h : μ ≤ μ') (hT : DominatedFinMeas
       gcongr
       exact hμ's.ne
 
+theorem add_measure {C' : ℝ} (μ ν : Measure α)
+    (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditive ν T' C') :
+    DominatedFinMeasAdditive (μ + ν) (T + T') (max C C') := by
+  refine ⟨hT.1.add_measure hT'.1, fun s hs hsf ↦ ?_⟩
+  have hμs : μ s < ∞ := (Measure.le_add_right le_rfl s).trans_lt hsf
+  have hνs : ν s < ∞ := (Measure.le_add_left le_rfl s).trans_lt hsf
+  rw [Pi.add_apply, measureReal_add_apply hμs.ne hνs.ne, mul_add]
+  calc
+    ‖T s + T' s‖ ≤ ‖T s‖ + ‖T' s‖ := norm_add_le _ _
+    _ ≤ C * μ.real s + C' * ν.real s := add_le_add (hT.2 s hs hμs) (hT'.2 s hs hνs)
+    _ ≤ max C C' * μ.real s + max C C' * ν.real s := by
+      gcongr
+      · exact le_max_left C C'
+      · exact le_max_right C C'
+
 theorem add_measure_right {_ : MeasurableSpace α} (μ ν : Measure α)
     (hT : DominatedFinMeasAdditive μ T C) (hC : 0 ≤ C) : DominatedFinMeasAdditive (μ + ν) T C :=
   of_measure_le (Measure.le_add_right le_rfl) hT hC
@@ -192,6 +222,26 @@ theorem add_measure_right {_ : MeasurableSpace α} (μ ν : Measure α)
 theorem add_measure_left {_ : MeasurableSpace α} (μ ν : Measure α)
     (hT : DominatedFinMeasAdditive ν T C) (hC : 0 ≤ C) : DominatedFinMeasAdditive (μ + ν) T C :=
   of_measure_le (Measure.le_add_left le_rfl) hT hC
+
+theorem finsetSum_measure {ι} {_ : MeasurableSpace α} (s : Finset ι) (μ : ι → Measure α)
+    (T : ι → Set α → β) (C : ι → ℝ)
+    (hT : ∀ i, DominatedFinMeasAdditive (μ i) (T i) (C i)) :
+    DominatedFinMeasAdditive (∑ i ∈ s, μ i) (∑ i ∈ s, T i)
+      (∑ i ∈ s, max (C i) 0) := by
+  classical
+  induction s using Finset.induction_on with
+  | empty =>
+      simpa using (zero (0 : Measure α) (β := β) (C := 0) le_rfl)
+  | insert i s his ih =>
+      have h_nonneg : 0 ≤ ∑ j ∈ s, max (C j) 0 :=
+        Finset.sum_nonneg fun j _ => le_max_right _ _
+      have hle : max (C i) (∑ j ∈ s, max (C j) 0) ≤
+          ∑ j ∈ insert i s, max (C j) 0 := by
+        rw [Finset.sum_insert his]
+        exact max_le ((le_max_left _ _).trans (le_add_of_nonneg_right h_nonneg))
+          (le_add_of_nonneg_left (le_max_right _ _))
+      simpa [Finset.sum_insert, his] using
+        ((hT i).add_measure (μ i) (∑ j ∈ s, μ j) ih).mono_bound hle
 
 theorem of_smul_measure {c : ℝ≥0∞} (hc_ne_top : c ≠ ∞) (hT : DominatedFinMeasAdditive (c • μ) T C) :
     DominatedFinMeasAdditive μ T (c.toReal * C) := by
