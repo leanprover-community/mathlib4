@@ -296,6 +296,19 @@ theorem gcd_isUnit_iff_isRelPrime [GCDMonoid α] {a b : α} :
     IsUnit (gcd a b) ↔ IsRelPrime a b :=
   ⟨fun h _ ha hb ↦ isUnit_of_dvd_unit (dvd_gcd ha hb) h, (· (gcd_dvd_left a b) (gcd_dvd_right a b))⟩
 
+lemma IsRelPrime.existsUnique_dvd_dvd_of_dvd_mul [GCDMonoid α] [DecompositionMonoid α]
+    [Subsingleton αˣ] {a b d : α} (hab : IsRelPrime a b) (hd : d ∣ a * b) :
+    ∃! p : α × α, p.1 ∣ a ∧ p.2 ∣ b ∧ p.1 * p.2 = d := by
+  obtain ⟨d₁, d₂, h1, h2, h3⟩ := exists_dvd_and_dvd_of_dvd_mul hd
+  refine ⟨(d₁, d₂), ⟨h1, h2, h3.symm⟩, fun ⟨q₁, q₂⟩ ⟨hq1, hq2, hq3⟩ ↦ ?_⟩
+  have h_eq : d₁ * d₂ = q₁ * q₂ := by rw [← h3, ← hq3]
+  apply Prod.ext <;> apply dvd_antisymm
+  · exact (hab.of_dvd_left hq1).of_dvd_right h2 |>.dvd_of_dvd_mul_right (h_eq ▸ dvd_mul_right ..)
+  · exact (hab.of_dvd_left h1).of_dvd_right hq2 |>.dvd_of_dvd_mul_right (h_eq ▸ dvd_mul_right ..)
+  · exact (hab.symm.of_dvd_left hq2).of_dvd_right h1 |>.dvd_of_dvd_mul_left (h_eq ▸ dvd_mul_left ..)
+  · exact (hab.symm.of_dvd_left h2).of_dvd_right hq1 |>.dvd_of_dvd_mul_left
+      (h_eq.symm ▸ dvd_mul_left ..)
+
 @[simp]
 theorem normalize_gcd [NormalizedGCDMonoid α] : ∀ a b : α, normalize (gcd a b) = gcd a b :=
   NormalizedGCDMonoid.normalize_gcd
