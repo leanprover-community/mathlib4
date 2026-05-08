@@ -99,6 +99,7 @@ instance {K : Type*} [Field K] [NumberField K]
     Algebra.IsSeparable (ℤ ⧸ p) ((𝓞 K) ⧸ q) := by
   sorry
 
+-- PRed
 instance (G R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
     [Group G] [MulSemiringAction G S] [h : IsGaloisGroup G R S] (H : Subgroup G) :
     IsGaloisGroup H (FixedPoints.subalgebra R S H) S where
@@ -172,9 +173,41 @@ theorem NumberField.supr_inertia_eq_top (S G : Type*) [CommRing S] [Module.Finit
   have : Module.Finite ℤ R := Module.IsNoetherian.finite ℤ R.toSubmodule
   have h5 : Algebra.Unramified ℤ R := by
     rw [Algebra.unramified_iff_forall]
-    intro p
-    -- maybe there's a nice way to get from here to ramification index without Dedekind domain?
-    sorry
+    rintro ⟨mF, hmF⟩
+    by_cases hmF0 : mF = ⊥
+    · simp [hmF0]
+      rw [Algebra.IsUnramifiedAt]
+      change Algebra.FormallyUnramified ℤ (Localization ((⊥ : Ideal R).primeCompl))
+      rw [Ideal.primeCompl_bot]
+      change Algebra.FormallyUnramified ℤ (FractionRing R)
+      let : Algebra (FractionRing ℤ) (FractionRing R) := FractionRing.liftAlgebra _ _
+      suffices Algebra.FormallyUnramified (FractionRing ℤ) (FractionRing ↥R) by
+        exact Algebra.FormallyUnramified.comp ℤ (FractionRing ℤ) (FractionRing R)
+      apply Algebra.FormallyUnramified.of_isSeparable
+    have : IsDedekindDomain R := sorry
+    have : IsDedekindDomain S := sorry
+    have : Module.Finite R S := Module.Finite.of_restrictScalars_finite ℤ R S
+    replace hmF : mF.IsMaximal := hmF.isMaximal hmF0
+    obtain ⟨mK, hmK, ⟨rfl⟩⟩ := mF.exists_maximal_ideal_liesOver_of_isIntegral (S := S)
+    rw [Algebra.isUnramifiedAt_iff_of_isDedekindDomain hmF0, Ideal.under_under]
+    have hm1 := Ideal.IsMaximal.ne_bot_of_isIntegral_int (mK.under ℤ)
+    have h : mK.toAddSubgroup.inertia G ≤ H :=
+      le_iSup (fun m : MaximalSpectrum S ↦ m.asIdeal.toAddSubgroup.inertia G) ⟨mK, hmK⟩
+    replace h : Nat.card (mK.toAddSubgroup.inertia H) = Nat.card (mK.toAddSubgroup.inertia G) := by
+      rw [← Subgroup.map_subgroupOf_eq_of_le h, Subgroup.card_subtype,
+        AddSubgroup.subgroupOf_inertia]
+    let := Ideal.Quotient.field mK
+    let := Ideal.Quotient.field (mK.under R)
+    let := Ideal.Quotient.field (mK.under ℤ)
+    have : Algebra.IsSeparable (R ⧸ mK.under R) (S ⧸ mK) := sorry
+    have : Algebra.IsSeparable (ℤ ⧸ mK.under ℤ) (S ⧸ mK) := sorry
+    rw [Ideal.card_inertia_eq_ramificationIdxIn (G := H) (mK.under R) hmF0 mK,
+      Ideal.card_inertia_eq_ramificationIdxIn (G := G) (mK.under ℤ) hm1 mK,
+      Ideal.ramificationIdxIn_eq_ramificationIdx (mK.under R) mK H,
+      Ideal.ramificationIdxIn_eq_ramificationIdx (mK.under ℤ) mK G] at h
+    have key := Ideal.ramificationIdx_algebra_tower (Ideal.map_ne_bot_of_ne_bot hmF0)
+      (Ideal.map_ne_bot_of_ne_bot hm1) Ideal.map_comap_le
+    rwa [h, right_eq_mul₀ (Ideal.IsDedekindDomain.ramificationIdx_ne_zero_of_liesOver mK hm1)] at key
   have h4 : Function.Bijective (algebraMap ℤ R) := by
     exact @bijective_algebraMap_int_of_finite_of_unramified R _ _ h5 _ _
   have h1 : fixingSubgroup G (Set.range (algebraMap R S)) = H := by
