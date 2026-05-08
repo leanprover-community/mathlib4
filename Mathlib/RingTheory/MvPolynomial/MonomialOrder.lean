@@ -16,7 +16,7 @@ public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 We consider a type `σ` of indeterminates and a commutative semiring `R`
 and a monomial order `m : MonomialOrder σ`.
 
-* `m.degree f` is the degree of `f` for the monomial ordering `m`, where polynomial `0` has degree
+* `m.degree f` is the degree of `f` for the monomial ordering `m`, where the polynomial `0` has degree
   `0`.
 
 * `m.leadingCoeff f` is the leading coefficient of `f` for the monomial ordering `m`.
@@ -27,7 +27,7 @@ and a monomial order `m : MonomialOrder σ`.
 
 * `m.sPolynomial f g` is S-polynomial of `f` and `g`.
 
-* `m.withBotDegree f` is the degree of `f` for the monomial ordering `m`, where polynomial `0` has
+`m.withBotDegree f` is the degree of `f` for the monomial ordering `m`, where the polynomial `0` has
   degree `⊥`, which is not equal to `0`.
 
 * `m.leadingCoeff_ne_zero_iff f` asserts that this coefficient is nonzero iff `f ≠ 0`.
@@ -108,7 +108,7 @@ section Semiring
 variable {R : Type*} [CommSemiring R]
 
 variable (m) in
-/-- the degree of a multivariate polynomial with respect to a monomial ordering, where polynomial
+/-- the degree of a multivariate polynomial with respect to a monomial ordering, where the polynomial
 `0` has degree `0`. -/
 noncomputable def degree (f : MvPolynomial σ R) : σ →₀ ℕ :=
   m.toSyn.symm (f.support.sup m.toSyn)
@@ -871,9 +871,7 @@ lemma withBotDegree_monomial (d) (c) [Decidable (c = 0)] :
 
 lemma withBotDegree_C (c) [Decidable (c = 0)] :
     m.withBotDegree (R := R) (C c) = if c = 0 then ⊥ else 0 := by
-  classical
-  rw [← monomial_zero', withBotDegree_monomial]
-  rfl
+  simp [← monomial_zero', withBotDegree_monomial]
 
 @[simp]
 lemma withBotDegree_leadingTerm : m.withBotDegree (m.leadingTerm f) = m.withBotDegree f := by
@@ -907,17 +905,16 @@ lemma withBotDegree_mul [NoZeroDivisors R] :
   nontriviality R using Subsingleton.eq_zero (α := MvPolynomial σ R)
   by_cases! hf : f = 0
   · simp [hf]
-  rw [← m.leadingCoeff_ne_zero_iff] at hf
-  exact m.withBotDegree_mul_of_left_mem_nonZeroDivisors (mem_nonZeroDivisors_iff_ne_zero.mpr hf)
+  rw [← m.leadingCoeff_ne_zero_iff, ← mem_nonZeroDivisors_iff_ne_zero] at hf
+  exact m.withBotDegree_mul_of_left_mem_nonZeroDivisors hf
 
 lemma withBotDegree_mul_le :
     m.withBotDegree (f * g) ≼'[m] m.withBotDegree f + m.withBotDegree g := by
   by_cases! h0 : f * g = 0
   · simp [h0]
-  simp only [m.withBotDegree_eq_coe_degree_iff _ |>.mpr h0, toWithBotSyn_apply_coe,
+  simp [-map_add, m.withBotDegree_eq_coe_degree_iff _ |>.mpr h0,
     m.withBotDegree_eq_coe_degree_iff f |>.mpr (by grind),
-    m.withBotDegree_eq_coe_degree_iff g |>.mpr (by grind), ← WithBot.coe_add, WithBot.coe_le_coe,
-    m.degree_mul_le]
+    m.withBotDegree_eq_coe_degree_iff g |>.mpr (by grind), ← WithBot.coe_add, m.degree_mul_le]
 
 lemma toWithBotSyn_withBotDegree_mul_le :
     m.toWithBotSyn (m.withBotDegree (f * g)) ≤
@@ -935,10 +932,9 @@ lemma withBotDegree_le_withBotDegree_iff :
   classical
   by_cases! +distrib h : f ≠ 0 ∧ g ≠ 0
   · simp [m.withBotDegree_eq, h, m.toWithBotSyn_apply]
-  rcases h with h | h
-  · simp [h, m.toWithBotSyn_apply]
-  · simp_rw [m.toWithBotSyn_apply]
-    aesop
+  rcases h with h | _
+  · simp [h]
+  · aesop
 
 variable {g} in
 lemma withBotDegree_le_withBotDegree_iff_of_ne_zero (hg : g ≠ 0) :
@@ -954,7 +950,7 @@ lemma withBotDegree_lt_withBotDegree_iff :
     aesop
   by_cases! hf : f = 0
   · simp [hg, hf, bot_lt_iff_ne_bot, toWithBotSyn_apply]
-  simp [m.withBotDegree_eq, hf, hg, m.toWithBotSyn_apply]
+  simp [withBotDegree_eq, hf, hg, toWithBotSyn_apply]
 
 lemma withBotDegree_lt_withBotDegree_iff_of_ne_zero (hf : f ≠ 0) :
     m.withBotDegree f ≺'[m] m.withBotDegree g ↔ m.degree f ≺[m] m.degree g := by
@@ -982,10 +978,8 @@ lemma withBotDegree_add_of_lt (h : m.withBotDegree g ≺'[m] m.withBotDegree f) 
     m.withBotDegree (f + g) = m.withBotDegree f := by
   by_cases hg : g = 0
   · simp [hg]
-  simp? [withBotDegree_lt_withBotDegree_iff, hg] at h says
-    simp only [withBotDegree_lt_withBotDegree_iff, hg, ne_eq, false_and, or_false] at h
-  simp? [withBotDegree_eq_withBotDegree_iff, show f ≠ 0 by contrapose h; simp [h]] says
-    simp only [withBotDegree_eq_withBotDegree_iff, show f ≠ 0 by contrapose h; simp [h], iff_false]
+  simp only [withBotDegree_lt_withBotDegree_iff, hg, ne_eq, false_and, or_false] at h
+  simp only [withBotDegree_eq_withBotDegree_iff, show f ≠ 0 by contrapose h; simp [h], iff_false]
   apply (show ∀ {p q}, p → (p → q) → (p ∧ q) by tauto) (m.degree_add_of_lt h)
   intro h'
   contrapose! h
