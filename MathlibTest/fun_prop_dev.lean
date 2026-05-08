@@ -714,7 +714,7 @@ example {f : FooHom α} : Con fun x => f (f x x) x := by fun_prop
 example {f : FooHom (Fin 2 → α)} : Con fun x i => f (f (fun _ => x 0) x) x i := by fun_prop
 example {f : FooHom (Fin 2 → α)} (i) : Con fun x => f (f (fun _ => x 0) x) x i := by fun_prop
 
-example {f : α → FooHom α} (hf : Con (fun x : α×α×α => f x.1 x.2.1 x.2.2)) :
+example {f : α → FooHom α} (hf : Con (fun x : α × α × α => f x.1 x.2.1 x.2.2)) :
     Con fun x ↦ f x x x := by
   fun_prop
 example {f : α → FooHom α} (hf : Con f) : Con fun x ↦ f x (f x x x) x := by

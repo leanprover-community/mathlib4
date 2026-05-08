@@ -341,6 +341,7 @@ def applyMorRules (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     let some (f, g) ← fData.peeloffArgDecomposition | return none
     applyCompRule funPropDecl e f g funProp
   | .exact =>
+    trace[Debug.Meta.Tactic.fun_prop] "no theorem matched"
     return none
 
 /-- Prove function property of using *transition theorems*. -/
