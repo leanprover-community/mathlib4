@@ -69,31 +69,88 @@ variable {C : Type v} [Category C] [Limits.HasZeroMorphisms C] {ι : Type*} {c :
 structure Hom (HP HP' : HomologyPretheory C c) where
   /-- The natural transformation of relative homology functors in a morphism of
   `HomologyPretheory`s. -/
-  hom (i : ι) : HP.Hₚ i ⟶ HP'.Hₚ i
-  /-- `hom` needs to be compatible with the boundary maps. -/
-  w (i j : ι) : HP.δ i j ≫ proj₂.whiskerLeft (HP.iso j).hom ≫
-      proj₂.whiskerLeft (incl.whiskerLeft (hom j)) =
-      hom i ≫ HP'.δ i j ≫ proj₂.whiskerLeft (HP'.iso j).hom := by cat_disch
+  homₚ (i : ι) : HP.Hₚ i ⟶ HP'.Hₚ i
+  /-- The natural transformation of homology functors in a morphism of
+  `HomologyPretheory`s. -/
+  hom (i : ι) : HP.H i ⟶ HP'.H i
+  /-- `homₚ` and `hom` need to be compatible with `HomologyPretheory.iso`. -/
+  iso_comm (i : ι) :
+    (HP.iso i).hom ≫ incl.whiskerLeft (homₚ i) = hom i ≫ (HP'.iso i).hom := by cat_disch
+  /-- `homₚ` needs to be compatible with the boundary maps. -/
+  w (i j : ι) : HP.δ i j ≫ proj₂.whiskerLeft (hom j) = homₚ i ≫ HP'.δ i j := by cat_disch
 
-attribute [reassoc] Hom.w
+attribute [reassoc (attr:=local simp)] Hom.w
+
+variable {HP HP' : HomologyPretheory C c}
+
+@[reassoc]
+lemma Hom.iso_comm_congr_app (f : HP.Hom HP') (i : ι) (X : TopCat.{u}) :
+    dsimp% (HP.iso i).hom.app X ≫ (incl.whiskerLeft (f.homₚ i)).app X =
+    (f.hom i).app X ≫ (HP'.iso i).hom.app X :=
+  congr($(f.iso_comm _).app _)
+
+@[reassoc]
+lemma Hom.w_congr_app (f : HP.Hom HP') (i j : ι) (X : TopPair) :
+    dsimp% (HP.δ i j).app X ≫ (f.hom j).app X.left = (f.homₚ i).app X ≫ (HP'.δ i j).app X :=
+  congr($(f.w _ _).app _)
 
 @[reassoc (attr := simp)]
-lemma Hom.w_congr_app {HP HP' : HomologyPretheory C c} (f : HP.Hom HP') (i j : ι) (X : TopPair) :
-    dsimp% (HP.δ i j).app X ≫ (HP.iso j).hom.app X.left ≫ (f.hom j).app (ofTopCat X.left) =
-      (f.hom i).app X ≫ (HP'.δ i j).app X ≫ (HP'.iso j).hom.app X.left :=
-  congr($(f.w i j).app _)
+lemma iso_homₚ_inv_hom (f : HP.Hom HP') (i : ι) :
+    (HP.iso i).hom ≫ incl.whiskerLeft (f.homₚ i) ≫ (HP'.iso i).inv = f.hom i := by
+  rw [← Category.assoc]
+  exact ((Iso.comp_inv_eq (HP'.iso i)).mpr (f.iso_comm i))
+
+@[reassoc (attr := simp)]
+lemma iso_homₚ_inv_hom_congr_app (f : HP.Hom HP') (i : ι) (X : TopCat) :
+    dsimp% (HP.iso i).hom.app X ≫ (f.homₚ i).app (ofTopCat X) ≫ (HP'.iso i).inv.app X =
+    (f.hom i).app X := congr($(iso_homₚ_inv_hom _ _).app _)
+
+@[reassoc (attr := simp)]
+lemma inv_hom_iso_homₚ (f : HP.Hom HP') (i : ι) :
+    (HP.iso i).inv ≫ f.hom i ≫ (HP'.iso i).hom = incl.whiskerLeft (f.homₚ i) :=
+  ((Iso.inv_comp_eq (HP.iso i)).mpr (f.iso_comm i).symm)
+
+@[reassoc (attr := simp)]
+lemma inv_hom_iso_homₚ_congr_app (f : HP.Hom HP') (i : ι) (X : TopCat) :
+    dsimp% (HP.iso i).inv.app X ≫ (f.hom i).app X ≫ (HP'.iso i).hom.app X =
+    (f.homₚ i).app (ofTopCat X) := congr($(inv_hom_iso_homₚ _ _).app _)
+
+/-- Constructor for a morphism in `HomologyPretheory` from only `homₚ`. -/
+def Hom.mkₚ (homₚ : (i : ι) → HP.Hₚ i ⟶ HP'.Hₚ i)
+    (w : ∀ (i j : ι), HP.δ i j ≫ proj₂.whiskerLeft (HP.iso j).hom ≫
+      proj₂.whiskerLeft (incl.whiskerLeft (homₚ j))
+      = homₚ i ≫ HP'.δ i j ≫ proj₂.whiskerLeft (HP'.iso j).hom := by cat_disch) : Hom HP HP' where
+  homₚ := homₚ
+  hom i := (HP.iso i).hom ≫ incl.whiskerLeft (homₚ i) ≫ (HP'.iso i).inv
+  w i j := by
+    have := proj₂.isoWhiskerLeft_hom (HP'.iso j) ▸ w i j
+    simp_all only [← Category.assoc, Functor.whiskerLeft_comp]
+    exact (Iso.comp_inv_eq _).mpr this
 
 set_option backward.isDefEq.respectTransparency false in
 @[simps]
 instance : Category (HomologyPretheory C c) where
   Hom := HomologyPretheory.Hom
-  id _ := { hom _ := NatTrans.id _ }
-  comp f g := { hom i := f.hom i ≫ g.hom i }
+  id _ := { homₚ _ := NatTrans.id _, hom _ := NatTrans.id _ }
+  comp f g := {
+    homₚ i := f.homₚ i ≫ g.homₚ i
+    hom i := f.hom i ≫ g.hom i
+    iso_comm i := by
+      simp only [Functor.whiskerLeft_comp, ← Category.assoc, Hom.iso_comm]
+      simp [Hom.iso_comm]
+  }
 
-/-- The forgetful functor that sends a `HomologyPretheory` to it's relative homology functor. -/
+/-- The forgetful functor that sends a `HomologyPretheory` to it's relative homology functor `Hₚ`.
+-/
 @[simps]
-protected def forget (i : ι) : HomologyPretheory C c ⥤ TopPair.{u} ⥤ C where
+protected def forgetₚ (i : ι) : HomologyPretheory C c ⥤ TopPair.{u} ⥤ C where
   obj HP := HP.Hₚ i
+  map f := f.homₚ i
+
+/-- The forgetful functor that sends a `HomologyPretheory` to it's homology functor `H`. -/
+@[simps]
+protected def forget (i : ι) : HomologyPretheory C c ⥤ TopCat.{u} ⥤ C where
+  obj HP := HP.H i
   map f := f.hom i
 
 end HomologyPretheory
@@ -145,10 +202,10 @@ instance : IsClosedUnderIsomorphisms (C := HomologyPretheory C c) IsHomotopyInva
   of_iso {HP HP'} e hHP := ⟨by
     intro _ _ _ _ hfg _
     have := hHP.homotopy _ _ hfg
-    apply ((((HomologyPretheory.forget _).mapIso e).app _).cancel_iso_hom_left
+    apply ((((HomologyPretheory.forgetₚ _).mapIso e).app _).cancel_iso_hom_left
       ((HP'.Hₚ _).map _) ((HP'.Hₚ _).map _)).mp
-    simp only [CategoryTheory.Iso.app_hom, HomologyPretheory.forget_obj, Functor.mapIso_hom,
-      forget_map, ← (e.hom.hom _).naturality]
+    simp only [CategoryTheory.Iso.app_hom, HomologyPretheory.forgetₚ_obj, Functor.mapIso_hom,
+      forgetₚ_map, ← (e.hom.homₚ _).naturality]
     cat_disch⟩
 
 /-- A `HomologyPretheory` has the excision-isomorphism, if cutting out a sufficiently nice subspace
@@ -162,7 +219,7 @@ attribute [instance] HasExcisionIso.excision
 
 instance : IsClosedUnderIsomorphisms (C := HomologyPretheory C c) HasExcisionIso where
   of_iso e hHP := { excision _ _ _ _ _ hf hg hcompl hU _ := (NatIso.isIso_map_iff
-    ((HomologyPretheory.forget _).mapIso e) _).mp (hHP.excision _ _ hf hg hcompl hU _) }
+    ((HomologyPretheory.forgetₚ _).mapIso e) _).mp (hHP.excision _ _ hf hg hcompl hU _) }
 
 /-- A `HomologyPretheory` is additive if its homology functor preserves coproducts. -/
 class IsAdditive where
@@ -173,7 +230,7 @@ attribute [instance] IsAdditive.additive
 
 instance : IsClosedUnderIsomorphisms (C := HomologyPretheory C c) IsAdditive where
   of_iso {HP HP'} e _ := { additive _ _ := Limits.preservesColimitsOfShape_of_natIso ((HP.iso _) ≪≫
-    Functor.isoWhiskerLeft incl ((HomologyPretheory.forget _).mapIso e) ≪≫ (HP'.iso _).symm) }
+    Functor.isoWhiskerLeft incl ((HomologyPretheory.forgetₚ _).mapIso e) ≪≫ (HP'.iso _).symm) }
 
 /-- This imposes that a `HomologyPretheory` has the long exact sequence of topological pairs
 `⋯ ⟶ H (c.next i) X.fst ⟶ Hₚ (c.next i) X) ⟶  H i X.snd ⟶ H i X.fst ⟶ ⋯`. -/
@@ -192,18 +249,18 @@ instance : IsClosedUnderIsomorphisms (C := HomologyPretheory C c) HasPairSequenc
       ((HP'.H i).map X.map) ((HP'.iso i).hom.app X.fst ≫ (HP'.Hₚ i).map X.j)
     have pairSeqIso : pairSeq ≅ pairSeq' :=
       ComposableArrows.isoMk₄
-        (((HomologyPretheory.forget _).mapIso e).app _)
-        (((HomologyPretheory.forget _).mapIso e).app _)
+        (((HomologyPretheory.forgetₚ _).mapIso e).app _)
+        (((HomologyPretheory.forgetₚ _).mapIso e).app _)
         ((proj₂.isoWhiskerLeft ((HP.iso _) ≪≫
-          incl.isoWhiskerLeft ((HomologyPretheory.forget _).mapIso e) ≪≫ (HP'.iso _).symm)).app _)
+          incl.isoWhiskerLeft ((HomologyPretheory.forgetₚ _).mapIso e) ≪≫ (HP'.iso _).symm)).app _)
         (((HP.iso _) ≪≫
-          incl.isoWhiskerLeft ((HomologyPretheory.forget _).mapIso e) ≪≫ (HP'.iso _).symm).app _)
-        (((HomologyPretheory.forget _).mapIso e).app _)
+          incl.isoWhiskerLeft ((HomologyPretheory.forgetₚ _).mapIso e) ≪≫ (HP'.iso _).symm).app _)
+        (((HomologyPretheory.forgetₚ _).mapIso e).app _)
         (by cat_disch)
+        (by simp [pairSeq, pairSeq', ComposableArrows.Precomp.map, Hom.w_congr_app])
         (by simp [pairSeq, pairSeq', ComposableArrows.Precomp.map])
-        (by simp [pairSeq, pairSeq', ComposableArrows.Precomp.map,
-          ← (HP'.iso i).inv.naturality])
-        (by simp [pairSeq, pairSeq', ComposableArrows.Precomp.map])
+        (by simp [pairSeq, pairSeq', ComposableArrows.Precomp.map]; simp only [← Category.assoc,
+          Hom.iso_comm_congr_app])
     exact ComposableArrows.exact_of_iso pairSeqIso (h.exact _ _)⟩
 
 /-- An extraordinary Eilenberg-Steenrod homology theory requires the homotopy, excision, additivity,
@@ -239,7 +296,7 @@ class HasDimensionAxiom where
 instance : IsClosedUnderIsomorphisms (C := HomologyPretheory C (ComplexShape.down ℕ))
     HasDimensionAxiom where
   of_iso {HP HP'} e h := ⟨fun n hn ↦ (Iso.isZero_iff (((HP.iso _) ≪≫ Functor.isoWhiskerLeft incl
-    ((HomologyPretheory.forget _).mapIso e) ≪≫ (HP'.iso _).symm).app
+    ((HomologyPretheory.forgetₚ _).mapIso e) ≪≫ (HP'.iso _).symm).app
     (TopCat.of PUnit))).mp (h.dimension n hn)⟩
 
 /-- An Eilenberg-Steenrod homology theory is an extraordinary Eilenberg-Steenrod homology theory
