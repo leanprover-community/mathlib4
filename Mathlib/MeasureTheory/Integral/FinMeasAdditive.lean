@@ -176,11 +176,6 @@ theorem add (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditi
   rw [Pi.add_apply, add_mul]
   exact (norm_add_le _ _).trans (add_le_add (hT.2 s hs hμs) (hT'.2 s hs hμs))
 
-theorem mono_bound (hT : DominatedFinMeasAdditive μ T C) (hCC' : C ≤ C') :
-    DominatedFinMeasAdditive μ T C' :=
-  ⟨hT.1, fun s hs hμs =>
-    (hT.2 s hs hμs).trans (mul_le_mul_of_nonneg_right hCC' measureReal_nonneg)⟩
-
 theorem smul [SeminormedAddGroup 𝕜] [DistribSMul 𝕜 β] [IsBoundedSMul 𝕜 β]
     (hT : DominatedFinMeasAdditive μ T C) (c : 𝕜) :
     DominatedFinMeasAdditive μ (fun s => c • T s) (‖c‖ * C) := by
@@ -223,25 +218,17 @@ theorem add_measure_left {_ : MeasurableSpace α} (μ ν : Measure α)
     (hT : DominatedFinMeasAdditive ν T C) (hC : 0 ≤ C) : DominatedFinMeasAdditive (μ + ν) T C :=
   of_measure_le (Measure.le_add_left le_rfl) hT hC
 
-theorem finsetSum_measure {ι} {_ : MeasurableSpace α} (s : Finset ι) (μ : ι → Measure α)
-    (T : ι → Set α → β) (C : ι → ℝ)
-    (hT : ∀ i, DominatedFinMeasAdditive (μ i) (T i) (C i)) :
-    DominatedFinMeasAdditive (∑ i ∈ s, μ i) (∑ i ∈ s, T i)
-      (∑ i ∈ s, max (C i) 0) := by
+theorem finsetSum_measure {ι} {s : Finset ι} (hs : s.Nonempty) (μ : ι → Measure α)
+    (T : ι → Set α → β) (C : ι → ℝ) (hT : ∀ i, DominatedFinMeasAdditive (μ i) (T i) (C i)) :
+    DominatedFinMeasAdditive (∑ i ∈ s, μ i) (∑ i ∈ s, T i) (s.sup' hs C) := by
   classical
   induction s using Finset.induction_on with
-  | empty =>
-      simpa using (zero (0 : Measure α) (β := β) (C := 0) le_rfl)
+  | empty => grind
   | insert i s his ih =>
-      have h_nonneg : 0 ≤ ∑ j ∈ s, max (C j) 0 :=
-        Finset.sum_nonneg fun j _ => le_max_right _ _
-      have hle : max (C i) (∑ j ∈ s, max (C j) 0) ≤
-          ∑ j ∈ insert i s, max (C j) 0 := by
-        rw [Finset.sum_insert his]
-        exact max_le ((le_max_left _ _).trans (le_add_of_nonneg_right h_nonneg))
-          (le_add_of_nonneg_left (le_max_right _ _))
-      simpa [Finset.sum_insert, his] using
-        ((hT i).add_measure (μ i) (∑ j ∈ s, μ j) ih).mono_bound hle
+    by_cases hs' : s.Nonempty
+    · simpa [Finset.sum_insert, his, Finset.sup'_insert hs' C] using
+        (hT i).add_measure (μ i) (∑ j ∈ s, μ j) (ih hs')
+    · simp_all
 
 theorem of_smul_measure {c : ℝ≥0∞} (hc_ne_top : c ≠ ∞) (hT : DominatedFinMeasAdditive (c • μ) T C) :
     DominatedFinMeasAdditive μ T (c.toReal * C) := by
