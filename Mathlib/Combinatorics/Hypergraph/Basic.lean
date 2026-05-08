@@ -51,8 +51,10 @@ all hypergraphs are *without repeated edge*.
 ## Acknowledgments
 
 Credit to Shreyas Srinivas, GitHub user @NotWearingPants ("Snir" on the Lean Zulip), Ammar
-Husain, Aaron Liu, Tristan Figueroa-Reid, and John Talbot for patient guidance and useful feedback
-on this implementation.
+Husain, Aaron Liu, Tristan Figueroa-Reid, John Talbot, and Thomas Browning for patient guidance and
+useful feedback on this implementation.
+
+Credit to Peter Nelson, Jun Kwon for `adj_comm` and `eAdj_comm`
 -/
 
 @[expose] public section
@@ -100,12 +102,11 @@ lemma _root_.Membership.mem.subset_vertexSet (he : e ∈ E(H)) : e ⊆ V(H) :=
   H.edge_isSubset_vertexSet he
 
 lemma edgeSet_subset_powerset_vertexSet {H : Hypergraph α} : E(H) ⊆ V(H).powerset := by
-  intro e (he : e ∈ E(H))
-  simpa using he.subset_vertexSet
+  intro e he
+  exact he.subset_vertexSet
 
-lemma mem_vertexSet_of_mem_edgeSet (he : e ∈ E(H)) (hx : x ∈ e) : x ∈ V(H) := by
-  have h1 : e ⊆ V(H) := by apply H.edge_isSubset_vertexSet he
-  apply Set.mem_of_subset_of_mem h1 hx
+lemma mem_vertexSet_of_mem_edgeSet (he : e ∈ E(H)) (hx : x ∈ e) : x ∈ V(H) :=
+  H.edge_isSubset_vertexSet he hx
 
 /--
 If edges `e` and `e'` have the same vertices from `G`, then they have all the same vertices.
@@ -114,12 +115,10 @@ tactic.
 -/
 lemma forall_of_forall_verts (he : e ∈ E(H)) (he' : e' ∈ E(H))
     (h : ∀ x ∈ V(H), x ∈ e ↔ x ∈ e') : ∀ x, x ∈ e ↔ x ∈ e' :=
-  fun x ↦ ⟨fun y ↦ (h x (he.subset_vertexSet y)).1 y,
-  fun y ↦ (h x (he'.subset_vertexSet y)).2 y⟩
+  fun x ↦ ⟨fun y ↦ (h x (he.subset_vertexSet y)).1 y, fun y ↦ (h x (he'.subset_vertexSet y)).2 y⟩
 
-lemma sUnion_edgeSet_subset_vertexSet : ⋃₀ E(H) ⊆ V(H) := by
-  refine subset_powerset_iff.mp ?_
-  exact edgeSet_subset_powerset_vertexSet
+lemma sUnion_edgeSet_subset_vertexSet : ⋃₀ E(H) ⊆ V(H) :=
+  subset_powerset_iff.mp edgeSet_subset_powerset_vertexSet
 
 /-! ## Vertex and Hyperedge Adjacency -/
 
@@ -135,7 +134,6 @@ def Adj (H : Hypergraph α) (x : α) (y : α) : Prop :=
 
 lemma Adj.symm (h : H.Adj x y) : H.Adj y x := by grind [Adj]
 
--- Credit: Peter Nelson, Jun Kwon
 lemma adj_comm (x y : α) : H.Adj x y ↔ H.Adj y x := ⟨.symm, .symm⟩
 
 /--
@@ -146,52 +144,34 @@ def EAdj (H : Hypergraph α) (e : Set α) (f : Set α) : Prop :=
   e ∈ E(H) ∧ f ∈ E(H) ∧ ∃ x, x ∈ e ∧ x ∈ f
 
 lemma EAdj.exists_vertex (h : H.EAdj e f) : ∃ x ∈ V(H), x ∈ e ∧ x ∈ f := by
-  unfold EAdj at h
   obtain ⟨x, hx⟩ := h.2.2
-  use x
-  constructor
-  · exact mem_vertexSet_of_mem_edgeSet h.1 hx.1
-  · exact hx
+  exact ⟨x, mem_vertexSet_of_mem_edgeSet h.1 hx.1, hx⟩
 
 lemma EAdj.symm (h : H.EAdj e f) : H.EAdj f e := by grind [EAdj]
 
-lemma EAdj.inter_nonempty (hef : H.EAdj e f) : (e ∩ f).Nonempty := by
-  unfold EAdj at *
-  have h' : ∃ x ∈ e, x ∈ f := by grind
-  apply Set.inter_nonempty.mpr h'
+lemma EAdj.inter_nonempty (hef : H.EAdj e f) : (e ∩ f).Nonempty :=
+  Set.inter_nonempty.mpr hef.2.2
 
--- Credit: Peter Nelson, Jun Kwon
 lemma eAdj_comm (e f) : H.EAdj e f ↔ H.EAdj f e := ⟨.symm, .symm⟩
 
 /-! ## Basic Hypergraph Definitions & Predicates-/
 
-/--
-The *star* of a vertex is the set of all edges `e ∈ E(H)` that a given vertex `x` is incident to
--/
+/-- The *star* of a vertex `x` is the set of all edges `e ∈ E(H)` incident to `x`. -/
 def star (H : Hypergraph α) (x : α) : Set (Set α) := {e ∈ E(H) | x ∈ e}
 
-/--
-We define the *star set* as the set of subsets of `E(H)` that each vertex in `V(H)` is
-incident to
--/
+/-- The *star set* is the set of subsets of `E(H)` of edges incident to a vertex in `V(H)`. -/
 def stars (H : Hypergraph α) : Set (Set (Set α)) := {H.star x | x ∈ V(H)}
 
-/--
-The *image* of a hypergraph `H : Hypergraph α` under function `f : α → β` is `Hᶠ : Hypergraph β`.
-
-The vertex set of `Hᶠ` is the image of `V(H)` under `f`, and the edge set of `Hᶠ` is the set of
-images of the edges (subsets of vertices) in `E(H)`.
--/
+/-- The *image* of a hypergraph `H : Hypergraph α` under a function `f : α → β` is the hypergraph
+`Hᶠ : Hypergraph β` where the vertex set of `Hᶠ` is the image of `V(H)` under `f` and the edge set
+of `Hᶠ` is the set of images of the edges (subsets of vertices) in `E(H)`. -/
 @[simps]
-def image (H : Hypergraph α) (f : α → β) : Hypergraph β where
+protected def image (H : Hypergraph α) (f : α → β) : Hypergraph β where
   vertexSet := V(H).image f
   edgeSet := E(H).image (Set.image f)
   edge_isSubset_vertexSet' := by
-    simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, image_subset_iff]
-    intro e he
-    have hev : e ⊆ V(H) := by exact Membership.mem.subset_vertexSet he
-    refine image_subset_iff.mp ?_
-    exact image_mono hev
+    rintro - ⟨e, he, rfl⟩
+    exact image_mono he.subset_vertexSet
 
 lemma mem_image {f : α → β} {e : Set β} : e ∈ E(H.image f) ↔ ∃ e' ∈ E(H), f '' e' = e := Iff.rfl
 
@@ -200,92 +180,69 @@ lemma image_mem_image {f : α → β} (he : e ∈ E(H)) : e.image f ∈ E(H.imag
 
 lemma image_image {f : α → β} {g : β → γ} (H : Hypergraph α) :
   (H.image f).image g = H.image (g ∘ f) := by
-    ext : 1
-    case vertexSet => simp [Set.image_image]
-    case edgeSet => simp [Set.image_image]
+  ext <;> simp [Set.image_image]
 
-/--
-Predicate to determine if a vertex is isolated, meaning that it is not incident to any edges. Note
-that this includes loops, i.e., if vertex `x` is isolated, there is no edge with associated vertex
-subset `{x}`.
--/
+/-- A vertex is isolated if it is not incident to any edges (including loops). -/
 def IsIsolated (H : Hypergraph α) (x : α) : Prop := ∀ e ∈ E(H), x ∉ e
 
 lemma not_exists_isolated_vertex_iff_sUnion_edgeSet_eq_vertexSet :
-  ⋃₀ E(H) = V(H) ↔ ∀ x ∈ V(H), ¬IsIsolated H x :=
-    Iff.intro
-    (by grind [IsIsolated])
-    (by
-      unfold IsIsolated
-      intro h
-      have h' : ∀ x ∈ V(H), ∃ e ∈ E(H), x ∈ e := by grind
-      refine Subset.antisymm ?_ h'
-      apply Set.sUnion_subset
-      exact fun t' a ↦ H.edge_isSubset_vertexSet a
-    )
+  ⋃₀ E(H) = V(H) ↔ ∀ x ∈ V(H), ¬IsIsolated H x := by
+    grind [IsIsolated, mem_vertexSet_of_mem_edgeSet]
 
-/--
-Predicate to determine if a edge `e` is a loop, meaning that its associated vertex subset `s`
-contains only one vertex, i.e., `|s| = 1`
--/
-def IsLoop (H : Hypergraph α) (e : Set α) : Prop := ∃ x ∈ V(H), e = {x}
+/-- A loop is an edge whose associated vertex subset consists of a single vertex. -/
+def IsLoop (H : Hypergraph α) (e : Set α) : Prop := e ∈ E(H) ∧ ∃ x ∈ V(H), e = {x}
 
-lemma isLoop_encard_one (h : H.IsLoop e) : Set.encard e = 1 := by
-  unfold IsLoop at h
-  refine encard_eq_one.mpr ?_
-  obtain ⟨x, hx⟩ := h
+lemma IsLoop.encard_one (h : H.IsLoop e) : Set.encard e = 1 := by
+  obtain ⟨he, hx⟩ := h
+  obtain ⟨x, hx'⟩ := hx
+  apply encard_eq_one.mpr
   use x
-  exact hx.2
+  exact hx'.2
 
-/--
-Predicate to determine if a hypergraph is empty
--/
+lemma isLoop_iff_mem_and_encard_one : H.IsLoop e ↔ (e ∈ E(H) ∧ Set.encard e = 1) :=
+  Iff.intro
+  (by grind [IsLoop, encard_eq_one])
+  (by grind [IsLoop, encard_eq_one, mem_vertexSet_of_mem_edgeSet, mem_vertexSet_of_mem_edgeSet])
+
+/-- A hypergraph is empty if it has no vertices and no edges. -/
 def IsEmpty (H : Hypergraph α) : Prop := V(H) = ∅ ∧ E(H) = ∅
 
-/--
-Predicate to determine if a hypergraph is nonempty
--/
+/-- A hypergraph is nonempty if it has at least one vertex and at least one edge. -/
 def IsNonempty (H : Hypergraph α) : Prop := (∃ x, x ∈ V(H)) ∨ (∃ e, e ∈ E(H))
 
-/--
-The empty hypergraph of type α
--/
+/-- The empty hypergraph on a type. -/
 @[simps]
 def emptyHypergraph (α : Type*) : Hypergraph α where
   vertexSet := ∅
   edgeSet := ∅
-  edge_isSubset_vertexSet' := by
-    intro e he
-    have h1 : e = ∅ := by exact False.elim he
-    exact Set.subset_empty_iff.mpr h1
+  edge_isSubset_vertexSet' := by simp
 
-@[simp] lemma coe_nonempty : V(H).Nonempty → H.IsNonempty := by
-  unfold IsNonempty
-  unfold Set.Nonempty
-  exact fun a ↦ Or.symm (Or.inr a)
+@[simp]
+lemma isNonempty_of_nonempty_vertexSet (hV : V(H).Nonempty) : H.IsNonempty :=
+  .inl hV
 
-lemma isEmpty_empty_hypergraph : IsEmpty (Hypergraph.emptyHypergraph α) := by
-  unfold IsEmpty
-  exact Prod.mk_inj.mp rfl
+lemma isEmpty_emptyHypergraph : IsEmpty (emptyHypergraph α) :=
+  ⟨rfl, rfl⟩
 
-lemma isEmpty_eq_empty_hypergraph (h : H.IsEmpty) : emptyHypergraph α = H := by
-  unfold IsEmpty at h
-  have hv : V(emptyHypergraph α) = ∅ := rfl
-  have he : E(emptyHypergraph α) = ∅ := rfl
-  apply Hypergraph.ext_iff.mpr
-  grind
-
-lemma edge_not_mem_empty : e ∉ E(emptyHypergraph α) := by simp
+lemma IsEmpty.eq_emptyHypergraph (h : H.IsEmpty) : H = emptyHypergraph α :=
+  Hypergraph.ext_iff.mpr h
 
 lemma IsEmpty.eq (hH : H.IsEmpty) : V(H) = ∅ ∧ E(H) = ∅ := by exact hH
 
+lemma IsEmpty.vertexSet_eq (hH : H.IsEmpty) : V(H) = ∅ := by exact hH.1
+
+lemma IsEmpty.edgeSet_eq (hH : H.IsEmpty) : E(H) = ∅ := by exact hH.2
+
 @[simp]
 lemma isEmpty_iff_forall_not_mem : H.IsEmpty ↔ (∀ x, x ∉ V(H)) ∧ (∀ e, e ∉ E(H)) := by
-  grind [IsEmpty, Set.notMem_empty]
+   simp_rw [IsEmpty, Set.eq_empty_iff_forall_notMem]
 
-lemma IsEmpty.not_mem (hH : H.IsEmpty) {e : Set α} : e ∉ E(H) := by
+lemma IsEmpty.not_mem_edgeSet (hH : H.IsEmpty) {e : Set α} : e ∉ E(H) := by
   unfold IsEmpty at hH
   grind
+
+lemma notMem_edgeSet_emptyHypergraph : e ∉ E(emptyHypergraph α) := by
+  exact IsEmpty.not_mem_edgeSet isEmpty_emptyHypergraph
 
 lemma not_isEmpty : ¬H.IsEmpty ↔ H.IsNonempty := by grind [IsEmpty, IsNonempty]
 
@@ -297,38 +254,25 @@ alias ⟨_, IsNonempty.not_isEmpty⟩ := not_isEmpty
 variable (H) in
 lemma isEmpty_or_isNonempty : H.IsEmpty ∨ H.IsNonempty := by grind [IsEmpty, IsNonempty]
 
-/--
-Predicate to determine if a hypergraph is trivial
-
-A hypergraph is trivial if it has a nonempty vertex set and an empty edge set
--/
+/-- A hypergraph is trivial if it has at least one vertex but no edges. -/
 def IsTrivial (H : Hypergraph α) : Prop := Set.Nonempty V(H) ∧ E(H) = ∅
 
-/--
-A trivial hypergraph of type α with vertex set h
--/
+/-- The trivial hypergraph with a given vertex set. -/
 @[simps]
 def trivialHypergraph (f : Set α) : Hypergraph α where
   vertexSet := f
   edgeSet := ∅
-  edge_isSubset_vertexSet' := by
-    intro e he
-    exact False.elim he
+  edge_isSubset_vertexSet' := by simp
 
-lemma not_isEmpty_trivial_hypergraph (hh : IsTrivial H) : ¬IsEmpty H := by
+lemma IsTrivial.not_isEmpty (hh : IsTrivial H) : ¬IsEmpty H := by
   grind [IsEmpty, IsTrivial, Set.nonempty_iff_ne_empty]
 
-lemma edge_not_mem_trivial (h : H.IsTrivial) : e ∉ E(H) := by grind [IsTrivial]
+lemma IsTrivial.not_mem_edgeSet (h : H.IsTrivial) : e ∉ E(H) := by grind [IsTrivial]
 
-/--
-Predicate to determine is a hypergraph `H` is complete, meaning that each member of the power set of
-the vertices (`𝒫 V(H)`) is represented in `E(H)`
--/
-def IsComplete (H : Hypergraph α) : Prop := ∀ e ∈ 𝒫 V(H), e ∈ E(H)
+/-- A hypergraph is complete if every subset of the vertex set is in the edge set. -/
+def IsComplete (H : Hypergraph α) : Prop := ∀ e ⊆ V(H), e ∈ E(H)
 
-/--
-A complete hypergraph with vertex set f
--/
+/-- The complete hypergraph with a given vertex set. -/
 @[simps]
 def completeOn (f : Set α) : Hypergraph α where
   vertexSet := f
@@ -339,32 +283,15 @@ lemma mem_completeOn : e ∈ E(completeOn f) ↔ e ⊆ f := by simp
 
 lemma isComplete_completeOn (f : Set α) : (completeOn f).IsComplete := by exact fun e a ↦ a
 
-lemma isComplete_not_isEmpty (h : H.IsComplete) : ¬ H.IsEmpty := by
-  unfold IsComplete at h
-  unfold IsEmpty
-  have h0 : ∅ ∈ 𝒫 V(H) := by
-    refine mem_powerset ?_
-    apply Set.empty_subset
-  apply not_and_or.mpr
-  right
-  grind
+lemma IsComplete.isNonempty (h : H.IsComplete) : H.IsNonempty :=
+  Or.inr ⟨∅, h ∅ (Set.empty_subset _)⟩
 
-lemma completeOn_isNonempty {S : Set α} : (completeOn S).IsNonempty := by
-  have h : E(completeOn S) = 𝒫 S := rfl
-  have h' : ∅ ∈ E(completeOn S) := by
-    refine mem_completeOn.mpr ?_
-    apply Set.empty_subset
-  unfold IsNonempty
-  right
-  use ∅
+lemma IsComplete.not_isEmpty (h : H.IsComplete) : ¬ H.IsEmpty :=
+  H.not_isEmpty.mpr h.isNonempty
 
-lemma isComplete_not_isTrivial (h : H.IsComplete) : ¬H.IsTrivial := by
-  unfold IsComplete at h
-  unfold IsTrivial
-  have h' : ∅ ∈ E(H) := by grind
-  apply not_and_or.mpr
-  right
-  exact ne_of_mem_of_not_mem' h' fun a ↦ a
+lemma IsComplete.not_isTrivial (h : H.IsComplete) : ¬H.IsTrivial := by
+  intro hH
+  exact hH.not_mem_edgeSet (e := ∅) (h ∅ (Set.empty_subset _))
 
 lemma completeOn_not_isTrivial {S : Set α} : ¬(completeOn S).IsTrivial := by
   unfold IsTrivial
