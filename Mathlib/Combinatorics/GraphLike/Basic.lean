@@ -113,22 +113,22 @@ lemma Step.tgt (h : Step G u v) : tgt Gr h.val = v := by
   obtain ⟨d, hd, hu, hv⟩ := h
   exact hv
 
-lemma Step.left_mem (h : Step G u v) : u ∈ V(G) := by
+lemma Step.src_mem (h : Step G u v) : u ∈ V(G) := by
   obtain ⟨d, hd, rfl, rfl⟩ := h
   exact src_mem_of_darts hd
 
-lemma Step.right_mem (h : Step G u v) : v ∈ V(G) := by
+lemma Step.tgt_mem (h : Step G u v) : v ∈ V(G) := by
   obtain ⟨d, hd, rfl, rfl⟩ := h
   exact tgt_mem_of_darts hd
 
-lemma Step.left_eq_of_val_eq {s₁ : Step G u v} {s₂ : Step G u' v'} (h : s₁.val = s₂.val) :
+lemma Step.src_eq_of_val_eq {s₁ : Step G u v} {s₂ : Step G u' v'} (h : s₁.val = s₂.val) :
     u = u' := by
   obtain ⟨d₁, hd₁, rfl, rfl⟩ := s₁
   obtain ⟨d₂, hd₂, rfl, rfl⟩ := s₂
   obtain rfl : d₁ = d₂ := h
   rfl
 
-lemma Step.right_eq_of_val_eq {s₁ : Step G u v} {s₂ : Step G u' v'} (h : s₁.val = s₂.val) :
+lemma Step.tgt_eq_of_val_eq {s₁ : Step G u v} {s₂ : Step G u' v'} (h : s₁.val = s₂.val) :
     v = v' := by
   obtain ⟨d₁, hd₁, rfl, rfl⟩ := s₁
   obtain ⟨d₂, hd₂, rfl, rfl⟩ := s₂
@@ -150,13 +150,13 @@ lemma Step.ext_HEq {u' v'} {s₁ : Step G u v} {s₂ : Step G u' v'} (h : s₁.v
 /-- Convert a step to a dart. -/
 @[expose] def Step.todart (h : Step G u v) : D(G) := ⟨h.val, h.prop.1⟩
 
-lemma Step.todart_val (h : Step G u v) : h.todart.val = h.val := by simp [Step.todart]
+lemma Step.val_todart (h : Step G u v) : h.todart.val = h.val := by simp [Step.todart]
 
-lemma Step.todart_src (s : Step G u v) : GraphLike.src Gr s.todart.val = u := by
+lemma Step.src_todart (s : Step G u v) : GraphLike.src Gr s.todart.val = u := by
   obtain ⟨d, hd, rfl, rfl⟩ := s
   rfl
 
-lemma Step.todart_tgt (s : Step G u v) : GraphLike.tgt Gr s.todart.val = v := by
+lemma Step.tgt_todart (s : Step G u v) : GraphLike.tgt Gr s.todart.val = v := by
   obtain ⟨d, hd, rfl, rfl⟩ := s
   rfl
 
@@ -169,7 +169,7 @@ lemma Step.adj (h : Step G u v) : Adj G u v := by
 noncomputable def Adj.toStep (h : Adj G u v) : Step G u v :=
   ⟨(exists_darts_iff_adj.mpr h).choose, (exists_darts_iff_adj.mpr h).choose_spec⟩
 
-lemma Adj.toStep_adj (h : Adj G u v) : (h.toStep).adj = h := rfl
+lemma Adj.adj_toStep (h : Adj G u v) : (h.toStep).adj = h := rfl
 
 /-- Convert a dart to a step. -/
 @[expose] def dartStep (d : D(G)) : Step G (src Gr d.val) (tgt Gr d.val) :=
