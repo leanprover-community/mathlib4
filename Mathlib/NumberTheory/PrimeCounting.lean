@@ -262,7 +262,4 @@ theorem primeCounting_add_le {a k : ℕ} (h0 : a ≠ 0) (h1 : a ≤ k) (n : ℕ)
   convert primeCounting'_add_le h0 ( Order.lt_add_one_iff.mpr h1) n using 2
   omega
 
-
-
-
 end Nat
