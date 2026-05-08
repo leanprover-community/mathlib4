@@ -584,7 +584,7 @@ instance smulDistribClass [SMulCommClass G A B] :
   ⟨fun g b x ↦ by
     rw [Algebra.smul_def', Algebra.smul_def', smul_mul']
     congr
-    exact fieldEquivOfAlgEquiv_algebraMap K _ _ _ b⟩
+    apply fieldEquivOfAlgEquiv_algebraMap⟩
 
 variable [MulSemiringAction G L] [SMulDistribClass G B L]
 
