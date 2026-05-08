@@ -18,7 +18,7 @@ of some finite Galois extension of number fields, and `A := ğ“K` and `B := ğ“
 integers.
 -/
 
-@[expose] public section
+public section
 
 namespace Algebra
 

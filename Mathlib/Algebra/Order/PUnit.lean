@@ -13,7 +13,7 @@ public import Mathlib.Algebra.Order.AddGroupWithTop
 This file collects facts about ordered algebraic structures on the one-element type.
 -/
 
-@[expose] public section
+public section
 
 namespace PUnit
 
@@ -30,5 +30,6 @@ instance : LinearOrderedAddCommMonoidWithTop PUnit where
   top := ()
   le_top _ := le_rfl
   top_add' _ := rfl
+  isAddLeftRegular_of_ne_top := by simp
 
 end PUnit

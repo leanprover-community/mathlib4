@@ -15,7 +15,7 @@ Operator norm as an `NNNorm`, i.e. taking values in non-negative reals.
 
 -/
 
-@[expose] public section
+public section
 
 suppress_compilation
 
@@ -49,12 +49,12 @@ theorem opNNNorm_subsingleton [Subsingleton E] (f : E →SL[σ₁₂] F) : ‖f�
 
 /-- If one controls the norm of every `A x`, then one controls the norm of `A`. -/
 theorem opNNNorm_le_bound (f : E →SL[σ₁₂] F) (M : ℝ≥0) (hM : ∀ x, ‖f x‖₊ ≤ M * ‖x‖₊) : ‖f‖₊ ≤ M :=
-  opNorm_le_bound f (zero_le M) hM
+  opNorm_le_bound f (zero_le (a := M)) hM
 
 /-- If one controls the norm of every `A x`, `‖x‖₊ ≠ 0`, then one controls the norm of `A`. -/
 theorem opNNNorm_le_bound' (f : E →SL[σ₁₂] F) (M : ℝ≥0) (hM : ∀ x, ‖x‖₊ ≠ 0 → ‖f x‖₊ ≤ M * ‖x‖₊) :
     ‖f‖₊ ≤ M :=
-  opNorm_le_bound' f (zero_le M) fun x hx => hM x <| by rwa [← NNReal.coe_ne_zero]
+  opNorm_le_bound' f (zero_le (a := M)) fun x hx => hM x <| by rwa [← NNReal.coe_ne_zero]
 
 /-- For a continuous real linear map `f`, if one controls the norm of every `f x`, `‖x‖₊ = 1`, then
 one controls the norm of `f`. -/
@@ -68,7 +68,7 @@ theorem opNNNorm_le_of_lipschitz {f : E →SL[σ₁₂] F} {K : ℝ≥0} (hf : L
 
 theorem opNNNorm_eq_of_bounds {φ : E →SL[σ₁₂] F} (M : ℝ≥0) (h_above : ∀ x, ‖φ x‖₊ ≤ M * ‖x‖₊)
     (h_below : ∀ N, (∀ x, ‖φ x‖₊ ≤ N * ‖x‖₊) → M ≤ N) : ‖φ‖₊ = M :=
-  Subtype.ext <| opNorm_eq_of_bounds (zero_le M) h_above <| Subtype.forall'.mpr h_below
+  Subtype.ext <| opNorm_eq_of_bounds (zero_le (a := M)) h_above <| Subtype.forall'.mpr h_below
 
 theorem opNNNorm_le_iff {f : E →SL[σ₁₂] F} {C : ℝ≥0} : ‖f‖₊ ≤ C ↔ ∀ x, ‖f x‖₊ ≤ C * ‖x‖₊ :=
   opNorm_le_iff C.2
@@ -188,7 +188,7 @@ theorem exists_nnnorm_eq_one_lt_apply_of_lt_opNNNorm [NormedAlgebra ℝ 𝕜]
   suffices r < ‖x‖₊⁻¹ * ‖f x‖₊ by simpa [nnnorm_smul, inv_mul_cancel₀ hx0.ne'] using this
   calc
     r < 1⁻¹ * ‖f x‖₊ := by simpa
-    _ < ‖x‖₊⁻¹ * ‖f x‖₊ := by gcongr; exact (zero_le r).trans_lt hr
+    _ < ‖x‖₊⁻¹ * ‖f x‖₊ := by gcongr; exact hr.pos
 
 /-- When the domain is a real normed space, `ContinuousLinearMap.sSup_unitClosedBall_eq_nnnorm` can
 be tightened to take the supremum over only the `Metric.sphere`. -/

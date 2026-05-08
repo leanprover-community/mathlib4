@@ -18,6 +18,15 @@ tests for these can be found in `MathlibTest/ImportHeavyFlexibleLinter.lean`
 
 -/
 
+def n : Nat := 1
+def m : Nat := 1
+
+-- Two consecutive occurrences of flexible tactics are fine.
+#guard_msgs in
+example : n = m := by
+  simp [n]
+  simp [m]
+
 /--
 warning: 'simp at h' is a flexible tactic modifying 'h'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.
 
@@ -34,6 +43,9 @@ example (h : 0 + 0 = 0) : True := by
 warning: 'simp_all' is a flexible tactic modifying '⊢'. Try 'simp_all?' and use the suggested 'simp_all only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.
 
 Note: This linter can be disabled with `set_option linter.flexible false`
+---
+info: Try this:
+  [apply] simp_all only [Nat.add_zero]
 ---
 info: 'exact Nat.le_succ_of_le h' uses '⊢'!
 -/
@@ -63,11 +75,17 @@ warning: 'simp' is a flexible tactic modifying '⊢'. Try 'simp?' and use the su
 
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
+info: Try this:
+  [apply] simp only [Nat.add_zero]
+---
 info: 'assumption' uses '⊢'!
 ---
 warning: 'simp' is a flexible tactic modifying '⊢'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.
 
 Note: This linter can be disabled with `set_option linter.flexible false`
+---
+info: Try this:
+  [apply] simp only [Nat.add_zero]
 ---
 info: 'assumption' uses '⊢'!
 -/
@@ -75,7 +93,6 @@ info: 'assumption' uses '⊢'!
 example {a b : Nat} (h : a = b) : a + 0 = b := by
   simp
   induction a <;> assumption
-
 
 /--
 warning: 'simp at h' is a flexible tactic modifying 'h'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.
@@ -97,11 +114,17 @@ warning: 'simp' is a flexible tactic modifying '⊢'. Try 'simp?' and use the su
 
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
+info: Try this:
+  [apply] simp only [Nat.zero_ne_one, and_self]
+---
 info: 'on_goal 2 => · contradiction' uses '⊢'!
 ---
 warning: 'simp' is a flexible tactic modifying '⊢'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.
 
 Note: This linter can be disabled with `set_option linter.flexible false`
+---
+info: Try this:
+  [apply] simp only [Nat.zero_ne_one, and_self]
 ---
 info: 'contradiction' uses '⊢'!
 -/
@@ -120,11 +143,17 @@ warning: 'simp' is a flexible tactic modifying '⊢'. Try 'simp?' and use the su
 
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
+info: Try this:
+  [apply] simp only [Nat.zero_ne_one, and_self]
+---
 info: 'contradiction' uses '⊢'!
 ---
 warning: 'simp' is a flexible tactic modifying '⊢'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.
 
 Note: This linter can be disabled with `set_option linter.flexible false`
+---
+info: Try this:
+  [apply] simp only [Nat.zero_ne_one, and_self]
 ---
 info: 'contradiction' uses '⊢'!
 -/
@@ -168,6 +197,9 @@ example {a b : Nat} (h : ∀ c, c + a + b = a + c) : (0 + 2 + 1 + a + b) = a + 3
 warning: 'simp' is a flexible tactic modifying '⊢'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.
 
 Note: This linter can be disabled with `set_option linter.flexible false`
+---
+info: Try this:
+  [apply] simp only [Nat.add_zero]
 ---
 info: 'exact h.symm' uses '⊢'!
 -/
@@ -213,6 +245,9 @@ warning: 'simp' is a flexible tactic modifying '⊢'. Try 'simp?' and use the su
 
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
+info: Try this:
+  [apply] simp only [Nat.zero_ne_one, and_self]
+---
 info: 'contradiction' uses '⊢'!
 -/
 #guard_msgs in
@@ -238,6 +273,9 @@ example (n : Nat) : n + 1 = 1 + n := by
 warning: 'simp at h' is a flexible tactic modifying 'h'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.
 
 Note: This linter can be disabled with `set_option linter.flexible false`
+---
+info: Try this:
+  [apply] simp only [not_true_eq_false, not_false_eq_true] at h
 ---
 info: 'rw [← Classical.not_not (a := True)] at h' uses 'h'!
 -/
@@ -295,6 +333,9 @@ warning: 'simp' is a flexible tactic modifying '⊢'. Try 'simp?' and use the su
 
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
+info: Try this:
+  [apply] simp only [Nat.zero_ne_one]
+---
 info: 'rwa [← Classical.not_not (a := False)]' uses '⊢'!
 -/
 #guard_msgs in
@@ -308,6 +349,9 @@ example {h : False} : 0 = 1 := by
 warning: 'simp' is a flexible tactic modifying '⊢'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.
 
 Note: This linter can be disabled with `set_option linter.flexible false`
+---
+info: Try this:
+  [apply] simp only [Nat.zero_ne_one]
 ---
 info: 'rwa [← Classical.not_not (a := False)]' uses '⊢'!
 -/

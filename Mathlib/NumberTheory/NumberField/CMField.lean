@@ -276,8 +276,8 @@ theorem mem_realUnits_iff (u : (𝓞 K)ˣ) :
 
 theorem unitsComplexConj_eq_self_iff [Algebra.IsIntegral ℚ K] (u : (𝓞 K)ˣ) :
     unitsComplexConj K u = u ↔ u ∈ realUnits K := by
-  simp_rw [Units.ext_iff,  mem_realUnits_iff, RingOfIntegers.ext_iff, Units.coe_mapEquiv,
-    AlgEquiv.toRingEquiv_eq_coe, RingEquiv.coe_toMulEquiv, RingOfIntegers.mapRingEquiv_apply,
+  simp_rw [Units.ext_iff, mem_realUnits_iff, RingOfIntegers.ext_iff, Units.coe_mapEquiv,
+    RingEquiv.coe_toMulEquiv, RingOfIntegers.mapRingEquiv_apply,
     AlgEquiv.coe_ringEquiv, Units.complexConj_eq_self_iff,
     IsScalarTower.algebraMap_apply (𝓞 K⁺) (𝓞 K) K]
 
@@ -465,7 +465,7 @@ theorem eq_maximalRealSubfield (E : Subfield K) [IsTotallyReal E] [IsQuadraticEx
     have := ((IntermediateField.isSimpleOrder_of_finrank_prime E K
       (IsQuadraticExtension.finrank_eq_two E K ▸ Nat.prime_two)).eq_bot_or_eq_top L).resolve_left ?_
     · simpa [L] using congr_arg IntermediateField.toSubfield this
-    · contrapose! h
+    · contrapose h
       rw [← SetLike.coe_set_eq, Subfield.coe_toIntermediateField] at h
       rw [← sup_eq_left, ← SetLike.coe_set_eq, h, IntermediateField.coe_bot]
       aesop
@@ -537,6 +537,7 @@ theorem of_forall_isConj [IsGalois ℚ K] {σ : Gal(K/ℚ)}
     rw [IsGaloisGroup.finrank_fixedPoints_eq_card_subgroup, hσ']⟩
   exact IsCMField.ofCMExtension L K
 
+open scoped IsMulCommutative in
 /--
 A totally complex abelian extension of `ℚ` is CM.
 -/

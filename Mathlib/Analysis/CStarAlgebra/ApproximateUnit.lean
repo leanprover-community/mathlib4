@@ -9,6 +9,7 @@ public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 public import Mathlib.Analysis.CStarAlgebra.SpecialFunctions.PosPart
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
 public import Mathlib.Topology.ApproximateUnit
+import Mathlib.Algebra.Order.Interval.Set.Group
 
 /-! # Nonnegative contractions in a C⋆-algebra form an approximate unit
 
@@ -102,8 +103,6 @@ lemma norm_cfcₙ_one_sub_one_add_inv_lt_one (a : A) :
     ‖cfcₙ (fun x : ℝ≥0 ↦ 1 - (1 + x)⁻¹) a‖ < 1 :=
   nnnorm_cfcₙ_nnreal_lt fun x _ ↦ tsub_lt_self zero_lt_one (by positivity)
 
--- the calls to `fun_prop` with a discharger set off the linter
-set_option linter.style.multiGoal false in
 lemma CStarAlgebra.directedOn_nonneg_ball :
     DirectedOn (· ≤ ·) ({x : A | 0 ≤ x} ∩ Metric.ball 0 1) := by
   let f : ℝ≥0 → ℝ≥0 := fun x => 1 - (1 + x)⁻¹
@@ -125,7 +124,7 @@ lemma CStarAlgebra.directedOn_nonneg_ball :
     _ = cfcₙ f (cfcₙ g a) := by
       rw [cfcₙ_comp f g a ?_ (by simp [f, tsub_self]) ?_ (by simp [g]) ha₁]
       · fun_prop (disch := intro _ _; positivity)
-      · have (x) (hx : x ∈ σₙ ℝ≥0 a) :  1 - x ≠ 0 := by
+      · have (x) (hx : x ∈ σₙ ℝ≥0 a) : 1 - x ≠ 0 := by
           refine tsub_pos_of_lt ?_ |>.ne'
           exact lt_of_le_of_lt (le_nnnorm_of_mem_quasispectrum hx) ha₂
         fun_prop (disch := assumption)
@@ -173,7 +172,7 @@ lemma tendsto_mul_right_of_forall_nonneg_tendsto {l : Filter A}
     change m ∈ span ℂ ({x | 0 ≤ x} ∩ ball 0 1)
     simp [span_nonneg_inter_unitBall]
   simp_rw [Finset.mul_sum]
-  refine tendsto_finset_sum _ fun i _ ↦ ?_
+  refine tendsto_finsetSum _ fun i _ ↦ ?_
   simp_rw [mul_smul_comm]
   exact tendsto_const_nhds.smul <| h (x i) (x i).2.1 <| by simpa using (x i).2.2
 
@@ -290,14 +289,14 @@ private lemma tendsto_mul_right_approximateUnit (m : A) :
       y * (1 + ε⁻¹ ^ 2 • y)⁻¹ * y = y * ε ^ 2 * (y / (ε ^ 2 + y)) := by simp [field]
       _ ≤ ε ^ 2 * 1 := by
         gcongr
-        · refine mul_le_of_le_one_left (zero_le _) ?_
+        · apply mul_le_of_le_one_left'
           have hm' := hm₂.le
           rw [norm_le_one_iff_of_nonneg m hm₁, ← cfc_id' ℝ≥0 m, ← cfc_one (R := ℝ≥0) m,
             cfc_nnreal_le_iff _ _ _ (QuasispectrumRestricts.nnreal_of_nonneg hm₁)] at hm'
           exact hm' y hy
         · exact div_le_one (by positivity) |>.mpr le_add_self
       _ = ε ^ 2 := mul_one _
-  rw [cfc_mul _ _ m (continuousOn_id' _ |>.mul hg') (continuousOn_id' _),
+  rw [cfc_mul _ _ m (continuousOn_id' _ |>.fun_mul hg') (continuousOn_id' _),
     cfc_mul _ _ m (continuousOn_id' _) hg', cfc_id' .., hm₁.star_eq]
   congr
   rw [← cfc_one (R := ℝ≥0) m, ← cfc_comp_smul _ _ _ hg.continuousOn hm₁,

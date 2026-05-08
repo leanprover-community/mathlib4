@@ -100,11 +100,13 @@ def lift (f : G →* H) (x : H) (hx : ∀ a : A, x * f ↑a = f (φ a : G) * x) 
     rintro _ _ ⟨a, rfl, rfl⟩
     simp [hx])
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lift_t (f : G →* H) (x : H) (hx : ∀ a : A, x * f ↑a = f (φ a : G) * x) :
     lift f x hx t = x := by
   delta HNNExtension; simp [lift, t]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lift_of (f : G →* H) (x : H) (hx : ∀ a : A, x * f ↑a = f (φ a : G) * x) (g : G) :
     lift f x hx (of g) = f g := by
@@ -167,6 +169,7 @@ theorem toSubgroupEquiv_one : toSubgroupEquiv φ 1 = φ := rfl
 @[simp]
 theorem toSubgroupEquiv_neg_one : toSubgroupEquiv φ (-1) = φ.symm := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toSubgroupEquiv_neg_apply (u : ℤˣ) (a : toSubgroup A B u) :
     (toSubgroupEquiv φ (-u) (toSubgroupEquiv φ u a) : G) = a := by
@@ -178,7 +181,7 @@ theorem toSubgroupEquiv_neg_apply (u : ℤˣ) (a : toSubgroup A B u) :
 namespace NormalWord
 
 variable (G A B)
-/-- To put word in the HNN Extension into a normal form, we must choose an element of each right
+/-- To put a word in the HNN Extension into a normal form, we must choose an element of each right
 coset of both `A` and `B`, such that the chosen element of the subgroup itself is `1`. -/
 structure TransversalPair : Type _ where
   /-- The transversal of each subgroup -/
@@ -192,7 +195,7 @@ instance TransversalPair.nonempty : Nonempty (TransversalPair G A B) := by
 
 /-- A reduced word is a `head`, which is an element of `G`, followed by the product list of pairs.
 There should also be no sequences of the form `t^u * g * t^-u`, where `g` is in
-`toSubgroup A B u` This is a less strict condition than required for `NormalWord`. -/
+`toSubgroup A B u`. This is a less strict condition than required for `NormalWord`. -/
 structure ReducedWord : Type _ where
   /-- Every `ReducedWord` is the product of an element of the group and a word made up
   of letters each of which is in the transversal. `head` is that element of the base group. -/
@@ -200,7 +203,7 @@ structure ReducedWord : Type _ where
   /-- The list of pairs `(ℤˣ × G)`, where each pair `(u, g)` represents the element `t^u * g` of
   `HNNExtension G A B φ` -/
   toList : List (ℤˣ × G)
-  /-- There are no sequences of the form `t^u * g * t^-u` where `g ∈ toSubgroup A B u` -/
+  /-- There are no sequences of the form `t^u * g * t^-u` where `g ∈ toSubgroup A B u`. -/
   chain : toList.IsChain (fun a b => a.2 ∈ toSubgroup A B a.1 → a.1 = b.1)
 
 /-- The empty reduced word. -/
@@ -253,8 +256,8 @@ instance : Inhabited (NormalWord d) := ⟨empty⟩
 
 instance : MulAction G (NormalWord d) :=
   { smul := fun g w => { w with head := g * w.head }
-    one_smul := by simp [instHSMul]
-    mul_smul := by simp [instHSMul, mul_assoc] }
+    one_smul := by simp +instances [instHSMul]
+    mul_smul := by simp +instances [instHSMul, mul_assoc] }
 
 theorem group_smul_def (g : G) (w : NormalWord d) :
     g • w = { w with head := g * w.head } := rfl
@@ -437,17 +440,8 @@ theorem unitsSMul_neg (u : ℤˣ) (w : NormalWord d) :
       cases hcan2.2
       have : ((d.compl (-u)).equiv w.head).1 = 1 :=
         (d.compl (-u)).equiv_fst_eq_one_of_mem_of_one_mem _ h1
-      apply NormalWord.ext
-      · -- This used to `simp [this]` before https://github.com/leanprover/lean4/pull/2644
-        dsimp
-        conv_lhs => erw [IsComplement.equiv_mul_left]
-        rw [map_mul, Submonoid.coe_mul, toSubgroupEquiv_neg_apply, this]
-        simp
-      · -- The next two lines were not needed before https://github.com/leanprover/lean4/pull/2644
-        dsimp
-        conv_lhs => erw [IsComplement.equiv_mul_left]
-        simp [Units.ext_iff, (d.compl (-u)).equiv_snd_eq_inv_mul, this,
-          -SetLike.coe_sort_coe]
+      simpa [NormalWord.ext_iff, (d.compl (-u)).equiv_mul_left, Units.ext_iff,
+        (d.compl (-u)).equiv_snd_eq_inv_mul]
 
 /-- the equivalence given by multiplication on the left by `t` -/
 @[simps]
@@ -457,6 +451,7 @@ noncomputable def unitsSMulEquiv : NormalWord d ≃ NormalWord d :=
     left_inv := fun _ => by rw [unitsSMul_neg]
     right_inv := fun w => by convert unitsSMul_neg _ _ w; simp }
 
+set_option backward.isDefEq.respectTransparency false in
 theorem unitsSMul_one_group_smul (g : A) (w : NormalWord d) :
     unitsSMul φ 1 ((g : G) • w) = (φ g : G) • (unitsSMul φ 1 w) := by
   unfold unitsSMul
@@ -473,7 +468,7 @@ theorem unitsSMul_one_group_smul (g : A) (w : NormalWord d) :
   · rw [dif_neg (mt this.1 hcan), dif_neg hcan]
     -- Before https://github.com/leanprover/lean4/pull/2644, all this was just
     -- `simp [← mul_smul, mul_assoc, unitsSMulGroup]`
-    simp only [toSubgroup_neg_one, unitsSMulGroup, toSubgroup_one, toSubgroupEquiv_one,
+    simp +instances only [toSubgroup_neg_one, unitsSMulGroup, toSubgroup_one, toSubgroupEquiv_one,
       SetLike.coe_sort_coe, group_smul_head, mul_inv_rev, ← mul_smul, mul_assoc, inv_mul_cancel,
       mul_one, smul_cons]
     -- This used to be the end of the proof before https://github.com/leanprover/lean4/pull/2644
@@ -498,16 +493,16 @@ theorem prod_group_smul (g : G) (w : NormalWord d) :
 
 theorem of_smul_eq_smul (g : G) (w : NormalWord d) :
     (of g : HNNExtension G A B φ) • w = g • w := by
-  simp [instHSMul, SMul.smul, MulAction.toEndHom]
+  simp +instances [instHSMul, SMul.smul, MulAction.toEndHom]
 
 theorem t_smul_eq_unitsSMul (w : NormalWord d) :
     (t : HNNExtension G A B φ) • w = unitsSMul φ 1 w := by
-  simp [instHSMul, SMul.smul, MulAction.toEndHom]
+  simp +instances [instHSMul, SMul.smul, MulAction.toEndHom]
 
 theorem t_pow_smul_eq_unitsSMul (u : ℤˣ) (w : NormalWord d) :
     (t ^ (u : ℤ) : HNNExtension G A B φ) • w = unitsSMul φ u w := by
   rcases Int.units_eq_one_or u with (rfl | rfl) <;>
-    simp [instHSMul, SMul.smul, MulAction.toEndHom, Equiv.Perm.inv_def]
+    simp +instances [instHSMul, SMul.smul, MulAction.toEndHom, Equiv.Perm.inv_def]
 
 @[simp]
 theorem prod_cons (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set u)
@@ -516,6 +511,7 @@ theorem prod_cons (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set 
     (cons g u w h1 h2).prod φ = of g * (t ^ (u : ℤ) * w.prod φ) := by
   simp [ReducedWord.prod, cons, mul_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem prod_unitsSMul (u : ℤˣ) (w : NormalWord d) :
     (unitsSMul φ u w).prod φ = (t ^ (u : ℤ) * w.prod φ : HNNExtension G A B φ) := by
   rw [unitsSMul]
@@ -530,7 +526,7 @@ theorem prod_unitsSMul (u : ℤˣ) (w : NormalWord d) :
         -- simp [equiv_symm_eq_conj, mul_assoc].
         simp only [toSubgroup_neg_one, toSubgroupEquiv_neg_one, Units.val_neg, Units.val_one,
           Int.reduceNeg, zpow_neg, zpow_one, inv_inv]
-        grind [equiv_symm_eq_conj, mul_assoc]
+        erw [equiv_symm_eq_conj, mul_assoc, mul_assoc]
   · simp only [unitsSMulGroup, SetLike.coe_sort_coe, prod_cons, prod_group_smul, map_mul, map_inv]
     rcases Int.units_eq_one_or u with (rfl | rfl)
     · -- Before https://github.com/leanprover/lean4/pull/2644, this proof was just
@@ -561,8 +557,6 @@ theorem prod_smul (g : HNNExtension G A B φ) (w : NormalWord d) :
     rw [← mul_right_inj x, ← ih]
     simp
 
--- TODO: fix non-terminal simp (acting on two goals, with different simp sets)
-set_option linter.flexible false in
 @[simp]
 theorem prod_smul_empty (w : NormalWord d) :
     (w.prod φ) • empty = w := by
@@ -577,11 +571,8 @@ theorem prod_smul_empty (w : NormalWord d) :
     --   -SetLike.coe_sort_coe]
     -- ext <;> simp [-SetLike.coe_sort_coe]
     simp only [unitsSMulGroup, (d.compl _).equiv_fst_eq_one_of_mem_of_one_mem (one_mem _) h1,
-      smul_cons]
-    ext <;> simp [-SetLike.coe_sort_coe]
-    rw [(d.compl _).equiv_snd_eq_inv_mul,
-      (d.compl _).equiv_fst_eq_one_of_mem_of_one_mem (one_mem _) h1]
-    simp
+      (d.compl _).equiv_snd_eq_inv_mul, inv_one, one_mul, mul_inv_cancel, one_smul, smul_cons]
+    ext <;> simp
 
 variable (d)
 /-- The equivalence between elements of the HNN extension and words in normal form. -/
@@ -660,11 +651,7 @@ theorem exists_normalWord_prod_eq
             (List.head?_eq_some_head _) hS
           rwa [List.head?_eq_some_head hl, Option.map_some, ← this, Option.some_inj] at hx'
         simp at this
-      rw [List.map_cons, mul_smul, of_smul_eq_smul, NormalWord.group_smul_def,
-        t_pow_smul_eq_unitsSMul, unitsSMul]
-      erw [dif_neg this]
-      rw [← hw'2]
-      simp [mul_assoc, unitsSMulGroup]
+      simp [mul_smul, of_smul_eq_smul, t_pow_smul_eq_unitsSMul, unitsSMul, dif_neg this, ← hw'2]
 
 /-- Two reduced words representing the same element of the `HNNExtension G A B φ` have the same
 length corresponding list, with the same pattern of occurrences of `t^1` and `t^(-1)`,

@@ -15,7 +15,7 @@ Instances on `Prop` such as `DistribLattice`, `BoundedOrder`, `LinearOrder`.
 
 -/
 
-@[expose] public section
+public section
 
 /-- Propositions form a distributive lattice. -/
 instance Prop.instDistribLattice : DistribLattice Prop where
@@ -44,7 +44,7 @@ theorem Prop.bot_eq_false : (⊥ : Prop) = False :=
 theorem Prop.top_eq_true : (⊤ : Prop) = True :=
   rfl
 
-instance Prop.le_isTotal : IsTotal Prop (· ≤ ·) :=
+instance Prop.le_total : @Std.Total Prop (· ≤ ·) :=
   ⟨fun p q => by by_cases h : q <;> simp [h]⟩
 
 noncomputable instance Prop.linearOrder : LinearOrder Prop := by
@@ -61,7 +61,7 @@ theorem inf_Prop_eq : (· ⊓ ·) = (· ∧ ·) :=
 
 namespace Pi
 
-variable {ι : Type*} {α' : ι → Type*} [∀ i, PartialOrder (α' i)]
+variable {ι α : Type*} {α' : ι → Type*} [∀ i, PartialOrder (α' i)]
 
 theorem disjoint_iff [∀ i, OrderBot (α' i)] {f g : ∀ i, α' i} :
     Disjoint f g ↔ ∀ i, Disjoint (f i) (g i) := by
@@ -80,6 +80,15 @@ theorem codisjoint_iff [∀ i, OrderTop (α' i)] {f g : ∀ i, α' i} :
 theorem isCompl_iff [∀ i, BoundedOrder (α' i)] {f g : ∀ i, α' i} :
     IsCompl f g ↔ ∀ i, IsCompl (f i) (g i) := by
   simp_rw [_root_.isCompl_iff, disjoint_iff, codisjoint_iff, forall_and]
+
+@[nontriviality]
+theorem eq_top_iff_refl_of_subsingleton [Subsingleton α] {r : α → α → Prop} : r = ⊤ ↔ Std.Refl r :=
+  ⟨fun h ↦ ⟨by simp [h]⟩, fun _ ↦ funext₂ <| by simp [rel_of_subsingleton]⟩
+
+@[nontriviality]
+theorem eq_bot_iff_irrefl_of_subsingleton [Subsingleton α] {r : α → α → Prop} :
+    r = ⊥ ↔ Std.Irrefl r :=
+  ⟨fun h ↦ ⟨by simp [h]⟩, fun _ ↦ funext₂ <| by simp [not_rel_of_subsingleton]⟩
 
 end Pi
 

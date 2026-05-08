@@ -13,7 +13,7 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 # Results about mapping big operators across ring equivalences
 -/
 
-@[expose] public section
+public section
 
 
 namespace RingEquiv

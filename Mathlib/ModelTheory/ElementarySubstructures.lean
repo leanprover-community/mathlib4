@@ -6,6 +6,7 @@ Authors: Aaron Anderson
 module
 
 public import Mathlib.ModelTheory.ElementaryMaps
+public import Mathlib.ModelTheory.Definability
 
 /-!
 # Elementary Substructures
@@ -61,6 +62,8 @@ instance instCoe : Coe (L.ElementarySubstructure M) (L.Substructure M) :=
 instance instSetLike : SetLike (L.ElementarySubstructure M) M :=
   ⟨fun x => x.toSubstructure.carrier, fun ⟨⟨s, hs1⟩, hs2⟩ ⟨⟨t, ht1⟩, _⟩ _ => by
     congr⟩
+
+instance : PartialOrder (L.ElementarySubstructure M) := .ofSetLike (L.ElementarySubstructure M) M
 
 instance inducedStructure (S : L.ElementarySubstructure M) : L.Structure S :=
   Substructure.inducedStructure
@@ -140,6 +143,96 @@ def toElementarySubstructure (S : L.Substructure M)
   ⟨S, S.isElementary_of_exists htv⟩
 
 end Substructure
+
+/-- A set meets definable sets if it meets every nonempty definable subset. -/
+def MeetsDefinable (A : Set M) : Prop :=
+  ∀ (D : Set M), D.Nonempty → A.Definable₁ L D → (D ∩ A).Nonempty
+
+namespace MeetsDefinable
+
+open Set Substructure
+
+variable {A : Set M}
+
+/-- The closure of a set meeting definable sets is equal to itself. -/
+theorem closure_eq_self (hA : L.MeetsDefinable A) :
+    closure L A = A := by
+  refine Subset.antisymm ?_ subset_closure
+  rw [coe_closure_eq_range_term_realize]
+  intro x hx
+  have : A.Definable₁ L {x} := by
+    obtain ⟨t, rfl⟩ := hx
+    use (Term.var 0).equal (t.relabel Sum.inl).varsToConstants
+    simp [Set.ext_iff]
+  exact singleton_inter_nonempty.mp <| hA _ (singleton_nonempty x) this
+
+/-- The closure of a set meeting definable sets is an elementary substructure. -/
+theorem isElementary_closure (hA : L.MeetsDefinable A) :
+    (closure L A).IsElementary := by
+  refine isElementary_of_exists ((closure L).toFun A) ?_
+  intro n φ x a hφ
+  let D : Set M := {y : M | φ.Realize default (Fin.snoc (Subtype.val ∘ x) y)}
+  have hD_ne : D.Nonempty := ⟨a,hφ⟩
+  have hD : A.Definable₁ L D := by
+    simp only [Definable₁, Definable, Fin.isValue]
+    refine ⟨((L.lhomWithConstants A).onBoundedFormula φ).toFormula.relabel
+      (Sum.elim Empty.elim id) |>.subst fun i => Fin.lastCases (Term.var 0)
+        (fun j => (L.con ⟨x j, by
+        nth_rw 1 [← hA.closure_eq_self]
+        simp only [Subtype.coe_prop]
+        ⟩).term) i, ?_⟩
+    ext v
+    simp only [Fin.isValue, mem_setOf_eq, Formula.relabel, Formula.Realize,
+      BoundedFormula.realize_subst, BoundedFormula.realize_relabel, Nat.add_zero, Fin.castAdd_zero,
+      Fin.cast_refl, Function.comp_id, Fin.natAdd_zero, D]
+    rw [← Formula.Realize, BoundedFormula.realize_toFormula, LHom.realize_onBoundedFormula]
+    congr! 1
+    ext i; cases i using Fin.lastCases <;> simp
+  obtain ⟨b, hbD, hbA⟩ := hA D hD_ne hD
+  exact ⟨⟨b, by rwa [← hA.closure_eq_self] at hbA⟩, hbD⟩
+
+/-- Bundles the closure of a set meeting definable sets as an elementary substructure. -/
+def toElementarySubstructure (hA : L.MeetsDefinable A) :
+    L.ElementarySubstructure M :=
+  ⟨closure L A, hA.isElementary_closure⟩
+
+end MeetsDefinable
+
+namespace ElementarySubstructure
+
+open Set Formula
+
+/-- An elementary substructure, regarded as a subset of the ambient structure, meets definable
+sets. -/
+theorem meetsDefinable (S : L.ElementarySubstructure M) : L.MeetsDefinable (S : Set M) := by
+  classical
+  rintro D ⟨x, hx⟩ ⟨φ, hφ⟩
+  have hφx : φ.Realize ![x] := by
+    simp [Set.ext_iff] at hφ
+    simp [← hφ, hx]
+  let ψ : L[[(S : Set M)]].Sentence := (φ.relabel Sum.inr).iExs
+  have hψM : ψ.Realize M := by
+    simpa only [Sentence.Realize, SetLike.coe_sort_coe, Formula.realize_iExs,
+      Formula.realize_relabel, Sum.elim_comp_inr, ψ] using
+        (⟨![x], hφx⟩ : ∃ w : Fin 1 → M, φ.Realize w)
+  have hψS : ψ.Realize S := by
+    rwa [← Formula.realize_equivSentence_symm_con, ← S.subtype.map_formula,
+      Formula.realize_equivSentence_symm]
+  simp only [Sentence.Realize, SetLike.coe_sort_coe, Formula.realize_iExs,
+    Formula.realize_relabel, Sum.elim_comp_inr, ψ] at hψS
+  obtain ⟨v', hv'⟩ := hψS
+  refine ⟨v' 0, ?_, by simp⟩
+  have hv'' : φ.Realize (Subtype.val ∘ v') := by
+    simp only [Formula.Realize, ← BoundedFormula.realize_constantsVarsEquiv,
+      ← S.subtype.map_boundedFormula] at hv'
+    simp only [Formula.Realize, ← BoundedFormula.realize_constantsVarsEquiv]
+    convert hv' using 1
+    funext i
+    cases i <;> rfl
+  change (Subtype.val ∘ v') ∈ {x | x 0 ∈ D}
+  simpa [hφ] using hv''
+
+end ElementarySubstructure
 
 end Language
 

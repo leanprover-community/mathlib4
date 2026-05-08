@@ -72,6 +72,7 @@ theorem oangle_zero_left (x : V) : o.oangle 0 x = 0 := by simp [oangle]
 @[simp]
 theorem oangle_zero_right (x : V) : o.oangle x 0 = 0 := by simp [oangle]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the two vectors passed to `oangle` are the same, the result is 0. -/
 @[simp]
 theorem oangle_self (x : V) : o.oangle x x = 0 := by
@@ -362,7 +363,7 @@ swapped is `π`. -/
 theorem oangle_eq_pi_iff_oangle_rev_eq_pi {x y : V} : o.oangle x y = π ↔ o.oangle y x = π := by
   rw [oangle_rev, neg_eq_iff_eq_neg, Real.Angle.neg_coe_pi]
 
-/-- The oriented angle between two vectors is `π` if and only they are nonzero and the first is
+/-- The oriented angle between two vectors is `π` if and only if they are nonzero and the first is
 on the same ray as the negation of the second. -/
 theorem oangle_eq_pi_iff_sameRay_neg {x y : V} :
     o.oangle x y = π ↔ x ≠ 0 ∧ y ≠ 0 ∧ SameRay ℝ x (-y) := by

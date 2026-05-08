@@ -15,7 +15,7 @@ public import Mathlib.GroupTheory.Perm.Cycle.Concrete
 
 -/
 
-@[expose] public section
+public section
 
 variable (α : Type*) [DecidableEq α] [Fintype α]
 
@@ -106,7 +106,7 @@ theorem Equiv.Perm.exists_with_cycleType_iff {m : Multiset ℕ} :
       apply List.map_congr_left
       intro x hx; simp only [Function.comp_apply]
       rw [List.support_formPerm_of_nodup x (hp_nodup x hx)]
-      ·-- length
+      · -- length
         rw [List.toFinset_card_of_nodup (hp_nodup x hx)]
       · -- length >= 1
         grind

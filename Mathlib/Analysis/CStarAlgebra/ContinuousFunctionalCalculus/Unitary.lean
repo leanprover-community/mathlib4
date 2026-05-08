@@ -18,7 +18,7 @@ public import Mathlib.Analysis.Complex.Basic
 
 -/
 
-@[expose] public section
+public section
 
 section Generic
 

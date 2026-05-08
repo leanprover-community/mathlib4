@@ -98,8 +98,8 @@ lemma dens_lt_dens (h : s ⊂ t) : dens s < dens t :=
     _ < #t := by gcongr
     _ ≤ Fintype.card α := card_le_univ t
 
-@[mono] lemma dens_mono : Monotone (dens : Finset α → ℚ≥0) := fun _ _ ↦ dens_le_dens
-@[mono] lemma dens_strictMono : StrictMono (dens : Finset α → ℚ≥0) := fun _ _ ↦ dens_lt_dens
+@[gcongr, mono] lemma dens_mono : Monotone (dens : Finset α → ℚ≥0) := fun _ _ ↦ dens_le_dens
+@[gcongr, mono] lemma dens_strictMono : StrictMono (dens : Finset α → ℚ≥0) := fun _ _ ↦ dens_lt_dens
 
 lemma dens_map_le [Fintype β] (f : α ↪ β) : dens (s.map f) ≤ dens s := by
   cases isEmpty_or_nonempty α
@@ -191,7 +191,7 @@ lemma dens_filter_add_dens_filter_not_eq_dens {α : Type*} [Fintype α] {s : Fin
     (p : α → Prop) [DecidablePred p] [∀ x, Decidable (¬p x)] :
     dens {a ∈ s | p a} + dens {a ∈ s | ¬ p a} = dens s := by
   classical
-  rw [← dens_union_of_disjoint (disjoint_filter_filter_neg ..), filter_union_filter_neg_eq]
+  rw [← dens_union_of_disjoint (disjoint_filter_filter_not ..), filter_union_filter_not_eq]
 
 lemma dens_union_le (s t : Finset α) : dens (s ∪ t) ≤ dens s + dens t :=
   dens_union_add_dens_inter s t ▸ le_add_of_nonneg_right zero_le'

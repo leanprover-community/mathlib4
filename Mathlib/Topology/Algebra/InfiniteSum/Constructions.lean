@@ -17,7 +17,7 @@ types, `MulOpposite`, etc.
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -122,7 +122,7 @@ theorem HasProd.sigma {γ : β → Type*} {f : (Σ b : β, γ b) → α} {g : β
   have : Tendsto (fun t : Finset (Σ b, γ b) ↦ ∏ p ∈ t with p.1 ∈ bs, f p) atTop
       (𝓝 <| ∏ b ∈ bs, g b) := by
     simp only [← sigma_preimage_mk, prod_sigma]
-    refine tendsto_finset_prod _ fun b _ ↦ ?_
+    refine tendsto_finsetProd _ fun b _ ↦ ?_
     change
       Tendsto (fun t ↦ (fun t ↦ ∏ s ∈ t, f ⟨b, s⟩) (preimage t (Sigma.mk b) _)) atTop (𝓝 (g b))
     exact (hf b).comp (tendsto_finset_preimage_atTop_atTop (sigma_mk_injective))
@@ -204,7 +204,7 @@ theorem HasProd.of_sigma {γ : β → Type*} {f : (Σ b : β, γ b) → α} {g :
   have L : Tendsto (fun t : Finset (Σ b, γ b) ↦ ∏ p ∈ t with p.1 ∈ t0, f p) atTop
       (𝓝 <| ∏ b ∈ t0, g b) := by
     simp only [← sigma_preimage_mk, prod_sigma]
-    refine tendsto_finset_prod _ fun b _ ↦ ?_
+    refine tendsto_finsetProd _ fun b _ ↦ ?_
     change
       Tendsto (fun t ↦ (fun t ↦ ∏ s ∈ t, f ⟨b, s⟩) (preimage t (Sigma.mk b) _)) atTop (𝓝 (g b))
     exact (hf b).comp (tendsto_finset_preimage_atTop_atTop (sigma_mk_injective))
@@ -320,7 +320,7 @@ theorem hasSum_unop {f : β → αᵐᵒᵖ} {a : αᵐᵒᵖ} :
   ⟨HasSum.op, HasSum.unop⟩
 
 @[simp]
-theorem summable_op : (Summable (fun a ↦ op (f a)) L) ↔ Summable f L:=
+theorem summable_op : (Summable (fun a ↦ op (f a)) L) ↔ Summable f L :=
   ⟨Summable.unop, Summable.op⟩
 
 theorem summable_unop {f : β → αᵐᵒᵖ} : (Summable (fun a ↦ unop (f a)) L) ↔ Summable f L :=

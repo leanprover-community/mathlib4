@@ -18,7 +18,7 @@ This file concerns the canonical homomorphism `ℤ → F`, where `F` is a field.
 * `Int.cast_div`: if `n` divides `m`, then `↑(m / n) = ↑m / ↑n`
 -/
 
-@[expose] public section
+public section
 
 
 namespace Int
@@ -27,7 +27,7 @@ open Nat
 
 variable {α : Type*}
 
-/-- Auxiliary lemma for norm_cast to move the cast `-↑n` upwards to `↑-↑n`.
+/-- Auxiliary lemma for `norm_cast` to move the cast `-↑n` upwards to `↑-↑n`.
 
 (The restriction to `DivisionRing` is necessary, otherwise this would also apply in the case where
 `R = ℤ` and cause nontermination.)

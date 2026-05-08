@@ -50,9 +50,6 @@ lemma preimage_insertNth_Icc_of_notMem {i : Fin (n + 1)} {x : α i} {q₁ q₂ :
   Set.ext fun p ↦ by
     simp only [mem_preimage, insertNth_mem_Icc, hx, false_and, mem_empty_iff_false]
 
-@[deprecated (since := "2025-05-23")]
-alias preimage_insertNth_Icc_of_not_mem := preimage_insertNth_Icc_of_notMem
-
 end Fin
 
 open Fin Matrix
@@ -152,6 +149,7 @@ def insertNthOrderIso (α : Fin (n + 1) → Type*) [∀ i, LE (α i)] (p : Fin (
   toEquiv := insertNthEquiv α p
   map_rel_iff' := by simp [Pi.le_def, Prod.le_def, p.forall_iff_succAbove]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma insertNthOrderIso_zero (α : Fin (n + 1) → Type*) [∀ i, LE (α i)] :
     insertNthOrderIso α 0 = consOrderIso α := by ext; simp [insertNthOrderIso]
 

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Subsemigroup.MulOpposite
 public import Mathlib.Algebra.Group.Submonoid.Basic
+public import Mathlib.Algebra.Group.Opposite
 
 /-!
 # Submonoid of opposite monoids

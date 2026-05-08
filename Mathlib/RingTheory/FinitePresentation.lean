@@ -170,7 +170,7 @@ theorem mvPolynomial_of_finitePresentation [FinitePresentation R A] (ι : Type v
     ⟨ι ⊕ ι', by infer_instance, g,
       (MvPolynomial.map_surjective f.toRingHom hf_surj).comp (AlgEquiv.surjective _),
       Ideal.fg_ker_comp _ _ ?_ ?_ (AlgEquiv.surjective _)⟩
-  · rw [AlgEquiv.toAlgHom_eq_coe, AlgEquiv.toAlgHom_toRingHom, AlgHom.ker_coe_equiv]
+  · rw [AlgEquiv.toAlgHom_toRingHom, AlgHom.ker_coe_equiv]
     exact Submodule.fg_bot
   · rw [AlgHom.toRingHom_eq_coe, MvPolynomial.mapAlgHom_coe_ringHom, MvPolynomial.ker_map]
     exact hf_ker.map MvPolynomial.C
@@ -200,7 +200,7 @@ instance self : FinitePresentation R R :=
 /-- `R[X]` is finitely presented as `R`-algebra. -/
 instance polynomial [FinitePresentation R A] : FinitePresentation R A[X] :=
   letI := FinitePresentation.mvPolynomial R A Unit
-  have := equiv (MvPolynomial.pUnitAlgEquiv.{_, 0} A)
+  have := equiv (MvPolynomial.uniqueAlgEquiv.{_, 0} A PUnit)
   .trans _ A _
 
 open MvPolynomial
@@ -425,6 +425,12 @@ theorem of_surjective (f : A →+* B) (hf : Surjective f) (hker : (RingHom.ker f
     f.FinitePresentation := by
   rw [← f.comp_id]
   exact (id A).comp_surjective hf hker
+
+lemma of_bijective {f : A →+* B} (hf : Function.Bijective f) : f.FinitePresentation :=
+  .of_surjective f hf.2 <| by
+    have : ker f = ⊥ := by rw [← RingHom.injective_iff_ker_eq_bot]; exact hf.1
+    rw [this]
+    exact Submodule.fg_bot
 
 theorem of_finiteType [IsNoetherianRing A] {f : A →+* B} : f.FiniteType ↔ f.FinitePresentation :=
   @Algebra.FinitePresentation.of_finiteType A B _ _ f.toAlgebra _

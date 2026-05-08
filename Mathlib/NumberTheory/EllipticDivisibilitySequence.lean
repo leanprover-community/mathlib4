@@ -53,7 +53,7 @@ when `n` is even. This coincides with the definition in the references since bot
 `normEDS b c d (2 * (m + 2) + 1)` and in `normEDS b c d (2 * (m + 3))`.
 
 One reason is to avoid the necessity for ring division by `b` in the inductive definition of
-`normEDS b c d (2 * (m + 3))`. The idea is that, it can be shown that `normEDS b c d (2 * (m + 3))`
+`normEDS b c d (2 * (m + 3))`. The idea is that it can be shown that `normEDS b c d (2 * (m + 3))`
 always contains a factor of `b`, so it is possible to remove a factor of `b` *a posteriori*, but
 stating this lemma requires first defining `normEDS b c d (2 * (m + 3))`, which requires having this
 factor of `b` *a priori*. Another reason is to allow the definition of univariate `n`-division
@@ -161,7 +161,7 @@ lemma preNormEDS'_even (m : ℕ) : preNormEDS' b c d (2 * (m + 3)) =
     preNormEDS' b c d (m + 2) ^ 2 * preNormEDS' b c d (m + 3) * preNormEDS' b c d (m + 5) -
       preNormEDS' b c d (m + 1) * preNormEDS' b c d (m + 3) * preNormEDS' b c d (m + 4) ^ 2 := by
   rw [show 2 * (m + 3) = 2 * m + 1 + 5 by rfl, preNormEDS', dif_neg m.not_even_two_mul_add_one]
-  simpa only [Nat.mul_add_div two_pos] using by rfl
+  simp [Nat.mul_add_div two_pos]
 
 lemma preNormEDS'_odd (m : ℕ) : preNormEDS' b c d (2 * (m + 2) + 1) =
     preNormEDS' b c d (m + 4) * preNormEDS' b c d (m + 2) ^ 3 * (if Even m then b else 1) -
@@ -221,8 +221,6 @@ lemma preNormEDS_even (m : ℤ) : preNormEDS b c d (2 * m) =
     simp_rw [mul_neg, ← sub_neg_eq_add, ← neg_sub', ← neg_add', preNormEDS_neg, ih]
     ring1
 
-@[deprecated (since := "2025-05-15")] alias preNormEDS_even_ofNat := preNormEDS_even
-
 lemma preNormEDS_odd (m : ℤ) : preNormEDS b c d (2 * m + 1) =
     preNormEDS b c d (m + 2) * preNormEDS b c d m ^ 3 * (if Even m then b else 1) -
       preNormEDS b c d (m - 1) * preNormEDS b c d (m + 1) ^ 3 * (if Even m then 1 else b) := by
@@ -240,8 +238,6 @@ lemma preNormEDS_odd (m : ℤ) : preNormEDS b c d (2 * m + 1) =
       show -(m + 1 : ℤ) + 2 = -(m - 1) by ring1, show -(m + 1 : ℤ) - 1 = -(m + 2) by rfl,
       show -(m + 1 : ℤ) + 1 = -m by ring1, preNormEDS_neg, even_neg, Int.even_add_one, ite_not, ih]
     ring1
-
-@[deprecated (since := "2025-05-15")] alias preNormEDS_odd_ofNat := preNormEDS_odd
 
 /-- The 2-complement sequence `Wᶜ₂ : ℤ → R` for a normalised EDS `W : ℤ → R` that witnesses
 `W(k) ∣ W(2 * k)`. In other words, `W(k) * Wᶜ₂(k) = W(2 * k)` for any `k ∈ ℤ`.
@@ -348,8 +344,6 @@ lemma normEDS_even (m : ℤ) : normEDS b c d (2 * m) * b =
   rw [← normEDS_mul_complEDS₂, mul_assoc, complEDS₂_mul_b]
   ring1
 
-@[deprecated (since := "2025-05-15")] alias normEDS_even_ofNat := normEDS_even
-
 lemma normEDS_odd (m : ℤ) : normEDS b c d (2 * m + 1) =
     normEDS b c d (m + 2) * normEDS b c d m ^ 3 -
       normEDS b c d (m - 1) * normEDS b c d (m + 1) ^ 3 := by
@@ -357,14 +351,13 @@ lemma normEDS_odd (m : ℤ) : normEDS b c d (2 * m + 1) =
     even_two, iff_true, Int.not_even_one, iff_false]
   split_ifs <;> ring1
 
-@[deprecated (since := "2025-05-15")] alias normEDS_odd_ofNat := normEDS_odd
-
 /--
 Strong recursion principle for a normalised EDS: if we have
 * `P 0`, `P 1`, `P 2`, `P 3`, and `P 4`,
 * for all `m : ℕ` we can prove `P (2 * (m + 3))` from `P k` for all `k < 2 * (m + 3)`, and
 * for all `m : ℕ` we can prove `P (2 * (m + 2) + 1)` from `P k` for all `k < 2 * (m + 2) + 1`,
-  then we have `P n` for all `n : ℕ`.
+
+then we have `P n` for all `n : ℕ`.
 -/
 @[elab_as_elim]
 noncomputable def normEDSRec' {P : ℕ → Sort u}
@@ -380,6 +373,7 @@ noncomputable def normEDSRec' {P : ℕ → Sort u}
   `P (m + 4)`, and `P (m + 5)`, and
 * for all `m : ℕ` we can prove `P (2 * (m + 2) + 1)` from `P (m + 1)`, `P (m + 2)`, `P (m + 3)`,
   and `P (m + 4)`,
+
 then we have `P n` for all `n : ℕ`. -/
 @[elab_as_elim]
 noncomputable def normEDSRec {P : ℕ → Sort u}
@@ -429,7 +423,7 @@ lemma complEDS'_odd (m : ℕ) : complEDS' b c d k (2 * (m + 1) + 1) =
       complEDS' b c d k (m + 2) ^ 2
           * normEDS b c d ((m + 1) * k + 1) * normEDS b c d ((m + 1) * k - 1) := by
   rw [show 2 * (m + 1) + 1 = 2 * m + 3 by rfl, complEDS', dif_neg m.not_even_two_mul_add_one]
-  simpa only [Nat.mul_add_div two_pos] using by rfl
+  simp [Nat.mul_add_div two_pos, add_assoc]
 
 /-- The complement sequence `Wᶜ : ℤ × ℤ → R` for a normalised EDS `W : ℤ → R` that witnesses
 `W(k) ∣ W(n * k)`. In other words, `W(k) * Wᶜ(k, n) = W(n * k)` for any `k, n ∈ ℤ`.
@@ -487,6 +481,7 @@ lemma complEDS_odd (m : ℤ) : complEDS b c d k (2 * m + 1) =
 * `P 0`, `P 1`,
 * for all `m : ℕ` we can prove `P (2 * (m + 3))` from `P k` for all `k < 2 * (m + 3)`, and
 * for all `m : ℕ` we can prove `P (2 * (m + 2) + 1)` from `P k` for all `k < 2 * (m + 2) + 1`,
+
 then we have `P n` for all `n : ℕ`. -/
 @[elab_as_elim]
 noncomputable def complEDSRec' {P : ℕ → Sort u} (zero : P 0) (one : P 1)
@@ -501,6 +496,7 @@ noncomputable def complEDSRec' {P : ℕ → Sort u} (zero : P 0) (one : P 1)
   `P (m + 4)`, and `P (m + 5)`, and
 * for all `m : ℕ` we can prove `P (2 * (m + 2) + 1)` from `P (m + 1)`, `P (m + 2)`, `P (m + 3)`,
   and `P (m + 4)`,
+
 then we have `P n` for all `n : ℕ`. -/
 @[elab_as_elim]
 noncomputable def complEDSRec {P : ℕ → Sort u} (zero : P 0) (one : P 1)

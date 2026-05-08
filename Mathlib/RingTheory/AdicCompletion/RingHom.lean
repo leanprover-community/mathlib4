@@ -78,7 +78,7 @@ theorem mk_comp_liftRingHom (n : ℕ) :
 /--
 Uniqueness of the lift.
 Given a compatible family of linear maps `f n : R →ₗ[R] S ⧸ (I ^ n)`.
-If `F : R →+* S` makes the following diagram commutes
+If `F : R →+* S` makes the following diagram commute
 ```
   R
   | \
@@ -160,6 +160,8 @@ theorem factorPow_comp_eq_of_factorPow_comp_succ_eq'
 variable [IsAdicComplete I S]
 
 variable (I)
+
+set_option backward.isDefEq.respectTransparency false in
 /--
 A variant of `IsAdicComplete.liftRingHom`. Only takes `f n : R →+* S ⧸ I ^ (a n)`
 from a strictly increasing sequence `a n`.
@@ -168,6 +170,7 @@ noncomputable def liftRingHom : R →+* S :=
   IsAdicComplete.liftRingHom I (fun n ↦ (factorPow I (ha.id_le n)).comp (f n))
     (fun hle ↦ by ext; simp [← factorPow_comp_eq_of_factorPow_comp_succ_eq' ha f hf hle])
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mk_liftRingHom {n : ℕ} (x : R) :
     Ideal.Quotient.mk _ (liftRingHom I ha f hf x) = f n x := by

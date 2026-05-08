@@ -19,7 +19,7 @@ complicated to state. This is because meromorphic functions can be modified at w
 subsets and still remain meromorphic.
 -/
 
-@[expose] public section
+public section
 
 variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -93,5 +93,30 @@ theorem eventuallyEq_nhdsNE_of_eventuallyEq_codiscreteWithin (hf : MeromorphicAt
     f =ᶠ[𝓝[≠] x] g := by
   rw [eventuallyEq_iff_sub] at *
   apply (hf.sub hg).eventuallyEq_zero_nhdsNE_of_eventuallyEq_zero_codiscreteWithin h₁x h₂x h
+
+/-
+Variant of `MeromorphicAt.eventuallyEq_nhdsNE_of_eventuallyEq_codiscreteWithin`, as a statement
+about meromorphic functions that agree outside a set codiscrete within a perfect set.
+-/
+theorem eventuallyEq_nhdsNE_of_eventuallyEq_codiscreteWithin_preperfect (hf : MeromorphicAt f x)
+    (hg : MeromorphicAt g x) (hx : x ∈ U) (hU : Preperfect U) (h : f =ᶠ[codiscreteWithin U] g) :
+    f =ᶠ[𝓝[≠] x] g :=
+  hf.eventuallyEq_nhdsNE_of_eventuallyEq_codiscreteWithin hg hx (hU x hx) h
+
+/-
+Variant of `MeromorphicAt.eventuallyEq_nhdsNE_of_eventuallyEq_codiscreteWithin`, as a statement
+about meromorphic functions agreeing in a neighborhood of a preperfect set.
+-/
+theorem eventually_nhdsSet_eventuallyEq_codiscreteWithin (hf : MeromorphicOn f U)
+    (hg : MeromorphicOn g U) (hU : Preperfect U) (h : f =ᶠ[codiscreteWithin U] g) :
+    ∀ᶠ x in 𝓝ˢ U, f =ᶠ[𝓝[≠] x] g := by
+  rw [eventually_nhdsSet_iff_exists]
+  use {x | f =ᶠ[𝓝[≠] x] g}
+  simp only [Set.mem_setOf_eq, imp_self, implies_true, and_true]
+  constructor
+  · apply isOpen_setOf_eventually_nhdsWithin
+  · intro x hx
+    rw [Set.mem_setOf]
+    exact eventuallyEq_nhdsNE_of_eventuallyEq_codiscreteWithin (hf x hx) (hg x hx) hx (hU x hx) h
 
 end MeromorphicAt

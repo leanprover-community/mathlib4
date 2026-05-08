@@ -12,7 +12,7 @@ public import Mathlib.Geometry.Manifold.DerivationBundle
 
 # Left invariant derivations
 
-In this file we define the concept of left invariant derivation for a Lie group. The concept is
+In this file we define the concept of left invariant derivations for a Lie group. The concept is
 analogous to the more classical concept of left invariant vector fields, and it holds that the
 derivation associated to a vector field is left invariant iff the field is.
 
@@ -35,7 +35,7 @@ noncomputable section
 
 open scoped LieGroup Manifold Derivation ContDiff
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞} {E : Type*} [NormedAddCommGroup E]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω} {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) (G : Type*)
   [TopologicalSpace G] [ChartedSpace H G] [Monoid G] [ContMDiffMul I ∞ G] (g h : G)
 
@@ -184,7 +184,7 @@ variable {I G}
 instance : Module 𝕜 (LeftInvariantDerivation I G) :=
   coe_injective.module _ (coeFnAddMonoidHom I G) coe_smul
 
-/-- Evaluation at a point for left invariant derivation. Same thing as for generic global
+/-- Evaluation at a point for left invariant derivations. Same thing as for generic global
 derivations (`Derivation.evalAt`). -/
 def evalAt : LeftInvariantDerivation I G →ₗ[𝕜] PointDerivation I g where
   toFun X := Derivation.evalAt g X.1
@@ -201,6 +201,7 @@ theorem evalAt_coe : Derivation.evalAt g ↑X = evalAt g X :=
 theorem left_invariant : 𝒅ₕ (smoothLeftMul_one I g) (evalAt (1 : G) X) = evalAt g X :=
   X.left_invariant'' g
 
+set_option backward.isDefEq.respectTransparency false in
 theorem evalAt_mul : evalAt (g * h) X = 𝒅ₕ (L_apply I g h) (evalAt h X) := by
   ext f
   rw [← left_invariant, hfdifferential_apply, hfdifferential_apply, L_mul, fdifferential_comp,

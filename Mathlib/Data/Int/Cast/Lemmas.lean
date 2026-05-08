@@ -39,11 +39,6 @@ def ofNatHom : ℕ →+* ℤ :=
 
 section cast
 
-@[simp, norm_cast]
-theorem cast_ite [IntCast α] (P : Prop) [Decidable P] (m n : ℤ) :
-    ((ite P m n : ℤ) : α) = ite P (m : α) (n : α) :=
-  apply_ite _ _ _ _
-
 /-- `coe : ℤ → α` as an `AddMonoidHom`. -/
 def castAddHom (α : Type*) [AddGroupWithOne α] : ℤ →+ α where
   toFun := Int.cast
@@ -86,6 +81,7 @@ variable [NonAssocRing α]
 
 variable (α) in
 /-- `coe : ℤ → α` as a `RingHom`. -/
+@[implicit_reducible]
 def castRingHom : ℤ →+* α where
   toFun := Int.cast
   map_zero' := cast_zero

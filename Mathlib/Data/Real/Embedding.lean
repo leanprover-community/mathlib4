@@ -106,7 +106,7 @@ theorem ratLt_nonempty (x : M) : (ratLt x).Nonempty := by
     use Rat.mk' 1 (n + 1) (by simp) (by simp)
     simpa using hn.trans_lt <| (nsmul_lt_nsmul_iff_left hxpos).mpr (by simp)
 
-open Pointwise in
+open scoped Pointwise in
 theorem ratLt_add (x y : M) : ratLt (x + y) = ratLt x + ratLt y := by
   ext a
   rw [Set.mem_add]
@@ -151,7 +151,7 @@ theorem ratLt'_bddAbove (x : M) : BddAbove (ratLt' x) :=
 
 theorem ratLt'_nonempty (x : M) : (ratLt' x).Nonempty := Set.image_nonempty.mpr (ratLt_nonempty x)
 
-open Pointwise in
+open scoped Pointwise in
 theorem ratLt'_add (x y : M) : ratLt' (x + y) = ratLt' x + ratLt' y := by
   rw [ratLt', ratLt_add, Set.image_add]
 
@@ -170,7 +170,7 @@ theorem embedRealFun_zero : embedRealFun (0 : M) = 0 := by
     rw [mem_upperBounds]
     suffices (∀ (y : ℚ), y.num • (1 : M) < 0 → y ≤ x) → 0 ≤ x by simpa using this
     intro h
-    have h' (y : ℚ) (hy: y < 0) : y ≤ x := by
+    have h' (y : ℚ) (hy : y < 0) : y ≤ x := by
       exact h _ <| (smul_neg_iff_of_neg_left (by simpa using hy)).mpr zero_lt_one
     contrapose! h'
     obtain ⟨y, hxy, hy⟩ := exists_rat_btwn h'
@@ -201,7 +201,7 @@ def embedReal : M →+o ℝ where
   map_add' := embedRealFun_add
   monotone' := (embedRealFun_strictMono M).monotone
 
-theorem embedReal_apply (a : M) :  embedReal M a = embedRealFun a := by rfl
+theorem embedReal_apply (a : M) : embedReal M a = embedRealFun a := by rfl
 
 variable (M) in
 theorem embedReal_injective : Function.Injective (embedReal M) :=

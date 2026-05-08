@@ -136,9 +136,9 @@ theorem toMultilinearMap_zero : (0 : ContinuousMultilinearMap R M₁ M₂).toMul
 
 section SMul
 
-variable {R' R'' A : Type*} [Monoid R'] [Monoid R''] [Semiring A] [∀ i, Module A (M₁ i)]
-  [Module A M₂] [DistribMulAction R' M₂] [ContinuousConstSMul R' M₂] [SMulCommClass A R' M₂]
-  [DistribMulAction R'' M₂] [ContinuousConstSMul R'' M₂] [SMulCommClass A R'' M₂]
+variable {R' R'' A : Type*} [Semiring A] [∀ i, Module A (M₁ i)]
+  [Module A M₂] [DistribSMul R' M₂] [ContinuousConstSMul R' M₂] [SMulCommClass A R' M₂]
+  [DistribSMul R'' M₂] [ContinuousConstSMul R'' M₂] [SMulCommClass A R'' M₂]
 
 instance : SMul R' (ContinuousMultilinearMap A M₁ M₂) :=
   ⟨fun c f => { c • f.toMultilinearMap with cont := f.cont.const_smul c }⟩
@@ -160,14 +160,21 @@ instance [SMul R' R''] [IsScalarTower R' R'' M₂] :
     IsScalarTower R' R'' (ContinuousMultilinearMap A M₁ M₂) :=
   ⟨fun _ _ _ => ext fun _ => smul_assoc _ _ _⟩
 
-instance [DistribMulAction R'ᵐᵒᵖ M₂] [IsCentralScalar R' M₂] :
+instance [DistribSMul R'ᵐᵒᵖ M₂] [IsCentralScalar R' M₂] :
     IsCentralScalar R' (ContinuousMultilinearMap A M₁ M₂) :=
   ⟨fun _ _ => ext fun _ => op_smul_eq_smul _ _⟩
+
+end SMul
+
+section SMulMonoid
+
+variable {R' A : Type*} [Monoid R'] [Semiring A] [∀ i, Module A (M₁ i)]
+  [Module A M₂] [DistribMulAction R' M₂] [ContinuousConstSMul R' M₂] [SMulCommClass A R' M₂]
 
 instance : MulAction R' (ContinuousMultilinearMap A M₁ M₂) := fast_instance%
   Function.Injective.mulAction toMultilinearMap toMultilinearMap_injective fun _ _ => rfl
 
-end SMul
+end SMulMonoid
 
 section ContinuousAdd
 
@@ -184,6 +191,10 @@ theorem add_apply (m : ∀ i, M₁ i) : (f + f') m = f m + f' m :=
 theorem toMultilinearMap_add (f g : ContinuousMultilinearMap R M₁ M₂) :
     (f + g).toMultilinearMap = f.toMultilinearMap + g.toMultilinearMap :=
   rfl
+
+-- The `AddMonoid` instance exists to help speedup unification
+instance : AddMonoid (ContinuousMultilinearMap R M₁ M₂) := fast_instance%
+  toMultilinearMap_injective.addMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 
 instance addCommMonoid : AddCommMonoid (ContinuousMultilinearMap R M₁ M₂) := fast_instance%
   toMultilinearMap_injective.addCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
@@ -594,7 +605,7 @@ variable (R n) (A : Type*) [CommSemiring R] [Semiring A] [Algebra R A] [Topologi
 `m` the product of all the `m i`.
 
 See also: `ContinuousMultilinearMap.mkPiAlgebra`. -/
-protected def mkPiAlgebraFin : A[×n]→L[R] A where
+protected def mkPiAlgebraFin : A [×n]→L[R] A where
   cont := by
     change Continuous fun m => (List.ofFn m).prod
     simp_rw [List.ofFn_eq_map]
@@ -620,7 +631,7 @@ over `𝕜`, associating to `m` the product of all the `m i`.
 
 See also `ContinuousMultilinearMap.mkPiAlgebraFin`. -/
 protected def mkPiAlgebra : ContinuousMultilinearMap R (fun _ : ι => A) A where
-  cont := continuous_finset_prod _ fun _ _ => continuous_apply _
+  cont := continuous_finsetProd _ fun _ _ => continuous_apply _
   toMultilinearMap := MultilinearMap.mkPiAlgebra R ι A
 
 @[simp]

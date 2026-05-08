@@ -64,6 +64,7 @@ protected def Category (_ : TwistShiftData C A) : Type u := C
 
 instance : Category t.Category := inferInstanceAs (Category C)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `t : TwistShiftData C A`, the shift on the category `TwistShift t` has
 the same shift functors as `C`, the same isomorphism `shiftFunctorZero` isomorphism,
 but the `shiftFunctorAdd` isomorphisms are modified using `t`. -/
@@ -106,6 +107,7 @@ lemma shiftFunctorZero_inv_app (X : t.Category) :
       (shiftFunctorZero C A).inv.app X ≫ (shiftIso t (0 : A)).inv.app X :=
   (Category.comp_id _).symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma shiftFunctorAdd'_hom_app (i j k : A) (h : i + j = k) (X : t.Category) :
     (shiftFunctorAdd' t.Category i j k h).hom.app X =
@@ -121,10 +123,11 @@ lemma shiftFunctorAdd'_hom_app (i j k : A) (h : i + j = k) (X : t.Category) :
   change _ = 𝟙 _ ≫ _ ≫ (shiftFunctor C j).map (𝟙 _) ≫ 𝟙 _
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma shiftFunctorAdd'_inv_app (i j k : A) (h : i + j = k) (X : t.Category) :
     (shiftFunctorAdd' t.Category i j k h).inv.app X =
-      ((t.z i j)⁻¹).val • (t.shiftIso j).hom.app _  ≫
+      ((t.z i j)⁻¹).val • (t.shiftIso j).hom.app _ ≫
         (shiftFunctor C j).map ((t.shiftIso i).hom.app X) ≫
         (shiftFunctorAdd' C i j k h).inv.app X ≫
         (t.shiftIso k).inv.app X := by

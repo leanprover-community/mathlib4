@@ -16,7 +16,7 @@ space over `ℝ`.
 
 -/
 
-@[expose] public section
+public section
 
 
 namespace Complex

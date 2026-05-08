@@ -30,7 +30,7 @@ limits, see `sequentialFunctor_initial`.
 
 open CategoryTheory Opposite CountableCategory
 
-variable (C : Type*) [Category C] (J : Type*) [Countable J]
+variable (C : Type*) [Category* C] (J : Type*) [Countable J]
 
 namespace CategoryTheory.Limits
 
@@ -41,7 +41,7 @@ instance and `J : Type` has a limit.
 class HasCountableLimits : Prop where
   /-- `C` has all limits over any type `J` whose objects and morphisms lie in the same universe
   and which has countably many objects and morphisms -/
-  out (J : Type) [SmallCategory J] [CountableCategory J] : HasLimitsOfShape J C
+  out (J : Type) [SmallCategory J] [CountableCategory J] : HasLimitsOfShape J C := by infer_instance
 
 instance (priority := 100) hasFiniteLimits_of_hasCountableLimits [HasCountableLimits C] :
     HasFiniteLimits C where
@@ -227,7 +227,7 @@ instance sequentialFunctor_initial : (sequentialFunctor J).Initial where
       exact ⟨CostructuredArrow.homMk (homOfLE h).op rfl⟩
 
 @[stacks 0032]
-proof_wanted preorder_of_cofiltered (J : Type*) [Category J] [IsCofiltered J] :
+proof_wanted preorder_of_cofiltered (J : Type*) [Category* J] [IsCofiltered J] :
     ∃ (I : Type*) (_ : Preorder I) (_ : IsCofiltered I) (F : I ⥤ J), F.Initial
 
 /--

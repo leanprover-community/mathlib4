@@ -17,17 +17,18 @@ is essentially surjective for any `n : ℕ`.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
 namespace Localization
 
-variable {C D : Type*} [Category C] [Category D] (L : C ⥤ D) (W : MorphismProperty C)
+variable {C D : Type*} [Category* C] [Category* D] (L : C ⥤ D) (W : MorphismProperty C)
   [L.IsLocalization W]
 
 open ComposableArrows
 
+set_option backward.isDefEq.respectTransparency false in
 lemma essSurj_mapComposableArrows_of_hasRightCalculusOfFractions
     [W.HasRightCalculusOfFractions] (n : ℕ) :
     (L.mapComposableArrows n).EssSurj where

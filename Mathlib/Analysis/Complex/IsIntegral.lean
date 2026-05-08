@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 This file proves that `Complex.I` is integral over ℤ and ℚ.
 -/
 
-@[expose] public section
+public section
 
 open Polynomial
 

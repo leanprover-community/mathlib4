@@ -104,7 +104,7 @@ def mk₂ {n : ℕ} {X : Truncated.{u} (n + 1)} (p q : X.Path 1)
 
 /-- For `j + l ≤ m`, a path of length `m` restricts to a path of length `l`, namely
 the subpath spanned by the vertices `j ≤ i ≤ j + l` and edges `j ≤ i < j + l`. -/
-def interval (f : Path X m) (j l : ℕ) (h : j + l ≤ m := by lia) : Path X l where
+def interval (f : Path X m) (j l : ℕ) (h : j + l ≤ m := by omega) : Path X l where
   vertex i := f.vertex ⟨j + i, by lia⟩
   arrow i := f.arrow ⟨j + i, by lia⟩
   arrow_src i := f.arrow_src ⟨j + i, by lia⟩
@@ -118,10 +118,10 @@ def map (f : Path X m) (σ : X ⟶ Y) : Path Y m where
   arrow i := σ.app (op ⦋1⦌ₙ₊₁) (f.arrow i)
   arrow_src i := by
     simp only [← f.arrow_src i]
-    exact congr (σ.naturality (tr (δ 1)).op) rfl |>.symm
+    exact ConcreteCategory.congr_hom (σ.naturality (tr (δ 1)).op) _ |>.symm
   arrow_tgt i := by
     simp only [← f.arrow_tgt i]
-    exact congr (σ.naturality (tr (δ 0)).op) rfl |>.symm
+    exact ConcreteCategory.congr_hom (σ.naturality (tr (δ 0)).op) _ |>.symm
 
 /- We write this lemma manually to ensure it refers to `Path.vertex`. -/
 @[simp]
@@ -150,15 +150,11 @@ def spine (m : ℕ) (h : m ≤ n + 1 := by omega) (Δ : X _⦋m⦌ₙ₊₁) : P
   vertex i := X.map (tr (SimplexCategory.const ⦋0⦌ ⦋m⦌ i)).op Δ
   arrow i := X.map (tr (mkOfSucc i)).op Δ
   arrow_src i := by
-    dsimp only [tr, trunc, SimplicialObject.Truncated.trunc, incl,
-      Functor.whiskeringLeft_obj_obj, id_eq, Functor.comp_map, Functor.op_map,
-      Quiver.Hom.unop_op]
-    rw [← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp, δ_one_mkOfSucc]
+    simp [← δ_one_mkOfSucc, tr_comp]
+    rfl
   arrow_tgt i := by
-    dsimp only [tr, trunc, SimplicialObject.Truncated.trunc, incl,
-      Functor.whiskeringLeft_obj_obj, id_eq, Functor.comp_map, Functor.op_map,
-      Quiver.Hom.unop_op]
-    rw [← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp, δ_zero_mkOfSucc]
+    simp [← δ_zero_mkOfSucc, tr_comp]
+    rfl
 
 /-- Further truncating `X` above `m` does not change the `m`-spine. -/
 lemma trunc_spine (k m : ℕ) (h : m ≤ k + 1) (hₙ : k ≤ n) :
@@ -183,9 +179,9 @@ lemma spine_arrow (Δ : X _⦋m⦌ₙ₊₁) (i : Fin m) :
 lemma spine_map_vertex (Δ : X _⦋m⦌ₙ₊₁) (a : ℕ) (hₐ : a ≤ n + 1)
     (φ : ⦋a⦌ₙ₊₁ ⟶ ⦋m⦌ₙ₊₁) (i : Fin (a + 1)) :
     (X.spine a hₐ (X.map φ.op Δ)).vertex i =
-      (X.spine m hₘ Δ).vertex (φ.toOrderHom i) := by
+      (X.spine m hₘ Δ).vertex (φ.hom.toOrderHom i) := by
   dsimp only [spine_vertex]
-  rw [← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp,
+  rw [← Functor.map_comp_apply, ← op_comp, ← tr_comp',
     SimplexCategory.const_comp]
 
 lemma spine_map_subinterval (j l : ℕ) (h : j + l ≤ m) (Δ : X _⦋m⦌ₙ₊₁) :
@@ -193,10 +189,10 @@ lemma spine_map_subinterval (j l : ℕ) (h : j + l ≤ m) (Δ : X _⦋m⦌ₙ₊
       (X.spine m hₘ Δ).interval j l h := by
   ext i
   · dsimp only [spine_vertex, Path.interval]
-    rw [← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp,
+    rw [← Functor.map_comp_apply, ← op_comp, ← tr_comp,
       const_subinterval_eq]
   · dsimp only [spine_arrow, Path.interval]
-    rw [← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp,
+    rw [← Functor.map_comp_apply, ← op_comp, ← tr_comp,
       mkOfSucc_subinterval_eq]
 
 end Truncated
@@ -309,9 +305,10 @@ lemma spine_δ₀ {m : ℕ} (x : X _⦋m + 1⦌) :
     simp [spine, Path.vertex, Truncated.Path.vertex, SimplicialObject.truncation,
       Truncated.spine, Path.interval, Truncated.Path.interval, Truncated.inclusion,
       Truncated.Hom.tr, ← SimplexCategory.δ_zero_eq_const, ← SimplicialObject.δ_def]
+    rfl
   · ext i
     dsimp
-    rw [SimplicialObject.δ_def, ← FunctorToTypes.map_comp_apply, ← op_comp,
+    rw [SimplicialObject.δ_def, ← Functor.map_comp_apply, ← op_comp,
       SimplexCategory.mkOfSucc_δ_gt (j := 0) (i := i) (by simp)]
     symm
     exact Path.arrow_interval _ _ _ _ _ _ (by rw [Fin.val_succ, add_comm])
@@ -327,7 +324,7 @@ lemma spine_map_vertex (Δ : X _⦋n⦌) {m : ℕ}
     (X.spine m (X.map φ.op Δ)).vertex i =
       (X.spine n Δ).vertex (φ.toOrderHom i) :=
   truncation (max m n + 1) |>.obj X
-    |>.spine_map_vertex n (by omega) Δ m (by omega) φ i
+    |>.spine_map_vertex n (by omega) Δ m (by omega) (InducedCategory.homMk φ) i
 
 lemma spine_map_subinterval (j l : ℕ) (h : j + l ≤ n) (Δ : X _⦋n⦌) :
     X.spine l (X.map (subinterval j l h).op Δ) = (X.spine n Δ).interval j l h :=

@@ -41,7 +41,7 @@ variable [Algebra S T] [IsScalarTower R S T]
 
 -- This should only be defined when `S` is the localization `M⁻¹R`, hence the nolint.
 /-- Localizing w.r.t. `M ⊆ R` and then w.r.t. `N ⊆ S = M⁻¹R` is equal to the localization of `R`
-w.r.t. this module. See `localization_localization_isLocalization`.
+w.r.t. this submonoid. See `localization_localization_isLocalization`.
 -/
 @[nolint unusedArguments]
 def localizationLocalizationSubmodule : Submonoid R :=

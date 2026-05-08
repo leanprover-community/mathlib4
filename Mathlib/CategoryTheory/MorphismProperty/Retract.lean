@@ -36,21 +36,24 @@ lemma of_retract {P : MorphismProperty C} [P.IsStableUnderRetracts]
     {X Y Z W : C} {f : X ⟶ Y} {g : Z ⟶ W} (h : RetractArrow f g) (hg : P g) : P f :=
   IsStableUnderRetracts.of_retract h hg
 
-instance {D : Type*} [Category D] (F : C ⥤ D) (P : MorphismProperty D)
+instance {D : Type*} [Category* D] (F : C ⥤ D) (P : MorphismProperty D)
     [P.IsStableUnderRetracts] :
     (P.inverseImage F).IsStableUnderRetracts where
   of_retract h₁ h₂ := of_retract (P := P) (h₁.map F) h₂
 
+set_option backward.isDefEq.respectTransparency false in
 instance IsStableUnderRetracts.monomorphisms : (monomorphisms C).IsStableUnderRetracts where
   of_retract {_ _ _ _ f g} h (hg : Mono g) := ⟨fun α β w ↦ by
     rw [← cancel_mono h.i.left, ← cancel_mono g, Category.assoc, Category.assoc,
       h.i_w, reassoc_of% w]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance IsStableUnderRetracts.epimorphisms : (epimorphisms C).IsStableUnderRetracts where
   of_retract {_ _ _ _ f g} h (hg : Epi g) := ⟨fun α β w ↦ by
     rw [← cancel_epi h.r.right, ← cancel_epi g, ← Category.assoc, ← Category.assoc, ← h.r_w,
       Category.assoc, Category.assoc, w]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance IsStableUnderRetracts.isomorphisms : (isomorphisms C).IsStableUnderRetracts where
   of_retract {X Y Z W f g} h (_ : IsIso _) := by
     refine ⟨h.i.right ≫ inv g ≫ h.r.left, ?_, ?_⟩

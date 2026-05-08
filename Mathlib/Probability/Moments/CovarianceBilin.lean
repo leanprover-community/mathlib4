@@ -90,8 +90,7 @@ lemma covarianceBilin_real {μ : Measure ℝ} [IsFiniteMeasure μ] (x y : ℝ) :
   by_cases h : MemLp id 2 μ
   · simp only [covarianceBilin_apply_eq_cov h, RCLike.inner_apply, conj_trivial, mul_comm]
     rw [covariance_const_mul_left, covariance_const_mul_right, ← mul_assoc,
-      covariance_self aemeasurable_id']
-    rfl
+      covariance_self aemeasurable_id', Function.id_def]
   · simp [h, variance_of_not_memLp, aestronglyMeasurable_id]
 
 lemma covarianceBilin_real_self {μ : Measure ℝ} [IsFiniteMeasure μ] (x : ℝ) :
@@ -136,7 +135,7 @@ lemma covarianceBilin_map_const_add [CompleteSpace E] [IsProbabilityMeasure μ] 
   · ext
     rw [covarianceBilin_of_not_memLp, covarianceBilin_of_not_memLp h]
     rw [(measurableEmbedding_addLeft _).memLp_map_measure_iff.not]
-    contrapose! h
+    contrapose h
     convert (memLp_const (-c)).add h
     ext; simp
 

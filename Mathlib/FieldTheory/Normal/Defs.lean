@@ -68,8 +68,11 @@ theorem Normal.tower_top_of_normal [h : Normal F E] : Normal K E :=
   normal_iff.2 fun x => by
     obtain ⟨hx, hhx⟩ := h.out x
     rw [algebraMap_eq F K E, ← map_map] at hhx
-    exact ⟨hx.tower_top, hhx.splits_of_dvd (map_ne_zero (map_ne_zero (minpoly.ne_zero hx)))
+    exact ⟨hx.tower_top, hhx.of_dvd (map_ne_zero (map_ne_zero (minpoly.ne_zero hx)))
       ((map_dvd_map' _).mpr (minpoly.dvd_map_of_isScalarTower F K x))⟩
+
+instance IntermediateField.normal (K : IntermediateField F E) [Normal F E] : Normal K E :=
+  Normal.tower_top_of_normal F K E
 
 theorem AlgHom.normal_bijective [h : Normal F E] (ϕ : E →ₐ[F] K) : Function.Bijective ϕ :=
   h.toIsAlgebraic.bijective_of_isScalarTower' ϕ
@@ -130,10 +133,9 @@ def AlgHom.restrictNormalAux [h : Normal F E] :
       rintro x ⟨y, ⟨z, hy⟩, hx⟩
       rw [← hx, ← hy]
       apply minpoly.mem_range_of_degree_eq_one E
-      refine
-        Or.resolve_left (splits_iff_splits.mp (h.splits z))
-          (map_ne_zero (minpoly.ne_zero (h.isIntegral z))) (minpoly.irreducible ?_)
-          (minpoly.dvd E _ (by simp [aeval_algHom_apply]))
+      refine ((h.splits z).of_dvd (map_ne_zero (minpoly.ne_zero (h.isIntegral z)))
+        (minpoly.dvd E _ (by simp [aeval_algHom_apply]))).degree_eq_one_of_irreducible
+        (minpoly.irreducible ?_)
       simp only [AlgHom.toRingHom_eq_coe, AlgHom.coe_toRingHom]
       suffices IsIntegral F _ by exact this.tower_top
       exact ((h.isIntegral z).map <| toAlgHom F E K₁).map ϕ⟩
@@ -175,6 +177,14 @@ theorem AlgEquiv.restrictNormal_commutes [Normal F E] (x : E) :
     algebraMap E K₂ (χ.restrictNormal E x) = χ (algebraMap E K₁ x) :=
   χ.toAlgHom.restrictNormal_commutes E x
 
+theorem AlgEquiv.restrictNormal_apply (L : IntermediateField F K₁) [Normal F L] (σ : Gal(K₁/F))
+    (x : L) : restrictNormal σ L x = σ x :=
+  AlgEquiv.restrictNormal_commutes σ L x
+
+theorem AlgEquiv.restrictNormal_eq_one_iff (L : IntermediateField F K₁) [Normal F L]
+    (σ : Gal(K₁/F)) : restrictNormal σ L = 1 ↔ ∀ x ∈ L, σ x = x := by
+  simp [AlgEquiv.ext_iff, Subtype.ext_iff, AlgEquiv.restrictNormal_apply]
+
 theorem AlgEquiv.restrictNormal_trans [Normal F E] :
     (χ.trans ω).restrictNormal E = (χ.restrictNormal E).trans (ω.restrictNormal E) :=
   AlgEquiv.ext fun _ =>
@@ -202,7 +212,7 @@ def Normal.algHomEquivAut [Normal F E] : (E →ₐ[F] K₁) ≃ Gal(E/F) where
     simp [AlgHom.restrictNormal']
   right_inv σ := by
     ext
-    simp only [AlgHom.restrictNormal', AlgEquiv.toAlgHom_eq_coe, AlgEquiv.coe_ofBijective]
+    simp only [AlgHom.restrictNormal', AlgEquiv.coe_ofBijective]
     apply FaithfulSMul.algebraMap_injective E K₁
     rw [AlgHom.restrictNormal_commutes]
     simp
@@ -225,10 +235,10 @@ theorem AlgEquiv.restrictNormalHom_id (F K : Type*)
 
 namespace IsScalarTower
 
-/-- In a scalar tower `K₃/K₂/K₁/F` with `K₁` and `K₂` are normal over `F`, the group homomorphism
-given by the restriction of algebra isomorphisms of `K₃` to `K₁` is equal to the composition of
-the group homomorphism given by the restricting an algebra isomorphism of `K₃` to `K₂` and
-the group homomorphism given by the restricting an algebra isomorphism of `K₂` to `K₁` -/
+/-- In a scalar tower `K₃/K₂/K₁/F` with `K₁` and `K₂` normal over `F`, the group homomorphism
+which restricts algebra isomorphisms of `K₃` to `K₁` is equal to the composition of
+the group homomorphism given by restricting an algebra isomorphism of `K₃` to `K₂` and
+the group homomorphism given by restricting an algebra isomorphism of `K₂` to `K₁`. -/
 theorem AlgEquiv.restrictNormalHom_comp (F K₁ K₂ K₃ : Type*)
     [Field F] [Field K₁] [Field K₂] [Field K₃]
     [Algebra F K₁] [Algebra F K₂] [Algebra F K₃] [Algebra K₁ K₂] [Algebra K₁ K₃] [Algebra K₂ K₃]

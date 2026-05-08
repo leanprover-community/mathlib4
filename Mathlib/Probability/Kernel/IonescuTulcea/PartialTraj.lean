@@ -62,6 +62,8 @@ against `partialTraj κ a b`, taking inspiration from `MeasureTheory.lmarginal`.
 
 * `partialTraj_comp_partialTraj`: if `a ≤ b` and `b ≤ c` then
   `partialTraj κ b c ∘ₖ partialTraj κ a b = partialTraj κ a c`.
+* `map_partialTraj_succ_self a`: the pushforward of `partialTraj κ a (a + 1)` along the point at
+  time `a + 1` is the kernel `κ a`.
 * `lmarginalPartialTraj_self` : if `a ≤ b` and `b ≤ c` then
   `lmarginalPartialTraj κ b c (lmarginalPartialTraj κ a b f) = lmarginalPartialTraj κ a c`.
 
@@ -116,8 +118,8 @@ lemma partialTraj_self (a : ℕ) : partialTraj κ a a = Kernel.id := by rw [part
 
 @[simp]
 lemma partialTraj_zero :
-    partialTraj κ a 0 = deterministic (frestrictLe₂ (zero_le a)) (measurable_frestrictLe₂ _) := by
-  rw [partialTraj_le (zero_le a)]
+    partialTraj κ a 0 = deterministic (frestrictLe₂ zero_le) (measurable_frestrictLe₂ _) := by
+  rw [partialTraj_le zero_le]
 
 lemma partialTraj_le_def (hab : a ≤ b) : partialTraj κ a b =
     @Nat.leRec a (fun b _ ↦ Kernel (Π i : Iic a, X i) (Π i : Iic b, X i)) Kernel.id
@@ -241,6 +243,17 @@ lemma partialTraj_eq_prod [∀ n, IsSFiniteKernel (κ n)] (a b : ℕ) :
 
 variable [∀ n, IsMarkovKernel (κ n)]
 
+/-- The pushforward of `partialTraj κ a (a + 1)` along the the point at time `a + 1` is `κ a`. -/
+lemma map_partialTraj_succ_self (a : ℕ) :
+    (partialTraj κ a (a + 1)).map (fun x ↦ x ⟨a + 1, mem_Iic.2 le_rfl⟩) = κ a := by
+  have hp : (fun x : Π n : Iic (a + 1), X n ↦ x ⟨a + 1, mem_Iic.2 le_rfl⟩) ∘ IicProdIoc a (a + 1) =
+      (piSingleton a).symm ∘ Prod.snd := by
+    ext
+    simp [_root_.IicProdIoc, piSingleton]
+  rw [partialTraj_succ_self, ← map_comp_right _ (by fun_prop) (by fun_prop), hp,
+    map_comp_right _ (by fun_prop) (by fun_prop), ← snd_eq, snd_prod,
+    ← map_comp_right _ (by fun_prop) (by fun_prop), symm_comp_self, map_id]
+
 lemma partialTraj_succ_map_frestrictLe₂ (a b : ℕ) :
     (partialTraj κ a (b + 1)).map (frestrictLe₂ b.le_succ) = partialTraj κ a b := by
   obtain hab | hba := le_or_gt a b
@@ -346,10 +359,7 @@ lemma measurable_lmarginalPartialTraj (a b : ℕ) {f : (Π n, X n) → ℝ≥0�
   let η : Kernel (Π n, X n) (Π i : Iic b, X i) :=
     (partialTraj κ a b).comap (frestrictLe a) (measurable_frestrictLe _)
   change Measurable fun x₀ ↦ ∫⁻ z : (i : Iic b) → X i, g (z, x₀) ∂η x₀
-  refine Measurable.lintegral_kernel_prod_left' <| hf.comp ?_
-  simp only [updateFinset, measurable_pi_iff]
-  intro i
-  by_cases h : i ∈ Iic b <;> simp only [h, ↓reduceDIte] <;> fun_prop
+  fun_prop
 
 /-- Integrating `f` against `partialTraj κ a b` and then against `partialTraj κ b c` is the same
 as integrating `f` against `partialTraj κ a c`. -/

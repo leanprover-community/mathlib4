@@ -18,14 +18,14 @@ then the shift functors on `D` are `R`-linear.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
 namespace Shift
 
-variable (R : Type*) [Ring R] {C : Type _} [Category C] [Preadditive C] [Linear R C]
-  {D : Type*} [Category D] [Preadditive D] [Linear R D]
+variable (R : Type*) [Ring R] {C : Type _} [Category* C] [Preadditive C] [Linear R C]
+  {D : Type*} [Category* D] [Preadditive D] [Linear R D]
   {M : Type*} [AddMonoid M] [HasShift C M]
   [∀ (n : M), (shiftFunctor C n).Linear R]
   (L : C ⥤ D) (W : MorphismProperty C)

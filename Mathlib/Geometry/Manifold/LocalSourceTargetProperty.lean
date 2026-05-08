@@ -13,7 +13,7 @@ In this file, we consider local properties of functions between manifolds, which
 source and the target: more precisely, properties `P` of functions `f : M → N` such that
 `f` has property `P` if and only if there is a suitable pair of charts on `M` and `N`, respectively,
 such that `f` read in these charts has a particular form.
-The motivating example of this general description are immersions and submersions:
+The motivating examples of this general description are immersions and submersions:
 `f : M → N` is an immersion at `x` iff there are charts `φ` and `ψ` of `M` and `N` around `x` and
 `f x`, respectively, such that in these charts, `f` looks like `u ↦ (u, 0)`. Similarly, `f` is a
 submersion at `x` iff it looks like a projection `(u, v) ↦ u` in suitable charts near `x` and `f x`.
@@ -26,7 +26,7 @@ local property of this form.
 
 * `Manifold.LocalSourceTargetPropertyAt` captures a local property of the above form:
   for each `f : M → N`, and pair of charts `φ` of `M` and `ψ` of `N`, the local property is either
-  safisfied or not.
+  satisfied or not.
   We ask that the property be stable under congruence and under restriction of `φ`.
 * `Manifold.LiftSourceTargetPropertyAt f x P`, where `P` is a `LocalSourceTargetPropertyAt`,
   defines a local property of functions of the above shape:
@@ -53,12 +53,12 @@ variable {𝕜 E E' F F' H H' G G' : Type*} [NontriviallyNormedField 𝕜]
   {M M' N N' : Type*} [TopologicalSpace M] [ChartedSpace H M]
   [TopologicalSpace M'] [ChartedSpace H' M']
   [TopologicalSpace N] [ChartedSpace G N] [TopologicalSpace N'] [ChartedSpace G' N']
-  {n : WithTop ℕ∞}
+  {n : ℕ∞ω}
 
 namespace Manifold
 
-/-- Structure recording good behaviour of a property of functions `M → N` w.r.t. to compatible
-choices of both a chart on `M` and `N`. Currently, we ask for the property being stable under
+/-- Structure recording good behaviour of a property of functions `M → N` w.r.t. compatible
+choices of both a chart on `M` and `N`. Currently, we ask for the property to be stable under
 restriction of the domain chart, and local in the target.
 
 Motivating examples are immersions and submersions of smooth manifolds. -/
@@ -93,7 +93,7 @@ variable (I J n) in
 charts `φ` and `ψ` of `M` and `N` around `x` and `f x`, respectively, such that `f` satisfies `P`
 w.r.t. `φ` and `ψ`.
 
-The motivating example are smooth immersions and submersions: the corresponding condition is that
+The motivating examples are smooth immersions and submersions: the corresponding condition is that
 `f` look like the inclusion `u ↦ (u, 0)` (resp. a projection `(u, v) ↦ u`)
 in the charts `φ` and `ψ`.
 -/
