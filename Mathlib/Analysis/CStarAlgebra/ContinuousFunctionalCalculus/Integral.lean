@@ -208,25 +208,21 @@ variable {X : Type*} {𝕜 : Type*} {A : Type*} {p : A → Prop} [RCLike 𝕜]
   [NonUnitalContinuousFunctionalCalculus 𝕜 A p]
   [CompleteSpace A]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma cfcₙL_integral [NormedSpace ℝ A] (a : A) (f : X → C(quasispectrum 𝕜 a, 𝕜)₀)
     (hf₁ : Integrable f μ) (ha : p a := by cfc_tac) :
     ∫ x, cfcₙL (a := a) ha (f x) ∂μ = cfcₙL (a := a) ha (∫ x, f x ∂μ) := by
   rw [ContinuousLinearMap.integral_comp_comm _ hf₁]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma cfcₙHom_integral [NormedSpace ℝ A] (a : A) (f : X → C(quasispectrum 𝕜 a, 𝕜)₀)
     (hf₁ : Integrable f μ) (ha : p a := by cfc_tac) :
     ∫ x, cfcₙHom (a := a) ha (f x) ∂μ = cfcₙHom (a := a) ha (∫ x, f x ∂μ) :=
   cfcₙL_integral a f hf₁ ha
 
-set_option backward.isDefEq.respectTransparency false in
 lemma cfcₙL_integrable (a : A) (f : X → C(quasispectrum 𝕜 a, 𝕜)₀)
     (hf₁ : Integrable f μ) (ha : p a := by cfc_tac) :
     Integrable (fun x ↦ cfcₙL (a := a) ha (f x)) μ :=
   ContinuousLinearMap.integrable_comp _ hf₁
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An integrability criterion for the continuous functional calculus.
 For a version with stronger assumptions which in practice are often easier to verify, see
 `integrable_cfcₙ`. -/
@@ -238,7 +234,6 @@ lemma integrable_cfcₙ' (f : X → 𝕜 → 𝕜) (a : A)
   conv in cfcₙ _ _ => rw [cfcₙ_eq_cfcₙL_mkD _ a]
   exact cfcₙL_integrable _ _ hf ha
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An integrability criterion for the continuous functional calculus.
 For a version with stronger assumptions which in practice are often easier to verify, see
 `integrableOn_cfcₙ`. -/
@@ -285,7 +280,6 @@ lemma integrableOn_cfcₙ [TopologicalSpace X] [OpensMeasurableSpace X] {s : Set
     exact ae_restrict_of_forall_mem hs fun x hx ↦
       hf.comp (Continuous.prodMk_right x).continuousOn fun _ hz ↦ ⟨hx, hz⟩
 
-set_option backward.isDefEq.respectTransparency false in
 open Set in
 /-- The continuous functional calculus commutes with integration.
 For a version with stronger assumptions which in practice are often easier to verify, see
@@ -315,7 +309,6 @@ lemma cfcₙ_integral' [NormedSpace ℝ A] (f : X → 𝕜 → 𝕜) (a : A)
   ext z
   rw [← key₁, key₂]
 
-set_option backward.isDefEq.respectTransparency false in
 open Set in
 /-- The continuous functional calculus commutes with integration.
 For a version with stronger assumptions which in practice are often easier to verify, see

@@ -239,7 +239,7 @@ theorem linearIndependent_iff'ₛ :
         refine _root_.by_contradiction fun hni ↦ hni <| hv (f.support ∪ g.support) f g ?_ _ ?_
         · rwa [← sum_subset subset_union_left, ← sum_subset subset_union_right] <;>
             rintro i - hi <;> rw [Finsupp.notMem_support_iff.mp hi, zero_smul]
-        · contrapose! hni
+        · contrapose hni
           simp_rw [notMem_union, Finsupp.notMem_support_iff] at hni
           rw [hni.1, hni.2]⟩
 
@@ -759,8 +759,8 @@ theorem not_linearIndependent_iff_linearCombination :
   simp [linearIndependent_iff_ker, LinearMap.ker_eq_bot']
 
 theorem not_linearIndependent_iff_finsupp :
-    ¬LinearIndependent R v ↔ ∃ (f : ι →₀ R), ∑ x ∈ f.support, f x • v x = 0 ∧ f ≠ 0 := by
-  simp [linearIndependent_iff_ker, LinearMap.ker_eq_bot', Finsupp.linearCombination, Finsupp.sum]
+    ¬LinearIndependent R v ↔ ∃ (f : ι →₀ R), f.sum (fun x r ↦ r • v x) = 0 ∧ f ≠ 0 := by
+  simp [linearIndependent_iff_ker, LinearMap.ker_eq_bot', Finsupp.linearCombination]
 
 theorem not_linearIndependent_iff :
     ¬LinearIndependent R v ↔

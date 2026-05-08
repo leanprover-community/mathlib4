@@ -47,7 +47,7 @@ universe u
 
 variable {C : Type*} [Category* C]
 
-namespace SimplicialObject
+namespace CategoryTheory.SimplicialObject
 
 namespace Splitting
 
@@ -195,7 +195,7 @@ def summand (A : IndexSet Δ) : C :=
   N A.1.unop.len
 
 /-- The cofan for `summand N Δ` induced by morphisms `N n ⟶ X _⦋n⦌` for all `n : ℕ`. -/
-def cofan' (Δ : SimplexCategoryᵒᵖ) : Cofan (summand N Δ) :=
+abbrev cofan' (Δ : SimplexCategoryᵒᵖ) : Cofan (summand N Δ) :=
   Cofan.mk (X.obj Δ) (fun A => φ A.1.unop.len ≫ X.map A.e.op)
 
 end Splitting
@@ -212,6 +212,8 @@ structure Splitting (X : SimplicialObject C) where
   /-- For each `Δ`, `X.obj Δ` identifies to the coproduct of the objects `N A.1.unop.len`
   for all `A : IndexSet Δ`. -/
   isColimit' : ∀ Δ : SimplexCategoryᵒᵖ, IsColimit (Splitting.cofan' N X ι Δ)
+
+initialize_simps_projections Splitting (-isColimit')
 
 namespace Splitting
 
@@ -413,4 +415,4 @@ def natTransCofanInj {Δ : SimplexCategoryᵒᵖ} (A : Splitting.IndexSet Δ) :
 
 end Split
 
-end SimplicialObject
+end CategoryTheory.SimplicialObject
