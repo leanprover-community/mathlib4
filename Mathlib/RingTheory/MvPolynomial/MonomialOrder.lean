@@ -987,8 +987,7 @@ lemma withBotDegree_add_of_lt (h : m.withBotDegree g ≺'[m] m.withBotDegree f) 
 
 lemma withBotDegree_add_of_right_lt (h : m.withBotDegree f ≺'[m] m.withBotDegree g) :
     m.withBotDegree (f + g) = m.withBotDegree g := by
-  rw [add_comm]
-  exact m.withBotDegree_add_of_lt _ _ h
+  rw [add_comm, withBotDegree_add_of_lt h]
 
 lemma withBotDegree_sum_le {α : Type*} {s : Finset α} {f : α → MvPolynomial σ R} :
     (m.toWithBotSyn <| m.withBotDegree <| ∑ x ∈ s, f x) ≤
