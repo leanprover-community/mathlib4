@@ -2527,6 +2527,9 @@ Q3527226:
 
 Q3527230:
   title: Von Staudt–Clausen theorem
+  decl: Bernoulli.vonStaudt_clausen
+  authors: Seewoo Lee
+  date: 2026
 
 Q3527233:
   title: Kolmogorov's three-series theorem
