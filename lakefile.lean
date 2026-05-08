@@ -127,6 +127,14 @@ lean_exe «check_title_labels» where
 lean_exe «nightly-testing-checklist» where
   srcDir := "scripts"
 
+/-- `lake exe expose_enumerate` prints a JSONL list of every `def`/`instance`
+in Mathlib whose body is currently in the exported view of the environment,
+i.e. would be a candidate for un-exposing if it's not unfolded downstream.
+Consumed by `scripts/expose_report.py`. -/
+lean_exe expose_enumerate where
+  srcDir := "scripts"
+  supportInterpreter := true
+
 lean_exe mathlib_test_executable where
   root := `MathlibTest.MathlibTestExecutable
 

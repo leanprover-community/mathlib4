@@ -186,6 +186,21 @@ to module `Foo.Bar` (no `srcDir` indirection).
   lists (which occasionally leave lines over the 100-char limit).
   Usage: `scripts/fix_long_lines.py path:line ...`
 
+- `expose_enumerate.lean`, `build_with_diagnostics.py`, `expose_report.py`
+  Three-stage pipeline that reports `@[expose]`-annotated defs which are not
+  unfolded by any other Mathlib file — i.e. candidates where `@[expose]` can
+  likely be removed. Stage 1: `lake exe expose_enumerate` dumps every exposed
+  def from the built Mathlib environment to JSONL. Stage 2:
+  `python3 scripts/build_with_diagnostics.py` patches `lakefile.lean` to
+  enable `set_option diagnostics true` / `diagnostics.threshold 0`, runs a
+  full `lake build Mathlib` (expect several hours; the change affects olean
+  hashes so cache is bypassed), and parses per-file unfold counts into
+  JSONL. Stage 3: `python3 scripts/expose_report.py` joins the two, filters
+  out same-module unfolds, and emits `report.tsv` sorted with zero-usage
+  decls first. Signal limitation: metaprograms that inspect
+  `ConstantInfo.value?` without a WHNF unfold will not appear in the
+  diagnostics, so a zero-usage row may still be load-bearing.
+
 **CI workflow**
 - `lake-build-with-retry.sh`
   Runs `lake build` on a target until `lake build --no-build` succeeds. Used in the main build workflows.
