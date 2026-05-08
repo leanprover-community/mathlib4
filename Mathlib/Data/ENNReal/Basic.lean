@@ -561,10 +561,10 @@ theorem toReal_le_coe_of_le_coe {a : ℝ≥0∞} {b : ℝ≥0} (h : a ≤ b) : a
   simpa using h
 
 @[deprecated max_eq_zero (since := "2026-05-07")]
-protected theorem max_eq_zero_iff : max a b = 0 ↔ a = 0 ∧ b = 0 := max_eq_bot
+theorem max_eq_zero_iff : max a b = 0 ↔ a = 0 ∧ b = 0 := max_eq_bot
 
 @[deprecated min_eq_zero (since := "2026-05-07")]
-protected theorem min_eq_zero_iff : min a b = 0 ↔ a = 0 ∨ b = 0 := min_eq_bot
+theorem min_eq_zero_iff : min a b = 0 ↔ a = 0 ∨ b = 0 := min_eq_bot
 
 @[deprecated zero_max (since := "2026-05-07")]
 theorem max_zero_left : max 0 a = a :=
