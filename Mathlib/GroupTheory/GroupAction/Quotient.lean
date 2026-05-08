@@ -94,12 +94,10 @@ theorem Quotient.smul_mk [QuotientAction β H] (b : β) (a : α) :
     (b • QuotientGroup.mk a : α ⧸ H) = QuotientGroup.mk (b • a) :=
   rfl
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem Quotient.smul_coe [QuotientAction β H] (b : β) (a : α) :
     b • (a : α ⧸ H) = (↑(b • a) : α ⧸ H) :=
   rfl
-
-attribute [simp] Quotient.smul_coe
 
 @[to_additive (attr := simp)]
 theorem Quotient.mk_smul_out [QuotientAction β H] (b : β) (q : α ⧸ H) :

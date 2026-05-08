@@ -70,7 +70,7 @@ private lemma aux_IsBigO_mul (k l : ℕ) (p : ℝ) {f : ℕ → ℂ}
       ring
     simpa [h1] using isBigO_ofReal_right.mp (Asymptotics.isBigO_const_mul_self
       ((2 * π * I / p) ^ k) (fun (n : ℕ) ↦ (↑(n ^ k) : ℝ)) atTop)
-  simp only [Nat.cast_pow]
+  push_cast
   convert hf.mul h0
   ring
 

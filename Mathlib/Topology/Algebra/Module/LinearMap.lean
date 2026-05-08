@@ -966,7 +966,6 @@ section
 
 variable {σ₂₁ : R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁]
 
-
 /-- Given a right inverse `f₂ : M₂ →L[R] M` to `f₁ : M →L[R] M₂`,
 `projKerOfRightInverse f₁ f₂ h` is the projection `M →L[R] LinearMap.ker f₁` along
 `LinearMap.range f₂`. -/
@@ -1093,6 +1092,41 @@ def coeLMₛₗ : (M →SL[σ₁₃] M₃) →ₗ[S₃] M →ₛₗ[σ₁₃] M�
   map_smul' c f := coe_smul c f
 
 end SMul
+
+section lcomp
+
+variable {R U V : Type*} (W : Type*) [CommSemiring R]
+    [AddCommMonoid U] [Module R U] [TopologicalSpace U]
+    [AddCommMonoid V] [Module R V] [TopologicalSpace V]
+    [AddCommMonoid W] [Module R W] [TopologicalSpace W]
+    [ContinuousAdd W] [ContinuousConstSMul R W]
+
+/-- Composition of continuous linear maps, as a linear map. Compare `LinearMap.lcomp`. -/
+@[simps]
+def lcomp (f : U →L[R] V) : (V →L[R] W) →ₗ[R] (U →L[R] W) where
+  toFun l := l.comp f
+  map_add' _ _ := by simp
+  map_smul' _ _ := by simp
+
+end lcomp
+
+section llcomp
+
+variable (R U V W : Type*) [CommSemiring R]
+  [AddCommMonoid U] [Module R U] [TopologicalSpace U]
+  [AddCommMonoid V] [Module R V] [TopologicalSpace V]
+  [ContinuousAdd V] [ContinuousConstSMul R V]
+  [AddCommMonoid W] [Module R W] [TopologicalSpace W]
+  [ContinuousAdd W] [ContinuousConstSMul R W]
+
+/-- Composition of continuous linear maps, as a bilinear map. Compare `LinearMap.llcomp`. -/
+@[simps]
+def llcomp : (U →L[R] V) →ₗ[R] (V →L[R] W) →ₗ[R] (U →L[R] W) where
+  toFun l := l.lcomp W
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
+
+end llcomp
 
 section toSpanSingletonLE
 
@@ -1225,58 +1259,29 @@ end ContinuousLinearMap
 namespace Submodule
 
 variable {R : Type*} [Ring R] {M : Type*} [TopologicalSpace M] [AddCommGroup M] [Module R M]
+  (S : Submodule R M)
 
 open ContinuousLinearMap
 
-/-- A submodule `p` is called *complemented* if there exists a continuous projection `M →ₗ[R] p`. -/
-def ClosedComplemented (p : Submodule R M) : Prop :=
-  ∃ f : M →L[R] p, ∀ x : p, f x = x
+/-- `Submodule.mkQ` as a `ContinuousLinearMap`. -/
+def mkQL : M →L[R] M ⧸ S where
+  toLinearMap := S.mkQ
+  cont := continuous_quot_mk
 
-variable {p : Submodule R M}
-
-namespace ClosedComplemented
-
-variable [T1Space p]
-
-theorem exists_isClosed_isCompl (h : ClosedComplemented p) :
-    ∃ q : Submodule R M, IsClosed (q : Set M) ∧ IsCompl p q :=
-  Exists.elim h fun f hf => ⟨ker f, isClosed_ker f, LinearMap.isCompl_of_proj hf⟩
-
-/-- An arbitrary choice of closed complement of a closed complemented submodule. -/
-noncomputable def complement (h : ClosedComplemented p) : Submodule R M :=
-  Classical.choose h.exists_isClosed_isCompl
-
-theorem isClosed_complement (h : ClosedComplemented p) : IsClosed (h.complement : Set M) :=
-  Classical.choose_spec (h.exists_isClosed_isCompl) |>.1
-
-theorem isCompl_complement (h : ClosedComplemented p) : IsCompl p h.complement :=
-  Classical.choose_spec (h.exists_isClosed_isCompl) |>.2
-
-protected theorem isClosed [IsTopologicalAddGroup M] [T1Space M]
-    {p : Submodule R M} (h : ClosedComplemented p) : IsClosed (p : Set M) := by
-  rcases h with ⟨f, hf⟩
-  have : (ContinuousLinearMap.id R M - p.subtypeL.comp f).ker = p :=
-    LinearMap.ker_id_sub_eq_of_proj hf
-  exact this ▸ isClosed_ker _
-
-end ClosedComplemented
+@[simp, norm_cast]
+theorem toLinearMap_mkQL : (S.mkQL : M →ₗ[R] M ⧸ S) = S.mkQ := rfl
 
 @[simp]
-theorem closedComplemented_bot : ClosedComplemented (⊥ : Submodule R M) :=
-  ⟨0, fun x => by simp only [zero_apply, eq_zero_of_bot_submodule x]⟩
+theorem coe_mkQL : ⇑S.mkQL = S.mkQ := rfl
 
-@[simp]
-theorem closedComplemented_top : ClosedComplemented (⊤ : Submodule R M) :=
-  ⟨(ContinuousLinearMap.id R M).codRestrict ⊤ fun _x => trivial,
-    fun x => Subtype.ext_iff.2 <| by simp⟩
+theorem mkQL_apply (x : M) : S.mkQL x = S.mkQ x := by simp
+
+theorem isQuotientMap_mkQL : IsQuotientMap S.mkQL := isQuotientMap_quot_mk
+
+theorem isOpenQuotientMap_mkQL [ContinuousAdd M] : IsOpenQuotientMap S.mkQL :=
+  S.isOpenQuotientMap_mkQ
 
 end Submodule
-
-theorem ContinuousLinearMap.closedComplemented_ker_of_rightInverse {R : Type*} [Ring R]
-    {M : Type*} [TopologicalSpace M] [AddCommGroup M] {M₂ : Type*} [TopologicalSpace M₂]
-    [AddCommGroup M₂] [Module R M] [Module R M₂] [IsTopologicalAddGroup M] (f₁ : M →L[R] M₂)
-    (f₂ : M₂ →L[R] M) (h : Function.RightInverse f₂ f₁) : f₁.ker.ClosedComplemented :=
-  ⟨f₁.projKerOfRightInverse f₂ h, f₁.projKerOfRightInverse_apply_idem f₂ h⟩
 
 namespace ContinuousLinearMap
 

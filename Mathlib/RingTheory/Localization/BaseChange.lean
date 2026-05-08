@@ -238,7 +238,7 @@ instance IsLocalization.tensor (M : Submonoid R) [IsLocalization M A] :
   rw [Algebra.isLocalization_iff_isPushout _ A]
   infer_instance
 
-attribute [local instance] Algebra.TensorProduct.rightAlgebra
+attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 instance IsLocalization.tensorRight (M : Submonoid R) [IsLocalization M A] :
     IsLocalization (Algebra.algebraMapSubmonoid S M) (A ⊗[R] S) := by
   rw [Algebra.isLocalization_iff_isPushout _ A]
@@ -254,6 +254,7 @@ lemma IsLocalization.tmul_mk' (M : Submonoid R) [IsLocalization M A] (s : S) (x 
     IsLocalization.mk'_spec', algebraMap_apply, Algebra.algebraMap_self, RingHom.id_apply,
     ← Algebra.smul_def, smul_tmul, Algebra.smul_def, mul_one]
 
+attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 open Algebra.TensorProduct in
 lemma IsLocalization.mk'_tmul (M : Submonoid R) [IsLocalization M A] (s : S) (x : R) (y : M) :
     IsLocalization.mk' A x y ⊗ₜ s =
@@ -318,7 +319,7 @@ end Localization
 variable (R S) {A} in
 /-- `A[M⁻¹] ⊗[R] S` is the localization of `A ⊗[R] S` at `M`. -/
 lemma IsLocalization.tensorProduct_tensorProduct (M : Submonoid A)
-    (B : Type*) [CommRing B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
+    (B : Type*) [CommSemiring B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
     [IsLocalization M B]
     [Algebra (A ⊗[R] S) (B ⊗[R] S)] [IsScalarTower A (A ⊗[R] S) (B ⊗[R] S)]
     (H : (algebraMap (A ⊗[R] S) (B ⊗[R] S)).comp Algebra.TensorProduct.includeRight.toRingHom =
@@ -326,6 +327,88 @@ lemma IsLocalization.tensorProduct_tensorProduct (M : Submonoid A)
     IsLocalization (Algebra.algebraMapSubmonoid (A ⊗[R] S) M) (B ⊗[R] S) :=
   (Algebra.isLocalization_iff_isPushout M _).mpr
     (Algebra.IsPushout.tensorProduct_tensorProduct R S A B H).symm
+
+attribute [local instance] Algebra.TensorProduct.rightAlgebra in
+variable (R S) {A} in
+/-- `S ⊗[R] A[M⁻¹]` is the localization of `S ⊗[R] A` at `M`. -/
+lemma IsLocalization.tensorProduct_tensorProduct_right (M : Submonoid A)
+    (B : Type*) [CommSemiring B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
+    [IsLocalization M B]
+    [Algebra (S ⊗[R] A) (S ⊗[R] B)] [IsScalarTower S (S ⊗[R] A) (S ⊗[R] B)]
+    (H : (algebraMap (S ⊗[R] A) (S ⊗[R] B)).comp Algebra.TensorProduct.includeRight.toRingHom =
+      Algebra.TensorProduct.includeRight.toRingHom.comp (algebraMap A B)) :
+    IsLocalization (M.map (Algebra.TensorProduct.includeRight (R := R) (A := S))) (S ⊗[R] B) := by
+  change IsLocalization (Algebra.algebraMapSubmonoid _ M) (S ⊗[R] B)
+  let : Algebra A (S ⊗[R] B) := .compHom _ (algebraMap A B)
+  have : IsScalarTower A (S ⊗[R] A) (S ⊗[R] B) := .of_algebraMap_eq' H.symm
+  have : IsScalarTower R A (S ⊗[R] B) :=
+    .of_algebraMap_eq' <| by
+      rw [Algebra.compHom_algebraMap_eq, RingHom.comp_assoc, ← IsScalarTower.algebraMap_eq,
+        IsScalarTower.algebraMap_eq R B]
+  have : IsScalarTower R (S ⊗[R] A) (S ⊗[R] B) := .to₁₃₄ _ A _ _
+  have : IsScalarTower A B (S ⊗[R] B) := .of_algebraMap_eq' rfl
+  rw [Algebra.isLocalization_iff_isPushout _ B, Algebra.IsPushout.comm,
+    ← Algebra.IsPushout.comp_iff R _ S]
+  infer_instance
+
+variable (R S) {A} in
+/-- The natural isomorphism `S ⊗[R] A[M⁻¹] ≃ (S ⊗[R] A)[M⁻¹]`. -/
+noncomputable
+def IsLocalization.tensorProductEquivOfMapIncludeRight (M : Submonoid A)
+    (B : Type*) [CommSemiring B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
+    [IsLocalization M B]
+    (C : Type*) [CommSemiring C] [Algebra S C] [Algebra (S ⊗[R] A) C] [IsScalarTower S (S ⊗[R] A) C]
+    [IsLocalization (M.map (Algebra.TensorProduct.includeRight (R := R) (A := S))) C] :
+    S ⊗[R] B ≃ₐ[S] C :=
+  letI M' : Submonoid (S ⊗[R] A) := M.map (Algebra.TensorProduct.includeRight (R := R) (A := S))
+  letI : Algebra (S ⊗[R] A) (S ⊗[R] B) :=
+    (Algebra.TensorProduct.map (AlgHom.id R S) (IsScalarTower.toAlgHom R _ _)).toAlgebra
+  haveI : IsScalarTower S (S ⊗[R] A) (S ⊗[R] B) :=
+    .of_algebraMap_eq <| by intro; simp [RingHom.algebraMap_toAlgebra]
+  haveI := IsLocalization.tensorProduct_tensorProduct_right R S M B
+    (by ext; simp [RingHom.algebraMap_toAlgebra])
+  (IsLocalization.algEquiv M' _ _).restrictScalars S
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma IsLocalization.tensorProductEquivOfMapIncludeRight_tmul (M : Submonoid A)
+    (B : Type*) [CommSemiring B] [Algebra R B] [Algebra A B]
+    [IsScalarTower R A B] [IsLocalization M B]
+    (C : Type*) [CommSemiring C] [Algebra S C] [Algebra (S ⊗[R] A) C] [IsScalarTower S (S ⊗[R] A) C]
+    [IsLocalization (M.map (Algebra.TensorProduct.includeRight (R := R) (A := S))) C]
+    (x : S) (a : A) :
+    IsLocalization.tensorProductEquivOfMapIncludeRight R S M B C (x ⊗ₜ algebraMap A B a) =
+      algebraMap _ _ (x ⊗ₜ[R] a) := by
+  letI : Algebra (S ⊗[R] A) (S ⊗[R] B) :=
+    (Algebra.TensorProduct.map (AlgHom.id R S) (IsScalarTower.toAlgHom R _ _)).toAlgebra
+  have heq : x ⊗ₜ[R] (algebraMap A B) a = algebraMap _ _ (x ⊗ₜ[R] a) := rfl
+  simp [heq, IsLocalization.tensorProductEquivOfMapIncludeRight]
+
+variable (R S) {A} in
+/-- The natural isomorphism `S ⊗[R] A[1/g] ≃ (S ⊗[R] A)[1/g]`. -/
+noncomputable
+def IsLocalization.Away.tensorProductEquivTMulRight (g : A) (B : Type*) [CommSemiring B]
+    [Algebra R B] [Algebra A B] [IsScalarTower R A B] [IsLocalization.Away g B] :
+    S ⊗[R] B ≃ₐ[S] Localization.Away ((1 : S) ⊗ₜ[R] g) :=
+  haveI : IsLocalization
+      ((Submonoid.powers g).map (Algebra.TensorProduct.includeRight (R := R) (A := S)))
+      (Localization.Away ((1 : S) ⊗ₜ[R] g)) := by
+    simp only [Submonoid.map_powers, Algebra.TensorProduct.includeRight_apply]
+    infer_instance
+  IsLocalization.tensorProductEquivOfMapIncludeRight _ _ (.powers g) _ _
+
+@[simp]
+lemma IsLocalization.Away.tensorProductEquivTMulRight_tmul (g : A) (B : Type*) [CommSemiring B]
+    [Algebra R B] [Algebra A B] [IsScalarTower R A B] [IsLocalization.Away g B]
+    (x : S) (a : A) :
+    IsLocalization.Away.tensorProductEquivTMulRight R S g B (x ⊗ₜ algebraMap _ _ a) =
+      algebraMap _ _ (x ⊗ₜ[R] a) :=
+  haveI : IsLocalization
+      ((Submonoid.powers g).map (Algebra.TensorProduct.includeRight (R := R) (A := S)))
+      (Localization.Away ((1 : S) ⊗ₜ[R] g)) := by
+    simp only [Submonoid.map_powers, Algebra.TensorProduct.includeRight_apply]
+    infer_instance
+  IsLocalization.tensorProductEquivOfMapIncludeRight_tmul _ _ _ _ _ _
 
 namespace IsLocalization.Away
 

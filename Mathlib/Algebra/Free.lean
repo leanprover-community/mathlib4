@@ -177,13 +177,13 @@ protected def recOnPure {C : FreeMagma α → Sort l} (x) (ih1 : ∀ x, C (pure 
     (ih2 : ∀ x y, C x → C y → C (x * y)) : C x :=
   FreeMagma.recOnMul x ih1 ih2
 
-@[to_additive]
+@[to_additive (attr := simp)]
 protected theorem map_pure (f : α → β) (x) : (f <$> pure x : FreeMagma β) = pure (f x) := rfl
 
 @[to_additive (attr := simp)]
 theorem map_mul' (f : α → β) (x y : FreeMagma α) : f <$> (x * y) = f <$> x * f <$> y := rfl
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem pure_bind (f : α → FreeMagma β) (x) : pure x >>= f = f x := rfl
 
 @[to_additive (attr := simp)]
@@ -490,7 +490,7 @@ def length (x : FreeSemigroup α) : ℕ := x.tail.length + 1
 
 @[to_additive (attr := simp)]
 theorem length_mul (x y : FreeSemigroup α) : (x * y).length = x.length + y.length := by
-  simp [length, Nat.add_right_comm, List.length, List.length_append]
+  simp [length, Nat.add_right_comm]
 
 @[to_additive (attr := simp)]
 theorem length_of (x : α) : (of x).length = 1 := rfl
@@ -521,7 +521,7 @@ a semigroup `β`. -/
 homomorphism `FreeAddSemigroup α → β` given an additive semigroup `β`. -/]
 def lift : (α → β) ≃ (FreeSemigroup α →ₙ* β) where
   toFun f :=
-    { toFun := fun x ↦ x.2.foldl (fun a b ↦ a * f b) (f x.1)
+    { toFun x := x.2.foldl (fun a b ↦ a * f b) (f x.1)
       map_mul' := by simp [← List.foldl_map, List.foldl_assoc] }
   invFun f := f ∘ of
 
@@ -576,14 +576,14 @@ def recOnPure {C : FreeSemigroup α → Sort l} (x) (ih1 : ∀ x, C (pure x))
     (ih2 : ∀ x y, C (pure x) → C y → C (pure x * y)) : C x :=
   FreeSemigroup.recOnMul x ih1 ih2
 
-@[to_additive]
+@[to_additive (attr := simp)]
 protected theorem map_pure (f : α → β) (x) : (f <$> pure x : FreeSemigroup β) = pure (f x) := rfl
 
 @[to_additive (attr := simp)]
 theorem map_mul' (f : α → β) (x y : FreeSemigroup α) : f <$> (x * y) = f <$> x * f <$> y :=
   map_mul (map f) _ _
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem pure_bind (f : α → FreeSemigroup β) (x) : pure x >>= f = f x := rfl
 
 @[to_additive (attr := simp)]

@@ -92,7 +92,7 @@ def restrictScalarsEmbedding : Submodule R M ↪o Submodule S M where
   inj' := restrictScalars_injective S R M
   map_rel_iff' := restrictScalars_le S
 
-@[mono]
+@[gcongr, mono]
 lemma restrictScalars_monotone : Monotone (restrictScalars S : Submodule R M → Submodule S M) :=
   (restrictScalarsEmbedding S R M).monotone
 

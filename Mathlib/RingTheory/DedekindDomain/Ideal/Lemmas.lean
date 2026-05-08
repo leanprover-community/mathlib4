@@ -531,6 +531,9 @@ See `IsDedekindDomain.HeightOneSpectrum.prime` for the inverse direction. -/
 def ofPrime {p : Ideal R} (hp : Prime p) : HeightOneSpectrum R :=
   ⟨p, Ideal.isPrime_of_prime hp, hp.ne_zero⟩
 
+@[simp]
+theorem ofPrime_prime : ofPrime v.prime = v := rfl
+
 theorem irreducible : Irreducible v.asIdeal :=
   UniqueFactorizationMonoid.irreducible_iff_prime.mpr v.prime
 

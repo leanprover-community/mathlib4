@@ -214,7 +214,7 @@ theorem toFun_eq_coe (f : M ≃* N) : f.toFun = f := rfl
 @[to_additive (attr := simp)]
 theorem coe_toEquiv (f : M ≃* N) : ⇑(f : M ≃ N) = f := rfl
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem coe_toMulHom {f : M ≃* N} : (f.toMulHom : M → N) = f := rfl
 
 /-- Makes a multiplicative isomorphism from a bijection which preserves multiplication. -/
@@ -512,10 +512,8 @@ as a multiplication-preserving function.
 def toMonoidHom (h : M ≃* N) : M →* N :=
   { h with map_one' := h.map_one }
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem coe_toMonoidHom (e : M ≃* N) : ⇑e.toMonoidHom = e := rfl
-
-attribute [simp] coe_toMonoidHom
 
 @[to_additive (attr := simp)]
 theorem toMonoidHom_eq_coe (f : M ≃* N) : f.toMonoidHom = (f : M →* N) :=

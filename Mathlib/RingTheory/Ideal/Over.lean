@@ -143,7 +143,8 @@ theorem LiesOver.of_eq_comap [Q.LiesOver p] {F : Type*} [FunLike F B C]
   over := by
     rw [h]
     exact (over_def Q p).trans <|
-      congrFun (congrFun (congrArg comap ((f : B →ₐ[A] C).comp_algebraMap.symm)) _) Q
+      congrFun (congrFun (congrArg
+        comap ((AlgHomClass.toAlgHom f : B →ₐ[A] C).comp_algebraMap.symm)) _) Q
 
 theorem LiesOver.of_eq_map_equiv [P.LiesOver p] {E : Type*} [EquivLike E B C]
     [AlgEquivClass E A B C] (σ : E) (h : Q = P.map σ) : Q.LiesOver p := by

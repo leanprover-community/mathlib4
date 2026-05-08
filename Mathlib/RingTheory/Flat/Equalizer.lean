@@ -284,10 +284,6 @@ lemma AlgHom.coe_tensorEqualizer (x : T ⊗[R] AlgHom.equalizer f g) :
       Algebra.TensorProduct.map (AlgHom.id S T) (AlgHom.equalizer f g).val x :=
   AlgHom.coe_tensorEqualizerAux S T f g x
 
-#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
-set_option backward.whnf.reducibleClassField false in
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- If `T` is `R`-flat, the canonical map
 `T ⊗[R] eq(f, g) →ₐ[S] eq (𝟙 ⊗ f, 𝟙 ⊗ g)` is an isomorphism. -/
 def AlgHom.tensorEqualizerEquiv [Module.Flat R T] :
