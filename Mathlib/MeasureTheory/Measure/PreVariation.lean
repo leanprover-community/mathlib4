@@ -79,16 +79,6 @@ noncomputable abbrev _root_.Finpartition.toMeasurableSet {s : Set X} (P : Finpar
     Finpartition (⟨s, hs⟩ : Subtype MeasurableSet) :=
   P.toSubtype (by measurability) (by measurability) (by measurability) hs hP
 
-/-- For a vector measure `μ` and a `Finpartition` of `⟨s, hs⟩ : Subtype MeasurableSet`, the sum of
-`μ` over the parts equals `μ s`. -/
-lemma _root_.MeasureTheory.VectorMeasure.sum_finpartition_parts {V : Type*} [AddCommMonoid V]
-    [TopologicalSpace V] [T2Space V] (μ : VectorMeasure X V) {s : Set X} {hs : MeasurableSet s}
-    (P : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet)) :
-    ∑ p ∈ P.parts, μ p.val = μ s := by
-  rw [← μ.of_biUnion_finset (P.pairwiseDisjoint_apply (fun _ _ => rfl) rfl)
-        (fun p _ => p.prop),
-      ← Finset.sup_set_eq_biUnion, P.sup_parts_apply (fun _ _ => rfl) rfl]
-
 lemma sum_le' {s : Set X} (hs : MeasurableSet s)
     (P : Finpartition s) (hP : ∀ p ∈ P.parts, MeasurableSet p) :
     ∑ p ∈ P.parts, f p ≤ preVariationFun f s := by

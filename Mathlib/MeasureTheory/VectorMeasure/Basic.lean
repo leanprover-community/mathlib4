@@ -7,6 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Real
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
+public import Mathlib.Order.Partition.Finpartition
 public import Mathlib.Topology.Algebra.InfiniteSum.Module
 
 /-!
@@ -217,6 +218,15 @@ lemma of_biUnion_finset {ι : Type*} {s : Finset ι} {f : ι → Set α} (hd : P
       exact fun i hi ↦ hd (by simp) (by simp [hi]) (by grind)
     · apply hm _ (by simp)
     · apply Finset.measurableSet_biUnion _ (by grind)
+
+/-- For a vector measure `v` and a `Finpartition` of `⟨s, hs⟩ : Subtype MeasurableSet`, the sum
+of `v` over the parts equals `v s`. -/
+lemma sum_finpartition_parts {s : Set α} {hs : MeasurableSet s}
+    (P : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet)) :
+    ∑ p ∈ P.parts, v p.val = v s := by
+  rw [← v.of_biUnion_finset (P.pairwiseDisjoint_apply (fun _ _ => rfl) rfl)
+        (fun p _ => p.prop),
+      ← Finset.sup_set_eq_biUnion, P.sup_parts_apply (fun _ _ => rfl) rfl]
 
 theorem tendsto_vectorMeasure_iUnion_atTop_nat
     {s : ℕ → Set α} (hm : Monotone s) (hs : ∀ i, MeasurableSet (s i)) :
