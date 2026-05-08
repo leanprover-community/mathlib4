@@ -304,30 +304,29 @@ theorem toZ_strictMono : StrictMono (toZ i0) := by
     refine Monotone.antitone_iterate_of_map_le pred_mono (pred_le _) (Int.toNat_le_toNat ?_)
     exact Int.neg_le_neg h_le
 
-@[deprecated toZ_strictMono (since := "2026-05-06")]
-theorem le_of_toZ_le {j : ι} (h_le : toZ i0 i ≤ toZ i0 j) : i ≤ j := by
-  contrapose! h_le
-  exact toZ_strictMono h_le
-
-@[deprecated toZ_strictMono (since := "2026-05-06")]
-theorem toZ_mono {i j : ι} (h_le : i ≤ j) : toZ i0 i ≤ toZ i0 j :=
-  toZ_strictMono.monotone h_le
+theorem injective_toZ : Function.Injective (toZ i0) :=
+  toZ_strictMono.injective
 
 @[simp]
-theorem toZ_le_iff {i j : ι} : toZ i0 i ≤ toZ i0 j ↔ i ≤ j :=
+theorem toZ_le_toZ {i j : ι} : toZ i0 i ≤ toZ i0 j ↔ i ≤ j :=
   toZ_strictMono.le_iff_le
 
+@[deprecated (since := "2026-05-07")]
+alias toZ_le_iff := toZ_le_toZ
+
+@[deprecated toZ_le_toZ (since := "2026-05-06")]
+alias ⟨le_of_toZ_le, toZ_mono⟩ := toZ_le_toZ
+
 @[simp]
-theorem toZ_lt_iff {i j : ι} : toZ i0 i < toZ i0 j ↔ i < j :=
+theorem toZ_lt_toZ {i j : ι} : toZ i0 i < toZ i0 j ↔ i < j :=
   toZ_strictMono.lt_iff_lt
+
+@[deprecated (since := "2026-05-07")]
+alias toZ_lt_iff := toZ_lt_toZ
 
 @[simp]
 theorem toZ_inj {i j : ι} : toZ i0 i = toZ i0 j ↔ i = j :=
-  toZ_strictMono.injective.eq_iff
-
-@[deprecated toZ_strictMono (since := "2026-05-06")]
-theorem injective_toZ : Function.Injective (toZ i0) :=
-  toZ_strictMono.injective
+  injective_toZ.eq_iff
 
 theorem toZ_iterate_succ [NoMaxOrder ι] (n : ℕ) : toZ i0 (succ^[n] i0) = n :=
   toZ_iterate_succ_of_not_isMax n (not_isMax _)
@@ -344,7 +343,7 @@ variable [SuccOrder ι] [PredOrder ι] [IsSuccArchimedean ι]
 /-- `toZ` defines an `OrderIso` between `ι` and its range. -/
 noncomputable def orderIsoRangeToZOfLinearSuccPredArch [hι : Nonempty ι] :
     ι ≃o Set.range (toZ hι.some) where
-  toEquiv := Equiv.ofInjective _ toZ_strictMono.injective
+  toEquiv := Equiv.ofInjective _ injective_toZ
   map_rel_iff' := by simp
 
 instance (priority := 100) countable_of_linear_succ_pred_arch : Countable ι := by
