@@ -348,13 +348,19 @@ end CommGroup
 
 section AddCommGroup
 
-set_option backward.inferInstanceAs.wrap.data false in
 instance {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] :
     Module R (M ⧸ AddCommGroup.torsion M) :=
-  letI : Submodule R M := { AddCommGroup.torsion M with smul_mem' := fun r m ⟨n, hn, hn'⟩ ↦
+  -- Upgrade the torsion subgroup to a submodule.
+  letI S : Submodule R M := { AddCommGroup.torsion M with smul_mem' := fun r m ⟨n, hn, hn'⟩ ↦
     ⟨n, hn, by { simp only [Function.IsPeriodicPt, Function.IsFixedPt, add_left_iterate, add_zero,
       smul_comm n] at hn' ⊢; simp only [hn', smul_zero] }⟩ }
-  inferInstanceAs (Module R (M ⧸ this))
+  -- The quotients are the same.
+  let e : (M ⧸ AddCommGroup.torsion M) ≃+ (M ⧸ S) := QuotientAddGroup.congr _ _ (.refl _)
+    (by simp [S])
+  -- So we can copy over scalar multiplication.
+  letI : SMul R (M ⧸ AddCommGroup.torsion M) := ⟨fun r m => e.symm (r • e m)⟩
+  Function.Injective.module R e.toAddMonoidHom e.injective (fun _ _ =>
+    e.symm.injective (e.symm_apply_apply _))
 
 end AddCommGroup
 
