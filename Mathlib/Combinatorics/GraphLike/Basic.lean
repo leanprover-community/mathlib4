@@ -80,7 +80,7 @@ variable [GraphLike V D E Gr]
 
 @[ext] theorem darts_ext (d₁ d₂ : darts G) (h : d₁.val = d₂.val) : d₁ = d₂ := Subtype.ext h
 
-lemma adj_of_mem_darts (hd : d ∈ D(G)) : Adj G (src Gr d) (tgt Gr d) :=
+lemma adj_src_tgt (hd : d ∈ D(G)) : Adj G (src Gr d) (tgt Gr d) :=
   exists_darts_iff_adj.mp ⟨d, hd, rfl, rfl⟩
 
 lemma Adj.left_mem (h : Adj G v w) : v ∈ V(G) := by
