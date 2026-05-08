@@ -79,14 +79,6 @@ noncomputable abbrev _root_.Finpartition.toMeasurableSet {s : Set X} (P : Finpar
     Finpartition (⟨s, hs⟩ : Subtype MeasurableSet) :=
   P.toSubtype (by measurability) (by measurability) (by measurability) hs hP
 
-/-- The bUnion of the parts (as sets) of a `Finpartition` of `⟨s, hs⟩ : Subtype MeasurableSet`
-is `s` itself. -/
-lemma _root_.Finpartition.iUnion_parts_val {s : Set X} {hs : MeasurableSet s}
-    (P : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet)) :
-    ⋃ p ∈ P.parts, p.val = s := by
-  rw [← Finset.sup_set_eq_biUnion]
-  exact P.sup_parts_apply (fun _ _ => rfl) rfl
-
 lemma sum_le' {s : Set X} (hs : MeasurableSet s)
     (P : Finpartition s) (hP : ∀ p ∈ P.parts, MeasurableSet p) :
     ∑ p ∈ P.parts, f p ≤ preVariationFun f s := by

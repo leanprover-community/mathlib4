@@ -38,21 +38,8 @@ namespace MeasureTheory.VectorMeasure
 
 variable {X V : Type*} {mX : MeasurableSpace X}
 
--- TODO: relocate the next two lemmas — `Finpartition.pairwiseDisjoint_val` belongs with
--- the other Subtype-MeasurableSet / Finpartition machinery (e.g.
--- `Mathlib/MeasureTheory/Measure/PreVariation.lean`); `sum_finpartition_parts` belongs near
--- the other `VectorMeasure.of_biUnion_finset` lemmas.
-
-/-- The parts (as sets) of a `Finpartition` of `⟨s, hs⟩ : Subtype MeasurableSet` are pairwise
-disjoint. -/
-lemma _root_.Finpartition.pairwiseDisjoint_val {s : Set X} {hs : MeasurableSet s}
-    (P : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet)) :
-    (P.parts : Set (Subtype MeasurableSet)).PairwiseDisjoint
-      (Subtype.val : _ → Set X) := fun a ha b hb hab => by
-  have h := P.disjoint ha hb hab
-  simp only [Function.onFun, disjoint_iff, id_eq, ← Subtype.coe_inj,
-    MeasurableSet.coe_bot] at h
-  rwa [Function.onFun, Set.disjoint_iff_inter_eq_empty]
+-- TODO: relocate `sum_finpartition_parts` near the other `VectorMeasure.of_biUnion_finset`
+-- lemmas.
 
 /-- For `μ : VectorMeasure X V`, summing `μ` over the parts of a `Finpartition` of
 `⟨s, hs⟩ : Subtype MeasurableSet` gives `μ s`. -/
@@ -60,7 +47,9 @@ lemma sum_finpartition_parts [AddCommMonoid V] [TopologicalSpace V] [T2Space V]
     (μ : VectorMeasure X V) {s : Set X} {hs : MeasurableSet s}
     (P : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet)) :
     ∑ p ∈ P.parts, μ p.val = μ s := by
-  rw [← μ.of_biUnion_finset P.pairwiseDisjoint_val (fun p _ => p.prop), P.iUnion_parts_val]
+  rw [← μ.of_biUnion_finset (P.pairwiseDisjoint_apply (fun _ _ => rfl) rfl)
+        (fun p _ => p.prop),
+      ← Finset.sup_set_eq_biUnion, P.sup_parts_apply (fun _ _ => rfl) rfl]
 
 section Basic
 
