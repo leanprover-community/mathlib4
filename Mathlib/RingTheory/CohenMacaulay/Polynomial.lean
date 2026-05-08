@@ -119,8 +119,8 @@ lemma Polynomial.localization_at_comap_maximal_isCM_isCM [IsNoetherianRing R]
       simpa only [span_le] using mem''
     have ht2 : p.height ≤ (maximalIdeal R).height + 1 := by
       rw [← WithBot.coe_le_coe, WithBot.coe_add, maximalIdeal_height_eq_ringKrullDim,
-        height_eq_primeHeight, WithBot.coe_one, ← ringKrullDim_of_isNoetherianRing]
-      exact primeHeight_le_ringKrullDim
+        WithBot.coe_one, ← ringKrullDim_of_isNoetherianRing]
+      exact Ideal.height_le_ringKrullDim_of_ne_top IsPrime.ne_top'
     apply le_trans ht2 (le_sSup _)
     use ((rs.map (algebraMap R R[X])) ++ [f]).map (algebraMap R[X] (Localization.AtPrime p)), reg
     simpa [cm] using mem''
