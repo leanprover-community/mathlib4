@@ -248,6 +248,8 @@ instance [HasFunctorialFactorization W₁ W₂] (J : Type*) [Category* J] :
     HasFunctorialFactorization (W₁.functorCategory J) (W₂.functorCategory J) :=
   ⟨⟨(functorialFactorizationData W₁ W₂).functorCategory J⟩⟩
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 variable {W₁ W₂} in
 /-- The term in `MapFactorizationData (W₁.inverseImage F) (W₂.inverseImage F) f`
 deduced from `h : MapFactorizationData W₁ W₂ (F.map f)` when `F` is an equivalence
@@ -261,10 +263,12 @@ noncomputable def MapFactorizationData.ofIsEquivalence {F : D ⥤ C}
   p := F.preimage ((F.objObjPreimageIso h.Z).hom ≫ h.p)
   hi := by
     refine (W₁.arrow_mk_iso_iff ?_).1 h.hi
-    exact Arrow.isoMk (Iso.refl _) (F.objObjPreimageIso h.Z).symm
+    refine Arrow.isoMk (Iso.refl _) (F.objObjPreimageIso h.Z).symm ?_
+    simp [F.map_preimage]
   hp := by
     refine (W₂.arrow_mk_iso_iff ?_).1 h.hp
-    exact Arrow.isoMk (F.objObjPreimageIso h.Z).symm (Iso.refl _)
+    refine Arrow.isoMk (F.objObjPreimageIso h.Z).symm (Iso.refl _) ?_
+    simp [F.map_preimage]
   fac := F.map_injective (by simp)
 
 instance (F : D ⥤ C) [F.IsEquivalence]
