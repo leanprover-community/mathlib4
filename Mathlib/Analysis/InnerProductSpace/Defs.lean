@@ -600,10 +600,7 @@ def InnerProductSpace.ofCoreOfTopology [AddCommGroup F] [hF : Module 𝕜 F] [To
 structure HilbertSpace (𝕜 E : Type*) [RCLike 𝕜]
   [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [CompleteSpace E]
 
-end
-
 namespace PUnit
-variable {𝕜 : Type*} [RCLike 𝕜]
 
 instance : InnerProductSpace 𝕜 PUnit where
   inner _ _ := 0
@@ -615,3 +612,5 @@ instance : InnerProductSpace 𝕜 PUnit where
 @[simp] lemma inner_eq_zero (x y : PUnit) : inner 𝕜 x y = 0 := rfl
 
 end PUnit
+
+end
