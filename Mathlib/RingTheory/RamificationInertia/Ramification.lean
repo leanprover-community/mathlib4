@@ -8,6 +8,7 @@ module
 public import Mathlib.NumberTheory.RamificationInertia.Ramification
 public import Mathlib.RingTheory.Flat.Localization
 public import Mathlib.RingTheory.LocalRing.Length
+public import Mathlib.RingTheory.Unramified.LocalRing
 
 /-!
 # Ramification index
@@ -59,6 +60,18 @@ theorem ramificationIdx'_def [q.IsPrime] :
 
 theorem ramificationIdx'_of_not_isPrime (hq : ¬ q.IsPrime) : q.ramificationIdx' R = 0 :=
   dif_neg hq
+
+theorem ramificationIdx'_eq_one [q.IsPrime] [Algebra.EssFiniteType R S]
+    [Algebra.IsUnramifiedAt R q] : q.ramificationIdx' R = 1 := by
+  let p := q.under R
+  let Rp := Localization.AtPrime p
+  let Sq := Localization.AtPrime q
+  let : Algebra Rp Sq := Localization.AtPrime.algebraOfLiesOver p q
+  have : Algebra.EssFiniteType Rp Sq := Algebra.EssFiniteType.of_comp R Rp Sq
+  rw [ramificationIdx'_def, ENat.toNat_eq_iff_eq_coe, Nat.cast_one, Module.length_eq_one_iff,
+    isSimpleModule_iff_isCoatom, ← Ideal.isMaximal_def, IsLocalRing.isMaximal_iff,
+    IsScalarTower.algebraMap_eq R Rp Sq, ← map_map, Localization.AtPrime.map_eq_maximalIdeal]
+  exact Algebra.FormallyUnramified.map_maximalIdeal
 
 end
 
