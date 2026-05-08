@@ -6,7 +6,7 @@ Authors: Arend Mellendijk
 module
 
 public import Mathlib.Algebra.Algebra.Basic
-public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.Tactic.Algebra.Lemmas
 public import Mathlib.Tactic.Ring.RingNF
 
@@ -624,6 +624,7 @@ elab (name := algebraNFWith) "algebra_nf" tk:"!"? " with " R:term loc:(location)
       (evalExpr R) (cleanup cfg)
     transformAtLocation (m ·) "algebra_nf" loc cfg.ifUnchanged false
 
+/-- Collects all rings that appear as the base of a scalar multiplication in any subexpression. -/
 def findRings : Expr → MetaM (List Expr) := Expr.foldlM
   (fun l e ↦  do
     match_expr e with
@@ -632,7 +633,8 @@ def findRings : Expr → MetaM (List Expr) := Expr.foldlM
     | _ => return l)
   []
 
-def inferBase' (e : Expr) : MetaM <| Option <| Σ u : Lean.Level, Q(Type u) := do
+/-- Attempt to infer the base ring based on all subespressions, used by algebra_nf -/
+def inferBaseNF (e : Expr) : MetaM <| Option <| Σ u : Lean.Level, Q(Type u) := do
   let rings ← (← findRings e).mapM getLevelQ'
   let res ← match rings with
   | [] => pure none
@@ -650,7 +652,7 @@ elab (name := algebraNF) "algebra_nf" tk:"!"? loc:(location)?  : tactic =>
   withMainContext do
     liftMetaTactic' preprocess
     let e ← getMainTarget
-    let R ← inferBase' e
+    let R ← inferBaseNF e
     let R' : TSyntax `term := ← match R with
     | none => `(term|_)
     | some ⟨_, R⟩ => do
