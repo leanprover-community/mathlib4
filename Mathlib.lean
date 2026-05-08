@@ -5699,6 +5699,7 @@ public import Mathlib.NumberTheory.ModularForms.ProperlyDiscontinuous
 public import Mathlib.NumberTheory.ModularForms.QExpansion
 public import Mathlib.NumberTheory.ModularForms.SlashActions
 public import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
+public import Mathlib.NumberTheory.ModularForms.SturmBound
 public import Mathlib.NumberTheory.MulChar.Basic
 public import Mathlib.NumberTheory.MulChar.Duality
 public import Mathlib.NumberTheory.MulChar.Lemmas
