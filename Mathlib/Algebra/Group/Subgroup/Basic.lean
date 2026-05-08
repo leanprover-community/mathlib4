@@ -869,6 +869,18 @@ theorem Normal.of_map_subtype {K : Subgroup G} {L : Subgroup K}
     (n : (Subgroup.map K.subtype L).Normal) : L.Normal :=
   n.of_map_injective K.subtype_injective
 
+theorem _root_.MulEquiv.mapSubgroup_normal_iff {G H : Type*} [Group G] [Group H] {f : G ≃* H}
+    {L : Subgroup G} : (f.mapSubgroup L).Normal ↔ L.Normal := by
+  constructor
+  · intro h
+    rw [MulEquiv.mapSubgroup_apply] at h
+    exact h.of_map_injective f.injective
+  · intro h
+    have : (f.symm.mapSubgroup (f.mapSubgroup L)).Normal := by
+      rwa [← MulEquiv.symm_mapSubgroup, OrderIso.symm_apply_apply]
+    rw [MulEquiv.mapSubgroup_apply] at this
+    exact this.of_map_injective f.symm.injective
+
 section SubgroupNormal
 
 @[to_additive]
