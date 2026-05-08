@@ -30,8 +30,8 @@ We prove several specialized tests for linear independence of families of vector
 vectors.
 
 * `linearIndependent_option`, `linearIndependent_finCons`,
-  `linearIndependent_finSucc`: type-specific tests for linear independence of families of vector
-  fields;
+  `linearIndependent_finSucc`, `linearIndependent_finSnoc`: type-specific tests for linear
+  independence of families of vector fields;
 * `linearIndependent_insert`, `linearIndependent_pair`: linear independence tests for set operations
 
 In many cases we additionally provide dot-style operations (e.g., `LinearIndependent.union`) to
@@ -659,11 +659,17 @@ theorem linearIndependent_finSnoc {n} {v : Fin n → V} :
   rw [Fin.snoc_eq_cons_rotate, ← Function.comp_def, linearIndependent_equiv,
     linearIndependent_finCons]
 
+@[deprecated (since := "2026-04-07")]
+alias linearIndependent_fin_snoc := linearIndependent_finSnoc
+
 /-- See `LinearIndependent.finCons'` for an uglier version that works if you
 only have a module over a semiring. -/
 theorem LinearIndependent.finCons {n} {v : Fin n → V} (hv : LinearIndependent K v)
     (hx : x ∉ Submodule.span K (range v)) : LinearIndependent K (Fin.cons x v : Fin (n + 1) → V) :=
   linearIndependent_finCons.2 ⟨hv, hx⟩
+
+@[deprecated (since := "2026-04-07")]
+alias LinearIndependent.fin_cons := LinearIndependent.finCons
 
 /-- See `LinearIndependent.finSnoc'` for an uglier version that works if you
 only have a module over a semiring, and `LinearIndependent.finSnoc_of_not_mem_span_over` for a
@@ -700,9 +706,15 @@ theorem linearIndependent_finSucc {n} {v : Fin (n + 1) → V} :
       LinearIndependent K (Fin.tail v) ∧ v 0 ∉ Submodule.span K (range <| Fin.tail v) := by
   rw [← linearIndependent_finCons, Fin.cons_self_tail]
 
+@[deprecated (since := "2026-04-07")]
+alias linearIndependent_fin_succ := linearIndependent_finSucc
+
 theorem linearIndependent_finSucc' {n} {v : Fin (n + 1) → V} : LinearIndependent K v ↔
     LinearIndependent K (Fin.init v) ∧ v (Fin.last _) ∉ Submodule.span K (range <| Fin.init v) := by
   rw [← linearIndependent_finSnoc, Fin.snoc_init_self]
+
+@[deprecated (since := "2026-04-07")]
+alias linearIndependent_fin_succ' := linearIndependent_finSucc'
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Equivalence between `k + 1` vectors of length `n` and `k` vectors of length `n` along with a

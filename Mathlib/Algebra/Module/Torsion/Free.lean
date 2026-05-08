@@ -23,7 +23,7 @@ If furthermore the base ring is a domain, this is equivalent to the naïve
 `r • m = 0 ↔ r = 0 ∨ m = 0` definition.
 -/
 
-@[expose] public section
+public section
 
 open Module
 

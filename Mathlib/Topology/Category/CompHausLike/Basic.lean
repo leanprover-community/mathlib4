@@ -90,13 +90,13 @@ instance : CoeSort (CompHausLike P) (Type u) :=
   ⟨fun X => X.toTop⟩
 
 instance category : Category (CompHausLike P) :=
-  inferInstanceAs (Category (InducedCategory _ toTop))
+  inferInstanceAs <| Category (InducedCategory _ toTop)
 
 instance concreteCategory : ConcreteCategory (CompHausLike P) (C(·, ·)) :=
-  InducedCategory.concreteCategory toTop
+  inferInstanceAs <| ConcreteCategory (InducedCategory _ toTop) _
 
 instance hasForget₂ : HasForget₂ (CompHausLike P) TopCat :=
-  InducedCategory.hasForget₂ _
+  inferInstanceAs <| HasForget₂ (InducedCategory _ toTop) _
 
 variable (X : Type u) [TopologicalSpace X] [CompactSpace X] [T2Space X]
 
@@ -203,7 +203,7 @@ variable {P}
 
 theorem epi_of_surjective {X Y : CompHausLike.{u} P} (f : X ⟶ Y) (hf : Function.Surjective f) :
     Epi f := by
-  rw [← CategoryTheory.epi_iff_surjective] at hf
+  rw [← CategoryTheory.ofHom_epi_iff_surjective] at hf
   exact (forget (CompHausLike P)).epi_of_epi_map hf
 
 theorem mono_iff_injective {X Y : CompHausLike.{u} P} (f : X ⟶ Y) :
@@ -214,7 +214,7 @@ theorem mono_iff_injective {X Y : CompHausLike.{u} P} (f : X ⟶ Y) :
     let g₂ : X ⟶ X := ofHom _ ⟨fun _ => x₂, continuous_const⟩
     have : g₁ ≫ f = g₂ ≫ f := by ext; exact h
     exact CategoryTheory.congr_fun ((cancel_mono _).mp this) x₁
-  · rw [← CategoryTheory.mono_iff_injective]
+  · rw [← CategoryTheory.ofHom_mono_iff_injective]
     apply (forget (CompHausLike P)).mono_of_mono_map
 
 /-- Any continuous function on compact Hausdorff spaces is a closed map. -/

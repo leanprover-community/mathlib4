@@ -92,7 +92,7 @@ theorem projectiveSeminorm_zero : ‖(0 : ⨂[𝕜] i, E i)‖ = 0 :=
   le_antisymm (ciInf_le (bddBelow_projectiveSemiNormAux _) ⟨0, lifts_zero⟩)
     (le_ciInf (fun p ↦ projectiveSeminormAux_nonneg p.val))
 
-theorem projectiveSeminorm_add_le (x y : ⨂[𝕜] i, E i) : ‖x+y‖ ≤ ‖x‖ + ‖y‖ :=
+theorem projectiveSeminorm_add_le (x y : ⨂[𝕜] i, E i) : ‖x + y‖ ≤ ‖x‖ + ‖y‖ :=
   le_ciInf_add_ciInf (fun p q ↦ ciInf_le_of_le (bddBelow_projectiveSemiNormAux _)
     ⟨p.1 + q.1, lifts_add p.2 q.2⟩ (projectiveSeminormAux_add_le p.1 q.1))
 

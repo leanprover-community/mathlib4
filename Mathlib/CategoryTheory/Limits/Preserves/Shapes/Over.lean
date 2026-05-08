@@ -20,7 +20,7 @@ As a corollary, if `F` preserves finite limits, or limits of a certain size, so 
 Dually, if `F` preserves certain colimits, `Under.post F` will preserve certain colimits as well.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.Limits
 

@@ -19,7 +19,7 @@ public import Mathlib.Topology.Order.Bornology
 The structure of a metric space on `ℤ` is introduced in this file, induced from `ℝ`.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -68,6 +68,9 @@ instance : ProperSpace ℤ :=
 
 instance : IsOrderBornology ℤ :=
   .of_isCompactIcc 0 (by simp [Int.closedBall_eq_Icc]) (by simp [Int.closedBall_eq_Icc])
+
+@[deprecated (since := "2026-04-07")]
+alias cobounded_eq := IsOrderBornology.cobounded_eq
 
 @[simp]
 theorem cofinite_eq : (cofinite : Filter ℤ) = atBot ⊔ atTop := by

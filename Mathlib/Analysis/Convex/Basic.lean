@@ -582,6 +582,11 @@ theorem Convex.smul_mono_of_zero_mem (h_conv : Convex 𝕜 s) (zero_mem : (0 : E
     refine Convex.mem_smul_of_zero_mem h_conv zero_mem hy (?_ : 1 ≤ p⁻¹ * q)
     rwa [le_inv_mul_iff₀ hp', mul_one]
 
+theorem Convex.add_half_self_eq_self (h_conv : Convex 𝕜 s) : (2 : 𝕜)⁻¹ • s + (2 : 𝕜)⁻¹ • s = s := by
+  rw [← h_conv.add_smul (by norm_num) (by norm_num)]
+  ring_nf
+  rw [one_smul]
+
 end AddCommGroup
 
 end LinearOrderedField
