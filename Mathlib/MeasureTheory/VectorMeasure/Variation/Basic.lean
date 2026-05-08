@@ -21,8 +21,6 @@ such vector-valued measures.
 * `variation_zero`: `(0 : VectorMeasure X V).variation = 0`.
 * `variation_neg`: `(-μ).variation = μ.variation`.
 * `absolutelyContinuous`: `μ ≪ᵥ μ.variation`.
-* `variation_eq_ennrealToMeasure`: if `μ : VectorMeasure X ℝ≥0∞` then
-  `μ.variation = μ.ennrealToMeasure`.
 * `ennrealVariation_eq`: if `μ : VectorMeasure X ℝ≥0∞` then `μ.ennrealVariation = μ`.
 
 ## References
@@ -40,19 +38,10 @@ namespace MeasureTheory.VectorMeasure
 
 variable {X V : Type*} {mX : MeasurableSpace X}
 
--- TODO: relocate the next three lemmas — `Finpartition.iUnion_parts_val` and
--- `Finpartition.pairwiseDisjoint_val` belong with the other Subtype-MeasurableSet /
--- Finpartition machinery (e.g. `Mathlib/MeasureTheory/Measure/PreVariation.lean`);
--- `sum_finpartition_parts` belongs near the other `VectorMeasure.of_biUnion_finset` lemmas.
-
-/-- The bUnion of the parts (as sets) of a `Finpartition` of `⟨s, hs⟩ : Subtype MeasurableSet`
-is `s` itself. -/
-lemma _root_.Finpartition.iUnion_parts_val {s : Set X} {hs : MeasurableSet s}
-    (P : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet)) :
-    ⋃ p ∈ P.parts, p.val = s := by
-  have h := congrArg Subtype.val P.sup_parts
-  rwa [Finset.sup_coe (Pbot := MeasurableSet.empty) (Psup := by measurability),
-    Finset.sup_set_eq_biUnion] at h
+-- TODO: relocate the next two lemmas — `Finpartition.pairwiseDisjoint_val` belongs with
+-- the other Subtype-MeasurableSet / Finpartition machinery (e.g.
+-- `Mathlib/MeasureTheory/Measure/PreVariation.lean`); `sum_finpartition_parts` belongs near
+-- the other `VectorMeasure.of_biUnion_finset` lemmas.
 
 /-- The parts (as sets) of a `Finpartition` of `⟨s, hs⟩ : Subtype MeasurableSet` are pairwise
 disjoint. -/
@@ -161,24 +150,18 @@ lemma iSup_sum_finpartition_parts (μ : VectorMeasure X ℝ≥0∞) {s : Set X} 
   obtain ⟨P⟩ := (inferInstance : Nonempty (Finpartition (⟨s, hs⟩ : Subtype MeasurableSet)))
   exact le_iSup_of_le P (μ.sum_finpartition_parts P).symm.le
 
-/-- For `μ : VectorMeasure X ℝ≥0∞`, `preVariationFun (μ ·) s = μ s` for any `s`. -/
+/-- For `μ : VectorMeasure X ℝ≥0∞`, `preVariationFun μ s = μ s` for any `s`. -/
 @[simp]
-lemma preVariationFun_self (μ : VectorMeasure X ℝ≥0∞) (s : Set X) :
-    preVariationFun (μ ·) s = μ s := by
+lemma preVariationFun_apply_of_ENNReal (μ : VectorMeasure X ℝ≥0∞) (s : Set X) : preVariationFun μ s = μ s := by
   unfold preVariationFun
   split_ifs with hs
   · exact iSup_sum_finpartition_parts μ hs
   · exact (μ.not_measurable' hs).symm
 
 @[simp]
-theorem preVariationFun_eq_self_of_ENNReal (s : Set X) : preVariationFun μ s = μ s := by
-  by_cases MeasurableSet s <;> simp [*]
-
-@[simp]
 theorem variation_eq_ennrealToMeasure : μ.variation = μ.ennrealToMeasure := by
   ext _ hs
-  simp [variation_apply, preVariation_apply, ennrealPreVariation_apply,
-    ennrealToMeasure_apply hs]
+  simp [variation_apply, preVariation_apply, ennrealPreVariation_apply, ennrealToMeasure_apply hs]
 
 @[simp]
 theorem ennrealVariation_eq : μ.ennrealVariation = μ := by simp [ennrealVariation]
