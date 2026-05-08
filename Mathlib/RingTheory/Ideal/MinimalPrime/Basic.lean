@@ -58,8 +58,11 @@ lemma minimalPrimes_eq_minimals : minimalPrimes R = {x | Minimal Ideal.IsPrime x
 
 variable {I J}
 
-theorem Ideal.IsPrime.of_mem_minimalPrimes {p : Ideal R} (h : p ∈ minimalPrimes R) :
-    p.IsPrime :=
+@[deprecated "Use `Ideal.IsMinimalPrime.isPrime` instead." (since := "2026-05-08")]
+theorem Ideal.IsPrime.of_mem_minimalPrimes {p : Ideal R} (h : p ∈ minimalPrimes R) : p.IsPrime :=
+  h.1.1
+
+theorem Ideal.IsPrime.of_mem_minimalPrimes' {p : Ideal R} (h : p ∈ minimalPrimes R) : p.IsPrime :=
   h.1.1
 
 theorem Ideal.exists_minimalPrimes_le [J.IsPrime] (e : I ≤ J) : ∃ p ∈ I.minimalPrimes, p ≤ J := by
