@@ -113,6 +113,33 @@ lemma prod_Ico_mul_eq_prod_Ico_add_one (hab : a ≤ b) (f : α → M) :
 
 end LocallyFiniteOrder
 
+section LocallyFiniteOrderBot
+variable [LocallyFiniteOrderBot α]
+
+@[to_additive (dont_translate := α)]
+lemma prod_Iio_add_one_comm [Add α] [One α] [SuccAddOrder α] [NoMaxOrder α]
+    (a : α) (f : α → M) : ∏ i < a + 1, f i = f a * (∏ i < a, f i) := by
+  simp [Iio_add_one_eq_Iic, ← Iio_insert, Finset.prod_insert]
+
+@[to_additive (dont_translate := α) (attr := simp)]
+lemma prod_Iio_add_one [Add α] [One α] [SuccAddOrder α] [NoMaxOrder α]
+    (a : α) (f : α → M) : ∏ i < a + 1, f i = (∏ i < a, f i) * f a := by
+  simp_rw [prod_Iio_add_one_comm, mul_comm]
+
+@[to_additive (dont_translate := α)]
+lemma prod_Iic_add_one_comm [Add α] [One α] [SuccAddOrder α] [NoMaxOrder α]
+    (a : α) (f : α → M) : ∏ i ≤ a + 1, f i = f (a + 1) * (∏ i ≤ a, f i) := by
+  simp only [← Iio_insert, mem_Iio, lt_self_iff_false, not_false_eq_true, prod_insert,
+    prod_Iio_add_one_comm]
+
+@[to_additive (dont_translate := α) (attr := simp)]
+lemma prod_Iic_add_one [Add α] [One α] [SuccAddOrder α] [NoMaxOrder α]
+    (a : α) (f : α → M) : ∏ i ≤ a + 1, f i = (∏ i ≤ a, f i) * f (a + 1) := by
+  simp_rw [prod_Iic_add_one_comm, mul_comm]
+
+end LocallyFiniteOrderBot
+
+section LocallyFiniteOrderTopBot
 variable [Fintype α] [LocallyFiniteOrderTop α] [LocallyFiniteOrderBot α]
 
 @[to_additive]
@@ -122,6 +149,8 @@ lemma prod_prod_Ioi_mul_eq_prod_prod_off_diag (f : α → α → M) :
   congr 1
   rw [prod_sigma', prod_sigma']
   refine prod_nbij' (fun i ↦ ⟨i.2, i.1⟩) (fun i ↦ ⟨i.2, i.1⟩) ?_ ?_ ?_ ?_ ?_ <;> simp
+
+end LocallyFiniteOrderTopBot
 
 end LinearOrder
 
