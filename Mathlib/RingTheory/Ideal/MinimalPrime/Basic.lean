@@ -36,6 +36,7 @@ section
 
 variable {R S : Type*} [CommSemiring R] [CommSemiring S] (I J : Ideal R)
 
+/-- The predicate for describing an ideal is minimal prime over certain ideal `I`. -/
 protected def Ideal.IsMinimalPrime (p : Ideal R) : Prop := Minimal (fun q ↦ q.IsPrime ∧ I ≤ q) p
 
 lemma Ideal.IsMinimalPrime.isPrime {p : Ideal R} (h : I.IsMinimalPrime p) : p.IsPrime := h.1.1
