@@ -714,6 +714,10 @@ lemma IsPath.isCycle_append {u v} {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPa
   · rw [tail_support_append, List.nodup_append']
     exact ⟨hp.support_nodup.tail, hq.support_nodup.tail, h⟩
 
+/--
+Given two distinct paths same endpoints, we can extract a subwalk from each such that their
+concatenation, with one reversed, forms a cycle.
+-/
 theorem IsPath.exists_isCycle_of_ne {u v : V} {p q : G.Walk u v} (hp : p.IsPath) (hq : q.IsPath)
     (h : p ≠ q) :
     ∃ (u' v' : V) (p' q' : G.Walk u' v'),
@@ -733,6 +737,10 @@ theorem IsPath.exists_isCycle_of_ne {u v : V} {p q : G.Walk u v} (hp : p.IsPath)
     · grind [dropLast_support_concat, IsPath.support_nodup, support_reverse, cons_tail_support]
     · grind [length_reverse, eq_of_length_le_one]
 
+/--
+Given two distinct paths, `p` and `q`, with same endpoints, we can extract a cycle whose support
+is a sublist of `p.support ++ q.support.reverse.tail`.
+-/
 theorem IsPath.exists_isCycle_sublist_of_ne {u v : V} {p q : G.Walk u v} (hp : p.IsPath)
     (hq : q.IsPath) (h : p ≠ q) :
     ∃ w, w ∈ p.support ∧ w ∈ q.support ∧
@@ -745,6 +753,10 @@ theorem IsPath.exists_isCycle_sublist_of_ne {u v : V} {p q : G.Walk u v} (hp : p
   · exact isSubwalk_iff_support_isInfix.mp hp' |>.sublist
   · exact isSubwalk_iff_support_isInfix.mp hq' |>.sublist
 
+/--
+Given two distinct paths with same endpoints, we can extract a cycle whose length is less than or
+equal to the sum of their lengths.
+-/
 theorem IsPath.exists_isCycle_le_length_sum_of_ne {u v : V} {p q : G.Walk u v} (hp : p.IsPath)
     (hq : q.IsPath) (h : p ≠ q) :
     ∃ w, w ∈ p.support ∧ w ∈ q.support ∧
