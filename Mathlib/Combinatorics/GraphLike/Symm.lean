@@ -47,17 +47,17 @@ lemma inv_mem_darts (hd : d ∈ darts G) : inv Gr d ∈ darts G :=
   inv_mem_darts_iff.mpr hd
 
 /-- The inverse of a step. -/
-@[symm] def step.inv (h : step G u v) : step G v u where
+@[symm] def Step.inv (h : Step G u v) : Step G v u where
   val := SymmGraphLike.inv Gr h.val
   property := by
     obtain ⟨d, hd, hu, hv⟩ := h
     use inv_mem_darts hd, hv ▸ inv_src d, hu ▸ inv_tgt d
 
 @[simp]
-lemma step.inv_inv (h : step G u v) : h.inv.inv = h := by
+lemma Step.inv_inv (h : Step G u v) : h.inv.inv = h := by
   obtain ⟨d, hd, hu, hv⟩ := h
-  change step.inv (⟨SymmGraphLike.inv Gr d, inv_mem_darts hd, hv ▸ inv_src d, hu ▸ inv_tgt d⟩ :
-    step G v u) = _
+  change Step.inv (⟨SymmGraphLike.inv Gr d, inv_mem_darts hd, hv ▸ inv_src d, hu ▸ inv_tgt d⟩ :
+    Step G v u) = _
   simp [inv]
 
 instance : Std.Symm (Adj G) where
@@ -77,7 +77,7 @@ lemma adj_comm : Adj G v w ↔ Adj G w v := ⟨symm_of (Adj G), symm_of (Adj G)�
 theorem dartSym2_mk (h : d ∈ darts G) : dartSym2 (⟨d, h⟩ : darts G) = s(src Gr d, tgt Gr d) := rfl
 
 @[simp]
-lemma step.todart_dartSym2 (h : step G u v) : dartSym2 h.todart = s(u, v) := by
+lemma Step.todart_dartSym2 (h : Step G u v) : dartSym2 h.todart = s(u, v) := by
   obtain ⟨d, hd, hu, hv⟩ := h
   grind [dartSym2, todart]
 
@@ -89,8 +89,8 @@ theorem dartSymm_mk (h : d ∈ darts G) : dartSymm (⟨d, h⟩) = ⟨inv Gr d, i
   rfl
 
 @[simp]
-lemma step.inv_todart (h : step G u v) : h.inv.todart = dartSymm h.todart := by
-  simp [todart, step.inv]
+lemma Step.inv_todart (h : Step G u v) : h.inv.todart = dartSymm h.todart := by
+  simp [todart, Step.inv]
 
 @[simp]
 theorem dartSym2_inv (d : darts G) : dartSym2 (dartSymm d) = dartSym2 d := by
