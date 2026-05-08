@@ -70,13 +70,12 @@ lemma toMeasureOfLEZero_apply_eq_enorm {i j : Set X} (him : MeasurableSet i)
   exact (ENNReal.ofReal_eq_coe_nnreal _).symm
 
 open VectorMeasure in
-/-- For signed measures, the Hahn–Jordan-based `totalVariation` agrees with the supremum-based
-`variation`. -/
+/-- The Hahn–Jordan-based `totalVariation` agrees with the supremum-based `variation`. -/
 theorem totalVariation_eq_variation (μ : SignedMeasure X) : μ.totalVariation = μ.variation := by
   ext r hr
-  obtain ⟨s, hsm, hs, hsc, hpos, hneg⟩ := μ.toJordanDecomposition_spec
   apply le_antisymm
-  · calc μ.totalVariation r
+  · obtain ⟨s, hsm, _, _, _, _⟩ := μ.toJordanDecomposition_spec
+    calc μ.totalVariation r
       _ = ‖μ (s ∩ r)‖ₑ + ‖μ (sᶜ ∩ r)‖ₑ := by
         grind [totalVariation, Measure.add_apply, μ.toMeasureOfZeroLE_apply_eq_enorm,
           μ.toMeasureOfLEZero_apply_eq_enorm]
@@ -86,19 +85,19 @@ theorem totalVariation_eq_variation (μ : SignedMeasure X) : μ.totalVariation =
         (measure_union (by grind) (hsm.compl.inter hr)).symm
       _ = μ.variation r := by
         rw [← Set.union_inter_distrib_right, Set.union_compl_self, Set.univ_inter]
-  · simp only [variation_apply, preVariation_apply, ennrealToMeasure_apply hr,
-      ennrealPreVariation_apply, preVariationFun, hr, ↓reduceDIte]
-    refine iSup_le fun P => ?_
-    have hcov' : ⋃ p ∈ P.parts, p.val = r := by
-      rw [← Finset.sup_set_eq_biUnion]; exact P.sup_parts_apply (fun _ _ => rfl) rfl
-    have hdisj : (P.parts : Set (Subtype MeasurableSet)).PairwiseDisjoint
-        (Subtype.val : Subtype MeasurableSet → Set X) :=
-      P.pairwiseDisjoint_apply (fun _ _ => rfl) rfl
+  · suffices ∀ (P : Finpartition (⟨r, hr⟩ : Subtype MeasurableSet)),
+        ∑ x ∈ P.parts, ‖μ x‖ₑ ≤ μ.totalVariation r by
+      simp only [variation_apply, preVariation_apply, ennrealToMeasure_apply hr,
+        ennrealPreVariation_apply, preVariationFun]
+      grind [iSup_le]
+    intro P
     calc ∑ p ∈ P.parts, ‖μ p.val‖ₑ
-        ≤ ∑ p ∈ P.parts, μ.totalVariation p.val :=
-          Finset.sum_le_sum fun p _ => SignedMeasure.enorm_le_totalVariation μ p.val
-      _ = μ.totalVariation (⋃ p ∈ P.parts, p.val) :=
-          (measure_biUnion_finset hdisj fun p _ => p.prop).symm
-      _ = μ.totalVariation r := by rw [hcov']
+      _ ≤ ∑ p ∈ P.parts, μ.totalVariation p.val :=
+        Finset.sum_le_sum fun p _ => SignedMeasure.enorm_le_totalVariation μ p.val
+      _ = μ.totalVariation (⋃ p ∈ P.parts, p.val) := by
+        refine (measure_biUnion_finset ?_ fun p _ => p.prop).symm
+        exact P.pairwiseDisjoint_apply (fun _ _ => rfl) rfl
+      _ = μ.totalVariation r := by
+        simp [← Finset.sup_set_eq_biUnion, P.sup_parts_apply]
 
 end MeasureTheory.SignedMeasure
