@@ -823,13 +823,7 @@ instance addMonoidWithOne : AddMonoidWithOne Ordinal.{u} where
   zero_add o := inductionOn o fun α _ _ => (RelIso.emptySumLex _ _).ordinal_type_eq
   add_zero o := inductionOn o fun α _ _ => (RelIso.sumLexEmpty _ _).ordinal_type_eq
   add_assoc o₁ o₂ o₃ :=
-    Quotient.inductionOn₃ o₁ o₂ o₃ fun ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨γ, t, _⟩ =>
-      Quot.sound
-        ⟨⟨sumAssoc _ _ _, by
-          intro a b
-          rcases a with (⟨a | a⟩ | a) <;> rcases b with (⟨b | b⟩ | b) <;>
-            simp only [sumAssoc_apply_inl_inl, sumAssoc_apply_inl_inr, sumAssoc_apply_inr,
-              Sum.lex_inl_inl, Sum.lex_inr_inr, Sum.Lex.sep, Sum.lex_inr_inl]⟩⟩
+    Quotient.inductionOn₃ o₁ o₂ o₃ fun _ _ _ ↦ Quot.sound ⟨⟨sumAssoc .., by simp⟩⟩
   nsmul := nsmulRec
 
 @[simp]
@@ -998,7 +992,8 @@ theorem type_lt_mem_range_succ [LinearOrder α] [WellFoundedLT α] [OrderTop α]
 
 theorem isSuccPrelimit_type_lt_iff [LinearOrder α] [WellFoundedLT α] :
     IsSuccPrelimit (typeLT α) ↔ NoMaxOrder α := by
-  rw [← not_iff_not, noMaxOrder_iff, not_isSuccPrelimit_iff', type_lt_mem_range_succ_iff]
+  rw [← not_iff_not, noMaxOrder_iff, not_isSuccPrelimit_iff_mem_range_succ,
+    type_lt_mem_range_succ_iff]
   simp [IsMax]
 
 theorem isSuccPrelimit_type_lt [LinearOrder α] [WellFoundedLT α] [h : NoMaxOrder α] :
@@ -1117,11 +1112,11 @@ The converse, however, is false (for instance, `o = ω+1` and `c = ℵ₀`).
 lemma card_le_of_le_ord {o : Ordinal} {c : Cardinal} (ho : o ≤ c.ord) : o.card ≤ c := by
   rw [← card_ord c]; exact Ordinal.card_le_card ho
 
-@[mono]
+@[gcongr, mono]
 theorem ord_strictMono : StrictMono ord :=
   gciOrdCard.strictMono_l
 
-@[mono]
+@[gcongr, mono]
 theorem ord_mono : Monotone ord :=
   gc_ord_card.monotone_l
 
@@ -1141,8 +1136,8 @@ theorem ord_zero : ord 0 = 0 :=
 theorem ord_nat (n : ℕ) : ord n = n := by
   apply (ord_le.2 (card_nat n).ge).antisymm
   induction n with
-  | zero => exact _root_.zero_le _
-  | succ n IH => exact (IH.trans_lt <| by simpa using Nat.cast_lt.2 n.lt_succ_self).succ_le
+  | zero => exact zero_le
+  | succ n IH => exact (IH.trans_lt <| by simp).succ_le
 
 @[simp]
 theorem ord_ofNat (n : ℕ) [n.AtLeastTwo] : ord ofNat(n) = OfNat.ofNat n :=
@@ -1183,6 +1178,10 @@ theorem card_typein_lt {r : α → α → Prop} [IsWellOrder α r] (x : α) (h :
 theorem mk_Iio_lt [LinearOrder α] [WellFoundedLT α] (i : α) (h : ord #α = typeLT α) :
     #(Iio i) < #α :=
   card_typein_lt (r := LT.lt) i h
+
+theorem mk_Ioi_lt {α : Type*} [LinearOrder α] [WellFoundedGT α] (i : α) (h : ord #α = typeLT αᵒᵈ) :
+    #(Ioi i) < #α :=
+  mk_Iio_lt (OrderDual.toDual i) h
 
 @[deprecated mk_Iio_lt (since := "2026-04-12")]
 theorem mk_Iio_toType_ord_lt {c : Cardinal} (i : c.ord.ToType) : #(Iio i) < c := by
@@ -1281,7 +1280,7 @@ theorem card_lt_aleph0 {o} : card o < ℵ₀ ↔ o < ω :=
 
 @[simp]
 theorem nat_lt_card {o} {n : ℕ} : (n : Cardinal) < card o ↔ (n : Ordinal) < o := by
-  rw [← succ_le_iff, ← succ_le_iff, ← nat_succ, nat_le_card]
+  rw [← natCast_add_one_le_iff, ← succ_le_iff, ← Nat.cast_add_one, nat_le_card]
   rfl
 
 @[simp]

@@ -34,7 +34,6 @@ instance : CoeSort (Under R) (Type u) where
 
 instance (A : Under R) : Algebra R A := RingHom.toAlgebra A.hom.hom
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Turn a morphism in `Under R` into an algebra homomorphism. -/
 def toAlgHom {A B : Under R} (f : A ⟶ B) : A →ₐ[R] B where
   __ := f.right.hom
