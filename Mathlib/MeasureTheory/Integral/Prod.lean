@@ -552,12 +552,135 @@ theorem setIntegral_prod (f : α × β → E) {s : Set α} {t : Set β}
   simp only [← Measure.prod_restrict s t, IntegrableOn] at hf ⊢
   exact integral_prod f hf
 
+theorem integrable_left_of_integrable_bilin_prod
+    {E F G : Type*}
+    [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+    [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
+    [NormedAddCommGroup G] [NormedSpace ℝ G] [CompleteSpace G]
+    (B : E →L[ℝ] F →L[ℝ] G) {f : α → E} {g : β → F} {C : NNReal}
+    (hC : C ≠ 0) (h : ∀ x y, C * ‖x‖ * ‖y‖ ≤ ‖B x y‖)
+    (hXY : Integrable (fun z ↦ B (f z.1) (g z.2)) (μ.prod ν))
+    (hX : AEStronglyMeasurable f μ) (hY : AEStronglyMeasurable g ν) (h'Y : ¬g =ᵐ[ν] 0) :
+    Integrable f μ := by
+  refine ⟨hX, ?_⟩
+  have I : (∫⁻ y, ‖g y‖ₑ ∂ν) ≠ 0 := fun H ↦ by
+    have I : (fun y => ‖g y‖ₑ : β → ℝ≥0∞) =ᵐ[ν] 0 := (lintegral_eq_zero_iff' hY.enorm).1 H
+    apply h'Y
+    filter_upwards [I] with ω hω
+    simpa using hω
+  refine hasFiniteIntegral_iff_enorm.mpr <| lt_top_iff_ne_top.2 fun H => ?_
+  have : ∞ < ∞ := calc
+    ∞ = C * ((∫⁻ x, ‖f x‖ₑ ∂μ) * ∫⁻ y, ‖g y‖ₑ ∂ν) := by
+      rw [H, top_mul I, mul_top (by simpa)]
+    _ = C * ∫⁻ z, ‖f z.1‖ₑ * ‖g z.2‖ₑ ∂μ.prod ν := by
+      rw [← lintegral_prod_mul (by fun_prop) (by fun_prop)]
+    _ ≤ ∫⁻ z, ‖B (f z.1) (g z.2)‖ₑ ∂μ.prod ν := by
+      rw [← lintegral_const_mul'' _ (hX.enorm.comp_fst.mul hY.enorm.comp_snd)]
+      gcongr with z
+      rw [← ENNReal.toReal_le_toReal (by finiteness) (by simp), toReal_mul, toReal_mul]
+      simpa [← mul_assoc] using h _ _
+    _ < ∞ := hXY.2
+  grind
+
+@[simp]
+lemma MeasurableEquiv.coe_prodComm {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
+    (MeasurableEquiv.prodComm : α × β → β × α) = Prod.swap := rfl
+
+theorem integrable_right_of_integrable_bilin_prod
+    {E F G : Type*}
+    [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+    [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
+    [NormedAddCommGroup G] [NormedSpace ℝ G] [CompleteSpace G]
+    (B : E →L[ℝ] F →L[ℝ] G) {f : α → E} {g : β → F} {C : NNReal}
+    (hC : C ≠ 0) (h : ∀ x y, C * ‖x‖ * ‖y‖ ≤ ‖B x y‖)
+    (hXY : Integrable (fun z ↦ B (f z.1) (g z.2)) (μ.prod ν))
+    (hX : AEStronglyMeasurable f μ) (hY : AEStronglyMeasurable g ν) (h'Y : ¬f =ᵐ[μ] 0) :
+    Integrable g ν := by
+  refine integrable_left_of_integrable_bilin_prod B.flip hC (fun x y ↦ ?_) ?_ hY hX h'Y
+  · grw [mul_right_comm, h y x, B.flip_apply]
+  · rw [← Measure.prod_swap, ← MeasurableEquiv.coe_prodComm, integrable_map_equiv]
+    simpa
+
+lemma integral_prod_bilin
+    {E F G : Type*}
+    [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+    [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
+    [NormedAddCommGroup G] [NormedSpace ℝ G] [CompleteSpace G]
+    (B : E →L[ℝ] F →L[ℝ] G) {f : α → E} {g : β → F} {C : NNReal}
+    (hC : C ≠ 0) (h : ∀ x y, C * ‖x‖ * ‖y‖ ≤ ‖B x y‖)
+    (hX : AEStronglyMeasurable f μ) (hY : AEStronglyMeasurable g ν) :
+    ∫ z, B (f z.1) (g z.2) ∂μ.prod ν = B (∫ x, f x ∂μ) (∫ y, g y ∂ν) := by
+  -- borelize β
+  -- have hfXgY := (hXY.comp₀ hX hY hf.aemeasurable hg.aemeasurable)
+  -- have hfX := (hf.comp_aemeasurable hX)
+  -- have hgY := (hg.comp_aemeasurable hY)
+  by_cases h'X : f =ᵐ[μ] 0
+  · have h' : ∀ᵐ z ∂μ.prod ν, B (f z.1) (g z.2) = 0 := by
+      rw [Measure.ae_prod_iff_ae_ae]
+      filter_upwards [h'X] with ω hω
+      simp [hω]
+      borelize G
+      change MeasurableSet ((fun z : α × β ↦ B (f z.1) (g z.2)) ⁻¹' {0})
+      apply MeasurableSet.preimage
+      simp
+    simp [integral_congr_ae h'X, integral_congr_ae h']
+  by_cases h'Y : ∀ᵐ ω ∂μ, g (Y ω) = 0
+  · have h' : ∀ᵐ ω ∂μ, f (X ω) • g (Y ω) = 0 := by
+      filter_upwards [h'Y] with ω hω
+      simp [hω]
+    simp [integral_congr_ae h'Y, integral_congr_ae h']
+  by_cases h : Integrable (fun ω ↦ f (X ω) • g (Y ω)) μ
+  · have :=
+      (hfXgY.integrable_left_of_integrable_smul h hfX hgY h'Y).isProbabilityMeasure_of_indepFun
+        _ _ h'X hfXgY
+    change ∫ ω, (fun x ↦ f x.1 • g x.2) (X ω, Y ω) ∂μ = _
+    rw [← integral_map (f := fun x ↦ f x.1 • g x.2) (φ := fun ω ↦ (X ω, Y ω)),
+      (indepFun_iff_map_prod_eq_prod_map_map hX hY).1 hXY, integral_prod_smul, integral_map,
+      integral_map]
+    any_goals fun_prop
+    rw [(indepFun_iff_map_prod_eq_prod_map_map hX hY).1 hXY]
+    exact hf.comp_fst.smul hg.comp_snd
+  · rw [integral_undef h]
+    obtain h | h : ¬(Integrable (fun ω ↦ f (X ω)) μ) ∨ ¬(Integrable (fun ω ↦ g (Y ω)) μ) :=
+      not_and_or.1 fun ⟨HX, HY⟩ ↦ h (hfXgY.integrable_smul HX HY)
+    all_goals simp [integral_undef h]
+
+theorem integral_prod_bilin {E F G : Type*}
+    [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+    [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
+    [NormedAddCommGroup G] [NormedSpace ℝ G] [CompleteSpace G]
+    (B : E →L[ℝ] F →L[ℝ] G) {f : α → E} {g : β → F}
+    (hf : Integrable f μ) (hg : Integrable g ν) :
+    ∫ z, B (f z.1) (g z.2) ∂μ.prod ν = B (∫ x, f x ∂μ) (∫ y, g y ∂ν) := by
+  have : Integrable (fun z ↦ B (f z.1) (g z.2)) (μ.prod ν) :=
+    hf.op_fst_snd (by fun_prop) ⟨‖B‖, B.le_opNorm₂⟩ hg
+  simp_rw [integral_prod _ this, ContinuousLinearMap.integral_comp_comm _ hg]
+  change ∫ x, B.flip (∫ y, g y ∂ν) (f x) ∂μ = _
+  rw [ContinuousLinearMap.integral_comp_comm _ hf]
+  simp
+
+theorem integral_prod_bilin' {E F G : Type*}
+    [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+    [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
+    [NormedAddCommGroup G] [NormedSpace ℝ G] [CompleteSpace G]
+    (B : E →L[ℝ] F →L[ℝ] G) {f : α → E} {g : β → F} {C : ℝ}
+    (hC : 0 < C) (h : ∀ x y, C * ‖x‖ * ‖y‖ ≤ ‖B x y‖) :
+    ∫ z, B (f z.1) (g z.2) ∂μ.prod ν = B (∫ x, f x ∂μ) (∫ y, g y ∂ν) := by
+  by_cases h : Integrable (fun z ↦ B (f z.1) (g z.2)) (μ.prod ν)
+
+  · rw [integral_prod _ this]
+  have : Integrable (fun z ↦ B (f z.1) (g z.2)) (μ.prod ν) :=
+    hf.op_fst_snd (by fun_prop) ⟨‖B‖, B.le_opNorm₂⟩ hg
+  simp_rw [integral_prod _ this, ContinuousLinearMap.integral_comp_comm _ hg]
+  change ∫ x, B.flip (∫ y, g y ∂ν) (f x) ∂μ = _
+  rw [ContinuousLinearMap.integral_comp_comm _ hf]
+  simp
+
 theorem integral_prod_smul {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] (f : α → 𝕜) (g : β → E) :
     ∫ z, f z.1 • g z.2 ∂μ.prod ν = (∫ x, f x ∂μ) • ∫ y, g y ∂ν := by
   by_cases hE : CompleteSpace E; swap; · simp [integral, hE]
-  by_cases h : Integrable (fun z : α × β => f z.1 • g z.2) (μ.prod ν)
-  · rw [integral_prod _ h]
-    simp_rw [integral_smul, integral_smul_const]
+  by_cases! h : Integrable f μ ∧ Integrable g ν
+  · exact integral_prod_bilin (.lsmul ℝ 𝕜) h.1 h.2
   have H : ¬Integrable f μ ∨ ¬Integrable g ν := by
     contrapose! h
     exact h.1.smul_prod h.2
