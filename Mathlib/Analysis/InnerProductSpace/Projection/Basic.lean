@@ -168,8 +168,8 @@ def orthogonalProjectionOnto : E →L[𝕜] K :=
     change ‖K.orthogonalProjectionFn x‖ ^ 2 ≤ ‖x‖ ^ 2
     nlinarith [K.orthogonalProjectionFn_norm_sq x]
 
-@[deprecated (since := "2026-05-05")] abbrev orthogonalProjection : E →L[𝕜] K :=
-  K.orthogonalProjectionOnto
+@[deprecated orthogonalProjectionOnto (since := "2026-05-05")] abbrev orthogonalProjection :
+    E →L[𝕜] K := K.orthogonalProjectionOnto
 
 variable {K}
 
