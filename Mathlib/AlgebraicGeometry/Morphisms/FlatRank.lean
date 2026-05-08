@@ -98,9 +98,6 @@ private lemma Scheme.Hom.finrank_eq_finrank_snd_of_isAffine (g : T ⟶ S) [IsAff
   obtain ⟨y, hyl, hyr⟩ := Scheme.Pullback.exists_preimage_pullback
     (S.affineOpenCover.covers <| g t).choose t (S.affineOpenCover.covers <| g t).choose_spec
   obtain ⟨R, u, hu, z, rfl⟩ := (pullback i g).exists_Spec_apply_eq y
-  have : IsFinite (pullback.snd f g) := MorphismProperty.pullback_snd _ _ inferInstance
-  have : IsFinite (pullback.snd f (S.affineOpenCover.f (g t))) :=
-    MorphismProperty.pullback_snd _ _ inferInstance
   trans IsAffine.finrank (pullback.snd (pullback.snd f g) (u ≫ pullback.snd _ _)) z
   · refine (IsAffine.finrank_of_isPullback _ _ ?_ ?_ ?_ _ _ ?_).symm
     · exact pullback.map _ _ _ _ (pullback.fst f g) (u ≫ pullback.fst _ _) g
