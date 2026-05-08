@@ -324,6 +324,7 @@ def piEquivalenceFunctorDiscrete (J : Type u₂) (C : Type u₁) [Category.{v₁
       obtain rfl : f = 𝟙 _ := rfl
       simp))) (by cat_disch)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `piEquivalenceFunctorDiscrete` is compatible with `evaluation`. -/
 @[simps!]
 def piEquivalenceFunctorDiscreteCompEvaluationIso (C : Type*) [Category* C] {J : Type*} (j : J) :
