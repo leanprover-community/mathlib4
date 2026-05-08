@@ -5,7 +5,7 @@ Authors: Jeremy Tan
 -/
 module
 
-public import Mathlib.Combinatorics.Enumerative.Catalan
+public import Mathlib.Combinatorics.Enumerative.Catalan.Tree
 
 import Batteries.Data.List.Count
 import Mathlib.Tactic.Positivity.Finset
@@ -173,7 +173,7 @@ def nest : DyckWord where
     rw [take_of_length_le (show [U].length ≤ i by rwa [length_singleton]), count_singleton']
     simp only [reduceCtorEq, ite_false]
     rw [add_comm]
-    exact add_le_add (zero_le _) (count_le_length.trans (by simp))
+    exact add_le_add zero_le (count_le_length.trans (by simp))
 
 @[simp] lemma nest_ne_zero : p.nest ≠ 0 := by simp [← toList_ne_nil, nest]
 
@@ -241,7 +241,6 @@ def semilength : ℕ := p.toList.count U
 lemma semilength_eq_count_D : p.semilength = p.toList.count D := by
   rw [← count_U_eq_count_D]; rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma two_mul_semilength_eq_length : 2 * p.semilength = p.toList.length := by
   nth_rw 1 [two_mul, semilength, p.count_U_eq_count_D, semilength]
@@ -260,7 +259,6 @@ def firstReturn : ℕ :=
 
 @[simp] lemma firstReturn_zero : firstReturn 0 = 0 := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 include h in
 lemma firstReturn_pos : 0 < p.firstReturn := by
   rw [← not_le, Nat.le_zero, firstReturn, findIdx_eq, getElem_range]
@@ -470,7 +468,7 @@ lemma monotone_semilength : Monotone semilength := fun p q pq ↦ by
 lemma strictMono_semilength : StrictMono semilength := fun p q pq ↦ by
   obtain ⟨plq, pnq⟩ := lt_iff_le_and_ne.mp pq
   apply lt_of_le_of_ne (monotone_semilength plq)
-  contrapose! pnq
+  contrapose pnq
   replace pnq := congr(2 * $(pnq))
   simp_rw [two_mul_semilength_eq_length] at pnq
   exact DyckWord.ext ((infix_of_le plq).eq_of_length pnq)
@@ -535,7 +533,6 @@ decreasing_by exacts [semilength_insidePart_lt h, semilength_outsidePart_lt h]
 
 @[deprecated (since := "2026-02-03")] alias semilength_eq_numNodes_equivTree := numNodes_toTree
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Equivalence between Dyck words of semilength `n` and rooted binary trees with
 `n` internal nodes. -/
 @[simps!]

@@ -49,7 +49,6 @@ theorem tendsto_rpow_neg_atTop {y : ℝ} (hy : 0 < y) : Tendsto (fun x : ℝ => 
   Tendsto.congr' (eventuallyEq_of_mem (Ioi_mem_atTop 0) fun _ hx => (rpow_neg (le_of_lt hx) y).symm)
     (tendsto_rpow_atTop hy).inv_tendsto_atTop
 
-set_option backward.isDefEq.respectTransparency false in
 open Asymptotics in
 lemma tendsto_rpow_atTop_of_base_lt_one (b : ℝ) (hb₀ : -1 < b) (hb₁ : b < 1) :
     Tendsto (b ^ · : ℝ → ℝ) atTop (𝓝 (0 : ℝ)) := by
@@ -87,9 +86,6 @@ lemma tendsto_rpow_atBot_of_base_gt_one (b : ℝ) (hb : 1 < b) :
   simp_rw [Real.rpow_def_of_pos (by positivity : 0 < b)]
   refine tendsto_exp_atBot.comp <| (tendsto_const_mul_atBot_of_pos ?_).mpr tendsto_id
   exact (log_pos_iff (by positivity)).mpr <| by aesop
-
-@[deprecated (since := "2025-08-24")]
-alias tendsto_rpow_atTop_of_base_gt_one := tendsto_rpow_atBot_of_base_gt_one
 
 /-- The function `x ^ (a / (b * x + c))` tends to `1` at `+∞`, for any real numbers `a`, `b`, and
 `c` such that `b` is nonzero. -/
@@ -241,9 +237,14 @@ theorem IsBigO.rpow (hr : 0 ≤ r) (hg : 0 ≤ᶠ[l] g) (h : f =O[l] g) :
   let ⟨_, hc, h'⟩ := h.exists_nonneg
   (h'.rpow hc hr hg).isBigO
 
-theorem IsTheta.rpow (hr : 0 ≤ r) (hf : 0 ≤ᶠ[l] f) (hg : 0 ≤ᶠ[l] g) (h : f =Θ[l] g) :
-    (fun x => f x ^ r) =Θ[l] fun x => g x ^ r :=
-  ⟨h.1.rpow hr hg, h.2.rpow hr hf⟩
+theorem IsTheta.rpow (hf : 0 ≤ᶠ[l] f) (hg : 0 ≤ᶠ[l] g) (h : f =Θ[l] g) :
+    (fun x => f x ^ r) =Θ[l] fun x => g x ^ r := by
+  wlog hr : r ≥ 0 with rpow_pos
+  · rw [← isTheta_inv]
+    grw [← EventuallyEq.isTheta <| hf.mono fun x hfx ↦ Real.rpow_neg hfx r]
+    grw [← EventuallyEq.isTheta <| hg.mono fun x hgx ↦ Real.rpow_neg hgx r]
+    exact rpow_pos hf hg h <| by linarith
+  exact ⟨h.1.rpow hr hg, h.2.rpow hr hf⟩
 
 theorem IsLittleO.rpow (hr : 0 < r) (hg : 0 ≤ᶠ[l] g) (h : f =o[l] g) :
     (fun x => f x ^ r) =o[l] fun x => g x ^ r := by
@@ -372,7 +373,7 @@ theorem isLittleO_log_rpow_rpow_atTop {s : ℝ} (r : ℝ) (hs : 0 < s) :
         filter_upwards [tendsto_log_atTop.eventually_ge_atTop 1] with x hx
         rw [Real.norm_of_nonneg (by positivity)]
         gcongr
-        exacts [hx, le_max_left _ _]
+        exact le_max_left _ _
     _ =o[atTop] fun x => (x ^ (s / r')) ^ r' :=
       ((isLittleO_log_rpow_atTop H).rpow hr <|
         (_root_.tendsto_rpow_atTop H).eventually <| eventually_ge_atTop 0)

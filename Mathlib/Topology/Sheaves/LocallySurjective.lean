@@ -9,6 +9,7 @@ public import Mathlib.Topology.Sheaves.Presheaf
 public import Mathlib.Topology.Sheaves.Stalks
 public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 public import Mathlib.CategoryTheory.Sites.LocallySurjective
+public import Mathlib.CategoryTheory.Sites.EpiMono
 
 /-!
 
@@ -62,8 +63,12 @@ def IsLocallySurjective (T : ℱ ⟶ 𝒢) :=
 
 theorem isLocallySurjective_iff (T : ℱ ⟶ 𝒢) :
     IsLocallySurjective T ↔
-      ∀ (U t), ∀ x ∈ U, ∃ (V : _) (ι : V ⟶ U), (∃ s, (T.app _) s = t |_ₕ ι) ∧ x ∈ V :=
-  ⟨fun h _ => h.imageSieve_mem, fun h => ⟨h _⟩⟩
+      ∀ (U t), ∀ x ∈ U, ∃ (V : _) (_ : V ≤ U), (∃ s, (T.app _) s = t |_ V) ∧ x ∈ V := by
+  refine ⟨fun h _ t x hx ↦ ?_, fun h => ⟨fun s x hx ↦ ?_⟩⟩
+  · obtain ⟨V, i, hi⟩ := h.imageSieve_mem t x hx
+    exact ⟨V, leOfHom i, hi⟩
+  · obtain ⟨V, Vle, hV⟩ := h _ s x hx
+    exact ⟨V, homOfLE Vle, hV⟩
 
 section SurjectiveOnStalks
 
@@ -116,3 +121,14 @@ end SurjectiveOnStalks
 end LocallySurjective
 
 end TopCat.Presheaf
+
+theorem TopCat.Sheaf.isLocallySurjective_iff_epi {X : TopCat.{v}} {C : Type u} [Category.{v} C]
+    {FC : C → C → Type*} {CC : C → Type v} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
+    [ConcreteCategory C FC] [Balanced (CategoryTheory.Sheaf (Opens.grothendieckTopology X) C)]
+    [(Opens.grothendieckTopology X).HasSheafCompose (CategoryTheory.forget C)]
+    [HasSheafify (Opens.grothendieckTopology X) C]
+    [(Opens.grothendieckTopology X).WEqualsLocallyBijective C]
+    [ConcreteCategory.HasFunctorialSurjectiveInjectiveFactorization C]
+    {F G : Sheaf C X} (φ : F ⟶ G) :
+    TopCat.Presheaf.IsLocallySurjective φ.hom ↔ Epi φ :=
+  CategoryTheory.Sheaf.isLocallySurjective_iff_epi' ..

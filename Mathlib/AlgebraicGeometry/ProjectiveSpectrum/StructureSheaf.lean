@@ -119,7 +119,6 @@ theorem add_mem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) (a b : ∀ x 
   simp only [Subtype.forall, Opens.apply_mk] at wa wb
   simp [wa y hy.1, wb y hy.2, ext_iff_val, add_mk, add_comm (sa * rb)]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem neg_mem' (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) (a : ∀ x : U.unop, at x.1)
     (ha : (isLocallyFraction 𝒜).pred a) : (isLocallyFraction 𝒜).pred (-a) := fun x => by
   rcases ha x with ⟨V, m, i, j, ⟨r, r_mem⟩, ⟨s, s_mem⟩, nin, hy⟩
@@ -201,7 +200,7 @@ def Proj.structureSheaf : Sheaf CommRingCat (ProjectiveSpectrum.top 𝒜) :=
     (-- We check the sheaf condition under `forget CommRing`.
           isSheaf_iff_isSheaf_comp
           _ _).mpr
-      (isSheaf_of_iso (structurePresheafCompForget 𝒜).symm (structureSheafInType 𝒜).cond)⟩
+      (isSheaf_of_iso (structurePresheafCompForget 𝒜).symm (structureSheafInType 𝒜).property)⟩
 
 end ProjectiveSpectrum
 
@@ -286,7 +285,6 @@ def sectionInBasicOpen (x : ProjectiveSpectrum.top 𝒜) :
     ⟨ProjectiveSpectrum.basicOpen 𝒜 f.den, y.2,
       ⟨𝟙 _, ⟨f.deg, ⟨f.num, f.den, _, fun _ => rfl⟩⟩⟩⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 open HomogeneousLocalization in
 /-- Given any point `x` and `f` in the homogeneous localization at `x`, there is an element in the
 stalk at `x` obtained by `sectionInBasicOpen`. This is the inverse of `stalkToFiberRingHom`.

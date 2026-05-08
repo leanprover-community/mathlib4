@@ -62,7 +62,7 @@ lemma ext_iff (f g : X.PartialMap Y) :
     f = g ↔ ∃ e : f.domain = g.domain, f.hom = (X.isoOfEq e).hom ≫ g.hom := by
   constructor
   · rintro rfl
-    simp only [exists_true_left, Scheme.isoOfEq_rfl, Iso.refl_hom, Category.id_comp]
+    simp
   · obtain ⟨U, hU, f⟩ := f
     obtain ⟨V, hV, g⟩ := g
     rintro ⟨rfl : U = V, e⟩
@@ -446,7 +446,6 @@ lemma RationalMap.eq_of_fromFunctionField_eq [IsIntegral X] (f g : X.RationalMap
   refine PartialMap.toRationalMap_eq_iff.mpr ?_
   exact PartialMap.equiv_of_fromSpecStalkOfMem_eq _ _ _ _ H
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Given `S`-schemes `X` and `Y` such that `Y` is locally of finite type and `X` is integral,
 `S`-morphisms `Spec K(X) ⟶ Y` correspond bijectively to `S`-rational maps from `X` to `Y`.

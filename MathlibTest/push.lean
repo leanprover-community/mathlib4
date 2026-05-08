@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.Push
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Set.Basic
@@ -58,24 +59,16 @@ end logic
 
 section lambda
 
-#adaptation_note
-/--
-leanprover/lean4#12341 adds `unif_hint (n * 0 =?= 0)`, so simp now unifies
-`1 * 0` with `0` during congruence proofs. This means `with_reducible rfl` no longer
-works after push/pull. We use `rfl` now, which handles the definitional equality,
-but this would have closed the goal before the `push`, so this is a regression.
--/
 example : (fun x : ℕ ↦ x ^ 2 + 1 * 0 - 5 • 6) = id ^ 2 + 1 * 0 - 5 • 6 := by
   push fun x ↦ _
-  rfl
+  with_reducible rfl
 
 example : (fun x : ℕ ↦ x ^ 2 + 1 * 0 - 5 • 6) = id ^ 2 + 1 * 0 - 5 • 6 := by
   simp only [pushFun]
-  rfl
 
 example : (fun x : ℕ ↦ x ^ 2 + 1 * 0 - 5 • 6) = id ^ 2 + 1 * 0 - 5 • 6 := by
   pull fun _ ↦ _
-  rfl
+  with_reducible rfl
 
 example : (fun x : ℕ ↦ x ^ 2 + 1 * 0 - 5 • 6) = id ^ 2 + 1 * 0 - 5 • 6 := by
   simp only [pullFun]
@@ -155,3 +148,39 @@ example (a b c : α) (s : Set α) : a ∈ (∅ ∪ (Set.univ ∩ (({b, c} \ sᶜ
   exact test_sorry
 
 end membership
+
+section floor
+
+example (a : ℤ) (n : ℕ) : ⌊a + n⌋ = ⌊a⌋ + n := by
+  push Int.floor
+  rfl
+
+example (a : ℤ) : ⌊a + 3⌋ = ⌊a⌋ + 3 := by
+  push Int.floor
+  rfl
+
+example (a : ℤ) : ⌊a + 2⌋ = ⌊a⌋ + 2 := by
+  push Int.floor
+  rfl
+
+example (a : ℤ) : ⌊a + 1⌋ = ⌊a⌋ + 1 := by
+  push Int.floor
+  rfl
+
+example (a : ℤ) (ha : 0 ≤ a) (n : ℕ) : ⌊a + n⌋₊ = ⌊a⌋₊ + n := by
+  push (disch := positivity) Nat.floor
+  rfl
+
+example (a : ℤ) (ha : 0 ≤ a) : ⌊a + 3⌋₊ = ⌊a⌋₊ + 3 := by
+  push (disch := positivity) Nat.floor
+  rfl
+
+example (a : ℤ) (ha : 0 ≤ a) : ⌊a + 2⌋₊ = ⌊a⌋₊ + 2 := by
+  push (disch := positivity) Nat.floor
+  rfl
+
+example (a : ℤ) (ha : 0 ≤ a) : ⌊a + 1⌋₊ = ⌊a⌋₊ + 1 := by
+  push (disch := positivity) Nat.floor
+  rfl
+
+end floor

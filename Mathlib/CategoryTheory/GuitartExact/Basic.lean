@@ -38,8 +38,8 @@ derived functors.
 ## TODO
 
 * Define the notion of derivability structure from
-[the paper by Kahn and Maltsiniotis][KahnMaltsiniotis2008] using Guitart exact squares
-and construct (pointwise) derived functors using this notion
+  [the paper by Kahn and Maltsiniotis][KahnMaltsiniotis2008] using Guitart exact squares
+  and construct (pointwise) derived functors using this notion
 
 ## References
 * https://ncatlab.org/nlab/show/exact+square
@@ -170,7 +170,6 @@ def inverse : w.CostructuredArrowDownwards g ⥤ w.StructuredArrowRightwards g w
 
 end EquivalenceJ
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given `w : TwoSquare T L R B` and a morphism `g : R.obj X₂ ⟶ B.obj X₃`, this is
 the obvious equivalence of categories
 `w.StructuredArrowRightwards g ≌ w.CostructuredArrowDownwards g`. -/
@@ -189,7 +188,6 @@ end
 
 section
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor `w.CostructuredArrowDownwards g ⥤ w.CostructuredArrowDownwards g'` induced
 by a morphism `γ` such that `R.map γ ≫ g = g'`. -/
 @[simps]

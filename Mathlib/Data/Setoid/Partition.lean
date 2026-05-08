@@ -15,7 +15,7 @@ This file comprises properties of equivalence relations viewed as partitions.
 There are two implementations of partitions here:
 * A collection `c : Set (Set α)` of sets is a partition of `α` if `∅ ∉ c` and each element `a : α`
   belongs to a unique set `b ∈ c`. This is expressed as `IsPartition c`
-* An indexed partition is a map `s : ι → α` whose image is a partition. This is
+* An indexed partition is a map `s : ι → Set α` whose image is a partition. This is
   expressed as `IndexedPartition s`.
 
 Of course both implementations are related to `Quotient` and `Setoid`.
@@ -47,6 +47,7 @@ theorem eq_of_mem_eqv_class {c : Set (Set α)} (H : ∀ a, ∃! b ∈ c, a ∈ b
   (H x).unique ⟨hc, hb⟩ ⟨hc', hb'⟩
 
 /-- Makes an equivalence relation from a set of sets partitioning α. -/
+@[implicit_reducible]
 def mkClasses (c : Set (Set α)) (H : ∀ a, ∃! b ∈ c, a ∈ b) : Setoid α where
   r x y := ∀ s ∈ c, x ∈ s → y ∈ s
   iseqv.refl := fun _ _ _ hx => hx
@@ -142,6 +143,7 @@ theorem eqv_classes_of_disjoint_union {c : Set (Set α)} (hu : Set.sUnion c = @S
   ExistsUnique.intro b ⟨hc, ha⟩ fun _ hc' => H.elim_set hc'.1 hc _ hc'.2 ha
 
 /-- Makes an equivalence relation from a set of disjoints sets covering α. -/
+@[implicit_reducible]
 def setoidOfDisjointUnion {c : Set (Set α)} (hu : Set.sUnion c = @Set.univ α)
     (H : c.PairwiseDisjoint id) : Setoid α :=
   Setoid.mkClasses c <| eqv_classes_of_disjoint_union hu H
@@ -157,7 +159,6 @@ theorem mkClasses_classes (r : Setoid α) : mkClasses r.classes classes_eqv_clas
 theorem sUnion_classes (r : Setoid α) : ⋃₀ r.classes = Set.univ :=
   Set.eq_univ_of_forall fun x => Set.mem_sUnion.2 ⟨{ y | r y x }, ⟨x, rfl⟩, Setoid.refl _⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence between the quotient by an equivalence relation and its
 type of equivalence classes. -/
 noncomputable def quotientEquivClasses (r : Setoid α) : Quotient r ≃ Setoid.classes r := by
@@ -203,7 +204,6 @@ theorem IsPartition.pairwiseDisjoint {c : Set (Set α)} (hc : IsPartition c) :
     c.PairwiseDisjoint id :=
   eqv_classes_disjoint hc.2
 
-set_option backward.isDefEq.respectTransparency false in
 lemma _root_.Set.PairwiseDisjoint.isPartition_of_exists_of_ne_empty {α : Type*} {s : Set (Set α)}
     (h₁ : s.PairwiseDisjoint id) (h₂ : ∀ a : α, ∃ x ∈ s, a ∈ x) (h₃ : ∅ ∉ s) :
     Setoid.IsPartition s := by
@@ -238,38 +238,53 @@ theorem classes_mkClasses (c : Set (Set α)) (hc : IsPartition c) :
     rwa [← eq_eqv_class_of_mem _ hb hy]
   · exact exists_of_mem_partition hc
 
+/-- The subtype of partitions of a type, endowed with the canonical order on partitions. -/
+def Partitions (α : Type*) : Type _ := Subtype (@IsPartition α)
+
+/-- Interpreting an element of `Partitions α` as a set of sets. -/
+def Partitions.toSet (p : Partitions α) : Set (Set α) :=
+  Subtype.val p
+
+lemma Partitions.ext_iff (p q : Partitions α) : p = q ↔ p.toSet = q.toSet :=
+  Subtype.ext_iff
+
+lemma Partitions.isPartition (p : Partitions α) : IsPartition p.toSet := p.2
+
 /-- Defining `≤` on partitions as the `≤` defined on their induced equivalence relations. -/
-instance Partition.le : LE (Subtype (@IsPartition α)) :=
-  ⟨fun x y => mkClasses x.1 x.2.2 ≤ mkClasses y.1 y.2.2⟩
+instance Partition.le : LE (Partitions α) :=
+  ⟨fun x y => mkClasses x.toSet x.isPartition.2 ≤ mkClasses y.toSet y.isPartition.2⟩
 
 /-- Defining a partial order on partitions as the partial order on their induced
 equivalence relations. -/
-instance Partition.partialOrder : PartialOrder (Subtype (@IsPartition α)) where
+instance Partition.partialOrder : PartialOrder (Partitions α) where
   lt x y := x ≤ y ∧ ¬y ≤ x
   le_refl _ := @le_refl (Setoid α) _ _
   le_trans _ _ _ := @le_trans (Setoid α) _ _ _ _
   lt_iff_le_not_ge _ _ := Iff.rfl
   le_antisymm x y hx hy := by
     let h := @le_antisymm (Setoid α) _ _ _ hx hy
-    rw [Subtype.ext_iff, ← classes_mkClasses x.1 x.2, ← classes_mkClasses y.1 y.2, h]
+    rw [Partitions.ext_iff, ← classes_mkClasses x.toSet x.isPartition,
+      ← classes_mkClasses y.toSet y.isPartition, h]
 
 variable (α) in
 /-- The order-preserving bijection between equivalence relations on a type `α`, and
 partitions of `α` into subsets. -/
-protected def Partition.orderIso : Setoid α ≃o { C : Set (Set α) // IsPartition C } where
+protected def Partition.orderIso : Setoid α ≃o Partitions α where
   toFun r := ⟨r.classes, empty_notMem_classes, classes_eqv_classes⟩
   invFun C := mkClasses C.1 C.2.2
   left_inv := mkClasses_classes
-  right_inv C := by rw [Subtype.ext_iff, ← classes_mkClasses C.1 C.2]
+  right_inv C := by
+    rw [Partitions.ext_iff, ← classes_mkClasses C.toSet C.isPartition]
+    rfl
   map_rel_iff' {r s} := by
     conv_rhs => rw [← mkClasses_classes r, ← mkClasses_classes s]
     rfl
 
 /-- A complete lattice instance for partitions; there is more infrastructure for the
 equivalent complete lattice on equivalence relations. -/
-instance Partition.completeLattice : CompleteLattice (Subtype (@IsPartition α)) :=
+instance Partition.completeLattice : CompleteLattice (Partitions α) :=
   GaloisInsertion.liftCompleteLattice <|
-    @OrderIso.toGaloisInsertion _ (Subtype (@IsPartition α)) _ (PartialOrder.toPreorder) <|
+    @OrderIso.toGaloisInsertion _ (Partitions α) _ (PartialOrder.toPreorder) <|
       Partition.orderIso α
 
 end Partition
@@ -505,14 +520,15 @@ some of the sets to obtain a coarser partition. -/
 noncomputable def coarserPartition (hs : IndexedPartition s) {κ : Type*} (g : ι → κ)
     (hg : g.Surjective) :
     IndexedPartition (fun k : κ => ⋃ i ∈ g ⁻¹' {k}, s i) where
-  eq_of_mem {_x _i _j} hxi hxj := by
+  eq_of_mem {x _i _j} hxi hxj := by
     obtain ⟨a, ⟨c, hc⟩, ha⟩ := hxi
     obtain ⟨b, ⟨d, hd⟩, hb⟩ := hxj
-    simp only [← hc, mem_iUnion] at ha
-    simp only [← hd, mem_iUnion] at hb
-    have : c = d := hs.eq_of_mem ha.2 hb.2
-    by_contra!
-    grind [disjoint_iff_forall_ne.mp ((disjoint_singleton.mpr this).preimage g) ha.1 hb.1]
+    grind =>
+      instantiate [mem_iUnion]
+      have hb : x ∈ s d
+      have ha : x ∈ s c
+      have : c = d := hs.eq_of_mem ha hb
+      finish
   some k := hs.some ((singleton_nonempty k).preimage hg).some
   some_mem k := by
     refine mem_iUnion_of_mem ((singleton_nonempty k).preimage hg).some ?_

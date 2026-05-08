@@ -309,13 +309,13 @@ lemma dep_iff_superset_isCircuit (hX : X ⊆ M.E := by aesop_mat) :
     M.Dep X ↔ ∃ C, C ⊆ X ∧ M.IsCircuit C :=
   ⟨Dep.exists_isCircuit_subset, fun ⟨C, hCX, hC⟩ ↦ hC.dep.superset hCX⟩
 
-/-- A version of `Matroid.dep_iff_superset_isCircuit` that has the supportedness hypothesis
+/-- A version of `Matroid.dep_iff_superset_isCircuit` that has the ground-set hypothesis
 as part of the equivalence, rather than a hypothesis. -/
 lemma dep_iff_superset_isCircuit' : M.Dep X ↔ (∃ C, C ⊆ X ∧ M.IsCircuit C) ∧ X ⊆ M.E :=
   ⟨fun h ↦ ⟨h.exists_isCircuit_subset, h.subset_ground⟩,
     fun ⟨⟨C, hCX, hC⟩, h⟩ ↦ hC.dep.superset hCX⟩
 
-/-- A version of `Matroid.indep_iff_forall_subset_not_isCircuit` that has the supportedness
+/-- A version of `Matroid.indep_iff_forall_subset_not_isCircuit` that has the ground-set
 hypothesis as part of the equivalence, rather than a hypothesis. -/
 lemma indep_iff_forall_subset_not_isCircuit' :
     M.Indep I ↔ (∀ C, C ⊆ I → ¬M.IsCircuit C) ∧ I ⊆ M.E := by
@@ -411,7 +411,6 @@ lemma IsCircuit.strong_multi_elimination_insert (x : ι → α) (I : ι → Set 
   rw [union_diff_distrib, union_comm]
   exact union_subset_union_left _ diff_subset
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A generalization of the strong circuit elimination axiom `Matroid.IsCircuit.strong_elimination`
 to an infinite collection of circuits.
 
@@ -498,7 +497,7 @@ section Finitary
 
 lemma IsCircuit.finite [Finitary M] (hC : M.IsCircuit C) : C.Finite := by
   have hi := hC.dep.not_indep
-  rw [indep_iff_forall_finite_subset_indep] at hi; push_neg at hi
+  rw [indep_iff_forall_finite_subset_indep] at hi; push Not at hi
   obtain ⟨J, hJC, hJfin, hJ⟩ := hi
   rwa [← hC.eq_of_not_indep_subset hJ hJC]
 
@@ -578,14 +577,13 @@ lemma isCocircuit_iff_minimal :
   rw [inter_assoc, inter_eq_self_of_subset_right hB.subset_ground]
   exact hX B hB
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A cocircuit is a minimal set whose complement is nonspanning. -/
 lemma isCocircuit_iff_minimal_compl_nonspanning :
     M.IsCocircuit K ↔ Minimal (fun X ↦ ¬ M.Spanning (M.E \ X)) K := by
   convert isCocircuit_iff_minimal with K
-  simp_rw [spanning_iff_exists_isBase_subset (S := M.E \ K), not_exists, subset_diff, not_and,
-    not_disjoint_iff_nonempty_inter, ← and_imp, and_iff_left_of_imp IsBase.subset_ground,
-    inter_comm K]
+  rw [spanning_iff_exists_isBase_subset]
+  simp_rw [not_exists, subset_diff, not_and, not_disjoint_iff_nonempty_inter, ← and_imp,
+    and_iff_left_of_imp IsBase.subset_ground, inter_comm K]
 
 /-- For an element `e` of a base `B`, the complement of the closure of `B \ {e}` is a cocircuit. -/
 lemma IsBase.compl_closure_diff_singleton_isCocircuit (hB : M.IsBase B) (he : e ∈ B) :
@@ -637,7 +635,6 @@ lemma IsCircuit.isCocircuit_inter_nontrivial (hC : M.IsCircuit C) (hK : M.IsCoci
   rw [nontrivial_iff_ne_singleton heCK]
   exact hC.inter_isCocircuit_ne_singleton hK
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsCircuit.isCocircuit_disjoint_or_nontrivial_inter (hC : M.IsCircuit C)
     (hK : M.IsCocircuit K) : Disjoint C K ∨ (C ∩ K).Nontrivial := by
   rw [or_iff_not_imp_left, disjoint_iff_inter_eq_empty, ← ne_eq, ← nonempty_iff_ne_empty]

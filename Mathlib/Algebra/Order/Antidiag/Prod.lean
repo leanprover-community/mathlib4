@@ -76,7 +76,7 @@ instance [AddMonoid A] : Subsingleton (HasAntidiagonal A) where
     rw [ha, hb]
 
 -- The goal of this lemma is to allow to rewrite antidiagonal
--- when the decidability instances obsucate Lean
+-- when the decidability instances obfuscate Lean
 lemma hasAntidiagonal_congr (A : Type*) [AddMonoid A]
     [H1 : HasAntidiagonal A] [H2 : HasAntidiagonal A] :
     H1.antidiagonal = H2.antidiagonal := by congr!; subsingleton
@@ -167,14 +167,11 @@ theorem filter_fst_eq_antidiagonal (n m : A) [DecidablePred (· = m)] [Decidable
 
 theorem filter_snd_eq_antidiagonal (n m : A) [DecidablePred (· = m)] [Decidable (m ≤ n)] :
     {x ∈ antidiagonal n | x.snd = m} = if m ≤ n then {(n - m, m)} else ∅ := by
-  have : (fun x : A × A ↦ (x.snd = m)) ∘ Prod.swap = fun x : A × A ↦ x.fst = m := by
-    ext; simp
   rw [← map_swap_antidiagonal, filter_map]
-  simp [this, filter_fst_eq_antidiagonal, apply_ite (Finset.map _)]
+  simp [filter_fst_eq_antidiagonal, apply_ite (Finset.map _)]
 
 end OrderedSub
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The disjoint union of antidiagonals `Σ (n : A), antidiagonal n` is equivalent to the product
     `A × A`. This is such an equivalence, obtained by mapping `(n, (k, l))` to `(k, l)`. -/
 @[simps]

@@ -32,45 +32,40 @@ section PiPreorder
 
 variable [∀ i, Preorder (α i)] (x y : ∀ i, α i)
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem pi_univ_Ici : (pi univ fun i ↦ Ici (x i)) = Ici x :=
   ext fun y ↦ by simp [Pi.le_def]
 
-@[simp]
-theorem pi_univ_Iic : (pi univ fun i ↦ Iic (x i)) = Iic x :=
-  ext fun y ↦ by simp [Pi.le_def]
-
-@[simp]
+@[to_dual self, simp]
 theorem pi_univ_Icc : (pi univ fun i ↦ Icc (x i) (y i)) = Icc x y :=
   ext fun y ↦ by simp [Pi.le_def, forall_and]
 
+@[to_dual self]
 theorem piecewise_mem_Icc {s : Set ι} [∀ j, Decidable (j ∈ s)] {f₁ f₂ g₁ g₂ : ∀ i, α i}
     (h₁ : ∀ i ∈ s, f₁ i ∈ Icc (g₁ i) (g₂ i)) (h₂ : ∀ i ∉ s, f₂ i ∈ Icc (g₁ i) (g₂ i)) :
     s.piecewise f₁ f₂ ∈ Icc g₁ g₂ :=
   ⟨le_piecewise (fun i hi ↦ (h₁ i hi).1) fun i hi ↦ (h₂ i hi).1,
     piecewise_le (fun i hi ↦ (h₁ i hi).2) fun i hi ↦ (h₂ i hi).2⟩
 
+@[to_dual self]
 theorem piecewise_mem_Icc' {s : Set ι} [∀ j, Decidable (j ∈ s)] {f₁ f₂ g₁ g₂ : ∀ i, α i}
     (h₁ : f₁ ∈ Icc g₁ g₂) (h₂ : f₂ ∈ Icc g₁ g₂) : s.piecewise f₁ f₂ ∈ Icc g₁ g₂ :=
   piecewise_mem_Icc (fun _ _ ↦ ⟨h₁.1 _, h₁.2 _⟩) fun _ _ ↦ ⟨h₂.1 _, h₂.2 _⟩
 
 section Nonempty
 
+@[to_dual]
 theorem pi_univ_Ioi_subset [Nonempty ι] : (pi univ fun i ↦ Ioi (x i)) ⊆ Ioi x := fun _ hz ↦
   ⟨fun i ↦ le_of_lt <| hz i trivial, fun h ↦
     (‹Nonempty ι›.elim) fun i ↦ not_lt_of_ge (h i) (hz i trivial)⟩
 
-theorem pi_univ_Iio_subset [Nonempty ι] : (pi univ fun i ↦ Iio (x i)) ⊆ Iio x :=
-  pi_univ_Ioi_subset (α := fun i ↦ (α i)ᵒᵈ) x
-
+@[to_dual self]
 theorem pi_univ_Ioo_subset [Nonempty ι] : (pi univ fun i ↦ Ioo (x i) (y i)) ⊆ Ioo x y := fun _ hx ↦
   ⟨(pi_univ_Ioi_subset _) fun i hi ↦ (hx i hi).1, (pi_univ_Iio_subset _) fun i hi ↦ (hx i hi).2⟩
 
+@[to_dual]
 theorem pi_univ_Ioc_subset [Nonempty ι] : (pi univ fun i ↦ Ioc (x i) (y i)) ⊆ Ioc x y := fun _ hx ↦
   ⟨(pi_univ_Ioi_subset _) fun i hi ↦ (hx i hi).1, fun i ↦ (hx i trivial).2⟩
-
-theorem pi_univ_Ico_subset [Nonempty ι] : (pi univ fun i ↦ Ico (x i) (y i)) ⊆ Ico x y := fun _ hx ↦
-  ⟨fun i ↦ (hx i trivial).1, (pi_univ_Iio_subset _) fun i hi ↦ (hx i hi).2⟩
 
 end Nonempty
 
@@ -98,7 +93,6 @@ theorem pi_univ_Ioc_update_right {x y : ∀ i, α i} {i₀ : ι} {m : α i₀} (
     singleton_pi', ← inter_assoc, this]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem disjoint_pi_univ_Ioc_update_left_right {x y : ∀ i, α i} {i₀ : ι} {m : α i₀} :
     Disjoint (pi univ fun i ↦ Ioc (x i) (update y i₀ m i))
     (pi univ fun i ↦ Ioc (update x i₀ m i) (y i)) := by

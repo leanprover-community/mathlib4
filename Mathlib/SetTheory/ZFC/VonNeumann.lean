@@ -32,7 +32,7 @@ namespace ZFSet
 `V_ a` for `a < o`. It satisfies the following properties:
 
 - `vonNeumann_zero`: `V_ 0 = ∅`
-- `vonNeumann_succ`: `V_ (succ a) = powerset (V_ a)`
+- `vonNeumann_add_one`: `V_ (a + 1) = powerset (V_ a)`
 - `vonNeumann_of_isSuccPrelimit`: `IsSuccPrelimit a → V_ a = ⋃ b < a, V_ b`
 -/
 noncomputable def vonNeumann (o : Ordinal.{u}) : ZFSet.{u} :=
@@ -117,8 +117,12 @@ theorem vonNeumann_zero : V_ 0 = ∅ :=
   (eq_empty _).2 (by simp [mem_vonNeumann])
 
 @[simp]
+theorem vonNeumann_add_one (o : Ordinal) : V_ (o + 1) = powerset (V_ o) :=
+  ext fun z ↦ by rw [mem_vonNeumann, mem_powerset, subset_vonNeumann, lt_add_one_iff]
+
+-- TODO: deprecate
 theorem vonNeumann_succ (o : Ordinal) : V_ (succ o) = powerset (V_ o) :=
-  ext fun z ↦ by rw [mem_vonNeumann, mem_powerset, subset_vonNeumann, lt_succ_iff]
+  vonNeumann_add_one o
 
 theorem vonNeumann_of_isSuccPrelimit (h : IsSuccPrelimit o) :
     V_ o = ⋃ a : Set.Iio o, vonNeumann a :=
@@ -147,14 +151,14 @@ theorem card_vonNeumann (o : Ordinal.{u}) : card (V_ o) = preBeth o := by
     rw [← lift_le.{u + 1}]
     apply lift_card_iUnion_le_sum_card.trans
     refine (sum_eq_lift_iSup_of_lift_mk_le_lift_iSup ?_ ?_).le
-    · rw [Ordinal.mk_Iio_ordinal, ← lift_aleph0.{u + 1, u}, lift_le, Ordinal.aleph0_le_card]
+    · rw [mk_Iio_ordinal, ← lift_aleph0.{u + 1, u}, lift_le, Ordinal.aleph0_le_card]
       exact Ordinal.omega0_le_of_isSuccLimit ho
-    · rw [Ordinal.mk_Iio_ordinal, lift_lift, lift_le]
+    · rw [mk_Iio_ordinal, lift_lift, lift_le]
       by_contra! h
       refine (⨆ i : Set.Iio o, (V_ ↑i).card).card_ord.not_lt <|
         (Ordinal.card_le_card_vonNeumann _).trans_lt <| (cantor _).trans_le ?_
       rw [← card_powerset, ← vonNeumann_succ]
-      refine le_ciSup (bddAbove_of_small _) (⟨_, ho.succ_lt ?_⟩ : Set.Iio o)
+      refine le_ciSup bddAbove_of_small (⟨_, ho.succ_lt ?_⟩ : Set.Iio o)
       exact (ord_card_le _).trans_lt' (ord_strictMono h)
 
 end ZFSet

@@ -79,7 +79,7 @@ lemma fib_add_one : ∀ {n}, n ≠ 0 → fib (n + 1) = fib (n - 1) + fib n
 
 theorem fib_le_fib_succ {n : ℕ} : fib n ≤ fib (n + 1) := by cases n <;> simp [fib_add_two]
 
-@[mono]
+@[gcongr, mono]
 theorem fib_mono : Monotone fib :=
   monotone_nat_of_le_succ fun _ => fib_le_fib_succ
 
@@ -146,7 +146,6 @@ theorem fib_add (m n : ℕ) : fib (m + n + 1) = fib m * fib n + fib (m + 1) * fi
     simp only [fib_add_two, ih]
     ring
 
-set_option backward.isDefEq.respectTransparency false in
 theorem fib_two_mul (n : ℕ) : fib (2 * n) = fib n * (2 * fib (n + 1) - fib n) := by
   cases n
   · simp
@@ -154,7 +153,6 @@ theorem fib_two_mul (n : ℕ) : fib (2 * n) = fib n * (2 * fib (n + 1) - fib n) 
     simp only [← add_assoc, add_tsub_cancel_right]
     ring
 
-set_option backward.isDefEq.respectTransparency false in
 theorem fib_two_mul_add_one (n : ℕ) : fib (2 * n + 1) = fib (n + 1) ^ 2 + fib n ^ 2 := by
   rw [two_mul, fib_add]
   ring

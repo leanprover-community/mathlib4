@@ -34,8 +34,7 @@ Prove that the Sorgenfrey line is a paracompact space.
 
 
 open Set Filter TopologicalSpace
-
-open scoped Topology Filter Cardinal
+open scoped Topology Cardinal
 
 namespace Counterexample
 
@@ -87,7 +86,6 @@ theorem nhds_basis_Ico_rat (a : ℝₗ) :
   rcases exists_rat_btwn hb with ⟨r, har, hrb⟩
   exact ⟨r, har, Ico_subset_Ico_right hrb.le⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem nhds_basis_Ico_inv_pnat (a : ℝₗ) :
     (𝓝 a).HasBasis (fun _ : ℕ+ => True) fun n => Ico a (a + (n : ℝₗ)⁻¹) := by
   refine (nhds_basis_Ico a).to_hasBasis (fun b hb => ?_) fun n hn =>

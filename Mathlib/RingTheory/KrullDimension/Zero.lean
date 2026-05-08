@@ -17,7 +17,7 @@ Basic definitions and lemmas are provided in `Mathlib/RingTheory/KrullDimension/
 
 -/
 
-@[expose] public section
+public section
 
 section CommSemiring
 
@@ -157,7 +157,6 @@ instance PrimeSpectrum.unique_of_ringKrullDimLE_zero [IsLocalRing R] : Unique (P
   ⟨⟨IsLocalRing.closedPoint _⟩,
     fun _ ↦ PrimeSpectrum.ext (Ring.KrullDimLE.eq_maximalIdeal_of_isPrime _)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma PrimeSpectrum.subsingleton_iff_isField_of_isReduced
     {R : Type*} [CommRing R] [IsReduced R] [Nontrivial R] :
     Subsingleton (PrimeSpectrum R) ↔ IsField R := by

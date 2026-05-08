@@ -199,7 +199,6 @@ theorem loopOfHom_eq_id {a b : Generators G} (e) (H : e ∈ wideSubquiverSymmetr
   · rw [treeHom_eq T (Path.cons default ⟨Sum.inr e, H⟩), homOfPath]
     simp only [IsIso.inv_hom_id, Category.comp_id, Category.assoc, treeHom]
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- Since a hom gives a loop, any homomorphism from the vertex group at the root
@@ -236,9 +235,7 @@ lemma endIsFree : IsFreeGroup (End (root' T)) :=
       refine ⟨F'.mapEnd _, ?_, ?_⟩
       · suffices ∀ {x y} (q : x ⟶ y), F'.map (loopOfHom T q) = (F'.map q : X) by
           rintro ⟨⟨a, b, e⟩, h⟩
-          -- Work around the defeq `X = End (F'.obj (IsFreeGroupoid.SpanningTree.root' T))`
-          erw [Functor.mapEnd_apply]
-          rw [this, hF']
+          simp only [Functor.mapEnd, DFunLike.coe, this, hF']
           exact dif_neg h
         intro x y q
         suffices ∀ {a} (p : Path (root T) a), F'.map (homOfPath T p) = 1 by
@@ -275,7 +272,6 @@ private def symgen {G : Type u} [Groupoid.{v} G] [IsFreeGroupoid G] :
     G → Symmetrify (Generators G) :=
   id
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- If there exists a morphism `a → b` in a free groupoid, then there also exists a zigzag

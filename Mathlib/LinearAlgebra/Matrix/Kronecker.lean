@@ -5,7 +5,6 @@ Authors: Filippo A. E. Nuccio, Eric Wieser
 -/
 module
 
-public import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 public import Mathlib.LinearAlgebra.Matrix.Trace
 public import Mathlib.RingTheory.TensorProduct.Basic
@@ -77,6 +76,25 @@ theorem kroneckerMap_map_right (f : α → β' → γ) (g : β → β') (A : Mat
 theorem kroneckerMap_map (f : α → β → γ) (g : γ → γ') (A : Matrix l m α) (B : Matrix n p β) :
     (kroneckerMap f A B).map g = kroneckerMap (fun a b => g (f a b)) A B :=
   ext fun _ _ => rfl
+
+theorem kroneckerMap_submatrix_left
+    (f : α → β → γ) (A : Matrix l m α) (B : Matrix n p β) (r : l' → l) (c : m' → m) :
+    kroneckerMap f (A.submatrix r c) B =
+      (kroneckerMap f A B).submatrix (.map r id) (.map c id) :=
+  rfl
+
+theorem kroneckerMap_submatrix_right
+    (f : α → β → γ) (A : Matrix l m α) (B : Matrix n p β) (r : n' → n) (c : p' → p) :
+    kroneckerMap f A (B.submatrix r c) =
+      (kroneckerMap f A B).submatrix (.map id r) (.map id c) :=
+  rfl
+
+theorem kroneckerMap_submatrix_submatrix
+    (f : α → β → γ) (A : Matrix l m α) (B : Matrix n p β)
+    (r : l' → l) (c : m' → m) (r' : n' → n) (c' : p' → p) :
+    kroneckerMap f (A.submatrix r c) (B.submatrix r' c') =
+      (kroneckerMap f A B).submatrix (.map r r') (.map c c') :=
+  rfl
 
 @[simp]
 theorem kroneckerMap_zero_left [Zero α] [Zero γ] (f : α → β → γ) (hf : ∀ b, f 0 b = 0)
@@ -321,7 +339,6 @@ theorem natCast_kronecker_natCast [NonAssocSemiring α] [DecidableEq m] [Decidab
     (a : Matrix m m α) ⊗ₖ (b : Matrix n n α) = ↑(a * b) :=
   (diagonal_kronecker_diagonal _ _).trans <| by simp_rw [← Nat.cast_mul]; rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem kronecker_natCast [NonAssocSemiring α] [DecidableEq n] (A : Matrix l m α) (b : ℕ) :
     A ⊗ₖ (b : Matrix n n α) = blockDiagonal fun _ => b • A :=
   kronecker_diagonal _ _ |>.trans <| by
@@ -329,7 +346,6 @@ theorem kronecker_natCast [NonAssocSemiring α] [DecidableEq n] (A : Matrix l m 
     ext
     simp [(Nat.cast_commute b _).eq]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem natCast_kronecker [NonAssocSemiring α] [DecidableEq l] (a : ℕ) (B : Matrix m n α) :
     (a : Matrix l l α) ⊗ₖ B =
       Matrix.reindex (Equiv.prodComm _ _) (Equiv.prodComm _ _) (blockDiagonal fun _ => a • B) :=
@@ -387,11 +403,7 @@ theorem det_kronecker [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [C
     (A : Matrix m m R) (B : Matrix n n R) :
     det (A ⊗ₖ B) = det A ^ Fintype.card n * det B ^ Fintype.card m := by
   refine (det_kroneckerMapBilinear (Algebra.lmul ℕ R).toLinearMap mul_mul_mul_comm _ _).trans ?_
-  congr 3
-  · ext i j
-    exact mul_one _
-  · ext i j
-    exact one_mul _
+  simp
 
 theorem conjTranspose_kronecker [CommMagma R] [StarMul R] (x : Matrix l m R) (y : Matrix n p R) :
     (x ⊗ₖ y)ᴴ = xᴴ ⊗ₖ yᴴ := by

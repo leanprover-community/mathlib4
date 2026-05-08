@@ -20,14 +20,7 @@ and its submodules. This immediately implies that the category of `R`-modules is
 
 @[expose] public section
 
-
-open CategoryTheory
-
-open CategoryTheory.Subobject
-
-open CategoryTheory.Limits
-
-open ModuleCat
+open CategoryTheory Subobject Limits
 
 universe v u
 
@@ -35,7 +28,6 @@ namespace ModuleCat
 
 variable {R : Type u} [Ring R] (M : ModuleCat.{v} R)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The categorical subobjects of a module `M` are in one-to-one correspondence with its
 submodules. -/
 noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
@@ -81,7 +73,6 @@ noncomputable def toKernelSubobject {M N : ModuleCat.{v} R} {f : M ⟶ N} :
     LinearMap.ker f.hom →ₗ[R] kernelSubobject f :=
   (kernelSubobjectIso f ≪≫ ModuleCat.kernelIsoKer f).inv.hom
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toKernelSubobject_arrow {M N : ModuleCat R} {f : M ⟶ N} (x : LinearMap.ker f.hom) :
     (kernelSubobject f).arrow (toKernelSubobject x) = x.1 := by

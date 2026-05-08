@@ -29,7 +29,7 @@ injective presentation for `A`, hence category of abelian groups has enough inje
 This file is split from `Mathlib/Algebra/Category/Grp/Injective.lean` to prevent import loops.
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory
 
@@ -39,7 +39,6 @@ namespace AddCommGrpCat
 
 open CharacterModule
 
-set_option backward.isDefEq.respectTransparency false in
 instance enoughInjectives : EnoughInjectives AddCommGrpCat.{u} where
   presentation A_ := Nonempty.intro
     { J := of <| (CharacterModule A_) → ULift.{u} (AddCircle (1 : ℚ))

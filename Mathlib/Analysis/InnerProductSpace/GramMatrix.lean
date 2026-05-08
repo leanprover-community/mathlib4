@@ -6,7 +6,9 @@ Authors: Peter Pfaffelhuber
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.LinearAlgebra.Matrix.PosDef
+import Mathlib.Analysis.Matrix.Order
 
 /-! # Gram Matrices
 
@@ -94,6 +96,11 @@ theorem linearIndependent_of_posDef_gram {v : n → E} (h_gram : PosDef (gram �
   have := h_gram.dotProduct_mulVec_pos (x := y)
   simp_all [star_dotProduct_gram_mulVec]
 
+omit [Finite n] in
+theorem linearIndependent_of_det_gram_ne_zero [Fintype n] [DecidableEq n] {v : n → E}
+    (h : (gram 𝕜 v).det ≠ 0) : LinearIndependent 𝕜 v :=
+  linearIndependent_of_posDef_gram <| (posSemidef_gram 𝕜 v).posDef_iff_det_ne_zero.mpr h
+
 end SemiInnerProductSpace
 
 section NormedInnerProductSpace
@@ -114,6 +121,18 @@ theorem posDef_gram_of_linearIndependent
 theorem posDef_gram_iff_linearIndependent {v : n → E} :
     PosDef (gram 𝕜 v) ↔ LinearIndependent 𝕜 v :=
   ⟨linearIndependent_of_posDef_gram, posDef_gram_of_linearIndependent⟩
+
+omit [Finite n] in
+theorem det_gram_ne_zero_iff_linearIndependent [Fintype n] [DecidableEq n] {v : n → E} :
+    (gram 𝕜 v).det ≠ 0 ↔ LinearIndependent 𝕜 v := by
+  rw [← posDef_gram_iff_linearIndependent, (posSemidef_gram 𝕜 v).posDef_iff_det_ne_zero]
+
+omit [Finite n] in
+theorem gram_eq_conjTranspose_mul {ι : Type*} [Fintype ι] (b : OrthonormalBasis ι 𝕜 E) (v : n → E) :
+    letI m := of fun i j ↦ b.repr (v j) i
+    gram 𝕜 v = mᴴ * m := by
+  ext i j
+  simp [mul_apply, b.repr_apply_apply, b.sum_inner_mul_inner]
 
 end NormedInnerProductSpace
 
