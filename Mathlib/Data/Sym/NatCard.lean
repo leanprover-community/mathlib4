@@ -56,16 +56,16 @@ instance [Infinite α] : Infinite {a : Sym2 α // ¬a.IsDiag} :=
   let e := Infinite.natEmbedding α
   .of_injective (fun n => ⟨s(e 0, e (n + 1)), by simp⟩) fun _ _ => by simp
 
-theorem natCard_subtype_diag : Nat.card { a : Sym2 α // a.IsDiag } = Nat.card α := by
+theorem natCard_subtype_diag : Nat.card { a : Sym2 α // a.IsDiag } = Nat.card α :=
+  Nat.card_congr isDiagElemEquiv
+
+theorem natCard_subtype_not_diag :
+    Nat.card { a : Sym2 α // ¬a.IsDiag } = (Nat.card α).choose 2 := by
   cases finite_or_infinite α
   · obtain ⟨_⟩ := nonempty_fintype α; letI := Classical.decEq α
     simp_rw [Nat.card_eq_fintype_card]
-    exact card_subtype_diag
+    exact card_subtype_not_diag
   · simp
-
-theorem natCard_subtype_not_diag :
-    Nat.card { a : Sym2 α // ¬a.IsDiag } = (Nat.card α).choose 2 :=
-  Nat.card_congr isDiagElemEquiv
 
 lemma ncard_diagSet : (diagSet : Set (Sym2 α)).ncard = Nat.card α :=
   natCard_subtype_diag _
