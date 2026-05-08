@@ -78,7 +78,7 @@ def map {S T : SSet.Truncated 2} (f : S ⟶ T) :
     OneTruncation₂ S ⥤rq OneTruncation₂ T where
   obj x := f.app _ x
   map e := e.map f
-  map_id x := by ext; simp [← FunctorToTypes.naturality, reflQuiver_id]
+  map_id x := by ext; simp [← NatTrans.naturality_apply, reflQuiver_id]
 
 end OneTruncation₂
 
@@ -141,6 +141,7 @@ lemma nerve_hom_ext {X : (SSet.Truncated 2)} {C : Type u} [Category.{u} C]
 end
 end OneTruncation₂
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The refl quiver underlying a nerve is naturally isomorphic to the refl quiver underlying the
 category. -/
 @[simps! hom_app_obj hom_app_map inv_app_obj_obj inv_app_obj_map inv_app_map]

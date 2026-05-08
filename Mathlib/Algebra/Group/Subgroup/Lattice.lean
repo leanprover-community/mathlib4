@@ -554,7 +554,7 @@ theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {K : ι → Subgroup G} (h
   rw [this, mem_biSup_of_directedOn trivial]
   · simp
   · simp only [setOf_true]
-    rw [directedOn_onFun_iff, Set.image_univ, ← directedOn_range]
+    rw [directedOn_onFun_iff, Set.image_univ, directedOn_range]
     -- `Directed.mono_comp` and much of the Set API requires `Type u` instead of `Sort u`
     intro i
     simp only [PLift.exists]
@@ -606,8 +606,7 @@ variable {P : C → Prop}
 @[to_additive, simp high]
 lemma forall_mem_sup :
     (∀ x ∈ s ⊔ t, P x) ↔ (∀ x₁ ∈ s, ∀ x₂ ∈ t, P (x₁ * x₂)) := by
-  simp [mem_sup]
-  aesop
+  grind [mem_sup]
 
 @[to_additive, simp high]
 lemma exists_mem_sup :

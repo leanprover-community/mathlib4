@@ -185,6 +185,13 @@ theorem coe_det [DecidableEq M] :
   · congr -- use the correct `DecidableEq` instance
   rfl
 
+theorem _root_.Module.Free.of_det_ne_one {f : M →ₗ[R] M} (hf : f.det ≠ 1) :
+    Module.Free R M := by
+  by_cases H : ∃ s : Finset M, Nonempty (Module.Basis s R M)
+  · rcases H with ⟨s, ⟨hs⟩⟩
+    exact Module.Free.of_basis hs
+  · classical simp [LinearMap.coe_det, H] at hf
+
 end
 
 -- Auxiliary lemma, the `simp` normal form goes in the other direction
@@ -301,7 +308,7 @@ theorem det_conj {N : Type*} [AddCommGroup N] [Module A N] (f : M →ₗ[A] M) (
       · rw [← toMatrix_comp, LinearEquiv.comp_coe, e.self_trans_symm, LinearEquiv.refl_toLinearMap,
           toMatrix_id]
     · have H' : ¬∃ t : Finset N, Nonempty (Basis t A N) := by
-        contrapose! H
+        contrapose H
         rcases H with ⟨s, ⟨b⟩⟩
         exact ⟨_, ⟨(b.map e.symm).reindexFinsetRange⟩⟩
       simp only [coe_det, H, H', MonoidHom.one_apply, dif_neg, not_false_eq_true]
@@ -328,11 +335,6 @@ theorem finite_of_det_ne_one {f : M →ₗ[R] M} (hf : f.det ≠ 1) : Module.Fin
   · rcases H with ⟨s, ⟨hs⟩⟩
     exact Module.Finite.of_basis hs
   · classical simp [LinearMap.coe_det, H] at hf
-
-@[deprecated "use `finite_of_det_ne_one` instead" (since := "2025-09-15")]
-theorem finiteDimensional_of_det_ne_one {𝕜 : Type*} [Field 𝕜] [Module 𝕜 M] (f : M →ₗ[𝕜] M)
-    (hf : LinearMap.det f ≠ 1) : FiniteDimensional 𝕜 M :=
-  finite_of_det_ne_one hf
 
 /-- If the determinant of a map vanishes, then the map is not injective. -/
 theorem bot_lt_ker_of_det_eq_zero [IsDomain R] [Free R M] {f : M →ₗ[R] M} (hf : f.det = 0) :
@@ -448,7 +450,7 @@ end LinearEquiv
 @[simp] theorem LinearMap.det_map {K V W : Type*} [Field K] [AddCommGroup V] [Module K V]
     [AddCommGroup W] [Module K W] {F : Type*} [EquivLike F (End K V) (End K W)]
     [AlgEquivClass F K _ _] (f : F) (x : End K V) : (f x).det = x.det :=
-  have ⟨_, h⟩ := AlgEquiv.eq_linearEquivConjAlgEquiv (f : End K V ≃ₐ[K] End K W)
+  have ⟨_, h⟩ := (AlgEquivClass.toAlgEquiv f).eq_linearEquivConjAlgEquiv
   (by simpa using congr($h x)) ▸ det_conj _ _
 
 @[simp] theorem Matrix.det_map {K m n : Type*} [Field K] [Fintype m] [Fintype n]
@@ -456,7 +458,7 @@ end LinearEquiv
     [AlgEquivClass F K _ _] (f : F) (x : Matrix m m K) : (f x).det = x.det := by
   simpa [toMatrixAlgEquiv', Matrix.toLinAlgEquiv'] using
     LinearMap.det_map ((Matrix.toLinAlgEquiv'.symm.trans
-      (f : Matrix m m K ≃ₐ[K] Matrix n n K)).trans Matrix.toLinAlgEquiv') x.toLin'
+      (AlgEquivClass.toAlgEquiv f)).trans Matrix.toLinAlgEquiv') x.toLin'
 
 -- TODO: show `(f x).det = x.det` for when `f : Matrix m m K →ₐ[K] Matrix m m K`
 -- (using Skolem-Noether)
@@ -720,7 +722,7 @@ end Module.Basis
 @[simp]
 theorem Pi.basisFun_det : (Pi.basisFun R ι).det = Matrix.detRowAlternating := by
   ext M
-  rw [Basis.det_apply, Basis.coePiBasisFun.toMatrix_eq_transpose, det_transpose]
+  rw [Basis.det_apply, Basis.coePiBasisFun.toMatrix_eq_transpose, det_transpose, det]
 
 theorem Pi.basisFun_det_apply (v : ι → ι → R) :
     (Pi.basisFun R ι).det v = (Matrix.of v).det := by

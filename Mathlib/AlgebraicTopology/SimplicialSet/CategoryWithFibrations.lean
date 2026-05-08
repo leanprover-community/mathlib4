@@ -46,10 +46,12 @@ which consists of horn inclusions `Λ[n, i].ι : Λ[n, i] ⟶ Δ[n]` (for positi
 def J : MorphismProperty SSet.{u} :=
   ⨆ n, .ofHoms (fun (i : Fin (n + 2)) ↦ Λ[n + 1, i].ι)
 
-lemma horn_ι_mem_J (n : ℕ) (i : Fin (n + 2)) :
-    J (horn.{u} (n + 1) i).ι := by
-  simp only [J, iSup_iff]
-  exact ⟨n, ⟨i⟩⟩
+lemma horn_ι_mem_J (n : ℕ) [NeZero n] (i : Fin (n + 1)) :
+    J (horn.{u} n i).ι := by
+  obtain _ | n := n
+  · exact (NeZero.ne 0 rfl).elim
+  · simp only [J, iSup_iff]
+    exact ⟨n, ⟨i⟩⟩
 
 lemma I_le_monomorphisms : I.{u} ≤ monomorphisms _ := by
   rintro _ _ _ ⟨n⟩

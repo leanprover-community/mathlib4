@@ -124,6 +124,8 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
         (vsub_orthogonalProjection_mem_direction_orthogonal s p),
       Real.norm_eq_abs, abs_mul_abs_self, dist_comm, ← dist_eq_norm_vsub V p,
       Real.mul_self_sqrt (add_nonneg (mul_self_nonneg _) (mul_self_nonneg _))] at hcr₃
+    #adaptation_note /-- This was not needed prior to v4.30.0-rc1. -/
+    have : t₃ * y = ycc₂ := by grind
     grind
 
 /-- Given a finite nonempty affinely independent family of points,
@@ -673,7 +675,6 @@ circumradius. -/
 theorem exists_circumradius_eq_of_cospherical {ps : Set P} {n : ℕ} [FiniteDimensional ℝ V]
     (hd : finrank ℝ V = n) (hc : Cospherical ps) :
     ∃ r : ℝ, ∀ sx : Simplex ℝ P n, Set.range sx.points ⊆ ps → sx.circumradius = r := by
-  haveI : Nonempty (⊤ : AffineSubspace ℝ P) := Set.univ.nonempty
   rw [← finrank_top, ← direction_top ℝ V P] at hd
   refine exists_circumradius_eq_of_cospherical_subset ?_ hd hc
   exact Set.subset_univ _
@@ -721,7 +722,6 @@ circumcenter. -/
 theorem exists_circumcenter_eq_of_cospherical {ps : Set P} {n : ℕ} [FiniteDimensional ℝ V]
     (hd : finrank ℝ V = n) (hc : Cospherical ps) :
     ∃ c : P, ∀ sx : Simplex ℝ P n, Set.range sx.points ⊆ ps → sx.circumcenter = c := by
-  haveI : Nonempty (⊤ : AffineSubspace ℝ P) := Set.univ.nonempty
   rw [← finrank_top, ← direction_top ℝ V P] at hd
   refine exists_circumcenter_eq_of_cospherical_subset ?_ hd hc
   exact Set.subset_univ _
@@ -759,7 +759,6 @@ circumsphere. -/
 theorem exists_circumsphere_eq_of_cospherical {ps : Set P} {n : ℕ} [FiniteDimensional ℝ V]
     (hd : finrank ℝ V = n) (hc : Cospherical ps) :
     ∃ c : Sphere P, ∀ sx : Simplex ℝ P n, Set.range sx.points ⊆ ps → sx.circumsphere = c := by
-  haveI : Nonempty (⊤ : AffineSubspace ℝ P) := Set.univ.nonempty
   rw [← finrank_top, ← direction_top ℝ V P] at hd
   refine exists_circumsphere_eq_of_cospherical_subset ?_ hd hc
   exact Set.subset_univ _

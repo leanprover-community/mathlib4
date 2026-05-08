@@ -110,9 +110,6 @@ namespace IsAdmissible
 @[grind →] lemma of_cons {m a L} (h : IsAdmissible m (a :: L)) :
     IsAdmissible (m + 1) L := by cases L <;> grind
 
-@[deprecated (since := "2025-10-15")]
-alias tail := IsAdmissible.of_cons
-
 lemma cons {m a L} (hL : IsAdmissible (m + 1) L) (ha : a ≤ m)
     (ha' : (_ : 0 < L.length) → a < L[0]) : IsAdmissible m (a :: L) := by cases L <;> grind
 
@@ -239,6 +236,8 @@ lemma simplicialEvalσ_monotone (L : List ℕ) : Monotone (simplicialEvalσ L) :
   induction L <;> grind [Monotone]
 
 variable {m}
+
+set_option backward.isDefEq.respectTransparency false in
 /- We prove that `simplicialEvalσ` is indeed a lift of
 `(toSimplexCategory.map (standardσ m L _ _)).toOrderHom` when the list is admissible. -/
 lemma simplicialEvalσ_of_isAdmissible
@@ -288,6 +287,7 @@ lemma standardσ_simplicialInsert (hL : IsAdmissible (m + 1) L) (j : ℕ) (hj : 
         convert σ_comp_σ_nat (n := m) a j (by grind) (by grind) (by grind) <;> grind
       grind [standardσ_cons]
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local grind! .] simplicialInsert_length simplicialInsert_isAdmissible in
 /-- Using `standardσ_simplicialInsert`, we can prove that every morphism satisfying `P_σ` is equal
 to some `standardσ` for some admissible list of indices. -/

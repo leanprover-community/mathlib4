@@ -6,6 +6,7 @@ Authors: Kenny Lau
 module
 
 public import Mathlib.LinearAlgebra.PiTensorProduct
+public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Symmetric tensor power of a semimodule over a commutative semiring
@@ -26,7 +27,7 @@ from `ι → M` to `Sym[R] ι M` by `⨂ₛ[R] i, f i`. We also reserve the nota
   associative and commutative, and that `n ↦ Sym[R]^n M` is a graded (semi)ring and algebra.
 * Universal property: linear maps from `Sym[R]^n M` to `N` correspond to symmetric multilinear
   maps `M ^ n` to `N`.
-* Relate to homogneous (multivariate) polynomials of degree `n`.
+* Relate to homogeneous (multivariate) polynomials of degree `n`.
 
 -/
 
@@ -50,6 +51,7 @@ is the quotient of the `ι`-indexed tensor power of `M` by the relation that two
 if they are related by a permutation of `ι`. -/
 def SymmetricPower : Type max u v :=
   (addConGen (SymmetricPower.Rel R ι M)).Quotient
+deriving AddCommMonoid
 
 @[inherit_doc]
 scoped[TensorProduct] notation:max "Sym[" R "] " ι:arg M:arg => SymmetricPower R ι M
@@ -59,10 +61,9 @@ scoped[TensorProduct] notation:max "Sym[" R "]^" n:arg M:arg => Sym[R] (Fin n) M
 
 namespace SymmetricPower
 
-instance : AddCommMonoid (Sym[R] ι M) := AddCon.addCommMonoid _
-
 instance (R : Type u) [CommRing R] (M : Type v) [AddCommGroup M] [Module R M] :
-    AddCommGroup (Sym[R] ι M) := AddCon.addCommGroup _
+    AddCommGroup (Sym[R] ι M) :=
+  inferInstanceAs <| AddCommGroup (AddCon.Quotient _)
 
 variable {R ι M} in
 lemma smul (r : R) (x y : ⨂[R] _, M) (h : addConGen (Rel R ι M) x y) :

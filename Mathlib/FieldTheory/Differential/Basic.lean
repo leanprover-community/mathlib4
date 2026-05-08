@@ -92,6 +92,7 @@ lemma _root_.algebraMap.coe_logDeriv {F K : Type*} [Field F] [Field K] [Differen
 
 variable {F : Type*} [Field F] [Differential F] [CharZero F]
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance (p : F[X]) [Fact (Irreducible p)] [Fact p.Monic] :
     Differential (AdjoinRoot p) where
   deriv := Derivation.liftOfSurjective (f := (AdjoinRoot.mk p).toIntAlgHom) AdjoinRoot.mk_surjective
@@ -105,7 +106,7 @@ noncomputable instance (p : F[X]) [Fact (Irreducible p)] [Fact p.Monic] :
       apply dvd_mul_of_dvd_right
       rw [← AdjoinRoot.mk_eq_zero]
       unfold implicitDeriv
-      simp only [ AdjoinRoot.aeval_eq, Derivation.coe_add, Derivation.coe_smul, Pi.add_apply,
+      simp only [AdjoinRoot.aeval_eq, Derivation.coe_add, Derivation.coe_smul, Pi.add_apply,
         Pi.smul_apply, Derivation.restrictScalars_apply, derivative'_apply, smul_eq_mul, map_add,
         map_mul, AdjoinRoot.mk_leftInverse Fact.out _]
       rw [div_mul_cancel₀, add_neg_cancel]
@@ -117,6 +118,7 @@ noncomputable instance (p : F[X]) [Fact (Irreducible p)] [Fact p.Monic] :
       apply natDegree_derivative_lt
       exact Nat.ne_zero_of_lt this)
 
+set_option backward.isDefEq.respectTransparency false in
 instance (p : F[X]) [Fact (Irreducible p)] [Fact p.Monic] :
     DifferentialAlgebra F (AdjoinRoot p) where
   deriv_algebraMap a := by
@@ -156,6 +158,7 @@ lemma differentialAlgebraFiniteDimensional [FiniteDimensional F K] :
 A finite extension of a differential field has a unique derivation which agrees with the one on the
 base field.
 -/
+@[implicit_reducible]
 noncomputable def uniqueDifferentialAlgebraFiniteDimensional [FiniteDimensional F K] :
     Unique {_a : Differential K // DifferentialAlgebra F K} := by
   let default : {_a : Differential K // DifferentialAlgebra F K} :=

@@ -70,7 +70,9 @@ lemma floor_lt_top : ⌊r⌋ₑ < ⊤ ↔ r < ∞ := by cases r <;> simp
 @[simp] lemma ceil_lt_top : ⌈r⌉ₑ < ⊤ ↔ r < ∞ := by cases r <;> simp
 
 @[simp] lemma le_floor : n ≤ ⌊r⌋ₑ ↔ n ≤ r := by cases r <;> cases n <;> simp [Nat.le_floor_iff]
+
 @[simp] lemma ceil_le : ⌈r⌉ₑ ≤ n ↔ r ≤ n := by cases r <;> cases n <;> simp
+
 @[simp] lemma floor_lt : ⌊r⌋ₑ < n ↔ r < n := lt_iff_lt_of_le_iff_le le_floor
 @[simp] lemma lt_ceil : n < ⌈r⌉ₑ ↔ n < r := lt_iff_lt_of_le_iff_le ceil_le
 
@@ -200,7 +202,7 @@ lemma floor_sub_ofNat (r : ℝ≥0∞) (n : ℕ) [n.AtLeastTwo] : ⌊r - ofNat(n
 
 @[bound]
 lemma ceil_lt_add_one (hr : r ≠ ∞) : (⌈r⌉ₑ : ℝ≥0∞) < r + 1 := by
-  lift r to ℝ≥0 using hr; simpa using mod_cast Nat.ceil_lt_add_one (zero_le r)
+  lift r to ℝ≥0 using hr; simpa using mod_cast Nat.ceil_lt_add_one zero_le
 
 @[bound]
 lemma ceil_add_le : ∀ (r s : ℝ≥0∞), ⌈r + s⌉ₑ ≤ ⌈r⌉ₑ + ⌈s⌉ₑ
@@ -219,8 +221,7 @@ end ENat
 namespace Mathlib.Meta.Positivity
 open Lean.Meta Qq
 
-set_option backward.privateInPublic true in
-private alias ⟨_, natCeil_pos⟩ := ENat.ceil_pos
+alias ⟨_, natCeil_pos⟩ := ENat.ceil_pos
 
 /-- Extension for the `positivity` tactic: `ENat.ceil` is positive if its input is. -/
 @[positivity ⌈_⌉ₑ]

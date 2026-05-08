@@ -247,6 +247,7 @@ theorem seminormFromBounded_add (f_nonneg : 0 ≤ f)
   · rw [← add_div, div_le_div_iff_of_pos_right (lt_of_le_of_ne' (f_nonneg _) hz), add_mul]
     exact f_add _ _
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- `seminormFromBounded'` is a ring seminorm on `R`. -/
 def seminormFromBounded (f_zero : f 0 = 0) (f_nonneg : 0 ≤ f)
     (f_mul : ∀ x y : R, f (x * y) ≤ c * f x * f y)

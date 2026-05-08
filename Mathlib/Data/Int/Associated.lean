@@ -17,7 +17,7 @@ This file contains some results on equality up to units in the integers.
 * `Int.natAbs_eq_iff_associated`: the absolute value is equal iff integers are associated
 -/
 
-@[expose] public section
+public section
 
 
 theorem Int.natAbs_eq_iff_associated {a b : ℤ} : a.natAbs = b.natAbs ↔ Associated a b := by

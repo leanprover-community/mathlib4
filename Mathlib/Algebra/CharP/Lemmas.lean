@@ -33,7 +33,7 @@ protected lemma add_pow_prime_pow_eq' (h : Commute x y) (n : ℕ) :
   _ = ∑ k ∈ Icc 0 (p ^ n), x ^ k * y ^ (p ^ n - k) * (p ^ n).choose k := by
     rw [h.add_pow, ← Nat.Ico_zero_eq_range, Ico_add_one_right_eq_Icc]
   _ = x ^ p ^ n + y ^ p ^ n + ∑ k ∈ Ioo 0 (p ^ n), x ^ k * y ^ (p ^ n - k) * (p ^ n).choose k := by
-    simp_rw [Icc_eq_cons_Ico (zero_le _), Ico_eq_cons_Ioo (pow_pos hp.pos _)]
+    simp_rw [Icc_eq_cons_Ico zero_le, Ico_eq_cons_Ioo (pow_pos hp.pos _)]
     simp [-cons_eq_insert, add_assoc]
   _ = _ := by
     simp_rw [mul_sum]
@@ -310,7 +310,7 @@ end CharP
 /-
 Preliminary definitions and results for the Frobenius map.
 Necessary here for simple results about sums of `p`-powers that are used in files forbidding
-to import algebra-related definitions (see `Mathlib/Algebra/CharP/Two.lean`).
+to import algebra-related definitions.
 -/
 section Frobenius
 

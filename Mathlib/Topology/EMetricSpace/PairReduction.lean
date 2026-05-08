@@ -181,7 +181,7 @@ variable [DecidableEq T]
     the log-size radius of `tᵢ₊₁` in `Vᵢ₊₁`. -/
 noncomputable
 def logSizeBallSeq (J : Finset T) (hJ : J.Nonempty) (a c : ℝ≥0∞) : ℕ → logSizeBallStruct T
-  | 0 => {finset := J, point := hJ.choose, radius := logSizeRadius hJ.choose J a c}
+  | 0 => { finset := J, point := hJ.choose, radius := logSizeRadius hJ.choose J a c }
   | n + 1 =>
     let V' := (logSizeBallSeq J hJ a c n).finset \ ((logSizeBallSeq J hJ a c n).smallBall c)
     let t' := if hV' : V'.Nonempty then hV'.choose else (logSizeBallSeq J hJ a c n).point
@@ -222,7 +222,7 @@ lemma antitone_logSizeBallSeq_add_one_subset (hJ : J.Nonempty) :
 
 lemma finset_logSizeBallSeq_subset_logSizeBallSeq_init (hJ : J.Nonempty) (i : ℕ) :
     (logSizeBallSeq J hJ a c i).finset ⊆ J := by
-  apply subset_trans <| antitone_logSizeBallSeq_add_one_subset hJ (zero_le i)
+  apply subset_trans <| antitone_logSizeBallSeq_add_one_subset hJ zero_le
   simp [finset_logSizeBallSeq_zero]
 
 lemma radius_logSizeBallSeq_le (hJ : J.Nonempty) (ha : 1 < a) (hn : 1 ≤ n) (hJ_card : #J ≤ a ^ n)
@@ -379,11 +379,10 @@ lemma edist_le_of_mem_pairSet (ha : 1 < a) (hJ_card : #J ≤ a ^ n) {s t : T}
   obtain ⟨i, hiJ, h'⟩ : ∃ i < #J, (s, t) ∈ pairSetSeq J a c i := by simpa [pairSet] using h
   have hJ : J.Nonempty := Finset.card_pos.mp (Nat.zero_lt_of_lt hiJ)
   wlog! hn : 1 ≤ n
-  · convert zero_le (n * c)
-    convert edist_self _
+  · suffices s = t by simp [this]
     simp only [Nat.lt_one_iff.mp hn, pow_zero, Nat.cast_le_one] at hJ_card
     have ⟨hs, ht⟩ := Finset.mem_product.mp (pairSet_subset h)
-    exact Finset.card_le_one_iff.mp hJ_card ht hs
+    exact Finset.card_le_one_iff.mp hJ_card hs ht
   simp only [pairSetSeq, hJ, ↓reduceDIte, logSizeBallStruct.ball, Finset.product_eq_sprod,
     Finset.singleton_product, Finset.mem_map, Finset.mem_filter, Function.Embedding.coeFn_mk,
     Prod.mk.injEq, exists_eq_right_right] at h'
@@ -399,7 +398,7 @@ lemma iSup_edist_pairSet {E : Type*} [PseudoEMetricSpace E] (ha : 1 < a) (f : T 
   let P (l : ℕ) := s ∈ (logSizeBallSeq J hJ a c l).finset ∧ t ∈ (logSizeBallSeq J hJ a c l).finset
   let l := Nat.findGreatest P (#J - 1)
   obtain ⟨hsV, htV⟩ : P l := by
-    apply Nat.findGreatest_spec (zero_le _)
+    apply Nat.findGreatest_spec zero_le
     simpa [P, finset_logSizeBallSeq_zero] using ⟨hs, ht⟩
   wlog h : s ∉ (logSizeBallSeq J hJ a c (l + 1)).finset generalizing s t
   · have h' : t ∉ (logSizeBallSeq J hJ a c (l + 1)).finset := by

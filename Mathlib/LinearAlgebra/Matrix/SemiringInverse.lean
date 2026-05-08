@@ -9,6 +9,8 @@ public import Mathlib.Algebra.Group.Embedding
 public import Mathlib.Data.Matrix.Mul
 public import Mathlib.GroupTheory.Perm.Sign
 
+import Mathlib.Algebra.Module.End
+
 /-!
 # Nonsingular inverses over semirings
 
@@ -30,24 +32,32 @@ namespace Matrix
 def detp : R := ∑ σ ∈ ofSign s, ∏ k, A k (σ k)
 
 @[simp]
-lemma detp_one_one : detp 1 (1 : Matrix n n R) = 1 := by
+lemma detp_one_diagonal (d : n → R) : detp 1 (diagonal d) = ∏ i, d i := by
   rw [detp, sum_eq_single_of_mem 1]
-  · simp [one_apply]
+  · simp
   · simp [ofSign]
   · rintro σ - hσ1
     obtain ⟨i, hi⟩ := not_forall.mp (mt Perm.ext_iff.mpr hσ1)
-    exact prod_eq_zero (mem_univ i) (one_apply_ne' hi)
+    exact prod_eq_zero (mem_univ i) (diagonal_apply_ne' _ hi)
 
 @[simp]
-lemma detp_neg_one_one : detp (-1) (1 : Matrix n n R) = 0 := by
+lemma detp_one_one : detp 1 (1 : Matrix n n R) = 1 := by
+  rw [← diagonal_one, detp_one_diagonal, prod_const_one]
+
+@[simp]
+lemma detp_neg_one_diagonal (d : n → R) : detp (-1) (diagonal d) = 0 := by
   rw [detp, sum_eq_zero]
   intro σ hσ
   have hσ1 : σ ≠ 1 := by
-    contrapose! hσ
+    contrapose hσ
     rw [hσ, mem_ofSign, sign_one]
     decide
   obtain ⟨i, hi⟩ := not_forall.mp (mt Perm.ext_iff.mpr hσ1)
-  exact prod_eq_zero (mem_univ i) (one_apply_ne' hi)
+  exact prod_eq_zero (mem_univ i) (diagonal_apply_ne' _ hi)
+
+@[simp]
+lemma detp_neg_one_one : detp (-1) (1 : Matrix n n R) = 0 := by
+  rw [← diagonal_one, detp_neg_one_diagonal]
 
 /-- The adjugate matrix, but only the terms of a given sign. -/
 def adjp : Matrix n n R :=
@@ -84,7 +94,7 @@ theorem detp_mul :
   conv_rhs => rw [add_assoc]
   refine congr_arg₂ (· + ·) (sum_congr rfl fun σ hσ ↦ ?_) (add_comm _ _)
   replace hσ : ¬ Function.Injective σ := by
-    contrapose! hσ
+    contrapose hσ
     rw [notMem_compl, mem_map, ofSign_disjUnion]
     exact ⟨Equiv.ofBijective σ hσ.bijective_of_finite, mem_univ _, rfl⟩
   obtain ⟨i, j, hσ, hij⟩ := Function.not_injective_iff.mp hσ
@@ -140,12 +150,13 @@ theorem mul_adjp_add_detp : A * adjp 1 A + detp (-1) A • 1 = A * adjp (-1) A +
 
 variable {A B}
 
-theorem isAddUnit_mul (hAB : A * B = 1) (i j k : n) (hij : i ≠ j) : IsAddUnit (A i k * B k j) := by
+theorem isAddUnit_mul {d : n → R} (hAB : A * B = diagonal d) (i j k : n) (hij : i ≠ j) :
+    IsAddUnit (A i k * B k j) := by
   revert k
-  rw [← IsAddUnit.sum_univ_iff, ← mul_apply, hAB, one_apply_ne hij]
+  rw [← IsAddUnit.sum_univ_iff, ← mul_apply, hAB, diagonal_apply_ne _ hij]
   exact isAddUnit_zero
 
-theorem isAddUnit_detp_mul_detp (hAB : A * B = 1) :
+theorem isAddUnit_detp_mul_detp {d : n → R} (hAB : A * B = diagonal d) :
     IsAddUnit (detp 1 A * detp (-1) B + detp (-1) A * detp 1 B) := by
   suffices h : ∀ {s t}, s ≠ t → IsAddUnit (detp s A * detp t B) from
     (h (by decide)).add (h (by decide))
@@ -162,7 +173,7 @@ theorem isAddUnit_detp_mul_detp (hAB : A * B = 1) :
     ← mul_prod_erase univ _ (mem_univ k), ← smul_eq_mul]
   exact (isAddUnit_mul hAB k (τ (σ k)) (σ k) hk).smul_right _
 
-theorem isAddUnit_detp_smul_mul_adjp (hAB : A * B = 1) :
+theorem isAddUnit_detp_smul_mul_adjp {d : n → R} (hAB : A * B = diagonal d) :
     IsAddUnit (detp 1 A • (B * adjp (-1) B) + detp (-1) A • (B * adjp 1 B)) := by
   suffices h : ∀ {s t}, s ≠ t → IsAddUnit (detp s A • (B * adjp t B)) from
     (h (by decide)).add (h (by decide))
@@ -190,7 +201,7 @@ theorem isAddUnit_detp_smul_mul_adjp (hAB : A * B = 1) :
 theorem detp_smul_add_adjp (hAB : A * B = 1) :
     detp 1 B • A + adjp (-1) B = detp (-1) B • A + adjp 1 B := by
   have key := congr(A * $(mul_adjp_add_detp B))
-  simp_rw [mul_add, ← mul_assoc, hAB, one_mul, mul_smul, mul_one] at key
+  simp_rw [mul_add, ← mul_assoc, hAB, one_mul, Matrix.mul_smul, mul_one] at key
   rwa [add_comm, eq_comm, add_comm]
 
 theorem detp_smul_adjp (hAB : A * B = 1) :
@@ -209,7 +220,7 @@ instance (priority := low) instIsStablyFiniteRingOfCommSemiring : IsStablyFinite
   have h0 := detp_mul A B
   rw [hAB, detp_one_one, detp_neg_one_one, zero_add] at h0
   replace h := congr(B * $(detp_smul_adjp hAB))
-  simp only [mul_add, mul_smul] at h
+  simp only [mul_add, Matrix.mul_smul] at h
   replace h := congr($h + (detp 1 A * detp (-1) B + detp (-1) A * detp 1 B) • 1)
   simp_rw [add_smul, ← smul_smul] at h
   rwa [add_assoc, add_add_add_comm, ← smul_add, ← smul_add,
@@ -226,12 +237,12 @@ instance (priority := low) instIsStablyFiniteRingOfCommSemiring : IsStablyFinite
 variable (A B)
 
 /-- We can construct an instance of invertible A if A has a left inverse. -/
-@[deprecated invertibleOfLeftInverse (since := "2025-12-06")]
+@[deprecated invertibleOfLeftInverse (since := "2025-12-06"), implicit_reducible]
 protected def invertibleOfLeftInverse (h : B * A = 1) : Invertible A :=
   invertibleOfLeftInverse _ _ h
 
 /-- We can construct an instance of invertible A if A has a right inverse. -/
-@[deprecated invertibleOfRightInverse (since := "2025-12-06")]
+@[deprecated invertibleOfRightInverse (since := "2025-12-06"), implicit_reducible]
 protected def invertibleOfRightInverse (h : A * B = 1) : Invertible A :=
   invertibleOfRightInverse _ _ h
 

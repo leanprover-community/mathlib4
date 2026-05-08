@@ -16,17 +16,17 @@ Given a functor `F : D ⥤ C`, we define a functor
 `F.partialLeftAdjoint : F.PartialLeftAdjointSource ⥤ D` which is
 defined on the full subcategory of `C` consisting of those objects `X : C`
 such that `F ⋙ coyoneda.obj (op X) : D ⥤ Type _` is corepresentable.
-We have a natural bijection
+For `X : F.PartialLeftAdjointSource` and `Y : D`, we have a natural bijection
 `(F.partialLeftAdjoint.obj X ⟶ Y) ≃ (X.obj ⟶ F.obj Y)`
 that is similar to what we would expect for the image of the object `X`
 by the left adjoint of `F`, if such an adjoint existed.
 
-Indeed, if the predicate `F.LeftAdjointObjIsDefined` which defines
+Indeed, if the predicate `F.leftAdjointObjIsDefined` which defines
 the `F.PartialLeftAdjointSource` holds for all
 objects `X : C`, then `F` has a left adjoint.
 
 When colimits indexed by a category `J` exist in `D`, we show that
-the predicate `F.LeftAdjointObjIsDefined` is stable under colimits indexed by `J`.
+the predicate `F.leftAdjointObjIsDefined` is stable under colimits indexed by `J`.
 
 ## TODO
 * consider dualizing the results to right adjoints
@@ -125,17 +125,10 @@ noncomputable def partialLeftAdjoint : F.PartialLeftAdjointSource ⥤ D where
   map := F.partialLeftAdjointMap
   map_id X := by
     apply F.partialLeftAdjointHomEquiv.injective
-    dsimp
-    rw [partialLeftAdjointHomEquiv_map]
-    erw [id_comp]
+    simp [partialLeftAdjointHomEquiv_map]
   map_comp {X Y Z} f g := by
     apply F.partialLeftAdjointHomEquiv.injective
-    dsimp
-    rw [partialLeftAdjointHomEquiv_map, partialLeftAdjointHomEquiv_comp,
-      partialLeftAdjointHomEquiv_map, assoc]
-    erw [assoc]
-    rw [← F.partialLeftAdjointHomEquiv_comp, id_comp,
-      partialLeftAdjointHomEquiv_map]
+    simp [partialLeftAdjointHomEquiv_comp, ← F.partialLeftAdjointHomEquiv_comp]
 
 variable {F}
 
@@ -155,6 +148,7 @@ lemma isRightAdjoint_iff_leftAdjointObjIsDefined_eq_top :
   simpa only [Pi.top_apply, Prop.top_eq_true, iff_true]
     using leftAdjointObjIsDefined_of_adjunction (Adjunction.ofIsRightAdjoint F) X
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `leftAdjointObjIsDefined_of_isColimit`. -/
 noncomputable def corepresentableByCompCoyonedaObjOfIsColimit {J : Type*} [Category* J]
     {R : J ⥤ F.PartialLeftAdjointSource}
@@ -181,7 +175,7 @@ noncomputable def corepresentableByCompCoyonedaObjOfIsColimit {J : Type*} [Categ
   homEquiv_comp {Y Y'} g f := hc.hom_ext (fun j ↦ by
     dsimp
     simp only [IsColimit.fac, IsColimit.fac_assoc, partialLeftAdjointHomEquiv_comp,
-      F.map_comp, assoc] )
+      F.map_comp, assoc])
 
 lemma leftAdjointObjIsDefined_of_isColimit {J : Type*} [Category* J] {R : J ⥤ C} {c : Cocone R}
     (hc : IsColimit c) [HasColimitsOfShape J D]
@@ -223,7 +217,7 @@ instance (Y : F.PartialRightAdjointSource) :
 
 /-- Given `F : C ⥤ D`, this is `F.partialRightAdjoint` on objects: it sends
 `X : D` such that `F.rightAdjointObjIsDefined X` holds to an object of `C`
-which represents the functor `F ⋙ coyoneda.obj (op X.obj)`. -/
+which represents the functor `F.op ⋙ yoneda.obj X.obj`. -/
 noncomputable def partialRightAdjointObj (Y : F.PartialRightAdjointSource) : C :=
   (F.op ⋙ yoneda.obj Y.obj).reprX
 
@@ -273,24 +267,17 @@ lemma partialRightAdjointHomEquiv_symm_comp {X : C} {Y Y' : F.PartialRightAdjoin
       F.partialRightAdjointHomEquiv.symm (f ≫ g.hom) := by
   simp [Equiv.eq_symm_apply, partialRightAdjointHomEquiv_map_comp]
 
-/-- Given `F : C ⥤ D`, this is the partial adjoint functor `F.PartialLeftAdjointSource ⥤ C`. -/
+/-- Given `F : C ⥤ D`, this is the partial adjoint functor `F.PartialRightAdjointSource ⥤ C`. -/
 @[simps]
 noncomputable def partialRightAdjoint : F.PartialRightAdjointSource ⥤ C where
   obj := F.partialRightAdjointObj
   map := F.partialRightAdjointMap
   map_id X := by
     apply F.partialRightAdjointHomEquiv.injective
-    dsimp
-    rw [partialRightAdjointHomEquiv_map]
-    erw [comp_id]
+    simp [partialRightAdjointHomEquiv_map]
   map_comp {X Y Z} f g := by
     apply F.partialRightAdjointHomEquiv.injective
-    dsimp
-    rw [partialRightAdjointHomEquiv_map, partialRightAdjointHomEquiv_comp,
-      partialRightAdjointHomEquiv_map, ← assoc]
-    erw [← assoc]
-    rw [← F.partialRightAdjointHomEquiv_comp, comp_id,
-      partialRightAdjointHomEquiv_map]
+    simp [partialRightAdjointHomEquiv_comp, ← assoc, ← F.partialRightAdjointHomEquiv_comp]
 
 variable {F}
 
@@ -310,6 +297,7 @@ lemma isLeftAdjoint_iff_rightAdjointObjIsDefined_eq_top :
   simpa only [Pi.top_apply, Prop.top_eq_true, iff_true]
     using rightAdjointObjIsDefined_of_adjunction (Adjunction.ofIsLeftAdjoint F) X
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `rightAdjointObjIsDefined_of_isLimit`. -/
 noncomputable def representableByCompYonedaObjOfIsLimit {J : Type*} [Category* J]
     {R : J ⥤ F.PartialRightAdjointSource}
@@ -336,7 +324,7 @@ noncomputable def representableByCompYonedaObjOfIsLimit {J : Type*} [Category* J
       right_inv := fun g ↦ hc.hom_ext (fun j ↦ by simp) }
   homEquiv_comp {Y Y'} g f := hc.hom_ext (fun j ↦ by
     dsimp
-    simp only [IsLimit.fac, partialRightAdjointHomEquiv_comp, assoc] )
+    simp only [IsLimit.fac, partialRightAdjointHomEquiv_comp, assoc])
 
 lemma rightAdjointObjIsDefined_of_isLimit {J : Type*} [Category* J] {R : J ⥤ D} {c : Cone R}
     (hc : IsLimit c) [HasLimitsOfShape J C]

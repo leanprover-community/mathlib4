@@ -28,7 +28,7 @@ more painful with reals than nonnegative extended reals. They should probably be
 run.
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Measure Set
 open scoped ENNReal NNReal Function symmDiff
@@ -78,9 +78,14 @@ theorem nonempty_of_measureReal_ne_zero (h : μ.real s ≠ 0) : s.Nonempty :=
     (c • μ).real s = c * μ.real s := by
   simp [measureReal_def]
 
+theorem map_measureReal_apply_of_aemeasurable [MeasurableSpace β] {f : α → β}
+    (hf : AEMeasurable f μ) {s : Set β} (hs : MeasurableSet s) :
+    (μ.map f).real s = μ.real (f ⁻¹' s) := by
+  simp_rw [measureReal_def, map_apply_of_aemeasurable hf hs]
+
 theorem map_measureReal_apply [MeasurableSpace β] {f : α → β} (hf : Measurable f)
-    {s : Set β} (hs : MeasurableSet s) : (μ.map f).real s = μ.real (f ⁻¹' s) := by
-  simp_rw [measureReal_def, map_apply hf hs]
+    {s : Set β} (hs : MeasurableSet s) : (μ.map f).real s = μ.real (f ⁻¹' s) :=
+  map_measureReal_apply_of_aemeasurable hf.aemeasurable hs
 
 @[gcongr] theorem measureReal_mono (h : s₁ ⊆ s₂) (h₂ : μ s₂ ≠ ∞ := by finiteness) :
     μ.real s₁ ≤ μ.real s₂ :=

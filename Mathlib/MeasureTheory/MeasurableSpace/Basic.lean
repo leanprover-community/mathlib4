@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Notation.Indicator
 public import Mathlib.Data.Int.Cast.Pi
 public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.MeasureTheory.MeasurableSpace.Defs
+public import Mathlib.Order.SupClosed
 
 /-!
 # Measurable spaces and measurable functions
@@ -58,6 +59,7 @@ variable {m m₁ m₂ : MeasurableSpace α} {m' : MeasurableSpace β} {f : α �
 
 /-- The forward image of a measurable space under a function. `map f m` contains the sets
   `s : Set β` whose preimage under `f` is measurable. -/
+@[implicit_reducible]
 protected def map (f : α → β) (m : MeasurableSpace α) : MeasurableSpace β where
   MeasurableSet' s := MeasurableSet[m] <| f ⁻¹' s
   measurableSet_empty := m.measurableSet_empty
@@ -76,6 +78,7 @@ theorem map_comp {f : α → β} {g : β → γ} : (m.map f).map g = m.map (g �
 
 /-- The reverse image of a measurable space under a function. `comap f m` contains the sets
   `s : Set α` such that `s` is the `f`-preimage of a measurable set in `β`. -/
+@[implicit_reducible]
 protected def comap (f : α → β) (m : MeasurableSpace β) : MeasurableSpace α where
   MeasurableSet' s := ∃ s', MeasurableSet[m] s' ∧ f ⁻¹' s' = s
   measurableSet_empty := ⟨∅, m.measurableSet_empty, rfl⟩
@@ -209,12 +212,18 @@ lemma Measurable.sup_of_right {mα mα' : MeasurableSpace α} {_ : MeasurableSpa
 theorem measurable_id'' {m mα : MeasurableSpace α} (hm : m ≤ mα) : @Measurable α α mα m id :=
   measurable_id.mono le_rfl hm
 
-@[measurability]
 theorem measurable_from_top [MeasurableSpace β] {f : α → β} : Measurable[⊤] f := fun _ _ => trivial
 
 theorem measurable_generateFrom [MeasurableSpace α] {s : Set (Set β)} {f : α → β}
     (h : ∀ t ∈ s, MeasurableSet (f ⁻¹' t)) : @Measurable _ _ _ (generateFrom s) f :=
   Measurable.of_le_map <| generateFrom_le h
+
+theorem measurableSet_generateFrom_of_mem_supClosure {s : Set (Set α)} {t : Set α}
+    (ht : t ∈ supClosure s) : MeasurableSet[generateFrom s] t := by
+  rcases ht with ⟨P, hP, PC, rfl⟩
+  rw [Finset.sup'_eq_sup, Finset.sup_id_set_eq_sUnion]
+  exact MeasurableSet.sUnion (Finset.countable_toSet P)
+    (fun s hs ↦ measurableSet_generateFrom (PC hs))
 
 variable {f g : α → β}
 
@@ -222,7 +231,7 @@ section TypeclassMeasurableSpace
 
 variable [MeasurableSpace α] [MeasurableSpace β]
 
-@[nontriviality, measurability]
+@[nontriviality]
 theorem Subsingleton.measurable [Subsingleton α] : Measurable f := fun _ _ =>
   @Subsingleton.measurableSet α _ _ _
 
@@ -285,10 +294,8 @@ protected theorem MeasurableSet.preimage {t : Set β} (ht : MeasurableSet t) (hf
 
 @[fun_prop]
 protected theorem Measurable.piecewise {_ : DecidablePred (· ∈ s)} (hs : MeasurableSet s)
-    (hf : Measurable f) (hg : Measurable g) : Measurable (piecewise s f g) := by
-  intro t ht
-  rw [piecewise_preimage]
-  exact hs.ite (hf ht) (hg ht)
+    (hf : Measurable f) (hg : Measurable g) : Measurable (piecewise s f g) :=
+  fun t ht => by simpa [piecewise_preimage] using hs.ite (hf ht) (hg ht)
 
 /-- This is slightly different from `Measurable.piecewise`. It can be used to show
 `Measurable (ite (x=0) 0 1)` by

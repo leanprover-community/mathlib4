@@ -5,8 +5,9 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.CharP.Lemmas
-public import Mathlib.GroupTheory.OrderOfElement
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.Ring.Parity
 
 /-!
 # Lemmas about rings of characteristic two
@@ -17,9 +18,12 @@ The lemmas in this file with a `_sq` suffix are just special cases of the `_pow_
 elsewhere, with a shorter name for ease of discovery, and no need for a `[Fact (Prime 2)]` argument.
 -/
 
-@[expose] public section
+public section
 
-assert_not_exists Algebra LinearMap
+-- TODO: `assert_not_exists Field` is added because of `Mathlib.GroupTheory.OrderOfElement`.
+-- If you want to import fields here, please refactor the import hierarchy for
+-- `Mathlib.GroupTheory.OrderOfElement`.
+assert_not_exists Algebra LinearMap Field
 
 variable {R ι : Type*}
 
@@ -28,9 +32,6 @@ namespace CharTwo
 section AddMonoidWithOne
 
 variable [AddMonoidWithOne R]
-
-theorem two_eq_zero [CharP R 2] : (2 : R) = 0 := by
-  rw [← Nat.cast_two, CharP.cast_eq_zero]
 
 /-- The only hypotheses required to build a `CharP R 2` instance are `1 ≠ 0` and `2 = 0`. -/
 theorem of_one_ne_zero_of_two_eq_zero (h₁ : (1 : R) ≠ 0) (h₂ : (2 : R) = 0) : CharP R 2 where
@@ -41,6 +42,34 @@ theorem of_one_ne_zero_of_two_eq_zero (h₁ : (1 : R) ≠ 0) (h₂ : (2 : R) = 0
     · simp_rw [hn.not_two_dvd_nat, iff_false]
       rwa [natCast_eq_one_of_odd_of_two_eq_zero hn h₂]
 
+variable [CharP R 2]
+
+@[scoped simp]
+theorem two_eq_zero : (2 : R) = 0 := by
+  rw [← Nat.cast_two, CharP.cast_eq_zero]
+
+theorem natCast_eq_ite (n : ℕ) : (n : R) = if Even n then 0 else 1 := by
+  induction n <;> aesop (add simp [one_add_one_eq_two])
+
+@[simp]
+theorem range_natCast : Set.range ((↑) : ℕ → R) = {0, 1} := by
+  rw [funext natCast_eq_ite, Set.range_ite_const]
+  · use 0; simp
+  · use 1; simp
+
+variable (R) in
+theorem natCast_cases (n : ℕ) : (n : R) = 0 ∨ (n : R) = 1 :=
+  range_natCast.le (Set.mem_range_self _)
+
+theorem natCast_eq_mod (n : ℕ) : (n : R) = (n % 2 : ℕ) := by
+  simp [natCast_eq_ite, Nat.even_iff]
+
+@[scoped simp]
+theorem ofNat_eq_mod (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : R) = (ofNat(n) % 2 : ℕ) :=
+  natCast_eq_mod n
+
+example : (37 : R) = 1 := by simp
+
 end AddMonoidWithOne
 
 section Semiring
@@ -48,10 +77,10 @@ section Semiring
 variable [Semiring R] [CharP R 2]
 
 @[scoped simp]
-theorem add_self_eq_zero (x : R) : x + x = 0 := by rw [← two_smul R x, two_eq_zero, zero_smul]
+theorem add_self_eq_zero (x : R) : x + x = 0 := by rw [← two_mul x, two_eq_zero, zero_mul]
 
 @[scoped simp]
-protected theorem two_nsmul (x : R) : 2 • x = 0 := by rw [two_smul, add_self_eq_zero]
+protected theorem two_nsmul (x : R) : 2 • x = 0 := by rw [two_nsmul, add_self_eq_zero]
 
 @[scoped simp]
 protected theorem add_cancel_left (a b : R) : a + (a + b) = b := by
@@ -90,39 +119,61 @@ protected theorem two_zsmul (x : R) : (2 : ℤ) • x = 0 := by
 protected theorem add_eq_zero {a b : R} : a + b = 0 ↔ a = b := by
   rw [← CharTwo.sub_eq_add, sub_eq_iff_eq_add, zero_add]
 
+theorem intCast_eq_ite (n : ℤ) : (n : R) = if Even n then 0 else 1 := by
+  obtain ⟨n, rfl | rfl⟩ := n.eq_nat_or_neg <;> simpa using natCast_eq_ite n
+
+@[simp]
+theorem range_intCast : Set.range ((↑) : ℤ → R) = {0, 1} := by
+  rw [funext intCast_eq_ite, Set.range_ite_const]
+  · use 0; simp
+  · use 1; simp
+
+variable (R) in
+theorem intCast_cases (n : ℤ) : (n : R) = 0 ∨ (n : R) = 1 :=
+  (Set.ext_iff.1 range_intCast _).1 (Set.mem_range_self _)
+
+theorem intCast_eq_mod (n : ℤ) : (n : R) = (n % 2 : ℤ) := by
+  simp [intCast_eq_ite, Int.even_iff]
+
 end Ring
 
 section CommSemiring
 
 variable [CommSemiring R] [CharP R 2]
 
-theorem add_sq (x y : R) : (x + y) ^ 2 = x ^ 2 + y ^ 2 :=
-  add_pow_char _ _ _
+theorem add_sq (x y : R) : (x + y) ^ 2 = x ^ 2 + y ^ 2 := by
+  simp [add_pow_two]
 
 theorem add_mul_self (x y : R) : (x + y) * (x + y) = x * x + y * y := by
   rw [← pow_two, ← pow_two, ← pow_two, add_sq]
 
+/-- See `frobenius` for the Frobenius map. -/
+private def sqAddMonoidHom : R →+ R where
+  toFun := (· ^ 2)
+  map_zero' := zero_pow two_ne_zero
+  map_add' := add_sq
+
 theorem list_sum_sq (l : List R) : l.sum ^ 2 = (l.map (· ^ 2)).sum :=
-  list_sum_pow_char _ _
+  map_list_sum sqAddMonoidHom _
 
 theorem list_sum_mul_self (l : List R) : l.sum * l.sum = (List.map (fun x => x * x) l).sum := by
   simp_rw [← pow_two, list_sum_sq]
 
 theorem multiset_sum_sq (l : Multiset R) : l.sum ^ 2 = (l.map (· ^ 2)).sum :=
-  multiset_sum_pow_char _ _
+  map_multiset_sum sqAddMonoidHom _
 
 theorem multiset_sum_mul_self (l : Multiset R) :
     l.sum * l.sum = (Multiset.map (fun x => x * x) l).sum := by simp_rw [← pow_two, multiset_sum_sq]
 
 theorem sum_sq (s : Finset ι) (f : ι → R) : (∑ i ∈ s, f i) ^ 2 = ∑ i ∈ s, f i ^ 2 :=
-  sum_pow_char _ _ _
+  map_sum sqAddMonoidHom _ _
 
 theorem sum_mul_self (s : Finset ι) (f : ι → R) :
     ((∑ i ∈ s, f i) * ∑ i ∈ s, f i) = ∑ i ∈ s, f i * f i := by simp_rw [← pow_two, sum_sq]
 
 end CommSemiring
 
-namespace CommRing
+section CommRing
 
 variable [CommRing R] [CharP R 2] [NoZeroDivisors R]
 
@@ -136,6 +187,12 @@ theorem sq_inj {x y : R} : x ^ 2 = y ^ 2 ↔ x = y :=
 
 end CommRing
 
+@[deprecated (since := "2026-02-05")]
+alias CommRing.sq_injective := sq_injective
+
+@[deprecated (since := "2026-02-05")]
+alias CommRing.sq_inj := sq_inj
+
 end CharTwo
 
 section ringChar
@@ -147,25 +204,4 @@ theorem neg_one_eq_one_iff [Nontrivial R] : (-1 : R) = 1 ↔ ringChar R = 2 := b
   rw [eq_comm, ← sub_eq_zero, sub_neg_eq_add, ← Nat.cast_one, ← Nat.cast_add] at h
   exact ((Nat.dvd_prime Nat.prime_two).mp (ringChar.dvd h)).resolve_left CharP.ringChar_ne_one
 
-@[simp]
-theorem orderOf_neg_one [Nontrivial R] : orderOf (-1 : R) = if ringChar R = 2 then 1 else 2 := by
-  split_ifs with h
-  · rw [neg_one_eq_one_iff.2 h, orderOf_one]
-  apply orderOf_eq_prime
-  · simp
-  simpa [neg_one_eq_one_iff] using h
-
 end ringChar
-
-section CharP
-
-variable [Ring R]
-
-lemma CharP.orderOf_eq_two_iff [Nontrivial R] [NoZeroDivisors R] (p : ℕ)
-    (hp : p ≠ 2) [CharP R p] {x : R} : orderOf x = 2 ↔ x = -1 := by
-  simp only [orderOf_eq_prime_iff, sq_eq_one_iff, ne_eq, or_and_right, and_not_self, false_or,
-    and_iff_left_iff_imp]
-  rintro rfl
-  exact fun h ↦ hp ((ringChar.eq R p) ▸ (neg_one_eq_one_iff.1 h))
-
-end CharP

@@ -11,7 +11,7 @@ public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-! # Properties of integration with respect to the Lebesgue measure -/
 
-@[expose] public section
+public section
 
 
 open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace
@@ -117,6 +117,6 @@ theorem integral_comp_abs {f : ℝ → ℝ} :
         refine setIntegral_congr_fun measurableSet_Iic (fun _ hx => ?_)
         rw [abs_eq_neg_self.mpr (by exact hx)]
   · have : ¬ Integrable (fun x => f |x|) := by
-      contrapose! hf
+      contrapose hf
       exact hf.integrableOn
     rw [← eq, integral_undef hf, integral_undef this, mul_zero]

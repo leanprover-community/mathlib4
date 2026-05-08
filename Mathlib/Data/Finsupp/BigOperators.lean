@@ -33,7 +33,7 @@ it is a member of the support of a member of the collection:
 
 -/
 
-@[expose] public section
+public section
 
 
 variable {ι M : Type*} [DecidableEq ι]

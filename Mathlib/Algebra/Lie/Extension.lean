@@ -27,11 +27,12 @@ change of signs in the "action" part of the Lie bracket.
 * `LieAlgebra.Extension.ringModuleOf`: Given an extension whose kernel is abelian, we obtain a Lie
   action of the target on the kernel.
 * `LieAlgebra.Extension.twoCocycle`: The 2-cocycle attached to an extension with a linear section.
+* `LieAlgebra.Extension.oneCochainOfTwoSplitting`: A 1-cochain attached to a pair of linear sections
+  of an extension.
 
 ## TODO
 * `IsCentral` - central extensions
 * `Equiv` - equivalence of extensions
-* The 2-coboundary from two linear splittings of an extension.
 
 ## References
 * [Chevalley, Eilenberg, *Cohomology Theory of Lie Groups and Lie
@@ -246,7 +247,7 @@ def ofTwoCocycle : Extension R M L where
     { toFun x := ofProd c (0, x)
       map_add' _ _ := by simp [← of_add]
       map_smul' _ _ := by simp [← of_smul]
-      map_lie' {_ _} := by simp [bracket_ofTwoCocycle] }
+      map_lie' {_ _} := by simp [trivial_lie_zero, bracket_ofTwoCocycle] }
   proj :=
     { toFun x := ((ofProd c).symm x).1
       map_add' _ _ := by simp
@@ -320,7 +321,7 @@ instance [IsLieAbelian M] (E : Extension R M L) : IsLieAbelian E.proj.ker :=
 /-- Given an extension of `L` by `M` whose kernel `M` is abelian, the kernel `M` gets an `L`-module
 structure. We do not make this an instance, because we may have to work with more than one
 extension. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def ringModuleOf [IsLieAbelian M] (E : Extension R M L) : LieRingModule L M where
   bracket x y := E.toKer.symm ⁅E.proj_surjective.hasRightInverse.choose x, E.toKer y⁆
   add_lie x y m := by

@@ -22,7 +22,7 @@ For a more detailed overview of one-dimensional derivatives in mathlib, see the 
 derivative
 -/
 
-@[expose] public section
+public section
 
 
 universe u
@@ -65,7 +65,8 @@ theorem differentiableAt_inv_iff : DifferentiableAt 𝕜 (fun x => x⁻¹) x ↔
 
 theorem deriv_inv : deriv (fun x => x⁻¹) x = -(x ^ 2)⁻¹ := by
   rcases eq_or_ne x 0 with (rfl | hne)
-  · simp [deriv_zero_of_not_differentiableAt (mt differentiableAt_inv_iff.1 (not_not.2 rfl))]
+  · rw [deriv_zero_of_not_differentiableAt (mt differentiableAt_inv_iff.1 (not_not.2 rfl))]
+    simp
   · exact (hasDerivAt_inv hne).deriv
 
 @[simp]

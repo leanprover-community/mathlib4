@@ -13,8 +13,8 @@ public import Mathlib.Tactic.AdaptationNote
 
 Given a stochastic process, the hitting time provides the first time the process "hits" some
 subset of the state space. The hitting time is a stopping time in the case that the time index is
-discrete and the process is adapted (this is true in a far more general setting however we have
-only proved it for the discrete case so far).
+discrete and the process is strongly adapted (this is true in a far more general setting however
+we have only proved it for the discrete case so far).
 
 ## Main definition
 
@@ -25,10 +25,10 @@ only proved it for the discrete case so far).
 
 ## Main results
 
-* `MeasureTheory.hittingBtwn_isStoppingTime`: a discrete hitting time of an adapted process is a
-  stopping time
-* `MeasureTheory.hittingAfter_isStoppingTime`: a discrete hitting time of an adapted process is a
-  stopping time
+* `MeasureTheory.Adapted.isStoppingTime_hittingBtwn`: a discrete hitting time of an adapted process
+  is a stopping time
+* `MeasureTheory.Adapted.isStoppingTime_hittingAfter`: a discrete hitting time of a adapted process
+  is a stopping time
 
 -/
 
@@ -52,7 +52,7 @@ open scoped Classical in
 the first time `u` is in `s` after time `n` and before time `m` (if `u` does not hit `s`
 after time `n` and before `m` then the hitting time is simply `m`).
 
-The hitting time is a stopping time if the process is adapted and discrete. -/
+The hitting time is a stopping time if the process is strongly adapted and discrete. -/
 noncomputable def hittingBtwn (u : ι → Ω → β)
     (s : Set β) (n m : ι) : Ω → ι :=
   fun x => if ∃ j ∈ Set.Icc n m, u j x ∈ s
@@ -284,34 +284,52 @@ theorem hittingBtwn_le_iff_of_lt [WellFoundedLT ι] {m : ι} (i : ι) (hi : i < 
   by_cases h_exists : ∃ j ∈ Set.Icc n m, u j ω ∈ s
   · rw [hittingBtwn_le_iff_of_exists h_exists]
   · simp_rw [hittingBtwn, if_neg h_exists]
-    push_neg at h_exists
+    push Not at h_exists
     simp only [not_le.mpr hi, Set.mem_Icc, false_iff, not_exists, not_and, and_imp]
     exact fun k hkn hki => h_exists k ⟨hkn, hki.trans hi.le⟩
 
 @[deprecated (since := "2025-10-25")] alias hitting_le_iff_of_lt := hittingBtwn_le_iff_of_lt
 
-theorem hittingBtwn_lt_iff [WellFoundedLT ι] {m : ι} (i : ι) (hi : i ≤ m) :
+theorem hittingBtwn_lt_iff {m : ι} (i : ι) (hi : i ≤ m) :
     hittingBtwn u s n m ω < i ↔ ∃ j ∈ Set.Ico n i, u j ω ∈ s := by
   constructor <;> intro h'
   · have h : ∃ j ∈ Set.Icc n m, u j ω ∈ s := by
       by_contra h
       simp_rw [hittingBtwn, if_neg h, ← not_le] at h'
       exact h' hi
-    exact ⟨hittingBtwn u s n m ω, ⟨le_hittingBtwn_of_exists h, h'⟩, hittingBtwn_mem_set h⟩
+    have hni : n < i := (le_hittingBtwn_of_exists h).trans_lt h'
+    have h_le := le_hittingBtwn (u := u) (s := s) (hni.le.trans hi) ω
+    rw [hittingBtwn, if_pos h, csInf_lt_iff] at h'
+    rotate_left
+    · exact ⟨n, by simp [mem_lowerBounds]; grind⟩
+    · exact h
+    simp only [Set.mem_inter_iff, Set.mem_Icc, Set.mem_setOf_eq] at h'
+    obtain ⟨j, ⟨⟨hnj, hjm⟩, hj_mem⟩, hji⟩ := h'
+    exact ⟨j, ⟨hnj, hji⟩, hj_mem⟩
   · obtain ⟨k, hk₁, hk₂⟩ := h'
     refine lt_of_le_of_lt ?_ hk₁.2
     exact hittingBtwn_le_of_mem hk₁.1 (hk₁.2.le.trans hi) hk₂
 
 @[deprecated (since := "2025-10-25")] alias hitting_lt_iff := hittingBtwn_lt_iff
 
-lemma hittingAfter_lt_iff [WellFoundedLT ι] :
+lemma hittingAfter_lt_iff :
     hittingAfter u s n ω < i ↔ ∃ j ∈ Set.Ico n i, u j ω ∈ s := by
   constructor <;> intro h'
   · have h_top : hittingAfter u s n ω ≠ ⊤ := fun h ↦ by simp [h] at h'
+    have h_exists : ∃ j, n ≤ j ∧ u j ω ∈ s := by
+      rw [ne_eq, hittingAfter_eq_top_iff] at h_top
+      push Not at h_top
+      exact h_top
     have h_le := le_hittingAfter (u := u) (s := s) (n := n) ω
-    refine ⟨(hittingAfter u s n ω).untopA, ?_, hittingAfter_mem_set_of_ne_top h_top⟩
-    lift (hittingAfter u s n ω) to ι using h_top with i'
-    norm_cast at h' h_le
+    rw [hittingAfter, if_pos h_exists] at h'
+    norm_cast at h'
+    rw [csInf_lt_iff] at h'
+    rotate_left
+    · exact ⟨n, by simp [mem_lowerBounds]; grind⟩
+    · exact h_exists
+    simp only [Set.mem_setOf_eq] at h'
+    obtain ⟨j, hj₁, hj₂⟩ := h'
+    exact ⟨j, ⟨hj₁.1, hj₂⟩, hj₁.2⟩
   · obtain ⟨j, hj₁, hj₂⟩ := h'
     refine lt_of_le_of_lt ?_ (mod_cast hj₁.2 : (j : WithTop ι) < i)
     exact hittingAfter_le_of_mem hj₁.1 hj₂
@@ -338,7 +356,7 @@ lemma hittingBtwn_anti (u : ι → Ω → β) (n m : ι) : Antitone (hittingBtwn
   simp only [hittingBtwn_def]
   split_ifs with hF hE hE
   · gcongr
-    exacts [⟨n, by simp [mem_lowerBounds]; grind⟩, hE, hEF]
+    exacts [⟨n, by simp [mem_lowerBounds]; grind⟩, hEF]
   · obtain ⟨t, ht⟩ := hF
     exact csInf_le_of_le ⟨n, by simp [mem_lowerBounds]; grind⟩ ht ht.1.2
   · obtain ⟨t, ht⟩ := hE
@@ -352,7 +370,7 @@ lemma hittingAfter_anti (u : ι → Ω → β) (n : ι) : Antitone (hittingAfter
   split_ifs with hF hE hE
   · norm_cast
     gcongr
-    exacts [⟨n, by simp only [mem_lowerBounds]; grind⟩, hE, hEF]
+    exacts [⟨n, by simp only [mem_lowerBounds]; grind⟩, hEF]
   · simp
   · obtain ⟨t, ht⟩ := hE
     exact absurd ⟨t, ht.1, hEF ht.2⟩ hF
@@ -388,7 +406,7 @@ lemma hittingBtwn_mono_left (u : ι → Ω → β) (s : Set β) (m : ι) :
   simp only [hittingBtwn]
   split_ifs with h_n h_n' h_n'
   · gcongr
-    exacts [⟨n, by simp [mem_lowerBounds]; grind⟩, h_n']
+    exacts [⟨n, by simp [mem_lowerBounds]; grind⟩]
   · obtain ⟨t, ht⟩ := h_n
     exact csInf_le_of_le ⟨n, by simp [mem_lowerBounds]; grind⟩ ht ht.1.2
   · have ⟨t, ht⟩ := h_n'
@@ -402,7 +420,7 @@ lemma hittingAfter_mono (u : ι → Ω → β) (s : Set β) : Monotone (hittingA
   split_ifs with h_n h_m h_m
   · norm_cast
     gcongr
-    exacts [⟨n, by simp [mem_lowerBounds]; grind⟩, h_m]
+    exacts [⟨n, by simp [mem_lowerBounds]; grind⟩]
   · simp
   · have ⟨t, ht⟩ := h_m
     exact absurd ⟨t, hnm.trans ht.1, ht.2⟩ h_n
@@ -420,38 +438,36 @@ lemma hittingAfter_apply_mono (u : ι → Ω → β) (s : Set β) (ω : Ω) :
 end Inequalities
 
 /-- A discrete hitting time is a stopping time. -/
-theorem hittingBtwn_isStoppingTime [ConditionallyCompleteLinearOrder ι] [WellFoundedLT ι]
-    [Countable ι] [TopologicalSpace β] [PseudoMetrizableSpace β] [MeasurableSpace β] [BorelSpace β]
-    {f : Filtration ι m} {u : ι → Ω → β} {s : Set β} {n n' : ι} (hu : Adapted f u)
-    (hs : MeasurableSet s) : IsStoppingTime f (fun ω ↦ (hittingBtwn u s n n' ω : ι)) := by
+theorem Adapted.isStoppingTime_hittingBtwn [ConditionallyCompleteLinearOrder ι] [WellFoundedLT ι]
+    [Countable ι] {_ : MeasurableSpace β} {f : Filtration ι m} {u : ι → Ω → β} {s : Set β}
+    {n n' : ι} (hu : Adapted f u) (hs : MeasurableSet s) :
+    IsStoppingTime f (fun ω ↦ (hittingBtwn u s n n' ω : ι)) := by
   intro i
   rcases le_or_gt n' i with hi | hi
   · have h_le : ∀ ω, hittingBtwn u s n n' ω ≤ i := fun x => (hittingBtwn_le x).trans hi
     simp [h_le]
   · have h_set_eq_Union : {ω | hittingBtwn u s n n' ω ≤ i} = ⋃ j ∈ Set.Icc n i, u j ⁻¹' s := by
-      ext x
-      rw [Set.mem_setOf_eq, hittingBtwn_le_iff_of_lt _ hi]
-      simp only [Set.mem_Icc, exists_prop, Set.mem_iUnion, Set.mem_preimage]
-    simp_rw [WithTop.coe_le_coe, h_set_eq_Union]
-    exact MeasurableSet.iUnion fun j =>
-      MeasurableSet.iUnion fun hj => f.mono hj.2 _ ((hu j).measurable hs)
+      ext; simp [hittingBtwn_le_iff_of_lt _ hi]
+    simpa [h_set_eq_Union] using MeasurableSet.iUnion fun j =>
+      MeasurableSet.iUnion fun hj => f.mono hj.2 _ ((hu j) hs)
 
-@[deprecated (since := "2025-10-25")] alias hitting_isStoppingTime := hittingBtwn_isStoppingTime
+@[deprecated (since := "2025-10-25")] alias hitting_isStoppingTime :=
+  Adapted.isStoppingTime_hittingBtwn
+@[deprecated (since := "2026-01-25")]
+alias hittingBtwn_isStoppingTime := Adapted.isStoppingTime_hittingBtwn
 
-/-- A discrete hitting time is a stopping time. -/
-theorem hittingAfter_isStoppingTime [ConditionallyCompleteLinearOrder ι] [WellFoundedLT ι]
-    [Countable ι] [TopologicalSpace β] [PseudoMetrizableSpace β] [MeasurableSpace β] [BorelSpace β]
-    {f : Filtration ι m} {u : ι → Ω → β} {s : Set β} {n : ι}
-    (hu : Adapted f u) (hs : MeasurableSet s) :
+theorem Adapted.isStoppingTime_hittingAfter [ConditionallyCompleteLinearOrder ι]
+    [WellFoundedLT ι] [Countable ι] {_ : MeasurableSpace β} {f : Filtration ι m} {u : ι → Ω → β}
+    {s : Set β} {n : ι} (hu : Adapted f u) (hs : MeasurableSet s) :
     IsStoppingTime f (hittingAfter u s n) := by
   intro i
   have h_set_eq_Union : {ω | hittingAfter u s n ω ≤ i} = ⋃ j ∈ Set.Icc n i, u j ⁻¹' s := by
-    ext x
-    rw [Set.mem_setOf_eq, hittingAfter_le_iff]
-    simp only [Set.mem_Icc, exists_prop, Set.mem_iUnion, Set.mem_preimage]
-  rw [h_set_eq_Union]
-  exact MeasurableSet.iUnion fun j =>
-      MeasurableSet.iUnion fun hj => f.mono hj.2 _ ((hu j).measurable hs)
+    ext; simp [hittingAfter_le_iff]
+  simpa [h_set_eq_Union] using MeasurableSet.iUnion fun j =>
+    MeasurableSet.iUnion fun hj => f.mono hj.2 _ ((hu j) hs)
+
+@[deprecated (since := "2026-01-25")]
+alias hittingAfter_isStoppingTime := Adapted.isStoppingTime_hittingAfter
 
 theorem stoppedValue_hittingBtwn_mem [ConditionallyCompleteLinearOrder ι] [WellFoundedLT ι]
     {u : ι → Ω → β} {s : Set β} {n m : ι} {ω : Ω} (h : ∃ j ∈ Set.Icc n m, u j ω ∈ s) :
@@ -466,11 +482,10 @@ theorem stoppedValue_hittingBtwn_mem [ConditionallyCompleteLinearOrder ι] [Well
 
 /-- The hitting time of a discrete process with the starting time indexed by a stopping time
 is a stopping time. -/
-theorem isStoppingTime_hittingBtwn_isStoppingTime [ConditionallyCompleteLinearOrder ι]
+theorem Adapted.isStoppingTime_hittingBtwn_isStoppingTime [ConditionallyCompleteLinearOrder ι]
     [WellFoundedLT ι] [Countable ι] [TopologicalSpace ι] [OrderTopology ι]
-    [FirstCountableTopology ι] [TopologicalSpace β] [PseudoMetrizableSpace β] [MeasurableSpace β]
-    [BorelSpace β] {f : Filtration ι m} {u : ι → Ω → β} {τ : Ω → WithTop ι}
-    (hτ : IsStoppingTime f τ)
+    [FirstCountableTopology ι] [MeasurableSpace β] {f : Filtration ι m} {u : ι → Ω → β}
+    {τ : Ω → WithTop ι} (hτ : IsStoppingTime f τ)
     {N : ι} (hτbdd : ∀ x, τ x ≤ N) {s : Set β} (hs : MeasurableSet s) (hf : Adapted f u) :
     IsStoppingTime f fun x ↦ (hittingBtwn u s (τ x).untopA N x : ι) := by
   intro n
@@ -494,15 +509,15 @@ theorem isStoppingTime_hittingBtwn_isStoppingTime [ConditionallyCompleteLinearOr
     lift τ x to ι using h_top with t
     rw [hτ] at hτbdd
     exact mod_cast hτbdd
-  simp only [WithTop.coe_le_coe]
-  rw [h₁, h₂, Set.union_empty]
+  simp only [WithTop.coe_le_coe, h₁, h₂, Set.union_empty]
   refine MeasurableSet.iUnion fun i => MeasurableSet.iUnion fun hi =>
     (f.mono hi _ (hτ.measurableSet_eq i)).inter ?_
-  have h := hittingBtwn_isStoppingTime (n := i) (n' := N) hf hs n
-  simpa only [WithTop.coe_le_coe] using h
+  simpa using hf.isStoppingTime_hittingBtwn hs n
 
 @[deprecated (since := "2025-10-25")] alias isStoppingTime_hitting_isStoppingTime :=
-  isStoppingTime_hittingBtwn_isStoppingTime
+  Adapted.isStoppingTime_hittingBtwn_isStoppingTime
+@[deprecated (since := "2026-01-25")]
+alias isStoppingTime_hittingBtwn_isStoppingTime := Adapted.isStoppingTime_hittingBtwn_isStoppingTime
 
 section CompleteLattice
 

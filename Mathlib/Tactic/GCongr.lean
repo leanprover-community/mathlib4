@@ -5,8 +5,8 @@ Authors: Mario Carneiro, Heather Macbeth
 -/
 module
 
-public meta import Mathlib.Tactic.GCongr.CoreAttrs
-public meta import Mathlib.Tactic.Hint
+public import Mathlib.Tactic.GCongr.CoreAttrs
+public import Mathlib.Tactic.Hint
 
 /-! # Setup for the `gcongr` tactic
 
@@ -14,6 +14,11 @@ The core implementation of the `gcongr` ("generalized congruence") tactic is in 
 `Tactic.GCongr.Core`. -/
 
 public meta section
+
+/-! We also use `assumption` to discharge side goals.
+In a further downstream file, `positivity` will also be registered as a discharger.
+From that point, `positivity` will be tried before `assumption` is: that is perfectly fine. -/
+macro_rules | `(tactic| gcongr_discharger) => `(tactic| assumption)
 
 /-!
 We register `gcongr` with the `hint` tactic.

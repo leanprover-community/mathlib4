@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.Interval.Finset.SuccPred
 public import Mathlib.Algebra.Order.Ring.Int
 public import Mathlib.Algebra.Ring.CharZero
+public import Mathlib.Data.Finset.NatAntidiagonal
 public import Mathlib.Data.Nat.Cast.Order.Ring
 public import Mathlib.Data.Nat.PrimeFin
 public import Mathlib.Data.Nat.SuccPred
@@ -173,7 +174,7 @@ lemma sortedGT_map_snd_divisorsAntidiagonalList {n : ℕ} :
   (List.pairwise_map.mpr <| pairwise_divisorsAntidiagonalList_snd).sortedGT
 
 lemma nodup_divisorsAntidiagonalList {n : ℕ} : n.divisorsAntidiagonalList.Nodup :=
-  have : IsIrrefl (ℕ × ℕ) (·.fst < ·.fst) := ⟨by simp⟩
+  have : @Std.Irrefl (ℕ × ℕ) (·.fst < ·.fst) := ⟨by simp⟩
   pairwise_divisorsAntidiagonalList_fst.nodup
 
 /-- The `Finset` and `List` versions agree by definition. -/
@@ -193,7 +194,7 @@ lemma swap_mem_divisorsAntidiagonalList {a : ℕ × ℕ} :
 
 lemma reverse_divisorsAntidiagonalList (n : ℕ) :
     n.divisorsAntidiagonalList.reverse = n.divisorsAntidiagonalList.map .swap := by
-  have : IsAsymm (ℕ × ℕ) (·.snd < ·.snd) := ⟨fun _ _ ↦ lt_asymm⟩
+  have : Std.Asymm (α := ℕ × ℕ) (·.snd < ·.snd) := ⟨fun _ _ ↦ lt_asymm⟩
   refine List.Perm.eq_of_pairwise' pairwise_divisorsAntidiagonalList_snd.reverse
     (pairwise_divisorsAntidiagonalList_fst.map _ fun _ _ ↦ id) ?_
   simp [List.reverse_perm', List.perm_ext_iff_of_nodup nodup_divisorsAntidiagonalList
@@ -260,7 +261,8 @@ lemma nonempty_divisors : (divisors n).Nonempty ↔ n ≠ 0 :=
 
 @[simp]
 lemma divisors_eq_empty : divisors n = ∅ ↔ n = 0 := by
-  contrapose!; exact nonempty_divisors
+  contrapose!
+  exact nonempty_divisors
 
 theorem properDivisors_subset_divisors : properDivisors n ⊆ divisors n :=
   filter_subset_filter _ <| Ico_subset_Ico_right n.le_succ
@@ -316,7 +318,8 @@ lemma nonempty_properDivisors : n.properDivisors.Nonempty ↔ 1 < n :=
 
 @[simp]
 lemma properDivisors_eq_empty : n.properDivisors = ∅ ↔ n ≤ 1 := by
-  contrapose!; exact nonempty_properDivisors
+  contrapose!
+  exact nonempty_properDivisors
 
 @[simp]
 theorem divisorsAntidiagonal_zero : divisorsAntidiagonal 0 = ∅ := by
@@ -551,7 +554,6 @@ theorem prod_divisorsAntidiagonal' {M : Type*} [CommMonoid M] (f : ℕ → ℕ �
 /-- The factors of `n` are the prime divisors -/
 theorem primeFactors_eq_to_filter_divisors_prime (n : ℕ) :
     n.primeFactors = {p ∈ divisors n | p.Prime} := by
-  ext
   grind
 
 lemma primeFactors_filter_dvd_of_dvd {m n : ℕ} (hn : n ≠ 0) (hmn : m ∣ n) :
@@ -606,6 +608,14 @@ lemma divisorsAntidiagonal_eq_prod_filter_of_le {n N : ℕ} (n_ne_zero : n ≠ 0
   · intro ⟨⟨hn1, hn2⟩, hn3⟩
     exact ⟨hn3, n_ne_zero⟩
 
+/-- `Finset.antidiagonal k` embeds as a subset of `Nat.divisorsAntidiagonal (q ^ k)`. -/
+theorem antidiagonal_map_subset_divisorsAntidiagonal_pow {q : ℕ} (hq : 1 < q) (k : ℕ) :
+    letI ι : ℕ ↪ ℕ := ⟨fun k ↦ q ^ k, Nat.pow_right_injective hq⟩
+    (Finset.antidiagonal k).map (.prodMap ι ι) ⊆ (q ^ k).divisorsAntidiagonal := by
+  intro k hk
+  obtain ⟨i, hi, rfl⟩ := Finset.mem_map.mp hk
+  simp [Nat.mem_divisorsAntidiagonal, ← Finset.mem_antidiagonal.mp hi, pow_add, ne_zero_of_lt hq]
+
 end Nat
 
 namespace Int
@@ -615,6 +625,12 @@ variable {xy : ℤ × ℤ} {x y z : ℤ}
 local notation "natCast" => Nat.castEmbedding (R := ℤ)
 local notation "negNatCast" =>
   Function.Embedding.trans Nat.castEmbedding (Equiv.toEmbedding (Equiv.neg ℤ))
+
+/-- `divisors z` is the `Finset` of divisors of `z`. By convention, we set `divisors 0 = ∅`. -/
+def divisors (z : ℤ) : Finset ℤ :=
+  letI s := z.natAbs.divisors
+  (s.map natCast).disjUnion (s.map negNatCast) <| by
+    simp +contextual [s, disjoint_left, Eq.comm, forall_comm (β := _ = _)]
 
 /-- Pairs of divisors of an integer as a finset.
 
@@ -630,7 +646,50 @@ def divisorsAntidiag : (z : ℤ) → Finset (ℤ × ℤ)
   | negSucc n =>
     let s : Finset (ℕ × ℕ) := (n + 1).divisorsAntidiagonal
     (s.map <| .prodMap natCast negNatCast).disjUnion (s.map <| .prodMap negNatCast natCast) <| by
-      simp +contextual [s, disjoint_left, eq_comm, forall_swap (α := _ * _ = _)]
+      simp +contextual [s, disjoint_left, eq_comm, forall_comm (α := _ * _ = _)]
+
+theorem mem_divisors_iff_natAbs_mem_divisors_natAbs :
+    x ∈ z.divisors ↔ x.natAbs ∈ z.natAbs.divisors := calc
+  _ ↔ ∃ y ∈ z.natAbs.divisors, ↑y = x ∨ -↑y = x := by
+    simp [← exists_or, ← and_or_left, divisors]
+  _ ↔ ∃ y ∈ z.natAbs.divisors, y = x.natAbs := congr(∃ y ∈ _, $(by grind))
+  _ ↔ x.natAbs ∈ z.natAbs.divisors := exists_eq_right
+
+@[simp, grind =]
+theorem mem_divisors : x ∈ divisors z ↔ x ∣ z ∧ z ≠ 0 := by
+  simp [mem_divisors_iff_natAbs_mem_divisors_natAbs]
+
+theorem dvd_of_mem_divisors (h : x ∈ divisors z) : x ∣ z := (mem_divisors.mp h).1
+
+theorem ne_zero_of_mem_divisors (h : x ∈ divisors z) : z ≠ 0 := (mem_divisors.mp h).2
+
+theorem one_mem_divisors : 1 ∈ divisors z ↔ z ≠ 0 := by simp
+
+theorem neg_one_mem_divisors : -1 ∈ divisors z ↔ z ≠ 0 := by simp
+
+@[simp]
+lemma divisors_zero : divisors 0 = ∅ := by
+  ext
+  simp
+
+@[simp]
+lemma nonempty_divisors : (divisors z).Nonempty ↔ z ≠ 0 :=
+  ⟨fun ⟨z, hz⟩ hx ↦ by simp [hx] at hz, fun hx ↦ ⟨1, one_mem_divisors.mpr hx⟩⟩
+
+@[simp]
+lemma divisors_eq_empty : divisors z = ∅ ↔ z = 0 := by
+  contrapose!
+  exact nonempty_divisors
+
+@[simp]
+theorem divisors_one : divisors 1 = {1, -1} := rfl
+
+lemma mem_divisors_self (hz : z ≠ 0) : z ∈ divisors z :=
+  mem_divisors.mpr ⟨dvd_rfl, hz⟩
+
+@[simp] theorem divisors_neg : divisors (-z) = divisors z := by
+  ext
+  simp
 
 @[simp]
 lemma mem_divisorsAntidiag :
@@ -671,6 +730,14 @@ lemma mem_divisorsAntidiag :
     simp [divisorsAntidiag, negSucc_eq, -neg_add_rev]
     norm_cast
     simp +contextual [eq_comm]
+
+theorem image_fst_divisorsAntidiag : z.divisorsAntidiag.image Prod.fst = z.divisors := by
+  ext
+  simp [Eq.comm, dvd_def]
+
+theorem image_snd_divisorsAntidiag : z.divisorsAntidiag.image Prod.snd = z.divisors := by
+  ext
+  simp [Eq.comm, mul_comm, dvd_def]
 
 @[simp] lemma divisorsAntidiag_zero : divisorsAntidiag 0 = ∅ := rfl
 

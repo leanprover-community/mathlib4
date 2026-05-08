@@ -5,9 +5,8 @@ Authors: Yoh Tanimoto
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.MeasureTheory.Integral.SetToL1
-public import Mathlib.MeasureTheory.VectorMeasure.Variation.Lemmas
+public import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
 
 /-!
 # Integral of vector-valued function against vector measure
@@ -15,208 +14,181 @@ public import Mathlib.MeasureTheory.VectorMeasure.Variation.Lemmas
 We extend the definition of the Bochner integral (of vector-valued function against `ℝ≥0∞`-valued
 measure) to vector measures through a bilinear pairing.
 Let `E`, `F` be normed vector spaces, and `G` be a Banach space (complete normed vector space).
-We fix a continuous linear pairing `B : E →L[ℝ] F →L[ℝ] → G` and an `F`-valued vector measure `μ`
-on a measurable space `α`.
-The vector measure `μ` gives the total variation measure `μ.totalvariation.ennrealToMeasure` on `α`.
-For an L1 function `f : α → E` with respect to this total variation measure,
-we define the `G`-valued integral, which is informally written `∫ B (f x) ∂μ x`.
+We fix a continuous linear pairing `B : E →L[ℝ] F →L[ℝ] G` and an `F`-valued vector measure `μ`
+on a measurable space `X`.
+For an integrable function `f : X → E` with respect to the total variation of the vector measure
+on `X` informally written `μ ∘ B.flip`, we define the `G`-valued integral, which is informally
+written `∫ B (f x) ∂μ x`.
 
-The pairing integral is defined through the general setting `setToL1` which sends a set function to
-a continuous linear map on the type of L1 functions, see the file
+Such integral is defined through the general setting `setToFun` which sends a set function to the
+integral of integrable functions, see the file
 `Mathlib/MeasureTheory/Integral/SetToL1.lean`.
 
 ## Main definitions
 
-The pairing integral is defined through the extension process described in the file
+The integral against vector measures is defined through the extension process described in the file
 `Mathlib/MeasureTheory/Integral/SetToL1.lean`, which follows these steps:
 
-1. Define the integral of the indicator of a set. This is `weightedVectorSMul B μ s x = B x (μ s)`.
-  `weightedVectorSMul B μ` is shown to be linear in the value `x` and `DominatedFinMeasAdditive`
+1. Define the integral of the indicator of a set. This is `cbmApplyMeasure B μ s x = B x (μ s)`.
+  `cbmApplyMeasure B μ` is shown to be linear in the value `x` and `DominatedFinMeasAdditive`
   (defined in the file `Mathlib/MeasureTheory/Integral/SetToL1.lean`) with respect to the set `s`.
 
-2. Define the structure `VectorMeasureWithPairing`, combining a pairing of two normed vector spaces
-  and a vector measure.
+2. Define the integral on integrable functions `f` as `setToFun (...) f`.
 
-3. Define the pairing integral on L1 functions `f` as `setToL1 (...) f`. Note that, differently
-  from the definition of Bochner integral, here `setToL1` is already a continuous linear map from
-  L1 functions, not from step functions.
+## Notations
+
+* `∫ᵛ x, f x ∂[B; μ]`: the `G`-valued integral of an `E`-valued function `f` against the `F`-valued
+  vector measure `μ` paired through `B`.
+* `∫ᵛ x, f x ∂•μ`: the special case where `f` is a real-valued function and `μ` is an `F`-valued
+  vector measure, with the pairing being the scalar multiplication by `ℝ`.
 
 ## Note
 
-Let be `Bμ : VectorMeasureWithPairing`.
-We often consider L1 functions with respect to the total variation of `Bμ.vectorMeasure`:
-* `α →₁[Bμ.vectorMeasure.variation.ennrealToVectorMeasure] E` : `E`-valued functions in L1 space.
+Let `μ` be a vector measure and `B` be a continuous linear pairing.
+We often consider integrable functions with respect to the total variation of
+`μ.transpose B` = `μ.mapRange B.flip.toAddMonoidHom B.flip.continuous`, which is the reference
+measure for the pairing integral.
+
+When `f` is not integrable with respect to `(μ.transpose B).variation`, the value of
+`μ.integral B f` is set to `0`. This is an analogous convention to the Bochner integral. However,
+there are cases where a natural definition of the integral as an unconditional sum exists, but `f`
+is not integrable in this sense: Let `μ` be the `L∞(ℕ)`-valued measure on `ℕ` defined by extending
+`{n} ↦ (0,0,..., 1/(n+1),0,0,...)` and `B` be the trivial coupling (the scalar multiplication by
+`ℝ`). The total variation is `∑ n, 1/(n+1) = ∞`, but the sum of `(0,...,0,1/n,0,...)` in `L∞(ℕ)` is
+unconditionally convergent.
 
 -/
 
-@[expose] public section
+public section
 
-open ENNReal Set MeasureTheory VectorMeasure ContinuousLinearMap
+open Set MeasureTheory VectorMeasure ContinuousLinearMap
 
-namespace MeasureTheory
-
-section weightedVectorSMul
-
-variable {α E F G : Type*} [MeasurableSpace α]
+variable {X E F G : Type*} {mX : MeasurableSpace X}
   [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F]
   [NormedAddCommGroup G] [NormedSpace ℝ G]
-  (B : E →L[ℝ] F →L[ℝ] G) (μ : VectorMeasure α F)
 
-/-- Given a set `s`, return the continuous linear map `fun x : E => B x (μ s)`, where the `B` is a
-`G`-valued bilinear form on `E` `F` and `μ` is an `F`-valued vector measure. The extension of that
-set function through `setToL1` gives the pairing integral of L1 functions. -/
-def weightedVectorSMul (s : Set α) : E →L[ℝ] G where
-  toFun x := B x (μ s)
-  map_add' _ _ := map_add₂ B _ _ (μ s)
-  map_smul' _ _ := map_smulₛₗ₂ B _ _ (μ s)
+namespace MeasureTheory
+
+section cbmApplyMeasure
+
+/-- The composition of the vector measure with the linear pairing, giving the reference
+vector measure. -/
+@[expose]
+noncomputable def VectorMeasure.transpose (μ : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) :
+    VectorMeasure X (E →L[ℝ] G) := μ.mapRange B.flip.toAddMonoidHom B.flip.continuous
+
+/-- Given a set `s`, return the continuous linear map `fun x : E ↦ B x (μ s)` (actually defined
+using `transpose` through `mapRange`), where the `B` is a `G`-valued bilinear form on `E × F` and
+`μ` is an `F`-valued vector measure. The extension of that set function through `setToFun` gives the
+pairing integral of `E`-valued integrable functions. -/
+noncomputable def cbmApplyMeasure (μ : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) (s : Set X) :
+    E →L[ℝ] G where
+  toFun x := μ.transpose B s x
+  map_add' _ _ := map_add₂ ..
+  map_smul' _ _ := map_smulₛₗ₂ ..
+
+lemma transpose_eq_cbmApplyMeasure (μ : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) :
+    μ.transpose B = cbmApplyMeasure μ B := by rfl
 
 @[simp]
-theorem weightedVectorSMul_apply (s : Set α) (x : E) : weightedVectorSMul B μ s x = B x (μ s) := rfl
+theorem cbmApplyMeasure_apply (μ : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) (s : Set X) (x : E) :
+    cbmApplyMeasure μ B s x = B x (μ s) := by
+  rfl
 
-theorem weightedVectorSMul_union (s t : Set α) (hs : MeasurableSet s) (ht : MeasurableSet t)
-    (hdisj : Disjoint s t) :
-    (weightedVectorSMul B μ (s ∪ t) : E →L[ℝ] G)
-    = weightedVectorSMul B μ s + weightedVectorSMul B μ t := by
+theorem cbmApplyMeasure_union (μ : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) {s t : Set X}
+    (hs : MeasurableSet s) (ht : MeasurableSet t) (hdisj : Disjoint s t) :
+    cbmApplyMeasure μ B (s ∪ t) = cbmApplyMeasure μ B s + cbmApplyMeasure μ B t := by
   ext x
-  simp only [weightedVectorSMul_apply, ContinuousLinearMap.add_apply]
-  rw [← (B x).map_add]
-  congr
-  exact of_union hdisj hs ht
+  simp [of_union hdisj hs ht]
 
-theorem norm_weightedVectorSMul_le (s : Set α) :
-    ‖(weightedVectorSMul B μ s : E →L[ℝ] G)‖ ≤ ‖B‖ * ‖μ s‖ := by
-  rw [ContinuousLinearMap.opNorm_le_iff (mul_nonneg (norm_nonneg B) (norm_nonneg (μ s)))]
+theorem dominatedFinMeasAdditive_cbmApplyMeasure (μ : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) :
+    DominatedFinMeasAdditive (μ.transpose B).variation
+    (cbmApplyMeasure μ B : Set X → E →L[ℝ] G) 1 := by
+  refine ⟨fun s t hs ht _ _ hdisj ↦ cbmApplyMeasure_union μ B hs ht hdisj, fun s hs hsf ↦ ?_⟩
+  simpa using norm_measure_le_variation hsf.ne
+
+theorem norm_cbmApplyMeasure_le (μ : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) (s : Set X) :
+    ‖cbmApplyMeasure μ B s‖ ≤ ‖B‖ * ‖μ s‖ := by
+  rw [opNorm_le_iff (by positivity)]
   intro x
-  simp only [weightedVectorSMul_apply]
-  apply le_trans (le_opNorm (B x) (μ s))
-  rw [mul_assoc, mul_comm _ ‖x‖, ← mul_assoc]
-  gcongr
-  exact le_opNorm B x
+  grw [cbmApplyMeasure_apply, le_opNorm₂, mul_right_comm]
 
-theorem dominatedFinMeasAdditive_weightedVectorSMul :
-    DominatedFinMeasAdditive (μ.variation.ennrealToMeasure)
-    (weightedVectorSMul B μ : Set α → E →L[ℝ] G) ‖B‖ := by
-  refine ⟨fun s t hs ht _ _ hdisj => weightedVectorSMul_union B μ s t hs ht hdisj, ?_⟩
-  intro s hs hsf
-  apply (fun s _ _ => (norm_weightedVectorSMul_le B μ s).trans)
-  gcongr
-  rw [Measure.real, ← ofReal_le_iff_le_toReal (LT.lt.ne_top hsf), ennrealToMeasure_apply hs,
-    ofReal_norm]
-  exact norm_measure_le_variation μ s
-
-end weightedVectorSMul
-
-open SimpleFunc L1
-
-section
-
-variable (α E F G : Type*) [MeasurableSpace α]
-  [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F]
-  [NormedAddCommGroup G] [NormedSpace ℝ G] [CompleteSpace G]
-
-/-- The structure containing a continuous linear pairing and a vector measure,
-enabling the dot notation `VectorMeasureWithParing.integral`. -/
-structure VectorMeasureWithPairing where
-  /-- A continuous linear pairing from `E` `F` into a Banach space `G`. -/
-  pairing : E →L[ℝ] F →L[ℝ] G
-  /-- An `F`-valued vector measure. -/
-  vectorMeasure : VectorMeasure α F
-
-end
-
-namespace VectorMeasureWithPairing
-
-variable {α E F G : Type*} [MeasurableSpace α]
-  [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F]
-  [NormedAddCommGroup G] [NormedSpace ℝ G] [CompleteSpace G]
-  (Bμ : VectorMeasureWithPairing α E F G)
-
-/-- The pairing integral in L1 space as a continuous linear map. -/
-noncomputable def integral : (α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E) →L[ℝ] G :=
-    setToL1 (dominatedFinMeasAdditive_weightedVectorSMul Bμ.pairing Bμ.vectorMeasure)
-
-@[integral_simps]
-theorem integral_add (f g : α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E) :
-    Bμ.integral (f + g) = Bμ.integral f + Bμ.integral g := by
-  simp [integral]
-
-@[integral_simps]
-theorem integral_neg (f : α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E) :
-    Bμ.integral (-f) = -Bμ.integral f := by
-  simp [integral]
-
-@[integral_simps]
-theorem integral_sub (f g : α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E) :
-    Bμ.integral (f - g) = Bμ.integral f - Bμ.integral g := by
-  simp [integral]
-
-@[integral_simps]
-theorem integral_smul (c : ℝ) (f : α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E) :
-    Bμ.integral (c • f) = c • Bμ.integral f := by
-  simp [integral]
-
-@[simp]
-lemma integral_apply (f : (α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E)) :
-    Bμ.integral f
-    = setToL1 (dominatedFinMeasAdditive_weightedVectorSMul Bμ.pairing Bμ.vectorMeasure) f := rfl
-
-theorem integral_le (f : (α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E)) :
-    ‖Bμ.integral f‖ ≤ ‖Bμ.pairing‖ * ‖f‖:= by
-  simp only [integral_apply]
-  exact norm_setToL1_le_mul_norm
-    (dominatedFinMeasAdditive_weightedVectorSMul Bμ.pairing Bμ.vectorMeasure)
-    (norm_nonneg Bμ.pairing) f
-
-theorem norm_integral_le_norm_pairing : ‖Bμ.integral‖ ≤ ‖Bμ.pairing‖ :=
-  (ContinuousLinearMap.opNorm_le_iff (norm_nonneg Bμ.pairing)).mpr
-  (integral_le Bμ)
-
-theorem nnnorm_integral_le_nnNnorm : ‖Bμ.integral‖₊ ≤ ‖Bμ.pairing‖₊ :=
-  norm_integral_le_norm_pairing Bμ
-
-theorem nnnorm_integral_le (f : α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E) :
-    ‖Bμ.integral f‖₊ ≤ ‖Bμ.pairing‖₊ * ‖f‖₊ := integral_le Bμ f
-
-@[continuity]
-theorem continuous_integral :
-    Continuous fun f : α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E =>
-    Bμ.integral f :=
-  (setToL1 (dominatedFinMeasAdditive_weightedVectorSMul Bμ.pairing Bμ.vectorMeasure)).continuous
-
-end VectorMeasureWithPairing
-
-section ScalarSMul
-
-/-- The embedding of `ℝ` to the multiple of the identity map as an `F`-valued pairing of
-`ℝ` and `F`. -/
-noncomputable def scalarSMulCLM (F : Type*) [NormedAddCommGroup F] [NormedSpace ℝ F] :
-    ℝ →L[ℝ] F →L[ℝ] F where
-  toFun c := lsmul ℝ ℝ c
-  map_add' _ _ := ContinuousLinearMap.map_add _ _ _
-  map_smul' _ _ := map_smul_of_tower (lsmul ℝ ℝ) _ _
-
-end ScalarSMul
+end cbmApplyMeasure
 
 namespace VectorMeasure
 
-variable {α F : Type*} [MeasurableSpace α]
-  [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
-  (μ : VectorMeasure α F)
+/-- `f : X → E` is said to be integrable with respect to `μ` and `B` if it is integrable with
+respect to `(μ.transpose B).variation`. -/
+protected abbrev Integrable (μ : VectorMeasure X F) (f : X → E) (B : E →L[ℝ] F →L[ℝ] G) : Prop :=
+  MeasureTheory.Integrable f (μ.transpose B).variation
 
-/-- For an `F`-valued vector measure `μ`, `μ.withPairing` is a structure `VectorMeasureWithPairing`
-where `pairing` is just the `ℝ`-multiplication, so that `μ.withPairing.integral` is the
-`F`-valued integral of `μ`. -/
-noncomputable def withPairing : VectorMeasureWithPairing α ℝ F F where
-  pairing := scalarSMulCLM F
-  vectorMeasure := μ
+open Classical in
+/-- The `G`-valued integral of `E`-valued function and the `F`-valued vector measure `μ` with linear
+paring `B : E →L[ℝ] F →L[ℝ] G` . This is set to be `0` if `G` is not complete or if `f` is not
+integrable with respect to `(μ.transpose B).variation`. -/
+noncomputable def integral (μ : VectorMeasure X F) (f : X → E) (B : E →L[ℝ] F →L[ℝ] G) : G :=
+  if _ : CompleteSpace G then
+  setToFun (μ.transpose B).variation (μ.transpose B)
+    (dominatedFinMeasAdditive_cbmApplyMeasure μ B) f
+  else 0
 
-/-- The `F`-valued integral with respect to an `F`-valued vector measure as a continuous linear map,
-defined as the pairing integral where the pairing is `scalarSMulCLM`. -/
-noncomputable def integral : (α →₁[μ.variation.ennrealToMeasure] ℝ) →L[ℝ] F :=
-    μ.withPairing.integral
+@[inherit_doc integral]
+notation3 "∫ᵛ "(...)", "r:60:(scoped f => f)" ∂["B:70"; "μ:70"]" => integral μ r B
+
+/-- The special case of the pairing integral where the pairing is just the scalar multiplication by
+`ℝ` on `F` and `f` is real-valued. The resulting integral is `F`-valued.-/
+notation3 "∫ᵛ "(...)", "r:60:(scoped f => f)" ∂•"μ:70 => integral μ r (lsmul ℝ ℝ)
+
+variable {μ : VectorMeasure X F} {B : E →L[ℝ] F →L[ℝ] G}
+
+theorem integral_fun_add {f g : X → E} (hf : μ.Integrable f B) (hg : μ.Integrable g B) :
+    ∫ᵛ x, f x + g x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] + ∫ᵛ x, g x ∂[B; μ] := by
+  by_cases hG : CompleteSpace G
+  · simp only [integral, hG]
+    exact setToFun_add (dominatedFinMeasAdditive_cbmApplyMeasure μ B) hf hg
+  · simp [integral, hG]
+
+theorem integral_add {f g : X → E} (hf : μ.Integrable f B) (hg : μ.Integrable g B) :
+    ∫ᵛ x, (f + g) x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] + ∫ᵛ x, g x ∂[B; μ] := integral_fun_add hf hg
+
+variable (μ B) in
+@[integral_simps]
+theorem integral_fun_neg (f : X → E) :
+    ∫ᵛ x, -f x ∂[B; μ]= -∫ᵛ x, f x ∂[B; μ] := by
+  by_cases hG : CompleteSpace G
+  · simp only [integral, hG, ↓reduceDIte, transpose_eq_cbmApplyMeasure]
+    exact setToFun_neg (dominatedFinMeasAdditive_cbmApplyMeasure μ B) f
+  · simp [integral, hG]
+
+variable (μ B) in
+@[integral_simps]
+theorem integral_neg (f : X → E) :
+    ∫ᵛ x, (-f) x ∂[B; μ] = -∫ᵛ x, f x ∂[B; μ] := integral_fun_neg μ B f
+
+theorem integral_fun_sub {f g : X → E} (hf : μ.Integrable f B) (hg : μ.Integrable g B) :
+    ∫ᵛ x, f x - g x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] - ∫ᵛ x, g x ∂[B; μ] := by
+  by_cases hG : CompleteSpace G
+  · simp only [integral, hG]
+    exact setToFun_sub (dominatedFinMeasAdditive_cbmApplyMeasure μ B) hf hg
+  · simp [integral, hG]
+
+theorem integral_sub {f g : X → E} (hf : μ.Integrable f B) (hg : μ.Integrable g B) :
+    ∫ᵛ x, (f - g) x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] - ∫ᵛ x, g x ∂[B; μ] := integral_fun_sub hf hg
+
+variable (μ B) in
+@[integral_simps]
+theorem integral_fun_smul (c : ℝ) (f : X → E) :
+    ∫ᵛ x, c • f x ∂[B; μ] = c • ∫ᵛ x, f x ∂[B; μ] := by
+  by_cases hG : CompleteSpace G
+  · simp only [integral, hG]
+    exact setToFun_smul (dominatedFinMeasAdditive_cbmApplyMeasure μ B) (by simp) c f
+  · simp [integral, hG]
+
+variable (μ B) in
+@[integral_simps]
+theorem integral_smul (c : ℝ) (f : X → E) :
+    ∫ᵛ x, (c • f) x ∂[B; μ] = c • ∫ᵛ x, f x ∂[B; μ] := integral_fun_smul μ B c f
 
 end VectorMeasure
 

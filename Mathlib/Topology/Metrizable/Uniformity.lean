@@ -58,6 +58,7 @@ namespace PseudoMetricSpace
 
 /-- The maximal pseudometric space structure on `X` such that `dist x y ≤ d x y` for all `x y`,
 where `d : X → X → ℝ≥0` is a function such that `d x x = 0` and `d x y = d y x` for all `x`, `y`. -/
+@[implicit_reducible]
 noncomputable def ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x, d x x = 0)
     (dist_comm : ∀ x y, d x y = d y x) : PseudoMetricSpace X where
   dist x y := ↑(⨅ l : List X, ((x::l).zipWith d (l ++ [y])).sum : ℝ≥0)
@@ -113,11 +114,10 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
     Then `d x₀ xₖ ≤ L`, `d xₖ xₖ₊₁ ≤ L`, and `d xₖ₊₁ xₙ ≤ L`, thus `d x₀ xₙ ≤ 2 * L`. -/
   rw [dist_ofPreNNDist, ← NNReal.coe_two, ← NNReal.coe_mul, NNReal.mul_iInf, NNReal.coe_le_coe]
   refine le_ciInf fun l => ?_
-  have hd₀_trans : Transitive fun x y => d x y = 0 := by
-    intro a b c hab hbc
+  haveI : IsTrans X fun x y => d x y = 0 := by
+    refine ⟨fun a b c hab hbc ↦ ?_⟩
     rw [← nonpos_iff_eq_zero]
     simpa only [nonpos_iff_eq_zero, hab, hbc, dist_self c, max_self, mul_zero] using hd a b c c
-  haveI : IsTrans X fun x y => d x y = 0 := ⟨hd₀_trans⟩
   suffices ∀ n, length l = n → d x y ≤ 2 * (zipWith d (x :: l) (l ++ [y])).sum by exact this _ rfl
   intro n hn
   induction n using Nat.strong_induction_on generalizing x y l with | h n ihn =>
@@ -159,7 +159,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
       convert hMs.1.out
       rw [take_zipWith, take, take_add_one, getElem?_append_left hMl, getElem?_eq_getElem hMl,
         ← Option.coe_def, Option.toList_some, take_append_of_le_length hMl.le, getElem_cons_succ]
-  · exact single_le_sum (fun x _ => zero_le x) _ (mem_iff_get.2 ⟨⟨M, hM_lt⟩, getElem_zipWith⟩)
+  · exact single_le_sum (fun x _ => zero_le) _ (mem_iff_get.2 ⟨⟨M, hM_lt⟩, getElem_zipWith⟩)
   · rcases hMl.eq_or_lt with (rfl | hMl)
     · simp only [getElem_append_right le_rfl, getElem_singleton, dist_self, zero_le]
     rw [getElem_append_left hMl]
@@ -218,7 +218,7 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
     split_ifs with h
     · rw [(pow_right_strictAnti₀ hr.1 hr.2).le_iff_ge, Nat.find_le_iff]
       exact ⟨fun ⟨m, hmn, hm⟩ hn => hm (hB.antitone hmn hn), fun h => ⟨n, le_rfl, h⟩⟩
-    · push_neg at h
+    · push Not at h
       simp only [h, not_true, (pow_pos hr.1 _).not_ge]
   have hd_le : ∀ x y, ↑(d x y) ≤ 2 * dist x y := by
     refine PseudoMetricSpace.le_two_mul_dist_ofPreNNDist _ _ _ fun x₁ x₂ x₃ x₄ => ?_
@@ -229,7 +229,7 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
       rintro ⟨h₁₂, h₂₃, h₃₄⟩
       refine Nat.find_spec H (hU_comp (lt_add_one <| Nat.find H) ?_)
       exact ⟨x₂, h₁₂, x₃, h₂₃, h₃₄⟩
-    · exact (dif_neg H).trans_le (zero_le _)
+    · exact (dif_neg H).trans_le zero_le
   -- Porting note: without the next line, `uniformity_basis_dist_pow` ends up introducing some
   -- `Subtype.val` applications instead of `NNReal.toReal`.
   rw [mem_Ioo, ← NNReal.coe_lt_coe, ← NNReal.coe_lt_coe] at hr

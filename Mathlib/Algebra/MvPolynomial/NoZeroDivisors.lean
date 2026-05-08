@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.MvPolynomial.Variables
 public import Mathlib.Algebra.MvPolynomial.Equiv
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
+public import Mathlib.Algebra.MvPolynomial.Division
 
 /-!
 # Multivariate polynomials over integral domains
@@ -17,7 +18,7 @@ that hold when the coefficient (semi)ring has no zero divisors.
 
 -/
 
-@[expose] public section
+public section
 
 open Finset Equiv
 
@@ -79,8 +80,8 @@ end Degrees
 theorem totalDegree_mul_of_isDomain {f g : MvPolynomial σ R}
     (hf : f ≠ 0) (hg : g ≠ 0) :
     totalDegree (f * g) = totalDegree f + totalDegree g := by
-  cases exists_wellOrder σ
-  simp [← degree_degLexDegree (σ := σᵒᵈ), MonomialOrder.degree_mul hf hg]
+  cases exists_wellFoundedGT σ
+  simp [← degree_degLexDegree, MonomialOrder.degree_mul hf hg]
 
 theorem totalDegree_le_of_dvd_of_isDomain {f g : MvPolynomial σ R}
     (h : f ∣ g) (hg : g ≠ 0) :
@@ -122,7 +123,7 @@ theorem degreeOf_C_mul (j : σ) (c : R) (hc : c ∈ R⁰) : degreeOf j (C c * p)
       exact hp (rename_injective _ (Equiv.injective _) (by simpa using h))
     simp_rw [ne_eq, renameEquiv_apply, algHom_C, algebraMap_eq, optionEquivLeft_C,
       Polynomial.leadingCoeff_C]
-    contrapose! hp'
+    contrapose hp'
     ext m
     apply hc.1
     simpa using congr_arg (coeff m) hp'

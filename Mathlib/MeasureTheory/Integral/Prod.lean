@@ -35,7 +35,7 @@ In this file we prove Fubini's theorem.
 product measure, Fubini's theorem, Fubini-Tonelli theorem
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -161,8 +161,6 @@ theorem integrable_measure_prodMk_left {s : Set (α × β)} (hs : MeasurableSet 
   simp [ofReal_toReal, hx]
 
 end Measure
-
-open Measure
 
 end MeasureTheory
 
@@ -475,7 +473,7 @@ theorem continuous_integral_integral :
     tendsto_integral_of_L1 _ (L1.integrable_coeFn g).integral_prod_left
       (Eventually.of_forall fun h => (L1.integrable_coeFn h).integral_prod_left) ?_
   simp_rw [← lintegral_fn_integral_sub _ (L1.integrable_coeFn _) (L1.integrable_coeFn g)]
-  apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds _ (fun i => zero_le _) _
+  apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds _ (fun i => zero_le) _
   · exact fun i => ∫⁻ x, ∫⁻ y, ‖i (x, y) - g (x, y)‖ₑ ∂ν ∂μ
   swap; · exact fun i => lintegral_mono fun x => enorm_integral_le_lintegral_enorm _
   change

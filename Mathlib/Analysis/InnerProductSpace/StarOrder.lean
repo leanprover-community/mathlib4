@@ -20,7 +20,7 @@ equipped with all the usual instances of the continuous functional calculus.
 
 -/
 
-@[expose] public section
+public section
 
 namespace ContinuousLinearMap
 

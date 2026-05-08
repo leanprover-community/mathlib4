@@ -109,8 +109,7 @@ def relationsSet : Set (FreeGroup B) := range <| uncurry M.relation
 /-- The Coxeter group associated to a Coxeter matrix $M$; that is, the group
 $$\langle \{s_i\}_{i \in B} \vert \{(s_i s_{i'})^{M_{i, i'}}\}_{i, i' \in B} \rangle.$$ -/
 protected def Group : Type _ := PresentedGroup M.relationsSet
-
-instance : Group M.Group := QuotientGroup.Quotient.group _
+deriving Group
 
 /-- The simple reflection of the Coxeter group `M.Group` at the index `i`. -/
 def simple (i : B) : M.Group := PresentedGroup.of i
@@ -235,6 +234,7 @@ theorem simple_mul_simple_pow (i i' : B) : (s i * s i') ^ M i i' = 1 := by
 @[simp] theorem simple_mul_simple_pow' (i i' : B) : (s i' * s i) ^ M i i' = 1 :=
   M.symmetric i' i ▸ cs.simple_mul_simple_pow i' i
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The simple reflections of `W` generate `W` as a group. -/
 theorem subgroup_closure_range_simple : Subgroup.closure (range cs.simple) = ⊤ := by
   have : cs.simple = cs.mulEquiv.symm ∘ PresentedGroup.of := rfl
@@ -320,6 +320,7 @@ private theorem toMonoidHom_apply_symm_apply (a : PresentedGroup (M.relationsSet
   _ = cs.mulEquiv ((MulEquiv.symm cs.mulEquiv) a) := by rfl
   _ = _ := by rw [MulEquiv.apply_symm_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- The universal mapping property of Coxeter systems. For any monoid `G`,
@@ -356,7 +357,6 @@ theorem simple_determines_coxeterSystem :
   apply CoxeterSystem.ext
   apply MulEquiv.toMonoidHom_injective
   apply cs1.ext_simple
-  intro i
   nth_rw 2 [h]
   simp [simple]
 
@@ -507,10 +507,7 @@ theorem prod_alternatingWord_eq_prod_alternatingWord_sub (i i' : B) (m : ℕ) (h
     rw [(by ring : ↑(M i i') * 2 - (2 * k + 1) = -1 + (-k + ↑(M i i')) * 2),
       (by ring : 2 * k + 1 = 1 + k * 2)]
     repeat rw [Int.add_mul_ediv_right _ _ (by simp)]
-    norm_num
-    rw [zpow_add, zpow_add, zpow_natCast, simple_mul_simple_pow', zpow_neg, ← inv_zpow, zpow_neg,
-      ← inv_zpow]
-    simp [← mul_assoc]
+    simp [zpow_add, simple_mul_simple_pow', ← inv_zpow, ← mul_assoc]
 
 /-- The two words of length `M i i'` that alternate between `i` and `i'` have the same product.
 This is known as the "braid relation" or "Artin-Tits relation". -/

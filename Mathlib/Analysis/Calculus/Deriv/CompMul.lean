@@ -19,7 +19,7 @@ the theorems in this file require neither differentiability of `f`,
 nor assumptions like `UniqueDiffWithinAt 𝕜 s x`.
 -/
 
-@[expose] public section
+public section
 
 open Set
 open scoped Pointwise
@@ -36,7 +36,7 @@ variable (c f s x) in
 theorem derivWithin_comp_mul_left :
     derivWithin (f <| c * ·) s x = c • derivWithin f (c • s) (c * x) := by
   simp only [← smul_eq_mul]
-  rw [← derivWithin_const_smul', derivWithin, derivWithin,
+  rw [← derivWithin_const_smul_field, derivWithin, derivWithin,
     fderivWithin_comp_smul_eq_fderivWithin_smul, Pi.smul_def]
 
 variable (c f x) in
