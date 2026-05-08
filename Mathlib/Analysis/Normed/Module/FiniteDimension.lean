@@ -132,31 +132,33 @@ theorem AffineMap.continuous_of_finiteDimensional (f : PE →ᵃ[𝕜] PF) : Con
 theorem AffineEquiv.continuous_of_finiteDimensional (f : PE ≃ᵃ[𝕜] PF) : Continuous f :=
   f.toAffineMap.continuous_of_finiteDimensional
 
-/-- Reinterpret an affine equivalence as a continuous affine equivalence in finite dimension. -/
-def AffineEquiv.toContinuousAffineEquiv (f : PE ≃ᵃ[𝕜] PF) : PE ≃ᴬ[𝕜] PF where
-  toAffineEquiv := f
-  continuous_toFun := f.continuous_of_finiteDimensional
-  continuous_invFun :=
-    haveI : FiniteDimensional 𝕜 F := f.linear.finiteDimensional
-    f.symm.continuous_of_finiteDimensional
+/-- In finite dimension, affine equivalences are equivalent to continuous affine equivalences. -/
+def AffineEquiv.equivContinuousAffineEquivOfFiniteDimensional :
+    (PE ≃ᵃ[𝕜] PF) ≃ (PE ≃ᴬ[𝕜] PF) where
+  toFun f :=
+    haveI := f.linear.finiteDimensional
+    ⟨f, f.continuous_of_finiteDimensional, f.symm.continuous_of_finiteDimensional⟩
+  invFun f := f.toAffineEquiv
+  left_inv _ := rfl
+  right_inv _ := ContinuousAffineEquiv.toAffineEquiv_injective rfl
 
 @[simp]
-theorem AffineEquiv.coe_toContinuousAffineEquiv (f : PE ≃ᵃ[𝕜] PF) :
-    ⇑f.toContinuousAffineEquiv = f :=
-  rfl
+theorem AffineEquiv.coe_equivContinuousAffineEquivOfFiniteDimensional (f : PE ≃ᵃ[𝕜] PF) :
+    ⇑(equivContinuousAffineEquivOfFiniteDimensional f) = f := rfl
 
 @[simp]
-theorem AffineEquiv.toAffineEquiv_toContinuousAffineEquiv (f : PE ≃ᵃ[𝕜] PF) :
-    f.toContinuousAffineEquiv.toAffineEquiv = f :=
-  rfl
+theorem AffineEquiv.toAffineEquiv_equivContinuousAffineEquivOfFiniteDimensional
+    (f : PE ≃ᵃ[𝕜] PF) :
+    (equivContinuousAffineEquivOfFiniteDimensional f).toAffineEquiv = f := rfl
+
+@[simp]
+theorem AffineEquiv.equivContinuousAffineEquivOfFiniteDimensional_symm_apply
+    (f : PE ≃ᴬ[𝕜] PF) :
+    equivContinuousAffineEquivOfFiniteDimensional.symm f = f.toAffineEquiv := rfl
 
 /-- Reinterpret an affine equivalence as a homeomorphism. -/
-def AffineEquiv.toHomeomorphOfFiniteDimensional (f : PE ≃ᵃ[𝕜] PF) : PE ≃ₜ PF where
-  toEquiv := f.toEquiv
-  continuous_toFun := f.continuous_of_finiteDimensional
-  continuous_invFun :=
-    haveI : FiniteDimensional 𝕜 F := f.linear.finiteDimensional
-    f.symm.continuous_of_finiteDimensional
+def AffineEquiv.toHomeomorphOfFiniteDimensional (f : PE ≃ᵃ[𝕜] PF) : PE ≃ₜ PF :=
+  f.equivContinuousAffineEquivOfFiniteDimensional.toHomeomorph
 
 @[simp]
 theorem AffineEquiv.coe_toHomeomorphOfFiniteDimensional (f : PE ≃ᵃ[𝕜] PF) :

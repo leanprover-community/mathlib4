@@ -29,8 +29,8 @@ same as the topological closure.
 ## Results
 
 The main results are:
-* `AffineIsometry.image_intrinsicInterior`/`AffineIsometry.image_intrinsicFrontier`/
-  `AffineIsometry.image_intrinsicClosure`: Intrinsic interiors/frontiers/closures commute with
+* `AffineIsometry.intrinsicInterior_image`/`AffineIsometry.intrinsicFrontier_image`/
+  `AffineIsometry.intrinsicClosure_image`: Intrinsic interiors/frontiers/closures commute with
   taking the image under an affine isometry.
 * `Set.Nonempty.intrinsicInterior`: The intrinsic interior of a nonempty convex set is nonempty.
 
@@ -213,28 +213,26 @@ theorem intrinsicClosure_eq_closure_inter_affineSpan (s : Set P) :
 
 section ImageOpPreimage
 
-private theorem image_op_preimage {A B P Q : Type*} {f : P → Q} {s : Set P}
-    {iA : A → P} {iB : B → Q} {opA : Set A → Set A} {opB : Set B → Set B} (e : A ≃ B)
-    (hcomm : f ∘ iA = iB ∘ e) (hpre : iA ⁻¹' (f ⁻¹' (f '' s)) = iA ⁻¹' s)
-    (hop : ∀ t, e '' opA t = opB (e '' t)) :
-    iB '' opB (iB ⁻¹' (f '' s)) = f '' (iA '' opA (iA ⁻¹' s)) := by
-  rw [← Equiv.symm_preimage_preimage e (iB ⁻¹' (f '' s)), ← preimage_comp (f := e), ← hcomm,
-    preimage_comp, hpre, ← Equiv.image_eq_preimage_symm, ← hop, ← image_comp, ← image_comp, ← hcomm]
-
 omit [TopologicalSpace P] in
-private theorem image_op_preimage_of_affineSpan [AddCommGroup W] [Module 𝕜 W] [AddTorsor W Q]
-    {f : P → Q} (hf : Function.Injective f) {s : Set P}
-    {opA : Set (affineSpan 𝕜 s) → Set (affineSpan 𝕜 s)}
-    {opB : Set (affineSpan 𝕜 (f '' s)) → Set (affineSpan 𝕜 (f '' s))}
-    (h_emptyA : opA ∅ = ∅) (h_emptyB : opB ∅ = ∅)
-    (e : [Nonempty s] → (affineSpan 𝕜 s) ≃ (affineSpan 𝕜 (f '' s)))
-    (hcomm : [Nonempty s] → f ∘ (↑) = (↑) ∘ e)
-    (hop : [Nonempty s] → ∀ t, e '' opA t = opB (e '' t)) :
+/-- Naturality for constructions of the form `(↑) '' op ((↑) ⁻¹' s)`: if an injective map
+identifies the affine span of `s` with the affine span of its image, and the operations on these
+spans are semiconjugate by this identification, then the corresponding intrinsic constructions
+commute with image.
+
+Used below with `op = interior`, `frontier` and `closure`. -/
+private theorem image_intrinsic_of_affineSpan [AddCommGroup W] [Module 𝕜 W] [AddTorsor W Q]
+    {f : P → Q} (hf : f.Injective) {s : Set P} {opA : Set (affineSpan 𝕜 s) → Set (affineSpan 𝕜 s)}
+    {opB : Set (affineSpan 𝕜 (f '' s)) → Set (affineSpan 𝕜 (f '' s))} (h_emptyA : opA ∅ = ∅)
+    (h_emptyB : opB ∅ = ∅) (e : [Nonempty s] → (affineSpan 𝕜 s) ≃ (affineSpan 𝕜 (f '' s)))
+    (hcomm : [Nonempty s] → f ∘ (↑) = (↑) ∘ e) (hop : [Nonempty s] → (e '' ·).Semiconj opA opB) :
     (↑) '' opB ((↑) ⁻¹' (f '' s)) = f '' ((↑) '' opA ((↑) ⁻¹' s)) :=
   match s.eq_empty_or_nonempty with
   | .inl hs => by simp [hs, h_emptyA, h_emptyB]
-  | .inr hs => haveI : Nonempty s := hs.to_subtype
-    image_op_preimage e hcomm (by rw [hf.preimage_image s]) hop
+  | .inr hs => by
+    haveI : Nonempty s := hs.to_subtype
+    rw [← Equiv.symm_preimage_preimage e ((↑) ⁻¹' (f '' s)), ← preimage_comp (f := e),
+      ← hcomm, preimage_comp, hf.preimage_image s, ← Equiv.image_eq_preimage_symm, ← hop _,
+      ← image_comp, ← image_comp, ← hcomm]
 
 end ImageOpPreimage
 
@@ -246,25 +244,28 @@ variable [Ring 𝕜] [AddCommGroup V] [AddCommGroup W] [Module 𝕜 V] [Module �
   [TopologicalSpace P] [TopologicalSpace Q] [AddTorsor V P] [AddTorsor W Q]
 
 @[simp]
-theorem image_intrinsicInterior (φ : P ≃ᴬ[𝕜] Q) (s : Set P) :
+theorem intrinsicInterior_image (φ : P ≃ᴬ[𝕜] Q) (s : Set P) :
     intrinsicInterior 𝕜 (φ '' s) = φ '' intrinsicInterior 𝕜 s :=
-  image_op_preimage_of_affineSpan φ.injective (by simp) (by simp)
-    (fun [_] => φ.affineSpanImageEquiv s) (fun [_] => by ext; simp)
-    (fun [_] t => (φ.affineSpanImageEquiv s).toHomeomorph.image_interior t)
+  let e : [Nonempty s] → (affineSpan 𝕜 s) ≃ᴬ[𝕜] (affineSpan 𝕜 (φ '' s)) := fun [_] =>
+    (φ.affineSubspaceMap (affineSpan 𝕜 s)).trans <| ofEq (map_span φ.toAffineMap s)
+  image_intrinsic_of_affineSpan φ.injective (by simp) (by simp) e (fun [_] => by ext; simp [e])
+    (fun [_] _ => e.toHomeomorph.image_interior _)
 
 @[simp]
-theorem image_intrinsicClosure (φ : P ≃ᴬ[𝕜] Q) (s : Set P) :
-    intrinsicClosure 𝕜 (φ '' s) = φ '' intrinsicClosure 𝕜 s :=
-  image_op_preimage_of_affineSpan φ.injective (by simp) (by simp)
-    (fun [_] => φ.affineSpanImageEquiv s) (fun [_] => by ext; simp)
-    (fun [_] t => (φ.affineSpanImageEquiv s).toHomeomorph.image_closure t)
-
-@[simp]
-theorem image_intrinsicFrontier (φ : P ≃ᴬ[𝕜] Q) (s : Set P) :
+theorem intrinsicFrontier_image (φ : P ≃ᴬ[𝕜] Q) (s : Set P) :
     intrinsicFrontier 𝕜 (φ '' s) = φ '' intrinsicFrontier 𝕜 s :=
-  image_op_preimage_of_affineSpan φ.injective (by simp) (by simp)
-    (fun [_] => φ.affineSpanImageEquiv s) (fun [_] => by ext; simp)
-    (fun [_] t => (φ.affineSpanImageEquiv s).toHomeomorph.image_frontier t)
+  let e : [Nonempty s] → (affineSpan 𝕜 s) ≃ᴬ[𝕜] (affineSpan 𝕜 (φ '' s)) := fun [_] =>
+    (φ.affineSubspaceMap (affineSpan 𝕜 s)).trans <| ofEq (map_span φ.toAffineMap s)
+  image_intrinsic_of_affineSpan φ.injective (by simp) (by simp) e (fun [_] => by ext; simp [e])
+    (fun [_] _ => e.toHomeomorph.image_frontier _)
+
+@[simp]
+theorem intrinsicClosure_image (φ : P ≃ᴬ[𝕜] Q) (s : Set P) :
+    intrinsicClosure 𝕜 (φ '' s) = φ '' intrinsicClosure 𝕜 s :=
+  let e : [Nonempty s] → (affineSpan 𝕜 s) ≃ᴬ[𝕜] (affineSpan 𝕜 (φ '' s)) := fun [_] =>
+    (φ.affineSubspaceMap (affineSpan 𝕜 s)).trans <| ofEq (map_span φ.toAffineMap s)
+  image_intrinsic_of_affineSpan φ.injective (by simp) (by simp) e (fun [_] => by ext; simp [e])
+    (fun [_] _ => e.toHomeomorph.image_closure _)
 
 end ContinuousAffineEquiv
 
@@ -275,25 +276,40 @@ variable [NormedField 𝕜] [SeminormedAddCommGroup V] [SeminormedAddCommGroup W
   [NormedAddTorsor W Q]
 
 @[simp]
-theorem image_intrinsicInterior (φ : P →ᵃⁱ[𝕜] Q) (s : Set P) :
+theorem intrinsicInterior_image (φ : P →ᵃⁱ[𝕜] Q) (s : Set P) :
     intrinsicInterior 𝕜 (φ '' s) = φ '' intrinsicInterior 𝕜 s :=
-  image_op_preimage_of_affineSpan φ.injective (by simp) (by simp)
-    (fun [_] => φ.affineSpanImageHomeomorph s) (fun [_] => by ext; simp)
-    (fun [_] t => (φ.affineSpanImageHomeomorph s).image_interior t)
+  let e : [Nonempty s] → (affineSpan 𝕜 s) ≃ᴬ[𝕜] (affineSpan 𝕜 (φ '' s)) := fun [_] =>
+    ((affineSpan 𝕜 s).isometryEquivMap φ).toContinuousAffineEquiv.trans <| ofEq <|
+      (map_span φ.toAffineMap s).trans <| congrArg _ <| congrArg (· '' s) φ.coe_toAffineMap
+  image_intrinsic_of_affineSpan φ.injective (by simp) (by simp) e (fun [_] => by ext; simp [e])
+    (fun [_] _ => e.toHomeomorph.image_interior _)
 
 @[simp]
-theorem image_intrinsicFrontier (φ : P →ᵃⁱ[𝕜] Q) (s : Set P) :
+theorem intrinsicFrontier_image (φ : P →ᵃⁱ[𝕜] Q) (s : Set P) :
     intrinsicFrontier 𝕜 (φ '' s) = φ '' intrinsicFrontier 𝕜 s :=
-  image_op_preimage_of_affineSpan φ.injective (by simp) (by simp)
-    (fun [_] => φ.affineSpanImageHomeomorph s) (fun [_] => by ext; simp)
-    (fun [_] t => (φ.affineSpanImageHomeomorph s).image_frontier t)
+  let e : [Nonempty s] → (affineSpan 𝕜 s) ≃ᴬ[𝕜] (affineSpan 𝕜 (φ '' s)) := fun [_] =>
+    ((affineSpan 𝕜 s).isometryEquivMap φ).toContinuousAffineEquiv.trans <| ofEq <|
+      (map_span φ.toAffineMap s).trans <| congrArg _ <| congrArg (· '' s) φ.coe_toAffineMap
+  image_intrinsic_of_affineSpan φ.injective (by simp) (by simp) e (fun [_] => by ext; simp [e])
+    (fun [_] _ => e.toHomeomorph.image_frontier _)
 
 @[simp]
-theorem image_intrinsicClosure (φ : P →ᵃⁱ[𝕜] Q) (s : Set P) :
+theorem intrinsicClosure_image (φ : P →ᵃⁱ[𝕜] Q) (s : Set P) :
     intrinsicClosure 𝕜 (φ '' s) = φ '' intrinsicClosure 𝕜 s :=
-  image_op_preimage_of_affineSpan φ.injective (by simp) (by simp)
-    (fun [_] => φ.affineSpanImageHomeomorph s) (fun [_] => by ext; simp)
-    (fun [_] t => (φ.affineSpanImageHomeomorph s).image_closure t)
+  let e : [Nonempty s] → (affineSpan 𝕜 s) ≃ᴬ[𝕜] (affineSpan 𝕜 (φ '' s)) := fun [_] =>
+    ((affineSpan 𝕜 s).isometryEquivMap φ).toContinuousAffineEquiv.trans <| ofEq <|
+      (map_span φ.toAffineMap s).trans <| congrArg _ <| congrArg (· '' s) φ.coe_toAffineMap
+  image_intrinsic_of_affineSpan φ.injective (by simp) (by simp) e (fun [_] => by ext; simp [e])
+    (fun [_] _ => e.toHomeomorph.image_closure _)
+
+@[deprecated intrinsicInterior_image (since := "2026-05-08")]
+alias image_intrinsicInterior := intrinsicInterior_image
+
+@[deprecated intrinsicFrontier_image (since := "2026-05-08")]
+alias image_intrinsicFrontier := intrinsicFrontier_image
+
+@[deprecated intrinsicClosure_image (since := "2026-05-08")]
+alias image_intrinsicClosure := intrinsicClosure_image
 
 end AffineIsometry
 
@@ -308,17 +324,17 @@ variable [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
 @[simp]
 theorem intrinsicInterior_image (φ : P ≃ᵃ[𝕜] Q) (s : Set P) :
     intrinsicInterior 𝕜 (φ '' s) = φ '' intrinsicInterior 𝕜 s :=
-  φ.toContinuousAffineEquiv.image_intrinsicInterior s
+  φ.equivContinuousAffineEquivOfFiniteDimensional.intrinsicInterior_image s
 
 @[simp]
 theorem intrinsicFrontier_image (φ : P ≃ᵃ[𝕜] Q) (s : Set P) :
     intrinsicFrontier 𝕜 (φ '' s) = φ '' intrinsicFrontier 𝕜 s :=
-  φ.toContinuousAffineEquiv.image_intrinsicFrontier s
+  φ.equivContinuousAffineEquivOfFiniteDimensional.intrinsicFrontier_image s
 
 @[simp]
 theorem intrinsicClosure_image (φ : P ≃ᵃ[𝕜] Q) (s : Set P) :
     intrinsicClosure 𝕜 (φ '' s) = φ '' intrinsicClosure 𝕜 s :=
-  φ.toContinuousAffineEquiv.image_intrinsicClosure s
+  φ.equivContinuousAffineEquivOfFiniteDimensional.intrinsicClosure_image s
 
 end AffineEquiv
 
