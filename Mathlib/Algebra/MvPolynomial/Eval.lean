@@ -344,7 +344,6 @@ theorem map_id : ∀ p : MvPolynomial σ R, map (RingHom.id R) p = p := AddMonoi
 theorem map_map [CommSemiring S₂] (g : S₁ →+* S₂) (p : MvPolynomial σ R) :
     map g (map f p) = map (g.comp f) p := AddMonoidAlgebra.map_map ..
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eval₂_eq_eval_map (g : σ → S₁) (p : MvPolynomial σ R) : p.eval₂ f g = eval g (map f p) := by
   simp [eval₂, eval]; simp [map, MvPolynomial, Finsupp.sum_mapRange_index, mapRingHom]
 
@@ -456,7 +455,7 @@ theorem constantCoeff_comp_map (f : R →+* S₁) :
 theorem support_map_subset (p : MvPolynomial σ R) : (map f p).support ⊆ p.support := by
   simp only [Finset.subset_iff, mem_support_iff]
   intro x hx
-  contrapose! hx
+  contrapose hx
   rw [coeff_map, hx, map_zero]
 
 theorem support_map_of_injective (p : MvPolynomial σ R) {f : R →+* S₁} (hf : Injective f) :
@@ -465,7 +464,7 @@ theorem support_map_of_injective (p : MvPolynomial σ R) {f : R →+* S₁} (hf 
   · exact MvPolynomial.support_map_subset _ _
   simp only [Finset.subset_iff, mem_support_iff]
   intro x hx
-  contrapose! hx
+  contrapose hx
   rw [coeff_map, ← f.map_zero] at hx
   exact hf hx
 
