@@ -218,7 +218,7 @@ theorem primeFactors_lcmUpto (n : ℕ) : primeFactors (lcmUpto n) = primesLE n :
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · have := prime_of_mem_primeFactors h
     rw [← support_factorization, Finsupp.mem_support_iff, factorization_lcmUpto _ this] at h
-    simp_all
+    simp_all [mem_primesLE]
   · refine Prime.mem_primeFactors (prime_of_mem_primesLE h) (dvd_lcm ?_) <| lcmUpto_ne_zero n
     exact mem_Icc.mpr ⟨(prime_of_mem_primesLE h).one_le, le_of_mem_primesLE h⟩
 
@@ -694,7 +694,7 @@ private theorem pi_mul_log_sqrt_le {x : ℝ} (hx : 1 ≤ x) :
     norm_cast
     rw [show ⌊√x⌋₊ = #(Icc 1 ⌊√x⌋₊) by simp]
     refine Finset.card_le_card fun p hp ↦ ?_
-    simp only [mem_filter, mem_Icc] at hp ⊢
+    simp only [mem_filter, mem_Icc, mem_primesLE] at hp ⊢
     exact ⟨hp.1.2.one_le, le_floor hp.2⟩
 
 /-- A weak but completely explicit upper bound on $\pi(x)$. -/
