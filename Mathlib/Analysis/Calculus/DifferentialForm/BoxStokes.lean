@@ -50,7 +50,7 @@ Stokes theorem, differential form, exterior derivative, box, divergence theorem
 
 noncomputable section
 
-open ContinuousAlternatingMap Fin Set MeasureTheory Measure Matrix
+open ContinuousAlternatingMap Equiv Fin Set MeasureTheory Measure Matrix
 open scoped Topology
 
 namespace DifferentialForm
