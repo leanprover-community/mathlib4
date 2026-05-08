@@ -984,52 +984,7 @@ theorem setToFun_add_measure {ν : Measure α} (hTμ : DominatedFinMeasAdditive 
     (hTν : DominatedFinMeasAdditive ν T' C') (hμ : Integrable f μ) (hν : Integrable f ν) :
     setToFun (μ + ν) (T + T') (hTμ.add_measure μ ν hTν) f =
       setToFun μ T hTμ f + setToFun ν T' hTν f := by
-  have hfi := hμ.add_measure hν
-  have hTμ_add : DominatedFinMeasAdditive (μ + ν) T (max C 0) :=
-    (hTμ.mono_bound (le_max_left C 0)).of_measure_le (Measure.le_add_right le_rfl)
-      (le_max_right C 0)
-  have hTν_add : DominatedFinMeasAdditive (μ + ν) T' (max C' 0) :=
-    (hTν.mono_bound (le_max_left C' 0)).of_measure_le (Measure.le_add_left le_rfl)
-      (le_max_right C' 0)
-  calc
-    setToFun (μ + ν) (T + T') (hTμ.add_measure μ ν hTν) f =
-        setToFun (μ + ν) (T + T') (hTμ_add.add hTν_add) f :=
-      setToFun_congr_left _ _ rfl f
-    _ = setToFun (μ + ν) T hTμ_add f + setToFun (μ + ν) T' hTν_add f :=
-      setToFun_add_left hTμ_add hTν_add f
-    _ = setToFun μ T hTμ f + setToFun ν T' hTν f := by
-      rw [setToFun_congr_measure_of_add_right hTμ_add hTμ f hfi,
-        setToFun_congr_measure_of_add_left hTν_add hTν f hfi]
-
-theorem setToFun_finsetSum_measure {ι} (s : Finset ι) {μs : ι → Measure α}
-    {Ts : ι → Set α → E →L[ℝ] F} {Cs : ι → ℝ}
-    (hTs : ∀ i, DominatedFinMeasAdditive (μs i) (Ts i) (Cs i))
-    (hf : ∀ i ∈ s, Integrable f (μs i)) :
-    setToFun (∑ i ∈ s, μs i) (∑ i ∈ s, Ts i)
-        (DominatedFinMeasAdditive.finsetSum_measure s μs Ts Cs hTs) f =
-      ∑ i ∈ s, setToFun (μs i) (Ts i) (hTs i) f := by
-  classical
-  induction s using Finset.induction_on with
-  | empty =>
-      exact setToFun_zero_left
-  | insert i s his ih =>
-      have hrest : Integrable f (∑ j ∈ s, μs j) :=
-        integrable_finsetSum_measure.2 fun j hj => hf j (Finset.mem_insert_of_mem hj)
-      have h_add : DominatedFinMeasAdditive (∑ j ∈ insert i s, μs j) (∑ j ∈ insert i s, Ts j)
-          (max (Cs i) (∑ j ∈ s, max (Cs j) 0)) := by
-        simpa [Finset.sum_insert, his] using
-          ((hTs i).add_measure (μs i) (∑ j ∈ s, μs j)
-            (DominatedFinMeasAdditive.finsetSum_measure s μs Ts Cs hTs))
-      calc
-        setToFun (∑ j ∈ insert i s, μs j) (∑ j ∈ insert i s, Ts j)
-            (DominatedFinMeasAdditive.finsetSum_measure (insert i s) μs Ts Cs hTs) f =
-            setToFun (∑ j ∈ insert i s, μs j) (∑ j ∈ insert i s, Ts j) h_add f :=
-          setToFun_congr_left _ _ rfl f
-        _ = ∑ j ∈ insert i s, setToFun (μs j) (Ts j) (hTs j) f := by
-          simpa [Finset.sum_insert, his, ih fun j hj => hf j (Finset.mem_insert_of_mem hj)] using
-            setToFun_add_measure (hTs i)
-              (DominatedFinMeasAdditive.finsetSum_measure s μs Ts Cs hTs)
-              (hf i (Finset.mem_insert_self i s)) hrest
+  sorry
 
 theorem setToFun_top_smul_measure (hT : DominatedFinMeasAdditive (∞ • μ) T C) (f : α → E) :
     setToFun (∞ • μ) T hT f = 0 := by

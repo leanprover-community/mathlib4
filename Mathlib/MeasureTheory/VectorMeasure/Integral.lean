@@ -324,8 +324,14 @@ theorem integral_sub_cbm (hB : μ.Integrable f B) (hC : μ.Integrable f C) :
 theorem integral_smul_cbm (c : ℝ) :
     ∫ᵛ x, f x ∂[c • B; μ] = c • ∫ᵛ x, f x ∂[B; μ] := by
   by_cases hG : CompleteSpace G
-  · simp only [integral, hG]
-    sorry
+  · simp only [integral, hG, ↓reduceDIte, transpose_smul, coe_smul, ← setToFun_smul_left,
+      Real.norm_eq_abs, mul_one]
+    refine setToFun_congr_measure (ENNReal.ofReal |c|) (ENNReal.ofReal |c|)⁻¹
+      ?_ ?_ ?_ ?_ _ _ f
+    · sorry
+    · sorry
+    · sorry
+    · sorry
   · simp [integral, hG]
 
 end cbm

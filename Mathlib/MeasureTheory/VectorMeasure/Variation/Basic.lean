@@ -6,6 +6,7 @@ Authors: Oliver Butterley, Yoh Tanimoto
 module
 
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Defs
+public import Mathlib.Analysis.Normed.Module.Basic
 
 /-!
 # Properties of variation
@@ -110,6 +111,12 @@ theorem norm_measure_le_variation {E : Set X} (hE : μ.variation E ≠ ∞ := by
 variable (μ) in
 @[simp]
 lemma variation_neg : (-μ).variation = μ.variation := by simp [variation]
+
+variable [NormedSpace ℝ V]
+
+theorem variation_smul (c : ℝ) :
+    (c • μ).variation = ENNReal.ofReal |c| • μ.variation := by
+  sorry
 
 end NormedAddCommGroup
 
