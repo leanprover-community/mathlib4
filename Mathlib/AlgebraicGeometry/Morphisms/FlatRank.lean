@@ -268,7 +268,7 @@ lemma Scheme.Hom.finrank_eq_one_of_isIso (f : X ⟶ Y) [IsIso f] : finrank f = 1
 
 /-- A finite flat locally finitely presented morphism is an isomorphism if and only if
 its rank is constant equal to `1`. -/
-nonrec lemma Scheme.Hom.isIso_iff_rank_eq : IsIso f ↔ finrank f = 1 := by
+nonrec lemma Scheme.Hom.isIso_iff_finrank_eq : IsIso f ↔ finrank f = 1 := by
   refine ⟨fun h ↦ finrank_eq_one_of_isIso f, fun h ↦ ?_⟩
   wlog hY : ∃ R, Y = Spec R
   · rw [← MorphismProperty.isomorphisms.iff,
