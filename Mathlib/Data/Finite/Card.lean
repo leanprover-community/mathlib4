@@ -166,7 +166,7 @@ theorem card_union_le (s t : Set α) : Nat.card (↥(s ∪ t)) ≤ Nat.card s + 
     cases h
     rw [← @Nat.cast_le Cardinal, Nat.cast_add, Nat.cast_card, Nat.cast_card, Nat.cast_card]
     exact Cardinal.mk_union_le s t
-  · exact Nat.card_eq_zero_of_infinite.trans_le (zero_le _)
+  · simp
 
 namespace Finite
 
