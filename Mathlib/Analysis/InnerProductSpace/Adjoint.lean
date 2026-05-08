@@ -256,6 +256,8 @@ theorem star_eq_adjoint (A : E →L[𝕜] E) : star A = A† :=
 theorem isSelfAdjoint_iff' {A : E →L[𝕜] E} : IsSelfAdjoint A ↔ A† = A :=
   Iff.rfl
 
+@[simp] lemma id_mem_unitary : .id 𝕜 E ∈ unitary (E →L[𝕜] E) := one_mem _
+
 theorem norm_adjoint_comp_self (A : E →L[𝕜] F) :
     ‖A† ∘L A‖ = ‖A‖ * ‖A‖ := by
   refine le_antisymm ?_ ?_
@@ -692,7 +694,7 @@ theorem isSymmetric_iff_isSelfAdjoint (A : E →ₗ[𝕜] E) : IsSymmetric A ↔
   rw [isSelfAdjoint_iff', IsSymmetric, ← LinearMap.eq_adjoint_iff]
   exact eq_comm
 
-@[simp] lemma id_mem_unitary : LinearMap.id ∈ unitary (E →ₗ[𝕜] E) := one_mem _
+@[simp] lemma id_mem_unitary : .id ∈ unitary (E →ₗ[𝕜] E) := one_mem _
 
 theorem isAdjointPair_inner (A : E →ₗ[𝕜] F) :
     IsAdjointPair (innerₛₗ 𝕜 (E := E)).flip
