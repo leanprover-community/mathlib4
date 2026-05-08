@@ -59,6 +59,11 @@ jobs:
           name: shake-explain
           path: explain.txt
 
+      - name: Cleanup explain.txt
+        if: steps.shake.outputs.changed == 'true'
+        run: |
+          rm explain.txt
+
       - name: Build PR body
         id: pr_body
         if: steps.shake.outputs.changed == 'true' && toJson(inputs.dry_run) != 'true'
