@@ -22,6 +22,7 @@ public import Mathlib.RingTheory.Localization.AtPrime.Basic
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.RingTheory.Polynomial.Basic
 public import Mathlib.RingTheory.RingHom.Flat
+public import Mathlib.Algebra.Category.Ring.FilteredColimitsLocal
 
 /-!
 
@@ -63,20 +64,6 @@ open CategoryTheory Limits IsLocalRing
 variable {J : Type u} [SmallCategory J] [IsFiltered J] (F : J ⥤ CommRingCat.{u}) {c : Cocone F}
   [h_obj : ∀ (j : J), IsLocalRing (F.obj j)]
   [h_hom : ∀ (j j' : J) (f : j ⟶ j'), IsLocalHom (F.map f).hom]
-
-namespace CommRingCat.FilteredColimit
-
-theorem isLocalRing_of_isColimit (hc : IsColimit c) : IsLocalRing c.pt := by sorry
-
-lemma maximalIdeal_eq_iUnion_of_isColimit (hc : IsColimit c) :
-    (isLocalRing_of_isColimit F hc).maximalIdeal =
-    ⋃ (j : J), ((c.ι.app j) '' (maximalIdeal (F.obj j)) : Set c.pt) := sorry
-
-omit h_obj in
-lemma isLocalHom_ι (hc : IsColimit c) (j : J) :
-    IsLocalHom (c.ι.app j).hom := by sorry
-
-end CommRingCat.FilteredColimit
 
 namespace CommRingCat
 
@@ -422,8 +409,8 @@ lemma algebraMap_comp_ι_eq (j j' : J) :
 noncomputable def coconeOfCoconeForgetPt (hc : IsColimit c) : FlatExtension R K := by
   let j := Classical.choice ‹IsFiltered J›.2
   let : IsLocalRing c.pt := @CommRingCat.FilteredColimit.isLocalRing_of_isColimit _ _ _ _ _
-      (fun j ↦ inferInstanceAs (IsLocalRing (F.obj j)))
-      (fun _ _ f ↦ inferInstanceAs (IsLocalHom (F.map f).algHom.toRingHom)) hc
+      (fun _ _ f ↦ inferInstanceAs (IsLocalHom (F.map f).algHom.toRingHom))
+      (fun j ↦ inferInstanceAs (IsLocalRing (F.obj j))) hc
   let : Algebra R c.pt := ((c.ι.app j).hom.comp (algebraMap R (F.obj j))).toAlgebra
   let : Algebra c.pt K := (hc.desc (algebraMapKCocone F)).hom.toAlgebra
   refine @FlatExtension.mk R _ _ K _ _ c.pt _ _ _ _ ?_ ?_ ?_
@@ -453,8 +440,8 @@ noncomputable def coconeOfCoconeForgetPt (hc : IsColimit c) : FlatExtension R K 
   · refine le_antisymm (fun x hx ↦ ?_) (((local_hom_TFAE (algebraMap R c.pt)).out 0 2).mp ?_)
     · obtain ⟨j, x, hx', rfl⟩ := Set.mem_iUnion.mp <| (le_of_eq <|
         @CommRingCat.FilteredColimit.maximalIdeal_eq_iUnion_of_isColimit _ _ _ _
-        c (fun j ↦ (F.obj j).isLocalRing)
-        (fun _ _ f ↦ inferInstanceAs (IsLocalHom (F.map f).algHom.toRingHom)) hc) hx
+        c (fun _ _ f ↦ inferInstanceAs (IsLocalHom (F.map f).algHom.toRingHom))
+        (fun j ↦ (F.obj j).isLocalRing) hc) hx
       change x ∈ maximalIdeal (F.obj j) at hx'
       rw [(F.obj j).eqmap] at hx'
       let f : R →+* (F.obj j) := algebraMap _ _
