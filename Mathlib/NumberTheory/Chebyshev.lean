@@ -59,16 +59,6 @@ Parts of this file were upstreamed from the PrimeNumberTheoremAnd project by Kon
 -/
 @[expose] public section
 
-namespace Nat.Prime
-
-theorem log_pos {p : ℕ} (hp : p.Prime) : 0 < Real.log p :=
-  Real.log_pos <| mod_cast hp.one_lt
-
-theorem log_ne_zero {p : ℕ} (hp : p.Prime) : Real.log p ≠ 0 := hp.log_pos.ne'
-
-end Nat.Prime
-
-
 open Nat hiding log
 open Finset Real
 open ArithmeticFunction hiding log id
