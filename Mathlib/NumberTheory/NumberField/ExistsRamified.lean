@@ -99,14 +99,6 @@ instance {K : Type*} [Field K] [NumberField K]
     Algebra.IsSeparable (ℤ ⧸ p) ((𝓞 K) ⧸ q) := by
   sorry
 
--- #38377
-theorem fixingSubgroup_range_algebraMap (G : Type*) [Group G] [Finite G] (A B C : Type*) [CommRing A]
-    [CommRing C] [IsDomain C] [Algebra A C] [FaithfulSMul A C] [MulSemiringAction G C]
-    (H : Subgroup G) [hGAC : IsGaloisGroup G A C] [CommRing B] [Algebra B C] [FaithfulSMul B C]
-    [hH : IsGaloisGroup H B C] :
-    fixingSubgroup G (Set.range (algebraMap B C)) = H := by
-  sorry
-
 instance (G R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
     [Group G] [MulSemiringAction G S] [h : IsGaloisGroup G R S] (H : Subgroup G) :
     IsGaloisGroup H (FixedPoints.subalgebra R S H) S where
@@ -118,8 +110,6 @@ protected theorem IsGaloisGroup.top (G R S : Type*) [Group G] [CommRing R] [Comm
     [Algebra R S] [MulSemiringAction G S] [IsGaloisGroup G R S] :
     IsGaloisGroup (⊤ : Subgroup G) R S :=
   .of_mulEquiv Subgroup.topEquiv fun _ _ ↦ rfl
-
-#check IsGaloisGroup.to_isFractionRing
 
 /-- Existing construction with `Finite G` replaced by `IsIntegral A B` -/
 theorem IsGaloisGroup.to_isFractionRing'
@@ -153,11 +143,13 @@ theorem IsGaloisGroup.to_isFractionRing'
     use algebraMap A K b / algebraMap A K a
     simp [hc, div_eq_div_iff ha hy', ← map_mul, ← map_mul, hb]
 
+-- PRed
 theorem Algebra.formallyUnramified_iff_forall
     {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] :
     FormallyUnramified R S ↔ ∀ q : PrimeSpectrum S, IsUnramifiedAt R q.1 :=
   unramifiedLocus_eq_univ_iff.symm.trans Set.eq_univ_iff_forall
 
+-- PRed
 theorem Algebra.unramified_iff_forall
     {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [FiniteType R S] :
     Unramified R S ↔ ∀ q : PrimeSpectrum S, IsUnramifiedAt R q.1 :=
@@ -191,10 +183,10 @@ theorem NumberField.supr_inertia_eq_top (S G : Type*) [CommRing S] [Module.Finit
   have h4 : Function.Bijective (algebraMap ℤ R) := by
     exact @bijective_algebraMap_int_of_finite_of_unramified R _ _ h5 _ _
   have h1 : fixingSubgroup G (Set.range (algebraMap R S)) = H := by
-    exact fixingSubgroup_range_algebraMap G ℤ R S H
+    exact IsGaloisGroup.fixingSubgroup_range_algebraMap G ℤ R S H
   have : IsGaloisGroup (⊤ : Subgroup G) ℤ S := IsGaloisGroup.top G ℤ S
   have h2 : fixingSubgroup G (Set.range (algebraMap ℤ S)) = ⊤ := by
-    exact fixingSubgroup_range_algebraMap G ℤ ℤ S ⊤
+    exact IsGaloisGroup.fixingSubgroup_range_algebraMap G ℤ ℤ S ⊤
   have h3 : Set.range (algebraMap ℤ S) = Set.range (algebraMap R S) := by
     rw [IsScalarTower.algebraMap_eq ℤ R S, RingHom.coe_comp, h4.surjective.range_comp]
   have : H = ⊤ := by rw [← h1, ← h3, h2]
