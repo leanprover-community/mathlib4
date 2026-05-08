@@ -323,8 +323,8 @@ noncomputable def IsVerdierLeftLocalizing.fullyFaithful [A.IsVerdierLeftLocalizi
     F.FullyFaithful :=
   Functor.FullyFaithful.ofIso (.ofFullyFaithful
     ((A.triangulatedLocalizerMorphism B).localizedFunctor L₁ L₂))
-      (Localization.liftNatIso L₁ (B.inverseImage A.ι).trW
-        ((A.triangulatedLocalizerMorphism B).functor ⋙ L₂) (L₁ ⋙ F) _ _ e.symm)
+    (Localization.liftNatIso L₁ (B.inverseImage A.ι).trW
+      ((A.triangulatedLocalizerMorphism B).functor ⋙ L₂) (L₁ ⋙ F) _ _ e.symm)
 
 /-- If `A` is a right `B`-localizing triangulated subcategory in the sense of Verdier,
 then the induced functor between the localizations with respect to `(B.inverseImage A.ι).trW`
