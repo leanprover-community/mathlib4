@@ -49,25 +49,19 @@ namespace MeasureTheory.SignedMeasure
 
 variable {X : Type*} {mX : MeasurableSpace X} (μ : SignedMeasure X)
 
-/-- For a positive measurable set `i` (i.e. `0 ≤ μ.restrict i`),
-`μ.toMeasureOfZeroLE i _ _ j = ‖μ (i ∩ j)‖ₑ`. -/
-lemma toMeasureOfZeroLE_apply_eq_enorm {i j : Set X} (him : MeasurableSet i)
-    (hi : 0 ≤[i] μ) (hjm : MeasurableSet j) :
-    μ.toMeasureOfZeroLE i him hi j = ‖μ (i ∩ j)‖ₑ := by
-  have hnn : 0 ≤ μ (i ∩ j) :=
-    μ.nonneg_of_zero_le_restrict (μ.zero_le_restrict_subset him Set.inter_subset_left hi)
-  rw [μ.toMeasureOfZeroLE_apply hi him hjm, Real.enorm_of_nonneg hnn]
-  exact (ENNReal.ofReal_eq_coe_nnreal _).symm
+lemma toMeasureOfZeroLE_apply_eq_enorm {i j : Set X} (him : MeasurableSet i) (hi : 0 ≤[i] μ)
+    (hjm : MeasurableSet j) : μ.toMeasureOfZeroLE i him hi j = ‖μ (i ∩ j)‖ₑ := by
+  have : 0 ≤ μ (i ∩ j) :=
+    μ.nonneg_of_zero_le_restrict (μ.zero_le_restrict_subset ‹_› Set.inter_subset_left ‹_›)
+  grind [μ.toMeasureOfZeroLE_apply, Real.enorm_of_nonneg, ENNReal.ofReal_eq_coe_nnreal]
 
-/-- For a negative measurable set `i` (i.e. `μ.restrict i ≤ 0`),
-`μ.toMeasureOfLEZero i _ _ j = ‖μ (i ∩ j)‖ₑ`. -/
 lemma toMeasureOfLEZero_apply_eq_enorm {i j : Set X} (him : MeasurableSet i)
     (hi : μ ≤[i] 0) (hjm : MeasurableSet j) :
     μ.toMeasureOfLEZero i him hi j = ‖μ (i ∩ j)‖ₑ := by
-  have hnp : μ (i ∩ j) ≤ 0 :=
-    μ.nonpos_of_restrict_le_zero (μ.restrict_le_zero_subset him Set.inter_subset_left hi)
-  rw [μ.toMeasureOfLEZero_apply hi him hjm, ← enorm_neg, Real.enorm_of_nonneg (neg_nonneg.mpr hnp)]
-  exact (ENNReal.ofReal_eq_coe_nnreal _).symm
+  have : μ (i ∩ j) ≤ 0 :=
+    μ.nonpos_of_restrict_le_zero (μ.restrict_le_zero_subset ‹_› Set.inter_subset_left ‹_›)
+  have := Real.enorm_of_nonneg (neg_nonneg.mpr this)
+  grind [μ.toMeasureOfLEZero_apply, ← enorm_neg, neg_nonneg, ENNReal.ofReal_eq_coe_nnreal]
 
 open VectorMeasure in
 /-- The Hahn–Jordan-based `totalVariation` agrees with the supremum-based `variation`. -/
