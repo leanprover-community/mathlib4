@@ -692,6 +692,8 @@ theorem isSymmetric_iff_isSelfAdjoint (A : E →ₗ[𝕜] E) : IsSymmetric A ↔
   rw [isSelfAdjoint_iff', IsSymmetric, ← LinearMap.eq_adjoint_iff]
   exact eq_comm
 
+@[simp] lemma id_mem_unitary : LinearMap.id ∈ unitary (E →ₗ[𝕜] E) := one_mem _
+
 theorem isAdjointPair_inner (A : E →ₗ[𝕜] F) :
     IsAdjointPair (innerₛₗ 𝕜 (E := E)).flip
       (innerₛₗ 𝕜 (E := F)).flip A A.adjoint := by
