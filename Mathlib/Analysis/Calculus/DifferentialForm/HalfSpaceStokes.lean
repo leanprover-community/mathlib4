@@ -3,11 +3,13 @@ Copyright (c) 2025 Haoen Feng. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Haoen Feng
 -/
-module
-
 import Mathlib.Analysis.Calculus.DifferentialForm.BoxStokes
 import Mathlib.Analysis.Calculus.FDeriv.Const
-import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
+import Mathlib.Analysis.Normed.Module.Alternating.Basic
+import Mathlib.Topology.MetricSpace.ProperSpace
+import Mathlib.Topology.Support
+import Mathlib.MeasureTheory.Integral.Bochner
+import Mathlib.MeasureTheory.Integral.SetIntegral
 
 /-!
 # Stokes' theorem on the half-space `ℝⁿ₊ = {x : x_m ≥ 0}`
@@ -123,7 +125,8 @@ theorem halfSpaceBoxLower_le_upper (m : ℕ) {R : ℝ} (hR : (0 : ℝ) ≤ R) :
 lemma norm_insertNth_ge_norm {m : ℕ} (i : Fin (m + 1)) (v : ℝ) (x : Fin m → ℝ) :
     ‖x‖ ≤ ‖(Fin.insertNth i v x : Fin (m + 1) → ℝ)‖ := by
   show Finset.univ.sup (fun b : Fin m => ‖(x : Fin m → ℝ) b‖₊) ≤
-       Finset.univ.sup (fun b : Fin (m + 1) => ‖(Fin.insertNth i v x : Fin (m + 1) → ℝ) b‖₊)
+      Finset.univ.sup (fun b : Fin (m + 1) =>
+        ‖(Fin.insertNth i v x : Fin (m + 1) → ℝ) b‖₊)
   exact Finset.sup_le fun j _ => by
     have h_val : (Fin.insertNth i v x : Fin (m + 1) → ℝ) (Fin.succAbove i j) = x j := by simp
     rw [← h_val]
@@ -142,7 +145,8 @@ lemma norm_insertNth_ge {m : ℕ} (i : Fin (m + 1)) (v : ℝ) (x : Fin m → ℝ
 
 /-! ## Form Field Vanishing -/
 
-/-- A form field that vanishes when `‖y‖ ≥ Rω` also vanishes at `insertNth i v x` when `‖x‖ ≥ Rω`. -/
+/-- A form field that vanishes when `‖y‖ ≥ Rω` also vanishes at
+`insertNth i v x` when `‖x‖ ≥ Rω`. -/
 lemma formField_vanishes_at_insertNth_norm {m : ℕ}
     (ω : (Fin (m + 1) → ℝ) → (Fin (m + 1) → ℝ) [⋀^Fin m]→L[ℝ] ℝ)
     {Rω : ℝ} (hRω : ∀ y, Rω ≤ ‖y‖ → ω y = 0)
@@ -151,7 +155,8 @@ lemma formField_vanishes_at_insertNth_norm {m : ℕ}
     ω (Fin.insertNth i v x) = 0 :=
   hRω _ (le_trans hx (norm_insertNth_ge_norm i v x))
 
-/-- A form field that vanishes when `‖y‖ ≥ Rω` also vanishes at `insertNth i v x` when `|v| ≥ Rω`. -/
+/-- A form field that vanishes when `‖y‖ ≥ Rω` also vanishes at
+`insertNth i v x` when `|v| ≥ Rω`. -/
 lemma formField_vanishes_at_insertNth {m : ℕ}
     (ω : (Fin (m + 1) → ℝ) → (Fin (m + 1) → ℝ) [⋀^Fin m]→L[ℝ] ℝ)
     {Rω : ℝ} (hRω : ∀ y, Rω ≤ ‖y‖ → ω y = 0)
@@ -354,7 +359,8 @@ For `ω` a compactly supported `C¹` `m`-form on `ℝ^{m+1}`:
 3. `∫_{HalfSpace} f = ∫_{Icc} f` (since `Icc ⊆ HalfSpace` and `f = 0` on `HalfSpace \ Icc`).
 4. `box_stokes_of_contDiff` gives `∫_{Icc} f = boxBoundaryIntegral ω lower upper`.
 5. For `i ≠ lastCoord m`: both front and back vanish (compact support, values at `±R`).
-6. For `i = lastCoord m`: front at `x_m = R` vanishes; back at `x_m = 0` equals `boundaryIntegral`. -/
+6. For `i = lastCoord m`: front at `x_m = R` vanishes;
+   back at `x_m = 0` equals `boundaryIntegral`. -/
 theorem halfSpace_stokes (m : ℕ)
     (ω : (Fin (m + 1) → ℝ) → (Fin (m + 1) → ℝ) [⋀^Fin m]→L[ℝ] ℝ)
     (hω : ContDiff ℝ (1 : ℕ∞) ω)
@@ -448,7 +454,8 @@ theorem halfSpace_stokes (m : ℕ)
       rw [show halfSpaceBoxUpper m R ∘ Fin.succAbove (lastCoord m) = fun _ => (R : ℝ) from rfl]
       congr 1
       -- ∫_{Icc(-R,R)^m} f = ∫ f (f vanishes outside Icc)
-      have h_meas : MeasurableSet (Icc (fun _ => -(R : ℝ)) (fun _ => (R : ℝ)) : Set (Fin m → ℝ)) :=
+      have h_meas : MeasurableSet
+          (Icc (fun _ => -(R : ℝ)) (fun _ => (R : ℝ)) : Set (Fin m → ℝ)) :=
         measurableSet_Icc
       have h_vanish : ∀ x : Fin m → ℝ,
           x ∈ (Set.univ \ Icc (fun _ => -(R : ℝ)) (fun _ => (R : ℝ))) →

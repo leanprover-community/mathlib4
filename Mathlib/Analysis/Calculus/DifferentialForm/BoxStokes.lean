@@ -3,8 +3,6 @@ Copyright (c) 2025 Haoen Feng. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Haoen Feng
 -/
-module
-
 import Mathlib.Analysis.Calculus.DifferentialForm.Basic
 import Mathlib.MeasureTheory.Integral.DivergenceTheorem
 import Mathlib.LinearAlgebra.Determinant
@@ -73,7 +71,8 @@ noncomputable def detTopForm (n : ℕ) :
             (Matrix.of m).det from rfl]
       rw [Matrix.det_apply]
       calc ‖(∑ σ : Perm (Fin n), Equiv.Perm.sign σ • ∏ i : Fin n, Matrix.of m (σ i) i)‖
-          ≤ ∑ σ : Perm (Fin n), ‖Equiv.Perm.sign σ • ∏ i : Fin n, Matrix.of m (σ i) i‖ :=
+          ≤ ∑ σ : Perm (Fin n),
+            ‖Equiv.Perm.sign σ • ∏ i : Fin n, Matrix.of m (σ i) i‖ :=
             norm_sum_le _ _
         _ ≤ ∑ σ : Perm (Fin n), (1 : ℝ) * ∏ i : Fin n, ‖m (σ i)‖ := by
             refine Finset.sum_le_sum (fun σ _ => ?_)
@@ -135,7 +134,8 @@ noncomputable def topFormDensity {n : ℕ}
     (ω : (Fin n → ℝ) → (Fin n → ℝ) [⋀^Fin n]→L[ℝ] ℝ) (x : Fin n → ℝ) : ℝ :=
   toTopFormFun n (ω x)
 
-/-- The integral of a top-form field over a measurable set: `∫_s ω = ∫_{x ∈ s} topFormDensity ω x dx`. -/
+/-- The integral of a top-form field over a measurable set:
+`∫_s ω = ∫_{x ∈ s} topFormDensity ω x dx`. -/
 noncomputable def topFormIntegral {n : ℕ}
     (ω : (Fin n → ℝ) → (Fin n → ℝ) [⋀^Fin n]→L[ℝ] ℝ)
     (s : Set (Fin n → ℝ)) : ℝ :=
@@ -299,7 +299,7 @@ theorem box_stokes_of_contDiff
     have hdiv_cont : Continuous
         (fun x => ∑ i : Fin (m + 1),
           fderiv ℝ (boxFaceComponent ω i) x (Pi.single i 1)) := by
-      refine continuous_finset_sum _ ?_
+      refine continuous_finsetSum _ ?_
       intro i _
       have hface : ContDiff ℝ (1 : ℕ∞) (boxFaceComponent ω i) :=
         boxFaceComponent_contDiff ω i hω
