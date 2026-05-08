@@ -46,11 +46,11 @@ namespace homotopyOfExtraDegeneracy
 variable {n : ℕ}
 
 def h {n : ℕ} (i : Fin (n + 1)) : X.left _⦋n⦌ ⟶ X.left _⦋n + 1⦌ :=
-  X.left.δ₀Iter i.val ≫ ed.s i.rev.val ≫ X.left.σ₀Iter i.val
+  X.left.δ₀Iter i.val (by grind) ≫ ed.s i.rev.val ≫ X.left.σ₀Iter i.val (by grind)
 
 @[reassoc]
 lemma h_eq (i : Fin (n + 1)) (j : ℕ) (hj : j = i.rev.val := by grind) :
-    h ed i = X.left.δ₀Iter i.val ≫ ed.s j ≫ X.left.σ₀Iter i.val := by
+    h ed i = X.left.δ₀Iter i.val (by grind) ≫ ed.s j ≫ X.left.σ₀Iter i.val (by grind) := by
   subst hj
   rfl
 
@@ -64,7 +64,7 @@ def homotopyOfExtraDegeneracy :
   h_zero_comp_δ_zero n := by simp [h_eq_assoc ed (0 : Fin (n + 1)) n (by simp)]
   h_last_comp_δ_last n := by
     dsimp
-    rw [h_eq_assoc _ _ 0, X.left.σ₀Iter_δ' _ _ 1,
+    rw [h_eq_assoc _ _ 0, X.left.σ₀Iter_δ' _ _ 1 (by grind),
       ed.s₀_comp_δ₁_assoc, X.δ₀Iter_hom_assoc ..]
     simp
   h_succ_comp_δ_castSucc_of_lt {n} i j hij := by
@@ -72,7 +72,7 @@ def homotopyOfExtraDegeneracy :
     dsimp
     rw [h_eq_assoc _ _ k, h_eq _ _ k]
     dsimp
-    rw [X.left.σ₀Iter_δ .., X.left.δ_δ₀Iter_assoc ..]
+    rw [X.left.σ₀Iter_δ _ _ (by grind), X.left.δ_δ₀Iter_assoc _ _ (by grind)]
   h_castSucc_comp_δ_succ_of_lt {n} i j hij := by
     generalize hk : j.rev = k
     obtain ⟨l, hl⟩ : ∃ l, i.val = j + 1 + l := by
@@ -82,24 +82,24 @@ def homotopyOfExtraDegeneracy :
     have := ed.s_comp_δ k ⟨l + 1, by grind⟩
     dsimp at this ⊢
     rw [h_eq_assoc _ _ (k + 1), h_eq _ _ k,
-      X.left.σ₀Iter_δ' _ _ ⟨l + 2, by grind⟩,
-      reassoc_of% this, ← X.left.δ_δ₀Iter'_assoc _ _ i]
+      X.left.σ₀Iter_δ' _ _ ⟨l + 2, by grind⟩ (by grind),
+      reassoc_of% this, ← X.left.δ_δ₀Iter'_assoc _ _ i (by grind)]
     dsimp
   h_succ_comp_δ_castSucc_succ {n} i := by
     generalize hk : i.succ.rev = k
     dsimp
     rw [h_eq_assoc _ _ k, h_eq_assoc _ _ (k + 1)]
     dsimp
-    rw [X.left.δ₀Iter_succ'_assoc ..,
+    rw [X.left.δ₀Iter_succ'_assoc _ (by grind),
       X.left.σ₀Iter_δ' i.castSucc.succ i.val (m := k.val + 1)
-        (i' := 1) (by grind) (by grind) (by simp; grind), dsimp% ed.s_comp_δ_assoc k.val 0,
-      X.left.σ₀Iter_δ ..]
+        (i' := 1) (by grind) (by grind) (by simp; grind),
+      dsimp% ed.s_comp_δ_assoc k.val 0, X.left.σ₀Iter_δ _ _ (by grind)]
   h_comp_σ_castSucc_of_le {n} i j hij := by
     generalize hk : j.rev = k
     dsimp
     rw [h_eq_assoc _ _ k, h_eq _ _ k]
     dsimp
-    rw [X.left.σ_δ₀Iter_assoc .., X.left.σ₀Iter_σ ..]
+    rw [X.left.σ_δ₀Iter_assoc _ _ (by grind), X.left.σ₀Iter_σ _ _ (by grind)]
   h_comp_σ_succ_of_lt {n} i j hij := by
     generalize hk : j.rev = k
     obtain ⟨l, hl⟩ := Nat.le.dest (Fin.le_def.1 hij)
@@ -108,7 +108,7 @@ def homotopyOfExtraDegeneracy :
       X.left.σ_δ₀Iter'_assoc _ _ ⟨l, by grind⟩
         (by grind) (by dsimp; grind),
       ← ed.s_comp_σ_assoc,
-      X.left.σ₀Iter_σ' j i.succ ⟨l + 1, by grind⟩]
+      X.left.σ₀Iter_σ' j i.succ ⟨l + 1, by grind⟩ (by grind)]
     dsimp
 
 end ExtraDegeneracy
