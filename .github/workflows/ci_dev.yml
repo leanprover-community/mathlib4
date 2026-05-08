@@ -34,7 +34,8 @@ on:
 
 permissions:
   contents: read
-  issues: write          # post ack comment
+  pull-requests: write   # required to post comments on PRs
+  issues: write          # PR comments use the issues API
   id-token: write        # Azure Key Vault token mint
 
 concurrency:
