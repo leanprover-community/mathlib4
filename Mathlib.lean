@@ -1489,6 +1489,7 @@ public import Mathlib.AlgebraicTopology.ModelCategory.Opposite
 public import Mathlib.AlgebraicTopology.ModelCategory.Over
 public import Mathlib.AlgebraicTopology.ModelCategory.PathObject
 public import Mathlib.AlgebraicTopology.ModelCategory.RightHomotopy
+public import Mathlib.AlgebraicTopology.ModelCategory.Transport
 public import Mathlib.AlgebraicTopology.MooreComplex
 public import Mathlib.AlgebraicTopology.Quasicategory.Basic
 public import Mathlib.AlgebraicTopology.Quasicategory.Nerve
@@ -3414,6 +3415,7 @@ public import Mathlib.CategoryTheory.Triangulated.Basic
 public import Mathlib.CategoryTheory.Triangulated.Functor
 public import Mathlib.CategoryTheory.Triangulated.Generators
 public import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
+public import Mathlib.CategoryTheory.Triangulated.LocalizingSubcategory
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Basic
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Functor
 public import Mathlib.CategoryTheory.Triangulated.Opposite.OpOp
@@ -6487,6 +6489,7 @@ public import Mathlib.RingTheory.Ideal.GoingUp
 public import Mathlib.RingTheory.Ideal.Height
 public import Mathlib.RingTheory.Ideal.IdempotentFG
 public import Mathlib.RingTheory.Ideal.Int
+public import Mathlib.RingTheory.Ideal.IsAugmentation
 public import Mathlib.RingTheory.Ideal.IsPrimary
 public import Mathlib.RingTheory.Ideal.IsPrincipal
 public import Mathlib.RingTheory.Ideal.IsPrincipalPowQuotient
