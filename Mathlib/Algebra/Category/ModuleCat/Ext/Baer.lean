@@ -65,6 +65,8 @@ lemma ext_quotient_one_subsingleton_iff [Small.{v} R] (M : ModuleCat.{v} R) (I :
   have S_exact : S.ShortExact :=
     ModuleCat.shortComplexOfConj_shortExact _ _ _ _ _ exact I.subtype_injective I.mkQ_surjective
   have : Projective S.X₂ := by dsimp [S]; infer_instance
+  --Reduce the vanishing of `Ext (R ⧸ I) M 1` to surjectivity of `Ext R M 0 → Ext I M 0`,
+  --but with shrink involved.
   apply (ext_one_subsingleton_iff_of_prijective M S S_exact this).trans
   refine ⟨fun h ↦ fun g ↦ ?_, fun h ↦ fun e ↦ ?_⟩
   · obtain ⟨f', hf'⟩ := h (Ext.mk₀ (ModuleCat.ofHom (g.comp (Shrink.linearEquiv R I).toLinearMap)))
