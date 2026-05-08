@@ -74,22 +74,43 @@ DEFAULT_JSONL = OUTPUT_DIR / "diagnostics.jsonl"
 PATCH_MARKER_BEGIN = "-- BEGIN expose_report diagnostics patch"
 PATCH_MARKER_END = "-- END expose_report diagnostics patch"
 
-# The extra LeanOptions lines inserted into `mathlibLeanOptions`.
+# Files that fail to elaborate when `diagnostics=true` is enabled globally.
+# We turn diagnostics off in each one for the duration of the build, then
+# restore the original source. Four are `#guard_msgs` mismatches caused by
+# the extra `[diag]` info messages; the fifth is an `aesop`/`naturality`
+# tactic failure that empirically also goes away with diagnostics off.
+DIAGNOSTICS_OFF_FILES: list[str] = [
+    "Mathlib/Tactic/Linter/ValidatePRTitle.lean",
+    "Mathlib/Order/Interval/Lex.lean",
+    "Mathlib/Tactic/NormNum/Ordinal.lean",
+    "Mathlib/Probability/ConditionalProbability.lean",
+    "Mathlib/CategoryTheory/Discrete/Basic.lean",
+]
+FILE_PATCH_LINE = (
+    "-- expose_report: locally disable diagnostics so this file builds "
+    "under global `diagnostics=true`\nset_option diagnostics false\n"
+)
+
+# Diagnostics options are inserted into `mathlibLeanOptions`. This DOES
+# affect Lake's olean hash, so the build rebuilds Mathlib from scratch. The
+# tradeoff is necessary: `weakLeanArgs` doesn't change the hash, but Lake
+# then sees the existing oleans as up-to-date and skips re-elaboration —
+# no re-elaboration means no diagnostics output. After this script
+# finishes, run `lake exe cache get` to restore cached oleans (their
+# unchanged hashes are still on the cache server).
 PATCH_BLOCK = f"""    {PATCH_MARKER_BEGIN}
     ⟨`diagnostics, true⟩,
     ⟨`diagnostics.threshold, (0 : Nat)⟩,
     {PATCH_MARKER_END}
 """
 
-# Insertion anchor inside `mathlibLeanOptions := #[ ... ]`. We insert *after*
-# this line (which has no trailing comment, so preserving trailing text is
-# not an issue).
+# Insertion anchor inside `mathlibLeanOptions := #[ ... ]`.
 ANCHOR = "    ⟨`autoImplicit, false⟩,\n"
 
 
 def patch_lakefile() -> str:
-    """Insert the diagnostics options into mathlibLeanOptions. Returns the
-    original contents (for restoration)."""
+    """Insert the diagnostics weakLeanArgs into the mathlib package config.
+    Returns the original contents for restoration."""
     original = LAKEFILE.read_text()
     if PATCH_MARKER_BEGIN in original:
         raise RuntimeError(
@@ -107,6 +128,42 @@ def patch_lakefile() -> str:
 
 def restore_lakefile(original: str) -> None:
     LAKEFILE.write_text(original)
+
+
+def patch_diagnostics_off_files() -> dict[str, str]:
+    """Insert `set_option diagnostics false` after the imports of each file
+    in `DIAGNOSTICS_OFF_FILES`. Returns originals for restoration.
+
+    Insertion point: the line *after* the last `import` / `public import`
+    line of the file. Works for both module-mode files (which have
+    `module` followed by imports) and non-module files. The copyright
+    comment block stays at the top.
+    """
+    originals: dict[str, str] = {}
+    for rel in DIAGNOSTICS_OFF_FILES:
+        path = REPO_ROOT / rel
+        text = path.read_text()
+        originals[rel] = text
+        if FILE_PATCH_LINE in text:
+            continue
+        lines = text.splitlines(keepends=True)
+        last_import = -1
+        for i, line in enumerate(lines):
+            stripped = line.lstrip()
+            if stripped.startswith("import ") or stripped.startswith("public import "):
+                last_import = i
+        if last_import < 0:
+            raise RuntimeError(f"no import line found in {rel}; "
+                               f"don't know where to insert set_option")
+        insert_at = last_import + 1
+        new_lines = lines[:insert_at] + ["\n", FILE_PATCH_LINE] + lines[insert_at:]
+        path.write_text("".join(new_lines))
+    return originals
+
+
+def restore_diagnostics_off_files(originals: dict[str, str]) -> None:
+    for rel, text in originals.items():
+        (REPO_ROOT / rel).write_text(text)
 
 
 def run_build(log_path: Path) -> int:
@@ -248,11 +305,13 @@ def main() -> int:
 
     rc = 0
     if not args.skip_build:
-        original = patch_lakefile()
+        original_lakefile = patch_lakefile()
+        original_files = patch_diagnostics_off_files()
         try:
             rc = run_build(args.log)
         finally:
-            restore_lakefile(original)
+            restore_lakefile(original_lakefile)
+            restore_diagnostics_off_files(original_files)
         if rc != 0:
             print(f"[build_with_diagnostics] lake build exited {rc}; "
                   f"log preserved at {args.log}. "

@@ -159,10 +159,27 @@ def collect : CoreM (Array DeclRecord) := do
 
 end Mathlib.ExposeReport
 
+/-- Read module names to import from a file, one per line, blank lines and
+`#`-comments ignored. -/
+def readModulesFile (path : System.FilePath) : IO (Array Name) := do
+  let text ← IO.FS.readFile path
+  let mut out : Array Name := #[]
+  for line in text.splitOn "\n" do
+    let line := line.trim
+    if line.isEmpty || line.startsWith "#" then continue
+    out := out.push line.toName
+  return out
+
 open Mathlib.ExposeReport in
-unsafe def main (_args : List String) : IO UInt32 := do
+unsafe def main (args : List String) : IO UInt32 := do
   let searchPath ← addSearchPathFromEnv (← getBuiltinSearchPath (← findSysroot))
-  CoreM.withImportModules #[`Mathlib] (searchPath := searchPath) (trustLevel := 1024) do
+  -- If a file path is given as the first argument, import the modules listed
+  -- there (one per line). Otherwise, default to the single `Mathlib` module.
+  let modules ← match args with
+    | path :: _ => readModulesFile path
+    | _         => pure #[`Mathlib]
+  IO.eprintln s!"[expose_enumerate] importing {modules.size} module(s)..."
+  CoreM.withImportModules modules (searchPath := searchPath) (trustLevel := 1024) do
     let records ← collect
     let stdout ← IO.getStdout
     for r in records do
