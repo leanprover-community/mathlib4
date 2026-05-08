@@ -16,7 +16,7 @@ term `ContMDiffRing` instead of Lie mainly because Lie ring has currently anothe
 in mathematics.
 -/
 
-@[expose] public section
+public section
 
 open scoped Manifold ContDiff
 

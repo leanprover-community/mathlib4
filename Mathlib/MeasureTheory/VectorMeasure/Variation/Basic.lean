@@ -36,7 +36,10 @@ open scoped ENNReal
 namespace MeasureTheory.VectorMeasure
 
 variable {X V : Type*} {mX : MeasurableSpace X}
-  [TopologicalSpace V] [ENormedAddCommMonoid V] [T2Space V]
+
+section Basic
+
+variable [TopologicalSpace V] [ENormedAddCommMonoid V] [T2Space V]
 
 @[simp]
 lemma variation_apply (μ : VectorMeasure X V) (s : Set X) :
@@ -86,15 +89,28 @@ lemma variation_zero : (0 : VectorMeasure X V).variation = 0 := by
   simp only [variation, coe_zero, Pi.zero_apply, enorm_zero]
   exact preVariation_zero
 
-@[simp]
-lemma variation_neg {V : Type*} [NormedAddCommGroup V] (μ : MeasureTheory.VectorMeasure X V) :
-    (-μ).variation = μ.variation := by simp [variation]
-
 lemma absolutelyContinuous (μ : VectorMeasure X V) : μ ≪ᵥ μ.ennrealVariation := by
   intro s hs
   by_cases hsm : MeasurableSet s
   · suffices ‖μ s‖ₑ ≤ 0 by simp_all
     grw [enorm_measure_le_variation, ← ennrealVariation_apply _ hsm, hs]
   · exact μ.not_measurable' hsm
+
+end Basic
+
+section NormedAddCommGroup
+
+variable [NormedAddCommGroup V] {μ : VectorMeasure X V}
+
+theorem norm_measure_le_variation {E : Set X} (hE : μ.variation E ≠ ∞ := by finiteness) :
+    ‖μ E‖ ≤ μ.variation.real E := by
+  rw [measureReal_def, ← toReal_enorm, ENNReal.toReal_le_toReal (enorm_ne_top) hE]
+  exact enorm_measure_le_variation μ E
+
+variable (μ) in
+@[simp]
+lemma variation_neg : (-μ).variation = μ.variation := by simp [variation]
+
+end NormedAddCommGroup
 
 end MeasureTheory.VectorMeasure

@@ -41,7 +41,7 @@ In this file, we prove **Krull's principal ideal theorem** (also known as
   by no more than `n` elements.
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*} [CommRing R] [IsNoetherianRing R]
 
@@ -125,6 +125,20 @@ theorem Ideal.map_height_le_one_of_mem_minimalPrimes {I p : Ideal R} {x : R}
         ⟨I.mk_ker.symm.trans_le <| ker_le_comap (Ideal.Quotient.mk I), le_comap_of_map_le hxr⟩⟩ <|
           (comap_mono hrp).trans <| Eq.le <|
             (p.comap_map_of_surjective _ Quotient.mk_surjective).trans <| sup_eq_left.mpr hfp⟩
+
+/-- In a Noetherian ring, the height of a principal ideal spanned by a non-unit is at most one. -/
+lemma Ideal.height_span_singleton_le_one {x : R} (hx' : ¬ IsUnit x) :
+    (span {x}).height ≤ 1 := by
+  obtain ⟨p, hp⟩ := (span {x}).nonempty_minimalPrimes (by simpa)
+  refine le_trans (height_mono hp.1.2) ?_
+  exact Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes (span {x}) _ hp
+
+/-- In a Noetherian ring, the height of a principal ideal spanned by a non-unit non-zero-divisor
+is one. -/
+lemma Ideal.height_span_singleton_eq_one_of_mem_nonZeroDivisors {x : R}
+    (hx : x ∈ nonZeroDivisors R) (hx' : ¬ IsUnit x) : (span {x}).height = 1 :=
+  le_antisymm (height_span_singleton_le_one hx')
+    (one_le_height_span_singleton_of_mem_nonZeroDivisors hx)
 
 /-- If `q < p` are prime ideals such that `p` is minimal over `span (s ∪ {x})` and
 `t` is a set contained in `q` such that `s ⊆ √span (t ∪ {x})`, then `q` is minimal over `span t`.
