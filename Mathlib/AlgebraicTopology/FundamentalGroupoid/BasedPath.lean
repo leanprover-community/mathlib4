@@ -75,7 +75,7 @@ public instance : TopologicalSpace (BasedPath x₀) :=
   source' := γ.2
   target' := rfl
 
-@[simp] public theorem endpoint_def (γ : BasedPath x₀) : endpoint γ = γ.1 1 := rfl
+public theorem endpoint_def (γ : BasedPath x₀) : endpoint γ = γ.1 1 := rfl
 @[simp] public theorem toPath_apply (γ : BasedPath x₀) (t : I) : toPath γ t = γ.1 t := rfl
 @[simp] public theorem toPath_source (γ : BasedPath x₀) : toPath γ 0 = x₀ := γ.2
 @[simp] public theorem toPath_target (γ : BasedPath x₀) : toPath γ 1 = endpoint γ := rfl
