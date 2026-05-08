@@ -641,64 +641,46 @@ The real caching value for distributed execution is at the **node level** — ca
 Given the goal is running the graph across a worker pool, the requirements reduce to:
 
 1. **Full graph enumerated before dispatch** — scheduler cannot stream-discover nodes efficiently.
-2. **Each node is hermetic** — a remote worker with `{command, env, inputs, outputs}` produces the outputs without consulting a central brain.
+2. **Each node is hermetic** — a remote worker produces the outputs without consulting a central brain.
 3. **Content-addressed inputs/outputs** — no shared filesystem assumption.
 4. **Deterministic outputs** — bit-identical for cache hits.
 
-Mathlib is well-positioned on 1, 3, 4: regime 1 → trivial enumeration; `lake exe cache` proves `.olean` content-addressability in practice; Lean strives for bit-reproducibility.
+Mathlib is well-positioned on 1, 3, 4: regime 1 → trivial enumeration; Lake's native artifact cache (`Lake.Artifact`, `Lake.CacheMap`, `lake cache get/put`) provides content-addressability natively as of v4.30; Lean strives for bit-reproducibility.
 
-Hermeticity is where real work is required.
+### 13.1 Lake's native cache provides hermeticity for free
 
-### 13.1 Input fanout
+Lake itself is a content-addressed build system. During `lake build`, Lake computes each module's input hash, calls `(← getLakeCache).readOutputs? scope inputHash`, and on hit, hardlinks artifacts from `cache.artifactDir` into `.lake/build`. On miss, builds and calls `saveArtifact` to populate the cache (`Lake/Build/Common.lean:459, 518`). `lake cache get/put/add/stage` (`Lake/CLI/Main.lean:383-650`) provides remote sync against Reservoir or a custom HTTP endpoint. As of `leanprover/lean4#12634` (2026-03-03), `lake cache get` defaults to lazy fetching — downloads mappings only; artifacts are pulled during `lake build` per input-hash lookup.
 
-`Mathlib.lean` lists **8310 transitive imports** in its setup JSON. Each contributes `olean + ir + olean.server` ≈ 25000 files as declared inputs. Per node, deep modules drag the entire universe of ancestors.
-
-- CAS pull: a cold worker pulls tens of GB for a single deep node.
-- Shared filesystem: per-read latency on every `olean` lookup `lean` performs.
-- Mitigations:
-  - **Sticky scheduling** — deep modules go to workers already holding their ancestors. Critical-path ordering (which `dag_traversal.py` already implements) produces good locality if workers are kept warm.
-  - **Merkle-tree inputs** — workers fetch only missing blobs (Bazel RBE pattern).
-  - **Layered execution** — workers build upward through the DAG; ancestors accumulate on disk naturally.
-
-### 13.2 Path hermeticity
-
-Setup JSON emitted by Lake contains **absolute paths** (`/Users/chelo/mathlib4/.lake/packages/batteries/...`). A remote worker at a different path will fail. For distribution:
-
-- The extractor must relativize paths to `$WORKSPACE`-style placeholders.
-- Each worker re-absolutizes on its end (bind-mount, symlink, or literal substitution before command execution).
-
-### 13.3 LEAN_PATH
-
-Order-sensitive and absolute. Must be constructed per-worker from the content-addressed input tree, in an order matching the extractor's declaration.
-
-### 13.4 Pre-generate setup.json
-
-`compileLeanModule` (Actions.lean:54) writes `.setup.json` as a side effect. For distributed dispatch, the *extractor* produces `setup.json` ahead of time (contents are static — §3.3, §5.2) and the worker reads the pre-generated file. This removes one runtime step and makes node caching cleaner: `setup.json` becomes an input blob rather than something produced mid-execution.
-
-### 13.5 Pipeline
+This means a distributed-build pipeline does not need to design a custom CAS, materialization protocol, or executor:
 
 ```
-[extract]    lake_graph_extract.py  →  build_graph.json
-                                        (relative paths, pre-computed setup.jsons,
-                                         per-node input_content_hashes)
+[extract]  lake graph-extract <target> → manifest + sidecars  (shard planning data)
 
-[plan]       scheduler reads graph, computes critical-path order,
-             assigns work with locality preference
+[plan]     orchestrator computes a topo-level partition across N matrix workers
 
-[dispatch]   worker pool receives {node_id, command, env, input_hashes, output_paths}
+[shard N]  lake cache get [<shard's mappings>]   ← lazy fetch from cache service
+           lake build <shard's modules>           ← Lake handles cache hit/miss
+           lake cache put                         ← upload new artifacts
 
-[fetch]      worker resolves input_hashes → files via CAS (Merkle-pruned)
-             absolutizes paths, constructs LEAN_PATH
-
-[execute]    worker runs `lean ...` or `cc ...`, uploads outputs to CAS
-
-[cache]      scheduler records node_cache_key → output_hashes
-             future runs skip nodes whose key hits
+           (`needs:` between shard topo levels so downstream sees upstream's `cache put`)
 ```
 
-This is Bazel Remote Execution (REAPI) structurally. Reuse REAPI (add Bazel workers), or roll a simpler version over Redis + S3.
+Lake's `Hash` is the cache key. The orchestrator's role is partitioning the closure; execution and CAS are Lake's job.
 
-### 13.6 Regime-detection is actually a distribution-cleanliness check
+### 13.2 Input fanout and locality
+
+`Mathlib.lean` lists **8310 transitive imports**. A naive distributed scheme has each worker materializing tens of GB on cold cache. Lake's lazy fetch (mappings-first, artifacts on demand) plus hardlink-from-CAS-into-`.lake/build` already addresses most of this — the worker only fetches artifacts whose input hash a build actually requests.
+
+Sharding strategies that further reduce duplication:
+- **Topo-level greedy bin-packing** — partition each topo level across workers; barrier between levels. ~80% of optimal, simple to implement.
+- **Critical-path-first** — schedule along the longest chain first; needs realistic per-node duration estimates.
+
+### 13.3 What still requires care
+
+- **Sidecar materialization.** Lake's cache-hit logic reads `.olean.hash` and `.trace` sidecars, not just `.olean`. Any system that materializes oleans into `.lake/build` MUST also materialize the corresponding sidecars or Lake will rebuild. Lake's own `saveArtifact` hardlinks all of them; mathlib's legacy `Cache/IO.lean:292-307` packs the same set in `.ltar` archives. Empirically validated 2026-05-04: deleting `.olean.hash` while keeping `.olean` causes Lake to rebuild the module.
+- **Coexistence with mathlib's legacy `Cache/`.** The Python `lake exe cache get` infrastructure remains the local-dev cache. CI will use Lake's native cache. `Cache/README.md` confirms eventual replacement; no active migration PR as of 2026-05-04.
+
+### 13.4 Regime-detection is a distribution-cleanliness check
 
 Re-reading §11 through the distribution lens:
 
@@ -722,92 +704,11 @@ If §10.11 ever fails (mathlib enters regime 2 or 3), the recovery path is:
 
 ---
 
-## 15. Prompt for designing the extraction tool
+## 15. Implementation status
 
-> I have a Lean 4 project (mathlib4, at `/Users/chelo/mathlib4/`) that builds via Lake. I've established (see `/Users/chelo/mathlib4/lake_build_graph_analysis.md`) that mathlib4's build graph is statically reconstructible: the per-module `lean` command is uniform, and all variability lives in a `.setup.json` whose contents are derivable from the lakefile + import graph + fixed path conventions.
->
-> **Ultimate goal: distributed execution.** The extracted graph is meant to drive a worker-pool execution of mathlib's build (Bazel-RBE-style or a custom CAS + queue). That shapes the emission format.
->
-> **Deliverable.** A Python tool `lake_graph_extract.py` (or an extension of `scripts/dag_traversal.py`) that, without running any build step, emits a JSON file where each node is:
->
-> ```json
-> {
->   "id": "<package>:<module or exe name>",
->   "kind": "lean_module" | "cc_compile" | "cc_link" | "package_extra_dep",
->   "command": ["<argv0>", "..."],          // relativized paths, $WORKSPACE placeholders
->   "env": {"LEAN_PATH": "..."},             // relativized, order-preserving
->   "inputs": [                              // every declared input
->     {"path": "$WORKSPACE/...", "sha256": "..."}
->   ],
->   "outputs": ["$WORKSPACE/..."],           // paths the command will produce
->   "setup_json": { ... },                   // pre-computed; emitted as an output blob
->   "cache_key": "sha256(normalized_command + env + sorted(input.sha256))"
-> }
-> ```
->
-> Edges are implicit: `A → B` iff `A.outputs ∩ (B.inputs[*].path) ≠ ∅`.
->
-> **Required emission properties (driven by distribution):**
->
-> 1. **Relative paths only.** Use `$WORKSPACE`, `$LAKE_HOME`, `$TOOLCHAIN` placeholders. Document the substitution rules so workers can re-absolutize. No absolute paths leak into the graph.
-> 2. **Pre-compute `setup.json`.** For each `lean_module` node, emit the full `ModuleSetup` JSON as an input blob (content-addressed). The worker reads it rather than letting `lean` regenerate it. This makes `setup.json` a proper declared input in the hermeticity sense.
-> 3. **Content hashes on every input.** Each input is `{path, sha256}`. The cache key is a deterministic function of these hashes plus the normalized command and env. A remote cache is keyed on `cache_key`.
->
-> **Inputs the tool may read:**
->
-> - `lakefile.lean` (parse just enough — use `lake setup-file <one-representative.lean>` once per `lean_lib` to get canonical options/plugins/dynlibs, then propagate to every module in that lib).
-> - `lean --deps-json --stdin` over all `.lean` sources (this is what `scripts/dag_traversal.py:_parse_all_imports` already does).
-> - `.lake/packages/*/` layout and each package's lakefile (for `LEAN_PATH` construction).
-> - Toolchain paths from `lake env` (emitted as `$TOOLCHAIN`).
->
-> **Outputs:**
->
-> 1. `build_graph.json` — one record per node, topo-ordered.
-> 2. `build_graph.dot` — optional Graphviz rendering (omit for huge graphs; guard behind a flag).
-> 3. `workspace_manifest.json` — list of source blobs with hashes, for priming the CAS.
-> 4. `run_graph.py` — minimal reference executor used by the end-to-end validation sub-command. Read `build_graph.json`, topo-sort, invoke each node's `command` with its `env`. No scheduler, no CAS, no caching. Kept intentionally short so a passing equivalence `diff` reflects the extractor's correctness and nothing else.
->
-> **Must cover:**
->
-> - Every `.lean` module under `Mathlib/`, `MathlibTest/`, `Archive/`, `Counterexamples/`, `Cache/`, `docs/`.
-> - Every `lean_exe`: emit the `lean` node, one `cc_compile` node per object in its transitive C sources, and the `cc_link` node (flags are static — §5.3).
-> - Upstream packages (batteries, Qq, aesop, proofwidgets, importGraph, LeanSearchClient, plausible): same graph structure for each.
->
-> **Non-goals:** cache-restoration logic in the graph (it is handled at a different layer); proofwidgets JS extraDep decomposition (model as one opaque `package_extra_dep` node); hash/trace sidecar tracking beyond listing them as outputs.
->
-> **Correctness goal (must pass before the graph is usable for distributed execution).** Running the extracted graph in topological order from a clean `.lake/build/` must produce byte-identical artifacts to invoking `lake build` on the same targets from the same clean state. This is the ground-truth equivalence check — stronger than command-level byte-compare, because it catches hidden environment state. Two sub-commands implement it:
->
-> **Command-level validation** (`lake_graph_extract.py --validate-commands <target>`):
->
-> 1. Run `lake build -v --no-cache <target>` in a temp cache.
-> 2. Capture `trace: .>` lines.
-> 3. Re-absolutize the statically generated `command + env` (reverse the placeholder substitution).
-> 4. Byte-compare. Report any diff.
->
-> Validate a sample of 20 modules across depths, plus one `supportInterpreter=true` `lean_exe` (e.g. `mk_all`) and one widget-using module.
->
-> **End-to-end output validation** (`lake_graph_extract.py --validate-outputs <target>`):
->
-> 1. `rm -rf .lake/build; lake build --no-cache <target>` → hash all declared-artifact files under `.lake/build/` into a baseline manifest.
-> 2. `rm -rf .lake/build; ./run_graph.py build_graph.json --target <target> --jobs 1` → hash the same file set into a candidate manifest.
-> 3. `diff` the manifests. Any mismatch is a correctness bug in the extractor (missed input, wrong LEAN_PATH ordering, drifted setup.json, etc.).
->
-> `run_graph.py` must be a minimal reference executor — topological order, one job at a time, no scheduler, no CAS, no caching. Its simplicity is the point: a passing `diff` attributes correctness to the *graph*, not to executor cleverness. Ship `run_graph.py` alongside the extractor.
->
-> Artefact file set to compare: `*.olean`, `*.ilean`, `*.c`, `*.olean.server`, `*.olean.private`, `*.ir`, `*.c.o.export`, and `lean_exe` binaries. Exclude `*.hash`, `*.trace`, `*.rsp`, build logs, mtimes (document the exclusion in the sub-command output). See §7.2 for the full protocol and expected failure modes.
->
-> Targets to cover in CI: one leaf module, one mid-stack module, one near-`Mathlib.lean` root, one `lean_exe` (`autolabel`), one `supportInterpreter=true` exe (`mk_all`), one module from each `lean_lib`. A nightly full-mathlib end-to-end run is the definitive test.
->
-> **Pre-flight guards.** Before emitting, run the checks in §10.11 of the analysis doc. Refuse to produce a graph if any check fails — fall through to the instrumentation path in §14 instead.
->
-> **Fingerprint (optional for v1, needed for v2).** In addition to per-node `cache_key`, emit a `graph_fingerprint` covering: sorted content hashes of all lakefiles in the dep tree, `lake-manifest.json`, `lean-toolchain`, header-prefix hashes of all source files, Lake CLI flags, and the Lake binary's own hash. Document what invalidates it (§12.1).
->
-> Start by reading `/Users/chelo/mathlib4/lake_build_graph_analysis.md` and `/Users/chelo/mathlib4/scripts/dag_traversal.py`. Path conventions, command templates, and empirical verifications are documented there. Ask before expanding scope.
+The extraction tool described above has been implemented as a Lake-side subcommand: `lake graph-extract` in `Lake/Build/GraphExtract.lean`. The original Python prototype that drove this analysis was superseded; the current state is captured in:
 
----
-
-## 16. Artefacts produced during this investigation
-
-- `/tmp/lake_test/` — scratch Lake project used to confirm the command template on a fresh build.
-- Empirical `lake setup-file` outputs for `Mathlib/Init.lean`, `Mathlib/Tactic/Widget/Calc.lean`, `Mathlib.lean` (not persisted; re-run the commands in §5.2).
-- `lake build -v autolabel` transcript (not persisted; re-run §5.3).
+- `lake_graph_extract_handoff.md` — implementation status, commits, working-tree layout, next steps.
+- `lake_graph_extract.md` — design reference (schema, architecture, validation harness).
+- `lake_facets_for_extraction.md` — facet purity rules the walker depends on.
+- `lake_upstream_feasibility.md` — strategy for upstreaming to `leanprover/lean4`.
