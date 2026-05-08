@@ -55,7 +55,7 @@ theorem Lex.wellFounded' (hbot : ∀ ⦃n⦄, ¬s n 0) (hs : WellFounded s)
 instance Lex.wellFoundedLT {α N} [LT α] [@Std.Trichotomous α (· < ·)] [hα : WellFoundedGT α]
     [AddMonoid N] [PartialOrder N] [CanonicallyOrderedAdd N]
     [hN : WellFoundedLT N] : WellFoundedLT (Lex (α →₀ N)) :=
-  ⟨Lex.wellFounded' (fun n => (zero_le n).not_gt) hN.wf hα.wf⟩
+  ⟨Lex.wellFounded' (fun _ => not_lt_zero) hN.wf hα.wf⟩
 
 instance Colex.wellFoundedLT {α N} [LT α] [@Std.Trichotomous α (· < ·)] [WellFoundedLT α]
     [AddMonoid N] [PartialOrder N] [CanonicallyOrderedAdd N]
@@ -83,7 +83,7 @@ protected theorem wellFoundedLT [Preorder N] [WellFoundedLT N] (hbot : ∀ n : N
 instance wellFoundedLT' {N}
     [AddMonoid N] [PartialOrder N] [CanonicallyOrderedAdd N] [WellFoundedLT N] :
     WellFoundedLT (α →₀ N) :=
-  Finsupp.wellFoundedLT fun a => (zero_le a).not_gt
+  Finsupp.wellFoundedLT fun _ => not_lt_zero
 
 instance wellFoundedLT_of_finite [Finite α] [Preorder N] [WellFoundedLT N] :
     WellFoundedLT (α →₀ N) :=
