@@ -14,6 +14,9 @@ public import Mathlib.CategoryTheory.Shift.SingleFunctorsLift
 /-!
 # The triangulated subcategory of bounded below cochain complexes up to homotopy
 
+In this file, we introduce the triangulated full subcategory `HomotopyCategory.Plus C`
+of `HomotopyCategory C (.up ℤ)` consisting of bounded below cochain complexes.
+
 -/
 
 @[expose] public section
