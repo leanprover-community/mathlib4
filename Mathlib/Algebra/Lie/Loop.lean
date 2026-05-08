@@ -91,12 +91,13 @@ def monomialMap (a : A) : L →ₗ[R] loopAlgebra R A L :=
 /-- A graded part of the loop algebra. -/
 def grade (a : A) : Submodule R (loopAlgebra R A L) := LinearMap.range (monomialMap R A L a)
 
+-- use DirectSum.congrAddEquiv: gives an isomorphism of direct sums from component isoms.
 /-
 open DirectSum in
 instance [DecidableEq A] {M N : Type*} [AddCommGroup M] [Module R M]
     (ℳ : A → Submodule R M) [DirectSum.Decomposition ℳ] [AddCommGroup N] [Module R N] :
     DirectSum.Decomposition (decomposeTensor ℳ N) where
-  decompose' x := (DirectSum.lmap fun a ↦ toDecomposeTensor ℳ N a)
+  decompose' x := (DirectSum.congrLinearEquiv fun a ↦ toDecomposeTensor ℳ N a)
     (TensorProduct.directSumLeft R R (fun a ↦ ℳ a) N
       ((DirectSum.decomposeLinearEquiv ℳ).rTensor N x))
   left_inv x := by
@@ -110,7 +111,7 @@ instance [DecidableEq A] {M N : Type*} [AddCommGroup M] [Module R M]
       | zero => simp
       | of i x =>
         rw [DirectSum.decomposeLinearEquiv_symm_apply, DirectSum.decompose_symm_of]
-        have : (DirectSum.lmap fun a ↦ toDecomposeTensor ℳ N a)
+        have : (DirectSum.lmap (R := R) fun a ↦ toDecomposeTensor ℳ N a)
             ((TensorProduct.directSumLeft R R (fun a ↦ (ℳ a)) N)
               ((DirectSum.of (fun i ↦ ↥(ℳ i)) i) x ⊗ₜ[R] y)) =
             DirectSum.of (fun i ↦ decomposeTensor ℳ N i) i
@@ -130,7 +131,10 @@ instance [DecidableEq A] {M N : Type*} [AddCommGroup M] [Module R M]
     induction x using DirectSum.induction_on with
     | zero => simp
     | of i x =>
-      simp
+      simp only [coeAddMonoidHom_of]
+
+      --have : ((TensorProduct.directSumLeft R R (fun a ↦ ↥(ℳ a)) N)
+      --((LinearEquiv.rTensor N (decomposeLinearEquiv ℳ)) ↑x)) =
       sorry
     | add x y _ _ => sorry
 
