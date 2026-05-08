@@ -46,6 +46,16 @@ open CategoryTheory Abelian
 
 namespace ModuleCat
 
+lemma ext_one_subsingleton_iff_of_prijective [Small.{v} R] (M : ModuleCat.{v} R)
+    (S : ShortComplex.{v} (ModuleCat R)) (S_exact : S.ShortExact) (proj : Projective S.X₂) :
+    Subsingleton (Ext S.X₃ M 1) ↔ Function.Surjective ((Ext.mk₀ S.f).precomp M (add_zero 0)) := by
+  refine Iff.trans ⟨fun h ↦ ?_, fun h ↦ ?_⟩ ((Ext.contravariant_sequence_exact₁' S_exact M 0 1
+    rfl).epi_f_iff.symm.trans (AddCommGrpCat.epi_iff_surjective _))
+  · exact (AddCommGrpCat.of (Ext S.X₃ M 1)).isZero_of_subsingleton.eq_zero_of_tgt _
+  · exact AddCommGrpCat.subsingleton_of_isZero ((Ext.contravariant_sequence_exact₃' S_exact M 0 1
+      rfl).isZero_X₂ h ((@AddCommGrpCat.isZero_of_subsingleton _
+        (Ext.subsingleton_of_projective S.X₂ M 0)).eq_zero_of_tgt _))
+
 lemma ext_quotient_one_subsingleton_iff [Small.{v} R] (M : ModuleCat.{v} R) (I : Ideal R) :
     Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M 1) ↔
     ∀ g : I →ₗ[R] M, ∃ g' : R →ₗ[R] M, ∀ (x : R) (mem : x ∈ I), g' x = g ⟨x, mem⟩ := by
@@ -55,15 +65,8 @@ lemma ext_quotient_one_subsingleton_iff [Small.{v} R] (M : ModuleCat.{v} R) (I :
   have S_exact : S.ShortExact :=
     ModuleCat.shortComplexOfConj_shortExact _ _ _ _ _ exact I.subtype_injective I.mkQ_surjective
   have : Projective S.X₂ := by dsimp [S]; infer_instance
-  have : Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M 1) ↔
-    Function.Surjective ((Ext.mk₀ S.f).precomp M (add_zero 0)) := by
-    refine Iff.trans ⟨fun h ↦ ?_, fun h ↦ ?_⟩ ((Ext.contravariant_sequence_exact₁' S_exact M 0 1
-      rfl).epi_f_iff.symm.trans (AddCommGrpCat.epi_iff_surjective _))
-    · exact (AddCommGrpCat.of (Ext S.X₃ M 1)).isZero_of_subsingleton.eq_zero_of_tgt _
-    · exact AddCommGrpCat.subsingleton_of_isZero ((Ext.contravariant_sequence_exact₃' S_exact M 0 1
-        rfl).isZero_X₂ h ((@AddCommGrpCat.isZero_of_subsingleton _
-          (Ext.subsingleton_of_projective S.X₂ M 0)).eq_zero_of_tgt _))
-  refine this.trans ⟨fun h ↦ fun g ↦ ?_, fun h ↦ fun e ↦ ?_⟩
+  apply (ext_one_subsingleton_iff_of_prijective M S S_exact this).trans
+  refine ⟨fun h ↦ fun g ↦ ?_, fun h ↦ fun e ↦ ?_⟩
   · obtain ⟨f', hf'⟩ := h (Ext.mk₀ (ModuleCat.ofHom (g.comp (Shrink.linearEquiv R I).toLinearMap)))
     rw [Ext.bilinearComp_apply_apply, ← Ext.mk₀_addEquiv₀_apply f', Ext.mk₀_comp_mk₀] at hf'
     use (Ext.addEquiv₀ f').hom.comp (Shrink.linearEquiv R R).symm.toLinearMap
