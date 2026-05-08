@@ -145,6 +145,16 @@ theorem LocallyConvexSpace.convex_open_symm_basis_zero [LocallyConvexSpace 𝕜 
       · rwa [← neg_neg t, Set.neg_mem_neg]
       · simp [hy]
 
+variable {E} in
+theorem closure_subset_of_nhds_zero_symm_add_subset {s t : Set E}
+    (hs₀ : s ∈ 𝓝 0) (h_symm : ∀ x ∈ s, -x ∈ s) (hs : s + s ⊆ t) :
+    closure s ⊆ t := by
+  intro y hy
+  obtain ⟨_, ⟨b, hb, rfl⟩, hc⟩ :=
+    mem_closure_iff_nhds.mp hy ((y + ·) '' s)
+      (by simpa using (isOpenMap_add_left y).image_mem_nhds hs₀)
+  simpa using hs (Set.add_mem_add hc (h_symm b hb))
+
 theorem LocallyConvexSpace.convex_open_symm_add_closure_subset_hasAntitoneBasis_zero
     [LocallyConvexSpace 𝕜 E] [FirstCountableTopology E] : ∃ x : ℕ → Set E,
     (∀ n, 0 ∈ x n ∧ IsOpen (x n) ∧ Convex 𝕜 (x n) ∧ (∀ y ∈ x n, -y ∈ x n) ∧
@@ -166,26 +176,23 @@ theorem LocallyConvexSpace.convex_open_symm_add_closure_subset_hasAntitoneBasis_
     · rintro y ⟨⟨z, hz, rfl⟩, hy₂⟩
       exact ⟨⟨-z, (hx₁_prop i).2.2.2 z hz, smul_neg _ _⟩, (hx₁_prop (n + 1)).2.2.2 _ hy₂⟩
     · rintro y ⟨z, ⟨hz, _⟩, a, ⟨ha, _⟩, rfl⟩
-      exact hi (by rw [← (hx₁_prop i).2.2.1.add_half_self_eq_self]; exact Set.add_mem_add hz ha)
+      obtain ⟨z', hz', rfl⟩ := hz
+      obtain ⟨a', ha', rfl⟩ := ha
+      exact hi ((hx₁_prop i).2.2.1 hz' ha' (by norm_num) (by norm_num) (by norm_num))
   let φ : ∀ n, Inv n :=
     Nat.rec ⟨x₁ 0, (hx₁_prop 0).1, (hx₁_prop 0).2.1, (hx₁_prop 0).2.2.1,
         (hx₁_prop 0).2.2.2, le_refl _⟩
       (fun n p => (step n p).1)
-  refine ⟨fun n => (φ n).1, fun n => ⟨(φ n).2.1, (φ n).2.2.1, (φ n).2.2.2.1,
-        (φ n).2.2.2.2.1, (step n (φ n)).2,
-        fun y hy => by
-          obtain ⟨_, ⟨b, hb, rfl⟩, hc⟩ :=
-            mem_closure_iff_nhds.mp hy ((y + ·) '' (φ (n + 1)).1)
-              ((isOpenMap_add_left y (φ (n + 1)).1 (φ (n + 1)).2.2.1).mem_nhds
-                ⟨0, (φ (n + 1)).2.1, add_zero y⟩)
-          have hkey : y = (y + b) + (-b) := by abel
-          exact hkey ▸ (step n (φ n)).2
-            (Set.add_mem_add hc ((φ (n + 1)).2.2.2.2.1 b hb))⟩,
-    hx₁_basis.to_hasBasis (fun i _ ↦ ⟨i, trivial, (φ i).2.2.2.2.2⟩)
-      (fun j _ ↦ hx₁_basis.toHasBasis.mem_iff.mp ((φ j).2.2.1.mem_nhds (φ j).2.1)),
-    antitone_nat_of_succ_le ?_⟩
-  intro n z hz
-  simpa using (step n (φ n)).2 (Set.add_mem_add hz (φ (n + 1)).2.1)
+  refine ⟨fun n => (φ n).1, ?_, ?_, ?_⟩
+  · intro n
+    refine ⟨(φ n).2.1, (φ n).2.2.1, (φ n).2.2.2.1, (φ n).2.2.2.2.1, (step n (φ n)).2, ?_⟩
+    exact closure_subset_of_nhds_zero_symm_add_subset ((φ (n+1)).2.2.1.mem_nhds (φ (n+1)).2.1)
+      (φ (n+1)).2.2.2.2.1 (step n (φ n)).2
+  · exact hx₁_basis.to_hasBasis (fun i _ ↦ ⟨i, trivial, (φ i).2.2.2.2.2⟩)
+      (fun j _ ↦ hx₁_basis.toHasBasis.mem_iff.mp ((φ j).2.2.1.mem_nhds (φ j).2.1))
+  · apply antitone_nat_of_succ_le
+    intro n z hz
+    simpa using (step n (φ n)).2 (Set.add_mem_add hz (φ (n + 1)).2.1)
 
 variable {𝕜 E} [LocallyConvexSpace 𝕜 E] {s t : Set E} {x : E}
 
