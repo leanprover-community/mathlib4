@@ -14,7 +14,7 @@ public import Mathlib.GroupTheory.Index
 The commutator of a finite direct product is contained in the direct product of the commutators.
 -/
 
-@[expose] public section
+public section
 
 variable {G : Type*} [Group G]
 
@@ -85,7 +85,6 @@ instance : Finite (commutatorRepresentatives G) := Set.finite_coe_iff.mpr (Set.f
 instance closureCommutatorRepresentatives_fg : Group.FG (closureCommutatorRepresentatives G) :=
   Group.closure_finite_fg _
 
-set_option backward.isDefEq.respectTransparency false in
 variable (G) in
 lemma rank_closureCommutatorRepresentatives_le :
     Group.rank (closureCommutatorRepresentatives G) ≤ 2 * Nat.card (commutatorSet G) := by

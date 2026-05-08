@@ -82,7 +82,6 @@ protected theorem eq [T0Space α] (h : IsGenericPoint x S) (h' : IsGenericPoint 
 theorem mem_open_set_iff (h : IsGenericPoint x S) (hU : IsOpen U) : x ∈ U ↔ (S ∩ U).Nonempty :=
   ⟨fun h' => ⟨x, h.mem, h'⟩, fun ⟨_y, hyS, hyU⟩ => (h.specializes hyS).mem_open hU hyU⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem disjoint_iff (h : IsGenericPoint x S) (hU : IsOpen U) : Disjoint S U ↔ x ∉ U := by
   rw [h.mem_open_set_iff hU, ← not_disjoint_iff_nonempty_inter, Classical.not_not]
 
@@ -175,6 +174,10 @@ noncomputable def irreducibleSetEquivPoints [QuasiSober α] [T0Space α] :
     simp
     rfl
 
+@[simp]
+lemma coe_irreducibleEquivPoints_symm_apply [QuasiSober α] [T0Space α] (x : α) :
+    (irreducibleSetEquivPoints.symm x : Set α) = closure {x} := rfl
+
 lemma Topology.IsClosedEmbedding.quasiSober {f : α → β} (hf : IsClosedEmbedding f) [QuasiSober β] :
     QuasiSober α where
   sober hS hS' := by
@@ -248,6 +251,21 @@ instance (priority := 100) R1Space.quasiSober [R1Space α] : QuasiSober α where
     · rw [← hs.closure_eq]
       exact closure_mono (singleton_subset_iff.mpr hx)
     · exact isPreirreducible_iff_forall_mem_subset_closure_singleton.mp h.isPreirreducible x hx
+
+open scoped Set.Notation in
+lemma QuasiSober.of_subset {V W : Set α} [QuasiSober W] (hV : IsClosed (W ↓∩ V)) (h : V ⊆ W) :
+    QuasiSober V := Topology.IsClosedEmbedding.quasiSober <| .inclusion h hV
+
+lemma QuasiSober.inter_of_isClosed_of_quasiSober_left {V : Set α} (W : Set α) [QuasiSober W]
+    (hV : IsClosed V) : QuasiSober (W ∩ V : Set α) := by
+  refine QuasiSober.of_subset ?_ (Set.inter_subset_left : W ∩ V ⊆ W)
+  rw [Subtype.preimage_coe_self_inter W V]
+  exact IsClosed.preimage_val hV
+
+lemma QuasiSober.inter_of_isClosed_of_quasiSober_right {V : Set α} (W : Set α) [QuasiSober V]
+    (hW : IsClosed W) : QuasiSober (W ∩ V : Set α) := by
+  rw [inter_comm]
+  exact .inter_of_isClosed_of_quasiSober_left V hW
 
 end Sober
 

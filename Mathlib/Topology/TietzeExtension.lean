@@ -39,7 +39,7 @@ topological space, then specialize them to the case `X = s : Set Y`, `e = (↑)`
 Tietze extension theorem, Urysohn's lemma, normal topological space
 -/
 
-@[expose] public section
+public section
 
 open Topology
 
@@ -167,7 +167,6 @@ noncomputable section
 
 namespace BoundedContinuousFunction
 
-set_option backward.isDefEq.respectTransparency false in
 /-- One step in the proof of the Tietze extension theorem. If `e : C(X, Y)` is a closed embedding
 of a topological space into a normal topological space and `f : X →ᵇ ℝ` is a bounded continuous
 function, then there exists a bounded continuous function `g : Y →ᵇ ℝ` of the norm `‖g‖ ≤ ‖f‖ / 3`
@@ -180,16 +179,16 @@ theorem tietze_extension_step (f : X →ᵇ ℝ) (e : C(X, Y)) (he : IsClosedEmb
   rcases eq_or_ne f 0 with (rfl | hf)
   · simp
   replace hf : 0 < ‖f‖ := norm_pos_iff.2 hf
-  /- Otherwise, the closed sets `e '' (f ⁻¹' (Iic (-‖f‖ / 3)))` and `e '' (f ⁻¹' (Ici (‖f‖ / 3)))`
+  /- Otherwise, the closed sets `e '' f ⁻¹' (Iic (-‖f‖ / 3))` and `e '' f ⁻¹' (Ici (‖f‖ / 3))`
     are disjoint, hence by Urysohn's lemma there exists a function `g` that is equal to `-‖f‖ / 3`
     on the former set and is equal to `‖f‖ / 3` on the latter set. This function `g` satisfies the
     assertions of the lemma. -/
   have hf3 : -‖f‖ / 3 < ‖f‖ / 3 := (div_lt_div_iff_of_pos_right h3).2 (Left.neg_lt_self hf)
-  have hc₁ : IsClosed (e '' (f ⁻¹' Iic (-‖f‖ / 3))) :=
+  have hc₁ : IsClosed (e '' f ⁻¹' Iic (-‖f‖ / 3)) :=
     he.isClosedMap _ (isClosed_Iic.preimage f.continuous)
-  have hc₂ : IsClosed (e '' (f ⁻¹' Ici (‖f‖ / 3))) :=
+  have hc₂ : IsClosed (e '' f ⁻¹' Ici (‖f‖ / 3)) :=
     he.isClosedMap _ (isClosed_Ici.preimage f.continuous)
-  have hd : Disjoint (e '' (f ⁻¹' Iic (-‖f‖ / 3))) (e '' (f ⁻¹' Ici (‖f‖ / 3))) := by
+  have hd : Disjoint (e '' f ⁻¹' Iic (-‖f‖ / 3)) (e '' f ⁻¹' Ici (‖f‖ / 3)) := by
     refine disjoint_image_of_injective he.injective (Disjoint.preimage _ ?_)
     rwa [Iic_disjoint_Ici, not_le]
   rcases exists_bounded_mem_Icc_of_closed_of_le hc₁ hc₂ hd hf3.le with ⟨g, hg₁, hg₂, hgf⟩
@@ -217,7 +216,6 @@ theorem tietze_extension_step (f : X →ᵇ ℝ) (e : C(X, Y)) (he : IsClosedEmb
               abs_of_nonneg (sub_nonneg.2 hle₂)]
           _ ≤ 2 / 3 * ‖f‖ := by linarith
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Tietze extension theorem** for real-valued bounded continuous maps, a version with a closed
 embedding and bundled composition. If `e : C(X, Y)` is a closed embedding of a topological space
 into a normal topological space and `f : X →ᵇ ℝ` is a bounded continuous function, then there exists

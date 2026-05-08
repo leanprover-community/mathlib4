@@ -263,7 +263,7 @@ theorem lintegral_mul_prod_lintegral_pow_le
     ∫⁻ x, f x ^ (1 - (#ι - 1 : ℝ) * p) * ∏ i, (∫⁻ xᵢ, f (update x i xᵢ) ∂μ i) ^ p ∂.pi μ
     ≤ (∫⁻ x, f x ∂.pi μ) ^ (1 + p) := by
   cases isEmpty_or_nonempty (∀ i, A i)
-  · simp_rw [lintegral_of_isEmpty]; refine zero_le _
+  · simp
   inhabit ∀ i, A i
   have H : (∅ : Finset ι) ≤ Finset.univ := Finset.empty_subset _
   simpa [lmarginal_univ] using GridLines.T_lmarginal_antitone μ hp₀ hp hf H default
@@ -367,7 +367,6 @@ irreducible_def lintegralPowLePowLIntegralFDerivConst (p : ℝ) : ℝ≥0 := by
   let c := addHaarScalarFactor μ ((volume : Measure (ι → ℝ)).map e.symm)
   exact (c * ‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊ ^ p) * (c ^ p)⁻¹
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 compactly-supported function `u` on a normed space `E` of finite dimension `n ≥ 2`, equipped
 with Haar measure. Then the Lebesgue integral of the pointwise expression
@@ -460,7 +459,6 @@ def eLpNormLESNormFDerivOfEqInnerConst (p : ℝ) : ℝ≥0 :=
 
 variable {F' : Type*} [NormedAddCommGroup F'] [InnerProductSpace ℝ F']
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 compactly-supported function `u` on a normed space `E` of finite dimension `n`, equipped
 with Haar measure, let `1 ≤ p < n` and let `p'⁻¹ := p⁻¹ - n⁻¹`.
@@ -514,7 +512,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
     simp_rw -zeta [one_div, hp']
     rw [← hq.one_sub_inv, ← hn.coe.one_sub_inv, sub_sub_sub_cancel_left]
     simp only [NNReal.coe_natCast, NNReal.coe_inv]
-  let γ : ℝ≥0 := ⟨p * (n - 1) / (n - p), by positivity⟩
+  let γ : ℝ≥0 := .mk (p * (n - 1) / (n - p)) (by positivity)
   have h0γ : (γ : ℝ) = p * (n - 1) / (n - p) := rfl
   have h1γ : 1 < (γ : ℝ) := by
     rwa [h0γ, one_lt_div hnp, mul_sub, mul_one, sub_lt_sub_iff_right, lt_mul_iff_one_lt_left]
@@ -591,7 +589,6 @@ irreducible_def SNormLESNormFDerivOfEqConst [FiniteDimensional ℝ F] (p : ℝ) 
   let e : F ≃L[ℝ] F' := toEuclidean
   ‖(e.symm : F' →L[ℝ] F)‖₊ * eLpNormLESNormFDerivOfEqInnerConst μ p * ‖(e : F →L[ℝ] F')‖₊
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 compactly-supported function `u` on a normed space `E` of finite dimension `n`, equipped
 with Haar measure, let `1 < p < n` and let `p'⁻¹ := p⁻¹ - n⁻¹`.
@@ -648,7 +645,6 @@ irreducible_def eLpNormLESNormFDerivOfLeConst [FiniteDimensional ℝ F] (s : Set
   (μ s).toNNReal ^ (1 / q - 1 / p' : ℝ) * SNormLESNormFDerivOfEqConst F μ p
 
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 function `u` supported in a bounded set `s` in a normed space `E` of finite dimension
 `n`, equipped with Haar measure, and let `1 < p < n` and `0 < q ≤ (p⁻¹ - (finrank ℝ E : ℝ)⁻¹)⁻¹`.
@@ -697,7 +693,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_le [FiniteDimensional ℝ F]
         have h2u' : HasCompactSupport u := by
           apply HasCompactSupport.of_support_subset_isCompact hs.isCompact_closure
           exact h2u.trans subset_closure
-        rel [eLpNorm_le_eLpNorm_fderiv_of_eq μ hu h2u' hp (mod_cast (zero_le p).trans_lt h2p) hp']
+        rel [eLpNorm_le_eLpNorm_fderiv_of_eq μ hu h2u' hp (mod_cast h2p.pos) hp']
     _ = eLpNormLESNormFDerivOfLeConst F μ s p q * eLpNorm (fderiv ℝ u) p μ := by
       simp_rw [eLpNormLESNormFDerivOfLeConst, ENNReal.coe_mul]; ring
 

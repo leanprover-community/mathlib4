@@ -67,8 +67,6 @@ lemma SpecMap_residue_apply {X : Scheme.{u}} (x : X) (s : Spec (X.residueField x
     Spec.map (X.residue x) s = closedPoint (X.presheaf.stalk x) :=
   IsLocalRing.PrimeSpectrum.comap_residue _ s
 
-@[deprecated (since := "2025-10-07")] alias Spec_map_residue_apply := SpecMap_residue_apply
-
 lemma residue_surjective (X : Scheme.{u}) (x) : Function.Surjective (X.residue x) :=
   Ideal.Quotient.mk_surjective
 
@@ -247,13 +245,6 @@ lemma Hom.SpecMap_residueFieldMap_fromSpecResidueField (x : X) :
     ← Spec.map_comp_assoc]
   rfl
 
-@[deprecated (since := "2025-10-07")]
-alias Hom.Spec_map_residueFieldMap_fromSpecResidueField :=
-  Hom.SpecMap_residueFieldMap_fromSpecResidueField
-@[deprecated (since := "2025-10-07")]
-alias Hom.Spec_map_residueFieldMap_fromSpecResidueField_assoc :=
-  Hom.SpecMap_residueFieldMap_fromSpecResidueField_assoc
-
 instance [X.Over Y] (x : X) : Spec.map ((X ↘ Y).residueFieldMap x) |>.IsOver Y where
 
 @[simp]
@@ -300,6 +291,15 @@ lemma Spec.algebraMap_residueFieldIso_inv :
 lemma Spec.residue_residueFieldIso_hom :
     (Spec R).residue x ≫ (residueFieldIso R x).hom =
       (Spec.stalkIso R x).hom ≫ CommRingCat.ofHom (algebraMap _ _) := rfl
+
+@[reassoc (attr := simp)]
+lemma Spec.map_residueFieldIso_inv_eq_fromSpecResidueField :
+    Spec.map (residueFieldIso _ _).inv ≫
+      Spec.map (CommRingCat.ofHom (algebraMap R x.asIdeal.ResidueField)) =
+    (Spec R).fromSpecResidueField x := by
+  simp only [Scheme.fromSpecResidueField, Spec.fromSpecStalk_eq, ← Spec.map_comp]
+  rw [Spec.map_inj]
+  simp [← Scheme.Spec.algebraMap_residueFieldIso_inv]
 
 end Spec
 

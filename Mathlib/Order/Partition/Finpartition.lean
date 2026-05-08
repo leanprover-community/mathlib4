@@ -5,14 +5,13 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Data.Finset.Lattice.Prod
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Data.Finset.Pairwise
+public import Mathlib.Data.Finset.Preimage
 public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.Data.Setoid.Basic
 public import Mathlib.Order.Atoms
 public import Mathlib.Order.SupIndep
-public import Mathlib.Data.Set.Finite.Basic
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Finite partitions
@@ -33,6 +32,7 @@ We provide many ways to build finpartitions:
 * `Finpartition.indiscrete`: The indiscrete, aka trivial, aka pure, finpartition made of a single
   part.
 * `Finpartition.discrete`: The discrete finpartition of `s : Finset α` made of singletons.
+* `Finpartition.toSubtype`: Turns a finpartition of a type to one of a subtype.
 * `Finpartition.bind`: Puts together the finpartitions of the parts of a finpartition into a new
   finpartition.
 * `Finpartition.extend`: Extends a finpartition of `a` to a finpartition of `a ⊔ b` by adding `b`
@@ -41,6 +41,8 @@ We provide many ways to build finpartitions:
   by adding `b \ a` as a new part (if nonempty).
 * `Finpartition.restrict`: Restricts a finpartition of `a` to `b` where `b ≤ a` by intersecting
   each part with `b`.
+* `Finpartition.ofPairwiseDisjoint`: Builds a finpartition from a finset `parts` of pairwise
+  disjoint elements.
 * `Finpartition.combine`: Combines a family of partitions of pairwise disjoint elements into a
   partition of their sup.
 * `Finpartition.ofExistsUnique`: Builds a finpartition from a collection of parts such that each
@@ -115,6 +117,12 @@ def ofSubset {a b : α} (P : Finpartition a) {parts : Finset α} (subset : parts
     sup_parts := sup_parts
     bot_notMem := fun h ↦ P.bot_notMem (subset h) }
 
+lemma sum_ofSubset_eq_sum {a b : α} (P : Finpartition a) {parts : Finset α}
+    (subset : parts ⊆ P.parts) (sup_parts : parts.sup id = b)
+    {X : Type*} [AddCommMonoid X] (f : α → X) (hf : ∀ p ∈ P.parts, p ∉ parts → f p = 0) :
+    ∑ p ∈ (P.ofSubset subset sup_parts).parts, f p = ∑ p ∈ P.parts, f p :=
+  Finset.sum_subset subset hf
+
 /-- Changes the type of a finpartition to an equal one. -/
 @[simps]
 def copy {a b : α} (P : Finpartition a) (h : a = b) : Finpartition b where
@@ -123,7 +131,6 @@ def copy {a b : α} (P : Finpartition a) (h : a = b) : Finpartition b where
   sup_parts := h ▸ P.sup_parts
   bot_notMem := P.bot_notMem
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Transfer a finpartition over an order isomorphism. -/
 def map {β : Type*} [Lattice β] [OrderBot β] {a : α} (e : α ≃o β) (P : Finpartition a) :
     Finpartition (e a) where
@@ -302,7 +309,6 @@ theorem exists_le_of_le {a b : α} {P Q : Finpartition a} (h : P ≤ Q) (hb : b 
   exact Q.supIndep (erase_subset _ _) hb (notMem_erase _ _)
 
 theorem card_mono {a : α} {P Q : Finpartition a} (h : P ≤ Q) : #Q.parts ≤ #P.parts := by
-  classical
   have : ∀ b ∈ Q.parts, ∃ c ∈ P.parts, c ≤ b := fun b ↦ exists_le_of_le h
   choose f hP hf using this
   rw [← card_attach]
@@ -313,6 +319,49 @@ theorem card_mono {a : α} {P Q : Finpartition a} (h : P ≤ Q) : #Q.parts ≤ #
         P.ne_bot (hP _ b.2) <| disjoint_self.1 <| H.mono (hf _ b.2) <| h.le.trans <| hf _ c.2)
 
 end Order
+
+section ToSubtype
+
+variable {s : α} (P : Finpartition s) {Pr : α → Prop}
+  (Prsup : ∀ ⦃s t : α⦄, Pr s → Pr t → Pr (s ⊔ t)) (Prinf : ∀ ⦃s t : α⦄, Pr s → Pr t → Pr (s ⊓ t))
+  (Prbot : Pr (⊥ : α)) (hs : Pr s) (hP : ∀ p ∈ P.parts, Pr p)
+
+/-- A `Finpartition` constructor in `Subtype Pr` for `Pr : Set X → Prop` such that `Pr` is closed
+under intersection and union and `Pr ⊥` holds from a `P : Finpartition s` with explicit assumptions
+that `Pr s` and `Pr p` for each part `p`. -/
+noncomputable def toSubtype :
+    letI : Lattice (Subtype Pr) := Subtype.lattice Prsup Prinf
+    letI : OrderBot (Subtype Pr) := Subtype.orderBot Prbot
+    Finpartition (⟨s, hs⟩ : Subtype Pr) :=
+  letI : Lattice (Subtype Pr) := Subtype.lattice Prsup Prinf
+  letI : OrderBot (Subtype Pr) := Subtype.orderBot Prbot
+  { parts := preimage P.parts Subtype.val Subtype.val_injective.injOn
+    supIndep t ht i hi hi' := by
+      classical
+      have : (fun (i : Subtype Pr) => (id i).val) = id ∘ Subtype.val := rfl
+      rw [disjoint_subtype_iff Prinf Prbot, sup_coe, this, ← sup_image t Subtype.val id]
+      · apply P.supIndep
+        · simpa [image_subset_iff_subset_preimage] using ht
+        · simpa using hi
+        · simpa [i.property] using hi'
+      exact Prsup
+    sup_parts := by
+      simpa [Finset.sup_preimage_val_id Prsup Prbot hP] using P.sup_parts
+    bot_notMem := by simpa [mem_preimage, Subtype.coe_bot Prbot] using P.bot_notMem }
+
+@[simp]
+lemma mem_toSubtype_iff (p : Subtype Pr) :
+    letI : Lattice (Subtype Pr) := Subtype.lattice Prsup Prinf
+    letI : OrderBot (Subtype Pr) := Subtype.orderBot Prbot
+    p ∈ (toSubtype P Prsup Prinf Prbot hs hP).parts ↔ p.val ∈ P.parts := by simp [toSubtype]
+
+lemma sum_eq_sum_finpartition_subtype {X : Type*} [AddCommMonoid X] (f : α → X) :
+    letI : Lattice (Subtype Pr) := Subtype.lattice Prsup Prinf
+    letI : OrderBot (Subtype Pr) := Subtype.orderBot Prbot
+    ∑ p ∈ P.parts, f p = ∑ p ∈ (Finpartition.toSubtype P Prsup Prinf Prbot hs hP).parts, f p := by
+  apply Finset.sum_bij (fun p hpP => ⟨p, hP p hpP⟩) <;> simp
+
+end ToSubtype
 
 end Lattice
 
@@ -399,6 +448,28 @@ lemma sum_restrict (P : Finpartition a) (hb : b ≤ a) {M : Type*} [AddCommMonoi
   simp only [restrict, heq, ← Finset.sum_filter_add_sum_filter_not P.parts (· ⊓ b ≠ ⊥), hz,
     Finset.sum_image hinj, add_zero]
 
+/-- A `Finpartition` constructor of `parts.sup id` from a finset `parts` of pairwise disjoint
+elements. Any `⊥` elements in `parts` are erased. -/
+@[simps]
+def ofPairwiseDisjoint (parts : Finset α) (hdisjoint : (parts : Set α).PairwiseDisjoint id) :
+    Finpartition (parts.sup id) where
+  parts := parts.erase ⊥
+  supIndep := Finset.supIndep_iff_pairwiseDisjoint.mpr fun _ ha _ hb hab =>
+    hdisjoint (Finset.erase_subset _ _ ha) (Finset.erase_subset _ _ hb) hab
+  sup_parts := Finset.sup_erase_bot parts
+  bot_notMem := Finset.notMem_erase _ _
+
+lemma sum_ofPairwiseDisjoint_eq_sum {parts : Finset α}
+    (hdisjoint : (parts : Set α).PairwiseDisjoint id)
+    {X : Type*} [AddCommMonoid X] {f : α → X} (hf : f ⊥ = 0) :
+    ∑ p ∈ (ofPairwiseDisjoint parts hdisjoint).parts, f p = ∑ p ∈ parts, f p := by
+  by_cases hbot : ⊥ ∈ parts
+  · simp only [Finpartition.ofPairwiseDisjoint]
+    rw [← erase_union_eq ⊥ parts hbot, union_comm, sum_union_eq_right]
+    · simp
+    grind
+  · simp_all
+
 end DistribLattice
 
 section IsModularLattice
@@ -416,7 +487,7 @@ def combine {ι : Type*} {I : Finset ι} {a : ι → α} (P : ∀ i, Finpartitio
     rw [sup_biUnion]
     exact sup_congr rfl fun i _ => (P i).sup_parts
   bot_notMem := by
-    rw [mem_biUnion]; push_neg; exact fun i _ => (P i).bot_notMem
+    rw [mem_biUnion]; push Not; exact fun i _ => (P i).bot_notMem
 
 /-- The sum of a set-valued function over a combined partition equals the sum of sums over component
 partitions. -/
@@ -434,7 +505,6 @@ section Bind
 
 variable {P : Finpartition a} {Q : ∀ i ∈ P.parts, Finpartition i}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a finpartition `P` of `a` and finpartitions of each part of `P`, this yields the
 finpartition of `a` obtained by juxtaposing all the subpartitions. -/
 @[simps! parts]
@@ -518,6 +588,13 @@ lemma parts_subset_extendOfLE (hab : a ≤ b) : P.parts ⊆ (P.extendOfLE hab).p
   split_ifs with hr
   · cases le_antisymm (sdiff_eq_bot_iff.mp hr) hab; rfl
   · exact Finset.subset_insert _ _
+
+lemma mem_parts_or_eq_sdiff_of_mem_extendOfLE (hab : a ≤ b) {p : α}
+    (hp : p ∈ (P.extendOfLE hab).parts) : p ∈ P.parts ∨ p = b \ a := by
+  by_cases h : a < b
+  · simp_all [parts_extendOfLE_of_lt _ h, mem_insert, Or.comm]
+  · left
+    simpa [parts_extendOfLE_of_eq _ (LE.le.eq_of_not_lt hab h)] using hp
 
 end GeneralizedBooleanAlgebra
 
@@ -611,7 +688,6 @@ lemma mem_part_self : a ∈ P.part a ↔ a ∈ s := by
 
 alias ⟨_, mem_part⟩ := mem_part_self
 
-set_option backward.isDefEq.respectTransparency false in
 lemma part_eq_iff_mem (ht : t ∈ P.parts) : P.part a = t ↔ a ∈ t := by
   constructor
   · rintro rfl
@@ -760,7 +836,6 @@ end Setoid
 
 section Atomise
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Cuts `s` along the finsets in `F`: Two elements of `s` will be in the same part if they are
 in the same finsets of `F`. -/
 def atomise (s : Finset α) (F : Finset (Finset α)) : Finpartition s :=

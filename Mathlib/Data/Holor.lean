@@ -101,23 +101,30 @@ instance [Add α] : Add (Holor α ds) :=
 instance [Neg α] : Neg (Holor α ds) :=
   ⟨fun a t => -a t⟩
 
-instance [AddSemigroup α] : AddSemigroup (Holor α ds) := Pi.addSemigroup
+instance [AddSemigroup α] : AddSemigroup (Holor α ds) :=
+  inferInstanceAs <| AddSemigroup (HolorIndex ds → α)
 
-instance [AddCommSemigroup α] : AddCommSemigroup (Holor α ds) := Pi.addCommSemigroup
+instance [AddCommSemigroup α] : AddCommSemigroup (Holor α ds) :=
+  inferInstanceAs <| AddCommSemigroup (HolorIndex ds → α)
 
-instance [AddMonoid α] : AddMonoid (Holor α ds) := Pi.addMonoid
+instance [AddMonoid α] : AddMonoid (Holor α ds) :=
+  inferInstanceAs <| AddMonoid (HolorIndex ds → α)
 
-instance [AddCommMonoid α] : AddCommMonoid (Holor α ds) := Pi.addCommMonoid
+instance [AddCommMonoid α] : AddCommMonoid (Holor α ds) :=
+  inferInstanceAs <| AddCommMonoid (HolorIndex ds → α)
 
-instance [AddGroup α] : AddGroup (Holor α ds) := Pi.addGroup
+instance [AddGroup α] : AddGroup (Holor α ds) :=
+  inferInstanceAs <| AddGroup (HolorIndex ds → α)
 
-instance [AddCommGroup α] : AddCommGroup (Holor α ds) := Pi.addCommGroup
+instance [AddCommGroup α] : AddCommGroup (Holor α ds) :=
+  inferInstanceAs <| AddCommGroup (HolorIndex ds → α)
 
 -- scalar product
 instance [Mul α] : SMul α (Holor α ds) :=
   ⟨fun a x => fun t => a * x t⟩
 
-instance [Semiring α] : Module α (Holor α ds) := Pi.module _ _ _
+instance [Semiring α] : Module α (Holor α ds) :=
+  inferInstanceAs <| Module α (HolorIndex ds → α)
 
 /-- The tensor product of two holors. -/
 def mul [Mul α] (x : Holor α ds₁) (y : Holor α ds₂) : Holor α (ds₁ ++ ds₂) := fun t =>
@@ -243,13 +250,14 @@ theorem sum_unitVec_mul_slice [Semiring α] (x : Holor α (d :: ds)) :
   it is the tensor product of 1-dimensional holors. -/
 inductive CPRankMax1 [Mul α] : ∀ {ds}, Holor α ds → Prop
   | nil (x : Holor α []) : CPRankMax1 x
-  | cons {d} {ds} (x : Holor α [d]) (y : Holor α ds) : CPRankMax1 y → CPRankMax1 (x ⊗ y)
+  | cons {d : ℕ} {ds : List ℕ} (x : Holor α [d]) (y : Holor α ds) :
+    CPRankMax1 y → CPRankMax1 (x ⊗ y)
 
 /-- `CPRankMax N x` means `x` has CP rank at most `N`, that is,
   it can be written as the sum of N holors of rank at most 1. -/
 inductive CPRankMax [Mul α] [AddMonoid α] : ℕ → ∀ {ds}, Holor α ds → Prop
-  | zero {ds} : CPRankMax 0 (0 : Holor α ds)
-  | succ (n) {ds} (x : Holor α ds) (y : Holor α ds) :
+  | zero {ds : List ℕ} : CPRankMax 0 (0 : Holor α ds)
+  | succ (n : ℕ) {ds : List ℕ} (x : Holor α ds) (y : Holor α ds) :
     CPRankMax1 x → CPRankMax n y → CPRankMax (n + 1) (x + y)
 
 theorem cprankMax_nil [Mul α] [AddMonoid α] (x : Holor α nil) : CPRankMax 1 x := by

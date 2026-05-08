@@ -222,7 +222,6 @@ theorem smul_mem_of_mem (hx : x ∈ fundamentalCone K) (hc : c ≠ 0) :
   · rw [Set.mem_setOf_eq, mixedEmbedding.norm_smul, mul_eq_zero, not_or]
     exact ⟨pow_ne_zero _ (abs_ne_zero.mpr hc), hx.2⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem smul_mem_iff_mem (hc : c ≠ 0) :
     c • x ∈ fundamentalCone K ↔ x ∈ fundamentalCone K := by
   refine ⟨fun h ↦ ?_, fun h ↦ smul_mem_of_mem h hc⟩
@@ -246,7 +245,6 @@ theorem torsion_smul_mem_of_mem (hx : x ∈ fundamentalCone K) {ζ : (𝓞 K)ˣ}
   · rw [Set.mem_setOf_eq, unitSMul_smul, map_mul, norm_unit, one_mul]
     exact hx.2
 
-set_option backward.isDefEq.respectTransparency false in
 theorem unit_smul_mem_iff_mem_torsion (hx : x ∈ fundamentalCone K) (u : (𝓞 K)ˣ) :
     u • x ∈ fundamentalCone K ↔ u ∈ torsion K := by
   classical

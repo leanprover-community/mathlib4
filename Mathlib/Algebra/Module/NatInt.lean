@@ -110,7 +110,6 @@ section
 
 variable (R)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `nsmul` is equal to any other module structure via a cast. -/
 @[norm_cast]
 lemma Nat.cast_smul_eq_nsmul (n : ℕ) (b : M) : (n : R) • b = n • b := by
@@ -132,15 +131,15 @@ theorem nat_smul_eq_nsmul (h : Module ℕ M) (n : ℕ) (x : M) : h.smul n x = n 
 
 /-- All `ℕ`-module structures are equal. Not an instance since in mathlib all `AddCommMonoid`
 should normally have exactly one `ℕ`-module structure by design. -/
+@[implicit_reducible]
 def AddCommMonoid.uniqueNatModule : Unique (Module ℕ M) where
   default := inferInstance
   uniq P := (Module.ext' P _) fun n => by convert nat_smul_eq_nsmul P n
 
-/-- All `ℕ`-module structures are equal. See also `AddCommMoniod.uniqueNatModule`. -/
+/-- All `ℕ`-module structures are equal. See also `AddCommMonoid.uniqueNatModule`. -/
 instance AddCommMonoid.subsingletonNatModule : Subsingleton (Module ℕ M) :=
   AddCommMonoid.uniqueNatModule.instSubsingleton
 
-set_option backward.isDefEq.respectTransparency false in
 instance AddCommMonoid.nat_isScalarTower : IsScalarTower ℕ R M where
   smul_assoc n x y := by
     induction n with
@@ -168,7 +167,6 @@ section
 
 variable (R)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `zsmul` is equal to any other module structure via a cast. -/
 @[norm_cast]
 lemma Int.cast_smul_eq_zsmul (n : ℤ) (b : M) : (n : R) • b = n • b := by
@@ -185,6 +183,7 @@ theorem int_smul_eq_zsmul (h : Module ℤ M) (n : ℤ) (x : M) : h.smul n x = n 
 
 /-- All `ℤ`-module structures are equal. Not an instance since in mathlib all `AddCommGroup`
 should normally have exactly one `ℤ`-module structure by design. -/
+@[implicit_reducible]
 def AddCommGroup.uniqueIntModule : Unique (Module ℤ M) where
   default := inferInstance
   uniq P := (Module.ext' P _) fun n => by convert int_smul_eq_zsmul P n
@@ -202,7 +201,6 @@ theorem map_intCast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [FunLi
     (x : ℤ) (a : M) :
     f ((x : R) • a) = (x : S) • f a := by simp only [Int.cast_smul_eq_zsmul, map_zsmul]
 
-set_option backward.isDefEq.respectTransparency false in
 instance AddCommGroup.intIsScalarTower {R : Type u} {M : Type v} [Ring R] [AddCommGroup M]
     [Module R M] : IsScalarTower ℤ R M where
   smul_assoc n x y := by

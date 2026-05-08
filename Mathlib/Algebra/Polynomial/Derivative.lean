@@ -347,7 +347,6 @@ theorem iterate_derivative_eq_factorial_smul_sum (p : R[X]) (k : ℕ) :
   refine sum_congr rfl fun i _ ↦ ?_
   rw [← smul_mul_assoc, smul_C, smul_smul, Nat.descFactorial_eq_factorial_mul_choose]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iterate_derivative_mul {n} (p q : R[X]) :
     derivative^[n] (p * q) =
       ∑ k ∈ range n.succ, (n.choose k • (derivative^[n - k] p * derivative^[k] q)) := by
@@ -455,7 +454,7 @@ theorem derivative_pow_succ (p : R[X]) (n : ℕ) :
 
 theorem derivative_pow (p : R[X]) (n : ℕ) :
     derivative (p ^ n) = C (n : R) * p ^ (n - 1) * derivative p :=
-  Nat.casesOn n (by rw [pow_zero, derivative_one, Nat.cast_zero, C_0, zero_mul, zero_mul]) fun n =>
+  Nat.casesOn n (by simp) fun n ↦
     by rw [p.derivative_pow_succ n, Nat.add_one_sub_one, n.cast_succ]
 
 theorem derivative_sq (p : R[X]) : derivative (p ^ 2) = C 2 * p * derivative p := by
@@ -485,7 +484,6 @@ theorem dvd_iterate_derivative_pow (f : R[X]) (n : ℕ) {m : ℕ} (c : R) (hm : 
     iterate_derivative_natCast_mul, eval_mul, eval_natCast]
   exact dvd_mul_right _ _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iterate_derivative_X_pow_eq_natCast_mul (n k : ℕ) :
     derivative^[k] (X ^ n : R[X]) = ↑(Nat.descFactorial n k : R[X]) * X ^ (n - k) := by
   induction k with
@@ -511,7 +509,6 @@ theorem derivative_X_add_C_pow (c : R) (m : ℕ) :
 theorem derivative_X_add_C_sq (c : R) : derivative ((X + C c) ^ 2) = C 2 * (X + C c) := by
   rw [derivative_sq, derivative_X_add_C, mul_one]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iterate_derivative_X_add_pow (n k : ℕ) (c : R) :
     derivative^[k] ((X + C c) ^ n) = Nat.descFactorial n k • (X + C c) ^ (n - k) := by
   induction k with
@@ -534,25 +531,22 @@ theorem iterate_derivative_mul_X_pow (n m : ℕ) (p : R[X]) :
     norm_cast
     ring
   rw [hsum]
-  refine sum_congr_of_eq_on_inter (fun k hk hk' ↦ ?_) (by aesop) (by simp)
+  refine sum_congr_of_eq_on_inter (fun k hk hk' ↦ ?_) (by simp_all) (by simp)
   rcases le_or_gt k m with hkm | hkm
   · replace hk' : n < k := by simpa [hkm] using hk'
     simp [Nat.choose_eq_zero_of_lt hk']
   · simp [Nat.descFactorial_eq_zero_iff_lt.mpr hkm]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iterate_derivative_mul_X {n : ℕ} (p : R[X]) :
     derivative^[n] (p * X) = (derivative^[n] p) * X + n • derivative^[n - 1] p := by
   convert p.iterate_derivative_mul_X_pow n 1; · simp
   rcases n with rfl | n <;> simp [sum_range_succ]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iterate_derivative_derivative_mul_X {n : ℕ} (p : R[X]) :
     derivative^[n] (derivative p * X) = (derivative^[n + 1] p) * X + n • derivative^[n] p := by
   convert (derivative p).iterate_derivative_mul_X_pow n 1; · simp
   rcases n with rfl | n <;> simp [sum_range_succ]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iterate_derivative_derivative_mul_X_sq {n : ℕ} (p : R[X]) :
     derivative^[n] (derivative^[2] p * X ^ 2) =
       (derivative^[n + 2] p) * X ^ 2 + (2 * n) • (derivative^[n + 1] p) * X +
@@ -695,12 +689,11 @@ theorem iterate_derivative_eq_zero_of_degree_lt {k : ℕ} {P : R[X]} (h : P.degr
       case pos hP' => simp [hP']
       case neg hP' =>
         have hP'' : P.natDegree ≠ 0 := by
-          contrapose! hP'
+          contrapose hP'
           exact derivative_of_natDegree_zero hP'
         refine ind <| (natDegree_lt_iff_degree_lt hP').mp ?_
         linarith [(natDegree_lt_iff_degree_lt hP).mpr h, natDegree_derivative_lt hP'']
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iterate_derivative_prod_X_sub_C {k : ℕ} {S : Finset R} (hk : k ≤ #S) :
     derivative^[k] (∏ a ∈ S, (X - C a)) =
     k.factorial * ∑ T ∈ S.powersetCard (#S - k), ∏ a ∈ T, (X - C a) := by

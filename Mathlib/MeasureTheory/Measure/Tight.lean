@@ -120,7 +120,6 @@ protected lemma subset (hT : IsTightMeasureSet T) (hST : S ⊆ T) :
   tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds hT (fun _ ↦ by simp)
     (iSup_le_iSup_of_subset hST)
 
-set_option backward.isDefEq.respectTransparency false in
 protected lemma union (hS : IsTightMeasureSet S) (hT : IsTightMeasureSet T) :
     IsTightMeasureSet (S ∪ T) := by
   rw [IsTightMeasureSet, iSup_union]
@@ -152,14 +151,13 @@ end Basic
 variable [PseudoMetricSpace 𝓧] [OpensMeasurableSpace 𝓧] [SecondCountableTopology 𝓧]
   {S : Set (ProbabilityMeasure 𝓧)}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_measure_iUnion_gt_of_isCompact_closure
     (U : ℕ → Set 𝓧) (O : ∀ i, IsOpen (U i)) (Cov : ⋃ i, U i = univ) (hcomp : IsCompact (closure S))
     (ε : ℝ≥0∞) (hε : 0 < ε) (hεbound : ε ≤ 1) :
     ∃ (k : ℕ), ∀ μ ∈ S, 1 - ε < μ (⋃ i ≤ k, U i) := by
   have εfin : ε ≠ ∞ := ne_top_of_le_ne_top (by simp) hεbound
   lift ε to ℝ≥0 using εfin
-  obtain ⟨ε, hε'⟩ := ε
+  obtain ⟨ε, hε', rfl⟩ : ∃ (ε' : ℝ) (hε' : 0 ≤ ε'), ε = .mk ε' hε' := ⟨↑ε, ε.2, rfl⟩
   simp only [ENNReal.coe_pos, ← NNReal.coe_lt_coe, NNReal.coe_zero, coe_mk, coe_le_one_iff,
       ← NNReal.coe_le_coe, NNReal.coe_one] at hε hεbound
   by_contra! nh
@@ -212,7 +210,6 @@ lemma exists_measure_iUnion_gt_of_isCompact_closure
 
 variable [CompleteSpace 𝓧]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In a second countable complete metric space, a set of probability measures with compact closure
 is tight. -/
 theorem isTightMeasureSet_of_isCompact_closure (hcomp : IsCompact (closure S)) :

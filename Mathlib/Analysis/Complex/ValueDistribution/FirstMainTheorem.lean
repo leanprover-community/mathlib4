@@ -58,7 +58,6 @@ lemma characteristic_sub_characteristic_inv (h : Meromorphic f) :
   _ = circleAverage (log ‖f ·‖) 0 - (divisor f Set.univ).logCounting := by
     rw [← ValueDistribution.log_counting_zero_sub_logCounting_top]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Helper lemma for the first part of the First Main Theorem: Away from zero, the difference between
 the characteristic functions of `f` and `f⁻¹` equals `log ‖meromorphicTrailingCoeffAt f 0‖`.
@@ -132,9 +131,9 @@ meromorphic on the complex plane, then the characteristic functions (for value `
 theorem abs_characteristic_sub_characteristic_shift_le {r : ℝ} (h : Meromorphic f) :
     |characteristic f ⊤ r - characteristic (f · - a₀) ⊤ r| ≤ log⁺ ‖a₀‖ + log 2 := by
   have h₁f : CircleIntegrable (fun x ↦ log⁺ ‖f x‖) 0 r :=
-    circleIntegrable_posLog_norm_meromorphicOn h.meromorphicOn
+    h.meromorphicOn.circleIntegrable_posLog_norm
   have h₂f : CircleIntegrable (fun x ↦ log⁺ ‖f x - a₀‖) 0 r := by
-    apply circleIntegrable_posLog_norm_meromorphicOn
+    apply MeromorphicOn.circleIntegrable_posLog_norm
     apply h.meromorphicOn.sub (MeromorphicOn.const a₀)
   rw [← Pi.sub_apply, characteristic_sub_characteristic_eq_proximity_sub_proximity h]
   simp only [proximity, reduceDIte, Pi.sub_apply, ← circleAverage_sub h₁f h₂f]
@@ -162,10 +161,6 @@ theorem isBigO_characteristic_sub_characteristic_shift (h : Meromorphic f) :
     (characteristic f ⊤ - characteristic (f · - a₀) ⊤) =O[atTop] (1 : ℝ → ℝ) :=
   isBigO_of_le' (c := log⁺ ‖a₀‖ + log 2) _
     (fun R ↦ by simpa using abs_characteristic_sub_characteristic_shift_le h)
-
-@[deprecated (since := "2025-10-06")]
-alias abs_characteristic_sub_characteristic_shift_eqO :=
-  isBigO_characteristic_sub_characteristic_shift
 
 end SecondPart
 

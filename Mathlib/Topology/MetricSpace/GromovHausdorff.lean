@@ -97,7 +97,6 @@ instance : Inhabited GHSpace :=
 def GHSpace.Rep (p : GHSpace) : Type :=
   (Quotient.out p : NonemptyCompacts ℓ_infty_ℝ)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eq_toGHSpace_iff {X : Type u} [MetricSpace X] [CompactSpace X] [Nonempty X]
     {p : NonemptyCompacts ℓ_infty_ℝ} :
     ⟦p⟧ = toGHSpace X ↔ ∃ Ψ : X → ℓ_infty_ℝ, Isometry Ψ ∧ range Ψ = p := by
@@ -193,13 +192,12 @@ theorem ghDist_le_hausdorffDist {X : Type u} [MetricSpace X] [CompactSpace X] [N
     separable and therefore embeddable in `ℓ^∞(ℝ)`. -/
   rcases exists_mem_of_nonempty X with ⟨xX, _⟩
   let s : Set γ := range Φ ∪ range Ψ
-  let Φ' : X → Subtype s := fun y => ⟨Φ y, mem_union_left _ (mem_range_self _)⟩
-  let Ψ' : Y → Subtype s := fun y => ⟨Ψ y, mem_union_right _ (mem_range_self _)⟩
+  let Φ' : X → s := fun y => ⟨Φ y, mem_union_left _ (mem_range_self _)⟩
+  let Ψ' : Y → s := fun y => ⟨Ψ y, mem_union_right _ (mem_range_self _)⟩
   have IΦ' : Isometry Φ' := fun x y => ha x y
   have IΨ' : Isometry Ψ' := fun x y => hb x y
   have : IsCompact s := (isCompact_range ha.continuous).union (isCompact_range hb.continuous)
-  let _ : MetricSpace (Subtype s) := by infer_instance
-  have : CompactSpace (Subtype s) := ⟨isCompact_iff_isCompact_univ.1 ‹IsCompact s›⟩
+  have : CompactSpace s := ⟨isCompact_iff_isCompact_univ.1 ‹IsCompact s›⟩
   have ΦΦ' : Φ = Subtype.val ∘ Φ' := rfl
   have ΨΨ' : Ψ = Subtype.val ∘ Ψ' := rfl
   have : hausdorffDist (range Φ) (range Ψ) = hausdorffDist (range Φ') (range Ψ') := by
@@ -207,7 +205,7 @@ theorem ghDist_le_hausdorffDist {X : Type u} [MetricSpace X] [CompactSpace X] [N
     exact hausdorffDist_image isometry_subtype_coe
   rw [this]
   -- Embed `s` in `ℓ^∞(ℝ)` through its Kuratowski embedding
-  let F := kuratowskiEmbedding (Subtype s)
+  let F := kuratowskiEmbedding s
   have : hausdorffDist (F '' range Φ') (F '' range Ψ') = hausdorffDist (range Φ') (range Ψ') :=
     hausdorffDist_image (kuratowskiEmbedding.isometry _)
   rw [← this]
@@ -415,10 +413,8 @@ instance : MetricSpace GHSpace where
               hausdorffDist (p.1 : Set ℓ_infty_ℝ) p.2) ∘
             Prod.swap ''
           { a | ⟦a⟧ = x } ×ˢ { b | ⟦b⟧ = y } := by
-      funext
-      simp only [comp_apply, Prod.fst_swap, Prod.snd_swap]
-      congr
-      simp only [hausdorffDist_comm]
+      ext
+      simp only [comp_apply, Prod.fst_swap, Prod.snd_swap, hausdorffDist_comm]
     simp only [dist, A, image_comp, image_swap_prod]
   eq_of_dist_eq_zero {x} {y} hxy := by
     /- To show that two spaces at zero distance are isometric,
@@ -601,7 +597,7 @@ theorem ghDist_le_of_approx_subsets {s : Set X} (Φ : s → Y) {ε₁ ε₂ ε�
       rcases mem_range.1 y_in_s' with ⟨x, xy⟩
       use Fl x, mem_image_of_mem _ x.2
       rw [← yx', ← xy, dist_comm]
-      exact le_of_eq (glueDist_glued_points (Z := s) (@Subtype.val X s) Φ (ε₂ / 2 + δ) x)
+      exact le_of_eq (glueDist_glued_points (Z := s) Subtype.val Φ (ε₂ / 2 + δ) x)
   have : hausdorffDist (Fr '' range Φ) (range Fr) ≤ ε₃ := by
     rw [← @image_univ _ _ Fr, hausdorffDist_image Ir]
     rcases exists_mem_of_nonempty Y with ⟨xY, _⟩
@@ -718,7 +714,13 @@ instance : SecondCountableTopology GHSpace := by
           _ ≤ 1 := le_of_lt (abs_sub_lt_one_of_floor_eq_floor this)
       calc
         |dist x y - dist (Ψ x) (Ψ y)|
-        _ = ε * (ε⁻¹ * |dist x y - dist (Ψ x) (Ψ y)|) := by grind
+        _ = ε * (ε⁻¹ * |dist x y - dist (Ψ x) (Ψ y)|) := by
+            #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+            (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed
+            this goal. It is not yet clear whether this is due to defeq abuse in Mathlib or a
+            problem in the new canonicalizer; a minimization would help. The original proof was:
+            `grind` -/
+            field_simp
         _ ≤ ε * 1 := by gcongr
         _ = ε := mul_one _
   calc

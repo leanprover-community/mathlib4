@@ -28,7 +28,7 @@ Isabelle formalization.
 measure-preserving map, measure
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory.Measure Function Set
 open scoped ENNReal
@@ -58,6 +58,12 @@ protected theorem id (μ : Measure α) : MeasurePreserving id μ μ :=
 
 protected theorem aemeasurable {f : α → β} (hf : MeasurePreserving f μa μb) : AEMeasurable f μa :=
   hf.1.aemeasurable
+
+protected theorem congr {f f' : α → β} (hf : MeasurePreserving f μa μb) (hf' : Measurable f')
+    (h : f =ᵐ[μa] f') : MeasurePreserving f' μa μb := by
+  refine ⟨hf', ?_⟩
+  rw [Measure.map_congr h.symm]
+  exact hf.map_eq
 
 @[nontriviality]
 theorem of_isEmpty [IsEmpty β] (f : α → β) (μa : Measure α) (μb : Measure β) :
@@ -189,7 +195,6 @@ protected theorem iterate (hf : MeasurePreserving f μ μ) :
   | 0 => .id μ
   | n + 1 => (MeasurePreserving.iterate hf n).comp hf
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped symmDiff in
 lemma measure_symmDiff_preimage_iterate_le
     (hf : MeasurePreserving f μ μ) (hs : NullMeasurableSet s μ) (n : ℕ) :

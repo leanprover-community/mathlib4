@@ -70,7 +70,7 @@ private lemma sum_pow_length_filter_eq_le_card_mul [Fintype α] [Nonempty α]
     (∑ x ∈ T.filter (fun x => x.length = s), (1 / (Fintype.card α : ℝ)) ^ x.length)
       ≤ ((Fintype.card α) ^ s) * (1 / Fintype.card α) ^ s := by
   calc
-    _  = ∑ x ∈ T.filter (fun x => x.length = s), (1 / (Fintype.card α : ℝ)) ^ s :=
+    _ = ∑ x ∈ T.filter (fun x => x.length = s), (1 / (Fintype.card α : ℝ)) ^ s :=
       Finset.sum_congr rfl fun x hx ↦ by simp [Finset.mem_filter.mp hx]
     _ = (T.filter fun x => x.length = s).card * (1 / Fintype.card α) ^ s := by
       simp only [Finset.sum_const, nsmul_eq_mul]
@@ -91,6 +91,7 @@ private lemma concatFn_length_mem_Icc {S : Finset (List α)}
   · -- upper bound
     exact (Finset.sum_le_sum (fun i _ => Finset.le_sup (w i).prop)).trans_eq (by simp)
 
+set_option linter.flexible false in -- TODO: fix non-terminal simp
 /-- Auxiliary bound for Kraft–McMillan.
 
 If `S` is a finite uniquely decodable code and `1 ≤ r`, then the `r`-th power of its Kraft sum
@@ -136,7 +137,8 @@ private lemma kraft_mcmillan_inequality_aux {S : Finset (List α)} [Fintype α] 
   apply le_trans (Finset.sum_le_sum (fun _ _ => sum_pow_length_filter_eq_le_card_mul))
   -- Summing these bounds over the interval s ∈ [r, r * maxLen] multiplies the term
   -- by the number of lengths. Since r ≥ 1, this count is at most r * maxLen.
-  rcases r with (_ | _ | r) <;> rcases maxLen with (_ | _ | maxLen) <;> norm_num at *
+  rcases r with (_ | _ | r) <;> rcases maxLen with (_ | _ | maxLen)
+  all_goals try simp at *
   · positivity
   · rw [Nat.cast_sub] <;> push_cast <;> nlinarith only
 

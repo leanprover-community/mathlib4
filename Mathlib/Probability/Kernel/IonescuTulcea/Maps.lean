@@ -161,27 +161,17 @@ section Lemmas
 
 variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [DecidableLE ι] {X : ι → Type*}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma _root_.IocProdIoc_preimage {a b c : ι} (hab : a ≤ b) (hbc : b ≤ c)
     (s : (i : Ioc a c) → Set (X i)) :
     IocProdIoc a b c ⁻¹' (Set.univ.pi s) =
       (Set.univ.pi <| restrict₂ (π := (fun n ↦ Set (X n))) (Ioc_subset_Ioc_right hbc) s) ×ˢ
         (Set.univ.pi <| restrict₂ (π := (fun n ↦ Set (X n))) (Ioc_subset_Ioc_left hab) s) := by
   ext x
-  simp only [Set.mem_preimage, Set.mem_pi, Set.mem_univ, IocProdIoc, forall_const, Subtype.forall,
-    mem_Ioc, Set.mem_prod, restrict₂]
-  refine ⟨fun h ↦ ⟨fun i ⟨hi1, hi2⟩ ↦ ?_, fun i ⟨hi1, hi2⟩ ↦ ?_⟩, fun ⟨h1, h2⟩ i ⟨hi1, hi2⟩ ↦ ?_⟩
-  · convert h i ⟨hi1, hi2.trans hbc⟩
-    rw [dif_pos hi2]
-  · convert h i ⟨lt_of_le_of_lt hab hi1, hi2⟩
-    rw [dif_neg (not_le.2 hi1)]
-  · split_ifs with hi3
-    · exact h1 i ⟨hi1, hi3⟩
-    · exact h2 i ⟨not_le.1 hi3, hi2⟩
+  simp
+  grind [IocProdIoc]
 
 variable [LocallyFiniteOrderBot ι]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma _root_.IicProdIoc_preimage {a b : ι} (hab : a ≤ b) (s : (i : Iic b) → Set (X i)) :
     IicProdIoc a b ⁻¹' (Set.univ.pi s) =
       (Set.univ.pi <| frestrictLe₂ (π := (fun n ↦ Set (X n))) hab s) ×ˢ

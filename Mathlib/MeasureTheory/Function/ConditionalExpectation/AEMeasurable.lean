@@ -258,7 +258,6 @@ theorem lpMeasSubgroupToLpTrim_norm_map [hp : Fact (1 ≤ p)] (hm : m ≤ m0)
     eLpNorm_congr_ae (lpMeasSubgroupToLpTrim_ae_eq hm _), ← Lp.norm_def]
   congr
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isometry_lpMeasSubgroupToLpTrim [hp : Fact (1 ≤ p)] (hm : m ≤ m0) :
     Isometry (lpMeasSubgroupToLpTrim F p μ hm) :=
   Isometry.of_dist_eq fun f g => by
@@ -359,7 +358,6 @@ section Induction
 
 variable {m m0 : MeasurableSpace α} {μ : Measure α} [Fact (1 ≤ p)] [NormedSpace ℝ F]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary lemma for `Lp.induction_stronglyMeasurable`. -/
 @[elab_as_elim]
 theorem Lp.induction_stronglyMeasurable_aux (hm : m ≤ m0) (hp_ne_top : p ≠ ∞) (P : Lp F p μ → Prop)

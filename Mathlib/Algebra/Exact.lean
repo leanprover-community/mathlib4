@@ -92,7 +92,7 @@ lemma iff_rangeFactorization [One P] (hg : 1 ∈ Set.range g) :
     MulExact f g ↔ MulExact ((↑) : Set.range f → N) (Set.rangeFactorization g) := by
   letI : One (Set.range g) := ⟨⟨1, hg⟩⟩
   have : ((1 : Set.range g) : P) = 1 := rfl
-  simp [MulExact, Set.rangeFactorization, Subtype.ext_iff, this]
+  simp [MulExact, Subtype.ext_iff, this]
 
 /-- If two maps `f : M → N` and `g : N → P` are exact, then the induced maps
 `Set.range f → N → Set.range g` are exact.
@@ -263,7 +263,6 @@ section Ring
 variable {R M N P : Type*} [Ring R]
   [AddCommGroup M] [AddCommGroup N] [AddCommGroup P] [Module R M] [Module R N] [Module R P]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exact_subtype_mkQ (Q : Submodule R N) :
     Exact (Submodule.subtype Q) (Submodule.mkQ Q) := by
   rw [exact_iff, Submodule.ker_mkQ, Submodule.range_subtype Q]
@@ -301,6 +300,11 @@ lemma LinearEquiv.conj_exact_iff_exact (e : N ≃ₗ[R] N') :
     LinearMap.range_comp]
   exact (Submodule.map_injective_of_injective e.injective).eq_iff
 
+variable (f g) in
+lemma LinearEquiv.conj_symm_exact_iff_exact (e : N' ≃ₗ[R] N) :
+    Function.Exact (e.symm ∘ₗ f) (g ∘ₗ (e : N' →ₗ[R] N)) ↔ Exact f g :=
+  LinearEquiv.conj_exact_iff_exact _ _ e.symm
+
 namespace Function
 
 open LinearMap
@@ -316,9 +320,17 @@ lemma Surjective.comp_exact_iff_exact {p : M' →ₗ[R] M} (h : Surjective p) :
   iff_of_eq <| forall_congr fun x =>
     congrArg (g x = 0 ↔ x ∈ ·) (h.range_comp f)
 
+lemma _root_.LinearEquiv.precomp_exact_iff_exact {e : M' ≃ₗ[R] M} :
+    Exact (f ∘ₗ (e : M' →ₗ[R] M)) g ↔ Exact f g :=
+  e.surjective.comp_exact_iff_exact
+
 lemma Injective.comp_exact_iff_exact {i : P →ₗ[R] P'} (h : Injective i) :
     Exact f (i ∘ₗ g) ↔ Exact f g :=
   forall_congr' fun _ => iff_congr (map_eq_zero_iff _ h) Iff.rfl
+
+lemma _root_.LinearEquiv.postcomp_exact_iff_exact {e : P ≃ₗ[R] P'} :
+    Exact f ((e : P →ₗ[R] P') ∘ₗ g) ↔ Exact f g :=
+  e.injective.comp_exact_iff_exact
 
 namespace Exact
 
@@ -418,8 +430,7 @@ def Exact.splitInjectiveEquiv
     · intro x y e
       simp only [prod_apply, Pi.prod, Prod.mk.injEq] at e
       obtain ⟨z, hz⟩ := (h (x - y)).mp (by simpa [sub_eq_zero] using e.2)
-      suffices z = 0 by rw [← sub_eq_zero, ← hz, this, map_zero]
-      rw [← h₁ z, hz, map_sub, e.1, sub_self]
+      rw [← sub_eq_zero, ← hz, ← h₁ z, hz, map_sub, e.1, sub_self, map_zero]
     · rintro ⟨x, y⟩
       obtain ⟨y, rfl⟩ := hg y
       refine ⟨f x + y - f (l.1 y), by ext <;> simp [h₁, h₂]⟩
@@ -498,7 +509,6 @@ variable [Ring R] [AddCommGroup M] [AddCommGroup N] [AddCommGroup P]
 
 namespace Function
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A necessary and sufficient condition for an exact sequence to descend to a quotient. -/
 lemma Exact.exact_mapQ_iff
     (hfg : Exact f g) {p q r} (hpq : p ≤ comap f q) (hqr : q ≤ comap g r) :
@@ -540,7 +550,6 @@ lemma surjective_range_liftQ (h : range f ≤ ker g) (hg : Function.Surjective g
   obtain ⟨x₂, rfl⟩ := hg x₃
   exact ⟨Submodule.Quotient.mk x₂, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ker_eq_bot_range_liftQ_iff (h : range f ≤ ker g) :
     ker ((range f).liftQ g h) = ⊥ ↔ ker g = range f := by
   simp only [Submodule.ext_iff, mem_ker, Submodule.mem_bot, mem_range]

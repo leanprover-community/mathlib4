@@ -28,7 +28,7 @@ and outputs a set of orthogonal vectors which have the same span.
 - `gramSchmidtBasis`: the basis produced by the Gram-Schmidt process when given a basis as input
 - `gramSchmidtNormed`:
   the normalized `gramSchmidt` process, i.e each vector in `gramSchmidtNormed` has unit length
-- `gramSchmidt_orthonormal`: `gramSchmidtNormed` produces an orthornormal system of vectors.
+- `gramSchmidt_orthonormal`: `gramSchmidtNormed` produces an orthonormal system of vectors.
 - `gramSchmidtOrthonormalBasis`: orthonormal basis constructed by the Gram-Schmidt process from
   an indexed set of vectors of the right size
 -/
@@ -39,7 +39,7 @@ and outputs a set of orthogonal vectors which have the same span.
 open Finset Submodule Module
 
 variable (𝕜 : Type*) {E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrderBot ι] [WellFoundedLT ι]
+variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrderBot ι]
 
 attribute [local instance] IsWellOrder.toHasWellFounded
 
@@ -54,7 +54,8 @@ noncomputable def gramSchmidt [WellFoundedLT ι] (f : ι → E) (n : ι) : E :=
 termination_by n
 decreasing_by exact mem_Iio.1 i.2
 
-set_option backward.isDefEq.respectTransparency false in
+variable [WellFoundedLT ι]
+
 /-- This lemma uses `∑ i in` instead of `∑ i :`. -/
 theorem gramSchmidt_def (f : ι → E) (n : ι) :
     gramSchmidt 𝕜 f n = f n - ∑ i ∈ Iio n, (𝕜 ∙ gramSchmidt 𝕜 f i).starProjection (f n) := by
@@ -256,7 +257,7 @@ theorem gramSchmidtNormed_unit_length' {f : ι → E} {n : ι} (hn : gramSchmidt
   simpa using hn
 
 /-- **Gram-Schmidt Orthonormalization**:
-`gramSchmidtNormed` applied to a linearly independent set of vectors produces an orthornormal
+`gramSchmidtNormed` applied to a linearly independent set of vectors produces an orthonormal
 system of vectors. -/
 theorem gramSchmidtNormed_orthonormal {f : ι → E} (h₀ : LinearIndependent 𝕜 f) :
     Orthonormal 𝕜 (gramSchmidtNormed 𝕜 f) := by
@@ -270,7 +271,7 @@ theorem gramSchmidtNormed_orthonormal {f : ι → E} (h₀ : LinearIndependent �
     exact gramSchmidt_orthogonal 𝕜 f hij
 
 /-- **Gram-Schmidt Orthonormalization**:
-`gramSchmidtNormed` produces an orthornormal system of vectors after removing the vectors which
+`gramSchmidtNormed` produces an orthonormal system of vectors after removing the vectors which
 become zero in the process. -/
 theorem gramSchmidtNormed_orthonormal' (f : ι → E) :
     Orthonormal 𝕜 fun i : { i | gramSchmidtNormed 𝕜 f i ≠ 0 } => gramSchmidtNormed 𝕜 f i := by

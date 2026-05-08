@@ -46,7 +46,7 @@ Note that a group `G` with Haar measure that is both left and right invariant is
 **unimodular**.
 -/
 
-@[expose] public section
+public section
 
 open Set MeasureTheory TopologicalSpace MeasureTheory.Measure
 
@@ -94,8 +94,7 @@ lemma MeasureTheory.QuotientMeasureEqMeasurePreimage.smulInvariantMeasure_quotie
     have meas_π : Measurable π := continuous_quotient_mk'.measurable
     obtain ⟨𝓕, h𝓕⟩ := hasFun.ExistsIsFundamentalDomain
     have h𝓕_translate_fundom : IsFundamentalDomain Γ.op (g • 𝓕) ν := h𝓕.smul_of_comm g
-    -- TODO: why `rw` fails with both of these rewrites?
-    erw [h𝓕.projection_respects_measure_apply (μ := μ)
+    rw [h𝓕.projection_respects_measure_apply (μ := μ)
       (meas_π (measurableSet_preimage (measurable_const_smul g) hA)),
       h𝓕_translate_fundom.projection_respects_measure_apply (μ := μ) hA]
     change ν ((π ⁻¹' _) ∩ _) = ν ((π ⁻¹' _) ∩ _)
@@ -181,7 +180,6 @@ theorem MeasureTheory.Measure.IsMulLeftInvariant.quotientMeasureEqMeasurePreimag
     · exact trans hV.symm neTopV
   exact measurableSet_quotient.mp meas_V
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a measure `μ` is left-invariant and satisfies the right scaling condition, then it
   satisfies `QuotientMeasureEqMeasurePreimage`. -/
 @[to_additive /-- If a measure `μ` is
@@ -234,8 +232,7 @@ theorem MeasureTheory.QuotientMeasureEqMeasurePreimage.haarMeasure_quotient [Loc
     ne_top_of_lt <| QuotientMeasureEqMeasurePreimage.covolume_ne_top μ (ν := ν)
   obtain ⟨s, fund_dom_s⟩ := i
   rw [fund_dom_s.covolume_eq_volume] at finiteCovol
-  -- TODO: why `rw` fails?
-  erw [fund_dom_s.projection_respects_measure_apply μ K'.isCompact.measurableSet]
+  rw [fund_dom_s.projection_respects_measure_apply μ K'.isCompact.measurableSet]
   apply IsHaarMeasure.smul
   · intro h
     have i' : IsOpenPosMeasure (ν : Measure G) := inferInstance
@@ -245,7 +242,7 @@ theorem MeasureTheory.QuotientMeasureEqMeasurePreimage.haarMeasure_quotient [Loc
     refine measure_mono_null (interior_subset.trans ?_) <|
       fund_dom_s.measure_zero_of_invariant _ (fun g ↦ QuotientGroup.sound _ _ g) h
     rw [QuotientGroup.coe_mk']
-    change (K : Set G) ⊆ π ⁻¹' (π '' K)
+    change (K : Set G) ⊆ π ⁻¹' π '' K
     exact subset_preimage_image π K
   · change ν (π ⁻¹' (π '' K) ∩ s) ≠ ⊤
     apply ne_of_lt
@@ -296,11 +293,7 @@ theorem IsFundamentalDomain.QuotientMeasureEqMeasurePreimage_smulHaarMeasure {�
     QuotientMeasureEqMeasurePreimage ν
       ((ν ((π ⁻¹' (K : Set (G ⧸ Γ))) ∩ 𝓕)) • haarMeasure K) := by
   set c := ν ((π ⁻¹' (K : Set (G ⧸ Γ))) ∩ 𝓕)
-  have c_ne_top : c ≠ ∞ := by
-    contrapose! h𝓕_finite
-    have : c ≤ ν 𝓕 := measure_mono (Set.inter_subset_right)
-    rw [h𝓕_finite] at this
-    exact top_unique this
+  have c_ne_top : c ≠ ∞ := measure_inter_ne_top_of_right_ne_top h𝓕_finite
   set μ := c • haarMeasure K
   have hμK : μ K = c := by simp [μ, haarMeasure_self]
   haveI : SigmaFinite μ := by

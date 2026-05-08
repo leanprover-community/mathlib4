@@ -221,7 +221,7 @@ theorem subset_iUnion (h : J ∈ π) : ↑J ⊆ π.iUnion :=
 theorem iUnion_subset : π.iUnion ⊆ I :=
   iUnion₂_subset π.le_of_mem'
 
-@[mono]
+@[gcongr, mono]
 theorem iUnion_mono (h : π₁ ≤ π₂) : π₁.iUnion ⊆ π₂.iUnion := fun _ hx =>
   let ⟨_, hJ₁, hx⟩ := π₁.mem_iUnion.1 hx
   let ⟨J₂, hJ₂, hle⟩ := h hJ₁
@@ -252,7 +252,6 @@ theorem eq_of_boxes_subset_iUnion_superset (h₁ : π₁.boxes ⊆ π₂.boxes) 
       ⟨fun _ hJ₁ _ hJ₂ Hne =>
         (π₂.eq_of_mem_of_mem hJ₁ (h₁ hJ₂) Hne.choose_spec.1 Hne.choose_spec.2).le, h₂⟩
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- Given a prepartition `π` of a box `I` and a collection of prepartitions `πi J` of all boxes
 `J ∈ π`, returns the prepartition of `I` into the union of the boxes of all `πi J`.
@@ -439,7 +438,7 @@ theorem mem_restrict : J₁ ∈ π.restrict J ↔ ∃ J' ∈ π, (J₁ : WithBot
 theorem mem_restrict' : J₁ ∈ π.restrict J ↔ ∃ J' ∈ π, (J₁ : Set (ι → ℝ)) = ↑J ∩ ↑J' := by
   simp only [mem_restrict, ← Box.withBotCoe_inj, Box.coe_inf, Box.coe_coe]
 
-@[mono]
+@[gcongr, mono]
 theorem restrict_mono {π₁ π₂ : Prepartition I} (Hle : π₁ ≤ π₂) : π₁.restrict J ≤ π₂.restrict J := by
   classical
   refine ofWithBot_mono fun J₁ hJ₁ hne => ?_
@@ -545,7 +544,6 @@ theorem filter_of_true {p : Box ι → Prop} (hp : ∀ J ∈ π, p J) : π.filte
 theorem filter_true : (π.filter fun _ => True) = π :=
   π.filter_of_true fun _ _ => trivial
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem iUnion_filter_not (π : Prepartition I) (p : Box ι → Prop) :
     (π.filter fun J => ¬p J).iUnion = π.iUnion \ (π.filter p).iUnion := by

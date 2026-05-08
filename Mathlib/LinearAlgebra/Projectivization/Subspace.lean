@@ -32,7 +32,7 @@ also in the subset.
 @[expose] public section
 
 
-variable (K V : Type*) [Field K] [AddCommGroup V] [Module K V]
+variable (K V : Type*) [DivisionRing K] [AddCommGroup V] [Module K V]
 
 namespace Projectivization
 
@@ -132,12 +132,10 @@ instance : CompleteLattice (Subspace K V) :=
 
 instance subspaceInhabited : Inhabited (Subspace K V) where default := ⊤
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The span of the empty set is the bottom of the lattice of subspaces. -/
 @[simp]
 theorem span_empty : span (∅ : Set (ℙ K V)) = ⊥ := gi.gc.l_bot
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The span of the entire projective space is the top of the lattice of subspaces. -/
 @[simp]
 theorem span_univ : span (Set.univ : Set (ℙ K V)) = ⊤ := by
@@ -152,7 +150,7 @@ theorem span_le_subspace_iff {S : Set (ℙ K V)} {W : Subspace K V} : span S ≤
 
 /-- If a set of points is a subset of another set of points, then its span will be contained in the
 span of that set. -/
-@[mono]
+@[gcongr, mono]
 theorem monotone_span : Monotone (span : Set (ℙ K V) → Subspace K V) :=
   gi.gc.monotone_l
 

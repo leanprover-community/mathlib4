@@ -217,7 +217,7 @@ lemma lpNorm_sum_le {ι : Type*} {s : Finset ι} {f : ι → α → E} (hf : ∀
 -- TODO: Golf using `eLpNorm_expect_le` once it exists
 lemma lpNorm_expect_le [Module ℚ≥0 E] [NormedSpace ℝ E] {ι : Type*} {s : Finset ι}
     {f : ι → α → E} (hf : ∀ i ∈ s, MemLp (f i) p μ) (hp : 1 ≤ p) :
-    lpNorm (𝔼 i ∈ s, f i) p μ ≤ 𝔼 i ∈ s, lpNorm (f i) p μ  :=  by
+    lpNorm (𝔼 i ∈ s, f i) p μ ≤ 𝔼 i ∈ s, lpNorm (f i) p μ := by
   obtain rfl | hs := s.eq_empty_or_nonempty
   · simp
   refine (le_inv_smul_iff_of_pos <| by positivity).2 ?_
@@ -231,7 +231,6 @@ lemma lpNorm_mono_real {g : α → ℝ} (hg : MemLp g p μ) (h : ∀ x, ‖f x�
     exact ENNReal.toNNReal_mono (hg.eLpNorm_ne_top) (eLpNorm_mono_real h)
   · simp [hf]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma lpNorm_smul_measure_of_ne_zero {f : α → E} {c : ℝ≥0} (hc : c ≠ 0) :
     lpNorm f p (c • μ) = c ^ p.toReal⁻¹ • lpNorm f p μ := by
   by_cases hf : AEStronglyMeasurable f μ
@@ -241,7 +240,6 @@ lemma lpNorm_smul_measure_of_ne_zero {f : α → E} {c : ℝ≥0} (hc : c ≠ 0)
       simpa [hc] using h.smul_measure c⁻¹]
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma lpNorm_smul_measure_of_ne_top (hp : p ≠ ∞) {f : α → E} (c : ℝ≥0) :
     lpNorm f p (c • μ) = c ^ p.toReal⁻¹ • lpNorm f p μ := by
   by_cases hf : AEStronglyMeasurable f μ

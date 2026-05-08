@@ -422,7 +422,6 @@ theorem isCoseparating_iff_mono
 
 end ObjectProperty
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An ingredient of the proof of the Special Adjoint Functor Theorem: a complete well-powered
     category with a small coseparating set has an initial object.
 
@@ -644,15 +643,18 @@ theorem IsCodetector.def {G : C} :
     IsCodetector G → ∀ ⦃X Y : C⦄ (f : X ⟶ Y), (∀ h : X ⟶ G, ∃! h', f ≫ h' = h) → IsIso f :=
   (isCodetector_def _).1
 
+open ConcreteCategory
+
 theorem isSeparator_iff_faithful_coyoneda_obj (G : C) :
     IsSeparator G ↔ (coyoneda.obj (op G)).Faithful :=
-  ⟨fun hG => ⟨fun hfg => hG.def _ _ (congr_fun hfg)⟩, fun _ =>
-    (isSeparator_def _).2 fun _ _ _ _ hfg => (coyoneda.obj (op G)).map_injective (funext hfg)⟩
+  ⟨fun hG => ⟨fun hfg => hG.def _ _ (congr_hom hfg)⟩, fun _ =>
+    (isSeparator_def _).2 fun _ _ _ _ hfg => (coyoneda.obj (op G)).map_injective
+      (by ext; apply hfg)⟩
 
 theorem isCoseparator_iff_faithful_yoneda_obj (G : C) : IsCoseparator G ↔ (yoneda.obj G).Faithful :=
-  ⟨fun hG => ⟨fun hfg => Quiver.Hom.unop_inj (hG.def _ _ (congr_fun hfg))⟩, fun _ =>
+  ⟨fun hG => ⟨fun hfg => Quiver.Hom.unop_inj (hG.def _ _ (congr_hom hfg))⟩, fun _ =>
     (isCoseparator_def _).2 fun _ _ _ _ hfg =>
-      Quiver.Hom.op_inj <| (yoneda.obj G).map_injective (funext hfg)⟩
+      Quiver.Hom.op_inj <| (yoneda.obj G).map_injective (by ext; apply hfg)⟩
 
 set_option backward.isDefEq.respectTransparency false in
 theorem isSeparator_iff_epi (G : C) [∀ A : C, HasCoproduct fun _ : G ⟶ A => G] :
@@ -980,80 +982,5 @@ theorem HasCodetector.hasDetector_of_hasCodetector_op [HasCodetector Cᵒᵖ] :
 end Dual
 
 end HasGenerator
-
-@[deprecated (since := "2025-10-06")] alias IsSeparating := ObjectProperty.IsSeparating
-@[deprecated (since := "2025-10-06")] alias IsCoseparating := ObjectProperty.IsCoseparating
-@[deprecated (since := "2025-10-06")] alias IsDetecting := ObjectProperty.IsDetecting
-@[deprecated (since := "2025-10-06")] alias IsCodetecting := ObjectProperty.IsCodetecting
-@[deprecated (since := "2025-10-06")] alias IsSeparating.of_equivalence :=
-  ObjectProperty.IsSeparating.of_equivalence
-@[deprecated (since := "2025-10-06")] alias IsCoseparating.of_equivalence :=
-  ObjectProperty.IsCoseparating.of_equivalence
-@[deprecated (since := "2025-10-06")] alias isSeparating_op_iff :=
-  ObjectProperty.isSeparating_op_iff
-@[deprecated (since := "2025-10-06")] alias isCoseparating_op_iff :=
-  ObjectProperty.isCoseparating_op_iff
-@[deprecated (since := "2025-10-06")] alias isSeparating_unop_iff :=
-  ObjectProperty.isSeparating_op_iff
-@[deprecated (since := "2025-10-06")] alias isCoseparating_unop_iff :=
-  ObjectProperty.isCoseparating_op_iff
-@[deprecated (since := "2025-10-06")] alias isDetecting_op_iff :=
-  ObjectProperty.isDetecting_op_iff
-@[deprecated (since := "2025-10-06")] alias isCodetecting_op_iff :=
-  ObjectProperty.isCodetecting_op_iff
-@[deprecated (since := "2025-10-06")] alias isDetecting_unop_iff :=
-  ObjectProperty.isDetecting_op_iff
-@[deprecated (since := "2025-10-06")] alias isCodetecting_unop_iff :=
-  ObjectProperty.isCodetecting_op_iff
-@[deprecated (since := "2025-10-06")] alias IsDetecting.isSeparating :=
-  ObjectProperty.IsDetecting.isSeparating
-@[deprecated (since := "2025-10-06")] alias IsCodetecting.isCoseparating :=
-  ObjectProperty.IsCodetecting.isCoseparating
-@[deprecated (since := "2025-10-06")] alias IsSeparating.isDetecting :=
-  ObjectProperty.IsSeparating.isDetecting
-@[deprecated (since := "2025-10-06")] alias IsDetecting.isIso_iff_of_mono :=
-  ObjectProperty.IsDetecting.isIso_iff_of_mono
-@[deprecated (since := "2025-10-06")] alias IsCodetecting.isIso_iff_of_epi :=
-  ObjectProperty.IsCodetecting.isIso_iff_of_epi
-@[deprecated (since := "2025-10-06")] alias IsCoseparating.isCodetecting :=
-  ObjectProperty.IsCoseparating.isCodetecting
-@[deprecated (since := "2025-10-06")] alias isDetecting_iff_isSeparating :=
-  ObjectProperty.isDetecting_iff_isSeparating
-@[deprecated (since := "2025-10-06")] alias isCodetecting_iff_isCoseparating :=
-  ObjectProperty.isCodetecting_iff_isCoseparating
-@[deprecated (since := "2025-10-06")] alias IsSeparating.mono :=
-  ObjectProperty.IsSeparating.of_le
-@[deprecated (since := "2025-10-06")] alias IsCoseparating.mono :=
-  ObjectProperty.IsCoseparating.of_le
-@[deprecated (since := "2025-10-06")] alias IsDetecting.mono :=
-  ObjectProperty.IsDetecting.of_le
-@[deprecated (since := "2025-10-06")] alias IsCodetecting.mono :=
-  ObjectProperty.IsCodetecting.of_le
-@[deprecated (since := "2025-10-06")] alias thin_of_isSeparating_empty :=
-  ObjectProperty.isThin_of_isSeparating_bot
-@[deprecated (since := "2025-10-06")] alias isSeparating_empty_of_thin :=
-  ObjectProperty.isSeparating_bot_of_isThin
-@[deprecated (since := "2025-10-06")] alias thin_of_isCoseparating_empty :=
-  ObjectProperty.isThin_of_isCoseparating_bot
-@[deprecated (since := "2025-10-06")] alias isCoseparating_empty_of_thin :=
-  ObjectProperty.isCoseparating_bot_of_isThin
-@[deprecated (since := "2025-10-06")] alias groupoid_of_isDetecting_empty :=
-  ObjectProperty.isGroupoid_of_isDetecting_bot
-@[deprecated (since := "2025-10-06")] alias isDetecting_empty_of_groupoid :=
-  ObjectProperty.isDetecting_bot_of_isGroupoid
-@[deprecated (since := "2025-10-06")] alias groupoid_of_isCodetecting_empty :=
-  ObjectProperty.isGroupoid_of_isCodetecting_bot
-@[deprecated (since := "2025-10-06")] alias isCodetecting_empty_of_groupoid :=
-  ObjectProperty.isCodetecting_bot_of_isGroupoid
-@[deprecated (since := "2025-10-07")] alias isSeparating_iff_epi :=
-  ObjectProperty.isSeparating_iff_epi
-@[deprecated (since := "2025-10-07")] alias isCoseparating_iff_mono :=
-  ObjectProperty.isCoseparating_iff_mono
-@[deprecated (since := "2025-10-07")] alias IsSeparating.isSeparator_coproduct :=
-  ObjectProperty.IsSeparating.isSeparator_coproduct
-@[deprecated (since := "2025-10-07")] alias StructuredArrow.isCoseparating_proj_preimage :=
-  StructuredArrow.isCoseparating_inverseImage_proj
-@[deprecated (since := "2025-10-07")] alias CostructuredArrow.isSeparating_proj_preimage :=
-  CostructuredArrow.isSeparating_inverseImage_proj
 
 end CategoryTheory

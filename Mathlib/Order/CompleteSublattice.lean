@@ -157,13 +157,11 @@ sublattice. -/
 
 @[simp] theorem mem_comap {L : CompleteSublattice β} {a : α} : a ∈ L.comap f ↔ f a ∈ L := Iff.rfl
 
-set_option backward.isDefEq.respectTransparency false in
 protected lemma disjoint_iff {a b : L} :
     Disjoint a b ↔ Disjoint (a : α) (b : α) := by
   rw [disjoint_iff, disjoint_iff, ← Sublattice.coe_inf, ← coe_bot (L := L),
     Subtype.coe_injective.eq_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 protected lemma codisjoint_iff {a b : L} :
     Codisjoint a b ↔ Codisjoint (a : α) (b : α) := by
   rw [codisjoint_iff, codisjoint_iff, ← Sublattice.coe_sup, ← coe_top (L := L),

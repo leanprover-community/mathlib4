@@ -25,7 +25,7 @@ Criteria for a convolution of functions to be differentiable.
 
 -/
 
-@[expose] public section
+public section
 open Set Function Filter MeasureTheory MeasureTheory.Measure TopologicalSpace
 
 open Bornology ContinuousLinearMap Metric Topology
@@ -40,13 +40,6 @@ variable [NormedAddCommGroup E] [NormedAddCommGroup E'] [NormedAddCommGroup E'']
   [NormedAddCommGroup F] {f f' : G → E} {g g' : G → E'} {x x' : G} {y y' : E}
 
 namespace MeasureTheory
-section NontriviallyNormedField
-
-variable [NontriviallyNormedField 𝕜]
-variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 E'] [NormedSpace 𝕜 E''] [NormedSpace 𝕜 F]
-variable (L : E →L[𝕜] E' →L[𝕜] F)
-
-end NontriviallyNormedField
 
 open scoped Convolution
 
@@ -141,7 +134,6 @@ variable [RCLike 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 E'] [NormedSpace �
   [NormedSpace 𝕜 G] [NormedAddCommGroup P] [NormedSpace 𝕜 P] {μ : Measure G}
   (L : E →L[𝕜] E' →L[𝕜] F)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The derivative of the convolution `f * g` is given by `f * Dg`, when `f` is locally integrable
 and `g` is `C^1` and compactly supported. Version where `g` depends on an additional parameter in an
 open subset `s` of a parameter space `P` (and the compact support `k` is independent of the

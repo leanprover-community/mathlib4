@@ -190,7 +190,7 @@ theorem map_zero [Nonempty ι] : f 0 = 0 :=
 
 theorem map_eq_zero_of_not_injective (v : ι → M) (hv : ¬Function.Injective v) : f v = 0 := by
   rw [Function.Injective] at hv
-  push_neg at hv
+  push Not at hv
   rcases hv with ⟨i₁, i₂, heq, hne⟩
   exact f.map_eq_zero_of_eq v heq hne
 
@@ -621,6 +621,16 @@ theorem map_update_sum {α : Type*} [DecidableEq ι] (t : Finset α) (i : ι) (g
     f (update m i (∑ a ∈ t, g a)) = ∑ a ∈ t, f (update m i (g a)) :=
   f.toMultilinearMap.map_update_sum t i g m
 
+theorem map_add_univ [DecidableEq ι] [Fintype ι] (m m' : ι → M) :
+    f (m + m') = ∑ s : Finset ι, f (s.piecewise m m') :=
+  f.toMultilinearMap.map_add_univ m m'
+
+theorem map_smul_univ {R : Type*} [CommSemiring R] {M : Type*} [AddCommMonoid M]
+    [Module R M] {N : Type*} [AddCommMonoid N] [Module R N] [Fintype ι]
+    (f : M [⋀^ι]→ₗ[R] N) (c : ι → R) (m : ι → M) :
+    (f fun i => c i • m i) = (∏ i, c i) • f m :=
+  f.toMultilinearMap.map_smul_univ c m
+
 end
 
 /-!
@@ -849,7 +859,6 @@ end MultilinearMap
 
 namespace AlternatingMap
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Alternatizing a multilinear map that is already alternating results in a scale factor of `n!`,
 where `n` is the number of inputs. -/
 theorem coe_alternatization [DecidableEq ι] [Fintype ι] (a : M [⋀^ι]→ₗ[R] N') :

@@ -5,12 +5,12 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Asymptotics.Defs
 public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 public import Mathlib.Analysis.Calculus.FDeriv.Defs
 public import Mathlib.Analysis.Normed.Operator.Asymptotics
 public import Mathlib.Analysis.Calculus.TangentCone.Basic
 import Mathlib.Analysis.Asymptotics.Lemmas
+import Mathlib.Analysis.Calculus.TangentCone.DimOne
 
 /-!
 # The Fréchet derivative: basic properties
@@ -378,6 +378,10 @@ theorem fderivWithin_zero_of_notMem_closure (h : x ∉ closure s) :
     fderivWithin 𝕜 f s x = 0 :=
   fderivWithin_zero_of_not_accPt (h ·.clusterPt.mem_closure)
 
+theorem fderivWithin_zero_of_not_uniqueDiffWithinAt {f : 𝕜 → F} {x : 𝕜} {s : Set 𝕜}
+    (h : ¬UniqueDiffWithinAt 𝕜 s x) : fderivWithin 𝕜 f s x = 0 :=
+  fderivWithin_zero_of_not_accPt <| mt AccPt.uniqueDiffWithinAt h
+
 theorem DifferentiableWithinAt.hasFDerivWithinAt (h : DifferentiableWithinAt 𝕜 f s x) :
     HasFDerivWithinAt f (fderivWithin 𝕜 f s x) s x := by
   simp only [fderivWithin, dif_pos h]
@@ -406,7 +410,6 @@ protected theorem HasFDerivAt.fderiv
     [ContinuousAdd E] [ContinuousSMul 𝕜 E] [ContinuousAdd F] [ContinuousSMul 𝕜 F] [T2Space F]
     (h : HasFDerivAt f f' x) :
     fderiv 𝕜 f x = f' := by
-  ext
   rw [h.unique h.differentiableAt.hasFDerivAt]
 
 theorem fderiv_eq
@@ -929,7 +932,6 @@ theorem HasFDerivAt.le_of_lipschitz {f : E → F} {f' : E →L[𝕜] F} {x₀ : 
 
 variable (𝕜)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Converse to the mean value inequality: if `f` is `C`-lipschitz
 on a neighborhood of `x₀` then its derivative at `x₀` has norm bounded by `C`. This version
 only assumes that `‖f x - f x₀‖ ≤ C * ‖x - x₀‖` in a neighborhood of `x`. -/

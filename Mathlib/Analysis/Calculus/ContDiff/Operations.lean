@@ -20,7 +20,7 @@ so on) preserve `C^n` functions.
 We use the notation `E [×n]→L[𝕜] F` for the space of continuous multilinear maps on `E^n` with
 values in `F`. This is the space in which the `n`-th derivative of a function from `E` to `F` lives.
 
-In this file, we denote `(⊤ : ℕ∞) : WithTop ℕ∞` with `∞` and `⊤ : WithTop ℕ∞` with `ω`.
+In this file, we denote `WithTop ℕ∞` with `ℕ∞ω`, `(⊤ : ℕ∞) : ℕ∞ω` with `∞` and `⊤ : ℕ∞ω` with `ω`.
 
 ## Tags
 
@@ -44,7 +44,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type uE} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {F : Type uF}
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type uG} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
   {X : Type*} [NormedAddCommGroup X] [NormedSpace 𝕜 X] {s t : Set E} {f : E → F}
-  {g : F → G} {x x₀ : E} {b : E × F → G} {m n : WithTop ℕ∞} {p : E → FormalMultilinearSeries 𝕜 E F}
+  {g : F → G} {x x₀ : E} {b : E × F → G} {m n : ℕ∞ω} {p : E → FormalMultilinearSeries 𝕜 E F}
 
 /-!
 ### Smoothness of functions `f : E → Π i, F' i`
@@ -56,7 +56,7 @@ variable {ι ι' : Type*} [Fintype ι] [Fintype ι'] {F' : ι → Type*} [∀ i,
   [∀ i, NormedSpace 𝕜 (F' i)] {φ : ∀ i, E → F' i} {p' : ∀ i, E → FormalMultilinearSeries 𝕜 E (F' i)}
   {Φ : E → ∀ i, F' i} {P' : E → FormalMultilinearSeries 𝕜 E (∀ i, F' i)}
 
-theorem hasFTaylorSeriesUpToOn_pi {n : WithTop ℕ∞} :
+theorem hasFTaylorSeriesUpToOn_pi {n : ℕ∞ω} :
     HasFTaylorSeriesUpToOn n (fun x i => φ i x)
         (fun x m => ContinuousMultilinearMap.pi fun i => p' i x m) s ↔
       ∀ i, HasFTaylorSeriesUpToOn n (φ i) (p' i) s := by
@@ -74,7 +74,7 @@ theorem hasFTaylorSeriesUpToOn_pi {n : WithTop ℕ∞} :
     exact (L m).continuous.comp_continuousOn <| continuousOn_pi.2 fun i => (h i).cont m hm
 
 @[simp]
-theorem hasFTaylorSeriesUpToOn_pi' {n : WithTop ℕ∞} :
+theorem hasFTaylorSeriesUpToOn_pi' {n : ℕ∞ω} :
     HasFTaylorSeriesUpToOn n Φ P' s ↔
       ∀ i, HasFTaylorSeriesUpToOn n (fun x => Φ x i)
         (fun x m => (@ContinuousLinearMap.proj 𝕜 _ ι F' _ _ _ i).compContinuousMultilinearMap
@@ -123,7 +123,7 @@ theorem contDiffOn_pi' (hΦ : ∀ i, ContDiffOn 𝕜 n (fun x => Φ x i) s) : Co
 theorem contDiffAt_pi' (hΦ : ∀ i, ContDiffAt 𝕜 n (fun x => Φ x i) x) : ContDiffAt 𝕜 n Φ x :=
   contDiffAt_pi.2 hΦ
 
-theorem contDiff_update [DecidableEq ι] (k : WithTop ℕ∞) (x : ∀ i, F' i) (i : ι) :
+theorem contDiff_update [DecidableEq ι] (k : ℕ∞ω) (x : ∀ i, F' i) (i : ι) :
     ContDiff 𝕜 k (update x i) := by
   rw [contDiff_pi]
   intro j
@@ -134,7 +134,7 @@ theorem contDiff_update [DecidableEq ι] (k : WithTop ℕ∞) (x : ∀ i, F' i) 
   · exact contDiff_const
 
 variable (F') in
-theorem contDiff_single [DecidableEq ι] (k : WithTop ℕ∞) (i : ι) :
+theorem contDiff_single [DecidableEq ι] (k : ℕ∞ω) (i : ι) :
     ContDiff 𝕜 k (Pi.single i : F' i → ∀ i, F' i) :=
   contDiff_update k 0 i
 
@@ -161,7 +161,7 @@ end Pi
 
 section Add
 
-theorem HasFTaylorSeriesUpToOn.add {n : WithTop ℕ∞} {q g} (hf : HasFTaylorSeriesUpToOn n f p s)
+theorem HasFTaylorSeriesUpToOn.add {n : ℕ∞ω} {q g} (hf : HasFTaylorSeriesUpToOn n f p s)
     (hg : HasFTaylorSeriesUpToOn n g q s) : HasFTaylorSeriesUpToOn n (f + g) (p + q) s := by
   exact HasFTaylorSeriesUpToOn.continuousLinearMap_comp
     (ContinuousLinearMap.fst 𝕜 F F + .snd 𝕜 F F) (hf.prodMk hg)
@@ -390,8 +390,9 @@ theorem ContDiff.sum {ι : Type*} {f : ι → E → F} {s : Finset ι}
 
 theorem iteratedFDerivWithin_sum_apply {ι : Type*} {f : ι → E → F} {u : Finset ι} {i : ℕ} {x : E}
     (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (h : ∀ j ∈ u, ContDiffWithinAt 𝕜 i (f j) s x) :
-    iteratedFDerivWithin 𝕜 i (∑ j ∈ u, f j ·) s x =
+    iteratedFDerivWithin 𝕜 i (∑ j ∈ u, f j) s x =
       ∑ j ∈ u, iteratedFDerivWithin 𝕜 i (f j) s x := by
+  rw [(by aesop : (∑ j ∈ u, f j) = (fun x ↦ ∑ j ∈ u, f j x))]
   induction u using Finset.cons_induction with
   | empty => simp
   | cons a u ha IH =>
@@ -399,11 +400,31 @@ theorem iteratedFDerivWithin_sum_apply {ι : Type*} {f : ι → E → F} {u : Fi
     simp only [Finset.sum_cons]
     rw [fun_iteratedFDerivWithin_add_apply h.1 (ContDiffWithinAt.sum h.2) hs hx, IH h.2]
 
+theorem iteratedFDerivWithin_fun_sum_apply {ι : Type*} {f : ι → E → F} {u : Finset ι} {i : ℕ}
+    {x : E} (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (h : ∀ j ∈ u, ContDiffWithinAt 𝕜 i (f j) s x) :
+    iteratedFDerivWithin 𝕜 i (fun z ↦ ∑ j ∈ u, f j z) s x =
+      ∑ j ∈ u, iteratedFDerivWithin 𝕜 i (f j) s x := by
+  convert iteratedFDerivWithin_sum_apply hs hx h
+  rw [Finset.sum_apply]
+
+theorem iteratedFDeriv_sum_apply {ι : Type*} {f : ι → E → F} {u : Finset ι} {n : ℕ} {x : E}
+    (h : ∀ j ∈ u, ContDiffAt 𝕜 n (f j) x) :
+    iteratedFDeriv 𝕜 n (∑ j ∈ u, f j) x = ∑ j ∈ u, iteratedFDeriv 𝕜 n (f j) x := by
+  simp only [← iteratedFDerivWithin_univ]
+  apply iteratedFDerivWithin_sum_apply uniqueDiffOn_univ (Set.mem_univ x)
+    (h · · |>.contDiffWithinAt)
+
+theorem iteratedFDeriv_fun_sum_apply {ι : Type*} {f : ι → E → F} {u : Finset ι} {n : ℕ} {x : E}
+    (h : ∀ j ∈ u, ContDiffAt 𝕜 n (f j) x) :
+    iteratedFDeriv 𝕜 n (fun z ↦ ∑ j ∈ u, f j z) x = ∑ j ∈ u, iteratedFDeriv 𝕜 n (f j) x := by
+  convert iteratedFDeriv_sum_apply h
+  rw [Finset.sum_apply]
+
 theorem iteratedFDeriv_sum {ι : Type*} {f : ι → E → F} {u : Finset ι} {i : ℕ}
     (h : ∀ j ∈ u, ContDiff 𝕜 i (f j)) :
     iteratedFDeriv 𝕜 i (∑ j ∈ u, f j ·) = ∑ j ∈ u, iteratedFDeriv 𝕜 i (f j) :=
   funext fun x ↦ by simpa [iteratedFDerivWithin_univ] using
-    iteratedFDerivWithin_sum_apply uniqueDiffOn_univ (mem_univ x) (h · · |>.contDiffWithinAt)
+    iteratedFDerivWithin_fun_sum_apply uniqueDiffOn_univ (mem_univ x) (h · · |>.contDiffWithinAt)
 
 /-! ### Product of two functions -/
 
@@ -660,6 +681,23 @@ theorem iteratedFDeriv_smul_const_apply {f : E → A} (hf : ContDiffAt 𝕜 i f 
         (iteratedFDeriv 𝕜 i f x) :=
   (ContinuousLinearMap.id 𝕜 A).smulRight v |>.iteratedFDeriv_comp_left hf le_rfl
 
+theorem iteratedFDeriv_comp_const_smul (a : 𝕜) (hf : ContDiff 𝕜 i f) :
+    iteratedFDeriv 𝕜 i (fun z ↦ f (a • z)) = fun x ↦ a ^ i • iteratedFDeriv 𝕜 i f (a • x) := by
+  induction i with
+  | zero => ext; simp
+  | succ i hi =>
+    ext v
+    rw [iteratedFDeriv_succ_eq_comp_left, iteratedFDeriv_succ_eq_comp_left]
+    simp only [Nat.succ_eq_add_one, Nat.cast_add, Nat.cast_one, self_le_add_right, hf.of_le, hi,
+      comp_apply, continuousMultilinearCurryLeftEquiv_symm_apply,
+      ContinuousMultilinearMap.smul_apply]
+    rw [fderiv_fun_const_smul, fderiv_comp_smul, smul_smul, ← pow_succ]
+    · simp
+    rw [← Function.comp_def (g := (a • ·))]
+    apply DifferentiableAt.comp
+    · exact hf.contDiffAt.differentiableAt_iteratedFDeriv (Nat.cast_lt.2 i.lt_succ_self)
+    · exact differentiableAt_id.const_smul _
+
 end ConstSMul
 
 /-! ### Cartesian product of two functions -/
@@ -844,7 +882,6 @@ section FunctionInverse
 
 open ContinuousLinearMap
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is a local homeomorphism and the point `a` is in its target,
 and if `f` is `n` times continuously differentiable at `f.symm a`,
 and if the derivative at `f.symm a` is a continuous linear equivalence,
@@ -952,7 +989,7 @@ such that `f` is `C^n` at `x` and `f.symm` is `C^n` at `y`.
 Note that `n` is a natural number or `ω`, but not `∞`,
 because the set of points of `C^∞`-smoothness of `f` is not guaranteed to be open. -/
 @[simps! apply symm_apply source target]
-def restrContDiff (f : OpenPartialHomeomorph E F) (n : WithTop ℕ∞) (hn : n ≠ ∞) :
+def restrContDiff (f : OpenPartialHomeomorph E F) (n : ℕ∞ω) (hn : n ≠ ∞) :
     OpenPartialHomeomorph E F :=
   haveI H : f.IsImage {x | ContDiffAt 𝕜 n f x ∧ ContDiffAt 𝕜 n f.symm (f x)}
       {y | ContDiffAt 𝕜 n f.symm y ∧ ContDiffAt 𝕜 n f (f.symm y)} := fun x hx ↦ by
@@ -961,11 +998,11 @@ def restrContDiff (f : OpenPartialHomeomorph E F) (n : WithTop ℕ∞) (hn : n �
     inter_mem (f.open_source.mem_nhds hxs) <| (hxf.eventually hn).and <|
     f.continuousAt hxs (hxf'.eventually hn)
 
-lemma contDiffOn_restrContDiff_source (f : OpenPartialHomeomorph E F) {n : WithTop ℕ∞}
+lemma contDiffOn_restrContDiff_source (f : OpenPartialHomeomorph E F) {n : ℕ∞ω}
     (hn : n ≠ ∞) : ContDiffOn 𝕜 n f (f.restrContDiff 𝕜 n hn).source :=
   fun _x hx ↦ hx.2.1.contDiffWithinAt
 
-lemma contDiffOn_restrContDiff_target (f : OpenPartialHomeomorph E F) {n : WithTop ℕ∞}
+lemma contDiffOn_restrContDiff_target (f : OpenPartialHomeomorph E F) {n : ℕ∞ω}
     (hn : n ≠ ∞) : ContDiffOn 𝕜 n f.symm (f.restrContDiff 𝕜 n hn).target :=
   fun _x hx ↦ hx.2.1.contDiffWithinAt
 
@@ -991,7 +1028,7 @@ variable [NormedSpace 𝕜' E] [IsScalarTower 𝕜 𝕜' E]
 variable [NormedSpace 𝕜' F] [IsScalarTower 𝕜 𝕜' F]
 variable {p' : E → FormalMultilinearSeries 𝕜' E F}
 
-theorem HasFTaylorSeriesUpToOn.restrictScalars {n : WithTop ℕ∞}
+theorem HasFTaylorSeriesUpToOn.restrictScalars {n : ℕ∞ω}
     (h : HasFTaylorSeriesUpToOn n f p' s) :
     HasFTaylorSeriesUpToOn n f (fun x => (p' x).restrictScalars 𝕜) s where
   zero_eq x hx := h.zero_eq x hx
