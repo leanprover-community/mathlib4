@@ -19,7 +19,7 @@ public import Mathlib.Algebra.Polynomial.AlgebraMap
   is an arbitrary polynomial
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

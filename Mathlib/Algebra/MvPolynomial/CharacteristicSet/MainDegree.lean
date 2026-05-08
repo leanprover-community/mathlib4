@@ -87,7 +87,7 @@ theorem max_vars_mem_degrees : p.vars.max = c → c ∈ p.degrees := fun h ↦
     ((X i : MvPolynomial σ R) ^ k).mainDegree = k := by
   by_cases hk : k = 0
   · exact hk ▸ pow_zero (X i : MvPolynomial σ R) ▸ mainDegree_C 1
-  have : (Finsupp.single i k).support.max = i := by rw [Finsupp.support_single_ne_zero i hk]; rfl
+  have : (Finsupp.single i k).support.max = i := by rw [Finsupp.support_single i hk]; rfl
   rw [X_pow_eq_monomial, mainDegree_monomial one_ne_zero this, Finsupp.single_eq_same]
 
 @[simp] theorem mainDegree_X [Nontrivial R] (i : σ) : (X i : MvPolynomial σ R).mainDegree = 1 :=

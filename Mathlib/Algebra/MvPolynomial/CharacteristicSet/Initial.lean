@@ -63,7 +63,7 @@ theorem initialOf_def {p : MvPolynomial σ R} {i : σ} :
   by_cases r_zero : r = 0
   · simp only [r_zero, monomial_zero, initialOf_zero]
   rw [initialOf_def, Finset.sum_filter, ← single_eq_monomial, degreeOf_eq_sup, support]
-  rw [Finsupp.support_single_ne_zero s r_zero, Finset.sum_singleton, Finset.sup_singleton]
+  rw [Finsupp.support_single s r_zero, Finset.sum_singleton, Finset.sup_singleton]
   rw [if_pos rfl, coeff, Finsupp.single_eq_same]
 
 @[simp] theorem initialOf_C (r : R) : (C r : MvPolynomial σ R).initialOf i = C r := by
@@ -455,7 +455,7 @@ theorem initial_monomial {s : σ →₀ ℕ} (r : R) {c : σ} :
 @[simp] theorem initial_X_pow (i : σ) {k : ℕ} (hk : k ≠ 0) :
     (X i ^ k).initial = (1 : MvPolynomial σ R) := by
   have : (Finsupp.single i k).support.max = i := by
-    rw [Finsupp.support_single_ne_zero _ hk]; exact rfl
+    rw [Finsupp.support_single _ hk]; exact rfl
   rw [X_pow_eq_monomial, initial_monomial 1 this, Finsupp.erase_single, monomial_zero', C_1]
 
 @[simp] theorem initial_X (i : σ) : (X i : MvPolynomial σ R).initial = 1 :=
