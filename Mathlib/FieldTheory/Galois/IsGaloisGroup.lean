@@ -77,8 +77,8 @@ variable {G A B} in
 theorem IsGaloisGroup.top_iff : IsGaloisGroup (⊤ : Subgroup G) A B ↔ IsGaloisGroup G A B :=
   iff_of_mulEquiv Subgroup.topEquiv fun _ _ ↦ rfl
 
-instance [hGAB : IsGaloisGroup G A B] : IsGaloisGroup (⊤ : Subgroup G) A B :=
-  IsGaloisGroup.top_iff.mpr hGAB
+instance [IsGaloisGroup G A B] : IsGaloisGroup (⊤ : Subgroup G) A B :=
+  IsGaloisGroup.top_iff.mpr ‹_›
 
 attribute [instance low] IsGaloisGroup.commutes IsGaloisGroup.isInvariant
 
