@@ -233,11 +233,9 @@ theorem finiteDimensional [Finite G] [IsGaloisGroup G K L] : FiniteDimensional K
 protected theorem finite (A B : Type*) [CommRing A] [CommRing B] [Algebra A B] [Module.Finite A B]
     [IsDomain A] [IsDomain B] [FaithfulSMul A B] [MulSemiringAction G B] [IsGaloisGroup G A B] :
     Finite G := by
-  let : Algebra (FractionRing A) (FractionRing B) := FractionRing.liftAlgebra A (FractionRing B)
-  let : MulSemiringAction G (FractionRing B) :=
-      IsFractionRing.mulSemiringAction G A B (FractionRing A) (FractionRing B)
-  have : IsGaloisGroup G (FractionRing A) (FractionRing B) :=
-    IsGaloisGroup.to_isFractionRing_of_isIntegral G A B (FractionRing A) (FractionRing B)
+  let := FractionRing.liftAlgebra A (FractionRing B)
+  let := IsFractionRing.mulSemiringAction G A B (FractionRing A) (FractionRing B)
+  have := IsGaloisGroup.to_isFractionRing_of_isIntegral G A B (FractionRing A) (FractionRing B)
   apply Nat.finite_of_card_ne_zero
   rw [card_eq_finrank G (FractionRing A) (FractionRing B)]
   exact Module.finrank_pos.ne'
