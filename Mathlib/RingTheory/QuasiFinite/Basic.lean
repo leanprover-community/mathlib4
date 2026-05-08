@@ -223,6 +223,10 @@ instance (M : Submonoid S) [QuasiFinite R S] : QuasiFinite R (Localization M) :=
 instance (priority := low) [IsFractionRing R S] : QuasiFinite R S :=
   of_isLocalization (nonZeroDivisors R)
 
+instance [QuasiFinite R S] (p : Ideal R) [p.IsPrime] (q : Ideal (p.Fiber S)) [q.IsPrime] :
+    Module.Finite p.ResidueField (Localization.AtPrime q) :=
+  .of_quasiFinite
+
 instance (P : Ideal S) [P.IsPrime] [QuasiFinite R S] : QuasiFinite R P.ResidueField :=
   .trans _ (S ⧸ P) _
 
