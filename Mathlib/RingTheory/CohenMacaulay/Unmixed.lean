@@ -118,9 +118,11 @@ lemma isCohenMacaulayRing_of_unmixed
 omit [IsNoetherianRing R] in
 lemma IsLocalization.height_le_height_map (S : Submonoid R) {A : Type*} [CommRing A] [Algebra R A]
     [IsLocalization S A] (J : Ideal R) : J.height ≤ (Ideal.map (algebraMap R A) J).height := by
-  apply le_iInf_iff.mpr (fun p ↦ (le_iInf_iff.mpr fun hp ↦ ?_))
-  have := Ideal.minimalPrimes_isPrime hp
-  rw [← Ideal.height_eq_primeHeight, ← IsLocalization.height_comap S p]
+  rw [(Ideal.map (algebraMap R A) J).height_eq_inf_minimalPrimes]
+  simp only [Set.mem_setOf_eq, le_iInf_iff]
+  intro p hp
+  have := hp.isPrime
+  rw [← IsLocalization.height_comap S p]
   exact Ideal.height_mono (Ideal.le_comap_of_map_le hp.1.2)
 
 theorem isCohenMacaulayRing_iff_unmixed : IsCohenMacaulayRing R ↔
