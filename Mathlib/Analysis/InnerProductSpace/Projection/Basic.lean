@@ -129,7 +129,7 @@ unbundled function. This definition is only intended for use in
 setting up the bundled version `orthogonalProjection` and should not
 be used once that is defined. -/
 @[deprecated starProjection (since := "2026-05-07")] abbrev orthogonalProjectionFn
-    (x : E) : E := (HasOrthogonalProjection.exists_orthogonal (K := K) v).choose
+    (v : E) : E := (HasOrthogonalProjection.exists_orthogonal (K := K) v).choose
 
 set_option linter.deprecated false in
 @[deprecated "Please use `orthogonalProjectionOnto` and `starProjection`" (since := "2026-05-07")]
