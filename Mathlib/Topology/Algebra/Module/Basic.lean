@@ -125,7 +125,7 @@ lemma TopologicalSpace.IsSeparable.span {R M : Type*} [AddCommMonoid M] [Semirin
   · have : IsSeparable {f : Fin n → R × M | ∀ (i : Fin n), f i ∈ Set.univ ×ˢ s} := by
       apply isSeparable_pi (fun i ↦ .prod (.of_separableSpace Set.univ) hs)
     rwa [Set.univ_prod] at this
-  · apply continuous_finset_sum _ (fun i _ ↦ ?_)
+  · apply continuous_finsetSum _ (fun i _ ↦ ?_)
     exact (continuous_fst.comp (continuous_apply i)).smul (continuous_snd.comp (continuous_apply i))
 
 namespace Submodule
@@ -321,6 +321,11 @@ theorem isOpenMap_mkQ [ContinuousAdd M] : IsOpenMap S.mkQ :=
 
 theorem isOpenQuotientMap_mkQ [ContinuousAdd M] : IsOpenQuotientMap S.mkQ :=
   QuotientAddGroup.isOpenQuotientMap_mk
+
+theorem isQuotientMap_mkQ : IsQuotientMap S.mkQ := isQuotientMap_quot_mk
+
+@[continuity, fun_prop]
+theorem continuous_mkQ : Continuous S.mkQ := continuous_quot_mk
 
 instance topologicalAddGroup_quotient [IsTopologicalAddGroup M] : IsTopologicalAddGroup (M ⧸ S) :=
   inferInstanceAs <| IsTopologicalAddGroup (M ⧸ S.toAddSubgroup)

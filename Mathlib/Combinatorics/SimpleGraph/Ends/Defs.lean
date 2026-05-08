@@ -257,11 +257,13 @@ The functor assigning, to a finite set in `V`, the set of connected components i
 @[simps]
 def componentComplFunctor : (Finset V)ᵒᵖ ⥤ Type u where
   obj K := G.ComponentCompl K.unop
-  map f := ComponentCompl.hom (le_of_op_hom f)
-  map_id _ := funext fun C => C.hom_refl
-  map_comp {_ Y Z} h h' := funext fun C => by
-    convert C.hom_trans (le_of_op_hom h) (le_of_op_hom _)
-    exact h'
+  map f := ↾(ComponentCompl.hom (le_of_op_hom f))
+  map_id _ := by
+    ext
+    simp [ComponentCompl.hom_refl]
+  map_comp {_ Y Z} h h' := by
+    ext C
+    simp [C.hom_trans (le_of_op_hom h) (le_of_op_hom h')]
 
 /-- The end of a graph, defined as the sections of the functor `component_compl_functor` . -/
 protected def «end» :=

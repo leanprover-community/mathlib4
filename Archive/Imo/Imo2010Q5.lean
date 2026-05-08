@@ -25,7 +25,7 @@ Determine if there exists a finite sequence of operations of the allowed types, 
 that the five boxes $B_1, B_2, B_3, B_4, B_5$ become empty, while box $B_6$ contains exactly
 $2010^{2010^{2010}}$ coins.
 
-# Solution
+## Solution
 
 We follow the solution from https://web.evanchen.cc/exams/IMO-2010-notes.pdf.
 
