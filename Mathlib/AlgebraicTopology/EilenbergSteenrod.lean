@@ -208,14 +208,14 @@ instance : IsClosedUnderIsomorphisms (C := HomologyPretheory C c) IsHomotopyInva
       forgetₚ_map, ← (e.hom.homₚ _).naturality]
     cat_disch⟩
 
+set_option linter.unusedVariables false in
 /-- A `HomologyPretheory` has the excision-isomorphism, if cutting out a sufficiently nice subspace
 `U` from a space `X` yields an isomorphism `Hₚ i X ≅ Hₚ i (X \ U)`. -/
 class HasExcisionIso where
   [excision ⦃X U V : TopPair⦄ (f : U ⟶ X) (g : V ⟶ X) (hf : IsEmbedding f) (hg : IsEmbedding g)
       (hcompl : TopPair.IsCompl f g)
-      (hU : closure (Set.range (Hom.fst f)) ⊆ interior (Set.range X.map)) (i : ι) : IsIso ((HP.Hₚ i).map g)]
-
-attribute [instance] HasExcisionIso.excision
+      (hU : closure (Set.range (Hom.fst f)) ⊆ interior (Set.range X.map)) (i : ι) :
+      IsIso ((HP.Hₚ i).map g)]
 
 instance : IsClosedUnderIsomorphisms (C := HomologyPretheory C c) HasExcisionIso where
   of_iso e hHP := { excision _ _ _ _ _ hf hg hcompl hU _ := (NatIso.isIso_map_iff
