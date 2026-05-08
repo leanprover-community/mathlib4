@@ -12,7 +12,7 @@ example {α β γ} {g : β → γ} {f : α → β} (hg : g.Injective) (hf : f.In
 
 /- A nice "teaching" example -/
 open Function
-example {α β γ} {g : β → γ} {f : α → β} (hg : Injective g) (hf :  Injective f) :
+example {α β γ} {g : β → γ} {f : α → β} (hg : Injective g) (hf : Injective f) :
     Injective (g ∘ f) := by
   intro x y
   assume g (f x) = g (f y)
