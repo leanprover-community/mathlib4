@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.EuclideanDomain.Basic
 public import Mathlib.Algebra.EuclideanDomain.Field
-public import Mathlib.Algebra.GCDMonoid.Basic
+public import Mathlib.Algebra.GCDMonoid.Finset
 public import Mathlib.RingTheory.Ideal.Prod
 public import Mathlib.RingTheory.Ideal.Nonunits
 public import Mathlib.RingTheory.Noetherian.UniqueFactorizationDomain
@@ -103,6 +103,10 @@ theorem mem_iff_eq_smul_generator (S : Submodule R M) [S.IsPrincipal] {x : M} :
 
 theorem eq_bot_iff_generator_eq_zero (S : Submodule R M) [S.IsPrincipal] :
     S = ⊥ ↔ generator S = 0 := by rw [← @span_singleton_eq_bot R M, span_singleton_generator]
+
+@[simp]
+theorem generator_bot : generator (⊥ : Submodule R M) = 0 :=
+  (eq_bot_iff_generator_eq_zero ⊥).mp rfl
 
 protected lemma fg {S : Submodule R M} (h : S.IsPrincipal) : S.FG :=
   ⟨{h.generator}, by simp only [Finset.coe_singleton, span_singleton_generator]⟩
@@ -224,6 +228,23 @@ theorem associated_gcd_gcd [GCDMonoid R] : Associated (IsBezout.gcd x y) (GCDMon
   gcd_greatest_associated (gcd_dvd_left _ _) (gcd_dvd_right _ _) (fun _ => dvd_gcd)
 
 end IsBezout
+
+/-- A version of Bézout's lemma for greatest common divisors over arbitrary `Finset`s. -/
+lemma Finset.gcd_eq_sum_mul {α : Type*} [CommRing R] [IsBezout R] [NormalizedGCDMonoid R]
+    (s : Finset α) (f : α → R) :
+    ∃ g : α → R, s.gcd f = ∑ a ∈ s, f a * g a := by classical
+  induction s using Finset.induction with
+  | empty => simp
+  | insert a s ha ih =>
+    obtain ⟨x, y, hxy⟩ := IsBezout.gcd_eq_sum (f a) (s.gcd f)
+    obtain ⟨u, hu⟩ := IsBezout.associated_gcd_gcd R (x := f a) (y := s.gcd f)
+    rw [← hxy, add_mul, mul_comm x, mul_comm y] at hu
+    obtain ⟨g, hg⟩ := ih
+    refine ⟨Function.update (g · * (y * u)) a (x * u), ?_⟩
+    rw [gcd_insert, sum_insert ha, ← hu, hg]
+    simp only [Function.update_self, add_right_inj, sum_mul, mul_assoc]
+    exact sum_congr rfl fun b hb ↦ congrArg (f b * ·) <|
+      (Function.update_of_ne (show b ≠ a by grind) (x * u) (g · * (y * u))).symm
 
 namespace IsPrime
 

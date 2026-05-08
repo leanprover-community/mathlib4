@@ -95,7 +95,7 @@ theorem psi_eq_zero_of_lt_two {x : ℝ} (hx : x < 2) : ψ x = 0 := by
   apply sum_eq_zero fun n hn ↦ ?_
   simp only [mem_Ioc] at hn
   convert vonMangoldt_apply_one
-  have := lt_of_le_of_lt (le_floor_iff' hn.1.ne.symm |>.mp hn.2) hx
+  have := lt_of_le_of_lt (le_floor_iff' hn.1.ne' |>.mp hn.2) hx
   norm_cast at this
   linarith
 
@@ -103,7 +103,7 @@ theorem theta_eq_zero_of_lt_two {x : ℝ} (hx : x < 2) : θ x = 0 := by
   apply sum_eq_zero fun n hn ↦ ?_
   convert log_one
   simp only [mem_filter, mem_Ioc] at hn
-  have := lt_of_le_of_lt (le_floor_iff' hn.1.1.ne.symm |>.mp hn.1.2) hx
+  have := lt_of_le_of_lt (le_floor_iff' hn.1.1.ne' |>.mp hn.1.2) hx
   norm_cast at ⊢ this
   linarith
 
@@ -115,18 +115,20 @@ theorem theta_eq_theta_coe_floor (x : ℝ) : θ x = θ ⌊x⌋₊ := by
   unfold theta
   rw [floor_natCast]
 
+@[gcongr]
 theorem psi_mono : Monotone ψ := by
   intro x y hxy
   apply sum_le_sum_of_subset_of_nonneg
-  · exact Ioc_subset_Ioc (by rfl) <| floor_le_floor hxy
+  · exact Ioc_subset_Ioc (by rfl) (by gcongr)
   · simp
 
+@[gcongr]
 theorem theta_mono : Monotone θ := by
   intro x y hxy
   apply sum_le_sum_of_subset_of_nonneg
-  · exact filter_subset_filter _ <| Ioc_subset_Ioc_right <| floor_mono hxy
+  · exact filter_subset_filter _ <| Ioc_subset_Ioc_right (by gcongr)
   · simp only [mem_filter]
-    exact fun p hp _ ↦ log_nonneg (mod_cast hp.2.one_le)
+    exact fun p hp _ ↦ by positivity
 
 /-- `θ x` is the log of the product of the primes up to `x`. -/
 theorem theta_eq_log_primorial (x : ℝ) : θ x = log (primorial ⌊x⌋₊) := by
@@ -139,7 +141,7 @@ theorem theta_eq_log_primorial (x : ℝ) : θ x = log (primorial ⌊x⌋₊) := 
 theorem theta_le_log4_mul_x {x : ℝ} (hx : 0 ≤ x) : θ x ≤ log 4 * x := by
   rw [theta_eq_log_primorial]
   trans log (4 ^ ⌊x⌋₊)
-  · apply log_le_log <;> norm_cast
+  · gcongr <;> norm_cast
     exacts [primorial_pos _, primorial_le_four_pow _]
   rw [Real.log_pow, mul_comm]
   gcongr
@@ -171,7 +173,8 @@ theorem sum_PrimePow_eq_sum_sum {R : Type*} [AddCommMonoid R] (f : ℕ → R) {x
       rw [cast_pow] at hbx
       refine ⟨k, hk₀, le_floor ?_, p, hp.nat_prime.pos, ?_, hp.nat_prime, ?_, rfl⟩
       · rw [le_div_iff₀ (log_pos (by norm_num)), ← Real.log_pow]
-        refine Real.log_le_log (by simp) (.trans ?_ hbx)
+        gcongr
+        apply (LE.le.trans ?_ hbx)
         exact pow_le_pow_left₀ (by norm_num) (mod_cast hp.nat_prime.two_le) _
       · exact (le_self_pow₀ (mod_cast hp.nat_prime.one_le) hk₀.ne').trans hbx
       · simp_all [le_rpow_inv_iff_of_pos]

@@ -41,7 +41,6 @@ section Real
 
 variable {μ : Measure ℝ} {r : ℝ}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma integral_charFun_Icc [IsFiniteMeasure μ] (hr : 0 < r) :
     ∫ t in -r..r, charFun μ t = 2 * r * ∫ x, sinc (r * x) ∂μ := by
   have h_int : Integrable (Function.uncurry fun (x y : ℝ) ↦ cexp (x * y * I))
@@ -91,7 +90,6 @@ lemma integral_charFun_Icc [IsFiniteMeasure μ] (hr : 0 < r) :
     rw [← integral_const_mul]
 
 set_option linter.flexible false in -- TODO: fix non-terminal norm_num
-set_option backward.isDefEq.respectTransparency false in
 /-- A bound on the measure of the set `{x | r < |x|}` in terms of the integral of
 the characteristic function, for a probability measure on `ℝ`. -/
 lemma measureReal_abs_gt_le_integral_charFun [IsProbabilityMeasure μ] (hr : 0 < r) :
@@ -162,7 +160,6 @@ lemma measureReal_abs_dual_gt_le_integral_charFunDual {E : Type*} [NormedAddComm
     · exact MeasurableSet.preimage measurableSet_Ioi (by fun_prop)
   · rw [charFun_map_eq_charFunDual_smul]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A bound on the measure of the set `{x | r < |⟪a, x⟫|}` in terms of the integral of
 the characteristic function, for a probability measure on an inner product space. -/
 lemma measureReal_abs_inner_gt_le_integral_charFun {E : Type*} [SeminormedAddCommGroup E]

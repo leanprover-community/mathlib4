@@ -245,12 +245,14 @@ theorem integral_add' {f g : α → G} (hf : Integrable f μ) (hg : Integrable g
     ∫ a, (f + g) a ∂μ = ∫ a, f a ∂μ + ∫ a, g a ∂μ :=
   integral_add hf hg
 
-theorem integral_finset_sum {ι} (s : Finset ι) {f : ι → α → G} (hf : ∀ i ∈ s, Integrable (f i) μ) :
+theorem integral_finsetSum {ι} (s : Finset ι) {f : ι → α → G} (hf : ∀ i ∈ s, Integrable (f i) μ) :
     ∫ a, ∑ i ∈ s, f i a ∂μ = ∑ i ∈ s, ∫ a, f i a ∂μ := by
   by_cases hG : CompleteSpace G
   · simp only [integral, hG, L1.integral]
-    exact setToFun_finset_sum (dominatedFinMeasAdditive_weightedSMul _) s hf
+    exact setToFun_finsetSum (dominatedFinMeasAdditive_weightedSMul _) s hf
   · simp [integral, hG]
+
+@[deprecated (since := "2026-04-08")] alias integral_finset_sum := integral_finsetSum
 
 @[integral_simps]
 theorem integral_neg (f : α → G) : ∫ a, -f a ∂μ = -∫ a, f a ∂μ := by
@@ -383,7 +385,7 @@ theorem HasFiniteIntegral.tendsto_setIntegral_nhds_zero {ι} {f : α → G}
   simp_rw [← coe_nnnorm, ← NNReal.coe_zero, NNReal.tendsto_coe, ← ENNReal.tendsto_coe,
     ENNReal.coe_zero]
   exact tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
-    (tendsto_setLIntegral_zero (ne_of_lt hf) hs) (fun i => zero_le _)
+    (tendsto_setLIntegral_zero (ne_of_lt hf) hs) (fun i => zero_le)
     fun i => enorm_integral_le_lintegral_enorm _
 
 /-- If `f` is integrable, then `∫ x in s, f x ∂μ` is absolutely continuous in `s`: it tends
@@ -420,7 +422,7 @@ lemma tendsto_setIntegral_of_L1 {ι} (f : α → G) (hfi : Integrable f μ) {F :
   refine tendsto_integral_of_L1 f hfi.restrict ?_ ?_
   · filter_upwards [hFi] with i hi using hi.restrict
   · simp_rw [← eLpNorm_one_eq_lintegral_enorm] at hF ⊢
-    exact tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds hF (fun _ ↦ zero_le _)
+    exact tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds hF (fun _ ↦ zero_le)
       (fun _ ↦ eLpNorm_mono_measure _ Measure.restrict_le_self)
 
 /-- If `F i → f` in `L1`, then `∫ x in s, F i x ∂μ → ∫ x in s, f x ∂μ`. -/
@@ -787,7 +789,7 @@ lemma integral_tendsto_of_tendsto_of_monotone {μ : Measure α} {f : ℕ → α 
   let f' := fun n x ↦ f n x - f 0 x
   have hf'_nonneg : ∀ᵐ x ∂μ, ∀ n, 0 ≤ f' n x := by
     filter_upwards [h_mono] with a ha n
-    simp [f', ha (zero_le n)]
+    simp [f', ha zero_le]
   have hf'_meas : ∀ n, Integrable (f' n) μ := fun n ↦ (hf n).sub (hf 0)
   suffices Tendsto (fun n ↦ ∫ x, f' n x ∂μ) atTop (𝓝 (∫ x, (F - f 0) x ∂μ)) by
     simp_rw [f', integral_sub (hf _) (hf _), integral_sub' hF (hf 0),
@@ -796,7 +798,7 @@ lemma integral_tendsto_of_tendsto_of_monotone {μ : Measure α} {f : ℕ → α 
   have hF_ge : 0 ≤ᵐ[μ] fun x ↦ (F - f 0) x := by
     filter_upwards [h_tendsto, h_mono] with x hx_tendsto hx_mono
     simp only [Pi.zero_apply, Pi.sub_apply, sub_nonneg]
-    exact ge_of_tendsto' hx_tendsto (fun n ↦ hx_mono (zero_le _))
+    exact ge_of_tendsto' hx_tendsto (fun n ↦ hx_mono zero_le)
   rw [ae_all_iff] at hf'_nonneg
   simp_rw [integral_eq_lintegral_of_nonneg_ae (hf'_nonneg _) (hf'_meas _).1]
   rw [integral_eq_lintegral_of_nonneg_ae hF_ge (hF.1.sub (hf 0).1)]
@@ -848,7 +850,7 @@ lemma tendsto_of_integral_tendsto_of_monotone {μ : Measure α} {f : ℕ → α 
     rw [← ofReal_integral_eq_lintegral_ofReal, integral_sub (hf_int i) (hf_int 0)]
     · exact (hf_int i).sub (hf_int 0)
     · filter_upwards [hf_mono] with a h_mono
-      simp [h_mono (zero_le i)]
+      simp [h_mono zero_le]
   have hF'_int_eq : ∫⁻ a, F' a ∂μ = ENNReal.ofReal (∫ a, F a ∂μ - ∫ a, f 0 a ∂μ) := by
     unfold F'
     rw [← ofReal_integral_eq_lintegral_ofReal, integral_sub hF_int (hf_int 0)]
@@ -878,7 +880,7 @@ lemma tendsto_of_integral_tendsto_of_monotone {μ : Measure α} {f : ℕ → α 
     ext i
     rw [ENNReal.toReal_ofReal]
     · abel
-    · simp [ha_mono (zero_le i)]
+    · simp [ha_mono zero_le]
   have h2 : F a = (F' a).toReal + f 0 a := by
     unfold F'
     rw [ENNReal.toReal_ofReal]
@@ -1022,7 +1024,7 @@ theorem setIntegral_measure_zero (f : α → G) {μ : Measure α} {s : Set α} (
 lemma integral_of_isEmpty [IsEmpty α] {f : α → G} : ∫ x, f x ∂μ = 0 :=
   μ.eq_zero_of_isEmpty ▸ integral_zero_measure _
 
-theorem integral_finset_sum_measure {ι} {m : MeasurableSpace α} {f : α → G} {μ : ι → Measure α}
+theorem integral_finsetSum_measure {ι} {m : MeasurableSpace α} {f : α → G} {μ : ι → Measure α}
     {s : Finset ι} (hf : ∀ i ∈ s, Integrable f (μ i)) :
     ∫ a, f a ∂(∑ i ∈ s, μ i) = ∑ i ∈ s, ∫ a, f a ∂μ i := by
   induction s using Finset.cons_induction_on with
@@ -1030,7 +1032,10 @@ theorem integral_finset_sum_measure {ι} {m : MeasurableSpace α} {f : α → G}
   | cons _ _ h ih =>
     rw [Finset.forall_mem_cons] at hf
     rw [Finset.sum_cons, Finset.sum_cons, ← ih hf.2]
-    exact integral_add_measure hf.1 (integrable_finset_sum_measure.2 hf.2)
+    exact integral_add_measure hf.1 (integrable_finsetSum_measure.2 hf.2)
+
+@[deprecated (since := "2026-04-08")]
+alias integral_finset_sum_measure := integral_finsetSum_measure
 
 theorem nndist_integral_add_measure_le_lintegral
     {f : α → G} (h₁ : Integrable f μ) (h₂ : Integrable f ν) :
