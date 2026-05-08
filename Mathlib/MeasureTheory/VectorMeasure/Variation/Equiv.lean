@@ -54,8 +54,9 @@ variable {X : Type*} {mX : MeasurableSpace X} (μ : SignedMeasure X)
 lemma toMeasureOfZeroLE_apply_eq_enorm {i j : Set X} (him : MeasurableSet i)
     (hi : 0 ≤[i] μ) (hjm : MeasurableSet j) :
     μ.toMeasureOfZeroLE i him hi j = ‖μ (i ∩ j)‖ₑ := by
-  rw [μ.toMeasureOfZeroLE_apply hi him hjm, Real.enorm_of_nonneg
-    (μ.nonneg_of_zero_le_restrict (μ.zero_le_restrict_subset him Set.inter_subset_left hi))]
+  have hnn : 0 ≤ μ (i ∩ j) :=
+    μ.nonneg_of_zero_le_restrict (μ.zero_le_restrict_subset him Set.inter_subset_left hi)
+  rw [μ.toMeasureOfZeroLE_apply hi him hjm, Real.enorm_of_nonneg hnn]
   exact (ENNReal.ofReal_eq_coe_nnreal _).symm
 
 /-- For a negative measurable set `i` (i.e. `μ.restrict i ≤ 0`),
@@ -63,10 +64,10 @@ lemma toMeasureOfZeroLE_apply_eq_enorm {i j : Set X} (him : MeasurableSet i)
 lemma toMeasureOfLEZero_apply_eq_enorm {i j : Set X} (him : MeasurableSet i)
     (hi : μ ≤[i] 0) (hjm : MeasurableSet j) :
     μ.toMeasureOfLEZero i him hi j = ‖μ (i ∩ j)‖ₑ := by
-  rw [μ.toMeasureOfLEZero_apply hi him hjm, ← enorm_neg, Real.enorm_of_nonneg]
-  · exact (ENNReal.ofReal_eq_coe_nnreal _).symm
-  · refine neg_nonneg.mpr <| μ.nonpos_of_restrict_le_zero ?_
-    exact μ.restrict_le_zero_subset him Set.inter_subset_left hi
+  have hnp : μ (i ∩ j) ≤ 0 :=
+    μ.nonpos_of_restrict_le_zero (μ.restrict_le_zero_subset him Set.inter_subset_left hi)
+  rw [μ.toMeasureOfLEZero_apply hi him hjm, ← enorm_neg, Real.enorm_of_nonneg (neg_nonneg.mpr hnp)]
+  exact (ENNReal.ofReal_eq_coe_nnreal _).symm
 
 open VectorMeasure in
 /-- For signed measures, the Hahn–Jordan-based `totalVariation` agrees with the supremum-based
@@ -74,8 +75,8 @@ open VectorMeasure in
 theorem totalVariation_eq_variation (μ : SignedMeasure X) : μ.totalVariation = μ.variation := by
   ext r hr
   obtain ⟨s, hsm, hs, hsc, hpos, hneg⟩ := μ.toJordanDecomposition_spec
-  have hd : Disjoint (s ∩ r) (sᶜ ∩ r) := by
-    rw [Set.disjoint_iff_inter_eq_empty]; ext x; simp; tauto
+  have hd : Disjoint (s ∩ r) (sᶜ ∩ r) :=
+    Disjoint.mono Set.inter_subset_left Set.inter_subset_left disjoint_compl_right
   have hcov : (s ∩ r) ∪ (sᶜ ∩ r) = r := by
     rw [← Set.union_inter_distrib_right, Set.union_compl_self, Set.univ_inter]
   have htotal : μ.totalVariation r = ‖μ (s ∩ r)‖ₑ + ‖μ (sᶜ ∩ r)‖ₑ := by
