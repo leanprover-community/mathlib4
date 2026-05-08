@@ -90,7 +90,7 @@ partial def makeFastInstance (inst expectedType : Expr) (root := true) (trace : 
       -- This is an invalid term.
       throwError "Incorrect number of arguments for constructor application `{f}`: {args}"
     -- Unify the parameters
-    unless ← isDefEq expectedType cls do
+    unless ← withDefault <| isDefEq expectedType cls do
       throwError "`{expectedType}` does not unify with the conclusion of `{.ofConstName c}`"
     -- TODO: use structure eta reduction when possible?
     for i in ci.numParams...args.size do
