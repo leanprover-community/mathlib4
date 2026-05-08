@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-!
 
-# Category Language Baer Criterion
+# Baer criterion for injective dimension
 
 The Baer criterion describes that an `R`-module `M` is injective iff any ideal `I` of `R`,
 any `I →ₗ[R] M` can be extended to `R →ₗ[R] M`. The later condition has an equivalent
