@@ -125,14 +125,12 @@ jobs:
         env:
           GH_TOKEN:     ${{ steps.app_token.outputs.token }}
           PR_NUMBER:    ${{ github.event.issue.number || inputs.pr_number }}
-          HEAD_REPO:    ${{ steps.validate.outputs.head_repo }}
           MERGE_SHA:    ${{ steps.validate.outputs.merge_sha }}
           DOWNSTREAMS:  ${{ steps.validate.outputs.resolved_names }}
         run: |
           gh workflow run mathlib-pr-validation.yml \
             -R leanprover-community/downstream-reports \
             -f pr_number="$PR_NUMBER" \
-            -f head_repo="$HEAD_REPO" \
             -f merge_sha="$MERGE_SHA" \
             -f downstreams="$DOWNSTREAMS"
 
