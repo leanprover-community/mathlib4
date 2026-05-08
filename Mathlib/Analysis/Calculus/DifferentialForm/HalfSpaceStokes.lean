@@ -7,7 +7,7 @@ import Mathlib.Analysis.Calculus.DifferentialForm.BoxStokes
 import Mathlib.Analysis.Calculus.FDeriv.Const
 import Mathlib.Analysis.Normed.Module.Alternating.Basic
 import Mathlib.Topology.MetricSpace.ProperSpace
-import Mathlib.Topology.Support
+import Mathlib.Topology.Algebra.Support
 import Mathlib.MeasureTheory.Integral.Bochner
 import Mathlib.MeasureTheory.Integral.SetIntegral
 
