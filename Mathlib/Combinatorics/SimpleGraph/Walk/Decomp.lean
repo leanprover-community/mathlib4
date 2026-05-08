@@ -184,6 +184,10 @@ theorem dropUntil_copy {u v w v' w'} (p : G.Walk v w) (hv : v = v') (hw : w = w'
   subst_vars
   rfl
 
+theorem support_takeUntil_prefix (p : G.Walk v w) (h : u ∈ p.support) :
+    (p.takeUntil u h).support <+: p.support := by
+  grw [takeUntil_eq_take, support_copy, take_support_eq_support_take_succ, List.take_prefix]
+
 theorem support_takeUntil_subset {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
     (p.takeUntil u h).support ⊆ p.support := fun x hx => by
   rw [← take_spec p h, mem_support_append_iff]
