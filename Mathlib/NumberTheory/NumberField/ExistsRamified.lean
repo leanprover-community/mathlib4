@@ -106,11 +106,13 @@ instance (G R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
   commutes := ⟨fun g x y ↦ by simp_rw [Subalgebra.smul_def, smul_eq_mul, smul_mul', x.2 g]⟩
   isInvariant := ⟨fun x hx ↦ ⟨⟨x, hx⟩, rfl⟩⟩
 
-protected theorem IsGaloisGroup.top (G R S : Type*) [Group G] [CommRing R] [CommRing S]
+-- PRed
+instance (G R S : Type*) [Group G] [CommRing R] [CommRing S]
     [Algebra R S] [MulSemiringAction G S] [IsGaloisGroup G R S] :
     IsGaloisGroup (⊤ : Subgroup G) R S :=
   .of_mulEquiv Subgroup.topEquiv fun _ _ ↦ rfl
 
+-- PRed
 /-- Existing construction with `Finite G` replaced by `IsIntegral A B` -/
 theorem IsGaloisGroup.to_isFractionRing'
     (G A B K L : Type*) [Group G] [CommRing A]
@@ -158,17 +160,10 @@ theorem Algebra.unramified_iff_forall
 theorem NumberField.supr_inertia_eq_top (S G : Type*) [CommRing S] [Module.Finite ℤ S]
     [IsDomain S] [FaithfulSMul ℤ S] [Group G] [MulSemiringAction G S] [IsGaloisGroup G ℤ S] :
     ⨆ m : MaximalSpectrum S, m.asIdeal.toAddSubgroup.inertia G = ⊤ := by
-  have : Finite G := by -- general fact
+  have : Finite G := by -- general fact to be PRed once `to_isFractionRing'` is done
     let : Algebra (FractionRing ℤ) (FractionRing S) := FractionRing.liftAlgebra ℤ (FractionRing S)
-    -- will be better after #38377
     let : MulSemiringAction G (FractionRing S) :=
-      MulSemiringAction.compHom (FractionRing S) ((IsFractionRing.fieldEquivOfAlgEquivHom
-        (FractionRing ℤ) (FractionRing S)).comp (MulSemiringAction.toAlgAut G ℤ S))
-    let : SMulDistribClass G S (FractionRing S) :=
-        ⟨fun g b x ↦ by
-          rw [Algebra.smul_def', Algebra.smul_def', smul_mul']
-          congr
-          apply IsFractionRing.fieldEquivOfAlgEquiv_algebraMap⟩
+        IsFractionRing.mulSemiringAction G ℤ S (FractionRing ℤ) (FractionRing S)
     have : IsGaloisGroup G (FractionRing ℤ) (FractionRing S) :=
       IsGaloisGroup.to_isFractionRing' G ℤ S (FractionRing ℤ) (FractionRing S)
     exact IsGaloisGroup.finite G (FractionRing ℤ) (FractionRing S)
@@ -184,7 +179,6 @@ theorem NumberField.supr_inertia_eq_top (S G : Type*) [CommRing S] [Module.Finit
     exact @bijective_algebraMap_int_of_finite_of_unramified R _ _ h5 _ _
   have h1 : fixingSubgroup G (Set.range (algebraMap R S)) = H := by
     exact IsGaloisGroup.fixingSubgroup_range_algebraMap G ℤ R S H
-  have : IsGaloisGroup (⊤ : Subgroup G) ℤ S := IsGaloisGroup.top G ℤ S
   have h2 : fixingSubgroup G (Set.range (algebraMap ℤ S)) = ⊤ := by
     exact IsGaloisGroup.fixingSubgroup_range_algebraMap G ℤ ℤ S ⊤
   have h3 : Set.range (algebraMap ℤ S) = Set.range (algebraMap R S) := by
