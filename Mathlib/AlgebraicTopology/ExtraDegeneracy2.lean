@@ -23,7 +23,7 @@ open Simplicial Opposite
 variable {C : Type*} [Category C] (X : Augmented C)
 
 @[reassoc (attr := simp)]
-lemma δ₀Iter_hom {n m : ℕ} (i : ℕ) (hi : n + i = m := by grind) :
+lemma δ₀Iter_hom_app {n m : ℕ} (i : ℕ) (hi : n + i = m := by grind) :
     dsimp% X.left.δ₀Iter i hi ≫ X.hom.app (op ⦋n⦌) =
       X.hom.app (op ⦋m⦌) := by
   simpa using X.hom.naturality (SimplexCategory.δ₀Iter i hi).op
@@ -65,7 +65,7 @@ def homotopyOfExtraDegeneracy :
   h_last_comp_δ_last n := by
     dsimp
     rw [h_eq_assoc _ _ 0, X.left.σ₀Iter_δ' _ _ 1 (by grind),
-      ed.s₀_comp_δ₁_assoc, X.δ₀Iter_hom_assoc ..]
+      ed.s₀_comp_δ₁_assoc, X.δ₀Iter_hom_app_assoc ..]
     simp
   h_succ_comp_δ_castSucc_of_lt {n} i j hij := by
     generalize hk : j.succ.rev = k
