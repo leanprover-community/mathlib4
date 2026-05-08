@@ -91,7 +91,7 @@ theorem element_of_chain_not_isUnit_of_index_ne_zero {n : ℕ} {i : Fin (n + 1)}
 
 theorem first_of_chain_isUnit {q : Associates M} {n : ℕ} {c : Fin (n + 1) → Associates M}
     (h₁ : StrictMono c) (h₂ : ∀ {r}, r ≤ q ↔ ∃ i, r = c i) : IsUnit (c 0) := by
-  obtain ⟨i, hr⟩ := h₂.mp Associates.one_le
+  obtain ⟨i, hr⟩ := h₂.mp one_le
   rw [Associates.isUnit_iff_eq_one, ← Associates.le_one_iff, hr]
   exact h₁.monotone (Fin.zero_le i)
 
