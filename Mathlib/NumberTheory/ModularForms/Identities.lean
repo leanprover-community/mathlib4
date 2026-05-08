@@ -49,6 +49,31 @@ lemma slash_S_apply (f : ℍ → ℂ) (k : ℤ) (z : ℍ) :
   rw [SL_slash_apply, modular_S_smul]
   simp [ModularGroup.S, denom]
 
+/-- The action of `T^j` on a function `g : ℍ → ℂ` via the slash action of weight `k` is the
+shift `g((j : ℝ) +ᵥ τ)`. -/
+lemma slash_T_zpow_apply_general (k : ℤ) (j : ℤ) (g : ℍ → ℂ) (τ : ℍ) :
+    (g ∣[k] ((ModularGroup.T : SL(2, ℤ))^j : GL (Fin 2) ℝ)) τ =
+      g ((j : ℝ) +ᵥ τ) := by
+  have hgl : ((ModularGroup.T : SL(2, ℤ))^j : GL (Fin 2) ℝ) =
+      Matrix.SpecialLinearGroup.mapGL ℝ ((ModularGroup.T)^j : SL(2, ℤ)) := by
+    change (Matrix.SpecialLinearGroup.mapGL ℝ ModularGroup.T)^j = _
+    rw [← map_zpow]
+  rw [hgl]
+  change (g ∣[k] ((ModularGroup.T)^j : SL(2, ℤ))) τ = _
+  rw [SL_slash_apply, modular_T_zpow_smul]
+  have hdenom : denom (((ModularGroup.T)^j : SL(2, ℤ)) : GL (Fin 2) ℝ) (τ : ℂ) = 1 := by
+    have hcoe : (((((ModularGroup.T)^j : SL(2, ℤ)) : GL (Fin 2) ℝ)) :
+        Matrix (Fin 2) (Fin 2) ℝ) =
+        ((((ModularGroup.T)^j : SL(2, ℤ)) : Matrix (Fin 2) (Fin 2) ℤ)).map (Int.castRingHom ℝ) :=
+      rfl
+    change ((((((ModularGroup.T)^j : SL(2, ℤ)) : GL (Fin 2) ℝ)) :
+        Matrix (Fin 2) (Fin 2) ℝ) 1 0 : ℂ) * τ +
+        ((((((ModularGroup.T)^j : SL(2, ℤ)) : GL (Fin 2) ℝ)) :
+          Matrix (Fin 2) (Fin 2) ℝ) 1 1 : ℂ) = 1
+    rw [hcoe, ModularGroup.coe_T_zpow]
+    simp
+  rw [hdenom, one_zpow, mul_one]
+
 section Generators
 
 theorem slash_action_generators {f : ℍ → ℂ} {Γ : Subgroup (GL (Fin 2) ℝ)}
