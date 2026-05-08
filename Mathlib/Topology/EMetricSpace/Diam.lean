@@ -83,7 +83,7 @@ theorem ediam_pair : ediam ({x, y} : Set X) = edist x y := by simp [ediam_insert
 
 theorem ediam_triple :
     ediam ({x, y, z} : Set X) = max (max (edist x y) (edist x z)) (edist y z) := by
-  simp only [ediam_insert, iSup_insert, iSup_singleton, ediam_singleton, ENNReal.max_zero_right]
+  simp only [ediam_insert, iSup_insert, iSup_singleton, ediam_singleton, max_zero]
 
 /-- The extended diameter is monotonous with respect to inclusion -/
 @[gcongr]
