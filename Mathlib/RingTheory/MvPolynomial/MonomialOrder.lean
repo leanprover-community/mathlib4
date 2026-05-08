@@ -16,8 +16,8 @@ public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 We consider a type `σ` of indeterminates and a commutative semiring `R`
 and a monomial order `m : MonomialOrder σ`.
 
-* `m.degree f` is the degree of `f` for the monomial ordering `m`, where the polynomial `0` has degree
-  `0`.
+* `m.degree f` is the degree of `f` for the monomial ordering `m`, where the polynomial `0` has
+  degree `0`.
 
 * `m.leadingCoeff f` is the leading coefficient of `f` for the monomial ordering `m`.
 
@@ -27,8 +27,8 @@ and a monomial order `m : MonomialOrder σ`.
 
 * `m.sPolynomial f g` is S-polynomial of `f` and `g`.
 
-`m.withBotDegree f` is the degree of `f` for the monomial ordering `m`, where the polynomial `0` has
-  degree `⊥`, which is not equal to `0`.
+* `m.withBotDegree f` is the degree of `f` for the monomial ordering `m`, where the polynomial `0`
+  has degree `⊥`, which is not equal to `0`.
 
 * `m.leadingCoeff_ne_zero_iff f` asserts that this coefficient is nonzero iff `f ≠ 0`.
 
@@ -959,6 +959,7 @@ lemma withBotDegree_lt_withBotDegree_iff :
   · simp [hg, hf, bot_lt_iff_ne_bot, toWithBotSyn_apply]
   simp [withBotDegree_eq, hf, hg, toWithBotSyn_apply]
 
+variable {f} in
 lemma withBotDegree_lt_withBotDegree_iff_of_ne_zero (hf : f ≠ 0) :
     m.withBotDegree f ≺'[m] m.withBotDegree g ↔ m.degree f ≺[m] m.degree g := by
   simp [withBotDegree_lt_withBotDegree_iff, hf]
@@ -981,6 +982,7 @@ lemma withBotDegree_add_le :
   · rcases h with h | h <;> simp [h, m.toWithBotSyn_apply]
   simpa [withBotDegree_le_withBotDegree_iff, h] using degree_add_le (R := R)
 
+variable {f g} in
 lemma withBotDegree_add_of_lt (h : m.withBotDegree g ≺'[m] m.withBotDegree f) :
     m.withBotDegree (f + g) = m.withBotDegree f := by
   by_cases hg : g = 0
@@ -992,6 +994,7 @@ lemma withBotDegree_add_of_lt (h : m.withBotDegree g ≺'[m] m.withBotDegree f) 
   contrapose! h
   simp [← h', h]
 
+variable {f g} in
 lemma withBotDegree_add_of_right_lt (h : m.withBotDegree f ≺'[m] m.withBotDegree g) :
     m.withBotDegree (f + g) = m.withBotDegree g := by
   rw [add_comm, withBotDegree_add_of_lt h]
@@ -1005,17 +1008,19 @@ lemma withBotDegree_sum_le {α : Type*} {s : Finset α} {f : α → MvPolynomial
     rw [Finset.sum_cons, Finset.sup_cons]
     exact le_trans (m.withBotDegree_add_le _ _) (max_le_max le_rfl h)
 
-lemma le_withBotDegree {f : MvPolynomial σ R} {d : σ →₀ ℕ} (hd : d ∈ f.support) :
+variable {f} in
+lemma le_withBotDegree {d : σ →₀ ℕ} (hd : d ∈ f.support) :
     d ≼'[m] m.withBotDegree f := by
   classical
   simp [withBotDegree_eq, toWithBotSyn_apply, ne_zero_iff.mpr ⟨d, by simpa using hd⟩, le_degree hd]
 
+variable {f g} in
 lemma withBotDegree_le_withBotDegree_of_support_subset
-    {p q : MvPolynomial σ R} (h : p.support ⊆ q.support) :
-    m.withBotDegree p ≼'[m] m.withBotDegree q := by
-  by_cases hq : q = 0
-  · simpa [hq] using h
-  rw [m.withBotDegree_le_withBotDegree_iff_of_ne_zero _ hq]
+    (h : f.support ⊆ g.support) :
+    m.withBotDegree f ≼'[m] m.withBotDegree g := by
+  by_cases hg : g = 0
+  · simpa [hg] using h
+  rw [m.withBotDegree_le_withBotDegree_iff_of_ne_zero _ hg]
   exact m.degree_le_degree_of_support_subset h
 
 end withBotDegree
