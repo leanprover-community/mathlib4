@@ -190,11 +190,18 @@ lemma exists_norm_bound_of_compact_support {n : ℕ}
 lemma exists_norm_bound_of_hasCompactSupport_form {m : ℕ}
     (ω : (Fin (m + 1) → ℝ) → (Fin (m + 1) → ℝ) [⋀^Fin m]→L[ℝ] ℝ)
     (hω : HasCompactSupport ω) :
-    ∃ R₀ : ℝ, ∀ x : Fin (m + 1) → ℝ, R₀ ≤ ‖x‖ → ω x = 0 :=
-  exists_norm_bound_of_compact_support (fun x => ω x (Fin.removeNth (lastCoord m)
-    (1 : Matrix (Fin (m + 1)) (Fin (m + 1)) ℝ))) <| by
-    refine HasCompactSupport.mono ?_ (fun x hx => by dsimp at hx; exact hx)
-    exact hω.comp isClosedEmbedding_finInsertNth_of_succ _
+    ∃ R₀ : ℝ, ∀ x : Fin (m + 1) → ℝ, R₀ ≤ ‖x‖ → ω x = 0 := by
+  have h_norm_comp : IsCompact ((fun x => ‖x‖) '' tsupport ω) :=
+    hω.image continuous_norm
+  have h_bdd : BddAbove ((fun x => ‖x‖) '' tsupport ω) := h_norm_comp.bddAbove
+  obtain ⟨C, hC⟩ := h_bdd
+  use C + 1
+  intro x hx
+  have hnx : x ∉ tsupport ω := fun hmem => by
+    have : ‖x‖ ≤ C := hC ⟨x, hmem, rfl⟩
+    linarith
+  contrapose! hnx
+  exact subset_tsupport ω (by simpa using hnx)
 
 /-! ## Top-Form Density Properties -/
 
