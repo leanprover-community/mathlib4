@@ -230,9 +230,9 @@ theorem card_eq_finrank [IsGaloisGroup G K L] : Nat.card G = Module.finrank K L 
 theorem finiteDimensional [Finite G] [IsGaloisGroup G K L] : FiniteDimensional K L :=
   FiniteDimensional.of_finrank_pos (card_eq_finrank G K L ▸ Nat.card_pos)
 
-protected theorem finite (G A B : Type*) [CommRing A] [CommRing B] [Algebra A B] [Module.Finite A B]
-    [IsDomain A] [IsDomain B] [FaithfulSMul A B]
-    [Group G] [MulSemiringAction G B] [IsGaloisGroup G A B] : Finite G := by
+protected theorem finite (A B : Type*) [CommRing A] [CommRing B] [Algebra A B] [Module.Finite A B]
+    [IsDomain A] [IsDomain B] [FaithfulSMul A B] [MulSemiringAction G B] [IsGaloisGroup G A B] :
+    Finite G := by
   let : Algebra (FractionRing A) (FractionRing B) := FractionRing.liftAlgebra A (FractionRing B)
   let : MulSemiringAction G (FractionRing B) :=
       IsFractionRing.mulSemiringAction G A B (FractionRing A) (FractionRing B)
