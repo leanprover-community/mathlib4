@@ -171,7 +171,7 @@ theorem isOpen_iff (h : e.IsImage s t) : IsOpen (e.source ∩ s) ↔ IsOpen (e.t
     h.preimage_eq' ▸ e.isOpen_inter_preimage hs⟩
 
 /-- Restrict an `OpenPartialHomeomorph` to a pair of corresponding open sets. -/
-@[simps! -fullyApplied apply symm_apply toPartialEquiv]
+@[simps! -fullyApplied apply symm_apply toPartialHomeomorph_toPartialEquiv]
 def restr (h : e.IsImage s t) (hs : IsOpen (e.source ∩ s)) : OpenPartialHomeomorph X Y where
   toPartialEquiv := h.toPartialEquiv.restr
   open_source := hs
@@ -254,8 +254,8 @@ theorem restr_toPartialEquiv' (s : Set X) (hs : IsOpen s) :
 
 theorem restr_eq_of_source_subset {e : OpenPartialHomeomorph X Y} {s : Set X} (h : e.source ⊆ s) :
     e.restr s = e :=
-  toPartialEquiv_injective <| PartialEquiv.restr_eq_of_source_subset <|
-    interior_maximal h e.open_source
+  toPartialHomeomorph_injective <| PartialHomeomorph.toPartialEquiv_injective
+    <| PartialEquiv.restr_eq_of_source_subset <| interior_maximal h e.open_source
 
 @[simp, mfld_simps]
 theorem restr_univ {e : OpenPartialHomeomorph X Y} : e.restr univ = e :=
@@ -315,7 +315,8 @@ theorem eqOnSource_iff (e e' : OpenPartialHomeomorph X Y) :
 
 /-- `EqOnSource` is an equivalence relation. -/
 instance eqOnSourceSetoid : Setoid (OpenPartialHomeomorph X Y) :=
-  { PartialEquiv.eqOnSourceSetoid.comap toPartialEquiv with r := EqOnSource }
+  { PartialEquiv.eqOnSourceSetoid.comap
+    (fun x ↦ (toPartialHomeomorph x).toPartialEquiv) with r := EqOnSource }
 
 theorem eqOnSource_refl : e ≈ e := Setoid.refl _
 
@@ -359,7 +360,8 @@ theorem Set.EqOn.restr_eqOn_source {e e' : OpenPartialHomeomorph X Y}
 
 theorem eq_of_eqOnSource_univ {e e' : OpenPartialHomeomorph X Y} (h : e ≈ e') (s : e.source = univ)
     (t : e.target = univ) : e = e' :=
-  toPartialEquiv_injective <| PartialEquiv.eq_of_eqOnSource_univ _ _ h s t
+  toPartialHomeomorph_injective <| PartialHomeomorph.toPartialEquiv_injective <|
+    PartialEquiv.eq_of_eqOnSource_univ _ _ h s t
 
 variable {s : Set X}
 
