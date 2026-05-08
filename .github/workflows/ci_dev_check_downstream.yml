@@ -22,10 +22,10 @@ on:
         required: true
         type: string
       mathlib_ci_ref:
-        description: "mathlib-ci ref to use (branch/tag/SHA). Defaults to master."
+        description: "mathlib-ci ref to use (branch/tag/SHA)."
         required: false
         type: string
-        default: master
+        default: marcelo/2026/05/DownstreamPrValidation
       post_results:
         description: "Pass post_results=true to downstream-reports (set false to skip comment posting)."
         required: false
