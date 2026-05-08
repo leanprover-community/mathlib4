@@ -53,11 +53,8 @@ variable (F R K) in
 /-- The equivalence between `mapDomainFixed F R K` and the `f : R[X]` with
 `Setoid.ker f ≥ MulAction.orbitRel Gal(K/F) K`. -/
 def mapDomainFixedEquivSubtype :
-    mapDomainFixed F R K ≃ { f : R[K] // MulAction.orbitRel Gal(K/F) K ≤ Setoid.ker f } where
-  toFun f := ⟨f, mem_mapDomainFixed_iff.mp f.2⟩
-  invFun f := ⟨f, mem_mapDomainFixed_iff.mpr f.2⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
+    mapDomainFixed F R K ≃ { f : R[K] // MulAction.orbitRel Gal(K/F) K ≤ Setoid.ker f.coeff } :=
+  Equiv.subtypeEquivProp <| funext fun _ ↦ propext mem_mapDomainFixed_iff
 
 namespace mapDomainFixed
 variable [FiniteDimensional F K] [Normal F K]
@@ -66,20 +63,18 @@ variable [FiniteDimensional F K] [Normal F K]
 def toFinsuppAux : mapDomainFixed F R K ≃ (ConjRootClass F K →₀ R) := by
   classical
   refine (mapDomainFixedEquivSubtype F R K).trans
-    { toFun := fun f ↦
+    { toFun f :=
         Quot.liftFinsupp (r := IsConjRoot _) f.val.coeff (by
           simp_rw [isConjRoot_iff_exists_algEquiv]
           exact f.2)
-      invFun := fun f => ⟨.ofCoeff ⟨f.support.biUnion fun i => i.carrier.toFinset,
-        fun x => f (ConjRootClass.mk F x), fun i => ?_⟩, ?_⟩
-      left_inv := ?_
-      right_inv := ?_ }
+      invFun f := ⟨.ofCoeff ⟨f.support.biUnion fun i => i.carrier.toFinset,
+        fun x => f (ConjRootClass.mk F x), fun i => ?_⟩, fun i j h ↦ ?_⟩
+      left_inv _ := Subtype.ext <| Finsupp.ext fun x => rfl
+      right_inv _ := Finsupp.ext fun x => Quot.inductionOn x fun i => rfl }
   · simp_rw [mem_biUnion, Set.mem_toFinset, ConjRootClass.mem_carrier, Finsupp.mem_support_iff,
       exists_eq_right']
-  · change ∀ i j, i ∈ MulAction.orbit Gal(K/F) j → f ⟦i⟧ = f ⟦j⟧
-    exact fun i j h => congr_arg f (Quotient.sound (isConjRoot_iff_exists_algEquiv.mpr h))
-  · exact fun _ => Subtype.ext <| Finsupp.ext fun x => rfl
-  · exact fun _ => Finsupp.ext fun x => Quot.inductionOn x fun i => rfl
+  · rw [Setoid.ker_def, AddMonoidAlgebra.coeff_ofCoeff, Finsupp.coe_mk]
+    exact congr_arg f (Quotient.sound (isConjRoot_iff_exists_algEquiv.mpr h))
 
 @[simp]
 private theorem toFinsuppAux_apply_apply_mk (f : mapDomainFixed F R K) (i : K) :

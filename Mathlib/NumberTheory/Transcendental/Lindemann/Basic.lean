@@ -105,12 +105,12 @@ private theorem linearIndependent_exp' [Fintype ι] (u : ι → ℂ) (hu : ∀ i
       have := (FloorSemiring.tendsto_pow_div_factorial_atTop x).const_mul x
       simp_rw [← mul_div_assoc, ← pow_succ', mul_zero] at this
       exact this.comp (Filter.tendsto_atTop_atTop.mpr fun b ↦ ⟨b + 1, fun _ ↦ by omega⟩)
-    convert Filter.Frequently.forall_exists_of_atTop
-      ((Filter.frequently_atTop.mpr Nat.exists_infinite_primes).and_eventually <|
-        Filter.Tendsto.eventually_lt_const (l := 1) (by simp)
-          ((this (‖k‖ ^ P.natDegree * c)).const_mul (L * ∑ i, Multiset.card ((p i).aroots ℂ))))
-      (N + 1) using 2
-    rw [Nat.succ_le_iff, mul_div_assoc]
+    simpa only [Nat.succ_le_iff, mul_div_assoc] using
+      Filter.Frequently.forall_exists_of_atTop
+        ((Filter.frequently_atTop.mpr Nat.exists_infinite_primes).and_eventually <|
+          Filter.Tendsto.eventually_lt_const (l := 1) (by simp)
+            ((this (‖k‖ ^ P.natDegree * c)).const_mul (L * ∑ i, Multiset.card ((p i).aroots ℂ))))
+        (N + 1)
   -- And this `q` is in particular large enough to apply `hc'`.
   obtain ⟨n, hn, gp, hgp, hc⟩ := hc' q (by order) prime_q
   replace hgp : gp.natDegree ≤ P.natDegree * q := by rw [mul_comm]; exact hgp.trans tsub_le_self
