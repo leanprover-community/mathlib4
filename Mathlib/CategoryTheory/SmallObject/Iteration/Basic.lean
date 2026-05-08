@@ -284,7 +284,7 @@ noncomputable def isColimit (i : J) (hi : Order.IsSuccLimit i) (hij : i ≤ j) :
     IsColimit (coconeOfLE iter.F hij) := by
   letI := hasColimitsOfShape_of_isSuccLimit C i hi
   refine IsColimit.ofIsoColimit (colimit.isColimit (restrictionLT iter.F hij))
-    (Cocones.ext (eqToIso (iter.obj_limit i hi hij).symm) ?_)
+    (Cocone.ext (eqToIso (iter.obj_limit i hi hij).symm) ?_)
   rintro ⟨k, hk⟩
   apply Arrow.mk_injective
   dsimp

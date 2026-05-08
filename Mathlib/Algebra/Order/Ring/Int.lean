@@ -30,7 +30,7 @@ This file contains:
   induction on numbers less than `b`.
 -/
 
-@[expose] public section
+public section
 
 -- We should need only a minimal development of sets in order to get here.
 assert_not_exists Set.Subsingleton
@@ -43,7 +43,6 @@ instance instIsStrictOrderedRing : IsStrictOrderedRing ℤ := .of_mul_pos @Int.m
 
 /-! ### Miscellaneous lemmas -/
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isCompl_even_odd : IsCompl { n : ℤ | Even n } { n | Odd n } := by
   simp [← not_even_iff_odd, ← Set.compl_setOf, isCompl_compl]
 

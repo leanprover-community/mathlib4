@@ -173,7 +173,6 @@ section IsCartanSubalgebra
 
 variable [H.IsCartanSubalgebra] [IsNoetherian R L]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma trace_toEnd_genWeightSpaceChain_eq_zero
     (hp : genWeightSpace M (p • α + χ) = ⊥)
     (hq : genWeightSpace M (q • α + χ) = ⊥)
@@ -203,7 +202,6 @@ lemma trace_toEnd_genWeightSpaceChain_eq_zero
   | add => simp_all
   | smul => simp_all
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a (potential) root `α` relative to a Cartan subalgebra `H`, if we restrict to the ideal
 `I = corootSpace α` of `H` (informally, `I = ⁅H(α), H(-α)⁆`), we may find an
 integral linear combination between `α` and any weight `χ` of a representation.
@@ -220,7 +218,7 @@ lemma exists_forall_mem_corootSpace_smul_add_eq_zero
   let b := ∑ i ∈ Finset.Ioo p q, finrank R (genWeightSpace M (i • α + χ))
   have hb : 0 < b := by
     replace hχ : Nontrivial (genWeightSpace M χ) := by rwa [LieSubmodule.nontrivial_iff_ne_bot]
-    refine Finset.sum_pos' (fun _ _ ↦ zero_le _) ⟨0, Finset.mem_Ioo.mpr ⟨hp₀, hq₀⟩, ?_⟩
+    refine Finset.sum_pos' (fun _ _ ↦ zero_le) ⟨0, Finset.mem_Ioo.mpr ⟨hp₀, hq₀⟩, ?_⟩
     rw [zero_smul, zero_add]
     exact finrank_pos
   refine ⟨a, b, Int.natCast_pos.mpr hb, fun x hx ↦ ?_⟩
@@ -281,7 +279,6 @@ section
 variable (hα : α ≠ 0)
 include hα
 
-set_option backward.isDefEq.respectTransparency false in
 lemma chainTopCoeff_add_one :
     letI := Classical.propDecidable
     chainTopCoeff α β + 1 =

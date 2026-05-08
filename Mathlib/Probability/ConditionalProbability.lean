@@ -293,7 +293,6 @@ lemma comap_cond {i : Ω' → Ω} (hi : MeasurableEmbedding i) (hi' : ∀ᵐ ω 
 
 variable [Fintype α] [MeasurableSpace α] [DiscreteMeasurableSpace α]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The **law of total probability** for a random variable taking finitely many values: a measure
 `μ` can be expressed as a linear combination of its conditional measures `μ[|X ← x]` on fibers of a
 random variable `X` valued in a fintype. -/
@@ -302,7 +301,7 @@ lemma sum_meas_smul_cond_fiber {X : Ω → α} (hX : Measurable X) (μ : Measure
   ext E hE
   calc
     _ = ∑ x, μ (X ⁻¹' {x} ∩ E) := by
-      simp only [Measure.coe_finset_sum, Measure.coe_smul, Finset.sum_apply,
+      simp only [Measure.coe_finsetSum, Measure.coe_smul, Finset.sum_apply,
         Pi.smul_apply, smul_eq_mul]
       simp_rw [mul_comm (μ _), cond_mul_eq_inter (hX (.singleton _))]
     _ = _ := by

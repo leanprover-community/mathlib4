@@ -166,7 +166,6 @@ theorem leadingCoeff_abs (x : Lex R⟦Γ⟧) :
   · obtain hgt' := leadingCoeff_pos_iff.mpr hgt
     rw [abs_eq_self.mpr hgt.le, abs_eq_self.mpr hgt'.le]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem abs_lt_abs_of_orderTop_ofLex {x y : Lex R⟦Γ⟧}
     (h : (ofLex y).orderTop < (ofLex x).orderTop) : |x| < |y| := by
   rw [← orderTop_abs x, ← orderTop_abs y] at h
@@ -409,7 +408,7 @@ def embDomainOrderEmbedding [Zero R] : Lex R⟦Γ⟧ ↪o Lex R⟦Γ'⟧ where
     constructor
     · rintro (⟨i, hj, hi⟩ | heq)
       · have himem : i ∈ Set.range f := by
-          contrapose! hi
+          contrapose hi
           simp [embDomain_notin_range hi]
         obtain ⟨k, rfl⟩ := himem
         refine Or.inl ⟨k, fun j hjk ↦ ?_, by simpa using hi⟩

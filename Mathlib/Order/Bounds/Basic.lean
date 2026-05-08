@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 module
 
+public import Mathlib.Order.Antisymmetrization
 public import Mathlib.Order.Bounds.Defs
 public import Mathlib.Order.Directed
 public import Mathlib.Order.BoundedOrder.Monotone
@@ -130,6 +131,65 @@ lemma DirectedOn.isCofinalFor_fst_image_prod_snd_image {β : Type*} [Preorder β
   rintro ⟨_, _⟩ ⟨⟨x, hx, rfl⟩, y, hy, rfl⟩
   obtain ⟨z, hz, hxz, hyz⟩ := hs _ hx _ hy
   exact ⟨z, hz, hxz.1, hyz.2⟩
+
+theorem IsCofinalFor.union_left (hc : IsCofinalFor s t) : IsCofinalFor (s ∪ t) t := by
+  rintro a (has | hat)
+  · exact hc has
+  · exact ⟨a, hat, le_rfl⟩
+
+theorem IsCofinalFor.union_right (hc : IsCofinalFor s t) : IsCofinalFor (t ∪ s) t := by
+  rw [union_comm]
+  exact hc.union_left
+
+theorem DirectedOn.of_isCofinalFor (hd : DirectedOn (· ≤ ·) t)
+    (hst : s ⊆ t) (hc : IsCofinalFor t s) : DirectedOn (· ≤ ·) s := by
+  intro x hx y hy
+  obtain ⟨z, hz, hxz, hyz⟩ := hd x (hst hx) y (hst hy)
+  obtain ⟨w, hw, hzw⟩ := hc hz
+  exact ⟨w, hw, hxz.trans hzw, hyz.trans hzw⟩
+
+theorem isCofinalFor_or_isCofinalFor_of_directedOn_union (h : DirectedOn (· ≤ ·) (s ∪ t)) :
+    IsCofinalFor t s ∨ IsCofinalFor s t := by
+  rw [or_iff_not_imp_left]
+  intro hts x hx
+  simp only [IsCofinalFor, not_forall, not_exists, not_and] at hts
+  obtain ⟨y, hy, hys⟩ := hts
+  obtain ⟨z, (hzs | hzt), hxz, hyz⟩ := h x (.inl hx) y (.inr hy)
+  · cases hys z hzs hyz
+  · exact ⟨z, hzt, hxz⟩
+
+theorem directedOn_union_iff :
+    DirectedOn (· ≤ ·) (s ∪ t) ↔
+      DirectedOn (· ≤ ·) s ∧ IsCofinalFor t s ∨ DirectedOn (· ≤ ·) t ∧ IsCofinalFor s t := by
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · rcases isCofinalFor_or_isCofinalFor_of_directedOn_union h with hts | hst
+    · exact .inl ⟨DirectedOn.of_isCofinalFor h subset_union_left hts.union_right, hts⟩
+    · exact .inr ⟨DirectedOn.of_isCofinalFor h subset_union_right hst.union_left, hst⟩
+  · rintro (⟨hs, hts⟩ | ⟨ht, hst⟩) x hx y hy
+    · obtain ⟨x', hx', hxx'⟩ := hts.union_right hx
+      obtain ⟨y', hy', hyy'⟩ := hts.union_right hy
+      obtain ⟨z, hz, hx'z, hy'z⟩ := hs x' hx' y' hy'
+      exact ⟨z, .inl hz, hxx'.trans hx'z, hyy'.trans hy'z⟩
+    · obtain ⟨x', hx', hxx'⟩ := hst.union_left hx
+      obtain ⟨y', hy', hyy'⟩ := hst.union_left hy
+      obtain ⟨z, hz, hx'z, hy'z⟩ := ht x' hx' y' hy'
+      exact ⟨z, .inr hz, hxx'.trans hx'z, hyy'.trans hy'z⟩
+
+theorem directedOn_or_directedOn_of_union (h : DirectedOn (· ≤ ·) (s ∪ t)) :
+    DirectedOn (· ≤ ·) s ∨ DirectedOn (· ≤ ·) t := by
+  rw [directedOn_union_iff] at h
+  tauto
+
+theorem directedOn_or_directedOn_of_union'
+    (hn : (s ∪ t).Nonempty) (h : DirectedOn (· ≤ ·) (s ∪ t)) :
+    DirectedOn (· ≤ ·) s ∧ s.Nonempty ∨ DirectedOn (· ≤ ·) t ∧ t.Nonempty := by
+  obtain h | h := directedOn_or_directedOn_of_union h
+  · obtain rfl | hs := s.eq_empty_or_nonempty
+    · aesop
+    · exact .inl ⟨h, hs⟩
+  · obtain rfl | ht := t.eq_empty_or_nonempty
+    · aesop
+    · exact .inr ⟨h, ht⟩
 
 /-!
 ### Monotonicity
@@ -665,14 +725,23 @@ theorem maximal_iff_isGreatest [LinearOrder α] {s : Set α} {a : α} :
 
 section Preorder
 
-variable [Preorder α] [Preorder β] {s : Set α} {t : Set β} {a b : α}
+variable [Preorder α] [Preorder β] {s s' : Set α} {t : Set β} {a b : α}
 
 theorem lowerBounds_le_upperBounds (ha : a ∈ lowerBounds s) (hb : b ∈ upperBounds s) :
     s.Nonempty → a ≤ b
   | ⟨_, hc⟩ => le_trans (ha hc) (hb hc)
 
+theorem lowerBounds_le_upperBounds_of_nonempty_inter (h : (s ∩ s').Nonempty)
+    (ha : a ∈ lowerBounds s) (hb : b ∈ upperBounds s') : a ≤ b := by
+  have ⟨x, hx, hx'⟩ := h
+  exact le_trans (ha hx) (hb hx')
+
 theorem isGLB_le_isLUB (ha : IsGLB s a) (hb : IsLUB s b) (hs : s.Nonempty) : a ≤ b :=
   lowerBounds_le_upperBounds ha.1 hb.1 hs
+
+theorem isGLB_le_isLUB_of_nonempty_inter (h : (s ∩ s').Nonempty) (ha : IsGLB s a)
+    (hb : IsLUB s' b) : a ≤ b :=
+  lowerBounds_le_upperBounds_of_nonempty_inter h ha.left hb.left
 
 @[to_dual lt_isGLB_iff]
 theorem isLUB_lt_iff (ha : IsLUB s a) : a < b ↔ ∃ c ∈ upperBounds s, c < b :=
@@ -692,6 +761,15 @@ theorem le_of_isLUB_le_isGLB {x y} (ha : IsGLB s a) (hb : IsLUB s b) (hab : b �
 @[to_dual]
 lemma IsLUB.prod {b : β} (hs : s.Nonempty) (ht : t.Nonempty) (ha : IsLUB s a) (hb : IsLUB t b) :
     IsLUB (s ×ˢ t) (a, b) := by simp_all +contextual [IsLUB, IsLeast, lowerBounds]
+
+theorem isLUB_congr_of_antisymmRel {a b : α} (h : AntisymmRel (· ≤ ·) a b) :
+    IsLUB s a ↔ IsLUB s b := by
+  simp [isLUB_iff_le_iff, h.le_congr_left]
+
+-- TODO: `to_dual` doesn't work with `AntisymmRel`.
+theorem isGLB_congr_of_antisymmRel {a b : α} (h : AntisymmRel (· ≤ ·) a b) :
+    IsGLB s a ↔ IsGLB s b := by
+  simp [isGLB_iff_le_iff, h.le_congr_right]
 
 end Preorder
 
@@ -731,19 +809,22 @@ variable [LinearOrder α] {s : Set α} {a b : α}
 theorem lt_isLUB_iff (h : IsLUB s a) : b < a ↔ ∃ c ∈ s, b < c := by
   simp_rw [← not_le, isLUB_le_iff h, mem_upperBounds, not_forall, not_le, exists_prop]
 
+@[to_dual none]
 theorem IsLUB.exists_between (h : IsLUB s a) (hb : b < a) : ∃ c ∈ s, b < c ∧ c ≤ a :=
   let ⟨c, hcs, hbc⟩ := (lt_isLUB_iff h).1 hb
   ⟨c, hcs, hbc, h.1 hcs⟩
 
+@[to_dual none]
 theorem IsLUB.exists_between' (h : IsLUB s a) (h' : a ∉ s) (hb : b < a) : ∃ c ∈ s, b < c ∧ c < a :=
   let ⟨c, hcs, hbc, hca⟩ := h.exists_between hb
   ⟨c, hcs, hbc, hca.lt_of_ne fun hac => h' <| hac ▸ hcs⟩
 
--- These are not `@[to_dual]` because the `And` conjuncts would be in the wrong order.
+@[to_dual none]
 theorem IsGLB.exists_between (h : IsGLB s a) (hb : a < b) : ∃ c ∈ s, a ≤ c ∧ c < b :=
   let ⟨c, hcs, hbc⟩ := (isGLB_lt_iff h).1 hb
   ⟨c, hcs, h.1 hcs, hbc⟩
 
+@[to_dual none]
 theorem IsGLB.exists_between' (h : IsGLB s a) (h' : a ∉ s) (hb : a < b) : ∃ c ∈ s, a < c ∧ c < b :=
   let ⟨c, hcs, hac, hcb⟩ := h.exists_between hb
   ⟨c, hcs, hac.lt_of_ne fun hac => h' <| hac.symm ▸ hcs, hcb⟩
@@ -770,3 +851,22 @@ instance Nat.instDecidableIsLeast (p : ℕ → Prop) (n : ℕ) [DecidablePred p]
     Decidable (IsLeast { n : ℕ | p n } n) :=
   decidable_of_iff (p n ∧ ∀ k < n, ¬p k) <| .and .rfl <| by
     simp [mem_lowerBounds, @imp_not_comm _ (p _)]
+
+/-- An alternative constructor for `SemilatticeSup` using `IsLUB`. -/
+@[to_dual (attr := implicit_reducible)
+/-- An alternative constructor for `SemilatticeInf` using `IsGLB`. -/]
+def SemilatticeSup.ofIsLUB [PartialOrder α] (sup : α → α → α)
+    (isLUB_pair : ∀ a b, IsLUB {a, b} (sup a b)) :
+    SemilatticeSup α where
+  sup := sup
+  le_sup_left a b := (isLUB_pair a b).1 (mem_insert _ _)
+  le_sup_right a b := (isLUB_pair a b).1 (mem_insert_of_mem _ (mem_singleton _))
+  sup_le a b _ hac hbc := (isLUB_pair a b).2 (forall_insert_of_forall (forall_eq.mpr hbc) hac)
+
+/-- An alternative constructor for `Lattice` using `IsLUB` and `IsGLB`. -/
+@[implicit_reducible, to_dual self (reorder := 3 4, 5 6)]
+def Lattice.ofIsLUBofIsGLB [PartialOrder α] (sup inf : α → α → α)
+    (isLUB_pair : ∀ a b, IsLUB {a, b} (sup a b)) (isGLB_pair : ∀ a b, IsGLB {a, b} (inf a b)) :
+    Lattice α where
+  __ := SemilatticeSup.ofIsLUB sup isLUB_pair
+  __ := SemilatticeInf.ofIsGLB inf isGLB_pair

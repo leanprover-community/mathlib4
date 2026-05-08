@@ -5,6 +5,7 @@ Authors: Anne Baanen, Wen Yang
 -/
 module
 
+public import Mathlib.Data.Fintype.Parity
 public import Mathlib.LinearAlgebra.Matrix.Adjugate
 public import Mathlib.LinearAlgebra.Matrix.ToLin
 public import Mathlib.LinearAlgebra.Matrix.Transvection
@@ -76,6 +77,9 @@ scoped[MatrixGroups] notation "SL(" n ", " R ")" => Matrix.SpecialLinearGroup (F
 namespace SpecialLinearGroup
 
 variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [CommRing R]
+
+/-- If `R` and `n` have decidable equality then so does `SL(n, R)`. -/
+instance [DecidableEq R] : DecidableEq (SpecialLinearGroup n R) := Subtype.instDecidableEq
 
 instance hasCoeToMatrix : Coe (SpecialLinearGroup n R) (Matrix n n R) :=
   ⟨fun A => A.val⟩
@@ -229,7 +233,6 @@ section center
 
 open Subgroup
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem center_eq_bot_of_subsingleton [Subsingleton n] :
     center (SpecialLinearGroup n R) = ⊥ :=
@@ -347,7 +350,8 @@ variable [Fact (Even (Fintype.card n))]
 each element. -/
 instance instNeg : Neg (SpecialLinearGroup n R) :=
   ⟨fun g => ⟨-g, by
-    simpa [(@Fact.out <| Even <| Fintype.card n).neg_one_pow, g.det_coe] using det_smul (↑ₘg) (-1)⟩⟩
+    simpa [(@Fact.out <| Even <| Fintype.card n).neg_one_pow, g.det_coe]
+      using det_smul (↑ₘg) (-1)⟩⟩
 
 @[simp]
 theorem coe_neg (g : SpecialLinearGroup n R) : ↑(-g) = -(g : Matrix n n R) :=
@@ -479,6 +483,8 @@ def T : SL(2, ℤ) :=
 theorem coe_S : ↑S = !![0, -1; 1, 0] :=
   rfl
 
+lemma S_inv : S⁻¹ = -S := by decide
+
 theorem coe_T : ↑T = (!![1, 1; 0, 1] : Matrix _ _ ℤ) :=
   rfl
 
@@ -508,7 +514,6 @@ theorem T_mul_apply_one (g : SL(2, ℤ)) : (T * g) 1 = g 1 := by
 theorem T_inv_mul_apply_one (g : SL(2, ℤ)) : (T⁻¹ * g) 1 = g 1 := by
   simpa using T_pow_mul_apply_one (-1) g
 
-set_option backward.isDefEq.respectTransparency false in
 lemma S_mul_S_eq : (S : Matrix (Fin 2) (Fin 2) ℤ) * S = -1 := by
   simp only [S, Int.reduceNeg, cons_mul, Nat.succ_eq_add_one, Nat.reduceAdd,
     vecMul_cons, head_cons, zero_smul, tail_cons, neg_smul, one_smul, neg_cons, neg_zero, neg_empty,

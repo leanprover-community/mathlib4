@@ -46,7 +46,6 @@ variable (P : RootPairing ι R M N) [Finite ι]
 local notation "Φ" => range P.root
 local notation "α" => P.root
 
-set_option backward.isDefEq.respectTransparency false in
 /-- SGA3 XXI Prop. 2.3.1 -/
 lemma coxeterWeightIn_le_four (S : Type*)
     [CommRing S] [LinearOrder S] [IsStrictOrderedRing S] [Algebra S R] [FaithfulSMul S R]
@@ -231,7 +230,7 @@ lemma root_add_root_mem_of_pairingIn_neg (h : P.pairingIn ℤ i j < 0) (h' : α 
     α i + α j ∈ Φ := by
   let _i := P.indexNeg
   replace h : 0 < P.pairingIn ℤ i (-j) := by simpa
-  replace h' : i ≠ -j := by contrapose! h'; simp [h']
+  replace h' : i ≠ -j := by contrapose h'; simp [h']
   simpa using P.root_sub_root_mem_of_pairingIn_pos h h'
 
 lemma pairingIn_eq_zero_of_add_notMem_of_sub_notMem (hp : i ≠ j) (hn : α i ≠ -α j)
@@ -301,7 +300,7 @@ lemma apply_eq_or (i j : ι) :
     B.form (α j) (α j) = 3 * B.form (α i) (α i) := by
   obtain ⟨j', h₁, h₂⟩ := P.exists_form_eq_form_and_form_ne_zero B i j
   suffices P.pairingIn ℤ i j' ≠ 0 by simp only [← h₁, B.apply_eq_or_aux i j' this]
-  contrapose! h₂
+  contrapose h₂
   replace h₂ : P.pairing i j' = 0 := by rw [← P.algebraMap_pairingIn ℤ, h₂, map_zero]
   exact (B.apply_root_root_zero_iff i j').mpr h₂
 
@@ -310,7 +309,7 @@ lengths. -/
 lemma exists_apply_eq_or [Nonempty ι] : ∃ i j, ∀ k,
     B.form (α k) (α k) = B.form (α i) (α i) ∨
     B.form (α k) (α k) = B.form (α j) (α j) := by
-  obtain ⟨i⟩ := inferInstanceAs (Nonempty ι)
+  obtain ⟨i⟩ := (inferInstance : Nonempty ι)
   by_cases! h : (∀ j, B.form (α j) (α j) = B.form (α i) (α i))
   · refine ⟨i, i, fun j ↦ by simp [h j]⟩
   · obtain ⟨j, hji_ne⟩ := h

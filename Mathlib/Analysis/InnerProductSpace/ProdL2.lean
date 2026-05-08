@@ -83,7 +83,6 @@ namespace Submodule
 
 variable (K : Submodule 𝕜 E) [K.HasOrthogonalProjection] (x : E)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a subspace `K` of an inner product space `E` admits an orthogonal projection, then `E` is
 isometrically isomorphic to the `L²` product of `K` and `Kᗮ`. -/
 @[simps! symm_apply]
@@ -95,7 +94,6 @@ def orthogonalDecomposition : E ≃ₗᵢ[𝕜] WithLp 2 (K × Kᗮ) where
       K.norm_sq_eq_add_norm_sq_projection]
     simp [starProjection_apply_eq_isComplProjection]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem orthogonalDecomposition_apply :
     K.orthogonalDecomposition x =
@@ -114,14 +112,12 @@ theorem toLinearEquiv_orthogonalDecomposition_symm :
         K.prodEquivOfIsCompl Kᗮ isCompl_orthogonal_of_hasOrthogonalProjection :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coe_orthogonalDecomposition :
     (K.orthogonalDecomposition : E →L[𝕜] WithLp 2 (K × Kᗮ)) =
       (WithLp.prodContinuousLinearEquiv 2 𝕜 K Kᗮ).symm ∘L
         K.orthogonalProjection.prod Kᗮ.orthogonalProjection := by
   ext; simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coe_orthogonalDecomposition_symm :
     (K.orthogonalDecomposition.symm : WithLp 2 (K × Kᗮ) →L[𝕜] E) =
       K.subtypeL.coprod Kᗮ.subtypeL ∘L WithLp.prodContinuousLinearEquiv 2 𝕜 K Kᗮ :=
@@ -135,12 +131,10 @@ theorem snd_orthogonalDecomposition_apply :
     (K.orthogonalDecomposition x).snd = Kᗮ.orthogonalProjection x := by
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem fstL_comp_coe_orthogonalDecomposition :
     WithLp.fstL 2 𝕜 K Kᗮ ∘L K.orthogonalDecomposition = K.orthogonalProjection := by
   ext; simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sndL_comp_coe_orthogonalDecomposition :
     WithLp.sndL 2 𝕜 K Kᗮ ∘L K.orthogonalDecomposition = Kᗮ.orthogonalProjection := by
   ext; simp

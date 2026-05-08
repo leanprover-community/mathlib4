@@ -56,7 +56,6 @@ lemma petersson_slash (k : ℤ) (f f' : ℍ → ℂ) (g : GL (Fin 2) ℝ) (τ : 
     rw [im_smul_eq_div_normSq, Complex.ofReal_div, Complex.ofReal_mul]
   _ = D ^ (k - 2) * σ g (petersson k f f' (g • τ)) := by simp [petersson, σ_conj]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma petersson_slash_SL (k : ℤ) (f f' : ℍ → ℂ) (g : SL(2, ℤ)) (τ : ℍ) :
     petersson k (f ∣[k] g) (f' ∣[k] g) τ = petersson k f f' (g • τ) := by
   -- need to disable two simp lemmas as they work against `Matrix.SpecialLinearGroup.det_coe`
@@ -77,7 +76,6 @@ section
 
 variable {F F' : Type*} [FunLike F ℍ ℂ] [FunLike F' ℍ ℂ]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma SlashInvariantFormClass.norm_petersson_smul {k g τ} {Γ : Subgroup (GL (Fin 2) ℝ)}
     [Γ.HasDetPlusMinusOne] [SlashInvariantFormClass F Γ k] {f : F}
     [SlashInvariantFormClass F' Γ k] {f' : F'} (hg : g ∈ Γ) :
@@ -85,7 +83,6 @@ lemma SlashInvariantFormClass.norm_petersson_smul {k g τ} {Γ : Subgroup (GL (F
   conv_rhs => rw [← slash_action_eq f _ hg, ← slash_action_eq f' _ hg, petersson_slash,
     Subgroup.HasDetPlusMinusOne.abs_det hg, Complex.ofReal_one, one_zpow, one_mul, norm_σ]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma SlashInvariantFormClass.petersson_smul {k g τ} {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetOne]
     [SlashInvariantFormClass F Γ k] {f : F} [SlashInvariantFormClass F' Γ k] {f' : F'}
     (hg : g ∈ Γ) : petersson k f f' (g • τ) = petersson k f f' τ := by
@@ -104,7 +101,7 @@ include Γ -- can't be inferred from statements
 exponentially rapid decay at infinity. -/
 lemma petersson_exp_decay_left {f : F} (h_bd : IsZeroAtImInfty f) (f' : F') :
     ∃ a > 0, petersson k f f' =O[atImInfty] fun τ ↦ Real.exp (-a * im τ) := by
-  obtain ⟨b, hb, hbf⟩ := h_bd.exp_decay_atImInfty'
+  obtain ⟨b, hb, hbf⟩ := ModularFormClass.exp_decay_atImInfty' f h_bd
   obtain ⟨a, ha, ha'⟩ := exists_between hb
   use a, ha
   apply IsBigO.of_norm_left

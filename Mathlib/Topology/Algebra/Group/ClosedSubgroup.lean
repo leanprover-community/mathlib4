@@ -26,7 +26,7 @@ and its additive version `ClosedAddSubgroup`.
 Actually provide the `Order.Frame (ClosedSubgroup G)` instance.
 -/
 
-@[expose] public section
+public section
 
 section
 
@@ -94,7 +94,7 @@ open scoped Pointwise
 
 namespace Subgroup
 
-variable {G : Type u} [Group G] [TopologicalSpace G] [ContinuousMul G]
+variable {G : Type u} [Group G] [TopologicalSpace G] [SeparatelyContinuousMul G]
 
 lemma normalCore_isClosed (H : Subgroup G) (h : IsClosed (H : Set G)) :
     IsClosed (H.normalCore : Set G) := by

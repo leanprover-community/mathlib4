@@ -44,7 +44,6 @@ open KaehlerDifferential
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `H¹(S/R) = 0` and `Ω[S⁄R]` is free on `{d sᵢ}ᵢ` for some `sᵢ : S`, then `S`
 is `R`-standard smooth. -/
 theorem IsStandardSmooth.of_basis_kaehlerDifferential [FinitePresentation R S]
@@ -97,7 +96,6 @@ theorem Etale.iff_isStandardSmoothOfRelativeDimension_zero :
   refine ⟨inferInstance, ⟨Empty, Module.Basis.empty Ω[S⁄R], ?_⟩⟩
   simp [Set.range_subset_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 /-- If `S` is `R`-smooth at a prime `p`, then `S` is `R`-standard-smooth in a neighbourhood of `p`:
 there exists a basic open `p ∈ D(f)` of `Spec S` such that `S[1/f]` is standard smooth. -/
@@ -109,7 +107,7 @@ theorem IsSmoothAt.exists_notMem_isStandardSmooth [FinitePresentation R S] (p : 
   · obtain ⟨g, hg, hsm⟩ := IsSmoothAt.exists_notMem_smooth R p
     have _ : (Ideal.map (algebraMap S (Localization.Away g)) p).IsPrime := by
       apply IsLocalization.isPrime_of_isPrime_disjoint (.powers g) _ _ ‹_›
-      rwa [Ideal.disjoint_powers_iff_notMem _ (Ideal.IsPrime.isRadical ‹_›)]
+      rwa [Ideal.disjoint_powers_iff_notMem_of_isPrime]
     obtain ⟨g', hg', hstd⟩ := this (R := R) (p.map (algebraMap S (Localization.Away g))) hsm
     have : IsLocalization.Away (g * (IsLocalization.Away.sec g g').1) (Localization.Away g') :=
       .mul_of_associated _ _ g' <| IsLocalization.Away.associated_sec_fst g g'
@@ -155,7 +153,13 @@ variable (R S) in
 theorem Smooth.exists_span_eq_top_isStandardSmooth [Smooth R S] :
     ∃ (s : Set S), Ideal.span s = ⊤ ∧ ∀ x ∈ s, IsStandardSmooth R (Localization.Away x) := by
   choose f hf₁ hf₂ using IsSmoothAt.exists_notMem_isStandardSmooth R (S := S)
-  refine ⟨Set.range (fun p : PrimeSpectrum S ↦ f p.asIdeal), ?_, by grind⟩
+  /- #adaptation_note Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), the original proof was:
+  `refine ⟨Set.range (fun p : PrimeSpectrum S ↦ f p.asIdeal), ?_, by grind⟩`
+  It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
+  canonicalizer; a minimization would help. -/
+  refine ⟨Set.range (fun p : PrimeSpectrum S ↦ f p.asIdeal), ?_, by
+    simp only [Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff]; intro; apply hf₂⟩
   simp [← PrimeSpectrum.iSup_basicOpen_eq_top_iff, TopologicalSpace.Opens.ext_iff, Set.ext_iff]
   grind
 

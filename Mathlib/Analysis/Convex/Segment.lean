@@ -47,13 +47,12 @@ section SMul
 
 variable (𝕜) [SMul 𝕜 E] {s : Set E} {x y : E}
 
-/-- Segments in a vector space. -/
+/-- Segments in a vector space. Denoted as `[x -[𝕜] y]` within the `Convex` namespace. -/
 def segment (x y : E) : Set E :=
   { z : E | ∃ a b : 𝕜, 0 ≤ a ∧ 0 ≤ b ∧ a + b = 1 ∧ a • x + b • y = z }
 
 /-- Open segment in a vector space. Note that `openSegment 𝕜 x x = {x}` instead of being `∅` when
-the base semiring has some element between `0` and `1`.
-Denoted as `[x -[𝕜] y]` within the `Convex` namespace. -/
+the base semiring has some element between `0` and `1`. -/
 def openSegment (x y : E) : Set E :=
   { z : E | ∃ a b : 𝕜, 0 < a ∧ 0 < b ∧ a + b = 1 ∧ a • x + b • y = z }
 
@@ -330,17 +329,29 @@ section LinearOrderedRing
 
 variable [Ring 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E] {x y : E}
 
-theorem midpoint_mem_segment [Invertible (2 : 𝕜)] (x y : E) : midpoint 𝕜 x y ∈ [x -[𝕜] y] := by
-  rw [segment_eq_image_lineMap]
-  exact ⟨⅟2, ⟨invOf_nonneg.mpr zero_le_two, invOf_le_one one_le_two⟩, rfl⟩
+theorem midpoint_mem_openSegment [Invertible (2 : 𝕜)] (x y : E) :
+    midpoint 𝕜 x y ∈ openSegment 𝕜 x y := by
+  rw [openSegment_eq_image_lineMap]
+  exact ⟨⅟2, ⟨invOf_pos.mpr two_pos, invOf_lt_one one_lt_two⟩, rfl⟩
 
-theorem mem_segment_sub_add [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x - y -[𝕜] x + y] := by
-  convert midpoint_mem_segment (𝕜 := 𝕜) (x - y) (x + y)
+theorem midpoint_mem_segment [Invertible (2 : 𝕜)] (x y : E) : midpoint 𝕜 x y ∈ [x -[𝕜] y] :=
+  openSegment_subset_segment _ _ _ <| midpoint_mem_openSegment _ _
+
+theorem mem_openSegment_sub_add [Invertible (2 : 𝕜)] (x y : E) :
+    x ∈ openSegment 𝕜 (x - y) (x + y) := by
+  convert midpoint_mem_openSegment (𝕜 := 𝕜) (x - y) (x + y)
   rw [midpoint_sub_add]
 
-theorem mem_segment_add_sub [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x + y -[𝕜] x - y] := by
-  convert midpoint_mem_segment (𝕜 := 𝕜) (x + y) (x - y)
+theorem mem_segment_sub_add [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x - y -[𝕜] x + y] :=
+  openSegment_subset_segment _ _ _ <| mem_openSegment_sub_add _ _
+
+theorem mem_openSegment_add_sub [Invertible (2 : 𝕜)] (x y : E) :
+    x ∈ openSegment 𝕜 (x + y) (x - y) := by
+  convert midpoint_mem_openSegment (𝕜 := 𝕜) (x + y) (x - y)
   rw [midpoint_add_sub]
+
+theorem mem_segment_add_sub [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x + y -[𝕜] x - y] :=
+  openSegment_subset_segment _ _ _ <| mem_openSegment_add_sub _ _
 
 @[simp]
 theorem left_mem_openSegment_iff [DenselyOrdered 𝕜] [IsTorsionFree 𝕜 E] :
@@ -595,14 +606,13 @@ protected lemma Icc_subset_segment {x y : {t : 𝕜 // 0 ≤ t}} :
   intro a ⟨hxa, hay⟩
   rw [← Subtype.coe_le_coe] at hxa hay
   rcases Icc_subset_segment ⟨hxa, hay⟩ with ⟨t₁, t₂, t₁_nonneg, t₂_nonneg, t_add, hta⟩
-  refine ⟨⟨t₁, t₁_nonneg⟩, ⟨t₂, t₂_nonneg⟩, zero_le _, zero_le _, ?_, ?_⟩ <;>
+  refine ⟨⟨t₁, t₁_nonneg⟩, ⟨t₂, t₂_nonneg⟩, zero_le, zero_le, ?_, ?_⟩ <;>
   ext <;> simpa
 
 protected lemma segment_eq_Icc {x y : {t : 𝕜 // 0 ≤ t}} (hxy : x ≤ y) :
     segment {t : 𝕜 // 0 ≤ t} x y = Icc x y := by
   refine subset_antisymm (segment_subset_Icc hxy) Nonneg.Icc_subset_segment
 
-set_option backward.isDefEq.respectTransparency false in
 protected lemma segment_eq_uIcc {x y : {t : 𝕜 // 0 ≤ t}} :
     segment {t : 𝕜 // 0 ≤ t} x y = uIcc x y := by
   rcases le_total x y with h | h

@@ -205,7 +205,6 @@ namespace Submodule
 
 variable [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem norm_subtypeL (K : Submodule 𝕜 E) [Nontrivial K] : ‖K.subtypeL‖ = 1 :=
   K.subtypeₗᵢ.norm_toContinuousLinearMap
 
@@ -257,7 +256,6 @@ theorem subsingleton_or_nnnorm_symm_pos [RingHomIsometric σ₁₂] (e : E ≃SL
 
 variable (𝕜)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coord_norm (x : E) (h : x ≠ 0) : ‖coord 𝕜 x h‖ = ‖x‖⁻¹ := by
   have hx : 0 < ‖x‖ := norm_pos_iff.mpr h
@@ -283,7 +281,6 @@ variable {ι : Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField �
   [RingHomIsometric σ₁₂] [SeminormedAddCommGroup E] [SeminormedAddCommGroup F]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] (f : ι → E →SL[σ₁₂] F)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Equivalent characterizations for equicontinuity of a family of continuous linear maps
 between normed spaces. See also `WithSeminorms.equicontinuous_TFAE` for similar characterizations
 between spaces satisfying `WithSeminorms`. -/

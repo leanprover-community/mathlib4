@@ -8,6 +8,7 @@ module
 public import Mathlib.Order.Disjoint
 public import Mathlib.Order.RelIso.Basic
 public import Mathlib.Tactic.Monotonicity.Attr
+public import Mathlib.Tactic.PPWithUniv
 
 /-!
 # Order homomorphisms
@@ -120,6 +121,8 @@ section
 /-- `OrderHomClass F α b` asserts that `F` is a type of `≤`-preserving morphisms. -/
 abbrev OrderHomClass (F : Type*) (α β : outParam Type*) [LE α] [LE β] [FunLike F α β] :=
   RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop)
+
+to_dual_insert_cast OrderHomClass := by grind only [RelHomClass]
 
 /-- `OrderIsoClass F α β` states that `F` is a type of order isomorphisms.
 
@@ -284,7 +287,7 @@ instance : Inhabited (α →o α) :=
 
 /-- The preorder structure of `α →o β` is pointwise inequality: `f ≤ g ↔ ∀ a, f a ≤ g a`. -/
 instance : Preorder (α →o β) :=
-  @Preorder.lift (α →o β) (α → β) _ toFun
+  @Preorder.lift (α →o β) (α → β) _ DFunLike.coe
 
 instance {β : Type*} [PartialOrder β] : PartialOrder (α →o β) :=
   @PartialOrder.lift (α →o β) (α → β) _ toFun ext
@@ -460,7 +463,7 @@ maps `Π i, α →o π i`. -/
 def piIso : (α →o ∀ i, π i) ≃o ∀ i, α →o π i where
   toFun f i := (Pi.evalOrderHom i).comp f
   invFun := pi
-  map_rel_iff' := forall_swap
+  map_rel_iff' := forall_comm
 
 /-- `Subtype.val` as a bundled monotone function. -/
 @[simps -fullyApplied]
@@ -603,15 +606,15 @@ also has `(· > ·)` well-founded. -/]
 protected theorem wellFoundedLT [WellFoundedLT β] (f : α ↪o β) : WellFoundedLT α where
   wf := f.wellFounded IsWellFounded.wf
 
--- `to_dual` cannot yet reorder arguments of arguments
 /-- To define an order embedding from a partial order to a preorder it suffices to give a function
 together with a proof that it satisfies `f a ≤ f b ↔ a ≤ b`.
 -/
+@[to_dual self]
 def ofMapLEIff {α β} [PartialOrder α] [Preorder β] (f : α → β) (hf : ∀ a b, f a ≤ f b ↔ a ≤ b) :
     α ↪o β :=
   RelEmbedding.ofMapRelIff f hf
 
-@[simp]
+@[simp, to_dual self]
 theorem coe_ofMapLEIff {α β} [PartialOrder α] [Preorder β] {f : α → β} (h) :
     ⇑(ofMapLEIff f h) = f :=
   rfl
@@ -715,15 +718,8 @@ section LE
 
 variable [LE α] [LE β] [LE γ]
 
-instance : EquivLike (α ≃o β) α β where
-  coe f := f.toFun
-  inv f := f.invFun
-  left_inv f := f.left_inv
-  right_inv f := f.right_inv
-  coe_injective' f g h₁ h₂ := by
-    obtain ⟨⟨_, _⟩, _⟩ := f
-    obtain ⟨⟨_, _⟩, _⟩ := g
-    congr
+instance : EquivLike (α ≃o β) α β :=
+  inferInstance
 
 instance : OrderIsoClass (α ≃o β) α β where
   map_le_map_iff f _ _ := f.map_rel_iff'
@@ -855,7 +851,6 @@ theorem self_trans_symm (e : α ≃o β) : e.trans e.symm = OrderIso.refl α :=
 theorem symm_trans_self (e : α ≃o β) : e.symm.trans e = OrderIso.refl β :=
   RelIso.symm_trans_self e
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An order isomorphism between the domains and codomains of two prosets of
 order homomorphisms gives an order isomorphism between the two function prosets. -/
 @[simps apply symm_apply]
@@ -961,25 +956,22 @@ theorem lt_symm_apply (e : α ≃o β) {x : α} {y : β} : x < e.symm y ↔ e x 
   rw [← e.lt_iff_lt, e.apply_symm_apply]
 
 /-- Converts an `OrderIso` into a `RelIso (<) (<)`. -/
-@[to_dual toRelIsoGT /-- Converts an `OrderIso` into a `RelIso (>) (>)`. -/]
+@[to_dual /-- Converts an `OrderIso` into a `RelIso (>) (>)`. -/]
 def toRelIsoLT (e : α ≃o β) : ((· < ·) : α → α → Prop) ≃r ((· < ·) : β → β → Prop) :=
   ⟨e.toEquiv, lt_iff_lt e⟩
 
-@[to_dual (attr := simp) toRelIsoGT_apply]
+@[to_dual (attr := simp)]
 theorem toRelIsoLT_apply (e : α ≃o β) (x : α) : e.toRelIsoLT x = e x :=
   rfl
 
+@[to_dual]
 theorem toRelIsoLT_symm (e : α ≃o β) : e.symm.toRelIsoLT = e.toRelIsoLT.symm :=
   rfl
 
-@[to_dual existing toRelIsoLT_symm] -- TODO: `to_dual` should be able to generate this by itself.
-theorem toRelIsoGT_symm (e : α ≃o β) : e.symm.toRelIsoGT = e.toRelIsoGT.symm :=
-  rfl
-
-@[to_dual (attr := simp) coe_toRelIsoGT]
+@[to_dual (attr := simp)]
 theorem coe_toRelIsoLT (e : α ≃o β) : ⇑e.toRelIsoLT = e := rfl
 
-@[to_dual (attr := simp) coe_symm_toRelIsoGT]
+@[to_dual (attr := simp)]
 theorem coe_symm_toRelIsoLT (e : α ≃o β) : ⇑e.toRelIsoLT.symm = e.symm := rfl
 
 /-- Converts a `RelIso (<) (<)` into an `OrderIso`. -/
@@ -1029,29 +1021,20 @@ def ofCmpEqCmp {α β} [LinearOrder α] [LinearOrder β] (f : α → β) (g : β
 
 /-- To show that `f : α →o β` and `g : β →o α` make up an order isomorphism it is enough to show
 that `g` is the inverse of `f`. -/
-@[simps! apply]
-def ofHomInv {F G : Type*} [FunLike F α β] [OrderHomClass F α β] [FunLike G β α]
-    [OrderHomClass G β α] (f : F) (g : G)
-    (h₁ : (f : α →o β).comp (g : β →o α) = OrderHom.id)
-    (h₂ : (g : β →o α).comp (f : α →o β) = OrderHom.id) :
+@[simps apply]
+def ofHomInv (f : α →o β) (g : β →o α) (h₁ : f.comp g = .id) (h₂ : g.comp f = .id) :
     α ≃o β where
   toFun := f
   invFun := g
   left_inv := DFunLike.congr_fun h₂
   right_inv := DFunLike.congr_fun h₁
-  map_rel_iff' := @fun a b =>
-    ⟨fun h => by
-      replace h := map_rel g h
-      rwa [Equiv.coe_fn_mk, show g (f a) = (g : β →o α).comp (f : α →o β) a from rfl,
-        show g (f b) = (g : β →o α).comp (f : α →o β) b from rfl, h₂] at h,
-      fun h => (f : α →o β).monotone h⟩
+  map_rel_iff' :=
+    { mp h := by simpa [h₂] using show g.comp f _ ≤ g.comp f _ from map_rel g h
+      mpr h := f.monotone h }
 
 @[simp]
-theorem ofHomInv_symm_apply {F G : Type*} [FunLike F α β] [OrderHomClass F α β] [FunLike G β α]
-    [OrderHomClass G β α] (f : F) (g : G)
-    (h₁ : (f : α →o β).comp (g : β →o α) = OrderHom.id)
-    (h₂ : (g : β →o α).comp (f : α →o β) = OrderHom.id) (a : β) :
-    (ofHomInv f g h₁ h₂).symm a = g a := rfl
+theorem ofHomInv_symm_apply (f : α →o β) (g : β →o α) (h₁ : f.comp g = .id) (h₂ : g.comp f = .id)
+    (a : β) : (ofHomInv f g h₁ h₂).symm a = g a := rfl
 
 /-- Order isomorphism between `α → β` and `β`, where `α` has a unique element. -/
 @[simps! toEquiv apply]

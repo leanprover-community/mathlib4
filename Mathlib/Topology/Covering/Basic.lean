@@ -150,7 +150,7 @@ theorem restrictPreimage {x : X} (hxs : x ∈ s) (h : IsEvenlyCovered f x I) :
 theorem subtypeVal_comp (hs : IsOpen s) {x : s} {f : E → s} (h : IsEvenlyCovered f x I) :
     IsEvenlyCovered (Subtype.val ∘ f) x I :=
   have ⟨inst, U, hxU, hU, hfU, H, hH⟩ := h
-  have : Subtype.val ∘ f ⁻¹' (Subtype.val '' U) = f ⁻¹' U := by ext; simp
+  have : Subtype.val ∘ f ⁻¹' Subtype.val '' U = f ⁻¹' U := by ext; simp
   ⟨inst, Subtype.val '' U, ⟨x, hxU, rfl⟩, hs.isOpenMap_subtype_val _ hU, by rwa [this], .trans
     (.setCongr this) (H.trans <| .prodCongr (IsEmbedding.subtypeVal.homeomorphImage U) (.refl I)),
     fun _ ↦ congr_arg Subtype.val (hH _)⟩
@@ -162,7 +162,7 @@ theorem comp_subtypeVal (hs : IsOpen s) (hfs : IsOpen (f ⁻¹' s)) {x : X} (hx 
     <| Set.not_nonempty_iff_eq_empty.mp fun ⟨e, he⟩ ↦ isEmptyElim (H ⟨⟨e, he.1⟩, he.2⟩).2) fun _ ↦
   have hUs : U ⊆ s := fun y hy ↦ by
     convert Set.mem_preimage.mp (H.symm (⟨y, hy⟩, Classical.arbitrary I)).1.2; simp [← hH]
-  have : Subtype.val '' ((fun e : f ⁻¹' s ↦ f e) ⁻¹' U) = f ⁻¹' U := by ext; simpa using @hUs _
+  have : Subtype.val '' (fun e : f ⁻¹' s ↦ f e) ⁻¹' U = f ⁻¹' U := by ext; simpa using @hUs _
   ⟨inst, U, hxU, hU, this ▸ hfs.isOpenMap_subtype_val _ hfU, .trans (.symm <| .trans
     (IsEmbedding.subtypeVal.homeomorphImage _) <| .setCongr this) H, fun x ↦ by
     dsimp; convert hH ⟨⟨x, hUs x.2⟩, x.2⟩ using 4; rw [Homeomorph.symm_apply_eq]; rfl⟩
@@ -434,7 +434,7 @@ that covers `f⁻¹(V)` such that for every `i`,
  2. `V` is contained in the image `f(Uᵢ)`,
  3. the open sets in `V` are determined by their preimages in `Uᵢ`.
 
-Then `f` admits a `Trivialization` over the base set `V`. -/
+Then `f` admits a `Bundle.Trivialization` over the base set `V`. -/
 @[simps source target baseSet] noncomputable def IsOpen.trivializationDiscrete [Nonempty (X → E)]
     {ι} [Nonempty ι] [TopologicalSpace ι] [DiscreteTopology ι] (U : ι → Set E) (V : Set X)
     (open_V : IsOpen V) (open_iff : ∀ i {W}, W ⊆ V → (IsOpen W ↔ IsOpen (f ⁻¹' W ∩ U i)))

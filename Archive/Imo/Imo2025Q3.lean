@@ -154,8 +154,8 @@ lemma isBonza : IsBonza fExample := by
     · simp [fExample, ch1]
     by_cases ch2 : a = 2
     · simp only [fExample, ch2, dvd_refl, not_true_eq_false, ↓reduceIte, Nat.cast_ofNat,
-        Nat.two_dvd_ne_zero, Nat.cast_ite, Nat.cast_one, Nat.cast_pow, ite_pow, one_pow,
-        Int.reducePow]
+        Nat.two_dvd_ne_zero]
+      push_cast
       split_ifs with hb1 hb2
       · grind [sq_mod_four_eq_one_of_odd]
       · simp [hb2]
@@ -179,7 +179,8 @@ lemma isBonza : IsBonza fExample := by
 
 theorem apply_le {f : ℕ → ℕ} (hf : IsBonza f) {n : ℕ} (hn : 0 < n) : f n ≤ 4 * n := by
   by_cases hnf : ∀ x > (0 : ℕ), f x = x
-  · simpa [hnf n hn] using by lia
+  · simp [hnf n hn]
+    lia
   · obtain ⟨k, hk⟩ := hf.not_id_two_pow hnf n hn
     rcases n.even_or_odd with ch | ch
     · have apply_dvd_three_pow_sub_one : f n ∣ 3 ^ n - 1 := by
@@ -205,7 +206,8 @@ theorem apply_le {f : ℕ → ℕ} (hf : IsBonza f) {n : ℕ} (hn : 0 < n) : f n
         have : Odd (f n) := ch.pow.of_dvd_nat (hf.apply_dvd_pow hn)
         rw [hk, odd_pow_iff nh] at this
         contradiction
-      simpa [hk, this] using by lia
+      simp [hk, this]
+      lia
 
 end fExample
 

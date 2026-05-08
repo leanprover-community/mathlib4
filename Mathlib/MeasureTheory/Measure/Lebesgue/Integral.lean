@@ -79,7 +79,6 @@ of finite integrals, see `intervalIntegral.integral_comp_neg`.
 -/
 
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem integral_comp_neg_Iic {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (c : ℝ) (f : ℝ → E) : (∫ x in Iic c, f (-x)) = ∫ x in Ioi (-c), f x := by
@@ -95,7 +94,6 @@ theorem integral_comp_neg_Ioi {E : Type*} [NormedAddCommGroup E] [NormedSpace �
   rw [← neg_neg c, ← integral_comp_neg_Iic]
   simp only [neg_neg]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem integral_comp_abs {f : ℝ → ℝ} :
     ∫ x, f |x| = 2 * ∫ x in Ioi (0 : ℝ), f x := by
   have eq : ∫ (x : ℝ) in Ioi 0, f |x| = ∫ (x : ℝ) in Ioi 0, f x := by
@@ -119,6 +117,6 @@ theorem integral_comp_abs {f : ℝ → ℝ} :
         refine setIntegral_congr_fun measurableSet_Iic (fun _ hx => ?_)
         rw [abs_eq_neg_self.mpr (by exact hx)]
   · have : ¬ Integrable (fun x => f |x|) := by
-      contrapose! hf
+      contrapose hf
       exact hf.integrableOn
     rw [← eq, integral_undef hf, integral_undef this, mul_zero]

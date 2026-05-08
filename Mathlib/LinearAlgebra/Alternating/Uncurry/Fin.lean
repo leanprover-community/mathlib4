@@ -114,15 +114,9 @@ def alternatizeUncurryFin (f : M →ₗ[R] M [⋀^Fin n]→ₗ[R] N) :
       _ = 0 := by
         rw [hvij, neg_one_pow_smul_map_removeNth_add_eq_zero_of_eq] <;> assumption
 
-@[deprecated (since := "2025-09-30")]
-alias uncurryFin := alternatizeUncurryFin
-
 theorem alternatizeUncurryFin_apply (f : M →ₗ[R] M [⋀^Fin n]→ₗ[R] N) (v : Fin (n + 1) → M) :
     alternatizeUncurryFin f v = ∑ i : Fin (n + 1), (-1) ^ (i : ℕ) • f (v i) (removeNth i v) := by
   simp [alternatizeUncurryFin]
-
-@[deprecated (since := "2025-09-30")]
-alias uncurryFin_apply := alternatizeUncurryFin_apply
 
 @[simp]
 theorem alternatizeUncurryFin_add (f g : M →ₗ[R] M [⋀^Fin n]→ₗ[R] N) :
@@ -130,17 +124,11 @@ theorem alternatizeUncurryFin_add (f g : M →ₗ[R] M [⋀^Fin n]→ₗ[R] N) :
   ext
   simp [alternatizeUncurryFin_apply, Finset.sum_add_distrib]
 
-@[deprecated (since := "2025-09-30")]
-alias uncurryFin_add := alternatizeUncurryFin_add
-
 @[simp]
 lemma alternatizeUncurryFin_curryLeft (f : M [⋀^Fin (n + 1)]→ₗ[R] N) :
     alternatizeUncurryFin (curryLeft f) = (n + 1) • f := by
   ext v
   simp [alternatizeUncurryFin_apply, ← map_insertNth]
-
-@[deprecated (since := "2025-09-30")]
-alias uncurryFin_curryLeft := alternatizeUncurryFin_curryLeft
 
 variable {S : Type*} [Monoid S] [DistribMulAction S N] [SMulCommClass R S N]
 
@@ -150,9 +138,6 @@ theorem alternatizeUncurryFin_smul (c : S) (f : M →ₗ[R] M [⋀^Fin n]→ₗ[
   ext v
   simp [alternatizeUncurryFin_apply, smul_comm _ c, Finset.smul_sum]
 
-@[deprecated (since := "2025-09-30")]
-alias uncurryFin_smul := alternatizeUncurryFin_smul
-
 /-- `AlternatingMap.alternatizeUncurryFin` as a linear map. -/
 @[simps! apply]
 def alternatizeUncurryFinLM : (M →ₗ[R] M [⋀^Fin n]→ₗ[R] N) →ₗ[R] M [⋀^Fin (n + 1)]→ₗ[R] N where
@@ -160,10 +145,6 @@ def alternatizeUncurryFinLM : (M →ₗ[R] M [⋀^Fin n]→ₗ[R] N) →ₗ[R] M
   map_add' := alternatizeUncurryFin_add
   map_smul' := alternatizeUncurryFin_smul
 
-@[deprecated (since := "2025-09-30")]
-alias uncurryFinLM := alternatizeUncurryFinLM
-
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is a bilinear map taking values in the space of alternating maps,
 then evaluation of the twice uncurried `f` on a tuple of vectors `v`
 can be represented as a sum of
@@ -174,7 +155,7 @@ f(v_j, v_i; v_0, \dots, \hat{v_i}, \dots, \hat{v_j}-)
 $$
 
 over all `(i j : Fin (n + 2))`, `i < j`, taken with appropriate signs.
-Here $\hat{v_i}$$ and $\hat{v_j}$$ mean that these vectors are removed from the tuple.
+Here $\hat{v_i}$ and $\hat{v_j}$ mean that these vectors are removed from the tuple.
 
 We use pairs of `i j : Fin (n + 1)`, `i ≤ j`,
 to encode pairs `(i.castSucc : Fin (n + 2), j.succ : Fin (n + 2))`,
@@ -216,9 +197,5 @@ theorem alternatizeUncurryFin_alternatizeUncurryFinLM_comp_of_symmetric
     alternatizeUncurryFin (alternatizeUncurryFinLM ∘ₗ f) = 0 := by
   ext v
   simp [alternatizeUncurryFin_alternatizeUncurryFinLM_comp_apply, hf (v <| .castSucc _)]
-
-@[deprecated (since := "2025-09-30")]
-alias uncurryFin_uncurryFinLM_comp_of_symmetric :=
-  alternatizeUncurryFin_alternatizeUncurryFinLM_comp_of_symmetric
 
 end AlternatingMap

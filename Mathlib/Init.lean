@@ -3,6 +3,7 @@ module  -- shake: keep-all, shake: keep-downstream
 public import Lean.Linter.Sets -- for the definition of linter sets
 public import Lean.LibrarySuggestions.Default -- for `+suggestions` modes in tactics
 public import Mathlib.Lean.Linter -- linter utilities; will be transitively imported in #31134
+public import Mathlib.Tactic.Lemma
 public import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
 public import Mathlib.Tactic.Linter.DirectoryDependency
 public import Mathlib.Tactic.Linter.DocPrime
@@ -12,8 +13,6 @@ public import Mathlib.Tactic.Linter.GlobalAttributeIn
 public import Mathlib.Tactic.Linter.HashCommandLinter
 public import Mathlib.Tactic.Linter.Header
 public import Mathlib.Tactic.Linter.FlexibleLinter
--- The following module imports `Batteries.Tactic.Lint`, where `#lint` is defined.
-public import Mathlib.Tactic.Linter.Lint
 public import Mathlib.Tactic.Linter.Multigoal
 public import Mathlib.Tactic.Linter.OldObtain
 public import Mathlib.Tactic.Linter.PrivateModule
@@ -24,13 +23,23 @@ public import Mathlib.Tactic.Linter.UnusedTactic
 public import Mathlib.Tactic.Linter.UnusedInstancesInType
 public import Mathlib.Tactic.Linter.Style
 public import Mathlib.Tactic.Linter.Whitespace
--- This import makes the `#min_imports` command available globally.
-public import Mathlib.Tactic.MinImports
 public import Mathlib.Tactic.TacticAnalysis.Declarations
+public import Mathlib.Tactic.TypeStar
 -- This is a redundant import, but it is needed so that
 -- the linter doesn't complain about `ParseCommand` not importing `Header`.
 -- This can be removed after https://github.com/leanprover-community/mathlib4/pull/32419
 public import Mathlib.Util.ParseCommand
+-- This import makes the `#help` command available globally.
+public import Batteries.Tactic.HelpCmd
+-- This import makes the `proof_wanted` command available globally.
+public import Batteries.Util.ProofWanted
+-- This import makes the `#redundant_imports`/`#min_imports`/`#find_home`/`#import_diff` commands
+-- available globally.
+public import ImportGraph.Tools
+-- The following module imports `Batteries.Tactic.Lint`, where `#lint` is defined.
+public import Mathlib.Tactic.Linter.Lint
+-- This import makes the `#min_imports in` command available globally.
+public import Mathlib.Tactic.MinImports
 
 /-!
 This is the root file in Mathlib: it is imported by virtually *all* Mathlib files.
@@ -113,6 +122,8 @@ register_linter_set linter.nightlyRegressionSet :=
 -/
 register_linter_set linter.weeklyLintSet :=
   linter.tacticAnalysis.mergeWithGrind
+  linter.style.docStringVerso
+  linter.tacticAnalysis.verifyGrindOnly
 
 -- Check that all linter options mentioned in the mathlib standard linter set exist.
 open Lean Elab.Command Linter Mathlib.Linter Style UnusedInstancesInType
