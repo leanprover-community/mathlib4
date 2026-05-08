@@ -143,14 +143,6 @@ theorem card_image_offDiag (s : Finset α) :
   rw [Nat.choose_two_right, Nat.mul_sub_left_distrib, mul_one, ← offDiag_card,
     Nat.div_eq_of_eq_mul_right Nat.zero_lt_two (two_mul_card_image_offDiag s).symm]
 
-/-- `Sym2.IsDiag.elem` and `Sym2.diag` as an equivalence. -/
-@[simps]
-def isDiagElemEquiv : { a : Sym2 α // a.IsDiag } ≃ α where
-  toFun x := x.2.elem
-  invFun a := ⟨diag a, rfl⟩
-  left_inv x := by ext; simp
-  right_inv a := by simp [diag]
-
 theorem card_subtype_diag [Fintype α] : card { a : Sym2 α // a.IsDiag } = card α :=
   card_congr isDiagElemEquiv
 

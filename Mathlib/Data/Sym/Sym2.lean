@@ -540,6 +540,14 @@ theorem IsDiag.elem_mk {a b : α} (h : IsDiag s(a, b)) : h.elem = a := rfl
 theorem IsDiag.diag_elem (h : z.IsDiag) : diag h.elem = z := by
   cases z; cases h; rfl
 
+/-- `Sym2.IsDiag.elem` and `Sym2.diag` as an equivalence. -/
+@[simps]
+def isDiagElemEquiv : { a : Sym2 α // a.IsDiag } ≃ α where
+  toFun x := x.2.elem
+  invFun a := ⟨diag a, rfl⟩
+  left_inv x := by ext; simp
+  right_inv a := by simp [diag]
+
 /-- The set of all `Sym2 α` elements on the diagonal. -/
 def diagSet : Set (Sym2 α) := {z | z.IsDiag}
 
