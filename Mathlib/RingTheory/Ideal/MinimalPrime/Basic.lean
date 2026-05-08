@@ -62,6 +62,7 @@ variable {I J}
 theorem Ideal.IsPrime.of_mem_minimalPrimes {p : Ideal R} (h : p ∈ minimalPrimes R) : p.IsPrime :=
   h.1.1
 
+/-- Variant of `Ideal.IsMinimalPrime.isPrime` for the set of all minimal primes of `R`. -/
 theorem Ideal.IsPrime.of_mem_minimalPrimes' {p : Ideal R} (h : p ∈ minimalPrimes R) : p.IsPrime :=
   h.1.1
 
