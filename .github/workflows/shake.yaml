@@ -38,7 +38,7 @@ jobs:
       - name: lake shake
         id: shake
         run: |
-          lake shake --add-public --keep-implied --keep-prefix --fix --explain > explain.txt 2>&1
+          lake shake --add-public --keep-implied --keep-prefix --fix --explain Mathlib Archive Counterexamples MathlibTest > explain.txt 2>&1
           if git diff --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
