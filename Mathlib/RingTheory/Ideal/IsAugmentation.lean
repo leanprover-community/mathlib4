@@ -109,7 +109,7 @@ open AlgHom RingHom Submodule Ideal.Quotient
 
 open TensorProduct LinearMap
 
-variable (R : Type*) [CommRing R] {A : Type*} [CommRing A] [Algebra R A] (J : Ideal A)
+variable (R : Type*) [CommSemiring R] {A : Type*} [CommRing A] [Algebra R A] (J : Ideal A)
   {M : Type*} [AddCommGroup M] [Module A M] {M₁ M₂ : Submodule A M}
 
 namespace LinearMap
@@ -181,7 +181,8 @@ theorem LinearMap.isCompl_baseChange (hM : IsCompl M₁ M₂)
   rw [← isCompl_restrictScalars_iff A]
   exact isCompl_lTensor R hM
 
-theorem Algebra.baseChange_bot {R S : Type*} [CommRing R] [Algebra A R] [CommRing S] [Algebra A S] :
+theorem Algebra.baseChange_bot {A R S : Type*} [CommSemiring A]
+    [CommSemiring R] [Algebra A R] [Semiring S] [Algebra A S] :
     Subalgebra.toSubmodule ⊥ = LinearMap.range
       (LinearMap.baseChange R (Subalgebra.toSubmodule (⊥ : Subalgebra A S)).subtype) := by
   ext x
@@ -207,11 +208,11 @@ theorem Algebra.baseChange_bot {R S : Type*} [CommRing R] [Algebra A R] [CommRin
       obtain ⟨y', hy⟩ := hy
       use x' + y'
       simp [hx, hy, map_add]
-#check Algebra.baseChange_bot
 
 theorem Algebra.TensorProduct.map_includeRight_eq_range_baseChange
-    {S : Type*} [CommRing S] [Algebra A S] {I : Ideal S}
-    (R : Type*) [CommRing R] [Algebra A R] :
+    {A : Type*} [CommSemiring A]
+    {S : Type*} [Semiring S] [Algebra A S] {I : Ideal S}
+    (R : Type*) [CommSemiring R] [Algebra A R] :
     (I.map Algebra.TensorProduct.includeRight).restrictScalars R
       = LinearMap.range ((Submodule.restrictScalars A I).subtype.baseChange R) := by
   ext x
@@ -442,22 +443,22 @@ section Augmentation
 
 namespace Ideal
 
-variable (R : Type*) [Semiring R] {A : Type*} [CommSemiring A] [Algebra A R] (J : Ideal A)
+variable (R : Type*) [CommSemiring R] {A : Type*} [CommSemiring A] [Algebra A R] (J : Ideal A)
 
 open TensorProduct Ideal LinearMap Submodule
 
 /-- If `I` is an augmentation ideal of the `A`-algebra `R` and `R` is an `A`-algebra,
 then the ideal `R ⊗[A] I` of `R ⊗[A] S` is an augmentation ideal. -/
 theorem isAugmentation_baseChange
-    {S : Type*} [CommRing S] [Algebra A S] {I : Ideal S}
-    (hI : IsAugmentation A I)
-    -- (hI : IsCompl (1 : Submodule A S) (I.restrictScalars A))
+    {A : Type*} [CommRing A]
+    {S : Type*} [Ring S] [Algebra A S]
+    {I : Ideal S} (hI : IsAugmentation A I)
     {R : Type*} [CommRing R] [Algebra A R] :
     (Ideal.map Algebra.TensorProduct.includeRight I : Ideal (R ⊗[A] S)).IsAugmentation R := by
-  unfold IsAugmentation
-  unfold IsAugmentation at hI
-  have := isCompl_baseChange hI R
-  rw [Algebra.baseChange_bot, Algebra.TensorProduct.map_includeRight_eq_range_baseChange]
+  rw [isAugmentation_iff, Algebra.TensorProduct.map_includeRight_eq_range_baseChange,
+    ← Algebra.toSubmodule_bot, Algebra.baseChange_bot]
+  apply isCompl_baseChange
+  rwa [Algebra.toSubmodule_bot]
 
 theorem isAugmentation_tensorProduct (A : Type*) [CommRing A] {R S : Type*} [CommRing R]
     [Algebra A R] {R₀ : Subalgebra A R} {I : Ideal R} (hI : I.IsAugmentation R₀) [CommRing S]
