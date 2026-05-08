@@ -355,7 +355,6 @@ instance [HasZeroObject C] : HasZeroObject W.Localization' := W.Q'.hasZeroObject
 
 end Localization
 
-
 lemma Functor.faithful_of_comp_cancel_zero_of_hasLeftCalculusOfFractions
     {E : Type*} [Category* E] (F : D ⥤ E)
     [W.HasLeftCalculusOfFractions]
