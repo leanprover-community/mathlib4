@@ -227,7 +227,6 @@ nonrec lemma Scheme.Hom.one_le_finrank_iff_surjective : 1 ≤ finrank f ↔ Surj
     obtain ⟨x, rfl⟩ := f.surjective y
     exact one_le_finrank_map f x
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The rank of a finite flat locally finitely presented morphism is locally constant. -/
 nonrec lemma Scheme.Hom.isLocallyConstant_finrank [LocallyOfFinitePresentation f] :
     IsLocallyConstant (finrank f) := by
