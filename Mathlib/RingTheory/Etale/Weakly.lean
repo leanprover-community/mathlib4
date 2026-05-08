@@ -21,7 +21,7 @@ In this file we define weakly étale algebras. An `R`-algebra `S` is weakly éta
   a weakly étale algebra of finite presentation is étale (@chrisflav).
 -/
 
-@[expose] public section
+public section
 
 universe u u₁ u₂ u₃ u₄ u₅
 
@@ -41,7 +41,6 @@ attribute [instance] WeaklyEtale.flat
 
 namespace WeaklyEtale
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] ULift.algebra' in
 lemma ulift_iff : WeaklyEtale (ULift.{u₁} R) (ULift.{u₂} S) ↔ WeaklyEtale R S := by
   rw [weaklyEtale_iff, weaklyEtale_iff, Module.Flat.ulift_left_iff, Module.Flat.ulift_right_iff]
@@ -54,18 +53,17 @@ lemma ulift_iff : WeaklyEtale (ULift.{u₁} R) (ULift.{u₂} S) ↔ WeaklyEtale 
 instance (priority := low) [Etale R S] : WeaklyEtale R S where
   flat_lmul' := by
     algebraize [Algebra.TensorProduct.lmul' R (S := S) |>.toRingHom]
-    have : IsScalarTower R (S ⊗[R] S) S := .of_algHom (Algebra.TensorProduct.lmul' R (S := S))
     have : Etale R (S ⊗[R] S) := .comp _ S _
     have : Etale (S ⊗[R] S) S := .of_restrictScalars R _ _
     exact Smooth.flat (S ⊗[R] S) S
 
-@[stacks 092H]
+@[stacks 092H "(2)"]
 instance {T : Type*} [CommRing T] [Algebra R T] [WeaklyEtale R S] :
     WeaklyEtale T (T ⊗[R] S) where
   flat_lmul' := by
     let e : T ⊗[R] S ⊗[T] (T ⊗[R] S) ≃ₐ[T] T ⊗[R] (S ⊗[R] S) :=
       (Algebra.TensorProduct.cancelBaseChange _ _ T _ _).trans
-        (TensorProduct.assoc _ _ _ _ _ _)
+        (TensorProduct.assoc ..)
     have : TensorProduct.lmul' T (S := T ⊗[R] S) =
         (TensorProduct.map (.id T T) (TensorProduct.lmul' R)).comp e.toAlgHom := by
       ext <;> simp [e, TensorProduct.one_def]
@@ -76,7 +74,7 @@ instance {T : Type*} [CommRing T] [Algebra R T] [WeaklyEtale R S] :
 
 set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] TensorProduct.rightAlgebra ULift.algebra' in
-@[stacks 092J]
+@[stacks 092J "(2)"]
 lemma trans (R : Type u₁) (S : Type u₂) [CommRing R] [CommRing S] [Algebra R S]
     (T : Type u₃) [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
     [WeaklyEtale R S] [WeaklyEtale S T] : WeaklyEtale R T := by
@@ -85,7 +83,7 @@ lemma trans (R : Type u₁) (S : Type u₂) [CommRing R] [CommRing S] [Algebra R
   · have heq : TensorProduct.lmul' (S := ULift.{max u₁ u₂ u₃} T) (ULift R) =
         AlgHom.comp ((TensorProduct.lmul' (S := ULift.{max u₁ u₂ u₃} T)
           (ULift.{max u₁ u₂ u₃} S)).restrictScalars (ULift.{max u₁ u₂ u₃} R))
-          (TensorProduct.mapOfCompatibleSMul _ _ _ _ _) := by
+          (TensorProduct.mapOfCompatibleSMul ..) := by
       ext <;> simp
     rw [heq]
     refine .comp ?_ ?_
