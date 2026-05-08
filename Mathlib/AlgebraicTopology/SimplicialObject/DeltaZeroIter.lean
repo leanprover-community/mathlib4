@@ -11,7 +11,7 @@ public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 /-!
 # Iterations of `δ 0` and `σ 0`
 
-This file introduce morphisms `δ₀Iter i` and `σ₀Iter i` for simplicial objects:
+This file introduces morphisms `δ₀Iter i` and `σ₀Iter i` for simplicial objects:
 they are obtained as the `i`th iteration of `δ 0` or `σ 0`.
 
 -/
