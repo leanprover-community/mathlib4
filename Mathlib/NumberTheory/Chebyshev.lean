@@ -62,7 +62,7 @@ Parts of this file were upstreamed from the PrimeNumberTheoremAnd project by Kon
 
 open Nat hiding log
 open Finset Real
-open ArithmeticFunction hiding log id
+open ArithmeticFunction hiding log 
 open scoped Nat.Prime
 
 namespace Chebyshev
