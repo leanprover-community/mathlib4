@@ -145,16 +145,6 @@ theorem LocallyConvexSpace.convex_open_symm_basis_zero [LocallyConvexSpace 𝕜 
       · rwa [← neg_neg t, Set.neg_mem_neg]
       · simp [hy]
 
-variable {E} in
-theorem closure_subset_of_nhds_zero_symm_add_subset {s t : Set E}
-    (hs₀ : s ∈ 𝓝 0) (h_symm : ∀ x ∈ s, -x ∈ s) (hs : s + s ⊆ t) :
-    closure s ⊆ t := by
-  intro y hy
-  obtain ⟨_, ⟨b, hb, rfl⟩, hc⟩ :=
-    mem_closure_iff_nhds.mp hy ((y + ·) '' s)
-      (by simpa using (isOpenMap_add_left y).image_mem_nhds hs₀)
-  simpa using hs (Set.add_mem_add hc (h_symm b hb))
-
 theorem LocallyConvexSpace.convex_open_symm_add_closure_subset_hasAntitoneBasis_zero
     [LocallyConvexSpace 𝕜 E] [FirstCountableTopology E] : ∃ x : ℕ → Set E,
     (∀ n, 0 ∈ x n ∧ IsOpen (x n) ∧ Convex 𝕜 (x n) ∧ (∀ y ∈ x n, -y ∈ x n) ∧
@@ -186,7 +176,8 @@ theorem LocallyConvexSpace.convex_open_symm_add_closure_subset_hasAntitoneBasis_
   refine ⟨fun n => (φ n).1, ?_, ?_, ?_⟩
   · intro n
     refine ⟨(φ n).2.1, (φ n).2.2.1, (φ n).2.2.2.1, (φ n).2.2.2.2.1, (step n (φ n)).2, ?_⟩
-    exact closure_subset_of_nhds_zero_symm_add_subset ((φ (n+1)).2.2.1.mem_nhds (φ (n+1)).2.1)
+    exact closure_subset_of_mem_nhds_zero_symm_add_subset
+      ((φ (n+1)).2.2.1.mem_nhds (φ (n+1)).2.1)
       (φ (n+1)).2.2.2.2.1 (step n (φ n)).2
   · exact hx₁_basis.to_hasBasis (fun i _ ↦ ⟨i, trivial, (φ i).2.2.2.2.2⟩)
       (fun j _ ↦ hx₁_basis.toHasBasis.mem_iff.mp ((φ j).2.2.1.mem_nhds (φ j).2.1))
