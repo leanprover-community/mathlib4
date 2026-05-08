@@ -56,6 +56,18 @@ Linter that checks whether a structure should be in Prop.
     | some _ => return none -- TODO: enforce `YYYY-MM-DD` format
     | none => return m!"`deprecated` attribute without `since` date"
 
+/-- Checks that declarations only rely on standard axioms. -/
+@[env_linter] public def checkAxioms : Linter where
+  noErrorsFound := "no unusual axioms found."
+  errorsFound := "FOUND declarations which rely on new or disallowed axioms"
+  test declName := do
+    let axioms ← collectAxioms declName
+    let allowedAxioms := #[``propext, ``Quot.sound, ``Classical.choice]
+    unless axioms.all allowedAxioms.contains do
+      return m!"Declaration depends on disallowed axioms \
+        {axioms.filter (!allowedAxioms.contains ·)}"
+    return none
+
 end Batteries.Tactic.Lint
 
 namespace Mathlib.Linter
