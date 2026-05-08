@@ -297,6 +297,7 @@ lemma δ_eq (X Y : C) :
 variable [PreservesLimit (Functor.empty.{0} C) F]
   [PreservesLimitsOfShape (Discrete WalkingPair) F]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option linter.deprecated false in
 @[deprecated inferInstance (since := "2025-10-19")]
 instance :
@@ -306,6 +307,7 @@ instance :
     let : CartesianMonoidalCategory D := .ofHasFiniteProducts
     IsIso (η F) := by dsimp [η_eq]; infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 set_option linter.deprecated false in
 @[deprecated inferInstance (since := "2025-10-19")]
 instance (X Y : C) :

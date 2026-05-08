@@ -252,6 +252,7 @@ def RightResolution.unopFunctor (X₂ : C₂ᵒᵖ) :
     { f := φ.unop.f.unop
       comm := Quiver.Hom.op_inj φ.unop.comm }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of categories
 `(Φ.LeftResolution X₂)ᵒᵖ ≌ Φ.op.RightResolution (Opposite.op X₂)`. -/
 @[simps]

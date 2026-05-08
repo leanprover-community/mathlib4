@@ -79,6 +79,7 @@ noncomputable def ofExists
 
 variable {F} (d : F.WellOrderInductionData) [OrderBot J]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given `d : F.WellOrderInductionData`, `val₀ : F.obj (op ⊥)` and `j : J`,
 this is the data of an element `val : F.obj (op j)` such that the induced
@@ -150,8 +151,7 @@ instance [WellFoundedLT J] (j : J) : Subsingleton (d.Extension val₀ j) := by
     refine Subsingleton.intro (fun e₁ e₂ ↦ val_injective ?_)
     have h₁ := e₁.map_limit i hi (by rfl)
     have h₂ := e₂.map_limit i hi (by rfl)
-    simp only [homOfLE_refl, op_id, map_id, id_apply, OrderHom.Subtype.val_coe, comp_obj, op_obj,
-      Monotone.functor_obj, homOfLE_leOfHom] at h₁ h₂
+    simp only [homOfLE_refl, op_id, map_id, id_apply, homOfLE_leOfHom] at h₁ h₂
     rw [h₁, h₂]
     congr
     ext ⟨⟨l, hl⟩⟩
@@ -240,7 +240,6 @@ def limit (j : J) (hj : Order.IsSuccLimit j)
       dsimp
       rw [this]
       congr
-      dsimp
       ext ⟨⟨l, hl⟩⟩
       rw [map_lift _ _ _ _ _ (hl.trans hij')]
       apply compatibility

@@ -106,7 +106,7 @@ instance isSeparated : IsSeparated (toSpecZero 𝒜) := by
   rw [← cancel_mono (pullbackSpecIso ..).inv]
   apply pullback.hom_ext
   · simp only [Iso.trans_hom, congrHom_hom, Category.assoc, Iso.hom_inv_id, Category.comp_id,
-      limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, e₂, e₁,
+      limit.lift_π, PullbackCone.mk_π_app, e₂, e₁,
       pullbackSpecIso_inv_fst, ← Spec.map_comp]
     erw [pullbackDiagonalMapIdIso_inv_snd_fst]
     erw [pullbackAwayιIso_inv_fst]
@@ -115,7 +115,7 @@ instance isSeparated : IsSeparated (toSpecZero 𝒜) := by
     exact DFunLike.congr_fun (Algebra.TensorProduct.lift_comp_includeLeft
       (awayMapₐ 𝒜 j.2.2 rfl) (awayMapₐ 𝒜 i.2.2 (mul_comm _ _)) (fun _ _ ↦ .all _ _)).symm x
   · simp only [Iso.trans_hom, congrHom_hom, Category.assoc, Iso.hom_inv_id, Category.comp_id,
-      limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, pullbackSpecIso_inv_snd,
+      limit.lift_π, PullbackCone.mk_π_app, pullbackSpecIso_inv_snd,
       ← Spec.map_comp, e₂, e₁]
     erw [pullbackDiagonalMapIdIso_inv_snd_snd]
     erw [pullbackAwayιIso_inv_snd]

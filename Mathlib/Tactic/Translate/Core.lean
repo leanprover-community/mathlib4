@@ -835,6 +835,16 @@ partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt
     /- It can be that `src` holds reflexively but `tgt` doesn't, so we need to use `inferDefEqAttr`.
     For example in `Ici_inter_Iic : Ici a ∩ Iic b = Icc a b := rfl`. -/
     MetaM.run' <| inferDefEqAttr tgt
+    /- Under the strict `@[defeq]` inference of lean4#13492, `inferDefEqAttr` tags the
+    additive translation only `@[backward_defeq]` even when the multiplicative source is
+    `@[defeq]` and the additive proof is rfl-shaped, because `withReducibleAndInstances`
+    `isDefEq` checks fail systematically for `to_additive`-generated additive lemmas
+    (the additive instance projections don't reduce at instance transparency).
+    To keep the simp/dsimp behaviour symmetric between additive and multiplicative
+    versions, promote `tgt` to `@[defeq]` whenever the source is `@[defeq]` and the
+    translated proof is at least rfl-shaped (i.e. `@[backward_defeq]` was inferred). -/
+    if backwardDefeqAttr.hasTag (← getEnv) tgt && !defeqAttr.hasTag (← getEnv) tgt then
+      defeqAttr.setTag tgt
   if let some matcherInfo ← getMatcherInfo? src then
     Match.addMatcherInfo tgt matcherInfo
   -- necessary so that e.g. match equations can be generated for `tgt`

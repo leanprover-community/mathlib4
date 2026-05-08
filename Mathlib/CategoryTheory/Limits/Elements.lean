@@ -28,6 +28,8 @@ the category of elements of `A` has limits of shape `I` and the forgetful functo
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 universe w v₁ v u₁ u
@@ -46,6 +48,7 @@ namespace CreatesLimitsAux
 
 variable (F : I ⥤ A.Elements)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- (implementation) A system `(Fi, fi)_i` of elements induces an element in `lim_i A(Fi)`. -/
 noncomputable def liftedConeElement' : limit ((F ⋙ π A) ⋙ A) :=

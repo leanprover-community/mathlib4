@@ -51,6 +51,7 @@ namespace isColimitMapCocone
 
 include hc hF hK
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma surjective (x : c.pt.obj cX.pt) :
     ∃ (j : J) (x' : c.pt.obj (X.obj j)), x = (c.pt.mapCocone cX).ι.app j x' := by
@@ -106,6 +107,7 @@ lemma surjective (x : c.pt.obj cX.pt) :
   rw [h₁, hz, NatTrans.naturality_apply, h₂, ← comp_apply, ← Functor.map_comp, cX.w]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma injective (j : J) (x₁ x₂ : c.pt.obj (X.obj j))
     (h : c.pt.map (cX.ι.app j) x₁ = c.pt.map (cX.ι.app j) x₂) :
@@ -166,6 +168,7 @@ lemma isCardinalAccessible_of_isLimit {K : Type u'} [Category.{v'} K] {F : K ⥤
 
 end Functor
 
+set_option backward.defeqAttrib.useBackward true in
 /-- In case `C` is locally `w`-small, use `isCardinalPresentable_of_isColimit`. -/
 lemma isCardinalPresentable_of_isColimit'
     {K : Type u'} [Category.{v'} K] {Y : K ⥤ C}
@@ -178,6 +181,7 @@ lemma isCardinalPresentable_of_isColimit'
   exact Functor.isCardinalAccessible_of_isLimit
     (coyoneda.mapCone c.op) (isLimitOfPreserves _ hc.op) κ (by simpa)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isCardinalPresentable_of_isColimit [LocallySmall.{w} C]
     {K : Type u'} [Category.{v'} K] [HasLimitsOfShape Kᵒᵖ (Type w)] {Y : K ⥤ C}
     (c : Cocone Y) (hc : IsColimit c) (κ : Cardinal.{w}) [Fact κ.IsRegular]

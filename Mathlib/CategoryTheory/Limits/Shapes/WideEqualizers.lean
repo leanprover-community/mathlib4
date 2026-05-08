@@ -157,6 +157,7 @@ def diagramIsoParallelFamily (F : WalkingParallelFamily J ⥤ C) :
   NatIso.ofComponents (fun j => eqToIso <| by cases j <;> cat_disch) <| by
     rintro _ _ (_ | _) <;> cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `WalkingParallelPair` as a category is equivalent to a special case of
 `WalkingParallelFamily`. -/
 @[simps!]
@@ -211,6 +212,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem Cotrident.app_one (s : Cotrident f) (j : J) : f j ≫ s.ι.app one = s.ι.app zero := by
   rw [← s.w (line j), parallelFamily_map_left]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A trident on `f : J → (X ⟶ Y)` is determined by the morphism `ι : P ⟶ X` satisfying
 `∀ j₁ j₂, ι ≫ f j₁ = ι ≫ f j₂`.
 -/
@@ -225,6 +227,7 @@ def Trident.ofι [Nonempty J] {P : C} (ι : P ⟶ X) (w : ∀ j₁ j₂, ι ≫ 
         · simp
         · simp [w (Classical.arbitrary J) k] }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A cotrident on `f : J → (X ⟶ Y)` is determined by the morphism `π : Y ⟶ P` satisfying
 `∀ j₁ j₂, f j₁ ≫ π = f j₂ ≫ π`.
 -/
@@ -383,6 +386,7 @@ theorem Cotrident.IsColimit.homIso_natural [Nonempty J] {t : Cotrident f} {Z Z' 
       (Cotrident.IsColimit.homIso ht _ k : Y ⟶ Z) ≫ q :=
   (Category.assoc _ _ _).symm
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- This is a helper construction that can be useful when verifying that a category has certain wide
     equalizers. Given `F : WalkingParallelFamily ⥤ C`, which is really the same as
@@ -399,6 +403,7 @@ def Cone.ofTrident {F : WalkingParallelFamily J ⥤ C} (t : Trident fun j => F.m
     { app := fun X => t.π.app X ≫ eqToHom (by cases X <;> cat_disch)
       naturality := fun j j' g => by cases g <;> cat_disch }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- This is a helper construction that can be useful when verifying that a category has all
     coequalizers. Given `F : WalkingParallelFamily ⥤ C`, which is really the same as
@@ -426,6 +431,7 @@ theorem Cocone.ofCotrident_ι {F : WalkingParallelFamily J ⥤ C}
     (Cocone.ofCotrident t).ι.app j = eqToHom (by cases j <;> cat_disch) ≫ t.ι.app j :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given `F : WalkingParallelFamily ⥤ C`, which is really the same as
     `parallelFamily (fun j ↦ F.map (line j))` and a cone on `F`, we get a trident on
     `fun j ↦ F.map (line j)`. -/
@@ -436,6 +442,7 @@ def Trident.ofCone {F : WalkingParallelFamily J ⥤ C} (t : Cone F) :
     { app := fun X => t.π.app X ≫ eqToHom (by cases X <;> cat_disch)
       naturality := by rintro _ _ (_ | _) <;> cat_disch }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given `F : WalkingParallelFamily ⥤ C`, which is really the same as
     `parallelFamily (F.map left) (F.map right)` and a cocone on `F`, we get a cotrident on
     `fun j ↦ F.map (line j)`. -/
@@ -537,6 +544,7 @@ theorem wideEqualizer.trident_π_app_zero :
 theorem wideEqualizer.condition (j₁ j₂ : J) : wideEqualizer.ι f ≫ f j₁ = wideEqualizer.ι f ≫ f j₂ :=
   Trident.condition j₁ j₂ <| limit.cone <| parallelFamily f
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The wideEqualizer built from `wideEqualizer.ι f` is limiting. -/
 def wideEqualizerIsWideEqualizer [Nonempty J] :
     IsLimit (Trident.ofι (wideEqualizer.ι f) (wideEqualizer.condition f)) :=
@@ -623,6 +631,7 @@ theorem wideCoequalizer.condition (j₁ j₂ : J) :
     f j₁ ≫ wideCoequalizer.π f = f j₂ ≫ wideCoequalizer.π f :=
   Cotrident.condition j₁ j₂ <| colimit.cocone <| parallelFamily f
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The cotrident built from `wideCoequalizer.π f` is colimiting. -/
 def wideCoequalizerIsWideCoequalizer [Nonempty J] :
     IsColimit (Cotrident.ofπ (wideCoequalizer.π f) (wideCoequalizer.condition f)) :=

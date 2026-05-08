@@ -221,12 +221,18 @@ noncomputable def ofHasCoeffs :
   map := P.map
   map_inj := P.map_inj
 
+#adaptation_note /-- As of nightly-2026-04-29, the simpNF linter is failing here.
+Assistance investigating this would be appreciated. -/
+attribute [nolint simpNF]
+  _root_.Algebra.PreSubmersivePresentation.ofHasCoeffs_algebra_algebraMap_apply
+
 end Algebra.PreSubmersivePresentation
 
 namespace Algebra.SubmersivePresentation
 
 variable [Finite σ] (P : Algebra.SubmersivePresentation R S ι σ)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma exists_sum_eq_σ_jacobian_mul_σ_jacobian_inv_sub_one
     [DecidableEq σ] [Fintype σ] :

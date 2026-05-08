@@ -51,6 +51,7 @@ noncomputable def freeYonedaHomEquiv {X : C} {M : A} {F : Cᵒᵖ ⥤ A} :
     simpa using (Sigma.ι _ (𝟙 _) ≫= f.naturality φ.op).symm
   right_inv g := by simp
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma freeYonedaHomEquiv_comp {X : C} {M : A} {F G : Cᵒᵖ ⥤ A}
     (α : freeYoneda X M ⟶ F) (f : F ⟶ G) :

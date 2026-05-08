@@ -152,6 +152,7 @@ set_option backward.isDefEq.respectTransparency false in
 def closedCounit (X : ∀ i, C i) : ihom X ⋙ tensorLeft X ⟶ 𝟭 (∀ i, C i) where
   app Y := fun i ↦ (ihom.ev (X i)).app (Y i)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Equips the product of a family of closed monoidal categories with
 a pointwise closed monoidal structure. -/
@@ -164,6 +165,7 @@ instance monoidalClosed : MonoidalClosed (∀ i, C i) where
 
 end Closed
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps!]
 instance (i : I) : (Pi.eval C i).Monoidal where
   ε := 𝟙 _
@@ -171,8 +173,10 @@ instance (i : I) : (Pi.eval C i).Monoidal where
   η := 𝟙 _
   δ X Y := 𝟙 _
 
+set_option backward.defeqAttrib.useBackward true in
 instance [∀ i, BraidedCategory (C i)] (i : I) : (Pi.eval C i).Braided where
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 instance laxMonoidalPi' {D : Type*} [Category* D] [MonoidalCategory D] (F : ∀ i : I, D ⥤ C i)
     [∀ i, (F i).LaxMonoidal] :
@@ -180,6 +184,7 @@ instance laxMonoidalPi' {D : Type*} [Category* D] [MonoidalCategory D] (F : ∀ 
   ε := fun i ↦ Functor.LaxMonoidal.ε (F i)
   μ X Y := fun i ↦ Functor.LaxMonoidal.μ (F i) X Y
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 instance opLaxMonoidalPi' {D : Type*} [Category* D] [MonoidalCategory D]
     (F : ∀ i : I, D ⥤ C i)
@@ -190,6 +195,7 @@ instance opLaxMonoidalPi' {D : Type*} [Category* D] [MonoidalCategory D]
   oplax_left_unitality X := by ext; simp
   oplax_right_unitality X := by ext; simp
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps!]
 instance monoidalPi' {D : Type*} [Category* D] [MonoidalCategory D]
     (F : ∀ i : I, D ⥤ C i) [∀ i, (F i).Monoidal] :
@@ -206,6 +212,7 @@ instance [∀ i, BraidedCategory (C i)]
     (F : ∀ i : I, D ⥤ C i) [∀ i, (F i).Braided] :
     (Functor.pi' F).Braided where
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 instance laxMonoidalPi {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
     [∀ i, MonoidalCategory (D i)] (F : ∀ i : I, D i ⥤ C i)
@@ -214,6 +221,7 @@ instance laxMonoidalPi {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
   ε := fun i ↦ Functor.LaxMonoidal.ε (F i)
   μ X Y := fun i ↦ Functor.LaxMonoidal.μ (F i) (X i) (Y i)
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps]
 instance opLaxMonoidalPi {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
     [∀ i, MonoidalCategory (D i)] (F : ∀ i : I, D i ⥤ C i)
@@ -224,6 +232,7 @@ instance opLaxMonoidalPi {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
   oplax_left_unitality X := by ext; simp
   oplax_right_unitality X := by ext; simp
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps!]
 instance monoidalPi {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
     [∀ i, MonoidalCategory (D i)] (F : ∀ i : I, D i ⥤ C i)
@@ -243,6 +252,7 @@ instance [∀ i, BraidedCategory (C i)]
     (F : ∀ i : I, D i ⥤ C i) [∀ i, (F i).Braided] :
     (Functor.pi F).Braided where
 
+set_option backward.defeqAttrib.useBackward true in
 instance {D : Type*} [Category* D] [MonoidalCategory D]
     {F G : D ⥤ (∀ i, C i)} [F.LaxMonoidal] [G.LaxMonoidal]
     (τ : ∀ i, F ⋙ Pi.eval C i ⟶ G ⋙ Pi.eval C i)
@@ -251,6 +261,7 @@ instance {D : Type*} [Category* D] [MonoidalCategory D]
   unit := by ext i; simpa using NatTrans.IsMonoidal.unit (τ := τ i)
   tensor X Y := by ext i; simpa using NatTrans.IsMonoidal.tensor _ _ (τ := τ i)
 
+set_option backward.defeqAttrib.useBackward true in
 instance {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
     [∀ i, MonoidalCategory (D i)]
     {F G : ∀ i : I, (D i ⥤ C i)} [∀ i, (F i).LaxMonoidal]

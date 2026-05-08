@@ -271,7 +271,7 @@ theorem opow_mul_lt_opow {b u v x : Ordinal} (hv : v < b) (hu : u < x) : b ^ u *
 `w < b ^ u`.
 
 We special case `log 0 x = log 1 x = 0`, as well as `log b 0 = 0`. -/
-@[pp_nodot, no_expose]
+@[pp_nodot]
 def log (b x : Ordinal) : Ordinal :=
   sSup ((b ^ ·) ⁻¹' Iic x)
 

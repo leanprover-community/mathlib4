@@ -271,6 +271,7 @@ theorem ι_desc {Z : C} (Δ : SimplexCategoryᵒᵖ) (F : ∀ A : IndexSet Δ, s
     (A : IndexSet Δ) : (s.cofan Δ).inj A ≫ s.desc Δ F = F A := by
   apply Cofan.IsColimit.fac
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A simplicial object that is isomorphic to a split simplicial object is split. -/
 @[simps]
 def ofIso (e : X ≅ Y) : Splitting Y where
@@ -279,6 +280,7 @@ def ofIso (e : X ≅ Y) : Splitting Y where
   isColimit' Δ := IsColimit.ofIsoColimit (s.isColimit Δ) (Cofan.ext (e.app Δ)
     (fun A => by simp [cofan, cofan']))
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 theorem cofan_inj_epi_naturality {Δ₁ Δ₂ : SimplexCategoryᵒᵖ} (A : IndexSet Δ₁) (p : Δ₁ ⟶ Δ₂)
     [Epi p.unop] : (s.cofan Δ₁).inj A ≫ X.map p = (s.cofan Δ₂).inj (A.epiComp p) := by

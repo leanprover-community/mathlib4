@@ -177,6 +177,7 @@ lemma isUniquelyCodimOneFace [h.IsProper] (s : h.ι) :
     S.IsUniquelyCodimOneFace (h.type₂ s).toS (h.type₁ s).toS :=
   IsProper.isUniquelyCodimOneFace _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance [h.IsProper] : h.pairing.IsProper where
   isUniquelyCodimOneFace x := by
@@ -202,6 +203,7 @@ class IsInner where
   ne_zero (s : h.ι) : h.index s ≠ 0
   ne_last (s : h.ι) : h.index s ≠ Fin.last _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance [h.IsInner] [h.IsProper] : h.pairing.IsInner where
   ne_zero x := by
@@ -217,6 +219,7 @@ instance [h.IsInner] [h.IsProper] : h.pairing.IsInner where
 def AncestralRel (s t : h.ι) : Prop :=
   s ≠ t ∧ h.type₂ s < h.type₁ t
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma ancestralRel_iff (s t : h.ι) :
     h.AncestralRel s t ↔ h.pairing.AncestralRel (h.equivII s) (h.equivII t) := by

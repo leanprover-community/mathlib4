@@ -56,6 +56,7 @@ namespace CategoryTheory.Limits
 section Over
 variable {f : Y ⟶ X} {g : Z ⟶ X}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Pullback cones to `X` are the same thing as binary fans in `Over X`. -/
 @[simps]
@@ -93,6 +94,7 @@ def IsLimit.pullbackConeEquivBinaryFanFunctor {c : PullbackCone f g} (hc : IsLim
       · simpa using congr(($e₁).left)
       · simpa using congr(($e₂).left)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A pullback cone to `X` is a limit if its corresponding binary fan in `Over X` is a limit. -/
 -- This could also be `(IsLimit.ofConeEquiv pullbackConeEquivBinaryFan.symm).symm hc`, but possibly
 -- bad defeqs?
@@ -115,6 +117,7 @@ end Over
 section Under
 variable {f : X ⟶ Y} {g : X ⟶ Z}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Pushout cocones from `X` are the same thing as binary cofans in `Under X`. -/
 @[simps]
@@ -152,6 +155,7 @@ def IsColimit.pushoutCoconeEquivBinaryCofanFunctor {c : PushoutCocone f g} (hc :
     · simpa using congr(($e₁).right)
     · simpa using congr(($e₂).right)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A pushout cocone from `X` is a colimit if its corresponding binary cofan in `Under X` is a
 colimit. -/
 -- This could also be `(IsColimit.ofCoconeEquiv pushoutCoconeEquivBinaryCofan.symm).symm hc`,
@@ -179,6 +183,8 @@ variable {X : C} {Y Z : Over X}
 
 open Limits
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma isPullback_of_binaryFan_isLimit (c : BinaryFan Y Z) (hc : IsLimit c) :
     IsPullback c.fst.left c.snd.left Y.hom Z.hom :=
   ⟨by simp, ⟨hc.pullbackConeEquivBinaryFanInverse⟩⟩
@@ -235,6 +241,8 @@ abbrev widePullbackDiagramOfDiagramOver (B : C) {J : Type w} (F : Discrete J ⥤
     WidePullbackShape J ⥤ C :=
   WidePullbackShape.wideCospan B (fun j => (F.obj ⟨j⟩).left) fun j => (F.obj ⟨j⟩).hom
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- (Impl) A preliminary definition to avoid timeouts. -/
 @[simps]
 def conesEquivInverseObj (B : C) {J : Type w} (F : Discrete J ⥤ Over B) (c : Cone F) :
@@ -249,6 +257,8 @@ def conesEquivInverseObj (B : C) {J : Type w} (F : Discrete J ⥤ Over B) (c : C
         · rw [Over.w, Category.id_comp]
         · rw [Category.id_comp, Category.comp_id] }
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- (Impl) A preliminary definition to avoid timeouts. -/
 @[simps]
 def conesEquivInverse (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
@@ -285,6 +295,7 @@ def conesEquivFunctor (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
 -- attribute [local aesop safe cases (rule_sets := [CategoryTheory])] WidePullbackShape
 -- If this worked we could avoid the `rintro` in `conesEquivUnitIso`.
 
+set_option backward.defeqAttrib.useBackward true in
 /-- (Impl) A preliminary definition to avoid timeouts. -/
 @[simps!]
 def conesEquivUnitIso (B : C) (F : Discrete J ⥤ Over B) :
@@ -295,6 +306,7 @@ def conesEquivUnitIso (B : C) (F : Discrete J ⥤ Over B) :
       inv := 𝟙 _ }
     (by rintro (j | j) <;> cat_disch)
 
+set_option backward.defeqAttrib.useBackward true in
 -- TODO: Can we add `:= by aesop` to the second arguments of `NatIso.ofComponents` and
 --       `Cone.ext`?
 /-- (Impl) A preliminary definition to avoid timeouts. -/
@@ -305,6 +317,7 @@ def conesEquivCounitIso (B : C) (F : Discrete J ⥤ Over B) :
     { hom := Over.homMk (𝟙 _)
       inv := Over.homMk (𝟙 _) }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- (Impl) Establish an equivalence between the category of cones for `F` and for the "grown" `F`.
 -/
 @[simps]
@@ -344,6 +357,7 @@ theorem over_finiteProducts_of_finiteWidePullbacks [HasFiniteWidePullbacks C] {B
 
 end ConstructProducts
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Construct terminal object in the over category. This isn't an instance as it's not typically the
 way we want to define terminal objects.
 (For instance, this gives a terminal object which is different from the generic one given by

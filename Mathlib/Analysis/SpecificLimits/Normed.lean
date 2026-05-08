@@ -942,7 +942,6 @@ lemma tendsto_smul_congr_of_tendsto_left_cobounded_of_isBoundedUnder
     (hbdd : IsBoundedUnder (· ≤ ·) l fun x ↦ ‖f₁ x - f₂ x‖) :
     Tendsto (fun x ↦ f₂ x • g x) l (𝓝 t) := by
   apply hmul.congr_dist
-  dsimp
   simp_rw [dist_eq_norm, ← sub_smul, norm_smul]
   apply isBoundedUnder_le_mul_tendsto_zero
   · change IsBoundedUnder _ _ fun _ ↦ _

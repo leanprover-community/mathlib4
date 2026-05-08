@@ -571,12 +571,12 @@ lemma lt_log_of_exp_lt (hax : exp a < x) : a < log x :=
   (lt_log_iff_exp_lt (exp_pos.trans hax).ne').2 hax
 
 /-- The exponential map as an order isomorphism between `G` and `Gᵐ⁰ˣ`. -/
-@[simps!] def expOrderIso : G ≃o Gᵐ⁰ˣ where
+@[simps! -isSimp] def expOrderIso : G ≃o Gᵐ⁰ˣ where
   __ := expEquiv
   map_rel_iff' := by simp [← Units.val_le_val]
 
 /-- The logarithm as an order isomorphism between `Gᵐ⁰ˣ` and `G`. -/
-@[simps!] def logOrderIso : Gᵐ⁰ˣ ≃o G where
+@[simps! -isSimp] def logOrderIso : Gᵐ⁰ˣ ≃o G where
   __ := logEquiv
   map_rel_iff' := by simp
 

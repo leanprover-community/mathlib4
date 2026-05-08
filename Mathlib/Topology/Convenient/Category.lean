@@ -198,7 +198,7 @@ instance : (toTopCat.{v} X).IsLeftAdjoint := adj.isLeftAdjoint
 
 instance : (TopCat.toContinuousGeneratedByCat.{v} X).IsRightAdjoint := adj.isRightAdjoint
 
-instance : IsIso (adj.{v} (X := X)).unit := by dsimp; infer_instance
+instance : IsIso (adj.{v} (X := X)).unit := inferInstanceAs (IsIso adjUnitIso.hom)
 
 /-- The functor `GeneratedByTopCat X ⥤ ContinuousGeneratedByCat X` which is
 part of the equivalence `ContinuousGeneratedByCat.equivalence`. It sends
@@ -222,8 +222,7 @@ part of the equivalence `ContinuousGeneratedByCat.equivalence`. -/
 def toGeneratedByTopCat : ContinuousGeneratedByCat.{v} X ⥤ GeneratedByTopCat.{v} X :=
   ObjectProperty.lift _ (toTopCat X) (fun Y ↦ by
     rw [TopCat.generatedBy_def]
-    dsimp +instances
-    infer_instance)
+    exact inferInstanceAs (IsGeneratedBy X (WithGeneratedByTopology X ↑Y)))
 
 lemma toGeneratedByTopCat_map_apply {Y Z : ContinuousGeneratedByCat.{v} X} (f : Y ⟶ Z)
     (y : WithGeneratedByTopology X Y) :
@@ -286,7 +285,7 @@ def adj : toTopCat.{v} (X := X) ⊣ TopCat.toGeneratedByTopCat where
   unit := adjUnitIso.hom
   counit := adjCounit
 
-instance : IsIso (adj.{v} (X := X)).unit := by dsimp; infer_instance
+instance : IsIso (adj.{v} (X := X)).unit := inferInstanceAs (IsIso adjUnitIso.hom)
 
 instance : (toTopCat.{v} (X := X)).IsLeftAdjoint := adj.isLeftAdjoint
 

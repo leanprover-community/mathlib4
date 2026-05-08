@@ -97,6 +97,8 @@ theorem pullbackId_hom_counit (X : C) [ChosenPullbacksAlong (𝟙 X)] :
   have := Adjunction.rightAdjointUniq_hom_counit (mapPullbackAdj (𝟙 X)) (id X).mapPullbackAdj
   rw [pullbackId, Adjunction.rightAdjointUniq_hom_counit]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- Every isomorphism has a functorial choice of pullbacks. -/
 @[simps, implicit_reducible]
 def iso {Y X : C} (f : Y ≅ X) : ChosenPullbacksAlong f.hom where
@@ -139,6 +141,8 @@ theorem pullbackComp_hom_counit {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
       (mapPullbackAdj (f ≫ g)).counit := by
   rw [pullbackComp, Adjunction.rightAdjointUniq_hom_counit]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- In cartesian monoidal categories, any morphism to the terminal tensor unit has a functorial
 choice of pullbacks. -/
 @[instance_reducible, simps]
@@ -149,6 +153,8 @@ def cartesianMonoidalCategoryToUnit [CartesianMonoidalCategory C] {X : C} (f : X
   mapPullbackAdj.unit.app T := Over.homMk (lift (𝟙 _) (T.hom))
   mapPullbackAdj.counit.app U := Over.homMk (fst _ _)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- In cartesian monoidal categories, the first product projections `fst` have a functorial choice
 of pullbacks. -/
 @[simps, implicit_reducible]
@@ -159,6 +165,8 @@ def cartesianMonoidalCategoryFst [CartesianMonoidalCategory C] (X Y : C) :
   mapPullbackAdj.unit.app T := Over.homMk (lift (𝟙 _) (T.hom ≫ snd _ _))
   mapPullbackAdj.counit.app U := Over.homMk (fst _ _)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- In cartesian monoidal categories, the second product projections `snd` have a functorial choice
 of pullbacks. -/
 @[simps, implicit_reducible]
@@ -324,6 +332,8 @@ theorem isPullback : IsPullback (fst f g) (snd f g) f g where
   w := condition
   isLimit' := ⟨isLimitPullbackCone f g⟩
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] condition in
 /-- If `g` has a chosen pullback, then `Over.ChosenPullbacksAlong.fst f g` has a chosen pullback. -/
 @[implicit_reducible]

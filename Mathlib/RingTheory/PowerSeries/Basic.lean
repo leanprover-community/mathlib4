@@ -542,7 +542,6 @@ noncomputable def rescale (a : R) : R⟦X⟧ →+* R⟦X⟧ where
   map_add' := by
     intros
     ext
-    dsimp only
     exact mul_add _ _ _
   map_mul' f g := by
     ext

@@ -138,6 +138,7 @@ section Symmetric
 
 variable [SymmetricCategory C]
 
+set_option backward.defeqAttrib.useBackward true in
 noncomputable instance : SymmetricCategory (LocalizedMonoidal L W ε) := by
   refine .ofCurried (natTrans₂_ext (L') (L') W W fun X Y ↦ ?_)
   simp [-Functor.map_braiding, β_hom_app, ← Functor.map_comp_assoc]

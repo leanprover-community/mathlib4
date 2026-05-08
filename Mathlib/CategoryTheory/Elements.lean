@@ -146,6 +146,7 @@ def π : F.Elements ⥤ C where
 
 instance : (π F).Faithful where
 
+set_option backward.defeqAttrib.useBackward true in
 instance : (π F).ReflectsIsomorphisms where
   reflects f h := by
     refine ⟨⟨(inv ((π F).map f) :), ?_⟩, ?_, ?_⟩
@@ -219,6 +220,8 @@ def toCostructuredArrow (F : Cᵒᵖ ⥤ Type v) : F.Elementsᵒᵖ ⥤ Costruct
       ext Z y
       simp [yonedaEquiv])
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The reverse direction of the equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)`,
 given by `CategoryTheory.yonedaEquiv`.
 -/
@@ -233,6 +236,7 @@ theorem fromCostructuredArrow_obj_mk (F : Cᵒᵖ ⥤ Type v) {X : C} (f : yoned
     (fromCostructuredArrow F).obj (op (CostructuredArrow.mk f)) = ⟨op X, yonedaEquiv.1 f⟩ :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)` given by yoneda lemma. -/
 @[simps]
 def costructuredArrowYonedaEquivalence (F : Cᵒᵖ ⥤ Type v) :
@@ -249,6 +253,7 @@ def costructuredArrowYonedaEquivalence (F : Cᵒᵖ ⥤ Type v) :
     simpa only [Functor.map_id, Category.id_comp] using
       (yonedaEquiv.symm_apply_apply X.hom).symm))
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence `(-.Elements)ᵒᵖ ≅ (yoneda, -)` of is actually a natural isomorphism of functors.
 -/
 theorem costructuredArrow_yoneda_equivalence_naturality {F₁ F₂ : Cᵒᵖ ⥤ Type v} (α : F₁ ⟶ F₂) :
@@ -274,6 +279,7 @@ def costructuredArrowYonedaEquivalenceInverseπ (F : Cᵒᵖ ⥤ Type v) :
     (costructuredArrowYonedaEquivalence F).inverse ⋙ (π F).leftOp ≅ CostructuredArrow.proj _ _ :=
   Iso.refl _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The opposite of the category of elements of a presheaf of types
 is equivalent to a category of costructured arrows for the Yoneda embedding functor. -/
@@ -314,6 +320,7 @@ def Elements.initialOfRepresentableBy {F : Cᵒᵖ ⥤ Type*} {X : C} (h : F.Rep
     F.Elements :=
   ⟨.op X, h.homEquiv (𝟙 X)⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `F` is represented by `X`, `X` with its universal element is the initial object of
 `F.Elements.` -/
@@ -328,6 +335,7 @@ def Elements.initialOfCorepresentableBy {F : C ⥤ Type*} {X : C} (h : F.Corepre
     F.Elements :=
   ⟨X, h.homEquiv (𝟙 X)⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `F` is corepresented by `X`, `X` with its universal element is the initial object of
 `F.Elements.` -/

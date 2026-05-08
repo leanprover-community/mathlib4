@@ -90,6 +90,7 @@ lemma dim_le_of_le {x y : X.N} (h : x ≤ y) : x.dim ≤ y.dim := by
   obtain ⟨f, hf, _⟩ := h
   exact SimplexCategory.len_le_of_mono f
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma dim_lt_of_lt {x y : X.N} (h : x < y) : x.dim < y.dim := by
   obtain h' | h' := (dim_le_of_le h.le).lt_or_eq
@@ -102,6 +103,7 @@ lemma dim_lt_of_lt {x y : X.N} (h : x < y) : x.dim < y.dim := by
     obtain rfl : y = x := by simpa using hf
     simp at h
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance : PartialOrder X.N where
   le_antisymm x₁ x₂ h h' := by
@@ -160,10 +162,11 @@ lemma subcomplex_le_iff {A B : X.Subcomplex} :
   · induction s using N.induction with
     | mk n x =>
       intro hx
-      simp only [Subfunctor.ofSection_le_iff, mk_dim, mk_simplex] at hx ⊢
+      simp only [Subfunctor.ofSection_le_iff, mk_simplex] at hx ⊢
       exact h _ _ hx
   · simpa using h (N.mk _ x.prop) (by simpa)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The bijection `X.op.N ≃ X.N`. -/
 @[simps -isSimp apply symm_apply]
@@ -181,6 +184,7 @@ def opEquiv : X.op.N ≃o X.N where
     · rintro ⟨f, hf⟩
       exact ⟨SimplexCategory.rev.map f, by simp [op_map, ← hf]⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The bijection `X.N ≃ Y.N` on nondegenerate simplices of simplicial sets
 that is induced by an isomorphism `X ≅ Y`. -/
@@ -238,6 +242,7 @@ lemma subcomplex_eq_of_epi (x y : X.S) (f : ⦋x.dim⦌ ⟶ ⦋y.dim⦌) [Epi f]
   have := isSplitEpi_of_epi f
   exact ⟨(section_ f).op, by simp [← hf, ← Functor.map_comp_apply, ← op_comp]⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma existsUnique_n (x : X.S) : ∃! (y : X.N), y.subcomplex = x.subcomplex :=
   existsUnique_of_exists_of_unique (by

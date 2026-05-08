@@ -19,7 +19,7 @@ run_cmd do
 
 -- realize `foo.eq_1`:
 /--
-info: @[defeq] theorem foo.eq_1 : foo = true :=
+info: @[backward_defeq] theorem foo.eq_1 : foo = true :=
 Eq.refl foo
 -/
 #guard_msgs in

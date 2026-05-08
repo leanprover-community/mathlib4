@@ -245,6 +245,7 @@ lemma mem_skeletonOfMono_obj_iff {d' : ℕ} :
 lemma range_map_le : Subcomplex.range c.map ≤ skeletonOfMono i (d + 1) := by
   simp [map, Subcomplex.range_eq_ofSimplex, mem_skeletonOfMono_obj_iff]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma preimage_map : (skeletonOfMono i d).preimage c.map = ∂Δ[d] := by
   rw [stdSimplex.eq_boundary_iff]
@@ -309,6 +310,7 @@ lemma ι_l (c : Cell i d) : c.ιSigmaBoundary ≫ l i d = ∂Δ[d].ι ≫ c.ιSi
 lemma ι_b_ι (c : Cell i d) : c.ιSigmaStdSimplex ≫ b i d ≫ Subcomplex.ι _ = c.map := by
   simp [Sigma.ι_desc_assoc]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma b_app_ι_app_objEquiv_symm_val (c : Cell i d) {n : SimplexCategory} (f : n ⟶ ⦋d⦌) :
     dsimp% ((b i d).app _ (c.ιSigmaStdSimplex.app _ (stdSimplex.objEquiv.symm f))).val =
       Y.map f.op c.simplex := by
@@ -317,6 +319,7 @@ lemma b_app_ι_app_objEquiv_symm_val (c : Cell i d) {n : SimplexCategory} (f : n
 
 end Cell
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isPullback : IsPullback (t i d) (l i d) (r i d) (b i d) where
   w := w i d
   isLimit' := ⟨evaluationJointlyReflectsLimits _ (fun ⟨⟨n⟩⟩ ↦ by
@@ -338,6 +341,7 @@ lemma isPullback : IsPullback (t i d) (l i d) (r i d) (b i d) where
       exact congr($(c.ι_t_ι_eq_ι_l_b_ι).app _ ⟨y, _⟩)
     · exact congr($(c.ι_l).app _ ⟨y, _⟩))⟩
 
+set_option backward.defeqAttrib.useBackward true in
 lemma sup_range_r_range_b :
     Subcomplex.range (r i d) ⊔ Subcomplex.range (b i d) = ⊤ := by
   rw [← top_le_iff]
@@ -370,6 +374,7 @@ lemma isPushout_aux {n : ℕ} (y : (sigmaStdSimplex i d) _⦋n⦌)
   refine ⟨c, stdSimplex.objEquiv s, ?_, by simp⟩
   simpa [SimplexCategory.epi_iff_surjective, boundary] using hs
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isPushout : IsPushout (t i d) (l i d) (r i d) (b i d) where
   w := w i d
   isColimit' := ⟨evaluationJointlyReflectsColimits _ (fun ⟨⟨n⟩⟩ ↦ by
@@ -397,6 +402,7 @@ lemma isPushout : IsPushout (t i d) (l i d) (r i d) (b i d) where
 
 end relativeCellComplexOfMono
 
+set_option backward.defeqAttrib.useBackward true in
 open relativeCellComplexOfMono in
 /-- If `i : X ⟶ Y` is a monomorphism of simplicial sets, then it is a relative cell
 complex with basic cells given by boundary inclusions `∂Δ[d] ⟶ Δ[d]`, one for each

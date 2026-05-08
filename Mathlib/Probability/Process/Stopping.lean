@@ -481,7 +481,6 @@ theorem measurableSpace_le (hτ : IsStoppingTime f τ) : hτ.measurableSpace ≤
 theorem measurableSpace_const (f : Filtration ι m) (i : ι) :
     (isStoppingTime_const f i).measurableSpace = f i := by
   ext1 s
-  change MeasurableSet[(isStoppingTime_const f i).measurableSpace] s ↔ MeasurableSet[f i] s
   rw [IsStoppingTime.measurableSet]
   constructor <;> intro h
   · have h' := h.2 i

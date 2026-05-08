@@ -98,6 +98,7 @@ attribute [instance] mono_L₂_f
 variable {C}
 variable (S : SnakeInput C)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The snake input in the opposite category that is deduced from a snake input. -/
 @[simps]
 noncomputable def op : SnakeInput Cᵒᵖ where
@@ -321,6 +322,7 @@ noncomputable def L₁' : ShortComplex C := ShortComplex.mk _ _ S.L₀_g_δ
 @[simps]
 noncomputable def L₂' : ShortComplex C := ShortComplex.mk _ _ S.δ_L₃_f
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Exactness of `L₀.X₂ ⟶ L₀.X₃ ⟶ L₃.X₁`. -/
 lemma L₁'_exact : S.L₁'.Exact := by
@@ -361,6 +363,7 @@ lemma op_δ : S.op.δ = S.δ.op := Quiver.Hom.unop_inj (by
   apply Quiver.Hom.op_inj
   simpa only [op_comp, Quiver.Hom.op_unop, assoc] using S.op.snd_δ_inr)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The duality isomorphism `S.L₂'.op ≅ S.op.L₁'`. -/
 noncomputable def L₂'OpIso : S.L₂'.op ≅ S.op.L₁' :=
   ShortComplex.isoMk (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp)
@@ -512,6 +515,7 @@ noncomputable def functorP : SnakeInput C ⥤ C where
   map_id _ := by dsimp [P]; simp
   map_comp _ _ := by dsimp [P]; cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma naturality_φ₂ (f : S₁ ⟶ S₂) : S₁.φ₂ ≫ f.f₂.τ₂ = functorP.map f ≫ S₂.φ₂ := by
