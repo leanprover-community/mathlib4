@@ -69,7 +69,7 @@ lemma σ_δ₀Iter (i : ℕ) {n m : ℕ} (j : Fin (m + 1))
   rw [← Functor.map_comp, ← op_comp, SimplexCategory.δ₀Iter_σ ..]
 
 @[reassoc]
-def σ_δ₀Iter' (i : ℕ) {n m : ℕ} (j : Fin (m + 1))
+lemma σ_δ₀Iter' (i : ℕ) {n m : ℕ} (j : Fin (m + 1))
     (j' : Fin (n + 1))
     (hi' : n + i = m := by grind)
     (hj' : j.val = j'.val + i := by grind) :
