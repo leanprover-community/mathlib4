@@ -262,7 +262,9 @@ lemma aux {S T : LightProfinite} (π : T ⟶ S ⊗ ℕ∪{∞}) [Epi π] :
   -- `fibres`.
   have := S'_compactSpace π (by fun_prop)
   let S'π (n : ℕ∪{∞}) : LightProfinite.of (S' π) ⟶ LightProfinite.fibre n (π ≫ snd _ _) :=
-    ⟨TopCat.ofHom ⟨fun x ↦ x.val n, by refine (continuous_apply _).comp ?_; fun_prop⟩⟩
+    ⟨TopCat.ofHom {
+      toFun x := x.val n,
+      continuous_toFun := by refine (continuous_apply _).comp ?_; fun_prop }⟩
   let y' : LightProfinite.of (S' π) ⟶ S := ConcreteCategory.ofHom ⟨y π, y_continuous π⟩
   let π' := pullback.snd π (y' ▷ ℕ∪{∞})
   let σ' : ℕ∪{∞} → LightProfinite.of (S' π) → pullback π (y' ▷ ℕ∪{∞}) := fun n ↦
