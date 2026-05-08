@@ -95,8 +95,8 @@ instance characteristic_centralizer [hH : H.Characteristic] :
 
 @[to_additive]
 theorem le_centralizer_iff_isMulCommutative : K ≤ centralizer K ↔ IsMulCommutative K :=
-  ⟨fun h => ⟨⟨fun x y => Subtype.ext (h y.2 x x.2)⟩⟩,
-    fun h x hx y hy => congr_arg Subtype.val (h.1.1 ⟨y, hy⟩ ⟨x, hx⟩)⟩
+  ⟨fun h ↦ ⟨⟨fun x y ↦ Subtype.ext <| h y.2 x x.2⟩⟩,
+    fun _ x hx y hy ↦ congrArg Subtype.val <| mul_comm' ⟨y, hy⟩ ⟨x, hx⟩⟩
 
 variable (H)
 

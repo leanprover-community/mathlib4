@@ -175,7 +175,6 @@ lemma mono_map_tfae {X Y : C} (f : X ⟶ Y) :
     intro W z hz
     obtain ⟨φ, hφ⟩ := Localization.exists_rightFraction L P.isoModSerre
       ((L.objObjPreimageIso W).hom ≫ z)
-    have hs := Localization.inverts L P.isoModSerre φ.s φ.hs
     rw [← cancel_epi (L.objObjPreimageIso W).hom, comp_zero, hφ,
       ← cancel_epi (L.map φ.s), comp_zero,
       MorphismProperty.RightFraction.map_s_comp_map]
@@ -209,7 +208,6 @@ lemma epi_map_tfae {X Y : C} (f : X ⟶ Y) :
     intro W z hz
     obtain ⟨φ, hφ⟩ := Localization.exists_leftFraction L P.isoModSerre
       (z ≫ (L.objObjPreimageIso W).inv)
-    have hs := Localization.inverts L P.isoModSerre φ.s φ.hs
     rw [← cancel_mono (L.objObjPreimageIso W).inv, zero_comp, hφ,
       ← cancel_mono (L.map φ.s), zero_comp,
       MorphismProperty.LeftFraction.map_comp_map_s]
@@ -304,7 +302,6 @@ lemma preservesKernel {X Y : C} (f : X ⟶ Y) :
       generalizing W
   · obtain ⟨φ, hφ⟩ := Localization.exists_rightFraction L P.isoModSerre
       ((L.objObjPreimageIso W).hom ≫ w)
-    have _ := Localization.inverts L P.isoModSerre φ.s φ.hs
     rw [← cancel_epi (L.map φ.s),
       MorphismProperty.RightFraction.map_s_comp_map] at hφ
     obtain ⟨l, hl⟩ := this _ (L.map φ.f) (by
@@ -324,7 +321,7 @@ lemma preservesCokernel {X Y : C} (f : X ⟶ Y) :
   have := preservesEpimorphisms L P
   have := Localization.essSurj L P.isoModSerre
   suffices ∀ (W : D) (z : L.obj Y ⟶ W) (hz : L.map f ≫ z = 0),
-      ∃ (l : L.obj (cokernel f) ⟶ W), L.map (cokernel.π  f) ≫ l = z from
+      ∃ (l : L.obj (cokernel f) ⟶ W), L.map (cokernel.π f) ≫ l = z from
     preservesColimit_of_preserves_colimit_cocone (cokernelIsCokernel f)
       ((CokernelCofork.isColimitMapCoconeEquiv _ L).2
         (Cofork.IsColimit.ofExistsUnique
@@ -336,7 +333,6 @@ lemma preservesCokernel {X Y : C} (f : X ⟶ Y) :
       generalizing W
   · obtain ⟨φ, hφ⟩ := Localization.exists_leftFraction L P.isoModSerre
       (w ≫ (L.objObjPreimageIso W).inv)
-    have _ := Localization.inverts L P.isoModSerre φ.s φ.hs
     rw [← cancel_mono (L.map φ.s), Category.assoc,
       MorphismProperty.LeftFraction.map_comp_map_s] at hφ
     obtain ⟨l, hl⟩ := this _ (L.map φ.f) (by rw [← hφ, reassoc_of% hw, zero_comp]) ⟨_, rfl, by simp⟩
@@ -444,13 +440,13 @@ def abelian : Abelian D := by
 
 lemma preservesFiniteLimits : PreservesFiniteLimits L := by
   letI := abelian L P
-  rw [((Functor.preservesFiniteLimits_tfae L).out 3 2:)]
+  rw [((Functor.preservesFiniteLimits_tfae L).out 3 2 :)]
   intro _ _ f
   exact preservesKernel L P f
 
 lemma preservesFiniteColimits : PreservesFiniteColimits L := by
   letI := abelian L P
-  rw [((Functor.preservesFiniteColimits_tfae L).out 3 2:)]
+  rw [((Functor.preservesFiniteColimits_tfae L).out 3 2 :)]
   intro _ _ f
   exact preservesCokernel L P f
 
@@ -557,7 +553,7 @@ lemma essImage_whiskeringLeft :
   refine ⟨?_, fun hF ↦ ?_⟩
   · rintro ⟨G, ⟨e⟩⟩
     rw [← MorphismProperty.IsInvertedBy.iff_of_iso _
-      (show  L ⋙ G.obj ≅ F.obj from (ObjectProperty.ι _).mapIso e)]
+      (show L ⋙ G.obj ≅ F.obj from (ObjectProperty.ι _).mapIso e)]
     exact MorphismProperty.IsInvertedBy.of_comp _ _ (Localization.inverts L _) _
   · refine ⟨⟨Localization.lift F.obj hF L, ?_⟩,
       ⟨ObjectProperty.isoMk _ (Localization.fac F.obj hF L)⟩⟩

@@ -13,7 +13,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.LocalClosure
 A local isomorphism of schemes is a morphism that is source-locally an open immersion.
 -/
 
-@[expose] public section
+public section
 
 universe u
 
@@ -57,8 +57,6 @@ lemma le_of_isZariskiLocalAtSource (P : MorphismProperty Scheme.{u}) [P.Contains
   obtain ⟨𝒰, h⟩ := eq_sourceLocalClosure_isOpenImmersion ▸ hf
   rw [IsZariskiLocalAtSource.iff_of_openCover 𝒰 (P := P)]
   exact fun _ ↦ IsZariskiLocalAtSource.of_isOpenImmersion _
-
-@[deprecated (since := "2025-10-07")] alias le_of_isLocalAtSource := le_of_isZariskiLocalAtSource
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `IsLocalIso` is the weakest source-Zariski-local property containing identities. -/

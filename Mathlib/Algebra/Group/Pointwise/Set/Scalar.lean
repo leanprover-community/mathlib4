@@ -78,7 +78,7 @@ protected def smul [SMul α β] : SMul (Set α) (Set β) where smul := image2 (�
 scoped[Pointwise] attribute [instance] Set.smulSet Set.smul
 scoped[Pointwise] attribute [instance] Set.vaddSet Set.vadd
 
-open Pointwise
+open scoped Pointwise
 
 section SMul
 variable {ι : Sort*} {κ : ι → Sort*} [SMul α β] {s s₁ s₂ : Set α} {t t₁ t₂ u : Set β} {a : α}
@@ -278,7 +278,7 @@ lemma union_vsub_inter_subset_union : s₁ ∪ s₂ -ᵥ t₁ ∩ t₂ ⊆ s₁ 
 
 end VSub
 
-open Pointwise
+open scoped Pointwise
 
 @[to_additive]
 lemma image_smul_comm [SMul α β] [SMul α γ] (f : β → γ) (a : α) (s : Set β) :

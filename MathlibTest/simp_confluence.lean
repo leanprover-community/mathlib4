@@ -10,7 +10,7 @@ variable {α β : Type*}
 /-- Without `subset_range_of_surjective`, `image_subset_iff` and `image_preimage_eq` create a simp
   confluence issue. -/
 example {f : α → β} (s t : Set β) (h : Surjective f) :
-    f '' (f ⁻¹' s) ⊆ t ↔ f '' (f ⁻¹' s) ⊆ t := by
+    f '' f ⁻¹' s ⊆ t ↔ f '' f ⁻¹' s ⊆ t := by
   conv =>
     congr
     · simp [h, -image_preimage_eq, -subset_range_of_surjective]

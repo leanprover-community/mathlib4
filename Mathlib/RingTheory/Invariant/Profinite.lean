@@ -35,13 +35,15 @@ open scoped Pointwise
 
 section ProfiniteGrp
 
+universe u
+
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
-variable {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
+variable {G : Type u} [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
 variable {P : Ideal A}
 variable [TopologicalSpace G] [CompactSpace G] [TotallyDisconnectedSpace G]
 variable [IsTopologicalGroup G] [TopologicalSpace B] [DiscreteTopology B] [ContinuousSMul G B]
 
-open Pointwise CategoryTheory
+open CategoryTheory
 
 include G in
 lemma Algebra.IsInvariant.isIntegral_of_profinite
@@ -63,7 +65,7 @@ lemma Algebra.IsInvariant.exists_smul_of_under_eq_of_profinite
   let B' := FixedPoints.subalgebra A B
   let F : OpenNormalSubgroup G ⥤ Type _ :=
   { obj N := { g : G ⧸ N.1.1 // Q.under (B' N.1.1) = g • P.under (B' N.1.1) }
-    map {N N'} f x := ⟨(QuotientGroup.map _ _ (.id _) (leOfHom f)) x.1, by
+    map {N N'} f := ↾fun x ↦ ⟨(QuotientGroup.map _ _ (.id _) (leOfHom f)) x.1, by
       have h : B' N'.1.1 ≤ B' N.1.1 := fun x hx n ↦ hx ⟨_, f.le n.2⟩
       obtain ⟨x, hx⟩ := x
       obtain ⟨x, rfl⟩ := QuotientGroup.mk_surjective x
@@ -126,7 +128,7 @@ The functor taking an open normal subgroup `N ≤ G` to the set of lifts of `σ`
 We will show that its inverse limit is nonempty to conclude that there exists a lift in `G`. -/
 def Ideal.Quotient.stabilizerHomSurjectiveAuxFunctor
     (P : Ideal A) (Q : Ideal B) [Q.LiesOver P] (σ : (B ⧸ Q) ≃ₐ[A ⧸ P] B ⧸ Q) :
-    OpenNormalSubgroup G ⥤ Type _ where
+    OpenNormalSubgroup G ⥤ Type u where
   obj N :=
     letI B' := FixedPoints.subalgebra A B N.1.1
     letI f : (B' ⧸ Q.under B') →ₐ[A ⧸ P] B ⧸ Q :=
@@ -134,8 +136,8 @@ def Ideal.Quotient.stabilizerHomSurjectiveAuxFunctor
       commutes' := Quotient.ind fun _ ↦ rfl }
     { σ' // f.comp (Ideal.Quotient.stabilizerHom
       (Q.under B') P (G ⧸ N.1.1) σ') = σ.toAlgHom.comp f }
-  map {N N'} i x := ⟨⟨(QuotientGroup.map _ _ (.id _) (leOfHom i)) x.1,
-    Ideal.Quotient.stabilizerHomSurjectiveAuxFunctor_aux Q i.le x.1.1 x.1.2⟩, by
+  map {N N'} i := ↾fun x ↦ ⟨⟨(QuotientGroup.map _ _ (.id _) (leOfHom i)) x.1,
+      Ideal.Quotient.stabilizerHomSurjectiveAuxFunctor_aux Q i.le x.1.1 x.1.2⟩, by
     have h : FixedPoints.subalgebra A B N'.1.1 ≤ FixedPoints.subalgebra A B N.1.1 :=
       fun x hx n ↦ hx ⟨_, i.le n.2⟩
     obtain ⟨⟨x, hx⟩, hx'⟩ := x
