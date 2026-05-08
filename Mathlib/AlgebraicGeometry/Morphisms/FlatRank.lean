@@ -132,7 +132,7 @@ lemma Scheme.Hom.finrank_SpecMap_eq_finrank {R S : CommRingCat.{u}} {f : R ⟶ S
   · simp [isoSpec_Spec_hom, SpecMap_ΓSpecIso_hom, ← AlgebraicGeometry.Spec.map_apply,
       ← Scheme.Hom.comp_apply, toSpecΓ_SpecMap_ΓSpecIso_inv]
 
-lemma Scheme.Hom.rank_SpecMap_algebraMap (R S : Type u) [CommRing R] [CommRing S] [Algebra R S]
+lemma Scheme.Hom.finrank_SpecMap_algebraMap (R S : Type u) [CommRing R] [CommRing S] [Algebra R S]
     [Module.Finite R S] [Module.Flat R S] (x : PrimeSpectrum R) :
     finrank (Spec.map (CommRingCat.ofHom <| algebraMap R S)) x = Module.rankAtStalk S x := by
   rw [finrank_SpecMap_eq_finrank]
