@@ -519,23 +519,23 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
     -- Emit warning and suggestion
     let msg := match stainStx.getKind with
       | ``Lean.Parser.Tactic.simp =>
-        m!"'{stainStr}' is a flexible tactic modifying '{d}'. \
-          Try 'simp?' and use the suggested 'simp only [...]'. \
+        m!"`{stainStr}` is a flexible tactic modifying `{d}`. \
+          Try `simp?` and use the suggested `simp only [...]`. \
           Alternatively, use `suffices` to explicitly state the simplified form."
       | ``Lean.Parser.Tactic.simpAll =>
-        m!"'{stainStr}' is a flexible tactic modifying '{d}'. \
-          Try 'simp_all?' and use the suggested 'simp_all only [...]'. \
+        m!"`{stainStr}` is a flexible tactic modifying `{d}`. \
+          Try `simp_all?` and use the suggested `simp_all only [...]`. \
           Alternatively, use `suffices` to explicitly state the simplified form."
       | `Aesop.Frontend.Parser.aesopTactic =>
-        m!"'{stainStr}' is a flexible tactic modifying '{d}'. \
-          Try 'aesop?' and use the suggested proof."
+        m!"`{stainStr}` is a flexible tactic modifying `{d}`. \
+          Try `aesop?` and use the suggested proof."
       | _ =>
-        m!"'{stainStr}' is a flexible tactic modifying '{d}'."
+        m!"'{stainStr}' is a flexible tactic modifying `{d}`."
     Linter.logLint linter.flexible stainStx msg
     if let some suggStx := suggestion? then
       liftCoreM <| Lean.Meta.Tactic.TryThis.addSuggestion stainStx
         { suggestion := .tsyntax (kind := `tactic) ⟨suggStx⟩ } (origSpan? := stainStx)
-    logInfoAt s m!"'{s}' uses '{d}'!"
+    logInfoAt s m!"`{s}` uses `{d}`!"
 
 initialize addLinter flexibleLinter
 
