@@ -150,6 +150,7 @@ protected abbrev semiring [Semiring R] (zero : f 0 = 0) (one : f 1 = 1)
   toNonUnitalSemiring := hf.nonUnitalSemiring f zero add mul nsmul
   __ := hf.nonAssocSemiring f zero one add mul nsmul natCast
   __ := hf.monoidWithZero f zero one mul npow
+  npow n x := x ^ n
 
 /-- Pullback a `NonUnitalNonAssocRing` instance along an injective function. -/
 -- See note [reducible non-instances]
