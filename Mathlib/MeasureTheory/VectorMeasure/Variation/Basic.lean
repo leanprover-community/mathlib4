@@ -113,4 +113,37 @@ lemma variation_neg : (-μ).variation = μ.variation := by simp [variation]
 
 end NormedAddCommGroup
 
+section ENNReal
+
+@[simp]
+theorem variation_eq_ennrealToMeasure (μ : VectorMeasure X ℝ≥0∞) :
+    μ.variation = μ.ennrealToMeasure := by
+  ext s hs
+  rw [ennrealToMeasure_apply hs]
+  refine le_antisymm ?_ ?_
+  · simp only [variation_apply, preVariation_apply, ennrealToMeasure_apply hs,
+      ennrealPreVariation_apply, preVariationFun, hs, ↓reduceDIte, enorm_eq_self]
+    refine iSup_le fun P => ?_
+    have hcov : ⋃ p ∈ P.parts, p.val = s := by
+      have h := congrArg Subtype.val P.sup_parts
+      rwa [Finset.sup_coe (Pbot := MeasurableSet.empty) (Psup := by measurability),
+        Finset.sup_set_eq_biUnion] at h
+    have hdisj : (P.parts : Set (Subtype MeasurableSet)).PairwiseDisjoint
+        (Subtype.val : _ → Set X) := by
+      intro a ha b hb hab
+      have h := P.disjoint ha hb hab
+      simp only [Function.onFun, disjoint_iff, id_eq, ← Subtype.coe_inj,
+        MeasurableSet.coe_bot] at h
+      rwa [Function.onFun, Set.disjoint_iff_inter_eq_empty]
+    have hsum : ∑ p ∈ P.parts, μ p.val = μ s := by
+      rw [← μ.of_biUnion_finset hdisj (fun p _ => p.prop), hcov]
+    exact hsum.le
+  · simpa [enorm_eq_self] using enorm_measure_le_variation μ s
+
+@[simp]
+theorem ennrealVariation_eq (μ : VectorMeasure X ℝ≥0∞) :
+    μ.ennrealVariation = μ := by simp [ennrealVariation]
+
+end ENNReal
+
 end MeasureTheory.VectorMeasure
