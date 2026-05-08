@@ -22,7 +22,7 @@ on:
 
 permissions:
   contents: read
-  pull-requests: write   # ack comment
+  pull-requests: write   # required to post comments on PRs (issues: write alone is insufficient)
   issues: write          # PR comments use the issues API
   id-token: write        # required for the Azure Key Vault token mint
 
