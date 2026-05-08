@@ -3,8 +3,10 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Sites.Pretopology
-import Mathlib.CategoryTheory.Sites.IsSheafFor
+module
+
+public import Mathlib.CategoryTheory.Sites.Pretopology
+public import Mathlib.CategoryTheory.Sites.IsSheafFor
 
 /-!
 # Sheaves of types on a Grothendieck topology
@@ -46,6 +48,8 @@ We also provide equivalent conditions to satisfy alternate definitions given in 
 
 -/
 
+@[expose] public section
+
 
 universe w w' v u
 
@@ -62,7 +66,7 @@ variable (J J₂ : GrothendieckTopology C)
 
 /-- A presheaf is separated for a topology if it is separated for every sieve in the topology. -/
 def IsSeparated (P : Cᵒᵖ ⥤ Type w) : Prop :=
-  ∀ {X} (S : Sieve X), S ∈ J X → IsSeparatedFor P (S : Presieve X)
+  ∀ ⦃X⦄ (S : Sieve X), S ∈ J X → IsSeparatedFor P (S : Presieve X)
 
 /-- A presheaf is a sheaf for a topology if it is a sheaf for every sieve in the topology.
 
@@ -72,6 +76,7 @@ check the sheaf condition at presieves in the pretopology.
 def IsSheaf (P : Cᵒᵖ ⥤ Type w) : Prop :=
   ∀ ⦃X⦄ (S : Sieve X), S ∈ J X → IsSheafFor P (S : Presieve X)
 
+variable {J} in
 theorem IsSheaf.isSheafFor {P : Cᵒᵖ ⥤ Type w} (hp : IsSheaf J P) (R : Presieve X)
     (hr : generate R ∈ J X) : IsSheafFor P R :=
   (isSheafFor_iff_generate R).2 <| hp _ hr
@@ -79,8 +84,21 @@ theorem IsSheaf.isSheafFor {P : Cᵒᵖ ⥤ Type w} (hp : IsSheaf J P) (R : Pres
 theorem isSheaf_of_le (P : Cᵒᵖ ⥤ Type w) {J₁ J₂ : GrothendieckTopology C} :
     J₁ ≤ J₂ → IsSheaf J₂ P → IsSheaf J₁ P := fun h t _ S hS => t S (h _ hS)
 
-theorem isSeparated_of_isSheaf (P : Cᵒᵖ ⥤ Type w) (h : IsSheaf J P) : IsSeparated J P :=
-  fun S hS => (h S hS).isSeparatedFor
+theorem isSeparated_of_le (P : Cᵒᵖ ⥤ Type w) {J₁ J₂ : GrothendieckTopology C} :
+    J₁ ≤ J₂ → IsSeparated J₂ P → IsSeparated J₁ P :=
+  fun h hP _ S hS ↦ hP S <| h _ hS
+
+variable {J} in
+theorem IsSheaf.isSeparated {P : Cᵒᵖ ⥤ Type w} (h : IsSheaf J P) : IsSeparated J P :=
+  fun _ S hS => (h S hS).isSeparatedFor
+
+variable {J} in
+/-- If `P` is separated and every compatible family of elements of `P` for a covering
+sieve has an amalgamation, `P` is a sheaf. -/
+theorem IsSeparated.isSheaf {P : Cᵒᵖ ⥤ Type w} (h : IsSeparated J P) (h' : ∀ X, ∀ S ∈ J X,
+      ∀ x : FamilyOfElements P S.arrows, x.Compatible → ∃ t, x.IsAmalgamation t) :
+    IsSheaf J P :=
+  fun _ S hS ↦ (h S hS).isSheafFor <| h' _ S hS
 
 section
 
@@ -96,19 +114,19 @@ lemma isSheaf_of_nat_equiv (hP₁ : Presieve.IsSheaf J P₁) :
 
 include he in
 lemma isSheaf_iff_of_nat_equiv :
-    Presieve.IsSheaf J P₁ ↔ Presieve.IsSheaf J P₂ :=
-  ⟨fun hP₁ ↦ isSheaf_of_nat_equiv e he hP₁,
-    fun hP₂ ↦
-      isSheaf_of_nat_equiv (fun _ ↦ (@e _).symm) (fun X Y f x ↦ by
-        obtain ⟨y, rfl⟩ := e.surjective x
-        refine e.injective ?_
-        simp only [Equiv.apply_symm_apply, Equiv.symm_apply_apply, he]) hP₂⟩
+    Presieve.IsSheaf J P₁ ↔ Presieve.IsSheaf J P₂ := by
+  simp only [Presieve.IsSheaf, Presieve.isSheafFor_iff_of_nat_equiv e he]
 
 end
 
 /-- The property of being a sheaf is preserved by isomorphism. -/
 theorem isSheaf_iso {P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') (h : IsSheaf J P) : IsSheaf J P' :=
   fun _ S hS => isSheafFor_iso i (h S hS)
+
+/-- The property of being separated is preserved under isomorphisms. -/
+theorem isSeparated_iso {P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') (hP : IsSeparated J P) :
+    IsSeparated J P' :=
+  fun _ S hS ↦ isSeparatedFor_iso i (hP S hS)
 
 theorem isSheaf_of_yoneda {P : Cᵒᵖ ⥤ Type v}
     (h : ∀ {X} (S : Sieve X), S ∈ J X → YonedaSheafCondition P S) : IsSheaf J P := fun _ _ hS =>
@@ -118,7 +136,7 @@ theorem isSheaf_of_yoneda {P : Cᵒᵖ ⥤ Type v}
 presieves only.
 -/
 theorem isSheaf_pretopology [HasPullbacks C] (K : Pretopology C) :
-    IsSheaf (K.toGrothendieck C) P ↔ ∀ {X : C} (R : Presieve X), R ∈ K X → IsSheafFor P R := by
+    IsSheaf K.toGrothendieck P ↔ ∀ {X : C} (R : Presieve X), R ∈ K X → IsSheafFor P R := by
   constructor
   · intro PJ X R hR
     rw [isSheafFor_iff_generate]
@@ -132,9 +150,24 @@ theorem isSheaf_pretopology [HasPullbacks C] (K : Pretopology C) :
     rw [← pullbackArrows_comm, ← isSheafFor_iff_generate]
     exact PK (pullbackArrows f R) (K.pullbacks f R hR)
 
-/-- Any presheaf is a sheaf for the bottom (trivial) grothendieck topology. -/
+/-- Any presheaf is a sheaf for the bottom (trivial) Grothendieck topology. -/
 theorem isSheaf_bot : IsSheaf (⊥ : GrothendieckTopology C) P := fun X => by
-  simp [isSheafFor_top_sieve]
+  simp [isSheafFor_top]
+
+/-- A presheaf is a sheaf after composing with a universe lift if and only if it is a sheaf. -/
+@[simp]
+theorem isSheafFor_comp_uliftFunctor_iff {R : Presieve X} :
+    R.IsSheafFor (P ⋙ uliftFunctor.{w'}) ↔ R.IsSheafFor P :=
+  (isSheafFor_iff_of_nat_equiv (fun _ => Equiv.ulift.symm) (fun _ _ _ _ => rfl)).symm
+
+/-- A presheaf is a sheaf after composing with a universe lift if and only if it is a sheaf. -/
+@[simp]
+theorem isSheaf_comp_uliftFunctor_iff : IsSheaf J (P ⋙ uliftFunctor.{w'}) ↔ IsSheaf J P :=
+  (isSheaf_iff_of_nat_equiv (fun _ => Equiv.ulift.symm) (fun _ _ _ _ => rfl)).symm
+
+/-- The composition of a sheaf with a ULift functor is still a sheaf. -/
+theorem isSheaf_comp_uliftFunctor (h : IsSheaf J P) : IsSheaf J (P ⋙ uliftFunctor.{w'}) := by
+  rwa [isSheaf_comp_uliftFunctor_iff]
 
 /--
 For a presheaf of the form `yoneda.obj W`, a compatible family of elements on a sieve
@@ -151,12 +184,9 @@ def compatibleYonedaFamily_toCocone (R : Presieve X) (W : C) (x : FamilyOfElemen
     { app := fun f => x f.obj.hom f.property
       naturality := by
         intro g₁ g₂ F
-        simp only [Functor.id_obj, Functor.comp_obj, ObjectProperty.ι_obj, Over.forget_obj,
-          Functor.const_obj_obj, Functor.comp_map, ObjectProperty.ι_map, Over.forget_map,
-          Functor.const_obj_map, comp_id]
-        rw [← Category.id_comp (x g₁.obj.hom g₁.property)]
-        apply hx
-        simp only [Functor.id_obj, Over.w, Opposite.unop_op, Category.id_comp] }
+        dsimp
+        rw [comp_id, ← id_comp (x g₁.obj.hom g₁.property)]
+        exact hx _ _ _ _ (by simp) }
 
 /-- Construct a family of elements from a cocone. -/
 def yonedaFamilyOfElements_fromCocone (R : Presieve X) (s : Cocone (diagram R)) :
@@ -175,17 +205,17 @@ theorem yonedaFamily_fromCocone_compatible (S : Sieve X) (s : Cocone (diagram S.
     FamilyOfElements.Compatible <| yonedaFamilyOfElements_fromCocone S.arrows s := by
   intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ hf₁ hf₂ hgf
   have Hs := s.ι.naturality
-  simp only [Functor.id_obj, yoneda_obj_obj, Opposite.unop_op, yoneda_obj_map, Quiver.Hom.unop_op]
+  simp only [yoneda_obj_obj, Opposite.unop_op, yoneda_obj_map, Quiver.Hom.unop_op]
   dsimp [yonedaFamilyOfElements_fromCocone]
   have hgf₁ : S.arrows (g₁ ≫ f₁) := by exact Sieve.downward_closed S hf₁ g₁
   have hgf₂ : S.arrows (g₂ ≫ f₂) := by exact Sieve.downward_closed S hf₂ g₂
   let F : (Over.mk (g₁ ≫ f₁) : Over X) ⟶ (Over.mk (g₂ ≫ f₂) : Over X) := Over.homMk (𝟙 Z)
   let F₁ : (Over.mk (g₁ ≫ f₁) : Over X) ⟶ (Over.mk f₁ : Over X) := Over.homMk g₁
   let F₂ : (Over.mk (g₂ ≫ f₂) : Over X) ⟶ (Over.mk f₂ : Over X) := Over.homMk g₂
-  have hF := @Hs ⟨Over.mk (g₁ ≫ f₁), hgf₁⟩ ⟨Over.mk (g₂ ≫ f₂), hgf₂⟩ F
-  have hF₁ := @Hs ⟨Over.mk (g₁ ≫ f₁), hgf₁⟩ ⟨Over.mk f₁, hf₁⟩ F₁
-  have hF₂ := @Hs ⟨Over.mk (g₂ ≫ f₂), hgf₂⟩ ⟨Over.mk f₂, hf₂⟩ F₂
-  aesop_cat
+  have hF := @Hs ⟨Over.mk (g₁ ≫ f₁), hgf₁⟩ ⟨Over.mk (g₂ ≫ f₂), hgf₂⟩ (ObjectProperty.homMk F)
+  have hF₁ := @Hs ⟨Over.mk (g₁ ≫ f₁), hgf₁⟩ ⟨Over.mk f₁, hf₁⟩ (ObjectProperty.homMk F₁)
+  have hF₂ := @Hs ⟨Over.mk (g₂ ≫ f₂), hgf₂⟩ ⟨Over.mk f₂, hf₂⟩ (ObjectProperty.homMk F₂)
+  cat_disch
 
 /--
 The base of a sieve `S` is a colimit of `S` iff all Yoneda-presheaves satisfy
@@ -205,7 +235,7 @@ theorem forallYonedaIsSheaf_iff_colimit (S : Sieve X) :
         replace H := H s.pt (yonedaFamilyOfElements_fromCocone S.arrows s)
           (yonedaFamily_fromCocone_compatible S s)
         have ht := H.choose_spec.1 f.obj.hom f.property
-        aesop_cat
+        cat_disch
       uniq := by
         intro s Fs HFs
         replace H := H s.pt (yonedaFamilyOfElements_fromCocone S.arrows s)

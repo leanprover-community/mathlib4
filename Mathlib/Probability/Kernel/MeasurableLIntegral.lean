@@ -3,8 +3,10 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.MeasurableSpace.Prod
-import Mathlib.Probability.Kernel.Basic
+module
+
+public import Mathlib.MeasureTheory.MeasurableSpace.Prod
+public import Mathlib.Probability.Kernel.Basic
 
 /-!
 # Measurability of the integral against a kernel
@@ -18,6 +20,8 @@ The Lebesgue integral of a measurable function against a kernel is measurable.
   is measurable.
 
 -/
+
+public section
 
 
 open MeasureTheory ProbabilityTheory Function Set Filter
@@ -69,40 +73,28 @@ theorem measurable_kernel_prodMk_left_of_finite {t : Set (α × β)} (ht : Measu
       rw [preimage_iUnion, measure_iUnion]
       · exact h_disj.mono fun _ _ ↦ .preimage _
       · exact fun i ↦ measurable_prodMk_left (hf_meas i)
-    simpa only [this] using Measurable.ennreal_tsum hf
-
-@[deprecated (since := "2025-03-05")]
-alias measurable_kernel_prod_mk_left_of_finite := measurable_kernel_prodMk_left_of_finite
+    simpa only [this] using Measurable.tsum hf
 
 theorem measurable_kernel_prodMk_left [IsSFiniteKernel κ] {t : Set (α × β)}
     (ht : MeasurableSet t) : Measurable fun a => κ a (Prod.mk a ⁻¹' t) := by
   rw [← Kernel.kernel_sum_seq κ]
-  have (a) : Kernel.sum (Kernel.seq κ) a (Prod.mk a ⁻¹' t) =
+  have (a : _) : Kernel.sum (Kernel.seq κ) a (Prod.mk a ⁻¹' t) =
       ∑' n, Kernel.seq κ n a (Prod.mk a ⁻¹' t) :=
     Kernel.sum_apply' _ _ (measurable_prodMk_left ht)
   simp_rw [this]
-  refine Measurable.ennreal_tsum fun n => ?_
+  refine Measurable.tsum fun n => ?_
   exact measurable_kernel_prodMk_left_of_finite ht inferInstance
-
-@[deprecated (since := "2025-03-05")]
-alias measurable_kernel_prod_mk_left := measurable_kernel_prodMk_left
 
 theorem measurable_kernel_prodMk_left' [IsSFiniteKernel η] {s : Set (β × γ)} (hs : MeasurableSet s)
     (a : α) : Measurable fun b => η (a, b) (Prod.mk b ⁻¹' s) := by
-  have (b) : Prod.mk b ⁻¹' s = {c | ((a, b), c) ∈ {p : (α × β) × γ | (p.1.2, p.2) ∈ s}} := rfl
+  have (b : _) : Prod.mk b ⁻¹' s = {c | ((a, b), c) ∈ {p : (α × β) × γ | (p.1.2, p.2) ∈ s}} := rfl
   simp_rw [this]
   refine (measurable_kernel_prodMk_left ?_).comp measurable_prodMk_left
   exact (measurable_fst.snd.prodMk measurable_snd) hs
 
-@[deprecated (since := "2025-03-05")]
-alias measurable_kernel_prod_mk_left' := measurable_kernel_prodMk_left'
-
 theorem measurable_kernel_prodMk_right [IsSFiniteKernel κ] {s : Set (β × α)}
     (hs : MeasurableSet s) : Measurable fun y => κ y ((fun x => (x, y)) ⁻¹' s) :=
   measurable_kernel_prodMk_left (measurableSet_swap_iff.mpr hs)
-
-@[deprecated (since := "2025-03-05")]
-alias measurable_kernel_prod_mk_right := measurable_kernel_prodMk_right
 
 end Kernel
 
@@ -115,13 +107,8 @@ variable [IsSFiniteKernel κ] [IsSFiniteKernel η]
 /-- Auxiliary lemma for `Measurable.lintegral_kernel_prod_right`. -/
 theorem Kernel.measurable_lintegral_indicator_const {t : Set (α × β)} (ht : MeasurableSet t)
     (c : ℝ≥0∞) : Measurable fun a => ∫⁻ b, t.indicator (Function.const (α × β) c) (a, b) ∂κ a := by
-  -- Porting note: was originally by
-  -- `simp_rw [lintegral_indicator_const_comp measurable_prodMk_left ht _]`
-  -- but this has no effect, so added the `conv` below
-  conv =>
-    congr
-    ext
-    erw [lintegral_indicator_const_comp measurable_prodMk_left ht _]
+  unfold Function.const
+  simp_rw [lintegral_indicator_const_comp measurable_prodMk_left ht _]
   exact Measurable.const_mul (measurable_kernel_prodMk_left ht) c
 
 /-- For an s-finite kernel `κ` and a function `f : α → β → ℝ≥0∞` which is measurable when seen as a
@@ -153,10 +140,7 @@ theorem _root_.Measurable.lintegral_kernel_prod_right {f : α → β → ℝ≥0
       (fun a => ∫⁻ b, g₁ (a, b) + g₂ (a, b) ∂κ a) =
         (fun a => ∫⁻ b, g₁ (a, b) ∂κ a) + fun a => ∫⁻ b, g₂ (a, b) ∂κ a := by
       ext1 a
-      rw [Pi.add_apply]
-      -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): was `rw` (`Function.comp` reducibility)
-      erw [lintegral_add_left (g₁.measurable.comp measurable_prodMk_left)]
-      simp_rw [Function.comp_apply]
+      rw [Pi.add_apply, lintegral_add_left (by fun_prop)]
     rw [h_add]
     exact Measurable.add hm₁ hm₂
 
@@ -167,10 +151,9 @@ theorem _root_.Measurable.lintegral_kernel_prod_right' {f : α × β → ℝ≥0
 @[fun_prop]
 theorem _root_.Measurable.lintegral_kernel_prod_right'' {f : β × γ → ℝ≥0∞} (hf : Measurable f) :
     Measurable fun x => ∫⁻ y, f (x, y) ∂η (a, x) := by
-  -- Porting note: used `Prod.mk a` instead of `fun x => (a, x)` below
   change
     Measurable
-      ((fun x => ∫⁻ y, (fun u : (α × β) × γ => f (u.1.2, u.2)) (x, y) ∂η x) ∘ Prod.mk a)
+      ((fun x => ∫⁻ y, (fun u : (α × β) × γ => f (u.1.2, u.2)) (x, y) ∂η x) ∘ fun x => (a, x))
   -- Porting note: specified `κ`, `f`.
   refine (Measurable.lintegral_kernel_prod_right' (κ := η)
     (f := (fun u ↦ f (u.fst.snd, u.snd))) ?_).comp measurable_prodMk_left
@@ -199,10 +182,8 @@ theorem _root_.Measurable.lintegral_kernel {κ : Kernel α β} {f : β → ℝ�
     Measurable fun a => ∫⁻ b, f b ∂κ a := by fun_prop
 
 theorem _root_.Measurable.setLIntegral_kernel {f : β → ℝ≥0∞} (hf : Measurable f) {s : Set β}
-    (hs : MeasurableSet s) : Measurable fun a => ∫⁻ b in s, f b ∂κ a := by
-  -- Porting note: was term mode proof (`Function.comp` reducibility)
-  refine Measurable.setLIntegral_kernel_prod_right ?_ hs
-  fun_prop
+    (hs : MeasurableSet s) : Measurable fun a => ∫⁻ b in s, f b ∂κ a :=
+  Measurable.setLIntegral_kernel_prod_right (by fun_prop) hs
 
 end Lintegral
 

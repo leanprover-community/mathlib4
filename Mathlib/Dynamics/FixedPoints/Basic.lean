@@ -3,51 +3,35 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.End
-import Mathlib.Data.Set.Function
+module
+
+public import Mathlib.Algebra.Group.End
+public import Mathlib.Data.Set.Function
+public import Mathlib.Dynamics.FixedPoints.Defs
 
 /-!
 # Fixed points of a self-map
 
-In this file we define
-
-* the predicate `IsFixedPt f x := f x = x`;
-* the set `fixedPoints f` of fixed points of a self-map `f`.
-
-We also prove some simple lemmas about `IsFixedPt` and `∘`, `iterate`, and `Semiconj`.
+We prove some simple lemmas about `IsFixedPt` and `∘`, `iterate`, and `Semiconj`.
 
 ## Tags
 
 fixed point
 -/
 
+public section
 
 open Equiv
 
 universe u v
 
-variable {α : Type u} {β : Type v} {f fa g : α → α} {x : α} {fb : β → β} {e : Perm α}
+variable {α β : Type*} {f fa g : α → α} {x : α} {fb : β → β} {e : Perm α}
 
 namespace Function
 
 open Function (Commute)
 
-/-- Every point is a fixed point of `id`. -/
-theorem isFixedPt_id (x : α) : IsFixedPt id x :=
-  (rfl :)
-
-/-- A function fixes every point iff it is the identity. -/
-@[simp] theorem forall_isFixedPt_iff : (∀ x, IsFixedPt f x) ↔ f = id :=
-  ⟨funext, fun h ↦ h ▸ isFixedPt_id⟩
-
 namespace IsFixedPt
-
-instance decidable [h : DecidableEq α] {f : α → α} {x : α} : Decidable (IsFixedPt f x) :=
-  h (f x) x
-
-/-- If `x` is a fixed point of `f`, then `f x = x`. This is useful, e.g., for `rw` or `simp`. -/
-protected theorem eq (hf : IsFixedPt f x) : f x = x :=
-  hf
 
 /-- If `x` is a fixed point of `f` and `g`, then it is a fixed point of `f ∘ g`. -/
 protected theorem comp (hf : IsFixedPt f x) (hg : IsFixedPt g x) : IsFixedPt (f ∘ g) x :=
@@ -109,27 +93,6 @@ end IsFixedPt
 theorem Injective.isFixedPt_apply_iff (hf : Injective f) {x : α} :
     IsFixedPt f (f x) ↔ IsFixedPt f x :=
   ⟨fun h => hf h.eq, IsFixedPt.apply⟩
-
-/-- The set of fixed points of a map `f : α → α`. -/
-def fixedPoints (f : α → α) : Set α :=
-  { x : α | IsFixedPt f x }
-
-instance fixedPoints.decidable [DecidableEq α] (f : α → α) (x : α) :
-    Decidable (x ∈ fixedPoints f) :=
-  IsFixedPt.decidable
-
-@[simp]
-theorem mem_fixedPoints : x ∈ fixedPoints f ↔ IsFixedPt f x :=
-  Iff.rfl
-
-theorem mem_fixedPoints_iff {α : Type*} {f : α → α} {x : α} : x ∈ fixedPoints f ↔ f x = x := by
-  rfl
-
-@[simp]
-theorem fixedPoints_id : fixedPoints (@id α) = Set.univ :=
-  Set.ext fun _ => by simpa using isFixedPt_id _
-
-theorem fixedPoints_subset_range : fixedPoints f ⊆ Set.range f := fun x hx => ⟨x, hx⟩
 
 /-- If `g` semiconjugates `fa` to `fb`, then it sends fixed points of `fa` to fixed points
 of `fb`. -/

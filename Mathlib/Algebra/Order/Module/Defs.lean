@@ -3,11 +3,15 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.NoZeroSMulDivisors.Basic
-import Mathlib.Algebra.Order.GroupWithZero.Action.Synonym
-import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Order.Hom.Basic
+module
+
+public import Mathlib.Algebra.Module.Torsion.Free
+public import Mathlib.Algebra.Order.Group.Basic
+public import Mathlib.Algebra.Order.GroupWithZero.Action.Synonym
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Order.Hom.Basic
+public import Mathlib.Algebra.GroupWithZero.Action.Units
 
 /-!
 # Monotonicity of scalar multiplication by positive elements
@@ -20,12 +24,11 @@ We use eight typeclasses to encode the various properties we care about for thos
 These typeclasses are meant to be mostly internal to this file, to set up each lemma in the
 appropriate generality.
 
-Less granular typeclasses like `OrderedAddCommMonoid`, `LinearOrderedField`, `OrderedSMul` should be
-enough for most purposes, and the system is set up so that they imply the correct granular
-typeclasses here. If those are enough for you, you may stop reading here! Else, beware that what
+Less granular typeclasses like `IsOrderedAddMonoid` and `IsOrderedModule` should be enough for most
+purposes, and the system is set up so that they imply the correct granular typeclasses here.
+If those are enough for you, you may stop reading here! Else, beware that what
 follows is a bit technical.
 
-## Definitions
 
 In all that follows, `α` and `β` are orders which have a `0` and such that `α` acts on `β` by scalar
 multiplication. Note however that we do not use lawfulness of this action in most of the file. Hence
@@ -42,6 +45,13 @@ We use the following four typeclasses to reason about right scalar multiplicatio
 * `SMulPosStrictMono`: If `b > 0`, then `a₁ < a₂` implies `a₁ • b < a₂ • b`.
 * `SMulPosReflectLT`: If `b ≥ 0`, then `a₁ • b < a₂ • b` implies `a₁ < a₂`.
 * `SMulPosReflectLE`: If `b > 0`, then `a₁ • b ≤ a₂ • b` implies `a₁ ≤ a₂`.
+
+Furthermore, in a *module*, i.e. a group acted on by a ring, `PosSMulMono` and `SMulPosMono` are
+equivalent (they are both the same as `∀ r ≥ 0, ∀ m ≥ 0, 0 ≤ r • m`),
+and similarly for `PosSMulStrictMono` and `SMulPosStrictMono`.
+To avoid dangerous instances going both, we have the extra two typeclasses:
+* `IsOrderedModule`: Conjunction of `PosSMulMono` and `SMulPosMono`
+* `IsStrictOrderedModule`: Conjunction of `PosSMulStrictMono` and `SMulPosStrictMono`.
 
 ## Constructors
 
@@ -70,17 +80,19 @@ used implications are:
 * When `α` is an ordered ring, `β` an ordered group and also an `α`-module:
   * `PosSMulMono → SMulPosMono`
   * `PosSMulStrictMono → SMulPosStrictMono`
-* When `α` is an linear ordered semifield, `β` is an `α`-module:
+* When `α` is a linear ordered semifield, `β` is an `α`-module:
   * `PosSMulStrictMono → PosSMulReflectLT`
   * `PosSMulMono → PosSMulReflectLE`
-* When `α` is a semiring, `β` is an `α`-module with `NoZeroSMulDivisors`:
+* When `α` is a semiring, `β` is an `α`-module with `Module.IsTorsionFree`:
   * `PosSMulMono → PosSMulStrictMono` (not registered as instance)
-* When `α` is a ring, `β` is an `α`-module with `NoZeroSMulDivisors`:
+* When `α` is a ring, `β` is an `α`-module with `Module.IsTorsionFree`:
   * `SMulPosMono → SMulPosStrictMono` (not registered as instance)
 
 Further, the bundled non-granular typeclasses imply the granular ones like so:
-* `OrderedSMul → PosSMulStrictMono`
-* `OrderedSMul → PosSMulReflectLT`
+* `IsOrderedModule → PosSMulMono`
+* `IsOrderedModule → SMulPosMono`
+* `IsStrictOrderedModule → PosSMulStrictMono`
+* `IsStrictOrderedModule → SMulPosStrictMono`
 
 Unless otherwise stated, all these implications are registered as instances,
 which means that in practice you should not worry about these implications.
@@ -107,18 +119,12 @@ because:
   anyway. It is easily copied over.
 
 In the future, it would be good to make the corresponding typeclasses in
-`Mathlib/Algebra/Order/GroupWithZero/Unbundled.lean` custom typeclasses too.
-
-## TODO
-
-This file acts as a substitute for `Mathlib/Algebra/Order/SMul.lean`. We now need to
-* finish the transition by deleting the duplicate lemmas
-* rearrange the non-duplicate lemmas into new files
-* generalise (most of) the lemmas from `Mathlib/Algebra/Order/Module.lean` to here
-* rethink `OrderedSMul`
+`Mathlib/Algebra/Order/GroupWithZero/Unbundled/Defs.lean` custom typeclasses too.
 -/
 
-assert_not_exists Field
+@[expose] public section
+
+assert_not_exists Field Finset
 
 open OrderDual
 
@@ -134,37 +140,41 @@ variable [Zero α]
 namely `b₁ ≤ b₂ → a • b₁ ≤ a • b₂` if `0 ≤ a`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedSMul`. -/
+`IsOrderedModule`. -/
 class PosSMulMono : Prop where
   /-- Do not use this. Use `smul_le_smul_of_nonneg_left` instead. -/
-  protected elim ⦃a : α⦄ (ha : 0 ≤ a) ⦃b₁ b₂ : β⦄ (hb : b₁ ≤ b₂) : a • b₁ ≤ a • b₂
+  protected smul_le_smul_of_nonneg_left ⦃a : α⦄ (ha : 0 ≤ a) ⦃b₁ b₂ : β⦄ (hb : b₁ ≤ b₂) :
+    a • b₁ ≤ a • b₂
 
 /-- Typeclass for strict monotonicity of scalar multiplication by positive elements on the left,
 namely `b₁ < b₂ → a • b₁ < a • b₂` if `0 < a`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedSMul`. -/
+`IsOrderedModule`. -/
 class PosSMulStrictMono : Prop where
   /-- Do not use this. Use `smul_lt_smul_of_pos_left` instead. -/
-  protected elim ⦃a : α⦄ (ha : 0 < a) ⦃b₁ b₂ : β⦄ (hb : b₁ < b₂) : a • b₁ < a • b₂
+  protected smul_lt_smul_of_pos_left ⦃a : α⦄ (ha : 0 < a) ⦃b₁ b₂ : β⦄ (hb : b₁ < b₂) :
+    a • b₁ < a • b₂
 
 /-- Typeclass for strict reverse monotonicity of scalar multiplication by nonnegative elements on
 the left, namely `a • b₁ < a • b₂ → b₁ < b₂` if `0 ≤ a`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedSMul`. -/
+`IsOrderedModule`. -/
 class PosSMulReflectLT : Prop where
   /-- Do not use this. Use `lt_of_smul_lt_smul_left` instead. -/
-  protected elim ⦃a : α⦄ (ha : 0 ≤ a) ⦃b₁ b₂ : β⦄ (hb : a • b₁ < a • b₂) : b₁ < b₂
+  protected lt_of_smul_lt_smul_left ⦃a : α⦄ (ha : 0 ≤ a) ⦃b₁ b₂ : β⦄ (hb : a • b₁ < a • b₂) :
+    b₁ < b₂
 
 /-- Typeclass for reverse monotonicity of scalar multiplication by positive elements on the left,
 namely `a • b₁ ≤ a • b₂ → b₁ ≤ b₂` if `0 < a`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedSMul`. -/
+`IsOrderedModule`. -/
 class PosSMulReflectLE : Prop where
-  /-- Do not use this. Use `le_of_smul_lt_smul_left` instead. -/
-  protected elim ⦃a : α⦄ (ha : 0 < a) ⦃b₁ b₂ : β⦄ (hb : a • b₁ ≤ a • b₂) : b₁ ≤ b₂
+  /-- Do not use this. Use `le_of_smul_le_smul_left` instead. -/
+  protected le_of_smul_le_smul_left ⦃a : α⦄ (ha : 0 < a) ⦃b₁ b₂ : β⦄ (hb : a • b₁ ≤ a • b₂) :
+    b₁ ≤ b₂
 
 end Left
 
@@ -175,39 +185,56 @@ variable [Zero β]
 namely `a₁ ≤ a₂ → a₁ • b ≤ a₂ • b` if `0 ≤ b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedSMul`. -/
+`IsOrderedModule`. -/
 class SMulPosMono : Prop where
   /-- Do not use this. Use `smul_le_smul_of_nonneg_right` instead. -/
-  protected elim ⦃b : β⦄ (hb : 0 ≤ b) ⦃a₁ a₂ : α⦄ (ha : a₁ ≤ a₂) : a₁ • b ≤ a₂ • b
+  protected smul_le_smul_of_nonneg_right ⦃b : β⦄ (hb : 0 ≤ b) ⦃a₁ a₂ : α⦄ (ha : a₁ ≤ a₂) :
+    a₁ • b ≤ a₂ • b
 
 /-- Typeclass for strict monotonicity of scalar multiplication by positive elements on the left,
 namely `a₁ < a₂ → a₁ • b < a₂ • b` if `0 < b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedSMul`. -/
+`IsOrderedModule`. -/
 class SMulPosStrictMono : Prop where
   /-- Do not use this. Use `smul_lt_smul_of_pos_right` instead. -/
-  protected elim ⦃b : β⦄ (hb : 0 < b) ⦃a₁ a₂ : α⦄ (ha : a₁ < a₂) : a₁ • b < a₂ • b
+  protected smul_lt_smul_of_pos_right ⦃b : β⦄ (hb : 0 < b) ⦃a₁ a₂ : α⦄ (ha : a₁ < a₂) :
+    a₁ • b < a₂ • b
 
 /-- Typeclass for strict reverse monotonicity of scalar multiplication by nonnegative elements on
 the left, namely `a₁ • b < a₂ • b → a₁ < a₂` if `0 ≤ b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedSMul`. -/
+`IsOrderedModule`. -/
 class SMulPosReflectLT : Prop where
   /-- Do not use this. Use `lt_of_smul_lt_smul_right` instead. -/
-  protected elim ⦃b : β⦄ (hb : 0 ≤ b) ⦃a₁ a₂ : α⦄ (hb : a₁ • b < a₂ • b) : a₁ < a₂
+  protected lt_of_smul_lt_smul_right ⦃b : β⦄ (hb : 0 ≤ b) ⦃a₁ a₂ : α⦄ (hb : a₁ • b < a₂ • b) :
+    a₁ < a₂
 
 /-- Typeclass for reverse monotonicity of scalar multiplication by positive elements on the left,
 namely `a₁ • b ≤ a₂ • b → a₁ ≤ a₂` if `0 < b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedSMul`. -/
+`IsOrderedModule`. -/
 class SMulPosReflectLE : Prop where
-  /-- Do not use this. Use `le_of_smul_lt_smul_right` instead. -/
-  protected elim ⦃b : β⦄ (hb : 0 < b) ⦃a₁ a₂ : α⦄ (hb : a₁ • b ≤ a₂ • b) : a₁ ≤ a₂
+  /-- Do not use this. Use `le_of_smul_le_smul_right` instead. -/
+  protected le_of_smul_le_smul_right ⦃b : β⦄ (hb : 0 < b) ⦃a₁ a₂ : α⦄ (hb : a₁ • b ≤ a₂ • b) :
+    a₁ ≤ a₂
 
 end Right
+
+section LeftRight
+variable [Zero α] [Zero β]
+
+/-- An ordered module is a module with a partial order such that scalar multiplication by a
+nonnegative scalar and of a nonnegative vector are both monotone. -/
+class IsOrderedModule extends PosSMulMono α β, SMulPosMono α β
+
+/-- An ordered module is a module with a partial order such that scalar multiplication by a
+positive scalar and of a positive vector are both strictly monotone. -/
+class IsStrictOrderedModule extends PosSMulStrictMono α β, SMulPosStrictMono α β
+
+end LeftRight
 end Defs
 
 variable {α β} {a a₁ a₂ : α} {b b₁ b₂ : β}
@@ -217,43 +244,67 @@ variable [Zero α] [Mul α] [Preorder α]
 
 -- See note [lower instance priority]
 instance (priority := 100) PosMulMono.toPosSMulMono [PosMulMono α] : PosSMulMono α α where
-  elim _a ha _b₁ _b₂ hb := mul_le_mul_of_nonneg_left hb ha
+  smul_le_smul_of_nonneg_left _a ha _b₁ _b₂ hb := mul_le_mul_of_nonneg_left hb ha
 
 -- See note [lower instance priority]
 instance (priority := 100) PosMulStrictMono.toPosSMulStrictMono [PosMulStrictMono α] :
     PosSMulStrictMono α α where
-  elim _a ha _b₁ _b₂ hb := mul_lt_mul_of_pos_left hb ha
+  smul_lt_smul_of_pos_left _a ha _b₁ _b₂ hb := mul_lt_mul_of_pos_left hb ha
 
 -- See note [lower instance priority]
 instance (priority := 100) PosMulReflectLT.toPosSMulReflectLT [PosMulReflectLT α] :
     PosSMulReflectLT α α where
-  elim _a ha _b₁ _b₂ h := lt_of_mul_lt_mul_left h ha
+  lt_of_smul_lt_smul_left _a ha _b₁ _b₂ h := lt_of_mul_lt_mul_left h ha
 
 -- See note [lower instance priority]
 instance (priority := 100) PosMulReflectLE.toPosSMulReflectLE [PosMulReflectLE α] :
     PosSMulReflectLE α α where
-  elim _a ha _b₁ _b₂ h := le_of_mul_le_mul_left h ha
+  le_of_smul_le_smul_left _a ha _b₁ _b₂ h := le_of_mul_le_mul_left h ha
 
 -- See note [lower instance priority]
 instance (priority := 100) MulPosMono.toSMulPosMono [MulPosMono α] : SMulPosMono α α where
-  elim _b hb _a₁ _a₂ ha := mul_le_mul_of_nonneg_right ha hb
+  smul_le_smul_of_nonneg_right _b hb _a₁ _a₂ ha := mul_le_mul_of_nonneg_right ha hb
 
 -- See note [lower instance priority]
 instance (priority := 100) MulPosStrictMono.toSMulPosStrictMono [MulPosStrictMono α] :
     SMulPosStrictMono α α where
-  elim _b hb _a₁ _a₂ ha := mul_lt_mul_of_pos_right ha hb
+  smul_lt_smul_of_pos_right _b hb _a₁ _a₂ ha := mul_lt_mul_of_pos_right ha hb
 
 -- See note [lower instance priority]
 instance (priority := 100) MulPosReflectLT.toSMulPosReflectLT [MulPosReflectLT α] :
     SMulPosReflectLT α α where
-  elim _b hb _a₁ _a₂ h := lt_of_mul_lt_mul_right h hb
+  lt_of_smul_lt_smul_right _b hb _a₁ _a₂ h := lt_of_mul_lt_mul_right h hb
 
 -- See note [lower instance priority]
 instance (priority := 100) MulPosReflectLE.toSMulPosReflectLE [MulPosReflectLE α] :
     SMulPosReflectLE α α where
-  elim _b hb _a₁ _a₂ h := le_of_mul_le_mul_right h hb
+  le_of_smul_le_smul_right _b hb _a₁ _a₂ h := le_of_mul_le_mul_right h hb
 
 end Mul
+
+instance {M : Type*} [PartialOrder M] [AddCommMonoid M] [IsOrderedAddMonoid M] :
+    PosSMulMono ℕ M where
+  smul_le_smul_of_nonneg_left _n _ _a _b hab := nsmul_le_nsmul_right hab _
+
+instance {M : Type*} [PartialOrder M] [AddCommMonoid M] [IsOrderedAddMonoid M] :
+    SMulPosMono ℕ M where
+  smul_le_smul_of_nonneg_right _a ha _m _n hmn := nsmul_le_nsmul_left ha hmn
+
+instance {M : Type*} [PartialOrder M] [AddCancelCommMonoid M] [IsOrderedAddMonoid M] :
+    PosSMulStrictMono ℕ M where
+  smul_lt_smul_of_pos_left _n hn _m₁ _m₂ := nsmul_lt_nsmul_right hn.ne'
+
+instance {M : Type*} [PartialOrder M] [AddCommMonoid M] [IsOrderedCancelAddMonoid M] :
+    SMulPosStrictMono ℕ M where
+  smul_lt_smul_of_pos_right _a ha _m _n hmn := nsmul_lt_nsmul_left ha hmn
+
+instance {G : Type*} [PartialOrder G] [AddCommGroup G] [IsOrderedAddMonoid G] :
+    PosSMulStrictMono ℤ G where
+  smul_lt_smul_of_pos_left _n hn _m₁ _m₂ := zsmul_lt_zsmul_right hn
+
+instance {G : Type*} [PartialOrder G] [AddCommGroup G] [IsOrderedAddMonoid G] :
+    SMulPosStrictMono ℤ G where
+  smul_lt_smul_of_pos_right _a ha _m _n hmn := zsmul_lt_zsmul_left ha hmn
 
 section SMul
 variable [SMul α β]
@@ -265,10 +316,10 @@ section Left
 variable [Zero α]
 
 lemma monotone_smul_left_of_nonneg [PosSMulMono α β] (ha : 0 ≤ a) : Monotone ((a • ·) : β → β) :=
-  PosSMulMono.elim ha
+  PosSMulMono.smul_le_smul_of_nonneg_left ha
 
 lemma strictMono_smul_left_of_pos [PosSMulStrictMono α β] (ha : 0 < a) :
-    StrictMono ((a • ·) : β → β) := PosSMulStrictMono.elim ha
+    StrictMono ((a • ·) : β → β) := PosSMulStrictMono.smul_lt_smul_of_pos_left ha
 
 @[gcongr] lemma smul_le_smul_of_nonneg_left [PosSMulMono α β] (hb : b₁ ≤ b₂) (ha : 0 ≤ a) :
     a • b₁ ≤ a • b₂ := monotone_smul_left_of_nonneg ha hb
@@ -277,10 +328,10 @@ lemma strictMono_smul_left_of_pos [PosSMulStrictMono α β] (ha : 0 < a) :
     a • b₁ < a • b₂ := strictMono_smul_left_of_pos ha hb
 
 lemma lt_of_smul_lt_smul_left [PosSMulReflectLT α β] (h : a • b₁ < a • b₂) (ha : 0 ≤ a) : b₁ < b₂ :=
-  PosSMulReflectLT.elim ha h
+  PosSMulReflectLT.lt_of_smul_lt_smul_left ha h
 
 lemma le_of_smul_le_smul_left [PosSMulReflectLE α β] (h : a • b₁ ≤ a • b₂) (ha : 0 < a) : b₁ ≤ b₂ :=
-  PosSMulReflectLE.elim ha h
+  PosSMulReflectLE.le_of_smul_le_smul_left ha h
 
 alias lt_of_smul_lt_smul_of_nonneg_left := lt_of_smul_lt_smul_left
 alias le_of_smul_le_smul_of_pos_left := le_of_smul_le_smul_left
@@ -301,22 +352,28 @@ section Right
 variable [Zero β]
 
 lemma monotone_smul_right_of_nonneg [SMulPosMono α β] (hb : 0 ≤ b) : Monotone ((· • b) : α → β) :=
-  SMulPosMono.elim hb
+  SMulPosMono.smul_le_smul_of_nonneg_right hb
 
 lemma strictMono_smul_right_of_pos [SMulPosStrictMono α β] (hb : 0 < b) :
-    StrictMono ((· • b) : α → β) := SMulPosStrictMono.elim hb
+    StrictMono ((· • b) : α → β) := SMulPosStrictMono.smul_lt_smul_of_pos_right hb
 
 @[gcongr] lemma smul_le_smul_of_nonneg_right [SMulPosMono α β] (ha : a₁ ≤ a₂) (hb : 0 ≤ b) :
     a₁ • b ≤ a₂ • b := monotone_smul_right_of_nonneg hb ha
+
+variable (β) in
+@[gcongr, mono]
+lemma smul_one_mono [One β] [ZeroLEOneClass β] [SMulPosMono α β] :
+    Monotone (fun x : α ↦ x • (1 : β)) :=
+  fun _ _ ha ↦ smul_le_smul_of_nonneg_right ha zero_le_one
 
 @[gcongr] lemma smul_lt_smul_of_pos_right [SMulPosStrictMono α β] (ha : a₁ < a₂) (hb : 0 < b) :
     a₁ • b < a₂ • b := strictMono_smul_right_of_pos hb ha
 
 lemma lt_of_smul_lt_smul_right [SMulPosReflectLT α β] (h : a₁ • b < a₂ • b) (hb : 0 ≤ b) :
-    a₁ < a₂ := SMulPosReflectLT.elim hb h
+    a₁ < a₂ := SMulPosReflectLT.lt_of_smul_lt_smul_right hb h
 
 lemma le_of_smul_le_smul_right [SMulPosReflectLE α β] (h : a₁ • b ≤ a₂ • b) (hb : 0 < b) :
-    a₁ ≤ a₂ := SMulPosReflectLE.elim hb h
+    a₁ ≤ a₂ := SMulPosReflectLE.le_of_smul_le_smul_right hb h
 
 alias lt_of_smul_lt_smul_of_nonneg_right := lt_of_smul_lt_smul_right
 alias le_of_smul_le_smul_of_pos_right := le_of_smul_le_smul_right
@@ -371,6 +428,26 @@ lemma smul_le_smul' [PosSMulMono α β] [SMulPosMono α β] (ha : a₁ ≤ a₂)
 end LeftRight
 end Preorder
 
+variable (β) in
+@[gcongr, mono]
+lemma smul_one_strictMono [Preorder α] [PartialOrder β] [Zero β] [One β] [ZeroLEOneClass β]
+    [NeZero (1 : β)] [SMulPosStrictMono α β] :
+    StrictMono (fun x : α ↦ x • (1 : β)) :=
+  fun _ _ ha ↦ smul_lt_smul_of_pos_right ha (zero_lt_one (α := β))
+
+section PartialOrder
+variable [Semiring α] [PartialOrder α]
+
+-- See note [lower instance priority]
+instance (priority := 100) IsOrderedRing.toIsOrderedModule [IsOrderedRing α] :
+    IsOrderedModule α α where
+
+-- See note [lower instance priority]
+instance (priority := 100) IsStrictOrderedRing.toIsStrictOrderedModule [IsStrictOrderedRing α] :
+    IsStrictOrderedModule α α where
+
+end PartialOrder
+
 section LinearOrder
 variable [Preorder α] [LinearOrder β]
 
@@ -380,19 +457,21 @@ variable [Zero α]
 -- See note [lower instance priority]
 instance (priority := 100) PosSMulStrictMono.toPosSMulReflectLE [PosSMulStrictMono α β] :
     PosSMulReflectLE α β where
-  elim _a ha _b₁ _b₂ := (strictMono_smul_left_of_pos ha).le_iff_le.1
+  le_of_smul_le_smul_left _a ha _b₁ _b₂ := (strictMono_smul_left_of_pos ha).le_iff_le.1
 
 lemma PosSMulReflectLE.toPosSMulStrictMono [PosSMulReflectLE α β] : PosSMulStrictMono α β where
-  elim _a ha _b₁ _b₂ hb := not_le.1 fun h ↦ hb.not_ge <| le_of_smul_le_smul_left h ha
+  smul_lt_smul_of_pos_left _a ha _b₁ _b₂ hb :=
+    not_le.1 fun h ↦ hb.not_ge <| le_of_smul_le_smul_left h ha
 
 lemma posSMulStrictMono_iff_PosSMulReflectLE : PosSMulStrictMono α β ↔ PosSMulReflectLE α β :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ PosSMulReflectLE.toPosSMulStrictMono⟩
 
 instance PosSMulMono.toPosSMulReflectLT [PosSMulMono α β] : PosSMulReflectLT α β where
-  elim _a ha _b₁ _b₂ := (monotone_smul_left_of_nonneg ha).reflect_lt
+  lt_of_smul_lt_smul_left _a ha _b₁ _b₂ := (monotone_smul_left_of_nonneg ha).reflect_lt
 
 lemma PosSMulReflectLT.toPosSMulMono [PosSMulReflectLT α β] : PosSMulMono α β where
-  elim _a ha _b₁ _b₂ hb := not_lt.1 fun h ↦ hb.not_gt <| lt_of_smul_lt_smul_left h ha
+  smul_le_smul_of_nonneg_left _a ha _b₁ _b₂ hb :=
+    not_lt.1 fun h ↦ hb.not_gt <| lt_of_smul_lt_smul_left h ha
 
 lemma posSMulMono_iff_posSMulReflectLT : PosSMulMono α β ↔ PosSMulReflectLT α β :=
   ⟨fun _ ↦ PosSMulMono.toPosSMulReflectLT, fun _ ↦ PosSMulReflectLT.toPosSMulMono⟩
@@ -409,10 +488,12 @@ section Right
 variable [Zero β]
 
 lemma SMulPosReflectLE.toSMulPosStrictMono [SMulPosReflectLE α β] : SMulPosStrictMono α β where
-  elim _b hb _a₁ _a₂ ha := not_le.1 fun h ↦ ha.not_ge <| le_of_smul_le_smul_of_pos_right h hb
+  smul_lt_smul_of_pos_right _b hb _a₁ _a₂ ha :=
+    not_le.1 fun h ↦ ha.not_ge <| le_of_smul_le_smul_of_pos_right h hb
 
 lemma SMulPosReflectLT.toSMulPosMono [SMulPosReflectLT α β] : SMulPosMono α β where
-  elim _b hb _a₁ _a₂ ha := not_lt.1 fun h ↦ ha.not_gt <| lt_of_smul_lt_smul_right h hb
+  smul_le_smul_of_nonneg_right _b hb _a₁ _a₂ ha :=
+    not_lt.1 fun h ↦ ha.not_gt <| lt_of_smul_lt_smul_right h hb
 
 end Right
 end LinearOrder
@@ -426,10 +507,12 @@ variable [Zero β]
 -- See note [lower instance priority]
 instance (priority := 100) SMulPosStrictMono.toSMulPosReflectLE [SMulPosStrictMono α β] :
     SMulPosReflectLE α β where
-  elim _b hb _a₁ _a₂ h := not_lt.1 fun ha ↦ h.not_gt <| smul_lt_smul_of_pos_right ha hb
+  le_of_smul_le_smul_right _b hb _a₁ _a₂ h :=
+    not_lt.1 fun ha ↦ h.not_gt <| smul_lt_smul_of_pos_right ha hb
 
 lemma SMulPosMono.toSMulPosReflectLT [SMulPosMono α β] : SMulPosReflectLT α β where
-  elim _b hb _a₁ _a₂ h := not_le.1 fun ha ↦ h.not_ge <| smul_le_smul_of_nonneg_right ha hb
+  lt_of_smul_lt_smul_right _b hb _a₁ _a₂ h :=
+    not_le.1 fun ha ↦ h.not_ge <| smul_le_smul_of_nonneg_right ha hb
 
 end Right
 end LinearOrder
@@ -469,7 +552,7 @@ lemma smul_pos_iff_of_pos_left [PosSMulStrictMono α β] [PosSMulReflectLT α β
 
 lemma smul_neg_iff_of_pos_left [PosSMulStrictMono α β] [PosSMulReflectLT α β] (ha : 0 < a) :
     a • b < 0 ↔ b < 0 := by
-  simpa only [smul_zero]  using smul_lt_smul_iff_of_pos_left ha (b₂ := (0 : β))
+  simpa only [smul_zero] using smul_lt_smul_iff_of_pos_left ha (b₂ := (0 : β))
 
 lemma smul_nonneg [PosSMulMono α β] (ha : 0 ≤ a) (hb : 0 ≤ b₁) : 0 ≤ a • b₁ := by
   simpa only [smul_zero] using smul_le_smul_of_nonneg_left hb ha
@@ -482,6 +565,22 @@ lemma pos_of_smul_pos_left [PosSMulReflectLT α β] (h : 0 < a • b) (ha : 0 �
 
 lemma neg_of_smul_neg_left [PosSMulReflectLT α β] (h : a • b < 0) (ha : 0 ≤ a) : b < 0 :=
   lt_of_smul_lt_smul_left (by rwa [smul_zero]) ha
+
+lemma nonneg_of_smul_nonneg_of_pos_left [PosSMulReflectLE α β] (h : 0 ≤ a • b) (ha : 0 < a) :
+    0 ≤ b :=
+  le_of_smul_le_smul_of_pos_left (by simpa) ha
+
+lemma nonpos_of_smul_nonpos_of_pos_left [PosSMulReflectLE α β] (h : a • b ≤ 0) (ha : 0 < a) :
+    b ≤ 0 :=
+  le_of_smul_le_smul_of_pos_left (by simpa) ha
+
+lemma smul_nonneg_iff_nonneg_of_pos_left [PosSMulMono α β] [PosSMulReflectLE α β] (ha : 0 < a) :
+    0 ≤ a • b ↔ 0 ≤ b :=
+  ⟨(nonneg_of_smul_nonneg_of_pos_left · ha), smul_nonneg ha.le⟩
+
+lemma smul_nonpos_iff_nonpos_of_pos_left [PosSMulMono α β] [PosSMulReflectLE α β] (ha : 0 < a) :
+    a • b ≤ 0 ↔ b ≤ 0 :=
+  ⟨(nonpos_of_smul_nonpos_of_pos_left · ha), smul_nonpos_of_nonneg_of_nonpos ha.le⟩
 
 end Preorder
 end SMulZeroClass
@@ -519,6 +618,37 @@ lemma pos_iff_pos_of_smul_pos [PosSMulReflectLT α β] [SMulPosReflectLT α β] 
     0 < a ↔ 0 < b :=
   ⟨pos_of_smul_pos_left hab ∘ le_of_lt, pos_of_smul_pos_right hab ∘ le_of_lt⟩
 
+lemma nonneg_of_smul_nonneg_of_pos_right [SMulPosReflectLE α β] (h : 0 ≤ a • b) (hb : 0 < b) :
+    0 ≤ a :=
+  le_of_smul_le_smul_of_pos_right (by simpa) hb
+
+lemma nonpos_of_smul_nonpos_of_pos_right [SMulPosReflectLE α β] (h : a • b ≤ 0) (hb : 0 < b) :
+    a ≤ 0 :=
+  le_of_smul_le_smul_of_pos_right (by simpa) hb
+
+lemma smul_nonneg_iff_nonneg_of_pos_right [SMulPosMono α β] [SMulPosReflectLE α β] (hb : 0 < b) :
+    0 ≤ a • b ↔ 0 ≤ a :=
+  ⟨(nonneg_of_smul_nonneg_of_pos_right · hb), (smul_nonneg' · hb.le)⟩
+
+lemma smul_nonpos_iff_nonpos_of_pos_right [SMulPosMono α β] [SMulPosReflectLE α β] (hb : 0 < b) :
+    a • b ≤ 0 ↔ a ≤ 0 :=
+  ⟨(nonpos_of_smul_nonpos_of_pos_right · hb), (smul_nonpos_of_nonpos_of_nonneg · hb.le)⟩
+
+lemma IsOrderedModule.of_smul_one_mono
+    [MulOneClass β] [PosMulMono β] [MulPosMono β] [IsScalarTower α β β]
+    (h : Monotone (fun x : α ↦ x • (1 : β))) : IsOrderedModule α β where
+  smul_le_smul_of_nonneg_left _ ha _ _ hb := by
+    have := mul_le_mul_of_nonneg_left hb (by simpa using h ha)
+    simpa
+  smul_le_smul_of_nonneg_right _ ha _ _ hb := by
+    simpa using mul_le_mul_of_nonneg_right (h hb) ha
+
+theorem isOrderedModule_iff_smul_one_mono
+    [MulOneClass β] [ZeroLEOneClass β] [PosMulMono β] [MulPosMono β] [IsScalarTower α β β] :
+    IsOrderedModule α β ↔ Monotone (fun x : α ↦ x • (1 : β)) where
+  mp _ := smul_one_mono _
+  mpr := IsOrderedModule.of_smul_one_mono
+
 end Preorder
 
 section PartialOrder
@@ -528,7 +658,7 @@ variable [PartialOrder α] [Preorder β]
 `0 < a` -/
 lemma PosSMulMono.of_pos (h₀ : ∀ a : α, 0 < a → ∀ b₁ b₂ : β, b₁ ≤ b₂ → a • b₁ ≤ a • b₂) :
     PosSMulMono α β where
-  elim a ha b₁ b₂ h := by
+  smul_le_smul_of_nonneg_left a ha b₁ b₂ h := by
     obtain ha | ha := ha.eq_or_lt
     · simp [← ha]
     · exact h₀ _ ha _ _ h
@@ -537,7 +667,7 @@ lemma PosSMulMono.of_pos (h₀ : ∀ a : α, 0 < a → ∀ b₁ b₂ : β, b₁ 
 when `0 < a` -/
 lemma PosSMulReflectLT.of_pos (h₀ : ∀ a : α, 0 < a → ∀ b₁ b₂ : β, a • b₁ < a • b₂ → b₁ < b₂) :
     PosSMulReflectLT α β where
-  elim a ha b₁ b₂ h := by
+  lt_of_smul_lt_smul_left a ha b₁ b₂ h := by
     obtain ha | ha := ha.eq_or_lt
     · simp [← ha] at h
     · exact h₀ _ ha _ _ h
@@ -551,7 +681,7 @@ variable [Preorder α] [PartialOrder β]
 `0 < b` -/
 lemma SMulPosMono.of_pos (h₀ : ∀ b : β, 0 < b → ∀ a₁ a₂ : α, a₁ ≤ a₂ → a₁ • b ≤ a₂ • b) :
     SMulPosMono α β where
-  elim b hb a₁ a₂ h := by
+  smul_le_smul_of_nonneg_right b hb a₁ a₂ h := by
     obtain hb | hb := hb.eq_or_lt
     · simp [← hb]
     · exact h₀ _ hb _ _ h
@@ -560,7 +690,7 @@ lemma SMulPosMono.of_pos (h₀ : ∀ b : β, 0 < b → ∀ a₁ a₂ : α, a₁ 
 when `0 < b` -/
 lemma SMulPosReflectLT.of_pos (h₀ : ∀ b : β, 0 < b → ∀ a₁ a₂ : α, a₁ • b < a₂ • b → a₁ < a₂) :
     SMulPosReflectLT α β where
-  elim b hb a₁ a₂ h := by
+  lt_of_smul_lt_smul_right b hb a₁ a₂ h := by
     obtain hb | hb := hb.eq_or_lt
     · simp [← hb] at h
     · exact h₀ _ hb _ _ h
@@ -591,6 +721,10 @@ instance (priority := 100) SMulPosReflectLE.toSMulPosReflectLT [SMulPosReflectLE
     SMulPosReflectLT α β :=
   SMulPosReflectLT.of_pos fun b hb a₁ a₂ h ↦
     (le_of_smul_le_smul_of_pos_right h.le hb).lt_of_ne <| by rintro rfl; simp at h
+
+-- See note [lower instance priority]
+instance (priority := 100) IsStrictOrderedModule.toIsOrderedModule [IsStrictOrderedModule α β] :
+    IsOrderedModule α β where
 
 lemma smul_eq_smul_iff_eq_and_eq_of_pos [PosSMulStrictMono α β] [SMulPosStrictMono α β]
     (ha : a₁ ≤ a₂) (hb : b₁ ≤ b₂) (h₁ : 0 < a₁) (h₂ : 0 < b₂) :
@@ -682,7 +816,14 @@ end Preorder
 end MulAction
 
 section Semiring
-variable [Semiring α] [AddCommGroup β] [Module α β] [NoZeroSMulDivisors α β]
+variable [Semiring α] [AddCommGroup β] [Module α β]
+
+/-- Constructor for `PosSMulMono` when the semimodule is in fact a group. -/
+lemma PosSMulMono.of_smul_nonneg [PartialOrder α] [PartialOrder β] [IsOrderedAddMonoid β]
+    (h : ∀ a : α, 0 ≤ a → ∀ b : β, 0 ≤ b → 0 ≤ a • b) : PosSMulMono α β where
+  smul_le_smul_of_nonneg_left _a ha b₁ b₂ := by simpa [sub_nonneg, smul_sub] using h _ ha (b₂ - b₁)
+
+variable [IsDomain α] [Module.IsTorsionFree α β]
 
 section PartialOrder
 variable [Preorder α] [PartialOrder β]
@@ -692,7 +833,8 @@ lemma PosSMulMono.toPosSMulStrictMono [PosSMulMono α β] : PosSMulStrictMono α
     (smul_right_injective _ ha.ne').ne hb.ne⟩
 
 instance PosSMulReflectLT.toPosSMulReflectLE [PosSMulReflectLT α β] : PosSMulReflectLE α β :=
-  ⟨fun _a ha _b₁ _b₂ h ↦ h.eq_or_lt.elim (fun h ↦ (smul_right_injective _ ha.ne' h).le) fun h' ↦
+  ⟨fun _a ha _b₁ _b₂ h ↦ h.eq_or_lt.elim
+    (fun h ↦ (smul_right_injective _ ha.ne' h).le) fun h' ↦
     (lt_of_smul_lt_smul_left h' ha.le).le⟩
 
 end PartialOrder
@@ -710,10 +852,16 @@ end PartialOrder
 end Semiring
 
 section Ring
-variable [Ring α] [AddCommGroup β] [Module α β] [NoZeroSMulDivisors α β]
+variable [Ring α] [AddCommGroup β] [Module α β] [PartialOrder α] [PartialOrder β]
 
-section PartialOrder
-variable [PartialOrder α] [PartialOrder β]
+/-- Constructor for `IsOrderedModule` when the semimodule is in fact a module. -/
+lemma IsOrderedModule.of_smul_nonneg [IsOrderedAddMonoid α] [IsOrderedAddMonoid β]
+    (h : ∀ a : α, 0 ≤ a → ∀ b : β, 0 ≤ b → 0 ≤ a • b) : IsOrderedModule α β where
+  toPosSMulMono := .of_smul_nonneg h
+  smul_le_smul_of_nonneg_right _b hb a₁ a₂ := by
+    simpa [sub_nonneg, sub_smul] using (h (a₂ - a₁) · _ hb)
+
+variable [IsDomain α] [Module.IsTorsionFree α β]
 
 lemma SMulPosMono.toSMulPosStrictMono [SMulPosMono α β] : SMulPosStrictMono α β :=
   ⟨fun _b hb _a₁ _a₂ ha ↦ (smul_le_smul_of_nonneg_right ha.le hb.le).lt_of_ne <|
@@ -729,7 +877,6 @@ lemma SMulPosReflectLT.toSMulPosReflectLE [SMulPosReflectLT α β] : SMulPosRefl
 lemma SMulPosReflectLE_iff_smulPosReflectLT : SMulPosReflectLE α β ↔ SMulPosReflectLT α β :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ SMulPosReflectLT.toSMulPosReflectLE⟩
 
-end PartialOrder
 end Ring
 
 section GroupWithZero
@@ -761,13 +908,13 @@ section Left
 variable [Preorder α] [Preorder β] [SMul α β] [Zero α]
 
 instance instPosSMulMono [PosSMulMono α β] : PosSMulMono α βᵒᵈ where
-  elim _a ha _b₁ _b₂ hb := smul_le_smul_of_nonneg_left (β := β) hb ha
+  smul_le_smul_of_nonneg_left _a ha _b₁ _b₂ hb := smul_le_smul_of_nonneg_left (β := β) hb ha
 instance instPosSMulStrictMono [PosSMulStrictMono α β] : PosSMulStrictMono α βᵒᵈ where
-  elim _a ha _b₁ _b₂ hb := smul_lt_smul_of_pos_left (β := β) hb ha
+  smul_lt_smul_of_pos_left _a ha _b₁ _b₂ hb := smul_lt_smul_of_pos_left (β := β) hb ha
 instance instPosSMulReflectLT [PosSMulReflectLT α β] : PosSMulReflectLT α βᵒᵈ where
-  elim _a ha _b₁ _b₂ h := lt_of_smul_lt_smul_of_nonneg_left (β := β) h ha
+  lt_of_smul_lt_smul_left _a ha _b₁ _b₂ h := lt_of_smul_lt_smul_of_nonneg_left (β := β) h ha
 instance instPosSMulReflectLE [PosSMulReflectLE α β] : PosSMulReflectLE α βᵒᵈ where
-  elim _a ha _b₁ _b₂ h := le_of_smul_le_smul_of_pos_left (β := β) h ha
+  le_of_smul_le_smul_left _a ha _b₁ _b₂ h := le_of_smul_le_smul_of_pos_left (β := β) h ha
 
 end Left
 
@@ -776,26 +923,35 @@ variable [Preorder α] [Monoid α] [AddCommGroup β] [PartialOrder β] [IsOrdere
   [DistribMulAction α β]
 
 instance instSMulPosMono [SMulPosMono α β] : SMulPosMono α βᵒᵈ where
-  elim _b hb a₁ a₂ ha := by
+  smul_le_smul_of_nonneg_right _b hb a₁ a₂ ha := by
     rw [← neg_le_neg_iff, ← smul_neg, ← smul_neg]
     exact smul_le_smul_of_nonneg_right (β := β) ha <| neg_nonneg.2 hb
 
 instance instSMulPosStrictMono [SMulPosStrictMono α β] : SMulPosStrictMono α βᵒᵈ where
-  elim _b hb a₁ a₂ ha := by
+  smul_lt_smul_of_pos_right _b hb a₁ a₂ ha := by
     rw [← neg_lt_neg_iff, ← smul_neg, ← smul_neg]
     exact smul_lt_smul_of_pos_right (β := β) ha <| neg_pos.2 hb
 
 instance instSMulPosReflectLT [SMulPosReflectLT α β] : SMulPosReflectLT α βᵒᵈ where
-  elim _b hb a₁ a₂ h := by
+  lt_of_smul_lt_smul_right _b hb a₁ a₂ h := by
     rw [← neg_lt_neg_iff, ← smul_neg, ← smul_neg] at h
     exact lt_of_smul_lt_smul_right (β := β) h <| neg_nonneg.2 hb
 
 instance instSMulPosReflectLE [SMulPosReflectLE α β] : SMulPosReflectLE α βᵒᵈ where
-  elim _b hb a₁ a₂ h := by
+  le_of_smul_le_smul_right _b hb a₁ a₂ h := by
     rw [← neg_le_neg_iff, ← smul_neg, ← smul_neg] at h
     exact le_of_smul_le_smul_right (β := β) h <| neg_pos.2 hb
 
 end Right
+
+section LeftRight
+variable [Preorder α] [MonoidWithZero α] [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β]
+  [DistribMulAction α β]
+
+instance instIsOrderedModule [IsOrderedModule α β] : IsOrderedModule α βᵒᵈ where
+instance instIsStrictOrderedModule [IsStrictOrderedModule α β] : IsStrictOrderedModule α βᵒᵈ where
+
+end LeftRight
 end OrderDual
 
 section OrderedAddCommMonoid
@@ -811,7 +967,6 @@ lemma smul_add_smul_le_smul_add_smul (ha : a₁ ≤ a₂) (hb : b₁ ≤ b₂) :
   obtain ⟨a, ha₀, rfl⟩ := exists_nonneg_add_of_le ha
   rw [add_smul, add_smul, add_left_comm]
   gcongr
-  assumption
 
 /-- Binary **rearrangement inequality**. -/
 lemma smul_add_smul_le_smul_add_smul' (ha : a₂ ≤ a₁) (hb : b₂ ≤ b₁) :
@@ -829,7 +984,6 @@ lemma smul_add_smul_lt_smul_add_smul (ha : a₁ < a₂) (hb : b₁ < b₂) :
   obtain ⟨a, ha₀, rfl⟩ := lt_iff_exists_pos_add.1 ha
   rw [add_smul, add_smul, add_left_comm]
   gcongr
-  assumption
 
 /-- Binary strict **rearrangement inequality**. -/
 lemma smul_add_smul_lt_smul_add_smul' (ha : a₂ < a₁) (hb : b₂ < b₁) :
@@ -856,7 +1010,8 @@ lemma antitone_smul_left (ha : a ≤ 0) : Antitone ((a • ·) : β → β) :=
   fun _ _ h ↦ smul_le_smul_of_nonpos_left h ha
 
 instance PosSMulMono.toSMulPosMono : SMulPosMono α β where
-  elim _b hb a₁ a₂ ha := by rw [← sub_nonneg, ← sub_smul]; exact smul_nonneg (sub_nonneg.2 ha) hb
+  smul_le_smul_of_nonneg_right _b hb a₁ a₂ ha := by
+    rw [← sub_nonneg, ← sub_smul]; exact smul_nonneg (sub_nonneg.2 ha) hb
 
 end PosSMulMono
 
@@ -871,7 +1026,8 @@ lemma strictAnti_smul_left (ha : a < 0) : StrictAnti ((a • ·) : β → β) :=
   fun _ _ h ↦ smul_lt_smul_of_neg_left h ha
 
 instance PosSMulStrictMono.toSMulPosStrictMono : SMulPosStrictMono α β where
-  elim _b hb a₁ a₂ ha := by rw [← sub_pos, ← sub_smul]; exact smul_pos (sub_pos.2 ha) hb
+  smul_lt_smul_of_pos_right _b hb a₁ a₂ ha := by
+    rw [← sub_pos, ← sub_smul]; exact smul_pos (sub_pos.2 ha) hb
 
 end PosSMulStrictMono
 
@@ -946,8 +1102,7 @@ lemma smul_nonpos_iff : a • b ≤ 0 ↔ 0 ≤ a ∧ b ≤ 0 ∨ a ≤ 0 ∧ 0 
   rw [← neg_nonneg, ← smul_neg, smul_nonneg_iff, neg_nonneg, neg_nonpos]
 
 lemma smul_nonneg_iff_pos_imp_nonneg : 0 ≤ a • b ↔ (0 < a → 0 ≤ b) ∧ (0 < b → 0 ≤ a) :=
-  smul_nonneg_iff.trans <| by
-    simp_rw [← not_le, ← or_iff_not_imp_left]; have := le_total a 0; have := le_total b 0; tauto
+  smul_nonneg_iff.trans <| by grind
 
 lemma smul_nonneg_iff_neg_imp_nonpos : 0 ≤ a • b ↔ (a < 0 → b ≤ 0) ∧ (b < 0 → a ≤ 0) := by
   rw [← neg_smul_neg, smul_nonneg_iff_pos_imp_nonneg]; simp only [neg_pos, neg_nonneg]
@@ -960,40 +1115,104 @@ lemma smul_nonpos_iff_neg_imp_nonneg : a • b ≤ 0 ↔ (a < 0 → 0 ≤ b) ∧
 
 end LinearOrderedRing
 
-namespace Pi
-variable {ι : Type*} {β : ι → Type*} [Zero α] [∀ i, Zero (β i)]
+namespace Prod
+variable {γ : Type*} [Zero α]
 
-section SMulZeroClass
-variable [Preorder α] [∀ i, Preorder (β i)] [∀ i, SMulZeroClass α (β i)]
+section SMul
+variable [Preorder α] [Preorder β] [Preorder γ] [SMul α β] [SMul α γ]
 
-instance instPosSMulMono [∀ i, PosSMulMono α (β i)] : PosSMulMono α (∀ i, β i) where
-  elim _a ha _b₁ _b₂ hb i := smul_le_smul_of_nonneg_left (hb i) ha
+instance instPosSMulMono [PosSMulMono α β] [PosSMulMono α γ] : PosSMulMono α (β × γ) where
+  smul_le_smul_of_nonneg_left _a ha _b₁ _b₂ hb :=
+    ⟨smul_le_smul_of_nonneg_left hb.1 ha, smul_le_smul_of_nonneg_left hb.2 ha⟩
 
-instance instSMulPosMono [∀ i, SMulPosMono α (β i)] : SMulPosMono α (∀ i, β i) where
-  elim _b hb _a₁ _a₂ ha i := smul_le_smul_of_nonneg_right ha (hb i)
+instance instPosSMulReflectLE [PosSMulReflectLE α β] [PosSMulReflectLE α γ] :
+    PosSMulReflectLE α (β × γ) where
+  le_of_smul_le_smul_left _a ha _b₁ _b₂ h :=
+    ⟨le_of_smul_le_smul_left h.1 ha, le_of_smul_le_smul_left h.2 ha⟩
 
-instance instPosSMulReflectLE [∀ i, PosSMulReflectLE α (β i)] : PosSMulReflectLE α (∀ i, β i) where
-  elim _a ha _b₁ _b₂ h i := le_of_smul_le_smul_left (h i) ha
+variable [Zero β] [Zero γ]
 
-instance instSMulPosReflectLE [∀ i, SMulPosReflectLE α (β i)] : SMulPosReflectLE α (∀ i, β i) where
-  elim _b hb _a₁ _a₂ h := by
-    obtain ⟨-, i, hi⟩ := lt_def.1 hb; exact le_of_smul_le_smul_right (h _) hi
+instance instSMulPosMono [SMulPosMono α β] [SMulPosMono α γ] : SMulPosMono α (β × γ) where
+  smul_le_smul_of_nonneg_right _b hb _a₁ _a₂ ha :=
+    ⟨smul_le_smul_of_nonneg_right ha hb.1, smul_le_smul_of_nonneg_right ha hb.2⟩
 
-end SMulZeroClass
+instance instSMulPosReflectLE [SMulPosReflectLE α β] [SMulPosReflectLE α γ] :
+    SMulPosReflectLE α (β × γ) where
+  le_of_smul_le_smul_right _b hb _a₁ _a₂ h := by
+    rcases lt_iff.mp hb with ⟨h₁, -⟩ | ⟨-, h₁⟩
+    · exact le_of_smul_le_smul_right h.1 h₁
+    · exact le_of_smul_le_smul_right h.2 h₁
+
+end SMul
 
 section SMulWithZero
-variable [PartialOrder α] [∀ i, PartialOrder (β i)] [∀ i, SMulWithZero α (β i)]
+variable [PartialOrder α] [PartialOrder β] [PartialOrder γ]
+  [Zero β] [Zero γ] [SMulWithZero α β] [SMulWithZero α γ]
+
+instance instPosSMulStrictMono [PosSMulStrictMono α β] [PosSMulStrictMono α γ] :
+    PosSMulStrictMono α (β × γ) where
+  smul_lt_smul_of_pos_left := by
+    simp_rw [lt_iff]
+    rintro _a ha _b₁ _b₂ (⟨h₁, h₂⟩ | ⟨h₁, h₂⟩)
+    · exact .inl ⟨smul_lt_smul_of_pos_left h₁ ha, smul_le_smul_of_nonneg_left h₂ ha.le⟩
+    · exact .inr ⟨smul_le_smul_of_nonneg_left h₁ ha.le, smul_lt_smul_of_pos_left h₂ ha⟩
+
+instance instSMulPosStrictMono [SMulPosStrictMono α β] [SMulPosStrictMono α γ] :
+    SMulPosStrictMono α (β × γ) where
+  smul_lt_smul_of_pos_right := by
+    simp_rw [lt_iff]
+    rintro a (⟨h₁, h₂⟩ | ⟨h₁, h₂⟩) _b₁ _b₂ hb
+    · exact .inl ⟨smul_lt_smul_of_pos_right hb h₁, smul_le_smul_of_nonneg_right hb.le h₂⟩
+    · exact .inr ⟨smul_le_smul_of_nonneg_right hb.le h₁, smul_lt_smul_of_pos_right hb h₂⟩
+
+instance instSMulPosReflectLT [SMulPosReflectLT α β] [SMulPosReflectLT α γ] :
+    SMulPosReflectLT α (β × γ) where
+  lt_of_smul_lt_smul_right := by
+    simp_rw [lt_iff]
+    rintro b hb _a₁ _a₂ (⟨h₁, h₂⟩ | ⟨h₁, h₂⟩)
+    · exact lt_of_smul_lt_smul_right h₁ hb.1
+    · exact lt_of_smul_lt_smul_right h₂ hb.2
+
+end SMulWithZero
+end Prod
+
+namespace Pi
+variable {ι : Type*} {β : ι → Type*} [Zero α]
+
+section SMul
+variable [Preorder α] [∀ i, Preorder (β i)] [∀ i, SMul α (β i)]
+
+instance instPosSMulMono [∀ i, PosSMulMono α (β i)] : PosSMulMono α (∀ i, β i) where
+  smul_le_smul_of_nonneg_left _a ha _b₁ _b₂ hb i := smul_le_smul_of_nonneg_left (hb i) ha
+
+instance instPosSMulReflectLE [∀ i, PosSMulReflectLE α (β i)] : PosSMulReflectLE α (∀ i, β i) where
+  le_of_smul_le_smul_left _a ha _b₁ _b₂ h i := le_of_smul_le_smul_left (h i) ha
+
+variable [∀ i, Zero (β i)]
+
+instance instSMulPosMono [∀ i, SMulPosMono α (β i)] : SMulPosMono α (∀ i, β i) where
+  smul_le_smul_of_nonneg_right _b hb _a₁ _a₂ ha i := smul_le_smul_of_nonneg_right ha (hb i)
+
+instance instSMulPosReflectLE [∀ i, SMulPosReflectLE α (β i)] : SMulPosReflectLE α (∀ i, β i) where
+  le_of_smul_le_smul_right _b hb _a₁ _a₂ h := by
+    obtain ⟨-, i, hi⟩ := lt_def.1 hb; exact le_of_smul_le_smul_right (h _) hi
+
+end SMul
+
+
+section SMulWithZero
+variable [∀ i, Zero (β i)] [PartialOrder α] [∀ i, PartialOrder (β i)] [∀ i, SMulWithZero α (β i)]
 
 instance instPosSMulStrictMono [∀ i, PosSMulStrictMono α (β i)] :
     PosSMulStrictMono α (∀ i, β i) where
-  elim := by
+  smul_lt_smul_of_pos_left := by
     simp_rw [lt_def]
     rintro _a ha _b₁ _b₂ ⟨hb, i, hi⟩
     exact ⟨smul_le_smul_of_nonneg_left hb ha.le, i, smul_lt_smul_of_pos_left hi ha⟩
 
 instance instSMulPosStrictMono [∀ i, SMulPosStrictMono α (β i)] :
     SMulPosStrictMono α (∀ i, β i) where
-  elim := by
+  smul_lt_smul_of_pos_right := by
     simp_rw [lt_def]
     rintro a ⟨ha, i, hi⟩ _b₁ _b₂ hb
     exact ⟨smul_le_smul_of_nonneg_right hb.le ha, i, smul_lt_smul_of_pos_right hb hi⟩
@@ -1002,7 +1221,7 @@ instance instSMulPosStrictMono [∀ i, SMulPosStrictMono α (β i)] :
 -- implied by the other instances
 
 instance instSMulPosReflectLT [∀ i, SMulPosReflectLT α (β i)] : SMulPosReflectLT α (∀ i, β i) where
-  elim := by
+  lt_of_smul_lt_smul_right := by
     simp_rw [lt_def]
     rintro b hb _a₁ _a₂ ⟨-, i, hi⟩
     exact lt_of_smul_lt_smul_right hi <| hb _
@@ -1020,23 +1239,25 @@ variable [Zero α]
 lemma PosSMulMono.lift [PosSMulMono α γ]
     (hf : ∀ {b₁ b₂}, f b₁ ≤ f b₂ ↔ b₁ ≤ b₂)
     (smul : ∀ (a : α) b, f (a • b) = a • f b) : PosSMulMono α β where
-  elim a ha b₁ b₂ hb := by simp only [← hf, smul] at *; exact smul_le_smul_of_nonneg_left hb ha
+  smul_le_smul_of_nonneg_left a ha b₁ b₂ hb := by
+    simp only [← hf, smul] at *; exact smul_le_smul_of_nonneg_left hb ha
 
 lemma PosSMulStrictMono.lift [PosSMulStrictMono α γ]
     (hf : ∀ {b₁ b₂}, f b₁ ≤ f b₂ ↔ b₁ ≤ b₂)
     (smul : ∀ (a : α) b, f (a • b) = a • f b) : PosSMulStrictMono α β where
-  elim a ha b₁ b₂ hb := by
+  smul_lt_smul_of_pos_left a ha b₁ b₂ hb := by
     simp only [← lt_iff_lt_of_le_iff_le' hf hf, smul] at *; exact smul_lt_smul_of_pos_left hb ha
 
 lemma PosSMulReflectLE.lift [PosSMulReflectLE α γ]
     (hf : ∀ {b₁ b₂}, f b₁ ≤ f b₂ ↔ b₁ ≤ b₂)
     (smul : ∀ (a : α) b, f (a • b) = a • f b) : PosSMulReflectLE α β where
-  elim a ha b₁ b₂ h := hf.1 <| le_of_smul_le_smul_left (by simpa only [smul] using hf.2 h) ha
+  le_of_smul_le_smul_left a ha b₁ b₂ h :=
+    hf.1 <| le_of_smul_le_smul_left (by simpa only [smul] using hf.2 h) ha
 
 lemma PosSMulReflectLT.lift [PosSMulReflectLT α γ]
     (hf : ∀ {b₁ b₂}, f b₁ ≤ f b₂ ↔ b₁ ≤ b₂)
     (smul : ∀ (a : α) b, f (a • b) = a • f b) : PosSMulReflectLT α β where
-  elim a ha b₁ b₂ h := by
+  lt_of_smul_lt_smul_left a ha b₁ b₂ h := by
     simp only [← lt_iff_lt_of_le_iff_le' hf hf, smul] at *; exact lt_of_smul_lt_smul_left h ha
 
 end
@@ -1048,14 +1269,14 @@ lemma SMulPosMono.lift [SMulPosMono α γ]
     (hf : ∀ {b₁ b₂}, f b₁ ≤ f b₂ ↔ b₁ ≤ b₂)
     (smul : ∀ (a : α) b, f (a • b) = a • f b)
     (zero : f 0 = 0) : SMulPosMono α β where
-  elim b hb a₁ a₂ ha := by
+  smul_le_smul_of_nonneg_right b hb a₁ a₂ ha := by
     simp only [← hf, zero, smul] at *; exact smul_le_smul_of_nonneg_right ha hb
 
 lemma SMulPosStrictMono.lift [SMulPosStrictMono α γ]
     (hf : ∀ {b₁ b₂}, f b₁ ≤ f b₂ ↔ b₁ ≤ b₂)
     (smul : ∀ (a : α) b, f (a • b) = a • f b)
     (zero : f 0 = 0) : SMulPosStrictMono α β where
-  elim b hb a₁ a₂ ha := by
+  smul_lt_smul_of_pos_right b hb a₁ a₂ ha := by
     simp only [← lt_iff_lt_of_le_iff_le' hf hf, zero, smul] at *
     exact smul_lt_smul_of_pos_right ha hb
 
@@ -1063,7 +1284,7 @@ lemma SMulPosReflectLE.lift [SMulPosReflectLE α γ]
     (hf : ∀ {b₁ b₂}, f b₁ ≤ f b₂ ↔ b₁ ≤ b₂)
     (smul : ∀ (a : α) b, f (a • b) = a • f b)
     (zero : f 0 = 0) : SMulPosReflectLE α β where
-  elim b hb a₁ a₂ h := by
+  le_of_smul_le_smul_right b hb a₁ a₂ h := by
     simp only [← hf, ← lt_iff_lt_of_le_iff_le' hf hf, zero, smul] at *
     exact le_of_smul_le_smul_right h hb
 
@@ -1071,7 +1292,7 @@ lemma SMulPosReflectLT.lift [SMulPosReflectLT α γ]
     (hf : ∀ {b₁ b₂}, f b₁ ≤ f b₂ ↔ b₁ ≤ b₂)
     (smul : ∀ (a : α) b, f (a • b) = a • f b)
     (zero : f 0 = 0) : SMulPosReflectLT α β where
-  elim b hb a₁ a₂ h := by
+  lt_of_smul_lt_smul_right b hb a₁ a₂ h := by
     simp only [← hf, ← lt_iff_lt_of_le_iff_le' hf hf, zero, smul] at *
     exact lt_of_smul_lt_smul_right h hb
 
@@ -1083,21 +1304,21 @@ section Nat
 
 instance OrderedSemiring.toPosSMulMonoNat [Semiring α] [PartialOrder α] [IsOrderedRing α] :
     PosSMulMono ℕ α where
-  elim _n _ _a _b hab := nsmul_le_nsmul_right hab _
+  smul_le_smul_of_nonneg_left _n _ _a _b hab := nsmul_le_nsmul_right hab _
 
 instance OrderedSemiring.toSMulPosMonoNat [Semiring α] [PartialOrder α] [IsOrderedRing α] :
     SMulPosMono ℕ α where
-  elim _a ha _m _n hmn := nsmul_le_nsmul_left ha hmn
+  smul_le_smul_of_nonneg_right _a ha _m _n hmn := nsmul_le_nsmul_left ha hmn
 
 instance StrictOrderedSemiring.toPosSMulStrictMonoNat
     [Semiring α] [PartialOrder α] [IsStrictOrderedRing α] :
     PosSMulStrictMono ℕ α where
-  elim _n hn _a _b hab := nsmul_right_strictMono hn.ne' hab
+  smul_lt_smul_of_pos_left _n hn _a _b hab := nsmul_right_strictMono hn.ne' hab
 
 instance StrictOrderedSemiring.toSMulPosStrictMonoNat
     [Semiring α] [PartialOrder α] [IsStrictOrderedRing α] :
     SMulPosStrictMono ℕ α where
-  elim _a ha _m _n hmn := nsmul_lt_nsmul_left ha hmn
+  smul_lt_smul_of_pos_right _a ha _m _n hmn := nsmul_lt_nsmul_left ha hmn
 
 end Nat
 

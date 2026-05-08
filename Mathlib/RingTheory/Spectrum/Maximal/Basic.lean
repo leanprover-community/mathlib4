@@ -3,14 +3,19 @@ Copyright (c) 2022 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.RingTheory.Spectrum.Maximal.Defs
-import Mathlib.RingTheory.Spectrum.Prime.Defs
+module
+
+public import Mathlib.RingTheory.Ideal.Operations
+public import Mathlib.RingTheory.Spectrum.Maximal.Defs
+public import Mathlib.RingTheory.Spectrum.Prime.Defs
 
 /-!
 # Maximal spectrum of a commutative (semi)ring
 
 Basic properties the maximal spectrum of a ring.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -41,5 +46,8 @@ def toPrimeSpectrum (x : MaximalSpectrum R) : PrimeSpectrum R :=
 
 theorem toPrimeSpectrum_injective : (@toPrimeSpectrum R _).Injective := fun ⟨_, _⟩ ⟨_, _⟩ h => by
   simpa only [MaximalSpectrum.mk.injEq] using PrimeSpectrum.ext_iff.mp h
+
+theorem isCoprime_of_ne {I J : MaximalSpectrum R} (h : I ≠ J) : IsCoprime I.1 J.1 :=
+  Ideal.isCoprime_iff_sup_eq.mpr <| I.2.coprime_of_ne J.2 <| mt MaximalSpectrum.ext h
 
 end MaximalSpectrum

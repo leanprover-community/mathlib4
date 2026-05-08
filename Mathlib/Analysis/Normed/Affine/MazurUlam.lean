@@ -3,8 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Instances.RealVectorSpace
-import Mathlib.Analysis.Normed.Affine.Isometry
+module
+
+public import Mathlib.Topology.Instances.RealVectorSpace
+public import Mathlib.Analysis.Normed.Affine.Isometry
 
 /-!
 # Mazur-Ulam Theorem
@@ -25,6 +27,8 @@ The formalization is based on [Jussi Väisälä, *A Proof of the Mazur-Ulam Theo
 
 isometry, affine map, linear map
 -/
+
+@[expose] public section
 
 
 variable {E PE F PF : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MetricSpace PE]
@@ -74,7 +78,7 @@ theorem midpoint_fixed {x y : PE} :
   have : c ≤ c / 2 := by
     apply ciSup_le
     rintro ⟨e, he⟩
-    simp only [Subtype.coe_mk, le_div_iff₀' (zero_lt_two' ℝ), ← hf_dist]
+    simp only [le_div_iff₀' (zero_lt_two' ℝ), ← hf_dist]
     exact le_ciSup h_bdd ⟨f e, hf_maps_to he⟩
   replace : c ≤ 0 := by linarith
   refine fun e hx hy => dist_le_zero.1 (le_trans ?_ this)

@@ -4,13 +4,17 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Sébastien Gouëzel,
   Rémy Degenne, David Loeffler
 -/
-import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 
 /-!
 # Continuity of power functions
 
 This file contains lemmas about continuity of the power functions on `ℂ`, `ℝ`, `ℝ≥0`, and `ℝ≥0∞`.
 -/
+
+public section
 
 
 noncomputable section
@@ -182,11 +186,9 @@ theorem continuousAt_rpow_of_ne (p : ℝ × ℝ) (hp : p.1 ≠ 0) :
   cases hp with
   | inl hp =>
     rw [continuousAt_congr (rpow_eq_nhds_of_neg hp)]
-    refine ContinuousAt.mul ?_ (continuous_cos.continuousAt.comp ?_)
+    refine ContinuousAt.mul ?_ (by fun_prop)
     · refine continuous_exp.continuousAt.comp (ContinuousAt.mul ?_ continuous_snd.continuousAt)
-      refine (continuousAt_log ?_).comp continuous_fst.continuousAt
-      exact hp.ne
-    · exact continuous_snd.continuousAt.mul continuousAt_const
+      exact (continuousAt_log hp.ne).comp continuous_fst.continuousAt
   | inr hp =>
     rw [continuousAt_congr (rpow_eq_nhds_of_pos hp)]
     refine continuous_exp.continuousAt.comp (ContinuousAt.mul ?_ continuous_snd.continuousAt)
@@ -218,7 +220,7 @@ theorem continuousAt_rpow (p : ℝ × ℝ) (h : p.1 ≠ 0 ∨ 0 < p.2) :
 theorem continuousAt_rpow_const (x : ℝ) (q : ℝ) (h : x ≠ 0 ∨ 0 ≤ q) :
     ContinuousAt (fun x : ℝ => x ^ q) x := by
   rw [le_iff_lt_or_eq, ← or_assoc] at h
-  obtain h|rfl := h
+  obtain h | rfl := h
   · exact (continuousAt_rpow (x, q) h).comp₂ continuousAt_id continuousAt_const
   · simp_rw [rpow_zero]; exact continuousAt_const
 
@@ -357,7 +359,7 @@ theorem continuousAt_ofReal_cpow (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) 
     apply ContinuousAt.mul
     · refine (continuousAt_cpow (Or.inl ?_)).comp A
       rwa [neg_re, ofReal_re, neg_pos]
-    · exact (continuous_exp.comp (continuous_const.mul continuous_snd)).continuousAt
+    · fun_prop
 
 theorem continuousAt_ofReal_cpow_const (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) :
     ContinuousAt (fun a => (a : ℂ) ^ y : ℝ → ℂ) x :=
@@ -383,7 +385,7 @@ theorem continuousAt_rpow {x : ℝ≥0} {y : ℝ} (h : x ≠ 0 ∨ 0 < y) :
       Real.toNNReal ∘ (fun p : ℝ × ℝ => p.1 ^ p.2) ∘ fun p : ℝ≥0 × ℝ => (p.1.1, p.2) := by
     ext p
     simp only [coe_rpow, val_eq_coe, Function.comp_apply, coe_toNNReal', left_eq_sup]
-    exact_mod_cast zero_le (p.1 ^ p.2)
+    positivity
   rw [this]
   refine continuous_real_toNNReal.continuousAt.comp (ContinuousAt.comp ?_ ?_)
   · apply Real.continuousAt_rpow
@@ -430,7 +432,7 @@ theorem continuousOn_rpow_const_compl_zero {r : ℝ} :
 @[fun_prop]
 theorem continuousOn_rpow_const {r : ℝ} {s : Set ℝ≥0}
     (h : 0 ∉ s ∨ 0 ≤ r) : ContinuousOn (fun z : ℝ≥0 => z ^ r) s :=
-  h.elim (fun _ ↦ ContinuousOn.mono (s := {0}ᶜ) (by fun_prop) (by aesop))
+  h.elim (fun _ ↦ ContinuousOn.mono (s := {0}ᶜ) (by fun_prop) (by simp_all))
     (NNReal.continuous_rpow_const · |>.continuousOn)
 
 end NNReal

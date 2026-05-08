@@ -3,9 +3,11 @@ Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck, David Loeffler
 -/
-import Mathlib.Algebra.Module.Submodule.Basic
-import Mathlib.Analysis.Asymptotics.Lemmas
-import Mathlib.Algebra.Algebra.Pi
+module
+
+public import Mathlib.Algebra.Module.Submodule.Basic
+public import Mathlib.Analysis.Asymptotics.Lemmas
+public import Mathlib.Algebra.Algebra.Pi
 
 /-!
 # Zero and Bounded at filter
@@ -16,6 +18,8 @@ that are `ZeroAtFilter`. Similarly, we construct the `Submodule` and `Subalgebra
 that are `BoundedAtFilter`.
 
 -/
+
+@[expose] public section
 
 
 namespace Filter
@@ -100,6 +104,16 @@ nonrec theorem BoundedAtFilter.mul [SeminormedRing β] {l : Filter α} {f g : α
   convert Asymptotics.isBigO_refl (E := ℝ) _ l
   simp
 
+theorem ZeroAtFilter.mul_boundedAtFilter [SeminormedRing β] {l : Filter α}
+    {f g : α → β} (hf : ZeroAtFilter l f) (hg : BoundedAtFilter l g) : ZeroAtFilter l (f * g) := by
+  rw [ZeroAtFilter, ← Asymptotics.isLittleO_one_iff (F := ℝ)] at hf ⊢
+  simpa using hf.mul_isBigO hg
+
+theorem BoundedAtFilter.mul_zeroAtFilter [SeminormedRing β] {l : Filter α}
+    {f g : α → β} (hf : BoundedAtFilter l f) (hg : ZeroAtFilter l g) : ZeroAtFilter l (f * g) := by
+  rw [ZeroAtFilter, ← Asymptotics.isLittleO_one_iff (F := ℝ)] at hg ⊢
+  simpa using hf.mul_isLittleO hg
+
 variable (𝕜) in
 /-- The submodule of functions that are bounded along a filter `l`. -/
 def boundedFilterSubmodule
@@ -119,5 +133,10 @@ def boundedFilterSubalgebra
     (boundedFilterSubmodule 𝕜 l)
     (const_boundedAtFilter l (1 : β))
     (fun f g hf hg ↦ by simpa only [Pi.one_apply, mul_one, norm_mul] using hf.mul hg)
+
+theorem BoundedAtFilter.prod {ι : Type} (s : Finset ι) [SeminormedCommRing β]
+    {l : Filter α} {f : ι → α → β} (h : ∀ i ∈ s, BoundedAtFilter l (f i)) :
+    BoundedAtFilter l (∏ i ∈ s, f i) :=
+  (boundedFilterSubalgebra β l).prod_mem (f := f) h
 
 end Filter

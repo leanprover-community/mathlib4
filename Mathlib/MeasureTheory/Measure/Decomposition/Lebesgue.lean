@@ -3,9 +3,11 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
-import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
-import Mathlib.MeasureTheory.Measure.Sub
+module
+
+public import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
+public import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
+public import Mathlib.MeasureTheory.Measure.Sub
 
 /-!
 # Lebesgue decomposition
@@ -43,6 +45,8 @@ The Lebesgue decomposition provides the Radon-Nikodym theorem readily.
 
 Lebesgue decomposition theorem
 -/
+
+@[expose] public section
 
 assert_not_exists MeasureTheory.VectorMeasure
 
@@ -92,7 +96,7 @@ lemma singularPart_of_not_haveLebesgueDecomposition (h : ¬ HaveLebesgueDecompos
     μ.singularPart ν = 0 := by
   rw [singularPart, dif_neg h]
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem measurable_rnDeriv (μ ν : Measure α) : Measurable <| μ.rnDeriv ν := by
   by_cases h : HaveLebesgueDecomposition μ ν
   · exact (haveLebesgueDecomposition_spec μ ν).1
@@ -153,7 +157,7 @@ instance haveLebesgueDecompositionSMul' (μ ν : Measure α) [HaveLebesgueDecomp
   lebesgue_decomposition := by
     obtain ⟨hmeas, hsing, hadd⟩ := haveLebesgueDecomposition_spec μ ν
     refine ⟨⟨r • μ.singularPart ν, r • μ.rnDeriv ν⟩, hmeas.const_smul _, hsing.smul _, ?_⟩
-    simp only [ENNReal.smul_def]
+    simp only
     rw [withDensity_smul _ hmeas, ← smul_add, ← hadd]
 
 instance haveLebesgueDecompositionSMul (μ ν : Measure α) [HaveLebesgueDecomposition μ ν]
@@ -222,8 +226,8 @@ lemma absolutelyContinuous_withDensity_rnDeriv [HaveLebesgueDecomposition ν μ]
   rw [haveLebesgueDecomposition_add ν μ] at hμν
   refine AbsolutelyContinuous.mk (fun s _ hνs ↦ ?_)
   obtain ⟨t, _, ht1, ht2⟩ := mutuallySingular_singularPart ν μ
-  rw [← inter_union_compl s]
-  refine le_antisymm ((measure_union_le (s ∩ t) (s ∩ tᶜ)).trans ?_) (zero_le _)
+  rw [← inter_union_compl s, ← nonpos_iff_eq_zero]
+  refine (measure_union_le (s ∩ t) (s ∩ tᶜ)).trans ?_
   simp only [nonpos_iff_eq_zero, add_eq_zero]
   constructor
   · refine hμν ?_
@@ -661,12 +665,18 @@ theorem rnDeriv_smul_right_of_ne_top (ν μ : Measure α) [IsFiniteMeasure ν]
     simp [hr, hr_ne_top]
   have : (r.toNNReal)⁻¹ • rnDeriv ν μ = r⁻¹ • rnDeriv ν μ := by
     ext x
-    simp only [Pi.smul_apply, ENNReal.smul_def, ne_eq, smul_eq_mul]
+    simp only [Pi.smul_apply, ENNReal.smul_def, smul_eq_mul]
     rw [ENNReal.coe_inv, ENNReal.coe_toNNReal hr_ne_top]
     rw [ne_eq, ENNReal.toNNReal_eq_zero_iff]
     simp [hr, hr_ne_top]
   simp_rw [this, ENNReal.smul_def, ENNReal.coe_toNNReal hr_ne_top] at h
   exact h
+
+theorem rnDeriv_smul_same (ν μ : Measure α) [IsFiniteMeasure ν]
+    [ν.HaveLebesgueDecomposition μ] {r : ℝ≥0} (hr : r ≠ 0) :
+    (r • ν).rnDeriv (r • μ) =ᵐ[μ] ν.rnDeriv μ := by
+  filter_upwards [rnDeriv_smul_left ν μ r, rnDeriv_smul_right (r • ν) μ hr] with x hx1 hx2
+  simp [hx1, hx2, hr]
 
 /-- Radon-Nikodym derivative of a sum of two measures.
 See also `rnDeriv_add'`, which requires sigma-finite `ν₁`, `ν₂` and `μ`. -/
@@ -718,7 +728,7 @@ theorem exists_positive_of_not_mutuallySingular (μ ν : Measure α) [IsFiniteMe
     lift μ A to ℝ≥0 using measure_ne_top _ _ with μA
     lift ν A to ℝ≥0 using measure_ne_top _ _ with νA
     rw [ENNReal.coe_eq_zero]
-    by_cases hb : 0 < νA
+    by_cases! hb : 0 < νA
     · suffices ∀ b, 0 < b → μA ≤ b by
         by_contra h
         have h' := this (μA / 2) (half_pos (zero_lt_iff.2 h))
@@ -731,7 +741,7 @@ theorem exists_positive_of_not_mutuallySingular (μ ν : Measure α) [IsFiniteMe
       rcases this with ⟨n, hn⟩
       have hb₁ : (0 : ℝ) < (νA : ℝ)⁻¹ := by rw [_root_.inv_pos]; exact hb
       have h' : 1 / (↑n + 1) * νA < c := by
-        rw [← NNReal.coe_lt_coe, ← mul_lt_mul_right hb₁, NNReal.coe_mul, mul_assoc, ←
+        rw [← NNReal.coe_lt_coe, ← mul_lt_mul_iff_left₀ hb₁, NNReal.coe_mul, mul_assoc, ←
           NNReal.coe_inv, ← NNReal.coe_mul, mul_inv_cancel₀, ← NNReal.coe_mul, mul_one,
           NNReal.coe_inv]
         · exact hn
@@ -739,15 +749,10 @@ theorem exists_positive_of_not_mutuallySingular (μ ν : Measure α) [IsFiniteMe
       refine le_trans ?_ h'.le
       rw [← ENNReal.coe_le_coe, ENNReal.coe_mul]
       exact hA₃ n
-    · rw [not_lt, le_zero_iff] at hb
-      specialize hA₃ 0
-      simp? [hb] at hA₃ says
-        simp only [CharP.cast_eq_zero, zero_add, ne_eq, one_ne_zero, not_false_eq_true, div_self,
-          ENNReal.coe_one, hb, ENNReal.coe_zero, mul_zero, nonpos_iff_eq_zero,
-          ENNReal.coe_eq_zero] at hA₃
-      assumption
+    · rw [le_zero_iff] at hb
+      simpa [hb] using hA₃ 0
   -- since `μ` and `ν` are not mutually singular, `μ A = 0` implies `ν Aᶜ > 0`
-  rw [MutuallySingular] at h; push_neg at h
+  rw [MutuallySingular] at h; push Not at h
   have := h _ hAmeas hμ
   simp_rw [A, compl_iInter, compl_compl] at this
   -- as `Aᶜ = ⋃ n, f n`, `ν Aᶜ > 0` implies there exists some `n` such that `ν (f n) > 0`
@@ -882,11 +887,7 @@ theorem haveLebesgueDecomposition_of_finiteMeasure [IsFiniteMeasure μ] [IsFinit
       refine le_intro fun B hB _ ↦ ?_
       rw [withDensity_apply _ hB]
       exact hξle B hB
-    have : IsFiniteMeasure (ν.withDensity ξ) := by
-      refine isFiniteMeasure_withDensity ?_
-      have hle' := hle univ
-      rw [withDensity_apply _ MeasurableSet.univ, Measure.restrict_univ] at hle'
-      exact ne_top_of_le_ne_top (measure_ne_top _ _) hle'
+    have : IsFiniteMeasure (ν.withDensity ξ) := isFiniteMeasure_of_le _ hle
     -- `ξ` is the `f` in the theorem statement and we set `μ₁` to be `μ - ν.withDensity ξ`
     -- since we need `μ₁ + ν.withDensity ξ = μ`
     set μ₁ := μ - ν.withDensity ξ with hμ₁
@@ -1058,6 +1059,27 @@ lemma rnDeriv_add_of_mutuallySingular (ν₁ ν₂ μ : Measure α)
   simp [hx_add, hx_zero]
 
 end rnDeriv
+
+lemma add_sub_of_mutuallySingular {ξ : Measure α} (h : μ ⟂ₘ ξ) : μ + (ν - ξ) = μ + ν - ξ := by
+  let s := h.nullSet
+  have hs : MeasurableSet s := h.measurableSet_nullSet
+  have h_le_s : μ.restrict s + (ν - ξ).restrict s = μ.restrict s + ν.restrict s - ξ.restrict s := by
+    rw [h.restrict_nullSet, restrict_sub_eq_restrict_sub_restrict hs]
+    simp
+  have h_le_s_compl : μ.restrict sᶜ + (ν - ξ).restrict sᶜ =
+      μ.restrict sᶜ + ν.restrict sᶜ - ξ.restrict sᶜ := by
+    rw [restrict_sub_eq_restrict_sub_restrict hs.compl, h.restrict_compl_nullSet]
+    simp
+  calc μ + (ν - ξ)
+  _ = μ.restrict s + μ.restrict sᶜ + (ν - ξ).restrict s + (ν - ξ).restrict sᶜ := by
+    rw [restrict_add_restrict_compl hs, add_assoc, restrict_add_restrict_compl hs]
+  _ = μ.restrict s + (ν - ξ).restrict s + (μ.restrict sᶜ + (ν - ξ).restrict sᶜ) := by abel
+  _ = (μ.restrict s + ν.restrict s - ξ.restrict s) +
+      (μ.restrict sᶜ + ν.restrict sᶜ - ξ.restrict sᶜ) := by rw [h_le_s, h_le_s_compl]
+  _ = (μ + ν - ξ).restrict s + (μ + ν - ξ).restrict sᶜ := by
+      simp [restrict_sub_eq_restrict_sub_restrict hs,
+        restrict_sub_eq_restrict_sub_restrict hs.compl]
+  _ = μ + ν - ξ := by rw [restrict_add_restrict_compl hs]
 
 end Measure
 

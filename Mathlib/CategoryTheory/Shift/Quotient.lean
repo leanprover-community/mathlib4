@@ -3,9 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Shift.CommShift
-import Mathlib.CategoryTheory.Shift.Induced
-import Mathlib.CategoryTheory.Quotient
+module
+
+public import Mathlib.CategoryTheory.Shift.CommShift
+public import Mathlib.CategoryTheory.Shift.Induced
+public import Mathlib.CategoryTheory.Quotient
 
 /-!
 # The shift on a quotient category
@@ -20,6 +22,8 @@ The condition `r.IsCompatibleWithShift A` on the relation `r` is a class so that
 the shift can be automatically inferred on the quotient category.
 
 -/
+
+@[expose] public section
 
 universe v v' u u' w
 
@@ -70,41 +74,38 @@ variable {A}
 noncomputable def iso (a : A) :
     shiftFunctor (Quotient r) a ⋙ lift r F hF ≅ lift r F hF ⋙ shiftFunctor D a :=
   natIsoLift r ((Functor.associator _ _ _).symm ≪≫
-    isoWhiskerRight ((functor r).commShiftIso a).symm _ ≪≫
-    Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ (lift.isLift r F hF) ≪≫ F.commShiftIso a ≪≫
-    isoWhiskerRight (lift.isLift r F hF).symm _ ≪≫ Functor.associator _ _ _)
+    Functor.isoWhiskerRight ((functor r).commShiftIso a).symm _ ≪≫
+    Functor.associator _ _ _ ≪≫ Functor.isoWhiskerLeft _ (lift.isLift r F hF) ≪≫ F.commShiftIso a ≪≫
+    Functor.isoWhiskerRight (lift.isLift r F hF).symm _ ≪≫ Functor.associator _ _ _)
 
 @[simp]
 lemma iso_hom_app (a : A) (X : C) :
     (iso F r hF a).hom.app ((functor r).obj X) =
       (lift r F hF).map (((functor r).commShiftIso a).inv.app X) ≫
       (F.commShiftIso a).hom.app X := by
-  dsimp only [iso, natIsoLift]
-  rw [natTransLift_app]
-  dsimp
-  erw [comp_id, id_comp, id_comp, id_comp, Functor.map_id, comp_id]
+  simp [iso, lift_obj_functor_obj]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma iso_inv_app (a : A) (X : C) :
     (iso F r hF a).inv.app ((functor r).obj X) =
       (F.commShiftIso a).inv.app X ≫
       (lift r F hF).map (((functor r).commShiftIso a).hom.app X) := by
-  dsimp only [iso, natIsoLift]
-  rw [natTransLift_app]
-  dsimp
-  erw [id_comp, comp_id, comp_id, comp_id, Functor.map_id, id_comp]
+  simp [iso, lift_obj_functor_obj]
 
 attribute [irreducible] iso
 
 end LiftCommShift
 
+set_option backward.isDefEq.respectTransparency false in
 /-- When `r : HomRel C` is compatible with the shift by an additive monoid, and
 `F : C ⥤ D` is a functor which commutes with the shift and is compatible with `r`, then
 the induced functor `Quotient.lift r F _ : Quotient r ⥤ D` also commutes with the shift. -/
+@[simps -isSimp commShiftIso]
 noncomputable instance liftCommShift :
     (Quotient.lift r F hF).CommShift A where
-  iso := LiftCommShift.iso F r hF
-  zero := by
+  commShiftIso := LiftCommShift.iso F r hF
+  commShiftIso_zero := by
     ext1
     apply natTrans_ext
     ext X
@@ -115,7 +116,7 @@ noncomputable instance liftCommShift :
       lift_map_functor_map, ← F.map_comp_assoc, Iso.inv_hom_id_app]
     dsimp [lift_obj_functor_obj]
     rw [F.map_id, id_comp]
-  add a b := by
+  commShiftIso_add a b := by
     ext1
     apply natTrans_ext
     ext X
@@ -127,22 +128,21 @@ noncomputable instance liftCommShift :
     congr 1
     rw [← cancel_epi ((shiftFunctor (Quotient r) b ⋙ lift r F hF).map
       (NatTrans.app (Functor.commShiftIso (functor r) a).hom X))]
-    erw [(LiftCommShift.iso F r hF b).hom.naturality_assoc
-      (((functor r).commShiftIso a).hom.app X), LiftCommShift.iso_hom_app,
-      ← Functor.map_comp_assoc, Iso.hom_inv_id_app]
-    dsimp
-    simp only [Functor.comp_obj, assoc, ← Functor.map_comp_assoc, Iso.inv_hom_id_app,
-      Functor.map_id, id_comp, Iso.hom_inv_id_app, lift_obj_functor_obj]
+    simp only [← Functor.comp_map, ← Functor.comp_obj]
+    rw [(LiftCommShift.iso F r hF b).hom.naturality_assoc (((functor r).commShiftIso a).hom.app X)]
+    simp only [Functor.comp_obj, LiftCommShift.iso_hom_app, Iso.hom_inv_id_app,
+      Functor.comp_map, assoc, ← Functor.map_comp_assoc, Iso.inv_hom_id_app,
+      Functor.map_id, id_comp, lift_obj_functor_obj]
 
+set_option backward.isDefEq.respectTransparency false in
 instance liftCommShift_compatibility :
     NatTrans.CommShift (Quotient.lift.isLift r F hF).hom A where
   shift_comm a := by
     ext X
     dsimp
-    erw [Functor.map_id, id_comp, comp_id]
-    rw [Functor.commShiftIso_comp_hom_app]
-    erw [LiftCommShift.iso_hom_app]
-    rw [← Functor.map_comp_assoc, Iso.hom_inv_id_app, Functor.map_id, id_comp]
+    rw [Functor.commShiftIso_comp_hom_app, liftCommShift_commShiftIso,
+      LiftCommShift.iso_hom_app, ← Functor.map_comp_assoc, Iso.hom_inv_id_app]
+    simp [lift, Quotient.functor]
 
 end Quotient
 

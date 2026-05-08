@@ -3,19 +3,23 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.LinearAlgebra.Dimension.Constructions
-import Mathlib.LinearAlgebra.Dimension.Subsingleton
+module
+
+public import Mathlib.LinearAlgebra.Dimension.Constructions
+public import Mathlib.LinearAlgebra.Dimension.Subsingleton
 
 /-!
 
 # Some results on free modules over rings satisfying strong rank condition
 
 This file contains some results on free modules over rings satisfying strong rank condition.
-Most of them are generalized from the same result assuming the base ring being division ring,
+Most of them are generalized from the same result assuming the base ring being a division ring,
 and are moved from the files `Mathlib/LinearAlgebra/Dimension/DivisionRing.lean`
-and `Mathlib/LinearAlgebra/FiniteDimensional.lean`.
+and `Mathlib/LinearAlgebra/FiniteDimensional/Basic.lean`.
 
 -/
+
+@[expose] public section
 
 open Cardinal Module Module Set Submodule
 
@@ -83,13 +87,13 @@ theorem rank_le_one_iff [Module.Free K V] :
       intro v
       simp [h' v]
     · use b i
-      have h' : (K ∙ b i) = ⊤ :=
+      have h' : K ∙ b i = ⊤ :=
         (subsingleton_range b).eq_singleton_of_mem (mem_range_self i) ▸ b.span_eq
       intro v
       have hv : v ∈ (⊤ : Submodule K V) := mem_top
       rwa [← h', mem_span_singleton] at hv
   · rintro ⟨v₀, hv₀⟩
-    have h : (K ∙ v₀) = ⊤ := by
+    have h : K ∙ v₀ = ⊤ := by
       ext
       simp [mem_span_singleton, hv₀]
     rw [← rank_top, ← h]
@@ -108,7 +112,7 @@ theorem rank_eq_one_iff [Module.Free K V] :
     haveI : Subsingleton V := .intro fun _ _ ↦ by simp_rw [← hv]
     exact one_ne_zero (h ▸ rank_subsingleton' K V)
   · by_contra H
-    rw [not_le, lt_one_iff_zero] at H
+    rw [not_le, Cardinal.lt_one_iff] at H
     obtain ⟨κ, b⟩ := Module.Free.exists_basis (R := K) (M := V)
     haveI := mk_eq_zero_iff.1 (H ▸ b.mk_eq_rank'')
     haveI := b.repr.toEquiv.subsingleton
@@ -120,19 +124,7 @@ its span. -/
 theorem rank_submodule_le_one_iff (s : Submodule K V) [Module.Free K s] :
     Module.rank K s ≤ 1 ↔ ∃ v₀ ∈ s, s ≤ K ∙ v₀ := by
   simp_rw [rank_le_one_iff, le_span_singleton_iff]
-  constructor
-  · rintro ⟨⟨v₀, hv₀⟩, h⟩
-    use v₀, hv₀
-    intro v hv
-    obtain ⟨r, hr⟩ := h ⟨v, hv⟩
-    use r
-    rwa [Subtype.ext_iff, coe_smul] at hr
-  · rintro ⟨v₀, hv₀, h⟩
-    use ⟨v₀, hv₀⟩
-    rintro ⟨v, hv⟩
-    obtain ⟨r, hr⟩ := h v hv
-    use r
-    rwa [Subtype.ext_iff, coe_smul]
+  simp
 
 /-- A submodule has dimension `1` if and only if there is a
 single non-zero vector in the submodule such that the submodule is contained in
@@ -182,7 +174,8 @@ theorem Module.rank_le_one_iff_top_isPrincipal [Module.Free K V] :
   rw [← Submodule.rank_le_one_iff_isPrincipal, rank_top]
 
 /-- A module has dimension 1 iff there is some `v : V` so `{v}` is a basis.
--/
+
+See also `Module.Basis.nonempty_unique_index_of_finrank_eq_one` -/
 theorem finrank_eq_one_iff [Module.Free K V] (ι : Type*) [Unique ι] :
     finrank K V = 1 ↔ Nonempty (Basis ι K V) := by
   constructor
@@ -198,7 +191,7 @@ theorem finrank_eq_one_iff' [Module.Free K V] :
   rw [← rank_eq_one_iff]
   exact toNat_eq_iff one_ne_zero
 
-/-- A finite dimensional module has dimension at most 1 iff
+/-- A finite-dimensional module has dimension at most 1 iff
 there is some `v : V` so every vector is a multiple of `v`.
 -/
 theorem finrank_le_one_iff [Module.Free K V] [Module.Finite K V] :
@@ -227,17 +220,10 @@ theorem lift_cardinalMk_eq_lift_cardinalMk_field_pow_lift_rank [Module.Free K V]
   rwa [Finsupp.equivFunOnFinite.cardinal_eq, mk_arrow, hs.mk_eq_rank'', lift_power, lift_lift,
     lift_lift, lift_umax] at this
 
-@[deprecated (since := "2024-11-10")]
-alias lift_cardinal_mk_eq_lift_cardinal_mk_field_pow_lift_rank :=
-  lift_cardinalMk_eq_lift_cardinalMk_field_pow_lift_rank
-
 theorem cardinalMk_eq_cardinalMk_field_pow_rank (K V : Type u) [Ring K] [StrongRankCondition K]
     [AddCommGroup V] [Module K V] [Module.Free K V] [Module.Finite K V] :
     #V = #K ^ Module.rank K V := by
   simpa using lift_cardinalMk_eq_lift_cardinalMk_field_pow_lift_rank K V
-
-@[deprecated (since := "2024-11-10")]
-alias cardinal_mk_eq_cardinal_mk_field_pow_rank := cardinalMk_eq_cardinalMk_field_pow_rank
 
 variable (K V) in
 theorem cardinal_lt_aleph0_of_finiteDimensional [Finite K] [Module.Free K V] [Module.Finite K V] :
@@ -263,7 +249,7 @@ theorem eq_bot_of_rank_le_one (h : Module.rank F S ≤ 1) [Module.Free F S] : S 
     obtain ⟨y, hy⟩ := (bijective_algebraMap_of_linearEquiv (b.repr ≪≫ₗ
       Finsupp.LinearEquiv.finsuppUnique _ _ _).symm).surjective ⟨x, hx⟩
     exact ⟨y, congr(Subtype.val $(hy))⟩
-  haveI := mk_eq_zero_iff.1 (b.mk_eq_rank''.symm ▸ lt_one_iff_zero.1 (h.lt_of_ne h1))
+  haveI := mk_eq_zero_iff.1 (b.mk_eq_rank''.symm ▸ Cardinal.lt_one_iff.1 (h.lt_of_ne h1))
   haveI := b.repr.toEquiv.subsingleton
   exact False.elim <| one_ne_zero congr(S.val $(Subsingleton.elim 1 0))
 
@@ -282,7 +268,7 @@ theorem rank_eq_one_iff [Nontrivial E] [Module.Free F S] : Module.rank F S = 1 �
     rwa [← one_eq_range, rank_self, lift_one, lift_le_one_iff,
       ← Algebra.toSubmodule_bot, rank_toSubmodule] at this
   · by_contra H
-    rw [not_le, lt_one_iff_zero] at H
+    rw [not_le, Cardinal.lt_one_iff] at H
     haveI := mk_eq_zero_iff.1 (H ▸ b.mk_eq_rank'')
     haveI := b.repr.toEquiv.subsingleton
     exact one_ne_zero congr((⊥ : Subalgebra F E).val $(Subsingleton.elim 1 0))
@@ -308,5 +294,12 @@ alias ⟨_, bot_eq_top_of_rank_eq_one⟩ := bot_eq_top_iff_rank_eq_one
 alias ⟨_, bot_eq_top_of_finrank_eq_one⟩ := bot_eq_top_iff_finrank_eq_one
 
 attribute [simp] bot_eq_top_of_finrank_eq_one bot_eq_top_of_rank_eq_one
+
+lemma _root_.Algebra.finrank_eq_one_iff_bijective_algebraMap [Module.Free F E] :
+    Module.finrank F E = 1 ↔ Function.Bijective (algebraMap F E) := by
+  refine ⟨?_, Module.finrank_of_bijective_algebraMap⟩
+  nontriviality E
+  refine fun h ↦ ⟨FaithfulSMul.algebraMap_injective F E, ?_⟩
+  rwa [Algebra.surjective_algebraMap_iff, eq_comm, Subalgebra.bot_eq_top_iff_finrank_eq_one]
 
 end Subalgebra

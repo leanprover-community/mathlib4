@@ -3,10 +3,16 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.FiniteStability
-import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
-import Mathlib.RingTheory.Kaehler.Basic
-import Mathlib.RingTheory.Localization.Away.AdjoinRoot
+module
+
+public import Mathlib.RingTheory.FiniteStability
+public import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
+public import Mathlib.RingTheory.Ideal.IdempotentFG
+public import Mathlib.RingTheory.Idempotents
+public import Mathlib.RingTheory.Kaehler.Basic
+public import Mathlib.RingTheory.Localization.Away.AdjoinRoot
+public import Mathlib.RingTheory.TensorProduct.Quotient
+public import Mathlib.Algebra.Algebra.Shrink
 
 /-!
 
@@ -30,10 +36,11 @@ localization at an element.
 
 -/
 
--- Porting note: added to make the syntax work below.
+public section
+
 open scoped TensorProduct
 
-universe u v w
+universe w u v
 
 namespace Algebra
 
@@ -49,7 +56,7 @@ This is equivalent to "for every `R`-algebra, every square-zero ideal
 See `Algebra.FormallyUnramified.iff_comp_injective`. -/
 @[mk_iff, stacks 00UM]
 class FormallyUnramified : Prop where
-  subsingleton_kaehlerDifferential : Subsingleton (Ω[A⁄R])
+  subsingleton_kaehlerDifferential : Subsingleton Ω[A⁄R]
 
 attribute [instance] FormallyUnramified.subsingleton_kaehlerDifferential
 
@@ -73,20 +80,30 @@ theorem comp_injective [FormallyUnramified R A] (hI : I ^ 2 = ⊥) :
           (derivationToSquareZeroEquivLift I hI)).surjective.subsingleton
   exact Subtype.ext_iff.mp (@Subsingleton.elim _ this ⟨f₁, rfl⟩ ⟨f₂, e.symm⟩)
 
-theorem iff_comp_injective :
+set_option backward.isDefEq.respectTransparency false in
+theorem iff_comp_injective_of_small [Small.{w} A] :
     FormallyUnramified R A ↔
-      ∀ ⦃B : Type u⦄ [CommRing B],
+      ∀ ⦃B : Type w⦄ [CommRing B],
         ∀ [Algebra R B] (I : Ideal B) (_ : I ^ 2 = ⊥),
           Function.Injective ((Ideal.Quotient.mkₐ R I).comp : (A →ₐ[R] B) → A →ₐ[R] B ⧸ I) := by
   constructor
   · intros; exact comp_injective _ ‹_›
   · intro H
+    replace H : ∀ ⦃B : Type u⦄ [CommRing B] [Small.{w} B],
+        ∀ [Algebra R B] (I : Ideal B) (_ : I ^ 2 = ⊥),
+          Function.Injective ((Ideal.Quotient.mkₐ R I).comp : (A →ₐ[R] B) → A →ₐ[R] B ⧸ I) := by
+      intro B _ _ _ I hI f g e
+      simpa [DFunLike.ext_iff] using H (B := Shrink B) (I.comap (Shrink.ringEquiv _))
+        (by rw [← Ideal.map_symm, ← Ideal.map_pow, hI]; simp)
+        (a₁ := (Shrink.algEquiv _ _).symm.toAlgHom.comp f)
+        (a₂ := (Shrink.algEquiv _ _).symm.toAlgHom.comp g)
+        (by simpa [DFunLike.ext_iff, Ideal.Quotient.mk_eq_mk_iff_sub_mem, Shrink.ringEquiv] using e)
     constructor
-    rw [← not_nontrivial_iff_subsingleton]
-    intro h
+    by_contra! h
     obtain ⟨f₁, f₂, e⟩ := (KaehlerDifferential.endEquiv R A).injective.nontrivial
     apply e
     ext1
+    let f := RingHom.ker (TensorProduct.lmul' R (S := A)).kerSquareLift.toRingHom
     refine H
       (RingHom.ker (TensorProduct.lmul' R (S := A)).kerSquareLift.toRingHom) ?_ ?_
     · rw [AlgHom.ker_kerSquareLift]
@@ -94,6 +111,14 @@ theorem iff_comp_injective :
     · ext x
       apply RingHom.kerLift_injective (TensorProduct.lmul' R (S := A)).kerSquareLift.toRingHom
       simpa using DFunLike.congr_fun (f₁.2.trans f₂.2.symm) x
+
+/-- A version without stray universes that is more easy to rewrite with. -/
+theorem iff_comp_injective :
+    FormallyUnramified R A ↔
+      ∀ ⦃B : Type u⦄ [CommRing B],
+        ∀ [Algebra R B] (I : Ideal B) (_ : I ^ 2 = ⊥),
+          Function.Injective ((Ideal.Quotient.mkₐ R I).comp : (A →ₐ[R] B) → A →ₐ[R] B ⧸ I) :=
+  iff_comp_injective_of_small
 
 theorem lift_unique
     [FormallyUnramified R A] (I : Ideal B) (hI : IsNilpotent I) (g₁ g₂ : A →ₐ[R] B)
@@ -161,9 +186,9 @@ theorem ext_of_iInf [FormallyUnramified R A] (hI : ⨅ i, I ^ i = ⊥) {g₁ g�
 
 end
 
-instance {R : Type*} [CommRing R] : FormallyUnramified R R := by
+instance {R : Type u} [CommRing R] : FormallyUnramified R R := by
   rw [iff_comp_injective]
-  intros B _ _ _ _ f₁ f₂ _
+  intro B _ _ _ _ f₁ f₂ _
   exact Subsingleton.elim _ _
 
 section OfEquiv
@@ -203,7 +228,7 @@ theorem comp [FormallyUnramified R A] [FormallyUnramified A B] :
   congr
   exact FormallyUnramified.ext I ⟨2, hI⟩ (AlgHom.congr_fun e)
 
-theorem of_comp [FormallyUnramified R B] : FormallyUnramified A B := by
+theorem of_restrictScalars [FormallyUnramified R B] : FormallyUnramified A B := by
   rw [iff_comp_injective]
   intro Q _ _ I e f₁ f₂ e'
   letI := ((algebraMap A Q).comp (algebraMap R A)).toAlgebra
@@ -212,6 +237,8 @@ theorem of_comp [FormallyUnramified R B] : FormallyUnramified A B := by
   refine FormallyUnramified.ext I ⟨2, e⟩ ?_
   intro x
   exact AlgHom.congr_fun e' x
+
+@[deprecated (since := "2025-10-24")] alias of_comp := of_restrictScalars
 
 end Comp
 
@@ -256,8 +283,11 @@ instance base_change [FormallyUnramified R A] :
   letI := ((algebraMap B C).comp (algebraMap R B)).toAlgebra
   haveI : IsScalarTower R B C := IsScalarTower.of_algebraMap_eq' rfl
   ext : 1
-  · subsingleton
-  · exact FormallyUnramified.ext I ⟨2, hI⟩ fun x => AlgHom.congr_fun e (1 ⊗ₜ x)
+  exact FormallyUnramified.ext I ⟨2, hI⟩ fun x => AlgHom.congr_fun e (1 ⊗ₜ x)
+
+instance quotient_map [FormallyUnramified R B] (p : Ideal R) :
+    FormallyUnramified (R ⧸ p) (B ⧸ p.map (algebraMap R B)) :=
+  .of_equiv (Algebra.TensorProduct.quotIdealMapEquivQuotTensor B p).symm
 
 end BaseChange
 
@@ -283,16 +313,15 @@ instance [FormallyUnramified R S] (M : Submonoid S) : FormallyUnramified R (Loca
   have := of_isLocalization (Rₘ := Localization M) M
   .comp _ S _
 
+set_option linter.unusedSectionVars false in
 /-- This actually does not need the localization instance, and is stated here again for
 consistency. See `Algebra.FormallyUnramified.of_comp` instead.
 
 The intended use is for copying proofs between `Formally{Unramified, Smooth, Etale}`
 without the need to change anything (including removing redundant arguments). -/
--- @[nolint unusedArguments] -- Porting note: removed
+@[nolint unusedArguments]
 theorem localization_base [FormallyUnramified R Sₘ] : FormallyUnramified Rₘ Sₘ :=
-  -- Porting note: added
-  let _ := M
-  FormallyUnramified.of_comp R Rₘ Sₘ
+  FormallyUnramified.of_restrictScalars R Rₘ Sₘ
 
 theorem localization_map [FormallyUnramified R S] :
     FormallyUnramified Rₘ Sₘ := by
@@ -302,6 +331,22 @@ theorem localization_map [FormallyUnramified R S] :
   exact FormallyUnramified.localization_base M
 
 end Localization
+
+/-- If `S` is an unramified `R`-algebra, `S ⊗[R] S` splits as `S × T` for some `R`-algebra `T`.
+In particular, the diagonal is an open and closed immersion. -/
+lemma exists_algEquiv_prod (R S : Type u) [CommRing R] [CommRing S]
+    [Algebra R S] [Algebra.EssFiniteType R S] [Algebra.FormallyUnramified R S] :
+    ∃ (T : Type u) (_ : CommRing T) (_ : Algebra S T), Nonempty (S ⊗[R] S ≃ₐ[S] S × T) := by
+  obtain ⟨e, he, hsp⟩ : ∃ e, IsIdempotentElem e ∧ KaehlerDifferential.ideal R S = S ⊗[R] S ∙ e :=
+    (Ideal.isIdempotentElem_iff_of_fg _ (KaehlerDifferential.ideal_fg R S)).mp <|
+      (Ideal.cotangent_subsingleton_iff _).mp <| inferInstanceAs <| Subsingleton Ω[S⁄R]
+  let e₁ := AlgEquiv.prodQuotientOfIsIdempotentElem (R := S) he he.one_sub (by simp) (by simp [he])
+  let e₂ : (S ⊗[R] S ⧸ Ideal.span {e}) ≃ₐ[S] S :=
+    ((Ideal.span {e}).quotientEquivAlgOfEq S hsp.symm).trans <|
+      Ideal.quotientKerAlgEquivOfSurjective <|
+        (⟨· ⊗ₜ 1, by simp [Algebra.TensorProduct.lmul'']⟩)
+  exact ⟨(S ⊗[R] S) ⧸ Ideal.span {1 - e}, inferInstance, inferInstance,
+    ⟨e₁.trans (.prodCongr e₂ .refl)⟩⟩
 
 end FormallyUnramified
 

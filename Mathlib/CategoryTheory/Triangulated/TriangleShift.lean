@@ -3,9 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Linear.LinearFunctor
-import Mathlib.CategoryTheory.Triangulated.Rotate
-import Mathlib.Algebra.Ring.NegOnePow
+module
+
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
+public import Mathlib.CategoryTheory.Triangulated.Rotate
+public import Mathlib.Algebra.Ring.NegOnePow
 
 /-!
 # The shift on the category of triangles
@@ -19,6 +21,8 @@ The shift on the category of triangles was also obtained by Adam Topaz,
 Johan Commelin and Andrew Yang during the Liquid Tensor Experiment.
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -37,6 +41,7 @@ attribute [local simp] Triangle.eqToHom_hom₁ Triangle.eqToHom_hom₂ Triangle.
   shiftFunctorAdd_zero_add_hom_app shiftFunctorAdd_add_zero_hom_app
   shiftFunctorAdd'_eq_shiftFunctorAdd shift_shiftFunctorCompIsoId_inv_app
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The shift functor `Triangle C ⥤ Triangle C` by `n : ℤ` sends a triangle
 to the triangle obtained by shifting the objects by `n` in `C` and by
 multiplying the three morphisms by `(-1)^n`. -/
@@ -57,10 +62,9 @@ noncomputable def Triangle.shiftFunctor (n : ℤ) : Triangle C ⥤ Triangle C wh
       comm₃ := by
         dsimp
         rw [Linear.units_smul_comp, Linear.comp_units_smul, ← Functor.map_comp_assoc, ← f.comm₃,
-          Functor.map_comp, assoc, assoc]
-        erw [(shiftFunctorComm C 1 n).hom.naturality]
-        rfl }
+          Functor.map_comp, assoc, assoc, dsimp% (shiftFunctorComm C 1 n).hom.naturality] }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical isomorphism `Triangle.shiftFunctor C 0 ≅ 𝟭 (Triangle C)`. -/
 @[simps!]
 noncomputable def Triangle.shiftFunctorZero : Triangle.shiftFunctor C 0 ≅ 𝟭 _ :=
@@ -72,8 +76,9 @@ noncomputable def Triangle.shiftFunctorZero : Triangle.shiftFunctor C 0 ≅ 𝟭
         simp only [one_smul, assoc, shiftFunctorComm_zero_hom_app,
           ← Functor.map_comp, Iso.inv_hom_id_app, Functor.id_obj, Functor.map_id,
           comp_id, NatTrans.naturality, Functor.id_map]))
-    (by aesop_cat)
+    (by cat_disch)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical isomorphism
 `Triangle.shiftFunctor C n ≅ Triangle.shiftFunctor C a ⋙ Triangle.shiftFunctor C b`
 when `a + b = n`. -/
@@ -99,21 +104,22 @@ noncomputable def Triangle.shiftFunctorAdd' (a b n : ℤ) (h : a + b = n) :
         subst h
         dsimp
         rw [Linear.units_smul_comp, Linear.comp_units_smul, Functor.map_units_smul,
-          Linear.units_smul_comp, Linear.comp_units_smul, smul_smul, assoc,
-          Functor.map_comp, assoc]
-        erw [← NatTrans.naturality_assoc]
+          Linear.units_smul_comp, Linear.comp_units_smul, smul_smul, assoc, Functor.map_comp, assoc,
+          ← dsimp% (CategoryTheory.shiftFunctorAdd' C a b (a + b) rfl).hom.naturality_assoc]
         simp only [shiftFunctorAdd'_eq_shiftFunctorAdd, Int.negOnePow_add,
           shiftFunctorComm_hom_app_comp_shift_shiftFunctorAdd_hom_app, add_comm a]))
-    (by aesop_cat)
+    (by cat_disch)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Rotating triangles three times identifies with the shift by `1`. -/
 noncomputable def rotateRotateRotateIso :
     rotate C ⋙ rotate C ⋙ rotate C ≅ Triangle.shiftFunctor C 1 :=
   NatIso.ofComponents
     (fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _)
       (by simp) (by simp) (by simp))
-    (by aesop_cat)
+    (by cat_disch)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Rotating triangles three times backwards identifies with the shift by `-1`. -/
 noncomputable def invRotateInvRotateInvRotateIso :
     invRotate C ⋙ invRotate C ⋙ invRotate C ≅ Triangle.shiftFunctor C (-1) :=
@@ -124,7 +130,7 @@ noncomputable def invRotateInvRotateInvRotateIso :
       (by
         dsimp [shiftFunctorCompIsoId]
         simp [shiftFunctorComm_eq C _ _ _ (add_neg_cancel (1 : ℤ))]))
-    (by aesop_cat)
+    (by cat_disch)
 
 /-- The inverse of the rotation of triangles can be expressed using a double
 rotation and the shift by `-1`. -/
@@ -133,20 +139,21 @@ noncomputable def invRotateIsoRotateRotateShiftFunctorNegOne :
   calc
     invRotate C ≅ invRotate C ⋙ 𝟭 _ := (Functor.rightUnitor _).symm
     _ ≅ invRotate C ⋙ Triangle.shiftFunctor C 0 :=
-          isoWhiskerLeft _ (Triangle.shiftFunctorZero C).symm
+          Functor.isoWhiskerLeft _ (Triangle.shiftFunctorZero C).symm
     _ ≅ invRotate C ⋙ Triangle.shiftFunctor C 1 ⋙ Triangle.shiftFunctor C (-1) :=
-          isoWhiskerLeft _ (Triangle.shiftFunctorAdd' C 1 (-1) 0 (add_neg_cancel 1))
+          Functor.isoWhiskerLeft _ (Triangle.shiftFunctorAdd' C 1 (-1) 0 (add_neg_cancel 1))
     _ ≅ invRotate C ⋙ (rotate C ⋙ rotate C ⋙ rotate C) ⋙ Triangle.shiftFunctor C (-1) :=
-          isoWhiskerLeft _ (isoWhiskerRight (rotateRotateRotateIso C).symm _)
+          Functor.isoWhiskerLeft _ (Functor.isoWhiskerRight (rotateRotateRotateIso C).symm _)
     _ ≅ (invRotate C ⋙ rotate C) ⋙ rotate C ⋙ rotate C ⋙ Triangle.shiftFunctor C (-1) :=
-          isoWhiskerLeft _ (Functor.associator _ _ _ ≪≫
-            isoWhiskerLeft _ (Functor.associator _ _ _)) ≪≫ (Functor.associator _ _ _).symm
+          Functor.isoWhiskerLeft _ (Functor.associator _ _ _ ≪≫
+            Functor.isoWhiskerLeft _ (Functor.associator _ _ _)) ≪≫ (Functor.associator _ _ _).symm
     _ ≅ 𝟭 _ ⋙ rotate C ⋙ rotate C ⋙ Triangle.shiftFunctor C (-1) :=
-          isoWhiskerRight (triangleRotation C).counitIso _
+          Functor.isoWhiskerRight (triangleRotation C).counitIso _
     _ ≅ _ := Functor.leftUnitor _
 
 namespace Triangle
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : HasShift (Triangle C) ℤ :=
   hasShiftMk (Triangle C) ℤ
     { F := Triangle.shiftFunctor C

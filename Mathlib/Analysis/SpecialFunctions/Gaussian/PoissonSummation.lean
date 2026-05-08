@@ -3,9 +3,10 @@ Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+module
 
-import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
-import Mathlib.Analysis.Fourier.PoissonSummation
+public import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
+public import Mathlib.Analysis.Fourier.PoissonSummation
 
 /-!
 # Poisson summation applied to the Gaussian
@@ -19,11 +20,13 @@ for positive real `a`, or complex `a` with positive real part. (See also
 `NumberTheory.ModularForms.JacobiTheta`.)
 -/
 
+public section
+
 open Real Set MeasureTheory Filter Asymptotics intervalIntegral
 
 open scoped Real Topology FourierTransform RealInnerProductSpace
 
-open Complex hiding exp continuous_exp abs_of_nonneg sq_abs
+open Complex hiding exp continuous_exp
 
 noncomputable section
 
@@ -55,8 +58,7 @@ lemma cexp_neg_quadratic_isLittleO_abs_rpow_cocompact {a : ℂ} (ha : a.re < 0) 
   rw [cocompact_eq_atBot_atTop, isLittleO_sup]
   constructor
   · refine ((cexp_neg_quadratic_isLittleO_rpow_atTop ha (-b) s).comp_tendsto
-      Filter.tendsto_neg_atBot_atTop).congr' (Eventually.of_forall fun x ↦ ?_) ?_
-    · simp only [neg_mul, Function.comp_apply, ofReal_neg, neg_sq, mul_neg, neg_neg]
+      Filter.tendsto_neg_atBot_atTop).congr' (Eventually.of_forall fun x ↦ by simp) ?_
     · refine (eventually_lt_atBot 0).mp (Eventually.of_forall fun x hx ↦ ?_)
       simp only [Function.comp_apply, abs_of_neg hx]
   · refine (cexp_neg_quadratic_isLittleO_rpow_atTop ha b s).congr' EventuallyEq.rfl ?_
@@ -90,7 +92,7 @@ theorem Complex.tsum_exp_neg_quadratic {a : ℂ} (ha : 0 < a.re) (b : ℂ) :
     · exact continuous_const.mul (Complex.continuous_ofReal.pow 2)
     · exact continuous_const.mul Complex.continuous_ofReal
   have hFf : 𝓕 f = fun x : ℝ ↦ 1 / a ^ (1 / 2 : ℂ) * cexp (-π / a * (x + I * b) ^ 2) :=
-    fourierIntegral_gaussian_pi' ha b
+    fourier_gaussian_pi' ha b
   have h1 : 0 < (↑π * a).re := by
     rw [re_ofReal_mul]
     exact mul_pos pi_pos ha
@@ -112,7 +114,7 @@ theorem Complex.tsum_exp_neg_quadratic {a : ℂ} (ha : 0 < a.re) (b : ℂ) :
     refine ((cexp_neg_quadratic_isLittleO_abs_rpow_cocompact
       (?_) (-2 * ↑π * I * b / a) (-2)).isBigO.const_mul_left _).const_mul_left _
     rwa [neg_div, neg_re, neg_lt_zero]
-  convert Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay hCf one_lt_two f_bd Ff_bd 0 using 1
+  convert Real.tsum_eq_tsum_fourier_of_rpow_decay hCf one_lt_two f_bd Ff_bd 0 using 1
   · simp only [f, zero_add, ofReal_intCast]
   · rw [← tsum_mul_left]
     simp only [QuotientAddGroup.mk_zero, fourier_eval_zero, mul_one, hFf, ofReal_intCast]

@@ -3,14 +3,18 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Category.HeytAlg
-import Mathlib.Order.Hom.CompleteLattice
+module
+
+public import Mathlib.Order.Category.HeytAlg
+public import Mathlib.Order.Hom.CompleteLattice
 
 /-!
-# The category of boolean algebras
+# The category of Boolean algebras
 
-This defines `BoolAlg`, the category of boolean algebras.
+This defines `BoolAlg`, the category of Boolean algebras.
 -/
+
+@[expose] public section
 
 
 open OrderDual Opposite Set
@@ -19,9 +23,11 @@ universe u
 
 open CategoryTheory
 
-/-- The category of boolean algebras. -/
+/-- The category of Boolean algebras. -/
 structure BoolAlg where
-  /-- The underlying boolean algebra. -/
+  /-- Construct a bundled `BoolAlg` from the underlying type and typeclass. -/
+  of ::
+  /-- The underlying Boolean algebra. -/
   carrier : Type*
   [str : BooleanAlgebra carrier]
 
@@ -36,9 +42,7 @@ instance : CoeSort BoolAlg (Type _) :=
 
 attribute [coe] BoolAlg.carrier
 
-/-- Construct a bundled `BoolAlg` from the underlying type and typeclass. -/
-abbrev of (X : Type*) [BooleanAlgebra X] : BoolAlg := ⟨X⟩
-
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `BoolAlg R`. -/
 @[ext]
 structure Hom (X Y : BoolAlg.{u}) where
@@ -46,11 +50,15 @@ structure Hom (X Y : BoolAlg.{u}) where
   /-- The underlying `BoundedLatticeHom`. -/
   hom' : BoundedLatticeHom X Y
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category BoolAlg.{u} where
   Hom X Y := Hom X Y
   id X := ⟨BoundedLatticeHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory BoolAlg (BoundedLatticeHom · ·) where
   hom := Hom.hom'
   ofHom := Hom.mk
@@ -83,7 +91,7 @@ lemma coe_comp {X Y Z : BoolAlg} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → 
 
 @[simp]
 lemma forget_map {X Y : BoolAlg} (f : X ⟶ Y) :
-    (forget BoolAlg).map f = f := rfl
+    (forget BoolAlg).map f = (f : _ → _) := rfl
 
 @[ext]
 lemma ext {X Y : BoolAlg} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -113,7 +121,8 @@ lemma hom_ext {X Y : BoolAlg} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
 
 @[simp]
 lemma hom_ofHom {X Y : Type u} [BooleanAlgebra X] [BooleanAlgebra Y] (f : BoundedLatticeHom X Y) :
-  (ofHom f).hom = f := rfl
+    (ofHom f).hom = f :=
+  rfl
 
 @[simp]
 lemma ofHom_hom {X Y : BoolAlg} (f : X ⟶ Y) :

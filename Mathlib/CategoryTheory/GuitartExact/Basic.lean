@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.CategoryTheory.Functor.TwoSquare
+module
+
+public import Mathlib.CategoryTheory.Limits.Final
+public import Mathlib.CategoryTheory.Functor.TwoSquare
 
 /-!
 # Guitart exact squares
@@ -36,8 +38,8 @@ derived functors.
 ## TODO
 
 * Define the notion of derivability structure from
-[the paper by Kahn and Maltsiniotis][KahnMaltsiniotis2008] using Guitart exact squares
-and construct (pointwise) derived functors using this notion
+  [the paper by Kahn and Maltsiniotis][KahnMaltsiniotis2008] using Guitart exact squares
+  and construct (pointwise) derived functors using this notion
 
 ## References
 * https://ncatlab.org/nlab/show/exact+square
@@ -45,6 +47,8 @@ and construct (pointwise) derived functors using this notion
 * [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
@@ -258,6 +262,7 @@ instance [hw : w.GuitartExact] (X₂ : C₂) :
   rw [guitartExact_iff_initial] at hw
   apply hw
 
+set_option backward.isDefEq.respectTransparency false in
 /-- When the left and right functors of a 2-square are equivalences, and the natural
 transformation of the 2-square is an isomorphism, then the 2-square is Guitart exact. -/
 instance (priority := 100) guitartExact_of_isEquivalence_of_isIso
@@ -271,6 +276,7 @@ instance (priority := 100) guitartExact_of_isEquivalence_of_isIso
   dsimp only [structuredArrowDownwards]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance guitartExact_id (F : C₁ ⥤ C₂) :
     GuitartExact (TwoSquare.mk (𝟭 C₁) F F (𝟭 C₂) (𝟙 F)) := by
   rw [guitartExact_iff_isConnected_rightwards]

@@ -3,12 +3,14 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.List.Perm.Subperm
-import Mathlib.Data.Quot
-import Mathlib.Order.Monotone.Defs
-import Mathlib.Order.RelClasses
-import Mathlib.Tactic.Monotonicity.Attr
-import Mathlib.Util.AssertExists
+module
+
+public import Mathlib.Data.List.Perm.Subperm
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Data.Quot
+public import Mathlib.Order.Monotone.Defs
+public import Mathlib.Order.RelClasses
+public import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
 # Multisets
@@ -51,6 +53,8 @@ importing `Multiset.Defs`.
 * `s ∩ t`: The multiset for which the number of occurrences of each `a` is the min of the
   occurrences of `a` in `s` and `t`.
 -/
+
+@[expose] public section
 
 -- No algebra should be required
 assert_not_exists Monoid OrderHom
@@ -160,6 +164,7 @@ theorem Subset.trans {s t u : Multiset α} : s ⊆ t → t ⊆ u → s ⊆ u := 
 theorem subset_iff {s t : Multiset α} : s ⊆ t ↔ ∀ ⦃x⦄, x ∈ s → x ∈ t :=
   Iff.rfl
 
+@[gcongr]
 theorem mem_of_subset {s t : Multiset α} {a : α} (h : s ⊆ t) : a ∈ s → a ∈ t :=
   @h _
 
@@ -198,8 +203,6 @@ theorem mem_of_le (h : s ≤ t) : a ∈ s → a ∈ t :=
 theorem notMem_mono (h : s ⊆ t) : a ∉ t → a ∉ s :=
   mt <| @h _
 
-@[deprecated (since := "2025-05-23")] alias not_mem_mono := notMem_mono
-
 @[simp]
 theorem coe_le {l₁ l₂ : List α} : (l₁ : Multiset α) ≤ l₂ ↔ l₁ <+~ l₂ :=
   Iff.rfl
@@ -231,10 +234,11 @@ theorem eq_of_le_of_card_le {s t : Multiset α} (h : s ≤ t) : card t ≤ card 
 theorem card_lt_card {s t : Multiset α} (h : s < t) : card s < card t :=
   lt_of_not_ge fun h₂ => _root_.ne_of_lt h <| eq_of_le_of_card_le (le_of_lt h) h₂
 
-@[mono]
+@[gcongr, mono]
 theorem card_mono : Monotone (@card α) := fun _a _b => card_le_card
 
-lemma card_strictMono : StrictMono (card : Multiset α → ℕ) := fun _ _ ↦ card_lt_card
+@[gcongr]
+lemma card_strictMono : StrictMono (@card α) := fun _ _ ↦ card_lt_card
 
 /-- Another way of expressing `strongInductionOn`: the `(<)` relation is well-founded. -/
 instance instWellFoundedLT : WellFoundedLT (Multiset α) :=
