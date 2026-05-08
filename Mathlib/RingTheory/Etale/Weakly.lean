@@ -23,7 +23,7 @@ In this file we define weakly étale algebras. An `R`-algebra `S` is weakly éta
 
 public section
 
-universe u u₁ u₂ u₃ u₄ u₅
+universe u u₁ u₂ u₃
 
 open TensorProduct
 
@@ -31,7 +31,8 @@ namespace Algebra
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
-/-- `S` is a weakly-étale `R`-algebra if both `R → S` and `S ⊗[R] S → R` are flat. -/
+/-- `S` is a weakly-étale `R`-algebra if both `R → S` and `S ⊗[R] S → R` are flat.
+This is also called absolutely flat. -/
 @[stacks 092B, mk_iff]
 class WeaklyEtale (R S : Type*) [CommRing R] [CommRing S] [Algebra R S] where
   flat : Module.Flat R S := by infer_instance
