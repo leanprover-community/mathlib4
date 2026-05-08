@@ -8,6 +8,18 @@ module
 public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Jordan
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
 
+
+
+
+
+
+-- TODO: tidy this entire file and then push to the PR branch.
+
+
+
+
+
+
 /-!
 # Equivalence of variation definitions for signed measures
 
@@ -53,21 +65,6 @@ end Finpartition
 namespace MeasureTheory.SignedMeasure
 
 variable {X : Type*} {mX : MeasurableSpace X} (μ : SignedMeasure X)
-
-/-- For a signed measure `μ`, `‖μ s‖ₑ ≤ μ.totalVariation s`. -/
-lemma enorm_le_totalVariation (s : Set X) : ‖μ s‖ₑ ≤ μ.totalVariation s := by
-  by_cases hs : MeasurableSet s; swap
-  · simp [μ.not_measurable' hs]
-  rw [show μ s = (μ.toJordanDecomposition.posPart s).toReal -
-      (μ.toJordanDecomposition.negPart s).toReal from by
-    conv_lhs => rw [← μ.toSignedMeasure_toJordanDecomposition]
-    simp [JordanDecomposition.toSignedMeasure, hs, measureReal_def]]
-  rw [totalVariation, Measure.add_apply, sub_eq_add_neg]
-  refine (enorm_add_le _ _).trans (le_of_eq ?_)
-  rw [enorm_neg, Real.enorm_of_nonneg ENNReal.toReal_nonneg,
-    Real.enorm_of_nonneg ENNReal.toReal_nonneg,
-    ENNReal.ofReal_toReal (measure_ne_top _ _),
-    ENNReal.ofReal_toReal (measure_ne_top _ _)]
 
 /-- For a positive measurable set `i` (i.e. `0 ≤ μ.restrict i`),
 `μ.toMeasureOfZeroLE i _ _ j = ‖μ (i ∩ j)‖ₑ`. -/
@@ -124,7 +121,7 @@ theorem totalVariation_eq_variation (μ : SignedMeasure X) :
       P.pairwiseDisjoint_apply (fun _ _ => rfl) rfl
     calc ∑ p ∈ P.parts, ‖μ p.val‖ₑ
         ≤ ∑ p ∈ P.parts, μ.totalVariation p.val :=
-          Finset.sum_le_sum fun p _ => μ.enorm_le_totalVariation p.val
+          Finset.sum_le_sum fun p _ => SignedMeasure.enorm_le_totalVariation μ p.val
       _ = μ.totalVariation (⋃ p ∈ P.parts, p.val) :=
           (measure_biUnion_finset hdisj fun p _ => p.prop).symm
       _ = μ.totalVariation r := by rw [hcov']
