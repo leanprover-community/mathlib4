@@ -1074,6 +1074,7 @@ def colim : (J ⥤ C) ⥤ C where
   obj F := colimit F
   map α := colimMap α
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural transformation induced by `colimit.ι`. -/
 @[simps]
 def colim.ι (j : J) : (evaluation J C).obj j ⟶ colim where
