@@ -438,10 +438,7 @@ theorem fixingSubgroup_range_algebraMap [Finite G] (A B C : Type*) [CommRing A]
   let : MulSemiringAction G L := IsFractionRing.mulSemiringAction G A C K L
   have : IsGaloisGroup G K L := IsGaloisGroup.toFractionRing G A C
   have : IsGaloisGroup H (FractionRing B) L := IsGaloisGroup.toFractionRing H B C
-  suffices h : fixingSubgroup G (Set.range (algebraMap B C)) =
-               fixingSubgroup G (Set.range (algebraMap (FractionRing B) L)) by
-    rw [h]
-    exact fixingSubgroup_range_algebraMap' G K L H (FractionRing B)
+  rw [← fixingSubgroup_range_algebraMap' G K L H (FractionRing B)]
   ext g
   simp only [mem_fixingSubgroup_iff, Set.mem_range]
   refine ⟨?_, ?_⟩

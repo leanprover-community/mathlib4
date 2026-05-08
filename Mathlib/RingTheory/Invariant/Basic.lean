@@ -557,6 +557,6 @@ theorem isInvariant (G A B K L : Type*) [Group G] [CommRing A] [CommRing B] [Mul
   obtain ⟨b, rfl⟩ := hAB.isInvariant b
     (by simpa [ha, hxy, smul_div₀', ← algebraMap.coe_smul'] using h)
   use algebraMap A K b / algebraMap A K a
-  simp [hc, div_eq_div_iff ha hy', ← map_mul, ← map_mul, hb]
+  rw [hxy, map_div₀, hc, hc]
 
 end IsFractionRing
