@@ -9,6 +9,7 @@ public meta import Lean.Elab.DeclarationRange
 public meta import Lean.Meta.Tactic.Cases
 public meta import Mathlib.Lean.Meta
 public meta import Mathlib.Lean.Name
+public import Mathlib.Init
 
 /-!
 # mk_iff_of_inductive_prop

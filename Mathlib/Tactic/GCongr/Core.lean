@@ -14,6 +14,7 @@ public import Mathlib.Tactic.Core
 public import Mathlib.Tactic.GCongr.ForwardAttr
 
 import all Lean.Meta.Tactic.Apply
+public meta import Mathlib.Tactic.GCongr.ForwardAttr
 
 /-!
 # The `gcongr` ("generalized congruence") tactic

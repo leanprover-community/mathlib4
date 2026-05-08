@@ -5,7 +5,6 @@ Authors: Jeremy Avigad, Wrenna Robson
 -/
 module
 
-public import Batteries.Data.List.Pairwise
 public import Batteries.Data.List.Perm
 public import Mathlib.Data.List.OfFn
 public import Mathlib.Data.List.Nodup

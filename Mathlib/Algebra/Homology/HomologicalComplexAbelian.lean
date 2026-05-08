@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Homology.Additive
 public import Mathlib.Algebra.Homology.HomologicalComplexLimits
-public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 
 /-! # THe category of homological complexes is abelian

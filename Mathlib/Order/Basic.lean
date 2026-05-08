@@ -13,6 +13,7 @@ public import Mathlib.Tactic.Convert
 public import Mathlib.Tactic.Inhabit
 public import Mathlib.Tactic.SimpRw
 public import Mathlib.Tactic.GCongr.Core
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Basic definitions about `≤` and `<`

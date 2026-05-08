@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Group.Pi.Basic
 public import Mathlib.Algebra.Notation.Prod
 public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Dependent functions with finite support

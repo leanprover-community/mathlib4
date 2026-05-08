@@ -6,7 +6,7 @@ Authors: Salvatore Mercuri
 module
 
 public import Mathlib.NumberTheory.NumberField.Completion.LiesOverInstances
-public import Mathlib.NumberTheory.RamificationInertia.Basic
+public import Mathlib.NumberTheory.RamificationInertia.Inertia
 
 /-!
 # Ramification theory of completions of number fields

@@ -13,6 +13,7 @@ public import Mathlib.Data.Multiset.Defs
 public import Mathlib.Data.Fintype.Defs
 public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Group.Int.Defs
+public import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Sign type

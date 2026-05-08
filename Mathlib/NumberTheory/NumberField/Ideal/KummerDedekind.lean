@@ -7,8 +7,9 @@ module
 
 public import Mathlib.NumberTheory.KummerDedekind
 public import Mathlib.NumberTheory.NumberField.Basic
-public import Mathlib.NumberTheory.RamificationInertia.Basic
 public import Mathlib.RingTheory.Ideal.Int
+public import Mathlib.NumberTheory.RamificationInertia.Inertia
+public import Mathlib.NumberTheory.RamificationInertia.Ramification
 
 /-!
 # Kummer-Dedekind criterion for the splitting of prime numbers

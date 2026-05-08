@@ -5,10 +5,10 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Data.Fin.Tuple.Embedding
 public import Mathlib.Data.Finite.Card
 public import Mathlib.Data.Set.Card
+public import Mathlib.Data.Set.Finite.Range
 
 /-! # Existence of embeddings from finite types
 

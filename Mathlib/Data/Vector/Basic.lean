@@ -12,6 +12,7 @@ public import Mathlib.Control.Traversable.Basic
 public import Mathlib.Algebra.BigOperators.Group.List.Basic
 public import Batteries.Data.Fin.Lemmas
 public import Mathlib.Data.Fin.SuccPred
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Additional theorems and definitions about the `Vector` type

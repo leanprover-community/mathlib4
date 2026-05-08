@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Int.Cast.Lemmas
 public import Mathlib.Tactic.NormNum.Basic
+public import Mathlib.Tactic.AdaptationNote
 
 /-!
 ## `norm_num` plugin for `^`.

@@ -6,6 +6,7 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Order.Disjoint
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 

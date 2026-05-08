@@ -5,9 +5,10 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Calculus.FDeriv.Add
 public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.Topology.Algebra.ContinuousAffineMap
+public import Mathlib.Algebra.Order.Field.Power
+public import Mathlib.Analysis.Calculus.FDeriv.Basic
 
 
 /-!

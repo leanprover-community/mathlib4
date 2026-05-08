@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Set.Image
 public import Mathlib.Data.SProd
 public import Mathlib.Data.Sum.Basic
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Sets in product and pi types

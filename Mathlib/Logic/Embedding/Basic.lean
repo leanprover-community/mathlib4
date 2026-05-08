@@ -10,6 +10,7 @@ public import Mathlib.Data.Prod.Basic
 public import Mathlib.Data.Prod.PProd
 public import Mathlib.Data.Sum.Basic
 public import Mathlib.Logic.Equiv.Basic
+public import Mathlib.Logic.IsEmpty.Basic
 
 /-!
 # Injective functions

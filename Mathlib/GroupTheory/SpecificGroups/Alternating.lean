@@ -9,9 +9,9 @@ public import Mathlib.Data.Fintype.Units
 public import Mathlib.GroupTheory.IndexNormal
 public import Mathlib.GroupTheory.Perm.ConjAct
 public import Mathlib.GroupTheory.Perm.Fin
-public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 public import Mathlib.GroupTheory.Subgroup.Simple
 public import Mathlib.Tactic.IntervalCases
+public import Mathlib.Data.Nat.Totient
 
 /-!
 # Alternating Groups
