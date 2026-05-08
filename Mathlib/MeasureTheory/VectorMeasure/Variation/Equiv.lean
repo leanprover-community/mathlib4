@@ -7,44 +7,27 @@ module
 
 public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Jordan
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
-
-
-
-
-
-
--- TODO: tidy this entire file and then push to the PR branch.
-
-
-
-
-
-
 /-!
 # Equivalence of variation definitions for signed measures
 
 For a `SignedMeasure`, two notions of variation are available:
-* the supremum-based `VectorMeasure.variation`, defined in
-  `Mathlib/MeasureTheory/VectorMeasure/Variation/Basic.lean`;
-* the Hahn–Jordan-based `SignedMeasure.totalVariation`, defined in
-  `Mathlib/MeasureTheory/VectorMeasure/Decomposition/Jordan.lean`.
+* the supremum-based `VectorMeasure.variation`,
+* the Hahn–Jordan-based `SignedMeasure.totalVariation`.
 
 This file shows that they coincide.
 
 ## Main results
 
-* `SignedMeasure.enorm_le_totalVariation`: `‖μ s‖ₑ ≤ μ.totalVariation s`.
 * `SignedMeasure.totalVariation_eq_variation`: `μ.totalVariation = μ.variation`.
 
 -/
 
-@[expose] public section
+public section
 
 open scoped ENNReal NNReal
 
--- TODO(mathlib4#26165): the next two `Finpartition` lemmas are scheduled to be added in mathlib
--- PR https://github.com/leanprover-community/mathlib4/pull/26165 . When that PR lands, delete
--- them here and use them directly from `Mathlib/Order/Partition/Finpartition.lean`.
+-- TODO(mathlib4#26165): the following `Finpartition` lemmas are scheduled to be added in
+-- PR https://github.com/leanprover-community/mathlib4/pull/26165 .
 namespace Finpartition
 
 variable {α : Type*} [Lattice α] [OrderBot α] {a : α} (P : Finpartition a)
@@ -88,8 +71,7 @@ lemma toMeasureOfLEZero_apply_eq_enorm {i j : Set X} (him : MeasurableSet i)
 open VectorMeasure in
 /-- For signed measures, the Hahn–Jordan-based `totalVariation` agrees with the supremum-based
 `variation`. -/
-theorem totalVariation_eq_variation (μ : SignedMeasure X) :
-    μ.totalVariation = μ.variation := by
+theorem totalVariation_eq_variation (μ : SignedMeasure X) : μ.totalVariation = μ.variation := by
   ext r hr
   obtain ⟨s, hsm, hs, hsc, hpos, hneg⟩ := μ.toJordanDecomposition_spec
   have hd : Disjoint (s ∩ r) (sᶜ ∩ r) := by
