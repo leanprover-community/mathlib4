@@ -220,8 +220,8 @@ theorem DirSupInacc.of_inter_subset
       ∀ ⦃a : α⦄, IsLUB d a → a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s) : DirSupInacc s :=
   dirSupInaccOn_univ.1 (.of_inter_subset (by simpa))
 
-/-- If `d` is a set whose LUB is contained in a `DirSupInaccOn` set `s`, then `s` contains an entire
-tail of `d`. -/
+/-- The condition `(d ∩ s).Nonempty` in `DirSupInaccOn` can be replaced with the stronger
+`∃ b ∈ d, Ici b ∩ d ⊆ s` (under mild assumptions on `D`). -/
 theorem dirSupInaccOn_iff_inter_subset (hDL : IsLowerSet D) :
     DirSupInaccOn D s ↔ ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d →
       ∀ ⦃a : α⦄, IsLUB d a → a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s where
@@ -241,8 +241,8 @@ theorem dirSupInaccOn_iff_inter_subset (hDL : IsLowerSet D) :
     · exact ⟨upperBounds_mono_set hft ha.1,
         fun b hb ↦ ha.2 fun c hc ↦ (hf ⟨c, hc⟩).1.trans (hb <| by simp)⟩
 
-/-- If `d` is a set whose LUB is contained in a `DirSupInacc` set `s`, then `s` contains an entire
-tail of `d`. -/
+/-- The condition `(d ∩ s).Nonempty` in `DirSupInacc` can be replaced with the stronger
+`∃ b ∈ d, Ici b ∩ d ⊆ s`. -/
 theorem dirSupInacc_iff_inter_subset :
     DirSupInacc s ↔ ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d →
       ∀ ⦃a : α⦄, IsLUB d a → a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s := by
