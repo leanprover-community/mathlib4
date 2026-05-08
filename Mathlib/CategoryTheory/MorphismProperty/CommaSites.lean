@@ -27,7 +27,7 @@ a precoverage `K` on `C`.
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 
