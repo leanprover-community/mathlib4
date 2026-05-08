@@ -12,7 +12,7 @@ public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 # Instances for the range submonoid of a monoid with zero hom
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Ring
 
@@ -52,5 +52,10 @@ instance [GroupWithZero G] [GroupWithZero H] (f : G →*₀ H) :
 
 instance [GroupWithZero G] [CommGroupWithZero H] (f : G →*₀ H) :
     CommGroupWithZero (MonoidHom.mrange f) where
+
+lemma mker_inverse [CommGroupWithZero H] :
+    MonoidHom.mker (MonoidWithZero.inverse (M := H)) = ⊥ := by
+  ext
+  simp
 
 end MonoidWithZeroHom

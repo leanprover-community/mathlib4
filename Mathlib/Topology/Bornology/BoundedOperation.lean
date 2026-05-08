@@ -25,7 +25,7 @@ we can equip bounded continuous functions with the corresponding operations.
 
 -/
 
-@[expose] public section
+public section
 
 open scoped NNReal
 
@@ -34,7 +34,7 @@ section bounded_sub
 ### Bounded subtraction
 -/
 
-open Pointwise
+open scoped Pointwise
 
 /-- A typeclass saying that `(p : R × R) ↦ p.1 - p.2` maps any product of bounded sets to a bounded
 set. This property automatically holds for seminormed additive groups, but it also holds, e.g.,
@@ -75,7 +75,8 @@ section bounded_mul
 ### Bounded multiplication and addition
 -/
 
-open Pointwise Set
+open scoped Pointwise
+open Set
 
 /-- A typeclass saying that `(p : R × R) ↦ p.1 + p.2` maps any product of bounded sets to a bounded
 set. This property follows from `LipschitzAdd`, and thus automatically holds, e.g., for seminormed

@@ -30,7 +30,7 @@ lemma pow_ssubset_pow_succ_of_pow_ne_closure (hX₁ : (1 : G) ∈ X) (hX : X.Non
   · simpa [ssubset_iff_subset_not_subset, hX₁, -Finset.subset_singleton_iff]
       using hX.not_subset_singleton
   refine (pow_subset_pow_right hX₁ <| n.le_add_right _).ssubset_of_ne ?_
-  contrapose! hXclosure with hXn
+  contrapose hXclosure with hXn
   rw [← closure_pow (mod_cast hX₁) hn]
   wlog hn₁ : n = 1
   · simp +contextual only [pow_one] at this

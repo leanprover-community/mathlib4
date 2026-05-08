@@ -29,12 +29,9 @@ public import Mathlib.NumberTheory.TsumDivisorsAntidiagonal
 
 @[expose] public section
 
-open TopologicalSpace Set MeasureTheory intervalIntegral
- Metric Filter Function Complex
-
+open Set Function Complex
 open UpperHalfPlane hiding I
-
-open scoped Interval Real NNReal ENNReal Topology BigOperators Nat
+open scoped Real
 
 local notation "𝕢" => Periodic.qParam
 
@@ -65,25 +62,51 @@ noncomputable def eta (z : ℂ) := 𝕢 24 z * ∏' n, (1 - eta_q n z)
 /-- Notation for the Dedekind eta function. -/
 scoped[ModularForm] notation "η" => eta
 
+/-- For `‖q‖ < 1`, the infinite product `∏ (1 - q^(n+1))` is multipliable. -/
+lemma multipliable_one_sub_pow {q : ℂ} (hq : ‖q‖ < 1) :
+    Multipliable fun n : ℕ ↦ 1 - q ^ (n + 1) := by
+  apply multipliable_one_add_of_summable (f := fun n ↦ -q ^ (n + 1))
+  simpa using (summable_nat_add_iff 1).mpr (summable_geometric_of_lt_one (norm_nonneg _) hq)
+
+/-- The infinite product `∏ (1 - q^(n+1))` converges locally uniformly on the open unit disc,
+with limit `q ↦ ∏' n, (1 - q^(n+1))`. -/
+lemma multipliableLocallyUniformlyOn_one_sub_pow :
+    MultipliableLocallyUniformlyOn (fun n q ↦ 1 - q ^ (n + 1)) (Metric.ball (0 : ℂ) 1) := by
+  use fun q ↦ ∏' n, (1 - q ^ (n + 1))
+  simp_rw [sub_eq_add_neg]
+  apply hasProdLocallyUniformlyOn_of_forall_compact Metric.isOpen_ball
+  intro K hK hcK
+  rcases K.eq_empty_or_nonempty with hN | hN
+  · simpa [hasProdUniformlyOn_iff_tendstoUniformlyOn, hN] using tendstoUniformlyOn_empty
+  · obtain ⟨q₀, hq₀, _, HB⟩ := hcK.exists_sSup_image_eq_and_ge hN
+      (show ContinuousOn (fun q : ℂ ↦ ‖q‖) K by fun_prop)
+    refine ((summable_nat_add_iff 1).mpr (summable_geometric_of_lt_one (norm_nonneg _)
+      (by simpa [Metric.mem_ball, dist_zero_right] using hK hq₀))).hasProdUniformlyOn_nat_one_add
+      hcK (.of_forall fun n x hx ↦ ?_) (fun _ ↦ by fun_prop)
+    simpa using pow_le_pow_left₀ (norm_nonneg _) (HB x hx) (n + 1)
+
+/-- The infinite product `q ↦ ∏' n, (1 - q^(n+1))` is differentiable on the open unit disc. -/
+lemma differentiableOn_tprod_one_sub_pow :
+    DifferentiableOn ℂ (fun q ↦ ∏' n, (1 - q ^ (n + 1))) (Metric.ball (0 : ℂ) 1) :=
+  multipliableLocallyUniformlyOn_one_sub_pow.hasProdLocallyUniformlyOn.differentiableOn
+    (.of_forall fun _ ↦ by simpa [Finset.prod_fn] using
+      DifferentiableOn.finsetProd (fun _ _ ↦ by fun_prop)) Metric.isOpen_ball
+
+/-- For any `k`, the function `q ↦ ∏' n, (1 - q^(n+1))^k` is differentiable on the
+open unit disc. -/
+lemma differentiableOn_tprod_one_sub_pow_pow (k : ℕ) :
+    DifferentiableOn ℂ (fun q ↦ ∏' n, (1 - q ^ (n + 1)) ^ k) (Metric.ball (0 : ℂ) 1) :=
+  (differentiableOn_tprod_one_sub_pow.fun_pow k).congr fun _ hq ↦
+    (multipliable_one_sub_pow (by simpa using hq)).tprod_pow k
+
 theorem summable_eta_q (z : ℍ) : Summable fun n ↦ ‖-eta_q n z‖ := by
-  simp [eta_q, eta_q_eq_pow, summable_nat_add_iff 1, norm_exp_two_pi_I_lt_one z]
+  simpa [summable_nat_add_iff] using
+    summable_geometric_of_lt_one (norm_nonneg _) (mod_cast norm_qParam_lt_one 1 z)
 
 lemma multipliableLocallyUniformlyOn_eta :
-    MultipliableLocallyUniformlyOn (fun n a ↦ 1 - eta_q n a) ℍₒ := by
-  use fun z ↦ ∏' n, (1 - eta_q n z)
-  simp_rw [sub_eq_add_neg]
-  apply hasProdLocallyUniformlyOn_of_forall_compact isOpen_upperHalfPlaneSet
-  intro K hK hcK
-  by_cases hN : K.Nonempty
-  · have hc : ContinuousOn (fun x ↦ ‖cexp (2 * π * I * x)‖) K := by fun_prop
-    obtain ⟨z, hz, hB, HB⟩ := hcK.exists_sSup_image_eq_and_ge hN hc
-    apply (summable_eta_q ⟨z, hK hz⟩).hasProdUniformlyOn_nat_one_add hcK
-    · filter_upwards with n x hx
-      simpa [eta_q, eta_q_eq_pow] using pow_le_pow_left₀ (by simp [norm_nonneg]) (HB x hx) _
-    · simp_rw [eta_q, Periodic.qParam]
-      fun_prop
-  · rw [hasProdUniformlyOn_iff_tendstoUniformlyOn]
-    simpa [not_nonempty_iff_eq_empty.mp hN] using tendstoUniformlyOn_empty
+    MultipliableLocallyUniformlyOn (fun n a ↦ 1 - eta_q n a) ℍₒ :=
+  multipliableLocallyUniformlyOn_one_sub_pow.comp (𝕢 1)
+    (fun z hz ↦ by simpa using norm_qParam_lt_one 1 ⟨z, hz⟩) (by fun_prop)
 
 lemma eta_tprod_ne_zero {z : ℂ} (hz : z ∈ ℍₒ) : ∏' n, (1 - eta_q n z) ≠ 0 := by
   refine tprod_one_add_ne_zero_of_summable (f := fun n ↦ -eta_q n z) ?_ ?_
@@ -110,12 +133,8 @@ private theorem one_sub_eta_logDeriv_eq (z : ℂ) (n : ℕ) :
     logDeriv (1 - eta_q n ·) z = 2 * π * I * (n + 1) * -eta_q n z / (1 - eta_q n z) := by
   have h2 : (fun x ↦ 1 - cexp (2 * ↑π * I * (n + 1) * x)) =
       ((fun z ↦ 1 - 1 * cexp z) ∘ fun x ↦ 2 * ↑π * I * (n + 1) * x) := by aesop
-  have h3 : deriv (fun x : ℂ ↦ (2 * π * I * (n + 1) * x)) =
-      fun _ ↦ 2 * π * I * (n + 1) := by
-    ext y
-    simpa using deriv_const_mul (2 * π * I * (n + 1)) (d := fun (x : ℂ) ↦ x) (x := y)
   simp_rw [eta_q_eq_cexp, h2, logDeriv_one_sub_mul_cexp_comp 1
-    (g := fun x ↦ (2 * π * I * (n + 1) * x)) (by fun_prop), h3]
+    (g := fun x ↦ (2 * π * I * (n + 1) * x)) (by fun_prop), deriv_const_mul_id]
   simp
 
 lemma tsum_logDeriv_eta_q (z : ℂ) : ∑' n, logDeriv (fun x ↦ 1 - eta_q n x) z =
@@ -125,10 +144,9 @@ lemma tsum_logDeriv_eta_q (z : ℂ) : ∑' n, logDeriv (fun x ↦ 1 - eta_q n x)
 
 lemma differentiableAt_eta_tprod {z : ℂ} (hz : z ∈ ℍₒ) :
     DifferentiableAt ℂ (fun x ↦ ∏' n, (1 - eta_q n x)) z := by
-  apply (multipliableLocallyUniformlyOn_eta.hasProdLocallyUniformlyOn.differentiableOn ?_
-    isOpen_upperHalfPlaneSet z hz).differentiableAt (isOpen_upperHalfPlaneSet.mem_nhds hz)
-  filter_upwards with b
-  simpa [Finset.prod_fn] using DifferentiableOn.finset_prod (by fun_prop)
+  have hq : 𝕢 1 z ∈ Metric.ball 0 1 := by simpa using norm_qParam_lt_one 1 ⟨z, hz⟩
+  exact (differentiableOn_tprod_one_sub_pow.differentiableAt
+    (Metric.isOpen_ball.mem_nhds hq)).comp z (by fun_prop)
 
 theorem differentiableAt_eta_of_mem_upperHalfPlaneSet {z : ℂ} (hz : z ∈ ℍₒ) :
     DifferentiableAt ℂ eta z :=
@@ -138,7 +156,7 @@ lemma logDeriv_qParam (h : ℝ) (z : ℂ) : logDeriv (𝕢 h) z = 2 * π * I / h
   have : 𝕢 h = cexp ∘ ((2 * π * I / h) * ·) := by
     ext
     grind [Periodic.qParam]
-  rw [this, logDeriv_comp (by fun_prop) (by fun_prop), deriv_const_mul _ (by fun_prop)]
+  rw [this, logDeriv_comp (by fun_prop) (by fun_prop), deriv_const_mul_id]
   simp [logDeriv_exp]
 
 lemma summable_logDeriv_one_sub_eta_q {z : ℂ} (hz : z ∈ ℍₒ) :

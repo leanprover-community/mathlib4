@@ -18,7 +18,7 @@ which sends `A : Set X` to its underlying type preserves filtered colimits.
 
 -/
 
-@[expose] public section
+public section
 
 universe w w' u
 
@@ -26,6 +26,7 @@ open CategoryTheory Limits CompleteLattice
 
 namespace Set
 
+set_option backward.isDefEq.respectTransparency false in
 open CompleteLattice in
 instance {J : Type w} [Category.{w'} J] {X : Type u} [IsFilteredOrEmpty J] :
     PreservesColimitsOfShape J (functorToTypes (X := X)) where

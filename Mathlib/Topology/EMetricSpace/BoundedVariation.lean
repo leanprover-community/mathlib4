@@ -109,7 +109,7 @@ theorem sum_le_of_monotoneOn_Icc {f : α → E} {s : Set α} {m n : ℕ} {u : �
         simp only [v, π, projIcc_of_mem hmn ⟨hi.1, hi.2.le⟩,
           projIcc_of_mem hmn ⟨hi.1.trans i.le_succ, hi.2⟩]
     _ ≤ ∑ i ∈ Finset.range n, edist (f (v (i + 1))) (f (v i)) :=
-      Finset.sum_mono_set _ (Nat.Iio_eq_range ▸ Finset.Ico_subset_Iio_self)
+      Finset.sum_mono_set _ (Nat.Iio_eq_range n ▸ Finset.Ico_subset_Iio_self)
     _ ≤ eVariationOn f s :=
       sum_le (fun i j h ↦ hu (π i).2 (π j).2 (monotone_projIcc hmn h)) fun i ↦ us _ (π i).2
 
@@ -216,7 +216,7 @@ theorem lowerSemicontinuous_aux {ι : Type*} {F : ι → α → E} {p : Filter �
     lt_iSup_iff.mp hv
   have : Tendsto (fun j => ∑ i ∈ Finset.range n, edist (F j (u (i + 1))) (F j (u i))) p
       (𝓝 (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i)))) := by
-    apply tendsto_finset_sum
+    apply tendsto_finsetSum
     exact fun i _ => Tendsto.edist (Ffs (u i.succ) (us i.succ)) (Ffs (u i) (us i))
   exact (this.eventually_const_lt hlt).mono fun i h => h.trans_le (sum_le um us)
 
@@ -281,7 +281,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
       grind
     · grind [Monotone]
   refine ⟨w, n + 1, hw, by grind, (mem_image _ _ _).2 ⟨N, by grind⟩, ?_⟩
-  rcases eq_or_lt_of_le (zero_le N) with (Npos | Npos)
+  rcases eq_zero_or_pos N with (Npos | Npos)
   · calc
       (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i))) =
           ∑ i ∈ Finset.range n, edist (f (w (1 + i + 1))) (f (w (1 + i))) := by grind
@@ -370,41 +370,15 @@ theorem add_le_union (f : α → E) {s t : Set α} (h : ∀ x ∈ s, ∀ y ∈ t
 the variation of `f` along `s ∪ t` is the sum of the variations. -/
 theorem union (f : α → E) {s t : Set α} {x : α} (hs : IsGreatest s x) (ht : IsLeast t x) :
     eVariationOn f (s ∪ t) = eVariationOn f s + eVariationOn f t := by
-  classical
-  apply le_antisymm _ (eVariationOn.add_le_union f fun a ha b hb => le_trans (hs.2 ha) (ht.2 hb))
-  apply iSup_le _
-  rintro ⟨n, ⟨u, hu, ust⟩⟩
-  obtain ⟨v, m, hv, vst, xv, huv⟩ : ∃ (v : ℕ → α) (m : ℕ),
-    Monotone v ∧ (∀ i, v i ∈ s ∪ t) ∧ x ∈ v '' Iio m ∧
-      (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i))) ≤
-        ∑ j ∈ Finset.range m, edist (f (v (j + 1))) (f (v j)) :=
+  apply (eVariationOn.add_le_union f fun a ha b hb ↦ (hs.2 ha).trans (ht.2 hb)).antisymm'
+  refine iSup_le fun ⟨n, ⟨u, hu, ust⟩⟩ ↦ ?_
+  obtain ⟨v, m, hv, vst, ⟨N, hN, rfl⟩, huv⟩ :=
     eVariationOn.add_point f (mem_union_left t hs.1) u hu ust n
-  obtain ⟨N, hN, Nx⟩ : ∃ N, N < m ∧ v N = x := xv
-  calc
-    (∑ j ∈ Finset.range n, edist (f (u (j + 1))) (f (u j))) ≤
-        ∑ j ∈ Finset.range m, edist (f (v (j + 1))) (f (v j)) :=
-      huv
-    _ = (∑ j ∈ Finset.Ico 0 N, edist (f (v (j + 1))) (f (v j))) +
-          ∑ j ∈ Finset.Ico N m, edist (f (v (j + 1))) (f (v j)) := by
-      rw [Finset.range_eq_Ico, Finset.sum_Ico_consecutive _ (zero_le _) hN.le]
-    _ ≤ eVariationOn f s + eVariationOn f t := by
-      refine add_le_add ?_ ?_
-      · apply sum_le_of_monotoneOn_Icc (hv.monotoneOn _) fun i hi => ?_
-        rcases vst i with (h | h); · exact h
-        have : v i = x := by
-          apply le_antisymm
-          · rw [← Nx]; exact hv hi.2
-          · exact ht.2 h
-        rw [this]
-        exact hs.1
-      · apply sum_le_of_monotoneOn_Icc (hv.monotoneOn _) fun i hi => ?_
-        rcases vst i with (h | h); swap; · exact h
-        have : v i = x := by
-          apply le_antisymm
-          · exact hs.2 h
-          · rw [← Nx]; exact hv hi.1
-        rw [this]
-        exact ht.1
+  apply huv.trans
+  rw [Finset.range_eq_Ico, ← Finset.sum_Ico_consecutive _ zero_le hN.le]
+  apply add_le_add <;> refine sum_le_of_monotoneOn_Icc (hv.monotoneOn _) fun i hi ↦ ?_
+  · exact (vst i).elim id (fun h ↦ (hv hi.2).antisymm (ht.2 h) ▸ hs.1)
+  · exact (vst i).elim (fun h ↦ (hs.2 h).antisymm (hv hi.1) ▸ ht.1) id
 
 theorem Icc_add_Icc (f : α → E) {s : Set α} {a b c : α} (hab : a ≤ b) (hbc : b ≤ c) (hb : b ∈ s) :
     eVariationOn f (s ∩ Icc a b) + eVariationOn f (s ∩ Icc b c) = eVariationOn f (s ∩ Icc a c) := by
@@ -467,9 +441,7 @@ theorem comp_eq_of_monotoneOn (f : α → E) {t : Set β} (φ : β → α) (hφ 
     eVariationOn (f ∘ φ) t = eVariationOn f (φ '' t) := by
   apply le_antisymm (comp_le_of_monotoneOn f φ hφ (mapsTo_image φ t))
   cases isEmpty_or_nonempty β
-  · convert zero_le (_ : ℝ≥0∞)
-    exact eVariationOn.subsingleton f <|
-      (subsingleton_of_subsingleton.image _).anti (surjOn_image φ t)
+  · simp [Set.eq_empty_of_isEmpty]
   let ψ := φ.invFunOn t
   have ψφs : EqOn (φ ∘ ψ) id (φ '' t) := (surjOn_image φ t).rightInvOn_invFunOn
   have ψts : MapsTo ψ (φ '' t) t := (surjOn_image φ t).mapsTo_invFunOn
@@ -502,9 +474,7 @@ theorem comp_eq_of_antitoneOn (f : α → E) {t : Set β} (φ : β → α) (hφ 
     eVariationOn (f ∘ φ) t = eVariationOn f (φ '' t) := by
   apply le_antisymm (comp_le_of_antitoneOn f φ hφ (mapsTo_image φ t))
   cases isEmpty_or_nonempty β
-  · convert zero_le (_ : ℝ≥0∞)
-    exact eVariationOn.subsingleton f <| (subsingleton_of_subsingleton.image _).anti
-      (surjOn_image φ t)
+  · simp [Set.eq_empty_of_isEmpty]
   let ψ := φ.invFunOn t
   have ψφs : EqOn (φ ∘ ψ) id (φ '' t) := (surjOn_image φ t).rightInvOn_invFunOn
   have ψts := (surjOn_image φ t).mapsTo_invFunOn
@@ -1002,8 +972,7 @@ protected theorem edist_zero_of_eq_zero (hf : LocallyBoundedVariationOn f s)
   · rw [edist_comm]
     apply this hf hb ha _ (le_of_not_ge h')
     rw [variationOnFromTo.eq_neg_swap, h, neg_zero]
-  · apply le_antisymm _ (zero_le _)
-    rw [← ENNReal.ofReal_zero, ← h, variationOnFromTo.eq_of_le f s h',
+  · rw [← nonpos_iff_eq_zero, ← ENNReal.ofReal_zero, ← h, variationOnFromTo.eq_of_le f s h',
       ENNReal.ofReal_toReal (hf a b ha hb)]
     apply eVariationOn.edist_le
     exacts [⟨ha, ⟨le_rfl, h'⟩⟩, ⟨hb, ⟨h', le_rfl⟩⟩]

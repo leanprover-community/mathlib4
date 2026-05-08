@@ -37,7 +37,7 @@ TODO: Generalize to ultrametric uniformities
 ultrametric, nonarchimedean
 -/
 
-@[expose] public section
+public section
 
 variable {X : Type*}
 

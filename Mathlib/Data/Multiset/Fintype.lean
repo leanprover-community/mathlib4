@@ -131,7 +131,7 @@ theorem mem_of_mem_toEnumFinset {p : α × ℕ} (h : p ∈ m.toEnumFinset) : p.1
     lia
   exact Nat.le_of_pred_lt (han.trans_lt <| by simpa using hsm hn)
 
-@[mono]
+@[gcongr, mono]
 theorem toEnumFinset_mono {m₁ m₂ : Multiset α} (h : m₁ ≤ m₂) :
     m₁.toEnumFinset ⊆ m₂.toEnumFinset := by
   intro p
@@ -170,9 +170,6 @@ def coeEquiv (m : Multiset α) : m ≃ m.toEnumFinset where
 theorem toEmbedding_coeEquiv_trans (m : Multiset α) :
     m.coeEquiv.toEmbedding.trans (Function.Embedding.subtype _) = m.coeEmbedding := by ext <;> rfl
 
-#adaptation_note /-- Before https://github.com/leanprover/lean4/pull/12247
-this was `@[irreducible]`, which is no longer allowed at the definition site,
-and must be applied afterwards. -/
 instance fintypeCoe : Fintype m :=
   Fintype.ofEquiv m.toEnumFinset m.coeEquiv.symm
 

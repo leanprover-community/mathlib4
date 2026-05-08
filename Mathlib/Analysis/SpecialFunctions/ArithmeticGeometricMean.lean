@@ -256,7 +256,7 @@ lemma agmSequences_fst_lt_agm_of_pos_of_ne (hx : 0 < x) (hy : 0 < y) (hn : x ≠
   set q := (agmSequences x y n).2
   apply (?_ : p < sqrt (p * q)).trans_le (agmSequences_fst_le_agm 0)
   have ppos : 0 < p :=
-    (show 0 < sqrt (x * y) by positivity).trans_le (agmSequences_fst_monotone (zero_le n))
+    (show 0 < sqrt (x * y) by positivity).trans_le (agmSequences_fst_monotone zero_le)
   have plq : p < q := agmSequences_fst_lt_snd_of_ne hn ..
   nth_rw 1 [← mul_self_sqrt p, sqrt_mul]
   gcongr

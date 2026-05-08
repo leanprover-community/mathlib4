@@ -49,18 +49,13 @@ def prodComonad : Comonad C where
   ε := { app := fun _ => Limits.prod.snd }
   δ := { app := fun _ => prod.lift Limits.prod.fst (𝟙 _) }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The forward direction of the equivalence from coalgebras for the product comonad to the over
 category.
 -/
 @[simps]
 def coalgebraToOver : Coalgebra (prodComonad X) ⥤ Over X where
   obj A := Over.mk (A.a ≫ Limits.prod.fst)
-  map f :=
-    Over.homMk f.f
-      (by
-        rw [Over.mk_hom, ← f.h_assoc]
-        simp)
+  map f := Over.homMk f.f (by simp [← dsimp% f.h_assoc])
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The backward direction of the equivalence from coalgebras for the product comonad to the over
@@ -99,18 +94,13 @@ def coprodMonad : Monad C where
   η := { app := fun _ => coprod.inr }
   μ := { app := fun _ => coprod.desc coprod.inl (𝟙 _) }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The forward direction of the equivalence from algebras for the coproduct monad to the under
 category.
 -/
 @[simps]
 def algebraToUnder : Monad.Algebra (coprodMonad X) ⥤ Under X where
   obj A := Under.mk (coprod.inl ≫ A.a)
-  map f :=
-    Under.homMk f.f
-      (by
-        rw [Under.mk_hom, Category.assoc, ← f.h]
-        simp)
+  map f := Under.homMk f.f (by simp [← dsimp% f.h])
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The backward direction of the equivalence from algebras for the coproduct monad to the under

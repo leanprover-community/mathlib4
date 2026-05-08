@@ -36,7 +36,7 @@ approximated by a *separable* polynomial.
 Normed field, algebraically closedness
 -/
 
-@[expose] public section
+public section
 
 open Polynomial
 

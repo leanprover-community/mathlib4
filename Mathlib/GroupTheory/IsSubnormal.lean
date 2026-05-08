@@ -44,7 +44,7 @@ We show the equivalence of the current definition with the existence of chains i
 
 variable {G : Type*} [Group G] {H K : Subgroup G}
 
-@[expose] public section
+public section
 
 namespace Subgroup
 

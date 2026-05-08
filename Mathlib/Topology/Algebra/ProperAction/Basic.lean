@@ -216,8 +216,8 @@ lemma ProperSMul.isProperMap_smul_pair_set [ProperSMul G X] {t : Set X} :
     IsProperMap (fun (gx : G × t) ↦ ((gx.1 • gx.2, gx.2) : X × t)) := by
   let Φ : G × X → X × X := fun gx ↦ (gx.1 • gx.2, gx.2)
   have Φ_proper : IsProperMap Φ := ProperSMul.isProperMap_smul_pair
-  let α : G × t ≃ₜ (Φ ⁻¹' (snd ⁻¹' t)) :=
-    have : univ ×ˢ t = Φ ⁻¹' (snd ⁻¹' t) := by ext; simp [Φ]
+  let α : G × t ≃ₜ (Φ ⁻¹' snd ⁻¹' t) :=
+    have : univ ×ˢ t = Φ ⁻¹' snd ⁻¹' t := by ext; simp [Φ]
     Homeomorph.Set.univ G |>.symm.prodCongr (.refl t) |>.trans
       ((Homeomorph.Set.prod _ t).symm) |>.trans (Homeomorph.setCongr this)
   let β : X × t ≃ₜ (snd ⁻¹' t) :=
@@ -225,7 +225,7 @@ lemma ProperSMul.isProperMap_smul_pair_set [ProperSMul G X] {t : Set X} :
       ((Homeomorph.Set.prod _ t).symm) |>.trans (Homeomorph.setCongr univ_prod)
   exact β.symm.isProperMap.comp (Φ_proper.restrictPreimage (snd ⁻¹' t)) |>.comp α.isProperMap
 
-open Pointwise in
+open scoped Pointwise in
 /-- If `G` acts on `X` properly, the set `s • t` is closed when `s : Set G` is *closed* and
 `t : Set X` is *compact*.
 
@@ -242,7 +242,7 @@ theorem IsClosed.smul_right_of_isCompact [ProperSMul G X] {s : Set G} {t : Set X
     (ht : IsCompact t) : IsClosed (s • t) := by
   let Ψ : G × t → X × t := fun gx ↦ (gx.1 • gx.2, gx.2)
   have Ψ_proper : IsProperMap Ψ := ProperSMul.isProperMap_smul_pair_set
-  have : s • t = (fst ∘ Ψ) '' (fst ⁻¹' s) :=
+  have : s • t = (fst ∘ Ψ) '' fst ⁻¹' s :=
     subset_antisymm
       (smul_subset_iff.mpr fun g hg x hx ↦ mem_image_of_mem (fst ∘ Ψ) (x := ⟨g, ⟨x, hx⟩⟩) hg)
       (image_subset_iff.mpr fun ⟨g, ⟨x, hx⟩⟩ hg ↦ smul_mem_smul hg hx)
@@ -256,7 +256,7 @@ but such a lemma can't be true in this level of generality. For a counterexample
 closed and `t` is compact, but `s +ᵥ t` is the set of all rationals, which is definitely not
 closed in `ℝ`. -/
 
-open Pointwise in
+open scoped Pointwise in
 /-- If `G` acts properly on `X`, then for each pair of compacts `U, V ⊆ X`,
 the set of `g` such that `g • U` intersects `V` is compact.
 

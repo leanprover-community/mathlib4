@@ -13,7 +13,7 @@ public import Mathlib.Data.Nat.Cast.Defs
 # Order of numerals in an `AddMonoidWithOne`.
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*}
 

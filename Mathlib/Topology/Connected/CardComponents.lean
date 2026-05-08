@@ -23,7 +23,7 @@ Let `f : X → Y` be an open and closed map.
   with finite fibers and `Y` has finitely many connected components, so does `X`.
 -/
 
-@[expose] public section
+public section
 
 open scoped Function
 
@@ -79,8 +79,8 @@ connected components, so does `X`. -/
 lemma IsOpenMap.finite_connectedComponents_of_finite_preimage_singleton
     [Finite (ConnectedComponents Y)] (hfc : Continuous f) (h : ∀ y, (f ⁻¹' {y}).Finite) :
     Finite (ConnectedComponents X) := by
-  suffices h : ∀ (y : ConnectedComponents Y), Finite (ConnectedComponents (f ⁻¹' (mk ⁻¹' {y}))) by
-    refine .of_equiv _ (equivOfIsClopen (U := fun y ↦ f ⁻¹' (mk ⁻¹' {y})) ?_ ?_ ?_).symm
+  suffices h : ∀ (y : ConnectedComponents Y), Finite (ConnectedComponents (f ⁻¹' mk ⁻¹' {y})) by
+    refine .of_equiv _ (equivOfIsClopen (U := fun y ↦ f ⁻¹' mk ⁻¹' {y}) ?_ ?_ ?_).symm
     · exact fun y ↦ (isClopen_discrete {y}).preimage (continuous_coe.comp hfc)
     · exact fun i j hij ↦ (Disjoint.preimage mk (by simpa)).preimage f
     · rw [Set.iUnion_eq_univ_iff]

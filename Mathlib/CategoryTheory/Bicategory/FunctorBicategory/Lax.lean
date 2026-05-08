@@ -113,7 +113,7 @@ def whiskerLeft (η : F ⟶ G) {θ ι : G ⟶ H} (Γ : θ ⟶ ι) : η ≫ θ �
       dsimp only [comp_app, comp_naturality]
       calc
         _ = 𝟙 _ ⊗≫ ((F.map f ≫ η.app b) ◁ Γ.as.app b ≫ η.naturality f ▷ ι.app b) ⊗≫
-            η.app a ◁ ι.naturality f ⊗≫ 𝟙 _  := by
+            η.app a ◁ ι.naturality f ⊗≫ 𝟙 _ := by
           bicategory
         _ = 𝟙 _ ⊗≫ η.naturality f ▷ θ.app b ⊗≫ η.app a ◁ (G.map f ◁ Γ.as.app b ≫
             ι.naturality f) ⊗≫ 𝟙 _ := by

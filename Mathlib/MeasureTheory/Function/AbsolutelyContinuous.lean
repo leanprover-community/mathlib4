@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.BoundedVariation
 public import Mathlib.Order.SuccPred.IntervalSucc
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+public import Mathlib.Analysis.Calculus.ContDiff.RCLike
 
 /-!
 # Absolutely Continuous Functions
@@ -32,9 +33,10 @@ We use the filter version to prove that absolutely continuous functions are clos
 * scalar multiplication - `AbsolutelyContinuousOnInterval.const_smul`,
   `AbsolutelyContinuousOnInterval.const_mul`;
 * multiplication - `AbsolutelyContinuousOnInterval.smul`,
-`AbsolutelyContinuousOnInterval.mul`;
+  `AbsolutelyContinuousOnInterval.mul`;
+
 and that absolutely continuous implies uniformly continuous in
-`AbsolutelyContinuousOnInterval.uniformContinuousOn`
+`AbsolutelyContinuousOnInterval.uniformContinuousOn`.
 
 We use the `ε`-`δ` definition to prove that
 * Lipschitz continuous functions are absolutely continuous -
@@ -67,11 +69,11 @@ namespace AbsolutelyContinuousOnInterval
 function that maps the finite sequence of the intervals to the total length of the intervals.
 Details:
 1. Technically the filter is on `ℕ × (ℕ → X × X)`. A finite sequence `uIoc (a i) (b i)`, `i < n`
-is represented by any `E : ℕ × (ℕ → X × X)` which satisfies `E.1 = n` and `E.2 i = (a i, b i)` for
-`i < n`. Its total length is `∑ i ∈ Finset.range n, dist (a i) (b i)`.
+   is represented by any `E : ℕ × (ℕ → X × X)` which satisfies `E.1 = n` and `E.2 i = (a i, b i)`
+   for `i < n`. Its total length is `∑ i ∈ Finset.range n, dist (a i) (b i)`.
 2. For a sequence `G : ℕ → ℕ × (ℕ → X × X)`, convergence of `G` along `totalLengthFilter` means that
-the total length of `G j`, i.e., `∑ i ∈ Finset.range (G j).1, dist ((G j).2 i).1 ((G j).2 i).2)`,
-tends to `0` as `j` tends to infinity.
+   the total length of `G j`, i.e., `∑ i ∈ Finset.range (G j).1, dist ((G j).2 i).1 ((G j).2 i).2)`,
+   tends to `0` as `j` tends to infinity.
 -/
 def totalLengthFilter : Filter (ℕ × (ℕ → X × X)) := Filter.comap
   (fun E ↦ ∑ i ∈ Finset.range E.1, dist (E.2 i).1 (E.2 i).2) (𝓝 0)
@@ -305,6 +307,13 @@ theorem _root_.LipschitzOnWith.absolutelyContinuousOnInterval {f : ℝ → X} {K
     _ ≤ K * (ε / (K + 1)) := by gcongr
     _ < (K + 1) * (ε / (K + 1)) := by gcongr; linarith
     _ = ε := by field
+
+/-- If `f` is `C^1` on `uIcc a b`, then `f` is absolutely continuous on `uIcc a b`. -/
+theorem _root_.ContDiffOn.absolutelyContinuousOnInterval {E : Type*} [NormedAddCommGroup E]
+    [NormedSpace ℝ E] {f : ℝ → E} (hf : ContDiffOn ℝ 1 f (uIcc a b)) :
+    AbsolutelyContinuousOnInterval f a b := by
+  obtain ⟨K, hK⟩ := hf.exists_lipschitzOnWith (by decide) (convex_Icc _ _) isCompact_Icc
+  exact hK.absolutelyContinuousOnInterval
 
 /-- If `f` is absolutely continuous on `uIcc a b`, then `f` has bounded variation on `uIcc a b`. -/
 theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :

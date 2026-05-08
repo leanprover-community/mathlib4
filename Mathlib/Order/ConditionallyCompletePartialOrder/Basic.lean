@@ -19,7 +19,7 @@ unnecessary. Otherwise the names here share the same names as their counterparts
 `Mathlib/Order/ConditionallyCompleteLattice/Basic.lean`.
 
 -/
-@[expose] public section
+public section
 
 -- Guard against import creep
 assert_not_exists Multiset

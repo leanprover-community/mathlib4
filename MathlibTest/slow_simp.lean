@@ -59,10 +59,5 @@ def PointedSpaceEquiv_inverse : Under (TopCat.of Unit) ⥤ PointedSpace where
     base := X.hom () }
   map := fun f =>
   { map := f.right.hom
-    base := by
-      have := f.w
-      replace this := CategoryTheory.congr_fun this ()
-      simp [-Under.w] at this
-      simp
-      exact this.symm }
+    base := CategoryTheory.congr_fun f.w () }
   map_comp := by intros; simp_all; rfl -- This is the slow step.

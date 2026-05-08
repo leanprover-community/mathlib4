@@ -24,7 +24,7 @@ We introduce the notation `⁅x, y⁆` for the `bracket` of any `Bracket` struct
 these are the Unicode "square with quill" brackets rather than the usual square brackets.
 -/
 
-@[expose] public section
+public section
 
 /-- The `Bracket` class has three intended uses:
   1. for certain binary operations on structures, like the product `⁅x, y⁆` of two elements
@@ -33,7 +33,8 @@ these are the Unicode "square with quill" brackets rather than the usual square 
     of a Lie algebra on an element `m` in one of its modules (analogous to `SMul` in the
     associative setting).
   3. for binary operations on substructures, like the commutator `⁅H, K⁆` of two subgroups `H` and
-     `K` of a group. -/
+     `K` of a group.
+-/
 class Bracket (L M : Type*) where
   /-- `⁅x, y⁆` is the result of a bracket operation on elements `x` and `y`.
   It is supported by the `Bracket` typeclass. -/

@@ -33,8 +33,7 @@ consisting of all `f : V ⟶ U` such that the restriction of `s` along `f` is in
 def sieveOfSection {U : Cᵒᵖ} (s : F.obj U) : Sieve (unop U) where
   arrows V f := F.map f.op s ∈ G.obj (op V)
   downward_closed := @fun V W i hi j => by
-    simp only [op_unop, op_comp, FunctorToTypes.map_comp_apply]
-    exact G.map _ hi
+    simpa using G.map _ hi
 
 /-- Given an `F`-section `s` on `U` and a subpresheaf `G`, we may define a family of elements in
 `G` consisting of the restrictions of `s` -/
@@ -46,7 +45,7 @@ theorem family_of_elements_compatible {U : Cᵒᵖ} (s : F.obj U) :
   intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ e
   refine Subtype.ext ?_ -- Porting note: `ext1` does not work here
   change F.map g₁.op (F.map f₁.op s) = F.map g₂.op (F.map f₂.op s)
-  rw [← FunctorToTypes.map_comp_apply, ← FunctorToTypes.map_comp_apply, ← op_comp, ← op_comp, e]
+  rw [← comp_apply, ← Functor.map_comp, ← comp_apply, ← Functor.map_comp, ← op_comp, ← op_comp, e]
 
 @[deprecated (since := "2025-12-11")] alias Subpresheaf.sieveOfSection := sieveOfSection
 @[deprecated (since := "2025-12-11")] alias Subpresheaf.familyOfElementsOfSection :=

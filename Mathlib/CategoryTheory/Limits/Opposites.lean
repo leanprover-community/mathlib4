@@ -18,7 +18,7 @@ We construct limits and colimits in the opposite categories.
 @[expose] public section
 
 
-universe v₁ v₂ u₁ u₂
+universe w v₁ v₂ u₁ u₂
 
 noncomputable section
 
@@ -509,11 +509,25 @@ theorem hasColimits_of_hasLimits_op [HasLimitsOfSize.{v₂, u₂} Cᵒᵖ] :
     HasColimitsOfSize.{v₂, u₂} C :=
   { has_colimits_of_shape := fun _ _ => hasColimitsOfShape_of_hasLimitsOfShape_op }
 
+lemma hasColimitsOfSize_opposite_iff :
+    HasColimitsOfSize.{v₂, u₂} Cᵒᵖ ↔ HasLimitsOfSize.{v₂, u₂} C :=
+  ⟨fun _ ↦ hasLimits_of_hasColimits_op, fun _ ↦ inferInstance⟩
+
+lemma hasLimitsOfSize_opposite_iff :
+    HasLimitsOfSize.{v₂, u₂} Cᵒᵖ ↔ HasColimitsOfSize.{v₂, u₂} C :=
+  ⟨fun _ ↦ hasColimits_of_hasLimits_op, fun _ ↦ inferInstance⟩
+
 instance hasFiniteColimits_opposite [HasFiniteLimits C] : HasFiniteColimits Cᵒᵖ :=
   ⟨fun _ _ _ => hasColimitsOfShape_op_of_hasLimitsOfShape⟩
 
 instance hasFiniteLimits_opposite [HasFiniteColimits C] : HasFiniteLimits Cᵒᵖ :=
   ⟨fun _ _ _ => hasLimitsOfShape_op_of_hasColimitsOfShape⟩
+
+lemma hasFiniteLimits_opposite_iff : HasFiniteLimits Cᵒᵖ ↔ HasFiniteColimits C :=
+  ⟨fun _ ↦ ⟨fun _ _ _ ↦ hasColimitsOfShape_of_hasLimitsOfShape_op⟩, fun _ ↦ inferInstance⟩
+
+lemma hasFiniteColimits_opposite_iff : HasFiniteColimits Cᵒᵖ ↔ HasFiniteLimits C :=
+  ⟨fun _ ↦ ⟨fun _ _ _ ↦ hasLimitsOfShape_of_hasColimitsOfShape_op⟩, fun _ ↦ inferInstance⟩
 
 lemma hasColimit_op_iff_hasLimit {F : J ⥤ C} : HasColimit F.op ↔ HasLimit F :=
   ⟨fun _ ↦ hasLimit_of_hasColimit_op F, fun _ ↦ inferInstance⟩
@@ -532,5 +546,71 @@ lemma hasLimit_leftOp_iff_hasColimit {F : J ⥤ Cᵒᵖ} : HasLimit F.leftOp ↔
 
 lemma hasLimit_rightOp_iff_hasColimit {F : Jᵒᵖ ⥤ C} : HasLimit F.rightOp ↔ HasColimit F :=
   ⟨fun _ ↦ hasColimit_of_hasLimit_rightOp F, fun _ ↦ inferInstance⟩
+
+lemma hasLimitsOfShape_opposite_iff : HasLimitsOfShape J Cᵒᵖ ↔ HasColimitsOfShape Jᵒᵖ C := by
+  refine ⟨fun _ ↦ ?_, fun _ ↦ inferInstance⟩
+  have : HasLimitsOfShape Jᵒᵖᵒᵖ Cᵒᵖ := hasLimitsOfShape_of_equivalence (opOpEquivalence J).symm
+  exact hasColimitsOfShape_of_hasLimitsOfShape_op
+
+lemma hasColimitsOfShape_opposite_iff : HasColimitsOfShape J Cᵒᵖ ↔ HasLimitsOfShape Jᵒᵖ C := by
+  refine ⟨fun _ ↦ ?_, fun _ ↦ inferInstance⟩
+  have : HasColimitsOfShape Jᵒᵖᵒᵖ Cᵒᵖ := hasColimitsOfShape_of_equivalence (opOpEquivalence J).symm
+  exact hasLimitsOfShape_of_hasColimitsOfShape_op
+
+lemma hasLimitsOfShape_opposite_opposite_iff :
+    HasLimitsOfShape Jᵒᵖ Cᵒᵖ ↔ HasColimitsOfShape J C := by
+  refine ⟨fun _ ↦ hasColimitsOfShape_of_hasLimitsOfShape_op, fun _ ↦ ?_⟩
+  have : HasColimitsOfShape Jᵒᵖᵒᵖ C := hasColimitsOfShape_of_equivalence (opOpEquivalence J).symm
+  exact hasLimitsOfShape_op_of_hasColimitsOfShape
+
+lemma hasColimitsOfShape_opposite_opposite_iff :
+    HasColimitsOfShape Jᵒᵖ Cᵒᵖ ↔ HasLimitsOfShape J C := by
+  refine ⟨fun _ ↦ hasLimitsOfShape_of_hasColimitsOfShape_op, fun _ ↦ ?_⟩
+  have : HasLimitsOfShape Jᵒᵖᵒᵖ C := hasLimitsOfShape_of_equivalence (opOpEquivalence J).symm
+  exact hasColimitsOfShape_op_of_hasLimitsOfShape
+
+instance [HasWidePullbacks.{w} C] : HasWidePushouts.{w} Cᵒᵖ := by
+  intro ι
+  rw [hasColimitsOfShape_opposite_iff]
+  exact hasLimitsOfShape_of_equivalence (widePushoutShapeOpEquiv _).symm
+
+instance [HasWidePushouts.{w} C] : HasWidePullbacks.{w} Cᵒᵖ := by
+  intro ι
+  rw [hasLimitsOfShape_opposite_iff]
+  exact hasColimitsOfShape_of_equivalence (widePullbackShapeOpEquiv _).symm
+
+lemma hasWidePullbacks_opposite_iff :
+    HasWidePullbacks.{w} Cᵒᵖ ↔ HasWidePushouts.{w} C := by
+  refine ⟨fun h ι ↦ ?_, fun _ ↦ inferInstance⟩
+  rw [← hasLimitsOfShape_opposite_opposite_iff]
+  exact hasLimitsOfShape_of_equivalence (widePushoutShapeOpEquiv _).symm
+
+lemma hasWidePushouts_opposite_iff :
+    HasWidePushouts.{w} Cᵒᵖ ↔ HasWidePullbacks.{w} C := by
+  refine ⟨fun h ι ↦ ?_, fun _ ↦ inferInstance⟩
+  rw [← hasColimitsOfShape_opposite_opposite_iff]
+  exact hasColimitsOfShape_of_equivalence (widePullbackShapeOpEquiv _).symm
+
+instance [HasFiniteWidePullbacks C] : HasFiniteWidePushouts Cᵒᵖ := by
+  refine ⟨fun J _ ↦ ?_⟩
+  rw [hasColimitsOfShape_opposite_iff]
+  exact hasLimitsOfShape_of_equivalence (widePushoutShapeOpEquiv _).symm
+
+instance [HasFiniteWidePushouts C] : HasFiniteWidePullbacks Cᵒᵖ := by
+  refine ⟨fun J _ ↦ ?_⟩
+  rw [hasLimitsOfShape_opposite_iff]
+  exact hasColimitsOfShape_of_equivalence (widePullbackShapeOpEquiv _).symm
+
+lemma hasFiniteWidePullbacks_opposite_iff :
+    HasFiniteWidePullbacks Cᵒᵖ ↔ HasFiniteWidePushouts C := by
+  refine ⟨fun h ↦ ⟨fun J _ ↦ ?_⟩, fun _ ↦ inferInstance⟩
+  rw [← hasLimitsOfShape_opposite_opposite_iff]
+  exact hasLimitsOfShape_of_equivalence (widePushoutShapeOpEquiv _).symm
+
+lemma hasFiniteWidePushouts_opposite_iff :
+    HasFiniteWidePushouts Cᵒᵖ ↔ HasFiniteWidePullbacks C := by
+  refine ⟨fun h ↦ ⟨fun J _ ↦ ?_⟩, fun _ ↦ inferInstance⟩
+  rw [← hasColimitsOfShape_opposite_opposite_iff]
+  exact hasColimitsOfShape_of_equivalence (widePullbackShapeOpEquiv _).symm
 
 end CategoryTheory.Limits

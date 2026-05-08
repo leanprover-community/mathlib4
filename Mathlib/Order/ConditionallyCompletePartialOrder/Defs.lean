@@ -40,7 +40,7 @@ required to add and maintain the infimum version is minimal.
 
 -/
 
-@[expose] public section
+public section
 
 variable {ι : Sort*} {α : Type*}
 
@@ -63,11 +63,14 @@ class ConditionallyCompletePartialOrderSup (α : Type*)
   isLUB_csSup_of_directed :
     ∀ s, DirectedOn (· ≤ ·) s → s.Nonempty → BddAbove s → IsLUB s (sSup s)
 
-/-- Conditionally complete partial orders (with suprema and infimae) are partial orders
+/-- Conditionally complete partial orders (with suprema and infima) are partial orders
 where every nonempty, directed set which is bounded above (respectively, below) has a
 least upper (respectively, greatest lower) bound. -/
 class ConditionallyCompletePartialOrder (α : Type*)
     extends ConditionallyCompletePartialOrderSup α, ConditionallyCompletePartialOrderInf α where
+
+attribute [to_dual existing]
+  ConditionallyCompletePartialOrder.toConditionallyCompletePartialOrderSup
 
 variable [ConditionallyCompletePartialOrderSup α]
 variable {f : ι → α} {s : Set α} {a : α}

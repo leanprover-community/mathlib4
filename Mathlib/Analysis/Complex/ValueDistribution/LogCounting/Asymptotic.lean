@@ -27,7 +27,7 @@ Establish the analogous characterization of meromorphic functions with finite se
 functions whose logarithmic counting function is big-O of `log`.
 -/
 
-@[expose] public section
+public section
 
 open Asymptotics Filter Function Real Set
 

@@ -99,8 +99,10 @@ theorem one_left (x : M) : SemiconjBy 1 x x :=
 generally, on `MulOneClass` type) is reflexive. -/
 @[to_additive /-- The relation “there exists an element that semiconjugates `a` to `b`” on an
 additive monoid (or, more generally, on an `AddZeroClass` type) is reflexive. -/]
-protected theorem reflexive : Reflexive fun a b : M ↦ ∃ c, SemiconjBy c a b
-  | a => ⟨1, one_left a⟩
+protected theorem refl : Std.Refl fun a b : M ↦ ∃ c, SemiconjBy c a b where
+  refl a := ⟨1, one_left a⟩
+
+@[deprecated (since := "2026-03-27")] protected alias reflexive := SemiconjBy.refl
 
 end MulOneClass
 

@@ -12,7 +12,7 @@ public import Mathlib.GroupTheory.GroupAction.ConjAct
 # Conjugation action of a group with zero on itself
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Ring
 

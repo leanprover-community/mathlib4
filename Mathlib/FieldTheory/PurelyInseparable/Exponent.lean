@@ -213,7 +213,7 @@ theorem elemExponent_le_exponent [HasExponent K L] (a : L) :
   elemExponent_le_of_pow_mem <| exponent_def K a
 
 variable {K} in
-instance hasExponent_of_finiteDimensional [IsPurelyInseparable K L] [FiniteDimensional K L] :
+instance hasExponent_of_finiteDimensional [FiniteDimensional K L] :
     HasExponent K L := by
   let ⟨p, _⟩ := ExpChar.exists K
   rcases ‹ExpChar K p› with _ | ⟨hp⟩

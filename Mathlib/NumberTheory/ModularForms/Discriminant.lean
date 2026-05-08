@@ -11,6 +11,7 @@ public import Mathlib.NumberTheory.ModularForms.DedekindEta
 public import Mathlib.NumberTheory.ModularForms.Basic
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Transform
 public import Mathlib.NumberTheory.ModularForms.LevelOne
+public import Mathlib.NumberTheory.ModularForms.QExpansion
 
 /-!
 # The modular discriminant Δ
@@ -21,7 +22,7 @@ function, and proves its key properties including invariance under the generator
 ## Main definitions
 
 * `ModularForm.discriminant`: The modular discriminant function `Δ(z) = η(z) ^ 24`, which can also
-be expressed as `q * ∏' (1 - q ^ (n + 1)) ^ 24` where `q = e ^ (2πiz)`.
+  be expressed as `q * ∏' (1 - q ^ (n + 1)) ^ 24` where `q = e ^ (2πiz)`.
 
 ## Main results
 
@@ -35,11 +36,11 @@ be expressed as `q * ∏' (1 - q ^ (n + 1)) ^ 24` where `q = e ^ (2πiz)`.
 * [F. Diamond and J. Shurman, *A First Course in Modular Forms*][diamondshurman2005], section 1.2
 -/
 
-open Function Complex Topology Filter SlashInvariantForm CongruenceSubgroup MatrixGroups
+open Function Complex SlashInvariantForm MatrixGroups Filter
 
 open UpperHalfPlane hiding I
 
-open scoped Real
+open scoped Real Topology
 
 noncomputable section
 
@@ -149,18 +150,18 @@ lemma discriminant_S_invariant : (Δ ∣[(12 : ℤ)] ModularGroup.S) = Δ := by
   simp only [he, mul_pow, mul_pow, inv_pow, csqrt_I_pow_24, csqrt_pow_24_eq (ne_zero z)]
   field_simp [z.ne_zero]
 
-lemma discriminant_bounded_factor :
+lemma tendsto_atImInfty_tprod_one_sub_eta_q_pow :
     Tendsto (fun x : ℍ ↦ ∏' (n : ℕ), (1 - eta_q n x) ^ 24) atImInfty (𝓝 1) := by
   have htprod : Tendsto (fun q : ℂ ↦ ∏' (n : ℕ), (1 - q ^ (n + 1))) (𝓝 0) (𝓝 1) := by
     have := tendsto_tprod_one_add_of_dominated_convergence (𝓕 := 𝓝 0) (g := 0)
       (f := fun (q : ℂ) (n : ℕ) ↦ -q ^ (n + 1)) (bound := fun n ↦ (1 / 2 : ℝ) ^ (n + 1))
     simp only [Pi.zero_apply, norm_neg, norm_pow, add_zero, tprod_one] at this
     simp_rw [sub_eq_add_neg]
-    apply this
-    · simpa only [pow_succ'] using (summable_geometric_of_abs_lt_one (by norm_num)).mul_left _
-    · exact fun k ↦ by simpa using ((continuous_pow (M := ℂ) (k + 1)).tendsto 0).neg
-    · filter_upwards [Metric.ball_mem_nhds (0 : ℂ) (by norm_num : (0 : ℝ) < 1 / 2)] with q hq k
-      exact pow_le_pow_left₀ (norm_nonneg _) (mem_ball_zero_iff.mp hq).le _
+    refine this
+      (by simpa only [pow_succ'] using (summable_geometric_of_abs_lt_one (by norm_num)).mul_left _)
+      (fun k ↦ by simpa using ((continuous_pow (M := ℂ) (k + 1)).tendsto 0).neg) ?_
+    filter_upwards [Metric.ball_mem_nhds (0 : ℂ) (by norm_num : (0 : ℝ) < 1 / 2)] with q hq k
+    exact pow_le_pow_left₀ (norm_nonneg _) (mem_ball_zero_iff.mp hq).le _
   have := (htprod.comp (UpperHalfPlane.qParam_tendsto_atImInfty zero_lt_one)).pow 24
   simp only [Periodic.qParam, ofReal_one, div_one, comp_apply, one_pow, eta_q] at *
   convert this using 2 with τ
@@ -168,14 +169,43 @@ lemma discriminant_bounded_factor :
   apply (multipliableLocallyUniformlyOn_eta.multipliable τ.2).congr
   simp [eta_q, Periodic.qParam, ← exp_nat_mul]
 
+@[deprecated (since := "2026-04-30")]
+alias discriminant_bounded_factor := tendsto_atImInfty_tprod_one_sub_eta_q_pow
+
 lemma discriminant_isZeroAtImInfty : IsZeroAtImInfty Δ := by
   apply Tendsto.congr (fun z ↦ (discriminant_eq_q_prod z).symm)
   rw [show (0 : ℂ) = 0 * 1 by ring]
   exact (qParam_tendsto_atImInfty zero_lt_one).mul
-    (discriminant_bounded_factor.congr fun z ↦ by congr 1)
+    (tendsto_atImInfty_tprod_one_sub_eta_q_pow.congr fun z ↦ by congr 1)
+
+lemma exp_isBigO_discriminant : (fun τ ↦ Real.exp (-2 * π * τ.im)) =O[atImInfty] Δ := by
+  refine .of_bound 2 ?_
+  have hprod := tendsto_atImInfty_tprod_one_sub_eta_q_pow.eventually
+    (Metric.ball_mem_nhds 1 (by norm_num : (0 : ℝ) < 1/2))
+  filter_upwards [hprod] with τ hτ
+  rw [discriminant_eq_q_prod, norm_mul, Real.norm_of_nonneg (Real.exp_pos _).le]
+  have hq_norm : ‖𝕢 1 τ‖ = Real.exp (-2 * π * τ.im) := by simp [Periodic.qParam, Complex.norm_exp]
+  rw [← hq_norm]
+  have hprod_bound : 1 / 2 ≤ ‖∏' n, (1 - eta_q n τ) ^ 24‖ := by
+    have hsub : ‖∏' n, (1 - eta_q n τ) ^ 24 - 1‖ < 1 / 2 := by rwa [Complex.dist_eq] at hτ
+    have h1 := norm_sub_norm_le 1 (∏' n, (1 - eta_q n τ) ^ 24)
+    grind [norm_one, norm_sub_rev]
+  linarith [norm_nonneg (𝕢 1 τ), mul_le_mul_of_nonneg_left hprod_bound (norm_nonneg (𝕢 1 τ))]
+
+end
+
+end ModularForm
+
+public section
+
+namespace CuspForm
+
+open ModularForm
+
+local notation "Δ" => ModularForm.discriminant
 
 /-- The modular discriminant `Δ` as a cusp form of weight 12 and level 1. -/
-def discriminantCuspForm : CuspForm 𝒮ℒ 12 where
+@[expose] def discriminant : CuspForm 𝒮ℒ 12 where
   toFun := Δ
   slash_action_eq' A hA := by
     obtain ⟨A, rfl⟩ := hA
@@ -184,7 +214,7 @@ def discriminantCuspForm : CuspForm 𝒮ℒ 12 where
     rw [UpperHalfPlane.mdifferentiable_iff]
     refine .congr (fun z hz ↦ (differentiableAt_eta_of_mem_upperHalfPlaneSet hz).pow
       24 |>.differentiableWithinAt) fun z hz ↦ ?_
-    simp [discriminant, ofComplex_apply_of_im_pos hz]
+    simp [ModularForm.discriminant, ofComplex_apply_of_im_pos hz]
   zero_at_cusps' hc := by
     rw [Subgroup.IsArithmetic.isCusp_iff_isCusp_SL2Z] at hc
     rw [OnePoint.isZeroAt_iff_forall_SL2Z hc]
@@ -192,6 +222,20 @@ def discriminantCuspForm : CuspForm 𝒮ℒ 12 where
     rw [slash_action_generators_SL2Z discriminant_S_invariant discriminant_T_invariant]
     exact discriminant_isZeroAtImInfty
 
-end
+@[simp]
+lemma coe_discriminant : discriminant = Δ := rfl
 
-end ModularForm
+variable {k : ℤ}
+
+/-- Any cusp form for `𝒮ℒ` is `O(Δ)` at the cusp `i∞`. -/
+lemma exp_decay_isBigO_discriminant (f : CuspForm 𝒮ℒ k) :
+    f =O[atImInfty] ModularForm.discriminant :=
+  (CuspFormClass.exp_decay_atImInfty (h := 1) f one_pos one_mem_strictPeriods_SL).trans
+    (by simpa using exp_isBigO_discriminant)
+
+end CuspForm
+
+@[deprecated CuspForm.discriminant (since := "2026-04-30")]
+alias ModularForm.discriminantCuspForm := CuspForm.discriminant
+
+end

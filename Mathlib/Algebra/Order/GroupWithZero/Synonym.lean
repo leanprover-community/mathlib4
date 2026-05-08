@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Order.Group.Synonym
 Transfer algebraic instances from `α` to `αᵒᵈ` and `Lex α`.
 -/
 
-@[expose] public section
+public section
 
 
 open Function

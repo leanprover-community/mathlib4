@@ -606,7 +606,7 @@ protected lemma Icc_subset_segment {x y : {t : 𝕜 // 0 ≤ t}} :
   intro a ⟨hxa, hay⟩
   rw [← Subtype.coe_le_coe] at hxa hay
   rcases Icc_subset_segment ⟨hxa, hay⟩ with ⟨t₁, t₂, t₁_nonneg, t₂_nonneg, t_add, hta⟩
-  refine ⟨⟨t₁, t₁_nonneg⟩, ⟨t₂, t₂_nonneg⟩, zero_le _, zero_le _, ?_, ?_⟩ <;>
+  refine ⟨⟨t₁, t₁_nonneg⟩, ⟨t₂, t₂_nonneg⟩, zero_le, zero_le, ?_, ?_⟩ <;>
   ext <;> simpa
 
 protected lemma segment_eq_Icc {x y : {t : 𝕜 // 0 ≤ t}} (hxy : x ≤ y) :

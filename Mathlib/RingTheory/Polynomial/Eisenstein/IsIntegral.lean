@@ -107,7 +107,7 @@ theorem cyclotomic_prime_pow_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] (
         simpa [map_comp] using hn
       · exact ⟨p ^ n, by rw [pow_succ']⟩
   · rw [coeff_zero_eq_eval_zero, eval_comp, cyclotomic_prime_pow_eq_geom_sum hp.out, eval_add,
-      eval_X, eval_one, zero_add, eval_finset_sum]
+      eval_X, eval_one, zero_add, eval_finsetSum]
     simp only [eval_pow, eval_X, one_pow, sum_const, card_range, Nat.smul_one_eq_cast,
       submodule_span_eq, Ideal.submodule_span_eq, Ideal.span_singleton_pow,
       Ideal.mem_span_singleton]
@@ -341,7 +341,7 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
       refine adjoin_le_integralClosure hBint (hf _ ?_).1
       rw [(minpoly.monic hBint).natDegree_map (algebraMap R L)]
       rw [add_comm, Nat.add_sub_assoc, le_add_iff_nonneg_right]
-      · exact _root_.zero_le _
+      · exact zero_le
       · refine one_le_iff_ne_zero.2 fun h => ?_
         rw [h] at hk
         simp at hk

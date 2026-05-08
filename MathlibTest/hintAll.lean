@@ -34,9 +34,6 @@ info: Try these:
   [apply] norm_num
   Remaining subgoals:
   ⊢ Q
-  [apply] group
-  Remaining subgoals:
-  ⊢ Q
 -/
 #guard_msgs in
 example {P Q : Prop} (p : P) (f : P → Q) : Q := by hint
@@ -45,9 +42,6 @@ example {P Q : Prop} (p : P) (f : P → Q) : Q := by hint
 info: Try these:
   [apply] 🎉️ simp_all only [and_self]
   [apply] norm_num
-  Remaining subgoals:
-  ⊢ Q ∧ P ∧ R
-  [apply] group
   Remaining subgoals:
   ⊢ Q ∧ P ∧ R
 -/
@@ -63,9 +57,6 @@ info: Try these:
   [apply] intro
   Remaining subgoals:
   ⊢ False
-  [apply] group
-  Remaining subgoals:
-  ⊢ ¬b < a
   [apply] simp_all only [not_lt]
   Remaining subgoals:
   ⊢ a ≤ b
@@ -103,9 +94,6 @@ info: Try these:
   Remaining subgoals:
   ⊢ ∃ x, P x
   [apply] ring_nf
-  Remaining subgoals:
-  ⊢ ∃ x, P x ∧ 0 ≤ x
-  [apply] group
   Remaining subgoals:
   ⊢ ∃ x, P x ∧ 0 ≤ x
   [apply] simp_all only [zero_le, and_true]
@@ -180,9 +168,6 @@ info: Try these:
   [apply] ring_nf
   Remaining subgoals:
   ⊢ 2 ≤ 1
-  [apply] group
-  Remaining subgoals:
-  ⊢ 2 ≤ 1
   [apply] simp_all only [Nat.not_ofNat_le_one]
   Remaining subgoals:
   ⊢ False
@@ -222,9 +207,6 @@ info: Try these:
   Remaining subgoals:
   ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
   [apply] abel_nf
-  Remaining subgoals:
-  ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
-  [apply] group
   Remaining subgoals:
   ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
 -/

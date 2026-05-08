@@ -31,7 +31,7 @@ an algebraically closed field in which the order of `G` is invertible:
 
 -/
 
-@[expose] public section
+public section
 
 universe u v w
 

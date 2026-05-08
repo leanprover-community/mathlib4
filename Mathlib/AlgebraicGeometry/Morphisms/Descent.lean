@@ -57,10 +57,6 @@ lemma Scheme.exists_hom_isAffine_of_isZariskiLocalAtSource (X : Scheme.{u}) [Com
   · rw [IsZariskiLocalAtSource.iff_of_openCover (P := P) (sigmaOpenCover _)]
     exact fun i ↦ by simpa [p] using IsZariskiLocalAtSource.of_isOpenImmersion _
 
-@[deprecated (since := "2025-10-07")]
-alias Scheme.exists_hom_isAffine_of_isLocalAtSource :=
-  Scheme.exists_hom_isAffine_of_isZariskiLocalAtSource
-
 set_option backward.isDefEq.respectTransparency false in
 /-- If `P` is local at the target, to show `P` descends along `P'` we may assume
 the base to be affine. -/
@@ -91,9 +87,6 @@ lemma IsZariskiLocalAtTarget.descendsAlong [IsZariskiLocalAtTarget P] [P'.IsStab
         (CategoryTheory.IsPullback.of_hasPullback _ _) hf
   obtain ⟨R, rfl⟩ := hZ
   exact H f g h hf
-
-@[deprecated (since := "2025-10-07")]
-alias IsLocalAtTarget.descendsAlong := IsZariskiLocalAtTarget.descendsAlong
 
 variable (Q Q' : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop)
 
@@ -154,10 +147,6 @@ lemma IsZariskiLocalAtTarget.descendsAlong_inf_quasiCompact [IsZariskiLocalAtTar
   obtain ⟨T, rfl⟩ := hX
   obtain ⟨φ, rfl⟩ := Spec.map_surjective f
   exact H φ g hf.1 h
-
-@[deprecated (since := "2025-10-07")]
-alias IsLocalAtTarget.descendsAlong_inf_quasiCompact :=
-  IsZariskiLocalAtTarget.descendsAlong_inf_quasiCompact
 
 include H₁ H₂ in
 /--

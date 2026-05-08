@@ -272,7 +272,7 @@ theorem linearCombination_onFinset {s : Finset α} {f : α → R} (g : α → M)
   simp only [linearCombination_apply, Finsupp.sum, Finsupp.onFinset_apply, Finsupp.support_onFinset]
   rw [Finset.sum_filter_of_ne]
   intro x _ h
-  contrapose! h
+  contrapose h
   simp [h]
 
 variable [Module S M] [SMulCommClass R S M]
@@ -438,7 +438,7 @@ section
 variable (R)
 
 /-- Pick some representation of `x : span R w` as a linear combination in `w`,
-  ((Finsupp.mem_span_iff_linearCombination _ _ _).mp x.2).choose
+`((Finsupp.mem_span_iff_linearCombination _ _ _).mp x.2).choose`
 -/
 irreducible_def Span.repr (w : Set M) (x : span R w) : w →₀ R :=
   ((Finsupp.mem_span_iff_linearCombination _ _ _).mp x.2).choose

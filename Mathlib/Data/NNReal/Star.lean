@@ -9,10 +9,10 @@ public import Mathlib.Data.NNReal.Defs
 public import Mathlib.Data.Real.Star
 
 /-!
-# The non-negative real numbers are a `*`-ring, with the trivial `*`-structure
+# The non-negative real numbers are a \*-ring, with the trivial \*-structure
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finset
 

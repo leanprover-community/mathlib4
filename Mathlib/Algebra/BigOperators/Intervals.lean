@@ -78,12 +78,12 @@ theorem prod_Icc_succ_top {a b : ℕ} (hab : a ≤ b + 1) (f : ℕ → M) :
 @[to_additive]
 theorem prod_range_mul_prod_Ico (f : ℕ → M) {m n : ℕ} (h : m ≤ n) :
     ((∏ k ∈ range m, f k) * ∏ k ∈ Ico m n, f k) = ∏ k ∈ range n, f k :=
-  Nat.Ico_zero_eq_range ▸ Nat.Ico_zero_eq_range ▸ prod_Ico_consecutive f m.zero_le h
+  Nat.Ico_zero_eq_range m ▸ Nat.Ico_zero_eq_range n ▸ prod_Ico_consecutive f m.zero_le h
 
 @[to_additive]
 theorem prod_range_eq_mul_Ico (f : ℕ → M) {n : ℕ} (hn : 0 < n) :
     ∏ x ∈ Finset.range n, f x = f 0 * ∏ x ∈ Ico 1 n, f x :=
-  Finset.range_eq_Ico ▸ Finset.prod_eq_prod_Ico_succ_bot hn f
+  Finset.range_eq_Ico n ▸ Finset.prod_eq_prod_Ico_succ_bot hn f
 
 @[to_additive]
 theorem prod_Ico_eq_mul_inv {δ : Type*} [CommGroup δ] (f : ℕ → δ) {m n : ℕ} (h : m ≤ n) :

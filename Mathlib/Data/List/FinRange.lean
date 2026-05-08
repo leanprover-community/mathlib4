@@ -45,10 +45,6 @@ alias finRange_map_getElem := map_getElem_finRange
 @[deprecated (since := "2025-11-04")]
 alias map_coe_finRange := map_coe_finRange_eq_range
 
-@[deprecated finRange_succ (since := "2025-10-10")]
-theorem finRange_succ_eq_map (n : ℕ) : finRange n.succ = 0 :: (finRange n).map Fin.succ :=
-  finRange_succ
-
 theorem ofFn_eq_pmap {n} {f : Fin n → α} :
     ofFn f = pmap (fun i hi => f ⟨i, hi⟩) (range n) fun _ => mem_range.1 := by
   ext

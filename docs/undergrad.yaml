@@ -197,8 +197,8 @@ Bilinear and Quadratic Forms Over a Vector Space:
     alternating bilinear forms: 'LinearMap.BilinForm.IsAlt'
     symmetric bilinear forms: 'LinearMap.BilinForm.IsSymm'
     nondegenerate forms: 'LinearMap.BilinForm.Nondegenerate'
-    matrix representation: 'BilinForm.toMatrix'
-    change of coordinates: 'BilinForm.toMatrix_comp'
+    matrix representation: 'LinearMap.BilinForm.toMatrix'
+    change of coordinates: 'LinearMap.BilinForm.toMatrix_comp'
     rank of a bilinear form: ''
   Quadratic forms:
     quadratic form: 'QuadraticForm'
@@ -323,7 +323,7 @@ Single Variable Real Analysis:
     Leibniz formula: 'deriv_mul'
   Taylor-like theorems:
     Taylor's theorem with little-o remainder: "https://en.wikipedia.org/wiki/Taylor%27s_theorem#Taylor's_theorem_in_one_real_variable"
-    Taylor's theorem with integral form for remainder: 'https://en.wikipedia.org/wiki/Taylor%27s_theorem#Explicit_formulas_for_the_remainder'
+    Taylor's theorem with integral form for remainder: 'taylor_integral_remainder_of_absolutelyContinuous'
     Taylor's theorem with Lagrange form for remainder: 'taylor_mean_remainder_lagrange'
     Taylor series expansions: 'https://en.wikipedia.org/wiki/Taylor_series'
   Elementary functions (trigonometric, rational, $\exp$, $\log$, etc):
@@ -517,7 +517,7 @@ Measures and integral calculus:
     dominated convergence theorem: 'MeasureTheory.tendsto_integral_of_dominated_convergence'
     finite-dimensional vector-valued integrable functions: 'MeasureTheory.Integrable'
     continuity of integrals with respect to parameters: 'intervalIntegral.continuous_of_dominated_interval'
-    differentiability of integrals with respect to parameters: ''
+    differentiability of integrals with respect to parameters: 'IntervalIntegrable.ae_hasDerivAt_integral'
     $\mathrm{L}^p$ spaces where $1 ≤ p ≤ ∞$: 'MeasureTheory.Lp'
     Completeness of $\mathrm{L}^p$ spaces: 'MeasureTheory.Lp.instCompleteSpace'
     Holder's inequality: 'NNReal.lintegral_mul_le_Lp_mul_Lq'
@@ -618,8 +618,8 @@ Distribution calculus:
     $L^p$ functions: 'MeasureTheory.Lp.toTemperedDistributionCLM'
     periodic functions: ''
     Dirac comb: ''
-    Fourier transforms: 'TemperedDistribution.fourierTransformCLM'
-    inverse Fourier transform: 'TemperedDistribution.fourierTransformInvCLM'
+    Fourier transforms: 'FourierTransform.fourierCLM'
+    inverse Fourier transform: 'FourierTransform.fourierInvCLM'
     Fourier transform and derivation: ''
     Fourier transform and convolution product: ''
   Applications:

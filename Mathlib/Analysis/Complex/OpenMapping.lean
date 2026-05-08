@@ -192,7 +192,7 @@ theorem AnalyticOnNhd.eq_const_of_re_eq_const {U : Set ℂ} {c₀ : ℝ} (h₁f 
     ∃ c, ∀ x ∈ U, f x = c := by
   obtain ⟨z₀, _⟩ := h₂U.nonempty
   by_contra h₅
-  grind [not_isOpen_singleton (c₀ : ℝ), (by aesop : (re '' (f '' U)) = { c₀ }), isOpenMap_re
+  grind [not_isOpen_singleton (c₀ : ℝ), (by aesop : (re '' f '' U) = { c₀ }), isOpenMap_re
     (f '' U) ((h₁f.is_constant_or_isOpen h₂U.isPreconnected).resolve_left h₅ U (by tauto) h₁U)]
 
 /--
@@ -217,7 +217,7 @@ theorem AnalyticOnNhd.eq_const_of_im_eq_const {U : Set ℂ} {c₀ : ℝ} (h₁f 
     ∃ c, ∀ x ∈ U, f x = c := by
   obtain ⟨z₀, _⟩ := h₂U.nonempty
   by_contra h₅
-  grind [not_isOpen_singleton (c₀ : ℝ), (by aesop : (im '' (f '' U)) = { c₀ }), isOpenMap_im
+  grind [not_isOpen_singleton (c₀ : ℝ), (by aesop : (im '' f '' U) = { c₀ }), isOpenMap_im
     (f '' U) ((h₁f.is_constant_or_isOpen h₂U.isPreconnected).resolve_left h₅ U (by tauto) h₁U)]
 
 /--

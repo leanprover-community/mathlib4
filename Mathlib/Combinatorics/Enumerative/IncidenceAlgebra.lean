@@ -65,7 +65,7 @@ Here are some additions to this file that could be made in the future:
 * [Jacobson, *Basic Algebra I, 8.6*][jacobson1974]
 * [Doubilet, Rota, Stanley, *On the foundations of Combinatorial Theory
   VI*][doubilet_rota_stanley_vi]
-* [Spiegel, O'Donnell, *Incidence Algebras*][spiegel_odonnel1997]
+* [Spiegel, O'Donnell, *Incidence Algebras*][spiegel_odonnell1997]
 * [Kung, Rota, Yan, *Combinatorics: The Rota Way, Chapter 3*][kung_rota_yan2009]
 -/
 
@@ -343,8 +343,6 @@ lemma zeta_mul_zeta [NonAssocSemiring 𝕜] [Preorder α] [LocallyFiniteOrder α
   refine sum_congr rfl fun x hx ↦ ?_
   rw [mem_Icc] at hx
   rw [zeta_of_le hx.1, zeta_of_le hx.2, one_mul]
-
-@[deprecated (since := "2025-09-28")] alias zeta_mul_kappa := zeta_mul_zeta
 
 section Mu
 variable (𝕜) [AddCommGroup 𝕜] [One 𝕜] [Preorder α] [LocallyFiniteOrder α] [DecidableEq α]

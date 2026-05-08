@@ -73,7 +73,7 @@ for a discussion about this notation, and whether to enable it globally (note th
 currently global but broken, hence actually only works locally).
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MulZeroClass
 
@@ -215,10 +215,12 @@ instance (priority := 100) MulRightMono.toMulPosReflectLT [MulRightReflectLT α]
     MulPosReflectLT α where elim _ _ := ‹MulRightReflectLT α›.elim _
 
 instance (priority := 100) MulLeftStrictMono.toPosMulReflectLE [MulLeftReflectLE α] :
-    PosMulReflectLE α where elim _ _ := ‹MulLeftReflectLE α›.elim _
+    PosMulReflectLE α where
+  elim _ _ _ := ‹MulLeftReflectLE α›.le_of_mul_le_mul_left'
 
 instance (priority := 100) MulRightStrictMono.toMulPosReflectLE [MulRightReflectLE α] :
-    MulPosReflectLE α where elim _ _ := ‹MulRightReflectLE α›.elim _
+    MulPosReflectLE α where
+  elim _ _ _ := ‹MulRightReflectLE α›.le_of_mul_le_mul_right'
 
 @[gcongr]
 theorem mul_le_mul_of_nonneg_left [PosMulMono α] (hbc : b ≤ c) (ha : 0 ≤ a) : a * b ≤ a * c :=
@@ -386,27 +388,27 @@ theorem lt_mul_of_lt_mul_of_nonneg_right [MulPosMono α] (h : a < b * c) (hle : 
     a < d * c :=
   h.trans_le (mul_le_mul_of_nonneg_right hle c0)
 
-variable [@Std.Commutative α (· * ·)]
+variable [IsMulCommutative α]
 
 theorem posMulMono_iff_mulPosMono : PosMulMono α ↔ MulPosMono α := by
-  simp only [posMulMono_iff, mulPosMono_iff, Std.Commutative.comm]
+  simp [posMulMono_iff, mulPosMono_iff, mul_comm']
 
 theorem PosMulMono.toMulPosMono [PosMulMono α] : MulPosMono α := posMulMono_iff_mulPosMono.mp ‹_›
 
 theorem posMulStrictMono_iff_mulPosStrictMono : PosMulStrictMono α ↔ MulPosStrictMono α := by
-  simp only [posMulStrictMono_iff, mulPosStrictMono_iff, Std.Commutative.comm]
+  simp [posMulStrictMono_iff, mulPosStrictMono_iff, mul_comm']
 
 theorem PosMulStrictMono.toMulPosStrictMono [PosMulStrictMono α] : MulPosStrictMono α :=
   posMulStrictMono_iff_mulPosStrictMono.mp ‹_›
 
 theorem posMulReflectLE_iff_mulPosReflectLE : PosMulReflectLE α ↔ MulPosReflectLE α := by
-  simp only [posMulReflectLE_iff, mulPosReflectLE_iff, Std.Commutative.comm]
+  simp [posMulReflectLE_iff, mulPosReflectLE_iff, mul_comm']
 
 theorem PosMulReflectLE.toMulPosReflectLE [PosMulReflectLE α] : MulPosReflectLE α :=
   posMulReflectLE_iff_mulPosReflectLE.mp ‹_›
 
 theorem posMulReflectLT_iff_mulPosReflectLT : PosMulReflectLT α ↔ MulPosReflectLT α := by
-  simp only [posMulReflectLT_iff, mulPosReflectLT_iff, Std.Commutative.comm]
+  simp [posMulReflectLT_iff, mulPosReflectLT_iff, mul_comm']
 
 theorem PosMulReflectLT.toMulPosReflectLT [PosMulReflectLT α] : MulPosReflectLT α :=
   posMulReflectLT_iff_mulPosReflectLT.mp ‹_›

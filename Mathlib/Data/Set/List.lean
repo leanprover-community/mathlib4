@@ -14,7 +14,7 @@ public import Mathlib.Data.List.Defs
 In this file we prove lemmas about range of some operations on lists.
 -/
 
-@[expose] public section
+public section
 
 
 open List

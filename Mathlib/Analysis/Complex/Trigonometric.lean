@@ -501,19 +501,11 @@ theorem tan_sq_div_one_add_tan_sq {x : ℂ} (hx : cos x ≠ 0) :
   simp only [← tan_mul_cos hx, mul_pow, ← inv_one_add_tan_sq hx, div_eq_mul_inv]
 
 theorem cos_three_mul : cos (3 * x) = 4 * cos x ^ 3 - 3 * cos x := by
-  have h1 : x + 2 * x = 3 * x := by ring
-  rw [← h1, cos_add x (2 * x)]
-  simp only [cos_two_mul, sin_two_mul, mul_sub, mul_one, sq]
-  have h2 : 4 * cos x ^ 3 = 2 * cos x * cos x * cos x + 2 * cos x * cos x ^ 2 := by ring
-  rw [h2, cos_sq']
-  ring
+  rw [← cosh_mul_I, mul_assoc, cosh_three_mul, cosh_mul_I]
 
 theorem sin_three_mul : sin (3 * x) = 3 * sin x - 4 * sin x ^ 3 := by
-  have h1 : x + 2 * x = 3 * x := by ring
-  rw [← h1, sin_add x (2 * x)]
-  simp only [cos_two_mul, sin_two_mul, cos_sq']
-  have h2 : cos x * (2 * sin x * cos x) = 2 * sin x * cos x ^ 2 := by ring
-  rw [h2, cos_sq']
+  rw [← two_add_one_eq_three, add_one_mul, sin_add (2 * x) x]
+  simp only [cos_two_mul, sin_two_mul, cos_sq', mul_assoc, ← sq]
   ring
 
 theorem exp_mul_I : exp (x * I) = cos x + sin x * I :=

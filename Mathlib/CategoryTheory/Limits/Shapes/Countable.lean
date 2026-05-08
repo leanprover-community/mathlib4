@@ -41,7 +41,7 @@ instance and `J : Type` has a limit.
 class HasCountableLimits : Prop where
   /-- `C` has all limits over any type `J` whose objects and morphisms lie in the same universe
   and which has countably many objects and morphisms -/
-  out (J : Type) [SmallCategory J] [CountableCategory J] : HasLimitsOfShape J C
+  out (J : Type) [SmallCategory J] [CountableCategory J] : HasLimitsOfShape J C := by infer_instance
 
 instance (priority := 100) hasFiniteLimits_of_hasCountableLimits [HasCountableLimits C] :
     HasFiniteLimits C where

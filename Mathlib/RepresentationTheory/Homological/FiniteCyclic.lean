@@ -117,7 +117,7 @@ lemma range_applyAsHom_sub_eq_ker_linearCombination (hg : ∀ x, x ∈ Subgroup.
 
 lemma range_applyAsHom_sub_eq_ker_norm (hg : ∀ x, x ∈ Subgroup.zpowers g) :
     LinearMap.range (applyAsHom (leftRegular k G) g - 𝟙 _).hom.toLinearMap =
-      LinearMap.ker (leftRegular k G).norm.hom.toLinearMap:= by
+      LinearMap.ker (leftRegular k G).norm.hom.toLinearMap := by
   simp [norm, ker_leftRegular_norm_eq, range_applyAsHom_sub_eq_ker_linearCombination k g hg]
 
 end leftRegular

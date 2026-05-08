@@ -76,7 +76,7 @@ def genEigenspace (f : End R M) (μ : R) : ℕ∞ →o Submodule R M where
 
 lemma mem_genEigenspace {f : End R M} {μ : R} {k : ℕ∞} {x : M} :
     x ∈ f.genEigenspace μ k ↔ ∃ l : ℕ, l ≤ k ∧ x ∈ LinearMap.ker ((f - μ • 1) ^ l) := by
-  have : Nonempty {l : ℕ // l ≤ k} := ⟨⟨0, zero_le _⟩⟩
+  have : Nonempty {l : ℕ // l ≤ k} := ⟨⟨0, zero_le⟩⟩
   have : Directed (ι := { i : ℕ // i ≤ k }) (· ≤ ·) fun i ↦ LinearMap.ker ((f - μ • 1) ^ (i : ℕ)) :=
     Monotone.directed_le fun m n h ↦ by simpa using (f - μ • 1).iterateKer.monotone h
   simp_rw [genEigenspace, OrderHom.coe_mk, LinearMap.mem_ker, iSup_subtype',
@@ -307,7 +307,7 @@ lemma HasUnifEigenvalue.le {f : End R M} {μ : R} {k m : ℕ∞}
     (hm : k ≤ m) (hk : f.HasUnifEigenvalue μ k) :
     f.HasUnifEigenvalue μ m := by
   unfold HasUnifEigenvalue at *
-  contrapose! hk
+  contrapose hk
   rw [← le_bot_iff, ← hk]
   exact (f.genEigenspace _).monotone hm
 
@@ -747,14 +747,10 @@ theorem genEigenspace_restrict (f : End R M) (p : Submodule R M) (k : ℕ∞) (�
     simp_rw [mem_genEigenspace, ← mem_genEigenspace_nat, this,
       Submodule.mem_comap, mem_genEigenspace (k := k), mem_genEigenspace_nat]
   intro l
-  simp only [genEigenspace_nat, ← LinearMap.ker_comp]
-  induction l with
-  | zero =>
-    rw [pow_zero, pow_zero, Module.End.one_eq_id]
-    apply (Submodule.ker_subtype _).symm
-  | succ l ih =>
-    erw [pow_succ, pow_succ, LinearMap.ker_comp, LinearMap.ker_comp, ih, ← LinearMap.ker_comp,
-      LinearMap.comp_assoc]
+  rw [genEigenspace_nat, genEigenspace_nat, ← LinearMap.restrict_smul_one μ,
+    LinearMap.restrict_sub hfp, Module.End.pow_restrict _,
+    ← LinearMap.ker_comp_of_ker_eq_bot _ (Submodule.ker_subtype p),
+    LinearMap.subtype_comp_restrict, LinearMap.domRestrict, ← LinearMap.ker_comp]
 
 lemma _root_.Submodule.inf_genEigenspace (f : End R M) (p : Submodule R M) {k : ℕ∞} {μ : R}
     (hfp : ∀ x : M, x ∈ p → f x ∈ p) :

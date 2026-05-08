@@ -14,7 +14,7 @@ public import Mathlib.Algebra.GroupWithZero.Units.Basic
 * `Field.toEuclideanDomain`: shows that any field is a Euclidean domain.
 -/
 
-@[expose] public section
+public section
 
 namespace Field
 

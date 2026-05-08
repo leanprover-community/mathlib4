@@ -1221,22 +1221,15 @@ variable {s} in
 lemma ExcenterExists.touchpoint_ne_point [Nat.AtLeastTwo n] {signs : Finset (Fin (n + 1))}
     (h : s.ExcenterExists signs) (i j : Fin (n + 1)) : s.touchpoint signs i ≠ s.points j := by
   intro he
-  rw [eq_comm, ← Finset.univ.affineCombination_affineCombinationSingleWeights ℝ s.points
-    (Finset.mem_univ _), affineCombination_eq_touchpoint_iff
-    (Finset.univ.sum_affineCombinationSingleWeights ℝ (Finset.mem_univ _))] at he
+  rw [eq_comm, ← Finset.univ.affineCombination_piSingle ℝ s.points (Finset.mem_univ _),
+    affineCombination_eq_touchpoint_iff (Fintype.sum_pi_single' _ _)] at he
   have : 1 < n := Nat.AtLeastTwo.one_lt
   obtain ⟨k, hki, hkj⟩ : ∃ k, k ≠ i ∧ k ≠ j := Fin.exists_ne_and_ne_of_two_lt i j (by lia)
-  have he' : Finset.affineCombinationSingleWeights ℝ j k = s.touchpointWeights signs i k := by
-    rw [he]
-  simp only [ne_eq, hkj, not_false_eq_true,
-    Finset.affineCombinationSingleWeights_apply_of_ne] at he'
-  rw [eq_comm] at he'
-  apply_fun SignType.sign at he'
-  rw [h.sign_touchpointWeights hki.symm, excenterWeights] at he'
-  have h' := h
-  rw [ExcenterExists] at h'
-  simp only [Pi.smul_apply, smul_eq_mul, sign_zero, sign_eq_zero_iff, mul_eq_zero, inv_eq_zero,
-    h', false_or] at he'
+  have he' := congr(SignType.sign ($he k))
+  rw [Pi.single_eq_of_ne hkj, sign_zero, eq_comm, h.sign_touchpointWeights hki.symm,
+    sign_eq_zero_iff, excenterWeights] at he'
+  rw [ExcenterExists] at h
+  simp only [Pi.smul_apply, smul_eq_mul, mul_eq_zero, inv_eq_zero, h, false_or] at he'
   rw [excenterWeightsUnnorm] at he'
   by_cases hk : k ∈ signs <;> simp [hk, (s.height_pos k).ne'] at he'
 

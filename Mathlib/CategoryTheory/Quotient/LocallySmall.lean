@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.Quotient
 
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 

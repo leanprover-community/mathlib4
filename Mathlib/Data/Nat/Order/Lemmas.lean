@@ -17,7 +17,7 @@ clear. They were separated for now to minimize the porting requirements for tact
 during the transition to mathlib4. Please feel free to reorganize these two files.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists RelIso
 

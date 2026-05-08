@@ -91,9 +91,9 @@ theorem IsHomogeneous.subsemiringClosure {s : Set A}
   | mul x y _ _ h₁ h₂ =>
     classical
     rw [decompose_mul, DirectSum.mul_eq_dfinsuppSum]
-    rw [DFinsupp.sum_apply, DFinsupp.sum, AddSubmonoidClass.coe_finset_sum]
+    rw [DFinsupp.sum_apply, DFinsupp.sum, AddSubmonoidClass.coe_finsetSum]
     refine sum_mem fun j _ ↦ ?_
-    rw [DFinsupp.sum_apply, DFinsupp.sum, AddSubmonoidClass.coe_finset_sum]
+    rw [DFinsupp.sum_apply, DFinsupp.sum, AddSubmonoidClass.coe_finsetSum]
     refine sum_mem fun k _ ↦ ?_
     obtain rfl | h := eq_or_ne i (j + k) <;> simp [of_eq_of_ne, mul_mem, *]
 

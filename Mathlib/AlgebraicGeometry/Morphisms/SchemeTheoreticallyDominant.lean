@@ -24,7 +24,7 @@ In this file, we define scheme-theoretically dominant morphisms as morphisms wit
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory MorphismProperty Limits
 

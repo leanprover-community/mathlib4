@@ -19,7 +19,7 @@ Hence, `presheafToSheaf` is an additive functor (`presheafToSheaf_additive`).
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

@@ -70,8 +70,8 @@ instance category : LargeCategory.{max v u} Grpd.{v, u} where
 /-- Functor that gets the set of objects of a groupoid. It is not
 called `forget`, because it is not a faithful functor. -/
 def objects : Grpd.{v, u} ⥤ Type u where
-  obj := Bundled.α
-  map F := F.obj
+  obj C := Bundled.α C
+  map F := ↾F.obj
 
 /-- Forgetting functor to `Cat` -/
 def forgetToCat : Grpd.{v, u} ⥤ Cat.{v, u} where

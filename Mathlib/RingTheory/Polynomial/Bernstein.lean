@@ -230,7 +230,7 @@ theorem linearIndependent_aux (n k : ℕ) (h : k ≤ n + 1) :
   induction k with
   | zero => apply linearIndependent_empty_type
   | succ k ih =>
-    apply linearIndependent_fin_succ'.mpr
+    apply linearIndependent_finSucc'.mpr
     fconstructor
     · exact ih (le_of_lt h)
     · -- The actual work!

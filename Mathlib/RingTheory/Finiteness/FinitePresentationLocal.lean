@@ -21,7 +21,7 @@ In this file we show that being a finitely presented algebra is local.
 
 -/
 
-@[expose] public section
+public section
 
 open scoped Pointwise TensorProduct
 

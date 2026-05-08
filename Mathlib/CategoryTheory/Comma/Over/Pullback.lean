@@ -206,8 +206,7 @@ def mapPushoutAdj {X Y : C} (f : X ⟶ Y) [HasPushoutsAlong f] :
       toFun := fun u => Under.homMk (pushout.inl _ _ ≫ u.right) <| by
         simp only [map_obj_hom]
         rw [← Under.w u]
-        simp only [Functor.const_obj_obj, map_obj_right, Functor.id_obj, pushout_obj, mk_right,
-          mk_hom]
+        simp only [map_obj_right, pushout_obj, mk_right, mk_hom]
         rw [← assoc, ← assoc, pushout.condition]
       invFun := fun v => Under.homMk (pushout.desc v.right y.hom <| by simp)
       left_inv := fun u => by

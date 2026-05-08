@@ -802,6 +802,13 @@ lemma leadingTerm_eq_leadingTerm_iff {p q : MvPolynomial σ R} :
   rw [leadingTerm, leadingTerm, monomial_eq_monomial_iff]
   aesop
 
+@[simp]
+theorem leadingTerm_mul [NoZeroDivisors R] (p q : MvPolynomial σ R) :
+    m.leadingTerm (p * q) = m.leadingTerm p * m.leadingTerm q := by
+  by_cases! h0 : p * q = 0
+  · simp [h0, zero_eq_mul.mp]
+  simp [leadingTerm, m.degree_mul' h0]
+
 @[simp, nontriviality]
 lemma monic_of_subsingleton [Subsingleton R] (p : MvPolynomial σ R) :
     m.Monic p := by
@@ -872,7 +879,7 @@ lemma sPolynomial_def (f g : MvPolynomial σ R) :
 
 lemma degree_ne_zero_of_sub_leadingTerm_ne_zero {f : MvPolynomial σ R}
     (h : f - m.leadingTerm f ≠ 0) : m.degree f ≠ 0 := by
-  contrapose! h
+  contrapose h
   rw [m.degree_eq_zero_iff.mp h, leadingTerm_C, sub_eq_zero]
 
 @[simp]
@@ -976,7 +983,7 @@ lemma degree_sPolynomial (f g : MvPolynomial σ R) :
     intro hs
     apply (m.degree_sPolynomial_le f g).lt_of_ne
     apply m.toSyn.injective.ne
-    contrapose! hs
+    contrapose hs
     rw [← m.coeff_degree_eq_zero_iff, hs, m.coeff_sPolynomial_sup_eq_zero]
 
 lemma degree_sPolynomial_lt_sup_degree {f g : MvPolynomial σ R} (h : m.sPolynomial f g ≠ 0) :

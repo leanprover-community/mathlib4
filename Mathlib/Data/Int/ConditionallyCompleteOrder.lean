@@ -14,7 +14,7 @@ public import Mathlib.Order.ConditionallyCompleteLattice.Defs
 The integers form a conditionally complete linear order.
 -/
 
-@[expose] public section
+public section
 
 
 open Int

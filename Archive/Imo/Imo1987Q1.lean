@@ -29,8 +29,6 @@ open Equiv Fintype Function
 
 open Finset (range sum_const)
 
-open Set (Iic)
-
 namespace Imo1987Q1
 
 /-- The set of pairs `(x : α, σ : Perm α)` such that `σ x = x` is equivalent to the set of pairs

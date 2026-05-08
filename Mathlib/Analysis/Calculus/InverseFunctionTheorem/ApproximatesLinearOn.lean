@@ -89,11 +89,11 @@ section
 variable {f' : E →L[𝕜] F} {s t : Set E} {c c' : ℝ≥0}
 
 theorem mono_num (hc : c ≤ c') (hf : ApproximatesLinearOn f f' s c) :
-    ApproximatesLinearOn f f' s c' := fun x hx y hy =>
-  le_trans (hf x hx y hy) (mul_le_mul_of_nonneg_right hc <| norm_nonneg _)
+    ApproximatesLinearOn f f' s c' :=
+  fun x hx y hy ↦ le_trans (hf x hx y hy) (by gcongr)
 
 theorem mono_set (hst : s ⊆ t) (hf : ApproximatesLinearOn f f' t c) :
-    ApproximatesLinearOn f f' s c := fun x hx y hy => hf x (hst hx) y (hst hy)
+    ApproximatesLinearOn f f' s c := fun x hx y hy ↦ hf x (hst hx) y (hst hy)
 
 theorem approximatesLinearOn_iff_lipschitzOnWith {f : E → F} {f' : E →L[𝕜] F} {s : Set E}
     {c : ℝ≥0} : ApproximatesLinearOn f f' s c ↔ LipschitzOnWith c (f - ⇑f') s := by
@@ -373,7 +373,7 @@ theorem to_inv (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c) (hc : Sub
       congr 2
       simp only [ContinuousLinearEquiv.apply_symm_apply, map_sub]
       abel
-    _ ≤ N * (c * ‖y' - x'‖) := mul_le_mul_of_nonneg_left (hf _ y's _ x's) (NNReal.coe_nonneg _)
+    _ ≤ N * (c * ‖y' - x'‖) := by gcongr; exact hf _ y's _ x's
     _ ≤ N * (c * (((N⁻¹ - c)⁻¹ : ℝ≥0) * ‖A y' - A x'‖)) := by
       gcongr
       rw [← dist_eq_norm, ← dist_eq_norm]

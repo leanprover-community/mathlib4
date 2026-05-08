@@ -61,11 +61,7 @@ lemma toReal_rnDeriv_map [IsFiniteMeasure μ] (hμν : μ ≪ ν)
   have : SigmaFinite ν := SigmaFinite.of_map _ hg.aemeasurable hσ
   refine ae_eq_condExp_of_forall_setIntegral_eq _ (by fun_prop) ?_ ?_ ?_
   · rintro _ ⟨t, _, rfl⟩ _
-    refine Integrable.integrableOn ?_
-    change Integrable ((fun x ↦ ((μ.map g).rnDeriv (ν.map g) x).toReal) ∘ g) ν
-    rw [← integrable_map_measure (f := g) (Measurable.aestronglyMeasurable (by fun_prop))
-      (by fun_prop)]
-    fun_prop
+    exact Integrable.integrableOn (Measure.integrable_toReal_rnDeriv.comp_measurable hg)
   · rintro _ ⟨t, ht, rfl⟩ _
     calc ∫ x in g ⁻¹' t, ((μ.map g).rnDeriv (ν.map g) (g x)).toReal ∂ν
     _ = ∫ y in t, ((μ.map g).rnDeriv (ν.map g) y).toReal ∂(ν.map g) := by
@@ -86,7 +82,7 @@ See `rnDeriv_map_ae_eq_trim` for the same statement, but with a.e. equality with
 the trimmed measure `ν.trim hg.comap_le`. -/
 lemma rnDeriv_map [IsFiniteMeasure μ] (hμν : μ ≪ ν)
     {g : 𝓧 → 𝓨} (hg : Measurable g) [hσ : SigmaFinite (ν.map g)] :
-    (fun a ↦ (μ.map g).rnDeriv (ν.map g) (g a)) =ᵐ[ν] ν⁻[μ.rnDeriv ν | m𝓨.comap g] := by
+    (fun a ↦ (μ.map g).rnDeriv (ν.map g) (g a)) =ᵐ[ν] ν⁻[μ.rnDeriv ν|m𝓨.comap g] := by
   have : SigmaFinite ν := SigmaFinite.of_map _ hg.aemeasurable hσ
   have h_ne_top1 : ∀ᵐ x ∂ν, (μ.map g).rnDeriv (ν.map g) (g x) ≠ ∞ :=
     ae_of_ae_map hg.aemeasurable (Measure.rnDeriv_ne_top (μ.map g) (ν.map g))
@@ -107,7 +103,7 @@ See `rnDeriv_map` for the same statement, but with a.e. equality with respect to
 lemma rnDeriv_map_ae_eq_trim [IsFiniteMeasure μ] (hμν : μ ≪ ν)
     {g : 𝓧 → 𝓨} (hg : Measurable g) [SigmaFinite (ν.map g)] :
     (fun a ↦ (μ.map g).rnDeriv (ν.map g) (g a)) =ᵐ[ν.trim hg.comap_le]
-      ν⁻[μ.rnDeriv ν | m𝓨.comap g] := by
+      ν⁻[μ.rnDeriv ν|m𝓨.comap g] := by
   rw [StronglyMeasurable.ae_eq_trim_iff]
   · exact rnDeriv_map hμν hg
   · refine Measurable.stronglyMeasurable fun s hs ↦ ?_

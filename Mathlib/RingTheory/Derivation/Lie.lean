@@ -32,7 +32,6 @@ section LieStructures
 /-! ### Lie structures -/
 
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The commutator of derivations is again a derivation. -/
 instance : Bracket (Derivation R A A) (Derivation R A A) :=
   ⟨fun D1 D2 =>
@@ -79,7 +78,7 @@ variable (R A A') in
 /-- Let `σ : A → A'` be a an homomorphism. A derivation `d : A → A` and a derivation
 `d' : A' → A'` are called compatible if `d' ∘ σ = σ ∘ d`. Couples of derivations
 with this property form a Lie subalgebra of all couples of derivations. -/
-def couple : LieSubalgebra R  (Derivation R A' A' × Derivation R A A) where
+def couple : LieSubalgebra R (Derivation R A' A' × Derivation R A A) where
   carrier := { x | x.fst.compAlgebraMapL R A A' A' = (Algebra.ofId A A').toLinearMap.compDer x.snd }
   add_mem' := by simp_all
   zero_mem' := by simp
@@ -110,7 +109,7 @@ lemma mk_right (x : Derivation R A' A') (y : Derivation R A A)
     (h : x ∘ (Algebra.ofId A A') = (Algebra.ofId A A') ∘ y) : (mk x y h).1.2 = y := rfl
 
 lemma apply (x : couple R A A') (a : A) :
-    x.1.1 (Algebra.ofId A A' a) = (Algebra.ofId A A')  (x.1.2 a) := by
+    x.1.1 (Algebra.ofId A A' a) = (Algebra.ofId A A') (x.1.2 a) := by
   exact congrArg (· a) x.2
 
 end Compatible

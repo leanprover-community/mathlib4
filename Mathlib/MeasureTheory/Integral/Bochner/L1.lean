@@ -456,7 +456,6 @@ local notation "Integral" => integralCLM α E μ
 
 open ContinuousLinearMap
 
-set_option backward.isDefEq.respectTransparency false in
 theorem norm_Integral_le_one : ‖Integral‖ ≤ 1 :=
   LinearMap.mkContinuous_norm_le _ zero_le_one fun f ↦ by
     simpa [one_mul] using norm_integral_le_norm f

@@ -40,6 +40,7 @@ We follow https://stacks.math.columbia.edu/tag/00PI and proceed in the following
     One first reduces to when `R ⊆ S` are domains, and then to when `R` is integrally closed.
     A going down theorem is now available, which could be applied to
     `Polynomial.map_under_lt_comap_of_quasiFiniteAt`:`(p ∩ R)[X] < p ∩ R<x>` to get a contradiction.
+
   The second result applied to `S/√𝔣` together with the first result implies that
   `p` does not contain `𝔣`.
   The claim then follows from `Localization.localRingHom_bijective_of_not_conductor_le`.
@@ -337,7 +338,7 @@ private lemma not_isStronglyTranscendental_of_weaklyQuasiFiniteAt_of_isIntegrall
   ext
   simp [Ideal.mem_map_C_iff, coeff_C, apply_ite]
 
-/-- This asks for an explict `K = Frac(R)`, `L = Frac(S)`,
+/-- This asks for an explicit `K = Frac(R)`, `L = Frac(S)`,
 `R'` the integral closure of `R` in `K`, and `S' ⊆ L` the subalgebra spanned by `R'` and `S`,
 to aid typeclass synthesis.
 
@@ -373,8 +374,7 @@ private lemma not_isStronglyTranscendental_of_weaklyQuasiFiniteAt_of_isDomain_au
   have hf₄ : f.IsIntegral := by
     have : f = (g.restrictScalars R).comp ((Algebra.TensorProduct.comm _ _ _).toAlgHom.comp
         (IsScalarTower.toAlgHom _ _ _)) := by ext; simp [g]
-    simp only [this, AlgEquiv.toAlgHom_eq_coe, AlgHom.toRingHom_eq_coe,
-      AlgHom.comp_toRingHom, ← RingHom.comp_assoc]
+    simp only [this, AlgHom.toRingHom_eq_coe, AlgHom.comp_toRingHom, ← RingHom.comp_assoc]
     refine .trans _ _ (algebraMap_isIntegral_iff.mpr inferInstance) ?_
     exact RingHom.isIntegral_of_surjective _
       (hf₁.comp (Algebra.TensorProduct.comm _ _ _).surjective)
@@ -514,7 +514,7 @@ private lemma ZariskisMainProperty.of_algHom_polynomial
     refine RingHom.Finite.of_comp_finite (f := mapRingHom (algebraMap R _)) ?_
     convert (show f.toRingHom.Finite from hf)
     ext <;> simp [show ∀ x, f (C x) = algebraMap _ _ x from f.commutes]
-  have : ¬ conductor R (f X) ≤ p := by
+  replace hf : ¬ conductor R (f X) ≤ p := by
     intro hp
     rw [← ‹p.IsPrime›.isRadical.radical_le_iff] at hp
     set J := (conductor R (f X)).radical
@@ -531,13 +531,14 @@ private lemma ZariskisMainProperty.of_algHom_polynomial
       (isStronglyTranscendental_mk_radical_conductor H (f X) (by convert hf; ext; simp))
     convert (RingHom.Finite.of_surjective _ (Ideal.Quotient.mk_surjective (I := J))).comp hf using 1
     ext <;> simp [show ∀ x, f (C x) = algebraMap _ _ x from f.commutes, J]
-  obtain ⟨x, hx, hxp⟩ := SetLike.not_le_iff_exists.mp this
+  obtain ⟨x, hx, hxp⟩ := SetLike.not_le_iff_exists.mp hf
   replace hx (a : _) : x * a ∈ f.range := by simpa [← AlgHom.map_adjoin_singleton f] using hx a
   refine ZariskisMainProperty.trans (S := f.range) _ ?_ ?_
   · have : Algebra.WeaklyQuasiFiniteAt R (p.under f.range) := by
+      let := Localization.AtPrime.algebraOfLiesOver (p.under f.range) p
       let e : Localization.AtPrime (p.under f.range) ≃ₐ[R] Localization.AtPrime p :=
         .ofBijective (IsScalarTower.toAlgHom _ _ _)
-          (Localization.localRingHom_bijective_of_not_conductor_le this
+          (Localization.localRingHom_bijective_of_not_conductor_le hf
             (by simp [← AlgHom.map_adjoin_singleton f]) _)
       exact .of_algHom_localization _ _ e.symm.toAlgHom e.symm.surjective
     refine .of_adjoin_eq_top _ ⟨f X, X, rfl⟩ ?_
@@ -578,6 +579,7 @@ private lemma ZariskisMainProperty.of_algHom_mvPolynomial
       Algebra.adjoin R ↑(Finset.univ.image (f ∘ .X ∘ Fin.succ) ∪ r ^ (s.sup m) • s ∪ {r})
     have hrR' : r ∈ R' := Algebra.subset_adjoin (by simp)
     have : Algebra.WeaklyQuasiFiniteAt R (p.under R') := by
+      let := Localization.AtPrime.algebraOfLiesOver (p.under R') p
       let e : Localization.AtPrime (p.under R') ≃ₐ[R] Localization.AtPrime p :=
         .ofBijective (IsScalarTower.toAlgHom _ _ _) <| by
           refine Localization.localRingHom_bijective_of_saturated_inf_eq_top _ ?_ _

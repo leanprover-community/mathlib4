@@ -18,7 +18,7 @@ as the category of types.
 
 -/
 
-@[expose] public section
+public section
 
 
 universe v u

@@ -107,12 +107,11 @@ def PartialIso : Type _ :=
   { f : Finset (α × β) //
     ∀ p ∈ f, ∀ q ∈ f,
       cmp (Prod.fst p) (Prod.fst q) = cmp (Prod.snd p) (Prod.snd q) }
+deriving Preorder
 
 namespace PartialIso
 
 instance : Inhabited (PartialIso α β) := ⟨⟨∅, fun _p h _q ↦ (Finset.notMem_empty _ h).elim⟩⟩
-
-instance : Preorder (PartialIso α β) := Subtype.preorder _
 
 variable {α β}
 

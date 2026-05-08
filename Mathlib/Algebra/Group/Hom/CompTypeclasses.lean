@@ -34,7 +34,7 @@ TODO :
 
 -/
 
-@[expose] public section
+public section
 
 section MonoidHomCompTriple
 

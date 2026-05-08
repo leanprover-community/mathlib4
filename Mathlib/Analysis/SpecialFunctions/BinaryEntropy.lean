@@ -204,10 +204,10 @@ lemma deriv_binEntropy (p : ℝ) : deriv binEntropy p = log (1 - p) - log p := b
 
 /-- Shannon q-ary Entropy function (measured in Nats, i.e., using natural logs).
 
-It's the Shannon entropy of a random variable with possible outcomes {1, ..., q}
+It's the Shannon entropy of a random variable with possible outcomes `{1, ..., q}`
 where outcome `1` has probability `1 - p` and all other outcomes are equally likely.
 
-The usual domain of definition is p ∈ [0,1], i.e., input is a probability.
+The usual domain of definition is `p ∈ [0,1]`, i.e., input is a probability.
 
 This is a generalization of the binary entropy function `binEntropy`. -/
 @[pp_nodot] noncomputable def qaryEntropy (q : ℕ) (p : ℝ) : ℝ := p * log (q - 1 : ℤ) + binEntropy p

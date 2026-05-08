@@ -14,7 +14,7 @@ public import Mathlib.Order.Nat
 Lemmas about the type of natural numbers with a bottom element adjoined.
 -/
 
-@[expose] public section
+public section
 
 
 namespace Nat

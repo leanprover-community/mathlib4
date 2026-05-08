@@ -73,7 +73,7 @@ so is its topological closure.
 See note [reducible non-instances] -/
 abbrev nonUnitalCommSemiringTopologicalClosure [T2Space A] (s : NonUnitalStarSubalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommSemiring s.topologicalClosure :=
-  s.toNonUnitalSubalgebra.nonUnitalCommSemiringTopologicalClosure hs
+  fast_instance% s.toNonUnitalSubalgebra.nonUnitalCommSemiringTopologicalClosure hs
 
 variable [TopologicalSpace B] [Star B] [NonUnitalSemiring B] [Module R B]
     [IsSemitopologicalSemiring B] [ContinuousConstSMul R B] [ContinuousStar B]
@@ -168,7 +168,7 @@ theorem isClosed (x : A) : IsClosed (elemental R x : Set A) :=
 
 open scoped IsMulCommutative in
 instance [T2Space A] {x : A} [IsStarNormal x] : NonUnitalCommSemiring (elemental R x) :=
-  nonUnitalCommSemiringTopologicalClosure _ mul_comm
+  fast_instance% nonUnitalCommSemiringTopologicalClosure _ mul_comm
 
 instance {R A : Type*} [CommRing R] [StarRing R] [NonUnitalRing A] [StarRing A]
     [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A]

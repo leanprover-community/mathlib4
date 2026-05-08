@@ -28,7 +28,7 @@ stronger assumptions (e.g., `im z` is bounded from below and from above) are not
 
 -/
 
-@[expose] public section
+public section
 
 
 open Asymptotics Filter Function

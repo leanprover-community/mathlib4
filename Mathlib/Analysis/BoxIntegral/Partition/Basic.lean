@@ -221,7 +221,7 @@ theorem subset_iUnion (h : J ∈ π) : ↑J ⊆ π.iUnion :=
 theorem iUnion_subset : π.iUnion ⊆ I :=
   iUnion₂_subset π.le_of_mem'
 
-@[mono]
+@[gcongr, mono]
 theorem iUnion_mono (h : π₁ ≤ π₂) : π₁.iUnion ⊆ π₂.iUnion := fun _ hx =>
   let ⟨_, hJ₁, hx⟩ := π₁.mem_iUnion.1 hx
   let ⟨J₂, hJ₂, hle⟩ := h hJ₁
@@ -438,7 +438,7 @@ theorem mem_restrict : J₁ ∈ π.restrict J ↔ ∃ J' ∈ π, (J₁ : WithBot
 theorem mem_restrict' : J₁ ∈ π.restrict J ↔ ∃ J' ∈ π, (J₁ : Set (ι → ℝ)) = ↑J ∩ ↑J' := by
   simp only [mem_restrict, ← Box.withBotCoe_inj, Box.coe_inf, Box.coe_coe]
 
-@[mono]
+@[gcongr, mono]
 theorem restrict_mono {π₁ π₂ : Prepartition I} (Hle : π₁ ≤ π₂) : π₁.restrict J ≤ π₂.restrict J := by
   classical
   refine ofWithBot_mono fun J₁ hJ₁ hne => ?_

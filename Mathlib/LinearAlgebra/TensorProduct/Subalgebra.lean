@@ -64,11 +64,9 @@ def lTensorBot : (⊥ : Subalgebra R S) ⊗[R] A ≃ₐ[R] A := by
     replace hx : algebraMap R _ x' = x := Subtype.val_injective hx
     obtain ⟨y', hy⟩ := Algebra.mem_bot.1 y.2
     replace hy : algebraMap R _ y' = y := Subtype.val_injective hy
-    rw [← hx, ← hy, ← map_mul]
-    erw [(toSubmodule A).lTensorOne_tmul x' a,
-      (toSubmodule A).lTensorOne_tmul y' b,
-      (toSubmodule A).lTensorOne_tmul (x' * y') (a * b)]
-    rw [Algebra.mul_smul_comm, Algebra.smul_mul_assoc, smul_smul, mul_comm x' y']
+    rw [← hx, ← hy, ← map_mul, (toSubmodule A).lTensorOne_tmul x' a,
+      (toSubmodule A).lTensorOne_tmul y' b, (toSubmodule A).lTensorOne_tmul (x' * y') (a * b),
+      Algebra.mul_smul_comm, Algebra.smul_mul_assoc, smul_smul, mul_comm x' y']
   · exact Submodule.lTensorOne_one_tmul _
 
 variable {A}
@@ -97,11 +95,9 @@ def rTensorBot : A ⊗[R] (⊥ : Subalgebra R S) ≃ₐ[R] A := by
     replace hx : algebraMap R _ x' = x := Subtype.val_injective hx
     obtain ⟨y', hy⟩ := Algebra.mem_bot.1 y.2
     replace hy : algebraMap R _ y' = y := Subtype.val_injective hy
-    rw [← hx, ← hy, ← map_mul]
-    erw [(toSubmodule A).rTensorOne_tmul x' a,
-      (toSubmodule A).rTensorOne_tmul y' b,
-      (toSubmodule A).rTensorOne_tmul (x' * y') (a * b)]
-    rw [Algebra.mul_smul_comm, Algebra.smul_mul_assoc, smul_smul, mul_comm x' y']
+    rw [← hx, ← hy, ← map_mul, (toSubmodule A).rTensorOne_tmul x' a,
+      (toSubmodule A).rTensorOne_tmul y' b, (toSubmodule A).rTensorOne_tmul (x' * y') (a * b),
+      Algebra.mul_smul_comm, Algebra.smul_mul_assoc, smul_smul, mul_comm x' y']
   · exact Submodule.rTensorOne_tmul_one _
 
 @[simp]
@@ -252,7 +248,7 @@ variable {A B} in
 theorem val_mulMap'_tmul (a : A) (b : B) : (mulMap' A B (a ⊗ₜ[R] b) : S) = a.1 * b.1 := rfl
 
 theorem mulMap'_surjective : Function.Surjective (mulMap' A B) := by
-  simp_rw [mulMap', AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe,
+  simp_rw [mulMap', AlgHom.coe_comp, AlgEquiv.coe_algHom,
     EquivLike.comp_surjective, AlgHom.rangeRestrict_surjective]
 
 end Subalgebra

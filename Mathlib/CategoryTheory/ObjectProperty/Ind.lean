@@ -49,6 +49,8 @@ lemma le_ind : P ≤ ind.{w} P := by
   intro X hX
   exact ⟨PUnit, inferInstance, inferInstance, .self X, by simpa⟩
 
+instance [P.Nonempty] : (ind.{w} P).Nonempty := .mono P.le_ind
+
 instance : P.ind.IsClosedUnderIsomorphisms where
   of_iso {X Y} e := fun ⟨J, _, _, pres, h⟩ ↦ ⟨J, ‹_›, ‹_›, pres.ofIso e, h⟩
 

@@ -368,7 +368,7 @@ inclusion into a larger affine subspace `S₂` is cospherical. -/
 theorem Cospherical.inclusion_iff {S₁ S₂ : AffineSubspace ℝ P} [Nonempty S₁] {ps : Set S₁}
     [S₁.direction.HasOrthogonalProjection] [S₂.direction.HasOrthogonalProjection] (hS : S₁ ≤ S₂) :
     Cospherical (AffineSubspace.inclusion hS '' ps) ↔ Cospherical ps := by
-  haveI : Nonempty S₂ := by obtain ⟨p⟩ := ‹Nonempty S₁›;exact ⟨⟨p, hS p.property⟩⟩
+  haveI : Nonempty S₂ := by obtain ⟨p⟩ := ‹Nonempty S₁›; exact ⟨⟨p, hS p.property⟩⟩
   simp [(Cospherical.subtype_val_iff (S := S₂) (ps := AffineSubspace.inclusion hS '' ps)).symm,
     Set.image_image]
 
@@ -415,7 +415,7 @@ theorem Cospherical.affineIndependent_of_mem_of_ne {s : Set P} (hs : Cospherical
     AffineIndependent ℝ ![p₁, p₂, p₃] := by
   refine hs.affineIndependent ?_ ?_
   · simp [h₁, h₂, h₃, Set.insert_subset_iff]
-  · erw [Fin.cons_injective_iff, Fin.cons_injective_iff]
+  · simp only [Matrix.vecCons, Fin.cons_injective_iff]
     simp [h₁₂, h₁₃, h₂₃, Function.Injective, eq_iff_true_of_subsingleton]
 
 /-- The three points of a cospherical set are affinely independent. -/

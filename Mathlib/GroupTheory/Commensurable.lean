@@ -37,7 +37,7 @@ additively.
 
 @[expose] public section
 
-open Pointwise
+open scoped Pointwise
 
 variable {G : Type*} [Group G]
 

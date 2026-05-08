@@ -15,7 +15,7 @@ In this file, we define the typeclass of abelian extensions and provide some bas
 
 -/
 
-@[expose] public section
+public section
 
 variable (K L M : Type*) [Field K] [Field L] [Algebra K L]
 variable [Field M] [Algebra K M] [Algebra L M] [IsScalarTower K L M]
@@ -66,6 +66,4 @@ instance : IsAbelianGalois K K where
 instance : IsAbelianGalois K (⊥ : IntermediateField K L) :=
   .of_algHom (IntermediateField.botEquiv K L).toAlgHom
 
-lemma IsAbelianGalois.of_isCyclic [IsGalois K L] [IsCyclic Gal(L/K)] :
-    IsAbelianGalois K L where
-  is_comm := letI := IsCyclic.commGroup (α := L ≃ₐ[K] L); inferInstance
+lemma IsAbelianGalois.of_isCyclic [IsGalois K L] [IsCyclic Gal(L/K)] : IsAbelianGalois K L where

@@ -57,7 +57,7 @@ These conditions are sufficient, but not necessary.  As mentioned above, *Kaplan
 asserts that `A` being torsion-free may be enough.
 -/
 
-@[expose] public section
+public section
 
 open Finsupp
 

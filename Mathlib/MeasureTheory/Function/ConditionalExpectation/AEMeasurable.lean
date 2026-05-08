@@ -258,7 +258,6 @@ theorem lpMeasSubgroupToLpTrim_norm_map [hp : Fact (1 ≤ p)] (hm : m ≤ m0)
     eLpNorm_congr_ae (lpMeasSubgroupToLpTrim_ae_eq hm _), ← Lp.norm_def]
   congr
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isometry_lpMeasSubgroupToLpTrim [hp : Fact (1 ≤ p)] (hm : m ≤ m0) :
     Isometry (lpMeasSubgroupToLpTrim F p μ hm) :=
   Isometry.of_dist_eq fun f g => by

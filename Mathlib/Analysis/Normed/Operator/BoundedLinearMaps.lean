@@ -354,7 +354,7 @@ theorem ContinuousLinearMap.isBoundedBilinearMap (f : E →L[𝕜] F →L[𝕜] 
     bound :=
       ⟨max ‖f‖ 1, zero_lt_one.trans_le (le_max_right _ _), fun x y =>
         (f.le_opNorm₂ x y).trans <| by
-          apply_rules [mul_le_mul_of_nonneg_right, norm_nonneg, le_max_left] ⟩ }
+          gcongr; apply le_max_left ⟩ }
 
 /-- A bounded bilinear map `f : E × F → G` defines a continuous linear map
 `f : E →L[𝕜] F →L[𝕜] G`. -/

@@ -23,7 +23,7 @@ which were not available in the import dependencies of `Mathlib/Data/Int/Cast/Ba
 Move order lemmas about `Nat.cast`, `Rat.cast`, `NNRat.cast` here.
 -/
 
-@[expose] public section
+public section
 
 open Function Nat
 

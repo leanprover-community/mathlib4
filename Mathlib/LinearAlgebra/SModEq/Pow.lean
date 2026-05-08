@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.Ideal.Operations
 
 /-! # Lemmas about SModEq related to powers -/
 
-@[expose] public section
+public section
 
 namespace SModEq
 variable {R : Type*} [CommRing R] {I J : Ideal R} {p : ℕ} (hpI : (p : R) ∈ I)

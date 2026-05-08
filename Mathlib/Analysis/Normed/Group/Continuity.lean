@@ -18,7 +18,7 @@ public import Mathlib.Topology.Sequences
 normed group
 -/
 
-@[expose] public section
+public section
 
 variable {α ι κ E F G : Type*}
 

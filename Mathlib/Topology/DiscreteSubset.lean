@@ -173,9 +173,6 @@ lemma IsClosed.tendsto_coe_cofinite_of_isDiscrete
   haveI := hs'.to_subtype
   tendsto_cofinite_cocompact_of_discrete hs.isClosedEmbedding_subtypeVal.tendsto_cocompact
 
-@[deprecated (since := "2025-10-08")] alias IsClosed.tendsto_coe_cofinite_of_discreteTopology :=
-  IsClosed.tendsto_coe_cofinite_of_isDiscrete
-
 lemma IsClosed.tendsto_coe_cofinite_iff [T1Space X] [WeaklyLocallyCompactSpace X]
     {s : Set X} (hs : IsClosed s) :
     Tendsto ((↑) : s → X) cofinite (cocompact _) ↔ IsDiscrete s :=
@@ -238,9 +235,6 @@ theorem isDiscrete_of_codiscreteWithin {U s : Set X} (h : sᶜ ∈ Filter.codisc
   rw [(by simp : ((s ∩ U) : Set X) = ((sᶜ ∪ Uᶜ)ᶜ : Set X)), isDiscrete_iff_nhdsNE]
   simp_rw [← Filter.mem_iff_inf_principal_compl]
   simp_all [← Set.compl_diff, mem_codiscreteWithin]
-
-@[deprecated (since := "2025-10-08")] alias discreteTopology_of_codiscreteWithin :=
-  isDiscrete_of_codiscreteWithin
 
 /-- Helper lemma for `codiscreteWithin_iff_locallyFiniteComplementWithin`: A set `s` is
 `codiscreteWithin U` iff every point `z ∈ U` has a punctured neighborhood that does not intersect

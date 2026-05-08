@@ -249,7 +249,7 @@ private theorem fixed_of_fixed1_aux1 :
   let r := ∑ i ∈ Finset.range (k + 1), Polynomial.monomial i (f.coeff (i + j))
   have hr : r.map (algebraMap B (B ⧸ Q)) = q := by
     ext n
-    rw [Polynomial.coeff_map, Polynomial.finset_sum_coeff]
+    rw [Polynomial.coeff_map, Polynomial.finsetSum_coeff]
     simp only [Polynomial.coeff_monomial, Finset.sum_ite_eq', Finset.mem_range_succ_iff]
     split_ifs with hn
     · rw [← Polynomial.coeff_map, hq, Polynomial.coeff_X_pow_mul]
@@ -353,7 +353,7 @@ noncomputable def IsFractionRing.stabilizerHom : MulAction.stabilizer G Q →* G
 omit [Finite G] [Q.IsPrime] [Algebra.IsInvariant A B G] in
 @[simp]
 theorem IsFractionRing.stabilizerHom_apply_apply_mk (σ : MulAction.stabilizer G Q) (x : B) :
-    IsFractionRing.stabilizerHom G P Q K L σ (algebraMap _  L (Ideal.Quotient.mk Q x)) =
+    IsFractionRing.stabilizerHom G P Q K L σ (algebraMap _ L (Ideal.Quotient.mk Q x)) =
       algebraMap _ L (Ideal.Quotient.mk Q (σ.val • x)) := by
   simp [IsFractionRing.stabilizerHom, MulAction.subgroup_smul_def]
 

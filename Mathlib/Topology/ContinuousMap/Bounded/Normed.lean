@@ -328,7 +328,7 @@ lemma nnnorm_sub_eq_max [IsCancelMulZero R] {f g : α →ᵇ R} (h : f * g = 0) 
     ‖f - g‖₊ = max ‖f‖₊ ‖g‖₊ :=
   NNReal.eq <| norm_sub_eq_max h
 
-open scoped Function
+open scoped Function in
 /-- If the pairwise products of bounded continuous functions are all zero, then the norm of their
 sum is the maximum of their norms. -/
 lemma nnnorm_sum_eq_sup [IsCancelMulZero R] {ι : Type*} {f : ι → (α →ᵇ R)} (s : Finset ι)

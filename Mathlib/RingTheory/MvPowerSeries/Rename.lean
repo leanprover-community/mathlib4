@@ -6,7 +6,7 @@ Authors: Riccardo Brasca, Bingyu Xia
 module
 
 public import Mathlib.Order.Filter.TendstoCofinite
-public import Mathlib.RingTheory.MvPowerSeries.Basic
+public import Mathlib.RingTheory.MvPowerSeries.Substitution
 public import Mathlib.Algebra.MvPolynomial.Rename
 
 /-!
@@ -35,11 +35,6 @@ This file is patterned after `Mathlib/Algebra/MvPolynomial/Rename.lean`.
 * `MvPowerSeries.renameEquiv`
 * `MvPowerSeries.killCompl`
 
-## TODO
-
-* Show that under appropriate substitution, `MvPowerSeries.substAlgHom` coincides with
-  `MvPowerSeries.rename` in the `CommRing` case.
-
 -/
 
 @[expose] public section
@@ -57,7 +52,7 @@ section Semiring
 variable [Semiring R] [Semiring S]
 
 /-- Implementation detail for `rename`. Use `MvPowerSeries.rename` instead. -/
-def renameFun [TendstoCofinite f] : MvPowerSeries σ R → MvPowerSeries τ R :=
+def renameFun : MvPowerSeries σ R → MvPowerSeries τ R :=
   TendstoCofinite.mapDomain (Finsupp.mapDomain f)
 
 private lemma coeff_renameFun {p : MvPowerSeries σ R} {x : τ →₀ ℕ} : (renameFun f p).coeff x =
@@ -115,7 +110,7 @@ variable [CommSemiring R] [CommSemiring S]
 
 /-- Rename all the variables in a multivariable power series by a map with finite fibers. -/
 @[no_expose]
-def rename [TendstoCofinite f] : MvPowerSeries σ R →ₐ[R] MvPowerSeries τ R where
+def rename : MvPowerSeries σ R →ₐ[R] MvPowerSeries τ R where
   toFun := renameFun f
   map_one' := renameFun_monomial f 0 1
   map_mul' := renameFun_mul f
@@ -274,7 +269,7 @@ theorem killCompl_X (i : σ) : killCompl (R := R) e (X (e i)) = X i := by
 theorem killCompl_X_eq_zero {t : τ} (h : t ∉ Set.range e) :
     killCompl (R := R) e (X t) = 0 := by
   replace h : single t 1 ∉ Set.range (embDomain e) := by
-    rwa [mem_range_embDomain_iff, support_single_ne_zero _ (by simp), Finset.coe_singleton,
+    rwa [mem_range_embDomain_iff, support_single _ (by simp), Finset.coe_singleton,
       Set.singleton_subset_iff]
   simpa using killCompl_monomial_eq_zero (1 : R) h
 
@@ -290,5 +285,32 @@ theorem killCompl_map (φ : R →+* S) (p : MvPowerSeries τ R) :
   ext; simp [coeff_killCompl]
 
 end CommSemiring
+
+section CommRing
+
+variable {R : Type*} [CommRing R] (p : MvPowerSeries σ R)
+
+lemma HasSubst.X_comp : HasSubst (X ∘ f : σ → MvPowerSeries τ R) where
+  const_coeff := by simp
+  coeff_zero d := Set.Finite.subset (d.support.finite_toSet.biUnion'
+    (fun i _ ↦ TendstoCofinite.finite_preimage_singleton f i)) (fun x => by
+      contrapose; intro _ _; classical simp_all [coeff_X])
+
+theorem rename_eq_subst : rename f p = p.subst (X ∘ f) := by
+  classical
+  ext n
+  rw [coeff_rename, coeff_subst (HasSubst.X_comp _) p n, finsum_eq_sum _
+    (coeff_subst_finite (HasSubst.X_comp _) p n)]
+  have (d : σ →₀ ℕ) (hd : (coeff d) p * (coeff n) (d.prod fun s e ↦ X (f s) ^ e) ≠ 0) :
+      mapDomain f d = n := by
+    simp_rw [← monomial_mapDomain_apply_one] at hd
+    exact (eq_of_coeff_monomial_ne_zero (right_ne_zero_of_mul hd)).symm
+  refine (Finset.sum_subset_zero_on_sdiff ?_ ?_ (fun x hx => ?_)).symm
+  · exact Set.Finite.toFinset_mono this
+  · simp +contextual [← monomial_mapDomain_apply_one]
+  · simp only [Set.Finite.mem_toFinset] at hx
+    simp [← this _ hx, ← monomial_mapDomain_apply_one, coeff_monomial_same]
+
+end CommRing
 
 end MvPowerSeries

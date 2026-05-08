@@ -73,6 +73,8 @@ theorem all [Star R] [TrivialStar R] (r : R) : IsSelfAdjoint r :=
 theorem star_eq [Star R] {x : R} (hx : IsSelfAdjoint x) : star x = x :=
   hx
 
+grind_pattern star_eq => IsSelfAdjoint x, star x
+
 theorem _root_.isSelfAdjoint_iff [Star R] {x : R} : IsSelfAdjoint x ↔ star x = x :=
   Iff.rfl
 
@@ -95,6 +97,11 @@ lemma commute_iff {R : Type*} [Mul R] [StarMul R] {x y : R}
   · rw [isSelfAdjoint_iff, star_mul, hx.star_eq, hy.star_eq, h.eq]
   · simpa only [star_mul, hx.star_eq, hy.star_eq] using h.symm
 
+lemma commute_of_mul_eq_isSelfAdjoint {R : Type*} [Mul R] [StarMul R] (x y z : R)
+    (hx : IsSelfAdjoint x) (hy : IsSelfAdjoint y) (hz : IsSelfAdjoint z) (hxyz : x * y = z) :
+    Commute x y := by
+  grind [commute_iff hx hy]
+
 /-- Functions in a `StarHomClass` preserve self-adjoint elements. -/
 @[aesop 10% apply]
 theorem map {F R S : Type*} [Star R] [Star S] [FunLike F R S] [StarHomClass F R S]
@@ -116,7 +123,7 @@ section AddMonoid
 variable [AddMonoid R] [StarAddMonoid R]
 
 variable (R) in
-@[simp] protected theorem zero : IsSelfAdjoint (0 : R) := star_zero R
+@[simp, grind .] protected theorem zero : IsSelfAdjoint (0 : R) := star_zero R
 
 @[aesop 90% apply]
 theorem add {x y : R} (hx : IsSelfAdjoint x) (hy : IsSelfAdjoint y) : IsSelfAdjoint (x + y) := by
@@ -175,7 +182,7 @@ section MulOneClass
 variable [MulOneClass R] [StarMul R]
 variable (R)
 
-@[simp] protected theorem one : IsSelfAdjoint (1 : R) :=
+@[simp, grind .] protected theorem one : IsSelfAdjoint (1 : R) :=
   star_one R
 
 end MulOneClass
@@ -204,14 +211,11 @@ lemma _root_.IsUnit.isSelfAdjoint_conjugate_iff' {a u : R} (hu : IsUnit u) :
     IsSelfAdjoint (star u * a * u) ↔ IsSelfAdjoint a := by
   simpa using hu.star.isSelfAdjoint_conjugate_iff
 
-@[deprecated (since := "2025-09-28")] alias _root_.isSelfAdjoint_conjugate_iff_of_isUnit :=
-  IsUnit.isSelfAdjoint_conjugate_iff
-@[deprecated (since := "2025-09-28")] alias _root_.isSelfAdjoint_conjugate_iff_of_isUnit' :=
-  IsUnit.isSelfAdjoint_conjugate_iff'
-
 end Monoid
 
 section Semiring
+
+open Ring
 
 variable [NonAssocSemiring R] [StarRing R]
 
@@ -219,9 +223,18 @@ variable [NonAssocSemiring R] [StarRing R]
 protected theorem natCast (n : ℕ) : IsSelfAdjoint (n : R) :=
   star_natCast _
 
-@[simp]
+@[simp, grind .]
 protected theorem ofNat (n : ℕ) [n.AtLeastTwo] : IsSelfAdjoint (ofNat(n) : R) :=
   .natCast n
+
+@[aesop safe apply, grind ←]
+protected theorem ringInverse {a : A} [Semiring A] [StarRing A]
+    (ha : IsSelfAdjoint a) : IsSelfAdjoint a⁻¹ʳ := by
+  rw [isSelfAdjoint_iff, ← Ring.inverse_star, ha.star_eq]
+
+theorem _root_.isSelfAdjoint_ringInverse_iff {a : A} [Semiring A] [StarRing A] (ha : IsUnit a) :
+    IsSelfAdjoint a⁻¹ʳ ↔ IsSelfAdjoint a :=
+  ⟨fun h => by grind [h.ringInverse], fun h => h.ringInverse⟩
 
 end Semiring
 
@@ -653,6 +666,12 @@ instance IsStarNormal.one_add [NonAssocSemiring R] [StarRing R] {a : R}
 instance IsStarNormal.one_sub [NonAssocRing R] [StarRing R] {a : R}
     [ha : IsStarNormal a] : IsStarNormal (1 - a) :=
   Commute.one_left (star a) |>.isStarNormal_sub
+
+lemma IsSelfAdjoint.commute_of_mul_eq_zero [NonUnitalNonAssocRing R] [StarRing R]
+    {a b : R} (ha : IsSelfAdjoint a) (hb : IsSelfAdjoint b) (hab : a * b = 0) :
+    Commute a b := by
+  have : b * a = 0 := by simpa [ha.star_eq, hb.star_eq] using congr(star $hab)
+  grind [commute_iff_eq]
 
 namespace Pi
 variable {ι : Type*} {α : ι → Type*} [∀ i, Star (α i)] {f : ∀ i, α i}

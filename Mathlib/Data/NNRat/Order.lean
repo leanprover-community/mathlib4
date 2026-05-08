@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Order.Nonneg.Ring
 
 -/
 
-@[expose] public section
+public section
 
 instance : IsStrictOrderedRing ℚ≥0 := Nonneg.isStrictOrderedRing
 

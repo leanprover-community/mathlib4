@@ -115,7 +115,7 @@ lemma coinduced_eq_induced_of_isOpenQuotientMap_of_isInducing
     (h : g ∘ p = q ∘ f)
     (hf : IsInducing f) (hp : Function.Surjective p)
     (hq : IsOpenQuotientMap q) (hg : Function.Injective g)
-    (H : q ⁻¹' (q '' (Set.range f)) ⊆ Set.range f) :
+    (H : q ⁻¹' q '' Set.range f ⊆ Set.range f) :
     ‹TopologicalSpace A›.coinduced p = ‹TopologicalSpace D›.induced g := by
   ext U
   change IsOpen (p ⁻¹' U) ↔ ∃ V, _
@@ -142,7 +142,7 @@ lemma isEmbedding_of_isOpenQuotientMap_of_isInducing
     (h : g ∘ p = q ∘ f)
     (hf : IsInducing f) (hp : IsQuotientMap p)
     (hq : IsOpenQuotientMap q) (hg : Function.Injective g)
-    (H : q ⁻¹' (q '' (Set.range f)) ⊆ Set.range f) :
+    (H : q ⁻¹' q '' Set.range f ⊆ Set.range f) :
     IsEmbedding g :=
   ⟨⟨hp.eq_coinduced.trans (coinduced_eq_induced_of_isOpenQuotientMap_of_isInducing
     f g p q h hf hp.surjective hq hg H)⟩, hg⟩
@@ -151,9 +151,9 @@ lemma isQuotientMap_of_isOpenQuotientMap_of_isInducing
     (h : g ∘ p = q ∘ f)
     (hf : IsInducing f) (hp : Surjective p)
     (hq : IsOpenQuotientMap q) (hg : IsEmbedding g)
-    (H : q ⁻¹' (q '' (Set.range f)) ⊆ Set.range f) :
+    (H : q ⁻¹' q '' Set.range f ⊆ Set.range f) :
     IsQuotientMap p :=
-  ⟨hp, hg.eq_induced.trans ((coinduced_eq_induced_of_isOpenQuotientMap_of_isInducing
-    f g p q h hf hp hq hg.injective H)).symm⟩
+  ⟨⟨hg.eq_induced.trans ((coinduced_eq_induced_of_isOpenQuotientMap_of_isInducing
+    f g p q h hf hp hq hg.injective H)).symm⟩, hp⟩
 
 end Subquotient

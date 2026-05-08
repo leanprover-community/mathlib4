@@ -25,7 +25,7 @@ This condition is necessary and sufficient for `U(R)` to be an open subspace of 
 for all affine scheme `X` over `R` and all affine open subscheme `U ⊆ X`.
 -/
 
-@[expose] public section
+public section
 
 open Topology
 

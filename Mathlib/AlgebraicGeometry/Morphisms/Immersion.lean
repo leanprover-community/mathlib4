@@ -187,7 +187,6 @@ instance (priority := 900) (f : X ⟶ Y) [IsImmersion f] : LocallyOfFiniteType f
   rw [← f.liftCoborder_ι]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 open Limits Scheme.Pullback in
 /-- The diagonal morphism is always an immersion. -/
 @[stacks 01KJ]

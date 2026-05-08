@@ -22,7 +22,7 @@ lemmas about `Pow` since these are easiest to prove via `Finset.prod`.
 
 -/
 
-@[expose] public section
+public section
 
 universe u v
 

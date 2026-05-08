@@ -7,7 +7,9 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Rayleigh
 public import Mathlib.Analysis.Normed.Group.Submodule
-public import Mathlib.Analysis.Normed.Operator.FredholmAlternative
+public import Mathlib.Analysis.Normed.Operator.Compact.FredholmAlternative
+public import Mathlib.Analysis.Normed.Operator.Compact.FiniteDimension
+public import Mathlib.LinearAlgebra.Eigenspace.Charpoly
 public import Mathlib.LinearAlgebra.Eigenspace.ContinuousLinearMap
 public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 public import Mathlib.Data.Fin.Tuple.Sort
@@ -343,6 +345,53 @@ theorem eigenvectorBasis_apply_self_apply (hT : T.IsSymmetric) (hn : Module.finr
   intro a
   rw [smul_smul, mul_comm, ofLp_toLp]
 
+theorem toMatrix_eigenvectorBasis (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) :
+    letI b := (hT.eigenvectorBasis hn).toBasis
+    T.toMatrix b b = Matrix.diagonal (RCLike.ofReal ∘ hT.eigenvalues hn) := by
+  ext i j
+  simp [toMatrix_apply, Matrix.diagonal_apply, RCLike.real_smul_eq_coe_mul]
+  grind
+
+open Polynomial in
+theorem charpoly_eq (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) :
+    T.charpoly = ∏ i, (X - C (hT.eigenvalues hn i : 𝕜)) := by
+  simp [← T.charpoly_toMatrix (hT.eigenvectorBasis hn).toBasis, toMatrix_eigenvectorBasis,
+    Matrix.charpoly_diagonal]
+
+theorem roots_charpoly_eq_eigenvalues (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) :
+    T.charpoly.roots = Multiset.map (RCLike.ofReal ∘ hT.eigenvalues hn) Finset.univ.val := by
+  rw [← charpoly_toMatrix _ (hT.eigenvectorBasis hn).toBasis, toMatrix_eigenvectorBasis,
+    Matrix.charpoly_diagonal, Polynomial.roots_prod _ _ (by
+      simp [Finset.prod_ne_zero_iff, Polynomial.X_sub_C_ne_zero])]
+  simp
+
+theorem sort_roots_charpoly_eq_eigenvalues (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) :
+    (T.charpoly.roots.map RCLike.re).sort (· ≥ ·) = List.ofFn (hT.eigenvalues hn) := by
+  simp_rw [hT.roots_charpoly_eq_eigenvalues, Fin.univ_val_map, Multiset.map_coe, List.map_ofFn,
+    Function.comp_def, RCLike.ofReal_re, Multiset.coe_sort]
+  have := hn.symm
+  convert List.mergeSort_of_pairwise ?_
+  simp_rw [decide_eq_true_eq, ← List.sortedGE_iff_pairwise]
+  convert (hT.eigenvalues_antitone hn).sortedGE_ofFn
+
+theorem eigenvalues_eq_eigenvalues_iff {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
+    [FiniteDimensional 𝕜 E'] {T' : E' →ₗ[𝕜] E'} (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n)
+    (hT' : T'.IsSymmetric) (hn' : Module.finrank 𝕜 E' = n) :
+    hT.eigenvalues hn = hT'.eigenvalues hn' ↔ T.charpoly = T'.charpoly where
+  mp h := by rw [hT.charpoly_eq hn, hT'.charpoly_eq hn', h]
+  mpr h := by
+    rw [← List.ofFn_inj, ← sort_roots_charpoly_eq_eigenvalues, ← sort_roots_charpoly_eq_eigenvalues,
+      h]
+
+theorem splits_charpoly (hT : T.IsSymmetric) : T.charpoly.Splits := by
+  refine Polynomial.splits_iff_card_roots.mpr ?_
+  simp [hT.roots_charpoly_eq_eigenvalues rfl, LinearMap.charpoly_natDegree]
+
+theorem det_eq_prod_eigenvalues (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) :
+    T.det = ∏ i, (hT.eigenvalues hn i : 𝕜) := by
+  simp [det_eq_prod_roots_charpoly_of_splits hT.splits_charpoly,
+    hT.roots_charpoly_eq_eigenvalues hn, List.prod_ofFn]
+
 end Version2
 
 end IsSymmetric
@@ -388,7 +437,6 @@ theorem eq_zero_of_forall_hasEigenvalue_eq_zero (hT : IsCompactOperator T) (hT' 
   apply exists_congr
   simp +contextual [hT.hasEigenvalue_iff_mem_spectrum]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The **Spectral Theorem** for compact self-adjoint operators: the eigenspaces of a compact
 self-adjoint operator have trivial orthogonal complement. -/
 theorem orthogonalComplement_iSup_eigenspaces_eq_bot
@@ -401,14 +449,8 @@ theorem orthogonalComplement_iSup_eigenspaces_eq_bot
     hT.restrict' hT'.orthogonalComplement_iSup_eigenspaces_invariant
   have hS_symm : S.IsSymmetric :=
     hT'.restrict_invariant (hT'.orthogonalComplement_iSup_eigenspaces_invariant)
-  have hS μ : eigenspace (S : Module.End 𝕜 (⨆ μ, eigenspace T μ : Submodule 𝕜 E)ᗮ) μ = ⊥ := by
-    rw [Submodule.eq_bot_iff]
-    intro v hv
-    rw [Subtype.ext_iff, Submodule.coe_zero, ← Submodule.mem_bot 𝕜,
-      ← Submodule.inf_orthogonal_eq_bot (⨆ μ, eigenspace T μ : Submodule 𝕜 E)]
-    refine ⟨Submodule.mem_iSup_of_mem μ ?_, v.2⟩
-    rw [mem_eigenspace_iff] at hv ⊢
-    exact Subtype.ext_iff.mp hv
+  have hS μ : eigenspace (S : Module.End 𝕜 (⨆ μ, eigenspace T μ : Submodule 𝕜 E)ᗮ) μ = ⊥ :=
+    hT'.orthogonalComplement_iSup_eigenspaces _
   have h μ : HasEigenvalue (S : End 𝕜 (⨆ μ, eigenspace T μ : Submodule 𝕜 E)ᗮ) μ → μ = 0 := by
     simp_all [hasEigenvalue_iff]
   rw [eq_zero_of_forall_hasEigenvalue_eq_zero hS_compact hS_symm] at h

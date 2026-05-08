@@ -104,6 +104,16 @@ nonrec theorem BoundedAtFilter.mul [SeminormedRing β] {l : Filter α} {f g : α
   convert Asymptotics.isBigO_refl (E := ℝ) _ l
   simp
 
+theorem ZeroAtFilter.mul_boundedAtFilter [SeminormedRing β] {l : Filter α}
+    {f g : α → β} (hf : ZeroAtFilter l f) (hg : BoundedAtFilter l g) : ZeroAtFilter l (f * g) := by
+  rw [ZeroAtFilter, ← Asymptotics.isLittleO_one_iff (F := ℝ)] at hf ⊢
+  simpa using hf.mul_isBigO hg
+
+theorem BoundedAtFilter.mul_zeroAtFilter [SeminormedRing β] {l : Filter α}
+    {f g : α → β} (hf : BoundedAtFilter l f) (hg : ZeroAtFilter l g) : ZeroAtFilter l (f * g) := by
+  rw [ZeroAtFilter, ← Asymptotics.isLittleO_one_iff (F := ℝ)] at hg ⊢
+  simpa using hf.mul_isLittleO hg
+
 variable (𝕜) in
 /-- The submodule of functions that are bounded along a filter `l`. -/
 def boundedFilterSubmodule

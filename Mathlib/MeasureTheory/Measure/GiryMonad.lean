@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 module
 
+public import Mathlib.MeasureTheory.Constructions.Polish.Basic
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
 
 /-!
@@ -90,7 +91,7 @@ theorem _root_.Measurable.measure_of_isPiSystem {μ : α → Measure β} [∀ a,
     simp only [measure_compl hsm (measure_ne_top _ _)]
     exact h_univ.sub ihs
   | iUnion f hfd hfm ihf =>
-    simpa only [measure_iUnion hfd hfm] using .ennreal_tsum ihf
+    simpa only [measure_iUnion hfd hfm] using .tsum ihf
 
 theorem _root_.Measurable.measure_of_isPiSystem_of_isProbabilityMeasure {μ : α → Measure β}
     [∀ a, IsProbabilityMeasure (μ a)]
@@ -211,7 +212,7 @@ theorem lintegral_join {m : Measure (Measure α)} {f : α → ℝ≥0∞} (hf : 
   · fun_prop
   congr
   funext n
-  rw [lintegral_finset_sum (s n)]
+  rw [lintegral_finsetSum (s n)]
   · simp_rw [lintegral_const_mul _ (hf _ _)]
   · exact fun r _ => (hf _ _).const_mul _
 

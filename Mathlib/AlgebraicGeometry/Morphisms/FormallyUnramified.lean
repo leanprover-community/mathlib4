@@ -20,7 +20,7 @@ We show that these properties are local, and are stable under compositions and b
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -175,7 +175,6 @@ instance [FormallyUnramified f] [LocallyOfFiniteType f] (x : X) :
     exact stalkMap f x
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Given any commuting diagram
 ```

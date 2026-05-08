@@ -76,7 +76,7 @@ theorem continuousOn_exp {s : Set ℂ} : ContinuousOn exp s :=
 
 lemma exp_sub_sum_range_isBigO_pow (n : ℕ) :
     (fun x ↦ exp x - ∑ i ∈ Finset.range n, x ^ i / i !) =O[𝓝 0] (· ^ n) := by
-  rcases (zero_le n).eq_or_lt with rfl | hn
+  rcases eq_zero_or_pos n with rfl | hn
   · simpa using continuous_exp.continuousAt.norm.isBoundedUnder_le
   · refine .of_bound (n.succ / (n ! * n)) ?_
     rw [NormedAddGroup.nhds_zero_basis_norm_lt.eventually_iff]
@@ -447,8 +447,7 @@ lemma HasSum.rexp {ι} {f : ι → ℝ} {a : ℝ} (h : HasSum f a) : HasProd (re
 
 namespace Complex
 
-#adaptation_note /-- After https://github.com/leanprover/lean4/pull/12179
-the simpNF linter complains about this being `@[simp]`. -/
+@[simp]
 theorem comap_exp_cobounded : comap exp (cobounded ℂ) = comap re atTop :=
   calc
     comap exp (cobounded ℂ) = comap re (comap Real.exp atTop) := by

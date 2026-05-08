@@ -778,9 +778,9 @@ lemma path1_firstMonster_of_not_edge (hN : 2 ≤ N) {m : MonsterData N} (hc₁0 
     (hc₁N : (m (row1 hN) : ℕ) ≠ N) :
     (path1 hN (m (row1 hN))).firstMonster m = none ∨
       (path1 hN (m (row1 hN))).firstMonster m =
-        some (⟨2, by lia⟩, ⟨(m (row1 hN) : ℕ) - 1, by lia⟩) := by
+        some (⟨2, by lia⟩, ⟨(m (row1 hN) : ℕ) - 1, by omega⟩) := by
   suffices h : ∀ c ∈ (path1 hN (m (row1 hN))).cells, c ∉ m.monsterCells ∨
-      c = (⟨2, by lia⟩, ⟨(m (row1 hN) : ℕ) - 1, by lia⟩) by
+      c = (⟨2, by lia⟩, ⟨(m (row1 hN) : ℕ) - 1, by omega⟩) by
     simp only [Path.firstMonster]
     by_cases hn : List.find? (fun x ↦ decide (x ∈ m.monsterCells))
                              (path1 hN (m (row1 hN))).cells = none

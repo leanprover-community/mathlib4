@@ -30,7 +30,6 @@ variable {x y : ℂ}
 
 namespace Complex
 
-set_option backward.isDefEq.respectTransparency false in
 -- Non-terminal simp, used to be field_simp
 set_option linter.flexible false in
 -- see https://github.com/leanprover-community/mathlib4/issues/29041

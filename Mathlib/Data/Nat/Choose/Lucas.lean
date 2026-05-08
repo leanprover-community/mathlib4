@@ -57,7 +57,7 @@ theorem choose_modEq_choose_mod_mul_choose_div :
       rw [h, add_mul_mod_self_left, add_mul_div_left _ _ Fin.pos', eq_comm (b := x₂)]
       exact ⟨mod_eq_of_lt h', right_eq_add.mpr (div_eq_of_lt h')⟩
     · rw [← h.left, ← h.right, mod_add_div]
-  simp only [finset_sum_coeff, coeff_mul_natCast, coeff_X_pow, ite_mul, zero_mul, ← cast_mul]
+  simp only [finsetSum_coeff, coeff_mul_natCast, coeff_X_pow, ite_mul, zero_mul, ← cast_mul]
   rw [← sum_product', sum_congr rfl (fun a ha ↦ if_congr (h_iff a ha) rfl rfl), sum_ite_eq]
   split_ifs with h
   · simp

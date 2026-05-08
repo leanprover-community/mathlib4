@@ -31,7 +31,7 @@ with codomain `𝟭 C`, i.e. an element of `MonoOver (𝟭 C)`.
 category theory, preradical, torsion theory
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

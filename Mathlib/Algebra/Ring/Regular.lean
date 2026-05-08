@@ -13,7 +13,7 @@ public import Mathlib.Algebra.Ring.Defs
 # Lemmas about regular elements in rings.
 -/
 
-@[expose] public section
+public section
 
 
 variable {α : Type*}

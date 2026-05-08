@@ -20,7 +20,7 @@ that this is a `κ`-filtered colimit.
 
 -/
 
-@[expose] public section
+public section
 
 universe w v' v u' u
 

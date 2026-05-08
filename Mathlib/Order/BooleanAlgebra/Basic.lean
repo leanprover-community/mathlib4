@@ -26,7 +26,7 @@ generalized Boolean algebras, Boolean algebras, lattices, sdiff, compl
 
 -/
 
-@[expose] public section
+public section
 
 universe u v
 
@@ -221,8 +221,6 @@ theorem sdiff_eq_sdiff_iff_inf_eq_inf : y \ x = y \ z ↔ y ⊓ x = y ⊓ z :=
 
 theorem sdiff_eq_self_iff_disjoint : x \ y = x ↔ Disjoint y x := sdiff_eq_left.trans disjoint_comm
 
-@[deprecated (since := "2025-10-12")] alias sdiff_eq_self_iff_disjoint' := sdiff_eq_left
-
 theorem sdiff_lt (hx : y ≤ x) (hy : y ≠ ⊥) : x \ y < x := by
   refine sdiff_le.lt_of_ne fun h => hy ?_
   rw [sdiff_eq_left, disjoint_iff] at h
@@ -289,8 +287,12 @@ theorem sdiff_eq_symm (hy : y ≤ x) (h : x \ y = z) : x \ z = y := by
 theorem sdiff_eq_comm (hy : y ≤ x) (hz : z ≤ x) : x \ y = z ↔ x \ z = y :=
   ⟨sdiff_eq_symm hy, sdiff_eq_symm hz⟩
 
-theorem eq_of_sdiff_eq_sdiff (hxz : x ≤ z) (hyz : y ≤ z) (h : z \ x = z \ y) : x = y := by
-  rw [← sdiff_sdiff_eq_self hxz, h, sdiff_sdiff_eq_self hyz]
+theorem sdiff_right_inj (hxz : x ≤ z) (hyz : y ≤ z) : z \ x = z \ y ↔ x = y :=
+  ⟨fun h => by rw [← sdiff_sdiff_eq_self hxz, h, sdiff_sdiff_eq_self hyz], congrArg (z \ ·)⟩
+
+@[deprecated sdiff_right_inj (since := "2026-04-16")]
+theorem eq_of_sdiff_eq_sdiff (hxz : x ≤ z) (hyz : y ≤ z) (h : z \ x = z \ y) : x = y :=
+  (sdiff_right_inj hxz hyz).mp h
 
 theorem sdiff_le_sdiff_iff_le (hx : x ≤ z) (hy : y ≤ z) : z \ x ≤ z \ y ↔ y ≤ x := by
   refine ⟨fun h ↦ ?_, sdiff_le_sdiff_left⟩
@@ -642,5 +644,28 @@ protected abbrev Function.Injective.booleanAlgebra [Max α] [Min α] [LE α] [LT
     rw [map_compl, sup_compl_eq_top, map_top]).ge
   sdiff_eq a b := hf <| (map_sdiff _ _).trans <| sdiff_eq.trans <| by rw [map_inf, map_compl]
   himp_eq a b := hf <| (map_himp _ _).trans <| himp_eq.trans <| by rw [map_sup, map_compl]
+
+namespace Equiv
+
+variable (e : α ≃ β)
+
+/-- Transfer `GeneralizedBooleanAlgebra` across an `Equiv`. -/
+protected abbrev generalizedBooleanAlgebra [GeneralizedBooleanAlgebra β] :
+    GeneralizedBooleanAlgebra α := by
+  let bot := e.bot
+  let sdiff := e.sdiff
+  let distribLattice := e.distribLattice
+  apply e.injective.generalizedBooleanAlgebra <;> intros <;>
+  first | rfl | exact e.apply_symm_apply _
+
+/-- Transfer `BooleanAlgebra` across an `Equiv`. -/
+protected abbrev booleanAlgebra [BooleanAlgebra β] : BooleanAlgebra α := by
+  let top := e.top
+  let compl := e.compl
+  let himp := e.himp
+  let generalizedBooleanAlgebra := e.generalizedBooleanAlgebra
+  apply e.injective.booleanAlgebra <;> intros <;> first | rfl | exact e.apply_symm_apply _
+
+end Equiv
 
 end lift

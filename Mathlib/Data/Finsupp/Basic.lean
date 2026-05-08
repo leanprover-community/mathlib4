@@ -121,9 +121,11 @@ theorem mapRange_multiset_sum (f : F) (m : Multiset (α →₀ M)) :
     mapRange f (map_zero f) m.sum = (m.map fun x => mapRange f (map_zero f) x).sum :=
   (mapRange.addMonoidHom (f : M →+ N) : (α →₀ _) →+ _).map_multiset_sum _
 
-theorem mapRange_finset_sum (f : F) (s : Finset ι) (g : ι → α →₀ M) :
+theorem mapRange_finsetSum (f : F) (s : Finset ι) (g : ι → α →₀ M) :
     mapRange f (map_zero f) (∑ x ∈ s, g x) = ∑ x ∈ s, mapRange f (map_zero f) (g x) :=
   map_sum (mapRange.addMonoidHom (f : M →+ N)) _ _
+
+@[deprecated (since := "2026-04-08")] alias mapRange_finset_sum := mapRange_finsetSum
 
 end Finsupp
 
@@ -334,9 +336,11 @@ theorem mapDomain.addMonoidHom_comp (f : β → γ) (g : α → β) :
       (mapDomain.addMonoidHom f).comp (mapDomain.addMonoidHom g) :=
   AddMonoidHom.ext fun _ => mapDomain_comp
 
-theorem mapDomain_finset_sum {f : α → β} {s : Finset ι} {v : ι → α →₀ M} :
+theorem mapDomain_finsetSum {f : α → β} {s : Finset ι} {v : ι → α →₀ M} :
     mapDomain f (∑ i ∈ s, v i) = ∑ i ∈ s, mapDomain f (v i) :=
   map_sum (mapDomain.addMonoidHom f) _ _
+
+@[deprecated (since := "2026-04-08")] alias mapDomain_finset_sum := mapDomain_finsetSum
 
 theorem mapDomain_sum [Zero N] {f : α → β} {s : α →₀ N} {v : α → N → α →₀ M} :
     mapDomain f (s.sum v) = s.sum fun a b => mapDomain f (v a b) :=
@@ -547,8 +551,8 @@ theorem comapDomain_single (f : α → β) (a : α) (m : M)
   rcases eq_or_ne m 0 with (rfl | hm)
   · simp_rw [single_zero, comapDomain_zero]
   · rw [eq_single_iff, comapDomain_apply, comapDomain_support, ← Finset.coe_subset, coe_preimage,
-      support_single_ne_zero _ hm, coe_singleton, coe_singleton, single_eq_same]
-    rw [support_single_ne_zero _ hm, coe_singleton] at hif
+      support_single _ hm, coe_singleton, coe_singleton, single_eq_same]
+    rw [support_single _ hm, coe_singleton] at hif
     exact ⟨fun x hx => hif hx rfl hx, rfl⟩
 
 lemma comapDomain_surjective {f : α → β} (hf : Function.Injective f) :
@@ -637,6 +641,12 @@ def filter (p : α → Prop) [DecidablePred p] (f : α →₀ M) : α →₀ M w
 
 theorem filter_apply (a : α) : f.filter p a = if p a then f a else 0 := rfl
 
+@[simp] lemma filter_eq [DecidableEq α] (f : α →₀ M) (a : α) :
+    f.filter (a = ·) = single a (f a) := by ext; rw [filter_apply, single_apply]; congr!; simp_all
+
+@[simp] lemma filter_eq' [DecidableEq α] (f : α →₀ M) (a : α) :
+    f.filter (· = a) = single a (f a) := by simp [eq_comm]
+
 theorem filter_eq_indicator : ⇑(f.filter p) = Set.indicator { x | p x } f := by
   ext
   simp [filter_apply, Set.indicator_apply]
@@ -688,12 +698,16 @@ theorem prod_div_prod_filter [CommGroup G] (g : α → M → G) :
 
 end Zero
 
-theorem filter_pos_add_filter_neg [AddZeroClass M] (f : α →₀ M) (p : α → Prop) [DecidablePred p] :
-    (f.filter p + f.filter fun a => ¬p a) = f :=
-  DFunLike.coe_injective <| by
-    simp only [coe_add, filter_eq_indicator]
-    exact Set.indicator_self_add_compl { x | p x } f
+section AddCommMonoid
+variable [AddCommMonoid M]
 
+@[simp]
+lemma filter_add_filter_not (f : α →₀ M) (p : α → Prop) [DecidablePred p] :
+    f.filter p + f.filter (¬ p ·) = f := by ext; simp [filter_apply]; split <;> simp
+
+@[deprecated (since := "2026-05-04")] alias filter_pos_add_filter_neg := filter_add_filter_not
+
+end AddCommMonoid
 end Filter
 
 /-! ### Declarations about `frange` -/
@@ -877,11 +891,13 @@ theorem mem_support_multiset_sum [AddCommMonoid M] {s : Multiset (α →₀ M)} 
         rcases ih (mem_support_iff.2 ha) with ⟨f', h₀, h₁⟩
         exact ⟨f', Multiset.mem_cons_of_mem h₀, h₁⟩)
 
-theorem mem_support_finset_sum [AddCommMonoid M] {s : Finset ι} {h : ι → α →₀ M} (a : α)
+theorem mem_support_finsetSum [AddCommMonoid M] {s : Finset ι} {h : ι → α →₀ M} (a : α)
     (ha : a ∈ (∑ c ∈ s, h c).support) : ∃ c ∈ s, a ∈ (h c).support :=
   let ⟨_, hf, hfa⟩ := mem_support_multiset_sum a ha
   let ⟨c, hc, Eq⟩ := Multiset.mem_map.1 hf
   ⟨c, hc, Eq.symm ▸ hfa⟩
+
+@[deprecated (since := "2026-04-08")] alias mem_support_finset_sum := mem_support_finsetSum
 
 /-! ### Declarations about `curry` and `uncurry` -/
 
@@ -1044,6 +1060,37 @@ lemma prod_sumElim {ι₁ ι₂ α M : Type*} [Zero α] [CommMonoid M]
     (f₁ : ι₁ →₀ α) (f₂ : ι₂ →₀ α) (g : ι₁ ⊕ ι₂ → α → M) :
     (f₁.sumElim f₂).prod g = f₁.prod (g ∘ Sum.inl) * f₂.prod (g ∘ Sum.inr) := by
   simp [Finsupp.prod, Finset.prod_disjSum]
+
+@[simp]
+lemma comapDomain_inl_sumElim (f : α →₀ γ) (g : β →₀ γ) :
+    comapDomain Sum.inl (f.sumElim g) Sum.inl_injective.injOn = f := by
+  ext; simp
+
+@[simp]
+lemma comapDomain_inr_sumElim (f : α →₀ γ) (g : β →₀ γ) :
+    comapDomain Sum.inr (f.sumElim g) Sum.inr_injective.injOn = g := by
+  ext; simp
+
+@[simp]
+lemma embDomain_inl (a : α →₀ γ) :
+    embDomain Function.Embedding.inl a = sumElim a (0 : β →₀ γ) := by
+  ext (_ | _) <;> simp [embDomain_apply]
+
+@[simp]
+lemma embDomain_inr (b : β →₀ γ) :
+    embDomain Function.Embedding.inr b = sumElim (0 : α →₀ γ) b := by
+  ext (_ | _) <;> simp [embDomain_apply]
+
+@[simp]
+lemma comapDomain_sumElim_comapDomain (c : α ⊕ β →₀ γ) :
+    (comapDomain Sum.inl c Sum.inl_injective.injOn).sumElim
+      (comapDomain Sum.inr c Sum.inr_injective.injOn) = c := by
+  ext (_ | _) <;> simp
+
+@[simp]
+lemma sumElim_add [AddZeroClass M] (a b : α →₀ M) (c d : β →₀ M) :
+    (a + b).sumElim (c + d) = a.sumElim c + b.sumElim d := by
+  ext (_ | _) <;> simp
 
 /-- The equivalence between `(α ⊕ β) →₀ γ` and `(α →₀ γ) × (β →₀ γ)`.
 

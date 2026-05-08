@@ -21,7 +21,7 @@ This can also easily be applied to filtered `J` in the case when `A` is a catego
 eventually to sifted `J` once that API is developed.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

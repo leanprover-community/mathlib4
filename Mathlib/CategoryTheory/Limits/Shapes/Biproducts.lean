@@ -611,9 +611,9 @@ instance biproduct.map_epi {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p 
   have : biproduct.map p =
       (biproduct.isoCoproduct _).hom ≫ Sigma.map p ≫ (biproduct.isoCoproduct _).inv := by
     ext
-    simp only [map_π, isoCoproduct_hom, isoCoproduct_inv, Category.assoc, ι_desc_assoc,
-      ι_colimMap_assoc, Discrete.functor_obj_eq_as, Discrete.natTrans_app, colimit.ι_desc_assoc,
-      Cofan.mk_pt, Cofan.mk_ι_app, ι_π, ι_π_assoc]
+    simp only [map_π, ι_π_assoc, isoCoproduct_hom, isoCoproduct_inv, Category.assoc, ι_desc_assoc,
+      Sigma.ι_map_assoc, colimit.ι_desc_assoc, Discrete.functor_obj_eq_as, Cofan.mk_pt,
+      Cofan.mk_ι_app, ι_π]
     split
     all_goals simp_all
   rw [this]

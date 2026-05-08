@@ -22,7 +22,7 @@ In this file we show that
 descend along faithfully flat base change.
 -/
 
-@[expose] public section
+public section
 
 universe u v w
 

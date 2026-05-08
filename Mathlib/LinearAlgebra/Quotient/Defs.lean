@@ -98,6 +98,12 @@ theorem mk_zero : mk 0 = (0 : M ⧸ p) :=
 @[simp]
 theorem mk_eq_zero : (mk x : M ⧸ p) = 0 ↔ x ∈ p := by simpa using (Quotient.eq' p : mk x = 0 ↔ _)
 
+instance addMonoid : AddMonoid (M ⧸ p) :=
+  inferInstanceAs <| AddMonoid (M ⧸ p.toAddSubgroup)
+
+instance addCommMonoid : AddCommMonoid (M ⧸ p) :=
+  inferInstanceAs <| AddCommMonoid (M ⧸ p.toAddSubgroup)
+
 instance addCommGroup : AddCommGroup (M ⧸ p) :=
   inferInstanceAs <| AddCommGroup (M ⧸ p.toAddSubgroup)
 

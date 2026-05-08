@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Algebra.Ring.NegOnePow
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
 
-/-! The cochain complex of homomorphisms between cochain complexes
+/-! # The cochain complex of homomorphisms between cochain complexes
 
 If `F` and `G` are cochain complexes (indexed by `ℤ`) in a preadditive category,
 there is a cochain complex of abelian groups whose `0`-cocycles identify to
@@ -728,7 +728,7 @@ def isKernel (hm : n + 1 = m) :
           #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
           this was just `cat_disch`. -/
           simp +instances only [HomComplex_X, map_add]
-          rfl})
+          rfl })
     (by cat_disch) (fun s l hl ↦ by ext : 3; simp [← hl])
 
 end Cocycle

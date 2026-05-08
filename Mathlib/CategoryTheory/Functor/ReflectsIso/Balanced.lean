@@ -19,7 +19,7 @@ and `PreservesMonomorphisms` are balanced.
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory CategoryTheory.Functor
 

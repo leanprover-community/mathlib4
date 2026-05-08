@@ -270,14 +270,14 @@ lemma not_odd_iff : ¬Odd n ↔ n % 2 = 0 := by grind
 
 lemma _root_.Odd.not_two_dvd_nat (h : Odd n) : ¬(2 ∣ n) := by grind
 
-lemma even_xor_odd (n : ℕ) : Xor' (Even n) (Odd n) := by grind
+lemma even_xor_odd (n : ℕ) : Xor (Even n) (Odd n) := by grind
 
 lemma even_or_odd (n : ℕ) : Even n ∨ Odd n := (even_xor_odd n).or
 
 lemma even_or_odd' (n : ℕ) : ∃ k, n = 2 * k ∨ n = 2 * k + 1 := by
   simpa only [← two_mul, exists_or, Odd, Even] using even_or_odd n
 
-lemma even_xor_odd' (n : ℕ) : ∃ k, Xor' (n = 2 * k) (n = 2 * k + 1) := by
+lemma even_xor_odd' (n : ℕ) : ∃ k, Xor (n = 2 * k) (n = 2 * k + 1) := by
   obtain ⟨k, rfl⟩ | ⟨k, rfl⟩ := even_or_odd n <;>
   · use k
     grind

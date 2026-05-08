@@ -13,7 +13,7 @@ public import Mathlib.Data.Fintype.EquivFin
 
 -/
 
-@[expose] public section
+public section
 
 
 open Function

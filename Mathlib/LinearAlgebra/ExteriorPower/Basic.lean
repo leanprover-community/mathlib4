@@ -114,7 +114,7 @@ lemma ιMulti_span :
   exact ExteriorAlgebra.ιMulti_span_fixedDegree R n
 
 open Set Submodule in
-/-- A version of `ιMulti_span_fixedDegree_of_span` that works in the exterior power. -/
+/-- A version of `ιMulti_span_fixedDegree_of_span_eq_top` that works in the exterior power. -/
 lemma ιMulti_span_of_span {s : Set M} (hs : span R s = ⊤) :
     span R (ιMulti R n '' {a | range a ⊆ s}) = ⊤ := by
   apply LinearMap.map_injective (ker_subtype (⋀[R]^n M))

@@ -266,7 +266,7 @@ theorem Module.support_quotient (I : Ideal R) :
       exact Ideal.map_mono hp₂
     exact e.nontrivial
 
-open Pointwise in
+open scoped Pointwise in
 @[simp]
 theorem Module.support_quotSMulTop (x : R) :
     support R (QuotSMulTop x M) = support R M ∩ zeroLocus {x} :=

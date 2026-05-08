@@ -68,7 +68,6 @@ instance : uliftFunctor.{v, u}.Faithful :=
 
 open Limits
 
-set_option backward.isDefEq.respectTransparency false in
 instance : PreservesLimitsOfSize.{w', w} uliftFunctor.{v, u} := by
   refine ⟨⟨fun {K} ↦ ⟨fun {c} hc ↦ ?_⟩⟩⟩
   rw [nonempty_isLimit_iff_eq_induced]

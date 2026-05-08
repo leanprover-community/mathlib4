@@ -29,7 +29,7 @@ With `open scoped RightActions`, this provides:
 * `p <+ᵥ v` as an alias for `AddOpposite.op v +ᵥ p`
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Ring
 

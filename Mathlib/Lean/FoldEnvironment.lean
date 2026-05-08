@@ -45,7 +45,8 @@ def visitConst (modName : Name) (errorRef : FoldDeclErrorRef)
 def foldModules (ngen : NameGenerator) (errorRef : FoldDeclErrorRef)
     (env : Environment) (init : α) (act : α → Name → ConstantInfo → MetaM α)
     (mctx : Meta.Context) (cctx : Core.Context)
-    (start stop : Nat) : EIO Exception α :=
+    (start stop : Nat) : EIO Exception α := do
+  let cctx := { cctx with initHeartbeats := ← IO.getNumHeartbeats }
   let go : MetaM α := do
     let mut a := init
     for i in start...stop do
@@ -70,7 +71,7 @@ public def foldImportedDecls (init : α) (cfg : Config)
   let env ← getEnv
   let numModules := env.header.moduleData.size
   let mctx := { keyedConfig := cfg.toConfigWithKey }
-  let cctx := { (← read) with maxHeartbeats := 0 }
+  let cctx ← read
   let errorRef ← IO.mkRef {}
   let mut tasks := #[]
   let mut start := 0
@@ -102,7 +103,7 @@ public def foldCurrFileDecls (init : α) (cfg : Config)
   setNGen parentNGen
   let go : MetaM α := env.constants.map₂.foldlM (visitConst modName errorRef act) init
   let result ← go.run' { keyedConfig := cfg.toConfigWithKey } {}
-    |>.run' { (← read) with maxHeartbeats := 0 } { env, ngen := childNGen }
+    |>.run' (← read) { env, ngen := childNGen }
   return (result, errorRef)
 
 end Lean.Meta

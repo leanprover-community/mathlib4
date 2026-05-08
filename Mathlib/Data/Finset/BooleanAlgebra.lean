@@ -21,7 +21,7 @@ This file provides the `BooleanAlgebra (Finset α)` instance, under the assumpti
 * `Finset.booleanAlgebra`: `Finset α` is a Boolean algebra if `α` is finite
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Monoid
 
@@ -58,6 +58,10 @@ theorem univ_eq_empty_iff : (univ : Finset α) = ∅ ↔ IsEmpty α := by
 theorem univ_nontrivial_iff :
     (Finset.univ : Finset α).Nontrivial ↔ Nontrivial α := by
   rw [Finset.Nontrivial, Finset.coe_univ, Set.nontrivial_univ_iff]
+
+lemma univ_neq_empty (α : Type*) [Fintype α] [Nonempty α] :
+    (Finset.univ : Finset α) ≠ ∅ :=
+  fun h ↦ (Finset.univ_eq_empty_iff.1 h).elim (Classical.arbitrary _)
 
 theorem univ_nontrivial [h : Nontrivial α] :
     (Finset.univ : Finset α).Nontrivial :=

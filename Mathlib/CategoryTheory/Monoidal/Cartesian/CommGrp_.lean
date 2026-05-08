@@ -6,7 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.CommMon_
-public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp_
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
 public import Mathlib.CategoryTheory.Monoidal.CommGrp_
 
 /-!

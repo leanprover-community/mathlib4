@@ -389,7 +389,7 @@ theorem exists_primitive_lcm_of_isPrimitive {p q : R[X]} (hp : p.IsPrimitive) (h
     by_contra! con
     rcases Nat.find_spec con with ⟨s, sdeg, ⟨ps, qs⟩, rs⟩
     have s0 : s ≠ 0 := by
-      contrapose! rs
+      contrapose rs
       simp [rs]
     have hs :=
       Nat.find_min' h

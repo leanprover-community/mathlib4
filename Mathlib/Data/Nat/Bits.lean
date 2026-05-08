@@ -34,6 +34,7 @@ variable {m n : ℕ}
 
 /-- `boddDiv2 n` returns a 2-tuple of type `(Bool, Nat)` where the `Bool` value indicates whether
 `n` is odd or not and the `Nat` value returns `⌊n/2⌋` -/
+@[deprecated "use `Nat.bodd` and `Nat.div2` instead" (since := "2026-03-22")]
 def boddDiv2 : ℕ → Bool × ℕ
   | 0 => (false, 0)
   | succ n =>
@@ -42,10 +43,12 @@ def boddDiv2 : ℕ → Bool × ℕ
     | (true, m) => (false, succ m)
 
 /-- `div2 n = ⌊n/2⌋` the greatest integer smaller than `n/2` -/
-def div2 (n : ℕ) : ℕ := (boddDiv2 n).2
+@[inline, grind =] def div2 (n : ℕ) : ℕ := n / 2
+
+theorem div2_val (n : ℕ) : div2 n = n / 2 := rfl
 
 /-- `bodd n` returns `true` if `n` is odd -/
-def bodd (n : ℕ) : Bool := (boddDiv2 n).1
+@[inline] def bodd (n : ℕ) : Bool := n.testBit 0
 
 @[simp] lemma bodd_zero : bodd 0 = false := rfl
 
@@ -55,9 +58,8 @@ lemma bodd_two : bodd 2 = false := rfl
 
 @[simp]
 lemma bodd_succ (n : ℕ) : bodd (succ n) = not (bodd n) := by
-  simp only [bodd, boddDiv2]
-  let ⟨b, m⟩ := boddDiv2 n
-  cases b <;> rfl
+  simp only [bodd]
+  cases mod_two_eq_zero_or_one n with | _ h => simp [h, add_mod]
 
 @[simp]
 lemma bodd_add (m n : ℕ) : bodd (m + n) = bxor (bodd m) (bodd n) := by
@@ -73,11 +75,13 @@ lemma bodd_mul (m n : ℕ) : bodd (m * n) = (bodd m && bodd n) := by
     simp only [mul_succ, bodd_add, IH, bodd_succ]
     cases bodd m <;> cases bodd n <;> rfl
 
+@[simp, grind =]
+lemma bodd_bit (b n) : bodd (bit b n) = b := by
+  cases b <;> simp [bodd]
+
 lemma mod_two_of_bodd (n : ℕ) : n % 2 = (bodd n).toNat := by
-  have : (n % 2).bodd = n.bodd := by
-    simpa using congr_arg bodd (mod_add_div n 2)
-  rw [← this]
-  rcases mod_two_eq_zero_or_one n with h | h <;> rw [h] <;> rfl
+  cases n using bitCasesOn with
+  | bit b n => cases b <;> simp
 
 @[simp] lemma div2_zero : div2 0 = 0 := rfl
 
@@ -87,25 +91,19 @@ lemma div2_two : div2 2 = 1 := rfl
 
 @[simp]
 lemma div2_succ (n : ℕ) : div2 (n + 1) = cond (bodd n) (succ (div2 n)) (div2 n) := by
-  simp only [bodd, boddDiv2, div2]
-  rcases boddDiv2 n with ⟨_ | _, _⟩ <;> simp
+  cases n using bitCasesOn with
+  | bit b n => cases b <;>
+    simp [bit_val, div2_val, Nat.succ_div, Nat.add_assoc, Nat.dvd_add_right (Nat.dvd_mul_right _ _)]
+
+@[simp, grind =]
+lemma div2_bit (b n) : div2 (bit b n) = n := by
+  rw [div2_val, bit_div_two]
 
 attribute [local simp] Nat.add_comm Nat.mul_comm
 
-lemma bodd_add_div2 : ∀ n, (bodd n).toNat + 2 * div2 n = n
-  | 0 => rfl
-  | succ n => by
-    simp only [bodd_succ, div2_succ, Nat.mul_comm]
-    refine Eq.trans ?_ (congr_arg succ (bodd_add_div2 n))
-    cases bodd n
-    · simp
-    · simp; lia
-
-@[grind =]
-lemma div2_val (n) : div2 n = n / 2 := by
-  refine Nat.eq_of_mul_eq_mul_left (by decide)
-    (Nat.add_left_cancel (Eq.trans ?_ (Nat.mod_add_div n 2).symm))
-  rw [mod_two_of_bodd, bodd_add_div2]
+lemma bodd_add_div2 (n : ℕ) : (bodd n).toNat + 2 * div2 n = n := by
+  cases n using bitCasesOn with
+  | bit b n => simpa using (bit_val b n).symm
 
 @[simp, grind =]
 lemma bit_bodd_div2 (n : Nat) : bit (bodd n) (div2 n) = n :=
@@ -129,8 +127,6 @@ lemma shiftLeft'_false : ∀ n, shiftLeft' false m n = m <<< n
       rw [Nat.mul_comm, Nat.mul_assoc, ← Nat.pow_succ]; simp
     simp [shiftLeft_eq, shiftLeft', bit_val, shiftLeft'_false, this]
 
-/-- Lean takes the unprimed name for `Nat.shiftLeft_eq m n : m <<< n = m * 2 ^ n`. -/
-@[simp] lemma shiftLeft_eq' (m n : Nat) : shiftLeft m n = m <<< n := rfl
 @[simp] lemma shiftRight_eq (m n : Nat) : shiftRight m n = m >>> n := rfl
 
 lemma binaryRec_decreasing (h : n ≠ 0) : div2 n < n := by grind
@@ -152,19 +148,6 @@ def ldiff : ℕ → ℕ → ℕ :=
   bitwise fun a b => a && not b
 
 /-! bitwise ops -/
-
-@[simp, grind =]
-lemma bodd_bit (b n) : bodd (bit b n) = b := by
-  rw [bit_val]
-  simp only [Nat.mul_comm, Nat.add_comm, bodd_add, bodd_mul, bodd_succ, bodd_zero, Bool.not_false,
-    Bool.not_true, Bool.and_false, Bool.xor_false]
-  cases b <;> cases bodd n <;> rfl
-
-@[simp, grind =]
-lemma div2_bit (b n) : div2 (bit b n) = n := by
-  rw [bit_val, div2_val, Nat.add_comm, add_mul_div_left, div_eq_of_lt, Nat.zero_add]
-  <;> cases b
-  <;> decide
 
 lemma shiftLeft'_add (b m n) : ∀ k, shiftLeft' b m (n + k) = shiftLeft' b (shiftLeft' b m n) k
   | 0 => rfl
@@ -195,9 +178,14 @@ lemma testBit_bit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
 
 /-! ### `boddDiv2_eq` and `bodd` -/
 
-
-@[simp, grind =]
-theorem boddDiv2_eq (n : ℕ) : boddDiv2 n = (bodd n, div2 n) := rfl
+set_option linter.deprecated false in
+@[deprecated "`Nat.boddDiv2` has been deprecated" (since := "2026-03-22")]
+theorem boddDiv2_eq (n : ℕ) : boddDiv2 n = (bodd n, div2 n) := by
+  induction n with
+  | zero => rfl
+  | succ n ih =>
+    rw [boddDiv2, ih]
+    cases hn : n.bodd <;> simp [hn]
 
 @[simp]
 theorem div2_bit0 (n) : div2 (2 * n) = n :=

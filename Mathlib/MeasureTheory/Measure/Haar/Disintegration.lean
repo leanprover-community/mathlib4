@@ -24,7 +24,7 @@ TODO: this holds more generally in any locally compact group, see
 [Fremlin, *Measure Theory* (volume 4, 443Q)][fremlin_vol4]
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Measure Set
 

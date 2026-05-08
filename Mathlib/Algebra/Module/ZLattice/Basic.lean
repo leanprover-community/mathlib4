@@ -488,7 +488,6 @@ theorem ZLattice.FG [hs : IsZLattice K L] : L.FG := by
 theorem ZLattice.module_finite [IsZLattice K L] : Module.Finite ℤ L :=
   .of_fg (ZLattice.FG K L)
 
-set_option backward.isDefEq.respectTransparency false in
 instance instModuleFinite_of_discrete_submodule {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [FiniteDimensional ℝ E] (L : Submodule ℤ E) [DiscreteTopology L] :
     Module.Finite ℤ L := by
@@ -568,7 +567,7 @@ theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
       rwa [h_card, ← topEquiv.finrank_eq, ← h_spanE, ← ht_span, finrank_span_set_eq_card ht_lin]
     -- Assume that `e ∪ {v}` is not `ℤ`-linear independent then we get the contradiction
     suffices ¬ LinearIndepOn ℤ id (insert v (Set.range e)) by
-      contrapose! this
+      contrapose this
       refine this.mono ?_
       exact Set.insert_subset (Set.mem_of_mem_diff hv) (by simp [e, ht_inc])
     -- We prove finally that `e ∪ {v}` is not ℤ-linear independent or, equivalently,
@@ -657,7 +656,6 @@ instance instCountable_of_discrete_submodule {E : Type*} [NormedAddCommGroup E] 
   simp_rw [← (Module.Free.chooseBasis ℤ L).ofZLatticeBasis_span ℝ]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Assume that the set `s` spans over `ℤ` a discrete set. Then its `ℝ`-rank is equal to its `ℤ`-rank.
 -/

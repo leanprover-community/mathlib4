@@ -34,7 +34,6 @@ instance : CoeSort (Under R) (Type u) where
 
 instance (A : Under R) : Algebra R A := RingHom.toAlgebra A.hom.hom
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Turn a morphism in `Under R` into an algebra homomorphism. -/
 def toAlgHom {A B : Under R} (f : A ⟶ B) : A →ₐ[R] B where
   __ := f.right.hom
@@ -143,7 +142,7 @@ variable (S) in
 def tensorProdObjIsoPushoutObj (A : Under R) :
     mkUnder S (S ⊗[R] A) ≅ (Under.pushout (ofHom <| algebraMap R S)).obj A :=
   Under.isoMk (CommRingCat.isPushout_tensorProduct R S A).flip.isoPushout <| by
-    simp only [Functor.const_obj_obj, Under.pushout_obj, Functor.id_obj, Under.mk_right,
+    simp only [Under.pushout_obj, Under.mk_right,
       mkUnder_hom, AlgHom.toRingHom_eq_coe, IsPushout.inr_isoPushout_hom, Under.mk_hom]
     rfl
 

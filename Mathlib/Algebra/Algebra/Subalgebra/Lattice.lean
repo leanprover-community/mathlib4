@@ -154,7 +154,7 @@ open Subalgebra in
 @[simp]
 theorem sSup_toSubsemiring (S : Set (Subalgebra R A)) (hS : S.Nonempty) :
     (sSup S).toSubsemiring = sSup (toSubsemiring '' S) := by
-  have h : toSubsemiring '' S = Subsemiring.closure '' (SetLike.coe '' S) := by
+  have h : toSubsemiring '' S = Subsemiring.closure '' SetLike.coe '' S := by
     rw [Set.image_image]
     congr! with x
     exact x.toSubsemiring.closure_eq.symm
@@ -824,7 +824,6 @@ theorem mem_adjoin_iff {s : Set A} {x : A} :
 
 variable (R)
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped IsMulCommutative in
 /-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is a commutative
 ring. -/

@@ -72,7 +72,7 @@ attribute [local simp] op_map in
 /-- The functor `opFunctor : SSet ⥤ SSet` is an involution. -/
 @[simps!]
 def opFunctorCompOpFunctorIso : opFunctor.{u} ⋙ opFunctor ≅ 𝟭 _ :=
-  NatIso.ofComponents (fun X ↦ NatIso.ofComponents
+  dsimp% NatIso.ofComponents (fun X ↦ NatIso.ofComponents
     (fun n ↦ Equiv.toIso (opObjEquiv.trans opObjEquiv)))
 
 /-- The covariant involution `opFunctor : SSet ⥤ SSet`,

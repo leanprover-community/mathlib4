@@ -256,7 +256,7 @@ theorem not_isReduced_alternatingWord (i i' : B) {m : ℕ} (hM : M i i' ≠ 0) (
       _ ≤ M i i' := Nat.sub_le _ _
       _ < M i i' + 1 := Nat.lt_succ_self _
   | step m ih => -- Inductive step
-    contrapose! ih
+    contrapose ih
     rw [alternatingWord_succ'] at ih
     apply IsReduced.drop (j := 1) at ih
     simpa using ih

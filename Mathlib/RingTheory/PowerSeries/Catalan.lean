@@ -6,7 +6,7 @@ Authors: Weijie Jiang
 module
 
 public import Mathlib.RingTheory.PowerSeries.Basic
-public import Mathlib.Combinatorics.Enumerative.Catalan
+public import Mathlib.Combinatorics.Enumerative.Catalan.Basic
 
 /-!
 # Catalan Power Series

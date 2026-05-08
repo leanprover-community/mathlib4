@@ -360,7 +360,6 @@ def productTriangle : Triangle C :=
     (Limits.Pi.map (fun j => (T j).mor₂))
     (Limits.Pi.map (fun j => (T j).mor₃) ≫ inv (piComparison _ _))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A projection from the product of a family of triangles. -/
 @[simps]
 def productTriangle.π (j : J) :
@@ -368,10 +367,6 @@ def productTriangle.π (j : J) :
   hom₁ := Pi.π _ j
   hom₂ := Pi.π _ j
   hom₃ := Pi.π _ j
-  comm₃ := by
-    dsimp
-    rw [← piComparison_comp_π, assoc, IsIso.inv_hom_id_assoc]
-    simp only [limMap_π, Discrete.natTrans_app]
 
 /-- The fan given by `productTriangle T`. -/
 @[simp]
@@ -411,9 +406,7 @@ lemma productTriangle.zero₃₁ [HasZeroMorphisms C]
   change _ ≫ (Pi.lift (fun j => Pi.π _ j ≫ (T j).mor₁))⟦(1 : ℤ)⟧' = 0
   rw [assoc, ← cancel_mono (piComparison _ _), zero_comp, assoc, assoc]
   ext j
-  simp only [map_lift_piComparison, assoc, limit.lift_π, Fan.mk_π_app, zero_comp,
-    Functor.map_comp, ← piComparison_comp_π_assoc, IsIso.inv_hom_id_assoc,
-    limMap_π_assoc, Discrete.natTrans_app, h j, comp_zero]
+  simp [h j]
 
 end
 

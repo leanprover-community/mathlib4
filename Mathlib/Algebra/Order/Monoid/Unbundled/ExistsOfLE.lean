@@ -17,7 +17,7 @@ generalising statements from groups/rings/fields that don't mention negation or 
 monoids/semirings/semifields.
 -/
 
-@[expose] public section
+public section
 
 universe u
 variable {α : Type u}

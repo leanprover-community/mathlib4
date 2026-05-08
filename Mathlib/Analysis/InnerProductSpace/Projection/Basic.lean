@@ -71,7 +71,7 @@ instance HasOrthogonalProjection.map_linearIsometryEquiv [K.HasOrthogonalProject
   exists_orthogonal v := by
     rcases HasOrthogonalProjection.exists_orthogonal (K := K) (f.symm v) with ⟨w, hwK, hw⟩
     refine ⟨f w, Submodule.mem_map_of_mem hwK, Set.forall_mem_image.2 fun u hu ↦ ?_⟩
-    erw [← f.symm.inner_map_map, f.symm_apply_apply, map_sub, f.symm_apply_apply, hw u hu]
+    simp [← f.symm.inner_map_map, hw u hu]
 
 instance HasOrthogonalProjection.map_linearIsometryEquiv' [K.HasOrthogonalProjection]
     {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E'] (f : E ≃ₗᵢ[𝕜] E') :
@@ -342,7 +342,6 @@ lemma starProjection_bot : (⊥ : Submodule 𝕜 E).starProjection = 0 := by
 
 variable (K)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The orthogonal projection has norm `≤ 1`. -/
 theorem orthogonalProjection_norm_le : ‖K.orthogonalProjection‖ ≤ 1 :=
   LinearMap.mkContinuous_norm_le _ (by simp) _
@@ -358,7 +357,6 @@ theorem norm_starProjection_apply {v : E} (hv : v ∈ K) :
     ‖K.starProjection v‖ = ‖v‖ :=
   norm_orthogonalProjection_apply _ hv
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The orthogonal projection onto a closed subspace is norm non-increasing. -/
 theorem norm_orthogonalProjection_apply_le (v : E) :
     ‖orthogonalProjection K v‖ ≤ ‖v‖ := by calc
@@ -378,7 +376,6 @@ theorem lipschitzWith_starProjection :
     LipschitzWith 1 K.starProjection :=
   ContinuousLinearMap.lipschitzWith_of_opNorm_le (starProjection_norm_le K)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The operator norm of the orthogonal projection onto a nontrivial subspace is `1`. -/
 theorem norm_orthogonalProjection (hK : K ≠ ⊥) :
     ‖K.orthogonalProjection‖ = 1 := by

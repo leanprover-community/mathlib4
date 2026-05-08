@@ -60,14 +60,23 @@ protected theorem Summable.tsum_mul_right (a) (hf : Summable f L) :
     ∑'[L] i, f i * a = (∑'[L] i, f i) * a :=
   (hf.hasSum.mul_right _).tsum_eq
 
-theorem Commute.tsum_right (a) (h : ∀ i, Commute a (f i)) : Commute a (∑'[L] i, f i) := by
-  classical
+theorem SemiconjBy.tsum_left {a b : α} (h : ∀ (i : ι), SemiconjBy (f i) a b) :
+    SemiconjBy (∑'[L] (i : ι), f i) a b := by
   by_cases hf : Summable f L
-  · exact (hf.tsum_mul_left a).symm.trans ((tsum_congr h).trans (hf.tsum_mul_right a))
-  · exact (tsum_eq_zero_of_not_summable hf).symm ▸ Commute.zero_right _
+  · rw [SemiconjBy, ← hf.tsum_mul_right a, ← hf.tsum_mul_left b, tsum_congr h]
+  · simp [tsum_eq_zero_of_not_summable hf]
+
+theorem SemiconjBy.tsum_right {f g : ι → α} (a : α) (hf : Summable f L) (hg : Summable g L)
+    (h : ∀ (i : ι), SemiconjBy a (f i) (g i)) :
+    SemiconjBy a (∑'[L] (i : ι), f i) (∑'[L] (i : ι), g i) := by
+  rw [SemiconjBy, ← hf.tsum_mul_left a, ← hg.tsum_mul_right a]
+  exact tsum_congr h
 
 theorem Commute.tsum_left (a) (h : ∀ i, Commute (f i) a) : Commute (∑'[L] i, f i) a :=
-  (Commute.tsum_right _ fun i ↦ (h i).symm).symm
+  SemiconjBy.tsum_left h
+
+theorem Commute.tsum_right (a) (h : ∀ i, Commute a (f i)) : Commute a (∑'[L] i, f i) :=
+  (Commute.tsum_left _ fun i ↦ (h i).symm).symm
 
 end tsum
 

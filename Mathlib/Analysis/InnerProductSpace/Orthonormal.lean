@@ -95,6 +95,11 @@ theorem orthonormal_iff_ite [DecidableEq ι] {v : ι → E} :
     · intro i j hij
       simpa [hij] using h i j
 
+@[simp]
+theorem orthonormal_subsingleton_iff [Subsingleton ι] {v : ι → E} :
+    Orthonormal 𝕜 v ↔ ∀ i, ‖v i‖ = 1 := by
+  simp [orthonormal_iff_ite, ← map_pow, pow_eq_one_iff_of_nonneg]
+
 /-- `if ... then ... else` characterization of a set of vectors being orthonormal.  (Inner product
 equals Kronecker delta.) -/
 theorem orthonormal_subtype_iff_ite [DecidableEq E] {s : Set E} :

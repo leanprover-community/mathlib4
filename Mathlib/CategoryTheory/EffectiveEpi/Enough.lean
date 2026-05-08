@@ -37,7 +37,7 @@ structure EffectivePresentation (X : D) where
   effectiveEpi : EffectiveEpi f
 
 /--
-`D` has *effectively enough objects with respect to the functor `F` if every object has an
+`D` has *effectively enough objects* with respect to the functor `F` if every object has an
 effective presentation.
 -/
 class EffectivelyEnough : Prop where

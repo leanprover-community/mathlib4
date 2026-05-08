@@ -17,7 +17,7 @@ We prove 4 versions of this statement (one for each of the infinite intervals),
 as well as provide convenience corollaries about `Filter.EventuallyEq`.
 -/
 
-@[expose] public section
+public section
 
 open Set
 

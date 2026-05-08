@@ -106,7 +106,7 @@ theorem ratLt_nonempty (x : M) : (ratLt x).Nonempty := by
     use Rat.mk' 1 (n + 1) (by simp) (by simp)
     simpa using hn.trans_lt <| (nsmul_lt_nsmul_iff_left hxpos).mpr (by simp)
 
-open Pointwise in
+open scoped Pointwise in
 theorem ratLt_add (x y : M) : ratLt (x + y) = ratLt x + ratLt y := by
   ext a
   rw [Set.mem_add]
@@ -151,7 +151,7 @@ theorem ratLt'_bddAbove (x : M) : BddAbove (ratLt' x) :=
 
 theorem ratLt'_nonempty (x : M) : (ratLt' x).Nonempty := Set.image_nonempty.mpr (ratLt_nonempty x)
 
-open Pointwise in
+open scoped Pointwise in
 theorem ratLt'_add (x y : M) : ratLt' (x + y) = ratLt' x + ratLt' y := by
   rw [ratLt', ratLt_add, Set.image_add]
 

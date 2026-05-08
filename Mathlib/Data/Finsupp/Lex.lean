@@ -170,11 +170,6 @@ theorem toLex_monotone : Monotone (@toLex (α →₀ N)) :=
 theorem toColex_monotone : Monotone (@toColex (α →₀ N)) :=
   toLex_monotone (α := αᵒᵈ)
 
-@[deprecated Lex.lt_iff (since := "2025-10-12")]
-theorem lt_of_forall_lt_of_lt (a b : Lex (α →₀ N)) (i : α) :
-    (∀ j < i, ofLex a j = ofLex b j) → ofLex a i < ofLex b i → a < b :=
-  fun h1 h2 ↦ ⟨i, h1, h2⟩
-
 end NHasZero
 
 section Covariants

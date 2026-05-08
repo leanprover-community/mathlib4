@@ -29,9 +29,6 @@ open scoped NNReal ENNReal uniformity
 
 section SeminormedAddCommGroup
 
--- Here, we set a rather high priority for the instance `[NormedSpace 𝕜 E] : Module 𝕜 E`
--- to take precedence over `Semiring.toModule` as this leads to instance paths with better
--- unification properties.
 /-- A normed space over a normed field is a vector space endowed with a norm which satisfies the
 equality `‖c • x‖ = ‖c‖ ‖x‖`. We require only `‖c • x‖ ≤ ‖c‖ ‖x‖` in the definition, then prove
 `‖c • x‖ = ‖c‖ ‖x‖` in `norm_smul`.
@@ -189,8 +186,8 @@ See note [reducible non-instances] -/
 abbrev NormedSpace.induced {F : Type*} (𝕜 E G : Type*) [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
     [SeminormedAddCommGroup G] [NormedSpace 𝕜 G] [FunLike F E G] [LinearMapClass F 𝕜 E G] (f : F) :
     @NormedSpace 𝕜 E _ (SeminormedAddCommGroup.induced E G f) :=
-  let _ := SeminormedAddCommGroup.induced E G f
-  ⟨fun a b ↦ by simpa only [← map_smul f a b] using norm_smul_le a (f b)⟩
+  letI := SeminormedAddCommGroup.induced E G f
+  { norm_smul_le a b := by simpa only [← map_smul f a b] using norm_smul_le a (f b) }
 
 section NontriviallyNormedSpace
 

@@ -157,7 +157,7 @@ instance : Inhabited CpltSepUniformSpace :=
 
 /-- The category instance on `CpltSepUniformSpace`. -/
 instance category : LargeCategory CpltSepUniformSpace :=
-  inferInstanceAs (Category (InducedCategory _ toUniformSpace))
+  inferInstanceAs <| Category (InducedCategory _ toUniformSpace)
 
 instance instFunLike (X Y : CpltSepUniformSpace) :
     FunLike { f : X → Y // UniformContinuous f } X Y where
@@ -167,10 +167,10 @@ instance instFunLike (X Y : CpltSepUniformSpace) :
 /-- The concrete category instance on `CpltSepUniformSpace`. -/
 instance concreteCategory : ConcreteCategory CpltSepUniformSpace
     ({ f : · → · // UniformContinuous f }) :=
-  InducedCategory.concreteCategory toUniformSpace
+  inferInstanceAs <| ConcreteCategory (InducedCategory _ toUniformSpace) _
 
 instance hasForgetToUniformSpace : HasForget₂ CpltSepUniformSpace UniformSpaceCat :=
-  InducedCategory.hasForget₂ toUniformSpace
+  inferInstanceAs <| HasForget₂ (InducedCategory _ toUniformSpace) _
 
 @[simp]
 theorem hom_comp {X Y Z : CpltSepUniformSpace} (f : X ⟶ Y) (g : Y ⟶ Z) :

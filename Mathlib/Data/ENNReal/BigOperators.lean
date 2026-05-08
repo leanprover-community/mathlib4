@@ -29,12 +29,16 @@ section OperationsAndInfty
 variable {α : Type*}
 
 @[simp, norm_cast]
-theorem coe_finset_sum {s : Finset α} {f : α → ℝ≥0} : ↑(∑ a ∈ s, f a) = ∑ a ∈ s, (f a : ℝ≥0∞) :=
+theorem coe_finsetSum {s : Finset α} {f : α → ℝ≥0} : ↑(∑ a ∈ s, f a) = ∑ a ∈ s, (f a : ℝ≥0∞) :=
   map_sum ofNNRealHom f s
 
+@[deprecated (since := "2026-04-08")] alias coe_finset_sum := coe_finsetSum
+
 @[simp, norm_cast]
-theorem coe_finset_prod {s : Finset α} {f : α → ℝ≥0} : ↑(∏ a ∈ s, f a) = ∏ a ∈ s, (f a : ℝ≥0∞) :=
+theorem coe_finsetProd {s : Finset α} {f : α → ℝ≥0} : ↑(∏ a ∈ s, f a) = ∏ a ∈ s, (f a : ℝ≥0∞) :=
   map_prod ofNNRealHom f s
+
+@[deprecated (since := "2026-04-08")] alias coe_finset_prod := coe_finsetProd
 
 @[simp]
 theorem toNNReal_prod {ι : Type*} {s : Finset ι} {f : ι → ℝ≥0∞} :
@@ -48,7 +52,7 @@ theorem toReal_prod {ι : Type*} {s : Finset ι} {f : ι → ℝ≥0∞} :
 
 theorem ofReal_prod_of_nonneg {α : Type*} {s : Finset α} {f : α → ℝ} (hf : ∀ i, i ∈ s → 0 ≤ f i) :
     ENNReal.ofReal (∏ i ∈ s, f i) = ∏ i ∈ s, ENNReal.ofReal (f i) := by
-  simp_rw [ENNReal.ofReal, ← coe_finset_prod, coe_inj]
+  simp_rw [ENNReal.ofReal, ← coe_finsetProd, coe_inj]
   exact Real.toNNReal_prod_of_nonneg hf
 
 theorem iInf_sum {ι α : Type*} {f : ι → α → ℝ≥0∞} {s : Finset α} [Nonempty ι]
@@ -94,7 +98,7 @@ theorem lt_top_of_sum_ne_top {s : Finset α} {f : α → ℝ≥0∞} (h : ∑ x 
 infinity -/
 theorem toNNReal_sum {s : Finset α} {f : α → ℝ≥0∞} (hf : ∀ a ∈ s, f a ≠ ∞) :
     ENNReal.toNNReal (∑ a ∈ s, f a) = ∑ a ∈ s, ENNReal.toNNReal (f a) := by
-  rw [← coe_inj, coe_toNNReal, coe_finset_sum, sum_congr rfl]
+  rw [← coe_inj, coe_toNNReal, coe_finsetSum, sum_congr rfl]
   · intro x hx
     exact (coe_toNNReal (hf x hx)).symm
   · exact sum_ne_top.2 hf
@@ -107,7 +111,7 @@ theorem toReal_sum {s : Finset α} {f : α → ℝ≥0∞} (hf : ∀ a ∈ s, f 
 
 theorem ofReal_sum_of_nonneg {s : Finset α} {f : α → ℝ} (hf : ∀ i, i ∈ s → 0 ≤ f i) :
     ENNReal.ofReal (∑ i ∈ s, f i) = ∑ i ∈ s, ENNReal.ofReal (f i) := by
-  simp_rw [ENNReal.ofReal, ← coe_finset_sum, coe_inj]
+  simp_rw [ENNReal.ofReal, ← coe_finsetSum, coe_inj]
   exact Real.toNNReal_sum_of_nonneg hf
 
 theorem sum_lt_sum_of_nonempty {s : Finset α} (hs : s.Nonempty) {f g : α → ℝ≥0∞}

@@ -470,7 +470,7 @@ theorem uniformly_extend_spec [CompleteSpace γ] (a : α) : Tendsto f (comap e (
 include h_f in
 theorem uniformContinuous_uniformly_extend [CompleteSpace γ] : UniformContinuous ψ := fun d hd =>
   let ⟨s, hs, hs_comp⟩ := comp3_mem_uniformity hd
-  have h_pnt : ∀ {a m}, m ∈ 𝓝 a → ∃ c ∈ f '' (e ⁻¹' m), (c, ψ a) ∈ s ∧ (ψ a, c) ∈ s :=
+  have h_pnt : ∀ {a m}, m ∈ 𝓝 a → ∃ c ∈ f '' e ⁻¹' m, (c, ψ a) ∈ s ∧ (ψ a, c) ∈ s :=
     fun {a m} hm =>
     have nb : NeBot (map f (comap e (𝓝 a))) :=
       ((h_e.isDenseInducing h_dense).comap_nhds_neBot _).map _

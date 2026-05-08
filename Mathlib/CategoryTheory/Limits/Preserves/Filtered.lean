@@ -20,7 +20,7 @@ types.
 
 -/
 
-@[expose] public section
+public section
 
 
 open CategoryTheory

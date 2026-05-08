@@ -195,7 +195,7 @@ noncomputable def cyclesMap (α : mk₂ f g ⟶ mk₂ f' g') (n : ℤ) :
       rw [Category.assoc, X.δ_naturality f g f' g'
         (homMk₁ (α.app 0) (α.app 1) (naturality' α 0 1))
           (homMk₁ (α.app 1) (α.app 2) (naturality' α 1 2)) n (n + 1),
-        iCycles_δ_assoc _ _ _ _ _ , zero_comp])
+        iCycles_δ_assoc _ _ _ _ _, zero_comp])
 
 @[reassoc]
 lemma cyclesMap_i (α : mk₂ f g ⟶ mk₂ f' g') (β : mk₁ g ⟶ mk₁ g') (n : ℤ)
@@ -256,8 +256,8 @@ lemma opcyclesMap_comp (α : mk₂ f g ⟶ mk₂ f' g') (α' : mk₂ f' g' ⟶ m
       X.opcyclesMap f g f'' g'' α'' n := by
   subst h
   rw [← cancel_epi (X.pOpcycles f g n),
-    X.p_opcyclesMap_assoc f g f' g' α _ ,
-    X.p_opcyclesMap f' g' f'' g'' α' _ ,
+    X.p_opcyclesMap_assoc f g f' g' α _,
+    X.p_opcyclesMap f' g' f'' g'' α' _,
     ← Functor.map_comp_assoc]
   exact (X.p_opcyclesMap _ _ _ _ _ _ _ (by cat_disch)).symm
 
@@ -483,7 +483,7 @@ lemma pOpcycles_δFromOpcycles (hn₁ : n₀ + 1 = n₁) :
 @[reassoc (attr := simp)]
 lemma fromOpcyles_δ (hn₁ : n₀ + 1 = n₁ := by lia) :
     X.fromOpcycles f₂ f₃ f₂₃ h₂₃ n₀ ≫ X.δ f₁ f₂₃ n₀ n₁ hn₁ =
-      X.δFromOpcycles f₁ f₂ f₃ n₀ n₁ hn₁  := by
+      X.δFromOpcycles f₁ f₂ f₃ n₀ n₁ hn₁ := by
   rw [← cancel_epi (X.pOpcycles f₂ f₃ n₀),
     p_fromOpcycles_assoc, pOpcycles_δFromOpcycles,
     X.δ_naturality f₁ f₂ f₁ f₂₃ (𝟙 _) (twoδ₂Toδ₁ f₂ f₃ f₂₃ h₂₃) n₀ n₁,

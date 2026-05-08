@@ -230,7 +230,6 @@ end Finite
 
 namespace FiniteType
 
-set_option backward.isDefEq.respectTransparency false in
 -- TODO: should infer_instance be marked as normalising?
 set_option linter.flexible false in
 variable (A) in

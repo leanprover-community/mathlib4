@@ -24,11 +24,9 @@ when `C` is a preadditive category with finite coproducts, and get an isomorphis
 @[expose] public section
 
 
-open CategoryTheory CategoryTheory.Limits CategoryTheory.Category CategoryTheory.Preadditive
-  CategoryTheory.Idempotents Opposite AlgebraicTopology AlgebraicTopology.DoldKan
-  Simplicial DoldKan
+namespace CategoryTheory.SimplicialObject
 
-namespace SimplicialObject
+open AlgebraicTopology Limits Category Preadditive Idempotents Opposite DoldKan Simplicial
 
 namespace Splitting
 
@@ -273,4 +271,4 @@ noncomputable def toKaroubiNondegComplexFunctorIsoN₁ :
 
 end Split
 
-end SimplicialObject
+end CategoryTheory.SimplicialObject

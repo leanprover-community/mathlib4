@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.Discrete.Basic
 # Discrete categories are groupoids
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

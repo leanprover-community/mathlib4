@@ -18,7 +18,7 @@ We prove basic properties of local rings homomorphisms.
 
 -/
 
-@[expose] public section
+public section
 
 variable {R S T : Type*}
 section

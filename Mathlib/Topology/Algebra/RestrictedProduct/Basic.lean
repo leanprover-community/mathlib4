@@ -169,7 +169,7 @@ lemma coe_comp_inclusion (h : 𝓕 ≤ 𝓖) :
   rfl
 
 lemma image_coe_preimage_inclusion_subset (h : 𝓕 ≤ 𝓖)
-    (U : Set Πʳ i, [R i, A i]_[𝓕]) : (⇑) '' (inclusion R A h ⁻¹' U) ⊆ (⇑) '' U :=
+    (U : Set Πʳ i, [R i, A i]_[𝓕]) : (⇑) '' inclusion R A h ⁻¹' U ⊆ (⇑) '' U :=
   fun _ ⟨x, hx, hx'⟩ ↦ ⟨inclusion R A h x, hx, hx'⟩
 
 lemma range_structureMap :

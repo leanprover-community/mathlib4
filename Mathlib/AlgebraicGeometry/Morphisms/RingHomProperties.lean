@@ -98,7 +98,6 @@ section affineLocally
 
 variable (P : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For `P` a property of ring homomorphisms, `sourceAffineLocally P` holds for `f : X ⟶ Y`
 whenever `P` holds for the restriction of `f` on every affine open subset of `X`. -/
 def sourceAffineLocally : AffineTargetMorphismProperty := fun X _ f _ =>
@@ -110,7 +109,6 @@ Also see `affineLocally_iff_affineOpens_le`. -/
 abbrev affineLocally : MorphismProperty Scheme.{u} :=
   targetAffineLocally (sourceAffineLocally P)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sourceAffineLocally_respectsIso (h₁ : RingHom.RespectsIso P) :
     (sourceAffineLocally P).toProperty.RespectsIso := by
   apply AffineTargetMorphismProperty.respectsIso_mk
@@ -190,7 +188,6 @@ open RingHom
 
 variable {X Y : Scheme.{u}} {f : X ⟶ Y}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `P` holds for `f` over affine opens `U₂` of `Y` and `V₂` of `X` and `U₁` (resp. `V₁`) are
 open affine neighborhoods of `x` (resp. `f.base x`), then `P` also holds for `f`
 over some basic open of `U₁` (resp. `V₁`). -/
@@ -253,7 +250,7 @@ and for `f : Spec B ⟶ Spec A`, it is equivalent to the ring hom property `Q`.
 To make the proofs easier, we state it instead as
 1. `Q` is local (See `RingHom.PropertyIsLocal`)
 2. `P f` if and only if `Q` holds for every `Γ(Y, U) ⟶ Γ(X, V)` for all affine `U`, `V`.
-See `HasRingHomProperty.iff_appLE`.
+  See `HasRingHomProperty.iff_appLE`.
 -/
 class HasRingHomProperty (P : MorphismProperty Scheme.{u})
     (Q : outParam (∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop)) : Prop where
@@ -369,7 +366,6 @@ theorem of_iSup_eq_top [IsAffine Y] {ι : Type*}
   refine of_source_openCover (X.openCoverOfIsOpenCover _ hU) fun i ↦ ?_
   simpa [Scheme.Hom.app_eq_appLE] using (f.appLE_congr _ rfl (by simp) (fun f => Q f.hom)).mp (H i)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iff_of_iSup_eq_top [IsAffine Y] {ι : Type*}
     (U : ι → X.affineOpens) (hU : ⨆ i, (U i : Opens X) = ⊤) :
     P f ↔ ∀ i, Q (f.appLE ⊤ (U i).1 le_top).hom :=
@@ -452,9 +448,6 @@ lemma of_isZariskiLocalAtSource_of_isZariskiLocalAtTarget [IsZariskiLocalAtTarge
     obtain ⟨φ, rfl⟩ : ∃ φ, Spec.map φ = f := ⟨_, Spec.map_preimage _⟩
     rw [HasRingHomProperty.Spec_iff (P := Q)]
     rfl
-
-@[deprecated (since := "2025-10-07")]
-alias of_isLocalAtSource_of_isLocalAtTarget := of_isZariskiLocalAtSource_of_isZariskiLocalAtTarget
 
 lemma inf {P P' : MorphismProperty Scheme.{u}}
     {Q Q' : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}

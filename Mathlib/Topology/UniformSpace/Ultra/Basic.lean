@@ -143,9 +143,6 @@ lemma IsTransitiveRel.mem_filter_prod_trans {s : SetRel X X} {f g h : Filter X} 
   Eventually.trans_prod (p := (fun x y ↦ (x, y) ∈ s)) (q := (fun x y ↦ (x, y) ∈ s))
     (r := (fun x y ↦ (x, y) ∈ s)) hfg hgh fun _ _ _ ↦ s.trans
 
-@[deprecated (since := "2025-10-08")]
-alias IsTransitiveRel.mem_filter_prod_comm := IsTransitiveRel.mem_filter_prod_trans
-
 open UniformSpace
 
 lemma ball_subset_of_mem {V : SetRel X X} [V.IsTrans] {x y : X} (hy : y ∈ ball x V) :

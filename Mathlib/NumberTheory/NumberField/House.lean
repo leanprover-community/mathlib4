@@ -344,7 +344,7 @@ theorem exists_ne_zero_int_vec_house_le :
     ∀ l, house (ξ l).1 ≤ c₁ K * ((c₁ K * q * A) ^ ((p : ℝ) / (q - p))) := by
   classical
   let h := finrank ℚ K
-  have hphqh : p * h < q * h := mul_lt_mul_of_pos_right hpq finrank_pos
+  have hphqh : p * h < q * h := by gcongr; exact finrank_pos
   have h0ph : 0 < p * h := by rw [mul_pos_iff]; constructor; exact ⟨h0p, finrank_pos⟩
   have hfinp : Fintype.card (α × (K →+* ℂ)) = p * h := by
     rw [Fintype.card_prod, cardα, Embeddings.card]

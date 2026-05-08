@@ -71,13 +71,7 @@ theorem not_of_mem_foldl_argAux (hr₀ : Std.Irrefl r) (hr₁ : IsTrans α r) :
     rw [foldl_argAux_eq_none] at hf
     simp_all [hf.1, hf.2, hr₀.irrefl _]
   rw [hf, Option.mem_def] at ho
-  dsimp only at ho
-  split_ifs at ho with hac <;> rcases mem_append.1 hb with h | h <;>
-    injection ho with ho <;> subst ho
-  · exact fun hba => ih h hf (hr₁.trans b a c hba hac)
-  · simp_all [hr₀.irrefl _]
-  · exact ih h hf
-  · simp_all
+  grind +splitIndPred
 
 end ArgAux
 
@@ -442,10 +436,6 @@ theorem Perm.minimum_eq {l l' : List α} (h : l ~ l') :
     l.minimum = l'.minimum := by
   induction h with grind [minimum_cons]
 
-#adaptation_note
-/-- 2025-08-14: We should stop using `max?_eq_some_iff_legacy` below, by connecting up Mathlib's
-order typeclasses with the new classes in Lean. -/
-set_option linter.deprecated false in
 lemma getD_max?_eq_unbotD_maximum (l : List α) (d : α) : l.max?.getD d = l.maximum.unbotD d := by
   cases hy : l.maximum with
   | bot => simp [List.maximum_eq_bot.mp hy]
@@ -456,10 +446,9 @@ lemma getD_max?_eq_unbotD_maximum (l : List α) (d : α) : l.max?.getD d = l.max
     | none => simp [List.max?_eq_none_iff.mp hz] at hy
     | some z =>
       have : Std.Antisymm (α := α) (· ≤ ·) := ⟨fun _ _ => _root_.le_antisymm⟩
-      rw [List.max?_eq_some_iff_legacy] at hz
+      rw [List.max?_eq_some_iff] at hz
       · rw [Option.getD_some]
         exact _root_.le_antisymm (hy.right _ hz.left) (hz.right _ hy.left)
-      all_goals simp [le_total]
 
 lemma getD_min?_eq_untopD_minimum (l : List α) (d : α) : l.min?.getD d = l.minimum.untopD d :=
   getD_max?_eq_unbotD_maximum (α := αᵒᵈ) _ _

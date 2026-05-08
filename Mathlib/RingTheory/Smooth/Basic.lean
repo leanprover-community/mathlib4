@@ -115,7 +115,8 @@ instance mvPolynomial (σ : Type*) : FormallySmooth R (MvPolynomial σ R) := by
   let P : Generators R (MvPolynomial σ R) σ :=
     .ofSurjective X (by simp [aeval_X_left, Function.Surjective])
   have : Subsingleton ↥P.toExtension.ker :=
-    Submodule.subsingleton_iff_eq_bot.mpr (by simp [SetLike.ext_iff, map_id])
+    Submodule.subsingleton_iff_eq_bot.mpr <| by
+      simp [SetLike.ext_iff, P, Generators.ofSurjective, aeval_X_left]
   have : Subsingleton P.toExtension.Cotangent := Cotangent.mk_surjective.subsingleton
   have := P.toExtension.h1Cotangentι_injective.subsingleton
   exact ⟨inferInstance, P.equivH1Cotangent.symm.subsingleton⟩
@@ -141,8 +142,7 @@ theorem exists_lift
     obtain ⟨g', rfl⟩ := h₁ g'
     replace e := congr_arg this.toAlgHom.comp e
     conv_rhs at e =>
-      rw [← AlgHom.comp_assoc, AlgEquiv.toAlgHom_eq_coe, AlgEquiv.toAlgHom_eq_coe,
-        AlgEquiv.comp_symm, AlgHom.id_comp]
+      rw [← AlgHom.comp_assoc, AlgEquiv.comp_symm, AlgHom.id_comp]
     exact ⟨g', e⟩
 
 /-- For a formally smooth `R`-algebra `A` and a map `f : A →ₐ[R] B ⧸ I` with `I` square-zero,
@@ -176,11 +176,11 @@ theorem liftOfSurjective_apply [FormallySmooth R A] (f : A →ₐ[R] C) (g : B �
     (hg : Function.Surjective g) (hg' : IsNilpotent <| RingHom.ker g) (x : A) :
     g (FormallySmooth.liftOfSurjective f g hg hg' x) = f x := by
   apply (Ideal.quotientKerAlgEquivOfSurjective hg).symm.injective
-  conv_rhs => rw [← AlgHom.coe_coe, ← AlgHom.comp_apply, ← FormallySmooth.mk_lift (A := A) _ hg']
+  conv_rhs => rw [← AlgEquiv.coe_algHom, ← AlgHom.comp_apply,
+    ← FormallySmooth.mk_lift (A := A) _ hg']
   apply (Ideal.quotientKerAlgEquivOfSurjective hg).injective
   rw [AlgEquiv.apply_symm_apply, Ideal.quotientKerAlgEquivOfSurjective_apply]
-  simp only [liftOfSurjective, ← RingHom.ker_coe_toRingHom g, RingHom.kerLift_mk,
-    AlgEquiv.toAlgHom_eq_coe, RingHom.coe_coe]
+  simp only [liftOfSurjective, ← RingHom.ker_coe_toRingHom g, RingHom.kerLift_mk, RingHom.coe_coe]
 
 @[simp]
 theorem comp_liftOfSurjective [FormallySmooth R A] (f : A →ₐ[R] C) (g : B →ₐ[R] C)
@@ -275,7 +275,6 @@ section iff_split
 
 variable [Algebra.FormallySmooth R P]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma kerCotangentToTensor_injective_iff
     [Algebra P A] [IsScalarTower R P A] (hf : Function.Surjective (algebraMap P A)) :
     Function.Injective (kerCotangentToTensor R P A) ↔ Subsingleton (Algebra.H1Cotangent R A) :=
@@ -359,8 +358,8 @@ theorem of_comp_surjective
   refine ⟨g, AlgHom.ext fun x ↦ congr(f.kerSquareLift.kerLift ($hg x)).trans ?_⟩
   obtain ⟨x, rfl⟩ := (Ideal.quotientKerAlgEquivOfSurjective surj).surjective x
   obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
-  simp only [AlgHom.toRingHom_eq_coe, AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_coe,
-    AlgEquiv.symm_apply_apply, AlgHom.coe_id, id_eq]
+  simp only [AlgHom.toRingHom_eq_coe, AlgEquiv.coe_algHom, AlgEquiv.symm_apply_apply,
+    AlgHom.coe_id, id_eq]
   simp only [Ideal.quotientKerAlgEquivOfSurjective_apply]
 
 /--
@@ -393,7 +392,7 @@ section Polynomial
 
 open scoped Polynomial in
 instance polynomial (R : Type*) [CommRing R] :
-  FormallySmooth R R[X] := .of_equiv (MvPolynomial.pUnitAlgEquiv.{_, 0} R)
+  FormallySmooth R R[X] := .of_equiv (MvPolynomial.uniqueAlgEquiv.{_, 0} R PUnit)
 
 instance : FormallySmooth R R := .of_equiv (MvPolynomial.isEmptyAlgEquiv R Empty)
 

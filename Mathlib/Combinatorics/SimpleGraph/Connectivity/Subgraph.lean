@@ -81,7 +81,7 @@ lemma top_induce_pair_connected_of_adj {u v : V} (huv : G.Adj u v) :
   rw [← subgraphOfAdj_eq_induce huv]
   exact subgraphOfAdj_connected huv
 
-@[mono]
+@[gcongr, mono]
 protected lemma Connected.mono {H H' : G.Subgraph} (hle : H ≤ H') (hv : H.verts = H'.verts)
     (h : H.Connected) : H'.Connected := by
   rw [← Subgraph.copy_eq H' H.verts hv H'.Adj rfl]

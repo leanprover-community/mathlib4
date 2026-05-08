@@ -22,7 +22,7 @@ curve.
 integral curve, vector field
 -/
 
-@[expose] public section
+public section
 
 open Function Set Pointwise
 

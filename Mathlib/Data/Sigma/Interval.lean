@@ -19,7 +19,7 @@ calculates the cardinality of its finite intervals.
 Do the same for the lexicographical order
 -/
 
-@[expose] public section
+public section
 
 
 open Finset Function

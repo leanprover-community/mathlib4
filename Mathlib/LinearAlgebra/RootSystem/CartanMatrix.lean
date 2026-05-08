@@ -178,7 +178,7 @@ lemma induction_on_cartanMatrix [P.IsReduced] [P.IsIrreducible]
   have hq₀ : q ≠ ⊥ := q.ne_bot_iff.mpr ⟨P.root i, subset_span <| by simpa, P.ne_zero i⟩
   have hq_mem (k : b.support) : P.root k ∈ q ↔ p k := by
     refine ⟨fun hk ↦ ?_, fun hk ↦ subset_span <| by simpa⟩
-    contrapose! hk
+    contrapose hk
     exact b.linearIndepOn_root.linearIndependent.notMem_span_image hk
   have hq_notMem (k : b.support) (hk : P.root k ∉ q) : q ≤ LinearMap.ker (P.coroot' k) := by
     refine fun x hx ↦ LinearMap.mem_ker.mpr ?_

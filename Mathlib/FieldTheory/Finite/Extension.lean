@@ -27,7 +27,7 @@ This extension is Galois with cyclic Galois group of degree `n`, and the (arithm
 ## Main Results
 
 * `FiniteField.algEquivExtension`: any other field extension `l/k` of degree `n` is (non-uniquely)
-isomorphic to our chosen `FiniteField.Extension k p n`.
+  isomorphic to our chosen `FiniteField.Extension k p n`.
 
 -/
 
@@ -45,7 +45,7 @@ namespace FiniteField
 
 /-- Given a finite field `k` of characteristic `p`, we have a non-canonically chosen extension
 of any given degree `n > 0`. -/
-def Extension [CharP k p] : Type :=
+def Extension : Type :=
   letI := ZMod.algebra k p
   GaloisField p (Module.finrank (ZMod p) k * n)
   deriving Field, Finite, Algebra (ZMod p), FiniteDimensional (ZMod p)
@@ -53,8 +53,9 @@ def Extension [CharP k p] : Type :=
 theorem finrank_zmod_extension [Algebra (ZMod p) k] :
     Module.finrank (ZMod p) (Extension k p n) = Module.finrank (ZMod p) k * n := by
   letI := ZMod.algebra k p
+  unfold Extension
   convert GaloisField.finrank p (n := Module.finrank (ZMod p) k * n) <|
-    mul_ne_zero Module.finrank_pos.ne' <| NeZero.ne n using 4
+    mul_ne_zero Module.finrank_pos.ne' <| NeZero.ne n
   subsingleton
 
 theorem nonempty_algHom_extension [Algebra (ZMod p) k] :

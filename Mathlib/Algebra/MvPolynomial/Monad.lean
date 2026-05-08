@@ -319,7 +319,7 @@ theorem vars_bind₁ [DecidableEq τ] (f : σ → MvPolynomial τ R) (φ : MvPol
   · intro j
     simp_rw [Finset.mem_biUnion]
     rintro ⟨d, hd, ⟨i, hi, hj⟩⟩
-    exact ⟨i, (mem_vars _).mpr ⟨d, hd, hi⟩, hj⟩
+    exact ⟨i, (mem_vars_iff_mem_support _).mpr ⟨d, hd, hi⟩, hj⟩
 
 end
 

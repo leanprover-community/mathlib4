@@ -21,7 +21,7 @@ on the auxiliary object appearing in the fraction.
 
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 
@@ -32,11 +32,11 @@ namespace DerivedCategory
 variable {C : Type u} [Category.{v} C] [Abelian C] [HasDerivedCategory.{w} C]
 
 instance : (HomotopyCategory.quasiIso C (ComplexShape.up ℤ)).HasLeftCalculusOfFractions := by
-  rw [HomotopyCategory.quasiIso_eq_subcategoryAcyclic_W]
+  rw [HomotopyCategory.quasiIso_eq_trW_subcategoryAcyclic]
   infer_instance
 
 instance : (HomotopyCategory.quasiIso C (ComplexShape.up ℤ)).HasRightCalculusOfFractions := by
-  rw [HomotopyCategory.quasiIso_eq_subcategoryAcyclic_W]
+  rw [HomotopyCategory.quasiIso_eq_trW_subcategoryAcyclic]
   infer_instance
 
 /-- Any morphism `f : Q.obj X ⟶ Q.obj Y` in the derived category can be written

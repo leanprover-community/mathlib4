@@ -11,6 +11,7 @@ public import Mathlib.Analysis.Matrix.HermitianFunctionalCalculus
 public import Mathlib.Analysis.Matrix.PosDef
 public import Mathlib.Analysis.RCLike.Sqrt
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Abs
+public import Mathlib.LinearAlgebra.Matrix.Vec
 
 /-!
 # The partial order on matrices
@@ -182,7 +183,7 @@ theorem PosSemidef.posDef_iff_isUnit [DecidableEq n] {x : Matrix n n 𝕜}
   obtain ⟨y, rfl⟩ := CStarAlgebra.nonneg_iff_eq_star_mul_self.mp hx.nonneg
   simp_rw [dotProduct_mulVec, ← vecMul_vecMul, star_eq_conjTranspose, ← star_mulVec,
     ← dotProduct_mulVec, dotProduct_star_self_pos_iff]
-  contrapose! hv
+  contrapose hv
   rw [← map_eq_zero_iff (f := (yᴴ * y).mulVecLin) (mulVec_injective_iff_isUnit.mpr h),
     mulVecLin_apply, ← mulVec_mulVec, hv, mulVec_zero]
 
@@ -195,16 +196,9 @@ alias ⟨IsStrictlyPositive.posDef, PosDef.isStrictlyPositive⟩ := isStrictlyPo
 
 attribute [aesop safe forward (rule_sets := [CStarAlgebra])] PosDef.isStrictlyPositive
 
-@[deprecated IsStrictlyPositive.commute_iff (since := "2025-09-26")]
-theorem PosDef.commute_iff {A B : Matrix n n 𝕜} (hA : A.PosDef) (hB : B.PosDef) :
-    Commute A B ↔ (A * B).PosDef := by
-  classical
-  rw [hA.isStrictlyPositive.commute_iff hB.isStrictlyPositive, isStrictlyPositive_iff_posDef]
-
-set_option linter.unusedDecidableInType false in
-@[deprecated IsStrictlyPositive.sqrt (since := "2025-09-26")]
-lemma PosDef.posDef_sqrt [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) :
-    PosDef (CFC.sqrt M) := hM.isStrictlyPositive.sqrt.posDef
+lemma PosSemidef.posDef_iff_det_ne_zero [DecidableEq n] {A : Matrix n n 𝕜} (hA : A.PosSemidef) :
+    A.PosDef ↔ A.det ≠ 0 := by
+  simp [hA.posDef_iff_isUnit, isUnit_iff_isUnit_det]
 
 section kronecker
 
@@ -235,13 +229,48 @@ theorem PosDef.kronecker {x : Matrix n n 𝕜} {y : Matrix m m 𝕜}
 
 end kronecker
 
-/--
-A matrix is positive definite if and only if it has the form `Bᴴ * B` for some invertible `B`.
--/
-@[deprecated CStarAlgebra.isStrictlyPositive_iff_eq_star_mul_self (since := "2025-09-28")]
-lemma posDef_iff_eq_conjTranspose_mul_self [DecidableEq n] {A : Matrix n n 𝕜} :
-    PosDef A ↔ ∃ B : Matrix n n 𝕜, IsUnit B ∧ A = Bᴴ * B :=
-  isStrictlyPositive_iff_posDef.symm.trans CStarAlgebra.isStrictlyPositive_iff_eq_star_mul_self
+section hadamard
+
+variable {ι : Type*}
+
+/-- [**Schur product theorem**][schur1911] (positive semidefinite version): the Hadamard (entrywise)
+product of positive semidefinite matrices is positive semidefinite. -/
+theorem PosSemidef.hadamard {A B : Matrix ι ι 𝕜}
+    (hA : A.PosSemidef) (hB : B.PosSemidef) : (A ⊙ B).PosSemidef := by
+  classical
+  refine ⟨hA.isHermitian.hadamard hB.isHermitian, fun x ↦ ?_⟩
+  have hAB : ((A ⊙ B).submatrix (↑) (↑) : Matrix x.support _ _).PosSemidef := by
+    have hAs := hA.submatrix ((↑) : x.support → ι)
+    have hBs := hB.submatrix ((↑) : x.support → ι)
+    rw [submatrix_hadamard, posSemidef_iff_dotProduct_mulVec]
+    refine ⟨hAs.isHermitian.hadamard hBs.isHermitian, fun y ↦ ?_⟩
+    rw [star_dotProduct_hadamard_mulVec_eq_kronecker]
+    exact (hAs.kronecker hBs).dotProduct_mulVec_nonneg _
+  simpa [Finsupp.sum, ← Finset.sum_attach x.support, ← Finset.subtype_mem_eq_attach,
+    ← Finsupp.subtypeDomain_apply, ← Finsupp.support_subtypeDomain] using hAB.2 _
+
+/-- **Schur product theorem**: the Hadamard (entrywise) product of positive definite
+matrices is positive definite. -/
+theorem PosDef.hadamard {A B : Matrix ι ι 𝕜}
+    (hA : A.PosDef) (hB : B.PosDef) : (A ⊙ B).PosDef := by
+  classical
+  refine ⟨hA.isHermitian.hadamard hB.isHermitian, fun x hx ↦ ?_⟩
+  have hAB : ((A ⊙ B).submatrix (↑) (↑) : Matrix x.support _ _).PosDef := by
+    have hAs : (A.submatrix (↑) (↑) : Matrix x.support _ _).PosDef :=
+      hA.submatrix Subtype.coe_injective
+    have hBs : (B.submatrix (↑) (↑) : Matrix x.support _ _).PosDef :=
+      hB.submatrix Subtype.coe_injective
+    rw [submatrix_hadamard, posDef_iff_dotProduct_mulVec]
+    refine ⟨hAs.isHermitian.hadamard hBs.isHermitian, fun y hy ↦ ?_⟩
+    rw [star_dotProduct_hadamard_mulVec_eq_kronecker]
+    exact (hAs.kronecker hBs).dotProduct_mulVec_pos <| by simpa
+  simp_rw [RCLike.star_def, hadamard_apply, Finsupp.sum,
+    ← Finset.sum_attach x.support, ← Finset.subtype_mem_eq_attach,
+    ← Finsupp.subtypeDomain_apply, ← Finsupp.support_subtypeDomain]
+  refine hAB.2 ?_
+  simpa [← Finsupp.support_nonempty_iff] using Finsupp.support_nonempty_iff.mpr hx
+
+end hadamard
 
 section tracePositiveLinearMap
 variable (n α 𝕜 : Type*) [Fintype n] [Semiring α] [RCLike 𝕜] [Module α 𝕜]

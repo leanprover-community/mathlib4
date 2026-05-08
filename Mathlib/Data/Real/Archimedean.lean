@@ -5,12 +5,13 @@ Authors: Mario Carneiro, Floris van Doorn
 -/
 module
 
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.Data.Real.Basic
 public import Mathlib.Order.Interval.Set.Disjoint
 
 import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
-public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+import Mathlib.Data.Int.LeastGreatest
 
 /-!
 # The real numbers are an Archimedean floor ring, and a conditionally complete linear order.
@@ -21,7 +22,8 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 assert_not_exists Finset
 
-open Pointwise CauSeq
+open scoped Pointwise
+open CauSeq
 
 namespace Real
 variable {ι : Sort*} {f : ι → ℝ} {s : Set ℝ} {a : ℝ}
@@ -62,7 +64,8 @@ theorem exists_isLUB (hne : s.Nonempty) (hbdd : BddAbove s) : ∃ x, IsLUB s x :
     rcases h with ⟨y, yS, hy⟩
     refine Int.cast_le.1 (hy.trans ?_)
     push_cast
-    exact mul_le_mul_of_nonneg_right ((hU yS).trans hk.le) d.cast_nonneg
+    gcongr
+    exact (hU yS).trans hk.le
   choose f hf using fun d : ℕ =>
     Int.exists_greatest_of_bdd (this d) ⟨⌊L * d⌋, L, hL, Int.floor_le _⟩
   have hf₁ : ∀ n > 0, ∃ y ∈ s, ((f n / n : ℚ) : ℝ) ≤ y := fun n n0 =>
@@ -73,7 +76,7 @@ theorem exists_isLUB (hne : s.Nonempty) (hbdd : BddAbove s) : ∃ x, IsLUB s x :
     have := (Int.sub_one_lt_floor _).trans_le (Int.cast_le.2 <| (hf n).2 _ ⟨y, yS, Int.floor_le _⟩)
     simp only [Rat.cast_div, Rat.cast_intCast, Rat.cast_natCast, gt_iff_lt]
     rwa [lt_div_iff₀ (Nat.cast_pos.2 n0 : (_ : ℝ) < _), sub_mul, inv_mul_cancel₀]
-    exact ne_of_gt (Nat.cast_pos.2 n0)
+    exact (Nat.cast_pos.2 n0).ne'
   have hg : IsCauSeq abs (fun n => f n / n : ℕ → ℚ) := by
     intro ε ε0
     suffices ∀ j ≥ ⌈ε⁻¹⌉₊, ∀ k ≥ ⌈ε⁻¹⌉₊, (f j / j - f k / k : ℚ) < ε by

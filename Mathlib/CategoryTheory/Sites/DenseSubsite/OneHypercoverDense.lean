@@ -598,9 +598,13 @@ lemma presheafMap_restriction {X Y : C} {X₀ : C₀} (f : F.obj X₀ ⟶ X) (g 
   have hc' := Sieve.ofArrows.fac hc
   have hd' := Sieve.ofArrows.fac hd
   dsimp at hc hd hc' hd' ⊢
+  /- #adaptation_note Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed the `fac`
+  arguments below (i.e. `fac := by grind`). It is not yet clear whether this is due to defeq
+  abuse in Mathlib or a problem in the new canonicalizer; a minimization would help. -/
   rw [assoc, ← op_comp, restriction_map (i := Sieve.ofArrows.i hd)
-    (p := F.map c ≫ Sieve.ofArrows.h hd) (fac := by grind),
-    restriction_map (i := Sieve.ofArrows.i hc) (p := Sieve.ofArrows.h hc) (fac := by grind),
+    (p := F.map c ≫ Sieve.ofArrows.h hd) (fac := by simp; grind),
+    restriction_map (i := Sieve.ofArrows.i hc) (p := Sieve.ofArrows.h hc) (fac := by simp; grind),
     presheafMap_π_assoc]
   dsimp
   have := J₀.intersection_covering (IsDenseSubsite.imageSieve_mem J₀ J F (Sieve.ofArrows.h hc))
@@ -610,8 +614,12 @@ lemma presheafMap_restriction {X Y : C} {X₀ : C₀} (f : F.obj X₀ ⟶ X) (g 
   dsimp
   rw [assoc, assoc,
     IsDenseSubsite.mapPreimage_map_of_fac J F G₀ _ _ x₂ (by simpa using fac₂.symm),
-    IsDenseSubsite.mapPreimage_map_of_fac J F G₀ _ _ x₁ fac₁.symm,
-    restriction_map data G₀ _ _ (F.map x₁) (by grind), IsDenseSubsite.mapPreimage_map]
+    IsDenseSubsite.mapPreimage_map_of_fac J F G₀ _ _ x₁ fac₁.symm]
+  /- #adaptation_note Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), the last argument below was
+  `by grind` (now `by simp_all`). It is not yet clear whether this is due to defeq abuse in
+  Mathlib or a problem in the new canonicalizer; a minimization would help. -/
+  rw [restriction_map data G₀ _ _ (F.map x₁) (by simp_all), IsDenseSubsite.mapPreimage_map]
 
 lemma presheafMap_id (X : C) :
     presheafMap data G₀ (𝟙 X) = 𝟙 _ := by

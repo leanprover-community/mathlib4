@@ -117,7 +117,7 @@ lemma centralizer_coe_image_includeRight_eq_center_tensorProduct
       ⟨fun h b hb ↦ (Algebra.TensorProduct.comm R A B).symm.injective <| by aesop, fun h b hb ↦
         (Algebra.TensorProduct.comm R A B).injective <| by aesop⟩
   · ext x
-    simp only [AlgHom.mem_range, AlgEquiv.toAlgHom_eq_coe, mem_comap, AlgHom.coe_coe]
+    simp only [AlgHom.mem_range, mem_comap, AlgEquiv.coe_algHom]
     constructor
     · rintro ⟨x, rfl⟩
       exact ⟨(Algebra.TensorProduct.comm R _ _) x,
