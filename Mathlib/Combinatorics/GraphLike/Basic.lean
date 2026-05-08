@@ -78,7 +78,7 @@ section GraphLike
 
 variable [GraphLike V D E Gr]
 
-@[ext] theorem darts_ext (d₁ d₂ : darts G) (h : d₁.val = d₂.val) : d₁ = d₂ := Subtype.ext h
+@[ext] theorem darts_ext (d₁ d₂ : D(G)) (h : d₁.val = d₂.val) : d₁ = d₂ := Subtype.ext h
 
 lemma adj_src_tgt (hd : d ∈ D(G)) : Adj G (src Gr d) (tgt Gr d) :=
   exists_darts_iff_adj.mp ⟨d, hd, rfl, rfl⟩
@@ -98,49 +98,49 @@ lemma Adj.right_mem (h : Adj G v w) : w ∈ V(G) := by
 
 /-- The step from `u` to `v` is a dart from `u` to `v`. -/
 @[expose]
-def step (G : Gr) [GraphLike V D E Gr] (u v : V) :=
+def Step (G : Gr) [GraphLike V D E Gr] (u v : V) : Type _ :=
   {d : D // d ∈ D(G) ∧ src Gr d = u ∧ tgt Gr d = v}
 
-instance [DecidableEq D] : DecidableEq (step G u v) := Subtype.instDecidableEq
+instance [DecidableEq D] : DecidableEq (Step G u v) := Subtype.instDecidableEq
 
 @[simp]
-lemma step.src (h : step G u v) : src Gr h.val = u := by
+lemma Step.src (h : Step G u v) : src Gr h.val = u := by
   obtain ⟨d, hd, hu, hv⟩ := h
   exact hu
 
 @[simp]
-lemma step.tgt (h : step G u v) : tgt Gr h.val = v := by
+lemma Step.tgt (h : Step G u v) : tgt Gr h.val = v := by
   obtain ⟨d, hd, hu, hv⟩ := h
   exact hv
 
-lemma step.left_mem (h : step G u v) : u ∈ V(G) := by
+lemma Step.left_mem (h : Step G u v) : u ∈ V(G) := by
   obtain ⟨d, hd, rfl, rfl⟩ := h
   exact src_mem_of_darts hd
 
-lemma step.right_mem (h : step G u v) : v ∈ V(G) := by
+lemma Step.right_mem (h : Step G u v) : v ∈ V(G) := by
   obtain ⟨d, hd, rfl, rfl⟩ := h
   exact tgt_mem_of_darts hd
 
-lemma step.left_eq_of_val_eq {s₁ : step G u v} {s₂ : step G u' v'} (h : s₁.val = s₂.val) :
+lemma Step.left_eq_of_val_eq {s₁ : Step G u v} {s₂ : Step G u' v'} (h : s₁.val = s₂.val) :
     u = u' := by
   obtain ⟨d₁, hd₁, rfl, rfl⟩ := s₁
   obtain ⟨d₂, hd₂, rfl, rfl⟩ := s₂
   obtain rfl : d₁ = d₂ := h
   rfl
 
-lemma step.right_eq_of_val_eq {s₁ : step G u v} {s₂ : step G u' v'} (h : s₁.val = s₂.val) :
+lemma Step.right_eq_of_val_eq {s₁ : Step G u v} {s₂ : Step G u' v'} (h : s₁.val = s₂.val) :
     v = v' := by
   obtain ⟨d₁, hd₁, rfl, rfl⟩ := s₁
   obtain ⟨d₂, hd₂, rfl, rfl⟩ := s₂
   obtain rfl : d₁ = d₂ := h
   rfl
 
-@[ext] lemma step.ext {s₁ s₂ : step G u v} (h : s₁.val = s₂.val) : s₁ = s₂ := Subtype.ext h
+@[ext] lemma Step.ext {s₁ s₂ : Step G u v} (h : s₁.val = s₂.val) : s₁ = s₂ := Subtype.ext h
 
-attribute [simp] step.ext_iff
+attribute [simp] Step.ext_iff
 
 @[simp]
-lemma step.ext_HEq {u' v'} {s₁ : step G u v} {s₂ : step G u' v'} (h : s₁.val = s₂.val) :
+lemma Step.ext_HEq {u' v'} {s₁ : Step G u v} {s₂ : Step G u' v'} (h : s₁.val = s₂.val) :
     s₁ ≍ s₂ := by
   obtain ⟨d₁, hd₁, rfl, rfl⟩ := s₁
   obtain ⟨d₂, hd₂, rfl, rfl⟩ := s₂
@@ -148,38 +148,38 @@ lemma step.ext_HEq {u' v'} {s₁ : step G u v} {s₂ : step G u' v'} (h : s₁.v
   rfl
 
 /-- Convert a step to a dart. -/
-@[expose] def step.todart (h : step G u v) : darts G := ⟨h.val, h.prop.1⟩
+@[expose] def Step.todart (h : Step G u v) : D(G) := ⟨h.val, h.prop.1⟩
 
-lemma step.todart_val (h : step G u v) : h.todart.val = h.val := by simp [step.todart]
+lemma Step.todart_val (h : Step G u v) : h.todart.val = h.val := by simp [Step.todart]
 
-lemma step.todart_src (s : step G u v) : GraphLike.src Gr s.todart.val = u := by
+lemma Step.todart_src (s : Step G u v) : GraphLike.src Gr s.todart.val = u := by
   obtain ⟨d, hd, rfl, rfl⟩ := s
   rfl
 
-lemma step.todart_tgt (s : step G u v) : GraphLike.tgt Gr s.todart.val = v := by
+lemma Step.todart_tgt (s : Step G u v) : GraphLike.tgt Gr s.todart.val = v := by
   obtain ⟨d, hd, rfl, rfl⟩ := s
   rfl
 
-lemma step.adj (h : step G u v) : Adj G u v := by
+lemma Step.adj (h : Step G u v) : Adj G u v := by
   rw [← exists_darts_iff_adj]
   obtain ⟨d, hd, rfl, rfl⟩ := h
   exact ⟨d, hd, rfl, rfl⟩
 
 /-- If `u` and `v` are adjacent, then there exists a step from `u` to `v`. -/
-noncomputable def Adj.toStep (h : Adj G u v) : step G u v :=
+noncomputable def Adj.toStep (h : Adj G u v) : Step G u v :=
   ⟨(exists_darts_iff_adj.mpr h).choose, (exists_darts_iff_adj.mpr h).choose_spec⟩
 
 lemma Adj.toStep_adj (h : Adj G u v) : (h.toStep).adj = h := rfl
 
 /-- Convert a dart to a step. -/
-@[expose] def dartStep (d : darts G) : step G (src Gr d.val) (tgt Gr d.val) :=
+@[expose] def dartStep (d : D(G)) : Step G (src Gr d.val) (tgt Gr d.val) :=
   ⟨d.val, d.prop, rfl, rfl⟩
 
 @[simp]
-lemma val_dartStep (d : darts G) : (dartStep d).val = d.val := by simp [dartStep]
+lemma val_dartStep (d : D(G)) : (dartStep d).val = d.val := by simp [dartStep]
 
 /-- Two darts are said to be adjacent if they could be consecutive darts in a walk -- that is, the
 first dart's target is equal to the second dart's source. -/
-@[expose] def DartAdj (d d' : darts G) : Prop := tgt Gr d.val = src Gr d'.val
+@[expose] def DartAdj (d d' : D(G)) : Prop := tgt Gr d.val = src Gr d'.val
 
 end GraphLike.GraphLike
