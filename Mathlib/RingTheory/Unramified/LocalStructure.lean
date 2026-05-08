@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Etale.Locus
 public import Mathlib.RingTheory.Etale.StandardEtale
 public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
 public import Mathlib.RingTheory.RingHom.StandardSmooth
@@ -392,7 +391,7 @@ theorem IsSmoothAt.exists_isStandardEtale_mvPolynomial
   have := IsScalarTower.of_algebraMap_eq' hgC.symm
   have : (Ideal.map (algebraMap S (Localization.Away f)) p).IsPrime :=
     IsLocalization.isPrime_of_isPrime_disjoint (.powers f) _ _ ‹_›
-      ((Ideal.disjoint_powers_iff_notMem _ (Ideal.IsPrime.isRadical ‹_›)).mpr hfp)
+      ((Ideal.disjoint_powers_iff_notMem_of_isPrime _).mpr hfp)
   obtain ⟨g₀, hg, H⟩ := IsEtaleAt.exists_isStandardEtale (R := (MvPolynomial (Fin n) R))
     (S := (Localization.Away f)) (p.map (algebraMap _ _))
   obtain ⟨g, ⟨_, m, rfl⟩, hg₀⟩ := IsLocalization.exists_mk'_eq (.powers f) g₀
