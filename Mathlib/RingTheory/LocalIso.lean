@@ -60,10 +60,7 @@ lemma iff_span_isStandardOpenImmersion_eq_top :
     IsLocalIso R S ↔
       Ideal.span {g : S | IsStandardOpenImmersion R (Localization.Away g)} = ⊤ := by
   refine ⟨fun _ ↦ span_isStandardOpenImmersion_eq_top R S, fun h ↦ ⟨fun q hq ↦ ?_⟩⟩
-  by_contra!
-  apply hq.ne_top
-  rw [_root_.eq_top_iff, ← h, Ideal.span_le]
-  grind [SetLike.mem_coe]
+  grind [Ideal.IsPrime.ne_top, Ideal.span_le, SetLike.mem_coe]
 
 instance (priority := 100) [IsStandardOpenImmersion R S] : IsLocalIso R S where
   exists_notMem_isStandardOpenImmersion q hq := by
