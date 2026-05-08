@@ -251,7 +251,9 @@ eM       eN       eL
 |        |        |
 v        v        v
 M'-----> N'-----> L'
-Here the three vertical maps are linear equivalences.
+More precisely, With the three vertical maps are linear equivalences, we obtain the short complex
+`M' → N' → L'` with morphisms `eN ∘ₗ f ∘ₗ eM.symm` and `eL ∘ₗ g ∘ₗ eN.symm`.
+This complex is exact when `f` and `g` are exact, see `ModuleCat.shortComplexOfConj_exact`.
 -/
 abbrev ModuleCat.shortComplexOfConj (eq0 : g ∘ₗ f = 0) :
     ShortComplex (ModuleCat.{v} R) :=
