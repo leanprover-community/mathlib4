@@ -107,7 +107,7 @@ lemma pi_of_finite {ι : Type*} (R : Type*) (S : ι → Type*) [CommSemiring R]
     IsLocalIso R (∀ i, S i)  := by
   classical
   let (i : ι) : Algebra (∀ i, S i) (S i) := (Pi.evalAlgHom R S i).toAlgebra
-  have (i : ι) : IsLocalization.Away ((fun i ↦ Pi.single i (1 : S i)) i) ((fun i ↦ S i) i) := by
+  have (i : ι) : IsLocalization.Away (Pi.single i (1 : S i)) (S i) := by
     apply IsLocalization.away_of_isIdempotentElem
     · simp [IsIdempotentElem, ← Pi.single_mul_left]
     · apply RingHom.ker_evalRingHom
