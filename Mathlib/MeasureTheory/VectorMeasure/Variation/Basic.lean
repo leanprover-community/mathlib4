@@ -38,6 +38,13 @@ namespace MeasureTheory.VectorMeasure
 
 variable {X V : Type*} {mX : MeasurableSpace X}
 
+/-- The sum of a vector measure `μ` on a `Finpartition` of `Subtype MeasurableSet` equals `μ s`. -/
+lemma sum_finpartition [AddCommMonoid V] [TopologicalSpace V] [T2Space V]
+    (μ : VectorMeasure X V) {s : Set X} {hs : MeasurableSet s}
+    (P : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet)) : ∑ p ∈ P.parts, μ p.val = μ s := by
+  rw [← μ.of_biUnion_finset (P.pairwiseDisjoint_apply (fun _ _ => rfl) rfl) (fun p _ => p.prop),
+      ← Finset.sup_set_eq_biUnion, P.sup_parts_apply (fun _ _ => rfl) rfl]
+
 section Basic
 
 variable [TopologicalSpace V] [ENormedAddCommMonoid V] [T2Space V]
@@ -122,9 +129,9 @@ variable (μ : VectorMeasure X ℝ≥0∞)
 `⟨s, hs⟩ : Subtype MeasurableSet` of the sum of `μ` over parts equals `μ s`. -/
 lemma iSup_sum_finpartition_parts (μ : VectorMeasure X ℝ≥0∞) {s : Set X} (hs : MeasurableSet s) :
     ⨆ (P : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet)), ∑ p ∈ P.parts, μ p.val = μ s := by
-  refine le_antisymm (iSup_le fun P => (μ.sum_finpartition_parts P).le) ?_
+  refine le_antisymm (iSup_le fun P => (μ.sum_finpartition P).le) ?_
   obtain ⟨P⟩ := (inferInstance : Nonempty (Finpartition (⟨s, hs⟩ : Subtype MeasurableSet)))
-  exact le_iSup_of_le P (μ.sum_finpartition_parts P).symm.le
+  exact le_iSup_of_le P (μ.sum_finpartition P).symm.le
 
 /-- For `μ : VectorMeasure X ℝ≥0∞`, `preVariationFun μ s = μ s` for any `s`. -/
 @[simp]
