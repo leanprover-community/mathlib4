@@ -5,24 +5,13 @@ Authors: Nailin Guan, Jingting Wang
 -/
 module
 
-public import Mathlib.Algebra.Category.CommAlgCat.Basic
-public import Mathlib.Algebra.Algebra.Shrink
-public import Mathlib.Algebra.Field.ULift
-public import Mathlib.Algebra.Polynomial.Lifts
-public import Mathlib.CategoryTheory.Limits.Filtered
-public import Mathlib.CategoryTheory.MorphismProperty.Ind
-public import Mathlib.CategoryTheory.SmallObject.Iteration.Nonempty
-public import Mathlib.FieldTheory.Minpoly.Basic
-public import Mathlib.RingTheory.AdjoinRoot
-public import Mathlib.RingTheory.Flat.Basic
-public import Mathlib.RingTheory.Flat.Localization
-public import Mathlib.RingTheory.Flat.Stability
-public import Mathlib.RingTheory.Ideal.GoingUp
-public import Mathlib.RingTheory.Localization.AtPrime.Basic
-public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
-public import Mathlib.RingTheory.Polynomial.Basic
-public import Mathlib.RingTheory.RingHom.Flat
+public import Mathlib.Algebra.Category.Ring.Colimits
 public import Mathlib.Algebra.Category.Ring.FilteredColimits
+public import Mathlib.Algebra.EuclideanDomain.Field
+public import Mathlib.Algebra.Field.Subfield.Basic
+public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Filtered
+public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 /-!
 
@@ -44,10 +33,6 @@ again local, with maximal ideal equal to the union of images of maximal ideals.
 @[expose] public section
 
 universe u v w
-
-open IsLocalRing CategoryTheory SmallObject Limits
-
-open Polynomial
 
 variable (R : Type u) [CommRing R]
 
