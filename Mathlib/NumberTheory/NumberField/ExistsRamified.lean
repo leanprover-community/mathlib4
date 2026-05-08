@@ -161,7 +161,7 @@ theorem Algebra.unramified_iff_forall
 theorem NumberField.supr_inertia_eq_top (S G : Type*) [CommRing S] [Module.Finite ℤ S]
     [IsDomain S] [FaithfulSMul ℤ S] [Group G] [MulSemiringAction G S] [IsGaloisGroup G ℤ S] :
     ⨆ m : MaximalSpectrum S, m.asIdeal.toAddSubgroup.inertia G = ⊤ := by
-  have : Finite G := by -- general fact to be PRed once `to_isFractionRing'` is done
+  have : Finite G := by -- PRed
     let : Algebra (FractionRing ℤ) (FractionRing S) := FractionRing.liftAlgebra ℤ (FractionRing S)
     let : MulSemiringAction G (FractionRing S) :=
         IsFractionRing.mulSemiringAction G ℤ S (FractionRing ℤ) (FractionRing S)
@@ -175,8 +175,7 @@ theorem NumberField.supr_inertia_eq_top (S G : Type*) [CommRing S] [Module.Finit
     rw [Algebra.unramified_iff_forall]
     rintro ⟨mF, hmF⟩
     by_cases hmF0 : mF = ⊥
-    · simp [hmF0]
-      rw [Algebra.IsUnramifiedAt]
+    · simp only [hmF0, Algebra.IsUnramifiedAt]
       change Algebra.FormallyUnramified ℤ (Localization ((⊥ : Ideal R).primeCompl))
       rw [Ideal.primeCompl_bot]
       change Algebra.FormallyUnramified ℤ (FractionRing R)
@@ -210,14 +209,9 @@ theorem NumberField.supr_inertia_eq_top (S G : Type*) [CommRing S] [Module.Finit
     rwa [h, right_eq_mul₀ (Ideal.IsDedekindDomain.ramificationIdx_ne_zero_of_liesOver mK hm1)] at key
   have h4 : Function.Bijective (algebraMap ℤ R) := by
     exact @bijective_algebraMap_int_of_finite_of_unramified R _ _ h5 _ _
-  have h1 : fixingSubgroup G (Set.range (algebraMap R S)) = H := by
-    exact IsGaloisGroup.fixingSubgroup_range_algebraMap G ℤ R S H
-  have h2 : fixingSubgroup G (Set.range (algebraMap ℤ S)) = ⊤ := by
-    exact IsGaloisGroup.fixingSubgroup_range_algebraMap G ℤ ℤ S ⊤
-  have h3 : Set.range (algebraMap ℤ S) = Set.range (algebraMap R S) := by
-    rw [IsScalarTower.algebraMap_eq ℤ R S, RingHom.coe_comp, h4.surjective.range_comp]
-  have : H = ⊤ := by rw [← h1, ← h3, h2]
-  exact this
+  rw [← IsGaloisGroup.fixingSubgroup_range_algebraMap G ℤ ℤ S ⊤,
+    IsScalarTower.algebraMap_eq ℤ R S, RingHom.coe_comp, h4.surjective.range_comp,
+    IsGaloisGroup.fixingSubgroup_range_algebraMap G ℤ R S H]
 
 theorem NumberField.supr_inertia_eq_top' (K : Type*) [Field K] [NumberField K]
     (G : Type*) [Group G] [MulSemiringAction G K] [IsGaloisGroup G ℚ K] :
