@@ -73,6 +73,7 @@ theorem IsGaloisGroup.iff_of_mulEquiv {H : Type*} [Group H] [MulSemiringAction H
   rw [← he, e.apply_symm_apply]
 
 variable {G A B} in
+@[simp]
 theorem IsGaloisGroup.top_iff : IsGaloisGroup (⊤ : Subgroup G) A B ↔ IsGaloisGroup G A B :=
   iff_of_mulEquiv Subgroup.topEquiv fun _ _ ↦ rfl
 
