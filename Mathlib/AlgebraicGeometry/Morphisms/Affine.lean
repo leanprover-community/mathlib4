@@ -31,7 +31,7 @@ We also provide the instance `HasAffineProperty @IsAffineHom fun X _ _ _ ↦ IsA
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 
@@ -51,8 +51,6 @@ lemma IsAffineOpen.preimage {X Y : Scheme} {U : Y.Opens} (hU : IsAffineOpen U)
     (f : X ⟶ Y) [IsAffineHom f] :
     IsAffineOpen (f ⁻¹ᵁ U) :=
   IsAffineHom.isAffine_preimage _ hU
-
-@[deprecated (since := "2025-10-07")] alias affinePreimage := IsAffineOpen.preimage
 
 instance (priority := 900) [IsIso f] : IsAffineHom f :=
   ⟨fun _ hU ↦ hU.preimage_of_isIso f⟩
