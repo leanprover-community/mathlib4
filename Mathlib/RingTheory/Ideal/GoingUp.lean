@@ -218,49 +218,57 @@ section IsIntegralClosure
 
 variable {A : Type*} [CommRing A] [Algebra R A] [Algebra.IsIntegral R A]
 
-theorem IsIntegralClosure.comap_lt_comap {I J : Ideal A} [I.IsPrime] (I_lt_J : I < J) :
+theorem IsIntegral.comap_lt_comap {I J : Ideal A} [I.IsPrime] (I_lt_J : I < J) :
     I.comap (algebraMap R A) < J.comap (algebraMap R A) :=
   let ⟨I_le_J, x, hxJ, hxI⟩ := SetLike.lt_iff_le_and_exists.mp I_lt_J
   comap_lt_comap_of_integral_mem_sdiff I_le_J ⟨hxJ, hxI⟩ (Algebra.IsIntegral.isIntegral x)
 
-theorem IsIntegralClosure.isMaximal_of_isMaximal_comap (I : Ideal A) [I.IsPrime]
+@[deprecated (since := "2026-05-08")] alias IsIntegralClosure.comap_le_comap :=
+  IsIntegral.comap_lt_comap
+
+theorem IsIntegral.isMaximal_of_isMaximal_comap (I : Ideal A) [I.IsPrime]
     (hI : IsMaximal (I.comap (algebraMap R A))) : IsMaximal I :=
   isMaximal_of_isIntegral_of_isMaximal_comap I hI
 
+@[deprecated (since := "2026-05-08")] alias IsIntegralClosure.isMaximal_of_isMaximal_comap :=
+  IsIntegral.isMaximal_of_isMaximal_comap
+
 variable [IsDomain A]
 
-theorem IsIntegralClosure.comap_ne_bot [Nontrivial R] {I : Ideal A} (I_ne_bot : I ≠ ⊥) :
+variable (R) in
+theorem IsIntegral.comap_ne_bot [Nontrivial R] {I : Ideal A} (I_ne_bot : I ≠ ⊥) :
     I.comap (algebraMap R A) ≠ ⊥ :=
   let ⟨x, x_mem, x_ne_zero⟩ := I.ne_bot_iff.mp I_ne_bot
   comap_ne_bot_of_integral_mem x_ne_zero x_mem (Algebra.IsIntegral.isIntegral x)
 
-theorem IsIntegralClosure.eq_bot_of_comap_eq_bot [Nontrivial R] {I : Ideal A} :
+@[deprecated (since := "2026-05-08")] alias IsIntegralClosure.comap_ne_bot :=
+  IsIntegral.comap_ne_bot
+
+variable (R) in
+theorem IsIntegral.eq_bot_of_comap_eq_bot [Nontrivial R] {I : Ideal A} :
     I.comap (algebraMap R A) = ⊥ → I = ⊥ := by
   contrapose
-  exact IsIntegralClosure.comap_ne_bot
+  exact IsIntegral.comap_ne_bot R
+
+@[deprecated (since := "2026-05-08")] alias IsIntegralClosure.eq_bot_of_comap_eq_bot :=
+    IsIntegral.eq_bot_of_comap_eq_bot
 
 end IsIntegralClosure
 
-theorem IntegralClosure.comap_lt_comap {I J : Ideal (integralClosure R S)} [I.IsPrime]
-    (I_lt_J : I < J) :
-    I.comap (algebraMap R (integralClosure R S)) < J.comap (algebraMap R (integralClosure R S)) :=
-  IsIntegralClosure.comap_lt_comap I_lt_J
+@[deprecated (since := "2026-05-08")] alias IntegralClosure.comap_lt_comap :=
+  IsIntegral.comap_lt_comap
 
-theorem IntegralClosure.isMaximal_of_isMaximal_comap (I : Ideal (integralClosure R S)) [I.IsPrime]
-    (hI : IsMaximal (I.comap (algebraMap R (integralClosure R S)))) : IsMaximal I :=
-  IsIntegralClosure.isMaximal_of_isMaximal_comap I hI
+@[deprecated (since := "2026-05-08")] alias IntegralClosure.isMaximal_of_isMaximal_comap :=
+  IsIntegral.isMaximal_of_isMaximal_comap
 
 section
 
 variable [IsDomain S]
 
-theorem IntegralClosure.comap_ne_bot [Nontrivial R] {I : Ideal (integralClosure R S)}
-    (I_ne_bot : I ≠ ⊥) : I.comap (algebraMap R (integralClosure R S)) ≠ ⊥ :=
-  IsIntegralClosure.comap_ne_bot I_ne_bot
+@[deprecated (since := "2026-05-08")] alias IntegralClosure.comap_ne_bot := IsIntegral.comap_ne_bot
 
-theorem IntegralClosure.eq_bot_of_comap_eq_bot [Nontrivial R] {I : Ideal (integralClosure R S)} :
-    I.comap (algebraMap R (integralClosure R S)) = ⊥ → I = ⊥ :=
-  IsIntegralClosure.eq_bot_of_comap_eq_bot
+@[deprecated (since := "2026-05-08")] alias IntegralClosure.eq_bot_of_comap_eq_bot :=
+  IsIntegral.eq_bot_of_comap_eq_bot
 
 /-- `comap (algebraMap R S)` is a surjection from the prime spec of `R` to prime spec of `S`.
 `hP : (algebraMap R S).ker ≤ P` is a slight generalization of the extension being injective -/

@@ -70,16 +70,16 @@ instance principal_ideal_ring [IsDomain A] [IsPrincipalIdealRing A] :
   maximalOfPrime := fun nonzero _ =>
     IsPrime.to_maximal_ideal nonzero
 
-theorem isIntegralClosure (B : Type*) [CommRing B] [IsDomain B] [Nontrivial R] [Algebra R A]
-    [Algebra R B] [Algebra B A] [IsScalarTower R B A] [IsIntegralClosure B R A] [DimensionLEOne R] :
+theorem isIntegralClosure (B : Type*) [CommRing B] [IsDomain B] [Nontrivial R]
+    [Algebra R B] [Algebra.IsIntegral R B] [DimensionLEOne R] :
     DimensionLEOne B where
   maximalOfPrime := fun {p} ne_bot _ =>
-    IsIntegralClosure.isMaximal_of_isMaximal_comap (R := R) A p
-      (Ideal.IsPrime.isMaximal inferInstance (IsIntegralClosure.comap_ne_bot A ne_bot))
+    IsIntegral.isMaximal_of_isMaximal_comap p
+      (Ideal.IsPrime.isMaximal inferInstance (IsIntegral.comap_ne_bot R ne_bot))
 
 nonrec instance integralClosure [Nontrivial R] [IsDomain A] [Algebra R A] [DimensionLEOne R] :
     DimensionLEOne (integralClosure R A) :=
-  DimensionLEOne.isIntegralClosure R A (integralClosure R A)
+  DimensionLEOne.isIntegralClosure R (integralClosure R A)
 
 variable {R}
 
