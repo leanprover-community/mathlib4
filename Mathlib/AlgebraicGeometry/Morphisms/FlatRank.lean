@@ -32,7 +32,7 @@ schemes `f : X ⟶ Y`. It is locally constant and is characterized by the condit
   locally finitely presented morphism is locally constant.
 - `AlgebraicGeometry.Scheme.Hom.one_le_finrank_iff_surjective`: The rank function is at least `1`
   everywhere if and only if the morphism is surjective.
-- `AlgebraicGeometry.Scheme.Hom.isIso_iff_rank_eq`: A finite flat locally finitely presented
+- `AlgebraicGeometry.Scheme.Hom.isIso_iff_finrank_eq`: A finite flat locally finitely presented
   morphism is an isomorphism if and only if its rank is constant equal to `1`.
 
 ## TODO
