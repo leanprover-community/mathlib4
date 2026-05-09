@@ -223,7 +223,8 @@ lemma topFormDensity_eq_zero_of_extDeriv_eq_zero {m : ℕ}
 /-- The topFormDensity of dω has compact support when ω is C¹ with compact support. -/
 lemma hasCompactSupport_topFormDensity_extDeriv {m : ℕ}
     (ω : (Fin (m + 1) → ℝ) → (Fin (m + 1) → ℝ) [⋀^Fin m]→L[ℝ] ℝ)
-    (_hω : ContDiff ℝ (1 : ℕ∞) ω) :
+    (_hω : ContDiff ℝ (1 : ℕ∞) ω)
+    (hω_support : HasCompactSupport ω) :
     HasCompactSupport (topFormDensity (extDeriv ω)) := by
   obtain ⟨R, hR⟩ := exists_norm_bound_of_hasCompactSupport_form ω hω_support
   have h_density_vanishes : ∀ x : Fin (m + 1) → ℝ, R < ‖x‖ →
@@ -313,7 +314,7 @@ lemma topFormDensity_extDeriv_vanishes_outside_box {m : ℕ}
       have hge : (0 : ℝ) ≤ x i := heq ▸ (by simp [HalfSpace] at hx_hs; exact hx_hs)
       exact hi hge
     · have hlow : halfSpaceBoxLower m R i = -(R : ℝ) := by
-        simp [halfSpaceBoxLower, heq, if_neg (Ne.symm heq)]
+        simp [halfSpaceBoxLower, heq]
       rw [hlow] at hi
       push Not at hi
       have habs : R < |x i| := by
