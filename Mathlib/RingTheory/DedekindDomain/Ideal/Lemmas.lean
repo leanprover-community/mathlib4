@@ -293,10 +293,6 @@ lemma FractionalIdeal.mul_inf (I J K : FractionalIdeal A⁰ K) : I * (J ⊓ K) =
 lemma FractionalIdeal.inf_mul (I J K : FractionalIdeal A⁰ K) : (I ⊓ J) * K = I * K ⊓ J * K :=
   inf_mul₀ (zero_le _) _ _
 
-lemma Ideal.inf_ne_bot_of_ne_bot {I J : Ideal A} (hI : I ≠ ⊥) (hJ : J ≠ ⊥) : I ⊓ J ≠ ⊥ := by
-  grw [← bot_lt_iff_ne_bot, ← mul_le_inf, bot_lt_iff_ne_bot, Ne, mul_eq_bot]
-  exact not_or_intro hI hJ
-
 section Gcd
 
 namespace Ideal
