@@ -309,8 +309,7 @@ theorem absNorm_span_singleton (r : S) :
   simp
 
 lemma absNorm_span_nat (n : ℕ) : (span {(n : S)}).absNorm = n ^ Module.finrank ℤ S := by
-  rw [absNorm_span_singleton, Algebra.norm_apply, map_natCast,
-    show (n : Module.End ℤ S) = (n : ℤ) by norm_cast, ← zsmul_one, LinearMap.det_smul]
+  rw [absNorm_span_singleton, Algebra.norm_nat]
   simp
 
 theorem absNorm_dvd_norm_of_mem {I : Ideal S} {x : S} (h : x ∈ I) :
