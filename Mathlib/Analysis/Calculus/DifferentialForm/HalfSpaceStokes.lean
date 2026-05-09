@@ -461,14 +461,15 @@ theorem halfSpace_stokes (m : ℕ)
       have h_meas : MeasurableSet
           (Icc (fun _ => -(R : ℝ)) (fun _ => (R : ℝ)) : Set (Fin m → ℝ)) :=
         measurableSet_Icc
+      set_option linter.unusedSimpArgs false in
       have h_vanish : ∀ x : Fin m → ℝ,
           x ∈ (Set.univ \ Icc (fun _ => -(R : ℝ)) (fun _ => (R : ℝ))) →
           boxFaceComponent ω (lastCoord m) ((lastCoord m).insertNth (0 : ℝ) x) = 0 := by
         intro x hx
         simp only [Set.mem_diff, Set.mem_univ, true_and, Set.mem_Icc, Pi.le_def,
-          not_and_or] at hx
+          not_and_or, not_le] at hx
         have h_norm_gt : R < ‖x‖ := by
-          simp only [not_forall, not_and_or] at hx
+          simp only [not_forall, not_and_or, not_le] at hx
           obtain ⟨i, hi⟩ | ⟨i, hi⟩ := hx
           · calc R < -(x i) := by linarith
               _ = |x i| := (abs_of_neg (by linarith : x i < 0)).symm
