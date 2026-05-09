@@ -6,8 +6,9 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Analysis.Normed.Group.Quotient
-import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 public import Mathlib.Topology.Instances.AddCircle.Real  -- shake: keep (used in type annotation)
+
+import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 
 /-!
 # The additive circle as a normed group

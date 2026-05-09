@@ -6,10 +6,11 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Analysis.Normed.Group.ZeroAtInfty
-import Mathlib.Analysis.Normed.Lp.SmoothApprox
 public import Mathlib.Analysis.Distribution.TemperateGrowth
 public import Mathlib.Topology.Algebra.UniformFilterBasis
 public import Mathlib.MeasureTheory.Function.L2Space
+
+import Mathlib.Analysis.Normed.Lp.SmoothApprox
 
 /-!
 # Schwartz space

@@ -5,8 +5,9 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-import Mathlib.Algebra.Order.Field.GeomSum
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+
+import Mathlib.Algebra.Order.Field.GeomSum
 
 /-!
 # Results on discretized exponentials

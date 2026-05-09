@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Normed.Algebra.Exponential
 public import Mathlib.Analysis.Matrix.Normed
 public import Mathlib.LinearAlgebra.Matrix.Hermitian
+
 import Mathlib.Topology.UniformSpace.Matrix
 
 /-!
