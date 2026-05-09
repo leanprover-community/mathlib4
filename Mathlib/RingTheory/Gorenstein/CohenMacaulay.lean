@@ -798,9 +798,9 @@ lemma isGorensteinLocalRing_of_exists (k : ℕ) (gt : ringKrullDim R < k)
       obtain ⟨m, hm⟩ := exist_nat_eq' Rq
       have mle : m ≤ n := by
         rw [← Order.lt_add_one_iff, ← Nat.cast_lt (α := WithBot ℕ∞), ← hm, ← hn,
-          IsLocalization.AtPrime.ringKrullDim_eq_height q, Ideal.height_eq_primeHeight,
-          ← maximalIdeal_primeHeight_eq_ringKrullDim, WithBot.coe_lt_coe]
-        exact Ideal.primeHeight_strict_mono qlt
+          IsLocalization.AtPrime.ringKrullDim_eq_height q,
+          ← maximalIdeal_height_eq_ringKrullDim, WithBot.coe_lt_coe]
+        exact Ideal.height_strict_mono_of_isPrime qlt
       simp only [hn, Nat.cast_lt] at gt
       have mlt : m < k - 1 := by omega
       have isg : IsGorensteinLocalRing Rq := by
@@ -912,7 +912,7 @@ lemma ext_subsingleton_of_regualr_sequence (M N : ModuleCat.{v} R) {rs : List R}
       have reg' := (isWeaklyRegular_cons_iff _ _ _).mp reg
       have mem' := mem
       simp only [List.mem_cons, forall_eq_or_imp] at mem'
-      let _ : Subsingleton (Ext N (M.smulShortComplex a).X₃ n) :=
+      have : Subsingleton (Ext N (M.smulShortComplex a).X₃ n) :=
         ih (ModuleCat.of R (QuotSMulTop a M)) reg'.2 mem'.2 hn
       exact (extClass_postcomp_surjective M N a reg'.1 mem'.1 (rfl : n + 1 = n + 1)).subsingleton
 
@@ -922,7 +922,7 @@ lemma extClass_postcomp_bijective_of_lt (M N : ModuleCat.{v} R) (x : R) (reg : I
     (ltlen : a < rs.length) :
     Function.Bijective (reg.smulShortComplex_shortExact.extClass.postcomp N h) := by
   refine ⟨?_, extClass_postcomp_surjective M N x reg mem h⟩
-  let _ : Subsingleton (Ext N (M.smulShortComplex x).X₂ a) :=
+  have : Subsingleton (Ext N (M.smulShortComplex x).X₂ a) :=
     ext_subsingleton_of_regualr_sequence M N reg' mem' a ltlen
   have mono := (Ext.covariant_sequence_exact₃' N reg.smulShortComplex_shortExact a b h).mono_g
     (Limits.IsZero.eq_zero_of_src (AddCommGrpCat.isZero_of_subsingleton _) _)
@@ -1031,8 +1031,8 @@ lemma exist_linearMap_range_le_of_ne_bot [IsArtinianRing R] {I : Ideal R} (ne : 
 set_option backward.isDefEq.respectTransparency false in
 lemma Ideal.bot_isIrreducible_iff_isPrincipal [IsArtinianRing R] :
     (⊥ : Ideal R).isIrreducible ↔ (⊤ : Submodule R (R ⧸ maximalIdeal R →ₗ[R] R)).IsPrincipal := by
-  let _ := quotient_maximal_hom_nontrivial R
-  let _ : Field (R ⧸ maximalIdeal R) := Quotient.field (maximalIdeal R)
+  have := quotient_maximal_hom_nontrivial R
+  let : Field (R ⧸ maximalIdeal R) := Quotient.field (maximalIdeal R)
   refine ⟨fun irr ↦ ?_, fun ⟨f, hf⟩ ↦ ⟨fun {I₁ I₂} infI ↦ ?_⟩⟩
   · obtain ⟨f, fne0⟩ : ∃ (f : (R ⧸ maximalIdeal R →ₗ[R] R)), f ≠ 0 := exists_ne 0
     use f
@@ -1188,7 +1188,6 @@ lemma linearMap_isPrincipal_iff (J : Ideal R) (hJ : J ≠ ⊤) :
     change ((Ideal.Quotient.mk J) r' • f) (e x) = _
     simp [hr', hr]
 
---set_option backward.isDefEq.respectTransparency false in
 lemma ext_isPrincipal_of_injectiveDimension_eq_ringKrullDim [IsNoetherianRing R] (n : ℕ)
     (h1 : injectiveDimension (ModuleCat.of R R) = n) (h2 : ringKrullDim R = n) :
     (⊤ : Submodule R (Ext.{u} (ModuleCat.of R (R ⧸ maximalIdeal R))
@@ -1348,10 +1347,10 @@ theorem isGroensteinLocalRing_tfae [IsNoetherianRing R] (n : ℕ) (h : ringKrull
     apply injectiveDimension_eq_ringKrullDim_of_isGorensteinLocalRing
   tfae_have 2 → 3 := by
     intro injdim
-    let _ : IsGorensteinLocalRing R := by
+    have : IsGorensteinLocalRing R := by
       rw [isGorensteinLocalRing_def, injdim]
       exact WithBot.coe_inj.not.mpr (ENat.coe_ne_top n)
-    let _ : IsCohenMacaulayLocalRing R := isCohenMacaulayLocalRing_of_isGorensteinLocalRing R
+    have : IsCohenMacaulayLocalRing R := isCohenMacaulayLocalRing_of_isGorensteinLocalRing R
     refine ⟨fun i hi ↦ ?_, ext_isPrincipal_of_injectiveDimension_eq_ringKrullDim n injdim h⟩
     rcases hi.lt_or_gt with lt|gt
     · have lt' : i < IsLocalRing.depth (ModuleCat.of R R) := by
