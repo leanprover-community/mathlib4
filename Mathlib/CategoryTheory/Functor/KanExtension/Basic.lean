@@ -40,8 +40,8 @@ open Category Limits Functor
 
 namespace Functor
 
-variable {C C' H D D' : Type*}
-  [Category* C] [Category* C'] [Category* H] [Category* D] [Category* D']
+variable {C C' H H' D D' : Type*} [Category* C] [Category* C']
+  [Category* H] [Category* H'] [Category* D] [Category* D']
 
 /-- Given two functors `L : C ⥤ D` and `F : C ⥤ H`, this is the category of functors
 `F' : D ⥤ H` equipped with a natural transformation `L ⋙ F' ⟶ F`. -/
@@ -72,6 +72,7 @@ variable (F' : D ⥤ H) {L : C ⥤ D} {F : C ⥤ H} (α : L ⋙ F' ⟶ F)
 /-- Given `α : L ⋙ F' ⟶ F`, the property `F'.IsRightKanExtension α` asserts that
 `(F', α)` is a terminal object in the category `RightExtension L F`, i.e. that `(F', α)`
 is a right Kan extension of `F` along `L`. -/
+@[mk_iff]
 class IsRightKanExtension : Prop where
   nonempty_isUniversal : Nonempty (RightExtension.mk F' α).IsUniversal
 
@@ -164,6 +165,7 @@ variable (F' : D ⥤ H) {L : C ⥤ D} {F : C ⥤ H} (α : F ⟶ L ⋙ F')
 /-- Given `α : F ⟶ L ⋙ F'`, the property `F'.IsLeftKanExtension α` asserts that
 `(F', α)` is an initial object in the category `LeftExtension L F`, i.e. that `(F', α)`
 is a left Kan extension of `F` along `L`. -/
+@[mk_iff]
 class IsLeftKanExtension : Prop where
   nonempty_isUniversal : Nonempty (LeftExtension.mk F' α).IsUniversal
 
@@ -409,6 +411,14 @@ def LeftExtension.postcompose₂ : LeftExtension L F ⥤ LeftExtension L (F ⋙ 
     (G := (whiskeringRight _ _ _).obj G)
     (𝟙 _) ({ app _ := (associator _ _ _).hom })
 
+instance [G.IsEquivalence] : (LeftExtension.postcompose₂ L F G).IsEquivalence := by
+  apply +allowSynthFailures StructuredArrow.isEquivalenceMap₂
+  · dsimp
+    infer_instance
+  · rw [NatTrans.isIso_iff_isIso_app]
+    intro
+    infer_instance
+
 /-- Given a right extension `E` of `F : C ⥤ H` along `L : C ⥤ D` and a functor `G : H ⥤ D'`,
 `E.postcompose₂ G` is the extension of `F ⋙ G` along `L` obtained by whiskering by `G`
 on the right. -/
@@ -418,6 +428,14 @@ def RightExtension.postcompose₂ : RightExtension L F ⥤ RightExtension L (F �
     (F := (whiskeringRight _ _ _).obj G)
     (G := (whiskeringRight _ _ _).obj G)
     ({ app _ := associator _ _ _ |>.inv }) (𝟙 _)
+
+instance [G.IsEquivalence] : (RightExtension.postcompose₂ L F G).IsEquivalence := by
+  apply +allowSynthFailures CostructuredArrow.isEquivalenceMap₂
+  · rw [NatTrans.isIso_iff_isIso_app]
+    intro
+    infer_instance
+  · dsimp
+    infer_instance
 
 variable {L F} {F' : D ⥤ H}
 /-- An isomorphism to describe the action of `LeftExtension.postcompose₂` on terms of the form
@@ -733,6 +751,40 @@ theorem isLeftKanExtension_iff_postcompose [F₁.IsLeftKanExtension α]
     exact IsInitial.ofIso h i
 
 end transitivity
+
+section postcompose₂
+
+variable (F' : D ⥤ H) {L : C ⥤ D} {F : C ⥤ H}
+
+lemma isLeftKanExtension_postcompose₂_iff
+    (α : F ⟶ L ⋙ F') (G : H ⥤ H') [G.IsEquivalence] :
+    (F' ⋙ G).IsLeftKanExtension (whiskerRight α G ≫ (Functor.associator _ _ _).hom) ↔
+    F'.IsLeftKanExtension α := by
+  simp only [isLeftKanExtension_iff]
+  refine Equiv.nonempty_congr ((IsInitial.equivOfIso ?_).trans
+    (IsInitial.isInitialIffObj (LeftExtension.postcompose₂ L F G) (LeftExtension.mk _ α)).symm)
+  exact StructuredArrow.isoMk (Iso.refl _)
+
+instance (α : F ⟶ L ⋙ F') (G : H ⥤ H') [G.IsEquivalence] [F'.IsLeftKanExtension α] :
+    (F' ⋙ G).IsLeftKanExtension (whiskerRight α G ≫ (Functor.associator _ _ _).hom) := by
+  rwa [isLeftKanExtension_postcompose₂_iff]
+
+lemma isRightKanExtension_postcompose₂_iff
+    (β : L ⋙ F' ⟶ F) (G : H ⥤ H') [G.IsEquivalence] :
+    (F' ⋙ G).IsRightKanExtension ((Functor.associator _ _ _).inv ≫ whiskerRight β G) ↔
+    F'.IsRightKanExtension β := by
+  simp only [isRightKanExtension_iff]
+  refine Equiv.nonempty_congr ((IsTerminal.equivOfIso ?_).trans
+    ((IsTerminal.isTerminalIffObj (RightExtension.postcompose₂ L F G)
+      (RightExtension.mk _ β))).symm)
+  exact CostructuredArrow.isoMk (Iso.refl _)
+
+instance (β : L ⋙ F' ⟶ F) (G : H ⥤ H') [G.IsEquivalence] [F'.IsRightKanExtension β] :
+    (F' ⋙ G).IsRightKanExtension ((Functor.associator _ _ _).inv ≫ whiskerRight β G) := by
+  rwa [isRightKanExtension_postcompose₂_iff]
+
+end postcompose₂
+
 
 section Colimit
 

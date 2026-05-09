@@ -65,10 +65,8 @@ instance :
 
 instance :
     (RF ⋙ shiftFunctor D a).IsRightDerivedFunctor (postcomposeShiftNatTrans RF α a) W := by
-  have : RF.IsRightDerivedFunctor α W := inferInstance
-  have : W.IsCompatibleWithShift A := inferInstance
-  sorry
-  --apply isRightDerivedFunctor_postcomp
+  dsimp only [postcomposeShiftNatTrans]
+  infer_instance
 
 variable (A)
 

@@ -142,6 +142,13 @@ lemma isLeftDerivedFunctor_iff_isIso_leftDerivedLift (G : D ⥤ H) (β : L ⋙ G
   have := IsLeftDerivedFunctor.isRightKanExtension _ α W
   exact isRightKanExtension_iff_isIso _ α _ (by simp)
 
+instance (G : H ⥤ H') [G.IsEquivalence] :
+    (LF ⋙ G).IsLeftDerivedFunctor ((Functor.associator _ _ _).inv ≫ whiskerRight α G) W := by
+  have : LF.IsRightKanExtension α := by
+    rwa [← isLeftDerivedFunctor_iff_isRightKanExtension _ _ W]
+  rw [isLeftDerivedFunctor_iff_isRightKanExtension]
+  infer_instance
+
 end
 
 variable (F)
