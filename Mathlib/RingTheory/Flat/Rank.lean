@@ -26,7 +26,7 @@ bijectivity of `R → S` with the rank of `S` over `R`.
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 
@@ -36,7 +36,6 @@ attribute [local instance] Module.free_of_flat_of_isLocalRing
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [Module.Flat R S] [Module.Finite R S]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma PrimeSpectrum.rankAtStalk_pos_iff_mem_range_comap (p : PrimeSpectrum R) :
     0 < Module.rankAtStalk (R := R) S p ↔ p ∈ Set.range (PrimeSpectrum.comap (algebraMap R S)) := by
   rw [Module.rankAtStalk_eq, Module.finrank_pos_iff, p.nontrivial_iff_mem_rangeComap]
@@ -61,6 +60,7 @@ lemma PrimeSpectrum.comap_surjective_iff_injective_of_finite :
   rw [← faithfulSMul_iff_algebraMap_injective]
   obtain ⟨⟨Q, _⟩, hQ⟩ := h ⟨p, inferInstance⟩
   have : Q.LiesOver p := ⟨congr($(hQ).asIdeal).symm⟩
+  let := Localization.AtPrime.algebraOfLiesOver p Q
   have : Nontrivial (Localization.AtPrime p ⊗[R] S) := by
     let f : Localization.AtPrime p ⊗[R] S →ₐ[R] Localization.AtPrime Q :=
       Algebra.TensorProduct.lift (IsScalarTower.toAlgHom R _ _)
