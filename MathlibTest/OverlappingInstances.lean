@@ -273,15 +273,15 @@ end universes
 
 namespace parameters
 
-/-! Test a projection that changes the instance parameters. -/
+/-! Test a projection that changes the instance parameters. (This needs `eraseInstances`) -/
 
 class A (α : Type*) where
 class A' (α : Type*) extends A α where
 
-instance {α} : A α where
-
 class B (α β : Type*) [A α] where
 class B' (α β : Type*) [A' α] extends B α β where
+
+instance {α} : A α where
 
 /--
 warning: Declaration `_example` has overlapping instances:
