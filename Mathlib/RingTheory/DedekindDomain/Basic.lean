@@ -6,6 +6,7 @@ Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 module
 
 public import Mathlib.RingTheory.Ideal.GoingUp
+public import Mathlib.RingTheory.KrullDimension.Basic
 public import Mathlib.RingTheory.Polynomial.RationalRoot
 
 /-!
@@ -97,6 +98,10 @@ theorem of_ringEquiv [hA : Ring.DimensionLEOne A] (e : R ≃+* A) : Ring.Dimensi
       Ideal.isMaximal_map_iff_of_bijective _ e.symm.bijective]
     apply Ring.DimensionLEOne.maximalOfPrime ?_ (P.comap_isPrime e.symm)
     simp [Ideal.map_eq_bot_iff_of_injective e.injective, hP_ne]
+
+-- TODO: replace `Ring.DimensionLEOne` with `Ring.KrullDimLE`.
+instance (priority := low) {R : Type*} [CommRing R] [Ring.DimensionLEOne R] : Ring.KrullDimLE 1 R :=
+  .mk₁' fun _ hI hI' ↦ hI'.isMaximal hI
 
 end Ring.DimensionLEOne
 
