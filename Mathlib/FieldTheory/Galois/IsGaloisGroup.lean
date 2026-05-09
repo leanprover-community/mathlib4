@@ -67,7 +67,7 @@ theorem IsGaloisGroup.of_mulEquiv [hG : IsGaloisGroup G A B] {H : Type*} [Group 
 
 variable {G A B} in
 theorem IsGaloisGroup.iff_of_mulEquiv {H : Type*} [Group H] [MulSemiringAction H B]
-    (e : H ≃* G) (he : ∀ h (x : B), (e h) • x = h • x) :
+    (e : H ≃* G) (he : ∀ h (x : B), e h • x = h • x) :
     IsGaloisGroup H A B ↔ IsGaloisGroup G A B := by
   refine ⟨fun h ↦ h.of_mulEquiv e.symm fun g x ↦ ?_, fun h ↦ h.of_mulEquiv e he⟩
   rw [← he, e.apply_symm_apply]
