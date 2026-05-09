@@ -22,7 +22,6 @@ Assouad's 1983 dual VC bound: if `𝒜.vcDim ≤ d`, then
 The proof is Assouad's original bitstring-coding argument. This bound works well
 for small `d`.
 
-
 ## Main definitions
 
 * `Finset.dualFamily`: the dual family of a set family relative to a ground
