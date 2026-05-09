@@ -54,6 +54,10 @@ variable (K L : Type*) [Field K] [Field L]
 -- See note [lower instance priority]
 attribute [instance] NumberField.to_charZero NumberField.to_finiteDimensional
 
+lemma one_le_finrank_rat [NumberField K] : 1 ≤ Module.finrank ℚ K := by
+  rw [Nat.one_le_iff_ne_zero, Ne, Module.finrank_eq_zero_iff_of_free]
+  exact not_subsingleton K
+
 protected theorem isAlgebraic [NumberField K] : Algebra.IsAlgebraic ℚ K :=
   Algebra.IsAlgebraic.of_finite _ _
 
@@ -410,6 +414,25 @@ theorem mem_span_integralBasis {x : K} :
 
 theorem RingOfIntegers.rank : Module.finrank ℤ (𝓞 K) = Module.finrank ℚ K :=
   IsIntegralClosure.rank ℤ ℚ K (𝓞 K)
+
+variable {K}
+
+lemma exists_zsmul_eq_integer (x : K) : ∃ (m : ℤ) (r : 𝓞 K), m ≠ 0 ∧  m • x = r := by
+    obtain ⟨num, ⟨d, hd⟩, h⟩ :=
+      IsLocalization.exists_mk'_eq (Algebra.algebraMapSubmonoid (𝓞 K) (nonZeroDivisors ℤ)) x
+    rw [Algebra.algebraMapSubmonoid, Submonoid.mem_map] at hd
+    choose a hamem ha using hd
+    refine ⟨a, num, mem_nonZeroDivisors_iff_ne_zero.mp hamem, ?_⟩
+    rw [← h, zsmul_eq_mul, ← show (a : 𝓞 K) • _ = (a : K) * _ from smul_eq_mul ..,
+      IsLocalization.smul_mk', Int.cast_comm a num, ← IsLocalization.smul_mk']
+    simp [← ha, Algebra.smul_def]
+
+lemma exists_nsmul_eq_integer (x : K) : ∃ (m : ℕ) (r : 𝓞 K), m ≠ 0 ∧  m • x = r := by
+    obtain ⟨a, r, ha, h⟩ := exists_zsmul_eq_integer x
+    refine ⟨a.natAbs, a.sign * r, Int.natAbs_ne_zero.mpr ha, ?_⟩
+    simp only [zsmul_eq_mul, nsmul_eq_mul, Nat.cast_natAbs, map_mul, map_intCast] at h ⊢
+    rw [← r.coe_eq_algebraMap, ← h, ← mul_assoc]
+    rw_mod_cast [Int.sign_mul_self_eq_abs a]
 
 end NumberField
 
