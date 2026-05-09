@@ -128,10 +128,8 @@ open Classical in
 paring `B : E →L[ℝ] F →L[ℝ] G` . This is set to be `0` if `G` is not complete or if `f` is not
 integrable with respect to `(μ.transpose B).variation`. -/
 noncomputable def integral (μ : VectorMeasure X F) (f : X → E) (B : E →L[ℝ] F →L[ℝ] G) : G :=
-  if _ : CompleteSpace G then
   setToFun (μ.transpose B).variation (μ.transpose B)
     (dominatedFinMeasAdditive_cbmApplyMeasure μ B) f
-  else 0
 
 @[inherit_doc integral]
 notation3 "∫ᵛ "(...)", "r:60:(scoped f => f)" ∂["B:70"; "μ:70"]" => integral μ r B
@@ -140,7 +138,23 @@ notation3 "∫ᵛ "(...)", "r:60:(scoped f => f)" ∂["B:70"; "μ:70"]" => integ
 `ℝ` on `F` and `f` is real-valued. The resulting integral is `F`-valued.-/
 notation3 "∫ᵛ "(...)", "r:60:(scoped f => f)" ∂•"μ:70 => integral μ r (lsmul ℝ ℝ)
 
+@[inherit_doc integral]
+notation3 "∫ᵛ "(...)" in "s", "r:60:(scoped f => f)" ∂["B:70"; "μ:70"]" =>
+  integral (VectorMeasure.restrict μ s) r B
+
+/-- The special case of the pairing integral in a set where the pairing is just the scalar
+multiplication by `ℝ` on `F` and `f` is real-valued. The resulting integral is `F`-valued.-/
+notation3 "∫ᵛ "(...)" in "s", "r:60:(scoped f => f)" ∂•"μ:70 =>
+  integral (VectorMeasure.restrict μ s) r (lsmul ℝ ℝ)
+
 variable {μ : VectorMeasure X F} {B : E →L[ℝ] F →L[ℝ] G}
+
+@[simp] theorem integral_zero {f : X → E} : ∫ᵛ x, f x ∂[B; (0 : VectorMeasure X F)] = 0 := by
+  by_cases hG : CompleteSpace G
+  · simp only [integral, hG, ↓reduceDIte]
+    apply setToFun_zero_left'
+    simp [VectorMeasure.transpose]
+  · simp [integral, hG]
 
 theorem integral_fun_add {f g : X → E} (hf : μ.Integrable f B) (hg : μ.Integrable g B) :
     ∫ᵛ x, f x + g x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] + ∫ᵛ x, g x ∂[B; μ] := by
@@ -189,6 +203,23 @@ variable (μ B) in
 @[integral_simps]
 theorem integral_smul (c : ℝ) (f : X → E) :
     ∫ᵛ x, (c • f) x ∂[B; μ] = c • ∫ᵛ x, f x ∂[B; μ] := integral_fun_smul μ B c f
+
+theorem integral_undef {f : X → E} (hf : ¬ μ.Integrable f B) :
+    ∫ᵛ x, f x ∂[B; μ] = 0 := by
+  by_cases hG : CompleteSpace G
+  · simp only [integral, hG, ↓reduceDIte]
+    exact setToFun_undef _ hf
+  · simp [integral, hG]
+
+theorem enorm_integral_le (f : X → E) :
+    ‖∫ᵛ x, f x ∂[B; μ]‖ₑ ≤ ∫⁻ x, ‖f x‖ₑ ∂ (μ.transpose B).variation := by
+  by_cases hG : CompleteSpace G; swap
+  · simp [integral, hG]
+  by_cases hf : μ.Integrable f B; swap
+  · simp [integral_undef hf]
+
+
+
 
 end VectorMeasure
 
