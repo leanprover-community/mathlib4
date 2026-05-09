@@ -53,15 +53,13 @@ is strongly adapted with respect to `ℱ` and for all `i ≤ j`, `μ[f j | ℱ i
 def Martingale (f : ι → Ω → E) (ℱ : Filtration ι m0) (μ : Measure Ω) : Prop :=
   StronglyAdapted ℱ f ∧ ∀ i j, i ≤ j → μ[f j | ℱ i] =ᵐ[μ] f i
 
-/-- A family of integrable functions `f : ι → Ω → E` is a supermartingale with respect to a
-filtration `ℱ` if `f` is strongly adapted with respect to `ℱ` and for all `i ≤ j`,
-`μ[f j | ℱ.le i] ≤ᵐ[μ] f i`. -/
-def Supermartingale [LE E] (f : ι → Ω → E) (ℱ : Filtration ι m0) (μ : Measure Ω) : Prop :=
-  StronglyAdapted ℱ f ∧ (∀ i j, i ≤ j → μ[f j | ℱ i] ≤ᵐ[μ] f i) ∧ ∀ i, Integrable (f i) μ
-
 /-- A family of integrable functions `f : ι → Ω → E` is a submartingale with respect to a
 filtration `ℱ` if `f` is strongly adapted with respect to `ℱ` and for all `i ≤ j`,
 `f i ≤ᵐ[μ] μ[f j | ℱ.le i]`. -/
+@[to_dual (dont_translate := ι)
+/-- A family of integrable functions `f : ι → Ω → E` is a supermartingale with respect to a
+filtration `ℱ` if `f` is strongly adapted with respect to `ℱ` and for all `i ≤ j`,
+`μ[f j | ℱ.le i] ≤ᵐ[μ] f i`. -/]
 def Submartingale [LE E] (f : ι → Ω → E) (ℱ : Filtration ι m0) (μ : Measure Ω) : Prop :=
   StronglyAdapted ℱ f ∧ (∀ i j, i ≤ j → f i ≤ᵐ[μ] μ[f j | ℱ i]) ∧ ∀ i, Integrable (f i) μ
 
@@ -123,9 +121,7 @@ theorem smul (c : ℝ) (hf : Martingale f ℱ μ) : Martingale (c • f) ℱ μ 
   refine (condExp_smul ..).trans ((hf.2 i j hij).mono fun x hx => ?_)
   simp only [Pi.smul_apply, hx]
 
-theorem supermartingale [Preorder E] (hf : Martingale f ℱ μ) : Supermartingale f ℱ μ :=
-  ⟨hf.1, fun i j hij => (hf.2 i j hij).le, fun i => hf.integrable i⟩
-
+@[to_dual (dont_translate := ι)]
 theorem submartingale [Preorder E] (hf : Martingale f ℱ μ) : Submartingale f ℱ μ :=
   ⟨hf.1, fun i j hij => (hf.2 i j hij).symm.le, fun i => hf.integrable i⟩
 
@@ -140,80 +136,37 @@ theorem martingale_condExp (f : Ω → E) (ℱ : Filtration ι m0) (μ : Measure
     [SigmaFiniteFiltration μ ℱ] : Martingale (fun i => μ[f | ℱ i]) ℱ μ :=
   ⟨fun _ => stronglyMeasurable_condExp, fun _ j hij => condExp_condExp_of_le (ℱ.mono hij) (ℱ.le j)⟩
 
-namespace Supermartingale
-
-protected theorem stronglyAdapted [LE E] (hf : Supermartingale f ℱ μ) : StronglyAdapted ℱ f :=
-  hf.1
-
-protected theorem stronglyMeasurable [LE E] (hf : Supermartingale f ℱ μ) (i : ι) :
-    StronglyMeasurable[ℱ i] (f i) :=
-  hf.stronglyAdapted i
-
-protected theorem integrable [LE E] (hf : Supermartingale f ℱ μ) (i : ι) : Integrable (f i) μ :=
-  hf.2.2 i
-
-theorem condExp_ae_le [LE E] (hf : Supermartingale f ℱ μ) {i j : ι} (hij : i ≤ j) :
-    μ[f j | ℱ i] ≤ᵐ[μ] f i :=
-  hf.2.1 i j hij
-
-theorem setIntegral_le [PartialOrder E] [IsOrderedAddMonoid E] [IsOrderedModule ℝ E]
-    [ClosedIciTopology E] [SigmaFiniteFiltration μ ℱ] {f : ι → Ω → E} (hf : Supermartingale f ℱ μ)
-    {i j : ι} (hij : i ≤ j) {s : Set Ω} (hs : MeasurableSet[ℱ i] s) :
-    ∫ ω in s, f j ω ∂μ ≤ ∫ ω in s, f i ω ∂μ := by
-  rw [← setIntegral_condExp (ℱ.le i) (hf.integrable j) hs]
-  refine setIntegral_mono_ae integrable_condExp.integrableOn (hf.integrable i).integrableOn ?_
-  filter_upwards [hf.2.1 i j hij] with _ heq using heq
-
-lemma congr [LE E] (hf : Supermartingale f ℱ μ) (hg : StronglyAdapted ℱ g)
-    (h_eq : ∀ t, f t =ᵐ[μ] g t) :
-    Supermartingale g ℱ μ := by
-  refine ⟨hg, fun i j hij ↦ ?_, fun i ↦ (integrable_congr (h_eq i)).mp (hf.integrable i)⟩
-  filter_upwards [condExp_ae_le hf hij, condExp_congr_ae (h_eq j), h_eq i] with ω h_le hcond h_eq
-  rwa [← hcond, ← h_eq]
-
-theorem add [Preorder E] [AddLeftMono E] (hf : Supermartingale f ℱ μ)
-    (hg : Supermartingale g ℱ μ) : Supermartingale (f + g) ℱ μ := by
-  refine ⟨hf.1.add hg.1, fun i j hij => ?_, fun i => (hf.2.2 i).add (hg.2.2 i)⟩
-  refine (condExp_add (hf.integrable j) (hg.integrable j) _).le.trans ?_
-  filter_upwards [hf.2.1 i j hij, hg.2.1 i j hij]
-  intros
-  refine add_le_add ?_ ?_ <;> assumption
-
-theorem add_martingale [Preorder E] [AddLeftMono E]
-    (hf : Supermartingale f ℱ μ) (hg : Martingale g ℱ μ) : Supermartingale (f + g) ℱ μ :=
-  hf.add hg.supermartingale
-
-theorem neg [Preorder E] [AddLeftMono E] (hf : Supermartingale f ℱ μ) :
-    Submartingale (-f) ℱ μ := by
-  refine ⟨hf.1.neg, fun i j hij => ?_, fun i => (hf.2.2 i).neg⟩
-  refine EventuallyLE.trans ?_ (condExp_neg ..).symm.le
-  filter_upwards [hf.2.1 i j hij] with _ _
-  simpa
-
-end Supermartingale
-
 namespace Submartingale
 
+@[to_dual (dont_translate := ι)]
 protected theorem stronglyAdapted [LE E] (hf : Submartingale f ℱ μ) : StronglyAdapted ℱ f :=
   hf.1
 
+@[to_dual (dont_translate := ι)]
 protected theorem stronglyMeasurable [LE E] (hf : Submartingale f ℱ μ) (i : ι) :
     StronglyMeasurable[ℱ i] (f i) :=
   hf.stronglyAdapted i
 
+@[to_dual (dont_translate := ι)]
 protected theorem integrable [LE E] (hf : Submartingale f ℱ μ) (i : ι) : Integrable (f i) μ :=
   hf.2.2 i
 
+@[to_dual (dont_translate := ι) Supermartingale.condExp_ae_le]
 theorem ae_le_condExp [LE E] (hf : Submartingale f ℱ μ) {i j : ι} (hij : i ≤ j) :
     f i ≤ᵐ[μ] μ[f j | ℱ i] :=
   hf.2.1 i j hij
 
+@[to_dual (dont_translate := ι)]
 lemma congr [LE E] (hf : Submartingale f ℱ μ) (hg : StronglyAdapted ℱ g)
     (h_eq : ∀ t, f t =ᵐ[μ] g t) :
     Submartingale g ℱ μ := by
   refine ⟨hg, fun i j hij ↦ ?_, fun i ↦ (integrable_congr (h_eq i)).mp (hf.integrable i)⟩
   exact (Filter.eventuallyLE_congr (h_eq i) (condExp_congr_ae (h_eq j))).mp (ae_le_condExp hf hij)
 
+-- TODO: move to definition of add_le_add
+attribute [to_dual self] add_le_add
+
+@[to_dual (dont_translate := ι)]
 theorem add [Preorder E] [AddLeftMono E] (hf : Submartingale f ℱ μ)
     (hg : Submartingale g ℱ μ) : Submartingale (f + g) ℱ μ := by
   refine ⟨hf.1.add hg.1, fun i j hij => ?_, fun i => (hf.2.2 i).add (hg.2.2 i)⟩
@@ -222,10 +175,12 @@ theorem add [Preorder E] [AddLeftMono E] (hf : Submartingale f ℱ μ)
   intros
   refine add_le_add ?_ ?_ <;> assumption
 
+@[to_dual (dont_translate := ι)]
 theorem add_martingale [Preorder E] [AddLeftMono E] (hf : Submartingale f ℱ μ)
     (hg : Martingale g ℱ μ) : Submartingale (f + g) ℱ μ :=
   hf.add hg.submartingale
 
+@[to_dual (dont_translate := ι)]
 theorem neg [Preorder E] [AddLeftMono E] (hf : Submartingale f ℱ μ) :
     Supermartingale (-f) ℱ μ := by
   refine ⟨hf.1.neg, fun i j hij => (condExp_neg ..).le.trans ?_, fun i => (hf.2.2 i).neg⟩
