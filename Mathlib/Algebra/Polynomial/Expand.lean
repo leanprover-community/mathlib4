@@ -23,10 +23,6 @@ public import Mathlib.RingTheory.Polynomial.Basic
 
 @[expose] public section
 
-
-
-
-
 universe u v w
 
 open Polynomial
