@@ -776,6 +776,8 @@ lemma isFiniteRelIndex_of_le_left {H₁ H₂ : Subgroup G} (H₃ : Subgroup G) [
   exact finiteIndex_of_le <| subgroupOf_mono H₃ h
 
 @[deprecated (since := "2026-05-09")] alias isFiniteRelIndex_of_le := isFiniteRelIndex_of_le_left
+@[deprecated (since := "2026-05-09")] alias
+  _root_.AddSubgroup.isFiniteRelIndex_of_le := AddSubgroup.isFiniteRelIndex_of_le_left
 
 @[to_additive]
 lemma isFiniteRelIndex_of_le_right {H₁ H₂ H₃ : Subgroup G} (h : H₂ ≤ H₃)
