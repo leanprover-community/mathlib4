@@ -310,9 +310,9 @@ theorem integral_add_vectorMeasure (hμ : μ.Integrable f B) (hν : ν.Integrabl
       transpose_eq_cbmApplyMeasure, ← setToFun_add_measure
       (dominatedFinMeasAdditive_cbmApplyMeasure μ B)
       (dominatedFinMeasAdditive_cbmApplyMeasure ν B) hμ hν]
-    refine (setToFun_congr_measure_of_integrable 1 ENNReal.one_ne_top ?_ _ _ f
-      (hμ.add_measure hν)).symm
-    sorry
+    refine (setToFun_congr_measure_of_integrable 1 ENNReal.one_ne_top ?_ _ _ f ?_).symm
+    · simpa using variation_add_le
+    · exact hμ.add_measure hν
   · simp [integral, hG]
 
 theorem integral_finsetSum_vectorMeasure {μ : ι → VectorMeasure X F}
@@ -323,9 +323,9 @@ theorem integral_finsetSum_vectorMeasure {μ : ι → VectorMeasure X F}
     · simp only [integral, hG, ↓reduceDIte, transpose_finsetSum_vectorMeasure, coe_finsetSum,
         transpose_eq_cbmApplyMeasure, ← setToFun_finsetSum_measure hs
         (fun i ↦ dominatedFinMeasAdditive_cbmApplyMeasure (μ i) B) hf]
-      refine (setToFun_congr_measure_of_integrable 1 ENNReal.one_ne_top ?_ _ _ f
-        (integrable_finsetSum_measure.2 hf)).symm
-      sorry
+      refine (setToFun_congr_measure_of_integrable 1 ENNReal.one_ne_top ?_ _ _ f ?_).symm
+      · simpa using variation_finsetSum_le s _
+      · exact integrable_finsetSum_measure.2 hf
     · simp_all
   · simp [integral, hG]
 
@@ -344,9 +344,9 @@ theorem integral_sub_vectorMeasure (hμ : μ.Integrable f B) (hν : ν.Integrabl
       transpose_eq_cbmApplyMeasure, ← setToFun_sub_measure
       (dominatedFinMeasAdditive_cbmApplyMeasure μ B) (dominatedFinMeasAdditive_cbmApplyMeasure ν B)
       hμ hν]
-    refine (setToFun_congr_measure_of_integrable 1 ENNReal.one_ne_top ?_ _ _ f
-       (hμ.add_measure hν)).symm
-    sorry
+    refine (setToFun_congr_measure_of_integrable 1 ENNReal.one_ne_top ?_ _ _ f ?_).symm
+    · simpa using variation_sub_le
+    · exact hμ.add_measure hν
   · simp [integral, hG]
 
 end VectorMeasure
@@ -365,9 +365,9 @@ theorem integral_add_cbm (hB : μ.Integrable f B) (hC : μ.Integrable f C) :
   · simp only [integral, hG, ↓reduceDIte, transpose_add_cbm, coe_add, transpose_eq_cbmApplyMeasure,
       ← setToFun_add_measure (dominatedFinMeasAdditive_cbmApplyMeasure μ B)
       (dominatedFinMeasAdditive_cbmApplyMeasure μ C) hB hC]
-    refine (setToFun_congr_measure_of_integrable 1 ENNReal.one_ne_top ?_ _ _ f
-      (hB.add_measure hC)).symm
-    sorry
+    refine (setToFun_congr_measure_of_integrable 1 ENNReal.one_ne_top ?_ _ _ f ?_).symm
+    · simpa using variation_add_le
+    · exact hB.add_measure hC
   · simp [integral, hG]
 
 theorem integral_finsetSum_cbm {B : ι → E →L[ℝ] F →L[ℝ] G}
@@ -378,9 +378,9 @@ theorem integral_finsetSum_cbm {B : ι → E →L[ℝ] F →L[ℝ] G}
     · simp only [integral, hG, ↓reduceDIte, transpose_finsetSum_cbm, coe_finsetSum,
         transpose_eq_cbmApplyMeasure, ← setToFun_finsetSum_measure hs
         (fun i ↦ dominatedFinMeasAdditive_cbmApplyMeasure μ (B i)) hf]
-      refine (setToFun_congr_measure_of_integrable 1 ENNReal.one_ne_top ?_ _ _ f
-        (integrable_finsetSum_measure.2 hf)).symm
-      sorry
+      refine (setToFun_congr_measure_of_integrable 1 ENNReal.one_ne_top ?_ _ _ f ?_).symm
+      · simpa using variation_finsetSum_le s _
+      · exact integrable_finsetSum_measure.2 hf
     · simp_all
   · simp [integral, hG]
 
@@ -398,9 +398,9 @@ theorem integral_sub_cbm (hB : μ.Integrable f B) (hC : μ.Integrable f C) :
       transpose_eq_cbmApplyMeasure, ← setToFun_sub_measure
       (dominatedFinMeasAdditive_cbmApplyMeasure μ B) (dominatedFinMeasAdditive_cbmApplyMeasure μ C)
       hB hC]
-    refine (setToFun_congr_measure_of_integrable 1 ENNReal.one_ne_top ?_ _ _ f
-       (hB.add_measure hC)).symm
-    sorry
+    refine (setToFun_congr_measure_of_integrable 1 ENNReal.one_ne_top ?_ _ _ f ?_).symm
+    · simpa using variation_sub_le
+    · exact hB.add_measure hC
   · simp [integral, hG]
 
 end cbm
