@@ -11,7 +11,7 @@ public import Mathlib.LinearAlgebra.Basis.Fin
 public import Mathlib.LinearAlgebra.Basis.Flag
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 public import Mathlib.LinearAlgebra.Matrix.Block
-public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.LinearAlgebra.Projection
 
 /-!
 # Triangularizable linear endomorphisms
@@ -30,12 +30,15 @@ This file contains basic results relevant to the triangularizability of linear e
   complete flag.
 * `Module.End.isTriangularizedBy_iff_isUpperTriangular_toMatrix`: equivalently, the matrix of `f`
   in that basis is upper triangular.
+* `Module.End.exists_isTriangularizedBy_of_iSup_maxGenEigenspace_eq_top`: in finite dimensions,
+  if the maximal generalized eigenspaces span the whole space, then `f` admits a triangularizing
+  basis.
 * `Module.End.isTriangularizable`: in finite dimensions over an algebraically closed field, every
   endomorphism admits an invariant complete flag.
 * `Module.End.exists_invariantFlag`: the unbundled form of `Module.End.isTriangularizable`.
 * `Module.End.exists_isTriangularizedBy`: in finite dimensions over an algebraically closed field,
   every endomorphism admits a triangularizing basis.
-* `Module.End.iSup_genEigenspace_eq_top`: in finite dimensions, over an algebraically
+* `Module.End.iSup_maxGenEigenspace_eq_top`: in finite dimensions, over an algebraically
   closed field, the generalized eigenspaces of any linear endomorphism span the whole space.
 * `Module.End.iSup_genEigenspace_restrict_eq_top`: in finite dimensions, if the
   generalized eigenspaces of a linear endomorphism span the whole space then the same is true of
@@ -48,7 +51,8 @@ This file contains basic results relevant to the triangularizability of linear e
 
 ## TODO
 
-Characterize `Module.End.IsTriangularizable` in finite dimensions over a field by the condition
+Prove the converse of `Module.End.isTriangularizable_of_iSup_maxGenEigenspace_eq_top`, completing
+the finite-dimensional characterization of `Module.End.IsTriangularizable` by
 `⨆ μ, f.maxGenEigenspace μ = ⊤`.
 
 ## Tags
@@ -127,30 +131,6 @@ theorem isTriangularizedBy_iff_isUpperTriangular_toMatrix :
       rw [← LinearMap.toMatrix_apply b b f l i]
       exact hf (Fin.castSucc_lt_castSucc_iff.mp (lt_of_lt_of_le hik hlk))
 
-/-- An intertwining linear map sends generalized eigenspaces into generalized eigenspaces with the
-same eigenvalue and exponent. -/
-theorem map_genEigenspace_le {V₂ : Type*} [AddCommGroup V₂] [Module K V₂]
-    {f : End K V} {g : End K V₂} (φ : V →ₗ[K] V₂) (hφ : g.comp φ = φ.comp f)
-    (μ : K) (k : ℕ∞) :
-    (f.genEigenspace μ k).map φ ≤ g.genEigenspace μ k := by
-  rintro y ⟨x, hx, rfl⟩
-  obtain ⟨l, hl, hx⟩ :=
-    (Module.End.mem_genEigenspace (f := f) (μ := μ) (k := k) (x := x)).mp hx
-  apply (Module.End.mem_genEigenspace (f := g) (μ := μ) (k := k) (x := φ x)).mpr
-  refine ⟨l, hl, ?_⟩
-  rw [LinearMap.mem_ker] at hx ⊢
-  have hsub (x : V) : (g - μ • 1) (φ x) = φ ((f - μ • 1) x) := by
-    have hfg : g (φ x) = φ (f x) := by
-      exact LinearMap.congr_fun hφ x
-    simp [LinearMap.sub_apply, hfg]
-  have hpow (l : ℕ) (x : V) :
-      ((g - μ • 1) ^ l) (φ x) = φ (((f - μ • 1) ^ l) x) := by
-    induction l with
-    | zero => simp
-    | succ l ih =>
-        rw [pow_succ', pow_succ', Module.End.mul_apply, Module.End.mul_apply, ih, hsub]
-  rw [hpow, hx, map_zero]
-
 /-- If the generalized eigenspaces of `f` span the whole space, then the same holds for the map
 induced by `f` on a quotient by an invariant submodule. -/
 theorem iSup_genEigenspace_mapQ_eq_top {p : Submodule K V} {f : End K V}
@@ -165,7 +145,7 @@ theorem iSup_genEigenspace_mapQ_eq_top {p : Submodule K V} {f : End K V}
     _ = ⨆ μ, (f.genEigenspace μ k).map p.mkQ := by rw [Submodule.map_iSup]
     _ ≤ ⨆ μ, Module.End.genEigenspace (p.mapQ p f hfp : End K (V ⧸ p)) μ k :=
       iSup_mono fun μ =>
-        map_genEigenspace_le p.mkQ (Submodule.mapQ_mkQ p p f (h := hfp)) μ k
+        Module.End.map_genEigenspace_le p.mkQ (Submodule.mapQ_mkQ p p f (h := hfp)) μ k
 
 /-- The maximal-generalized-eigenspace version of
 `Module.End.iSup_genEigenspace_mapQ_eq_top`. -/
@@ -226,29 +206,10 @@ theorem mkFinCons_apply_zero_mem_flag {n : ℕ} {f : End K V} {v : V} {μ : K}
   exact Submodule.smul_mem _ _ <|
     span_singleton_le_mkFinCons_flag_succ k (Submodule.mem_span_singleton_self v)
 
-theorem mkFinCons_apply_succ_mem_flag {n : ℕ} {f : End K V} {v : V} {W : Submodule K V}
-    {bW : Basis (Fin n) K W} {hli hsp} (hW : IsCompl (K ∙ v) W) {k : Fin (n + 1)}
-    {i : Fin n} (hi : i.castSucc < k)
-    (hg : Module.End.IsTriangularizedBy
-      (W.projectionOnto (K ∙ v) hW.symm ∘ₗ f.domRestrict W : End K W) bW) :
-    f (Basis.mkFinCons v bW hli hsp i.succ) ∈
-      (Basis.mkFinCons v bW hli hsp).flag k.succ := by
-  rw [show Basis.mkFinCons v bW hli hsp i.succ = (bW i : V) by simp [Basis.coe_mkFinCons]]
-  have hgw := (hg k : bW.flag k ≤ (bW.flag k).comap
-    (W.projectionOnto (K ∙ v) hW.symm ∘ₗ f.domRestrict W : End K W)) (bW.self_mem_flag hi)
-  have hdecomp : f (bW i : V) = (K ∙ v).projection W hW (f (bW i : V)) +
-      W.projection (K ∙ v) hW.symm (f (bW i : V)) := by
-    simpa using (LinearMap.congr_fun (Submodule.projection_add_projection_eq_id hW)
-      (f (bW i : V))).symm
-  rw [hdecomp]
-  exact Submodule.add_mem _ (span_singleton_le_mkFinCons_flag_succ k <|
-    Submodule.projection_apply_mem hW _) (map_flag_le_mkFinCons_flag_succ k ⟨_, hgw, rfl⟩)
-
-theorem isTriangularizedBy_mkFinCons {n : ℕ} {f : End K V} {v : V} {μ : K}
-    {W : Submodule K V} {bW : Basis (Fin n) K W} {hli hsp} (hv : f v = μ • v)
-    (hW : IsCompl (K ∙ v) W)
-    (hg : Module.End.IsTriangularizedBy
-      (W.projectionOnto (K ∙ v) hW.symm ∘ₗ f.domRestrict W : End K W) bW) :
+theorem isTriangularizedBy_mkFinCons_of_sub_mem_span_singleton {n : ℕ} {f : End K V}
+    {v : V} {μ : K} {W : Submodule K V} {g : End K W} {bW : Basis (Fin n) K W}
+    {hli hsp} (hv : f v = μ • v)
+    (hfg : ∀ w : W, f (w : V) - (g w : V) ∈ K ∙ v) (hg : g.IsTriangularizedBy bW) :
     f.IsTriangularizedBy (Basis.mkFinCons v bW hli hsp) := by
   intro k
   refine Fin.cases (by simp) (fun k => ?_) k
@@ -257,7 +218,36 @@ theorem isTriangularizedBy_mkFinCons {n : ℕ} {f : End K V} {v : V} {μ : K}
     change f (Basis.mkFinCons v bW hli hsp i) ∈ (Basis.mkFinCons v bW hli hsp).flag k.succ
     revert hi
     refine Fin.cases (fun _ => mkFinCons_apply_zero_mem_flag hv k) ?_ i
-    exact fun i hi => mkFinCons_apply_succ_mem_flag hW (Fin.succ_lt_succ_iff.mp hi) hg
+    intro i hi
+    rw [show Basis.mkFinCons v bW hli hsp i.succ = (bW i : V) by simp [Basis.coe_mkFinCons]]
+    have hgw := (hg k : bW.flag k ≤ (bW.flag k).comap g)
+      (bW.self_mem_flag (Fin.succ_lt_succ_iff.mp hi))
+    have hdecomp : f (bW i : V) = (f (bW i : V) - (g (bW i) : V)) + (g (bW i) : V) := by
+      abel
+    rw [hdecomp]
+    exact Submodule.add_mem _ (span_singleton_le_mkFinCons_flag_succ k (hfg (bW i)))
+      (map_flag_le_mkFinCons_flag_succ k ⟨_, hgw, rfl⟩)
+
+theorem isTriangularizedBy_mkFinCons {n : ℕ} {f : End K V} {v : V} {μ : K}
+    {W : Submodule K V} {bW : Basis (Fin n) K W} {hli hsp} (hv : f v = μ • v)
+    (hW : IsCompl (K ∙ v) W)
+    (hg : Module.End.IsTriangularizedBy
+      (W.projectionOnto (K ∙ v) hW.symm ∘ₗ f.domRestrict W : End K W) bW) :
+    f.IsTriangularizedBy (Basis.mkFinCons v bW hli hsp) := by
+  refine isTriangularizedBy_mkFinCons_of_sub_mem_span_singleton hv ?_ hg
+  intro w
+  change f (w : V) - W.projection (K ∙ v) hW.symm (f (w : V)) ∈ K ∙ v
+  have hdecomp : f (w : V) =
+      (K ∙ v).projection W hW (f (w : V)) +
+        W.projection (K ∙ v) hW.symm (f (w : V)) := by
+    simpa using (LinearMap.congr_fun (Submodule.projection_add_projection_eq_id hW)
+      (f (w : V))).symm
+  have hsub : f (w : V) - W.projection (K ∙ v) hW.symm (f (w : V)) =
+      (K ∙ v).projection W hW (f (w : V)) := by
+    nth_rewrite 1 [hdecomp]
+    rw [add_sub_cancel_right]
+  rw [hsub]
+  exact Submodule.projection_apply_mem hW _
 
 theorem exists_hasEigenvalue_of_genEigenspace_eq_top [Nontrivial M] {f : End R M} (k : ℕ∞)
     (hf : ⨆ μ, f.genEigenspace μ k = ⊤) :
@@ -294,50 +284,68 @@ theorem exists_isTriangularizedBy_of_subsingleton [Subsingleton V] (f : End K V)
   change f x ∈ (Module.Basis.empty V : Basis (Fin 0) K V).flag k
   convert hx using 1
 
-private noncomputable def triangularizationAux {V : Type*} [AddCommGroup V] [Module K V]
-    [IsAlgClosed K] [FiniteDimensional K V] (f : End K V) :
+private noncomputable def triangularizationAux_of_iSup_maxGenEigenspace_eq_top {V : Type*}
+    [AddCommGroup V] [Module K V] [FiniteDimensional K V] (f : End K V)
+    (hf : ⨆ μ, f.maxGenEigenspace μ = ⊤) :
     ∃ n, ∃ b : Basis (Fin n) K V, f.IsTriangularizedBy b :=
   haveI : Decidable (Nontrivial V) := Classical.propDecidable _
   if hV : Nontrivial V then
-    let μ : f.Eigenvalues := default
-    let ⟨v, hv⟩ := Module.End.HasEigenvalue.exists_hasEigenvector
-      (μ.property : f.HasEigenvalue μ)
+    let ⟨μ, hμ⟩ := exists_hasEigenvalue_of_iSup_maxGenEigenspace_eq_top hf
+    let ⟨v, hv⟩ := Module.End.HasEigenvalue.exists_hasEigenvector hμ
     let L : Submodule K V := K ∙ v
+    have hL : L ≤ L.comap f := by
+      rw [Submodule.span_singleton_le_iff_mem]
+      change f v ∈ L
+      rw [hv.apply_eq_smul]
+      exact Submodule.smul_mem L μ (Submodule.mem_span_singleton_self v)
+    let qf : End K (V ⧸ L) := L.mapQ L f hL
+    have hqf : ⨆ μ, qf.maxGenEigenspace μ = ⊤ :=
+      iSup_maxGenEigenspace_mapQ_eq_top hL hf
+    let ⟨n, bq, hbq⟩ := triangularizationAux_of_iSup_maxGenEigenspace_eq_top qf hqf
     let ⟨W, hW⟩ := L.exists_isCompl
-    let g : End K W := W.projectionOnto L hW.symm ∘ₗ f.domRestrict W
-    let ⟨n, bW, hg⟩ := triangularizationAux g
+    let e : (V ⧸ L) ≃ₗ[K] W := Submodule.quotientEquivOfIsCompl L W hW
+    let g : End K W := e.conj qf
     let hli := isCompl_span_singleton_mkFinCons_hli hv.2 hW
     let hsp := isCompl_span_singleton_mkFinCons_hsp hW
-    ⟨n + 1, Basis.mkFinCons v bW hli hsp,
-      isTriangularizedBy_mkFinCons hv.apply_eq_smul hW hg⟩
+    ⟨n + 1, Basis.mkFinCons v (bq.map e) hli hsp,
+      isTriangularizedBy_mkFinCons_of_sub_mem_span_singleton hv.apply_eq_smul
+        (by
+          intro w
+          have hq : L.mkQ (f (w : V)) = L.mkQ (g w : V) := by
+            calc
+              L.mkQ (f (w : V)) = qf (L.mkQ (w : V)) := by
+                rw [Submodule.mkQ_apply, Submodule.mkQ_apply, Submodule.mapQ_apply]
+              _ = qf (e.symm w) := by simp [e, Submodule.mkQ_apply]
+              _ = e.symm (g w) := by simp [g]
+              _ = L.mkQ (g w : V) := by simp [e, Submodule.mkQ_apply]
+          change f (w : V) - (g w : V) ∈ L
+          rw [← Submodule.ker_mkQ L]
+          exact LinearMap.mem_ker.mpr (by simpa using congr_arg (fun x => x - L.mkQ (g w : V)) hq))
+        (hbq.map e)⟩
   else
     haveI : Subsingleton V := not_nontrivial_iff_subsingleton.mp hV
     exists_isTriangularizedBy_of_subsingleton f
 termination_by Module.finrank K V
 decreasing_by
-  have hdim := Submodule.finrank_add_eq_of_isCompl hW
+  have hdim := Submodule.finrank_quotient_add_finrank L
   rw [finrank_span_singleton hv.2] at hdim
   rw [← hdim]
-  exact Nat.lt_add_of_pos_left Nat.zero_lt_one
+  exact Nat.lt_add_of_pos_right Nat.zero_lt_one
 
-/-- In finite dimensions over an algebraically closed field, every endomorphism is triangularized by
-some basis. -/
-theorem exists_isTriangularizedBy [IsAlgClosed K] [FiniteDimensional K V] (f : End K V) :
+/-- If the maximal generalized eigenspaces of a finite-dimensional endomorphism span the whole
+space, then the endomorphism is triangularized by some basis. -/
+theorem exists_isTriangularizedBy_of_iSup_maxGenEigenspace_eq_top [FiniteDimensional K V]
+    {f : End K V} (hf : ⨆ μ, f.maxGenEigenspace μ = ⊤) :
     ∃ n, ∃ b : Basis (Fin n) K V, f.IsTriangularizedBy b :=
-  triangularizationAux f
+  triangularizationAux_of_iSup_maxGenEigenspace_eq_top f hf
 
-/-- In finite dimensions over an algebraically closed field, every endomorphism is
-triangularizable. -/
-theorem isTriangularizable [IsAlgClosed K] [FiniteDimensional K V] (f : End K V) :
+/-- If the maximal generalized eigenspaces of a finite-dimensional endomorphism span the whole
+space, then the endomorphism is triangularizable. -/
+theorem isTriangularizable_of_iSup_maxGenEigenspace_eq_top [FiniteDimensional K V]
+    {f : End K V} (hf : ⨆ μ, f.maxGenEigenspace μ = ⊤) :
     f.IsTriangularizable := by
-  obtain ⟨n, b, hb⟩ := f.exists_isTriangularizedBy
+  obtain ⟨n, b, hb⟩ := exists_isTriangularizedBy_of_iSup_maxGenEigenspace_eq_top hf
   exact hb.isTriangularizable
-
-/-- In finite dimensions over an algebraically closed field, every endomorphism admits an invariant
-complete flag. -/
-theorem exists_invariantFlag [IsAlgClosed K] [FiniteDimensional K V] (f : End K V) :
-    ∃ c : Flag (Submodule K V), f.IsTriangularizedByFlag c :=
-  f.isTriangularizable
 
 -- Lemma 8.22(c) of [axler2024]
 /-- In finite dimensions, over an algebraically closed field, the generalized eigenspaces of any
@@ -405,6 +413,24 @@ theorem iSup_maxGenEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V] (f 
     change ⨆ (μ : K), f.maxGenEigenspace μ = ⊤
     rw [← top_le_iff, ← Submodule.eq_top_of_disjoint ER ES h_dim_add.ge h_disjoint]
     apply sup_le hER hES
+
+/-- In finite dimensions over an algebraically closed field, every endomorphism is triangularized by
+some basis. -/
+theorem exists_isTriangularizedBy [IsAlgClosed K] [FiniteDimensional K V] (f : End K V) :
+    ∃ n, ∃ b : Basis (Fin n) K V, f.IsTriangularizedBy b :=
+  exists_isTriangularizedBy_of_iSup_maxGenEigenspace_eq_top (iSup_maxGenEigenspace_eq_top f)
+
+/-- In finite dimensions over an algebraically closed field, every endomorphism is
+triangularizable. -/
+theorem isTriangularizable [IsAlgClosed K] [FiniteDimensional K V] (f : End K V) :
+    f.IsTriangularizable :=
+  isTriangularizable_of_iSup_maxGenEigenspace_eq_top (iSup_maxGenEigenspace_eq_top f)
+
+/-- In finite dimensions over an algebraically closed field, every endomorphism admits an invariant
+complete flag. -/
+theorem exists_invariantFlag [IsAlgClosed K] [FiniteDimensional K V] (f : End K V) :
+    ∃ c : Flag (Submodule K V), f.IsTriangularizedByFlag c :=
+  f.isTriangularizable
 
 end Module.End
 

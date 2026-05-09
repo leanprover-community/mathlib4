@@ -87,8 +87,7 @@ noncomputable def schurTriangulation : UpperTriangular n 𝕜 :=
 field. In particular, a complex matrix can be converted to upper-triangular form by a change of
 basis. In other words, any complex matrix is unitarily similar to an upper triangular matrix. -/
 lemma schur_triangulation :
-    A =
-      schurTriangulationUnitary A * schurTriangulation A *
+    A = schurTriangulationUnitary A * schurTriangulation A *
         star (schurTriangulationUnitary A) := by
   let U := schurTriangulationUnitary A
   have h : U * (schurTriangulation A).val = A * U := by
