@@ -318,8 +318,10 @@ instance topCharacteristic : Characteristic (⊤ : Subgroup G) :=
 
 /-- If `H` is a characteristic subgroup of `G`, then every automorphism of `G` induces an
 automorphism of `H`. -/
-@[simps!]
-def _root_.MulAut.characteristic [H.Characteristic] : MulAut G →* MulAut H where
+@[to_additive
+  /-- If `H` is a characteristic additive subgroup of `G`, then every automorphism of `G` induces an
+  automorphism of `H`. -/]
+def _root_.MulAut.characteristic (H : Subgroup G) [H.Characteristic] : MulAut G →* MulAut H where
   toFun φ :=
     { toFun := fun h => ⟨φ h, characteristic_iff_le_comap.mp inferInstance φ h.2⟩
       invFun := fun h => ⟨φ.symm h, characteristic_iff_le_comap.mp inferInstance φ.symm h.2⟩
@@ -329,13 +331,12 @@ def _root_.MulAut.characteristic [H.Characteristic] : MulAut G →* MulAut H whe
   map_one' := rfl
   map_mul' _ _ := rfl
 
-/-- If `H` is a characteristic subgroup of `G` and `K` is a characteristic subgroup of `H`, then
-`K` is a characteristic subgroup of `G`. -/
+@[to_additive]
 instance characteristic_of_characteristic_of_characteristic [H.Characteristic]
     {K : Subgroup H} [hK : K.Characteristic] : (K.map H.subtype).Characteristic := by
   refine characteristic_iff_map_eq.2 fun φ => ?_
-  have := congr_arg (map H.subtype) <| characteristic_iff_map_eq.1 hK (MulAut.Characteristic φ)
-  simpa [Subgroup.map_map, MulAut.Characteristic] using this
+  have := congr_arg (map H.subtype) <| characteristic_iff_map_eq.1 hK (MulAut.characteristic H φ)
+  simpa [Subgroup.map_map, MulAut.characteristic] using this
 
 variable (H)
 
