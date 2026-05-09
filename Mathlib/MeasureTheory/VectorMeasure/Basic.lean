@@ -325,6 +325,10 @@ def coeFnAddMonoidHom : VectorMeasure α M →+ Set α → M where
   map_zero' := coe_zero
   map_add' := coe_add
 
+@[simp]
+theorem coe_finsetSum {ι} (I : Finset ι) (v : ι → VectorMeasure α M) :
+    ⇑(∑ i ∈ I, v i) = ∑ i ∈ I, ⇑(v i) := map_sum coeFnAddMonoidHom v I
+
 end AddCommMonoid
 
 section AddCommGroup

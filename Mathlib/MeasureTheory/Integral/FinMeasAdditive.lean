@@ -58,25 +58,13 @@ def FinMeasAdditive {β} [AddMonoid β] {_ : MeasurableSpace α} (μ : Measure �
 
 namespace FinMeasAdditive
 
-variable {β : Type*} [AddCommMonoid β] {T T' : Set α → β}
+variable {β : Type*} {T T' : Set α → β}
+
+section AddMonoid
+
+variable [AddMonoid β]
 
 theorem zero : FinMeasAdditive μ (0 : Set α → β) := fun _ _ _ _ _ _ _ => by simp
-
-theorem add (hT : FinMeasAdditive μ T) (hT' : FinMeasAdditive μ T') :
-    FinMeasAdditive μ (T + T') := by
-  intro s t hs ht hμs hμt hst
-  simp only [hT s t hs ht hμs hμt hst, hT' s t hs ht hμs hμt hst, Pi.add_apply]
-  abel
-
-theorem add_measure {ν : Measure α} (hT : FinMeasAdditive μ T) (hT' : FinMeasAdditive ν T') :
-    FinMeasAdditive (μ + ν) (T + T') := by
-  intro s t hms hmt hs ht hst
-  have hμs : μ s ≠ ∞ := ((Measure.le_add_right le_rfl s).trans_lt hs.lt_top).ne
-  have hμt : μ t ≠ ∞ := ((Measure.le_add_right le_rfl t).trans_lt ht.lt_top).ne
-  have hνs : ν s ≠ ∞ := ((Measure.le_add_left le_rfl s).trans_lt hs.lt_top).ne
-  have hνt : ν t ≠ ∞ := ((Measure.le_add_left le_rfl t).trans_lt ht.lt_top).ne
-  simp [hT s t hms hmt hμs hμt hst, hT' s t hms hmt hνs hνt hst]
-  abel
 
 theorem smul [DistribSMul 𝕜 β] (hT : FinMeasAdditive μ T) (c : 𝕜) :
     FinMeasAdditive μ fun s => c • T s := fun s t hs ht hμs hμt hst => by
@@ -112,6 +100,28 @@ theorem map_empty_eq_zero {β} [AddCancelMonoid β] {T : Set α → β} (hT : Fi
   nth_rw 1 [← add_zero (T ∅)] at hT
   exact (add_left_cancel hT).symm
 
+end AddMonoid
+
+section AddCommMonoid
+
+variable [AddCommMonoid β]
+
+theorem add (hT : FinMeasAdditive μ T) (hT' : FinMeasAdditive μ T') :
+    FinMeasAdditive μ (T + T') := by
+  intro s t hs ht hμs hμt hst
+  simp only [hT s t hs ht hμs hμt hst, hT' s t hs ht hμs hμt hst, Pi.add_apply]
+  abel
+
+theorem add_measure {ν : Measure α} (hT : FinMeasAdditive μ T) (hT' : FinMeasAdditive ν T') :
+    FinMeasAdditive (μ + ν) (T + T') := by
+  intro s t hms hmt hs ht hst
+  have hμs : μ s ≠ ∞ := ((Measure.le_add_right le_rfl s).trans_lt hs.lt_top).ne
+  have hμt : μ t ≠ ∞ := ((Measure.le_add_right le_rfl t).trans_lt ht.lt_top).ne
+  have hνs : ν s ≠ ∞ := ((Measure.le_add_left le_rfl s).trans_lt hs.lt_top).ne
+  have hνt : ν t ≠ ∞ := ((Measure.le_add_left le_rfl t).trans_lt ht.lt_top).ne
+  simp [hT s t hms hmt hμs hμt hst, hT' s t hms hmt hνs hνt hst]
+  abel
+
 theorem map_iUnion_fin_meas_set_eq_sum (T : Set α → β) (T_empty : T ∅ = 0)
     (h_add : FinMeasAdditive μ T) {ι} (S : ι → Set α) (sι : Finset ι)
     (hS_meas : ∀ i, MeasurableSet (S i)) (hSp : ∀ i ∈ sι, μ (S i) ≠ ∞)
@@ -139,6 +149,19 @@ theorem map_iUnion_fin_meas_set_eq_sum (T : Set α → β) (T_empty : T ∅ = 0)
     refine h_disj a (Finset.mem_insert_self a s) i (Finset.mem_insert_of_mem hi) fun hai ↦ ?_
     rw [← hai] at hi
     exact has hi
+
+end AddCommMonoid
+
+theorem neg [AddGroup β] (hT : FinMeasAdditive μ T) :
+    FinMeasAdditive μ (-T) := by
+  intro s t hs ht hμs hμt hst
+  have h_comm : T s + T t = T t + T s := by
+    rw [← hT s t hs ht hμs hμt hst, ← hT t s ht hs hμt hμs hst.symm, union_comm]
+  simp_all [Pi.neg_apply, hT s t hs ht hμs hμt hst, neg_add_rev]
+
+theorem sub [AddCommGroup β] (hT : FinMeasAdditive μ T) (hT' : FinMeasAdditive μ T') :
+    FinMeasAdditive μ (T - T') :=
+  sub_eq_add_neg T T' ▸ hT.add hT'.neg
 
 end FinMeasAdditive
 
@@ -170,11 +193,21 @@ theorem eq_zero {β : Type*} [NormedAddCommGroup β] {T : Set α → β} {C : �
     T s = 0 :=
   eq_zero_of_measure_zero hT hs (by simp only [Measure.coe_zero, Pi.zero_apply])
 
+theorem max_zero (hT : DominatedFinMeasAdditive μ T C) :
+    DominatedFinMeasAdditive μ T (max C 0) :=
+  ⟨hT.1, fun s hs hμs => (hT.2 s hs hμs).trans <|
+    mul_le_mul_of_nonneg_right (le_max_left C 0) measureReal_nonneg⟩
+
 theorem add (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditive μ T' C') :
     DominatedFinMeasAdditive μ (T + T') (C + C') := by
   refine ⟨hT.1.add hT'.1, fun s hs hμs => ?_⟩
   rw [Pi.add_apply, add_mul]
   exact (norm_add_le _ _).trans (add_le_add (hT.2 s hs hμs) (hT'.2 s hs hμs))
+
+theorem neg (hT : DominatedFinMeasAdditive μ T C) :
+    DominatedFinMeasAdditive μ (-T) C := by
+  refine ⟨hT.1.neg, fun s hs hμs => ?_⟩
+  simpa only [Pi.neg_apply, norm_neg] using hT.2 s hs hμs
 
 theorem smul [SeminormedAddGroup 𝕜] [DistribSMul 𝕜 β] [IsBoundedSMul 𝕜 β]
     (hT : DominatedFinMeasAdditive μ T C) (c : 𝕜) :
@@ -210,6 +243,11 @@ theorem add_measure {C' : ℝ} (μ ν : Measure α)
       · exact le_max_left C C'
       · exact le_max_right C C'
 
+theorem sub_measure {C' : ℝ} (μ ν : Measure α)
+    (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditive ν T' C') :
+    DominatedFinMeasAdditive (μ + ν) (T - T') (max C C') :=
+  sub_eq_add_neg T T' ▸ hT.add_measure μ ν hT'.neg
+
 theorem add_measure_right {_ : MeasurableSpace α} (μ ν : Measure α)
     (hT : DominatedFinMeasAdditive μ T C) (hC : 0 ≤ C) : DominatedFinMeasAdditive (μ + ν) T C :=
   of_measure_le (Measure.le_add_right le_rfl) hT hC
@@ -226,8 +264,7 @@ theorem finsetSum_measure {ι} {s : Finset ι} (hs : s.Nonempty) (μ : ι → Me
   | empty => grind
   | insert i s his ih =>
     by_cases hs' : s.Nonempty
-    · simpa [Finset.sum_insert, his, Finset.sup'_insert hs' C] using
-        (hT i).add_measure (μ i) (∑ j ∈ s, μ j) (ih hs')
+    · simpa [his, Finset.sup'_insert hs' C] using (hT i).add_measure (μ i) (∑ j ∈ s, μ j) (ih hs')
     · simp_all
 
 theorem of_smul_measure {c : ℝ≥0∞} (hc_ne_top : c ≠ ∞) (hT : DominatedFinMeasAdditive (c • μ) T C) :

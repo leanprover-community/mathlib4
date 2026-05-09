@@ -744,6 +744,10 @@ theorem setToFun_neg (hT : DominatedFinMeasAdditive μ T C) (f : α → E) :
   · rw [setToFun_undef hT hf, setToFun_undef hT, neg_zero]
     rwa [← integrable_neg_iff] at hf
 
+theorem setToFun_neg' (hT : DominatedFinMeasAdditive μ T C) (f : α → E) :
+    setToFun μ (-T) hT.neg f = -setToFun μ T hT f := by
+  simpa using setToFun_smul_left' hT hT.neg (-1) (by simp) f
+
 theorem setToFun_sub (hT : DominatedFinMeasAdditive μ T C) (hf : Integrable f μ)
     (hg : Integrable g μ) : setToFun μ T hT (f - g) = setToFun μ T hT f - setToFun μ T hT g := by
   rw [sub_eq_add_neg, sub_eq_add_neg, setToFun_add hT hf hg.neg, setToFun_neg hT g]
@@ -983,8 +987,41 @@ theorem setToFun_congr_measure_of_add_left {μ' : Measure α}
 theorem setToFun_add_measure {ν : Measure α} (hTμ : DominatedFinMeasAdditive μ T C)
     (hTν : DominatedFinMeasAdditive ν T' C') (hμ : Integrable f μ) (hν : Integrable f ν) :
     setToFun (μ + ν) (T + T') (hTμ.add_measure μ ν hTν) f =
-      setToFun μ T hTμ f + setToFun ν T' hTν f := by
-  sorry
+      setToFun μ T hTμ f + setToFun ν T' hTν f :=
+  have hTμ_add : DominatedFinMeasAdditive (μ + ν) T (max C 0) :=
+    hTμ.max_zero.add_measure_right μ ν (le_max_right C 0)
+  have hTν_add : DominatedFinMeasAdditive (μ + ν) T' (max C' 0) :=
+    hTν.max_zero.add_measure_left μ ν (le_max_right C' 0)
+  calc
+    _ = setToFun (μ + ν) T hTμ_add f + setToFun (μ + ν) T' hTν_add f :=
+      setToFun_add_left hTμ_add hTν_add f
+    _ = setToFun μ T hTμ f + setToFun ν T' hTν f := by
+      rw [setToFun_congr_measure_of_add_right hTμ_add hTμ f (hμ.add_measure hν),
+        setToFun_congr_measure_of_add_left hTν_add hTν f (hμ.add_measure hν)]
+
+theorem setToFun_sub_measure {ν : Measure α} (hTμ : DominatedFinMeasAdditive μ T C)
+    (hTν : DominatedFinMeasAdditive ν T' C') (hμ : Integrable f μ) (hν : Integrable f ν) :
+    setToFun (μ + ν) (T - T') (hTμ.sub_measure μ ν hTν) f =
+      setToFun μ T hTμ f - setToFun ν T' hTν f := by
+  simp [sub_eq_add_neg, setToFun_add_measure hTμ hTν.neg hμ hν, setToFun_neg' hTν]
+
+theorem setToFun_finsetSum_measure {ι} {s : Finset ι} (hs : s.Nonempty)
+    {μs : ι → Measure α} {Ts : ι → Set α → E →L[ℝ] F} {Cs : ι → ℝ}
+    (hTs : ∀ i, DominatedFinMeasAdditive (μs i) (Ts i) (Cs i))
+    (hf : ∀ i ∈ s, Integrable f (μs i)) :
+    setToFun (∑ i ∈ s, μs i) (∑ i ∈ s, Ts i)
+      (DominatedFinMeasAdditive.finsetSum_measure hs μs Ts Cs hTs) f =
+      ∑ i ∈ s, setToFun (μs i) (Ts i) (hTs i) f := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => grind
+  | insert i s his ih =>
+    by_cases hs' : s.Nonempty
+    · simpa [his, ih hs' fun j hj => hf j (Finset.mem_insert_of_mem hj)] using
+        setToFun_add_measure (hTs i) (DominatedFinMeasAdditive.finsetSum_measure hs' μs Ts Cs hTs)
+        (hf i (s.mem_insert_self i))
+        (integrable_finsetSum_measure.2 fun j hj => hf j (Finset.mem_insert_of_mem hj))
+    · simp_all
 
 theorem setToFun_top_smul_measure (hT : DominatedFinMeasAdditive (∞ • μ) T C) (f : α → E) :
     setToFun (∞ • μ) T hT f = 0 := by
