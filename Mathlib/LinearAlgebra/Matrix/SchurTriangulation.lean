@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Gordon Hsu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Gordon Hsu
+Authors: Gordon Hsu, Matteo Cipollina
 -/
 module
 
@@ -20,35 +20,10 @@ closed field, e.g., `ℂ`, is unitarily similar to an upper triangular matrix.
   be decomposed as `A = U * T * star U` where `U` is unitary and `T` is upper triangular.
 - `Matrix.schurTriangulationUnitary` : the unitary matrix `U` as previously stated.
 - `Matrix.schurTriangulation` : the upper triangular matrix `T` as previously stated.
-- `LinearMap.SchurTriangulationAux.of` packages the algebraic triangularization theorem and the
-  Gram-Schmidt orthonormal flag-adaptation theorem for use by the matrix API.
 
 -/
 
 @[expose] public section
-
-namespace LinearMap
-
-open scoped InnerProductSpace
-
-variable {𝕜 : Type*} [RCLike 𝕜]
-
-section
-
-variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-
-/-- **Don't use this definition directly.** Instead, use `Matrix.schurTriangulationBasis`,
-`Matrix.schurTriangulationUnitary`, and `Matrix.schurTriangulation`. See also
-`LinearMap.SchurTriangulationAux.of` and `Matrix.schurTriangulationAux`. -/
-structure SchurTriangulationAux (f : Module.End 𝕜 E) where
-  /-- The dimension of the inner product space `E`. -/
-  dim : ℕ
-  hdim : Module.finrank 𝕜 E = dim
-  /-- An orthonormal basis of `E` that induces an upper triangular form for `f`. -/
-  basis : OrthonormalBasis (Fin dim) 𝕜 E
-  upperTriangular : (toMatrix basis.toBasis basis.toBasis f).BlockTriangular _root_.id
-
-end
 
 /-! The Schur construction below specializes algebraic triangularization. First
 `Module.End.exists_isTriangularizedBy` gives a basis whose complete flag is invariant; then
@@ -56,41 +31,28 @@ end
 to the same flag. For orthonormal bases, upper triangular entries are the same predicate as flag
 invariance by `Module.End.isTriangularizedBy_iff_isUpperTriangular_toMatrix`. -/
 
-variable [IsAlgClosed 𝕜]
-
-/-- **Don't use this definition directly.** This is the key algorithm behind
-`Matrix.schur_triangulation`. -/
-noncomputable def SchurTriangulationAux.of {E : Type*} [NormedAddCommGroup E]
-    [InnerProductSpace 𝕜 E] [FiniteDimensional 𝕜 E] (f : Module.End 𝕜 E) :
-    SchurTriangulationAux f := by
-  let h := Module.End.exists_orthonormalBasis_isTriangularizedBy
-    (Module.End.exists_isTriangularizedBy f)
-  let n := h.choose
-  let b := h.choose_spec.choose
-  have hb : f.IsTriangularizedBy b.toBasis := h.choose_spec.choose_spec
-  refine
-    { dim := n
-      hdim := ?_
-      basis := b
-      upperTriangular := ?_ }
-  · simpa using Module.finrank_eq_card_basis b.toBasis
-  · exact Module.End.isTriangularizedBy_iff_isUpperTriangular_toMatrix.mp hb
-
-end LinearMap
-
 namespace Matrix
+
+open scoped InnerProductSpace
 
 variable {𝕜 : Type*} [RCLike 𝕜] [IsAlgClosed 𝕜]
 variable {n : Type*} [Fintype n] [LinearOrder n] (A : Matrix n n 𝕜)
 
 /-- **Don't use this definition directly.** Instead, use `Matrix.schurTriangulationBasis`,
 `Matrix.schurTriangulationUnitary`, and `Matrix.schurTriangulation` for which this is their
-simultaneous definition. This is `LinearMap.SchurTriangulationAux` adapted for matrices in the
-Euclidean space. -/
+simultaneous definition. -/
 noncomputable def schurTriangulationAux :
     OrthonormalBasis n 𝕜 (EuclideanSpace 𝕜 n) × UpperTriangular n 𝕜 := by
-  let f := toEuclideanLin A
-  obtain ⟨d, hd, b, hut⟩ := LinearMap.SchurTriangulationAux.of f
+  let f : Module.End 𝕜 (EuclideanSpace 𝕜 n) := toEuclideanLin A
+  let h := Module.End.exists_orthonormalBasis_isTriangularizedBy
+    (Module.End.exists_isTriangularizedBy f)
+  let d := h.choose
+  let b := h.choose_spec.choose
+  have hb : f.IsTriangularizedBy b.toBasis := h.choose_spec.choose_spec
+  have hd : Module.finrank 𝕜 (EuclideanSpace 𝕜 n) = d := by
+    simpa using Module.finrank_eq_card_basis b.toBasis
+  have hut : (LinearMap.toMatrix b.toBasis b.toBasis f).IsUpperTriangular :=
+    Module.End.isTriangularizedBy_iff_isUpperTriangular_toMatrix.mp hb
   let e : Fin d ≃o n := Fintype.orderIsoFinOfCardEq n (finrank_euclideanSpace.symm.trans hd)
   let e' : Fin d ≃ n := e.toEquiv
   let b' := b.reindex e'
