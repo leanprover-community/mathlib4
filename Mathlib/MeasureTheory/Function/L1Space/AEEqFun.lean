@@ -213,6 +213,10 @@ theorem norm_toL1_eq_lintegral_norm (f : α → β) (hf : Integrable f μ) :
     ‖hf.toL1 f‖ = ENNReal.toReal (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) := by
   rw [norm_toL1, lintegral_norm_eq_lintegral_edist]
 
+theorem norm_toL1_eq_lintegral_enorm (f : α → β) (hf : Integrable f μ) :
+    ‖hf.toL1 f‖ = (∫⁻ a, ‖f a‖ₑ ∂μ).toReal := by
+  simp_rw [norm_toL1, edist_zero_right]
+
 @[simp]
 theorem edist_toL1_toL1 (f g : α → β) (hf : Integrable f μ) (hg : Integrable g μ) :
     edist (hf.toL1 f) (hg.toL1 g) = ∫⁻ a, edist (f a) (g a) ∂μ := by

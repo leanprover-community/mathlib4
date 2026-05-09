@@ -150,18 +150,12 @@ notation3 "∫ᵛ "(...)" in "s", "r:60:(scoped f => f)" ∂•"μ:70 =>
 variable {μ : VectorMeasure X F} {B : E →L[ℝ] F →L[ℝ] G}
 
 @[simp] theorem integral_zero {f : X → E} : ∫ᵛ x, f x ∂[B; (0 : VectorMeasure X F)] = 0 := by
-  by_cases hG : CompleteSpace G
-  · simp only [integral, hG, ↓reduceDIte]
-    apply setToFun_zero_left'
-    simp [VectorMeasure.transpose]
-  · simp [integral, hG]
+  apply setToFun_zero_left'
+  simp [VectorMeasure.transpose]
 
 theorem integral_fun_add {f g : X → E} (hf : μ.Integrable f B) (hg : μ.Integrable g B) :
-    ∫ᵛ x, f x + g x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] + ∫ᵛ x, g x ∂[B; μ] := by
-  by_cases hG : CompleteSpace G
-  · simp only [integral, hG]
-    exact setToFun_add (dominatedFinMeasAdditive_cbmApplyMeasure μ B) hf hg
-  · simp [integral, hG]
+    ∫ᵛ x, f x + g x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] + ∫ᵛ x, g x ∂[B; μ] :=
+  setToFun_add (dominatedFinMeasAdditive_cbmApplyMeasure μ B) hf hg
 
 theorem integral_add {f g : X → E} (hf : μ.Integrable f B) (hg : μ.Integrable g B) :
     ∫ᵛ x, (f + g) x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] + ∫ᵛ x, g x ∂[B; μ] := integral_fun_add hf hg
@@ -169,11 +163,8 @@ theorem integral_add {f g : X → E} (hf : μ.Integrable f B) (hg : μ.Integrabl
 variable (μ B) in
 @[integral_simps]
 theorem integral_fun_neg (f : X → E) :
-    ∫ᵛ x, -f x ∂[B; μ]= -∫ᵛ x, f x ∂[B; μ] := by
-  by_cases hG : CompleteSpace G
-  · simp only [integral, hG, ↓reduceDIte, transpose_eq_cbmApplyMeasure]
-    exact setToFun_neg (dominatedFinMeasAdditive_cbmApplyMeasure μ B) f
-  · simp [integral, hG]
+    ∫ᵛ x, -f x ∂[B; μ]= -∫ᵛ x, f x ∂[B; μ] :=
+  setToFun_neg (dominatedFinMeasAdditive_cbmApplyMeasure μ B) f
 
 variable (μ B) in
 @[integral_simps]
@@ -181,11 +172,8 @@ theorem integral_neg (f : X → E) :
     ∫ᵛ x, (-f) x ∂[B; μ] = -∫ᵛ x, f x ∂[B; μ] := integral_fun_neg μ B f
 
 theorem integral_fun_sub {f g : X → E} (hf : μ.Integrable f B) (hg : μ.Integrable g B) :
-    ∫ᵛ x, f x - g x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] - ∫ᵛ x, g x ∂[B; μ] := by
-  by_cases hG : CompleteSpace G
-  · simp only [integral, hG]
-    exact setToFun_sub (dominatedFinMeasAdditive_cbmApplyMeasure μ B) hf hg
-  · simp [integral, hG]
+    ∫ᵛ x, f x - g x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] - ∫ᵛ x, g x ∂[B; μ] :=
+  setToFun_sub (dominatedFinMeasAdditive_cbmApplyMeasure μ B) hf hg
 
 theorem integral_sub {f g : X → E} (hf : μ.Integrable f B) (hg : μ.Integrable g B) :
     ∫ᵛ x, (f - g) x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] - ∫ᵛ x, g x ∂[B; μ] := integral_fun_sub hf hg
@@ -193,11 +181,8 @@ theorem integral_sub {f g : X → E} (hf : μ.Integrable f B) (hg : μ.Integrabl
 variable (μ B) in
 @[integral_simps]
 theorem integral_fun_smul (c : ℝ) (f : X → E) :
-    ∫ᵛ x, c • f x ∂[B; μ] = c • ∫ᵛ x, f x ∂[B; μ] := by
-  by_cases hG : CompleteSpace G
-  · simp only [integral, hG]
-    exact setToFun_smul (dominatedFinMeasAdditive_cbmApplyMeasure μ B) (by simp) c f
-  · simp [integral, hG]
+    ∫ᵛ x, c • f x ∂[B; μ] = c • ∫ᵛ x, f x ∂[B; μ] :=
+  setToFun_smul (dominatedFinMeasAdditive_cbmApplyMeasure μ B) (by simp) c f
 
 variable (μ B) in
 @[integral_simps]
@@ -205,11 +190,8 @@ theorem integral_smul (c : ℝ) (f : X → E) :
     ∫ᵛ x, (c • f) x ∂[B; μ] = c • ∫ᵛ x, f x ∂[B; μ] := integral_fun_smul μ B c f
 
 theorem integral_undef {f : X → E} (hf : ¬ μ.Integrable f B) :
-    ∫ᵛ x, f x ∂[B; μ] = 0 := by
-  by_cases hG : CompleteSpace G
-  · simp only [integral, hG, ↓reduceDIte]
-    exact setToFun_undef _ hf
-  · simp [integral, hG]
+    ∫ᵛ x, f x ∂[B; μ] = 0 :=
+  setToFun_undef _ hf
 
 theorem enorm_integral_le (f : X → E) :
     ‖∫ᵛ x, f x ∂[B; μ]‖ₑ ≤ ∫⁻ x, ‖f x‖ₑ ∂ (μ.transpose B).variation := by
@@ -217,9 +199,6 @@ theorem enorm_integral_le (f : X → E) :
   · simp [integral, hG]
   by_cases hf : μ.Integrable f B; swap
   · simp [integral_undef hf]
-
-
-
 
 end VectorMeasure
 
