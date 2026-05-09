@@ -213,6 +213,8 @@ variable [Nontrivial S] [IsDedekindDomain S] [Module.Free ℤ S]
 
 theorem absNorm_apply (I : Ideal S) : absNorm I = cardQuot I := rfl
 
+lemma absNorm_eq_index (I : Ideal S) : absNorm I = I.toAddSubgroup.index := rfl
+
 @[simp]
 theorem absNorm_bot : absNorm (⊥ : Ideal S) = 0 := by rw [← Ideal.zero_eq_bot, map_zero]
 
@@ -306,6 +308,12 @@ theorem absNorm_span_singleton (r : S) :
   refine b.ext fun i => ?_
   simp
 
+lemma absNorm_span_nat (n : ℕ) :
+    (span {(n : S)}).absNorm = n ^ Module.finrank ℤ S := by
+  rw [absNorm_span_singleton, Algebra.norm_apply, map_natCast,
+    show (n : Module.End ℤ S) = (n : ℤ) by norm_cast, ← zsmul_one, LinearMap.det_smul]
+  simp
+
 theorem absNorm_dvd_norm_of_mem {I : Ideal S} {x : S} (h : x ∈ I) :
     ↑(Ideal.absNorm I) ∣ Algebra.norm ℤ x := by
   rw [← Int.dvd_natAbs, ← absNorm_span_singleton x, Int.natCast_dvd_natCast]
@@ -345,6 +353,20 @@ theorem absNorm_ne_zero_of_nonZeroDivisors (I : (Ideal S)⁰) : absNorm (I : Ide
 
 theorem absNorm_pos_of_nonZeroDivisors (I : (Ideal S)⁰) : 0 < absNorm (I : Ideal S) :=
   absNorm_pos_iff_mem_nonZeroDivisors.mpr (SetLike.coe_mem I)
+
+lemma finiteIndex {I : Ideal S} (hI : I ≠ ⊥) : I.toAddSubgroup.FiniteIndex := by
+  rwa [AddSubgroup.finiteIndex_iff, ← absNorm_eq_index, Ne, absNorm_eq_zero_iff]
+
+open AddSubgroup in
+lemma isFiniteRelIndex {I : Ideal S} (hI : I ≠ ⊥) (J : Ideal S) :
+    I.toAddSubgroup.IsFiniteRelIndex J.toAddSubgroup := by
+  rw [isFiniteRelIndex_iff_finiteIndex, ← inf_addSubgroupOf_right]
+  rcases eq_or_ne J ⊥ with rfl | hJ
+  · simpa using instFiniteIndexTop
+  change ((I ⊓ J).toAddSubgroup).addSubgroupOf _ |>.FiniteIndex
+  rw [← isFiniteRelIndex_iff_finiteIndex]
+  have := finiteIndex <| inf_ne_bot_of_ne_bot hI hJ
+  exact isFiniteRelIndex_of_le_of_finiteIndex (Submodule.toAddSubgroup_mono inf_le_right)
 
 /-- The norm of a maximal ideal is a prime power.
 The prime is `(P.under ℤ).absNorm` and the exponent is `(P.under ℤ).inertialDeg P`.
