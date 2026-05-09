@@ -159,7 +159,7 @@ attribute [local instance] FractionRing.liftAlgebra in
 /--
 If `G` is finite and `IsGaloisGroup G A B` with `A` and `B` domains, then `G` is also
 a Galois group for `FractionRing B / FractionRing A` for the action defined by
-`FractionRing.mulSemiringAction_of_isGaloisGroup`.
+`IsFractionRing.mulSemiringAction`.
 -/
 theorem IsGaloisGroup.toFractionRing [IsDomain A] [IsDomain B] [IsTorsionFree A B] [Finite G]
     [IsGaloisGroup G A B] :
@@ -467,10 +467,10 @@ theorem fixingSubgroup_range_algebraMap' [Finite G] (B : Type*) [CommSemiring B]
 attribute [local instance] FractionRing.liftAlgebra in
 /-- If `G` acts on a domain `C` with `IsGaloisGroup G A C`, and a subgroup `H` acts on `C` with
 `IsGaloisGroup H B C`, then the fixing subgroup of `algebraMap B C` equals `H`. -/
-theorem fixingSubgroup_range_algebraMap [Finite G] (A B C : Type*) [CommRing A]
-    [CommRing C] [IsDomain C] [Algebra A C] [FaithfulSMul A C] [MulSemiringAction G C]
-    (H : Subgroup G) [hGAC : IsGaloisGroup G A C] [CommRing B] [Algebra B C] [FaithfulSMul B C]
-    [hH : IsGaloisGroup H B C] :
+theorem fixingSubgroup_range_algebraMap [Finite G] (A B C : Type*) (H : Subgroup G)
+    [CommRing A] [CommRing B] [CommRing C] [IsDomain C]
+    [Algebra A C] [FaithfulSMul A C] [MulSemiringAction G C] [hGAC : IsGaloisGroup G A C]
+    [Algebra B C] [FaithfulSMul B C] [hH : IsGaloisGroup H B C] :
     fixingSubgroup G (Set.range (algebraMap B C)) = H := by
   have : IsDomain B := (FaithfulSMul.algebraMap_injective B C).isDomain
   have : IsDomain A := (FaithfulSMul.algebraMap_injective A C).isDomain
