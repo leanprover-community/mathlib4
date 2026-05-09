@@ -45,11 +45,14 @@ private lemma cofactorToLeft_ιMulti_cons (bN : Module.Basis (Fin n) R N) (m : M
   Then `M` is free if it is locally free of rank `1`. -/
 theorem Module.free_of_isStablyFree_of_localized_eq_ring [Nontrivial R] [Module.Finite R M]
     [IsStablyFree R M] (hlo : ∀ (m : Ideal R) [m.IsMaximal],
-      LocalizedModule.AtPrime m M ≃ₗ[Localization.AtPrime m] Localization.AtPrime m) :
+      Module.Invertible (Localization.AtPrime m) (LocalizedModule.AtPrime m M)) :
     Module.Free R M := by
   obtain ⟨N, _, _, _, _, _⟩ := IsStablyFree.exist_free_prod R M
   obtain ⟨𝔪, h𝔪⟩ := Ideal.exists_maximal R
-  have h1 : Module.rankAtStalk M ⟨𝔪, h𝔪.isPrime⟩ = 1 := by simp [rankAtStalk, (hlo 𝔪).finrank_eq]
+  have : Module.Free (Localization.AtPrime 𝔪) (LocalizedModule 𝔪.primeCompl M) :=
+    free_of_flat_of_isLocalRing
+  have h1 : Module.rankAtStalk M ⟨𝔪, h𝔪.isPrime⟩ = 1 := by
+    simp [rankAtStalk, Invertible.finrank_eq_one]
   let n := Module.finrank R N
   have hp : Module.finrank R (M × N) = n + 1 := by
     simpa [← h1, n, Nat.add_comm] using congrArg (fun f ↦ f ⟨𝔪, h𝔪.isPrime⟩) <|
@@ -64,5 +67,4 @@ theorem Module.free_of_isStablyFree_of_localized_eq_ring [Nontrivial R] [Module.
       by simp [f, cofactorToLeft_ιMulti_cons]⟩
   exact Module.Free.of_equiv <| LinearEquiv.ofBijective f <| bijective_of_localized_maximal f <| by
     intro m _
-    have : Module.Invertible _ (LocalizedModule.AtPrime m M) := Module.Invertible.congr (hlo m).symm
     exact Invertible.bijective_of_surjective (LocalizedModule.map_surjective m.primeCompl f hfs)
