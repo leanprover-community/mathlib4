@@ -777,16 +777,15 @@ lemma isFiniteRelIndex_of_le_left (L : Subgroup G) [H.IsFiniteRelIndex L] (h : H
 @[deprecated (since := "2026-05-09")] alias
   _root_.AddSubgroup.isFiniteRelIndex_of_le := AddSubgroup.isFiniteRelIndex_of_le_left
 
+variable (H) in
 @[to_additive]
-lemma isFiniteRelIndex_of_le_right (H₁ : Subgroup G) {H₂ H₃ : Subgroup G} (h : H₂ ≤ H₃)
-    [H₁.IsFiniteRelIndex H₃] :
-    H₁.IsFiniteRelIndex H₂ := by
+lemma isFiniteRelIndex_of_le_right {L : Subgroup G} (h : K ≤ L) [H.IsFiniteRelIndex L] :
+    H.IsFiniteRelIndex K := by
   rw [isFiniteRelIndex_iff_relIndex_ne_zero]
   exact mt (relIndex_eq_zero_of_le_right h) relIndex_ne_zero
 
 @[to_additive]
-lemma isFiniteRelIndex_of_finiteIndex {H₁ H₂ : Subgroup G} [h : H₁.FiniteIndex] :
-    H₁.IsFiniteRelIndex H₂ := by
+lemma isFiniteRelIndex_of_finiteIndex [h : H.FiniteIndex] : H.IsFiniteRelIndex K := by
   rw [← isFiniteRelIndex_top_iff] at h
   exact isFiniteRelIndex_of_le_right _ le_top
 
