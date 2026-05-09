@@ -50,7 +50,7 @@ an ordered field.
 * WithTop (in a different file?)
 -/
 
-@[expose] public section
+public section
 
 open Function
 

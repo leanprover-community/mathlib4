@@ -260,8 +260,6 @@ lemma equiv_of_fromSpecStalkOfMem_eq [IrreducibleSpace X]
     simpa only [fromSpecStalkOfMem, restrict_domain, Opens.fromSpecStalkOfMem, Spec.map_inv,
       restrict_hom, Category.assoc, IsIso.eq_inv_comp, IsIso.hom_inv_id_assoc] using H
 
-instance (U : X.Opens) [IsReduced X] : IsReduced U := isReduced_of_isOpenImmersion U.ι
-
 lemma Opens.isDominant_ι {U : X.Opens} (hU : Dense (X := X) U) : IsDominant U.ι :=
   ⟨by simpa [DenseRange] using hU⟩
 

@@ -8,15 +8,7 @@ module
 public import Mathlib.Algebra.MonoidAlgebra.PointwiseSMul
 
 /-!
-# Scalar multiplication by finitely supported functions.
-Given sets `G` and `P`, with a left-cancellative vector-addition of `G` on `P`, we define an
-antidiagonal function that assigns, for any element `a` in `P`, finite subset `s` of `G`, and subset
-`t` in `P`, the `Set` of all pairs of an element in `s` and an element in `t` that vector-add to
-`a`. When `R` is a ring and `V` is an `R`-module, we obtain a convolution-type action of the ring of
-finitely supported `R`-valued functions on `G` on the space of `V`-valued functions on `P`.
-
-## Definitions
-* Finsupp.vaddAntidiagonal : The finset of pairs that vector-add to a given element.
+# Deprecated
 
 -/
 
@@ -30,13 +22,13 @@ variable {G P F R S U V : Type*}
 
 namespace Finsupp
 @[deprecated (since := "2026-02-13")] alias finite_vaddAntidiagonal :=
-  AddMonoidAlgebra.finite_vaddAntidiagonal
+  Set.SMulAntidiagonal.finite_of_finite_fst
 
 @[deprecated (since := "2026-02-13")] noncomputable alias vaddAntidiagonal :=
-  AddMonoidAlgebra.vaddAntidiagonal
+  Finset.VAddAntidiagonal
 
 @[deprecated (since := "2026-02-13")] alias mem_vaddAntidiagonal_iff :=
-  AddMonoidAlgebra.mem_vaddAntidiagonal_iff
+  Finset.mem_vaddAntidiagonal
 
 @[deprecated (since := "2026-02-13")] alias mem_vaddAntidiagonal_of_addGroup :=
   AddMonoidAlgebra.mem_vaddAntidiagonal_of_addGroup

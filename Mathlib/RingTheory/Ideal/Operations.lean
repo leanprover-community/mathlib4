@@ -207,7 +207,7 @@ section CommSemiring
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
 
-open Pointwise
+open scoped Pointwise
 
 variable {I : Ideal R} {N : Submodule R M}
 
@@ -231,7 +231,7 @@ theorem mem_of_span_eq_top_of_smul_pow_mem (M' : Submodule R M) (s : Set R) (hs 
   rintro ⟨_, r, hr, rfl⟩
   exact hf r
 
-open Pointwise in
+open scoped Pointwise in
 @[simp]
 theorem map_pointwise_smul (r : R) (N : Submodule R M) (f : M →ₗ[R] M') :
     (r • N).map f = r • N.map f := by
@@ -854,11 +854,15 @@ theorem mem_radical_of_pow_mem {I : Ideal R} {x : R} {m : ℕ} (hx : x ^ m ∈ r
   radical_idem I ▸ ⟨m, hx⟩
 
 theorem disjoint_powers_iff_notMem (y : R) (hI : I.IsRadical) :
-    Disjoint (Submonoid.powers y : Set R) ↑I ↔ y ∉ I.1 := by
+    Disjoint (Submonoid.powers y : Set R) ↑I ↔ y ∉ I := by
   refine ⟨fun h => Set.disjoint_left.1 h (Submonoid.mem_powers _),
       fun h => disjoint_iff.mpr (eq_bot_iff.mpr ?_)⟩
   rintro x ⟨⟨n, rfl⟩, hx'⟩
   exact h (hI <| mem_radical_of_pow_mem <| le_radical hx')
+
+theorem disjoint_powers_iff_notMem_of_isPrime [I.IsPrime] (y : R) :
+    Disjoint (Submonoid.powers y : Set R) ↑I ↔ y ∉ I :=
+  disjoint_powers_iff_notMem y (IsPrime.isRadical ‹_›)
 
 variable (I J)
 
