@@ -369,7 +369,7 @@ theorem gramSchmidtOrthonormalBasis_inv_blockTriangular :
     ((gramSchmidtOrthonormalBasis h f).toBasis.toMatrix f).BlockTriangular id := fun _ _ =>
   gramSchmidtOrthonormalBasis_inv_triangular' h f
 
-private theorem gramSchmidtOrthonormalBasis_toBasis_flag_le
+theorem gramSchmidtOrthonormalBasis_toBasis_flag_le
     {n : ℕ} (b : Basis (Fin n) 𝕜 E) (k : Fin (n + 1)) :
     (gramSchmidtOrthonormalBasis (Module.finrank_eq_card_basis b) b).toBasis.flag k ≤
       b.flag k := by
@@ -387,7 +387,7 @@ private theorem gramSchmidtOrthonormalBasis_toBasis_flag_le
     lt_of_le_of_lt (Fin.castSucc_le_castSucc_iff.mpr hj) hi)
     (gramSchmidt_mem_span 𝕜 b le_rfl)
 
-private theorem flag_le_gramSchmidtOrthonormalBasis_toBasis_flag
+theorem flag_le_gramSchmidtOrthonormalBasis_toBasis_flag
     {n : ℕ} (b : Basis (Fin n) 𝕜 E) (k : Fin (n + 1)) :
     b.flag k ≤
       (gramSchmidtOrthonormalBasis (Module.finrank_eq_card_basis b) b).toBasis.flag k := by
