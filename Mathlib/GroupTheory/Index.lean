@@ -695,14 +695,14 @@ theorem not_finiteIndex_iff : ¬ H.FiniteIndex ↔ H.index = 0 :=
 theorem finiteIndex_toAddSubgroup_iff : H.toAddSubgroup.FiniteIndex ↔ H.FiniteIndex := by
   simp [finiteIndex_iff, AddSubgroup.finiteIndex_iff]
 
-@[to_additive (attr := simp)]
-lemma isFiniteRelIndex_top_iff : H.IsFiniteRelIndex ⊤ ↔ H.FiniteIndex := by
-  rw [finiteIndex_iff, isFiniteRelIndex_iff_relIndex_ne_zero, relIndex_top_right]
-
 @[simp]
 theorem _root_.AddSubgroup.finiteIndex_toSubgroup_iff {G : Type*} [AddGroup G] (H : AddSubgroup G) :
     H.toSubgroup.FiniteIndex ↔ H.FiniteIndex := by
   simp [finiteIndex_iff, AddSubgroup.finiteIndex_iff]
+
+@[to_additive (attr := simp)]
+lemma isFiniteRelIndex_top_iff : H.IsFiniteRelIndex ⊤ ↔ H.FiniteIndex := by
+  rw [finiteIndex_iff, isFiniteRelIndex_iff_relIndex_ne_zero, relIndex_top_right]
 
 /-- A finite index subgroup has finite quotient. -/
 @[to_additive (attr := implicit_reducible) /-- A finite index subgroup has finite quotient -/]
