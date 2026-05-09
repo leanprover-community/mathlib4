@@ -9,23 +9,24 @@ public import Mathlib.Algebra.Lie.Loop
 public import Mathlib.Algebra.Vertex.VertexOperator
 
 /-!
-# Vertex operators
-In this file we introduce lattice vertex operators as linear maps on Heisenberg modules. We put them
-together from component parts so that we can add API for the parts.
+# Lattice vertex operators
+In this file we introduce vertex operators attached to elements in the double cover of an integer
+lattice. They are given by formal power series of operators with rational coefficients, but they
+preserve certain integral forms. We introduce a typeclass for a graded module to admit an action by
+these operator series.
 
 ## Definitions
  * `VertexOperator.Lattice.E-` : The creation operator.
- * `VertexOperator.Lattice.E-` : The annihilation operator.
+ * `VertexOperator.Lattice.E+` : The annihilation operator.
 
 ## Main results
 
 ## TODO:
 
 ## References
-* [G. Mason *Vertex rings and Pierce bundles*][mason2017]
-* [A. Matsuo, K. Nagatomo, *On axioms for a vertex algebra and locality of quantum
-  fields*][matsuo1997]
-* H. Li's paper on local systems?
+* [R. Borcherds, *Vertex algebras, Kac-Moody algebras, and the monster*]
+* [R. McRae, *On integral forms for vertex algebras associated with affine Lie algebras and
+  lattices*]
 -/
 
 @[expose] public section

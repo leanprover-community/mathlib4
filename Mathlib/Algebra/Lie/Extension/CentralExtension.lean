@@ -123,7 +123,7 @@ def twoCocycleIncl : N →ₗ⁅R⁆ (LieAlgebra.ofTwoCocycle c) where
     map_add' _ _ := by
       rw [← of_add, Prod.zero_mk_add_zero_mk]
     map_smul' _ _ := by rw [← of_smul, Equiv.apply_eq_iff_eq, RingHom.id_apply, Prod.smul_zero_mk]}
-  map_lie' {x y} := by simp [Prod.mk_zero_zero, LieAlgebra.bracket_ofTwoCocycle]
+  map_lie' {x y} := by simp [Prod.mk_zero_zero, LieAlgebra.bracket_ofTwoCocycle, trivial_lie_zero]
 
 @[simp]
 lemma twoCocycleProj_ofAlg_symm :
@@ -190,7 +190,8 @@ lemma isCentral_ofTwoCocycle [LieModule.IsTrivial M N] : (ofTwoCocycle c).IsCent
   intro x hx
   have : ((ofProd c).symm ((ofAlg c).symm x)).1 = 0 := hx
   intro y
-  simp [bracket_ofTwoCocycle, LieAlgebra.bracket_ofTwoCocycle, this, Prod.mk_zero_zero]
+  simp [bracket_ofTwoCocycle, LieAlgebra.bracket_ofTwoCocycle, this, trivial_lie_zero,
+    Prod.mk_zero_zero]
 
 /-- An equivalence of extensions induced by a coboundary translation. -/
 @[simps]

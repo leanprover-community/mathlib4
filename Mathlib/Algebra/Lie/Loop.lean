@@ -7,7 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.EvenFunction
 public import Mathlib.Algebra.Lie.Extension
+public import Mathlib.Algebra.Lie.Graded
 public import Mathlib.Algebra.Lie.InvariantForm
+public import Mathlib.Algebra.MonoidAlgebra.Grading
 public import Mathlib.Algebra.Polynomial.Laurent
 public import Mathlib.Data.Set.MulAntidiagonal
 
@@ -74,13 +76,11 @@ def loopAlgebraEquivLaurent :
 
 namespace LoopAlgebra
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Lie algebra homomorphism induced by an additive map of character groups. -/
 def mapMonomialLieHom {A} {A' : Type*} [AddCommMonoid A] [AddCommMonoid A'] (f : A →+ A') :
     loopAlgebra R A L →ₗ⁅R⁆ loopAlgebra R A' L :=
   LieAlgebra.ExtendScalars.map (AddMonoidAlgebra.mapDomainAlgHom R R f) LieHom.id
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma mapMonomialLieHom_single {A} {A' : Type*} [AddCommMonoid A] [AddCommMonoid A'] (f : A →+ A')
     (r : R) (a : A) (x : L) :
@@ -348,6 +348,25 @@ def finsuppRestrictLieAlgebra [AddCommMonoid A] :
 -- define eval.LieModule
 -/
 
+section Grading
+/- wait until #38594 gets merged.
+instance [DecidableEq A] [AddCommMonoid A] :
+    GradedLieAlgebra (fun (a : A) ↦ (monomial R L a).range) where
+  bracket_mem i j gi gj hi hj := by
+    obtain ⟨xi, hxi⟩ := hi
+    obtain ⟨xj, hxj⟩ := hj
+    simp [← hxi, ← hxj]
+  decompose' x := by
+    sorry
+  /-(DirectSum.decompose (AddMonoidAlgebra.grade R (M := A))) ∘ₗ
+      (TensorProduct.directSumLeft R R (ι₁ := A)
+        (fun a ↦ LinearMap.range (LinearMap.rTensor L
+          ((AddMonoidAlgebra.lsingle a)) ∘ₗ (TensorProduct.lid R L).symm)) L).toLinearMap -/
+  left_inv := sorry
+  right_inv := sorry
+-/
+end Grading
+
 section CentralExt
 
 open Finsupp in
@@ -450,7 +469,7 @@ instance {R : Type*} [CommRing R] :
 /-- We endow the trivial Lie module with a trivial Lie algebra structure. -/
 instance {R : Type*} [CommRing R] :
     LieAlgebra R (TrivialLieModule R L R) where
-  lie_smul _ _ _ := by simp
+  lie_smul _ _ _ := by simp [Bracket.bracket]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The extension of a loop algebra by a trivial module. -/

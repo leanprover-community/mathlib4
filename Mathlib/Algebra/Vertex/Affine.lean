@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Vertex.Basic
 public import Mathlib.Algebra.Lie.Loop
 
 /-!
-# Vertex algebras attached to affine Lie algebras
+# Vertex operators and vertex algebras attached to affine Lie algebras
 Given a Lie algebra `L` over a commutative ring `R`, a central extension `C → g → L[z,z⁻¹]`, and a
 positive-energy representation `V` of `g` with fixed central character `χ: C → R` we define vertex
 operators on `V` attached to elements of `L`.  We show that they are local, so `V` is a module for
@@ -40,16 +40,16 @@ variable {R L M : Type*}
 section LoopAlgebra
 
 /-
-/-- A representation has positive energy if the energy spectrum is non-negative. -/
+/-- A representation has `positive energy` if the energy spectrum is non-negative. -/
 class positiveEnergy [CommRing R] [IsAddTorsionFree R] [LieRing L] [LieAlgebra R L] [AddCommGroup M]
     [Module R M] (Φ : LinearMap.BilinForm R L) (hΦ : LinearMap.BilinForm.lieInvariant L Φ)
     (hΦs : LinearMap.BilinForm.IsSymm Φ)
     [LieRingModule (LieAlgebra.LoopAlgebra.extension R ℤ L Φ hΦ hΦs).L M] where
   graded (by linearly ordered group): sorry
   homogeneous_action : sorry
-  bounded_below : sorry
+  support_bounded_below : sorry
 
-/-- Traditionally, a representation of a topological group is smooth if all stabilizers are open
+/-- Traditionally, a representation of a topological group is `smooth` if all stabilizers are open
 subgroups. -/
 class smooth [CommRing R] [IsAddTorsionFree R] [LieRing L] [LieAlgebra R L] [AddCommGroup M]
     [Module R M] (Φ : LinearMap.BilinForm R L) (hΦ : LinearMap.BilinForm.lieInvariant L Φ)
