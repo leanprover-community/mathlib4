@@ -46,9 +46,10 @@ noncomputable def schurTriangulationAux :
   let f : Module.End 𝕜 (EuclideanSpace 𝕜 n) := toEuclideanLin A
   let h := Module.End.exists_orthonormalBasis_isTriangularizedBy
     (Module.End.exists_isTriangularizedBy f)
-  let d := h.choose
-  let b := h.choose_spec.choose
-  have hb : f.IsTriangularizedBy b.toBasis := h.choose_spec.choose_spec
+  let d := Classical.choose h
+  let hb_exists := Classical.choose_spec h
+  let b := Classical.choose hb_exists
+  have hb : f.IsTriangularizedBy b.toBasis := Classical.choose_spec hb_exists
   have hd : Module.finrank 𝕜 (EuclideanSpace 𝕜 n) = d := by
     simpa using Module.finrank_eq_card_basis b.toBasis
   have hut : (LinearMap.toMatrix b.toBasis b.toBasis f).IsUpperTriangular :=
@@ -97,8 +98,15 @@ lemma schur_triangulation :
       _ = LinearMap.toMatrix c c (toEuclideanLin A) * c.toMatrix b := by simp
       _ = LinearMap.toMatrix c c (toLin c c A) * U := rfl
       _ = A * U := by simp
+  have hstar : (star U : Matrix n n 𝕜) = star (U : Matrix n n 𝕜) := rfl
   calc A
-    _ = A * U * star U := by simp [mul_assoc]
+    _ = A * 1 := by rw [mul_one]
+    _ = A * ((U : Matrix n n 𝕜) * (star U : Matrix n n 𝕜)) := by
+      rw [Matrix.mem_unitaryGroup_iff.mp U.property]
+    _ = A * U * star U := by
+      change A * ((U : Matrix n n 𝕜) * star (U : Matrix n n 𝕜)) =
+        A * (U : Matrix n n 𝕜) * (star U : Matrix n n 𝕜)
+      rw [← hstar, mul_assoc]
     _ = U * schurTriangulation A * star U := by rw [← h]
 
 end Matrix

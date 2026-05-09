@@ -5,7 +5,7 @@ Authors: Alexander Bentkamp
 -/
 module
 
-public import Mathlib.LinearAlgebra.Eigenspace.Basic
+public import Mathlib.LinearAlgebra.Eigenspace.Zero
 public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 public import Mathlib.LinearAlgebra.Basis.Fin
 public import Mathlib.LinearAlgebra.Basis.Flag
@@ -33,6 +33,10 @@ This file contains basic results relevant to the triangularizability of linear e
 * `Module.End.exists_isTriangularizedBy_of_iSup_maxGenEigenspace_eq_top`: in finite dimensions,
   if the maximal generalized eigenspaces span the whole space, then `f` admits a triangularizing
   basis.
+* `Module.End.iSup_maxGenEigenspace_eq_top_of_charpoly_splits`: in finite dimensions, if the
+  characteristic polynomial splits, then the maximal generalized eigenspaces span the whole space.
+* `Module.End.exists_isTriangularizedBy_iff_iSup_maxGenEigenspace_eq_top`: in finite dimensions,
+  a basis triangularizes an endomorphism if and only if its maximal generalized eigenspaces span.
 * `Module.End.isTriangularizable`: in finite dimensions over an algebraically closed field, every
   endomorphism admits an invariant complete flag.
 * `Module.End.exists_invariantFlag`: the unbundled form of `Module.End.isTriangularizable`.
@@ -130,6 +134,14 @@ theorem isTriangularizedBy_iff_isUpperTriangular_toMatrix :
       intro l hlk
       rw [← LinearMap.toMatrix_apply b b f l i]
       exact hf (Fin.castSucc_lt_castSucc_iff.mp (lt_of_lt_of_le hik hlk))
+
+theorem IsTriangularizedBy.charpoly_splits [FiniteDimensional K V] (hb : f.IsTriangularizedBy b) :
+    f.charpoly.Splits := by
+  rw [← LinearMap.charpoly_toMatrix (f := f) b]
+  rw [Matrix.charpoly_of_upperTriangular _
+    (isTriangularizedBy_iff_isUpperTriangular_toMatrix.mp hb)]
+  exact Polynomial.Splits.prod fun i _ => by
+    simpa [sub_eq_add_neg] using Polynomial.Splits.X_add_C (-(LinearMap.toMatrix b b f i i))
 
 /-- If the generalized eigenspaces of `f` span the whole space, then the same holds for the map
 induced by `f` on a quotient by an invariant submodule. -/
@@ -347,72 +359,70 @@ theorem isTriangularizable_of_iSup_maxGenEigenspace_eq_top [FiniteDimensional K 
   obtain ⟨n, b, hb⟩ := exists_isTriangularizedBy_of_iSup_maxGenEigenspace_eq_top hf
   exact hb.isTriangularizable
 
--- Lemma 8.22(c) of [axler2024]
+private theorem finrank_finset_sup_maxGenEigenspace [FiniteDimensional K V]
+    (f : End K V) (s : Finset K) :
+    finrank K (s.sup (fun μ => f.maxGenEigenspace μ) : Submodule K V) =
+      ∑ μ ∈ s, finrank K (f.maxGenEigenspace μ) := by
+  classical
+  have hind := Module.End.independent_maxGenEigenspace f
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert μ s hμ ih =>
+      have hdisj : Disjoint (f.maxGenEigenspace μ)
+          (s.sup (fun μ => f.maxGenEigenspace μ) : Submodule K V) := by
+        have hs := hind.supIndep' (insert μ s)
+        simpa [hμ] using
+          (Finset.supIndep_iff_disjoint_erase.mp hs μ (Finset.mem_insert_self μ s))
+      have hfin := Submodule.finrank_sup_add_finrank_inf_eq (f.maxGenEigenspace μ)
+        (s.sup (fun μ => f.maxGenEigenspace μ) : Submodule K V)
+      rw [hdisj.eq_bot, finrank_bot, add_zero] at hfin
+      rw [Finset.sup_insert, Finset.sum_insert hμ, hfin, ih]
+
+/-- If the characteristic polynomial of a finite-dimensional endomorphism splits, then its maximal
+generalized eigenspaces span the whole space. -/
+theorem iSup_maxGenEigenspace_eq_top_of_charpoly_splits [FiniteDimensional K V]
+    {f : End K V} (hf : f.charpoly.Splits) :
+    ⨆ μ, f.maxGenEigenspace μ = ⊤ := by
+  classical
+  let s := f.charpoly.roots.toFinset
+  have hs : (s.sup (fun μ => f.maxGenEigenspace μ) : Submodule K V) = ⊤ := by
+    apply Submodule.eq_top_of_finrank_eq
+    calc
+      finrank K (s.sup (fun μ => f.maxGenEigenspace μ) : Submodule K V)
+          = ∑ μ ∈ s, finrank K (f.maxGenEigenspace μ) :=
+            finrank_finset_sup_maxGenEigenspace f s
+      _ = ∑ μ ∈ s, f.charpoly.rootMultiplicity μ := by
+            refine Finset.sum_congr rfl fun μ _ => ?_
+            exact LinearMap.finrank_maxGenEigenspace_eq f μ
+      _ = ∑ μ ∈ s, f.charpoly.roots.count μ := by
+            refine Finset.sum_congr rfl fun μ _ => ?_
+            rw [Polynomial.count_roots]
+      _ = f.charpoly.roots.card := by
+            exact Multiset.sum_count_eq_card (by simp [s])
+      _ = f.charpoly.natDegree := hf.natDegree_eq_card_roots.symm
+      _ = finrank K V := LinearMap.charpoly_natDegree f
+  rw [← top_le_iff, ← hs]
+  exact Finset.sup_le fun μ _ => le_iSup f.maxGenEigenspace μ
+
+theorem IsTriangularizedBy.iSup_maxGenEigenspace_eq_top [FiniteDimensional K V]
+    (hb : f.IsTriangularizedBy b) :
+    ⨆ μ, f.maxGenEigenspace μ = ⊤ :=
+  iSup_maxGenEigenspace_eq_top_of_charpoly_splits hb.charpoly_splits
+
+theorem exists_isTriangularizedBy_iff_iSup_maxGenEigenspace_eq_top [FiniteDimensional K V]
+    (f : End K V) :
+    (∃ n, ∃ b : Basis (Fin n) K V, f.IsTriangularizedBy b) ↔
+      ⨆ μ, f.maxGenEigenspace μ = ⊤ := by
+  constructor
+  · rintro ⟨n, b, hb⟩
+    exact hb.iSup_maxGenEigenspace_eq_top
+  · exact exists_isTriangularizedBy_of_iSup_maxGenEigenspace_eq_top
+
 /-- In finite dimensions, over an algebraically closed field, the generalized eigenspaces of any
 linear endomorphism span the whole space. -/
 theorem iSup_maxGenEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V] (f : End K V) :
-    ⨆ (μ : K), f.maxGenEigenspace μ = ⊤ := by
-  -- We prove the claim by strong induction on the dimension of the vector space.
-  suffices ∀ n, finrank K V = n → ⨆ (μ : K), f.maxGenEigenspace μ = ⊤ by exact this _ rfl
-  intro n h_dim
-  induction n using Nat.strong_induction_on generalizing V with | h n ih =>
-  rcases n with - | n
-  -- If the vector space is 0-dimensional, the result is trivial.
-  · rw [← top_le_iff]
-    simp only [Submodule.finrank_eq_zero.1 (Eq.trans (finrank_top _ _) h_dim), bot_le]
-  -- Otherwise the vector space is nontrivial.
-  · haveI : Nontrivial V := finrank_pos_iff.1 (by rw [h_dim]; apply Nat.zero_lt_succ)
-    -- Hence, `f` has an eigenvalue `μ₀`.
-    obtain ⟨μ₀, hμ₀⟩ : ∃ μ₀, f.HasEigenvalue μ₀ := exists_eigenvalue f
-    -- We define `ES` to be the generalized eigenspace
-    let ES := f.genEigenspace μ₀ (finrank K V)
-    -- and `ER` to be the generalized eigenrange.
-    let ER := f.genEigenrange μ₀ (finrank K V)
-    -- `f` maps `ER` into itself.
-    have h_f_ER : ∀ x : V, x ∈ ER → f x ∈ ER := fun x hx =>
-      map_genEigenrange_le (Submodule.mem_map_of_mem hx)
-    -- Therefore, we can define the restriction `f'` of `f` to `ER`.
-    let f' : End K ER := f.restrict h_f_ER
-    -- The dimension of `ES` is positive
-    have h_dim_ES_pos : 0 < finrank K ES := by
-      dsimp +instances only [ES]
-      rw [h_dim]
-      apply pos_finrank_genEigenspace_of_hasEigenvalue hμ₀ (Nat.zero_lt_succ n)
-    -- and the dimensions of `ES` and `ER` add up to `finrank K V`.
-    have h_dim_add : finrank K ER + finrank K ES = finrank K V := by
-      dsimp +instances only [ER, ES]
-      rw [Module.End.genEigenspace_nat, Module.End.genEigenrange_nat]
-      apply LinearMap.finrank_range_add_finrank_ker
-    -- Therefore the dimension `ER` mus be smaller than `finrank K V`.
-    have h_dim_ER : finrank K ER < n.succ := by lia
-    -- This allows us to apply the induction hypothesis on `ER`:
-    have ih_ER : ⨆ (μ : K), f'.maxGenEigenspace μ = ⊤ :=
-      ih (finrank K ER) h_dim_ER f' rfl
-    -- The induction hypothesis gives us a statement about subspaces of `ER`. We can transfer this
-    -- to a statement about subspaces of `V` via `Submodule.subtype`:
-    have ih_ER' : ⨆ (μ : K), (f'.maxGenEigenspace μ).map ER.subtype = ER := by
-      simp only [(Submodule.map_iSup _ _).symm, ih_ER, Submodule.map_subtype_top ER]
-    -- Moreover, every generalized eigenspace of `f'` is contained in the corresponding generalized
-    -- eigenspace of `f`.
-    have hff' :
-      ∀ μ, (f'.maxGenEigenspace μ).map ER.subtype ≤ f.maxGenEigenspace μ := by
-      intros
-      rw [maxGenEigenspace, genEigenspace_restrict]
-      apply Submodule.map_comap_le
-    -- It follows that `ER` is contained in the span of all generalized eigenvectors.
-    have hER : ER ≤ ⨆ (μ : K), f.maxGenEigenspace μ := by
-      rw [← ih_ER']
-      exact iSup_mono hff'
-    -- `ES` is contained in this span by definition.
-    have hES : ES ≤ ⨆ (μ : K), f.maxGenEigenspace μ :=
-      ((f.genEigenspace μ₀).mono le_top).trans (le_iSup f.maxGenEigenspace μ₀)
-    -- Moreover, we know that `ER` and `ES` are disjoint.
-    have h_disjoint : Disjoint ER ES := generalized_eigenvec_disjoint_range_ker f μ₀
-    -- Since the dimensions of `ER` and `ES` add up to the dimension of `V`, it follows that the
-    -- span of all generalized eigenvectors is all of `V`.
-    change ⨆ (μ : K), f.maxGenEigenspace μ = ⊤
-    rw [← top_le_iff, ← Submodule.eq_top_of_disjoint ER ES h_dim_add.ge h_disjoint]
-    apply sup_le hER hES
+    ⨆ (μ : K), f.maxGenEigenspace μ = ⊤ :=
+  iSup_maxGenEigenspace_eq_top_of_charpoly_splits (IsAlgClosed.splits f.charpoly)
 
 /-- In finite dimensions over an algebraically closed field, every endomorphism is triangularized by
 some basis. -/
