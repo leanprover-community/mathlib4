@@ -43,24 +43,20 @@ deduced from `α : F ⟶ L ⋙ RF` when `L` commutes with the shift. -/
 @[simps!]
 def precomposeShiftNatTrans :
     shiftFunctor C a ⋙ F ⟶ L ⋙ shiftFunctor H a ⋙ RF :=
-  whiskerLeft (shiftFunctor C a) α ≫ (Functor.associator _ _ _).inv ≫
-    whiskerRight (L.commShiftIso a).hom _ ≫ (Functor.associator _ _ _).hom
+  whiskerLeft (shiftFunctor C a) α ≫ (associator _ _ _).inv ≫
+    whiskerRight (L.commShiftIso a).hom _ ≫ (associator _ _ _).hom
 
 /-- The natural transformation `F ⋙ shiftFunctor D a ⟶ L ⋙ RF ⋙ shiftFunctor D a`
 deduced from `α : F ⟶ L ⋙ RF` when `L` commutes with the shift. -/
 @[simps!]
 def postcomposeShiftNatTrans :
     F ⋙ shiftFunctor D a ⟶ L ⋙ RF ⋙ shiftFunctor D a :=
-  whiskerRight α (shiftFunctor D a) ≫ (Functor.associator _ _ _).hom
+  whiskerRight α (shiftFunctor D a) ≫ (associator _ _ _).hom
 
 instance :
     (shiftFunctor H a ⋙ RF).IsRightDerivedFunctor (precomposeShiftNatTrans RF α a) W := by
-  have : RF.IsRightDerivedFunctor α W := inferInstance
-  have : W.IsCompatibleWithShift A := inferInstance
-  sorry
-  /-((W.shiftLocalizerMorphism a).isRightDerivedFunctor_iff_precomp L L
-    (shiftFunctor H a) (L.commShiftIso a) α (precomposeShiftNatTrans RF α a) (Iso.refl _)
-    (Iso.refl _) (by aesop_cat)).2 inferInstance-/
+  rwa [← (W.shiftLocalizerMorphism a).isRightDerivedFunctor_iff_precomp
+    L L _ (L.commShiftIso a) α (precomposeShiftNatTrans RF α a) (Iso.refl _) (Iso.refl _)]
 
 instance :
     (RF ⋙ shiftFunctor D a).IsRightDerivedFunctor (postcomposeShiftNatTrans RF α a) W := by
@@ -94,7 +90,7 @@ noncomputable def commShift : RF.CommShift A where
       (precomposeShiftNatTrans RF α a) (postcomposeShiftNatTrans RF α _) W
       (F.commShiftIso _).hom X)
     rw [precomposeShiftNatTrans_app, postcomposeShiftNatTrans_app,
-      Functor.map_comp, Functor.map_comp, Functor.map_comp, Category.assoc] at ha
+      map_comp, map_comp, map_comp, Category.assoc] at ha
     have hb := rightDerivedNatTrans_app _ _ (precomposeShiftNatTrans RF α b)
       (postcomposeShiftNatTrans RF α _) W (F.commShiftIso _).hom (X⟦a⟧) =≫
         (RF.map ((L.commShiftIso a).hom.app X))⟦b⟧'

@@ -792,7 +792,8 @@ lemma isLeftKanExtension_iff_precomp_equivalence
     {G : C ⥤ C'} {G' : D ⥤ D'} [G.IsEquivalence] [G'.IsEquivalence]
     (iso : G ⋙ L₂ ≅ L₁ ⋙ G') (e : F₁ ≅ G ⋙ F₂) (e' : G' ⋙ F₂' ≅ F₁')
     (h : α₁ = e.hom ≫ whiskerLeft G α₂ ≫ (associator _ _ _).inv ≫
-      whiskerRight iso.hom F₂' ≫ (associator _ _ _).hom ≫ whiskerLeft L₁ e'.hom) :
+      whiskerRight iso.hom F₂' ≫ (associator _ _ _).hom ≫
+      whiskerLeft L₁ e'.hom := by cat_disch) :
     F₂'.IsLeftKanExtension α₂ ↔ F₁'.IsLeftKanExtension α₁ := by
   simp only [isLeftKanExtension_iff]
   let Φ : L₂.LeftExtension F₂ ⥤ L₁.LeftExtension F₁ :=
