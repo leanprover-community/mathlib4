@@ -103,4 +103,8 @@ lemma det_lsmul (x : R) : LinearMap.det (lsmul R R S x) = x ^ finrank R S := by
 protected theorem norm_algebraMap (x : R) : norm R (algebraMap R S x) = x ^ finrank R S := by
   rw [norm_apply, lmul_algebraMap, det_lsmul]
 
+variable (R) in
+lemma norm_nat (n : ℕ) : norm R (n : S) = n ^ Module.finrank R S := by
+  rw [← map_natCast (algebraMap R S), Algebra.norm_algebraMap]
+
 end Algebra
