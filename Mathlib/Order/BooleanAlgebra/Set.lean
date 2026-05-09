@@ -38,7 +38,7 @@ instance : HImp (Set α) where
   himp s t := {x | x ∈ s → x ∈ t}
 
 instance instBooleanAlgebra : BooleanAlgebra (Set α) :=
-  fast_instance% { (inferInstance : BooleanAlgebra (α → Prop)) with }
+  fast_instance% equivPredicate α |>.booleanAlgebra
 
 /-- See also `Set.sdiff_inter_right_comm`. -/
 lemma inter_diff_assoc (a b c : Set α) : (a ∩ b) \ c = a ∩ (b \ c) := inf_sdiff_assoc ..
@@ -178,7 +178,7 @@ lemma mem_compl_singleton_iff : a ∈ ({b} : Set α)ᶜ ↔ a ≠ b := .rfl
 lemma compl_singleton_eq (a : α) : {a}ᶜ = {x | x ≠ a} := rfl
 
 @[simp]
-lemma compl_ne_eq_singleton (a : α) : {x | x ≠ a}ᶜ = {a} := compl_compl _
+lemma compl_ne_eq_singleton (a : α) : {x | x ≠ a}ᶜ = {a} := compl_compl {a}
 
 @[simp]
 lemma subset_compl_singleton_iff : s ⊆ {a}ᶜ ↔ a ∉ s := subset_compl_comm.trans singleton_subset_iff
