@@ -89,7 +89,7 @@ namespace Complex
 
 variable (x y : ℂ)
 
-@[simp]
+@[simp, push]
 theorem exp_zero : exp 0 = 1 := by
   rw [exp]
   refine lim_eq_of_equiv_const fun ε ε0 => ⟨1, fun j hj => ?_⟩
@@ -228,6 +228,7 @@ theorem exp_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
 lemma exp_nsmul (x : ℝ) (n : ℕ) : exp (n • x) = exp x ^ n :=
   @MonoidHom.map_pow (Multiplicative ℝ) ℝ _ _ expMonoidHom _ _
 
+@[push, push ←]
 nonrec theorem exp_nat_mul (x : ℝ) (n : ℕ) : exp (n * x) = exp x ^ n :=
   ofReal_injective (by simp [exp_nat_mul])
 
