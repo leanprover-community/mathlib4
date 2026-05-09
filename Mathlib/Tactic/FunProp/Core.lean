@@ -327,7 +327,7 @@ def applyMorRules (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
   | .underApplied =>
     applyPiRule funPropDecl e funProp
   | .overApplied =>
-    let some (f, g) ← fData.peeloffArgDecomposition | return none
+    let .comp f g ← fData.peeloffArgDecomposition | return none
     applyCompRule funPropDecl e f g funProp
   | .exact =>
 
@@ -381,7 +381,7 @@ def removeArgRule (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
       -- if have to apply morphisms rules if we deal with morphisms
       return ← applyMorRules funPropDecl e fData funProp
     else
-      let some (f, g) ← fData.peeloffArgDecomposition | return none
+      let .comp f g ← fData.peeloffArgDecomposition | return none
       applyCompRule funPropDecl e f g funProp
 
 
@@ -549,9 +549,8 @@ def fvarAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
       if let some r ← applyMorRules funPropDecl e fData funProp then
         return r
 
-    if not <| (← fData.decomposition) matches .comp .. then
-      if let some r ← applyTransitionRules e funProp then
-        return r
+    if let some r ← applyTransitionRules e funProp then
+      return r
 
     if thms.size = 0 then
       logError s!"No theorems found for `{← ppExpr (.fvar id)}` in order to prove `{← ppExpr e}`"
