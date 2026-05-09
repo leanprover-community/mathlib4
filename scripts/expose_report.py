@@ -72,6 +72,12 @@ def main() -> int:
                          "chains like `instLattice → instSemilatticeSup`).")
     ap.add_argument("--no-transitive", action="store_true",
                     help="don't apply one-hop transitive closure on static refs")
+    ap.add_argument("--include-same-module", action="store_true",
+                    help="count same-module references too. Same-module "
+                         "uses (e.g. a theorem in file F whose `rfl` needs the "
+                         "body of an instance in F) actually require the "
+                         "instance to be `@[expose]`d; filtering them out "
+                         "produces false-positive 'safe' verdicts.")
     ap.add_argument("--out-jsonl", type=Path,
                     default=OUTPUT_DIR / "report.jsonl")
     ap.add_argument("--out-tsv", type=Path,
@@ -108,10 +114,21 @@ def main() -> int:
             rec = exposed.get(decl)
             if rec is None:
                 continue
-            if d["file"] == rec["file"]:
-                continue  # same-module use, not a downstream signal
-            usage[decl] += d["count"]
-            using_file_counts[decl][d["file"]] += d["count"]
+            same_module = (d["file"] == rec["file"])
+            if same_module and not args.include_same_module:
+                # Default: skip cross-decl-but-same-module use, EXCEPT same-module
+                # references coming from theorems (whose `:= rfl` proofs need
+                # the body to defeq). `theorem_count` is set on static_refs.jsonl
+                # records by `expose_static_refs.lean`; absent for diagnostics
+                # (those are runtime unfolds, all from non-theorem code paths).
+                tc = d.get("theorem_count", 0)
+                if tc <= 0:
+                    continue
+                count = tc
+            else:
+                count = d["count"]
+            usage[decl] += count
+            using_file_counts[decl][d["file"]] += count
             n += 1
         return n
 
@@ -149,7 +166,7 @@ def main() -> int:
                 if rec is None:
                     continue
                 for file, count in files.items():
-                    if file == rec["file"]:
+                    if file == rec["file"] and not args.include_same_module:
                         continue  # same-module
                     usage[ref] += count
                     using_file_counts[ref][file] += count

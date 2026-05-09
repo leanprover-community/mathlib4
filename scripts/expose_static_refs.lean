@@ -66,10 +66,16 @@ def jsonEscape (s : String) : String :=
     | '\t' => "\\t"
     | c    => c.toString
 
-/-- For each pair (referencing module, referenced const name), the count of
-constants in that module whose stored body or type mentions the referenced
-name. -/
-abbrev RefMap := Std.HashMap (Nat × Name) Nat
+/-- For each pair (referencing module, referenced const name): a tuple of
+`(total_count, theorem_count)`. `total_count` is how many constants in
+that module reference the decl; `theorem_count` is the subset of those
+that are `theorem`s (proof-irrelevant). The split matters for
+same-module use: a `theorem ... := rfl` that mentions the decl needs
+its body for defeq to succeed, so even *intra-file* theorem references
+are load-bearing. Other intra-file references (e.g. an `instance`'s
+anonymous-constructor field `__ := X`) typically don't require the
+body to be exposed. -/
+abbrev RefMap := Std.HashMap (Nat × Name) (Nat × Nat)
 
 /-- Walk every constant in the env, accumulating reference pairs. -/
 def collectRefs : CoreM RefMap := do
@@ -77,17 +83,16 @@ def collectRefs : CoreM RefMap := do
   let mut acc : RefMap := {}
   let mut considered : Nat := 0
   for (name, info) in env.constants.toList do
-    -- Determine the module the referencing constant lives in.
     let some refModIdx := env.getModuleIdxFor? name | continue
-    -- Skip compiler-generated helpers (they reflect implementation
-    -- details rather than user-written use).
     if name.hasMacroScopes then continue
     if name.isInternal then continue
     considered := considered + 1
+    let isThm := info matches .thmInfo _
     let refs := info.getUsedConstantsAsSet
     acc := refs.foldl (init := acc) fun acc referenced =>
       let key := (refModIdx, referenced)
-      acc.insert key ((acc.getD key 0) + 1)
+      let (cTot, cThm) := acc.getD key (0, 0)
+      acc.insert key (cTot + 1, if isThm then cThm + 1 else cThm)
   IO.eprintln (s!"[expose_static_refs] scanned {considered} constants, " ++
     s!"recorded {acc.size} (module,decl) reference pairs")
   return acc
@@ -128,13 +133,14 @@ unsafe def mainUnsafe (args : List String) : IO UInt32 := do
       -- module mode: aggregate by (refModule, refName)
       let acc ← collectRefs
       let env ← getEnv
-      for ((modIdx, decl), count) in acc.toList do
+      for ((modIdx, decl), (count, thmCount)) in acc.toList do
         let some mod := env.header.moduleNames[modIdx]? | continue
         let file := moduleToFilePath mod
         stdout.putStrLn <|
           "{\"file\":\"" ++ jsonEscape file ++
           "\",\"decl\":\"" ++ jsonEscape decl.toString ++
           "\",\"count\":" ++ toString count ++
+          ",\"theorem_count\":" ++ toString thmCount ++
           ",\"category\":\"static/ref\"}"
   return 0
 
