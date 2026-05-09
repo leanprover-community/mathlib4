@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.Devissage
 public import Mathlib.CategoryTheory.Functor.Derived.RightDerivedComposition
 public import Mathlib.CategoryTheory.Functor.Derived.RightDerivedCommShift
 public import Mathlib.CategoryTheory.Functor.Derived.RightDerivedTriangulated
-public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Triangulated
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.DerivesTriangulated
 public import Mathlib.CategoryTheory.Triangulated.TStructure.Homology
 
 /-!

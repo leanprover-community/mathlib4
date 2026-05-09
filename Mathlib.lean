@@ -3052,6 +3052,7 @@ public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Construc
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Derives
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.DerivesFour
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.DerivesThree
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.DerivesTriangulated
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.DerivesTwo
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Existence
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Monoidal
@@ -3060,7 +3061,6 @@ public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.OfLocali
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.PointwiseRightDerived
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Product
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Quotient
-public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Triangulated
 public import Mathlib.CategoryTheory.Localization.Equivalence
 public import Mathlib.CategoryTheory.Localization.FiniteProducts
 public import Mathlib.CategoryTheory.Localization.HasLocalization
