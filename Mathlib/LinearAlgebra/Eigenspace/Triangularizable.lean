@@ -11,6 +11,7 @@ public import Mathlib.LinearAlgebra.Basis.Fin
 public import Mathlib.LinearAlgebra.Basis.Flag
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 public import Mathlib.LinearAlgebra.Matrix.Block
+public import Mathlib.LinearAlgebra.Quotient.Basic
 
 /-!
 # Triangularizable linear endomorphisms
@@ -25,12 +26,15 @@ This file contains basic results relevant to the triangularizability of linear e
   endomorphism.
 * `Module.End.IsTriangularizedByFlag`: a predicate saying that every submodule in a flag is
   invariant.
+* `Module.End.IsTriangularizable`: an endomorphism is triangularizable if it admits an invariant
+  complete flag.
 * `Module.End.isTriangularizedBy_iff_isUpperTriangular_toMatrix`: equivalently, the matrix of `f`
   in that basis is upper triangular.
-* `Module.End.exists_invariantFlag`: in finite dimensions over an algebraically closed field, every
+* `Module.End.isTriangularizable`: in finite dimensions over an algebraically closed field, every
   endomorphism admits an invariant complete flag.
+* `Module.End.exists_invariantFlag`: the unbundled form of `Module.End.isTriangularizable`.
 * `Module.End.exists_isTriangularizedBy`: in finite dimensions over an algebraically closed field,
-  every endomorphism admits such a basis.
+  every endomorphism admits a triangularizing basis.
 * `Module.End.iSup_genEigenspace_eq_top`: in finite dimensions, over an algebraically
   closed field, the generalized eigenspaces of any linear endomorphism span the whole space.
 * `Module.End.iSup_genEigenspace_restrict_eq_top`: in finite dimensions, if the
@@ -41,6 +45,11 @@ This file contains basic results relevant to the triangularizability of linear e
 
 * [Sheldon Axler, *Linear Algebra Done Right*][axler2024]
 * https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors
+
+## TODO
+
+Characterize `Module.End.IsTriangularizable` in finite dimensions over a field by the condition
+`⨆ μ, f.maxGenEigenspace μ = ⊤`.
 
 ## Tags
 
@@ -64,6 +73,10 @@ def IsTriangularizedBy {n : ℕ} (f : End K V) (b : Basis (Fin n) K V) : Prop :=
 def IsTriangularizedByFlag (f : End K V) (c : Flag (Submodule K V)) : Prop :=
   ∀ ⦃p : Submodule K V⦄, p ∈ c → p ∈ f.invtSubmodule
 
+/-- An endomorphism is triangularizable if it admits an invariant complete flag. -/
+def IsTriangularizable (f : End K V) : Prop :=
+  ∃ c : Flag (Submodule K V), f.IsTriangularizedByFlag c
+
 variable {n : ℕ} {f : End K V} {b : Basis (Fin n) K V}
 
 theorem isTriangularizedBy_toFlag :
@@ -75,6 +88,10 @@ theorem isTriangularizedBy_toFlag :
     exact hf k
   · intro hf k
     exact hf (Basis.mem_toFlag b |>.2 ⟨k, rfl⟩)
+
+theorem IsTriangularizedBy.isTriangularizable (hb : f.IsTriangularizedBy b) :
+    f.IsTriangularizable :=
+  ⟨b.toFlag, isTriangularizedBy_toFlag.mp hb⟩
 
 theorem isTriangularizedBy_of_flag_eq {b' : Basis (Fin n) K V}
     (hb : f.IsTriangularizedBy b) (hflag : ∀ k, b'.flag k = b.flag k) :
@@ -102,6 +119,53 @@ theorem isTriangularizedBy_iff_isUpperTriangular_toMatrix :
       intro l hlk
       rw [← LinearMap.toMatrix_apply b b f l i]
       exact hf (Fin.castSucc_lt_castSucc_iff.mp (lt_of_lt_of_le hik hlk))
+
+/-- An intertwining linear map sends generalized eigenspaces into generalized eigenspaces with the
+same eigenvalue and exponent. -/
+theorem map_genEigenspace_le {V₂ : Type*} [AddCommGroup V₂] [Module K V₂]
+    {f : End K V} {g : End K V₂} (φ : V →ₗ[K] V₂) (hφ : g.comp φ = φ.comp f)
+    (μ : K) (k : ℕ∞) :
+    (f.genEigenspace μ k).map φ ≤ g.genEigenspace μ k := by
+  rintro y ⟨x, hx, rfl⟩
+  obtain ⟨l, hl, hx⟩ :=
+    (Module.End.mem_genEigenspace (f := f) (μ := μ) (k := k) (x := x)).mp hx
+  apply (Module.End.mem_genEigenspace (f := g) (μ := μ) (k := k) (x := φ x)).mpr
+  refine ⟨l, hl, ?_⟩
+  rw [LinearMap.mem_ker] at hx ⊢
+  have hsub (x : V) : (g - μ • 1) (φ x) = φ ((f - μ • 1) x) := by
+    have hfg : g (φ x) = φ (f x) := by
+      exact LinearMap.congr_fun hφ x
+    simp [LinearMap.sub_apply, hfg]
+  have hpow (l : ℕ) (x : V) :
+      ((g - μ • 1) ^ l) (φ x) = φ (((f - μ • 1) ^ l) x) := by
+    induction l with
+    | zero => simp
+    | succ l ih =>
+        rw [pow_succ', pow_succ', Module.End.mul_apply, Module.End.mul_apply, ih, hsub]
+  rw [hpow, hx, map_zero]
+
+/-- If the generalized eigenspaces of `f` span the whole space, then the same holds for the map
+induced by `f` on a quotient by an invariant submodule. -/
+theorem iSup_genEigenspace_mapQ_eq_top {p : Submodule K V} {f : End K V}
+    (hfp : p ≤ p.comap f) {k : ℕ∞} (hf : ⨆ μ, f.genEigenspace μ k = ⊤) :
+    ⨆ μ, Module.End.genEigenspace (p.mapQ p f hfp : End K (V ⧸ p)) μ k = ⊤ := by
+  rw [← top_le_iff]
+  calc
+    ⊤ = (⊤ : Submodule K V).map p.mkQ := by
+      rw [Submodule.map_top]
+      exact (LinearMap.range_eq_top.mpr p.mkQ_surjective).symm
+    _ = (⨆ μ, f.genEigenspace μ k).map p.mkQ := by rw [hf]
+    _ = ⨆ μ, (f.genEigenspace μ k).map p.mkQ := by rw [Submodule.map_iSup]
+    _ ≤ ⨆ μ, Module.End.genEigenspace (p.mapQ p f hfp : End K (V ⧸ p)) μ k :=
+      iSup_mono fun μ =>
+        map_genEigenspace_le p.mkQ (Submodule.mapQ_mkQ p p f (h := hfp)) μ k
+
+/-- The maximal-generalized-eigenspace version of
+`Module.End.iSup_genEigenspace_mapQ_eq_top`. -/
+theorem iSup_maxGenEigenspace_mapQ_eq_top {p : Submodule K V} {f : End K V}
+    (hfp : p ≤ p.comap f) (hf : ⨆ μ, f.maxGenEigenspace μ = ⊤) :
+    ⨆ μ, Module.End.maxGenEigenspace (p.mapQ p f hfp : End K (V ⧸ p)) μ = ⊤ :=
+  iSup_genEigenspace_mapQ_eq_top hfp hf
 
 theorem isCompl_span_singleton_mkFinCons_hli {v : V} {W : Submodule K V}
     (hv : v ≠ 0) (hW : IsCompl (K ∙ v) W) :
@@ -250,12 +314,18 @@ theorem exists_isTriangularizedBy [IsAlgClosed K] [FiniteDimensional K V] (f : E
     ∃ n, ∃ b : Basis (Fin n) K V, f.IsTriangularizedBy b :=
   triangularizationAux f
 
+/-- In finite dimensions over an algebraically closed field, every endomorphism is
+triangularizable. -/
+theorem isTriangularizable [IsAlgClosed K] [FiniteDimensional K V] (f : End K V) :
+    f.IsTriangularizable := by
+  obtain ⟨n, b, hb⟩ := f.exists_isTriangularizedBy
+  exact hb.isTriangularizable
+
 /-- In finite dimensions over an algebraically closed field, every endomorphism admits an invariant
 complete flag. -/
 theorem exists_invariantFlag [IsAlgClosed K] [FiniteDimensional K V] (f : End K V) :
-    ∃ c : Flag (Submodule K V), f.IsTriangularizedByFlag c := by
-  obtain ⟨n, b, hb⟩ := f.exists_isTriangularizedBy
-  exact ⟨b.toFlag, isTriangularizedBy_toFlag.mp hb⟩
+    ∃ c : Flag (Submodule K V), f.IsTriangularizedByFlag c :=
+  f.isTriangularizable
 
 -- Lemma 8.22(c) of [axler2024]
 /-- In finite dimensions, over an algebraically closed field, the generalized eigenspaces of any
