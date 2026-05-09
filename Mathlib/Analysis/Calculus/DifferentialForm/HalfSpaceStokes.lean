@@ -94,6 +94,7 @@ noncomputable def halfSpaceBoxLower (m : ℕ) (R : ℝ) : Fin (m + 1) → ℝ :=
   fun i => if i = lastCoord m then (0 : ℝ) else -(R : ℝ)
 
 /-- Upper corner of the half-space box: `(R, ..., R)`. -/
+@[nolint unusedArguments]
 noncomputable def halfSpaceBoxUpper (m : ℕ) (R : ℝ) : Fin (m + 1) → ℝ :=
   fun _ => (R : ℝ)
 
