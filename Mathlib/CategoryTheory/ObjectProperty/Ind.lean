@@ -141,8 +141,7 @@ private lemma ind_pi_of_ind {ι : Type w} [P.IsClosedUnderLimitsOfShape (Discret
     { diag := _, ι := _, isColimit := hc }, fun i ↦ P.prop_limit _ fun a ↦ hpres a.1 _⟩
 
 instance isClosedUnderLimitsOfShape_ind_discrete {ι : Type*} [Small.{w} ι]
-    [P.IsClosedUnderLimitsOfShape (Discrete ι)]
-    [HasProductsOfShape ι C] [IsIPCOfShape.{w} ι C] :
+    [P.IsClosedUnderLimitsOfShape (Discrete ι)] [HasProductsOfShape ι C] [IsIPCOfShape.{w} ι C] :
     (ind.{w} P).IsClosedUnderLimitsOfShape (Discrete ι) := by
   refine .mk' fun X ⟨Y, h⟩ ↦ ?_
   let e := equivShrink ι
