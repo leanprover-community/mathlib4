@@ -1727,8 +1727,8 @@ public import Mathlib.Analysis.Calculus.DerivativeTest
 public import Mathlib.Analysis.Calculus.DiffContOnCl
 public import Mathlib.Analysis.Calculus.DifferentialForm.Basic
 public import Mathlib.Analysis.Calculus.DifferentialForm.BoxStokes
-public import Mathlib.Analysis.Calculus.DifferentialForm.HalfSpaceStokes
 public import Mathlib.Analysis.Calculus.DifferentialForm.FullSpaceStokes
+public import Mathlib.Analysis.Calculus.DifferentialForm.HalfSpaceStokes
 public import Mathlib.Analysis.Calculus.DifferentialForm.VectorField
 public import Mathlib.Analysis.Calculus.FDeriv.Add
 public import Mathlib.Analysis.Calculus.FDeriv.Affine
