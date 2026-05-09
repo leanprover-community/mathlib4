@@ -222,17 +222,16 @@ end Functor
 
 namespace LocalizerMorphism
 
-open Functor
-
 variable {C₁ C₂ H₁ H₂ D : Type*} [Category C₁] [Category C₂] [Category D]
   [Category H₁] [Category H₂] {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂}
   (Φ : LocalizerMorphism W₁ W₂) [Φ.IsLocalizedEquivalence] [Φ.functor.IsEquivalence]
-  (L₁ : C₁ ⥤ H₁) (L₂ : C₂ ⥤ H₂) [L₁.IsLocalization W₁] [L₂.IsLocalization W₂]
-  (G : H₁ ⥤ H₂) (iso : Φ.functor ⋙ L₂ ≅ L₁ ⋙ G)
 
+open Functor in
 lemma isRightDerivedFunctor_iff_precomp
-    {F₂ : C₂ ⥤ D} {RF₂ : H₂ ⥤ D} (α₂ : F₂ ⟶ L₂ ⋙ RF₂)
+    (L₁ : C₁ ⥤ H₁) (L₂ : C₂ ⥤ H₂) [L₁.IsLocalization W₁] [L₂.IsLocalization W₂]
+    (G : H₁ ⥤ H₂) (iso : Φ.functor ⋙ L₂ ≅ L₁ ⋙ G)
     {F₁ : C₁ ⥤ D} {RF₁ : H₁ ⥤ D} (α₁ : F₁ ⟶ L₁ ⋙ RF₁)
+    {F₂ : C₂ ⥤ D} {RF₂ : H₂ ⥤ D} (α₂ : F₂ ⟶ L₂ ⋙ RF₂)
     (e₁ : Φ.functor ⋙ F₂ ≅ F₁)
     (e₂ : G ⋙ RF₂ ≅ RF₁)
     (h : α₁ = e₁.inv ≫ whiskerLeft Φ.functor α₂ ≫ (Functor.associator _ _ _).inv ≫
