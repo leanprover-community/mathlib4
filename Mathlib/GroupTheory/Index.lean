@@ -695,9 +695,9 @@ theorem not_finiteIndex_iff : ¬ H.FiniteIndex ↔ H.index = 0 :=
 theorem finiteIndex_toAddSubgroup_iff : H.toAddSubgroup.FiniteIndex ↔ H.FiniteIndex := by
   simp [finiteIndex_iff, AddSubgroup.finiteIndex_iff]
 
-@[to_additive]
-lemma finiteIndex_iff_isFiniteRelIndex_top {H : Subgroup G} :
-    H.FiniteIndex ↔ H.IsFiniteRelIndex ⊤ := by
+@[to_additive (attr := simp)]
+lemma isFiniteRelIndex_top_iff_finiteIndex {H : Subgroup G} :
+    H.IsFiniteRelIndex ⊤ ↔ H.FiniteIndex := by
   rw [finiteIndex_iff, isFiniteRelIndex_iff_relIndex_ne_zero, relIndex_top_right]
 
 @[simp]
@@ -769,25 +769,26 @@ theorem finiteIndex_of_le [FiniteIndex H] (h : H ≤ K) : FiniteIndex K :=
   ⟨ne_zero_of_dvd_ne_zero FiniteIndex.index_ne_zero (index_dvd_of_le h)⟩
 
 @[to_additive]
-lemma isFiniteRelIndex_of_le {H₁ H₂ : Subgroup G} (H₃ : Subgroup G) [H₁.IsFiniteRelIndex H₃]
+lemma isFiniteRelIndex_of_le_left {H₁ H₂ : Subgroup G} (H₃ : Subgroup G) [H₁.IsFiniteRelIndex H₃]
     (h : H₁ ≤ H₂) :
     H₂.IsFiniteRelIndex H₃ := by
   rw [isFiniteRelIndex_iff_finiteIndex] at *
   exact finiteIndex_of_le <| subgroupOf_mono H₃ h
 
-@[to_additive]
-lemma isFiniteRelIndex_of_le' {H₁ H₂ H₃ : Subgroup G} (h₁₂ : H₁ ≤ H₂) (h₂₃ : H₂ ≤ H₃)
-    [H₁.IsFiniteRelIndex H₃] :
-    H₁.IsFiniteRelIndex H₂ := by
-  have := relIndex_mul_relIndex _ _ _ h₁₂ h₂₃
-  grind [isFiniteRelIndex_iff_relIndex_ne_zero]
+@[deprecated (since := "2026-05-09")] alias isFiniteRelIndex_of_le := isFiniteRelIndex_of_le_left
 
 @[to_additive]
-lemma isFiniteRelIndex_of_le_of_finiteIndex {H₁ H₂ : Subgroup G} (h₁₂ : H₁ ≤ H₂)
-    [h : H₁.FiniteIndex] :
+lemma isFiniteRelIndex_of_le_right {H₁ H₂ H₃ : Subgroup G} (h : H₂ ≤ H₃)
+    [H₁.IsFiniteRelIndex H₃] :
     H₁.IsFiniteRelIndex H₂ := by
-  rw [finiteIndex_iff_isFiniteRelIndex_top] at h
-  exact isFiniteRelIndex_of_le' h₁₂ le_top
+  have := relIndex_inter_ne_zero (show H₁.relIndex H₃ ≠ 0 from relIndex_ne_zero) H₂
+  rwa [inf_of_le_right h, inf_relIndex_right, ← isFiniteRelIndex_iff_relIndex_ne_zero] at this
+
+@[to_additive]
+lemma isFiniteRelIndex_of_finiteIndex {H₁ H₂ : Subgroup G} [h : H₁.FiniteIndex] :
+    H₁.IsFiniteRelIndex H₂ := by
+  rw [← isFiniteRelIndex_top_iff_finiteIndex] at h
+  exact isFiniteRelIndex_of_le_right le_top
 
 @[to_additive (attr := gcongr)]
 lemma index_antitone (h : H ≤ K) [H.FiniteIndex] : K.index ≤ H.index :=

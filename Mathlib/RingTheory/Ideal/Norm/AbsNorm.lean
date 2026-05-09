@@ -360,13 +360,10 @@ lemma finiteIndex {I : Ideal S} (hI : I ≠ ⊥) : I.toAddSubgroup.FiniteIndex :
 open AddSubgroup in
 lemma isFiniteRelIndex {I : Ideal S} (hI : I ≠ ⊥) (J : Ideal S) :
     I.toAddSubgroup.IsFiniteRelIndex J.toAddSubgroup := by
-  rw [isFiniteRelIndex_iff_finiteIndex, ← inf_addSubgroupOf_right]
   rcases eq_or_ne J ⊥ with rfl | hJ
-  · simpa using instFiniteIndexTop
-  change ((I ⊓ J).toAddSubgroup).addSubgroupOf _ |>.FiniteIndex
-  rw [← isFiniteRelIndex_iff_finiteIndex]
-  have := finiteIndex <| inf_ne_bot_of_ne_bot hI hJ
-  exact isFiniteRelIndex_of_le_of_finiteIndex (Submodule.toAddSubgroup_mono inf_le_right)
+  · simpa [isFiniteRelIndex_iff_finiteIndex, ← inf_addSubgroupOf_right] using instFiniteIndexTop
+  have := finiteIndex hI
+  exact isFiniteRelIndex_of_finiteIndex
 
 /-- The norm of a maximal ideal is a prime power.
 The prime is `(P.under ℤ).absNorm` and the exponent is `(P.under ℤ).inertialDeg P`.
