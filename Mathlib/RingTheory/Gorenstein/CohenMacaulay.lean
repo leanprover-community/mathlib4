@@ -407,10 +407,9 @@ lemma supportDim_le_injectiveDimension [IsLocalRing R] [IsNoetherianRing R] (M :
   have head_min : (q 0).1.1 ∈ (Module.annihilator R M).minimalPrimes := by
     rcases Ideal.exists_minimalPrimes_le (annihilator_le_of_mem_support (q 0).2) with ⟨p, min, ple⟩
     rcases lt_or_eq_of_le ple with lt|eq
-    · have pp : p.IsPrime := Ideal.minimalPrimes_isPrime min
-      have : ⟨p, pp⟩ ∈ Module.support R M := by
+    · have : ⟨p, min.isPrime⟩ ∈ Module.support R M := by
         simpa [Module.mem_support_iff_of_finite] using min.1.2
-      let q' := q.cons ⟨⟨p, pp⟩, this⟩ lt
+      let q' := q.cons ⟨⟨p, min.isPrime⟩, this⟩ lt
       have : q'.length > q.length := by simp [q']
       absurd this
       simp only [gt_iff_lt, not_lt, ← Nat.cast_le (α := WithBot ℕ∞),
