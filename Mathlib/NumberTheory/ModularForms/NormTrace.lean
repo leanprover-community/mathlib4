@@ -58,7 +58,6 @@ protected def trace : SlashInvariantForm ℋ k where
     simpa [SlashAction.sum_slash, quotientFunc_smul f hh]
       using Equiv.sum_comp (MulAction.toPerm (_ : ℋ)) _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The norm of a slash-invariant form, as a slash-invariant form. -/
 @[simps! -fullyApplied]
 protected def norm [ℋ.HasDetPlusMinusOne] : SlashInvariantForm ℋ (k * Nat.card 𝒬) where
