@@ -515,7 +515,7 @@ theorem Submodule.starProjection_le_starProjection_iff {U V : Submodule 𝕜 E}
     U.starProjection ≤ V.starProjection ↔ U ≤ V := by
   simp_rw [← coe_le_coe_iff, isSymmetricProjection_starProjection _
       |>.le_iff_range_le_range <| isSymmetricProjection_starProjection _,
-    toLinearMap_starProjection_eq_isComplProjection, IsCompl.projection_range]
+    toLinearMap_starProjection_eq_isComplProjection, range_projection]
 
 /-- `U.starProjection = V.starProjection` iff `U = V`. -/
 theorem Submodule.starProjection_inj {U V : Submodule 𝕜 E}
