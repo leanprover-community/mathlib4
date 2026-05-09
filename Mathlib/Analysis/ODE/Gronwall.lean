@@ -161,7 +161,7 @@ theorem gronwall_bellman_inequality {a b : ℝ} {Λ μ y : ℝ → ℝ}
     ∀ t ∈ Icc a b,
       y t ≤ Λ t + ∫ s in a..t, Λ s * μ s * exp (∫ τ in s..t, μ τ) := by
   intro t ht
-  -- ── Notation and Continuity properties ──────────────────────────
+  --  Notation and Continuity properties
   let z : ℝ → ℝ := fun t => ∫ s in a..t, μ s * y s
   let M : ℝ → ℝ := fun t => ∫ τ in a..t, μ τ
   have hμ_t : ContinuousOn μ (Icc a t) := hμ.mono (by grind)
@@ -173,7 +173,7 @@ theorem gronwall_bellman_inequality {a b : ℝ} {Λ μ y : ℝ → ℝ}
   have hexp_M : ContinuousOn (fun s ↦ rexp (-M s)) (Icc a t) := by
     have hM_cont := continuousOn_integral_Icc ht.1 (hμ_t.integrableOn_compact isCompact_Icc)
     fun_prop
-  -- ── Integrate the bound to get an estimate on w ─────────────────
+  --  Integrate the bound to get an estimate on w
   have hw_bound : exp (-M t) * ∫ s in a..t, μ s * y s ≤ ∫ s in a..t, exp (-M s) * (μ s * Λ s) := by
     calc
       exp (-M t) * z t = exp (-M t) * z t - exp (-M a) * z a := by simp [z]
@@ -200,7 +200,7 @@ theorem gronwall_bellman_inequality {a b : ℝ} {Λ μ y : ℝ → ℝ}
     linarith [intervalIntegral.integral_add_adjacent_intervals (μ := volume)
       ((hμ_t.mono (Icc_subset_Icc_right hs.2)).intervalIntegrable_of_Icc hs.1)
       ((hμ_t.mono (Icc_subset_Icc_left hs.1)).intervalIntegrable_of_Icc hs.2)]
-  -- ── Multiply by exp(M t) ────────────────────────────────────────
+  --  Multiply by exp(M t)
   have hzt_bound : z t ≤ ∫ s in a..t, Λ s * μ s * exp (∫ τ in s..t, μ τ) := by
     calc
       z t = rexp (M t) * exp (-M t) * ∫ s in a..t, μ s * y s := by
