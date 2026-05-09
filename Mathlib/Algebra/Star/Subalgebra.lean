@@ -337,11 +337,9 @@ end Centralizer
 end StarSubalgebra
 
 /-! ### The star closure of a subalgebra -/
-
-
 namespace Subalgebra
 
-open Pointwise
+open scoped Pointwise
 
 variable {F R A B : Type*} [CommSemiring R] [StarRing R]
 variable [Semiring A] [Algebra R A] [StarRing A] [StarModule R A]
@@ -515,7 +513,7 @@ theorem _root_.Subalgebra.starClosure_eq_adjoin (S : Subalgebra R A) :
 @[elab_as_elim]
 theorem adjoin_induction {s : Set A} {p : (x : A) → x ∈ adjoin R s → Prop}
     (mem : ∀ (x) (h : x ∈ s), p x (subset_adjoin R s h))
-    (algebraMap : ∀ r, p (_root_.algebraMap R _ r) (_root_.algebraMap_mem _ r))
+    (algebraMap : ∀ r, p (algebraMap R _ r) (algebraMap_mem _ r))
     (add : ∀ x y hx hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
     (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
     (star : ∀ x hx, p x hx → p (star x) (star_mem hx))
@@ -531,11 +529,11 @@ theorem adjoin_induction₂ {s : Set A} {p : (x y : A) → x ∈ adjoin R s → 
     (mem_mem : ∀ (x) (y) (hx : x ∈ s) (hy : y ∈ s), p x y (subset_adjoin R s hx)
       (subset_adjoin R s hy))
     (algebraMap_both : ∀ r₁ r₂, p (algebraMap R A r₁) (algebraMap R A r₂)
-      (_root_.algebraMap_mem _ r₁) (_root_.algebraMap_mem _ r₂))
-    (algebraMap_left : ∀ (r) (x) (hx : x ∈ s), p (algebraMap R A r) x (_root_.algebraMap_mem _ r)
+      (algebraMap_mem _ r₁) (algebraMap_mem _ r₂))
+    (algebraMap_left : ∀ (r) (x) (hx : x ∈ s), p (algebraMap R A r) x (algebraMap_mem _ r)
       (subset_adjoin R s hx))
     (algebraMap_right : ∀ (r) (x) (hx : x ∈ s), p x (algebraMap R A r) (subset_adjoin R s hx)
-      (_root_.algebraMap_mem _ r))
+      (algebraMap_mem _ r))
     (add_left : ∀ x y z hx hy hz, p x z hx hz → p y z hy hz → p (x + y) z (add_mem hx hy) hz)
     (add_right : ∀ x y z hx hy hz, p x y hx hy → p x z hx hz → p x (y + z) hx (add_mem hy hz))
     (mul_left : ∀ x y z hx hy hz, p x z hx hz → p y z hy hz → p (x * y) z (mul_mem hx hy) hz)
@@ -800,7 +798,7 @@ variable [FunLike F A B] [AlgHomClass F R A B] [StarHomClass F A B] (f g : F)
 
 /-- The equalizer of two star `R`-algebra homomorphisms. -/
 def equalizer : StarSubalgebra R A where
-  toSubalgebra := AlgHom.equalizer (f : A →ₐ[R] B) g
+  toSubalgebra := AlgHom.equalizer (AlgHomClass.toAlgHom f) (AlgHomClass.toAlgHom g)
   star_mem' {a} (ha : f a = g a) := by simpa only [← map_star] using congrArg star ha
 
 @[simp]
@@ -862,7 +860,7 @@ def rangeRestrict (f : A →⋆ₐ[R] B) : A →⋆ₐ[R] f.range :=
 @[simps]
 noncomputable def _root_.StarAlgEquiv.ofInjective (f : A →⋆ₐ[R] B)
     (hf : Function.Injective f) : A ≃⋆ₐ[R] f.range :=
-  { AlgEquiv.ofInjective (f : A →ₐ[R] B) hf with
+  { AlgEquiv.ofInjective f.toAlgHom hf with
     toFun := f.rangeRestrict
     map_star' := fun a => Subtype.ext (map_star f a)
     map_smul' := fun r a => Subtype.ext (map_smul f r a) }
