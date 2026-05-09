@@ -381,7 +381,7 @@ lemma XYIdeal'_eq {x y : F} (h : W.Nonsingular x y) :
 -- see https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Field.20.28FunctionField.20.3Fm.2E19.29/near/594011283
 lemma mk_XYIdeal'_neg_mul {x y : F} (h : W.Nonsingular x y) :
     ClassGroup.mk (XYIdeal' (W := W) <| (nonsingular_neg ..).mpr h) *
-    ClassGroup.mk (XYIdeal' (W := W) h) = 1 := by
+      ClassGroup.mk (XYIdeal' (W := W) h) = 1 := by
   rw [← map_mul]
   exact (ClassGroup.mk_eq_one_of_coe_ideal <| (coeIdeal_mul ..).symm.trans <|
     FractionalIdeal.coeIdeal_inj.mpr <| XYIdeal_neg_mul h).mpr ⟨_, XClass_ne_zero x, rfl⟩
