@@ -6,7 +6,6 @@ Authors: Eric Wieser, Kyle Miller, Jovan Gerbscheid
 module
 
 public import Mathlib.Init
-public meta import Lean.Meta.Reduce
 
 /-!
 # The `fast_instance%` and `inferInstanceAs%` term elaborators
@@ -113,7 +112,7 @@ partial def makeFastInstance (inst expectedType : Expr) (root := true) (trace : 
       else
         -- For data fields, make sure that the lambda binders have the right type.
         mvarId.assign <| ← forallTelescopeReducing argExpectedType fun xs _ ↦ do
-          mkLambdaFVars xs <| ← reduce (mkAppN arg xs)
+          mkLambdaFVars xs (← whnfI (mkAppN arg xs))
     return mkAppN f (← mvars.mapM instantiateMVars)
 
 /--
