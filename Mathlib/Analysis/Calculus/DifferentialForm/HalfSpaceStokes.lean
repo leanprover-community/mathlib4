@@ -3,6 +3,7 @@ Copyright (c) 2025 Haoen Feng. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Haoen Feng
 -/
+module
 import Mathlib.Analysis.Calculus.DifferentialForm.BoxStokes
 import Mathlib.Analysis.Calculus.FDeriv.Const
 import Mathlib.Analysis.Normed.Module.Alternating.Basic
@@ -220,8 +221,7 @@ lemma topFormDensity_eq_zero_of_extDeriv_eq_zero {m : ℕ}
 /-- The topFormDensity of dω has compact support when ω is C¹ with compact support. -/
 lemma hasCompactSupport_topFormDensity_extDeriv {m : ℕ}
     (ω : (Fin (m + 1) → ℝ) → (Fin (m + 1) → ℝ) [⋀^Fin m]→L[ℝ] ℝ)
-    (hω : ContDiff ℝ (1 : ℕ∞) ω)
-    (hω_support : HasCompactSupport ω) :
+    (_hω : ContDiff ℝ (1 : ℕ∞) ω) :
     HasCompactSupport (topFormDensity (extDeriv ω)) := by
   obtain ⟨R, hR⟩ := exists_norm_bound_of_hasCompactSupport_form ω hω_support
   have h_density_vanishes : ∀ x : Fin (m + 1) → ℝ, R < ‖x‖ →
@@ -276,7 +276,7 @@ lemma setIntegral_eq_of_zero_on_diff {n : ℕ}
 /-! ## Half-Space Box Properties -/
 
 /-- The half-space box is contained in the half-space. -/
-lemma halfSpaceBox_subset_halfSpace {m : ℕ} {R : ℝ} (hR : (0 : ℝ) ≤ R) :
+lemma halfSpaceBox_subset_halfSpace {m : ℕ} {R : ℝ} (_hR : (0 : ℝ) ≤ R) :
     Icc (halfSpaceBoxLower m R) (halfSpaceBoxUpper m R) ⊆ HalfSpace m := by
   intro x hx
   rw [mem_Icc] at hx
@@ -286,14 +286,14 @@ lemma halfSpaceBox_subset_halfSpace {m : ℕ} {R : ℝ} (hR : (0 : ℝ) ≤ R) :
 
 /-- HalfSpace is a measurable set. -/
 lemma measurableSet_halfSpace (m : ℕ) : MeasurableSet (HalfSpace m) := by
-  simp only [HalfSpace, mem_setOf_eq]
+  simp only [HalfSpace]
   exact measurableSet_le measurable_const (measurable_pi_apply (lastCoord m))
 
 /-- For large R, the topFormDensity of dω vanishes outside the half-space box. -/
 lemma topFormDensity_extDeriv_vanishes_outside_box {m : ℕ}
     (ω : (Fin (m + 1) → ℝ) → (Fin (m + 1) → ℝ) [⋀^Fin m]→L[ℝ] ℝ)
-    (hω : ContDiff ℝ (1 : ℕ∞) ω)
-    (hω_support : HasCompactSupport ω) (R : ℝ) (hR : (0 : ℝ) < R)
+    (_hω : ContDiff ℝ (1 : ℕ∞) ω)
+    (_hω_support : HasCompactSupport ω) (R : ℝ) (hR : (0 : ℝ) < R)
     (hR_large : ∀ x : Fin (m + 1) → ℝ, R ≤ ‖x‖ → topFormDensity (extDeriv ω) x = 0) :
     ∀ x ∈ HalfSpace m \ Icc (halfSpaceBoxLower m R) (halfSpaceBoxUpper m R),
       topFormDensity (extDeriv ω) x = 0 := by
@@ -313,7 +313,7 @@ lemma topFormDensity_extDeriv_vanishes_outside_box {m : ℕ}
     · have hlow : halfSpaceBoxLower m R i = -(R : ℝ) := by
         simp [halfSpaceBoxLower, heq, if_neg (Ne.symm heq)]
       rw [hlow] at hi
-      push_neg at hi
+      push Not at hi
       have habs : R < |x i| := by
         rw [abs_of_neg (by linarith : (0 : ℝ) > x i)]; linarith
       exact hR_large x (le_of_lt (lt_of_lt_of_le habs (norm_le_pi_norm x i)))

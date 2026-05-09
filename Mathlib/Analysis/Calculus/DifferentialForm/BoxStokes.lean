@@ -3,6 +3,7 @@ Copyright (c) 2025 Haoen Feng. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Haoen Feng
 -/
+module
 import Mathlib.Analysis.Calculus.DifferentialForm.Basic
 import Mathlib.MeasureTheory.Integral.DivergenceTheorem
 import Mathlib.LinearAlgebra.Determinant
