@@ -90,16 +90,17 @@ theorem norm_algebraMap_of_basis [Fintype ι] (b : Basis ι R S) (x : R) :
   rw [norm_apply, ← det_toMatrix b, lmul_algebraMap]
   simp
 
-/-- If `x` is in the base field `K`, then the norm is `x ^ [L : K]`.
+variable [Free R S]
 
-(If `L` is not finite-dimensional over `K`, then `norm = 1 = x ^ 0 = x ^ (finrank L K)`.)
+lemma det_lsmul (x : R) : LinearMap.det (lsmul R R S x) = x ^ finrank R S := by
+  rw [show lsmul R R S x = x • 1 from rfl, LinearMap.det_smul, map_one, mul_one]
+
+/-- If `x` is in the base ring `R` and `S` is free over `R`, then the norm is `x ^ [S : R]`.
+
+(If `S` is not finitely generated over `R`, then `norm = 1 = x ^ 0 = x ^ (finrank R S)`.)
 -/
 @[simp]
-protected theorem norm_algebraMap {L : Type*} [Ring L] [Algebra K L] (x : K) :
-    norm K (algebraMap K L x) = x ^ finrank K L := by
-  by_cases H : ∃ s : Finset L, Nonempty (Basis s K L)
-  · rw [norm_algebraMap_of_basis H.choose_spec.some, finrank_eq_card_basis H.choose_spec.some]
-  · rw [norm_eq_one_of_not_exists_basis K H, finrank_eq_zero_of_not_exists_basis, pow_zero]
-    assumption_mod_cast
+protected theorem norm_algebraMap (x : R) : norm R (algebraMap R S x) = x ^ finrank R S := by
+  rw [norm_apply, lmul_algebraMap, det_lsmul]
 
 end Algebra
