@@ -49,5 +49,5 @@ theorem Module.FinitePresentation.of_localizationSpan' (hs : Ideal.span s = ⊤)
   `r`, then `M` is a finitely presented `R`-module. -/
 theorem Module.FinitePresentation.of_localizationSpan (hs : Ideal.span s = ⊤)
     (h : ∀ g : s, Module.FinitePresentation (Localization.Away g.1) (LocalizedModule.Away g.1 M)) :
-      Module.FinitePresentation R M :=
+    Module.FinitePresentation R M :=
   of_localizationSpan' s hs (fun g ↦ LocalizedModule.mkLinearMap (Submonoid.powers g.1) M) h
