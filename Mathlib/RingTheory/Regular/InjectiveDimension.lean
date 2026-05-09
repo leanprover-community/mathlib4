@@ -103,7 +103,8 @@ lemma ext_subsingleton_of_all_gt (M : ModuleCat.{v} R) [Module.Finite R M] (n : 
       PrimeSpectrum.mem_zeroLocus, Set.singleton_subset_iff, SetLike.mem_coe] at hq
     have : q.asIdeal ≠ p := ne_of_mem_of_not_mem' hq.2 nmem
     apply lt_of_le_of_ne _ (ne_of_mem_of_not_mem' hq.2 nmem).symm
-    apply le_of_eq_of_le Ideal.annihilator_quotient.symm (Module.annihilator_le_of_mem_support hq.1)
+    rw [← p.annihilator_quotient]
+    exact Module.annihilator_le_of_mem_support hq.1
   let S := (ModuleCat.of R (Shrink.{v} (R ⧸ p))).smulShortComplex x
   have reg : IsSMulRegular (Shrink.{v} (R ⧸ p)) x := by
     rw [(Shrink.linearEquiv.{v} R _).isSMulRegular_congr, isSMulRegular_iff_right_eq_zero_of_smul]
@@ -125,7 +126,7 @@ lemma ext_subsingleton_of_all_gt (M : ModuleCat.{v} R) [Module.Finite R M] (n : 
   intro y hy
   rcases epi y with ⟨z, hz⟩
   simp only [ModuleCat.smulShortComplex, Ext.mk₀_smul,
-      Ext.bilinearComp_apply_apply, Ext.smul_comp, Ext.mk₀_id_comp] at hz
+    Ext.bilinearComp_apply_apply, Ext.smul_comp, Ext.mk₀_id_comp] at hz
   simpa [← hz] using Submodule.smul_mem_pointwise_smul _ _ ⊤ trivial
 
 lemma ext_vanish_of_residueField_vanish (M : ModuleCat.{v} R) (n : ℕ) [Module.Finite R M]
@@ -166,7 +167,6 @@ lemma ext_vanish_of_residueField_vanish (M : ModuleCat.{v} R) (n : ℕ) [Module.
   apply this m n (le_refl n)
   simpa [← hm] using ringKrullDim_quotient_le p.1
 
-set_option backward.isDefEq.respectTransparency false in
 lemma injectiveDimension_eq_sInf_of_finite (M : ModuleCat.{v} R) [Module.Finite R M] :
     injectiveDimension M = sInf {n : WithBot ℕ∞ | ∀ (i : ℕ), n < i →
       Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) M i)} := by
@@ -181,7 +181,6 @@ lemma injectiveDimension_eq_sInf_of_finite (M : ModuleCat.{v} R) [Module.Finite 
   intro k hk
   exact h k (lt_of_lt_of_le hi (Nat.cast_le.mpr hk))
 
-set_option backward.isDefEq.respectTransparency false in
 lemma injectiveDimension_lt_iff_of_finite (M : ModuleCat.{v} R) [Module.Finite R M] (n : ℕ) :
     injectiveDimension M < n ↔ ∀ (i : ℕ), n ≤ i →
       Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) M i) := by
@@ -234,12 +233,6 @@ def ModuleCat.restrictScalars_fullyFaithful_of_surjective (h : Function.Surjecti
         rcases h r' with ⟨r, hr⟩
         rw [← hr]
         exact map_smul g.hom r x }
-  map_preimage g := by
-    ext
-    rfl
-  preimage_map g := by
-    ext
-    rfl
 
 end restrictScalars
 
@@ -418,7 +411,7 @@ lemma ext_residueField_subsingleton_iff {M : ModuleCat.{v} R} {x : R}
 
 end
 
-local instance finite_QuotSMulTop' (M : Type*) [AddCommGroup M] [Module R M] [Module.Finite R M]
+instance finite_QuotSMulTop' (M : Type*) [AddCommGroup M] [Module R M] [Module.Finite R M]
     (x : R) : Module.Finite (R ⧸ Ideal.span {x}) (QuotSMulTop x M) :=
   Module.Finite.of_restrictScalars_finite R _ _
 
