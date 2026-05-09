@@ -172,7 +172,7 @@ end Set
 /-- This is `Set` but with a `Monad` instance. -/
 def SetM (α : Type u) := Set α
 
-instance : AlternativeMonad SetM := Set.monad
+instance : AlternativeMonad SetM := fast_instance% Set.monad
 
 instance : LawfulMonad SetM := Set.instLawfulMonad
 

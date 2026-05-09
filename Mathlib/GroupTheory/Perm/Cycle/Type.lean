@@ -154,7 +154,6 @@ theorem sum_cycleType (σ : Perm α) : σ.cycleType.sum = #σ.support := by
 theorem sum_cycleType_le (σ : Perm α) : σ.cycleType.sum ≤ Fintype.card α :=
   σ.sum_cycleType ▸ Finset.card_le_univ σ.support
 
-set_option backward.isDefEq.respectTransparency false in
 theorem card_fixedPoints (σ : Equiv.Perm α) :
     Fintype.card (Function.fixedPoints σ) = Fintype.card α - σ.cycleType.sum := by
   rw [Equiv.Perm.sum_cycleType, ← Finset.card_compl, Fintype.card_ofFinset]

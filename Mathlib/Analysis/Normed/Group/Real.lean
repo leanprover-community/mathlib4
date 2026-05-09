@@ -17,7 +17,7 @@ We equip `ℝ`, `ℝ≥0`, and `ℝ≥0∞` with their natural norms / enorms.
 normed group
 -/
 
-@[expose] public section
+public section
 
 
 variable {𝓕 α ι κ E F G : Type*}
