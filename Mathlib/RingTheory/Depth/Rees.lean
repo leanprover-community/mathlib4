@@ -76,8 +76,8 @@ lemma ModuleCat.exists_isRegular_of_exists_subsingleton_ext [IsNoetherianRing R]
       intro i hi
       -- the vanishing of `Ext` is obtained from the (covariant) long exact sequence given by
       -- `M.smulShortComplex (x ^ k)`
-      have zero1 := AddCommGrpCat.isZero_iff_subsingleton'.mpr (h_ext i (by omega))
-      have zero2 := AddCommGrpCat.isZero_iff_subsingleton'.mpr (h_ext (i + 1) (by omega))
+      have zero1 := AddCommGrpCat.isZero_of_iff_subsingleton.mpr (h_ext i (by omega))
+      have zero2 := AddCommGrpCat.isZero_of_iff_subsingleton.mpr (h_ext (i + 1) (by omega))
       exact AddCommGrpCat.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
         ((Ext.covariant_sequence_exact₃' N (hx.pow k).smulShortComplex_shortExact) i (i + 1) rfl)
         (zero1.eq_zero_of_src _) (zero2.eq_zero_of_tgt _)

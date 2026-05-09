@@ -243,7 +243,18 @@ variable {M' N' L' : Type*} [AddCommGroup M'] [AddCommGroup N'] [AddCommGroup L'
 
 variable (eM : M ≃ₗ[R] M') (eN : N ≃ₗ[R] N') (eL : L ≃ₗ[R] L') (f : M' →ₗ[R] N') (g : N' →ₗ[R] L')
 
-/-- The short complex in `ModuleCat` obtained from conjugate by linear equivalences. -/
+/--
+The short complex in `ModuleCat` obtained from conjugate by linear equivalences.
+M --f--> N --g--> L
+|        |        |
+eM       eN       eL
+|        |        |
+v        v        v
+M'-----> N'-----> L'
+More precisely, With the three vertical maps are linear equivalences, we obtain the short complex
+`M' → N' → L'` with morphisms `eN ∘ₗ f ∘ₗ eM.symm` and `eL ∘ₗ g ∘ₗ eN.symm`.
+This complex is exact when `f` and `g` are exact, see `ModuleCat.shortComplexOfConj_exact`.
+-/
 abbrev ModuleCat.shortComplexOfConj (eq0 : g ∘ₗ f = 0) :
     ShortComplex (ModuleCat.{v} R) :=
   ModuleCat.shortComplexOfCompEqZero ((eN.symm.comp f).comp eM.toLinearMap)
