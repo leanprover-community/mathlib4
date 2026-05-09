@@ -29,6 +29,12 @@ In this file we define compact linear operators between two topological vector s
 * `isClosed_setOf_isCompactOperator` : the set of compact operators is closed for the operator
   norm
 
+Note that results linking compact operators with `FiniteDimensional` are in a separate file
+in order to avoid a heavy import. There, we prove :
+
+* `isCompactOperator_id_iff_finiteDimensional` : the identity of `E` is compact if and only if
+  `E` has finite dimension.
+
 ## Implementation details
 
 We define `IsCompactOperator` as a predicate, because the space of compact operators inherits all

@@ -103,13 +103,11 @@ theorem aleph0_mul_mk_eq {α : Type*} [Infinite α] : ℵ₀ * #α = #α :=
 theorem mk_mul_aleph0_eq {α : Type*} [Infinite α] : #α * ℵ₀ = #α :=
   mul_aleph0_eq (aleph0_le_mk α)
 
-@[simp]
-theorem aleph0_mul_aleph (o : Ordinal) : ℵ₀ * ℵ_ o = ℵ_ o :=
-  aleph0_mul_eq (aleph0_le_aleph o)
+theorem aleph0_mul_aleph (o : Ordinal) : ℵ₀ * ℵ_ o = ℵ_ o := by
+  simp
 
-@[simp]
-theorem aleph_mul_aleph0 (o : Ordinal) : ℵ_ o * ℵ₀ = ℵ_ o :=
-  mul_aleph0_eq (aleph0_le_aleph o)
+theorem aleph_mul_aleph0 (o : Ordinal) : ℵ_ o * ℵ₀ = ℵ_ o := by
+  simp
 
 theorem mul_lt_of_lt {a b c : Cardinal} (hc : ℵ₀ ≤ c) (h1 : a < c) (h2 : b < c) : a * b < c :=
   (mul_le_mul' (le_max_left a b) (le_max_right a b)).trans_lt <|
@@ -678,8 +676,7 @@ theorem mk_equiv_eq_arrow_of_eq (eq : #α = #β) : #(α ≃ β) = #(α → β) :
   mk_equiv_eq_arrow_of_lift_eq congr(lift $eq)
 
 theorem mk_equiv_of_lift_eq (leq : lift.{v} #α = lift.{u} #β') : #(α ≃ β') = 2 ^ lift.{v} #α := by
-  erw [← (lift_mk_eq'.2 ⟨.equivCongr (.refl α) (lift_mk_eq'.1 leq).some⟩).trans (lift_id'.{u, v} _),
-    lift_umax.{u, v}, mk_perm_eq_two_power, lift_power, lift_natCast]; rfl
+  simp [mk_equiv_eq_arrow_of_lift_eq leq, ← leq, power_self_eq]
 
 theorem mk_equiv_of_eq (eq : #α = #β) : #(α ≃ β) = 2 ^ #α := by
   rw [mk_equiv_of_lift_eq (lift_inj.mpr eq), lift_id]

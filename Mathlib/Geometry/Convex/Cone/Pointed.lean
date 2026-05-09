@@ -37,7 +37,7 @@ namespace PointedCone
 
 open Function Submodule Pointwise
 
-open Pointwise
+open scoped Pointwise
 
 section Submodule
 
