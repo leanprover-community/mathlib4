@@ -154,7 +154,7 @@ instance {R S : Type*} [CommSemiring R] {P : Ideal R} [CommSemiring S] [Algebra 
   .of_isLocalization R S P.primeCompl
 
 open Algebra nonZeroDivisors in
-instance {A C : Type*} [CommRing A] [CommSemiring C] [Algebra A C] [Module.Finite A C] :
+instance {A C : Type*} [CommRing A] [CommRing C] [Algebra A C] [Module.Finite A C] :
     Module.Finite (FractionRing A) (Localization (algebraMapSubmonoid C A⁰)) :=
   have : IsScalarTower A (FractionRing A) (Localization (algebraMapSubmonoid C A⁰)) :=
     instIsScalarTowerLocalizationAlgebraMapSubmonoid A⁰ C
