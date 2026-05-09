@@ -4,13 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Haoen Feng
 -/
 module
-import Mathlib.Analysis.Calculus.DifferentialForm.BoxStokes
-import Mathlib.Analysis.Calculus.FDeriv.Const
-import Mathlib.Analysis.Normed.Module.Alternating.Basic
-import Mathlib.Topology.MetricSpace.ProperSpace
-import Mathlib.Topology.Algebra.Support
-import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.Analysis.Calculus.DifferentialForm.BoxStokes
+public import Mathlib.Analysis.Calculus.FDeriv.Const
+public import Mathlib.Analysis.Normed.Module.Alternating.Basic
+public import Mathlib.Topology.MetricSpace.ProperSpace
+public import Mathlib.Topology.Algebra.Support
+public import Mathlib.MeasureTheory.Integral.Bochner.Set
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
 /-!
 # Stokes' theorem on the half-space `ℝⁿ₊ = {x : x_m ≥ 0}`

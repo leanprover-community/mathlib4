@@ -4,15 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Haoen Feng
 -/
 module
-import Mathlib.Analysis.Calculus.DifferentialForm.Basic
-import Mathlib.MeasureTheory.Integral.DivergenceTheorem
-import Mathlib.LinearAlgebra.Determinant
-import Mathlib.Data.Fintype.Perm
-import Mathlib.Data.Fintype.Card
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Ring.Cast
-import Mathlib.Data.Int.Cast.Lemmas
+public import Mathlib.Analysis.Calculus.DifferentialForm.Basic
+public import Mathlib.MeasureTheory.Integral.DivergenceTheorem
+public import Mathlib.LinearAlgebra.Determinant
+public import Mathlib.Data.Fintype.Perm
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.Ring.Cast
+public import Mathlib.Data.Int.Cast.Lemmas
 
 /-!
 # Stokes' theorem on rectangular boxes in Euclidean space
