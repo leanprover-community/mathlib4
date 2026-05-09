@@ -121,15 +121,6 @@ lemma edgeSet.ext_iff (he : e ∈ E(H)) (he' : e' ∈ E(H)) : e = e' ↔ ∀ x �
     )
   )
 
-/--
-If edges `e` and `e'` have the same vertices from `G`, then they have all the same vertices.
-This could be phrased as `e = e'`, but this formulation is more useful in combination with the `ext`
-tactic.
--/
-lemma forall_of_forall_verts (he : e ∈ E(H)) (he' : e' ∈ E(H))
-    (h : ∀ x ∈ V(H), x ∈ e ↔ x ∈ e') : ∀ x, x ∈ e ↔ x ∈ e' :=
-  fun x ↦ ⟨fun y ↦ (h x (he.subset_vertexSet y)).1 y, fun y ↦ (h x (he'.subset_vertexSet y)).2 y⟩
-
 lemma sUnion_edgeSet_subset_vertexSet : ⋃₀ E(H) ⊆ V(H) :=
   subset_powerset_iff.mp edgeSet_subset_powerset_vertexSet
 
