@@ -70,6 +70,13 @@ lemma stdSimplex.notMem_boundary (n : ℕ) :
   intro i hi
   simpa using @hi i (by aesop)
 
+/-- A simplex of `Δ[n]` is outside the boundary iff its representing map is epi. -/
+lemma stdSimplex.notMem_boundary_iff_epi_objEquiv {n m : ℕ} (x : Δ[n] _⦋m⦌) :
+    x ∉ (boundary.{u} n).obj (op ⦋m⦌) ↔ Epi (stdSimplex.objEquiv x) := by
+  rw [SimplexCategory.epi_iff_surjective]
+  simp only [boundary, Set.mem_setOf_eq, Decidable.not_not]
+  rfl
+
 lemma boundary_lt_top (n : ℕ) :
     boundary.{u} n < ⊤ :=
   lt_of_le_not_ge (by simp) (fun h ↦ stdSimplex.notMem_boundary n (h _ (by simp)))
@@ -203,7 +210,6 @@ lemma isPushout {X : SSet.{u}} {n : ℕ} (A : X.Subcomplex) (x : X _⦋n⦌)
         (yonedaEquiv.symm ⟨x, Or.inr (Subcomplex.mem_ofSimplex_obj x)⟩) := by
   have hnd : x ∈ X.nonDegenerate n := nonDegenerate_of_preimage_eq_boundary A x h
   set σ : (Δ[n] : SSet.{u}) ⟶ X := yonedaEquiv.symm x
-  set A' : X.Subcomplex := A ⊔ .ofSimplex x
   refine IsPushout.of_forall_isPushout_app fun ⟨m⟩ ↦
     (Types.isPushout_of_isPullback_of_mono
       (k := (Subcomplex.ι _).app _) ?_ rfl rfl ?_ ?_)
@@ -214,15 +220,14 @@ lemma isPushout {X : SSet.{u}} {n : ℕ} (A : X.Subcomplex) (x : X _⦋n⦌)
     obtain hy | ⟨z, hz⟩ := hy
     · exact Or.inl ⟨⟨y, hy⟩, rfl⟩
     · exact Or.inr ⟨stdSimplex.objEquiv.symm z.unop, Subtype.ext hz⟩
-  -- Off-boundary simplices have epi representing maps, so Eilenberg-Zilber map-uniqueness applies.
   · induction m using SimplexCategory.rec with | _ m
     intro x₃ y₃ hx₃ _ heq
     obtain ⟨φ, rfl⟩ := stdSimplex.objEquiv.symm.surjective x₃
     obtain ⟨ψ, rfl⟩ := stdSimplex.objEquiv.symm.surjective y₃
-    have hφs : Function.Surjective ⇑φ.toOrderHom := by
-      by_contra h'
-      exact hx₃ ⟨⟨stdSimplex.objEquiv.symm φ, h'⟩, rfl⟩
-    have hφ : Epi φ := SimplexCategory.epi_iff_surjective.mpr hφs
+    have hφ : Epi φ := (stdSimplex.notMem_boundary_iff_epi_objEquiv
+      (stdSimplex.objEquiv.symm φ)).1 (by
+        intro hφ_mem
+        exact hx₃ ⟨⟨stdSimplex.objEquiv.symm φ, hφ_mem⟩, rfl⟩)
     obtain rfl := X.unique_nonDegenerate_map _ φ ⟨x, hnd⟩ rfl ψ ⟨x, hnd⟩ heq
     rfl
 
