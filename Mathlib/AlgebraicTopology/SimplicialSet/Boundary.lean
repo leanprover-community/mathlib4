@@ -202,13 +202,9 @@ lemma isPushout {X : SSet.{u}} {n : ℕ} (A : X.Subcomplex) (x : X _⦋n⦌)
   have hnd : x ∈ X.nonDegenerate n := nonDegenerate_of_preimage_eq_boundary A x h
   set σ : (Δ[n] : SSet.{u}) ⟶ X := yonedaEquiv.symm x
   set A' : X.Subcomplex := A ⊔ .ofSimplex x
-  refine IsPushout.of_forall_isPushout_app fun ⟨m⟩ ↦ ?_
-  haveI := subtype_val_mono (A.obj ⟨m⟩)
-  haveI := subtype_val_mono (A'.obj ⟨m⟩)
-  -- Factor through `X.obj m` so the pullback obligation is `h` at `m`.
-  refine Types.isPushout_of_isPullback_of_mono (X₅ := X.obj ⟨m⟩)
-    (k := ↾Subtype.val) (r' := ↾Subtype.val) (b' := σ.app ⟨m⟩)
-      ?_ rfl rfl ?_ ?_
+  refine IsPushout.of_forall_isPushout_app fun ⟨m⟩ ↦
+    (Types.isPushout_of_isPullback_of_mono 
+      (k := (Subcomplex.ι _).app _) ?_ rfl rfl ?_ ?_)
   · exact Types.isPullback_of_eq_setPreimage (σ.app ⟨m⟩) (A.obj ⟨m⟩) (by simp [← h])
   · apply le_antisymm le_top
     rintro ⟨y, hy⟩ _
@@ -237,9 +233,8 @@ lemma exists_isPushout_of_ne_top {X : SSet.{u}} (A : X.Subcomplex) (hA : A ≠ �
       IsPushout t (∂Δ[n] : (Δ[n] : SSet.{u}).Subcomplex).ι (Subcomplex.homOfLE lt.le) b := by
   by_contra h
   apply hA
-  ext ⟨n⟩ : 2
+  ext ⟨⟨n⟩⟩ : 2
   simp only [Subfunctor.top_obj, Set.top_eq_univ, Set.eq_univ_iff_forall]
-  induction n using SimplexCategory.rec with | _ n
   induction n using Nat.strong_induction_on with | _ n hn
   by_contra! H
   obtain ⟨x, hxA⟩ := H
