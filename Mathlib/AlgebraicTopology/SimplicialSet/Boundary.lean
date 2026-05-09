@@ -203,7 +203,7 @@ lemma isPushout {X : SSet.{u}} {n : ℕ} (A : X.Subcomplex) (x : X _⦋n⦌)
   set σ : (Δ[n] : SSet.{u}) ⟶ X := yonedaEquiv.symm x
   set A' : X.Subcomplex := A ⊔ .ofSimplex x
   refine IsPushout.of_forall_isPushout_app fun ⟨m⟩ ↦
-    (Types.isPushout_of_isPullback_of_mono 
+    (Types.isPushout_of_isPullback_of_mono
       (k := (Subcomplex.ι _).app _) ?_ rfl rfl ?_ ?_)
   · exact Types.isPullback_of_eq_setPreimage (σ.app ⟨m⟩) (A.obj ⟨m⟩) (by simp [← h])
   · apply le_antisymm le_top
