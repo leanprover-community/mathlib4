@@ -530,7 +530,7 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
         m!"`{stainStr}` is a flexible tactic modifying `{d}`. \
           Try `aesop?` and use the suggested proof."
       | _ =>
-        m!"'{stainStr}' is a flexible tactic modifying `{d}`."
+        m!"`{stainStr}` is a flexible tactic modifying `{d}`."
     Linter.logLint linter.flexible stainStx msg
     if let some suggStx := suggestion? then
       liftCoreM <| Lean.Meta.Tactic.TryThis.addSuggestion stainStx
