@@ -779,7 +779,7 @@ lemma isFiniteRelIndex_of_le_left (L : Subgroup G) [H.IsFiniteRelIndex L] (h : H
 
 variable (H) in
 @[to_additive]
-lemma isFiniteRelIndex_of_le_right {L : Subgroup G} (h : K ≤ L) [H.IsFiniteRelIndex L] :
+lemma isFiniteRelIndex_of_le_right (h : K ≤ L) [H.IsFiniteRelIndex L] :
     H.IsFiniteRelIndex K := by
   rw [isFiniteRelIndex_iff_relIndex_ne_zero]
   exact mt (relIndex_eq_zero_of_le_right h) relIndex_ne_zero
