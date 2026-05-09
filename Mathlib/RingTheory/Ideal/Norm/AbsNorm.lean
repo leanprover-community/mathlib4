@@ -308,8 +308,7 @@ theorem absNorm_span_singleton (r : S) :
   refine b.ext fun i => ?_
   simp
 
-lemma absNorm_span_nat (n : ℕ) :
-    (span {(n : S)}).absNorm = n ^ Module.finrank ℤ S := by
+lemma absNorm_span_nat (n : ℕ) : (span {(n : S)}).absNorm = n ^ Module.finrank ℤ S := by
   rw [absNorm_span_singleton, Algebra.norm_apply, map_natCast,
     show (n : Module.End ℤ S) = (n : ℤ) by norm_cast, ← zsmul_one, LinearMap.det_smul]
   simp
@@ -360,8 +359,6 @@ lemma finiteIndex {I : Ideal S} (hI : I ≠ ⊥) : I.toAddSubgroup.FiniteIndex :
 open AddSubgroup in
 lemma isFiniteRelIndex {I : Ideal S} (hI : I ≠ ⊥) (J : Ideal S) :
     I.toAddSubgroup.IsFiniteRelIndex J.toAddSubgroup := by
-  rcases eq_or_ne J ⊥ with rfl | hJ
-  · simpa [isFiniteRelIndex_iff_finiteIndex, ← inf_addSubgroupOf_right] using instFiniteIndexTop
   have := finiteIndex hI
   exact isFiniteRelIndex_of_finiteIndex
 
