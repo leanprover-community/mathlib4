@@ -98,7 +98,7 @@ local macro "pderiv_simp" : tactic =>
 
 universe r s u v
 
-variable {R : Type r} {S : Type s} {A F : Type u} {B K : Type v}
+variable {R : Type r} {F : Type u}
 
 name_poly_vars X, Y, Z over R
 
@@ -127,11 +127,11 @@ lemma fin3_def (P : Fin 3 → R) : ![P x, P y, P z] = P := by
 lemma fin3_def_ext (a b c : R) : ![a, b, c] x = a ∧ ![a, b, c] y = b ∧ ![a, b, c] z = c :=
   ⟨rfl, rfl, rfl⟩
 
-lemma comp_fin3 (f : R → S) (a b c : R) : f ∘ ![a, b, c] = ![f a, f b, f c] :=
+lemma comp_fin3 {S : Type s} (f : R → S) (a b c : R) : f ∘ ![a, b, c] = ![f a, f b, f c] :=
   (FinVec.map_eq ..).symm
 
-variable [CommRing R] [CommRing S] [CommRing A] [CommRing B] [Field F] [Field K] {W' : Projective R}
-  {W : Projective F}
+variable [CommRing R] [Field F] {W' : Projective R} {W : Projective F} {S : Type s} [CommRing S]
+  {A : Type u} [CommRing A] {B : Type v} [CommRing B] {K : Type v} [Field K]
 
 lemma smul_fin3 (P : Fin 3 → R) (u : R) : u • P = ![u * P x, u * P y, u * P z] := by
   simp [← List.ofFn_inj, List.ofFn_succ]
@@ -478,81 +478,89 @@ lemma nonsingularLift_some (a b : R) :
 
 /-! ## Maps and base changes -/
 
-variable (f : R →+* S) (P : Fin 3 → R)
+variable (W') (f : R →+* S)
+
+/-- The Weierstrass curve in projective coordinates mapped over a ring homomorphism `f : R →+* S`.
+-/
+@[simps!]
+abbrev map : Projective S :=
+  WeierstrassCurve.map W' f
+
+variable (S) in
+/-- The Weierstrass curve in projective coordinates base changed to an algebra `S` over `R`. -/
+@[simps!]
+abbrev baseChange [Algebra R S] : Projective S :=
+  WeierstrassCurve.baseChange W' S
+
+/-- The notation `\textf` for `WeierstrassCurve.Projective.baseChange W S`. -/
+scoped notation:max W:max "⁄" S:max => baseChange W S
 
 @[simp]
-lemma map_polynomial : (W'.map f).toProjective.polynomial = MvPolynomial.map f W'.polynomial := by
+lemma map_polynomial : (W'.map f).polynomial = .map f W'.polynomial := by
   simp only [polynomial]
   map_simp
 
-variable {P} in
-lemma Equation.map (h : W'.Equation P) : (W'.map f).toProjective.Equation (f ∘ P) := by
+variable {W'} in
+lemma Equation.map {P : Fin 3 → R} (h : W'.Equation P) : (W'.map f).Equation (f ∘ P) := by
   rw [Equation, map_polynomial, eval_map, ← eval₂_comp, h, map_zero]
 
 variable {f} in
 @[simp]
-lemma map_equation (hf : Function.Injective f) :
-    (W'.map f).toProjective.Equation (f ∘ P) ↔ W'.Equation P := by
+lemma map_equation (hf : Function.Injective f) (P : Fin 3 → R) :
+    (W'.map f).Equation (f ∘ P) ↔ W'.Equation P := by
   simp only [Equation, map_polynomial, eval_map, ← eval₂_comp, map_eq_zero_iff f hf]
 
 @[simp]
-lemma map_polynomialX :
-    (W'.map f).toProjective.polynomialX = MvPolynomial.map f W'.polynomialX := by
+lemma map_polynomialX : (W'.map f).polynomialX = .map f W'.polynomialX := by
   simp only [polynomialX, map_polynomial, pderiv_map]
 
 @[simp]
-lemma map_polynomialY :
-    (W'.map f).toProjective.polynomialY = MvPolynomial.map f W'.polynomialY := by
+lemma map_polynomialY : (W'.map f).polynomialY = .map f W'.polynomialY := by
   simp only [polynomialY, map_polynomial, pderiv_map]
 
 @[simp]
-lemma map_polynomialZ :
-    (W'.map f).toProjective.polynomialZ = MvPolynomial.map f W'.polynomialZ := by
+lemma map_polynomialZ : (W'.map f).polynomialZ = .map f W'.polynomialZ := by
   simp only [polynomialZ, map_polynomial, pderiv_map]
 
 variable {f} in
 @[simp]
-lemma map_nonsingular (hf : Function.Injective f) :
-    (W'.map f).toProjective.Nonsingular (f ∘ P) ↔ W'.Nonsingular P := by
-  simp only [Nonsingular, map_equation P hf, map_polynomialX, map_polynomialY, map_polynomialZ,
+lemma map_nonsingular (hf : Function.Injective f) (P : Fin 3 → R) :
+    (W'.map f).Nonsingular (f ∘ P) ↔ W'.Nonsingular P := by
+  simp only [Nonsingular, W'.map_equation hf, map_polynomialX, map_polynomialY, map_polynomialZ,
     eval_map, ← eval₂_comp, map_ne_zero_iff f hf]
 
 variable [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Algebra R B] [Algebra S B]
-  [IsScalarTower R S B] (f : A →ₐ[S] B) (P : Fin 3 → A)
+  [IsScalarTower R S B] (f : A →ₐ[S] B)
 
-lemma baseChange_polynomial : (W'.baseChange B).toProjective.polynomial =
-    MvPolynomial.map f (W'.baseChange A).toProjective.polynomial := by
+lemma map_baseChange : (W'⁄A).map f = W'⁄B :=
+  WeierstrassCurve.map_baseChange W' f
+
+lemma baseChange_polynomial : (W'⁄B).polynomial = .map f (W'⁄A).polynomial := by
   rw [← map_polynomial, map_baseChange]
 
-variable {P} in
-lemma Equation.baseChange (h : (W'.baseChange A).toProjective.Equation P) :
-    (W'.baseChange B).toProjective.Equation (f ∘ P) := by
+variable {W'} in
+lemma Equation.baseChange {P : Fin 3 → A} (h : (W'⁄A).Equation P) : (W'⁄B).Equation (f ∘ P) := by
   convert Equation.map f.toRingHom h using 1
   rw [AlgHom.toRingHom_eq_coe, map_baseChange]
 
 variable {f} in
-lemma baseChange_equation (hf : Function.Injective f) :
-    (W'.baseChange B).toProjective.Equation (f ∘ P) ↔
-      (W'.baseChange A).toProjective.Equation P := by
-  rw [← RingHom.coe_coe, ← map_equation P hf, AlgHom.toRingHom_eq_coe, map_baseChange]
+lemma baseChange_equation (hf : Function.Injective f) (P : Fin 3 → A) :
+    (W'⁄B).Equation (f ∘ P) ↔ (W'⁄A).Equation P := by
+  rw [← RingHom.coe_coe, ← map_equation _ hf, AlgHom.toRingHom_eq_coe, map_baseChange]
 
-lemma baseChange_polynomialX : (W'.baseChange B).toProjective.polynomialX =
-    MvPolynomial.map f (W'.baseChange A).toProjective.polynomialX := by
+lemma baseChange_polynomialX : (W'⁄B).polynomialX = .map f (W'⁄A).polynomialX := by
   rw [← map_polynomialX, map_baseChange]
 
-lemma baseChange_polynomialY : (W'.baseChange B).toProjective.polynomialY =
-    MvPolynomial.map f (W'.baseChange A).toProjective.polynomialY := by
+lemma baseChange_polynomialY : (W'⁄B).polynomialY = .map f (W'⁄A).polynomialY := by
   rw [← map_polynomialY, map_baseChange]
 
-lemma baseChange_polynomialZ : (W'.baseChange B).toProjective.polynomialZ =
-    MvPolynomial.map f (W'.baseChange A).toProjective.polynomialZ := by
+lemma baseChange_polynomialZ : (W'⁄B).polynomialZ = .map f (W'⁄A).polynomialZ := by
   rw [← map_polynomialZ, map_baseChange]
 
 variable {f} in
-lemma baseChange_nonsingular (hf : Function.Injective f) :
-    (W'.baseChange B).toProjective.Nonsingular (f ∘ P) ↔
-      (W'.baseChange A).toProjective.Nonsingular P := by
-  rw [← RingHom.coe_coe, ← map_nonsingular P hf, AlgHom.toRingHom_eq_coe, map_baseChange]
+lemma baseChange_nonsingular (hf : Function.Injective f) (P : Fin 3 → A) :
+    (W'⁄B).Nonsingular (f ∘ P) ↔ (W'⁄A).Nonsingular P := by
+  rw [← RingHom.coe_coe, ← map_nonsingular _ hf, AlgHom.toRingHom_eq_coe, map_baseChange]
 
 end Projective
 

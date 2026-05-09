@@ -702,7 +702,7 @@ lemma comap_evalRingHom_basicOpen [DecidableEq ι] (i : ι) (f : R i) :
     exact ⟨q, by simpa using hp, by ext; simp⟩
 
 lemma sigmaToPi_mk_basicOpen [DecidableEq ι] (i : ι) (f : R i) :
-    sigmaToPi R '' (Sigma.mk i '' basicOpen f) = basicOpen (Pi.single i f) := by
+    sigmaToPi R '' Sigma.mk i '' basicOpen f = basicOpen (Pi.single i f) := by
   simp only [Set.image_image, sigmaToPi_apply]
   exact PrimeSpectrum.comap_evalRingHom_basicOpen _ _
 
@@ -958,7 +958,7 @@ lemma denseRange_comap_iff_minimalPrimes :
   · intro H I hI
     have : I ∈ (RingHom.ker f).minimalPrimes := by
       rw [denseRange_comap_iff_ker_le_nilRadical] at H
-      simp only [minimalPrimes, Ideal.minimalPrimes, Set.mem_setOf] at hI ⊢
+      simp only [Set.mem_setOf, Ideal.IsMinimalPrime] at hI ⊢
       convert hI using 2 with p
       exact ⟨fun h ↦ ⟨h.1, bot_le⟩, fun h ↦ ⟨h.1, H.trans (h.1.radical_le_iff.mpr bot_le)⟩⟩
     obtain ⟨p, hp, _, rfl⟩ := Ideal.exists_comap_eq_of_mem_minimalPrimes f (I := ⊥) I this
