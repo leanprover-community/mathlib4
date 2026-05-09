@@ -68,7 +68,7 @@ noncomputable def detTopForm (n : ℕ) :
     (Matrix.detRowAlternating : (Fin n → ℝ) [⋀^Fin n]→ₗ[ℝ] ℝ)
     ((Fintype.card (Fin n)).factorial)
     (fun m => by
-      show ‖(Matrix.detRowAlternating : (Fin n → ℝ) [⋀^Fin n]→ₗ[ℝ] ℝ) m‖ ≤
+      change ‖(Matrix.detRowAlternating : (Fin n → ℝ) [⋀^Fin n]→ₗ[ℝ] ℝ) m‖ ≤
            ↑(Fintype.card (Fin n)).factorial * ∏ i, ‖m i‖
       rw [show (Matrix.detRowAlternating : (Fin n → ℝ) [⋀^Fin n]→ₗ[ℝ] ℝ) m =
             (Matrix.of m).det from rfl]
@@ -80,7 +80,7 @@ noncomputable def detTopForm (n : ℕ) :
         _ ≤ ∑ σ : Perm (Fin n), (1 : ℝ) * ∏ i : Fin n, ‖m (σ i)‖ := by
             refine Finset.sum_le_sum (fun σ _ => ?_)
             simp only [Matrix.of_apply]
-            show ‖(Equiv.Perm.sign σ : ℤ) • ∏ x : Fin n, m (σ x) x‖ ≤
+            change ‖(Equiv.Perm.sign σ : ℤ) • ∏ x : Fin n, m (σ x) x‖ ≤
                  (1 : ℝ) * ∏ i : Fin n, ‖m (σ i)‖
             rw [zsmul_eq_mul, norm_mul, Real.norm_eq_abs, Real.norm_eq_abs]
             rw [← Int.cast_abs, Equiv.Perm.sign_abs, Int.cast_one]

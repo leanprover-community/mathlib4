@@ -128,7 +128,7 @@ theorem halfSpaceBoxLower_le_upper (m : ℕ) {R : ℝ} (hR : (0 : ℝ) ≤ R) :
 /-- `‖Fin.insertNth i v x‖ ≥ ‖x‖` for the sup norm on finite products. -/
 lemma norm_insertNth_ge_norm {m : ℕ} (i : Fin (m + 1)) (v : ℝ) (x : Fin m → ℝ) :
     ‖x‖ ≤ ‖(Fin.insertNth i v x : Fin (m + 1) → ℝ)‖ := by
-  show Finset.univ.sup (fun b : Fin m => ‖(x : Fin m → ℝ) b‖₊) ≤
+  change Finset.univ.sup (fun b : Fin m => ‖(x : Fin m → ℝ) b‖₊) ≤
       Finset.univ.sup (fun b : Fin (m + 1) =>
         ‖(Fin.insertNth i v x : Fin (m + 1) → ℝ) b‖₊)
   exact Finset.sup_le fun j _ => by
@@ -312,7 +312,7 @@ lemma topFormDensity_extDeriv_vanishes_outside_box {m : ℕ}
     · exfalso
       have h0 : halfSpaceBoxLower m R i = (0 : ℝ) := heq ▸ halfSpaceBoxLower_last m R
       rw [h0] at hi
-      have hge : (0 : ℝ) ≤ x i := heq ▸ (by simp [HalfSpace] at hx_hs; exact hx_hs)
+      have hge : (0 : ℝ) ≤ x i := heq ▸ (by simp only [HalfSpace] at hx_hs; exact hx_hs)
       exact hi hge
     · have hlow : halfSpaceBoxLower m R i = -(R : ℝ) := by
         simp [halfSpaceBoxLower, heq]
@@ -466,9 +466,9 @@ theorem halfSpace_stokes (m : ℕ)
           boxFaceComponent ω (lastCoord m) ((lastCoord m).insertNth (0 : ℝ) x) = 0 := by
         intro x hx
         simp only [Set.mem_diff, Set.mem_univ, true_and, Set.mem_Icc, Pi.le_def,
-          not_and_or, not_le] at hx
+          not_and_or] at hx
         have h_norm_gt : R < ‖x‖ := by
-          simp only [not_forall, not_and_or, not_le] at hx
+          simp only [not_forall, not_and_or] at hx
           obtain ⟨i, hi⟩ | ⟨i, hi⟩ := hx
           · calc R < -(x i) := by linarith
               _ = |x i| := (abs_of_neg (by linarith : x i < 0)).symm
