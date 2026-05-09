@@ -78,6 +78,8 @@ theorem lsmul_coe (a : A) : (lsmul R B M a : M → M) = (a • ·) := rfl
 
 lemma lsmul_apply (a : A) (m : M) : lsmul R B M a m = a • m := rfl
 
+lemma lsmul_eq_smul_one (a : A) : lsmul R R M a = a • 1 := rfl
+
 end Algebra
 
 namespace IsScalarTower

@@ -93,7 +93,7 @@ theorem norm_algebraMap_of_basis [Fintype ι] (b : Basis ι R S) (x : R) :
 variable [Free R S]
 
 lemma det_lsmul (x : R) : LinearMap.det (lsmul R R S x) = x ^ finrank R S := by
-  rw [show lsmul R R S x = x • 1 from rfl, LinearMap.det_smul, map_one, mul_one]
+  rw [lsmul_eq_smul_one, LinearMap.det_smul, map_one, mul_one]
 
 /-- If `x` is in the base ring `R` and `S` is free over `R`, then the norm is `x ^ [S : R]`.
 
