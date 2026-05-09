@@ -318,7 +318,8 @@ instance topCharacteristic : Characteristic (⊤ : Subgroup G) :=
 
 /-- If `H` is a characteristic subgroup of `G`, then every automorphism of `G` induces an
 automorphism of `H`. -/
-def _root_.MulAut.Characteristic [H.Characteristic] : MulAut G →* MulAut H where
+@[simps!]
+def _root_.MulAut.characteristic [H.Characteristic] : MulAut G →* MulAut H where
   toFun φ :=
     { toFun := fun h => ⟨φ h, characteristic_iff_le_comap.mp inferInstance φ h.2⟩
       invFun := fun h => ⟨φ.symm h, characteristic_iff_le_comap.mp inferInstance φ.symm h.2⟩
