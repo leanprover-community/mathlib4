@@ -395,7 +395,7 @@ theorem halfSpace_stokes (m : ℕ)
   have hf_cont : Continuous (topFormDensity (extDeriv ω)) := by
     have h_diff : ∀ x, DifferentiableAt ℝ ω x :=
       fun x => (hω.differentiable one_ne_zero).differentiableAt
-    refine (continuous_finset_sum _ fun i _ => by
+    refine (continuous_finsetSum _ fun i _ => by
       have hface : ContDiff ℝ (1 : ℕ∞) (boxFaceComponent ω i) :=
         boxFaceComponent_contDiff ω i hω
       exact (hface.continuous_fderiv_apply one_ne_zero).comp
@@ -480,7 +480,7 @@ theorem halfSpace_stokes (m : ℕ)
       have h_f_cont : Continuous fun x : Fin m → ℝ =>
           boxFaceComponent ω (lastCoord m) ((lastCoord m).insertNth (0 : ℝ) x) := by
         have h_comp := (boxFaceComponent_contDiff ω (lastCoord m) hω).continuous
-        exact h_comp.comp (continuous_const.finInsertNth continuous_id)
+        exact h_comp.comp (continuous_const.finInsertNth (lastCoord m) continuous_id)
       have h_f_compact : HasCompactSupport fun x : Fin m → ℝ =>
           boxFaceComponent ω (lastCoord m) ((lastCoord m).insertNth (0 : ℝ) x) := by
         refine HasCompactSupport.intro (K := Icc (fun _ => -(R : ℝ)) (fun _ => (R : ℝ))) ?_ ?_
