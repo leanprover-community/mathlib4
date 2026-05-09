@@ -156,8 +156,6 @@ instance {R S : Type*} [CommSemiring R] {P : Ideal R} [CommSemiring S] [Algebra 
 open Algebra nonZeroDivisors in
 instance {A C : Type*} [CommRing A] [CommRing C] [Algebra A C] [Module.Finite A C] :
     Module.Finite (FractionRing A) (Localization (algebraMapSubmonoid C A⁰)) :=
-  have : IsScalarTower A (FractionRing A) (Localization (algebraMapSubmonoid C A⁰)) :=
-    instIsScalarTowerLocalizationAlgebraMapSubmonoid A⁰ C
   .of_isLocalization A C A⁰
 
 include S f in
