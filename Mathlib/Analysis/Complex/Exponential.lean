@@ -204,6 +204,9 @@ variable (x y : ℝ)
 @[simp]
 theorem exp_zero : exp 0 = 1 := by simp [Real.exp]
 
+theorem exp_int_mul (x : ℝ) (n : ℤ) : Real.exp (n * x) = Real.exp x ^ n := by
+  exact_mod_cast congr(Complex.re $(Complex.exp_int_mul x n))
+
 nonrec theorem exp_add : exp (x + y) = exp x * exp y := by simp [exp_add, exp]
 
 /-- the exponential function as a monoid hom from `Multiplicative ℝ` to `ℝ` -/
