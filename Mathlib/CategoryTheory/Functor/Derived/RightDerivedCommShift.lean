@@ -19,31 +19,6 @@ namespace CategoryTheory
 
 open Category
 
-namespace MorphismProperty
-
-variable {C : Type*} [Category C]
-  (W : MorphismProperty C) {A : Type*} [AddGroup A] [HasShift C A]
-  [W.IsCompatibleWithShift A] (a : A)
-
-@[simps]
-def localizerMorphismOfIsCompatibleWithShift :
-    LocalizerMorphism W W where
-  functor := shiftFunctor C a
-  map _ _ f hf := (IsCompatibleWithShift.iff W f a).2 hf
-
-noncomputable instance :
-    (W.localizerMorphismOfIsCompatibleWithShift a).functor.IsEquivalence := by
-  dsimp
-  infer_instance
-
-instance : (W.localizerMorphismOfIsCompatibleWithShift a).IsLocalizedEquivalence := by
-  apply LocalizerMorphism.IsLocalizedEquivalence.of_equivalence
-  intro X Y f hf
-  exact ⟨_, _, f⟦-a⟧', (IsCompatibleWithShift.iff W f _).2 hf,
-    ⟨Arrow.isoOfNatIso (shiftEquiv C a).counitIso (Arrow.mk f)⟩⟩
-
-end MorphismProperty
-
 namespace Functor
 
 variable {C D H : Type*} [Category C] [Category D] [Category H]
@@ -72,7 +47,7 @@ def postcomposeShiftNatTrans :
 
 instance :
     (shiftFunctor H a ⋙ RF).IsRightDerivedFunctor (precomposeShiftNatTrans RF α a) W :=
-  ((W.localizerMorphismOfIsCompatibleWithShift a).isRightDerivedFunctor_iff_precomp L L
+  ((W.shiftLocalizerMorphism a).isRightDerivedFunctor_iff_precomp L L
     (shiftFunctor H a) (L.commShiftIso a) α (precomposeShiftNatTrans RF α a) (Iso.refl _)
     (Iso.refl _) (by aesop_cat)).2 inferInstance
 
