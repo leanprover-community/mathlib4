@@ -16,8 +16,8 @@ closed field, e.g., `ℂ`, is unitarily similar to an upper triangular matrix.
 
 ## Main definitions
 
-- `Matrix.schur_triangulation` : a matrix `A : Matrix n n 𝕜` with `𝕜` being algebraically closed can
-  be decomposed as `A = U * T * star U` where `U` is unitary and `T` is upper triangular.
+- `Matrix.schurTriangulation_eq` : a square matrix over an algebraically closed field can be
+  decomposed as `A = U * T * star U` where `U` is unitary and `T` is upper triangular.
 - `Matrix.schurTriangulationUnitary` : the unitary matrix `U` as previously stated.
 - `Matrix.schurTriangulation` : the upper triangular matrix `T` as previously stated.
 
@@ -46,10 +46,9 @@ noncomputable def schurTriangulationAux :
   let f : Module.End 𝕜 (EuclideanSpace 𝕜 n) := toEuclideanLin A
   let h := Module.End.exists_orthonormalBasis_isTriangularizedBy
     (Module.End.exists_isTriangularizedBy f)
-  let d := Classical.choose h
-  let hb_exists := Classical.choose_spec h
-  let b := Classical.choose hb_exists
-  have hb : f.IsTriangularizedBy b.toBasis := Classical.choose_spec hb_exists
+  let d := h.choose
+  let b := h.choose_spec.choose
+  have hb : f.IsTriangularizedBy b.toBasis := h.choose_spec.choose_spec
   have hd : Module.finrank 𝕜 (EuclideanSpace 𝕜 n) = d := by
     simpa using Module.finrank_eq_card_basis b.toBasis
   have hut : (LinearMap.toMatrix b.toBasis b.toBasis f).IsUpperTriangular :=
@@ -87,7 +86,7 @@ noncomputable def schurTriangulation : UpperTriangular n 𝕜 :=
 /-- **Schur triangulation**, **Schur decomposition** for matrices over an algebraically closed
 field. In particular, a complex matrix can be converted to upper-triangular form by a change of
 basis. In other words, any complex matrix is unitarily similar to an upper triangular matrix. -/
-lemma schur_triangulation :
+lemma schurTriangulation_eq :
     A = schurTriangulationUnitary A * schurTriangulation A *
         star (schurTriangulationUnitary A) := by
   let U := schurTriangulationUnitary A
@@ -98,15 +97,8 @@ lemma schur_triangulation :
       _ = LinearMap.toMatrix c c (toEuclideanLin A) * c.toMatrix b := by simp
       _ = LinearMap.toMatrix c c (toLin c c A) * U := rfl
       _ = A * U := by simp
-  have hstar : (star U : Matrix n n 𝕜) = star (U : Matrix n n 𝕜) := rfl
   calc A
-    _ = A * 1 := by rw [mul_one]
-    _ = A * ((U : Matrix n n 𝕜) * (star U : Matrix n n 𝕜)) := by
-      rw [Matrix.mem_unitaryGroup_iff.mp U.property]
-    _ = A * U * star U := by
-      change A * ((U : Matrix n n 𝕜) * star (U : Matrix n n 𝕜)) =
-        A * (U : Matrix n n 𝕜) * (star U : Matrix n n 𝕜)
-      rw [← hstar, mul_assoc]
+    _ = A * U * star U := by simp [mul_assoc]
     _ = U * schurTriangulation A * star U := by rw [← h]
 
 end Matrix
