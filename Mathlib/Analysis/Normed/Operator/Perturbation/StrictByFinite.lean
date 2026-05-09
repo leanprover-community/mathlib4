@@ -12,8 +12,6 @@ public import Mathlib.Topology.Algebra.Module.FiniteDimension
 # Strict linear maps with closed range are closed under finite-rank perturbation
 -/
 
-@[expose] public section
-
 open Topology Set Submodule Function
 
 variable {𝕜 𝕜₁ 𝕜₂}
@@ -29,6 +27,32 @@ variable {E F : Type*}
 
 section FiniteCodimSubspace
 
+/-!
+## Proof of `ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict`
+
+Let `u : E →L[𝕜] F` be a continuous linear map, and `A` a finite codimension closed
+subspace of `E`. We want to show that `u` is strict with closed range if and only if
+`Set.restrict A u` is strict with closed range.
+
+We do the proof in three steps.
+-/
+
+/-!
+### Step 1
+
+We prove the theorem under the assumptions that
+- `u` is surjective
+- `u.ker` is disjoint from `A` (i.e. `u` is injective on `A`)
+
+The statement becomes: `u` is a quotient map if and only if `Set.restrict A u` is
+a closed embedding.
+-/
+
+/-- The forward direction of step 1 in the proof of
+`ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict`, which you should use instead.
+
+Note that we only prove it for `u = K.mkQ`, because it is easier and precisely what we will need
+in step 2. -/
 theorem step1_foward (A : Submodule 𝕜₁ E) (K : Submodule 𝕜₁ E) (A_closed : IsClosed (A : Set E))
     [codim_A : FiniteDimensional 𝕜₁ (E ⧸ A)] (K_disj_A : Disjoint K A) :
     IsClosedEmbedding (restrict A K.mkQ) := by
@@ -45,6 +69,27 @@ theorem step1_foward (A : Submodule 𝕜₁ E) (K : Submodule 𝕜₁ E) (A_clos
   · rw [← K.isQuotientMap_mkQ.isClosed_preimage, range_restrict, ← Submodule.map_coe,
       ← Submodule.comap_coe K.mkQ]
     exact isClosed_mono_of_finiteDimensional_quotient A_closed (le_comap_map _ A)
+
+/-- The backward direction of step 1 in the proof of
+`ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict`, which you should use instead.
+
+Note the hypothesis `h_ker` is implied `h_clemb`, but since this is a private theorem
+we just write the most convenient statement to prove and use. -/
+theorem step1_backward (A : Submodule 𝕜₁ E) (u : E →SL[σ] F) (A_closed : IsClosed (A : Set E))
+    [codim_A : FiniteDimensional 𝕜₁ (E ⧸ A)] (h_ker : Disjoint u.ker A) (h_range : u.range = ⊤)
+    (h_clemb : IsClosedEmbedding (restrict A u)) :
+    IsQuotientMap u := by
+  sorry
+
+/-!
+### Step 2
+
+We prove the theorem under the assumption that `u.ker` is disjoint from `A`
+(i.e. `u` is injective on `A`).
+
+The statement becomes: `u` is strict with closed range if and only if `Set.restrict A u` is
+a closed embedding.
+-/
 
 theorem step2_forward (u : E →SL[σ] F) (A : Submodule 𝕜₁ E) (A_closed : IsClosed (A : Set E))
     [codim_A : FiniteDimensional 𝕜₁ (E ⧸ A)] (h_ker : Disjoint u.ker A) (h_strict : IsStrictMap u)
@@ -64,7 +109,19 @@ theorem step2_forward (u : E →SL[σ] F) (A : Submodule 𝕜₁ E) (A_closed : 
   rw [eq]
   exact u'_clemb.comp π_restr_clemb
 
-theorem foo (u : E →SL[σ] F) (A : Submodule 𝕜₁ E) (A_closed : IsClosed (A : Set E))
+theorem step2 (u : E →SL[σ] F) (A : Submodule 𝕜₁ E) (A_closed : IsClosed (A : Set E))
+    [codim_A : FiniteDimensional 𝕜₁ (E ⧸ A)] (h_ker : Disjoint u.ker A) :
+    (IsStrictMap u ∧ IsClosed (range u)) ↔ IsClosedEmbedding (restrict A u) := by
+  sorry
+
+/-!
+### Step 3
+
+We now deduce from the two previous step the full strength of the theorem.
+-/
+
+public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict (u : E →SL[σ] F)
+    (A : Submodule 𝕜₁ E) (A_closed : IsClosed (A : Set E))
     [codim_A : FiniteDimensional 𝕜₁ (E ⧸ A)] :
     (IsStrictMap u ∧ IsClosed (range u)) ↔
       (IsStrictMap (restrict A u) ∧ IsClosed (u '' A)) := by
@@ -74,12 +131,16 @@ end FiniteCodimSubspace
 
 section FiniteRank
 
-theorem bar [T1Space F] (u v : E →L[𝕜] F) (h_finite_rank : FiniteDimensional 𝕜 (u - v).range) :
+-- TODO: state in terms of "equality modulo finite rank" relation
+public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_of_finiteDimensional [T1Space F]
+    (u v : E →L[𝕜] F) (h_finite_rank : FiniteDimensional 𝕜 (u - v).range) :
     (IsStrictMap u ∧ IsClosed (range u)) ↔ (IsStrictMap v ∧ IsClosed (range v)) := by
   let A := (u - v).ker
   have hA : IsClosed (A : Set E) := (u - v).isClosed_ker
   have : FiniteDimensional 𝕜 (E ⧸ A) := (u - v).toLinearMap.quotKerEquivRange.symm.finiteDimensional
   have eqOn_A : EqOn u v A := fun _ ↦ by simp [A, sub_eq_zero]
-  simp_rw [foo u A hA, foo v A hA, ← range_restrict, restrict_eq_restrict_iff.mpr eqOn_A]
+  simp_rw [u.isStrictMap_isClosed_range_iff_restrict A hA,
+    v.isStrictMap_isClosed_range_iff_restrict A hA,
+    ← range_restrict, restrict_eq_restrict_iff.mpr eqOn_A]
 
 end FiniteRank
