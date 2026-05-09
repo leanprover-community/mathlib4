@@ -259,6 +259,7 @@ instance (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
     [MulSemiringAction G S] [hGKL : IsGaloisGroup G R S] :
     IsGaloisGroup H (FixedPoints.subalgebra R S H) S where
   faithful := have := hGKL.faithful; inferInstance
+  commutes := inferInstance
   isInvariant := ⟨fun x h ↦ ⟨⟨x, h⟩, rfl⟩⟩
 
 instance subgroup [hGKL : IsGaloisGroup G K L] :
