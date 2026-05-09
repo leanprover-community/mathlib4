@@ -69,6 +69,7 @@ namespace Set
 
 variable {α : Type u} {s t : Set α}
 
+/-- A set of `α`s is equivalent to a predicate on elements of type `α`. -/
 def equivPredicate (α : Type*) : Set α ≃ (α → Prop) where
   toFun := Membership.mem
   invFun := setOf
