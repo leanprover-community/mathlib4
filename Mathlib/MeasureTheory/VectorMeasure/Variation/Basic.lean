@@ -141,13 +141,13 @@ lemma preVariationFun_apply_of_ENNReal (s : Set X) : preVariationFun μ s = μ s
   · exact iSup_sum_finpartition_parts μ hs
   · exact (μ.not_measurable' hs).symm
 
-@[simp]
 theorem variation_eq_ennrealToMeasure : μ.variation = μ.ennrealToMeasure := by
   ext _ hs
   simp [variation_apply, preVariation_apply, ennrealPreVariation_apply, ennrealToMeasure_apply hs]
 
 @[simp]
-theorem ennrealVariation_eq : μ.ennrealVariation = μ := by simp [ennrealVariation]
+theorem ennrealVariation_eq : μ.ennrealVariation = μ := by
+  simp [variation_eq_ennrealToMeasure,ennrealVariation]
 
 end ENNReal
 
