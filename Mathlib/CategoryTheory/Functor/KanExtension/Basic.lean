@@ -766,12 +766,12 @@ lemma isLeftKanExtension_postcompose₂_iff
   exact StructuredArrow.isoMk (Iso.refl _)
 
 instance (α : F ⟶ L ⋙ F') (G : H ⥤ H') [G.IsEquivalence] [F'.IsLeftKanExtension α] :
-    (F' ⋙ G).IsLeftKanExtension (whiskerRight α G ≫ (Functor.associator _ _ _).hom) := by
+    (F' ⋙ G).IsLeftKanExtension (whiskerRight α G ≫ (associator _ _ _).hom) := by
   rwa [isLeftKanExtension_postcompose₂_iff]
 
 lemma isRightKanExtension_postcompose₂_iff
     (β : L ⋙ F' ⟶ F) (G : H ⥤ H') [G.IsEquivalence] :
-    (F' ⋙ G).IsRightKanExtension ((Functor.associator _ _ _).inv ≫ whiskerRight β G) ↔
+    (F' ⋙ G).IsRightKanExtension ((associator _ _ _).inv ≫ whiskerRight β G) ↔
     F'.IsRightKanExtension β := by
   simp only [isRightKanExtension_iff]
   refine Equiv.nonempty_congr ((IsTerminal.equivOfIso ?_).trans
@@ -780,7 +780,7 @@ lemma isRightKanExtension_postcompose₂_iff
   exact CostructuredArrow.isoMk (Iso.refl _)
 
 instance (β : L ⋙ F' ⟶ F) (G : H ⥤ H') [G.IsEquivalence] [F'.IsRightKanExtension β] :
-    (F' ⋙ G).IsRightKanExtension ((Functor.associator _ _ _).inv ≫ whiskerRight β G) := by
+    (F' ⋙ G).IsRightKanExtension ((associator _ _ _).inv ≫ whiskerRight β G) := by
   rwa [isRightKanExtension_postcompose₂_iff]
 
 end postcompose₂
@@ -796,8 +796,8 @@ lemma isLeftKanExtension_iff_precomp_equivalence
     F₂'.IsLeftKanExtension α₂ ↔ F₁'.IsLeftKanExtension α₁ := by
   simp only [isLeftKanExtension_iff]
   let Φ : L₂.LeftExtension F₂ ⥤ L₁.LeftExtension F₁ :=
-    StructuredArrow.map₂ (F := (Functor.whiskeringLeft _ _ _).obj G')
-      (G := (Functor.whiskeringLeft _ _ _).obj G) e.hom
+    StructuredArrow.map₂ (F := (whiskeringLeft _ _ _).obj G')
+      (G := (whiskeringLeft _ _ _).obj G) e.hom
         ((whiskeringLeft C D' H).mapIso iso).hom
   exact Equiv.nonempty_congr ((IsInitial.isInitialIffObj Φ _).trans
     (IsInitial.equivOfIso (StructuredArrow.isoMk e')))
@@ -812,8 +812,8 @@ lemma isRightKanExtension_iff_precomp_equivalence
     F₂'.IsRightKanExtension α₂ ↔ F₁'.IsRightKanExtension α₁ := by
   simp only [isRightKanExtension_iff]
   let Φ : L₂.RightExtension F₂ ⥤ L₁.RightExtension F₁ :=
-    CostructuredArrow.map₂ (F := (Functor.whiskeringLeft _ _ _).obj G')
-      (G := (Functor.whiskeringLeft _ _ _).obj G)
+    CostructuredArrow.map₂ (F := (whiskeringLeft _ _ _).obj G')
+      (G := (whiskeringLeft _ _ _).obj G)
       ((whiskeringLeft C D' H).mapIso iso).inv e.inv
   exact Equiv.nonempty_congr ((IsTerminal.isTerminalIffObj Φ _).trans
     (IsTerminal.equivOfIso (CostructuredArrow.isoMk e'.symm).symm))
