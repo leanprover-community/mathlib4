@@ -168,7 +168,7 @@ section Field
 variable [Field K]
 
 instance (priority := 100) Field.toGrindField : Lean.Grind.Field K :=
-  fast_instance% { CommRing.toGrindCommRing K, ‹Field K› with
+  { CommRing.toGrindCommRing K, ‹Field K› with
     zpow := ⟨fun a n => a^n⟩
     zpow_zero a := by simp
     zpow_succ a n := by
