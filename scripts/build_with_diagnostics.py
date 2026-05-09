@@ -204,20 +204,25 @@ BUILT_RE = re.compile(
 )
 # Header:  `  [reduction] unfolded declarations (max: N, num: M):`
 CATEGORY_HEADER_RE = re.compile(
-    r"^\s*\[(reduction|kernel)\]\s+(unfolded declarations|"
-    r"unfolded instances|unfolded reducible declarations)\s*"
+    r"^\s*\[(reduction|kernel|type_class)\]\s+(unfolded declarations|"
+    r"unfolded instances|unfolded reducible declarations|used instances)\s*"
     r"\(max: \d+, num: \d+\):\s*$"
 )
 # Entry:   `    [reduction] Foo.bar ↦ 3`
 ENTRY_RE = re.compile(
-    r"^\s*\[(reduction|kernel)\]\s+(\S.*?)\s+↦\s+(\d+)\s*$"
+    r"^\s*\[(reduction|kernel|type_class)\]\s+(\S.*?)\s+↦\s+(\d+)\s*$"
 )
 
+# `type_class / used instances` is needed because instance synthesis can
+# rely on a downstream-exposed body without ever recording an explicit
+# `recordUnfold` event (e.g. typeclass projection through a parent class).
+# Empirically, the report misses such uses if this category is omitted.
 CATEGORY_SHORT = {
     ("reduction", "unfolded declarations"): "reduction/unfolded",
     ("reduction", "unfolded instances"): "reduction/instances",
     ("reduction", "unfolded reducible declarations"): "reduction/reducible",
     ("kernel", "unfolded declarations"): "kernel/unfolded",
+    ("type_class", "used instances"): "type_class/used",
 }
 
 
