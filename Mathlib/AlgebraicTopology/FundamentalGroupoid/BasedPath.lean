@@ -75,7 +75,11 @@ public instance : TopologicalSpace (BasedPath x₀) :=
   source' := γ.2
   target' := rfl
 
-@[simp] public theorem endpoint_def (γ : BasedPath x₀) : endpoint γ = γ.1 1 := rfl
+/-- Definitional unfolding of `endpoint`. Not a global simp lemma: it overlaps with
+`endpoint_refl` (and other `endpoint_…` lemmas) on the simp normal form, so we instead include it
+explicitly in `simp [endpoint_def, …]` at each site that wants to bridge between the named
+`endpoint γ = u` API and the underlying `γ.1 1` evaluation. -/
+public theorem endpoint_def (γ : BasedPath x₀) : endpoint γ = γ.1 1 := rfl
 @[simp] public theorem toPath_apply (γ : BasedPath x₀) (t : I) : toPath γ t = γ.1 t := rfl
 @[simp] public theorem toPath_source (γ : BasedPath x₀) : toPath γ 0 = x₀ := γ.2
 @[simp] public theorem toPath_target (γ : BasedPath x₀) : toPath γ 1 = endpoint γ := rfl
@@ -164,7 +168,7 @@ public theorem terminalTail_target {u : X} (γ : BasedPath x₀) (hu : endpoint 
     (ha1 : a ≤ 1) :
     terminalTail γ hu a ha1 1 = u := by
   have htail : terminalTail γ hu a ha1 1 = γ.toPath 1 := by
-    simpa [terminalTail] using (γ.toPath.truncateOfLE ha1).target
+    simpa [terminalTail, endpoint_def] using (γ.toPath.truncateOfLE ha1).target
   exact htail.trans hu
 
 /-- Replace the terminal interval of a based path by first traversing a compressed tail of the
@@ -192,26 +196,26 @@ original path and then a new endpoint path. -/
   refine ⟨ContinuousMap.mk
     (fun t : I ↦ f t)
     (hf_cont.comp continuous_subtype_val), ?_⟩
-  simpa [f, ha] using γ.toPath.source
+  simpa [f, ha, endpoint_def] using γ.toPath.source
 
 public theorem deformTerminal_apply_of_le {u v : X} (γ : BasedPath x₀) (hu : endpoint γ = u)
     (δ : Path u v) {a b : ℝ} (ha : 0 ≤ a) (hab : a < b) (hb : b < 1)
     (t : I) (ht : (t : ℝ) ≤ a) :
     (deformTerminal γ hu δ ha hab hb).1 t = γ.toPath.extend t := by
-  simp [deformTerminal, ht]
+  simp [deformTerminal, endpoint_def, ht]
 
 public theorem deformTerminal_apply_of_lt_of_le {u v : X} (γ : BasedPath x₀)
     (hu : endpoint γ = u) (δ : Path u v) {a b : ℝ} (ha : 0 ≤ a) (hab : a < b) (hb : b < 1)
     (t : I) (hta : a < (t : ℝ)) (htb : (t : ℝ) ≤ b) :
     (deformTerminal γ hu δ ha hab hb).1 t =
       (terminalTail γ hu a (by linarith)).extend (((t : ℝ) - a) / (b - a)) := by
-  simp [deformTerminal, not_le_of_gt hta, htb]
+  simp [deformTerminal, endpoint_def, not_le_of_gt hta, htb]
 
 public theorem deformTerminal_apply_of_lt {u v : X} (γ : BasedPath x₀) (hu : endpoint γ = u)
     (δ : Path u v) {a b : ℝ} (ha : 0 ≤ a) (hab : a < b) (hb : b < 1)
     (t : I) (ht : b < (t : ℝ)) :
     (deformTerminal γ hu δ ha hab hb).1 t = δ.extend (((t : ℝ) - b) / (1 - b)) := by
-  simp [deformTerminal, not_le_of_gt (lt_trans hab ht), not_le_of_gt ht]
+  simp [deformTerminal, endpoint_def, not_le_of_gt (lt_trans hab ht), not_le_of_gt ht]
 
 /-- The endpoint of `deformTerminal γ hu δ ha hab hb` is the endpoint of `δ`. -/
 public theorem endpoint_deformTerminal {u v : X} (γ : BasedPath x₀) (hu : endpoint γ = u)
