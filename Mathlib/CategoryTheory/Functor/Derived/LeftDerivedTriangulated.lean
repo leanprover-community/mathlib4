@@ -49,10 +49,10 @@ public lemma isTriangulated_of_rightExtension
     refine ⟨L.mapTriangle.obj T', (isoTriangleOfIso₁₂ _ _
         (L.map_distinguished T' hT') hT (Arrow.leftFunc.mapIso e)
         (Arrow.rightFunc.mapIso e) (by simp)).symm,
-      isomorphic_distinguished _ (F.map_distinguished T' hT') _ ?_⟩
-    refine ((mapTriangleCompIso L F').symm.app T') ≪≫
-      (Triangle.isoMk _ _ (asIso (α.app _)) (asIso (α.app _)) (asIso (α.app _))
-        (by simp [dsimp% α.naturality]) (by simp [dsimp% α.naturality]) ?_)
+      isomorphic_distinguished _ (F.map_distinguished T' hT') _
+        (((mapTriangleCompIso L F').symm.app T') ≪≫
+          (Triangle.isoMk _ _ (asIso (α.app _)) (asIso (α.app _)) (asIso (α.app _))
+            (by simp [dsimp% α.naturality]) (by simp [dsimp% α.naturality]) ?_))⟩
     simp [← dsimp% α.naturality_assoc, NatTrans.shift_app_comm]
 
 end CategoryTheory.Functor
