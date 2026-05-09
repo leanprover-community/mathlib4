@@ -88,6 +88,8 @@ section Functor
 
 open CategoryTheory TensorProduct AlgebraTensorModule
 
+attribute [local ext high] ConcreteCategory.hom_ext
+
 variable {A : Type w} [CommRing A] [Algebra R A]
 variable {B : Type w} [CommRing B] [Algebra R B]
 variable (f : A →ₐ[R] B)
@@ -119,14 +121,12 @@ theorem map_toSubmodule (N : G(k, A ⊗[R] M; A)) :
     letI : IsScalarTower R A B := IsScalarTower.of_algebraMap_eq' <|
       IsScalarTower.algebraMap_eq R A B
     (map f N).toSubmodule = LinearMap.ker
-      (N.toSubmodule.mkQ.baseChange B ∘ₗ (cancelBaseChange R A B B M).symm.toLinearMap) :=
-  rfl
+      (N.toSubmodule.mkQ.baseChange B ∘ₗ (cancelBaseChange R A B B M).symm.toLinearMap) := by rfl
 
 variable (k)
 
-theorem map_id (A : CommAlgCat R) : map (.id R A) = 𝟙 G(k, A ⊗[R] M; A)  := by
-  ext1 N
-  rw [types_id_apply]
+@[simp] theorem map_id (A : CommAlgCat R) (N : G(k, A ⊗[R] M; A)) :
+    map (.id R A) N = N := by
   ext1
   exact (ker_baseChange_comp_cancelBaseChange_symm N.mkQ).trans N.toSubmodule.ker_mkQ
 
@@ -169,12 +169,12 @@ theorem map_comp (N : G(k, A ⊗[R] M; A)) :
   rw [hfAC_ker_eq, hfBC_ker_eq, hcomp, LinearEquiv.ker_comp]
 
 /-- The Grassmannian functor sends an `R`-algebra `A` to `G(k, A ⊗[R] M; A)`. -/
-@[simps]
+@[expose, simps]
 def functor : CommAlgCat.{w, u} R ⥤ Type (max v w) where
   obj A := G(k, (A ⊗[R] M); A)
-  map f := map f.hom
-  map_id A := map_id k A
-  map_comp f g := funext (map_comp k f.hom g.hom)
+  map f := ↾map f.hom
+  map_id A := by ext1 N; exact map_id k A N
+  map_comp f g := by ext1 N; exact map_comp k f.hom g.hom N
 
 end Functor
 
