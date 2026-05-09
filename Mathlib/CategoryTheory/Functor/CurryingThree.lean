@@ -19,6 +19,7 @@ We study the equivalence of categories
 
 @[expose] public section
 
+
 namespace CategoryTheory
 
 namespace Functor

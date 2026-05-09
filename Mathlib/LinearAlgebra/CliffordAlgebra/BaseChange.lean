@@ -34,6 +34,7 @@ We show the additional results:
 
 @[expose] public section
 
+
 variable {R A V : Type*}
 variable [CommRing R] [CommRing A] [AddCommGroup V]
 variable [Algebra R A] [Module R V]

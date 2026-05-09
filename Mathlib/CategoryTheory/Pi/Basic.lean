@@ -19,6 +19,7 @@ We define the pointwise category structure on indexed families of objects in a c
 
 @[expose] public section
 
+
 namespace CategoryTheory
 
 open Functor

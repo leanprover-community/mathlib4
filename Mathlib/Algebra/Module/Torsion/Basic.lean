@@ -72,6 +72,7 @@ Torsion, submodule, module, quotient
 
 @[expose] public section
 
+
 open Module
 
 namespace Ideal

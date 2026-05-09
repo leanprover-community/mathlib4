@@ -26,6 +26,7 @@ public import Mathlib.LinearAlgebra.QuadraticForm.Prod
 @[expose] public section
 
 
+
 variable (R M N : Type*)
 
 namespace LinearMap

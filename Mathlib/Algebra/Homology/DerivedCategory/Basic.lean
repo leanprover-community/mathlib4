@@ -114,15 +114,17 @@ variable (C) in
 def quotientCompQhIso : HomotopyCategory.quotient C (ComplexShape.up ℤ) ⋙ Qh ≅ Q :=
   HomologicalComplexUpToQuasiIso.quotientCompQhIso C (ComplexShape.up ℤ)
 
+#adaptation_note /-- Prior to nightly-2026-05-07, the LHS of these statements was guarded with
+`dsimp%`; it now reports `made no progress`, so we write the (already-reduced) form directly. -/
 @[reassoc (attr := simp)]
 lemma quotientCompQhIso_hom_naturality {K L : CochainComplex C ℤ} (f : K ⟶ L) :
-    dsimp% Qh.map ((HomotopyCategory.quotient _ _).map f) ≫ (quotientCompQhIso C).hom.app L =
+    Qh.map ((HomotopyCategory.quotient _ _).map f) ≫ (quotientCompQhIso C).hom.app L =
       (quotientCompQhIso C).hom.app K ≫ Q.map f :=
   (quotientCompQhIso C).hom.naturality f
 
 @[reassoc]
 lemma quotientCompQhIso_inv_naturality {K L : CochainComplex C ℤ} (f : K ⟶ L) :
-    dsimp% Q.map f ≫ (quotientCompQhIso C).inv.app L =
+    Q.map f ≫ (quotientCompQhIso C).inv.app L =
       (quotientCompQhIso C).inv.app K ≫ Qh.map ((HomotopyCategory.quotient _ _).map f) :=
   (quotientCompQhIso C).inv.naturality f
 

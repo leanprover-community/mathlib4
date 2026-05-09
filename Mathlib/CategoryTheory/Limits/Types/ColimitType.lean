@@ -36,6 +36,7 @@ in a categorical sense is a colimit.
 
 @[expose] public section
 
+
 universe w₃ w₂ w₁ w₀ w₀' v u
 
 assert_not_exists CategoryTheory.Limits.Cocone

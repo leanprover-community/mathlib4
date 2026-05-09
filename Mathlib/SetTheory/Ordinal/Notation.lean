@@ -61,6 +61,7 @@ instance : Inhabited ONote :=
 instance : One ONote :=
   ⟨oadd 0 1 0⟩
 
+
 /-- Notation for ω -/
 def omega : ONote :=
   oadd 1 1 0

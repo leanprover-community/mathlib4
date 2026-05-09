@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Order.PropInstances
 public import Mathlib.Tactic.Lift
+public import Mathlib.Tactic.Attr.Register
 
 /-!
 # Basic properties of sets

@@ -44,6 +44,7 @@ set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
+
 set_option backward.privateInPublic true
 
 /-!

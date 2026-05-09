@@ -30,6 +30,7 @@ This file provides results about maps between tensor products of `R`-algebras.
 
 -/
 
+
 @[expose] public section
 
 assert_not_exists Equiv.Perm.cycleType

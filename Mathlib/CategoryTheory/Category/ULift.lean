@@ -41,6 +41,7 @@ and the backward direction is `AsSmall.down`. The equivalence itself is `AsSmall
 
 @[expose] public section
 
+
 universe w₁ v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
