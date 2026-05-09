@@ -696,7 +696,7 @@ theorem finiteIndex_toAddSubgroup_iff : H.toAddSubgroup.FiniteIndex ↔ H.Finite
   simp [finiteIndex_iff, AddSubgroup.finiteIndex_iff]
 
 @[to_additive (attr := simp)]
-lemma isFiniteRelIndex_top_iff_finiteIndex {H : Subgroup G} :
+lemma isFiniteRelIndex_top_iff {H : Subgroup G} :
     H.IsFiniteRelIndex ⊤ ↔ H.FiniteIndex := by
   rw [finiteIndex_iff, isFiniteRelIndex_iff_relIndex_ne_zero, relIndex_top_right]
 
@@ -789,7 +789,7 @@ lemma isFiniteRelIndex_of_le_right {H₁ H₂ H₃ : Subgroup G} (h : H₂ ≤ H
 @[to_additive]
 lemma isFiniteRelIndex_of_finiteIndex {H₁ H₂ : Subgroup G} [h : H₁.FiniteIndex] :
     H₁.IsFiniteRelIndex H₂ := by
-  rw [← isFiniteRelIndex_top_iff_finiteIndex] at h
+  rw [← isFiniteRelIndex_top_iff] at h
   exact isFiniteRelIndex_of_le_right le_top
 
 @[to_additive (attr := gcongr)]
