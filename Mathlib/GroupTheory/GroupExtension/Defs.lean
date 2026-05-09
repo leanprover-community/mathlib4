@@ -3,9 +3,10 @@ Copyright (c) 2024 Yudai Yamazaki. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yudai Yamazaki
 -/
+module
 
-import Mathlib.GroupTheory.GroupAction.ConjAct
-import Mathlib.GroupTheory.SemidirectProduct
+public import Mathlib.GroupTheory.GroupAction.ConjAct
+public import Mathlib.GroupTheory.SemidirectProduct
 
 /-!
 # Group Extensions
@@ -22,14 +23,14 @@ such as splittings and equivalences.
 
 ```text
 For multiplicative groups:
-      ↗︎ E  ↘
+      ↗ E  ↘
 1 → N   ↓    G → 1
-      ↘︎ E' ↗︎️
+      ↘ E' ↗
 
 For additive groups:
-      ↗︎ E  ↘
+      ↗ E  ↘
 0 → N   ↓    G → 0
-      ↘︎ E' ↗︎️
+      ↘ E' ↗
 ```
 
 - `(Add?)GroupExtension.Section S`: structure for right inverses to `rightHom` of a group extension
@@ -45,10 +46,13 @@ If `N` is abelian,
 
 - there is a bijection between `N`-conjugacy classes of
   `(SemidirectProduct.toGroupExtension φ).Splitting` and `groupCohomology.H1`
-  (which will be available in `GroupTheory/GroupExtension/Abelian.lean` to be added in a later PR).
+  (which will be available in the planned file `Mathlib/GroupTheory/GroupExtension/Abelian.lean` to
+  be added in a later PR).
 - there is a bijection between equivalence classes of group extensions and `groupCohomology.H2`
-  (which is also stated as a TODO in `RepresentationTheory/GroupCohomology/LowDegree.lean`).
+  (which is also stated as a TODO in `Mathlib/RepresentationTheory/GroupCohomology/LowDegree.lean`).
 -/
+
+@[expose] public section
 
 variable (N E G : Type*)
 

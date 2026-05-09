@@ -3,12 +3,16 @@ Copyright (c) 2018 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Products.Basic
-import Mathlib.CategoryTheory.Types
+module
+
+public import Mathlib.CategoryTheory.Products.Basic
+public import Mathlib.CategoryTheory.Types.Basic
 
 /-!
 The hom functor, sending `(X, Y)` to the type `X ⟶ Y`.
 -/
+
+@[expose] public section
 
 
 universe v u
@@ -26,6 +30,6 @@ covariant in `Y`. -/
 @[simps]
 def hom : Cᵒᵖ × C ⥤ Type v where
   obj p := unop p.1 ⟶ p.2
-  map f h := f.1.unop ≫ h ≫ f.2
+  map f := TypeCat.ofHom fun h => f.1.unop ≫ h ≫ f.2
 
 end CategoryTheory.Functor

@@ -3,8 +3,10 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ApproximatesLinearOn
-import Mathlib.Analysis.Normed.Module.FiniteDimension
+module
+
+public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ApproximatesLinearOn
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
 
 /-!
 # A lemma about `ApproximatesLinearOn` that needs `FiniteDimensional`
@@ -16,6 +18,8 @@ can be extended to a homeomorphism of the whole space.
 This used to be the only lemma in `Mathlib/Analysis/Calculus/Inverse`
 depending on `FiniteDimensional`, so it was moved to a new file when the original file got split.
 -/
+
+public section
 
 open Set
 open scoped NNReal

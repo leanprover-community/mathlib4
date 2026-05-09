@@ -3,8 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Logic.Function.Basic
-import Mathlib.Data.Set.Defs
+module
+
+public import Mathlib.Logic.Function.Basic
+public import Mathlib.Data.Set.Defs
+public import Mathlib.Data.Nat.Notation
 
 /-!
 # Relations holding pairwise
@@ -16,6 +19,8 @@ This file defines pairwise relations.
 * `Pairwise`: `Pairwise r` states that `r i j` for all `i ≠ j`.
 * `Set.Pairwise`: `s.Pairwise r` states that `r i j` for all `i ≠ j` with `i, j ∈ s`.
 -/
+
+@[expose] public section
 
 open Function
 
@@ -68,7 +73,7 @@ theorem pairwise_fin_succ_iff {n : ℕ} {R : Fin n.succ → Fin n.succ → Prop}
       (Fin.cases nofun fun j _ => hj j)
       (fun i => Fin.cases (fun _ => hi i) fun _j hij => h (ne_of_apply_ne _ hij))
 
-theorem pairwise_fin_succ_iff_of_isSymm {n : ℕ} {R : Fin n.succ → Fin n.succ → Prop} [IsSymm _ R] :
+theorem pairwise_fin_succ_iff_of_isSymm {n : ℕ} {R : Fin n.succ → Fin n.succ → Prop} [Std.Symm R] :
     Pairwise R ↔ (∀ j, R 0 (Fin.succ j)) ∧ Pairwise fun i j => R (Fin.succ i) (Fin.succ j) := by
   simp only [pairwise_fin_succ_iff, comm (b := 0) (r := R), and_self_left]
 
@@ -91,10 +96,13 @@ theorem Pairwise.imp (h : s.Pairwise r) (hpq : ∀ ⦃a b : α⦄, r a b → p a
 protected theorem Pairwise.eq (hs : s.Pairwise r) (ha : a ∈ s) (hb : b ∈ s) (h : ¬r a b) : a = b :=
   of_not_not fun hab => h <| hs ha hb hab
 
-theorem _root_.Reflexive.set_pairwise_iff (hr : Reflexive r) :
+theorem _root_.Std.Refl.set_pairwise_iff [Std.Refl r] :
     s.Pairwise r ↔ ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → r a b :=
   forall₄_congr fun a _ _ _ => or_iff_not_imp_left.symm.trans <| or_iff_right_of_imp <| Eq.ndrec <|
-    hr a
+    refl a
+
+@[deprecated (since := "2026-03-27")]
+alias _root_.Reflexive.set_pairwise_iff := Std.Refl.set_pairwise_iff
 
 theorem Pairwise.on_injective (hs : s.Pairwise r) (hf : Function.Injective f) (hfs : ∀ x, f x ∈ s) :
     Pairwise (r on f) := fun i j hij => hs (hfs i) (hfs j) (hf.ne hij)

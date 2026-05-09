@@ -3,8 +3,10 @@ Copyright (c) 2024 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Etienne Marion
 -/
-import Mathlib.Topology.Category.CompHaus.Basic
-import Mathlib.Topology.Compactification.OnePoint.Basic
+module
+
+public import Mathlib.Topology.Category.CompHaus.Basic
+public import Mathlib.Topology.Compactification.OnePoint.Basic
 
 /-!
 # Compactly generated topological spaces
@@ -41,6 +43,8 @@ as well as a Hausdorff `WeaklyLocallyCompactSpace`.
 compactly generated space
 -/
 
+@[expose] public section
+
 universe u v w x
 
 open TopologicalSpace Filter Topology Set
@@ -57,6 +61,7 @@ topology, continuous.
 Note: this definition should be used with an explicit universe parameter `u` for the size of the
 compact Hausdorff spaces mapping to `X`.
 -/
+@[implicit_reducible]
 def TopologicalSpace.compactlyGenerated (X : Type w) [TopologicalSpace X] : TopologicalSpace X :=
   let f : (Σ (i : (S : CompHaus.{u}) × C(S, X)), i.fst) → X := fun ⟨⟨_, i⟩, s⟩ ↦ i s
   coinduced f inferInstance
@@ -76,6 +81,10 @@ This version includes an explicit universe parameter `u` which should always be 
 intended for categorical purposes. See `CompactlyGeneratedSpace` for the version without this
 parameter, intended for topological purposes.
 -/
+-- After https://github.com/leanprover/lean4/pull/12286 and
+-- https://github.com/leanprover/lean4/pull/12423, the compact space universe `u` would default
+-- to a universe output parameter. See Note [universe output parameters and typeclass caching].
+@[univ_out_params]
 class UCompactlyGeneratedSpace (X : Type v) [t : TopologicalSpace X] : Prop where
   /-- The topology of `X` is finer than the compactly generated topology. -/
   le_compactlyGenerated : t ≤ compactlyGenerated.{u} X
@@ -207,8 +216,7 @@ instance (priority := 100) [SequentialSpace X] : UCompactlyGeneratedSpace.{u} X 
   apply IsClosed.mem_of_tendsto _ ((continuous_uliftUp.tendsto ∞).comp this)
   · simp only [Function.comp_apply, mem_preimage, eventually_atTop, ge_iff_le]
     exact ⟨0, fun b _ ↦ hu b⟩
-  · exact h (CompHaus.of (ULift.{u} (OnePoint ℕ)))
-      ⟨g, (continuousMapMkNat u p hup).continuous.comp continuous_uliftDown⟩
+  · exact h (CompHaus.of (ULift.{u} (OnePoint ℕ))) ⟨g, by fun_prop⟩
 
 end UCompactlyGeneratedSpace
 
@@ -356,7 +364,7 @@ instance to_compactlyCoherentSpace [CompactlyGeneratedSpace X] : CompactlyCohere
     fun K _ _ _ f hf ↦ h K f hf
 
 /-- A compactly coherent space that is Hausdorff is compactly generated. -/
-instance of_compactlyCoherentSpace_of_t2 [T2Space X] [CompactlyCoherentSpace X] :
+instance of_compactlyCoherentSpace_of_t2 [CompactlyCoherentSpace X] :
     CompactlyGeneratedSpace X := by
   apply compactlyGeneratedSpace_of_isClosed_of_t2
   intro s hs

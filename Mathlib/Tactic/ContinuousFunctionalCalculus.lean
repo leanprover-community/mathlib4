@@ -3,10 +3,10 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
+module
 
-import Mathlib.Tactic.Core
-import Mathlib.Tactic.FunProp
-import Aesop
+public import Aesop
+public import Mathlib.Tactic.FunProp
 
 /-!
 
@@ -14,6 +14,8 @@ import Aesop
 
 At the moment, these tactics are just wrappers, but potentially they could be more sophisticated.
 -/
+
+public meta section
 
 declare_aesop_rule_sets [CStarAlgebra]
 
@@ -35,7 +37,7 @@ macro_rules
   | `(tactic| cfc_cont_tac) =>
     `(tactic| try (first
       | fun_prop (disch := aesop (config := {warnOnNonterminal := false})
-          (rule_sets := [$(Lean.mkIdent `CStarAlgebra):ident]))
+                             (rule_sets := [$(Lean.mkIdent `CStarAlgebra):ident]))
       | assumption))
 
 /-- A tactic used to automatically discharge goals relating to the non-unital continuous functional

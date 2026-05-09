@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.LinearAlgebra.Basis.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.LinearAlgebra.Basis.Basic
 
 /-!
 # Bases and scalar multiplication
@@ -12,6 +14,8 @@ import Mathlib.LinearAlgebra.Basis.Basic
 This file defines the scalar multiplication of bases by multiplying each basis vector.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Ordinal
 
@@ -113,8 +117,7 @@ theorem coord_unitsSMul (e : Basis ι R₂ M) (w : ι → R₂ˣ) (i : ι) :
     apply e.ext
     intro j
     trans ((unitsSMul e w).coord i) ((w j)⁻¹ • (unitsSMul e w) j)
-    · congr
-      simp [Basis.unitsSMul, ← mul_smul]
+    · simp [Basis.unitsSMul, ← mul_smul]
     simp only [Basis.coord_apply, LinearMap.smul_apply, Basis.repr_self, Units.smul_def,
       map_smul, Finsupp.single_apply]
     split_ifs with h <;> simp [h]

@@ -3,8 +3,10 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
-import Mathlib.MeasureTheory.Integral.MeanInequalities
+module
+
+public import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
+public import Mathlib.MeasureTheory.Integral.MeanInequalities
 
 /-!
 # Triangle inequality for `Lp`-seminorm
@@ -13,8 +15,10 @@ In this file we prove several versions of the triangle inequality for the `Lp` s
 as well as simple corollaries.
 -/
 
-open Filter
-open scoped ENNReal Topology
+@[expose] public section
+
+open Filter ENNReal
+open scoped Topology
 
 namespace MeasureTheory
 
@@ -56,33 +60,11 @@ theorem eLpNorm_add_le (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurab
   repeat rw [eLpNorm_eq_eLpNorm' hp0 hp_top]
   exact eLpNorm'_add_le hf hg hp1_real
 
-/-- A constant for the inequality `‖f + g‖_{L^p} ≤ C * (‖f‖_{L^p} + ‖g‖_{L^p})`. It is equal to `1`
-for `p ≥ 1` or `p = 0`, and `2^(1/p-1)` in the more tricky interval `(0, 1)`. -/
-noncomputable def LpAddConst (p : ℝ≥0∞) : ℝ≥0∞ :=
-  if p ∈ Set.Ioo (0 : ℝ≥0∞) 1 then (2 : ℝ≥0∞) ^ (1 / p.toReal - 1) else 1
-
-theorem LpAddConst_of_one_le {p : ℝ≥0∞} (hp : 1 ≤ p) : LpAddConst p = 1 := by
-  rw [LpAddConst, if_neg]
-  intro h
-  exact lt_irrefl _ (h.2.trans_le hp)
-
-theorem LpAddConst_zero : LpAddConst 0 = 1 := by
-  rw [LpAddConst, if_neg]
-  intro h
-  exact lt_irrefl _ h.1
-
-theorem LpAddConst_lt_top (p : ℝ≥0∞) : LpAddConst p < ∞ := by
-  rw [LpAddConst]
-  split_ifs with h
-  · apply ENNReal.rpow_lt_top_of_nonneg _ ENNReal.ofNat_ne_top
-    rw [one_div, sub_nonneg, ← ENNReal.toReal_inv, ← ENNReal.toReal_one]
-    exact ENNReal.toReal_mono (by simpa using h.1.ne') (ENNReal.one_le_inv.2 h.2.le)
-  · exact ENNReal.one_lt_top
-
 theorem eLpNorm_add_le' (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
-    (p : ℝ≥0∞) : eLpNorm (f + g) p μ ≤ LpAddConst p * (eLpNorm f p μ + eLpNorm g p μ) := by
+    (p : ℝ≥0∞) :
+    eLpNorm (f + g) p μ ≤ LpAddConst p * (eLpNorm f p μ + eLpNorm g p μ) := by
   rcases eq_or_ne p 0 with (rfl | hp)
-  · simp only [eLpNorm_exponent_zero, add_zero, mul_zero, le_zero_iff]
+  · simp
   rcases lt_or_ge p 1 with (h'p | h'p)
   · simp only [eLpNorm_eq_eLpNorm' hp (h'p.trans ENNReal.one_lt_top).ne]
     convert eLpNorm'_add_le_of_le_one hf ENNReal.toReal_nonneg _
@@ -102,7 +84,8 @@ theorem exists_Lp_half (p : ℝ≥0∞) {δ : ℝ≥0∞} (hδ : δ ≠ 0) :
         ∀ (f g : α → ε), AEStronglyMeasurable f μ → AEStronglyMeasurable g μ →
           eLpNorm f p μ ≤ η → eLpNorm g p μ ≤ η → eLpNorm (f + g) p μ < δ := by
   have :
-    Tendsto (fun η : ℝ≥0∞ => LpAddConst p * (η + η)) (𝓝[>] 0) (𝓝 (LpAddConst p * (0 + 0))) :=
+    Tendsto (fun η : ℝ≥0∞ => LpAddConst p * (η + η)) (𝓝[>] 0)
+        (𝓝 (LpAddConst p * (0 + 0))) :=
     (ENNReal.Tendsto.const_mul (tendsto_id.add tendsto_id)
           (Or.inr (LpAddConst_lt_top p).ne)).mono_left
       nhdsWithin_le_nhds
@@ -110,13 +93,15 @@ theorem exists_Lp_half (p : ℝ≥0∞) {δ : ℝ≥0∞} (hδ : δ ≠ 0) :
   rcases (((tendsto_order.1 this).2 δ hδ.bot_lt).and self_mem_nhdsWithin).exists with ⟨η, hη, ηpos⟩
   refine ⟨η, ηpos, fun f g hf hg Hf Hg => ?_⟩
   calc
-    eLpNorm (f + g) p μ ≤ LpAddConst p * (eLpNorm f p μ + eLpNorm g p μ) := eLpNorm_add_le' hf hg p
+    eLpNorm (f + g) p μ ≤ LpAddConst p * (eLpNorm f p μ + eLpNorm g p μ) :=
+      eLpNorm_add_le' hf hg p
     _ ≤ LpAddConst p * (η + η) := by gcongr
     _ < δ := hη
 
 theorem eLpNorm_sub_le' {f g : α → E}
     (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
-    (p : ℝ≥0∞) : eLpNorm (f - g) p μ ≤ LpAddConst p * (eLpNorm f p μ + eLpNorm g p μ) := by
+    (p : ℝ≥0∞) :
+    eLpNorm (f - g) p μ ≤ LpAddConst p * (eLpNorm f p μ + eLpNorm g p μ) := by
   simpa only [sub_eq_add_neg, eLpNorm_neg] using eLpNorm_add_le' hf hg.neg p
 
 theorem eLpNorm_sub_le {f g : α → E} (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
@@ -136,15 +121,18 @@ theorem eLpNorm'_sum_le [ContinuousAdd ε'] {ι} {f : ι → α → ε'} {s : Fi
     (hfs : ∀ i, i ∈ s → AEStronglyMeasurable (f i) μ) (hq1 : 1 ≤ q) :
     eLpNorm' (∑ i ∈ s, f i) q μ ≤ ∑ i ∈ s, eLpNorm' (f i) q μ :=
   Finset.le_sum_of_subadditive_on_pred (fun f : α → ε' => eLpNorm' f q μ)
-    (fun f => AEStronglyMeasurable f μ) (eLpNorm'_zero (zero_lt_one.trans_le hq1))
+    (fun f => AEStronglyMeasurable f μ) (eLpNorm'_zero (zero_lt_one.trans_le hq1)).le
     (fun _f _g hf hg => eLpNorm'_add_le hf hg hq1) (fun _f _g hf hg => hf.add hg) _ hfs
 
 theorem eLpNorm_sum_le [ContinuousAdd ε'] {ι} {f : ι → α → ε'} {s : Finset ι}
     (hfs : ∀ i, i ∈ s → AEStronglyMeasurable (f i) μ) (hp1 : 1 ≤ p) :
     eLpNorm (∑ i ∈ s, f i) p μ ≤ ∑ i ∈ s, eLpNorm (f i) p μ :=
   Finset.le_sum_of_subadditive_on_pred (fun f : α → ε' => eLpNorm f p μ)
-    (fun f => AEStronglyMeasurable f μ) eLpNorm_zero (fun _f _g hf hg => eLpNorm_add_le hf hg hp1)
+    (fun f => AEStronglyMeasurable f μ) eLpNorm_zero.le
+    (fun _f _g hf hg => eLpNorm_add_le hf hg hp1)
     (fun _f _g hf hg => hf.add hg) _ hfs
+
+-- TODO: We can prove `eLpNorm_expect_le` once we have `Module ℚ≥0 ℝ≥0∞`
 
 theorem MemLp.add [ContinuousAdd ε] (hf : MemLp f p μ) (hg : MemLp g p μ) : MemLp (f + g) p μ :=
   ⟨AEStronglyMeasurable.add hf.1 hg.1, eLpNorm_add_lt_top hf hg⟩

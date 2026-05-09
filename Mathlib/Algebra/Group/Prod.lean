@@ -3,18 +3,20 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.Algebra.Group.Hom.Basic
-import Mathlib.Algebra.Group.Opposite
-import Mathlib.Algebra.Group.Torsion
-import Mathlib.Algebra.Group.Units.Hom
-import Mathlib.Algebra.Notation.Pi.Defs
-import Mathlib.Algebra.Notation.Prod
-import Mathlib.Logic.Equiv.Prod
-import Mathlib.Tactic.TermCongr
+module
+
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.Group.Hom.Basic
+public import Mathlib.Algebra.Group.Opposite
+public import Mathlib.Algebra.Group.Torsion
+public import Mathlib.Algebra.Group.Units.Hom
+public import Mathlib.Algebra.Notation.Pi.Defs
+public import Mathlib.Algebra.Notation.Prod
+public import Mathlib.Logic.Equiv.Prod
+public import Mathlib.Tactic.TermCongr
 
 /-!
-# Monoid, group etc structures on `M × N`
+# Monoid, group etc. structures on `M × N`
 
 In this file we define one-binop (`Monoid`, `Group` etc) structures on `M × N`.
 We also prove trivial `simp` lemmas, and define the following operations on `MonoidHom`s:
@@ -35,6 +37,8 @@ We also prove trivial `simp` lemmas, and define the following operations on `Mon
   multiplicative/monoid homomorphism.
 * `divMonoidHom`: Division bundled as a monoid homomorphism.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero DenselyOrdered AddMonoidWithOne
 
@@ -81,6 +85,7 @@ instance instMonoid [Monoid M] [Monoid N] : Monoid (M × N) :=
     one_mul := by simp,
     mul_one := by simp }
 
+@[to_additive]
 instance instIsMulTorsionFree [Monoid M] [Monoid N] [IsMulTorsionFree M] [IsMulTorsionFree N] :
     IsMulTorsionFree (M × N) where
   pow_left_injective n hn a b hab := by
@@ -104,7 +109,7 @@ instance [DivisionMonoid G] [DivisionMonoid H] : DivisionMonoid (G × H) :=
 
 @[to_additive SubtractionCommMonoid]
 instance [DivisionCommMonoid G] [DivisionCommMonoid H] : DivisionCommMonoid (G × H) :=
-  { mul_comm := fun ⟨g₁ , h₁⟩ ⟨_, _⟩ => by rw [mk_mul_mk, mul_comm g₁, mul_comm h₁]; rfl }
+  { mul_comm := fun ⟨g₁, h₁⟩ ⟨_, _⟩ => by rw [mk_mul_mk, mul_comm g₁, mul_comm h₁]; rfl }
 
 @[to_additive]
 instance instGroup [Group G] [Group H] : Group (G × H) where
@@ -133,15 +138,11 @@ instance [RightCancelSemigroup G] [RightCancelSemigroup H] : RightCancelSemigrou
 
 @[to_additive]
 instance [LeftCancelMonoid M] [LeftCancelMonoid N] : LeftCancelMonoid (M × N) :=
-  { mul_one := by simp,
-    one_mul := by simp
-    mul_left_cancel _ _ := by simp }
+  { mul_left_cancel _ _ := by simp }
 
 @[to_additive]
 instance [RightCancelMonoid M] [RightCancelMonoid N] : RightCancelMonoid (M × N) :=
-  { mul_one := by simp,
-    one_mul := by simp
-    mul_right_cancel _ _ := by simp }
+  { mul_right_cancel _ _ := by simp }
 
 @[to_additive]
 instance [CancelMonoid M] [CancelMonoid N] : CancelMonoid (M × N) :=
@@ -408,7 +409,7 @@ theorem snd_comp_prod (f : M →* N) (g : M →* P) : (snd N P).comp (f.prod g) 
 
 @[to_additive (attr := simp) prod_unique]
 theorem prod_unique (f : M →* N × P) : ((fst N P).comp f).prod ((snd N P).comp f) = f :=
-  ext fun x => by simp only [prod_apply, coe_fst, coe_snd, comp_apply]
+  ext fun _ => by simp
 
 end Prod
 
@@ -557,7 +558,8 @@ def prodCongr (f : M ≃* M') (g : N ≃* N') : M × N ≃* M' × N' :=
 /-- Multiplying by the trivial monoid doesn't change the structure.
 
 This is the `MulEquiv` version of `Equiv.uniqueProd`. -/
-@[to_additive uniqueProd /-- Multiplying by the trivial monoid doesn't change the structure.
+@[to_additive (attr := simps!) uniqueProd /-- Multiplying by the trivial monoid doesn't change the
+structure.
 
 This is the `AddEquiv` version of `Equiv.uniqueProd`. -/]
 def uniqueProd [Unique N] : N × M ≃* M :=
@@ -566,7 +568,8 @@ def uniqueProd [Unique N] : N × M ≃* M :=
 /-- Multiplying by the trivial monoid doesn't change the structure.
 
 This is the `MulEquiv` version of `Equiv.prodUnique`. -/
-@[to_additive prodUnique /-- Multiplying by the trivial monoid doesn't change the structure.
+@[to_additive (attr := simps!) prodUnique /-- Multiplying by the trivial monoid doesn't change the
+structure.
 
 This is the `AddEquiv` version of `Equiv.prodUnique`. -/]
 def prodUnique [Unique N] : M × N ≃* M :=
@@ -593,12 +596,17 @@ def prodUnits : (M × N)ˣ ≃* Mˣ × Nˣ where
     simp only [Units.map, MonoidHom.coe_fst, Units.inv_eq_val_inv,
       MonoidHom.coe_snd, MonoidHom.prod_apply, Prod.mk.injEq]
     exact ⟨rfl, rfl⟩
-  map_mul' := MonoidHom.map_mul _
+  map_mul' := map_mul _
 
 @[to_additive]
 lemma _root_.Prod.isUnit_iff {x : M × N} : IsUnit x ↔ IsUnit x.1 ∧ IsUnit x.2 where
   mp h := ⟨(prodUnits h.unit).1.isUnit, (prodUnits h.unit).2.isUnit⟩
   mpr h := (prodUnits.symm (h.1.unit, h.2.unit)).isUnit
+
+@[to_additive]
+instance _root_.Prod.instSubsingletonUnits [Subsingleton Mˣ] [Subsingleton Nˣ] :
+    Subsingleton (M × N)ˣ :=
+  .units_of_isUnit <| by simp [Prod.isUnit_iff, Prod.ext_iff]
 
 end
 

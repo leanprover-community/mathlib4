@@ -3,7 +3,9 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.PrincipalIdealDomain
+module
+
+public import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 
@@ -14,9 +16,11 @@ Notable examples include principal ideal rings, valuation rings, and the ring of
 
 ## Main results
 - `IsBezout.iff_span_pair_isPrincipal`: It suffices to verify every `span {x, y}` is principal.
-- `IsBezout.TFAE`: For a Bézout domain, noetherian ↔ PID ↔ UFD ↔ ACCP
+- `IsBezout.TFAE`: For a Bézout domain, Noetherian ↔ PID ↔ UFD ↔ ACCP
 
 -/
+
+public section
 
 
 universe u v
@@ -34,7 +38,9 @@ theorem iff_span_pair_isPrincipal :
       constructor
       apply Submodule.fg_induction
       · exact fun _ => ⟨⟨_, rfl⟩⟩
-      · rintro _ _ ⟨⟨x, rfl⟩⟩ ⟨⟨y, rfl⟩⟩; rw [← Submodule.span_insert]; exact H _ _
+      · rintro _ _ _ _ ⟨⟨x, rfl⟩⟩ ⟨⟨y, rfl⟩⟩
+        rw [← Submodule.span_insert]
+        exact H _ _
 
 theorem _root_.Function.Surjective.isBezout {S : Type v} [CommRing S] (f : R →+* S)
     (hf : Function.Surjective f) [IsBezout R] : IsBezout S := by
@@ -44,7 +50,7 @@ theorem _root_.Function.Surjective.isBezout {S : Type v} [CommRing S] (f : R →
   use f (gcd x y)
   trans Ideal.map f (Ideal.span {gcd x y})
   · rw [span_gcd, Ideal.map_span, Set.image_insert_eq, Set.image_singleton]
-  · rw [Ideal.map_span, Set.image_singleton]; rfl
+  · rw [Ideal.map_span, Set.image_singleton]
 
 theorem TFAE [IsBezout R] [IsDomain R] :
     List.TFAE

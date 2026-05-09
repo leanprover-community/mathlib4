@@ -3,8 +3,10 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Opposites
-import Mathlib.CategoryTheory.Groupoid
+module
+
+public import Mathlib.CategoryTheory.Opposites
+public import Mathlib.CategoryTheory.Groupoid
 
 /-!
 # Facts about epimorphisms and monomorphisms.
@@ -12,6 +14,8 @@ import Mathlib.CategoryTheory.Groupoid
 The definitions of `Epi` and `Mono` are in `CategoryTheory.Category`,
 since they are used by some lemmas for `Iso`, which is used everywhere.
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ u₁ u₂
@@ -31,6 +35,26 @@ instance op_mono_of_epi {A B : C} (f : A ⟶ B) [Epi f] : Mono f.op :=
 
 instance op_epi_of_mono {A B : C} (f : A ⟶ B) [Mono f] : Epi f.op :=
   ⟨fun _ _ eq => Quiver.Hom.unop_inj ((cancel_mono f).1 (Quiver.Hom.op_inj eq))⟩
+
+@[simp]
+lemma op_mono_iff {X Y : C} (f : X ⟶ Y) :
+    Mono f.op ↔ Epi f :=
+  ⟨fun _ ↦ unop_epi_of_mono f.op, fun _ ↦ inferInstance⟩
+
+@[simp]
+lemma op_epi_iff {X Y : C} (f : X ⟶ Y) :
+    Epi f.op ↔ Mono f :=
+  ⟨fun _ ↦ unop_mono_of_epi f.op, fun _ ↦ inferInstance⟩
+
+@[simp]
+lemma unop_mono_iff {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+    Mono f.unop ↔ Epi f :=
+  ⟨fun _ ↦ op_epi_of_mono f.unop, fun _ ↦ inferInstance⟩
+
+@[simp]
+lemma unop_epi_iff {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+    Epi f.unop ↔ Mono f :=
+  ⟨fun _ ↦ op_mono_of_epi f.unop, fun _ ↦ inferInstance⟩
 
 /-- A split monomorphism is a morphism `f : X ⟶ Y` with a given retraction `retraction f : Y ⟶ X`
 such that `f ≫ retraction f = 𝟙 X`.
@@ -184,6 +208,7 @@ theorem IsIso.of_epi_section {X Y : C} (f : X ⟶ Y) [hf : IsSplitEpi f] [hf' : 
 
 -- FIXME this has unnecessarily become noncomputable!
 /-- A category where every morphism has a `Trunc` retraction is computably a groupoid. -/
+@[implicit_reducible]
 noncomputable def Groupoid.ofTruncSplitMono
     (all_split_mono : ∀ {X Y : C} (f : X ⟶ Y), Trunc (IsSplitMono f)) : Groupoid.{v₁} C := by
   apply Groupoid.ofIsIso
@@ -255,7 +280,7 @@ lemma epi_comp_iff_of_epi {X Y Z : C} (f : X ⟶ Y) [Epi f] (g : Y ⟶ Z) :
 lemma epi_comp_iff_of_isIso {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
     Epi (f ≫ g) ↔ Epi f := by
   refine ⟨fun h ↦ ?_, fun h ↦ inferInstance⟩
-  simpa using (inferInstance : Epi ((f ≫ g) ≫ inv g ))
+  simpa using (inferInstance : Epi ((f ≫ g) ≫ inv g))
 
 /-- When `f` is an isomorphism, `f ≫ g` is monic iff `g` is. -/
 @[simp]
@@ -271,5 +296,27 @@ lemma mono_comp_iff_of_mono {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [Mono g] :
   ⟨fun _ ↦ mono_of_mono _ g, fun _ ↦ inferInstance⟩
 
 end
+
+section Opposite
+
+variable {X Y : C} {f : X ⟶ Y}
+
+/-- The opposite of a split mono is a split epi. -/
+def SplitMono.op (h : SplitMono f) : SplitEpi f.op where
+  section_ := h.retraction.op
+  id := Quiver.Hom.unop_inj (by simp)
+
+/-- The opposite of a split epi is a split mono. -/
+def SplitEpi.op (h : SplitEpi f) : SplitMono f.op where
+  retraction := h.section_.op
+  id := Quiver.Hom.unop_inj (by simp)
+
+instance [IsSplitMono f] : IsSplitEpi f.op :=
+  .mk' IsSplitMono.exists_splitMono.some.op
+
+instance [IsSplitEpi f] : IsSplitMono f.op :=
+  .mk' IsSplitEpi.exists_splitEpi.some.op
+
+end Opposite
 
 end CategoryTheory

@@ -1,18 +1,20 @@
 /-
 Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison, William Sørensen, Robin Arnez
+Authors: Kim Morrison
 -/
-import Mathlib.Logic.Equiv.Defs
-import Mathlib.Tactic.MkIffOfInductiveProp
-import Mathlib.Tactic.PPWithUniv
+module
+
+public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Tactic.MkIffOfInductiveProp
+public import Mathlib.Tactic.PPWithUniv
 
 /-!
 # Small types
 
 A type is `w`-small if there exists an equivalence to some `S : Type w`.
 
-We provide a model `Shrink α : Type w`, and `equivShrink α : α ≃ Shrink α`.
+We provide a noncomputable model `Shrink α : Type w`, and `equivShrink α : α ≃ Shrink α`.
 
 A subsingleton type is `w`-small for any `w`.
 
@@ -21,11 +23,17 @@ If `α ≃ β`, then `Small.{w} α ↔ Small.{w} β`.
 See `Mathlib/Logic/Small/Basic.lean` for further instances and theorems.
 -/
 
+@[expose] public section
+
 universe u w v v'
 
 /-- A type is `Small.{w}` if there exists an equivalence to some `S : Type w`.
 -/
-@[mk_iff, pp_with_univ]
+-- After https://github.com/leanprover/lean4/pull/12286 and
+-- https://github.com/leanprover/lean4/pull/12423: `v` is a true output (determined by `α`),
+-- but we need the attribute to prevent `w` from also being treated as output.
+-- See Note [universe output parameters and typeclass caching].
+@[univ_out_params v, mk_iff, pp_with_univ]
 class Small (α : Type v) : Prop where
   /-- If a type is `Small.{w}`, then there exists an equivalence with some `S : Type w` -/
   equiv_small : ∃ S : Type w, Nonempty (α ≃ S)
@@ -37,27 +45,14 @@ theorem Small.mk' {α : Type v} {S : Type w} (e : α ≃ S) : Small.{w} α :=
 
 /-- An arbitrarily chosen model in `Type w` for a `w`-small type.
 -/
-@[pp_with_univ]
+@[pp_with_univ, no_expose]
 def Shrink (α : Type v) [Small.{w} α] : Type w :=
   Classical.choose (@Small.equiv_small α _)
 
-/--
-A computable implementation of `equivShrink`.
-
-The `implemented_by` using this to implement `equivShrink` is safe because:
-* `Shrink α` has no memory layout in the compiler that needs to be conformed to.
-* There is no other computable way to construct or destructure an object of type `Shrink α`.
-* There is also no other computable way to modify the content of a shrink
-  (as it always needs `Classical.choose_spec`).
+/-- The noncomputable equivalence between a `w`-small type and a model.
 -/
-@[inline]
-private unsafe def equivShrinkImpl (α : Type v) [Small.{u, v} α] : α ≃ Shrink.{u, v} α :=
-  ⟨unsafeCast, unsafeCast, lcProof, lcProof⟩
-
-/-- The equivalence between a `w`-small type and a model.
--/
-@[implemented_by equivShrinkImpl]
-def equivShrink (α : Type v) [Small.{w} α] : α ≃ Shrink α :=
+@[no_expose]
+noncomputable def equivShrink (α : Type v) [Small.{w} α] : α ≃ Shrink α :=
   Nonempty.some (Classical.choose_spec (@Small.equiv_small α _))
 
 @[ext]
@@ -66,10 +61,10 @@ theorem Shrink.ext {α : Type v} [Small.{w} α] {x y : Shrink α}
   simpa using w
 
 -- It would be nice to mark this as `aesop cases` if
--- https://github.com/JLimperg/aesop/issues/59
+-- https://github.com/leanprover-community/aesop/issues/59
 -- is resolved.
 @[induction_eliminator]
-protected def Shrink.rec {α : Type*} [Small.{w} α] {F : Shrink α → Sort v}
+protected noncomputable def Shrink.rec {α : Type*} [Small.{w} α] {F : Shrink α → Sort v}
     (h : ∀ X, F (equivShrink _ X)) : ∀ X, F X :=
   fun X => ((equivShrink _).apply_symm_apply X) ▸ (h _)
 
@@ -98,8 +93,8 @@ lemma small_max (α : Type v) : Small.{max w v} α :=
 
 instance small_zero (α : Type) : Small.{w} α := small_max α
 
-instance (priority := 100) small_succ (α : Type v) : Small.{v+1} α :=
-  small_lift.{v, v+1} α
+instance (priority := 100) small_succ (α : Type v) : Small.{v + 1} α :=
+  small_lift.{v, v + 1} α
 
 instance small_ulift (α : Type u) [Small.{v} α] : Small.{v} (ULift.{w} α) :=
   small_map Equiv.ulift

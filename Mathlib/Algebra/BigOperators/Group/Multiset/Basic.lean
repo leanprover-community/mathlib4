@@ -3,11 +3,13 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.BigOperators.Group.List.Lemmas
-import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
-import Mathlib.Algebra.Group.Prod
-import Mathlib.Algebra.Order.Group.Multiset
-import Mathlib.Algebra.Order.Sub.Unbundled.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Group.List.Lemmas
+public import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
+public import Mathlib.Algebra.Group.Prod
+public import Mathlib.Algebra.Order.Group.Multiset
+public import Mathlib.Algebra.Order.Sub.Unbundled.Basic
 
 /-!
 # Sums and products over multisets
@@ -18,9 +20,11 @@ and sums indexed by finite sets.
 ## Main declarations
 
 * `Multiset.prod`: `s.prod f` is the product of `f i` over all `i ∈ s`. Not to be mistaken with
-  the cartesian product `Multiset.product`.
+  the Cartesian product `Multiset.product`.
 * `Multiset.sum`: `s.sum f` is the sum of `f i` over all `i ∈ s`.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -44,7 +48,7 @@ theorem prod_map_erase [DecidableEq ι] {a : ι} (h : a ∈ m) :
 
 @[to_additive (attr := simp, grind =)]
 theorem prod_add (s t : Multiset M) : prod (s + t) = prod s * prod t :=
-  Quotient.inductionOn₂ s t fun l₁ l₂ => by simp
+  Quotient.inductionOn₂ s t fun l₁ l₂ => by simp [List.prod_append]
 
 @[to_additive]
 theorem prod_nsmul (m : Multiset M) : ∀ n : ℕ, (n • m).prod = m.prod ^ n
@@ -226,5 +230,9 @@ theorem sum_map_tsub [AddCommMonoid M] [PartialOrder M] [ExistsAddOfLE M]
     exact map_congr rfl fun x hx => tsub_add_cancel_of_le <| hfg _ hx
 
 end OrderedSub
+
+instance {M : Type*} : IsAddTorsionFree (Multiset M) :=
+  ⟨fun n hn x y h ↦ open Classical in Multiset.ext' fun _ ↦
+    (Nat.mul_right_inj hn).mp <| by simp only [← Multiset.count_nsmul, h]⟩
 
 end Multiset

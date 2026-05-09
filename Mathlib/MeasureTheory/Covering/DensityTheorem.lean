@@ -3,9 +3,11 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.MeasureTheory.Measure.Doubling
-import Mathlib.MeasureTheory.Covering.Vitali
-import Mathlib.MeasureTheory.Covering.Differentiation
+module
+
+public import Mathlib.MeasureTheory.Measure.Doubling
+public import Mathlib.MeasureTheory.Covering.Vitali
+public import Mathlib.MeasureTheory.Covering.Differentiation
 
 /-!
 # Uniformly locally doubling measures and Lebesgue's density theorem
@@ -25,6 +27,8 @@ form of Lebesgue's density theorem.
   fixed.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -90,8 +94,8 @@ theorem closedBall_mem_vitaliFamily_of_dist_le_mul {K : ℝ} {x y : α} {r : ℝ
         apply closedBall_subset_closedBall'
         linarith
       have I2 : closedBall y ((4 * K + 3) * r) ⊆ closedBall y (max (4 * K + 3) 3 * r) := by
-        apply closedBall_subset_closedBall
-        exact mul_le_mul_of_nonneg_right (le_max_left _ _) rpos.le
+        gcongr
+        exact le_max_left ..
       apply (measure_mono (I1.trans I2)).trans
       exact measure_mul_le_scalingConstantOf_mul _
         ⟨zero_lt_three.trans_le (le_max_right _ _), le_rfl⟩ hr

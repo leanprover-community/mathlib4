@@ -3,8 +3,10 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Homology.HomologicalComplex
-import Mathlib.CategoryTheory.DifferentialObject
+module
+
+public import Mathlib.Algebra.Homology.HomologicalComplex
+public import Mathlib.CategoryTheory.DifferentialObject
 
 /-!
 # Homological complexes are differential graded objects.
@@ -16,6 +18,8 @@ This equivalence is probably not particularly useful in practice;
 it's here to check that definitions match up as expected.
 -/
 
+@[expose] public section
+
 open CategoryTheory CategoryTheory.Limits
 
 noncomputable section
@@ -23,12 +27,12 @@ noncomputable section
 /-!
 We first prove some results about differential graded objects.
 
-Porting note: after the port, move these to their own file.
+TODO: We should move these to their own file.
 -/
 namespace CategoryTheory.DifferentialObject
 
 variable {β : Type*} [AddCommGroup β] {b : β}
-variable {V : Type*} [Category V] [HasZeroMorphisms V]
+variable {V : Type*} [Category* V] [HasZeroMorphisms V]
 variable (X : DifferentialObject ℤ (GradedObjectWithShift b V))
 
 /-- Since `eqToHom` only preserves the fact that `X.X i = X.X j` but not `i = j`, this definition
@@ -43,6 +47,7 @@ theorem objEqToHom_refl (i : β) : X.objEqToHom (refl i) = 𝟙 _ :=
 
 -- Removing `@[simp]`, because it is in the opposite direction of `eqToHom_naturality`.
 -- Having both causes an infinite loop in the simpNF linter.
+set_option backward.isDefEq.respectTransparency false in -- Needed in dgoToHomologicalComplex
 @[reassoc]
 theorem objEqToHom_d {x y : β} (h : x = y) :
     X.objEqToHom h ≫ X.d y = X.d x ≫ X.objEqToHom (by cases h; rfl) := by cases h; simp
@@ -63,12 +68,13 @@ open CategoryTheory.DifferentialObject
 namespace HomologicalComplex
 
 variable {β : Type*} [AddCommGroup β] (b : β)
-variable (V : Type*) [Category V] [HasZeroMorphisms V]
+variable (V : Type*) [Category* V] [HasZeroMorphisms V]
 
 @[reassoc]
 theorem d_eqToHom (X : HomologicalComplex V (ComplexShape.up' b)) {x y z : β} (h : y = z) :
     X.d x y ≫ eqToHom (congr_arg X.X h) = X.d x z := by cases h; simp
 
+set_option backward.isDefEq.respectTransparency false in
 open Classical in
 /-- The functor from differential graded objects to homological complexes.
 -/
@@ -113,6 +119,7 @@ def dgoEquivHomologicalComplexUnitIso :
     { hom := { f := fun i => 𝟙 (X.obj i) }
       inv := { f := fun i => 𝟙 (X.obj i) } })
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The counit isomorphism for `dgoEquivHomologicalComplex`.
 -/
 @[simps!]

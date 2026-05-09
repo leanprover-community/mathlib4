@@ -3,11 +3,12 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+module
 
-import Mathlib.Data.Complex.ExponentialBounds
-import Mathlib.NumberTheory.Harmonic.Defs
-import Mathlib.Analysis.Normed.Order.Lattice
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Analysis.Complex.ExponentialBounds
+public import Mathlib.Analysis.Normed.Order.Lattice
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.NumberTheory.Harmonic.Defs
 
 /-!
 # The Euler-Mascheroni constant `γ`
@@ -34,6 +35,8 @@ It follows that both sequences tend to a common limit `γ`, and we have the ineq
 `eulerMascheroniSeq n < γ < eulerMascheroniSeq' n` for all `n`. Taking `n = 6` gives the bounds
 `1 / 2 < γ < 2 / 3`.
 -/
+
+@[expose] public section
 
 open Filter Topology
 
@@ -91,8 +94,8 @@ lemma strictAnti_eulerMascheroniSeq' : StrictAnti eulerMascheroniSeq' := by
     ← log_inv]
   refine (log_lt_sub_one_of_pos ?_ ?_).trans_le (le_of_eq ?_)
   · positivity
-  · field_simp
-  · field_simp
+  · simp [field]
+  · simp [field]
 
 lemma eulerMascheroniSeq'_six_lt_two_thirds : eulerMascheroniSeq' 6 < 2 / 3 := by
   have h1 : eulerMascheroniSeq' 6 = 49 / 20 - log 6 := by

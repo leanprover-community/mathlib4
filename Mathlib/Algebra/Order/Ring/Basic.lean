@@ -3,14 +3,17 @@ Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
 -/
-import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Ring.Parity
-import Mathlib.Tactic.Bound.Attribute
+module
+
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Algebra.Ring.Parity
+public import Mathlib.Tactic.Bound.Attribute
 
 /-!
 # Basic lemmas about ordered rings
 -/
+
+@[expose] public section
 
 -- We should need only a minimal development of sets in order to get here.
 assert_not_exists Set.Subsingleton
@@ -30,20 +33,6 @@ lemma not_isSquare_of_neg [Semiring R] [LinearOrder R]
     [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R]
     {x : R} (h : x < 0) : ¬ IsSquare x :=
   (h.not_ge ·.nonneg)
-
-namespace MonoidHom
-
-variable [Ring R] [Monoid M] [LinearOrder M] [MulLeftMono M] (f : R →* M)
-
-theorem map_neg_one : f (-1) = 1 :=
-  (pow_eq_one_iff (Nat.succ_ne_zero 1)).1 <| by rw [← map_pow, neg_one_sq, map_one]
-
-@[simp]
-theorem map_neg (x : R) : f (-x) = f x := by rw [← neg_one_mul, map_mul, map_neg_one, one_mul]
-
-theorem map_sub_swap (x y : R) : f (x - y) = f (y - x) := by rw [← map_neg, neg_sub]
-
-end MonoidHom
 
 section OrderedSemiring
 
@@ -66,7 +55,7 @@ theorem pow_add_pow_le (hx : 0 ≤ x) (hy : 0 ≤ y) (hn : n ≠ 0) : x ^ n + y 
           add_assoc (x * x ^ n) (x * y ^ n), add_comm (x * y ^ n) (y * y ^ n), ← add_assoc]
       _ ≤ (x + y) ^ (n + 1) := by
         rw [pow_succ' _ n]
-        exact mul_le_mul_of_nonneg_left (ih (Nat.succ_ne_zero k)) h2
+        gcongr; exact ih (Nat.succ_ne_zero k)
 
 attribute [bound] pow_le_one₀ one_le_pow₀
 
@@ -109,8 +98,8 @@ def IsNonarchimedean {α : Type*} [Add α] (f : α → R) : Prop := ∀ a b : α
 
 The slightly unusual typeclass assumptions `[LinearOrderedSemiring R] [ExistsAddOfLE R]` cover two
 more familiar settings:
-* `[LinearOrderedRing R]`, eg `ℤ`, `ℚ` or `ℝ`
-* `[CanonicallyLinearOrderedSemiring R]` (although we don't actually have this typeclass), eg `ℕ`,
+* `[LinearOrderedRing R]`, e.g. `ℤ`, `ℚ` or `ℝ`
+* `[CanonicallyLinearOrderedSemiring R]` (although we don't actually have this typeclass), e.g. `ℕ`,
   `ℚ≥0` or `ℝ≥0`
 -/
 
@@ -120,7 +109,7 @@ lemma add_sq_le : (a + b) ^ 2 ≤ 2 * (a ^ 2 + b ^ 2) := by
   calc
     (a + b) ^ 2 = a ^ 2 + b ^ 2 + (a * b + b * a) := by
         simp_rw [pow_succ', pow_zero, mul_one, add_mul, mul_add, add_comm (b * a), add_add_add_comm]
-    _ ≤ a ^ 2 + b ^ 2 + (a * a + b * b) := add_le_add_left ?_ _
+    _ ≤ a ^ 2 + b ^ 2 + (a * a + b * b) := add_le_add_right ?_ _
     _ = _ := by simp_rw [pow_succ', pow_zero, mul_one, two_mul]
   cases le_total a b
   · exact mul_add_mul_le_mul_add_mul ‹_› ‹_›
@@ -138,12 +127,13 @@ lemma add_pow_le (ha : 0 ≤ a) (hb : 0 ≤ b) : ∀ n, (a + b) ^ n ≤ 2 ^ (n -
       _ = 2 ^ n * (a ^ (n + 2) + b ^ (n + 2) + (a ^ (n + 1) * b + b ^ (n + 1) * a)) := by
           rw [mul_assoc, mul_add, add_mul, add_mul, ← pow_succ, ← pow_succ, add_comm _ (b ^ _),
             add_add_add_comm, add_comm (_ * a)]
-      _ ≤ 2 ^ n * (a ^ (n + 2) + b ^ (n + 2) + (a ^ (n + 1) * a + b ^ (n + 1) * b)) :=
-          mul_le_mul_of_nonneg_left (add_le_add_left ?_ _) <| pow_nonneg (zero_le_two (α := R)) _
+      _ ≤ 2 ^ n * (a ^ (n + 2) + b ^ (n + 2) + (a ^ (n + 1) * a + b ^ (n + 1) * b)) := by
+        gcongr _ * (_ + _ + ?_)
+        · exact pow_nonneg zero_le_two _
+        obtain hab | hba := le_total a b
+        · exact mul_add_mul_le_mul_add_mul (by gcongr) hab
+        · exact mul_add_mul_le_mul_add_mul' (by gcongr) hba
       _ = _ := by simp only [← pow_succ, ← two_mul, ← mul_assoc]; rfl
-    · obtain hab | hba := le_total a b
-      · exact mul_add_mul_le_mul_add_mul (pow_le_pow_left₀ ha hab _) hab
-      · exact mul_add_mul_le_mul_add_mul' (pow_le_pow_left₀ hb hba _) hba
 
 protected lemma Even.add_pow_le (hn : Even n) :
     (a + b) ^ n ≤ 2 ^ (n - 1) * (a ^ n + b ^ n) := by
@@ -178,7 +168,7 @@ lemma Odd.pow_nonneg_iff (hn : Odd n) : 0 ≤ a ^ n ↔ 0 ≤ a :=
 
 lemma Odd.pow_nonpos_iff (hn : Odd n) : a ^ n ≤ 0 ↔ a ≤ 0 := by
   rw [le_iff_lt_or_eq, le_iff_lt_or_eq, hn.pow_neg_iff, pow_eq_zero_iff]
-  rintro rfl; simp [Odd, eq_comm (a := 0)] at hn
+  rintro rfl; simp at hn
 
 lemma Odd.pow_pos_iff (hn : Odd n) : 0 < a ^ n ↔ 0 < a := lt_iff_lt_of_le_iff_le hn.pow_nonpos_iff
 
@@ -186,7 +176,7 @@ alias ⟨_, Odd.pow_nonpos⟩ := Odd.pow_nonpos_iff
 alias ⟨_, Odd.pow_neg⟩ := Odd.pow_neg_iff
 
 lemma Odd.strictMono_pow (hn : Odd n) : StrictMono fun a : R => a ^ n := by
-  have hn₀ : n ≠ 0 := by rintro rfl; simp [Odd, eq_comm (a := 0)] at hn
+  have hn₀ : n ≠ 0 := by rintro rfl; simp [Odd] at hn
   intro a b hab
   obtain ha | ha := le_total 0 a
   · exact pow_lt_pow_left₀ hab ha hn₀

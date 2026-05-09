@@ -3,9 +3,11 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.Deriv.Pow
-import Mathlib.Analysis.Calculus.Deriv.Inv
-import Mathlib.Analysis.Calculus.Deriv.Shift
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Pow
+public import Mathlib.Analysis.Calculus.Deriv.Inv
+public import Mathlib.Analysis.Calculus.Deriv.Shift
 
 /-!
 # Derivatives of `x ^ m`, `m : ℤ`
@@ -13,12 +15,14 @@ import Mathlib.Analysis.Calculus.Deriv.Shift
 In this file we prove theorems about (iterated) derivatives of `x ^ m`, `m : ℤ`.
 
 For a more detailed overview of one-dimensional derivatives in mathlib, see the module docstring of
-`analysis/calculus/deriv/basic`.
+`Mathlib/Analysis/Calculus/Deriv/Basic.lean`.
 
 ## Keywords
 
 derivative, power
 -/
+
+public section
 
 universe u v w
 
@@ -78,7 +82,7 @@ theorem deriv_zpow (m : ℤ) (x : 𝕜) : deriv (fun x => x ^ m) x = m * x ^ (m 
   by_cases H : x ≠ 0 ∨ 0 ≤ m
   · exact (hasDerivAt_zpow m x H).deriv
   · rw [deriv_zero_of_not_differentiableAt (mt differentiableAt_zpow.1 H)]
-    push_neg at H
+    push Not at H
     rcases H with ⟨rfl, hm⟩
     rw [zero_zpow _ ((sub_one_lt _).trans hm).ne, mul_zero]
 
@@ -94,10 +98,11 @@ theorem derivWithin_zpow (hxs : UniqueDiffWithinAt 𝕜 s x) (h : x ≠ 0 ∨ 0 
 theorem iter_deriv_zpow' (m : ℤ) (k : ℕ) :
     (deriv^[k] fun x : 𝕜 => x ^ m) =
       fun x => (∏ i ∈ Finset.range k, ((m : 𝕜) - i)) * x ^ (m - k) := by
-  induction' k with k ihk
-  · simp only [one_mul, Int.ofNat_zero, id, sub_zero, Finset.prod_range_zero,
-      Function.iterate_zero]
-  · simp only [Function.iterate_succ_apply', ihk, deriv_const_mul_field', deriv_zpow',
+  induction k with
+  | zero =>
+    simp only [one_mul, Int.ofNat_zero, id, sub_zero, Finset.prod_range_zero, Function.iterate_zero]
+  | succ k ihk =>
+    simp only [Function.iterate_succ_apply', ihk, deriv_const_mul_field', deriv_zpow',
       Finset.prod_range_succ, Int.natCast_succ, ← sub_sub, Int.cast_sub, Int.cast_natCast,
       mul_assoc]
 
@@ -151,9 +156,9 @@ theorem iter_deriv_inv_linear (k : ℕ) (c d : 𝕜) :
         (fun x ↦ (c * x + d) ^ (-1 - (k : ℤ))) := by
         ext y
         field_simp
-        ring_nf
       rw [h0, deriv_comp_mul_left c (fun x ↦ (x) ^ (-1 - k : ℤ)) (z + d / c)] at this
-      field_simp [this]
+      simp [this]
+      field_simp
       ring_nf
 
 theorem iter_deriv_inv_linear_sub (k : ℕ) (c d : 𝕜) :

@@ -3,16 +3,20 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Damiano Testa, Jens Wagemaker
 -/
-import Mathlib.Algebra.MonoidAlgebra.Division
-import Mathlib.Algebra.Polynomial.Degree.Operations
-import Mathlib.Algebra.Polynomial.EraseLead
-import Mathlib.Order.Interval.Finset.Nat
+module
+
+public import Mathlib.Algebra.MonoidAlgebra.Division
+public import Mathlib.Algebra.Polynomial.Degree.Operations
+public import Mathlib.Algebra.Polynomial.EraseLead
+public import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Induction on polynomials
 
 This file contains lemmas dealing with different flavours of induction on polynomials.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -89,7 +93,7 @@ theorem natDegree_divX_eq_natDegree_tsub_one : p.divX.natDegree = p.natDegree - 
   apply map_natDegree_eq_sub (φ := divX_hom)
   · intro f
     simpa [divX_hom, divX_eq_zero_iff] using eq_C_of_natDegree_eq_zero
-  · intros n c c0
+  · intro n c c0
     rw [← C_mul_X_pow_eq_monomial, divX_hom_toFun, divX_C_mul, divX_X_pow]
     split_ifs with n0
     · simp [n0]
@@ -153,6 +157,7 @@ if it holds for
 * `a * X`, with `a ∈ R`,
 * `p * X`, with `p ∈ R[X]`,
 * `p + a`, with `a ∈ R`, `p ∈ R[X]`,
+
 with appropriate restrictions on each term.
 
 See `natDegree_ne_zero_induction_on` for a similar statement involving no explicit multiplication.
@@ -166,7 +171,7 @@ theorem degree_pos_induction_on {P : R[X] → Prop} (p : R[X]) (h0 : 0 < degree 
       (have : 0 < degree p :=
         (lt_of_not_ge fun h =>
           not_lt_of_ge (degree_C_le (a := a)) <|
-            by rwa [eq_C_of_degree_le_zero h, ← C_add,heq0,zero_add] at h0)
+            by rwa [eq_C_of_degree_le_zero h, ← C_add, heq0, zero_add] at h0)
       hadd this (ih this)))
     (fun p _ ih h0' =>
       if h0 : 0 < degree p then hX h0 (ih h0)
@@ -180,7 +185,9 @@ semiring `R` if it holds for
 * `p + a`, with `a ∈ R`, `p ∈ R[X]`,
 * `p + q`, with `p, q ∈ R[X]`,
 * monomials with nonzero coefficient and non-zero exponent,
+
 with appropriate restrictions on each term.
+
 Note that multiplication is "hidden" in the assumption on monomials, so there is no explicit
 multiplication in the statement.
 See `degree_pos_induction_on` for a similar statement involving more explicit multiplications.

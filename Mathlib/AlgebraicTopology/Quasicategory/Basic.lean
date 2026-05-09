@@ -3,8 +3,9 @@ Copyright (c) 2023 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+module
 
-import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex
+public import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex
 
 /-!
 # Quasicategories
@@ -24,6 +25,8 @@ we show that the nerve of a category is a quasicategory.
 
 -/
 
+@[expose] public section
+
 namespace SSet
 
 open CategoryTheory Simplicial
@@ -34,19 +37,19 @@ every map of simplicial sets `σ₀ : Λ[n, i] → S` can be extended to a map `
 -/
 @[kerodon 003A]
 class Quasicategory (S : SSet) : Prop where
-  hornFilling' : ∀ ⦃n : ℕ⦄ ⦃i : Fin (n+3)⦄ (σ₀ : (Λ[n+2, i] : SSet) ⟶ S)
-    (_h0 : 0 < i) (_hn : i < Fin.last (n+2)),
-      ∃ σ : Δ[n+2] ⟶ S, σ₀ = Λ[n + 2, i].ι ≫ σ
+  hornFilling' : ∀ ⦃n : ℕ⦄ ⦃i : Fin (n + 3)⦄ (σ₀ : (Λ[n + 2, i] : SSet) ⟶ S)
+    (_h0 : 0 < i) (_hn : i < Fin.last (n + 2)),
+      ∃ σ : Δ[n + 2] ⟶ S, σ₀ = Λ[n + 2, i].ι ≫ σ
 
 lemma Quasicategory.hornFilling {S : SSet} [Quasicategory S] ⦃n : ℕ⦄ ⦃i : Fin (n + 1)⦄
     (h0 : 0 < i) (hn : i < Fin.last n)
     (σ₀ : (Λ[n, i] : SSet) ⟶ S) : ∃ σ : Δ[n] ⟶ S, σ₀ = Λ[n, i].ι ≫ σ := by
   cases n using Nat.casesAuxOn with
-  | zero => simp [Fin.lt_iff_val_lt_val] at hn
+  | zero => simp [Fin.lt_def] at hn
   | succ n =>
   cases n using Nat.casesAuxOn with
   | zero =>
-    simp only [Fin.lt_iff_val_lt_val, Fin.val_zero, Fin.val_last, zero_add, Nat.lt_one_iff] at h0 hn
+    simp only [Fin.lt_def, Fin.val_zero, Fin.val_last, zero_add, Nat.lt_one_iff] at h0 hn
     simp [hn] at h0
   | succ n => exact Quasicategory.hornFilling' σ₀ h0 hn
 

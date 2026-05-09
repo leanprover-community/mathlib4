@@ -3,10 +3,14 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis
 -/
-import Mathlib.Tactic.Basic
+module
+
+public import Mathlib.Data.Int.Cast.Basic
+public import Mathlib.Order.Basic
+public meta import Mathlib.Tactic.ToAdditive
+public meta import Mathlib.Tactic.ToDual
+
 import Mathlib.Tactic.Attr.Register
-import Mathlib.Data.Int.Cast.Basic
-import Mathlib.Order.Basic
 
 /-!
 # `zify` tactic
@@ -24,6 +28,8 @@ example (a b c x y z : Nat) (h : ¬ x*y*z < 0) : c < a + 3*b := by
 ```
 -/
 
+public meta section
+
 namespace Mathlib.Tactic.Zify
 
 open Lean
@@ -32,8 +38,23 @@ open Lean.Parser.Tactic
 open Lean.Elab.Tactic
 
 /--
-The `zify` tactic is used to shift propositions from `Nat` to `Int`.
-This is often useful since `Int` has well-behaved subtraction.
+`zify` rewrites the main goal by shifting propositions from `ℕ` to `ℤ`.
+This is often useful since `ℤ` has well-behaved subtraction.
+
+`zify` makes use of the `@[zify_simps]` attribute to insert casts into propositions, and the
+`push_cast` tactic to simplify the `ℤ`-valued expressions.
+
+`zify` is in some sense dual to the `lift` tactic. `lift (z : Int) to Nat` will change the type of
+an integer `z` (in the supertype) to `Nat` (the subtype), given a proof that `z ≥ 0`; propositions
+concerning `z` will still be over `Int`. `zify` changes propositions about `Nat` (the subtype) to
+propositions about `Int` (the supertype), without changing the type of any variable.
+
+* `zify at l1 l2 ...` rewrites at the given locations.
+* `zify [h₁, ..., hₙ]` uses the expressions `h₁`, ..., `hₙ` as extra lemmas for simplification.
+  This is especially useful in the presence of nat subtraction or of division: passing arguments of
+  type `· ≤ ·` will allow `push_cast` to do more work.
+
+Examples:
 ```
 example (a b c x y z : Nat) (h : ¬ x*y*z < 0) : c < a + 3*b := by
   zify
@@ -42,22 +63,14 @@ example (a b c x y z : Nat) (h : ¬ x*y*z < 0) : c < a + 3*b := by
   h : ¬↑x * ↑y * ↑z < 0
   ⊢ ↑c < ↑a + 3 * ↑b
   -/
-```
-`zify` can be given extra lemmas to use in simplification. This is especially useful in the
-presence of nat subtraction: passing `≤` arguments will allow `push_cast` to do more work.
-```
-example (a b c : Nat) (h : a - b < c) (hab : b ≤ a) : false := by
+  sorry
+
+example (a b c : Nat) (h : a - b < c) (hab : b ≤ a) : False := by
+  -- Nonnegativity hypothesis allows pushing `· - ·`.
   zify [hab] at h
   /- h : ↑a - ↑b < ↑c -/
+  sorry
 ```
-`zify` makes use of the `@[zify_simps]` attribute to move propositions,
-and the `push_cast` tactic to simplify the `Int`-valued expressions.
-`zify` is in some sense dual to the `lift` tactic.
-`lift (z : Int) to Nat` will change the type of an
-integer `z` (in the supertype) to `Nat` (the subtype), given a proof that `z ≥ 0`;
-propositions concerning `z` will still be over `Int`.
-`zify` changes propositions about `Nat` (the subtype) to propositions about `Int` (the supertype),
-without changing the type of any variable.
 -/
 syntax (name := zify) "zify" (simpArgs)? (location)? : tactic
 
@@ -109,7 +122,8 @@ def zifyProof (simpArgs : Option (Syntax.TSepArray `Lean.Parser.Tactic.simpStar 
 
 variable {R : Type*} [AddGroupWithOne R]
 
-@[norm_cast] theorem Nat.cast_sub_of_add_le {m n k} (h : m + k ≤ n) :
+@[deprecated "use Nat.cast_sub" (since := "2026-02-21"), norm_cast]
+theorem Nat.cast_sub_of_add_le {m n k} (h : m + k ≤ n) :
     ((n - m : ℕ) : R) = n - m := Nat.cast_sub (m.le_add_right k |>.trans h)
 
 @[norm_cast] theorem Nat.cast_sub_of_lt {m n} (h : m < n) :

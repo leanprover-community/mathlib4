@@ -3,16 +3,21 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.FreeAbelianGroup.Finsupp
-import Mathlib.Algebra.MonoidAlgebra.Module
-import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-import Mathlib.LinearAlgebra.Quotient.Basic
-import Mathlib.RingTheory.Finiteness.Basic
+module
+
+public import Mathlib.Algebra.FreeAbelianGroup.Finsupp
+public import Mathlib.Algebra.MonoidAlgebra.Module
+public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.RingTheory.Finiteness.Basic
+public import Mathlib.Algebra.Exact
 
 /-!
 # Finiteness of (sub)modules and finitely supported functions
 
 -/
+
+@[expose] public section
 
 open Function (Surjective)
 open Finsupp
@@ -109,11 +114,22 @@ theorem fg_ker_comp (f : M →ₗ[R] N) (g : N →ₗ[R] P)
   · rwa [inf_of_le_right (show (LinearMap.ker f) ≤
       (LinearMap.ker g).comap f from comap_mono bot_le)]
 
+/-- If $M → N → P → 0$ is exact and $M$ and $P$ are finitely generated then so is $N$.
+
+This is the `Module.Finite` version of `Submodule.fg_of_fg_map_of_fg_inf_ker`. -/
+@[stacks 0519 "(1)"]
+lemma _root_.Module.Finite.of_exact {f : M →ₗ[R] N} {g : N →ₗ[R] P}
+    (h_exact : Function.Exact f g) (h_surj : Function.Surjective g)
+    [Module.Finite R M] [Module.Finite R P] : Module.Finite R N := by
+  refine ⟨(⊤ : Submodule R _).fg_of_fg_map_of_fg_inf_ker g ?_ ?_⟩
+  · rw [← LinearMap.range_eq_top] at h_surj
+    rw [Submodule.map_top, h_surj]
+    exact Module.Finite.fg_top
+  · simp [LinearMap.exact_iff.1 h_exact]
+
 theorem _root_.Module.Finite.of_submodule_quotient (N : Submodule R M) [Module.Finite R N]
-    [Module.Finite R (M ⧸ N)] : Module.Finite R M where
-  fg_top := fg_of_fg_map_of_fg_inf_ker N.mkQ
-    (by simpa only [map_top, range_mkQ] using Module.finite_def.mp ‹_›) <| by
-    simpa only [top_inf_eq, ker_mkQ] using Module.Finite.iff_fg.mp ‹_›
+    [Module.Finite R (M ⧸ N)] : Module.Finite R M :=
+  .of_exact (LinearMap.exact_subtype_mkQ N) (Quotient.mk_surjective _)
 
 end Submodule
 
@@ -128,16 +144,16 @@ instance Module.Finite.finsupp {ι : Type*} [_root_.Finite ι] [Module.Finite R 
 end
 
 namespace AddMonoidAlgebra
-variable {ι R S : Type*} [Finite ι] [Semiring R] [Semiring S] [Module R S] [Module.Finite R S]
+variable {M R S : Type*} [Finite M] [Semiring R] [Semiring S] [Module R S] [Module.Finite R S]
 
-instance moduleFinite : Module.Finite R S[ι] := .finsupp
+instance moduleFinite : Module.Finite R S[M] := .finsupp
 
 end AddMonoidAlgebra
 
 namespace MonoidAlgebra
-variable {ι R S : Type*} [Finite ι] [Semiring R] [Semiring S] [Module R S] [Module.Finite R S]
+variable {M R S : Type*} [Finite M] [Semiring R] [Semiring S] [Module R S] [Module.Finite R S]
 
-instance moduleFinite : Module.Finite R (MonoidAlgebra S ι) := .finsupp
+instance moduleFinite : Module.Finite R S[M] := .finsupp
 
 end MonoidAlgebra
 

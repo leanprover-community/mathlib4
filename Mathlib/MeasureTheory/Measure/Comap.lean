@@ -3,7 +3,9 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
+module
+
+public import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
 
 /-!
 # Pullback of a measure
@@ -16,6 +18,8 @@ If `f` does not have these properties, then we define `comap f μ` to be zero.
 In the future, we may decide to redefine `comap f μ` so that it gives meaningful results, e.g.,
 for covering maps like `(↑) : ℝ → AddCircle (1 : ℝ)`.
 -/
+
+@[expose] public section
 
 open Function Set Filter
 open scoped ENNReal
@@ -85,6 +89,12 @@ theorem comap_apply (f : α → β) (hfi : Injective f)
     (hf : ∀ s, MeasurableSet s → MeasurableSet (f '' s)) (μ : Measure β) (hs : MeasurableSet s) :
     comap f μ s = μ (f '' s) :=
   comap_apply₀ f μ hfi (fun s hs => (hf s hs).nullMeasurableSet) hs.nullMeasurableSet
+
+theorem comap_apply_le (f : α → β) (μ : Measure β) (hs : NullMeasurableSet s (μ.comap f)) :
+    μ.comap f s ≤ μ (f '' s) := by
+  by_cases hf : Injective f ∧ ∀ t, MeasurableSet t → NullMeasurableSet (f '' t) μ
+  · rw [comap_apply₀ _ _ hf.1 hf.2 hs]
+  · simp [comap_undef hf]
 
 theorem comapₗ_eq_comap (f : α → β) (hfi : Injective f)
     (hf : ∀ s, MeasurableSet s → MeasurableSet (f '' s)) (μ : Measure β) (hs : MeasurableSet s) :

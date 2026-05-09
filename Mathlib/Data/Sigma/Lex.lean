@@ -3,8 +3,11 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Logic.Function.Defs
-import Mathlib.Order.Defs.Unbundled
+module
+
+public import Mathlib.Logic.Function.Defs
+public import Mathlib.Order.Defs.Unbundled
+public import Batteries.Logic
 
 /-!
 # Lexicographic order on a sigma type
@@ -27,6 +30,8 @@ Related files are:
   `Sigma.Lex` where all summands are the same
 -/
 
+@[expose] public section
+
 
 namespace Sigma
 
@@ -46,7 +51,6 @@ theorem lex_iff : Lex r s a b ↔ r a.1 b.1 ∨ ∃ h : a.1 = b.1, s b.1 (h.rec 
     · exact Or.inl hij
     · exact Or.inr ⟨rfl, hab⟩
   · obtain ⟨i, a⟩ := a
-    obtain ⟨j, b⟩ := b
     dsimp only
     rintro (h | ⟨rfl, h⟩)
     · exact Lex.left _ _ h
@@ -76,10 +80,10 @@ theorem lex_swap : Lex (Function.swap r) s a b ↔ Lex r (fun i => Function.swap
       · exact Lex.left _ _ h
       · exact Lex.right _ _ h
 
-instance [∀ i, IsRefl (α i) (s i)] : IsRefl _ (Lex r s) :=
+instance [∀ i, Std.Refl (s i)] : Std.Refl (Lex r s) :=
   ⟨fun ⟨_, _⟩ => Lex.right _ _ <| refl _⟩
 
-instance [IsIrrefl ι r] [∀ i, IsIrrefl (α i) (s i)] : IsIrrefl _ (Lex r s) :=
+instance [Std.Irrefl r] [∀ i, Std.Irrefl (s i)] : Std.Irrefl (Lex r s) :=
   ⟨by
     rintro _ (⟨a, b, hi⟩ | ⟨a, b, ha⟩)
     · exact irrefl _ hi
@@ -94,16 +98,14 @@ instance [IsTrans ι r] [∀ i, IsTrans (α i) (s i)] : IsTrans _ (Lex r s) :=
     · exact Lex.left _ _ hk
     · exact Lex.right _ _ (_root_.trans hab hc)⟩
 
-instance [IsSymm ι r] [∀ i, IsSymm (α i) (s i)] : IsSymm _ (Lex r s) :=
+instance [Std.Symm r] [∀ i, Std.Symm (s i)] : Std.Symm (Lex r s) :=
   ⟨by
     rintro _ _ (⟨a, b, hij⟩ | ⟨a, b, hab⟩)
     · exact Lex.left _ _ (symm hij)
     · exact Lex.right _ _ (symm hab)
       ⟩
 
-attribute [local instance] IsAsymm.isIrrefl
-
-instance [IsAsymm ι r] [∀ i, IsAntisymm (α i) (s i)] : IsAntisymm _ (Lex r s) :=
+instance [Std.Asymm r] [∀ i, Std.Antisymm (s i)] : Std.Antisymm (Lex r s) :=
   ⟨by
     rintro _ _ (⟨a, b, hij⟩ | ⟨a, b, hab⟩) (⟨_, _, hji⟩ | ⟨_, _, hba⟩)
     · exact (asymm hij hji).elim
@@ -111,7 +113,7 @@ instance [IsAsymm ι r] [∀ i, IsAntisymm (α i) (s i)] : IsAntisymm _ (Lex r s
     · exact (irrefl _ hji).elim
     · exact congr_arg (Sigma.mk _ ·) <| antisymm hab hba⟩
 
-instance [IsTrichotomous ι r] [∀ i, IsTotal (α i) (s i)] : IsTotal _ (Lex r s) :=
+instance [Std.Trichotomous r] [∀ i, Std.Total (s i)] : Std.Total (Lex r s) :=
   ⟨by
     rintro ⟨i, a⟩ ⟨j, b⟩
     obtain hij | rfl | hji := trichotomous_of r i j
@@ -121,8 +123,8 @@ instance [IsTrichotomous ι r] [∀ i, IsTotal (α i) (s i)] : IsTotal _ (Lex r 
       · exact Or.inr (Lex.right _ _ hba)
     · exact Or.inr (Lex.left _ _ hji)⟩
 
-instance [IsTrichotomous ι r] [∀ i, IsTrichotomous (α i) (s i)] : IsTrichotomous _ (Lex r s) :=
-  ⟨by
+instance [Std.Trichotomous r] [∀ i, Std.Trichotomous (s i)] : Std.Trichotomous (Lex r s) :=
+  Std.trichotomous_of_rel_or_eq_or_rel_swap <| by
     rintro ⟨i, a⟩ ⟨j, b⟩
     obtain hij | rfl | hji := trichotomous_of r i j
     · exact Or.inl (Lex.left _ _ hij)
@@ -130,7 +132,7 @@ instance [IsTrichotomous ι r] [∀ i, IsTrichotomous (α i) (s i)] : IsTrichoto
       · exact Or.inl (Lex.right _ _ hab)
       · exact Or.inr (Or.inl rfl)
       · exact Or.inr (Or.inr <| Lex.right _ _ hba)
-    · exact Or.inr (Or.inr <| Lex.left _ _ hji)⟩
+    · exact Or.inr (Or.inr <| Lex.left _ _ hji)
 
 end Sigma
 
@@ -148,7 +150,6 @@ theorem lex_iff {a b : Σ' i, α i} :
     · exact Or.inl hij
     · exact Or.inr ⟨rfl, hab⟩
   · obtain ⟨i, a⟩ := a
-    obtain ⟨j, b⟩ := b
     dsimp only
     rintro (h | ⟨rfl, h⟩)
     · exact Lex.left _ _ h

@@ -3,9 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Data.Nat.Basic
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Data.Nat.Basic
 
 /-!
 # Partial predecessor and partial subtraction on the natural numbers
@@ -20,6 +22,8 @@ wrap the result in an `Option` type instead:
 - `Nat.psub`: a partial subtraction operation
 
 -/
+
+@[expose] public section
 
 namespace Nat
 
@@ -71,12 +75,12 @@ theorem psub_eq_some {m : ℕ} : ∀ {n k}, psub m n = some k ↔ k + n = m
     simp [add_comm, add_left_comm]
 
 theorem psub_eq_none {m n : ℕ} : psub m n = none ↔ m < n := by
-  rcases s : psub m n <;> simp [eq_comm]
-  · refine lt_of_not_ge fun h => ?_
+  rcases s : psub m n
+  · simp only [true_iff]
+    refine lt_of_not_ge fun h => ?_
     obtain ⟨k, e⟩ := le.dest h
     injection s.symm.trans (psub_eq_some.2 <| (add_comm _ _).trans e)
-  · rw [← psub_eq_some.1 s]
-    apply Nat.le_add_left
+  · grind [psub_eq_some]
 
 theorem ppred_eq_pred {n} (h : 0 < n) : ppred n = some (pred n) :=
   ppred_eq_some.2 <| succ_pred_eq_of_pos h

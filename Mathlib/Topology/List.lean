@@ -3,15 +3,20 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Topology.Constructions
-import Mathlib.Order.Filter.ListTraverse
-import Mathlib.Tactic.AdaptationNote
-import Mathlib.Topology.Algebra.Monoid.Defs
+module
+
+public import Mathlib.Topology.Constructions
+public import Mathlib.Order.Filter.ListTraverse
+public import Mathlib.Tactic.AdaptationNote
+public import Mathlib.Topology.Algebra.Monoid.Defs
+public import Mathlib.Data.Vector.Basic
 
 /-!
 # Topology on lists and vectors
 
 -/
+
+@[expose] public section
 
 
 open TopologicalSpace Set Filter
@@ -57,7 +62,7 @@ theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
       replace hv := hv.flip
       simp only [List.forall₂_and_left, Function.flip_def] at hv ⊢
       exact ⟨hv.1, hu.flip⟩
-    refine mem_of_superset ?_ hvs
+    grw [← hvs]
     exact mem_traverse _ _ (this.imp fun a s ⟨hs, ha⟩ => IsOpen.mem_nhds hs ha)
 
 @[simp]
@@ -168,13 +173,16 @@ end List
 
 namespace List.Vector
 
-instance (n : ℕ) : TopologicalSpace (Vector α n) := by unfold Vector; infer_instance
+instance (n : ℕ) : TopologicalSpace (Vector α n) :=
+  inferInstanceAs <| TopologicalSpace (Subtype _)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem tendsto_cons {n : ℕ} {a : α} {l : Vector α n} :
     Tendsto (fun p : α × Vector α n => p.1 ::ᵥ p.2) (𝓝 a ×ˢ 𝓝 l) (𝓝 (a ::ᵥ l)) := by
   rw [tendsto_subtype_rng, Vector.cons_val]
   exact tendsto_fst.cons (Tendsto.comp continuousAt_subtype_val tendsto_snd)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem tendsto_insertIdx {n : ℕ} {i : Fin (n + 1)} {a : α} :
     ∀ {l : Vector α n},
       Tendsto (fun p : α × Vector α n => insertIdx p.1 i p.2) (𝓝 a ×ˢ 𝓝 l)
@@ -194,6 +202,7 @@ theorem continuous_insertIdx {n : ℕ} {i : Fin (n + 1)} {f : β → α} {g : β
     (hf : Continuous f) (hg : Continuous g) : Continuous fun b => Vector.insertIdx (f b) i (g b) :=
   continuous_insertIdx'.comp (hf.prodMk hg)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem continuousAt_eraseIdx {n : ℕ} {i : Fin (n + 1)} :
     ∀ {l : Vector α (n + 1)}, ContinuousAt (Vector.eraseIdx i) l
   | ⟨l, hl⟩ => by

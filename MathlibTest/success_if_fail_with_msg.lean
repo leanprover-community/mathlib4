@@ -5,18 +5,17 @@ example : True := by
 
 example : Nat → Nat → True := by
   success_if_fail_with_msg "No goals to be solved"
-    intro
-    intro
+    intro _ _
     trivial
     trivial
   intros; trivial
 
 /--
-info: Update with tactic error message: "No goals to be solved"
+info: Update with tactic error message: ⏎
+  [apply] "No goals to be solved"
 ---
 error: tactic '
-  intro
-  intro
+  intro _ _
   trivial
   trivial' failed, but got different error message:
 
@@ -25,8 +24,7 @@ No goals to be solved
 #guard_msgs in
 example : Nat → Nat → True := by
   success_if_fail_with_msg "No goals"
-    intro
-    intro
+    intro _ _
     trivial
     trivial
   intros; trivial

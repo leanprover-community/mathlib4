@@ -3,10 +3,12 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Basic
-import Mathlib.Algebra.Lie.Subalgebra
-import Mathlib.Algebra.Lie.Submodule
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
+module
+
+public import Mathlib.Algebra.Lie.Basic
+public import Mathlib.Algebra.Lie.Subalgebra
+public import Mathlib.Algebra.Lie.Submodule
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
 
 /-!
 # Lie algebras of associative algebras
@@ -31,6 +33,8 @@ make such a definition in this file.
 
 lie algebra, ring commutator, adjoint action
 -/
+
+@[expose] public section
 
 
 universe u v w w₁ w₂
@@ -223,7 +227,8 @@ lemma ext_of_isFaithful [IsFaithful R L M] {x y : L} (h : ∀ m : M, ⁅x, m⁆ 
 @[simp]
 lemma toEnd_eq_zero_iff [IsFaithful R L M] {x : L} :
     toEnd R L M x = 0 ↔ x = 0 := by
-  simp [- LieHom.map_zero, ← (toEnd R L M).map_zero]
+  rw [← (toEnd R L M).toLinearMap.map_zero]
+  exact toEnd_eq_iff R L M
 
 lemma isFaithful_iff' : IsFaithful R L M ↔ ∀ x : L, (∀ m : M, ⁅x, m⁆ = 0) → x = 0 := by
   refine ⟨fun h x hx ↦ ?_, fun h ↦ ⟨fun x y hxy ↦ ?_⟩⟩
@@ -341,9 +346,6 @@ theorem toEnd_comp_subtype_mem (m : M) (hm : m ∈ (N : Submodule R M)) :
 @[simp]
 theorem toEnd_restrict_eq_toEnd (h := N.toEnd_comp_subtype_mem x) :
     (toEnd R L M x).restrict h = toEnd R L N x := by
-  ext
-  simp only [LinearMap.restrict_coe_apply, toEnd_apply_apply, ← coe_bracket,
-    SetLike.coe_eq_coe]
   rfl
 
 lemma mapsTo_pow_toEnd_sub_algebraMap {φ : R} {k : ℕ} {x : L} :
@@ -384,6 +386,7 @@ variable {R : Type u} {M₁ : Type v} {M₂ : Type w}
 variable [CommRing R] [AddCommGroup M₁] [Module R M₁] [AddCommGroup M₂] [Module R M₂]
 variable (e : M₁ ≃ₗ[R] M₂)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A linear equivalence of two modules induces a Lie algebra equivalence of their endomorphisms. -/
 def lieConj : Module.End R M₁ ≃ₗ⁅R⁆ Module.End R M₂ :=
   { e.conj with

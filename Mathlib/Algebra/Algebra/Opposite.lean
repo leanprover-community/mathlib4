@@ -3,9 +3,11 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Algebra.Equiv
-import Mathlib.Algebra.Module.Opposite
-import Mathlib.Algebra.Ring.Opposite
+module
+
+public import Mathlib.Algebra.Algebra.Equiv
+public import Mathlib.Algebra.Module.Opposite
+public import Mathlib.Algebra.Ring.Opposite
 
 /-!
 # Algebra structures on the multiplicative opposite
@@ -23,6 +25,8 @@ import Mathlib.Algebra.Ring.Opposite
   original algebra.
 * `AlgEquiv.opComm`: swap which side of an isomorphism lies in the opposite algebra.
 -/
+
+@[expose] public section
 
 
 variable {R S A B : Type*}
@@ -60,7 +64,9 @@ def opOp : A ≃ₐ[R] Aᵐᵒᵖᵐᵒᵖ where
   __ := RingEquiv.opOp A
   commutes' _ := rfl
 
-@[simp] theorem toRingEquiv_opOp : (opOp R A : A ≃+* Aᵐᵒᵖᵐᵒᵖ) = RingEquiv.opOp A := rfl
+#adaptation_note /-- After https://github.com/leanprover/lean4/pull/12179
+the simpNF linter complains about this being `@[simp]`. -/
+theorem toRingEquiv_opOp : (opOp R A : A ≃+* Aᵐᵒᵖᵐᵒᵖ) = RingEquiv.opOp A := rfl
 
 end AlgEquiv
 
@@ -192,7 +198,9 @@ def toOpposite : A ≃ₐ[R] Aᵐᵒᵖ where
   __ := RingEquiv.toOpposite A
   commutes' _r := rfl
 
-@[simp] lemma toRingEquiv_toOpposite : (toOpposite R A : A ≃+* Aᵐᵒᵖ) = RingEquiv.toOpposite A := rfl
+#adaptation_note /-- After https://github.com/leanprover/lean4/pull/12179
+the simpNF linter complains about this being `@[simp]`. -/
+lemma toRingEquiv_toOpposite : (toOpposite R A : A ≃+* Aᵐᵒᵖ) = RingEquiv.toOpposite A := rfl
 @[simp] lemma toLinearEquiv_toOpposite : toLinearEquiv (toOpposite R A) = opLinearEquiv R := rfl
 
 end AlgEquiv

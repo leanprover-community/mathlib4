@@ -3,14 +3,19 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Option.Basic
-import Mathlib.Data.Prod.Basic
-import Mathlib.Data.Prod.PProd
-import Mathlib.Logic.Equiv.Basic
+module
+
+public import Mathlib.Data.Option.Basic
+public import Mathlib.Data.Prod.Basic
+public import Mathlib.Data.Prod.PProd
+public import Mathlib.Data.Sum.Basic
+public import Mathlib.Logic.Equiv.Basic
 
 /-!
 # Injective functions
 -/
+
+@[expose] public section
 
 universe u v w x
 
@@ -44,7 +49,7 @@ theorem exists_surjective_iff {α β : Sort*} :
 
 end Function
 
-section Equiv
+namespace Equiv
 
 variable {α : Sort u} {β : Sort v} (f : α ≃ β)
 
@@ -61,24 +66,22 @@ example (s : Finset (Fin 3)) (f : Equiv.Perm (Fin 3)) : s.map f.toEmbedding = s.
 example (s : Finset (Fin 3)) (f : Equiv.Perm (Fin 3)) : s.map f = s.map f.toEmbedding := by simp
 ```
 -/
-protected def Equiv.toEmbedding : α ↪ β :=
+@[reducible]
+protected def toEmbedding : α ↪ β :=
   ⟨f, f.injective⟩
 
 @[simp]
-theorem Equiv.coe_toEmbedding : (f.toEmbedding : α → β) = f :=
+theorem coe_toEmbedding : (f.toEmbedding : α → β) = f :=
   rfl
 
-theorem Equiv.toEmbedding_apply (a : α) : f.toEmbedding a = f a :=
+theorem toEmbedding_apply (a : α) : f.toEmbedding a = f a :=
   rfl
 
-theorem Equiv.toEmbedding_injective : Function.Injective (Equiv.toEmbedding : (α ≃ β) → (α ↪ β)) :=
+theorem toEmbedding_injective : Function.Injective (Equiv.toEmbedding : (α ≃ β) → (α ↪ β)) :=
   fun _ _ h ↦ by rwa [DFunLike.ext'_iff] at h ⊢
 
-instance Equiv.coeEmbedding : Coe (α ≃ β) (α ↪ β) :=
+instance coeEmbedding : Coe (α ≃ β) (α ↪ β) :=
   ⟨Equiv.toEmbedding⟩
-
-@[instance] abbrev Equiv.Perm.coeEmbedding : Coe (Equiv.Perm α) (α ↪ α) :=
-  Equiv.coeEmbedding
 
 end Equiv
 
@@ -109,6 +112,7 @@ theorem coeFn_mk {α β} (f : α → β) (i) : (@mk _ _ f i : α → β) = f :=
 theorem mk_coe {α β : Type*} (f : α ↪ β) (inj) : (⟨f, inj⟩ : α ↪ β) = f :=
   rfl
 
+@[grind! .] -- This adds `Injective f` into the grind context for every embedding `f : α ↪ β`.
 protected theorem injective {α β} (f : α ↪ β) : Injective f :=
   EmbeddingLike.injective f
 
@@ -138,16 +142,12 @@ instance : Trans Embedding Embedding Embedding := ⟨Embedding.trans⟩
 @[simp] lemma mk_trans_mk {α β γ} (f : α → β) (g : β → γ) (hf hg) :
     (mk f hf).trans (mk g hg) = mk (g ∘ f) (hg.comp hf) := rfl
 
-@[simp]
 theorem equiv_toEmbedding_trans_symm_toEmbedding {α β : Sort*} (e : α ≃ β) :
     e.toEmbedding.trans e.symm.toEmbedding = Embedding.refl _ := by
-  ext
   simp
 
-@[simp]
 theorem equiv_symm_toEmbedding_trans_toEmbedding {α β : Sort*} (e : α ≃ β) :
     e.symm.toEmbedding.trans e.toEmbedding = Embedding.refl _ := by
-  ext
   simp
 
 /-- Transfer an embedding along a pair of equivalences. -/
@@ -174,8 +174,7 @@ def setValue {α β : Sort*} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidabl
     [∀ a', Decidable (f a' = b)] : α ↪ β :=
   ⟨fun a' => if a' = a then b else if f a' = b then f a else f a', by
     intro x y h
-    simp only at h
-    split_ifs at h <;> (try subst b) <;> (try simp only [f.injective.eq_iff] at *) <;> grind⟩
+    grind⟩
 
 @[simp]
 theorem setValue_eq {α β} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable (a' = a)]
@@ -299,6 +298,8 @@ variable {α α' : Type*} {β : α → Type*} {β' : α' → Type*}
 @[simps apply]
 def sigmaMk (a : α) : β a ↪ Σ x, β x :=
   ⟨Sigma.mk a, sigma_mk_injective⟩
+
+attribute [grind =] sigmaMk_apply
 
 /-- If `f : α ↪ α'` is an embedding and `g : Π a, β α ↪ β' (f α)` is a family
 of embeddings, then `Sigma.map f g` is an embedding. -/
@@ -451,19 +452,28 @@ def subtypeOrLeftEmbedding (p q : α → Prop) [DecidablePred p] :
     dsimp only
     split_ifs <;> simp [Subtype.ext_iff]⟩
 
+@[simp]
 theorem subtypeOrLeftEmbedding_apply_left {p q : α → Prop} [DecidablePred p]
     (x : { x // p x ∨ q x }) (hx : p x) :
     subtypeOrLeftEmbedding p q x = Sum.inl ⟨x, hx⟩ :=
   dif_pos hx
 
+@[simp]
 theorem subtypeOrLeftEmbedding_apply_right {p q : α → Prop} [DecidablePred p]
     (x : { x // p x ∨ q x }) (hx : ¬p x) :
     subtypeOrLeftEmbedding p q x = Sum.inr ⟨x, x.prop.resolve_left hx⟩ :=
   dif_neg hx
 
+@[grind =]
+theorem subtypeOrLeftEmbedding_apply {p q : α → Prop} [DecidablePred p]
+    (x : { x // p x ∨ q x }) :
+    subtypeOrLeftEmbedding p q x =
+      if h : p x then Sum.inl ⟨x, h⟩ else Sum.inr ⟨x, x.prop.resolve_left h⟩ :=
+  rfl
+
 /-- A subtype `{x // p x}` can be injectively sent to into a subtype `{x // q x}`,
 if `p x → q x` for all `x : α`. -/
-@[simps]
+@[simps (attr := grind =)]
 def Subtype.impEmbedding (p q : α → Prop) (h : ∀ x, p x → q x) : { x // p x } ↪ { x // q x } :=
   ⟨fun x => ⟨x, h x x.prop⟩, fun x y => by simp [Subtype.ext_iff]⟩
 

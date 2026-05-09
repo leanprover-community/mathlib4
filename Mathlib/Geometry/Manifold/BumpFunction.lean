@@ -3,10 +3,13 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.BumpFunction.FiniteDimension
-import Mathlib.Geometry.Manifold.ContMDiff.Atlas
-import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
-import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
+module
+
+public import Mathlib.Analysis.Calculus.BumpFunction.FiniteDimension
+public import Mathlib.Geometry.Manifold.ContMDiff.Atlas
+public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
+public import Mathlib.Geometry.Manifold.Notation
+public import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 
 /-!
 # Smooth bump functions on a smooth manifold
@@ -28,6 +31,8 @@ The actual statements involve (pre)images under `extChartAt I f` and are given a
 manifold, smooth bump function
 -/
 
+@[expose] public section
+
 universe uE uF uH uM
 
 variable {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -47,7 +52,7 @@ In this section we define a structure for a bundled smooth bump function and pro
 -/
 
 variable (I) in
-/-- Given a smooth manifold modelled on a finite dimensional space `E`,
+/-- Given a smooth manifold modelled on a finite-dimensional space `E`,
 `f : SmoothBumpFunction I M` is a smooth function on `M` such that in the extended chart `e` at
 `f.c`:
 
@@ -231,7 +236,6 @@ theorem support_updateRIn {r : ℝ} (hr : r ∈ Ioo 0 f.rOut) :
     support (f.updateRIn r hr) = support f := by
   simp only [support_eq_inter_preimage, updateRIn_rOut]
 
--- Porting note: was an `Inhabited` instance
 instance : Nonempty (SmoothBumpFunction I c) := nhdsWithin_range_basis.nonempty
 
 variable [T2Space M]
@@ -286,14 +290,14 @@ theorem nhds_basis_support {s : Set M} (hs : s ∈ 𝓝 c) :
 variable [IsManifold I ∞ M]
 
 /-- A smooth bump function is infinitely smooth. -/
-protected theorem contMDiff : ContMDiff I 𝓘(ℝ) ∞ f := by
+protected theorem contMDiff : CMDiff ∞ f := by
   refine contMDiff_of_tsupport fun x hx => ?_
   have : x ∈ (chartAt H c).source := f.tsupport_subset_chartAt_source hx
   refine ContMDiffAt.congr_of_eventuallyEq ?_ <| f.eqOn_source.eventuallyEq_of_mem <|
     (chartAt H c).open_source.mem_nhds this
   exact f.contDiffAt.contMDiffAt.comp _ (contMDiffAt_extChartAt' this)
 
-protected theorem contMDiffAt {x} : ContMDiffAt I 𝓘(ℝ) ∞ f x :=
+protected theorem contMDiffAt {x} : CMDiffAt ∞ f x :=
   f.contMDiff.contMDiffAt
 
 protected theorem continuous : Continuous f :=
@@ -302,15 +306,14 @@ protected theorem continuous : Continuous f :=
 /-- If `f : SmoothBumpFunction I c` is a smooth bump function and `g : M → G` is a function smooth
 on the source of the chart at `c`, then `f • g` is smooth on the whole manifold. -/
 theorem contMDiff_smul {G} [NormedAddCommGroup G] [NormedSpace ℝ G] {g : M → G}
-    (hg : ContMDiffOn I 𝓘(ℝ, G) ∞ g (chartAt H c).source) :
-    ContMDiff I 𝓘(ℝ, G) ∞ fun x => f x • g x := by
+    (hg : CMDiff[(chartAt H c).source] ∞ g) : CMDiff ∞ fun x => f x • g x := by
   refine contMDiff_of_tsupport fun x hx => ?_
-  have : x ∈ (chartAt H c).source :=
   -- Porting note: was a more readable `calc`
   -- calc
   --   x ∈ tsupport fun x => f x • g x := hx
   --   _ ⊆ tsupport f := tsupport_smul_subset_left _ _
   --   _ ⊆ (chart_at _ c).source := f.tsupport_subset_chartAt_source
+  have : x ∈ (chartAt H c).source :=
     f.tsupport_subset_chartAt_source <| tsupport_smul_subset_left _ _ hx
   exact f.contMDiffAt.smul ((hg _ this).contMDiffAt <| (chartAt _ _).open_source.mem_nhds this)
 

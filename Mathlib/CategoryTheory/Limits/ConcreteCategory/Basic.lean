@@ -3,16 +3,20 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Adam Topaz
 -/
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
-import Mathlib.CategoryTheory.Limits.Types.Colimits
-import Mathlib.CategoryTheory.Limits.Types.Images
-import Mathlib.CategoryTheory.Limits.Types.Filtered
-import Mathlib.CategoryTheory.Limits.Yoneda
+module
+
+public import Mathlib.CategoryTheory.ConcreteCategory.Forget
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+public import Mathlib.CategoryTheory.Limits.Types.Colimits
+public import Mathlib.CategoryTheory.Limits.Types.Images
+public import Mathlib.CategoryTheory.Limits.Types.Filtered
+public import Mathlib.CategoryTheory.Limits.Yoneda
 
 /-!
 # Facts about (co)limits of functors into concrete categories
 -/
+
+@[expose] public section
 
 
 universe s t w v u r
@@ -23,39 +27,31 @@ namespace CategoryTheory.Types
 
 open Limits
 
-/-! The forgetful fuctor on `Type u` is the identity; copy the instances on `𝟭 (Type u)`
-over to `forget (Type u)`.
-
-We currently have two instances for `HasForget (Type u)`:
-
-* A global `HasForget` instance where `forget (Type u)` reduces to `𝟭 Type`
-* A locally enabled `ConcreteCategory` where `forget (Type u)` is only reducible-with-instances
-  equal to `𝟭 Type`.
+/-! The forgetful functor on `Type u` is the identity; copy the instances on `𝟭 (Type u)`
+over to `forget Type u`.
 
 Since instance synthesis only looks through reducible definitions, we need to help it out by copying
 over the instances that wouldn't be found otherwise.
 -/
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory
-
-instance : (@forget (Type u) _ ConcreteCategory.toHasForget).Full :=
+instance : (forget <| Type u).Full :=
   Functor.Full.id
 
-instance : PreservesLimitsOfSize (@forget (Type u) _ ConcreteCategory.toHasForget) :=
+instance : PreservesLimitsOfSize (forget <| Type u) :=
   id_preservesLimitsOfSize
-instance : PreservesColimitsOfSize (@forget (Type u) _ ConcreteCategory.toHasForget) :=
+instance : PreservesColimitsOfSize (forget <| Type u) :=
   id_preservesColimitsOfSize
 
-instance : ReflectsLimitsOfSize (@forget (Type u) _ ConcreteCategory.toHasForget) :=
+instance : ReflectsLimitsOfSize (forget <| Type u) :=
   id_reflectsLimits
-instance : ReflectsColimitsOfSize (@forget (Type u) _ ConcreteCategory.toHasForget) :=
+instance : ReflectsColimitsOfSize (forget <| Type u) :=
   id_reflectsColimits
 
-instance : (@forget (Type u) _ ConcreteCategory.toHasForget).IsEquivalence :=
+instance : (forget <| Type u).IsEquivalence :=
   Functor.isEquivalence_refl
 
-instance : (@forget (Type u) _ ConcreteCategory.toHasForget).IsCorepresentable :=
-  instIsCorepresentableIdType
+instance : (forget <| Type u).IsCorepresentable :=
+  inferInstanceAs (𝟭 <| Type u).IsCorepresentable
 
 end CategoryTheory.Types
 
@@ -66,7 +62,8 @@ section Limits
 /-- If a functor `G : J ⥤ C` to a concrete category has a limit and that `forget C`
 is corepresentable, then `(G ⋙ forget C).sections` is small. -/
 lemma small_sections_of_hasLimit
-    {C : Type u} [Category.{v} C] [HasForget.{v} C]
+    {C : Type u} [Category.{v} C] {FC : outParam <| C → C → Type*} {CC : outParam <| C → Type v}
+    [outParam <| ∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory.{v} C FC]
     [(forget C).IsCorepresentable] {J : Type w} [Category.{t} J] (G : J ⥤ C) [HasLimit G] :
     Small.{v} (G ⋙ forget C).sections := by
   rw [← Types.hasLimit_iff_small_sections]
@@ -141,6 +138,7 @@ theorem colimit_exists_rep [HasColimit F] (x : ToType (colimit F)) :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isColimit_rep_eq_of_exists {D : Cocone F} {i j : J} (x : ToType (F.obj i))
     (y : ToType (F.obj j))
     (h : ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f x = F.map g y) :
@@ -150,8 +148,8 @@ theorem isColimit_rep_eq_of_exists {D : Cocone F} {i j : J} (x : ToType (F.obj i
   let h1 : (F ⋙ forget C).map f ≫ E.ι.app k = E.ι.app i := E.ι.naturality f
   let h2 : (F ⋙ forget C).map g ≫ E.ι.app k = E.ι.app j := E.ι.naturality g
   change E.ι.app i x = E.ι.app j y
-  rw [← h1, types_comp_apply, hfg]
-  exact congrFun h2 y
+  rw [← h1, comp_apply, hfg]
+  exact ConcreteCategory.congr_hom h2 y
 
 theorem colimit_rep_eq_of_exists [HasColimit F] {i j : J} (x : ToType (F.obj i))
     (y : ToType (F.obj j))

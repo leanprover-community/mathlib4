@@ -3,7 +3,9 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 
 /-!
 ## Locally directed gluing
@@ -16,11 +18,13 @@ This is the condition needed to show that a colimit (in `TopCat`) of open embedd
 gluing of the open sets. See `Mathlib/AlgebraicGeometry/Gluing.lean` for an actual application.
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Limits
 
-variable {J : Type*} [Category J]
+variable {J : Type*} [Category* J]
 
 /--
 We say that a functor `F` to `Type*` is locally directed if for every `x ∈ F.obj k`, the
@@ -49,18 +53,16 @@ alias Functor.exists_map_eq_of_isLocallyDirected := Functor.IsLocallyDirected.co
 instance (F : Discrete J ⥤ Type*) : F.IsLocallyDirected := by
   constructor
   rintro ⟨i⟩ ⟨j⟩ ⟨k⟩ ⟨⟨⟨⟩⟩⟩ ⟨⟨⟨⟩⟩⟩
-  simp only [Discrete.functor_map_id, types_id_apply, forall_eq']
-  exact fun x ↦ ⟨⟨i⟩, 𝟙 _, 𝟙 _, x, by simp⟩
+  simpa using fun x ↦ ⟨i, 𝟙 _, 𝟙 _, x, by simp⟩
 
 instance (F : WidePushoutShape J ⥤ Type*) [∀ i, Mono (F.map (.init i))] :
     F.IsLocallyDirected := by
   constructor
   rintro i j k (_ | i) (_ | j)
-  · simp only [WidePushoutShape.hom_id, FunctorToTypes.map_id_apply, forall_eq']
-    exact fun x ↦ ⟨_, 𝟙 _, 𝟙 _, x, by simp⟩
-  · simp only [WidePushoutShape.hom_id, FunctorToTypes.map_id_apply, forall_comm, forall_eq]
+  · simpa using fun x ↦ ⟨_, 𝟙 _, 𝟙 _, x, by simp⟩
+  · simp only [WidePushoutShape.hom_id, Functor.map_id, id_apply, forall_comm, forall_eq]
     exact fun x ↦ ⟨_, .init _, 𝟙 _, x, by simp⟩
-  · simp only [WidePushoutShape.hom_id, FunctorToTypes.map_id_apply, forall_eq']
+  · simp only [WidePushoutShape.hom_id, Functor.map_id, id_apply, forall_eq']
     exact fun x ↦ ⟨_, 𝟙 _, .init _, x, by simp⟩
   · simp only [((CategoryTheory.mono_iff_injective (F.map (.init i))).mp inferInstance).eq_iff,
       forall_eq']

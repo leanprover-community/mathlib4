@@ -3,7 +3,9 @@ Copyright (c) 2024 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.RingTheory.PrincipalIdealDomain
+module
+
+public import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Principal Ideals
@@ -23,6 +25,8 @@ This file deals with the set of principal ideals of a `CommRing R`.
 * `Ideal.associatesNonZeroDivisorsMulEquivIsPrincipal`: the `MulEquiv` between the monoid of
   `Associates R⁰` and the submonoid of non-zero-divisors principal ideals of `R`.
 -/
+
+@[expose] public section
 
 variable {R : Type*} [CommRing R]
 
@@ -67,7 +71,7 @@ noncomputable def associatesEquivIsPrincipal :
   toFun := _root_.Quotient.lift (fun x ↦ ⟨span {x}, x, rfl⟩)
     (fun _ _ _ ↦ by simpa [span_singleton_eq_span_singleton])
   invFun I := .mk I.2.generator
-  left_inv := Quotient.ind fun _ ↦ by simpa using
+  left_inv := Quotient.ind fun _ ↦ by simpa [Quotient.eq] using
     Ideal.span_singleton_eq_span_singleton.mp (@Ideal.span_singleton_generator _ _ _ ⟨_, rfl⟩)
   right_inv I := by simp only [_root_.Quotient.lift_mk, span_singleton_generator, Subtype.coe_eta]
 
@@ -95,6 +99,7 @@ theorem associatesEquivIsPrincipal_map_one :
     (associatesEquivIsPrincipal R 1 : Ideal R) = 1 := by
   rw [one_eq_mk_one, associatesEquivIsPrincipal_apply, span_singleton_one, one_eq_top]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 /-- The `MulEquiv` version of `Ideal.associatesEquivIsPrincipal`. -/
 noncomputable def associatesMulEquivIsPrincipal :
@@ -119,7 +124,8 @@ noncomputable def associatesNonZeroDivisorsEquivIsPrincipal :
           associatesEquivIsPrincipal_apply, span_singleton_nonZeroDivisors])
     _ ≃ {I : Ideal R // IsPrincipal I ∧ I ∈ (Ideal R)⁰} :=
       Equiv.subtypeSubtypeEquivSubtypeInter (fun I ↦ IsPrincipal I) (fun I ↦ I ∈ (Ideal R)⁰)
-    _ ≃ {I : Ideal R // I ∈ (Ideal R)⁰ ∧ IsPrincipal I} := Equiv.setCongr (by simp_rw [and_comm])
+    _ ≃ {I : Ideal R // I ∈ (Ideal R)⁰ ∧ IsPrincipal I} :=
+      .subtypeEquivProp <| by simp_rw [and_comm]
     _ ≃ {I : (Ideal R)⁰ // IsPrincipal I.1} := (Equiv.subtypeSubtypeEquivSubtypeInter _ _).symm
 
 @[simp]
@@ -143,14 +149,36 @@ theorem associatesNonZeroDivisorsEquivIsPrincipal_map_one :
   rw [associatesNonZeroDivisorsEquivIsPrincipal_coe, map_one, OneMemClass.coe_one,
     associatesEquivIsPrincipal_map_one]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 /-- The `MulEquiv` version of `Ideal.associatesNonZeroDivisorsEquivIsPrincipal`. -/
 noncomputable def associatesNonZeroDivisorsMulEquivIsPrincipal :
     Associates R⁰ ≃* (isPrincipalNonZeroDivisorsSubmonoid R) where
   __ := associatesNonZeroDivisorsEquivIsPrincipal R
   map_mul' _ _ := by
-    rw [Subtype.ext_iff, Subtype.ext_iff]
-    erw [associatesNonZeroDivisorsEquivIsPrincipal_mul]
+    rw [Subtype.ext_iff, Subtype.ext_iff, Equiv.toFun_as_coe,
+      associatesNonZeroDivisorsEquivIsPrincipal_mul]
     rfl
+
+/-- A nonzero principal ideal in an integral domain `R` is isomorphic to `R` as a module.
+The isomorphism we choose here sends `1` to the generator chosen by `Ideal.generator`. -/
+noncomputable def isoBaseOfIsPrincipal {I : Ideal R}
+    [hprinc : I.IsPrincipal] (hI : I ≠ ⊥) : R ≃ₗ[R] I :=
+  letI x := IsPrincipal.generator I
+  have hx : x ≠ 0 := by rwa [Ne, ← IsPrincipal.eq_bot_iff_generator_eq_zero]
+  (LinearEquiv.toSpanNonzeroSingleton R R x hx).trans
+    (LinearEquiv.ofEq (Submodule.span R {x}) I (IsPrincipal.span_singleton_generator I))
+
+@[simp]
+theorem isoBaseOfIsPrincipal_apply {I : Ideal R} [hprinc : I.IsPrincipal] (hI : I ≠ ⊥) (x : R) :
+    (Ideal.isoBaseOfIsPrincipal hI) x = x * IsPrincipal.generator I :=
+  rfl
+
+theorem subtype_isoBaseOfIsPrincipal_eq_mul {I : Ideal R}
+    [hprinc : I.IsPrincipal] (h : I ≠ ⊥) :
+    Submodule.subtype I ∘ₗ ↑(Ideal.isoBaseOfIsPrincipal h) =
+    LinearMap.mul R R (IsPrincipal.generator I) := by
+  ext
+  simp
 
 end Ideal

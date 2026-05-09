@@ -3,8 +3,10 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Analysis.SpecialFunctions.Complex.Circle
-import Mathlib.Topology.Algebra.Group.CompactOpen
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Complex.Circle
+public import Mathlib.Topology.Algebra.Group.CompactOpen
 
 /-!
 # Pontryagin dual
@@ -19,6 +21,8 @@ isomorphic to its double dual.
 
 * `PontryaginDual A`: The group of continuous homomorphisms `A →* Circle`.
 -/
+
+@[expose] public section
 
 open Pointwise Function
 
@@ -67,8 +71,14 @@ namespace PontryaginDual
 
 open ContinuousMonoidHom
 
+#adaptation_note /-- nightly-2026-03-31
+Without this `set_option` we get a PANIC!
+-/
+set_option backward.inferInstanceAs.wrap.data false in
+instance : CommGroup (PontryaginDual A) := inferInstanceAs (CommGroup (A →ₜ* Circle))
+
 deriving instance
-  T2Space, CommGroup, IsTopologicalGroup,
+  T2Space, IsTopologicalGroup,
   Inhabited, FunLike, ContinuousMapClass, MonoidHomClass,
   [DiscreteTopology A] → CompactSpace _
 for PontryaginDual A

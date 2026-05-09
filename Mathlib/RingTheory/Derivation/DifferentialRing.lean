@@ -3,7 +3,9 @@ Copyright (c) 2024 Daniel Weber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Weber
 -/
-import Mathlib.RingTheory.Derivation.Basic
+module
+
+public import Mathlib.RingTheory.Derivation.Basic
 
 /-!
 # Differential and Algebras
@@ -11,6 +13,8 @@ import Mathlib.RingTheory.Derivation.Basic
 This file defines derivations from a commutative ring to itself as a typeclass, which lets us
 use the x′ notation for the derivative of x.
 -/
+
+@[expose] public section
 
 /-- A derivation from a ring to itself, as a typeclass. -/
 @[ext]
@@ -29,7 +33,7 @@ A delaborator for the x′ notation. This is required because it's not direct fu
 so the default delaborator doesn't work.
 -/
 @[app_delab DFunLike.coe]
-def delabDeriv : Delab := do
+meta def delabDeriv : Delab := do
   let e ← getExpr
   guard <| e.isAppOfArity' ``DFunLike.coe 6
   guard <| (e.getArg!' 4).isAppOf' ``Differential.deriv
@@ -89,7 +93,7 @@ lemma DifferentialAlgebra.equiv {A : Type*} [CommRing A] [Differential A]
   letI := Differential.equiv h.toRingEquiv
   ⟨fun a ↦ by
     change (LinearMap.comp ..) _ = _
-    simp only [AlgEquiv.toRingEquiv_eq_coe, RingHom.toAddMonoidHom_eq_coe,
+    simp only [RingHom.toAddMonoidHom_eq_coe,
       RingEquiv.toRingHom_eq_coe, AlgEquiv.toRingEquiv_toRingHom, LinearMap.coe_comp,
       AddMonoidHom.coe_toIntLinearMap, AddMonoidHom.coe_coe, RingHom.coe_coe, Derivation.coeFn_coe,
       Function.comp_apply, AlgEquiv.commutes, deriv_algebraMap]

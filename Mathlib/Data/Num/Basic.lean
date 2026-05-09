@@ -3,11 +3,12 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Lean.Linter.Deprecated
-import Mathlib.Data.Nat.Notation
-import Mathlib.Data.Int.Notation
-import Mathlib.Data.Nat.BinaryRec
-import Mathlib.Tactic.TypeStar
+module
+
+public import Lean.Linter.Deprecated
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Data.Int.Notation
+public import Mathlib.Data.Nat.BinaryRec
 
 /-!
 # Binary representation of integers using inductive types
@@ -17,6 +18,8 @@ the reliance on kernel reduction, in Lean this representation is discouraged
 in favor of the "Peano" natural numbers `Nat`, and the purpose of this
 collection of theorems is to show the equivalence of the different approaches.
 -/
+
+@[expose] public section
 
 /-- The type of positive binary numbers.
 
@@ -81,7 +84,7 @@ def succ : PosNum → PosNum
   | bit1 n => bit0 (succ n)
   | bit0 n => bit1 n
 
-/-- Returns a boolean for whether the `PosNum` is `one`. -/
+/-- Returns a Boolean for whether the `PosNum` is `one`. -/
 def isOne : PosNum → Bool
   | 1 => true
   | _ => false
@@ -479,11 +482,11 @@ instance : LT ZNum :=
 instance : LE ZNum :=
   ⟨fun a b => ¬b < a⟩
 
-instance decidableLT : DecidableLT ZNum
-  | a, b => by dsimp [LT.lt]; infer_instance
+instance decidableLT : DecidableLT ZNum :=
+  inferInstanceAs <| DecidableRel fun a b => cmp a b = Ordering.lt
 
-instance decidableLE : DecidableLE ZNum
-  | a, b => by dsimp [LE.le]; infer_instance
+instance decidableLE : DecidableLE ZNum :=
+  inferInstanceAs <| DecidableRel fun a b => ¬b < a
 
 end ZNum
 

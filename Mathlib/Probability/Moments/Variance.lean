@@ -3,7 +3,12 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Kexing Ying
 -/
-import Mathlib.Probability.Moments.Covariance
+module
+
+public import Mathlib.Probability.Moments.Covariance
+public import Mathlib.Probability.Notation
+import Mathlib.MeasureTheory.Function.LpSeminorm.Prod
+import Mathlib.Probability.Independence.Integrable
 
 /-!
 # Variance of random variables
@@ -31,8 +36,10 @@ We define the variance of a real-valued random variable as `Var[X] = 𝔼[(X - �
 * `ProbabilityTheory.variance_le_sub_mul_sub`: the variance of a random variable `X` satisfying
   `a ≤ X ≤ b` almost everywhere is at most `(b - 𝔼 X) * (𝔼 X - a)`.
 * `ProbabilityTheory.variance_le_sq_of_bounded`: the variance of a random variable `X` satisfying
-  `a ≤ X ≤ b` almost everywhere is at most`((b - a) / 2) ^ 2`.
+  `a ≤ X ≤ b` almost everywhere is at most `((b - a) / 2) ^ 2`.
 -/
+
+@[expose] public section
 
 open MeasureTheory Filter Finset
 
@@ -44,7 +51,7 @@ namespace ProbabilityTheory
 variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {X Y : Ω → ℝ} {μ : Measure Ω}
 
 variable (X μ) in
--- Porting note: Consider if `evariance` or `eVariance` is better. Also,
+-- TODO: Consider if `evariance` or `eVariance` is better. Also,
 -- consider `eVariationOn` in `Mathlib.Analysis.BoundedVariation`.
 /-- The `ℝ≥0∞`-valued variance of a real-valued random variable defined as the Lebesgue integral of
 `‖X - 𝔼[X]‖^2`. -/
@@ -84,9 +91,13 @@ theorem evariance_congr (h : X =ᵐ[μ] Y) : eVar[X; μ] = eVar[Y; μ] := by
 theorem variance_congr (h : X =ᵐ[μ] Y) : Var[X; μ] = Var[Y; μ] := by
   simp_rw [variance, evariance_congr h]
 
+@[simp] lemma evariance_zero_measure : eVar[X; (0 : Measure Ω)] = 0 := by simp [evariance]
+@[simp] lemma variance_zero_measure : Var[X; (0 : Measure Ω)] = 0 := by simp [variance]
+
 theorem evariance_lt_top [IsFiniteMeasure μ] (hX : MemLp X 2 μ) : evariance X μ < ∞ := by
   have := ENNReal.pow_lt_top (hX.sub <| memLp_const <| μ[X]).2 (n := 2)
-  rw [eLpNorm_eq_lintegral_rpow_enorm two_ne_zero ENNReal.ofNat_ne_top, ← ENNReal.rpow_two] at this
+  rw [eLpNorm_eq_lintegral_rpow_enorm_toReal two_ne_zero ENNReal.ofNat_ne_top, ← ENNReal.rpow_two]
+    at this
   simp only [ENNReal.toReal_ofNat, Pi.sub_apply, one_div] at this
   rw [← ENNReal.rpow_mul, inv_mul_cancel₀ (two_ne_zero : (2 : ℝ) ≠ 0), ENNReal.rpow_one] at this
   simp_rw [ENNReal.rpow_two] at this
@@ -101,7 +112,7 @@ theorem evariance_eq_top [IsFiniteMeasure μ] (hXm : AEStronglyMeasurable X μ) 
   rw [← Ne, ← lt_top_iff_ne_top] at h
   have : MemLp (fun ω => X ω - μ[X]) 2 μ := by
     refine ⟨by fun_prop, ?_⟩
-    rw [eLpNorm_eq_lintegral_rpow_enorm two_ne_zero ENNReal.ofNat_ne_top]
+    rw [eLpNorm_eq_lintegral_rpow_enorm_toReal two_ne_zero ENNReal.ofNat_ne_top]
     simp only [ENNReal.toReal_ofNat, ENNReal.rpow_two]
     exact ENNReal.rpow_lt_top_of_nonneg (by linarith) h.ne
   refine hX ?_
@@ -114,15 +125,17 @@ theorem evariance_lt_top_iff_memLp [IsFiniteMeasure μ] (hX : AEStronglyMeasurab
   mp := by contrapose!; rw [top_le_iff]; exact evariance_eq_top hX
   mpr := evariance_lt_top
 
-@[deprecated (since := "2025-02-21")]
-alias evariance_lt_top_iff_memℒp := evariance_lt_top_iff_memLp
-
 lemma evariance_eq_top_iff [IsFiniteMeasure μ] (hX : AEStronglyMeasurable X μ) :
     evariance X μ = ∞ ↔ ¬ MemLp X 2 μ := by simp [← evariance_lt_top_iff_memLp hX]
 
 lemma variance_of_not_memLp [IsFiniteMeasure μ] (hX : AEStronglyMeasurable X μ)
     (hX_not : ¬ MemLp X 2 μ) :
     variance X μ = 0 := by simp [variance, (evariance_eq_top_iff hX).mpr hX_not]
+
+lemma memLp_two_of_variance_ne_zero [IsFiniteMeasure μ] (hX : AEStronglyMeasurable X μ)
+    (h : Var[X; μ] ≠ 0) : MemLp X 2 μ := by
+  contrapose h
+  exact variance_of_not_memLp hX h
 
 theorem ofReal_variance [IsFiniteMeasure μ] (hX : MemLp X 2 μ) :
     .ofReal (variance X μ) = evariance X μ := by
@@ -133,13 +146,6 @@ protected alias _root_.MeasureTheory.MemLp.evariance_lt_top := evariance_lt_top
 protected alias _root_.MeasureTheory.MemLp.evariance_ne_top := evariance_ne_top
 protected alias _root_.MeasureTheory.MemLp.ofReal_variance_eq := ofReal_variance
 
-@[deprecated (since := "2025-02-21")]
-protected alias _root_.MeasureTheory.Memℒp.evariance_lt_top := evariance_lt_top
-@[deprecated (since := "2025-02-21")]
-protected alias _root_.MeasureTheory.Memℒp.evariance_ne_top := evariance_ne_top
-@[deprecated (since := "2025-02-21")]
-protected alias _root_.MeasureTheory.Memℒp.ofReal_variance_eq := ofReal_variance
-
 variable (X μ) in
 theorem evariance_eq_lintegral_ofReal :
     evariance X μ = ∫⁻ ω, ENNReal.ofReal ((X ω - μ[X]) ^ 2) ∂μ := by
@@ -148,6 +154,19 @@ theorem evariance_eq_lintegral_ofReal :
 lemma variance_eq_integral (hX : AEMeasurable X μ) : Var[X; μ] = ∫ ω, (X ω - μ[X]) ^ 2 ∂μ := by
   simp [variance, evariance, toReal_enorm, ← integral_toReal ((hX.sub_const _).enorm.pow_const _) <|
     .of_forall fun _ ↦ ENNReal.pow_lt_top enorm_lt_top]
+
+/-- A random variable with variance `0` is almost surely constant. -/
+lemma ae_eq_integral_of_variance_eq_zero [IsFiniteMeasure μ] (hX : MemLp X 2 μ)
+    (h : Var[X; μ] = 0) :
+    ∀ᵐ ω ∂μ, X ω = μ[X] := by
+  rw [variance_eq_integral hX.aemeasurable, integral_eq_zero_iff_of_nonneg] at h
+  · filter_upwards [h] with ω hω
+    simp at hω
+    grind
+  · exact fun _ ↦ by positivity
+  · simp_rw [sub_sq]
+    exact (hX.integrable_sq.sub (((hX.integrable (by simp)).const_mul _).mul_const _)).add
+      (integrable_const _)
 
 lemma variance_of_integral_eq_zero (hX : AEMeasurable X μ) (hXint : μ[X] = 0) :
     variance X μ = ∫ ω, X ω ^ 2 ∂μ := by
@@ -178,31 +197,34 @@ lemma covariance_self {X : Ω → ℝ} (hX : AEMeasurable X μ) :
   congr with x
   ring
 
-@[deprecated (since := "2025-06-25")] alias covariance_same := covariance_self
-
+@[simp]
 theorem variance_nonneg (X : Ω → ℝ) (μ : Measure Ω) : 0 ≤ variance X μ :=
   ENNReal.toReal_nonneg
 
-theorem variance_mul (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
+theorem variance_const_mul (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
     variance (fun ω => c * X ω) μ = c ^ 2 * variance X μ := by
   rw [variance, evariance_mul, ENNReal.toReal_mul, ENNReal.toReal_ofReal (sq_nonneg _)]
   rfl
 
+theorem variance_mul_const (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
+    variance (fun ω => X ω * c) μ = variance X μ * c ^ 2 := by
+  simp [mul_comm, variance_const_mul]
+
+@[deprecated (since := "2025-11-29")] alias variance_mul := variance_const_mul
+
 theorem variance_smul (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
     variance (c • X) μ = c ^ 2 * variance X μ :=
-  variance_mul c X μ
+  variance_const_mul c X μ
 
 theorem variance_smul' {A : Type*} [CommSemiring A] [Algebra A ℝ] (c : A) (X : Ω → ℝ)
     (μ : Measure Ω) : variance (c • X) μ = c ^ 2 • variance X μ := by
   convert variance_smul (algebraMap A ℝ c) X μ using 1
-  · congr; simp only [algebraMap_smul]
+  · simp only [algebraMap_smul]
   · simp only [Algebra.smul_def, map_pow]
 
 theorem variance_eq_sub [IsProbabilityMeasure μ] {X : Ω → ℝ} (hX : MemLp X 2 μ) :
     variance X μ = μ[X ^ 2] - μ[X] ^ 2 := by
   rw [← covariance_self hX.aemeasurable, covariance_eq_sub hX hX, pow_two, pow_two]
-
-@[deprecated (since := "2025-08-07")] alias variance_def' := variance_eq_sub
 
 lemma variance_add_const [IsProbabilityMeasure μ] (hX : AEStronglyMeasurable X μ) (c : ℝ) :
     Var[fun ω ↦ X ω + c; μ] = Var[X; μ] := by
@@ -222,7 +244,7 @@ lemma variance_const_add [IsProbabilityMeasure μ] (hX : AEStronglyMeasurable X 
   simp_rw [add_comm c, variance_add_const hX c]
 
 lemma variance_fun_neg : Var[fun ω ↦ -X ω; μ] = Var[X; μ] := by
-  convert variance_mul (-1) X μ
+  convert variance_const_mul (-1) X μ
   · ext; ring
   · simp
 
@@ -301,6 +323,12 @@ lemma variance_map {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ : Measure Ω'}
   · refine AEStronglyMeasurable.pow ?_ _
     exact AEMeasurable.aestronglyMeasurable (by fun_prop)
 
+lemma _root_.MeasureTheory.MeasurePreserving.variance_fun_comp {Ω' : Type*}
+    {mΩ' : MeasurableSpace Ω'} {ν : Measure Ω'} {X : Ω → Ω'}
+    (hX : MeasurePreserving X μ ν) {f : Ω' → ℝ} (hf : AEMeasurable f ν) :
+    Var[fun ω ↦ f (X ω); μ] = Var[f; ν] := by
+  rw [← hX.map_eq, variance_map (hX.map_eq ▸ hf) hX.aemeasurable, Function.comp_def]
+
 lemma variance_map_equiv {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ : Measure Ω'}
     (X : Ω → ℝ) (Y : Ω' ≃ᵐ Ω) :
     Var[X; μ.map Y] = Var[X ∘ Y; μ] := by
@@ -344,28 +372,25 @@ theorem evariance_def' [IsProbabilityMeasure μ] {X : Ω → ℝ} (hX : AEStrong
     refine ⟨?_, ENNReal.ofReal_ne_top⟩
     rw [MemLp, not_and] at hℒ
     specialize hℒ hX
-    simp only [eLpNorm_eq_lintegral_rpow_enorm two_ne_zero ENNReal.ofNat_ne_top, not_lt, top_le_iff,
-      ENNReal.toReal_ofNat, one_div, ENNReal.rpow_eq_top_iff, inv_lt_zero, inv_pos, and_true,
-      or_iff_not_imp_left, not_and_or, zero_lt_two] at hℒ
+    simp only [eLpNorm_eq_lintegral_rpow_enorm_toReal two_ne_zero ENNReal.ofNat_ne_top, not_lt,
+      top_le_iff, ENNReal.toReal_ofNat, one_div, ENNReal.rpow_eq_top_iff, inv_lt_zero, inv_pos,
+      and_true, or_iff_not_imp_left, not_and_or, zero_lt_two] at hℒ
     exact mod_cast hℒ fun _ => zero_le_two
 
-set_option linter.deprecated false in
 /-- **Chebyshev's inequality** for `ℝ≥0∞`-valued variance. -/
 theorem meas_ge_le_evariance_div_sq {X : Ω → ℝ} (hX : AEStronglyMeasurable X μ) {c : ℝ≥0}
     (hc : c ≠ 0) : μ {ω | ↑c ≤ |X ω - μ[X]|} ≤ evariance X μ / c ^ 2 := by
   have A : (c : ℝ≥0∞) ≠ 0 := by rwa [Ne, ENNReal.coe_eq_zero]
   have B : AEStronglyMeasurable (fun _ : Ω => μ[X]) μ := aestronglyMeasurable_const
-  convert meas_ge_le_mul_pow_eLpNorm μ two_ne_zero ENNReal.ofNat_ne_top (hX.sub B) A using 1
-  · congr
-    simp only [Pi.sub_apply, ENNReal.coe_le_coe, ← Real.norm_eq_abs, ← coe_nnnorm,
-      NNReal.coe_le_coe]
-  · rw [eLpNorm_eq_lintegral_rpow_enorm two_ne_zero ENNReal.ofNat_ne_top]
-    simp only [ENNReal.toReal_ofNat, one_div, Pi.sub_apply]
-    rw [div_eq_mul_inv, ENNReal.inv_pow, mul_comm, ENNReal.rpow_two]
-    congr
-    simp_rw [← ENNReal.rpow_mul, inv_mul_cancel₀ (two_ne_zero : (2 : ℝ) ≠ 0), ENNReal.rpow_two,
-      ENNReal.rpow_one, evariance]
-
+  convert meas_ge_le_mul_pow_eLpNorm_enorm μ two_ne_zero ENNReal.ofNat_ne_top
+      (hX.sub B) A (by simp) using 1
+  · norm_cast
+  rw [eLpNorm_eq_lintegral_rpow_enorm_toReal two_ne_zero ENNReal.ofNat_ne_top]
+  simp only [ENNReal.toReal_ofNat, one_div, Pi.sub_apply]
+  rw [div_eq_mul_inv, ENNReal.inv_pow, mul_comm, ENNReal.rpow_two]
+  congr
+  simp_rw [← ENNReal.rpow_mul, inv_mul_cancel₀ (two_ne_zero : (2 : ℝ) ≠ 0), ENNReal.rpow_two,
+    ENNReal.rpow_one, evariance]
 
 /-- **Chebyshev's inequality**: one can control the deviation probability of a real random variable
 from its expectation in terms of the variance. -/
@@ -373,14 +398,13 @@ theorem meas_ge_le_variance_div_sq [IsFiniteMeasure μ] {X : Ω → ℝ} (hX : M
     (hc : 0 < c) : μ {ω | c ≤ |X ω - μ[X]|} ≤ ENNReal.ofReal (variance X μ / c ^ 2) := by
   rw [ENNReal.ofReal_div_of_pos (sq_pos_of_ne_zero hc.ne.symm), hX.ofReal_variance_eq]
   convert @meas_ge_le_evariance_div_sq _ _ _ _ hX.1 c.toNNReal (by simp [hc]) using 1
-  · simp only [Real.coe_toNNReal', max_le_iff, abs_nonneg, and_true]
+  · simp
   · rw [ENNReal.ofReal_pow hc.le]
     rfl
 
--- Porting note: supplied `MeasurableSpace Ω` argument of `h` by unification
 /-- The variance of the sum of two independent random variables is the sum of the variances. -/
 nonrec theorem IndepFun.variance_add {X Y : Ω → ℝ} (hX : MemLp X 2 μ)
-    (hY : MemLp Y 2 μ) (h : IndepFun X Y μ) : Var[X + Y; μ] = Var[X; μ] + Var[Y; μ] := by
+    (hY : MemLp Y 2 μ) (h : X ⟂ᵢ[μ] Y) : Var[X + Y; μ] = Var[X; μ] + Var[Y; μ] := by
   by_cases h' : X =ᵐ[μ] 0
   · rw [variance_congr h', variance_congr h'.add_right]
     simp
@@ -388,12 +412,16 @@ nonrec theorem IndepFun.variance_add {X Y : Ω → ℝ} (hX : MemLp X 2 μ)
   rw [variance_add hX hY, h.covariance_eq_zero hX hY]
   simp
 
--- Porting note: supplied `MeasurableSpace Ω` argument of `hs`, `h` by unification
+/-- The variance of the sum of two independent random variables is the sum of the variances. -/
+lemma IndepFun.variance_fun_add {X Y : Ω → ℝ} (hX : MemLp X 2 μ)
+    (hY : MemLp Y 2 μ) (h : X ⟂ᵢ[μ] Y) : Var[fun ω ↦ X ω + Y ω; μ] = Var[X; μ] + Var[Y; μ] :=
+  h.variance_add hX hY
+
 /-- The variance of a finite sum of pairwise independent random variables is the sum of the
 variances. -/
 nonrec theorem IndepFun.variance_sum {ι : Type*} {X : ι → Ω → ℝ} {s : Finset ι}
     (hs : ∀ i ∈ s, MemLp (X i) 2 μ)
-    (h : Set.Pairwise ↑s fun i j => IndepFun (X i) (X j) μ) :
+    (h : Set.Pairwise ↑s fun i j => X i ⟂ᵢ[μ] X j) :
     variance (∑ i ∈ s, X i) μ = ∑ i ∈ s, variance (X i) μ := by
   by_cases h'' : ∀ i ∈ s, X i =ᵐ[μ] 0
   · rw [variance_congr (Y := 0), variance_zero]
@@ -415,6 +443,21 @@ nonrec theorem IndepFun.variance_sum {ι : Type*} {X : ι → Ω → ℝ} {s : F
   rw [← covariance_self (hs i hi).aemeasurable]
   refine Finset.sum_eq_single_of_mem i hi fun j hj1 hj2 ↦ ?_
   exact (h hi hj1 hj2.symm).covariance_eq_zero (hs i hi) (hs j hj1)
+
+lemma variance_sum_pi [Fintype ι] {Ω : ι → Type*} {mΩ : ∀ i, MeasurableSpace (Ω i)}
+    {μ : (i : ι) → Measure (Ω i)} [∀ i, IsProbabilityMeasure (μ i)]
+    {X : Π i, Ω i → ℝ} (h : ∀ i, MemLp (X i) 2 (μ i)) :
+    Var[∑ i, fun ω ↦ X i (ω i); Measure.pi μ] = ∑ i, Var[X i; μ i] := by
+  rw [IndepFun.variance_sum]
+  · congr with i
+    change Var[(X i) ∘ (fun ω ↦ ω i); Measure.pi μ] = _
+    rw [← variance_map, (measurePreserving_eval _ i).map_eq]
+    · rw [(measurePreserving_eval _ i).map_eq]
+      exact (h i).aestronglyMeasurable.aemeasurable
+    · exact Measurable.aemeasurable (by fun_prop)
+  · exact fun i _ ↦ (h i).comp_measurePreserving (measurePreserving_eval _ i)
+  · exact fun i _ j _ hij ↦
+      (iIndepFun_pi fun i ↦ (h i).aestronglyMeasurable.aemeasurable).indepFun hij
 
 /-- **The Bhatia-Davis inequality on variance**
 
@@ -460,5 +503,40 @@ lemma variance_le_sq_of_bounded [IsProbabilityMeasure μ] {a b : ℝ} {X : Ω �
     _ ≤ (b - μ[X]) * (μ[X] - a) := variance_le_sub_mul_sub h hX
     _ = ((b - a) / 2) ^ 2 - (μ[X] - (b + a) / 2) ^ 2 := by ring
     _ ≤ ((b - a) / 2) ^ 2 := sub_le_self _ (sq_nonneg _)
+
+section Prod
+
+variable {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {ν : Measure Ω'}
+  [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
+  {X : Ω → ℝ} {Y : Ω' → ℝ}
+
+lemma variance_add_prod (hfμ : MemLp X 2 μ) (hgν : MemLp Y 2 ν) :
+    Var[fun p ↦ X p.1 + Y p.2; μ.prod ν] = Var[X; μ] + Var[Y; ν] := by
+  refine (IndepFun.variance_fun_add (hfμ.comp_fst ν) (hgν.comp_snd μ) ?_).trans ?_
+  · exact indepFun_prod₀ hfμ.aemeasurable hgν.aemeasurable
+  · rw [measurePreserving_fst.variance_fun_comp hfμ.aemeasurable,
+      measurePreserving_snd.variance_fun_comp hgν.aemeasurable]
+
+end Prod
+
+section NormedSpace
+
+variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {mE : MeasurableSpace E}
+  [NormedAddCommGroup F] [NormedSpace ℝ F] {mF : MeasurableSpace F}
+  {μ : Measure E} [IsProbabilityMeasure μ] {ν : Measure F} [IsProbabilityMeasure ν]
+
+lemma variance_dual_prod' {L : StrongDual ℝ (E × F)}
+    (hLμ : MemLp (L.comp (.inl ℝ E F)) 2 μ) (hLν : MemLp (L.comp (.inr ℝ E F)) 2 ν) :
+    Var[L; μ.prod ν] = Var[L.comp (.inl ℝ E F); μ] + Var[L.comp (.inr ℝ E F); ν] := by
+  have : L = fun x : E × F ↦ L.comp (.inl ℝ E F) x.1 + L.comp (.inr ℝ E F) x.2 := by
+    ext; rw [L.comp_inl_add_comp_inr]
+  rw [this, variance_add_prod hLμ hLν]
+
+lemma variance_dual_prod {L : StrongDual ℝ (E × F)} (hLμ : MemLp id 2 μ) (hLν : MemLp id 2 ν) :
+    Var[L; μ.prod ν] = Var[L.comp (.inl ℝ E F); μ] + Var[L.comp (.inr ℝ E F); ν] :=
+  variance_dual_prod' (ContinuousLinearMap.comp_memLp' _ hLμ)
+    (ContinuousLinearMap.comp_memLp' _ hLν)
+
+end NormedSpace
 
 end ProbabilityTheory

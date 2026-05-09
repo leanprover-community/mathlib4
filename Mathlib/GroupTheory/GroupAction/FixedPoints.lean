@@ -3,16 +3,20 @@ Copyright (c) 2024 Emilie Burgun. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Emilie Burgun
 -/
-import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-import Mathlib.Algebra.Group.Commute.Basic
-import Mathlib.Dynamics.PeriodicPts.Defs
-import Mathlib.GroupTheory.GroupAction.Defs
+module
+
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.Commute.Basic
+public import Mathlib.Dynamics.PeriodicPts.Defs
+public import Mathlib.GroupTheory.GroupAction.Defs
+public import Mathlib.GroupTheory.GroupAction.Hom
 
 /-!
 # Properties of `fixedPoints` and `fixedBy`
 
 This module contains some useful properties of `MulAction.fixedPoints` and `MulAction.fixedBy`
-that don't directly belong to `Mathlib/GroupTheory/GroupAction/Basic.lean`.
+that don't directly belong to `Mathlib/GroupTheory/GroupAction/Basic.lean`,
+as well as their interaction with `MulActionHom`.
 
 ## Main theorems
 
@@ -42,6 +46,8 @@ To properly use theorems using `fixedBy (Set α) g`, you should `open Pointwise`
 `s ∈ fixedBy (Set α) g` is a weaker statement than `s ⊆ fixedBy α g`: the latter requires that
 all points in `s` are fixed by `g`, whereas the former only requires that `g • x ∈ s`.
 -/
+
+public section
 
 namespace MulAction
 open Pointwise
@@ -77,14 +83,23 @@ theorem minimalPeriod_eq_one_iff_fixedBy {a : α} {g : G} :
     Function.minimalPeriod (fun x => g • x) a = 1 ↔ a ∈ fixedBy α g :=
   Function.minimalPeriod_eq_one_iff_isFixedPt
 
+@[to_additive]
+theorem mem_fixedBy_zpow {g : G} {a : α} (h : a ∈ fixedBy α g) (j : ℤ) :
+    a ∈ fixedBy α (g ^ j) := by
+  rw [mem_fixedBy, zpow_smul_eq_iff_minimalPeriod_dvd, minimalPeriod_eq_one_iff_fixedBy.mpr h,
+    Int.natCast_one]
+  exact one_dvd j
+
+@[to_additive]
+theorem mem_fixedBy_zpowers_iff_mem_fixedBy {g : G} {a : α} :
+    (∀ j : ℤ, a ∈ fixedBy α (g ^ j)) ↔ a ∈ fixedBy α g :=
+  ⟨fun h ↦ by simpa using h 1, fun h j ↦ mem_fixedBy_zpow h j⟩
+
 variable (α) in
 @[to_additive]
 theorem fixedBy_subset_fixedBy_zpow (g : G) (j : ℤ) :
-    fixedBy α g ⊆ fixedBy α (g ^ j) := by
-  intro a a_in_fixedBy
-  rw [mem_fixedBy, zpow_smul_eq_iff_minimalPeriod_dvd,
-    minimalPeriod_eq_one_iff_fixedBy.mpr a_in_fixedBy, Int.natCast_one]
-  exact one_dvd j
+    fixedBy α g ⊆ fixedBy α (g ^ j) :=
+  fun _ h ↦ mem_fixedBy_zpow h j
 
 variable (M α) in
 @[to_additive (attr := simp)]
@@ -247,10 +262,29 @@ is disjoint from `(fixedBy α g)ᶜ`, then `g` and `h` cannot commute.
 is disjoint from `(fixedBy α g)ᶜ`, then `g` and `h` cannot commute. -/]
 theorem not_commute_of_disjoint_movedBy_preimage {g h : G} (ne_one : g ≠ 1)
     (disjoint : Disjoint (fixedBy α g)ᶜ (h • (fixedBy α g)ᶜ)) : ¬Commute g h := by
-  contrapose! ne_one with comm
+  contrapose ne_one with comm
   rwa [movedBy_mem_fixedBy_of_commute comm, disjoint_self, Set.bot_eq_empty, ← Set.compl_univ,
     compl_inj_iff, fixedBy_eq_univ_iff_eq_one] at disjoint
 
 end Faithful
 
 end MulAction
+
+namespace MulActionHom
+
+/-- `MulActionHom` maps `fixedPoints` to `fixedPoints`. -/
+@[to_additive /-- `AddActionHom` maps `fixedPoints` to `fixedPoints`. -/]
+lemma map_mem_fixedPoints {G A B : Type*} [Monoid G] [MulAction G A] [MulAction G B]
+    (f : A →[G] B) {H : Submonoid G} {a : A} (ha : a ∈ MulAction.fixedPoints H A) :
+    f a ∈ MulAction.fixedPoints H B := by
+  intro ⟨h, _⟩
+  simp_all [← f.map_smul h a]
+
+/-- `MulActionHom` maps `fixedBy` to `fixedBy`. -/
+@[to_additive /-- `AddActionHom` maps `fixedBy` to `fixedBy`. -/]
+lemma map_mem_fixedBy {G A B : Type*} [Monoid G] [MulAction G A] [MulAction G B]
+    (f : A →[G] B) {g : G} {a : A} (ha : a ∈ MulAction.fixedBy A g) :
+    f a ∈ MulAction.fixedBy B g := by
+  simpa using congr_arg f ha
+
+end MulActionHom

@@ -3,9 +3,11 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux, Jon Bannon
 -/
-import Mathlib.Analysis.CStarAlgebra.Unitization
-import Mathlib.Analysis.CStarAlgebra.Classes
-import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+module
+
+public import Mathlib.Analysis.CStarAlgebra.Unitization
+public import Mathlib.Analysis.CStarAlgebra.Classes
+public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 
 /-!
 # Multiplier Algebra of a C⋆-algebra
@@ -51,6 +53,8 @@ separately.
   `L : A → A`, `R : A → A` satisfying the centrality condition `∀ x y, R x * y = x * L y`.
 + Show that if `A` is unital, then `A ≃⋆ₐ[𝕜] 𝓜(𝕜, A)`.
 -/
+
+@[expose] public section
 
 
 open NNReal ENNReal ContinuousLinearMap MulOpposite
@@ -191,9 +195,10 @@ instance instIntCast : IntCast 𝓜(𝕜, A) where
 instance instPow : Pow 𝓜(𝕜, A) ℕ where
   pow a n :=
     ⟨a.toProd ^ n, fun x y => by
-      induction' n with k hk generalizing x y
-      · rfl
-      · rw [Prod.pow_snd, Prod.pow_fst] at hk ⊢
+      induction n generalizing x y with
+      | zero => rfl
+      | succ k hk =>
+        rw [Prod.pow_snd, Prod.pow_fst] at hk ⊢
         rw [pow_succ' a.snd, mul_apply, a.central, hk, pow_succ a.fst, mul_apply]⟩
 
 instance instInhabited : Inhabited 𝓜(𝕜, A) :=
@@ -399,21 +404,16 @@ theorem star_snd (a : 𝓜(𝕜, A)) (b : A) : (star a).snd b = star (a.fst (sta
 
 instance instStarAddMonoid : StarAddMonoid 𝓜(𝕜, A) :=
   { DoubleCentralizer.instStar with
-    star_involutive := fun x => by ext <;> simp only [star_fst, star_snd, star_star]
-    star_add := fun x y => by
-      ext <;>
-        simp only [star_fst, star_snd, add_fst, add_snd, ContinuousLinearMap.add_apply, star_add] }
+    star_involutive _ := by ext <;> simp
+    star_add _ _ := by ext <;> simp }
 
 instance instStarRing : StarRing 𝓜(𝕜, A) :=
   { DoubleCentralizer.instStarAddMonoid with
-    star_mul := fun a b => by
-      ext <;>
-        simp only [star_fst, star_snd, mul_fst, mul_snd, star_star, ContinuousLinearMap.coe_mul,
-          Function.comp_apply] }
+    star_mul _ _ := by ext <;> simp }
 
 instance instStarModule : StarModule 𝕜 𝓜(𝕜, A) :=
   { DoubleCentralizer.instStarAddMonoid (𝕜 := 𝕜) (A := A) with
-    star_smul := fun k a => by ext <;> exact star_smul _ _ }
+    star_smul _ _ := by ext <;> exact star_smul _ _ }
 
 end Star
 
@@ -520,11 +520,7 @@ instance [CompleteSpace A] : CompleteSpace 𝓜(𝕜, A) := by
   rw [completeSpace_iff_isComplete_range isUniformEmbedding_toProdMulOpposite.isUniformInducing]
   apply IsClosed.isComplete
   simp only [range_toProdMulOpposite, Set.setOf_forall]
-  refine isClosed_iInter fun x => isClosed_iInter fun y => isClosed_eq ?_ ?_
-  · exact
-      ((ContinuousLinearMap.apply 𝕜 A _).continuous.comp <| continuous_unop.comp continuous_snd).mul
-        continuous_const
-  exact continuous_const.mul ((ContinuousLinearMap.apply 𝕜 A _).continuous.comp continuous_fst)
+  exact isClosed_iInter fun x ↦ isClosed_iInter fun y ↦ isClosed_eq (by fun_prop) (by fun_prop)
 
 variable [StarRing A] [CStarRing A]
 
@@ -534,10 +530,7 @@ theorem norm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a.snd‖ := by
   -- a handy lemma for this proof
   have h0 : ∀ f : A →L[𝕜] A, ∀ C : ℝ≥0, (∀ b : A, ‖f b‖₊ ^ 2 ≤ C * ‖f b‖₊ * ‖b‖₊) → ‖f‖₊ ≤ C := by
     intro f C h
-    have h1 : ∀ b, C * ‖f b‖₊ * ‖b‖₊ ≤ C * ‖f‖₊ * ‖b‖₊ ^ 2 := by
-      intro b
-      convert mul_le_mul_right' (mul_le_mul_left' (f.le_opNNNorm b) C) ‖b‖₊ using 1
-      ring
+    have h1 b : C * ‖f b‖₊ * ‖b‖₊ ≤ C * ‖f‖₊ * ‖b‖₊ ^ 2 := by grw [f.le_opNNNorm b]; ring_nf; rfl
     have := NNReal.div_le_of_le_mul <| f.opNNNorm_le_bound _ <| by
       simpa only [sqrt_sq, sqrt_mul] using fun b ↦ sqrt_le_sqrt.2 <| (h b).trans (h1 b)
     convert NNReal.rpow_le_rpow this two_pos.le
@@ -551,7 +544,7 @@ theorem norm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a.snd‖ := by
         simpa only [← sq] using CStarRing.nnnorm_star_mul_self.symm
       _ ≤ ‖a.snd (star (a.fst b))‖₊ * ‖b‖₊ := (a.central (star (a.fst b)) b ▸ nnnorm_mul_le _ _)
       _ ≤ ‖a.snd‖₊ * ‖a.fst b‖₊ * ‖b‖₊ :=
-        nnnorm_star (a.fst b) ▸ mul_le_mul_right' (a.snd.le_opNNNorm _) _
+        nnnorm_star (a.fst b) ▸ mul_le_mul_left (a.snd.le_opNNNorm _) _
   have h2 : ∀ b, ‖a.snd b‖₊ ^ 2 ≤ ‖a.fst‖₊ * ‖a.snd b‖₊ * ‖b‖₊ := by
     intro b
     calc
@@ -561,7 +554,7 @@ theorem norm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a.snd‖ := by
         ((a.central b (star (a.snd b))).symm ▸ nnnorm_mul_le _ _)
       _ = ‖a.fst (star (a.snd b))‖₊ * ‖b‖₊ := mul_comm _ _
       _ ≤ ‖a.fst‖₊ * ‖a.snd b‖₊ * ‖b‖₊ :=
-        nnnorm_star (a.snd b) ▸ mul_le_mul_right' (a.fst.le_opNNNorm _) _
+        nnnorm_star (a.snd b) ▸ mul_le_mul_left (a.fst.le_opNNNorm _) _
   exact le_antisymm (h0 _ _ h1) (h0 _ _ h2)
 
 theorem nnnorm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖₊ = ‖a.snd‖₊ :=

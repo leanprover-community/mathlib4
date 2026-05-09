@@ -3,14 +3,15 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Algebra.Algebra.Opposite
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.Algebra.Prod
-import Mathlib.Algebra.Algebra.Rat
-import Mathlib.Algebra.Algebra.RestrictScalars
-import Mathlib.Algebra.Module.Rat
-import Mathlib.Analysis.Normed.Field.Lemmas
-import Mathlib.Analysis.Normed.MulAction
+module
+
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.Algebra.Algebra.Prod
+public import Mathlib.Algebra.Algebra.Rat
+public import Mathlib.Algebra.Algebra.RestrictScalars
+public import Mathlib.Algebra.Module.Rat
+public import Mathlib.Analysis.Normed.Field.Lemmas
+public import Mathlib.Analysis.Normed.MulAction
 
 /-!
 # Normed spaces
@@ -19,6 +20,7 @@ In this file we define (semi)normed spaces and algebras. We also prove some theo
 about these definitions.
 -/
 
+@[expose] public section
 
 variable {𝕜 𝕜' E F α : Type*}
 
@@ -35,8 +37,9 @@ equality `‖c • x‖ = ‖c‖ ‖x‖`. We require only `‖c • x‖ ≤ �
 `‖c • x‖ = ‖c‖ ‖x‖` in `norm_smul`.
 
 Note that since this requires `SeminormedAddCommGroup` and not `NormedAddCommGroup`, this
-typeclass can be used for "semi normed spaces" too, just as `Module` can be used for
-"semi modules". -/
+typeclass can be used for "seminormed spaces" too, just as `Module` can be used for
+"semimodules". -/
+@[ext]
 class NormedSpace (𝕜 : Type*) (E : Type*) [NormedField 𝕜] [SeminormedAddCommGroup E]
     extends Module 𝕜 E where
   protected norm_smul_le : ∀ (a : 𝕜) (b : E), ‖a • b‖ ≤ ‖a‖ * ‖b‖
@@ -47,7 +50,7 @@ variable [NormedField 𝕜] [SeminormedAddCommGroup E] [SeminormedAddCommGroup F
 variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
 
 -- see Note [lower instance priority]
-instance (priority := 100) NormedSpace.toNormSMulClass [NormedSpace 𝕜 E] : NormSMulClass 𝕜 E :=
+instance (priority := 100) NormedSpace.toNormSMulClass : NormSMulClass 𝕜 E :=
   haveI : IsBoundedSMul 𝕜 E := .of_norm_smul_le NormedSpace.norm_smul_le
   NormedDivisionRing.toNormSMulClass
 
@@ -55,7 +58,7 @@ instance (priority := 100) NormedSpace.toNormSMulClass [NormedSpace 𝕜 E] : No
 https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Normed.20modules/near/516757412.
 
 It is implied via `NormedSpace.toNormSMulClass`. -/
-instance NormedSpace.toIsBoundedSMul [NormedSpace 𝕜 E] : IsBoundedSMul 𝕜 E := inferInstance
+instance NormedSpace.toIsBoundedSMul : IsBoundedSMul 𝕜 E := inferInstance
 
 instance NormedField.toNormedSpace : NormedSpace 𝕜 𝕜 where norm_smul_le a b := norm_mul_le a b
 
@@ -70,6 +73,11 @@ theorem norm_intCast_eq_abs_mul_norm_one (α) [SeminormedRing α] [NormSMulClass
 theorem norm_natCast_eq_mul_norm_one (α) [SeminormedRing α] [NormSMulClass ℤ α] (n : ℕ) :
     ‖(n : α)‖ = n * ‖(1 : α)‖ := by
   simpa using norm_intCast_eq_abs_mul_norm_one α n
+
+@[simp]
+lemma norm_natCast {α : Type*} [SeminormedRing α] [NormOneClass α] [NormSMulClass ℤ α]
+    (a : ℕ) : ‖(a : α)‖ = a := by
+  simpa using norm_natCast_eq_mul_norm_one α a
 
 theorem eventually_nhds_norm_smul_sub_lt (c : 𝕜) (x : E) {ε : ℝ} (h : 0 < ε) :
     ∀ᶠ y in 𝓝 x, ‖c • (y - x)‖ < ε :=
@@ -91,6 +99,7 @@ theorem Filter.IsBoundedUnder.smul_tendsto_zero {f : α → 𝕜} {g : α → E}
 instance NormedSpace.discreteTopology_zmultiples
     {E : Type*} [NormedAddCommGroup E] [NormedSpace ℚ E] (e : E) :
     DiscreteTopology <| AddSubgroup.zmultiples e := by
+  have : IsAddTorsionFree E := .of_module_rat E
   rcases eq_or_ne e 0 with (rfl | he)
   · rw [AddSubgroup.zmultiples_zero_eq_bot]
     exact Subsingleton.discreteTopology (α := ↑(⊥ : Subspace ℚ E))
@@ -103,6 +112,34 @@ instance NormedSpace.discreteTopology_zmultiples
       Int.norm_eq_abs, mul_lt_iff_lt_one_left (norm_pos_iff.mpr he), ← @Int.cast_one ℝ _,
       ← Int.cast_abs, Int.cast_lt, Int.abs_lt_one_iff, smul_eq_zero, or_iff_left he]
 
+section Real
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [Nontrivial E]
+
+lemma Metric.diam_sphere_eq (x : E) {r : ℝ} (hr : 0 ≤ r) : diam (sphere x r) = 2 * r := by
+  apply le_antisymm
+    (diam_mono sphere_subset_closedBall isBounded_closedBall |>.trans <| diam_closedBall hr)
+  obtain ⟨y, hy⟩ := exists_ne (0 : E)
+  calc
+    2 * r = dist (x + r • ‖y‖⁻¹ • y) (x - r • ‖y‖⁻¹ • y) := by
+      simp [dist_eq_norm, ← two_nsmul, ← smul_assoc, norm_smul, abs_of_nonneg hr, hy, mul_assoc]
+    _ ≤ diam (sphere x r) := by
+      apply dist_le_diam_of_mem isBounded_sphere <;> simp [norm_smul, hy, abs_of_nonneg hr]
+
+lemma Metric.diam_closedBall_eq (x : E) {r : ℝ} (hr : 0 ≤ r) : diam (closedBall x r) = 2 * r :=
+  le_antisymm (diam_closedBall hr) <|
+    diam_sphere_eq x hr |>.symm.le.trans <| diam_mono sphere_subset_closedBall isBounded_closedBall
+
+lemma Metric.diam_ball_eq (x : E) {r : ℝ} (hr : 0 ≤ r) : diam (ball x r) = 2 * r := by
+  /- This proof could be simplified with `Metric.diam_closure` and `closure_ball`,
+  but we opt for this proof to minimize dependencies. -/
+  refine le_antisymm (diam_ball hr) <|
+    mul_le_of_forall_lt_of_nonneg (by positivity) diam_nonneg fun a ha ha' r' hr' hr'' ↦ ?_
+  calc a * r' ≤ 2 * r' := by gcongr
+    _ ≤ _ := by simpa only [← Metric.diam_sphere_eq x hr'.le]
+      using diam_mono (sphere_subset_ball hr'') isBounded_ball
+
+end Real
+
 open NormedField
 
 instance ULift.normedSpace : NormedSpace 𝕜 (ULift E) :=
@@ -114,8 +151,7 @@ instance ULift.normedSpace : NormedSpace 𝕜 (ULift E) :=
 instance Prod.normedSpace : NormedSpace 𝕜 (E × F) :=
   { Prod.seminormedAddCommGroup (E := E) (F := F), Prod.instModule with
     norm_smul_le := fun s x => by
-      simp only [norm_smul, Prod.norm_def,
-        mul_max_of_nonneg, norm_nonneg, le_rfl] }
+      simp only [norm_smul, Prod.norm_def, le_rfl] }
 
 /-- The product of finitely many normed spaces is a normed space, with the sup norm. -/
 instance Pi.normedSpace {ι : Type*} {E : ι → Type*} [Fintype ι] [∀ i, SeminormedAddCommGroup (E i)]
@@ -153,8 +189,8 @@ See note [reducible non-instances] -/
 abbrev NormedSpace.induced {F : Type*} (𝕜 E G : Type*) [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
     [SeminormedAddCommGroup G] [NormedSpace 𝕜 G] [FunLike F E G] [LinearMapClass F 𝕜 E G] (f : F) :
     @NormedSpace 𝕜 E _ (SeminormedAddCommGroup.induced E G f) :=
-  let _ := SeminormedAddCommGroup.induced E G f
-  ⟨fun a b ↦ by simpa only [← map_smul f a b] using norm_smul_le a (f b)⟩
+  letI := SeminormedAddCommGroup.induced E G f
+  { norm_smul_le a b := by simpa only [← map_smul f a b] using norm_smul_le a (f b) }
 
 section NontriviallyNormedSpace
 
@@ -202,11 +238,10 @@ This cannot be an instance because in order to apply it,
 Lean would have to search for `NormedSpace 𝕜 E` with unknown `𝕜`.
 We register this as an instance in two cases: `𝕜 = E` and `𝕜 = ℝ`. -/
 protected theorem NormedSpace.noncompactSpace : NoncompactSpace E := by
-  by_cases H : ∃ c : 𝕜, c ≠ 0 ∧ ‖c‖ ≠ 1
+  by_cases! H : ∃ c : 𝕜, c ≠ 0 ∧ ‖c‖ ≠ 1
   · letI := NontriviallyNormedField.ofNormNeOne H
     exact ⟨fun h ↦ NormedSpace.unbounded_univ 𝕜 E h.isBounded⟩
-  · push_neg at H
-    rcases exists_ne (0 : E) with ⟨x, hx⟩
+  · rcases exists_ne (0 : E) with ⟨x, hx⟩
     suffices IsClosedEmbedding (Infinite.natEmbedding 𝕜 · • x) from this.noncompactSpace
     refine isClosedEmbedding_of_pairwise_le_dist (norm_pos_iff.2 hx) fun k n hne ↦ ?_
     simp only [dist_eq_norm, ← sub_smul, norm_smul]
@@ -261,6 +296,10 @@ theorem dist_algebraMap (x y : 𝕜) :
 theorem norm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖ = ‖x‖ := by
   rw [norm_algebraMap, norm_one, mul_one]
 
+@[simp]
+theorem Algebra.norm_smul_one_eq_norm [NormOneClass 𝕜'] (x : 𝕜) : ‖x • (1 : 𝕜')‖ = ‖x‖ := by
+  simp [norm_smul]
+
 /-- This is a simpler version of `nnnorm_algebraMap` when `‖1‖ = 1` in `𝕜'`. -/
 @[simp]
 theorem nnnorm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖₊ = ‖x‖₊ :=
@@ -288,28 +327,29 @@ end NNReal
 
 variable (𝕜)
 
-/--
-Preimages of cobounded sets under the algebra map are cobounded.
--/
-theorem algebraMap_cobounded_le_cobounded [NormOneClass 𝕜'] :
-    Filter.map (algebraMap 𝕜 𝕜') (Bornology.cobounded 𝕜) ≤ Bornology.cobounded 𝕜' := by
+open Filter Bornology in
+/-- Preimages of cobounded sets under the algebra map are cobounded. -/
+@[simp]
+theorem tendsto_algebraMap_cobounded (𝕜 𝕜' : Type*) [NormedField 𝕜] [SeminormedRing 𝕜']
+    [NormedAlgebra 𝕜 𝕜'] [NormOneClass 𝕜'] :
+    Tendsto (algebraMap 𝕜 𝕜') (cobounded 𝕜) (cobounded 𝕜') := by
   intro c hc
-  rw [Filter.mem_map, ← Bornology.isCobounded_def, ← Bornology.isBounded_compl_iff,
-    isBounded_iff_forall_norm_le]
-  obtain ⟨s, hs⟩ := isBounded_iff_forall_norm_le.1
-    (Bornology.isBounded_compl_iff.2 (Bornology.isCobounded_def.1 hc))
-  use s
-  exact fun x hx ↦ by simpa [norm_algebraMap, norm_one] using hs ((algebraMap 𝕜 𝕜') x) hx
+  rw [mem_map]
+  rw [← isCobounded_def, ← isBounded_compl_iff, isBounded_iff_forall_norm_le] at hc ⊢
+  obtain ⟨s, hs⟩ := hc
+  exact ⟨s, fun x hx ↦ by simpa using hs (algebraMap 𝕜 𝕜' x) hx⟩
+
+@[deprecated (since := "2025-11-04")] alias
+  algebraMap_cobounded_le_cobounded := tendsto_algebraMap_cobounded
 
 /-- In a normed algebra, the inclusion of the base field in the extended field is an isometry. -/
 theorem algebraMap_isometry [NormOneClass 𝕜'] : Isometry (algebraMap 𝕜 𝕜') := by
   refine Isometry.of_dist_eq fun x y => ?_
-  rw [dist_eq_norm, dist_eq_norm, ← RingHom.map_sub, norm_algebraMap']
+  rw [dist_eq_norm, dist_eq_norm, ← map_sub, norm_algebraMap']
 
 instance NormedAlgebra.id : NormedAlgebra 𝕜 𝕜 :=
   { NormedField.toNormedSpace, Algebra.id 𝕜 with }
 
--- Porting note: cannot synth scalar tower ℚ ℝ k
 /-- Any normed characteristic-zero division ring that is a normed algebra over the reals is also a
 normed algebra over the rationals.
 
@@ -362,7 +402,7 @@ abbrev NormedAlgebra.induced {F : Type*} (𝕜 R S : Type*) [NormedField 𝕜] [
 
 instance Subalgebra.toNormedAlgebra {𝕜 A : Type*} [SeminormedRing A] [NormedField 𝕜]
     [NormedAlgebra 𝕜 A] (S : Subalgebra 𝕜 A) : NormedAlgebra 𝕜 S :=
-  NormedAlgebra.induced 𝕜 S A S.val
+  fast_instance% NormedAlgebra.induced 𝕜 S A S.val
 
 section SubalgebraClass
 
@@ -426,24 +466,8 @@ variable (𝕜 𝕜' E)
 variable [NormedField 𝕜] [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
   [SeminormedAddCommGroup E] [NormedSpace 𝕜' E]
 
-/-- If `E` is a normed space over `𝕜'` and `𝕜` is a normed algebra over `𝕜'`, then
-`RestrictScalars.module` is additionally a `NormedSpace`. -/
-instance RestrictScalars.normedSpace : NormedSpace 𝕜 (RestrictScalars 𝕜 𝕜' E) :=
-  { RestrictScalars.module 𝕜 𝕜' E with
-    norm_smul_le := fun c x =>
-      (norm_smul_le (algebraMap 𝕜 𝕜' c) (_ : E)).trans_eq <| by rw [norm_algebraMap'] }
-
--- If you think you need this, consider instead reproducing `RestrictScalars.lsmul`
--- appropriately modified here.
-/-- The action of the original normed_field on `RestrictScalars 𝕜 𝕜' E`.
-This is not an instance as it would be contrary to the purpose of `RestrictScalars`.
--/
-def Module.RestrictScalars.normedSpaceOrig {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [NormedField 𝕜']
-    [SeminormedAddCommGroup E] [I : NormedSpace 𝕜' E] : NormedSpace 𝕜' (RestrictScalars 𝕜 𝕜' E) :=
-  I
-
 /-- Warning: This declaration should be used judiciously.
-Please consider using `IsScalarTower` and/or `RestrictScalars 𝕜 𝕜' E` instead.
+Please consider using `IsScalarTower` instead.
 
 This definition allows the `RestrictScalars.normedSpace` instance to be put directly on `E`
 rather on `RestrictScalars 𝕜 𝕜' E`. This would be a very bad instance; both because `𝕜'` cannot be
@@ -451,8 +475,32 @@ inferred, and because it is likely to create instance diamonds.
 
 See Note [reducible non-instances].
 -/
-abbrev NormedSpace.restrictScalars : NormedSpace 𝕜 E :=
-  RestrictScalars.normedSpace _ 𝕜' E
+@[implicit_reducible]
+def NormedSpace.restrictScalars : NormedSpace 𝕜 E :=
+  { Module.restrictScalars 𝕜 𝕜' E with
+    norm_smul_le := fun c x =>
+      (norm_smul_le (algebraMap 𝕜 𝕜' c) (_ : E)).trans_eq <| by rw [norm_algebraMap'] }
+
+theorem NormedSpace.restrictScalars_eq {E : Type*} [SeminormedAddCommGroup E]
+    [h : NormedSpace 𝕜 E] [NormedSpace 𝕜' E] [IsScalarTower 𝕜 𝕜' E] :
+    NormedSpace.restrictScalars 𝕜 𝕜' E = h := by
+  ext
+  apply algebraMap_smul
+
+/-- If `E` is a normed space over `𝕜'` and `𝕜` is a normed algebra over `𝕜'`, then
+`RestrictScalars.module` is additionally a `NormedSpace`. -/
+instance RestrictScalars.normedSpace : NormedSpace 𝕜 (RestrictScalars 𝕜 𝕜' E) :=
+  fast_instance% NormedSpace.restrictScalars 𝕜 𝕜' E
+
+-- If you think you need this, consider instead reproducing `RestrictScalars.lsmul`
+-- appropriately modified here.
+/-- The action of the original `NormedField` on `RestrictScalars 𝕜 𝕜' E`.
+This is not an instance as it would be contrary to the purpose of `RestrictScalars`.
+-/
+@[implicit_reducible]
+def Module.RestrictScalars.normedSpaceOrig {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [NormedField 𝕜']
+    [SeminormedAddCommGroup E] [I : NormedSpace 𝕜' E] : NormedSpace 𝕜' (RestrictScalars 𝕜 𝕜' E) :=
+  I
 
 end NormedSpace
 
@@ -462,23 +510,8 @@ variable (𝕜 𝕜' E)
 variable [NormedField 𝕜] [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
   [SeminormedRing E] [NormedAlgebra 𝕜' E]
 
-/-- If `E` is a normed algebra over `𝕜'` and `𝕜` is a normed algebra over `𝕜'`, then
-`RestrictScalars.module` is additionally a `NormedAlgebra`. -/
-instance RestrictScalars.normedAlgebra : NormedAlgebra 𝕜 (RestrictScalars 𝕜 𝕜' E) :=
-  { RestrictScalars.algebra 𝕜 𝕜' E with
-    norm_smul_le := norm_smul_le }
-
--- If you think you need this, consider instead reproducing `RestrictScalars.lsmul`
--- appropriately modified here.
-/-- The action of the original normed_field on `RestrictScalars 𝕜 𝕜' E`.
-This is not an instance as it would be contrary to the purpose of `RestrictScalars`.
--/
-def Module.RestrictScalars.normedAlgebraOrig {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [NormedField 𝕜']
-    [SeminormedRing E] [I : NormedAlgebra 𝕜' E] : NormedAlgebra 𝕜' (RestrictScalars 𝕜 𝕜' E) :=
-  I
-
 /-- Warning: This declaration should be used judiciously.
-Please consider using `IsScalarTower` and/or `RestrictScalars 𝕜 𝕜' E` instead.
+Please consider using `IsScalarTower` instead.
 
 This definition allows the `RestrictScalars.normedAlgebra` instance to be put directly on `E`
 rather on `RestrictScalars 𝕜 𝕜' E`. This would be a very bad instance; both because `𝕜'` cannot be
@@ -486,9 +519,24 @@ inferred, and because it is likely to create instance diamonds.
 
 See Note [reducible non-instances].
 -/
-abbrev NormedAlgebra.restrictScalars : NormedAlgebra 𝕜 E :=
-  RestrictScalars.normedAlgebra _ 𝕜' _
+@[implicit_reducible]
+def NormedAlgebra.restrictScalars : NormedAlgebra 𝕜 E :=
+  { NormedSpace.restrictScalars 𝕜 𝕜' E, Algebra.restrictScalars 𝕜 𝕜' E with }
 
+/-- If `E` is a normed algebra over `𝕜'` and `𝕜` is a normed algebra over `𝕜'`, then
+`RestrictScalars.module` is additionally a `NormedAlgebra`. -/
+instance RestrictScalars.normedAlgebra : NormedAlgebra 𝕜 (RestrictScalars 𝕜 𝕜' E) :=
+  fast_instance% NormedAlgebra.restrictScalars 𝕜 𝕜' E
+
+-- If you think you need this, consider instead reproducing `RestrictScalars.lsmul`
+-- appropriately modified here.
+/-- The action of the original `NormedField` on `RestrictScalars 𝕜 𝕜' E`.
+This is not an instance as it would be contrary to the purpose of `RestrictScalars`.
+-/
+@[implicit_reducible]
+def Module.RestrictScalars.normedAlgebraOrig {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [NormedField 𝕜']
+    [SeminormedRing E] [I : NormedAlgebra 𝕜' E] : NormedAlgebra 𝕜' (RestrictScalars 𝕜 𝕜' E) :=
+  I
 end NormedAlgebra
 
 end RestrictScalars
@@ -515,35 +563,30 @@ structure SeminormedSpace.Core (𝕜 : Type*) (E : Type*) [NormedField 𝕜] [Ad
   norm_smul (c : 𝕜) (x : E) : ‖c • x‖ = ‖c‖ * ‖x‖
   norm_triangle (x y : E) : ‖x + y‖ ≤ ‖x‖ + ‖y‖
 
-@[deprecated (since := "2025-06-03")] alias SeminormedAddCommGroup.Core := SeminormedSpace.Core
-
 /-- Produces a `PseudoMetricSpace E` instance from a `SeminormedSpace.Core`. Note that
 if this is used to define an instance on a type, it also provides a new uniformity and
 topology on the type. See note [reducible non-instances]. -/
 abbrev PseudoMetricSpace.ofSeminormedSpaceCore {𝕜 E : Type*} [NormedField 𝕜] [AddCommGroup E]
     [Norm E] [Module 𝕜 E] (core : SeminormedSpace.Core 𝕜 E) :
     PseudoMetricSpace E where
-  dist x y := ‖x - y‖
+  dist x y := ‖-x + y‖
   dist_self x := by
-    show ‖x - x‖ = 0
-    simp only [sub_self]
+    show ‖-x + x‖ = 0
+    simp only [add_comm, ← sub_eq_add_neg, sub_self]
     have : (0 : E) = (0 : 𝕜) • (0 : E) := by simp
     rw [this, core.norm_smul]
     simp
   dist_comm x y := by
-    show ‖x - y‖ = ‖y - x‖
-    have : y - x = (-1 : 𝕜) • (x - y) := by simp
+    show ‖-x + y‖ = ‖-y + x‖
+    have : -y + x = (-1 : 𝕜) • (-x + y) := by simp; abel
     rw [this, core.norm_smul]
     simp
   dist_triangle x y z := by
-    show ‖x - z‖ ≤ ‖x - y‖ + ‖y - z‖
-    have : x - z = (x - y) + (y - z) := by abel
+    show ‖-x + z‖ ≤ ‖-x + y‖ + ‖-y + z‖
+    have : -x + z = (-x + y) + (-y + z) := by abel
     rw [this]
     exact core.norm_triangle _ _
   edist_dist x y := by exact (ENNReal.ofReal_eq_coe_nnreal _).symm
-
-@[deprecated (since := "2025-06-03")]
-alias PseudoMetricSpace.ofSeminormedAddCommGroupCore := PseudoMetricSpace.ofSeminormedSpaceCore
 
 /-- Produces a `PseudoEMetricSpace E` instance from a `SeminormedSpace.Core`. Note that
 if this is used to define an instance on a type, it also provides a new uniformity and
@@ -552,9 +595,6 @@ abbrev PseudoEMetricSpace.ofSeminormedSpaceCore {𝕜 E : Type*} [NormedField �
     [AddCommGroup E] [Norm E] [Module 𝕜 E]
     (core : SeminormedSpace.Core 𝕜 E) : PseudoEMetricSpace E :=
   (PseudoMetricSpace.ofSeminormedSpaceCore core).toPseudoEMetricSpace
-
-@[deprecated (since := "2025-06-03")]
-alias PseudoEMetricSpace.ofSeminormedAddCommGroupCore := PseudoEMetricSpace.ofSeminormedSpaceCore
 
 /-- Produces a `PseudoEMetricSpace E` instance from a `SeminormedSpace.Core` on a type that
 already has an existing uniform space structure. This requires a proof that the uniformity induced
@@ -566,10 +606,6 @@ abbrev PseudoMetricSpace.ofSeminormedSpaceCoreReplaceUniformity {𝕜 E : Type*}
         (self := PseudoEMetricSpace.ofSeminormedSpaceCore core)]) :
     PseudoMetricSpace E :=
   .replaceUniformity (.ofSeminormedSpaceCore core) H
-
-@[deprecated (since := "2025-06-03")]
-alias PseudoMetricSpace.ofSeminormedAddCommGroupCoreReplaceUniformity :=
-  PseudoMetricSpace.ofSeminormedSpaceCoreReplaceUniformity
 
 /-- Produces a `PseudoEMetricSpace E` instance from a `SeminormedSpace.Core` on a type that
 already has an existing topology. This requires a proof that the topology induced
@@ -596,10 +632,6 @@ abbrev PseudoMetricSpace.ofSeminormedSpaceCoreReplaceAll {𝕜 E : Type*} [Norme
       ↔ @IsBounded _ (PseudoMetricSpace.ofSeminormedSpaceCore core).toBornology s) :
     PseudoMetricSpace E :=
   .replaceBornology (.replaceUniformity (.ofSeminormedSpaceCore core) HU) HB
-
-@[deprecated (since := "2025-06-03")]
-alias PseudoMetricSpace.ofSeminormedAddCommGroupCoreReplaceAll :=
-  PseudoMetricSpace.ofSeminormedSpaceCoreReplaceAll
 
 /-- Produces a `SeminormedAddCommGroup E` instance from a `SeminormedSpace.Core`. Note that
 if this is used to define an instance on a type, it also provides a new distance measure from the
@@ -663,8 +695,9 @@ See note [reducible non-instances]. -/
 abbrev NormedAddCommGroup.ofCore (core : NormedSpace.Core 𝕜 E) : NormedAddCommGroup E :=
   { SeminormedAddCommGroup.ofCore core.toCore with
     eq_of_dist_eq_zero := by
+      letI := SeminormedAddCommGroup.ofCore core.toCore
       intro x y h
-      rw [← sub_eq_zero, ← core.norm_eq_zero_iff]
+      rw [← sub_eq_zero, ← core.norm_eq_zero_iff, ← norm_neg_add]
       exact h }
 
 /-- Produces a `NormedAddCommGroup E` instance from a `NormedSpace.Core` on a type
@@ -676,8 +709,9 @@ abbrev NormedAddCommGroup.ofCoreReplaceUniformity [U : UniformSpace E] (core : N
     NormedAddCommGroup E :=
   { SeminormedAddCommGroup.ofCoreReplaceUniformity core.toCore H with
     eq_of_dist_eq_zero := by
+      letI := SeminormedAddCommGroup.ofCore core.toCore
       intro x y h
-      rw [← sub_eq_zero, ← core.norm_eq_zero_iff]
+      rw [← sub_eq_zero, ← core.norm_eq_zero_iff, ← norm_neg_add]
       exact h }
 
 /-- Produces a `NormedAddCommGroup E` instance from a `NormedSpace.Core` on a type
@@ -690,8 +724,9 @@ abbrev NormedAddCommGroup.ofCoreReplaceTopology [T : TopologicalSpace E]
     NormedAddCommGroup E :=
   { SeminormedAddCommGroup.ofCoreReplaceTopology core.toCore H with
     eq_of_dist_eq_zero := by
+      letI := SeminormedAddCommGroup.ofCore core.toCore
       intro x y h
-      rw [← sub_eq_zero, ← core.norm_eq_zero_iff]
+      rw [← sub_eq_zero, ← core.norm_eq_zero_iff, ← norm_neg_add]
       exact h }
 
 open Bornology in
@@ -708,8 +743,9 @@ abbrev NormedAddCommGroup.ofCoreReplaceAll [U : UniformSpace E] [B : Bornology E
     NormedAddCommGroup E :=
   { SeminormedAddCommGroup.ofCoreReplaceAll core.toCore HU HB with
     eq_of_dist_eq_zero := by
+      letI := SeminormedAddCommGroup.ofCore core.toCore
       intro x y h
-      rw [← sub_eq_zero, ← core.norm_eq_zero_iff]
+      rw [← sub_eq_zero, ← core.norm_eq_zero_iff, ← norm_neg_add]
       exact h }
 
 /-- Produces a `NormedSpace 𝕜 E` instance from a `NormedSpace.Core`. This is meant to be used

@@ -3,7 +3,9 @@ Copyright (c) 2022 Kevin H. Wilson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin H. Wilson
 -/
-import Mathlib.Order.Filter.Prod
+module
+
+public import Mathlib.Order.Filter.Prod
 
 /-!
 # Curried Filters
@@ -25,9 +27,11 @@ Another way to think about the curried versus the product filter is that tending
 the product filter is a version of uniform convergence (see `tendsto_prod_filter_iff`) whereas
 tending to some limit on a curried filter is just iterated limits (see `Filter.Tendsto.curry`).
 
-In the "generalized set" intuition, `Filter.prod` and `Filter.curry` correspond to two ways of
-describing the product of two sets, namely `s ×ˢ t = fst ⁻¹' s ∩ snd ⁻¹' t` and
-`s ×ˢ t = ⋃ x ∈ s, (x, ·) '' t`.
+In the "generalized set" intuition, a product filter and `Filter.curry` correspond to two ways
+of describing the product of two sets:
+
+* `f ×ˢ g = comap fst f ⊓ comap snd g` corresponds to `s ×ˢ t = fst ⁻¹' s ∩ snd ⁻¹' t`
+* `f.curry g = bind f (fun x ↦ map (x, ·) g)` corresponds to `s ×ˢ t = ⋃ x ∈ s, (x, ·) '' t`
 
 ## Main definitions
 
@@ -43,6 +47,8 @@ describing the product of two sets, namely `s ×ˢ t = fst ⁻¹' s ∩ snd ⁻�
 
 uniform convergence, curried filters, product filters
 -/
+
+public section
 
 
 namespace Filter
