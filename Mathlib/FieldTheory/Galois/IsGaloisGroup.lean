@@ -544,10 +544,10 @@ theorem coe_quotient_smul [N.Normal] [MulSemiringAction G B] [MulAction (G ⧸ N
 noncomputable instance instMulSemiringActionQuotient [N.Normal] [MulSemiringAction G B]
     [MulAction (G ⧸ N) B] [IsScalarTower G (G ⧸ N) B] :
     MulSemiringAction (G ⧸ N) B where
-  one_smul _ := by rw [← QuotientGroup.mk_one, coe_quotient_smul , one_smul]
+  one_smul _ := by rw [← QuotientGroup.mk_one, coe_quotient_smul, one_smul]
   smul_zero g := Quotient.inductionOn' g fun g ↦ by simp
   mul_smul g g' x := Quotient.inductionOn₂' g g' fun g g' ↦ by
-      rw [← QuotientGroup.mk_mul, coe_quotient_smul, mul_smul, coe_quotient_smul, coe_quotient_smul]
+    rw [← QuotientGroup.mk_mul, coe_quotient_smul, mul_smul, coe_quotient_smul, coe_quotient_smul]
   smul_add g x y := Quotient.inductionOn' g fun g ↦ by simp [smul_add]
   smul_one g := Quotient.inductionOn' g fun g ↦ by simp
   smul_mul g x y := Quotient.inductionOn' g fun g ↦ by simp
@@ -621,7 +621,7 @@ instance [SMulCommClass G K L] [MulSemiringAction G F] [SMulDistribClass G F L]
 /-- If `G` is a finite Galois group for `L/K` and `N` is a normal subgroup of `G` that is a
 Galois group for `L/F`, then the quotient group `G ⧸ N` is a Galois group for `F/K`. -/
 instance instIsGaloisGroupQuotient [Finite G] [IsGaloisGroup G K L] :
-    IsGaloisGroup (G ⧸ N) K F  :=
+    IsGaloisGroup (G ⧸ N) K F :=
   let := smulOfNormal G F L N
   have := smulDistribClass_smulOfNormal G F L N
   have := isScalarTower_smulQuotient G F L N
