@@ -135,6 +135,15 @@ lean_exe expose_enumerate where
   srcDir := "scripts"
   supportInterpreter := true
 
+/-- `lake exe expose_static_refs` walks the built Mathlib environment and
+emits a JSONL of (referencing-module, referenced-decl) pairs based on
+`ConstantInfo.getUsedConstantsAsSet`. Complementary to `diagnostics.jsonl`
+from `scripts/build_with_diagnostics.py`: catches typeclass-projection
+sources that the diagnostic-based signal misses. -/
+lean_exe expose_static_refs where
+  srcDir := "scripts"
+  supportInterpreter := true
+
 lean_exe mathlib_test_executable where
   root := `MathlibTest.MathlibTestExecutable
 

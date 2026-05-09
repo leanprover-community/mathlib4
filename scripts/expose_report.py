@@ -54,6 +54,24 @@ def main() -> int:
     ap.add_argument("--diagnostics", type=Path,
                     default=OUTPUT_DIR / "diagnostics.jsonl",
                     help="per-unfold JSONL from build_with_diagnostics.py")
+    ap.add_argument("--static-refs", type=Path,
+                    default=OUTPUT_DIR / "static_refs.jsonl",
+                    help="static-reference JSONL from `lake exe expose_static_refs`. "
+                         "Optional but recommended: catches typeclass-projection "
+                         "sources that diagnostics misses. Use --no-static-refs "
+                         "to disable.")
+    ap.add_argument("--no-static-refs", action="store_true",
+                    help="ignore static_refs.jsonl even if present")
+    ap.add_argument("--decl-refs", type=Path,
+                    default=OUTPUT_DIR / "decl_refs.jsonl",
+                    help="per-decl reference list from "
+                         "`lake exe expose_static_refs decl`. Used for "
+                         "one-hop transitive-closure: a downstream use of "
+                         "decl `K` propagates to mark every decl in `K`'s "
+                         "body as also used (catches typeclass-projection "
+                         "chains like `instLattice → instSemilatticeSup`).")
+    ap.add_argument("--no-transitive", action="store_true",
+                    help="don't apply one-hop transitive closure on static refs")
     ap.add_argument("--out-jsonl", type=Path,
                     default=OUTPUT_DIR / "report.jsonl")
     ap.add_argument("--out-tsv", type=Path,
@@ -75,19 +93,69 @@ def main() -> int:
         r = json.loads(raw)
         exposed[r["name"]] = r
 
-    # Aggregate diagnostics, filtering to cross-module unfolds.
+    # Aggregate cross-module uses from both signals:
+    #   diagnostics.jsonl  - unfold-based use captured by `set_option diagnostics true`
+    #   static_refs.jsonl  - literal `Expr.const` references in elaborated bodies
+    # Both sources have the same record shape; we sum counts.
     usage: Counter = Counter()
     using_file_counts: dict[str, Counter] = defaultdict(Counter)
-    for raw in open(args.diagnostics):
-        d = json.loads(raw)
-        decl = d["decl"]
-        rec = exposed.get(decl)
-        if rec is None:
-            continue
-        if d["file"] == rec["file"]:
-            continue  # same-module unfold, not a downstream signal
-        usage[decl] += d["count"]
-        using_file_counts[decl][d["file"]] += d["count"]
+
+    def absorb(path: Path) -> int:
+        n = 0
+        for raw in open(path):
+            d = json.loads(raw)
+            decl = d["decl"]
+            rec = exposed.get(decl)
+            if rec is None:
+                continue
+            if d["file"] == rec["file"]:
+                continue  # same-module use, not a downstream signal
+            usage[decl] += d["count"]
+            using_file_counts[decl][d["file"]] += d["count"]
+            n += 1
+        return n
+
+    diag_n = absorb(args.diagnostics)
+    print(f"[expose_report] absorbed {diag_n} diagnostics records",
+          file=sys.stderr)
+    if not args.no_static_refs and args.static_refs.exists():
+        sref_n = absorb(args.static_refs)
+        print(f"[expose_report] absorbed {sref_n} static-reference records",
+              file=sys.stderr)
+    elif args.no_static_refs:
+        print(f"[expose_report] static refs disabled by --no-static-refs",
+              file=sys.stderr)
+    else:
+        print(f"[expose_report] static_refs.jsonl not found; using diagnostics only",
+              file=sys.stderr)
+
+    # One-hop transitive closure: if downstream module M uses decl K, also
+    # mark every decl K's body references as used by M. Captures cases like
+    # `M` uses `instLattice`, whose body anonymous-constructs from
+    # `instSemilatticeSup`/`instSemilatticeInf`, which then need to be exposed
+    # for downstream projection to find their fields.
+    if not args.no_transitive and args.decl_refs.exists():
+        decl_refs: dict[str, list[str]] = {}
+        for raw in open(args.decl_refs):
+            d = json.loads(raw)
+            decl_refs[d["decl"]] = d["refs"]
+        # For each used (decl, file) pair, propagate to (ref, file) for ref ∈ decl_refs[decl].
+        propagated = 0
+        # snapshot the current using_file_counts so iteration is stable
+        snapshot = [(decl, dict(files)) for decl, files in using_file_counts.items()]
+        for decl, files in snapshot:
+            for ref in decl_refs.get(decl, []):
+                rec = exposed.get(ref)
+                if rec is None:
+                    continue
+                for file, count in files.items():
+                    if file == rec["file"]:
+                        continue  # same-module
+                    usage[ref] += count
+                    using_file_counts[ref][file] += count
+                    propagated += 1
+        print(f"[expose_report] one-hop transitive: propagated {propagated} extra (ref,file) edges",
+              file=sys.stderr)
 
     # Build and sort report records.
     records: list[dict] = []
