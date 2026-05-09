@@ -46,12 +46,13 @@ variable {A : Type v} [Ring A]
 namespace LieRing
 
 /-- An associative ring gives rise to a Lie ring by taking the bracket to be the ring commutator. -/
-instance (priority := 100) ofAssociativeRing : LieRing A where
-  add_lie _ _ _ := by simp only [Ring.lie_def, right_distrib, left_distrib]; abel
-  lie_add _ _ _ := by simp only [Ring.lie_def, right_distrib, left_distrib]; abel
-  lie_self := by simp only [Ring.lie_def, forall_const, sub_self]
-  leibniz_lie _ _ _ := by
-    simp only [Ring.lie_def, mul_sub_left_distrib, mul_sub_right_distrib, mul_assoc]; abel
+instance (priority := 100) ofAssociativeRing : LieRing A :=
+  fast_instance% {
+    add_lie _ _ _ := by simp only [Ring.lie_def, right_distrib, left_distrib]; abel
+    lie_add _ _ _ := by simp only [Ring.lie_def, right_distrib, left_distrib]; abel
+    lie_self := by simp only [Ring.lie_def, forall_const, sub_self]
+    leibniz_lie _ _ _ := by
+      simp only [Ring.lie_def, mul_sub_left_distrib, mul_sub_right_distrib, mul_assoc]; abel }
 
 theorem of_associative_ring_bracket (x y : A) : ⁅x, y⁆ = x * y - y * x :=
   rfl
@@ -95,10 +96,11 @@ variable {R : Type u} [CommRing R] [Algebra R A]
 
 /-- An associative algebra gives rise to a Lie algebra by taking the bracket to be the ring
 commutator. -/
-instance (priority := 100) LieAlgebra.ofAssociativeAlgebra : LieAlgebra R A where
-  lie_smul t x y := by
-    rw [LieRing.of_associative_ring_bracket, LieRing.of_associative_ring_bracket,
-      Algebra.mul_smul_comm, Algebra.smul_mul_assoc, smul_sub]
+instance (priority := 100) LieAlgebra.ofAssociativeAlgebra : LieAlgebra R A :=
+  fast_instance% {
+    lie_smul t x y := by
+      rw [LieRing.of_associative_ring_bracket, LieRing.of_associative_ring_bracket,
+        Algebra.mul_smul_comm, Algebra.smul_mul_assoc, smul_sub] }
 
 attribute [local instance] LieRingModule.ofAssociativeModule
 

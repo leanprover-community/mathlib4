@@ -49,12 +49,12 @@ instance (priority := 100) Semiring.toGrindSemiring [s : Semiring α] :
 
 instance (priority := 100) CommSemiring.toGrindCommSemiring [s : CommSemiring α] :
     Grind.CommSemiring α :=
-  { Semiring.toGrindSemiring α with
+  fast_instance% { Semiring.toGrindSemiring α with
     mul_comm := s.mul_comm }
 
 instance (priority := 100) Ring.toGrindRing [s : Ring α] :
     Grind.Ring α :=
-  { s, Semiring.toGrindSemiring α with
+  fast_instance% { s, Semiring.toGrindSemiring α with
     nsmul := ⟨s.nsmul⟩
     npow := ⟨fun a n => a^n⟩
     zsmul := ⟨s.zsmul⟩
@@ -71,7 +71,7 @@ instance (priority := 100) Ring.toGrindRing [s : Ring α] :
 
 instance (priority := 100) CommRing.toGrindCommRing [s : CommRing α] :
     Grind.CommRing α :=
-  { Ring.toGrindRing α with
+  fast_instance% { Ring.toGrindRing α with
     mul_comm := s.mul_comm }
 
 theorem Semiring.toGrindSemiring_ofNat [Semiring α] (n : ℕ) :

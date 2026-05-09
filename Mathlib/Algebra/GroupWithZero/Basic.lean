@@ -357,19 +357,20 @@ private theorem inv_eq_of_mul (h : a * b = 1) : a⁻¹ = b := by
   rw [← inv_mul_cancel_left₀ (left_ne_zero_of_mul_eq_one h) b, h, mul_one]
 
 -- See note [lower instance priority]
-instance (priority := 100) GroupWithZero.toDivisionMonoid : DivisionMonoid G₀ where
-  inv_inv a := by
-    by_cases h : a = 0
-    · simp [h]
-    · exact left_inv_eq_right_inv (inv_mul_cancel₀ <| inv_ne_zero h) (inv_mul_cancel₀ h)
-  mul_inv_rev a b := by
-    by_cases ha : a = 0
-    · simp [ha]
-    by_cases hb : b = 0
-    · simp [hb]
-    apply inv_eq_of_mul
-    simp [mul_assoc, ha, hb]
-  inv_eq_of_mul _ _ := by exact inv_eq_of_mul
+instance (priority := 100) GroupWithZero.toDivisionMonoid : DivisionMonoid G₀ :=
+  fast_instance% {
+    inv_inv a := by
+      by_cases h : a = 0
+      · simp [h]
+      · exact left_inv_eq_right_inv (inv_mul_cancel₀ <| inv_ne_zero h) (inv_mul_cancel₀ h)
+    mul_inv_rev a b := by
+      by_cases ha : a = 0
+      · simp [ha]
+      by_cases hb : b = 0
+      · simp [hb]
+      apply inv_eq_of_mul
+      simp [mul_assoc, ha, hb]
+    inv_eq_of_mul _ _ := by exact inv_eq_of_mul }
 
 -- see Note [lower instance priority]
 instance (priority := 10) : IsCancelMulZero G₀ where

@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Ring.Semiconj
 public import Mathlib.Algebra.Ring.Units
 public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Data.Bracket
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Semirings and rings
@@ -252,7 +253,7 @@ variable [NonUnitalNonAssocRing R]
 
 namespace Ring
 
-instance (priority := 100) instBracket : Bracket R R := ⟨fun x y => x * y - y * x⟩
+instance (priority := 100) instBracket : Bracket R R := fast_instance% ⟨fun x y => x * y - y * x⟩
 
 theorem lie_def (x y : R) : ⁅x, y⁆ = x * y - y * x := rfl
 

@@ -407,7 +407,7 @@ theorem div_eq_div_iff_comm : a / b = c / d ↔ b / a = d / c :=
 
 @[to_additive]
 instance (priority := 100) DivisionMonoid.toDivInvOneMonoid : DivInvOneMonoid α :=
-  { DivisionMonoid.toDivInvMonoid with
+  fast_instance% { DivisionMonoid.toDivInvMonoid with
     inv_one := by simpa only [one_div, inv_inv] using (inv_div (1 : α) 1).symm }
 
 @[to_additive (attr := simp)]

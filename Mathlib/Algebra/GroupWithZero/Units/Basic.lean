@@ -442,9 +442,10 @@ variable [CommGroupWithZero G₀] {a b c d : G₀}
 
 -- See note [lower instance priority]
 instance (priority := 100) CommGroupWithZero.toDivisionCommMonoid :
-    DivisionCommMonoid G₀ where
-  __ := ‹CommGroupWithZero G₀›
-  __ := GroupWithZero.toDivisionMonoid
+    DivisionCommMonoid G₀ :=
+  fast_instance% {
+    __ := ‹CommGroupWithZero G₀›
+    __ := GroupWithZero.toDivisionMonoid }
 
 lemma div_mul_cancel_left₀ (ha : a ≠ 0) (b : G₀) : a / (a * b) = b⁻¹ :=
   ha.isUnit.div_mul_cancel_left _

@@ -8,6 +8,7 @@ module
 
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.FastInstance
 public import Batteries.Tactic.SeqFocus
 
 /-!
@@ -43,7 +44,7 @@ variable [Semigroup α] {a b c : α}
 /-- There are two possible conventions for divisibility, which coincide in a `CommMonoid`.
 This matches the convention for ordinals. -/
 instance (priority := 100) semigroupDvd : Dvd α :=
-  Dvd.mk fun a b => ∃ c, b = a * c
+  fast_instance% Dvd.mk fun a b => ∃ c, b = a * c
 
 -- TODO: this used to not have `c` explicit, but that seems to be important
 --       for use with tactics, similar to `Exists.intro`
