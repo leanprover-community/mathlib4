@@ -47,6 +47,8 @@ integral of `dω` over the box into a sum of face integrals.
 Stokes theorem, differential form, exterior derivative, box, divergence theorem
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open ContinuousAlternatingMap Equiv Fin Set MeasureTheory Measure Matrix

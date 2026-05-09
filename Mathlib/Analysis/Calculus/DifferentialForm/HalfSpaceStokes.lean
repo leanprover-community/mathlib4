@@ -38,6 +38,8 @@ The proof strategy:
 Stokes theorem, half-space, differential form, exterior derivative, boundary integral
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open ContinuousAlternatingMap Fin Set MeasureTheory Measure Matrix DifferentialForm
