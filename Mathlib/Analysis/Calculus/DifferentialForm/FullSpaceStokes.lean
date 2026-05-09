@@ -3,11 +3,8 @@ Copyright (c) 2025 Haoen Feng. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Haoen Feng
 -/
-
-import Mathlib.Analysis.Calculus.DifferentialForm.HalfSpaceStokes
-import Mathlib.Analysis.Calculus.FDeriv.Const
-import Mathlib.Analysis.Calculus.FDeriv.Mul
-import Mathlib.Analysis.Calculus.FDeriv.Add
+module
+public import Mathlib.Analysis.Calculus.DifferentialForm.HalfSpaceStokes
 
 /-!
 # Stokes' theorem on the full space ℝⁿ and product rule for differential forms
@@ -38,6 +35,8 @@ of `d(f · ω)` and the partition-of-unity telescoping identity.
 Stokes theorem, full space, differential form, exterior derivative, product rule,
 partition of unity, wedge density
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -201,7 +200,6 @@ theorem fullSpace_stokes (m : ℕ)
   have hR_pos : (0 : ℝ) < R :=
     lt_of_lt_of_le (by positivity) (le_max_right (max Rω Rd) 1)
   have hR_nneg : (0 : ℝ) ≤ R := le_of_lt hR_pos
-
   -- Apply box_stokes
   have hle : (fun _ : Fin (m + 1) => -(R : ℝ)) ≤
       (fun _ : Fin (m + 1) => (R : ℝ)) := by
@@ -209,7 +207,6 @@ theorem fullSpace_stokes (m : ℕ)
   have h_box := box_stokes_of_contDiff ω
     (fun _ : Fin (m + 1) => -(R : ℝ))
     (fun _ : Fin (m + 1) => (R : ℝ)) hle hω
-
   -- All face integrals vanish for large R
   have h_face_pos (i : Fin (m + 1)) :
       (∫ x : Fin m → ℝ in
@@ -231,7 +228,6 @@ theorem fullSpace_stokes (m : ℕ)
     exact faceIntegral_eq_zero_of_large_v ω Rω hRω
       (fun _ : Fin (m + 1) => -(R : ℝ))
       (fun _ : Fin (m + 1) => (R : ℝ)) i (-(R : ℝ)) hRω_le_abs
-
   -- Boundary integral = sum over (front - back) = 0 for all faces
   have h_boundary_eq_zero : boxBoundaryIntegral ω
       (fun _ : Fin (m + 1) => -(R : ℝ))
@@ -239,10 +235,8 @@ theorem fullSpace_stokes (m : ℕ)
     unfold boxBoundaryIntegral
     rw [Finset.sum_eq_zero]
     intro i _
-    simp only [show (fun _ : Fin (m + 1) => (R : ℝ)) i = (R : ℝ) from rfl,
-      show (fun _ : Fin (m + 1) => -(R : ℝ)) i = -(R : ℝ) from rfl]
+    -- After unfold, (fun _ => R) i and (fun _ => -R) i reduce to R and -R by rfl
     rw [h_face_pos i, h_face_neg i, sub_zero]
-
   -- Density = 0 outside Icc(-R, R) since R ≥ Rd
   have h_density_outside : ∀ x : Fin (m + 1) → ℝ,
       x ∉ Icc (fun _ : Fin (m + 1) => -(R : ℝ))
@@ -251,7 +245,7 @@ theorem fullSpace_stokes (m : ℕ)
     intro x hx
     have hnorm : Rd ≤ ‖x‖ := by
       by_contra h_lt
-      push_neg at h_lt
+      push Not at h_lt
       have h_in_box : x ∈ Icc
           (fun _ : Fin (m + 1) => -(R : ℝ))
           (fun _ : Fin (m + 1) => (R : ℝ)) := by
@@ -269,9 +263,8 @@ theorem fullSpace_stokes (m : ℕ)
           linarith [abs_le.mp (le_of_lt this)]
       exact hx h_in_box
     exact hRd x hnorm
-
   have h_cont : Continuous (topFormDensity (extDeriv ω)) := by
-    refine (continuous_finset_sum _ fun i _ => ?_).congr
+    refine (continuous_finsetSum _ fun i _ => ?_).congr
       (fun x => (topFormDensity_extDeriv_eq_boxFaceComponent_divergence
         ω ((hω.differentiable one_ne_zero).differentiableAt)).symm)
     exact (boxFaceComponent_contDiff ω i hω).continuous_fderiv_apply
@@ -314,7 +307,7 @@ theorem continuous_topFormDensity_extDeriv {m : ℕ}
     (ω : (Fin (m + 1) → ℝ) → (Fin (m + 1) → ℝ) [⋀^Fin m]→L[ℝ] ℝ)
     (hω : ContDiff ℝ (1 : ℕ∞) ω) :
     Continuous (topFormDensity (extDeriv ω)) := by
-  refine (continuous_finset_sum Finset.univ fun i _ => ?_).congr
+  refine (continuous_finsetSum Finset.univ fun i _ => ?_).congr
     (fun x => (topFormDensity_extDeriv_eq_boxFaceComponent_divergence
       ω ((hω.differentiable one_ne_zero).differentiableAt)).symm)
   exact (boxFaceComponent_contDiff ω i hω).continuous_fderiv_apply
