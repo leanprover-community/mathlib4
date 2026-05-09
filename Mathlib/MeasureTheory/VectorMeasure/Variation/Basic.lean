@@ -100,7 +100,7 @@ end Basic
 
 section NormedAddCommGroup
 
-variable [NormedAddCommGroup V] {μ : VectorMeasure X V}
+variable [NormedAddCommGroup V] {μ ν : VectorMeasure X V}
 
 theorem norm_measure_le_variation {E : Set X} (hE : μ.variation E ≠ ∞ := by finiteness) :
     ‖μ E‖ ≤ μ.variation.real E := by
@@ -110,6 +110,16 @@ theorem norm_measure_le_variation {E : Set X} (hE : μ.variation E ≠ ∞ := by
 variable (μ) in
 @[simp]
 lemma variation_neg : (-μ).variation = μ.variation := by simp [variation]
+
+lemma variation_add_le : (μ + ν).variation ≤ μ.variation + ν.variation := by
+  sorry
+
+lemma variation_sub_le : (μ - ν).variation ≤ μ.variation + ν.variation := by
+  grw [sub_eq_add_neg, variation_add_le, variation_neg]
+
+lemma variation_finsetSum_le {ι} (s : Finset ι) (μ : ι → VectorMeasure X V) :
+    (∑ i ∈ s, μ i).variation ≤ ∑ i ∈ s, (μ i).variation := by
+  sorry
 
 end NormedAddCommGroup
 
