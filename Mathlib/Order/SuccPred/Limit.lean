@@ -79,9 +79,9 @@ Use `IsSuccPrelimit` if you want to include the case of a minimal element. -/
 @[mk_iff]
 structure IsSuccLimit (a : α) : Prop where
   /-- Successor limits aren't minimal. -/
-  not_isMin : ¬ IsMin a
+  protected not_isMin : ¬ IsMin a
   /-- Successor limits don't cover any other elements. -/
-  isSuccPrelimit : IsSuccPrelimit a
+  protected isSuccPrelimit : IsSuccPrelimit a
 
 /-- A predecessor limit is a value that isn't maximal and isn't covered by any other.
 
@@ -92,9 +92,9 @@ Use `IsPredPrelimit` if you want to include the case of a maximal element. -/
 @[mk_iff, to_dual existing]
 structure IsPredLimit (a : α) : Prop where
   /-- Predecessor limits aren't maximal. -/
-  not_isMax : ¬ IsMax a
+  protected not_isMax : ¬ IsMax a
   /-- Predecessor limits aren't covered by any other elements. -/
-  isPredPrelimit : IsPredPrelimit a
+  protected isPredPrelimit : IsPredPrelimit a
 
 attribute [to_dual existing]
   IsSuccLimit.mk IsSuccLimit.not_isMin IsSuccLimit.isSuccPrelimit isSuccLimit_iff
