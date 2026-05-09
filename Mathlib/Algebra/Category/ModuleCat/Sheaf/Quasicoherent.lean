@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Generators
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Abelian
-public import Mathlib.CategoryTheory.Comma.Over.Pullback
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Generators
+public import Mathlib.CategoryTheory.Sites.CoversTop.Over
 
 /-!
 # Quasicoherent sheaves
@@ -147,7 +147,7 @@ variable {C' : Type u₂} [Category.{v₂} C'] {J' : GrothendieckTopology C'} {S
 
 variable {M : SheafOfModules.{u} R} (P : Presentation M)
   (F : SheafOfModules.{u} R ⥤ SheafOfModules.{u} S) [PreservesColimitsOfSize.{u, u} F]
-  (η : F.obj (unit R) ≅ unit S)
+  (η : unit S ≅ F.obj (unit R))
 
 -- `preservesColimitsOfSize_shrink` is not a global instance because it loops indefinitely.
 -- But here it is fine as an instance since the universe `u` is inferrable from the type of `F`.
@@ -157,19 +157,19 @@ local instance : PreservesColimitsOfSize.{0, 0} F := preservesColimitsOfSize_shr
 colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will obtain
 relations of `Presentation (F.obj M)`. -/
 def Presentation.mapRelations : free P.relations.I (R := S) ⟶ free P.generators.I :=
-  (mapFree F η P.relations.I).inv ≫ F.map ((freeHomEquiv _).symm P.relations.s) ≫
-    F.map (kernel.ι _) ≫ (mapFree F η P.generators.I).hom
+  (mapFreeIso F P.relations.I η).hom ≫ F.map ((freeHomEquiv _).symm P.relations.s) ≫
+    F.map (kernel.ι _) ≫ (mapFreeIso F P.generators.I η).inv
 
 /-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
 colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will obtain
 generators of `Presentation (F.obj M)`. -/
 def Presentation.mapGenerators : free P.generators.I ⟶ F.obj M :=
-  (mapFree F η P.generators.I).inv ≫ F.map (P.generators.π)
+  (mapFreeIso F P.generators.I η).hom ≫ F.map (P.generators.π)
 
 @[reassoc (attr := simp)]
 theorem Presentation.mapRelations_mapGenerators :
     P.mapRelations F η ≫ P.mapGenerators F η = 0 := by
-  simp only [mapRelations, mapGenerators, Category.assoc, Iso.hom_inv_id_assoc,
+  simp only [mapRelations, mapGenerators, Category.assoc, Iso.inv_hom_id_assoc,
     ← Functor.map_comp, kernel.condition, Functor.map_zero, comp_zero]
 
 /-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
@@ -179,13 +179,14 @@ colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we 
 def Presentation.map : Presentation (F.obj M) :=
   presentationOfIsCokernelFree (P.mapRelations F η) (P.mapGenerators F η)
     (P.mapRelations_mapGenerators F η) <| by
-    refine IsColimit.equivOfNatIsoOfIso (parallelPairIsoMk (mapFree F η _) (mapFree F η _)
-      (by simp [Presentation.mapRelations]) (by simp)) _ _ ?_ (isColimitOfPreserves F P.isColimit)
+    refine IsColimit.equivOfNatIsoOfIso
+      (parallelPairIsoMk (mapFreeIso F _ η).symm (mapFreeIso F _ η).symm
+        (by simp [Presentation.mapRelations]) (by simp)) _ _ ?_ (isColimitOfPreserves F P.isColimit)
     exact (Cocone.ext (Iso.refl _) <| by rintro (_ | _)
       <;> simp [Presentation.mapRelations, Presentation.mapGenerators, ← Functor.map_comp])
 
 theorem Presentation.map_π_eq :
-    (P.map F η).generators.π = (mapFree F η _).inv ≫ F.map (P.generators.π) :=
+    (P.map F η).generators.π = (mapFreeIso F _ η).hom ≫ F.map (P.generators.π) :=
   (F.obj M).freeHomEquiv.symm_apply_eq.mpr rfl
 
 end
@@ -354,18 +355,15 @@ variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat
   [∀ X Y, HasSheafify ((J.over X).over Y) AddCommGrpCat.{u}]
   [∀ X Y, ((J.over X).over Y).WEqualsLocallyBijective AddCommGrpCat.{u}]
 
-#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
 /-- Given an cover `X` and a quasicoherent data for `M` restricted onto each `Mᵢ`, we may glue them
 into a quasicoherent data of `M` itself. -/
 noncomputable def QuasicoherentData.bind {R : Sheaf J RingCat.{u}}
     (M : SheafOfModules.{u} R) {I : Type u}
     (X : I → C) (hX : J.CoversTop X) (D : Π i, QuasicoherentData (M.over (X i))) :
     M.QuasicoherentData where
-  I := Σ i, (D i).I
+  I := (i : I) × (D i).I
   X ij := ((D ij.1).X ij.2).left
-  coversTop Y := J.transitive (hX Y) _ fun Z f ⟨i, ⟨g⟩⟩ ↦
-      J.superset_covering ((Sieve.functorPushforward_ofObjects_le _ _ _).trans
-      (Sieve.ofObjects_mono fun i' ↦ by aesop)) ((D i).coversTop (.mk g))
+  coversTop := hX.over (fun i ↦ (D i).coversTop)
   presentation i :=
     letI e := pushforwardPushforwardEquivalence (Over.iteratedSliceEquiv ((D i.1).X i.2))
       (S := (R.over _).over _) (R := R.over _) (𝟙 _) (𝟙 _)

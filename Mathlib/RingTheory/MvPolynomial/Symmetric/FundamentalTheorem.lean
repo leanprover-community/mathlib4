@@ -142,7 +142,7 @@ lemma esymmAlgHom_apply (p : MvPolynomial (Fin n) R) :
 lemma rename_esymmAlgHom (e : σ ≃ τ) :
     (renameSymmetricSubalgebra e).toAlgHom.comp (esymmAlgHom σ R n) = esymmAlgHom τ R n := by
   ext i : 2
-  simp_rw [AlgHom.comp_apply, esymmAlgHom, aeval_X, AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_coe,
+  simp_rw [AlgHom.comp_apply, esymmAlgHom, aeval_X, AlgEquiv.coe_algHom,
     renameSymmetricSubalgebra_apply_coe, rename_esymm]
 
 variable (σ) in
@@ -274,7 +274,7 @@ lemma esymmAlgHom_fin_injective (h : n ≤ m) :
   rw [injective_iff_map_eq_zero]
   refine fun p ↦ (fun hp ↦ ?_).mtr
   rw [p.as_sum, map_sum (esymmAlgHom (Fin m) R n), ← Subalgebra.coe_eq_zero,
-    AddSubmonoidClass.coe_finset_sum]
+    AddSubmonoidClass.coe_finsetSum]
   refine sum_ne_zero_of_injOn_supDegree (D := toLex) (support_nonempty.2 hp) (fun t ht ↦ ?_)
     (fun t ht s hs he ↦ DFunLike.ext' <| accumulate_injective h ?_)
   · rw [← esymmAlgHomMonomial, Ne, ← leadingCoeff_eq_zero toLex.injective,

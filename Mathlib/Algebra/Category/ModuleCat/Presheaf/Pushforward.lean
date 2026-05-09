@@ -37,7 +37,7 @@ variable (F : C ⥤ D)
 set_option backward.isDefEq.respectTransparency false in
 /-- Implementation of `pushforward₀`. -/
 @[simps]
-def pushforward₀_obj (R : Dᵒᵖ ⥤ RingCat.{u}) (M : PresheafOfModules R) :
+def pushforward₀Obj (R : Dᵒᵖ ⥤ RingCat.{u}) (M : PresheafOfModules R) :
     PresheafOfModules (F.op ⋙ R) :=
   { obj X := ModuleCat.of _ (M.obj (F.op.obj X))
     map {X Y} f := M.map (F.op.map f)
@@ -52,13 +52,15 @@ def pushforward₀_obj (R : Dᵒᵖ ⥤ RingCat.{u}) (M : PresheafOfModules R) :
         (@LinearMap.ext _ _ _ _ _ _ _ _ (_) (_) _ _ _ (fun x => ?_))
       exact (M.congr_map_apply (F.op.map_comp f g) x).trans (by simp) }
 
+@[deprecated (since := "2026-04-27")] alias pushforward₀_obj := pushforward₀Obj
+
 set_option backward.isDefEq.respectTransparency false in
 /-- The pushforward functor on presheaves of modules for a functor `F : C ⥤ D` and
 `R : Dᵒᵖ ⥤ RingCat`. On the underlying presheaves of abelian groups, it is induced
 by the precomposition with `F.op`. -/
 def pushforward₀ (R : Dᵒᵖ ⥤ RingCat.{u}) :
     PresheafOfModules.{v} R ⥤ PresheafOfModules.{v} (F.op ⋙ R) where
-  obj M := pushforward₀_obj F R M
+  obj M := pushforward₀Obj F R M
   map {M₁ M₂} φ := { app X := φ.app _ }
 
 /-- If `F : C ⥤ D` if a functor and `R : Dᵒᵖ ⥤ CommRingCat` is a presheaf
