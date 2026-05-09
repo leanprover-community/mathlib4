@@ -43,10 +43,6 @@ variable {T : Monad C}
 @[simp] lemma mk_of (c : Kleisli T) : Kleisli.mk T c.of = c := rfl
 lemma of_mk (c : C) : (Kleisli.mk T c).of = c := rfl
 
-theorem comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ T.η.app Y) ≫ T.map (g ≫ T.η.app Z) ≫ T.μ.app Z = (f ≫ g) ≫ T.η.app Z := by
-  simp [Monad.unit_naturality, Monad.mu_naturality, Monad.right_unit_assoc]
-
 /-- For (T : Monad C), morphisms `c ⟶ c'` in the Kleisli category of `T` are
 morphisms ` c ⟶ T.obj c'` in `C`. -/
 structure Hom (c c' : Kleisli T) where
@@ -66,11 +62,9 @@ instance category : Category (Kleisli T) where
   id X := .mk <| T.η.app X.of
   comp {_} {_} {Z} f g := .mk <| f.of ≫ T.map g.of ≫ T.μ.app Z.of
   id_comp {X} {Y} f := by
-    simp [dsimp% T.left_unit, ← T.unit_naturality_assoc]
-  comp_id {X} {Y} f := by
-    simp [dsimp% T.right_unit]
+    simp [← T.unit_naturality_assoc]
   assoc f g h := by
-    simp [dsimp% T.assoc, T.mu_naturality_assoc]
+    simp [T.assoc, T.mu_naturality_assoc]
 
 variable {T} in
 attribute [local ext] Hom in
@@ -87,7 +81,7 @@ def toKleisli : C ⥤ Kleisli T where
   map {X} {Y} f := .mk <| f ≫ T.η.app Y
   map_comp {X} {Y} {Z} f g := by
     unfold_projs
-    rw [comp]
+    simp [Monad.unit_naturality, Monad.mu_naturality, Monad.right_unit_assoc]
 
 /-- The right adjoint of the adjunction which induces the monad `(T, η_ T, μ_ T)`. -/
 @[simps]
@@ -96,7 +90,7 @@ def fromKleisli : Kleisli T ⥤ C where
   map {_} {Y} f := T.map f.of ≫ T.μ.app Y.of
   map_id _ := T.right_unit _
   map_comp {X} {Y} {Z} f g := by
-    simp [← T.mu_naturality_assoc, dsimp% T.assoc]
+    simp [← T.mu_naturality_assoc, T.assoc]
 
 /-- The Kleisli adjunction which gives rise to the monad `(T, η_ T, μ_ T)`.
 cf Lemma 5.2.11 of [Riehl][riehl2017]. -/
@@ -105,13 +99,12 @@ def adj : toKleisli T ⊣ fromKleisli T :=
     { homEquiv X Y := { toFun f := f.of, invFun f := .mk f }
       homEquiv_naturality_left_symm := fun {X} {Y} {Z} f g => by
         ext
-        simp [← T.unit_naturality_assoc, dsimp% T.left_unit]
-        rfl }
+        unfold_projs
+        simp [← T.unit_naturality_assoc] }
 
 /-- The composition of the adjunction gives the original functor. -/
 def toKleisliCompFromKleisliIsoSelf : toKleisli T ⋙ fromKleisli T ≅ T :=
-  NatIso.ofComponents (fun _ => (Iso.refl _))
-    (naturality := fun {X} {Y} f => by simp_all [dsimp% T.right_unit])
+  NatIso.ofComponents fun _ => Iso.refl _
 
 end Adjunction
 
@@ -130,10 +123,6 @@ variable (U : Comonad C)
 
 @[simp] lemma mk_of (c : Cokleisli U) : Cokleisli.mk U c.of = c := rfl
 lemma of_mk (c : C) : (Cokleisli.mk U c).of = c := rfl
-
-theorem comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    U.δ.app X ≫ U.map (U.ε.app X ≫ f) ≫ (U.ε.app Y ≫ g) = U.ε.app X ≫ (f ≫ g) := by
-  simp [Comonad.counit_naturality_assoc]
 
 variable {U} in
 /-- For (U : Comonad C), morphisms `c ⟶ c'` in the Cokleisli category of `U` are
@@ -170,8 +159,7 @@ def toCokleisli : C ⥤ Cokleisli U where
   map {X} {_} f := .mk (U.ε.app X ≫ f)
   map_comp {X} {Y} {Z} f g := by
     unfold_projs
-    rw [comp]
-    simp
+    simp [Comonad.counit_naturality_assoc]
 
 /-- The left adjoint of the adjunction which induces the comonad `(U, ε_ U, δ_ U)`. -/
 @[simps]

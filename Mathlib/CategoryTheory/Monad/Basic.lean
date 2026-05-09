@@ -46,9 +46,9 @@ structure Monad extends C ⥤ C where
   η : 𝟭 _ ⟶ toFunctor
   /-- The multiplication for the monad. -/
   μ : toFunctor ⋙ toFunctor ⟶ toFunctor
-  assoc : ∀ X, toFunctor.map (NatTrans.app μ X) ≫ μ.app _ = μ.app _ ≫ μ.app _ := by cat_disch
-  left_unit : ∀ X : C, η.app (toFunctor.obj X) ≫ μ.app _ = 𝟙 _ := by cat_disch
-  right_unit : ∀ X : C, toFunctor.map (η.app X) ≫ μ.app _ = 𝟙 _ := by cat_disch
+  assoc : ∀ X, dsimp% toFunctor.map (NatTrans.app μ X) ≫ μ.app _ = μ.app _ ≫ μ.app _ := by cat_disch
+  left_unit : ∀ X : C, dsimp% η.app (toFunctor.obj X) ≫ μ.app _ = 𝟙 _ := by cat_disch
+  right_unit : ∀ X : C, dsimp% toFunctor.map (η.app X) ≫ μ.app _ = 𝟙 _ := by cat_disch
 
 @[reassoc]
 lemma Monad.unit_naturality (T : Monad C) ⦃X Y : C⦄ (f : X ⟶ Y) :
@@ -72,10 +72,10 @@ structure Comonad extends C ⥤ C where
   ε : toFunctor ⟶ 𝟭 _
   /-- The comultiplication for the comonad. -/
   δ : toFunctor ⟶ toFunctor ⋙ toFunctor
-  coassoc : ∀ X, NatTrans.app δ _ ≫ toFunctor.map (δ.app X) = δ.app _ ≫ δ.app _ := by
+  coassoc : ∀ X, dsimp% NatTrans.app δ _ ≫ toFunctor.map (δ.app X) = δ.app _ ≫ δ.app _ := by
     cat_disch
-  left_counit : ∀ X : C, δ.app X ≫ ε.app (toFunctor.obj X) = 𝟙 _ := by cat_disch
-  right_counit : ∀ X : C, δ.app X ≫ toFunctor.map (ε.app X) = 𝟙 _ := by cat_disch
+  left_counit : ∀ X : C, dsimp% δ.app X ≫ ε.app (toFunctor.obj X) = 𝟙 _ := by cat_disch
+  right_counit : ∀ X : C, dsimp% δ.app X ≫ toFunctor.map (ε.app X) = 𝟙 _ := by cat_disch
 
 @[reassoc]
 lemma Comonad.counit_naturality (T : Comonad C) ⦃X Y : C⦄ (f : X ⟶ Y) :
