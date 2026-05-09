@@ -108,12 +108,6 @@ instance (G R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
   isInvariant := ⟨fun x hx ↦ ⟨⟨x, hx⟩, rfl⟩⟩
 
 -- PRed
-instance (G R S : Type*) [Group G] [CommRing R] [CommRing S]
-    [Algebra R S] [MulSemiringAction G S] [IsGaloisGroup G R S] :
-    IsGaloisGroup (⊤ : Subgroup G) R S :=
-  .of_mulEquiv Subgroup.topEquiv fun _ _ ↦ rfl
-
--- PRed
 /-- Existing construction with `Finite G` replaced by `IsIntegral A B` -/
 theorem IsGaloisGroup.to_isFractionRing'
     (G A B K L : Type*) [Group G] [CommRing A]
@@ -175,7 +169,8 @@ theorem NumberField.supr_inertia_eq_top (S G : Type*) [CommRing S] [Module.Finit
     rw [Algebra.unramified_iff_forall]
     rintro ⟨mF, hmF⟩
     by_cases hmF0 : mF = ⊥
-    · simp only [hmF0, Algebra.IsUnramifiedAt]
+    · simp only [hmF0]
+      rw [Algebra.IsUnramifiedAt]
       change Algebra.FormallyUnramified ℤ (Localization ((⊥ : Ideal R).primeCompl))
       rw [Ideal.primeCompl_bot]
       change Algebra.FormallyUnramified ℤ (FractionRing R)
