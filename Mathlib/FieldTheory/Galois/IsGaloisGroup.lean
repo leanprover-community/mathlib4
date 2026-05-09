@@ -256,10 +256,9 @@ theorem map_mulEquivAlgEquiv_fixingSubgroup
 variable (H H' : Subgroup G) (F F' : IntermediateField K L)
 
 instance (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
-    [MulSemiringAction G S] [hGKL : IsGaloisGroup G R S] (H : Subgroup G) :
+    [MulSemiringAction G S] [hGKL : IsGaloisGroup G R S] :
     IsGaloisGroup H (FixedPoints.subalgebra R S H) S where
   faithful := have := hGKL.faithful; inferInstance
-  commutes := ⟨fun g x y ↦ by simp_rw [Subalgebra.smul_def, smul_eq_mul, smul_mul', x.2 g]⟩
   isInvariant := ⟨fun x h ↦ ⟨⟨x, h⟩, rfl⟩⟩
 
 instance subgroup [hGKL : IsGaloisGroup G K L] :
