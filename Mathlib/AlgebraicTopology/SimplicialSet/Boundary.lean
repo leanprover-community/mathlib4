@@ -145,6 +145,18 @@ end stdSimplex
 
 namespace boundary
 
+/-- The top simplex is not in the boundary. -/
+lemma yonedaEquiv_id_notMem (n : ℕ) :
+    yonedaEquiv.{u} (𝟙 Δ[n]) ∉ ∂Δ[n].obj _ := by
+  simpa only [stdSimplex.objEquiv_yonedaEquiv_id] using stdSimplex.notMem_boundary.{u} n
+
+/-- A codimension-one face lies in the boundary. -/
+lemma yonedaEquiv_δ_mem {n : ℕ} (i : Fin (n + 2)) :
+    yonedaEquiv (stdSimplex.{u}.δ i) ∈ ∂Δ[n + 1].obj _ := by
+  -- TODO: after #38662, reprove this using `boundary.ι` and `boundary.ι_ι`.
+  rw [← Subcomplex.ofSimplex_le_iff, stdSimplex.ofSimplex_yonedaEquiv_δ]
+  exact face_singleton_compl_le_boundary i
+
 /-- If `x : X _⦋n⦌` is missing from `A` and every lower-dimensional simplex lies in `A`,
 then `A.preimage (yonedaEquiv.symm x) = ∂Δ[n]`. -/
 lemma preimage_eq_boundary_of_minimal_notMem
@@ -164,31 +176,22 @@ lemma nonDegenerate_of_preimage_eq_boundary
     {X : SSet.{u}} {n : ℕ} (A : X.Subcomplex) (x : X _⦋n⦌)
     (h : A.preimage (yonedaEquiv.symm x) = ∂Δ[n]) :
     x ∈ X.nonDegenerate n := by
-  intro hxd
-  rw [SSet.mem_degenerate_iff] at hxd
-  obtain ⟨m, hm, f, hf, y, rfl⟩ := hxd
-  haveI := hf
-  obtain ⟨⟨s, hs⟩⟩ := (isSplitEpi_of_epi f).exists_splitEpi
-  -- A section `s : ⦋m⦌ ⟶ ⦋n⦌` of an epi `f : ⦋n⦌ ⟶ ⦋m⦌` with `m < n` cannot be surjective.
-  have hs_ns : ¬ Function.Surjective ⇑s.toOrderHom := fun hsurj ↦ by
-    haveI : Epi s := SimplexCategory.epi_iff_surjective.mpr hsurj
-    exact absurd (SimplexCategory.len_le_of_epi s) (by lia)
-  -- Evaluating `X.map f.op y` on the section recovers `y`.
-  have hsf : (yonedaEquiv.symm (X.map f.op y)).app (op ⦋m⦌) (stdSimplex.objEquiv.symm s) = y := by
-    change X.map s.op (X.map f.op y) = y
-    rw [← Functor.map_comp_apply, ← op_comp, hs, op_id, Functor.map_id_apply]
-  have hy_in_A : y ∈ A.obj _ := by
-    have hs_in : stdSimplex.objEquiv.symm s ∈
-        (∂Δ[n] : (Δ[n] : SSet.{u}).Subcomplex).obj (op ⦋m⦌) := hs_ns
-    rw [← h] at hs_in
-    rwa [Subcomplex.preimage_obj, Set.mem_preimage, hsf] at hs_in
-  have hxA : X.map f.op y ∈ A.obj _ := A.map _ hy_in_A
-  have hid : yonedaEquiv (𝟙 (Δ[n] : SSet.{u})) ∈
-      (A.preimage (yonedaEquiv.symm (X.map f.op y))).obj (op ⦋n⦌) := by
+  rw [mem_nonDegenerate_iff_notMem_degenerate]
+  intro hx
+  obtain _ | n := n
+  · simp at hx
+  · refine yonedaEquiv_id_notMem.{u} (n + 1) ?_
+    rw [← h]
+    simp only [degenerate_eq_iUnion_range_σ, Set.mem_iUnion, Set.mem_range] at hx
+    obtain ⟨i, y, rfl⟩ := hx
     simp only [Subcomplex.preimage_obj, Set.mem_preimage, yonedaEquiv_symm_app_id]
-    exact hxA
-  rw [h] at hid
-  exact stdSimplex.notMem_boundary n (by simpa using hid)
+    apply A.map
+    have := yonedaEquiv_δ_mem.{u} i.castSucc
+    simp only [← h, Subcomplex.preimage_obj, Set.mem_preimage] at this
+    -- TODO: after #38664, express this as Yoneda naturality:
+    -- `convert this; rw [← yonedaEquiv_comp, stdSimplex.yonedaEquiv_δ_comp]; simp`.
+    change X.δ i.castSucc (X.σ i y) ∈ A.obj _ at this
+    simpa using this
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If the preimage of `A` along the simplex classified by `x : X _⦋n⦌` is `∂Δ[n]`,
