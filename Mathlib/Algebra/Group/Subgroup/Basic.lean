@@ -318,7 +318,7 @@ instance topCharacteristic : Characteristic (⊤ : Subgroup G) :=
 
 /-- If `H` is a characteristic subgroup of `G`, then every automorphism of `G` induces an
 automorphism of `H`. -/
-@[to_additive
+@[to_additive (attr := simps!)
   /-- If `H` is a characteristic additive subgroup of `G`, then every automorphism of `G` induces an
   automorphism of `H`. -/]
 def _root_.MulAut.characteristic (H : Subgroup G) [H.Characteristic] : MulAut G →* MulAut H where
