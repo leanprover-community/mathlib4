@@ -768,11 +768,10 @@ theorem finiteIndex_of_le [FiniteIndex H] (h : H ≤ K) : FiniteIndex K :=
   ⟨ne_zero_of_dvd_ne_zero FiniteIndex.index_ne_zero (index_dvd_of_le h)⟩
 
 @[to_additive]
-lemma isFiniteRelIndex_of_le_left {H₁ H₂ : Subgroup G} (H₃ : Subgroup G) [H₁.IsFiniteRelIndex H₃]
-    (h : H₁ ≤ H₂) :
-    H₂.IsFiniteRelIndex H₃ := by
+lemma isFiniteRelIndex_of_le_left (L : Subgroup G) [H.IsFiniteRelIndex L] (h : H ≤ K) :
+    K.IsFiniteRelIndex L := by
   rw [isFiniteRelIndex_iff_finiteIndex] at *
-  exact finiteIndex_of_le <| subgroupOf_mono H₃ h
+  exact finiteIndex_of_le <| subgroupOf_mono L h
 
 @[deprecated (since := "2026-05-09")] alias isFiniteRelIndex_of_le := isFiniteRelIndex_of_le_left
 @[deprecated (since := "2026-05-09")] alias
