@@ -81,8 +81,8 @@ explicitly in `simp [endpoint_def, …]` at each site that wants to bridge betwe
 `endpoint γ = u` API and the underlying `γ.1 1` evaluation. -/
 public theorem endpoint_def (γ : BasedPath x₀) : endpoint γ = γ.1 1 := rfl
 @[simp] public theorem toPath_apply (γ : BasedPath x₀) (t : I) : toPath γ t = γ.1 t := rfl
-@[simp] public theorem toPath_source (γ : BasedPath x₀) : toPath γ 0 = x₀ := γ.2
-@[simp] public theorem toPath_target (γ : BasedPath x₀) : toPath γ 1 = endpoint γ := rfl
+public theorem toPath_source (γ : BasedPath x₀) : toPath γ 0 = x₀ := γ.2
+public theorem toPath_target (γ : BasedPath x₀) : toPath γ 1 = endpoint γ := rfl
 
 @[ext] public theorem ext {γ γ' : BasedPath x₀} (h : ∀ t, γ.1 t = γ'.1 t) : γ = γ' := by
   cases γ with
