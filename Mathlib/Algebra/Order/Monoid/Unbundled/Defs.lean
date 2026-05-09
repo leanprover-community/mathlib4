@@ -125,7 +125,7 @@ class ContravariantClass : Prop where
 namely `b₁ ≤ b₂ → a * b₁ ≤ a * b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedCommMonoid`. -/
+`IsOrderedMonoid`. -/
 abbrev MulLeftMono [Mul M] [LE M] : Prop :=
   CovariantClass M M (· * ·) (· ≤ ·)
 
@@ -135,7 +135,7 @@ to_dual_insert_cast MulLeftMono := by grind [CovariantClass, Covariant]
 namely `a₁ ≤ a₂ → a₁ * b ≤ a₂ * b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedCommMonoid`. -/
+`IsOrderedMonoid`. -/
 abbrev MulRightMono [Mul M] [LE M] : Prop :=
   CovariantClass M M (swap (· * ·)) (· ≤ ·)
 
@@ -145,7 +145,7 @@ to_dual_insert_cast MulRightMono := by grind [CovariantClass, Covariant]
 namely `b₁ ≤ b₂ → a + b₁ ≤ a + b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedAddCommMonoid`. -/
+`IsOrderedAddMonoid`. -/
 abbrev AddLeftMono [Add M] [LE M] : Prop :=
   CovariantClass M M (· + ·) (· ≤ ·)
 
@@ -155,7 +155,7 @@ to_dual_insert_cast AddLeftMono := by grind [CovariantClass, Covariant]
 namely `a₁ ≤ a₂ → a₁ + b ≤ a₂ + b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedAddCommMonoid`. -/
+`IsOrderedAddMonoid`. -/
 abbrev AddRightMono [Add M] [LE M] : Prop :=
   CovariantClass M M (swap (· + ·)) (· ≤ ·)
 
@@ -167,7 +167,7 @@ attribute [to_additive existing] MulLeftMono MulRightMono
 namely `b₁ < b₂ → a * b₁ < a * b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedCommGroup`. -/
+`IsOrderedMonoid`. -/
 abbrev MulLeftStrictMono [Mul M] [LT M] : Prop :=
   CovariantClass M M (· * ·) (· < ·)
 
@@ -177,7 +177,7 @@ to_dual_insert_cast MulLeftStrictMono := by grind [CovariantClass, Covariant]
 namely `a₁ < a₂ → a₁ * b < a₂ * b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedCommGroup`. -/
+`IsOrderedMonoid`. -/
 abbrev MulRightStrictMono [Mul M] [LT M] : Prop :=
   CovariantClass M M (swap (· * ·)) (· < ·)
 
@@ -187,7 +187,7 @@ to_dual_insert_cast MulRightStrictMono := by grind [CovariantClass, Covariant]
 namely `b₁ < b₂ → a + b₁ < a + b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedAddCommGroup`. -/
+`IsOrderedAddMonoid`. -/
 abbrev AddLeftStrictMono [Add M] [LT M] : Prop :=
   CovariantClass M M (· + ·) (· < ·)
 
@@ -197,7 +197,7 @@ to_dual_insert_cast AddLeftStrictMono := by grind [CovariantClass, Covariant]
 namely `a₁ < a₂ → a₁ + b < a₂ + b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedAddCommGroup`. -/
+`IsOrderedAddMonoid`. -/
 abbrev AddRightStrictMono [Add M] [LT M] : Prop :=
   CovariantClass M M (swap (· + ·)) (· < ·)
 
@@ -209,7 +209,7 @@ attribute [to_additive existing] MulLeftStrictMono MulRightStrictMono
 namely `a * b₁ < a * b₂ → b₁ < b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedCommGroup`. -/
+`IsOrderedMonoid`. -/
 abbrev MulLeftReflectLT [Mul M] [LT M] : Prop :=
   ContravariantClass M M (· * ·) (· < ·)
 
@@ -219,7 +219,7 @@ to_dual_insert_cast MulLeftReflectLT := by grind [ContravariantClass, Contravari
 namely `a₁ * b < a₂ * b → a₁ < a₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedCommGroup`. -/
+`IsOrderedMonoid`. -/
 abbrev MulRightReflectLT [Mul M] [LT M] : Prop :=
   ContravariantClass M M (swap (· * ·)) (· < ·)
 
@@ -229,7 +229,7 @@ to_dual_insert_cast MulRightReflectLT := by grind [ContravariantClass, Contravar
 namely `a + b₁ < a + b₂ → b₁ < b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedAddCommGroup`. -/
+`IsOrderedAddMonoid`. -/
 abbrev AddLeftReflectLT [Add M] [LT M] : Prop :=
   ContravariantClass M M (· + ·) (· < ·)
 
@@ -239,7 +239,7 @@ to_dual_insert_cast AddLeftReflectLT := by grind [ContravariantClass, Contravari
 namely `a₁ * b < a₂ * b → a₁ < a₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedAddCommGroup`. -/
+`IsOrderedAddMonoid`. -/
 abbrev AddRightReflectLT [Add M] [LT M] : Prop :=
   ContravariantClass M M (swap (· + ·)) (· < ·)
 

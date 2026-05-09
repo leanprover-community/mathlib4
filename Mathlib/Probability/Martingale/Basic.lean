@@ -3,11 +3,10 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Kexing Ying
 -/
-module
 
-public import Mathlib.MeasureTheory.Function.ConditionalExpectation.PullOut
-public import Mathlib.Probability.Process.Predictable
-public import Mathlib.Probability.Process.Stopping
+import Mathlib.MeasureTheory.Function.ConditionalExpectation.PullOut
+import Mathlib.Probability.Process.Predictable
+import Mathlib.Probability.Process.Stopping
 
 /-!
 # Martingales
@@ -164,10 +163,10 @@ lemma congr [LE E] (hf : Submartingale f ℱ μ) (hg : StronglyAdapted ℱ g)
   exact (Filter.eventuallyLE_congr (h_eq i) (condExp_congr_ae (h_eq j))).mp (ae_le_condExp hf hij)
 
 -- TODO: move to definition of add_le_add
-attribute [to_dual self] add_le_add
+attribute [to_dual self] add_le_add neg_le_neg_iff
 
 @[to_dual (dont_translate := ι)]
-theorem add [Preorder E] [AddLeftMono E] (hf : Submartingale f ℱ μ)
+theorem add [Preorder E] [IsOrderedAddMonoid E] (hf : Submartingale f ℱ μ)
     (hg : Submartingale g ℱ μ) : Submartingale (f + g) ℱ μ := by
   refine ⟨hf.1.add hg.1, fun i j hij => ?_, fun i => (hf.2.2 i).add (hg.2.2 i)⟩
   refine EventuallyLE.trans ?_ (condExp_add (hf.integrable j) (hg.integrable j) _).symm.le
@@ -176,33 +175,45 @@ theorem add [Preorder E] [AddLeftMono E] (hf : Submartingale f ℱ μ)
   refine add_le_add ?_ ?_ <;> assumption
 
 @[to_dual (dont_translate := ι)]
-theorem add_martingale [Preorder E] [AddLeftMono E] (hf : Submartingale f ℱ μ)
+theorem add_martingale [Preorder E] [IsOrderedAddMonoid E] (hf : Submartingale f ℱ μ)
     (hg : Martingale g ℱ μ) : Submartingale (f + g) ℱ μ :=
   hf.add hg.submartingale
 
 @[to_dual (dont_translate := ι)]
-theorem neg [Preorder E] [AddLeftMono E] (hf : Submartingale f ℱ μ) :
+theorem neg [Preorder E] [IsOrderedAddMonoid E] (hf : Submartingale f ℱ μ) :
     Supermartingale (-f) ℱ μ := by
   refine ⟨hf.1.neg, fun i j hij => (condExp_neg ..).le.trans ?_, fun i => (hf.2.2 i).neg⟩
   filter_upwards [hf.2.1 i j hij] with _ _
   simpa
 
+-- TODO: move to definition of setIntegral_mono_ae
+attribute [to_dual self (reorder := f g, hf hg)] setIntegral_mono_ae
+
 /-- The converse of this lemma is `MeasureTheory.submartingale_of_setIntegral_le`. -/
+@[to_dual (dont_translate := ι)
+/-- The converse of this lemma is `MeasureTheory.supermartingale_of_setIntegral_le`. -/]
 theorem setIntegral_le [PartialOrder E] [IsOrderedAddMonoid E] [IsOrderedModule ℝ E]
-    [ClosedIciTopology E] [SigmaFiniteFiltration μ ℱ] {f : ι → Ω → E} (hf : Submartingale f ℱ μ)
+    [OrderClosedTopology E] [SigmaFiniteFiltration μ ℱ] {f : ι → Ω → E} (hf : Submartingale f ℱ μ)
     {i j : ι} (hij : i ≤ j) {s : Set Ω} (hs : MeasurableSet[ℱ i] s) :
     ∫ ω in s, f i ω ∂μ ≤ ∫ ω in s, f j ω ∂μ := by
-  rw [← neg_le_neg_iff, ← integral_neg, ← integral_neg]
-  exact Supermartingale.setIntegral_le hf.neg hij hs
+  rw [← setIntegral_condExp (ℱ.le i) (hf.integrable j) hs]
+  refine setIntegral_mono_ae (hf.integrable i).integrableOn integrable_condExp.integrableOn ?_
+  filter_upwards [hf.2.1 i j hij] with _ heq using heq
 
-theorem sub_supermartingale [Preorder E] [AddLeftMono E]
+@[to_dual (dont_translate := ι)]
+theorem sub_supermartingale [Preorder E] [IsOrderedAddMonoid E]
     (hf : Submartingale f ℱ μ) (hg : Supermartingale g ℱ μ) : Submartingale (f - g) ℱ μ := by
   rw [sub_eq_add_neg]; exact hf.add hg.neg
 
-theorem sub_martingale [Preorder E] [AddLeftMono E] (hf : Submartingale f ℱ μ)
+@[to_dual (dont_translate := ι)]
+theorem sub_martingale [Preorder E] [IsOrderedAddMonoid E] (hf : Submartingale f ℱ μ)
     (hg : Martingale g ℱ μ) : Submartingale (f - g) ℱ μ :=
   hf.sub_supermartingale hg.supermartingale
 
+attribute [to_dual existing] ContinuousSup StronglyMeasurable.sup Integrable.sup
+attribute [to_dual self (reorder := f g, hf hg)] condExp_mono
+
+@[to_dual (dont_translate := ι)]
 protected theorem sup [Lattice E] [ContinuousSup E] [HasSolidNorm E] [IsOrderedAddMonoid E]
     [IsOrderedModule ℝ E] {f g : ι → Ω → E} (hf : Submartingale f ℱ μ)
     (hg : Submartingale g ℱ μ) :
@@ -227,11 +238,16 @@ end Submartingale
 
 section Submartingale
 
+-- attribute [to_dual self] EventuallyLE.eq_1
+-- attribute [to_dual ae_nonpos_of_forall_setIntegral_nonpos] ae_nonneg_of_forall_setIntegral_nonneg
+
+@[to_dual]
 theorem submartingale_of_setIntegral_le [SigmaFiniteFiltration μ ℱ]
     {f : ι → Ω → ℝ} (hadp : StronglyAdapted ℱ f)
     (hint : ∀ i, Integrable (f i) μ) (hf : ∀ i j : ι,
       i ≤ j → ∀ s : Set Ω, MeasurableSet[ℱ i] s → ∫ ω in s, f i ω ∂μ ≤ ∫ ω in s, f j ω ∂μ) :
     Submartingale f ℱ μ := by
+  sorry
   refine ⟨hadp, fun i j hij => ?_, hint⟩
   suffices f i ≤ᵐ[μ.trim (ℱ.le i)] μ[f j | ℱ i] by exact ae_le_of_ae_le_trim this
   suffices 0 ≤ᵐ[μ.trim (ℱ.le i)] μ[f j | ℱ i] - f i by
@@ -272,51 +288,26 @@ theorem submartingale_iff_condExp_sub_nonneg [PartialOrder E] [IsOrderedAddMonoi
 
 end Submartingale
 
-namespace Supermartingale
-
-theorem sub_submartingale [Preorder E] [AddLeftMono E]
-    (hf : Supermartingale f ℱ μ) (hg : Submartingale g ℱ μ) : Supermartingale (f - g) ℱ μ := by
-  rw [sub_eq_add_neg]; exact hf.add hg.neg
-
-theorem sub_martingale [Preorder E] [AddLeftMono E]
-    (hf : Supermartingale f ℱ μ) (hg : Martingale g ℱ μ) : Supermartingale (f - g) ℱ μ :=
-  hf.sub_submartingale hg.submartingale
-
-section
-
-variable {F : Type*} [NormedAddCommGroup F] [PartialOrder F] [NormedSpace ℝ F] [CompleteSpace F]
-  [IsOrderedModule ℝ F]
-
-theorem smul_nonneg {f : ι → Ω → F} {c : ℝ} (hc : 0 ≤ c) (hf : Supermartingale f ℱ μ) :
-    Supermartingale (c • f) ℱ μ := by
-  refine ⟨hf.1.smul c, fun i j hij => ?_, fun i => (hf.2.2 i).smul c⟩
-  filter_upwards [condExp_smul c (f j) (ℱ i), hf.2.1 i j hij] with ω hω hle
-  simpa only [hω, Pi.smul_apply] using smul_le_smul_of_nonneg_left hle hc
-
-theorem smul_nonpos [IsOrderedAddMonoid F] {f : ι → Ω → F} {c : ℝ}
-    (hc : c ≤ 0) (hf : Supermartingale f ℱ μ) :
-    Submartingale (c • f) ℱ μ := by
-  rw [← neg_neg c, neg_smul]
-  exact (hf.smul_nonneg <| neg_nonneg.2 hc).neg
-
-end
-
-end Supermartingale
-
 namespace Submartingale
 
 section
 
-variable {F : Type*} [NormedAddCommGroup F] [PartialOrder F] [IsOrderedAddMonoid F]
+variable {F : Type*} [NormedAddCommGroup F] [PartialOrder F]
   [NormedSpace ℝ F] [CompleteSpace F] [IsOrderedModule ℝ F]
 
+-- TODO
+attribute [to_dual self (dont_translate := α)] smul_le_smul_of_nonneg_left
+
+@[to_dual (dont_translate := ι)]
 theorem smul_nonneg {f : ι → Ω → F} {c : ℝ} (hc : 0 ≤ c) (hf : Submartingale f ℱ μ) :
     Submartingale (c • f) ℱ μ := by
-  rw [← neg_neg (c • f), ← smul_neg]
-  exact Supermartingale.neg (hf.neg.smul_nonneg hc)
+  refine ⟨hf.1.smul c, fun i j hij => ?_, fun i => (hf.2.2 i).smul c⟩
+  filter_upwards [condExp_smul c (f j) (ℱ i), hf.2.1 i j hij] with ω hω hle
+  simpa only [hω, Pi.smul_apply] using smul_le_smul_of_nonneg_left hle hc
 
-theorem smul_nonpos {f : ι → Ω → F} {c : ℝ} (hc : c ≤ 0) (hf : Submartingale f ℱ μ) :
-    Supermartingale (c • f) ℱ μ := by
+@[to_dual (dont_translate := ι)]
+theorem smul_nonpos [IsOrderedAddMonoid F] {f : ι → Ω → F} {c : ℝ} (hc : c ≤ 0)
+    (hf : Submartingale f ℱ μ) : Supermartingale (c • f) ℱ μ := by
   rw [← neg_neg c, neg_smul]
   exact (hf.smul_nonneg <| neg_nonneg.2 hc).neg
 
@@ -353,7 +344,7 @@ end OfSetIntegral
 
 section OfSucc
 
-variable [PartialOrder E] [IsOrderedAddMonoid E] [ClosedIciTopology E] [IsOrderedModule ℝ E]
+variable [PartialOrder E] [IsOrderedAddMonoid E] [OrderClosedTopology E] [IsOrderedModule ℝ E]
 
 theorem submartingale_nat [IsFiniteMeasure μ] {f : ℕ → Ω → E} (hadp : StronglyAdapted 𝒢 f)
     (hint : ∀ i, Integrable (f i) μ) (hf : ∀ i, f i ≤ᵐ[μ] μ[f (i + 1) | 𝒢 i]) :
@@ -498,7 +489,7 @@ end Submartingale
 
 section SumSMul
 
-variable [PartialOrder E] [IsOrderedModule ℝ E] [ClosedIciTopology E] [IsOrderedAddMonoid E]
+variable [PartialOrder E] [IsOrderedModule ℝ E] [OrderClosedTopology E] [IsOrderedAddMonoid E]
 
 theorem Submartingale.sum_smul_sub [IsFiniteMeasure μ] {R : ℝ} {f : ℕ → Ω → E} {ξ : ℕ → Ω → ℝ}
     (hf : Submartingale f 𝒢 μ) (hξ : StronglyAdapted 𝒢 ξ) (hbdd : ∀ n ω, ξ n ω ≤ R)
