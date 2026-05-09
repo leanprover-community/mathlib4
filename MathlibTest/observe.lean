@@ -3,7 +3,7 @@ import Mathlib.Data.Nat.Factorial.Basic
 
 open Nat
 
-set_option maxHeartbeats 6000 in
+set_option maxHeartbeats 7000 in
 theorem euclid (n : ℕ) : ∃ N, n < N ∧ N.Prime := by
   let N := n.factorial + 1
   let p := minFac N
@@ -11,7 +11,7 @@ theorem euclid (n : ℕ) : ∃ N, n < N ∧ N.Prime := by
   have prime : p.Prime := by
     apply minFac_prime
     observe : n.factorial > 0
-    omega
+    lia
   constructor
   · by_contra!
     observe : p ∣ n.factorial

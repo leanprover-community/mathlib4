@@ -3,7 +3,10 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Seminorm
+module
+
+public import Mathlib.Analysis.Seminorm
+public import Mathlib.GroupTheory.GroupAction.Pointwise
 
 /-!
 # The Minkowski functional, normed field version
@@ -24,7 +27,9 @@ Currently, we can't reuse results about `egauge` for `gauge`,
 because we lack a theory of normed semifields.
 -/
 
-open Set Filter Metric
+@[expose] public section
+
+open Function Set Filter Metric
 open scoped Topology Pointwise ENNReal NNReal
 
 section SMul
@@ -44,9 +49,13 @@ noncomputable def egauge (𝕜 : Type*) [ENorm 𝕜] {E : Type*} [SMul 𝕜 E] (
 
 variable (𝕜 : Type*) [NNNorm 𝕜] {E : Type*} [SMul 𝕜 E] {c : 𝕜} {s t : Set E} {x : E} {r : ℝ≥0∞}
 
+lemma Set.MapsTo.egauge_le {E' F : Type*} [SMul 𝕜 E'] [FunLike F E E'] [MulActionHomClass F 𝕜 E E']
+    (f : F) {t : Set E'} (h : MapsTo f s t) (x : E) : egauge 𝕜 t (f x) ≤ egauge 𝕜 s x :=
+  iInf_mono fun c ↦ iInf_mono' fun hc ↦ ⟨h.smul_set c hc, le_rfl⟩
+
 @[mono, gcongr]
 lemma egauge_anti (h : s ⊆ t) (x : E) : egauge 𝕜 t x ≤ egauge 𝕜 s x :=
-  iInf_mono fun _c ↦ iInf_mono' fun hc ↦ ⟨smul_set_mono h hc, le_rfl⟩
+  MapsTo.egauge_le _ (MulActionHom.id ..) h _
 
 @[simp] lemma egauge_empty (x : E) : egauge 𝕜 ∅ x = ∞ := by simp [egauge]
 
@@ -69,6 +78,18 @@ lemma le_egauge_inter (s t : Set E) (x : E) :
     egauge 𝕜 s x ⊔ egauge 𝕜 t x ≤ egauge 𝕜 (s ∩ t) x :=
   max_le (egauge_anti _ inter_subset_left _) (egauge_anti _ inter_subset_right _)
 
+lemma le_egauge_pi {ι : Type*} {E : ι → Type*} [∀ i, SMul 𝕜 (E i)] {I : Set ι} {i : ι}
+    (hi : i ∈ I) (s : ∀ i, Set (E i)) (x : ∀ i, E i) :
+    egauge 𝕜 (s i) (x i) ≤ egauge 𝕜 (I.pi s) x :=
+  MapsTo.egauge_le _ (Pi.evalMulActionHom i) (fun x hx ↦ by exact hx i hi) _
+
+variable {F : Type*} [SMul 𝕜 F]
+
+lemma le_egauge_prod (s : Set E) (t : Set F) (a : E) (b : F) :
+    max (egauge 𝕜 s a) (egauge 𝕜 t b) ≤ egauge 𝕜 (s ×ˢ t) (a, b) :=
+  max_le (mapsTo_fst_prod.egauge_le 𝕜 (MulActionHom.fst 𝕜 E F) (a, b))
+    (MapsTo.egauge_le 𝕜 (MulActionHom.snd 𝕜 E F) mapsTo_snd_prod (a, b))
+
 end SMul
 
 section SMulZero
@@ -82,7 +103,7 @@ variable (𝕜 : Type*) [NNNorm 𝕜] [Nonempty 𝕜] {E : Type*} [Zero E] [SMul
 
 end SMulZero
 
-section Module
+section NormedDivisionRing
 
 variable {𝕜 : Type*} [NormedDivisionRing 𝕜] {E : Type*} [AddCommGroup E] [Module 𝕜 E]
     {c : 𝕜} {s : Set E} {x : E}
@@ -102,14 +123,23 @@ lemma egauge_le_of_smul_mem (h : c • x ∈ s) : egauge 𝕜 s x ≤ ‖c‖ₑ
   · simp
   · exact (egauge_le_of_smul_mem_of_ne h hc).trans ENNReal.coe_inv_le
 
+lemma mem_smul_of_egauge_lt (hs : Balanced 𝕜 s) (hc : egauge 𝕜 s x < ‖c‖ₑ) : x ∈ c • s :=
+  let ⟨a, hxa, ha⟩ := egauge_lt_iff.1 hc
+  hs.smul_mono (by simpa [enorm] using ha.le) hxa
+
 lemma mem_of_egauge_lt_one (hs : Balanced 𝕜 s) (hx : egauge 𝕜 s x < 1) : x ∈ s :=
-  let ⟨c, hxc, hc⟩ := egauge_lt_iff.1 hx
-  hs c (by simpa [enorm] using hc.le) hxc
+  one_smul 𝕜 s ▸ mem_smul_of_egauge_lt hs (by simpa)
 
 lemma egauge_eq_zero_iff : egauge 𝕜 s x = 0 ↔ ∃ᶠ c : 𝕜 in 𝓝 0, x ∈ c • s := by
   refine (iInf₂_eq_bot _).trans ?_
   rw [(nhds_basis_uniformity uniformity_basis_edist).frequently_iff]
   simp [and_comm]
+
+@[simp]
+lemma egauge_univ [(𝓝[≠] (0 : 𝕜)).NeBot] : egauge 𝕜 univ x = 0 := by
+  rw [egauge_eq_zero_iff]
+  refine (frequently_iff_neBot.2 ‹_›).mono fun c hc ↦ ?_
+  simp_all [smul_set_univ₀]
 
 variable (𝕜)
 
@@ -125,6 +155,22 @@ lemma egauge_le_one (h : x ∈ s) : egauge 𝕜 s x ≤ 1 := by
   simpa using egauge_le_of_mem_smul h
 
 variable {𝕜}
+
+lemma le_egauge_of_forall_ne_zero [(𝓝[≠] (0 : 𝕜)).NeBot] {r : ℝ≥0∞}
+    (hs₀ : 0 ∈ s) (h : ∀ c : 𝕜, c ≠ 0 → x ∈ c • s → r ≤ ‖c‖ₑ) : r ≤ egauge 𝕜 s x := by
+  rw [le_egauge_iff]
+  intro c hc
+  rcases ne_or_eq c 0 with hc₀ | rfl
+  · exact h c hc₀ hc
+  obtain rfl : x = 0 := by
+    grw [zero_smul_set_subset, Set.mem_zero] at hc
+    exact hc
+  apply le_of_forall_gt
+  intro b hb
+  rcases Filter.nonempty_of_mem <|
+    inter_mem_nhdsWithin {(0 : 𝕜)}ᶜ (Metric.eball_mem_nhds 0 (by simpa using hb))
+    with ⟨c, hc₀, hcb⟩
+  exact (h c (by simpa using hc₀) ⟨_, hs₀, by simp⟩).trans_lt (by simpa using hcb)
 
 lemma le_egauge_smul_left (c : 𝕜) (s : Set E) (x : E) :
     egauge 𝕜 s x / ‖c‖ₑ ≤ egauge 𝕜 (c • s) x := by
@@ -165,24 +211,102 @@ lemma egauge_smul_right (h : c = 0 → s.Nonempty) (x : E) :
     refine (le_egauge_smul_right _ _ _).trans_eq ?_
     rw [inv_smul_smul₀ hc]
 
-end Module
-
-section VectorSpace
-
-variable {𝕜 : Type*} [NormedField 𝕜] {E : Type*} [AddCommGroup E] [Module 𝕜 E]
+/-- The extended gauge of a point `(a, b)` with respect to the product of balanced sets `U` and `V`
+is equal to the maximum of the extended gauges of `a` with respect to `U`
+and `b` with respect to `V`.
+-/
+theorem egauge_prod_mk {F : Type*} [AddCommGroup F] [Module 𝕜 F] {U : Set E} {V : Set F}
+    (hU : Balanced 𝕜 U) (hV : Balanced 𝕜 V) (a : E) (b : F) :
+    egauge 𝕜 (U ×ˢ V) (a, b) = max (egauge 𝕜 U a) (egauge 𝕜 V b) := by
+  refine le_antisymm (le_of_forall_gt fun r hr ↦ ?_) (le_egauge_prod _ _ _ _)
+  simp only [max_lt_iff, egauge_lt_iff, smul_set_prod] at hr ⊢
+  rcases hr with ⟨⟨x, hx, hxr⟩, ⟨y, hy, hyr⟩⟩
+  cases le_total ‖x‖ ‖y‖ with
+  | inl hle => exact ⟨y, ⟨hU.smul_mono hle hx, hy⟩, hyr⟩
+  | inr hle => exact ⟨x, ⟨hx, hV.smul_mono hle hy⟩, hxr⟩
 
 theorem egauge_add_add_le {U V : Set E} (hU : Balanced 𝕜 U) (hV : Balanced 𝕜 V) (a b : E) :
     egauge 𝕜 (U + V) (a + b) ≤ max (egauge 𝕜 U a) (egauge 𝕜 V b) := by
-  refine le_of_forall_lt' fun c hc ↦ ?_
-  simp only [max_lt_iff, egauge_lt_iff] at hc ⊢
-  rcases hc with ⟨⟨x, hx, hxc⟩, ⟨y, hy, hyc⟩⟩
-  wlog hxy : ‖x‖ ≤ ‖y‖ generalizing a b x y U V
-  · simpa only [add_comm] using this hV hU b a y hy hyc x hx hxc (le_of_not_le hxy)
-  refine ⟨y, ?_, hyc⟩
-  rw [smul_add]
-  exact add_mem_add (hU.smul_mono hxy hx) hy
+  rw [← egauge_prod_mk hU hV a b, ← add_image_prod]
+  exact MapsTo.egauge_le 𝕜 (LinearMap.fst 𝕜 E E + LinearMap.snd 𝕜 E E) (mapsTo_image _ _) (a, b)
 
-end VectorSpace
+end NormedDivisionRing
+
+section Pi
+
+variable {𝕜 : Type*} {ι : Type*} {E : ι → Type*}
+variable [NormedDivisionRing 𝕜] [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)]
+
+/-- The extended gauge of a point `x` in an indexed product
+with respect to a product of finitely many balanced sets `U i`, `i ∈ I`,
+(and the whole spaces for the other indices)
+is the supremum of the extended gauges of the components of `x`
+with respect to the corresponding balanced set.
+
+This version assumes the following technical condition:
+- either `I` is the universal set;
+- or one of `x i`, `i ∈ I`, is nonzero;
+- or `𝕜` is nontrivially normed.
+-/
+theorem egauge_pi' {I : Set ι} (hI : I.Finite)
+    {U : ∀ i, Set (E i)} (hU : ∀ i ∈ I, Balanced 𝕜 (U i))
+    (x : ∀ i, E i) (hI₀ : I = univ ∨ (∃ i ∈ I, x i ≠ 0) ∨ (𝓝[≠] (0 : 𝕜)).NeBot) :
+    egauge 𝕜 (I.pi U) x = ⨆ i ∈ I, egauge 𝕜 (U i) (x i) := by
+  refine le_antisymm ?_ (iSup₂_le fun i hi ↦ le_egauge_pi hi _ _)
+  refine le_of_forall_gt fun r hr ↦ ?_
+  have : ∀ i ∈ I, ∃ c : 𝕜, x i ∈ c • U i ∧ ‖c‖ₑ < r := fun i hi ↦
+    egauge_lt_iff.mp <| (le_iSup₂ i hi).trans_lt hr
+  choose! c hc hcr using this
+  obtain ⟨c₀, hc₀, hc₀I, hc₀r⟩ :
+      ∃ c₀ : 𝕜, (c₀ ≠ 0 ∨ I = univ) ∧ (∀ i ∈ I, ‖c i‖ ≤ ‖c₀‖) ∧ ‖c₀‖ₑ < r := by
+    have hr₀ : 0 < r := hr.bot_lt
+    rcases I.eq_empty_or_nonempty with rfl | hIne
+    · obtain hι | hbot : IsEmpty ι ∨ (𝓝[≠] (0 : 𝕜)).NeBot := by simpa [@eq_comm _ ∅] using hI₀
+      · use 0
+        simp [@eq_comm _ ∅, hι, hr₀]
+      · rcases exists_enorm_lt 𝕜 hr₀.ne' with ⟨c₀, hc₀, hc₀r⟩
+        exact ⟨c₀, .inl hc₀, by simp, hc₀r⟩
+    · obtain ⟨i₀, hi₀I, hc_max⟩ : ∃ i₀ ∈ I, IsMaxOn (‖c ·‖ₑ) I i₀ :=
+        exists_max_image _ (‖c ·‖ₑ) hI hIne
+      by_cases! H : c i₀ ≠ 0 ∨ I = univ
+      · exact ⟨c i₀, H, fun i hi ↦ by simpa [enorm] using hc_max hi, hcr _ hi₀I⟩
+      · have hc0 (i : ι) (hi : i ∈ I) : c i = 0 := by simpa [H] using hc_max hi
+        have heg0 (i : ι) (hi : i ∈ I) : x i = 0 :=
+          zero_smul_set_subset (α := 𝕜) (U i) (hc0 i hi ▸ hc i hi)
+        have : (𝓝[≠] (0 : 𝕜)).NeBot := (hI₀.resolve_left H.2).resolve_left (by simpa)
+        rcases exists_enorm_lt 𝕜 hr₀.ne' with ⟨c₁, hc₁, hc₁r⟩
+        refine ⟨c₁, .inl hc₁, fun i hi ↦ ?_, hc₁r⟩
+        simp [hc0 i hi]
+  refine egauge_lt_iff.2 ⟨c₀, ?_, hc₀r⟩
+  rw [smul_set_pi₀' hc₀]
+  intro i hi
+  exact (hU i hi).smul_mono (hc₀I i hi) (hc i hi)
+
+/-- The extended gauge of a point `x` in an indexed product with finite index type
+with respect to a product of balanced sets `U i`,
+is the supremum of the extended gauges of the components of `x`
+with respect to the corresponding balanced set.
+-/
+theorem egauge_univ_pi [Finite ι] {U : ∀ i, Set (E i)} (hU : ∀ i, Balanced 𝕜 (U i)) (x : ∀ i, E i) :
+    egauge 𝕜 (univ.pi U) x = ⨆ i, egauge 𝕜 (U i) (x i) :=
+  egauge_pi' finite_univ (fun i _ ↦ hU i) x (.inl rfl) |>.trans <| by simp
+
+/-- The extended gauge of a point `x` in an indexed product
+with respect to a product of finitely many balanced sets `U i`, `i ∈ I`,
+(and the whole spaces for the other indices)
+is the supremum of the extended gauges of the components of `x`
+with respect to the corresponding balanced set.
+
+This version assumes that `𝕜` is a nontrivially normed division ring.
+See also `egauge_univ_pi` for when `s = univ`,
+and `egauge_pi'` for a version with more choices of the technical assumptions.
+-/
+theorem egauge_pi [(𝓝[≠] (0 : 𝕜)).NeBot] {I : Set ι} {U : ∀ i, Set (E i)}
+    (hI : I.Finite) (hU : ∀ i ∈ I, Balanced 𝕜 (U i)) (x : ∀ i, E i) :
+    egauge 𝕜 (I.pi U) x = ⨆ i ∈ I, egauge 𝕜 (U i) (x i) :=
+  egauge_pi' hI hU x <| .inr <| .inr inferInstance
+
+end Pi
 
 section SeminormedAddCommGroup
 
@@ -212,14 +336,14 @@ variable {c : 𝕜} {x : E} {r : ℝ≥0}
 lemma egauge_ball_le_of_one_lt_norm (hc : 1 < ‖c‖) (h₀ : r ≠ 0 ∨ ‖x‖ ≠ 0) :
     egauge 𝕜 (ball 0 r) x ≤ ‖c‖ₑ * ‖x‖ₑ / r := by
   letI : NontriviallyNormedField 𝕜 := ⟨c, hc⟩
-  rcases (zero_le r).eq_or_lt with rfl | hr
+  rcases eq_zero_or_pos r with rfl | hr
   · rw [ENNReal.coe_zero, ENNReal.div_zero (mul_ne_zero _ _)]
     · apply le_top
     · simpa using one_pos.trans hc
     · simpa [enorm, ← NNReal.coe_eq_zero] using h₀
   · rcases eq_or_ne ‖x‖ 0 with hx | hx
     · have hx' : ‖x‖ₑ = 0 := by simpa [enorm, ← coe_nnnorm, NNReal.coe_eq_zero] using hx
-      simp [egauge_eq_zero_iff, hx']
+      simp only [hx', mul_zero, ENNReal.zero_div, nonpos_iff_eq_zero, egauge_eq_zero_iff]
       refine (frequently_iff_neBot.2 (inferInstance : NeBot (𝓝[≠] (0 : 𝕜)))).mono fun c hc ↦ ?_
       simp [mem_smul_set_iff_inv_smul_mem₀ hc, norm_smul, hx, hr]
     · rcases rescale_to_shell_semi_normed hc hr hx with ⟨a, ha₀, har, -, hainv⟩

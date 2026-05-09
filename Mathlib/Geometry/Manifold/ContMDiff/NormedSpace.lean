@@ -3,17 +3,24 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.ContMDiff.Product
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Prod
+module
+
+public import Mathlib.Geometry.Manifold.ContMDiff.Constructions
+public import Mathlib.Analysis.Normed.Operator.Prod
 
 /-! ## Equivalence of smoothness with the basic definition for functions between vector spaces
 
 * `contMDiff_iff_contDiff`: for functions between vector spaces,
   manifold-smoothness is equivalent to usual smoothness.
 * `ContinuousLinearMap.contMDiff`: continuous linear maps between normed spaces are smooth
-* `smooth_smul`: multiplication by scalars is a smooth operation
+
+Smoothness of addition and scalar multiplication in normed spaces is proven not here but in
+`Mathlib/Geometry/Manifold/Algebra/LieGroup.lean` and `Mathlib/Geometry/Manifold/Algebra/SMul.lean`
+in the form of `LieAddGroup` and `ContMDiffSMul` instances.
 
 -/
+
+public section
 
 open Set ChartedSpace
 open scoped Topology Manifold
@@ -105,9 +112,6 @@ theorem ContinuousLinearMap.contMDiffWithinAt (L : E →L[𝕜] F) {s x} :
 theorem ContinuousLinearMap.contMDiffOn (L : E →L[𝕜] F) {s} : ContMDiffOn 𝓘(𝕜, E) 𝓘(𝕜, F) n L s :=
   L.contMDiff.contMDiffOn
 
-@[deprecated (since := "2024-11-20")]
-alias ContinuousLinearMap.smooth := ContinuousLinearMap.contMDiff
-
 theorem ContMDiffWithinAt.clm_precomp {f : M → F₁ →L[𝕜] F₂} {s : Set M} {x : M}
     (hf : ContMDiffWithinAt I 𝓘(𝕜, F₁ →L[𝕜] F₂) n f s x) :
     ContMDiffWithinAt I 𝓘(𝕜, (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) n
@@ -161,7 +165,7 @@ theorem ContMDiffWithinAt.clm_comp {g : M → F₁ →L[𝕜] F₃} {f : M → F
     (hf : ContMDiffWithinAt I 𝓘(𝕜, F₂ →L[𝕜] F₁) n f s x) :
     ContMDiffWithinAt I 𝓘(𝕜, F₂ →L[𝕜] F₃) n (fun x => (g x).comp (f x)) s x :=
   ContDiff.comp_contMDiffWithinAt (g := fun x : (F₁ →L[𝕜] F₃) × (F₂ →L[𝕜] F₁) => x.1.comp x.2)
-    (f := fun x => (g x, f x)) (contDiff_fst.clm_comp contDiff_snd) (hg.prod_mk_space hf)
+    (f := fun x => (g x, f x)) (contDiff_fst.clm_comp contDiff_snd) (hg.prodMk_space hf)
 
 theorem ContMDiffAt.clm_comp {g : M → F₁ →L[𝕜] F₃} {f : M → F₂ →L[𝕜] F₁} {x : M}
     (hg : ContMDiffAt I 𝓘(𝕜, F₁ →L[𝕜] F₃) n g x) (hf : ContMDiffAt I 𝓘(𝕜, F₂ →L[𝕜] F₁) n f x) :
@@ -177,19 +181,21 @@ theorem ContMDiff.clm_comp {g : M → F₁ →L[𝕜] F₃} {f : M → F₂ →L
     (hg : ContMDiff I 𝓘(𝕜, F₁ →L[𝕜] F₃) n g) (hf : ContMDiff I 𝓘(𝕜, F₂ →L[𝕜] F₁) n f) :
     ContMDiff I 𝓘(𝕜, F₂ →L[𝕜] F₃) n fun x => (g x).comp (f x) := fun x => (hg x).clm_comp (hf x)
 
-/-- Applying a linear map to a vector is smooth within a set. Version in vector spaces. For a
-version in nontrivial vector bundles, see `ContMDiffWithinAt.clm_apply_of_inCoordinates`. -/
+/-- Applying a linear map to a vector is smooth within a set. Version in vector spaces. For
+versions in nontrivial vector bundles, see `ContMDiffWithinAt.clm_apply_of_inCoordinates` and
+`ContMDiffWithinAt.clm_bundle_apply`. -/
 theorem ContMDiffWithinAt.clm_apply {g : M → F₁ →L[𝕜] F₂} {f : M → F₁} {s : Set M} {x : M}
     (hg : ContMDiffWithinAt I 𝓘(𝕜, F₁ →L[𝕜] F₂) n g s x)
     (hf : ContMDiffWithinAt I 𝓘(𝕜, F₁) n f s x) :
     ContMDiffWithinAt I 𝓘(𝕜, F₂) n (fun x => g x (f x)) s x :=
   ContDiffWithinAt.comp_contMDiffWithinAt (t := univ)
     (g := fun x : (F₁ →L[𝕜] F₂) × F₁ => x.1 x.2)
-    (by apply ContDiff.contDiffAt; exact contDiff_fst.clm_apply contDiff_snd) (hg.prod_mk_space hf)
+    (by apply ContDiff.contDiffAt; exact contDiff_fst.clm_apply contDiff_snd) (hg.prodMk_space hf)
     (by simp_rw [preimage_univ, subset_univ])
 
-/-- Applying a linear map to a vector is smooth. Version in vector spaces. For a
-version in nontrivial vector bundles, see `ContMDiffAt.clm_apply_of_inCoordinates`. -/
+/-- Applying a linear map to a vector is smooth. Version in vector spaces. For
+versions in nontrivial vector bundles, see `ContMDiffAt.clm_apply_of_inCoordinates` and
+`ContMDiffAt.clm_bundle_apply`. -/
 nonrec theorem ContMDiffAt.clm_apply {g : M → F₁ →L[𝕜] F₂} {f : M → F₁} {x : M}
     (hg : ContMDiffAt I 𝓘(𝕜, F₁ →L[𝕜] F₂) n g x) (hf : ContMDiffAt I 𝓘(𝕜, F₁) n f x) :
     ContMDiffAt I 𝓘(𝕜, F₂) n (fun x => g x (f x)) x :=
@@ -240,7 +246,7 @@ theorem ContMDiffWithinAt.clm_prodMap {g : M → F₁ →L[𝕜] F₃} {f : M �
     ContMDiffWithinAt I 𝓘(𝕜, F₁ × F₂ →L[𝕜] F₃ × F₄) n (fun x => (g x).prodMap (f x)) s x :=
   ContDiff.comp_contMDiffWithinAt (g := fun x : (F₁ →L[𝕜] F₃) × (F₂ →L[𝕜] F₄) => x.1.prodMap x.2)
     (f := fun x => (g x, f x)) (ContinuousLinearMap.prodMapL 𝕜 F₁ F₃ F₂ F₄).contDiff
-    (hg.prod_mk_space hf)
+    (hg.prodMk_space hf)
 
 nonrec theorem ContMDiffAt.clm_prodMap {g : M → F₁ →L[𝕜] F₃} {f : M → F₂ →L[𝕜] F₄} {x : M}
     (hg : ContMDiffAt I 𝓘(𝕜, F₁ →L[𝕜] F₃) n g x) (hf : ContMDiffAt I 𝓘(𝕜, F₂ →L[𝕜] F₄) n f x) :
@@ -256,38 +262,3 @@ theorem ContMDiff.clm_prodMap {g : M → F₁ →L[𝕜] F₃} {f : M → F₂ �
     (hg : ContMDiff I 𝓘(𝕜, F₁ →L[𝕜] F₃) n g) (hf : ContMDiff I 𝓘(𝕜, F₂ →L[𝕜] F₄) n f) :
     ContMDiff I 𝓘(𝕜, F₁ × F₂ →L[𝕜] F₃ × F₄) n fun x => (g x).prodMap (f x) := fun x =>
   (hg x).clm_prodMap (hf x)
-
-/-! ### Smoothness of scalar multiplication -/
-
-variable {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
-
-/-- On any vector space, multiplication by a scalar is a smooth operation. -/
-theorem contMDiff_smul : ContMDiff (𝓘(𝕜).prod 𝓘(𝕜, V)) 𝓘(𝕜, V) ⊤ fun p : 𝕜 × V => p.1 • p.2 :=
-  contMDiff_iff.2 ⟨continuous_smul, fun _ _ => contDiff_smul.contDiffOn⟩
-
-@[deprecated (since := "2024-11-20")] alias smooth_smul := contMDiff_smul
-
-theorem ContMDiffWithinAt.smul {f : M → 𝕜} {g : M → V} (hf : ContMDiffWithinAt I 𝓘(𝕜) n f s x)
-    (hg : ContMDiffWithinAt I 𝓘(𝕜, V) n g s x) :
-    ContMDiffWithinAt I 𝓘(𝕜, V) n (fun p => f p • g p) s x :=
-  (contMDiff_smul.of_le le_top).contMDiffAt.comp_contMDiffWithinAt x (hf.prod_mk hg)
-
-nonrec theorem ContMDiffAt.smul {f : M → 𝕜} {g : M → V} (hf : ContMDiffAt I 𝓘(𝕜) n f x)
-    (hg : ContMDiffAt I 𝓘(𝕜, V) n g x) : ContMDiffAt I 𝓘(𝕜, V) n (fun p => f p • g p) x :=
-  hf.smul hg
-
-theorem ContMDiffOn.smul {f : M → 𝕜} {g : M → V} (hf : ContMDiffOn I 𝓘(𝕜) n f s)
-    (hg : ContMDiffOn I 𝓘(𝕜, V) n g s) : ContMDiffOn I 𝓘(𝕜, V) n (fun p => f p • g p) s :=
-  fun x hx => (hf x hx).smul (hg x hx)
-
-theorem ContMDiff.smul {f : M → 𝕜} {g : M → V} (hf : ContMDiff I 𝓘(𝕜) n f)
-    (hg : ContMDiff I 𝓘(𝕜, V) n g) : ContMDiff I 𝓘(𝕜, V) n fun p => f p • g p := fun x =>
-  (hf x).smul (hg x)
-
-@[deprecated (since := "2024-11-20")] alias SmoothWithinAt.smul := ContMDiffWithinAt.smul
-
-@[deprecated (since := "2024-11-20")] alias SmoothAt.smul := ContMDiffAt.smul
-
-@[deprecated (since := "2024-11-20")] alias SmoothOn.smul := ContMDiffOn.smul
-
-@[deprecated (since := "2024-11-20")] alias Smooth.smul := ContMDiff.smul

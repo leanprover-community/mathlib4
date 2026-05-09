@@ -3,8 +3,10 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Nilpotent
-import Mathlib.Algebra.Lie.Normalizer
+module
+
+public import Mathlib.Algebra.Lie.Nilpotent
+public import Mathlib.Algebra.Lie.Normalizer
 
 /-!
 # Cartan subalgebras
@@ -22,6 +24,8 @@ The standard example is the set of diagonal matrices in the Lie algebra of matri
 
 lie subalgebra, normalizer, idealizer, cartan subalgebra
 -/
+
+@[expose] public section
 
 
 universe u v w w₁ w₂
@@ -78,6 +82,9 @@ theorem isCartanSubalgebra_iff_isUcsLimit : H.IsCartanSubalgebra ↔ H.toLieSubm
     exact
       { nilpotent := by
           dsimp only [LieRing.IsNilpotent]
+          -- The instance for the second `H` in the goal is `lieRingSelfModule`
+          -- but `rw` expects it to be `H.toLieSubmodule.instLieRingModuleSubtypeMem`,
+          -- and these are not reducibly defeq.
           erw [H.toLieSubmodule.isNilpotent_iff_exists_lcs_eq_bot]
           use k
           rw [_root_.eq_bot_iff, LieSubmodule.lcs_le_iff, hk k (le_refl k)]

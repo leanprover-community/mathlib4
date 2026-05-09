@@ -3,8 +3,11 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Manuel Candales
 -/
-import Mathlib.Analysis.InnerProductSpace.Subspace
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Subspace
+public import Mathlib.Analysis.Normed.Module.Normalize
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
 
 /-!
 # Angles between vectors
@@ -14,11 +17,9 @@ This file defines unoriented angles in real inner product spaces.
 ## Main definitions
 
 * `InnerProductGeometry.angle` is the undirected angle between two vectors.
-
-## TODO
-
-Prove the triangle inequality for the angle.
 -/
+
+@[expose] public section
 
 
 assert_not_exists HasFDerivAt ConformalAt
@@ -26,8 +27,6 @@ assert_not_exists HasFDerivAt ConformalAt
 noncomputable section
 
 open Real Set
-
-open Real
 
 open RealInnerProductSpace
 
@@ -42,11 +41,9 @@ def angle (x y : V) : ℝ :=
   Real.arccos (⟪x, y⟫ / (‖x‖ * ‖y‖))
 
 theorem continuousAt_angle {x : V × V} (hx1 : x.1 ≠ 0) (hx2 : x.2 ≠ 0) :
-    ContinuousAt (fun y : V × V => angle y.1 y.2) x :=
-  Real.continuous_arccos.continuousAt.comp <|
-    continuous_inner.continuousAt.div
-      ((continuous_norm.comp continuous_fst).mul (continuous_norm.comp continuous_snd)).continuousAt
-      (by simp [hx1, hx2])
+    ContinuousAt (fun y : V × V => angle y.1 y.2) x := by
+  unfold angle
+  fun_prop (disch := simp [*])
 
 theorem angle_smul_smul {c : ℝ} (hc : c ≠ 0) (x y : V) : angle (c • x) (c • y) = angle x y := by
   have : c * c ≠ 0 := mul_ne_zero hc hc
@@ -100,8 +97,6 @@ theorem angle_neg_right (x y : V) : angle x (-y) = π - angle x y := by
 /-- The angle between the negation of a vector and another vector. -/
 theorem angle_neg_left (x y : V) : angle (-x) y = π - angle x y := by
   rw [← angle_neg_neg, neg_neg, angle_neg_right]
-
-proof_wanted angle_triangle (x y z : V) : angle x z ≤ angle x y + angle y z
 
 /-- The angle between the zero vector and a vector. -/
 @[simp]
@@ -168,33 +163,39 @@ product of their norms. -/
 theorem sin_angle_mul_norm_mul_norm (x y : V) :
     Real.sin (angle x y) * (‖x‖ * ‖y‖) = √(⟪x, x⟫ * ⟪y, y⟫ - ⟪x, y⟫ * ⟪x, y⟫) := by
   unfold angle
-  rw [Real.sin_arccos, ← Real.sqrt_mul_self (mul_nonneg (norm_nonneg x) (norm_nonneg y)),
-    ← Real.sqrt_mul' _ (mul_self_nonneg _), sq,
-    Real.sqrt_mul_self (mul_nonneg (norm_nonneg x) (norm_nonneg y)),
-    real_inner_self_eq_norm_mul_norm, real_inner_self_eq_norm_mul_norm]
-  by_cases h : ‖x‖ * ‖y‖ = 0
-  · rw [show ‖x‖ * ‖x‖ * (‖y‖ * ‖y‖) = ‖x‖ * ‖y‖ * (‖x‖ * ‖y‖) by ring, h, mul_zero,
-      mul_zero, zero_sub]
-    cases' eq_zero_or_eq_zero_of_mul_eq_zero h with hx hy
-    · rw [norm_eq_zero] at hx
-      rw [hx, inner_zero_left, zero_mul, neg_zero]
-    · rw [norm_eq_zero] at hy
-      rw [hy, inner_zero_right, zero_mul, neg_zero]
-  · -- takes 600ms; squeezing the "equivalent" simp call yields an invalid result
-    field_simp [h]
-    ring_nf
+  rw [Real.sin_arccos]
+  nth_rw 2 [← Real.sqrt_sq (mul_nonneg (norm_nonneg x) (norm_nonneg y))]
+  rw [← Real.sqrt_mul' _ (by positivity), sq]
+  rcases eq_or_ne x 0 with (rfl | hx); · simp
+  rcases eq_or_ne y 0 with (rfl | hy); · simp
+  simp only [real_inner_self_eq_norm_mul_norm]
+  field_simp
+
+/-- The sine of the angle between two vectors. -/
+theorem sin_angle {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
+    Real.sin (angle x y) = √(⟪x, x⟫ * ⟪y, y⟫ - ⟪x, y⟫ * ⟪x, y⟫) / (‖x‖ * ‖y‖) := by
+  rw [← sin_angle_mul_norm_mul_norm]
+  field
+
+/-- The sine of the angle between `x` and `x + y`. -/
+theorem sin_angle_add {x y : V} (hx : x ≠ 0) (hy : x + y ≠ 0) :
+    Real.sin (angle x (x + y)) = √(⟪x, x⟫ * ⟪y, y⟫ - ⟪x, y⟫ * ⟪x, y⟫) / (‖x‖ * ‖x + y‖) := by
+  rw [sin_angle hx hy]
+  field_simp
+  simp only [inner_add_left, inner_add_right, real_inner_comm]
+  ring_nf
 
 /-- The angle between two vectors is zero if and only if they are
 nonzero and one is a positive multiple of the other. -/
 theorem angle_eq_zero_iff {x y : V} : angle x y = 0 ↔ x ≠ 0 ∧ ∃ r : ℝ, 0 < r ∧ y = r • x := by
-  rw [angle, ← real_inner_div_norm_mul_norm_eq_one_iff, Real.arccos_eq_zero, LE.le.le_iff_eq,
+  rw [angle, ← real_inner_div_norm_mul_norm_eq_one_iff, Real.arccos_eq_zero, LE.le.ge_iff_eq',
     eq_comm]
   exact (abs_le.mp (abs_real_inner_div_norm_mul_norm_le_one x y)).2
 
 /-- The angle between two vectors is π if and only if they are nonzero
 and one is a negative multiple of the other. -/
 theorem angle_eq_pi_iff {x y : V} : angle x y = π ↔ x ≠ 0 ∧ ∃ r : ℝ, r < 0 ∧ y = r • x := by
-  rw [angle, ← real_inner_div_norm_mul_norm_eq_neg_one_iff, Real.arccos_eq_pi, LE.le.le_iff_eq]
+  rw [angle, ← real_inner_div_norm_mul_norm_eq_neg_one_iff, Real.arccos_eq_pi, LE.le.ge_iff_eq']
   exact (abs_le.mp (abs_real_inner_div_norm_mul_norm_le_one x y)).1
 
 /-- If the angle between two vectors is π, the angles between those
@@ -275,13 +276,8 @@ theorem norm_sub_eq_add_norm_iff_angle_eq_pi {x y : V} (hx : x ≠ 0) (hy : y �
 if and only the angle between the two vectors is 0. -/
 theorem norm_add_eq_add_norm_iff_angle_eq_zero {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
     ‖x + y‖ = ‖x‖ + ‖y‖ ↔ angle x y = 0 := by
-  refine ⟨fun h => ?_, norm_add_eq_add_norm_of_angle_eq_zero⟩
-  rw [← inner_eq_mul_norm_iff_angle_eq_zero hx hy]
-  obtain ⟨hxy₁, hxy₂⟩ := norm_nonneg (x + y), add_nonneg (norm_nonneg x) (norm_nonneg y)
-  rw [← sq_eq_sq₀ hxy₁ hxy₂, norm_add_pow_two_real] at h
-  calc
-    ⟪x, y⟫ = ((‖x‖ + ‖y‖) ^ 2 - ‖x‖ ^ 2 - ‖y‖ ^ 2) / 2 := by linarith
-    _ = ‖x‖ * ‖y‖ := by ring
+  refine ⟨?_, norm_add_eq_add_norm_of_angle_eq_zero⟩
+  grind [inner_eq_mul_norm_iff_angle_eq_zero hx hy, norm_add_pow_two_real]
 
 /-- The norm of the difference of two non-zero vectors equals the absolute value
 of the difference of their norms if and only the angle between the two vectors is 0. -/
@@ -331,5 +327,30 @@ theorem sin_eq_one_iff_angle_eq_pi_div_two : sin (angle x y) = 1 ↔ angle x y =
   refine ⟨fun h => ?_, fun h => by rw [h, sin_pi_div_two]⟩
   rw [← cos_eq_zero_iff_angle_eq_pi_div_two, ← abs_eq_zero, abs_cos_eq_sqrt_one_sub_sin_sq, h]
   simp
+
+/-- If the angle between two vectors of equal norm is equal to 0, then the vectors are equal. -/
+lemma eq_of_angle_eq_zero_of_norm_eq {x y : V} (hxy : angle x y = 0) (h : ‖x‖ = ‖y‖) : x = y := by
+  grind [angle_eq_zero_iff, norm_smul, Real.norm_eq_abs, norm_ne_zero_iff, abs, one_smul]
+
+/-- The angle between a normalized vector and another vector is equal to the angle
+between the original vectors. -/
+@[simp]
+lemma angle_normalize_left (x y : V) :
+    angle (NormedSpace.normalize x) y = angle x y := by
+  by_cases hx : x = 0
+  · simp [hx]
+  · rw [NormedSpace.normalize, angle_smul_left_of_pos _ _ (by positivity)]
+
+/-- The angle between a vector and another normalized vector is equal to the angle
+between the original vectors. -/
+@[simp]
+lemma angle_normalize_right (x y : V) :
+    angle x (NormedSpace.normalize y) = angle x y := by
+  rw [angle_comm, angle_normalize_left, angle_comm]
+
+/-- The inner product of two unit vectors is equal to the cosine of the angle between them. -/
+lemma inner_eq_cos_angle_of_norm_eq_one {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
+    ⟪x, y⟫ = Real.cos (angle x y) := by
+  simp [cos_angle, hx, hy]
 
 end InnerProductGeometry

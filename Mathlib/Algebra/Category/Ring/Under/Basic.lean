@@ -3,17 +3,21 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Algebra.Category.Ring.Colimits
-import Mathlib.Algebra.Category.Ring.Constructions
-import Mathlib.CategoryTheory.Adjunction.Over
+module
+
+public import Mathlib.Algebra.Category.Ring.Colimits
+public import Mathlib.Algebra.Category.Ring.Constructions
+public import Mathlib.CategoryTheory.Comma.Over.Pullback
 
 /-!
 # Under `CommRingCat`
 
 In this file we provide basic API for `Under R` when `R : CommRingCat`. `Under R` is
 (equivalent to) the category of commutative `R`-algebras. For not necessarily commutative
-algebras, use `AlgebraCat R` instead.
+algebras, use `AlgCat R` instead.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -51,7 +55,7 @@ lemma toAlgHom_apply {A B : Under R} (f : A ⟶ B) (a : A) :
 
 variable (R) in
 /-- Make an object of `Under R` from an `R`-algebra. -/
-@[simps! hom, simps! (config := .lemmasOnly) right]
+@[simps! hom, simps! -isSimp right]
 def mkUnder (A : Type u) [CommRing A] [Algebra R A] : Under R :=
   Under.mk (CommRingCat.ofHom <| algebraMap R A)
 
@@ -132,21 +136,24 @@ def tensorProd : Under R ⥤ Under S where
   map f := Algebra.TensorProduct.map (AlgHom.id S S) (toAlgHom f) |>.toUnder
   map_comp {X Y Z} f g := by simp [Algebra.TensorProduct.map_id_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (S) in
 /-- The natural isomorphism `S ⊗[R] A ≅ pushout A.hom (algebraMap R S)` in `Under S`. -/
 def tensorProdObjIsoPushoutObj (A : Under R) :
     mkUnder S (S ⊗[R] A) ≅ (Under.pushout (ofHom <| algebraMap R S)).obj A :=
   Under.isoMk (CommRingCat.isPushout_tensorProduct R S A).flip.isoPushout <| by
-    simp only [Functor.const_obj_obj, Under.pushout_obj, Functor.id_obj, Under.mk_right,
+    simp only [Under.pushout_obj, Under.mk_right,
       mkUnder_hom, AlgHom.toRingHom_eq_coe, IsPushout.inr_isoPushout_hom, Under.mk_hom]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma pushout_inl_tensorProdObjIsoPushoutObj_inv_right (A : Under R) :
     pushout.inl A.hom (ofHom <| algebraMap R S) ≫ (tensorProdObjIsoPushoutObj S A).inv.right =
       (ofHom <| Algebra.TensorProduct.includeRight.toRingHom) := by
   simp [tensorProdObjIsoPushoutObj]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma pushout_inr_tensorProdObjIsoPushoutObj_inv_right (A : Under R) :
     pushout.inr A.hom (ofHom <| algebraMap R S) ≫
@@ -154,6 +161,7 @@ lemma pushout_inr_tensorProdObjIsoPushoutObj_inv_right (A : Under R) :
       (CommRingCat.ofHom <| Algebra.TensorProduct.includeLeftRingHom) := by
   simp [tensorProdObjIsoPushoutObj]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R S) in
 /-- `A ↦ S ⊗[R] A` is naturally isomorphic to `A ↦ pushout A.hom (algebraMap R S)`. -/
 def tensorProdIsoPushout : tensorProd R S ≅ Under.pushout (ofHom <| algebraMap R S) :=

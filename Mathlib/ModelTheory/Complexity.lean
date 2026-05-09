@@ -3,7 +3,9 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.ModelTheory.Equivalence
+module
+
+public import Mathlib.ModelTheory.Equivalence
 
 /-!
 # Quantifier Complexity
@@ -15,7 +17,7 @@ This file defines quantifier complexity of first-order formulas, and constructs 
 - `FirstOrder.Language.BoundedFormula.IsAtomic` defines atomic formulas - those which are
   constructed only from terms and relations.
 - `FirstOrder.Language.BoundedFormula.IsQF` defines quantifier-free formulas - those which are
-  constructed only from atomic formulas and boolean operations.
+  constructed only from atomic formulas and Boolean operations.
 - `FirstOrder.Language.BoundedFormula.IsPrenex` defines when a formula is in prenex normal form -
   when it consists of a series of quantifiers applied to a quantifier-free formula.
 - `FirstOrder.Language.BoundedFormula.toPrenex` constructs a prenex normal form of a given formula.
@@ -27,6 +29,8 @@ This file defines quantifier complexity of first-order formulas, and constructs 
   formula has the same realization as the original formula.
 
 -/
+
+@[expose] public section
 
 universe u v w u' v'
 
@@ -64,11 +68,11 @@ theorem IsAtomic.castLE {h : l ≤ n} (hφ : IsAtomic φ) : (φ.castLE h).IsAtom
   IsAtomic.recOn hφ (fun _ _ => IsAtomic.equal _ _) fun _ _ => IsAtomic.rel _ _
 
 /-- A quantifier-free formula is a formula defined without quantifiers. These are all equivalent
-to boolean combinations of atomic formulas. -/
+to Boolean combinations of atomic formulas. -/
 inductive IsQF : L.BoundedFormula α n → Prop
   | falsum : IsQF falsum
-  | of_isAtomic {φ} (h : IsAtomic φ) : IsQF φ
-  | imp {φ₁ φ₂} (h₁ : IsQF φ₁) (h₂ : IsQF φ₂) : IsQF (φ₁.imp φ₂)
+  | of_isAtomic {φ :  L.BoundedFormula α n} (h : IsAtomic φ) : IsQF φ
+  | imp {φ₁ φ₂ :  L.BoundedFormula α n} (h₁ : IsQF φ₁) (h₂ : IsQF φ₂) : IsQF (φ₁.imp φ₂)
 
 theorem IsAtomic.isQF {φ : L.BoundedFormula α n} : IsAtomic φ → IsQF φ :=
   IsQF.of_isAtomic
@@ -102,20 +106,20 @@ protected theorem castLE {h : l ≤ n} (hφ : IsQF φ) : (φ.castLE h).IsQF :=
 end IsQF
 
 theorem not_all_isQF (φ : L.BoundedFormula α (n + 1)) : ¬φ.all.IsQF := fun con => by
-  cases' con with _ con
+  obtain - | con := con
   exact φ.not_all_isAtomic con
 
 theorem not_ex_isQF (φ : L.BoundedFormula α (n + 1)) : ¬φ.ex.IsQF := fun con => by
-  cases' con with _ con _ _ con
+  obtain - | con | con := con
   · exact φ.not_ex_isAtomic con
   · exact not_all_isQF _ con
 
 /-- Indicates that a bounded formula is in prenex normal form - that is, it consists of quantifiers
   applied to a quantifier-free formula. -/
 inductive IsPrenex : ∀ {n}, L.BoundedFormula α n → Prop
-  | of_isQF {n} {φ : L.BoundedFormula α n} (h : IsQF φ) : IsPrenex φ
-  | all {n} {φ : L.BoundedFormula α (n + 1)} (h : IsPrenex φ) : IsPrenex φ.all
-  | ex {n} {φ : L.BoundedFormula α (n + 1)} (h : IsPrenex φ) : IsPrenex φ.ex
+  | of_isQF {n : ℕ} {φ : L.BoundedFormula α n} (h : IsQF φ) : IsPrenex φ
+  | all {n : ℕ} {φ : L.BoundedFormula α (n + 1)} (h : IsPrenex φ) : IsPrenex φ.all
+  | ex {n : ℕ} {φ : L.BoundedFormula α (n + 1)} (h : IsPrenex φ) : IsPrenex φ.ex
 
 theorem IsQF.isPrenex {φ : L.BoundedFormula α n} : IsQF φ → IsPrenex φ :=
   IsPrenex.of_isQF
@@ -248,14 +252,7 @@ theorem realize_toPrenexImp {φ ψ : L.BoundedFormula α n} (hφ : IsPrenex φ) 
     rw [realize_ex]
     refine _root_.trans (exists_congr fun _ => ih hψ.liftAt) ?_
     simp only [realize_imp, realize_liftAt_one_self, snoc_comp_castSucc, realize_all]
-    refine ⟨?_, fun h' => ?_⟩
-    · rintro ⟨a, ha⟩ h
-      exact ha (h a)
-    · by_cases h : ψ.Realize v xs
-      · inhabit M
-        exact ⟨default, fun _h'' => h⟩
-      · obtain ⟨a, ha⟩ := not_forall.1 (h ∘ h')
-        exact ⟨a, fun h => (ha h).elim⟩
+    exact Iff.symm forall_imp_iff_exists_imp
   | ex _ ih =>
     intro ψ hψ
     refine _root_.trans (forall_congr' fun _ => ih hψ.liftAt) ?_
@@ -284,7 +281,7 @@ theorem IsQF.induction_on_sup_not {P : L.BoundedFormula α n → Prop} {φ : L.B
     (hse :
       ∀ {φ₁ φ₂ : L.BoundedFormula α n}, (φ₁ ⇔[∅] φ₂) → (P φ₁ ↔ P φ₂)) :
     P φ :=
-  IsQF.recOn h hf @(ha) fun {φ₁ φ₂} _ _ h1 h2 =>
+  IsQF.recOn h hf @ha fun {φ₁ φ₂} _ _ h1 h2 =>
     (hse (φ₁.imp_iff_not_sup φ₂)).2 (hsup (hnot h1) h2)
 
 theorem IsQF.induction_on_inf_not {P : L.BoundedFormula α n → Prop} {φ : L.BoundedFormula α n}
@@ -332,8 +329,8 @@ theorem induction_on_exists_not {P : ∀ {m}, L.BoundedFormula α m → Prop} (�
 /-- A universal formula is a formula defined by applying only universal quantifiers to a
 quantifier-free formula. -/
 inductive IsUniversal : ∀ {n}, L.BoundedFormula α n → Prop
-  | of_isQF {n} {φ : L.BoundedFormula α n} (h : IsQF φ) : IsUniversal φ
-  | all {n} {φ : L.BoundedFormula α (n + 1)} (h : IsUniversal φ) : IsUniversal φ.all
+  | of_isQF {n : ℕ} {φ : L.BoundedFormula α n} (h : IsQF φ) : IsUniversal φ
+  | all {n : ℕ} {φ : L.BoundedFormula α (n + 1)} (h : IsUniversal φ) : IsUniversal φ.all
 
 lemma IsQF.isUniversal {φ : L.BoundedFormula α n} : IsQF φ → IsUniversal φ :=
   IsUniversal.of_isQF
@@ -344,8 +341,8 @@ lemma IsAtomic.isUniversal {φ : L.BoundedFormula α n} (h : IsAtomic φ) : IsUn
 /-- An existential formula is a formula defined by applying only existential quantifiers to a
 quantifier-free formula. -/
 inductive IsExistential : ∀ {n}, L.BoundedFormula α n → Prop
-  | of_isQF {n} {φ : L.BoundedFormula α n} (h : IsQF φ) : IsExistential φ
-  | ex {n} {φ : L.BoundedFormula α (n + 1)} (h : IsExistential φ) : IsExistential φ.ex
+  | of_isQF {n : ℕ} {φ : L.BoundedFormula α n} (h : IsQF φ) : IsExistential φ
+  | ex {n : ℕ} {φ : L.BoundedFormula α (n + 1)} (h : IsExistential φ) : IsExistential φ.ex
 
 lemma IsQF.isExistential {φ : L.BoundedFormula α n} : IsQF φ → IsExistential φ :=
   IsExistential.of_isQF

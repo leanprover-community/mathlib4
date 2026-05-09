@@ -3,12 +3,13 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
-import Mathlib.GroupTheory.GroupAction.ConjAct
-import Mathlib.GroupTheory.Perm.Cycle.Basic
-import Mathlib.GroupTheory.Perm.Cycle.Factors
-import Mathlib.GroupTheory.Perm.Support
-/-! # Some lemmas pertaining to the action of `ConjAct (Perm α)` on `Perm α`
+module
+
+public import Mathlib.Algebra.Group.Action.Pointwise.Finset
+public import Mathlib.GroupTheory.Perm.Cycle.Factors
+
+/-!
+# Some lemmas pertaining to the action of `ConjAct (Perm α)` on `Perm α`
 
 We prove some lemmas related to the action of `ConjAct (Perm α)` on `Perm α`:
 
@@ -17,10 +18,12 @@ Let `α` be a decidable fintype.
 * `conj_support_eq` relates the support of `k • g` with that of `g`
 
 * `cycleFactorsFinset_conj_eq`, `mem_cycleFactorsFinset_conj'`
-  and `cycleFactorsFinset_conj` relate the set of cycles of `g`,  `g.cycleFactorsFinset`,
+  and `cycleFactorsFinset_conj` relate the set of cycles of `g`, `g.cycleFactorsFinset`,
   with that for `k • g`
 
 -/
+
+public section
 
 namespace Equiv.Perm
 
@@ -35,6 +38,15 @@ theorem mem_conj_support (k : ConjAct (Perm α)) (g : Perm α) (a : α) :
   simp only [mem_support, ConjAct.smul_def, not_iff_not, coe_mul,
     Function.comp_apply, ConjAct.ofConjAct_inv]
   apply Equiv.apply_eq_iff_eq_symm_apply
+
+theorem support_conj_eq_smul_support (k : ConjAct (Perm α)) (g : Equiv.Perm α) :
+    (k • g).support = k.ofConjAct • g.support := by
+  ext
+  rw [mem_conj_support, ← Perm.smul_def, ConjAct.ofConjAct_inv, Finset.inv_smul_mem_iff]
+
+theorem support_toConjAct_eq_smul_support (k g : Perm α) :
+    (ConjAct.toConjAct k • g).support = k • g.support := by
+  rw [Equiv.Perm.support_conj_eq_smul_support, ConjAct.ofConjAct_toConjAct]
 
 theorem cycleFactorsFinset_conj (g k : Perm α) :
     (ConjAct.toConjAct k • g).cycleFactorsFinset =
@@ -61,5 +73,14 @@ theorem cycleFactorsFinset_conj_eq
   rw [← mem_cycleFactorsFinset_conj' k⁻¹ (k • g) c]
   simp only [inv_smul_smul]
   exact Finset.inv_smul_mem_iff
+
+omit [Fintype α] in
+theorem conj_smul_range_ofSubtype [Finite α] (g : Perm α) (s : Finset α) :
+    ConjAct.toConjAct g • (ofSubtype (p := (· ∈ s))).range =
+      (ofSubtype (p := (· ∈ g • s))).range := by
+  have : Fintype α := Fintype.ofFinite α
+  ext k
+  simp_rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem, mem_range_ofSubtype_iff]
+  simp [support_conj_eq_smul_support, Set.subset_smul_set_iff]
 
 end Equiv.Perm

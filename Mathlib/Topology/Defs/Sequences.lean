@@ -3,8 +3,10 @@ Copyright (c) 2018 Jan-David Salchow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Patrick Massot, Yury Kudryashov
 -/
-import Mathlib.Topology.Defs.Filter
-import Mathlib.Order.Filter.AtTopBot
+module
+
+public import Mathlib.Order.Filter.AtTopBot.Defs
+public import Mathlib.Topology.Defs.Filter
 
 /-!
 # Sequences in topological spaces
@@ -40,6 +42,8 @@ In this file we define sequential closure, continuity, compactness etc.
 sequentially closed, sequentially compact, sequential space
 -/
 
+@[expose] public section
+
 open Set Filter
 open scoped Topology
 
@@ -58,7 +62,7 @@ def IsSeqClosed (s : Set X) : Prop :=
   ∀ ⦃x : ℕ → X⦄ ⦃p : X⦄, (∀ n, x n ∈ s) → Tendsto x atTop (𝓝 p) → p ∈ s
 
 /-- A function between topological spaces is sequentially continuous if it commutes with limit of
- convergent sequences. -/
+convergent sequences. -/
 def SeqContinuous (f : X → Y) : Prop :=
   ∀ ⦃x : ℕ → X⦄ ⦃p : X⦄, Tendsto x atTop (𝓝 p) → Tendsto (f ∘ x) atTop (𝓝 (f p))
 

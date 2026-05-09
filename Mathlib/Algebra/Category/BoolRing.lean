@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Category.Ring.Basic
-import Mathlib.Algebra.Ring.BooleanRing
-import Mathlib.Order.Category.BoolAlg
+module
+
+public import Mathlib.Algebra.Category.Ring.Basic
+public import Mathlib.Algebra.Ring.BooleanRing
+public import Mathlib.Order.Category.BoolAlg
 
 /-!
 # The category of Boolean rings
@@ -17,6 +19,8 @@ This file defines `BoolRing`, the category of Boolean rings.
 Finish the equivalence with `BoolAlg`.
 -/
 
+@[expose] public section
+
 
 universe u
 
@@ -24,7 +28,8 @@ open CategoryTheory Order
 
 /-- The category of Boolean rings. -/
 structure BoolRing where
-  private mk ::
+  /-- Construct a bundled `BoolRing` from a `BooleanRing`. -/
+  of ::
   /-- The underlying type. -/
   carrier : Type u
   [booleanRing : BooleanRing carrier]
@@ -40,10 +45,6 @@ attribute [coe] carrier
 
 attribute [instance] booleanRing
 
-/-- Construct a bundled `BoolRing` from a `BooleanRing`. -/
-abbrev of (α : Type*) [BooleanRing α] : BoolRing :=
-  ⟨α⟩
-
 theorem coe_of (α : Type*) [BooleanRing α] : ↥(of α) = α :=
   rfl
 
@@ -51,6 +52,7 @@ instance : Inhabited BoolRing :=
   ⟨of PUnit⟩
 
 variable {R} in
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `BoolRing`. -/
 @[ext]
 structure Hom (R S : BoolRing) where
@@ -58,11 +60,15 @@ structure Hom (R S : BoolRing) where
   /-- The underlying ring hom. -/
   hom' : R →+* S
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category BoolRing where
   Hom R S := Hom R S
   id R := ⟨RingHom.id R⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory BoolRing (· →+* ·) where
   hom f := f.hom'
   ofHom f := ⟨f⟩
@@ -84,6 +90,8 @@ instance hasForgetToCommRing : HasForget₂ BoolRing CommRingCat where
     { obj := fun R ↦ CommRingCat.of R
       map := fun f ↦ CommRingCat.ofHom f.hom }
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Constructs an isomorphism of Boolean rings from a ring isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : BoolRing.{u}} (e : α ≃+* β) : α ≅ β where
@@ -96,26 +104,25 @@ end BoolRing
 
 /-! ### Equivalence between `BoolAlg` and `BoolRing` -/
 
--- Porting note: Added. somehow it does not find this instance.
+-- We have to add this instance since Lean doesn't see through `X.toBddDistLat`.
 instance {X : BoolAlg} :
     BooleanAlgebra ↑(BddDistLat.toBddLat (X.toBddDistLat)).toLat :=
-  BoolAlg.instBooleanAlgebra _
+  BoolAlg.str _
 
+-- We have to add this instance since Lean doesn't see through `R.toBddDistLat`.
 instance {R : Type u} [BooleanRing R] :
     BooleanRing (BoolAlg.of (AsBoolAlg ↑R)).toBddDistLat.toBddLat.toLat :=
   inferInstanceAs <| BooleanRing R
 
 @[simps]
 instance BoolRing.hasForgetToBoolAlg : HasForget₂ BoolRing BoolAlg where
-  forget₂ :=
-    { obj := fun X ↦ BoolAlg.of (AsBoolAlg X)
-      map := fun {R S} f ↦ RingHom.asBoolAlg f.hom }
+  forget₂.obj X := .of (AsBoolAlg X)
+  forget₂.map f := BoolAlg.ofHom f.hom.asBoolAlg
 
 @[simps]
 instance BoolAlg.hasForgetToBoolRing : HasForget₂ BoolAlg BoolRing where
-  forget₂ :=
-    { obj := fun X => BoolRing.of (AsBoolRing X)
-      map := fun {_ _} f => BoolRing.ofHom <| BoundedLatticeHom.asBoolRing f }
+  forget₂.obj X := .of (AsBoolRing X)
+  forget₂.map f := BoolRing.ofHom <| BoundedLatticeHom.asBoolRing f.hom
 
 /-- The equivalence between Boolean rings and Boolean algebras. This is actually an isomorphism. -/
 @[simps functor inverse]

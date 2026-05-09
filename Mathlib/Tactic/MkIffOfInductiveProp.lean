@@ -3,11 +3,12 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, David Renshaw
 -/
-import Lean.Elab.DeclarationRange
-import Lean.Meta.Tactic.Cases
-import Mathlib.Lean.Meta
-import Mathlib.Lean.Name
-import Mathlib.Tactic.TypeStar
+module
+
+public meta import Lean.Elab.DeclarationRange
+public meta import Lean.Meta.Tactic.Cases
+public meta import Mathlib.Lean.Meta
+public meta import Mathlib.Lean.Name
 
 /-!
 # mk_iff_of_inductive_prop
@@ -24,6 +25,8 @@ the following type:
 This tactic can be called using either the `mk_iff_of_inductive_prop` user command or
 the `mk_iff` attribute.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.MkIff
 
@@ -52,7 +55,7 @@ This relation is user-visible, so we compact it by removing each `b_j` where a `
 hence `a_i = b_j`. We need to take care when there are `p_i` and `p_j` with `p_i = p_j = b_k`.
 -/
 partial def compactRelation :
-  List Expr → List (Expr × Expr) → List (Option Expr) × List (Expr × Expr) × (Expr → Expr)
+    List Expr → List (Expr × Expr) → List (Option Expr) × List (Expr × Expr) × (Expr → Expr)
 | [],    as_ps => ([], as_ps, id)
 | b::bs, as_ps =>
   match as_ps.span (fun ⟨_, p⟩ ↦ p != b) with
@@ -122,7 +125,7 @@ structure Shape : Type where
        R a b → List.Chain R b l → List.Chain R a (b :: l)
   ```
   and the `a : α` gets eliminated, so `variablesKept = [false,true,true,true,true]`.
-   -/
+  -/
   variablesKept : List Bool
 
   /-- The number of equalities, or `none` in the case when we've reduced something
@@ -197,7 +200,7 @@ do
     let mvar'' ← select p (subgoals.size - 1) subgoal.mvarId
     match t with
     | none => do
-      let v := vars.get! (shape.length - 1)
+      let v := vars[shape.length - 1]!
       let mv ← mvar''.existsi (List.init si)
       mv.assign v
     | some n => do
@@ -329,14 +332,17 @@ def mkIffOfInductivePropImpl (ind : Name) (rel : Name) (relStx : Syntax) : MetaM
     value := ← instantiateMVars mvar
   }
   addDeclarationRangesFromSyntax rel (← getRef) relStx
-  addConstInfo relStx rel
+  Term.addTermInfo' relStx (← mkConstWithLevelParams rel) (isBinder := true) |>.run'
 
 /--
 Applying the `mk_iff` attribute to an inductively-defined proposition `mk_iff` makes an `iff` rule
-`r` with the shape `∀ps is, i as ↔ ⋁_j, ∃cs, is = cs`, where `ps` are the type parameters, `is` are
-the indices, `j` ranges over all possible constructors, the `cs` are the parameters for each of the
-constructors, and the equalities `is = cs` are the instantiations for each constructor for each of
-the indices to the inductive type `i`.
+`r` with the shape `∀ ps is, i as ↔ ⋁_j, ∃ cs, is = cs`, where
+* `ps` are the type parameters,
+* `is` are the indices,
+* `j` ranges over all possible constructors,
+* the `cs` are the parameters for each of the constructors, and
+* the equalities `is = cs` are the instantiations for each constructor for each of
+  the indices to the inductive type `i`.
 
 In each case, we remove constructor parameters (i.e. `cs`) when the corresponding equality would
 be just `c = i` for some index `i`.
@@ -374,10 +380,13 @@ syntax (name := mkIff) "mk_iff" (ppSpace ident)? : attr
 
 /--
 `mk_iff_of_inductive_prop i r` makes an `iff` rule for the inductively-defined proposition `i`.
-The new rule `r` has the shape `∀ps is, i as ↔ ⋁_j, ∃cs, is = cs`, where `ps` are the type
-parameters, `is` are the indices, `j` ranges over all possible constructors, the `cs` are the
-parameters for each of the constructors, and the equalities `is = cs` are the instantiations for
-each constructor for each of the indices to the inductive type `i`.
+The new rule `r` has the shape `∀ ps is, i as ↔ ⋁_j, ∃ cs, is = cs`, where
+* `ps` are the type parameters,
+* `is` are the indices,
+* `j` ranges over all possible constructors,
+* the `cs` are the parameters for each of the constructors, and
+* the equalities `is = cs` are the instantiations for
+  each constructor for each of the indices to the inductive type `i`.
 
 In each case, we remove constructor parameters (i.e. `cs`) when the corresponding equality would
 be just `c = i` for some index `i`.
@@ -386,7 +395,7 @@ For example, `mk_iff_of_inductive_prop` on `List.Chain` produces:
 
 ```lean
 ∀ { α : Type*} (R : α → α → Prop) (a : α) (l : List α),
-  Chain R a l ↔ l = [] ∨ ∃(b : α) (l' : List α), R a b ∧ Chain R b l ∧ l = b :: l'
+  Chain R a l ↔ l = [] ∨ ∃ (b : α) (l' : List α), R a b ∧ Chain R b l ∧ l = b :: l'
 ```
 
 See also the `mk_iff` user attribute.

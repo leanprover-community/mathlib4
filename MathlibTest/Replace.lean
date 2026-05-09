@@ -3,6 +3,7 @@ Copyright (c) 2022 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino
 -/
+module
 import Mathlib.Tactic.Replace
 
 set_option linter.unusedVariables false
@@ -22,9 +23,9 @@ example (z : Int) : Nat := by
   assumption
 
 example : True := by
-  have : 1 + 1 = 2 := by simp_arith
+  have : 1 + 1 = 2 := by simp +arith
   replace : 2 + 2 = 4
-  simp_arith
+  simp +arith
   trivial
 
 -- Regression test. `replace h` used to close goal and leave metavariables.

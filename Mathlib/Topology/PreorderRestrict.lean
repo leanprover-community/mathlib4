@@ -3,8 +3,10 @@ Copyright (c) 2024 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.Order.Restriction
-import Mathlib.Topology.Constructions
+module
+
+public import Mathlib.Order.Restriction
+public import Mathlib.Topology.Constructions
 
 /-!
 # Continuity of the restriction function for functions indexed by a preorder
@@ -13,9 +15,11 @@ We prove that the map which restricts a function `f : (i : α) → X i` to eleme
 continuous.
 -/
 
+public section
+
 namespace Preorder
 
-variable {α : Type*} [Preorder α] {X : α  → Type*} [∀ i, TopologicalSpace (X i)]
+variable {α : Type*} [Preorder α] {X : α → Type*} [∀ i, TopologicalSpace (X i)]
 
 @[continuity, fun_prop]
 theorem continuous_restrictLe (a : α) : Continuous (restrictLe (π := X) a) :=

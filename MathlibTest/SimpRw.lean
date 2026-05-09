@@ -3,7 +3,7 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Mario Carneiro
 -/
-
+module
 import Mathlib.Tactic.SimpRw
 
 private axiom test_sorry : ∀ {α}, α
@@ -39,12 +39,12 @@ set_option linter.unusedTactic false in
 example : 1 = 2 := by
   let a := 2
   show 1 = a
-  simp_rw (config := {zeta := false}) []
+  simp_rw -zeta []
   guard_target =ₛ 1 = a
   exact test_sorry
 
 /--
-error: no goals to be solved
+error: No goals to be solved
 -/
 -- check that `simp_rw` does not "spill over" goals
 #guard_msgs in

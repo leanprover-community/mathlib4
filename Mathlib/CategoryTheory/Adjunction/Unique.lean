@@ -3,7 +3,9 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Thomas Read, Andrew Yang, Dagur Asgeirsson, Joël Riou
 -/
-import Mathlib.CategoryTheory.Adjunction.Mates
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Mates
 /-!
 
 # Uniqueness of adjoints
@@ -20,9 +22,11 @@ This file shows that adjoints are unique up to natural isomorphism.
 
 -/
 
-open CategoryTheory
+@[expose] public section
 
-variable {C D : Type*} [Category C] [Category D]
+open CategoryTheory Functor
+
+variable {C D : Type*} [Category* C] [Category* D]
 
 namespace CategoryTheory.Adjunction
 
@@ -41,7 +45,7 @@ theorem unit_leftAdjointUniq_hom {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G)
     adj1.unit ≫ whiskerRight (leftAdjointUniq adj1 adj2).hom G = adj2.unit := by
   ext x
   rw [NatTrans.comp_app, ← homEquiv_leftAdjointUniq_hom_app adj1 adj2]
-  simp [← G.map_comp]
+  simp
 
 @[reassoc (attr := simp)]
 theorem unit_leftAdjointUniq_hom_app
@@ -109,6 +113,7 @@ theorem unit_rightAdjointUniq_hom_app {F : C ⥤ D} {G G' : D ⥤ C} (adj1 : F �
   rw [← adj2.unit_naturality_assoc, ← G'.map_comp]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem unit_rightAdjointUniq_hom {F : C ⥤ D} {G G' : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F ⊣ G') :
     adj1.unit ≫ whiskerLeft F (rightAdjointUniq adj1 adj2).hom = adj2.unit := by
@@ -121,6 +126,7 @@ theorem rightAdjointUniq_hom_app_counit {F : C ⥤ D} {G G' : D ⥤ C} (adj1 : F
     F.map ((rightAdjointUniq adj1 adj2).hom.app x) ≫ adj2.counit.app x = adj1.counit.app x := by
   simp [rightAdjointUniq]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem rightAdjointUniq_hom_counit {F : C ⥤ D} {G G' : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F ⊣ G') :
     whiskerRight (rightAdjointUniq adj1 adj2).hom F ≫ adj2.counit = adj1.counit := by
@@ -154,8 +160,5 @@ theorem rightAdjointUniq_refl {F : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) :
   simp
 
 end Adjunction
-
-@[deprecated (since := "2024-10-07")] alias Adjunction.natTransEquiv := conjugateEquiv
-@[deprecated (since := "2024-10-07")] alias Adjunction.natIsoEquiv := conjugateIsoEquiv
 
 end CategoryTheory

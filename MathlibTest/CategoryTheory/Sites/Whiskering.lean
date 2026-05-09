@@ -1,3 +1,4 @@
+module
 import Mathlib.Algebra.Category.ModuleCat.Colimits
 import Mathlib.Algebra.Category.ModuleCat.Limits
 import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
@@ -17,9 +18,9 @@ end Small
 
 section Large
 
-variable {C : Type (u+1)} [LargeCategory C] (J : GrothendieckTopology C)
+variable {C : Type (u + 1)} [LargeCategory C] (J : GrothendieckTopology C)
 
-example (R : Type (u+1)) [Ring R] : HasSheafCompose J (forget (ModuleCat.{u+1} R)) := inferInstance
+example (R : Type (u + 1)) [Ring R] : HasSheafCompose J (forget (ModuleCat.{u+1} R)) := inferInstance
 
 variable [EssentiallySmall.{u} C]
 

@@ -4,12 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.EuclideanDomain.Field
+import Mathlib.Algebra.Field.ZMod
 import Mathlib.Algebra.GroupWithZero.Action.Prod
 import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.Data.Complex.Module
 import Mathlib.Data.ZMod.Basic
+import Mathlib.LinearAlgebra.Complex.Module
 import Mathlib.RingTheory.Algebraic.Pi
 import Mathlib.RingTheory.TensorProduct.Basic
 
@@ -26,23 +27,23 @@ open scoped Polynomial
 example : (SubNegMonoid.toZSMul : SMul ℤ ℂ) = (Complex.SMul.instSMulRealComplex : SMul ℤ ℂ) := by
   with_reducible_and_instances rfl
 
-example : RestrictScalars.module ℝ ℂ ℂ = Complex.instModule := by
+example : Module.restrictScalars ℝ ℂ ℂ = Complex.instModule := by
   with_reducible_and_instances rfl
 
 -- fails `with_reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
-example : RestrictScalars.algebra ℝ ℂ ℂ = Complex.instAlgebraOfReal := by
+example : Algebra.restrictScalars ℝ ℂ ℂ = Complex.instAlgebraOfReal := by
   rfl
 
 example (α β : Type _) [AddMonoid α] [AddMonoid β] :
-    (Prod.smul : SMul ℕ (α × β)) = AddMonoid.toNatSMul := by
+    (Prod.instSMul : SMul ℕ (α × β)) = AddMonoid.toNSMul := by
   with_reducible_and_instances rfl
 
 example (α β : Type _) [SubNegMonoid α] [SubNegMonoid β] :
-    (Prod.smul : SMul ℤ (α × β)) = SubNegMonoid.toZSMul := by
+    (Prod.instSMul : SMul ℤ (α × β)) = SubNegMonoid.toZSMul := by
   with_reducible_and_instances rfl
 
 example (α : Type _) (β : α → Type _) [∀ a, AddMonoid (β a)] :
-    (Pi.instSMul : SMul ℕ (∀ a, β a)) = AddMonoid.toNatSMul := by
+    (Pi.instSMul : SMul ℕ (∀ a, β a)) = AddMonoid.toNSMul := by
   with_reducible_and_instances rfl
 
 example (α : Type _) (β : α → Type _) [∀ a, SubNegMonoid (β a)] :
@@ -55,7 +56,7 @@ open scoped TensorProduct
 
 open Complex
 
-/- `TensorProduct.Algebra.module` forms a diamond with `Mul.toSMul` and
+/- `TensorProduct.Algebra.module` forms a diamond with `instSMulOfMul` and
 `algebra.tensor_product.tensor_product.semiring`. Given a commutative semiring `A` over a
 commutative semiring `R`, we get two mathematically different scalar actions of `A ⊗[R] A` on
 itself. -/
@@ -69,19 +70,19 @@ noncomputable def f : ℂ ⊗[ℝ] ℂ →ₗ[ℝ] ℝ :=
 theorem f_apply (z w : ℂ) : f (z ⊗ₜ[ℝ] w) = z.re * w.re := by simp [f]
 
 unseal Algebra.TensorProduct.mul in
-/- `TensorProduct.Algebra.module` forms a diamond with `Mul.toSMul` and
+/- `TensorProduct.Algebra.module` forms a diamond with `instSMulOfMul` and
 `algebra.tensor_product.tensor_product.semiring`. Given a commutative semiring `A` over a
 commutative semiring `R`, we get two mathematically different scalar actions of `A ⊗[R] A` on
 itself. -/
 example :
-    Mul.toSMul (ℂ ⊗[ℝ] ℂ) ≠
+    instSMulOfMul (α := ℂ ⊗[ℝ] ℂ) ≠
       (@TensorProduct.Algebra.module ℝ ℂ ℂ (ℂ ⊗[ℝ] ℂ) _ _ _ _ _ _ _ _ _ _ _ _).toSMul := by
   have contra : I ⊗ₜ[ℝ] I ≠ (-1) ⊗ₜ[ℝ] 1 := fun c => by simpa using congr_arg f c
   contrapose! contra
   rw [SMul.ext_iff, SMul.smul_eq_hSMul, @SMul.smul_eq_hSMul _ _ (_)] at contra
   replace contra := congr_fun (congr_fun contra (1 ⊗ₜ I)) (I ⊗ₜ 1)
   rw [TensorProduct.Algebra.smul_def (R := ℝ) (1 : ℂ) I (I ⊗ₜ[ℝ] (1 : ℂ))] at contra
-  simpa only [Algebra.id.smul_eq_mul, Algebra.TensorProduct.tmul_mul_tmul, one_mul, mul_one,
+  simpa only [smul_eq_mul, Algebra.TensorProduct.tmul_mul_tmul, one_mul, mul_one,
     one_smul, TensorProduct.smul_tmul', I_mul_I] using contra
 
 end TensorProduct
@@ -111,25 +112,11 @@ example {α : Type*} [CommMonoid α] :
 
 end Units
 
-end SMul
-
-/-! ## `WithTop` (Type with point at infinity) instances -/
-
-
-section WithTop
-
-example (R : Type _) [h : StrictOrderedSemiring R] :
-    @WithTop.addCommMonoid R
-        (@NonUnitalNonAssocSemiring.toAddCommMonoid R
-          (@NonAssocSemiring.toNonUnitalNonAssocSemiring R
-            (@Semiring.toNonAssocSemiring R (@StrictOrderedSemiring.toSemiring R h)))) =
-      @OrderedAddCommMonoid.toAddCommMonoid (WithTop R)
-        (@WithTop.orderedAddCommMonoid R
-          (@OrderedCancelAddCommMonoid.toOrderedAddCommMonoid R
-            (@StrictOrderedSemiring.toOrderedCancelAddCommMonoid R h))) := by
+example {R S A : Type*} [CommSemiring R] [CommSemiring S] [Semiring A] [Algebra S A] (f : R →+* S) :
+    (Algebra.compHom A f).toModule = Module.compHom A f := by
   with_reducible_and_instances rfl
 
-end WithTop
+end SMul
 
 /-! ## `Multiplicative` instances -/
 
@@ -158,7 +145,7 @@ example {k : Type _} [Semiring k] [Nontrivial k] :
   replace h := h u (Finsupp.single 1 1) u
   classical
   rw [comapSMul_single, smul_apply, smul_eq_mul, mul_one, single_eq_same, smul_eq_mul,
-    single_eq_of_ne hu.symm, MulZeroClass.mul_zero] at h
+    single_eq_of_ne hu, MulZeroClass.mul_zero] at h
   exact one_ne_zero h
 
 /-- `Finsupp.comapSMul` can form a non-equal diamond with `Finsupp.smulZeroClass` even when
@@ -166,13 +153,13 @@ the domain is a group. -/
 example {k : Type _} [Semiring k] [Nontrivial kˣ] :
     (Finsupp.comapSMul : SMul kˣ (kˣ →₀ k)) ≠ Finsupp.smulZeroClass.toSMul := by
   obtain ⟨u : kˣ, hu⟩ := exists_ne (1 : kˣ)
-  haveI : Nontrivial k := ⟨⟨u, 1, Units.ext.ne hu⟩⟩
+  haveI : Nontrivial k := Units.val_injective.nontrivial
   intro h
   simp only [SMul.ext_iff, @SMul.smul_eq_hSMul _ _ (_), funext_iff, DFunLike.ext_iff] at h
   replace h := h u (Finsupp.single 1 1) u
   classical
   rw [comapSMul_single, smul_apply, Units.smul_def, smul_eq_mul, mul_one, single_eq_same,
-    smul_eq_mul, single_eq_of_ne hu.symm, MulZeroClass.mul_zero] at h
+    smul_eq_mul, single_eq_of_ne hu, MulZeroClass.mul_zero] at h
   exact one_ne_zero h
 
 end Finsupp
@@ -226,8 +213,8 @@ end Polynomial
 section Subtype
 
 -- this diamond is the reason that `Fintype.toLocallyFiniteOrder` is not an instance
-example {α} [Preorder α] [LocallyFiniteOrder α] [Fintype α] [DecidableRel (α := α) (· < ·)]
-    [DecidableRel (α := α) (· ≤ ·)] (p : α → Prop) [DecidablePred p] :
+example {α} [Preorder α] [LocallyFiniteOrder α] [Fintype α] [DecidableLT α]
+    [DecidableLE α] (p : α → Prop) [DecidablePred p] :
     Subtype.instLocallyFiniteOrder p = Fintype.toLocallyFiniteOrder := by
   fail_if_success rfl
   exact Subsingleton.elim _ _
@@ -246,9 +233,14 @@ example :
       ZMod.commRing p := by
   with_reducible_and_instances rfl
 
+set_option backward.isDefEq.respectTransparency false in
+-- We need `open Fin.CommRing`, as otherwise `Fin.instCommRing` is not an instance,
+-- so `with_reducible_and_instances` doesn't have the desired effect.
+open Fin.CommRing in
 example (n : ℕ) : ZMod.commRing (n + 1) = Fin.instCommRing (n + 1) := by
   with_reducible_and_instances rfl
 
+set_option backward.isDefEq.respectTransparency false in
 example : ZMod.commRing 0 = Int.instCommRing := by
   with_reducible_and_instances rfl
 
@@ -286,5 +278,5 @@ end complexToReal
 /-- This diamond arose because the semifield structure on `NNRat` needs to be defined as early as
 possible, before `Nonneg.zpow` becomes available; `Nonneg.zpow` is used to then define the
 `LinearOrderedCommGroupWithZero` instance. -/
-example : (inferInstanceAs (Semifield ℚ≥0)).toCommGroupWithZero =
-    (inferInstanceAs (LinearOrderedCommGroupWithZero ℚ≥0)).toCommGroupWithZero := rfl
+example : (inferInstance : (Semifield ℚ≥0)).toCommGroupWithZero =
+    (inferInstance : (LinearOrderedCommGroupWithZero ℚ≥0)).toCommGroupWithZero := rfl

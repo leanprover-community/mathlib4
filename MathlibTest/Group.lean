@@ -1,4 +1,7 @@
+module
 import Mathlib.Tactic.Group
+
+open scoped commutatorElement
 
 variable {G : Type} [Group G]
 
@@ -29,11 +32,11 @@ example (n : ℕ) (a : G) : a^(n-n) = 1 := by group
 
 example (n : ℤ) (a : G) : a^(n-n) = 1 := by group
 
-example (n : ℤ) (a : G) (h : a^(n*(n+1)-n-n^2) = a) : a = 1 := by
+example (n : ℤ) (a : G) (h : a ^ (n * (n + 1) - n - n ^ 2) = a) : a = 1 := by
   group at h
   exact h.symm
 
-example (a b c d : G) (h : c = (a*b^2)*((b*b)⁻¹*a⁻¹)*d) : a*c*d⁻¹ = a := by
+example (a b c d : G) (h : c = (a * b ^ 2) * ((b * b)⁻¹ * a⁻¹) * d) : a*c*d⁻¹ = a := by
   group at h
   rw [h]
   group
@@ -49,7 +52,14 @@ example (n : ℤ) (a b : G) : a^n*b^n*a^n*a^n*a^(-n)*a^(-n)*b^(-n)*a^(-n) = 1 :=
 
 example (x y : G) : (x⁻¹ * (x * y) * y⁻¹)⁻¹ = 1 := by group
 
-set_option linter.unusedTactic false in
+/--
+error: `group` made no progress
+G : Type
+inst✝ : Group G
+x : G
+h : x = 1
+⊢ x = 1
+-/
+#guard_msgs in
 example (x : G) (h : x = 1) : x = 1 := by
   group
-  exact h

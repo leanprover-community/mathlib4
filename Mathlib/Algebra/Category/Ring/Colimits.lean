@@ -3,8 +3,10 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Category.Ring.Basic
-import Mathlib.CategoryTheory.Limits.HasLimits
+module
+
+public import Mathlib.Algebra.Category.Ring.Basic
+public import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
 # The category of commutative rings has all colimits.
@@ -14,6 +16,8 @@ This file uses a "pre-automated" approach, just as for
 It is a very uniform approach, that conceivably could be synthesised directly
 by a tactic that analyses the shape of `CommRing` and `RingHom`.
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -39,7 +43,6 @@ on a collection of types indexed by the objects of `J`.
 inductive Prequotient
   -- There's always `of`
   | of : ∀ (j : J) (_ : F.obj j), Prequotient
-
   -- Then one generator for each operation
   | zero : Prequotient
   | one : Prequotient
@@ -95,11 +98,9 @@ inductive Relation : Prequotient F → Prequotient F → Prop -- Make it an equi
 
 /-- The setoid corresponding to commutative expressions modulo monoid Relations and identifications.
 -/
-def colimitSetoid : Setoid (Prequotient F) where
+instance colimitSetoid : Setoid (Prequotient F) where
   r := Relation F
   iseqv := ⟨Relation.refl, Relation.symm _ _, Relation.trans _ _ _⟩
-
-attribute [instance] colimitSetoid
 
 /-- The underlying type of the colimit of a diagram in `CommRingCat`.
 -/
@@ -125,7 +126,6 @@ instance ColimitType.AddGroup : AddGroup (ColimitType F) where
   nsmul := nsmulRec
   zsmul := zsmulRec
 
--- Porting note: failed to derive `Inhabited` instance
 instance InhabitedColimitType : Inhabited <| ColimitType F where
   default := 0
 
@@ -160,25 +160,19 @@ theorem quot_one : Quot.mk Setoid.r one = (1 : ColimitType F) :=
 
 @[simp]
 theorem quot_neg (x : Prequotient F) :
-    -- Porting note: Lean can't see `Quot.mk Setoid.r x` is a `ColimitType F` even with type
-    -- annotation unless we use `by exact` to change the elaboration order.
-    (by exact Quot.mk Setoid.r (neg x) : ColimitType F) = -(by exact Quot.mk Setoid.r x) :=
+    Quot.mk Setoid.r (neg x) = -(show ColimitType F from Quot.mk Setoid.r x) :=
   rfl
 
--- Porting note: Lean can't see `Quot.mk Setoid.r x` is a `ColimitType F` even with type annotation
--- unless we use `by exact` to change the elaboration order.
 @[simp]
 theorem quot_add (x y) :
-    (by exact Quot.mk Setoid.r (add x y) : ColimitType F) =
-      (by exact Quot.mk _ x) + (by exact Quot.mk _ y) :=
+    Quot.mk Setoid.r (add x y) =
+      (show ColimitType F from Quot.mk _ x) + (show ColimitType F from Quot.mk _ y) :=
   rfl
 
--- Porting note: Lean can't see `Quot.mk Setoid.r x` is a `ColimitType F` even with type annotation
--- unless we use `by exact` to change the elaboration order.
 @[simp]
 theorem quot_mul (x y) :
-    (by exact Quot.mk Setoid.r (mul x y) : ColimitType F) =
-      (by exact Quot.mk _ x) * (by exact Quot.mk _ y) :=
+    Quot.mk Setoid.r (mul x y) =
+      (show ColimitType F from Quot.mk _ x) * (show ColimitType F from Quot.mk _ y) :=
   rfl
 
 /-- The bundled ring giving the colimit of a diagram. -/
@@ -236,11 +230,11 @@ def descFun (s : Cocone F) : ColimitType F → s.pt := by
     | symm x y _ ih => exact ih.symm
     | trans x y z _ _ ih1 ih2 => exact ih1.trans ih2
     | map j j' f x => exact RingHom.congr_fun (congrArg Hom.hom <| s.ι.naturality f) x
-    | zero j => simp
-    | one j => simp
-    | neg j x => simp
-    | add j x y => simp
-    | mul j x y => simp
+    | zero j => simp +instances
+    | one j => simp +instances
+    | neg j x => simp +instances
+    | add j x y => simp +instances
+    | mul j x y => simp +instances
     | neg_1 x x' r ih => dsimp; rw [ih]
     | add_1 x x' y r ih => dsimp; rw [ih]
     | add_2 x y y' r ih => dsimp; rw [ih]
@@ -272,6 +266,7 @@ def descMorphism (s : Cocone F) : colimit F ⟶ s.pt := ofHom
       rfl
     map_mul' := fun x y ↦ by exact Quot.induction_on₂ x y fun a b => rfl }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Evidence that the proposed colimit is the colimit. -/
 def colimitIsColimit : IsColimit (colimitCocone F) where
   desc s := descMorphism F s
@@ -396,11 +391,9 @@ inductive Relation : Prequotient F → Prequotient F → Prop -- Make it an equi
 
 /-- The setoid corresponding to commutative expressions modulo monoid Relations and identifications.
 -/
-def colimitSetoid : Setoid (Prequotient F) where
+instance colimitSetoid : Setoid (Prequotient F) where
   r := Relation F
   iseqv := ⟨Relation.refl, Relation.symm _ _, Relation.trans _ _ _⟩
-
-attribute [instance] colimitSetoid
 
 /-- The underlying type of the colimit of a diagram in `CommRingCat`.
 -/
@@ -426,7 +419,6 @@ instance ColimitType.AddGroup : AddGroup (ColimitType F) where
   nsmul := nsmulRec
   zsmul := zsmulRec
 
--- Porting note: failed to derive `Inhabited` instance
 instance InhabitedColimitType : Inhabited <| ColimitType F where
   default := 0
 
@@ -462,25 +454,23 @@ theorem quot_one : Quot.mk Setoid.r one = (1 : ColimitType F) :=
 
 @[simp]
 theorem quot_neg (x : Prequotient F) :
-    -- Porting note: Lean can't see `Quot.mk Setoid.r x` is a `ColimitType F` even with type
-    -- annotation unless we use `by exact` to change the elaboration order.
-    (by exact Quot.mk Setoid.r (neg x) : ColimitType F) = -(by exact Quot.mk Setoid.r x) :=
+    Quot.mk Setoid.r (neg x) = -(show ColimitType F from Quot.mk Setoid.r x) :=
   rfl
 
 -- Porting note: Lean can't see `Quot.mk Setoid.r x` is a `ColimitType F` even with type annotation
 -- unless we use `by exact` to change the elaboration order.
 @[simp]
 theorem quot_add (x y) :
-    (by exact Quot.mk Setoid.r (add x y) : ColimitType F) =
-      (by exact Quot.mk _ x) + (by exact Quot.mk _ y) :=
+    Quot.mk Setoid.r (add x y) =
+      (show ColimitType F from Quot.mk _ x) + (show ColimitType F from Quot.mk _ y) :=
   rfl
 
 -- Porting note: Lean can't see `Quot.mk Setoid.r x` is a `ColimitType F` even with type annotation
 -- unless we use `by exact` to change the elaboration order.
 @[simp]
 theorem quot_mul (x y) :
-    (by exact Quot.mk Setoid.r (mul x y) : ColimitType F) =
-      (by exact Quot.mk _ x) * (by exact Quot.mk _ y) :=
+    Quot.mk Setoid.r (mul x y) =
+      (show ColimitType F from Quot.mk _ x) * (show ColimitType F from Quot.mk _ y) :=
   rfl
 
 /-- The bundled commutative ring giving the colimit of a diagram. -/
@@ -538,11 +528,11 @@ def descFun (s : Cocone F) : ColimitType F → s.pt := by
     | symm x y _ ih => exact ih.symm
     | trans x y z _ _ ih1 ih2 => exact ih1.trans ih2
     | map j j' f x => exact RingHom.congr_fun (congrArg Hom.hom <| s.ι.naturality f) x
-    | zero j => simp
-    | one j => simp
-    | neg j x => simp
-    | add j x y => simp
-    | mul j x y => simp
+    | zero j => simp +instances
+    | one j => simp +instances
+    | neg j x => simp +instances
+    | add j x y => simp +instances
+    | mul j x y => simp +instances
     | neg_1 x x' r ih => dsimp; rw [ih]
     | add_1 x x' y r ih => dsimp; rw [ih]
     | add_2 x y y' r ih => dsimp; rw [ih]
@@ -575,6 +565,7 @@ def descMorphism (s : Cocone F) : colimit F ⟶ s.pt := ofHom
       rfl
     map_mul' := fun x y ↦ by exact Quot.induction_on₂ x y fun a b => rfl }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Evidence that the proposed colimit is the colimit. -/
 def colimitIsColimit : IsColimit (colimitCocone F) where
   desc := fun s ↦ descMorphism F s

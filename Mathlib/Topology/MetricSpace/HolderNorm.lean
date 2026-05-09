@@ -3,7 +3,9 @@ Copyright (c) 2024 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Topology.MetricSpace.Holder
+module
+
+public import Mathlib.Topology.MetricSpace.Holder
 
 /-!
 # Hölder norm
@@ -29,6 +31,8 @@ for which `WithHolder C r f` is true.
 Hölder norm, Hoelder norm, Holder norm
 
 -/
+
+@[expose] public section
 
 variable {X Y : Type*}
 
@@ -91,9 +95,8 @@ lemma eHolderNorm_zero [Zero Y] (r : ℝ≥0) : eHolderNorm r (0 : X → Y) = 0 
 variable (X) in
 @[simp]
 lemma nnHolderNorm_const (r : ℝ≥0) (c : Y) : nnHolderNorm r (Function.const X c) = 0 := by
-  refine le_antisymm (ENNReal.coe_le_coe.1 <|
-    le_trans coe_nnHolderNorm_le_eHolderNorm ?_) (zero_le _)
-  rw [eHolderNorm_const, ENNReal.coe_zero]
+  rw [← nonpos_iff_eq_zero, ← ENNReal.coe_le_coe, ENNReal.coe_zero, ← eHolderNorm_const X r c]
+  exact coe_nnHolderNorm_le_eHolderNorm
 
 variable (X) in
 @[simp]
@@ -125,6 +128,71 @@ lemma memHolder_const' {c : Y} : MemHolder r (fun _ ↦ c : X → Y) :=
 lemma memHolder_zero [Zero Y] : MemHolder r (0 : X → Y) :=
   memHolder_const
 
+section Monotonicity
+
+open Bornology
+
+/-- If a function is `r`-Hölder over a bounded space, then it is also `s`-Hölder when `s ≤ r`.
+See `MemHolder.of_le'` for the version in a pseudoemetric space. -/
+lemma MemHolder.of_le {X : Type*} [PseudoMetricSpace X] [hX : BoundedSpace X]
+    {f : X → Y} {s : ℝ≥0} (hf : MemHolder r f) (hs : s ≤ r) :
+    MemHolder s f := by
+  obtain ⟨C, hf⟩ := hf
+  obtain ⟨C', hC'⟩ := Metric.boundedSpace_iff_edist.1 hX
+  exact ⟨C * C' ^ (r - s : ℝ),
+    holderOnWith_univ.1 <| (holderOnWith_univ.2 hf).of_le (fun x _ y _ ↦ hC' x y) hs⟩
+
+/-- If a function is `r`-Hölder over a bounded space, then it is also `s`-Hölder when `s ≤ r`.
+See `MemHolder.of_le` for the version in a pseudometric space. -/
+lemma MemHolder.of_le' {s : ℝ≥0} (hf : MemHolder r f) (hs : s ≤ r)
+    (hX : ∃ C : ℝ≥0, ∀ x y : X, edist x y ≤ C) :
+    MemHolder s f := by
+  obtain ⟨C, hX⟩ := hX
+  letI := PseudoEMetricSpace.toPseudoMetricSpace
+    fun x y ↦ ne_top_of_le_ne_top ENNReal.coe_ne_top (hX x y)
+  have := Metric.boundedSpace_iff_edist.2 ⟨C, hX⟩
+  exact hf.of_le hs
+
+/-- If a function is `r`-Hölder over a bounded set, then it is also `s`-Hölder over this set
+when `s ≤ r`. See `HolderOnWith.exists_holderOnWith_of_le'`
+for the version in a pseudoemetric space. -/
+lemma HolderOnWith.exists_holderOnWith_of_le {X : Type*} [PseudoMetricSpace X]
+    {f : X → Y} {s : ℝ≥0} {A : Set X} (hf : ∃ C, HolderOnWith C r f A) (hs : s ≤ r)
+    (hA : IsBounded A) : ∃ C, HolderOnWith C s f A := by
+  simp_rw [← HolderWith.restrict_iff] at *
+  have : BoundedSpace A := boundedSpace_val_set_iff.2 hA
+  exact MemHolder.of_le hf hs
+
+/-- If a function is `r`-Hölder over a bounded set,
+then it is also `s`-Hölder over this set when `s ≤ r`. See `HolderOnWith.exists_holderOnWith_of_le`
+for the version in a pseudometric space. -/
+lemma HolderOnWith.exists_holderOnWith_of_le' {D s : ℝ≥0} {A : Set X}
+    (hf : ∃ C, HolderOnWith C r f A) (hs : s ≤ r)
+    (hA : ∀ ⦃x⦄, x ∈ A → ∀ ⦃y⦄, y ∈ A → edist x y ≤ D) :
+    ∃ C, HolderOnWith C s f A := by
+  simp_rw [← HolderWith.restrict_iff] at *
+  letI := PseudoEMetricSpace.toPseudoMetricSpace
+    fun x y : A ↦ ne_top_of_le_ne_top ENNReal.coe_ne_top (hA x.2 y.2)
+  have : BoundedSpace A := Metric.boundedSpace_iff_edist.2 ⟨D, fun x y ↦ hA x.2 y.2⟩
+  exact MemHolder.of_le hf hs
+
+/-- If a function is locally `r`-Hölder and locally `t`-Hölder,
+then it is locally `s`-Hölder for `r ≤ s ≤ t`. -/
+lemma HolderOnWith.exists_holderOnWith_of_le_of_le {s t : ℝ≥0} {A : Set X}
+    (hf₁ : ∃ C, HolderOnWith C r f A) (hf₂ : ∃ C, HolderOnWith C t f A)
+    (hrs : r ≤ s) (hst : s ≤ t) : ∃ C, HolderOnWith C s f A := by
+  obtain ⟨C₁, hf₁⟩ := hf₁
+  obtain ⟨C₂, hf₂⟩ := hf₂
+  exact ⟨max C₁ C₂, hf₁.of_le_of_le hf₂ hrs hst⟩
+
+/-- If a function is `r`-Hölder and `t`-Hölder, then it is `s`-Hölder for `r ≤ s ≤ t`. -/
+lemma MemHolder.memHolder_of_le_of_le {s t : ℝ≥0} (hf₁ : MemHolder r f) (hf₂ : MemHolder t f)
+    (hrs : r ≤ s) (hst : s ≤ t) : MemHolder s f := by
+  simp_rw [MemHolder, ← holderOnWith_univ] at *
+  exact HolderOnWith.exists_holderOnWith_of_le_of_le hf₁ hf₂ hrs hst
+
+end Monotonicity
+
 end PseudoEMetricSpace
 
 section MetricSpace
@@ -138,23 +206,22 @@ lemma eHolderNorm_eq_zero {r : ℝ≥0} {f : X → Y} :
     by_cases hx : x₁ = x₂
     · rw [hx]
     · rw [eHolderNorm, ← ENNReal.bot_eq_zero, iInf₂_eq_bot] at h
-      rw [← edist_eq_zero, ← le_zero_iff]
-      refine le_of_forall_lt' fun b hb => ?_
+      rw [← edist_eq_zero, ← nonpos_iff_eq_zero]
+      refine le_of_forall_gt fun b hb => ?_
       obtain ⟨C, hC, hC'⟩ := h (b / edist x₁ x₂ ^ (r : ℝ))
         (ENNReal.div_pos hb.ne.symm (ENNReal.rpow_lt_top_of_nonneg zero_le_coe
           (edist_lt_top x₁ x₂).ne).ne)
       exact lt_of_le_of_lt (hC x₁ x₂) <| ENNReal.mul_lt_of_lt_div hC'
   · intro h
-    cases' isEmpty_or_nonempty X with hX hX
-    · haveI := hX
-      exact eHolderNorm_of_isEmpty
+    rcases isEmpty_or_nonempty X with hX | hX
+    · exact eHolderNorm_of_isEmpty
     · rw [← eHolderNorm_const X r (f hX.some)]
       congr
       simp [funext_iff, h _ hX.some]
 
 lemma MemHolder.holderWith {r : ℝ≥0} {f : X → Y} (hf : MemHolder r f) :
     HolderWith (nnHolderNorm r f) r f := by
-  intros x₁ x₂
+  intro x₁ x₂
   by_cases hx : x₁ = x₂
   · simp only [hx, edist_self, zero_le]
   rw [nnHolderNorm, eHolderNorm, coe_toNNReal]
@@ -201,31 +268,36 @@ variable {r : ℝ≥0} {f g : X → Y}
 lemma MemHolder.add (hf : MemHolder r f) (hg : MemHolder r g) : MemHolder r (f + g) :=
   (hf.holderWith.add hg.holderWith).memHolder
 
-lemma MemHolder.smul {𝕜} [NormedDivisionRing 𝕜] [Module 𝕜 Y] [BoundedSMul 𝕜 Y]
+lemma MemHolder.smul {𝕜} [SeminormedRing 𝕜] [Module 𝕜 Y] [IsBoundedSMul 𝕜 Y]
     {c : 𝕜} (hf : MemHolder r f) : MemHolder r (c • f) :=
   (hf.holderWith.smul c).memHolder
 
-lemma MemHolder.nsmul [Module ℝ Y] [BoundedSMul ℝ Y] (n : ℕ) (hf : MemHolder r f) :
+lemma MemHolder.smul_iff {𝕜} [SeminormedRing 𝕜] [Module 𝕜 Y] [NormSMulClass 𝕜 Y]
+    {c : 𝕜} (hc : ‖c‖₊ ≠ 0) : MemHolder r (c • f) ↔ MemHolder r f := by
+  refine ⟨fun ⟨h, hh⟩ => ⟨h * ‖c‖₊⁻¹, ?_⟩, .smul⟩
+  rw [← HolderWith.smul_iff _ hc, inv_mul_cancel_right₀ hc]
+  exact hh
+
+lemma MemHolder.nsmul [NormedSpace ℝ Y] (n : ℕ) (hf : MemHolder r f) :
     MemHolder r (n • f) := by
   simp [← Nat.cast_smul_eq_nsmul (R := ℝ), hf.smul]
 
 lemma MemHolder.nnHolderNorm_add_le (hf : MemHolder r f) (hg : MemHolder r g) :
     nnHolderNorm r (f + g) ≤ nnHolderNorm r f + nnHolderNorm r g :=
-  (hf.add hg).holderWith.nnholderNorm_le.trans <|
-    coe_le_coe.2 (hf.holderWith.add hg.holderWith).nnholderNorm_le
+  (hf.add hg).holderWith.nnholderNorm_le.trans (hf.holderWith.add hg.holderWith).nnholderNorm_le
 
 lemma eHolderNorm_add_le :
     eHolderNorm r (f + g) ≤ eHolderNorm r f + eHolderNorm r g := by
-  by_cases hfg : MemHolder r f  ∧ MemHolder r g
+  by_cases hfg : MemHolder r f ∧ MemHolder r g
   · obtain ⟨hf, hg⟩ := hfg
     rw [← hf.coe_nnHolderNorm_eq_eHolderNorm, ← hg.coe_nnHolderNorm_eq_eHolderNorm,
       ← (hf.add hg).coe_nnHolderNorm_eq_eHolderNorm, ← coe_add, ENNReal.coe_le_coe]
     exact hf.nnHolderNorm_add_le hg
-  · rw [Classical.not_and_iff_or_not_not, ← eHolderNorm_eq_top, ← eHolderNorm_eq_top] at hfg
+  · rw [Classical.not_and_iff_not_or_not, ← eHolderNorm_eq_top, ← eHolderNorm_eq_top] at hfg
     obtain (h | h) := hfg
     all_goals simp [h]
 
-lemma eHolderNorm_smul {α} [NormedDivisionRing α] [Module α Y] [BoundedSMul α Y] (c : α) :
+lemma eHolderNorm_smul {α} [NormedRing α] [Module α Y] [NormSMulClass α Y] (c : α) :
     eHolderNorm r (c • f) = ‖c‖₊ * eHolderNorm r f := by
   by_cases hc : ‖c‖₊ = 0
   · rw [nnnorm_eq_zero] at hc
@@ -241,24 +313,22 @@ lemma eHolderNorm_smul {α} [NormedDivisionRing α] [Module α Y] [BoundedSMul �
         ← Pi.smul_apply]
       exact hf.smul.holderWith x₁ x₂
   · rw [← eHolderNorm_eq_top] at hf
-    rw [hf, mul_top <| coe_ne_zero.2 hc, eHolderNorm_eq_top]
+    rw [hf, mul_top <| coe_ne_zero.2 hc, eHolderNorm_eq_top, MemHolder.smul_iff hc]
     rw [nnnorm_eq_zero] at hc
     intro h
-    have := h.smul (c := c⁻¹)
-    rw [inv_smul_smul₀ hc] at this
-    exact this.eHolderNorm_lt_top.ne hf
+    exact h.eHolderNorm_lt_top.ne hf
 
-lemma MemHolder.nnHolderNorm_smul {α} [NormedDivisionRing α] [Module α Y] [BoundedSMul α Y]
+lemma MemHolder.nnHolderNorm_smul {α} [NormedRing α] [Module α Y] [NormSMulClass α Y]
     (hf : MemHolder r f) (c : α) :
     nnHolderNorm r (c • f) = ‖c‖₊ * nnHolderNorm r f := by
   rw [← ENNReal.coe_inj, coe_mul, hf.coe_nnHolderNorm_eq_eHolderNorm,
     hf.smul.coe_nnHolderNorm_eq_eHolderNorm, eHolderNorm_smul]
 
-lemma eHolderNorm_nsmul [Module ℝ Y] [BoundedSMul ℝ Y] (n : ℕ) :
+lemma eHolderNorm_nsmul [NormedSpace ℝ Y] (n : ℕ) :
     eHolderNorm r (n • f) = n • eHolderNorm r f := by
   simp [← Nat.cast_smul_eq_nsmul (R := ℝ), eHolderNorm_smul]
 
-lemma MemHolder.nnHolderNorm_nsmul [Module ℝ Y] [BoundedSMul ℝ Y] (n : ℕ) (hf : MemHolder r f) :
+lemma MemHolder.nnHolderNorm_nsmul [NormedSpace ℝ Y] (n : ℕ) (hf : MemHolder r f) :
     nnHolderNorm r (n • f) = n • nnHolderNorm r f := by
   simp [← Nat.cast_smul_eq_nsmul (R := ℝ), hf.nnHolderNorm_smul]
 

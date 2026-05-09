@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Topology.Instances.ENNReal.Defs
-import Mathlib.Topology.Algebra.InfiniteSum.Defs
+module
+
+public import Mathlib.Topology.Algebra.InfiniteSum.Defs
+public import Mathlib.Topology.Order.Real
 
 /-!
 # Definitions of an outer measure and the corresponding `FunLike` class
@@ -33,6 +35,10 @@ We also define a typeclass `MeasureTheory.OuterMeasureClass`.
 outer measure
 -/
 
+public section
+
+assert_not_exists Module.Basis IsTopologicalRing UniformSpace
+
 open scoped ENNReal
 
 variable {α : Type*}
@@ -50,6 +56,8 @@ structure OuterMeasure (α : Type*) where
   protected iUnion_nat : ∀ s : ℕ → Set α, Pairwise (Disjoint on s) →
     measureOf (⋃ i, s i) ≤ ∑' i, measureOf (s i)
 
+attribute [gcongr] OuterMeasure.mono
+
 /-- A mixin class saying that elements `μ : F` are outer measures on `α`.
 
 This typeclass is used to unify some API for outer measures and measures. -/
@@ -58,6 +66,8 @@ class OuterMeasureClass (F : Type*) (α : outParam Type*) [FunLike F (Set α) �
   protected measure_mono (f : F) {s t} : s ⊆ t → f s ≤ f t
   protected measure_iUnion_nat_le (f : F) (s : ℕ → Set α) : Pairwise (Disjoint on s) →
     f (⋃ i, s i) ≤ ∑' i, f (s i)
+
+attribute [gcongr] OuterMeasureClass.measure_mono
 
 namespace OuterMeasure
 

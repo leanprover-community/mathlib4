@@ -3,7 +3,9 @@ Copyright (c) 2019 Minchao Wu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Minchao Wu, Mario Carneiro
 -/
-import Mathlib.Computability.Halting
+module
+
+public import Mathlib.Computability.Halting
 
 /-!
 # Strong reducibility and degrees.
@@ -12,7 +14,7 @@ This file defines the notions of computable many-one reduction and one-one
 reduction between sets, and shows that the corresponding degrees form a
 semilattice.
 
-## Notations
+## Notation
 
 This file uses the local notation `⊕'` for `Sum.elim` to denote the disjoint union of two degrees.
 
@@ -24,6 +26,8 @@ This file uses the local notation `⊕'` for `Sum.elim` to denote the disjoint u
 
 computability, reducibility, reduction
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -53,13 +57,17 @@ theorem ManyOneReducible.trans {α β γ} [Primcodable α] [Primcodable β] [Pri
     {p : α → Prop} {q : β → Prop} {r : γ → Prop} : p ≤₀ q → q ≤₀ r → p ≤₀ r
   | ⟨f, c₁, h₁⟩, ⟨g, c₂, h₂⟩ =>
     ⟨g ∘ f, c₂.comp c₁,
-      fun a => ⟨fun h => by erw [← h₂, ← h₁]; assumption, fun h => by rwa [h₁, h₂]⟩⟩
+      fun a => ⟨fun h => by rw [comp_apply, ← h₂, ← h₁]; assumption, fun h => by rwa [h₁, h₂]⟩⟩
 
-theorem reflexive_manyOneReducible {α} [Primcodable α] : Reflexive (@ManyOneReducible α α _ _) :=
-  manyOneReducible_refl
+instance stdRefl_manyOneReducible {α} [Primcodable α] : Std.Refl (@ManyOneReducible α α _ _) where
+  refl := manyOneReducible_refl
 
-theorem transitive_manyOneReducible {α} [Primcodable α] : Transitive (@ManyOneReducible α α _ _) :=
-  fun _ _ _ => ManyOneReducible.trans
+@[deprecated (since := "2026-03-27")] alias reflexive_manyOneReducible := stdRefl_manyOneReducible
+
+instance isTrans_manyOneReducible {α} [Primcodable α] : IsTrans (α → Prop) ManyOneReducible where
+  trans _ _ _ := ManyOneReducible.trans
+
+@[deprecated (since := "2026-02-21")] alias transitive_manyOneReducible := isTrans_manyOneReducible
 
 /--
 `p` is one-one reducible to `q` if there is an injective computable function translating questions
@@ -84,7 +92,7 @@ theorem OneOneReducible.trans {α β γ} [Primcodable α] [Primcodable β] [Prim
     {q : β → Prop} {r : γ → Prop} : p ≤₁ q → q ≤₁ r → p ≤₁ r
   | ⟨f, c₁, i₁, h₁⟩, ⟨g, c₂, i₂, h₂⟩ =>
     ⟨g ∘ f, c₂.comp c₁, i₂.comp i₁, fun a =>
-      ⟨fun h => by erw [← h₂, ← h₁]; assumption, fun h => by rwa [h₁, h₂]⟩⟩
+      ⟨fun h => by rw [comp_apply, ← h₂, ← h₁]; assumption, fun h => by rwa [h₁, h₂]⟩⟩
 
 theorem OneOneReducible.to_many_one {α β} [Primcodable α] [Primcodable β] {p : α → Prop}
     {q : β → Prop} : p ≤₁ q → p ≤₀ q
@@ -98,11 +106,15 @@ theorem OneOneReducible.of_equiv_symm {α β} [Primcodable α] [Primcodable β] 
     (q : β → Prop) (h : Computable e.symm) : q ≤₁ (q ∘ e) := by
   convert OneOneReducible.of_equiv _ h; funext; simp
 
-theorem reflexive_oneOneReducible {α} [Primcodable α] : Reflexive (@OneOneReducible α α _ _) :=
-  oneOneReducible_refl
+instance stdRefl_oneOneReducible {α} [Primcodable α] : Std.Refl (@OneOneReducible α α _ _) where
+  refl := oneOneReducible_refl
 
-theorem transitive_oneOneReducible {α} [Primcodable α] : Transitive (@OneOneReducible α α _ _) :=
-  fun _ _ _ => OneOneReducible.trans
+@[deprecated (since := "2026-03-27")] alias reflexive_oneOneReducible := stdRefl_oneOneReducible
+
+instance isTrans_oneOneReducible {α} [Primcodable α] : IsTrans (α → Prop) OneOneReducible where
+  trans _ _ _ := OneOneReducible.trans
+
+@[deprecated (since := "2026-02-21")] alias transitive_oneOneReducible := isTrans_oneOneReducible
 
 namespace ComputablePred
 
@@ -245,17 +257,17 @@ open Nat.Primrec
 
 theorem OneOneReducible.disjoin_left {α β} [Primcodable α] [Primcodable β] {p : α → Prop}
     {q : β → Prop} : p ≤₁ p ⊕' q :=
-  ⟨Sum.inl, Computable.sum_inl, fun _ _ => Sum.inl.inj_iff.1, fun _ => Iff.rfl⟩
+  ⟨Sum.inl, Computable.sumInl, fun _ _ => Sum.inl.inj_iff.1, fun _ => Iff.rfl⟩
 
 theorem OneOneReducible.disjoin_right {α β} [Primcodable α] [Primcodable β] {p : α → Prop}
     {q : β → Prop} : q ≤₁ p ⊕' q :=
-  ⟨Sum.inr, Computable.sum_inr, fun _ _ => Sum.inr.inj_iff.1, fun _ => Iff.rfl⟩
+  ⟨Sum.inr, Computable.sumInr, fun _ _ => Sum.inr.inj_iff.1, fun _ => Iff.rfl⟩
 
 theorem disjoin_manyOneReducible {α β γ} [Primcodable α] [Primcodable β] [Primcodable γ]
     {p : α → Prop} {q : β → Prop} {r : γ → Prop} : p ≤₀ r → q ≤₀ r → (p ⊕' q) ≤₀ r
   | ⟨f, c₁, h₁⟩, ⟨g, c₂, h₂⟩ =>
     ⟨Sum.elim f g,
-      Computable.id.sum_casesOn (c₁.comp Computable.snd).to₂ (c₂.comp Computable.snd).to₂,
+      Computable.id.sumCasesOn (c₁.comp Computable.snd).to₂ (c₂.comp Computable.snd).to₂,
       fun x => by cases x <;> [apply h₁; apply h₂]⟩
 
 theorem disjoin_le {α β γ} [Primcodable α] [Primcodable β] [Primcodable γ] {p : α → Prop}
@@ -336,6 +348,7 @@ protected theorem liftOn₂_eq {φ} (p q : Set ℕ) (f : Set ℕ → Set ℕ →
     (of p).liftOn₂ (of q) f h = f p q :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem of_eq_of {p : α → Prop} {q : β → Prop} : of p = of q ↔ ManyOneEquiv p q := by
   rw [of, of, Quotient.eq'']
@@ -356,23 +369,27 @@ instance instLE : LE ManyOneDegree :=
 theorem of_le_of {p : α → Prop} {q : β → Prop} : of p ≤ of q ↔ p ≤₀ q :=
   manyOneReducible_toNat_toNat
 
+set_option backward.privateInPublic true in
 private theorem le_refl (d : ManyOneDegree) : d ≤ d := by
   induction d using ManyOneDegree.ind_on; simp; rfl
 
+set_option backward.privateInPublic true in
 private theorem le_antisymm {d₁ d₂ : ManyOneDegree} : d₁ ≤ d₂ → d₂ ≤ d₁ → d₁ = d₂ := by
   induction d₁ using ManyOneDegree.ind_on
   induction d₂ using ManyOneDegree.ind_on
   intro hp hq
   simp_all only [ManyOneEquiv, of_le_of, of_eq_of, true_and]
 
+set_option backward.privateInPublic true in
 private theorem le_trans {d₁ d₂ d₃ : ManyOneDegree} : d₁ ≤ d₂ → d₂ ≤ d₃ → d₁ ≤ d₃ := by
   induction d₁ using ManyOneDegree.ind_on
   induction d₂ using ManyOneDegree.ind_on
   induction d₃ using ManyOneDegree.ind_on
   apply ManyOneReducible.trans
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance instPartialOrder : PartialOrder ManyOneDegree where
-  le := (· ≤ ·)
   le_refl := le_refl
   le_trans _ _ _ := le_trans
   le_antisymm _ _ := le_antisymm

@@ -3,19 +3,26 @@ Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson
 -/
-import Mathlib.Computability.Language
-import Mathlib.Tactic.AdaptationNote
+module
+
+public import Mathlib.Computability.Language
+public import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Regular Expressions
 
 This file contains the formal definition for regular expressions and basic lemmas. Note these are
-regular expressions in terms of formal language theory. Note this is different to regex's used in
+regular expressions in terms of formal language theory. Note this is different to regexes used in
 computer science such as the POSIX standard.
 
 ## TODO
 
-* Show that this regular expressions and DFA/NFA's are equivalent. -/
+Currently, we do not show that regular expressions and DFAs/NFAs are equivalent.
+Multiple competing PRs towards that goal are in review.
+See https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Regular.20languages.3A.20the.20review.20queue
+-/
+
+@[expose] public section
 
 open List Set
 
@@ -28,13 +35,13 @@ variable {α β γ : Type*}
 -- Disable generation of unneeded lemmas which the simpNF linter would complain about.
 set_option genSizeOfSpec false in
 set_option genInjectivity false in
-/-- This is the definition of regular expressions. The names used here is to mirror the definition
-of a Kleene algebra (https://en.wikipedia.org/wiki/Kleene_algebra).
+/-- This is the definition of regular expressions. The names used here are meant to mirror the
+[definition of a Kleene algebra](https://en.wikipedia.org/wiki/Kleene_algebra).
 * `0` (`zero`) matches nothing
 * `1` (`epsilon`) matches only the empty string
 * `char a` matches only the string 'a'
-* `star P` matches any finite concatenation of strings which match `P`
-* `P + Q` (`plus P Q`) matches anything which match `P` or `Q`
+* `star P` matches any finite concatenation of strings that match `P`
+* `P + Q` (`plus P Q`) matches anything that matches `P` or `Q`
 * `P * Q` (`comp P Q`) matches `x ++ y` if `x` matches `P` and `y` matches `Q`
 -/
 inductive RegularExpression (α : Type u) : Type u
@@ -83,10 +90,11 @@ theorem plus_def (P Q : RegularExpression α) : plus P Q = P + Q :=
 theorem comp_def (P Q : RegularExpression α) : comp P Q = P * Q :=
   rfl
 
--- This was renamed to `matches'` during the port of Lean 4 as `matches` is a reserved word.
-/-- `matches' P` provides a language which contains all strings that `P` matches -/
--- Porting note: was '@[simp] but removed based on
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/simpNF.20issues.20in.20Computability.2ERegularExpressions.20!4.232306/near/328355362
+/-- `matches' P` provides a language which contains all strings that `P` matches.
+
+Not named `matches` since that is a reserved word.
+-/
+@[simp]
 def matches' : RegularExpression α → Language α
   | 0 => 0
   | 1 => 1
@@ -95,23 +103,18 @@ def matches' : RegularExpression α → Language α
   | P * Q => P.matches' * Q.matches'
   | star P => P.matches'∗
 
-@[simp]
 theorem matches'_zero : (0 : RegularExpression α).matches' = 0 :=
   rfl
 
-@[simp]
 theorem matches'_epsilon : (1 : RegularExpression α).matches' = 1 :=
   rfl
 
-@[simp]
 theorem matches'_char (a : α) : (char a).matches' = {[a]} :=
   rfl
 
-@[simp]
 theorem matches'_add (P Q : RegularExpression α) : (P + Q).matches' = P.matches' + Q.matches' :=
   rfl
 
-@[simp]
 theorem matches'_mul (P Q : RegularExpression α) : (P * Q).matches' = P.matches' * Q.matches' :=
   rfl
 
@@ -122,7 +125,6 @@ theorem matches'_pow (P : RegularExpression α) : ∀ n : ℕ, (P ^ n).matches' 
       (congrFun (congrArg HMul.hMul (matches'_pow P n)) (matches' P))
       (pow_succ _ n).symm
 
-@[simp]
 theorem matches'_star (P : RegularExpression α) : P.star.matches' = P.matches'∗ :=
   rfl
 
@@ -186,43 +188,40 @@ theorem one_rmatch_iff (x : List α) : rmatch 1 x ↔ x = [] := by
   induction x <;> simp [rmatch, matchEpsilon, *]
 
 theorem char_rmatch_iff (a : α) (x : List α) : rmatch (char a) x ↔ x = [a] := by
-  cases' x with _ x
+  rcases x with - | ⟨_, x⟩
   · exact of_decide_eq_true rfl
-  cases' x with head tail
-  · rw [rmatch, deriv]
-    split_ifs
-    · tauto
-    · simp [List.singleton_inj]; tauto
-  · rw [rmatch, rmatch, deriv]
-    split_ifs with h
-    · simp only [deriv_one, zero_rmatch, cons.injEq, and_false, reduceCtorEq]
-    · simp only [deriv_zero, zero_rmatch, cons.injEq, and_false, reduceCtorEq]
+  · rcases x with - | ⟨head, tail⟩
+    · rw [rmatch, deriv, List.singleton_inj]
+      split <;> tauto
+    · rw [rmatch, rmatch, deriv, cons.injEq]
+      split
+      · simp_rw [deriv_one, zero_rmatch, reduceCtorEq, and_false]
+      · simp_rw [deriv_zero, zero_rmatch, reduceCtorEq, and_false]
 
 theorem add_rmatch_iff (P Q : RegularExpression α) (x : List α) :
     (P + Q).rmatch x ↔ P.rmatch x ∨ Q.rmatch x := by
   induction x generalizing P Q with
   | nil => simp only [rmatch, matchEpsilon, Bool.or_eq_true_iff]
   | cons _ _ ih =>
-    repeat rw [rmatch]
-    rw [deriv_add]
+    rw [rmatch, deriv_add]
     exact ih _ _
 
 theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
     (P * Q).rmatch x ↔ ∃ t u : List α, x = t ++ u ∧ P.rmatch t ∧ Q.rmatch u := by
-  induction' x with a x ih generalizing P Q
-  · rw [rmatch]; simp only [matchEpsilon]
+  induction x generalizing P Q with
+  | nil =>
+    rw [rmatch]; simp only [matchEpsilon]
     constructor
     · intro h
       refine ⟨[], [], rfl, ?_⟩
       rw [rmatch, rmatch]
       rwa [Bool.and_eq_true_iff] at h
     · rintro ⟨t, u, h₁, h₂⟩
-      cases' List.append_eq_nil_iff.1 h₁.symm with ht hu
-      subst ht
-      subst hu
+      obtain ⟨rfl, rfl⟩ := List.append_eq_nil_iff.1 h₁.symm
       repeat rw [rmatch] at h₂
       simp [h₂]
-  · rw [rmatch]; simp only [deriv]
+  | cons a x ih =>
+    rw [rmatch]; simp only [deriv]
     split_ifs with hepsilon
     · rw [add_rmatch_iff, ih]
       constructor
@@ -230,7 +229,7 @@ theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
         · exact ⟨a :: t, u, by tauto⟩
         · exact ⟨[], a :: x, rfl, hepsilon, h⟩
       · rintro ⟨t, u, h, hP, hQ⟩
-        cases' t with b t
+        rcases t with - | ⟨b, t⟩
         · right
           rw [List.nil_append] at h
           rw [← h] at hQ
@@ -244,7 +243,7 @@ theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
     · rw [ih]
       constructor <;> rintro ⟨t, u, h, hP, hQ⟩
       · exact ⟨a :: t, u, by tauto⟩
-      · cases' t with b t
+      · rcases t with - | ⟨b, t⟩
         · contradiction
         · rw [List.cons_append, List.cons_eq_cons] at h
           refine ⟨t, u, h.2, ?_, hQ⟩
@@ -259,14 +258,14 @@ theorem star_rmatch_iff (P : RegularExpression α) :
     have IH := fun t (_h : List.length t < List.length x) => star_rmatch_iff P t
     clear star_rmatch_iff
     constructor
-    · cases' x with a x
+    · rcases x with - | ⟨a, x⟩
       · intro _h
         use []; dsimp; tauto
       · rw [rmatch, deriv, mul_rmatch_iff]
         rintro ⟨t, u, hs, ht, hu⟩
         have hwf : u.length < (List.cons a x).length := by
           rw [hs, List.length_cons, List.length_append]
-          omega
+          lia
         rw [IH _ hwf] at hu
         rcases hu with ⟨S', hsum, helem⟩
         use (a :: t) :: S'
@@ -279,28 +278,21 @@ theorem star_rmatch_iff (P : RegularExpression α) :
             exact ht
           | tail _ ht' => exact helem t' ht'
     · rintro ⟨S, hsum, helem⟩
-      cases' x with a x
+      rcases x with - | ⟨a, x⟩
       · rfl
       · rw [rmatch, deriv, mul_rmatch_iff]
-        cases' S with t' U
+        rcases S with - | ⟨t', U⟩
         · exact ⟨[], [], by tauto⟩
-        · cases' t' with b t
+        · obtain - | ⟨b, t⟩ := t'
           · simp only [forall_eq_or_imp, List.mem_cons] at helem
-            simp only [eq_self_iff_true, not_true, Ne, false_and] at helem
-          simp only [List.flatten, List.cons_append, List.cons_eq_cons] at hsum
+            simp only [not_true, Ne, false_and] at helem
+          simp only [List.flatten_cons, List.cons_append, List.cons_eq_cons] at hsum
           refine ⟨t, U.flatten, hsum.2, ?_, ?_⟩
           · specialize helem (b :: t) (by simp)
             rw [rmatch] at helem
             convert helem.2
             exact hsum.1
-          · have hwf : U.flatten.length < (List.cons a x).length := by
-              rw [hsum.1, hsum.2]
-              simp only [List.length_append, List.length_flatten, List.length]
-              omega
-            rw [IH _ hwf]
-            refine ⟨U, rfl, fun t h => helem t ?_⟩
-            right
-            assumption
+          · grind
   termination_by t => (P, t.length)
 
 @[simp]
@@ -359,9 +351,9 @@ theorem map_map (g : β → γ) (f : α → β) : ∀ P : RegularExpression α, 
   | 0 => rfl
   | 1 => rfl
   | char _ => rfl
-  | R + S => by simp only [map, Function.comp_apply, map_map]
-  | R * S => by simp only [map, Function.comp_apply, map_map]
-  | star R => by simp only [map, Function.comp_apply, map_map]
+  | R + S => by simp only [map, map_map]
+  | R * S => by simp only [map, map_map]
+  | star R => by simp only [map, map_map]
 
 /-- The language of the map is the map of the language. -/
 @[simp]

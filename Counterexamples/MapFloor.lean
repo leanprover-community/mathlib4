@@ -42,11 +42,9 @@ noncomputable section
 
 open Function Int Polynomial
 
-open scoped Polynomial
-
-/-- The integers with infinitesimals adjoined. -/
-def IntWithEpsilon :=
-  ℤ[X] deriving Nontrivial
+/-- The integers with infinitesimals adjoined. Higher powers of `ε` are smaller than lower
+powers. -/
+abbrev IntWithEpsilon := ℤ[X]
 
 local notation "ℤ[ε]" => IntWithEpsilon
 
@@ -54,21 +52,12 @@ local notation "ε" => (X : ℤ[ε])
 
 namespace IntWithEpsilon
 
-instance nontrivial : Nontrivial IntWithEpsilon := inferInstance
-
--- Porting note: `inhabited` and `commRing` were `deriving` instances in mathlib3
-instance commRing : CommRing IntWithEpsilon := Polynomial.commRing
-
-instance inhabited : Inhabited IntWithEpsilon := ⟨69⟩
-
 instance linearOrder : LinearOrder ℤ[ε] :=
   LinearOrder.lift' (toLex ∘ coeff) coeff_injective
 
-instance orderedAddCommGroup : OrderedAddCommGroup ℤ[ε] := by
-  refine (toLex.injective.comp coeff_injective).orderedAddCommGroup _ ?_ ?_ ?_ ?_ ?_ ?_ <;>
-  (first | rfl | intros) <;> funext <;>
-  (simp only [comp_apply, Pi.toLex_apply, coeff_add, coeff_neg, coeff_sub,
-    ← nsmul_eq_mul, ← zsmul_eq_mul]; rfl)
+instance isOrderedAddMonoid : IsOrderedAddMonoid ℤ[ε] :=
+  Function.Injective.isOrderedAddMonoid
+    (toLex ∘ coeff) (fun _ _ => funext fun _ => coeff_add _ _ _) .rfl
 
 theorem pos_iff {p : ℤ[ε]} : 0 < p ↔ 0 < p.trailingCoeff := by
   rw [trailingCoeff]
@@ -80,11 +69,11 @@ theorem pos_iff {p : ℤ[ε]} : 0 < p ↔ 0 < p.trailingCoeff := by
   exact (natTrailingDegree_le_of_ne_zero hn.2.ne').antisymm
     (le_natTrailingDegree (by rintro rfl; cases hn.2.false) fun m hm => (hn.1 _ hm).symm)
 
-instance : LinearOrderedCommRing ℤ[ε] :=
-  { IntWithEpsilon.linearOrder, IntWithEpsilon.commRing, IntWithEpsilon.orderedAddCommGroup,
-    IntWithEpsilon.nontrivial with
-    zero_le_one := Or.inr ⟨0, by simp⟩
-    mul_pos := fun p q => by simp_rw [pos_iff]; rw [trailingCoeff_mul]; exact mul_pos}
+instance : ZeroLEOneClass ℤ[ε] :=
+  { zero_le_one := Or.inr ⟨0, by simp⟩ }
+
+instance : IsStrictOrderedRing ℤ[X] :=
+  .of_mul_pos fun p q => by simp_rw [pos_iff]; rw [trailingCoeff_mul]; exact mul_pos
 
 instance : FloorRing ℤ[ε] :=
   FloorRing.ofFloor _ (fun p => if (p.coeff 0 : ℤ[ε]) ≤ p then p.coeff 0 else p.coeff 0 - 1)
@@ -94,15 +83,14 @@ instance : FloorRing ℤ[ε] :=
     · split_ifs with h
       · rintro ⟨_ | n, hn⟩
         · apply (sub_one_lt _).trans _
-          simp at hn
-          rwa [intCast_coeff_zero] at hn
+          simp_all
         · dsimp at hn
-          simp [hn.1 _ n.zero_lt_succ]
+          simp only [hn.1 _ n.zero_lt_succ]
           rw [intCast_coeff_zero]; simp
       · exact fun h' => cast_lt.1 ((not_lt.1 h).trans_lt h')
     · split_ifs with h
       · exact fun h' => h.trans_le (cast_le.2 <| sub_one_lt_iff.1 h')
-      · exact fun h' => ⟨0, by simp; rwa [intCast_coeff_zero]⟩
+      · exact fun h' => ⟨0, by simp_all⟩
 
 /-- The ordered ring homomorphisms from `ℤ[ε]` to `ℤ` that "forgets" the `ε`s. -/
 def forgetEpsilons : ℤ[ε] →+*o ℤ where
@@ -113,7 +101,7 @@ def forgetEpsilons : ℤ[ε] →+*o ℤ where
   map_mul' := mul_coeff_zero
   monotone' := monotone_iff_forall_lt.2 (by
     rintro p q ⟨n, hn⟩
-    cases' n with n
+    rcases n with - | n
     · exact hn.2.le
     · exact (hn.1 _ n.zero_lt_succ).le)
 

@@ -3,8 +3,10 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Algebra.Group.Support
-import Mathlib.Data.Set.Pointwise.SMul
+module
+
+public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
+public import Mathlib.Algebra.Notation.Support
 
 /-!
 # Support of a function composed with a scalar action
@@ -12,8 +14,10 @@ import Mathlib.Data.Set.Pointwise.SMul
 We show that the support of `x ↦ f (c⁻¹ • x)` is equal to `c • support f`.
 -/
 
+public section
 
-open Pointwise
+
+open scoped Pointwise
 
 open Function Set
 
@@ -33,8 +37,6 @@ theorem support_comp_inv_smul [Zero γ] (c : α) (f : β → γ) :
   ext x
   simp only [mem_smul_set_iff_inv_smul_mem, mem_support]
 
-attribute [to_additive existing support_comp_inv_smul] mulSupport_comp_inv_smul
-
 end Group
 
 section GroupWithZero
@@ -52,7 +54,5 @@ theorem support_comp_inv_smul₀ [Zero γ] {c : α} (hc : c ≠ 0) (f : β → �
     (support fun x ↦ f (c⁻¹ • x)) = c • support f := by
   ext x
   simp only [mem_smul_set_iff_inv_smul_mem₀ hc, mem_support]
-
-attribute [to_additive existing support_comp_inv_smul₀] mulSupport_comp_inv_smul₀
 
 end GroupWithZero

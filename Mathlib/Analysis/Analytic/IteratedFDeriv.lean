@@ -3,9 +3,11 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Basic
-import Mathlib.Analysis.Calculus.ContDiff.CPolynomial
-import Mathlib.Data.Fintype.Perm
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Operations
+public import Mathlib.Analysis.Calculus.ContDiff.CPolynomial
+public import Mathlib.Data.Fintype.Perm
 
 /-!
 # The iterated derivative of an analytic function
@@ -43,6 +45,8 @@ is not complete). This makes it possible to avoid all completeness assumptions i
 statements. When needed, we give versions of some statements assuming completeness and dropping
 analyticity, for ease of use.
 -/
+
+@[expose] public section
 
 open scoped ENNReal Topology ContDiff
 open Equiv Set
@@ -123,24 +127,15 @@ lemma ContinuousMultilinearMap.iteratedFDeriv_comp_diagonal
   rw [← sum_comp (Equiv.embeddingEquivOfFinite (Fin n))]
   congr with σ
   congr with i
-  have A : ∃ y, σ y = i := by
-    have : Function.Bijective σ := (Fintype.bijective_iff_injective_and_card _).2 ⟨σ.injective, rfl⟩
-    exact this.surjective i
-  rcases A with ⟨y, rfl⟩
-  simp only [EmbeddingLike.apply_eq_iff_eq, exists_eq, ↓reduceDIte,
-    Function.Embedding.toEquivRange_symm_apply_self, ContinuousLinearMap.coe_pi',
-    ContinuousLinearMap.coe_id', id_eq, g]
-  congr 1
-  symm
-  simp [coe_fn_mk, inv_apply, Perm.inv_def,
-    ofBijective_symm_apply_apply, Function.Embedding.equivOfFiniteSelfEmbedding]
+  obtain ⟨y, rfl⟩ := σ.equivOfFiniteSelfEmbedding.surjective i
+  simp [Function.Embedding.equivOfFiniteSelfEmbedding, g]
 
 private lemma HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_sum_of_subset
     (h : HasFPowerSeriesWithinOnBall f p s x r) (h' : AnalyticOn 𝕜 f s)
     (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s)
-    {n : ℕ} (v : Fin n → E) (h's : s ⊆ EMetric.ball x r) :
+    {n : ℕ} (v : Fin n → E) (h's : s ⊆ Metric.eball x r) :
     iteratedFDerivWithin 𝕜 n f s x v = ∑ σ : Perm (Fin n), p n (fun i ↦ v (σ i)) := by
-  have I : insert x s ∩ EMetric.ball x r = s := by
+  have I : insert x s ∩ Metric.eball x r = s := by
     rw [Set.insert_eq_of_mem hx]
     exact Set.inter_eq_left.2 h's
   have fcont : ContDiffOn 𝕜 (↑n) f s := by
@@ -160,7 +155,7 @@ private lemma HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_sum_of_subset
       · intro i hi h'i
         simp [q, h'i.symm]
     · intro m hm
-      have : n ≠ m := by omega
+      have : n ≠ m := by lia
       simp [q, this]
   have B : HasFPowerSeriesWithinOnBall g q s x r :=
     A.toHasFPowerSeriesOnBall.hasFPowerSeriesWithinOnBall
@@ -168,8 +163,8 @@ private lemma HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_sum_of_subset
       iteratedFDerivWithin 𝕜 n g s x + iteratedFDerivWithin 𝕜 n (f - g) s x := by
     have : f = g + (f - g) := by abel
     nth_rewrite 1 [this]
-    rw [iteratedFDerivWithin_add_apply (gcont.of_le le_top).contDiffOn
-      (by exact fcont.sub (gcont.of_le le_top).contDiffOn) hs hx]
+    rw [iteratedFDerivWithin_add_apply (gcont.of_le le_top).contDiffWithinAt
+      (by exact (fcont _ hx).sub (gcont.of_le le_top).contDiffWithinAt) hs hx]
   have J2 : iteratedFDerivWithin 𝕜 n (f - g) s x = 0 := by
     apply (h.sub B).iteratedFDerivWithin_eq_zero (h'.sub ?_) hs hx
     · simp [q]
@@ -184,25 +179,25 @@ private lemma HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_sum_of_subset
 
 /-- If a function has a power series in a ball, then its `n`-th iterated derivative is given by
 `(v₁, ..., vₙ) ↦ ∑ pₙ (v_{σ (1)}, ..., v_{σ (n)})` where the sum is over all
-permutations of `{1, ..., n}`.-/
+permutations of `{1, ..., n}`. -/
 theorem HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_sum
     (h : HasFPowerSeriesWithinOnBall f p s x r) (h' : AnalyticOn 𝕜 f s)
     (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) {n : ℕ} (v : Fin n → E) :
     iteratedFDerivWithin 𝕜 n f s x v = ∑ σ : Perm (Fin n), p n (fun i ↦ v (σ i)) := by
   have : iteratedFDerivWithin 𝕜 n f s x
-      = iteratedFDerivWithin 𝕜 n f (s ∩ EMetric.ball x r) x :=
-    (iteratedFDerivWithin_inter_open EMetric.isOpen_ball (EMetric.mem_ball_self h.r_pos)).symm
+      = iteratedFDerivWithin 𝕜 n f (s ∩ Metric.eball x r) x :=
+    (iteratedFDerivWithin_inter_open Metric.isOpen_eball (Metric.mem_eball_self h.r_pos)).symm
   rw [this]
   apply HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_sum_of_subset
   · exact h.mono inter_subset_left
   · exact h'.mono inter_subset_left
-  · exact hs.inter EMetric.isOpen_ball
-  · exact ⟨hx, EMetric.mem_ball_self h.r_pos⟩
+  · exact hs.inter Metric.isOpen_eball
+  · exact ⟨hx, Metric.mem_eball_self h.r_pos⟩
   · exact inter_subset_right
 
 /-- If a function has a power series in a ball, then its `n`-th iterated derivative is given by
 `(v₁, ..., vₙ) ↦ ∑ pₙ (v_{σ (1)}, ..., v_{σ (n)})` where the sum is over all
-permutations of `{1, ..., n}`.-/
+permutations of `{1, ..., n}`. -/
 theorem HasFPowerSeriesOnBall.iteratedFDeriv_eq_sum
     (h : HasFPowerSeriesOnBall f p x r) (h' : AnalyticOn 𝕜 f univ) {n : ℕ} (v : Fin n → E) :
     iteratedFDeriv 𝕜 n f x v = ∑ σ : Perm (Fin n), p n (fun i ↦ v (σ i)) := by
@@ -211,26 +206,26 @@ theorem HasFPowerSeriesOnBall.iteratedFDeriv_eq_sum
 
 /-- If a function has a power series in a ball, then its `n`-th iterated derivative is given by
 `(v₁, ..., vₙ) ↦ ∑ pₙ (v_{σ (1)}, ..., v_{σ (n)})` where the sum is over all
-permutations of `{1, ..., n}`.-/
+permutations of `{1, ..., n}`. -/
 theorem HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_sum_of_completeSpace [CompleteSpace F]
     (h : HasFPowerSeriesWithinOnBall f p s x r)
     (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) {n : ℕ} (v : Fin n → E) :
     iteratedFDerivWithin 𝕜 n f s x v = ∑ σ : Perm (Fin n), p n (fun i ↦ v (σ i)) := by
   have : iteratedFDerivWithin 𝕜 n f s x
-      = iteratedFDerivWithin 𝕜 n f (s ∩ EMetric.ball x r) x :=
-    (iteratedFDerivWithin_inter_open EMetric.isOpen_ball (EMetric.mem_ball_self h.r_pos)).symm
+      = iteratedFDerivWithin 𝕜 n f (s ∩ Metric.eball x r) x :=
+    (iteratedFDerivWithin_inter_open Metric.isOpen_eball (Metric.mem_eball_self h.r_pos)).symm
   rw [this]
   apply HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_sum_of_subset
   · exact h.mono inter_subset_left
   · apply h.analyticOn.mono
     rw [insert_eq_of_mem hx]
-  · exact hs.inter EMetric.isOpen_ball
-  · exact ⟨hx, EMetric.mem_ball_self h.r_pos⟩
+  · exact hs.inter Metric.isOpen_eball
+  · exact ⟨hx, Metric.mem_eball_self h.r_pos⟩
   · exact inter_subset_right
 
 /-- If a function has a power series in a ball, then its `n`-th iterated derivative is given by
 `(v₁, ..., vₙ) ↦ ∑ pₙ (v_{σ (1)}, ..., v_{σ (n)})` where the sum is over all
-permutations of `{1, ..., n}`.-/
+permutations of `{1, ..., n}`. -/
 theorem HasFPowerSeriesOnBall.iteratedFDeriv_eq_sum_of_completeSpace [CompleteSpace F]
     (h : HasFPowerSeriesOnBall f p x r) {n : ℕ} (v : Fin n → E) :
     iteratedFDeriv 𝕜 n f x v = ∑ σ : Perm (Fin n), p n (fun i ↦ v (σ i)) := by
@@ -247,6 +242,12 @@ theorem AnalyticOn.iteratedFDerivWithin_comp_perm
   conv_rhs => rw [← Equiv.sum_comp (Equiv.mulLeft σ)]
   simp only [coe_mulLeft, Perm.coe_mul, Function.comp_apply]
 
+theorem AnalyticOn.domDomCongr_iteratedFDerivWithin
+    (h : AnalyticOn 𝕜 f s) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) {n : ℕ} (σ : Perm (Fin n)) :
+    (iteratedFDerivWithin 𝕜 n f s x).domDomCongr σ = iteratedFDerivWithin 𝕜 n f s x := by
+  ext
+  exact h.iteratedFDerivWithin_comp_perm hs hx _ _
+
 /-- The `n`-th iterated derivative of an analytic function on a set is symmetric. -/
 theorem ContDiffWithinAt.iteratedFDerivWithin_comp_perm
     (h : ContDiffWithinAt 𝕜 ω f s x) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) {n : ℕ} (v : Fin n → E)
@@ -259,6 +260,13 @@ theorem ContDiffWithinAt.iteratedFDerivWithin_comp_perm
   rw [← this]
   exact AnalyticOn.iteratedFDerivWithin_comp_perm hu.analyticOn (hs.inter u_open) ⟨hx, xu⟩ _ _
 
+theorem ContDiffWithinAt.domDomCongr_iteratedFDerivWithin
+    (h : ContDiffWithinAt 𝕜 ω f s x) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) {n : ℕ}
+    (σ : Perm (Fin n)) :
+    (iteratedFDerivWithin 𝕜 n f s x).domDomCongr σ = iteratedFDerivWithin 𝕜 n f s x := by
+  ext
+  exact h.iteratedFDerivWithin_comp_perm hs hx _ _
+
 /-- The `n`-th iterated derivative of an analytic function is symmetric. -/
 theorem AnalyticOn.iteratedFDeriv_comp_perm
     (h : AnalyticOn 𝕜 f univ) {n : ℕ} (v : Fin n → E) (σ : Perm (Fin n)) :
@@ -266,9 +274,19 @@ theorem AnalyticOn.iteratedFDeriv_comp_perm
   rw [← iteratedFDerivWithin_univ]
   exact h.iteratedFDerivWithin_comp_perm uniqueDiffOn_univ (mem_univ x) _ _
 
+theorem AnalyticOn.domDomCongr_iteratedFDeriv (h : AnalyticOn 𝕜 f univ) {n : ℕ} (σ : Perm (Fin n)) :
+    (iteratedFDeriv 𝕜 n f x).domDomCongr σ = iteratedFDeriv 𝕜 n f x := by
+  rw [← iteratedFDerivWithin_univ]
+  exact h.domDomCongr_iteratedFDerivWithin uniqueDiffOn_univ (mem_univ x) _
+
 /-- The `n`-th iterated derivative of an analytic function is symmetric. -/
 theorem ContDiffAt.iteratedFDeriv_comp_perm
     (h : ContDiffAt 𝕜 ω f x) {n : ℕ} (v : Fin n → E) (σ : Perm (Fin n)) :
     iteratedFDeriv 𝕜 n f x (v ∘ σ) = iteratedFDeriv 𝕜 n f x v := by
   rw [← iteratedFDerivWithin_univ]
   exact h.iteratedFDerivWithin_comp_perm uniqueDiffOn_univ (mem_univ x) _ _
+
+theorem ContDiffAt.domDomCongr_iteratedFDeriv (h : ContDiffAt 𝕜 ω f x) {n : ℕ} (σ : Perm (Fin n)) :
+    (iteratedFDeriv 𝕜 n f x).domDomCongr σ = iteratedFDeriv 𝕜 n f x := by
+  rw [← iteratedFDerivWithin_univ]
+  exact h.domDomCongr_iteratedFDerivWithin uniqueDiffOn_univ (mem_univ x) _

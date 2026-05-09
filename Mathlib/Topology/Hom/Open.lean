@@ -3,7 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Topology.ContinuousMap.Basic
+module
+
+public import Mathlib.Topology.ContinuousMap.Basic
 
 /-!
 # Continuous open maps
@@ -21,6 +23,8 @@ be satisfied by itself and all stricter types.
 
 * `ContinuousOpenMapClass`
 -/
+
+@[expose] public section
 
 
 open Function
@@ -40,7 +44,7 @@ section
 
 You should extend this class when you extend `ContinuousOpenMap`. -/
 class ContinuousOpenMapClass (F : Type*) (α β : outParam Type*) [TopologicalSpace α]
-  [TopologicalSpace β] [FunLike F α β] extends ContinuousMapClass F α β : Prop where
+  [TopologicalSpace β] [FunLike F α β] : Prop extends ContinuousMapClass F α β where
   map_open (f : F) : IsOpenMap f
 
 end

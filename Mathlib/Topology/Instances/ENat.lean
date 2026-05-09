@@ -3,14 +3,19 @@ Copyright (c) 2022 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Data.ENat.Basic
-import Mathlib.Topology.Algebra.Monoid
-import Mathlib.Topology.Instances.Discrete
-import Mathlib.Order.Interval.Set.WithBotTop
+module
+
+public import Mathlib.Data.ENat.Basic
+public import Mathlib.Topology.Instances.Discrete
+public import Mathlib.Order.Interval.Set.WithBotTop
+public import Mathlib.Order.Filter.Pointwise
+public import Mathlib.Topology.Algebra.Monoid.Defs
 
 /-!
 # Topology on extended natural numbers
 -/
+
+public section
 
 open Filter Set Topology
 
@@ -32,14 +37,8 @@ instance : OrderTopology ℕ∞ := ⟨rfl⟩
 theorem isEmbedding_natCast : IsEmbedding ((↑) : ℕ → ℕ∞) :=
   Nat.strictMono_cast.isEmbedding_of_ordConnected <| range_natCast ▸ ordConnected_Iio
 
-@[deprecated (since := "2024-10-26")]
-alias embedding_natCast := isEmbedding_natCast
-
 theorem isOpenEmbedding_natCast : IsOpenEmbedding ((↑) : ℕ → ℕ∞) :=
   ⟨isEmbedding_natCast, range_natCast ▸ isOpen_Iio⟩
-
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_natCast := isOpenEmbedding_natCast
 
 theorem nhds_natCast (n : ℕ) : 𝓝 (n : ℕ∞) = pure (n : ℕ∞) := by
   simp [← isOpenEmbedding_natCast.map_nhds_eq]
@@ -60,8 +59,8 @@ theorem mem_nhds_natCast_iff (n : ℕ) {s : Set ℕ∞} : s ∈ 𝓝 (n : ℕ∞
 
 theorem tendsto_nhds_top_iff_natCast_lt {α : Type*} {l : Filter α} {f : α → ℕ∞} :
     Tendsto f l (𝓝 ⊤) ↔ ∀ n : ℕ, ∀ᶠ a in l, n < f a := by
-  simp_rw [nhds_top_order, lt_top_iff_ne_top, tendsto_iInf, tendsto_principal]
-  exact Option.ball_ne_none
+  simp_rw [nhds_top_order, lt_top_iff_ne_top, tendsto_iInf, tendsto_principal, ENat.forall_ne_top,
+    mem_Ioi]
 
 instance : ContinuousAdd ℕ∞ := by
   refine ⟨continuous_iff_continuousAt.2 fun (a, b) ↦ ?_⟩
@@ -73,12 +72,12 @@ instance : ContinuousAdd ℕ∞ := by
 instance : ContinuousMul ℕ∞ where
   continuous_mul :=
     have key (a : ℕ∞) : ContinuousAt (· * ·).uncurry (a, ⊤) := by
-      rcases (zero_le a).eq_or_gt with rfl | ha
+      rcases eq_zero_or_pos a with rfl | ha
       · simp [ContinuousAt, nhds_prod_eq]
       · simp only [ContinuousAt, Function.uncurry, mul_top ha.ne']
         refine tendsto_nhds_top_mono continuousAt_snd ?_
         filter_upwards [continuousAt_fst (lt_mem_nhds ha)] with (x, y) (hx : 0 < x)
-        exact le_mul_of_one_le_left (zero_le y) (Order.one_le_iff_pos.2 hx)
+        exact le_mul_of_one_le_left' (Order.one_le_iff_pos.2 hx)
     continuous_iff_continuousAt.2 <| Prod.forall.2 fun
       | (a : ℕ∞), ⊤ => key a
       | ⊤, (b : ℕ∞) =>
@@ -105,7 +104,7 @@ end ENat
 theorem Filter.Tendsto.enatSub {α : Type*} {l : Filter α} {f g : α → ℕ∞} {a b : ℕ∞}
     (hf : Tendsto f l (𝓝 a)) (hg : Tendsto g l (𝓝 b)) (h : a ≠ ⊤ ∨ b ≠ ⊤) :
     Tendsto (fun x ↦ f x - g x) l (𝓝 (a - b)) :=
-  (ENat.continuousAt_sub h).tendsto.comp (hf.prod_mk_nhds hg)
+  (ENat.continuousAt_sub h).tendsto.comp (hf.prodMk_nhds hg)
 
 variable {X : Type*} [TopologicalSpace X] {f g : X → ℕ∞} {s : Set X} {x : X}
 

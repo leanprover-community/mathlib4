@@ -3,7 +3,9 @@ Copyright (c) 2020 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Anatole Dedecker
 -/
-import Mathlib.Topology.Separation.Regular
+module
+
+public import Mathlib.Topology.Separation.Regular
 
 /-!
 # Extending a function from a subset
@@ -21,6 +23,8 @@ it suffices that `f` converges within `A` at any point of `B`, provided that
 `f` is a function to a T₃ space.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -78,5 +82,5 @@ theorem continuousOn_extendFrom [RegularSpace Y] {f : X → Y} {A B : Set X} (hB
 dense set `A` for any `x`, then `extendFrom A f` is continuous. -/
 theorem continuous_extendFrom [RegularSpace Y] {f : X → Y} {A : Set X} (hA : Dense A)
     (hf : ∀ x, ∃ y, Tendsto f (𝓝[A] x) (𝓝 y)) : Continuous (extendFrom A f) := by
-  rw [continuous_iff_continuousOn_univ]
+  rw [← continuousOn_univ]
   exact continuousOn_extendFrom (fun x _ ↦ hA x) (by simpa using hf)

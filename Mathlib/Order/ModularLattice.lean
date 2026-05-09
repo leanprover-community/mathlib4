@@ -3,9 +3,12 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Yaël Dillies
 -/
-import Mathlib.Order.Cover
-import Mathlib.Order.LatticeIntervals
-import Mathlib.Order.GaloisConnection.Defs
+module
+
+public import Mathlib.Data.Set.Monotone
+public import Mathlib.Order.Cover
+public import Mathlib.Order.LatticeIntervals
+public import Mathlib.Order.GaloisConnection.Defs
 
 /-!
 # Modular Lattices
@@ -43,13 +46,15 @@ We define (semi)modularity typeclasses as Prop-valued mixins.
 
 ## References
 
-* [Manfred Stern, *Semimodular lattices. {Theory} and applications*][stern2009]
-* [Wikipedia, *Modular Lattice*][https://en.wikipedia.org/wiki/Modular_lattice]
+* [Manfred Stern, *Semimodular lattices. Theory and applications*][stern2009]
+* [Wikipedia, Modular Lattice](https://en.wikipedia.org/wiki/Modular_lattice)
 
 ## TODO
 
 - Relate atoms and coatoms in modular lattices
 -/
+
+@[expose] public section
 
 
 open Set
@@ -64,6 +69,7 @@ class IsWeakUpperModularLattice (α : Type*) [Lattice α] : Prop where
 
 /-- A weakly lower modular lattice is a lattice where `a` and `b` cover `a ⊓ b` if `a ⊔ b` covers
 both `a` and `b`. -/
+@[to_dual existing]
 class IsWeakLowerModularLattice (α : Type*) [Lattice α] : Prop where
 /-- `a` and `b` cover `a ⊓ b` if `a ⊔ b` covers both `a` and `b` -/
   inf_covBy_of_covBy_covBy_sup {a b : α} : a ⋖ a ⊔ b → b ⋖ a ⊔ b → a ⊓ b ⋖ a
@@ -76,118 +82,92 @@ class IsUpperModularLattice (α : Type*) [Lattice α] : Prop where
 
 /-- A lower modular lattice is a lattice where `a` and `b` both cover `a ⊓ b` if `a ⊔ b` covers
 either `a` or `b`. -/
+@[to_dual existing]
 class IsLowerModularLattice (α : Type*) [Lattice α] : Prop where
 /-- `a` and `b` both cover `a ⊓ b` if `a ⊔ b` covers either `a` or `b` -/
   inf_covBy_of_covBy_sup {a b : α} : a ⋖ a ⊔ b → a ⊓ b ⋖ b
 
 /-- A modular lattice is one with a limited associativity between `⊓` and `⊔`. -/
 class IsModularLattice (α : Type*) [Lattice α] : Prop where
-/-- Whenever `x ≤ z`, then for any `y`, `(x ⊔ y) ⊓ z ≤ x ⊔ (y ⊓ z)`  -/
+/-- Whenever `x ≤ z`, then for any `y`, `(x ⊔ y) ⊓ z ≤ x ⊔ (y ⊓ z)` -/
   sup_inf_le_assoc_of_le : ∀ {x : α} (y : α) {z : α}, x ≤ z → (x ⊔ y) ⊓ z ≤ x ⊔ y ⊓ z
 
 section WeakUpperModular
 
 variable [Lattice α] [IsWeakUpperModularLattice α] {a b : α}
 
+@[to_dual inf_covBy_of_covBy_sup_of_covBy_sup_left]
 theorem covBy_sup_of_inf_covBy_of_inf_covBy_left : a ⊓ b ⋖ a → a ⊓ b ⋖ b → a ⋖ a ⊔ b :=
   IsWeakUpperModularLattice.covBy_sup_of_inf_covBy_covBy
 
+@[to_dual inf_covBy_of_covBy_sup_of_covBy_sup_right]
 theorem covBy_sup_of_inf_covBy_of_inf_covBy_right : a ⊓ b ⋖ a → a ⊓ b ⋖ b → b ⋖ a ⊔ b := by
   rw [inf_comm, sup_comm]
   exact fun ha hb => covBy_sup_of_inf_covBy_of_inf_covBy_left hb ha
 
+@[to_dual]
 alias CovBy.sup_of_inf_of_inf_left := covBy_sup_of_inf_covBy_of_inf_covBy_left
 
+@[to_dual]
 alias CovBy.sup_of_inf_of_inf_right := covBy_sup_of_inf_covBy_of_inf_covBy_right
 
+@[to_dual]
 instance : IsWeakLowerModularLattice (OrderDual α) :=
   ⟨fun ha hb => (ha.ofDual.sup_of_inf_of_inf_left hb.ofDual).toDual⟩
 
 end WeakUpperModular
 
-section WeakLowerModular
-
-variable [Lattice α] [IsWeakLowerModularLattice α] {a b : α}
-
-theorem inf_covBy_of_covBy_sup_of_covBy_sup_left : a ⋖ a ⊔ b → b ⋖ a ⊔ b → a ⊓ b ⋖ a :=
-  IsWeakLowerModularLattice.inf_covBy_of_covBy_covBy_sup
-
-theorem inf_covBy_of_covBy_sup_of_covBy_sup_right : a ⋖ a ⊔ b → b ⋖ a ⊔ b → a ⊓ b ⋖ b := by
-  rw [sup_comm, inf_comm]
-  exact fun ha hb => inf_covBy_of_covBy_sup_of_covBy_sup_left hb ha
-
-alias CovBy.inf_of_sup_of_sup_left := inf_covBy_of_covBy_sup_of_covBy_sup_left
-
-alias CovBy.inf_of_sup_of_sup_right := inf_covBy_of_covBy_sup_of_covBy_sup_right
-
-instance : IsWeakUpperModularLattice (OrderDual α) :=
-  ⟨fun ha hb => (ha.ofDual.inf_of_sup_of_sup_left hb.ofDual).toDual⟩
-
-end WeakLowerModular
-
 section UpperModular
 
 variable [Lattice α] [IsUpperModularLattice α] {a b : α}
 
+@[to_dual inf_covBy_of_covBy_sup_left]
 theorem covBy_sup_of_inf_covBy_left : a ⊓ b ⋖ a → b ⋖ a ⊔ b :=
   IsUpperModularLattice.covBy_sup_of_inf_covBy
 
+@[to_dual inf_covBy_of_covBy_sup_right]
 theorem covBy_sup_of_inf_covBy_right : a ⊓ b ⋖ b → a ⋖ a ⊔ b := by
   rw [sup_comm, inf_comm]
   exact covBy_sup_of_inf_covBy_left
 
+@[to_dual]
 alias CovBy.sup_of_inf_left := covBy_sup_of_inf_covBy_left
 
+@[to_dual]
 alias CovBy.sup_of_inf_right := covBy_sup_of_inf_covBy_right
 
 -- See note [lower instance priority]
+@[to_dual]
 instance (priority := 100) IsUpperModularLattice.to_isWeakUpperModularLattice :
     IsWeakUpperModularLattice α :=
   ⟨fun _ => CovBy.sup_of_inf_right⟩
 
+@[to_dual]
 instance : IsLowerModularLattice (OrderDual α) :=
   ⟨fun h => h.ofDual.sup_of_inf_left.toDual⟩
 
 end UpperModular
 
-section LowerModular
-
-variable [Lattice α] [IsLowerModularLattice α] {a b : α}
-
-theorem inf_covBy_of_covBy_sup_left : a ⋖ a ⊔ b → a ⊓ b ⋖ b :=
-  IsLowerModularLattice.inf_covBy_of_covBy_sup
-
-theorem inf_covBy_of_covBy_sup_right : b ⋖ a ⊔ b → a ⊓ b ⋖ a := by
-  rw [inf_comm, sup_comm]
-  exact inf_covBy_of_covBy_sup_left
-
-alias CovBy.inf_of_sup_left := inf_covBy_of_covBy_sup_left
-
-alias CovBy.inf_of_sup_right := inf_covBy_of_covBy_sup_right
-
--- See note [lower instance priority]
-instance (priority := 100) IsLowerModularLattice.to_isWeakLowerModularLattice :
-    IsWeakLowerModularLattice α :=
-  ⟨fun _ => CovBy.inf_of_sup_right⟩
-
-instance : IsUpperModularLattice (OrderDual α) :=
-  ⟨fun h => h.ofDual.inf_of_sup_left.toDual⟩
-
-end LowerModular
-
 section IsModularLattice
 
 variable [Lattice α] [IsModularLattice α]
 
+theorem sup_inf_le_assoc_of_le {x z : α} (y : α) : x ≤ z → (x ⊔ y) ⊓ z ≤ x ⊔ y ⊓ z :=
+  IsModularLattice.sup_inf_le_assoc_of_le y
+
+@[to_dual existing]
+theorem inf_sup_le_assoc_of_le {x z : α} (y : α) : z ≤ x → x ⊓ (y ⊔ z) ≤ x ⊓ y ⊔ z := by
+  simp_rw [inf_comm x, sup_comm _ z]
+  exact sup_inf_le_assoc_of_le y
+
+@[to_dual]
 theorem sup_inf_assoc_of_le {x : α} (y : α) {z : α} (h : x ≤ z) : (x ⊔ y) ⊓ z = x ⊔ y ⊓ z :=
-  le_antisymm (IsModularLattice.sup_inf_le_assoc_of_le y h)
+  le_antisymm (sup_inf_le_assoc_of_le y h)
     (le_inf (sup_le_sup_left inf_le_left _) (sup_le h inf_le_right))
 
+@[to_dual]
 theorem IsModularLattice.inf_sup_inf_assoc {x y z : α} : x ⊓ z ⊔ y ⊓ z = (x ⊓ z ⊔ y) ⊓ z :=
   (sup_inf_assoc_of_le y inf_le_right).symm
-
-theorem inf_sup_assoc_of_le {x : α} (y : α) {z : α} (h : z ≤ x) : x ⊓ y ⊔ z = x ⊓ (y ⊔ z) := by
-  rw [inf_comm, sup_comm, ← sup_inf_assoc_of_le y h, inf_comm, sup_comm]
 
 instance : IsModularLattice αᵒᵈ :=
   ⟨fun y z xz =>
@@ -198,44 +178,41 @@ instance : IsModularLattice αᵒᵈ :=
 
 variable {x y z : α}
 
-theorem IsModularLattice.sup_inf_sup_assoc : (x ⊔ z) ⊓ (y ⊔ z) = (x ⊔ z) ⊓ y ⊔ z :=
-  @IsModularLattice.inf_sup_inf_assoc αᵒᵈ _ _ _ _ _
-
+@[to_dual]
 theorem eq_of_le_of_inf_le_of_le_sup (hxy : x ≤ y) (hinf : y ⊓ z ≤ x) (hsup : y ≤ x ⊔ z) :
     x = y := by
   refine hxy.antisymm ?_
   rw [← inf_eq_right, sup_inf_assoc_of_le _ hxy] at hsup
   rwa [← hsup, sup_le_iff, and_iff_right rfl.le, inf_comm]
 
+@[to_dual]
 theorem eq_of_le_of_inf_le_of_sup_le (hxy : x ≤ y) (hinf : y ⊓ z ≤ x ⊓ z) (hsup : y ⊔ z ≤ x ⊔ z) :
     x = y :=
   eq_of_le_of_inf_le_of_le_sup hxy (hinf.trans inf_le_left) (le_sup_left.trans hsup)
 
-theorem sup_lt_sup_of_lt_of_inf_le_inf (hxy : x < y) (hinf : y ⊓ z ≤ x ⊓ z) : x ⊔ z < y ⊔ z :=
+@[to_dual]
+theorem sup_lt_sup_of_lt_of_inf_le_inf (hxy : y < x) (hinf : x ⊓ z ≤ y ⊓ z) : y ⊔ z < x ⊔ z :=
   lt_of_le_of_ne (sup_le_sup_right (le_of_lt hxy) _) fun hsup =>
     ne_of_lt hxy <| eq_of_le_of_inf_le_of_sup_le (le_of_lt hxy) hinf (le_of_eq hsup.symm)
 
-theorem inf_lt_inf_of_lt_of_sup_le_sup (hxy : x < y) (hinf : y ⊔ z ≤ x ⊔ z) : x ⊓ z < y ⊓ z :=
-  sup_lt_sup_of_lt_of_inf_le_inf (α := αᵒᵈ) hxy hinf
-
 theorem strictMono_inf_prod_sup : StrictMono fun x ↦ (x ⊓ z, x ⊔ z) := fun _x _y hxy ↦
   ⟨⟨inf_le_inf_right _ hxy.le, sup_le_sup_right hxy.le _⟩,
-    fun ⟨inf_le, sup_le⟩ ↦ (sup_lt_sup_of_lt_of_inf_le_inf hxy inf_le).not_le sup_le⟩
+    fun ⟨inf_le, sup_le⟩ ↦ (sup_lt_sup_of_lt_of_inf_le_inf hxy inf_le).not_ge sup_le⟩
 
 /-- A generalization of the theorem that if `N` is a submodule of `M` and
   `N` and `M / N` are both Artinian, then `M` is Artinian. -/
-theorem wellFounded_lt_exact_sequence {β γ : Type*} [PartialOrder β] [Preorder γ]
+theorem wellFounded_lt_exact_sequence {β γ : Type*} [Preorder β] [Preorder γ]
     [h₁ : WellFoundedLT β] [h₂ : WellFoundedLT γ] (K : α)
     (f₁ : β → α) (f₂ : α → β) (g₁ : γ → α) (g₂ : α → γ) (gci : GaloisCoinsertion f₁ f₂)
     (gi : GaloisInsertion g₂ g₁) (hf : ∀ a, f₁ (f₂ a) = a ⊓ K) (hg : ∀ a, g₁ (g₂ a) = a ⊔ K) :
     WellFoundedLT α :=
   StrictMono.wellFoundedLT (f := fun A ↦ (f₂ A, g₂ A)) fun A B hAB ↦ by
-    simp only [Prod.le_def, lt_iff_le_not_le, ← gci.l_le_l_iff, ← gi.u_le_u_iff, hf, hg]
+    simp only [Prod.le_def, lt_iff_le_not_ge, ← gci.l_le_l_iff, ← gi.u_le_u_iff, hf, hg]
     exact strictMono_inf_prod_sup hAB
 
 /-- A generalization of the theorem that if `N` is a submodule of `M` and
   `N` and `M / N` are both Noetherian, then `M` is Noetherian. -/
-theorem wellFounded_gt_exact_sequence {β γ : Type*} [Preorder β] [PartialOrder γ]
+theorem wellFounded_gt_exact_sequence {β γ : Type*} [Preorder β] [Preorder γ]
     [WellFoundedGT β] [WellFoundedGT γ] (K : α)
     (f₁ : β → α) (f₂ : α → β) (g₁ : γ → α) (g₂ : α → γ) (gci : GaloisCoinsertion f₁ f₂)
     (gi : GaloisInsertion g₂ g₁) (hf : ∀ a, f₁ (f₂ a) = a ⊓ K) (hg : ∀ a, g₁ (g₂ a) = a ⊔ K) :
@@ -259,7 +236,7 @@ def infIccOrderIsoIccSup (a b : α) : Set.Icc (a ⊓ b) a ≃o Set.Icc b (a ⊔ 
         change a ⊓ ↑x ⊔ b = ↑x
         rw [inf_comm, inf_sup_assoc_of_le _ x.prop.1, inf_eq_left.2 x.prop.2])
   map_rel_iff' {x y} := by
-    simp only [Subtype.mk_le_mk, Equiv.coe_fn_mk, le_sup_right]
+    simp only [Subtype.mk_le_mk, Equiv.coe_fn_mk]
     rw [← Subtype.coe_le_coe]
     refine ⟨fun h => ?_, fun h => sup_le_sup_right h _⟩
     rw [← sup_eq_right.2 x.prop.1, inf_sup_assoc_of_le _ x.prop.2, sup_comm, ←
@@ -305,6 +282,7 @@ instance (priority := 100) IsModularLattice.to_isLowerModularLattice : IsLowerMo
     exact id⟩
 
 -- See note [lower instance priority]
+@[to_dual existing]
 instance (priority := 100) IsModularLattice.to_isUpperModularLattice : IsUpperModularLattice α :=
   ⟨fun {a b} => by
     simp_rw [covBy_iff_Ioo_eq, ← isEmpty_coe_sort, right_lt_sup, inf_lt_left,
@@ -326,6 +304,12 @@ def IicOrderIsoIci {a b : α} (h : IsCompl a b) : Set.Iic a ≃o Set.Ici b :=
 
 end IsCompl
 
+lemma le_iff_eq_of_codisjoint_of_disjoint [Lattice α] [BoundedOrder α] [IsModularLattice α]
+    {a b c : α} (h₀ : Codisjoint a b) (h₁ : Disjoint b c) :
+    a ≤ c ↔ a = c :=
+  ⟨fun h₂ ↦ le_antisymm h₂ <| by simpa [h₀.eq_top, h₁.eq_bot] using sup_inf_le_assoc_of_le b h₂,
+   le_of_eq⟩
+
 theorem isModularLattice_iff_inf_sup_inf_assoc [Lattice α] :
     IsModularLattice α ↔ ∀ x y z : α, x ⊓ z ⊔ y ⊓ z = (x ⊓ z ⊔ y) ⊓ z :=
   ⟨fun h => @IsModularLattice.inf_sup_inf_assoc _ _ h, fun h =>
@@ -342,6 +326,7 @@ namespace Disjoint
 
 variable {a b c : α}
 
+@[to_dual]
 theorem disjoint_sup_right_of_disjoint_sup_left [Lattice α] [OrderBot α]
     [IsModularLattice α] (h : Disjoint a b) (hsup : Disjoint (a ⊔ b) c) :
     Disjoint a (b ⊔ c) := by
@@ -350,6 +335,7 @@ theorem disjoint_sup_right_of_disjoint_sup_left [Lattice α] [OrderBot α]
   apply (inf_le_inf_right (c ⊔ b) le_sup_right).trans
   rw [sup_comm, IsModularLattice.sup_inf_sup_assoc, hsup.eq_bot, bot_sup_eq]
 
+@[to_dual]
 theorem disjoint_sup_left_of_disjoint_sup_right [Lattice α] [OrderBot α]
     [IsModularLattice α] (h : Disjoint b c) (hsup : Disjoint a (b ⊔ c)) :
     Disjoint (a ⊔ b) c := by
@@ -357,11 +343,21 @@ theorem disjoint_sup_left_of_disjoint_sup_right [Lattice α] [OrderBot α]
   apply Disjoint.disjoint_sup_right_of_disjoint_sup_left h.symm
   rwa [sup_comm, disjoint_comm] at hsup
 
+@[to_dual]
+lemma _root_.disjoint_sup_right_of_disjoint_sup_right [Lattice α] [OrderBot α] [IsModularLattice α]
+    (h₁ : Disjoint a (b ⊔ c)) (h₂ : Disjoint b (c ⊔ a)) :
+    Disjoint c (a ⊔ b) := by
+  rw [sup_comm] at h₂ ⊢
+  rw [disjoint_comm]
+  exact (h₁.mono_right le_sup_right).disjoint_sup_left_of_disjoint_sup_right h₂
+
+@[to_dual]
 theorem isCompl_sup_right_of_isCompl_sup_left [Lattice α] [BoundedOrder α] [IsModularLattice α]
     (h : Disjoint a b) (hcomp : IsCompl (a ⊔ b) c) :
     IsCompl a (b ⊔ c) :=
   ⟨h.disjoint_sup_right_of_disjoint_sup_left hcomp.disjoint, codisjoint_assoc.mp hcomp.codisjoint⟩
 
+@[to_dual]
 theorem isCompl_sup_left_of_isCompl_sup_right [Lattice α] [BoundedOrder α] [IsModularLattice α]
     (h : Disjoint b c) (hcomp : IsCompl a (b ⊔ c)) :
     IsCompl (a ⊔ b) c :=
@@ -379,7 +375,7 @@ lemma Set.Iic.isCompl_inf_inf_of_isCompl_of_le [Lattice α] [BoundedOrder α] [I
 
 namespace IsModularLattice
 
-variable [Lattice α] [IsModularLattice α] {a : α}
+variable [Lattice α] [IsModularLattice α] {a b c : α}
 
 instance isModularLattice_Iic : IsModularLattice (Set.Iic a) :=
   ⟨@fun x y z xz => (sup_inf_le_assoc_of_le (y : α) xz : (↑x ⊔ ↑y) ⊓ ↑z ≤ ↑x ⊔ ↑y ⊓ ↑z)⟩
@@ -391,35 +387,44 @@ section ComplementedLattice
 
 variable [BoundedOrder α] [ComplementedLattice α]
 
-instance complementedLattice_Iic : ComplementedLattice (Set.Iic a) :=
-  ⟨fun ⟨x, hx⟩ =>
-    let ⟨y, hy⟩ := exists_isCompl x
-    ⟨⟨y ⊓ a, Set.mem_Iic.2 inf_le_right⟩, by
-      constructor
-      · rw [disjoint_iff_inf_le]
-        change x ⊓ (y ⊓ a) ≤ ⊥
-        -- improve lattice subtype API
-        rw [← inf_assoc]
-        exact le_trans inf_le_left hy.1.le_bot
-      · rw [codisjoint_iff_le_sup]
-        change a ≤ x ⊔ y ⊓ a
-        -- improve lattice subtype API
-        rw [← sup_inf_assoc_of_le _ (Set.mem_Iic.1 hx), hy.2.eq_top, top_inf_eq]⟩⟩
+theorem exists_inf_eq_and_sup_eq (hb : a ≤ b) (hc : b ≤ c) : ∃ b', b ⊓ b' = a ∧ b ⊔ b' = c := by
+  obtain ⟨d, hdisjoint, hcodisjoint⟩ := exists_isCompl b
+  refine ⟨(d ⊔ a) ⊓ c, ?_, ?_⟩
+  · simpa [← inf_assoc, ← inf_sup_assoc_of_le _ hb, hdisjoint.eq_bot] using hb.trans hc
+  · simp [← sup_inf_assoc_of_le _ hc, ← sup_assoc, hcodisjoint.eq_top]
 
-instance complementedLattice_Ici : ComplementedLattice (Set.Ici a) :=
-  ⟨fun ⟨x, hx⟩ =>
-    let ⟨y, hy⟩ := exists_isCompl x
-    ⟨⟨y ⊔ a, Set.mem_Ici.2 le_sup_right⟩, by
-      constructor
-      · rw [disjoint_iff_inf_le]
-        change x ⊓ (y ⊔ a) ≤ a
-        -- improve lattice subtype API
-        rw [← inf_sup_assoc_of_le _ (Set.mem_Ici.1 hx), hy.1.eq_bot, bot_sup_eq]
-      · rw [codisjoint_iff_le_sup]
-        change ⊤ ≤ x ⊔ (y ⊔ a)
-        -- improve lattice subtype API
-        rw [← sup_assoc]
-        exact le_trans hy.2.top_le le_sup_left⟩⟩
+theorem exists_disjoint_and_sup_eq (h : a ≤ b) : ∃ a', Disjoint a a' ∧ a ⊔ a' = b := by
+  simp_rw [disjoint_iff]
+  apply exists_inf_eq_and_sup_eq (by simp) h
+
+theorem exists_inf_eq_and_codisjoint (h : a ≤ b) : ∃ b', b ⊓ b' = a ∧ Codisjoint b b' := by
+  simp_rw [codisjoint_iff]
+  apply exists_inf_eq_and_sup_eq h (by simp)
+
+instance complementedLattice_Icc [Fact (a ≤ b)] : ComplementedLattice (Set.Icc a b) where
+  exists_isCompl := fun ⟨x, ha, hb⟩ => by
+    simp_rw [Set.Icc.isCompl_iff]
+    obtain ⟨y, rfl, rfl⟩ := exists_inf_eq_and_sup_eq ha hb
+    exact ⟨⟨y, inf_le_right, le_sup_right⟩, rfl, rfl⟩
+
+instance complementedLattice_Iic : ComplementedLattice (Set.Iic a) where
+  exists_isCompl := fun ⟨x, hx⟩ => by
+    simp_rw [Set.Iic.isCompl_iff]
+    obtain ⟨y, hdisjoint, rfl⟩ := exists_disjoint_and_sup_eq hx
+    exact ⟨⟨y, le_sup_right⟩, hdisjoint, rfl⟩
+
+instance complementedLattice_Ici : ComplementedLattice (Set.Ici a) where
+  exists_isCompl := fun ⟨x, hx⟩ => by
+    simp_rw [Set.Ici.isCompl_iff]
+    obtain ⟨y, rfl, hcodisjoint⟩ := exists_inf_eq_and_codisjoint hx
+    exact ⟨⟨y, inf_le_right⟩, rfl, hcodisjoint⟩
+
+/-- A disjoint element can be enlarged to a complementary element. -/
+@[to_dual /-- A codisjoint element can be shrunk to a complementary element. -/]
+theorem _root_.Disjoint.exists_isCompl {a b : α} (hab : Disjoint a b) :
+    ∃ a' : α, a ≤ a' ∧ IsCompl a' b := by
+  obtain ⟨u, hu⟩ := ComplementedLattice.exists_isCompl (a ⊔ b)
+  exact ⟨u ⊔ a, le_sup_right, hab.isCompl_sup_left_of_isCompl_sup_right hu.symm⟩
 
 end ComplementedLattice
 

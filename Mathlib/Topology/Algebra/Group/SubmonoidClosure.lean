@@ -3,9 +3,11 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+module
 
-import Mathlib.Order.Filter.AtTopBot.Group
-import Mathlib.Topology.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
+public import Mathlib.Order.Filter.AtTopBot.Group
+public import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
 # Topological closure of the submonoid closure
@@ -18,6 +20,8 @@ The proof is based on the following observation, see `mapClusterPt_self_zpow_atT
 each `x^m`, `m : ℤ` is a limit point (`MapClusterPt`) of the sequence `x^n`, `n : ℕ`, as `n → ∞`.
 -/
 
+public section
+
 open Filter Function Set
 open scoped Topology
 
@@ -28,7 +32,7 @@ theorem mapClusterPt_atTop_zpow_iff_pow [DivInvMonoid G] [TopologicalSpace G] {x
     MapClusterPt x atTop (y ^ · : ℤ → G) ↔ MapClusterPt x atTop (y ^ · : ℕ → G) := by
   simp_rw [MapClusterPt, ← Nat.map_cast_int_atTop, map_map, comp_def, zpow_natCast]
 
-variable [Group G] [TopologicalSpace G] [CompactSpace G] [TopologicalGroup G]
+variable [Group G] [TopologicalSpace G] [CompactSpace G] [IsTopologicalGroup G]
 
 @[to_additive]
 theorem mapClusterPt_self_zpow_atTop_pow (x : G) (m : ℤ) :
