@@ -27,7 +27,7 @@ namespace CategoryTheory
 
 namespace Functor
 
-variable {C D H : Type*} [Category C] [Category D] [Category H]
+variable {C D H : Type*} [Category* C] [Category* D] [Category* H]
   (RF : H ⥤ D) {F : C ⥤ D} {L : C ⥤ H}
   (α : F ⟶ L ⋙ RF) (W : MorphismProperty C) [L.IsLocalization W]
   [RF.IsRightDerivedFunctor α W]
@@ -56,7 +56,7 @@ def postcomposeShiftNatTrans :
 instance :
     (shiftFunctor H a ⋙ RF).IsRightDerivedFunctor (precomposeShiftNatTrans RF α a) W := by
   rwa [← (W.shiftLocalizerMorphism a).isRightDerivedFunctor_iff_precomp
-    L L _ (L.commShiftIso a) α (precomposeShiftNatTrans RF α a) (Iso.refl _) (Iso.refl _)]
+    L L _ (L.commShiftIso a) (precomposeShiftNatTrans RF α a) α (Iso.refl _) (Iso.refl _)]
 
 instance :
     (RF ⋙ shiftFunctor D a).IsRightDerivedFunctor (postcomposeShiftNatTrans RF α a) W := by
