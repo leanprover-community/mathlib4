@@ -6,7 +6,9 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.Ring.Defs
-public import Mathlib.Data.Int.Cast.Basic
+public import Mathlib.Algebra.Group.Basic
+import Mathlib.Data.Int.Cast.Basic
+import Mathlib.Init
 
 /-!
 # Instances for `grind`.

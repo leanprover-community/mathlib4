@@ -6,7 +6,9 @@ Authors: Damiano Testa
 module
 
 public meta import Lean.Elab.Command
-public import Mathlib.Init
+public meta import Lean.DocString
+public import Lean.Environment
+import Mathlib.Init
 
 /-!
 # The `stacks` and `kerodon` attributes

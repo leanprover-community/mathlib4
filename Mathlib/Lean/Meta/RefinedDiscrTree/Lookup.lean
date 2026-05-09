@@ -5,7 +5,9 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Lean.Meta.RefinedDiscrTree.Encode
+public import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
+import Mathlib.Init
+import Mathlib.Lean.Meta.RefinedDiscrTree.Encode
 
 /-!
 # Matching with a RefinedDiscrTree

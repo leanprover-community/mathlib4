@@ -7,10 +7,15 @@ module
 
 public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Group.Hom.Instances
-public import Mathlib.Algebra.GroupWithZero.NeZero
 public import Mathlib.Algebra.Opposites
 public import Mathlib.Algebra.Ring.Defs
-public import Mathlib.Tactic.TFAE
+public import Mathlib.Data.List.TFAE
+import Mathlib.Algebra.GroupWithZero.NeZero
+import Mathlib.Algebra.NeZero
+import Mathlib.Init
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.TFAE
+import Mathlib.Util.CompileInductive
 
 /-!
 # Semirings and rings

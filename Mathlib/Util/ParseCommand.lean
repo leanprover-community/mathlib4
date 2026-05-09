@@ -5,10 +5,10 @@ Authors: Matthew Robert Ballard, Damiano Testa
 -/
 module
 
-public meta import Lean.Elab.Command
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  --shake: keep
+import Lean.Parser.Term.Basic
 
 /-!
 # `#parse` -- a command to parse text and log outputs

@@ -6,8 +6,18 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy
 module
 
 public import Mathlib.Data.Set.Subsingleton
-public import Mathlib.Order.BooleanAlgebra.Set
 public import Mathlib.Order.Interval.Set.Defs
+import Aesop.Frontend.Tactic
+import Aesop.Main
+import Batteries.Tactic.Init
+import Mathlib.Data.Set.Insert
+import Mathlib.Init
+import Mathlib.Order.BooleanAlgebra.Set
+import Mathlib.Tactic.Contrapose
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.Translate.ToDual
+import Mathlib.Util.CompileInductive
 
 /-!
 # Intervals

@@ -7,11 +7,16 @@ module
 
 public import Mathlib.Control.Combinators
 public import Mathlib.Data.Option.Defs
-public import Mathlib.Logic.IsEmpty.Basic
 public import Mathlib.Logic.Relator
-public import Mathlib.Util.CompileInductive
-public import Aesop
 public import Batteries.Tactic.Lint.Simp
+public import Aesop.BuiltinRules
+public import Mathlib.Logic.Function.Basic
+public import Mathlib.Logic.IsEmpty.Defs
+import Aesop.Frontend.Tactic
+import Aesop.Main
+import Mathlib.Init
+import Mathlib.Logic.Basic
+import Mathlib.Util.CompileInductive
 
 /-!
 # Option of a type

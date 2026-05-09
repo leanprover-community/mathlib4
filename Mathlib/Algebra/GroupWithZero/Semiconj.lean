@@ -5,8 +5,13 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Units.Basic
-public import Mathlib.Algebra.Group.Semiconj.Units
+public import Mathlib.Algebra.Group.Commute.Defs
+public import Mathlib.Algebra.GroupWithZero.Basic
+import Mathlib.Algebra.Group.Semiconj.Units
+import Mathlib.Algebra.GroupWithZero.Units.Basic
+import Mathlib.Init
+import Mathlib.Logic.Basic
+import Mathlib.Tactic.Attr.Core
 
 /-!
 # Lemmas about semiconjugate elements in a `GroupWithZero`.

@@ -5,12 +5,29 @@ Authors: Jeremy Avigad, Leonardo de Moura
 -/
 module
 
-public import Batteries.Tactic.Congr
-public import Mathlib.Data.Option.Basic
-public import Mathlib.Data.Prod.Basic
 public import Mathlib.Data.Set.Subsingleton
-public import Mathlib.Data.Set.SymmDiff
 public import Mathlib.Data.Set.Inclusion
+public import Mathlib.Data.Set.Insert
+public import Mathlib.Order.BooleanAlgebra.Set
+public import Mathlib.Order.SymmDiff
+import Aesop.Frontend.Tactic
+import Aesop.Main
+import Batteries.Tactic.Congr
+import Batteries.Tactic.Init
+import Mathlib.Data.Option.Basic
+import Mathlib.Data.Prod.Basic
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Data.Set.SymmDiff
+import Mathlib.Init
+import Mathlib.Logic.IsEmpty.Basic
+meta import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Coe
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.Simproc.ExistsAndEq
+import Mathlib.Tactic.Use
+import Mathlib.Util.CompileInductive
 
 /-!
 # Images and preimages of sets

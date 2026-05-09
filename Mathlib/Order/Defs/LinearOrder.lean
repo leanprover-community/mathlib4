@@ -6,13 +6,14 @@ Authors: Leonardo de Moura
 module
 
 public import Batteries.Classes.Order
-public import Batteries.Tactic.Trans
 public import Mathlib.Data.Ordering.Basic
-public import Mathlib.Tactic.ExtendDoc
-public import Mathlib.Tactic.Push.Attr
 public import Mathlib.Tactic.Simps.Basic
-public import Mathlib.Tactic.SplitIfs
 public import Mathlib.Order.Defs.PartialOrder
+import Batteries.Tactic.Init
+import Mathlib.Init
+import Mathlib.Tactic.Push.Attr
+import Mathlib.Tactic.SplitIfs
+import Mathlib.Tactic.Translate.ToDual
 
 /-!
 # Orders

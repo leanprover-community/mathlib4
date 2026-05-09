@@ -7,6 +7,17 @@ module
 
 public import Mathlib.Order.PropInstances
 public import Mathlib.Tactic.Lift
+public import Mathlib.Order.RelClasses
+import Batteries.Tactic.Trans
+import Mathlib.Init
+import Mathlib.Logic.IsEmpty.Basic
+import Mathlib.Order.BoundedOrder.Lattice
+meta import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.SplitIfs
+import Mathlib.Util.CompileInductive
 
 /-!
 # Basic properties of sets

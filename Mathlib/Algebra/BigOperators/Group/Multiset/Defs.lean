@@ -9,6 +9,10 @@ public import Mathlib.Algebra.BigOperators.Group.List.Defs
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Data.Multiset.Basic
 public import Mathlib.Data.Multiset.Filter
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Sums and products over multisets

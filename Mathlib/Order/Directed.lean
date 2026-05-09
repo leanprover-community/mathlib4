@@ -5,8 +5,19 @@ Authors: Johannes Hölzl, Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Set.Image
 public import Mathlib.Util.Delaborators
+public import Aesop.BuiltinRules
+public import Mathlib.Order.BoundedOrder.Basic
+public import Mathlib.Order.Lattice
+import Batteries.Tactic.Init
+import Mathlib.Data.Set.Image
+import Mathlib.Init
+import Mathlib.Tactic.Choose
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.Translate.ToDual
+import Mathlib.Tactic.Use
+import Mathlib.Util.CompileInductive
 
 /-!
 # Directed indexed families and sets

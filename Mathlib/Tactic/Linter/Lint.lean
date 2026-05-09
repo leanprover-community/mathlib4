@@ -9,9 +9,9 @@ module
 -- It is responsible for making `#lint` available through `Mathlib.Init`.
 -- TODO: consider removing `-- shake: keep` after batteries#1613
 public import Batteries.Tactic.Lint -- shake: keep
-public import Lean.Linter.Deprecated
-public import Mathlib.Tactic.DeclarationNames
-public import Batteries.Tactic.Lint.Basic
+meta import Lean.Linter.Basic
+import Lean.Linter.Deprecated
+import Mathlib.Tactic.DeclarationNames
 
 /-!
 # Linters for Mathlib

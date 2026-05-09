@@ -7,7 +7,22 @@ module
 
 public import Mathlib.Order.Hom.Basic
 public import Mathlib.Order.Interval.Set.Defs
-public import Mathlib.Order.WellFounded
+public import Mathlib.Data.Set.Subsingleton
+public import Mathlib.Order.BooleanAlgebra.Basic
+public import Mathlib.Order.Bounds.Defs
+import Aesop.Frontend.Tactic
+import Aesop.Main
+import Batteries.Tactic.Init
+import Mathlib.Data.Set.Image
+import Mathlib.Init
+import Mathlib.Order.WellFounded
+import Mathlib.Tactic.Convert
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.Tauto
+import Mathlib.Tactic.Translate.ToDual
+import Mathlib.Util.CompileInductive
 
 /-!
 # Minimality and Maximality

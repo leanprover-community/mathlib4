@@ -5,11 +5,16 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-public import Mathlib.Algebra.Order.Sub.Unbundled.Basic
-public import Mathlib.Algebra.Group.Equiv.Basic
 public import Mathlib.Algebra.Group.Even
+public import Mathlib.Algebra.Order.Sub.Defs
+import Mathlib.Algebra.Order.Sub.Unbundled.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Conv
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.SplitIfs
+import Mathlib.Util.CompileInductive
 /-!
 # Lemmas about subtraction in unbundled canonically ordered monoids
 -/

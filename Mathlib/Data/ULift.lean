@@ -6,7 +6,11 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Control.ULift
-public import Mathlib.Logic.Equiv.Basic
+public import Aesop.BuiltinRules
+public import Mathlib.Logic.Equiv.Defs
+import Mathlib.Init
+import Mathlib.Logic.Equiv.Basic
+import Mathlib.Util.CompileInductive
 
 /-!
 # Extra lemmas about `ULift` and `PLift`

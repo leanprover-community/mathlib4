@@ -10,6 +10,7 @@ public meta import Mathlib.Tactic.Widget.SelectInsertParamsClass
 public import Mathlib.Tactic.Widget.SelectInsertParamsClass
 public import ProofWidgets.Component.MakeEditLink
 public import ProofWidgets.Data.Html
+import Mathlib.Init
 
 /-! # Selection panel utilities
 

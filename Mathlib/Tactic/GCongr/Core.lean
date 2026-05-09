@@ -10,10 +10,14 @@ public import Batteries.Tactic.Exact
 public meta import Lean.Meta.Tactic.Rfl
 public meta import Lean.Meta.Tactic.Symm
 public import Mathlib.Order.Defs.Unbundled
-public import Mathlib.Tactic.Core
 public import Mathlib.Tactic.GCongr.ForwardAttr
 
 import all Lean.Meta.Tactic.Apply
+public meta import Lean.Elab.Tactic.ElabTerm
+public meta import Lean.Meta.Tactic.Replace
+public meta import Mathlib.Tactic.GCongr.ForwardAttr
+import Mathlib.Init
+import Mathlib.Tactic.Core
 
 /-!
 # The `gcongr` ("generalized congruence") tactic

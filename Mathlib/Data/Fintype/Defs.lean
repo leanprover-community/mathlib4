@@ -8,6 +8,12 @@ module
 public import Mathlib.Data.Finset.Filter
 public import Mathlib.Data.Finite.Defs
 public import Mathlib.Order.Lex
+public import Mathlib.Lean.Meta.CongrTheorems
+import Mathlib.Data.Set.Function
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Finite types

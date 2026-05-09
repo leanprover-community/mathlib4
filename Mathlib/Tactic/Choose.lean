@@ -5,7 +5,15 @@ Authors: Johannes Hölzl, Floris van Doorn, Mario Carneiro, Reid Barton, Johan C
 -/
 module
 
-public import Mathlib.Logic.Function.Basic
+public import Batteries.Util.ExtendedBinder
+public meta import Lean.Elab.Binders
+public meta import Lean.Elab.Tactic.ElabTerm
+public import Lean.Elab.Term.TermElabM
+public meta import Lean.Meta.Tactic.Replace
+public meta import Mathlib.Lean.Expr.Basic
+import Lean.Meta.Tactic.Replace
+import Mathlib.Init
+import Mathlib.Logic.Function.Basic
 
 /-!
 # `choose` tactic

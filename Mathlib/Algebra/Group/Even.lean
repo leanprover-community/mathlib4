@@ -5,10 +5,17 @@ Authors: Damiano Testa
 -/
 module
 
-public import Mathlib.Algebra.Group.Equiv.Basic
-public import Mathlib.Algebra.Group.Equiv.Opposite
 public import Mathlib.Algebra.Group.TypeTags.Basic
 public import Mathlib.Data.Set.Operations
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Algebra.Opposites
+import Aesop.Frontend.Tactic
+import Aesop.Main
+import Mathlib.Algebra.Group.Equiv.Opposite
+import Mathlib.Init
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 # Squares and even elements

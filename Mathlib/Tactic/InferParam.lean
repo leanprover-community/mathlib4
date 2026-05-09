@@ -5,9 +5,9 @@ Authors: Yury Kudryashov, Mario Carneiro
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.Elab.Tactic.Basic
 public meta import Lean.Meta.Tactic.Replace
+import Mathlib.Init
 
 /-!
 # Infer an optional parameter

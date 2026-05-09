@@ -5,11 +5,10 @@ Authors: Sebastian Ullrich
 -/
 module
 
-public import Mathlib.Init
 public meta import Batteries.Util.Cache
-public meta import Lean.HeadIndex
 public meta import Lean.Elab.Command
-public import Batteries.Util.Cache
+import Batteries.Util.Cache
+import Mathlib.Init
 
 /-!
 # The `#find` command and tactic.

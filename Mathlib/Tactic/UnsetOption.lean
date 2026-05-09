@@ -5,10 +5,9 @@ Authors: Alex J. Best
 -/
 module
 
-public import Mathlib.Init
-public meta import Lean.Parser.Term
-public meta import Lean.Parser.Do
 public meta import Lean.Elab.Command
+public import Lean.Elab.InfoTree.Main
+import Mathlib.Init
 
 /-!
 # The `unset_option` command

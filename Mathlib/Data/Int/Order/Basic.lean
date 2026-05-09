@@ -8,7 +8,8 @@ module
 public import Mathlib.Data.Int.Notation
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Order.Defs.LinearOrder
-public import Mathlib.Tactic.ByCases
+import Mathlib.Init
+import Mathlib.Logic.Basic
 
 /-!
 # The order relation on the integers

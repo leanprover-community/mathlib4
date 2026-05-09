@@ -5,7 +5,12 @@ Authors: Mario Carneiro, Yakov Pechersky, Eric Wieser
 -/
 module
 
-public import Mathlib.Data.List.Basic
+public import Aesop.BuiltinRules
+public import Mathlib.Data.Nat.Notation
+import Mathlib.Data.List.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # Properties of `List.enum`

@@ -5,10 +5,14 @@ Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Ne
 -/
 module
 
-public import Mathlib.Algebra.Ring.Semiconj
 public import Mathlib.Algebra.Ring.Units
-public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Data.Bracket
+import Mathlib.Algebra.Ring.Semiconj
+import Mathlib.Init
+import Mathlib.Logic.Basic
+import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.SimpRw
+import Mathlib.Util.CompileInductive
 
 /-!
 # Semirings and rings

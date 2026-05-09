@@ -5,10 +5,14 @@ Authors: Jeremy Avigad
 -/
 module
 
-public import Mathlib.Tactic.Tauto
 public import Mathlib.Algebra.Group.Int.Defs
-public import Mathlib.Algebra.Group.Basic
-public import Mathlib.Algebra.Group.Nat.Units
+public import Aesop.BuiltinRules
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Algebra.Group.Units.Defs
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Nat.Units
+import Mathlib.Init
+import Mathlib.Tactic.Tauto
 
 /-!
 # Units in the integers

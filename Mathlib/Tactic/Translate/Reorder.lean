@@ -5,7 +5,10 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Init
+public import Batteries.Tactic.Lint.Misc
+public meta import Lean.Elab.Term.TermElabM
+public import Lean.Message
+import Mathlib.Init
 
 /-!
 # Reordering arguments in a translation

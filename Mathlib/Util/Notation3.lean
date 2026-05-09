@@ -9,12 +9,15 @@ public meta import Lean.Elab.MacroArgUtil
 public meta import Lean.PrettyPrinter.Delaborator  -- shake: keep (dependency of elaborator output)
 public meta import Mathlib.Lean.PrettyPrinter.Delaborator
 public meta import Batteries.Lean.Syntax
-public meta import Lean.PrettyPrinter.Delaborator.Builtins
 public import Batteries.Linter.UnreachableTactic
 public import Batteries.Util.ExtendedBinder
-public import Lean.Elab.AuxDef
 public import Mathlib.Lean.Elab.Term
 public import Mathlib.Tactic.ScopedNS
+public import Lean.SubExpr
+import Lean.Elab.AuxDef
+import Lean.Parser.Syntax
+import Mathlib.Init
+import Mathlib.Util.WithWeakNamespace
 
 /-!
 # The notation3 macro, simulating Lean 3's notation.

@@ -5,11 +5,19 @@ Authors: Johannes Hölzl, Yaël Dillies
 -/
 module
 
-public import Mathlib.Logic.Equiv.Set
-public import Mathlib.Logic.Pairwise
 public import Mathlib.Order.CompleteLattice.Lemmas
 public import Mathlib.Order.Directed
-public import Mathlib.Order.GaloisConnection.Basic
+public import Mathlib.Order.SymmDiff
+import Mathlib.Init
+import Mathlib.Logic.Equiv.Set
+import Mathlib.Order.Bounds.Basic
+import Mathlib.Order.GaloisConnection.Basic
+import Mathlib.Tactic.ByContra
+import Mathlib.Tactic.Choose
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.Translate.ToDual
+import Mathlib.Util.CompileInductive
 
 /-!
 # Frames, completely distributive lattices and complete Boolean algebras

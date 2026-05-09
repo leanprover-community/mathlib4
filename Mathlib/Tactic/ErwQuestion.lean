@@ -5,8 +5,9 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.Elab.Tactic.Rewrite
+public import Lean.Meta.Basic
+import Mathlib.Init
 
 /-!
 # The `erw?` tactic

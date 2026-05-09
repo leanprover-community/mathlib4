@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.Group.Int.Defs
 public import Mathlib.Algebra.Order.Monoid.Defs
+import Mathlib.Init
+import Mathlib.Util.CompileInductive
 
 /-!
 # The integers form a linear ordered group

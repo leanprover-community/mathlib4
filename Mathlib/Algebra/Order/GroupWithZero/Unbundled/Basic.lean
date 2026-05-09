@@ -6,15 +6,24 @@ Authors: Damiano Testa, Yuyang Zhao
 module
 
 public import Mathlib.Algebra.GroupWithZero.Units.Basic
-public import Mathlib.Algebra.Notation.Pi.Defs
 public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
 public import Mathlib.Algebra.Order.ZeroLEOne
-public import Mathlib.Tactic.Bound.Attribute
-public import Mathlib.Tactic.Monotonicity.Attr
 
 import Mathlib.Data.Set.Function
 public import Mathlib.Data.Int.Order.Basic
-public import Mathlib.Util.CompileInductive
+import Batteries.Tactic.Init
+import Mathlib.Init
+import Mathlib.Order.Monotone.Basic
+import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.Bound.Attribute
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Contrapose
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.Nontriviality.Core
+import Mathlib.Tactic.SimpRw
+import Mathlib.Util.CompileInductive
 
 /-!
 # Lemmas on the monotone multiplication typeclasses

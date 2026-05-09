@@ -5,10 +5,11 @@ Authors: Johannes Hölzl, David Renshaw
 -/
 module
 
-public meta import Lean.Elab.DeclarationRange
-public meta import Lean.Meta.Tactic.Cases
 public meta import Mathlib.Lean.Meta
 public meta import Mathlib.Lean.Name
+public meta import Lean.Elab.Command
+public import Lean.Meta.Basic
+import Mathlib.Init
 
 /-!
 # mk_iff_of_inductive_prop

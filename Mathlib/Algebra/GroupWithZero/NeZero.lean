@@ -6,7 +6,9 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.GroupWithZero.Defs
-public import Mathlib.Algebra.NeZero
+import Batteries.Logic
+import Mathlib.Algebra.NeZero
+import Mathlib.Init
 
 /-!
 # `NeZero 1` in a nontrivial `MulZeroOneClass`.

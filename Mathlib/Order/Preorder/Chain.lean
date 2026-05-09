@@ -6,10 +6,16 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Data.Set.Notation
-public import Mathlib.Data.Set.Pairwise.Basic
 public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Order.Directed
-public import Mathlib.Order.Hom.Set
+public import Mathlib.Data.Set.Subsingleton
+public import Mathlib.Order.Hom.Basic
+import Mathlib.Data.Set.Pairwise.Basic
+import Mathlib.Init
+import Mathlib.Order.Hom.Set
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Chains and flags

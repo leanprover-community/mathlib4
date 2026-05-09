@@ -5,8 +5,8 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Init
 public import Lean.PrettyPrinter.Delaborator.Basic
+import Mathlib.Init
 
 /-!
 # Additions to the delaborator

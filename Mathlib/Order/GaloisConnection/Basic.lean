@@ -6,8 +6,20 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Order.Bounds.Image
-public import Mathlib.Order.CompleteLattice.Basic
 public import Mathlib.Order.WithBot
+public import Mathlib.Order.BooleanAlgebra.Set
+public import Mathlib.Order.CompleteLattice.Defs
+public import Mathlib.Order.Hom.Basic
+public import Mathlib.Order.Interval.Set.Defs
+import Mathlib.Data.Set.NAry
+import Mathlib.Init
+import Mathlib.Order.Bounds.Basic
+import Mathlib.Order.CompleteLattice.Basic
+import Mathlib.Order.Hom.Set
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.Translate.ToDual
+import Mathlib.Util.CompileInductive
 
 /-!
 # Galois connections, insertions and coinsertions

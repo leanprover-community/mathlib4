@@ -7,8 +7,10 @@ module
 
 public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Logic.Nontrivial.Defs
-public import Mathlib.Logic.Basic
-public import Batteries.Tactic.SeqFocus
+import Batteries.Tactic.SeqFocus
+import Mathlib.Init
+import Mathlib.Logic.Basic
+import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
 # Typeclasses for groups with an adjoined zero element

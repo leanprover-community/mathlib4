@@ -5,11 +5,12 @@ Authors: Jeremy Avigad, Leonardo de Moura
 -/
 module
 
-public import Mathlib.Tactic.AdaptationNote
 public import Batteries.Logic
 public import Batteries.Util.LibraryNote
 
 import Mathlib.Tactic.Attr.Register
+public import Batteries.Tactic.Lint.Misc
+import Mathlib.Init
 
 /-!
 # Basic logic properties

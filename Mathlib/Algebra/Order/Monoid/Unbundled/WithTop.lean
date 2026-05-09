@@ -6,11 +6,20 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 module
 
 public import Mathlib.Algebra.CharZero.Defs
-public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 public import Mathlib.Algebra.Order.ZeroLEOne
 public import Mathlib.Order.WithBot
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+import Aesop.Frontend.Tactic
+import Aesop.Main
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Tactic.Translate.ToDual
+import Mathlib.Util.CompileInductive
 
 /-! # Adjoining top/bottom elements to ordered monoids.
 -/

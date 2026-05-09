@@ -6,8 +6,12 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 module
 
 public import Mathlib.Algebra.Order.Group.Synonym
-public import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
 public import Mathlib.Algebra.Order.Monoid.Defs
+import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
+import Mathlib.Init
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-! # Ordered monoid structures on the order dual. -/
 

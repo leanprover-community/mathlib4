@@ -7,6 +7,8 @@ Jovan Gerbscheid
 module
 
 public import Mathlib.Tactic.Translate.Core
+public meta import Lean.Elab.Command
+import Mathlib.Init
 
 /-!
 # The `@[to_additive]` attribute.
