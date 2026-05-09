@@ -14,11 +14,10 @@ public import Mathlib.CategoryTheory.Shift.Localization
 Let `L : C ⥤ H` be a localization functor with respect to `W : MorphismProperty C`.
 Let `F : C ⥤ D`, `RF : H ⥤ D` and `α : F ⟶ L ⋙ RF` be a natural transformation
 which makes `RF` the right derived functor of `F`. We assume that `C`, `D` and `H`
-are equipped with shifts by an additive groupe `A`, that `L` and `F` commutes with these shifts,
-and that `W` is compatible with the shift. Then, we show that `RF` commutes with
-shifts, and that for this structure, the natural transformation `α` is compatible
-with the shifts.
-
+are equipped with shifts by an additive group `A`, that `L` and `F` commute with these shifts,
+and that `W` is compatible with the shift. Under these assumptions, we show that
+`RF` commutes with shifts, and that for this structure, the natural
+transformation `α` is compatible with the shifts.
 
 -/
 
