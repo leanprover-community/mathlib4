@@ -8,7 +8,6 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 
 import Mathlib.CategoryTheory.Limits.Types.Pushouts
-import Mathlib.CategoryTheory.Subobject.Types
 
 /-!
 # The boundary of the standard simplex
