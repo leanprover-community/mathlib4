@@ -782,8 +782,8 @@ lemma isFiniteRelIndex_of_le_left {H₁ H₂ : Subgroup G} (H₃ : Subgroup G) [
 lemma isFiniteRelIndex_of_le_right (H₁ : Subgroup G) {H₂ H₃ : Subgroup G} (h : H₂ ≤ H₃)
     [H₁.IsFiniteRelIndex H₃] :
     H₁.IsFiniteRelIndex H₂ := by
-  have := relIndex_inter_ne_zero (show H₁.relIndex H₃ ≠ 0 from relIndex_ne_zero) H₂
-  rwa [inf_of_le_right h, inf_relIndex_right, ← isFiniteRelIndex_iff_relIndex_ne_zero] at this
+  rw [isFiniteRelIndex_iff_relIndex_ne_zero]
+  exact mt (relIndex_eq_zero_of_le_right h) relIndex_ne_zero
 
 @[to_additive]
 lemma isFiniteRelIndex_of_finiteIndex {H₁ H₂ : Subgroup G} [h : H₁.FiniteIndex] :
