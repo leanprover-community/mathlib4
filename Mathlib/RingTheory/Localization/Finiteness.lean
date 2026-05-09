@@ -283,8 +283,7 @@ lemma of_localizationSpan' (s : Set R) (hs : Ideal.span (s : Set R) = ⊤)
 lemma of_localizationSpan (s : Set R) (hs : Ideal.span (s : Set R) = ⊤)
     (H : ∀ (g : s), (localized (Submonoid.powers g.1) N).FG) : N.FG :=
   N.of_localizationSpan' s hs (Rₚ := fun g ↦ Localization (Submonoid.powers g.1))
-    (fun g ↦ LocalizedModule.mkLinearMap (Submonoid.powers g.1) M)
-    (fun g ↦ by simp_all only [Subtype.forall])
+    (fun g ↦ LocalizedModule.mkLinearMap (Submonoid.powers g.1) M) (fun g ↦ by simp [H g])
 
 variable (R' : Type*) [CommRing R'] [Algebra R R']
   {M' : Type*} [AddCommGroup M'] [Module R M'] [Module R' M'] [IsScalarTower R R' M']
@@ -295,7 +294,7 @@ lemma localized'_fg (h : N.FG) : (N.localized' R' S f).FG := by
   rcases h with ⟨s, hfin, hspan⟩
   exact ⟨f '' s, Set.Finite.image f hfin, by rw [← hspan, localized'_span]⟩
 
-lemma localized_fg (h : N.FG) : (N.localized S).FG := localized'_fg _ _ _ h
+lemma localized_fg (h : N.FG) : (N.localized S).FG := localized'_fg _ S _ h
 
 end Submodule
 
