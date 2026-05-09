@@ -308,6 +308,7 @@ theorem absNorm_span_singleton (r : S) :
   refine b.ext fun i => ?_
   simp
 
+@[simp]
 lemma absNorm_span_nat (n : ℕ) : (span {(n : S)}).absNorm = n ^ Module.finrank ℤ S := by
   rw [absNorm_span_singleton, Algebra.norm_nat]
   simp
