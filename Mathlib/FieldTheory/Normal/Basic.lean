@@ -6,10 +6,9 @@ Authors: Kenny Lau, Thomas Browning, Patrick Lutz
 module
 
 public import Mathlib.FieldTheory.Extension
-public import Mathlib.FieldTheory.Normal.Defs
-public import Mathlib.GroupTheory.Solvable
+public import Mathlib.FieldTheory.Minpoly.Finite
 public import Mathlib.FieldTheory.SplittingField.Construction
-public import Mathlib.LinearAlgebra.Charpoly.Basic
+public import Mathlib.GroupTheory.Solvable
 
 /-!
 # Normal field extensions

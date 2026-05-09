@@ -136,7 +136,7 @@ theorem pow_norm_pow_one_div_tendsto_nhds_spectralRadius (a : A) :
   convert pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius a using 1
   ext1
   rw [← ofReal_rpow_of_nonneg (norm_nonneg _) _, ← coe_nnnorm, coe_nnreal_eq]
-  exact one_div_nonneg.mpr (mod_cast zero_le _)
+  simp
 
 section Nontrivial
 
@@ -200,8 +200,8 @@ precisely the units. This allows for the application of this isomorphism in broa
 to the quotient of a complex Banach algebra by a maximal ideal. In the case when `A` is actually a
 `NormedDivisionRing`, one may fill in the argument `hA` with the lemma `isUnit_iff_ne_zero`. -/
 @[simps]
-noncomputable def _root_.NormedRing.algEquivComplexOfComplete (hA : ∀ {a : A}, IsUnit a ↔ a ≠ 0)
-    [CompleteSpace A] : ℂ ≃ₐ[ℂ] A :=
+noncomputable def _root_.NormedRing.algEquivComplexOfComplete (hA : ∀ {a : A}, IsUnit a ↔ a ≠ 0) :
+    ℂ ≃ₐ[ℂ] A :=
   let nt : Nontrivial A := ⟨⟨1, 0, hA.mp ⟨⟨1, 1, mul_one _, mul_one _⟩, rfl⟩⟩⟩
   { Algebra.ofId ℂ A with
     toFun := algebraMap ℂ A

@@ -142,7 +142,6 @@ lemma ContinuousMap.integral_apply [NormedSpace ℝ E] [CompleteSpace E] {f : X 
           (ContinuousLinearMap.integral_comp_comm _ hf).symm
     _ = _ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped ContinuousMapZero in
 theorem ContinuousMapZero.integral_apply {R : Type*} [NormedCommRing R] [Zero Y]
     [NormedAlgebra ℝ R] [CompleteSpace R] {f : X → C(Y, R)₀}
