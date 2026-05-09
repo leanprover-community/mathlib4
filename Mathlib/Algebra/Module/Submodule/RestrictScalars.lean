@@ -55,6 +55,13 @@ theorem restrictScalars_mem (V : Submodule R M) (m : M) : m ∈ V.restrictScalar
 theorem restrictScalars_self (V : Submodule R M) : V.restrictScalars R = V :=
   SetLike.coe_injective rfl
 
+@[simp] theorem restrictScalars_restrictScalars
+    (T : Type*) [Semiring T] [SMul T R] [SMul S T] [IsScalarTower S T R]
+    [Module T M] [IsScalarTower S T M] [IsScalarTower T R M]
+    (V : Submodule R M) :
+    (V.restrictScalars T).restrictScalars S = V.restrictScalars S :=
+  rfl
+
 variable (R M)
 
 theorem restrictScalars_injective :
@@ -92,7 +99,7 @@ def restrictScalarsEmbedding : Submodule R M ↪o Submodule S M where
   inj' := restrictScalars_injective S R M
   map_rel_iff' := restrictScalars_le S
 
-@[mono]
+@[gcongr, mono]
 lemma restrictScalars_monotone : Monotone (restrictScalars S : Submodule R M → Submodule S M) :=
   (restrictScalarsEmbedding S R M).monotone
 
@@ -167,5 +174,20 @@ lemma restrictScalars_sup (s t : Submodule R M) :
 lemma toIntSubmodule_toAddSubgroup {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
     (N : Submodule R M) :
     N.toAddSubgroup.toIntSubmodule = N.restrictScalars ℤ := rfl
+
+@[simp]
+theorem codisjoint_restrictScalars_iff {s t : Submodule R M} :
+    Codisjoint (s.restrictScalars S) (t.restrictScalars S) ↔ Codisjoint s t := by
+  simp [codisjoint_iff, ← restrictScalars_sup]
+
+@[simp]
+theorem disjoint_restrictScalars_iff {s t : Submodule R M} :
+    Disjoint (s.restrictScalars S) (t.restrictScalars S) ↔ Disjoint s t := by
+  simp [disjoint_def]
+
+@[simp]
+theorem isCompl_restrictScalars_iff {s t : Submodule R M} :
+    IsCompl (s.restrictScalars S) (t.restrictScalars S) ↔ IsCompl s t := by
+  simp [isCompl_iff]
 
 end Submodule

@@ -66,7 +66,7 @@ theorem count_le {n : ℕ} : count p n ≤ n := by
 theorem count_succ (n : ℕ) : count p (n + 1) = count p n + if p n then 1 else 0 := by
   grind [count, List.range_succ]
 
-@[mono]
+@[gcongr, mono]
 theorem count_monotone : Monotone (count p) :=
   monotone_nat_of_le_succ (by grind)
 

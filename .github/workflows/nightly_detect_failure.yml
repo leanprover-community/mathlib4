@@ -21,7 +21,7 @@ jobs:
         api-key: ${{ secrets.ZULIP_API_KEY }}
         email: 'github-mathlib4-bot@leanprover.zulipchat.com'
         organization-url: 'https://leanprover.zulipchat.com'
-        to: 'nightly-testing'
+        to: 'nightly-testing-mathlib'
         type: 'stream'
         topic: 'Mathlib status updates'
         content: |
@@ -112,7 +112,7 @@ jobs:
         sudo rm -rf -- *
     - name: Generate lean-pr-testing app token
       id: lean-pr-testing-token
-      uses: actions/create-github-app-token@f8d387b68d61c58ab83c6c016672934102569859 # v3.0.0
+      uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
       with:
         app-id: ${{ secrets.MATHLIB_LEAN_PR_TESTING_APP_ID }}
         private-key: ${{ secrets.MATHLIB_LEAN_PR_TESTING_PRIVATE_KEY }}
@@ -159,7 +159,7 @@ jobs:
           'num_before': 1,
           'num_after': 0,
           'narrow': [
-            {'operator': 'stream', 'operand': 'nightly-testing'},
+            {'operator': 'stream', 'operand': 'nightly-testing-mathlib'},
             {'operator': 'topic', 'operand': 'Mathlib status updates'},
             {'operator': 'sender', 'operand': bot_email}
           ],
@@ -171,7 +171,7 @@ jobs:
             # Post the success message
             request = {
                 'type': 'stream',
-                'to': 'nightly-testing',
+                'to': 'nightly-testing-mathlib',
                 'topic': 'Mathlib status updates',
                 'content': f"✅ The latest CI for Mathlib's [nightly-testing branch](https://github.com/leanprover-community/mathlib4-nightly-testing/tree/nightly-testing) has succeeded! ([{os.getenv('SHA')}](https://github.com/${{ github.repository }}/commit/{os.getenv('SHA')}))"
             }
@@ -183,7 +183,7 @@ jobs:
 
     - name: Check for matching bump/nightly-YYYY-MM-DD branch
       id: check_branch
-      uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+      uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
       with:
         script: |
           const branchName = `bump/nightly-${process.env.NIGHTLY}`;
@@ -214,7 +214,7 @@ jobs:
     - name: Fetch latest bump branch name
       if: steps.check_branch.outputs.result == 'false'
       id: latest_bump_branch
-      uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+      uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
       with:
         result-encoding: string
         script: |
@@ -235,7 +235,7 @@ jobs:
     - name: Fetch lean-toolchain from latest bump branch
       if: steps.check_branch.outputs.result == 'false'
       id: bump_version
-      uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+      uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
       with:
         script: |
           const branchName = '${{ steps.latest_bump_branch.outputs.result }}';
@@ -310,7 +310,7 @@ jobs:
         api-key: ${{ secrets.ZULIP_API_KEY }}
         email: 'github-mathlib4-bot@leanprover.zulipchat.com'
         organization-url: 'https://leanprover.zulipchat.com'
-        to: 'nightly-testing'
+        to: 'nightly-testing-mathlib'
         type: 'stream'
         topic: 'Mathlib status updates'
         content: |
@@ -435,7 +435,7 @@ jobs:
               'num_before': 1,
               'num_after': 0,
               'narrow': [
-                {'operator': 'stream', 'operand': 'nightly-testing'},
+                {'operator': 'stream', 'operand': 'nightly-testing-mathlib'},
                 {'operator': 'topic', 'operand': 'Mathlib bump branch reminders'},
                 {'operator': 'sender', 'operand': bot_email}
               ],
@@ -473,7 +473,7 @@ jobs:
                 # Post the reminder message
                 request = {
                     'type': 'stream',
-                    'to': 'nightly-testing',
+                    'to': 'nightly-testing-mathlib',
                     'topic': 'Mathlib bump branch reminders',
                     'content': payload
                 }

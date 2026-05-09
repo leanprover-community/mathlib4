@@ -29,9 +29,6 @@ open scoped NNReal ENNReal uniformity
 
 section SeminormedAddCommGroup
 
--- Here, we set a rather high priority for the instance `[NormedSpace 𝕜 E] : Module 𝕜 E`
--- to take precedence over `Semiring.toModule` as this leads to instance paths with better
--- unification properties.
 /-- A normed space over a normed field is a vector space endowed with a norm which satisfies the
 equality `‖c • x‖ = ‖c‖ ‖x‖`. We require only `‖c • x‖ ≤ ‖c‖ ‖x‖` in the definition, then prove
 `‖c • x‖ = ‖c‖ ‖x‖` in `norm_smul`.

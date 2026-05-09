@@ -559,6 +559,14 @@ instance : Category (Mon C) where
   id := id
   comp f g := comp f g
 
+/-- Construct a morphism `Mon.mk G ⟶ Mon.mk H` from a  map `f : G ⟶ H` and a `IsMonHom f`
+instance. -/
+@[to_additive (attr := simps!)
+/-- Construct a morphism `AddMon.mk G ⟶ AddMon.mk H` from a  map `f : G ⟶ H` and a `IsAddMonHom f`
+instance. -/]
+def ofHom {A B : C} [MonObj A] [MonObj B] (f : A ⟶ B) [IsMonHom f] : Mon.mk A ⟶ Mon.mk B :=
+  .mk f
+
 @[to_additive]
 instance {M N : Mon C} (f : M ⟶ N) : IsMonHom f.hom := f.isMonHom_hom
 
