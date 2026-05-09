@@ -193,7 +193,6 @@ lemma nonDegenerate_of_preimage_eq_boundary
     change X.δ i.castSucc (X.σ i y) ∈ A.obj _ at this
     simpa using this
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the preimage of `A` along the simplex classified by `x : X _⦋n⦌` is `∂Δ[n]`,
 then adjoining `x` to `A` is a pushout of `∂Δ[n] ↪ Δ[n]`. -/
 lemma isPushout {X : SSet.{u}} {n : ℕ} (A : X.Subcomplex) (x : X _⦋n⦌)
