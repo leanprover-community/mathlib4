@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Group.End
 public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 
 /-!
-# Torsors of additive group actions
+# Torsors of group actions
 
 Further results for torsors, that are not in `Mathlib/Algebra/AddTorsor/Defs.lean` to avoid
 increasing imports there.

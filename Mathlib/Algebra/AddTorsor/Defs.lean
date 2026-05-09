@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Group.Action.Defs
 
 /-!
-# Torsors of additive group actions
+# Torsors of group actions
 
 This file defines torsors of additive and multiplicative group actions.
 
@@ -282,7 +282,8 @@ theorem pointReflection_involutive (x : P) : Involutive (pointReflection x : P â
 
 end Equiv
 
-theorem AddTorsor.subsingleton_iff (G P : Type*) [AddGroup G] [AddTorsor G P] :
+@[to_additive]
+theorem Torsor.subsingleton_iff (G P : Type*) [Group G] [Torsor G P] :
     Subsingleton G â†” Subsingleton P := by
   inhabit P
-  exact (Equiv.vaddConst default).subsingleton_congr
+  exact (Equiv.smulConst default).subsingleton_congr
