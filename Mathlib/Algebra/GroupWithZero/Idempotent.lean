@@ -12,7 +12,7 @@ public import Mathlib.Algebra.GroupWithZero.Defs
 # Idempotent elements of a group with zero
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Ring
 
