@@ -22,7 +22,7 @@ that are sent to a zero object by `G`.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

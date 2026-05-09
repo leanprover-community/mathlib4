@@ -32,7 +32,7 @@ morphisms are deterministic.
 deterministic, copy-discard category, comonoid morphism
 -/
 
-@[expose] public section
+public section
 
 universe v u
 
