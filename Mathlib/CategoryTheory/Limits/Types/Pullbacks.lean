@@ -241,11 +241,7 @@ lemma isPullback_of_eq_setPreimage {X Y : Type u} (f : X ⟶ Y) (B : Set Y) {A :
     IsPullback (↾fun (⟨a, ha⟩ : A) ↦ (⟨f a, by simpa [hA] using ha⟩ : B))
       (↾Subtype.val) (↾Subtype.val) f := by
   rw [isPullback_iff]
-  refine ⟨rfl, ?_, ?_⟩
-  · rintro ⟨_, _⟩ ⟨_, _⟩ ⟨_, rfl⟩
-    rfl
-  · rintro ⟨_, hx₂⟩ x₃ rfl
-    exact ⟨⟨x₃, by rwa [hA]⟩, rfl, rfl⟩
+  cat_disch
 
 end
 

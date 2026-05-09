@@ -150,16 +150,14 @@ then `A.preimage (yonedaEquiv.symm x) = ∂Δ[n]`. -/
 lemma preimage_eq_boundary_of_minimal_notMem
     {X : SSet.{u}} {n : ℕ} (A : X.Subcomplex) {x : X _⦋n⦌} (hxA : x ∉ A.obj _)
     (hn : ∀ m < n, ∀ y : X _⦋m⦌, y ∈ A.obj _) :
-    A.preimage (yonedaEquiv.symm x) = (∂Δ[n] : (Δ[n] : SSet.{u}).Subcomplex) := by
+    A.preimage (yonedaEquiv.symm x) = ∂Δ[n] := by
   rw [stdSimplex.eq_boundary_iff]
   refine ⟨?_, fun heq ↦ hxA ?_⟩
   · rw [Subcomplex.le_iff_contains_nonDegenerate]
     intro d ⟨y, hy⟩ hy'
-    have hd : d < n := dim_lt_of_nonDegenerate
-      (X := ((∂Δ[n] : (Δ[n] : SSet.{u}).Subcomplex) : SSet.{u}))
-      ⟨⟨y, hy'⟩, (Subcomplex.mem_nonDegenerate_iff _ _).2 hy⟩ _
-    exact hn d hd ((yonedaEquiv.symm x).app _ y)
-  · simpa using heq.symm.le _ (by simp : yonedaEquiv (𝟙 _) ∈ _)
+    exact hn d (dim_lt_of_nonDegenerate (X := ∂Δ[n]) ⟨⟨y, hy'⟩,
+      (Subcomplex.mem_nonDegenerate_iff _ _).2 hy⟩ _) _
+  · simpa using heq.symm.le _ (show yonedaEquiv (𝟙 _) ∈ _ by simp)
 
 /-- If `A.preimage (yonedaEquiv.symm x) = ∂Δ[n]`, then `x` is non-degenerate. -/
 lemma nonDegenerate_of_preimage_eq_boundary
