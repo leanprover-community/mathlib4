@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 public import Mathlib.Algebra.Module.Equiv.Basic
 public import Mathlib.Tactic.Linarith
 
-/-! Shifting cochains
+/-! # Shifting cochains
 
 Let `C` be a preadditive category. Given two cochain complexes (indexed by `ℤ`),
 the type of cochains `HomComplex.Cochain K L n` of degree `n` was introduced
