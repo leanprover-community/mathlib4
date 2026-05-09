@@ -6,6 +6,7 @@ Authors: Christian Merten
 module
 
 public import Mathlib.Algebra.Module.LocalizedModule.Int
+public import Mathlib.Algebra.Module.LocalizedModule.Submodule
 public import Mathlib.RingTheory.Localization.Algebra
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
 
@@ -262,6 +263,41 @@ theorem of_localizationSpan (t : Set R) (ht : Ideal.span t = ⊤)
 end Finite
 
 end Module
+
+namespace Submodule
+
+variable {R : Type u} [CommRing R] {M : Type v} [AddCommGroup M] [Module R M] {N : Submodule R M}
+
+lemma of_localizationSpan' (s : Set R) (hs : Ideal.span (s : Set R) = ⊤)
+    {Mₚ : ∀ (_ : s), Type*} [∀ (g : s), AddCommMonoid (Mₚ g)] [∀ (g : s), Module R (Mₚ g)]
+    {Rₚ : ∀ (_ : s), Type u} [∀ (g : s), CommRing (Rₚ g)] [∀ (g : s), Algebra R (Rₚ g)]
+    [∀ (g : s), IsLocalization.Away g.val (Rₚ g)]
+    [∀ (g : s), Module (Rₚ g) (Mₚ g)] [∀ (g : s), IsScalarTower R (Rₚ g) (Mₚ g)]
+    (ϕ : ∀ (g : s), M →ₗ[R] Mₚ g) [∀ (g : s), IsLocalizedModule (Submonoid.powers g.val) (ϕ g)]
+    (H : ∀ (g : s), (N.localized' (Rₚ g) (Submonoid.powers g.1) (ϕ g)).FG) :
+    N.FG := by
+  simp [← Module.Finite.iff_fg, Module.Finite.of_localizationSpan' s hs
+    (fun g ↦ N.toLocalized' (Rₚ g) (Submonoid.powers g.1) (ϕ g))
+    (fun g ↦ Module.Finite.iff_fg.mpr (H g))]
+
+lemma of_localizationSpan (s : Set R) (hs : Ideal.span (s : Set R) = ⊤)
+    (H : ∀ (g : s), (localized (Submonoid.powers g.1) N).FG) : N.FG :=
+  N.of_localizationSpan' s hs (Rₚ := fun g ↦ Localization (Submonoid.powers g.1))
+    (fun g ↦ LocalizedModule.mkLinearMap (Submonoid.powers g.1) M)
+    (fun g ↦ by simp_all only [Subtype.forall])
+
+variable (R' : Type*) [CommRing R'] [Algebra R R']
+  {M' : Type*} [AddCommGroup M'] [Module R M'] [Module R' M'] [IsScalarTower R R' M']
+  (S : Submonoid R) [IsLocalization S R'] (f : M →ₗ[R] M') [IsLocalizedModule S f]
+
+lemma localized'_fg (h : N.FG) : (N.localized' R' S f).FG := by
+  rw [fg_def] at h ⊢
+  rcases h with ⟨s, hfin, hspan⟩
+  exact ⟨f '' s, Set.Finite.image f hfin, by rw [← hspan, localized'_span]⟩
+
+lemma localized_fg (h : N.FG) : (N.localized S).FG := localized'_fg _ _ _ h
+
+end Submodule
 
 namespace Ideal
 
