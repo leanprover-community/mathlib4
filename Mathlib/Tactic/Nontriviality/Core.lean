@@ -50,13 +50,14 @@ def nontrivialityByElim {u : Level} (α : Q(Type u)) (g : MVarId) (simpArgs : Ar
     g.assign q(subsingleton_or_nontrivial_elim $g₁ $g₂)
     pure g₂.mvarId!
 
+open Lean.Elab.Tactic.SolveByElim in
 /--
 Tries to generate a `Nontrivial α` instance using `nontrivial_of_ne` or `nontrivial_of_lt`
 and local hypotheses.
 -/
 def nontrivialityByAssumption (g : MVarId) : MetaM Unit := do
   g.inferInstance <|> do
-    _ ← SolveByElim.processSyntax {maxDepth := 6}
+    _ ← processSyntax {maxDepth := 6}
       false false [← `(nontrivial_of_ne), ← `(nontrivial_of_lt)] [] #[] [g]
 
 /-- `nontriviality α` generates a proof of `Nontrivial α` and adds this as a hypothesis.
