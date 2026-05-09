@@ -777,7 +777,7 @@ lemma isFiniteRelIndex_of_le {H₁ H₂ : Subgroup G} (H₃ : Subgroup G) [H₁.
 
 @[to_additive]
 lemma isFiniteRelIndex_of_le' {H₁ H₂ H₃ : Subgroup G} (h₁₂ : H₁ ≤ H₂) (h₂₃ : H₂ ≤ H₃)
-    [h : H₁.IsFiniteRelIndex H₃] :
+    [H₁.IsFiniteRelIndex H₃] :
     H₁.IsFiniteRelIndex H₂ := by
   have := relIndex_mul_relIndex _ _ _ h₁₂ h₂₃
   grind [isFiniteRelIndex_iff_relIndex_ne_zero]
