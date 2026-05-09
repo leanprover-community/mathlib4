@@ -276,17 +276,9 @@ include hG in
   trivially a politician. -/
 theorem existsPolitician_of_degree_le_one (hd : G.IsRegularOfDegree d) (hd1 : d ≤ 1) :
     ExistsPolitician G := by
-  have sq : d * d = d := by interval_cases d <;> norm_num
   have h := card_of_regular hG hd
-  rw [sq] at h
-  have : Fintype.card V ≤ 1 := by
-    cases hn : Fintype.card V with
-    | zero => exact zero_le _
-    | succ n => lia
-  use Classical.arbitrary V
-  intro w h; exfalso
-  apply h
-  apply Fintype.card_le_one_iff.mp this
+  have : Fintype.card V ≤ 1 := by interval_cases d <;> lia
+  exact ⟨Classical.arbitrary V, fun w h ↦ (h <| Fintype.card_le_one_iff.mp this ..).elim⟩
 
 open scoped Classical in
 include hG in
