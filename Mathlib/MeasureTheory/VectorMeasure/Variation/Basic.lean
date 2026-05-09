@@ -100,7 +100,7 @@ end Basic
 
 section NormedAddCommGroup
 
-variable [NormedAddCommGroup V] {μ : VectorMeasure X V}
+variable [NormedAddCommGroup V] {μ ν : VectorMeasure X V}
 
 theorem norm_measure_le_variation {E : Set X} (hE : μ.variation E ≠ ∞ := by finiteness) :
     ‖μ E‖ ≤ μ.variation.real E := by
@@ -110,6 +110,28 @@ theorem norm_measure_le_variation {E : Set X} (hE : μ.variation E ≠ ∞ := by
 variable (μ) in
 @[simp]
 lemma variation_neg : (-μ).variation = μ.variation := by simp [variation]
+
+lemma variation_add_le : (μ + ν).variation ≤ μ.variation + ν.variation := by
+  refine Measure.le_iff.2 fun s hs ↦ ?_
+  simp only [variation_apply, preVariation_apply, Measure.add_apply, ennrealToMeasure_apply hs,
+    ennrealPreVariation_apply, preVariationFun, hs, ↓reduceDIte]
+  refine iSup_le fun P ↦ ?_
+  calc
+  _ ≤ ∑ p ∈ P.parts, (‖μ p‖ₑ + ‖ν p‖ₑ) := Finset.sum_le_sum fun p _ ↦ enorm_add_le (μ p) (ν p)
+  _ = (∑ p ∈ P.parts, ‖μ p‖ₑ) + ∑ p ∈ P.parts, ‖ν p‖ₑ := by rw [Finset.sum_add_distrib]
+  _ ≤ _ := add_le_add (le_iSup_of_le P le_rfl) (le_iSup_of_le P le_rfl)
+
+lemma variation_sub_le : (μ - ν).variation ≤ μ.variation + ν.variation := by
+  grw [sub_eq_add_neg, variation_add_le, variation_neg]
+
+lemma variation_finsetSum_le {ι} (s : Finset ι) (μ : ι → VectorMeasure X V) :
+    (∑ i ∈ s, μ i).variation ≤ ∑ i ∈ s, (μ i).variation := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert i s his ih =>
+    simpa [Finset.sum_insert his] using
+      variation_add_le.trans (add_le_add_right ih ((μ i).variation))
 
 end NormedAddCommGroup
 
