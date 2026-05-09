@@ -203,7 +203,7 @@ open Complex
 
 variable (x y : ℝ)
 
-@[simp]
+@[simp, push]
 theorem exp_zero : exp 0 = 1 := by simp [Real.exp]
 
 nonrec theorem exp_add : exp (x + y) = exp x * exp y := by simp [exp_add, exp]
