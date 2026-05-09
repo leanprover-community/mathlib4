@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Functor.KanExtension.Basic
-public import Mathlib.CategoryTheory.Localization.Predicate
+public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 
 /-!
 # Right derived functors

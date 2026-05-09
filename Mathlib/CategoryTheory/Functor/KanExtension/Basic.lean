@@ -785,6 +785,22 @@ instance (β : L ⋙ F' ⟶ F) (G : H ⥤ H') [G.IsEquivalence] [F'.IsRightKanEx
 
 end postcompose₂
 
+-- TODO (@joelriou): dualize this lemma for right Kan extensions
+lemma isLeftKanExtension_iff_precomp_equivalence
+    {F₁' : D ⥤ H} {L₁ : C ⥤ D} {F₁ : C ⥤ H} (α₁ : F₁ ⟶ L₁ ⋙ F₁')
+    {F₂' : D' ⥤ H} {L₂ : C' ⥤ D'} {F₂ : C' ⥤ H} (α₂ : F₂ ⟶ L₂ ⋙ F₂')
+    {G : C ⥤ C'} {G' : D ⥤ D'} [G.IsEquivalence] [G'.IsEquivalence]
+    (iso : G ⋙ L₂ ≅ L₁ ⋙ G') (e : F₁ ≅ G ⋙ F₂) (e' : G' ⋙ F₂' ≅ F₁')
+    (h : α₁ = e.hom ≫ whiskerLeft G α₂ ≫ (associator _ _ _).inv ≫
+      whiskerRight iso.hom F₂' ≫ (associator _ _ _).hom ≫ whiskerLeft L₁ e'.hom) :
+    F₂'.IsLeftKanExtension α₂ ↔ F₁'.IsLeftKanExtension α₁ := by
+  simp only [isLeftKanExtension_iff]
+  let Φ : L₂.LeftExtension F₂ ⥤ L₁.LeftExtension F₁ :=
+    StructuredArrow.map₂ (F := (Functor.whiskeringLeft _ _ _).obj G')
+      (G := (Functor.whiskeringLeft _ _ _).obj G) e.hom
+        ((whiskeringLeft C D' H).mapIso iso).hom
+  exact Equiv.nonempty_congr ((IsInitial.isInitialIffObj Φ _).trans
+    (IsInitial.equivOfIso (StructuredArrow.isoMk e')))
 
 section Colimit
 
