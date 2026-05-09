@@ -6,6 +6,7 @@ Authors: Jiale Miao, Kevin Buzzard, Alexander Bentkamp
 module
 
 public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.LinearAlgebra.Basis.Flag
 public import Mathlib.LinearAlgebra.Matrix.Block
 
 /-!
@@ -367,6 +368,37 @@ orthonormal basis `gramSchmidtOrthonormalBasis` constructed from `f` is upper-tr
 theorem gramSchmidtOrthonormalBasis_inv_blockTriangular :
     ((gramSchmidtOrthonormalBasis h f).toBasis.toMatrix f).BlockTriangular id := fun _ _ =>
   gramSchmidtOrthonormalBasis_inv_triangular' h f
+
+/-- Gram-Schmidt applied to a basis preserves each flag subspace spanned by an initial segment. -/
+theorem _root_.Module.Basis.flag_gramSchmidtOrthonormalBasis_toBasis
+    {n : ℕ} (b : Basis (Fin n) 𝕜 E) (k : Fin (n + 1)) :
+    (gramSchmidtOrthonormalBasis (Module.finrank_eq_card_basis b) b).toBasis.flag k =
+      b.flag k := by
+  let u := gramSchmidtOrthonormalBasis (Module.finrank_eq_card_basis b) b
+  have hu (i : Fin n) : u i = gramSchmidtNormed 𝕜 b i :=
+    gramSchmidtOrthonormalBasis_apply _ ((gramSchmidtNormed_linearIndependent
+      (𝕜 := 𝕜) b.linearIndependent).ne_zero i)
+  apply le_antisymm
+  · rw [Basis.flag_le_iff]
+    intro i hi
+    change u i ∈ b.flag k
+    rw [hu i, gramSchmidtNormed]
+    refine Submodule.smul_mem _ _ ?_
+    rw [Basis.flag]
+    exact span_mono (image_mono fun j hj =>
+      lt_of_le_of_lt (Fin.castSucc_le_castSucc_iff.mpr hj) hi)
+      (gramSchmidt_mem_span 𝕜 b le_rfl)
+  · rw [Basis.flag_le_iff]
+    intro i hi
+    rw [Basis.flag]
+    have hb : b i ∈ span 𝕜 (gramSchmidtNormed 𝕜 b '' Set.Iic i) := by
+      rw [span_gramSchmidtNormed, span_gramSchmidt_Iic]
+      exact subset_span ⟨i, by simp, rfl⟩
+    refine span_mono (Set.image_subset_iff.2 ?_) hb
+    intro j hj
+    change gramSchmidtNormed 𝕜 b j ∈ u.toBasis '' {i | i.castSucc < k}
+    rw [← hu j]
+    exact ⟨j, lt_of_le_of_lt (Fin.castSucc_le_castSucc_iff.mpr hj) hi, rfl⟩
 
 theorem gramSchmidtOrthonormalBasis_det [DecidableEq ι] :
     (gramSchmidtOrthonormalBasis h f).toBasis.det f =

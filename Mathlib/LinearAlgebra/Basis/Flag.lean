@@ -99,6 +99,26 @@ theorem flag_le_ker_dual (b : Basis (Fin n) R M) (k : Fin n) :
 
 end CommRing
 
+section Field
+
+variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V] {n : ℕ}
+
+theorem mem_flag_iff_repr_eq_zero (b : Basis (Fin n) K V) {k : Fin (n + 1)} {x : V} :
+    x ∈ b.flag k ↔ ∀ i : Fin n, k ≤ i.castSucc → b.repr x i = 0 := by
+  constructor
+  · intro hx i hi
+    have hmem : x ∈ LinearMap.ker (b.coord i) := b.flag_le_ker_coord hi hx
+    simpa [Module.Basis.coord_apply] using (LinearMap.mem_ker.mp hmem)
+  · intro h
+    rw [← b.sum_repr x]
+    exact Submodule.sum_mem _ fun i _ => by
+      by_cases hi : i.castSucc < k
+      · exact Submodule.smul_mem _ _ (b.self_mem_flag hi)
+      · rw [h i (le_of_not_gt hi), zero_smul]
+        exact Submodule.zero_mem _
+
+end Field
+
 section DivisionRing
 
 variable {K V : Type*} [DivisionRing K] [AddCommGroup V] [Module K V] {n : ℕ}
