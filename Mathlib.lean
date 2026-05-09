@@ -1229,6 +1229,7 @@ public import Mathlib.Algebra.Ring.Idempotent
 public import Mathlib.Algebra.Ring.Identities
 public import Mathlib.Algebra.Ring.InjSurj
 public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Algebra.Ring.Int.Field
 public import Mathlib.Algebra.Ring.Int.Parity
 public import Mathlib.Algebra.Ring.Int.Units
 public import Mathlib.Algebra.Ring.Invertible
@@ -1383,6 +1384,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Immersion
 public import Mathlib.AlgebraicGeometry.Morphisms.Integral
 public import Mathlib.AlgebraicGeometry.Morphisms.IsIso
 public import Mathlib.AlgebraicGeometry.Morphisms.LocalClosure
+public import Mathlib.AlgebraicGeometry.Morphisms.LocalFlatDescent
 public import Mathlib.AlgebraicGeometry.Morphisms.LocalIso
 public import Mathlib.AlgebraicGeometry.Morphisms.OpenImmersion
 public import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
@@ -1488,6 +1490,7 @@ public import Mathlib.AlgebraicTopology.ModelCategory.Opposite
 public import Mathlib.AlgebraicTopology.ModelCategory.Over
 public import Mathlib.AlgebraicTopology.ModelCategory.PathObject
 public import Mathlib.AlgebraicTopology.ModelCategory.RightHomotopy
+public import Mathlib.AlgebraicTopology.ModelCategory.Transport
 public import Mathlib.AlgebraicTopology.MooreComplex
 public import Mathlib.AlgebraicTopology.Quasicategory.Basic
 public import Mathlib.AlgebraicTopology.Quasicategory.Nerve
@@ -3413,6 +3416,7 @@ public import Mathlib.CategoryTheory.Triangulated.Basic
 public import Mathlib.CategoryTheory.Triangulated.Functor
 public import Mathlib.CategoryTheory.Triangulated.Generators
 public import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
+public import Mathlib.CategoryTheory.Triangulated.LocalizingSubcategory
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Basic
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Functor
 public import Mathlib.CategoryTheory.Triangulated.Opposite.OpOp
@@ -4527,6 +4531,7 @@ public import Mathlib.Geometry.Group.Growth.QuotientInter
 public import Mathlib.Geometry.Manifold.Algebra.LeftInvariantDerivation
 public import Mathlib.Geometry.Manifold.Algebra.LieGroup
 public import Mathlib.Geometry.Manifold.Algebra.Monoid
+public import Mathlib.Geometry.Manifold.Algebra.SMul
 public import Mathlib.Geometry.Manifold.Algebra.SmoothFunctions
 public import Mathlib.Geometry.Manifold.Algebra.Structures
 public import Mathlib.Geometry.Manifold.Bordism
@@ -5722,6 +5727,7 @@ public import Mathlib.NumberTheory.NumberField.Discriminant.Basic
 public import Mathlib.NumberTheory.NumberField.Discriminant.Defs
 public import Mathlib.NumberTheory.NumberField.Discriminant.Different
 public import Mathlib.NumberTheory.NumberField.EquivReindex
+public import Mathlib.NumberTheory.NumberField.ExistsRamified
 public import Mathlib.NumberTheory.NumberField.FinitePlaces
 public import Mathlib.NumberTheory.NumberField.FractionalIdeal
 public import Mathlib.NumberTheory.NumberField.House
@@ -6484,6 +6490,7 @@ public import Mathlib.RingTheory.Ideal.GoingUp
 public import Mathlib.RingTheory.Ideal.Height
 public import Mathlib.RingTheory.Ideal.IdempotentFG
 public import Mathlib.RingTheory.Ideal.Int
+public import Mathlib.RingTheory.Ideal.IsAugmentation
 public import Mathlib.RingTheory.Ideal.IsPrimary
 public import Mathlib.RingTheory.Ideal.IsPrincipal
 public import Mathlib.RingTheory.Ideal.IsPrincipalPowQuotient

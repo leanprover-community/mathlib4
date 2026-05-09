@@ -260,8 +260,6 @@ lemma equiv_of_fromSpecStalkOfMem_eq [IrreducibleSpace X]
     simpa only [fromSpecStalkOfMem, restrict_domain, Opens.fromSpecStalkOfMem, Spec.map_inv,
       restrict_hom, Category.assoc, IsIso.eq_inv_comp, IsIso.hom_inv_id_assoc] using H
 
-instance (U : X.Opens) [IsReduced X] : IsReduced U := isReduced_of_isOpenImmersion U.ι
-
 set_option backward.isDefEq.respectTransparency false in
 /-- Two partial maps from reduced schemes to separated schemes are equivalent if and only if
 they are equal on **any** open dense subset. -/
