@@ -48,13 +48,6 @@ the vertex or edge set. This is an issue, but is likely amenable to automation."
 Because `edgeSet` is a `Set (Set α)`, rather than a multiset, here we are assuming that
 all hypergraphs are *without repeated edge*.
 
-## Acknowledgments
-
-Credit to Shreyas Srinivas, GitHub user @NotWearingPants ("Snir" on the Lean Zulip), Ammar
-Husain, Aaron Liu, Tristan Figueroa-Reid, John Talbot, and Thomas Browning for patient guidance and
-useful feedback on this implementation.
-
-Credit to Peter Nelson, Jun Kwon for `adj_comm` and `eAdj_comm`
 -/
 
 @[expose] public section
@@ -67,7 +60,7 @@ variable {α β γ : Type*} {x y : α} {e e' f g : Set α} {l : Set (Set α)}
 An undirected hypergraph with vertices of type `α` and edges of type `Set α`, as described by vertex
 and edge sets `vertexSet : Set α` and `edgeSet : Set (Set α)`.
 
-The requirement `edge_isSubset_vertexSet` ensures that all vertices in edges are part of
+The requirement `subset_vertexSet_of_mem_edgeSet` ensures that all vertices in edges are part of
 `vertexSet`, i.e., all edges are subsets of the `vertexSet`.
 -/
 @[ext]
@@ -77,7 +70,7 @@ structure Hypergraph (α : Type*) where
   /-- The edge set -/
   edgeSet : Set (Set α)
   /-- All edges must be subsets of the vertex set -/
-  edge_isSubset_vertexSet' : ∀ ⦃e⦄, e ∈ edgeSet → e ⊆ vertexSet
+  subset_vertexSet_of_mem_edgeSet' : ∀ ⦃e⦄, e ∈ edgeSet → e ⊆ vertexSet
 
 namespace Hypergraph
 
@@ -95,18 +88,18 @@ scoped notation "E(" H ")" => Hypergraph.edgeSet H
 /-! ## Vertex-Hyperedge Incidence -/
 
 @[simp]
-lemma edge_isSubset_vertexSet (he : e ∈ E(H)) : e ⊆ V(H) :=
-  H.edge_isSubset_vertexSet' he
+lemma subset_vertexSet_of_mem_edgeSet (he : e ∈ E(H)) : e ⊆ V(H) :=
+  H.subset_vertexSet_of_mem_edgeSet' he
 
 lemma _root_.Membership.mem.subset_vertexSet (he : e ∈ E(H)) : e ⊆ V(H) :=
-  H.edge_isSubset_vertexSet he
+  H.subset_vertexSet_of_mem_edgeSet he
 
 lemma edgeSet_subset_powerset_vertexSet {H : Hypergraph α} : E(H) ⊆ V(H).powerset := by
   intro e he
   exact he.subset_vertexSet
 
 lemma mem_vertexSet_of_mem_edgeSet (he : e ∈ E(H)) (hx : x ∈ e) : x ∈ V(H) :=
-  H.edge_isSubset_vertexSet he hx
+  H.subset_vertexSet_of_mem_edgeSet he hx
 
 /--
 If edges `e` and `e'` have the same vertices from `G`, then they have all the same vertices.
@@ -126,7 +119,7 @@ lemma sUnion_edgeSet_subset_vertexSet : ⋃₀ E(H) ⊆ V(H) :=
 Predicate for adjacency. Two vertices `x` and `y` are adjacent if there is some edge `e ∈ E(H)`
 where `x` and `y` are both incident to `e`.
 
-Note that we do not need to explicitly check that x, y ∈ V(H) here because a vertex that is not in
+Note that we do not need to explicitly check that `x, y ∈ V(H)` here because a vertex that is not in
 the vertex set cannot be incident to any edge.
 -/
 def Adj (H : Hypergraph α) (x : α) (y : α) : Prop :=
@@ -169,13 +162,14 @@ of `Hᶠ` is the set of images of the edges (subsets of vertices) in `E(H)`. -/
 protected def image (H : Hypergraph α) (f : α → β) : Hypergraph β where
   vertexSet := V(H).image f
   edgeSet := E(H).image (Set.image f)
-  edge_isSubset_vertexSet' := by
+  subset_vertexSet_of_mem_edgeSet' := by
     rintro - ⟨e, he, rfl⟩
     exact image_mono he.subset_vertexSet
 
-lemma mem_image {f : α → β} {e : Set β} : e ∈ E(H.image f) ↔ ∃ e' ∈ E(H), f '' e' = e := Iff.rfl
+lemma mem_edgeSet_image {f : α → β} {e : Set β} : e ∈ E(H.image f) ↔ ∃ e' ∈ E(H), f '' e' = e :=
+  .rfl
 
-lemma image_mem_image {f : α → β} (he : e ∈ E(H)) : e.image f ∈ E(H.image f) :=
+lemma image_mem_edgeSet_image {f : α → β} (he : e ∈ E(H)) : e.image f ∈ E(H.image f) :=
   mem_image_of_mem _ he
 
 lemma image_image {f : α → β} {g : β → γ} (H : Hypergraph α) :
@@ -215,7 +209,7 @@ def IsNonempty (H : Hypergraph α) : Prop := (∃ x, x ∈ V(H)) ∨ (∃ e, e �
 def emptyHypergraph (α : Type*) : Hypergraph α where
   vertexSet := ∅
   edgeSet := ∅
-  edge_isSubset_vertexSet' := by simp
+  subset_vertexSet_of_mem_edgeSet' := by simp
 
 @[simp]
 lemma isNonempty_of_nonempty_vertexSet (hV : V(H).Nonempty) : H.IsNonempty :=
@@ -262,7 +256,7 @@ def IsTrivial (H : Hypergraph α) : Prop := Set.Nonempty V(H) ∧ E(H) = ∅
 def trivialHypergraph (f : Set α) : Hypergraph α where
   vertexSet := f
   edgeSet := ∅
-  edge_isSubset_vertexSet' := by simp
+  subset_vertexSet_of_mem_edgeSet' := by simp
 
 lemma IsTrivial.not_isEmpty (hh : IsTrivial H) : ¬IsEmpty H := by
   grind [IsEmpty, IsTrivial, Set.nonempty_iff_ne_empty]
@@ -277,7 +271,7 @@ def IsComplete (H : Hypergraph α) : Prop := ∀ e ⊆ V(H), e ∈ E(H)
 def completeOn (f : Set α) : Hypergraph α where
   vertexSet := f
   edgeSet := 𝒫 f
-  edge_isSubset_vertexSet' := by simp
+  subset_vertexSet_of_mem_edgeSet' := by simp
 
 lemma mem_completeOn : e ∈ E(completeOn f) ↔ e ⊆ f := by simp
 
