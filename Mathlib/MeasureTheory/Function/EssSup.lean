@@ -8,7 +8,7 @@ module
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 public import Mathlib.MeasureTheory.Measure.Count
 public import Mathlib.Order.Filter.ENNReal
-public import Mathlib.Probability.UniformO
+public import Mathlib.Probability.UniformOn
 
 /-!
 # Essential supremum and infimum
