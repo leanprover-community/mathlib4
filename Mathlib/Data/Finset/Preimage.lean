@@ -118,7 +118,7 @@ theorem image_preimage_of_bij [DecidableEq β] (f : α → β) (s : Finset β)
     (hf : Set.BijOn f (f ⁻¹' ↑s) ↑s) : image f (preimage s f hf.injOn) = s :=
   Finset.coe_inj.1 <| by simpa using hf.image_eq
 
-theorem _root_.Function.Bijective.image_preimage_eq [DecidableEq β] (f : α → β) (s : Finset β)
+theorem image_preimage_eq_of_bijective [DecidableEq β] {f : α → β} (s : Finset β)
     (hf : Bijective f) : image f (preimage s f (hf.injective.injOn)) = s :=
   image_preimage_of_bij f s hf.bijOn_preimage
 
@@ -134,10 +134,10 @@ theorem subset_map_iff {f : α ↪ β} {s : Finset β} {t : Finset α} :
   classical
   simp_rw [map_eq_image, subset_image_iff, eq_comm]
 
-theorem image_eq_iff_eq_preimage [DecidableEq β] {f : α → β} (hf : Bijective f)
-      {s : Finset α} {t : Finset β} :
+theorem image_eq_iff_eq_preimage [DecidableEq β] {s : Finset α} {t : Finset β}
+    {f : α → β} (hf : Bijective f) :
     s.image f = t ↔ s = t.preimage f hf.injective.injOn := by
-  rw [← image_inj hf.injective, hf.image_preimage_eq]
+  rw [← image_inj hf.injective, t.image_preimage_eq_of_bijective hf]
 
 @[simp]
 theorem sup_preimage_self {α β : Type*} [Nonempty α] [SemilatticeSup β] [OrderBot β]
