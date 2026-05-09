@@ -237,7 +237,7 @@ lemma BirationalOver.trans {S X Y Z : Scheme.{u}} [X.Over S] [Y.Over S] [Z.Over 
   ⟨h₁.partialIso.trans h₂.partialIso, inferInstance⟩
 
 /-- `X` is rational over `S` (or `S`-rational) if it is birational over `S` to some
-affine space `𝔸(Fin n; S)`. -/
+affine space `𝔸(n; S)`. -/
 @[mk_iff]
 class IsRationalOver (S X : Scheme.{max u v}) [X.Over S] : Prop where
   exists_birationalOver_affineSpace' : ∃ (n : Type v), BirationalOver S X 𝔸(n; S)
