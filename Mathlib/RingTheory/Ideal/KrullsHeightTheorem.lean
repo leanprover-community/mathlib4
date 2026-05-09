@@ -148,9 +148,8 @@ theorem Ideal.mem_minimalPrimes_span_of_mem_minimalPrimes_span_insert {q p : Ide
         sup_eq_left.mpr hI'q, sup_eq_left.mpr hI'p] using comap_mono (f := f) e
     have : (q.map f).IsPrime := map_isPrime_of_surjective hf (by rwa [mk_ker])
     have : (p.map f).FiniteHeight := ⟨Or.inr (h.trans_lt (WithTop.coe_lt_top 1)).ne⟩
-    rw [height_eq_primeHeight] at h
-    have := (primeHeight_strict_mono h_lt).trans_le h
-    rw [ENat.lt_one_iff_eq_zero, primeHeight_eq_zero_iff] at this
+    have := (height_strict_mono_of_isPrime_of_isPrime h_lt).trans_le h
+    rw [ENat.lt_one_iff_eq_zero, height_eq_zero_iff] at this
     have := minimalPrimes_comap_of_surjective hf this
     rwa [comap_map_of_surjective f hf, ← RingHom.ker_eq_comap_bot,
       mk_ker, sup_eq_left.mpr hI'q] at this
@@ -182,8 +181,7 @@ nonrec lemma Ideal.height_le_spanRank_toENat_of_mem_minimalPrimes
     have := hp.isPrime
     cases n with
     | zero =>
-      rw [ENat.coe_zero, nonpos_iff_eq_zero, height_eq_primeHeight p,
-        primeHeight_eq_zero_iff, minimalPrimes]
+      rw [ENat.coe_zero, nonpos_iff_eq_zero, height_eq_zero_iff, minimalPrimes]
       simp_all
     | succ n =>
       wlog hR : ∃ (_ : IsLocalRing R), p = maximalIdeal R
@@ -243,9 +241,8 @@ than or equal to the minimum number of generators for this ideal. -/
 lemma Ideal.height_le_spanRank_toENat (I : Ideal R) (hI : I ≠ ⊤) :
     I.height ≤ I.spanRank.toENat := by
   obtain ⟨J, hJ⟩ := nonempty_minimalPrimes hI
-  refine (iInf₂_le J hJ).trans ?_
-  convert (I.height_le_spanRank_toENat_of_mem_minimalPrimes J hJ)
-  exact (@height_eq_primeHeight _ _ J hJ.1.1).symm
+  rw [I.height_eq_inf_minimalPrimes]
+  exact (iInf₂_le J hJ).trans (I.height_le_spanRank_toENat_of_mem_minimalPrimes J hJ)
 
 lemma Ideal.height_le_spanFinrank (I : Ideal R) (hI : I ≠ ⊤) :
     I.height ≤ I.spanFinrank := by
@@ -473,7 +470,7 @@ lemma Ideal.height_eq_height_add_of_liesOver_of_hasGoingDown [IsNoetherianRing S
       simp [hlq, map_le_iff_le_comap, LiesOver.over (p := p) (P := P)]
   obtain ⟨lp', hlp'len, hlp', _⟩ := exists_ltSeries_of_hasGoingDown lp l'.head.asIdeal
   have : (lp'.smash l' hlp').length = lp.length + lq.length := by simp [hlp'len, l']
-  rw [← hlenp, ← hlenq, ← Nat.cast_add, ← this, height_eq_primeHeight]
+  rw [← hlenp, ← hlenq, ← Nat.cast_add, ← this, Ideal.height_eq_order_height_of_isPrime]
   apply Order.length_le_height
   simp [hlq, l', ← PrimeSpectrum.asIdeal_le_asIdeal, map_le_iff_le_comap,
     LiesOver.over (p := p) (P := P)]
