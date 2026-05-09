@@ -162,7 +162,7 @@ by `deformTerminal` to splice a new endpoint path onto `γ` while preserving its
 public theorem terminalTail_source {u : X} (γ : BasedPath x₀) (hu : endpoint γ = u) (a : ℝ)
     (ha1 : a ≤ 1) :
     terminalTail γ hu a ha1 0 = γ.toPath.extend a := by
-  simpa [terminalTail] using (γ.toPath.truncateOfLE ha1).source
+  simp [terminalTail]
 
 public theorem terminalTail_target {u : X} (γ : BasedPath x₀) (hu : endpoint γ = u) (a : ℝ)
     (ha1 : a ≤ 1) :
@@ -189,10 +189,10 @@ original path and then a new endpoint path. -/
       · intro t htb
         have hba : b - a ≠ 0 := sub_ne_zero.mpr hab.ne.symm
         subst t
-        simpa [tail, hba] using terminalTail_target γ hu a (by linarith)
+        simp [tail, hba]
     · intro t hta
       subst t
-      simpa [tail, hab.le] using (terminalTail_source γ hu a (by linarith)).symm
+      simp [tail, hab.le]
   refine ⟨ContinuousMap.mk
     (fun t : I ↦ f t)
     (hf_cont.comp continuous_subtype_val), ?_⟩
