@@ -91,8 +91,8 @@ def FixedPoints.subsemiring : Subsemiring B' where
   __ := FixedPoints.addSubmonoid G B'
   __ := FixedPoints.submonoid G B'
 
-instance : SMulCommClass G (FixedPoints.subsemiring B' G) B' where
-  smul_comm g x y := by simp_rw [Subsemiring.smul_def, smul_eq_mul, smul_mul', x.2 g]
+instance : SMulCommClass G (FixedPoints.subsemiring B' G) B' :=
+  inferInstanceAs (SMulCommClass G (FixedPoints.submonoid G B') B')
 
 /-- The set of fixed points under a group action, as a subring. -/
 def FixedPoints.subring : Subring B where
