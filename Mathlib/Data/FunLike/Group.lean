@@ -14,7 +14,8 @@ public import Mathlib.Algebra.Group.Pi.Basic
 In this file we define various instances related to groups for `FunLike` types.
 
 For example given a `FunLike F α β` with `IsMulApply F α β` and `Semigroup β`, then `F` is naturally
-a semigroup.
+a semigroup. Note that currently, these are not registered as instances, but only `abbrev`s to
+avoid long typeclass searches.
 
 Moreover, we define the homomorphism `FunLike.coeMulHom : F →* α → β` that acts by coercion. This
 definition is mainly needed to define a module instance on `F`.

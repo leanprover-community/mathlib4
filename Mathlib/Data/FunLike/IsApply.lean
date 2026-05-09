@@ -8,13 +8,13 @@ module
 public import Mathlib.Algebra.Notation.Pi.Defs
 public import Mathlib.Data.FunLike.Basic
 
-/-! # Group structure for `FunLike`
-In this file we provide typeclasses for the compatibility of algebraic structures and`FunLike`
+/-! # Typeclasses for `FunLike` and algebraic operations
+In this file we provide typeclasses for the compatibility of algebraic structures and `FunLike`
 instances.
 
 These instances encode the property that algebraic operations such as addition, subtraction, and
-negation are given by the pointwise operations, and moreover we provide classes for multiplication
-is given by composition.
+negation are given by the pointwise operations, and moreover we provide classes for `1` acting as
+the identity and multiplication acting as composition.
 
 The algebraic `FunLike` typeclasses provide a `simp` lemma of the form `add_apply` and a `norm_cast`
 lemma `coe_add`.
@@ -30,8 +30,8 @@ The following `Is*Apply` typeclasses are available:
   `(f ^ n) x = (f x) ^ n`, respectively
 * `IsNatCastApply`, `IsIntCastApply`: `(n : F) x = n • x` for `n : ℕ` and `n : ℤ`, respectively
 
-For every type that declares a `FunLike` instance and an `Add` instance in general there should be
-a `IsAddApply` instance with the proof usually being `rfl`.
+For every type that declares a `FunLike` instance and an `Add` instance, there should be generally
+an `IsAddApply` instance with the proof usually being `rfl`.
 So for instance for the continuous linear maps equipped with the uniform convergence topology,
 we have the instance
 ```
@@ -39,7 +39,6 @@ instance instIsAddApply [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : S
     IsAddApply (E →SLᵤ[σ, 𝔖] F) E F where
   add_apply _ _ _ := rfl
 ```
-etc.
 
 
 There are a few lemmas that apply to any function space as long as they have an `IsAddApply`
@@ -61,7 +60,6 @@ theorem prod_apply {ι : Type*} (s : Finset ι) (f : ι → F) (x : α) :
 
 end FunLike
 ```
-
 
 -/
 

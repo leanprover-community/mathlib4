@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Module.Pi
 
 /-! # Module instances for `FunLike` types
 In this file we define various instances related to modules for `FunLike` types.
+
+Note that currently, these are not registered as instances, but only `abbrev`s to avoid long
+typeclass searches.
 -/
 
 public section

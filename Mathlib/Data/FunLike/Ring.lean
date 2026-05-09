@@ -8,10 +8,12 @@ module
 public import Mathlib.Data.FunLike.Group
 public import Mathlib.Algebra.Ring.InjSurj
 public import Mathlib.Algebra.Ring.Pi
-import Mathlib.Tactic.FastInstance
 
 /-! # Ring instances for `FunLike` types
 In this file we define various instances related to ring for `FunLike` types.
+
+Note that currently, these are not registered as instances, but only `abbrev`s to avoid long
+typeclass searches.
 -/
 
 @[expose] public section
