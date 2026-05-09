@@ -100,6 +100,13 @@ theorem isTriangularizedBy_of_flag_eq {b' : Basis (Fin n) K V}
   rw [hflag k]
   exact hb k
 
+theorem IsTriangularizedBy.map {V₂ : Type*} [AddCommGroup V₂] [Module K V₂]
+    (hb : f.IsTriangularizedBy b) (e : V ≃ₗ[K] V₂) :
+    (e.conj f).IsTriangularizedBy (b.map e) := by
+  intro k
+  rw [Module.Basis.flag_map]
+  exact LinearEquiv.map_mem_invtSubmodule_conj_iff.mpr (hb k)
+
 theorem isTriangularizedBy_iff_isUpperTriangular_toMatrix :
     f.IsTriangularizedBy b ↔ (LinearMap.toMatrix b b f).IsUpperTriangular := by
   constructor
@@ -259,6 +266,11 @@ theorem exists_hasEigenvalue_of_genEigenspace_eq_top [Nontrivial M] {f : End R M
     peel this with μ hμ
     exact HasUnifEigenvalue.lt zero_lt_one hμ
   simp [HasUnifEigenvalue, ← not_forall, ← iSup_eq_bot, hf]
+
+theorem exists_hasEigenvalue_of_iSup_maxGenEigenspace_eq_top [Nontrivial M] {f : End R M}
+    (hf : ⨆ μ, f.maxGenEigenspace μ = ⊤) :
+    ∃ μ, f.HasEigenvalue μ :=
+  exists_hasEigenvalue_of_genEigenspace_eq_top ⊤ hf
 
 -- This is Lemma 5.19 of [axler2024], although we are no longer following that proof.
 /-- In finite dimensions, over an algebraically closed field, every linear endomorphism has an
