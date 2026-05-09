@@ -27,7 +27,7 @@ namespace CategoryTheory
 
 namespace Functor
 
-variable {C D H : Type*} [Category C] [Category D] [Category H]
+variable {C D H : Type*} [Category* C] [Category* D] [Category* H]
   (RF : H ⥤ D) {F : C ⥤ D} {L : C ⥤ H}
   (α : F ⟶ L ⋙ RF) (W : MorphismProperty C) [L.IsLocalization W]
   [RF.IsRightDerivedFunctor α W]
