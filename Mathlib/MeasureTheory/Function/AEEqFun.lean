@@ -658,6 +658,12 @@ theorem coeFn_const_eq [NeZero μ] (b : β) (x : α) : (const α b : α →ₘ[�
   simp_rw [const, mk_eq_mk, EventuallyEq, ← const_def, eventually_const] at this
   rw [Function.const, this]
 
+theorem coeFn_const_eq' (b : β) : ∃ b', ((const α b : α →ₘ[μ] β) : α → β) = fun _ ↦ b' := by
+  simp only [cast]
+  split_ifs with h
+  case neg => exact h.elim ⟨b, rfl⟩
+  exact ⟨Classical.choose h, by ext; simp⟩
+
 variable {α}
 
 instance instInhabited [Inhabited β] : Inhabited (α →ₘ[μ] β) :=

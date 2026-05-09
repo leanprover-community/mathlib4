@@ -47,7 +47,7 @@ variable {α F F' G G' 𝕜 : Type*} [RCLike 𝕜]
   [NormedSpace 𝕜 F]
   -- F' for integrals on a Lp submodule
   [NormedAddCommGroup F']
-  [NormedSpace 𝕜 F'] [NormedSpace ℝ F'] [CompleteSpace F']
+  [NormedSpace 𝕜 F'] [NormedSpace ℝ F']
   -- G for a Lp add_subgroup
   [NormedAddCommGroup G]
   -- G' for integrals on a Lp add_subgroup
@@ -313,6 +313,9 @@ section CondexpL1
 variable {m m0 : MeasurableSpace α} {μ : Measure α} {hm : m ≤ m0} [SigmaFinite (μ.trim hm)]
   {f g : α → F'} {s : Set α}
 
+section CondExpL1CLM
+
+variable [CompleteSpace F']
 variable (F')
 
 /-- Conditional expectation of a function as a linear map from `α →₁[μ] F'` to itself. -/
@@ -438,6 +441,8 @@ theorem condExpL1CLM_of_aestronglyMeasurable' (f : α →₁[μ] F') (hfm : AESt
     condExpL1CLM F' hm μ f = f :=
   condExpL1CLM_lpMeas (⟨f, hfm⟩ : lpMeas F' ℝ m 1 μ)
 
+end CondExpL1CLM
+
 /-- Conditional expectation of a function, in L1. Its value is 0 if the function is not
 integrable. The function-valued `condExp` should be used instead in most cases. -/
 def condExpL1 (hm : m ≤ m0) (μ : Measure α) [SigmaFinite (μ.trim hm)] (f : α → F') : α →₁[μ] F' :=
@@ -446,7 +451,8 @@ def condExpL1 (hm : m ≤ m0) (μ : Measure α) [SigmaFinite (μ.trim hm)] (f : 
 theorem condExpL1_undef (hf : ¬Integrable f μ) : condExpL1 hm μ f = 0 :=
   setToFun_undef (dominatedFinMeasAdditive_condExpInd F' hm μ) hf
 
-theorem condExpL1_eq (hf : Integrable f μ) : condExpL1 hm μ f = condExpL1CLM F' hm μ (hf.toL1 f) :=
+theorem condExpL1_eq [CompleteSpace F']
+    (hf : Integrable f μ) : condExpL1 hm μ f = condExpL1CLM F' hm μ (hf.toL1 f) :=
   setToFun_eq (dominatedFinMeasAdditive_condExpInd F' hm μ) hf
 
 @[simp]
@@ -459,6 +465,12 @@ theorem condExpL1_measure_zero (hm : m ≤ m0) : condExpL1 hm (0 : Measure α) f
 
 theorem aestronglyMeasurable_condExpL1 {f : α → F'} :
     AEStronglyMeasurable[m] (condExpL1 hm μ f) μ := by
+  have A (g :  α →ₘ[μ] F') : AEStronglyMeasurable g μ := by
+    exact AEEqFun.aestronglyMeasurable g
+  by_cases hF' : CompleteSpace (Lp F' 1 μ); swap
+  · simp [condExpL1, setToFun, hF']
+    apply AEEqFun.aestronglyMeasurable (μ := μ)
+
   by_cases hf : Integrable f μ
   · rw [condExpL1_eq hf]
     exact aestronglyMeasurable_condExpL1CLM _

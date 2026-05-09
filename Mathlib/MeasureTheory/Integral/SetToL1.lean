@@ -1079,7 +1079,8 @@ theorem enorm_setToFun_le (hT : DominatedFinMeasAdditive μ T C) (hC : 0 ≤ C) 
   · simp [setToFun, hF]
   by_cases hf : Integrable f μ; swap
   · simp [setToFun_undef _ hf]
-  apply (ENNReal.toReal_le_toReal (by simp) (ENNReal.mul_ne_top (by simp) hf.hasFiniteIntegral.ne)).1
+  apply (ENNReal.toReal_le_toReal (by simp)
+    (ENNReal.mul_ne_top (by simp) hf.hasFiniteIntegral.ne)).1
   simp only [toReal_enorm, toReal_mul, coe_toReal, NNReal.coe_mk]
   apply (norm_setToFun_le hT hf hC).trans
   gcongr
