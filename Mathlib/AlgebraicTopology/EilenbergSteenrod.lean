@@ -228,6 +228,10 @@ class IsAdditive where
 
 attribute [instance] IsAdditive.additive
 
+instance IsAdditive.additive_of_small [IsAdditive HP] (J : Type*) [Small.{u} J] (i : ι) :
+    Limits.PreservesColimitsOfShape (Discrete J) (HP.H i) :=
+  Limits.preservesColimitsOfShape_of_equiv (Discrete.equivalence (equivShrink _).symm) _
+
 instance : IsClosedUnderIsomorphisms (C := HomologyPretheory C c) IsAdditive where
   of_iso {HP HP'} e _ := { additive _ _ := Limits.preservesColimitsOfShape_of_natIso ((HP.iso _) ≪≫
     Functor.isoWhiskerLeft incl ((HomologyPretheory.forgetₚ _).mapIso e) ≪≫ (HP'.iso _).symm) }
