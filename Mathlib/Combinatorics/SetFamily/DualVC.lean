@@ -59,11 +59,11 @@ dual family is the collection of its columns. -/
 @[expose]
 def dualFamily (𝒜 : Finset (Finset α)) (X : Finset α) :
     Finset (Finset (Finset α)) :=
-  X.image fun x ↦ 𝒜.filter fun A ↦ x ∈ A
+  X.image fun x ↦ {A ∈ 𝒜 | x ∈ A}
 
 @[simp]
 lemma mem_dualFamily :
-    𝒞 ∈ 𝒜.dualFamily X ↔ ∃ x ∈ X, 𝒜.filter (fun A ↦ x ∈ A) = 𝒞 := by
+    𝒞 ∈ 𝒜.dualFamily X ↔ ∃ x ∈ X, {A ∈ 𝒜 | x ∈ A} = 𝒞 := by
   simp only [dualFamily, mem_image]
 
 /-- A subfamily shattered by `𝒜.dualFamily X` is itself a subfamily of `𝒜`:
@@ -78,7 +78,7 @@ private lemma subset_of_dualFamily_shatters {S : Finset (Finset α)}
 /-- Embedding `(Fin n → Bool) ↪ ↥S` when `2 ^ n ≤ #S`,
 via `(Fin n → Bool) ≃ Fin (2 ^ n) ↪ Fin #S ≃ ↥S`. -/
 private noncomputable def cubeEmbedding {n : ℕ} (S : Finset (Finset α))
-    (hcard : 2 ^ n ≤ S.card) :
+    (hcard : 2 ^ n ≤ #S) :
     (Fin n → Bool) ↪ ↥S :=
   ((Fintype.equivOfCardEq (by rw [Fintype.card_pi_const, Fintype.card_bool,
     Fintype.card_fin])).toEmbedding.trans (Fin.castLEEmb hcard)).trans
@@ -115,8 +115,8 @@ these `n` elements are then shattered by `𝒜`. -/
 theorem exists_shatters_of_dualFamily_shatters
     (𝒜 : Finset (Finset α)) (X : Finset α)
     {S : Finset (Finset α)} (hS : (𝒜.dualFamily X).Shatters S)
-    {n : ℕ} (hcard : 2 ^ n ≤ S.card) :
-    ∃ T : Finset α, T ⊆ X ∧ T.card = n ∧ 𝒜.Shatters T := by
+    {n : ℕ} (hcard : 2 ^ n ≤ #S) :
+    ∃ T : Finset α, T ⊆ X ∧ #T = n ∧ 𝒜.Shatters T := by
   classical
   have hSsub : S ⊆ 𝒜 := subset_of_dualFamily_shatters hS
   let cube := cubeEmbedding S hcard
