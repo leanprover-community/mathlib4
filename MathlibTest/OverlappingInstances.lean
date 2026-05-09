@@ -3,8 +3,6 @@ module
 import Mathlib.Tactic.Linter.OverlappingInstances
 import Mathlib.Init
 
-namespace Lean
-
 public section
 
 class SubBar (α : Type) where
@@ -142,7 +140,7 @@ private def foo [Add Nat] [Add Nat] : Bool := true
 
 end Foo
 
-section prop
+namespace prop
 
 class IsFoo : Prop
 
@@ -163,12 +161,64 @@ Note: This linter can be disabled with `set_option linter.overlappingInstances f
 #guard_msgs in
 example [IsBar] [IsBaz] : True := trivial
 
-/-! Don't warn when data overlaps on `Prop` -/
+class Bar : Type extends IsFoo
+class Baz : Type extends IsFoo
+class Baz1 : Type extends Baz
+class Baz2 : Type extends Baz
 
-class IsBarPlus : Type extends IsBar
-class IsBazPlus : Type extends IsBaz
+/--
+warning: Declaration `_example` has overlapping instances:
 
-example [IsBarPlus] [IsBazPlus] : True := trivial
+`[IsFoo]` and `[Bar]` each imply `[IsFoo]`.
+Of these, `[IsFoo]` is redundant.
+
+Consider choosing different instance hypotheses.
+
+Note: This linter can be disabled with `set_option linter.overlappingInstances false`
+-/
+#guard_msgs in
+example [IsFoo] [Bar] : True := trivial
+
+example [IsBar] [Bar] : True := trivial
+
+example [Bar] [Baz] : True := trivial
+
+/--
+warning: Declaration `_example` has overlapping instances:
+
+There are 2 `[Baz]` instances.
+
+Consider choosing different instance hypotheses.
+
+Note: This linter can be disabled with `set_option linter.overlappingInstances false`
+-/
+#guard_msgs in
+example [Baz] [Baz] : True := trivial
+
+/--
+warning: Declaration `_example` has overlapping instances:
+
+`[Baz]` and `[Baz1]` give conflicting instances of `[Baz]` and `[IsFoo]`.
+Of these, `[Baz]` is redundant.
+
+Consider choosing different instance hypotheses.
+
+Note: This linter can be disabled with `set_option linter.overlappingInstances false`
+-/
+#guard_msgs in
+example [Baz] [Baz1] : True := trivial
+
+/--
+warning: Declaration `_example` has overlapping instances:
+
+`[Baz1]` and `[Baz2]` give conflicting instances of `[Baz]` and `[IsFoo]`.
+
+Consider choosing different instance hypotheses.
+
+Note: This linter can be disabled with `set_option linter.overlappingInstances false`
+-/
+#guard_msgs in
+example [Baz1] [Baz2] : True := trivial
 
 end prop
 
@@ -323,6 +373,20 @@ class FooClass (α : Type) [Add α] [Add α] where
 
 structure NotAClass where
 class IsAClass1 extends NotAClass
-class IsAClass2 extends NotAClass
+class IsAClass1' extends NotAClass
+class IsAClass2 extends IsAClass1
 
+example [IsAClass1] [IsAClass1'] : True := trivial
+
+/--
+warning: Declaration `_example` has overlapping instances:
+
+`[IsAClass1]` and `[IsAClass2]` give conflicting instances of `[IsAClass1]`.
+Of these, `[IsAClass1]` is redundant.
+
+Consider choosing different instance hypotheses.
+
+Note: This linter can be disabled with `set_option linter.overlappingInstances false`
+-/
+#guard_msgs in
 example [IsAClass1] [IsAClass2] : True := trivial
