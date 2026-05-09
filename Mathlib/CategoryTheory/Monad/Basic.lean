@@ -52,7 +52,7 @@ structure Monad extends C ⥤ C where
 
 @[reassoc]
 lemma Monad.unit_naturality (T : Monad C) ⦃X Y : C⦄ (f : X ⟶ Y) :
-    f ≫ T.η.app Y = T.η.app X ≫ T.map f :=
+    dsimp% f ≫ T.η.app Y = T.η.app X ≫ T.map f :=
   T.η.naturality _
 
 @[reassoc]
@@ -79,7 +79,7 @@ structure Comonad extends C ⥤ C where
 
 @[reassoc]
 lemma Comonad.counit_naturality (T : Comonad C) ⦃X Y : C⦄ (f : X ⟶ Y) :
-    T.map f ≫ T.ε.app Y = T.ε.app X ≫ f :=
+    dsimp% T.map f ≫ T.ε.app Y = T.ε.app X ≫ f :=
   T.ε.naturality _
 
 @[reassoc]

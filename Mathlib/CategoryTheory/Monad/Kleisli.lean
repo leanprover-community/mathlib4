@@ -140,7 +140,7 @@ instance category : Category (Cokleisli U) where
   id X := .mk <| U.ε.app X.of
   comp f g := .mk <| U.δ.app _ ≫ (U : C ⥤ C).map f.of ≫ g.of
   comp_id {X} {Y} f := by
-    simp [U.left_counit_assoc, dsimp% U.counit_naturality]
+    simp [U.left_counit_assoc, U.counit_naturality]
   assoc f g h := by
     simp [U.delta_naturality_assoc]
 
