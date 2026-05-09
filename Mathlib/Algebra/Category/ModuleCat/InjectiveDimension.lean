@@ -5,10 +5,9 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.Algebra.Category.ModuleCat.Ext.Baer
 public import Mathlib.Algebra.Category.ModuleCat.Ext.RingEquiv
-public import Mathlib.CategoryTheory.Abelian.Injective.Dimension
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
 
 /-!
 
