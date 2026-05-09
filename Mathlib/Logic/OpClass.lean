@@ -5,7 +5,7 @@ Authors: Leonardo de Moura
 -/
 module
 
-import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # Typeclasses for commuting heterogeneous operations

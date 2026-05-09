@@ -5,10 +5,9 @@ Authors: Jeremy Avigad
 -/
 module
 
+public import Batteries.Logic
 public import Mathlib.Data.Int.Notation
 public import Mathlib.Data.Nat.Notation
-import Batteries.Logic
-import Mathlib.Init
 
 /-!
 # Basic operations on the integers

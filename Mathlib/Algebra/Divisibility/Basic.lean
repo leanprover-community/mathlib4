@@ -6,14 +6,9 @@ Neil Strickland, Aaron Anderson
 -/
 module
 
-public import Aesop.BuiltinRules
-public import Mathlib.Algebra.Group.Defs
-public import Mathlib.Order.Defs.Unbundled
-import Batteries.Tactic.SeqFocus
-import Batteries.Tactic.Trans
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Init
-import Mathlib.Tactic.Common
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Tactic.Common
+public import Batteries.Tactic.SeqFocus
 
 /-!
 # Divisibility

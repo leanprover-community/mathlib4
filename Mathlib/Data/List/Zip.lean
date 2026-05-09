@@ -5,16 +5,8 @@ Authors: Mario Carneiro, Kenny Lau
 -/
 module
 
-public import Aesop.BuiltinRules
-public import Mathlib.Data.List.Defs
-public import Mathlib.Logic.OpClass
-import Batteries.Data.List.Lemmas
-import Mathlib.Data.List.Basic
-import Mathlib.Data.List.Forall2
-import Mathlib.Data.Nat.Basic
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Util.CompileInductive
+public import Mathlib.Data.List.Forall2
+public import Mathlib.Data.Nat.Basic
 
 /-!
 # zip & unzip

@@ -8,10 +8,6 @@ module
 
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Init
-import Mathlib.Tactic.SimpRw
-import Mathlib.Tactic.Translate.ToAdditive
-import Mathlib.Util.CompileInductive
 
 /-!
 # Additional lemmas about monoid and group homomorphisms

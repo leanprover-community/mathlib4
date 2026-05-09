@@ -5,10 +5,8 @@ Authors: Gabriel Ebner
 -/
 module
 
-public meta import Lean.Elab.Command
-import Mathlib.Init
-import Mathlib.Tactic.Eqns
-import Mathlib.Util.TermReduce
+public import Mathlib.Tactic.Eqns
+public import Mathlib.Util.TermReduce
 
 /-!
 # Irreducible definitions

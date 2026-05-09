@@ -5,9 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public meta import Lean.Elab.Command
-import Mathlib.Init
-meta import Mathlib.Lean.MessageData.Trace
+public import Mathlib.Init
+public meta import Mathlib.Lean.MessageData.Trace
 
 /-!
 # The `#defeq_abuse` tactic and command combinators

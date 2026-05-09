@@ -9,8 +9,7 @@ module
 public meta import Mathlib.Tactic.FunProp.Mor
 public import Mathlib.Tactic.FunProp.Mor
 public import Mathlib.Tactic.FunProp.ToBatteries
-public meta import Std.Do.Triple.SpecLemmas
-import Mathlib.Init
+public meta import Std.Do
 
 /-!
 ## `funProp` data structure holding information about a function

@@ -6,9 +6,10 @@ Authors: Anne Baanen
 module
 
 public meta import Lean.Elab.Tactic.Doc
+public meta import Lean.Parser.Tactic.Doc
 public import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Batteries.Tactic.Lint.Basic
-import Lean.Elab.Tactic.Doc
+public import Lean.Elab.Tactic.Doc
 
 /-! # The `tacticDocs` linter
 

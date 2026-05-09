@@ -5,10 +5,8 @@ Authors: Kim Morrison, Floris van Doorn
 -/
 module
 
-public meta import Lean.DefEqAttrib
-public meta import Lean.DocString
-public meta import Lean.Elab.Term.TermElabM
-import Mathlib.Init
+public import Mathlib.Init
+public meta import Lean.Elab.DeclarationRange
 
 /-!
 # `addRelatedDecl`

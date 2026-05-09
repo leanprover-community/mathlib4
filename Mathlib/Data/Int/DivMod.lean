@@ -5,7 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-import Mathlib.Init
+public import Batteries.Tactic.Alias
+public import Mathlib.Init
 
 /-!
 # Basic lemmas about division and modulo for integers

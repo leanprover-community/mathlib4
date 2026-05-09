@@ -8,8 +8,7 @@ module
 public meta import Batteries.Lean.Expr
 public meta import Batteries.Lean.Meta.UnusedNames
 public meta import Lean.Elab.Tactic.RCases
-import Lean.Exception
-import Mathlib.Tactic.TypeStar
+public import Mathlib.Tactic.TypeStar
 
 /-!
 # lift tactic

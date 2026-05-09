@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Algebra.Group.Equiv.Basic
 public import Mathlib.Algebra.Group.Opposite
-import Mathlib.Init
-import Mathlib.Tactic.Translate.ToAdditive
-import Mathlib.Util.CompileInductive
 
 /-!
 # Group isomorphism between a group and its opposite

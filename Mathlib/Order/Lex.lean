@@ -6,8 +6,7 @@ Authors: Johan Commelin, Damiano Testa, Yaël Dillies
 module
 
 public import Mathlib.Logic.Equiv.Defs
-import Mathlib.Init
-import Mathlib.Util.CompileInductive
+public import Mathlib.Order.Basic
 
 /-!
 # Type synonyms

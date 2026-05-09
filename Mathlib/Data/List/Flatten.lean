@@ -5,9 +5,7 @@ Authors: Sébastien Gouëzel, Floris van Doorn, Mario Carneiro, Martin Dvorak
 -/
 module
 
-import Batteries.Tactic.Alias
-import Mathlib.Init
-import Mathlib.Tactic.GCongr.Core
+public import Mathlib.Tactic.GCongr.Core
 
 /-!
 # Join of a list of lists

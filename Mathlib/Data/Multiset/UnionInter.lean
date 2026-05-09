@@ -5,15 +5,10 @@ Authors: Mario Carneiro
 -/
 module
 
+public import Mathlib.Data.List.Perm.Lattice
 public import Mathlib.Data.Multiset.Filter
-import Batteries.Tactic.Init
-import Mathlib.Data.List.Basic
-import Mathlib.Data.List.Lattice
-import Mathlib.Data.List.Perm.Lattice
-import Mathlib.Init
-import Mathlib.Order.MinMax
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
+public import Mathlib.Order.MinMax
+public import Mathlib.Logic.Pairwise
 
 /-!
 # Distributive lattice structure on multisets

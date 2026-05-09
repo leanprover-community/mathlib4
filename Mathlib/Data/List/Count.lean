@@ -5,12 +5,9 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 -/
 module
 
-public import Aesop.BuiltinRules
-public import Batteries.Data.List.Basic
-import Batteries.Data.List.Perm
-import Mathlib.Init
-import Mathlib.Logic.Function.Defs
-import Mathlib.Tactic.Common
+public import Batteries.Data.List.Perm
+public import Mathlib.Tactic.Common
+public import Batteries.Data.List.Lemmas
 
 /-!
 # Counting in lists

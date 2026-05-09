@@ -5,15 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 -/
 module
 
-public import Mathlib.Data.Finite.Defs
-public import Mathlib.Data.Finset.Defs
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Finset.Powerset
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Data.Finset.Powerset
+public import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Finiteness of the powerset of a finite set

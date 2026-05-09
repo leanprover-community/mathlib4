@@ -5,9 +5,8 @@ Authors: Damiano Testa, Anne Baanen
 -/
 module
 
-public meta import Lean.Elab.Command
-import ImportGraph.Tools.FindHome
-import Mathlib.Init
+public import Mathlib.Init
+public import ImportGraph.Tools.FindHome
 
 /-! # The `upstreamableDecl` linter
 

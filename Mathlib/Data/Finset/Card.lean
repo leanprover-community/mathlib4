@@ -5,16 +5,9 @@ Authors: Leonardo de Moura, Jeremy Avigad
 -/
 module
 
+public import Mathlib.Data.Finset.Basic
 public import Mathlib.Data.Finset.Image
-import Mathlib.Algebra.NeZero
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Finset.Basic
-import Mathlib.Data.Finset.Lattice.Lemmas
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Monotonicity.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Data.Finset.Lattice.Lemmas
 
 /-!
 # Cardinality of a finite set

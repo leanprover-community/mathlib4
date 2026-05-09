@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Tactic.Translate.Core
 public meta import Mathlib.Tactic.Translate.Core
-public meta import Lean.Elab.Command
-import Mathlib.Init
 
 /-!
 # Tagging of unfold boundaries for translation attributes

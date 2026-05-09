@@ -5,8 +5,7 @@ Authors: Kyle Miller
 -/
 module
 
-public meta import Lean.PrettyPrinter.Delaborator.Options
-import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 Mathlib-specific pretty printer options.

@@ -5,15 +5,9 @@ Authors: Yaël Dillies
 -/
 module
 
+public import Mathlib.Logic.Relation
 public import Mathlib.Order.Hom.Basic
-import Batteries.Tactic.Trans
-import Mathlib.Init
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Monotonicity.Attr
-import Mathlib.Tactic.SimpRw
-import Mathlib.Tactic.Tauto
-import Mathlib.Util.CompileInductive
+public import Mathlib.Tactic.Tauto
 
 /-!
 # Turning a preorder into a partial order

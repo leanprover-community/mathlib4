@@ -7,11 +7,7 @@ module
 
 public import Mathlib.Data.Finset.Defs
 public import Mathlib.Data.Multiset.ZeroCons
-public meta import Aesop.Search.Main
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Aesop
 
 /-!
 # Empty and nonempty finite sets

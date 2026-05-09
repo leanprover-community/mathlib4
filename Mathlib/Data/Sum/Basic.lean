@@ -6,9 +6,7 @@ Authors: Mario Carneiro, Yury Kudryashov
 module
 
 public import Mathlib.Logic.Function.Basic
-import Mathlib.Init
-import Mathlib.Logic.Basic
-import Mathlib.Tactic.MkIffOfInductiveProp
+public import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
 # Additional lemmas about sum types

@@ -8,8 +8,6 @@ module
 public import Mathlib.Data.Set.Defs
 
 import Mathlib.Tactic.Attr.Register
-public import Batteries.Tactic.Lint.Misc
-import Mathlib.Init
 
 /-!
 # Functors

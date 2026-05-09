@@ -5,8 +5,11 @@ Authors: Mario Carneiro
 -/
 module
 
+public import Mathlib.Init
+public import Lean.Elab.Term
 public import Lean.Elab.Tactic.Basic
-import Mathlib.Init
+public import Lean.Meta.Tactic.Assert
+public import Lean.Meta.Tactic.Clear
 
 /-! ## Additional utilities in `Lean.MVarId` -/
 

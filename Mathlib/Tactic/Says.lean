@@ -5,12 +5,13 @@ Authors: Kim Morrison
 -/
 module
 
+public import Mathlib.Init
+public meta import Lean.Meta.Tactic.TryThis
+public meta import Qq.Match
 public meta import Mathlib.Lean.Elab.InfoTree
 public import Batteries.Linter.UnreachableTactic
 public import Mathlib.Tactic.Basic
-public import Mathlib.Util.ParseCommand
-public meta import Qq.MatchImpl
-import Mathlib.Init
+public meta import Mathlib.Util.ParseCommand
 
 /-!
 # The `says` tactic combinator.

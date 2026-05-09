@@ -5,10 +5,12 @@ Authors: Damiano Testa
 -/
 module
 
+public meta import Lean.Elab.Command
+public meta import Lean.Elab.Tactic.Simp
+public meta import Lean.Meta.Tactic.TryThis
+public meta import Lean.Server.InfoUtils
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
-meta import Lean.Elab.Tactic.Simp
-meta import Lean.Meta.Tactic.TryThis
-import Lean.Parser.Term
+public import Lean.Parser.Term
 
 /-!
 # The "flexible" linter
