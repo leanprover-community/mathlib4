@@ -1002,6 +1002,19 @@ noncomputable def ofExactOfRetraction (S : ShortComplex C) (hS : S.Exact) (r : S
 
 end Splitting
 
+instance [HasZeroMorphisms D] [HasLimitsOfShape WalkingParallelPair D]
+    [HasColimitsOfShape WalkingParallelPair D] (X : C) :
+    ((evaluation C D).obj X).PreservesHomology where
+
+lemma exact_iff_evaluation [HasZeroObject D] [HasZeroMorphisms D]
+    [HasLimitsOfShape WalkingParallelPair D] [HasColimitsOfShape WalkingParallelPair D]
+    (S : ShortComplex (C ⥤ D)) [S.HasHomology] :
+    S.Exact ↔ ∀ j, (S.map ((evaluation C D).obj j)).Exact := by
+  rw [exact_iff_isZero_homology, Functor.isZero_iff]
+  refine forall_congr' fun j ↦ ?_
+  let e : S.homology.obj j ≅ _ := (mapHomologyIso S ((evaluation _ _).obj j)).symm
+  rw [e.isZero_iff, exact_iff_isZero_homology]
+
 end ShortComplex
 
 end CategoryTheory
