@@ -464,17 +464,89 @@ theorem condExpL1_zero : condExpL1 hm μ (0 : α → F') = 0 :=
 theorem condExpL1_measure_zero (hm : m ≤ m0) : condExpL1 hm (0 : Measure α) f = 0 :=
   setToFun_measure_zero _ rfl
 
-theorem aestronglyMeasurable_condExpL1 [CompleteSpace F'] {f : α → F'} :
-    AEStronglyMeasurable[m] (condExpL1 hm μ f) μ := by
-  by_cases hf : Integrable f μ
-  · rw [condExpL1_eq hf]
-    exact aestronglyMeasurable_condExpL1CLM _
-  · rw [condExpL1_undef hf]
-    exact stronglyMeasurable_zero.aestronglyMeasurable.congr (coeFn_zero ..).symm
-
-theorem condExpL1_congr_ae (hm : m ≤ m0) [SigmaFinite (μ.trim hm)] (h : f =ᵐ[μ] g) :
+theorem condExpL1_congr_ae (hm : m ≤ m0) (h : f =ᵐ[μ] g) :
     condExpL1 hm μ f = condExpL1 hm μ g :=
   setToFun_congr_ae _ h
+
+lemma FinStronglyMeasurable.exists_measurableSet_measure_pos_lt_top {f : α → F'}
+    (hf : FinStronglyMeasurable f μ) (h'f : ¬(f =ᵐ[μ] 0)) :
+    ∃ s, MeasurableSet s ∧ 0 < μ s ∧ μ s < ∞ := by
+  contrapose! h'f
+  rcases hf with ⟨fn, hfn, hfn_lim⟩
+  have A n : μ (Function.support (fn n)) = 0 := by
+    by_contra!
+    have := h'f (Function.support (fn n)) (fn n).measurableSet_support (by positivity)
+    exact (lt_irrefl _ (this.trans_lt (hfn n))).elim
+  have B : ∀ᵐ x ∂μ, ∀ n, fn n x = 0 := ae_all_iff.mpr A
+  filter_upwards [B] with x hx
+  apply tendsto_nhds_unique (hfn_lim x)
+  simp [hx]
+
+lemma AEFinStronglyMeasurable.exists_measurableSet_measure_pos_lt_top {f : α → F'}
+    (hf : AEFinStronglyMeasurable f μ) (h'f : ¬(f =ᵐ[μ] 0)) :
+    ∃ s, MeasurableSet s ∧ 0 < μ s ∧ μ s < ∞ := by
+  apply hf.finStronglyMeasurable_mk.exists_measurableSet_measure_pos_lt_top
+  contrapose! h'f
+  exact hf.ae_eq_mk.trans h'f
+
+private lemma completeSpace_of_completeSpace_Lp'
+    {s : Set α} (hs : μ s ≠ 0) (h's : μ s ≠ ∞) (h''s : MeasurableSet s)
+    [CompleteSpace (Lp F' 1 μ)] :
+    CompleteSpace F' := by
+  let f : F' → Lp F' 1 μ := fun x ↦ indicatorConstLp 1 h''s h's x
+  have hf : LipschitzWith (NNReal.mk (μ.real s) measureReal_nonneg) f := by
+    apply lipschitzWith_iff_norm_sub_le.2 (fun x y ↦ ?_)
+    simp only [indicatorConstLp_sub, f]
+    rw [norm_indicatorConstLp (by simp) (by simp)]
+    simp [mul_comm]
+  apply Metric.complete_of_cauchySeq_tendsto (fun u hu ↦ ?_)
+  obtain ⟨g, hg⟩ : ∃ g, Tendsto (f ∘ u) atTop (𝓝 g) :=
+    cauchySeq_tendsto_of_complete (hf.cauchySeq_comp hu)
+  let f' : ℕ → (α → F') := fun n ↦ (f ∘ u) n
+  obtain ⟨ns, hns, nslim⟩ : ∃ ns : ℕ → ℕ, StrictMono ns ∧
+      ∀ᵐ x ∂μ, Tendsto (fun i ↦ f' (ns i) x) atTop (𝓝 (g x)) :=
+    (tendstoInMeasure_of_tendsto_Lp hg).exists_seq_tendsto_ae
+  -- tendsto_nhds_of_cauchySeq_of_subseq
+
+
+
+
+
+#exit
+
+
+lemma completeSpace_of_completeSpace_Lp
+    {s : Set α} (hs : 0 < μ s) (h's : μ s < ∞)
+    [CompleteSpace (Lp F' 1 μ)] :
+    CompleteSpace F' := by
+  apply completeSpace_of_completeSpace_Lp' (s := toMeasurable μ s) (μ := μ)
+  · simp [measure_toMeasurable, hs]
+  · simp [measure_toMeasurable, h's]
+  · exact measurableSet_toMeasurable μ s
+
+
+
+
+
+#exit
+
+theorem aestronglyMeasurable_condExpL1 {f : α → F'} :
+    AEStronglyMeasurable[m] (condExpL1 hm μ f) μ := by
+  by_cases hF' : CompleteSpace (Lp F' 1 μ); swap
+  · simp only [condExpL1, setToFun, hF', ↓reduceDIte, ZeroMemClass.coe_zero]
+    apply stronglyMeasurable_zero.aestronglyMeasurable.congr
+    exact (coeFn_zero _ 1 _).symm
+  by_cases hf : Integrable f μ; swap
+  · rw [condExpL1_undef hf]
+    exact stronglyMeasurable_zero.aestronglyMeasurable.congr (coeFn_zero ..).symm
+  by_cases hf' : f =ᵐ[μ] 0
+  · apply stronglyMeasurable_zero.aestronglyMeasurable.congr
+    simp only [condExpL1_congr_ae hm hf', condExpL1_zero, ZeroMemClass.coe_zero]
+    exact (coeFn_zero _ 1 _).symm
+  have : CompleteSpace F' := sorry
+
+  rw [condExpL1_eq hf]
+  exact aestronglyMeasurable_condExpL1CLM _
 
 theorem integrable_condExpL1 (f : α → F') : Integrable (condExpL1 hm μ f) μ :=
   L1.integrable_coeFn _

@@ -194,11 +194,8 @@ theorem integral_undef {f : X → E} (hf : ¬ μ.Integrable f B) :
   setToFun_undef _ hf
 
 theorem enorm_integral_le (f : X → E) :
-    ‖∫ᵛ x, f x ∂[B; μ]‖ₑ ≤ ∫⁻ x, ‖f x‖ₑ ∂ (μ.transpose B).variation := by
-  by_cases hG : CompleteSpace G; swap
-  · simp [integral, hG]
-  by_cases hf : μ.Integrable f B; swap
-  · simp [integral_undef hf]
+    ‖∫ᵛ x, f x ∂[B; μ]‖ₑ ≤ ∫⁻ x, ‖f x‖ₑ ∂ (μ.transpose B).variation :=
+  (enorm_setToFun_le _ (by simp)).trans (by simp)
 
 end VectorMeasure
 

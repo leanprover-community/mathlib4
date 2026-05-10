@@ -436,7 +436,7 @@ lemma condExp_ofNat (n : ℕ) [n.AtLeastTwo] (f : α → R) :
 end NormedRing
 
 section NormedLatticeAddCommGroup
-variable [NormedAddCommGroup E] [CompleteSpace E] [NormedSpace ℝ E]
+variable [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- **Lebesgue dominated convergence theorem**: sufficient conditions under which almost
   everywhere convergence of a sequence of functions implies the convergence of their image by
@@ -448,6 +448,8 @@ theorem tendsto_condExpL1_of_dominated_convergence (hm : m ≤ m₀) [SigmaFinit
     (hfs : ∀ᵐ x ∂μ, Tendsto (fun n => fs n x) atTop (𝓝 (f x))) :
     Tendsto (fun n => condExpL1 hm μ (fs n)) atTop (𝓝 (condExpL1 hm μ f)) :=
   tendsto_setToFun_of_dominated_convergence _ bound_fs hfs_meas h_int_bound_fs hfs_bound hfs
+
+variable [CompleteSpace E]
 
 /-- If two sequences of functions have a.e. equal conditional expectations at each step, converge
 and verify dominated convergence hypotheses, then the conditional expectations of their limits are
