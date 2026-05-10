@@ -76,8 +76,8 @@ lemma continuousWithinAt_nnrpow_setProd {a : A} {p : ℝ≥0} (hp : 0 < p) (ha :
   let f₂ : (ℝ≥0 →ᵤ[{s}] ℝ≥0) × A → A := fun x => cfcₙ (toFun {s} x.1) x.2
   have h₁ : ContinuousWithinAt f₁ (Ioi 0) p := by
     --apply ContinuousOn.continuousOn_uniformOnFun_of_uncurry
-    have : CompactSpace s := by
-      sorry
+    have : CompactSpace s :=
+      isCompact_iff_compactSpace.mp (ConditionallyCompleteLinearOrder.isCompact_Icc 0 _)
     refine ContinuousOn.continuousOn_uniformOnFun_of_uncurry ?_ _ hp
     intro x hx
     apply ContinuousAt.continuousWithinAt
@@ -107,7 +107,8 @@ lemma continuousWithinAt_nnrpow_setProd {a : A} {p : ℝ≥0} (hp : 0 < p) (ha :
       · simp only [toFun, NNReal.nnrpow_def, Equiv.symm_apply_apply, f₁]
         fun_prop
       · exact h₁' _ hp
-      · sorry
+      · intro x hx
+        exact ⟨zero_le x, le_add_right (le_csSup (IsCompact.bddAbove (quasispectrum.isCompact_nnreal a)) hx)⟩
     · exact ConditionallyCompleteLinearOrder.isCompact_Icc 0 (sSup (quasispectrum ℝ≥0 a) + 1)
   · refine ContinuousWithinAt.comp (t := ssws) ?_ ?_ ?_
     · simp only [Prod.swap_prod_mk]
