@@ -24,8 +24,7 @@ namespace ENat
 theorem continuous_toENNReal : Continuous toENNReal := by
   refine OrderTopology.continuous_iff.mpr fun a ↦ ⟨?_, ?_⟩
   · simpa using isOpen_Ioi
-  · have : toENNReal ⁻¹' Set.Iio a = Set.Iio ⌈a⌉ₑ := by ext; simp
-    simpa using isOpen_Iio
+  · simpa using isOpen_Iio
 
 theorem isClosedEmbedding_toENNReal : Topology.IsClosedEmbedding toENNReal :=
   continuous_toENNReal.isClosedEmbedding toENNReal_strictMono.injective
