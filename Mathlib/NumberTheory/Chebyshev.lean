@@ -649,7 +649,7 @@ theorem eventually_primeCounting_le {ε : ℝ} (εpos : 0 < ε) :
   grind [le_norm_self]
 
 theorem pi_ge (n : ℕ) : (n * log 2 - log (n + 1)) / log n ≤ π n := by
-  rcases (show n = 0 ∨ n = 1 ∨ 1 < n by omega) with rfl | rfl | h
+  rcases (show n = 0 ∨ n = 1 ∨ 1 < n by lia) with rfl | rfl | h
   · simp
   · simp
   grw [div_le_iff₀ (log_pos (mod_cast h)), ← psi_le_primeCounting_mul_log, psi_ge]
