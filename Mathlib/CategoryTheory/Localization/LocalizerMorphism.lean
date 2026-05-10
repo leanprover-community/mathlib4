@@ -364,8 +364,7 @@ export IsInduced (inverseImage_eq)
 
 instance [Φ.IsInduced] : Φ.op.IsInduced where
   inverseImage_eq := by
-    simp only [← Φ.inverseImage_eq]
-    rfl
+    simp [← Φ.inverseImage_eq]
 
 instance : (id W₁).IsInduced where
   inverseImage_eq := rfl
@@ -373,20 +372,19 @@ instance : (id W₁).IsInduced where
 instance (Ψ : LocalizerMorphism W₂ W₃) [Φ.IsInduced] [Ψ.IsInduced] :
     (Φ.comp Ψ).IsInduced where
   inverseImage_eq := by
-    simp only [← Φ.inverseImage_eq, ← Ψ.inverseImage_eq]
-    rfl
+    simp [← Φ.inverseImage_eq, ← Ψ.inverseImage_eq]
 
 section
 
 variable [Φ.functor.IsEquivalence] [Φ.IsInduced] [W₂.RespectsIso]
 
-set_option backward.isDefEq.respectTransparency false in
+attribute [local simp] Functor.asEquivalence_counitIso_hom_app
+  Functor.asEquivalence_counitIso_inv_app in
 /-- The inverse of a localizer morphism `Φ : LocalizerMorphism W₁ W₂`,
 when `Φ.functor` is an equivalence, `W₁` is induced by `W₂`
 and `W₂` respects isomorphisms. -/
 @[simps]
-noncomputable def inv :
-    LocalizerMorphism W₂ W₁ where
+noncomputable def inv : LocalizerMorphism W₂ W₁ where
   functor := Φ.functor.inv
   map := by
     simp only [← Φ.inverseImage_eq]
@@ -399,7 +397,8 @@ instance : Φ.inv.functor.IsEquivalence := by
   dsimp
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
+attribute [local simp] Functor.asEquivalence_inverse
+  Functor.asEquivalence_counitIso_hom_app Functor.asEquivalence_counitIso_inv_app in
 instance : Φ.inv.IsInduced where
   inverseImage_eq := by
     ext X Y f

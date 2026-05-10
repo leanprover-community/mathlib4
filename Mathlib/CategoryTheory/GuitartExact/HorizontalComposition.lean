@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Joël Riou. All rights reserved.
+Copyright (c) 2026 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
@@ -21,8 +21,8 @@ namespace CategoryTheory
 
 open Category
 
-variable {C₁ C₂ C₃ D₁ D₂ D₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
-  [Category D₁] [Category D₂] [Category D₃]
+variable {C₁ C₂ C₃ D₁ D₂ D₃ : Type*} [Category* C₁] [Category* C₂] [Category* C₃]
+  [Category* D₁] [Category* D₂] [Category* D₃]
 
 namespace TwoSquare
 
@@ -41,7 +41,7 @@ def whiskerHorizontal (α : T' ⟶ T) (β : B ⟶ B') :
 namespace GuitartExact
 
 /-- A 2-square stays Guitart exact if we replace the top and bottom functors
-by isomorphic functors. See also `whiskerVertical_iff`. -/
+by isomorphic functors. See also `whiskerHorizontal_iff`. -/
 lemma whiskerHorizontal [w.GuitartExact] (α : T ≅ T') (β : B ≅ B') :
     (w.whiskerHorizontal α.inv β.hom).GuitartExact := by
   rw [guitartExact_iff_final]
@@ -85,7 +85,7 @@ def hComp' {T₁₂ : C₁ ⥤ C₃} {B₁₂ : D₁ ⥤ D₃} (eT : T₁ ⋙ T�
 
 namespace GuitartExact
 
-instance hComp [hw : w.GuitartExact] [hw' : w'.GuitartExact] :
+instance hComp [w.GuitartExact] [w'.GuitartExact] :
     (w ≫ₕ w').GuitartExact := by
   rw [← guitartExact_op_iff]
   have : (w ≫ₕ w').op = w.op ≫ᵥ w'.op := by ext; simp
@@ -106,13 +106,14 @@ def costructuredArrowRightwardsComp (Y₁ : D₁) :
       (w ≫ₕ w').costructuredArrowRightwards Y₁ :=
   NatIso.ofComponents (fun _ => CostructuredArrow.isoMk (Iso.refl _))
 
-set_option backward.isDefEq.respectTransparency false in
 lemma of_hComp [B₁.EssSurj] [w.GuitartExact] [(w ≫ₕ w').GuitartExact] :
     w'.GuitartExact := by
   rw [guitartExact_iff_final]
   intro Y₂
   rw [costructuredArrowRightwards_final_iff_of_iso _ (B₁.objObjPreimageIso Y₂).symm]
-  have := Functor.final_of_natIso (costructuredArrowRightwardsComp w w' (B₁.objPreimage Y₂)).symm
+  have : (w.costructuredArrowRightwards (B₁.objPreimage Y₂) ⋙
+      w'.costructuredArrowRightwards (B₁.obj (B₁.objPreimage Y₂))).Final :=
+    (Functor.final_of_natIso (costructuredArrowRightwardsComp w w' _).symm :)
   exact Functor.final_of_final_comp (w.costructuredArrowRightwards (B₁.objPreimage Y₂)) _
 
 lemma of_hComp' {T₁₂ : C₁ ⥤ C₃} {B₁₂ : D₁ ⥤ D₃} (eT : T₁ ⋙ T₂ ≅ T₁₂) (eB : B₁ ⋙ B₂ ≅ B₁₂)
