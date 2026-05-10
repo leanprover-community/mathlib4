@@ -4,8 +4,8 @@ public import Std
 public import Batteries
 public import Mathlib.Algebra.AddConstMap.Basic
 public import Mathlib.Algebra.AddConstMap.Equiv
-public import Mathlib.Algebra.AddTorsor.Basic
-public import Mathlib.Algebra.AddTorsor.Defs
+public import Mathlib.Algebra.Torsor.Basic
+public import Mathlib.Algebra.Torsor.Defs
 public import Mathlib.Algebra.AffineMonoid.Basic
 public import Mathlib.Algebra.AffineMonoid.Embedding
 public import Mathlib.Algebra.AffineMonoid.Irreducible
