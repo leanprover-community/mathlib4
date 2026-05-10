@@ -218,7 +218,7 @@ theorem primorial_dvd_lcmUpto (n : ℕ) : primorial n ∣ lcmUpto n := by
   exact prod_primeFactors_dvd _
 
 theorem lcmUpto_eq_prod (n : ℕ) :
-  lcmUpto n = ∏ p ∈ primesLE n, p ^ ((lcmUpto n).factorization p) := by
+    lcmUpto n = ∏ p ∈ primesLE n, p ^ ((lcmUpto n).factorization p) := by
   conv_lhs => rw [← prod_factorization_pow_eq_self (lcmUpto_ne_zero n)]
   rw [prod_factorization_eq_prod_primeFactors]
   congr
