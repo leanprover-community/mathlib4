@@ -118,6 +118,20 @@ theorem step2_forward (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : Is
   have eq : restrict A u = u' ∘ restrict A π := by ext x; simp [π, u']
   exact eq ▸ u'_clemb.comp π_restr_clemb
 
+theorem step2_backward (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E))
+    [codim_A : FiniteDimensional 𝕜 (E ⧸ A)] (h_ker : Disjoint u.ker A)
+    (h_clemb : IsClosedEmbedding (restrict A u)) :
+    IsStrictMap u ∧ IsClosed (range u) := by
+  rcases A.exists_isCompl with ⟨S, A_compl_S⟩
+  have : FiniteDimensional 𝕜 S :=
+    quotientEquivOfIsCompl A S A_compl_S |>.finiteDimensional
+  rw [isClosedEmbedding_iff, range_restrict] at h_clemb
+  have : range u = (map u.toLinearMap A ⊔ map u.toLinearMap S) := by
+    rw [← Submodule.map_sup, A_compl_S.sup_eq_top, Submodule.map_top,
+      LinearMap.coe_range, ContinuousLinearMap.coe_coe]
+  refine ⟨?_, this ▸ Submodule.isClosed_sup_finiteDimensional _ _ h_clemb.2⟩
+  sorry
+
 theorem step2 (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E))
     [codim_A : FiniteDimensional 𝕜 (E ⧸ A)] (h_ker : Disjoint u.ker A) :
     (IsStrictMap u ∧ IsClosed (range u)) ↔ IsClosedEmbedding (restrict A u) := by
