@@ -8,5 +8,5 @@
 **/__pycache__/
 # Progress file from scripts/rm_set_option.py
 scripts/.rm_set_option_progress.jsonl
-# Output directory from scripts/build_with_diagnostics.py and expose_report.py
-scripts/.expose_report/
+# Output directory for `lake exe no_expose`
+scripts/.no_expose/
