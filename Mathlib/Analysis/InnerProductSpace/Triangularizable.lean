@@ -20,6 +20,9 @@ Gram-Schmidt construction of an orthonormal basis adapted to the same flag.
   basis in a finite-dimensional inner product space can be replaced by an orthonormal
   triangularizing basis with the same index type.
 * `Module.End.exists_orthonormalBasis_isTriangularizedBy`: the corresponding existential form.
+* `Module.End.exists_orthonormalBasis_isUpperTriangular_toMatrix`: in finite dimensions over an
+  algebraically closed field, an endomorphism has an upper-triangular matrix in some orthonormal
+  basis.
 -/
 
 @[expose] public section
@@ -50,5 +53,23 @@ theorem exists_orthonormalBasis_isTriangularizedBy
   obtain ⟨n, b, hb⟩ := h
   obtain ⟨u, hu⟩ := exists_orthonormalBasis_isTriangularizedBy_of_isTriangularizedBy b hb
   exact ⟨n, u, hu⟩
+
+/-- If an endomorphism has a triangularizing basis in a finite-dimensional inner product space, then
+it has an upper-triangular matrix in some orthonormal basis. -/
+theorem exists_orthonormalBasis_isUpperTriangular_toMatrix_of_exists_isTriangularizedBy
+    (h : ∃ n, ∃ b : Basis (Fin n) 𝕜 E, f.IsTriangularizedBy b) :
+    ∃ n, ∃ u : OrthonormalBasis (Fin n) 𝕜 E,
+      (LinearMap.toMatrix u.toBasis u.toBasis f).IsUpperTriangular := by
+  obtain ⟨n, u, hu⟩ := exists_orthonormalBasis_isTriangularizedBy h
+  exact ⟨n, u, isTriangularizedBy_iff_isUpperTriangular_toMatrix.mp hu⟩
+
+/-- In finite dimensions over an algebraically closed `RCLike` field, every endomorphism has an
+upper-triangular matrix in some orthonormal basis. -/
+theorem exists_orthonormalBasis_isUpperTriangular_toMatrix [IsAlgClosed 𝕜]
+    [FiniteDimensional 𝕜 E] (f : End 𝕜 E) :
+    ∃ n, ∃ u : OrthonormalBasis (Fin n) 𝕜 E,
+      (LinearMap.toMatrix u.toBasis u.toBasis f).IsUpperTriangular :=
+  exists_orthonormalBasis_isUpperTriangular_toMatrix_of_exists_isTriangularizedBy
+    (Module.End.exists_isTriangularizedBy f)
 
 end Module.End

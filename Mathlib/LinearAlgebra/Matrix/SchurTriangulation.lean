@@ -26,10 +26,9 @@ closed field, e.g., `ℂ`, is unitarily similar to an upper triangular matrix.
 @[expose] public section
 
 /-! The Schur construction below specializes algebraic triangularization. First
-`Module.End.exists_isTriangularizedBy` gives a basis whose complete flag is invariant; then
-`Module.End.exists_orthonormalBasis_isTriangularizedBy` replaces it by an orthonormal basis adapted
-to the same flag. For orthonormal bases, upper triangular entries are the same predicate as flag
-invariance by `Module.End.isTriangularizedBy_iff_isUpperTriangular_toMatrix`. -/
+`Module.End.exists_orthonormalBasis_isUpperTriangular_toMatrix` gives an orthonormal basis in
+which the associated linear map is upper triangular; the rest of the file repackages this choice as
+a unitary similarity of matrices. These choices are noncanonical. -/
 
 namespace Matrix
 
@@ -44,15 +43,13 @@ theorem exists_orthonormalBasis_isUpperTriangular_toEuclideanLin :
     ∃ b : OrthonormalBasis n 𝕜 (EuclideanSpace 𝕜 n),
       (LinearMap.toMatrixOrthonormal b (toEuclideanLin A)).IsUpperTriangular := by
   let f : Module.End 𝕜 (EuclideanSpace 𝕜 n) := toEuclideanLin A
-  let h := Module.End.exists_orthonormalBasis_isTriangularizedBy
-    (Module.End.exists_isTriangularizedBy f)
+  let h := Module.End.exists_orthonormalBasis_isUpperTriangular_toMatrix f
   let d := h.choose
   let b := h.choose_spec.choose
-  have hb : f.IsTriangularizedBy b.toBasis := h.choose_spec.choose_spec
   have hd : Module.finrank 𝕜 (EuclideanSpace 𝕜 n) = d := by
     simpa using Module.finrank_eq_card_basis b.toBasis
   have hut : (LinearMap.toMatrix b.toBasis b.toBasis f).IsUpperTriangular :=
-    Module.End.isTriangularizedBy_iff_isUpperTriangular_toMatrix.mp hb
+    h.choose_spec.choose_spec
   let e : Fin d ≃o n := Fintype.orderIsoFinOfCardEq n (finrank_euclideanSpace.symm.trans hd)
   let e' : Fin d ≃ n := e.toEquiv
   let b' := b.reindex e'
@@ -66,8 +63,8 @@ theorem exists_orthonormalBasis_isUpperTriangular_toEuclideanLin :
       rfl
     _ = 0 := hut (e.symm.lt_iff_lt.mpr hji)
 
-/-- The change of basis that induces the upper triangular form `A.schurTriangulation` of a matrix
-`A` over an algebraically closed field. -/
+/-- An arbitrary orthonormal change of basis that induces the upper triangular form
+`A.schurTriangulation` of a matrix `A` over an algebraically closed field. -/
 noncomputable def schurTriangulationBasis : OrthonormalBasis n 𝕜 (EuclideanSpace 𝕜 n) :=
   (exists_orthonormalBasis_isUpperTriangular_toEuclideanLin A).choose
 
@@ -86,7 +83,7 @@ noncomputable def schurTriangulation : UpperTriangular n 𝕜 where
 /-- **Schur triangulation**, **Schur decomposition** for matrices over an algebraically closed
 field. In particular, a complex matrix can be converted to upper-triangular form by a change of
 basis. In other words, any complex matrix is unitarily similar to an upper triangular matrix. -/
-lemma schurTriangulation_eq :
+theorem schurTriangulation_eq :
     A = schurTriangulationUnitary A * schurTriangulation A *
         star (schurTriangulationUnitary A) := by
   let U := schurTriangulationUnitary A
