@@ -317,7 +317,7 @@ nonrec theorem disjoint_iff {f g : ι →₀ α} : Disjoint f g ↔ Disjoint f.s
   classical
     rw [disjoint_iff, disjoint_iff, Finsupp.bot_eq_zero, ← Finsupp.support_eq_empty,
       Finsupp.support_inf]
-
+    rfl
 
 end LinearOrder
 
