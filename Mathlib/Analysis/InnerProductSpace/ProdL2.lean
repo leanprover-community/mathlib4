@@ -157,12 +157,13 @@ def quotientEquivOrthogonal : (E ⧸ K) ≃ₗᵢ[𝕜] ↥Kᗮ where
 @[simp]
 theorem coe_quotientEquivOrthogonal :
     K.quotientEquivOrthogonal =
-    (K.quotientEquivOfIsCompl Kᗮ K.isCompl_orthogonal_of_hasOrthogonalProjection) := rfl
+      (K.quotientEquivOfIsCompl Kᗮ K.isCompl_orthogonal_of_hasOrthogonalProjection) :=
+  rfl
 
 @[simp]
 theorem coe_quotientEquivOrthogonal_symm :
     K.quotientEquivOrthogonal.symm =
-    (K.quotientEquivOfIsCompl Kᗮ K.isCompl_orthogonal_of_hasOrthogonalProjection).symm :=
+      (K.quotientEquivOfIsCompl Kᗮ K.isCompl_orthogonal_of_hasOrthogonalProjection).symm :=
   rfl
 
 @[simp]
@@ -178,14 +179,14 @@ theorem quotientEquivOrthogonal_mk (x : E) (hx : x ∈ Kᗮ) :
   rfl
 
 theorem quotientEquivOrthogonal_mk_symm (x : E) (hx : x ∈ Kᗮ) :
-    (Quotient.mk x) = K.quotientEquivOrthogonal.symm ⟨x, hx⟩ := by
+    Quotient.mk x = K.quotientEquivOrthogonal.symm ⟨x, hx⟩ := by
   rw [← K.quotientEquivOfIsCompl_symm_apply Kᗮ
     K.isCompl_orthogonal_of_hasOrthogonalProjection ⟨x, hx⟩]
   rfl
 
 noncomputable instance instQuotientInnerProductSpace :
     InnerProductSpace 𝕜 (E ⧸ K) where
-  inner x y := inner 𝕜 (K.quotientEquivOrthogonal x) (K.quotientEquivOrthogonal y)
+  inner x y := ⟪K.quotientEquivOrthogonal x, K.quotientEquivOrthogonal y⟫_𝕜
   add_left x y z := by rw [map_add, inner_add_left]
   smul_left x y r := by rw [map_smul, inner_smul_left]
   conj_inner_symm x y := inner_conj_symm _ _
@@ -193,19 +194,14 @@ noncomputable instance instQuotientInnerProductSpace :
 
 @[simp]
 theorem inner_eq (x y : E ⧸ K) :
-    inner 𝕜 x y = inner 𝕜 (K.quotientEquivOrthogonal x) (K.quotientEquivOrthogonal y) := rfl
+    ⟪x, y⟫_𝕜 = ⟪K.quotientEquivOrthogonal x, K.quotientEquivOrthogonal y⟫_𝕜 :=
+  rfl
 
 theorem inner_mk_mk (x y : E) (hx : x ∈ Kᗮ) (hy : y ∈ Kᗮ) :
-    inner 𝕜 (K.quotientEquivOrthogonal (Quotient.mk x))
-      (K.quotientEquivOrthogonal (Quotient.mk y)) =
-    inner 𝕜 (⟨x, hx⟩: Kᗮ) ⟨y, hy⟩ := by
-  simp_rw [← quotientEquivOrthogonal_mk]
-
-theorem inner_mk_mk_symm (x y : E) (hx : x ∈ Kᗮ) (hy : y ∈ Kᗮ) :
-    inner 𝕜 (Quotient.mk (p:=K) x) (Quotient.mk y) =
-      inner 𝕜 (K.quotientEquivOrthogonal.symm ⟨x, hx⟩)
-        (K.quotientEquivOrthogonal.symm ⟨y, hy⟩) := by
-  simp_rw [← quotientEquivOrthogonal_mk_symm]
+    ⟪K.quotientEquivOrthogonal (Quotient.mk x), K.quotientEquivOrthogonal (Quotient.mk y)⟫_𝕜 =
+      ⟪x, y⟫_𝕜 := by
+  rw [K.quotientEquivOrthogonal_mk x hx, K.quotientEquivOrthogonal_mk y hy]
+  rfl
 
 end Submodule
 
