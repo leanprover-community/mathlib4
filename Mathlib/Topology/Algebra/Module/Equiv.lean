@@ -536,11 +536,11 @@ theorem symm_trans_apply (e₁ : M₂ ≃SL[σ₂₁] M₁) (e₂ : M₃ ≃SL[�
   rfl
 
 @[simp]
-theorem symm_image_image (e : M₁ ≃SL[σ₁₂] M₂) (s : Set M₁) : e.symm '' (e '' s) = s :=
+theorem symm_image_image (e : M₁ ≃SL[σ₁₂] M₂) (s : Set M₁) : e.symm '' e '' s = s :=
   e.toLinearEquiv.toEquiv.symm_image_image s
 
 @[simp]
-theorem image_symm_image (e : M₁ ≃SL[σ₁₂] M₂) (s : Set M₂) : e '' (e.symm '' s) = s :=
+theorem image_symm_image (e : M₁ ≃SL[σ₁₂] M₂) (s : Set M₂) : e '' e.symm '' s = s :=
   e.symm.symm_image_image s
 
 @[simp, norm_cast]
@@ -597,12 +597,12 @@ protected theorem image_symm_eq_preimage (e : M₁ ≃SL[σ₁₂] M₂) (s : Se
 
 @[simp]
 protected theorem symm_preimage_preimage (e : M₁ ≃SL[σ₁₂] M₂) (s : Set M₂) :
-    e.symm ⁻¹' (e ⁻¹' s) = s :=
+    e.symm ⁻¹' e ⁻¹' s = s :=
   e.toLinearEquiv.toEquiv.symm_preimage_preimage s
 
 @[simp]
 protected theorem preimage_symm_preimage (e : M₁ ≃SL[σ₁₂] M₂) (s : Set M₁) :
-    e ⁻¹' (e.symm ⁻¹' s) = s :=
+    e ⁻¹' e.symm ⁻¹' s = s :=
   e.symm.symm_preimage_preimage s
 
 lemma isUniformEmbedding {E₁ E₂ : Type*} [UniformSpace E₁] [UniformSpace E₂]
@@ -1389,28 +1389,6 @@ end ContinuousLinearEquiv
 
 end map
 
-namespace Submodule
-
-variable {R : Type*} [Ring R] {M : Type*} [TopologicalSpace M] [AddCommGroup M] [Module R M]
-
-open ContinuousLinearMap
-
-/-- If `p` is a closed complemented submodule,
-then there exists a submodule `q` and a continuous linear equivalence `M ≃L[R] (p × q)` such that
-`e (x : p) = (x, 0)`, `e (y : q) = (0, y)`, and `e.symm x = x.1 + x.2`.
-
-In fact, the properties of `e` imply the properties of `e.symm` and vice versa,
-but we provide both for convenience. -/
-lemma ClosedComplemented.exists_submodule_equiv_prod [IsTopologicalAddGroup M]
-    {p : Submodule R M} (hp : p.ClosedComplemented) :
-    ∃ (q : Submodule R M) (e : M ≃L[R] (p × q)),
-      (∀ x : p, e x = (x, 0)) ∧ (∀ y : q, e y = (0, y)) ∧ (∀ x, e.symm x = x.1 + x.2) :=
-  let ⟨f, hf⟩ := hp
-  ⟨f.ker, .equivOfRightInverse f p.subtypeL hf,
-    fun _ ↦ by ext <;> simp [hf], fun _ ↦ by ext <;> simp, fun _ ↦ rfl⟩
-
-end Submodule
-
 namespace MulOpposite
 
 variable (R : Type*) [Semiring R] [τR : TopologicalSpace R] [IsTopologicalSemiring R]
@@ -1456,4 +1434,14 @@ theorem trans_smul [IsScalarTower S R G] (α : Sˣ) (e : G ≃L[R] V) (f : V ≃
     e.trans (α • f) = α • (e.trans f) := by ext; simp
 
 end ContinuousLinearEquiv
+
+/-- A linear equivalence between topological modules is a homeomorphism if and only if it is
+continuous in both directions. -/
+theorem LinearEquiv.isHomeomorph_iff {R S : Type*} [Semiring R] [Semiring S]
+    {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
+    {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [Module R M]
+    {N : Type*} [TopologicalSpace N] [AddCommMonoid N] [Module S N]
+    (e : M ≃ₛₗ[σ] N) : IsHomeomorph e ↔ Continuous e ∧ Continuous e.symm :=
+  e.toEquiv.isHomeomorph_iff
+
 end
