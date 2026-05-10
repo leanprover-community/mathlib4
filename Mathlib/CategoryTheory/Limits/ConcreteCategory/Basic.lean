@@ -188,6 +188,16 @@ theorem colimit_rep_eq_iff_exists [HasColimit F] {i j : J} (x : ToType (F.obj i)
     colimit.ι F i x = colimit.ι F j y ↔ ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f x = F.map g y :=
   ⟨Concrete.colimit_exists_of_rep_eq.{s} _ _ _, Concrete.colimit_rep_eq_of_exists _ _ _⟩
 
+omit [IsFiltered J] in
+theorem exists_hom_ι_eq_of_isColimit [IsFilteredOrEmpty J] {D : Cocone F} (hD : IsColimit D)
+    (x : ToType D.pt) (k : J) :
+    ∃ (j : J) (_ : k ⟶ j) (y : ToType (F.obj j)), D.ι.app j y = x := by
+  obtain ⟨j, y, rfl⟩ := isColimit_exists_rep F hD x
+  refine ⟨IsFiltered.max k j, IsFiltered.leftToMax _ _, F.map (IsFiltered.rightToMax _ _) y, ?_⟩
+  rw [← ConcreteCategory.comp_apply]
+  congr 1
+  simp
+
 end FilteredColimits
 
 end Colimits
