@@ -9,7 +9,6 @@ public import Mathlib.ModelTheory.Complexity
 public import Mathlib.ModelTheory.Satisfiability
 public import Mathlib.ModelTheory.PartialEquiv
 
-
 /-!
 # Quantifier Elimination
 
