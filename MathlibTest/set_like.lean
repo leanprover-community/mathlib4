@@ -1,3 +1,4 @@
+module
 import Mathlib.Algebra.Field.Subfield.Basic
 import Mathlib.Algebra.Star.Subalgebra
 import Mathlib.Algebra.Star.SelfAdjoint
@@ -7,8 +8,6 @@ set_option autoImplicit true
 
 section Delab
 variable {M : Type u} [Monoid M] (S S' : Submonoid M)
-
-set_option linter.style.commandStart false
 
 /-- info: ↥S → ↥S' : Type u -/
 #guard_msgs in #check S → S'

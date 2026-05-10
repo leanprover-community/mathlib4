@@ -153,7 +153,6 @@ lemma toAut_surjective_isGalois_finite_family (t : Aut F) {ι : Type*} [Finite �
     ∃ (g : G), ∀ (i : ι) (x : F.obj (X i)), g • x = t.hom.app (X i) x := by
   let x (i : ι) : F.obj (X i) := (nonempty_fiber_of_isConnected F (X i)).some
   let P : C := ∏ᶜ X
-  letI : Fintype ι := Fintype.ofFinite ι
   let is₁ : F.obj P ≅ ∏ᶜ fun i ↦ (F.obj (X i)) := PreservesProduct.iso F X
   let is₂ : (∏ᶜ fun i ↦ F.obj (X i) : FintypeCat) ≃ ∀ i, F.obj (X i) :=
     Limits.FintypeCat.productEquiv (fun i ↦ (F.obj (X i)))
@@ -168,7 +167,7 @@ lemma toAut_surjective_isGalois_finite_family (t : Aut F) {ι : Type*} [Finite �
   rw [← hpx i, ← IsNaturalSMul.naturality, FunctorToFintypeCat.naturality,
     ← hfa, FunctorToFintypeCat.naturality, ← IsNaturalSMul.naturality, hg]
 
-open Pointwise
+open scoped Pointwise
 
 /-- If `G` is a compact, topological group that acts continuously and naturally on the
 fibers of `F`, `toAut F G` is surjective if and only if it acts transitively on the fibers

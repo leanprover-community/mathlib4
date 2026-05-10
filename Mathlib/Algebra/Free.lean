@@ -12,6 +12,8 @@ public import Mathlib.Control.Traversable.Basic
 public import Mathlib.Logic.Equiv.Defs
 public import Mathlib.Tactic.AdaptationNote
 
+import Mathlib.Tactic.Attr.Register
+
 /-!
 # Free constructions
 
@@ -252,10 +254,6 @@ theorem traverse_mul' :
 @[to_additive (attr := simp)]
 theorem traverse_eq (x) : FreeMagma.traverse F x = traverse F x := rfl
 
-@[to_additive (attr := deprecated "Use map_pure and seq_pure" (since := "2025-05-21"))]
-theorem mul_map_seq (x y : FreeMagma α) :
-    ((· * ·) <$> x <*> y : Id (FreeMagma α)) = (x * y : FreeMagma α) := rfl
-
 @[to_additive]
 instance : LawfulTraversable FreeMagma.{u} :=
   { instLawfulMonad with
@@ -492,7 +490,7 @@ def length (x : FreeSemigroup α) : ℕ := x.tail.length + 1
 
 @[to_additive (attr := simp)]
 theorem length_mul (x y : FreeSemigroup α) : (x * y).length = x.length + y.length := by
-  simp [length, Nat.add_right_comm, List.length, List.length_append]
+  simp [length, Nat.add_right_comm]
 
 @[to_additive (attr := simp)]
 theorem length_of (x : α) : (of x).length = 1 := rfl
@@ -523,11 +521,13 @@ a semigroup `β`. -/
 homomorphism `FreeAddSemigroup α → β` given an additive semigroup `β`. -/]
 def lift : (α → β) ≃ (FreeSemigroup α →ₙ* β) where
   toFun f :=
-    { toFun := fun x ↦ x.2.foldl (fun a b ↦ a * f b) (f x.1)
-      map_mul' := fun x y ↦ by
-        simp [head_mul, tail_mul, ← List.foldl_map, List.foldl_append, List.foldl_cons,
-          List.foldl_assoc] }
+    { toFun x := x.2.foldl (fun a b ↦ a * f b) (f x.1)
+      map_mul' := by simp [← List.foldl_map, List.foldl_assoc] }
   invFun f := f ∘ of
+
+@[to_additive]
+lemma lift_mk_eq_foldl {f : α → β} {x : α} {xs : List α} :
+    lift f ⟨x, xs⟩ = xs.foldl (· * f ·) (f x) := rfl
 
 @[to_additive (attr := simp)]
 theorem lift_of (x : α) : lift f (of x) = f x := rfl
@@ -647,10 +647,6 @@ end
 
 @[to_additive (attr := simp)]
 theorem traverse_eq (x) : FreeSemigroup.traverse F x = traverse F x := rfl
-
-@[to_additive (attr := deprecated "Use map_pure and seq_pure" (since := "2025-05-21"))]
-theorem mul_map_seq (x y : FreeSemigroup α) :
-    ((· * ·) <$> x <*> y : Id (FreeSemigroup α)) = (x * y : FreeSemigroup α) := rfl
 
 @[to_additive]
 instance : LawfulTraversable FreeSemigroup.{u} :=

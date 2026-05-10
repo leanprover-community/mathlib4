@@ -31,7 +31,7 @@ Implementation Note: Like `circleMap`, `circleAverage`s are defined for negative
 
 @[expose] public section
 
-open Complex Filter Metric Real
+open Complex Filter Metric Real Set Topology
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -56,6 +56,13 @@ noncomputable def circleAverage : E :=
 
 lemma circleAverage_def :
     circleAverage f c R = (2 * π)⁻¹ • ∫ θ in 0..2 * π, f (circleMap c R θ) := rfl
+
+/--
+If 'f' is *not* circle integrable, then the circle average is zero by definition.
+-/
+theorem circleAverage.integral_undef (hf : ¬CircleIntegrable f c R) :
+    circleAverage f c R = 0 := by
+  simp_all [circleAverage, CircleIntegrable, intervalIntegral.integral_undef]
 
 /-- Expression of `circleAverage` in terms of interval averages. -/
 lemma circleAverage_eq_intervalAverage :
@@ -174,7 +181,49 @@ theorem circleAverage_zero_one_congr_inv {f : ℂ → E} :
     rw [intervalIntegral.integral_comp_neg (fun w ↦ f (circleMap 0 1 w))]
     have t₀ : Function.Periodic (fun w ↦ f (circleMap 0 1 w)) (2 * π) :=
       fun x ↦ by simp [periodic_circleMap 0 1 x]
-    simpa using (t₀.intervalIntegral_add_eq_of_pos two_pi_pos (-(2 * π)) 0)
+    simpa using (t₀.intervalIntegral_add_eq (-(2 * π)) 0)
+
+/-!
+## Continuity
+-/
+
+/--
+The circleMap for a fixed center is continuous as a function on `ℝ × ℝ`.
+-/
+@[fun_prop] lemma circleMap.continuous {c : ℂ} :
+    Continuous (fun (x : ℝ × ℝ) ↦ circleMap c x.1 x.2) := by
+  fun_prop [circleMap]
+
+/--
+The circle average of a continuous function is itself continuous, as a function
+of the radius.
+-/
+theorem ContinuousOn.circleAverage {f : ℂ → E} {s : Set ℝ} {c : ℂ}
+    (hf : ContinuousOn f {z : ℂ | ‖z - c‖ ∈ s})
+    (hs : ∀ r ∈ s, 0 ≤ r) :
+    ContinuousOn (circleAverage f c) s := by
+  rw [continuousOn_iff_continuous_restrict] at *
+  apply (intervalIntegral.continuous_parametric_intervalIntegral_of_continuous' _ _ _).const_smul
+  have (x : s × ℝ) : circleMap c x.1 x.2 ∈ {z | ‖z - c‖ ∈ s} :=
+    by simp [abs_of_nonneg (hs x.1 (Subtype.coe_prop x.1))]
+  apply hf.comp (f := (fun x ↦ ⟨circleMap c x.1 x.2, this x⟩))
+  fun_prop
+
+/--
+Companion lemma to `ContinuousOn.circleAverage`: a function continuous on `Ioc r
+R` and constant on `Ioo r R` is constant.
+-/
+lemma ContinuousOn.eq_of_eqOn_Ioo {f : ℝ → ℝ} {c r R : ℝ}
+    (h₁f : ContinuousOn f (Ioc r R)) (hR : r < R)
+    (h₂f : EqOn f (fun _ ↦ c) (Ioo r R)) :
+    f R = c := by
+  have : Filter.Tendsto f (𝓝[Iio R] R) (𝓝 (f R)) := by
+    apply (h₁f R (right_mem_Ioc.mpr hR)).mono_left
+    rw [nhdsWithin_le_iff, mem_nhdsLT_iff_exists_Ioo_subset]
+    use r
+    simp_all [Ioo_subset_Ioc_self]
+  apply tendsto_nhds_unique this (tendsto_const_nhds.congr' _)
+  apply Filter.eventuallyEq_of_mem (Ioo_mem_nhdsLT hR) (fun _ hx ↦ (h₂f hx).symm)
 
 /-!
 ## Constant Functions
@@ -239,6 +288,19 @@ theorem abs_circleAverage_le_circleAverage_abs {f : ℂ → ℝ} :
     abs_of_pos (inv_pos.2 two_pi_pos), mul_le_mul_iff_of_pos_left (inv_pos.2 two_pi_pos)]
   exact intervalIntegral.abs_integral_le_integral_abs (le_of_lt two_pi_pos)
 
+/--
+The circle average of a nonnegative function is nonnegative.
+-/
+theorem circleAverage_nonneg_of_nonneg {c : ℂ} {R : ℝ} {f : ℂ → ℝ}
+    (h₂f : ∀ x ∈ Metric.sphere c |R|, 0 ≤ f x) :
+    0 ≤ circleAverage f c R := by
+  by_cases hf : CircleIntegrable f c R
+  · rw [← circleAverage_const 0 c |R|, circleAverage, circleAverage, smul_eq_mul, smul_eq_mul,
+      mul_le_mul_iff_of_pos_left (inv_pos.2 two_pi_pos)]
+    apply intervalIntegral.integral_mono_on_of_le_Ioo (le_of_lt two_pi_pos)
+      intervalIntegrable_const hf (fun θ _ ↦ h₂f (circleMap c R θ) (circleMap_mem_sphere' c R θ))
+  · rw [circleAverage.integral_undef hf]
+
 /-!
 ## Commutativity with Linear Maps
 -/
@@ -287,7 +349,7 @@ theorem circleAverage_sum {ι : Type*} {s : Finset ι} {f : ι → ℂ → E}
     (h : ∀ i ∈ s, CircleIntegrable (f i) c R) :
     circleAverage (∑ i ∈ s, f i) c R = ∑ i ∈ s, circleAverage (f i) c R := by
   unfold circleAverage
-  simp [← Finset.smul_sum, intervalIntegral.integral_finset_sum h]
+  simp [← Finset.smul_sum, intervalIntegral.integral_finsetSum h]
 
 /-- Circle averages commute with sums. -/
 theorem circleAverage_fun_sum {ι : Type*} {s : Finset ι} {f : ι → ℂ → E}

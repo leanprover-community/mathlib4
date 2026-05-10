@@ -347,12 +347,6 @@ theorem mem_closure_of_mem {s : Set G} {x : G} (hx : x ∈ s) : x ∈ closure s 
 theorem notMem_of_notMem_closure {P : G} (hP : P ∉ closure k) : P ∉ k := fun h =>
   hP (subset_closure h)
 
-@[deprecated (since := "2025-05-23")]
-alias _root_.AddSubgroup.not_mem_of_not_mem_closure := AddSubgroup.notMem_of_notMem_closure
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
-
 open Set
 
 /-- A subgroup `K` includes `closure k` if and only if it includes `k`. -/
@@ -560,7 +554,7 @@ theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {K : ι → Subgroup G} (h
   rw [this, mem_biSup_of_directedOn trivial]
   · simp
   · simp only [setOf_true]
-    rw [directedOn_onFun_iff, Set.image_univ, ← directedOn_range]
+    rw [directedOn_onFun_iff, Set.image_univ, directedOn_range]
     -- `Directed.mono_comp` and much of the Set API requires `Type u` instead of `Sort u`
     intro i
     simp only [PLift.exists]
@@ -612,8 +606,7 @@ variable {P : C → Prop}
 @[to_additive, simp high]
 lemma forall_mem_sup :
     (∀ x ∈ s ⊔ t, P x) ↔ (∀ x₁ ∈ s, ∀ x₂ ∈ t, P (x₁ * x₂)) := by
-  simp [mem_sup]
-  aesop
+  grind [mem_sup]
 
 @[to_additive, simp high]
 lemma exists_mem_sup :

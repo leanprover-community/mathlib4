@@ -79,6 +79,7 @@ compact Hausdorff spaces.
 def stoneCechObj (X : TopCat) : CompHaus :=
   CompHaus.of (StoneCech X)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation) The bijection of homsets to establish the reflective adjunction of compact
 Hausdorff spaces in topological spaces.
 -/
@@ -91,7 +92,7 @@ noncomputable def stoneCechEquivalence (X : TopCat.{u}) (Y : CompHaus.{u}) :
     { toFun := stoneCechExtend f.hom.2
       continuous_toFun := continuous_stoneCechExtend f.hom.2 }
   left_inv := by
-    rintro ⟨f : StoneCech X ⟶ Y, hf : Continuous f⟩
+    rintro ⟨f, hf : Continuous f⟩
     ext x
     refine congr_fun ?_ x
     apply Continuous.ext_on denseRange_stoneCechUnit (continuous_stoneCechExtend _) hf
@@ -99,7 +100,7 @@ noncomputable def stoneCechEquivalence (X : TopCat.{u}) (Y : CompHaus.{u}) :
       apply congr_fun (stoneCechExtend_extends (hf.comp _)) y
       apply continuous_stoneCechUnit
   right_inv := by
-    rintro ⟨f : (X : Type _) ⟶ Y, hf : Continuous f⟩
+    rintro ⟨f, hf : Continuous f⟩
     ext
     exact congr_fun (stoneCechExtend_extends hf) _
 
@@ -175,7 +176,7 @@ def limitConeIsLimit {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u
     uniq := fun S m hm => InducedCategory.hom_ext
       ((TopCat.limitConeIsLimit FF).uniq (compHausToTop.mapCone S) _ (fun j ↦ by
         simp [← hm]
-        rfl )) }
+        rfl)) }
 
 theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
   constructor
@@ -207,7 +208,7 @@ theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Functi
     dsimp [g, h, Z] at H
     simp only [hφ1 (Set.mem_singleton y), Pi.one_apply] at H
     exact zero_ne_one H
-  · rw [← CategoryTheory.epi_iff_surjective]
+  · rw [← CategoryTheory.ofHom_epi_iff_surjective]
     apply (forget CompHaus).epi_of_epi_map
 
 end CompHaus

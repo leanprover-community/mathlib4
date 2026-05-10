@@ -32,7 +32,7 @@ also in the subset.
 @[expose] public section
 
 
-variable (K V : Type*) [Field K] [AddCommGroup V] [Module K V]
+variable (K V : Type*) [DivisionRing K] [AddCommGroup V] [Module K V]
 
 namespace Projectivization
 
@@ -59,6 +59,8 @@ instance : SetLike (Subspace K V) (ℙ K V) where
     cases A
     cases B
     simp
+
+instance : PartialOrder (Subspace K V) := .ofSetLike (Subspace K V) (ℙ K V)
 
 @[simp]
 theorem mem_carrier_iff (A : Subspace K V) (x : ℙ K V) : x ∈ A.carrier ↔ x ∈ A :=
@@ -148,7 +150,7 @@ theorem span_le_subspace_iff {S : Set (ℙ K V)} {W : Subspace K V} : span S ≤
 
 /-- If a set of points is a subset of another set of points, then its span will be contained in the
 span of that set. -/
-@[mono]
+@[gcongr, mono]
 theorem monotone_span : Monotone (span : Set (ℙ K V) → Subspace K V) :=
   gi.gc.monotone_l
 

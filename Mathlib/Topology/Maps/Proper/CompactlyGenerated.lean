@@ -15,7 +15,7 @@ This file proves that if `Y` is a Hausdorff and compactly generated space, a con
 `f : X → Y` is proper if and only if preimage of compact sets are compact.
 -/
 
-@[expose] public section
+public section
 
 open Set Filter
 

@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.Order.Filter.AtTopBot.Group
 public import Mathlib.Order.Filter.CountablyGenerated
 public import Mathlib.Tactic.GCongr
+import Mathlib.Algebra.Order.Group.Basic
 
 /-!
 # `Filter.atTop` filter and archimedean (semi)rings/fields
@@ -19,7 +20,7 @@ does `f`. We also prove that `Nat.cast : ℕ → R` tends to `Filter.atTop` alon
 well as version of these two results for `ℤ` (and a ring `R`) and `ℚ` (and a field `R`).
 -/
 
-@[expose] public section
+public section
 
 
 variable {α R : Type*}
@@ -35,6 +36,10 @@ theorem tendsto_natCast_atTop_iff [Semiring R] [PartialOrder R] [IsStrictOrdered
     [Archimedean R] {f : α → ℕ}
     {l : Filter α} : Tendsto (fun n => (f n : R)) l atTop ↔ Tendsto f l atTop :=
   tendsto_atTop_embedding (fun _ _ => Nat.cast_le) exists_nat_ge
+
+theorem PNat.tendsto_comp_val_iff {β : Type*} {f : ℕ → β} {l : Filter β} :
+    Tendsto (fun x : ℕ+ => f x) atTop l ↔ Tendsto f atTop l := by
+  exact tendsto_comp_val_Ioi_atTop
 
 theorem tendsto_natCast_atTop_atTop [Semiring R] [PartialOrder R] [IsOrderedRing R]
     [Archimedean R] :

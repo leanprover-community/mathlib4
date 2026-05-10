@@ -7,9 +7,11 @@ module
 
 public import Mathlib.Algebra.Algebra.RestrictScalars
 public import Mathlib.Algebra.CharP.Invertible
+public import Mathlib.Algebra.Star.Unitary
 public import Mathlib.Data.Complex.Basic
 public import Mathlib.Data.Real.Star
 public import Mathlib.LinearAlgebra.Matrix.ToLin
+import Mathlib.Algebra.Module.Torsion.Field
 
 /-!
 # Complex number as a vector space over `ℝ`
@@ -107,6 +109,15 @@ instance : StarModule ℝ ℂ :=
 theorem coe_algebraMap : (algebraMap ℝ ℂ : ℝ → ℂ) = ((↑) : ℝ → ℂ) :=
   rfl
 
+example : (Semiring.toNatAlgebra : Algebra ℕ ℂ) = Complex.instAlgebraOfReal := by
+  with_reducible_and_instances rfl
+
+example : (Ring.toIntAlgebra ℂ : Algebra ℤ ℂ) = Complex.instAlgebraOfReal := by
+  with_reducible_and_instances rfl
+
+example : Module.restrictScalars ℝ ℂ ℂ = Complex.instModule := by
+  with_reducible_and_instances rfl
+
 section
 
 variable {A : Type*} [Semiring A] [Algebra ℝ A]
@@ -156,13 +167,13 @@ end Complex
 vector space. -/
 instance (priority := 900) Module.complexToReal (E : Type*) [AddCommGroup E] [Module ℂ E] :
     Module ℝ E :=
-  RestrictScalars.module ℝ ℂ E
+  .restrictScalars ℝ ℂ E
 
 /- Register as an instance (with low priority) the fact that a complex algebra is also a real
 algebra. -/
 instance (priority := 900) Algebra.complexToReal {A : Type*} [Semiring A] [Algebra ℂ A] :
     Algebra ℝ A :=
-  RestrictScalars.algebra ℝ ℂ A
+  .restrictScalars ℝ ℂ A
 
 -- try to make sure we're not introducing diamonds but we will need
 -- `reducible_and_instances` which currently fails https://github.com/leanprover-community/mathlib4/issues/10906
@@ -268,28 +279,33 @@ def equivRealProdLm : ℂ ≃ₗ[ℝ] ℝ × ℝ :=
 
 theorem equivRealProdLm_symm_apply (p : ℝ × ℝ) :
     Complex.equivRealProdLm.symm p = p.1 + p.2 * Complex.I := Complex.equivRealProd_symm_apply p
+
 section lift
 
 variable {A : Type*} [Ring A] [Algebra ℝ A]
 
-/-- There is an alg_hom from `ℂ` to any `ℝ`-algebra with an element that squares to `-1`.
+open Algebra
+
+/-- There is an `AlgHom` from `ℂ` to any `ℝ`-algebra with an element that squares to `-1`.
 
 See `Complex.lift` for this as an equiv. -/
 def liftAux (I' : A) (hf : I' * I' = -1) : ℂ →ₐ[ℝ] A :=
   AlgHom.ofLinearMap
     ((Algebra.linearMap ℝ A).comp reLm + (LinearMap.toSpanSingleton _ _ I').comp imLm)
-    (show algebraMap ℝ A 1 + (0 : ℝ) • I' = 1 by rw [map_one, zero_smul, add_zero])
-    fun ⟨x₁, y₁⟩ ⟨x₂, y₂⟩ =>
-    show
-      algebraMap ℝ A (x₁ * x₂ - y₁ * y₂) + (x₁ * y₂ + y₁ * x₂) • I' =
-        (algebraMap ℝ A x₁ + y₁ • I') * (algebraMap ℝ A x₂ + y₂ • I') by
-      rw [add_mul, mul_add, mul_add, add_comm _ (y₁ • I' * y₂ • I'), add_add_add_comm]
-      congr 1
-      -- equate "real" and "imaginary" parts
-      · rw [smul_mul_smul_comm, hf, smul_neg, ← Algebra.algebraMap_eq_smul_one, ← sub_eq_add_neg,
-          ← map_mul, ← map_sub]
-      · rw [Algebra.smul_def, Algebra.smul_def, Algebra.smul_def, ← Algebra.right_comm _ x₂,
-          ← mul_assoc, ← add_mul, ← map_mul, ← map_mul, ← map_add]
+    (show algebraMap ℝ A 1 + (0 : ℝ) • I' = 1 by rw [map_one, zero_smul, add_zero]) ?_
+where finally
+  rintro ⟨x₁, y₁⟩ ⟨x₂, y₂⟩
+  rw [mk_mul_mk]
+  change
+    algebraMap ℝ A (x₁ * x₂ - y₁ * y₂) + (x₁ * y₂ + y₁ * x₂) • I' =
+      (algebraMap ℝ A x₁ + y₁ • I') * (algebraMap ℝ A x₂ + y₂ • I')
+  rw [add_mul, mul_add, mul_add, add_comm _ (y₁ • I' * y₂ • I'), add_add_add_comm]
+  congr 1
+  -- equate "real" and "imaginary" parts
+  · rw [smul_mul_smul_comm, hf, smul_neg, ← algebraMap_eq_smul_one, ← sub_eq_add_neg,
+      ← map_mul, ← map_sub]
+  · rw [smul_def, smul_def, smul_def, ← right_comm _ x₂,
+      ← mul_assoc, ← add_mul, ← map_mul, ← map_mul, ← map_add]
 
 @[simp]
 theorem liftAux_apply (I' : A) (hI') (z : ℂ) : liftAux I' hI' z = algebraMap ℝ A z.re + z.im • I' :=
@@ -298,13 +314,13 @@ theorem liftAux_apply (I' : A) (hI') (z : ℂ) : liftAux I' hI' z = algebraMap �
 theorem liftAux_apply_I (I' : A) (hI') : liftAux I' hI' I = I' := by simp
 
 @[simp]
-theorem adjoin_I : Algebra.adjoin ℝ {I} = ⊤ := by
+theorem adjoin_I : ℝ[I] = ⊤ := by
   refine top_unique fun x hx => ?_; clear hx
   rw [← x.re_add_im, ← smul_eq_mul, ← Complex.coe_algebraMap]
-  exact add_mem (algebraMap_mem _ _) (Subalgebra.smul_mem _ (Algebra.subset_adjoin <| by simp) _)
+  exact add_mem (algebraMap_mem _ _) (Subalgebra.smul_mem _ (subset_adjoin <| by simp) _)
 
 @[simp]
-theorem range_liftAux (I' : A) (hI') : (liftAux I' hI').range = Algebra.adjoin ℝ {I'} := by
+theorem range_liftAux (I' : A) (hI') : (liftAux I' hI').range = ℝ[I'] := by
   simp_rw [← Algebra.map_top, ← adjoin_I, AlgHom.map_adjoin, Set.image_singleton, liftAux_apply_I]
 
 /-- A universal property of the complex numbers, providing a unique `ℂ →ₐ[ℝ] A` for every element
@@ -338,7 +354,11 @@ section RealImaginaryPart
 
 open Complex
 
-variable {A : Type*} [AddCommGroup A] [Module ℂ A] [StarAddMonoid A] [StarModule ℂ A]
+variable {A : Type*}
+
+section AddCommGroup
+
+variable [AddCommGroup A] [Module ℂ A] [StarAddMonoid A] [StarModule ℂ A]
 
 /-- Create a `selfAdjoint` element from a `skewAdjoint` element by multiplying by the scalar
 `-Complex.I`. -/
@@ -468,6 +488,23 @@ lemma imaginaryPart_surjective : Function.Surjective (imaginaryPart (A := A)) :=
   fun x ↦
     ⟨I • (x : A), Subtype.ext <| by simp only [imaginaryPart_I_smul, x.property.coe_realPart]⟩
 
+lemma ComplexStarModule.ext {x y : A} (h₁ : ℜ x = ℜ y) (h₂ : ℑ x = ℑ y) : x = y := by
+  rw [← realPart_add_I_smul_imaginaryPart x, ← realPart_add_I_smul_imaginaryPart y, h₁, h₂]
+
+lemma ComplexStarModule.ext_iff {x y : A} : x = y ↔ ℜ x = ℜ y ∧ ℑ x = ℑ y where
+  mp := by grind
+  mpr h := ext h.1 h.2
+
+@[simp]
+theorem ker_imaginaryPart : imaginaryPart.ker = selfAdjoint.submodule ℝ A := by
+  ext x
+  simp [selfAdjoint.submodule, selfAdjoint.mem_iff, imaginaryPart, Subtype.ext_iff]
+  grind
+
+@[simp]
+lemma imaginaryPart_eq_zero_iff {x : A} : ℑ x = 0 ↔ IsSelfAdjoint x := by
+  simpa [-ker_imaginaryPart] using SetLike.ext_iff.mp ker_imaginaryPart x
+
 open Submodule
 
 lemma span_selfAdjoint : span ℂ (selfAdjoint A : Set A) = ⊤ := by
@@ -475,6 +512,10 @@ lemma span_selfAdjoint : span ℂ (selfAdjoint A : Set A) = ⊤ := by
   rw [← realPart_add_I_smul_imaginaryPart x]
   exact add_mem (subset_span (ℜ x).property) <|
     SMulMemClass.smul_mem _ <| subset_span (ℑ x).property
+
+end AddCommGroup
+
+open scoped ComplexStarModule
 
 /-- The natural `ℝ`-linear equivalence between `selfAdjoint ℂ` and `ℝ`. -/
 @[simps apply symm_apply]
@@ -499,22 +540,73 @@ lemma realPart_ofReal (r : ℝ) : (ℜ (r : ℂ) : ℂ) = r := by
 lemma imaginaryPart_ofReal (r : ℝ) : ℑ (r : ℂ) = 0 := by
   ext1; simp [imaginaryPart_apply_coe, conj_ofReal]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 lemma Complex.coe_realPart (z : ℂ) : (ℜ z : ℂ) = z.re := calc
   (ℜ z : ℂ) = (↑(ℜ (↑z.re + ↑z.im * I))) := by congrm (ℜ $((re_add_im z).symm))
   _         = z.re                       := by
     rw [map_add, AddSubmonoid.coe_add, mul_comm, ← smul_eq_mul, realPart_I_smul]
     simp
 
-lemma star_mul_self_add_self_mul_star {A : Type*} [NonUnitalNonAssocRing A] [StarRing A]
-    [Module ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A] [StarModule ℂ A] (a : A) :
+section NonUnitalNonAssocRing
+
+variable [NonUnitalNonAssocRing A] [StarRing A] [Module ℂ A] [IsScalarTower ℂ A A]
+  [SMulCommClass ℂ A A] [StarModule ℂ A]
+
+lemma star_mul_self_add_self_mul_star (a : A) :
     star a * a + a * star a = 2 • (ℜ a * ℜ a + ℑ a * ℑ a) :=
   have a_eq := (realPart_add_I_smul_imaginaryPart a).symm
   calc
     star a * a + a * star a = _ :=
       congr((star $(a_eq)) * $(a_eq) + $(a_eq) * (star $(a_eq)))
     _ = 2 • (ℜ a * ℜ a + ℑ a * ℑ a) := by
-      simp [mul_add, add_mul, smul_smul, two_smul, mul_smul_comm,
+      simp [mul_add, add_mul, smul_smul, mul_smul_comm,
         smul_mul_assoc]
       abel
+
+lemma star_mul_self_sub_self_mul_star (a : A) :
+    star a * a - a * star a = 2 • I • (ℜ a * ℑ a - ℑ a * ℜ a) :=
+  have a_eq := (realPart_add_I_smul_imaginaryPart a).symm
+  calc
+    star a * a - a * star a = _ :=
+      congr((star $(a_eq)) * $(a_eq) - $(a_eq) * (star $(a_eq)))
+    _ = 2 • I • (ℜ a * ℑ a - ℑ a * ℜ a) := by
+      simp [mul_add, add_mul, mul_smul_comm, smul_mul_assoc, smul_smul]
+      module
+
+/-- An element in a non-unital star `ℂ`-algebra is normal if and only if its real and imaginary
+parts commute. -/
+lemma isStarNormal_iff_commute_realPart_imaginaryPart {x : A} :
+    IsStarNormal x ↔ Commute (ℜ x : A) (ℑ x : A) := by
+  rw [isStarNormal_iff, commute_iff_eq, ← sub_eq_zero, star_mul_self_sub_self_mul_star,
+    two_smul ℕ, ← two_smul ℂ, smul_eq_zero_iff_right two_ne_zero, smul_eq_zero_iff_right I_ne_zero,
+    sub_eq_zero, commute_iff_eq]
+
+lemma Commute.realPart_imaginaryPart (x : A) [IsStarNormal x] :
+    Commute (ℜ x : A) (ℑ x : A) :=
+  isStarNormal_iff_commute_realPart_imaginaryPart.mp inferInstance
+
+lemma star_mul_self_eq_realPart_sq_add_imaginaryPart_sq (x : A) [hx : IsStarNormal x] :
+    star x * x = ℜ x * ℜ x + ℑ x * ℑ x := calc
+  star x * x = ℜ x * ℜ x + ℑ x * ℑ x + Complex.I • (ℜ x * ℑ x - ℑ x * ℜ x) := by
+    conv_lhs => rw [← realPart_add_I_smul_imaginaryPart x]
+    simp [add_mul, mul_add, smul_mul_assoc, mul_smul_comm, smul_smul, smul_sub]
+    grind
+  _ = _ := by simp [Commute.realPart_imaginaryPart x |>.eq]
+
+end NonUnitalNonAssocRing
+
+@[simp]
+lemma realPart_one [Ring A] [StarRing A] [Module ℂ A] [StarModule ℂ A] :
+    ℜ (1 : A) = 1 := by
+  ext; simp [realPart_apply_coe, ← two_smul ℝ]
+
+lemma mem_unitary_iff_isStarNormal_and_realPart_sq_add_imaginaryPart_sq_eq_one [Ring A]
+    [StarRing A] [Module ℂ A] [SMulCommClass ℂ A A] [IsScalarTower ℂ A A] [StarModule ℂ A] {x : A} :
+    x ∈ unitary A ↔ IsStarNormal x ∧ ℜ x ^ 2 + ℑ x ^ 2 = (1 : A) := by
+  rw [Unitary.mem_iff]
+  refine ⟨fun ⟨h, h'⟩ ↦ ?_, fun ⟨hx, h⟩ ↦ ?_⟩
+  · have : IsStarNormal x := ⟨h.trans h'.symm⟩
+    exact ⟨this, by simp [sq, ← star_mul_self_eq_realPart_sq_add_imaginaryPart_sq x, h]⟩
+  · simp [← hx.star_comm_self.eq, star_mul_self_eq_realPart_sq_add_imaginaryPart_sq, ← sq, h]
 
 end RealImaginaryPart

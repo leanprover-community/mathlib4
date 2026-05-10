@@ -39,7 +39,7 @@ def ofScalars (c : ℕ → 𝕜) : FormalMultilinearSeries 𝕜 E E :=
 
 @[simp]
 theorem ofScalars_eq_zero [Nontrivial E] (n : ℕ) : ofScalars E c n = 0 ↔ c n = 0 := by
-  rw [ofScalars, smul_eq_zero (c := c n) (x := ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n E)]
+  rw [ofScalars, smul_eq_zero]
   refine or_iff_left (ContinuousMultilinearMap.ext_iff.1.mt <| not_forall_of_exists_not ?_)
   use fun _ ↦ 1
   simp
@@ -64,15 +64,9 @@ theorem ofScalars_series_of_subsingleton [Subsingleton E] : ofScalars E c = 0 :=
 
 variable (𝕜) in
 theorem ofScalars_series_injective [Nontrivial E] : Function.Injective (ofScalars E (𝕜 := 𝕜)) := by
-  intro _ _
-  refine Function.mtr fun h ↦ ?_
-  simp_rw [FormalMultilinearSeries.ext_iff, ofScalars, ContinuousMultilinearMap.ext_iff,
-    ContinuousMultilinearMap.smul_apply]
-  push_neg
-  obtain ⟨n, hn⟩ := Function.ne_iff.1 h
-  refine ⟨n, fun _ ↦ 1, ?_⟩
-  simp only [mkPiAlgebraFin_apply, List.ofFn_const, List.prod_replicate, one_pow, ne_eq]
-  exact (smul_left_injective 𝕜 one_ne_zero).ne hn
+  intro _ _ h
+  ext n
+  simpa [ofScalars] using congrArg (fun p ↦ p n fun _ ↦ (1 : E)) h
 
 variable (c)
 
@@ -92,16 +86,13 @@ lemma coeff_ofScalars {𝕜 : Type*} [NontriviallyNormedField 𝕜] {p : ℕ →
   simp [FormalMultilinearSeries.coeff, FormalMultilinearSeries.ofScalars, List.prod_ofFn]
 
 theorem ofScalars_add (c' : ℕ → 𝕜) : ofScalars E (c + c') = ofScalars E c + ofScalars E c' := by
-  unfold ofScalars
-  simp_rw [Pi.add_apply, Pi.add_def _ _]
-  exact funext fun n ↦ Module.add_smul (c n) (c' n) (ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n E)
+  ext; simp [ofScalars, add_smul]
 
 lemma ofScalars_sub (c' : ℕ → 𝕜) : ofScalars E (c - c') = ofScalars E c - ofScalars E c' := by
   ext; simp [ofScalars, sub_smul]
 
 theorem ofScalars_smul (x : 𝕜) : ofScalars E (x • c) = x • ofScalars E c := by
-  unfold ofScalars
-  simp [Pi.smul_def x _, smul_smul]
+  ext; simp [ofScalars, smul_smul]
 
 theorem ofScalars_comp_neg_id :
     (ofScalars E c).compContinuousLinearMap (-ContinuousLinearMap.id _ _) =
@@ -173,6 +164,7 @@ open scoped Topology NNReal
 variable {𝕜 : Type*} (E : Type*) [NontriviallyNormedField 𝕜] [SeminormedRing E]
     [NormedAlgebra 𝕜 E] (c : ℕ → 𝕜) (n : ℕ)
 
+@[simp]
 theorem ofScalars_norm_eq_mul :
     ‖ofScalars E c n‖ = ‖c n‖ * ‖ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n E‖ := by
   rw [ofScalars, norm_smul]
@@ -182,9 +174,8 @@ theorem ofScalars_norm_le (hn : n > 0) : ‖ofScalars E c n‖ ≤ ‖c n‖ := 
   exact (mul_le_of_le_one_right (norm_nonneg _)
     (ContinuousMultilinearMap.norm_mkPiAlgebraFin_le_of_pos hn))
 
-@[simp]
 theorem ofScalars_norm [NormOneClass E] : ‖ofScalars E c n‖ = ‖c n‖ := by
-  simp [ofScalars_norm_eq_mul]
+  simp
 
 end Seminormed
 
@@ -259,7 +250,7 @@ theorem ofScalars_radius_eq_top_of_tendsto (hc : ∀ᶠ n in atTop, c n ≠ 0)
   refine radius_eq_top_of_summable_norm _ fun r' ↦ ?_
   by_cases hrz : r' = 0
   · apply Summable.comp_nat_add (k := 1)
-    simpa [hrz] using (summable_const_iff 0).mpr rfl
+    simp [hrz]
   · refine Summable.of_norm_bounded_eventually (g := fun n ↦ ‖‖c n‖ * r' ^ n‖) ?_ ?_
     · apply summable_of_ratio_test_tendsto_lt_one zero_lt_one (hc.mp (Eventually.of_forall ?_))
       · simp only [norm_norm]

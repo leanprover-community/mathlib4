@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.List.Defs
 public import Mathlib.Tactic.Common
+public import Mathlib.Logic.Function.Iterate
 
 /-!
 # `Take` and `Drop` lemmas for lists
@@ -14,7 +15,7 @@ public import Mathlib.Tactic.Common
 This file provides lemmas about `List.take` and `List.drop` and related functions.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists GroupWithZero
 assert_not_exists Lattice
@@ -80,6 +81,34 @@ lemma drop_length_sub_one {l : List α} (h : l ≠ []) : l.drop (l.length - 1) =
     · simp_all
     rw [length_cons, Nat.add_one_sub_one, List.drop_length_cons hl a]
     simp [getLast_cons, hl]
+
+/-- Applying `tail` to a list `n` times is equivalent to dropping `n` elements. -/
+theorem tail_iterate (l : List α) (n : ℕ) : (List.tail^[n]) l = l.drop n := by
+  induction n generalizing l with
+  | zero => rfl
+  | succ n ih => cases l <;> simp [*]
+
+section TailDropLast
+
+variable (l : List α) (n : ℕ)
+
+theorem tail_take_eq_take_tail : (l.take n).tail = l.tail.take (n - 1) := by
+  ext
+  grind
+
+theorem dropLast_take_eq_take_dropLast : (l.take n).dropLast = l.dropLast.take (n - 1) := by
+  ext
+  grind
+
+theorem tail_drop_eq_drop_tail : (l.drop n).tail = l.tail.drop n := by
+  ext
+  grind
+
+theorem dropLast_drop_eq_drop_dropLast : (l.drop n).dropLast = l.dropLast.drop n := by
+  ext
+  grind
+
+end TailDropLast
 
 section TakeI
 

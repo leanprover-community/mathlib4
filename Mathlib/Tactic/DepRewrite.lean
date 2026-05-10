@@ -9,6 +9,7 @@ public meta import Lean.Elab.Tactic.Simp
 public meta import Lean.Elab.Tactic.Conv.Basic
 public meta import Lean.Elab.Tactic.Rewrite
 public import Mathlib.Init
+public import Lean.Elab.Tactic.Config
 
 /-! ## Dependent rewrite tactic -/
 
@@ -291,7 +292,7 @@ The expected types of certain subterms are computed from `et?`. -/
 partial def visit (e : Expr) (et? : Option Expr) : M Expr :=
   withTraceNode traceClsVisit (fun
     | .ok e' => pure m!"{e} => {e'} (et: {et?})"
-    | .error _ => pure m!"{e} => 💥️") <| Meta.withIncRecDepth do
+    | .error _ => pure m!"{e} => ??") <| Meta.withIncRecDepth do
   let ctx ← read
   if let some (eup, cacheOcc, dCacheOcc) ← MonadCache.findCached? { val := e : ExprStructEq } then
     if canUseCache cacheOcc dCacheOcc (← get) ctx.cfg.occs then
@@ -400,7 +401,7 @@ def dabstract (e : Expr) (p : Expr) (cfg : DepRewrite.Config) : MetaM Expr := do
   withTraceNode traceCls (fun
     -- Message shows unified pattern (without mvars) b/c it is constructed after the body runs
     | .ok motive => pure m!"{e} =[x/{p}]=> {motive}"
-    | .error (err : Lean.Exception) => pure m!"{e} =[x/{p}]=> 💥️{indentD err.toMessageData}") do
+    | .error (err : Lean.Exception) => pure m!"{e} =[x/{p}]=> {indentD err.toMessageData}") do
   withLocalDeclD `x tp fun x => do
   withLocalDeclD `h (← mkEq p x) fun h => do
     let e' ← visit e none |>.run { cfg, p, x, h, Δ := ∅, δ := ∅ } |>.run.run' 1
@@ -508,14 +509,14 @@ The result is expected to be defeq to the original expression. -/
 def cleanupCasts (e : Expr) : MetaM Expr :=
   transform (input := e) (skipConstInApp := true) (pre := fun e =>
     -- since the `pre` method returns a result instead of calling itself recursively,
-    -- the tracing creates many parallel nodes insetad of nesting them
+    -- the tracing creates many parallel nodes instead of nesting them
     -- unfortunately, there does not seem to be a way to nest the trace nodes
     -- within the bounds of the `Lean.Meta.transform` API
     withTraceNode traceClsClean (fun
       | .ok (.visit e') => pure m!"{e} => visit {e'}"
       | .ok (.continue e'?) => pure m!"{e} => continue {e'?.getD e}"
       | .ok (.done e') => pure m!"{e} => done {e'}"
-      | .error _ => pure m!"{e} => 💥️") <| do
+      | .error _ => pure m!"{e} => ??") <| do
     let .mdata mdata e := e | return .continue
     if mdata != castMData then return .continue
     trace[Tactic.depRewrite.cleanupCasts] "found potential cast{indentExpr e}"
@@ -603,7 +604,7 @@ def depRwLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId)
     (← getMainGoal).depRewrite localDecl.type e symm (config := config)
   let r ← (← getMainGoal).replaceLocalDecl fvarId rwResult.eNew rwResult.eqProof
   let mvarId' ← r.mvarId.changeLocalDecl r.fvarId (← withTransparency config.castTransparency
-    (r.mvarId.withContext <| cleanupCasts (← r.fvarId.getType)))
+    (r.mvarId.withContext do cleanupCasts (← r.fvarId.getType)))
   replaceMainGoal (mvarId' :: rwResult.mvarIds)
 
 /-- Elaborate `DepRewrite.Config`. -/
@@ -633,10 +634,10 @@ namespace Conv
 open Conv
 
 @[inherit_doc depRewriteSeq]
-syntax (name := depRewrite) "rewrite!" optConfig rwRuleSeq (location)? : conv
+syntax (name := depRewrite) "rewrite!" optConfig rwRuleSeq : conv
 
 @[inherit_doc depRwSeq]
-syntax (name := depRw) "rw!" optConfig rwRuleSeq (location)? : conv
+syntax (name := depRw) "rw!" optConfig rwRuleSeq : conv
 
 /-- Apply `rewrite!` to the goal. -/
 def depRewriteTarget (stx : Syntax) (symm : Bool) (config : DepRewrite.Config := {}) :
@@ -654,28 +655,18 @@ def depRwTarget (stx : Syntax) (symm : Bool) (config : DepRewrite.Config := {}) 
     let r ←  (← getMainGoal).depRewrite (← getLhs) e symm (config := config)
     updateLhs r.eNew r.eqProof
     changeLhs (← withTransparency config.castTransparency
-      (withMainContext <| cleanupCasts (← getMainTarget)))
+      (withMainContext <| cleanupCasts (← getLhs)))
     replaceMainGoal ((← getMainGoal) :: r.mvarIds)
 
 @[tactic depRewrite, inherit_doc depRewriteSeq]
 def evalDepRewriteSeq : Tactic := fun stx => do
   let cfg ← elabDepRewriteConfig stx[1]
-  let loc   := expandOptLocation stx[3]
-  withRWRulesSeq stx[0] stx[2] fun symm term => do
-    withLocation loc
-      (DepRewrite.depRewriteLocalDecl term symm · cfg)
-      (depRewriteTarget term symm cfg)
-      (throwTacticEx `depRewrite · "did not find instance of the pattern in the current goal")
+  withRWRulesSeq stx[0] stx[2] fun symm term => depRewriteTarget term symm cfg
 
 @[tactic depRw, inherit_doc depRwSeq]
 def evalDepRwSeq : Tactic := fun stx => do
   let cfg ← elabDepRewriteConfig stx[1]
-  let loc   := expandOptLocation stx[3]
-  withRWRulesSeq stx[0] stx[2] fun symm term => do
-    withLocation loc
-      (depRwLocalDecl term symm · cfg)
-      (depRwTarget term symm cfg)
-      (throwTacticEx `depRewrite · "did not find instance of the pattern in the current goal")
+  withRWRulesSeq stx[0] stx[2] fun symm term => depRwTarget term symm cfg
 
 end Conv
 end Mathlib.Tactic.DepRewrite

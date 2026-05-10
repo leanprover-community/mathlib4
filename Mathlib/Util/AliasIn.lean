@@ -6,6 +6,9 @@ Authors: Floris van Doorn
 module
 
 public meta import Mathlib.Lean.Expr.Basic
+public import Batteries.Tactic.Alias
+public import Lean.Exception
+public import Mathlib.Tactic.Core
 
 /-! ## The `@[alias_in]` attribute -/
 
@@ -48,12 +51,15 @@ initialize registerBuiltinAttribute {
       let newNamespace := nm.getId.components
       let num := num.map (·.getNat) |>.getD newNamespace.length
       let components := src.components
+      if (← toModifiers src).visibility.isPrivate then
+        throwError "The `alias_in` attribute cannot be used for private declarations."
       if components.length ≤ num then
         throwError m!"{src} has only {components.length - 1} namespaces, cannot remove {num}.\n\
         Use `@[alias_in {nm} {components.length - 1}]` instead."
       let tgtName := .fromComponents <|
         components.take (components.length - 1 - num) ++ newNamespace ++ [components.getLast!]
-      liftCommandElabM <| elabCommand <| ← `(command| alias $(mkIdent tgtName) := $(mkIdent src))
+      liftCommandElabM <| elabCommand <|
+        ← `(command| public alias $(mkIdent tgtName) := $(mkIdent src))
       -- add mouse-over text
       Term.addTermInfo' nm (← mkConstWithLevelParams tgtName) (isBinder := true) |>.run' |>.run'
     | _, _, _ => throwUnsupportedSyntax }

@@ -190,12 +190,12 @@ theorem specializes_pi {f g : ∀ i, A i} : f ⤳ g ↔ ∀ i, f i ⤳ g i := by
 
 theorem not_specializes_iff_exists_open : ¬x ⤳ y ↔ ∃ S : Set X, IsOpen S ∧ y ∈ S ∧ x ∉ S := by
   rw [specializes_iff_forall_open]
-  push_neg
+  push Not
   rfl
 
 theorem not_specializes_iff_exists_closed : ¬x ⤳ y ↔ ∃ S : Set X, IsClosed S ∧ x ∈ S ∧ y ∉ S := by
   rw [specializes_iff_forall_closed]
-  push_neg
+  push Not
   rfl
 
 theorem IsOpen.continuous_piecewise_of_specializes [DecidablePred (· ∈ s)] (hs : IsOpen s)
@@ -211,6 +211,17 @@ theorem IsClosed.continuous_piecewise_of_specializes [DecidablePred (· ∈ s)] 
     (hf : Continuous f) (hg : Continuous g) (hspec : ∀ x, g x ⤳ f x) :
     Continuous (s.piecewise f g) := by
   simpa only [piecewise_compl] using hs.isOpen_compl.continuous_piecewise_of_specializes hg hf hspec
+
+theorem Specializes.clusterPt {f : Filter X} (h : x ⤳ y) (hx : ClusterPt x f) :
+    ClusterPt y f :=
+  Filter.NeBot.mono hx <| inf_le_inf_right _ h
+
+theorem IsCompact.of_subset_of_specializes {s t : Set X} (hs : IsCompact s) (hts : t ⊆ s)
+    (h : ∀ x ∈ s, ∃ y ∈ t, x ⤳ y) : IsCompact t := by
+  intro f _ hf
+  obtain ⟨x, hxs, hxf⟩ := hs <| hf.trans <| Filter.monotone_principal hts
+  obtain ⟨y, hyt, hxy⟩ := h x hxs
+  exact ⟨y, hyt, hxy.clusterPt hxf⟩
 
 attribute [local instance] specializationPreorder
 
@@ -446,7 +457,7 @@ theorem inseparable_iff_forall_isOpen : (x ~ᵢ y) ↔ ∀ s : Set X, IsOpen s �
     Iff.comm]
 
 theorem not_inseparable_iff_exists_open :
-    ¬(x ~ᵢ y) ↔ ∃ s : Set X, IsOpen s ∧ Xor' (x ∈ s) (y ∈ s) := by
+    ¬(x ~ᵢ y) ↔ ∃ s : Set X, IsOpen s ∧ Xor (x ∈ s) (y ∈ s) := by
   simp [inseparable_iff_forall_isOpen, ← xor_iff_not_iff]
 
 theorem inseparable_iff_forall_isClosed : (x ~ᵢ y) ↔ ∀ s : Set X, IsClosed s → (x ∈ s ↔ y ∈ s) := by
@@ -472,7 +483,7 @@ theorem subtype_inseparable_iff {p : X → Prop} (x y : Subtype p) : (x ~ᵢ y) 
 
 @[simp] theorem inseparable_prod {x₁ x₂ : X} {y₁ y₂ : Y} :
     ((x₁, y₁) ~ᵢ (x₂, y₂)) ↔ (x₁ ~ᵢ x₂) ∧ (y₁ ~ᵢ y₂) := by
-  simp only [Inseparable, nhds_prod_eq, prod_inj]
+  simp only [Inseparable, nhds_prod_eq, Filter.prod_inj]
 
 theorem Inseparable.prod {x₁ x₂ : X} {y₁ y₂ : Y} (hx : x₁ ~ᵢ x₂) (hy : y₁ ~ᵢ y₂) :
     (x₁, y₁) ~ᵢ (x₂, y₂) :=
@@ -540,7 +551,8 @@ In this section we define the quotient of a topological space by the `Inseparabl
 -/
 
 variable (X) in
-instance : TopologicalSpace (SeparationQuotient X) := instTopologicalSpaceQuotient
+instance : TopologicalSpace (SeparationQuotient X) :=
+  inferInstanceAs <| TopologicalSpace (Quotient _)
 
 variable {t : Set (SeparationQuotient X)}
 
@@ -583,23 +595,29 @@ instance [Subsingleton X] : Subsingleton (SeparationQuotient X) :=
   surjective_mk.subsingleton
 
 @[simp]
-theorem inseparableSetoid_eq_top_iff {t : TopologicalSpace α} :
-    inseparableSetoid α = ⊤ ↔ t = ⊤ :=
-  Setoid.eq_top_iff.trans TopologicalSpace.eq_top_iff_forall_inseparable.symm
+theorem inseparableSetoid_eq_top_iff [TopologicalSpace α] :
+    inseparableSetoid α = ⊤ ↔ IndiscreteTopology α :=
+  Setoid.eq_top_iff.trans TopologicalSpace.indiscrete_iff_forall_inseparable.symm
 
-theorem subsingleton_iff {t : TopologicalSpace α} :
-    Subsingleton (SeparationQuotient α) ↔ t = ⊤ :=
+theorem subsingleton_iff [TopologicalSpace α] :
+    Subsingleton (SeparationQuotient α) ↔ IndiscreteTopology α :=
   Quotient.subsingleton_iff.trans inseparableSetoid_eq_top_iff
 
-theorem nontrivial_iff {t : TopologicalSpace α} :
-    Nontrivial (SeparationQuotient α) ↔ t ≠ ⊤ := by
-  simpa only [not_subsingleton_iff_nontrivial] using subsingleton_iff.not
+instance [TopologicalSpace α] [IndiscreteTopology α] : Subsingleton (SeparationQuotient α) :=
+  subsingleton_iff.2 ‹_›
+
+theorem nontrivial_iff [TopologicalSpace α] :
+    Nontrivial (SeparationQuotient α) ↔ NontrivialTopology α := by
+  simpa [not_subsingleton_iff_nontrivial] using subsingleton_iff.not
+
+instance [TopologicalSpace α] [NontrivialTopology α] : Nontrivial (SeparationQuotient α) :=
+  nontrivial_iff.2 ‹_›
 
 @[to_additive] instance [One X] : One (SeparationQuotient X) := ⟨mk 1⟩
 
 @[to_additive (attr := simp)] theorem mk_one [One X] : mk (1 : X) = 1 := rfl
 
-theorem preimage_image_mk_open (hs : IsOpen s) : mk ⁻¹' (mk '' s) = s := by
+theorem preimage_image_mk_open (hs : IsOpen s) : mk ⁻¹' mk '' s = s := by
   refine Subset.antisymm ?_ (subset_preimage_image _ _)
   rintro x ⟨y, hys, hxy⟩
   exact ((mk_eq_mk.1 hxy).mem_open_iff hs).1 hys
@@ -610,7 +628,7 @@ theorem isOpenMap_mk : IsOpenMap (mk : X → SeparationQuotient X) := fun s hs =
 theorem isOpenQuotientMap_mk : IsOpenQuotientMap (mk : X → SeparationQuotient X) :=
   ⟨surjective_mk, continuous_mk, isOpenMap_mk⟩
 
-theorem preimage_image_mk_closed (hs : IsClosed s) : mk ⁻¹' (mk '' s) = s := by
+theorem preimage_image_mk_closed (hs : IsClosed s) : mk ⁻¹' mk '' s = s := by
   refine Subset.antisymm ?_ (subset_preimage_image _ _)
   rintro x ⟨y, hys, hxy⟩
   exact ((mk_eq_mk.1 hxy).mem_closed_iff hs).1 hys

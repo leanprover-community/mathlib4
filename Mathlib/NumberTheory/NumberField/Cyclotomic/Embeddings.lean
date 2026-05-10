@@ -18,7 +18,7 @@ We prove that cyclotomic extensions of `ℚ` are totally complex, meaning that
   then there are no real places of `K`.
 -/
 
-@[expose] public section
+public section
 
 universe u
 

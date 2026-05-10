@@ -94,9 +94,6 @@ theorem ne_natDegree_of_mem_eraseLead_support {a : ℕ} (h : a ∈ (eraseLead f)
 theorem natDegree_notMem_eraseLead_support : f.natDegree ∉ (eraseLead f).support := fun h =>
   ne_natDegree_of_mem_eraseLead_support h rfl
 
-@[deprecated (since := "2025-05-23")]
-alias natDegree_not_mem_eraseLead_support := natDegree_notMem_eraseLead_support
-
 theorem eraseLead_support_card_lt (h : f ≠ 0) : #(eraseLead f).support < #f.support := by
   rw [eraseLead_support]
   exact card_lt_card (erase_ssubset <| natDegree_mem_support_of_nonzero h)
@@ -351,6 +348,7 @@ theorem induction_with_natDegree_le (motive : R[X] → Prop) (N : ℕ) (zero : m
 "sufficiently monotone" map.  Assume also that
 * `φ` maps to `0` all monomials of degree less than `k`,
 * `φ` maps each monomial `m` in `R[x]` to a polynomial `φ m` of degree `fu (deg m)`.
+
 Then, `φ` maps each polynomial `p` in `R[x]` to a polynomial of degree `fu (deg p)`. -/
 theorem mono_map_natDegree_eq {S F : Type*} [Semiring S]
     [FunLike F R[X] S[X]] [AddMonoidHomClass F R[X] S[X]] {φ : F}
@@ -392,7 +390,7 @@ theorem card_support_eq' {n : ℕ} (k : Fin n → ℕ) (x : Fin n → R) (hk : F
     (hx : ∀ i, x i ≠ 0) : #(∑ i, C (x i) * X ^ k i).support = n := by
   suffices (∑ i, C (x i) * X ^ k i).support = image k univ by
     rw [this, univ.card_image_of_injective hk, card_fin]
-  simp_rw [Finset.ext_iff, mem_support_iff, finset_sum_coeff, coeff_C_mul_X_pow, mem_image,
+  simp_rw [Finset.ext_iff, mem_support_iff, finsetSum_coeff, coeff_C_mul_X_pow, mem_image,
     mem_univ, true_and]
   refine fun i => ⟨fun h => ?_, ?_⟩
   · obtain ⟨j, _, h⟩ := exists_ne_zero_of_sum_ne_zero h
@@ -430,7 +428,7 @@ theorem card_support_eq {n : ℕ} :
           ← Fin.castSucc_lt_castSucc_iff]
       · rw [Function.extend_apply' _ _ _ hj]
         apply lt_natDegree_of_mem_eraseLead_support
-        rw [mem_support_iff, hf, finset_sum_coeff]
+        rw [mem_support_iff, hf, finsetSum_coeff]
         rw [sum_eq_single, coeff_C_mul, coeff_X_pow_self, mul_one]
         · exact hx i
         · intro j _ hji

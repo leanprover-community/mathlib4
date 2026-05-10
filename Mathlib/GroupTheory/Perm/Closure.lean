@@ -21,7 +21,7 @@ public import Mathlib.GroupTheory.Perm.Cycle.Basic
 
 -/
 
-@[expose] public section
+public section
 
 open Equiv Function Finset
 

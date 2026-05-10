@@ -96,7 +96,7 @@ lemma coe_comp {X Y Z : Lat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) =
 
 @[simp]
 lemma forget_map {X Y : Lat} (f : X ⟶ Y) :
-    (forget Lat).map f = f := rfl
+    (forget Lat).map f = (f : _ → _) := rfl
 
 @[ext]
 lemma ext {X Y : Lat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=

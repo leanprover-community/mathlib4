@@ -16,7 +16,7 @@ as well as the interaction of `List.Pairwise Disjoint` and the condition of
 `Disjoint` on `List.toFinset`, in `Set` form.
 -/
 
-@[expose] public section
+public section
 
 
 open Finset
@@ -82,7 +82,7 @@ theorem pairwise_of_coe_toFinset_pairwise (hl : (l.toFinset : Set α).Pairwise r
 
 theorem pairwise_iff_coe_toFinset_pairwise (hn : l.Nodup) (hs : Symmetric r) :
     (l.toFinset : Set α).Pairwise r ↔ l.Pairwise r := by
-  letI : IsSymm α r := ⟨hs⟩
+  letI : Std.Symm r := ⟨hs⟩
   rw [coe_toFinset, hn.pairwise_coe]
 
 open scoped Function -- required for scoped `on` notation

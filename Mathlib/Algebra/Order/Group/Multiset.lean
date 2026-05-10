@@ -32,7 +32,7 @@ namespace Multiset
 instance instAddLeftMono : AddLeftMono (Multiset α) where elim _s _t _u := Multiset.add_le_add_left
 
 instance instAddLeftReflectLE : AddLeftReflectLE (Multiset α) where
-  elim _s _t _u := Multiset.le_of_add_le_add_left
+  le_of_add_le_add_left := Multiset.le_of_add_le_add_left
 
 instance instAddCancelCommMonoid : AddCancelCommMonoid (Multiset α) where
   add_comm := Multiset.add_comm

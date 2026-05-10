@@ -282,8 +282,6 @@ theorem toMeasure_apply_finset (s : Finset α) : p.toMeasure s = ∑ x ∈ s, p 
 theorem toMeasure_apply_eq_tsum (s : Set α) : p.toMeasure s = ∑' x, s.indicator p x :=
   (p.toMeasure_apply_eq_toOuterMeasure s).trans (p.toOuterMeasure_apply s)
 
-@[deprecated (since := "2025-06-23")] alias toMeasure_apply_of_finite := toMeasure_apply_eq_tsum
-
 @[simp]
 theorem toMeasure_apply_fintype (s : Set α) [Fintype α] : p.toMeasure s = ∑ x, s.indicator p x :=
   (p.toMeasure_apply_eq_toOuterMeasure s).trans (p.toOuterMeasure_apply_fintype s)

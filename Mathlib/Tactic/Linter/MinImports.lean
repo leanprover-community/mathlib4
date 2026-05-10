@@ -5,8 +5,9 @@ Authors: Damiano Testa
 -/
 module
 
-public meta import ImportGraph.Imports
-public meta import Mathlib.Tactic.MinImports
+public meta import ImportGraph.Imports.ImportGraph
+public meta import ImportGraph.Graph.TransitiveClosure
+public import Mathlib.Tactic.MinImports
 
 /-! # The `minImports` linter
 
@@ -19,9 +20,6 @@ information.
 It also works incrementally, accumulating increasing import information.
 This is better suited, for instance, to split files.
 -/
-
-set_option backward.privateInPublic true
-set_option backward.privateInPublic.warn false
 
 meta section
 
@@ -54,7 +52,7 @@ structure ImportState where
 /--
 `minImportsRef` keeps track of cumulative imports across multiple commands, using `ImportState`.
 -/
-initialize minImportsRef : IO.Ref ImportState ← IO.mkRef {}
+private initialize minImportsRef : IO.Ref ImportState ← IO.mkRef {}
 
 /-- `#reset_min_imports` sets to empty the current list of cumulative imports. -/
 elab "#reset_min_imports" : command => minImportsRef.set {}
@@ -127,7 +125,7 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- when the linter reaches the end of the file or `#exit`, it gives a report
     if #[``Parser.Command.eoi, ``Lean.Parser.Command.exit].contains stx.getKind then
       let explicitImportsInFile : NameSet :=
-        .ofArray ((env.imports.map (·.module)).erase `Init)
+        .ofArray ((env.imports.map (·.module)).filter (!isInitImport ·))
       let newImps := importsSoFar \ explicitImportsInFile
       let currentlyUnneededImports := explicitImportsInFile \ importsSoFar
       -- we read the current file, to do a custom parsing of the imports:
@@ -148,7 +146,7 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
         logWarningAt ((impMods.raw.find? (·.isOfKind `import)).getD default)
           m!"-- missing imports\n{"\n".intercalate withImport.toList}"
     let id ← getId stx
-    let newImports := getIrredundantImports env (← getAllImports stx id)
+    let newImports := (getIrredundantImports env (← getAllImports stx id)).filter (!isInitImport ·)
     let tot := (newImports.append importsSoFar)
     let redundant := env.findRedundantImports tot.toArray
     let currImports := tot \ redundant

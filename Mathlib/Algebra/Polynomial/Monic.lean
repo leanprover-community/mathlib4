@@ -53,12 +53,9 @@ theorem Monic.as_sum (hp : p.Monic) :
   suffices C (p.coeff p.natDegree) = 1 by rw [this, one_mul]
   exact congr_arg C hp
 
-@[deprecated (since := "2025-08-14")] alias ne_zero_of_ne_zero_of_monic :=
-  Monic.ne_zero_of_polynomial_ne
-
 theorem Monic.map [Semiring S] (f : R →+* S) (hp : Monic p) : Monic (p.map f) :=
   subsingleton_or_nontrivial S |>.elim (·.elim ..) fun _ ↦
-    f.map_one ▸ hp ▸ leadingCoeff_map_eq_of_isUnit_leadingCoeff _ <| hp ▸ isUnit_one
+    f.map_one ▸ hp ▸ leadingCoeff_map_eq_of_isUnit_leadingCoeff _ <| isUnit_one
 
 theorem monic_C_mul_of_mul_leadingCoeff_eq_one {b : R} (hp : b * p.leadingCoeff = 1) :
     Monic (C b * p) := by
@@ -108,12 +105,12 @@ theorem Monic.add_of_right (hq : Monic q) (hpq : degree p < degree q) : Monic (p
   rwa [Monic, leadingCoeff_add_of_degree_lt hpq]
 
 theorem Monic.of_mul_monic_left (hp : p.Monic) (hpq : (p * q).Monic) : q.Monic := by
-  contrapose! hpq
+  contrapose hpq
   rw [Monic.def] at hpq ⊢
   rwa [leadingCoeff_monic_mul hp]
 
 theorem Monic.of_mul_monic_right (hq : q.Monic) (hpq : (p * q).Monic) : p.Monic := by
-  contrapose! hpq
+  contrapose hpq
   rw [Monic.def] at hpq ⊢
   rwa [leadingCoeff_mul_monic hq]
 
@@ -258,6 +255,7 @@ lemma MonicDegreeEq.coeff_of_ge (p : MonicDegreeEq R n) (i : ℕ) (hi : n ≤ i)
   split_ifs <;> simp_all [p.2.1, p.2.2 _ (hi.lt_of_ne (.symm _))]
 
 /-- The constructor for `MonicDegreeEq` given a monic polynomial of degree `n`. -/
+@[simps]
 def MonicDegreeEq.mk (p : R[X]) (hp : p.Monic) (hp' : p.natDegree = n) :
     MonicDegreeEq R n :=
   ⟨p, by rw [← hp', ← leadingCoeff, hp], fun i hi ↦ coeff_eq_zero_of_natDegree_lt (hp'.trans_lt hi)⟩
@@ -367,10 +365,10 @@ lemma Monic.not_irreducible_iff_exists_add_mul_eq_coeff (hm : p.Monic) (hnd : p.
   cases subsingleton_or_nontrivial R
   · simp [natDegree_of_subsingleton] at hnd
   rw [hm.irreducible_iff_natDegree', and_iff_right, hnd]
-  · push_neg
+  · push Not
     constructor
     · rintro ⟨a, b, ha, hb, rfl, hdb⟩
-      simp only [zero_lt_two, Nat.div_self, Nat.Ioc_succ_singleton, zero_add, mem_singleton] at hdb
+      simp only [Nat.Ioc_succ_singleton, zero_add, mem_singleton] at hdb
       have hda := hnd
       rw [ha.natDegree_mul hb, hdb] at hda
       use a.coeff 0, b.coeff 0, mul_coeff_zero a b
@@ -543,7 +541,7 @@ theorem natDegree_smul_of_smul_regular {S : Type*} [SMulZeroClass S R] {k : S}
   · simp [hp]
   rw [← Nat.cast_inj (R := WithBot ℕ), ← degree_eq_natDegree hp, ← degree_eq_natDegree,
     degree_smul_of_smul_regular p h]
-  contrapose! hp
+  contrapose hp
   rw [← smul_zero k] at hp
   exact h.polynomial hp
 

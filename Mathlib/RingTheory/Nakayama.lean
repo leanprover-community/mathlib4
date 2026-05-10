@@ -29,7 +29,8 @@ This file contains some alternative statements of Nakayama's Lemma as found in
 * `Submodule.smul_le_of_le_smul_of_le_jacobson_bot` - Statement (4) in
   [Stacks: Nakayama's Lemma](https://stacks.math.columbia.edu/tag/00DV).
 
-* `Submodule.le_span_of_map_mkQ_le_map_mkQ_span_of_le_jacobson_bot` - Statement (8) in
+* `Submodule.exists_injOn_mkQ_image_span_eq_of_span_eq_map_mkQ_of_le_jacobson_bot` -
+  Statement (8) in
   [Stacks: Nakayama's Lemma](https://stacks.math.columbia.edu/tag/00DV).
 
 Note that a version of Statement (1) in
@@ -44,7 +45,7 @@ Note that a version of Statement (1) in
 Nakayama, Jacobson
 -/
 
-@[expose] public section
+public section
 
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
@@ -73,7 +74,7 @@ lemma eq_bot_of_eq_ideal_smul_of_le_jacobson_annihilator {I : Ideal R}
     (hIjac : I ≤ N.annihilator.jacobson) : N = ⊥ :=
   (eq_smul_of_le_smul_of_le_jacobson hN hIN.le hIjac).trans N.annihilator_smul
 
-open Pointwise in
+open scoped Pointwise in
 lemma eq_bot_of_eq_pointwise_smul_of_mem_jacobson_annihilator {r : R}
     {N : Submodule R M} (hN : FG N) (hrN : N = r • N)
     (hrJac : r ∈ N.annihilator.jacobson) : N = ⊥ :=
@@ -81,7 +82,7 @@ lemma eq_bot_of_eq_pointwise_smul_of_mem_jacobson_annihilator {r : R}
     (Eq.trans hrN (ideal_span_singleton_smul r N).symm)
     ((span_singleton_le_iff_mem r _).mpr hrJac)
 
-open Pointwise in
+open scoped Pointwise in
 lemma eq_bot_of_set_smul_eq_of_subset_jacobson_annihilator {s : Set R}
     {N : Submodule R M} (hN : FG N) (hsN : N = s • N)
     (hsJac : s ⊆ N.annihilator.jacobson) : N = ⊥ :=
@@ -94,7 +95,7 @@ lemma top_ne_ideal_smul_of_le_jacobson_annihilator [Nontrivial M]
   eq_bot_of_eq_ideal_smul_of_le_jacobson_annihilator Module.Finite.fg_top H <|
     (congrArg (I ≤ Ideal.jacobson ·) annihilator_top).mpr h
 
-open Pointwise in
+open scoped Pointwise in
 lemma top_ne_set_smul_of_subset_jacobson_annihilator [Nontrivial M]
     [Module.Finite R M] {s : Set R}
     (h : s ⊆ (Module.annihilator R M).jacobson) :
@@ -102,7 +103,7 @@ lemma top_ne_set_smul_of_subset_jacobson_annihilator [Nontrivial M]
   ne_of_ne_of_eq (top_ne_ideal_smul_of_le_jacobson_annihilator (span_le.mpr h))
     (span_smul_eq _ _)
 
-open Pointwise in
+open scoped Pointwise in
 lemma top_ne_pointwise_smul_of_mem_jacobson_annihilator [Nontrivial M]
     [Module.Finite R M] {r} (h : r ∈ (Module.annihilator R M).jacobson) :
     (⊤ : Submodule R M) ≠ r • ⊤ :=
@@ -156,7 +157,7 @@ theorem smul_le_of_le_smul_of_le_jacobson_bot {I : Ideal R} {N N' : Submodule R 
     (hIJ : I ≤ jacobson ⊥) (hNN : N' ≤ N ⊔ I • N') : I • N' ≤ N :=
   smul_le_right.trans (le_of_le_smul_of_le_jacobson_bot hN' hIJ hNN)
 
-open Pointwise in
+open scoped Pointwise in
 @[stacks 00DV "(3) see `Submodule.localized₀_le_localized₀_of_smul_le` for the second conclusion."]
 lemma exists_sub_one_mem_and_smul_le_of_fg_of_le_sup {I : Ideal R}
     {N N' P : Submodule R M} (hN' : N'.FG) (hN'le : N' ≤ P) (hNN' : P ≤ N ⊔ I • N') :
@@ -184,18 +185,47 @@ lemma exists_sub_one_mem_and_smul_le_of_fg_of_le_sup {I : Ideal R}
   | add _ _ _ _ hx hy => exact N.add_mem hx hy
   | zero => exact N.zero_mem
 
-/-- **Nakayama's Lemma** - Statement (8) in
-[Stacks 00DV](https://stacks.math.columbia.edu/tag/00DV). -/
-@[stacks 00DV "(8)"]
-theorem le_span_of_map_mkQ_le_map_mkQ_span_of_le_jacobson_bot
-    {I : Ideal R} {N : Submodule R M} {t : Set M}
-    (hN : N.FG) (hIjac : I ≤ jacobson ⊥) (htspan : map (I • N).mkQ N ≤ map (I • N).mkQ (span R t)) :
-    N ≤ span R t := by
+lemma le_of_map_mkQ_le_map_mkQ_of_le_jacobson_bot
+    {I : Ideal R} {N N' : Submodule R M} (hN : N.FG) (hIjac : I ≤ jacobson ⊥)
+    (hmaple : map (I • N).mkQ N ≤ map (I • N).mkQ N') : N ≤ N' := by
   apply le_of_le_smul_of_le_jacobson_bot hN hIjac
-  apply_fun comap (I • N).mkQ at htspan
+  apply_fun comap (I • N).mkQ at hmaple
   on_goal 2 => apply Submodule.comap_mono
-  simp only [comap_map_mkQ] at htspan
-  grw [sup_comm, ← htspan]
-  simp only [le_sup_right]
+  simp only [comap_map_mkQ, smul_le_right, sup_of_le_right] at hmaple
+  grw [sup_comm, ← hmaple]
+
+@[deprecated (since := "2026-01-03")]
+alias le_span_of_map_mkQ_le_map_mkQ_span_of_le_jacobson_bot :=
+  le_of_map_mkQ_le_map_mkQ_of_le_jacobson_bot
+
+lemma eq_of_map_mkQ_eq_map_mkQ_of_le_jacobson_bot
+    {I : Ideal R} {N N' : Submodule R M} (hN : N.FG) (hIjac : I ≤ jacobson ⊥)
+    (hmaple : map (I • N).mkQ N = map (I • N).mkQ N') : N = N' := by
+  apply le_antisymm
+  · exact le_of_map_mkQ_le_map_mkQ_of_le_jacobson_bot hN hIjac hmaple.le
+  · apply_fun comap (I • N).mkQ at hmaple
+    simp only [comap_map_mkQ, smul_le_right, sup_of_le_right] at hmaple
+    rw [hmaple]; apply le_sup_right
+
+/--
+**Nakayama's Lemma** - Statement (8) in
+[Stacks 00DV](https://stacks.math.columbia.edu/tag/00DV).
+
+If `N` is a finitely generated `R`-submodule of `M`,
+`I` is an ideal contained in the Jacobson radical of `R`,
+`s` is a set of `M / (I • N)` that spans the quotient image of `N`,
+then there exists a spanning set `t` of `N` in bijection with `s` via the quotient map.
+-/
+@[stacks 00DV "(8)"]
+theorem exists_injOn_mkQ_image_span_eq_of_span_eq_map_mkQ_of_le_jacobson_bot
+    {I : Ideal R} {N : Submodule R M} (s : Set (M ⧸ (I • N)))
+    (hN : N.FG) (hIjac : I ≤ jacobson ⊥) (hsspan : span R s = map (I • N).mkQ N) :
+    ∃ (t : Set M), t.InjOn (I • N).mkQ ∧ (I • N).mkQ '' t = s ∧ span R t = N := by
+  use Quotient.out '' s
+  split_ands
+  · simp [Set.InjOn]
+  · simp [Set.image_image]
+  · symm; apply eq_of_map_mkQ_eq_map_mkQ_of_le_jacobson_bot hN hIjac
+    simp [← hsspan, map_span, Set.image_image]
 
 end Submodule

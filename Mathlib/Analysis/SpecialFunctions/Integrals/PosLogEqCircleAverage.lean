@@ -18,7 +18,7 @@ If `a` is any complex number, `circleAverage_log_norm_sub_const_eq_posLog` repre
 the circle average of `log ‖· - a‖` over the unit circle.
 -/
 
-@[expose] public section
+public section
 
 open Filter Interval intervalIntegral MeasureTheory Metric Real
 
@@ -32,7 +32,7 @@ variable {a c : ℂ} {R : ℝ}
 If `a` is any complex number, the function `(log ‖· - a‖)` is circle integrable over every circle.
 -/
 lemma circleIntegrable_log_norm_sub_const (r : ℝ) : CircleIntegrable (log ‖· - a‖) c r :=
-  circleIntegrable_log_norm_meromorphicOn (fun z hz ↦ by fun_prop)
+  MeromorphicOn.circleIntegrable_log_norm (fun z hz ↦ by fun_prop)
 
 /-!
 ## Computing `circleAverage (log ‖· - a‖) 0 1` in case where `‖a‖ < 1`.
@@ -227,7 +227,7 @@ theorem circleAverage_log_norm_sub_const_eq_log_radius_add_posLog (hR : R ≠ 0)
     simp
   _ = log R + log⁺ (|R|⁻¹ * ‖c - a‖) := by
     rw [← Pi.add_def, circleAverage_add (circleIntegrable_const (log ‖R‖) 0 1)
-      (circleIntegrable_log_norm_meromorphicOn (fun _ _ ↦ by fun_prop)), circleAverage_const]
+      (MeromorphicOn.circleIntegrable_log_norm (fun _ _ ↦ by fun_prop)), circleAverage_const]
     simp
   _ = log R + log⁺ (R⁻¹ * ‖c - a‖) := by
     congr 1

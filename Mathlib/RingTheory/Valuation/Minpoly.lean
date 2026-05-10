@@ -5,7 +5,8 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 module
 
-public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
+public import Mathlib.FieldTheory.Minpoly.Field
+public import Mathlib.FieldTheory.Minpoly.Finite
 public import Mathlib.RingTheory.Valuation.Basic
 
 /-!
@@ -24,7 +25,7 @@ Let `K` be a field with a valuation `v` and let `L` be a field extension of `K`.
   is helpful for defining the valuation on `L` inducing `v`.
 -/
 
-@[expose] public section
+public section
 
 open Module minpoly Polynomial
 
