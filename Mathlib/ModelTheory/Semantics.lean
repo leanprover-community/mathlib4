@@ -586,6 +586,39 @@ theorem realize_relabel_sumInr (φ : L.Formula (Fin n)) {v : Empty → M} {x : F
     cast_refl, Function.comp_id,
     Subsingleton.elim (x ∘ (natAdd n : Fin 0 → Fin n)) default]
 
+/-- Evaluates a formula relabeled by `finSumFinEquiv.symm` on two variable vectors `v` and `xs` by
+concatenating them via `Sum.elim`. -/
+@[simp]
+theorem realize_relabel_finSumFinEquiv_symm {m n : ℕ} (φ : L.Formula (Fin (m + n)))
+    {v : Fin m → M} {xs : Fin n → M} :
+    (BoundedFormula.relabel (fun i => finSumFinEquiv.symm i) φ).Realize v xs ↔
+      φ.Realize (Sum.elim v xs ∘ finSumFinEquiv.symm) := by
+  rw [BoundedFormula.realize_relabel, Formula.Realize]
+  have hbound : (xs ∘ Fin.natAdd n : Fin 0 → M) = default := by ext i; exact i.elim0
+  rw [hbound]
+  rfl
+
+/-- A specialized version of `Formula.realize_relabel_finSumFinEquiv_symm` for quantifying
+over a single variable using `Fin.snoc`. -/
+@[simp]
+theorem realize_relabel_finSumFinEquiv_symm_snoc {m : ℕ} (φ : L.Formula (Fin (m + 1)))
+    {v : Fin m → M} {x : M} :
+    (BoundedFormula.relabel (fun i => finSumFinEquiv.symm i) φ).Realize v (Fin.snoc default x) ↔
+      φ.Realize (Fin.snoc v x) := by
+  rw [realize_relabel_finSumFinEquiv_symm]
+  have h_snoc : Sum.elim v (Fin.snoc default x) ∘ (fun i => finSumFinEquiv.symm i) = Fin.snoc v x := by
+    ext i
+    refine Fin.addCases (fun i => ?_) (fun j => ?_) i
+    · simp only [Function.comp_apply, finSumFinEquiv_symm_apply_castAdd, Sum.elim_inl]
+      change v i = (@Fin.snoc m (fun _ => M) v x) i.castSucc
+      rw [Fin.snoc_castSucc]
+    · have hj : j = 0 := Fin.ext (Nat.le_zero.mp (Nat.lt_succ_iff.mp j.isLt))
+      subst hj
+      simp only [Function.comp_apply, finSumFinEquiv_symm_apply_natAdd, Sum.elim_inr, Fin.snoc_zero]
+      change x = (@Fin.snoc m (fun _ => M) v x) (Fin.last m)
+      rw [Fin.snoc_last]
+  rw [h_snoc]
+
 @[simp]
 theorem realize_equal {t₁ t₂ : L.Term α} {x : α → M} :
     (t₁.equal t₂).Realize x ↔ t₁.realize x = t₂.realize x := by simp [Term.equal, Realize]

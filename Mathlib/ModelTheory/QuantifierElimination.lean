@@ -9,6 +9,7 @@ public import Mathlib.ModelTheory.Complexity
 public import Mathlib.ModelTheory.Satisfiability
 public import Mathlib.ModelTheory.PartialEquiv
 
+
 /-!
 # Quantifier Elimination
 
@@ -546,17 +547,10 @@ private theorem exists_qf_equiv_ex_of_isQF
         simp [hfree, hbound]
       _ ↔ ψ'.Realize v' := hmain
       _ ↔ ψ.Realize v xs := by
-        have hxs0 : (xs ∘ Fin.natAdd n : Fin 0 → M) = default := by
-          funext i
-          exact i.elim0
         change ψ'.Realize v' ↔
           (BoundedFormula.relabel (fun i : Fin (m + n) => finSumFinEquiv.symm i) ψ').Realize v xs
-        rw [BoundedFormula.realize_relabel]
-        change ψ'.Realize v' ↔
-          BoundedFormula.Realize ψ' v' (xs ∘ Fin.natAdd n)
-        rw [hxs0]
-        change ψ'.Realize v' ↔ ψ'.Realize v'
-        rfl
+        rw [Formula.realize_relabel_finSumFinEquiv_symm]
+        exact Iff.rfl
 
 /-- To prove quantifier elimination, it suffices to eliminate one existential quantifier from
 every quantifier-free formula with one bound variable.
@@ -785,34 +779,17 @@ theorem hasQuantifierElimination_of_isElementaryExtensionPairFG
     simpa [vM, b', Function.comp_def] using (hqa_apply i).symm
   let θ : L.BoundedFormula (Fin m) 1 :=
         BoundedFormula.relabel (L := L) (β := Fin m) (n := 1) finSumFinEquiv.symm φ
-  have hθ_realize : ∀ {X : Type (max u v)} [L.Structure X] (x : Fin m → X) (y : X),
-      θ.Realize x (Fin.snoc default y) ↔ φ.Realize (Fin.snoc x y) := by
-    intro X _ x y
-    rw [BoundedFormula.realize_relabel]
-    have hfree : (Sum.elim x (Fin.snoc default y ∘ Fin.castAdd 0) ∘ ((@finSumFinEquiv m 1).symm :
-      Fin m.succ → Fin m ⊕ Fin 1)) = Fin.snoc x y := by
-      funext i
-      refine Fin.addCases (fun i => ?_) (fun j => ?_) i
-      · simp only [Function.comp_apply, finSumFinEquiv_symm_apply_castAdd, Sum.elim_inl]
-        change x i = (@Fin.snoc m (fun _ => X) x y) i.castSucc
-        rw [Fin.snoc_castSucc]
-      · obtain rfl : j = 0 := Subsingleton.elim j 0
-        simp only [Function.comp_apply, finSumFinEquiv_symm_apply_natAdd,Sum.elim_inr,Fin.snoc_zero]
-        change y = (@Fin.snoc m (fun _ => X) x y) (Fin.last m)
-        rw [Fin.snoc_last]
-    have hbound : (Fin.snoc default y ∘ Fin.natAdd 1 : Fin 0 → X) = default := by
-      funext i; exact i.elim0
-    rw [hfree, hbound]
-    rfl
   have hθN' : θ.ex.Realize ((e.toEmbedding ∘ g) ∘ a) default := by
     rw [BoundedFormula.realize_ex]
-    exact ⟨b', (hθ_realize (((e.toEmbedding ∘ g) ∘ a)) b').2 htarget⟩
+    exact ⟨b', by change (BoundedFormula.relabel _ φ).Realize _ _; rw
+      [Formula.realize_relabel_finSumFinEquiv_symm_snoc]; exact htarget⟩
   have hθN : θ.ex.Realize (g ∘ a) default := by
     have he := e.map_boundedFormula θ.ex (g ∘ a) default
     exact he.1 (by simpa [Function.comp_def] using hθN')
   rw [BoundedFormula.realize_ex] at hθN
   obtain ⟨c, hc⟩ := hθN
-  exact ⟨c, (hθ_realize (g ∘ a) c).1 hc⟩
+  exact ⟨c, by change (BoundedFormula.relabel _ φ).Realize _ _ at hc; rw
+    [Formula.realize_relabel_finSumFinEquiv_symm_snoc] at hc; exact hc⟩
 
 /-- If a theory has the elementary extension-pair property, then it has quantifier elimination.
 
