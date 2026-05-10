@@ -214,10 +214,6 @@ lemma hom_ext₀ {X : SSet.{u}} {f g : (∂Δ[0] : SSet) ⟶ X} : f = g := by
   ext _ ⟨x, hx⟩
   simp at hx
 
-end boundary
-
-namespace boundary
-
 /-- The top simplex is not in the boundary. -/
 lemma yonedaEquiv_id_notMem (n : ℕ) :
     yonedaEquiv.{u} (𝟙 Δ[n]) ∉ ∂Δ[n].obj _ := by
@@ -226,9 +222,8 @@ lemma yonedaEquiv_id_notMem (n : ℕ) :
 /-- A codimension-one face lies in the boundary. -/
 lemma yonedaEquiv_δ_mem {n : ℕ} (i : Fin (n + 2)) :
     yonedaEquiv (stdSimplex.{u}.δ i) ∈ ∂Δ[n + 1].obj _ := by
-  -- TODO: after #38662, reprove this using `boundary.ι` and `boundary.ι_ι`.
-  rw [← Subcomplex.ofSimplex_le_iff, stdSimplex.ofSimplex_yonedaEquiv_δ]
-  exact face_singleton_compl_le_boundary i
+  rw [← ι_ι i, ← Subcomplex.yonedaEquiv_coe (boundary.ι.{u} i)]
+  exact (yonedaEquiv (ι.{u} i)).property
 
 /-- If `x : X _⦋n⦌` is missing from `A` and every lower-dimensional simplex lies in `A`,
 then `A.preimage (yonedaEquiv.symm x) = ∂Δ[n]`. -/
