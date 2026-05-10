@@ -80,11 +80,9 @@ noncomputable def theta (x : ℝ) : ℝ :=
 @[inherit_doc]
 scoped notation "θ" => Chebyshev.theta
 
-theorem psi_nonneg (x : ℝ) : 0 ≤ ψ x :=
-  sum_nonneg fun _ _ ↦ (by simp)
+theorem psi_nonneg (x : ℝ) : 0 ≤ ψ x := sum_nonneg fun _ _ ↦ (by simp)
 
-theorem theta_nonneg (x : ℝ) : 0 ≤ θ x :=
-  sum_nonneg fun _ _ ↦ log_nonneg (by aesop)
+theorem theta_nonneg (x : ℝ) : 0 ≤ θ x := sum_nonneg fun _ _ ↦ log_nonneg (by aesop)
 
 theorem theta_pos {x : ℝ} (hy : 2 ≤ x) : 0 < θ x := by
   refine sum_pos (fun n hn ↦ log_pos ?_) ⟨2, ?_⟩
@@ -103,8 +101,7 @@ theorem theta_eq_sum_primesLE (x : ℝ) :
     θ x = ∑ p ∈ primesLE ⌊x⌋₊, log p := by
     simp [theta_eq_sum_Icc, primesLE_eq_filter_Icc_zero]
 
-theorem theta_eq_sum_log (n : ℕ) : θ n = ∑ p ∈ primesLE n, log p := by
-  simp [theta_eq_sum_primesLE]
+theorem theta_eq_sum_log (n : ℕ) : θ n = ∑ p ∈ primesLE n, log p := by simp [theta_eq_sum_primesLE]
 
 theorem psi_eq_zero_of_lt_two {x : ℝ} (hx : x < 2) : ψ x = 0 := by
   apply sum_eq_zero fun n hn ↦ ?_
@@ -182,8 +179,7 @@ Basic facts about the least common multiple of the first `n` natural numbers
 /-- Least common multiple of $\{1, \dots, n\}$. -/
 def lcmUpto (n : ℕ) : ℕ := (Icc 1 n).lcm id
 
-theorem lcmUpto_ne_zero (n : ℕ) : lcmUpto n ≠ 0 := by
-  simp [lcmUpto]
+theorem lcmUpto_ne_zero (n : ℕ) : lcmUpto n ≠ 0 := by simp [lcmUpto]
 
 theorem lcmUpto_pos (n : ℕ) : 0 < lcmUpto n := pos_of_ne_zero <| lcmUpto_ne_zero n
 
@@ -214,7 +210,7 @@ theorem primeFactors_lcmUpto (n : ℕ) : primeFactors (lcmUpto n) = primesLE n :
 
 theorem primorial_dvd_lcmUpto (n : ℕ) : primorial n ∣ lcmUpto n := by
   simp only [primorial]
-  rw [show (range (n + 1)).filter Prime = primesLE n from rfl, ← primeFactors_lcmUpto]
+  rw [← primesLE_eq_filter_range, ← primeFactors_lcmUpto]
   exact prod_primeFactors_dvd _
 
 theorem lcmUpto_eq_prod (n : ℕ) :
