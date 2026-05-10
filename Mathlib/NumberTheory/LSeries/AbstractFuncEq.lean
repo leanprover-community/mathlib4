@@ -273,15 +273,9 @@ lemma hf_modif_int :
     fun_prop (discharger := assumption)
   refine LocallyIntegrableOn.add (fun x hx ↦ ?_) (fun x hx ↦ ?_)
   · obtain ⟨s, hs, hs'⟩ := P.hf_int.sub (locallyIntegrableOn_const _) x hx
-    refine ⟨s, hs, ?_⟩
-    rw [IntegrableOn, integrable_indicator_iff measurableSet_Ioi, IntegrableOn,
-      Measure.restrict_restrict measurableSet_Ioi, ← IntegrableOn]
-    exact hs'.mono_set Set.inter_subset_right
+    exact ⟨s, hs, hs'.indicator measurableSet_Ioi⟩
   · obtain ⟨s, hs, hs'⟩ := P.hf_int.sub this x hx
-    refine ⟨s, hs, ?_⟩
-    rw [IntegrableOn, integrable_indicator_iff measurableSet_Ioo, IntegrableOn,
-      Measure.restrict_restrict measurableSet_Ioo, ← IntegrableOn]
-    exact hs'.mono_set Set.inter_subset_right
+    exact ⟨s, hs, hs'.indicator measurableSet_Ioo⟩
 
 lemma hf_modif_FE (x : ℝ) (hx : 0 < x) :
     P.f_modif (1 / x) = (P.ε * ↑(x ^ P.k)) • P.g_modif x := by
@@ -344,7 +338,6 @@ lemma f_modif_aux1 : EqOn (fun x ↦ P.f_modif x - P.f x + P.f₀)
       indicator_of_notMem (mem_singleton_iff.not.mpr hx'.ne')]
     abel
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Compute the Mellin transform of the modifying term used to kill off the constants at
 `0` and `∞`. -/
 lemma f_modif_aux2 [CompleteSpace E] {s : ℂ} (hs : P.k < re s) :
