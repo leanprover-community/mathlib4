@@ -86,6 +86,12 @@ noncomputable def schurTriangulationUnitary : unitaryGroup n 𝕜 where
   val := (EuclideanSpace.basisFun n 𝕜).toBasis.toMatrix (schurTriangulationBasis A)
   property := OrthonormalBasis.toMatrix_orthonormalBasis_mem_unitary ..
 
+@[simp]
+theorem coe_schurTriangulationUnitary :
+    (schurTriangulationUnitary A : Matrix n n 𝕜) =
+      (EuclideanSpace.basisFun n 𝕜).toBasis.toMatrix (schurTriangulationBasis A) :=
+  rfl
+
 /-- The upper triangular form induced by `A.schurTriangulationUnitary` to which a matrix `A` over an
 algebraically closed field is unitarily similar. -/
 noncomputable def schurTriangulation : UpperTriangular n 𝕜 where
