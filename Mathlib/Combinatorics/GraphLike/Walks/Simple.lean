@@ -37,7 +37,7 @@ theorem mem_darts_iff_infix_support {u' v'} (s : step G u' v') :
     exact p.darts.getElem_mem (n := i) (by grind)
 
 theorem mem_darts_iff_fst_snd_infix_support (d : GraphLike.darts G) :
-    d ∈ p.darts ↔ [src Gr d.val, tgt Gr d.val] <:+: p.support :=
+    d ∈ p.darts ↔ [src G d.val, tgt G d.val] <:+: p.support :=
   mem_darts_iff_infix_support ⟨d.val, d.prop, rfl, rfl⟩
 
 end GraphLike.Walk

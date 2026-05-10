@@ -48,18 +48,18 @@ class GraphLike (V D E : outParam Type*) (Gr : Type*) where
   /-- The set of edges of a graph-like structure. -/
   edges : Gr → Set E
   /-- The source vertex of a dart. -/
-  src : D → V
+  src : Gr → D → V
   /-- The target vertex of a dart. -/
-  tgt : D → V
+  tgt : Gr → D → V
   /-- The edge of a dart. -/
-  edge : D → E
-  src_mem_of_darts : ∀ ⦃G d⦄, d ∈ darts G → src d ∈ verts G
-  tgt_mem_of_darts : ∀ ⦃G d⦄, d ∈ darts G → tgt d ∈ verts G
-  edge_mem_of_darts : ∀ ⦃G d⦄, d ∈ darts G → edge d ∈ edges G
+  edge : Gr → D → E
+  src_mem_of_darts : ∀ ⦃G d⦄, d ∈ darts G → src G d ∈ verts G
+  tgt_mem_of_darts : ∀ ⦃G d⦄, d ∈ darts G → tgt G d ∈ verts G
+  edge_mem_of_darts : ∀ ⦃G d⦄, d ∈ darts G → edge G d ∈ edges G
   /-- The adjacency relation of a graph-like structure. -/
-  Adj : Gr → V → V → Prop := fun G u v ↦ ∃ d ∈ darts G, src d = u ∧ tgt d = v
+  Adj : Gr → V → V → Prop := fun G u v ↦ ∃ d ∈ darts G, src G d = u ∧ tgt G d = v
   /-- Two vertices are adjacent if and only if there is a dart between them. -/
-  exists_darts_iff_adj : ∀ ⦃G u v⦄, (∃ d ∈ darts G, src d = u ∧ tgt d = v) ↔ Adj G u v
+  exists_darts_iff_adj : ∀ ⦃G u v⦄, (∃ d ∈ darts G, src G d = u ∧ tgt G d = v) ↔ Adj G u v
 
 namespace GraphLike
 
@@ -80,7 +80,7 @@ variable [GraphLike V D E Gr]
 
 @[ext] theorem darts_ext (d₁ d₂ : darts G) (h : d₁.val = d₂.val) : d₁ = d₂ := Subtype.ext h
 
-lemma adj_of_mem_darts (hd : d ∈ D(G)) : Adj G (src Gr d) (tgt Gr d) :=
+lemma adj_of_mem_darts (hd : d ∈ D(G)) : Adj G (src G d) (tgt G d) :=
   exists_darts_iff_adj.mp ⟨d, hd, rfl, rfl⟩
 
 lemma Adj.left_mem (h : Adj G v w) : v ∈ V(G) := by
@@ -94,22 +94,22 @@ lemma Adj.right_mem (h : Adj G v w) : w ∈ V(G) := by
   exact tgt_mem_of_darts hd
 
 /-- Convert a dart to a pair of vertices. -/
-@[expose] def toProd (d : D(G)) : V × V := (src Gr d.val, tgt Gr d.val)
+@[expose] def toProd (d : D(G)) : V × V := (src G d.val, tgt G d.val)
 
 /-- The step from `u` to `v` is a dart from `u` to `v`. -/
 @[expose]
 def step (G : Gr) [GraphLike V D E Gr] (u v : V) :=
-  {d : D // d ∈ D(G) ∧ src Gr d = u ∧ tgt Gr d = v}
+  {d : D // d ∈ D(G) ∧ src G d = u ∧ tgt G d = v}
 
 instance [DecidableEq D] : DecidableEq (step G u v) := Subtype.instDecidableEq
 
 @[simp]
-lemma step.src (h : step G u v) : src Gr h.val = u := by
+lemma step.src (h : step G u v) : src G h.val = u := by
   obtain ⟨d, hd, hu, hv⟩ := h
   exact hu
 
 @[simp]
-lemma step.tgt (h : step G u v) : tgt Gr h.val = v := by
+lemma step.tgt (h : step G u v) : tgt G h.val = v := by
   obtain ⟨d, hd, hu, hv⟩ := h
   exact hv
 
@@ -152,11 +152,11 @@ lemma step.ext_HEq {u' v'} {s₁ : step G u v} {s₂ : step G u' v'} (h : s₁.v
 
 lemma step.todart_val (h : step G u v) : h.todart.val = h.val := by simp [step.todart]
 
-lemma step.todart_src (s : step G u v) : GraphLike.src Gr s.todart.val = u := by
+lemma step.todart_src (s : step G u v) : GraphLike.src G s.todart.val = u := by
   obtain ⟨d, hd, rfl, rfl⟩ := s
   rfl
 
-lemma step.todart_tgt (s : step G u v) : GraphLike.tgt Gr s.todart.val = v := by
+lemma step.todart_tgt (s : step G u v) : GraphLike.tgt G s.todart.val = v := by
   obtain ⟨d, hd, rfl, rfl⟩ := s
   rfl
 
@@ -172,7 +172,7 @@ noncomputable def Adj.toStep (h : Adj G u v) : step G u v :=
 lemma Adj.toStep_adj (h : Adj G u v) : (h.toStep).adj = h := rfl
 
 /-- Convert a dart to a step. -/
-@[expose] def dartStep (d : darts G) : step G (src Gr d.val) (tgt Gr d.val) :=
+@[expose] def dartStep (d : darts G) : step G (src G d.val) (tgt G d.val) :=
   ⟨d.val, d.prop, rfl, rfl⟩
 
 @[simp]
@@ -180,7 +180,7 @@ lemma val_dartStep (d : darts G) : (dartStep d).val = d.val := by simp [dartStep
 
 /-- Two darts are said to be adjacent if they could be consecutive darts in a walk -- that is, the
 first dart's target is equal to the second dart's source. -/
-@[expose] def DartAdj (d d' : darts G) : Prop := tgt Gr d.val = src Gr d'.val
+@[expose] def DartAdj (d d' : darts G) : Prop := tgt G d.val = src G d'.val
 
 end GraphLike
 
@@ -196,27 +196,27 @@ such graph-like structures.
 
 /-- A graph-like structure with no multi-edge. This includes `SimpleGraph` and `Digraph`. -/
 class NoMultiEdgeGraphLike (V D E : outParam Type*) (Gr : Type*) extends GraphLike V D E Gr where
-  protected src_tgt_inj : Function.Injective (fun d ↦ (src d, tgt d))
+  protected src_tgt_inj (G : Gr) : Function.Injective (fun d ↦ (src G d, tgt G d))
 
 variable [NoMultiEdgeGraphLike V D E Gr]
 
-lemma dart_eq_of_src_tgt_eq {d₁ d₂ : D} (h : src Gr d₁ = src Gr d₂) (h' : tgt Gr d₁ = tgt Gr d₂) :
+lemma dart_eq_of_src_tgt_eq {d₁ d₂ : D} (h : src G d₁ = src G d₂) (h' : tgt G d₁ = tgt G d₂) :
     d₁ = d₂ := by
-  apply NoMultiEdgeGraphLike.src_tgt_inj (Gr := Gr)
+  apply NoMultiEdgeGraphLike.src_tgt_inj (Gr := Gr) G
   grind
 
-lemma src_tgt_inj (d₁ d₂ : D) : src Gr d₁ = src Gr d₂ ∧ tgt Gr d₁ = tgt Gr d₂ ↔ d₁ = d₂ :=
+lemma src_tgt_inj (d₁ d₂ : D) : src G d₁ = src G d₂ ∧ tgt G d₁ = tgt G d₂ ↔ d₁ = d₂ :=
   ⟨fun h => dart_eq_of_src_tgt_eq h.1 h.2, by grind⟩
 
 @[simp]
-lemma mem_darts_iff_adj : d ∈ darts G ↔ Adj G (src Gr d) (tgt Gr d) := by
+lemma mem_darts_iff_adj : d ∈ darts G ↔ Adj G (src G d) (tgt G d) := by
   rw [← exists_darts_iff_adj]
   refine ⟨fun h => (by use d), fun ⟨d', hd', hs, ht⟩ => ?_⟩
   obtain rfl := src_tgt_inj d' d |>.mp ⟨hs, ht⟩
   exact hd'
 
 instance [DecidableRel (Adj G)] : DecidablePred (· ∈ darts G) :=
-  fun d => decidable_of_iff (Adj G (src Gr d) (tgt Gr d)) (mem_darts_iff_adj.symm)
+  fun d => decidable_of_iff (Adj G (src G d) (tgt G d)) (mem_darts_iff_adj.symm)
 
 instance : Subsingleton (step G u v) where
   allEq := by

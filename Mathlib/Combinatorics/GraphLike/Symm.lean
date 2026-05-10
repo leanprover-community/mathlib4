@@ -25,12 +25,12 @@ class SymmGraphLike (V D E : outParam Type*) (Gr : Type*) extends GraphLike V D 
   /-- The inverse of a dart. -/
   inv : D → D
   inv_invol : ∀ ⦃d⦄, inv (inv d) = d
-  inv_src (d : D) : src (inv d) = (tgt d : V)
-  inv_tgt (d : D) : tgt (inv d) = (src d : V)
+  inv_src (G : Gr) (d : D) : src G (inv d) = (tgt G d : V)
+  inv_tgt (G : Gr) (d : D) : tgt G (inv d) = (src G d : V)
   inv_ne : ∀ ⦃G d⦄, d ∈ darts G → inv d ≠ d
   inv_mem_darts_iff : ∀ ⦃G d⦄, inv d ∈ darts G ↔ d ∈ darts G
   edge_eq_edge_iff : ∀ ⦃G d d'⦄, d ∈ darts G → d' ∈ darts G →
-    ((edge d : E) = edge d' ↔ d = d' ∨ inv d = d')
+    ((edge G d : E) = edge G d' ↔ d = d' ∨ inv d = d')
 
 open SymmGraphLike
 
@@ -51,12 +51,12 @@ lemma inv_mem_darts (hd : d ∈ darts G) : inv Gr d ∈ darts G :=
   val := SymmGraphLike.inv Gr h.val
   property := by
     obtain ⟨d, hd, hu, hv⟩ := h
-    use inv_mem_darts hd, hv ▸ inv_src d, hu ▸ inv_tgt d
+    use inv_mem_darts hd, hv ▸ inv_src G d, hu ▸ inv_tgt G d
 
 @[simp]
 lemma step.inv_inv (h : step G u v) : h.inv.inv = h := by
   obtain ⟨d, hd, hu, hv⟩ := h
-  change step.inv (⟨SymmGraphLike.inv Gr d, inv_mem_darts hd, hv ▸ inv_src d, hu ▸ inv_tgt d⟩ :
+  change step.inv (⟨SymmGraphLike.inv Gr d, inv_mem_darts hd, hv ▸ inv_src G d, hu ▸ inv_tgt G d⟩ :
     step G v u) = _
   simp [inv]
 
@@ -64,17 +64,17 @@ instance : Std.Symm (Adj G) where
   symm _ _ h := by
     rw [← exists_darts_iff_adj] at h ⊢
     obtain ⟨d, hd, rfl, rfl⟩ := h
-    exact ⟨SymmGraphLike.inv Gr d, inv_mem_darts hd, inv_src d, inv_tgt d⟩
+    exact ⟨SymmGraphLike.inv Gr d, inv_mem_darts hd, inv_src G d, inv_tgt G d⟩
 
 @[symm] lemma Adj.symm (h : Adj G v w) : Adj G w v := symm_of (Adj G) h
 
 lemma adj_comm : Adj G v w ↔ Adj G w v := ⟨symm_of (Adj G), symm_of (Adj G)⟩
 
 /-- The two vertices of the dart as an unordered pair. -/
-@[expose] def dartSym2 (d : darts G) : Sym2 V := s(src Gr d.val, tgt Gr d.val)
+@[expose] def dartSym2 (d : darts G) : Sym2 V := s(src G d.val, tgt G d.val)
 
 @[simp]
-theorem dartSym2_mk (h : d ∈ darts G) : dartSym2 (⟨d, h⟩ : darts G) = s(src Gr d, tgt Gr d) := rfl
+theorem dartSym2_mk (h : d ∈ darts G) : dartSym2 (⟨d, h⟩ : darts G) = s(src G d, tgt G d) := rfl
 
 @[simp]
 lemma step.todart_dartSym2 (h : step G u v) : dartSym2 h.todart = s(u, v) := by
@@ -114,7 +114,7 @@ theorem dartSym2_eq_mk'_iff {d : darts G} :
   simp [toProd]
 
 theorem dartSym2_eq_mk'_iff' {d : darts G} : dartSym2 d = s(u, v) ↔
-    src Gr d.val = u ∧ tgt Gr d.val = v ∨ src Gr d.val = v ∧ tgt Gr d.val = u := by
+    src G d.val = u ∧ tgt G d.val = v ∨ src G d.val = v ∧ tgt G d.val = u := by
   obtain ⟨p, hp⟩ := d
   simp
 
@@ -136,8 +136,8 @@ theorem dartSym2_eq_iff [noMultiEdgeSymmGraphLike V D E Gr] (d₁ d₂ : darts G
   refine ⟨?_, by rintro (rfl | rfl) <;> simp⟩
   rintro (⟨h1, h2⟩ | ⟨h1, h2⟩)
   · exact Or.inl <| dart_eq_of_src_tgt_eq h1 h2
-  rw [← inv_src q] at h1
-  rw [← inv_tgt q] at h2
+  rw [← inv_src G q] at h1
+  rw [← inv_tgt G q] at h2
   exact Or.inr <| dart_eq_of_src_tgt_eq h1 h2
 
 end noMultiEdgeGraphLike
