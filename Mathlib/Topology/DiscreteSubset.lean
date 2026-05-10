@@ -298,7 +298,21 @@ theorem codiscreteWithin_iff_locallyFiniteComplementWithin [T1Space X] {s U : Se
     use t \ (t ∩ (U \ s)), nhdsNE_of_nhdsNE_sdiff_finite (mem_nhdsWithin_of_mem_nhds h₁t) h₂t
     simp
 
-/-- In a `T1Space`, complements of finite sets are codiscrete within any set. -/
+/--
+In a `T1Space`, complements of singleton sets are codiscrete within any set.
+-/
+@[simp]
+theorem compl_singleton_mem_codiscreteWithin {X : Type*} [TopologicalSpace X] [T1Space X]
+    {s : Set X} (x : X) :
+    {x}ᶜ ∈ codiscreteWithin s := by
+  rw [codiscreteWithin_iff_locallyEmptyComplementWithin]
+  intro z hz
+  use univ \ {x}
+  exact ⟨nhdsNE_of_nhdsNE_sdiff_finite univ_mem Finite.of_subsingleton, by aesop⟩
+
+/--
+In a `T1Space`, complements of finite sets are codiscrete within any set.
+-/
 theorem compl_finite_mem_codiscreteWithin {X : Type*} [TopologicalSpace X] [T1Space X]
     {s t : Set X} (h : t.Finite) :
     tᶜ ∈ codiscreteWithin s := by
@@ -306,21 +320,7 @@ theorem compl_finite_mem_codiscreteWithin {X : Type*} [TopologicalSpace X] [T1Sp
   · simp
   · intro τ t hτ h₁t h₂t
     have : (insert τ t)ᶜ = {τ}ᶜ ∩ tᶜ := by aesop
-    have : {τ}ᶜ ∈ codiscreteWithin s := by
-      rw [codiscreteWithin_iff_locallyEmptyComplementWithin]
-      intro z hz
-      use univ \ {τ}
-      exact ⟨nhdsNE_of_nhdsNE_sdiff_finite univ_mem Finite.of_subsingleton, by aesop⟩
     simp_all
-
-/--
-Special case of `compl_finite_mem_codiscreteWithin`: In a `T1Space`, complements of singleton sets
-are codiscrete within any set.
--/
-@[simp]
-theorem compl_singleton_mem_codiscreteWithin {X : Type*} [TopologicalSpace X] [T1Space X]
-    {s : Set X} (x : X) :
-    {x}ᶜ ∈ codiscreteWithin s := by simp
 
 /-- In any topological space, the open sets with discrete complement form a filter,
 defined as the supremum of all punctured neighborhoods.
