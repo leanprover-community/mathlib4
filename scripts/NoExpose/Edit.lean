@@ -3,6 +3,7 @@ Copyright (c) 2026 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+import Lean.Parser.Module
 import NoExpose.Cli
 import NoExpose.Paths
 import NoExpose.Report
@@ -221,6 +222,45 @@ private def isCleanInGit (path : FilePath) : IO Bool := do
     cmd := "git", args := #["status", "--porcelain", path.toString] }
   return out.stdout.trimAscii.toString == ""
 
+/-! ## Parse validation + lake-build verify -/
+
+/-- Count parse errors in `text` at the syntax level only (no
+elaboration). Cheap — only `Init` is in scope, so Mathlib-defined
+notations produce false positives. Callers should use this
+*differentially* (compare before/after) rather than absolutely. -/
+unsafe def countParseErrors (file : System.FilePath) (text : String) :
+    IO Nat := do
+  Lean.initSearchPath (← Lean.findSysroot)
+  let env ← Lean.importModules #[{ module := `Init }] {}
+  let inputCtx := Lean.Parser.mkInputContext text file.toString
+  let (_, mps, msgs) ← Lean.Parser.parseHeader inputCtx
+  let pmctx : Lean.Parser.ParserModuleContext := { env, options := {} }
+  let mut state := mps
+  let mut messages := msgs
+  repeat
+    let (stx, state', msgs') := Lean.Parser.parseCommand inputCtx pmctx state messages
+    state := state'
+    messages := msgs'
+    if Lean.Parser.isTerminalCommand stx then break
+  return messages.toList.foldl (init := 0) fun n m =>
+    if m.severity == .error then n + 1 else n
+
+/-- Convert `Mathlib/Foo/Bar.lean` to the module name `Mathlib.Foo.Bar`. -/
+private def fileToModule (path : System.FilePath) : String :=
+  let s := path.toString
+  let stripped : String :=
+    if s.endsWith ".lean" then (s.dropEnd 5).toString else s
+  stripped.replace "/" "."
+
+/-- Run `lake build <module>` for the touched file. Returns the exit code. -/
+def verifyByLakeBuild (file : System.FilePath) : IO UInt32 := do
+  let mod := fileToModule file
+  IO.eprintln s!"[no_expose edit] verifying: lake build {mod}"
+  let proc ← IO.Process.spawn {
+    cmd := "lake", args := #["build", mod]
+    stdout := .inherit, stderr := .inherit }
+  proc.wait
+
 /-! ## Top-level driver -/
 
 /-- Compute a tiny unified-diff-ish summary of two strings. v1 is
@@ -239,7 +279,7 @@ private def quickDiff (oldText newText : String) : String := Id.run do
 
 /-- Apply edits to a single file. Returns `true` if the file was
 modified (or would be, in dry-run mode). -/
-def editOneFile (file : FilePath) (records : Array ReportRecord)
+unsafe def editOneFile (file : FilePath) (records : Array ReportRecord)
     (args : EditArgs) (auditAccum : IO.Ref String) : IO Bool := do
   unless ← System.FilePath.pathExists file do
     IO.eprintln s!"no_expose edit: {file} does not exist; skipping"
@@ -286,16 +326,33 @@ def editOneFile (file : FilePath) (records : Array ReportRecord)
     IO.eprintln s!"  skipped {file}:{s} (multi-attribute or unknown shape)"
   -- Audit trail.
   auditAccum.modify (· ++ s!"--- {file}\n" ++ quickDiff originalText newText)
+  -- Parse-validate (differential): the edited text must not introduce
+  -- new syntax errors over the original. False positives from
+  -- Mathlib-only notation cancel out.
+  let oldErrCount ← countParseErrors file originalText
+  let newErrCount ← countParseErrors file newText
+  if newErrCount > oldErrCount then
+    IO.eprintln s!"no_expose edit: {file}: edit introduced {newErrCount - oldErrCount} \
+      new parse error(s); refusing to write."
+    return false
   if args.dryRun then
     IO.println s!"{file}: would modify (dry-run; pass without --dry-run to apply)."
     IO.println (quickDiff originalText newText)
     return true
   IO.FS.writeFile file newText
   IO.println s!"{file}: applied edits."
+  if args.verify then
+    let rc ← verifyByLakeBuild file
+    if rc != 0 then
+      IO.eprintln s!"no_expose edit: {file}: lake build failed (exit {rc}); \
+        rolling back."
+      IO.FS.writeFile file originalText
+      return false
+    IO.println s!"{file}: verify ok."
   return true
 
 /-- Top-level `edit` subcommand. -/
-def runEdit (args : EditArgs) : IO UInt32 := do
+unsafe def runEdit (args : EditArgs) : IO UInt32 := do
   unless ← System.FilePath.pathExists reportPath do
     IO.eprintln s!"no_expose edit: {reportPath} not found; \
       run `lake exe no_expose collect` first."

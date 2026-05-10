@@ -4,20 +4,21 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import NoExpose.Cli
+import NoExpose.Diagnostics
 import NoExpose.Env
 import NoExpose.Paths
 import NoExpose.Report
+import NoExpose.Restore
 
 /-!
 # `NoExpose.Collect` — orchestrator for the `collect` subcommand
 
 Owns the high-level sequence:
-1. (TODO) `NoExpose.Diagnostics`: patch lakefile, run `lake build`, parse log.
+1. `NoExpose.Diagnostics`: patch lakefile, run `lake build`, parse log
+   into `diagnostics.jsonl`. Skipped under `--skip-build`.
 2. `NoExpose.Env`: open env via `withImportModules`; emit
    `exposed.jsonl`, `static_refs.jsonl`, `decl_refs.jsonl`.
 3. `NoExpose.Report.build`: join everything into `report.jsonl`.
-
-For now only step 2 + 3 are implemented (i.e. `--skip-build` mode).
 -/
 
 open Lean
@@ -50,13 +51,24 @@ unsafe def runEnvScan (project : ProjectInfo) (modules : Array Name)
 
 /-- Run the `collect` subcommand. -/
 unsafe def runCollect (args : CollectArgs) : IO UInt32 := do
+  -- On every startup, restore any orphaned backups left by an
+  -- interrupted previous run. (No-op if state.json is absent.)
+  detectOrphan
   let project ← detectProjectInfo
   IO.eprintln s!"[no_expose collect] project: {project.name} \
     (libs: {project.libRoots})"
+  -- Step 1: full build with diagnostics, unless skipped.
   unless args.skipBuild do
-    IO.eprintln "no_expose collect: full build mode not yet implemented; \
-      pass --skip-build to use existing oleans + diagnostics.jsonl."
-    return 1
+    if project.name.toString != "mathlib" then
+      IO.eprintln s!"no_expose collect: full-build mode is Mathlib-only in v1 \
+        (detected project: {project.name}); pass --skip-build."
+      return 1
+    let extraOff : Array System.FilePath := args.patchFiles.map .mk
+    let rc ← runDiagnostics project.lakefilePath extraOff
+    if rc != 0 then
+      IO.eprintln s!"[no_expose collect] lake build returned {rc}; \
+        diagnostics.jsonl reflects the partial log. Continuing with env scan."
+  -- Step 2: env scan.
   -- For Mathlib, the canonical target is just `Mathlib` (the union module).
   -- For downstream projects, pick the first lib root.
   let modules : Array Name :=
@@ -66,7 +78,7 @@ unsafe def runCollect (args : CollectArgs) : IO UInt32 := do
     if project.libRoots.contains `Mathlib then #[`Mathlib]
     else project.libRoots
   runEnvScan project modules scopePrefix
-  -- Now build report.jsonl by joining everything.
+  -- Step 3: join.
   build exposedPath diagnosticsPath staticRefsPath declRefsPath reportPath
   return 0
 
