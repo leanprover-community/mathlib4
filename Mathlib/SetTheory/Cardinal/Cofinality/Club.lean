@@ -45,7 +45,7 @@ theorem IsClub.of_isEmpty [IsEmpty α] (s : Set α) : IsClub s :=
   ⟨.of_isEmpty s, .of_isEmpty s⟩
 
 @[simp]
-theorem IsClub.univ : IsClub (.univ (α := α)) :=
+theorem IsClub.univ : IsClub (α := α) .univ :=
   ⟨.univ, .univ⟩
 
 theorem IsClub.union (hs : IsClub s) (ht : IsClub t) : IsClub (s ∪ t) :=
