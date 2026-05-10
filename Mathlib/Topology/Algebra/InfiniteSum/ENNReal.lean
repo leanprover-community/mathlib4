@@ -20,7 +20,6 @@ these sums.
 
 ## TODO
 
-+ Once we have a topology on `ENat`, provide an `ENat`-valued version
 + Provide versions which sum over the whole type.
 -/
 
