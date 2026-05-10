@@ -138,7 +138,7 @@ lemma ιNormalizedChainComplex_eq_zero (x : X _⦋n⦌) (hx : x ∈ X.degenerate
     obtain ⟨i, y, rfl⟩ := hx
     trans X.ιChainComplex y ≫ X'.σ i ≫ (PInfty (X := X')).f _
     · simp [ιChainComplex, X']
-    · simp [σ_comp_PInfty X' i]
+    · simp
 
 variable (R n) in
 /-- The cofan given by the inclusions
