@@ -20,10 +20,6 @@ This file defines regular, singular, and inaccessible cardinals.
   its cofinality is smaller than itself.
 * `Cardinal.IsInaccessible c` means that `c` is strongly inaccessible:
   `ℵ₀ < c ∧ IsRegular c ∧ IsStrongLimit c`.
-
-## TODO
-
-* Prove more theorems on inaccessible cardinals.
 -/
 
 @[expose] public section
@@ -411,15 +407,68 @@ theorem IsInaccessible.isRegular (h : IsInaccessible c) : IsRegular c :=
 theorem IsInaccessible.isStrongLimit (h : IsInaccessible c) : IsStrongLimit c :=
   ⟨h.ne_zero, h.two_power_lt⟩
 
+theorem IsInaccessible.isSuccLimit {c : Cardinal} (h : IsInaccessible c) : IsSuccLimit c :=
+  h.isStrongLimit.isSuccLimit
+
 theorem isInaccessible_def : IsInaccessible c ↔ ℵ₀ < c ∧ IsRegular c ∧ IsStrongLimit c where
   mp h := ⟨h.aleph0_lt, h.isRegular, h.isStrongLimit⟩
   mpr := fun ⟨h₁, h₂, h₃⟩ ↦ ⟨h₁, h₂.2, h₃.two_power_lt⟩
 
--- Lean's foundations prove the existence of ℵ₀ many inaccessible cardinals
+/-- Lean's foundations prove the existence of `v` inaccessibles in universe `v`. -/
 theorem IsInaccessible.univ : IsInaccessible univ.{u, v} :=
   ⟨aleph0_lt_univ, by simp, IsStrongLimit.univ.two_power_lt⟩
 
--- TODO: prove that `IsInaccessible o.card` implies `IsInaccessible (ℵ_ o)` and
--- `IsInaccessible (ℶ_ o)`
+theorem IsInaccessible.preBeth_ord (hc : IsInaccessible c) : preBeth c.ord = c := by
+  apply (preBeth_strictMono.comp ord_strictMono).le_apply.antisymm'
+  apply (isNormal_preBeth.le_iff_forall_le (isSuccLimit_ord hc.aleph0_lt.le)).2
+  refine fun a ha ↦ le_of_lt ?_
+  induction a using WellFoundedLT.induction with | ind a IH
+  rw [preBeth]
+  apply lift_iSup_lt_of_lt_cof_ord _ _
+  · rwa [mk_Iio_ordinal, lift_lift, hc.isRegular.lift.cof_ord, lift_lt, ← lt_ord]
+  · rintro ⟨b, hb⟩
+    exact hc.isStrongLimit.two_power_lt <| IH _ hb (hb.trans ha)
+
+theorem IsInaccessible.beth_ord (hc : IsInaccessible c) : ℶ_ c.ord = c := by
+  rw [← preBeth_of_omega0_sq_le (le_of_lt _), hc.preBeth_ord]
+  rw [lt_ord, pow_two, card_mul, card_omega0, aleph0_mul_aleph0]
+  exact hc.aleph0_lt
+
+theorem IsInaccessible.preAleph_ord (hc : IsInaccessible c) : preAleph c.ord = c :=
+  ((preAleph_le_preBeth _).trans hc.preBeth_ord.le).antisymm
+    (preAleph.strictMono.comp ord_strictMono).le_apply
+
+theorem IsInaccessible.aleph_ord (hc : IsInaccessible c) : ℵ_ c.ord = c :=
+  ((aleph_le_beth _).trans hc.beth_ord.le).antisymm (aleph.strictMono.comp ord_strictMono).le_apply
+
+theorem IsInaccessible.preOmega_ord (hc : IsInaccessible c) : preOmega c.ord = c.ord := by
+  rw [← ord_preAleph, hc.preAleph_ord]
+
+theorem IsInaccessible.omega_ord (hc : IsInaccessible c) : ω_ c.ord = c.ord := by
+  rw [← ord_aleph, hc.aleph_ord]
+
+@[simp]
+theorem preBeth_univ : preBeth Ordinal.univ.{u, v} = univ.{u, v} := by
+  simpa using IsInaccessible.univ.preBeth_ord
+
+@[simp]
+theorem beth_univ : ℶ_ Ordinal.univ.{u, v} = univ.{u, v} := by
+  simpa using IsInaccessible.univ.beth_ord
+
+@[simp]
+theorem preAleph_univ : preAleph Ordinal.univ.{u, v} = univ.{u, v} := by
+  simpa using IsInaccessible.univ.preAleph_ord
+
+@[simp]
+theorem aleph_univ : ℵ_ Ordinal.univ.{u, v} = univ.{u, v} := by
+  simpa using IsInaccessible.univ.aleph_ord
+
+@[simp]
+theorem _root_.Ordinal.preOmega_univ : preOmega Ordinal.univ.{u, v} = Ordinal.univ.{u, v} := by
+  simpa using IsInaccessible.univ.preOmega_ord
+
+@[simp]
+theorem _root_.Ordinal.omega_univ : ω_ Ordinal.univ.{u, v} = Ordinal.univ.{u, v} := by
+  simpa using IsInaccessible.univ.omega_ord
 
 end Cardinal
