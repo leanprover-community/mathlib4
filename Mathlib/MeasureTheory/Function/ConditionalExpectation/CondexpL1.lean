@@ -5,6 +5,7 @@ Authors: Rémy Degenne
 -/
 module
 
+public import Mathlib.MeasureTheory.Function.LpSpace.CompleteOfCompleteLp
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL2
 public import Mathlib.MeasureTheory.Measure.Real
 
@@ -481,8 +482,12 @@ theorem aestronglyMeasurable_condExpL1 {f : α → F'} :
   · apply stronglyMeasurable_zero.aestronglyMeasurable.congr
     simp only [condExpL1_congr_ae hm hf', condExpL1_zero, ZeroMemClass.coe_zero]
     exact (coeFn_zero _ 1 _).symm
-  have : CompleteSpace F' := sorry
-
+  have : CompleteSpace F' := by
+    have : Nontrivial (Lp F' 1 μ) := by
+      apply nontrivial_of_ne (hf.toL1 f) 0
+      grw [ne_eq, Lp.ext_iff, Integrable.coeFn_toL1, coeFn_zero]
+      exact hf'
+    exact completeSpace_of_completeSpace_Lp F' 1 μ
   rw [condExpL1_eq hf]
   exact aestronglyMeasurable_condExpL1CLM _
 
@@ -522,7 +527,7 @@ theorem condExpL1_of_aestronglyMeasurable' [CompleteSpace F'] (hfm : AEStronglyM
 
 theorem condExpL1_mono {E}
     [NormedAddCommGroup E] [PartialOrder E] [ClosedIciTopology E] [IsOrderedAddMonoid E]
-    [CompleteSpace E] [NormedSpace ℝ E] [IsOrderedModule ℝ E] {f g : α → E} (hf : Integrable f μ)
+    [NormedSpace ℝ E] [IsOrderedModule ℝ E] {f g : α → E} (hf : Integrable f μ)
     (hg : Integrable g μ) (hfg : f ≤ᵐ[μ] g) :
     condExpL1 hm μ f ≤ᵐ[μ] condExpL1 hm μ g := by
   rw [coeFn_le]

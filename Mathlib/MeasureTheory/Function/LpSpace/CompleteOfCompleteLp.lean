@@ -45,8 +45,7 @@ lemma AEFinStronglyMeasurable.exists_measurableSet_measure_pos_lt_top {f : α �
   exact hf.ae_eq_mk.trans h'f
 
 variable (E p μ) in
-lemma nontrivial_Lp_real_of_nontrivial_Lp [Nontrivial (Lp E p μ)] :
-    Nontrivial (Lp ℝ p μ) := by
+lemma nontrivial_Lp_real_of_nontrivial_Lp [Nontrivial (Lp E p μ)] : Nontrivial (Lp ℝ p μ) := by
   obtain ⟨f, hf⟩ : ∃ f : Lp E p μ, f ≠ 0 := exists_ne 0
   have hfne : ¬ (f =ᵐ[μ] 0) := by
     contrapose! hf
@@ -79,8 +78,8 @@ lemma nontrivial_Lp_real_of_nontrivial_Lp [Nontrivial (Lp E p μ)] :
 
 variable [NormedSpace ℝ E]
 
-/-- If an `Lp` space is complete, then the target space is automatically complete unless the
-`Lp` space is trivial. -/
+variable (E p μ) in
+/-- If an `L^p` space is complete and nontrivial, then the target space is complete. -/
 lemma completeSpace_of_completeSpace_Lp [hp : Fact (1 ≤ p)]
     [CompleteSpace (Lp E p μ)] [Nontrivial (Lp E p μ)] : CompleteSpace E := by
   /- Consider a nonzero function `f : α → ℝ` in `L^p`. Given a Cauchy sequence `uₙ` in `E`, form
