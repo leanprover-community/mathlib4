@@ -841,11 +841,14 @@ variable (μ p) in
 variable (μ p) in
 /-- Given a continuous bilinear map `G → E → F`, construct the associated continuous bilinear map
 `G → Lp E p μ → Lp F p μ`. -/
-@[simps!] def compLpL₂ [Fact (1 ≤ p)] (B : G →L[𝕜] E →L[𝕜] F) :
+def compLpL₂ [Fact (1 ≤ p)] (B : G →L[𝕜] E →L[𝕜] F) :
     G →L[𝕜] Lp E p μ →L[𝕜] Lp F p μ :=
   (B.compLpₗ₂ p μ).mkContinuous₂ ‖B‖ (fun c f ↦ by
     simp only [compLpₗ₂_apply, compLpₗ_apply]
     grw [norm_compLp_le, le_opNorm])
+
+@[simp] theorem compLpL₂_apply_apply [Fact (1 ≤ p)] (B : G →L[𝕜] E →L[𝕜] F) (g : G) (f : Lp E p μ) :
+    compLpL₂ p μ B g f = (B g).compLp f := rfl
 
 theorem norm_compLpL₂ [Fact (1 ≤ p)] (B : G →L[𝕜] E →L[𝕜] F) :
     ‖B.compLpL₂ p μ‖ ≤ ‖B‖ :=

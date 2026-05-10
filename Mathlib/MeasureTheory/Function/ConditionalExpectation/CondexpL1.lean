@@ -489,23 +489,32 @@ lemma AEFinStronglyMeasurable.exists_measurableSet_measure_pos_lt_top {f : α �
   contrapose! h'f
   exact hf.ae_eq_mk.trans h'f
 
-private lemma completeSpace_of_completeSpace_Lp'
-    {s : Set α} (hs : μ s ≠ 0) (h's : μ s ≠ ∞) (h''s : MeasurableSet s)
-    [CompleteSpace (Lp F' 1 μ)] :
+private lemma completeSpace_of_completeSpace_Lp' {p : ℝ≥0∞} [Fact (1 ≤ p)]
+    [CompleteSpace (Lp F' p μ)] [Nontrivial (Lp ℝ p μ)] :
     CompleteSpace F' := by
-  let f : F' → Lp F' 1 μ := fun x ↦ indicatorConstLp 1 h''s h's x
-  have hf : LipschitzWith (NNReal.mk (μ.real s) measureReal_nonneg) f := by
-    apply lipschitzWith_iff_norm_sub_le.2 (fun x y ↦ ?_)
-    simp only [indicatorConstLp_sub, f]
-    rw [norm_indicatorConstLp (by simp) (by simp)]
-    simp [mul_comm]
+  obtain ⟨f, hf⟩ : ∃ f : Lp ℝ p μ, f ≠ 0 := exists_ne 0
+  let m : F' →L[ℝ] Lp F' p μ := ((lsmul ℝ ℝ).flip.compLpL₂ p μ).flip f
   apply Metric.complete_of_cauchySeq_tendsto (fun u hu ↦ ?_)
-  obtain ⟨g, hg⟩ : ∃ g, Tendsto (f ∘ u) atTop (𝓝 g) :=
-    cauchySeq_tendsto_of_complete (hf.cauchySeq_comp hu)
-  let f' : ℕ → (α → F') := fun n ↦ (f ∘ u) n
+  obtain ⟨g, hg⟩ : ∃ g, Tendsto (m ∘ u) atTop (𝓝 g) :=
+    cauchySeq_tendsto_of_complete (m.lipschitz.cauchySeq_comp hu)
+  let f' : ℕ → (α → F') := fun n ↦ (m ∘ u) n
   obtain ⟨ns, hns, nslim⟩ : ∃ ns : ℕ → ℕ, StrictMono ns ∧
       ∀ᵐ x ∂μ, Tendsto (fun i ↦ f' (ns i) x) atTop (𝓝 (g x)) :=
     (tendstoInMeasure_of_tendsto_Lp hg).exists_seq_tendsto_ae
+  have : (ae (μ.restrict (Function.support ↑↑f))).NeBot := by
+    apply ae_restrict_neBot.2
+    sorry
+  have A : ∀ᵐ x ∂(μ.restrict (Function.support f)),
+    Tendsto (fun i ↦ f' (ns i) x) atTop (𝓝 (g x)) := ae_restrict_of_ae nslim
+  have B : ∀ᵐ x ∂(μ.restrict (Function.support f)), x ∈ Function.support f :=
+    ae_restrict_mem (measurableSet_support (by fun_prop))
+  have C : ∀ᵐ x ∂(μ.restrict (Function.support f)), ∀ n, m (u n) x = (f x) • u n := by
+    apply ae_restrict_of_ae
+    apply ae_all_iff.2 (fun n ↦ ?_)
+    simp [m]
+  obtain ⟨x, xlim, hx⟩ : ∃ x, Tendsto (fun i ↦ f' (ns i) x) atTop (𝓝 (g x))
+    ∧ x ∈ Function.support f := (A.and B).exists
+  simp [f', m] at xlim
   -- tendsto_nhds_of_cauchySeq_of_subseq
 
 
