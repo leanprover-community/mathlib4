@@ -60,7 +60,7 @@ lemma continuousOn_nnrpow (r : ℝ≥0) : ContinuousOn (· ^ r) {a : A | 0 ≤ a
   · simpa using continuousOn_const
   · exact continuousOn_id.cfcₙ_nnreal_of_mem_nhdsSet _ Filter.univ_mem
 
-attribute [fun_prop] ContinuousAt.prodMap
+attribute [fun_prop] ContinuousWithinAt.prodMap NNReal.continuousAt_rpow
 
 open UniformOnFun Set in
 lemma continuousWithinAt_nnrpow_setProd {a : A} {p : ℝ≥0} (hp : 0 < p) (ha : 0 ≤ a := by cfc_tac) :
@@ -68,12 +68,28 @@ lemma continuousWithinAt_nnrpow_setProd {a : A} {p : ℝ≥0} (hp : 0 < p) (ha :
   let s : Set ℝ≥0 := Icc 0 (sSup (quasispectrum ℝ≥0 a) + 1)
   let s' := {f : ℝ≥0 →ᵤ[{s}] ℝ≥0 | ContinuousOn (toFun {s} f) s ∧ f 0 = 0}
                 ×ˢ {a : A | 0 ≤ a ∧ quasispectrum ℝ≥0 a ⊆ s}
-  let ssw := {a : A | 0 ≤ a ∧ quasispectrum ℝ≥0 a ⊆ s} ×ˢ Ioi (0 : ℝ≥0)
-  refine ContinuousWithinAt.mono_of_mem_nhdsWithin (t := ssw) ?_ (by sorry)
+  let ssw := {b : A | 0 ≤ b ∧ quasispectrum ℝ≥0 b ⊆ s} ×ˢ Ioi (0 : ℝ≥0)
+  let ssws := Ioi (0 : ℝ≥0) ×ˢ {b : A | 0 ≤ b ∧ quasispectrum ℝ≥0 b ⊆ s}
+  refine ContinuousWithinAt.mono_of_mem_nhdsWithin (t := ssw) ?_ <| by
+    sorry
   let f₁ : ℝ≥0 → ℝ≥0 →ᵤ[{s}] ℝ≥0 := fun q : ℝ≥0 => ofFun {s} (fun x : ℝ≥0 => x.nnrpow q)
   let f₂ : (ℝ≥0 →ᵤ[{s}] ℝ≥0) × A → A := fun x => cfcₙ (toFun {s} x.1) x.2
-  have h₁ : ContinuousAt f₁ p := by
-    sorry
+  have h₁ : ContinuousWithinAt f₁ (Ioi 0) p := by
+    --apply ContinuousOn.continuousOn_uniformOnFun_of_uncurry
+    have : CompactSpace s := by
+      sorry
+    refine ContinuousOn.continuousOn_uniformOnFun_of_uncurry ?_ _ hp
+    intro x hx
+    apply ContinuousAt.continuousWithinAt
+    unfold Function.uncurry
+    simp only [NNReal.nnrpow_def]
+    change ContinuousAt ((fun a => a.1 ^ a.2) ∘ (Prod.map id NNReal.toReal) ∘ Prod.swap) x
+    refine ContinuousAt.comp ?_ ?_
+    · apply NNReal.continuousAt_rpow
+      simp only [Function.comp_apply, Prod.map_fst, Prod.fst_swap, id_eq, ne_eq, Prod.map_snd,
+        Prod.snd_swap, NNReal.coe_pos]
+      grind
+    · fun_prop
   have h₁' : ∀ q ∈ Ioi 0, f₁ q 0 = 0 := by
     intro q hq
     simp only [ofFun, NNReal.nnrpow_def, Equiv.coe_fn_mk, NNReal.rpow_eq_left_iff, zero_ne_one,
@@ -88,16 +104,23 @@ lemma continuousWithinAt_nnrpow_setProd {a : A} {p : ℝ≥0} (hp : 0 < p) (ha :
     · simp only [Function.comp_apply, Prod.swap_prod_mk, Prod.map_apply, id_eq, mem_prod,
         mem_setOf_eq]
       refine ⟨⟨?_, ?_⟩, ha, ?_⟩
-      · sorry
+      · simp only [toFun, NNReal.nnrpow_def, Equiv.symm_apply_apply, f₁]
+        fun_prop
       · exact h₁' _ hp
       · sorry
     · exact ConditionallyCompleteLinearOrder.isCompact_Icc 0 (sSup (quasispectrum ℝ≥0 a) + 1)
-  · fun_prop (disch := grind)
+  · refine ContinuousWithinAt.comp (t := ssws) ?_ ?_ ?_
+    · simp only [Prod.swap_prod_mk]
+      apply ContinuousWithinAt.prodMap h₁
+      exact continuousWithinAt_id
+    · fun_prop
+    · grind [MapsTo]
   · intro x hx
     simp only [Function.comp_apply, mem_prod, Prod.map_fst, Prod.fst_swap, mem_setOf_eq,
       Prod.map_snd, Prod.snd_swap, id_eq, s']
     refine ⟨⟨?_, ?_⟩, ?_, ?_⟩
-    · sorry
+    · simp only [toFun, NNReal.nnrpow_def, Equiv.symm_apply_apply, f₁]
+      fun_prop
     · apply h₁'
       grind
     · grind
