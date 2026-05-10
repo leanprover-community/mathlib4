@@ -171,3 +171,17 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_of_finiteDimen
     ← range_restrict, restrict_eq_restrict_iff.mpr eqOn_A]
 
 end FiniteRank
+
+section FiniteDimQuotient
+
+-- TODO: better name
+-- TODO: use ∘ or ∘L ? The simp NF is ∘
+public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_quotient
+    (u : E →L[𝕜] F) (A : Submodule 𝕜 F) [dim_A : FiniteDimensional 𝕜 A]
+    (A_compl : ClosedComplemented A) :
+    (IsStrictMap u ∧ IsClosed (range u)) ↔
+      (IsStrictMap (A.mkQ ∘ u) ∧ IsClosed (range (A.mkQ ∘ u))) := by
+  obtain ⟨S, A_compl_S⟩ := A_compl.exists_isTopCompl
+  sorry
+
+end FiniteDimQuotient
