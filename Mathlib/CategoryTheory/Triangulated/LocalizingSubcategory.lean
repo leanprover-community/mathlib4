@@ -153,7 +153,7 @@ lemma IsVerdierLeftLocalizing.fac'
 
 /-- If `A` is a triangulated subcategory of a pretriangulated category `C`,
 and `B : ObjectProperty C`, this is the inclusion functor
-`A.ι : A.FullSubcategory ⥤ C`, considered as a localized morphism,
+`A.ι : A.FullSubcategory ⥤ C`, considered as a localizer morphism,
 where `C` is equipped with the property of morphisms `B.trW`
 and `A.FullSubcategory` with the property of morphisms `(B.inverseImage A.ι).trW`. -/
 @[implicit_reducible]
@@ -323,8 +323,8 @@ noncomputable def IsVerdierLeftLocalizing.fullyFaithful [A.IsVerdierLeftLocalizi
     F.FullyFaithful :=
   Functor.FullyFaithful.ofIso (.ofFullyFaithful
     ((A.triangulatedLocalizerMorphism B).localizedFunctor L₁ L₂))
-      (Localization.liftNatIso L₁ (B.inverseImage A.ι).trW
-        ((A.triangulatedLocalizerMorphism B).functor ⋙ L₂) (L₁ ⋙ F) _ _ e.symm)
+    (Localization.liftNatIso L₁ (B.inverseImage A.ι).trW
+      ((A.triangulatedLocalizerMorphism B).functor ⋙ L₂) (L₁ ⋙ F) _ _ e.symm)
 
 /-- If `A` is a right `B`-localizing triangulated subcategory in the sense of Verdier,
 then the induced functor between the localizations with respect to `(B.inverseImage A.ι).trW`
@@ -337,8 +337,8 @@ noncomputable def IsVerdierRightLocalizing.fullyFaithful [A.IsVerdierRightLocali
     F.FullyFaithful :=
   Functor.FullyFaithful.ofIso (.ofFullyFaithful
     ((A.triangulatedLocalizerMorphism B).localizedFunctor L₁ L₂))
-      (Localization.liftNatIso L₁ (B.inverseImage A.ι).trW
-        ((A.triangulatedLocalizerMorphism B).functor ⋙ L₂) (L₁ ⋙ F) _ _ e.symm)
+    (Localization.liftNatIso L₁ (B.inverseImage A.ι).trW
+      ((A.triangulatedLocalizerMorphism B).functor ⋙ L₂) (L₁ ⋙ F) _ _ e.symm)
 
 end
 
