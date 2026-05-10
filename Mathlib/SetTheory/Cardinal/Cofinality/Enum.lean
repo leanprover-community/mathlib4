@@ -78,14 +78,14 @@ theorem cof_eq_cardinalMk : cof α = #α := by
 
 @[simp]
 theorem _root_.Cardinal.ord_cardinalMk : ord (#α) = typeLT α := by
-  rw [← ord_cof_eq_type_lt, cof_eq_card]
+  rw [← ord_cof_eq_type_lt, cof_eq_cardinalMk]
 
 theorem cof_ordinal : cof Ordinal.{u} = Cardinal.univ.{u, u + 1} := by
   simp
 
 theorem ordinalType_eq_of_isCofinal {s : Set α} (hs : IsCofinal s) : typeLT s = typeLT α := by
   apply (RelEmbedding.ofMonotone Subtype.val (by simp)).ordinal_type_le.antisymm
-  rw [← ord_cardinalMk, ord_le, card_type, ← cof_eq_card]
+  rw [← ord_cardinalMk, ord_le, card_type, ← cof_eq_cardinalMk]
   exact cof_le hs
 
 /-- Enumerate the elements of a cofinal subset of `α` by `α` itself. This is a generalization of
