@@ -65,27 +65,28 @@ instance :
 
 variable (A)
 
---set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency false in
 /-- The right derived functor commutes with the shift. -/
 @[implicit_reducible]
 noncomputable def commShift : LF.CommShift A where
   commShiftIso a := leftDerivedNatIso _ _ (precomposeShiftNatTrans LF α a)
     (postcomposeShiftNatTrans LF α a) W (F.commShiftIso a)
-  commShiftIso_zero := sorry
-  commShiftIso_add := sorry
-  /-
   commShiftIso_zero := by
     ext : 1
-    apply rightDerived_ext _ (precomposeShiftNatTrans LF α 0) W
+    apply leftDerived_ext _ (postcomposeShiftNatTrans LF α 0) W
     ext X
     dsimp
-    rw [dsimp% rightDerivedNatTrans_app _ _ (precomposeShiftNatTrans LF α 0)
-      (postcomposeShiftNatTrans LF α 0) W (F.commShiftIso (0 : A)).hom X]
-    simp only [commShiftIso_zero, CommShift.isoZero_hom_app, postcomposeShiftNatTrans_app,
-      Category.assoc, precomposeShiftNatTrans_app, ← map_comp_assoc, Iso.inv_hom_id_app, id_obj,
-      Category.comp_id]
-    rw [← dsimp% (shiftFunctorZero D A).inv.naturality (α.app X)]
-    simp
+    rw [dsimp% leftDerivedNatTrans_app _ _ (precomposeShiftNatTrans LF α (0 : A))
+      (postcomposeShiftNatTrans LF α 0) W (F.commShiftIso 0).hom X]
+    simp only [precomposeShiftNatTrans_app, commShiftIso_zero, CommShift.isoZero_inv_app, map_comp,
+      Category.assoc, CommShift.isoZero_hom_app, postcomposeShiftNatTrans_app]
+    simp [dsimp% α.naturality_assoc, ← Functor.map_comp_assoc,
+      dsimp% (shiftFunctorZero D A).inv.naturality (α.app X)]
+  commShiftIso_add a b := by
+    ext : 1
+    apply leftDerived_ext _ (postcomposeShiftNatTrans LF α (a + b)) W
+    sorry
+  /-
   commShiftIso_add a b := by
     ext : 1
     apply rightDerived_ext _ (precomposeShiftNatTrans LF α (a + b)) W
