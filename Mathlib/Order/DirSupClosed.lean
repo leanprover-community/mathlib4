@@ -221,7 +221,7 @@ theorem dirSupClosedOn_singleton (a : α) : DirSupClosedOn D {a} :=
 
 end PartialOrder
 
-namespace LinearOrder
+section LinearOrder
 variable [LinearOrder α]
 
 theorem dirSupClosedOn_iff_of_linearOrder :
