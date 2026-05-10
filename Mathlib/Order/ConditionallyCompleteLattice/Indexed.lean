@@ -188,6 +188,14 @@ theorem ciInf_le {f : ι → α} (H : BddBelow (range f)) (c : ι) : iInf f ≤ 
 theorem ciInf_le_of_le {f : ι → α} (H : BddBelow (range f)) (c : ι) (h : f c ≤ a) : iInf f ≤ a :=
   le_ciSup_of_le (α := αᵒᵈ) H c h
 
+theorem ciSup_mono_of_forall_exists {ι'} [Nonempty ι] {f : ι → α} {g : ι' → α}
+    (hg : BddAbove <| range g) (h : ∀ i, ∃ i', f i ≤ g i') : ⨆ i, f i ≤ ⨆ i', g i' :=
+  ciSup_le fun i ↦ h i |>.elim <| le_ciSup_of_le hg
+
+theorem ciInf_mono_of_forall_exists {ι'} [Nonempty ι'] {f : ι → α} {g : ι' → α}
+    (hf : BddBelow <| range f) (h : ∀ i', ∃ i, f i ≤ g i') : ⨅ i, f i ≤ ⨅ i', g i' :=
+  ciSup_mono_of_forall_exists (α := αᵒᵈ) hf h
+
 /-- If the set of all `f i j` is bounded below, then so is the set of the infimums of every row -/
 theorem BddBelow.range_iInf_of_iUnion_range {κ : ι → Sort*} {f : ∀ i, κ i → α}
     (H : BddBelow <| ⋃ i, range (f i)) : BddBelow <| range fun i ↦ ⨅ j, f i j := by
@@ -491,9 +499,11 @@ theorem exists_lt_of_lt_ciSup' {f : ι → α} {a : α} (h : a < ⨆ i, f i) : �
   contrapose! h
   exact ciSup_le' h
 
-theorem ciSup_mono' {ι'} {f : ι → α} {g : ι' → α} (hg : BddAbove (range g))
-    (h : ∀ i, ∃ i', f i ≤ g i') : iSup f ≤ iSup g :=
-  ciSup_le' fun i => Exists.elim (h i) (le_ciSup_of_le hg)
+theorem ciSup_mono_of_forall_exists' {ι'} {f : ι → α} {g : ι' → α} (hg : BddAbove <| range g)
+    (h : ∀ i, ∃ i', f i ≤ g i') : ⨆ i, f i ≤ ⨆ i', g i' :=
+  ciSup_le' fun i ↦ h i |>.elim <| le_ciSup_of_le hg
+
+@[deprecated (since := "2026-05-03")] alias ciSup_mono' := ciSup_mono_of_forall_exists'
 
 lemma ciSup_or' (p q : Prop) (f : p ∨ q → α) :
     ⨆ (h : p ∨ q), f h = (⨆ h : p, f (.inl h)) ⊔ ⨆ h : q, f (.inr h) := by
