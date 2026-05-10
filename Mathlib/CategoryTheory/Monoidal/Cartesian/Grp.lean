@@ -309,6 +309,10 @@ scoped[CategoryTheory.AddMonObj] attribute [instance] Hom.addCommGroup
 
 section
 
+@[to_additive]
+lemma GrpObj.conj_eq_snd_of_isCommMonObj [IsCommMonObj G] : conj G = snd G G := by
+  simp [conj]
+
 open scoped IsMulCommutative in
 /-- `G` is a commutative group object if and only if the commutator map `(x, y) ↦ x * y * x⁻¹ * y⁻¹`
 is constant. -/
