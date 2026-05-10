@@ -188,7 +188,7 @@ theorem lcmUpto_ne_zero (n : ℕ) : lcmUpto n ≠ 0 := by
 theorem lcmUpto_pos (n : ℕ) : 0 < lcmUpto n := pos_of_ne_zero <| lcmUpto_ne_zero n
 
 theorem factorization_lcmUpto (n : ℕ) {p : ℕ} (hp : p.Prime) :
-  (lcmUpto n).factorization p = p.log n := by
+    (lcmUpto n).factorization p = p.log n := by
   rw [lcmUpto, factorization_lcm (fun _ _ ↦ by grind)]
   have := hp.one_lt
   refine le_antisymm ?_ ?_
