@@ -368,6 +368,26 @@ lemma ciInf_image {ι ι' : Type*} {s : Set ι} {f : ι → ι'} {g : ι' → α
     ⨅ i ∈ (f '' s), g i = ⨅ x ∈ s, g (f x) :=
   ciSup_image (α := αᵒᵈ) hf hg'
 
+/-- Note that equality need not hold: consider `ι := Bool, p := (·), α := ℤ, f := fun _ ↦ -1`,
+then the LHS is `-1` but the RHS is `-1 ⊔ sSup ∅ = -1 ⊔ 0 = 0`. -/
+theorem ciSup_exists_le {p : ι → Prop} {f : Exists p → α} : ⨆ ih, f ih ≤ ⨆ (i) (h), f ⟨i, h⟩ := by
+  by_cases! h : Exists p
+  · have : Nonempty <| Exists p := ⟨h⟩
+    refine ciSup_le fun ⟨i, hi⟩ ↦ le_ciSup₂ (f := fun _ _ ↦ _) ⟨f ⟨i, hi⟩, ?_⟩ i hi
+    rintro _ ⟨_, ⟨j, rfl⟩, ⟨hj, rfl⟩⟩
+    rfl
+  · cases isEmpty_or_nonempty ι <;>
+      simp [h, iSup_of_empty', ciSup_const]
+
+theorem le_ciInf_exists {p : ι → Prop} {f : Exists p → α} : ⨅ (i) (h), f ⟨i, h⟩ ≤ ⨅ ih, f ih :=
+  ciSup_exists_le (α := αᵒᵈ)
+
+theorem ciSup_and {p q : Prop} {f : p ∧ q → α} : ⨆ ih, f ih = ⨆ (h₁) (h₂), f ⟨h₁, h₂⟩ := by
+  by_cases hp : p <;> by_cases hq : q <;> simp [hp, hq, iSup_of_empty']
+
+theorem ciInf_and {p q : Prop} {f : p ∧ q → α} : ⨅ ih, f ih = ⨅ (h₁) (h₂), f ⟨h₁, h₂⟩ :=
+  ciSup_and (α := αᵒᵈ)
+
 end ConditionallyCompleteLattice
 
 section ConditionallyCompleteLinearOrder
@@ -504,6 +524,10 @@ theorem ciSup_mono_of_forall_exists' {ι'} {f : ι → α} {g : ι' → α} (hg 
   ciSup_le' fun i ↦ h i |>.elim <| le_ciSup_of_le hg
 
 @[deprecated (since := "2026-05-03")] alias ciSup_mono' := ciSup_mono_of_forall_exists'
+
+theorem ciSup_exists {p : ι → Prop} {f : Exists p → α} : ⨆ ih, f ih = ⨆ (i) (h), f ⟨i, h⟩ := by
+  refine le_antisymm ciSup_exists_le <| ciSup_le' fun i ↦ ciSup_le' fun hi ↦ ?_
+  simp [show Exists p from ⟨i, hi⟩]
 
 lemma ciSup_or' (p q : Prop) (f : p ∨ q → α) :
     ⨆ (h : p ∨ q), f h = (⨆ h : p, f (.inl h)) ⊔ ⨆ h : q, f (.inr h) := by
