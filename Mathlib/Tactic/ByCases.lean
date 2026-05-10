@@ -32,7 +32,7 @@ syntax (name := byCases!) "by_cases! " optConfig (atomic(ident " : "))? term : t
 
 local elab "try_push_neg_at" cfg:optConfig h:ident : tactic => do
   Push.push (← Push.elabPushConfig cfg) none (.const ``Not) (.targets #[h] false)
-    (failIfUnchanged := false)
+    (ifUnchanged := .silent)
 
 macro_rules
   | `(tactic| by_cases! $cfg:optConfig $e) => `(tactic| by_cases! $cfg h : $e)

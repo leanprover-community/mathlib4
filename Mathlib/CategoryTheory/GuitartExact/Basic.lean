@@ -170,7 +170,6 @@ def inverse : w.CostructuredArrowDownwards g ⥤ w.StructuredArrowRightwards g w
 
 end EquivalenceJ
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given `w : TwoSquare T L R B` and a morphism `g : R.obj X₂ ⟶ B.obj X₃`, this is
 the obvious equivalence of categories
 `w.StructuredArrowRightwards g ≌ w.CostructuredArrowDownwards g`. -/
@@ -189,7 +188,6 @@ end
 
 section
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor `w.CostructuredArrowDownwards g ⥤ w.CostructuredArrowDownwards g'` induced
 by a morphism `γ` such that `R.map γ ≫ g = g'`. -/
 @[simps]
@@ -243,6 +241,14 @@ instance [hw : w.GuitartExact] {X₂ : C₂} (g : StructuredArrow (R.obj X₂) B
   rw [guitartExact_iff_isConnected_downwards] at hw
   apply hw
 
+lemma costructuredArrowRightwards_final_iff_of_iso {X₃ X₃' : C₃} (e : X₃ ≅ X₃') :
+    (w.costructuredArrowRightwards X₃).Final ↔
+      (w.costructuredArrowRightwards X₃').Final := by
+  rw [Functor.final_iff_comp_equivalence _ (CostructuredArrow.mapIso (B.mapIso e)).functor,
+    Functor.final_iff_equivalence_comp (CostructuredArrow.mapIso e).functor]
+  exact Functor.final_natIso_iff
+    (NatIso.ofComponents (fun _ ↦ CostructuredArrow.isoMk (Iso.refl _)))
+
 lemma guitartExact_iff_final :
     w.GuitartExact ↔ ∀ (X₃ : C₃), (w.costructuredArrowRightwards X₃).Final :=
   ⟨fun _ _ => ⟨fun _ => inferInstance⟩, fun _ => ⟨fun _ => inferInstance⟩⟩
@@ -251,6 +257,14 @@ instance [hw : w.GuitartExact] (X₃ : C₃) :
     (w.costructuredArrowRightwards X₃).Final := by
   rw [guitartExact_iff_final] at hw
   apply hw
+
+lemma structuredArrowDownwards_initial_iff_of_iso {X₂ X₂' : C₂} (e : X₂ ≅ X₂') :
+    (w.structuredArrowDownwards X₂).Initial ↔
+      (w.structuredArrowDownwards X₂').Initial := by
+  rw [Functor.initial_iff_comp_equivalence _ (StructuredArrow.mapIso (R.mapIso e)).functor,
+    Functor.initial_iff_equivalence_comp (StructuredArrow.mapIso e).functor]
+  exact Functor.initial_natIso_iff
+    (NatIso.ofComponents (fun _ ↦ StructuredArrow.isoMk (Iso.refl _)))
 
 lemma guitartExact_iff_initial :
     w.GuitartExact ↔ ∀ (X₂ : C₂), (w.structuredArrowDownwards X₂).Initial :=
