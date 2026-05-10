@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Order.DirSupClosed
 public import Mathlib.Order.IsNormal
-public import Mathlib.SetTheory.Cardinal.Cofinality.Basic
+public import Mathlib.SetTheory.Cardinal.Cofinality.Enum
 public import Mathlib.SetTheory.Ordinal.Arithmetic
 
 /-!
@@ -139,27 +139,23 @@ theorem IsClub.inter {s t : Set α} (hα : cof α ≠ ℵ₀) (hs : IsClub s) (h
 
 attribute [-simp] Function.iterate_succ in
 /-- Club sets are closed under diagonal intersections. -/
-theorem IsClub.diag {f : α → Set α} (hα' : ℵ₀ < Order.cof α) (hα : typeLT α ≤ (Order.cof α).ord)
+theorem IsClub.diag [IsRegularCardinalOrder α] {f : α → Set α} (hα : ℵ₀ < Order.cof α)
     (hf : ∀ a, IsClub (f a)) : IsClub {a | ∀ b < a, a ∈ f b} where
   dirSupClosed t ht ht₀ _ a ha b hb := by
     obtain ⟨c, hc, hbc, -⟩ := ha.exists_between hb
     apply (hf b).isLUB_mem _ ⟨c, _⟩ (ha.inter_Ici_of_mem hc) <;> grind
   isCofinal a := by
     have : Nonempty α := ⟨a⟩
-    have := (noTopOrder_iff_noMaxOrder α).1 <| Order.one_lt_cof_iff.1 (one_lt_aleph0.trans hα')
-    replace hα : (Order.cof α).ord = typeLT α := by
-      apply hα.antisymm'
-      rw [ord_le]
-      exact Order.cof_le_cardinalMk α
-    have hα'' : Order.cof α = #α := by simpa using congrArg card hα
+    have := (noTopOrder_iff_noMaxOrder α).1 <| Order.one_lt_cof_iff.1 (one_lt_aleph0.trans hα)
+    have hα' : Order.cof α = #α := Order.cof_eq_cardinalMk
     have (b : α) : ∃ c ∈ ⋂₀ (f '' Set.Iio b), b < c := by
       obtain ⟨b', hb'⟩ := exists_gt b
       have ⟨c, hc, hbc⟩ :=
-        (IsClub.sInter (s := f '' Set.Iio b) hα'.ne' (mk_image_le.trans_lt ?_) ?_).isCofinal b'
+        (IsClub.sInter (s := f '' Set.Iio b) hα.ne' (mk_image_le.trans_lt ?_) ?_).isCofinal b'
       · exact ⟨c, hc, hb'.trans_le hbc⟩
-      · rw [hα'']
+      · rw [hα']
         apply mk_Iio_lt
-        rw [← hα, hα'']
+        rw [← hα, hα']
       · simp [hf]
     choose g hg using this
     have hgm : StrictMono fun n ↦ g^[n] a := by
@@ -238,14 +234,14 @@ proof_wanted isStationary_iff_not_isCofinal_compl (hα : Order.cof α ≤ ℵ₀
 /-- **Fodor's lemma,** or the **pressing down lemma:** if `α` has the order type of a regular
 cardinal, `s` is a stationary set, and `f : s → α` is a regressive function, there exists some
 stationary subset of `s` which is constant on `f`. -/
-theorem exists_isStationary_preimage_singleton [WellFoundedLT α] {f : s → α}
-    (hα' : ℵ₀ < Order.cof α) (hα : typeLT α ≤ (Order.cof α).ord)
+theorem exists_isStationary_preimage_singleton
+    [WellFoundedLT α] [IsRegularCardinalOrder α] {f : s → α} (hα : ℵ₀ < Order.cof α)
     (hs : IsStationary s) (hf : ∀ x : s, f x < x) :
     ∃ a, IsStationary (Subtype.val '' (f ⁻¹' {a})) := by
   unfold IsStationary
   by_contra!
   choose g hg using this
   simp_rw [Set.eq_empty_iff_forall_notMem] at hg
-  obtain ⟨a, hs, ha⟩ := hs <| .diag hα' hα fun a ↦ (hg a).1
+  obtain ⟨a, hs, ha⟩ := hs <| .diag hα fun a ↦ (hg a).1
   apply (hg (f ⟨a, hs⟩)).2 a
   simpa using ⟨hs, ha _ (hf ⟨a, hs⟩)⟩
