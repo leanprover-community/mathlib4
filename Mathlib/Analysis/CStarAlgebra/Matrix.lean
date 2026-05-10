@@ -26,6 +26,9 @@ This transports the operator norm on `EuclideanSpace 𝕜 n →L[𝕜] Euclidean
 ## Main statements
 
 * `entry_norm_bound_of_unitary`: the entries of a unitary matrix are uniformly bound by `1`.
+* `isCompact_unitaryGroup` and `isCompact_specialUnitaryGroup`: the unitary and
+  special unitary groups are compact subsets of `Matrix n n 𝕜`, with the corresponding
+  `CompactSpace` instances.
 
 ## Implementation details
 
@@ -83,6 +86,59 @@ theorem entrywise_sup_norm_bound_of_unitary {U : Matrix n n 𝕜} (hU : U ∈ Ma
   simp_rw [pi_norm_le_iff_of_nonneg zero_le_one]
   intros
   exact entry_norm_bound_of_unitary hU _ _
+
+section Compact
+
+set_option backward.isDefEq.respectTransparency false
+open scoped Matrix.Norms.Elementwise
+
+/-- The unitary group `Matrix.unitaryGroup n 𝕜` is closed inside `Matrix n n 𝕜`. -/
+theorem isClosed_unitaryGroup :
+    IsClosed (Matrix.unitaryGroup n 𝕜 : Set (Matrix n n 𝕜)) := by
+  have h_eq : (Matrix.unitaryGroup n 𝕜 : Set (Matrix n n 𝕜)) = { U | U * star U = 1 } := by
+    ext U; simp [Matrix.mem_unitaryGroup_iff]
+  rw [h_eq]
+  exact isClosed_singleton.preimage (by fun_prop)
+
+/-- The unitary group `Matrix.unitaryGroup n 𝕜` is compact: it is closed in the
+finite-dimensional normed space `Matrix n n 𝕜` and bounded by `1` in the entrywise sup norm. -/
+theorem isCompact_unitaryGroup :
+    IsCompact (Matrix.unitaryGroup n 𝕜 : Set (Matrix n n 𝕜)) := by
+  rw [Metric.isCompact_iff_isClosed_bounded]
+  refine ⟨isClosed_unitaryGroup, ?_⟩
+  refine (Metric.isBounded_closedBall (x := (0 : Matrix n n 𝕜)) (r := 1)).subset ?_
+  intro U hU
+  rw [Metric.mem_closedBall, dist_zero_right]
+  exact entrywise_sup_norm_bound_of_unitary hU
+
+/-- The unitary group is a compact topological space. -/
+instance Matrix.unitaryGroup.instCompactSpace :
+    CompactSpace (Matrix.unitaryGroup n 𝕜) :=
+  isCompact_iff_compactSpace.mp isCompact_unitaryGroup
+
+/-- The special unitary group `Matrix.specialUnitaryGroup n 𝕜` is closed inside
+`Matrix n n 𝕜`. -/
+theorem isClosed_specialUnitaryGroup :
+    IsClosed (Matrix.specialUnitaryGroup n 𝕜 : Set (Matrix n n 𝕜)) := by
+  have h_inter : (Matrix.specialUnitaryGroup n 𝕜 : Set (Matrix n n 𝕜))
+      = (Matrix.unitaryGroup n 𝕜 : Set (Matrix n n 𝕜)) ∩ { U | U.det = 1 } := by
+    ext U
+    simp [Matrix.specialUnitaryGroup, Set.mem_inter_iff]
+  rw [h_inter]
+  exact isClosed_unitaryGroup.inter (isClosed_singleton.preimage (by fun_prop))
+
+/-- The special unitary group is compact, as a closed subset of the unitary group. -/
+theorem isCompact_specialUnitaryGroup :
+    IsCompact (Matrix.specialUnitaryGroup n 𝕜 : Set (Matrix n n 𝕜)) :=
+  isCompact_unitaryGroup.of_isClosed_subset isClosed_specialUnitaryGroup
+    Matrix.specialUnitaryGroup_le_unitaryGroup
+
+/-- The special unitary group is a compact topological space. -/
+instance Matrix.specialUnitaryGroup.instCompactSpace :
+    CompactSpace (Matrix.specialUnitaryGroup n 𝕜) :=
+  isCompact_iff_compactSpace.mp isCompact_specialUnitaryGroup
+
+end Compact
 
 end EntrywiseSupNorm
 
