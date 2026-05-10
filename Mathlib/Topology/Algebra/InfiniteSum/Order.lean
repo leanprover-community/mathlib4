@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.Quantale
 public import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 public import Mathlib.Topology.Algebra.InfiniteSum.NatInt
 public import Mathlib.Topology.Algebra.Order.Field
@@ -293,36 +294,33 @@ variable [T2Space α]
 
 @[to_additive] theorem tprod_eq_iSup_prod' (s : ι' → Finset ι) (hs : ∀ t, ∃ i, t ⊆ s i) :
     ∏' a, f a = ⨆ i, ∏ a ∈ s i, f a := by
-  rw [tprod_eq_iSup_prod]
-  symm
-  change ⨆ i : ι', (fun t : Finset ι => ∏ a ∈ t, f a) (s i) = ⨆ s : Finset ι, ∏ a ∈ s, f a
-  exact (Finset.prod_mono_set' f).iSup_comp_eq hs
+  simpa [tprod_eq_iSup_prod] using ((Finset.prod_mono_set' f).iSup_comp_eq hs).symm
 
 variable [ContinuousMul α]
 
 @[to_additive] theorem tprod_mul : ∏' a, (f a * g a) = (∏' a, f a) * ∏' a, g a :=
   multipliable.tprod_mul multipliable
 
-@[to_additive] theorem tprod_union_disjoint (hd : Disjoint s t) :
+@[to_additive] theorem tprod_union_of_disjoint (hd : Disjoint s t) :
     ∏' (x : ↑(s ∪ t)), f x = (∏' (x : s), f x) * ∏' (x : t), f x :=
   multipliable.tprod_union_disjoint hd multipliable
 
 @[to_additive] theorem tprod_le_of_subset (h : s ⊆ t) : ∏' (x : s), f x ≤ ∏' (x : t), f x := by
-  rw [← diff_union_of_subset h, tprod_union_disjoint disjoint_sdiff_left]
+  rw [← diff_union_of_subset h, tprod_union_of_disjoint disjoint_sdiff_left]
   exact le_mul_self
 
 @[to_additive] theorem tprod_union_le (f : ι → α) (s t : Set ι) :
     ∏' (x : ↑(s ∪ t)), f x ≤ (∏' (x : s), f x) * ∏' (x : t), f x := by
-  rw [← diff_union_self, tprod_union_disjoint disjoint_sdiff_left]
+  rw [← diff_union_self, tprod_union_of_disjoint disjoint_sdiff_left]
   exact mul_le_mul_left (tprod_le_of_subset diff_subset) _
 
 @[to_additive]
 theorem tprod_insert (h : i ∉ s) : ∏' (x : ↑(insert i s)), f x = f i * ∏' (x : s), f x := by
-  rw [← singleton_union, tprod_union_disjoint, tprod_singleton]
+  rw [← singleton_union, tprod_union_of_disjoint, tprod_singleton]
   rwa [Set.disjoint_singleton_left]
 
 @[to_additive]
-theorem tprod_singleton_mul_tprod_ne : f i * (∏' (x : {x // x ≠ i}), f x) = ∏' x, f x := by
+theorem singleton_mul_tprod_ne : f i * (∏' (x : {x // x ≠ i}), f x) = ∏' x, f x := by
   rw [eq_comm, ← tprod_univ, show univ = insert i {i}ᶜ by ext; simp [em]]
   exact tprod_insert (by simp)
 
@@ -383,7 +381,7 @@ variable [IsOrderedMonoid α] [OrderClosedTopology α]
 @[to_additive] theorem le_tprod_of_mem (hi : i ∈ s) : f i ≤ ∏' x : s, f x := by
   exact le_tprod (f ∘ (↑)) (⟨i, hi⟩ : s)
 
-@[to_additive] theorem tprod_eq_one : ∏' i, f i = 1 ↔ ∀ i, f i = 1 :=
+@[to_additive, simp] theorem tprod_eq_one : ∏' i, f i = 1 ↔ ∀ i, f i = 1 :=
   multipliable.tprod_eq_one_iff
 
 @[to_additive] theorem tprod_eq_top_of_eq_top : (∃ a, f a = ⊤) → ∏' a, f a = ⊤
@@ -411,8 +409,18 @@ theorem tprod_comp_eq_tprod_of_bijective {f : ι → ι'} (hf : f.Bijective) (g 
     (tprod_le_tprod_comp_of_surjective hf.surjective g)
 
 @[to_additive]
+theorem tprod_range_le_tprod_comp (f : ι → α) (g : ι' → ι) :
+    ∏' (x : range g), f x ≤ ∏' x, f (g x) :=
+  tprod_le_tprod_comp_of_surjective rangeFactorization_surjective _
+
+@[to_additive]
 theorem tprod_comp_eq_tprod_of_equiv (e : ι ≃ ι') (g : ι' → α) : ∏' x, g (e x) = ∏' y, g y := by
   rw [tprod_comp_eq_tprod_of_bijective e.bijective]
+
+@[to_additive]
+theorem tprod_image_le_tprod_comp (f : ι → α) (g : ι' → ι) (s : Set ι') :
+    ∏' x : (g '' s), f x ≤ ∏' x : s, f (g x) :=
+  tprod_le_tprod_comp_of_surjective imageFactorization_surjective _
 
 @[to_additive] theorem tprod_mono_subtype (f : ι → α) (h : s ⊆ t) : ∏' x : s, f x ≤ ∏' x : t, f x :=
   tprod_comp_le_tprod_of_injective (inclusion_injective h) (f ∘ (↑))
@@ -459,7 +467,37 @@ omit [IsOrderedMonoid α] [T3Space α] in
   rw [_root_.tprod_subtype, prod_eq_tprod_mulIndicator]
   simp [← tprod_mul]
 
+@[to_additive]
+theorem tprod_iUnion_le_prod [Fintype ι'] (f : ι → α) (t : ι' → Set ι) :
+    ∏' x : ⋃ i, t i, f x ≤ ∏ i, ∏' x : t i, f x := by
+  convert tprod_iUnion_le_tprod f t
+  exact (tprod_fintype fun b ↦ ∏' (x : ↑(t b)), f ↑x).symm
+
+@[to_additive]
+theorem tprod_subtype_eq_tprod_mulSupport (s : Set ι) (f : ι → α) :
+    ∏' (x : s), f x = ∏' (x : {x | x ∈ s ∧ f x ≠ 1}), f x := by
+  have hu : s = {i | i ∈ s ∧ f i ≠ 1} ∪ {i | i ∈ s ∧ f i = 1} := by
+    simp only [Set.ext_iff, ne_eq, mem_union, mem_setOf_eq]
+    grind
+  have hrw : ∏' i : {i | i ∈ s ∧ f i = 1}, f i = 1 := by simp
+  rw [hu, tprod_union_of_disjoint (by grind), hrw, mul_one, ← hu]
+
 end CompleteLattice
+
+section CompleteLatticeRing
+
+variable {R : Type*} [Semiring R] [CompleteLattice R] [IsQuantale R] [TopologicalSpace R]
+    [CanonicallyOrderedAdd R] [SupConvergenceClass R] [T2Space R]
+
+theorem mul_tsum (c : R) (f : α → R) : c * (∑' a, f a) = ∑' a, (c * f a) := by
+  rw [tsum_eq_iSup_sum, tsum_eq_iSup_sum, Quantale.mul_iSup_distrib,
+    iSup_congr (fun _ ↦ Finset.mul_sum ..)]
+
+theorem tsum_mul (c : R) (f : α → R) : (∑' a, f a) * c = ∑' a, (f a * c) := by
+  rw [tsum_eq_iSup_sum, tsum_eq_iSup_sum, Quantale.iSup_mul_distrib,
+    iSup_congr (fun _ ↦ Finset.sum_mul ..)]
+
+end CompleteLatticeRing
 
 section LinearOrder
 
