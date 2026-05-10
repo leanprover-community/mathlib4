@@ -265,10 +265,9 @@ theorem sumAlgEquiv_comp_rename_inr : (sumAlgEquiv σ τ R).toAlgHom.comp
     (rename Embedding.inr) = IsScalarTower.toAlgHom R (MvPowerSeries τ R)
       (MvPowerSeries σ (MvPowerSeries τ R)) := by
   classical
-  ext _ x y
-  simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe, comp_apply,
-    sumAlgEquiv_apply, coeff_sumToIter, IsScalarTower.coe_toAlgHom', algebraMap_apply,
-    Algebra.algebraMap_self, RingHom.id_apply, coeff_C]
+  ext p x y
+  suffices (coeff (x.sumElim y)) ((rename Embedding.inr) p) =
+    (coeff y) (if x = 0 then p else 0) by simpa [coeff_sumToIter, algebraMap_apply, coeff_C]
   split_ifs with h
   · simp [h, ← embDomain_inr]
   · replace h : x.sumElim y ∉ Set.range (mapDomain Embedding.inr) := by
@@ -280,9 +279,8 @@ theorem sumAlgEquiv_comp_rename_inl : (sumAlgEquiv σ τ R).toAlgHom.comp
     (rename Embedding.inl) = mapAlgHom (Algebra.ofId ..) := by
   classical
   ext p x y
-  simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe, comp_apply,
-    sumAlgEquiv_apply, coeff_sumToIter,
-    show (coeff x) ((mapAlgHom (Algebra.ofId R (MvPowerSeries τ R))) p) = C (coeff x p) from rfl]
+  suffices (coeff (x.sumElim y)) ((rename Embedding.inl) p) = (coeff y) (C ((coeff x) p)) by
+    simpa [sumAlgEquiv_apply, coeff_sumToIter]
   by_cases h : y = 0
   · simp [h, ← embDomain_inl]
   · have : x.sumElim y ∉ Set.range (mapDomain Embedding.inl) := by
