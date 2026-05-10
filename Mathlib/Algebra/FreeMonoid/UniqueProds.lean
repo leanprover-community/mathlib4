@@ -13,7 +13,7 @@ public import Mathlib.Algebra.Order.Group.Nat
 # Free monoids have unique products
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Cardinal Subsemiring Algebra Submodule StarModule
 

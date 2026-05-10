@@ -6,6 +6,7 @@ Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 module
 
 public import Mathlib.RingTheory.Ideal.GoingUp
+public import Mathlib.RingTheory.KrullDimension.Basic
 public import Mathlib.RingTheory.Polynomial.RationalRoot
 
 /-!
@@ -45,7 +46,7 @@ to add a `(h : ¬ IsField A)` assumption whenever this is explicitly needed.
 dedekind domain, dedekind ring
 -/
 
-@[expose] public section
+public section
 
 
 variable (R A K : Type*) [CommRing R] [CommRing A] [Field K]
@@ -76,7 +77,6 @@ theorem isIntegralClosure (B : Type*) [CommRing B] [IsDomain B] [Nontrivial R] [
     IsIntegralClosure.isMaximal_of_isMaximal_comap (R := R) A p
       (Ideal.IsPrime.isMaximal inferInstance (IsIntegralClosure.comap_ne_bot A ne_bot))
 
-set_option backward.isDefEq.respectTransparency false in
 nonrec instance integralClosure [Nontrivial R] [IsDomain A] [Algebra R A] [DimensionLEOne R] :
     DimensionLEOne (integralClosure R A) :=
   DimensionLEOne.isIntegralClosure R A (integralClosure R A)
@@ -98,6 +98,10 @@ theorem of_ringEquiv [hA : Ring.DimensionLEOne A] (e : R ≃+* A) : Ring.Dimensi
       Ideal.isMaximal_map_iff_of_bijective _ e.symm.bijective]
     apply Ring.DimensionLEOne.maximalOfPrime ?_ (P.comap_isPrime e.symm)
     simp [Ideal.map_eq_bot_iff_of_injective e.injective, hP_ne]
+
+-- TODO: replace `Ring.DimensionLEOne` with `Ring.KrullDimLE`.
+instance (priority := low) {R : Type*} [CommRing R] [Ring.DimensionLEOne R] : Ring.KrullDimLE 1 R :=
+  .mk₁' fun _ hI hI' ↦ hI'.isMaximal hI
 
 end Ring.DimensionLEOne
 

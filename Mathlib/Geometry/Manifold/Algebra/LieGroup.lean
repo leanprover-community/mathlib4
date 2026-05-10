@@ -50,7 +50,7 @@ so the definition does not apply. Hence the definition should be more general, a
 `I : ModelWithCorners 𝕜 E H`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -61,7 +61,7 @@ open scoped Manifold ContDiff
 the addition and negation operations are `C^n`. -/
 class LieAddGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H)
-    (n : WithTop ℕ∞) (G : Type*)
+    (n : ℕ∞ω) (G : Type*)
     [AddGroup G] [TopologicalSpace G] [ChartedSpace H G] : Prop extends ContMDiffAdd I n G where
   /-- Negation is smooth in an additive Lie group. -/
   contMDiff_neg : CMDiff n fun a : G ↦ -a
@@ -72,7 +72,7 @@ the multiplication and inverse operations are `C^n`. -/
 @[to_additive]
 class LieGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H)
-    (n : WithTop ℕ∞) (G : Type*)
+    (n : ℕ∞ω) (G : Type*)
     [Group G] [TopologicalSpace G] [ChartedSpace H G] : Prop extends ContMDiffMul I n G where
   /-- Inversion is smooth in a Lie group. -/
   contMDiff_inv : CMDiff n fun a : G ↦ a⁻¹
@@ -86,23 +86,23 @@ class LieGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [Topolo
 section PointwiseDivision
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H] {E : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {n : WithTop ℕ∞} {G : Type*}
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {n : ℕ∞ω} {G : Type*}
   [TopologicalSpace G] [ChartedSpace H G] [Group G] {E' : Type*}
   [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
   {I' : ModelWithCorners 𝕜 E' H'} {M : Type*} [TopologicalSpace M] [ChartedSpace H' M]
 
 @[to_additive]
-protected theorem LieGroup.of_le {m n : WithTop ℕ∞} (hmn : m ≤ n)
+protected theorem LieGroup.of_le {m n : ℕ∞ω} (hmn : m ≤ n)
     [h : LieGroup I n G] : LieGroup I m G := by
   have : ContMDiffMul I m G := ContMDiffMul.of_le hmn
   exact ⟨h.contMDiff_inv.of_le hmn⟩
 
 @[to_additive]
-instance {a : WithTop ℕ∞} [LieGroup I ∞ G] [h : ENat.LEInfty a] : LieGroup I a G :=
+instance {a : ℕ∞ω} [LieGroup I ∞ G] [h : ENat.LEInfty a] : LieGroup I a G :=
   LieGroup.of_le h.out
 
 @[to_additive]
-instance {a : WithTop ℕ∞} [LieGroup I ω G] : LieGroup I a G :=
+instance {a : ℕ∞ω} [LieGroup I ω G] : LieGroup I a G :=
   LieGroup.of_le le_top
 
 @[to_additive]
@@ -181,7 +181,7 @@ section Product
 
 -- Instance of product group
 @[to_additive]
-instance Prod.instLieGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
+instance Prod.instLieGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω}
     {H : Type*} [TopologicalSpace H] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {G : Type*}
     [TopologicalSpace G] [ChartedSpace H G] [Group G] [LieGroup I n G] {E' : Type*}
@@ -194,7 +194,7 @@ end Product
 
 /-! ### Normed spaces are Lie groups -/
 
-instance instNormedSpaceLieAddGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
+instance instNormedSpaceLieAddGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω}
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] : LieAddGroup 𝓘(𝕜, E) n E where
   contMDiff_neg := contDiff_neg.contMDiff
 
@@ -210,18 +210,18 @@ section ContMDiffInv₀
 Any complete normed (semi)field has this property. -/
 class ContMDiffInv₀ {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H)
-    (n : WithTop ℕ∞) (G : Type*)
+    (n : ℕ∞ω) (G : Type*)
     [Inv G] [Zero G] [TopologicalSpace G] [ChartedSpace H G] : Prop where
   /-- Inversion is `C^n` away from `0`. -/
   contMDiffAt_inv₀ : ∀ ⦃x : G⦄, x ≠ 0 → CMDiffAt n (fun (y : G) ↦ y⁻¹) x
 
-instance {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞} : ContMDiffInv₀ 𝓘(𝕜) n 𝕜 where
+instance {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω} : ContMDiffInv₀ 𝓘(𝕜) n 𝕜 where
   contMDiffAt_inv₀ x hx := by
     change ContMDiffAt 𝓘(𝕜) 𝓘(𝕜) n Inv.inv x
     rw [contMDiffAt_iff_contDiffAt]
     exact contDiffAt_inv 𝕜 hx
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω}
   {H : Type*} [TopologicalSpace H] {E : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {G : Type*}
   [TopologicalSpace G] [ChartedSpace H G] [Inv G] [Zero G] {E' : Type*}
@@ -229,14 +229,14 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
   {I' : ModelWithCorners 𝕜 E' H'} {M : Type*} [TopologicalSpace M] [ChartedSpace H' M]
   {f : M → G}
 
-protected theorem ContMDiffInv₀.of_le {m n : WithTop ℕ∞} (hmn : m ≤ n)
+protected theorem ContMDiffInv₀.of_le {m n : ℕ∞ω} (hmn : m ≤ n)
     [h : ContMDiffInv₀ I n G] : ContMDiffInv₀ I m G := by
   exact ⟨fun x hx ↦ (h.contMDiffAt_inv₀ hx).of_le hmn⟩
 
-instance {a : WithTop ℕ∞} [ContMDiffInv₀ I ∞ G] [h : ENat.LEInfty a] : ContMDiffInv₀ I a G :=
+instance {a : ℕ∞ω} [ContMDiffInv₀ I ∞ G] [h : ENat.LEInfty a] : ContMDiffInv₀ I a G :=
   ContMDiffInv₀.of_le h.out
 
-instance {a : WithTop ℕ∞} [ContMDiffInv₀ I ω G] : ContMDiffInv₀ I a G :=
+instance {a : ℕ∞ω} [ContMDiffInv₀ I ω G] : ContMDiffInv₀ I a G :=
   ContMDiffInv₀.of_le le_top
 
 instance [ContinuousInv₀ G] : ContMDiffInv₀ I 0 G := by
@@ -264,9 +264,6 @@ This is not an instance for technical reasons, see
 note [Design choices about smooth algebraic structures]. -/
 theorem continuousInv₀_of_contMDiffInv₀ : ContinuousInv₀ G :=
   { continuousAt_inv₀ := fun _ hx ↦ (contMDiffAt_inv₀ (I := I) (n := n) hx).continuousAt }
-
-@[deprecated (since := "2025-09-01")] alias hasContinuousInv₀_of_hasContMDiffInv₀ :=
-  continuousInv₀_of_contMDiffInv₀
 
 theorem contMDiffOn_inv₀ : CMDiff[{0}ᶜ] n (Inv.inv : G → G) :=
   fun _x hx ↦ (contMDiffAt_inv₀ hx).contMDiffWithinAt
@@ -298,7 +295,7 @@ functions `f : M → N` is `C^n` whenever the denominator is non-zero.
 -/
 section Div
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω}
 {H : Type*} [TopologicalSpace H] {E : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {G : Type*}
   [TopologicalSpace G] [ChartedSpace H G] [GroupWithZero G] [ContMDiffInv₀ I n G]

@@ -132,7 +132,7 @@ theorem Valued.continuous_valuation [hv : Valued K Γ₀] :
   · have v_ne : (v.restrict x : ValueGroup₀ hv.v) ≠ 0 := (Valuation.ne_zero_iff _).mpr h
     rw [ContinuousAt, WithZeroTopology.tendsto_of_ne_zero v_ne]
     simp_rw [v.restrict_inj]
-    apply Valued.loc_const (by simpa [restrict₀_apply] using v_ne)
+    apply Valued.locally_const (by simpa [restrict₀_apply] using v_ne)
 
 theorem Valued.continuous_valuation_of_surjective [hv : Valued K Γ₀]
     (hsurj : Function.Surjective hv.v) : Continuous hv.v := by
@@ -148,7 +148,7 @@ theorem Valued.continuous_valuation_of_surjective [hv : Valued K Γ₀]
       imp_self, implies_true]
   · have h0 : hv.v x ≠ 0 := (Valuation.ne_zero_iff _).mpr h
     rw [ContinuousAt, WithZeroTopology.tendsto_of_ne_zero h0]
-    exact Valued.loc_const (by simpa using h0)
+    exact Valued.locally_const (by simpa using h0)
 
 end
 
@@ -242,7 +242,7 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → ValueGro
       have : (v (1 : K) : Γ₀) ≠ 0 := by
         rw [Valuation.map_one]
         exact zero_ne_one.symm
-      convert Valued.loc_const this
+      convert Valued.locally_const this
       ext x
       rw [Valuation.map_one, mem_preimage, mem_singleton_iff, mem_setOf_eq]
     obtain ⟨V, V_in, hV⟩ : ∃ V ∈ 𝓝 (1 : hat K), ∀ x : K, (x : hat K) ∈ V → (v x : Γ₀) = 1 := by
@@ -288,7 +288,7 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → ValueGro
     rw [WithZeroTopology.tendsto_of_ne_zero vz₀_ne, eventually_comap]
     filter_upwards [nhds_right] with x x_in a ha
     rcases x_in with ⟨y, y_in, rfl⟩
-    have : (v.restrict (a * z₀⁻¹) ) = 1 := by
+    have : (v.restrict (a * z₀⁻¹)) = 1 := by
       rw [v.restrict_def, ValueGroup₀.restrict₀_eq_one_iff]
       apply hV
       have : (z₀⁻¹ : K) = (z₀ : hat K)⁻¹ := map_inv₀ (Completion.coeRingHom : K →+* hat K) z₀
@@ -358,6 +358,7 @@ lemma extension_eq_zero_iff {x : hat K} : extension x = 0 ↔ x = 0 := by
     simpa only [extensionValuation_toFun, map_eq_zero]
   rw [Valuation.zero_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_coe_eq_v (x : hat K) : ∃ r : K, extensionValuation x = v r := by
   rcases eq_or_ne x 0 with (rfl | h)
   · exact ⟨0, extensionValuation_apply_coe 0⟩
@@ -371,7 +372,11 @@ lemma exists_coe_eq_v (x : hat K) : ∃ r : K, extensionValuation x = v r := by
       simp_rw [← hr, ← Valuation.restrict_def, h]
       convert valuation_isClosedMap.isClosed_range.preimage (continuous_extension (hv := hv))
       simp_rw [eq_comm (a := extension _)]
-      grind
+      #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+      (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this
+      goal. It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in
+      the new canonicalizer; a minimization would help. The original proof was: `grind` -/
+      ext; simp
 
 -- Bourbaki CA VI §5 no.3 Proposition 5 (d)
 theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
@@ -501,7 +506,7 @@ noncomputable def valueGroup₀_equiv_extensionValuation :
         simp only [ne_eq, extension_eq_zero_iff, map_eq_zero]
         rw [← hy_def] at hy
         simpa [← hy] using hb0
-      simp only [h0, ↓reduceDIte,  h0', WithZero.coe_inj, Subtype.mk.injEq, Units.mk0_inj] at this
+      simp only [h0, ↓reduceDIte, h0', WithZero.coe_inj, Subtype.mk.injEq, Units.mk0_inj] at this
       erw [embedding_strictMono.injective.eq_iff, extension_extends, extension_extends] at this
       simp only [Valuation.restrict_def, Algebra.algebraMap_self, RingHom.id_apply] at this
       rw [hx, hy] at this

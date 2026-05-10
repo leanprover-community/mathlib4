@@ -40,7 +40,7 @@ of a Noetherian scheme (e.g., the spectrum of a Noetherian ring) is Noetherian.
 
 -/
 
-@[expose] public section
+public section
 
 open Topology
 
@@ -51,7 +51,6 @@ namespace TopologicalSpace
 /-- Type class for Noetherian spaces. It is defined to be spaces whose open sets satisfies ACC. -/
 abbrev NoetherianSpace : Prop := WellFoundedGT (Opens α)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem noetherianSpace_iff_opens : NoetherianSpace α ↔ ∀ s : Opens α, IsCompact (s : Set α) := by
   rw [NoetherianSpace, CompleteLattice.wellFoundedGT_iff_isSupFiniteCompact,
     CompleteLattice.isSupFiniteCompact_iff_all_elements_compact]
@@ -137,7 +136,6 @@ theorem NoetherianSpace.iUnion {ι : Type*} (f : ι → Set α) [Finite ι]
   rw [← Set.inter_eq_left.mpr ht, Set.inter_iUnion]
   exact isCompact_iUnion fun i => hf i _ Set.inter_subset_right
 
-set_option backward.isDefEq.respectTransparency false in
 -- This is not an instance since it makes a loop with `t2_space_discrete`.
 theorem NoetherianSpace.discrete [NoetherianSpace α] [T2Space α] : DiscreteTopology α :=
   ⟨eq_bot_iff.mpr fun _ _ => isClosed_compl_iff.mp (NoetherianSpace.isCompact _).isClosed⟩
@@ -215,5 +213,15 @@ theorem NoetherianSpace.exists_open_ne_empty_le_irreducibleComponent [Noetherian
     (Z : Set α) (H : Z ∈ irreducibleComponents α) :
     ∃ o : Set α, IsOpen o ∧ o.Nonempty ∧ o ≤ Z := by
   simpa using exists_isOpen_nonempty_subset_irreducibleComponent Z H
+
+lemma NoetherianSpace.of_subset {W V : Set α} [NoetherianSpace W]
+    (h : V ⊆ W) : NoetherianSpace V :=
+  Topology.IsInducing.noetherianSpace (Topology.IsEmbedding.inclusion h).isInducing
+
+lemma NoetherianSpace.inter_of_left (W V : Set α) [NoetherianSpace W] :
+    NoetherianSpace (W ∩ V : Set α) := .of_subset Set.inter_subset_left
+
+lemma NoetherianSpace.inter_of_right (W V : Set α) [NoetherianSpace V] :
+    NoetherianSpace (W ∩ V : Set α) := .of_subset Set.inter_subset_right
 
 end TopologicalSpace

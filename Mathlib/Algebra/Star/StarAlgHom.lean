@@ -145,13 +145,11 @@ theorem coe_copy (f : A →⋆ₙₐ[R] B) (f' : A → B) (h : f' = f) : ⇑(f.c
 theorem copy_eq (f : A →⋆ₙₐ[R] B) (f' : A → B) (h : f' = f) : f.copy f' h = f :=
   DFunLike.ext' h
 
-#adaptation_note /-- After https://github.com/leanprover/lean4/pull/12179
-the simpNF linter complains about this being `@[simp]`. -/
+/-- `coe_mk'` below applies in more cases -/
 theorem coe_mk (f : A → B) (h₁ h₂ h₃ h₄ h₅) :
     ((⟨⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩, h₅⟩ : A →⋆ₙₐ[R] B) : A → B) = f :=
   rfl
 
--- this is probably the more useful lemma for Lean 4 and should likely replace `coe_mk` above
 @[simp]
 theorem coe_mk' (f : A →ₙₐ[R] B) (h) :
     ((⟨f, h⟩ : A →⋆ₙₐ[R] B) : A → B) = f :=
@@ -236,8 +234,8 @@ instance : Inhabited (A →⋆ₙₐ[R] B) :=
   ⟨0⟩
 
 instance : MonoidWithZero (A →⋆ₙₐ[R] A) :=
-  { inferInstanceAs (Monoid (A →⋆ₙₐ[R] A)),
-    inferInstanceAs (Zero (A →⋆ₙₐ[R] A)) with
+  { (inferInstance : Monoid (A →⋆ₙₐ[R] A)),
+    (inferInstance : Zero (A →⋆ₙₐ[R] A)) with
     zero_mul := fun _ => ext fun _ => rfl
     mul_zero := fun f => ext fun _ => map_zero f }
 
@@ -310,7 +308,7 @@ variable [StarHomClass F A B]
 actual `StarAlgHom`. This is declared as the default coercion from `F` to `A →⋆ₐ[R] B`. -/
 @[coe]
 def toStarAlgHom (f : F) : A →⋆ₐ[R] B :=
-  { (f : A →ₐ[R] B) with
+  { (AlgHomClass.toAlgHom f) with
     map_star' := map_star f }
 
 instance : CoeTC F (A →⋆ₐ[R] B) :=
@@ -344,6 +342,11 @@ protected theorem coe_coe {F : Type*} [FunLike F A B] [AlgHomClass F R A B]
   rfl
 
 initialize_simps_projections StarAlgHom (toFun → apply)
+
+attribute [coe] StarAlgHom.toAlgHom
+
+instance : Coe (A →⋆ₐ[R] B) (A →ₐ[R] B) :=
+  ⟨toAlgHom⟩
 
 @[simp]
 theorem coe_toAlgHom {f : A →⋆ₐ[R] B} : (f.toAlgHom : A → B) = f :=
@@ -667,7 +670,7 @@ an actual `StarAlgEquiv`. This is declared as the default coercion from `F` to `
 def toStarAlgEquiv {F R A B : Type*} [Add A] [Mul A] [SMul R A] [Star A] [Add B] [Mul B] [SMul R B]
     [Star B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] [StarHomClass F A B]
     (f : F) : A ≃⋆ₐ[R] B :=
-  { (f : A ≃+* B) with
+  { (RingEquivClass.toRingEquiv f : A ≃+* B) with
     map_star' := map_star f
     map_smul' := map_smul f }
 
@@ -784,12 +787,7 @@ theorem refl_symm : (StarAlgEquiv.refl : A ≃⋆ₐ[R] A).symm = StarAlgEquiv.r
 theorem toStarRingEquiv_symm (e : A ≃⋆ₐ[R] B) : (e.symm : B ≃⋆+* A) = (e : A ≃⋆+* B).symm := rfl
 
 @[simp]
-theorem toRingEquiv_symm (e : A ≃⋆ₐ[R] B) : (e.symm : B ≃+* A) = (e : A ≃+* B).symm :=
-  rfl
-
-@[deprecated "← toRingEquiv_symm" (since := "2025-08-25")]
-theorem to_ringEquiv_symm (f : A ≃⋆ₐ[R] B) : (f : A ≃+* B).symm = f.symm := rfl
-@[deprecated (since := "2025-08-25")] alias symm_to_ringEquiv := toRingEquiv_symm
+theorem toRingEquiv_symm (e : A ≃⋆ₐ[R] B) : (e : A ≃⋆+* B).symm = (e : A ≃+* B).symm := rfl
 
 /-- Transitivity of `StarAlgEquiv`. -/
 @[trans]

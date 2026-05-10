@@ -30,12 +30,13 @@ instance : CoeSort AlexDisc (Type _) :=
   ⟨fun X => X.toTopCat⟩
 
 instance category : Category AlexDisc :=
-  inferInstanceAs (Category (InducedCategory _ toTopCat))
+  inferInstanceAs <| Category (InducedCategory _ toTopCat)
 
 instance concreteCategory : ConcreteCategory AlexDisc (C(·, ·)) :=
-  InducedCategory.concreteCategory toTopCat
+  inferInstanceAs <| ConcreteCategory (InducedCategory _ toTopCat) _
 
-instance instHasForgetToTop : HasForget₂ AlexDisc TopCat := InducedCategory.hasForget₂ toTopCat
+instance instHasForgetToTop : HasForget₂ AlexDisc TopCat :=
+  inferInstanceAs <| HasForget₂ (InducedCategory _ toTopCat) _
 
 -- TODO: generalize to `InducedCategory.forget₂_full`?
 instance forgetToTop_full : (forget₂ AlexDisc TopCat).Full where
