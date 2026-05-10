@@ -70,15 +70,35 @@ theorem step1_foward (A : Submodule 𝕜₁ E) (K : Submodule 𝕜₁ E) (A_clos
       ← Submodule.comap_coe K.mkQ]
     exact isClosed_mono_of_finiteDimensional_quotient A_closed (le_comap_map _ A)
 
+#check Codisjoint
+
 /-- The backward direction of step 1 in the proof of
 `ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict`, which you should use instead.
 
 Note the hypothesis `h_ker` is implied `h_clemb`, but since this is a private theorem
 we just write the most convenient statement to prove and use. -/
-theorem step1_backward (A : Submodule 𝕜₁ E) (u : E →SL[σ] F) (A_closed : IsClosed (A : Set E))
-    [codim_A : FiniteDimensional 𝕜₁ (E ⧸ A)] (h_ker : Disjoint u.ker A) (h_range : u.range = ⊤)
+theorem step1_backward (A : Submodule 𝕜 E) (u : E →L[𝕜] F) (A_closed : IsClosed (A : Set E))
+    [codim_A : FiniteDimensional 𝕜 (E ⧸ A)] (h_ker : Disjoint u.ker A) (h_range : u.range = ⊤)
     (h_clemb : IsClosedEmbedding (restrict A u)) :
     IsQuotientMap u := by
+  rcases h_ker.exists_isCompl with ⟨S, ker_le_S, S_compl_A⟩
+  replace S_compl_A : IsTopCompl S A :=
+      S_compl_A.symm.isTopCompl_of_quotient_finiteDimensional A_closed |>.symm
+  have : FiniteDimensional 𝕜 S :=
+    quotientEquivOfIsCompl A S S_compl_A.isCompl.symm |>.finiteDimensional
+  have uA_closed : IsClosed (map u.toLinearMap A : Set F) := by
+    simpa [← range_restrict] using h_clemb.isClosed_range
+  have : FiniteDimensional 𝕜 (map u.toLinearMap S) :=
+    show_term inferInstance
+  have uS_compl_uA : IsCompl (map u.toLinearMap S) (map u.toLinearMap A) := by
+    constructor
+    · rw [disjoint_iff, inf_comm, map_inf_eq_map_inf_comap, comap_map_eq, sup_eq_left.mpr ker_le_S,
+        S_compl_A.isCompl.symm.inf_eq_bot, Submodule.map_bot]
+    · rw [codisjoint_iff, ← Submodule.map_sup, S_compl_A.isCompl.sup_eq_top, Submodule.map_top,
+        h_range]
+  replace uS_compl_uA : IsTopCompl (map u.toLinearMap S) (map u.toLinearMap A) :=
+      uS_compl_uA.symm.isTopCompl_of_isClosed_of_finiteDimensional uA_closed |>.symm
+
   sorry
 
 /-!
@@ -106,8 +126,7 @@ theorem step2_forward (u : E →SL[σ] F) (A : Submodule 𝕜₁ E) (A_closed : 
   have π_restr_clemb : IsClosedEmbedding (restrict A π) :=
     step1_foward A u.ker A_closed h_ker
   have eq : restrict A u = u' ∘ restrict A π := by ext x; simp [π, u']
-  rw [eq]
-  exact u'_clemb.comp π_restr_clemb
+  exact eq ▸ u'_clemb.comp π_restr_clemb
 
 theorem step2 (u : E →SL[σ] F) (A : Submodule 𝕜₁ E) (A_closed : IsClosed (A : Set E))
     [codim_A : FiniteDimensional 𝕜₁ (E ⧸ A)] (h_ker : Disjoint u.ker A) :
