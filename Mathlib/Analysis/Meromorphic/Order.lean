@@ -785,6 +785,17 @@ theorem codiscrete_setOf_meromorphicOrderAt_eq_zero_or_top (hf : MeromorphicOn f
     · simp +contextual [h'.meromorphicOrderAt_eq, h'.analyticOrderAt_eq_zero.2, h'₁a]
     · exact fun ha ↦ (h' ha).elim
 
+/--
+Variant of `codiscrete_setOf_meromorphicOrderAt_eq_zero_or_top`: The set where a meromorphic
+function has zero or infinite order is codiscrete within its domain of meromorphicity.
+-/
+theorem codiscreteWithin_setOf_meromorphicOrderAt_eq_zero_or_top (h₁f : MeromorphicOn f U)
+    (h₂f : ∀ u ∈ U, meromorphicOrderAt f u ≠ ⊤) :
+    {u ∈ U | meromorphicOrderAt f u = 0 ∨ meromorphicOrderAt f u = ⊤} ∈ codiscreteWithin U := by
+  convert mem_codiscrete_subtype_iff_mem_codiscreteWithin.1
+    h₁f.codiscrete_setOf_meromorphicOrderAt_eq_zero_or_top
+  aesop
+
 end MeromorphicOn
 
 section comp
