@@ -126,28 +126,6 @@ theorem directedOn_of_inf_mem [SemilatticeInf α] {S : Set α}
     (H : ∀ ⦃i j⦄, i ∈ S → j ∈ S → i ⊓ j ∈ S) : DirectedOn (· ≥ ·) S :=
   directedOn_of_sup_mem (α := αᵒᵈ) H
 
-theorem directedOn_union [Preorder α] {s t : Set α} (h : DirectedOn (· ≤ ·) (s ∪ t)) :
-    DirectedOn (· ≤ ·) s ∨ DirectedOn (· ≤ ·) t := by
-  simp_rw [DirectedOn]
-  by_contra!
-  obtain ⟨⟨a, ha, b, hb, hab⟩, ⟨c, hc, d, hd, hcd⟩⟩ := this
-  obtain ⟨x, hx, hax, hbx⟩ := h a (.inl ha) b (.inl hb)
-  obtain ⟨y, hy, hcy, hdy⟩ := h c (.inr hc) d (.inr hd)
-  obtain ⟨z, hz | hz, hxz, hyz⟩ := h x hx y hy
-  · exact hab z hz (hax.trans hxz) (hbx.trans hxz)
-  · exact hcd z hz (hcy.trans hyz) (hdy.trans hyz)
-
-theorem directedOn_union' [Preorder α] {s t : Set α}
-    (hn : (s ∪ t).Nonempty) (h : DirectedOn (· ≤ ·) (s ∪ t)) :
-    DirectedOn (· ≤ ·) s ∧ s.Nonempty ∨ DirectedOn (· ≤ ·) t ∧ t.Nonempty := by
-  obtain h | h := directedOn_union h
-  · obtain rfl | hs := s.eq_empty_or_nonempty
-    · aesop
-    · exact .inl ⟨h, hs⟩
-  · obtain rfl | ht := t.eq_empty_or_nonempty
-    · aesop
-    · exact .inr ⟨h, ht⟩
-
 theorem Std.Total.directed [Std.Total r] (f : ι → α) : Directed r f := fun i j =>
   Or.casesOn (total_of r (f i) (f j)) (fun h => ⟨j, h, refl _⟩) fun h => ⟨i, refl _, h⟩
 
