@@ -84,6 +84,36 @@ theorem entrywise_sup_norm_bound_of_unitary {U : Matrix n n 𝕜} (hU : U ∈ Ma
   intros
   exact entry_norm_bound_of_unitary hU _ _
 
+
+set_option backward.isDefEq.respectTransparency false in
+open scoped Matrix.Norms.Elementwise in
+/-- `Matrix.specialUnitaryGroup n 𝕜` has `ContinuousInv`. The inverse on
+the special unitary group is the conjugate transpose (star), which is continuous. -/
+instance Matrix.specialUnitaryGroup.instContinuousInv :
+    ContinuousInv (Matrix.specialUnitaryGroup n 𝕜) where
+  continuous_inv := by
+    show Continuous fun U : Matrix.specialUnitaryGroup n 𝕜 => U⁻¹
+    have h_inv_eq_star : (fun U : Matrix.specialUnitaryGroup n 𝕜 => U⁻¹) =
+        fun U => star U := by
+      funext U; exact (Matrix.star_eq_inv U).symm
+    rw [h_inv_eq_star]
+    refine continuous_induced_rng.mpr ?_
+    have h_val : (Subtype.val : Matrix.specialUnitaryGroup n 𝕜 → Matrix n n 𝕜) ∘
+        (fun U : Matrix.specialUnitaryGroup n 𝕜 => star U) =
+        fun U : Matrix.specialUnitaryGroup n 𝕜 => star U.val := by
+      funext U; exact Matrix.specialUnitaryGroup.coe_star U
+    rw [h_val]
+    exact continuous_star.comp continuous_subtype_val
+
+set_option backward.isDefEq.respectTransparency false in
+open scoped Matrix.Norms.Elementwise in
+/-- `Matrix.specialUnitaryGroup n 𝕜` is a topological group: `ContinuousMul` from
+the Submonoid structure + `ContinuousInv` via the conjugate transpose. -/
+instance Matrix.specialUnitaryGroup.instIsTopologicalGroup :
+    IsTopologicalGroup (Matrix.specialUnitaryGroup n 𝕜) where
+  continuous_mul := continuous_mul
+  continuous_inv := continuous_inv
+
 end EntrywiseSupNorm
 
 noncomputable section L2OpNorm
