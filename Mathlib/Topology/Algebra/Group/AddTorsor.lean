@@ -93,8 +93,8 @@ theorem IsTopologicalTorsor.to_isTopologicalGroup : IsTopologicalGroup V where
       equals p /ₛ (v • p) => rw [sdiv_smul_eq_sdiv_div, sdiv_self, one_div]
     fun_prop
 
-/-- The map `v ↦ v +ᵥ p` as a homeomorphism between `V` and `P`. -/
-@[to_additive (attr := simps!)]
+/-- The map `v ↦ v • p` as a homeomorphism between `V` and `P`. -/
+@[to_additive (attr := simps!) /-- The map `v ↦ v +ᵥ p` as a homeomorphism between `V` and `P`. -/]
 def Homeomorph.smulConst (p : P) : V ≃ₜ P where
   __ := Equiv.smulConst p
 
