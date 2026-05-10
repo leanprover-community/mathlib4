@@ -24,10 +24,13 @@ show continuity since the source and target dual spaces use different topologies
 ## Main definitions
 
 - `ContDiffMapSupportedIn.toSchwartzMapCLM`: the local map `𝓓_{K}(E, F) →L[𝕜] 𝓢(E, F)`.
-- `TestFunction.toSchwartzMapCLM`: the canonical continuous linear map `𝓓(Ω, F) →L[𝕜] 𝓢(E, F)`.
+- `TestFunction.toSchwartzMapCLM`: the canonical continuous linear map
+  `𝓓(Ω, F) →L[𝕜] 𝓢(E, F)`.
 - `TestFunction.toComplexSchwartzMapCLM`: the canonical continuous linear map
-  `𝓓(Ω, ℝ) →L[ℝ] 𝓢(E, ℂ)`, used to let tempered distributions act on real-valued test functions.
-- `TemperedDistribution.toDistributionLM`: the induced linear map `𝓢'(E, F) →ₗ[ℂ] 𝓓'(Ω, F)`.
+  `𝓓(Ω, ℝ) →L[ℝ] 𝓢(E, ℂ)`, used to let tempered distributions act on
+  real-valued test functions.
+- `TemperedDistribution.toDistributionLM`: the induced linear map
+  `𝓢'(E, F) →ₗ[ℂ] 𝓓'(Ω, F)`.
 
 ## Tags
 
@@ -70,7 +73,8 @@ private theorem norm_pow_le_bound_on_compact (k : ℕ) {x : E} (hx : x ∈ K) :
   grw [powNormBound, ← le_max_of_le_left]
   exact le_csSup (K.isCompact.image (by fun_prop)).bddAbove ⟨x, hx, rfl⟩
 
-/-- Main continuity estimate: each Schwartz seminorm is bounded by a defining seminorm on `𝓓_{K}`. -/
+/-- Main continuity estimate: each Schwartz seminorm is bounded by a defining seminorm on
+`𝓓_{K}`. -/
 private theorem schwartzSeminorm_le_localSeminorm (k n : ℕ) (f : 𝓓_{K}(E, F)) :
     SchwartzMap.seminorm 𝕜 k n (toSchwartzMap f) ≤
       powNormBound K k * N[𝕜]_{K, n} f := by
@@ -95,7 +99,8 @@ noncomputable def toSchwartzMapCLM : 𝓓_{K}(E, F) →L[𝕜] 𝓢(E, F) :=
 where finally
   case h₁ | h₂ => exact SchwartzMap.ext fun _ ↦ rfl
   refine (ContDiffMapSupportedIn.withSeminorms 𝕜 E F ⊤ K).continuous_of_isBounded
-    (schwartz_withSeminorms 𝕜 E F) _ (.of_real fun ⟨k, n⟩ ↦ ⟨{n}, powNormBound K k, fun f ↦ ?_⟩)
+    (schwartz_withSeminorms 𝕜 E F) _ (.of_real fun ⟨k, n⟩ ↦
+      ⟨{n}, powNormBound K k, fun f ↦ ?_⟩)
   simpa [Finset.sup_singleton, Seminorm.smul_apply] using
     schwartzSeminorm_le_localSeminorm (𝕜 := 𝕜) (K := K) k n f
 
