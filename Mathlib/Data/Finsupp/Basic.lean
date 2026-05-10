@@ -551,8 +551,8 @@ theorem comapDomain_single (f : α → β) (a : α) (m : M)
   rcases eq_or_ne m 0 with (rfl | hm)
   · simp_rw [single_zero, comapDomain_zero]
   · rw [eq_single_iff, comapDomain_apply, comapDomain_support, ← Finset.coe_subset, coe_preimage,
-      support_single_ne_zero _ hm, coe_singleton, coe_singleton, single_eq_same]
-    rw [support_single_ne_zero _ hm, coe_singleton] at hif
+      support_single _ hm, coe_singleton, coe_singleton, single_eq_same]
+    rw [support_single _ hm, coe_singleton] at hif
     exact ⟨fun x hx => hif hx rfl hx, rfl⟩
 
 lemma comapDomain_surjective {f : α → β} (hf : Function.Injective f) :
