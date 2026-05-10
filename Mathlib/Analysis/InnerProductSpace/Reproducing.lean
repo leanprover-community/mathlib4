@@ -382,7 +382,7 @@ lemma mem_of_posSemidef (f : X → V) {c : ℝ}
       |>.comp (Submodule.inclusion hrange)
   have hL : L_lin.comp toSpan' = Laux := by
     apply Finsupp.lhom_ext
-    intro ⟨x, v⟩ r
+    intro ⟨x, v⟩ _
     simp only [LinearMap.comp_apply, toSpan', Finsupp.linearCombination_single,
                map_smul, Laux, Finsupp.linearCombination_single]
     congr 1
@@ -391,14 +391,13 @@ lemma mem_of_posSemidef (f : X → V) {c : ℝ}
       Subtype.ext (by simp [toSpan, Finsupp.linearCombination_single])
     have h2 : toSpan.quotKerEquivRange.symm ⟨toSpan _, LinearMap.mem_range_self _ _⟩ =
         Submodule.Quotient.mk (Finsupp.single (x, v) 1) :=
-      (LinearEquiv.symm_apply_eq toSpan.quotKerEquivRange).mpr rfl
+      toSpan.quotKerEquivRange.symm_apply_eq.mpr rfl
     simp only [LinearMap.comp_apply, LinearEquiv.coe_coe, L_lin]
     simp_rw [h1, h2, Submodule.liftQ_apply, Laux, Finsupp.linearCombination_single, one_smul]
   let L : ↥(span 𝕜 {kerFun H x v | (x : X) (v : V)}) →L[𝕜] 𝕜 := L_lin.mkContinuous ‖c‖ (fun ξ ↦ by
     obtain ⟨y, hy⟩ := hrange ξ.2
     have hcomp : (Submodule.subtype _).comp toSpan' = toSpan :=
-      Finsupp.lhom_ext fun ⟨a, v⟩ r ↦ by
-        simp [toSpan, toSpan', Finsupp.linearCombination_single]
+      Finsupp.lhom_ext fun _ _ ↦ by simp [toSpan, toSpan', Finsupp.linearCombination_single]
     have hξ : toSpan' y = ξ := Subtype.ext (LinearMap.congr_fun hcomp y |>.trans hy)
     rw [← hξ, ← LinearMap.comp_apply, LinearMap.congr_fun hL _,
       ← sq_le_sq₀ (norm_nonneg _) (by positivity), mul_pow, Real.norm_eq_abs, sq_abs, hξ,
