@@ -243,6 +243,11 @@ theorem Filter.Tendsto.rpow_const {l : Filter α} {f : α → ℝ} {x p : ℝ} (
   if h0 : 0 = p then h0 ▸ by simp [tendsto_const_nhds]
   else hf.rpow tendsto_const_nhds (h.imp id fun h' => h'.lt_of_ne h0)
 
+theorem Filter.Tendsto.rpow_const_nhds_zero {l : Filter α} {f : α → ℝ} {p : ℝ}
+    (hf : Tendsto f l (𝓝 0)) (hp : 0 < p) :
+    Tendsto (fun t ↦ f t ^ p) l (𝓝 0) :=
+  Real.zero_rpow hp.ne' ▸ hf.rpow_const (.inr hp.le)
+
 variable [TopologicalSpace α] {f g : α → ℝ} {s : Set α} {x : α} {p : ℝ}
 
 nonrec theorem ContinuousAt.rpow (hf : ContinuousAt f x) (hg : ContinuousAt g x)
