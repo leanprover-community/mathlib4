@@ -127,6 +127,10 @@ instance (priority := 100) toContinuousSemilinearMapClass
     [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] : ContinuousSemilinearMapClass 𝓕 σ₁₂ E E₂ where
   map_continuous := SemilinearIsometryClass.continuous
 
+instance (priority := 100) toIsometryClass [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] :
+    IsometryClass 𝓕 E E₂ where
+  isometry := SemilinearIsometryClass.isometry
+
 end SemilinearIsometryClass
 
 namespace LinearIsometry
@@ -609,6 +613,7 @@ protected theorem continuousWithinAt {s x} : ContinuousWithinAt e s x :=
   e.continuous.continuousWithinAt
 
 /-- Interpret a `LinearIsometryEquiv` as a `ContinuousLinearEquiv`. -/
+@[coe]
 def toContinuousLinearEquiv : E ≃SL[σ₁₂] E₂ :=
   { e.toLinearIsometry.toContinuousLinearMap, e.toHomeomorph with }
 
@@ -810,6 +815,14 @@ theorem mul_def (e e' : E ≃ₗᵢ[R] E) : (e * e' : E ≃ₗᵢ[R] E) = e'.tra
 
 theorem inv_def (e : E ≃ₗᵢ[R] E) : (e⁻¹ : E ≃ₗᵢ[R] E) = e.symm :=
   rfl
+
+@[simp] lemma toContinuousLinearEquiv_one : toContinuousLinearEquiv (1 : E ≃ₗᵢ[R] E) = 1 := rfl
+
+@[simp] lemma toContinuousLinearEquiv_mul (e e' : E ≃ₗᵢ[R] E) :
+    toContinuousLinearEquiv (e * e') = e.toContinuousLinearEquiv * e'.toContinuousLinearEquiv := rfl
+
+@[simp] lemma toContinuousLinearEquiv_inv (e : E ≃ₗᵢ[R] E) :
+    toContinuousLinearEquiv e⁻¹ = e.toContinuousLinearEquiv⁻¹ := rfl
 
 /-! Lemmas about mixing the group structure with definitions. Because we have multiple ways to
 express `LinearIsometryEquiv.refl`, `LinearIsometryEquiv.symm`, and
