@@ -12,7 +12,7 @@ public import Mathlib.Order.SupClosed
 public import Mathlib.Order.UpperLower.Closure
 
 /-!
-# Colexigraphic order
+# Colexicographic order
 
 We define the colex order for finite sets, and give a couple of important lemmas and properties
 relating to it.
@@ -67,64 +67,9 @@ variable {α β : Type*}
 
 namespace Finset
 
-/-- Type synonym of `Finset α` equipped with the colexicographic order rather than the inclusion
-order. -/
-@[deprecated Colex (since := "2025-08-28")]
-protected structure Colex (α) where
-  /-- `toColex` is the "identity" function between `Finset α` and `Finset.Colex α`. -/
-  protected toColex ::
-  /-- `ofColex` is the "identity" function between `Finset.Colex α` and `Finset α`. -/
-  protected (ofColex : Finset α)
-
 open Colex
 
 instance : Inhabited (Colex (Finset α)) := ⟨toColex ∅⟩
-
-set_option linter.deprecated false in
-@[deprecated toColex_ofColex (since := "2025-08-28")]
-protected lemma toColex_ofColex (s : Finset.Colex α) :
-    Finset.Colex.toColex (Finset.Colex.ofColex s) = s :=
-  rfl
-
-set_option linter.deprecated false in
-@[deprecated ofColex_toColex (since := "2025-08-28")]
-protected lemma ofColex_toColex (s : Finset α) :
-    Finset.Colex.ofColex (Finset.Colex.toColex s) = s :=
-  rfl
-
-set_option linter.deprecated false in
-@[deprecated toColex_inj (since := "2025-08-28")]
-protected lemma toColex_inj {s t : Finset α} :
-    Finset.Colex.toColex s = Finset.Colex.toColex t ↔ s = t := by
-  simp
-
-set_option linter.deprecated false in
-@[deprecated ofColex_inj (since := "2025-08-28")]
-protected lemma ofColex_inj {s t : Finset.Colex α} :
-    Finset.Colex.ofColex s = Finset.Colex.ofColex t ↔ s = t := by
-  cases s; cases t; simp
-
-set_option linter.deprecated false in
-@[deprecated toColex_inj (since := "2025-08-28")]
-lemma toColex_ne_toColex {s t : Finset α} :
-    Finset.Colex.toColex s ≠ Finset.Colex.toColex t ↔ s ≠ t := by
-  simp
-
-set_option linter.deprecated false in
-@[deprecated ofColex_inj (since := "2025-08-28")]
-lemma ofColex_ne_ofColex {s t : Finset.Colex α} :
-    Finset.Colex.ofColex s ≠ Finset.Colex.ofColex t ↔ s ≠ t := by
-  simp [Finset.ofColex_inj]
-
-set_option linter.deprecated false in
-@[deprecated toColex_inj (since := "2025-08-28")]
-lemma toColex_injective : Injective (Finset.Colex.toColex : Finset α → Finset.Colex α) :=
-  fun _ _ ↦ Finset.toColex_inj.1
-
-set_option linter.deprecated false in
-@[deprecated ofColex_inj (since := "2025-08-28")]
-lemma ofColex_injective : Injective (Finset.Colex.ofColex : Finset.Colex α → Finset α) :=
-  fun _ _ ↦ Finset.ofColex_inj.1
 
 namespace Colex
 section PartialOrder
@@ -153,7 +98,7 @@ private lemma trans_aux (hst : toColex s ≤ toColex t) (htu : toColex t ≤ toC
 set_option backward.privateInPublic true in
 private lemma antisymm_aux (hst : toColex s ≤ toColex t) (hts : toColex t ≤ toColex s) : s ⊆ t := by
   intro a has
-  by_contra! hat
+  by_contra hat
   have ⟨_b, hb₁, hb₂, _⟩ := trans_aux hst hts has hat
   exact hb₂ hb₁
 
@@ -264,14 +209,14 @@ instance instDecidableLE [DecidableLE α] : DecidableLE (Colex (Finset α)) :=
 instance instDecidableLT [DecidableLE α] : DecidableLT (Colex (Finset α)) :=
   decidableLTOfDecidableLE
 
-/-- The colexigraphic order is insensitive to removing the same elements from both sets. -/
+/-- The colexicographic order is insensitive to removing the same elements from both sets. -/
 lemma toColex_sdiff_le_toColex_sdiff (hus : u ⊆ s) (hut : u ⊆ t) :
     toColex (s \ u) ≤ toColex (t \ u) ↔ toColex s ≤ toColex t := by
   simp_rw [toColex_le_toColex, ← and_imp, ← and_assoc, ← mem_sdiff,
     sdiff_sdiff_sdiff_cancel_right (show u ≤ s from hus),
     sdiff_sdiff_sdiff_cancel_right (show u ≤ t from hut)]
 
-/-- The colexigraphic order is insensitive to removing the same elements from both sets. -/
+/-- The colexicographic order is insensitive to removing the same elements from both sets. -/
 lemma toColex_sdiff_lt_toColex_sdiff (hus : u ⊆ s) (hut : u ⊆ t) :
     toColex (s \ u) < toColex (t \ u) ↔ toColex s < toColex t :=
   lt_iff_lt_of_le_iff_le' (toColex_sdiff_le_toColex_sdiff hut hus) <|
@@ -475,7 +420,7 @@ end Fintype
 
 /-! ### Initial segments -/
 
-/-- `𝒜` is an initial segment of the colexigraphic order on sets of `r`, and that if `t` is below
+/-- `𝒜` is an initial segment of the colexicographic order on sets of `r`, and that if `t` is below
 `s` in colex where `t` has size `r` and `s` is in `𝒜`, then `t` is also in `𝒜`. In effect, `𝒜` is
 downwards closed with respect to colex among sets of size `r`. -/
 def IsInitSeg (𝒜 : Finset (Finset α)) (r : ℕ) : Prop :=
@@ -551,7 +496,7 @@ variable {s t : Finset ℕ} {n : ℕ}
 
 lemma geomSum_ofColex_strictMono (hn : 2 ≤ n) : StrictMono fun s ↦ ∑ k ∈ ofColex s, n ^ k := by
   intro s t hst
-  rw [lt_iff_exists_forall_lt] at hst
+  rw [Colex.lt_iff_exists_forall_lt] at hst
   obtain ⟨a, hat, has, ha⟩ := hst
   rw [← sum_sdiff_lt_sum_sdiff]
   exact (Nat.geomSum_lt hn <| by simpa).trans_le <| single_le_sum (fun _ _ ↦ by lia) <|
@@ -589,7 +534,7 @@ theorem lt_geomSum_of_mem {a : ℕ} (hn : 2 ≤ n) (hi : a ∈ s) : a < ∑ i �
 /-- The equivalence between `ℕ` and `Finset ℕ` that maps `∑ i ∈ s, 2^i` to `s`. -/
 @[simps] def equivBitIndices : ℕ ≃ Finset ℕ where
   toFun n := n.bitIndices.toFinset
-  invFun s := ∑ i ∈ s, 2^i
+  invFun s := ∑ i ∈ s, 2 ^ i
   left_inv := twoPowSum_toFinset_bitIndices
   right_inv := toFinset_bitIndices_twoPowSum
 

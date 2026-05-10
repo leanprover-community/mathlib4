@@ -11,7 +11,7 @@ public import Mathlib.Order.CompleteLattice.Basic
 
 /-! # Complete lattices and groups -/
 
-@[expose] public section
+public section
 
 variable {α : Type*} {ι : Sort*} {κ : ι → Sort*}
   [CompleteLattice α] [Mul α] [MulLeftMono α] [MulRightMono α]

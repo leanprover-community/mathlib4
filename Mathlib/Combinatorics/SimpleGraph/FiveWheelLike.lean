@@ -9,7 +9,6 @@ public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
 public import Mathlib.Tactic.Linarith
-public import Mathlib.Tactic.Ring
 /-!
 # Five-wheel like graphs
 
@@ -42,11 +41,13 @@ The first interesting cases of such structures are `W₁,₀` and `W₂,₁`: `W
 while `W₂,₁` is a 5-cycle with an extra central hub vertex adjacent to all other vertices
 (i.e. `W₂,₁` resembles a wheel with five spokes).
 
+```
                  `W₁,₀`       v                 `W₂,₁`      v
                            /     \                       /  |  \
                           s       t                     s ─ u ─ t
                            \     /                       \ / \ /
                            w₁ ─ w₂                       w₁ ─ w₂
+```
 
 ## Main definitions
 
@@ -74,7 +75,7 @@ We will need to refer to this consistently and choose the following formulation:
 
 ## References
 
-* [B. Andrasfái, P Erdős, V. T. Sós
+* [B. Andrásfai, P Erdős, V. T. Sós
   **On the connection between chromatic number, maximal clique, and minimal degree of a graph**
   https://doi.org/10.1016/0012-365X(74)90133-2][andrasfaiErdosSos1974]
 
@@ -171,9 +172,9 @@ lemma not_colorable_succ : ¬ G.Colorable (r + 1) := by
   have h := C.surjOn_of_card_le_isClique hw.isNClique_fst_left.1 (by simp [hw.isNClique_fst_left.2])
   have := C.surjOn_of_card_le_isClique hw.isNClique_snd_right.1 (by simp [hw.isNClique_snd_right.2])
   -- Since `C` is an `r + 1`-coloring and `insert w₁ s` is an `r + 1`-clique, it contains a vertex
-  -- `x` which shares its colour with `v`
+  -- `x` which shares its color with `v`
   obtain ⟨x, hx, hcx⟩ := h (a := C v) trivial
-  -- Similarly there is a vertex `y` in `insert w₂ t` which shares its colour with `v`.
+  -- Similarly there is a vertex `y` in `insert w₂ t` which shares its color with `v`.
   obtain ⟨y, hy, hcy⟩ := this (a := C v) trivial
   rw [coe_insert] at *
   -- However since `insert v s` and `insert v t` are cliques, we must have `x = w₁` and `y = w₂`.
@@ -235,11 +236,11 @@ theorem colorable_iff_isCompleteMultipartite_of_maximal_cliqueFree
     (h : Maximal (fun H => H.CliqueFree (r + 1)) G) : G.Colorable r ↔ G.IsCompleteMultipartite := by
   classical
   match r with
-  | 0 => exact ⟨fun _ ↦ fun x ↦ cliqueFree_one.1 h.1 |>.elim' x,
+  | 0 => exact ⟨fun _ ↦ ⟨fun x ↦ cliqueFree_one.1 h.1 |>.elim' x⟩,
                 fun _ ↦ G.colorable_zero_iff.2 <| cliqueFree_one.1 h.1⟩
   | r + 1 =>
     refine ⟨fun hc ↦ ?_, fun hc ↦ hc.colorable_of_cliqueFree h.1⟩
-    contrapose! hc
+    contrapose hc
     obtain ⟨_, _, _, _, _, hw⟩ :=
       exists_isFiveWheelLike_of_maximal_cliqueFree_not_isCompleteMultipartite h hc
     exact hw.not_colorable_succ
@@ -383,9 +384,7 @@ lemma minDegree_le_of_cliqueFree_fiveWheelLikeFree_succ [Fintype α]
   have bdX := sum_degree_le_of_le_not_adj xcle (fun _ _ ↦ Nat.zero_le _)
   rw [compl_compl, tsub_zero, add_comm] at bdX
   rw [Nat.le_div_iff_mul_le <| Nat.add_pos_right _ zero_lt_three]
-  have Wc : #W + k = 2 * r + 3 := by
-    change #(insert _ <| insert _ <| insert _ _) + _ = _
-    grind [card_inter_add_card_union]
+  have Wc : #W + k = 2 * r + 3 := by grind
   -- The sum of the degree sum over `W` and twice the degree sum over `s ∩ t`
   -- is at least `G.minDegree * (#W + 2 * #(s ∩ t))` which implies the result
   calc
@@ -412,7 +411,7 @@ lemma minDegree_le_of_cliqueFree_fiveWheelLikeFree_succ [Fintype α]
 
 end IsFiveWheelLike
 
-/-- **Andrasfái-Erdős-Sós** theorem
+/-- **Andrásfai-Erdős-Sós** theorem
 
 If `G` is a `Kᵣ₊₁`-free graph with `n` vertices and `(3 * r - 4) * n / (3 * r - 1) < G.minDegree`
 then `G` is `r + 1`-colorable, e.g. if `G` is `K₃`-free and `2 * n / 5 < G.minDegree` then `G`

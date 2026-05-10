@@ -9,6 +9,7 @@ public import Mathlib.Analysis.SpecialFunctions.Complex.Log
 public import Mathlib.RingTheory.Int.Basic
 public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 public import Mathlib.Tactic.Rify
+public import Mathlib.Tactic.Qify
 
 /-!
 # Complex roots of unity
@@ -25,7 +26,7 @@ are exactly the complex numbers `exp (2 * π * I * (i / n))` for `i ∈ Finset.r
 
 -/
 
-@[expose] public section
+public section
 
 
 namespace Complex
@@ -187,11 +188,11 @@ theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn 
   simp only [Int.cast_sub, Int.cast_natCast, Set.mem_Ioc]
   field_simp
   constructor
-  · push_neg at h₂
+  · push Not at h₂
     rify at h₂
     linear_combination h₂
   · rify at h
-    linear_combination 2 * h + (n:ℝ) * one_pos (α := ℝ)
+    linear_combination 2 * h + (n : ℝ) * one_pos (α := ℝ)
 
 lemma Complex.norm_eq_one_of_mem_rootsOfUnity {ζ : ℂˣ} {n : ℕ} [NeZero n]
     (hζ : ζ ∈ rootsOfUnity n ℂ) :

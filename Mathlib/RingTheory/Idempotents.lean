@@ -8,13 +8,14 @@ module
 public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
-public import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
 
-## Idempotents in rings
+# Idempotents in rings
 
-The predicate `IsIdempotentElem` is defined for general monoids in `Algebra/Ring/Idempotents.lean`.
+The predicate `IsIdempotentElem` is defined for general monoids in
+`Mathlib/Algebra/Group/Idempotent.lean`; ring-specific lemmas are in
+`Mathlib/Algebra/Ring/Idempotent.lean`.
 In this file we provide various results regarding idempotent elements in rings.
 
 ## Main definitions
@@ -77,9 +78,6 @@ lemma OrthogonalIdempotents.mul_sum_of_notMem (he : OrthogonalIdempotents e)
     {i : I} {s : Finset I} (h : i ∉ s) : e i * ∑ j ∈ s, e j = 0 := by
   classical
   simp [Finset.mul_sum, he.mul_eq, h]
-
-@[deprecated (since := "2025-05-23")]
-alias OrthogonalIdempotents.mul_sum_of_not_mem := OrthogonalIdempotents.mul_sum_of_notMem
 
 lemma OrthogonalIdempotents.map (he : OrthogonalIdempotents e) :
     OrthogonalIdempotents (f ∘ e) := by
@@ -538,22 +536,25 @@ def NonUnitalRing.corner [NonUnitalRing R] : NonUnitalSubring R where
   neg_mem' := by rintro _ ⟨a, rfl⟩; exact ⟨-a, by simp_rw [mul_neg, neg_mul]⟩
 
 instance [NonUnitalSemiring R] (idem : IsIdempotentElem e) : Semiring idem.Corner where
-  __ : NonUnitalSemiring (NonUnitalSubsemiring.corner e) := inferInstance
+  __ : NonUnitalSemiring idem.Corner :=
+    inferInstanceAs <| NonUnitalSemiring (NonUnitalSubsemiring.corner e)
   one := ⟨e, e, by simp_rw [idem.eq]⟩
   one_mul r := Subtype.ext ((Subsemigroup.mem_corner_iff idem).mp r.2).1
   mul_one r := Subtype.ext ((Subsemigroup.mem_corner_iff idem).mp r.2).2
 
 instance [NonUnitalCommSemiring R] (idem : IsIdempotentElem e) : CommSemiring idem.Corner where
-  __ : NonUnitalCommSemiring (NonUnitalSubsemiring.corner e) := inferInstance
   __ : Semiring idem.Corner := inferInstance
+  __ : NonUnitalCommSemiring idem.Corner :=
+    inferInstanceAs <| NonUnitalCommSemiring (NonUnitalSubsemiring.corner e)
 
 instance [NonUnitalRing R] (idem : IsIdempotentElem e) : Ring idem.Corner where
-  __ : NonUnitalRing (NonUnitalRing.corner e) := inferInstance
   __ : Semiring idem.Corner := inferInstance
+  __ : NonUnitalRing idem.Corner := inferInstanceAs <| NonUnitalRing (NonUnitalRing.corner e)
 
 instance [NonUnitalCommRing R] (idem : IsIdempotentElem e) : CommRing idem.Corner where
-  __ : NonUnitalCommRing (NonUnitalRing.corner e) := inferInstance
-  __ : Semiring idem.Corner := inferInstance
+  __ : Ring idem.Corner := inferInstance
+  __ : NonUnitalCommRing idem.Corner :=
+    inferInstanceAs <| NonUnitalCommRing (NonUnitalRing.corner e)
 
 variable {I : Type*} [Fintype I] {e : I → R}
 

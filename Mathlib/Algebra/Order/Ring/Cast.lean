@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Order.Group.Abs
 public import Mathlib.Algebra.Order.Ring.Int
 public import Mathlib.Data.Nat.Cast.Order.Ring
+public import Mathlib.Algebra.Order.GroupWithZero.Synonym
 
 /-!
 # Order properties of cast of integers
@@ -22,7 +23,7 @@ which were not available in the import dependencies of `Mathlib/Data/Int/Cast/Ba
 Move order lemmas about `Nat.cast`, `Rat.cast`, `NNRat.cast` here.
 -/
 
-@[expose] public section
+public section
 
 open Function Nat
 
@@ -58,9 +59,7 @@ variable [NeZero (1 : R)] {m n : ℤ}
 lemma cast_strictMono : StrictMono (fun x : ℤ => (x : R)) :=
   strictMono_of_le_iff_le fun _ _ => cast_le.symm
 
-@[simp, norm_cast] lemma cast_lt : (m : R) < n ↔ m < n := cast_strictMono.lt_iff_lt
-
-@[gcongr] protected alias ⟨_, GCongr.intCast_strictMono⟩ := Int.cast_lt
+@[simp, norm_cast, gcongr] lemma cast_lt : (m : R) < n ↔ m < n := cast_strictMono.lt_iff_lt
 
 @[simp] lemma cast_nonpos : (n : R) ≤ 0 ↔ n ≤ 0 := by rw [← cast_zero, cast_le]
 
@@ -109,22 +108,6 @@ lemma nneg_mul_add_sq_of_abs_le_one (n : ℤ) (hx : |x| ≤ 1) : (0 : R) ≤ n *
 
 end LinearOrderedRing
 end Int
-
-/-! ### Order dual -/
-
-open OrderDual
-
-namespace OrderDual
-
-instance instIntCast [IntCast R] : IntCast Rᵒᵈ := ‹_›
-instance instAddGroupWithOne [AddGroupWithOne R] : AddGroupWithOne Rᵒᵈ := ‹_›
-instance instAddCommGroupWithOne [AddCommGroupWithOne R] : AddCommGroupWithOne Rᵒᵈ := ‹_›
-
-end OrderDual
-
-@[simp] lemma toDual_intCast [IntCast R] (n : ℤ) : toDual (n : R) = n := rfl
-
-@[simp] lemma ofDual_intCast [IntCast R] (n : ℤ) : (ofDual n : R) = n := rfl
 
 /-! ### Lexicographic order -/
 

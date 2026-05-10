@@ -193,7 +193,7 @@ variable [Group S] [DistribMulAction S M] [SMulCommClass S R M]
 This is a stronger version of `DistribMulAction.toAddEquiv`. -/
 @[simps!]
 def toLinearEquiv (s : S) : M ≃ₗ[R] M :=
-  { toAddEquiv M s, toLinearMap R M s with }
+  { toAddEquiv M s, DistribSMul.toLinearMap R M s with }
 
 /-- Each element of the group defines a module automorphism.
 
@@ -205,6 +205,11 @@ def toModuleAut : S →* M ≃ₗ[R] M where
   map_mul' _ _ := LinearEquiv.ext <| mul_smul _ _
 
 end DistribMulAction
+
+theorem LinearEquiv.smul_refl [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M] [Module S M]
+    [SMulCommClass R S M] [SMul S R] [IsScalarTower S R M] (α : Sˣ) :
+    letI := SMulCommClass.symm R Sˣ M
+    α • refl R M = DistribMulAction.toLinearEquiv R M α := rfl
 
 namespace AddEquiv
 
@@ -274,7 +279,7 @@ variable {modM : Module ℤ M} {modM₂ : Module ℤ M₂} {modM₃ : Module ℤ
 equivalence between ℤ-modules -/
 def toIntLinearEquiv : M ≃ₗ[ℤ] M₂ := by
   refine e.toLinearEquiv fun c a ↦ ?_
-  convert e.toAddMonoidHom.map_zsmul a c using 1
+  convert e.toAddMonoidHom.map_zsmul c a using 1
   · exact congr(e $(int_smul_eq_zsmul ..))
   · exact int_smul_eq_zsmul ..
 
@@ -315,6 +320,30 @@ end AddCommGroup
 end AddEquiv
 
 namespace LinearMap
+
+/-- Pointwise application of a family of linear forms to a family of vectors -/
+def piApply {V : M → Type*} [CommSemiring R] [∀ x, AddCommMonoid (V x)] [∀ x, Module R (V x)] :
+    (Π x : M, V x →ₗ[R] R) →ₗ[R] (Π x : M, V x) →ₗ[R] M → R where
+  toFun e :=
+    { toFun s x := e x (s x)
+      map_add' := by intros; ext; simp
+      map_smul' := by intros; ext; simp }
+  map_add' := by intros; ext; simp
+  map_smul' := by intros; ext; simp
+
+@[simp]
+theorem piApply_apply {V : M → Type*}
+    [CommSemiring R] [∀ x, AddCommMonoid (V x)] [∀ x, Module R (V x)]
+    (e : Π x : M, V x →ₗ[R] R) (s : Π x : M, V x) :
+    piApply e s = fun x ↦ e x (s x) :=
+  rfl
+
+@[simp]
+theorem piApply_apply_apply {V : M → Type*}
+    [CommSemiring R] [∀ x, AddCommMonoid (V x)] [∀ x, Module R (V x)]
+    (e : Π x : M, V x →ₗ[R] R) (s : Π x : M, V x) (x : M) :
+    piApply e s x = e x (s x) :=
+  rfl
 
 variable (R S M)
 variable [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M]
@@ -543,6 +572,7 @@ See `LinearEquiv.conj` for the linear version of this isomorphism. -/
   __ := arrowCongrAddEquiv e e
   map_mul' _ _ := by ext; simp [arrowCongrAddEquiv]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A linear isomorphism between the domains and codomains of two spaces of linear maps gives a
 linear isomorphism with respect to an action on the domains. -/
 @[simps] def domMulActCongrRight [Semiring S] [Module S M₁]
@@ -683,6 +713,10 @@ theorem conj_apply (e : M₁' ≃ₛₗ[σ₁'₂'] M₂') (f : Module.End R₁'
     e.conj f = ((↑e : M₁' →ₛₗ[σ₁'₂'] M₂').comp f).comp (e.symm : M₂' →ₛₗ[σ₂'₁'] M₁') :=
   rfl
 
+-- Note this has lower `simp` priority for performance reasons, so that we rewrite as
+-- `e.conj LinearMap.id x => LinearMap.id x` => `x` rather than
+-- `e.conj LinearMap.id x => e (LinearMap.id (e.symm x)) => e (e.symm x) => x`.
+@[simp 900]
 theorem conj_apply_apply (e : M₁' ≃ₛₗ[σ₁'₂'] M₂') (f : Module.End R₁' M₁') (x : M₂') :
     e.conj f x = e (f (e.symm x)) :=
   rfl
@@ -700,14 +734,13 @@ theorem conj_trans (e₁ : M₁' ≃ₛₗ[σ₁'₂'] M₂') (e₂ : M₂' ≃�
   rfl
 
 @[simp] lemma conj_conj_symm (e : M₁' ≃ₛₗ[σ₁'₂'] M₂') (f : Module.End R₂' M₂') :
-    e.conj (e.symm.conj f) = f := by ext; simp [conj_apply]
+    e.conj (e.symm.conj f) = f := by ext; simp
 
 @[simp] lemma conj_symm_conj (e : M₁' ≃ₛₗ[σ₁'₂'] M₂') (f : Module.End R₁' M₁') :
-    e.symm.conj (e.conj f) = f := by ext; simp [conj_apply]
+    e.symm.conj (e.conj f) = f := by ext; simp
 
 @[simp]
-theorem conj_id (e : M₁' ≃ₛₗ[σ₁'₂'] M₂') : e.conj LinearMap.id = LinearMap.id := by
-  simp [conj_apply]
+theorem conj_id (e : M₁' ≃ₛₗ[σ₁'₂'] M₂') : e.conj LinearMap.id = LinearMap.id := by ext; simp
 
 @[simp]
 theorem conj_refl (f : Module.End R M) : (refl R M).conj f = f := rfl
@@ -859,5 +892,84 @@ def piUnique {α : Type*} [Unique α] (R : Type*) [Semiring R] (f : α → Type*
 end LinearEquiv
 
 end Pi
+
+namespace Units
+variable {R A : Type*} [Semiring R] [Semiring A] [Module R A]
+
+section mulLeft
+variable [SMulCommClass R A A]
+
+variable (R A) in
+/-- Left multiplication by a unit of a semiring as a linear equivalence. -/
+def mulLeftLinearEquiv : Aˣ →* A ≃ₗ[R] A where
+  toFun a :=
+    { __ := mulLeft a
+      __ := LinearMap.mulLeft R (a : A) }
+  map_mul' _ _ := by ext; simp [mul_assoc]
+  map_one' := by ext; simp
+
+variable (R) in
+@[simp] lemma mulLeftLinearEquiv_apply (a : Aˣ) (x : A) :
+    a.mulLeftLinearEquiv R A x = a * x := rfl
+
+variable (R) in
+lemma symm_mulLeftLinearEquiv_apply (a : Aˣ) (x : A) :
+    (a.mulLeftLinearEquiv R A).symm x = a⁻¹ * x := rfl
+
+@[simp] lemma symm_mulLeftLinearEquiv (a : Aˣ) :
+    (a.mulLeftLinearEquiv R A).symm = a⁻¹.mulLeftLinearEquiv R A := rfl
+
+lemma mulLeftLinearEquiv_trans_mulLeftLinearEquiv (a b : Aˣ) :
+    (a.mulLeftLinearEquiv R A).trans (b.mulLeftLinearEquiv R A) =
+      (b * a).mulLeftLinearEquiv R A := map_mul _ _ _ |>.symm
+
+lemma mulLeftLinearEquiv_mul_apply (u v : Aˣ) (x : A) :
+    mulLeftLinearEquiv R A (u * v) x =
+      mulLeftLinearEquiv R A u (mulLeftLinearEquiv R A v x) := by simp
+
+@[simp] lemma toLinearMap_mulLeftLinearEquiv (u : Aˣ) :
+    (mulLeftLinearEquiv R A u).toLinearMap = LinearMap.mulLeft R (u : A) := rfl
+
+@[simp] lemma toEquiv_mulLeftLinearEquiv (u : Aˣ) :
+    (mulLeftLinearEquiv R A u).toEquiv = u.mulLeft := rfl
+
+end mulLeft
+
+section mulRight
+variable [IsScalarTower R A A]
+
+variable (R) in
+/-- Right multiplication by a unit of a semiring as a linear equivalence. -/
+def mulRightLinearEquiv (a : Aˣ) : A ≃ₗ[R] A where
+  __ := mulRight a
+  __ := LinearMap.mulRight R (a : A)
+
+variable (R) in
+@[simp] lemma mulRightLinearEquiv_apply (a : Aˣ) (x : A) :
+    a.mulRightLinearEquiv R x = x * a := rfl
+
+variable (R) in
+lemma symm_mulRightLinearEquiv_apply (a : Aˣ) (x : A) :
+    (a.mulRightLinearEquiv R).symm x = x * a⁻¹ := rfl
+
+@[simp] lemma symm_mulRightLinearEquiv (a : Aˣ) :
+    (a.mulRightLinearEquiv R).symm = a⁻¹.mulRightLinearEquiv R := rfl
+
+lemma mulRightLinearEquiv_trans_mulRightLinearEquiv (a b : Aˣ) :
+    (a.mulRightLinearEquiv R).trans (b.mulRightLinearEquiv R) =
+      (a * b).mulRightLinearEquiv R := by ext; simp [mul_assoc]
+
+lemma mulRightLinearEquiv_mul_apply (u v : Aˣ) (x : A) :
+    mulRightLinearEquiv R (u * v) x =
+      mulRightLinearEquiv R v (mulRightLinearEquiv R u x) := by simp [mul_assoc]
+
+@[simp] lemma toLinearMap_mulRightLinearEquiv (u : Aˣ) :
+    (mulRightLinearEquiv R u).toLinearMap = LinearMap.mulRight R (u : A) := rfl
+
+@[simp] lemma toEquiv_mulRightLinearEquiv (u : Aˣ) :
+    (mulRightLinearEquiv R u).toEquiv = u.mulRight := rfl
+
+end mulRight
+end Units
 
 end AddCommMonoid

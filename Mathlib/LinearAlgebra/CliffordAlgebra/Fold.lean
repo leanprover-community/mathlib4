@@ -179,7 +179,6 @@ theorem foldr'Aux_apply_apply (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] 
 theorem foldr'Aux_foldr'Aux (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] N)
     (hf : ∀ m x fx, f m (ι Q m * x, f m (x, fx)) = Q m • fx) (v : M) (x_fx) :
     foldr'Aux Q f v (foldr'Aux Q f v x_fx) = Q v • x_fx := by
-  obtain ⟨x, fx⟩ := x_fx
   simp only [foldr'Aux_apply_apply]
   rw [← mul_assoc, ι_sq_scalar, ← Algebra.smul_def, hf, Prod.smul_mk]
 

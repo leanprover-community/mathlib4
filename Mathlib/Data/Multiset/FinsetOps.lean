@@ -53,8 +53,6 @@ theorem ndinsert_of_mem {a : α} {s : Multiset α} : a ∈ s → ndinsert a s = 
 theorem ndinsert_of_notMem {a : α} {s : Multiset α} : a ∉ s → ndinsert a s = a ::ₘ s :=
   Quot.inductionOn s fun _ h => congr_arg ((↑) : List α → Multiset α) <| insert_of_not_mem h
 
-@[deprecated (since := "2025-05-23")] alias ndinsert_of_not_mem := ndinsert_of_notMem
-
 @[simp]
 theorem mem_ndinsert {a b : α} {s : Multiset α} : a ∈ ndinsert b s ↔ a = b ∨ a ∈ s :=
   Quot.inductionOn s fun _ => mem_insert_iff
@@ -73,8 +71,6 @@ theorem length_ndinsert_of_mem {a : α} {s : Multiset α} (h : a ∈ s) :
 
 theorem length_ndinsert_of_notMem {a : α} {s : Multiset α} (h : a ∉ s) :
     card (ndinsert a s) = card s + 1 := by simp [h]
-
-@[deprecated (since := "2025-05-23")] alias length_ndinsert_of_not_mem := length_ndinsert_of_notMem
 
 theorem dedup_cons {a : α} {s : Multiset α} : dedup (a ::ₘ s) = ndinsert a (dedup s) := by
   by_cases h : a ∈ s <;> simp [h]
@@ -215,8 +211,6 @@ theorem cons_ndinter_of_mem {a : α} (s : Multiset α) {t : Multiset α} (h : a 
 @[simp]
 theorem ndinter_cons_of_notMem {a : α} (s : Multiset α) {t : Multiset α} (h : a ∉ t) :
     ndinter (a ::ₘ s) t = ndinter s t := by simp [ndinter, h]
-
-@[deprecated (since := "2025-05-23")] alias ndinter_cons_of_not_mem := ndinter_cons_of_notMem
 
 @[simp]
 theorem mem_ndinter {s t : Multiset α} {a : α} : a ∈ ndinter s t ↔ a ∈ s ∧ a ∈ t := by

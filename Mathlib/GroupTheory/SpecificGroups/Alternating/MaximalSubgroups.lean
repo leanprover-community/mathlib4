@@ -36,7 +36,7 @@ alternating and symmetric groups*, 1987][LiebeckPraegerSaxl-1987].
 
 -/
 
-@[expose] public section
+public section
 
 open scoped Pointwise
 
@@ -97,12 +97,12 @@ theorem stabilizer.surjective_toPerm {s : Set α} (hs : sᶜ.Nontrivial) :
     exact (Set.disjoint_left.mp hk_support) hx
   intro g
   rcases Int.units_eq_one_or (sign g) with hsg | hsg
-  · use! ofSubtype g
+  · use! Equiv.Perm.ofSubtype g
     · simp [mem_alternatingGroup, hsg]
     · rw [mem_stabilizer_iff, Submonoid.mk_smul]
       exact ofSubtype_mem_stabilizer g
     · aesop
-  · use! ofSubtype g * k
+  · use! Equiv.Perm.ofSubtype g * k
     · simp [mem_alternatingGroup, hk_swap.sign_eq, hsg]
     · rw [mem_stabilizer_iff, Submonoid.mk_smul, mul_smul, hks, ofSubtype_mem_stabilizer]
     · ext x
@@ -184,7 +184,7 @@ theorem subgroup_eq_top_of_isPreprimitive (h4 : 4 < Nat.card α)
   · let φ := (alternatingGroup α).subtype.subgroupMap G
     let f : α →ₑ[φ] α := {
       toFun := id
-      map_smul' _ _ := rfl  }
+      map_smul' _ _ := rfl }
     rwa [← isPreprimitive_congr (f := f) ((alternatingGroup α).subtype.subgroupMap_surjective G)
       Function.bijective_id]
 

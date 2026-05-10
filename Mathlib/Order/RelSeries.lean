@@ -103,15 +103,12 @@ lemma length_toList (x : RelSeries r) : x.toList.length = x.length + 1 :=
   List.length_ofFn
 
 @[simp]
-lemma toList_singleton (x : α) : (singleton r x).toList = [x] :=
-  by simp [toList, singleton]
+lemma toList_singleton (x : α) : (singleton r x).toList = [x] := by simp [toList, singleton]
 
 lemma isChain_toList (x : RelSeries r) : x.toList.IsChain (· ~[r] ·) := by
   simp_rw [List.isChain_iff_getElem, length_toList, add_lt_add_iff_right]
   intro i h
   convert x.step ⟨i, by simpa [toList] using h⟩ <;> apply List.get_ofFn
-
-@[deprecated (since := "2025-09-24")] alias toList_chain' := isChain_toList
 
 lemma toList_ne_nil (x : RelSeries r) : x.toList ≠ [] := fun m =>
   List.eq_nil_iff_forall_not_mem.mp m (x 0) <| List.mem_ofFn.mpr ⟨_, rfl⟩
@@ -122,8 +119,6 @@ def fromListIsChain (x : List α) (x_ne_nil : x ≠ []) (hx : x.IsChain (· ~[r]
   length := x.length - 1
   toFun i := x[Fin.cast (Nat.succ_pred_eq_of_pos <| List.length_pos_iff.mpr x_ne_nil) i]
   step i := List.isChain_iff_getElem.mp hx i _
-
-@[deprecated (since := "2025-09-24")] alias fromListChain' := fromListIsChain
 
 /-- Relation series of `r` and nonempty list of `α` satisfying `r`-chain condition bijectively
 corresponds to each other. -/
@@ -280,9 +275,6 @@ lemma toList_fromListIsChain (l : List α) (l_ne_nil : l ≠ []) (hl : l.IsChain
 lemma head_fromListIsChain (l : List α) (l_ne_nil : l ≠ []) (hl : l.IsChain (· ~[r] ·)) :
     (fromListIsChain l l_ne_nil hl).head = l.head l_ne_nil := by
   simp [← apply_zero, List.getElem_zero_eq_head]
-
-@[deprecated (since := "2025-09-24")] alias toList_fromListChain' := toList_fromListIsChain
-@[deprecated (since := "2025-09-24")] alias head_fromListChain' := head_fromListIsChain
 
 @[simp]
 lemma getLast_toList (p : RelSeries r) : p.toList.getLast (by simp [toList]) = p.last := by
@@ -466,6 +458,7 @@ def reverse (p : RelSeries r) : RelSeries r.inv where
 @[simp] lemma last_reverse (p : RelSeries r) : p.reverse.last = p.head := by
   simp [RelSeries.last, RelSeries.head]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma head_reverse (p : RelSeries r) : p.reverse.head = p.last := by
   simp [RelSeries.last, RelSeries.head]
 
@@ -509,8 +502,6 @@ lemma fromListIsChain_cons (l : List α) (l_ne_nil : l ≠ [])
       (fromListIsChain l l_ne_nil hl).cons x (by simpa) := by
   apply toList_injective
   simp
-
-@[deprecated (since := "2025-09-24")] alias fromListChain'_cons := fromListIsChain_cons
 
 lemma append_cons {p q : RelSeries r} {x : α} (hx : x ~[r] p.head) (hq : p.last ~[r] q.head) :
     (p.cons x hx).append q (by simpa) = (p.append q hq).cons x (by simpa) := by
@@ -788,7 +779,7 @@ variable {r} in
 lemma SetRel.not_finiteDimensional_iff [Nonempty α] :
     ¬ r.FiniteDimensional ↔ r.InfiniteDimensional := by
   rw [finiteDimensional_iff, infiniteDimensional_iff]
-  push_neg
+  push Not
   constructor
   · intro H n
     induction n with
@@ -819,9 +810,6 @@ variable {r} in
 lemma SetRel.finiteDimensional_inv : FiniteDimensional r.inv ↔ FiniteDimensional r :=
   ⟨fun _ ↦ .inv r.inv, fun _ ↦ .inv _⟩
 
-@[deprecated (since := "2025-07-06")]
-alias SetRel.finiteDimensional_swap_iff := SetRel.finiteDimensional_inv
-
 instance SetRel.InfiniteDimensional.inv [InfiniteDimensional r] : InfiniteDimensional r.inv :=
   ⟨fun n ↦ ⟨.reverse (.withLength r n), RelSeries.length_withLength r n⟩⟩
 
@@ -830,9 +818,6 @@ variable {r} in
 lemma SetRel.infiniteDimensional_inv : InfiniteDimensional r.inv ↔ InfiniteDimensional r :=
   ⟨fun _ ↦ .inv r.inv, fun _ ↦ .inv _⟩
 
-@[deprecated (since := "2025-07-06")]
-alias SetRel.infiniteDimensional_swap_iff := SetRel.infiniteDimensional_inv
-
 lemma SetRel.IsWellFounded.inv_of_finiteDimensional [r.FiniteDimensional] :
     r.inv.IsWellFounded := by
   rw [IsWellFounded, wellFounded_iff_isEmpty_descending_chain]
@@ -840,15 +825,8 @@ lemma SetRel.IsWellFounded.inv_of_finiteDimensional [r.FiniteDimensional] :
   let s := RelSeries.mk (r := r) ((RelSeries.longestOf r).length + 1) (f ·) (hf ·)
   exact (RelSeries.longestOf r).length.lt_succ_self.not_ge s.length_le_length_longestOf
 
-@[deprecated (since := "2025-07-06")]
-alias Rel.wellFounded_swap_of_finiteDimensional :=
-  SetRel.IsWellFounded.inv_of_finiteDimensional
-
 lemma SetRel.IsWellFounded.of_finiteDimensional [r.FiniteDimensional] : r.IsWellFounded :=
   .inv_of_finiteDimensional r.inv
-
-@[deprecated (since := "2025-07-06")]
-alias SetRel.wellFounded_of_finiteDimensional := SetRel.IsWellFounded.of_finiteDimensional
 
 /-- A type is finite dimensional if its `LTSeries` has bounded length. -/
 abbrev FiniteDimensionalOrder (γ : Type*) [Preorder γ] :=
@@ -984,6 +962,7 @@ def range (n : ℕ) : LTSeries ℕ where
 
 @[simp] lemma last_range (n : ℕ) : (range n).last = n := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any `LTSeries` can be refined to a `CovBy`-`RelSeries`
 in a bidirectionally well-founded order. -/
 theorem exists_relSeries_covBy

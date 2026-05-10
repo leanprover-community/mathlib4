@@ -38,9 +38,9 @@ in this setup.
   within `f '' U` is codiscrete within `U`.
 -/
 
-@[expose] public section
+public section
 
-open Filter Function Nat FormalMultilinearSeries EMetric Set
+open Filter Function Module Nat FormalMultilinearSeries EMetric Set
 
 open scoped Topology
 
@@ -192,7 +192,7 @@ theorem exists_eventuallyEq_pow_smul_nonzero_iff (hf : AnalyticAt 𝕜 f z₀) :
     ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ n • g z) ↔ (¬∀ᶠ z in 𝓝 z₀, f z = 0) := by
   constructor
   · rintro ⟨n, g, hg_an, hg_ne, hg_eq⟩
-    contrapose! hg_ne
+    contrapose hg_ne
     apply EventuallyEq.eq_of_nhds
     rw [EventuallyEq, ← AnalyticAt.frequently_eq_iff_eventually_eq hg_an analyticAt_const]
     refine (eventually_nhdsWithin_iff.mpr ?_).frequently
@@ -273,12 +273,12 @@ section Mul
 ### Vanishing of products of analytic functions
 -/
 
-variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A]
+variable {A : Type*} [NormedRing A] [IsDomain A] [NormedAlgebra 𝕜 A]
   {B : Type*} [NormedAddCommGroup B] [NormedSpace 𝕜 B] [Module A B]
 
 /-- If `f, g` are analytic on a neighbourhood of the preconnected open set `U`, and `f • g = 0`
 on `U`, then either `f = 0` on `U` or `g = 0` on `U`. -/
-lemma eq_zero_or_eq_zero_of_smul_eq_zero [NoZeroSMulDivisors A B]
+lemma eq_zero_or_eq_zero_of_smul_eq_zero [IsTorsionFree A B]
     {f : 𝕜 → A} {g : 𝕜 → B} (hf : AnalyticOnNhd 𝕜 f U) (hg : AnalyticOnNhd 𝕜 g U)
     (hfg : ∀ z ∈ U, f z • g z = 0) (hU : IsPreconnected U) :
     (∀ z ∈ U, f z = 0) ∨ (∀ z ∈ U, g z = 0) := by
@@ -302,9 +302,8 @@ lemma eq_zero_or_eq_zero_of_smul_eq_zero [NoZeroSMulDivisors A B]
 
 /-- If `f, g` are analytic on a neighbourhood of the preconnected open set `U`, and `f * g = 0`
 on `U`, then either `f = 0` on `U` or `g = 0` on `U`. -/
-lemma eq_zero_or_eq_zero_of_mul_eq_zero [NoZeroDivisors A]
-    {f g : 𝕜 → A} (hf : AnalyticOnNhd 𝕜 f U) (hg : AnalyticOnNhd 𝕜 g U)
-    (hfg : ∀ z ∈ U, f z * g z = 0) (hU : IsPreconnected U) :
+lemma eq_zero_or_eq_zero_of_mul_eq_zero {f g : 𝕜 → A} (hf : AnalyticOnNhd 𝕜 f U)
+    (hg : AnalyticOnNhd 𝕜 g U) (hfg : ∀ z ∈ U, f z * g z = 0) (hU : IsPreconnected U) :
     (∀ z ∈ U, f z = 0) ∨ (∀ z ∈ U, g z = 0) :=
   eq_zero_or_eq_zero_of_smul_eq_zero hf hg hfg hU
 
@@ -325,7 +324,7 @@ theorem AnalyticAt.preimage_of_nhdsNE {x : 𝕜} {f : 𝕜 → E} {s : Set E} (h
   have : ∀ᶠ (z : 𝕜) in 𝓝 x, f z ∈ insert (f x) s := by
     filter_upwards [hfx.continuousAt.preimage_mem_nhds (insert_mem_nhds_iff.2 hs)]
     tauto
-  contrapose! h₂f with h
+  contrapose h₂f with h
   rw [eventuallyConst_iff_exists_eventuallyEq]
   use f x
   rw [EventuallyEq, ← hfx.frequently_eq_iff_eventually_eq analyticAt_const]
@@ -359,7 +358,8 @@ theorem AnalyticOnNhd.preimage_mem_codiscreteWithin {U : Set 𝕜} {s : Set E} {
   rw [preimage_union, preimage_compl]
   apply union_subset_union_right (f ⁻¹' s)
   intro x hx
-  simp only [mem_compl_iff, mem_preimage, mem_image, not_exists, not_and] at hx ⊢
+  push _ ∈ _ at hx ⊢
+  push Not at hx
   tauto
 
 /-- Preimages of codiscrete sets, filter version: if `f` is analytic on a neighbourhood of `U` and

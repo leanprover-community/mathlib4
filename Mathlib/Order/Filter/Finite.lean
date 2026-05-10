@@ -15,7 +15,7 @@ public import Mathlib.Order.Filter.Basic
 This file proves that finitely many conditions eventually hold if each of them eventually holds.
 -/
 
-@[expose] public section
+public section
 
 open Function Set Order
 open scoped symmDiff

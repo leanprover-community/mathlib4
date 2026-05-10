@@ -104,18 +104,12 @@ theorem exists_root_C_mul_X_pow_add_C_mul_X_add_C
     [IsSepClosed k] {n : ℕ} (a b c : k) (hn : (n : k) = 0) (hn' : 2 ≤ n) (hb : b ≠ 0) :
     ∃ x, a * x ^ n + b * x + c = 0 := by
   let f : k[X] := C a * X ^ n + C b * X + C c
-  have hdeg : f.degree ≠ 0 := degree_ne_of_natDegree_ne <| by
+  -- Specify `n := 0` below, otherwise Lean unfolds `0` to `Zero.zero`.
+  have hdeg : f.degree ≠ 0 := degree_ne_of_natDegree_ne (n := 0) <| by
+    have : C 0 * X ^ n + C b * X = 0 * X ^ n + C b * X := by grind
     by_cases ha : a = 0
-    · suffices f.natDegree = 1 from this ▸ one_ne_zero
-      simp_rw [f, ha, map_zero, zero_mul, zero_add]
-      compute_degree!
-    · suffices f.natDegree = n from this ▸ (lt_of_lt_of_le zero_lt_two hn').ne'
-      simp_rw [f]
-      have h0 : n ≠ 0 := by linarith only [hn']
-      have h1 : n ≠ 1 := by linarith only [hn']
-      have : 1 ≤ n := le_trans one_le_two hn'
-      compute_degree!
-      simp [h0, h1, ha]
+    · grind [zero_add]
+    · grind [natDegree_add_eq_left_of_natDegree_lt]
   have hsep : f.Separable := separable_C_mul_X_pow_add_C_mul_X_add_C a b c hn hb.isUnit
   obtain ⟨x, hx⟩ := exists_root f hdeg hsep
   exact ⟨x, by simpa [f] using hx⟩
@@ -183,18 +177,19 @@ variable (k) {K}
 
 theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → Separable p → ∃ x, p.eval x = 0) :
     IsSepClosed k := by
-  refine ⟨fun p hsep ↦ splits_iff_splits.mpr <| Or.inr ?_⟩
-  intro q hq hdvd
-  have hlc : IsUnit (leadingCoeff q)⁻¹ := IsUnit.inv <| Ne.isUnit <|
-    leadingCoeff_ne_zero.2 <| Irreducible.ne_zero hq
-  have hsep' : Separable (q * C (leadingCoeff q)⁻¹) :=
-    Separable.mul (Separable.of_dvd hsep hdvd) ((separable_C _).2 hlc)
-    (by simpa only [← isCoprime_mul_unit_right_right (isUnit_C.2 hlc) q 1, one_mul]
-      using isCoprime_one_right (x := q))
-  have hirr' := hq
-  rw [← irreducible_mul_isUnit (isUnit_C.2 hlc)] at hirr'
-  obtain ⟨x, hx⟩ := H (q * C (leadingCoeff q)⁻¹) (monic_mul_leadingCoeff_inv hq.ne_zero) hirr' hsep'
-  exact degree_mul_leadingCoeff_inv q hq.ne_zero ▸ degree_eq_one_of_irreducible_of_root hirr' hx
+  replace H (p : k[X]) (hp : Irreducible p) (hs : Separable p) : ∃ x, p.eval x = 0 := by
+    obtain ⟨x, hx⟩ := H (p * C (leadingCoeff p)⁻¹) (monic_mul_leadingCoeff_inv hp.ne_zero)
+      (irreducible_mul_leadingCoeff_inv.mpr hp) (hs.mul_unit (by aesop))
+    exact ⟨x, by simpa [hp.ne_zero] using hx⟩
+  refine ⟨fun p hp ↦ ?_⟩
+  by_cases hp0 : p = 0
+  · simp [hp0]
+  obtain ⟨u, hu⟩ := UniqueFactorizationMonoid.factors_prod hp0
+  rw [← hu]
+  refine (Splits.multisetProd fun f hf ↦ ?_).mul u.isUnit.splits
+  let h := UniqueFactorizationMonoid.irreducible_of_factor f hf
+  obtain ⟨x, hx⟩ := H f h (hp.of_dvd (UniqueFactorizationMonoid.dvd_of_mem_factors hf))
+  exact Splits.of_degree_eq_one (degree_eq_one_of_irreducible_of_root h hx)
 
 theorem degree_eq_one_of_irreducible [IsSepClosed k] {p : k[X]}
     (hp : Irreducible p) (hsep : p.Separable) : p.degree = 1 :=
@@ -269,7 +264,7 @@ instance isSeparable [Algebra k K] [IsSepClosure k K] : Algebra.IsSeparable k K 
 
 instance (priority := 100) isGalois [Algebra k K] [IsSepClosure k K] : IsGalois k K where
   to_isSeparable := IsSepClosure.separable
-  to_normal.toIsAlgebraic :=  inferInstance
+  to_normal.toIsAlgebraic := inferInstance
   to_normal.splits' x := (IsSepClosure.sep_closed k).splits_codomain _
     (Algebra.IsSeparable.isSeparable k x)
 

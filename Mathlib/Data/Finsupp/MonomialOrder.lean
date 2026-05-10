@@ -34,11 +34,11 @@ It is activated using `open scoped MonomialOrder`.
 
 Commutative algebra defines many monomial orders, with different usefulness ranges.
 In this file, we provide the basic example of lexicographic ordering.
-For the graded lexicographic ordering, see `Mathlib/Data/Finsupp/DegLex.lean`
+For the graded lexicographic ordering, see `Mathlib/Data/Finsupp/MonomialOrder/DegLex.lean`
 
 * `MonomialOrder.lex` : the lexicographic ordering on `σ →₀ ℕ`.
-For this, `σ` needs to be embedded with an ordering relation which satisfies `WellFoundedGT σ`.
-(This last property is automatic when `σ` is finite).
+  For this, `σ` needs to be embedded with an ordering relation which satisfies `WellFoundedGT σ`.
+  (This last property is automatic when `σ` is finite).
 
 The type synonym is `Lex (σ →₀ ℕ)` and the two lemmas `MonomialOrder.lex_le_iff`
 and `MonomialOrder.lex_lt_iff` rewrite the ordering as comparisons in the type `Lex (σ →₀ ℕ)`.

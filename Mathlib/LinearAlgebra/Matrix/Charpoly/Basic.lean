@@ -116,7 +116,7 @@ lemma charmatrix_fromBlocks :
     charmatrix (fromBlocks M₁₁ M₁₂ M₂₁ M₂₂) =
       fromBlocks (charmatrix M₁₁) (- M₁₂.map C) (- M₂₁.map C) (charmatrix M₂₂) := by
   simp only [charmatrix]
-  ext (i|i) (j|j) : 2 <;> simp [diagonal]
+  ext (i | i) (j | j) : 2 <;> simp [diagonal]
 
 -- TODO: importing block triangular here is somewhat expensive, if more lemmas about it are added
 -- to this file, it may be worth extracting things out to Charpoly/Block.lean
@@ -284,6 +284,7 @@ theorem charpoly_units_conj' (M : (Matrix n n R)ˣ) (N : Matrix n n R) :
     (M⁻¹.val * N * M.val).charpoly = N.charpoly :=
   charpoly_units_conj M⁻¹ N
 
+set_option backward.isDefEq.respectTransparency false in
 theorem charpoly_sub_scalar (M : Matrix n n R) (μ : R) :
     (M - scalar n μ).charpoly = M.charpoly.comp (X + C μ) := by
   simp_rw [charpoly, det_apply, Polynomial.sum_comp, Polynomial.smul_comp, Polynomial.prod_comp]

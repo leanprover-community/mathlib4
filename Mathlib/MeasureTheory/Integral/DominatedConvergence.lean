@@ -1,13 +1,12 @@
 /-
 Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Zhouhang Zhou, Yury Kudryashov, Patrick Massot
+Authors: Zhouhang Zhou, Yury Kudryashov, Patrick Massot, Louis (Yiyang) Liu
 -/
 module
 
+public import Mathlib.MeasureTheory.Constructions.Polish.StronglyMeasurable
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
-public import Mathlib.MeasureTheory.Measure.Real
-public import Mathlib.Order.Filter.IndicatorFunction
 
 /-!
 # The dominated convergence theorem
@@ -31,7 +30,7 @@ for the Bochner integral.
 
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Metric
 
@@ -95,7 +94,7 @@ theorem hasSum_integral_of_dominated_convergence {ι} [Countable ι] {F : ι →
   have hF_integrable : ∀ n, Integrable (F n) μ := by
     refine fun n => bound_integrable.mono' (hF_meas n) ?_
     exact EventuallyLE.trans (h_bound n) (hb_le_tsum n)
-  simp only [HasSum, ← integral_finset_sum _ fun n _ => hF_integrable n]
+  simp only [HasSum, ← integral_finsetSum _ fun n _ => hF_integrable n]
   refine tendsto_integral_filter_of_dominated_convergence
       (fun a => ∑' n, bound n a) ?_ ?_ bound_integrable h_lim
   · exact Eventually.of_forall fun s => s.aestronglyMeasurable_fun_sum fun n _ => hF_meas n
@@ -114,7 +113,7 @@ theorem integral_tsum {ι} [Countable ι] {f : ι → α → G} (hf : ∀ i, AES
   have hf'' i : AEMeasurable (‖f i ·‖ₑ) μ := (hf i).enorm
   have hhh : ∀ᵐ a : α ∂μ, Summable fun n => (‖f n a‖₊ : ℝ) := by
     rw [← lintegral_tsum hf''] at hf'
-    refine (ae_lt_top' (AEMeasurable.ennreal_tsum hf'') hf').mono ?_
+    refine (ae_lt_top' (AEMeasurable.tsum hf'') hf').mono ?_
     intro x hx
     rw [← ENNReal.tsum_coe_ne_top_iff_summable_coe]
     exact hx.ne
@@ -123,11 +122,7 @@ theorem integral_tsum {ι} [Countable ι] {f : ι → α → G} (hf : ∀ i, AES
   · intro n
     filter_upwards with x
     rfl
-  · simp_rw [← NNReal.coe_tsum]
-    rw [aestronglyMeasurable_iff_aemeasurable]
-    apply AEMeasurable.coe_nnreal_real
-    apply AEMeasurable.nnreal_tsum
-    exact fun i => (hf i).nnnorm.aemeasurable
+  · fun_prop
   · dsimp [HasFiniteIntegral]
     have : ∫⁻ a, ∑' n, ‖f n a‖ₑ ∂μ < ⊤ := by rwa [lintegral_tsum hf'', lt_top_iff_ne_top]
     convert this using 1
@@ -192,12 +187,12 @@ theorem _root_.Antitone.tendsto_setIntegral (hsm : ∀ i, MeasurableSet (s i)) (
   refine tendsto_integral_of_dominated_convergence bound ?_ ?_ ?_ ?_
   · intro n
     rw [aestronglyMeasurable_indicator_iff (hsm n)]
-    exact (IntegrableOn.mono_set hfi (h_anti (zero_le n))).1
+    exact (IntegrableOn.mono_set hfi (h_anti zero_le)).1
   · rw [integrable_indicator_iff (hsm 0)]
     exact hfi.norm
   · simp_rw [norm_indicator_eq_indicator_norm]
     refine fun n => Eventually.of_forall fun x => ?_
-    grw [(h_anti (zero_le n)).subset]
+    grw [(h_anti zero_le).subset]
   · filter_upwards [] with a using le_trans (h_anti.tendsto_indicator _ _ _) (pure_le_nhds _)
 
 end TendstoMono
@@ -472,8 +467,7 @@ theorem continuousOn_primitive (h_int : IntegrableOn f (Icc a b) μ) :
     rw [continuousOn_congr this]
     intro x₀ _
     refine continuousWithinAt_primitive (measure_singleton x₀) ?_
-    simp only [intervalIntegrable_iff_integrableOn_Ioc_of_le, max_eq_right, h,
-      min_self]
+    simp only [intervalIntegrable_iff_integrableOn_Ioc_of_le, max_eq_right, h, min_self]
     exact h_int.mono Ioc_subset_Icc_self le_rfl
   · rw [Icc_eq_empty h]
     exact continuousOn_empty _
@@ -636,5 +630,97 @@ theorem continuous_parametric_intervalIntegral_of_continuous'
 end ContinuousPrimitive
 
 end intervalIntegral
+
+namespace MeasureTheory
+
+namespace IntegrableOn
+
+open intervalIntegral
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {μ : Measure ℝ} {f : ℝ → E}
+
+theorem continuousWithinAt_Ici_primitive_Ioi {a₀ : ℝ} (hf : IntegrableOn f (Ioi a₀) μ) :
+    ContinuousWithinAt (fun b ↦ ∫ x in Ioi b, f x ∂μ) (Ici a₀) a₀ := by
+  simp_rw [← integral_indicator measurableSet_Ioi]
+  apply tendsto_integral_filter_of_dominated_convergence ((Ioi a₀).indicator (norm ∘ f))
+  · filter_upwards [self_mem_nhdsWithin] with a ha
+    rw [aestronglyMeasurable_indicator_iff measurableSet_Ioi]
+    exact (hf.mono_set (Ioi_subset_Ioi ha)).aestronglyMeasurable
+  · filter_upwards [self_mem_nhdsWithin] with a ha
+    refine ae_of_all _ fun x ↦ ?_
+    rw [norm_indicator_eq_indicator_norm]
+    apply indicator_le_indicator_of_subset (Ioi_subset_Ioi (by grind)) (fun a ↦ norm_nonneg (f a))
+  · simpa [integrable_indicator_iff measurableSet_Ioi] using hf.norm
+  · refine ae_of_all _ fun x ↦ ?_
+    simp only [indicator_apply, mem_Ioi]
+    by_cases hx : a₀ < x <;> apply tendsto_const_nhds.congr'
+    · filter_upwards [mem_nhdsWithin_of_mem_nhds (Iio_mem_nhds hx)] with a ha using by grind
+    · filter_upwards [self_mem_nhdsWithin] with a ha using by grind
+
+theorem continuousOn_Ici_primitive_Ioi [NoAtoms μ] {a₀ : ℝ} (hf : IntegrableOn f (Ioi a₀) μ) :
+    ContinuousOn (fun b ↦ ∫ x in Ioi b, f x ∂μ) (Ici a₀) := by
+  intro a (ha : a₀ ≤ a)
+  rw [continuousWithinAt_iff_continuous_left_right]
+  constructor
+  · rw [Ici_inter_Iic]
+    have h_int : IntervalIntegrable f μ a₀ a :=
+      (intervalIntegrable_iff_integrableOn_Ioc_of_le ha).2 <| hf.mono_set Ioc_subset_Ioi_self
+    have h_split : ∀ b ∈ Icc a₀ a, ∫ x in Ioi b, f x ∂μ =
+        (∫ x in Ioi a₀, f x ∂μ) - ∫ x in a₀..b, f x ∂μ := by
+      intro b hb
+      simp [← integral_Ioi_sub_Ioi hf hb.1]
+    have h_cwa : ContinuousWithinAt (fun b ↦ ∫ x in a₀..b, f x ∂μ) (Icc a₀ a) a :=
+      continuousWithinAt_primitive (measure_singleton a) (by simpa [ha])
+    exact (continuousWithinAt_const.sub h_cwa).congr h_split (h_split a (right_mem_Icc.2 ha))
+  · simpa [ha] using (hf.mono_set (Ioi_subset_Ioi ha)).continuousWithinAt_Ici_primitive_Ioi
+
+theorem continuousWithinAt_Iic_primitive_Iio {a₀ : ℝ} (hf : IntegrableOn f (Iio a₀) μ) :
+    ContinuousWithinAt (fun b ↦ ∫ x in Iio b, f x ∂μ) (Iic a₀) a₀ := by
+  simp_rw [← integral_indicator measurableSet_Iio]
+  apply tendsto_integral_filter_of_dominated_convergence ((Iio a₀).indicator (norm ∘ f))
+  · filter_upwards [self_mem_nhdsWithin] with a ha
+    rw [aestronglyMeasurable_indicator_iff measurableSet_Iio]
+    exact (hf.mono_set (Iio_subset_Iio ha)).aestronglyMeasurable
+  · filter_upwards [self_mem_nhdsWithin] with a ha
+    refine ae_of_all _ fun x ↦ ?_
+    rw [norm_indicator_eq_indicator_norm]
+    apply indicator_le_indicator_of_subset (Iio_subset_Iio (by grind)) (fun a ↦ norm_nonneg (f a))
+  · simpa [integrable_indicator_iff measurableSet_Iio] using hf.norm
+  · refine ae_of_all _ fun x ↦ ?_
+    simp only [indicator_apply, mem_Iio]
+    by_cases hx : x < a₀ <;> apply tendsto_const_nhds.congr'
+    · filter_upwards [mem_nhdsWithin_of_mem_nhds (Ioi_mem_nhds hx)] with a ha using by grind
+    · filter_upwards [self_mem_nhdsWithin] with a ha using by grind
+
+theorem continuousOn_Iic_primitive_Iio [NoAtoms μ] {a₀ : ℝ} (hf : IntegrableOn f (Iio a₀) μ) :
+    ContinuousOn (fun b ↦ ∫ x in Iio b, f x ∂μ) (Iic a₀) := by
+  intro a (ha : a ≤ a₀)
+  rw [continuousWithinAt_iff_continuous_left_right]
+  constructor
+  · simpa [ha] using (hf.mono_set (Iio_subset_Iio ha)).continuousWithinAt_Iic_primitive_Iio
+  · rw [Iic_inter_Ici]
+    have h_int : IntervalIntegrable f μ a a₀ :=
+      (intervalIntegrable_iff_integrableOn_Ico_of_le ha).2 <| hf.mono_set Ico_subset_Iio_self
+    have h_split : ∀ b ∈ Icc a a₀, ∫ x in Iio b, f x ∂μ =
+        (∫ x in Iio a₀, f x ∂μ) + ∫ x in a₀..b, f x ∂μ := by
+      intro b hb
+      simp [integral_symm b a₀, ← integral_Iio_sub_Iio' hf (hf.mono_set (Iio_subset_Iio hb.2))]
+    have h_cwa : ContinuousWithinAt (fun b ↦ ∫ x in a₀..b, f x ∂μ) (Icc a a₀) a :=
+      continuousWithinAt_primitive (measure_singleton a) (by simpa [ha])
+    exact (continuousWithinAt_const.add h_cwa).congr h_split (h_split a (left_mem_Icc.2 ha))
+
+theorem continuousOn_Ici_primitive_Ici [NoAtoms μ] {a₀ : ℝ} (hf : IntegrableOn f (Ici a₀) μ) :
+    ContinuousOn (fun b ↦ ∫ x in Ici b, f x ∂μ) (Ici a₀) := by
+  simp_rw [integral_Ici_eq_integral_Ioi]
+  exact (hf.mono_set Ioi_subset_Ici_self).continuousOn_Ici_primitive_Ioi
+
+theorem continuousOn_Iic_primitive_Iic [NoAtoms μ] {a₀ : ℝ} (hf : IntegrableOn f (Iic a₀) μ) :
+    ContinuousOn (fun b ↦ ∫ x in Iic b, f x ∂μ) (Iic a₀) := by
+  simp_rw [integral_Iic_eq_integral_Iio]
+  exact (hf.mono_set Iio_subset_Iic_self).continuousOn_Iic_primitive_Iio
+
+end IntegrableOn
+
+end MeasureTheory
 
 end DominatedConvergenceTheorem

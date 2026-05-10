@@ -16,11 +16,11 @@ into a separate file, not with the definition of `DomMulAct`.
 
 ## TODO
 
-Add left actions of, e.g., `M` on `α →[N] β` to `Mathlib/Algebra/Hom/GroupAction.lean` and
+Add left actions of, e.g., `M` on `α →[N] β` to `Mathlib/Algebra/Group/Action/Hom.lean` and
 `SMulCommClass` instances saying that left and right actions commute.
 -/
 
-@[expose] public section
+public section
 
 namespace DomMulAct
 

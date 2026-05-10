@@ -58,11 +58,10 @@ lemma house_prod_le (s : Finset K) : house (∏ x ∈ s, x) ≤ ∏ x ∈ s, hou
 theorem house_add_le (α β : K) : house (α + β) ≤ house α + house β := by
   simp only [house, map_add]; apply norm_add_le
 
-theorem house_pow_le (α : K) (i : ℕ) : house (α^i) ≤ house α ^ i := by
+theorem house_pow_le (α : K) (i : ℕ) : house (α ^ i) ≤ house α ^ i := by
   simpa only [house, map_pow] using norm_pow_le ((canonicalEmbedding K) α) i
 
-theorem house_nat_mul (α : K) (c : ℕ) :
-    house (c * α) = c * house α := by
+theorem house_nat_mul (α : K) (c : ℕ) : house (c * α) = c * house α := by
   rw [house_eq_sup', house_eq_sup', Finset.sup'_eq_sup, Finset.sup'_eq_sup]
   norm_cast
   simp [NNReal.mul_finset_sup]
@@ -134,6 +133,7 @@ private theorem c_nonneg : 0 ≤ c K := by
   rw [c]
   positivity
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 theorem basis_repr_norm_le_const_mul_house (α : 𝓞 K) (i : K →+* ℂ) :
@@ -185,6 +185,7 @@ private def asiegel : Matrix (α × (K →+* ℂ)) (β × (K →+* ℂ)) ℤ := 
 
 variable (ha : a ≠ 0)
 
+set_option backward.isDefEq.respectTransparency false in
 include ha in
 private theorem asiegel_ne_0 : asiegel K a ≠ 0 := by
   simp +unfoldPartialApp only [asiegel, a']
@@ -343,7 +344,7 @@ theorem exists_ne_zero_int_vec_house_le :
     ∀ l, house (ξ l).1 ≤ c₁ K * ((c₁ K * q * A) ^ ((p : ℝ) / (q - p))) := by
   classical
   let h := finrank ℚ K
-  have hphqh : p * h < q * h := mul_lt_mul_of_pos_right hpq finrank_pos
+  have hphqh : p * h < q * h := by gcongr; exact finrank_pos
   have h0ph : 0 < p * h := by rw [mul_pos_iff]; constructor; exact ⟨h0p, finrank_pos⟩
   have hfinp : Fintype.card (α × (K →+* ℂ)) = p * h := by
     rw [Fintype.card_prod, cardα, Embeddings.card]

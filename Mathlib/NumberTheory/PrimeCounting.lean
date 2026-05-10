@@ -97,8 +97,6 @@ theorem tendsto_primeCounting' : Tendsto π' atTop atTop := by
 theorem tendsto_primeCounting : Tendsto π atTop atTop :=
   (tendsto_add_atTop_iff_nat 1).mpr tendsto_primeCounting'
 
-@[deprecated (since := "2025-07-08")] alias tensto_primeCounting := tendsto_primeCounting
-
 @[simp]
 theorem prime_nth_prime (n : ℕ) : Prime (nth Prime n) :=
   nth_mem_of_infinite infinite_setOf_prime _
@@ -109,7 +107,7 @@ lemma primeCounting'_eq_zero_iff {n : ℕ} : n.primeCounting' = 0 ↔ n ≤ 2 :=
 
 @[simp]
 lemma primeCounting_eq_zero_iff {n : ℕ} : n.primeCounting = 0 ↔ n ≤ 1 := by
-  simp [primeCounting]
+  simp [primeCounting, -Order.add_one_le_iff]
 
 @[simp]
 lemma primeCounting_zero : primeCounting 0 = 0 :=
@@ -130,7 +128,7 @@ theorem primeCounting'_add_le {a k : ℕ} (h0 : a ≠ 0) (h1 : a < k) (n : ℕ) 
     π' (k + n) ≤ π' k + Nat.totient a * (n / a + 1) :=
   calc
     π' (k + n) ≤ #{p ∈ range k | p.Prime} + #{p ∈ Ico k (k + n) | p.Prime} := by
-      rw [primeCounting', count_eq_card_filter_range, range_eq_Ico, ←
+      rw [primeCounting', count_eq_card_filter_range, range_eq_Ico, range_eq_Ico, ←
         Ico_union_Ico_eq_Ico (zero_le k) le_self_add, filter_union]
       apply card_union_le
     _ ≤ π' k + #{p ∈ Ico k (k + n) | p.Prime} := by

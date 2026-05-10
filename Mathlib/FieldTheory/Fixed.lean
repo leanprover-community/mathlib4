@@ -13,22 +13,22 @@ public import Mathlib.FieldTheory.Normal.Defs
 public import Mathlib.FieldTheory.Separable
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+public import Mathlib.RingTheory.Polynomial.Subring
 
 /-!
 # Fixed field under a group action.
 
 This is the basis of the Fundamental Theorem of Galois Theory.
 Given a (finite) group `G` that acts on a field `F`, we define `FixedPoints.subfield G F`,
-the subfield consisting of elements of `F` fixed_points by every element of `G`.
+the subfield consisting of elements of `F` fixed by every element of `G`.
 
 This subfield is then normal and separable, and in addition if `G` acts faithfully on `F`
 then `finrank (FixedPoints.subfield G F) F = Fintype.card G`.
 
 ## Main Definitions
 
-- `FixedPoints.subfield G F`, the subfield consisting of elements of `F` fixed_points by every
-element of `G`, where `G` is a group that acts on `F`.
-
+- `FixedPoints.subfield G F`, the subfield consisting of elements of `F` fixed by every
+  element of `G`, where `G` is a group that acts on `F`.
 -/
 
 @[expose] public section
@@ -42,9 +42,9 @@ universe u v w
 
 variable {M : Type u} [Monoid M]
 variable (G : Type u) [Group G]
-variable (F : Type v) [Field F] [MulSemiringAction M F] [MulSemiringAction G F] (m : M)
+variable (K : Type*) (F : Type v) [Field F] [MulSemiringAction M F] [MulSemiringAction G F] (m : M)
 
-/-- The subfield of F fixed by the field endomorphism `m`. -/
+/-- The subfield of `F` fixed by the field endomorphism `m`. -/
 def FixedBy.subfield : Subfield F where
   carrier := fixedBy F m
   zero_mem' := smul_zero m
@@ -53,6 +53,21 @@ def FixedBy.subfield : Subfield F where
   one_mem' := smul_one m
   mul_mem' hx hy := (smul_mul' m _ _).trans <| congr_arg₂ _ hx hy
   inv_mem' x hx := (smul_inv'' m x).trans <| congr_arg _ hx
+
+@[simp]
+theorem FixedBy.subfield_mem_iff (x : F) :
+    x ∈ FixedBy.subfield F m ↔ m • x = x := Iff.rfl
+
+variable [Field K] [Algebra K F] [SMulCommClass M K F]
+
+/-- The intermediate field between `K` and `F` fixed by the field endomorphism `m`. -/
+def FixedBy.intermediateField : IntermediateField K F where
+  __ := FixedBy.subfield F m
+  algebraMap_mem' x := smul_algebraMap m x
+
+@[simp]
+theorem FixedBy.intermediateField_mem_iff (x : F) :
+    x ∈ FixedBy.intermediateField K F m ↔ m • x = x := Iff.rfl
 
 section InvariantSubfields
 
@@ -276,7 +291,7 @@ instance isSeparable : Algebra.IsSeparable (FixedPoints.subfield G F) F := by
 instance : FiniteDimensional (subfield G F) F := by
   cases nonempty_fintype G
   exact IsNoetherian.iff_fg.1
-      (IsNoetherian.iff_rank_lt_aleph0.2 <| (rank_le_card G F).trans_lt <| Cardinal.nat_lt_aleph0 _)
+    (IsNoetherian.iff_rank_lt_aleph0.2 <| (rank_le_card G F).trans_lt Cardinal.natCast_lt_aleph0)
 
 end Finite
 
@@ -366,10 +381,10 @@ theorem toAlgAut_surjective [Finite G] :
     MulSemiringAction.toAlgAut G (FixedPoints.subfield G F) F
   let Q := G ⧸ f.ker
   let _ : MulSemiringAction Q F := MulSemiringAction.compHom _ (QuotientGroup.kerLift f)
-  have : FaithfulSMul Q F := ⟨by
-    intro q₁ q₂
-    refine Quotient.inductionOn₂' q₁ q₂ (fun g₁ g₂ h ↦ QuotientGroup.eq.mpr ?_)
-    rwa [MonoidHom.mem_ker, map_mul, map_inv, inv_mul_eq_one, AlgEquiv.ext_iff]⟩
+  have : FaithfulSMul Q F := ⟨fun {q₁ q₂} ↦ by
+    induction q₁, q₂ using Quotient.inductionOn₂ with | _ g₁ g₂
+    intro h
+    rwa [QuotientGroup.eq, MonoidHom.mem_ker, map_mul, map_inv, inv_mul_eq_one, AlgEquiv.ext_iff]⟩
   intro f
   obtain ⟨q, hq⟩ := (toAlgAut_bijective Q F).surjective
     (AlgEquiv.ofRingEquiv (f := f) (fun ⟨x, hx⟩ ↦ f.commutes' ⟨x, fun g ↦ hx g⟩))

@@ -9,7 +9,7 @@ public import Mathlib.CategoryTheory.FinCategory.AsType
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback  -- shake: keep (`example`)
 public import Mathlib.Data.Fintype.Option
 
 /-!
@@ -18,7 +18,7 @@ public import Mathlib.Data.Fintype.Option
 A typeclass for categories with all finite (co)limits.
 -/
 
-@[expose] public section
+public section
 
 
 universe w' w v' u' v u

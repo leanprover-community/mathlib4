@@ -74,9 +74,8 @@ variable [Countable ι]
 
 lemma setBernoulli_ae_subset : ∀ᵐ s ∂setBer(u, p), s ⊆ u := by
   classical
-  change _ = _
-  simp only [Set.compl_setOf, Set.not_subset_iff_exists_mem_notMem, Set.setOf_exists, Set.setOf_and,
-    measure_iUnion_null_iff]
+  simp only [Filter.Eventually, mem_ae_iff, Set.compl_setOf, Set.not_subset_iff_exists_mem_notMem,
+    Set.setOf_exists, Set.setOf_and, measure_iUnion_null_iff]
   rintro i
   by_cases hi : i ∈ u
   · simp [*]
@@ -88,7 +87,18 @@ lemma setBernoulli_ae_subset : ∀ᵐ s ∂setBer(u, p), s ⊆ u := by
       rw [setBernoulli_apply']; congr!; ext; simp [funext_iff]
     _ = 0 := by simp [infinitePi_cylinder, hi]
 
-variable (u p) in
+@[simp]
+lemma setBernoulli_singleton_of_not_subset {s : Set ι} (p : I) (hs : ¬ s ⊆ u) :
+    setBer(u, p) {s} = 0 :=
+  Measure.mono_null (by simpa) setBernoulli_ae_subset
+
+/-- `setBer(u, p)` only gives mass to families of sets contained in `u`. -/
+lemma setBernoulli_apply_eq_apply_subsets (u : Set ι) (p : I) (S : Set (Set ι)) :
+    setBer(u, p) S = setBer(u, p) { s ∈ S | s ⊆ u} := by
+  apply (measure_eq_measure_of_null_diff (by grind) ?_).symm
+  exact Measure.mono_null (by grind) setBernoulli_ae_subset
+
+variable (p) in
 @[simp] lemma setBernoulli_singleton (hsu : s ⊆ u) (hu : u.Finite) :
     setBer(u, p) {s} = toNNReal p ^ s.ncard * toNNReal (σ p) ^ (u \ s).ncard := by
   classical
@@ -98,13 +108,28 @@ variable (u p) in
     _ = ∏' i, ((if i ∈ u ↔ i ∈ s then (toNNReal p : ℝ≥0∞) else 0) +
           if i ∈ s then 0 else (toNNReal (σ p) : ℝ≥0∞)) := by
       simp [setBernoulli_apply, Set.image_singleton, Set.indicator]
-      simp [ENNReal.smul_def]
     _ = ∏ i ∈ u, (if i ∈ s then (toNNReal p : ℝ≥0∞) else (toNNReal (σ p) : ℝ≥0∞)) := by
       rw [tprod_eq_prod, Finset.prod_congr rfl] <;>
         simp +contextual [ite_add_ite, mt (@hsu _), ← ENNReal.coe_add]
     _ = toNNReal p ^ s.ncard * toNNReal (σ p) ^ (↑u \ s).ncard := by
       simp [Finset.prod_ite, ← Set.ncard_coe_finset, Set.setOf_and,
         Set.inter_eq_right.2 hsu, ← Set.compl_setOf, Set.diff_eq_compl_inter, Set.inter_comm]
+
+@[simp]
+lemma setBernoulli_real_singleton (p : I) (hsu : s ⊆ u) (hu : u.Finite) :
+    setBer(u, p).real {s} = p ^ s.ncard * (1 - p : ℝ) ^ (u \ s).ncard := by
+  simp [measureReal_def, setBernoulli_singleton p hsu hu]
+
+@[simp]
+lemma setBernoulli_empty : setBer((∅ : Set ι), p) = dirac ∅ := by
+  ext s hs
+  rw [setBernoulli_apply_eq_apply_subsets]
+  by_cases h : ∅ ∈ s
+  · have : {t | t ∈ s ∧ t ⊆ ∅} = {∅} := by grind
+    simp_all
+  · have : {t | t ∈ s ∧ t ⊆ ∅} = ∅ := by grind
+    rw [this]
+    simp_all
 
 end Countable
 

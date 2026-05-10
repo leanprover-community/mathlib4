@@ -156,17 +156,11 @@ instance canLift : CanLift (OnePoint X) X (↑) fun x => x ≠ ∞ :=
 theorem notMem_range_coe_iff {x : OnePoint X} : x ∉ range some ↔ x = ∞ := by
   rw [← mem_compl_iff, compl_range_coe, mem_singleton_iff]
 
-@[deprecated (since := "2025-05-23")] alias not_mem_range_coe_iff := notMem_range_coe_iff
-
 theorem infty_notMem_range_coe : ∞ ∉ range ((↑) : X → OnePoint X) :=
   notMem_range_coe_iff.2 rfl
 
-@[deprecated (since := "2025-05-23")] alias infty_not_mem_range_coe := infty_notMem_range_coe
-
 theorem infty_notMem_image_coe {s : Set X} : ∞ ∉ ((↑) : X → OnePoint X) '' s :=
   notMem_subset (image_subset_range _ _) infty_notMem_range_coe
-
-@[deprecated (since := "2025-05-23")] alias infty_not_mem_image_coe := infty_notMem_image_coe
 
 @[simp]
 theorem coe_preimage_infty : ((↑) : X → OnePoint X) ⁻¹' {∞} = ∅ := by
@@ -237,8 +231,6 @@ theorem isOpen_iff_of_mem (h : ∞ ∈ s) :
 theorem isOpen_iff_of_notMem (h : ∞ ∉ s) : IsOpen s ↔ IsOpen ((↑) ⁻¹' s : Set X) := by
   simp [isOpen_def, h]
 
-@[deprecated (since := "2025-05-23")] alias isOpen_iff_of_not_mem := isOpen_iff_of_notMem
-
 theorem isClosed_iff_of_mem (h : ∞ ∈ s) : IsClosed s ↔ IsClosed ((↑) ⁻¹' s : Set X) := by
   have : ∞ ∉ sᶜ := fun H => H h
   rw [← isOpen_compl_iff, isOpen_iff_of_notMem this, ← isOpen_compl_iff, preimage_compl]
@@ -246,8 +238,6 @@ theorem isClosed_iff_of_mem (h : ∞ ∈ s) : IsClosed s ↔ IsClosed ((↑) ⁻
 theorem isClosed_iff_of_notMem (h : ∞ ∉ s) :
     IsClosed s ↔ IsClosed ((↑) ⁻¹' s : Set X) ∧ IsCompact ((↑) ⁻¹' s : Set X) := by
   rw [← isOpen_compl_iff, isOpen_iff_of_mem (mem_compl h), ← preimage_compl, compl_compl]
-
-@[deprecated (since := "2025-05-23")] alias isClosed_iff_of_not_mem := isClosed_iff_of_notMem
 
 @[simp]
 theorem isOpen_image_coe {s : Set X} : IsOpen ((↑) '' s : Set (OnePoint X)) ↔ IsOpen s := by
@@ -504,6 +494,7 @@ Finally, if the original space `X` is *not* compact and is a preconnected space,
 `OnePoint X` is a connected space.
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For any topological space `X`, its one point compactification is a compact space. -/
 instance : CompactSpace (OnePoint X) where
   isCompact_univ := by

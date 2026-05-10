@@ -57,6 +57,7 @@ theorem det_eq_one (u : SpecialLinearGroup R V) :
     LinearMap.det (u : V →ₗ[R] V) = 1 := by
   simp [← LinearEquiv.coe_det, u.prop]
 
+/-- The coercion from `SpecialLinearGroup R V` to the function type `V → V` -/
 instance : CoeFun (SpecialLinearGroup R V) (fun _ ↦ V → V) where
   coe u x := u.val x
 
@@ -69,6 +70,7 @@ theorem ext (u v : SpecialLinearGroup R V) : (∀ x, u x = v x) → u = v :=
 
 section rankOne
 
+/-- If a free module has `Module.finrank` equal to `1`, then its special linear group is trivial. -/
 theorem subsingleton_of_finrank_eq_one [Module.Free R V] (d1 : Module.finrank R V = 1) :
     Subsingleton (SpecialLinearGroup R V) where
   allEq u v := by
@@ -167,6 +169,7 @@ theorem coe_dualMap
 
 end CoeLemmas
 
+/-- The special linear group of a module is a group. -/
 instance : Group (SpecialLinearGroup R V) := fast_instance%
   Function.Injective.group _ Subtype.coe_injective coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
 
@@ -176,18 +179,21 @@ def toLinearEquiv : SpecialLinearGroup R V →* V ≃ₗ[R] V where
   map_one' := coe_one
   map_mul' := coe_mul
 
-theorem toLinearEquiv_apply (A : SpecialLinearGroup R V) (v : V) :
+@[simp] lemma toLinearEquiv_apply (A : SpecialLinearGroup R V) (v : V) :
     A.toLinearEquiv v = A v :=
   rfl
 
+@[simp]
 theorem toLinearEquiv_to_linearMap (A : SpecialLinearGroup R V) :
     (SpecialLinearGroup.toLinearEquiv A) = (A : V →ₗ[R] V) :=
   rfl
 
+@[simp]
 theorem toLinearEquiv_symm_apply (A : SpecialLinearGroup R V) (v : V) :
     A.toLinearEquiv.symm v = A⁻¹ v :=
   rfl
 
+@[simp]
 theorem toLinearEquiv_symm_to_linearMap (A : SpecialLinearGroup R V) :
     A.toLinearEquiv.symm = ((A⁻¹ : SpecialLinearGroup R V) : V →ₗ[R] V) :=
   rfl
@@ -220,6 +226,20 @@ lemma mem_range_toGeneralLinearGroup_iff {u : LinearMap.GeneralLinearGroup R V} 
     exact v.prop
   · intro hu
     refine ⟨⟨u.toLinearEquiv, hu⟩, rfl⟩
+
+/-- The natural action of `SpecialLinearGroup R V` on `V`. -/
+instance : DistribMulAction (SpecialLinearGroup R V) V :=
+  DistribMulAction.compHom  _ (SpecialLinearGroup.toLinearEquiv)
+
+theorem _root_.SpecialLinearGroup.smul_def (g : SpecialLinearGroup R V) (v : V) :
+    g • v = g.toLinearEquiv • v := rfl
+
+theorem _root_.SpecialLinearGroup.toLinearEquiv_eq_coe (g : SpecialLinearGroup R V) :
+    g.toLinearEquiv = (g : V ≃ₗ[R] V) := rfl
+
+instance : SMulCommClass (SpecialLinearGroup R V) R V where
+  smul_comm g a v := by
+    simp [SpecialLinearGroup.smul_def]
 
 section baseChange
 
@@ -398,6 +418,7 @@ noncomputable def centerEquivRootsOfUnity_invFun
       rw [mem_rootsOfUnity', max_eq_left hV] at hr
       simpa [← Subtype.val_inj, ← Units.val_inj]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 open Classical in
 /-- The isomorphism between the roots of unity and the center of the special linear group. -/
 noncomputable def centerEquivRootsOfUnity :
@@ -549,7 +570,7 @@ theorem centerCongr_toLin_equiv_trans_centerEquivRootsOfUnity_eq (g) :
     set g' := ((Subgroup.centerCongr (Matrix.SpecialLinearGroup.toLin_equiv b)) g)
     ext x
     have := centerEquivRootsOfUnity_apply_apply g' x
-    simp only [smul_def, Units.smul_def] at this
+    simp only [Subgroup.smul_def, Units.smul_def] at this
     simp only [LinearMap.smul_apply, LinearMap.id_coe, id_eq]
     rw [this, ← LinearEquiv.coe_toLinearMap, hgg',
       Matrix.SpecialLinearGroup.toLin_equiv.toLinearMap_eq,

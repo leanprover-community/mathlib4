@@ -16,7 +16,7 @@ for every `ε > 0` there exists a `r : ℝ` such that for all `x : E` with `r < 
 `‖f x‖ < ε`.
 -/
 
-@[expose] public section
+public section
 
 open Topology Filter
 

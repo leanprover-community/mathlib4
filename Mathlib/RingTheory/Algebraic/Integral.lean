@@ -10,6 +10,8 @@ public import Mathlib.RingTheory.Algebraic.Basic
 public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 public import Mathlib.RingTheory.Localization.BaseChange
 
+import Mathlib.RingTheory.Polynomial.Subring
+
 /-!
 # Algebraic elements and integral elements
 
@@ -121,7 +123,7 @@ theorem transcendental_aeval_iff {r : A} {f : K[X]} :
     Transcendental K (Polynomial.aeval r f) ↔ Transcendental K r ∧ Transcendental K f := by
   refine ⟨fun h ↦ ⟨?_, h.of_aeval⟩, fun ⟨h1, h2⟩ ↦ h1.aeval_of_transcendental h2⟩
   rw [Transcendental] at h ⊢
-  contrapose! h
+  contrapose h
   rw [isAlgebraic_iff_isIntegral] at h ⊢
   exact .of_mem_of_fg _ h.fg_adjoin_singleton _ (aeval_mem_adjoin_singleton _ _)
 
@@ -148,7 +150,7 @@ namespace IsAlgebraic
 
 theorem exists_integral_multiple (hz : IsAlgebraic R z) : ∃ y ≠ (0 : R), IsIntegral R (y • z) := by
   by_cases inj : Function.Injective (algebraMap R A); swap
-  · rw [injective_iff_map_eq_zero] at inj; push_neg at inj
+  · rw [injective_iff_map_eq_zero] at inj; push Not at inj
     have ⟨r, eq, ne⟩ := inj
     exact ⟨r, ne, by simpa [← algebraMap_smul A, eq, zero_smul] using isIntegral_zero⟩
   have ⟨p, p_ne_zero, px⟩ := hz
@@ -226,7 +228,10 @@ theorem restrictScalars [Algebra.IsAlgebraic R S]
   by_cases hRS : Function.Injective (algebraMap R S)
   on_goal 2 => exact (Algebra.isAlgebraic_of_not_injective
     fun h ↦ hRS <| .of_comp (IsScalarTower.algebraMap_eq R S A ▸ h)).1 _
-  have := hRS.noZeroDivisors _ (map_zero _) (map_mul _)
+  rw [← faithfulSMul_iff_algebraMap_injective] at hRS
+  have := NoZeroDivisors.of_faithfulSMul R S
+  have := Algebra.nontrivial_of_isAlgebraic R S
+  have : IsDomain R := NoZeroDivisors.to_isDomain _
   classical
   have ⟨r, hr, int⟩ := Algebra.IsAlgebraic.exists_integral_multiples R (p.support.image (coeff p))
   let p := (r • p).toSubring (integralClosure R S).toSubring fun s hs ↦ by
@@ -234,9 +239,8 @@ theorem restrictScalars [Algebra.IsAlgebraic R S]
     exact int _ (Finset.mem_image_of_mem _ <| support_smul _ _ hn)
   have : IsAlgebraic (integralClosure R S) a := by
     refine ⟨p, ?_, ?_⟩
-    · have : FaithfulSMul R S := (faithfulSMul_iff_algebraMap_injective R S).mpr hRS
-      simpa only [← Polynomial.map_ne_zero_iff (f := Subring.subtype _) Subtype.val_injective,
-        p, map_toSubring, smul_ne_zero_iff] using And.intro hr hp
+    · simpa only [← Polynomial.map_ne_zero_iff (f := Subring.subtype _) (p := p)
+        Subtype.val_injective, p, map_toSubring, smul_ne_zero_iff] using And.intro hr hp
     rw [← eval_map_algebraMap, Subalgebra.algebraMap_eq, ← map_map, ← Subalgebra.toSubring_subtype,
       map_toSubring, eval_map_algebraMap, ← AlgHom.restrictScalars_apply R,
       map_smul, AlgHom.restrictScalars_apply, eval0, smul_zero]
@@ -627,14 +631,14 @@ namespace Algebra.IsAlgebraic
 
 @[stacks 0G1M] theorem rank_fractionRing_polynomial :
     Module.rank (FractionRing R[X]) (FractionRing S[X]) = Module.rank R S := by
-  have := (FaithfulSMul.algebraMap_injective R S).isDomain
+  have := IsDomain.of_faithfulSMul R S
   rw [rank_fractionRing, rank_polynomial_polynomial]
 
 open Cardinal in
 @[stacks 0G1M] theorem rank_fractionRing_mvPolynomial (σ : Type u) :
     Module.rank (FractionRing (MvPolynomial σ R)) (FractionRing (MvPolynomial σ S)) =
     lift.{u} (Module.rank R S) := by
-  have := (FaithfulSMul.algebraMap_injective R S).isDomain
+  have := IsDomain.of_faithfulSMul R S
   rw [rank_fractionRing, rank_mvPolynomial_mvPolynomial]
 
 end Algebra.IsAlgebraic
@@ -648,7 +652,7 @@ open scoped nonZeroDivisors
 
 attribute [local instance] FractionRing.liftAlgebra
 
-instance [IsDomain R] [IsDomain S] [NoZeroSMulDivisors R S] [Module.Finite R S] :
+instance [IsDomain R] [IsDomain S] [IsTorsionFree R S] [Module.Finite R S] :
     FiniteDimensional (FractionRing R) (FractionRing S) := by
   obtain ⟨_, s, hs⟩ := Module.Finite.exists_fin (R := R) (M := S)
   exact Module.finite_def.mpr <|

@@ -169,7 +169,7 @@ theorem energy_increment (hP : P.IsEquipartition) (hP₇ : 7 ≤ #P.parts)
     _ ≤ _ := sum_le_sum fun i _ ↦ le_sum_distinctPairs_edgeDensity_sq i hε₁ hPα hPε
   gcongr
   calc
-    _ = (6/7 * #P.parts ^ 2) * ε ^ 5 * (7 / 24) := by ring
+    _ = (6 / 7 * #P.parts ^ 2) * ε ^ 5 * (7 / 24) := by ring
     _ ≤ #P.parts.offDiag * ε ^ 5 * (22 / 75) := by
         gcongr ?_ * _ * ?_
         · rw [← mul_div_right_comm, div_le_iff₀ (by simp), offDiag_card]

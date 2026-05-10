@@ -12,7 +12,7 @@ public import Mathlib.Analysis.Calculus.MeanValue
 # Higher differentiability over `ℝ` or `ℂ`
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -79,11 +79,13 @@ theorem ContDiff.hasStrictDerivAt {f : 𝕂 → F'} {x : 𝕂} (hf : ContDiff �
     HasStrictDerivAt f (deriv f x) x :=
   hf.contDiffAt.hasStrictDerivAt hn
 
-/-- If `f` has a formal Taylor series `p` up to order `1` on `{x} ∪ s`, where `s` is a convex set,
-and `‖p x 1‖₊ < K`, then `f` is `K`-Lipschitz in a neighborhood of `x` within `s`. -/
-theorem HasFTaylorSeriesUpToOn.exists_lipschitzOnWith_of_nnnorm_lt {E F : Type*}
+variable {E F : Type*}
     [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F] {f : E → F}
     {p : E → FormalMultilinearSeries ℝ E F} {s : Set E} {x : E}
+
+/-- If `f` has a formal Taylor series `p` up to order `1` on `{x} ∪ s`, where `s` is a convex set,
+and `‖p x 1‖₊ < K`, then `f` is `K`-Lipschitz in a neighborhood of `x` within `s`. -/
+theorem HasFTaylorSeriesUpToOn.exists_lipschitzOnWith_of_nnnorm_lt
     (hf : HasFTaylorSeriesUpToOn 1 f p (insert x s)) (hs : Convex ℝ s) (K : ℝ≥0)
     (hK : ‖p x 1‖₊ < K) : ∃ t ∈ 𝓝[s] x, LipschitzOnWith K f t := by
   set f' := fun y => continuousMultilinearCurryFin1 ℝ E F (p y 1)
@@ -99,17 +101,14 @@ theorem HasFTaylorSeriesUpToOn.exists_lipschitzOnWith_of_nnnorm_lt {E F : Type*}
 
 /-- If `f` has a formal Taylor series `p` up to order `1` on `{x} ∪ s`, where `s` is a convex set,
 then `f` is Lipschitz in a neighborhood of `x` within `s`. -/
-theorem HasFTaylorSeriesUpToOn.exists_lipschitzOnWith {E F : Type*} [NormedAddCommGroup E]
-    [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F] {f : E → F}
-    {p : E → FormalMultilinearSeries ℝ E F} {s : Set E} {x : E}
+theorem HasFTaylorSeriesUpToOn.exists_lipschitzOnWith
     (hf : HasFTaylorSeriesUpToOn 1 f p (insert x s)) (hs : Convex ℝ s) :
     ∃ K, ∃ t ∈ 𝓝[s] x, LipschitzOnWith K f t :=
   (exists_gt _).imp <| hf.exists_lipschitzOnWith_of_nnnorm_lt hs
 
 /-- If `f` is `C^1` within a convex set `s` at `x`, then it is Lipschitz on a neighborhood of `x`
 within `s`. -/
-theorem ContDiffWithinAt.exists_lipschitzOnWith {E F : Type*} [NormedAddCommGroup E]
-    [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F] {f : E → F} {s : Set E} {x : E}
+theorem ContDiffWithinAt.exists_lipschitzOnWith
     (hf : ContDiffWithinAt ℝ 1 f s x) (hs : Convex ℝ s) :
     ∃ K : ℝ≥0, ∃ t ∈ 𝓝[s] x, LipschitzOnWith K f t := by
   rcases hf 1 le_rfl with ⟨t, hst, p, hp⟩
@@ -133,18 +132,32 @@ theorem ContDiffAt.exists_lipschitzOnWith {f : E' → F'} {x : E'} (hf : ContDif
     ∃ K, ∃ t ∈ 𝓝 x, LipschitzOnWith K f t :=
   (hf.hasStrictFDerivAt one_ne_zero).exists_lipschitzOnWith
 
-/-- If `f` is `C^1`, it is locally Lipschitz. -/
+/-- If `f` is `C¹` on a convex set `s`, it is locally Lipschitz on `s`. -/
+lemma ContDiffOn.locallyLipschitzOn {f : E → F} {s : Set E} (hs : Convex ℝ s)
+    (hf : ContDiffOn ℝ 1 f s) : LocallyLipschitzOn s f := by
+  intro x hx
+  obtain ⟨K, t, ht, hf⟩ := ContDiffWithinAt.exists_lipschitzOnWith (hf x hx) hs
+  use K, t
+
+/-- If `f` is `C¹`, it is locally Lipschitz. -/
 lemma ContDiff.locallyLipschitz {f : E' → F'} (hf : ContDiff 𝕂 1 f) : LocallyLipschitz f := by
   intro x
   rcases hf.contDiffAt.exists_lipschitzOnWith with ⟨K, t, ht, hf⟩
   use K, t
 
-/-- A `C^1` function with compact support is Lipschitz. -/
+/-- If `f` is `C¹` on a convex compact set `s`, it is Lipschitz on `s`. -/
+theorem ContDiffOn.exists_lipschitzOnWith {s : Set E} {f : E → F} {n} (hf : ContDiffOn ℝ n f s)
+    (hn : n ≠ 0) (hs : Convex ℝ s) (hs' : IsCompact s) :
+    ∃ K, LipschitzOnWith K f s := by
+  apply LocallyLipschitzOn.exists_lipschitzOnWith_of_compact hs'
+  exact (hf.of_le <| ENat.one_le_iff_ne_zero_withTop.2 hn).locallyLipschitzOn hs
+
+/-- A `C^n` function with compact support is Lipschitz. -/
 theorem ContDiff.lipschitzWith_of_hasCompactSupport {f : E' → F'}
     (hf : HasCompactSupport f) (h'f : ContDiff 𝕂 n f) (hn : n ≠ 0) :
     ∃ C, LipschitzWith C f := by
   obtain ⟨C, hC⟩ := (hf.fderiv 𝕂).exists_bound_of_continuous (h'f.continuous_fderiv hn)
-  refine ⟨⟨max C 0, le_max_right _ _⟩, ?_⟩
+  refine ⟨.mk (max C 0) (le_max_right _ _), ?_⟩
   apply lipschitzWith_of_nnnorm_fderiv_le (h'f.differentiable hn) (fun x ↦ ?_)
   simp [← NNReal.coe_le_coe, hC x]
 

@@ -21,7 +21,7 @@ converge to the orthogonal projection of `x` to the subspace of fixed points of 
 see `ContinuousLinearMap.tendsto_birkhoffAverage_orthogonalProjection`.
 -/
 
-@[expose] public section
+public section
 
 open Filter Finset Function Bornology
 open scoped Topology
@@ -47,7 +47,7 @@ on the inner product space structure.
 theorem LinearMap.tendsto_birkhoffAverage_of_ker_subset_closure [NormedSpace 𝕜 E]
     (f : E →ₗ[𝕜] E) (hf : LipschitzWith 1 f) (g : E →L[𝕜] LinearMap.eqLocus f 1)
     (hg_proj : ∀ x : LinearMap.eqLocus f 1, g x = x)
-    (hg_ker : (LinearMap.ker g : Set E) ⊆ closure (LinearMap.range (f - 1))) (x : E) :
+    (hg_ker : (g.ker : Set E) ⊆ closure (LinearMap.range (f - 1))) (x : E) :
     Tendsto (birkhoffAverage 𝕜 f _root_.id · x) atTop (𝓝 (g x)) := by
   /- Any point can be represented as a sum of `y ∈ LinearMap.ker g` and a fixed point `z`. -/
   obtain ⟨y, hy, z, hz, rfl⟩ : ∃ y, g y = 0 ∧ ∃ z, IsFixedPt f z ∧ x = y + z :=
@@ -78,6 +78,7 @@ variable [InnerProductSpace 𝕜 E] [CompleteSpace E]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Von Neumann Mean Ergodic Theorem** for an operator in a Hilbert space.
 For a contracting continuous linear self-map `f : E →L[𝕜] E` of a Hilbert space, `‖f‖ ≤ 1`,
 the Birkhoff averages

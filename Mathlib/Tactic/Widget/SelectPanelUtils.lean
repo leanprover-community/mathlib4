@@ -6,9 +6,10 @@ Authors: Patrick Massot
 module
 
 public meta import Lean.Meta.ExprLens
-public meta import ProofWidgets.Component.MakeEditLink
-public meta import ProofWidgets.Component.OfRpcMethod -- needed in all files using this one.
 public meta import Mathlib.Tactic.Widget.SelectInsertParamsClass
+public import Mathlib.Tactic.Widget.SelectInsertParamsClass
+public import ProofWidgets.Component.MakeEditLink
+public import ProofWidgets.Data.Html
 
 /-! # Selection panel utilities
 
@@ -36,7 +37,7 @@ def getGoalLocations (locations : Array GoalsLocation) : Array SubExpr.Pos := Id
 def insertMetaVar (e : Expr) (pos : SubExpr.Pos) : MetaM Expr :=
   replaceSubexpr (fun _ ↦ do mkFreshExprMVar none .synthetic) pos e
 
-/-- Replace all meta-variable names by "?_". -/
+/-- Replace all meta-variable names by `"?_"`. -/
 def String.renameMetaVar (s : String) : String :=
   match s.splitOn "?m." with
   | [] => ""
