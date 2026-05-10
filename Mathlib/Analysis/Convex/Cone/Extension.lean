@@ -6,7 +6,7 @@ Authors: Yury Kudryashov, Frédéric Dupuis
 module
 
 public import Mathlib.Data.Real.Archimedean
-public import Mathlib.Geometry.Convex.Cone.Basic
+public import Mathlib.Geometry.Convex.Cone.Pointed
 public import Mathlib.LinearAlgebra.LinearPMap
 
 /-!
@@ -56,7 +56,7 @@ namespace RieszExtension
 
 open Submodule
 
-variable (s : ConvexCone ℝ E) (f : E →ₗ.[ℝ] ℝ)
+variable (s : PointedCone ℝ E) (f : E →ₗ.[ℝ] ℝ)
 
 /-- Induction step in M. Riesz extension theorem. Given a convex cone `s` in a vector space `E`,
 a partially defined linear map `f : f.domain → ℝ`, assume that `f` is nonnegative on `f.domain ∩ p`
@@ -142,7 +142,7 @@ end RieszExtension
 and a linear `f : p → ℝ`, assume that `f` is nonnegative on `p ∩ s` and `p + s = E`. Then
 there exists a globally defined linear function `g : E → ℝ` that agrees with `f` on `p`,
 and is nonnegative on `s`. -/
-theorem riesz_extension (s : ConvexCone ℝ E) (f : E →ₗ.[ℝ] ℝ)
+theorem riesz_extension (s : PointedCone ℝ E) (f : E →ₗ.[ℝ] ℝ)
     (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
     (dense : ∀ y, ∃ x : f.domain, (x : E) + y ∈ s) :
     ∃ g : E →ₗ[ℝ] ℝ, (∀ x : f.domain, g x = f x) ∧ ∀ x ∈ s, 0 ≤ g x := by
@@ -152,6 +152,7 @@ theorem riesz_extension (s : ConvexCone ℝ E) (f : E →ₗ.[ℝ] ℝ)
   · exact fun x => (hfg rfl).symm
   · exact fun x hx => hgs ⟨x, _⟩ hx
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Hahn-Banach theorem**: if `N : E → ℝ` is a sublinear map, `f` is a linear map
 defined on a subspace of `E`, and `f x ≤ N x` for all `x` in the domain of `f`,
 then `f` can be extended to the whole space to a linear map `g` such that `g x ≤ N x`
@@ -160,21 +161,18 @@ theorem exists_extension_of_le_sublinear (f : E →ₗ.[ℝ] ℝ) (N : E → ℝ
     (N_hom : ∀ c : ℝ, 0 < c → ∀ x, N (c • x) = c * N x) (N_add : ∀ x y, N (x + y) ≤ N x + N y)
     (hf : ∀ x : f.domain, f x ≤ N x) :
     ∃ g : E →ₗ[ℝ] ℝ, (∀ x : f.domain, g x = f x) ∧ ∀ x, g x ≤ N x := by
-  let s : ConvexCone ℝ (E × ℝ) :=
+  have N_0 : N 0 = 0 := by grind [N_hom 2 (by norm_num) 0, smul_zero]
+  let s : PointedCone ℝ (E × ℝ) :=
     { carrier := { p : E × ℝ | N p.1 ≤ p.2 }
-      smul_mem' := fun c hc p hp =>
-        calc
-          N (c • p.1) = c * N p.1 := N_hom c hc p.1
-          _ ≤ c * p.2 := by gcongr; exact hp
-      add_mem' := fun x hx y hy => (N_add _ _).trans (add_le_add hx hy) }
+      zero_mem' := by simp [N_0]
+      smul_mem' := fun ⟨_, hc⟩ _ _ => by rcases eq_or_lt_of_le' hc <;> simp_all
+      add_mem' := fun hx hy => (N_add _ _).trans (add_le_add hx hy) }
   set f' := (-f).coprod (LinearMap.id.toPMap ⊤)
   have hf'_nonneg : ∀ x : f'.domain, x.1 ∈ s → 0 ≤ f' x := fun x (hx : N x.1.1 ≤ x.1.2) ↦ by
     simpa [f'] using le_trans (hf ⟨x.1.1, x.2.1⟩) hx
   have hf'_dense : ∀ y : E × ℝ, ∃ x : f'.domain, ↑x + y ∈ s := by
     rintro ⟨x, y⟩
-    refine ⟨⟨(0, N x - y), ⟨f.domain.zero_mem, trivial⟩⟩, ?_⟩
-    simp only [s, ConvexCone.mem_mk, mem_setOf_eq, Prod.fst_add, Prod.snd_add, zero_add,
-      sub_add_cancel, le_rfl]
+    exact ⟨⟨(0, N x - y), ⟨f.domain.zero_mem, trivial⟩⟩, by simp [s]⟩
   obtain ⟨g, g_eq, g_nonneg⟩ := riesz_extension s f' hf'_nonneg hf'_dense
   replace g_eq : ∀ (x : f.domain) (y : ℝ), g (x, y) = y - f x := fun x y ↦
     (g_eq ⟨(x, y), ⟨x.2, trivial⟩⟩).trans (sub_eq_neg_add _ _).symm
