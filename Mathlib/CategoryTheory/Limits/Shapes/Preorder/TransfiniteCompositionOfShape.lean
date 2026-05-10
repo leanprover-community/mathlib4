@@ -57,6 +57,9 @@ structure TransfiniteCompositionOfShape [SuccOrder J] [WellFoundedLT J] where
   isColimit : IsColimit (Cocone.mk Y incl)
   fac : isoBot.inv ≫ incl.app ⊥ = f := by cat_disch
 
+
+initialize_simps_projections TransfiniteCompositionOfShape (-isColimit)
+
 namespace TransfiniteCompositionOfShape
 
 attribute [reassoc (attr := simp)] fac

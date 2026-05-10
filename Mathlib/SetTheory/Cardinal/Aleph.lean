@@ -446,9 +446,14 @@ theorem isNormal_aleph : Order.IsNormal aleph :=
 theorem aleph_limit {o : Ordinal} (ho : IsSuccLimit o) : ℵ_ o = ⨆ a : Iio o, ℵ_ a :=
   isNormal_aleph.apply_of_isSuccLimit ho
 
+@[simp]
 theorem aleph0_le_aleph (o : Ordinal) : ℵ₀ ≤ ℵ_ o := by
   rw [aleph_eq_preAleph, aleph0_le_preAleph]
   exact le_self_add
+
+@[simp]
+theorem aleph0_lt_aleph {o : Ordinal} : ℵ₀ < ℵ_ o ↔ 0 < o := by
+  rw [← aleph_zero, aleph_lt_aleph]
 
 theorem aleph_pos (o : Ordinal) : 0 < ℵ_ o :=
   aleph0_pos.trans_le (aleph0_le_aleph o)
@@ -625,7 +630,7 @@ theorem isStrongLimit_preBeth {o : Ordinal} : IsStrongLimit (preBeth o) ↔ IsSu
     rw [← preBeth_succ] at this
     exact this.trans_lt (preBeth_strictMono (H.succ_lt hi))
   · apply iff_of_false _ H
-    rw [not_isSuccLimit_iff, not_isSuccPrelimit_iff'] at H
+    rw [not_isSuccLimit_iff, not_isSuccPrelimit_iff_mem_range_succ] at H
     obtain ho | ⟨a, rfl⟩ := H
     · simp [ho.eq_bot]
     · intro h
