@@ -70,21 +70,35 @@ Algorithm:
    lines and `/-- ... -/` doccomments).
 -/
 
-/-- Walk lines backwards from `idx` (a 0-based index pointing at the
-decl's source line, i.e. the line with `def Foo …`) and return the
-index where we should insert `@[expose]` so that it lands above any
-existing attributes / doccomments / `noncomputable` modifier on the
-same logical declaration. -/
-private partial def insertionLineFor
+/-- Starting at `idx` (a 0-based index pointing somewhere inside the
+"decl block" — i.e. doc-comment lines, attribute lines, or the decl
+keyword itself), advance forward past doc comments and attribute lines
+until we reach the line containing the decl keyword (`def`,
+`theorem`, `instance`, `abbrev`, …). Returns that line's index.
+
+Doc comments are handled in two shapes: single-line `/-- ... -/` and
+multi-line `/-- ...` … `... -/`. Attributes are single-line
+`@[...]`. Other modifier-only lines (`noncomputable`) are also
+skipped. -/
+private partial def declKeywordLineFrom
     (lines : Array String) (idx : Nat) : Nat := Id.run do
   let mut i := idx
-  while i > 0 do
-    let prev : String := lines[i - 1]!
-    let trimmed : String := prev.trimAscii.toString
-    if trimmed.startsWith "@[" || trimmed.startsWith "/--" ||
-       trimmed.startsWith "-- " || trimmed.endsWith "-/" ||
-       trimmed.startsWith "noncomputable" then
-      i := i - 1
+  while i < lines.size do
+    let line : String := lines[i]!
+    let trimmed : String := line.trimAscii.toString
+    if trimmed.startsWith "/--" then
+      -- Single-line doc on this same line?
+      if trimmed.endsWith "-/" && trimmed.length > "/----/".length then
+        i := i + 1
+      else
+        -- Multi-line doc; skip until the closing `-/`.
+        i := i + 1
+        while i < lines.size do
+          let l2 := (lines[i]!).trimAscii.toString
+          i := i + 1
+          if l2.endsWith "-/" then break
+    else if trimmed.startsWith "@[" then
+      i := i + 1
     else
       break
   return i
@@ -109,19 +123,38 @@ def applySectionStrategy (text : String) (loadBearing : Array Nat) :
       newLines := newLines.push line
   unless sectionRewritten do return none
   -- Step 2: insert `@[expose]` above each load-bearing decl, processing
-  -- highest line first so earlier indices remain valid.
+  -- highest line first so earlier indices remain valid. Lean does not
+  -- allow stacked `@[...]` blocks before a decl, so if the first line
+  -- of the decl block is already `@[...]` we merge into it.
   let sortedDesc := loadBearing.qsort (· > ·)
   for declLine in sortedDesc do
-    -- declLine is 1-based; convert to 0-based index.
     if declLine == 0 then continue
-    let idx := declLine - 1
-    if idx ≥ newLines.size then continue
-    let insertAt := insertionLineFor newLines idx
-    let line : String := newLines[insertAt]!
-    let leading := line.takeWhile Char.isWhitespace |>.toString
-    -- Build the new attribute line; insert it before `insertAt`.
-    let attrLine := leading ++ "@[expose]"
-    newLines := newLines.insertIdx! insertAt attrLine
+    let blockStart := declLine - 1
+    if blockStart ≥ newLines.size then continue
+    -- Walk forward to the actual decl-keyword line.
+    let declIdx := declKeywordLineFrom newLines blockStart
+    if declIdx == 0 || declIdx ≥ newLines.size then continue
+    -- Look at the line immediately above the decl. If it's an attribute
+    -- list, merge `@[expose, ...]`; otherwise insert a new line above
+    -- the decl (so the order is `/-- doc -/`, then `@[expose]`, then
+    -- the decl keyword).
+    let above : String := newLines[declIdx - 1]!
+    let aboveTrim : String := above.trimAscii.toString
+    if aboveTrim.startsWith "@[" then
+      -- Already-exposed shapes: skip.
+      if aboveTrim == "@[expose]" || aboveTrim.startsWith "@[expose " ||
+         aboveTrim.startsWith "@[expose," then
+        continue
+      let leading : String := (above.takeWhile Char.isWhitespace).toString
+      let body : String :=
+        (above.drop (leading.length + "@[".length)).toString
+      let merged : String := leading ++ "@[expose, " ++ body
+      newLines := newLines.set! (declIdx - 1) merged
+    else
+      let declLineStr : String := newLines[declIdx]!
+      let leading : String := (declLineStr.takeWhile Char.isWhitespace).toString
+      let attrLine : String := leading ++ "@[expose]"
+      newLines := newLines.insertIdx! declIdx attrLine
   return some (String.intercalate "\n" newLines.toList)
 
 /-! ## Individual-strategy edit
@@ -218,16 +251,23 @@ def editOneFile (file : FilePath) (records : Array ReportRecord)
         pass --force-dirty to override."
       return false
   -- Safety: stale data.
-  unless args.forceDirty do
+  unless args.forceStale do
     if !(← checkStaleness file reportPath) then
       IO.eprintln s!"no_expose edit: {file} is newer than {reportPath}; \
-        re-run `collect` or pass --force-dirty."
+        re-run `collect` or pass --force-stale."
       return false
   let originalText ← IO.FS.readFile file
-  let safeLines : Array Nat := records
-    |>.filter (Verdict.classify · == .safeToUnexpose) |>.map (·.line)
-  let loadBearingLines : Array Nat := records
-    |>.filter (Verdict.classify · == .loadBearing) |>.map (·.line)
+  -- Dedupe by line: `to_additive` (and similar) macros produce multiple
+  -- report rows that all point at the same source line. Each line should
+  -- get at most one edit.
+  let dedupe (xs : Array Nat) : Array Nat :=
+    let init : Array Nat × Std.HashSet Nat := (#[], {})
+    (xs.foldl (init := init) fun (acc, seen) x =>
+      if seen.contains x then (acc, seen) else (acc.push x, seen.insert x)).1
+  let safeLines : Array Nat := dedupe (records
+    |>.filter (Verdict.classify · == .safeToUnexpose) |>.map (·.line))
+  let loadBearingLines : Array Nat := dedupe (records
+    |>.filter (Verdict.classify · == .loadBearing) |>.map (·.line))
   let strategy := chooseStrategy args.strategy originalText
   let (newText, skipped) : String × Array Nat ← do
     match strategy with
