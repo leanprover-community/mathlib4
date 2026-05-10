@@ -588,8 +588,15 @@ lemma isReduced_of_tensorProduct_adjoinPthRoots_reduced_of_finiteType (p : ℕ) 
   have := Ideal.minimalPrimes_isPrime hq
   let := (localization_minimal_isField q hq).toField
   have h : IsReduced ((adjoinPthRoots k p) ⊗[k] (Localization.AtPrime q)) := by
-    -- IsLocalization.tensorProduct_tensorProduct_right
-    sorry
+    let : Algebra (adjoinPthRoots k p ⊗[k] S) (adjoinPthRoots k p ⊗[k] Localization.AtPrime q) :=
+      (Algebra.TensorProduct.lTensor (S := adjoinPthRoots k p) _
+        (IsScalarTower.toAlgHom k S (Localization.AtPrime q))).toRingHom.toAlgebra
+    let qc' : Submonoid (adjoinPthRoots k p ⊗[k] S) :=
+      q.primeCompl.map Algebra.TensorProduct.includeRight
+    have isl : IsLocalization qc' _ := IsLocalization.tensorProduct_tensorProduct_right k _
+      q.primeCompl (Localization.AtPrime q) (by ext; simp [RingHom.algebraMap_toAlgebra])
+    exact isReduced_of_injective _ (IsLocalization.algEquiv qc'
+      (adjoinPthRoots k p ⊗[k] Localization.AtPrime q) (Localization qc')).injective
   have sep : Algebra.IsTranscendentalSeparable k (Localization.AtPrime q) :=
     ((Algebra.isTranscendentalSeparable_tfae k (Localization.AtPrime q) p hp).out 0 2).mpr h
   have : IsReduced (Localization.AtPrime q ⊗[k] K) :=
@@ -604,5 +611,21 @@ lemma isReduced_of_tensorProduct_adjoinPthRoots_reduced (p : ℕ) (hp : Nat.Prim
   apply isReduced_of_tensorProduct_adjoinPthRoots_reduced_of_finiteType k T p hp K
   exact isReduced_of_injective (Algebra.TensorProduct.lTensor (S := k) (adjoinPthRoots k p) T.val)
     (Module.Flat.lTensor_preserves_injective_linearMap _ Subtype.val_injective)
+
+lemma tensorProduct_isReduced_of_isGeometricallyReduced (K : Type*) [Field K] [Algebra k K]
+    [Algebra.IsGeometricallyReduced k S] : IsReduced (K ⊗[k] S) := by
+  have : IsReduced (AlgebraicClosure k ⊗[k] S) :=
+    (Algebra.isGeometricallyReduced_field_iff k S).mp ‹_›
+  rcases CharP.exists' k with char0|⟨p, hp, charp⟩
+  · have : IsReduced S := isReduced_of_injective _
+      (Algebra.TensorProduct.includeRight_injective (algebraMap k (AlgebraicClosure k)).injective)
+    exact isReduced_of_perfectField k S K
+  · apply isReduced_of_tensorProduct_adjoinPthRoots_reduced k S p hp.out K
+    let f : (adjoinPthRoots k p) →ₐ[k] (AlgebraicClosure k) :=
+      (IsAlgClosure.equiv k (AlgebraicClosure (adjoinPthRoots k p))
+        (AlgebraicClosure k)).toAlgHom.comp (IsScalarTower.toAlgHom k (adjoinPthRoots k p) _)
+    have : Function.Injective (Algebra.TensorProduct.rTensor S f) :=
+      Module.Flat.rTensor_preserves_injective_linearMap _ (RingHom.injective _)
+    exact isReduced_of_injective _ this
 
 end IsGeometricallyReduced
