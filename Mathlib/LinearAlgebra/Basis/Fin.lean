@@ -65,31 +65,28 @@ section DivisionRing
 
 variable {K V : Type*} [DivisionRing K] [AddCommGroup V] [Module K V]
 
-/-- Let `b` be a basis for a submodule `N` of `V`. If `K ∙ y` is complementary to `N`,
-then `y` followed by `b` is a basis of `V`. -/
+/-- Let `b` be a basis for a submodule `N` of `V`. If `y` is nonzero and `K ∙ y` is
+complementary to `N`, then `y` followed by `b` is a basis of `V`. -/
 noncomputable def mkFinConsOfIsCompl {n : ℕ} {N : Submodule K V} (y : V)
     (b : Basis (Fin n) K N) (hy : y ≠ 0) (hN : IsCompl (K ∙ y) N) :
     Basis (Fin (n + 1)) K V :=
   mkFinCons y b
     (fun c x hx hcx => by
+      have hcy_eq : c • y = -x := add_eq_zero_iff_eq_neg.mp hcx
       have hcyN : c • y ∈ N := by
-        rw [add_eq_zero_iff_eq_neg] at hcx
-        rw [hcx]
+        rw [hcy_eq]
         exact N.neg_mem hx
       have hcyL : c • y ∈ K ∙ y :=
         Submodule.smul_mem _ _ (Submodule.mem_span_singleton_self y)
       have hcy0 : c • y = 0 := by
-        simpa using hN.disjoint.le_bot ⟨hcyL, hcyN⟩
+        exact hN.disjoint.le_bot ⟨hcyL, hcyN⟩
       by_contra hc
-      exact hy <| by
-        calc
-          y = c⁻¹ • (c • y) := by rw [smul_smul, inv_mul_cancel₀ hc, one_smul]
-          _ = 0 := by rw [hcy0, smul_zero])
+      exact hy <| by simpa [hcy0] using (inv_smul_smul₀ hc y).symm)
     (fun z => by
       have hz : z ∈ K ∙ y ⊔ N := by
         rw [hN.sup_eq_top]
         exact Submodule.mem_top
-      obtain ⟨u, hu, w, hw, huz⟩ := Submodule.mem_sup.mp hz
+      obtain ⟨_, hu, w, hw, huz⟩ := Submodule.mem_sup.mp hz
       obtain ⟨a, rfl⟩ := Submodule.mem_span_singleton.mp hu
       refine ⟨-a, ?_⟩
       rw [← huz]
