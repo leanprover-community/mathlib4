@@ -147,15 +147,12 @@ theorem IsClub.diag [IsRegularCardinalOrder α] {f : α → Set α} (hα : ℵ�
   isCofinal a := by
     have : Nonempty α := ⟨a⟩
     have := (noTopOrder_iff_noMaxOrder α).1 <| Order.one_lt_cof_iff.1 (one_lt_aleph0.trans hα)
-    have hα' : Order.cof α = #α := Order.cof_eq_cardinalMk
     have (b : α) : ∃ c ∈ ⋂₀ (f '' Set.Iio b), b < c := by
       obtain ⟨b', hb'⟩ := exists_gt b
       have ⟨c, hc, hbc⟩ :=
         (IsClub.sInter (s := f '' Set.Iio b) hα.ne' (mk_image_le.trans_lt ?_) ?_).isCofinal b'
       · exact ⟨c, hc, hb'.trans_le hbc⟩
-      · rw [hα']
-        apply mk_Iio_lt
-        rw [← hα, hα']
+      · simpa using mk_Iio_lt b
       · simp [hf]
     choose g hg using this
     have hgm : StrictMono fun n ↦ g^[n] a := by
@@ -164,7 +161,7 @@ theorem IsClub.diag [IsRegularCardinalOrder α] {f : α → Set α} (hα : ℵ�
       exact (hg _).2
     have hg' : IsLUB (.range fun n ↦ g^[n] a) (⨆ n, g^[n] a) := by
       refine isLUB_ciSup (.of_not_isCofinal fun h ↦ ?_)
-      apply (Order.cof_le h).not_gt (hα'.trans_le' _)
+      apply (Order.cof_le h).not_gt (hα.trans_le' _)
       simpa using mk_range_le_lift (f := fun n ↦ g^[n] a)
     refine ⟨⨆ n, g^[n] a, fun b hb ↦ ?_, hg'.1 ⟨0, rfl⟩⟩
     obtain ⟨_, ⟨n, rfl⟩, hb, hn⟩ := hg'.exists_between hb
@@ -212,8 +209,8 @@ theorem IsStationary.nonempty (hs : IsStationary s) : s.Nonempty := by
   simpa using hs .univ
 
 theorem isStationary_univ_iff : IsStationary (.univ (α := α)) ↔ Nonempty α := by
-  simp_rw [IsStationary, Set.univ_inter, ← not_imp_not (b := IsClub _),
-    Set.not_nonempty_iff_eq_empty, forall_eq, isClub_empty_iff, not_isEmpty_iff]
+  simp [IsStationary, ← not_imp_not (b := IsClub _),
+    Set.not_nonempty_iff_eq_empty, isClub_empty_iff]
 
 @[simp]
 theorem IsStationary.univ [Nonempty α] : IsStationary (.univ (α := α)) :=
@@ -231,17 +228,16 @@ theorem IsStationary.of_not_isCofinal_compl (hs : ¬ IsCofinal (sᶜ)) : IsStati
 proof_wanted isStationary_iff_not_isCofinal_compl (hα : Order.cof α ≤ ℵ₀) :
     IsStationary s ↔ ¬ IsCofinal (sᶜ)
 
-/-- **Fodor's lemma,** or the **pressing down lemma:** if `α` has the order type of a regular
-cardinal, `s` is a stationary set, and `f : s → α` is a regressive function, there exists some
-stationary subset of `s` which is constant on `f`. -/
+/-- **Fodor's lemma**, or the **pressing down lemma**: if `α` has the order type of a regular
+cardinal, `s` is a stationary set, and `f : α → α` is a regressive function on `s`, there exists
+some stationary subset of `s` which is constant on `f`. -/
 theorem exists_isStationary_preimage_singleton
-    [WellFoundedLT α] [IsRegularCardinalOrder α] {f : s → α} (hα : ℵ₀ < Order.cof α)
-    (hs : IsStationary s) (hf : ∀ x : s, f x < x) :
-    ∃ a, IsStationary (Subtype.val '' (f ⁻¹' {a})) := by
+    [WellFoundedLT α] [IsRegularCardinalOrder α] {f : α → α} (hα : ℵ₀ < Order.cof α)
+    (hs : IsStationary s) (hf : ∀ x ∈ s, f x < x) : ∃ a, IsStationary (s ∩ f ⁻¹' {a}) := by
   unfold IsStationary
   by_contra!
   choose g hg using this
   simp_rw [Set.eq_empty_iff_forall_notMem] at hg
   obtain ⟨a, hs, ha⟩ := hs <| .diag hα fun a ↦ (hg a).1
-  apply (hg (f ⟨a, hs⟩)).2 a
-  simpa using ⟨hs, ha _ (hf ⟨a, hs⟩)⟩
+  apply (hg (f a)).2 a
+  grind
