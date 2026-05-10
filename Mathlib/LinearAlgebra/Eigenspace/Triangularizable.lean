@@ -87,7 +87,7 @@ def IsTriangularizable (f : End K V) : Prop :=
 
 variable {n : ℕ} {f : End K V} {b : Basis (Fin n) K V}
 
-theorem isTriangularizedBy_toFlag :
+theorem isTriangularizedBy_iff_isTriangularizedByFlag_toFlag :
     f.IsTriangularizedBy b ↔ f.IsTriangularizedByFlag b.toFlag := by
   constructor
   · intro hf p hp
@@ -99,7 +99,7 @@ theorem isTriangularizedBy_toFlag :
 
 theorem IsTriangularizedBy.isTriangularizable (hb : f.IsTriangularizedBy b) :
     f.IsTriangularizable :=
-  ⟨b.toFlag, isTriangularizedBy_toFlag.mp hb⟩
+  ⟨b.toFlag, isTriangularizedBy_iff_isTriangularizedByFlag_toFlag.mp hb⟩
 
 theorem isTriangularizedBy_of_flag_eq {b' : Basis (Fin n) K V}
     (hb : f.IsTriangularizedBy b) (hflag : ∀ k, b'.flag k = b.flag k) :
@@ -166,62 +166,10 @@ theorem iSup_maxGenEigenspace_mapQ_eq_top {p : Submodule K V} {f : End K V}
     ⨆ μ, Module.End.maxGenEigenspace (p.mapQ p f hfp : End K (V ⧸ p)) μ = ⊤ :=
   iSup_genEigenspace_mapQ_eq_top hfp hf
 
-theorem isCompl_span_singleton_mkFinCons_hli {v : V} {W : Submodule K V}
-    (hv : v ≠ 0) (hW : IsCompl (K ∙ v) W) :
-    ∀ c : K, ∀ x ∈ W, c • v + x = 0 → c = 0 := by
-  intro c x hx hcx
-  have hcvW : c • v ∈ W := by
-    rw [add_eq_zero_iff_eq_neg] at hcx
-    rw [hcx]
-    exact W.neg_mem hx
-  have hcvL : c • v ∈ K ∙ v :=
-    Submodule.smul_mem _ _ (Submodule.mem_span_singleton_self v)
-  have hcv0 : c • v = 0 := by
-    simpa using hW.disjoint.le_bot ⟨hcvL, hcvW⟩
-  exact (smul_eq_zero.mp hcv0).resolve_right hv
-
-theorem isCompl_span_singleton_mkFinCons_hsp {v : V} {W : Submodule K V}
-    (hW : IsCompl (K ∙ v) W) : ∀ z : V, ∃ c : K, z + c • v ∈ W := by
-  intro z
-  have hz : z ∈ K ∙ v ⊔ W := by
-    rw [hW.sup_eq_top]
-    exact Submodule.mem_top
-  obtain ⟨u, hu, w, hw, huz⟩ := Submodule.mem_sup.mp hz
-  obtain ⟨a, rfl⟩ := Submodule.mem_span_singleton.mp hu
-  refine ⟨-a, ?_⟩
-  rw [← huz]
-  simpa [add_assoc, add_comm, add_left_comm] using hw
-
-theorem span_singleton_le_mkFinCons_flag_succ {n : ℕ} {v : V} {W : Submodule K V}
-    {bW : Basis (Fin n) K W} {hli hsp} (k : Fin (n + 1)) :
-    K ∙ v ≤ (Basis.mkFinCons v bW hli hsp).flag k.succ := by
-  rw [Submodule.span_singleton_le_iff_mem]
-  convert (Basis.mkFinCons v bW hli hsp).self_mem_flag (i := 0) (k := k.succ) ?_
-  · simp [Basis.coe_mkFinCons]
-  · simp
-
-theorem map_flag_le_mkFinCons_flag_succ {n : ℕ} {v : V} {W : Submodule K V}
-    {bW : Basis (Fin n) K W} {hli hsp} (k : Fin (n + 1)) :
-    (bW.flag k).map W.subtype ≤ (Basis.mkFinCons v bW hli hsp).flag k.succ := by
-  rw [Submodule.map_le_iff_le_comap]
-  exact bW.flag_le_iff.2 fun i hi => by
-    change (bW i : V) ∈ (Basis.mkFinCons v bW hli hsp).flag k.succ
-    convert (Basis.mkFinCons v bW hli hsp).self_mem_flag (i := i.succ)
-      (k := k.succ) (Fin.succ_lt_succ_iff.mpr hi)
-    simp [Basis.coe_mkFinCons]
-
-theorem mkFinCons_apply_zero_mem_flag {n : ℕ} {f : End K V} {v : V} {μ : K}
-    {W : Submodule K V} {bW : Basis (Fin n) K W} {hli hsp} (hv : f v = μ • v)
-    (k : Fin (n + 1)) :
-    f (Basis.mkFinCons v bW hli hsp 0) ∈ (Basis.mkFinCons v bW hli hsp).flag k.succ := by
-  rw [show Basis.mkFinCons v bW hli hsp 0 = v by simp [Basis.coe_mkFinCons], hv]
-  exact Submodule.smul_mem _ _ <|
-    span_singleton_le_mkFinCons_flag_succ k (Submodule.mem_span_singleton_self v)
-
-theorem isTriangularizedBy_mkFinCons_of_sub_mem_span_singleton {n : ℕ} {f : End K V}
+theorem IsTriangularizedBy.mkFinCons_of_sub_mem_span_singleton {n : ℕ} {f : End K V}
     {v : V} {μ : K} {W : Submodule K V} {g : End K W} {bW : Basis (Fin n) K W}
-    {hli hsp} (hv : f v = μ • v)
-    (hfg : ∀ w : W, f (w : V) - (g w : V) ∈ K ∙ v) (hg : g.IsTriangularizedBy bW) :
+    {hli hsp} (hg : g.IsTriangularizedBy bW) (hv : f v = μ • v)
+    (hfg : ∀ w : W, f (w : V) - (g w : V) ∈ K ∙ v) :
     f.IsTriangularizedBy (Basis.mkFinCons v bW hli hsp) := by
   intro k
   refine Fin.cases (by simp) (fun k => ?_) k
@@ -229,37 +177,19 @@ theorem isTriangularizedBy_mkFinCons_of_sub_mem_span_singleton {n : ℕ} {f : En
   exact (Basis.mkFinCons v bW hli hsp).flag_le_iff.2 fun i hi => by
     change f (Basis.mkFinCons v bW hli hsp i) ∈ (Basis.mkFinCons v bW hli hsp).flag k.succ
     revert hi
-    refine Fin.cases (fun _ => mkFinCons_apply_zero_mem_flag hv k) ?_ i
+    refine Fin.cases (fun _ => ?_) ?_ i
+    · rw [show Basis.mkFinCons v bW hli hsp 0 = v by simp, hv]
+      exact Submodule.smul_mem _ _ <|
+        Basis.span_singleton_le_mkFinCons_flag_succ k (Submodule.mem_span_singleton_self v)
     intro i hi
-    rw [show Basis.mkFinCons v bW hli hsp i.succ = (bW i : V) by simp [Basis.coe_mkFinCons]]
+    rw [show Basis.mkFinCons v bW hli hsp i.succ = (bW i : V) by simp]
     have hgw := (hg k : bW.flag k ≤ (bW.flag k).comap g)
       (bW.self_mem_flag (Fin.succ_lt_succ_iff.mp hi))
     have hdecomp : f (bW i : V) = (f (bW i : V) - (g (bW i) : V)) + (g (bW i) : V) := by
       abel
     rw [hdecomp]
-    exact Submodule.add_mem _ (span_singleton_le_mkFinCons_flag_succ k (hfg (bW i)))
-      (map_flag_le_mkFinCons_flag_succ k ⟨_, hgw, rfl⟩)
-
-theorem isTriangularizedBy_mkFinCons {n : ℕ} {f : End K V} {v : V} {μ : K}
-    {W : Submodule K V} {bW : Basis (Fin n) K W} {hli hsp} (hv : f v = μ • v)
-    (hW : IsCompl (K ∙ v) W)
-    (hg : Module.End.IsTriangularizedBy
-      (W.projectionOnto (K ∙ v) hW.symm ∘ₗ f.domRestrict W : End K W) bW) :
-    f.IsTriangularizedBy (Basis.mkFinCons v bW hli hsp) := by
-  refine isTriangularizedBy_mkFinCons_of_sub_mem_span_singleton hv ?_ hg
-  intro w
-  change f (w : V) - W.projection (K ∙ v) hW.symm (f (w : V)) ∈ K ∙ v
-  have hdecomp : f (w : V) =
-      (K ∙ v).projection W hW (f (w : V)) +
-        W.projection (K ∙ v) hW.symm (f (w : V)) := by
-    simpa using (LinearMap.congr_fun (Submodule.projection_add_projection_eq_id hW)
-      (f (w : V))).symm
-  have hsub : f (w : V) - W.projection (K ∙ v) hW.symm (f (w : V)) =
-      (K ∙ v).projection W hW (f (w : V)) := by
-    nth_rewrite 1 [hdecomp]
-    rw [add_sub_cancel_right]
-  rw [hsub]
-  exact Submodule.projection_apply_mem hW _
+    exact Submodule.add_mem _ (Basis.span_singleton_le_mkFinCons_flag_succ k (hfg (bW i)))
+      (Basis.map_flag_le_mkFinCons_flag_succ k ⟨_, hgw, rfl⟩)
 
 theorem exists_hasEigenvalue_of_genEigenspace_eq_top [Nontrivial M] {f : End R M} (k : ℕ∞)
     (hf : ⨆ μ, f.genEigenspace μ k = ⊤) :
@@ -317,10 +247,9 @@ private noncomputable def triangularizationAux_of_iSup_maxGenEigenspace_eq_top {
     let ⟨W, hW⟩ := L.exists_isCompl
     let e : (V ⧸ L) ≃ₗ[K] W := Submodule.quotientEquivOfIsCompl L W hW
     let g : End K W := e.conj qf
-    let hli := isCompl_span_singleton_mkFinCons_hli hv.2 hW
-    let hsp := isCompl_span_singleton_mkFinCons_hsp hW
-    ⟨n + 1, Basis.mkFinCons v (bq.map e) hli hsp,
-      isTriangularizedBy_mkFinCons_of_sub_mem_span_singleton hv.apply_eq_smul
+    ⟨n + 1, Basis.mkFinConsOfIsCompl v (bq.map e) hv.2 hW, by
+      simpa [Basis.mkFinConsOfIsCompl] using (hbq.map e).mkFinCons_of_sub_mem_span_singleton
+        hv.apply_eq_smul
         (by
           intro w
           have hq : L.mkQ (f (w : V)) = L.mkQ (g w : V) := by
@@ -332,8 +261,8 @@ private noncomputable def triangularizationAux_of_iSup_maxGenEigenspace_eq_top {
               _ = L.mkQ (g w : V) := by simp [e, Submodule.mkQ_apply]
           change f (w : V) - (g w : V) ∈ L
           rw [← Submodule.ker_mkQ L]
-          exact LinearMap.mem_ker.mpr (by simpa using congr_arg (fun x => x - L.mkQ (g w : V)) hq))
-        (hbq.map e)⟩
+          exact LinearMap.mem_ker.mpr (by
+            simpa using congr_arg (fun x => x - L.mkQ (g w : V)) hq))⟩
   else
     haveI : Subsingleton V := not_nontrivial_iff_subsingleton.mp hV
     exists_isTriangularizedBy_of_subsingleton f

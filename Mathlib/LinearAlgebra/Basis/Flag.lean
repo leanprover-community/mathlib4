@@ -6,7 +6,7 @@ Authors: Yury Kudryashov, Patrick Massot
 module
 
 public import Mathlib.Data.Fin.FlagRange
-public import Mathlib.LinearAlgebra.Basis.Basic
+public import Mathlib.LinearAlgebra.Basis.Fin
 public import Mathlib.LinearAlgebra.Dual.Basis
 public import Mathlib.RingTheory.SimpleRing.Basic
 
@@ -82,6 +82,30 @@ lemma flag_le_flag (hij : i ≤ j) : b.flag i ≤ b.flag j := flag_mono _ hij
 lemma flag_lt_flag [Nontrivial R] (hij : i < j) : b.flag i < b.flag j := flag_strictMono _ hij
 
 end Semiring
+
+section Ring
+
+variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] {n : ℕ}
+
+theorem span_singleton_le_mkFinCons_flag_succ {v : M} {W : Submodule R M}
+    {bW : Basis (Fin n) R W} {hli hsp} (k : Fin (n + 1)) :
+    R ∙ v ≤ (Basis.mkFinCons v bW hli hsp).flag k.succ := by
+  rw [Submodule.span_singleton_le_iff_mem]
+  convert (Basis.mkFinCons v bW hli hsp).self_mem_flag (i := 0) (k := k.succ) ?_
+  · simp
+  · simp
+
+theorem map_flag_le_mkFinCons_flag_succ {v : M} {W : Submodule R M}
+    {bW : Basis (Fin n) R W} {hli hsp} (k : Fin (n + 1)) :
+    (bW.flag k).map W.subtype ≤ (Basis.mkFinCons v bW hli hsp).flag k.succ := by
+  rw [Submodule.map_le_iff_le_comap]
+  exact bW.flag_le_iff.2 fun i hi => by
+    change (bW i : M) ∈ (Basis.mkFinCons v bW hli hsp).flag k.succ
+    convert (Basis.mkFinCons v bW hli hsp).self_mem_flag (i := i.succ)
+      (k := k.succ) (Fin.succ_lt_succ_iff.mpr hi)
+    simp
+
+end Ring
 
 section CommRing
 

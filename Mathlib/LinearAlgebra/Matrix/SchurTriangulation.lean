@@ -38,11 +38,11 @@ open scoped InnerProductSpace
 variable {𝕜 : Type*} [RCLike 𝕜] [IsAlgClosed 𝕜]
 variable {n : Type*} [Fintype n] [LinearOrder n] (A : Matrix n n 𝕜)
 
-/-- **Don't use this definition directly.** Instead, use `Matrix.schurTriangulationBasis`,
-`Matrix.schurTriangulationUnitary`, and `Matrix.schurTriangulation` for which this is their
-simultaneous definition. -/
-noncomputable def schurTriangulationAux :
-    OrthonormalBasis n 𝕜 (EuclideanSpace 𝕜 n) × UpperTriangular n 𝕜 := by
+/-- Every matrix over an algebraically closed `RCLike` field has an orthonormal basis in which its
+associated linear map has an upper triangular matrix. -/
+theorem exists_orthonormalBasis_isUpperTriangular_toEuclideanLin :
+    ∃ b : OrthonormalBasis n 𝕜 (EuclideanSpace 𝕜 n),
+      (LinearMap.toMatrixOrthonormal b (toEuclideanLin A)).IsUpperTriangular := by
   let f : Module.End 𝕜 (EuclideanSpace 𝕜 n) := toEuclideanLin A
   let h := Module.End.exists_orthonormalBasis_isTriangularizedBy
     (Module.End.exists_isTriangularizedBy f)
@@ -56,8 +56,7 @@ noncomputable def schurTriangulationAux :
   let e : Fin d ≃o n := Fintype.orderIsoFinOfCardEq n (finrank_euclideanSpace.symm.trans hd)
   let e' : Fin d ≃ n := e.toEquiv
   let b' := b.reindex e'
-  let B := LinearMap.toMatrixOrthonormal b' f
-  refine ⟨b', B, ?_⟩
+  refine ⟨b', ?_⟩
   intro i j hji
   calc LinearMap.toMatrixOrthonormal b' f i j
     _ = LinearMap.toMatrixOrthonormal b f (e'.symm i) (e'.symm j) := by
@@ -70,7 +69,7 @@ noncomputable def schurTriangulationAux :
 /-- The change of basis that induces the upper triangular form `A.schurTriangulation` of a matrix
 `A` over an algebraically closed field. -/
 noncomputable def schurTriangulationBasis : OrthonormalBasis n 𝕜 (EuclideanSpace 𝕜 n) :=
-  (schurTriangulationAux A).1
+  (exists_orthonormalBasis_isUpperTriangular_toEuclideanLin A).choose
 
 /-- The unitary matrix that induces the upper triangular form `A.schurTriangulation` to which a
 matrix `A` over an algebraically closed field is unitarily similar. -/
@@ -80,8 +79,9 @@ noncomputable def schurTriangulationUnitary : unitaryGroup n 𝕜 where
 
 /-- The upper triangular form induced by `A.schurTriangulationUnitary` to which a matrix `A` over an
 algebraically closed field is unitarily similar. -/
-noncomputable def schurTriangulation : UpperTriangular n 𝕜 :=
-  (schurTriangulationAux A).2
+noncomputable def schurTriangulation : UpperTriangular n 𝕜 where
+  val := LinearMap.toMatrixOrthonormal (schurTriangulationBasis A) (toEuclideanLin A)
+  property := (exists_orthonormalBasis_isUpperTriangular_toEuclideanLin A).choose_spec
 
 /-- **Schur triangulation**, **Schur decomposition** for matrices over an algebraically closed
 field. In particular, a complex matrix can be converted to upper-triangular form by a change of
