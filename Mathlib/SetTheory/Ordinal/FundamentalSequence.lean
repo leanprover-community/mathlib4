@@ -5,7 +5,7 @@ Authors: Violeta Hernández Palacios, Mario Carneiro
 -/
 module
 
-public import Mathlib.SetTheory.Cardinal.Cofinality
+public import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
 
 /-!
 # Fundamental sequences

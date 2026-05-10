@@ -3040,6 +3040,7 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon_
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Normal
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Over
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Ring
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.ShrinkYoneda
 public import Mathlib.CategoryTheory.Monoidal.Category
 public import Mathlib.CategoryTheory.Monoidal.Center
@@ -6962,7 +6963,8 @@ public import Mathlib.RingTheory.ZariskisMainTheorem
 public import Mathlib.SetTheory.Cardinal.Aleph
 public import Mathlib.SetTheory.Cardinal.Arithmetic
 public import Mathlib.SetTheory.Cardinal.Basic
-public import Mathlib.SetTheory.Cardinal.Cofinality
+public import Mathlib.SetTheory.Cardinal.Cofinality.Basic
+public import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
 public import Mathlib.SetTheory.Cardinal.Continuum
 public import Mathlib.SetTheory.Cardinal.CountableCover
 public import Mathlib.SetTheory.Cardinal.Defs
