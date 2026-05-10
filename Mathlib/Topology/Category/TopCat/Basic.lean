@@ -67,15 +67,19 @@ variable {X} in
 /-- The type of morphisms in `TopCat`. -/
 @[ext]
 structure Hom (X Y : TopCat.{u}) where
-  --private mk ::
+  private mk ::
   /-- The underlying `ContinuousMap`. -/
   hom' : C(X, Y)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category TopCat where
   Hom X Y := Hom X Y
   id X := ⟨ContinuousMap.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory.{u} TopCat (fun X Y => C(X, Y)) where
   hom := Hom.hom'
   ofHom f := ⟨f⟩
@@ -255,6 +259,14 @@ theorem isOpenEmbedding_iff_isIso_comp' {X Y Z : TopCat.{u}} (f : X ⟶ Y) (g : 
     IsOpenEmbedding (g ∘ f) ↔ IsOpenEmbedding g := by
   simp only
   exact isOpenEmbedding_iff_isIso_comp f g
+
+/-- The `MorphismProperty` in `TopCat` of a morphism being an embedding. -/
+abbrev isEmbedding : MorphismProperty TopCat :=
+  fun ⦃A X : TopCat⦄ (f : A ⟶ X) ↦ Topology.IsEmbedding f.hom
+
+@[simp]
+lemma isEmbedding_iff ⦃A X : TopCat⦄ (f : A ⟶ X) : isEmbedding f ↔ Topology.IsEmbedding f.hom :=
+  .rfl
 
 /-- The constant morphism `X ⟶ Y` in `TopCat` given by `y : Y`. -/
 def const {X Y : TopCat.{u}} (y : Y) : X ⟶ Y :=

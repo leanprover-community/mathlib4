@@ -174,7 +174,8 @@ theorem DirSupClosedOn.union (hDL : IsLowerSet D)
   rw [← hdst] at hd₀ hd₁
   wlog h : DirectedOn (· ≤ ·) (d ∩ s) ∧ (d ∩ s).Nonempty
   · rw [union_comm] at hdu hd₀ hd₁ hdst ⊢
-    exact this hDL ht hs hD hdu hd₀ hd₁ ha hdst <| (directedOn_union' hd₀ hd₁).resolve_right h
+    exact this hDL ht hs hD hdu hd₀ hd₁ ha hdst <|
+      (directedOn_or_directedOn_of_union' hd₀ hd₁).resolve_right h
   obtain ⟨hds, hn⟩ := h
   by_cases had : a ∈ lowerBounds (upperBounds (d ∩ s))
   · exact .inl <| hs (hDL inter_subset_left hD) inter_subset_right hn hds
@@ -195,36 +196,36 @@ theorem DirSupClosedOn.union (hDL : IsLowerSet D)
       by_cases hyb : y ≤ b
       · obtain ⟨z, hz, hxz, hyz⟩ := hd₁ _ (hdst ▸ hy) _ (.inr (key hw))
         exact hxz.trans (hx ⟨hdst ▸ hz, fun hzb ↦ hw.2 (hyz.trans hzb)⟩)
-      · exact hx ⟨hy, hyb⟩
+      exact hx ⟨hy, hyb⟩
 
 theorem DirSupInaccOn.inter (hDL : IsLowerSet D)
     (hs : DirSupInaccOn D s) (ht : DirSupInaccOn D t) : DirSupInaccOn D (s ∩ t) := by
   rw [← dirSupClosedOn_compl, compl_inter]; exact hs.compl.union hDL ht.compl
 
-theorem DirSupClosed.union (hs : DirSupClosed s) (ht : DirSupClosed t) : DirSupClosed (s ∪ t) :=
-  .of_univ (hs.to_univ.union isLowerSet_univ ht.to_univ)
+theorem DirSupClosed.union (hs : DirSupClosed s) (ht : DirSupClosed t) : DirSupClosed (s ∪ t) := by
+  simpa using hs.dirSupClosedOn.union isLowerSet_univ ht.dirSupClosedOn
 
-theorem DirSupInacc.inter (hs : DirSupInacc s) (ht : DirSupInacc t) : DirSupInacc (s ∩ t) :=
-  .of_univ (hs.to_univ.inter isLowerSet_univ ht.to_univ)
+theorem DirSupInacc.inter (hs : DirSupInacc s) (ht : DirSupInacc t) : DirSupInacc (s ∩ t) := by
+  simpa using hs.dirSupInaccOn.inter isLowerSet_univ ht.dirSupInaccOn
 
-theorem dirSupInaccOn_of_inter_subset
+theorem DirSupInaccOn.of_inter_subset
     (h : ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d →
       ∀ ⦃a : α⦄, IsLUB d a → a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s) : DirSupInaccOn D s := by
   intro d hd₀ hd₁ hd₂ a hda hd₃
   obtain ⟨b, hbd, hb⟩ := h hd₀ hd₁ hd₂ hda hd₃
   exact ⟨b, hbd, hb ⟨le_rfl, hbd⟩⟩
 
-theorem dirSupInacc_of_inter_subset
+theorem DirSupInacc.of_inter_subset
     (h : ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d →
       ∀ ⦃a : α⦄, IsLUB d a → a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s) : DirSupInacc s :=
-  .of_univ (dirSupInaccOn_of_inter_subset (by simpa))
+  dirSupInaccOn_univ.1 (.of_inter_subset (by simpa))
 
-/-- If `d` is a set whose LUB is contained in a `DirSupInaccOn` set, then it contains an entire tail
-of `d`. -/
+/-- The condition `(d ∩ s).Nonempty` in `DirSupInaccOn` can be replaced with the stronger
+`∃ b ∈ d, Ici b ∩ d ⊆ s` (under mild assumptions on `D`). -/
 theorem dirSupInaccOn_iff_inter_subset (hDL : IsLowerSet D) :
     DirSupInaccOn D s ↔ ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d →
       ∀ ⦃a : α⦄, IsLUB d a → a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s where
-  mpr := dirSupInaccOn_of_inter_subset
+  mpr := .of_inter_subset
   mp h t hD ht₀ ht₁ a ha has := by
     by_contra! H
     have H : ∀ b : t, ∃ c, b.1 ≤ c ∧ c ∈ t ∧ c ∉ s := by simpa [not_subset, and_assoc] using H
@@ -240,8 +241,8 @@ theorem dirSupInaccOn_iff_inter_subset (hDL : IsLowerSet D) :
     · exact ⟨upperBounds_mono_set hft ha.1,
         fun b hb ↦ ha.2 fun c hc ↦ (hf ⟨c, hc⟩).1.trans (hb <| by simp)⟩
 
-/-- If `d` is a set whose LUB is contained in a `DirSupInaccOn` set, then it contains an entire tail
-of `d`. -/
+/-- The condition `(d ∩ s).Nonempty` in `DirSupInacc` can be replaced with the stronger
+`∃ b ∈ d, Ici b ∩ d ⊆ s`. -/
 theorem dirSupInacc_iff_inter_subset :
     DirSupInacc s ↔ ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d →
       ∀ ⦃a : α⦄, IsLUB d a → a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s := by
@@ -301,23 +302,24 @@ theorem dirSupClosedOn_singleton (a : α) : DirSupClosedOn D {a} :=
 
 end PartialOrder
 
-namespace LinearOrder
+section LinearOrder
 variable [LinearOrder α]
 
-theorem dirSupClosedOn_iff_of_linearOrder : DirSupClosedOn D s ↔
-    ∀ ⦃d⦄, d ∈ D → d ⊆ s → d.Nonempty → ∀ ⦃a⦄, IsLUB d a → a ∈ s := by
+theorem dirSupClosedOn_iff_of_linearOrder :
+    DirSupClosedOn D s ↔ ∀ ⦃d⦄, d ∈ D → d ⊆ s → d.Nonempty → ∀ ⦃a⦄, IsLUB d a → a ∈ s := by
   simp [DirSupClosedOn]
 
-theorem dirSupClosed_iff_of_linearOrder : DirSupClosed s ↔
-    ∀ ⦃d⦄, d ⊆ s → d.Nonempty → ∀ ⦃a⦄, IsLUB d a → a ∈ s := by
+theorem dirSupClosed_iff_of_linearOrder :
+    DirSupClosed s ↔ ∀ ⦃d⦄, d ⊆ s → d.Nonempty → ∀ ⦃a⦄, IsLUB d a → a ∈ s := by
   simp [DirSupClosed]
 
-theorem dirSupInaccOn_iff_of_linearOrder : DirSupInaccOn D s ↔
-    ∀ ⦃d⦄, d ∈ D → d.Nonempty → ∀ ⦃a⦄, IsLUB d a → a ∈ s → (d ∩ s).Nonempty := by
+theorem dirSupInaccOn_iff_of_linearOrder :
+    DirSupInaccOn D s ↔
+      ∀ ⦃d⦄, d ∈ D → d.Nonempty → ∀ ⦃a⦄, IsLUB d a → a ∈ s → (d ∩ s).Nonempty := by
   simp [DirSupInaccOn]
 
-theorem dirSupInacc_iff_of_linearOrder : DirSupInacc s ↔
-    ∀ ⦃d⦄, d.Nonempty → ∀ ⦃a⦄, IsLUB d a → a ∈ s → (d ∩ s).Nonempty := by
+theorem dirSupInacc_iff_of_linearOrder :
+    DirSupInacc s ↔ ∀ ⦃d⦄, d.Nonempty → ∀ ⦃a⦄, IsLUB d a → a ∈ s → (d ∩ s).Nonempty := by
   simp [DirSupInacc]
 
 end LinearOrder
