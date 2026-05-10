@@ -723,7 +723,7 @@ theorem Submodule.IsCompl.isTopCompl_of_finiteDimensional_quotient {p q : Submod
 has finite dimension, then they are in fact topological complements.
 
 Note that this theorem does not help you to build a closed complement to a finite dimensional
-subspace. This requires the Hahn-Banach theorem, and you don't get much control over what the
+subspace. That requires the Hahn-Banach theorem, and you don't get much control over what the
 complement is. See `Submodule.ClosedComplemented.of_finiteDimensional`. -/
 theorem Submodule.IsCompl.isTopCompl_of_isClosed_of_finiteDimensional {p q : Submodule 𝕜 E}
     (h : IsCompl p q) (hp : IsClosed (p : Set E)) [hq : FiniteDimensional 𝕜 q] :
