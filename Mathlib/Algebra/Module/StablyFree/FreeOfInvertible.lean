@@ -41,21 +41,18 @@ private lemma cofactorToLeft_ιMulti_cons (bN : Module.Basis (Fin n) R N) (m : M
   simp [cofactorToLeft, cofactorLinear, AlternatingMap.alternatizeUncurryFin_apply,
     Fin.sum_univ_succ, Module.Basis.det_self]
 
-variable (R M)
-
+variable (R M) in
 /-- Let `R` be a commutative ring, `M` be a finite stably free `R`-module.
   Then `M` is free if it is invertible. -/
 theorem Module.free_of_isStablyFree_of_invertible [IsStablyFree R M] [Module.Invertible R M] :
     Module.Free R M := by
-  rcases subsingleton_or_nontrivial R with h | h
+  rcases subsingleton_or_nontrivial R with _ | _
   · have : Subsingleton M := Module.Finite.subsingleton_of_ring_subsingleton R M
     infer_instance
   obtain ⟨N, _, _, _, _, _⟩ := IsStablyFree.exist_free_prod R M
   obtain ⟨𝔪, h𝔪⟩ := Ideal.exists_maximal R
-  have : Module.Free (Localization.AtPrime 𝔪) (LocalizedModule 𝔪.primeCompl M) :=
-    free_of_flat_of_isLocalRing
-  have h1 : Module.rankAtStalk M ⟨𝔪, h𝔪.isPrime⟩ = 1 := by
-    simp [rankAtStalk, Invertible.finrank_eq_one]
+  have : Free (Localization.AtPrime 𝔪) (LocalizedModule.AtPrime 𝔪 M) := free_of_flat_of_isLocalRing
+  have h1 : rankAtStalk M ⟨𝔪, h𝔪.isPrime⟩ = 1 := by simp [rankAtStalk, Invertible.finrank_eq_one]
   let n := Module.finrank R N
   have hp : Module.finrank R (M × N) = n + 1 := by
     simpa [← h1, n, Nat.add_comm] using congrArg (fun f ↦ f ⟨𝔪, h𝔪.isPrime⟩) <|
@@ -68,4 +65,4 @@ theorem Module.free_of_isStablyFree_of_invertible [IsStablyFree R M] [Module.Inv
   have hfs : Function.Surjective f := fun x ↦
     ⟨e.symm (exteriorPower.ιMulti R (n + 1) (Fin.cons (x, 0) fun i ↦ (0, bN i))),
       by simp [f, cofactorToLeft_ιMulti_cons]⟩
-  exact Module.Free.of_equiv <| LinearEquiv.ofBijective f <| Invertible.bijective_of_surjective hfs
+  exact Module.Free.of_equiv (LinearEquiv.ofBijective f (Invertible.bijective_of_surjective hfs))

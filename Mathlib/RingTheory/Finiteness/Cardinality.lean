@@ -68,7 +68,7 @@ theorem exists_fin_quot_equiv (R M : Type*) [Ring R] [AddCommGroup M] [Module R 
   let ⟨n, f, hf⟩ := Module.Finite.exists_fin' R M
   ⟨n, LinearMap.ker f, ⟨f.quotKerEquivOfSurjective hf⟩⟩
 
-theorem Module.Finite.subsingleton_of_ring_subsingleton [Module.Finite R M] [Subsingleton R] :
+theorem subsingleton_of_ring_subsingleton [Module.Finite R M] [Subsingleton R] :
     Subsingleton M := by
   obtain ⟨n, f, fsurj⟩ := Module.Finite.exists_fin' R M
   exact fsurj.subsingleton
