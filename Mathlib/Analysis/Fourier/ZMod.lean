@@ -174,18 +174,17 @@ lemma dft_comp_neg (Φ : ZMod N → E) : 𝓕 (fun j ↦ Φ (-j)) = fun k ↦ �
   auxDFT_neg ..
 
 /-- The discrete Fourier transform of `star ∘ Φ` at frequency `k` equals
-the complex conjugate of `𝓕 Φ` at `-k`:
+the star of `𝓕 Φ` at `-k`:
 `𝓕 (star ∘ Φ) k = star (𝓕 Φ (-k))`.
 This is the discrete analogue of the standard interaction between the Fourier
 transform and complex conjugation; combined with `dft_comp_neg` it yields
 the conjugate-symmetry identity `𝓕 Φ (-k) = star (𝓕 Φ k)` for self-adjoint
 (real-valued) `Φ`. -/
-lemma dft_star_comp (Φ : ZMod N → ℂ) :
+lemma dft_star_comp [StarAddMonoid E] [StarModule ℂ E] (Φ : ZMod N → E) :
     𝓕 (fun j ↦ star (Φ j)) = fun k ↦ star (𝓕 Φ (-k)) := by
   ext k
-  simp only [dft_apply, smul_eq_mul, star_sum, star_mul', mul_neg, neg_neg,
-             AddChar.map_neg_eq_conj]
-  rfl
+  simp only [dft_apply, star_sum, star_smul, AddChar.map_neg_eq_conj,
+    starRingEnd_apply, neg_neg, mul_neg]
 
 /-- Fourier inversion formula, discrete case. -/
 lemma dft_dft (Φ : ZMod N → E) : 𝓕 (𝓕 Φ) = fun j ↦ (N : ℂ) • Φ (-j) :=
