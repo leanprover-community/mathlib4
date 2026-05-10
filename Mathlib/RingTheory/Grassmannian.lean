@@ -127,7 +127,7 @@ variable (k)
 
 @[simp] theorem map_id (A : CommAlgCat R) (N : G(k, A ⊗[R] M; A)) :
     map (.id R A) N = N := by
-  ext1
+  ext : 1
   exact (ker_baseChange_comp_cancelBaseChange_symm N.mkQ).trans N.toSubmodule.ker_mkQ
 
 variable {C : Type w} [CommRing C] [Algebra R C]
@@ -173,8 +173,8 @@ theorem map_comp (N : G(k, A ⊗[R] M; A)) :
 def functor : CommAlgCat.{w, u} R ⥤ Type (max v w) where
   obj A := G(k, (A ⊗[R] M); A)
   map f := ↾map f.hom
-  map_id A := by ext1 N; exact map_id k A N
-  map_comp f g := by ext1 N; exact map_comp k f.hom g.hom N
+  map_id A := by ext N : 1; exact map_id k A N
+  map_comp f g := by ext N : 1; exact map_comp k f.hom g.hom N
 
 end Functor
 
