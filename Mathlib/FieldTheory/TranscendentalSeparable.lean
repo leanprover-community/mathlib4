@@ -559,25 +559,30 @@ lemma tensorProduct_isReduced_of_localization_of_finiteType [IsReduced S] [Algeb
       letI := Ideal.minimalPrimes_isPrime h
       IsReduced (K ⊗[k] (Localization.AtPrime p))) :
     IsReduced (K ⊗[k] S) := by
-  have h (x : k) (y : S) : (toLocalizationMinimal S) (x • y) = x • (toLocalizationMinimal S) y := by
+  have (x : k) (y : S) : (toLocalizationMinimal S) (x • y) = x • (toLocalizationMinimal S) y := by
     ext p
     simp [toLocalizationMinimal, Algebra.smul_def, ← IsScalarTower.algebraMap_apply]
-  let g := AlgHom.mk' (toLocalizationMinimal S) h
+  let g := AlgHom.mk' (toLocalizationMinimal S) this
   have inj : Function.Injective (Algebra.TensorProduct.lTensor K g) :=
     Module.Flat.lTensor_preserves_injective_linearMap _
       (isReduced_injective_to_prod_localizations S)
+  have : IsNoetherianRing S := Algebra.FiniteType.isNoetherianRing k S
+  have : Fintype (minimalPrimes S) := (minimalPrimes.finite_of_isNoetherianRing S).fintype
+  have (p : minimalPrimes S) :
+    letI := Ideal.minimalPrimes_isPrime p.2
+    IsReduced (K ⊗[k] Localization.AtPrime p.1) := h p.1 p.2
   have red : IsReduced (K ⊗[k] ((p : minimalPrimes S) →
       letI := Ideal.minimalPrimes_isPrime p.2
-      Localization.AtPrime p.1)) := by
-    sorry
+      Localization.AtPrime p.1)) :=
+    isReduced_of_injective _ (Algebra.TensorProduct.piRight k k K _).injective
   exact isReduced_of_injective _ inj
 
 lemma isReduced_of_tensorProduct_adjoinPthRoots_reduced_of_finiteType (p : ℕ) (hp : Nat.Prime p)
     [ExpChar k p] (K : Type*) [Field K] [Algebra k K]
     [Algebra.FiniteType k S] (red : IsReduced (adjoinPthRoots k p ⊗[k] S)) :
     IsReduced (K ⊗[k] S) := by
-  have redS : IsReduced S := by
-    sorry
+  have redS : IsReduced S := isReduced_of_injective _
+    (Algebra.TensorProduct.includeRight_injective (algebraMap k (adjoinPthRoots k p)).injective)
   have red' (q : Ideal S) (h : q ∈ minimalPrimes S) :
       letI := Ideal.minimalPrimes_isPrime h
       IsReduced ((adjoinPthRoots k p) ⊗[k] (Localization.AtPrime q)) := by
