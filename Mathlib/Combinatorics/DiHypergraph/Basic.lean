@@ -56,7 +56,7 @@ variable {α : Type*} {x y z : α} {d d' s s' : Set α} {e f g : (Set α) × (Se
 An directed hypergraph with vertices of type `α` and edges of type `((Set α) × (Set α))`, as
 described by vertex and edge sets `vertexSet : Set α` and `edgeSet : Set ((Set α) × (Set α))`.
 
-The requirement `edge_src_dst_isSubset_vertexSet` ensures that, for all edges, all
+The requirement `subset_vertexSet_of_src_dst_of_mem_edgeSet` ensures that, for all edges, all
 vertices in the source and all vertices in the destination are part of `vertexSet`, i.e., all
 limbs of all edges are subsets of the `vertexSet`.
 -/
@@ -67,7 +67,9 @@ structure DiHypergraph (α : Type*) where
   /-- The edge set -/
   edgeSet : Set ((Set α) × (Set α))
   /-- Each edge is a pair (s, d), where s ⊆ vertexSet and d ⊆ vertexSet -/
-  edge_src_dst_isSubset_vertexSet' : ∀ ⦃e⦄, e ∈ edgeSet → e.1 ⊆ vertexSet ∧ e.2 ⊆ vertexSet
+  subset_vertexSet_of_src_dst_of_mem_edgeSet' : (
+    ∀ ⦃e⦄, e ∈ edgeSet → e.1 ⊆ vertexSet ∧ e.2 ⊆ vertexSet
+  )
 
 namespace DiHypergraph
 
@@ -75,24 +77,35 @@ variable {Dₕ Dₕ' : DiHypergraph α}
 
 /-! ## Notation -/
 
-/-- `V(H)` denotes the `vertexSet` of a dihypergraph `Dₕ` -/
+/-- `V(Dₕ)` denotes the `vertexSet` of a dihypergraph `Dₕ` -/
 scoped notation "V(" Dₕ ")" => DiHypergraph.vertexSet Dₕ
 
-/-- `E(H)` denotes the `edgeSet` of a hypergraph `H` -/
+/-- `E(Dₕ)` denotes the `edgeSet` of a hypergraph `Dₕ` -/
 scoped notation "E(" Dₕ ")" => DiHypergraph.edgeSet Dₕ
 
 /-! ## DiHypergraph Basics -/
 
-lemma edge_src_dst_isSubset_vertexSet (he : e ∈ E(Dₕ)) : e.1 ⊆ V(Dₕ) ∧ e.2 ⊆ V(Dₕ) :=
-  Dₕ.edge_src_dst_isSubset_vertexSet' he
+lemma subset_vertexSet_of_src_dst_of_mem_edgeSet (he : e ∈ E(Dₕ)) : e.1 ⊆ V(Dₕ) ∧ e.2 ⊆ V(Dₕ) :=
+  Dₕ.subset_vertexSet_of_src_dst_of_mem_edgeSet' he
 
 @[simp]
 lemma src_isSubset_vertexSet (he : e ∈ E(Dₕ)) : e.1 ⊆ V(Dₕ) :=
-  (Dₕ.edge_src_dst_isSubset_vertexSet he).1
+  (Dₕ.subset_vertexSet_of_src_dst_of_mem_edgeSet he).1
 
 @[simp]
 lemma dst_isSubset_vertexSet (he : e ∈ E(Dₕ)) : e.2 ⊆ V(Dₕ) :=
-  (Dₕ.edge_src_dst_isSubset_vertexSet he).2
+  (Dₕ.subset_vertexSet_of_src_dst_of_mem_edgeSet he).2
+
+lemma _root_.Membership.mem.src_subset_vertexSet (he : e ∈ E(Dₕ)) : e.1 ⊆ V(Dₕ) :=
+  Dₕ.src_isSubset_vertexSet he
+
+lemma _root_.Membership.mem.dst_subset_vertexSet (he : e ∈ E(Dₕ)) : e.2 ⊆ V(Dₕ) :=
+  Dₕ.dst_isSubset_vertexSet he
+
+lemma edgeSet_subset_powerset_vertexSet_vertexSet {Dₕ : DiHypergraph α} :
+  E(Dₕ) ⊆ (V(Dₕ).powerset ×ˢ V(Dₕ).powerset) := by
+    intro e he
+    grind [subset_vertexSet_of_src_dst_of_mem_edgeSet]
 
 /-! ## Vertex-Edge Incidence -/
 
@@ -108,27 +121,17 @@ lemma mem_vertexSet_of_mem_edgeSet_src (he : e ∈ E(Dₕ)) (hx : x ∈ e.1) : x
 lemma mem_vertexSet_of_mem_edgeSet_dst (he : e ∈ E(Dₕ)) (hx : x ∈ e.2) : x ∈ V(Dₕ) :=
   mem_vertexSet_of_mem_edgeSet_src_dst he (by right; exact hx)
 
-/--
-If the tails of edges `e` and `e'` have the same vertices from `Dₕ`, then they have all the same
-vertices.
--/
-lemma forall_of_forall_verts_src (he : e ∈ E(Dₕ)) (hf : f ∈ E(Dₕ))
-    (h : ∀ x ∈ V(Dₕ), x ∈ e.1 ↔ x ∈ f.1) : ∀ x, x ∈ e.1 ↔ x ∈ f.1 := by
-     intro x
-     constructor
-     · grind [src_isSubset_vertexSet, mem_vertexSet_of_mem_edgeSet_src]
-     · grind [src_isSubset_vertexSet, mem_vertexSet_of_mem_edgeSet_src]
+lemma edgeSet.src_ext_iff (he : e ∈ E(Dₕ)) (hf : f ∈ E(Dₕ)) :
+  e.1 = f.1 ↔ ∀ x ∈ V(Dₕ), (x ∈ e.1 ↔ x ∈ f.1) := by
+    grind [he.src_subset_vertexSet, hf.src_subset_vertexSet]
 
-/--
-If the heads of edges `e` and `e'` have the same vertices from `Dₕ`, then they have all the same
-vertices.
--/
-lemma forall_of_forall_verts_dst (he : e ∈ E(Dₕ)) (hf : f ∈ E(Dₕ))
-    (h : ∀ x ∈ V(Dₕ), x ∈ e.2 ↔ x ∈ f.2) : ∀ x, x ∈ e.2 ↔ x ∈ f.2 := by
-     intro x
-     constructor
-     · grind [dst_isSubset_vertexSet, mem_vertexSet_of_mem_edgeSet_dst]
-     · grind [dst_isSubset_vertexSet, mem_vertexSet_of_mem_edgeSet_dst]
+lemma edgeSet.dst_ext_iff (he : e ∈ E(Dₕ)) (hf : f ∈ E(Dₕ)) :
+  e.2 = f.2 ↔ ∀ x ∈ V(Dₕ), (x ∈ e.2 ↔ x ∈ f.2) := by
+    grind [he.dst_subset_vertexSet, hf.dst_subset_vertexSet]
+
+lemma edgeSet.ext_iff (he : e ∈ E(Dₕ)) (hf : f ∈ E(Dₕ)) :
+  e = f ↔ ∀ x ∈ V(Dₕ), (x ∈ e.1 ↔ x ∈ f.1) ∧ (x ∈ e.2 ↔ x ∈ f.2) := by
+  grind [src_ext_iff, dst_ext_iff]
 
 /--
 The *tail star* of a vertex `x` is the set of all tails of edges `e ∈ E(Dₕ)` where `x` is in the
@@ -199,8 +202,8 @@ end SpecialCase
 section Adjacency
 
 /--
-Predicate for vertex adjacency. Two vertices `x` and `y` are adjacent if there is some edge
-`e ∈ E(H)` where `x` is in the tail of `e  and `y` is in the head of `e`.
+Two vertices `x` and `y` are adjacent if there is some edge `e ∈ E(H)` where `x` is in the tail of
+`e`  and `y` is in the head of `e`.
 
 Note that we do not need to explicitly check that x, y ∈ V(H) here because a vertex that is not in
 the vertex set cannot be incident to any edge.
@@ -209,8 +212,8 @@ def Adj (Dₕ : DiHypergraph α) (x : α) (y : α) : Prop :=
   ∃ e ∈ E(Dₕ), x ∈ e.1 ∧ y ∈ e.2
 
 /--
-Predicate for edge adjacency. Analogous to `DiHypergraph.Adj`, edges `e` and `f` are
-adjacent if there is some vertex `x ∈ V(H)` where `x` is in the head of e and in the tail of f.
+Edges `e` and `f` are adjacent if there is some vertex `x ∈ V(H)` where `x` is in the head of `e`
+and in the tail of `f`.
 -/
 def EAdj (Dₕ : DiHypergraph α) (e : (Set α × Set α)) (f : (Set α × Set α)) : Prop :=
   e ∈ E(Dₕ) ∧ f ∈ E(Dₕ) ∧ ∃ x, x ∈ e.2 ∧ x ∈ f.1
@@ -235,7 +238,7 @@ end Adjacency
 section Isolated
 
 /--
-Predicate to determine if a vertex is isolated, meaning that it is not incident to any edges..
+Predicate to determine if a vertex is isolated, meaning that it is not incident to any edges.
 -/
 def IsIsolated (Dₕ : DiHypergraph α) (x : α) : Prop := ∀ e ∈ E(Dₕ), x ∉ e.1 ∧ x ∉ e.2
 
@@ -333,7 +336,7 @@ The empty dihypergraph of type α
 def emptyDiHypergraph (α : Type*) : DiHypergraph α where
   vertexSet := ∅
   edgeSet := ∅
-  edge_src_dst_isSubset_vertexSet' := by
+  subset_vertexSet_of_src_dst_of_mem_edgeSet' := by
     intro e he
     exact False.elim he
 
@@ -366,7 +369,7 @@ lemma isNonEndless_emptyDiHypergraph : (emptyDiHypergraph α).IsNonEndless := by
 
 lemma edge_not_mem_empty : e ∉ E(emptyDiHypergraph α) := by simp
 
-lemma IsEmpty.eq (hDₕ : Dₕ.IsEmpty) : V(Dₕ) = ∅ ∧ E(Dₕ) = ∅ := by exact hDₕ
+lemma IsEmpty.eq (hDₕ : Dₕ.IsEmpty) : V(Dₕ) = ∅ ∧ E(Dₕ) = ∅ := hDₕ
 
 @[simp]
 lemma isEmpty_iff_forall_not_mem : Dₕ.IsEmpty ↔ (∀ x, x ∉ V(Dₕ)) ∧ (∀ e, e ∉ E(Dₕ)) := by
