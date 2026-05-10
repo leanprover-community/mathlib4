@@ -234,7 +234,7 @@ theorem dirSupClosed_range {f : α → α} (hf : IsNormal f) : DirSupClosed (ran
     obtain ⟨b, hb⟩ := hs₀
     obtain ⟨c, rfl⟩ := hs hb
     exact ⟨c, hb⟩
-  have : Nonempty α := ⟨a⟩ 
+  have : Nonempty α := ⟨a⟩
   let := WellFoundedLT.toOrderBot α
   let := WellFoundedLT.conditionallyCompleteLinearOrderBot α
   have hfl : IsLUB (f ⁻¹' s) (sSup (f ⁻¹' s)) :=
