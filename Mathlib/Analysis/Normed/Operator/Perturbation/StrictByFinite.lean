@@ -120,11 +120,25 @@ theorem step2 (u : E →SL[σ] F) (A : Submodule 𝕜₁ E) (A_closed : IsClosed
 We now deduce from the two previous step the full strength of the theorem.
 -/
 
+#check quotientQuotientEquivQuotient
+
 public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict (u : E →SL[σ] F)
     (A : Submodule 𝕜₁ E) (A_closed : IsClosed (A : Set E))
     [codim_A : FiniteDimensional 𝕜₁ (E ⧸ A)] :
     (IsStrictMap u ∧ IsClosed (range u)) ↔
       (IsStrictMap (restrict A u) ∧ IsClosed (u '' A)) := by
+  set N : Submodule 𝕜₁ E := A ⊓ u.ker
+  set v : E ⧸ N →SL[σ] F := ⟨N.liftQ u inf_le_right, continuous_quot_lift _ u.continuous⟩
+  have v_eq_u : v.comp N.mkQL = u := rfl
+  set B : Submodule 𝕜₁ (E ⧸ N) := map N.mkQ A
+  have comap_B : comap N.mkQ B = A := by simp [B, N]
+  have B_closed : IsClosed (B : Set <| E ⧸ N) := by
+    rwa [← N.isQuotientMap_mkQ.isClosed_preimage, ← comap_coe, comap_B]
+  have codim_B : FiniteDimensional 𝕜₁ ((E ⧸ N) ⧸ B) :=
+    quotientQuotientEquivQuotient N A inf_le_left |>.symm.finiteDimensional
+  have range_eq : range v = range u := range_quot_lift _
+  have image_eq : v '' B = u '' A := by simp [B, ← v_eq_u, ← image_comp]
+  rw [← range_eq, ← image_eq]
   sorry
 
 end FiniteCodimSubspace
