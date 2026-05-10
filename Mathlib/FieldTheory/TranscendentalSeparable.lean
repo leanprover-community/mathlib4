@@ -7,6 +7,7 @@ module
 
 public import Mathlib.FieldTheory.SeparablyGenerated
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
+public import Mathlib.RingTheory.Localization.BaseChange
 public import Mathlib.RingTheory.LocalProperties.Reduced
 public import Mathlib.RingTheory.Nilpotent.GeometricallyReduced
 public import Mathlib.RingTheory.TensorProduct.Pi
@@ -583,15 +584,14 @@ lemma isReduced_of_tensorProduct_adjoinPthRoots_reduced_of_finiteType (p : ℕ) 
     IsReduced (K ⊗[k] S) := by
   have redS : IsReduced S := isReduced_of_injective _
     (Algebra.TensorProduct.includeRight_injective (algebraMap k (adjoinPthRoots k p)).injective)
-  have h (q : Ideal S) (h : q ∈ minimalPrimes S) :
-      letI := Ideal.minimalPrimes_isPrime h
-      IsReduced ((adjoinPthRoots k p) ⊗[k] (Localization.AtPrime q)) := by
-    sorry
   refine tensorProduct_isReduced_of_localization_of_finiteType k K S (fun q hq ↦ ?_)
   have := Ideal.minimalPrimes_isPrime hq
   let := (localization_minimal_isField q hq).toField
+  have h : IsReduced ((adjoinPthRoots k p) ⊗[k] (Localization.AtPrime q)) := by
+    -- IsLocalization.tensorProduct_tensorProduct_right
+    sorry
   have sep : Algebra.IsTranscendentalSeparable k (Localization.AtPrime q) :=
-    ((Algebra.isTranscendentalSeparable_tfae k (Localization.AtPrime q) p hp).out 0 2).mpr (h q hq)
+    ((Algebra.isTranscendentalSeparable_tfae k (Localization.AtPrime q) p hp).out 0 2).mpr h
   have : IsReduced (Localization.AtPrime q ⊗[k] K) :=
     tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced k _ K
   exact isReduced_of_injective _ (Algebra.TensorProduct.comm k K _).injective
