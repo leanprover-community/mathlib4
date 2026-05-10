@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios, Nir Paz
 module
 
 public import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
+public import Mathlib.SetTheory.Cardinal.Ordinal
 public import Mathlib.SetTheory.Ordinal.FixedPoint
 public import Mathlib.SetTheory.Ordinal.FundamentalSequence
 
