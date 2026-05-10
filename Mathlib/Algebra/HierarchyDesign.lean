@@ -245,7 +245,7 @@ Therefore, if we create an instance that always applies, we set the priority of 
 
 library_note «higher instance priority» /--
 Certain instances only apply if the goal has a certain shape. For example
-`Semiring.toModule [Semiring R] : Module R R` or Int.instAddGroupInt : AddGroup ℤ`.
+`Semiring.toModule [Semiring R] : Module R R` or Int.instAddGroup : AddGroup ℤ`.
 Usually these instances will fail quickly, and when they apply, they are almost always
 the desired instance. For performance reasons it is sometimes useful to increase the
 priority of these instances, especially if they are defined very early on in mathlib
