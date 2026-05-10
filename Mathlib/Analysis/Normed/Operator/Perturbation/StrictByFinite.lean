@@ -67,8 +67,6 @@ theorem step1_foward (A : Submodule 𝕜 E) (K : Submodule 𝕜 E) (A_closed : I
       ← Submodule.comap_coe K.mkQ]
     exact isClosed_mono_of_finiteDimensional_quotient A_closed (le_comap_map _ A)
 
-#check Codisjoint
-
 /-- The backward direction of step 1 in the proof of
 `ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict`, which you should use instead.
 
@@ -112,9 +110,7 @@ theorem step2_forward (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : Is
   let u' : E ⧸ u.ker →ₗ[𝕜] F := u.ker.liftQ u le_rfl
   have u'_clemb : IsClosedEmbedding u' := by
     constructor
-    · rw [isStrictMap_iff_isEmbedding_kerLift] at h_strict
-      -- exact h_strict
-      sorry -- should be fixed with more API on strict homs
+    · sorry -- should be fixed with more API on strict homs
     · simpa [u', ← LinearMap.coe_range, Submodule.range_liftQ]
   let π : E →L[𝕜] E ⧸ u.ker := u.ker.mkQL
   have π_restr_clemb : IsClosedEmbedding (restrict A π) :=
@@ -142,7 +138,7 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict (u : 
       (IsStrictMap (restrict A u) ∧ IsClosed (u '' A)) := by
   set N : Submodule 𝕜 E := A ⊓ u.ker
   set v : E ⧸ N →L[𝕜] F := ⟨N.liftQ u inf_le_right, continuous_quot_lift _ u.continuous⟩
-  have v_eq_u : v.comp N.mkQL = u := rfl
+  have v_eq_u : v ∘L N.mkQL = u := rfl
   set B : Submodule 𝕜 (E ⧸ N) := map N.mkQ A
   have comap_B : comap N.mkQ B = A := by simp [B, N]
   have B_closed : IsClosed (B : Set <| E ⧸ N) := by

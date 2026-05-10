@@ -131,4 +131,9 @@ lemma isQuotientMap_iff_isStrictMap_surjective :
   set Φ : range f ≃ₜ Y := .trans (.setCongr f_surj.range_eq) (Homeomorph.Set.univ Y)
   exact Φ.isQuotientMap.comp f_strict
 
+lemma isEmbedding_iff_isStrictMap_injective :
+    IsEmbedding f ↔ IsStrictMap f ∧ Injective f := by
+  refine ⟨fun H ↦ ⟨H.isStrictMap, H.injective⟩, fun ⟨f_strict, f_inj⟩ ↦ ?_⟩
+  sorry
+
 end Topology
