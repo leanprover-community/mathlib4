@@ -40,9 +40,9 @@ attribute [simp] Subtype.heq_iff_coe_eq
 
 namespace GraphLike
 
-open HasSourceTarget HasEdge GraphLike
+open GraphLike
 
-variable {V D E Gr : Type*} {u v w : V} {G : Gr} {d : D} {e : E} [HasSourceTarget V D] [HasEdge D E]
+variable {V D E Gr : Type*} {u v w : V} {G : Gr} {d : D} {e : E} [GraphLike V D E Gr]
 
 /-- A walk is a sequence of adjacent vertices.  For vertices `u v : V`, the type `Walk u v` consists
 of all walks starting at `u` and ending at `v`.
@@ -52,7 +52,7 @@ walk visits is `GraphLike.Walk.support`.
 
 See `GraphLike.Walk.nil'` and `GraphLike.Walk.cons'` for patterns that
 can be useful in definitions since they make the vertices explicit. -/
-inductive Walk (G : Gr) [GraphLike V D E Gr] : V → V → Type (max u_1 u_2)
+inductive Walk (G : Gr) : V → V → Type (max u_1 u_2)
   | nil {u : V} : Walk G u u
   | cons {u v w : V} (s : step G u v) (p : Walk G v w) : Walk G u w
 
@@ -60,7 +60,7 @@ namespace Walk
 
 section GraphLike
 
-variable [GraphLike V D E Gr] {p : Walk G u v}
+variable {p : Walk G u v}
 
 /- Manual instances for `DecidableEq` because deriving gives an instance that requires
   `DecidableEq Gr` -/
@@ -215,7 +215,7 @@ theorem isChain_adj_support : ∀ (p : Walk G u v), List.IsChain (Adj G) p.suppo
   | nil => .singleton _
   | cons h p => isChain_adj_cons_support h p
 
-theorem isChain_dartAdj_cons_darts {d : GraphLike.darts G} (h : tgt d.val = v) (p : Walk G v w) :
+theorem isChain_dartAdj_cons_darts {d : GraphLike.darts G} (h : tgt G d.val = v) (p : Walk G v w) :
     List.IsChain DartAdj (d :: p.darts) := by
   induction p generalizing d with
   | nil => exact .singleton _
@@ -232,16 +232,16 @@ theorem darts_nil : (nil : Walk G u u).darts = [] := rfl
 theorem darts_cons (s : step G u v) (p : Walk G v w) :
     (cons s p).darts = ⟨s.val, s.prop.1⟩ :: p.darts := rfl
 
-theorem cons_map_tgt_darts (p : Walk G u v) : (u :: p.darts.map (tgt ·.val)) = p.support := by
+theorem cons_map_tgt_darts (p : Walk G u v) : (u :: p.darts.map (tgt G ·.val)) = p.support := by
   induction p <;> simp [-List.map_subtype, *]
 
-theorem map_tgt_darts (p : Walk G u v) : p.darts.map (tgt ·.val) = p.support.tail := by
+theorem map_tgt_darts (p : Walk G u v) : p.darts.map (tgt G ·.val) = p.support.tail := by
   simpa using congr_arg List.tail (cons_map_tgt_darts p)
 
-theorem map_src_darts_append (p : Walk G u v) : p.darts.map (src ·.val) ++ [v] = p.support := by
+theorem map_src_darts_append (p : Walk G u v) : p.darts.map (src G ·.val) ++ [v] = p.support := by
   induction p <;> simp [-List.map_subtype, *]
 
-theorem map_src_darts (p : Walk G u v) : p.darts.map (src ·.val) = p.support.dropLast := by
+theorem map_src_darts (p : Walk G u v) : p.darts.map (src G ·.val) = p.support.dropLast := by
   simpa! using congr_arg List.dropLast (map_src_darts_append p)
 
 @[simp, grind =]
@@ -254,12 +254,12 @@ theorem length_darts (p : Walk G u v) : p.darts.length = p.length := by
 
 @[simp]
 theorem src_darts_getElem {i : ℕ} (hi : i < p.darts.length) :
-    src p.darts[i].val = p.support.dropLast[i]'(by grind) := by
+    src G p.darts[i].val = p.support.dropLast[i]'(by grind) := by
   grind [map_src_darts]
 
 @[simp]
 theorem tgt_darts_getElem {i : ℕ} (hi : i < p.darts.length) :
-    tgt p.darts[i].val = p.support.tail[i]'(by grind) := by
+    tgt G p.darts[i].val = p.support.tail[i]'(by grind) := by
   grind [map_tgt_darts]
 
 @[simp]
@@ -272,7 +272,7 @@ lemma support_getElem_length (p : Walk G u v) : p.support[p.length] = v := by
 /-- Until the `reverse` is generalized to `GraphLike`, the dual lemma is only available for
   `SimpleGraph` and called `dart_snd_mem_support_of_mem_darts`. (Note `snd` not `tgt`) -/
 theorem dart_src_mem_support_of_mem_darts {u v : V} :
-    ∀ (p : Walk G u v) {d : GraphLike.darts G}, d ∈ p.darts → src d.val ∈ p.support
+    ∀ (p : Walk G u v) {d : GraphLike.darts G}, d ∈ p.darts → src G d.val ∈ p.support
   | cons h p', d, hd => by
     simp only [support_cons, darts_cons, List.mem_cons] at hd ⊢
     rcases hd with rfl | hd
@@ -390,7 +390,7 @@ def notNilRec {motive : {u w : V} → (p : Walk G u w) → (h : ¬ p.Nil) → So
 lemma notNilRec_cons {motive : {u w : V} → (p : Walk G u w) → ¬ p.Nil → Sort*}
     (cons : {u v w : V} → (h : step G u v) → (q : Walk G v w) →
     motive (q.cons h) Walk.not_nil_cons) (h' : step G u v) (q' : Walk G v w) :
-    @notNilRec _ _ _ _ _ _ _ _ _ _ _ cons _ _ = cons h' q' := by rfl
+    @notNilRec _ _ _ _ _ _ _ _ _ cons _ _ = cons h' q' := by rfl
 
 theorem end_mem_tail_support (h : ¬ p.Nil) : v ∈ p.support.tail :=
   p.notNilRec (by simp) h
@@ -402,7 +402,7 @@ lemma edges_eq_nil {p : Walk G v w} : p.edges = [] ↔ p.Nil := by
 /-- Given a set `S` and a walk `w` from `u` to `v` such that `u ∈ S` but `v ∉ S`,
 there exists a step in the walk whose start is in `S` but whose end is not. -/
 theorem exists_boundary_dart (p : Walk G u v) (S : Set V) (uS : u ∈ S) (vS : v ∉ S) :
-    ∃ d : GraphLike.darts G, d ∈ p.darts ∧ src d.val ∈ S ∧ tgt d.val ∉ S := by
+    ∃ d : GraphLike.darts G, d ∈ p.darts ∧ src G d.val ∈ S ∧ tgt G d.val ∉ S := by
   induction p with
   | nil => cases vS uS
   | cons a p' ih =>
