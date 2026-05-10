@@ -30,9 +30,9 @@ after applying `B`, there exists a precylinder object `P` of `X₀`
 such that `T.map P.i₀ = T.map i₁` and there exists a left homotopy
 between `f₀` and `f₁` for `P.map L`. The dual result is also obtained.
 
-This result shall be applied in the situation `C₀` is a suitable
+This result shall be applied in the situation where `C₀` is a suitable
 full subcategory of a category `C` of homological complexes, and `H₀` and `H`
-and the corresponding homotopy categories (TODO @joelriou).
+are the corresponding homotopy categories (TODO @joelriou).
 
 -/
 
