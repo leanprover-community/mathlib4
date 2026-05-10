@@ -330,7 +330,7 @@ def rightCosetEquivSubgroup (g : α) : (op g • s : Set α) ≃ s :=
 
 /-- A (non-canonical) bijection between a group `α` and the product `(α/s) × s` -/
 @[to_additive addGroupEquivQuotientProdAddSubgroup
-  /-- A (non-canonical) bijection between an add_group `α` and the product `(α/s) × s` -/]
+  /-- A (non-canonical) bijection between an `AddGroup` `α` and the product `(α/s) × s` -/]
 noncomputable def groupEquivQuotientProdSubgroup : α ≃ (α ⧸ s) × s :=
   calc
     α ≃ Σ L : α ⧸ s, { x : α // (x : α ⧸ s) = L } := (Equiv.sigmaFiberEquiv QuotientGroup.mk).symm
@@ -443,9 +443,7 @@ def quotientiInfSubgroupOfEmbedding {ι : Type*} (f : ι → Subgroup α) (H : S
       simp_rw [funext_iff, quotientSubgroupOfMapOfLE_apply_mk, QuotientGroup.eq, mem_subgroupOf,
         mem_iInf, imp_self, forall_const]
 
-#adaptation_note /-- After https://github.com/leanprover/lean4/pull/12179
-the simpNF linter complains about this being `@[simp]`. -/
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem quotientiInfSubgroupOfEmbedding_apply_mk {ι : Type*} (f : ι → Subgroup α) (H : Subgroup α)
     (g : H) (i : ι) :
     quotientiInfSubgroupOfEmbedding f H (QuotientGroup.mk g) i = QuotientGroup.mk g :=
@@ -460,9 +458,7 @@ def quotientiInfEmbedding {ι : Type*} (f : ι → Subgroup α) : (α ⧸ ⨅ i,
       simp_rw [funext_iff, quotientMapOfLE_apply_mk, QuotientGroup.eq, mem_iInf, imp_self,
         forall_const]
 
-#adaptation_note /-- After https://github.com/leanprover/lean4/pull/12179
-the simpNF linter complains about this being `@[simp]`. -/
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem quotientiInfEmbedding_apply_mk {ι : Type*} (f : ι → Subgroup α) (g : α) (i : ι) :
     quotientiInfEmbedding f (QuotientGroup.mk g) i = QuotientGroup.mk g :=
   rfl

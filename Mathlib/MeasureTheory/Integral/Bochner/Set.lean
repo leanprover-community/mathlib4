@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Combinatorics.Enumerative.InclusionExclusion
 public import Mathlib.MeasureTheory.Function.LocallyIntegrable
-public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.MeasureTheory.Integral.Bochner.SumMeasure
 public import Mathlib.Topology.ContinuousMap.Compact
 public import Mathlib.Topology.MetricSpace.ThickenedIndicator
 
@@ -125,9 +125,6 @@ theorem integral_biUnion_finset {ι : Type*} (t : Finset ι) {s : ι → Set X}
       exact fun i hi => (h's.2 i hi (ne_of_mem_of_not_mem hi hat).symm).1
     · exact Finset.measurableSet_biUnion _ hs.2
 
-@[deprecated (since := "2025-08-28")]
-alias integral_finset_biUnion := integral_biUnion_finset
-
 theorem integral_iUnion_fintype {ι : Type*} [Fintype ι] {s : ι → Set X}
     (hs : ∀ i, MeasurableSet (s i)) (h's : Pairwise (Disjoint on s))
     (hf : ∀ i, IntegrableOn f (s i) μ) : ∫ x in ⋃ i, s i, f x ∂μ = ∑ i, ∫ x in s i, f x ∂μ := by
@@ -135,14 +132,14 @@ theorem integral_iUnion_fintype {ι : Type*} [Fintype ι] {s : ι → Set X}
   · simp
   · simp [pairwise_univ, h's]
 
-@[deprecated (since := "2025-08-28")]
-alias integral_fintype_iUnion := integral_iUnion_fintype
-
-
 theorem setIntegral_empty : ∫ x in ∅, f x ∂μ = 0 := by
   rw [Measure.restrict_empty, integral_zero_measure]
 
 theorem setIntegral_univ : ∫ x in univ, f x ∂μ = ∫ x, f x ∂μ := by rw [Measure.restrict_univ]
+
+lemma integral_eq_setIntegral (hs : ∀ᵐ x ∂μ, x ∈ s) (f : X → E) :
+    ∫ x, f x ∂μ = ∫ x in s, f x ∂μ := by
+  rw [← setIntegral_univ, ← setIntegral_congr_set]; rwa [ae_eq_univ]
 
 theorem integral_add_compl₀ (hs : NullMeasurableSet s μ) (hfi : Integrable f μ) :
     ∫ x in s, f x ∂μ + ∫ x in sᶜ, f x ∂μ = ∫ x, f x ∂μ := by
@@ -209,7 +206,7 @@ theorem integral_biUnion_eq_sum_powerset {ι : Type*} {t : Finset ι} {s : ι �
         (fun a ↦ (-1 : ℝ) ^ (#x + 1) • f a) a ∂μ := by
     apply Finset.sum_congr rfl (fun x hx ↦ ?_)
     rw [← integral_indicator (A x hx)]
-  rw [this, ← integral_finset_sum]; swap
+  rw [this, ← integral_finsetSum]; swap
   · intro u hu
     rw [integrable_indicator_iff (A u hu)]
     apply Integrable.smul
@@ -339,7 +336,7 @@ theorem setIntegral_eq_zero_of_ae_eq_zero (ht_eq : ∀ᵐ x ∂μ, x ∈ t → f
     ∫ x in t, f x ∂μ = 0 := by
   by_cases hf : AEStronglyMeasurable f (μ.restrict t); swap
   · rw [integral_undef]
-    contrapose! hf
+    contrapose hf
     exact hf.1
   have : ∫ x in t, hf.mk f x ∂μ = 0 := by
     refine integral_eq_zero_of_ae ?_
@@ -354,6 +351,14 @@ theorem setIntegral_eq_zero_of_ae_eq_zero (ht_eq : ∀ᵐ x ∂μ, x ∈ t → f
 theorem setIntegral_eq_zero_of_forall_eq_zero (ht_eq : ∀ x ∈ t, f x = 0) :
     ∫ x in t, f x ∂μ = 0 :=
   setIntegral_eq_zero_of_ae_eq_zero (Eventually.of_forall ht_eq)
+
+theorem frequently_ae_ne_zero_of_setIntegral_ne_zero (hU : ∫ x in t, f x ∂μ ≠ 0) :
+    ∃ᶠ x in ae (μ.restrict t), f x ≠ 0 :=
+  frequently_ae_ne_zero_of_integral_ne_zero hU
+
+theorem exists_ne_zero_of_setIntegral_ne_zero (hU : ∫ x in t, f x ∂μ ≠ 0) :
+    ∃ x, x ∈ t ∧ f x ≠ 0 := by
+  contrapose! hU; exact setIntegral_eq_zero_of_forall_eq_zero hU
 
 theorem integral_union_eq_left_of_ae_aux (ht_eq : ∀ᵐ x ∂μ.restrict t, f x = 0)
     (haux : StronglyMeasurable f) (H : IntegrableOn f (s ∪ t) μ) :
@@ -584,7 +589,7 @@ theorem norm_setIntegral_le_of_norm_le_const_ae' {C : ℝ} (hs : μ s < ∞)
   · rw [integral_non_aestronglyMeasurable hfm]
     have : ∃ᵐ (x : X) ∂μ, x ∈ s := by
       apply frequently_ae_mem_iff.mpr
-      contrapose! hfm
+      contrapose hfm
       simp [Measure.restrict_eq_zero.mpr hfm]
     rcases (this.and_eventually hC).exists with ⟨x, hx, h'x⟩
     have : 0 ≤ C := (norm_nonneg _).trans (h'x hx)
@@ -692,6 +697,9 @@ theorem integral_Ioc_eq_integral_Ioo : ∫ t in Ioc x y, f t ∂μ = ∫ t in Io
 
 theorem integral_Ico_eq_integral_Ioo : ∫ t in Ico x y, f t ∂μ = ∫ t in Ioo x y, f t ∂μ :=
   integral_Ico_eq_integral_Ioo' <| measure_singleton x
+
+theorem integral_Ico_eq_integral_Ioc : ∫ t in Ico x y, f t ∂μ = ∫ t in Ioc x y, f t ∂μ := by
+  rw [integral_Ico_eq_integral_Ioo, integral_Ioc_eq_integral_Ioo]
 
 theorem integral_Icc_eq_integral_Ioo : ∫ t in Icc x y, f t ∂μ = ∫ t in Ioo x y, f t ∂μ := by
   rw [integral_Icc_eq_integral_Ico, integral_Ico_eq_integral_Ioo]
@@ -866,17 +874,14 @@ section IntegrableUnion
 
 variable {ι : Type*} [Countable ι] {μ : Measure X} [NormedAddCommGroup E]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem integrableOn_iUnion_of_summable_integral_norm {f : X → E} {s : ι → Set X}
     (hi : ∀ i : ι, IntegrableOn f (s i) μ)
     (h : Summable fun i : ι => ∫ x : X in s i, ‖f x‖ ∂μ) : IntegrableOn f (iUnion s) μ := by
   refine ⟨AEStronglyMeasurable.iUnion fun i => (hi i).1, (lintegral_iUnion_le _ _).trans_lt ?_⟩
   have B := fun i => lintegral_coe_eq_integral (fun x : X => ‖f x‖₊) (hi i).norm
   simp_rw [enorm_eq_nnnorm, tsum_congr B]
-  have S' :
-    Summable fun i : ι =>
-      (⟨∫ x : X in s i, ‖f x‖₊ ∂μ, integral_nonneg fun x => NNReal.coe_nonneg _⟩ :
-        NNReal) := by
+  have S' : Summable fun i : ι =>
+      (NNReal.mk (∫ x : X in s i, ‖f x‖₊ ∂μ) (integral_nonneg fun x => NNReal.coe_nonneg _)) := by
     rw [← NNReal.summable_coe]; exact h
   have S'' := ENNReal.tsum_coe_eq S'.hasSum
   simp_rw [ENNReal.coe_nnreal_eq, NNReal.coe_mk, coe_nnnorm] at S''
@@ -911,7 +916,6 @@ end IntegrableUnion
 
 We prove that for any set `s`, the function
 `fun f : X →₁[μ] E => ∫ x in s, f x ∂μ` is continuous. -/
-
 
 section ContinuousSetIntegral
 

@@ -54,7 +54,6 @@ theorem ENat.measurable_iff {α : Type*} [MeasurableSpace α] {f : α → ℕ∞
     exact .compl <| .iUnion h
   | coe n => exact h n
 
-@[measurability]
 theorem measurable_unit [MeasurableSpace α] (f : Unit → α) : Measurable f :=
   measurable_from_top
 
@@ -78,7 +77,6 @@ section Nat
 
 variable {mα : MeasurableSpace α}
 
-@[measurability]
 theorem measurable_from_nat {f : ℕ → α} : Measurable f :=
   measurable_from_top
 
@@ -228,6 +226,10 @@ theorem Measurable.subtype_mk {p : β → Prop} {f : α → β} (hf : Measurable
   hs.2 ▸ by simp only [← preimage_comp, Function.comp_def, hf hs.1]
 
 @[fun_prop]
+theorem Measurable.codRestrict {s : Set β} {f : α → β} (hf : Measurable f)
+    (h : ∀ y, f y ∈ s) : Measurable (codRestrict f s h) := hf.subtype_mk
+
+@[fun_prop]
 protected theorem Measurable.rangeFactorization {f : α → β} (hf : Measurable f) :
     Measurable (rangeFactorization f) :=
   hf.subtype_mk
@@ -361,6 +363,7 @@ end Atoms
 section Prod
 
 /-- A `MeasurableSpace` structure on the product of two measurable spaces. -/
+@[implicit_reducible]
 def MeasurableSpace.prod {α β} (m₁ : MeasurableSpace α) (m₂ : MeasurableSpace β) :
     MeasurableSpace (α × β) :=
   m₁.comap Prod.fst ⊔ m₂.comap Prod.snd
@@ -387,7 +390,6 @@ theorem Measurable.fst {f : α → β × γ} (hf : Measurable f) : Measurable fu
 theorem Measurable.snd {f : α → β × γ} (hf : Measurable f) : Measurable fun a : α => (f a).2 :=
   measurable_snd.comp hf
 
-@[measurability]
 theorem Measurable.prod {f : α → β × γ} (hf₁ : Measurable fun a => (f a).1)
     (hf₂ : Measurable fun a => (f a).2) : Measurable f :=
   Measurable.of_le_map <|
@@ -484,9 +486,6 @@ lemma measurable_from_prod_countable_right' [Countable α] {f : α × β → γ}
     (h'f : ∀ x x' y, x' ∈ measurableAtom x → f (x', y) = f (x, y)) : Measurable f := by
   change Measurable ((fun p ↦ f (p.2, p.1)) ∘ Prod.swap)
   exact (measurable_from_prod_countable_left' hf h'f).comp measurable_swap
-
-@[deprecated (since := "2025-08-17")]
-alias measurable_from_prod_countable' := measurable_from_prod_countable_left'
 
 /-- For the version where the first space in the product is countable,
 see `measurable_from_prod_countable_right`. -/
@@ -699,6 +698,10 @@ protected theorem MeasurableSet.univ_pi [Countable δ] {t : ∀ i : δ, Set (X i
     (ht : ∀ i, MeasurableSet (t i)) : MeasurableSet (pi univ t) :=
   MeasurableSet.pi (to_countable _) fun i _ => ht i
 
+theorem MeasurableSet.univ_pi' [Countable δ] {t : ∀ i : δ, Set (X i)}
+    (ht : ∀ i, MeasurableSet (t i)) : MeasurableSet {f : ∀ i : δ, X i | ∀ i : δ, f i ∈ t i} :=
+  (MeasurableSet.univ_pi ht).congr (by grind)
+
 theorem measurableSet_pi_of_nonempty {s : Set δ} {t : ∀ i, Set (X i)} (hs : s.Countable)
     (h : (pi s t).Nonempty) : MeasurableSet (pi s t) ↔ ∀ i ∈ s, MeasurableSet (t i) := by
   classical
@@ -905,11 +908,11 @@ variable [MeasurableSpace β] {g : β → Set α}
 
 /-- This instance is useful when talking about Bernoulli sequences of random variables or binomial
 random graphs. -/
-instance Set.instMeasurableSpace : MeasurableSpace (Set α) := by unfold Set; infer_instance
+instance Set.instMeasurableSpace : MeasurableSpace (Set α) :=
+  inferInstanceAs <| MeasurableSpace (α → Prop)
 
-set_option backward.isDefEq.respectTransparency false in
-instance Set.instMeasurableSingletonClass [Countable α] : MeasurableSingletonClass (Set α) := by
-  unfold Set; infer_instance
+instance Set.instMeasurableSingletonClass [Countable α] : MeasurableSingletonClass (Set α) :=
+  inferInstanceAs <| MeasurableSingletonClass (α → Prop)
 
 @[simp, fun_prop] lemma measurable_setOf : Measurable fun p : α → Prop ↦ {a | p a} := measurable_id
 

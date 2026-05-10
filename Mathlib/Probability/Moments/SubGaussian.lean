@@ -306,7 +306,7 @@ lemma id_map_iff (hX : Measurable X) :
   · simpa [Kernel.map_apply _ hX, mgf_id_map hX.aemeasurable] using h.mgf_le
 
 protected lemma const_mul (h : HasSubgaussianMGF X c κ ν) (r : ℝ) :
-    HasSubgaussianMGF (fun ω ↦ r * X ω) (⟨r ^ 2, sq_nonneg r⟩ * c) κ ν where
+    HasSubgaussianMGF (fun ω ↦ r * X ω) (.mk (r ^ 2) (sq_nonneg r) * c) κ ν where
   integrable_exp_mul t := by
     simp_rw [← mul_assoc]
     exact h.integrable_exp_mul (t * r)
@@ -759,7 +759,7 @@ private lemma sum_of_iIndepFun_of_forall_aemeasurable
   | empty => simp
   | insert i s his h =>
     simp_rw [← Finset.sum_apply, Finset.sum_insert his, Pi.add_apply, Finset.sum_apply]
-    have h_indep' := (h_indep.indepFun_finset_sum_of_notMem₀ h_meas his).symm
+    have h_indep' := (h_indep.indepFun_finsetSum_of_notMem₀ h_meas his).symm
     refine add_of_indepFun (h_subG _ (Finset.mem_insert_self _ _)) (h ?_) ?_
     · exact fun i hi ↦ h_subG _ (Finset.mem_insert_of_mem hi)
     · convert h_indep'
@@ -836,7 +836,6 @@ protected lemma mgf_le_of_mem_Icc_of_integral_eq_zero [IsProbabilityMeasure μ] 
     · exact hm.mono_ac (tilted_absolutelyContinuous μ (u * X ·))
   _ = (‖b - a‖₊ / 2) ^ 2 := by simp [field]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Hoeffding's lemma**: with respect to a probability measure `μ`, if `X` is a random variable
 that has expectation zero and is almost surely in `Set.Icc a b` for some `a ≤ b`, then `X` has a
 sub-Gaussian moment-generating function with parameter `((b - a) / 2) ^ 2`. -/

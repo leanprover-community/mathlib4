@@ -15,10 +15,10 @@ public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 # AB axioms for the category of abelian groups
 
 This file proves that the category of abelian groups satisfies Grothendieck's axioms AB5, AB4, and
-AB4*.
+AB4\*.
 -/
 
-@[expose] public section
+public section
 
 universe u
 
@@ -75,7 +75,7 @@ instance : HasExactLimitsOfShape (Discrete J) (AddCommGrpCat.{u}) := by
       have : Pi.map (fun i ↦ f.app ⟨i⟩) = iX.inv ≫ lim.map f ≫ iY.hom := by
         simp only [Discrete.functor_obj_eq_as, Discrete.mk_as, Pi.isoLimit,
           IsLimit.conePointUniqueUpToIso, limit.cone, AddCommGrpCat.HasLimit.productLimitCone,
-          Iso.trans_inv, Functor.mapIso_inv, IsLimit.uniqueUpToIso_inv, Cones.forget_map,
+          Iso.trans_inv, Functor.mapIso_inv, IsLimit.uniqueUpToIso_inv, Cone.forget_map,
           IsLimit.liftConeMorphism_hom, limit.isLimit_lift, Iso.symm_inv, Functor.mapIso_hom,
           IsLimit.uniqueUpToIso_hom, lim_obj, lim_map, Iso.trans_hom, Iso.symm_hom,
           AddCommGrpCat.HasLimit.lift, Functor.const_obj_obj, Category.assoc, limit.lift_map_assoc,

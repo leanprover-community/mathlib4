@@ -74,8 +74,12 @@ instance : AlgHomClass (𝒜 →ₐᵍ[R] ℬ) R A B where
   map_one f := f.map_one
   commutes f := f.commutes
 
+attribute [coe] GradedAlgHom.toAlgHom
+
+instance : CoeOut (𝒜 →ₐᵍ[R] ℬ) (A →ₐ[R] B) := ⟨toAlgHom⟩
+
 @[simp] lemma toAlgHom_ofClass {F : Type*} [FunLike F A B] [GradedFunLike F 𝒜 ℬ]
-    [AlgHomClass F R A B] (f : F) : (ofClass f : A →ₐ[R] B) = f := rfl
+    [AlgHomClass F R A B] (f : F) : (ofClass f : A →ₐ[R] B) = AlgHomClass.toAlgHom f := rfl
 
 @[simp] lemma toGradedRingHom_ofClass {F : Type*} [FunLike F A B] [GradedFunLike F 𝒜 ℬ]
     [AlgHomClass F R A B] (f : F) :
@@ -94,8 +98,8 @@ initialize_simps_projections GradedAlgHom (toFun → apply)
 theorem coe_mks {f : A → B} (h₁ h₂ h₃ h₄ h₅ h₆) :
     ⇑(⟨⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩, h₆⟩ : 𝒜 →ₐᵍ[R] ℬ) = f := rfl
 
-@[simp, norm_cast]
-theorem coe_algHom_mk {f : A →ₐ[R] B} (h) : ((⟨f, h⟩ : 𝒜 →ₐᵍ[R] ℬ) : A →ₐ[R] B) = f := rfl
+theorem coe_algHom_mk {f : A →ₐ[R] B} (h) : ((⟨f, h⟩ : 𝒜 →ₐᵍ[R] ℬ) : A →ₐ[R] B) = f := by
+  dsimp only
 
 variable (f : 𝒜 →ₐᵍ[R] ℬ)
 
@@ -237,5 +241,31 @@ lemma default_apply (x : A) : (default : 𝒜 →ₐᵍ[R] ℬ) x = 0 :=
   rfl
 
 end
+
+section restrictScalars
+
+/-- Restrict the base ring to a "smaller" ring. -/
+@[coe, simps!] def restrictScalars (R₀ : Type*) [CommSemiring R₀] [Algebra R₀ R]
+    [Algebra R₀ A] [Algebra R₀ B] [IsScalarTower R₀ R A] [IsScalarTower R₀ R B]
+    (f : 𝒜 →ₐᵍ[R] ℬ) : (𝒜 · |>.restrictScalars R₀) →ₐᵍ[R₀] (ℬ · |>.restrictScalars R₀) :=
+  { f.toAlgHom.restrictScalars R₀, f with }
+
+variable (R₀ : Type*) [CommSemiring R₀] [Algebra R₀ R]
+    [Algebra R₀ A] [Algebra R₀ B] [IsScalarTower R₀ R A] [IsScalarTower R₀ R B]
+    (f : 𝒜 →ₐᵍ[R] ℬ)
+
+@[simp] lemma coe_restrictScalars : ⇑(f.restrictScalars R₀) = f := rfl
+
+@[simp] lemma restrictScalars_coe_algHom :
+    (f : A →ₐ[R] B).restrictScalars R₀ = f.restrictScalars R₀ := rfl
+
+@[simp] lemma restrictScalars_coe_linearMap :
+    (f : A →ₗ[R] B).restrictScalars R₀ = f.restrictScalars R₀ := rfl
+
+lemma restrictScalars_injective :
+    Function.Injective (restrictScalars R₀ : (𝒜 →ₐᵍ[R] ℬ) → _) :=
+  fun _ _ h ↦ coe_fn_injective congr($h)
+
+end restrictScalars
 
 end GradedAlgHom

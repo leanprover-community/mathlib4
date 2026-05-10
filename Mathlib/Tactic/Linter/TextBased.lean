@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Rothgang
+Authors: Michael Rothgang, Jon Eugster, Adomas Baliuka
 -/
 module
 
@@ -26,13 +26,14 @@ This file defines various mathlib linters which are based on reading the source 
 In practice, all such linters check for code style issues.
 
 Currently, this file contains linters checking
-- if the string "adaptation note" is used instead of the command #adaptation_note,
+- if the string "adaptation note" is used instead of the command `#adaptation_note`,
 - for lines with windows line endings,
 - for lines containing trailing whitespace,
 - for module names to be in upper camel case,
 - for module names to be valid Windows filenames, and containing no forbidden characters such as
   `!`, `.` or spaces.
-- for any code containing blocklisted unicode characters
+- for any code containing unicode characters not on the allowlist
+- for incorrect usage of unicode variant selectors
 
 For historic reasons, some further such checks are written in a Python script `lint-style.py`:
 these are gradually being rewritten in Lean.
@@ -51,7 +52,7 @@ namespace Mathlib.Linter.TextBased
 -- We collect these in one inductive type to centralise error reporting.
 inductive StyleError where
   /-- The bare string "Adaptation note" (or variants thereof):
-  instead, the #adaptation_note command should be used. -/
+  instead, the `#adaptation_note` command should be used. -/
   | adaptationNote
   /-- A line ends with windows line endings (\r\n) instead of unix ones (\n). -/
   | windowsLineEnding
@@ -61,6 +62,11 @@ inductive StyleError where
   | semicolon
   /-- A unicode character was used that isn't allowed -/
   | unwantedUnicode (c : Char)
+  /-- Unicode variant selectors are used in a bad way.
+  * `s` is the string containing the unicode character and any unicode variant selector following it
+  * `selector` is the desired selector or `none`
+  -/
+  | unicodeVariant (s : String) (selector: Option Char)
 deriving BEq, Inhabited
 
 /-- How to format style errors -/
@@ -75,16 +81,45 @@ public inductive ErrorFormat
   | github : ErrorFormat
   deriving BEq
 
-/-- Create the underlying error message for a given `StyleError`. -/
+open UnicodeLinter in
+/--
+Create the underlying error message for a given `StyleError`.
+
+Note: changes to the texts here must be accounted for in `parse?_errorContext`!
+-/
 def StyleError.errorMessage (err : StyleError) : String := match err with
   | StyleError.adaptationNote =>
     "Found the string \"Adaptation note:\", please use the #adaptation_note command instead"
-  | windowsLineEnding => "This line ends with a windows line ending (\r\n): please use Unix line\
-    endings (\n) instead"
+  | windowsLineEnding => "This file contains windows line endings (\\r\\n): please use Unix line\
+    endings (\\n) instead"
   | trailingWhitespace => "This line ends with some whitespace: please remove this"
   | semicolon => "This line contains a space before a semicolon"
-  | StyleError.unwantedUnicode c => s!"This line contains a bad unicode character \
-    '{c}' ({UnicodeLinter.printCodepointHex c})."
+  | StyleError.unwantedUnicode c => s!"This line contains a unicode character that is not on the \
+    allowlist '{c}' ({c.printCodepointHex}). \
+    For adding new symbols see `Mathlib.Linter.TextBased.UnicodeLinter.othersInMathlib`."
+  | StyleError.unicodeVariant s selector =>
+    let variantText := if selector == UnicodeVariant.emoji then
+      "emoji"
+    else if selector == UnicodeVariant.text then
+      "text"
+    else
+      "default"
+    let oldHex := s.printCodepointHex
+    match s.toList, selector with
+    | c₀ :: [], some sel =>
+      let newC : String := String.ofList [c₀, sel]
+      let newHex := s.printCodepointHex
+      s!"Missing unicode variant selector: \"{s}\" ({oldHex}). \
+        Please use the {variantText} variant: \"{newC}\" ({newHex})!"
+    | c₀ :: _ :: [], some sel =>
+      -- by assumption, the second character is a variant selector
+      let newC : String := String.ofList [c₀, sel]
+      let newHex := s.printCodepointHex
+      s!"Wrong unicode variant selector: \"{s}\" ({oldHex}). \
+        Please use the {variantText} variant: \"{newC}\" ({newHex})!"
+    | _, _ =>
+      s!"Unexpected unicode variant selector: \"{s}\" ({oldHex}). \
+        Consider deleting it."
 
 /-- The error code for a given style error. Keep this in sync with `parse?_errorContext` below! -/
 -- FUTURE: we're matching the old codes in `lint-style.py` for compatibility;
@@ -95,6 +130,7 @@ def StyleError.errorCode (err : StyleError) : String := match err with
   | StyleError.trailingWhitespace => "ERR_TWS"
   | StyleError.semicolon => "ERR_SEM"
   | StyleError.unwantedUnicode _ => "ERR_UNICODE"
+  | StyleError.unicodeVariant _ _ => "ERR_UNICODE_VARIANT"
 
 
 /-- Context for a style error: the actual error, the line number in the file we're reading
@@ -137,7 +173,7 @@ def compare (existing new : ErrorContext) : ComparisonResult :=
 /-- Find the first style exception in `exceptions` (if any) which covers a style exception `e`. -/
 def ErrorContext.find?_comparable (e : ErrorContext) (exceptions : Array ErrorContext) :
     Option ErrorContext :=
-  (exceptions).find? (fun new ↦ compare e new == ComparisonResult.Comparable)
+  exceptions.find? (fun new ↦ compare e new == ComparisonResult.Comparable)
 
 /-- Output the formatted error message, containing its context.
 `style` specifies if the error should be formatted for humans to read, github problem matchers
@@ -159,7 +195,12 @@ def outputMessage (errctx : ErrorContext) (style : ErrorFormat) : String :=
     -- Print for humans: clickable file name and omit the error code
     s!"error: {errctx.path}:{errctx.lineNumber}: {errorMessage}"
 
+/-- Removes quotation marks '"' at front and back of string. -/
+def removeQuotations (s : String) : String :=
+  ((s.dropPrefix "\"").toString.dropSuffix "\"").toString
+
 /-- Try parsing an `ErrorContext` from a string: return `some` if successful, `none` otherwise.
+This should be the inverse of `fun ctx ↦ outputMessage ctx .exceptionsFile`
 Used for, e.g., parsing the "exceptions" file.
 
 Need to ensure (see unit tests in `MathlibTest/LintStyle.lean`) that
@@ -186,9 +227,22 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
           -- extract the offending unicode character from `errorMessage`
           -- (if the offending character is 'C', `errorMessage[7] == "'C'"` )
           -- and wrap it in the appropriate `StyleError`, which will print it as '+NNNN'
-          let str ← errorMessage[7]?
+          let str ← errorMessage[12]?
           let c ← String.Pos.Raw.get? str ⟨1⟩ -- take middle character of expected three
           StyleError.unwantedUnicode c
+        | "ERR_UNICODE_VARIANT" => do
+          match (← errorMessage[0]?).toLower with
+          | "wrong" | "missing" =>
+            let offending := removeQuotations (← errorMessage[4]?)
+            let selector := match ← errorMessage[9]? with
+            | "emoji" => UnicodeLinter.UnicodeVariant.emoji
+            | "text" => UnicodeLinter.UnicodeVariant.text
+            | _ => none
+            StyleError.unicodeVariant offending selector
+          | "unexpected" =>
+            let offending := removeQuotations (← errorMessage[4]?)
+            StyleError.unicodeVariant offending none
+          | _ => none
         | _ => none
       match String.toNat? lineNumber with
       | some n => err.map fun e ↦ (ErrorContext.mk e n path)
@@ -289,19 +343,43 @@ end
 namespace UnicodeLinter
 
 /-- Creates `StyleError`s for bad usage of unicode characters. -/
-def findBadUnicodeAux (s : String) (pos : s.Pos)
+def findBadUnicodeAux (s : String) (pos : s.Pos) (c : Char)
     (err : Array StyleError := #[]) : Array StyleError :=
   if h : pos < s.endPos then
-    let c := pos.get (show pos ≠ s.endPos from String.Pos.ne_of_lt h)
     let posₙ := pos.next (show pos ≠ s.endPos from String.Pos.ne_of_lt h)
-    have : posₙ.remainingBytes < pos.remainingBytes :=
-        (pos.lt_iff_remainingBytes_lt posₙ).mp pos.lt_next
-    if ! isAllowedCharacter c then
-      -- bad: character not allowed. Add StyleError and continue recursion.
-      findBadUnicodeAux s posₙ (err.push (.unwantedUnicode c))
-    else
-      -- okay. Continue recursion.
-      findBadUnicodeAux s posₙ err
+    match posₙ.get? with
+    | none =>
+      -- `c` is the last character of the string
+      if ! isAllowedCharacter c then
+        -- bad: character not allowed. Add StyleError.
+        (err.push (.unwantedUnicode c))
+      else
+        err
+    | some cₙ =>
+      have : posₙ.remainingBytes < pos.remainingBytes :=
+          (pos.lt_iff_remainingBytes_lt posₙ).mp pos.lt_next
+      if ! isAllowedCharacter c then
+        -- bad: character not allowed.
+        findBadUnicodeAux s posₙ cₙ (err.push (.unwantedUnicode c))
+      else if cₙ == UnicodeVariant.emoji && !(emojis.contains c) then
+        -- bad: unwanted emoji variant selector.
+        let errₙ := err.push (.unicodeVariant (String.ofList [c, cₙ]) none)
+        findBadUnicodeAux s posₙ cₙ errₙ
+      else if cₙ == UnicodeVariant.text && !(nonEmojis.contains c) then
+        -- bad: unwanted text variant selector.
+        let errₙ := err.push (.unicodeVariant (String.ofList [c, cₙ]) none)
+        findBadUnicodeAux s posₙ cₙ errₙ
+      else if cₙ != UnicodeVariant.emoji && emojis.contains c then
+        -- bad: missing emoji variant selector.
+        let errₙ := err.push (.unicodeVariant c.toString UnicodeVariant.emoji)
+        findBadUnicodeAux s posₙ cₙ errₙ
+      else if cₙ != UnicodeVariant.text && nonEmojis.contains c then
+        -- bad: missing text variant selector.
+        let errₙ := err.push (.unicodeVariant c.toString UnicodeVariant.text)
+        findBadUnicodeAux s posₙ cₙ errₙ
+      else
+        -- okay. Continue recursion.
+        findBadUnicodeAux s posₙ cₙ err
   else
     err
 termination_by pos.remainingBytes
@@ -309,11 +387,17 @@ termination_by pos.remainingBytes
 /-- Creates `StyleError`s for bad usage of unicode characters. -/
 @[inline]
 def findBadUnicode (s : String) : Array StyleError :=
-  findBadUnicodeAux s s.startPos
+  match s.startPos.get? with
+  | none => #[]
+  | some c =>
+    findBadUnicodeAux s s.startPos c
 
 end UnicodeLinter
 
-/-- Lint a collection of input strings for disallowed unicode characters. -/
+/-- Lint a collection of input strings for disallowed unicode characters.
+
+This is implemented using an allowlist, see
+`Mathlib.Linter.TextBased.UnicodeLinter.isAllowedCharacter`. -/
 public register_option linter.unicodeLinter : Bool := { defValue := true }
 
 @[inherit_doc linter.unicodeLinter]
@@ -335,6 +419,12 @@ def unicodeLinter : TextbasedLinter := fun opts lines ↦ Id.run do
             newLine := newLine.replace c replacement
         else
             pure ()
+      | .unicodeVariant s sel =>
+        let replacement := match sel, s.startPos.get? with
+        | none, some c => c.toString
+        | some v, some c => String.ofList [c, v]
+        | _, none => unreachable!
+        newLine := newLine.replace s replacement
       | _ => unreachable!
 
     changed := changed.push newLine
@@ -389,7 +479,7 @@ def lintFile (opts : LinterOptions) (path : FilePath) (exceptions : Array ErrorC
         -- check if any exception applies:
         if new_errors.any fun (e, idx) ↦
           (idx - 1 == lineIdx) -- Subtract 1 since linter's line numbers are one-based
-          ∧ (ErrorContext.find?_comparable ⟨e, lineIdx, path⟩ exceptions).isSome
+          ∧ (ErrorContext.find?_comparable ⟨e, lineIdx, path⟩ exceptions).isNone
         then
           c[lineIdx]! -- no exception applies. Assign linter's suggestion.
         else
@@ -460,7 +550,8 @@ def lintModules (opts : LinterOptions) (nolints : Array String) (moduleNames : A
       IO.eprint output.stdout
   formatErrors allUnexpectedErrors style
   if allUnexpectedErrors.size > 0 then
-    IO.eprintln s!"error: found {allUnexpectedErrors.size} new style error(s)"
+    IO.eprintln s!"error: found {allUnexpectedErrors.size} new style error(s)! \
+      Try `lake exe lint-style --fix` to apply automatic fixes."
   return numberErrorFiles
 
 /-- Verify that all modules are named in `UpperCamelCase` -/
@@ -499,7 +590,8 @@ COM6, COM7, COM8, COM9, COM¹, COM², COM³, LPT1, LPT2, LPT3, LPT4, LPT5, LPT6,
 LPT¹, LPT² or LPT³ in its filename, as these are forbidden on Windows.
 
 Also verify that module names contain no forbidden characters such as `*`, `?` (Windows),
-`!` (forbidden on Nix OS) or `.` (might result from confusion with a module name).
+`!` (forbidden on Nix OS), `.` (might result from confusion with a module name)
+or `'` (causes shell escaping issues in scripts).
 
 Source: https://learn.microsoft.com/en-gb/windows/win32/fileio/naming-a-file.
 Return the number of module names violating this rule. -/
@@ -531,6 +623,10 @@ public def modulesOSForbidden (opts : LinterOptions) (modules : Array Lean.Name)
         else if s.contains '.' then
           isBad := true
           IO.eprintln s!"error: module name '{name}' contains forbidden character '.'"
+        else if s.contains '\'' then
+          isBad := true
+          IO.eprintln s!"error: module name '{name}' contains a prime ('), \
+            which causes shell escaping issues"
         else if s.contains ' ' || s.contains '\t' || s.contains '\n' then
           isBad := true
           IO.eprintln s!"error: module name '{name}' contains a whitespace character"

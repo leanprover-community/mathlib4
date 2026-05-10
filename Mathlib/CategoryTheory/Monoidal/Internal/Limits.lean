@@ -23,7 +23,7 @@ in particular `MonCat`, `SemiRingCat`, `RingCat`, and `AlgCat R`.)
 @[expose] public section
 
 
-open CategoryTheory Limits Monoidal MonoidalCategory
+open CategoryTheory Limits MonoidalCategory
 
 universe v u w
 
@@ -75,7 +75,7 @@ def limitCone (F : J ⥤ Mon C) (c : Cone (F ⋙ Mon.forget C)) (hc : IsLimit c)
 @[simps!]
 def forgetMapConeLimitConeIso (F : J ⥤ Mon C) (c : Cone (F ⋙ Mon.forget C)) (hc : IsLimit c) :
     (forget C).mapCone (limitCone F c hc) ≅ c :=
-  Cones.ext (Iso.refl _) (by simp)
+  Cone.ext (Iso.refl _) (by simp)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Implementation of `Mon.hasLimitsOfShape`:

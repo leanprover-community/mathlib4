@@ -75,7 +75,7 @@ lemma pairwise_primeFactors_isRelPrime :
   intro x hx y hy hxy
   simp only [Finset.mem_coe, mem_primeFactors, mem_normalizedFactors_iff' ha₀] at hx hy
   rw [hx.1.isRelPrime_iff_not_dvd]
-  contrapose! hxy
+  contrapose hxy
   have : Associated x y := hx.1.associated_of_dvd hy.1 hxy
   exact this.eq_of_normalized hx.2.1 hy.2.1
 
@@ -167,6 +167,11 @@ theorem radical_mul_of_isUnit_right (h : IsUnit u) : radical (a * u) = radical a
 
 theorem radical_pow (a : M) {n : ℕ} (hn : n ≠ 0) : radical (a ^ n) = radical a := by
   simp_rw [radical, primeFactors_pow a hn]
+
+theorem radical_pow_dvd {n : ℕ} : radical (a ^ n) ∣ radical a := by
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp
+  · rw [radical_pow _ hn]
 
 theorem radical_dvd_self : radical a ∣ a := by
   classical

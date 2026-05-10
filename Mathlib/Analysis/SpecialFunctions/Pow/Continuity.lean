@@ -49,12 +49,8 @@ theorem cpow_eq_nhds {a b : ℂ} (ha : a ≠ 0) :
 
 theorem cpow_eq_nhds' {p : ℂ × ℂ} (hp_fst : p.fst ≠ 0) :
     (fun x => x.1 ^ x.2) =ᶠ[𝓝 p] fun x => exp (log x.1 * x.2) := by
-  suffices ∀ᶠ x : ℂ × ℂ in 𝓝 p, x.1 ≠ 0 from
-    this.mono fun x hx ↦ by
-      dsimp only
-      rw [cpow_def_of_ne_zero hx]
-  refine IsOpen.eventually_mem ?_ hp_fst
-  change IsOpen { x : ℂ × ℂ | x.1 = 0 }ᶜ
+  suffices IsOpen {x : ℂ × ℂ | x.1 = 0}ᶜ from
+    mem_nhds_iff.mpr ⟨_, fun x hx ↦ by simp_all [cpow_def_of_ne_zero], this, hp_fst⟩
   rw [isOpen_compl_iff]
   exact isClosed_eq continuous_fst continuous_const
 
@@ -385,7 +381,7 @@ theorem continuousAt_rpow {x : ℝ≥0} {y : ℝ} (h : x ≠ 0 ∨ 0 < y) :
       Real.toNNReal ∘ (fun p : ℝ × ℝ => p.1 ^ p.2) ∘ fun p : ℝ≥0 × ℝ => (p.1.1, p.2) := by
     ext p
     simp only [coe_rpow, val_eq_coe, Function.comp_apply, coe_toNNReal', left_eq_sup]
-    exact_mod_cast zero_le (p.1 ^ p.2)
+    positivity
   rw [this]
   refine continuous_real_toNNReal.continuousAt.comp (ContinuousAt.comp ?_ ?_)
   · apply Real.continuousAt_rpow

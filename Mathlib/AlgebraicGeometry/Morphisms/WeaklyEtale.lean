@@ -27,7 +27,7 @@ morphism of finite presentation is étale.
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -109,5 +109,8 @@ lemma of_comp (f : X ⟶ Y) (g : Y ⟶ Z) [WeaklyEtale (f ≫ g)] [WeaklyEtale g
   MorphismProperty.of_postcomp _ _ g ‹_› ‹_›
 
 end WeaklyEtale
+
+lemma etale_le_weaklyEtale : @Etale ≤ @WeaklyEtale :=
+  fun _ _ _ _ ↦ inferInstance
 
 end AlgebraicGeometry

@@ -144,6 +144,7 @@ variable [CartesianMonoidalCategory D]
 Note we didn't require any coherence between the choice of finite products here, since we transport
 along the `prodComparison` isomorphism.
 -/
+@[implicit_reducible]
 noncomputable def cartesianClosedOfEquiv (e : C ≌ D) [MonoidalClosed C] : MonoidalClosed D :=
   letI : e.inverse.Monoidal := .ofChosenFiniteProducts _
   MonoidalClosed.ofEquiv e.inverse e.symm.toAdjunction

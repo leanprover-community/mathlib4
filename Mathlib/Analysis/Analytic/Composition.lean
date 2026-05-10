@@ -115,7 +115,6 @@ theorem applyComposition_ones (p : FormalMultilinearSeries 𝕜 E F) (n : ℕ) :
   refine congr_arg v ?_
   rw [Fin.ext_iff, Fin.val_castLE, Composition.ones_embedding, Fin.val_mk]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem applyComposition_single (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ} (hn : 0 < n)
     (v : Fin n → E) : p.applyComposition (Composition.single n hn) v = fun _j => p n v := by
   ext j
@@ -125,8 +124,8 @@ theorem applyComposition_single (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
   convert Composition.single_embedding hn ⟨i, hi2⟩ using 1
   obtain ⟨j_val, j_property⟩ := j
   have : j_val = 0 := le_bot_iff.1 (Nat.lt_succ_iff.1 j_property)
-  congr!
-  simp
+  rw! [this]
+  rfl
 
 @[simp]
 theorem removeZero_applyComposition (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
@@ -436,7 +435,6 @@ theorem id_comp' (p : FormalMultilinearSeries 𝕜 E F) (x : F) (v0 : Fin 0 → 
 
 section
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If two formal multilinear series have positive radius of convergence, then the terms appearing
 in the definition of their composition are also summable (when multiplied by a suitable positive
 geometric term). -/
@@ -691,7 +689,6 @@ end FormalMultilinearSeries
 
 open FormalMultilinearSeries
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If two functions `g` and `f` have power series `q` and `p` respectively at `f x` and `x`, within
 two sets `s` and `t` such that `f` maps `s` to `t`, then `g ∘ f` admits the power
 series `q.comp p` at `x` within `s`. -/
@@ -804,7 +801,7 @@ theorem HasFPowerSeriesWithinAt.comp {g : F → G} {f : E → F} {q : FormalMult
     tendsto_nhds_of_cauchySeq_of_subseq cau compPartialSumTarget_tendsto_atTop C
   -- Fifth step: the sum over `n` of `q.comp p n` can be expressed as a particular resummation of
   -- the sum over all compositions, by grouping together the compositions of the same
-  -- integer `n`. The convergence of the whole sum therefore implies the converence of the sum
+  -- integer `n`. The convergence of the whole sum therefore implies the convergence of the sum
   -- of `q.comp p n`
   have E : HasSum (fun n => (q.comp p) n fun _j => y) (g (f (x + y))) := by
     apply D.sigma
@@ -1255,7 +1252,6 @@ namespace FormalMultilinearSeries
 
 open Composition
 
-set_option backward.isDefEq.respectTransparency false in
 theorem comp_assoc (r : FormalMultilinearSeries 𝕜 G H) (q : FormalMultilinearSeries 𝕜 F G)
     (p : FormalMultilinearSeries 𝕜 E F) : (r.comp q).comp p = r.comp (q.comp p) := by
   ext n v
@@ -1294,6 +1290,7 @@ theorem comp_assoc (r : FormalMultilinearSeries 𝕜 G H) (q : FormalMultilinear
   -- `sizeUpTo_sizeUpTo_add`.
   refine congr_arg v (Fin.ext ?_)
   dsimp [Composition.embedding]
-  rw [sizeUpTo_sizeUpTo_add _ _ hi1 hj1, add_assoc]
+  rw [← add_assoc, ← sizeUpTo_sizeUpTo_add _ _ hi1 hj1]
+  rfl
 
 end FormalMultilinearSeries
