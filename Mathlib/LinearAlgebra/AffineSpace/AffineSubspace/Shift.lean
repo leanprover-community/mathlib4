@@ -77,12 +77,10 @@ theorem shift_eq {s : AffineSubspace k P} (p : s) (c : P) (r : k) :
   simp only [mem_map, AffineEquiv.coe_toAffineMap, AffineEquiv.constVAdd_apply]
   constructor <;> intro ⟨x, hx, heq⟩ <;> rw [← heq]
   · refine ⟨(1 - r) • (p.val -ᵥ h.some.val) +ᵥ x, ?_, ?_⟩
-    · refine vadd_mem_of_mem_direction (smul_mem _ _ ?_) hx
-      apply vsub_mem_direction p.prop h.some.prop
+    · exact vadd_mem_of_mem_direction (smul_mem _ _ (vsub_mem_direction p.prop h.some.prop)) hx
     · rw [vadd_vadd, ← smul_add, vsub_add_vsub_cancel]
   · refine ⟨(1 - r) • (h.some.val -ᵥ p.val) +ᵥ x, ?_, ?_⟩
-    · refine vadd_mem_of_mem_direction (smul_mem _ _ ?_) hx
-      apply vsub_mem_direction h.some.prop p.prop
+    · exact vadd_mem_of_mem_direction (smul_mem _ _ (vsub_mem_direction h.some.prop p.prop)) hx
     · rw [vadd_vadd, ← smul_add, vsub_add_vsub_cancel]
 
 @[simp]
