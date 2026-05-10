@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Normed.Operator.Mul
 public import Mathlib.MeasureTheory.Function.ConvergenceInMeasure
 public import Mathlib.MeasureTheory.Function.LpSpace.Complete
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
 
 /-!
 # If an `Lp` space is complete, so is the target space
@@ -43,7 +44,30 @@ lemma AEFinStronglyMeasurable.exists_measurableSet_measure_pos_lt_top {f : α �
   contrapose! h'f
   exact hf.ae_eq_mk.trans h'f
 
-lemma foo [Nontrivial (Lp E p μ)] : Nontrivial (Lp ℝ p μ) := by
+lemma foo [Nontrivial (Lp E p μ)] (hp : p ≠ 0) : Nontrivial (Lp ℝ p μ) := by
+  obtain ⟨f, hf⟩ : ∃ f : Lp E p μ, f ≠ 0 := exists_ne 0
+  have hfne : ¬ (f =ᵐ[μ] 0) := by
+    contrapose! hf
+    ext
+    grw [hf, (Lp.coeFn_zero E p μ)]
+  rcases eq_top_or_lt_top p with rfl | h'p
+  · sorry
+  · have h'f : AEFinStronglyMeasurable f μ :=
+      MemLp.aefinStronglyMeasurable (Lp.memLp f) hp h'p.ne
+    obtain ⟨s, s_meas, s_pos, s_top⟩ : ∃ s, MeasurableSet s ∧ 0 < μ s ∧ μ s < ∞ :=
+      h'f.exists_measurableSet_measure_pos_lt_top hfne
+    apply nontrivial_of_ne (indicatorConstLp p s_meas s_top.ne 1) 0
+    intro hzero
+    have : ‖indicatorConstLp p s_meas s_top.ne (1 : ℝ)‖ = ‖(0 : Lp ℝ p μ)‖ := by rw [hzero]
+    simp [norm_indicatorConstLp hp h'p.ne] at this
+
+
+
+
+
+
+
+#exit
 
 
 
