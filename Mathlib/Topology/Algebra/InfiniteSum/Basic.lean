@@ -742,6 +742,8 @@ protected theorem Multipliable.tprod_union_of_disjoint {s t : Set β} (hd : Disj
 
 @[deprecated (since := "2026-05-10")]
 alias Multipliable.tprod_union_disjoint := Multipliable.tprod_union_of_disjoint
+@[deprecated (since := "2026-05-10")]
+alias Summable.tsum_union_disjoint := Summable.tsum_union_of_disjoint
 
 @[to_additive]
 protected theorem Multipliable.tprod_finset_bUnion_disjoint {ι} {s : Finset ι} {t : ι → Set β}
