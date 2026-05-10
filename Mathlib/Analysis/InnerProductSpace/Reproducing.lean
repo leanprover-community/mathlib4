@@ -365,8 +365,8 @@ def generatorRestricted : WithLp 2 (H × H₁) →L[𝕜] Sum' H H₁ :=
 variable (𝕜 H H₁) in
 variable [CompleteSpace H] [CompleteSpace H₁] in
 @[simp]
-lemma generatorRestricted_apply (f : WithLp 2 (H × H₁)) (x : X) :
-    generatorRestricted f x = (generator H H₁) f x := by
+lemma generatorRestricted_def (f : WithLp 2 (H × H₁)) :
+    generatorRestricted f = (generator H H₁) f := by
   rw [generatorRestricted]
   rfl
 
@@ -384,10 +384,12 @@ def coeR' : H₁ →L[𝕜] (Sum' H H₁) := generatorRestricted
 
 variable (𝕜 H H₁) in
 variable [CompleteSpace H] [CompleteSpace H₁] in
+@[simp]
 lemma coeL'_apply (f : H) (x : X) : (coeL' 𝕜 H H₁) f x = f x := by simp [coeL']
 
 variable (𝕜 H H₁) in
 variable [CompleteSpace H] [CompleteSpace H₁] in
+@[simp]
 lemma coeR'_apply (f : H₁) (x : X) : (coeR' 𝕜 H H₁) f x = f x := by simp [coeR']
 
 variable [CompleteSpace H] [CompleteSpace H₁] [CompleteSpace V] in
@@ -404,15 +406,26 @@ theorem kerFun_sum_eq_sum_of_kerFun' (x : X) :
     kerFun (Sum' H H₁) x = (coeL' 𝕜 H H₁) ∘L kerFun H x + (coeR' 𝕜 H H₁) ∘L kerFun H₁ x := by
   apply ContinuousLinearMap.ext
   intro v
-  ext
-  simp
-  rw [coeL'_apply, coeR'_apply]
-  -- rw [ext_iff_inner_left (𝕜 := 𝕜)]
-  -- intro f
+  -- ext
   -- simp
-  -- rw [inner_add_right, ← adjoint_inner_left, inner_kerFun, ← adjoint_inner_left, inner_kerFun,
-  --   ← adjoint_coeL_add_adjoint_coeR_eq, inner_add_left]
+  -- rw [coeL'_apply, coeR'_apply]
+  rw [ext_iff_inner_left (𝕜 := 𝕜)]
+  intro f
+  obtain ⟨⟨p1,p2⟩ , hp⟩ := Quotient.exists_rep f
+  have hs : p1 x + p2 x = f x := by sorry
+  simp
+  rw [← hs]
+  rw [inner_add_right, ← adjoint_inner_left, inner_kerFun, ← adjoint_inner_left, inner_kerFun]
+  -- rw [show (Submodule.Quotient.mk (WithLp.toLp 2 (p1, p2))) x = ↑(generator H H₁) (WithLp.toLp 2 (p1, p2)) x from rfl]
+  rw [← adjoint_coeL_add_adjoint_coeR_eq, inner_add_left]
 
+variable [CompleteSpace H] [CompleteSpace H₁] [CompleteSpace V] in
+theorem kernel_sum_eq_sum_of_kernel : kernel (Sum' H H₁) = kernel H + kernel H₁ := by
+  ext
+  rw [Matrix.add_apply, add_apply]
+  simp_rw [← kerFun_apply]
+  rw [kerFun_sum_eq_sum_of_kerFun']
+  simp
 
 -- ROUTE 1:
 
