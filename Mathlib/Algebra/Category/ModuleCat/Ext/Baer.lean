@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-!
 
-# Category Language Baer Criterion
+# Baer criterion for injective dimension
 
 The Baer criterion describes that an `R`-module `M` is injective iff any ideal `I` of `R`,
 any `I →ₗ[R] M` can be extended to `R →ₗ[R] M`. The later condition has an equivalent
@@ -46,15 +46,16 @@ open CategoryTheory Abelian
 
 namespace ModuleCat
 
-lemma ext_one_subsingleton_iff_of_prijective [Small.{v} R] (M : ModuleCat.{v} R)
+attribute [local instance] Ext.subsingleton_of_projective in
+lemma ext_one_subsingleton_iff_of_projective [Small.{v} R] (M : ModuleCat.{v} R)
     (S : ShortComplex.{v} (ModuleCat R)) (S_exact : S.ShortExact) (proj : Projective S.X₂) :
     Subsingleton (Ext S.X₃ M 1) ↔ Function.Surjective ((Ext.mk₀ S.f).precomp M (add_zero 0)) := by
-  refine Iff.trans ⟨fun h ↦ ?_, fun h ↦ ?_⟩ ((Ext.contravariant_sequence_exact₁' S_exact M 0 1
-    rfl).epi_f_iff.symm.trans (AddCommGrpCat.epi_iff_surjective _))
-  · exact (AddCommGrpCat.of (Ext S.X₃ M 1)).isZero_of_subsingleton.eq_zero_of_tgt _
-  · exact AddCommGrpCat.subsingleton_of_isZero ((Ext.contravariant_sequence_exact₃' S_exact M 0 1
-      rfl).isZero_X₂ h ((@AddCommGrpCat.isZero_of_subsingleton _
-        (Ext.subsingleton_of_projective S.X₂ M 0)).eq_zero_of_tgt _))
+  refine ⟨fun h x₁ ↦ Ext.contravariant_sequence_exact₁ S_exact _ x₁ (add_zero _)
+    (by subsingleton), fun h ↦ subsingleton_of_forall_eq 0 (fun x₃ ↦ ?_)⟩
+  obtain ⟨x₁, rfl⟩ := Ext.contravariant_sequence_exact₃ S_exact _ x₃
+    (by subsingleton) (add_zero 1)
+  obtain ⟨x₂, rfl⟩ := h x₁
+  simp
 
 lemma ext_quotient_one_subsingleton_iff [Small.{v} R] (M : ModuleCat.{v} R) (I : Ideal R) :
     Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M 1) ↔
@@ -67,7 +68,7 @@ lemma ext_quotient_one_subsingleton_iff [Small.{v} R] (M : ModuleCat.{v} R) (I :
   have : Projective S.X₂ := by dsimp [S]; infer_instance
   --Reduce the vanishing of `Ext (R ⧸ I) M 1` to surjectivity of `Ext R M 0 → Ext I M 0`,
   --but with shrink involved.
-  apply (ext_one_subsingleton_iff_of_prijective M S S_exact this).trans
+  apply (ext_one_subsingleton_iff_of_projective M S S_exact this).trans
   refine ⟨fun h ↦ fun g ↦ ?_, fun h ↦ fun e ↦ ?_⟩
   · obtain ⟨f', hf'⟩ := h (Ext.mk₀ (ModuleCat.ofHom (g.comp (Shrink.linearEquiv R I).toLinearMap)))
     rw [Ext.bilinearComp_apply_apply, ← Ext.mk₀_addEquiv₀_apply f', Ext.mk₀_comp_mk₀] at hf'
@@ -89,6 +90,7 @@ lemma injective_of_subsingleton_ext_quotient_one [Small.{v} R] (M : ModuleCat.{v
   rw [← Module.injective_iff_injective_object, ← Module.Baer.iff_injective]
   exact fun I ↦ (ext_quotient_one_subsingleton_iff M I).mp (h I)
 
+attribute [local instance] Ext.subsingleton_of_injective in
 open Limits in
 lemma hasInjectiveDimensionLE_of_quotients [Small.{v} R] (M : ModuleCat.{v} R) (n : ℕ)
     (h : ∀ I : Ideal R, Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M (n + 1))) :
@@ -98,19 +100,12 @@ lemma hasInjectiveDimensionLE_of_quotients [Small.{v} R] (M : ModuleCat.{v} R) (
     have : Injective M := injective_of_subsingleton_ext_quotient_one M h
     infer_instance
   | succ n ih =>
-    let ip : InjectivePresentation M := (EnoughInjectives.presentation M).some
-    let S := ip.shortComplex
-    have (N : ModuleCat R) : Subsingleton (Ext N M (n + 2)) ↔
-        Subsingleton (Ext N (cokernel ip.3) (n + 1)) := by
-      have := Ext.subsingleton_of_injective N S.X₂
-      have : IsIso (AddCommGrpCat.ofHom (ip.shortExact_shortComplex.extClass.postcomp N rfl)) :=
-        (Ext.covariantSequence_exact N ip.shortExact_shortComplex (n + 1) (n + 2) rfl).isIso_map'
-          1 (by decide) ((AddCommGrpCat.of _).isZero_of_subsingleton.eq_zero_of_src _)
-            ((AddCommGrpCat.of _).isZero_of_subsingleton.eq_zero_of_tgt  _)
-      exact (asIso (AddCommGrpCat.ofHom (ip.shortExact_shortComplex.extClass.postcomp N
-        rfl))).addCommGroupIsoToAddEquiv.subsingleton_congr.symm
-    simp only [this] at h
-    exact (ip.shortExact_shortComplex.hasInjectiveDimensionLT_X₃_iff n inferInstance).mp (ih _ h)
+    let ip : InjectivePresentation M := Classical.arbitrary _
+    refine ip.shortExact_shortComplex.hasInjectiveDimensionLT_X₁ _
+      (ih _ (fun I ↦ subsingleton_of_forall_eq 0 (fun x₃ ↦ ?_))) inferInstance
+    obtain ⟨x₂, rfl⟩ := Ext.covariant_sequence_exact₃ _ ip.shortExact_shortComplex x₃ rfl
+      (by subsingleton)
+    simp [Subsingleton.elim x₂ 0]
 
 lemma hasInjectiveDimensionLT_of_quotients [Small.{v} R] (M : ModuleCat.{v} R) (n : ℕ)
     (h : ∀ I : Ideal R, Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M n)) :
