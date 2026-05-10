@@ -109,8 +109,8 @@ omit [Algebra ℚ A] in
 private theorem eq_of_deriv_mul_one_add_X_eq_self [IsAddTorsionFree A]
     {g : A⟦X⟧} {c : A} (hderiv : d⁄dX A g * (1 + X) = g) (hconst : constantCoeff g = c) :
     g = c • (1 + X) := by
-  have hcoeff : ∀ n, coeff n (d⁄dX A g * (1 + X)) = coeff n g := fun n => by rw [hderiv]
-  have hrec : ∀ n : ℕ, (↑(n + 2) : A) * coeff (n + 2) g = -↑n * coeff (n + 1) g := fun n => by
+  have hcoeff (n) : coeff n (d⁄dX A g * (1 + X)) = coeff n g := by rw [hderiv]
+  have hrec (n : ℕ) : (↑(n + 2) : A) * coeff (n + 2) g = -↑n * coeff (n + 1) g := by
     have h := hcoeff (n + 1)
     rw [mul_add, mul_one, map_add, coeff_succ_mul_X, coeff_derivative, coeff_derivative] at h
     push_cast at h ⊢
@@ -126,11 +126,11 @@ private theorem eq_of_deriv_mul_one_add_X_eq_self [IsAddTorsionFree A]
     | zero =>
       have h := hrec 0
       simp only [Nat.cast_zero, neg_zero, zero_mul, ← nsmul_eq_mul] at h
-      exact (nsmul_eq_zero_iff_right (by omega : (2 : ℕ) ≠ 0)).mp h
+      rwa [nsmul_eq_zero_iff_right (by omega : (2 : ℕ) ≠ 0)] at h
     | succ m ih =>
       have h := hrec (m + 1)
       rw [ih, mul_zero, ← nsmul_eq_mul] at h
-      exact (nsmul_eq_zero_iff_right (by omega : (m + 3 : ℕ) ≠ 0)).mp h
+      rwa [nsmul_eq_zero_iff_right (by omega : (m + 3 : ℕ) ≠ 0)] at h
   ext n
   match n with
   | 0 => simp [coeff_zero_eq_constantCoeff, hconst]
@@ -144,8 +144,8 @@ private theorem geom_mul_one_add_X :
   match n with
   | 0 => simp
   | n + 1 =>
-    rw [coeff_succ_mul_X, coeff_mk, coeff_mk, pow_succ, ← map_add,
-      show (-1 : ℚ) ^ n * -1 + (-1) ^ n = 0 by ring, map_zero]
+    have hcancel : (-1 : ℚ) ^ n * -1 + (-1) ^ n = 0 := by ring
+    rw [coeff_succ_mul_X, coeff_mk, coeff_mk, pow_succ, ← map_add, hcancel, map_zero]
     simp
 
 theorem subst_exp_log [IsAddTorsionFree A] : (exp A).subst (log A) = 1 + X := by
@@ -168,14 +168,16 @@ theorem subst_log_exp_sub_one [IsAddTorsionFree A] :
     rw [subst_mul HasSubst.exp_sub_one, subst_add HasSubst.exp_sub_one,
       ← coe_substAlgHom HasSubst.exp_sub_one (R := A), map_one,
       coe_substAlgHom, subst_X HasSubst.exp_sub_one] at h
-    rwa [show (1 : A⟦X⟧) + (exp A - 1) = exp A from by ring] at h
+    have hone_add : (1 : A⟦X⟧) + (exp A - 1) = exp A := by ring
+    rwa [hone_add] at h
   · change MvPowerSeries.constantCoeff _ = _
-    rw [constantCoeff_subst_of_constantCoeff_zero (show constantCoeff (exp A - 1 : A⟦X⟧) = 0
-      by simp [constantCoeff_exp]), constantCoeff_log, map_zero, constantCoeff_X]
+    have hconst : constantCoeff (exp A - 1 : A⟦X⟧) = 0 := by simp [constantCoeff_exp]
+    rw [constantCoeff_subst_of_constantCoeff_zero hconst, constantCoeff_log, map_zero,
+      constantCoeff_X]
 
 variable (A) in
 theorem logOf_exp [IsAddTorsionFree A] : logOf (exp A) = X :=
-  log_subst_exp_sub_one A
+  subst_log_exp_sub_one A
 
 end PowerSeries
 
