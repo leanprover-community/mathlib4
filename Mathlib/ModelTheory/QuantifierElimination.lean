@@ -181,12 +181,12 @@ theorem isEquivQF_iff_realize_iff_of_embeddings
         let lqfs : List Q1 := qfs.toList
         let θ : L.Formula (Fin m) := (lqfs.map Subtype.val).foldr (· ⊓ ·) ⊤
         have hθQF : θ.IsQF := by
-          show ((lqfs.map Subtype.val).foldr (· ⊓ ·) ⊤).IsQF
+          change ((lqfs.map Subtype.val).foldr (· ⊓ ·) ⊤).IsQF
           induction lqfs with
           | nil => exact BoundedFormula.IsQF.top
           | cons q _ ih => exact q.2.1.inf (by simpa using ih)
         have hφθ : φ ⟹[T] θ := fun M v xs hφ => by
-          show BoundedFormula.Realize ((lqfs.map Subtype.val).foldr (· ⊓ ·) ⊤) v xs
+          change BoundedFormula.Realize ((lqfs.map Subtype.val).foldr (· ⊓ ·) ⊤) v xs
           rw [BoundedFormula.realize_foldr_inf, List.forall_mem_map]
           exact fun q _ => q.2.2 M v xs hφ
         have hθφ : θ ⟹[T] φ := by
@@ -247,7 +247,7 @@ theorem isEquivQF_iff_realize_iff_of_embeddings
         let lqfs : List P := qfs.toList
         let θ : L.Formula (Fin m) := (lqfs.map Subtype.val).foldr (· ⊓ ·) ⊤
         have hθQF : θ.IsQF := by
-          show ((lqfs.map Subtype.val).foldr (· ⊓ ·) ⊤).IsQF
+          change ((lqfs.map Subtype.val).foldr (· ⊓ ·) ⊤).IsQF
           induction lqfs with
           | nil => exact BoundedFormula.IsQF.top
           | cons q _ ih => exact q.2.1.inf (by simpa using ih)
@@ -282,7 +282,7 @@ theorem isEquivQF_iff_realize_iff_of_embeddings
                 exact (Formula.boundedFormula_realize_eq_realize ..).1 (hθall q.1 hqlist)⟩
           exact hs (Theory.Model.isSatisfiable M)
         have hθv0 : θ.Realize v0 := by
-          show BoundedFormula.Realize ((lqfs.map Subtype.val).foldr (· ⊓ ·) ⊤) v0 default
+          change BoundedFormula.Realize ((lqfs.map Subtype.val).foldr (· ⊓ ·) ⊤) v0 default
           rw [BoundedFormula.realize_foldr_inf, List.forall_mem_map]
           exact fun q _ => q.2.2
         exact hqfConseq ⟨θ.not, hθQF.not, hφnotθ⟩ hθv0
