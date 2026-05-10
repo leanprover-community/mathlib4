@@ -469,11 +469,11 @@ lemma Algebra.isTranscendentalSeparable_tfae (hp : Nat.Prime p) :
     intro sep
     have := tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced
       k K (AlgebraicClosure k)
-    apply (Algebra.isGeometricallyReduced_iff k K).mpr
+    apply (Algebra.isGeometricallyReduced_field_iff k K).mpr
     exact isReduced_of_injective _ (Algebra.TensorProduct.comm k _ K).injective
   tfae_have 4 → 3 := by
     have : Fact (Nat.Prime p) := ⟨hp⟩
-    simp only [isGeometricallyReduced_iff]
+    simp only [isGeometricallyReduced_field_iff]
     intro red
     let f : (adjoinPthRoots k p) →ₐ[k] (AlgebraicClosure k) :=
       (IsAlgClosure.equiv k (AlgebraicClosure (adjoinPthRoots k p))
