@@ -19,7 +19,7 @@ related basic results.
 
 * `ContRepresentation R G V` is the type of continuous representations of a monoid `G` on a
   `R`-module `V` which is a topological addgroup (where the action of `G` on `V` is
-  *Not* assumed to be continuous so that `coind₁`). The reason for this more general
+  *not* assumed to be continuous so that `coind₁`). The reason for this more general
   definition is that it allows us to define the coinduced representation of a continuous
   representation. The coinduced representation is then also a continuous representation without any
   restriction on the topology on `G`.
