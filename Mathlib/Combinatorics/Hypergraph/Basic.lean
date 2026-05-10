@@ -101,25 +101,8 @@ lemma edgeSet_subset_powerset_vertexSet {H : Hypergraph α} : E(H) ⊆ V(H).powe
 lemma mem_vertexSet_of_mem_edgeSet (he : e ∈ E(H)) (hx : x ∈ e) : x ∈ V(H) :=
   H.subset_vertexSet_of_mem_edgeSet he hx
 
-lemma edgeSet.ext_iff (he : e ∈ E(H)) (he' : e' ∈ E(H)) : e = e' ↔ ∀ x ∈ V(H), x ∈ e ↔ x ∈ e' :=
-  Iff.intro
-  (fun a x a_1 ↦ Iff.of_eq (congrFun a x))
-  (
-    by
-    intro h
-    refine ext ?_
-    intro x
-    have h': x ∈ V(H) ∨ x ∉ V(H) := Classical.em (x ∈ V(H))
-    cases h' with
-    | inl xmem => exact Iff.symm ((fun {a b} ↦ iff_comm.mp) (h x xmem))
-    | inr xnmem => (
-      refine Iff.symm ((fun {a b} ha ↦ (iff_false_left ha).mpr) ?_ ?_)
-      · contrapose xnmem
-        exact mem_vertexSet_of_mem_edgeSet he' xnmem
-      · contrapose xnmem
-        exact mem_vertexSet_of_mem_edgeSet he xnmem
-    )
-  )
+lemma edgeSet.ext_iff (he : e ∈ E(H)) (he' : e' ∈ E(H)) : e = e' ↔ ∀ x ∈ V(H), x ∈ e ↔ x ∈ e' := by
+  grind [he.subset_vertexSet, he'.subset_vertexSet]
 
 lemma sUnion_edgeSet_subset_vertexSet : ⋃₀ E(H) ⊆ V(H) :=
   subset_powerset_iff.mp edgeSet_subset_powerset_vertexSet
@@ -291,10 +274,7 @@ lemma IsComplete.not_isTrivial (h : H.IsComplete) : ¬H.IsTrivial := by
   intro hH
   exact hH.not_mem_edgeSet (e := ∅) (h ∅ (Set.empty_subset _))
 
-lemma completeOn_not_isTrivial {S : Set α} : ¬(completeOn S).IsTrivial := by
-  unfold IsTrivial
-  apply not_and_or.mpr
-  right
-  exact ne_of_mem_of_not_mem' (fun ⦃a⦄ a ↦ a) fun a ↦ a
+lemma completeOn_not_isTrivial (f : Set α) : ¬ (completeOn f).IsTrivial :=
+  (isComplete_completeOn f).not_isTrivial
 
 end Hypergraph
