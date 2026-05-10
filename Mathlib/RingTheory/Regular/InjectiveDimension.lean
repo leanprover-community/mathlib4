@@ -5,25 +5,18 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Shrink
-public import Mathlib.Algebra.FiveLemma
-public import Mathlib.CategoryTheory.Abelian.Injective.Dimension
-public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-public import Mathlib.Algebra.Category.Grp.Zero
+public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRingsExact
 public import Mathlib.Algebra.Category.ModuleCat.Ext.Baer
 public import Mathlib.Algebra.Category.ModuleCat.Ext.Finite
+public import Mathlib.Algebra.FiveLemma
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Map
-public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.CategoryTheory.Abelian.Projective.Dimension
 public import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
 public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
-public import Mathlib.RingTheory.KrullDimension.Basic
 public import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
-public import Mathlib.RingTheory.KrullDimension.Zero
-public import Mathlib.RingTheory.LocalRing.Module
-public import Mathlib.RingTheory.Noetherian.Basic
 public import Mathlib.RingTheory.Regular.Category
 public import Mathlib.RingTheory.Regular.RegularSequence
+public import Mathlib.RingTheory.Support
 
 /-!
 
@@ -205,23 +198,6 @@ section restrictScalars
 universe u'
 
 variable {R' : Type u'} [CommRing R'] (f : R →+* R')
-
-lemma ModuleCat.restrictScalars_map_exact' (S : ShortComplex (ModuleCat.{v} R')) (h : S.Exact) :
-    (S.map (ModuleCat.restrictScalars.{v} f)).Exact := by
-  rw [CategoryTheory.ShortComplex.ShortExact.moduleCat_exact_iff_function_exact] at h ⊢
-  exact h
-
-instance ModuleCat.restrictScalars_preservesFiniteLimits :
-    Limits.PreservesFiniteLimits (ModuleCat.restrictScalars.{v} f) := by
-  have := ((CategoryTheory.Functor.exact_tfae (ModuleCat.restrictScalars.{v} f)).out 1 3).mp
-    (ModuleCat.restrictScalars_map_exact' f)
-  exact this.1
-
-instance ModuleCat.restrictScalars_preservesFiniteColimits :
-    Limits.PreservesFiniteColimits (ModuleCat.restrictScalars.{v} f) := by
-  have := ((CategoryTheory.Functor.exact_tfae (ModuleCat.restrictScalars.{v} f)).out 1 3).mp
-    (ModuleCat.restrictScalars_map_exact' f)
-  exact this.2
 
 /-- Restricting scalar by surjective ring homomorphism is fully faithful. -/
 def ModuleCat.restrictScalars_fullyFaithful_of_surjective (h : Function.Surjective f) :
