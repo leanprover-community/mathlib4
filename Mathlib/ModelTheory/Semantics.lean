@@ -606,7 +606,8 @@ theorem realize_relabel_finSumFinEquiv_symm_snoc {m : ℕ} (φ : L.Formula (Fin 
     (BoundedFormula.relabel (fun i => finSumFinEquiv.symm i) φ).Realize v (Fin.snoc default x) ↔
       φ.Realize (Fin.snoc v x) := by
   rw [realize_relabel_finSumFinEquiv_symm]
-  have h_snoc : Sum.elim v (Fin.snoc default x) ∘ (fun i => finSumFinEquiv.symm i) = Fin.snoc v x := by
+  have h_snoc : Sum.elim v (Fin.snoc default x) ∘ (fun i => finSumFinEquiv.symm i) = Fin.snoc v x
+  := by
     ext i
     refine Fin.addCases (fun i => ?_) (fun j => ?_) i
     · simp only [Function.comp_apply, finSumFinEquiv_symm_apply_castAdd, Sum.elim_inl]
