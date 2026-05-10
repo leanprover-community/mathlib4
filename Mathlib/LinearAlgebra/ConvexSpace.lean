@@ -179,8 +179,8 @@ class ConvexSpace (R : Type u) (M : Type v)
   mk' ::
   /-- Take a convex combination with the given probability distribution over points. -/
   /- FIXME: Lean makes `inst₁`, `inst₂`, `inst₃` implicit by default, which renders `sConvexCombo`
-  unusable without these manual `[inst]` binders. Why is this so? Shouldn't typeclass arguments to a `structure` also be typeclass
-  arguments to its fields? -/
+  unusable without these manual `[inst]` binders. Why is this so? Shouldn't typeclass arguments to
+  a `structure` also be typeclass arguments to its fields? -/
   sConvexCombo [inst₁] [inst₂] [inst₃] (f : StdSimplex R M) : M
   /-- A convex combination of a single point is that point. -/
   sConvexCombo_single (x : M) : sConvexCombo (.single x) = x
