@@ -586,8 +586,8 @@ theorem IsSymmetric.adjoint_eq {A : E →ₗ[𝕜] E} (hA : A.IsSymmetric) :
     A.adjoint = A := by
   rwa [eq_comm, eq_adjoint_iff A A]
 
-theorem adjoint_id : (LinearMap.id (R := 𝕜) (M := E)).adjoint = LinearMap.id := by
-  simp
+lemma adjoint_id : (.id : E →ₗ[𝕜] E).adjoint = .id := by simp
+lemma adjoint_one : (1 : E →ₗ[𝕜] E).adjoint = 1 := by simp
 
 /-- 7.6(b) from [axler2024].
 See `ContinuousLinearMap.orthogonal_ker` for the infinite-dimensional version. -/
