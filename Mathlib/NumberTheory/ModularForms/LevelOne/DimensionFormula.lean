@@ -136,8 +136,8 @@ lemma ModularForm.rank_eq_one_add_rank_cuspForm {k : ℕ} (hk : 3 ≤ k) (hk2 : 
     exact one_ne_zero <| hE.symm.trans <| (isCuspForm_iff_coeffZero_eq_zero _).mp h
   · refine (Submodule.Quotient.forall _).mpr fun f ↦ ⟨(qExpansion 1 f).coeff 0, ?_⟩
     rw [← Submodule.Quotient.mk_smul, Submodule.Quotient.eq, mem_cuspFormSubmodule_iff,
-      isCuspForm_iff_coeffZero_eq_zero, ModularForm.coe_sub, ModularFormClass.qExpansion_sub,
-      IsGLPos.coe_smul, ModularFormClass.qExpansion_smul, map_sub,
+      isCuspForm_iff_coeffZero_eq_zero, ModularForm.coe_sub, ModularForm.qExpansion_sub,
+      IsGLPos.coe_smul, ModularForm.qExpansion_smul, map_sub,
       PowerSeries.coeff_smul, E_qExpansion_coeff_zero hk hk2, smul_eq_mul, mul_one, sub_self]
     all_goals simp
 
@@ -187,12 +187,12 @@ private lemma weight_two_qExpansion_eq_zero (f : ModularForm 𝒮ℒ 2) : qExpan
       (Module.rank_eq_one_iff_finrank_eq_one.mp levelOne_weight_six_rank_one) _
   have hqc4 : c4 • qExpansion 1 (E₄ : ℍ → ℂ) = qExpansion 1 (f : ℍ → ℂ) ^ 2 := by
     rw [pow_two, ← ModularForm.qExpansion_mul one_pos one_mem_strictPeriods_SL f f,
-      ← ModularFormClass.qExpansion_smul one_pos one_mem_strictPeriods_SL c4 E₄,
+      ← ModularForm.qExpansion_smul one_pos one_mem_strictPeriods_SL c4 E₄,
       show (c4 • E₄ : ℍ → ℂ) = (f.mul f) from congrArg DFunLike.coe hc4]
   have hqc6 : c6 • qExpansion 1 E₆ = qExpansion 1 (f : ℍ → ℂ) ^ 3 := by
     rw [pow_succ, pow_two, ← ModularForm.qExpansion_mul one_pos one_mem_strictPeriods_SL f f,
       ← ModularForm.qExpansion_mul one_pos one_mem_strictPeriods_SL (f.mul f) f,
-      ← ModularFormClass.qExpansion_smul one_pos one_mem_strictPeriods_SL c6 E₆,
+      ← ModularForm.qExpansion_smul one_pos one_mem_strictPeriods_SL c6 E₆,
       show (c6 • E₆ : ℍ → ℂ) = (f.mul f).mul f from congrArg DFunLike.coe hc6]
   exact eq_zero_of_pow_eq_smul (E_qExpansion_coeff_zero _ ⟨2, rfl⟩)
     (E_qExpansion_coeff_zero _ ⟨3, rfl⟩) E₄_qExpansion_coeff_one E₆_qExpansion_coeff_one hqc4 hqc6
