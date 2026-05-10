@@ -385,7 +385,7 @@ We establish additivity of the order under multiplication and taking powers.
 -/
 
 /-- The order of a function `f` equals the order of `-f`. -/
-@[to_fun] theorem meromorphicOrderAt_neg {f : 𝕜 → E} :
+theorem meromorphicOrderAt_neg {f : 𝕜 → E} :
     meromorphicOrderAt f x = meromorphicOrderAt (-f) x := by
   by_cases h₁ : ¬MeromorphicAt f x
   · aesop
@@ -398,6 +398,10 @@ We establish additivity of the order under multiplication and taking powers.
   obtain ⟨g, hg⟩ := hn
   use -g
   simp_all
+
+/-- The order of a function `f` equals the order of `-f`. -/
+theorem meromorphicOrderAt_fun_neg {f : 𝕜 → E} :
+    meromorphicOrderAt f x = meromorphicOrderAt (fun z ↦ -f z) x := meromorphicOrderAt_neg
 
 /-- The order is additive when multiplying scalar-valued and vector-valued meromorphic functions. -/
 @[to_fun] theorem meromorphicOrderAt_smul {f : 𝕜 → 𝕜} {g : 𝕜 → E}
