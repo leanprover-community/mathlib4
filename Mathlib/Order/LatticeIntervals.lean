@@ -27,7 +27,7 @@ In the following, `*` can represent either `c`, `o`, or `i`.
   * `Set.Ici.boundedOrder`, within an `OrderTop`
 -/
 
-@[expose] public section
+public section
 
 
 variable {α : Type*}

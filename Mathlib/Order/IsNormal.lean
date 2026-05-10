@@ -5,7 +5,7 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Dynamics.FixedPoints.Basic
+public import Mathlib.Dynamics.FixedPoints.Defs
 public import Mathlib.Order.SuccPred.CompleteLinearOrder
 public import Mathlib.Order.SuccPred.InitialSeg
 
