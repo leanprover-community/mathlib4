@@ -228,7 +228,7 @@ def getRel (e : Expr) : Option (Name × Expr × Expr) :=
       none
   | _ => none
 
-/-- If `e` is of the form `r a b`, replace either `a` or `b` with `e`. -/
+/-- If `r` is of the form `rel a b`, replace either `a` or `b` with `e`. -/
 def updateRel (r e : Expr) (isLhs : Bool) : Expr :=
   match r with
   | .forallE _ d b _ => if isLhs then r.updateForallE! e b else r.updateForallE! d e
@@ -517,7 +517,7 @@ lemma rel_imp_rel (h₁ : r c a) (h₂ : r b d) : r a b → r c d :=
 Construct a `GCongrLemma` for `gcongr` goals of the form `a ≺ b → c ≺ d`.
 This will be tried if there is no other available `@[gcongr]` lemma.
 For example, the relation `a ≡ b [ZMOD n]` has an instance of `IsTrans`, so a congruence of the form
-`a ≡ b [ZMOD n] → c ≡ d [ZMOD n]` can be solved with `rel_imp_rel`, `rel_trans` or `rel_trans'`.
+`a ≡ b [ZMOD n] → c ≡ d [ZMOD n]` can be solved with `rel_imp_rel`.
 -/
 def relImpRelLemma (arity : Nat) : List GCongrLemma :=
   if arity < 2 then [] else [{
