@@ -5,8 +5,8 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.SetTheory.Cardinal.Cofinality.Basic
 public import Mathlib.Order.DirSupClosed
+public import Mathlib.SetTheory.Cardinal.Cofinality.Basic
 
 /-!
 # Club sets
