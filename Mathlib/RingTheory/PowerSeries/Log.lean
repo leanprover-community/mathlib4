@@ -148,7 +148,7 @@ private theorem geom_mul_one_add_X :
       show (-1 : ℚ) ^ n * -1 + (-1) ^ n = 0 by ring, map_zero]
     simp
 
-theorem exp_subst_log [IsAddTorsionFree A] : (exp A).subst (log A) = 1 + X := by
+theorem subst_exp_log [IsAddTorsionFree A] : (exp A).subst (log A) = 1 + X := by
   have hderiv : d⁄dX A ((exp A).subst (log A)) * (1 + X) = (exp A).subst (log A) := by
     rw [derivative_subst (hg := HasSubst.log), derivative_exp, deriv_log, mul_assoc,
       geom_mul_one_add_X, mul_one]
