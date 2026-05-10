@@ -70,7 +70,7 @@ theorem eventuallyEq_zero_nhdsNE_of_eventuallyEq_zero_codiscreteWithin (hf : Mer
 
 /--
 Variant of the principle of isolated zeros, formulated in terms of orders: If `f` is nowhere locally
-constant zero, then its zero set is codiscrete within its domain of meromorphicity.
+constant zero, then its zero set is discrete within its domain of meromorphicity.
 -/
 theorem MeromorphicOn.codiscreteWithin_setOf_ne_zero (h₁f : MeromorphicOn f U)
     (h₂f : ∀ u ∈ U, meromorphicOrderAt f u ≠ ⊤) :
