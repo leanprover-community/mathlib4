@@ -554,7 +554,7 @@ lemma isReduced_of_perfectField [PerfectField k] [IsReduced S]
     Algebra.isTranscendentalSeparable_of_perfectField k K
   apply tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced
 
-lemma tensorProduct_isReduced_of_localization [IsReduced S]
+lemma tensorProduct_isReduced_of_localization_of_finiteType [IsReduced S] [Algebra.FiniteType k S]
     (h : ∀ (p : Ideal S) (h : p ∈ minimalPrimes S),
       letI := Ideal.minimalPrimes_isPrime h
       IsReduced (K ⊗[k] (Localization.AtPrime p))) :
@@ -569,13 +569,13 @@ lemma tensorProduct_isReduced_of_localization [IsReduced S]
   have red : IsReduced (K ⊗[k] ((p : minimalPrimes S) →
       letI := Ideal.minimalPrimes_isPrime p.2
       Localization.AtPrime p.1)) := by
-    --`Algebra.TensorProduct.piRightHom` is injective for free module
     sorry
   exact isReduced_of_injective _ inj
 
-lemma isReduced_of_tensorProduct_adjoinPthRoots_reduced (p : ℕ) (hp : Nat.Prime p)
+lemma isReduced_of_tensorProduct_adjoinPthRoots_reduced_of_finiteType (p : ℕ) (hp : Nat.Prime p)
     [ExpChar k p] (K : Type*) [Field K] [Algebra k K]
-    (red : IsReduced ((adjoinPthRoots k p) ⊗[k] S)) : IsReduced (K ⊗[k] S) := by
+    [Algebra.FiniteType k S] (red : IsReduced (adjoinPthRoots k p ⊗[k] S)) :
+    IsReduced (K ⊗[k] S) := by
   have redS : IsReduced S := by
     sorry
   have red' (q : Ideal S) (h : q ∈ minimalPrimes S) :
@@ -586,5 +586,14 @@ lemma isReduced_of_tensorProduct_adjoinPthRoots_reduced (p : ℕ) (hp : Nat.Prim
   let isf (q : Ideal S) (h : q ∈ minimalPrimes S) := (localization_minimal_isField q h).toField
 
   sorry
+
+lemma isReduced_of_tensorProduct_adjoinPthRoots_reduced (p : ℕ) (hp : Nat.Prime p)
+    [ExpChar k p] (K : Type*) [Field K] [Algebra k K]
+    (red : IsReduced ((adjoinPthRoots k p) ⊗[k] S)) : IsReduced (K ⊗[k] S) := by
+  refine IsReduced.tensorProduct_of_flat_of_forall_fg (fun T Tfg ↦ ?_)
+  have : Algebra.FiniteType k T := T.fg_iff_finiteType.mp Tfg
+  apply isReduced_of_tensorProduct_adjoinPthRoots_reduced_of_finiteType k T p hp K
+  exact isReduced_of_injective (Algebra.TensorProduct.lTensor (S := k) (adjoinPthRoots k p) T.val)
+    (Module.Flat.lTensor_preserves_injective_linearMap _ Subtype.val_injective)
 
 end IsGeometricallyReduced
