@@ -204,17 +204,17 @@ theorem induction_on_isSmallExtension (hf : Surjective f.hom.toAlgHom)
     rw [← ENat.coe_lt_coe, hlen, hm]
     exact this.trans_lt (length_quotient_lt (Ideal.span {x}) (by simpa))
 
-/-- A morphism `f : A ⟶ B` in the base category is called essentially surjective if its
+/-- A morphism `f : A ⟶ B` in the base category is called minimally surjective if its
 underlying algebra homomorphism is surjective, and it satisfies the following minimality
 condition: for any object `C` and morphism `g : C ⟶ A` in `BaseCat`, if the composition
 `g ≫ f` is surjective, then `g` itself must be surjective. -/
 @[stacks 06GF, mk_iff]
-class IsEssSurj (f : A ⟶ B) : Prop where
+class IsMinimallySurjective (f : A ⟶ B) : Prop where
   surjective (f) : Surjective f.hom.toAlgHom
   surjective_of_comp_left (f) {C : BaseCat.{w} Λ k} (g : C ⟶ A) :
     Surjective (g ≫ f).hom.toAlgHom → Surjective g.hom.toAlgHom
 
-instance IsEssSurj.hom_iso (e : A ≅ B) : IsEssSurj e.hom := by
+instance IsMinimallySurjective.hom_iso (e : A ≅ B) : IsMinimallySurjective e.hom := by
   constructor
   · rw [surjective_iff_hasRightInverse]
     use e.inv.hom.toAlgHom
@@ -226,13 +226,14 @@ instance IsEssSurj.hom_iso (e : A ≅ B) : IsEssSurj e.hom := by
     use e.inv.hom.toAlgHom
     simp [leftInverse_iff_comp, ← AlgHom.coe_comp, ← LocAlgCat.toAlgHom_comp]
 
-instance IsEssSurj.comp (f : A ⟶ B) (g : B ⟶ C) [IsEssSurj f] [IsEssSurj g] :
-    IsEssSurj (f ≫ g) :=
-  ⟨by simpa using .comp (IsEssSurj.surjective g) (IsEssSurj.surjective f), fun _ h ↦
-    IsEssSurj.surjective_of_comp_left f _ (IsEssSurj.surjective_of_comp_left g _ h)⟩
+instance IsMinimallySurjective.comp (f : A ⟶ B) (g : B ⟶ C) [IsMinimallySurjective f]
+    [IsMinimallySurjective g] : IsMinimallySurjective (f ≫ g) :=
+  ⟨by simpa using .comp (IsMinimallySurjective.surjective g) (IsMinimallySurjective.surjective f),
+  fun _ h ↦ IsMinimallySurjective.surjective_of_comp_left f _
+    (IsMinimallySurjective.surjective_of_comp_left g _ h)⟩
 
-theorem isEssSurj_toOfQuot_of_le {I : Ideal A} [Nontrivial (A ⧸ I)]
-    (h : I ≤ maximalIdeal A ^ 2) : IsEssSurj (A.toOfQuot I) := by
+theorem isMinimallySurjective_toOfQuot_of_le {I : Ideal A} [Nontrivial (A ⧸ I)]
+    (h : I ≤ maximalIdeal A ^ 2) : IsMinimallySurjective (A.toOfQuot I) := by
   rw [← LocAlgCat.bijective_mapCotangent_toOfQuot_iff] at h
   refine ⟨Ideal.Quotient.mk_surjective, fun {C} g hg ↦ ?_⟩
   apply LocAlgCat.surjective_of_surjective_mapCotangent
@@ -309,10 +310,10 @@ def ofPullbackOfIsSeparable [Algebra.IsSeparable (ResidueField Λ) k] (f : A ⟶
     (LocAlgCat.surjective_residue_comp_pullbackFst_of_isSeparable f.hom g.hom), inferInstance⟩
 
 @[stacks 06S5]
-theorem isEssSurj_iff_isEssSurj_mapOfQuot (f : A ⟶ B) {I : Ideal A} {J : Ideal B}
-    [Nontrivial (A ⧸ I)] [Nontrivial (B ⧸ J)] (hI : I ≤ maximalIdeal A ^ 2)
+theorem isMinimallySurjective_iff_isMinimallySurjective_mapOfQuot (f : A ⟶ B) {I : Ideal A}
+    {J : Ideal B} [Nontrivial (A ⧸ I)] [Nontrivial (B ⧸ J)] (hI : I ≤ maximalIdeal A ^ 2)
     (hJ : J ≤ maximalIdeal B ^ 2) (hf : I ≤ J.comap f.hom.toAlgHom) :
-    IsEssSurj f ↔ IsEssSurj (mapOfQuot f hf) := by
+    IsMinimallySurjective f ↔ IsMinimallySurjective (mapOfQuot f hf) := by
   refine ⟨fun h ↦ ⟨?_, fun {C} g hg ↦ ?_⟩, fun h ↦ ⟨?_, fun {C} g hg ↦ ?_⟩⟩
   · apply Surjective.of_comp (g := (A.toOfQuot I).hom.toAlgHom)
     rw [← AlgHom.coe_comp, ← LocAlgCat.toAlgHom_comp, ← ObjectProperty.FullSubcategory.comp_hom,
@@ -325,8 +326,8 @@ theorem isEssSurj_iff_isEssSurj_mapOfQuot (f : A ⟶ B) {I : Ideal A} {J : Ideal
       pullback_comm_sq, ObjectProperty.FullSubcategory.comp_hom, LocAlgCat.toAlgHom_comp,
       AlgHom.coe_comp]
     refine Surjective.comp Ideal.Quotient.mk_surjective ?_
-    apply isEssSurj_toOfQuot_of_le at hJ
-    apply IsEssSurj.surjective_of_comp_left (f ≫ B.toOfQuot J)
+    apply isMinimallySurjective_toOfQuot_of_le at hJ
+    apply IsMinimallySurjective.surjective_of_comp_left (f ≫ B.toOfQuot J)
     rw [← toOfQuot_comp_mapOfQuot (I := I) f hf, Category.assoc', ← pullback_comm_sq,
       Category.assoc, ObjectProperty.FullSubcategory.comp_hom, LocAlgCat.toAlgHom_comp,
       AlgHom.coe_comp]
@@ -339,8 +340,8 @@ theorem isEssSurj_iff_isEssSurj_mapOfQuot (f : A ⟶ B) {I : Ideal A} {J : Ideal
       exact Surjective.comp (LocAlgCat.surjective_mapCotangent_of_surjective h.surjective)
         (LocAlgCat.surjective_mapCotangent_of_surjective Ideal.Quotient.mk_surjective)
     · exact ((LocAlgCat.bijective_mapCotangent_toOfQuot_iff J).mpr hJ).injective
-  · apply isEssSurj_toOfQuot_of_le at hI
-    apply IsEssSurj.surjective_of_comp_left (A.toOfQuot I ≫ (mapOfQuot f hf))
+  · apply isMinimallySurjective_toOfQuot_of_le at hI
+    apply IsMinimallySurjective.surjective_of_comp_left (A.toOfQuot I ≫ (mapOfQuot f hf))
     rw [toOfQuot_comp_mapOfQuot, Category.assoc', ObjectProperty.FullSubcategory.comp_hom,
       LocAlgCat.toAlgHom_comp, AlgHom.coe_comp]
     exact Ideal.Quotient.mk_surjective.comp hg
