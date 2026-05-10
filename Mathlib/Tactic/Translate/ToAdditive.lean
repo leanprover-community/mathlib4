@@ -380,11 +380,19 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("subNegZeroAddMonoid", "SubNegZeroMonoid"),
   ("modularCharacter", "AddModularCharacter"),
   ("isQuotientCoveringMap", "IsAddQuotientCoveringMap"),
-  ("addExact", "exact"),
+  ("addExact", "Exact"),
   ("isMonHom", "IsAddMonHom"),
   ("mapMon", "MapAddMon"),
   ("monObj", "AddMonObj"),
-  ("yonedaMon", "yonedaAddMon")]
+  ("isModHom", "IsAddModHom"),
+  ("mapMod", "MapAddMod"),
+  ("modObj", "AddModObj"),
+  ("yonedaMon", "YonedaAddMon"),
+  ("conGen", "AddConGen")]
+
+@[inherit_doc GuessName.GuessNameExt]
+initialize guessNameExt : GuessName.GuessNameExt ←
+  GuessName.registerGuessNameExt { nameDict, abbreviationDict }
 
 /-- The bundle of environment extensions for `to_additive` -/
 def data : TranslateData where
@@ -392,13 +400,14 @@ def data : TranslateData where
   attrName := `to_additive
   changeNumeral := true
   isDual := false
-  guessNameData := { nameDict, abbreviationDict }
+  guessNameExt
 
 initialize registerBuiltinAttribute {
     name := `to_additive
     descr := "Transport multiplicative to additive"
     add := fun src stx kind ↦ discard do
-      addTranslationAttr data src (← elabTranslationAttr src stx) kind
+      profileitM Exception "to_additive" (← getOptions) do
+        addTranslationAttr data src (← elabTranslationAttr src stx) kind
     -- we (presumably) need to run after compilation to properly add the `simp` attribute
     applicationTime := .afterCompilation
   }
@@ -408,5 +417,10 @@ into the `to_additive` dictionary. This is useful for translating namespaces tha
 have a corresponding translated declaration. -/
 elab "insert_to_additive_translation" src:ident tgt:ident : command => do
   translations.add src.getId { translation := tgt.getId }
+
+/-- `to_additive_name_hint src tgt` lets `to_additive` translate the name segment `src` to `tgt`
+for the rest of the file current. `src` and `tgt` should both be capitalized. -/
+elab "to_additive_name_hint" src:ident tgt:ident : command => do
+  guessNameExt.addTranslation src tgt
 
 end Mathlib.Tactic.ToAdditive
