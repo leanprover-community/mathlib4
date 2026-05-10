@@ -21,9 +21,10 @@ criteria for establishing it.
   quantifier-free formula.
 - `FirstOrder.Language.Theory.HasQuantifierElimination` says that every formula in finitely many
   free variables is equivalent over the theory to a quantifier-free formula.
-- `FirstOrder.Language.Theory.IsElementaryExtensionPair` and
-  `FirstOrder.Language.Theory.IsElementaryExtensionPairFG` are extension properties for partial
-  isomorphisms, used in criteria for quantifier elimination.
+- `FirstOrder.Language.Theory.IsElementaryExtensionPairCore` abstracts the common logic for
+  `FirstOrder.Language.Theory.IsElementaryExtensionPair` and
+  `FirstOrder.Language.Theory.IsElementaryExtensionPairFG`, which are extension properties for partial
+  isomorphisms used in criteria for quantifier elimination.
 
 ## Main Results
 
