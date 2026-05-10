@@ -160,8 +160,7 @@ theorem toReal_spectralRadius_star_mul_self_eq_norm_sq (a : A) :
 
 theorem toReal_spectralRadius_self_mul_star_eq_norm_sq (a : A) :
     (spectralRadius ℂ (a * a⋆)).toReal = ‖a‖ ^ 2 := by
-  rw [pow_two, ← norm_star, ← CStarRing.norm_star_mul_self (x := a⋆),
-    ← (IsSelfAdjoint.star_mul_self a⋆).toReal_spectralRadius_complex_eq_norm, star_star]
+  rw [← norm_star a, ← toReal_spectralRadius_star_mul_self_eq_norm_sq, star_star]
 
 theorem sqrt_toReal_spectralRadius_star_mul_self_eq_norm (a : A) :
     (spectralRadius ℂ (a⋆ * a)).toReal.sqrt = ‖a‖ := by
