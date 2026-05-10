@@ -19,10 +19,9 @@ related basic results.
 
 * `ContRepresentation R G V` is the type of continuous representations of a monoid `G` on a
   `R`-module `V` which is a topological addgroup (where the action of `G` on `V` is
-  *not* assumed to be continuous so that `coind₁`). The reason for this more general
-  definition is that it allows us to define the coinduced representation of a continuous
-  representation. The coinduced representation is then also a continuous representation without any
-  restriction on the topology on `G`.
+  *not* assumed to be continuous). The reason for this more general definition is that it allows us
+  to define the coinduced representation of a continuous representation as also a continuous
+  representation without any restriction on the topology on `G`.
 
 * `ContIntertwiningMap π₁ π₂` is the type of continuous intertwining maps between two continuous
   representations `π₁` and `π₂`.
