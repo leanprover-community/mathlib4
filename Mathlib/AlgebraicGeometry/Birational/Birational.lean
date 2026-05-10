@@ -255,6 +255,39 @@ lemma BirationalOver.isRationalOver {S X Y : Scheme.{u}} [X.Over S] [Y.Over S]
   obtain ⟨n, hn⟩ := exists_birationalOver_affineSpace S Y
   exact ⟨n, h.trans hn⟩
 
+section DenseOpen
+
+variable {X S : Scheme.{u}} [X.Over S] (U : Opens X)
+
+/-- A dense open set `U : Opens X` induces a partial isomorphism between `U` and `X`. -/
+@[simps]
+def Opens.partialIso_of_dense (hU : Dense (U : Set X)) : PartialIso U X where
+  source := ⊤
+  dense_source := dense_univ
+  target := U
+  dense_target := hU
+  iso := U.toScheme.topIso
+
+set_option backward.isDefEq.respectTransparency false in
+instance isOver_partialIso_of_dense (hU : Dense (U : Set X)) :
+    (U.partialIso_of_dense hU).IsOver S := by simp
+
+/-- A dense open set `U : Opens X` is birational to `X`. -/
+lemma Opens.birational_of_dense (hU : Dense (U : Set X)) : Birational U X :=
+  ⟨U.partialIso_of_dense hU⟩
+
+/-- A dense open set `U : Opens X` of a scheme `X` over `S` is `S`-birational to `X`. -/
+lemma Opens.birationalOver_of_dense (hU : Dense (U : Set X)) : BirationalOver S U X :=
+  ⟨U.partialIso_of_dense hU, inferInstance⟩
+
+/-- A dense open set `U : Opens X` of a `S`-rational scheme `X` is `S`-rational. -/
+lemma Opens.isRationalOver_of_dense (hU : Dense (U : Set X)) [IsRationalOver S X] :
+    IsRationalOver S U := by
+  obtain ⟨n, hn⟩ := exists_birationalOver_affineSpace S X
+  exact ⟨n, (U.birationalOver_of_dense hU).trans hn⟩
+
+end DenseOpen
+
 end Scheme
 
 end AlgebraicGeometry
