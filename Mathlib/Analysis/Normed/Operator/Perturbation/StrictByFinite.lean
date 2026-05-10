@@ -14,16 +14,13 @@ public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 open Topology Set Submodule Function
 
-variable {𝕜 𝕜₁ 𝕜₂}
+variable {𝕜}
   [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
-  [NontriviallyNormedField 𝕜₁] [CompleteSpace 𝕜₁]
-  [NontriviallyNormedField 𝕜₂] [CompleteSpace 𝕜₂]
-  {σ : 𝕜₁ →+* 𝕜₂} [RingHomSurjective σ]
 
 variable {E F : Type*}
-  [AddCommGroup E] [Module 𝕜 E] [Module 𝕜₁ E] [AddCommGroup F] [Module 𝕜 F] [Module 𝕜₂ F]
-  [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E] [ContinuousSMul 𝕜₁ E]
-  [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F] [ContinuousSMul 𝕜₂ F]
+  [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜 F]
+  [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
+  [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F]
 
 section FiniteCodimSubspace
 
@@ -53,15 +50,15 @@ a closed embedding.
 
 Note that we only prove it for `u = K.mkQ`, because it is easier and precisely what we will need
 in step 2. -/
-theorem step1_foward (A : Submodule 𝕜₁ E) (K : Submodule 𝕜₁ E) (A_closed : IsClosed (A : Set E))
-    [codim_A : FiniteDimensional 𝕜₁ (E ⧸ A)] (K_disj_A : Disjoint K A) :
+theorem step1_foward (A : Submodule 𝕜 E) (K : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E))
+    [codim_A : FiniteDimensional 𝕜 (E ⧸ A)] (K_disj_A : Disjoint K A) :
     IsClosedEmbedding (restrict A K.mkQ) := by
   constructor
   · rcases K_disj_A.exists_isCompl with ⟨S, K_le_S, S_compl_A⟩
     replace S_compl_A : IsTopCompl S A :=
       S_compl_A.symm.isTopCompl_of_quotient_finiteDimensional A_closed |>.symm
     -- TODO: `Submodule.liftQL`
-    let s : E ⧸ K →L[𝕜₁] A :=
+    let s : E ⧸ K →L[𝕜] A :=
       ⟨K.liftQ (A.projectionOntoL S S_compl_A.symm) (by simpa),
         continuous_quot_lift _ (A.projectionOntoL S S_compl_A.symm).continuous⟩
     have leftInv : LeftInverse s (restrict A K.mkQ) := fun x ↦ by simp [s]
@@ -111,25 +108,25 @@ The statement becomes: `u` is strict with closed range if and only if `Set.restr
 a closed embedding.
 -/
 
-theorem step2_forward (u : E →SL[σ] F) (A : Submodule 𝕜₁ E) (A_closed : IsClosed (A : Set E))
-    [codim_A : FiniteDimensional 𝕜₁ (E ⧸ A)] (h_ker : Disjoint u.ker A) (h_strict : IsStrictMap u)
+theorem step2_forward (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E))
+    [codim_A : FiniteDimensional 𝕜 (E ⧸ A)] (h_ker : Disjoint u.ker A) (h_strict : IsStrictMap u)
     (h_closed : IsClosed (range u)) : IsClosedEmbedding (restrict A u) := by
   -- TODO: `Submodule.liftQL` ?
-  let u' : E ⧸ u.ker →ₛₗ[σ] F := u.ker.liftQ u le_rfl
+  let u' : E ⧸ u.ker →ₗ[𝕜] F := u.ker.liftQ u le_rfl
   have u'_clemb : IsClosedEmbedding u' := by
     constructor
     · rw [isStrictMap_iff_isEmbedding_kerLift] at h_strict
       -- exact h_strict
       sorry -- should be fixed with more API on strict homs
     · simpa [u', ← LinearMap.coe_range, Submodule.range_liftQ]
-  let π : E →L[𝕜₁] E ⧸ u.ker := u.ker.mkQL
+  let π : E →L[𝕜] E ⧸ u.ker := u.ker.mkQL
   have π_restr_clemb : IsClosedEmbedding (restrict A π) :=
     step1_foward A u.ker A_closed h_ker
   have eq : restrict A u = u' ∘ restrict A π := by ext x; simp [π, u']
   exact eq ▸ u'_clemb.comp π_restr_clemb
 
-theorem step2 (u : E →SL[σ] F) (A : Submodule 𝕜₁ E) (A_closed : IsClosed (A : Set E))
-    [codim_A : FiniteDimensional 𝕜₁ (E ⧸ A)] (h_ker : Disjoint u.ker A) :
+theorem step2 (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E))
+    [codim_A : FiniteDimensional 𝕜 (E ⧸ A)] (h_ker : Disjoint u.ker A) :
     (IsStrictMap u ∧ IsClosed (range u)) ↔ IsClosedEmbedding (restrict A u) := by
   sorry
 
@@ -141,19 +138,19 @@ We now deduce from the two previous step the full strength of the theorem.
 
 #check quotientQuotientEquivQuotient
 
-public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict (u : E →SL[σ] F)
-    (A : Submodule 𝕜₁ E) (A_closed : IsClosed (A : Set E))
-    [codim_A : FiniteDimensional 𝕜₁ (E ⧸ A)] :
+public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict (u : E →L[𝕜] F)
+    (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E))
+    [codim_A : FiniteDimensional 𝕜 (E ⧸ A)] :
     (IsStrictMap u ∧ IsClosed (range u)) ↔
       (IsStrictMap (restrict A u) ∧ IsClosed (u '' A)) := by
-  set N : Submodule 𝕜₁ E := A ⊓ u.ker
-  set v : E ⧸ N →SL[σ] F := ⟨N.liftQ u inf_le_right, continuous_quot_lift _ u.continuous⟩
+  set N : Submodule 𝕜 E := A ⊓ u.ker
+  set v : E ⧸ N →L[𝕜] F := ⟨N.liftQ u inf_le_right, continuous_quot_lift _ u.continuous⟩
   have v_eq_u : v.comp N.mkQL = u := rfl
-  set B : Submodule 𝕜₁ (E ⧸ N) := map N.mkQ A
+  set B : Submodule 𝕜 (E ⧸ N) := map N.mkQ A
   have comap_B : comap N.mkQ B = A := by simp [B, N]
   have B_closed : IsClosed (B : Set <| E ⧸ N) := by
     rwa [← N.isQuotientMap_mkQ.isClosed_preimage, ← comap_coe, comap_B]
-  have codim_B : FiniteDimensional 𝕜₁ ((E ⧸ N) ⧸ B) :=
+  have codim_B : FiniteDimensional 𝕜 ((E ⧸ N) ⧸ B) :=
     quotientQuotientEquivQuotient N A inf_le_left |>.symm.finiteDimensional
   have range_eq : range v = range u := range_quot_lift _
   have image_eq : v '' B = u '' A := by simp [B, ← v_eq_u, ← image_comp]
