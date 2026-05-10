@@ -144,6 +144,25 @@ lean_exe expose_static_refs where
   srcDir := "scripts"
   supportInterpreter := true
 
+/-- Implementation modules for the `no_expose` exe (see below). Kept as a
+lib so multiple files under `scripts/NoExpose/` can `import` each other.
+The lib deliberately does NOT pull in Mathlib. -/
+lean_lib NoExpose where
+  srcDir := "scripts"
+  globs := #[`NoExpose.+]
+
+/-- `lake exe no_expose` is the user-facing tool for analysing and
+removing unnecessary `@[expose]` attributes in Mathlib (and downstream
+Mathlib-using projects). Subcommands:
+  * `collect` — build with diagnostics, scan env, produce report data
+  * `report`  — render per-file recommendations (no build)
+  * `edit`    — apply removals (with safety checks + audit trail)
+The exe deliberately does NOT `import Mathlib` so that it builds in
+seconds; it loads Mathlib at runtime via `Lean.withImportModules`. -/
+lean_exe no_expose where
+  srcDir := "scripts"
+  supportInterpreter := true
+
 lean_exe mathlib_test_executable where
   root := `MathlibTest.MathlibTestExecutable
 
