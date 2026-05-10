@@ -33,7 +33,7 @@ variable {a b o : Ordinal}
 cofinal range. We provide `a = o.cof.ord` explicitly to avoid type rewrites. -/
 structure IsFundamentalSeq (f : Iio a → Iio o) : Prop where
   /-- This condition alongside the others is enough to conclude `o.cof.ord = a`, see
-  `IsFundamentalSeq.ord_cof`. -/
+  `IsFundamentalSeq.ord_cof_eq`. -/
   le_ord_cof : a ≤ o.cof.ord
   /-- A fundamental sequence is strictly monotonic. -/
   strictMono : StrictMono f
@@ -75,7 +75,7 @@ protected theorem id (ho : o ≤ o.cof.ord) : IsFundamentalSeq (o := o) id where
 protected theorem zero (f : Iio 0 → Iio 0) : IsFundamentalSeq f where
   strictMono _ := by simp
   le_ord_cof := by simp
-  isCofinal_range := .of_isEmpty _
+  isCofinal_range := by rw [range_eq_empty, isCofinal_empty_iff]; infer_instance
 
 /-- The length one sequence `(o)` is a fundamental sequence for `o + 1`. -/
 protected theorem add_one (o : Ordinal) :
