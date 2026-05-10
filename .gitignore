@@ -10,6 +10,3 @@
 scripts/.rm_set_option_progress.jsonl
 # Output directory for `lake exe no_expose`
 scripts/.no_expose/
-# Legacy output directory from the predecessor expose-report pipeline; left
-# here so existing local checkouts don't see noisy untracked files after upgrade.
-scripts/.expose_report/
