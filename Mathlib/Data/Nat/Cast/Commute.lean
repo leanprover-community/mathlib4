@@ -50,7 +50,7 @@ theorem _root_.Commute.ofNat_left (n : ℕ) [n.AtLeastTwo] (x : α) : Commute (O
   n.cast_commute x
 
 theorem cast_comm (n : ℕ) (x : α) : (n : α) * x = x * n :=
-  cast_commute n x
+  n.cast_commute x
 
 theorem commute_cast (x : α) (n : ℕ) : Commute x n :=
   (n.cast_commute x).symm
