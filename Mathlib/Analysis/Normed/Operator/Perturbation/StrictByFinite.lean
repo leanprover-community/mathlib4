@@ -85,8 +85,6 @@ theorem step1_backward (A : Submodule 𝕜 E) (u : E →L[𝕜] F) (A_closed : I
     quotientEquivOfIsCompl A S S_compl_A.isCompl.symm |>.finiteDimensional
   have uA_closed : IsClosed (map u.toLinearMap A : Set F) := by
     simpa [← range_restrict] using h_clemb.isClosed_range
-  have : FiniteDimensional 𝕜 (map u.toLinearMap S) :=
-    show_term inferInstance
   have uS_compl_uA : IsCompl (map u.toLinearMap S) (map u.toLinearMap A) := by
     constructor
     · rw [disjoint_iff, inf_comm, map_inf_eq_map_inf_comap, comap_map_eq, sup_eq_left.mpr ker_le_S,
@@ -95,7 +93,6 @@ theorem step1_backward (A : Submodule 𝕜 E) (u : E →L[𝕜] F) (A_closed : I
         h_range]
   replace uS_compl_uA : IsTopCompl (map u.toLinearMap S) (map u.toLinearMap A) :=
       uS_compl_uA.symm.isTopCompl_of_isClosed_of_finiteDimensional uA_closed |>.symm
-
   sorry
 
 /-!
@@ -136,7 +133,7 @@ theorem step2 (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : IsClosed (
 We now deduce from the two previous step the full strength of the theorem.
 -/
 
-#check quotientQuotientEquivQuotient
+#check IsOpenQuotientMap
 
 public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict (u : E →L[𝕜] F)
     (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E))
