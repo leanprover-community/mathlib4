@@ -17,8 +17,8 @@ and `edit` need:
 {"name": "Foo.bar", "kind": "def", "effect": "exposed",
  "module": "Mathlib.Foo", "file": "Mathlib/Foo.lean",
  "line": 42, "col": 0,
- "downstream_usage": 17, "num_using_files": 5,
- "top_using_files": [{"file": "...", "count": 4}, ...]}
+ "downstream_usage": 17, "num_usingMap_files": 5,
+ "top_usingMap_files": [{"file": "...", "count": 4}, ...]}
 ```
 
 This module parses those records and renders per-file output in three
@@ -209,5 +209,169 @@ def runReport (args : ReportArgs) : IO UInt32 := do
     for f in selectedFiles do
       IO.print (renderTsvFile (groups.getD f #[]))
   return 0
+
+/-! ## Build side: join raw signals into `report.jsonl` -/
+
+/-- Decl key + originating file. `Std.HashMap` lacks structural keys
+of arbitrary nested type, so we use a `String × String` here. -/
+private abbrev UseKey := String × String
+
+/-- Parse one line of `diagnostics.jsonl` or `static_refs.jsonl`. Returns
+`(decl, file, count, theoremCount)`. `theoremCount = 0` when the field
+is absent (diagnostics records). -/
+private def parseSignalLine (line : String) :
+    Except String (String × String × Nat × Nat) := do
+  let j ← Json.parse line
+  let decl ← jsonGetStr j "decl"
+  let file ← jsonGetStr j "file"
+  let count ← jsonGetNat j "count"
+  let thm := j.getObjVal? "theorem_count" |>.toOption
+    |>.bind (·.getNat?.toOption) |>.getD 0
+  return (decl, file, count, thm)
+
+/-- Parse one line of `decl_refs.jsonl`: `{decl: ..., refs: [...]}`. -/
+private def parseDeclRefsLine (line : String) :
+    Except String (String × Array String) := do
+  let j ← Json.parse line
+  let decl ← jsonGetStr j "decl"
+  let refsJ ← j.getObjVal? "refs"
+  let refsArr ← refsJ.getArr?
+  let refs ← refsArr.mapM (·.getStr?)
+  return (decl, refs)
+
+/-- Read `exposed.jsonl` into a map keyed by decl name. -/
+private def readExposed (path : System.FilePath) : IO (Std.HashMap String Json) := do
+  let mut acc : Std.HashMap String Json := {}
+  for line in (← IO.FS.readFile path).splitOn "\n" do
+    if line.trimAscii.isEmpty then continue
+    match Json.parse line with
+    | .ok j =>
+      match jsonGetStr j "name" with
+      | .ok name => acc := acc.insert name j
+      | .error _ => pure ()
+    | .error _ => pure ()
+  return acc
+
+/-- Same-module-but-from-theorem references count; other same-module
+refs are skipped. Mirrors `expose_report.py:117`. -/
+private def shouldCount (sameModule : Bool) (count theoremCount : Nat) : Option Nat :=
+  if sameModule then
+    if theoremCount > 0 then some theoremCount else none
+  else
+    some count
+
+/-- Absorb one signal file into the running usage map. Returns the
+number of records actually counted (skipping any that don't match an
+exposed decl or are filtered out). -/
+private def absorbSignal (exposed : Std.HashMap String Json)
+    (path : System.FilePath)
+    (usage : Std.HashMap String Nat)
+    (usingMap : Std.HashMap UseKey Nat) :
+    IO (Std.HashMap String Nat × Std.HashMap UseKey Nat × Nat) := do
+  let mut usage := usage
+  let mut usingMap := usingMap
+  let mut absorbed := 0
+  for line in (← IO.FS.readFile path).splitOn "\n" do
+    if line.trimAscii.isEmpty then continue
+    match parseSignalLine line with
+    | .error _ => continue
+    | .ok (decl, file, count, thm) =>
+      let some rec := exposed[decl]? | continue
+      let recFile := (rec.getObjVal? "file" |>.bind (·.getStr?)).toOption.getD ""
+      let some delta := shouldCount (file == recFile) count thm | continue
+      usage := usage.insert decl ((usage.getD decl 0) + delta)
+      let key : UseKey := (decl, file)
+      usingMap := usingMap.insert key ((usingMap.getD key 0) + delta)
+      absorbed := absorbed + 1
+  return (usage, usingMap, absorbed)
+
+/-- One-hop transitive closure: a downstream use of decl `K` propagates
+to every decl in `K`'s body. Mirrors `expose_report.py:154`. -/
+private def applyTransitiveClosure (exposed : Std.HashMap String Json)
+    (declRefsPath : System.FilePath)
+    (usage : Std.HashMap String Nat)
+    (usingMap : Std.HashMap UseKey Nat) :
+    IO (Std.HashMap String Nat × Std.HashMap UseKey Nat × Nat) := do
+  -- Load decl_refs into a map.
+  let mut refsMap : Std.HashMap String (Array String) := {}
+  for line in (← IO.FS.readFile declRefsPath).splitOn "\n" do
+    if line.trimAscii.isEmpty then continue
+    if let .ok (decl, refs) := parseDeclRefsLine line then
+      refsMap := refsMap.insert decl refs
+  -- Snapshot usingMap to avoid iterating while mutating.
+  let snapshot := usingMap.toArray
+  let mut usage := usage
+  let mut usingMap := usingMap
+  let mut propagated := 0
+  for ((decl, file), count) in snapshot do
+    let some refs := refsMap[decl]? | continue
+    for ref in refs do
+      let some refRec := exposed[ref]? | continue
+      let recFile := (refRec.getObjVal? "file" |>.bind (·.getStr?)).toOption.getD ""
+      if file == recFile then continue  -- same-module
+      usage := usage.insert ref ((usage.getD ref 0) + count)
+      let key : UseKey := (ref, file)
+      usingMap := usingMap.insert key ((usingMap.getD key 0) + count)
+      propagated := propagated + 1
+  return (usage, usingMap, propagated)
+
+/-- JSON-string-escape `s` (duplicate of `Env.jsonEscape` to keep this
+module standalone). -/
+private def jsonEscape (s : String) : String :=
+  s.foldl (init := "") fun acc c => acc ++
+    match c with
+    | '"'  => "\\\""
+    | '\\' => "\\\\"
+    | '\n' => "\\n"
+    | '\r' => "\\r"
+    | '\t' => "\\t"
+    | c    => c.toString
+
+/-- Build `report.jsonl` by joining the four input files. -/
+def build (exposedPath diagnosticsPath staticRefsPath declRefsPath : System.FilePath)
+    (outPath : System.FilePath) : IO Unit := do
+  let exposed ← readExposed exposedPath
+  IO.eprintln s!"[no_expose report] loaded {exposed.size} exposed decls"
+
+  let mut usage : Std.HashMap String Nat := {}
+  let mut usingMap : Std.HashMap UseKey Nat := {}
+  if ← System.FilePath.pathExists diagnosticsPath then
+    let (u, uf, n) ← absorbSignal exposed diagnosticsPath usage usingMap
+    usage := u; usingMap := uf
+    IO.eprintln s!"[no_expose report] absorbed {n} diagnostics records"
+  if ← System.FilePath.pathExists staticRefsPath then
+    let (u, uf, n) ← absorbSignal exposed staticRefsPath usage usingMap
+    usage := u; usingMap := uf
+    IO.eprintln s!"[no_expose report] absorbed {n} static-reference records"
+  if ← System.FilePath.pathExists declRefsPath then
+    let (u, uf, n) ← applyTransitiveClosure exposed declRefsPath usage usingMap
+    usage := u; usingMap := uf
+    IO.eprintln s!"[no_expose report] one-hop transitive: propagated {n} extra (ref,file) edges"
+
+  -- Build per-decl `top_usingMap_files` from `usingMap`.
+  let mut perDecl : Std.HashMap String (Array (String × Nat)) := {}
+  for ((decl, file), count) in usingMap.toArray do
+    let cur := perDecl.getD decl #[]
+    perDecl := perDecl.insert decl (cur.push (file, count))
+
+  IO.FS.writeFile outPath ""
+  IO.FS.withFile outPath .append fun h => do
+    for (name, exposedRec) in exposed.toArray do
+      let u := usage.getD name 0
+      let top := perDecl.getD name #[]
+      let topSorted := top.qsort fun a b => a.2 > b.2
+      let topNFiles := top.size
+      let top5 := topSorted.take 5
+      let topJson := "[" ++ String.intercalate "," (top5.toList.map fun (f, c) =>
+        "{\"file\":\"" ++ jsonEscape f ++ "\",\"count\":" ++ toString c ++ "}") ++ "]"
+      -- Re-emit the original exposed record's fields plus our additions.
+      let baseStr := exposedRec.compress
+      -- Drop the trailing `}` and append our fields.
+      let baseStripped := baseStr.dropRight 1
+      h.putStrLn (baseStripped ++
+        ",\"downstream_usage\":" ++ toString u ++
+        ",\"num_using_files\":" ++ toString topNFiles ++
+        ",\"top_using_files\":" ++ topJson ++ "}")
+  IO.eprintln s!"[no_expose report] wrote {exposed.size} report rows to {outPath}"
 
 end NoExpose

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import NoExpose.Cli
+import NoExpose.Collect
 import NoExpose.Paths
 import NoExpose.Report
 
@@ -32,9 +33,7 @@ unsafe def main (args : List String) : IO UInt32 := do
     else
       IO.println s!"{dataDir} does not exist; nothing to clean"
     return 0
-  | .ok (.collect _) => do
-    IO.eprintln "no_expose collect: not yet implemented"
-    return 1
+  | .ok (.collect a) => runCollect a
   | .ok (.report a) => runReport a
   | .ok (.edit _) => do
     IO.eprintln "no_expose edit: not yet implemented"
