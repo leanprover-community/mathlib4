@@ -17,7 +17,7 @@ is continuous on its closure. In this file we define a predicate `DiffContOnCl` 
 this property and prove basic facts about this predicate.
 -/
 
-@[expose] public section
+public section
 
 
 open Set Filter Metric
