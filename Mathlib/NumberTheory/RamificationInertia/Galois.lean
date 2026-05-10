@@ -210,6 +210,8 @@ theorem inertiaDegIn_mul_inertiaDegIn [p.IsMaximal] [P.IsMaximal] :
   rw [inertiaDegIn_eq_inertiaDeg p P G, inertiaDegIn_eq_inertiaDeg p Q GAC,
     inertiaDegIn_eq_inertiaDeg P Q GBC, inertiaDeg_algebra_tower p P Q]
 
+set_option linter.overlappingInstances false
+
 variable {p} in
 include G GAC GBC in
 theorem ramificationIdxIn_mul_ramificationIdxIn [IsDedekindDomain B] [IsDedekindDomain C]
