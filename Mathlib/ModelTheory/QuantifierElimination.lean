@@ -21,9 +21,6 @@ criteria for establishing it.
   quantifier-free formula.
 - `FirstOrder.Language.Theory.HasQuantifierElimination` says that every formula in finitely many
   free variables is equivalent over the theory to a quantifier-free formula.
-- `FirstOrder.Language.Theory.IsElementaryExtensionPair` and
-  `FirstOrder.Language.Theory.IsElementaryExtensionPairFG` are extension properties for partial
-  isomorphisms, used in criteria for quantifier elimination.
 
 ## Main Results
 
@@ -545,17 +542,10 @@ private theorem exists_qf_equiv_ex_of_isQF
         simp [hfree, hbound]
       _ ↔ ψ'.Realize v' := hmain
       _ ↔ ψ.Realize v xs := by
-        have hxs0 : (xs ∘ Fin.natAdd n : Fin 0 → M) = default := by
-          funext i
-          exact i.elim0
         change ψ'.Realize v' ↔
           (BoundedFormula.relabel (fun i : Fin (m + n) => finSumFinEquiv.symm i) ψ').Realize v xs
-        rw [BoundedFormula.realize_relabel]
-        change ψ'.Realize v' ↔
-          BoundedFormula.Realize ψ' v' (xs ∘ Fin.natAdd n)
-        rw [hxs0]
-        change ψ'.Realize v' ↔ ψ'.Realize v'
-        rfl
+        rw [Formula.realize_relabel_finSumFinEquiv_symm]
+        exact Iff.rfl
 
 /-- To prove quantifier elimination, it suffices to eliminate one existential quantifier from
 every quantifier-free formula with one bound variable.
@@ -665,130 +655,6 @@ private theorem isQF_realize_partialEquiv
       (hφ.realize_embedding (f := p.toEmbedding) (v := vdom) (xs := default))
   exact hcod.trans hdom.symm
 
-/-- A theory has the elementary extension-pair property if every partial isomorphism between
-substructures of nonempty models of the theory can be extended, after passing to an elementary
-extension of the codomain model, to include any prescribed element of the domain model. -/
-def IsElementaryExtensionPair (T : L.Theory) : Prop :=
-  ∀ {M N : Type (max u v)} [L.Structure M] [L.Structure N]
-    [T.Model M] [T.Model N] [Nonempty M] [Nonempty N]
-    (f : M ≃ₚ[L] N) (a : M),
-    ∃ (N' : Type (max u v)) (_ : L.Structure N')
-      (e : N ↪ₑ[L] N') (g : M ≃ₚ[L] N'),
-      a ∈ g.dom ∧ f.ExtendsAlong e.toEmbedding g
-
-/-- A theory has the finitely generated elementary extension-pair property if every partial
-isomorphism between finitely generated substructures of nonempty models of the theory can be
-extended, after passing to an elementary extension of the codomain model, to include any prescribed
-element of the domain model. -/
-def IsElementaryExtensionPairFG (T : L.Theory) : Prop :=
-  ∀ {M N : Type (max u v)} [L.Structure M] [L.Structure N]
-    [T.Model M] [T.Model N] [Nonempty M] [Nonempty N]
-    (f : L.FGEquiv M N) (a : M),
-    ∃ (N' : Type (max u v)) (_ : L.Structure N')
-      (e : N ↪ₑ[L] N') (g : L.FGEquiv M N'),
-      a ∈ g.1.dom ∧ f.1.ExtendsAlong e.toEmbedding g
-
-/-- If a theory has the elementary extension-pair property, then it has quantifier elimination.
-
-The hypothesis is condition (2) in van den Dries--Henson, Theorem 7.11; this theorem proves the
-implication from that extension property to condition (1). -/
-theorem hasQuantifierElimination_of_isElementaryExtensionPair
-    {T : L.Theory} (h : T.IsElementaryExtensionPair) :
-    T.HasQuantifierElimination := by
-  classical
-  refine hasQuantifierElimination_of_exists_realize_of_embeddings (T := T) ?_
-  intro m φ hφ M N A _ _ _ _ _ _ _ f g a hM
-  rcases hM with ⟨b, hb⟩
-  let p : M ≃ₚ[L] N := {
-    dom := f.toHom.range
-    cod := g.toHom.range
-    toEquiv := g.equivRange.comp f.equivRange.symm
-  }
-  have hp_dom (x : A) : f x ∈ p.dom := by
-    change f x ∈ f.toHom.range
-    exact f.toHom.mem_range_self x
-  have hp_apply (x : A) : (p.toEquiv ⟨f x, hp_dom x⟩ : N) = g x := by
-    change g (f.equivRange.symm ⟨f x, f.toHom.mem_range_self x⟩) = g x
-    congr 1
-    apply f.equivRange.injective
-    apply Subtype.ext
-    simp
-  rcases h p b with ⟨N', hN', e, q, hbq, hpq⟩
-  letI : L.Structure N' := hN'
-  let r : M ≃ₚ[L] N' := PartialEquiv.codMap p e.toEmbedding
-  have hrq : r ≤ q := by
-    simpa [PartialEquiv.ExtendsAlong, r] using hpq
-  have hqa_dom (i : Fin m) : f (a i) ∈ q.dom :=
-    PartialEquiv.dom_le_dom hrq (hp_dom (a i))
-  have hqa_apply (i : Fin m) :
-      (q.toEquiv ⟨f (a i), hqa_dom i⟩ : N') = e (g (a i)) := by
-    let x : r.dom := ⟨f (a i), hp_dom (a i)⟩
-    have hx := PartialEquiv.toEquiv_inclusion_apply hrq x
-    have hx' := congr_arg (fun y : q.cod => (y : N')) hx
-    change (q.toEquiv ⟨f (a i), hqa_dom i⟩ : N') = (r.toEquiv x : N') at hx'
-    calc
-      (q.toEquiv ⟨f (a i), hqa_dom i⟩ : N') = (r.toEquiv x : N') := hx'
-      _ = e (g (a i)) := by
-        change e ((p.toEquiv ⟨f (a i), hp_dom (a i)⟩ : N)) = e (g (a i))
-        rw [hp_apply]
-  let vM : Fin m.succ → M := Fin.snoc (f ∘ a) b
-  have hvM (i : Fin m.succ) : vM i ∈ q.dom := by
-    refine Fin.lastCases ?_ ?_ i
-    · simpa [vM] using hbq
-    · intro i
-      simpa [vM, Function.comp_def] using hqa_dom i
-  let b' : N' := q.toEquiv ⟨b, hbq⟩
-  have hqreal :
-      φ.Realize (fun i : Fin m.succ => (q.toEquiv ⟨vM i, hvM i⟩ : N')) := by
-    exact (isQF_realize_partialEquiv hφ q hvM).2 (by simpa [vM] using hb)
-  have htarget :
-      φ.Realize (Fin.snoc ((e.toEmbedding ∘ g) ∘ a) b') := by
-    convert hqreal using 1
-    funext i
-    refine Fin.lastCases ?_ ?_ i
-    · simp [vM, b']
-    · intro i
-      simpa [vM, b', Function.comp_def] using (hqa_apply i).symm
-  let θ : L.BoundedFormula (Fin m) 1 :=
-    BoundedFormula.relabel (L := L) (β := Fin m) (n := 1) finSumFinEquiv.symm φ
-  have hθ_realize :
-      ∀ {X : Type (max u v)} [L.Structure X] (x : Fin m → X) (y : X),
-        θ.Realize x (Fin.snoc default y) ↔ φ.Realize (Fin.snoc x y) := by
-    intro X _ x y
-    rw [BoundedFormula.realize_relabel]
-    have hfree :
-        (Sum.elim x (Fin.snoc default y ∘ Fin.castAdd 0) ∘
-            ((@finSumFinEquiv m 1).symm : Fin m.succ → Fin m ⊕ Fin 1)) =
-          Fin.snoc x y := by
-      funext i
-      refine Fin.addCases ?_ ?_ i
-      · intro i
-        simp only [Function.comp_apply, finSumFinEquiv_symm_apply_castAdd, Sum.elim_inl]
-        change x i = (@Fin.snoc m (fun _ => X) x y) i.castSucc
-        rw [Fin.snoc_castSucc]
-      · intro j
-        have hj : j = 0 := Subsingleton.elim j 0
-        subst j
-        simp only [Function.comp_apply, finSumFinEquiv_symm_apply_natAdd, Sum.elim_inr]
-        rw [Fin.snoc_zero]
-        change y = (@Fin.snoc m (fun _ => X) x y) (Fin.last m)
-        rw [Fin.snoc_last]
-    have hbound : (Fin.snoc default y ∘ Fin.natAdd 1 : Fin 0 → X) = default := by
-      funext i
-      exact i.elim0
-    rw [hfree]
-    rw [hbound]
-    rfl
-  have hθN' : θ.ex.Realize ((e.toEmbedding ∘ g) ∘ a) default := by
-    rw [BoundedFormula.realize_ex]
-    exact ⟨b', (hθ_realize (((e.toEmbedding ∘ g) ∘ a)) b').2 htarget⟩
-  have hθN : θ.ex.Realize (g ∘ a) default := by
-    have he := e.map_boundedFormula θ.ex (g ∘ a) default
-    exact he.1 (by simpa [Function.comp_def] using hθN')
-  rw [BoundedFormula.realize_ex] at hθN
-  rcases hθN with ⟨c, hc⟩
-  exact ⟨c, (hθ_realize (g ∘ a) c).1 hc⟩
-
 /-- If a theory has the finitely generated elementary extension-pair property, then it has
 quantifier elimination.
 
@@ -800,46 +666,28 @@ theorem hasQuantifierElimination_of_isElementaryExtensionPairFG
   classical
   refine hasQuantifierElimination_of_exists_realize_of_embeddings (T := T) ?_
   intro m φ hφ M N A _ _ _ _ _ _ _ f g a hM
-  rcases hM with ⟨b, hb⟩
+  obtain ⟨b, hb⟩ := hM
   let S : L.Substructure M := Substructure.closure L (Set.range (f ∘ a))
   have hSrange : S ≤ f.toHom.range := by
     rw [Substructure.closure_le]
-    intro x hx
-    rcases hx with ⟨i, rfl⟩
+    rintro x ⟨i, rfl⟩
     exact f.toHom.mem_range_self (a i)
-  let k : S ↪[L] N :=
-    g.comp (f.equivRange.symm.toEmbedding.comp (Substructure.inclusion hSrange))
-  let p : M ≃ₚ[L] N := {
-    dom := S
-    cod := k.toHom.range
-    toEquiv := k.equivRange
-  }
+  let k : S ↪[L] N := g.comp (f.equivRange.symm.toEmbedding.comp (Substructure.inclusion hSrange))
   let p₀ : L.FGEquiv M N :=
-    ⟨p, by
-      change S.FG
-      exact Substructure.fg_closure (Set.finite_range (f ∘ a))⟩
-  have hp_dom (i : Fin m) : f (a i) ∈ (p₀ : M ≃ₚ[L] N).dom := by
-    change f (a i) ∈ S
-    exact Substructure.subset_closure ⟨i, rfl⟩
-  have hp_apply (i : Fin m) :
-      ((p₀ : M ≃ₚ[L] N).toEquiv ⟨f (a i), hp_dom i⟩ : N) = g (a i) := by
-    change (k.equivRange ⟨f (a i), hp_dom i⟩ : N) = g (a i)
-    change g (f.equivRange.symm (Substructure.inclusion hSrange ⟨f (a i), hp_dom i⟩)) =
-      g (a i)
+    ⟨{ dom := S, cod := k.toHom.range, toEquiv := k.equivRange },
+      Substructure.fg_closure (Set.finite_range (f ∘ a))⟩
+  have hp_dom (i : Fin m) : f (a i) ∈ (p₀ : M ≃ₚ[L] N).dom := Substructure.subset_closure ⟨i, rfl⟩
+  have hp_apply (i : Fin m) : ((p₀ : M ≃ₚ[L] N).toEquiv ⟨f (a i), hp_dom i⟩ : N) = g (a i) := by
+    change g (f.equivRange.symm (Substructure.inclusion hSrange ⟨f (a i), hp_dom i⟩)) = g (a i)
     congr 1
-    apply f.equivRange.injective
-    apply Subtype.ext
-    simp
-  rcases h p₀ b with ⟨N', hN', e, q₀, hbq, hpq⟩
+    exact f.equivRange.injective (Subtype.ext (by simp))
+  obtain ⟨N', hN', e, q₀, hbq, hpq⟩ := h p₀ b
   letI : L.Structure N' := hN'
   let q : M ≃ₚ[L] N' := q₀
   let r : M ≃ₚ[L] N' := PartialEquiv.codMap (p₀ : M ≃ₚ[L] N) e.toEmbedding
-  have hrq : r ≤ q := by
-    simpa [PartialEquiv.ExtendsAlong, r, q] using hpq
-  have hqa_dom (i : Fin m) : f (a i) ∈ q.dom :=
-    PartialEquiv.dom_le_dom hrq (hp_dom i)
-  have hqa_apply (i : Fin m) :
-      (q.toEquiv ⟨f (a i), hqa_dom i⟩ : N') = e (g (a i)) := by
+  have hrq : r ≤ q := by simpa [PartialEquiv.ExtendsAlong, r, q] using hpq
+  have hqa_dom (i : Fin m) : f (a i) ∈ q.dom := PartialEquiv.dom_le_dom hrq (hp_dom i)
+  have hqa_apply (i : Fin m) : (q.toEquiv ⟨f (a i), hqa_dom i⟩ : N') = e (g (a i)) := by
     let x : r.dom := ⟨f (a i), hp_dom i⟩
     have hx := PartialEquiv.toEquiv_inclusion_apply hrq x
     have hx' := congr_arg (fun y : q.cod => (y : N')) hx
@@ -847,66 +695,42 @@ theorem hasQuantifierElimination_of_isElementaryExtensionPairFG
     calc
       (q.toEquiv ⟨f (a i), hqa_dom i⟩ : N') = (r.toEquiv x : N') := hx'
       _ = e (g (a i)) := by
-        change e (((p₀ : M ≃ₚ[L] N).toEquiv ⟨f (a i), hp_dom i⟩ : N)) =
-          e (g (a i))
+        change e (((p₀ : M ≃ₚ[L] N).toEquiv ⟨f (a i), hp_dom i⟩ : N)) = e (g (a i))
         rw [hp_apply]
   let vM : Fin m.succ → M := Fin.snoc (f ∘ a) b
   have hvM (i : Fin m.succ) : vM i ∈ q.dom := by
-    refine Fin.lastCases ?_ ?_ i
-    · simpa [vM, q] using hbq
-    · intro i
-      simpa [vM, Function.comp_def] using hqa_dom i
+    refine Fin.lastCases (by simpa [vM, q] using hbq) (fun i => ?_) i
+    simpa [vM, Function.comp_def] using hqa_dom i
   let b' : N' := q.toEquiv ⟨b, by simpa [q] using hbq⟩
-  have hqreal :
-      φ.Realize (fun i : Fin m.succ => (q.toEquiv ⟨vM i, hvM i⟩ : N')) := by
-    exact (isQF_realize_partialEquiv hφ q hvM).2 (by simpa [vM] using hb)
-  have htarget :
-      φ.Realize (Fin.snoc ((e.toEmbedding ∘ g) ∘ a) b') := by
+  have hqreal : φ.Realize (fun i : Fin m.succ => (q.toEquiv ⟨vM i, hvM i⟩ : N')) :=
+    (isQF_realize_partialEquiv hφ q hvM).2 (by simpa [vM] using hb)
+  have htarget : φ.Realize (Fin.snoc ((e.toEmbedding ∘ g) ∘ a) b') := by
     convert hqreal using 1
     funext i
-    refine Fin.lastCases ?_ ?_ i
-    · simp [vM, b']
-    · intro i
-      simpa [vM, b', Function.comp_def] using (hqa_apply i).symm
+    refine Fin.lastCases (by simp [vM, b']) (fun i => ?_) i
+    simpa [vM, b', Function.comp_def] using (hqa_apply i).symm
   let θ : L.BoundedFormula (Fin m) 1 :=
-    BoundedFormula.relabel (L := L) (β := Fin m) (n := 1) finSumFinEquiv.symm φ
-  have hθ_realize :
-      ∀ {X : Type (max u v)} [L.Structure X] (x : Fin m → X) (y : X),
-        θ.Realize x (Fin.snoc default y) ↔ φ.Realize (Fin.snoc x y) := by
-    intro X _ x y
-    rw [BoundedFormula.realize_relabel]
-    have hfree :
-        (Sum.elim x (Fin.snoc default y ∘ Fin.castAdd 0) ∘
-            ((@finSumFinEquiv m 1).symm : Fin m.succ → Fin m ⊕ Fin 1)) =
-          Fin.snoc x y := by
-      funext i
-      refine Fin.addCases ?_ ?_ i
-      · intro i
-        simp only [Function.comp_apply, finSumFinEquiv_symm_apply_castAdd, Sum.elim_inl]
-        change x i = (@Fin.snoc m (fun _ => X) x y) i.castSucc
-        rw [Fin.snoc_castSucc]
-      · intro j
-        have hj : j = 0 := Subsingleton.elim j 0
-        subst j
-        simp only [Function.comp_apply, finSumFinEquiv_symm_apply_natAdd, Sum.elim_inr]
-        rw [Fin.snoc_zero]
-        change y = (@Fin.snoc m (fun _ => X) x y) (Fin.last m)
-        rw [Fin.snoc_last]
-    have hbound : (Fin.snoc default y ∘ Fin.natAdd 1 : Fin 0 → X) = default := by
-      funext i
-      exact i.elim0
-    rw [hfree]
-    rw [hbound]
-    rfl
+        BoundedFormula.relabel (L := L) (β := Fin m) (n := 1) finSumFinEquiv.symm φ
   have hθN' : θ.ex.Realize ((e.toEmbedding ∘ g) ∘ a) default := by
     rw [BoundedFormula.realize_ex]
-    exact ⟨b', (hθ_realize (((e.toEmbedding ∘ g) ∘ a)) b').2 htarget⟩
+    exact ⟨b', by change (BoundedFormula.relabel _ φ).Realize _ _; rw
+      [Formula.realize_relabel_finSumFinEquiv_symm_snoc]; exact htarget⟩
   have hθN : θ.ex.Realize (g ∘ a) default := by
     have he := e.map_boundedFormula θ.ex (g ∘ a) default
     exact he.1 (by simpa [Function.comp_def] using hθN')
   rw [BoundedFormula.realize_ex] at hθN
-  rcases hθN with ⟨c, hc⟩
-  exact ⟨c, (hθ_realize (g ∘ a) c).1 hc⟩
+  obtain ⟨c, hc⟩ := hθN
+  exact ⟨c, by change (BoundedFormula.relabel _ φ).Realize _ _ at hc; rw
+    [Formula.realize_relabel_finSumFinEquiv_symm_snoc] at hc; exact hc⟩
+
+/-- If a theory has the elementary extension-pair property, then it has quantifier elimination.
+
+The hypothesis is condition (2) in van den Dries--Henson, Theorem 7.11; this theorem proves the
+implication from that extension property to condition (1). -/
+theorem hasQuantifierElimination_of_isElementaryExtensionPair
+    {T : L.Theory} (h : T.IsElementaryExtensionPair) :
+    T.HasQuantifierElimination :=
+  hasQuantifierElimination_of_isElementaryExtensionPairFG h.FG
 
 end Theory
 
