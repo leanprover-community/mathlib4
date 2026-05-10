@@ -19,7 +19,8 @@ Gram-Schmidt construction of an orthonormal basis adapted to the same flag.
 * `Module.End.exists_orthonormalBasis_isTriangularizedBy_of_isTriangularizedBy`: a triangularizing
   basis in a finite-dimensional inner product space can be replaced by an orthonormal
   triangularizing basis with the same index type.
-* `Module.End.exists_orthonormalBasis_isTriangularizedBy`: the corresponding existential form.
+* `Module.End.exists_orthonormalBasis_isTriangularizedBy`: an endomorphism with a triangularizing
+  basis has an orthonormal triangularizing basis.
 * `Module.End.exists_orthonormalBasis_isUpperTriangular_toMatrix`: in finite dimensions over an
   algebraically closed field, an endomorphism has an upper-triangular matrix in some orthonormal
   basis.

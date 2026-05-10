@@ -32,6 +32,8 @@ and outputs a set of orthogonal vectors which have the same span.
 - `gramSchmidt_orthonormal`: `gramSchmidtNormed` produces an orthonormal system of vectors.
 - `gramSchmidtOrthonormalBasis`: orthonormal basis constructed by the Gram-Schmidt process from
   an indexed set of vectors of the right size
+- `Module.Basis.flag_gramSchmidtOrthonormalBasis_toBasis`: applying Gram-Schmidt to a basis
+  preserves each initial flag subspace.
 -/
 
 @[expose] public section

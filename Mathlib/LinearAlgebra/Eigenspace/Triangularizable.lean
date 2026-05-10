@@ -44,9 +44,9 @@ This file contains basic results relevant to the triangularizability of linear e
   every endomorphism admits a triangularizing basis.
 * `Module.End.iSup_maxGenEigenspace_eq_top`: in finite dimensions, over an algebraically
   closed field, the generalized eigenspaces of any linear endomorphism span the whole space.
-* `Module.End.iSup_genEigenspace_restrict_eq_top`: in finite dimensions, if the
-  generalized eigenspaces of a linear endomorphism span the whole space then the same is true of
-  its restriction to any invariant submodule.
+* `Module.End.genEigenspace_restrict_eq_top`: in finite dimensions, if the generalized
+  eigenspaces of a linear endomorphism span the whole space, then the same is true of its
+  restriction to any invariant submodule.
 
 ## References
 
@@ -348,7 +348,7 @@ theorem exists_isTriangularizedBy_iff_iSup_maxGenEigenspace_eq_top [FiniteDimens
   · exact exists_isTriangularizedBy_of_iSup_maxGenEigenspace_eq_top
 
 /-- In finite dimensions, over an algebraically closed field, the generalized eigenspaces of any
-linear endomorphism span the whole space. -/
+linear endomorphism span the whole space. This is Lemma 8.22(c) of [axler2024]. -/
 theorem iSup_maxGenEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V] (f : End K V) :
     ⨆ (μ : K), f.maxGenEigenspace μ = ⊤ :=
   iSup_maxGenEigenspace_eq_top_of_charpoly_splits (IsAlgClosed.splits f.charpoly)

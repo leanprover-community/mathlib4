@@ -61,7 +61,9 @@ variable [Zero R]
 def BlockTriangular (M : Matrix m m R) (b : m → α) : Prop :=
   ∀ ⦃i j⦄, b j < b i → M i j = 0
 
-/-- The property of a matrix being upper triangular. See also `Matrix.det_of_upperTriangular`. -/
+/-- The property of a matrix being upper triangular. For a linear order this is the usual
+upper-triangular condition; for a more general `<`, this is `Matrix.BlockTriangular id`.
+See also `Matrix.det_of_upperTriangular`. -/
 abbrev IsUpperTriangular [LT m] (M : Matrix m m R) : Prop := M.BlockTriangular id
 
 /-- The subtype of upper triangular matrices. -/

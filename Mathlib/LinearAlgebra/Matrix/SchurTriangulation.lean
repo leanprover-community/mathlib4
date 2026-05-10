@@ -10,25 +10,31 @@ public import Mathlib.Analysis.InnerProductSpace.Triangularizable
 public import Mathlib.LinearAlgebra.Matrix.Block
 /-! # Schur triangulation
 
-Schur triangulation is more commonly known as Schur decomposition or Schur triangularization, but
-"triangulation" makes the API more readable. It states that a square matrix over an algebraically
-closed field, e.g., `ℂ`, is unitarily similar to an upper triangular matrix.
+Schur triangulation is also known as Schur decomposition or Schur triangularization. It states that
+a square matrix over an algebraically closed field, for example `ℂ`, is unitarily similar to an
+upper triangular matrix.
+
+The definitions `schurTriangulationBasis`, `schurTriangulationUnitary`, and
+`schurTriangulation` are noncanonical classical choices. The upper-triangular predicate is
+relative to the chosen `LinearOrder` on the finite index type.
 
 ## Main definitions
 
 - `Matrix.schurTriangulation_eq` : a square matrix over an algebraically closed field can be
   decomposed as `A = U * T * star U` where `U` is unitary and `T` is upper triangular.
-- `Matrix.schurTriangulationUnitary` : the unitary matrix `U` as previously stated.
-- `Matrix.schurTriangulation` : the upper triangular matrix `T` as previously stated.
+- `Matrix.schurTriangulationUnitary_mul_schurTriangulation` : the corresponding intertwining
+  identity `U * T = A * U`.
+- `Matrix.schurTriangulationUnitary` : the chosen unitary matrix `U`.
+- `Matrix.schurTriangulation` : the chosen upper triangular matrix `T`.
 
 -/
 
 @[expose] public section
 
-/-! The Schur construction below specializes algebraic triangularization. First
-`Module.End.exists_orthonormalBasis_isUpperTriangular_toMatrix` gives an orthonormal basis in
-which the associated linear map is upper triangular; the rest of the file repackages this choice as
-a unitary similarity of matrices. These choices are noncanonical. -/
+/-! The Schur construction below specializes algebraic triangularization. The theorem
+`Module.End.exists_orthonormalBasis_isUpperTriangular_toMatrix` gives an orthonormal basis in which
+the associated linear map is upper triangular; this file uses that choice to construct a unitary
+similarity of matrices. -/
 
 namespace Matrix
 
@@ -63,10 +69,16 @@ theorem exists_orthonormalBasis_isUpperTriangular_toEuclideanLin :
       rfl
     _ = 0 := hut (e.symm.lt_iff_lt.mpr hji)
 
-/-- An arbitrary orthonormal change of basis that induces the upper triangular form
+/-- A chosen orthonormal change of basis that induces the upper triangular form
 `A.schurTriangulation` of a matrix `A` over an algebraically closed field. -/
 noncomputable def schurTriangulationBasis : OrthonormalBasis n 𝕜 (EuclideanSpace 𝕜 n) :=
   (exists_orthonormalBasis_isUpperTriangular_toEuclideanLin A).choose
+
+/-- The matrix of `toEuclideanLin A` in the chosen Schur basis is upper triangular. -/
+theorem schurTriangulationBasis_isUpperTriangular_toEuclideanLin :
+    (LinearMap.toMatrixOrthonormal (schurTriangulationBasis A)
+      (toEuclideanLin A)).IsUpperTriangular :=
+  (exists_orthonormalBasis_isUpperTriangular_toEuclideanLin A).choose_spec
 
 /-- The unitary matrix that induces the upper triangular form `A.schurTriangulation` to which a
 matrix `A` over an algebraically closed field is unitarily similar. -/
@@ -78,7 +90,25 @@ noncomputable def schurTriangulationUnitary : unitaryGroup n 𝕜 where
 algebraically closed field is unitarily similar. -/
 noncomputable def schurTriangulation : UpperTriangular n 𝕜 where
   val := LinearMap.toMatrixOrthonormal (schurTriangulationBasis A) (toEuclideanLin A)
-  property := (exists_orthonormalBasis_isUpperTriangular_toEuclideanLin A).choose_spec
+  property := schurTriangulationBasis_isUpperTriangular_toEuclideanLin A
+
+@[simp]
+theorem coe_schurTriangulation :
+    (schurTriangulation A : Matrix n n 𝕜) =
+      LinearMap.toMatrixOrthonormal (schurTriangulationBasis A) (toEuclideanLin A) :=
+  rfl
+
+/-- The chosen Schur unitary intertwines `A` with its triangular form. -/
+theorem schurTriangulationUnitary_mul_schurTriangulation :
+    (schurTriangulationUnitary A : Matrix n n 𝕜) *
+        (schurTriangulation A : Matrix n n 𝕜) =
+      A * schurTriangulationUnitary A := by
+  let b := (schurTriangulationBasis A).toBasis
+  let c := (EuclideanSpace.basisFun n 𝕜).toBasis
+  calc c.toMatrix b * LinearMap.toMatrix b b (toEuclideanLin A)
+    _ = LinearMap.toMatrix c c (toEuclideanLin A) * c.toMatrix b := by simp
+    _ = LinearMap.toMatrix c c (toLin c c A) * schurTriangulationUnitary A := rfl
+    _ = A * schurTriangulationUnitary A := by simp
 
 /-- **Schur triangulation**, **Schur decomposition** for matrices over an algebraically closed
 field. In particular, a complex matrix can be converted to upper-triangular form by a change of
@@ -87,15 +117,9 @@ theorem schurTriangulation_eq :
     A = schurTriangulationUnitary A * schurTriangulation A *
         star (schurTriangulationUnitary A) := by
   let U := schurTriangulationUnitary A
-  have h : U * (schurTriangulation A).val = A * U := by
-    let b := (schurTriangulationBasis A).toBasis
-    let c := (EuclideanSpace.basisFun n 𝕜).toBasis
-    calc c.toMatrix b * LinearMap.toMatrix b b (toEuclideanLin A)
-      _ = LinearMap.toMatrix c c (toEuclideanLin A) * c.toMatrix b := by simp
-      _ = LinearMap.toMatrix c c (toLin c c A) * U := rfl
-      _ = A * U := by simp
   calc A
     _ = A * U * star U := by simp [mul_assoc]
-    _ = U * schurTriangulation A * star U := by rw [← h]
+    _ = U * schurTriangulation A * star U := by
+      rw [← schurTriangulationUnitary_mul_schurTriangulation A]
 
 end Matrix
