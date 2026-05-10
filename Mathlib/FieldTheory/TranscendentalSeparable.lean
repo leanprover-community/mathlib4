@@ -305,11 +305,8 @@ lemma tensorProduct_isReduced_of_isTranscendentalBasis_of_isReduced [IsReduced S
     exact tensorProduct_isReduced_of_isTranscendentalBasis_of_isDomain k K _ f isT
   have : IsReduced (K ⊗[k] ((p : (minimalPrimes S)) →
     letI := Ideal.minimalPrimes_isPrime p.2
-    Localization.AtPrime p.1)) := by
-    apply isReduced_of_injective _ (Algebra.TensorProduct.piRight k k K
-      (fun (p : (minimalPrimes S)) ↦
-        letI := Ideal.minimalPrimes_isPrime p.2
-        Localization.AtPrime p.1)).injective
+    Localization.AtPrime p.1)) :=
+    isReduced_of_injective _ (Algebra.TensorProduct.piRight k k K _).injective
   exact isReduced_of_injective _ inj
 
 lemma tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced_of_essFiniteType
@@ -459,6 +456,16 @@ lemma linearIndepOn_pow_of_isReduced_tensorProduct (hp : Nat.Prime p)
 
 instance : ExpChar (AlgebraicClosure k) p := ExpChar.of_injective_algebraMap' k _
 
+lemma isReduced_adjoinPthRoots_of_isReduced_algebraicClosure (hp : Nat.Prime p)
+    (red : IsReduced (AlgebraicClosure k ⊗[k] K)) : IsReduced (adjoinPthRoots k p ⊗[k] K) := by
+  have : Fact (Nat.Prime p) := ⟨hp⟩
+  let f : (adjoinPthRoots k p) →ₐ[k] (AlgebraicClosure k) :=
+      (IsAlgClosure.equiv k (AlgebraicClosure (adjoinPthRoots k p))
+        (AlgebraicClosure k)).toAlgHom.comp (IsScalarTower.toAlgHom k (adjoinPthRoots k p) _)
+  have : Function.Injective (Algebra.TensorProduct.rTensor K f) :=
+    Module.Flat.rTensor_preserves_injective_linearMap _ (RingHom.injective _)
+  exact isReduced_of_injective _ this
+
 @[stacks 030W]
 lemma Algebra.isTranscendentalSeparable_tfae (hp : Nat.Prime p) :
     [ Algebra.IsTranscendentalSeparable k K,
@@ -473,15 +480,8 @@ lemma Algebra.isTranscendentalSeparable_tfae (hp : Nat.Prime p) :
     apply (Algebra.isGeometricallyReduced_field_iff k K).mpr
     exact isReduced_of_injective _ (Algebra.TensorProduct.comm k _ K).injective
   tfae_have 4 → 3 := by
-    have : Fact (Nat.Prime p) := ⟨hp⟩
     simp only [isGeometricallyReduced_field_iff]
-    intro red
-    let f : (adjoinPthRoots k p) →ₐ[k] (AlgebraicClosure k) :=
-      (IsAlgClosure.equiv k (AlgebraicClosure (adjoinPthRoots k p))
-        (AlgebraicClosure k)).toAlgHom.comp (IsScalarTower.toAlgHom k (adjoinPthRoots k p) _)
-    have : Function.Injective (Algebra.TensorProduct.rTensor K f) :=
-      Module.Flat.rTensor_preserves_injective_linearMap _ (RingHom.injective _)
-    exact isReduced_of_injective _ this
+    exact isReduced_adjoinPthRoots_of_isReduced_algebraicClosure k K p hp
   tfae_have 3 → 2 := fun red s li ↦ linearIndepOn_pow_of_isReduced_tensorProduct k K p hp red s li
   tfae_have 2 → 1 := by
     simp only [Algebra.isTranscendentalSeparable_iff, Algebra.isSeparablyGenerated_iff]
