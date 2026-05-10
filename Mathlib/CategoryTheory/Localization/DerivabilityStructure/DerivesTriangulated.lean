@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedTriangulated
 public import Mathlib.CategoryTheory.Functor.Derived.RightDerivedTriangulated
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Derives
 
@@ -55,8 +56,26 @@ lemma isTriangulated_of_isRightDerivedFunctor
     obtain ⟨Z, g, h, hT⟩ := distinguished_cocone_triangle R.X₁.hom
     exact ⟨_, Φ.functor.map_distinguished _ hT,
       hF.isIso _ _, hF.isIso _ _, hF.isIso _ _,
-      ⟨Iso.symm (Arrow.isoMk (Localization.isoOfHom L _ _ R.hw.1)
-        (Localization.isoOfHom L _ _ R.hw.2) (by simp [← Functor.map_comp])) ≪≫ eφ⟩⟩)
+      ⟨(Arrow.isoMk (Localization.isoOfHom L _ _ R.hw.1)
+        (Localization.isoOfHom L _ _ R.hw.2) (by simp [← Functor.map_comp])).symm ≪≫ eφ⟩⟩)
+
+include hF in
+lemma isTriangulated_of_isLeftDerivedFunctor
+    [Φ.IsLeftDerivabilityStructure] [Φ.arrow.HasLeftResolutions]
+    {RF : D₂ ⥤ H} [RF.CommShift ℤ]
+    (α : L ⋙ RF ⟶ F) [NatTrans.CommShift α ℤ]
+    [RF.IsLeftDerivedFunctor α W₂] :
+    RF.IsTriangulated :=
+  Functor.isTriangulated_of_rightExtension _ α (fun X Y f ↦ by
+    obtain ⟨φ, ⟨eφ⟩⟩ := Functor.EssSurj.mem_essImage (F := L.mapArrow) (Arrow.mk f)
+    let R : Φ.arrow.LeftResolution φ := Classical.arbitrary _
+    obtain ⟨Z, g, h, hT⟩ := distinguished_cocone_triangle R.X₁.hom
+    refine ⟨_, Φ.functor.map_distinguished _ hT,
+      hF.isIso' _ _, hF.isIso' _ _, hF.isIso' _ _,
+        ⟨?_ ≪≫ eφ⟩⟩
+    exact Arrow.isoMk (Localization.isoOfHom L _ _ R.hw.1)
+      (Localization.isoOfHom L _ _ R.hw.2)
+      (by simp [← Functor.map_comp, dsimp% Arrow.w R.w]))
 
 end LocalizerMorphism.Derives
 

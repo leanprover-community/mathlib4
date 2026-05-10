@@ -2968,6 +2968,7 @@ public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Construc
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Derives
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.DerivesTriangulated
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.OfFunctorialResolutions
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.PointwiseLeftDerived
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.PointwiseRightDerived
 public import Mathlib.CategoryTheory.Localization.Equivalence
 public import Mathlib.CategoryTheory.Localization.FiniteProducts

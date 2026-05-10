@@ -59,7 +59,7 @@ lemma isLeftDerivedFunctor_iff_isRightKanExtension [L.IsLocalization W] :
   · exact fun _ => IsLeftDerivedFunctor.isRightKanExtension LF α W
   · exact fun h => ⟨h⟩
 
-variable {RF RF'} in
+variable {LF LF'} in
 lemma isLeftDerivedFunctor_iff_of_iso (α' : L ⋙ LF' ⟶ F) (W : MorphismProperty C)
     [L.IsLocalization W] (e : LF ≅ LF') (comm : whiskerLeft L e.hom ≫ α' = α) :
     LF.IsLeftDerivedFunctor α W ↔ LF'.IsLeftDerivedFunctor α' W := by

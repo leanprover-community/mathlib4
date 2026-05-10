@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.PointwiseLeftDerived
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.PointwiseRightDerived
 
 /-!
@@ -53,15 +54,17 @@ abbrev Derives : Prop := W₁.IsInvertedBy (Φ.functor ⋙ F)
 
 namespace Derives
 
-variable {Φ F} (h : Φ.Derives F) [Φ.IsRightDerivabilityStructure]
+variable {Φ F} (h : Φ.Derives F)
+
+section
+
+variable [Φ.IsRightDerivabilityStructure]
 
 include h
 
 lemma hasPointwiseRightDerivedFunctor : F.HasPointwiseRightDerivedFunctor W₂ := by
   rw [hasPointwiseRightDerivedFunctor_iff_of_isRightDerivabilityStructure Φ F]
   exact Functor.hasPointwiseRightDerivedFunctor_of_inverts _ h
-
-section
 
 variable {L₂ : C₂ ⥤ D₂} [L₂.IsLocalization W₂] {RF : D₂ ⥤ H} (α : F ⟶ L₂ ⋙ RF)
 
@@ -97,6 +100,53 @@ lemma isRightDerivedFunctor_of_isIso (hα : ∀ (X₁ : C₁), IsIso (α.app (Φ
 lemma isRightDerivedFunctor_iff_isIso :
     RF.IsRightDerivedFunctor α W₂ ↔ ∀ (X₁ : C₁), IsIso (α.app (Φ.functor.obj X₁)) :=
   ⟨fun _ _ ↦ h.isIso α _, h.isRightDerivedFunctor_of_isIso α⟩
+
+end
+
+section
+
+variable [Φ.IsLeftDerivabilityStructure]
+
+include h
+
+lemma hasPointwiseLeftDerivedFunctor : F.HasPointwiseLeftDerivedFunctor W₂ := by
+  rw [hasPointwiseLeftDerivedFunctor_iff_of_isLeftDerivabilityStructure Φ F]
+  exact Functor.hasPointwiseLeftDerivedFunctor_of_inverts _ h
+
+variable {L₂ : C₂ ⥤ D₂} [L₂.IsLocalization W₂] {LF : D₂ ⥤ H} (α : L₂ ⋙ LF ⟶ F)
+
+lemma isIso' (X₁ : C₁) [LF.IsLeftDerivedFunctor α W₂] :
+    IsIso (α.app (Φ.functor.obj X₁)) := by
+  let G : W₁.Localization ⥤ H := Localization.lift (Φ.functor ⋙ F) h W₁.Q
+  let eG := Localization.Lifting.iso W₁.Q W₁ (Φ.functor ⋙ F) G
+  have := Functor.isLeftDerivedFunctor_of_inverts W₁ G eG
+  have := (Φ.functor ⋙ F).hasPointwiseLeftDerivedFunctor_of_inverts h
+  rw [← Φ.isIso_iff_of_isLeftDerivabilityStructure W₁.Q L₂ F G eG.hom LF α]
+  infer_instance
+
+set_option backward.isDefEq.respectTransparency false in
+lemma isLeftDerivedFunctor_of_isIso (hα : ∀ (X₁ : C₁), IsIso (α.app (Φ.functor.obj X₁))) :
+    LF.IsLeftDerivedFunctor α W₂ := by
+  have := h.hasPointwiseLeftDerivedFunctor
+  have := h.isIso' (F.totalLeftDerivedCounit L₂ W₂)
+  have := Φ.essSurj_of_hasLeftResolutions L₂
+  let φ := (F.totalLeftDerived L₂ W₂).leftDerivedLift (F.totalLeftDerivedCounit L₂ W₂) W₂ LF α
+  have hφ : Functor.whiskerLeft L₂ φ ≫ F.totalLeftDerivedCounit L₂ W₂ = α :=
+    (F.totalLeftDerived L₂ W₂).leftDerived_fac (F.totalLeftDerivedCounit L₂ W₂) W₂ LF α
+  have : IsIso φ := by
+    rw [NatTrans.isIso_iff_isIso_app]
+    intro Y₂
+    rw [NatTrans.isIso_app_iff_of_iso φ ((Φ.functor ⋙ L₂).objObjPreimageIso Y₂).symm]
+    dsimp
+    simp only [← hφ, NatTrans.comp_app, Functor.whiskerLeft_app, isIso_comp_right_iff] at hα
+    infer_instance
+  rw [← Functor.isLeftDerivedFunctor_iff_of_iso (F.totalLeftDerivedCounit L₂ W₂) α W₂
+    (asIso φ).symm (by cat_disch)]
+  infer_instance
+
+lemma isLeftDerivedFunctor_iff_isIso :
+    LF.IsLeftDerivedFunctor α W₂ ↔ ∀ (X₁ : C₁), IsIso (α.app (Φ.functor.obj X₁)) :=
+  ⟨fun _ _ ↦ h.isIso' α _, h.isLeftDerivedFunctor_of_isIso α⟩
 
 end
 
