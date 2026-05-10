@@ -6,7 +6,6 @@ Authors: Weiyi Wang
 module
 
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
-public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
 
 /-!
 # Shifting an affine subspace towards a point
@@ -48,7 +47,7 @@ We define `AffineSubspace.shift ⊥ c r = ⊥` (See `AffineSubspace.shift_bot`).
 noncomputable
 def shift (s : AffineSubspace k P) (c : P) (r : k) : AffineSubspace k P :=
   if h : Nonempty s then
-    s.map (AffineEquiv.constVAdd k P ((1 - r) • (c -ᵥ h.some))).toAffineMap
+    s.map <| AffineEquiv.constVAdd k P ((1 - r) • (c -ᵥ h.some))
   else
     ⊥
 
@@ -71,7 +70,7 @@ theorem shift_bot (c : P) (r : k) : shift ⊥ c r = ⊥ := by
 /-- `AffineSubspace.shift s c r` can be represented by moving a point in the subspace
 towards `c`. -/
 theorem shift_eq {s : AffineSubspace k P} (p : s) (c : P) (r : k) :
-    s.shift c r = s.map (AffineEquiv.constVAdd k P ((1 - r) • (c -ᵥ p))).toAffineMap := by
+    s.shift c r = s.map (AffineEquiv.constVAdd k P ((1 - r) • (c -ᵥ p))) := by
   have h : Nonempty s := ⟨p⟩
   simp only [shift, h, ↓reduceDIte]
   ext q
@@ -122,8 +121,7 @@ theorem shift_eq_map_homothety (s : AffineSubspace k P) (c : P) {r : k} (hr : Is
       exact smul_mem _ _ <| vsub_mem_direction hmem h.some.prop
     · rw [vadd_vsub_assoc, smul_add, smul_smul, ht, sub_eq_add_neg, add_smul, one_smul, one_smul,
         neg_smul, ← smul_neg, neg_vsub_eq_vsub_rev]
-      simp_rw [add_comm _ (r • (h.some.val -ᵥ c)), ← vadd_vadd]
-      congrm _ +ᵥ $(vsub_vadd_comm x h.some.val c)
+      simp_rw [add_comm _ (r • (h.some.val -ᵥ c)), ← vadd_vadd, vsub_vadd_comm x h.some.val c]
   · refine ⟨r • (x -ᵥ h.some.val) +ᵥ h.some.val, ?_, ?_⟩
     · refine vadd_mem_of_mem_direction ?_ h.some.prop
       exact smul_mem _ _ <| vsub_mem_direction hmem h.some.prop
