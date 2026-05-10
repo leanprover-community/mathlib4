@@ -63,8 +63,6 @@ Characterize when `rectVandermonde v w n` has linearly independent rows.
 
 @[expose] public section
 
-
-
 variable {R K : Type*} [CommRing R] [Field K] {n : ℕ}
 
 open Equiv Finset

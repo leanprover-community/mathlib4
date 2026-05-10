@@ -23,7 +23,6 @@ public import Mathlib.RingTheory.Flat.Localization
 
 @[expose] public section
 
-
 universe u
 
 variable (R S T : Type*) [CommRing R] [CommRing S] [CommRing T]

@@ -28,7 +28,6 @@ lifting property
 @[expose] public section
 
 
-
 universe v
 
 namespace CategoryTheory
