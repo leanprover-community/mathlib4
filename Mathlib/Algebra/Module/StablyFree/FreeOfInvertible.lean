@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.PicardGroup
 public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 
 /-!
-This file proves that a finite stably free module `M` is free if it is locally free of rank `1`.
+This file proves that a finite stably free module `M` is free if it is invertible.
 -/
 
 public section
@@ -43,15 +43,9 @@ private lemma cofactorToLeft_ιMulti_cons (bN : Module.Basis (Fin n) R N) (m : M
 
 variable (R M)
 
-theorem Module.Finite.subsingleton_of_ring_subsingleton [Module.Finite R M] [Subsingleton R] :
-    Subsingleton M := by
-  obtain ⟨n, f, fsurj⟩ := Module.Finite.exists_fin' R M
-  exact fsurj.subsingleton
-
 /-- Let `R` be a commutative ring, `M` be a finite stably free `R`-module.
-  Then `M` is free if it is locally free of rank `1`. -/
-theorem Module.free_of_isStablyFree_of_localized_eq_ring [Module.Finite R M]
-    [IsStablyFree R M] [Module.Invertible R M] :
+  Then `M` is free if it is invertible. -/
+theorem Module.free_of_isStablyFree_of_invertible [IsStablyFree R M] [Module.Invertible R M] :
     Module.Free R M := by
   rcases subsingleton_or_nontrivial R with h | h
   · have : Subsingleton M := Module.Finite.subsingleton_of_ring_subsingleton R M
