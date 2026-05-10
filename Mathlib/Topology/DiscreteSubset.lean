@@ -299,7 +299,7 @@ theorem codiscreteWithin_iff_locallyFiniteComplementWithin [T1Space X] {s U : Se
     simp
 
 /-- In a `T1Space`, complements of finite sets are codiscrete within any set. -/
-@[simp] theorem compl_finite_mem_codiscreteWithin {X : Type*} [TopologicalSpace X] [T1Space X]
+theorem compl_finite_mem_codiscreteWithin {X : Type*} [TopologicalSpace X] [T1Space X]
     {s t : Set X} (h : t.Finite) :
     tᶜ ∈ codiscreteWithin s := by
   apply h.induction_on (motive := fun t _ ↦ tᶜ ∈ codiscreteWithin s)
@@ -317,6 +317,7 @@ theorem codiscreteWithin_iff_locallyFiniteComplementWithin [T1Space X] {s U : Se
 Special case of `compl_finite_mem_codiscreteWithin`: In a `T1Space`, complements of singleton sets
 are codiscrete within any set.
 -/
+@[simp]
 theorem compl_singleton_mem_codiscreteWithin {X : Type*} [TopologicalSpace X] [T1Space X]
     {s : Set X} (x : X) :
     {x}ᶜ ∈ codiscreteWithin s := by simp

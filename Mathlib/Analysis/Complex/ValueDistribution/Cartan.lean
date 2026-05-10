@@ -82,19 +82,16 @@ theorem circleIntegrable_log_meromorphicTrailingCoeffAt :
       rwa [MeromorphicAt.meromorphicAt_fun_sub_iff_meromorphicAt₂ (by fun_prop)]
     simp_all
   rcases lt_trichotomy (meromorphicOrderAt f 0) 0 with hneg | hzero | hpos
-  · apply (circleIntegrable_congr _).2 (circleIntegrable_const
+  · refine (circleIntegrable_congr fun a ha ↦ ?_).2 (circleIntegrable_const
       (log ‖meromorphicTrailingCoeffAt f 0‖) 0 1)
-    intro a ha
-    simp only
     rw [(MeromorphicAt.const a 0).meromorphicTrailingCoeffAt_fun_sub_eq_left_of_lt]
     rw [meromorphicOrderAt_const]
     aesop
   · apply CircleIntegrable.congr_codiscreteWithin
      (eventuallyEq_log_trailingCoeff_of_meromorphicOrderAt_eq_zero (not_not.1 h) hzero)
-    convert circleIntegrable_log_norm_sub_const (a := meromorphicTrailingCoeffAt f 0) 1 using 1
-    simp_rw [norm_sub_rev]
+    simpa [norm_sub_rev] using circleIntegrable_log_norm_sub_const 1
   · apply (circleIntegrable_congr _).2 (circleIntegrable_const 0 0 1)
-    exact fun x hx ↦ log_trailingCoeff_eq_zero_on_unitSphere hpos hx
+    exact fun _ ↦ log_trailingCoeff_eq_zero_on_unitSphere hpos
 
 /--
 Circle average of the function `fun a ↦ log ‖meromorphicTrailingCoeffAt (f · - a) 0‖` that appears
@@ -113,13 +110,12 @@ theorem circleAverage_log_norm_meromorphicTrailingCoeffAt_of_meromorphicOrderAt_
     (h : meromorphicOrderAt f 0 = 0) :
     circleAverage (fun a ↦ log ‖meromorphicTrailingCoeffAt (f · - a) 0‖) 0 1
       = log⁺ ‖meromorphicTrailingCoeffAt f 0‖ := by
-  by_cases hf: MeromorphicAt f 0
+  by_cases hf : MeromorphicAt f 0
   · rw [← circleAverage_congr_codiscreteWithin
       (eventuallyEq_log_trailingCoeff_of_meromorphicOrderAt_eq_zero hf h) zero_ne_one.symm]
     simp_rw [norm_sub_rev]
     rw [circleAverage_log_norm_sub_const_eq_posLog]
-  simp_all
-  have {a : ℂ} : ¬MeromorphicAt (fun x ↦ f x - a) 0 := by
+  have {a : ℂ} : ¬ MeromorphicAt (fun x ↦ f x - a) 0 := by
     rwa [MeromorphicAt.meromorphicAt_fun_sub_iff_meromorphicAt₂ (by fun_prop)]
   simp_all [circleAverage_const]
 
