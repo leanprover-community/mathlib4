@@ -35,7 +35,6 @@ fibre `W x`), the construction produces a continuous linear map `V x →L[𝕜] 
   arguments defines a continuous bilinear map out of `V x` and `V' x`.
 
 -/
-
 open Bundle FiberBundle Topology Module
 
 open scoped Manifold ContDiff

@@ -65,7 +65,6 @@ divided powers (`DividedPowerAlgebra.lift`).
 -/
 
 @[expose] public section
-
 noncomputable section
 
 open Finset Ideal MvPolynomial RingQuot
