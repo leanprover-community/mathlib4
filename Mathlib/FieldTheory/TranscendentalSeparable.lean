@@ -543,3 +543,48 @@ lemma Algebra.isTranscendentalSeparable_of_perfectField [PerfectField k] :
     let e := (Algebra.TensorProduct.congr (AlgEquiv.ofBijective _ bij).symm AlgEquiv.refl).trans
       (Algebra.TensorProduct.lid k K)
     exact isReduced_of_injective _ e.injective
+
+section IsGeometricallyReduced
+
+variable (S : Type*) [CommRing S] [Algebra k S]
+
+lemma isReduced_of_perfectField [PerfectField k] [IsReduced S]
+    (K : Type*) [Field K] [Algebra k K] : IsReduced (K ⊗[k] S) := by
+  have : Algebra.IsTranscendentalSeparable k K :=
+    Algebra.isTranscendentalSeparable_of_perfectField k K
+  apply tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced
+
+lemma tensorProduct_isReduced_of_localization [IsReduced S]
+    (h : ∀ (p : Ideal S) (h : p ∈ minimalPrimes S),
+      letI := Ideal.minimalPrimes_isPrime h
+      IsReduced (K ⊗[k] (Localization.AtPrime p))) :
+    IsReduced (K ⊗[k] S) := by
+  have h (x : k) (y : S) : (toLocalizationMinimal S) (x • y) = x • (toLocalizationMinimal S) y := by
+    ext p
+    simp [toLocalizationMinimal, Algebra.smul_def, ← IsScalarTower.algebraMap_apply]
+  let g := AlgHom.mk' (toLocalizationMinimal S) h
+  have inj : Function.Injective (Algebra.TensorProduct.lTensor K g) :=
+    Module.Flat.lTensor_preserves_injective_linearMap _
+      (isReduced_injective_to_prod_localizations S)
+  have red : IsReduced (K ⊗[k] ((p : minimalPrimes S) →
+      letI := Ideal.minimalPrimes_isPrime p.2
+      Localization.AtPrime p.1)) := by
+    --`Algebra.TensorProduct.piRightHom` is injective for free module
+    sorry
+  exact isReduced_of_injective _ inj
+
+lemma isReduced_of_tensorProduct_adjoinPthRoots_reduced (p : ℕ) (hp : Nat.Prime p)
+    [ExpChar k p] (K : Type*) [Field K] [Algebra k K]
+    (red : IsReduced ((adjoinPthRoots k p) ⊗[k] S)) : IsReduced (K ⊗[k] S) := by
+  have redS : IsReduced S := by
+    sorry
+  have red' (q : Ideal S) (h : q ∈ minimalPrimes S) :
+      letI := Ideal.minimalPrimes_isPrime h
+      IsReduced ((adjoinPthRoots k p) ⊗[k] (Localization.AtPrime q)) := by
+    --IsLocalization.tensorProduct_tensorProduct
+    sorry
+  let isf (q : Ideal S) (h : q ∈ minimalPrimes S) := (localization_minimal_isField q h).toField
+
+  sorry
+
+end IsGeometricallyReduced
