@@ -298,12 +298,16 @@ variable [T2Space α]
 
 variable [ContinuousMul α]
 
+/-- See also `Multipliable.tprod_mul` for more general result without `CompleteLattice`
+assumption. -/
 @[to_additive] theorem tprod_mul : ∏' a, (f a * g a) = (∏' a, f a) * ∏' a, g a :=
   multipliable.tprod_mul multipliable
 
+/-- See also `Multipliable.tprod_union_of_disjoint` for more general result without
+`CompleteLattice` assumption. -/
 @[to_additive] theorem tprod_union_of_disjoint (hd : Disjoint s t) :
     ∏' (x : ↑(s ∪ t)), f x = (∏' (x : s), f x) * ∏' (x : t), f x :=
-  multipliable.tprod_union_disjoint hd multipliable
+  multipliable.tprod_union_of_disjoint hd multipliable
 
 @[to_additive] theorem tprod_le_of_subset (h : s ⊆ t) : ∏' (x : s), f x ≤ ∏' (x : t), f x := by
   rw [← diff_union_of_subset h, tprod_union_of_disjoint disjoint_sdiff_left]
@@ -339,21 +343,31 @@ variable [T3Space α]
   apply (equiv.hasProd_iff.mpr multipliable.hasProd).sigma
   exact fun _ ↦ multipliable.hasProd_iff.mpr rfl
 
+/-- See also `Multipliable.tprod_comm'` for more general result without `CompleteLattice`
+assumption. -/
 @[to_additive] theorem tprod_comm {f : ι → ι' → α} : ∏' (a) (b), f a b = ∏' (b) (a), f a b :=
   multipliable.tprod_comm' (fun _ ↦ multipliable) fun _ ↦ multipliable
 
+/-- See also `Multipliable.tprod_prod'` for more general result without `CompleteLattice`
+assumption. -/
 @[to_additive tsum_prod]
 theorem tprod_prod {f : ι → ι' → α} : ∏' p : ι × ι', f p.1 p.2 = ∏' (a) (b), f a b :=
   multipliable.tprod_prod' fun _ ↦ multipliable
 
+/-- See also `Multipliable.tprod_prod'` for more general result without `CompleteLattice`
+assumption. -/
 @[to_additive tsum_prod']
 theorem tprod_prod' {f : ι × ι' → α} : ∏' p : ι × ι', f p = ∏' (a) (b), f (a, b) :=
   multipliable.tprod_prod' fun _ => multipliable
 
+/-- See also `Multipliable.tprod_sigma'` for more general result without `CompleteLattice`
+assumption. -/
 @[to_additive] theorem tprod_sigma {β : ι → Type*} (f : ∀ a, β a → α) :
     ∏' p : Σ i, β i, f p.1 p.2 = ∏' (i) (j), f i j :=
   multipliable.tprod_sigma' (fun _ ↦ multipliable)
 
+/-- See also `Multipliable.tprod_sigma'` for more general result without `CompleteLattice`
+assumption. -/
 @[to_additive] theorem tprod_sigma' {β : ι → Type*} (f : (Σ i, β i) → α) :
     ∏' p : Σ i, β i, f p = ∏' (i) (j), f ⟨i, j⟩ :=
   multipliable.tprod_sigma' (fun _ ↦ multipliable)
@@ -370,18 +384,26 @@ theorem tprod_prod' {f : ι × ι' → α} : ∏' p : ι × ι', f p = ∏' (a) 
 omit [ContinuousMul α] [T3Space α]
 variable [IsOrderedMonoid α] [OrderClosedTopology α]
 
+/-- See also `Multipliable.tprod_le_tprod` for more general result without `CompleteLattice`
+assumption. -/
 @[to_additive] theorem tprod_le_tprod (h : f ≤ g) : ∏' a, f a ≤ ∏' a, g a :=
   multipliable.tprod_le_tprod h multipliable
 
+/-- See also `Multipliable.prod_le_tprod` for more general result without `CompleteLattice`
+assumption. -/
 @[to_additive] theorem prod_le_tprod (s : Finset ι) : ∏ x ∈ s, f x ≤ ∏' x, f x :=
   multipliable.prod_le_tprod s (fun _ _ ↦ one_le _)
 
+/-- See also `Multipliable.le_tprod'` for more general result without `CompleteLattice`
+assumption. -/
 @[to_additive] theorem le_tprod (f : ι → α) (a : ι) : f a ≤ ∏' a, f a := multipliable.le_tprod' a
 
 @[to_additive] theorem le_tprod_of_mem (hi : i ∈ s) : f i ≤ ∏' x : s, f x := by
   exact le_tprod (f ∘ (↑)) (⟨i, hi⟩ : s)
 
-@[to_additive, simp] theorem tprod_eq_one : ∏' i, f i = 1 ↔ ∀ i, f i = 1 :=
+/-- See also `Multipliable.tprod_eq_one_iff` for more general result without `CompleteLattice`
+assumption. -/
+@[to_additive, simp] theorem tprod_eq_one_iff : ∏' i, f i = 1 ↔ ∀ i, f i = 1 :=
   multipliable.tprod_eq_one_iff
 
 @[to_additive] theorem tprod_eq_top_of_eq_top : (∃ a, f a = ⊤) → ∏' a, f a = ⊤
@@ -391,6 +413,8 @@ variable [IsOrderedMonoid α] [OrderClosedTopology α]
   let ⟨a, ha, has⟩ := h
   tprod_eq_top_of_eq_top ⟨⟨a, ha⟩, has⟩
 
+/-- See also `Multipliable.tprod_le_tprod_of_inj` for more general result without `CompleteLattice`
+assumption. -/
 @[to_additive]
 theorem tprod_comp_le_tprod_of_injective {f : ι → ι'} (hf : Injective f) (g : ι' → α) :
     ∏' x, g (f x) ≤ ∏' y, g y :=
