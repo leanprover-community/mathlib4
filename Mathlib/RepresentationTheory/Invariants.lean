@@ -211,7 +211,7 @@ end Rep
 
 section FDRep
 
-variable {k : Type u} [Field k] {G : Type u} [Group G]
+variable {k : Type u} [Field k] {G : Type v} [Group G]
 
 /-- The invariants of the representation `linHom X.ρ Y.ρ` correspond to the representation
 homomorphisms from `X` to `Y`. -/

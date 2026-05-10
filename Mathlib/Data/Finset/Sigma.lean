@@ -66,7 +66,7 @@ alias ⟨_, Aesop.sigma_nonempty_of_exists_nonempty⟩ := sigma_nonempty
 theorem sigma_eq_empty : s.sigma t = ∅ ↔ ∀ i ∈ s, t i = ∅ := by
   contrapose!; exact sigma_nonempty
 
-@[mono]
+@[gcongr, mono]
 theorem sigma_mono (hs : s₁ ⊆ s₂) (ht : ∀ i, t₁ i ⊆ t₂ i) : s₁.sigma t₁ ⊆ s₂.sigma t₂ :=
   fun ⟨i, _⟩ h =>
   let ⟨hi, ha⟩ := mem_sigma.1 h

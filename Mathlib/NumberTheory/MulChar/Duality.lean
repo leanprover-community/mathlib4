@@ -133,4 +133,12 @@ theorem mem_subgroupOrderIsoSubgroupMulChar_symm_iff {X : Subgroup (MulChar M R)
     m ∈ (subgroupOrderIsoSubgroupMulChar M R).symm (OrderDual.toDual X) ↔ ∀ χ ∈ X, χ m = 1 := by
   simp [subgroupOrderIsoSubgroupMulChar, ← Units.val_eq_one]
 
+/-- The cardinality of the dual subgroup of `MulChar M R` associated to a subgroup `H` of `Mˣ`
+equals the index of `H` in `Mˣ`. -/
+theorem card_subgroupOrderIsoSubgroupMulChar {H : Subgroup Mˣ} :
+    Nat.card (subgroupOrderIsoSubgroupMulChar M R H).ofDual = Nat.card (Mˣ ⧸ H) := by
+  rw [subgroupOrderIsoSubgroupMulChar, OrderIso.trans_apply, OrderIso.dual_apply,
+    OrderDual.ofDual_toDual, Subgroup.card_mapSubgroup,
+    CommGroup.card_subgroupOrderIsoSubgroupMonoidHom]
+
 end MulChar

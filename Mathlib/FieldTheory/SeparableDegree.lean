@@ -159,7 +159,7 @@ def embEquivOfEquiv (i : E ≃ₐ[F] K) :
     intro x
     have h := isAlgebraic_algebraMap (R := E) (A := K) (i.symm.toAlgHom x)
     rw [show ∀ y : E, (algebraMap E K) y = i.toAlgHom y from fun y ↦ rfl] at h
-    simpa only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_coe, AlgEquiv.apply_symm_apply] using h
+    simpa only [AlgEquiv.coe_algHom, AlgEquiv.apply_symm_apply] using h
   apply AlgEquiv.restrictScalars (R := F) (S := E)
   exact IsAlgClosure.equivOfAlgebraic E K (AlgebraicClosure K) (AlgebraicClosure E)
 

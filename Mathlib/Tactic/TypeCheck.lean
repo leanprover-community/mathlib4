@@ -18,7 +18,7 @@ public meta section
 
 open Lean Elab Meta
 
-/-- Type check the given expression, and trace its type. -/
+/-- `type_check e` type checks the term `e` and prints its type to the infoview. -/
 elab tk:"type_check " e:term : tactic => do
   Tactic.withMainContext do
     let e ← Term.elabTermAndSynthesize e none

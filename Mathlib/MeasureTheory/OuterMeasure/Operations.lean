@@ -225,7 +225,7 @@ theorem map_map {β γ} (f : α → β) (g : β → γ) (m : OuterMeasure α) :
     map g (map f m) = map (g ∘ f) m :=
   ext fun _ => rfl
 
-@[mono]
+@[gcongr, mono]
 theorem map_mono {β} (f : α → β) : Monotone (map f) := fun _ _ h _ => h _
 
 @[simp]
@@ -284,7 +284,7 @@ def comap {β} (f : α → β) : OuterMeasure β →ₗ[ℝ≥0∞] OuterMeasure
 theorem comap_apply {β} (f : α → β) (m : OuterMeasure β) (s : Set α) : comap f m s = m (f '' s) :=
   rfl
 
-@[mono]
+@[gcongr, mono]
 theorem comap_mono {β} (f : α → β) : Monotone (comap f) := fun _ _ h _ => h _
 
 @[simp]

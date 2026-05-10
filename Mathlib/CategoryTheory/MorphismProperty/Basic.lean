@@ -71,24 +71,32 @@ lemma of_eq_top {P : MorphismProperty C} (h : P = ⊤) {X Y : C} (f : X ⟶ Y) :
   simp [h]
 
 @[simp]
+lemma sup_iff (W W' : MorphismProperty C) {X Y : C} (f : X ⟶ Y) : (W ⊔ W') f ↔ W f ∨ W' f :=
+  Iff.rfl
+
+@[simp]
 lemma sSup_iff (S : Set (MorphismProperty C)) {X Y : C} (f : X ⟶ Y) :
-    sSup S f ↔ ∃ (W : S), W.1 f := by
-  dsimp [sSup, iSup]
-  constructor
-  · rintro ⟨_, ⟨⟨_, ⟨⟨_, ⟨_, h⟩, rfl⟩, rfl⟩⟩, rfl⟩, hf⟩
-    exact ⟨⟨_, h⟩, hf⟩
-  · rintro ⟨⟨W, hW⟩, hf⟩
-    exact ⟨_, ⟨⟨_, ⟨_, ⟨⟨W, hW⟩, rfl⟩⟩, rfl⟩, rfl⟩, hf⟩
+    sSup S f ↔ ∃ W ∈ S, W f := by
+  simp +instances [MorphismProperty]
 
 @[simp]
 lemma iSup_iff {ι : Sort*} (W : ι → MorphismProperty C) {X Y : C} (f : X ⟶ Y) :
     iSup W f ↔ ∃ i, W i f := by
-  apply (sSup_iff (Set.range W) f).trans
-  constructor
-  · rintro ⟨⟨_, i, rfl⟩, hf⟩
-    exact ⟨i, hf⟩
-  · rintro ⟨i, hf⟩
-    exact ⟨⟨_, i, rfl⟩, hf⟩
+  simp [← sSup_range]
+
+@[simp]
+lemma inf_iff (W W' : MorphismProperty C) {X Y : C} (f : X ⟶ Y) : (W ⊓ W') f ↔ W f ∧ W' f :=
+  Iff.rfl
+
+@[simp]
+lemma sInf_iff (S : Set (MorphismProperty C)) {X Y : C} (f : X ⟶ Y) :
+    sInf S f ↔ ∀ W ∈ S, W f := by
+  simp +instances [MorphismProperty]
+
+@[simp]
+lemma iInf_iff {ι : Type*} (W : ι → MorphismProperty C) {X Y : C} (f : X ⟶ Y) :
+    iInf W f ↔ ∀ i, W i f := by
+  simp [← sInf_range]
 
 /-- The morphism property in `Cᵒᵖ` associated to a morphism property in `C` -/
 @[simp]
@@ -235,6 +243,21 @@ lemma inverseImage_sInf (F : C ⥤ D) (P : Set (MorphismProperty D)) :
     (sInf P).inverseImage F = ⨅ P' ∈ P, P'.inverseImage F :=
   (gc_strictMap F).u_sInf
 
+@[simp]
+lemma inverseImage_sup (F : C ⥤ D) (P P' : MorphismProperty D) :
+    (P ⊔ P').inverseImage F = P.inverseImage F ⊔ P'.inverseImage F :=
+  rfl
+
+@[simp]
+lemma inverseImage_iSup (F : C ⥤ D) {ι : Type*} (P : ι → MorphismProperty D) :
+    (⨆ i, P i).inverseImage F = ⨆ i, (P i).inverseImage F := by
+  ext; simp
+
+@[simp]
+lemma inverseImage_sSup (F : C ⥤ D) (P : Set (MorphismProperty D)) :
+    (sSup P).inverseImage F = ⨆ P' ∈ P, P'.inverseImage F := by
+  ext; simp
+
 /-- The image (up to isomorphisms) of a `MorphismProperty C` by a functor `C ⥤ D` -/
 def map (P : MorphismProperty C) (F : C ⥤ D) : MorphismProperty D := fun _ _ f =>
   ∃ (X' Y' : C) (f' : X' ⟶ Y') (_ : P f'), Nonempty (Arrow.mk (F.map f') ≅ Arrow.mk f)
@@ -375,9 +398,31 @@ instance RespectsLeft.inf (P₁ P₂ Q : MorphismProperty C) [P₁.RespectsLeft 
     [P₂.RespectsLeft Q] : (P₁ ⊓ P₂).RespectsLeft Q where
   precomp i hi f hf := ⟨precomp i hi f hf.left, precomp i hi f hf.right⟩
 
+lemma RespectsLeft.sInf {W : Set (MorphismProperty C)} {Q : MorphismProperty C}
+    (h : ∀ W' ∈ W, W'.RespectsLeft Q) : (sInf W).RespectsLeft Q where
+  precomp _ hi _ hf := by
+    rw [sInf_iff] at hf ⊢
+    exact fun _ hW' ↦ (h _ hW').precomp _ hi _ (hf _ hW')
+
+instance RespectsLeft.iInf {ι : Type*} {W : ι → MorphismProperty C} {Q : MorphismProperty C}
+    [∀ i, (W i).RespectsLeft Q] : (⨅ i, W i).RespectsLeft Q := by
+  rw [← sInf_range]
+  exact sInf (by simpa)
+
 instance RespectsRight.inf (P₁ P₂ Q : MorphismProperty C) [P₁.RespectsRight Q]
     [P₂.RespectsRight Q] : (P₁ ⊓ P₂).RespectsRight Q where
   postcomp i hi f hf := ⟨postcomp i hi f hf.left, postcomp i hi f hf.right⟩
+
+lemma RespectsRight.sInf {W : Set (MorphismProperty C)} {Q : MorphismProperty C}
+    (h : ∀ W' ∈ W, W'.RespectsRight Q) : (sInf W).RespectsRight Q where
+  postcomp _ hi _ hf := by
+    rw [sInf_iff] at hf ⊢
+    exact fun _ hW' ↦ (h _ hW').postcomp _ hi _ (hf _ hW')
+
+instance RespectsRight.iInf {ι : Type*} {W : ι → MorphismProperty C} {Q : MorphismProperty C}
+    [∀ i, (W i).RespectsRight Q] : (⨅ i, W i).RespectsRight Q := by
+  rw [← sInf_range]
+  exact sInf (by simpa)
 
 end
 
@@ -407,7 +452,20 @@ variable {C}
 it is stable under pre- and postcomposition with isomorphisms. -/
 abbrev RespectsIso (P : MorphismProperty C) : Prop := P.Respects (isomorphisms C)
 
-instance inf (P Q : MorphismProperty C) [P.RespectsIso] [Q.RespectsIso] : (P ⊓ Q).RespectsIso where
+instance RespectsIso.inf (P Q : MorphismProperty C) [P.RespectsIso] [Q.RespectsIso] :
+    (P ⊓ Q).RespectsIso where
+
+@[deprecated (since := "2026-05-04")] alias inf := RespectsIso.inf
+
+lemma RespectsIso.sInf {W : Set (MorphismProperty C)} (h : ∀ W' ∈ W, W'.RespectsIso) :
+    (sInf W).RespectsIso where
+  toRespectsLeft := RespectsLeft.sInf (fun W' hW' ↦ (h W' hW').toRespectsLeft)
+  toRespectsRight := RespectsRight.sInf (fun W' hW' ↦ (h W' hW').toRespectsRight)
+
+instance RespectsIso.iInf {ι : Type*} {W : ι → MorphismProperty C} [∀ i, (W i).RespectsIso] :
+    (⨅ i, W i).RespectsIso := by
+  rw [← sInf_range]
+  exact sInf (by simpa)
 
 lemma RespectsIso.mk (P : MorphismProperty C)
     (hprecomp : ∀ {X Y Z : C} (e : X ≅ Y) (f : Y ⟶ Z) (_ : P f), P (e.hom ≫ f))

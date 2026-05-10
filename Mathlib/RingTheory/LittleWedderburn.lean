@@ -124,8 +124,8 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
   have card_Zx : card Zx = q ^ d := Module.card_eq_pow_finrank
   have h1qd : 1 ≤ q ^ d := by rw [← card_Zx]; exact card_pos
   haveI : IsScalarTower Z Zx D := ⟨fun x y z ↦ mul_assoc _ _ _⟩
-  rw [card_units, card_Zx, Int.natCast_div, Nat.cast_sub h1qd, Nat.cast_sub h1qn, Nat.cast_one,
-      Nat.cast_pow, Nat.cast_pow]
+  rw [card_units, card_Zx]
+  push_cast [h1qd, h1qn]
   apply Int.dvd_div_of_mul_dvd
   have aux : ∀ {k : ℕ}, ((X : ℤ[X]) ^ k - 1).eval ↑q = (q : ℤ) ^ k - 1 := by
     simp only [eval_X, eval_one, eval_pow, eval_sub, forall_const]

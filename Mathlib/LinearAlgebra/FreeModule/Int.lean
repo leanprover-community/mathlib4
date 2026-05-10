@@ -41,7 +41,7 @@ lemma toAddSubgroup_index_eq_pow_mul_prod [Module R M] {N : Submodule R M}
   have snf' : ∀ i, (bN' i : ι → R) = Pi.single (f i) (a i) := by
     intro i
     simp only [map_apply, bN']
-    erw [LinearEquiv.submoduleMap_apply]
+    rw [LinearEquiv.submoduleMap_apply]
     simp only [equivFun_apply, snf, map_smul, repr_self, Finsupp.single_eq_pi_single]
     ext j
     simp [Pi.single_apply]

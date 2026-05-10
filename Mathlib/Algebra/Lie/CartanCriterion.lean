@@ -231,7 +231,7 @@ namespace LieAlgebra
 
 /-- **Cartan's criterion for solvability**: if the Killing form of `L` vanishes on `L × ⁅L, L⁆`,
 then `L` is solvable. -/
-lemma isSolvable_of_killingForm_apply_lie_eq_zero
+public lemma isSolvable_of_killingForm_apply_lie_eq_zero
     (h : ∀ x, ∀ y ∈ derivedSeries R L 1, killingForm R L x y = 0) :
     IsSolvable L := by
   suffices IsSolvable (⊤ : LieIdeal R L) by
@@ -257,7 +257,7 @@ See also `LieAlgebra.hasTrivialRadical_iff_isKilling`. -/
 public instance HasTrivialRadical.instIsKilling [HasTrivialRadical R L] : IsKilling R L where
   killingCompl_top_eq_bot := by simpa using killingCompl_top_le_radical R L
 
-lemma hasTrivialRadical_iff_isKilling [IsPrincipalIdealRing R] :
+public lemma hasTrivialRadical_iff_isKilling [IsPrincipalIdealRing R] :
     HasTrivialRadical R L ↔ IsKilling R L :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
 

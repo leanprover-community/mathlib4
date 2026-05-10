@@ -451,11 +451,11 @@ theorem image_vsub_image {s t : Set P1} (f : P1 →ᵃ[k] P2) :
 /-- The product of two affine maps is an affine map. -/
 @[simps linear]
 def prod (f : P1 →ᵃ[k] P2) (g : P1 →ᵃ[k] P3) : P1 →ᵃ[k] P2 × P3 where
-  toFun := Pi.prod f g
+  toFun := Function.prod f g
   linear := f.linear.prod g.linear
   map_vadd' := by simp
 
-theorem coe_prod (f : P1 →ᵃ[k] P2) (g : P1 →ᵃ[k] P3) : prod f g = Pi.prod f g :=
+theorem coe_prod (f : P1 →ᵃ[k] P2) (g : P1 →ᵃ[k] P3) : prod f g = Function.prod f g :=
   rfl
 
 @[simp]

@@ -183,14 +183,14 @@ theorem mk_mem_carrier (z : HomogeneousLocalization.NumDenSameDeg 𝒜 (.powers 
     IsLocalization.comap_map_of_isPrime_disjoint (.powers f)]
   · rfl
   · infer_instance
-  · exact (disjoint_powers_iff_notMem _ (Ideal.IsPrime.isRadical inferInstance)).mpr x.2
+  · exact (disjoint_powers_iff_notMem_of_isPrime _).mpr x.2
   · exact isUnit_of_invertible _
 
 theorem isPrime_carrier : Ideal.IsPrime (carrier x) := by
   refine Ideal.IsPrime.comap _ (hK := ?_)
   exact IsLocalization.isPrime_of_isPrime_disjoint
     (Submonoid.powers f) _ _ inferInstance
-    ((disjoint_powers_iff_notMem _ (Ideal.IsPrime.isRadical inferInstance)).mpr x.2)
+    ((disjoint_powers_iff_notMem_of_isPrime _).mpr x.2)
 
 variable (f)
 

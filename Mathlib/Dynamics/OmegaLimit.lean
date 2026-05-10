@@ -345,8 +345,7 @@ theorem omegaLimit_image_eq (hf : ∀ t, Tendsto (· + t) f f) (t : τ) : ω f �
 
 theorem omegaLimit_omegaLimit (hf : ∀ t, Tendsto (t + ·) f f) : ω f ϕ (ω f ϕ s) ⊆ ω f ϕ s := by
   simp only [subset_def, mem_omegaLimit_iff_frequently₂, frequently_iff]
-  intro _ h
-  rintro n hn u hu
+  intro _ h n hn u hu
   rcases mem_nhds_iff.mp hn with ⟨o, ho₁, ho₂, ho₃⟩
   rcases h o (IsOpen.mem_nhds ho₂ ho₃) hu with ⟨t, _ht₁, ht₂⟩
   have l₁ : (ω f ϕ s ∩ o).Nonempty :=

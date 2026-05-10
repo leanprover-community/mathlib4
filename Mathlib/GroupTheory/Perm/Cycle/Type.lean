@@ -627,6 +627,10 @@ variable [DecidableEq α] {σ : Perm α}
 theorem cycleType (h : IsThreeCycle σ) : σ.cycleType = {3} :=
   h
 
+theorem ne_one (h : IsThreeCycle σ) : σ ≠ 1 := by
+  rintro rfl
+  simpa using h.cycleType
+
 theorem card_support (h : IsThreeCycle σ) : #σ.support = 3 := by
   rw [← sum_cycleType, h.cycleType, Multiset.sum_singleton]
 

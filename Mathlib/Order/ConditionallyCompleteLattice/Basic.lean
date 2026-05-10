@@ -471,6 +471,14 @@ theorem csInf_eq_csInf_of_forall_exists_le {s t : Set α}
     sInf s = sInf t :=
   csSup_eq_csSup_of_forall_exists_le (α := αᵒᵈ) hs ht
 
+theorem csSup_union_le (s t : Set α) : sSup (s ∪ t) ≤ sSup s ⊔ sSup t := by
+  rcases s.eq_empty_or_nonempty with (rfl | hs)
+  · simp
+  rcases t.eq_empty_or_nonempty with (rfl | ht)
+  · simp
+  by_cases BddAbove (s ∪ t) <;>
+    grind [csSup_union, bddAbove_union, csSup_of_not_bddAbove]
+
 lemma sSup_iUnion_Iic (f : ι → α) : sSup (⋃ (i : ι), Iic (f i)) = ⨆ i, f i := by
   apply csSup_eq_csSup_of_forall_exists_le
   · rintro x ⟨-, ⟨i, rfl⟩, hi⟩
@@ -587,6 +595,21 @@ theorem csSup_le_csSup' {s t : Set α} (h₁ : BddAbove t) (h₂ : s ⊆ t) : sS
   · rw [csSup_empty]
     exact bot_le
   · exact csSup_le_csSup h₁ h h₂
+
+variable {t : Set α}
+
+theorem csSup_union' (hs : BddAbove s := by bddDefault) (ht : BddAbove t := by bddDefault) :
+    sSup (s ∪ t) = sSup s ⊔ sSup t := by
+  rcases s.eq_empty_or_nonempty with (rfl | hne)
+  · simp
+  exact (isLUB_csSup' hs |>.union <| isLUB_csSup' ht).csSup_eq hne.inl
+
+theorem csSup_inter_le' (hs : BddAbove s := by bddDefault) (ht : BddAbove t := by bddDefault) :
+    sSup (s ∩ t) ≤ sSup s ⊓ sSup t :=
+  csSup_le' fun _ hx ↦ le_inf (le_csSup hs hx.left) (le_csSup ht hx.right)
+
+theorem csSup_insert' (hs : BddAbove s := by bddDefault) : sSup (insert a s) = a ⊔ sSup s :=
+  isLUB_csSup' hs |>.insert a |>.csSup_eq <| insert_nonempty a s
 
 end ConditionallyCompleteLinearOrderBot
 

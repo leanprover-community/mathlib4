@@ -147,7 +147,7 @@ variable (f g : CircleDeg1Lift)
 
 protected theorem monotone : Monotone f := f.monotone'
 
-@[mono] theorem mono {x y} (h : x ≤ y) : f x ≤ f y := f.monotone h
+@[gcongr, mono] theorem mono {x y} (h : x ≤ y) : f x ≤ f y := f.monotone h
 
 theorem strictMono_iff_injective : StrictMono f ↔ Injective f :=
   f.monotone.strictMono_iff_injective

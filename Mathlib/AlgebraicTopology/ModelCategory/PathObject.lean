@@ -111,6 +111,28 @@ end
 lemma symm_p [HasBinaryProducts C] :
     P.symm.p = P.p ≫ (prod.braiding A A).hom := by aesop_cat
 
+/-- The pre-path object in a full subcategory of `C` induced by a pre-path object
+in the category `C`. -/
+@[simps]
+def toFullSubcategory {P : ObjectProperty C} {X : P.FullSubcategory} (Q : PrepathObject X.obj)
+    (hQ : P Q.P) :
+    PrepathObject X where
+  P := ⟨Q.P, hQ⟩
+  p₀ := P.homMk Q.p₀
+  p₁ := P.homMk Q.p₁
+  ι := P.homMk Q.ι
+
+/-- The image of a pre-path object by a functor. -/
+@[simps]
+def map {X : C} (P : PrepathObject X) {D : Type*} [Category* D] (F : C ⥤ D) :
+    PrepathObject (F.obj X) where
+  P := F.obj P.P
+  p₀ := F.map P.p₀
+  p₁ := F.map P.p₁
+  ι := F.map P.ι
+  ι_p₀ := by simp [← F.map_comp]
+  ι_p₁ := by simp [← F.map_comp]
+
 end PrepathObject
 
 /-- In a category with weak equivalences, a path object is the

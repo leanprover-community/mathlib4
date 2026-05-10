@@ -577,7 +577,7 @@ lemma nullMeasurableSet_region_between_oc (μ : Measure α)
   · change NullMeasurableSet {p : α × ℝ | p.snd ≤ g p.fst} (μ.prod volume)
     rw [show {p : α × ℝ | p.snd ≤ g p.fst} = {p : α × ℝ | g p.fst < p.snd}ᶜ by
           ext p
-          simp only [mem_setOf_eq, mem_compl_iff, not_lt]]
+          simp]
     exact (nullMeasurableSet_lt (by fun_prop) measurable_snd.aemeasurable).compl
 
 /-- The region between two a.e.-measurable functions on a null-measurable set is null-measurable;
@@ -591,7 +591,7 @@ lemma nullMeasurableSet_region_between_co (μ : Measure α)
   · change NullMeasurableSet {p : α × ℝ | f p.fst ≤ p.snd} (μ.prod volume)
     rw [show {p : α × ℝ | f p.fst ≤ p.snd} = {p : α × ℝ | p.snd < f p.fst}ᶜ by
           ext p
-          simp only [mem_setOf_eq, mem_compl_iff, not_lt]]
+          simp]
     exact (nullMeasurableSet_lt measurable_snd.aemeasurable (by fun_prop)).compl
   · exact nullMeasurableSet_lt measurable_snd.aemeasurable (by fun_prop)
 
@@ -606,12 +606,12 @@ lemma nullMeasurableSet_region_between_cc (μ : Measure α)
   · change NullMeasurableSet {p : α × ℝ | f p.fst ≤ p.snd} (μ.prod volume)
     rw [show {p : α × ℝ | f p.fst ≤ p.snd} = {p : α × ℝ | p.snd < f p.fst}ᶜ by
           ext p
-          simp only [mem_setOf_eq, mem_compl_iff, not_lt]]
+          simp]
     exact (nullMeasurableSet_lt measurable_snd.aemeasurable (by fun_prop)).compl
   · change NullMeasurableSet {p : α × ℝ | p.snd ≤ g p.fst} (μ.prod volume)
     rw [show {p : α × ℝ | p.snd ≤ g p.fst} = {p : α × ℝ | g p.fst < p.snd}ᶜ by
           ext p
-          simp only [mem_setOf_eq, mem_compl_iff, not_lt]]
+          simp]
     exact (nullMeasurableSet_lt (by fun_prop) measurable_snd.aemeasurable).compl
 
 end regionBetween

@@ -545,7 +545,7 @@ def giGenerateFrom (X : Type*) : GaloisInsertion generateFrom (@toPlots X) where
 
 instance : CompleteLattice (DiffeologicalSpace X) := (giGenerateFrom X).liftCompleteLattice
 
-@[mono]
+@[gcongr, mono]
 theorem generateFrom_mono {g₁ g₂ : Set ((n : ℕ) × (𝔼ⁿ → X))} (h : g₁ ⊆ g₂) :
     generateFrom g₁ ≤ generateFrom g₂ :=
   (gc_generateFrom _).monotone_l h

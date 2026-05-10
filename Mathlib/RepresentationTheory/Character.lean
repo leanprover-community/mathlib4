@@ -37,7 +37,7 @@ defined in `Mathlib/CategoryTheory/Simple.lean`
 
 noncomputable section
 
-universe u
+universe u v
 
 open CategoryTheory LinearMap CategoryTheory.MonoidalCategory Representation Module
 
@@ -47,7 +47,7 @@ namespace FDRep
 
 section Monoid
 
-variable {G : Type u} [Monoid G]
+variable {G : Type v} [Monoid G]
 
 /-- The character of a representation `V : FDRep k G` is the function associating to `g : G` the
 trace of the linear map `V.ρ g`. -/
@@ -76,7 +76,7 @@ end Monoid
 
 section Group
 
-variable {G : Type u} [Group G]
+variable {G : Type v} [Group G]
 
 /-- The character of a representation is constant on conjugacy classes. -/
 @[simp]
@@ -119,7 +119,7 @@ end Group
 
 section Orthogonality
 
-variable {G : Type u} [Group G] [IsAlgClosed k]
+variable {G : Type v} [Group G] [IsAlgClosed k]
 
 variable [Fintype G] [Invertible (Fintype.card G : k)]
 

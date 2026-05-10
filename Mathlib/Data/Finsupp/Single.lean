@@ -98,8 +98,10 @@ theorem single_of_single_apply (a a' : α) (b : M) :
   classical
   grind
 
-theorem support_single_ne_zero (a : α) (hb : b ≠ 0) : (single a b).support = {a} :=
+@[simp] lemma support_single (a : α) (hb : b ≠ 0) : (single a b).support = {a} :=
   if_neg hb
+
+@[deprecated (since := "2026-05-05")] alias support_single_ne_zero := support_single
 
 theorem support_single_subset : (single a b).support ⊆ {a} := by
   classical
@@ -160,11 +162,11 @@ lemma apply_surjective (a : α) : Surjective fun f : α →₀ M ↦ f a :=
   RightInverse.surjective fun _ ↦ single_eq_same
 
 theorem support_single_ne_bot (i : α) (h : b ≠ 0) : (single i b).support ≠ ⊥ := by
-  simpa only [support_single_ne_zero _ h] using singleton_ne_empty _
+  simpa only [support_single _ h] using singleton_ne_empty _
 
 theorem support_single_disjoint {b' : M} (hb : b ≠ 0) (hb' : b' ≠ 0) {i j : α} :
     Disjoint (single i b).support (single j b').support ↔ i ≠ j := by
-  rw [support_single_ne_zero _ hb, support_single_ne_zero _ hb', disjoint_singleton]
+  rw [support_single _ hb, support_single _ hb', disjoint_singleton]
 
 @[simp]
 theorem single_eq_zero : single a b = 0 ↔ b = 0 := by
@@ -206,14 +208,14 @@ theorem support_eq_singleton {f : α →₀ M} {a : α} :
   ⟨fun h =>
     ⟨mem_support_iff.1 <| h.symm ▸ Finset.mem_singleton_self a,
       eq_single_iff.2 ⟨subset_of_eq h, rfl⟩⟩,
-    fun h => h.2.symm ▸ support_single_ne_zero _ h.1⟩
+    fun h => h.2.symm ▸ support_single _ h.1⟩
 
 theorem support_eq_singleton' {f : α →₀ M} {a : α} :
     f.support = {a} ↔ ∃ b ≠ 0, f = single a b :=
   ⟨fun h =>
     let h := support_eq_singleton.1 h
     ⟨_, h.1, h.2⟩,
-    fun ⟨_b, hb, hf⟩ => hf.symm ▸ support_single_ne_zero _ hb⟩
+    fun ⟨_b, hb, hf⟩ => hf.symm ▸ support_single _ hb⟩
 
 theorem card_support_eq_one {f : α →₀ M} :
     #f.support = 1 ↔ ∃ a, f a ≠ 0 ∧ f = single a (f a) := by
@@ -415,7 +417,7 @@ theorem single_of_embDomain_single (l : α →₀ M) (f : α ↪ β) (a : β) (b
     (h : l.embDomain f = single a b) : ∃ x, l = single x b ∧ f x = a := by
   classical
     have h_map_support : Finset.map f l.support = {a} := by
-      rw [← support_embDomain, h, support_single_ne_zero _ hb]
+      rw [← support_embDomain, h, support_single _ hb]
     have ha : a ∈ Finset.map f l.support := by simp only [h_map_support, Finset.mem_singleton]
     rcases Finset.mem_map.1 ha with ⟨c, _hc₁, hc₂⟩
     use c

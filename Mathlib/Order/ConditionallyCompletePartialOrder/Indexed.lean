@@ -216,7 +216,7 @@ theorem l_ciSup_set_of_directedOn (gc : GaloisConnection l u) {s : Set γ} {f : 
   haveI := hne.to_subtype
   rw [image_eq_range] at hf
   refine gc.l_ciSup_of_directed ?_ hf
-  simpa [directedOn_range, ← comp_def, range_comp]
+  simpa [← directedOn_range, ← comp_def, range_comp]
 
 end Sup
 

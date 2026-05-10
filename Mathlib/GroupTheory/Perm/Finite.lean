@@ -266,7 +266,7 @@ lemma support_closure_subset_union (S : Set (Perm α)) :
     ∀ a ∈ closure S, (a.support : Set α) ⊆ ⋃ b ∈ S, b.support := by
   apply closure_induction
   · exact fun x hx ↦ Set.subset_iUnion₂_of_subset x hx subset_rfl
-  · simp only [support_one, Finset.coe_empty, Set.empty_subset]
+  · simp
   · intro a b ha hb hc hd
     refine (Finset.coe_subset.mpr (support_mul_le a b)).trans ?_
     rw [Finset.sup_eq_union, Finset.coe_union, Set.union_subset_iff]
