@@ -158,7 +158,7 @@ theorem exp_subst_log [IsAddTorsionFree A] : (exp A).subst (log A) = 1 + X := by
   simpa using eq_of_deriv_mul_one_add_X_eq_self hderiv hconst
 
 variable (A) in
-theorem log_subst_exp_sub_one [IsAddTorsionFree A] :
+theorem subst_log_exp_sub_one [IsAddTorsionFree A] :
     (log A).subst (exp A - 1) = X := by
   apply derivative.ext
   · rw [derivative_X, derivative_subst (hg := HasSubst.exp_sub_one), deriv_log, map_sub,
