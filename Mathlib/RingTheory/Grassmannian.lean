@@ -136,6 +136,7 @@ variable (g : B →ₐ[R] C)
 theorem map_comp (N : G(k, A ⊗[R] M; A)) :
     map (g.comp f) N = map g (map f N) := by
   algebraize [f.toRingHom, g.toRingHom, (g.comp f).toRingHom]
+  -- FIXME: `algebraize` doesn't generate this instance, even though it seems like it should
   let : IsScalarTower A B C := by apply IsScalarTower.of_algebraMap_eq'; rfl
   let fAB := N.toSubmodule.mkQ.baseChange B ∘ₗ
     (cancelBaseChange R A B B M).symm.toLinearMap
