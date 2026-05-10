@@ -20,12 +20,12 @@ public section
 
 namespace ENat
 
+@[continuity]
 theorem continuous_toENNReal : Continuous toENNReal := by
   refine OrderTopology.continuous_iff.mpr fun a ↦ ⟨?_, ?_⟩
-  · have : toENNReal ⁻¹' Set.Ioi a = Set.Ioi ⌊a⌋ₑ := by ext; simp
-    simpa [this] using isOpen_Ioi
+  · simpa using isOpen_Ioi
   · have : toENNReal ⁻¹' Set.Iio a = Set.Iio ⌈a⌉ₑ := by ext; simp
-    simpa [this] using isOpen_Iio
+    simpa using isOpen_Iio
 
 theorem isClosedEmbedding_toENNReal : Topology.IsClosedEmbedding toENNReal :=
   continuous_toENNReal.isClosedEmbedding toENNReal_strictMono.injective
