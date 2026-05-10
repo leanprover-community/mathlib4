@@ -153,8 +153,8 @@ theorem subst_exp_log [IsAddTorsionFree A] : (exp A).subst (log A) = 1 + X := by
     rw [derivative_subst (hg := HasSubst.log), derivative_exp, deriv_log, mul_assoc,
       geom_mul_one_add_X, mul_one]
   have hconst : constantCoeff ((exp A).subst (log A)) = 1 := by
-    change MvPowerSeries.constantCoeff _ = _
-    rw [constantCoeff_subst_of_constantCoeff_zero constantCoeff_log, constantCoeff_exp, map_one]
+    rw [constantCoeff_eq, constantCoeff_subst_of_constantCoeff_zero constantCoeff_log,
+      constantCoeff_exp, map_one]
   simpa using eq_of_deriv_mul_one_add_X_eq_self hderiv hconst
 
 variable (A) in
@@ -170,10 +170,9 @@ theorem subst_log_exp_sub_one [IsAddTorsionFree A] :
       coe_substAlgHom, subst_X HasSubst.exp_sub_one] at h
     have hone_add : (1 : A⟦X⟧) + (exp A - 1) = exp A := by ring
     rwa [hone_add] at h
-  · change MvPowerSeries.constantCoeff _ = _
-    have hconst : constantCoeff (exp A - 1 : A⟦X⟧) = 0 := by simp [constantCoeff_exp]
-    rw [constantCoeff_subst_of_constantCoeff_zero hconst, constantCoeff_log, map_zero,
-      constantCoeff_X]
+  · have hconst : constantCoeff (exp A - 1 : A⟦X⟧) = 0 := by simp [constantCoeff_exp]
+    rw [constantCoeff_eq, constantCoeff_subst_of_constantCoeff_zero hconst, constantCoeff_log,
+      map_zero, constantCoeff_X]
 
 variable (A) in
 theorem logOf_exp [IsAddTorsionFree A] : logOf (exp A) = X :=
