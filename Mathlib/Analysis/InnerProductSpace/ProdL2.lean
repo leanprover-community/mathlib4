@@ -165,7 +165,8 @@ theorem coe_quotientEquivOrthogonal_symm :
     (K.quotientEquivOfIsCompl Kᗮ K.isCompl_orthogonal_of_hasOrthogonalProjection).symm :=
   rfl
 
-@[simp] lemma toLinearEquiv_quotientEquivOrthogonal :
+@[simp]
+lemma toLinearEquiv_quotientEquivOrthogonal :
     (quotientEquivOrthogonal K).toLinearEquiv =
       K.quotientEquivOfIsCompl _ K.isCompl_orthogonal_of_hasOrthogonalProjection :=
   rfl
