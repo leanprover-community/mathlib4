@@ -385,6 +385,50 @@ lemma mk' {P X Y Z : C} {fst : P ⟶ X} {snd : P ⟶ Y} {f : X ⟶ Z} {g : Y ⟶
         (h₁.trans (l s).choose_spec.1.symm)
         (h₂.trans (l s).choose_spec.2.symm))⟩
 
+/--
+The main objects in this lemma fit in the following commutative diagram:
+```
+Pfg -------> X <------- Pfi
+ |           |           |
+ |           f           |
+ ↓           ↓           ↓
+ Y --- g --> S <-- i --- Z
+  \                     /
+    --              --
+       \          /
+         --  R --
+```
+Suppose the two squares are cartesian, then `Pfg ×[Y] R` is the pullback of
+`Pfi ⟶ Z` and `R ⟶ Z`.
+-/
+lemma paste_twist_right {X Y Z S : C} {f : X ⟶ S} {g : Y ⟶ S} {i : Z ⟶ S}
+    {Pfg : C} {fstfg : Pfg ⟶ X} {sndfg : Pfg ⟶ Y} (hfg : IsPullback fstfg sndfg f g)
+    {Pfi : C} {fstfi : Pfi ⟶ X} {sndfi : Pfi ⟶ Z} (hfi : IsPullback fstfi sndfi f i)
+    {R : C} (rY : R ⟶ Y) (rZ : R ⟶ Z) (hrw : rY ≫ g = rZ ≫ i)
+    {Psndfgr : C} (fstsndfgr : Psndfgr ⟶ Pfg) (sndsndfgr : Psndfgr ⟶ R)
+    (hsndfgr : IsPullback fstsndfgr sndsndfgr sndfg rY)
+    {t : Psndfgr ⟶ Pfi} (ht₁ : t ≫ fstfi = fstsndfgr ≫ fstfg) (ht₂ : t ≫ sndfi = sndsndfgr ≫ rZ) :
+    IsPullback t sndsndfgr sndfi rZ := by
+  refine .of_right ?_ ht₂ hfi
+  rw [← hrw, ht₁]
+  exact .paste_horiz hsndfgr hfg
+
+set_option backward.isDefEq.respectTransparency false in
+/-- This is a `HasPullback` variant of `CategoryTheory.IsPullback.paste_twist_right` -/
+lemma map_fst_comp_fst_snd_comp_fst {X Y Z U S : C} (f : X ⟶ S) (g : Y ⟶ S) (i : Z ⟶ S)
+    [HasPullback i g] (h : U ⟶ pullback i g) [HasPullback f g] [HasPullback (pullback.snd f g)
+    (h ≫ pullback.snd i g)] [HasPullback f i] :
+    IsPullback
+      (pullback.map (pullback.snd f g) (h ≫ pullback.snd i g) f i (pullback.fst f g)
+        (h ≫ pullback.fst i g) g
+        pullback.condition.symm (by simp [pullback.condition]))
+      (pullback.snd (pullback.snd f g) (h ≫ pullback.snd i g))
+      (pullback.snd f i)
+      (h ≫ pullback.fst i g) :=
+  paste_twist_right (.of_hasPullback f g) (.of_hasPullback f i) (h ≫ pullback.snd _ _)
+    (h ≫ pullback.fst _ _) (by simp [pullback.condition]) _ _ (.of_hasPullback _ _) (by simp)
+    (by simp)
+
 end IsPullback
 namespace IsPushout
 
