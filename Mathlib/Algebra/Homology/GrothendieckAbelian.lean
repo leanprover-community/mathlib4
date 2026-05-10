@@ -19,7 +19,7 @@ category (with `IsGrothendieckAbelian.{w} C`), the category
 
 -/
 
-@[expose] public section
+public section
 
 universe w w' t v u
 

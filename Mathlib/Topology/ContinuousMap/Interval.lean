@@ -95,8 +95,8 @@ theorem tendsto_concat {ι : Type*} {p : Filter ι} {F : ι → C(Icc a b, E)} {
   rw [tendsto_nhds_compactOpen] at hf hg ⊢
   rintro K hK U hU hfgU
   have h : b ∈ Icc a c := ⟨Fact.out, Fact.out⟩
-  let K₁ : Set (Icc a b) := projIccCM '' (Subtype.val '' (K ∩ Iic ⟨b, h⟩))
-  let K₂ : Set (Icc b c) := projIccCM '' (Subtype.val '' (K ∩ Ici ⟨b, h⟩))
+  let K₁ : Set (Icc a b) := projIccCM '' Subtype.val '' (K ∩ Iic ⟨b, h⟩)
+  let K₂ : Set (Icc b c) := projIccCM '' Subtype.val '' (K ∩ Ici ⟨b, h⟩)
   have hK₁ : IsCompact K₁ :=
     hK.inter_right isClosed_Iic |>.image continuous_subtype_val |>.image projIccCM.continuous
   have hK₂ : IsCompact K₂ :=

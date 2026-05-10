@@ -40,7 +40,7 @@ namespace Function
 variable (f : M → N) (g : N → P) (g' : P → P')
 
 /-- The maps `f` and `g` form an exact pair: `g y = 1` iff `y` belongs to the image of `f`. -/
-@[to_additive Exact /-- The maps `f` and `g` form an exact pair:
+@[to_additive /-- The maps `f` and `g` form an exact pair:
   `g y = 0` iff `y` belongs to the image of `f`. -/]
 def MulExact [One P] : Prop := ∀ y, g y = 1 ↔ y ∈ Set.range f
 
