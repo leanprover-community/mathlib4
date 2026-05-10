@@ -5,6 +5,7 @@ Authors: Kim Morrison
 -/
 import NoExpose.Cli
 import NoExpose.Collect
+import NoExpose.Edit
 import NoExpose.Paths
 import NoExpose.Report
 
@@ -35,6 +36,4 @@ unsafe def main (args : List String) : IO UInt32 := do
     return 0
   | .ok (.collect a) => runCollect a
   | .ok (.report a) => runReport a
-  | .ok (.edit _) => do
-    IO.eprintln "no_expose edit: not yet implemented"
-    return 1
+  | .ok (.edit a) => runEdit a
