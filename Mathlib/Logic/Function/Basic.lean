@@ -359,7 +359,7 @@ theorem exists_fixed_point_of_surjective {α β : Type*} (f : α → α → β)
 to `Set α`. -/
 theorem cantor_surjective {α} (f : α → Set α) : ¬Surjective f := fun hf ↦
   let ⟨a, ha⟩ := hf {a | a ∉ f a}
-  not_iff_self <| .of_eq <| .symm <| congrArg (a ∈ ·) ha
+  iff_not_self <| .of_eq <| congrArg (a ∈ ·) ha
 
 /-- **Cantor's diagonal argument** implies that there are no injective functions from `Set α`
 to `α`. -/
