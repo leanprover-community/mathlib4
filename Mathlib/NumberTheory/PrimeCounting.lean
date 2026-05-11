@@ -127,7 +127,7 @@ def primesLE (n : ℕ) : Finset ℕ := primesBelow (n + 1)
 
 lemma primesBelow_eq_filter_range (n : ℕ) : primesBelow n = filter Nat.Prime (range n) := rfl
 
-lemma primesLE_eq_filter_range (n : ℕ) : primesLE n = filter Nat.Prime (range (n + 1)) := by rfl
+lemma primesLE_eq_filter_range (n : ℕ) : primesLE n = filter Nat.Prime (range (n + 1)) := rfl
 
 @[simp]
 lemma primesBelow_zero : primesBelow 0 = ∅ := by
