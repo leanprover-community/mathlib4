@@ -325,6 +325,9 @@ theorem eval_mul_X_pow {k : ℕ} : (p * X ^ k).eval x = p.eval x * x ^ k := by
   | zero => simp
   | succ k ih => simp [pow_succ, ← mul_assoc, ih]
 
+theorem eval_mul_C_of_commute (h : Commute a x) : (p * C a).eval x = p.eval x * a := by
+  rw [eval, eval₂_mul_C'] <;> simp [h]
+
 /-- Polynomial evaluation commutes with `List.sum`. -/
 theorem eval_listSum (l : List R[X]) (x : R) : eval x l.sum = (l.map (eval x)).sum :=
   eval₂_list_sum ..
