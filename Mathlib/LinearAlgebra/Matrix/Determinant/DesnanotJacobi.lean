@@ -202,16 +202,12 @@ theorem desnanot_jacobi (M : Matrix (Fin (n + 2)) (Fin (n + 2)) R) :
   let X := mvPolynomialX (Fin (n + 2)) (Fin (n + 2)) ℤ
   let φ : MvPolynomial (Fin (n + 2) × Fin (n + 2)) ℤ →ₐ[ℤ] R :=
     MvPolynomial.aeval fun p ↦ M p.1 p.2
-  -- These helpers push `φ` through `det` on `X` and on each submatrix shape used below.
-  have h_det_inner : ∀ (r c : Fin n → Fin (n + 2)),
+  -- Push `φ` through `det` on any submatrix of `X`.
+  have h_det_sub : ∀ {m : ℕ} (r c : Fin m → Fin (n + 2)),
       φ (X.submatrix r c).det = (M.submatrix r c).det := fun r c ↦ by
     rw [AlgHom.map_det]; congr 1; ext i j
     simp [φ, X, AlgHom.mapMatrix_apply, mvPolynomialX_apply]
-  have h_det_corner : ∀ (r c : Fin (n + 1) → Fin (n + 2)),
-      φ (X.submatrix r c).det = (M.submatrix r c).det := fun r c ↦ by
-    rw [AlgHom.map_det]; congr 1; ext i j
-    simp [φ, X, AlgHom.mapMatrix_apply, mvPolynomialX_apply]
-  simpa [map_sub, map_mul, h_det_inner, h_det_corner,
+  simpa [map_sub, map_mul, h_det_sub,
     show φ X.det = M.det from by rw [AlgHom.map_det, mvPolynomialX_mapMatrix_aeval]]
     using congr_arg φ
       (mul_left_cancel₀ (det_mvPolynomialX_ne_zero (Fin (n + 2)) ℤ)
