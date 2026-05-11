@@ -1293,6 +1293,5 @@ theorem comp_assoc (r : FormalMultilinearSeries 𝕜 G H) (q : FormalMultilinear
   refine congr_arg v (Fin.ext ?_)
   dsimp [Composition.embedding]
   rw [← add_assoc, ← sizeUpTo_sizeUpTo_add _ _ hi1 hj1]
-  rfl
 
 end FormalMultilinearSeries
