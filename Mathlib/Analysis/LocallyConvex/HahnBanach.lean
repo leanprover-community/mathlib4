@@ -56,7 +56,7 @@ variable [Module 𝕜 E] [ContinuousSMul 𝕜 E] [LocallyConvexSpace 𝕜 E]
 
 /-- **Hahn-Banach theorem** for continuous linear functions on locally convex spaces over an
 `RCLike` field. -/
-theorem exists_extension (p : Submodule 𝕜 E) (f : StrongDual 𝕜 p) :
+theorem StrongDual.exists_extension (p : Submodule 𝕜 E) (f : StrongDual 𝕜 p) :
     ∃ g : StrongDual 𝕜 E, ∀ x : p, g x = f x := by
   letI : Module ℝ E := .restrictScalars ℝ 𝕜 E
   letI : IsScalarTower ℝ 𝕜 E := .restrictScalars _ _ _
