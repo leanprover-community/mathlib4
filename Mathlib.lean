@@ -6038,6 +6038,7 @@ public import Mathlib.Order.Monotone.Odd
 public import Mathlib.Order.Monotone.Union
 public import Mathlib.Order.Nat
 public import Mathlib.Order.NonemptyFiniteChains
+public import Mathlib.Order.Northcott
 public import Mathlib.Order.Notation
 public import Mathlib.Order.Nucleus
 public import Mathlib.Order.OmegaCompletePartialOrder
