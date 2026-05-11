@@ -168,40 +168,64 @@ only handles two shapes:
 Anything else (multi-attribute `@[expose, simp]`, splits across lines
 in unusual ways) is skipped with a diagnostic. -/
 
+/-- Why an individual-strategy strip was skipped. -/
+inductive SkipReason where
+  /-- No `@[expose]` on or directly above the decl line — likely
+  exposed via an enclosing `public meta section` or similar. -/
+  | noAttribute
+  /-- `@[expose]` is present but bundled with other attributes
+  (e.g. `@[expose, simp]`); v1 doesn't unbundle. -/
+  | multiAttribute
+  deriving Repr, BEq
+
+def SkipReason.toString : SkipReason → String
+  | .noAttribute    => "no `@[expose]` attribute found (likely inside a `public meta section`)"
+  | .multiAttribute => "`@[expose]` bundled with other attributes; unbundling not implemented"
+
 /-- Strip `@[expose]` from a single-attribute occurrence around `line`
-(0-based index into `lines`). Returns `(modifiedLines?, reason)`
-where `reason` is a short tag for logging skipped cases. -/
+(0-based index into `lines`). Returns `Except SkipReason (Array String)`:
+the updated lines on success, or the reason we couldn't edit. -/
 private def stripIndividualOne (lines : Array String) (lineIdx : Nat) :
-    Option (Array String) := Id.run do
-  if lineIdx ≥ lines.size then return none
+    Except SkipReason (Array String) := Id.run do
+  if lineIdx ≥ lines.size then return .error .noAttribute
   let line := lines[lineIdx]!
   let trimmed := line.trimAscii.toString
   -- Case A: `@[expose] decl ...` on the same line, single attribute.
   if trimmed.startsWith "@[expose] " then
     let leading := line.takeWhile Char.isWhitespace |>.toString
     let rest := (line.drop (leading.length + "@[expose] ".length)).toString
-    return some (lines.set! lineIdx (leading ++ rest))
+    return .ok (lines.set! lineIdx (leading ++ rest))
   -- Case B: previous line is exactly `@[expose]` (with optional whitespace).
   if lineIdx > 0 then
     let prev := lines[lineIdx - 1]!
     if prev.trimAscii.toString == "@[expose]" then
-      return some (lines.eraseIdx! (lineIdx - 1))
-  return none
+      return .ok (lines.eraseIdx! (lineIdx - 1))
+  -- Case C: `@[expose, ...]` or `@[..., expose, ...]` on the decl line
+  -- or directly above — present but bundled.
+  let containsExpose (s : String) : Bool :=
+    s.startsWith "@[expose," || s.startsWith "@[expose ," ||
+    (s.splitOn ", expose").length > 1 || (s.splitOn ",expose").length > 1
+  if containsExpose trimmed then return .error .multiAttribute
+  if lineIdx > 0 then
+    let prevTrim := (lines[lineIdx - 1]!).trimAscii.toString
+    if prevTrim.startsWith "@[" && containsExpose prevTrim then
+      return .error .multiAttribute
+  return .error .noAttribute
 
 /-- Apply the individual strategy. Returns the new contents and a list
-of decl lines that we couldn't safely edit (caller logs them). -/
+of `(line, reason)` pairs for decls we couldn't safely edit. -/
 def applyIndividualStrategy (text : String) (safe : Array Nat) :
-    String × Array Nat := Id.run do
+    String × Array (Nat × SkipReason) := Id.run do
   let mut lines := (text.splitOn "\n").toArray
-  let mut skipped : Array Nat := #[]
+  let mut skipped : Array (Nat × SkipReason) := #[]
   -- Process highest line first so index shifts don't matter.
   let sortedDesc := safe.qsort (· > ·)
   for declLine in sortedDesc do
     if declLine == 0 then continue
     let idx := declLine - 1
     match stripIndividualOne lines idx with
-    | some lines' => lines := lines'
-    | none        => skipped := skipped.push declLine
+    | .ok lines'  => lines := lines'
+    | .error r    => skipped := skipped.push (declLine, r)
   return (String.intercalate "\n" lines.toList, skipped)
 
 /-! ## Safety checks -/
@@ -423,7 +447,7 @@ unsafe def editOneFile (file : FilePath) (records : Array ReportRecord)
   let neededDownstreamLines : Array Nat := dedupe (records
     |>.filter (Verdict.classify · == .neededDownstream) |>.map (·.line))
   let strategy := chooseStrategy originalText
-  let (newText, skipped) : String × Array Nat ← do
+  let (newText, skipped) : String × Array (Nat × SkipReason) ← do
     match strategy with
     | .section_ => do
       match applySectionStrategy originalText neededDownstreamLines with
@@ -433,11 +457,11 @@ unsafe def editOneFile (file : FilePath) (records : Array ReportRecord)
           no `@[expose] public section` line found; skipping."
         pure (originalText, #[])
     | .individual => pure (applyIndividualStrategy originalText safeLines)
+  for (ln, reason) in skipped do
+    IO.eprintln s!"  {file}:{ln}: {reason.toString}"
   if newText == originalText then
     IO.println s!"{file}: no changes."
     return false
-  for s in skipped do
-    IO.eprintln s!"  skipped {file}:{s} (multi-attribute or unknown shape)"
   let diff := renderUnifiedDiff file.toString originalText newText
   -- Parse-validate (differential): the edited text must not introduce
   -- new syntax errors over the original. False positives from
