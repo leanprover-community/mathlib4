@@ -339,8 +339,7 @@ lemma projectiveDimension_X₂_le_sup :
   refine le_of_forall_ge (fun N ↦ ?_)
   induction N with
   | bot =>
-    simpa [projectiveDimension_eq_bot_iff] using
-      fun h1 h3 ↦ hS.1.isZero_of_both_zeros (h1.eq_zero_of_src _) (h3.eq_zero_of_tgt _)
+    simpa [projectiveDimension_eq_bot_iff] using fun h1 h3 ↦ hS.1.isZero_of_both_isZero h1 h3
   | coe N =>
     induction N with
     | top => simp

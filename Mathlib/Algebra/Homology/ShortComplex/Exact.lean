@@ -261,6 +261,10 @@ lemma Exact.isZero_of_both_zeros (ex : S.Exact) (hf : S.f = 0) (hg : S.g = 0) :
     IsZero S.X₂ :=
   (ShortComplex.HomologyData.ofZeros S hf hg).exact_iff.1 ex
 
+lemma Exact.isZero_of_both_isZero (ex : S.Exact) (hX₁ : IsZero S.X₁) (hX₃ : IsZero S.X₃) :
+    IsZero S.X₂ :=
+  ex.isZero_of_both_zeros (hX₁.eq_zero_of_src _) (hX₃.eq_zero_of_tgt _)
+
 end
 
 section Preadditive
