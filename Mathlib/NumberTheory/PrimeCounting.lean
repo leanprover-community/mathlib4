@@ -119,7 +119,6 @@ lemma primeCounting_zero : primeCounting 0 = 0 :=
 lemma primeCounting_one : primeCounting 1 = 0 :=
   primeCounting_eq_zero_iff.mpr le_rfl
 
-
 /-- `primesBelow n` is the set of primes less than `n` as a `Finset`. -/
 def primesBelow (n : ℕ) : Finset ℕ := {p ∈ Finset.range n | p.Prime}
 
