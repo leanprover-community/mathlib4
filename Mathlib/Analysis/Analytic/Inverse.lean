@@ -390,7 +390,7 @@ theorem radius_right_inv_pos_of_radius_pos_aux1 (n : ℕ) (p : ℕ → ℝ) (hp 
       rw [sum_sigma']
       gcongr
       · intro x _ _
-        exact prod_nonneg fun j _ => mul_nonneg hr (mul_nonneg (pow_nonneg ha _) (hp _))
+        exact prod_nonneg fun j _ ↦ (by positivity [ha, hp (x.snd.blocksFun j)])
       rintro ⟨k, c⟩ hd
       simp only [Set.mem_toFinset (s := {c | 1 < Composition.length c}), mem_Ico, mem_sigma,
         Set.mem_setOf_eq] at hd
@@ -513,7 +513,7 @@ theorem radius_rightInv_pos_of_radius_pos
     apply Nat.le_induction
     · simp only [S]
       rw [Ico_eq_empty_of_le (le_refl 1), sum_empty]
-      exact mul_nonneg (add_nonneg (norm_nonneg _) zero_le_one) apos.le
+      positivity
     · intro n one_le_n hn
       have In : 2 ≤ n + 1 := by lia
       have rSn : r * S n ≤ 1 / 2 :=
@@ -594,7 +594,7 @@ lemma HasFPowerSeriesAt.tendsto_partialSum_prod_of_comp
           apply mul_le_mul_of_nonneg_left _ (norm_nonneg _)
           rw [Finset.prod_const, Finset.card_fin]
           gcongr
-          rw [Metric.mem_eball, edist_zero_eq_enorm] at hy
+          rw [Metric.mem_eball, edist_zero_right] at hy
           have := le_trans (le_of_lt hy) (min_le_right _ _)
           rwa [enorm_le_coe, ← NNReal.coe_le_coe, coe_nnnorm] at this
     apply HasSum.of_sigma (fun b ↦ hasSum_fintype _) ?_ cau

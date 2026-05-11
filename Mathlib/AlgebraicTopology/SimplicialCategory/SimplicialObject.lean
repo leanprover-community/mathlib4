@@ -21,7 +21,7 @@ sets is a simplicial category.
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

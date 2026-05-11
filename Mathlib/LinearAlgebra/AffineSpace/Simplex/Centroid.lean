@@ -28,7 +28,7 @@ of the simplex.
 * `centroid` is the centroid of a simplex, defined via `Finset.univ.centroid` on its vertices.
 
 * `faceOppositeCentroid` is the centroid of the facet obtained by removing one vertex from the
-simplex.
+  simplex.
 
 * `median` is the line connecting a vertex to the corresponding faceOppositeCentroid.
 
@@ -303,14 +303,14 @@ theorem faceOppositeCentroid_vsub_faceOppositeCentroid [CharZero k] (s : Affine.
   rw [faceOppositeCentroid_eq_sum_vsub_vadd s i, faceOppositeCentroid_eq_sum_vsub_vadd s j,
     vadd_vsub_vadd_comm _ _ (s.points i) (s.points j)]
   have h1 (i : Fin (n + 1)) : ∑ x, (s.points x -ᵥ s.points i) =
-      ∑ x, (s.points x -ᵥ s.points 0 - (s.points i-ᵥ s.points 0)) := by
+      ∑ x, (s.points x -ᵥ s.points 0 - (s.points i -ᵥ s.points 0)) := by
     apply sum_congr rfl
     simp
   simp_rw [h1 i, h1 j, sum_sub_distrib]
   rw [smul_sub, smul_sub, sub_sub_sub_cancel_left, ← smul_sub, ← sum_sub_distrib,
     vsub_sub_vsub_cancel_right, sum_const, card_univ, Fintype.card_fin]
   have : (s.points i -ᵥ s.points j) = -(s.points j -ᵥ s.points i) := by simp
-  rw [this, ← sub_eq_add_neg, add_smul, sub_eq_iff_eq_add , one_smul, smul_add, add_comm]
+  rw [this, ← sub_eq_add_neg, add_smul, sub_eq_iff_eq_add, one_smul, smul_add, add_comm]
   have : (n : k)⁻¹ • n • (s.points j -ᵥ s.points i) =
       (n : k)⁻¹ • (n : k) • (s.points j -ᵥ s.points i) := by
     norm_cast0
@@ -558,7 +558,7 @@ theorem medial_map {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [Affi
   ext i
   simp [medial_points]
 
-open Pointwise in
+open scoped Pointwise in
 @[simp]
 theorem affineSpan_range_medial [CharZero k] (s : Simplex k P n) :
     affineSpan k (Set.range (s.medial.points)) = affineSpan k (Set.range (s.points)) := by

@@ -113,6 +113,7 @@ theorem LinearEquiv.isIsotypicOfType_iff_type (e : N ≃ₗ[R] S) :
 theorem LinearEquiv.isIsotypic_iff (e : M ≃ₗ[R] N) : IsIsotypic R M ↔ IsIsotypic R N :=
   ⟨(·.of_injective _ e.symm.injective), (·.of_injective _ e.injective)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isIsotypicOfType_submodule_iff {N : Submodule R M} :
     IsIsotypicOfType R N S ↔ ∀ m ≤ N, [IsSimpleModule R m] → Nonempty (m ≃ₗ[R] S) := by
   rw [Subtype.forall', ← (Submodule.MapSubtype.orderIso N).forall_congr_right]
@@ -120,6 +121,7 @@ theorem isIsotypicOfType_submodule_iff {N : Submodule R M} :
   simp_rw [Submodule.MapSubtype.orderIso, Equiv.coe_fn_mk, ← (e _).isSimpleModule_iff]
   exact forall₂_congr fun m _ ↦ ⟨fun ⟨e'⟩ ↦ ⟨(e m).symm.trans e'⟩, fun ⟨e'⟩ ↦ ⟨(e m).trans e'⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isIsotypic_submodule_iff {N : Submodule R M} :
     IsIsotypic R N ↔ ∀ m ≤ N, [IsSimpleModule R m] → IsIsotypicOfType R N m := by
   rw [Subtype.forall', ← (Submodule.MapSubtype.orderIso N).forall_congr_right]
@@ -219,7 +221,7 @@ theorem Submodule.le_linearEquiv_of_sSup_eq_top [IsSemisimpleModule R M]
   have := IsSimpleModule.nontrivial R N
   have ⟨_, compl⟩ := exists_isCompl N
   have ⟨m, hm, ne⟩ := exists_ne_zero_of_sSup_eq_top (ne_zero_of_surjective
-    (N.linearProjOfIsCompl_surjective compl)) _ hs
+    (projectionOnto_surjective compl)) _ hs
   have ⟨S, ⟨e⟩⟩ := linearEquiv_of_ne_zero ne
   exact ⟨m, hm, _, m.map_subtype_le S, ⟨e.trans (S.equivMapOfInjective _ m.subtype_injective)⟩⟩
 

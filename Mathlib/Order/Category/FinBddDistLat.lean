@@ -100,7 +100,7 @@ lemma coe_comp {X Y Z : FinBddDistLat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : 
 
 @[simp]
 lemma forget_map {X Y : FinBddDistLat} (f : X ⟶ Y) :
-    (forget FinBddDistLat).map f = f := rfl
+    (forget FinBddDistLat).map f = (f : _ → _) := rfl
 
 @[ext]
 lemma ext {X Y : FinBddDistLat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=

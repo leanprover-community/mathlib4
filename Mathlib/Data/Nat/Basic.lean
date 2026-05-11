@@ -20,7 +20,7 @@ depending on Mathlib definitions.
 See note [foundational algebra order theory].
 -/
 
-@[expose] public section
+public section
 
 /- We don't want to import the algebraic hierarchy in this file. -/
 assert_not_exists Monoid
@@ -38,7 +38,7 @@ instance instLinearOrder : LinearOrder ℕ where
   le_antisymm := @Nat.le_antisymm
   le_total := @Nat.le_total
   lt := Nat.lt
-  lt_iff_le_not_ge := @Nat.lt_iff_le_not_le
+  lt_iff_le_not_ge := @Nat.lt_iff_le_and_not_ge
   toDecidableLT := inferInstance
   toDecidableLE := inferInstance
   toDecidableEq := inferInstance

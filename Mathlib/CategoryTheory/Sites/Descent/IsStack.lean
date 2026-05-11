@@ -29,7 +29,7 @@ equivalences of categories.
 
 -/
 
-@[expose] public section
+public section
 
 universe t t' v' v u' u
 
