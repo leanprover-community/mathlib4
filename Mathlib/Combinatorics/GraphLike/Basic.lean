@@ -35,7 +35,7 @@ public section
 It has vertex and edge sets so subgraph relations can be handled within the same type.
 The "darts" terminology comes from combinatorial maps, and they are also known as "half-edges" or
 "bonds." They represents the ways an edge can be traversed: if `d` is a dart with `edge d = e`,
-`src d = u` and `tgt d = v` then `d` is walk of length 1 from `u` to `v` with edge `e`. In an
+`source d = u` and `target d = v` then `d` is walk of length 1 from `u` to `v` with edge `e`. In an
 undirected graph, each edge is composed of two darts.
 `Adj` is the adjacency relation of a graph-like structure. Two vertices, `u` & `v`, are adjacent iff
 there is a dart between them and therefore there is an edge that can be traversed from `u` to `v`.
@@ -48,18 +48,18 @@ class GraphLike (V D E : outParam Type*) (Gr : Type*) where
   /-- The set of edges of a graph-like structure. -/
   edges : Gr → Set E
   /-- The source vertex of a dart. -/
-  src : Gr → D → V
+  source : Gr → D → V
   /-- The target vertex of a dart. -/
-  tgt : Gr → D → V
+  target : Gr → D → V
   /-- The edge of a dart. -/
   edge : Gr → D → E
-  src_mem_of_darts : ∀ ⦃G d⦄, d ∈ darts G → src G d ∈ verts G
-  tgt_mem_of_darts : ∀ ⦃G d⦄, d ∈ darts G → tgt G d ∈ verts G
+  source_mem_of_darts : ∀ ⦃G d⦄, d ∈ darts G → source G d ∈ verts G
+  target_mem_of_darts : ∀ ⦃G d⦄, d ∈ darts G → target G d ∈ verts G
   edge_mem_of_darts : ∀ ⦃G d⦄, d ∈ darts G → edge G d ∈ edges G
   /-- The adjacency relation of a graph-like structure. -/
-  Adj : Gr → V → V → Prop := fun G u v ↦ ∃ d ∈ darts G, src G d = u ∧ tgt G d = v
+  Adj : Gr → V → V → Prop := fun G u v ↦ ∃ d ∈ darts G, source G d = u ∧ target G d = v
   /-- Two vertices are adjacent if and only if there is a dart between them. -/
-  exists_darts_iff_adj : ∀ ⦃G u v⦄, (∃ d ∈ darts G, src G d = u ∧ tgt G d = v) ↔ Adj G u v
+  exists_darts_iff_adj : ∀ ⦃G u v⦄, (∃ d ∈ darts G, source G d = u ∧ target G d = v) ↔ Adj G u v
 
 namespace GraphLike
 
@@ -80,55 +80,55 @@ variable [GraphLike V D E Gr]
 
 @[ext] theorem darts_ext (d₁ d₂ : D(G)) (h : d₁.val = d₂.val) : d₁ = d₂ := Subtype.ext h
 
-lemma adj_src_tgt (hd : d ∈ D(G)) : Adj G (src G d) (tgt G d) :=
+lemma adj_source_target (hd : d ∈ D(G)) : Adj G (source G d) (target G d) :=
   exists_darts_iff_adj.mp ⟨d, hd, rfl, rfl⟩
 
 lemma Adj.left_mem (h : Adj G v w) : v ∈ V(G) := by
   rw [← exists_darts_iff_adj] at h
   obtain ⟨d, hd, rfl, rfl⟩ := h
-  exact src_mem_of_darts hd
+  exact source_mem_of_darts hd
 
 lemma Adj.right_mem (h : Adj G v w) : w ∈ V(G) := by
   rw [← exists_darts_iff_adj] at h
   obtain ⟨d, hd, rfl, rfl⟩ := h
-  exact tgt_mem_of_darts hd
+  exact target_mem_of_darts hd
 
 /-- Convert a dart to a pair of vertices. -/
-@[expose] def toProd (d : D(G)) : V × V := (src G d.val, tgt G d.val)
+@[expose] def toProd (d : D(G)) : V × V := (source G d.val, target G d.val)
 
 /-- The step from `u` to `v` is a dart from `u` to `v`. -/
 @[expose]
 def Step (G : Gr) [GraphLike V D E Gr] (u v : V) : Type _ :=
-  {d : D // d ∈ D(G) ∧ src G d = u ∧ tgt G d = v}
+  {d : D // d ∈ D(G) ∧ source G d = u ∧ target G d = v}
 
 instance [DecidableEq D] : DecidableEq (Step G u v) := Subtype.instDecidableEq
 
 @[simp]
-lemma Step.src (h : Step G u v) : src G h.val = u := by
+lemma Step.source (h : Step G u v) : source G h.val = u := by
   obtain ⟨d, hd, hu, hv⟩ := h
   exact hu
 
 @[simp]
-lemma Step.tgt (h : Step G u v) : tgt G h.val = v := by
+lemma Step.target (h : Step G u v) : target G h.val = v := by
   obtain ⟨d, hd, hu, hv⟩ := h
   exact hv
 
-lemma Step.src_mem (h : Step G u v) : u ∈ V(G) := by
+lemma Step.source_mem (h : Step G u v) : u ∈ V(G) := by
   obtain ⟨d, hd, rfl, rfl⟩ := h
-  exact src_mem_of_darts hd
+  exact source_mem_of_darts hd
 
-lemma Step.tgt_mem (h : Step G u v) : v ∈ V(G) := by
+lemma Step.target_mem (h : Step G u v) : v ∈ V(G) := by
   obtain ⟨d, hd, rfl, rfl⟩ := h
-  exact tgt_mem_of_darts hd
+  exact target_mem_of_darts hd
 
-lemma Step.src_eq_of_val_eq {s₁ : Step G u v} {s₂ : Step G u' v'} (h : s₁.val = s₂.val) :
+lemma Step.source_eq_of_val_eq {s₁ : Step G u v} {s₂ : Step G u' v'} (h : s₁.val = s₂.val) :
     u = u' := by
   obtain ⟨d₁, hd₁, rfl, rfl⟩ := s₁
   obtain ⟨d₂, hd₂, rfl, rfl⟩ := s₂
   obtain rfl : d₁ = d₂ := h
   rfl
 
-lemma Step.tgt_eq_of_val_eq {s₁ : Step G u v} {s₂ : Step G u' v'} (h : s₁.val = s₂.val) :
+lemma Step.target_eq_of_val_eq {s₁ : Step G u v} {s₂ : Step G u' v'} (h : s₁.val = s₂.val) :
     v = v' := by
   obtain ⟨d₁, hd₁, rfl, rfl⟩ := s₁
   obtain ⟨d₂, hd₂, rfl, rfl⟩ := s₂
@@ -152,11 +152,11 @@ lemma Step.ext_HEq {u' v'} {s₁ : Step G u v} {s₂ : Step G u' v'} (h : s₁.v
 
 lemma Step.val_todart (h : Step G u v) : h.todart.val = h.val := by simp [Step.todart]
 
-lemma Step.src_todart (s : Step G u v) : GraphLike.src G s.todart.val = u := by
+lemma Step.source_todart (s : Step G u v) : GraphLike.source G s.todart.val = u := by
   obtain ⟨d, hd, rfl, rfl⟩ := s
   rfl
 
-lemma Step.tgt_todart (s : Step G u v) : GraphLike.tgt G s.todart.val = v := by
+lemma Step.target_todart (s : Step G u v) : GraphLike.target G s.todart.val = v := by
   obtain ⟨d, hd, rfl, rfl⟩ := s
   rfl
 
@@ -172,7 +172,7 @@ noncomputable def Adj.toStep (h : Adj G u v) : Step G u v :=
 lemma Adj.adj_toStep (h : Adj G u v) : (h.toStep).adj = h := rfl
 
 /-- Convert a dart to a step. -/
-@[expose] def dartStep (d : D(G)) : Step G (src G d.val) (tgt G d.val) :=
+@[expose] def dartStep (d : D(G)) : Step G (source G d.val) (target G d.val) :=
   ⟨d.val, d.prop, rfl, rfl⟩
 
 @[simp]
@@ -180,6 +180,6 @@ lemma val_dartStep (d : D(G)) : (dartStep d).val = d.val := by simp [dartStep]
 
 /-- Two darts are said to be adjacent if they could be consecutive darts in a walk -- that is, the
 first dart's target is equal to the second dart's source. -/
-@[expose] def DartAdj (d d' : D(G)) : Prop := tgt G d.val = src G d'.val
+@[expose] def DartAdj (d d' : D(G)) : Prop := target G d.val = source G d'.val
 
 end GraphLike.GraphLike
