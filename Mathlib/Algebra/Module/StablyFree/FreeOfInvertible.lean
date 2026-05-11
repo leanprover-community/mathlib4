@@ -17,14 +17,12 @@ public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 This file proves that a finite stably free module `M` is free if it is invertible.
 -/
 
-public section
-
 variable {R : Type*} [CommRing R] {M N : Type*} [AddCommGroup M] [Module R M]
   [AddCommGroup N] [Module R N] {n : ℕ}
 
 /-- The map linear in the first argument and alternating in the remaining arguments that
 underlies the cofactor expansion along the `M`-summand of `M × N`. -/
-private noncomputable def exteriorPower.cofactorLinear (bN : Module.Basis (Fin n) R N) :
+noncomputable def exteriorPower.cofactorLinear (bN : Module.Basis (Fin n) R N) :
     M × N →ₗ[R] (M × N) [⋀^Fin n]→ₗ[R] M where
   toFun x := (bN.det.compLinearMap (LinearMap.snd R M N)).smulRight x.1
   map_add' x y := AlternatingMap.ext fun _ ↦ by simp
@@ -32,11 +30,11 @@ private noncomputable def exteriorPower.cofactorLinear (bN : Module.Basis (Fin n
 
 /-- The linear map from the top exterior power of `M × N` to `M` induced by the cofactor
 expansion along the `M`-summand. -/
-private noncomputable def exteriorPower.cofactorToLeft (bN : Module.Basis (Fin n) R N) :
+noncomputable def exteriorPower.cofactorToLeft (bN : Module.Basis (Fin n) R N) :
     ⋀[R]^(n + 1) (M × N) →ₗ[R] M :=
   exteriorPower.alternatingMapLinearEquiv (AlternatingMap.alternatizeUncurryFin (cofactorLinear bN))
 
-private lemma exteriorPower.cofactorToLeft_ιMulti_cons (bN : Module.Basis (Fin n) R N) (m : M) :
+lemma exteriorPower.cofactorToLeft_ιMulti_cons (bN : Module.Basis (Fin n) R N) (m : M) :
     cofactorToLeft bN (exteriorPower.ιMulti R (n + 1) (Fin.cons (m, 0) fun i ↦ (0, bN i))) = m := by
   simp [cofactorToLeft, cofactorLinear, AlternatingMap.alternatizeUncurryFin_apply,
     Fin.sum_univ_succ, Module.Basis.det_self]
@@ -44,8 +42,8 @@ private lemma exteriorPower.cofactorToLeft_ιMulti_cons (bN : Module.Basis (Fin 
 variable (R M) in
 /-- Let `R` be a commutative ring, `M` be a finite stably free `R`-module.
   Then `M` is free if it is invertible. -/
-theorem Module.free_of_isStablyFree_of_invertible [IsStablyFree R M] [Module.Invertible R M] :
-    Module.Free R M := by
+public theorem Module.free_of_isStablyFree_of_invertible
+    [IsStablyFree R M] [Module.Invertible R M] : Module.Free R M := by
   rcases subsingleton_or_nontrivial R with _ | _
   · exact Module.Free.of_subsingleton' R M
   obtain ⟨N, _, _, _, _, _⟩ := IsStablyFree.exist_free_prod R M
