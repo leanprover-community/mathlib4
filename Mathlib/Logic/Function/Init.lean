@@ -71,17 +71,17 @@ may depend on `i`. -/
 @[inline] def prod {ι} {α β : ι → Type*} (f : ∀ i, α i) (g : ∀ i, β i) :
     (i : ι) → α i × β i := fun i => Prod.mk (f i) (g i)
 
+@[inherit_doc] infixr:95 " ×ᶠ " => prod
+
 /-- The first component of a map into a product. -/
-@[inline] def fstComp {ι} {α β : ι → Type*} (h : (i : ι) → α i × β i) :
-    ∀ i, α i := (h ·|>.1)
+@[inline] def fstComp {ι} {α β : ι → Type*} (h : (i : ι) → α i × β i) := (h ·|>.1)
+
+@[inherit_doc] postfix:max "₍₁₎" => fstComp
 
 /-- The second component of a map into a product. -/
-@[inline] def sndComp {ι} {α β : ι → Type*} (h : (i : ι) → α i × β i) (i : ι) :
-    β i := (h i).2
+@[inline] def sndComp {ι} {α β : ι → Type*} (h : (i : ι) → α i × β i) := (h ·|>.2)
 
-@[inherit_doc] infixr:95 " ×ᶠ " => prod
-@[inherit_doc] notation:max x:max "₍₁₎" => fstComp x
-@[inherit_doc] notation:max x:max "₍₂₎" => sndComp x
+@[inherit_doc] postfix:max "₍₂₎" => sndComp
 
 section
 
