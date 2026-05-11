@@ -101,7 +101,8 @@ theorem theta_eq_sum_primesLE (x : ℝ) :
     θ x = ∑ p ∈ primesLE ⌊x⌋₊, log p := by
   simp [theta_eq_sum_Icc, primesLE_eq_filter_Icc_zero]
 
-theorem theta_eq_sum_primesLE_log (n : ℕ) : θ n = ∑ p ∈ primesLE n, log p := by simp [theta_eq_sum_primesLE]
+theorem theta_eq_sum_primesLE_log (n : ℕ) : θ n = ∑ p ∈ primesLE n, log p := by
+  simp [theta_eq_sum_primesLE]
 
 theorem psi_eq_zero_of_lt_two {x : ℝ} (hx : x < 2) : ψ x = 0 := by
   apply sum_eq_zero fun n hn ↦ ?_
@@ -182,17 +183,13 @@ Basic facts about the least common multiple of the first `n` natural numbers
 /-- Least common multiple of `Icc 1 n`. -/
 def lcmUpto (n : ℕ) : ℕ := (Icc 1 n).lcm id
 
-end Nat
-
-namespace Chebyshev
-
 theorem lcmUpto_ne_zero (n : ℕ) : lcmUpto n ≠ 0 := by simp [lcmUpto]
 
 theorem lcmUpto_pos (n : ℕ) : 0 < lcmUpto n := pos_of_ne_zero <| lcmUpto_ne_zero n
 
 theorem factorization_lcmUpto (n : ℕ) {p : ℕ} (hp : p.Prime) :
     (lcmUpto n).factorization p = p.log n := by
-  rw [lcmUpto, factorization_lcm (fun _ _ ↦ by grind)]
+  rw [lcmUpto, Finset.factorization_lcm (fun _ _ ↦ by grind)]
   have := hp.one_lt
   refine le_antisymm ?_ ?_
   · simp only [Finset.sup_le_iff, mem_Icc, and_imp]
@@ -232,8 +229,13 @@ theorem lcmUpto_eq_prod_pow_log (n : ℕ) : lcmUpto n = ∏ p ∈ primesLE n, p 
   exact Finset.prod_congr rfl fun p hp ↦ congrArg (p ^ ·) <|
     factorization_lcmUpto n <| prime_of_mem_primesLE hp
 
-theorem lcmUpto_eq_prod_pow_floor (n : ℕ) : lcmUpto n = ∏ p ∈ primesLE n, p ^ ⌊log n / log p⌋₊ := by
+theorem lcmUpto_eq_prod_pow_floor (n : ℕ) :
+    lcmUpto n = ∏ p ∈ primesLE n, p ^ ⌊Real.log n / Real.log p⌋₊ := by
   simp_rw [lcmUpto_eq_prod_pow_log, ← natFloor_logb_natCast, ← log_div_log]
+
+end Nat
+
+namespace Chebyshev
 
 theorem psi_eq_sum_mul_log_prime (n : ℕ) : ψ n = ∑ p ∈ primesLE n, p.log n * log p := calc
   _ = ∑ m ∈ Icc 1 n, Λ m := by simp [psi, ← Icc_add_one_left_eq_Ioc]
