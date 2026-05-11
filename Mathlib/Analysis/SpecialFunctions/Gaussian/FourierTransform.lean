@@ -97,7 +97,7 @@ theorem verticalIntegral_norm_le (hb : 0 < b.re) (c : ℝ) {T : ℝ} (hT : 0 ≤
       rw [mul_assoc]
   · intro y hy
     have absy : |y| ≤ |c| := by
-      simpa using Set.abs_sub_left_of_mem_uIcc (Set.uIoc_subset_uIcc hy)
+      simpa using abs_sub_left_of_mem_uIcc (uIoc_subset_uIcc hy)
     rw [norm_mul, norm_I, one_mul, two_mul]
     refine (norm_sub_le _ _).trans (add_le_add (vert_norm_bound hT absy) ?_)
     rw [← abs_neg y] at absy
