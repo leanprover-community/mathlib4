@@ -46,7 +46,6 @@ These give logarithmically weighted sums of primes and prime powers.
 - `Chebyshev.pi_le_log4_mul_div` gives an explicit upper bound on the prime counting function.
 - `Chebyshev.pi_ge` gives an explicit lower bound on the prime counting function.
 
-
 ## Notation
 
 We introduce the scoped notations `θ` and `ψ` in the Chebyshev namespace for the Chebyshev
@@ -87,7 +86,8 @@ theorem theta_nonneg (x : ℝ) : 0 ≤ θ x := sum_nonneg fun _ _ ↦ log_nonneg
 theorem theta_pos {x : ℝ} (hy : 2 ≤ x) : 0 < θ x := by
   refine sum_pos (fun n hn ↦ log_pos ?_) ⟨2, ?_⟩
   · simp only [mem_filter] at hn; exact_mod_cast hn.2.one_lt
-  · simpa using ⟨(le_floor_iff (by grind : 0 ≤ x)).2 hy, prime_two⟩
+  · have : 0 ≤ x := by grind
+    simpa using ⟨(le_floor_iff this).2 hy, prime_two⟩
 
 theorem psi_eq_sum_Icc (x : ℝ) :
     ψ x = ∑ n ∈ Icc 0 ⌊x⌋₊, Λ n := by
@@ -99,9 +99,9 @@ theorem theta_eq_sum_Icc (x : ℝ) :
 
 theorem theta_eq_sum_primesLE (x : ℝ) :
     θ x = ∑ p ∈ primesLE ⌊x⌋₊, log p := by
-    simp [theta_eq_sum_Icc, primesLE_eq_filter_Icc_zero]
+  simp [theta_eq_sum_Icc, primesLE_eq_filter_Icc_zero]
 
-theorem theta_eq_sum_log (n : ℕ) : θ n = ∑ p ∈ primesLE n, log p := by simp [theta_eq_sum_primesLE]
+theorem theta_eq_sum_primesLE_log (n : ℕ) : θ n = ∑ p ∈ primesLE n, log p := by simp [theta_eq_sum_primesLE]
 
 theorem psi_eq_zero_of_lt_two {x : ℝ} (hx : x < 2) : ψ x = 0 := by
   apply sum_eq_zero fun n hn ↦ ?_
@@ -179,7 +179,7 @@ namespace Nat
 Basic facts about the least common multiple of the first `n` natural numbers
 -/
 
-/-- Least common multiple of $\{1, \dots, n\}$. -/
+/-- Least common multiple of `Icc 1 n`. -/
 def lcmUpto (n : ℕ) : ℕ := (Icc 1 n).lcm id
 
 end Nat
@@ -275,12 +275,12 @@ theorem psi_le_primeCounting_mul_log' (x : ℝ) : ψ x ≤ (π ⌊x⌋₊) * log
   · exact_mod_cast lt_of_add_one_le <| (one_le_floor_iff x).mpr h
   · exact floor_le (by positivity)
 
-/-- $\psi(n) = \log(\mathrm{lcm}(1, \dots, n))$. -/
+/-- `ψ n` is the logarithm of `lcmUpto n`. -/
 theorem psi_eq_log_lcmUpto (n : ℕ) : ψ n = log (lcmUpto n) := by
   rw [lcmUpto_eq_prod_pow_log, cast_prod, log_prod (by simp +contextual)]
   simp [psi_eq_sum_mul_log_prime]
 
-/-- $\mathrm{lcm}(1, \dots, n)$ is divisible by $\binom{n}{k}$ for all $k \le n$. -/
+/-- `lcmUpto n` is divisible by `choose n k` for all `k ≤ n` -/
 theorem choose_dvd_lcmUpto {n k : ℕ} (hkn : k ≤ n) : choose n k ∣ lcmUpto n := by
   rw [← factorization_prime_le_iff_dvd (choose_ne_zero hkn) (lcmUpto_ne_zero n)]
   intro p hp
@@ -659,7 +659,7 @@ theorem pi_ge (n : ℕ) : (n * log 2 - log (n + 1)) / log n ≤ π n := by
 
 theorem pi_ge' {x : ℝ} (hx : 1 < x) :
     ((x - 1) * log 2 - log (x + 2)) / log x ≤ π ⌊x⌋₊ := by
-  grw [div_le_iff₀ (log_pos hx), ←psi_le_primeCounting_mul_log', psi_ge']
+  grw [div_le_iff₀ (log_pos hx), ← psi_le_primeCounting_mul_log', psi_ge']
   positivity
 
 theorem theta_le_pi_mul_log (n : ℕ) : θ n ≤ (π n) * log n :=
@@ -679,7 +679,7 @@ private theorem pi_mul_log_sqrt_le {x : ℝ} (hx : 1 ≤ x) :
     grind
   _ ≤ _ := by
     grw [← theta_le_log4_mul_x (by positivity)]
-    rw [sum_add_distrib, theta_eq_theta_coe_floor, theta_eq_sum_log, ← sum_filter]
+    rw [sum_add_distrib, theta_eq_theta_coe_floor, theta_eq_sum_primesLE_log, ← sum_filter]
     simp only [sum_const, nsmul_eq_mul]
     gcongr
     · exact log_nonneg (one_le_sqrt.mpr hx)

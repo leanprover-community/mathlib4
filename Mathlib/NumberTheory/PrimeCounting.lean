@@ -63,6 +63,8 @@ def primeCounting (n : ℕ) : ℕ :=
 
 open scoped Nat.Prime
 
+theorem primeCounting_eq_primeCounting'_succ (n : ℕ) : π n = π' (n + 1) := rfl
+
 @[simp]
 theorem primeCounting_sub_one (n : ℕ) : π (n - 1) = π' n := by
   cases n <;> rfl
@@ -119,6 +121,10 @@ lemma primeCounting_zero : primeCounting 0 = 0 :=
 lemma primeCounting_one : primeCounting 1 = 0 :=
   primeCounting_eq_zero_iff.mpr le_rfl
 
+section PrimeSets
+
+variable {p k n : ℕ}
+
 /-- `primesBelow n` is the set of primes less than `n` as a `Finset`. -/
 def primesBelow (n : ℕ) : Finset ℕ := {p ∈ Finset.range n | p.Prime}
 
@@ -139,7 +145,7 @@ lemma primesBelow_one : primesBelow 1 = ∅ := by
 
 @[simp]
 lemma primesBelow_two : primesBelow 2 = ∅ := by
-  grind [primesBelow_eq_filter_range, not_prime_zero, not_prime_one]
+  decide
 
 @[simp]
 lemma primesLE_zero : primesLE 0 = ∅ := primesBelow_one
@@ -150,33 +156,33 @@ lemma primesLE_one : primesLE 1 = ∅ := primesBelow_two
 theorem primesBelow_eq_primesLE_sub_one (n : ℕ) : primesBelow n = primesLE (n - 1) := by
   cases n <;> simp [primesLE]
 
-lemma mem_primesBelow {k n : ℕ} :
+lemma mem_primesBelow :
     n ∈ primesBelow k ↔ n < k ∧ n.Prime := by simp [primesBelow]
 
-lemma mem_primesLE {p n : ℕ} : p ∈ primesLE n ↔ p ≤ n ∧ p.Prime := by
+lemma mem_primesLE : p ∈ primesLE n ↔ p ≤ n ∧ p.Prime := by
   simp [primesLE, mem_primesBelow]
 
-lemma prime_of_mem_primesBelow {p n : ℕ} (h : p ∈ n.primesBelow) : p.Prime :=
+lemma prime_of_mem_primesBelow (h : p ∈ n.primesBelow) : p.Prime :=
   (Finset.mem_filter.mp h).2
 
-lemma prime_of_mem_primesLE {p n : ℕ} (hp : p ∈ primesLE n) : p.Prime :=
+lemma prime_of_mem_primesLE (hp : p ∈ primesLE n) : p.Prime :=
   prime_of_mem_primesBelow hp
 
-lemma lt_of_mem_primesBelow {p n : ℕ} (h : p ∈ n.primesBelow) : p < n :=
+lemma lt_of_mem_primesBelow (h : p ∈ n.primesBelow) : p < n :=
   Finset.mem_range.mp <| Finset.mem_of_mem_filter p h
 
-lemma le_of_mem_primesLE {p n : ℕ} (hp : p ∈ primesLE n) : p ≤ n := (mem_primesLE.mp hp).1
+lemma le_of_mem_primesLE (hp : p ∈ primesLE n) : p ≤ n := (mem_primesLE.mp hp).1
 
-lemma one_lt_of_mem_primesBelow {p n : ℕ} (hp : p ∈ primesBelow n) : 1 < p :=
+lemma one_lt_of_mem_primesBelow (hp : p ∈ primesBelow n) : 1 < p :=
   (prime_of_mem_primesBelow hp).one_lt
 
-lemma one_lt_of_mem_primesLE {p n : ℕ} (hp : p ∈ primesLE n) : 1 < p :=
+lemma one_lt_of_mem_primesLE (hp : p ∈ primesLE n) : 1 < p :=
   one_lt_of_mem_primesBelow hp
 
-lemma two_le_of_mem_primesBelow {p n : ℕ} (hp : p ∈ primesBelow n) : 2 ≤ p :=
+lemma two_le_of_mem_primesBelow (hp : p ∈ primesBelow n) : 2 ≤ p :=
   (prime_of_mem_primesBelow hp).two_le
 
-lemma two_le_of_mem_primesLE {p n : ℕ} (hp : p ∈ primesLE n) : 2 ≤ p :=
+lemma two_le_of_mem_primesLE (hp : p ∈ primesLE n) : 2 ≤ p :=
   two_le_of_mem_primesBelow hp
 
 lemma primesBelow_eq_filter_Ico_zero (n : ℕ) : primesBelow n = filter Nat.Prime (Ico 0 n) := by
@@ -225,6 +231,8 @@ lemma notMem_primesBelow (n : ℕ) : n ∉ primesBelow n :=
 lemma notMem_primesLE (n : ℕ) : n + 1 ∉ primesLE n :=
   notMem_primesBelow (n + 1)
 
+end PrimeSets
+
 /-- The cardinality of the finset `primesBelow n` equals the counting function
 `primeCounting'` at `n`. -/
 theorem primesBelow_card_eq_primeCounting' (n : ℕ) : #n.primesBelow = π' n := by
@@ -256,8 +264,8 @@ theorem primeCounting'_add_le {a k : ℕ} (h0 : a ≠ 0) (h1 : a < k) (n : ℕ) 
       exact Ico_filter_coprime_le k n h0
 
 theorem primeCounting_add_le {a k : ℕ} (h0 : a ≠ 0) (h1 : a ≤ k) (n : ℕ) :
-    π (k + n) ≤ π k + Nat.totient a * (n / a + 1) := by
-  unfold primeCounting
+    π (k + n) ≤ π k + totient a * (n / a + 1) := by
+  rw [primeCounting_eq_primeCounting'_succ]
   convert primeCounting'_add_le h0 (Order.lt_add_one_iff.mpr h1) n using 2
   omega
 
