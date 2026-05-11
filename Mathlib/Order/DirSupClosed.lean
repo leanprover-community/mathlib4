@@ -179,24 +179,16 @@ theorem DirSupClosedOn.union (hDL : IsLowerSet D)
   obtain ⟨hds, hn⟩ := h
   by_cases had : a ∈ lowerBounds (upperBounds (d ∩ s))
   · exact .inl <| hs (hDL inter_subset_left hD) inter_subset_right hn hds
-      ⟨fun b hb ↦ ha.1 hb.1, had⟩
-  · simp only [lowerBounds, mem_setOf_eq, not_forall] at had
-    obtain ⟨b, hb, hb'⟩ := had
-    have key : {x ∈ d | ¬ x ≤ b} ⊆ d ∩ t := fun a ⟨had, hab⟩ ↦
-      ⟨had, (hdu had).resolve_left fun has ↦ hab <| hb ⟨had, has⟩⟩
-    obtain ⟨w, hw⟩ : {x ∈ d | ¬ x ≤ b}.Nonempty := by
-      contrapose! hb'
-      apply ha.2
-      aesop
-    refine Or.inr <| ht (hDL inter_subset_left hD) (key.trans inter_subset_right)
-      ⟨w, hw⟩ (fun x hx y hy ↦ ?_) ?_
-    · obtain ⟨z, hz, hz'⟩ := hd₁ _ (.inr (key hx)) _ (.inr (key hy))
-      exact ⟨z, ⟨⟨hdst ▸ hz, mt hz'.1.trans hx.2⟩, hz'⟩⟩
-    · refine ⟨fun x hx ↦ ha.1 hx.1, fun x hx ↦ ha.2 fun y hy ↦ ?_⟩
-      by_cases hyb : y ≤ b
-      · obtain ⟨z, hz, hxz, hyz⟩ := hd₁ _ (hdst ▸ hy) _ (.inr (key hw))
-        exact hxz.trans (hx ⟨hdst ▸ hz, fun hzb ↦ hw.2 (hyz.trans hzb)⟩)
-      exact hx ⟨hy, hyb⟩
+      ⟨upperBounds_mono_set inter_subset_left ha.1, had⟩
+  · obtain ⟨b, hb, hb'⟩ : ∃ b ∈ upperBounds (d ∩ s), ¬ a ≤ b := by
+      simpa [lowerBounds] using had
+    have hdd : DirectedOn (· ≤ ·) d := hdst ▸ hd₁
+    have hcof : IsCofinalFor d (d \ Iic b) :=
+      hdd.isCofinalFor_sdiff_Iic fun h ↦ hb' (ha.2 h)
+    have hsub : d \ Iic b ⊆ d ∩ t := by grind [mem_upperBounds]
+    exact .inr <| ht (hDL diff_subset hD) (hsub.trans inter_subset_right)
+      (hcof.nonempty (hdst ▸ hd₀)) (hdd.of_isCofinalFor diff_subset hcof)
+      (ha.of_isCofinalFor diff_subset hcof)
 
 theorem DirSupInaccOn.inter (hDL : IsLowerSet D)
     (hs : DirSupInaccOn D s) (ht : DirSupInaccOn D t) : DirSupInaccOn D (s ∩ t) := by
@@ -232,14 +224,11 @@ theorem dirSupInaccOn_iff_inter_subset (hDL : IsLowerSet D) :
     choose f hf using H
     have := ht₀.to_subtype
     have hft : range f ⊆ t := by grind
-    apply (h (hDL hft hD) (range_nonempty f) _ _ has).ne_empty
-    · aesop
-    · intro a ha b hb
-      obtain ⟨c, hc, _, _⟩ := ht₁ _ (hft ha) _ (hft hb)
-      have := hf ⟨c, hc⟩
-      grind
-    · exact ⟨upperBounds_mono_set hft ha.1,
-        fun b hb ↦ ha.2 fun c hc ↦ (hf ⟨c, hc⟩).1.trans (hb <| by simp)⟩
+    have hcof : IsCofinalFor t (range f) := fun c hc ↦
+      ⟨f ⟨c, hc⟩, ⟨_, rfl⟩, (hf ⟨c, hc⟩).1⟩
+    apply (h (hDL hft hD) (range_nonempty f) (ht₁.of_isCofinalFor hft hcof)
+      (ha.of_isCofinalFor hft hcof) has).ne_empty
+    aesop
 
 /-- The condition `(d ∩ s).Nonempty` in `DirSupInacc` can be replaced with the stronger
 `∃ b ∈ d, Ici b ∩ d ⊆ s`. -/

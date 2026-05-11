@@ -132,6 +132,10 @@ lemma DirectedOn.isCofinalFor_fst_image_prod_snd_image {β : Type*} [Preorder β
   obtain ⟨z, hz, hxz, hyz⟩ := hs _ hx _ hy
   exact ⟨z, hz, hxz.1, hyz.2⟩
 
+@[to_dual]
+lemma IsCofinalFor.nonempty (h : IsCofinalFor s t) (hs : s.Nonempty) : t.Nonempty :=
+  let ⟨_, ha⟩ := hs; let ⟨b, hb, _⟩ := h ha; ⟨b, hb⟩
+
 theorem IsCofinalFor.union_left (hc : IsCofinalFor s t) : IsCofinalFor (s ∪ t) t := by
   rintro a (has | hat)
   · exact hc has
@@ -147,6 +151,17 @@ theorem DirectedOn.of_isCofinalFor (hd : DirectedOn (· ≤ ·) t)
   obtain ⟨z, hz, hxz, hyz⟩ := hd x (hst hx) y (hst hy)
   obtain ⟨w, hw, hzw⟩ := hc hz
   exact ⟨w, hw, hxz.trans hzw, hyz.trans hzw⟩
+
+/-- If `b` is not an upper bound of a directed set `s`, then the elements of `s` not below `b`
+form a cofinal subset of `s`. -/
+@[to_dual /-- If `b` is not a lower bound of a coinitially-directed set `s`, then the elements of
+`s` not above `b` form a coinitial subset of `s`. -/]
+theorem DirectedOn.isCofinalFor_sdiff_Iic (hd : DirectedOn (· ≤ ·) s) (hb : b ∉ upperBounds s) :
+    IsCofinalFor s (s \ Iic b) := by
+  obtain ⟨w, hw, hwb⟩ : ∃ w ∈ s, ¬ w ≤ b := by simpa [upperBounds] using hb
+  intro x hx
+  obtain ⟨z, hz, hxz, hwz⟩ := hd x hx w hw
+  exact ⟨z, ⟨hz, fun hzb ↦ hwb (hwz.trans hzb)⟩, hxz⟩
 
 theorem isCofinalFor_or_isCofinalFor_of_directedOn_union (h : DirectedOn (· ≤ ·) (s ∪ t)) :
     IsCofinalFor t s ∨ IsCofinalFor s t := by
@@ -225,6 +240,13 @@ bound for any set `t`, `s ⊆ t ⊆ p`. -/]
 theorem IsLUB.of_subset_of_superset {s t p : Set α} (hs : IsLUB s a) (hp : IsLUB p a) (hst : s ⊆ t)
     (htp : t ⊆ p) : IsLUB t a :=
   ⟨upperBounds_mono_set htp hp.1, lowerBounds_mono_set (upperBounds_mono_set hst) hs.2⟩
+
+/-- The least upper bound of a set is also the least upper bound of any cofinal subset. -/
+@[to_dual /-- The greatest lower bound of a set is also the greatest lower bound of any
+coinitial subset. -/]
+theorem IsLUB.of_isCofinalFor {s t : Set α} (hs : IsLUB s a) (hts : t ⊆ s)
+    (hst : IsCofinalFor s t) : IsLUB t a :=
+  ⟨upperBounds_mono_set hts hs.1, fun _b hb ↦ hs.2 (upperBounds_mono_of_isCofinalFor hst hb)⟩
 
 @[to_dual]
 theorem IsLeast.mono (ha : IsLeast s a) (hb : IsLeast t b) (hst : s ⊆ t) : b ≤ a :=
