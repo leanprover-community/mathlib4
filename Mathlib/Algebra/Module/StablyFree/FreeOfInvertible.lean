@@ -24,7 +24,7 @@ variable {R : Type*} [CommRing R] {M N : Type*} [AddCommGroup M] [Module R M]
 
 /-- The map linear in the first argument and alternating in the remaining arguments that
 underlies the cofactor expansion along the `M`-summand of `M × N`. -/
-private noncomputable def cofactorLinear (bN : Module.Basis (Fin n) R N) :
+private noncomputable def exteriorPower.cofactorLinear (bN : Module.Basis (Fin n) R N) :
     M × N →ₗ[R] (M × N) [⋀^Fin n]→ₗ[R] M where
   toFun x := (bN.det.compLinearMap (LinearMap.snd R M N)).smulRight x.1
   map_add' x y := AlternatingMap.ext fun _ ↦ by simp
@@ -32,11 +32,11 @@ private noncomputable def cofactorLinear (bN : Module.Basis (Fin n) R N) :
 
 /-- The linear map from the top exterior power of `M × N` to `M` induced by the cofactor
 expansion along the `M`-summand. -/
-private noncomputable def cofactorToLeft (bN : Module.Basis (Fin n) R N) :
+private noncomputable def exteriorPower.cofactorToLeft (bN : Module.Basis (Fin n) R N) :
     ⋀[R]^(n + 1) (M × N) →ₗ[R] M :=
   exteriorPower.alternatingMapLinearEquiv (AlternatingMap.alternatizeUncurryFin (cofactorLinear bN))
 
-private lemma cofactorToLeft_ιMulti_cons (bN : Module.Basis (Fin n) R N) (m : M) :
+private lemma exteriorPower.cofactorToLeft_ιMulti_cons (bN : Module.Basis (Fin n) R N) (m : M) :
     cofactorToLeft bN (exteriorPower.ιMulti R (n + 1) (Fin.cons (m, 0) fun i ↦ (0, bN i))) = m := by
   simp [cofactorToLeft, cofactorLinear, AlternatingMap.alternatizeUncurryFin_apply,
     Fin.sum_univ_succ, Module.Basis.det_self]
@@ -59,7 +59,7 @@ theorem Module.free_of_isStablyFree_of_invertible [IsStablyFree R M] [Module.Inv
   let e : R ≃ₗ[R] ⋀[R]^(n + 1) (M × N) :=
     (Module.nonempty_linearEquiv_of_finrank_eq_one <| by simp [exteriorPower.finrank_eq, hp]).some
   let bN : Module.Basis (Fin n) R N := Module.finBasis R N
-  let f : R →ₗ[R] M := cofactorToLeft bN ∘ₗ e
+  let f : R →ₗ[R] M := exteriorPower.cofactorToLeft bN ∘ₗ e
   exact Module.Free.of_equiv <| LinearEquiv.ofBijective f <| Invertible.bijective_of_surjective <|
     fun x ↦ ⟨e.symm (exteriorPower.ιMulti R (n + 1) (Fin.cons (x, 0) fun i ↦ (0, bN i))), by
-      simp [f, cofactorToLeft_ιMulti_cons]⟩
+      simp [f, exteriorPower.cofactorToLeft_ιMulti_cons]⟩
