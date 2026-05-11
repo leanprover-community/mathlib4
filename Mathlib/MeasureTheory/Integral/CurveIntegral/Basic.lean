@@ -6,11 +6,12 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Order.Field.Pointwise
+public import Mathlib.Analysis.Calculus.AddTorsor.AffineMap
 public import Mathlib.Analysis.Calculus.ContDiff.Deriv
 public import Mathlib.Analysis.Calculus.Deriv.AffineMap
 public import Mathlib.Analysis.Calculus.Deriv.Shift
 public import Mathlib.Analysis.Normed.Module.Convex
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 
 /-!
 # Integral of a 1-form along a path
@@ -287,20 +288,59 @@ theorem curveIntegral_trans (h₁ : CurveIntegrable ω γab) (h₂ : CurveIntegr
   simp only [curveIntegral_def]
   norm_num
 
-theorem curveIntegralFun_segment [NormedSpace ℝ E] (ω : E → E →L[𝕜] F) (a b : E)
-    {t : ℝ} (ht : t ∈ I) : curveIntegralFun ω (.segment a b) t = ω (lineMap a b t) (b - a) := by
+end PathOperations
+
+section Segment
+
+variable {𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedSpace ℝ E]
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {a b c d : E} {ω : E → E →L[𝕜] F}
+  {γ γab : Path a b} {γbc : Path b c} {t : ℝ}
+
+theorem curveIntegralFun_segment (ω : E → E →L[𝕜] F) (a b : E) {t : ℝ} (ht : t ∈ I) :
+    curveIntegralFun ω (.segment a b) t = ω (lineMap a b t) (b - a) := by
   have := Path.eqOn_extend_segment a b
   simp only [curveIntegralFun_def, this ht, derivWithin_congr this (this ht),
     (hasDerivWithinAt_lineMap ..).derivWithin (uniqueDiffOn_Icc_zero_one t ht)]
 
-theorem curveIntegrable_segment [NormedSpace ℝ E] :
-    CurveIntegrable ω (.segment a b) ↔
+theorem curveIntegrable_segment_iff : CurveIntegrable ω (.segment a b) ↔
       IntervalIntegrable (fun t ↦ ω (lineMap a b t) (b - a)) volume 0 1 := by
   rw [CurveIntegrable, intervalIntegrable_congr]
   rw [uIoc_of_le zero_le_one]
   exact .mono Ioc_subset_Icc_self fun _t ↦ curveIntegralFun_segment ω a b
 
-theorem curveIntegral_segment [NormedSpace ℝ E] [NormedSpace ℝ F] (ω : E → E →L[𝕜] F) (a b : E) :
+@[deprecated (since := "2026-05-11")] alias curveIntegrable_segment := curveIntegrable_segment_iff
+
+@[simp] theorem curveIntegrable_segment_const (ω : E →L[𝕜] F) (a b : E) :
+    CurveIntegrable (fun _ : E => ω) (.segment a b) :=
+  curveIntegrable_segment_iff.mpr intervalIntegrable_const
+
+/-- If a 1-form `ω` is continuous on a set `s`,
+then it is curve integrable along any $C^1$ path in this set. -/
+theorem ContinuousOn.curveIntegrable_of_contDiffOn {s : Set E} (hω : ContinuousOn ω s)
+    (hγ : ContDiffOn ℝ 1 γ.extend I) (hγs : ∀ t, γ t ∈ s) : CurveIntegrable ω γ := by
+  apply ContinuousOn.intervalIntegrable_of_Icc zero_le_one
+  simp only [funext (curveIntegralFun_def ω γ)]
+  apply ContinuousOn.clm_apply
+  · exact hω.comp (by fun_prop) fun _ _ ↦ hγs _
+  · exact hγ.continuousOn_derivWithin uniqueDiffOn_Icc_zero_one le_rfl
+
+/-- The straight-line path `Path.segment a b` is `C¹` (in fact smooth) on the unit interval. -/
+theorem Path.segment_contDiffOn (a b : E) :
+    ContDiffOn ℝ 1 (Path.segment a b).extend I :=
+  (AffineMap.lineMap_contDiff a b).contDiffOn.congr (Path.eqOn_extend_segment a b)
+
+/-- If a 1-form `ω` is continuous on the segment `[a -[ℝ] b]`,
+then it is curve integrable along the segment from `a` to `b`. -/
+theorem ContinuousOn.curveIntegrable_segment (hω : ContinuousOn ω [a -[ℝ] b]) :
+    CurveIntegrable ω (.segment a b) :=
+  hω.curveIntegrable_of_contDiffOn (Path.segment_contDiffOn a b)
+    fun t => Path.range_segment a b ▸ Set.mem_range_self t
+
+/-- If a 1-form `ω` is continuous, then it is curve integrable along any segment. -/
+theorem Continuous.curveIntegrable_segment (hω : Continuous ω) (a b : E) :
+    CurveIntegrable ω (.segment a b) := hω.continuousOn.curveIntegrable_segment
+
+theorem curveIntegral_segment [NormedSpace ℝ F] (ω : E → E →L[𝕜] F) (a b : E) :
     ∫ᶜ x in .segment a b, ω x = ∫ t in 0..1, ω (lineMap a b t) (b - a) := by
   rw [curveIntegral_def]
   refine intervalIntegral.integral_congr fun t ht ↦ ?_
@@ -308,14 +348,14 @@ theorem curveIntegral_segment [NormedSpace ℝ E] [NormedSpace ℝ F] (ω : E �
   exact curveIntegralFun_segment ω a b ht
 
 @[simp]
-theorem curveIntegral_segment_const [NormedSpace ℝ E] [CompleteSpace F] (ω : E →L[𝕜] F) (a b : E) :
+theorem curveIntegral_segment_const [CompleteSpace F] (ω : E →L[𝕜] F) (a b : E) :
     ∫ᶜ _ in .segment a b, ω = ω (b - a) := by
   letI : NormedSpace ℝ F := .restrictScalars ℝ 𝕜 F
   simp [curveIntegral_segment]
 
 /-- If `‖ω z‖ ≤ C` at all points of the segment `[a -[ℝ] b]`,
 then the curve integral `∫ᶜ x in .segment a b, ω x` has norm at most `C * ‖b - a‖`. -/
-theorem norm_curveIntegral_segment_le [NormedSpace ℝ E] {C : ℝ} (h : ∀ z ∈ [a -[ℝ] b], ‖ω z‖ ≤ C) :
+theorem norm_curveIntegral_segment_le {C : ℝ} (h : ∀ z ∈ [a -[ℝ] b], ‖ω z‖ ≤ C) :
     ‖∫ᶜ x in .segment a b, ω x‖ ≤ C * ‖b - a‖ := calc
   ‖∫ᶜ x in .segment a b, ω x‖ ≤ C * ‖b - a‖ * |1 - 0| := by
     letI : NormedSpace ℝ F := .restrictScalars ℝ 𝕜 F
@@ -326,18 +366,7 @@ theorem norm_curveIntegral_segment_le [NormedSpace ℝ E] {C : ℝ} (h : ∀ z �
     apply_rules [(ω _).le_of_opNorm_le, mem_image_of_mem, Ioc_subset_Icc_self]
   _ = C * ‖b - a‖ := by simp
 
-/-- If a 1-form `ω` is continuous on a set `s`,
-then it is curve integrable along any $C^1$ path in this set. -/
-theorem ContinuousOn.curveIntegrable_of_contDiffOn [NormedSpace ℝ E] {s : Set E}
-    (hω : ContinuousOn ω s) (hγ : ContDiffOn ℝ 1 γ.extend I) (hγs : ∀ t, γ t ∈ s) :
-    CurveIntegrable ω γ := by
-  apply ContinuousOn.intervalIntegrable_of_Icc zero_le_one
-  simp only [funext (curveIntegralFun_def ω γ)]
-  apply ContinuousOn.clm_apply
-  · exact hω.comp (by fun_prop) fun _ _ ↦ hγs _
-  · exact hγ.continuousOn_derivWithin uniqueDiffOn_Icc_zero_one le_rfl
-
-end PathOperations
+end Segment
 
 /-!
 ### Algebraic operations on the 1-form
@@ -529,13 +558,13 @@ theorem HasFDerivWithinAt.curveIntegral_segment_source' (hs : Convex ℝ s)
   rw [← curveIntegral_segment_const, ← curveIntegral_fun_sub]
   · refine norm_curveIntegral_segment_le fun z hz ↦ ?_
     simpa [dist_eq_norm] using (hδ (hsub hz)).2
-  · rw [curveIntegrable_segment]
+  · rw [curveIntegrable_segment_iff]
     refine ContinuousOn.intervalIntegrable_of_Icc zero_le_one fun t ht ↦ ?_
     refine ((hδ ?_).1.eval_const _).comp AffineMap.lineMap_continuous.continuousWithinAt ?_
     · refine hsub <| segment_eq_image_lineMap ℝ a b ▸ mem_image_of_mem _ ht
     · rw [mapsTo_iff_image_subset, ← segment_eq_image_lineMap]
       exact hs.segment_subset ha hbs
-  · rw [curveIntegrable_segment]
+  · rw [curveIntegrable_segment_iff]
     exact intervalIntegrable_const
 
 /-- The integral of `ω` along `[a -[ℝ] b]`, as a function of `b`, has derivative `ω a` at `b = a`.
@@ -556,5 +585,16 @@ This is a `HasFDerivAt` version assuming that `ω` is continuous on the whole sp
 theorem HasFDerivAt.curveIntegral_segment_source (hω : Continuous ω) :
     HasFDerivAt (∫ᶜ x in .segment a ·, ω x) (ω a) a :=
   .curveIntegral_segment_source' <| .of_forall fun _ ↦ hω.continuousAt
+
+/-- **Fundamental theorem of calculus along a line segment.** If `f : E → F` is differentiable
+with continuous derivative `fderiv ℝ f` on the segment `[a -[ℝ] b]`, then the curve integral of
+`fderiv ℝ f` along the segment equals `f b - f a`. -/
+theorem curveIntegral_fderiv_segment [NormedSpace ℝ F] {f : E → F}
+    (hf : Differentiable ℝ f) (hcont : Continuous (fderiv ℝ f)) (a b : E) :
+    ∫ᶜ z in .segment a b, fderiv ℝ f z = f b - f a := by
+  rw [curveIntegral_segment]
+  simpa using intervalIntegral.integral_eq_sub_of_hasDerivAt
+    (fun t _ => (hf _).hasFDerivAt.comp_hasDerivAt t AffineMap.hasDerivAt_lineMap)
+    (((hcont.comp (by fun_prop)).clm_apply continuous_const).intervalIntegrable 0 1)
 
 end FDeriv
