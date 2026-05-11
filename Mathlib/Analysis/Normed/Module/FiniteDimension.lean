@@ -267,22 +267,21 @@ def ContinuousLinearEquiv.piRing (ι : Type*) [Fintype ι] [DecidableEq ι] :
     ((ι → 𝕜) →L[𝕜] E) ≃L[𝕜] ι → E :=
   { LinearMap.toContinuousLinearMap.symm.trans (LinearEquiv.piRing 𝕜 E ι 𝕜) with
     continuous_toFun := by
-      refine continuous_pi fun i => ?_
-      exact (ContinuousLinearMap.apply 𝕜 E (Pi.single i 1)).continuous
+      refine continuous_pi fun i ↦ ?_
+      exact (apply 𝕜 E (Pi.single i 1)).continuous
     continuous_invFun := by
       simp_rw [LinearEquiv.invFun_eq_symm, LinearEquiv.trans_symm, LinearEquiv.symm_symm]
-      -- Note: added explicit type and removed `change` that tried to achieve the same
       refine AddMonoidHomClass.continuous_of_bound
         (LinearMap.toContinuousLinearMap.toLinearMap.comp
             (LinearEquiv.piRing 𝕜 E ι 𝕜).symm.toLinearMap)
-        (Fintype.card ι : ℝ) fun g => ?_
+        (Fintype.card ι : ℝ) fun g ↦ ?_
       rw [← nsmul_eq_mul]
-      refine opNorm_le_bound _ (nsmul_nonneg (norm_nonneg g) (Fintype.card ι)) fun t => ?_
+      refine opNorm_le_bound _ (nsmul_nonneg (norm_nonneg g) (Fintype.card ι)) fun t ↦ ?_
       simp_rw [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply,
         LinearMap.coe_toContinuousLinearMap', LinearEquiv.piRing_symm_apply]
       apply le_trans (norm_sum_le _ _)
       rw [smul_mul_assoc]
-      refine Finset.sum_le_card_nsmul _ _ _ fun i _ => ?_
+      refine Finset.sum_le_card_nsmul _ _ _ fun i _ ↦ ?_
       rw [norm_smul, mul_comm]
       gcongr <;> apply norm_le_pi_norm }
 
@@ -384,7 +383,7 @@ instance [FiniteDimensional 𝕜 E] [SecondCountableTopology F] :
     SecondCountableTopology (E →L[𝕜] F) := by
   let d := Module.finrank 𝕜 E
   let e₁ : E ≃L[𝕜] Fin d → 𝕜 :=
-    ContinuousLinearEquiv.ofFinrankEq (@Module.finrank_fin_fun 𝕜 _ _ d).symm
+    ContinuousLinearEquiv.ofFinrankEq (finrank_fin_fun 𝕜).symm
   let e₂ : (E →L[𝕜] F) ≃L[𝕜] Fin d → F :=
     (e₁.arrowCongr (1 : F ≃L[𝕜] F)).trans (ContinuousLinearEquiv.piRing (Fin d))
   exact e₂.toHomeomorph.secondCountableTopology
