@@ -759,7 +759,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- `n ↦ ∏ₙ X` is left adjoint to `Hom(-, X)`. -/
 def piConstAdj [Limits.HasProducts.{v} C] (X : C) :
     (piConst.obj X).rightOp ⊣ yoneda.obj X where
-  unit := { app n := TypeCat.ofHom (fun i ↦ Limits.Pi.π (fun _ : n ↦ X) i) }
+  unit := { app n := ↾fun i ↦ Limits.Pi.π (fun _ : n ↦ X) i }
   counit :=
   { app Y := (Limits.Pi.lift id).op,
     naturality _ _ _ := by apply Quiver.Hom.unop_inj; cat_disch }
@@ -775,7 +775,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- `n ↦ ∐ₙ X` is left adjoint to `Hom(X, -)`. -/
 def sigmaConstAdj [Limits.HasCoproducts.{v} C] (X : C) :
     sigmaConst.obj X ⊣ coyoneda.obj (Opposite.op X) where
-  unit := { app n := TypeCat.ofHom (fun i ↦ Limits.Sigma.ι (fun _ : n ↦ X) i) }
+  unit := { app n := ↾fun i ↦ Limits.Sigma.ι (fun _ : n ↦ X) i }
   counit := { app Y := Limits.Sigma.desc id }
 
 /-!
@@ -969,6 +969,84 @@ def Cofan.IsColimit.prod (c : ∀ i : ι, Cofan (fun j : ι' ↦ X i j)) (hc : �
     exact Cofan.IsColimit.hom_ext (hc i) _ _ fun j ↦ (by simpa using hm (i, j))
 
 end Fubini
+
+variable (α) in
+/-- The functor `(f : α → C) ↦ ∏ᶜ f`. -/
+@[simps]
+noncomputable def Pi.functor [HasProductsOfShape α C] : (α → C) ⥤ C where
+  obj f := ∏ᶜ f
+  map {f g} t := Pi.map t
+
+/-- The natural transformation induced by `Pi.π`. -/
+@[simps]
+def Pi.functorπ [HasProductsOfShape α C] (a : α) :
+    Pi.functor α ⟶ Pi.eval (fun _ ↦ C) a where
+  app f := Pi.π f a
+
+variable (α) in
+/-- Up to pre-composing with an equivalence of categories, `Pi.functor` is isomorphic to `lim`. -/
+@[simps!]
+def piEquivalenceFunctorDiscreteCompLim [HasProductsOfShape α C] :
+    (piEquivalenceFunctorDiscrete α C).functor ⋙ lim ≅ Pi.functor _ :=
+  NatIso.ofComponents fun _ ↦ Iso.refl _
+
+@[reassoc]
+lemma piEquivalenceFunctorDiscreteCompLim_comp_functorπ [HasProductsOfShape α C] (a : α) :
+    (piEquivalenceFunctorDiscreteCompLim (C := C) α).hom ≫ Pi.functorπ a =
+      Functor.whiskerLeft _ (lim.π <| Discrete.mk a) ≫
+        (piEquivalenceFunctorDiscreteCompEvaluationIso _ _).hom := by
+  cat_disch
+
+attribute [local simp] Functor.pi in
+/-- The `∏ᶜ` functor composed with the pointwise constant functor `Π i, I i ⥤ (α → C)` is isomorphic
+to the constant functor with value `∏ᶜ X`. -/
+@[simps!]
+noncomputable def Pi.constCompPiIsoConst [HasProductsOfShape α C] {I : α → Type*}
+    [∀ i, Category* (I i)] (X : α → C) :
+    Functor.pi (fun i ↦ (Functor.const (I i)).obj (X i)) ⋙ Pi.functor α ≅
+      (Functor.const _).obj (∏ᶜ X) :=
+  NatIso.ofComponents (fun _ ↦ Iso.refl _)
+
+variable (α) in
+/-- The functor `(f : α → C) ↦ ∐ f`. -/
+@[simps]
+noncomputable def Sigma.functor [HasCoproductsOfShape α C] : (α → C) ⥤ C where
+  obj f := ∐ f
+  map {f g} t := Sigma.map t
+
+/-- The natural transformation induced by `Sigma.ι`. -/
+@[simps]
+def Sigma.functorι [HasCoproductsOfShape α C] (a : α) :
+    Pi.eval (fun _ ↦ C) a ⟶ Sigma.functor α where
+  app f := Sigma.ι f a
+
+variable (α) in
+/-- Up to pre-composing with an equivalence of categories, `Sigma.functor` is isomorphic
+to `colim`. -/
+@[simps!]
+def piEquivalenceFunctorDiscreteCompColim [HasCoproductsOfShape α C] :
+    (piEquivalenceFunctorDiscrete α C).functor ⋙ colim ≅ Sigma.functor _ :=
+  NatIso.ofComponents fun _ ↦ Iso.refl _
+
+@[reassoc]
+lemma piEquivalenceFunctorDiscreteCompColim_comp_functorι [HasCoproductsOfShape α C] (a : α) :
+    Functor.whiskerLeft _ (colim.ι <| .mk a) ≫ (piEquivalenceFunctorDiscreteCompColim α).hom =
+      (piEquivalenceFunctorDiscreteCompEvaluationIso C _).hom ≫ Sigma.functorι a := by
+  cat_disch
+
+lemma piEquivalenceFunctorDiscrete_functor_comp_colim [HasCoproductsOfShape α C] :
+    (piEquivalenceFunctorDiscrete α C).functor ⋙ colim = Sigma.functor _ :=
+  rfl
+
+attribute [local simp] Functor.pi in
+/-- The `∐` functor composed with the pointwise constant functor `Π i, I i ⥤ (α → C)` is isomorphic
+to the constant functor with value `∐ X`. -/
+@[simps!]
+noncomputable def Sigma.constCompSigmaIsoConst [HasCoproductsOfShape α C] {I : α → Type*}
+    [∀ i, Category* (I i)] (X : α → C) :
+    Functor.pi (fun i ↦ (Functor.const (I i)).obj (X i)) ⋙ Sigma.functor α ≅
+      (Functor.const _).obj (∐ X) :=
+  NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
 /-- The functor `C ⥤ (Type w)ᵒᵖ ⥤ C` which sends `X : C` and `α : Type w` to
 the product of copies of `X` indexed by `α`. -/

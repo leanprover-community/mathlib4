@@ -505,7 +505,7 @@ theorem measurable_trajFun (a : ℕ) : Measurable (trajFun κ a) := by
     exact (Measure.measurable_map _ (measurable_restrict₂ _)).comp (measurable _)
   · have := isProbabilityMeasure_trajFun κ a
     simpa [measure_compl mt (measure_ne_top _ _)] using Measurable.const_sub ht _
-  · simpa [measure_iUnion disf mf] using Measurable.ennreal_tsum hf
+  · simpa [measure_iUnion disf mf] using Measurable.tsum hf
 
 /-- *Ionescu-Tulcea Theorem* : Given a family of kernels `κ n` taking variables in `Iic n` with
 value in `X (n + 1)`, the kernel `traj κ a` takes a variable `x` depending on the

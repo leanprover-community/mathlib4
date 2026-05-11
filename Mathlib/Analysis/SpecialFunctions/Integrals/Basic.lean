@@ -143,7 +143,6 @@ theorem integral_cpow {r : ℂ} (h : -1 < r.re ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[
     · contrapose hr; rw [hr]; ring
   · exact intervalIntegrable_cpow' h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem integral_rpow {r : ℝ} (h : -1 < r ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[a, b]]) :
     ∫ x in a..b, x ^ r = (b ^ (r + 1) - a ^ (r + 1)) / (r + 1) := by
   have h' : -1 < (r : ℂ).re ∨ (r : ℂ) ≠ -1 ∧ (0 : ℝ) ∉ [[a, b]] := by
@@ -311,7 +310,7 @@ theorem integral_sin : ∫ x in a..b, sin x = cos a - cos b := by
   rw [integral_deriv_eq_sub' fun x => -cos x]
   · ring
   · simp
-  · simp only [differentiableAt_fun_neg_iff, differentiableAt_cos, implies_true]
+  · simp
   · exact continuousOn_sin
 
 @[simp]

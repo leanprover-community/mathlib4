@@ -50,7 +50,6 @@ open Unitization NNReal CStarAlgebra
 
 variable [PartialOrder A] [StarOrderedRing A]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma CFC.monotoneOn_one_sub_one_add_inv :
     MonotoneOn (cfcₙ (fun x : ℝ≥0 ↦ 1 - (1 + x)⁻¹)) (Set.Ici (0 : A)) := by
   intro a ha b hb hab
@@ -251,7 +250,6 @@ lemma norm_sub_mul_self_le_of_inr {x y : A} (z : A) (hx₀ : 0 ≤ x) (hxy : x �
       ← norm_le_one_iff_of_nonneg _, norm_inr]
     exact ⟨hxy, hy₁⟩
 
-set_option backward.isDefEq.respectTransparency false in
 variable {A} in
 /-- This shows `CStarAlgebra.approximateUnit` is a one-sided approximate unit, but this is marked
 `private` because it is only used to prove `CStarAlgebra.increasingApproximateUnit`. -/

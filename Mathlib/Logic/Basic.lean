@@ -5,11 +5,10 @@ Authors: Jeremy Avigad, Leonardo de Moura
 -/
 module
 
-public import Mathlib.Tactic.AdaptationNote
 public import Batteries.Logic
 public import Batteries.Util.LibraryNote
 
-import Mathlib.Tactic.Attr.Register
+public import Mathlib.Tactic.Attr.Register
 
 /-!
 # Basic logic properties
@@ -83,11 +82,11 @@ in specific circumstances.
 
 For example, `ZMod p` is a field if and only if `p` is a prime number.
 In order to be able to find this field instance automatically by type class search,
-we have to turn `p.prime` into an instance implicit assumption.
+we have to turn `p.Prime` into an instance implicit assumption.
 
-On the other hand, making `Nat.prime` a class would require a major refactoring of the library,
-and it is questionable whether making `Nat.prime` a class is desirable at all.
-The compromise is to add the assumption `[Fact p.prime]` to `ZMod.field`.
+On the other hand, making `Nat.Prime` a class would require a major refactoring of the library,
+and it is questionable whether making `Nat.Prime` a class is desirable at all.
+The compromise is to add the assumption `[Fact p.Prime]` to `ZMod.instField`.
 
 In particular, this class is not intended for turning the type class system
 into an automated theorem prover for first-order logic. -/

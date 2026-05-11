@@ -44,7 +44,6 @@ variable {K L : Type*} [Field K] [Field L] [Algebra K L] (v : InfinitePlace K) {
 
 namespace Completion
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `w` is a ramified place over `v` then `w.Completion` has `v.Completion` dimension two. -/
 theorem finrank_eq_two_of_isRamified [w.1.LiesOver v.1] (h : w.IsRamified K) :
     Module.finrank v.Completion w.Completion = 2 := by

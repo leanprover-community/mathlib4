@@ -174,7 +174,7 @@ end Module
 
 section CommMonoid
 
-variable (G) [CommMonoid G]
+variable (G) [CommMonoid G] [CommMonoid H]
 
 namespace CommMonoid
 
@@ -187,6 +187,13 @@ def torsion : Submonoid G where
   carrier := { x | IsOfFinOrder x }
   one_mem' := IsOfFinOrder.one
   mul_mem' hx hy := hx.mul hy
+
+@[to_additive]
+theorem mem_torsion (g : G) : g ∈ torsion G ↔ IsOfFinOrder g := Iff.rfl
+
+@[to_additive]
+lemma torsion_prod : torsion (G × H) = (torsion G).prod (torsion H) := by
+  simp [Submonoid.ext_iff, Submonoid.mem_prod, mem_torsion, IsOfFinOrder.prod_iff]
 
 variable {G}
 
@@ -300,9 +307,9 @@ theorem torsion_eq_torsion_submonoid : CommMonoid.torsion G = (torsion G).toSubm
 @[to_additive]
 theorem mem_torsion (g : G) : g ∈ torsion G ↔ IsOfFinOrder g := Iff.rfl
 
--- PRed
+
 @[to_additive]
-lemma torsion_eq_top_iff : CommGroup.torsion G = ⊤ ↔ IsTorsion G :=
+lemma torsion_eq_top_iff : torsion G = ⊤ ↔ IsTorsion G :=
   (torsion G).eq_top_iff'
 
 @[to_additive]
@@ -427,13 +434,19 @@ end CommGroup
 
 section AddCommGroup
 
-set_option backward.inferInstanceAs.wrap.data false in
 instance {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] :
     Module R (M ⧸ AddCommGroup.torsion M) :=
-  letI : Submodule R M := { AddCommGroup.torsion M with smul_mem' := fun r m ⟨n, hn, hn'⟩ ↦
+  -- Upgrade the torsion subgroup to a submodule.
+  letI S : Submodule R M := { AddCommGroup.torsion M with smul_mem' := fun r m ⟨n, hn, hn'⟩ ↦
     ⟨n, hn, by { simp only [Function.IsPeriodicPt, Function.IsFixedPt, add_left_iterate, add_zero,
       smul_comm n] at hn' ⊢; simp only [hn', smul_zero] }⟩ }
-  inferInstanceAs (Module R (M ⧸ this))
+  -- The quotients are the same.
+  let e : (M ⧸ AddCommGroup.torsion M) ≃+ (M ⧸ S) := QuotientAddGroup.congr _ _ (.refl _)
+    (by simp [S])
+  -- So we can copy over scalar multiplication.
+  letI : SMul R (M ⧸ AddCommGroup.torsion M) := ⟨fun r m => e.symm (r • e m)⟩
+  Function.Injective.module R e.toAddMonoidHom e.injective (fun _ _ =>
+    e.symm.injective (e.symm_apply_apply _))
 
 end AddCommGroup
 
