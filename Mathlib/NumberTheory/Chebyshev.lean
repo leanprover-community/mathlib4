@@ -424,7 +424,7 @@ theorem psi_sub_theta_eq_sum_not_prime (x : ℝ) :
   · simp [h, vonMangoldt_apply_prime]
   · simp
 
-/-- The Chebyshev lower bound for $\psi$. -/
+/-- The Chebyshev lower bound for `ψ`. -/
 theorem psi_ge (n : ℕ) : n * log 2 - log (n + 1) ≤ ψ n := by
   rw [tsub_le_iff_left, psi_eq_log_lcmUpto, ← log_pow 2,
     ← log_mul (by positivity) (by simp [lcmUpto_ne_zero])]
