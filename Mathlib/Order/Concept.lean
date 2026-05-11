@@ -276,16 +276,6 @@ variable {c d : Concept α β r} {c' : Concept α α r'}
 
 attribute [simp] upperPolar_extent lowerPolar_intent
 
-theorem extent_mk (extent : Set α) (intent : Set β)
-  (upperPolar_extent : upperPolar r extent = intent)
-  (lowerPolar_intent : lowerPolar r intent = extent) :
-  (mk extent intent upperPolar_extent lowerPolar_intent : Concept α β r).extent = extent := rfl
-
-theorem intent_mk (extent : Set α) (intent : Set β)
-  (upperPolar_extent : upperPolar r extent = intent)
-  (lowerPolar_intent : lowerPolar r intent = extent) :
-  (mk extent intent upperPolar_extent lowerPolar_intent : Concept α β r).intent = intent := rfl
-
 /-- See `Concept.ext'` for a version using the intent. -/
 @[ext]
 theorem ext (h : c.extent = d.extent) : c = d := by

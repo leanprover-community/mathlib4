@@ -19,6 +19,8 @@ This file indirectly formalizes that construction, by proving that the Dedekind 
 of the rationals is order isomorphic to the extended reals.
 -/
 
+@[expose] public section
+
 namespace EReal
 
 open DedekindCut Concept Order
@@ -54,7 +56,7 @@ public noncomputable def dedekindCutOrderIso : DedekindCut ℚ ≃o EReal where
   }
   left_inv x := by
     ext z
-    simp only [factorEmbedding_apply, sSup_image, extent_mk, Set.mem_setOf_eq]
+    simp only [factorEmbedding_apply, sSup_image, left_mk, Set.mem_setOf_eq]
     constructor
     · intro z_le_sup
       simp_rw [← x.lowerBounds_right, ← x.upperBounds_left, mem_lowerBounds, mem_upperBounds]
@@ -64,7 +66,7 @@ public noncomputable def dedekindCutOrderIso : DedekindCut ℚ ≃o EReal where
     · exact (le_iSup₂_of_le z · le_rfl)
   right_inv x := by
     apply sSup_eq_of_forall_le_of_forall_lt_exists_gt
-    · simp [extent_mk]
+    · simp [left_mk]
     · simp only [Set.mem_image, exists_exists_and_eq_and]
       intro w w_lt_x
       obtain ⟨r, w_lt_r, r_lt_x⟩ := exists_rat_btwn_of_lt w_lt_x
