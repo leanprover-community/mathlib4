@@ -334,14 +334,13 @@ lemma injectiveDimension_X₂_le_sup :
   refine le_of_forall_ge (fun N ↦ ?_)
   induction N with
   | bot =>
-    simp only [le_bot_iff, sup_eq_bot_iff, injectiveDimension_eq_bot_iff, and_imp]
-    exact fun h1 h3 ↦ hS.1.isZero_of_both_zeros (h1.eq_zero_of_src _) (h3.eq_zero_of_tgt _)
+    simpa [injectiveDimension_eq_bot_iff] using
+      fun h1 h3 ↦ hS.1.isZero_of_both_zeros (h1.eq_zero_of_src _) (h3.eq_zero_of_tgt _)
   | coe N =>
     induction N with
     | top => simp
     | coe n =>
-      simp only [ENat.WithBot.coe_eq_natCast, sup_le_iff, injectiveDimension_le_iff, and_imp]
-      exact hS.hasInjectiveDimensionLT_X₂ (n + 1)
+      simpa [injectiveDimension_le_iff] using hS.hasInjectiveDimensionLT_X₂ (n + 1)
 
 lemma injectiveDimension_X₁_le_sup :
     injectiveDimension S.X₁ ≤ injectiveDimension S.X₂ ⊔ (injectiveDimension S.X₃ + 1) := by
@@ -349,16 +348,13 @@ lemma injectiveDimension_X₁_le_sup :
   induction N with
   | bot =>
     let := hS.2
-    simp only [le_bot_iff, sup_eq_bot_iff, injectiveDimension_eq_bot_iff, WithBot.add_eq_bot,
-      WithBot.one_ne_bot, or_false, and_imp]
-    exact fun h2 h3 ↦ h2.of_mono S.f
+    simpa [injectiveDimension_eq_bot_iff] using fun h2 h3 ↦ h2.of_mono S.f
   | coe N =>
     induction N with
     | top => simp
     | coe n =>
-      simp only [ENat.WithBot.coe_eq_natCast, sup_le_iff, injectiveDimension_le_iff,
-        ENat.WithBot.add_one_le_natCast_iff, injectiveDimension_lt_iff, and_imp]
-      exact fun h2 h3 ↦ hS.hasInjectiveDimensionLT_X₁ n h3 h2
+      simpa [injectiveDimension_le_iff, ENat.WithBot.add_one_le_natCast_iff,
+        injectiveDimension_lt_iff] using fun h2 h3 ↦ hS.hasInjectiveDimensionLT_X₁ n h3 h2
 
 lemma hasinjectiveDimension_X₃_succ_le_sup :
     injectiveDimension S.X₃ + 1 ≤ (injectiveDimension S.X₂ + 1) ⊔ injectiveDimension S.X₁ := by
@@ -366,16 +362,13 @@ lemma hasinjectiveDimension_X₃_succ_le_sup :
   induction N with
   | bot =>
     let := hS.3
-    simp only [le_bot_iff, sup_eq_bot_iff, WithBot.add_eq_bot, injectiveDimension_eq_bot_iff,
-      WithBot.one_ne_bot, or_false, and_imp]
-    exact fun h2 h1 ↦ h2.of_epi S.g
+    simpa [injectiveDimension_eq_bot_iff] using fun h2 h1 ↦ h2.of_epi S.g
   | coe N =>
     induction N with
     | top => simp
     | coe n =>
-      simp only [ENat.WithBot.coe_eq_natCast, sup_le_iff, injectiveDimension_le_iff,
-        ENat.WithBot.add_one_le_natCast_iff, injectiveDimension_lt_iff, and_imp]
-      exact fun h2 h1 ↦ hS.hasInjectiveDimensionLT_X₃ n h2 h1
+      simpa [injectiveDimension_le_iff, ENat.WithBot.add_one_le_natCast_iff,
+        injectiveDimension_lt_iff] using fun h2 h1 ↦ hS.hasInjectiveDimensionLT_X₃ n h2 h1
 
 lemma injectiveDimension_X₃_eq_succ_of_not_projective (i : Injective S.X₂)
     (ni : ¬ Injective S.X₁) : injectiveDimension S.X₁ = injectiveDimension S.X₃ + 1 := by
@@ -386,7 +379,7 @@ lemma injectiveDimension_X₃_eq_succ_of_not_projective (i : Injective S.X₂)
     have : (0 : ℕ) ≤ injectiveDimension S.X₃ := by
       rw [injectiveDimension_ge_iff, hasInjectiveDimensionLT_zero_iff_isZero]
       by_contra isz
-      let _ := (isIso_iff_mono_and_epi S.f).mpr ⟨hS.2, hS.1.epi_f (isz.eq_zero_of_tgt _)⟩
+      have := (isIso_iff_mono_and_epi S.f).mpr ⟨hS.2, hS.1.epi_f (isz.eq_zero_of_tgt _)⟩
       exact ni (Injective.of_iso (asIso S.f).symm i)
     exact zero_le_one.trans (ENat.WithBot.add_le_add_one_right_iff.mpr this)
   · simp only [sup_le_iff, Std.le_refl, and_true]
