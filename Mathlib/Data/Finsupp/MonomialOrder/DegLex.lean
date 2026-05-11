@@ -194,7 +194,7 @@ namespace MonomialOrder
 
 open Finsupp
 
-variable {σ : Type*} [LinearOrder σ] [WellFoundedGT σ]
+variable {σ : Type*} [LinearOrder σ]
 
 /-- The deg-lexicographic order on `σ →₀ ℕ`, as a `MonomialOrder` -/
 noncomputable def degLex :
@@ -208,6 +208,9 @@ noncomputable def degLex :
     · refine Or.inr ⟨le_antisymm ?_ ha, toLex_monotone h⟩
       rw [← add_tsub_cancel_of_le h, map_add]
       exact Nat.le_add_right a.degree (b - a).degree
+
+instance [WellFoundedGT σ] : WellFoundedLT (degLex (σ := σ)).syn :=
+  inferInstanceAs <| WellFoundedLT (DegLex (σ →₀ ℕ))
 
 theorem degLex_le_iff {a b : σ →₀ ℕ} :
     a ≼[degLex] b ↔ toDegLex a ≤ toDegLex b :=

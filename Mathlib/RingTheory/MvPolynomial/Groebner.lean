@@ -125,7 +125,7 @@ theorem degree_reduce_lt {f b : MvPolynomial σ R} (hb : IsUnit (m.leadingCoeff 
 
 /-- Division by a family of multivariate polynomials
 whose leading coefficients are invertible with respect to a monomial order -/
-theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
+theorem div [WellFoundedLT m.syn] {ι : Type*} {b : ι → MvPolynomial σ R}
     (hb : ∀ i, IsUnit (m.leadingCoeff (b i))) (f : MvPolynomial σ R) :
     ∃ (g : ι →₀ (MvPolynomial σ R)) (r : MvPolynomial σ R),
       f = Finsupp.linearCombination _ b g + r ∧
@@ -210,7 +210,7 @@ theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
       exact bot_le
     · exact (div hb) (m.subLTerm f)
 termination_by WellFounded.wrap
-  ((isWellFounded_iff m.syn fun x x_1 ↦ x < x_1).mp m.wf) (m.toSyn (m.degree f))
+  ((isWellFounded_iff m.syn fun x x_1 ↦ x < x_1).mp inferInstance) (m.toSyn (m.degree f))
 decreasing_by
 · exact deg_reduce
 · apply degree_sub_LTerm_lt
@@ -229,7 +229,7 @@ See https://github.com/leanprover/lean4/issues/12573
 
 /-- Division by a *set* of multivariate polynomials
 whose leading coefficients are invertible with respect to a monomial order -/
-theorem div_set {B : Set (MvPolynomial σ R)}
+theorem div_set [WellFoundedLT m.syn] {B : Set (MvPolynomial σ R)}
     (hB : ∀ b ∈ B, IsUnit (m.leadingCoeff b)) (f : MvPolynomial σ R) :
     ∃ (g : B →₀ (MvPolynomial σ R)) (r : MvPolynomial σ R),
       f = Finsupp.linearCombination _ (fun (b : B) ↦ (b : MvPolynomial σ R)) g + r ∧
@@ -240,7 +240,7 @@ theorem div_set {B : Set (MvPolynomial σ R)}
 
 /-- Division by a multivariate polynomial
 whose leading coefficient is invertible with respect to a monomial order -/
-theorem div_single {b : MvPolynomial σ R}
+theorem div_single [WellFoundedLT m.syn] {b : MvPolynomial σ R}
     (hb : IsUnit (m.leadingCoeff b)) (f : MvPolynomial σ R) :
     ∃ (g : MvPolynomial σ R) (r : MvPolynomial σ R),
       f = g * b + r ∧

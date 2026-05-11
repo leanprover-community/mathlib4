@@ -26,7 +26,7 @@ variable [CommSemiring R] {f g : MvPolynomial σ R}
 
 section LinearOrder
 
-variable [LinearOrder σ] [WellFoundedGT σ]
+variable [LinearOrder σ]
 
 theorem degree_degLexDegree : (degLex.degree f).degree = f.totalDegree := by
   by_cases hf : f = 0
