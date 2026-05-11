@@ -59,19 +59,6 @@ open Lean Meta Elab
 /-- A permutation, represented using cycle notation. -/
 abbrev Permutation := List {l : List Nat // 2 ≤ l.length}
 
-/-- Permute a list of either universe levels or universe parameters.
-The current heuristic is to swap the first two universes if the first argument is permuted. -/
-def Reorder.permuteUniv {α} (r : Reorder) (us : List α) : List α :=
-  if r.perm.any (·.1.contains 0) then
-    if let x :: y :: l := us then
-      y :: x :: l
-    else us
-  else us
-
-/-- Return `true` if the reorder doesn't do anything. -/
-def Reorder.isEmpty : Reorder → Bool
-  | { perm, argReorders } => perm.isEmpty && argReorders.isEmpty
-
 namespace Permutation
 
 /-- Permute an array of arguments using the given reorder. -/
