@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 Evan Spotte-Smith, Bhavik Mehta, Thomas Browning. All rights reserved.
+Copyright (c) 2026 Evan Spotte-Smith, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Evan Spotte-Smith, Bhavik Mehta, Thomas Browning
+Authors: Evan Spotte-Smith, Bhavik Mehta
 -/
 module
 public import Mathlib.Data.Set.Basic
