@@ -5,7 +5,7 @@ Authors: Jeremy Avigad
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 /-!
 # Notation `ℤ` for the integers.
 -/

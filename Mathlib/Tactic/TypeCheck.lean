@@ -5,7 +5,7 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 public meta import Lean.Elab.Tactic.Basic
 public meta import Lean.Elab.SyntheticMVars
 

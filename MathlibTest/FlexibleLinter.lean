@@ -1,11 +1,11 @@
 module
 
-public import Mathlib.Tactic.Linter.FlexibleLinter
-import all Mathlib.Tactic.Linter.FlexibleLinter
-import Mathlib.Tactic.Linter.UnusedTactic
+public import MathlibInit.Tactic.Linter.FlexibleLinter
+import all MathlibInit.Tactic.Linter.FlexibleLinter
+import MathlibInit.Tactic.Linter.UnusedTactic
 import Batteries.Linter.UnreachableTactic
 import Batteries.Tactic.PermuteGoals
-import Mathlib.Tactic.TacticAnalysis.Declarations -- only needed temporarily for the `lia` shim
+import MathlibInit.Tactic.TacticAnalysis.Declarations -- only needed temporarily for the `lia` shim
 
 set_option linter.flexible true
 set_option linter.unusedVariables false

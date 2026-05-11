@@ -1,6 +1,6 @@
 module
 
-import Mathlib.Tactic.Linter.PrivateModule
+import MathlibInit.Tactic.Linter.PrivateModule
 
 set_option linter.privateModule true
 

@@ -1,7 +1,7 @@
 module
 
-import Mathlib.Init
-import all Mathlib.Tactic.Linter.PrivateModule
+import MathlibInit
+import all MathlibInit.Tactic.Linter.PrivateModule
 public import MathlibTest.PrivateModuleLinter.reservedName1
 
 open Lean

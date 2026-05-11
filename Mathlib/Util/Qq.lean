@@ -5,7 +5,7 @@ Authors: Kim Morrison, Alex J. Best, Yaël Dillies
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 public import Qq
 public import Qq.Typ
 

@@ -5,7 +5,7 @@ Authors: Anne Baanen, Mario Carneiro, Alex J. Best
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 
 /-!
 # The `simp_rw` tactic

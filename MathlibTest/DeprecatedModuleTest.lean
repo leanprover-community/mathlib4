@@ -4,8 +4,8 @@ import MathlibTest.DeprecatedModule
 warning: We can also give more details about the deprecation
 'MathlibTest.DeprecatedModule' has been deprecated: please replace this import by
 
-import Mathlib.Tactic.Linter.DocPrime
-import Mathlib.Tactic.Linter.DocString
+import MathlibInit.Tactic.Linter.DocPrime
+import MathlibInit.Tactic.Linter.DocString
 
 
 Note: This linter can be disabled with `set_option linter.deprecated.module false`
@@ -13,8 +13,8 @@ Note: This linter can be disabled with `set_option linter.deprecated.module fals
 warning:
 'MathlibTest.DeprecatedModule' has been deprecated: please replace this import by
 
-import Mathlib.Tactic.Linter.DocPrime
-import Mathlib.Tactic.Linter.DocString
+import MathlibInit.Tactic.Linter.DocPrime
+import MathlibInit.Tactic.Linter.DocString
 
 
 Note: This linter can be disabled with `set_option linter.deprecated.module false`

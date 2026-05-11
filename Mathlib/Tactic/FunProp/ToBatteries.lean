@@ -5,7 +5,7 @@ Authors: Tomáš Skřivan
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 
 /-!
 ## `funProp` missing function from standard library

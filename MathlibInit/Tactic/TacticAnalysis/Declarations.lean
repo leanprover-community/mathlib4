@@ -5,13 +5,13 @@ Authors: Anne Baanen, Edward van de Meent
 -/
 module
 
-public meta import Mathlib.Tactic.TacticAnalysis
+public meta import MathlibInit.Tactic.TacticAnalysis
 public meta import Lean.Elab.Command
-public meta import Mathlib.Lean.Elab.InfoTree
+public meta import MathlibInit.Lean.Elab.InfoTree
 public meta import Lean.Meta.Tactic.TryThis
-public import Mathlib.Tactic.ExtractGoal
-public import Mathlib.Tactic.TacticAnalysis
-public import Mathlib.Util.ParseCommand
+public import MathlibInit.Tactic.ExtractGoal
+public import MathlibInit.Tactic.TacticAnalysis
+public import MathlibInit.Util.ParseCommand
 
 /-!
 # Tactic linters

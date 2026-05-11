@@ -11,7 +11,7 @@ public meta import ImportGraph.Imports.Redundant
 public meta import ImportGraph.Imports.RequiredModules
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
+public meta import MathlibInit.Tactic.Linter.Header  -- shake: keep
 public import Lean.Elab.DeclModifiers
 
 /-! # `#min_imports in` a command to find minimal imports
@@ -31,7 +31,7 @@ Here is an example where the command fails to notice a dependency:
 import Mathlib.Data.Sym.Sym2.Init -- the actual minimal import
 import Aesop.Frontend.Attribute   -- the import that `#min_imports in` suggests
 
-import Mathlib.Tactic.MinImports
+import MathlibInit.Tactic.MinImports
 
 -- import Aesop.Frontend.Attribute
 #min_imports in

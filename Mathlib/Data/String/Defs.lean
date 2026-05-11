@@ -5,7 +5,7 @@ Authors: Simon Hudon, Keeley Hoek, Floris van Doorn, Chris Bailey
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 /-!
 # Definitions for `String`
 

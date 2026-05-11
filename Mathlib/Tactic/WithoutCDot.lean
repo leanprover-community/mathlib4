@@ -6,7 +6,7 @@ Authors: Eric Wieser
 module
 
 public meta import Lean.Elab.SyntheticMVars
-public import Mathlib.Init
+public import MathlibInit
 
 /-!
 # The `without_cdot()` elaborator

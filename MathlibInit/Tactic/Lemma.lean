@@ -5,7 +5,7 @@ Authors: Mario Carneiro, Kyle Miller
 -/
 module
 
-public import Mathlib.Tactic.Linter.Header  --shake: keep
+public import MathlibInit.Tactic.Linter.Header  --shake: keep
 
 /-!
 # Support for `lemma` as a synonym for `theorem`.

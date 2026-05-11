@@ -653,8 +653,8 @@ public def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array Me
     -- from `Init`, `Lean` and `Std`, as well as imports in `Aesop`, `Qq`, `Plausible`,
     -- `ImportGraph`, `ProofWidgets` or `LeanSearchClient` (as these are imported in Tactic.Common).
     -- We also allow transitive imports of Mathlib.Init, as well as Mathlib.Init itself.
-    let initImports := (← findImports ("Mathlib" / "Init.lean")).append
-      #[`Mathlib.Init, `Mathlib.Tactic.DeclarationNames, `Mathlib.Tactic.Linter.DeprecatedModule]
+    let initImports := (← findImports "MathlibInit.lean").append
+      #[`MathlibInit, `MathlibInit.Tactic.DeclarationNames, `Mathlib.Tactic.Linter.DeprecatedModule]
     let exclude := [
       `Init, `Std, `Lean,
       `Aesop, `Qq, `Plausible, `ImportGraph, `ProofWidgets, `LeanSearchClient

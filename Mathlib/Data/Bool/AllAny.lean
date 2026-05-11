@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 
 /-!
 # Boolean quantifiers

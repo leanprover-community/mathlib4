@@ -1,9 +1,9 @@
 module
 
 import Aesop.Frontend.Attribute
-import all Mathlib.Tactic.Linter.Whitespace
-import Mathlib.Tactic.Linter.Style
-import Mathlib.Init
+import all MathlibInit.Tactic.Linter.Whitespace
+import MathlibInit.Tactic.Linter.Style
+import MathlibInit
 
 -- Deprecation warnings for the old linter option.
 section

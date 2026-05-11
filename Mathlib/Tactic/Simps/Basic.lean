@@ -7,7 +7,7 @@ module
 
 public meta import Lean.Elab.Tactic.Simp
 public meta import Lean.Elab.App
-public meta import Mathlib.Lean.Expr.Basic
+public meta import MathlibInit.Lean.Expr.Basic
 public import Mathlib.Util.AddRelatedDecl
 public import Mathlib.Tactic.Simps.NotationClass
 public import Mathlib.Tactic.Translate.Attributes

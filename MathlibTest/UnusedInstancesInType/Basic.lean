@@ -1,7 +1,7 @@
 module
 
 public meta import Lean.Elab.Command
-public import Mathlib.Init
+public import MathlibInit
 
 /-!
 Basic definitions used for testing the unused instances in type linters. The definitions here "use"

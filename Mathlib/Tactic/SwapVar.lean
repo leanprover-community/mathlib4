@@ -5,7 +5,7 @@ Authors: Arthur Paulino
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 
 /-!
 # Defines the `swap_var` tactic

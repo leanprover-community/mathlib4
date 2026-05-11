@@ -5,7 +5,7 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 
 /-!
 # Propositional typeclasses on several maps

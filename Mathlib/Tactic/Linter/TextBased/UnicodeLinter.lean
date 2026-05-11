@@ -5,7 +5,7 @@ Authors: Adomas Baliuka, Jon Eugster, Michael Rothgang
 -/
 module
 
-import Mathlib.Init
+import MathlibInit
 
 
 /-!

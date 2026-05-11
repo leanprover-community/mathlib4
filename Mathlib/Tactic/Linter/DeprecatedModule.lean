@@ -6,7 +6,7 @@ Authors: Damiano Testa
 module
 
 public meta import Std.Time.Format
-public import Mathlib.Init
+public import MathlibInit
 public import Std.Time.Date
 
 /-!

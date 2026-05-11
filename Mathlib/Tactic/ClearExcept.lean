@@ -5,7 +5,7 @@ Authors: Joshua Clune
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 public meta import Lean.Elab.Tactic.ElabTerm
 
 /-!

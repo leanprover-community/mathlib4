@@ -5,7 +5,7 @@ Authors: Mario Carneiro, Evgenia Karunus, Kyle Miller
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 public meta import Lean.Util.Trace
 
 /-!

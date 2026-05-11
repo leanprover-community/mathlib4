@@ -7,7 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 public import Mathlib.MeasureTheory.Covering.Besicovitch
-public import Mathlib.Tactic.AdaptationNote
+public import MathlibInit.Tactic.AdaptationNote
 public import Mathlib.Algebra.EuclideanDomain.Basic
 
 /-!

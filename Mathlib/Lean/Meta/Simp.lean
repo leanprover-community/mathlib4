@@ -5,7 +5,7 @@ Authors: Kim Morrison, Gabriel Ebner, Floris van Doorn
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 public import Lean.Elab.Tactic.Simp
 public import Lean.Meta.DiscrTree
 

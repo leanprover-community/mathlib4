@@ -5,7 +5,7 @@ Authors: Kim Morrison, Jannis Limperg
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 /-!
 # Monadic instances for `ULift` and `PLift`
 

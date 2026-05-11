@@ -5,7 +5,7 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 public meta import Lean.Meta.Eqns
 public meta import Batteries.Lean.NameMapAttribute
 public meta import Lean.Elab.Exception

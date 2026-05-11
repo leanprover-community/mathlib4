@@ -5,7 +5,7 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 
 /-!
 # Coequalizer of a pair of functions

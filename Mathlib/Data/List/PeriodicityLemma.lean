@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Data.Nat.Lattice
-public import Mathlib.Tactic.TacticAnalysis.Declarations
+public import MathlibInit.Tactic.TacticAnalysis.Declarations
 
 /-! # Periods of words (Lists)
 

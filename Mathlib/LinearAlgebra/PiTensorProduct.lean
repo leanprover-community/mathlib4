@@ -6,7 +6,7 @@ Authors: Frédéric Dupuis, Eric Wieser
 module
 
 public import Mathlib.LinearAlgebra.Multilinear.TensorProduct
-public import Mathlib.Tactic.AdaptationNote
+public import MathlibInit.Tactic.AdaptationNote
 public import Mathlib.LinearAlgebra.Multilinear.Curry
 
 /-!

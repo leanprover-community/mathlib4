@@ -7,7 +7,7 @@ module
 
 public meta import Std.Time.Format
 public import Batteries.Tactic.Alias
-public import Mathlib.Init
+public import MathlibInit
 
 /-!
 # `deprecate to` -- a deprecation tool

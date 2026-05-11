@@ -5,7 +5,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Floris van Doorn
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 
 /-!
 # `ExistsUnique`

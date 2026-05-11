@@ -5,7 +5,7 @@ Authors: Jovan Gerbsheid
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 
 /-!
 # Combining attributes that generate declarations with translation attributes

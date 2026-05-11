@@ -1,4 +1,4 @@
-import Mathlib.Tactic.Linter.FlexibleLinter
+import MathlibInit.Tactic.Linter.FlexibleLinter
 
 import Mathlib.Data.ENNReal.Operations
 import Mathlib.Tactic.Abel

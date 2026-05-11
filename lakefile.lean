@@ -65,6 +65,11 @@ lean_lib Mathlib where
 
 -- NB. When adding further libraries, check if they should be excluded from `getLeanLibs` in
 -- `scripts/mk_all.lean`.
+
+lean_lib MathlibInit where
+  leanOptions := mathlibLeanOptions
+  precompileModules := true
+
 lean_lib Cache where
   globs := #[`Cache.+]
 

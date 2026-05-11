@@ -5,7 +5,7 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 public import Lean.LocalContext
 public import Batteries.Control.AlternativeMonad
 

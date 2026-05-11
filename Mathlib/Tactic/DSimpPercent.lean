@@ -5,7 +5,7 @@ Authors: Robin Carlier, Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 
 /-!
 `dsimp% […] t` runs `dsimp […]` on term `t`.

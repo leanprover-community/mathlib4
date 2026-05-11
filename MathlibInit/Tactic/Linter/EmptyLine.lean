@@ -5,7 +5,7 @@ Authors: Damiano Testa
 -/
 
 module
-public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
+public meta import MathlibInit.Tactic.Linter.Header  -- shake: keep
 public import Lean.Parser.Command
 
 /-!

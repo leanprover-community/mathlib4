@@ -5,7 +5,7 @@ Authors: Tomáš Skřivan
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 
 /-!
 ## `funProp` environment extension that stores all registered function properties

@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 public meta import Lean.Elab.Eval
 public meta import Lean.Elab.Tactic.ElabTerm
 public import Lean.Elab.Tactic.Config

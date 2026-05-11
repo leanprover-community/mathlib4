@@ -5,7 +5,7 @@ Authors: Gabriel Ebner
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 
 /-!
 Defines a command wrapper that prints the changes the command makes to the

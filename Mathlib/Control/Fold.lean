@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.Endomorphism
 public import Mathlib.CategoryTheory.Types.Basic
 public import Mathlib.Control.Traversable.Instances
 public import Mathlib.Control.Traversable.Lemmas
-public import Mathlib.Tactic.AdaptationNote
+public import MathlibInit.Tactic.AdaptationNote
 
 /-!
 

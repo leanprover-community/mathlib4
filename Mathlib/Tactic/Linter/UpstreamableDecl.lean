@@ -5,7 +5,7 @@ Authors: Damiano Testa, Anne Baanen
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 public import ImportGraph.Tools.FindHome
 
 /-! # The `upstreamableDecl` linter

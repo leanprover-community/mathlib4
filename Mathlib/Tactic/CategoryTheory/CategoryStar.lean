@@ -5,7 +5,7 @@ Authors: Adam Topaz, Thomas R. Murrills
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 
 /-!
 # Support for `Category* C`.

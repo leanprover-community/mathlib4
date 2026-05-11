@@ -10,7 +10,7 @@ module
 -- TODO: consider removing `-- shake: keep` after batteries#1613
 public import Batteries.Tactic.Lint -- shake: keep
 public import Lean.Linter.Deprecated
-public import Mathlib.Tactic.DeclarationNames
+public import MathlibInit.Tactic.DeclarationNames
 public import Batteries.Tactic.Lint.Basic
 
 /-!

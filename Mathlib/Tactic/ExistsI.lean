@@ -5,7 +5,7 @@ Authors: Arthur Paulino, Gabriel Ebner, Moritz Doll
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 /-!
 # The `existsi` tactic
 This file defines the `existsi` tactic: its purpose is to instantiate existential quantifiers.

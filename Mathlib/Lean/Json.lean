@@ -5,7 +5,7 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 
 /-!
 # Json serialization typeclass for `PUnit` & `Fin n` & `Subtype p`

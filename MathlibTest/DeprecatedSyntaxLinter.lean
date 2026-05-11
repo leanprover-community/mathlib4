@@ -1,5 +1,5 @@
 import Mathlib.Tactic.Cases
-import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
+import MathlibInit.Tactic.Linter.DeprecatedSyntaxLinter
 
 set_option linter.style.refine true
 /--

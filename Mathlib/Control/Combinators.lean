@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 /-!
 # Monad combinators, as in Haskell's Control.Monad.
 -/

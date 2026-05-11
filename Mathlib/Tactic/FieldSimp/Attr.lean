@@ -5,7 +5,7 @@ Authors: Heather Macbeth
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 
 /-! # Attribute grouping the `field_simp` simprocs -/
 

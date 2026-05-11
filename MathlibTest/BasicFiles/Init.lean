@@ -1,6 +1,6 @@
 module
 
-import Mathlib.Init
+import MathlibInit
 
 /-! Checks that some utilities are available already when importing `Mathlib.Init`. -/
 
