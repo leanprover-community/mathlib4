@@ -136,7 +136,7 @@ lemma primesBelow_zero : primesBelow 0 = ∅ := by
 
 @[simp]
 lemma primesBelow_one : primesBelow 1 = ∅ := by
-  simp [primesBelow_eq_filter_range, not_prime_zero]
+  decide
 
 @[simp]
 lemma primesBelow_two : primesBelow 2 = ∅ := by
