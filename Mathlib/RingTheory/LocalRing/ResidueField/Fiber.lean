@@ -90,8 +90,8 @@ noncomputable def Fiber.algEquivQuotient :
 
 /-- The localization of the fiber `p.Fiber S` is isomorphic to a quotient of a localization. -/
 noncomputable def Ideal.Fiber.localizationAlgEquivQuotient (q : Ideal (p.Fiber S)) [q.IsPrime]
-    [h1 : Algebra (Localization.AtPrime p) (Localization.AtPrime (q.comap includeRight))]
-    [h2 : Localization.AtPrime.IsLiesOverAlgebra p (q.comap includeRight)] :
+    [Algebra (Localization.AtPrime p) (Localization.AtPrime (q.comap includeRight))]
+    [Localization.AtPrime.IsLiesOverAlgebra p (q.comap includeRight)] :
     letI r := q.comap includeRight
     letI Sr := Localization.AtPrime r
     Localization.AtPrime q ≃ₐ[Localization.AtPrime p] Sr ⧸ p.map (algebraMap R Sr) :=
