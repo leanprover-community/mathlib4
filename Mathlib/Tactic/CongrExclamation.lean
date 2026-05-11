@@ -5,7 +5,7 @@ Authors: Kyle Miller
 -/
 module
 
-public meta import Lean.Elab.Tactic.Config
+public meta import Lean.Elab.ConfigEval
 public meta import Lean.Elab.Tactic.RCases
 public meta import Lean.Meta.Tactic.Assumption
 public meta import Lean.Meta.Tactic.Rfl
