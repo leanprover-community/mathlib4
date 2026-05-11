@@ -126,7 +126,7 @@ def ofBoxProdLeft [DecidableEq β] [DecidableRel G.Adj] {x y : α × β} :
   | nil => nil
   | cons h w =>
     Or.by_cases h.adj
-      (fun hG => w.ofBoxProdLeft.cons (Adj.toStep hG.1))
+      (fun hG => w.ofBoxProdLeft.cons hG.1.toStep)
       (fun hH => hH.2 ▸ w.ofBoxProdLeft)
 
 /-- Project a walk on `G □ H` to a walk on `H` by discarding the moves in the direction of `G`. -/
@@ -135,7 +135,7 @@ def ofBoxProdRight [DecidableEq α] [DecidableRel H.Adj] {x y : α × β} :
   | nil => nil
   | cons h w =>
     (Or.symm h.adj).by_cases
-      (fun hH => w.ofBoxProdRight.cons (Adj.toStep hH.1))
+      (fun hH => w.ofBoxProdRight.cons hH.1.toStep)
       (fun hG => hG.2 ▸ w.ofBoxProdRight)
 
 set_option backward.isDefEq.respectTransparency false in

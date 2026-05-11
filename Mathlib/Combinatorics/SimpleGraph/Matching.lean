@@ -502,8 +502,8 @@ lemma IsCycles.reachable_deleteEdges [Finite V] (hadj : G.Adj v w)
       Set.mem_singleton_iff, or_true, sup_of_le_left]
     exact (Subgraph.spanningCoe_subgraphOfAdj hadj).symm
   rw [show G.deleteEdges {s(v, w)} = G \ fromEdgeSet {s(v, w)} from by rfl]
-  exact this ▸ (hcyc.reachable_sdiff_toSubgraph_spanningCoe (Adj.toWalk hadj)
-    (Walk.IsPath.of_adj hadj)).symm
+  exact this ▸ (hcyc.reachable_sdiff_toSubgraph_spanningCoe hadj.toWalk
+    (by simpa using Walk.IsPath.of_adj hadj)).symm
 
 lemma IsCycles.exists_cycle_toSubgraph_verts_eq_connectedComponentSupp [Finite V]
     {c : G.ConnectedComponent} (h : G.IsCycles) (hv : v ∈ c.supp)

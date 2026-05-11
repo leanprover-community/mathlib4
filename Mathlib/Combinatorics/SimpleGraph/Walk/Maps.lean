@@ -31,7 +31,7 @@ walks
 
 @[expose] public section
 
-open GraphLike SimpleGraph SymmDartLike
+open GraphLike SimpleGraph
 
 namespace GraphLike.Walk
 
@@ -52,7 +52,7 @@ variable (f : G →g G') (f' : G' →g G'') {u v u' v' w : V} (p : Walk G u v)
 theorem map_nil : (nil : Walk G u u).map f = nil := rfl
 
 @[simp]
-theorem map_cons {w : V} (s : step G w u) : (cons s p).map f = cons (f.mapStep s) (p.map f) := rfl
+theorem map_cons {w : V} (s : Step G w u) : (cons s p).map f = cons (f.mapStep s) (p.map f) := rfl
 
 @[simp]
 theorem map_copy (hu : u = u') (hv : v = v') :
@@ -139,12 +139,12 @@ end mapLe
 /-! ### Transferring between graphs -/
 
 /-- Convert a step in a graph to a step in a subgraph. -/
-protected def _root_.GraphLike.step.transfer (s : step G u v) (H : SimpleGraph V)
-    (h : s(u, v) ∈ H.edgeSet) : step H u v :=
+protected def _root_.GraphLike.Step.transfer (s : Step G u v) (H : SimpleGraph V)
+    (h : s(u, v) ∈ H.edgeSet) : Step H u v :=
   ⟨s.val, by simpa using h, s.prop.2.1, s.prop.2.2⟩
 
 @[simp]
-lemma step.transfer_inv (s : step G u v) (H : SimpleGraph V) (h : s(u, v) ∈ H.edgeSet) :
+lemma Step.transfer_inv (s : Step G u v) (H : SimpleGraph V) (h : s(u, v) ∈ H.edgeSet) :
     (s.transfer H h).inv = s.inv.transfer H (Sym2.eq_swap ▸ h) := by simp
 
 /-- The walk `p` transferred to lie in `H`, given that `H` contains its edges. -/
@@ -211,7 +211,7 @@ protected def induce {u v : V} :
 
 @[simp] lemma induce_nil (hw) : (.nil : Walk G u u).induce s hw = .nil := rfl
 
-@[simp] lemma induce_cons (huu' : step G u u') (w : Walk G u' v) (hw) :
+@[simp] lemma induce_cons (huu' : Step G u u') (w : Walk G u' v) (hw) :
     (w.cons huu').induce s hw = .cons (stepInduce _ huu') (w.induce s <| by simp_all) := rfl
 
 @[simp] lemma support_induce {u v : V} :
@@ -219,7 +219,7 @@ protected def induce {u v : V} :
   | .nil, hw => rfl
   | .cons (v := u') hu w, hw => by simp [support_induce]
 
-@[simp] lemma mapStep_induce {u u' : s} (huu' : step G u.val u') :
+@[simp] lemma mapStep_induce {u u' : s} (huu' : Step G u.val u') :
     (Embedding.induce s).toHom.mapStep (G.stepInduce huu') = huu' := by
   simp [Hom.mapStep]
 
@@ -228,11 +228,11 @@ protected def induce {u v : V} :
   | .nil, hw => rfl
   | .cons (v := u') huu' w, hw => by simp [map_induce]
 
-@[simp] lemma mapStep_induceOfLE {u u' : s} (huu' : step G u.val u') (hs : s ⊆ s') :
+@[simp] lemma mapStep_induceOfLE {u u' : s} (huu' : Step G u.val u') (hs : s ⊆ s') :
     (G.induceHomOfLE hs).toHom.mapStep (G.stepInduce huu') = G.stepInduce (s := s') huu' := by
   simp only [RelHom.coeFn_mk, Function.Embedding.toFun_eq_coe, RelEmbedding.coe_toEmbedding,
-    induceHomOfLE_apply, Hom.mapStep, src_eq, tgt_eq, induceHomOfLE_toHom, coe_induceHom,
-    Hom.coe_id, val_step_eq, Prod.map_apply, step.ext_iff, Prod.mk.injEq]
+    induceHomOfLE_apply, Hom.mapStep, src_def, tgt_def, induceHomOfLE_toHom, coe_induceHom,
+    Hom.coe_id, val_step_eq, Prod.map_apply, Step.ext_iff, Prod.mk.injEq]
   exact Prod.mk_inj.mp rfl
 
 lemma map_induce_induceHomOfLE (hs : s ⊆ s') {u v : V} : ∀ (w : Walk G u v) (hw),
@@ -243,8 +243,8 @@ lemma map_induce_induceHomOfLE (hs : s ⊆ s') {u v : V} : ∀ (w : Walk G u v) 
 /-! ## Deleting edges -/
 
 /-- Convert a step in a graph to a step in a graph with edges deleted. -/
-abbrev _root_.GraphLike.step.toDeleteEdges (s : Set (Sym2 V)) (h : step G u v) (hp : s(u, v) ∉ s) :
-    step (G.deleteEdges s) u v :=
+abbrev _root_.GraphLike.Step.toDeleteEdges (s : Set (Sym2 V)) (h : Step G u v) (hp : s(u, v) ∉ s) :
+    Step (G.deleteEdges s) u v :=
   ⟨h.val, deleteEdges_adj.mpr ⟨h.prop.1, by simpa⟩, h.prop.2.1, h.prop.2.2⟩
 
 /-- Given a walk that avoids a set of edges, produce a walk in the graph
@@ -260,7 +260,7 @@ theorem toDeleteEdges_nil (s : Set (Sym2 V)) {v : V} (hp) :
     (Walk.nil : Walk G v v).toDeleteEdges s hp = Walk.nil := rfl
 
 @[simp]
-theorem toDeleteEdges_cons (s : Set (Sym2 V)) {u v w : V} (h : step G u v) (p : Walk G v w) (hp) :
+theorem toDeleteEdges_cons (s : Set (Sym2 V)) {u v w : V} (h : Step G u v) (p : Walk G v w) (hp) :
     (Walk.cons h p).toDeleteEdges s hp =
       Walk.cons (h.toDeleteEdges s (hp s(u, v) (by simp)))
         (p.toDeleteEdges s fun _ he => hp _ <| List.Mem.tail _ he) :=

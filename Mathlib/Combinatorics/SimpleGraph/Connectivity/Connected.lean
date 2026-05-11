@@ -40,7 +40,7 @@ trails, paths, cycles, bridge edges
 
 @[expose] public section
 
-open Function SymmDartLike GraphLike SymmGraphLike
+open Function GraphLike SymmGraphLike
 
 universe u v w
 
@@ -76,7 +76,7 @@ protected theorem _root_.GraphLike.Walk.reachable {G : SimpleGraph V} {u v : V} 
     Reachable G u v := ⟨p⟩
 
 protected theorem Adj.reachable {u v : V} (h : G.Adj u v) : Reachable G u v :=
-  Walk.reachable (Adj.toWalk h)
+  h.toWalk.reachable
 
 theorem adj_le_reachable (G : SimpleGraph V) : G.Adj ≤ Reachable G :=
   fun _ _ ↦ Adj.reachable
@@ -673,7 +673,7 @@ lemma adj_spanningCoe_toSimpleGraph {v w : V} (C : G.ConnectedComponent) :
 
 /-- Get the walk between two vertices in a connected component from a walk in the original graph.
 This is used in `reachable_toSimpleGraph`. -/
-private def walk_toSimpleGraph {G : SimpleGraph V} (C : G.ConnectedComponent) {u v : V}
+private def walk_toSimpleGraph {G : SimpleGraph V} (C : G.ConnectedComponent) {u v}
     (hu : u ∈ C) (hv : v ∈ C) (p : Walk G u v) : Walk C.toSimpleGraph ⟨u, hu⟩ ⟨v, hv⟩ := by
   cases p with
   | nil => exact Walk.nil

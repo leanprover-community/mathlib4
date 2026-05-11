@@ -17,7 +17,7 @@ oriented edge. This file defines darts and proves some of their basic properties
 
 @[expose] public section
 
-open HasSourceTarget HasEdge HasInvol SymmDartLike SymmGraphLike GraphLike
+open SymmGraphLike GraphLike
 
 variable {V : Type*} {G : SimpleGraph V} {d : V × V}
 
@@ -29,12 +29,12 @@ theorem fst_ne_snd_of_mem_darts (hd : d ∈ darts G) : d.fst ≠ d.snd :=
 theorem snd_ne_fst_of_mem_darts (hd : d ∈ darts G) : d.snd ≠ d.fst :=
   fun h ↦ G.irrefl <| h ▸ (show G.Adj d.1 d.2 from adj_of_mem_darts hd)
 
-theorem step.ne {u v} (s : step G u v) : u ≠ v := by
+theorem Step.ne {u v} (s : Step G u v) : u ≠ v := by
   obtain ⟨d, hd, rfl, rfl⟩ := s
   exact fst_ne_snd_of_mem_darts hd
 
-instance {u} : IsEmpty (step G u u) where
-  false s := step.ne s rfl
+instance {u} : IsEmpty (Step G u u) where
+  false s := Step.ne s rfl
 
 @[simp]
 theorem dartSym2_mem (d : darts G) : dartSym2 d ∈ G.edgeSet :=

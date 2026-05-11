@@ -44,22 +44,22 @@ lemma nil_isSubwalk {u v} (q : Walk G u v) : (Walk.nil : Walk G u u).IsSubwalk q
   ⟨nil, q, by simp⟩
 
 protected lemma IsSubwalk.cons {u v u' v' w} {p : Walk G u v} {q : Walk G u' v'}
-    (hpq : p.IsSubwalk q) (h : step G w u') : p.IsSubwalk (q.cons h) := by
+    (hpq : p.IsSubwalk q) (h : Step G w u') : p.IsSubwalk (q.cons h) := by
   obtain ⟨r1, r2, rfl⟩ := hpq
   use r1.cons h, r2
   simp
 
 @[simp]
-lemma isSubwalk_cons {u v w} (p : Walk G u v) (h : step G w u) : p.IsSubwalk (p.cons h) :=
+lemma isSubwalk_cons {u v w} (p : Walk G u v) (h : Step G w u) : p.IsSubwalk (p.cons h) :=
   (isSubwalk_rfl p).cons h
 
 protected lemma IsSubwalk.concat {u v u' v' w} {p : Walk G u v} {q : Walk G u' v'}
-    (hpq : p.IsSubwalk q) (h : step G v' w) : p.IsSubwalk (q.concat h) := by
+    (hpq : p.IsSubwalk q) (h : Step G v' w) : p.IsSubwalk (q.concat h) := by
   obtain ⟨r₁, r₂, rfl⟩ := hpq
   exact ⟨r₁, r₂.concat h, by rw [append_concat]⟩
 
 @[simp]
-lemma isSubwalk_concat {u v w} (p : Walk G u v) (h : step G v w) : p.IsSubwalk (p.concat h) :=
+lemma isSubwalk_concat {u v w} (p : Walk G u v) (h : Step G v w) : p.IsSubwalk (p.concat h) :=
   (isSubwalk_rfl p).concat h
 
 lemma IsSubwalk.trans {u₁ v₁ u₂ v₂ u₃ v₃} {p₁ : Walk G u₁ v₁} {p₂ : Walk G u₂ v₂}
@@ -132,8 +132,8 @@ theorem isSubwalk_iff_darts_isInfix {p₁ : Walk G u v} {p₂ : Walk G u' v'} (h
     ext <;> grind [src_darts_getElem, tgt_darts_getElem]
   · rw [getElem?_pos _ _ <| by grind, Option.some_inj]
     by_cases hi' : i = p₁.length
-    · have := h <| i - 1
-      grind [not_nil_iff_lt_length, tgt_darts_getElem]
+    · have := h (i - 1) (by grind [not_nil_iff_lt_length])
+      grind [tgt_darts_getElem]
     have := h i
     grind [src_darts_getElem]
 
@@ -142,7 +142,7 @@ theorem isSubwalk_nil_iff_mem_support (p : Walk G u v) :
     (nil : Walk G v' v').IsSubwalk p ↔ v' ∈ p.support :=
   isSubwalk_iff_support_isInfix.trans <| p.support.singleton_infix_iff _
 
-theorem isSubwalk_toWalk_iff_mem_darts (p : Walk G u v) (h : step G u' v') :
+theorem isSubwalk_toWalk_iff_mem_darts (p : Walk G u v) (h : Step G u' v') :
     h.toWalk.IsSubwalk p ↔ ⟨⟨u', v'⟩, h.adj⟩ ∈ p.darts := by
   simp [isSubwalk_iff_darts_isInfix, List.singleton_infix_iff]
 
@@ -150,12 +150,12 @@ theorem isSubwalk_toWalk_adj_iff_mem_darts {d : GraphLike.darts G} (p : Walk G u
     (dartStep d).toWalk.IsSubwalk p ↔ d ∈ p.darts :=
   isSubwalk_toWalk_iff_mem_darts ..
 
-theorem isSubwalk_toWalk_iff_mem_edges {p : Walk G u v} (h : step G u' v') :
+theorem isSubwalk_toWalk_iff_mem_edges {p : Walk G u v} (h : Step G u' v') :
     h.toWalk.IsSubwalk p ∨ h.inv.toWalk.IsSubwalk p ↔ s(u', v') ∈ p.edges := by
   rw [isSubwalk_toWalk_iff_mem_darts, isSubwalk_toWalk_iff_mem_darts, edges, List.mem_map]
   refine ⟨fun h ↦ by grind [dartSym2], fun h ↦ ?_⟩
   have ⟨d, hd, h⟩ := h
-  rw [edge_eq, Sym2.eq, Sym2.rel_iff'] at h
+  rw [edge_def, Sym2.eq, Sym2.rel_iff'] at h
   refine h.imp (fun h ↦ ?_) (fun h ↦ ?_)
     <;> convert hd using 2
     <;> exact h.symm

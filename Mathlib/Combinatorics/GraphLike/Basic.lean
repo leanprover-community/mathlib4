@@ -98,49 +98,49 @@ lemma Adj.right_mem (h : Adj G v w) : w ∈ V(G) := by
 
 /-- The step from `u` to `v` is a dart from `u` to `v`. -/
 @[expose]
-def step (G : Gr) [GraphLike V D E Gr] (u v : V) :=
+def Step (G : Gr) [GraphLike V D E Gr] (u v : V) :=
   {d : D // d ∈ D(G) ∧ src G d = u ∧ tgt G d = v}
 
-instance [DecidableEq D] : DecidableEq (step G u v) := Subtype.instDecidableEq
+instance [DecidableEq D] : DecidableEq (Step G u v) := Subtype.instDecidableEq
 
 @[simp]
-lemma step.src (h : step G u v) : src G h.val = u := by
+lemma Step.src (h : Step G u v) : src G h.val = u := by
   obtain ⟨d, hd, hu, hv⟩ := h
   exact hu
 
 @[simp]
-lemma step.tgt (h : step G u v) : tgt G h.val = v := by
+lemma Step.tgt (h : Step G u v) : tgt G h.val = v := by
   obtain ⟨d, hd, hu, hv⟩ := h
   exact hv
 
-lemma step.left_mem (h : step G u v) : u ∈ V(G) := by
+lemma Step.left_mem (h : Step G u v) : u ∈ V(G) := by
   obtain ⟨d, hd, rfl, rfl⟩ := h
   exact src_mem_of_darts hd
 
-lemma step.right_mem (h : step G u v) : v ∈ V(G) := by
+lemma Step.right_mem (h : Step G u v) : v ∈ V(G) := by
   obtain ⟨d, hd, rfl, rfl⟩ := h
   exact tgt_mem_of_darts hd
 
-lemma step.left_eq_of_val_eq {s₁ : step G u v} {s₂ : step G u' v'} (h : s₁.val = s₂.val) :
+lemma Step.left_eq_of_val_eq {s₁ : Step G u v} {s₂ : Step G u' v'} (h : s₁.val = s₂.val) :
     u = u' := by
   obtain ⟨d₁, hd₁, rfl, rfl⟩ := s₁
   obtain ⟨d₂, hd₂, rfl, rfl⟩ := s₂
   obtain rfl : d₁ = d₂ := h
   rfl
 
-lemma step.right_eq_of_val_eq {s₁ : step G u v} {s₂ : step G u' v'} (h : s₁.val = s₂.val) :
+lemma Step.right_eq_of_val_eq {s₁ : Step G u v} {s₂ : Step G u' v'} (h : s₁.val = s₂.val) :
     v = v' := by
   obtain ⟨d₁, hd₁, rfl, rfl⟩ := s₁
   obtain ⟨d₂, hd₂, rfl, rfl⟩ := s₂
   obtain rfl : d₁ = d₂ := h
   rfl
 
-@[ext] lemma step.ext {s₁ s₂ : step G u v} (h : s₁.val = s₂.val) : s₁ = s₂ := Subtype.ext h
+@[ext] lemma Step.ext {s₁ s₂ : Step G u v} (h : s₁.val = s₂.val) : s₁ = s₂ := Subtype.ext h
 
-attribute [simp] step.ext_iff
+attribute [simp] Step.ext_iff
 
 @[simp]
-lemma step.ext_HEq {u' v'} {s₁ : step G u v} {s₂ : step G u' v'} (h : s₁.val = s₂.val) :
+lemma Step.ext_HEq {u' v'} {s₁ : Step G u v} {s₂ : Step G u' v'} (h : s₁.val = s₂.val) :
     s₁ ≍ s₂ := by
   obtain ⟨d₁, hd₁, rfl, rfl⟩ := s₁
   obtain ⟨d₂, hd₂, rfl, rfl⟩ := s₂
@@ -148,31 +148,31 @@ lemma step.ext_HEq {u' v'} {s₁ : step G u v} {s₂ : step G u' v'} (h : s₁.v
   rfl
 
 /-- Convert a step to a dart. -/
-@[expose] def step.todart (h : step G u v) : darts G := ⟨h.val, h.prop.1⟩
+@[expose] def Step.todart (h : Step G u v) : darts G := ⟨h.val, h.prop.1⟩
 
-lemma step.todart_val (h : step G u v) : h.todart.val = h.val := by simp [step.todart]
+lemma Step.todart_val (h : Step G u v) : h.todart.val = h.val := by simp [Step.todart]
 
-lemma step.todart_src (s : step G u v) : GraphLike.src G s.todart.val = u := by
+lemma Step.todart_src (s : Step G u v) : GraphLike.src G s.todart.val = u := by
   obtain ⟨d, hd, rfl, rfl⟩ := s
   rfl
 
-lemma step.todart_tgt (s : step G u v) : GraphLike.tgt G s.todart.val = v := by
+lemma Step.todart_tgt (s : Step G u v) : GraphLike.tgt G s.todart.val = v := by
   obtain ⟨d, hd, rfl, rfl⟩ := s
   rfl
 
-lemma step.adj (h : step G u v) : Adj G u v := by
+lemma Step.adj (h : Step G u v) : Adj G u v := by
   rw [← exists_darts_iff_adj]
   obtain ⟨d, hd, rfl, rfl⟩ := h
   exact ⟨d, hd, rfl, rfl⟩
 
 /-- If `u` and `v` are adjacent, then there exists a step from `u` to `v`. -/
-noncomputable def Adj.toStep (h : Adj G u v) : step G u v :=
+@[expose] noncomputable def Adj.toStep (h : Adj G u v) : Step G u v :=
   ⟨(exists_darts_iff_adj.mpr h).choose, (exists_darts_iff_adj.mpr h).choose_spec⟩
 
-lemma Adj.toStep_adj (h : Adj G u v) : (h.toStep).adj = h := rfl
+lemma Adj.toStep_adj (h : Adj G u v) : h.toStep.adj = h := rfl
 
 /-- Convert a dart to a step. -/
-@[expose] def dartStep (d : darts G) : step G (src G d.val) (tgt G d.val) :=
+@[expose] def dartStep (d : darts G) : Step G (src G d.val) (tgt G d.val) :=
   ⟨d.val, d.prop, rfl, rfl⟩
 
 @[simp]
@@ -200,13 +200,13 @@ class NoMultiEdgeGraphLike (V D E : outParam Type*) (Gr : Type*) extends GraphLi
 
 variable [NoMultiEdgeGraphLike V D E Gr]
 
-lemma dart_eq_of_src_tgt_eq {d₁ d₂ : D} (h : src G d₁ = src G d₂) (h' : tgt G d₁ = tgt G d₂) :
+lemma dart_eq_of_src_tgt_def {d₁ d₂ : D} (h : src G d₁ = src G d₂) (h' : tgt G d₁ = tgt G d₂) :
     d₁ = d₂ := by
   apply NoMultiEdgeGraphLike.src_tgt_inj (Gr := Gr) G
   grind
 
 lemma src_tgt_inj (d₁ d₂ : D) : src G d₁ = src G d₂ ∧ tgt G d₁ = tgt G d₂ ↔ d₁ = d₂ :=
-  ⟨fun h => dart_eq_of_src_tgt_eq h.1 h.2, by grind⟩
+  ⟨fun h => dart_eq_of_src_tgt_def h.1 h.2, by grind⟩
 
 @[simp]
 lemma mem_darts_iff_adj : d ∈ darts G ↔ Adj G (src G d) (tgt G d) := by
@@ -218,14 +218,14 @@ lemma mem_darts_iff_adj : d ∈ darts G ↔ Adj G (src G d) (tgt G d) := by
 instance [DecidableRel (Adj G)] : DecidablePred (· ∈ darts G) :=
   fun d => decidable_of_iff (Adj G (src G d) (tgt G d)) (mem_darts_iff_adj.symm)
 
-instance : Subsingleton (step G u v) where
+instance : Subsingleton (Step G u v) where
   allEq := by
     rintro ⟨p₁, h₁, rfl, rfl⟩ ⟨p₂, h₂, h1, h2⟩
-    exact step.ext_iff.mpr <| dart_eq_of_src_tgt_eq h1.symm h2.symm
+    exact Step.ext_iff.mpr <| dart_eq_of_src_tgt_def h1.symm h2.symm
 
 @[simp]
-lemma exists_step_iff_adj {P : (step G u v) → Prop} :
-    (∃ s : step G u v, P s) ↔ (∃ h : Adj G u v, P (h.toStep)) := by
+lemma exists_step_iff_adj {P : (Step G u v) → Prop} :
+    (∃ s : Step G u v, P s) ↔ (∃ h : Adj G u v, P (h.toStep)) := by
   refine ⟨fun ⟨s, hp⟩ ↦ ⟨s.adj, ?_⟩, fun ⟨h, hp⟩ ↦ ⟨h.toStep, hp⟩⟩
   rwa [Subsingleton.elim s.adj.toStep s]
 

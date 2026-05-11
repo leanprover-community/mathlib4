@@ -48,7 +48,7 @@ def getVert {u v : V} : Walk G u v → ℕ → V
 theorem getVert_zero {u v} (w : Walk G u v) : w.getVert 0 = u := by cases w <;> rfl
 
 @[simp]
-theorem getVert_nil (u : V) {i : ℕ} : (@nil _ _ _ _ _ _ G _ u).getVert i = u := rfl
+theorem getVert_nil (u : V) {i : ℕ} : (@nil _ _ _ _ _ G u).getVert i = u := rfl
 
 theorem getVert_of_length_le {u v} (w : Walk G u v) {i : ℕ} (hi : w.length ≤ i) :
     w.getVert i = v := by
@@ -73,10 +73,10 @@ theorem adj_getVert_succ {u v} (w : Walk G u v) {i : ℕ} (hi : i < w.length) :
     · exact ih (Nat.succ_lt_succ_iff.1 hi)
 
 @[simp]
-lemma getVert_cons_succ {u v w n} (p : Walk G v w) (s : step G u v) :
+lemma getVert_cons_succ {u v w n} (p : Walk G v w) (s : Step G u v) :
     (p.cons s).getVert (n + 1) = p.getVert n := rfl
 
-lemma getVert_cons {u v w n} (p : Walk G v w) (s : step G u v) (hn : n ≠ 0) :
+lemma getVert_cons {u v w n} (p : Walk G v w) (s : Step G u v) (hn : n ≠ 0) :
     (p.cons s).getVert n = p.getVert (n - 1) := by
   obtain ⟨n, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero hn
   rw [getVert_cons_succ, Nat.add_sub_cancel]
@@ -147,10 +147,10 @@ abbrev snd (p : Walk G u v) : V := p.getVert 1
   simpa using adj_getVert_succ p (by simpa [not_nil_iff_lt_length] using hp : 0 < p.length)
 
 /-- The first step of a walk, ending at the second vertex. -/
-def step_snd {p : Walk G v w} (hp : ¬ p.Nil) : step G v p.snd :=
+def step_snd {p : Walk G v w} (hp : ¬ p.Nil) : Step G v p.snd :=
   ⟨(v, p.snd), p.adj_snd hp, rfl, rfl⟩
 
-lemma snd_cons {u v w} (q : Walk G v w) (s : step G u v) :
+lemma snd_cons {u v w} (q : Walk G v w) (s : Step G u v) :
     (q.cons s).snd = v := by simp
 
 lemma snd_mem_tail_support {u v : V} {p : Walk G u v} (h : ¬p.Nil) : p.snd ∈ p.support.tail :=
@@ -170,16 +170,16 @@ lemma snd_eq_support_getElem_one {p : Walk G u v} (hnil : ¬p.Nil) :
 abbrev penultimate (p : Walk G u v) : V := p.getVert (p.length - 1)
 
 @[simp]
-lemma penultimate_nil : (@nil _ _ _ _ _ _ G _ v).penultimate = v := rfl
+lemma penultimate_nil : (@nil _ _ _ _ _ G v).penultimate = v := rfl
 
 @[simp]
-lemma penultimate_cons_nil (s : step G u v) : (cons s nil).penultimate = u := rfl
+lemma penultimate_cons_nil (s : Step G u v) : (cons s nil).penultimate = u := rfl
 
 @[simp]
-lemma penultimate_cons_cons {w'} (s : step G u v) (s₂ : step G v w) (p : Walk G w w') :
+lemma penultimate_cons_cons {w'} (s : Step G u v) (s₂ : Step G v w) (p : Walk G w w') :
     (cons s (cons s₂ p)).penultimate = (cons s₂ p).penultimate := rfl
 
-lemma penultimate_cons_of_not_nil (s : step G u v) (p : Walk G v w) (hp : ¬ p.Nil) :
+lemma penultimate_cons_of_not_nil (s : Step G u v) (p : Walk G v w) (hp : ¬ p.Nil) :
     (cons s p).penultimate = p.penultimate :=
   p.notNilRec (by simp) hp s
 
@@ -190,7 +190,7 @@ lemma adj_penultimate {p : Walk G v w} (hp : ¬ p.Nil) : G.Adj p.penultimate w :
   convert adj_getVert_succ _ _ <;> lia
 
 /-- The last step of a walk, ending at the penultimate vertex. -/
-def step_penultimate {p : Walk G u v} (hp : ¬p.Nil) : step G p.penultimate v :=
+def step_penultimate {p : Walk G u v} (hp : ¬p.Nil) : Step G p.penultimate v :=
   ⟨(p.penultimate, v), p.adj_penultimate hp, rfl, rfl⟩
 
 lemma penultimate_mem_dropLast_support {p : Walk G u v} (h : ¬p.Nil) :

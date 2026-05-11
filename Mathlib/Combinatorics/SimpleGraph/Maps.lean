@@ -231,7 +231,7 @@ variable {G} in
 lemma induce_adj {s : Set V} {u v : s} : (G.induce s).Adj u v ↔ G.Adj u v := .rfl
 
 /-- Convert a step in a graph to a step in the induced subgraph. -/
-def stepInduce {s : Set V} {u v : s} (h : step G u.val v) : step (G.induce s) u v :=
+def stepInduce {s : Set V} {u v : s} (h : Step G u.val v) : Step (G.induce s) u v :=
   ⟨(u, v), induce_adj.mpr h.adj, rfl, rfl⟩
 
 @[simp] lemma induce_top (s : Set V) : (completeGraph V).induce s = completeGraph s :=
@@ -383,18 +383,18 @@ theorem mapDart_apply (d : darts G) : f.mapDart d = ⟨d.1.map f f, f.map_adj d.
 
 /-- The map between steps induced by a homomorphism. -/
 @[simps]
-def mapStep {u v : V} (s : step G u v) : step G' (f u) (f v) :=
+def mapStep {u v : V} (s : Step G u v) : Step G' (f u) (f v) :=
   ⟨Prod.map f f s.val, f.map_rel' s.prop.1, by simp, by simp⟩
 
 theorem mapStep_injective {f : G →g G'} (u v : V) :
-    Function.Injective (f.mapStep : step G u v → step G' (f u) (f v)) :=
+    Function.Injective (f.mapStep : Step G u v → Step G' (f u) (f v)) :=
   fun _ _ _ => by simp
 
 @[simp]
-theorem mapStep_id (s : step G u v) : Hom.id.mapStep s = s := step.ext rfl
+theorem mapStep_id (s : Step G u v) : Hom.id.mapStep s = s := Step.ext rfl
 
 @[simp]
-theorem mapStep_symm (s : step G u v) : f.mapStep s.inv = (f.mapStep s).inv := by simp
+theorem mapStep_symm (s : Step G u v) : f.mapStep s.inv = (f.mapStep s).inv := by simp
 
 /-- The graph homomorphism from a smaller graph to a bigger one. -/
 def ofLE (h : G₁ ≤ G₂) : G₁ →g G₂ := ⟨id, @h⟩

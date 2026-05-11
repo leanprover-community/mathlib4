@@ -231,7 +231,7 @@ theorem toSubgraph_reverse (p : Walk G u v) : p.reverse.toSubgraph = p.toSubgrap
   induction p with
   | nil => simp
   | cons s p ih =>
-    simp [ih, sup_comm, subgraphOfAdj_symm s.adj]
+    simp [ih, sup_comm p.toSubgraph, subgraphOfAdj_symm s.adj]
 
 @[simp]
 theorem toSubgraph_rotate [DecidableEq V] (c : Walk G v v) (h : u ∈ c.support) :
@@ -336,7 +336,7 @@ lemma toSubgraph_bypass_le_toSubgraph {u v : V} {p : Walk G u v} [DecidableEq V]
   · simpa [adj_toSubgraph_iff_mem_edges] using fun _ _ h ↦ p.edges_toPath_subset h
 
 /-- Map a walk to its own subgraph. -/
-def mapToSubgraph {u v : V} : ∀ w : Walk G u v, Walk w.toSubgraph.coe
+noncomputable def mapToSubgraph {u v : V} : ∀ w : Walk G u v, Walk w.toSubgraph.coe
     ⟨_, w.start_mem_verts_toSubgraph⟩ ⟨_, w.end_mem_verts_toSubgraph⟩
   | nil => nil
   | cons .. =>
@@ -361,8 +361,11 @@ theorem map_mapToSubgraph_eq_induce (s : Set V) {u v : V} :
         w.toSubgraph.coe →g G.induce s) = w.induce s hs
   | nil, hs => rfl
   | cons hadj w, hs => by
-    rw [mapToSubgraph, map_cons, map_map]
-    exact congrArg _ <| w.map_mapToSubgraph_eq_induce s (hs · <| List.mem_of_mem_tail ·)
+    rw [mapToSubgraph, map_cons, map_map, induce_cons, ← w.map_mapToSubgraph_eq_induce s
+      (hs · <| List.mem_of_mem_tail ·)]
+    simp only [Walk.toSubgraph, Subgraph.verts_sup, subgraphOfAdj_verts, RelHom.coeFn_mk,
+      cons.injEq, heq_eq_eq, Step.ext_iff, src_def, tgt_def, val_step_eq, true_and]
+    rfl
 
 /-- Mapping a walk to its own subgraph and then to `G[w.support]` is the same as inducing the walk
 to its support. -/

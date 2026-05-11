@@ -181,7 +181,7 @@ theorem isAcyclic_iff_forall_adj_isBridge :
   · rintro hb v (_ | ⟨ha, p⟩) hp
     · exact hp.not_of_nil
     · apply (hb ha.adj).2 _ hp
-      rw [Walk.edges_cons, val_step_eq, edge_eq]
+      rw [Walk.edges_cons, val_step_eq, edge_def]
       apply List.mem_cons_self
 
 theorem isAcyclic_iff_forall_edge_isBridge :
@@ -208,7 +208,8 @@ theorem IsAcyclic.path_unique {G : SimpleGraph V} (h : G.IsAcyclic) {v w : V} (p
       | nil => simp at hp
       | cons s q =>
         rw [Walk.cons_isPath_iff] at hp hq
-        simp only [Walk.edges_cons, List.mem_cons, val_step_eq, edge_eq, Sym2.eq_iff, true_and] at h
+        simp only [Walk.edges_cons, List.mem_cons, val_step_eq, edge_def, Sym2.eq_iff,
+          true_and] at h
         rcases h with (⟨h, rfl⟩ | ⟨rfl, rfl⟩) | h
         · cases ih hp.1 q hq.1
           rw [Subsingleton.elim s ph]
@@ -298,7 +299,7 @@ theorem IsAcyclic.isPath_iff_isChain (hG : G.IsAcyclic) {v w : V} (p : Walk G v 
           ⟨[], (tail.dropUntil u' hh).support.tail, by simp [← support_append]⟩
       refine ⟨⟨?_, edges_nodup_of_support_nodup this⟩, this⟩
       by_contra hhh
-      simp only [src_eq, tgt_eq, val_step_eq, edge_eq] at hhh hcc
+      simp only [src_def, tgt_def, val_step_eq, edge_def] at hhh hcc
       refine hcc.1 s(u', v') ?_ rfl
       rw [← tail.cons_tail_eq (by simp [not_nil_iff_lt_length, h'])]
       have := IsPath.mk' this |>.eq_snd_of_mem_edges (Sym2.eq_swap ▸ hhh)

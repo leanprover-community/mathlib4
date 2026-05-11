@@ -43,7 +43,7 @@ theorem set_walk_length_zero_eq_of_ne {u v : V} (h : u ≠ v) :
 
 theorem set_walk_length_succ_eq (u v : V) (n : ℕ) :
     {p : Walk G u v | p.length = n.succ} =
-      ⋃ (w : V) (h : step G u w), Walk.cons h '' {p' : Walk G w v | p'.length = n} := by
+      ⋃ (w : V) (h : Step G u w), Walk.cons h '' {p' : Walk G w v | p'.length = n} := by
   ext p
   cases p with
   | nil => simp [eq_comm]
@@ -59,7 +59,7 @@ def walkLengthTwoEquivCommonNeighbors (u v : V) :
     {p : Walk G u v // p.length = 2} ≃ G.commonNeighbors u v where
   toFun p := ⟨p.val.snd, match p with
     | ⟨.cons s1 (.cons s2 .nil), _⟩ => ⟨s1.adj, s2.adj.symm⟩⟩
-  invFun w := ⟨(Adj.toWalk (w.prop.1)).concat (Adj.toStep w.prop.2.symm), rfl⟩
+  invFun w := ⟨w.prop.1.toWalk.concat w.prop.2.symm.toStep, rfl⟩
   left_inv | ⟨.cons s1 (.cons s2 .nil), hp⟩ => by simp [Walk.getVert]
 
 section LocallyFinite
@@ -93,7 +93,7 @@ theorem coe_finsetWalkLength_eq (n : ℕ) (u v : V) :
       Embedding.coeFn_mk]
     congr!
     ext w
-    simp only [Set.mem_iUnion, Set.mem_image, Set.mem_setOf_eq, exists_step_iff_adj]
+    simp only [Set.mem_iUnion, Set.mem_image, Set.mem_setOf_eq, exists_step_iff_adj, Adj.toStep_eq]
     rfl
 
 variable {G} in

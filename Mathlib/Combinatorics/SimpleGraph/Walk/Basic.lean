@@ -33,15 +33,16 @@ walks
 
 @[expose] public section
 
-open SimpleGraph HasSourceTarget HasEdge HasInvol SymmDartLike SymmGraphLike
-namespace GraphLike
+open SimpleGraph SymmGraphLike
 
-universe u
-variable {V : Type u} (G : SimpleGraph V) {u v w : V}
+variable {V : Type*} {G : SimpleGraph V} {u v w : V}
 
-namespace Walk
+/-- The one-edge walk associated to a pair of adjacent vertices. -/
+@[expose, match_pattern, reducible]
+def SimpleGraph.Adj.toWalk {u v : V} (h : Adj G u v) : GraphLike.Walk G u v :=
+  GraphLike.Walk.cons h.toStep GraphLike.Walk.nil
 
-variable {G}
+namespace GraphLike.Walk
 
 theorem adj_of_mem_edges {u v x y : V} (p : Walk G u v) (h : s(x, y) ∈ p.edges) : G.Adj x y :=
   p.edges_subset_edgeSet h
@@ -75,6 +76,14 @@ theorem mem_support_iff_exists_mem_edges_of_not_nil {u v w : V} {p : Walk G u v}
   induction p with
   | nil => simp at hnil
   | cons h p ih => cases p <;> aesop
+
+theorem darts_getElem_eq_fst_snd {u v} {p : Walk G u v} {i : ℕ} (hi : i < p.darts.length) :
+    p.darts[i] = (p.support[i]'(by grind), p.support[i + 1]'(by grind)) := by
+  match i, p with
+  | 0, .cons s_2 p_2 => simp
+  | n_1 + 1, .cons s_2 p_2 =>
+    simp only [darts_cons, val_step_eq, List.getElem_cons_succ, support_cons]
+    exact p_2.darts_getElem_eq_fst_snd _
 
 end Walk
 

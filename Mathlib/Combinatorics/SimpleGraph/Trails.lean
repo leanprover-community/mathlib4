@@ -43,7 +43,7 @@ namespace GraphLike.Walk
 
 variable {V : Type*} {G : SimpleGraph V}
 
-open SimpleGraph SymmDartLike GraphLike SymmGraphLike
+open SimpleGraph GraphLike SymmGraphLike
 
 /-- The edges of a trail as a finset, since each edge in a trail appears exactly once. -/
 abbrev IsTrail.edgesFinset {u v : V} {p : Walk G u v} (h : p.IsTrail) : Finset (Sym2 V) :=
@@ -58,8 +58,9 @@ theorem IsTrail.even_countP_edges_iff {u v : V} {p : Walk G u v} (ht : p.IsTrail
   | cons huv p ih =>
     rw [isTrail_cons] at ht
     specialize ih ht.1
-    simp only [edges_cons, src_eq, tgt_eq, val_step_eq, edge_eq, List.countP_cons, Sym2.mem_iff,
-      Bool.decide_or, Bool.or_eq_true, decide_eq_true_eq, Ne]
+    simp only [edges_cons, SimpleGraph.src_def, SimpleGraph.tgt_def, SimpleGraph.val_step_eq,
+      SimpleGraph.edge_def, List.countP_cons, Sym2.mem_iff, Bool.decide_or, Bool.or_eq_true,
+      decide_eq_true_eq, Ne]
     split_ifs with h
     · obtain (rfl | rfl) := h
       · rw [Nat.even_add_one, ih]
@@ -127,7 +128,8 @@ theorem IsEulerian.edgesFinset_eq [Fintype G.edgeSet] {u v : V} {p : Walk G u v}
 theorem IsEulerian.even_degree_iff {x u v : V} {p : Walk G u v} (ht : p.IsEulerian) [Fintype V]
     [DecidableRel G.Adj] : Even (G.degree x) ↔ u ≠ v → x ≠ u ∧ x ≠ v := by
   convert ht.isTrail.even_countP_edges_iff x
-  rw [← Multiset.coe_countP, Multiset.countP_eq_card_filter, ← card_incidenceFinset_eq_degree]
+  rw [← Multiset.coe_countP, Multiset.countP_eq_card_filter,
+    ← SimpleGraph.card_incidenceFinset_eq_degree]
   change Multiset.card _ = _
   congr 1
   convert_to _ = (ht.isTrail.edgesFinset.filter (x ∈ ·)).val

@@ -54,7 +54,7 @@ See `GraphLike.Walk.nil'` and `GraphLike.Walk.cons'` for patterns that
 can be useful in definitions since they make the vertices explicit. -/
 inductive Walk (G : Gr) : V → V → Type (max u_1 u_2)
   | nil {u : V} : Walk G u u
-  | cons {u v w : V} (s : step G u v) (p : Walk G v w) : Walk G u w
+  | cons {u v w : V} (s : Step G u v) (p : Walk G v w) : Walk G u w
 
 namespace Walk
 
@@ -88,7 +88,7 @@ instance instInhabited (G : Gr) [GraphLike V D E Gr] (v : V) : Inhabited (Walk G
 
 /-- The one-edge walk associated to a single step, which is a dart from `u` to `v`. -/
 @[expose, match_pattern, reducible, cast_data]
-def _root_.GraphLike.step.toWalk (s : step G u v) : Walk G u v :=
+def _root_.GraphLike.Step.toWalk (s : Step G u v) : Walk G u v :=
   Walk.cons s Walk.nil
 
 /-- Pattern to get `Walk.nil` with the vertex as an explicit argument. -/
@@ -97,10 +97,10 @@ abbrev nil' (u : V) : Walk G u u := Walk.nil
 
 /-- Pattern to get `Walk.cons` with the vertices as explicit arguments. -/
 @[match_pattern]
-abbrev cons' (u v w : V) (s : step G u v) (p : Walk G v w) : Walk G u w := Walk.cons s p
+abbrev cons' (u v w : V) (s : Step G u v) (p : Walk G v w) : Walk G u w := Walk.cons s p
 
 theorem exists_eq_cons_of_ne (hne : u ≠ v) :
-    ∀ (p : Walk G u v), ∃ (w : V) (s : step G u w) (p' : Walk G w v), p = cons s p'
+    ∀ (p : Walk G u v), ∃ (w : V) (s : Step G u w) (p' : Walk G w v), p = cons s p'
   | nil => (hne rfl).elim
   | cons s p' => ⟨_, s, p', rfl⟩
 
@@ -114,14 +114,14 @@ def length {u v : V} : Walk G u v → ℕ
 theorem length_nil : (nil : Walk G u u).length = 0 := rfl
 
 @[simp]
-theorem length_cons (s : step G u v) (p : Walk G v w) :
+theorem length_cons (s : Step G u v) (p : Walk G v w) :
     (cons s p).length = p.length + 1 := rfl
 
 theorem eq_of_length_eq_zero : ∀ {p : Walk G u v}, p.length = 0 → u = v
   | nil, _ => rfl
 
 /-- If `u` and `v` connected by one-edge walk, then there exists a step between them. -/
-@[expose] def step_of_length_eq_one : ∀ {p : Walk G u v}, p.length = 1 → step G u v
+@[expose] def step_of_length_eq_one : ∀ {p : Walk G u v}, p.length = 1 → Step G u v
   | cons s nil, _ => s
 
 @[simp]
@@ -131,7 +131,7 @@ theorem exists_length_eq_zero_iff : (∃ p : Walk G u v, p.length = 0) ↔ u = v
 @[simp]
 lemma exists_length_eq_one_iff : (∃ (p : Walk G u v), p.length = 1) ↔ Adj G u v := by
   rw [← exists_darts_iff_adj]
-  refine ⟨fun ⟨p, hp⟩ ↦ ?_, fun ⟨d, hd, hu, hv⟩ ↦ ⟨step.toWalk ⟨d, hd, hu, hv⟩, by simp⟩⟩
+  refine ⟨fun ⟨p, hp⟩ ↦ ?_, fun ⟨d, hd, hu, hv⟩ ↦ ⟨Step.toWalk ⟨d, hd, hu, hv⟩, by simp⟩⟩
   induction p with
   | nil => simp at hp
   | cons d p' =>
@@ -157,13 +157,13 @@ def darts {u v : V} : Walk G u v → List (darts G)
 
 /-- The `edges` of a walk is the list of edges it visits in order.
 This is defined to be the list of edges underlying `SimpleGraph.Walk.darts`. -/
-@[expose, cast_data] def edges {u v : V} (p : Walk G u v) : List E := p.darts.map (edge ·.val)
+@[expose, cast_data] def edges {u v : V} (p : Walk G u v) : List E := p.darts.map (edge G ·.val)
 
 @[simp]
 theorem support_nil : (nil : Walk G u u).support = [u] := rfl
 
 @[simp, grind =]
-theorem support_cons (s : step G u v) (p : Walk G v w) :
+theorem support_cons (s : Step G u v) (p : Walk G v w) :
     (cons s p).support = u :: p.support := rfl
 
 @[simp]
@@ -199,14 +199,14 @@ theorem end_mem_tail_support_of_ne (h : u ≠ v) (p : Walk G u v) : v ∈ p.supp
   obtain ⟨_, _, _, rfl⟩ := exists_eq_cons_of_ne h p
   simp
 
-theorem support_subset_support_cons (p : Walk G v w) (s : step G u v) :
+theorem support_subset_support_cons (p : Walk G v w) (s : Step G u v) :
     p.support ⊆ (p.cons s).support := by
   simp
 
 theorem coe_support (p : Walk G u v) : (p.support : Multiset V) = {u} + p.support.tail := by
   cases p <;> rfl
 
-theorem isChain_adj_cons_support {u v w : V} (s : step G u v) :
+theorem isChain_adj_cons_support {u v w : V} (s : Step G u v) :
     ∀ (p : Walk G v w), List.IsChain (Adj G) (u :: p.support)
   | nil => .cons_cons s.adj (.singleton v)
   | cons h' p => .cons_cons s.adj (isChain_adj_cons_support h' p)
@@ -229,7 +229,7 @@ theorem isChain_dartAdj_darts : ∀ (p : Walk G u v), List.IsChain DartAdj p.dar
 theorem darts_nil : (nil : Walk G u u).darts = [] := rfl
 
 @[simp]
-theorem darts_cons (s : step G u v) (p : Walk G v w) :
+theorem darts_cons (s : Step G u v) (p : Walk G v w) :
     (cons s p).darts = ⟨s.val, s.prop.1⟩ :: p.darts := rfl
 
 theorem cons_map_tgt_darts (p : Walk G u v) : (u :: p.darts.map (tgt G ·.val)) = p.support := by
@@ -294,8 +294,8 @@ theorem darts_injective {u v : V} : Function.Injective (Walk.darts : Walk G u v 
     simp only [darts_cons, List.cons.injEq, Subtype.mk.injEq] at h
     obtain ⟨hs, h⟩ := h
     rw [cons.injEq]
-    obtain rfl := step.right_eq_of_val_eq hs
-    exact ⟨rfl, step.ext_HEq hs, heq_of_eq <| darts_injective h⟩
+    obtain rfl := Step.right_eq_of_val_eq hs
+    exact ⟨rfl, Step.ext_HEq hs, heq_of_eq <| darts_injective h⟩
 
 /-- Every edge in a walk's edge list is an edge of the graph.
 It is written in this form (rather than using `⊆`) to avoid unsightly coercions. -/
@@ -309,8 +309,8 @@ theorem edges_subset_edgeSet {u v} : ∀ (p : Walk G u v) ⦃e : E⦄, e ∈ p.e
 theorem edges_nil {u : V} : (nil : Walk G u u).edges = [] := rfl
 
 @[simp]
-theorem edges_cons {u v w : V} (s : step G u v) (p : Walk G v w) :
-    (cons s p).edges = edge s.val :: p.edges := by simp [edges, darts]
+theorem edges_cons {u v w : V} (s : Step G u v) (p : Walk G v w) :
+    (cons s p).edges = edge G s.val :: p.edges := by simp [edges, darts]
 
 @[simp, grind =]
 theorem length_edges {u v : V} (p : Walk G u v) : p.edges.length = p.length := by simp [edges]
@@ -325,8 +325,8 @@ lemma mem_edgeSet {u v : V} {p : Walk G u v} {e : E} : e ∈ p.edgeSet ↔ e ∈
 lemma edgeSet_nil (u : V) : (nil : Walk G u u).edgeSet = ∅ := by ext; simp
 
 @[simp]
-theorem edgeSet_cons {u v w : V} (s : step G u v) (p : Walk G v w) :
-    (cons s p).edgeSet = insert (edge s.val) p.edgeSet := by ext; simp
+theorem edgeSet_cons {u v w : V} (s : Step G u v) (p : Walk G v w) :
+    (cons s p).edgeSet = insert (edge G s.val) p.edgeSet := by ext; simp
 
 theorem coe_edges_toFinset [DecidableEq E] {u v : V} (p : Walk G u v) :
     (p.edges.toFinset : Set E) = p.edgeSet := by
@@ -341,7 +341,7 @@ inductive Nil : {u v : V} → Walk G u v → Prop
 
 @[simp, grind .] lemma nil_nil : (nil : Walk G u u).Nil := Nil.nil
 
-@[simp] lemma not_nil_cons {h : step G u v} {p : Walk G v w} : ¬ (cons h p).Nil := nofun
+@[simp] lemma not_nil_cons {h : Step G u v} {p : Walk G v w} : ¬ (cons h p).Nil := nofun
 
 instance (p : Walk G v w) : Decidable p.Nil :=
   match p with
@@ -368,7 +368,7 @@ lemma nil_iff_length_eq : p.Nil ↔ p.length = 0 := by
 lemma not_nil_iff_lt_length : ¬ p.Nil ↔ 0 < p.length := by
   cases p <;> simp
 
-lemma not_nil_iff : ¬ p.Nil ↔ ∃ (w : V) (h : step G u w) (q : Walk G w v), p = cons h q := by
+lemma not_nil_iff : ¬ p.Nil ↔ ∃ (w : V) (h : Step G u w) (q : Walk G w v), p = cons h q := by
   cases p <;> simp [*]
 
 /-- A walk with its endpoints defeq is `Nil` if and only if it is equal to `nil`. -/
@@ -380,7 +380,7 @@ alias ⟨Nil.eq_nil, _⟩ := nil_iff_eq_nil
 /-- The recursion principle for nonempty walks -/
 @[elab_as_elim]
 def notNilRec {motive : {u w : V} → (p : Walk G u w) → (h : ¬ p.Nil) → Sort*}
-    (cons : {u v w : V} → (h : step G u v) → (q : Walk G v w) → motive (cons h q) not_nil_cons)
+    (cons : {u v w : V} → (h : Step G u v) → (q : Walk G v w) → motive (cons h q) not_nil_cons)
     (p : Walk G u w) : (hp : ¬ p.Nil) → motive p hp :=
   match p with
   | nil => fun hp => absurd .nil hp
@@ -388,8 +388,8 @@ def notNilRec {motive : {u w : V} → (p : Walk G u w) → (h : ¬ p.Nil) → So
 
 @[simp]
 lemma notNilRec_cons {motive : {u w : V} → (p : Walk G u w) → ¬ p.Nil → Sort*}
-    (cons : {u v w : V} → (h : step G u v) → (q : Walk G v w) →
-    motive (q.cons h) Walk.not_nil_cons) (h' : step G u v) (q' : Walk G v w) :
+    (cons : {u v w : V} → (h : Step G u v) → (q : Walk G v w) →
+    motive (q.cons h) Walk.not_nil_cons) (h' : Step G u v) (q' : Walk G v w) :
     @notNilRec _ _ _ _ _ _ _ _ _ cons _ _ = cons h' q' := by rfl
 
 theorem end_mem_tail_support (h : ¬ p.Nil) : v ∈ p.support.tail :=
@@ -416,7 +416,7 @@ theorem exists_boundary_dart (p : Walk G u v) (S : Set V) (uS : u ∈ S) (vS : v
 in the graph -/
 @[expose]
 def ofDarts (l : List D(G)) (hne : l ≠ []) (hchain : l.IsChain DartAdj) :
-    Walk G (src (l.head hne).val) (tgt (l.getLast hne).val) :=
+    Walk G (src G (l.head hne).val) (tgt G (l.getLast hne).val) :=
   match l with
   | [d] => .cons (dartStep d) .nil
   | d₁ :: d₂ :: l =>
@@ -446,7 +446,7 @@ theorem darts_ofDarts {l : List D(G)} (hne : l ≠ []) (hchain : l.IsChain DartA
 
 @[simp]
 theorem edges_ofDarts {l : List D(G)} (hne : l ≠ []) (hchain : l.IsChain DartAdj) :
-    (ofDarts l hne hchain).edges = l.map (edge ·.val) := by
+    (ofDarts l hne hchain).edges = l.map (edge G ·.val) := by
   simp [edges]
 
 @[simp, grind =]

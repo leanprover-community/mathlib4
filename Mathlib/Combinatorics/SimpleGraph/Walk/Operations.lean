@@ -30,7 +30,7 @@ walks
 
 @[expose] public section
 
-open Function HasSourceTarget HasEdge HasInvol SymmDartLike SymmGraphLike GraphLike SimpleGraph
+open Function SymmGraphLike GraphLike SimpleGraph
 
 namespace GraphLike.Walk
 
@@ -61,13 +61,13 @@ theorem copy_nil {u u'} (hu : u = u') : (Walk.nil : Walk G u u).copy hu hu = nil
   subst_vars
   rfl
 
-theorem copy_cons {u v w u' w'} (h : step G u v) (p : Walk G v w) (hu : u = u') (hw : w = w') :
+theorem copy_cons {u v w u' w'} (h : Step G u v) (p : Walk G v w) (hu : u = u') (hw : w = w') :
     (Walk.cons h p).copy hu hw = Walk.cons (hu ▸ h) (p.copy rfl hw) := by
   subst_vars
   rfl
 
 @[simp]
-theorem cons_copy {u v w v' w'} (h : step G u v) (p : Walk G v' w') (hv : v' = v) (hw : w' = w) :
+theorem cons_copy {u v w v' w'} (h : Step G u v) (p : Walk G v' w') (hv : v' = v) (hw : w' = w) :
     cons h (p.copy hv hw) = (Walk.cons (hv ▸ h) p).copy rfl hw := by
   subst_vars
   rfl
@@ -80,9 +80,9 @@ def append {u v w : V} : Walk G u v → Walk G v w → Walk G u w
 
 /-- The reversed version of `SimpleGraph.Walk.cons`, concatenating an edge to
 the end of a walk. -/
-def concat {u v w : V} (p : Walk G u v) (h : step G v w) : Walk G u w := p.append (cons h nil)
+def concat {u v w : V} (p : Walk G u v) (h : Step G v w) : Walk G u w := p.append (cons h nil)
 
-theorem concat_eq_append {u v w : V} (p : Walk G u v) (h : step G v w) :
+theorem concat_eq_append {u v w : V} (p : Walk G u v) (h : Step G v w) :
     p.concat h = p.append (cons h nil) := rfl
 
 /-- The concatenation of the reverse of the first walk with the second walk. -/
@@ -95,11 +95,11 @@ protected def reverseAux {u v w : V} : Walk G u v → Walk G u w → Walk G v w
 def reverse {u v : V} (w : Walk G u v) : Walk G v u := w.reverseAux nil
 
 @[simp]
-theorem cons_append {u v w x : V} (h : step G u v) (p : Walk G v w) (q : Walk G w x) :
+theorem cons_append {u v w x : V} (h : Step G u v) (p : Walk G v w) (q : Walk G w x) :
     (cons h p).append q = cons h (p.append q) := rfl
 
 @[simp]
-theorem cons_nil_append {u v w : V} (h : step G u v) (p : Walk G v w) :
+theorem cons_nil_append {u v w : V} (h : Step G u v) (p : Walk G v w) :
     (cons h nil).append p = cons h p := rfl
 
 @[simp]
@@ -122,22 +122,22 @@ theorem append_copy_copy {u v w u' v' w'} (p : Walk G u v) (q : Walk G v w)
   rfl
 
 @[simp]
-theorem concat_nil {u v : V} (h : step G u v) : nil.concat h = cons h nil := rfl
+theorem concat_nil {u v : V} (h : Step G u v) : nil.concat h = cons h nil := rfl
 
 @[simp]
-theorem concat_cons {u v w x : V} (h : step G u v) (p : Walk G v w) (h' : step G w x) :
+theorem concat_cons {u v w x : V} (h : Step G u v) (p : Walk G v w) (h' : Step G w x) :
     (cons h p).concat h' = cons h (p.concat h') := rfl
 
-theorem append_concat {u v w x : V} (p : Walk G u v) (q : Walk G v w) (h : step G w x) :
+theorem append_concat {u v w x : V} (p : Walk G u v) (q : Walk G v w) (h : Step G w x) :
     p.append (q.concat h) = (p.append q).concat h := append_assoc _ _ _
 
-theorem concat_append {u v w x : V} (p : Walk G u v) (h : step G v w) (q : Walk G w x) :
+theorem concat_append {u v w x : V} (p : Walk G u v) (h : Step G v w) (q : Walk G w x) :
     (p.concat h).append q = p.append (cons h q) := by
   rw [concat_eq_append, ← append_assoc, cons_nil_append]
 
 /-- A non-trivial `cons` walk is representable as a `concat` walk. -/
-theorem exists_cons_eq_concat {u v w : V} (h : step G u v) (p : Walk G v w) :
-    ∃ (x : V) (q : Walk G u x) (h' : step G x w), cons h p = q.concat h' := by
+theorem exists_cons_eq_concat {u v w : V} (h : Step G u v) (p : Walk G v w) :
+    ∃ (x : V) (q : Walk G u x) (h' : Step G x w), cons h p = q.concat h' := by
   induction p generalizing u with
   | nil => exact ⟨_, nil, h, rfl⟩
   | cons h' p ih =>
@@ -146,22 +146,22 @@ theorem exists_cons_eq_concat {u v w : V} (h : step G u v) (p : Walk G v w) :
 
 /-- A non-trivial `concat` walk is representable as a `cons` walk. -/
 theorem exists_concat_eq_cons {u v w : V} :
-    ∀ (p : Walk G u v) (h : step G v w),
-      ∃ (x : V) (h' : step G u x) (q : Walk G x w), p.concat h = cons h' q
+    ∀ (p : Walk G u v) (h : Step G v w),
+      ∃ (x : V) (h' : Step G u x) (q : Walk G x w), p.concat h = cons h' q
   | nil, h => ⟨_, h, nil, rfl⟩
   | cons h' p, h => ⟨_, h', Walk.concat p h, concat_cons _ _ _⟩
 
 @[simp]
 theorem reverse_nil {u : V} : (nil : Walk G u u).reverse = nil := rfl
 
-theorem reverse_singleton {u v : V} (h : step G u v) : (cons h nil).reverse = cons (h.inv) nil :=
+theorem reverse_singleton {u v : V} (h : Step G u v) : (cons h nil).reverse = cons (h.inv) nil :=
   rfl
 
 @[simp]
-theorem reverse_toWalk {u v : V} (h : step G u v) : h.toWalk.reverse = h.inv.toWalk := rfl
+theorem reverse_toWalk {u v : V} (h : Step G u v) : h.toWalk.reverse = h.inv.toWalk := rfl
 
 @[simp]
-theorem cons_reverseAux {u v w x : V} (p : Walk G u v) (q : Walk G w x) (h : step G w u) :
+theorem cons_reverseAux {u v w x : V} (p : Walk G u v) (q : Walk G w x) (h : Step G w u) :
     (cons h p).reverseAux q = p.reverseAux (cons h.inv q) := rfl
 
 @[simp]
@@ -184,7 +184,7 @@ protected theorem reverseAux_eq_reverse_append {u v w : V} (p : Walk G u v) (q :
     p.reverseAux q = p.reverse.append q := by simp [reverse]
 
 @[simp]
-theorem reverse_cons {u v w : V} (h : step G u v) (p : Walk G v w) :
+theorem reverse_cons {u v w : V} (h : Step G u v) (p : Walk G v w) :
     (cons h p).reverse = p.reverse.append (cons h.inv nil) := by simp [reverse]
 
 @[simp]
@@ -198,7 +198,7 @@ theorem reverse_append {u v w : V} (p : Walk G u v) (q : Walk G v w) :
     (p.append q).reverse = q.reverse.append p.reverse := by simp [reverse]
 
 @[simp]
-theorem reverse_concat {u v w : V} (p : Walk G u v) (h : step G v w) :
+theorem reverse_concat {u v w : V} (p : Walk G u v) (h : Step G v w) :
     (p.concat h).reverse = cons h.inv p.reverse := by simp [concat_eq_append]
 
 @[simp]
@@ -228,7 +228,7 @@ theorem length_append {u v w : V} (p : Walk G u v) (q : Walk G v w) :
   induction p <;> simp [*, add_comm, add_assoc]
 
 @[simp]
-theorem length_concat {u v w : V} (p : Walk G u v) (h : step G v w) :
+theorem length_concat {u v w : V} (p : Walk G u v) (h : Step G v w) :
     (p.concat h).length = p.length + 1 := length_append _ _
 
 @[simp]
@@ -262,7 +262,7 @@ theorem getVert_reverse {u v : V} (p : Walk G u v) (i : ℕ) :
 section ConcatRec
 
 variable {motive : ∀ u v : V, Walk G u v → Sort*} (Hnil : ∀ {u : V}, motive u u nil)
-  (Hconcat : ∀ {u v w : V} (p : Walk G u v) (h : step G v w), motive u v p →
+  (Hconcat : ∀ {u v w : V} (p : Walk G u v) (h : Step G v w), motive u v p →
     motive u w (p.concat h))
 
 /-- Auxiliary definition for `SimpleGraph.Walk.concatRec` -/
@@ -283,7 +283,7 @@ theorem concatRec_nil (u : V) :
     @concatRec _ _ motive @Hnil @Hconcat _ _ (nil : Walk G u u) = Hnil := rfl
 
 @[simp]
-theorem concatRec_concat {u v w : V} (p : Walk G u v) (h : step G v w) :
+theorem concatRec_concat {u v w : V} (p : Walk G u v) (h : Step G v w) :
     @concatRec _ _ motive @Hnil @Hconcat _ _ (p.concat h) =
       Hconcat p h (concatRec @Hnil @Hconcat p) := by
   simp only [concatRec]
@@ -296,11 +296,11 @@ theorem concatRec_concat {u v w : V} (p : Walk G u v) (h : step G v w) :
 
 end ConcatRec
 
-theorem concat_ne_nil {u v : V} (p : Walk G u v) (h : step G v u) : p.concat h ≠ nil := by
+theorem concat_ne_nil {u v : V} (p : Walk G u v) (h : Step G v u) : p.concat h ≠ nil := by
   cases p <;> simp [concat]
 
-theorem concat_inj {u v v' w : V} {p : Walk G u v} {h : step G v w} {p' : Walk G u v'}
-    {h' : step G v' w} (he : p.concat h = p'.concat h') : ∃ hv : v = v', p.copy rfl hv = p' := by
+theorem concat_inj {u v v' w : V} {p : Walk G u v} {h : Step G v w} {p' : Walk G u v'}
+    {h' : Step G v' w} (he : p.concat h = p'.concat h') : ∃ hv : v = v', p.copy rfl hv = p' := by
   induction p with
   | nil =>
     cases p'
@@ -321,7 +321,7 @@ theorem concat_inj {u v v' w : V} {p : Walk G u v} {h : step G v w} {p' : Walk G
       exact ⟨rfl, hh ▸ rfl⟩
 
 @[simp]
-theorem support_concat {u v w : V} (p : Walk G u v) (h : step G v w) :
+theorem support_concat {u v w : V} (p : Walk G u v) (h : Step G v w) :
     (p.concat h).support = p.support ++ [w] := by
   induction p <;> simp [*, concat_nil]
 
@@ -355,8 +355,8 @@ theorem dropLast_support_concat {u v : V} (p : Walk G u v) :
 
 lemma ext_support {u v} {p q : Walk G u v} (h : p.support = q.support) : p = q := by
   refine darts_injective (Subtype.val_injective.list_map (List.rightInverse_unzip_zip.injective ?_))
-  have : Prod.fst ∘ Subtype.val = fun d : GraphLike.darts G ↦ src d.val := rfl
-  have : Prod.snd ∘ Subtype.val = fun d : GraphLike.darts G ↦ tgt d.val := rfl
+  have : Prod.fst ∘ Subtype.val = fun d : GraphLike.darts G ↦ src G d.val := rfl
+  have : Prod.snd ∘ Subtype.val = fun d : GraphLike.darts G ↦ tgt G d.val := rfl
   grind [map_src_darts, map_tgt_darts]
 
 @[simp]
@@ -372,7 +372,7 @@ theorem mem_support_append_iff {t u v w : V} (p : Walk G u v) (p' : Walk G v w) 
     -- this `have` triggers the unusedHavesSuffices linter:
     (try have := h'.symm) <;> simp [*]
 
-theorem support_subset_support_concat {u v w : V} (p : Walk G u v) (hadj : step G v w) :
+theorem support_subset_support_concat {u v w : V} (p : Walk G u v) (hadj : Step G v w) :
     p.support ⊆ (p.concat hadj).support := by
   simp
 
@@ -410,7 +410,7 @@ theorem ofSupport_support {u v : V} (p : Walk G u v) :
     exact Subsingleton.allEq _ _
 
 @[simp]
-theorem darts_concat {u v w : V} (p : Walk G u v) (h : step G v w) :
+theorem darts_concat {u v w : V} (p : Walk G u v) (h : Step G v w) :
     (p.concat h).darts = p.darts.concat ⟨(v, w), h.adj⟩ := by
   induction p <;> simp [*, concat_nil]
 
@@ -441,12 +441,12 @@ theorem ofDarts_darts {u v : V} {p : Walk G u v} (hp : ¬p.Nil) :
   | cons (v := w) h .nil, _ => exact ext_support <| by simp
   | cons (v := u') h₁ (.cons (v := v') h₂ p), _ =>
     have := p.cons h₂ |>.ofDarts_darts not_nil_cons
-    simp_all only [darts_cons, src_eq, tgt_eq, List.head_cons, List.getLast_cons_cons,
+    simp_all only [darts_cons, src_def, tgt_def, List.head_cons, List.getLast_cons_cons,
       ofDarts_cons_cons, cons_copy]
     congr 2 <;> simp
 
 @[simp]
-theorem edges_concat {u v w : V} (p : Walk G u v) (h : step G v w) :
+theorem edges_concat {u v w : V} (p : Walk G u v) (h : Step G v w) :
     (p.concat h).edges = p.edges.concat s(v, w) := by simp [edges]
 
 @[simp]
@@ -472,7 +472,7 @@ theorem dart_snd_mem_support_of_mem_darts {u v : V} (p : Walk G u v) {d : GraphL
 theorem fst_mem_support_of_mem_edges {t u v w : V} (p : Walk G v w) (he : s(t, u) ∈ p.edges) :
     t ∈ p.support := by
   obtain ⟨⟨u, v⟩, hd, he⟩ := List.mem_map.mp he
-  simp only [edge_eq, Sym2.eq_iff] at he
+  simp only [edge_def, Sym2.eq_iff] at he
   rcases he with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩
   · exact dart_src_mem_support_of_mem_darts _ hd
   · exact dart_snd_mem_support_of_mem_darts _ hd
@@ -504,7 +504,7 @@ theorem nodup_tail_support_reverse {u : V} {p : Walk G u u} :
 lemma edgeSet_reverse {u v : V} (p : Walk G u v) : p.reverse.edgeSet = p.edgeSet := by ext; simp
 
 @[simp]
-theorem edgeSet_concat {u v w : V} (p : Walk G u v) (h : step G v w) :
+theorem edgeSet_concat {u v w : V} (p : Walk G u v) (h : Step G v w) :
     (p.concat h).edgeSet = insert s(v, w) p.edgeSet := by ext; simp [or_comm]
 
 theorem edgeSet_append {u v w : V} (p : Walk G u v) (q : Walk G v w) :
@@ -555,7 +555,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma nil_drop_iff (p : Walk G u v) (n : ℕ) : (p.drop n).Nil ↔ p.length ≤ n := by
   induction p generalizing n <;> cases n <;> simp [*, drop]
 
-lemma drop_cons_eq (h : step G u v) (p : Walk G v w) (n : ℕ) (hn : n ≠ 0) :
+lemma drop_cons_eq (h : Step G u v) (p : Walk G v w) (n : ℕ) (hn : n ≠ 0) :
     (cons h p).drop n = (p.drop (n - 1)).copy (p.getVert_cons h hn).symm rfl := by
   apply ext_support
   obtain ⟨_, rfl⟩ := Nat.exists_add_one_eq.mpr (Nat.ne_zero_iff_zero_lt.mp hn)
@@ -622,7 +622,7 @@ lemma take_of_length_le {u v n} {p : Walk G u v} (h : p.length ≤ n) :
     rw [length_cons, Nat.add_le_add_iff_right] at h
     simp [take, ih h]
 
-lemma take_cons_eq (h : step G u v) (p : Walk G v w) (n : ℕ) (hn : n ≠ 0) :
+lemma take_cons_eq (h : Step G u v) (p : Walk G v w) (n : ℕ) (hn : n ≠ 0) :
     (cons h p).take n = cons h ((p.take <| n - 1).copy rfl (p.getVert_cons h hn).symm) := by
   apply ext_support
   grind [support_copy, take_support_eq_support_take_succ]
@@ -634,7 +634,7 @@ lemma edges_take (p : Walk G u v) (n : ℕ) : (p.take n).edges = p.edges.take n 
   induction p generalizing n <;> cases n <;> simp [*, take]
 
 @[simp]
-lemma penultimate_concat {t u v} (p : Walk G u v) (h : step G v t) :
+lemma penultimate_concat {t u v} (p : Walk G u v) (h : Step G v t) :
     (p.concat h).penultimate = v := by simp [concat_eq_append, getVert_append]
 
 @[simp]
@@ -675,32 +675,32 @@ theorem append_take_drop_eq (p : Walk G u v) (n : ℕ) : (p.take n).append (p.dr
 def dropLast (p : Walk G u v) : Walk G u p.penultimate := p.take (p.length - 1)
 
 @[simp]
-lemma tail_nil : (@nil _ _ _ _ _ _ G _ v).tail = .nil := rfl
+lemma tail_nil : (@nil _ _ _ _ _ G v).tail = .nil := rfl
 
 @[simp]
-lemma tail_cons_nil (h : step G u v) : (Walk.cons h .nil).tail = .nil := rfl
+lemma tail_cons_nil (h : Step G u v) : (Walk.cons h .nil).tail = .nil := rfl
 
 @[simp]
-lemma tail_cons (h : step G u v) (p : Walk G v w) :
+lemma tail_cons (h : Step G u v) (p : Walk G v w) :
     (p.cons h).tail = p.copy (getVert_zero p).symm rfl := by
   cases p <;> rfl
 
 @[simp]
-lemma dropLast_nil : (@nil _ _ _ _ _ _ G _ v).dropLast = nil := rfl
+lemma dropLast_nil : (@nil _ _ _ _ _ G v).dropLast = nil := rfl
 
 @[simp]
-lemma dropLast_cons_nil (h : step G u v) : (cons h nil).dropLast = nil := rfl
+lemma dropLast_cons_nil (h : Step G u v) : (cons h nil).dropLast = nil := rfl
 
 @[simp]
-lemma dropLast_cons_cons {w'} (h : step G u v) (h₂ : step G v w) (p : Walk G w w') :
+lemma dropLast_cons_cons {w'} (h : Step G u v) (h₂ : Step G v w) (p : Walk G w w') :
     (cons h (cons h₂ p)).dropLast = cons h (cons h₂ p).dropLast := rfl
 
-lemma dropLast_cons_of_not_nil (h : step G u v) (p : Walk G v w) (hp : ¬ p.Nil) :
+lemma dropLast_cons_of_not_nil (h : Step G u v) (p : Walk G v w) (hp : ¬ p.Nil) :
     (cons h p).dropLast = cons h (p.dropLast.copy rfl (penultimate_cons_of_not_nil _ _ hp).symm) :=
   p.notNilRec (by simp) hp h
 
 @[simp]
-lemma dropLast_concat {t u v} (p : Walk G u v) (h : step G v t) :
+lemma dropLast_concat {t u v} (p : Walk G u v) (h : Step G v t) :
     (p.concat h).dropLast = p.copy rfl (by simp) := by
   induction p
   · rfl
@@ -712,7 +712,7 @@ lemma cons_tail_eq (p : Walk G u v) (hp : ¬ p.Nil) :
   cases p <;> simp at hp ⊢
 
 @[simp]
-lemma concat_dropLast {p : Walk G u v} (hp : step G p.penultimate v) :
+lemma concat_dropLast {p : Walk G u v} (hp : Step G p.penultimate v) :
     p.dropLast.concat hp = p := by
   induction p with
   | nil =>
