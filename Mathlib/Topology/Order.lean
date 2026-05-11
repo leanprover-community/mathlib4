@@ -347,18 +347,12 @@ theorem le_of_nhds_le_nhds (h : ∀ x, @nhds α t₁ x ≤ @nhds α t₂ x) : t�
   rw [@isOpen_iff_mem_nhds _ t₁, @isOpen_iff_mem_nhds _ t₂]
   exact fun hs a ha => h _ (hs _ ha)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eq_bot_of_singletons_open {t : TopologicalSpace α} (h : ∀ x, IsOpen[t] {x}) : t = ⊥ :=
   bot_unique fun s _ => biUnion_of_singleton s ▸ isOpen_biUnion fun x _ => h x
 
 theorem discreteTopology_iff_forall_isOpen [TopologicalSpace α] :
     DiscreteTopology α ↔ ∀ s : Set α, IsOpen s :=
   ⟨@isOpen_discrete _ _, fun h ↦ ⟨eq_bot_of_singletons_open fun _ ↦ h _⟩⟩
-
-@[deprecated discreteTopology_iff_forall_isOpen (since := "2025-10-10")]
-theorem forall_open_iff_discrete {X : Type*} [TopologicalSpace X] :
-    (∀ s : Set X, IsOpen s) ↔ DiscreteTopology X :=
-  discreteTopology_iff_forall_isOpen.symm
 
 theorem discreteTopology_iff_forall_isClosed [TopologicalSpace α] :
     DiscreteTopology α ↔ ∀ s : Set α, IsClosed s :=
@@ -368,11 +362,6 @@ theorem discreteTopology_iff_forall_isClosed [TopologicalSpace α] :
 theorem discreteTopology_iff_isOpen_singleton [TopologicalSpace α] :
     DiscreteTopology α ↔ (∀ a : α, IsOpen ({a} : Set α)) :=
   ⟨fun _ _ ↦ isOpen_discrete _, fun h ↦ ⟨eq_bot_of_singletons_open h⟩⟩
-
-@[deprecated discreteTopology_iff_isOpen_singleton (since := "2025-10-10")]
-theorem singletons_open_iff_discrete {X : Type*} [TopologicalSpace X] :
-    (∀ a : X, IsOpen ({a} : Set X)) ↔ DiscreteTopology X :=
-  discreteTopology_iff_isOpen_singleton.symm
 
 theorem DiscreteTopology.of_finite_of_isClosed_singleton [TopologicalSpace α] [Finite α]
     (h : ∀ a : α, IsClosed {a}) : DiscreteTopology α :=
@@ -460,7 +449,6 @@ theorem induced_mono (h : t₁ ≤ t₂) : t₁.induced g ≤ t₂.induced g :=
 theorem coinduced_mono (h : t₁ ≤ t₂) : t₁.coinduced f ≤ t₂.coinduced f :=
   (gc_coinduced_induced f).monotone_l h
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem induced_top : (⊤ : TopologicalSpace α).induced g = ⊤ :=
   (gc_coinduced_induced g).u_top
@@ -479,7 +467,6 @@ theorem induced_sInf {s : Set (TopologicalSpace α)} :
     TopologicalSpace.induced g (sInf s) = sInf (TopologicalSpace.induced g '' s) := by
   rw [sInf_eq_iInf', sInf_image', induced_iInf]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coinduced_bot : (⊥ : TopologicalSpace α).coinduced f = ⊥ :=
   (gc_coinduced_induced f).l_bot
@@ -509,7 +496,6 @@ theorem induced_compose {tγ : TopologicalSpace γ} {f : α → β} {g : β → 
       ⟨fun ⟨_, ⟨s, hs, h₂⟩, h₁⟩ => h₁ ▸ h₂ ▸ ⟨s, hs, rfl⟩,
         fun ⟨s, hs, h⟩ => ⟨preimage g s, ⟨s, hs, rfl⟩, h ▸ rfl⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem induced_const [t : TopologicalSpace α] {x : α} : (t.induced fun _ : β => x) = ⊤ :=
   le_antisymm le_top (@continuous_const β α ⊤ t x).le_induced
 
@@ -696,7 +682,6 @@ theorem nhds_inf {t₁ t₂ : TopologicalSpace α} {a : α} :
     @nhds α (t₁ ⊓ t₂) a = @nhds α t₁ a ⊓ @nhds α t₂ a :=
   (gc_nhds a).u_inf (b₁ := t₁)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem nhds_top {a : α} : @nhds α ⊤ a = ⊤ :=
   (gc_nhds a).u_top
 
@@ -795,7 +780,6 @@ theorem continuous_le_rng {t₁ : TopologicalSpace α} {t₂ t₃ : TopologicalS
   rw [continuous_iff_coinduced_le] at h₂ ⊢
   exact le_trans h₂ h₁
 
-set_option backward.isDefEq.respectTransparency false in
 theorem continuous_sup_dom {t₁ t₂ : TopologicalSpace α} {t₃ : TopologicalSpace β} :
     Continuous[t₁ ⊔ t₂, t₃] f ↔ Continuous[t₁, t₃] f ∧ Continuous[t₂, t₃] f := by
   simp only [continuous_iff_le_induced, sup_le_iff]
@@ -808,7 +792,6 @@ theorem continuous_sup_rng_right {t₁ : TopologicalSpace α} {t₃ t₂ : Topol
     Continuous[t₁, t₃] f → Continuous[t₁, t₂ ⊔ t₃] f :=
   continuous_le_rng le_sup_right
 
-set_option backward.isDefEq.respectTransparency false in
 theorem continuous_sSup_dom {T : Set (TopologicalSpace α)} {t₂ : TopologicalSpace β} :
     Continuous[sSup T, t₂] f ↔ ∀ t ∈ T, Continuous[t, t₂] f := by
   simp only [continuous_iff_le_induced, sSup_le_iff]
@@ -818,7 +801,6 @@ theorem continuous_sSup_rng {t₁ : TopologicalSpace α} {t₂ : Set (Topologica
     Continuous[t₁, sSup t₂] f :=
   continuous_iff_coinduced_le.2 <| le_sSup_of_le h₁ <| continuous_iff_coinduced_le.1 hf
 
-set_option backward.isDefEq.respectTransparency false in
 theorem continuous_iSup_dom {t₁ : ι → TopologicalSpace α} {t₂ : TopologicalSpace β} :
     Continuous[iSup t₁, t₂] f ↔ ∀ i, Continuous[t₁ i, t₂] f := by
   simp only [continuous_iff_le_induced, iSup_le_iff]
@@ -827,7 +809,6 @@ theorem continuous_iSup_rng {t₁ : TopologicalSpace α} {t₂ : ι → Topologi
     (h : Continuous[t₁, t₂ i] f) : Continuous[t₁, iSup t₂] f :=
   continuous_sSup_rng ⟨i, rfl⟩ h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem continuous_inf_rng {t₁ : TopologicalSpace α} {t₂ t₃ : TopologicalSpace β} :
     Continuous[t₁, t₂ ⊓ t₃] f ↔ Continuous[t₁, t₂] f ∧ Continuous[t₁, t₃] f := by
   simp only [continuous_iff_coinduced_le, le_inf_iff]
@@ -845,7 +826,6 @@ theorem continuous_sInf_dom {t₁ : Set (TopologicalSpace α)} {t₂ : Topologic
     Continuous[t, t₂] f → Continuous[sInf t₁, t₂] f :=
   continuous_le_dom <| sInf_le h₁
 
-set_option backward.isDefEq.respectTransparency false in
 theorem continuous_sInf_rng {t₁ : TopologicalSpace α} {T : Set (TopologicalSpace β)} :
     Continuous[t₁, sInf T] f ↔ ∀ t ∈ T, Continuous[t₁, t] f := by
   simp only [continuous_iff_coinduced_le, le_sInf_iff]
@@ -854,17 +834,14 @@ theorem continuous_iInf_dom {t₁ : ι → TopologicalSpace α} {t₂ : Topologi
     Continuous[t₁ i, t₂] f → Continuous[iInf t₁, t₂] f :=
   continuous_le_dom <| iInf_le _ _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem continuous_iInf_rng {t₁ : TopologicalSpace α} {t₂ : ι → TopologicalSpace β} :
     Continuous[t₁, iInf t₂] f ↔ ∀ i, Continuous[t₁, t₂ i] f := by
   simp only [continuous_iff_coinduced_le, le_iInf_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 @[continuity, fun_prop]
 theorem continuous_bot {t : TopologicalSpace β} : Continuous[⊥, t] f :=
   continuous_iff_le_induced.2 bot_le
 
-set_option backward.isDefEq.respectTransparency false in
 @[continuity, fun_prop]
 theorem continuous_top {t : TopologicalSpace α} : Continuous[t, ⊤] f :=
   continuous_iff_coinduced_le.2 le_top
@@ -1026,7 +1003,7 @@ theorem generateFrom_iInter (f : ι → TopologicalSpace α) :
 theorem generateFrom_iInter_of_generateFrom_eq_self (f : ι → Set (Set α))
     (hf : ∀ i, { s | IsOpen[generateFrom (f i)] s } = f i) :
     generateFrom (⋂ i, f i) = ⨆ i, generateFrom (f i) :=
-  (gciGenerateFrom α).u_iSup_of_lu_eq_self f hf
+  (gciGenerateFrom α).u_iSup_of_l_u_eq_self f hf
 
 variable {t : ι → TopologicalSpace α}
 

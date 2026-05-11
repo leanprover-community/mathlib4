@@ -95,6 +95,12 @@ lemma Ideal.disjoint_nonZeroDivisors_of_mem_minimalPrimes {p : Ideal R} (hp : p 
     exists_prop, @and_comm (_ * _ = _), ← mul_comm]
   exact fun _ ↦ Ideal.exists_mul_mem_of_mem_minimalPrimes hp
 
+/-- An element of a minimal prime is a zero divisor. -/
+lemma notMem_nonZeroDivisors_of_mem_mem_minimalPrimes
+    {x : R} {q : Ideal R} (hx : x ∈ q) (hq : q ∈ minimalPrimes R) :
+    x ∉ nonZeroDivisors R :=
+  Set.disjoint_left.mp (Ideal.disjoint_nonZeroDivisors_of_mem_minimalPrimes hq) hx
+
 theorem Ideal.exists_comap_eq_of_mem_minimalPrimes {I : Ideal S} (f : R →+* S) (p)
     (H : p ∈ (I.comap f).minimalPrimes) : ∃ p' : Ideal S, p'.IsPrime ∧ I ≤ p' ∧ p'.comap f = p :=
   have := H.1.1
@@ -127,7 +133,7 @@ section
 
 variable {R S : Type*} [CommRing R] [CommRing S] {I J : Ideal R}
 
-theorem Ideal.minimal_primes_comap_of_surjective {f : R →+* S} (hf : Function.Surjective f)
+theorem Ideal.minimalPrimes_comap_of_surjective {f : R →+* S} (hf : Function.Surjective f)
     {I J : Ideal S} (h : J ∈ I.minimalPrimes) : J.comap f ∈ (I.comap f).minimalPrimes := by
   have := h.1.1
   refine ⟨⟨inferInstance, Ideal.comap_mono h.1.2⟩, ?_⟩
@@ -139,6 +145,9 @@ theorem Ideal.minimal_primes_comap_of_surjective {f : R →+* S} (hf : Function.
   · exact ⟨Ideal.map_isPrime_of_surjective hf this, Ideal.le_map_of_comap_le_of_surjective f hf e₁⟩
   · exact Ideal.map_le_of_le_comap e₂
 
+@[deprecated (since := "2026-04-01")] alias Ideal.minimal_primes_comap_of_surjective :=
+    Ideal.minimalPrimes_comap_of_surjective
+
 theorem Ideal.comap_minimalPrimes_eq_of_surjective {f : R →+* S} (hf : Function.Surjective f)
     (I : Ideal S) : (I.comap f).minimalPrimes = Ideal.comap f '' I.minimalPrimes := by
   ext J
@@ -147,7 +156,7 @@ theorem Ideal.comap_minimalPrimes_eq_of_surjective {f : R →+* S} (hf : Functio
     obtain ⟨p, h, rfl⟩ := Ideal.exists_minimalPrimes_comap_eq f J H
     exact ⟨p, h, rfl⟩
   · rintro ⟨J, hJ, rfl⟩
-    exact Ideal.minimal_primes_comap_of_surjective hf hJ
+    exact Ideal.minimalPrimes_comap_of_surjective hf hJ
 
 lemma Ideal.minimalPrimes_map_of_surjective {S : Type*} [CommRing S] {f : R →+* S}
     (hf : Function.Surjective f) (I : Ideal R) :

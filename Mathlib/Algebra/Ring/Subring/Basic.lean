@@ -395,8 +395,9 @@ theorem center_eq_top (R) [CommRing R] : center R = ⊤ :=
   SetLike.coe_injective (Set.center_eq_univ R)
 
 /-- The center is commutative. -/
-instance {R} [Ring R] : CommRing (center R) :=
-  { (inferInstance : CommSemiring (Subsemiring.center R)), (center R).toRing with }
+instance {R} [Ring R] : CommRing (center R) where
+  __ := (center R).toRing
+  __ : CommSemiring (center R) := inferInstanceAs <| CommSemiring (Subsemiring.center R)
 
 /-- The center of isomorphic (not necessarily associative) rings are isomorphic. -/
 @[simps!] def centerCongr (e : R ≃+* S) : center R ≃+* center S :=
@@ -593,13 +594,25 @@ lemma closure_le_centralizer_centralizer {R} [Ring R] (s : Set R) :
     closure s ≤ centralizer (centralizer s) :=
   closure_le.mpr Set.subset_centralizer_centralizer
 
-/-- If all elements of `s : Set A` commute pairwise, then `closure s` is a commutative ring. -/
+/-- If all elements of `s : Set R` commute pairwise, then `closure s` is a commutative ring. -/
+theorem isMulCommutative_closure {R} [Ring R] {s : Set R}
+    (hcomm : ∀ x ∈ s, ∀ y ∈ s, x * y = y * x) :
+    IsMulCommutative (closure s) :=
+  have := closure_le_centralizer_centralizer s
+  .of_setLike_mul_comm fun _ h₁ _ h₂ ↦
+    Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂)
+
+open scoped IsMulCommutative in
+/-- If all elements of `s : Set R` commute pairwise, then `closure s` is a commutative ring. -/
+@[deprecated isMulCommutative_closure (since := "2026-03-11")]
 abbrev closureCommRingOfComm {R} [Ring R] {s : Set R} (hcomm : ∀ x ∈ s, ∀ y ∈ s, x * y = y * x) :
     CommRing (closure s) :=
-  { (closure s).toRing with
-    mul_comm := fun ⟨_, h₁⟩ ⟨_, h₂⟩ ↦
-      have := closure_le_centralizer_centralizer s
-      Subtype.ext <| Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂) }
+  have := isMulCommutative_closure hcomm
+  inferInstance
+
+instance instIsMulCommutative_closure {S R : Type*} [Ring R] [SetLike S R] [MulMemClass S R] (s : S)
+    [IsMulCommutative s] : IsMulCommutative (closure (s : Set R)) :=
+  isMulCommutative_closure fun _ h₁ _ h₂ => setLike_mul_comm h₁ h₂
 
 theorem exists_list_of_mem_closure {R} [Ring R] {s : Set R} {x : R} (hx : x ∈ closure s) :
     ∃ L : List (List R), (∀ t ∈ L, ∀ y ∈ t, y ∈ s ∨ y = (-1 : R)) ∧ (L.map List.prod).sum = x := by
@@ -777,6 +790,17 @@ theorem coe_sSup_of_directedOn {S : Set (Subring R)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) : (↑(sSup S) : Set R) = ⋃ s ∈ S, ↑s :=
   Set.ext fun x => by simp [mem_sSup_of_directedOn Sne hS]
 
+theorem isMulCommutative_iSup {ι : Sort*} [Nonempty ι] {S : ι → Subring R}
+    [hS : ∀ i, IsMulCommutative (S i)] (dir : Directed (· ≤ ·) S) :
+    IsMulCommutative (⨆ i, S i : Subring R) := by
+  simpa [isMulCommutative_iff, ← SetLike.mem_coe, coe_iSup_of_directed dir,
+    Subsemigroup.coe_iSup_of_directed dir] using Subsemigroup.isMulCommutative_iSup dir
+
+instance instIsMulCommutative_iSup {ι : Type*} [Nonempty ι] [Preorder ι] [IsDirectedOrder ι]
+    {S : ι →o Subring R} [hS : ∀ i, IsMulCommutative (S i)] :
+    IsMulCommutative (⨆ i, S i : Subring R) :=
+  Subring.isMulCommutative_iSup S.monotone.directed_le
+
 theorem mem_map_equiv {f : R ≃+* S} {K : Subring R} {x : S} :
     x ∈ K.map (f : R →+* S) ↔ f.symm x ∈ K :=
   @Set.mem_image_equiv _ _ (K : Set R) f.toEquiv x
@@ -821,6 +845,11 @@ theorem range_eq_top {f : R →+* S} :
 theorem range_eq_top_of_surjective (f : R →+* S) (hf : Function.Surjective f) :
     f.range = (⊤ : Subring S) :=
   range_eq_top.2 hf
+
+@[simp]
+theorem domRestrict_comp_rangeRestrict (g : S →+* T) (f : R →+* S) :
+    (g.domRestrict f.range).comp (f.rangeRestrict) = g.comp f :=
+  rfl
 
 section eqLocus
 
@@ -914,6 +943,14 @@ def subringCongr (h : s = t) : s ≃+* t :=
   { Equiv.setCongr <| congr_arg _ h with
     map_mul' := fun _ _ => rfl
     map_add' := fun _ _ => rfl }
+
+@[simp]
+theorem subringCongr_symm (h : s = t) :
+    (subringCongr h).symm = subringCongr h.symm := rfl
+
+@[simp]
+theorem coe_subringCongr_apply (h : s = t) (x : s) :
+    (subringCongr h x).val = x.val := rfl
 
 /-- Restrict a ring homomorphism with a left inverse to a ring isomorphism to its
 `RingHom.range`. -/
