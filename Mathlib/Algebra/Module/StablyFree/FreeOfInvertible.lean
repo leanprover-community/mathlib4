@@ -47,14 +47,13 @@ variable (R M) in
 theorem Module.free_of_isStablyFree_of_invertible [IsStablyFree R M] [Module.Invertible R M] :
     Module.Free R M := by
   rcases subsingleton_or_nontrivial R with _ | _
-  · have : Subsingleton M := Module.Finite.subsingleton_of_ring_subsingleton R M
-    infer_instance
+  · exact Module.Free.of_subsingleton' R M
   obtain ⟨N, _, _, _, _, _⟩ := IsStablyFree.exist_free_prod R M
   let n := Module.finrank R N
   have hp : Module.finrank R (M × N) = n + 1 := by
     let 𝔭 : PrimeSpectrum R := Nonempty.some inferInstance
     have h1 : rankAtStalk M 𝔭 = 1 := by simp [rankAtStalk, Invertible.finrank_eq_one]
-    have heq := congr($(Module.rankAtStalk_prod M N) 𝔭)
+    have heq := congr($(rankAtStalk_prod M N) 𝔭)
     simp only [rankAtStalk_eq_finrank_of_free, Pi.natCast_apply, Pi.add_apply, h1] at heq
     grind
   let e : R ≃ₗ[R] ⋀[R]^(n + 1) (M × N) :=
