@@ -397,6 +397,11 @@ end MultipleLambdaTheorems
 #guard_msgs in
 #check_failure ((by fun_prop) : ?m)
 
+/-- error: `Injective Nat.succ` is not a `fun_prop` goal!
+Consider marking `Function.Injective` with `@[fun_prop]`. -/
+#guard_msgs in
+example : Nat.succ.Injective := by fun_prop
+
 -- todo: warning should not have mvar id in it
 -- /-- warning: `?m.71721` is not a `fun_prop` goal! -/
 -- #guard_msgs in
@@ -536,16 +541,16 @@ example [Add α] (a : α) :
 
 -- Test that local theorem is being used
 /--
-trace: [Meta.Tactic.fun_prop] [✅️] Con fun x => f x y
-  [Meta.Tactic.fun_prop] [✅️] Con fun x => f x y
+trace: [Meta.Tactic.fun_prop] ✅️ Con fun x => f x y
+  [Meta.Tactic.fun_prop] ✅️ Con fun x => f x y
     [Meta.Tactic.fun_prop] candidate local theorems for f #[this : Con f]
     [Meta.Tactic.fun_prop] removing argument to later use this : Con f
-    [Meta.Tactic.fun_prop] [✅️] applying: Con_comp
-      [Meta.Tactic.fun_prop] [✅️] Con fun f => f y
-        [Meta.Tactic.fun_prop] [✅️] applying: Con_apply
-      [Meta.Tactic.fun_prop] [✅️] Con fun x => f x
+    [Meta.Tactic.fun_prop] ✅️ applying: Con_comp
+      [Meta.Tactic.fun_prop] ✅️ Con fun f => f y
+        [Meta.Tactic.fun_prop] ✅️ applying: Con_apply
+      [Meta.Tactic.fun_prop] ✅️ Con fun x => f x
         [Meta.Tactic.fun_prop] candidate local theorems for f #[this : Con f]
-        [Meta.Tactic.fun_prop] [✅️] applying: this : Con f
+        [Meta.Tactic.fun_prop] ✅️ applying: this : Con f
 -/
 #guard_msgs in
 example [Add α] (y : α):
@@ -579,8 +584,8 @@ example (f : R → R) (hf : Con f) :
     Con (fun x ↦ (f (x + 3)) + 2 + f (x + 1) + x + 1) := by fun_prop -- succeeds in 11ms
 
 -- This used to fail in exponentially increasing time, up to 6s for the last example
--- We set maxHearthbeats to 1000 such that the last three examples should fail if the exponential
--- blow happen again.
+-- We set maxHeartbeats to 1000 such that the last three examples should fail if the exponential
+-- blowup happens again.
 set_option maxHeartbeats 1000 in
 example (f : R → R) :
     Con (fun x ↦ f (x + 3)) := by
@@ -671,3 +676,59 @@ example (f g : α → Rat) (hf : Con f) (hg : Con g) (h : ∀ x, 0 < g x) :
     goal.assign <| ← mkAuxTheorem ty (← instantiateMVars mvar))
 
 end StateReversionBug
+
+section MVarBug
+
+opaque Lin' (f : α → β) : Prop
+
+theorem Lin'.lin {f : α → β} (h : Lin' f) : Lin f := silentSorry
+
+variable {Ω ι R : Type*} {X : ι → Ω → R}
+
+example (hX : ∀ i, Lin' (X i)) : Lin (fun ω i ↦ X i ω) := by
+  fail_if_success fun_prop -- fails, ok
+  exact silentSorry
+
+example (hX : ∀ i, Lin' (X i)) : Lin (fun ω i ↦ X i ω) := by
+  have : ∀ i, Lin (X i) := fun i ↦ (hX i).lin
+  fun_prop -- succeeds, ok
+
+example (hX : ∀ i, Lin' (X i)) : Lin (fun ω i ↦ X i ω) := by
+  have := fun i ↦ (hX i).lin
+  fun_prop -- now succeeds
+  -- failed in https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Weird.20behavior.20of.20fun_prop
+
+end MVarBug
+
+section BundledMorphismWithFunctionValues
+
+structure FooHom (α : Type*) where
+  toFun : α → α → α
+  cont' : Con (Function.uncurry toFun)
+
+instance : FunLike (FooHom α) α (α → α) where
+  coe f := f.toFun
+  coe_injective' f g h := by cases f; cases g; congr
+
+@[fun_prop]
+theorem con_foohom' {β : Type*} {f : β → FooHom α} (hf : Con f) {g₁ : β → α} (hg₁ : Con g₁)
+    {g₂ : β → α} (hg₂ : Con g₂) : Con fun x ↦ (f x) (g₁ x) (g₂ x) := silentSorry
+
+example {f : FooHom α} : Con fun x => f x x := by fun_prop
+
+example {f : FooHom α} (y : α) : Con fun x => f x y := by fun_prop
+
+example {f : FooHom α} : Con fun x => f (f x x) x := by fun_prop
+
+example {f : FooHom (Fin 2 → α)} : Con fun x i => f (f (fun _ => x 0) x) x i := by fun_prop
+
+example {f : FooHom (Fin 2 → α)} (i) : Con fun x => f (f (fun _ => x 0) x) x i := by fun_prop
+
+example {f : α → FooHom α} (hf : Con (fun x : α × α × α => f x.1 x.2.1 x.2.2)) :
+    Con fun x ↦ f x x x := by
+  fun_prop
+
+example {f : α → FooHom α} (hf : Con f) : Con fun x ↦ f x (f x x x) x := by
+  fun_prop
+
+end BundledMorphismWithFunctionValues

@@ -6,6 +6,7 @@ Authors: Alexander Bentkamp
 module
 
 public import Mathlib.Algebra.Star.Pi
+public import Mathlib.LinearAlgebra.Matrix.Hadamard
 public import Mathlib.LinearAlgebra.Matrix.ZPow
 
 /-! # Hermitian matrices
@@ -64,8 +65,13 @@ theorem IsHermitian.ext_iff {A : Matrix n n α} : A.IsHermitian ↔ ∀ i j, sta
 
 @[simp]
 theorem IsHermitian.map {A : Matrix n n α} (h : A.IsHermitian) (f : α → β)
-    (hf : Function.Semiconj f star star) : (A.map f).IsHermitian :=
-  (conjTranspose_map f hf).symm.trans <| h.eq.symm ▸ rfl
+    (hf : Function.Semiconj f star star) : (A.map f).IsHermitian := by
+  rw [IsHermitian, ← conjTranspose_map f hf, h.eq]
+
+@[simp]
+theorem isHermitian_map_iff {A : Matrix n n α} {f : α → β} (hf : Function.Semiconj f star star)
+    (hinj : f.Injective) : (A.map f).IsHermitian ↔ A.IsHermitian := by
+  rw [IsHermitian, IsHermitian, ← conjTranspose_map f hf, map_injective hinj |>.eq_iff]
 
 @[simp, nontriviality]
 theorem IsHermitian.of_subsingleton {A : Matrix n n α} [Subsingleton α] : A.IsHermitian :=
@@ -76,7 +82,7 @@ theorem IsHermitian.transpose {A : Matrix n n α} (h : A.IsHermitian) : Aᵀ.IsH
   exact congr_arg Matrix.transpose h
 
 @[simp]
-theorem isHermitian_transpose_iff (A : Matrix n n α) : Aᵀ.IsHermitian ↔ A.IsHermitian :=
+theorem isHermitian_transpose_iff {A : Matrix n n α} : Aᵀ.IsHermitian ↔ A.IsHermitian :=
   ⟨by intro h; rw [← transpose_transpose A]; exact IsHermitian.transpose h, IsHermitian.transpose⟩
 
 theorem IsHermitian.conjTranspose {A : Matrix n n α} (h : A.IsHermitian) : Aᴴ.IsHermitian :=
@@ -91,6 +97,34 @@ theorem isHermitian_submatrix_equiv {A : Matrix n n α} (e : m ≃ n) :
     (A.submatrix e e).IsHermitian ↔ A.IsHermitian :=
   ⟨fun h => by simpa using h.submatrix e.symm, fun h => h.submatrix _⟩
 
+theorem IsHermitian.reindex {A : Matrix n n α} (h : A.IsHermitian) (f : n ≃ m) :
+    (A.reindex f f).IsHermitian := by
+  rw [reindex_apply]
+  apply submatrix h
+
+theorem isHermitian_reindex_iff {A : Matrix n n α} (f : n ≃ m) :
+    (A.reindex f f).IsHermitian ↔ A.IsHermitian := by
+  refine ⟨fun h ↦ ?_, (·.reindex f)⟩
+  simpa using h.reindex f.symm
+
+theorem conjTranspose_comp {I J K L : Type*} (M : Matrix I J (Matrix K L α)) :
+    (comp I J K L α M)ᴴ = comp J I L K α (Mᵀ.map (·ᴴ)) :=
+  rfl
+
+/-- When the inner matrices are square we can use the induced star operation -/
+theorem conjTranspose_comp' {I J K : Type*} (M : Matrix I J (Matrix K K α)) :
+    (comp I J K K α M)ᴴ = comp J I K K α Mᴴ :=
+  rfl
+
+theorem isHermitian_comp_iff {A : Matrix m m (Matrix n n α)} :
+    (A.comp m m n n α).IsHermitian ↔ A.IsHermitian := by
+  rw [IsHermitian, IsHermitian, conjTranspose_comp', comp .. |>.injective.eq_iff]
+
+theorem isHermitian_comp_iff_forall {A : Matrix m m (Matrix n n α)} :
+    (A.comp m m n n α).IsHermitian ↔ ∀ i j i' j', star (A j i j' i') = A i j i' j' := by
+  simp [IsHermitian.ext_iff]
+  grind
+
 end Star
 
 section InvolutiveStar
@@ -98,7 +132,7 @@ section InvolutiveStar
 variable [InvolutiveStar α]
 
 @[simp]
-theorem isHermitian_conjTranspose_iff (A : Matrix n n α) : Aᴴ.IsHermitian ↔ A.IsHermitian :=
+theorem isHermitian_conjTranspose_iff {A : Matrix n n α} : Aᴴ.IsHermitian ↔ A.IsHermitian :=
   IsSelfAdjoint.star_iff
 
 /-- A block matrix `A.from_blocks B C D` is Hermitian,
@@ -121,6 +155,11 @@ theorem isHermitian_fromBlocks_iff {A : Matrix m m α} {B : Matrix m n α} {C : 
 
 end InvolutiveStar
 
+/-- The Hadamard product of Hermitian matrices is Hermitian. -/
+theorem IsHermitian.hadamard [CommMonoid α] [StarMul α] {A B : Matrix n n α}
+    (hA : A.IsHermitian) (hB : B.IsHermitian) : (A ⊙ B).IsHermitian := by
+  rw [IsHermitian, conjTranspose_hadamard, hB.eq, hA.eq, hadamard_comm]
+
 section AddMonoid
 
 variable [AddMonoid α] [StarAddMonoid α]
@@ -135,6 +174,17 @@ theorem isHermitian_diagonal_of_self_adjoint [DecidableEq n] (v : n → α) (h :
 lemma isHermitian_diagonal_iff [DecidableEq n] {d : n → α} :
     IsHermitian (diagonal d) ↔ (∀ i : n, IsSelfAdjoint (d i)) := by
   simp [isSelfAdjoint_iff, IsHermitian, conjTranspose, diagonal_transpose, diagonal_map]
+
+/-- A block diagonal matrix is Hermitian if and only if each block is Hermitian. -/
+theorem isHermitian_blockDiagonal'_iff [DecidableEq n] {p : n → Type*}
+    {M : ∀ i, Matrix (p i) (p i) α} : (blockDiagonal' M).IsHermitian ↔ ∀ i, (M i).IsHermitian := by
+  grind [IsHermitian, blockDiagonal'_conjTranspose, blockDiagonal'_inj]
+
+/-- A block diagonal matrix whose components are all equal is Hermitian if
+and only if each block is Hermitian. -/
+theorem isHermitian_blockDiagonal_iff [DecidableEq n] {M : n → Matrix m m α} :
+    (blockDiagonal M).IsHermitian ↔ ∀ i, (M i).IsHermitian := by
+  simpa [IsHermitian] using isHermitian_blockDiagonal'_iff
 
 /-- A diagonal matrix is Hermitian if the entries have the trivial `star` operation
 (such as on the reals). -/
@@ -175,11 +225,50 @@ theorem IsHermitian.neg {A : Matrix n n α} (h : A.IsHermitian) : (-A).IsHermiti
   IsSelfAdjoint.neg h
 
 @[simp]
+theorem isHermitian_neg_iff {A : Matrix n n α} : (-A).IsHermitian ↔ A.IsHermitian := by
+  refine ⟨fun h ↦ ?_, (·.neg)⟩
+  rw [← neg_neg A]
+  exact h.neg
+
+@[simp]
 theorem IsHermitian.sub {A B : Matrix n n α} (hA : A.IsHermitian) (hB : B.IsHermitian) :
     (A - B).IsHermitian :=
   IsSelfAdjoint.sub hA hB
 
 end AddGroup
+
+section StarModule
+
+variable {R : Type*} [Star R] [Star α] [SMul R α] [StarModule R α]
+
+theorem IsHermitian.smul {A : Matrix n n α} (h : A.IsHermitian) {k : R} (hk : IsSelfAdjoint k) :
+    (k • A).IsHermitian := by
+  rw [IsHermitian, conjTranspose_smul, hk.star_eq, h.eq]
+
+end StarModule
+
+section MulAction_StarModule
+
+variable {R : Type*} [Monoid R] [Star R] [Star α] [MulAction R α] [StarModule R α]
+
+theorem IsHermitian.of_smul {A : Matrix n n α} {k : R} [Invertible k] (h : (k • A).IsHermitian)
+    (hk : IsSelfAdjoint k) : A.IsHermitian := by
+  rw [IsHermitian, conjTranspose_smul, hk.star_eq] at h
+  simpa using congr(⅟k • $h)
+
+/-- Assumes `IsSelfAdjoint ⅟k` instead of `IsSelfAdjoint k`.
+These are equivalent given `StarMul R` -/
+theorem IsHermitian.of_smul' {A : Matrix n n α} {k : R} [Invertible k] (h : (k • A).IsHermitian)
+    (hk : IsSelfAdjoint ⅟k) : A.IsHermitian := by
+  rw [← invOf_smul_smul k A]
+  exact h.smul hk
+
+@[simp]
+theorem isHermitian_smul_iff {A : Matrix n n α} {k : R} [Invertible k] (hk : IsSelfAdjoint k) :
+    (k • A).IsHermitian ↔ A.IsHermitian :=
+  ⟨(·.of_smul hk), (·.smul hk)⟩
+
+end MulAction_StarModule
 
 section NonUnitalSemiring
 
@@ -213,15 +302,21 @@ lemma IsHermitian.commute_iff [Fintype n] {A B : Matrix n n α}
 
 end NonUnitalSemiring
 
-section Semiring
+section NonAssocSemiring
 
-variable [Semiring α] [StarRing α]
+variable [NonAssocSemiring α] [StarRing α]
 
 /-- Note this is more general for matrices than `isSelfAdjoint_one` as it does not
 require `Fintype n`, which is necessary for `Monoid (Matrix n n R)`. -/
 @[simp]
 theorem isHermitian_one [DecidableEq n] : (1 : Matrix n n α).IsHermitian :=
   conjTranspose_one
+
+end NonAssocSemiring
+
+section Semiring
+
+variable [Semiring α] [StarRing α]
 
 @[simp]
 theorem isHermitian_natCast [DecidableEq n] (d : ℕ) : (d : Matrix n n α).IsHermitian :=

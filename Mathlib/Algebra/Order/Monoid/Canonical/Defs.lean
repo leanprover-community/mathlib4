@@ -10,12 +10,13 @@ public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 public import Mathlib.Algebra.NeZero
 public import Mathlib.Order.BoundedOrder.Basic
+public import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # Canonically ordered monoids
 -/
 
-@[expose] public section
+public section
 
 universe u
 
@@ -126,60 +127,14 @@ variable [MulOneClass α]
 section LE
 variable [LE α] [CanonicallyOrderedMul α] {a b : α}
 
-@[to_additive (attr := simp) zero_le]
-theorem one_le (a : α) : 1 ≤ a :=
-  le_self_mul.trans_eq (one_mul _)
-
-@[to_additive] theorem isBot_one : IsBot (1 : α) := one_le
+@[to_additive]
+instance : IsBotOneClass α where
+  isBot_one _ := le_self_mul.trans_eq (one_mul _)
 
 end LE
 
-section Preorder
-variable [Preorder α] [CanonicallyOrderedMul α] {a b : α}
-
-@[to_additive (attr := simp) not_lt_zero] lemma not_lt_one : ¬ a < 1 := (one_le a).not_gt
-
-@[deprecated (since := "2025-12-03")] alias not_neg := not_lt_one
-
-@[to_additive] -- `(attr := simp)` cannot be used here because `a` cannot be inferred by `simp`.
-theorem one_lt_of_gt (h : a < b) : 1 < b :=
-  (one_le _).trans_lt h
-
-alias LT.lt.pos := pos_of_gt
-@[to_additive existing] alias LT.lt.one_lt := one_lt_of_gt
-
-end Preorder
-
 section PartialOrder
 variable [PartialOrder α] [CanonicallyOrderedMul α] {a b c : α}
-
-@[to_additive]
-theorem bot_eq_one [OrderBot α] : (⊥ : α) = 1 := isBot_one.eq_bot.symm
-
-@[to_additive (attr := simp)]
-theorem le_one_iff_eq_one : a ≤ 1 ↔ a = 1 :=
-  (one_le a).ge_iff_eq'
-
-@[to_additive]
-theorem one_lt_iff_ne_one : 1 < a ↔ a ≠ 1 :=
-  (one_le a).lt_iff_ne.trans ne_comm
-
-@[to_additive]
-theorem one_lt_of_ne_one (h : a ≠ 1) : 1 < a :=
-  one_lt_iff_ne_one.2 h
-
-@[to_additive]
-theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := (one_le a).eq_or_lt.imp_left Eq.symm
-
-@[to_additive]
-lemma one_notMem_iff [OrderBot α] {s : Set α} : 1 ∉ s ↔ ∀ x ∈ s, 1 < x :=
-  bot_eq_one (α := α) ▸ bot_notMem_iff
-
-alias Ne.pos := pos_of_ne_zero
-@[to_additive existing] alias Ne.one_lt := one_lt_of_ne_one
-
-@[deprecated (since := "2026-02-17")] alias NE.ne.pos := Ne.pos
-@[deprecated (since := "2026-02-17")] alias NE.ne.one_lt := Ne.one_lt
 
 @[to_additive]
 theorem exists_one_lt_mul_of_lt (h : a < b) : ∃ (c : _) (_ : 1 < c), a * c = b := by
@@ -259,29 +214,6 @@ end PartialOrder
 
 end CommMonoid
 
-namespace NeZero
-
-theorem pos {M} [AddZeroClass M] [PartialOrder M] [CanonicallyOrderedAdd M]
-    (a : M) [NeZero a] : 0 < a :=
-  (zero_le a).lt_of_ne <| NeZero.out.symm
-
-theorem of_gt {M} [AddZeroClass M] [Preorder M] [CanonicallyOrderedAdd M]
-    {x y : M} (h : x < y) : NeZero y :=
-  of_pos <| pos_of_gt h
-
--- 1 < p is still an often-used `Fact`, due to `Nat.Prime` implying it, and it implying `Nontrivial`
--- on `ZMod`'s ring structure. We cannot just set this to be any `x < y`, else that becomes a
--- metavariable and it will hugely slow down typeclass inference.
-instance (priority := 10) of_gt' {M : Type*} [AddZeroClass M] [Preorder M] [CanonicallyOrderedAdd M]
-    [One M] {y : M}
-    [Fact (1 < y)] : NeZero y := of_gt <| @Fact.out (1 < y) _
-
-theorem of_ge {M} [AddZeroClass M] [PartialOrder M] [CanonicallyOrderedAdd M]
-    {x y : M} [NeZero x] (h : x ≤ y) : NeZero y :=
-  of_pos <| lt_of_lt_of_le (pos x) h
-
-end NeZero
-
 section CanonicallyLinearOrderedMonoid
 
 variable [Monoid α] [LinearOrder α] [CanonicallyOrderedMul α]
@@ -298,17 +230,9 @@ theorem min_mul_distrib (a b c : α) : min a (b * c) = min a (min a b * min a c)
 theorem min_mul_distrib' (a b c : α) : min (a * b) c = min (min a c * min b c) c := by
   simpa [min_comm _ c] using min_mul_distrib c a b
 
-@[to_additive]
-theorem one_min (a : α) : min 1 a = 1 :=
-  min_eq_left (one_le a)
-
-@[to_additive]
-theorem min_one (a : α) : min a 1 = 1 :=
-  min_eq_right (one_le a)
-
 /-- In a linearly ordered monoid, we are happy for `bot_eq_one` to be a `@[simp]` lemma. -/
 @[to_additive (attr := simp)
-  /-- In a linearly ordered monoid, we are happy for `bot_eq_zero` to be a `@[simp]` lemma -/]
+/-- In a linearly ordered monoid, we are happy for `bot_eq_zero` to be a `@[simp]` lemma -/]
 theorem bot_eq_one' [OrderBot α] : (⊥ : α) = 1 :=
   bot_eq_one
 

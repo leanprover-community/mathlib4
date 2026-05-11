@@ -63,7 +63,7 @@ The ε-δ definition quantifies "for all ε > 0, there exists δ > 0 such that o
 convex, uniformly convex
 -/
 
-@[expose] public section
+public section
 
 open Set Metric
 

@@ -1098,9 +1098,6 @@ theorem submonoidMap_symm_apply (e : M ≃* N) (S : Submonoid M) (g : S.map (e :
     (e.submonoidMap S).symm g = ⟨e.symm g, SetLike.mem_coe.1 <| Set.mem_image_equiv.1 g.2⟩ :=
   rfl
 
-@[deprecated (since := "2025-08-20")]
-alias _root_.AddEquiv.add_submonoid_map_symm_apply := AddEquiv.addSubmonoidMap_symm_apply
-
 end MulEquiv
 
 @[to_additive (attr := simp)]
@@ -1122,7 +1119,8 @@ namespace Submonoid
 elements of `M`. -/
 @[to_additive (attr := simps!) /-- The additive equivalence between the type of additive units of
 `M` and the additive submonoid whose elements are the additive units of `M`. -/]
-noncomputable def unitsTypeEquivIsUnitSubmonoid [Monoid M] : Mˣ ≃* IsUnit.submonoid M where
+noncomputable def unitsTypeEquivIsUnitSubmonoid {M : Type*} [Monoid M] :
+    Mˣ ≃* IsUnit.submonoid M where
   toFun x := ⟨x, Units.isUnit x⟩
   invFun x := x.prop.unit
   left_inv _ := IsUnit.unit_of_val_units _

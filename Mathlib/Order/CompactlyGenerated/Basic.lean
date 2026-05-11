@@ -125,8 +125,7 @@ theorem isCompactElement_iff_exists_le_sSup_of_le_sSup (k : α) :
       have Sne : S.Nonempty := by
         suffices ⊥ ∈ S from Set.nonempty_of_mem this
         use ∅
-        simp only [Set.empty_subset, Finset.coe_empty, Finset.sup_empty,
-          and_self_iff]
+        simp
       -- Now apply the defn of compact and finish.
       obtain ⟨j, ⟨hjS, hjk⟩⟩ := hk S Sne dir_US (le_trans hsup sup_S)
       obtain ⟨t, ⟨htS, htsup⟩⟩ := hjS
@@ -224,9 +223,8 @@ theorem WellFoundedGT.isSupFiniteCompact [WellFoundedGT α] :
 theorem IsSupFiniteCompact.isSupClosedCompact (h : IsSupFiniteCompact α) :
     IsSupClosedCompact α := by
   intro s hne hsc; obtain ⟨t, ht₁, ht₂⟩ := h s; clear h
-  rcases t.eq_empty_or_nonempty with h | h
-  · subst h
-    rw [Finset.sup_empty] at ht₂
+  rcases t.eq_empty_or_nonempty with rfl | h
+  · rw [Finset.sup_empty] at ht₂
     rw [ht₂]
     simp [eq_singleton_bot_of_sSup_eq_bot_of_nonempty ht₂ hne]
   · rw [ht₂]
@@ -519,6 +517,25 @@ theorem iSupIndep_sUnion_of_directed {s : Set (Set α)} (hs : DirectedOn (· ⊆
     (h : ∀ a ∈ s, sSupIndep a) : sSupIndep (⋃₀ s) := by
   rw [Set.sUnion_eq_iUnion]
   exact sSupIndep_iUnion_of_directed hs.directed_val (by simpa using h)
+
+lemma disjoint_biSup_of_finite_disjoint_biSup {ι : Type*} {f : ι → α} {s : Set ι} {a : α}
+    (hs : ∀ t ⊆ s, t.Finite → Disjoint (⨆ i ∈ t, f i) a) :
+    Disjoint (⨆ i ∈ s, f i) a := by
+  simp_rw [disjoint_iff, iSup_subtype', ← sSup_range, inf_comm, inf_sSup_eq_iSup_inf_sup_finset,
+    iSup_eq_bot]
+  intro u hu
+  obtain ⟨t, ht, ht', htu⟩ : ∃ᵉ (t ⊆ s) (hu : t.Finite), f '' t = u :=
+    Set.Finite.exists_subset_finite_image_eq u.finite_toSet <| by rwa [Set.image_eq_range f s]
+  replace htu : u.sup id = ⨆ i ∈ t, f i := by
+    simp only [Finset.sup_eq_iSup, id_eq, ← Finset.mem_coe, ← htu, iSup_image]
+  rw [inf_comm, ← disjoint_iff, htu]
+  exact hs t ht ht'
+
+lemma iSupIndep.disjoint_biSup_biSup {ι : Type*} [IsModularLattice α]
+    {f : ι → α} {s t : Set ι} (hf : iSupIndep f) (hst : Disjoint s t) :
+    Disjoint (⨆ i ∈ s, f i) (⨆ i ∈ t, f i) :=
+  disjoint_biSup_of_finite_disjoint_biSup fun _ h₁ h₂ ↦
+    disjoint_biSup_biSup' hf (Set.disjoint_of_subset_left h₁ hst) h₂
 
 end
 

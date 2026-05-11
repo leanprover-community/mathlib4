@@ -18,14 +18,9 @@ the tensor product commutes with filtered colimits in both variables.
 We show that the fiber functors `Φ.presheafFiber : (Cᵒᵖ ⥤ A) ⥤ A`
 and `Φ.sheafFiber : Sheaf J A ⥤ A` are monoidal.
 
-## TODO (@joelriou)
-* for sites that have enough points, use this to give an alternative
-  proof of the assumption to `Sheaf.monoidalCategory` in the file
-  `Mathlib/CategoryTheory/Sites/Monoidal`
-
 -/
 
-@[expose] public section
+public section
 
 universe w w' v v' u u'
 

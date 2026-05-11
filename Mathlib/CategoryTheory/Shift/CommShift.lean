@@ -173,13 +173,13 @@ variable [F.CommShift A]
 
 @[reassoc (attr := simp)]
 lemma commShiftIso_hom_naturality {X Y : C} (f : X ⟶ Y) (a : A) :
-    F.map (f⟦a⟧') ≫ (F.commShiftIso a).hom.app Y =
+    dsimp% F.map (f⟦a⟧') ≫ (F.commShiftIso a).hom.app Y =
       (F.commShiftIso a).hom.app X ≫ (F.map f)⟦a⟧' :=
   (F.commShiftIso a).hom.naturality f
 
 @[reassoc (attr := simp)]
 lemma commShiftIso_inv_naturality {X Y : C} (f : X ⟶ Y) (a : A) :
-    (F.map f)⟦a⟧' ≫ (F.commShiftIso a).inv.app Y =
+    dsimp% (F.map f)⟦a⟧' ≫ (F.commShiftIso a).inv.app Y =
       (F.commShiftIso a).inv.app X ≫ F.map (f⟦a⟧') :=
   (F.commShiftIso a).inv.naturality f
 
@@ -530,7 +530,6 @@ lemma shiftFunctorIso_ofHasShiftOfFullyFaithful (a : A) :
 
 end hasShiftOfFullyFaithful
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma map_shiftFunctorComm
     [AddCommMonoid A] [HasShift C A] [HasShift D A]

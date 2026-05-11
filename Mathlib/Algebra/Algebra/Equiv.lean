@@ -24,7 +24,7 @@ This file defines bundled isomorphisms of `R`-algebras.
 
 @[expose] public section
 
-universe u v w u₁ v₁
+universe u v w u₁ v₁ u₂ u₃
 
 /-- An equivalence of algebras (denoted as `A ≃ₐ[R] B`)
 is an equivalence of rings commuting with the actions of scalars. -/
@@ -67,11 +67,8 @@ This is declared as the default coercion from `F` to `A ≃ₐ[R] B`. -/
 @[coe]
 def toAlgEquiv {F R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
     [Algebra R B] [EquivLike F A B] [AlgEquivClass F R A B] (f : F) : A ≃ₐ[R] B :=
-  { (f : A ≃ B), (f : A ≃+* B) with commutes' := commutes f }
+  { (f : A ≃ B), (RingEquivClass.toRingEquiv f : A ≃+* B) with commutes' := commutes f }
 
-instance (F R A B : Type*) [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
-    [EquivLike F A B] [AlgEquivClass F R A B] : CoeTC F (A ≃ₐ[R] B) :=
-  ⟨toAlgEquiv⟩
 end AlgEquivClass
 
 namespace AlgEquiv
@@ -137,28 +134,27 @@ theorem toEquiv_eq_coe : e.toEquiv = e :=
 
 @[simp]
 protected theorem coe_coe {F : Type*} [EquivLike F A₁ A₂] [AlgEquivClass F R A₁ A₂] (f : F) :
-    ⇑(f : A₁ ≃ₐ[R] A₂) = f :=
+    ⇑(AlgEquivClass.toAlgEquiv f) = f :=
   rfl
 
 theorem coe_fun_injective : @Function.Injective (A₁ ≃ₐ[R] A₂) (A₁ → A₂) fun e => (e : A₁ → A₂) :=
   DFunLike.coe_injective
 
-instance hasCoeToRingEquiv : CoeOut (A₁ ≃ₐ[R] A₂) (A₁ ≃+* A₂) :=
-  ⟨AlgEquiv.toRingEquiv⟩
+instance : CoeOut (A₁ ≃ₐ[R] A₂) (A₁ ≃+* A₂) where coe := AlgEquiv.toRingEquiv
 
 @[simp]
 theorem coe_toEquiv : ((e : A₁ ≃ A₂) : A₁ → A₂) = e :=
   rfl
 
-@[simp]
+@[deprecated "Now a syntactic equality" (since := "2026-04-09"), nolint synTaut]
 theorem toRingEquiv_eq_coe : e.toRingEquiv = e :=
   rfl
 
-@[simp, norm_cast]
+@[simp]
 lemma toRingEquiv_toRingHom : ((e : A₁ ≃+* A₂) : A₁ →+* A₂) = e :=
   rfl
 
-@[simp, norm_cast]
+@[simp]
 theorem coe_ringEquiv : ((e : A₁ ≃+* A₂) : A₁ → A₂) = e :=
   rfl
 
@@ -178,7 +174,9 @@ def toAlgHom : A₁ →ₐ[R] A₂ :=
     map_one' := map_one e
     map_zero' := map_zero e }
 
-@[simp]
+instance : CoeOut (A₁ ≃ₐ[R] A₂) (A₁ →ₐ[R] A₂) where coe := AlgEquiv.toAlgHom
+
+@[deprecated "Now a syntactic equality" (since := "2026-04-29"), nolint synTaut]
 theorem toAlgHom_eq_coe : e.toAlgHom = e :=
   rfl
 
@@ -186,7 +184,7 @@ theorem toAlgHom_apply (x : A₁) : e.toAlgHom x = e x :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_algHom : DFunLike.coe (e.toAlgHom) = DFunLike.coe e :=
+theorem coe_algHom : DFunLike.coe e.toAlgHom = DFunLike.coe e :=
   rfl
 
 theorem coe_algHom_injective : Function.Injective ((↑) : (A₁ ≃ₐ[R] A₂) → A₁ →ₐ[R] A₂) :=
@@ -255,13 +253,13 @@ theorem invFun_eq_symm {e : A₁ ≃ₐ[R] A₂} : e.invFun = e.symm :=
 @[simp]
 theorem coe_apply_coe_coe_symm_apply {F : Type*} [EquivLike F A₁ A₂] [AlgEquivClass F R A₁ A₂]
     (f : F) (x : A₂) :
-    f ((f : A₁ ≃ₐ[R] A₂).symm x) = x :=
+    f ((AlgEquivClass.toAlgEquiv f).symm x) = x :=
   EquivLike.right_inv f x
 
 @[simp]
 theorem coe_coe_symm_apply_coe_apply {F : Type*} [EquivLike F A₁ A₂] [AlgEquivClass F R A₁ A₂]
     (f : F) (x : A₁) :
-    (f : A₁ ≃ₐ[R] A₂).symm (f x) = x :=
+    (AlgEquivClass.toAlgEquiv f).symm (f x) = x :=
   EquivLike.left_inv f x
 
 /-- `simp` normal form of `invFun_eq_symm` -/
@@ -409,10 +407,10 @@ def arrowCongr (e₁ : A₁ ≃ₐ[R] A₁') (e₂ : A₂ ≃ₐ[R] A₂') : (A�
   toFun f := (e₂.toAlgHom.comp f).comp e₁.symm.toAlgHom
   invFun f := (e₂.symm.toAlgHom.comp f).comp e₁.toAlgHom
   left_inv f := by
-    simp only [AlgHom.comp_assoc, toAlgHom_eq_coe, symm_comp]
+    simp only [AlgHom.comp_assoc, symm_comp]
     simp only [← AlgHom.comp_assoc, symm_comp, AlgHom.id_comp, AlgHom.comp_id]
   right_inv f := by
-    simp only [AlgHom.comp_assoc, toAlgHom_eq_coe, comp_symm]
+    simp only [AlgHom.comp_assoc, comp_symm]
     simp only [← AlgHom.comp_assoc, comp_symm, AlgHom.id_comp, AlgHom.comp_id]
 
 theorem arrowCongr_comp (e₁ : A₁ ≃ₐ[R] A₁') (e₂ : A₂ ≃ₐ[R] A₂')
@@ -577,7 +575,7 @@ lemma toLinearMap_ofBijective (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective
 
 @[simp]
 lemma toAlgHom_ofBijective (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) :
-    AlgHomClass.toAlgHom (ofBijective f hf) = f := rfl
+    (ofBijective f hf).toAlgHom = f := rfl
 
 lemma ofBijective_apply_symm_apply (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) (x : A₂) :
     f ((ofBijective f hf).symm x) = x :=
@@ -832,11 +830,41 @@ lemma AlgEquiv.default_apply [Subsingleton S] [Subsingleton T] (x : S) :
 end
 
 /-- The algebra equivalence between `ULift A` and `A`. -/
-@[simps! -isSimp apply]
+@[simps! apply, simps! -isSimp symm_apply, pp_with_univ]
 def ULift.algEquiv {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A] :
     ULift.{w} A ≃ₐ[R] A where
   __ := ULift.ringEquiv
   commutes' _ := rfl
+
+@[simp]
+lemma ULift.down_algEquiv_symm_apply {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+    (a : A) :
+    (ULift.algEquiv (R := R).symm a).down = a :=
+  rfl
+
+section
+
+variable {R S T : Type*} [CommSemiring R] [Semiring S]
+  [Semiring T] [Algebra R S] [Algebra R T]
+
+attribute [local instance] ULift.algebra' in
+/-- `ULift` is functorial for algebra homomorphisms. -/
+@[pp_with_univ]
+def AlgHom.ulift (f : S →ₐ[R] T) :
+    ULift.{u₁} S →ₐ[ULift.{u₂} R] ULift.{u₃} T where
+  __ := AlgHom.comp ULift.algEquiv.symm.toAlgHom (f.comp ULift.algEquiv.toAlgHom)
+  commutes' _ := by simp
+
+@[simp]
+lemma AlgHom.down_ulift_apply (f : S →ₐ[R] T) (x : ULift S) :
+    (f.ulift x).down = f x.down :=
+  rfl
+
+lemma AlgHom.ulift_apply (f : S →ₐ[R] T) (x : ULift S) :
+    f.ulift x = ⟨f x.down⟩ :=
+  rfl
+
+end
 
 /-- If an `R`-algebra `A` is isomorphic to `R` as `R`-module, then the canonical map `R → A` is an
 equivalence of `R`-algebras.

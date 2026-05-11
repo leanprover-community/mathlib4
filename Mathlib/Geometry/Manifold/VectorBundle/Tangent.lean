@@ -47,7 +47,7 @@ noncomputable section
 
 section General
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞} {E : Type*} [NormedAddCommGroup E]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω} {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H : Type*}
   [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {H' : Type*} [TopologicalSpace H']
   {I' : ModelWithCorners 𝕜 E' H'} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
@@ -180,13 +180,13 @@ local notation "TM" => TangentBundle I M
 section TangentBundleInstances
 
 instance : TopologicalSpace TM :=
-  (tangentBundleCore I M).toTopologicalSpace
+  inferInstanceAs <| TopologicalSpace (tangentBundleCore I M).TotalSpace
 
 instance TangentSpace.fiberBundle : FiberBundle E (TangentSpace I : M → Type _) :=
-  (tangentBundleCore I M).fiberBundle
+  inferInstanceAs <| FiberBundle E (tangentBundleCore I M).Fiber
 
 instance TangentSpace.vectorBundle : VectorBundle 𝕜 E (TangentSpace I : M → Type _) :=
-  (tangentBundleCore I M).vectorBundle
+  inferInstanceAs <| VectorBundle 𝕜 E (tangentBundleCore I M).Fiber
 
 namespace TangentBundle
 

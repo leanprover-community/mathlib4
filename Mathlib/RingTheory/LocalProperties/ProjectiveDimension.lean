@@ -16,11 +16,11 @@ public import Mathlib.RingTheory.LocalProperties.Projective
 
 In this file, we proved that projective dimension equal to supremum over localizations
 
-# Main definition and results
+## Main definition and results
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 
@@ -41,11 +41,12 @@ instance [Small.{v} R] (S : Submonoid R) :
 
 open Limits in
 lemma localizedModule_hasProjectiveDimensionLE [Small.{v, u} R] (n : ℕ) (S : Submonoid R)
-    (M : ModuleCat.{v} R) [projle : HasProjectiveDimensionLE M n] :
+    (M : ModuleCat.{v} R) [HasProjectiveDimensionLE M n] :
     HasProjectiveDimensionLE (M.localizedModule S) n := by
   have : Small.{v} (Localization S) := small_of_surjective Localization.mkHom_surjective
   induction n generalizing M with
   | zero =>
+    have projle : HasProjectiveDimensionLE M 0 := ‹_›
     simp only [HasProjectiveDimensionLE, zero_add] at projle ⊢
     rw [← projective_iff_hasProjectiveDimensionLT_one, ← IsProjective.iff_projective] at projle ⊢
     exact Module.projective_of_isLocalizedModule S (M.localizedModuleMkLinearMap S)
@@ -53,13 +54,10 @@ lemma localizedModule_hasProjectiveDimensionLE [Small.{v, u} R] (n : ℕ) (S : S
     rcases ModuleCat.enoughProjectives.1 M with ⟨⟨P, f⟩⟩
     let T := ShortComplex.mk (kernel.ι f) f (kernel.condition f)
     have T_exact : T.ShortExact := { exact := ShortComplex.exact_kernel f }
-    have TS_exact' := IsLocalizedModule.map_exact S (T.X₁.localizedModuleMkLinearMap S)
-      (T.X₂.localizedModuleMkLinearMap S) (T.X₃.localizedModuleMkLinearMap S)
-      _ _ ((ShortComplex.ShortExact.moduleCat_exact_iff_function_exact T).mp T_exact.1)
     let TS := T.map (ModuleCat.localizedModuleFunctor S)
     have TS_exact : TS.ShortExact := T_exact.map_of_exact (ModuleCat.localizedModuleFunctor S)
     have : Projective TS.X₂ := (ModuleCat.localizedModuleFunctor.{v} S).projective_obj _
-    have := (T_exact.hasProjectiveDimensionLT_X₃_iff n ‹_›).mp projle
+    have := (T_exact.hasProjectiveDimensionLT_X₃_iff n ‹_›).mp ‹_›
     exact (TS_exact.hasProjectiveDimensionLT_X₃_iff n ‹_›).mpr (ih (kernel f))
 
 lemma projectiveDimension_le_projectiveDimension_of_isLocalizedModule [Small.{v, u} R]
@@ -88,7 +86,7 @@ lemma hasProjectiveDimensionLE_iff_forall_maximalSpectrum (n : ℕ) [Small.{v} R
   | zero =>
     simp only [HasProjectiveDimensionLE, zero_add, ← projective_iff_hasProjectiveDimensionLT_one]
     refine ⟨fun h p ↦ ?_, fun h ↦ ?_⟩
-    · have : Small.{v} (Localization p.asIdeal.primeCompl) :=
+    · let : Small.{v} (Localization p.asIdeal.primeCompl) :=
         small_of_surjective Localization.mkHom_surjective
       rw [← IsProjective.iff_projective]
       exact Module.projective_of_isLocalizedModule p.1.primeCompl
@@ -97,10 +95,9 @@ lemma hasProjectiveDimensionLE_iff_forall_maximalSpectrum (n : ℕ) [Small.{v} R
       have : Module.FinitePresentation R M := Module.finitePresentation_of_finite R M
       apply Module.projective_of_localization_maximal (fun p hp ↦ ?_)
       have : Module.Projective (Localization.AtPrime p) (M.localizedModule p.primeCompl) := by
-        have : Small.{v} (Localization.AtPrime p) :=
+        let : Small.{v} (Localization.AtPrime p) :=
           small_of_surjective Localization.mkHom_surjective
-        rw [IsProjective.iff_projective]
-        exact h ⟨p, hp⟩
+        simpa [IsProjective.iff_projective] using h ⟨p, hp⟩
       exact Module.Projective.of_equiv (LinearEquiv.extendScalarsOfIsLocalization p.primeCompl
         (Localization.AtPrime p) (IsLocalizedModule.linearEquiv p.primeCompl
         (M.localizedModuleMkLinearMap p.primeCompl)
