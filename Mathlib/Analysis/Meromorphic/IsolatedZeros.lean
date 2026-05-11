@@ -60,13 +60,9 @@ theorem eventuallyEq_zero_nhdsNE_of_eventuallyEq_zero_codiscreteWithin (hf : Mer
     (h₁x : x ∈ U) (h₂x : AccPt x (𝓟 U)) (h : f =ᶠ[codiscreteWithin U] 0) :
     f =ᶠ[𝓝[≠] x] 0 := by
   rw [← hf.frequently_zero_iff_eventuallyEq_zero]
-  apply ((accPt_iff_frequently_nhdsNE.1 h₂x).and_eventually
-    (mem_codiscreteWithin_iff_forall_mem_nhdsNE.1 h x h₁x)).mp
-  filter_upwards
-  intro a
-  simp_rw [Pi.zero_apply]
-  rw [(by rfl : ({x | f x = 0} ∪ Uᶜ) a ↔ a ∈ {x | f x = 0} ∪ Uᶜ)]
-  simp_all
+  apply ((accPt_iff_frequently_nhdsNE.1 h₂x).and_eventually <| eventually_mem_set.2
+    (mem_codiscreteWithin_iff_forall_mem_nhdsNE.1 h x h₁x)).mono
+  simp +contextual
 
 /-!
 ## Identity Principles

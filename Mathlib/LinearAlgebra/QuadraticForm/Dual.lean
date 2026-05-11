@@ -140,7 +140,7 @@ def toDualProd (Q : QuadraticForm R M) [Invertible (2 : R)] :
   map_app' x := by
     dsimp only [associated, associatedHom]
     dsimp only [LinearMap.smul_apply, LinearMap.coe_mk, AddHom.coe_mk, AddHom.toFun_eq_coe,
-      LinearMap.coe_toAddHom, LinearMap.prod_apply, Pi.prod, LinearMap.add_apply,
+      LinearMap.coe_toAddHom, LinearMap.prod_apply, Function.prod_apply, LinearMap.add_apply,
       LinearMap.coe_comp, Function.comp_apply, LinearMap.fst_apply, LinearMap.snd_apply,
       LinearMap.sub_apply, dualProd_apply, polarBilin_apply_apply, prod_apply, neg_apply]
     simp only [polar_sub_right, polar_self, nsmul_eq_mul, Nat.cast_ofNat, polar_comm _ x.1 x.2,
