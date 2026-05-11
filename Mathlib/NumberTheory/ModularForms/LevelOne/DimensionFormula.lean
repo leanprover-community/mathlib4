@@ -13,10 +13,10 @@ public import Mathlib.LinearAlgebra.Dimension.Localization
 public import Mathlib.RingTheory.PowerSeries.Order
 
 /-!
-# Dimension formula for level 1 modular forms
+# Dimension formula and Sturm bound for level 1 modular forms
 
-This file proves the dimension formula for the space of modular forms for `𝒮ℒ` (= `SL(2, ℤ)`)
-of even weight.
+This file proves the dimension formula and the Sturm bound for the space of modular forms
+for `𝒮ℒ` (= `SL(2, ℤ)`) of even weight.
 
 ## Main results
 
@@ -25,6 +25,8 @@ of even weight.
 * `ModularForm.dimension_level_one`: the full dimension formula for all even `k : ℕ`.
 * `ModularForm.levelOne_odd_weight_rank_zero`: modular forms of odd weight are zero.
 * A `FiniteDimensional ℂ (ModularForm 𝒮ℒ k)` instance for every `k : ℤ`.
+* `ModularForm.sturm_bound_levelOne`: a modular form `f : ModularForm 𝒮ℒ k` whose first
+  `⌊k/12⌋ + 1` q-expansion coefficients vanish is identically zero.
 -/
 
 @[expose] public noncomputable section
@@ -275,6 +277,39 @@ instance (k : ℤ) : FiniteDimensional ℂ (ModularForm 𝒮ℒ k) := by
     split_ifs <;> exact_mod_cast Cardinal.natCast_lt_aleph0
   · rw [levelOne_odd_weight_rank_zero hk_odd]
     exact Cardinal.aleph0_pos
+
+/-- **Sturm bound for level-1 modular forms.** If a modular form `f` of weight `k` for `SL(2, ℤ)`
+has zero coefficient on `q^i` in its q-expansion for every `i ≥ 0` with `12 * i ≤ k`, then
+`f` is identically zero. The proof iterates `CuspForm.discriminantEquiv` (division by `Δ`)
+until the weight goes negative, where everything is zero. -/
+theorem sturm_bound_levelOne {k : ℤ} (f : ModularForm 𝒮ℒ k)
+    (h : ∀ i : ℕ, 12 * (i : ℤ) ≤ k → (qExpansion 1 f).coeff i = 0) : f = 0 := by
+  suffices key : ∀ (n : ℕ) ⦃k : ℤ⦄ (f : ModularForm 𝒮ℒ k), k < 12 * n →
+      (∀ i < n, (qExpansion 1 f).coeff i = 0) → f = 0 by
+    by_cases hk_neg : k < 0
+    · exact rank_zero_iff_forall_zero.mp (levelOne_neg_weight_rank_zero hk_neg) f
+    push Not at hk_neg
+    exact key (k.toNat / 12 + 1) f (by omega) fun i hi ↦ h i (by omega)
+  intro n
+  induction n with
+  | zero => intro k f hk _; push_cast at hk
+            exact rank_zero_iff_forall_zero.mp (levelOne_neg_weight_rank_zero (by omega)) f
+  | succ n ih =>
+    intro k f hk hcoeff
+    have h0 : (qExpansion 1 f).coeff 0 = 0 := hcoeff 0 (Nat.zero_lt_succ n)
+    set g := CuspForm.discriminantEquiv (toCuspForm f h0) with hg_def
+    have hg_order : ↑(n : ℕ) ≤ (qExpansion 1 g).order := by
+      refine (ENat.add_le_add_iff_left ENat.one_ne_top (k := 1)).mp ?_
+      rw [show (1 : ℕ∞) + ↑n = ((n + 1 : ℕ) : ℕ∞) by push_cast; ring,
+        ← discriminant_qExpansion_order, ← PowerSeries.order_mul,
+        ← qExpansion_eq_qExpansion_discriminant_mul f h0]
+      exact PowerSeries.nat_le_order _ _ hcoeff
+    have hg_zero : g = 0 := ih g (by push_cast at hk; linarith) fun i hi ↦
+      PowerSeries.coeff_of_lt_order _ (lt_of_lt_of_le (by exact_mod_cast hi) hg_order)
+    have hf' : toCuspForm f h0 = 0 :=
+      CuspForm.discriminantEquiv.injective (by simpa [← hg_def] using hg_zero)
+    ext z
+    simpa [toCuspForm_apply] using DFunLike.congr_fun hf' z
 
 end ModularForm
 
