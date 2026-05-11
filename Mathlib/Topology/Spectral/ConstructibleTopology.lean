@@ -185,7 +185,7 @@ def toConstructibleTopology (X) [TopologicalSpace X] : X ≃ WithConstructibleTo
 /--
 Canoical map from a space `WithConstructibleTopology X` to `X`
 -/
-def ofConstructibleTopology (X) [TopologicalSpace X] : WithConstructibleTopology X ≃ X :=
+def WithConstructibleTopology.equiv (X) [TopologicalSpace X] : WithConstructibleTopology X ≃ X :=
   Equiv.refl _
 
 /--
