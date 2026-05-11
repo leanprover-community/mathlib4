@@ -46,7 +46,6 @@ These give logarithmically weighted sums of primes and prime powers.
 - `Chebyshev.pi_le_log4_mul_div` gives an explicit upper bound on the prime counting function.
 - `Chebyshev.pi_ge` gives an explicit lower bound on the prime counting function.
 
-
 ## Notation
 
 We introduce the scoped notations `θ` and `ψ` in the Chebyshev namespace for the Chebyshev
