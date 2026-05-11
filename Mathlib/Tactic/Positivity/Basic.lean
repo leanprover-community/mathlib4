@@ -188,7 +188,7 @@ such that there is a local hypothesis `b < a`, `b ≤ a`, `a ≠ b` or `b ≠ a`
   assumeInstancesCommute
   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ q($f) q(HSub.hSub)
   match pα? with
-  | .some pα =>
+  | some pα =>
     let mut result := .none
     for decl in ← getLCtx do
       unless decl.isImplementationDetail do
@@ -222,7 +222,7 @@ such that there is a local hypothesis `b < a`, `b ≤ a`, `a ≠ b` or `b ≠ a`
             return .none
           | _ => return .none
     return result
-  | .none =>
+  | none =>
     let mut result := .none
     for decl in ← getLCtx do
       unless decl.isImplementationDetail do
@@ -273,13 +273,13 @@ such that `positivity` successfully recognises both `a` and `b`. -/
     assumeInstancesCommute
     pure (.positive q(mul_pos $pa $pb))
   match pα? with
-  | .some pα =>
+  | some pα =>
     let mut result : Strictness zα e (some pα) := .none
     result ← orElse result (tryProvePositive pα ra.toPositive rb.toPositive)
     result ← orElse result (tryProveNonneg pα ra.toNonneg rb.toNonneg)
     result ← orElse result (tryProveNonzero pα ra.toNonzero rb.toNonzero)
     return result
-  | .none =>
+  | none =>
     return ← catchNone <| tryProveNonzero .none ra.toNonzero rb.toNonzero
 
 lemma int_div_self_pos {a : ℤ} (ha : 0 < a) : 0 < a / a := by

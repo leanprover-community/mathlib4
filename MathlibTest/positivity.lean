@@ -643,24 +643,19 @@ example {α : Type*} [Semifield α] {x : α} (hx : x ≠ 0) : x⁻¹ ≠ 0 := by
 example {α : Type*} [Semifield α] {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) : x / y ≠ 0 := by positivity
 
 example {α : Type*} [MonoidWithZero α] [NoZeroDivisors α] {x : α} (hx : x ≠ 0) (n : ℕ) :
-    x ^ n ≠ 0 := by
-  positivity
+    x ^ n ≠ 0 := by positivity
 
 example {α : Type*} [MonoidWithZero α] [NoZeroDivisors α] {x y : α}
-    (hx : x ≠ 0) (hy : y ≠ 0) : x * y ≠ 0 := by
-  positivity
+    (hx : x ≠ 0) (hy : y ≠ 0) : x * y ≠ 0 := by positivity
 
 example {α : Type*} [AddMonoidWithOne α] [CharZero α] {n : ℕ} (hn : n ≠ 0) :
-    (n : α) ≠ 0 := by
-  positivity
-
+    (n : α) ≠ 0 := by positivity
 example {α : Type*} [AddGroupWithOne α] [CharZero α] {z : ℤ} (hz : z ≠ 0) :
-    (z : α) ≠ 0 := by
-  positivity
-
+    (z : α) ≠ 0 := by positivity
 example {α : Type*} [DivisionRing α] [CharZero α] {q : ℚ} (hq : q ≠ 0) :
-    (q : α) ≠ 0 := by
-  positivity
+    (q : α) ≠ 0 := by positivity
 
-example {α : Type*} [Semiring α] [Nontrivial α] (x : α) : x ^ 0 ≠ 0 := by
-  positivity
+example {α : Type*} [Semiring α] [Nontrivial α] (a : α) : a ^ 0 ≠ 0 := by positivity
+
+example {α : Type*} [AddGroup α] {a b : α} (ha : a ≠ b) : 0 ≠ b - a := by positivity
+example {α : Type*} [AddGroup α] {a b : α} (ha : a ≠ b) : 0 ≠ a - b := by positivity
