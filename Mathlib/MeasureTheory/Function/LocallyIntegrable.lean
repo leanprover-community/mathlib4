@@ -410,9 +410,19 @@ protected theorem LocallyIntegrable.sub {f g : X → E}
 protected theorem LocallyIntegrable.neg {f : X → E} (hf : LocallyIntegrable f μ) :
     LocallyIntegrable (-f) μ := fun x ↦ (hf x).neg
 
+@[simp] theorem locallyIntegrable_neg_iff {f : X → E} :
+    LocallyIntegrable (-f) μ ↔ LocallyIntegrable f μ := by
+  simp [← locallyIntegrableOn_univ]
+
 protected theorem LocallyIntegrable.smul {f : X → E} {𝕜 : Type*} [NormedAddCommGroup 𝕜]
     [SMulZeroClass 𝕜 E] [IsBoundedSMul 𝕜 E] (hf : LocallyIntegrable f μ) (c : 𝕜) :
     LocallyIntegrable (c • f) μ := fun x ↦ (hf x).smul c
+
+-- TODO: generalise this to ENormed spaces, once there are suitable typeclasses
+@[simp] theorem locallyIntegrable_smul_iff {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
+    {f : X → E} (c : 𝕜) :
+    LocallyIntegrable (c • f) μ ↔ c = 0 ∨ LocallyIntegrable f μ := by
+  simp [← locallyIntegrableOn_univ]
 
 variable {ε''' : Type*} [TopologicalSpace ε'''] [ESeminormedAddCommMonoid ε''']
   [ContinuousAdd ε'''] in
