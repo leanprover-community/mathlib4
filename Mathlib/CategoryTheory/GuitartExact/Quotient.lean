@@ -57,12 +57,11 @@ lemma quotient_of_nonempty_leftHomotopy (e : T ⋙ R ≅ L ⋙ B)
   let X₀ := T.objPreimage Y₀
   let e₀ : T.obj X₀ ≅ Y₀ := T.objObjPreimageIso Y₀
   let S := { f : L.obj X₀ ⟶ X // B.map f = e.inv.app X₀ ≫ R.map e₀.hom ≫ g }
-  have : Nonempty S := by
-    obtain ⟨f, hf⟩ := B.map_surjective (e.inv.app _ ≫ R.map e₀.hom ≫ g)
-    exact ⟨⟨f, hf⟩⟩
   let Z (s : S) : CostructuredArrowDownwards e.hom g :=
     CostructuredArrowDownwards.mk _ _ X₀ e₀.inv s.val (by simp [s.property])
-  have : Nonempty (CostructuredArrowDownwards e.hom g) := ⟨Z (Classical.arbitrary _)⟩
+  have : Nonempty (CostructuredArrowDownwards e.hom g) := by
+    obtain ⟨f, hf⟩ := B.map_surjective (e.inv.app _ ≫ R.map e₀.hom ≫ g)
+    exact ⟨Z ⟨f, hf⟩⟩
   refine zigzag_isConnected (fun A₀ A₁ ↦ ?_)
   have H (A : CostructuredArrowDownwards e.hom g) : ∃ s, Nonempty (Z s ⟶ A) := by
     obtain ⟨a, ha⟩ := T.map_surjective (e₀.hom ≫ A.left.hom)
