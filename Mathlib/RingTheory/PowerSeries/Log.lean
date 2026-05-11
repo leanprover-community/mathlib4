@@ -32,7 +32,7 @@ over ℚ-algebras and establishes its key properties.
   `∑ (-1)^n · Xⁿ = 1/(1+X)`.
 * `PowerSeries.exp_subst_log`: `exp` and `log` are mutually inverse:
   substituting `log(1+X)` into `exp` yields `1 + X`.
-* `PowerSeries.log_subst_exp_sub_one`: Conversely, substituting `exp X - 1` into `log(1+X)`
+* `PowerSeries.log_subst_exp_sub_one`: Substituting `exp X - 1` into `log(1+X)`
   yields `X`.
 * `PowerSeries.logOf_exp`: The reformulation `logOf (exp X) = X`, where `logOf f` is
   `log(1+X)` evaluated at `f - 1`.
