@@ -71,7 +71,7 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr)
       else
         -- try user provided discharger
         let ctx : Context ← read
-        if (← isProp type) then
+        if ((← isProp type) || type.isAppOfArity' `ModelWithCorners 7) then
           if let some proof ← ctx.disch type then
             if (← isDefEq x proof) then
               continue
