@@ -89,7 +89,7 @@ theorem isCoveringMapOn_zpow (n : ℤ) (hn : (n : 𝕜) ≠ 0) :
   refine .of_isCoveringMap_restrictPreimage _ (by simp) ?_ ?_
   · convert isClosed_singleton (x := (0 : 𝕜)).isOpen_compl using 1
     ext; simp [this]
-  · convert (isCoveringMap_zpow n hn).comp_homeomorph (.setCongr (t := {x | x ≠ 0}) _) using 1
+  · convert (isCoveringMap_zpow n hn).comp_homeomorph (.ofEqSubtypes _) using 1
     ext; simpa using (this _).not
 
 attribute [-instance] Units.mulAction'
@@ -103,7 +103,7 @@ theorem isQuotientCoveringMap_npow (n : ℕ) (hn : (n : 𝕜) ≠ 0)
     (by fun_prop) (.restrictPreimage _ surj)
   have : IsQuotientMap fun x : 𝕜ˣ ↦ x ^ n := by
     let e := unitsHomeomorphNeZero (G₀ := 𝕜)
-    convert (e.symm.isQuotientMap.comp this).comp (e.trans (.setCongr (s := {0}ᶜ) _)).isQuotientMap
+    convert (e.symm.isQuotientMap.comp this).comp (e.trans (.ofEqSubtypes _)).isQuotientMap
     · exact (e.left_inv _).symm
     · ext; simp [NeZero.ne]
   refine this.isQuotientCoveringMap_of_subgroup _
