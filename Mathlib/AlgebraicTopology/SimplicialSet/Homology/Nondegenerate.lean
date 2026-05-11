@@ -225,6 +225,7 @@ noncomputable def normalizedChainComplexFunctorObj : SSet.{w} ⥤ ChainComplex C
 
 /-- The morphism `X.toNormalizedChainComplex R` for any simplicial set `X`,
 as a natural transformation. -/
+@[simps]
 noncomputable def toNormalizedChainComplexNatTrans :
     (chainComplexFunctor C).obj R ⟶ normalizedChainComplexFunctorObj R where
   app X := X.toNormalizedChainComplex R
