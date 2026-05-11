@@ -26,7 +26,6 @@ structure CollectArgs where
 
 structure ReportArgs where
   paths : Array String := #[]
-  all : Bool := false
   format : ReportFormat := .text
 
 structure EditArgs where
@@ -53,10 +52,11 @@ SUBCOMMANDS:
       Build Mathlib with `set_option diagnostics true`, walk the env,
       and write report data to scripts/.no_expose/.
 
-  report [PATH...] [--all] [--format text|json]
+  report [PATH...] [--format text|json]
       Render per-file recommendations from existing report data.
-      Defaults to `--format text` and to listing `safe-to-unexpose`
-      and `needed-downstream` decls in each PATH.
+      With no PATH, renders every file in the report. Default
+      `--format text` lists `safe-to-unexpose` and
+      `needed-downstream` decls in each file.
 
   edit [PATH...] [--dry-run] [--verify] [--force-dirty] [--force-stale]
       Apply (default) or preview (--dry-run) the un-expose edits to
@@ -89,7 +89,6 @@ private partial def parseCollect (rest : List String) : Except String CollectArg
 private partial def parseReport (rest : List String) : Except String ReportArgs := loop rest {} where
   loop : List String → ReportArgs → Except String ReportArgs
     | [], acc => .ok acc
-    | "--all" :: rest, acc => loop rest { acc with all := true }
     | "--format" :: v :: rest, acc => do
       let f ← parseFormat v
       loop rest { acc with format := f }

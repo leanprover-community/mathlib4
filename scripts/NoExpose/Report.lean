@@ -170,13 +170,10 @@ def runReport (args : ReportArgs) : IO UInt32 := do
   let (records, errs) ← readReport reportPath
   for e in errs do IO.eprintln s!"warning: {e}"
   let groups := byFile records
-  -- Determine which files to render.
+  -- Default to every file in the report; with explicit PATHs, just those.
   let selectedFiles : Array String :=
-    if args.all then groups.toArray.map (·.1)
+    if args.paths.isEmpty then groups.toArray.map (·.1) |>.qsort (· < ·)
     else args.paths
-  if selectedFiles.isEmpty then
-    IO.eprintln "no_expose: pass at least one PATH or --all"
-    return 2
   match args.format with
   | .text => do
     for f in selectedFiles do
