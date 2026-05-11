@@ -181,42 +181,57 @@ namespace CategoryTheory.ShortComplex.ShortExact
 
 open HomologicalComplex Limits
 
-lemma acyclic_X₁ (hS : S.ShortExact) (hg : _root_.QuasiIso S.g) : S.X₁.Acyclic := by
-  intro j
+lemma exactAt_X₁ (hS : S.ShortExact) (j : ι)
+    (h₁ : Mono (HomologicalComplex.homologyMap S.g j) := by infer_instance)
+    (h₂ : ∀ (i : ι), c.Rel i j → Epi (HomologicalComplex.homologyMap S.g i) := by infer_instance) :
+    S.X₁.ExactAt j := by
   rw [exactAt_iff_isZero_homology]
-  by_cases hj : ∃ i, c.Rel i j
+  by_cases! hj : ∃ i, c.Rel i j
   · obtain ⟨i, hij⟩ := hj
+    have := h₂ i hij
     apply (hS.homology_exact₁ i j hij).isZero_X₂
     · simp [← cancel_epi (HomologicalComplex.homologyMap S.g i)]
-    · dsimp
-      rw [← cancel_mono (HomologicalComplex.homologyMap S.g j), zero_comp,
-        ← HomologicalComplex.homologyMap_comp, S.zero,
-        HomologicalComplex.homologyMap_zero]
+    · simp [← cancel_mono (HomologicalComplex.homologyMap S.g j),
+        ← HomologicalComplex.homologyMap_comp]
   · have := hS.mono_f
-    have := HomologicalComplex.mono_homologyMap_of_mono_of_not_rel S.f j (by tauto)
+    have := HomologicalComplex.mono_homologyMap_of_mono_of_not_rel S.f j hj
     rw [IsZero.iff_id_eq_zero,
       ← cancel_mono (HomologicalComplex.homologyMap S.f j),
-      ← cancel_mono (HomologicalComplex.homologyMap S.g j), zero_comp, zero_comp,
-      Category.id_comp, ← HomologicalComplex.homologyMap_comp, S.zero,
-      HomologicalComplex.homologyMap_zero]
+      ← cancel_mono (HomologicalComplex.homologyMap S.g j)]
+    simp [← HomologicalComplex.homologyMap_comp]
 
-lemma acyclic_X₃ (hS : S.ShortExact) (h : _root_.QuasiIso S.f) : S.X₃.Acyclic := by
-  intro i
+lemma exactAt_X₂ (hS : S.ShortExact) (i : ι) (h₁ : S.X₁.ExactAt i) (h₃ : S.X₃.ExactAt i) :
+    S.X₂.ExactAt i := by
+  rw [exactAt_iff_isZero_homology] at h₁ h₃ ⊢
+  exact (hS.homology_exact₂ i).isZero_X₂ (h₁.eq_of_src _ _) (h₃.eq_of_tgt _ _)
+
+lemma exactAt_X₃ (hS : S.ShortExact) (i : ι)
+    (h₁ : Epi (HomologicalComplex.homologyMap S.f i) := by infer_instance)
+    (h₂ : ∀ (j : ι), c.Rel i j → Mono (HomologicalComplex.homologyMap S.f j) := by infer_instance) :
+    S.X₃.ExactAt i := by
   rw [exactAt_iff_isZero_homology]
-  by_cases hi : ∃ j, c.Rel i j
+  by_cases! hi : ∃ j, c.Rel i j
   · obtain ⟨j, hij⟩ := hi
+    have := h₂ j hij
     apply (hS.homology_exact₃ i j hij).isZero_X₂
-    · dsimp
-      rw [← cancel_epi (HomologicalComplex.homologyMap S.f i), comp_zero,
-        ← HomologicalComplex.homologyMap_comp, S.zero,
-        HomologicalComplex.homologyMap_zero]
+    · simp [← cancel_epi (HomologicalComplex.homologyMap S.f i),
+        ← HomologicalComplex.homologyMap_comp]
     · simp [← cancel_mono (HomologicalComplex.homologyMap S.f j)]
   · have := hS.epi_g
-    have pi := HomologicalComplex.epi_homologyMap_of_epi_of_not_rel S.g i (by tauto)
+    have := HomologicalComplex.epi_homologyMap_of_epi_of_not_rel S.g i hi
     rw [IsZero.iff_id_eq_zero,
       ← cancel_epi (HomologicalComplex.homologyMap S.g i),
-      ← cancel_epi (HomologicalComplex.homologyMap S.f i), comp_zero, comp_zero,
-      Category.comp_id, ← HomologicalComplex.homologyMap_comp, S.zero,
-      HomologicalComplex.homologyMap_zero]
+      ← cancel_epi (HomologicalComplex.homologyMap S.f i)]
+    simp [← HomologicalComplex.homologyMap_comp]
+
+lemma acyclic_X₁ (hS : S.ShortExact) (hg : _root_.QuasiIso S.g) : S.X₁.Acyclic :=
+  fun j ↦ hS.exactAt_X₁ j
+
+lemma acyclic_X₂ (hS : S.ShortExact) (h₁ : S.X₁.Acyclic) (h₃ : S.X₃.Acyclic) :
+    S.X₂.Acyclic :=
+  fun i ↦ hS.exactAt_X₂ i (h₁ _) (h₃ _)
+
+lemma acyclic_X₃ (hS : S.ShortExact) (h : _root_.QuasiIso S.f) : S.X₃.Acyclic :=
+  fun i ↦ hS.exactAt_X₃ i
 
 end CategoryTheory.ShortComplex.ShortExact
