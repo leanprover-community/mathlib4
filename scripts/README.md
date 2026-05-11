@@ -198,6 +198,8 @@ to module `Foo.Bar` (no `srcDir` indirection).
   per-decl strategy auto-detected from the file. With `--verify`,
   re-runs `lake build` on the touched module and rolls back on
   failure.
+  The exe deliberately does not `import Mathlib` (so it builds in
+  seconds); it loads the env at runtime via `Lean.withImportModules`.
 
 **CI workflow**
 - `lake-build-with-retry.sh`

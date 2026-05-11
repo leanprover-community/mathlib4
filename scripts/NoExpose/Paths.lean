@@ -85,4 +85,15 @@ def detectProjectInfo : IO ProjectInfo := do
     lakefilePath
   }
 
+/-- JSON-string-escape `s`. -/
+def jsonEscape (s : String) : String :=
+  s.foldl (init := "") fun acc c => acc ++
+    match c with
+    | '"'  => "\\\""
+    | '\\' => "\\\\"
+    | '\n' => "\\n"
+    | '\r' => "\\r"
+    | '\t' => "\\t"
+    | c    => c.toString
+
 end NoExpose

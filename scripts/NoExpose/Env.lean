@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Lean
+import NoExpose.Paths
 
 /-!
 # `NoExpose.Env` — env-walk pieces (enumeration + static refs)
@@ -153,17 +154,6 @@ def collectStaticRefs : CoreM RefMap := do
   return acc
 
 /-! ## JSON serialisation -/
-
-/-- JSON-string-escape `s`. -/
-private def jsonEscape (s : String) : String :=
-  s.foldl (init := "") fun acc c => acc ++
-    match c with
-    | '"'  => "\\\""
-    | '\\' => "\\\\"
-    | '\n' => "\\n"
-    | '\r' => "\\r"
-    | '\t' => "\\t"
-    | c    => c.toString
 
 def DeclRecord.toJsonLine (d : DeclRecord) : String :=
   "{\"name\":\"" ++ jsonEscape d.name.toString ++

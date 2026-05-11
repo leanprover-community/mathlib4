@@ -23,8 +23,8 @@ Lean. Three pieces:
   per (file, decl, count, category) tuple.
 
 The build itself is `lake build Mathlib`, run as a child process.
-Hours of CPU; gated on `--full-build` (default off — `--skip-build`
-remains the working mode).
+Hours of CPU; pass `--skip-build` to `collect` to reuse an existing
+`build.log` and skip this step.
 -/
 
 open System
@@ -216,8 +216,8 @@ def parseLogToRecords (logPath : FilePath) : IO (Array DiagRecord) := do
       currentCategory := none
   return out
 
-/-- Stream `logPath` line-by-line and write `outPath` with one JSONL
-record per (file, decl, count, category). -/
+/-- Parse `logPath` and write `outPath` with one JSONL record per
+(file, decl, count, category). -/
 def parseLog (logPath outPath : FilePath) : IO Nat := do
   let records ← parseLogToRecords logPath
   IO.FS.withFile outPath .write fun h => do

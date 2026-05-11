@@ -28,7 +28,7 @@ namespace NoExpose
 /-- Run the env-scan portion of `collect`: opens the env once via
 `withImportModules`, then writes all three JSONLs. Defaults to
 importing the project's lib roots. -/
-unsafe def runEnvScan (project : ProjectInfo) (modules : Array Name)
+unsafe def runEnvScan (_project : ProjectInfo) (modules : Array Name)
     (scopePrefix : Array Name) : IO Unit := do
   IO.FS.createDirAll dataDir
   let searchPath ← addSearchPathFromEnv (← getBuiltinSearchPath (← findSysroot))
@@ -46,8 +46,6 @@ unsafe def runEnvScan (project : ProjectInfo) (modules : Array Name)
     -- 3. Per-decl refs → decl_refs.jsonl
     IO.FS.withFile declRefsPath .write fun h => writeDeclRefs env h
     IO.eprintln s!"[no_expose collect] wrote per-decl refs to {declRefsPath}"
-  -- Mark unused
-  let _ := project
 
 /-- Run the `collect` subcommand. -/
 unsafe def runCollect (args : CollectArgs) : IO UInt32 := do

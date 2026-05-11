@@ -30,10 +30,8 @@ The user-facing core. For each target file:
 6. **Audit trail** (apply-only): append a `git apply`-compatible unified
    diff to `scripts/.no_expose/edits.patch`. `--dry-run` prints the same
    diff to stdout but does not touch the audit file.
-
-v1 punts on `--verify` (rebuild the smallest containing target after
-edit). The conservative defaults + audit trail give the user a quick
-`git diff` / `git checkout` recovery path.
+7. **Verify** (apply-only, `--verify`): re-run `lake build` on the
+   touched module and roll back the edit on non-zero exit.
 -/
 
 open System
@@ -171,8 +169,7 @@ only handles two shapes:
   (only if it's the *only* attribute on the line).
 
 Anything else (multi-attribute `@[expose, simp]`, splits across lines
-in unusual ways) is skipped with a diagnostic — these are the ~34
-hand-written edge cases. -/
+in unusual ways) is skipped with a diagnostic. -/
 
 /-- Strip `@[expose]` from a single-attribute occurrence around `line`
 (0-based index into `lines`). Returns `(modifiedLines?, reason)`

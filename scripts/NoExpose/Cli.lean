@@ -7,11 +7,8 @@ Authors: Kim Morrison
 /-!
 # `NoExpose.Cli` — argument parsing for `lake exe no_expose`
 
-Hand-rolled argparse (no external deps). Three subcommands: `collect`,
-`report`, `edit`, plus `clean` for removing the data directory.
-
-The flag set is small and the dispatch is shallow, so a hand-rolled
-parser keeps the dependency surface minimal.
+Subcommands: `collect`, `report`, `edit`, plus `clean` for removing the
+data directory.
 -/
 
 namespace NoExpose
@@ -40,7 +37,6 @@ structure ReportArgs where
   paths : Array String := #[]
   all : Bool := false
   format : ReportFormat := .text
-  collectOnDemand : Bool := false
 
 structure EditArgs where
   paths : Array String := #[]
@@ -67,7 +63,7 @@ SUBCOMMANDS:
       Build Mathlib with `set_option diagnostics true`, walk the env,
       and write report data to scripts/.no_expose/.
 
-  report [PATH...] [--all] [--format text|json|tsv] [--collect-on-demand]
+  report [PATH...] [--all] [--format text|json|tsv]
       Render per-file recommendations from existing report data.
       Defaults to `--format text` and to listing `safe-to-unexpose`
       and `load-bearing` decls in each PATH.
@@ -112,7 +108,6 @@ private partial def parseReport (rest : List String) : Except String ReportArgs 
   loop : List String → ReportArgs → Except String ReportArgs
     | [], acc => .ok acc
     | "--all" :: rest, acc => loop rest { acc with all := true }
-    | "--collect-on-demand" :: rest, acc => loop rest { acc with collectOnDemand := true }
     | "--format" :: v :: rest, acc => do
       let f ← parseFormat v
       loop rest { acc with format := f }

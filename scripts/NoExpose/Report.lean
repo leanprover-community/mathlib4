@@ -174,13 +174,8 @@ def renderJsonFile (file : String) (rs : Array ReportRecord) : Json := Id.run do
 /-- Top-level `report` subcommand. -/
 def runReport (args : ReportArgs) : IO UInt32 := do
   unless ← System.FilePath.pathExists reportPath do
-    IO.eprintln s!"no_expose: {reportPath} not found."
-    if args.collectOnDemand then
-      IO.eprintln "  (would run `collect` here, but `collect` is not yet \
-        implemented in the new tool — TODO)"
-    else
-      IO.eprintln "  Run `lake exe no_expose collect` first, or pass \
-        `--collect-on-demand`."
+    IO.eprintln s!"no_expose: {reportPath} not found. \
+      Run `lake exe no_expose collect` first."
     return 2
   let (records, errs) ← readReport reportPath
   for e in errs do IO.eprintln s!"warning: {e}"
@@ -314,18 +309,6 @@ private def applyTransitiveClosure (exposed : Std.HashMap String Json)
       usingMap := usingMap.insert key ((usingMap.getD key 0) + count)
       propagated := propagated + 1
   return (usage, usingMap, propagated)
-
-/-- JSON-string-escape `s` (duplicate of `Env.jsonEscape` to keep this
-module standalone). -/
-private def jsonEscape (s : String) : String :=
-  s.foldl (init := "") fun acc c => acc ++
-    match c with
-    | '"'  => "\\\""
-    | '\\' => "\\\\"
-    | '\n' => "\\n"
-    | '\r' => "\\r"
-    | '\t' => "\\t"
-    | c    => c.toString
 
 /-- Build `report.jsonl` by joining the four input files. -/
 def build (exposedPath diagnosticsPath staticRefsPath declRefsPath : System.FilePath)
