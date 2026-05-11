@@ -82,7 +82,7 @@ namespace HomotopyCategory
 underlying cochain complex is bounded below. (Note: this property of
 objects is not closed under isomorphisms.) -/
 def plus : ObjectProperty (HomotopyCategory C (.up ℤ)) :=
-  fun K ↦ ∃ (n : ℤ), CochainComplex.IsStrictlyGE K.1 n
+  fun K ↦ ∃ (n : ℤ), CochainComplex.IsStrictlyGE K.as n
 
 @[simp]
 lemma plus_quotient_obj_iff (K : CochainComplex C ℤ) :
