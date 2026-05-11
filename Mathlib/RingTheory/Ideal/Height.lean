@@ -202,6 +202,17 @@ lemma Ideal.primeHeight_eq_zero_iff {I : Ideal R} [I.IsPrime] :
   · rintro ⟨hI, hI'⟩ b hb
     exact hI' (y := b.asIdeal) b.isPrime hb
 
+/-- If `x` is a non-zero-divisor, then `span {x}` has height at least 1. -/
+lemma Ideal.one_le_height_span_singleton_of_mem_nonZeroDivisors
+    {x : R} (hx : x ∈ nonZeroDivisors R) : 1 ≤ (span {x}).height := by
+  dsimp [Ideal.height]
+  refine le_iInf₂ fun q hq => ?_
+  have : q.IsPrime := minimalPrimes_isPrime hq
+  rw [ENat.one_le_iff_ne_zero, Ne, primeHeight_eq_zero_iff]
+  intro hmin
+  exact absurd hx <| notMem_nonZeroDivisors_of_mem_mem_minimalPrimes
+    (hq.1.2 <| Ideal.mem_span_singleton.mpr <| dvd_refl x) hmin
+
 @[simp]
 lemma Ideal.height_bot [Nontrivial R] : (⊥ : Ideal R).height = 0 := by
   obtain ⟨p, hp⟩ := Ideal.nonempty_minimalPrimes (R := R) (I := ⊥) top_ne_bot.symm
@@ -367,10 +378,7 @@ lemma mem_minimalPrimes_of_primeHeight_eq_height {I J : Ideal R} [J.IsPrime] (e 
 lemma exists_spanRank_le_and_le_height_of_le_height [IsNoetherianRing R] (I : Ideal R) (r : ℕ)
     (hr : r ≤ I.height) : ∃ J ≤ I, J.spanRank ≤ r ∧ r ≤ J.height := by
   induction r with
-  | zero =>
-    refine ⟨⊥, bot_le, ?_, zero_le _⟩
-    rw [Submodule.spanRank_bot]
-    exact le_refl 0
+  | zero => simp
   | succ r ih =>
     obtain ⟨J, h₁, h₂, h₃⟩ := ih ((WithTop.coe_le_coe.mpr r.le_succ).trans hr)
     let S := { K | K ∈ J.minimalPrimes ∧ Ideal.height K = r }

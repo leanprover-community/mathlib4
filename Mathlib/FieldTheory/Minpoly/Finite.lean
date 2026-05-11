@@ -17,7 +17,7 @@ that is finite as a module.
 
 -/
 
-@[expose] public section
+public section
 
 variable {A B : Type*} [CommRing A] [Ring B] [Algebra A B] [Module.Finite A B] (x : B)
 

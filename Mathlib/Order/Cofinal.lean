@@ -25,7 +25,7 @@ For the cofinality of a set as a cardinal, see `Mathlib/SetTheory/Cardinal/Cofin
 - Deprecate `Order.Cofinal` in favor of this predicate.
 -/
 
-@[expose] public section
+public section
 
 open Set
 
