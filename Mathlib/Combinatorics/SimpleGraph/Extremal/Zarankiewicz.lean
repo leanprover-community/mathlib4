@@ -95,7 +95,7 @@ theorem lt_zarankiewicz_iff
 variable {R : Type*} [Semiring R] [LinearOrder R] [FloorSemiring R]
 
 @[inherit_doc zarankiewicz_le_iff]
-theorem zarankiewicz_card_le_iff_of_nonneg
+theorem zarankiewicz_le_iff_of_nonneg
     (hm : card V = m) (hn : card W = n) (hs : card α = s) (ht : card β = t) {x : R} (h : 0 ≤ x) :
     zarankiewicz m n s t ≤ x ↔
       ∀ ⦃G : SimpleGraph (V ⊕ W)⦄ [DecidableRel G.Adj], G ≤ completeBipartiteGraph V W →
@@ -104,7 +104,7 @@ theorem zarankiewicz_card_le_iff_of_nonneg
   exact zarankiewicz_le_iff hm hn hs ht ⌊x⌋₊
 
 @[inherit_doc lt_zarankiewicz_iff]
-theorem lt_zarankiewicz_card_iff_of_nonneg
+theorem lt_zarankiewicz_iff_of_nonneg
     (hm : card V = m) (hn : card W = n) (hs : card α = s) (ht : card β = t) {x : R} (h : 0 ≤ x) :
     x < zarankiewicz m n s t ↔
       ∃ G : SimpleGraph (V ⊕ W), ∃ _ : DecidableRel G.Adj, G ≤ completeBipartiteGraph V W ∧
@@ -142,7 +142,6 @@ theorem two_mul_extremalNumber_le_zarankiewicz_symm
   · simp_rw [mem_filter, mem_univ, true_and]
     refine ⟨bipartiteDoubleCover_le, ?_⟩
     contrapose! h
-    rw [not_free] at h ⊢
     refine completeBipartiteGraph_isContained_bipartiteDoubleCover.mp <|
       h.trans' ⟨Iso.toCopy ?_⟩
     exact completeBipartiteGraphCongr
