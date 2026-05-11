@@ -165,6 +165,18 @@ theorem le_log_iff_exp_le (hy : 0 < y) : x ≤ log y ↔ exp x ≤ y := by rw [�
 
 theorem lt_log_iff_exp_lt (hy : 0 < y) : x < log y ↔ exp x < y := by rw [← exp_lt_exp, exp_log hy]
 
+/-- One direction of `Real.log_le_iff_le_exp` without positivity assumption. -/
+lemma le_exp_of_log_le (h : log x ≤ y) : x ≤ exp y := by
+  rcases le_or_gt x 0 with hx | hx
+  · exact hx.trans <| exp_nonneg y
+  · exact (log_le_iff_le_exp hx).mp h
+
+/-- One direction of `Real.log_lt_iff_lt_exp` without positivity assumption. -/
+lemma lt_exp_of_log_lt (h : log x < y) : x < exp y := by
+  rcases le_or_gt x 0 with hx | hx
+  · exact hx.trans_lt <| exp_pos y
+  · exact (log_lt_iff_lt_exp hx).mp h
+
 theorem log_pos_iff (hx : 0 ≤ x) : 0 < log x ↔ 1 < x := by
   rcases hx.eq_or_lt with (rfl | hx)
   · simp [zero_le_one]
@@ -410,7 +422,7 @@ theorem log_nat_eq_sum_factorization (n : ℕ) :
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp -- relies on junk values of `log` and `Nat.factorization`
   · simp only [← log_pow, ← Nat.cast_pow]
-    rw [← Finsupp.log_prod, ← Nat.cast_finsuppProd, Nat.factorization_prod_pow_eq_self hn]
+    rw [← Finsupp.log_prod, ← Nat.cast_finsuppProd, Nat.prod_factorization_pow_eq_self hn]
     intro p hp
     rw [eq_zero_of_pow_eq_zero (Nat.cast_eq_zero.1 hp), Nat.factorization_zero_right]
 

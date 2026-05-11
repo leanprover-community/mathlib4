@@ -9,8 +9,9 @@ public import Mathlib.Data.Sigma.Lex
 public import Mathlib.Util.Notation3
 public import Init.NotationExtra
 public import Mathlib.Data.Sigma.Basic
-public import Mathlib.Order.Lattice
 public import Mathlib.Order.BoundedOrder.Basic
+public import Mathlib.Order.Lattice
+public import Mathlib.Order.Lex
 
 /-!
 # Lexicographic order on a sigma type
@@ -32,7 +33,7 @@ Prove that a sigma type is a `NoMaxOrder`, `NoMinOrder`, `DenselyOrdered` when i
 are.
 -/
 
-@[expose] public section
+public section
 
 
 variable {ι : Type*} {α : ι → Type*}

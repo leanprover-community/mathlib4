@@ -28,7 +28,7 @@ In this file we show some global properties satisfy fpqc descent.
   (`AlgebraicGeometry.descendsAlong_isOpenImmersion_surjective_inf_flat_inf_quasicompact`)
 -/
 
-@[expose] public section
+public section
 
 universe u
 
@@ -120,7 +120,7 @@ instance descendsAlong_isomorphisms_surjective_inf_flat_inf_quasicompact :
       RingHom.FaithfullyFlat.codescendsAlong_bijective ?_ ?_ h hfst
   · intro _ _ f hf
     rwa [← flat_and_surjective_SpecMap_iff, and_comm]
-  · simp_rw [← isIso_SpecMap_iff, isomorphisms.iff, implies_true]
+  · simp_rw [← isIso_SpecMap_iff, implies_true]
 
 /-- Being an open immersion satisfies fpqc descent. -/
 @[stacks 02L3]
@@ -152,6 +152,19 @@ instance descendsAlong_isOpenImmersion_surjective_inf_flat_inf_quasicompact' :
     exact MorphismProperty.pullback_snd _ _ hf
   rw [← IsOpenImmersion.lift_fac U.ι g (by simp [U])]
   infer_instance
+
+lemma HasRingHomProperty.descendsAlong_flat {P : MorphismProperty Scheme.{u}}
+    [P.IsStableUnderBaseChange] {Q : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
+    [HasRingHomProperty P Q] (h : RingHom.CodescendsAlong Q RingHom.FaithfullyFlat) :
+    P.DescendsAlong (@Surjective ⊓ @Flat ⊓ @QuasiCompact) := by
+  refine HasRingHomProperty.descendsAlong _ _ _ _ ?_ ?_ h
+  · rw [inf_comm]
+    gcongr
+    exact IsLocalIso.le_of_isZariskiLocalAtSource @Flat
+  · intro R S f ⟨hf₁, hf₂⟩
+    rw [RingHom.FaithfullyFlat.iff_flat_and_comap_surjective]
+    refine ⟨?_, (Spec.map f).surjective⟩
+    rwa [HasRingHomProperty.Spec_iff (P := @Flat)] at hf₂
 
 /-- fpqc descent implies fppf descent -/
 instance (P : MorphismProperty Scheme) [P.DescendsAlong (@Surjective ⊓ @Flat ⊓ @QuasiCompact)]

@@ -19,7 +19,7 @@ is again finitely generated.
 
 -/
 
-@[expose] public section
+public section
 
 open Function (Surjective)
 open Finsupp
@@ -107,7 +107,7 @@ variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] [Module.Finite
 lemma Module.exists_isPrincipal_quotient_of_finite :
     ∃ N : Submodule R M, N ≠ ⊤ ∧ Submodule.IsPrincipal (⊤ : Submodule R (M ⧸ N)) := by
   obtain ⟨n, f, hf⟩ := @Module.Finite.exists_fin R M _ _ _ _
-  let s := { m : ℕ | Submodule.span R (f '' (Fin.val ⁻¹' (Set.Iio m))) ≠ ⊤ }
+  let s := { m : ℕ | Submodule.span R (f '' Fin.val ⁻¹' Set.Iio m) ≠ ⊤ }
   have hns : ∀ x ∈ s, x < n := by
     refine fun x hx ↦ lt_iff_not_ge.mpr fun e ↦ ?_
     have : (Fin.val ⁻¹' Set.Iio x : Set (Fin n)) = Set.univ := by ext y; simpa using y.2.trans_le e
@@ -126,7 +126,6 @@ lemma Module.exists_isPrincipal_quotient_of_finite :
   ext
   simp [Fin.ext_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Module.exists_surjective_quotient_of_finite :
     ∃ (I : Ideal R) (f : M →ₗ[R] R ⧸ I), I ≠ ⊤ ∧ Function.Surjective f := by
   obtain ⟨N, hN, ⟨x, hx⟩⟩ := Module.exists_isPrincipal_quotient_of_finite R M
@@ -139,7 +138,6 @@ lemma Module.exists_surjective_quotient_of_finite :
 
 open TensorProduct
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Nontrivial (M ⊗[R] M) := by
   obtain ⟨I, ϕ, hI, hϕ⟩ := Module.exists_surjective_quotient_of_finite R M
   let ψ : M ⊗[R] M →ₗ[R] R ⧸ I :=
@@ -151,7 +149,6 @@ instance : Nontrivial (M ⊗[R] M) := by
 
 end NontrivialTensorProduct
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Subalgebra.finite_sup {K L : Type*} [CommSemiring K] [CommSemiring L] [Algebra K L]
     (E1 E2 : Subalgebra K L) [Module.Finite K E1] [Module.Finite K E2] :
     Module.Finite K ↥(E1 ⊔ E2) := by
@@ -183,7 +180,7 @@ lemma RingHom.Finite.tensorProductMap
     (Algebra.TensorProduct.comm _ _ _).toRingEquiv.finite |>.comp <|
     RingHom.Finite.tensorProductMap_id (T := S) Hg |>.comp <|
     (Algebra.TensorProduct.comm _ _ _).toRingEquiv.finite
-  simp only [AlgHom.toRingHom_eq_coe, AlgEquiv.toRingEquiv_eq_coe, RingEquiv.toRingHom_eq_coe,
+  simp only [AlgHom.toRingHom_eq_coe, RingEquiv.toRingHom_eq_coe,
     AlgEquiv.toRingEquiv_toRingHom, ← AlgEquiv.toAlgHom_toRingHom, ← AlgHom.comp_toRingHom]
   congr
   ext <;> simp

@@ -435,8 +435,7 @@ theorem IsCycle.swap_mul {α : Type*} [DecidableEq α] {f : Perm α} (hf : IsCyc
 theorem IsCycle.sign {f : Perm α} (hf : IsCycle f) : sign f = -(-1) ^ #f.support :=
   let ⟨x, hx⟩ := hf
   calc
-    Perm.sign f = Perm.sign (swap x (f x) * (swap x (f x) * f)) := by
-      {rw [← mul_assoc, mul_def, mul_def, swap_swap, trans_refl]}
+    Perm.sign f = Perm.sign (swap x (f x) * (swap x (f x) * f)) := by simp
     _ = -(-1) ^ #f.support :=
       if h1 : f (f x) = x then by
         have h : swap x (f x) * f = 1 := by
@@ -519,7 +518,7 @@ theorem IsCycle.support_pow_eq_iff (hf : IsCycle f) {n : ℕ} :
   · intro H
     apply le_antisymm (support_pow_le _ n) _
     intro x hx
-    contrapose! H
+    contrapose H
     ext z
     by_cases hz : f z = z
     · rw [pow_apply_eq_self_of_apply_eq_self hz, one_apply]
@@ -616,12 +615,7 @@ theorem IsCycle.isCycle_pow_pos_of_lt_prime_order [Finite β] {f : Perm β} (hf 
       refine Nat.Coprime.symm ?_
       rw [Nat.Prime.coprime_iff_not_dvd hf']
       exact Nat.not_dvd_of_pos_of_lt hn hn'
-    obtain ⟨m, hm⟩ := exists_pow_eq_self_of_coprime this
-    have hf'' := hf
-    rw [← hm] at hf''
-    refine hf''.of_pow ?_
-    rw [hm]
-    exact support_pow_le f n
+    exact (pow_iff hf).mpr this
 
 end IsCycle
 
@@ -653,8 +647,7 @@ theorem IsCycle.isConj_iff (hσ : IsCycle σ) (hτ : IsCycle τ) :
     IsConj σ τ ↔ #σ.support = #τ.support where
   mp h := by
     obtain ⟨π, rfl⟩ := (_root_.isConj_iff).1 h
-    exact Finset.card_bij (fun a _ => π a) (fun _ ha => by simpa using ha)
-      (fun _ _ _ _ ab => π.injective ab) fun b hb ↦ ⟨π⁻¹ b, by simpa using hb, π.apply_symm_apply b⟩
+    exact card_support_conj.symm
   mpr := hσ.isConj hτ
 
 end Conjugation
@@ -1025,7 +1018,7 @@ theorem IsCycle.commute_iff' {g c : Perm α} (hc : c.IsCycle) :
         subtypePerm_apply_zpow_of_mem] at hix
       exact hix.symm
     · rw [notMem_support.mp hx, eq_comm, ← notMem_support]
-      contrapose! hx
+      contrapose hx
       exact (hc' x).mp hx
 
 /-- A permutation `g` commutes with a cycle `c` if and only if
@@ -1054,10 +1047,7 @@ theorem zpow_eq_ofSubtype_subtypePerm_iff
   constructor
   · intro h
     ext ⟨x, hx⟩
-    simp only [Perm.congr_fun h x, subtypePerm_apply_zpow_of_mem, Subtype.coe_mk, subtypePerm_apply]
-    rw [ofSubtype_apply_of_mem]
-    · simp only [Subtype.coe_mk, subtypePerm_apply]
-    · exact hx
+    simpa [Perm.congr_fun h _] using ofSubtype_subtypePerm_of_mem _ hx
   · intro h; ext x
     rw [← h]
     by_cases hx : x ∈ s

@@ -109,14 +109,15 @@ lemma IsOpenMap.isDiscrete_range [DiscreteTopology X] (hf : IsOpenMap f) :
     IsDiscrete (Set.range f) := by
   simpa using IsDiscrete.univ.image_of_isOpenMap_of_isOpen hf isOpen_univ
 
-lemma IsDiscrete.image (hs : IsDiscrete s) (hf : IsEmbedding f) : IsDiscrete (f '' s) := by
-  refine .of_nhdsWithin ?_
-  rintro _ ⟨x, hx, rfl⟩
-  rw [← map_pure, ← hs.nhdsWithin x hx, hf.map_nhdsWithin_eq]
+lemma IsDiscrete.image (hs : IsDiscrete s) (hf : IsInducing f) : IsDiscrete (f '' s) := by
+  simp_all [isDiscrete_iff_nhdsWithin, ← hf.map_nhdsWithin_eq s]
 
-lemma IsEmbedding.isDiscrete_range [DiscreteTopology X] (hf : IsEmbedding f) :
+lemma IsInducing.isDiscrete_range [DiscreteTopology X] (hf : IsInducing f) :
     IsDiscrete (Set.range f) := by
   simpa using IsDiscrete.univ.image hf
+
+@[deprecated (since := "2026-03-30")] alias
+IsEmbedding.isDiscrete_range := IsInducing.isDiscrete_range
 
 lemma IsDiscrete.preimage {s : Set Y} (hs : IsDiscrete s)
     (hf : ContinuousOn f (f ⁻¹' s)) (hf' : Function.Injective f) :
@@ -171,9 +172,6 @@ lemma IsClosed.tendsto_coe_cofinite_of_isDiscrete
     Tendsto ((↑) : s → X) cofinite (cocompact _) :=
   haveI := hs'.to_subtype
   tendsto_cofinite_cocompact_of_discrete hs.isClosedEmbedding_subtypeVal.tendsto_cocompact
-
-@[deprecated (since := "2025-10-08")] alias IsClosed.tendsto_coe_cofinite_of_discreteTopology :=
-  IsClosed.tendsto_coe_cofinite_of_isDiscrete
 
 lemma IsClosed.tendsto_coe_cofinite_iff [T1Space X] [WeaklyLocallyCompactSpace X]
     {s : Set X} (hs : IsClosed s) :
@@ -238,9 +236,6 @@ theorem isDiscrete_of_codiscreteWithin {U s : Set X} (h : sᶜ ∈ Filter.codisc
   simp_rw [← Filter.mem_iff_inf_principal_compl]
   simp_all [← Set.compl_diff, mem_codiscreteWithin]
 
-@[deprecated (since := "2025-10-08")] alias discreteTopology_of_codiscreteWithin :=
-  isDiscrete_of_codiscreteWithin
-
 /-- Helper lemma for `codiscreteWithin_iff_locallyFiniteComplementWithin`: A set `s` is
 `codiscreteWithin U` iff every point `z ∈ U` has a punctured neighborhood that does not intersect
 `U \ s`. -/
@@ -302,6 +297,30 @@ theorem codiscreteWithin_iff_locallyFiniteComplementWithin [T1Space X] {s U : Se
     obtain ⟨t, h₁t, h₂t⟩ := h z h₁z
     use t \ (t ∩ (U \ s)), nhdsNE_of_nhdsNE_sdiff_finite (mem_nhdsWithin_of_mem_nhds h₁t) h₂t
     simp
+
+/--
+In a `T1Space`, complements of singleton sets are codiscrete within any set.
+-/
+@[simp]
+theorem compl_singleton_mem_codiscreteWithin {X : Type*} [TopologicalSpace X] [T1Space X]
+    {s : Set X} (x : X) :
+    {x}ᶜ ∈ codiscreteWithin s := by
+  rw [codiscreteWithin_iff_locallyEmptyComplementWithin]
+  intro z hz
+  use univ \ {x}
+  exact ⟨nhdsNE_of_nhdsNE_sdiff_finite univ_mem Finite.of_subsingleton, by aesop⟩
+
+/--
+In a `T1Space`, complements of finite sets are codiscrete within any set.
+-/
+theorem compl_finite_mem_codiscreteWithin {X : Type*} [TopologicalSpace X] [T1Space X]
+    {s t : Set X} (h : t.Finite) :
+    tᶜ ∈ codiscreteWithin s := by
+  apply h.induction_on (motive := fun t _ ↦ tᶜ ∈ codiscreteWithin s)
+  · simp
+  · intro τ t hτ h₁t h₂t
+    have : (insert τ t)ᶜ = {τ}ᶜ ∩ tᶜ := by aesop
+    simp_all
 
 /-- In any topological space, the open sets with discrete complement form a filter,
 defined as the supremum of all punctured neighborhoods.

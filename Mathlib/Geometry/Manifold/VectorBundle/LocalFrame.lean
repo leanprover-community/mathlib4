@@ -110,7 +110,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   -- `F` model fiber
-  (n : WithTop ℕ∞)
+  (n : ℕ∞ω)
   {V : M → Type*} [TopologicalSpace (TotalSpace F V)]
   [∀ x, AddCommGroup (V x)] [∀ x, Module 𝕜 (V x)]
   [∀ x : M, TopologicalSpace (V x)]
@@ -120,7 +120,7 @@ noncomputable section
 
 section IsLocalFrame
 
-variable {ι : Type*} {s s' : ι → (x : M) → V x} {u u' : Set M} {x : M} {n : WithTop ℕ∞}
+variable {ι : Type*} {s s' : ι → (x : M) → V x} {u u' : Set M} {x : M} {n : ℕ∞ω}
 
 variable (I F n) in
 /--
@@ -432,14 +432,14 @@ variable {n}
 variable (e) in
 /-- Suppose `e` is a compatible trivialisation around `x ∈ M`, and `s` a bundle section.
 Then the coefficient of `s` w.r.t. the local frame induced by `b` and `e`
-equals the cofficient of "`s x` read in the trivialisation `e`" for `b i`. -/
+equals the coefficient of "`s x` read in the trivialisation `e`" for `b i`. -/
 lemma localFrame_coeff_eq_coeff (hxe : x ∈ e.baseSet) {i : ι} :
     e.localFrame_coeff I b i x (s x) = b.repr (e ((T% s) x)).2 i := by
   simp [e.localFrame_coeff_apply_of_mem_baseSet b hxe, basisAt]
 
 end Bundle.Trivialization
 
-/-! # Determining smoothness of a section via its local frame coefficients
+/-! ### Determining smoothness of a section via its local frame coefficients
 We show that for finite rank bundles over a complete field, a section is smooth iff its coefficients
 in a local frame induced by a local trivialisation are. In many contexts, this statement holds for
 *any* local frame (e.g., for all real bundles which admit a continuous bundle metric, as is
@@ -448,7 +448,7 @@ proven in `OrthonormalFrame.lean`).
 
 variable [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
   {e : Trivialization F (TotalSpace.proj : TotalSpace F V → M)} [MemTrivializationAtlas e]
-  {ι : Type*} (b : Basis ι 𝕜 F) {s : Π x : M, V x} {t : Set M} {k : WithTop ℕ∞} {x x' : M}
+  {ι : Type*} (b : Basis ι 𝕜 F) {s : Π x : M, V x} {t : Set M} {k : ℕ∞ω} {x x' : M}
   [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜] [ContMDiffVectorBundle k F V I]
 
 /-- If `s` is `C^k` at `x`, so is its coefficient `b.localFrame_coeff e i` in the local frame
@@ -518,8 +518,8 @@ lemma contMDiffOn_baseSet_iff_localFrame_coeff :
 -- Differentiability of a section can be checked in terms of its local frame coefficients
 section MDifferentiable
 
-/-- If `s` is diffentiable at `x`, so is its coefficient `b.localFrame_coeff e i` in the local frame
-near `x` induced by `e` and `b` -/
+/-- If `s` is differentiable at `x`, so is its coefficient `b.localFrame_coeff e i` in the local
+frame near `x` induced by `e` and `b` -/
 lemma mdifferentiableAt_localFrame_coeff
     (hxe : x ∈ e.baseSet) (hs : MDiffAt (T% s) x) (i : ι) :
     MDiffAt ((LinearMap.piApply (e.localFrame_coeff I b i)) s) x := by

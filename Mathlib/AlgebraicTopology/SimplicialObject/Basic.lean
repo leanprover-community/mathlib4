@@ -211,10 +211,25 @@ theorem σ_naturality {X' X : SimplicialObject C} (f : X ⟶ X') {n : ℕ} (i : 
 
 variable (C)
 
+section
+
+variable {D : Type*} [Category* D]
+
+variable (D) in
 /-- Functor composition induces a functor on simplicial objects. -/
 @[simps!]
-def whiskering (D : Type*) [Category* D] : (C ⥤ D) ⥤ SimplicialObject C ⥤ SimplicialObject D :=
+def whiskering : (C ⥤ D) ⥤ SimplicialObject C ⥤ SimplicialObject D :=
   whiskeringRight _ _ _
+
+@[simp]
+lemma whiskering_obj_obj_δ (F : C ⥤ D) (X : SimplicialObject C) {n : ℕ} (i : Fin (n + 2)) :
+    dsimp% (((whiskering C D).obj F).obj X).δ i = F.map (X.δ i) := rfl
+
+@[simp]
+lemma whiskering_obj_obj_σ (F : C ⥤ D) (X : SimplicialObject C) {n : ℕ} (i : Fin (n + 1)) :
+    dsimp% (((whiskering C D).obj F).obj X).σ i = F.map (X.σ i) := rfl
+
+end
 
 /-- Truncated simplicial objects. -/
 abbrev Truncated (n : ℕ) := (SimplexCategory.Truncated n)ᵒᵖ ⥤ C
@@ -238,8 +253,9 @@ scoped syntax:max (name := mkNotation)
 open scoped SimplexCategory.Truncated in
 scoped macro_rules
   | `($X:term _⦋$m:term⦌$n:subscript) =>
+    -- try `decide` before `get_elem_tactic` because it is faster for goals with literals.
     `(($X : CategoryTheory.SimplicialObject.Truncated _ $n).obj
-      (Opposite.op ⟨SimplexCategory.mk $m, by first | get_elem_tactic |
+      (Opposite.op ⟨SimplexCategory.mk $m, by first | decide | get_elem_tactic |
       fail "Failed to prove truncation property. Try writing `X _⦋m, by ...⦌ₙ`."⟩))
   | `($X:term _⦋$m:term, $p:term⦌$n:subscript) =>
     `(($X : CategoryTheory.SimplicialObject.Truncated _ $n).obj
@@ -379,9 +395,8 @@ def Augmented :=
   Comma (𝟭 (SimplicialObject C)) (const C)
 
 @[simps!]
-instance : Category (Augmented C) := by
-  dsimp only [Augmented]
-  infer_instance
+instance : Category (Augmented C) :=
+  inferInstanceAs <| Category (Comma _ _)
 
 variable {C}
 
@@ -402,7 +417,11 @@ def drop : Augmented C ⥤ SimplicialObject C :=
 def point : Augmented C ⥤ C :=
   Comma.snd _ _
 
-set_option backward.isDefEq.respectTransparency false in
+@[reassoc]
+lemma w_app {X Y : Augmented C} (f : X ⟶ Y) (n : SimplexCategoryᵒᵖ) :
+    dsimp% f.left.app n ≫ Y.hom.app n = X.hom.app n ≫ f.right :=
+  congr_app f.w n
+
 /-- The functor from augmented objects to arrows. -/
 @[simps]
 def toArrow : Augmented C ⥤ Arrow C where
@@ -413,22 +432,17 @@ def toArrow : Augmented C ⥤ Arrow C where
   map η :=
     { left := (drop.map η).app _
       right := point.map η
-      w := by
-        dsimp
-        rw [← NatTrans.comp_app]
-        erw [η.w]
-        rfl }
+      w := by simp [w_app] }
 
 /-- The compatibility of a morphism with the augmentation, on 0-simplices -/
 @[reassoc]
 theorem w₀ {X Y : Augmented C} (f : X ⟶ Y) :
-    (Augmented.drop.map f).app (op ⦋0⦌) ≫ Y.hom.app (op ⦋0⦌) =
-      X.hom.app (op ⦋0⦌) ≫ Augmented.point.map f := by
-  convert congr_app f.w (op ⦋0⦌)
+    dsimp% (Augmented.drop.map f).app (op ⦋0⦌) ≫ Y.hom.app (op ⦋0⦌) =
+      X.hom.app (op ⦋0⦌) ≫ Augmented.point.map f :=
+  congr_app f.w (op ⦋0⦌)
 
 variable (C)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Functor composition induces a functor on augmented simplicial objects. -/
 @[simp]
 def whiskeringObj (D : Type*) [Category* D] (F : C ⥤ D) : Augmented C ⥤ Augmented D where
@@ -439,12 +453,7 @@ def whiskeringObj (D : Type*) [Category* D] (F : C ⥤ D) : Augmented C ⥤ Augm
   map η :=
     { left := whiskerRight η.left _
       right := F.map η.right
-      w := by
-        ext
-        dsimp [whiskerRight]
-        simp only [Category.comp_id, ← F.map_comp, ← NatTrans.comp_app]
-        erw [η.w]
-        rfl }
+      w := by ext; simp [← Functor.map_comp, w_app] }
 
 /-- Functor composition induces a functor on augmented simplicial objects. -/
 @[simps]
@@ -676,10 +685,7 @@ def whiskering (D : Type*) [Category* D] : (C ⥤ D) ⥤ CosimplicialObject C �
 /-- Truncated cosimplicial objects. -/
 def Truncated (n : ℕ) :=
   SimplexCategory.Truncated n ⥤ C
-
-instance {n : ℕ} : Category (Truncated C n) := by
-  dsimp [Truncated]
-  infer_instance
+deriving Category
 
 variable {C}
 
@@ -756,9 +762,8 @@ def Augmented :=
   Comma (const C) (𝟭 (CosimplicialObject C))
 
 @[simps!]
-instance : Category (Augmented C) := by
-  dsimp only [Augmented]
-  infer_instance
+instance : Category (Augmented C) :=
+  inferInstanceAs <| Category (Comma _ _)
 
 variable {C}
 
@@ -779,7 +784,11 @@ def drop : Augmented C ⥤ CosimplicialObject C :=
 def point : Augmented C ⥤ C :=
   Comma.fst _ _
 
-set_option backward.isDefEq.respectTransparency false in
+@[reassoc]
+lemma w_app {X Y : Augmented C} {η : X ⟶ Y} {n : SimplexCategory} :
+    dsimp% η.left ≫ Y.hom.app n = X.hom.app n ≫ η.right.app n :=
+  NatTrans.congr_app η.w n
+
 /-- The functor from augmented objects to arrows. -/
 @[simps!]
 def toArrow : Augmented C ⥤ Arrow C where
@@ -790,15 +799,10 @@ def toArrow : Augmented C ⥤ Arrow C where
   map η :=
     { left := point.map η
       right := (drop.map η).app _
-      w := by
-        dsimp
-        rw [← NatTrans.comp_app]
-        erw [← η.w]
-        rfl }
+      w := by simp [w_app]}
 
 variable (C)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Functor composition induces a functor on augmented cosimplicial objects. -/
 @[simp]
 def whiskeringObj (D : Type*) [Category* D] (F : C ⥤ D) : Augmented C ⥤ Augmented D where
@@ -812,9 +816,8 @@ def whiskeringObj (D : Type*) [Category* D] (F : C ⥤ D) : Augmented C ⥤ Augm
       w := by
         ext
         dsimp
-        rw [Category.id_comp, Category.id_comp, ← F.map_comp, ← F.map_comp, ← NatTrans.comp_app]
-        erw [← η.w]
-        rfl }
+        rw [Category.id_comp, Category.id_comp, ← F.map_comp, ← F.map_comp]
+        simp [w_app, map_comp] }
 
 /-- Functor composition induces a functor on augmented cosimplicial objects. -/
 @[simps]

@@ -225,9 +225,6 @@ theorem dvd_of_mem_normalizedFactors {a p : α} (H : p ∈ normalizedFactors a) 
   · rw [hcases]
     exact dvd_zero p
   · exact dvd_trans (Multiset.dvd_prod H) (Associated.dvd (prod_normalizedFactors hcases))
-@[deprecated (since := "2025-08-26")]
-alias dvd_of_normalized_factor := dvd_of_mem_normalizedFactors
-
 theorem mem_normalizedFactors_iff [Subsingleton αˣ] {p x : α} (hx : x ≠ 0) :
     p ∈ normalizedFactors x ↔ Prime p ∧ p ∣ x := by
   constructor
@@ -404,5 +401,34 @@ protected noncomputable def normalizationMonoid : NormalizationMonoid α :=
       rw [if_neg hx, ← mkMonoidHom_apply, MonoidHom.map_multiset_prod, map_map, h, map_id, ←
         associated_iff_eq]
       apply prod_normalizedFactors hx)
+
+end UniqueFactorizationMonoid
+
+namespace UniqueFactorizationMonoid
+
+open Multiset
+
+variable {α : Type*} [CommMonoidWithZero α] [UniqueFactorizationMonoid α]
+
+lemma normalizedFactors_prod_eq_self_of_subset [Subsingleton αˣ] {a : α} {m : Multiset α}
+    (hm : m ⊆ normalizedFactors a) :
+    normalizedFactors m.prod = m :=
+  normalizedFactors_prod_of_prime fun _ h ↦ prime_of_normalized_factor _ (mem_of_subset hm h)
+
+lemma prod_ne_zero_of_subset_normalizedFactors [NormalizationMonoid α] [Nontrivial α] {a : α}
+    {m : Multiset α} (hm : m ⊆ normalizedFactors a) :
+    m.prod ≠ 0 :=
+  prod_ne_zero_of_prime _ fun _ h ↦ prime_of_normalized_factor _ (mem_of_subset hm h)
+
+variable [DecidableEq α]
+
+lemma normalizedFactors_prod_inter_eq_inter [Subsingleton αˣ] (a b : α) :
+    normalizedFactors (normalizedFactors a ∩ normalizedFactors b).prod =
+      normalizedFactors a ∩ normalizedFactors b :=
+  normalizedFactors_prod_eq_self_of_subset fun _ h ↦ (mem_inter.mp h).left
+
+lemma prod_inter_normalizedFactors_ne_zero [NormalizationMonoid α] [Nontrivial α] (a b : α) :
+    (normalizedFactors a ∩ normalizedFactors b).prod ≠ 0 :=
+  prod_ne_zero_of_subset_normalizedFactors fun _ h ↦ (mem_inter.mp h).left
 
 end UniqueFactorizationMonoid

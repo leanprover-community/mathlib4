@@ -39,7 +39,6 @@ lemma exists_ltSeries_support_isMaximal_last_of_ltSeries_support (q : LTSeries (
     simpa
   · use q
 
-set_option backward.isDefEq.respectTransparency false in
 theorem supportDim_le_supportDim_quotSMulTop_succ_of_mem_jacobson {x : R}
     (h : x ∈ (annihilator R M).jacobson) : supportDim R M ≤ supportDim R (QuotSMulTop x M) + 1 := by
   nontriviality M
@@ -58,7 +57,7 @@ theorem supportDim_le_supportDim_quotSMulTop_succ_of_mem_jacobson {x : R}
         Submodule.Quotient.nontrivial_iff.mpr <|
           (Submodule.top_ne_pointwise_smul_of_mem_jacobson_annihilator h).symm
     rw [hp0, ← WithBot.coe_unbot (supportDim R (QuotSMulTop x M)) hb]
-    exact WithBot.coe_le_coe.mpr (zero_le ((supportDim R (QuotSMulTop x M)).unbot hb + 1))
+    exact WithBot.coe_le_coe.mpr zero_le
   -- Let `q' i := q (i + 1)`, then `q'` is a chain of prime ideals in `Supp(M/xM)`.
   let q' : LTSeries (support R (QuotSMulTop x M)) := {
     length := p.length - 1

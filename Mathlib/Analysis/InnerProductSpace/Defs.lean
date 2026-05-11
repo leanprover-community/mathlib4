@@ -421,7 +421,6 @@ def toNormedSpace : NormedSpace 𝕜 F where
     · simp [sqrt_normSq_eq_norm]
     · positivity
 
-set_option backward.isDefEq.respectTransparency false in
 omit c in
 /-- Seminormed space core structure constructed from a `PreInnerProductSpace.Core` structure -/
 lemma toSeminormedSpaceCore (c : PreInnerProductSpace.Core 𝕜 F) : SeminormedSpace.Core 𝕜 F where
@@ -488,7 +487,6 @@ section
 
 attribute [local instance] toNormedAddCommGroup
 
-set_option backward.isDefEq.respectTransparency false in
 omit cd in
 /-- Normed space core structure constructed from an `InnerProductSpace.Core` structure -/
 lemma toNormedSpaceCore (cd : InnerProductSpace.Core 𝕜 F) : NormedSpace.Core 𝕜 F where
@@ -601,5 +599,18 @@ def InnerProductSpace.ofCoreOfTopology [AddCommGroup F] [hF : Module 𝕜 F] [To
 @[variable_alias]
 structure HilbertSpace (𝕜 E : Type*) [RCLike 𝕜]
   [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [CompleteSpace E]
+
+namespace PUnit
+
+instance : InnerProductSpace 𝕜 PUnit where
+  inner _ _ := 0
+  norm_sq_eq_re_inner := by simp
+  conj_inner_symm := by simp
+  add_left := by simp
+  smul_left := by simp
+
+@[simp] lemma inner_eq_zero (x y : PUnit) : inner 𝕜 x y = 0 := rfl
+
+end PUnit
 
 end

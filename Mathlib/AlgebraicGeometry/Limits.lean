@@ -350,7 +350,6 @@ lemma isCompl_range_inl_inr :
   ((TopCat.binaryCofan_isColimit_iff _).mp
     ⟨mapIsColimitOfPreservesOfIsColimit Scheme.forgetToTop.{u} _ _ (coprodIsCoprod X Y)⟩).2.2
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isCompl_opensRange_inl_inr :
     IsCompl (coprod.inl : X ⟶ X ⨿ Y).opensRange (coprod.inr : Y ⟶ X ⨿ Y).opensRange := by
   convert isCompl_range_inl_inr X Y
@@ -410,7 +409,6 @@ def coprodOpenCover.{w} : (X ⨿ Y).OpenCover where
     · simp only [Sum.elim_inr, coprodMk_inr, exists_apply_eq_apply]
 
 -- TODO: should infer_instance be considered normalising?
-set_option backward.isDefEq.respectTransparency false in
 set_option linter.flexible false in
 /-- If `X` and `Y` are open disjoint and covering open subschemes of `S`,
 `S` is the disjoint union of `X` and `Y`. -/
@@ -473,7 +471,6 @@ instance : FinitaryExtensive Scheme where
 
 variable {X Y}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The sections on coproducts of schemes are the (categorical) product of the sections
 on the components -/
 noncomputable def Scheme.coprodPresheafObjIso (U : (X ⨿ Y).Opens) :
@@ -669,7 +666,6 @@ private lemma IsAffineOpen.iSup_of_disjoint_aux [Finite ι] {U : ι → X.Opens}
   · have (i : _) : IsAffine _ := hU i
     infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Function in
 lemma IsAffineOpen.iSup_of_disjoint [Finite σ] {U : σ → X.Opens}
     (hU : ∀ i, IsAffineOpen (U i)) (hU' : Pairwise (Disjoint on U)) :
@@ -679,7 +675,6 @@ lemma IsAffineOpen.iSup_of_disjoint [Finite σ] {U : σ → X.Opens}
   rw [← e.symm.iSup_congr fun _ ↦ rfl]
   exact .iSup_of_disjoint_aux (by simp [*]) fun i j h ↦ hU' (e.symm.injective.ne h)
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Function in
 lemma IsAffineOpen.biSup_of_disjoint {s : Set σ} (hs : s.Finite)
     {U : σ → X.Opens} (hU : ∀ i ∈ s, IsAffineOpen (U i)) (hU' : s.Pairwise (Disjoint on U)) :
@@ -688,7 +683,6 @@ lemma IsAffineOpen.biSup_of_disjoint {s : Set σ} (hs : s.Finite)
   have := hs.to_subtype
   exact .iSup_of_disjoint (by simpa) fun i j e ↦ hU' i.2 j.2 (by aesop)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsAffineOpen.sup_of_disjoint {U V : X.Opens} (hU : IsAffineOpen U) (hV : IsAffineOpen V)
     (H : Disjoint U V) :
     IsAffineOpen (U ⊔ V) := by
@@ -696,7 +690,6 @@ lemma IsAffineOpen.sup_of_disjoint {U V : X.Opens} (hU : IsAffineOpen U) (hV : I
     (by simp_all [_root_.Pairwise, Unique.forall_iff, ← Opens.coe_disjoint, disjoint_comm])
   aesop
 
-set_option backward.isDefEq.respectTransparency false in
 instance (priority := low) [Finite X] [DiscreteTopology X] : IsAffine X :=
   have : IsAffineOpen (⨆ (x : X), (⟨{x}, isOpen_discrete _⟩ : X.Opens)) :=
     .iSup_of_disjoint (fun i ↦ .of_subsingleton Set.subsingleton_singleton)
@@ -713,7 +706,6 @@ instance {U X Y : Scheme} (f : U ⟶ X) (g : U ⟶ Y) [IsOpenImmersion f] [IsOpe
   · simpa using f.isOpenEmbedding.injective
   · simpa using g.isOpenEmbedding.injective
 
-set_option backward.isDefEq.respectTransparency false in
 instance {U X Y : Scheme} (f : U ⟶ X) (g : U ⟶ Y) [IsOpenImmersion f] [IsOpenImmersion g]
     {i j : WalkingSpan} (t : i ⟶ j) : IsOpenImmersion ((span f g).map t) := by
   obtain (a | (a | a)) := t
@@ -723,7 +715,6 @@ instance {U X Y : Scheme} (f : U ⟶ X) (g : U ⟶ Y) [IsOpenImmersion f] [IsOpe
   · simpa
 
 -- Test that instances on locally directed colimits fire correctly.
-set_option backward.isDefEq.respectTransparency false in
 example {U X Y : Scheme.{u}} (f : U ⟶ X) (g : U ⟶ Y)
     [IsOpenImmersion f] [IsOpenImmersion g] : HasPushout f g :=
   inferInstance

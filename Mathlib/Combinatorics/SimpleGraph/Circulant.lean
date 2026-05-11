@@ -26,6 +26,8 @@ are adjacent if and only if `u - v ∈ s` or `v - u ∈ s`. The elements of `s` 
 
 namespace SimpleGraph
 
+open Walk
+
 /-- Circulant graph over additive group `G` with jumps `s` -/
 @[simps!]
 def circulantGraph {G : Type*} [AddGroup G] (s : Set G) : SimpleGraph G :=
@@ -60,12 +62,21 @@ theorem circulantGraph_adj_translate {s : Set G} {u v d : G} :
 
 /-- Cycle graph over `Fin n` -/
 def cycleGraph : (n : ℕ) → SimpleGraph (Fin n)
-  | 0 => ⊥
-  | _ + 1 => circulantGraph {1}
+  | 0 | 1 => ⊥
+  | _ + 2 => {
+    Adj a b := a - b = 1 ∨ b - a = 1
+    symm _ _ := Or.symm
+    loopless.irrefl _ h := h.elim (by simp) (by simp)
+  }
 
 instance : (n : ℕ) → DecidableRel (cycleGraph n).Adj
-  | 0 => fun _ _ => inferInstanceAs (Decidable False)
-  | _ + 1 => inferInstanceAs (DecidableRel (circulantGraph _).Adj)
+  | 0 | 1 => fun _ _ => inferInstanceAs (Decidable False)
+  | _ + 2 => by unfold cycleGraph; infer_instance
+
+theorem cycleGraph_eq_circulantGraph (n : ℕ) : cycleGraph (n + 1) = circulantGraph {1} := by
+  cases n
+  · exact edgeFinset_inj.mp rfl
+  · aesop
 
 theorem cycleGraph_zero_adj {u v : Fin 0} : ¬(cycleGraph 0).Adj u v := id
 
@@ -83,14 +94,10 @@ theorem cycleGraph_three_eq_top : cycleGraph 3 = ⊤ := by
   decide
 
 theorem cycleGraph_one_adj {u v : Fin 1} : ¬(cycleGraph 1).Adj u v := by
-  rw [cycleGraph_one_eq_bot]
-  exact id
+  simp [cycleGraph_one_eq_bot]
 
 theorem cycleGraph_adj {n : ℕ} {u v : Fin (n + 2)} :
-    (cycleGraph (n + 2)).Adj u v ↔ u - v = 1 ∨ v - u = 1 := by
-  simp only [cycleGraph, circulantGraph_adj, Set.mem_singleton_iff, and_iff_right_iff_imp]
-  intro _ _
-  simp_all
+    (cycleGraph (n + 2)).Adj u v ↔ u - v = 1 ∨ v - u = 1 := Iff.rfl
 
 theorem cycleGraph_adj' {n : ℕ} {u v : Fin n} :
     (cycleGraph n).Adj u v ↔ (u - v).val = 1 ∨ (v - u).val = 1 := by
@@ -119,7 +126,6 @@ theorem cycleGraph_degree_three_le {n : ℕ} {v : Fin (n + 3)} :
   simp only [ne_eq, sub_eq_iff_eq_add, add_assoc v, left_eq_add]
   exact ne_of_beq_false rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem pathGraph_le_cycleGraph {n : ℕ} : pathGraph n ≤ cycleGraph n := by
   match n with
   | 0 | 1 => simp
@@ -137,36 +143,69 @@ theorem cycleGraph_preconnected {n : ℕ} : (cycleGraph n).Preconnected :=
 theorem cycleGraph_connected {n : ℕ} : (cycleGraph (n + 1)).Connected :=
   (pathGraph_connected n).mono pathGraph_le_cycleGraph
 
+section cycle
+
 set_option backward.privateInPublic true in
-private def cycleGraph_EulerianCircuit_cons (n : ℕ) :
-    ∀ m : Fin (n + 3), (cycleGraph (n + 3)).Walk m 0
+private def cycleGraph.cycleCons (n : ℕ) : ∀ m : Fin (n + 3), (cycleGraph (n + 3)).Walk m 0
   | ⟨0, h⟩ => Walk.nil
   | ⟨m + 1, h⟩ =>
     have hadj : (cycleGraph (n + 3)).Adj ⟨m + 1, h⟩ ⟨m, Nat.lt_of_succ_lt h⟩ := by
       simp [cycleGraph_adj, Fin.ext_iff, Fin.sub_val_of_le]
-    Walk.cons hadj (cycleGraph_EulerianCircuit_cons n ⟨m, Nat.lt_of_succ_lt h⟩)
+    Walk.cons hadj (cycleGraph.cycleCons n ⟨m, Nat.lt_of_succ_lt h⟩)
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-/-- Eulerian trail of `cycleGraph (n + 3)` -/
-def cycleGraph_EulerianCircuit (n : ℕ) : (cycleGraph (n + 3)).Walk 0 0 :=
+/-- The Eulerian cycle of `cycleGraph (n + 3)` -/
+def cycleGraph.cycle (n : ℕ) : (cycleGraph (n + 3)).Walk 0 0 :=
   have hadj : (cycleGraph (n + 3)).Adj 0 (Fin.last (n + 2)) := by
     simp [cycleGraph_adj]
-  Walk.cons hadj (cycleGraph_EulerianCircuit_cons n (Fin.last (n + 2)))
+  Walk.cons hadj (cycleGraph.cycleCons n (Fin.last (n + 2)))
 
-private theorem cycleGraph_EulerianCircuit_cons_length (n : ℕ) : ∀ m : Fin (n + 3),
-    (cycleGraph_EulerianCircuit_cons n m).length = m.val
+@[deprecated (since := "2026-02-15")]
+alias cycleGraph_EulerianCircuit := cycleGraph.cycle
+
+private theorem cycleGraph.length_cycle_cons (n : ℕ) :
+    ∀ m : Fin (n + 3), (cycleGraph.cycleCons n m).length = m.val
   | ⟨0, h⟩ => by
-    unfold cycleGraph_EulerianCircuit_cons
+    unfold cycleGraph.cycleCons
     rfl
   | ⟨m + 1, h⟩ => by
-    unfold cycleGraph_EulerianCircuit_cons
+    unfold cycleGraph.cycleCons
     simp only [Walk.length_cons]
-    rw [cycleGraph_EulerianCircuit_cons_length n]
+    rw [cycleGraph.length_cycle_cons n]
 
-theorem cycleGraph_EulerianCircuit_length {n : ℕ} :
-    (cycleGraph_EulerianCircuit n).length = n + 3 := by
-  unfold cycleGraph_EulerianCircuit
-  simp [cycleGraph_EulerianCircuit_cons_length]
+variable {n : ℕ}
+
+@[simp, grind =]
+theorem cycleGraph.length_cycle : (cycleGraph.cycle n).length = n + 3 := by
+  unfold cycleGraph.cycle
+  simp [cycleGraph.length_cycle_cons]
+
+@[deprecated (since := "2026-02-15")]
+alias cycleGraph_EulerianCircuit_length := cycleGraph.length_cycle
+
+private theorem cycleGraph.getVert_cycleCons (m : Fin (n + 3)) (i : ℕ) (hi : i ≤ m.val) :
+    (cycleGraph.cycleCons n m).getVert i = (m - i) % (n + 3) := by
+  obtain ⟨m, hm⟩ := m
+  induction i generalizing m
+  · simp [Nat.mod_eq_of_lt hm]
+  · cases m <;> grind +locals [getVert_cons_succ]
+
+theorem cycleGraph.getVert_cycle {m : ℕ} (hm : m ≤ n + 3) :
+    (cycleGraph.cycle n).getVert m = ⟨(n + 3 - m) % (n + 3), Nat.mod_lt _ (by lia)⟩ := by
+  cases m
+  · simp
+  · grind +locals [getVert_cons_succ, cycleGraph.getVert_cycleCons]
+
+theorem cycleGraph.isPath_tail_cycle : (cycleGraph.cycle n).tail.IsPath := by
+  refine isPath_iff_injective_get_support _ |>.mpr fun ⟨i, hi⟩ ⟨j, hj⟩ hij ↦ ?_
+  rw [support_tail_of_not_nil _ (of_decide_eq_false rfl)] at hi hj
+  simp only [List.get_eq_getElem, support_getElem_eq_getVert, getVert_tail] at hij
+  grind [← Nat.mod_eq_of_lt, cycleGraph.getVert_cycle]
+
+theorem cycleGraph.isCycle_cycle : (cycleGraph.cycle n).IsCycle :=
+  isCycle_iff_isPath_tail_and_le_length.mpr ⟨cycleGraph.isPath_tail_cycle, by simp⟩
+
+end cycle
 
 end SimpleGraph

@@ -49,7 +49,7 @@ section
 
 variable
   {EB : Type*} [NormedAddCommGroup EB] [NormedSpace ℝ EB]
-  {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners ℝ EB HB} {n n' : WithTop ℕ∞}
+  {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners ℝ EB HB} {n n' : ℕ∞ω}
   {B : Type*} [TopologicalSpace B] [ChartedSpace HB B]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
   {E : B → Type*} [TopologicalSpace (TotalSpace F E)] [∀ x, NormedAddCommGroup (E x)]
@@ -74,11 +74,11 @@ lemma IsContMDiffRiemannianBundle.of_le [h : IsContMDiffRiemannianBundle IB n F 
   rcases h.exists_contMDiff with ⟨g, g_smooth, hg⟩
   exact ⟨g, g_smooth.of_le h', hg⟩
 
-instance {a : WithTop ℕ∞} [IsContMDiffRiemannianBundle IB ∞ F E] [h : LEInfty a] :
+instance {a : ℕ∞ω} [IsContMDiffRiemannianBundle IB ∞ F E] [h : LEInfty a] :
     IsContMDiffRiemannianBundle IB a F E :=
   IsContMDiffRiemannianBundle.of_le h.out
 
-instance {a : WithTop ℕ∞} [IsContMDiffRiemannianBundle IB ω F E] :
+instance {a : ℕ∞ω} [IsContMDiffRiemannianBundle IB ω F E] :
     IsContMDiffRiemannianBundle IB a F E :=
   IsContMDiffRiemannianBundle.of_le le_top
 
@@ -103,7 +103,7 @@ instance : IsContMDiffRiemannianBundle IB n F₁ (Bundle.Trivial B F₁) := by
   simp only [contMDiffAt_section]
   convert contMDiffAt_const (c := innerSL ℝ)
   ext v w
-  simp [hom_trivializationAt_apply, inCoordinates, Trivialization.linearMapAt_apply]
+  simp [hom_trivializationAt_apply, inCoordinates]
 
 end Trivial
 
@@ -226,7 +226,7 @@ section Construction
 
 variable
   {EB : Type*} [NormedAddCommGroup EB] [NormedSpace ℝ EB]
-  {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners ℝ EB HB} {n n' : WithTop ℕ∞}
+  {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners ℝ EB HB} {n n' : ℕ∞ω}
   {B : Type*} [TopologicalSpace B] [ChartedSpace HB B]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
   {E : B → Type*} [TopologicalSpace (TotalSpace F E)]
@@ -260,7 +260,6 @@ def ContMDiffRiemannianMetric.toRiemannianMetric
     (g : ContMDiffRiemannianMetric IB n F E) : RiemannianMetric E :=
   g.toContinuousRiemannianMetric.toRiemannianMetric
 
-set_option backward.isDefEq.respectTransparency false in
 instance (g : ContMDiffRiemannianMetric IB n F E) :
     letI : RiemannianBundle E := ⟨g.toRiemannianMetric⟩
     IsContMDiffRiemannianBundle IB n F E :=

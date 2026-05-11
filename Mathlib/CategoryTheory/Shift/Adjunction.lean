@@ -131,10 +131,9 @@ lemma compatibilityCounit_left (h : CompatibilityCounit adj e₁ e₂) (X : C) :
   have := h (F.obj X)
   rw [← cancel_epi (F.map (e₂.inv.app _)), ← assoc, ← F.map_comp, Iso.inv_hom_id_app, F.map_id,
     id_comp] at this
-  rw [this]
-  erw [e₁.hom.naturality_assoc]
-  rw [Functor.comp_map, ← Functor.map_comp, left_triangle_components]
-  simp only [Functor.comp_obj, Functor.id_obj, Functor.map_id, comp_id]
+  dsimp only [Functor.comp_obj, Functor.id_obj]
+  rw [this, dsimp% e₁.hom.naturality_assoc, ← Functor.map_comp, left_triangle_components]
+  simp only [Functor.map_id, comp_id]
 
 /-- Given an adjunction `adj : F ⊣ G`, `a` in `A` and commutation isomorphisms
 `e₁ : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a` and
@@ -248,8 +247,6 @@ lemma mk' (_ : NatTrans.CommShift adj.unit A) :
       Functor.commShiftIso_id_hom_app, comp_id]
     refine (compatibilityCounit_of_compatibilityUnit adj _ _ (fun X ↦ ?_) _).symm
     simpa [Functor.commShiftIso_comp_hom_app] using NatTrans.shift_app_comm adj.unit a X⟩
-
-variable [adj.CommShift A]
 
 /-- The identity adjunction is compatible with the trivial `CommShift` structure on the
 identity functor.
@@ -532,24 +529,21 @@ lemma mk' (h : NatTrans.CommShift E.unitIso.hom A) :
 /--
 The forward functor of the identity equivalence is compatible with shifts.
 -/
-instance : (Equivalence.refl (C := C)).functor.CommShift A := by
-  dsimp
-  infer_instance
+instance : (Equivalence.refl (C := C)).functor.CommShift A :=
+  inferInstanceAs <| (𝟭 C).CommShift A
 
 /--
 The inverse functor of the identity equivalence is compatible with shifts.
 -/
-instance : (Equivalence.refl (C := C)).inverse.CommShift A := by
-  dsimp
-  infer_instance
+instance : (Equivalence.refl (C := C)).inverse.CommShift A :=
+  inferInstanceAs <| (𝟭 C).CommShift A
 
-set_option backward.isDefEq.respectTransparency false in
+
 /--
 The identity equivalence is compatible with shifts.
 -/
-instance : (Equivalence.refl (C := C)).CommShift A := by
-  dsimp [Equivalence.CommShift, refl_toAdjunction]
-  infer_instance
+instance : (Equivalence.refl (C := C)).CommShift A :=
+  inferInstanceAs <| Adjunction.id.CommShift A
 
 /--
 If an equivalence `E : C ≌ D` is compatible with shifts, so is `E.symm`.
@@ -616,7 +610,6 @@ this constructs the unique compatible `CommShift` structure on `E.functor`.
 noncomputable def commShiftFunctor [E.inverse.CommShift A] : E.functor.CommShift A :=
   E.symm.toAdjunction.rightAdjointCommShift A
 
-set_option backward.isDefEq.respectTransparency false in
 lemma commShift_of_inverse [E.inverse.CommShift A] :
     letI := E.commShiftFunctor A
     E.CommShift A := by
