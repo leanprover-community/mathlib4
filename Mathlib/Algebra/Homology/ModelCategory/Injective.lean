@@ -158,12 +158,12 @@ lemma lifting {A B X Y : CochainComplex.Plus C} (i : A ⟶ B) (p : X ⟶ Y)
     exact Lifting.hasLift sq _ (cokernelIsCokernel _) (kernelIsKernel _) α hα
 
 instance {A B X Y : CochainComplex.Plus C} (i : A ⟶ B) (p : X ⟶ Y)
-    [Cofibration i] [WeakEquivalence i] [Fibration p] :
+    [Mono i] [WeakEquivalence i] [Fibration p] :
     HasLiftingProperty i p :=
   lifting _ _ (Or.inl inferInstance)
 
 instance {A B X Y : CochainComplex.Plus C} (i : A ⟶ B) (p : X ⟶ Y)
-    [Cofibration i] [Fibration p] [WeakEquivalence p] :
+    [Mono i] [Fibration p] [WeakEquivalence p] :
     HasLiftingProperty i p :=
   lifting _ _ (Or.inr inferInstance)
 
