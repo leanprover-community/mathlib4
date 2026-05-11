@@ -41,7 +41,8 @@ open Function Set Topology
 
 namespace Topology
 
-variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y)
+variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+  (f : X → Y) {g : Y → Z}
 
 /-- A map is a strict map in the sense of Bourbaki if the natural map to its image
 is a quotient map. -/
@@ -96,5 +97,43 @@ lemma IsClosedMap.isStrictMap (hc : IsClosedMap f) (h_cont : Continuous f) :
   exact (hc.subtype_mk fun x => ⟨x, rfl⟩).isQuotientMap
     h_cont.rangeFactorization Set.rangeFactorization_surjective
 
+lemma IsHomeomorph.isStrictMap (f_homeo : IsHomeomorph f) :
+    IsStrictMap f :=
+  f_homeo.isOpenMap.isStrictMap f_homeo.continuous
+
+lemma IsStrictMap.id : IsStrictMap (id : X → X) := IsHomeomorph.id.isStrictMap
+
+lemma IsQuotientMap.isStrictMap_iff (f_quot : IsQuotientMap f) :
+    IsStrictMap g ↔ IsStrictMap (g ∘ f) := by
+  set Φ : range (g ∘ f) ≃ₜ range g := .setCongr <| f_quot.surjective.range_comp g
+  have key : rangeFactorization g ∘ f = Φ ∘ rangeFactorization (g ∘ f) := rfl
+  simp_rw [isStrictMap_iff_isQuotientMap_rangeFactorization, ← f_quot.of_comp_iff, key]
+  exact ⟨fun H ↦ by simpa using Φ.symm.isQuotientMap.comp H, fun H ↦ Φ.isQuotientMap.comp H⟩
+
+lemma IsQuotientMap.isStrictMap (f_quot : IsQuotientMap f) :
+    IsStrictMap f :=
+  f_quot.isStrictMap_iff.mp .id
+
+lemma IsEmbedding.isStrictMap_iff (g_emb : IsEmbedding g) :
+    IsStrictMap f ↔ IsStrictMap (g ∘ f) := by
+  have eq : Setoid.ker (g ∘ f) = Setoid.ker f := by ext; simp [g_emb.injective.eq_iff]
+  rw [isStrictMap_iff_isEmbedding_kerLift, isStrictMap_iff_isEmbedding_kerLift]
+  sorry
+
+lemma IsEmbedding.isStrictMap (f_emb : IsEmbedding f) :
+    IsStrictMap f :=
+  f_emb.isStrictMap_iff.mp .id
+
+lemma isQuotientMap_iff_isStrictMap_surjective :
+    IsQuotientMap f ↔ IsStrictMap f ∧ Surjective f := by
+  refine ⟨fun H ↦ ⟨H.isStrictMap, H.surjective⟩, fun ⟨f_strict, f_surj⟩ ↦ ?_⟩
+  rw [isStrictMap_iff_isQuotientMap_rangeFactorization] at f_strict
+  set Φ : range f ≃ₜ Y := .trans (.setCongr f_surj.range_eq) (Homeomorph.Set.univ Y)
+  exact Φ.isQuotientMap.comp f_strict
+
+lemma isEmbedding_iff_isStrictMap_injective :
+    IsEmbedding f ↔ IsStrictMap f ∧ Injective f := by
+  refine ⟨fun H ↦ ⟨H.isStrictMap, H.injective⟩, fun ⟨f_strict, f_inj⟩ ↦ ?_⟩
+  sorry
 
 end Topology
