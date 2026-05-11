@@ -652,7 +652,7 @@ theorem pi_ge (n : ℕ) : (n * log 2 - log (n + 1)) / log n ≤ π n := by
 
 theorem pi_ge' {x : ℝ} (hx : 1 < x) :
     ((x - 1) * log 2 - log (x + 2)) / log x ≤ π ⌊x⌋₊ := by
-  grw [div_le_iff₀ (log_pos hx), ←psi_le_primeCounting_mul_log', psi_ge']
+  grw [div_le_iff₀ (log_pos hx), ← psi_le_primeCounting_mul_log', psi_ge']
   positivity
 
 theorem theta_le_pi_mul_log (n : ℕ) : θ n ≤ (π n) * log n :=
