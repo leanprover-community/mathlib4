@@ -214,7 +214,7 @@ theorem isMaximal_comap_of_isIntegral_of_isMaximal' {R S : Type*} [CommRing R] [
   have : Algebra.IsIntegral R S := ⟨hf⟩
   isMaximal_comap_of_isIntegral_of_isMaximal (R := R) (S := S) I
 
-section IsIntegralClosure
+section IsIntegral
 
 variable {A : Type*} [CommRing A] [Algebra R A] [Algebra.IsIntegral R A]
 
@@ -253,7 +253,7 @@ theorem IsIntegral.eq_bot_of_comap_eq_bot [Nontrivial R] {I : Ideal A} :
 @[deprecated (since := "2026-05-08")] alias IsIntegralClosure.eq_bot_of_comap_eq_bot :=
     IsIntegral.eq_bot_of_comap_eq_bot
 
-end IsIntegralClosure
+end IsIntegral
 
 @[deprecated (since := "2026-05-08")] alias IntegralClosure.comap_lt_comap :=
   IsIntegral.comap_lt_comap
