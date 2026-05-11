@@ -198,6 +198,10 @@ nonrec theorem add (hf : CircleIntegrable f c R) (hg : CircleIntegrable g c R) :
     CircleIntegrable (f + g) c R :=
   hf.add hg
 
+nonrec theorem sub (hf : CircleIntegrable f c R) (hg : CircleIntegrable g c R) :
+    CircleIntegrable (f - g) c R :=
+  hf.sub hg
+
 /-- Sums of circle integrable functions are circle integrable. -/
 protected theorem sum {ι : Type*} (s : Finset ι) {f : ι → ℂ → E}
     (h : ∀ i ∈ s, CircleIntegrable (f i) c R) :

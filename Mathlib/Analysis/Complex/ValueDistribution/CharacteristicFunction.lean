@@ -54,6 +54,9 @@ noncomputable def characteristic : ℝ → ℝ := proximity f a + logCounting f 
 
 /-!
 ## Elementary Properties
+
+See `characteristic_monotoneOn` in the file `Mathlib/Analysis/Complex/ValueDistribution` for the
+non-trivial fact that the characteristic function is monotone.
 -/
 
 /--
