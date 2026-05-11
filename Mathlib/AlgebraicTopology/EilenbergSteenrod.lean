@@ -128,7 +128,6 @@ def Hom.mkₚ (homₚ : (i : ι) → HP.Hₚ i ⟶ HP'.Hₚ i)
     simp_all only [← Category.assoc, Functor.whiskerLeft_comp]
     exact (Iso.comp_inv_eq _).mpr this
 
-set_option backward.isDefEq.respectTransparency false in
 @[simps]
 instance : Category (HomologyPretheory C c) where
   Hom := HomologyPretheory.Hom
