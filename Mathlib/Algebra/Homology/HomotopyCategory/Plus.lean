@@ -82,12 +82,17 @@ namespace HomotopyCategory
 underlying cochain complex is bounded below. (Note: this property of
 objects is not closed under isomorphisms.) -/
 def plus : ObjectProperty (HomotopyCategory C (.up ℤ)) :=
-  fun K ↦ ∃ (n : ℤ), CochainComplex.IsStrictlyGE K.as n
+  (CochainComplex.plus C).strictMap (quotient _ _)
 
+variable {C} in
 @[simp]
 lemma plus_quotient_obj_iff (K : CochainComplex C ℤ) :
-    plus C ((quotient _ _).obj K) ↔ ∃ (n : ℤ), CochainComplex.IsStrictlyGE K n :=
-  Iff.rfl
+    plus C ((quotient _ _).obj K) ↔ CochainComplex.plus C K := by
+  refine ⟨?_, fun h ↦ ⟨_, h⟩⟩
+  simp only [plus, ObjectProperty.strictMap_iff]
+  rintro ⟨L, h, hL⟩
+  obtain rfl : L = K := congr_arg Quotient.as hL
+  exact h
 
 instance [HasZeroObject C] : (plus C).ContainsZero where
   exists_zero :=
@@ -101,18 +106,18 @@ instance : (plus C).IsStableUnderShift ℤ where
         obtain ⟨K : CochainComplex _ _, rfl⟩ := K.quotient_obj_surjective
         simp only [plus_quotient_obj_iff] at hK
         obtain ⟨q, _⟩ := hK
-        refine ⟨q - n, ?_⟩
-        have : (((HomotopyCategory.quotient _ _).obj K)⟦n⟧) =
-          ((HomotopyCategory.quotient _ _).obj (K⟦n⟧)) :=
-          Quotient.functor_obj_shift ..
-        rw [this]
-        exact K.isStrictlyGE_shift q n (q - n) (by lia) }
+        rw [ObjectProperty.prop_shift_iff, shift_quotient_obj,
+          plus_quotient_obj_iff]
+        exact ⟨q - n, K.isStrictlyGE_shift q n (q - n) (by lia)⟩ }
 
 set_option backward.isDefEq.respectTransparency false in
 instance [HasZeroObject C] [HasBinaryBiproducts C] :
     (plus C).IsTriangulatedClosed₃ where
-  ext₃' T hT := by
-    rintro ⟨n₁, _⟩ ⟨n₂, _⟩
+  ext₃' T hT h₁ h₂ := by
+    obtain ⟨n₁, _⟩ : (CochainComplex.plus C) T.obj₁.as := by
+      rwa [← plus_quotient_obj_iff]
+    obtain ⟨n₂, _⟩ : (CochainComplex.plus C) T.obj₂.as := by
+      rwa [← plus_quotient_obj_iff]
     obtain ⟨f : T.obj₁.as ⟶ T.obj₂.as, hf⟩ := (quotient _ _).map_surjective T.mor₁
     refine ⟨_, ?_,
       ⟨Triangle.π₃.mapIso (isoTriangleOfIso₁₂ T _ hT (mappingCone_triangleh_distinguished f)
@@ -166,8 +171,8 @@ instance : (quasiIso A).RespectsIso := by
 def quotient : CochainComplex.Plus C ⥤ Plus C :=
   ObjectProperty.lift _
     (CochainComplex.Plus.ι C ⋙ HomotopyCategory.quotient C (.up ℤ)) (by
-      rintro ⟨K, n, hn⟩
-      exact ⟨n, hn⟩)
+      rintro ⟨K, h⟩
+      simpa [plus_quotient_obj_iff])
 
 /-- The functor
 `HomotopyCategory.Plus.quotient C : CochainComplex.Plus C ⥤ HomotopyCategory.Plus C`
@@ -179,10 +184,16 @@ def quotientCompι :
 
 variable {C} in
 lemma quotient_obj_surjective : Function.Surjective (quotient C).obj :=
-  fun K ↦ ⟨⟨K.obj.as, K.property⟩, rfl⟩
+  fun K ↦ by
+    obtain ⟨L, hL⟩ := HomotopyCategory.quotient_obj_surjective K.obj
+    refine ⟨⟨L, ?_⟩, by ext; exact hL⟩
+    rw [← HomotopyCategory.plus_quotient_obj_iff, hL]
+    exact K.property
 
 instance : (quotient C).EssSurj where
-  mem_essImage K := ⟨⟨K.obj.as, K.property⟩, ⟨Iso.refl _⟩⟩
+  mem_essImage K := by
+    obtain ⟨L, rfl⟩ := quotient_obj_surjective K
+    exact ⟨L, ⟨Iso.refl _⟩⟩
 
 instance : (quotient C).Full := by dsimp [quotient]; infer_instance
 
@@ -210,7 +221,9 @@ along with their compatibilities with shifts. -/
 noncomputable def singleFunctors : SingleFunctors C (Plus C) ℤ :=
   SingleFunctors.lift (HomotopyCategory.singleFunctors C) (ι C)
     (fun n ↦ (plus C).lift (singleFunctor C n)
-    (fun X ↦ ⟨n, inferInstanceAs (((CochainComplex.singleFunctor C n).obj X).IsStrictlyGE n)⟩))
+    (fun X ↦ by
+      rw [← quotient_obj_singleFunctors_obj, plus_quotient_obj_iff]
+      exact ⟨n, inferInstance⟩))
     (fun _ ↦ Iso.refl _)
 
 /-- The single functor `C ⥤ HomotopyCategory.Plus C`. -/
