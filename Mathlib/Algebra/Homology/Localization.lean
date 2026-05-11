@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Homology.QuasiIso
 public import Mathlib.CategoryTheory.Localization.Composition
 public import Mathlib.CategoryTheory.Localization.HasLocalization
 
-/-! The category of homological complexes up to quasi-isomorphisms
+/-! # The category of homological complexes up to quasi-isomorphisms
 
 Given a category `C` with homology and any complex shape `c`, we define
 the category `HomologicalComplexUpToQuasiIso C c` which is the localized
@@ -122,6 +122,15 @@ instance respectsIso_quasiIso : (quasiIso C c).RespectsIso := by
   intro f g e hf i
   exact ((MorphismProperty.isomorphisms C).arrow_mk_iso_iff
     ((homologyFunctor C c i).mapArrow.mapIso e)).1 (hf i)
+
+instance : (quasiIso C c).IsMultiplicative where
+  id_mem K := by
+    rw [mem_quasiIso_iff]
+    infer_instance
+  comp_mem f g hf hg := by
+    rw [mem_quasiIso_iff] at hf hg ⊢
+    simp only [Functor.map_comp]
+    infer_instance
 
 lemma homologyFunctor_inverts_quasiIso (i : ι) :
     (quasiIso C c).IsInvertedBy (homologyFunctor C c i) := fun _ _ _ hf => hf i

@@ -338,8 +338,6 @@ injective. -/
 theorem kerLift_injective (f : α → β) : Injective <| kerLift f :=
   fun x y => Quotient.inductionOn₂' x y fun _ _ h => Quotient.sound' h
 
-@[deprecated (since := "2025-10-11")] alias ker_lift_injective := kerLift_injective
-
 /-- Given a map f from α to β, the kernel of f is the unique equivalence relation on α whose
 induced map from the quotient of α to β is injective. -/
 theorem ker_eq_lift_of_injective {r : Setoid α} (f : α → β) (H : r ≤ ker f)
@@ -485,4 +483,4 @@ theorem Quot.subsingleton_iff (r : α → α → Prop) :
   refine Quot.mk_surjective.forall.trans (forall_congr' fun a => ?_)
   refine Quot.mk_surjective.forall.trans (forall_congr' fun b => ?_)
   rw [Quot.eq]
-  simp only [forall_const, le_Prop_eq, Prop.top_eq_true]
+  simp
