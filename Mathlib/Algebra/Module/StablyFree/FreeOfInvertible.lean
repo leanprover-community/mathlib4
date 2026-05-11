@@ -49,18 +49,18 @@ theorem Module.free_of_isStablyFree_of_invertible [IsStablyFree R M] [Module.Inv
   rcases subsingleton_or_nontrivial R with _ | _
   · have : Subsingleton M := Module.Finite.subsingleton_of_ring_subsingleton R M
     infer_instance
+  obtain ⟨N, _, _, _, _, _⟩ := IsStablyFree.exist_free_prod R M
+  let n := Module.finrank R N
   have hp : Module.finrank R (M × N) = n + 1 := by
     let 𝔭 : PrimeSpectrum R := Nonempty.some inferInstance
     have h1 : rankAtStalk M 𝔭 = 1 := by simp [rankAtStalk, Invertible.finrank_eq_one]
-    have := congr($(Module.rankAtStalk_prod M N) 𝔭)
-    simp only [rankAtStalk_eq_finrank_of_free, Pi.natCast_apply, Pi.add_apply] at this
-    grind [Module.rankAtStalk_eq_finrank_of_free]
+    have heq := congr($(Module.rankAtStalk_prod M N) 𝔭)
+    simp only [rankAtStalk_eq_finrank_of_free, Pi.natCast_apply, Pi.add_apply, h1] at heq
+    grind
+  let e : R ≃ₗ[R] ⋀[R]^(n + 1) (M × N) :=
+    (Module.nonempty_linearEquiv_of_finrank_eq_one <| by simp [exteriorPower.finrank_eq, hp]).some
   let bN : Module.Basis (Fin n) R N := Module.finBasis R N
-  let b : Module.Basis (Fin (n + 1)) R (M × N) := Module.finBasisOfFinrankEq R (M × N) hp
-  let e : R ≃ₗ[R] ⋀[R]^(n + 1) (M × N) := Classical.choice <|
-    Module.nonempty_linearEquiv_of_finrank_eq_one <| by simp [exteriorPower.finrank_eq, hp]
   let f : R →ₗ[R] M := cofactorToLeft bN ∘ₗ e
-  have hfs : Function.Surjective f := fun x ↦
-    ⟨e.symm (exteriorPower.ιMulti R (n + 1) (Fin.cons (x, 0) fun i ↦ (0, bN i))),
-      by simp [f, cofactorToLeft_ιMulti_cons]⟩
-  exact Module.Free.of_equiv (LinearEquiv.ofBijective f (Invertible.bijective_of_surjective hfs))
+  exact Module.Free.of_equiv <| LinearEquiv.ofBijective f <| Invertible.bijective_of_surjective <|
+    fun x ↦ ⟨e.symm (exteriorPower.ιMulti R (n + 1) (Fin.cons (x, 0) fun i ↦ (0, bN i))), by
+      simp [f, cofactorToLeft_ιMulti_cons]⟩
