@@ -99,7 +99,7 @@ section
 variable {R} {n : ℕ}
 
 /-- The map `R ⟶ (X.normalizedChainComplex R).X n` for any `x : X _⦋n⦌`. Note that
-this is zero is `x` is a degenerate simplex, see `ιNormalizedChainComplex_eq_zero`. -/
+this is zero if `x` is a degenerate simplex, see `ιNormalizedChainComplex_eq_zero`. -/
 @[no_expose]
 noncomputable def ιNormalizedChainComplex (x : X _⦋n⦌) :
     R ⟶ (X.normalizedChainComplex R).X n :=
