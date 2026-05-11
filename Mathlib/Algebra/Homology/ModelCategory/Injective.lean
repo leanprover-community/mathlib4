@@ -25,6 +25,9 @@ that are degreewise epimorphisms with an injective kernel.
 The `ModelCategory` instance is scoped in the namespace
 `CochainComplex.Plus.modelCategoryQuillen`.
 
+## References
+* [Daniel G. Quillen, Homotopical algebra, §I.1, Example B][Quillen1967]
+
 -/
 
 @[expose] public section
