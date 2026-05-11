@@ -3,8 +3,10 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Multiset.Count
-import Mathlib.Data.List.Count
+module
+
+public import Mathlib.Data.Multiset.Count
+public import Mathlib.Data.List.Count
 
 /-!
 # Sum and difference of multisets
@@ -23,6 +25,8 @@ This file defines the following operations on multisets:
   occurrences of `a` in `s` and `t`.
 
 -/
+
+@[expose] public section
 
 -- No algebra should be required
 assert_not_exists Monoid
@@ -105,7 +109,7 @@ theorem cons_add (a : α) (s t : Multiset α) : a ::ₘ s + t = a ::ₘ (s + t) 
 theorem add_cons (a : α) (s t : Multiset α) : s + a ::ₘ t = a ::ₘ (s + t) := by
   rw [Multiset.add_comm, cons_add, Multiset.add_comm]
 
-@[simp]
+@[simp, grind =]
 theorem mem_add {a : α} {s t : Multiset α} : a ∈ s + t ↔ a ∈ s ∨ a ∈ t :=
   Quotient.inductionOn₂ s t fun _l₁ _l₂ => mem_append
 
@@ -164,8 +168,6 @@ theorem erase_singleton (a : α) : ({a} : Multiset α).erase a = 0 :=
 @[simp]
 theorem erase_of_notMem {a : α} {s : Multiset α} : a ∉ s → s.erase a = s :=
   Quot.inductionOn s fun _l h => congr_arg _ <| List.erase_of_not_mem h
-
-@[deprecated (since := "2025-05-23")] alias erase_of_not_mem := erase_of_notMem
 
 @[simp]
 theorem cons_erase {s : Multiset α} {a : α} : a ∈ s → a ::ₘ s.erase a = s :=

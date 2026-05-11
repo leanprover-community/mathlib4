@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Indicator
-import Mathlib.Data.ENNReal.Basic
-import Mathlib.Data.Finset.Lattice.Fold
+module
+
+public import Mathlib.Algebra.Group.Indicator
+public import Mathlib.Data.ENNReal.Basic
+public import Mathlib.Data.Finset.Lattice.Fold
 
 /-!
 # Some lemmas on extended non-negative reals
@@ -13,6 +15,8 @@ import Mathlib.Data.Finset.Lattice.Fold
 These are some lemmas split off from `ENNReal.Basic` because they need a lot more imports.
 They are probably good targets for further cleanup or moves.
 -/
+
+public section
 
 
 open Function Set NNReal
@@ -24,7 +28,7 @@ namespace ENNReal
 @[simp, norm_cast]
 theorem coe_indicator {α} (s : Set α) (f : α → ℝ≥0) (a : α) :
     ((s.indicator f a : ℝ≥0) : ℝ≥0∞) = s.indicator (fun x => ↑(f x)) a :=
-  (ofNNRealHom : ℝ≥0 →+ ℝ≥0∞).map_indicator _ _ _
+  map_indicator ofNNRealHom _ _ _
 
 section Order
 

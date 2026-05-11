@@ -3,11 +3,15 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.ContinuousOn
+module
+
+public import Mathlib.Topology.ContinuousOn
 
 /-!
 ### Continuity of piecewise defined functions
 -/
+
+public section
 
 open Set Filter Function Topology Filter
 
@@ -92,14 +96,14 @@ theorem continuous_if' {p : α → Prop} [∀ a, Decidable (p a)]
     (hpg : ∀ a ∈ frontier { x | p x }, Tendsto g (𝓝[{ x | ¬p x }] a) (𝓝 <| ite (p a) (f a) (g a)))
     (hf : ContinuousOn f { x | p x }) (hg : ContinuousOn g { x | ¬p x }) :
     Continuous fun a => ite (p a) (f a) (g a) := by
-  rw [continuous_iff_continuousOn_univ]
-  apply ContinuousOn.if' <;> simp [*] <;> assumption
+  rw [← continuousOn_univ]
+  apply ContinuousOn.if' <;> simpa
 
 theorem continuous_if {p : α → Prop} [∀ a, Decidable (p a)]
     (hp : ∀ a ∈ frontier { x | p x }, f a = g a) (hf : ContinuousOn f (closure { x | p x }))
     (hg : ContinuousOn g (closure { x | ¬p x })) :
     Continuous fun a => if p a then f a else g a := by
-  rw [continuous_iff_continuousOn_univ]
+  rw [← continuousOn_univ]
   apply ContinuousOn.if <;> simpa
 
 theorem Continuous.if {p : α → Prop} [∀ a, Decidable (p a)]

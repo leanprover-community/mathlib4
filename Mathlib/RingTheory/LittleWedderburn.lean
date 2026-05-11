@@ -3,9 +3,11 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Eric Rodriguez
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Center
-import Mathlib.GroupTheory.ClassEquation
-import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
+module
+
+public import Mathlib.Algebra.GroupWithZero.Action.Center
+public import Mathlib.GroupTheory.ClassEquation
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
 
 /-!
 # Wedderburn's Little Theorem
@@ -34,6 +36,8 @@ below proof is free, then the proof works nearly verbatim.
 
 -/
 
+@[expose] public section
+
 open scoped Polynomial
 open Fintype
 
@@ -51,8 +55,9 @@ open Module Polynomial
 
 variable {D}
 
+@[implicit_reducible]
 private def field (hD : InductionHyp D) {R : Subring D} (hR : R < ⊤)
-  [Fintype D] [DecidableEq D] [DecidablePred (· ∈ R)] :
+    [Fintype D] [DecidableEq D] [DecidablePred (· ∈ R)] :
     Field R :=
   { show DivisionRing R from Fintype.divisionRingOfIsDomain R with
     mul_comm := fun x y ↦ Subtype.ext <| hD hR x.2 y.2 }
@@ -84,7 +89,7 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
   rw [Nat.cast_add, Nat.cast_sub h1qn, Nat.cast_sub hq.le, Nat.cast_one, Nat.cast_pow] at key
   suffices Φₙ.eval ↑q ∣ ↑(∑ x ∈ (ConjClasses.noncenter Dˣ).toFinset, x.carrier.toFinset.card) by
     have contra : Φₙ.eval _ ∣ _ := eval_dvd (cyclotomic.dvd_X_pow_sub_one n ℤ) (x := (q : ℤ))
-    rw [eval_sub, eval_pow, eval_X, eval_one, ← key, Int.dvd_add_left this] at contra
+    rw [eval_sub, eval_X_pow, eval_one, ← key, Int.dvd_add_left this] at contra
     refine (Nat.le_of_dvd ?_ ?_).not_gt (sub_one_lt_natAbs_cyclotomic_eval (n := n) ?_ hq.ne')
     · exact tsub_pos_of_lt hq
     · convert Int.natAbs_dvd_natAbs.mpr contra
@@ -119,11 +124,11 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
   have card_Zx : card Zx = q ^ d := Module.card_eq_pow_finrank
   have h1qd : 1 ≤ q ^ d := by rw [← card_Zx]; exact card_pos
   haveI : IsScalarTower Z Zx D := ⟨fun x y z ↦ mul_assoc _ _ _⟩
-  rw [card_units, card_Zx, Int.natCast_div, Nat.cast_sub h1qd, Nat.cast_sub h1qn, Nat.cast_one,
-      Nat.cast_pow, Nat.cast_pow]
+  rw [card_units, card_Zx]
+  push_cast [h1qd, h1qn]
   apply Int.dvd_div_of_mul_dvd
   have aux : ∀ {k : ℕ}, ((X : ℤ[X]) ^ k - 1).eval ↑q = (q : ℤ) ^ k - 1 := by
-    simp only [eval_X, eval_one, eval_pow, eval_sub, eq_self_iff_true, forall_const]
+    simp only [eval_X, eval_one, eval_pow, eval_sub, forall_const]
   rw [← aux, ← aux, ← eval_mul]
   refine map_dvd (evalRingHom ↑q) (X_pow_sub_one_mul_cyclotomic_dvd_X_pow_sub_one_of_dvd ℤ ?_)
   refine Nat.mem_properDivisors.mpr ⟨⟨_, (finrank_mul_finrank Z Zx D).symm⟩, ?_⟩
@@ -138,7 +143,7 @@ end InductionHyp
 private theorem center_eq_top [Finite D] : Subring.center D = ⊤ := by
   classical
   cases nonempty_fintype D
-  induction' hn : Fintype.card D using Nat.strong_induction_on with n IH generalizing D
+  induction hn : Fintype.card D using Nat.strong_induction_on generalizing D with | _ n IH
   apply InductionHyp.center_eq_top
   intro R hR x y hx hy
   suffices (⟨y, hy⟩ : R) ∈ Subring.center R by

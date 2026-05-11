@@ -3,8 +3,10 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Mario Carneiro
 -/
-import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.CategoryTheory.Adjunction.Basic
+module
+
+public import Mathlib.Topology.Category.TopCat.Basic
+public import Mathlib.CategoryTheory.Adjunction.Basic
 
 /-!
 # Adjunctions regarding the category of topological spaces
@@ -13,6 +15,8 @@ This file shows that the forgetful functor from topological spaces to types has 
 adjoint, given by `TopCat.discrete`, resp. `TopCat.trivial`, the functors which equip a type with
 the discrete, resp. trivial, topology.
 -/
+
+@[expose] public section
 
 
 universe u
@@ -27,7 +31,7 @@ namespace TopCat
 `Top ⥤ Type`. -/
 @[simps! unit counit]
 def adj₁ : discrete ⊣ forget TopCat.{u} where
-  unit := { app := fun _ => id }
+  unit := 𝟙 _
   counit := { app := fun X => TopCat.ofHom (X := discrete.obj X) ⟨id, continuous_bot⟩ }
 
 /-- Equipping a type with the trivial topology is right adjoint to the forgetful functor
@@ -35,7 +39,7 @@ def adj₁ : discrete ⊣ forget TopCat.{u} where
 @[simps! unit counit]
 def adj₂ : forget TopCat.{u} ⊣ trivial where
   unit := { app := fun X => TopCat.ofHom (Y := trivial.obj X) ⟨id, continuous_top⟩ }
-  counit := { app := fun _ => id }
+  counit := 𝟙 _
 
 instance : (forget TopCat.{u}).IsRightAdjoint :=
   ⟨_, ⟨adj₁⟩⟩

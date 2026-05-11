@@ -3,12 +3,14 @@ Copyright (c) 2025 Jakob Stiefel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Stiefel
 -/
-import Mathlib.Analysis.SpecialFunctions.MulExpNegMulSq
-import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
-import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
-import Mathlib.MeasureTheory.Integral.DominatedConvergence
-import Mathlib.MeasureTheory.Measure.RegularityCompacts
-import Mathlib.Topology.ContinuousMap.StoneWeierstrass
+module
+
+public import Mathlib.Analysis.SpecialFunctions.MulExpNegMulSq
+public import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
+public import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
+public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+public import Mathlib.MeasureTheory.Measure.RegularityCompacts
+public import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 
 /-!
 # Properties of the integral of `mulExpNegMulSq`
@@ -36,6 +38,8 @@ of `mulExpNegMulSq ε ∘ g` with respect to `P, P'` is bounded by `6 * √ε`.
 This is a key ingredient in the proof of theorem `ext_of_forall_mem_subalgebra_integral_eq`, where
 it is shown that a subalgebra of functions that separates points separates finite measures.
 -/
+
+public section
 
 open MeasureTheory Real NNReal ENNReal BoundedContinuousFunction Filter
 
@@ -75,7 +79,7 @@ theorem tendsto_integral_mulExpNegMulSq_comp (g : E →ᵇ ℝ) :
 /-- The integral of `mulExpNegMulSq ε ∘ g` with respect to a finite measure `P` can be
 approximated by the integral of the sequence approximating the exponential function. -/
 theorem tendsto_integral_mul_one_add_inv_smul_sq_pow (g : E →ᵇ ℝ) (hε : 0 < ε) :
-    Tendsto (fun (n : ℕ) => ∫ x, (g * (1 + (n : ℝ)⁻¹ • -(ε • g * g)) ^ n) x ∂ P)
+    Tendsto (fun (n : ℕ) => ∫ x, (g * (1 + (n : ℝ)⁻¹ • -(ε • g * g)) ^ n) x ∂P)
     atTop (𝓝 (∫ x, mulExpNegMulSq ε (g x) ∂P)) := by
   apply tendsto_integral_filter_of_norm_le_const ?h_meas ?h_bound ?h_lim
   · apply Eventually.of_forall
@@ -103,14 +107,14 @@ theorem tendsto_integral_mul_one_add_inv_smul_sq_pow (g : E →ᵇ ℝ) (hε : 0
       (div_nonneg (mul_nonneg (le_of_lt hε) (mul_self_nonneg (g x))) (le_of_lt hnpos)))⟩
     apply le_trans (by linarith) (sub_nonneg_of_le ((div_le_one hnpos).mpr _))
     apply le_trans (le_trans _ (le_of_lt hgN)) (Nat.cast_le.mpr hn)
-    apply mul_le_mul (Preorder.le_refl ε) _ (mul_self_nonneg (g x)) (le_of_lt hε)
+    apply mul_le_mul (le_refl ε) _ (mul_self_nonneg (g x)) (le_of_lt hε)
     rw [← abs_le_iff_mul_self_le, abs_norm]
     exact norm_coe_le_norm g x
   · apply Eventually.of_forall
     intro x
     apply Tendsto.const_mul (g x)
-    simp [mul_assoc, inv_mul_eq_div, ← neg_div]
-    exact tendsto_one_add_div_pow_exp (-(ε * (g x * g x)))
+    simpa [mul_assoc, inv_mul_eq_div, ← neg_div] using
+      tendsto_one_add_div_pow_exp (-(ε * (g x * g x)))
 
 theorem integral_mulExpNegMulSq_comp_eq {P' : Measure E} [IsFiniteMeasure P']
     {A : Subalgebra ℝ (E →ᵇ ℝ)} (hε : 0 < ε)
@@ -159,31 +163,31 @@ theorem dist_integral_mulExpNegMulSq_comp_le (f : E →ᵇ ℝ)
     |∫ x, mulExpNegMulSq ε (f x) ∂P - ∫ x, mulExpNegMulSq ε (f x) ∂P'| ≤ 6 * √ε := by
   -- if both measures are zero, the result is trivial
   by_cases hPP' : P = 0 ∧ P' = 0
-  · simp only [hPP', integral_zero_measure, sub_self, abs_zero, gt_iff_lt, Nat.ofNat_pos,
+  · simp only [hPP', integral_zero_measure, sub_self, abs_zero, Nat.ofNat_pos,
     mul_nonneg_iff_of_pos_left, (le_of_lt (sqrt_pos_of_pos hε))]
   let const : ℝ := (max (P.real Set.univ) (P'.real Set.univ))
   have pos_of_measure : 0 < const := by
     rw [not_and_or] at hPP'
     rcases hPP' with hP0 | hP'0
     · exact lt_max_of_lt_left
-        (toReal_pos ((Measure.measure_univ_ne_zero).mpr hP0) (measure_ne_top P Set.univ))
+        (toReal_pos ((Measure.measure_univ_ne_zero).mpr hP0) (by finiteness))
     · exact lt_max_of_lt_right
-        (toReal_pos ((Measure.measure_univ_ne_zero).mpr hP'0) (measure_ne_top P' Set.univ))
+        (toReal_pos ((Measure.measure_univ_ne_zero).mpr hP'0) (by finiteness))
   -- obtain K, a compact and closed set, which covers E up to a small area of measure at most ε
-  -- wrt to both P and P'
+  -- w.r.t. both P and P'
   obtain ⟨KP, _, hKPco, hKPcl, hKP⟩ := MeasurableSet.exists_isCompact_isClosed_diff_lt
-    (MeasurableSet.univ) (measure_ne_top P Set.univ) (ne_of_gt (ofReal_pos.mpr hε))
+    (MeasurableSet.univ) (measure_ne_top P Set.univ) (ofReal_pos.mpr hε).ne'
   obtain ⟨KP', _, hKP'co, hKP'cl, hKP'⟩ := MeasurableSet.exists_isCompact_isClosed_diff_lt
-    (MeasurableSet.univ) (measure_ne_top P' Set.univ) (ne_of_gt (ofReal_pos.mpr hε))
+    (MeasurableSet.univ) (measure_ne_top P' Set.univ) (ofReal_pos.mpr hε).ne'
   let K := KP ∪ KP'
   have hKco := IsCompact.union hKPco hKP'co
   have hKcl := IsClosed.union hKPcl hKP'cl
-  simp [← Set.compl_eq_univ_diff] at hKP hKP'
+  simp only [← Set.compl_eq_univ_diff] at hKP hKP'
   have hKPbound : P (KP ∪ KP')ᶜ < ε.toNNReal := lt_of_le_of_lt
         (measure_mono (Set.compl_subset_compl_of_subset (Set.subset_union_left))) hKP
   have hKP'bound : P' (KP ∪ KP')ᶜ < ε.toNNReal := lt_of_le_of_lt
         (measure_mono (Set.compl_subset_compl_of_subset (Set.subset_union_right))) hKP'
-  -- stone-weierstrass approximation of f on K
+  -- Stone-Weierstrass approximation of f on K
   obtain ⟨g', hg'A, hg'approx⟩ :=
       ContinuousMap.exists_mem_subalgebra_near_continuous_of_isCompact_of_separatesPoints
       hA f hKco (Left.mul_pos (sqrt_pos_of_pos hε) (inv_pos_of_pos pos_of_measure))
@@ -220,7 +224,7 @@ theorem dist_integral_mulExpNegMulSq_comp_le (f : E →ᵇ ℝ)
     rw [mul_assoc]
     apply mul_le_of_le_one_right (le_of_lt (sqrt_pos_of_pos hε))
     apply inv_mul_le_one_of_le₀ (le_max_of_le_left _) (le_of_lt pos_of_measure)
-    exact (toReal_le_toReal (measure_ne_top P _) (measure_ne_top P _)).mpr
+    exact (toReal_le_toReal (by finiteness) (by finiteness)).mpr
         (measure_mono (Set.subset_univ _))
   have line6 : |∫ x in K, mulExpNegMulSq ε (g x) ∂P'
       - ∫ x in K, mulExpNegMulSq ε (f x) ∂P'| ≤ √ε := by
@@ -229,7 +233,7 @@ theorem dist_integral_mulExpNegMulSq_comp_le (f : E →ᵇ ℝ)
     rw [mul_assoc]
     apply mul_le_of_le_one_right (le_of_lt (sqrt_pos_of_pos hε))
     apply inv_mul_le_one_of_le₀ (le_max_of_le_right _) (le_of_lt pos_of_measure)
-    exact (toReal_le_toReal (measure_ne_top P' _) (measure_ne_top P' _)).mpr
+    exact (toReal_le_toReal (by finiteness) (by finiteness)).mpr
         (measure_mono (Set.subset_univ _))
   have line4 : |∫ x, mulExpNegMulSq ε (g x) ∂P
       - ∫ x, mulExpNegMulSq ε (g x) ∂P'| = 0 := by

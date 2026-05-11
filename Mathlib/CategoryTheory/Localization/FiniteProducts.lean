@@ -3,14 +3,16 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.ConeCategory
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.CategoryTheory.Localization.Adjunction
-import Mathlib.CategoryTheory.Localization.HasLocalization
-import Mathlib.CategoryTheory.Localization.Pi
-import Mathlib.CategoryTheory.MorphismProperty.Limits
+module
 
-/-! The localized category has finite products
+public import Mathlib.CategoryTheory.Limits.ConeCategory
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.Localization.Adjunction
+public import Mathlib.CategoryTheory.Localization.HasLocalization
+public import Mathlib.CategoryTheory.Localization.Pi
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
+
+/-! # The localized category has finite products
 
 In this file, it is shown that if `L : C ⥤ D` is
 a localization functor for `W : MorphismProperty C` and that
@@ -19,11 +21,13 @@ products, and `L` preserves finite products.
 
 -/
 
+@[expose] public section
+
 universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
 
-open Limits
+open Limits Functor
 
 namespace Localization
 
@@ -56,11 +60,11 @@ noncomputable def compLimitFunctorIso :
 instance :
     CatCommSq (Functor.const (Discrete J)) L
       ((whiskeringRight (Discrete J) C D).obj L) (Functor.const (Discrete J)) where
-  iso' := (Functor.compConstIso _ _).symm
+  iso := (Functor.compConstIso _ _).symm
 
 noncomputable instance :
     CatCommSq lim ((whiskeringRight (Discrete J) C D).obj L) L (limitFunctor L W J) where
-  iso' := (compLimitFunctorIso L W J).symm
+  iso := (compLimitFunctorIso L W J).symm
 
 /-- The adjunction between the constant functor `D ⥤ (Discrete J ⥤ D)`
 and `limitFunctor L W J`. -/
@@ -80,7 +84,7 @@ lemma adj_counit_app (F : Discrete J ⥤ C) :
 noncomputable def isLimitMapCone (F : Discrete J ⥤ C) :
     IsLimit (L.mapCone (limit.cone F)) :=
   IsLimit.ofIsoLimit (isLimitConeOfAdj (adj L W J) (F ⋙ L))
-    (Cones.ext ((compLimitFunctorIso L W J).app F) (by simp [adj_counit_app, constLimAdj]))
+    (Cone.ext ((compLimitFunctorIso L W J).app F) (by simp [adj_counit_app, constLimAdj]))
 
 end HasProductsOfShapeAux
 
@@ -94,7 +98,7 @@ lemma hasProductsOfShape (J : Type) [Finite J] [HasProductsOfShape J C]
     (HasProductsOfShapeAux.adj L W J).isLeftAdjoint
 
 /-- When `C` has finite products indexed by `J`, `W : MorphismProperty C` contains
-identities and is stable by products indexed by `J`,
+identities and is stable under products indexed by `J`,
 then any localization functor for `W` preserves finite products indexed by `J`. -/
 lemma preservesProductsOfShape (J : Type) [Finite J]
     [HasProductsOfShape J C] [W.IsStableUnderProductsOfShape J] :
@@ -110,7 +114,7 @@ lemma hasFiniteProducts : HasFiniteProducts D :=
 
 include W in
 /-- When `C` has finite products and `W : MorphismProperty C` contains
-identities and is stable by finite products,
+identities and is stable under finite products,
 then any localization functor for `W` preserves finite products. -/
 lemma preservesFiniteProducts :
     PreservesFiniteProducts L where

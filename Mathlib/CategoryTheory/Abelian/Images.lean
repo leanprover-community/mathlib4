@@ -3,7 +3,9 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
 /-!
 # The abelian image and coimage.
@@ -20,6 +22,8 @@ Later we show that this is always an isomorphism in an abelian category,
 and conversely a category with (co)kernels and finite products in which this morphism
 is always an isomorphism is an abelian category.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -122,6 +126,6 @@ def coimageImageComparisonFunctor : Arrow C ⥤ Arrow C where
   obj f := Arrow.mk (coimageImageComparison f.hom)
   map {f g} η := Arrow.homMk
     (cokernel.map _ _ (kernel.map _ _ η.left η.right (by simp)) η.left (by simp))
-    (kernel.map _ _ η.right (cokernel.map _ _ η.left η.right (by simp)) (by simp)) (by aesop_cat)
+    (kernel.map _ _ η.right (cokernel.map _ _ η.left η.right (by simp)) (by simp)) (by cat_disch)
 
 end CategoryTheory.Abelian

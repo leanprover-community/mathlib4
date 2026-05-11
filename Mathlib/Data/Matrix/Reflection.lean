@@ -3,8 +3,10 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.Matrix.Notation
-import Mathlib.Data.Fin.Tuple.Reflection
+module
+
+public import Mathlib.Data.Fin.Tuple.Reflection
+public import Mathlib.LinearAlgebra.Matrix.Notation
 
 /-!
 # Lemmas for concrete matrices `Matrix (Fin m) (Fin n) α`
@@ -29,6 +31,8 @@ corresponding `*_eq` lemmas to be used in a place where they are definitionally 
 * `Matrix.etaExpand`
 
 -/
+
+@[expose] public section
 
 
 open Matrix
@@ -146,7 +150,7 @@ example [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b�
 @[simp]
 theorem mulᵣ_eq [Mul α] [AddCommMonoid α] (A : Matrix (Fin l) (Fin m) α)
     (B : Matrix (Fin m) (Fin n) α) : mulᵣ A B = A * B := by
-  simp [mulᵣ, Function.comp, Matrix.transpose]
+  simp [mulᵣ, Matrix.transpose]
   rfl
 
 example [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b₁₂ b₂₁ b₂₂ : α) :
@@ -170,7 +174,7 @@ example [NonUnitalNonAssocSemiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁ b�
 @[simp]
 theorem mulVecᵣ_eq [NonUnitalNonAssocSemiring α] (A : Matrix (Fin l) (Fin m) α) (v : Fin m → α) :
     mulVecᵣ A v = A *ᵥ v := by
-  simp [mulVecᵣ, Function.comp]
+  simp [mulVecᵣ]
   rfl
 
 example [NonUnitalNonAssocSemiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁ b₂ : α) :
@@ -192,7 +196,7 @@ example [NonUnitalNonAssocSemiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁ b�
 @[simp]
 theorem vecMulᵣ_eq [NonUnitalNonAssocSemiring α] (v : Fin l → α) (A : Matrix (Fin l) (Fin m) α) :
     vecMulᵣ v A = v ᵥ* A := by
-  simp [vecMulᵣ, Function.comp]
+  simp [vecMulᵣ]
   rfl
 
 example [NonUnitalNonAssocSemiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁ b₂ : α) :
@@ -213,8 +217,11 @@ example (A : Matrix (Fin 2) (Fin 2) α) :
 -/
 theorem etaExpand_eq {m n} (A : Matrix (Fin m) (Fin n) α) : etaExpand A = A := by
   simp_rw [etaExpand, FinVec.etaExpand_eq, Matrix.of]
-  -- This to be in the above `simp_rw` before https://github.com/leanprover/lean4/pull/2644
-  erw [Equiv.refl_apply]
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
+  It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
+  canonicalizer; a minimization would help. The original proof was: `grind` -/
+  rfl
 
 example (A : Matrix (Fin 2) (Fin 2) α) : A = !![A 0 0, A 0 1; A 1 0, A 1 1] :=
   (etaExpand_eq _).symm

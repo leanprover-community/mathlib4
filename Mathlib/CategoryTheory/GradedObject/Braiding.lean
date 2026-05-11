@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.GradedObject.Monoidal
-import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+module
+
+public import Mathlib.CategoryTheory.GradedObject.Monoidal
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 /-!
 # The braided and symmetric category structures on graded objects
 
@@ -18,11 +20,13 @@ structure on `GradedObject I C` and show that it is symmetric if `C` is symmetri
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Limits
 
-variable {I : Type*} [AddCommMonoid I] {C : Type*} [Category C] [MonoidalCategory C]
+variable {I : Type*} [AddCommMonoid I] {C : Type*} [Category* C] [MonoidalCategory C]
 
 namespace GradedObject
 
@@ -45,16 +49,16 @@ noncomputable def braiding [HasTensor X Y] [HasTensor Y X] : tensorObj X Y ≅ t
 variable {Y Z} in
 lemma braiding_naturality_right [HasTensor X Y] [HasTensor Y X] [HasTensor X Z] [HasTensor Z X]
     (f : Y ⟶ Z) :
-    whiskerLeft X f ≫ (braiding X Z).hom = (braiding X Y).hom ≫ whiskerRight f X  := by
+    whiskerLeft X f ≫ (braiding X Z).hom = (braiding X Y).hom ≫ whiskerRight f X := by
   dsimp [braiding]
-  aesop_cat
+  cat_disch
 
 variable {X Y} in
 lemma braiding_naturality_left [HasTensor Y Z] [HasTensor Z Y] [HasTensor X Z] [HasTensor Z X]
     (f : X ⟶ Y) :
-    whiskerRight f Z ≫ (braiding Y Z).hom = (braiding X Z).hom ≫ whiskerLeft Z f  := by
+    whiskerRight f Z ≫ (braiding Y Z).hom = (braiding X Z).hom ≫ whiskerLeft Z f := by
   dsimp [braiding]
-  aesop_cat
+  cat_disch
 
 lemma hexagon_forward [HasTensor X Y] [HasTensor Y X] [HasTensor Y Z]
     [HasTensor Z X] [HasTensor X Z]
@@ -72,13 +76,13 @@ lemma hexagon_forward [HasTensor X Y] [HasTensor Y X] [HasTensor Y Z]
   conv_lhs => rw [ιTensorObj₃'_associator_hom_assoc, ιTensorObj₃_eq X Y Z i₁ i₂ i₃ k h _ rfl,
     assoc, ι_tensorObjDesc_assoc, assoc, ← MonoidalCategory.id_tensorHom,
     BraidedCategory.braiding_naturality_assoc,
-    BraidedCategory.braiding_tensor_right, assoc, assoc, assoc, assoc, Iso.hom_inv_id_assoc,
+    BraidedCategory.braiding_tensor_right_hom, assoc, assoc, assoc, assoc, Iso.hom_inv_id_assoc,
     MonoidalCategory.tensorHom_id,
     ← ιTensorObj₃'_eq_assoc Y Z X i₂ i₃ i₁ k (by rw [add_comm _ i₁, ← add_assoc, h]) _ rfl,
     ιTensorObj₃'_associator_hom, Iso.inv_hom_id_assoc]
   conv_rhs => rw [ιTensorObj₃'_eq X Y Z i₁ i₂ i₃ k h _ rfl, assoc, ι_tensorHom_assoc,
     ← MonoidalCategory.tensorHom_id,
-    ← MonoidalCategory.tensor_comp_assoc, id_comp, ι_tensorObjDesc,
+    MonoidalCategory.tensorHom_comp_tensorHom_assoc, id_comp, ι_tensorObjDesc,
     categoryOfGradedObjects_id, MonoidalCategory.comp_tensor_id, assoc,
     MonoidalCategory.tensorHom_id, MonoidalCategory.tensorHom_id,
     ← ιTensorObj₃'_eq_assoc Y X Z i₂ i₁ i₃ k
@@ -92,7 +96,7 @@ lemma hexagon_forward [HasTensor X Y] [HasTensor Y X] [HasTensor Y Z]
     ← MonoidalCategory.id_tensor_comp_assoc, MonoidalCategory.tensorHom_id,
     MonoidalCategory.id_tensorHom, MonoidalCategory.whiskerLeft_comp, assoc,
     ← ιTensorObj₃_eq Y Z X i₂ i₃ i₁ k (by rw [add_comm _ i₁, ← add_assoc, h])
-      (i₁ + i₃) (add_comm _ _ )]
+      (i₁ + i₃) (add_comm _ _)]
 
 lemma hexagon_reverse [HasTensor X Y] [HasTensor Y Z] [HasTensor Z X]
     [HasTensor Z Y] [HasTensor X Z]
@@ -101,7 +105,7 @@ lemma hexagon_reverse [HasTensor X Y] [HasTensor Y Z] [HasTensor Z X]
     [HasTensor X (tensorObj Z Y)] [HasTensor (tensorObj X Z) Y]
     [HasGoodTensor₁₂Tensor X Y Z] [HasGoodTensorTensor₂₃ X Y Z]
     [HasGoodTensor₁₂Tensor Z X Y] [HasGoodTensorTensor₂₃ Z X Y]
-    [HasGoodTensor₁₂Tensor X Z Y] [HasGoodTensorTensor₂₃ X Z Y]:
+    [HasGoodTensor₁₂Tensor X Z Y] [HasGoodTensorTensor₂₃ X Z Y] :
     (associator X Y Z).inv ≫ (braiding (tensorObj X Y) Z).hom ≫ (associator Z X Y).inv =
       whiskerLeft X (braiding Y Z).hom ≫ (associator X Z Y).inv ≫
         whiskerRight (braiding X Z).hom Y := by
@@ -110,13 +114,13 @@ lemma hexagon_reverse [HasTensor X Y] [HasTensor Y Z] [HasTensor Z X]
   conv_lhs => rw [ιTensorObj₃_associator_inv_assoc, ιTensorObj₃'_eq X Y Z i₁ i₂ i₃ k h _ rfl, assoc,
     ι_tensorObjDesc_assoc, assoc, ← MonoidalCategory.tensorHom_id,
     BraidedCategory.braiding_naturality_assoc,
-    BraidedCategory.braiding_tensor_left, assoc, assoc, assoc, assoc, Iso.inv_hom_id_assoc,
+    BraidedCategory.braiding_tensor_left_hom, assoc, assoc, assoc, assoc, Iso.inv_hom_id_assoc,
     MonoidalCategory.id_tensorHom,
     ← ιTensorObj₃_eq_assoc Z X Y i₃ i₁ i₂ k (by rw [add_assoc, add_comm i₃, h]) _ rfl,
     ιTensorObj₃_associator_inv, Iso.hom_inv_id_assoc]
   conv_rhs => rw [ιTensorObj₃_eq X Y Z i₁ i₂ i₃ k h _ rfl, assoc, ι_tensorHom_assoc,
     ← MonoidalCategory.id_tensorHom,
-    ← MonoidalCategory.tensor_comp_assoc, id_comp, ι_tensorObjDesc,
+    MonoidalCategory.tensorHom_comp_tensorHom_assoc, id_comp, ι_tensorObjDesc,
     categoryOfGradedObjects_id, MonoidalCategory.id_tensor_comp, assoc,
     MonoidalCategory.id_tensorHom, MonoidalCategory.id_tensorHom,
     ← ιTensorObj₃_eq_assoc X Z Y i₁ i₃ i₂ k
@@ -136,7 +140,7 @@ end Braided
 lemma symmetry [SymmetricCategory C] [HasTensor X Y] [HasTensor Y X] :
     (braiding X Y).hom ≫ (braiding Y X).hom = 𝟙 _ := by
   dsimp [braiding]
-  aesop_cat
+  cat_disch
 
 end Monoidal
 
@@ -156,8 +160,8 @@ variable
 noncomputable instance braidedCategory [BraidedCategory C] :
     BraidedCategory (GradedObject I C) where
   braiding X Y := Monoidal.braiding X Y
-  braiding_naturality_left _ _:= Monoidal.braiding_naturality_left _ _
-  braiding_naturality_right _ _ _ _  := Monoidal.braiding_naturality_right _ _
+  braiding_naturality_left _ _ := Monoidal.braiding_naturality_left _ _
+  braiding_naturality_right _ _ _ _ := Monoidal.braiding_naturality_right _ _
   hexagon_forward _ _ _ := Monoidal.hexagon_forward _ _ _
   hexagon_reverse _ _ _ := Monoidal.hexagon_reverse _ _ _
 

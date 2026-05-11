@@ -3,9 +3,12 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.Algebra.CharP.Lemmas
-import Mathlib.Algebra.CharP.IntermediateField
-import Mathlib.FieldTheory.PurelyInseparable.Basic
+module
+
+public import Mathlib.Algebra.CharP.Lemmas
+public import Mathlib.Algebra.CharP.IntermediateField
+public import Mathlib.FieldTheory.PurelyInseparable.Basic
+public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 
 /-!
 
@@ -38,7 +41,9 @@ separable degree, degree, separable closure, purely inseparable
 
 -/
 
-open IntermediateField
+@[expose] public section
+
+open IntermediateField Module
 
 noncomputable section
 
@@ -239,7 +244,6 @@ theorem adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable (S : Set E)
   haveI : Algebra.IsSeparable M (extendScalars hi) :=
     Algebra.isSeparable_tower_top_of_isSeparable F M L
   haveI : IsPurelyInseparable M (extendScalars hi) := by
-    haveI := expChar_of_injective_algebraMap (algebraMap F M).injective q
     rw [extendScalars_adjoin hi, isPurelyInseparable_adjoin_iff_pow_mem M _ q]
     exact fun x hx ↦ ⟨n, ⟨x ^ q ^ n, subset_adjoin F _ ⟨x, hx, rfl⟩⟩, rfl⟩
   simpa only [extendScalars_restrictScalars, restrictScalars_bot_eq_self] using congr_arg
@@ -278,7 +282,6 @@ theorem adjoin_simple_eq_adjoin_pow_expChar_pow_of_isSeparable {a : E} (ha : IsS
 `F⟮a⟯ = F⟮a ^ q ^ n⟯` for any subset `a : E` and any natural number `n`. -/
 theorem adjoin_simple_eq_adjoin_pow_expChar_pow_of_isSeparable' [Algebra.IsSeparable F E] (a : E)
     (q : ℕ) [ExpChar F q] (n : ℕ) : F⟮a⟯ = F⟮a ^ q ^ n⟯ := by
-  haveI := Algebra.isSeparable_tower_bot_of_isSeparable F F⟮a⟯ E
   simpa using adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable F E {a} q n
 
 /-- If `F` is a field of exponential characteristic `q`, `a : E` is separable over `F`, then
@@ -307,7 +310,7 @@ theorem Field.span_map_pow_expChar_pow_eq_top_of_isSeparable [Algebra.IsSeparabl
     Submodule.span F (Set.range (v · ^ q ^ n)) = ⊤ := by
   rw [← Algebra.top_toSubmodule, ← top_toSubalgebra, ← adjoin_univ,
     adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable' F E _ q n,
-    adjoin_algebraic_toSubalgebra fun x _ ↦ Algebra.IsAlgebraic.isAlgebraic x,
+    adjoin_toSubalgebra_of_isAlgebraic fun x _ ↦ Algebra.IsAlgebraic.isAlgebraic x,
     Set.image_univ, Algebra.adjoin_eq_span]
   have := (MonoidHom.mrange (powMonoidHom (α := E) (q ^ n))).closure_eq
   simp only [MonoidHom.mrange, powMonoidHom, MonoidHom.coe_mk, OneHom.coe_mk,
@@ -344,13 +347,11 @@ family of elements of `E` which is `F`-linearly independent, then `{ u_i ^ (q ^ 
 theorem LinearIndependent.map_pow_expChar_pow_of_isSeparable [Algebra.IsSeparable F E]
     (h : LinearIndependent F v) : LinearIndependent F (v · ^ q ^ n) := by
   classical
-  have halg := Algebra.IsSeparable.isAlgebraic F E
   rw [linearIndependent_iff_finset_linearIndependent] at h ⊢
   intro s
   let E' := adjoin F (s.image v : Set E)
   haveI : FiniteDimensional F E' := finiteDimensional_adjoin
     fun x _ ↦ Algebra.IsIntegral.isIntegral x
-  haveI : Algebra.IsSeparable F E' := Algebra.isSeparable_tower_bot_of_isSeparable F E' E
   let v' (i : s) : E' := ⟨v i.1, subset_adjoin F _ (Finset.mem_image.2 ⟨i.1, i.2, rfl⟩)⟩
   have h' : LinearIndependent F v' := (h s).of_comp E'.val.toLinearMap
   exact (h'.map_pow_expChar_pow_of_fd_isSeparable q n).map'
@@ -373,9 +374,9 @@ theorem LinearIndependent.map_pow_expChar_pow_of_isSeparable'
 /-- If `E / F` is a separable extension of exponential characteristic `q`, if `{ u_i }` is an
 `F`-basis of `E`, then `{ u_i ^ (q ^ n) }` is also an `F`-basis of `E`
 for any natural number `n`. -/
-def Basis.mapPowExpCharPowOfIsSeparable [Algebra.IsSeparable F E]
-    (b : Basis ι F E) : Basis ι F E :=
-  Basis.mk (b.linearIndependent.map_pow_expChar_pow_of_isSeparable q n)
+def Module.Basis.mapPowExpCharPowOfIsSeparable [Algebra.IsSeparable F E] (b : Basis ι F E) :
+    Basis ι F E :=
+  .mk (b.linearIndependent.map_pow_expChar_pow_of_isSeparable q n)
     (Field.span_map_pow_expChar_pow_eq_top_of_isSeparable q n b.span_eq).ge
 
 /-- For an extension `E / F` of exponential characteristic `q` and a separable element `a : E`, the
@@ -414,11 +415,11 @@ theorem perfectField_of_perfectClosure_eq_bot [h : PerfectField E] (eq : perfect
     obtain ⟨y, h⟩ := surjective_frobenius E p (algebraMap F E x)
     have : y ∈ perfectClosure F E := ⟨1, x, by rw [← h, pow_one, frobenius_def, ringExpChar.eq F p]⟩
     obtain ⟨z, rfl⟩ := eq ▸ this
-    simp only [Algebra.ofId, AlgHom.coe_ringHom_mk] at h
+    simp only [Algebra.ofId] at h
     exact ⟨z, (algebraMap F E).injective (by rw [RingHom.map_frobenius]; rw [h])⟩
   exact PerfectRing.toPerfectField F p
 
-/-- If `E / F` is a separable extension, `E` is perfect, then `F` is also prefect. -/
+/-- If `E / F` is a separable extension, `E` is perfect, then `F` is also perfect. -/
 theorem perfectField_of_isSeparable_of_perfectField_top [Algebra.IsSeparable F E] [PerfectField E] :
     PerfectField F :=
   perfectField_of_perfectClosure_eq_bot F E (perfectClosure.eq_bot_of_isSeparable F E)

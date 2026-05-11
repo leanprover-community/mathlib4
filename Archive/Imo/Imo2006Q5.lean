@@ -107,7 +107,7 @@ theorem Polynomial.isPeriodicPt_eval_two {P : Polynomial ℤ} {t : ℤ}
       simp [IsPeriodicPt, IsFixedPt, H]
   · -- We take two nonequal consecutive entries.
     rw [Cycle.chain_map, periodicOrbit_chain' _ ht] at HC'
-    push_neg at HC'
+    push Not at HC'
     obtain ⟨n, hn⟩ := HC'
     -- They must have opposite sign, so that P^{k + 1}(t) - P^k(t) = P^{k + 2}(t) - P^{k + 1}(t).
     rcases Int.natAbs_eq_natAbs_iff.1 (Habs n n.succ) with hn' | hn'
@@ -171,7 +171,7 @@ theorem imo2006_q5' {P : Polynomial ℤ} (hP : 1 < P.natDegree) :
     replace ht := isRoot_of_mem_roots (Multiset.mem_toFinset.1 ht)
     rw [IsRoot.def, eval_sub, eval_comp, eval_X, sub_eq_zero] at ht
     simp only [mem_roots hPab', sub_eq_iff_eq_add, Multiset.mem_toFinset, IsRoot.def,
-      eval_sub, eval_add, eval_X, eval_C, eval_intCast, Int.cast_id, zero_add]
+      eval_sub, eval_add, eval_X, eval_intCast, Int.cast_id, zero_add]
     -- An auxiliary lemma proved earlier implies we only need to show |t - a| = |u - b| and
     -- |t - b| = |u - a|. We prove this by establishing that each side of either equation divides
     -- the other.

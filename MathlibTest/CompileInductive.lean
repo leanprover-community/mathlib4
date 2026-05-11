@@ -15,7 +15,6 @@ example := @Fin2.recOn
 example := @PUnit.recOn
 example := @PEmpty.recOn
 example := @And.recOn
-example := @False.recOn
 example := @Empty.recOn
 
 example := @Nat.brecOn

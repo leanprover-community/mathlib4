@@ -3,8 +3,10 @@ Copyright (c) 2021 Bryan Gin-ge Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Bryan Gin-ge Chen, Yaël Dillies
 -/
-import Mathlib.Order.BooleanAlgebra
-import Mathlib.Logic.Equiv.Basic
+module
+
+public import Mathlib.Order.BooleanAlgebra.Basic
+public import Mathlib.Logic.Equiv.Basic
 
 /-!
 # Symmetric difference and bi-implication
@@ -15,7 +17,7 @@ This file defines the symmetric difference and bi-implication operators in (co-)
 
 Some examples are
 * The symmetric difference of two sets is the set of elements that are in either but not both.
-* The symmetric difference on propositions is `Xor'`.
+* The symmetric difference on propositions is `Xor`.
 * The symmetric difference on `Bool` is `Bool.xor`.
 * The equivalence of propositions. Two propositions are equivalent if they imply each other.
 * The symmetric difference translates to addition when considering a Boolean algebra as a Boolean
@@ -31,7 +33,7 @@ In generalized Boolean algebras, the symmetric difference operator is:
 * `symmDiff_comm`: commutative, and
 * `symmDiff_assoc`: associative.
 
-## Notations
+## Notation
 
 * `a ∆ b`: `symmDiff a b`
 * `a ⇔ b`: `bihimp a b`
@@ -48,6 +50,8 @@ Proof from the Book" by John McCuan:
 boolean ring, generalized boolean algebra, boolean algebra, symmetric difference, bi-implication,
 Heyting
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 
@@ -78,8 +82,10 @@ theorem symmDiff_def [Max α] [SDiff α] (a b : α) : a ∆ b = a \ b ⊔ b \ a 
 theorem bihimp_def [Min α] [HImp α] (a b : α) : a ⇔ b = (b ⇨ a) ⊓ (a ⇨ b) :=
   rfl
 
-theorem symmDiff_eq_Xor' (p q : Prop) : p ∆ q = Xor' p q :=
+theorem symmDiff_eq_xor (p q : Prop) : p ∆ q = Xor p q :=
   rfl
+
+@[deprecated (since := "2026-04-27")] alias symmDiff_eq_Xor' := symmDiff_eq_xor
 
 @[simp]
 theorem bihimp_iff_iff {p q : Prop} : p ⇔ q ↔ (p ↔ q) :=
@@ -238,8 +244,6 @@ theorem inf_le_bihimp {a b : α} : a ⊓ b ≤ a ⇔ b :=
   inf_le_inf le_himp le_himp
 
 theorem bihimp_eq_sup_himp_inf : a ⇔ b = a ⊔ b ⇨ a ⊓ b := by simp [himp_inf_distrib, bihimp]
-
-@[deprecated (since := "2025-06-05")] alias bihimp_eq_inf_himp_inf := bihimp_eq_sup_himp_inf
 
 theorem Codisjoint.bihimp_eq_inf {a b : α} (h : Codisjoint a b) : a ⇔ b = a ⊓ b := by
   rw [bihimp, h.himp_eq_left, h.himp_eq_right]
@@ -699,10 +703,12 @@ end Prod
 
 namespace Pi
 
+@[push ←]
 theorem symmDiff_def [∀ i, GeneralizedCoheytingAlgebra (π i)] (a b : ∀ i, π i) :
     a ∆ b = fun i => a i ∆ b i :=
   rfl
 
+@[push ←]
 theorem bihimp_def [∀ i, GeneralizedHeytingAlgebra (π i)] (a b : ∀ i, π i) :
     a ⇔ b = fun i => a i ⇔ b i :=
   rfl

@@ -3,10 +3,12 @@ Copyright (c) 2024 Geoffrey Irving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Geoffrey Irving
 -/
-import Mathlib.Analysis.Analytic.Composition
-import Mathlib.Analysis.Analytic.Constructions
-import Mathlib.Analysis.Complex.CauchyIntegral
-import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
+module
+
+public import Mathlib.Analysis.Analytic.Composition
+public import Mathlib.Analysis.Analytic.Constructions
+public import Mathlib.Analysis.Complex.CauchyIntegral
+public import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
 
 /-!
 # Various complex special functions are analytic
@@ -14,11 +16,13 @@ import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
 `log`, and `cpow` are analytic, since they are differentiable.
 -/
 
+public section
+
 open Complex Set
 open scoped Topology
 
-variable {E : Type} [NormedAddCommGroup E] [NormedSpace ℂ E]
-variable {f g : E → ℂ} {z : ℂ} {x : E} {s : Set E}
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+  {f g : E → ℂ} {z : ℂ} {x : E} {s : Set E}
 
 /-- `log` is analytic away from nonpositive reals -/
 @[fun_prop]

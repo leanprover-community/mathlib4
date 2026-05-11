@@ -3,10 +3,12 @@ Copyright (c) 2025 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.Group.Prod
-import Mathlib.Algebra.GroupWithZero.Commute
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Algebra.GroupWithZero.WithZero
+module
+
+public import Mathlib.Algebra.Group.Prod
+public import Mathlib.Algebra.GroupWithZero.Commute
+public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+public import Mathlib.Algebra.GroupWithZero.WithZero
 
 /-!
 # Homomorphisms for products of groups with zero
@@ -21,6 +23,8 @@ TODO: Give `GrpWithZero` instances of `HasBinaryProducts` and `HasBinaryCoproduc
 as well as a terminal object.
 
 -/
+
+@[expose] public section
 
 namespace MonoidWithZeroHom
 
@@ -142,12 +146,12 @@ lemma inl_injective [DecidablePred fun x : G₀ ↦ x = 0] :
 lemma inr_injective [DecidablePred fun x : H₀ ↦ x = 0] :
     Function.Injective (inr G₀ H₀) :=
   Function.HasLeftInverse.injective ⟨snd .., fun _ ↦ by simp⟩
-lemma fst_surjective [DecidablePred fun x : G₀ ↦ x = 0] :
-    Function.Surjective (fst G₀ H₀) :=
-  Function.HasRightInverse.surjective ⟨inl .., fun _ ↦ by simp⟩
-lemma snd_surjective [DecidablePred fun x : H₀ ↦ x = 0] :
-    Function.Surjective (snd G₀ H₀) :=
-  Function.HasRightInverse.surjective ⟨inr .., fun _ ↦ by simp⟩
+lemma fst_surjective : Function.Surjective (fst G₀ H₀) := by
+  classical
+  exact Function.HasRightInverse.surjective ⟨inl .., fun _ ↦ by simp⟩
+lemma snd_surjective : Function.Surjective (snd G₀ H₀) := by
+  classical
+  exact Function.HasRightInverse.surjective ⟨inr .., fun _ ↦ by simp⟩
 
 variable [DecidablePred fun x : G₀ ↦ x = 0] [DecidablePred fun x : H₀ ↦ x = 0]
 

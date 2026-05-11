@@ -3,9 +3,11 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.Fin.Tuple.Reflection
-import Mathlib.RingTheory.Algebraic.MvPolynomial
-import Mathlib.RingTheory.AlgebraicIndependent.Basic
+module
+
+public import Mathlib.Data.Fin.Tuple.Reflection
+public import Mathlib.RingTheory.Algebraic.MvPolynomial
+public import Mathlib.RingTheory.AlgebraicIndependent.Basic
 
 /-!
 # Algebraic Independence
@@ -20,6 +22,8 @@ This file relates algebraic independence and transcendence (or algebraicity) of 
 transcendence
 
 -/
+
+public section
 
 noncomputable section
 
@@ -37,7 +41,7 @@ its element is transcendental. -/
 theorem algebraicIndependent_unique_type_iff [Unique ι] :
     AlgebraicIndependent R x ↔ Transcendental R (x default) := by
   rw [transcendental_iff_injective, algebraicIndependent_iff_injective_aeval]
-  let i := (renameEquiv R (Equiv.equivPUnit.{_, 1} ι)).trans (pUnitAlgEquiv R)
+  let i := uniqueAlgEquiv R ι
   have key : aeval (R := R) x = (Polynomial.aeval (R := R) (x default)).comp i := by
     ext y
     simp [i, Subsingleton.elim y default]
@@ -79,7 +83,7 @@ theorem trdeg_eq_zero [Algebra.IsAlgebraic R A] : trdeg R A = 0 :=
 variable (R A) in
 theorem trdeg_pos [Algebra.Transcendental R A] : 0 < trdeg R A :=
   have ⟨x, hx⟩ := Algebra.Transcendental.transcendental (R := R) (A := A)
-  zero_lt_one.trans_le <| le_ciSup_of_le (Cardinal.bddAbove_range _)
+  zero_lt_one.trans_le <| le_ciSup_of_le Cardinal.bddAbove_of_small
     ⟨{x}, algebraicIndependent_unique_type_iff.mpr hx⟩ (by simp)
 
 theorem trdeg_eq_zero_iff : trdeg R A = 0 ↔ Algebra.IsAlgebraic R A := by
@@ -115,7 +119,7 @@ theorem AlgebraicIndepOn.insert_iff {s : Set ι} {i : ι} (h : i ∉ s) :
   classical simp_rw [← algebraicIndependent_equiv (subtypeInsertEquivOption h).symm,
     AlgebraicIndepOn]
   convert option_iff (x := fun i : s ↦ x i) (a := x i) using 2
-  · ext (_|_) <;> rfl
+  · ext (_ | _) <;> rfl
   · rw [Set.image_eq_range]
 
 protected theorem AlgebraicIndepOn.insert {s : Set ι} {i : ι} (hs : AlgebraicIndepOn R x s)
@@ -170,7 +174,7 @@ theorem sumElim_iff {ι'} {y : ι' → A} : AlgebraicIndependent R (Sum.elim y x
   · exact ⟨fun h ↦ (hx <| by apply h.comp _ Sum.inr_injective).elim, fun h ↦ (hx h.1).elim⟩
   let e := (sumAlgEquiv R ι' ι).trans (mapAlgEquiv _ hx.aevalEquiv)
   have : aeval (Sum.elim y x) = ((aeval y).restrictScalars R).comp e.toAlgHom := by
-    ext (_|_) <;> simp [e, algebraMap_aevalEquiv]
+    ext (_ | _) <;> simp [e]
   simp_rw [hx, AlgebraicIndependent, this]; simp
 
 theorem iff_adjoin_image (s : Set ι) :
@@ -179,7 +183,7 @@ theorem iff_adjoin_image (s : Set ι) :
   rw [show x '' s = range fun i : s ↦ x i by ext; simp]
   convert ← sumElim_iff
   classical apply algebraicIndependent_equiv' ((Equiv.sumComm ..).trans (Equiv.Set.sumCompl ..))
-  ext (_|_) <;> rfl
+  ext (_ | _) <;> rfl
 
 theorem iff_adjoin_image_compl (s : Set ι) :
     AlgebraicIndependent R x ↔ AlgebraicIndependent R (fun i : ↥sᶜ ↦ x i) ∧
@@ -205,7 +209,7 @@ theorem sumElim_of_tower {ι'} {y : ι' → A} (hxS : range x ⊆ range (algebra
   set Rx := adjoin R (range x)
   let _ : Algebra Rx S :=
     (e.symm.toAlgHom.comp <| Subalgebra.inclusion <| adjoin_le hxS).toAlgebra
-  have : IsScalarTower Rx S A := .of_algebraMap_eq fun x ↦ show _ = (e (e.symm _)).1 by simp; rfl
+  have : IsScalarTower Rx S A := .of_algebraMap_eq fun x ↦ show _ = (e (e.symm _)).1 by simp
   refine hx.sumElim (hy.restrictScalars (e.symm.injective.comp ?_))
   simpa only [AlgHom.coe_toRingHom] using Subalgebra.inclusion_injective _
 
@@ -242,12 +246,12 @@ end AlgebraicIndependent
 open Cardinal in
 theorem lift_trdeg_add_le [Nontrivial R] [FaithfulSMul R S] [FaithfulSMul S A] :
     lift.{v} (trdeg R S) + lift.{u} (trdeg S A) ≤ lift.{u} (trdeg R A) := by
-  simp_rw [trdeg, lift_iSup (bddAbove_range _)]
-  simp_rw [Cardinal.ciSup_add_ciSup _ (bddAbove_range _) _ (bddAbove_range _),
+  simp_rw [trdeg, lift_iSup bddAbove_of_small]
+  simp_rw [Cardinal.ciSup_add_ciSup _ bddAbove_of_small _ bddAbove_of_small,
     add_comm (lift.{v, u} _), ← mk_sum]
   refine ciSup_le fun ⟨s, hs⟩ ↦ ciSup_le fun ⟨t, ht⟩ ↦ ?_
   have := hs.sumElim_comp ht
-  refine le_ciSup_of_le (bddAbove_range _) ⟨_, this.to_subtype_range⟩ ?_
+  refine le_ciSup_of_le bddAbove_of_small ⟨_, this.to_subtype_range⟩ ?_
   rw [← lift_umax, mk_range_eq_of_injective this.injective, lift_id']
 
 theorem trdeg_add_le [Nontrivial R] {A : Type u} [CommRing A] [Algebra R A] [Algebra S A]
