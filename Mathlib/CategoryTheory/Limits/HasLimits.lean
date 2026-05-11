@@ -489,6 +489,7 @@ def lim : (J ⥤ C) ⥤ C where
     apply Limits.limit.hom_ext; intro j
     simp [assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural transformation induced by `limit.π`. -/
 @[simps]
 def lim.π (j : J) : lim ⟶ (evaluation J C).obj j where
@@ -1074,6 +1075,7 @@ def colim : (J ⥤ C) ⥤ C where
   obj F := colimit F
   map α := colimMap α
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural transformation induced by `colimit.ι`. -/
 @[simps]
 def colim.ι (j : J) : (evaluation J C).obj j ⟶ colim where

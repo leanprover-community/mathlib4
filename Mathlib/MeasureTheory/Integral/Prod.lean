@@ -476,9 +476,6 @@ theorem continuous_integral_integral :
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds _ (fun i => zero_le) _
   · exact fun i => ∫⁻ x, ∫⁻ y, ‖i (x, y) - g (x, y)‖ₑ ∂ν ∂μ
   swap; · exact fun i => lintegral_mono fun x => enorm_integral_le_lintegral_enorm _
-  change
-    Tendsto (fun i : α × β →₁[μ.prod ν] E => ∫⁻ x, ∫⁻ y : β, ‖i (x, y) - g (x, y)‖ₑ ∂ν ∂μ) (𝓝 g)
-      (𝓝 0)
   have this (i : α × β →₁[μ.prod ν] E) : Measurable fun z => ‖i z - g z‖ₑ :=
     ((Lp.stronglyMeasurable i).sub (Lp.stronglyMeasurable g)).enorm
   simp_rw [← lintegral_prod _ (this _).aemeasurable, ← L1.ofReal_norm_sub_eq_lintegral,
