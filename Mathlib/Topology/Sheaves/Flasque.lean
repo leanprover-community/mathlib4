@@ -192,7 +192,7 @@ valued in `A` supported at an arbitrary point is a flasque sheaf.
 -/
 theorem isFlasque_skyscraperSheaf_of_epi_from {X : TopCat} (p₀ : ↑X)
     [(U : Opens ↑X) → Decidable (p₀ ∈ U)] {C : Type*} [Category* C] (A : C) [HasTerminal C]
-    (h : Epi <| terminalIsTerminal.from A) :
+    [Epi <| terminalIsTerminal.from A] :
     (skyscraperSheaf p₀ A).IsFlasque where
   epi {U V} r := by
     by_cases h1 : p₀ ∈ unop U
