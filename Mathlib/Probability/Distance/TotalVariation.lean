@@ -7,6 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Sub
 public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
+public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.JordanSub
 
 /-!
 # Total variation distance between two measures
@@ -37,6 +38,12 @@ on the signed Jordan decomposition, keeping the import surface minimal.
 * `tvDist_nonneg` : `0 ≤ tvDist μ ν` (automatic in `ℝ≥0∞`, exposed as a
   named lemma for use in `gcongr`/rewriting chains).
 * `tvDist_le_one` : for two probability measures the distance is at most `1`.
+* `tvDist_eq_signedMeasure_totalVariation` : for finite measures, `tvDist μ ν`
+  agrees with `½ · ‖μ.toSignedMeasure - ν.toSignedMeasure‖_TV`, where the
+  right-hand side uses Mathlib's existing
+  `MeasureTheory.SignedMeasure.totalVariation`. This bridges the present
+  definition with the signed-measure infrastructure in
+  `Mathlib/MeasureTheory/VectorMeasure/Decomposition/Jordan.lean`.
 
 ## Implementation notes
 
@@ -46,21 +53,29 @@ We choose the formulation `((μ - ν) + (ν - μ)) Set.univ / 2` because:
 2. it lives in `ℝ≥0∞`, so nonnegativity and `0 ≤ ⊤` are free;
 3. it reuses the existing `Measure.sub_self` and `Measure.sub_le` simp
    lemmas, keeping the basic API one-liners;
-4. it does not require the Jordan decomposition of a signed measure,
-   keeping the import surface minimal.
+4. it makes the basic properties (`tvDist_self`, `tvDist_comm`, `tvDist_le_one`)
+   provable without invoking the Jordan decomposition.
 
-For probability measures this agrees with the classical
-`sup_{A measurable} |μ A - ν A|` formulation, but stating the equivalence
-requires the signed Jordan decomposition that is intentionally out of
-scope for this minimal module.
+The bridge lemma `tvDist_eq_signedMeasure_totalVariation` then connects this
+formulation to Mathlib's existing
+`MeasureTheory.SignedMeasure.totalVariation` for finite measures, using
+`Measure.toJordanDecomposition_toSignedMeasure_sub` from
+`Mathlib/MeasureTheory/VectorMeasure/Decomposition/JordanSub.lean`, which
+identifies the Jordan decomposition of `μ.toSignedMeasure - ν.toSignedMeasure`
+with the pair `(μ - ν, ν - μ)` of truncated differences. Through this bridge,
+downstream results stated in terms of the existing
+`SignedMeasure.totalVariation` API (such as the classical
+`sup_{A measurable} |μ A - ν A|` characterization) transfer to `tvDist` for
+finite measures.
 
-The characterization `tvDist μ ν = 0 ↔ μ = ν` for finite measures requires
-the implication `μ - ν = 0 → μ ≤ ν`, which is not currently a standalone
-Mathlib lemma (Mathlib only provides the converse `Measure.sub_eq_zero_of_le`).
-The natural proof route is via the Jordan decomposition of `μ - ν` as a
-signed measure; once that infrastructure lands upstream, this
-characterization can be added in a single line by combining the two
-`sub_eq_zero` directions with `le_antisymm`.
+The characterization `tvDist μ ν = 0 ↔ μ = ν` for finite measures is not
+included in this file but is now reachable: the bridge lemma
+`tvDist_eq_signedMeasure_totalVariation` reduces it to a statement about
+`SignedMeasure.totalVariation` vanishing, which together with the Jordan
+decomposition pins down `μ.toSignedMeasure = ν.toSignedMeasure`, hence
+`μ = ν` by `Measure.toSignedMeasure_eq_toSignedMeasure_iff`. We leave this
+characterization to a follow-up so that the present file stays focused on
+the basic API.
 
 ## References
 
@@ -144,5 +159,28 @@ theorem tvDist_le_one (μ ν : ProbabilityMeasure α) :
       = ((μ' - ν') + (ν' - μ')) Set.univ / 2 := rfl
     _ ≤ 2 / 2 := ENNReal.div_le_div_right hsum' 2
     _ = 1 := ENNReal.div_self h2ne h2top
+
+/-- For finite measures, `tvDist μ ν` agrees with `½ · ‖μ.toSignedMeasure -
+ν.toSignedMeasure‖_TV`, where the right-hand side uses Mathlib's existing
+`MeasureTheory.SignedMeasure.totalVariation`.
+
+This is how `tvDist` relates to the signed-measure infrastructure in
+`Mathlib/MeasureTheory/VectorMeasure/Decomposition/Jordan.lean`. The proof
+reduces to `MeasureTheory.Measure.toJordanDecomposition_toSignedMeasure_sub`,
+which identifies the Jordan decomposition of
+`μ.toSignedMeasure - ν.toSignedMeasure` with the pair
+`(μ - ν, ν - μ)` of truncated differences in `Measure α`. -/
+theorem tvDist_eq_signedMeasure_totalVariation
+    (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
+    tvDist μ ν =
+      (μ.toSignedMeasure - ν.toSignedMeasure).totalVariation Set.univ / 2 := by
+  unfold tvDist
+  congr 1
+  -- Both sides equal `((μ - ν) + (ν - μ)) Set.univ`.
+  -- The right-hand side uses Mathlib's Jordan-decomposition computation.
+  rw [SignedMeasure.totalVariation,
+    Measure.toJordanDecomposition_toSignedMeasure_sub,
+    Measure.jordanDecompositionOfToSignedMeasureSub_posPart,
+    Measure.jordanDecompositionOfToSignedMeasureSub_negPart]
 
 end MeasureTheory
