@@ -856,8 +856,8 @@ alias ⟨_, map_isTrail_of_injective⟩ := map_isTrail_iff_of_injective
 
 theorem map_isCycle_iff_of_injective {p : G.Walk u u} (hinj : Function.Injective f) :
     (p.map f).IsCycle ↔ p.IsCycle := by
-  rw [isCycle_def, isCycle_def, map_isTrail_iff_of_injective hinj, Ne, map_eq_nil_iff,
-    support_map, ← List.map_tail, List.nodup_map_iff hinj]
+  rw [isCycle_def, isCycle_def, map_isTrail_iff_of_injective hinj, Ne, Ne, eq_nil_iff, eq_nil_iff,
+    nil_map_iff, support_map, ← List.map_tail, List.nodup_map_iff hinj]
 
 alias ⟨_, IsCycle.map⟩ := map_isCycle_iff_of_injective
 
