@@ -326,6 +326,12 @@ omit [CompactSpace X] in
 lemma _root_.IsCompact.isRetrocompact (hU' : IsCompact U) (hU : IsOpen U) : IsRetrocompact U :=
   fun _ hV' hV ↦ hU'.inter_of_isOpen hV' hU hV
 
+omit [QuasiSeparatedSpace X] in
+lemma IsOpenEmbedding.isSpectralMap_of_compactSpace {f : X → Y}
+    (hf : Topology.IsOpenEmbedding f) [QuasiSeparatedSpace Y] :
+  IsSpectralMap f := ⟨hf.continuous, fun _ hU hU' ↦ IsRetrocompact.isCompact <|
+    IsRetrocompact.preimage_of_isOpenEmbedding hf <| hU'.isRetrocompact hU⟩
+
 omit [CompactSpace X] in
 lemma _root_.IsCompact.isConstructible (hU' : IsCompact U) (hU : IsOpen U) : IsConstructible U :=
   (hU'.isRetrocompact hU).isConstructible hU
