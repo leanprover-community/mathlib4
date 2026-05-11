@@ -360,8 +360,8 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
       }
       -- todo: maybe do a little bit more careful detection of morphism and transition theorems
       match (← fData.isMorApplication) with
-      | .exact => return .mor thm
-      | .underApplied | .overApplied =>
+      | .exact | .overApplied => return .mor thm
+      | .underApplied =>
         throwError "fun_prop theorem about morphism coercion has to be in fully applied form"
       | .none =>
         if fData.fn.isFVar && (fData.args.size == 1) &&
