@@ -27,9 +27,9 @@ This module defines `Hypergraph α` for a vertex type `α` (edges are defined as
 
 For `H : Hypergraph α`:
 
-* `V(H)` denotes the vertex set of `H` as a term in `Set α`.
-* `E(H)` denotes the edge set of `H` as a term in `Set (Set α)`. Hyperedges must be subsets of
-    `V(H)`.
+* `H.vertexSet` (abbrev. `V(H)`) denotes the vertex set of `H` as a term in `Set α`.
+* `H.edgeSet` (abbreb. `E(H)`) denotes the edge set of `H` as a term in `Set (Set α)`. Hyperedges
+    must be subsets of `V(H)`.
 * `H.Adj x y` means that there exists some edge containing both `x` and `y` (or, in other
     words, `x` and `y` are incident to some shared edge `e`).
 * `H.EAdj e f` means that there exists some vertex that is incident to the edges `e` and
@@ -94,9 +94,8 @@ lemma subset_vertexSet_of_mem_edgeSet (he : e ∈ E(H)) : e ⊆ V(H) :=
 lemma _root_.Membership.mem.subset_vertexSet (he : e ∈ E(H)) : e ⊆ V(H) :=
   H.subset_vertexSet_of_mem_edgeSet he
 
-lemma edgeSet_subset_powerset_vertexSet {H : Hypergraph α} : E(H) ⊆ V(H).powerset := by
-  intro e he
-  exact he.subset_vertexSet
+lemma edgeSet_subset_powerset_vertexSet {H : Hypergraph α} : E(H) ⊆ V(H).powerset :=
+  fun _ ↦ subset_vertexSet_of_mem_edgeSet
 
 lemma mem_vertexSet_of_mem_edgeSet (he : e ∈ E(H)) (hx : x ∈ e) : x ∈ V(H) :=
   H.subset_vertexSet_of_mem_edgeSet he hx
@@ -167,23 +166,21 @@ lemma image_mem_edgeSet_image {f : α → β} (he : e ∈ E(H)) : e.image f ∈ 
   mem_image_of_mem _ he
 
 lemma image_image {f : α → β} {g : β → γ} (H : Hypergraph α) :
-  (H.image f).image g = H.image (g ∘ f) := by
+    (H.image f).image g = H.image (g ∘ f) := by
   ext <;> simp [Set.image_image]
 
 /-- A vertex is isolated if it is not incident to any edges (including loops). -/
 def IsIsolated (H : Hypergraph α) (x : α) : Prop := ∀ e ∈ E(H), x ∉ e
 
 lemma sUnion_edgeSet_eq_vertexSet_iff_all_vertex_not_isolated :
-  ⋃₀ E(H) = V(H) ↔ ∀ x ∈ V(H), ¬IsIsolated H x := by
-    grind [IsIsolated, mem_vertexSet_of_mem_edgeSet]
+    ⋃₀ E(H) = V(H) ↔ ∀ x ∈ V(H), ¬IsIsolated H x := by
+  grind [IsIsolated, mem_vertexSet_of_mem_edgeSet]
 
 /-- A loop is an edge whose associated vertex subset consists of a single vertex. -/
 def IsLoop (H : Hypergraph α) (e : Set α) : Prop := e ∈ E(H) ∧ ∃ x ∈ V(H), e = {x}
 
-lemma isLoop_iff_mem_and_ncard_one : H.IsLoop e ↔ (e ∈ E(H) ∧ Set.ncard e = 1) :=
-  Iff.intro
-  (by grind [IsLoop, ncard_eq_one])
-  (by grind [IsLoop, ncard_eq_one, mem_vertexSet_of_mem_edgeSet, mem_vertexSet_of_mem_edgeSet])
+lemma isLoop_iff_mem_and_ncard_one : H.IsLoop e ↔ (e ∈ E(H) ∧ Set.ncard e = 1) := by
+  grind [IsLoop, ncard_eq_one, mem_vertexSet_of_mem_edgeSet]
 
 lemma IsLoop.ncard_one (h : H.IsLoop e) : Set.ncard e = 1 := (isLoop_iff_mem_and_ncard_one.mp h).2
 
@@ -219,8 +216,7 @@ lemma isEmpty_iff_forall_not_mem : H.IsEmpty ↔ (∀ x, x ∉ V(H)) ∧ (∀ e,
    simp_rw [IsEmpty, Set.eq_empty_iff_forall_notMem]
 
 lemma IsEmpty.not_mem_edgeSet (hH : H.IsEmpty) {e : Set α} : e ∉ E(H) := by
-  unfold IsEmpty at hH
-  grind
+  grind [IsEmpty]
 
 lemma notMem_edgeSet_emptyHypergraph : e ∉ E(emptyHypergraph α) :=
   IsEmpty.not_mem_edgeSet isEmpty_emptyHypergraph
@@ -270,9 +266,9 @@ lemma IsComplete.isNonempty (h : H.IsComplete) : H.IsNonempty :=
 lemma IsComplete.not_isEmpty (h : H.IsComplete) : ¬ H.IsEmpty :=
   H.not_isEmpty_iff.mpr h.isNonempty
 
-lemma IsComplete.not_isTrivial (h : H.IsComplete) : ¬H.IsTrivial := by
+lemma IsComplete.not_isTrivial (h : H.IsComplete) : ¬ H.IsTrivial := by
   intro hH
-  exact hH.not_mem_edgeSet (e := ∅) (h ∅ (Set.empty_subset _))
+  exact hH.not_mem_edgeSet (h ∅ (Set.empty_subset _))
 
 lemma completeOn_not_isTrivial (f : Set α) : ¬ (completeOn f).IsTrivial :=
   (isComplete_completeOn f).not_isTrivial
