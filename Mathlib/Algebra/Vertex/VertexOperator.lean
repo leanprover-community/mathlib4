@@ -102,7 +102,7 @@ instance [CommRing R] [AddCommGroup V] [Module R V] : One (VertexOperator R V) w
   one := {
     toFun v := HahnModule.of R (HahnSeries.single 0 v)
     map_add' _ _ := by simp
-    map_smul' _ _ := by simp [← HahnModule.of_smul] }
+    map_smul' _ _ := by ext; simp }
 
 @[simp]
 theorem one_apply (x : V) :
@@ -414,7 +414,6 @@ theorem resProdLeft_neg_one_one_left (A : VertexOperator R V) : resProdLeft (-1 
   rw [finsum_eq_single _ 0 fun _ _ ↦ (by rw [one_ncoeff_ne_neg_one (by omega)]; simp)]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma resProdLeft_hasseDeriv_left (m : ℕ) (k : ℤ) (A B : VertexOperator R V) :
     (A.hasseDeriv m).resProdLeft k B =
@@ -599,6 +598,14 @@ def resProd (m : ℤ) :
   map_add' A B := by ext; simp; abel
   map_smul' r A := by ext; simp [smul_sub]
 
+--delete?
+theorem resProd_apply_ncoeff (A B : VertexOperator R V) (m n : ℤ) (v : V) :
+    ((A.resProd m B)[[n]]) v =
+    ∑ᶠ i : ℕ, Int.negOnePow i • Ring.choose m i • (A[[m - i]] • (B[[n + i]] • v))
+      - (Int.negOnePow m) • ∑ᶠ i : ℕ, Int.negOnePow i • Ring.choose m i •
+        (B[[m + n - i]] • (A[[i]] • v)) := by
+  simp
+
 set_option backward.isDefEq.respectTransparency false in
 theorem resProd_neg_one_one_left (A : VertexOperator R V) : resProd (-1 : ℤ) 1 A = A := by
   rw [resProd_apply_apply, resProdLeft_neg_one_one_left, resProdRight_one_left, sub_zero]
@@ -643,6 +650,65 @@ lemma resProd_hasseDeriv_left (m : ℕ) (k : ℤ) (A B : VertexOperator R V) :
   ext v n
   dsimp only [resProd]
   simp [smul_sub]
+
+-- Golf using some combination of Ring.choose.neg, Nat.choose_symm_add
+set_option backward.isDefEq.respectTransparency false in
+theorem resProd_neg_one_right_apply (n : ℕ) (A : VertexOperator R V) :
+    resProd (-n - 1) A 1 = A.hasseDeriv n := by
+  ext v m
+  simp only [resProd_apply_apply, LinearMap.sub_apply, HahnModule.of_symm_sub,
+    HahnSeries.coeff_sub', Pi.sub_apply, hasseDeriv_apply_apply, Equiv.symm_apply_apply,
+    LaurentSeries.hasseDeriv_coeff]
+  simp only [← coeff_apply_apply, coeff_eq_ncoeff, resProdLeft_apply_ncoeff, Module.End.smul_def,
+    resProdRight_apply_ncoeff, neg_add_rev]
+  by_cases h : 0 ≤ m
+  · let m' := m.toNat
+    rw [finsum_eq_single _ m', show -m - 1 + m.toNat = -1 by grind, one_ncoeff_neg_one,
+      finsum_eq_zero_of_forall_eq_zero, ← smul_assoc]
+    · simp only [LinearMap.id_coe, id_eq, smul_zero, sub_zero]
+      congr 1
+      · rw [show (-(n : ℤ) - 1) = -(n + 1) by grind, Ring.choose_neg, ← smul_assoc,
+          show (n : ℤ) + 1 + m' - 1 = m' + n by grind, show m + n = m' + n by grind, ← Nat.cast_add,
+          Ring.choose_natCast, Ring.choose_natCast, Nat.choose_symm_add]
+        simp
+      · grind
+    · intro i
+      rw [one_ncoeff_ne_neg_one (by grind)]
+      simp
+    · intro i hi
+      rw [one_ncoeff_ne_neg_one (by grind)]
+      simp
+  · let m' := (-m - 1).toNat
+    have hm' : -m - 1 = m' := by grind
+    rw [finsum_eq_zero_of_forall_eq_zero]
+    · by_cases h : -m - 1 - n < 0
+      · rw [finsum_eq_zero_of_forall_eq_zero]
+        · let mn := (m + n).toNat
+          have : m + n = mn := by grind
+          rw [this, Ring.choose_natCast, Nat.choose_eq_zero_of_lt (by grind)]
+          simp
+        · intro i
+          rw [one_ncoeff_ne_neg_one (by grind)]
+          simp
+      · rw [finsum_eq_single _ (-m - n - 1).toNat,
+          show (-↑n - 1 + (-m - 1) - ↑(-m - ↑n - 1).toNat) = -1 by grind, one_ncoeff_neg_one]
+        · simp only [← smul_assoc, Units.smul_eq_mul, LinearMap.id_coe, id_eq, zero_sub, ← neg_smul]
+          congr 1
+          · have hmn1 : (-m - n - 1).toNat = -m - n - 1 := by grind
+            have hmn2 : m' = (-m - n - 1).toNat + n := by grind
+            rw [show -(n : ℤ) - 1 = -(n + 1) by grind, Ring.choose_neg, hmn1,
+              show n + 1 + (-m - n - 1) - 1 = m' by grind, Ring.choose_natCast, hmn2,
+              Nat.choose_symm_of_eq_add (b := n) (by grind), ← hmn2, ← Ring.choose_natCast,
+              ← neg_neg (m' : ℤ), Ring.choose_neg, show -m' + n - 1 = m + n by grind]
+            simp only [← smul_assoc, ← Int.negOnePow_add, Units.smul_eq_mul, ← Units.neg_smul]
+            rw [← Int.negOnePow_succ, Int.negOnePow_even _ (by grind), one_smul]
+          · rw [show (-m - n - 1).toNat = -n - m - 1 by grind, Int.add_neg_eq_sub]
+        · intro i hi
+          rw [one_ncoeff_ne_neg_one (by grind)]
+          simp
+    · intro i
+      rw [one_ncoeff_ne_neg_one (by grind)]
+      simp
 
 end ResidueProduct
 

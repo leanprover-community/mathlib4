@@ -129,8 +129,7 @@ def twoCochainOfBilinear [CommRing A] [IsAddTorsionFree R] [Algebra A R]
     refine Function.Odd.finset_sum_eq_zero (fun n ↦ by simp [hΦ.eq]) (Finset.map_eq_of_subset ?_)
     intro x hx
     rw [Finset.mem_union]
-    replace hx : -x ∈ (F f).support ∨ -x ∈ (F f).support.image Neg.neg := by simpa [hs] using hx
-    obtain (h | h) := hx
+    obtain (h | h) : -x ∈ (F f).support ∨ -x ∈ (F f).support.image Neg.neg := by simpa [hs] using hx
     · exact Or.inr <| Finset.mem_image.mpr ⟨-x, by simp [h]⟩
     · exact Or.inl <| by simpa using h
 
