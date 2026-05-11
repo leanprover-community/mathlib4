@@ -27,7 +27,9 @@ The user-facing core. For each target file:
    * stale-data check: report.jsonl mtime ≥ source mtime
    * clean-tree check: `git status --porcelain PATH` is empty
 5. **Apply** unless `--dry-run`.
-6. **Audit trail**: append a unified diff to `edits.patch`.
+6. **Audit trail** (apply-only): append a `git apply`-compatible unified
+   diff to `scripts/.no_expose/edits.patch`. `--dry-run` prints the same
+   diff to stdout but does not touch the audit file.
 
 v1 punts on `--verify` (rebuild the smallest containing target after
 edit). The conservative defaults + audit trail give the user a quick
@@ -261,21 +263,139 @@ def verifyByLakeBuild (file : System.FilePath) : IO UInt32 := do
     stdout := .inherit, stderr := .inherit }
   proc.wait
 
-/-! ## Top-level driver -/
+/-! ## Unified-diff rendering
 
-/-- Compute a tiny unified-diff-ish summary of two strings. v1 is
-"line N: -<old>\n+<new>"-style, not a real `diff -u` (no hunk
-headers). Good enough for the audit trail. -/
-private def quickDiff (oldText newText : String) : String := Id.run do
-  let oldLines := oldText.splitOn "\n"
-  let newLines := newText.splitOn "\n"
-  let mut acc : String := ""
-  for i in [:oldLines.length.max newLines.length] do
-    let o := oldLines[i]?.getD ""
-    let n := newLines[i]?.getD ""
-    if o != n then
-      acc := acc ++ s!"@@ line {i+1}\n-{o}\n+{n}\n"
+A standard LCS-based line diff with `git apply`-compatible hunk headers
+(`@@ -A,B +C,D @@`). Used for both the on-screen `--dry-run` preview and
+the persisted audit trail at `scripts/.no_expose/edits.patch`. -/
+
+private inductive DiffOp where
+  | keep (line : String)
+  | del  (line : String)
+  | ins  (line : String)
+  deriving Inhabited
+
+/-- Split on `"\n"` and drop the trailing empty element produced by a
+final newline, so that "a\nb\n" yields `#["a", "b"]` (two lines, not
+three). -/
+private def splitIntoLines (s : String) : Array String :=
+  let xs := (s.splitOn "\n").toArray
+  if xs.size > 0 && xs[xs.size - 1]! == "" then xs.pop else xs
+
+/-- Line-level LCS diff. O(m·n) time and memory; fine for the file
+sizes `no_expose` edits (mathlib files are at most a few thousand
+lines). -/
+private def diffOps (old new : Array String) : Array DiffOp := Id.run do
+  let m := old.size
+  let n := new.size
+  let w := n + 1
+  -- Flat (m+1) × (n+1) LCS-length table.
+  let mut t : Array Nat := Array.replicate ((m+1) * w) 0
+  for i in [:m] do
+    for j in [:n] do
+      let v :=
+        if old[i]! == new[j]! then
+          t[i*w + j]! + 1
+        else
+          Nat.max t[i*w + (j+1)]! t[(i+1)*w + j]!
+      t := t.set! ((i+1)*w + (j+1)) v
+  -- Backtrack from (m, n).
+  let mut ops : Array DiffOp := #[]
+  let mut i := m
+  let mut j := n
+  while i > 0 || j > 0 do
+    if i > 0 && j > 0 && old[i-1]! == new[j-1]! then
+      ops := ops.push (.keep old[i-1]!)
+      i := i - 1; j := j - 1
+    else if j > 0 && (i == 0 || t[i*w + (j-1)]! ≥ t[(i-1)*w + j]!) then
+      ops := ops.push (.ins new[j-1]!)
+      j := j - 1
+    else
+      ops := ops.push (.del old[i-1]!)
+      i := i - 1
+  return ops.reverse
+
+private structure Hunk where
+  oldStart : Nat
+  newStart : Nat
+  oldLen : Nat
+  newLen : Nat
+  lines : Array String  -- each prefixed by ' ', '-', or '+'
+
+/-- Group diff ops into hunks with `context` lines of unchanged context
+around each run of changes. Adjacent runs whose contexts touch are
+merged into a single hunk. -/
+private def buildHunks (ops : Array DiffOp) (context : Nat := 3) : Array Hunk := Id.run do
+  let n := ops.size
+  if n == 0 then return #[]
+  -- Mark each op that is within `context` positions of a non-keep op.
+  let mut inHunk : Array Bool := Array.replicate n false
+  for k in [:n] do
+    match ops[k]! with
+    | .keep _ => pure ()
+    | _ =>
+      let lo := if k ≥ context then k - context else 0
+      let hi := Nat.min n (k + context + 1)
+      for p in [lo:hi] do
+        inHunk := inHunk.set! p true
+  -- Walk, emitting one hunk per maximal run of inHunkd ops.
+  let mut hunks : Array Hunk := #[]
+  let mut oldLine : Nat := 1
+  let mut newLine : Nat := 1
+  let mut k : Nat := 0
+  while k < n do
+    if !inHunk[k]! then
+      match ops[k]! with
+      | .keep _ => oldLine := oldLine + 1; newLine := newLine + 1
+      | .del _ => oldLine := oldLine + 1
+      | .ins _ => newLine := newLine + 1
+      k := k + 1
+    else
+      let hOldStart := oldLine
+      let hNewStart := newLine
+      let mut hLines : Array String := #[]
+      let mut hOldLen := 0
+      let mut hNewLen := 0
+      while k < n && inHunk[k]! do
+        match ops[k]! with
+        | .keep s =>
+          hLines := hLines.push (" " ++ s)
+          oldLine := oldLine + 1; newLine := newLine + 1
+          hOldLen := hOldLen + 1; hNewLen := hNewLen + 1
+        | .del s =>
+          hLines := hLines.push ("-" ++ s)
+          oldLine := oldLine + 1
+          hOldLen := hOldLen + 1
+        | .ins s =>
+          hLines := hLines.push ("+" ++ s)
+          newLine := newLine + 1
+          hNewLen := hNewLen + 1
+        k := k + 1
+      hunks := hunks.push ⟨hOldStart, hNewStart, hOldLen, hNewLen, hLines⟩
+  return hunks
+
+private def formatHunkHeader (h : Hunk) : String :=
+  -- For pure insertions/deletions, the conventional start in unified
+  -- diff is the line *before* the change (or 0 at file start).
+  let oldStart := if h.oldLen == 0 && h.oldStart > 0 then h.oldStart - 1 else h.oldStart
+  let newStart := if h.newLen == 0 && h.newStart > 0 then h.newStart - 1 else h.newStart
+  s!"@@ -{oldStart},{h.oldLen} +{newStart},{h.newLen} @@"
+
+/-- Render a `git apply`-compatible unified diff for a single file. -/
+private def renderUnifiedDiff (filePath : String) (oldText newText : String) : String := Id.run do
+  let oldLines := splitIntoLines oldText
+  let newLines := splitIntoLines newText
+  let ops := diffOps oldLines newLines
+  let hunks := buildHunks ops
+  if hunks.isEmpty then return ""
+  let mut acc : String := s!"--- a/{filePath}\n+++ b/{filePath}\n"
+  for h in hunks do
+    acc := acc ++ formatHunkHeader h ++ "\n"
+    for line in h.lines do
+      acc := acc ++ line ++ "\n"
   return acc
+
+/-! ## Top-level driver -/
 
 /-- Apply edits to a single file. Returns `true` if the file was
 modified (or would be, in dry-run mode). -/
@@ -324,8 +444,7 @@ unsafe def editOneFile (file : FilePath) (records : Array ReportRecord)
     return false
   for s in skipped do
     IO.eprintln s!"  skipped {file}:{s} (multi-attribute or unknown shape)"
-  -- Audit trail.
-  auditAccum.modify (· ++ s!"--- {file}\n" ++ quickDiff originalText newText)
+  let diff := renderUnifiedDiff file.toString originalText newText
   -- Parse-validate (differential): the edited text must not introduce
   -- new syntax errors over the original. False positives from
   -- Mathlib-only notation cancel out.
@@ -337,8 +456,10 @@ unsafe def editOneFile (file : FilePath) (records : Array ReportRecord)
     return false
   if args.dryRun then
     IO.println s!"{file}: would modify (dry-run; pass without --dry-run to apply)."
-    IO.println (quickDiff originalText newText)
+    IO.print diff
     return true
+  -- Persisted audit trail (apply-only).
+  auditAccum.modify (· ++ diff)
   IO.FS.writeFile file newText
   IO.println s!"{file}: applied edits."
   if args.verify then

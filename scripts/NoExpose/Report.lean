@@ -367,8 +367,8 @@ def build (exposedPath diagnosticsPath staticRefsPath declRefsPath : System.File
       -- Re-emit the original exposed record's fields plus our additions.
       let baseStr := exposedRec.compress
       -- Drop the trailing `}` and append our fields.
-      let baseStripped := baseStr.dropRight 1
-      h.putStrLn (baseStripped ++
+      let baseStripped := baseStr.dropEnd 1
+      h.putStrLn (baseStripped.toString ++
         ",\"downstream_usage\":" ++ toString u ++
         ",\"num_using_files\":" ++ toString topNFiles ++
         ",\"top_using_files\":" ++ topJson ++ "}")
