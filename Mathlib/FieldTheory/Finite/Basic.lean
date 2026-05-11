@@ -16,6 +16,7 @@ public import Mathlib.FieldTheory.Galois.Notation
 public import Mathlib.FieldTheory.Perfect
 public import Mathlib.FieldTheory.Separable
 public import Mathlib.RingTheory.IntegralDomain
+public import Mathlib.RingTheory.PowerSeries.Expand
 
 /-!
 # Finite fields
@@ -473,13 +474,36 @@ theorem frobenius_pow {p : ℕ} [Fact p.Prime] [CharP K p] {n : ℕ} (hcard : q 
 
 open Polynomial
 
-theorem expand_card (f : K[X]) : expand K q f = f ^ q := by
+theorem Polynomial.expand_card (f : K[X]) : expand K q f = f ^ q := by
   obtain ⟨p, hp⟩ := CharP.exists K
   rcases FiniteField.card K p with ⟨⟨n, npos⟩, ⟨hp, hn⟩⟩
   haveI : Fact p.Prime := ⟨hp⟩
-  dsimp at hn
   rw [hn, ← map_iterateFrobenius_expand, iterateFrobenius_eq_pow,
     frobenius_pow hn, RingHom.one_def, map_id]
+
+@[deprecated (since := "2026-05-11")]
+alias expand_card := Polynomial.expand_card
+
+theorem MvPolynomial.expand_card {σ : Type*} (f : MvPolynomial σ K) :
+    f.expand q = f ^ q := by
+  obtain ⟨p, hp⟩ := CharP.exists K
+  rcases FiniteField.card K p with ⟨⟨n, npos⟩, ⟨hp, hn⟩⟩
+  haveI : Fact p.Prime := ⟨hp⟩
+  rw [hn, ← MvPolynomial.map_iterateFrobenius_expand, iterateFrobenius_eq_pow,
+    frobenius_pow hn, RingHom.one_def, MvPolynomial.map_id]
+
+theorem MvPowerSeries.expand_card {σ : Type*} (f : MvPowerSeries σ K) :
+    f.expand q Fintype.card_ne_zero = f ^ q := by
+  obtain ⟨p, hp⟩ := CharP.exists K
+  rcases FiniteField.card K p with ⟨⟨n, npos⟩, ⟨hp, hn⟩⟩
+  haveI : Fact p.Prime := ⟨hp⟩
+  simp_rw [hn]
+  rw [← MvPowerSeries.map_iterateFrobenius_expand _ (NeZero.ne' p).symm, iterateFrobenius_eq_pow,
+    frobenius_pow hn, RingHom.one_def, MvPowerSeries.map_id, RingHom.id_apply]
+
+theorem PowerSeries.expand_card (f : PowerSeries K) :
+    f.expand q Fintype.card_ne_zero = f ^ q := by
+  rw [PowerSeries.expand, MvPowerSeries.expand_card]
 
 end FiniteField
 
