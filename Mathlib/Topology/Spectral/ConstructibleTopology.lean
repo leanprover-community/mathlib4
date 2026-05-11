@@ -202,10 +202,10 @@ The map from `X` with the constructible topology to `X` is continuous if `X` is 
 lemma WithConstructibleTopology.continuous_equiv_symm [PrespectralSpace X] :
     Continuous <| ofConstructibleTopology X := by
   rw [TopologicalSpace.IsTopologicalBasis.continuous_iff (PrespectralSpace.isBasis_opens X)]
-  intro U ⟨hU1, hU2, hU3⟩
-  convert hU2.isOpen_constructibleTopology_of_isOpen hU1.2
-  simp [hU3, ofConstructibleTopology]
-  rfl
+  simp only [Set.mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+  intro U hU
+  rw [isOpen_ofConstructibleTopology_preimage_iff]
+  exact hU.isOpen_constructibleTopology_of_isOpen U.2
 
 lemma WithConstructibleTopology.lift_continuous {f : X → Y} (hf : IsSpectralMap f) :
     Continuous <| WithConstructibleTopology.lift f := by
