@@ -383,14 +383,14 @@ noncomputable def fderivWithOrderLM :
     else 0
   map_add' f g := by
     split_ifs with hk
-    · have hk' : 1 ≤ (n : WithTop ℕ∞) := mod_cast (le_of_add_le_right hk)
+    · have hk' : (n : WithTop ℕ∞) ≠ 0 := sorry --mod_cast (le_of_add_le_right hk)
       ext
       simp [fderiv_add (f.contDiff.differentiable hk').differentiableAt
                        (g.contDiff.differentiable hk').differentiableAt]
     · simp
   map_smul' c f := by
     split_ifs with hk
-    · have hk' : 1 ≤ (n : WithTop ℕ∞) := mod_cast (le_of_add_le_right hk)
+    · have hk' : (n : WithTop ℕ∞) ≠ 0 := sorry -- mod_cast (le_of_add_le_right hk)
       ext
       simp [fderiv_const_smul (f.contDiff.differentiable hk').differentiableAt]
     · simp
@@ -413,44 +413,6 @@ lemma fderivWithOrderLM_apply_of_gt (f : 𝓓^{n}_{K}(E, F)) (hk : ¬ (k + 1 ≤
 lemma fderivWithOrderLM_eq_of_scalars (𝕜' : Type*) [NontriviallyNormedField 𝕜']
     [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
     (fderivWithOrderLM 𝕜 n k : 𝓓^{n}_{K}(E, F) → _) = fderivWithOrderLM 𝕜' n k :=
-  rfl
-
-/-- `fderivLM 𝕜` is the `𝕜`-linear-map sending `f : 𝓓_{K}(E, F)` to
-its derivative as an element of `𝓓_{K}(E, E →L[ℝ] F)`.
-
-See also `fderivWithOrderLM` if you need more control on the regularities.
-
-This is subsumed by `fderivCLM`, which also bundles the continuity. -/
-noncomputable def fderivLM :
-    𝓓_{K}(E, F) →ₗ[𝕜] 𝓓_{K}(E, E →L[ℝ] F) where
-  toFun f := .of_support_subset
-    (f.contDiff.fderiv_right le_rfl)
-    ((support_fderiv_subset ℝ).trans f.tsupport_subset)
-  map_add' f g := by
-    have h : 1 ≤ ∞ := mod_cast le_top
-    ext
-    simp [fderiv_add (f.contDiff.differentiable h).differentiableAt
-                     (g.contDiff.differentiable h).differentiableAt]
-  map_smul' c f := by
-    have h : 1 ≤ ∞ := mod_cast le_top
-    ext
-    simp [fderiv_const_smul (f.contDiff.differentiable h).differentiableAt]
-
-@[simp]
-lemma fderivLM_apply (f : 𝓓_{K}(E, F)) :
-    fderivLM 𝕜 f = fderiv ℝ f :=
-  rfl
-
-/-- Note: this turns out to be a definitional equality thanks to decidablity of the order
-on `ℕ∞`. This means we could have *defined* `fderivLM` this way, but we avoid it
-to make sure that `if`s won't appear in the smooth case. -/
-lemma fderivLM_eq_withOrder :
-    (fderivLM 𝕜 : 𝓓_{K}(E, F) →ₗ[𝕜] _) = fderivWithOrderLM 𝕜 ⊤ ⊤ :=
-  rfl
-
-lemma fderivLM_eq_of_scalars (𝕜' : Type*) [NontriviallyNormedField 𝕜']
-    [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
-    (fderivLM 𝕜 : 𝓓_{K}(E, F) → _) = fderivLM 𝕜' :=
   rfl
 
 variable (n k) in
@@ -642,11 +604,7 @@ noncomputable def structureMapCLM (i : ℕ) :
 @[simp]
 lemma structureMapCLM_apply {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) :
     structureMapCLM 𝕜 n i f = if i ≤ n then iteratedFDeriv ℝ i f else 0 := by
-  simp [structureMapCLM, structureMapLM_apply_withOrder]
-
-lemma structureMapCLM_top_apply {i : ℕ} (f : 𝓓_{K}(E, F)) :
-    structureMapCLM 𝕜 ⊤ i f = iteratedFDeriv ℝ i f := by
-  simp [structureMapCLM, structureMapLM_top_apply]
+  simp [structureMapCLM, structureMapLM_apply]
 
 lemma structureMapCLM_top_apply {i : ℕ} (f : 𝓓_{K}(E, F)) :
     structureMapCLM 𝕜 ⊤ i f = iteratedFDeriv ℝ i f := by
@@ -959,78 +917,12 @@ lemma fderivCLM_eq_of_scalars (𝕜' : Type*) [NontriviallyNormedField 𝕜']
 theorem seminorm_fderivWithOrderLM_le {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) :
     N[𝕜]_{K, k, i} (fderivWithOrderLM 𝕜 n k f) ≤ N[𝕜]_{K, n, i+1} f := by
   by_cases hk : k + 1 ≤ n
-  · rw [ContDiffMapSupportedIn.seminorm_le_iff_withOrder 𝕜 (apply_nonneg _ _)]
+  · rw [ContDiffMapSupportedIn.seminorm_le_iff 𝕜 (apply_nonneg _ _)]
     intro hi x hx
     have hi' : i + 1 ≤ n := (add_le_add_left hi 1).trans hk
     simpa [hk, norm_iteratedFDeriv_fderiv] using
-      norm_iteratedFDeriv_apply_le_seminorm_withOrder 𝕜 hi'
+      norm_iteratedFDeriv_apply_le_seminorm 𝕜 hi'
   · simp [fderivWithOrderLM_apply_of_gt 𝕜 f hk]
-
-variable (n k) in
-/-- `fderivWithOrderCLM 𝕜 n k` is the continuous `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to
-its derivative as an element of `𝓓^{k}_{K}(E, E →L[ℝ] F)`.
-This only makes mathematical sense if `k + 1 ≤ n`, otherwise we define it as the zero map.
-
-See `fderivCLM` for the very common case where everything is infinitely differentiable. -/
-noncomputable def fderivWithOrderCLM :
-    𝓓^{n}_{K}(E, F) →L[𝕜] 𝓓^{k}_{K}(E, E →L[ℝ] F) where
-  toLinearMap := fderivWithOrderLM 𝕜 n k
-  cont := show Continuous (fderivWithOrderLM 𝕜 n k) by
-    refine continuous_from_bounded (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _)
-      (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _) _ (fun i ↦ ⟨{i+1}, 1, fun f ↦ ?_⟩)
-    simpa using seminorm_fderivWithOrderLM_le 𝕜 f
-
-@[simp]
-lemma fderivWithOrderCLM_apply (f : 𝓓^{n}_{K}(E, F)) :
-    fderivWithOrderCLM 𝕜 n k f = if k + 1 ≤ n then fderiv ℝ f else 0 :=
-  fderivWithOrderLM_apply 𝕜 f
-
-lemma fderivWithOrderCLM_apply_of_le (f : 𝓓^{n}_{K}(E, F)) (hk : k + 1 ≤ n) :
-    fderivWithOrderCLM 𝕜 n k f = fderiv ℝ f :=
-  fderivWithOrderLM_apply_of_le 𝕜 f hk
-
-lemma fderivWithOrderCLM_apply_of_gt (f : 𝓓^{n}_{K}(E, F)) (hk : ¬ (k + 1 ≤ n)) :
-    fderivWithOrderCLM 𝕜 n k f = 0 :=
-  fderivWithOrderLM_apply_of_gt 𝕜 f hk
-
-lemma fderivWithOrderCLM_eq_of_scalars (𝕜' : Type*) [NontriviallyNormedField 𝕜']
-    [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
-    (fderivWithOrderCLM 𝕜 n k : 𝓓^{n}_{K}(E, F) → _) = fderivWithOrderCLM 𝕜' n k :=
-  rfl
-
-theorem seminorm_fderivLM {i : ℕ} (f : 𝓓_{K}(E, F)) :
-    N[𝕜]_{K, i} (fderivLM 𝕜 f) = N[𝕜]_{K, i+1} f := by
-  simp [ContDiffMapSupportedIn.seminorm_apply, BoundedContinuousFunction.norm_eq_iSup_norm,
-    norm_iteratedFDeriv_fderiv]
-
-/-- `fderivCLM 𝕜` is the continuous `𝕜`-linear-map sending `f : 𝓓_{K}(E, F)` to
-its derivative as an element of `𝓓_{K}(E, E →L[ℝ] F)`.
-
-See also `fderivWithOrderCLM` if you need more control on the regularities. -/
-noncomputable def fderivCLM :
-    𝓓_{K}(E, F) →L[𝕜] 𝓓_{K}(E, E →L[ℝ] F) where
-  toLinearMap := fderivLM 𝕜
-  cont := show Continuous (fderivLM 𝕜) by
-    refine continuous_from_bounded (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _)
-      (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _) _ (fun i ↦ ⟨{i+1}, 1, fun f ↦ ?_⟩)
-    simp [seminorm_fderivLM 𝕜 f]
-
-@[simp]
-lemma fderivCLM_apply (f : 𝓓_{K}(E, F)) :
-    fderivCLM 𝕜 f = fderiv ℝ f :=
-  rfl
-
-/-- Note: this turns out to be a definitional equality thanks to decidablity of the order
-on `ℕ∞`. This means we could have *defined* `fderivLM` this way, but we avoid it
-to make sure that `if`s won't appear in the smooth case. -/
-lemma fderivCLM_eq_withOrder :
-    (fderivCLM 𝕜 : 𝓓_{K}(E, F) →L[𝕜] _) = fderivWithOrderCLM 𝕜 ⊤ ⊤ :=
-  rfl
-
-lemma fderivCLM_eq_of_scalars (𝕜' : Type*) [NontriviallyNormedField 𝕜']
-    [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
-    (fderivCLM 𝕜 : 𝓓_{K}(E, F) → _) = fderivCLM 𝕜' :=
-  rfl
 
 end Topology
 
