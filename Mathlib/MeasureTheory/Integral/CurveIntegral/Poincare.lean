@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
+public import Mathlib.Analysis.Calculus.AddTorsor.AffineMap
 public import Mathlib.Analysis.Calculus.Deriv.Prod
 public import Mathlib.Analysis.Calculus.DiffContOnCl
 public import Mathlib.Analysis.Calculus.FDeriv.Symmetric
@@ -330,8 +331,6 @@ theorem curveIntegral_segment_add_eq_of_hasFDerivWithinAt_symmetric (hs : Convex
       lift y to I using hy
       simp [φ]
     refine .congr ?_ this
-    -- TODO: add `ContDiff.lineMap` etc
-    simp only [AffineMap.lineMap_apply_module]
     fun_prop
 
 variable [CompleteSpace F]
