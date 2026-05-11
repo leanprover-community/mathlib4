@@ -86,6 +86,7 @@ def precomp {f g : X ⟶ Y} (h : P.RightHomotopy f g) {Z : C} (i : Z ⟶ X) :
     P.RightHomotopy (i ≫ f) (i ≫ g) where
   h := i ≫ h.h
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Right homotopies in a full subcategory identify to right homotopies in the
 ambient category. -/
 noncomputable def fullSubcategoryEquiv {P : ObjectProperty C} {X Y : P.FullSubcategory}

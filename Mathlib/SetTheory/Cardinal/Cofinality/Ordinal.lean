@@ -560,7 +560,7 @@ theorem cof_univ : cof univ.{u, v} = Cardinal.univ.{u, v} := by
 
 @[simp]
 theorem _root_.Order.cof_ordinal : Order.cof Ordinal.{u} = Cardinal.univ.{u, u + 1} := by
-  have := (OrderIso.ofRelIsoLT liftPrincipalSeg.subrelIso.{u, u + 1}).lift_cof_congr
+  have := (OrderIso.ofRelIsoLT liftPrincipalSeg.{u, u + 1}.subrelIso).lift_cof_congr
   rw [Cardinal.lift_id'.{_, u + 2}] at this
   change Order.cof (Iio univ) = _ at this
   rwa [cof_Iio, ← lift_cof, Cardinal.lift_inj, cof_univ, eq_comm] at this
