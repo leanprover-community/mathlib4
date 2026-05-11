@@ -139,7 +139,7 @@ lemma primesBelow_one : primesBelow 1 = ∅ := by
 
 @[simp]
 lemma primesBelow_two : primesBelow 2 = ∅ := by
-  grind [primesBelow_eq_filter_range, not_prime_zero, not_prime_one]
+  decide
 
 @[simp]
 lemma primesLE_zero : primesLE 0 = ∅ := primesBelow_one
