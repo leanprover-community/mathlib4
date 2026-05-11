@@ -4,17 +4,19 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Lezeau
 -/
 
+module
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Tactic.Linter.Header
 
 /-!
 # Linter against deprecated simp lemmas
 
-Tagging deprecated lemmas with `simp` is unsafe as we may not always notice when they are being
-used. This linter is designed to flag such occurences.
+We prefer to avoid using `deprecated` lemmas, so these should not be tagged with the `simp`
+attribute. This linter is designed to flag such occurences.
 -/
 
+meta section
 
 open Lean Elab Meta Std Linter Parser Term Command
 
@@ -25,36 +27,28 @@ register_option linter.deprecatedSimpLemma : Bool := {
   descr := "enable the deprecatedSimpLemma linter"
 }
 
-/-- Extract the attributes from a `Syntax` term.  -/
-private def extractAttributes (stx : Syntax) :
-     (Array <| TSyntax ``attrInstance) :=
+/-- Extract the attributes from a `Syntax` term. -/
+private def extractAttributes (stx : Syntax) : Array (TSyntax `Lean.Parser.Term.attrInstance) :=
   match stx with
-  | `(declModifiers| $_? @[$[$atts],*] $_? $_? $_? $_?) => atts
-  | _ => #[]
+  | `(declModifiers| $(_)? @[$[$atts],*] $(_)? $(_)? $(_)? $(_)?) => atts
+  | _ => panic! s!"No attributes found in {stx}."
 
-/-- Check if a `Syntax` term corresponds to a deprecation tag. -/
-def isDeprecationAttr (stx : Syntax) : Bool :=
-  match stx with
-  | `(attr| deprecated $[$id?]? $[$text?]? $[(since := $since?)]?) => true
-  | _ => false
-
-/-- Check if a `Syntax` term corresponds to a simp tag. -/
-def isSimpAttr (stx : Syntax) : Bool :=
-  match stx with
-  | `(attr| simp $[$pre]? $[$_]? $[$prio]?) => true
-  | _ => false
-
+private def getAttributesFromDecl {m : Type → Type} [Monad m] [MonadEnv m] [MonadResolveName m]
+    [MonadError m] [MonadMacroAdapter m] [MonadRecDepth m] [MonadTrace m] [MonadOptions m]
+    [AddMessageContext m] [MonadLiftT IO m] [MonadFinally m][MonadLog m] (stx : Syntax) :
+    m (Array Attribute) := do
+  let some modifiersStx := stx.find? (·.isOfKind ``Parser.Command.declModifiers)
+    | throwError s!"{stx} does not have any declaration modifiers."
+  elabAttrs (extractAttributes modifiersStx)
 
 /-- The deprecated simp lemma linter flags when a deprecated declaration has the `simp` attribute. -/
 def deprecatedSimpLemmaLinter : Linter where run stx := do
   unless getLinterValue linter.deprecatedSimpLemma (← getLinterOptions) do return
   if (← get).messages.hasErrors then return
   unless [``Lean.Parser.Command.declaration, `lemma].contains stx.getKind do return
-  let some modifiersStx := stx.find? (·.isOfKind ``Parser.Command.declModifiers) | pure ()
-  match modifiersStx.find? isDeprecationAttr, modifiersStx.find? isSimpAttr with
-  | some _, some _ =>
-    Lean.logInfo "Deprecated results should not have the simp attribute"
-  | _, _ => return
+  let attributeNames := (← getAttributesFromDecl stx).map (·.name)
+  unless attributeNames.contains `simp && attributeNames.contains `deprecated do return
+  Lean.logInfo "Deprecated declarations should not have the simp attribute"
 
 initialize addLinter deprecatedSimpLemmaLinter
 
