@@ -559,6 +559,10 @@ theorem normalClosure_le_normal {N : Subgroup G} [N.Normal] (h : s ⊆ N) : norm
 theorem normalClosure_subset_iff {N : Subgroup G} [N.Normal] : s ⊆ N ↔ normalClosure s ≤ N :=
   ⟨normalClosure_le_normal, Set.Subset.trans subset_normalClosure⟩
 
+@[simp]
+theorem normalClosure_eq_bot_iff : normalClosure s = ⊥ ↔ s ⊆ {1} := by
+  rw [eq_bot_iff, ← normalClosure_subset_iff, coe_bot]
+
 @[to_additive (attr := gcongr)]
 theorem normalClosure_mono {s t : Set G} (h : s ⊆ t) : normalClosure s ≤ normalClosure t :=
   normalClosure_le_normal (Set.Subset.trans h subset_normalClosure)
@@ -846,6 +850,7 @@ instance (priority := 100) normal_subgroupOf {H N : Subgroup G} [N.Normal] :
     (N.subgroupOf H).Normal :=
   Subgroup.normal_comap _
 
+@[to_additive]
 theorem map_normalClosure (s : Set G) (f : G →* N) (hf : Surjective f) :
     (normalClosure s).map f = normalClosure (f '' s) := by
   have : Normal (map f (normalClosure s)) := Normal.map inferInstance f hf
@@ -854,6 +859,7 @@ theorem map_normalClosure (s : Set G) (f : G →* N) (hf : Surjective f) :
       ← Set.image_subset_iff, subset_normalClosure]
   · exact normalClosure_le_normal (Set.image_mono subset_normalClosure)
 
+@[to_additive]
 theorem comap_normalClosure (s : Set N) (f : G ≃* N) :
     normalClosure (f ⁻¹' s) = (normalClosure s).comap f := by
   have := f.toEquiv.image_symm_eq_preimage s
