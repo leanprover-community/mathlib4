@@ -635,6 +635,7 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
 public import Mathlib.Algebra.Homology.HomotopyCategory.KProjective
 public import Mathlib.Algebra.Homology.HomotopyCategory.MappingCocone
 public import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
+public import Mathlib.Algebra.Homology.HomotopyCategory.Plus
 public import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
 public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 public import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
@@ -654,6 +655,7 @@ public import Mathlib.Algebra.Homology.Localization
 public import Mathlib.Algebra.Homology.ModelCategory.Lifting
 public import Mathlib.Algebra.Homology.Monoidal
 public import Mathlib.Algebra.Homology.Opposite
+public import Mathlib.Algebra.Homology.Precylinder
 public import Mathlib.Algebra.Homology.QuasiIso
 public import Mathlib.Algebra.Homology.Refinements
 public import Mathlib.Algebra.Homology.ShortComplex.Ab
