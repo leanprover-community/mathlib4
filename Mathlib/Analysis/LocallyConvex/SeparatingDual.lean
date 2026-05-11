@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Central.Basic
 public import Mathlib.Analysis.LocallyConvex.Separation
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 
 /-!
 # Spaces with separating dual
@@ -34,7 +35,7 @@ Under the assumption `SeparatingDual R V`, we show in
 equivalences acts transitively on the set of nonzero vectors.
 -/
 
-@[expose] public section
+public section
 /-- When `E` is a topological module over a topological ring `R`, the class `SeparatingDual R E`
 registers that continuous linear forms on `E` separate points of `E`. -/
 @[mk_iff separatingDual_def]
@@ -52,9 +53,9 @@ instance {E : Type*} [TopologicalSpace E] [AddCommGroup E] [IsTopologicalAddGrou
 
 instance {E 𝕜 : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] : SeparatingDual 𝕜 E :=
   ⟨fun x hx ↦
-    let : NormedSpace ℝ E := RestrictScalars.normedSpace ℝ 𝕜 E
-    let : Module ℝ E := RestrictScalars.module ℝ 𝕜 E
-    have : IsScalarTower ℝ 𝕜 E := RestrictScalars.isScalarTower ℝ 𝕜 E
+    let : NormedSpace ℝ E := .restrictScalars ℝ 𝕜 E
+    let : Module ℝ E := .restrictScalars ℝ 𝕜 E
+    have : IsScalarTower ℝ 𝕜 E := .restrictScalars ℝ 𝕜 E
     have : LocallyConvexSpace ℝ E := NormedSpace.toLocallyConvexSpace' 𝕜
     RCLike.geometric_hahn_banach_point_point hx |>.imp fun f hf hf' ↦ by simp [hf'] at hf⟩
 
@@ -84,6 +85,19 @@ protected theorem t2Space [T2Space R] : T2Space V := by
   rcases exists_separating_of_ne (R := R) hxy with ⟨f, hf⟩
   exact separated_by_continuous f.continuous hf
 
+theorem eq_zero_of_forall_dual_eq_zero {x : V} (h : ∀ f : StrongDual R V, f x = 0) : x = 0 := by
+  by_contra hx
+  rcases exists_ne_zero (R := R) hx with ⟨f, hf⟩
+  exact hf (h f)
+
+theorem eq_zero_iff_forall_dual_eq_zero (x : V) : x = 0 ↔ ∀ g : StrongDual R V, g x = 0 :=
+  ⟨by simp +contextual, fun h => eq_zero_of_forall_dual_eq_zero (R := R) h⟩
+
+/-- See also `geometric_hahn_banach_point_point`. -/
+theorem eq_iff_forall_dual_eq {x y : V} : x = y ↔ ∀ g : StrongDual R V, g x = g y := by
+  rw [← sub_eq_zero, eq_zero_iff_forall_dual_eq_zero (R := R) (x - y)]
+  simp [sub_eq_zero]
+
 end Ring
 
 section Field
@@ -97,7 +111,7 @@ theorem _root_.separatingDual_iff_injective : SeparatingDual R V ↔
   simp_rw [separatingDual_def, Ne, injective_iff_map_eq_zero]
   congrm ∀ v, ?_
   rw [not_imp_comm, LinearMap.ext_iff]
-  push_neg; rfl
+  push Not; rfl
 
 variable [SeparatingDual R V]
 
@@ -161,6 +175,24 @@ instance _root_.Algebra.IsCentral.instContinuousLinearMap [Algebra.IsCentral S R
     obtain ⟨g, hg⟩ := exists_eq_one (R := R) hx
     have (y : V) := by simpa [hg] using congr($(Subalgebra.mem_center_iff.mp hf (g.smulRight y)) x)
     exact ⟨g (f x), by simp [this, ContinuousLinearMap.ext_iff]⟩
+
+open ContinuousLinearMap ContinuousLinearEquiv in
+theorem _root_.ContinuousLinearEquiv.conjContinuousAlgEquiv_ext_iff
+    {R V W : Type*} [NormedField R] [AddCommGroup V] [AddCommGroup W] [TopologicalSpace R]
+    [TopologicalSpace V] [TopologicalSpace W] [IsTopologicalRing R] [Module R V] [Module R W]
+    [SeparatingDual R V] [IsTopologicalAddGroup V] [IsTopologicalAddGroup W]
+    [ContinuousSMul R V] [ContinuousSMul R W] (f g : V ≃L[R] W) :
+    f.conjContinuousAlgEquiv = g.conjContinuousAlgEquiv ↔ ∃ α : Rˣ, f = α • g := by
+  conv_lhs => rw [eq_comm]
+  simp_rw [ContinuousAlgEquiv.ext_iff, funext_iff, conjContinuousAlgEquiv_apply,
+    ← eq_toContinuousLinearMap_symm_comp, ← ContinuousLinearMap.comp_assoc,
+    eq_comp_toContinuousLinearMap_symm, ContinuousLinearMap.comp_assoc,
+    ← ContinuousLinearMap.comp_assoc _ f.toContinuousLinearMap, comp_coe, ← mul_def,
+    ← Subalgebra.mem_center_iff (R := R), Algebra.IsCentral.center_eq_bot, ← comp_coe,
+    Algebra.mem_bot, Set.mem_range, Algebra.algebraMap_eq_smul_one, ContinuousLinearEquiv.ext_iff]
+  refine ⟨fun ⟨y, h⟩ ↦ ?_, fun ⟨y, h⟩ ↦ ⟨(y : R), by ext; simp [h]⟩⟩
+  if hy : y = 0 then exact ⟨1, funext fun x ↦ by simp [by simpa [hy] using congr($h x).symm]⟩
+  else exact ⟨.mk0 y hy, funext fun x ↦ by simp [by simpa [eq_symm_apply] using congr($h x)]⟩
 
 end algebra
 

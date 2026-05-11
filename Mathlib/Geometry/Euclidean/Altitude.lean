@@ -180,6 +180,7 @@ def altitudeFoot {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : 
   simp only [altitudeFoot, reindex_points, Function.comp_apply]
   exact orthogonalProjectionSpan_congr (s.range_faceOpposite_reindex e i) rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma altitudeFoot_map {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (f : P →ᵃⁱ[ℝ] P₂)
     (i : Fin (n + 1)) :
     (s.map f.toAffineMap f.injective).altitudeFoot i = f (s.altitudeFoot i) := by
@@ -226,6 +227,10 @@ lemma altitudeFoot_mem_altitude {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : 
   rw [← affineSpan_pair_altitudeFoot_eq_altitude]
   exact left_mem_affineSpan_pair _ _ _
 
+@[simp] lemma altitudeFoot_eq_point_rev (s : Simplex ℝ P 1) (i : Fin 2) :
+    s.altitudeFoot i = s.points i.rev := by
+  simp [altitudeFoot, faceOpposite_point_eq_point_rev]
+
 /-- The height of a vertex of a simplex is the distance between it and the foot of the altitude
 from that vertex. -/
 def height {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : ℝ :=
@@ -264,6 +269,14 @@ meta def evalHeight : PositivityExt where eval {u α} _ _ e := do
 
 example {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : 0 < s.height i := by
   positivity
+
+/-- The height of a 1-dimensional simplex equals to the distance between the two vertices. -/
+@[simp] lemma height_eq_dist (s : Simplex ℝ P 1) (i : Fin 2) :
+    s.height i = dist (s.points 0) (s.points 1) := by
+  fin_cases i
+  · simp [height]
+  · rw [dist_comm]
+    simp [height]
 
 open scoped RealInnerProductSpace
 

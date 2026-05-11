@@ -75,11 +75,11 @@ local notation "ℬ𝒜" => (fun i : ι × ι => ℬ (Prod.fst i) ⊗[R] 𝒜 (P
 /-- Auxiliary construction used to build `TensorProduct.gradedComm`.
 
 This operates on direct sums of tensors instead of tensors of direct sums. -/
-def gradedCommAux : DirectSum _ 𝒜ℬ →ₗ[R] DirectSum _ ℬ𝒜 := by
-  refine DirectSum.toModule R _ _ fun i => ?_
-  have o := DirectSum.lof R _ ℬ𝒜 i.swap
-  have s : ℤˣ := ((-1 : ℤˣ) ^ (i.1 * i.2 : ι) : ℤˣ)
-  exact (s • o) ∘ₗ (TensorProduct.comm R _ _).toLinearMap
+def gradedCommAux : DirectSum _ 𝒜ℬ →ₗ[R] DirectSum _ ℬ𝒜 :=
+  DirectSum.toModule R _ _ fun i =>
+    have o := DirectSum.lof R _ ℬ𝒜 (i.2, i.1)
+    have s : ℤˣ := ((-1 : ℤˣ) ^ (i.1 * i.2 : ι) : ℤˣ)
+    (s • o) ∘ₗ (TensorProduct.comm R _ _).toLinearMap
 
 @[simp]
 theorem gradedCommAux_lof_tmul (i j : ι) (a : 𝒜 i) (b : ℬ j) :

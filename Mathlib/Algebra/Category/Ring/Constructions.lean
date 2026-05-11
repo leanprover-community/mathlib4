@@ -66,6 +66,7 @@ theorem pushoutCocone_pt :
     (pushoutCocone R A B).pt = CommRingCat.of (A ⊗[R] B) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Verify that the `pushout_cocone` is indeed the colimit. -/
 def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone R A B) :=
   Limits.PushoutCocone.isColimitAux' _ fun s => by
@@ -127,6 +128,7 @@ lemma isPushout_of_isPushout (R S A B : Type u) [CommRing R] [CommRing S]
     (Algebra.IsPushout.equiv R S A B).toCommRingCatIso (by simp) (by simp)
     (by ext; simp [Algebra.IsPushout.equiv_tmul]) (by ext; simp [Algebra.IsPushout.equiv_tmul])
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 lemma isPushout_iff_isPushout {R S : Type u} [CommRing R] [CommRing S] [Algebra R S]
     {R' S' : Type u} [CommRing R'] [CommRing S'] [Algebra R R'] [Algebra S S'] [Algebra R' S']
@@ -169,7 +171,7 @@ lemma closure_range_union_range_eq_top_of_isPushout
     (H : IsPushout f g a b) :
     Subring.closure (Set.range a ∪ Set.range b) = ⊤ := by
   algebraize [f.hom, g.hom]
-  let e := ((isPushout_tensorProduct R A B).isoIsPushout _ _ H).commRingCatIsoToRingEquiv
+  let e := ((isPushout_tensorProduct R A B).isoIsPushout A B H).commRingCatIsoToRingEquiv
   rw [← Subring.comap_map_eq_self_of_injective e.symm.injective (.closure _), RingHom.map_closure,
     ← top_le_iff, ← Subring.map_le_iff_le_comap, Set.image_union]
   simp only [AlgHom.toRingHom_eq_coe, ← Set.range_comp, ← RingHom.coe_comp]
@@ -198,6 +200,7 @@ theorem coproductCocone_inl :
 theorem coproductCocone_inr :
     (coproductCocone A B).inr = ofHom (Algebra.TensorProduct.includeRight (R := ℤ)).toRingHom := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The tensor product `A ⊗[ℤ] B` is a coproduct for `A` and `B`. -/
 @[simps]
 def coproductCoconeIsColimit : IsColimit (coproductCocone A B) where
@@ -275,6 +278,7 @@ variable (A B : CommRingCat.{u})
 def prodFan : BinaryFan A B :=
   BinaryFan.mk (CommRingCat.ofHom <| RingHom.fst A B) (CommRingCat.ofHom <| RingHom.snd A B)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The product in `CommRingCat` is the Cartesian product. -/
 def prodFanIsLimit : IsLimit (prodFan A B) where
   lift c := ofHom <| RingHom.prod (c.π.app ⟨WalkingPair.left⟩).hom (c.π.app ⟨WalkingPair.right⟩).hom
@@ -379,6 +383,7 @@ open CategoryTheory.Limits.WalkingParallelPair Opposite
 
 open CategoryTheory.Limits.WalkingParallelPairHom
 
+set_option backward.isDefEq.respectTransparency false in
 instance equalizer_ι_isLocalHom' (F : WalkingParallelPairᵒᵖ ⥤ CommRingCat.{u}) :
     IsLocalHom (limit.π F (Opposite.op WalkingParallelPair.one)).hom := by
   have := limit.isoLimitCone_inv_π

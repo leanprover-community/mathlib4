@@ -52,6 +52,7 @@ section
 
 variable [HasZeroObject C] [HasZeroMorphisms C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary construction for `desc`. -/
 def descFZero {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y) (J : InjectiveResolution Z) :
     J.cocomplex.X 0 ⟶ I.cocomplex.X 0 :=
@@ -67,6 +68,7 @@ lemma exact₀ {Z : C} (I : InjectiveResolution Z) :
     (ShortComplex.mk _ _ I.ι_f_zero_comp_complex_d).Exact :=
   ShortComplex.exact_of_f_is_kernel _ I.isLimitKernelFork
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary construction for `desc`. -/
 def descFOne {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y) (J : InjectiveResolution Z) :
     J.cocomplex.X 1 ⟶ I.cocomplex.X 1 :=
@@ -238,6 +240,7 @@ def InjectiveResolution.iso {X : C} (I : InjectiveResolution X) :
       (HomotopyCategory.quotient _ _).obj I.cocomplex :=
   HomotopyCategory.isoOfHomotopyEquiv (homotopyEquiv _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma InjectiveResolution.iso_hom_naturality {X Y : C} (f : X ⟶ Y)
     (I : InjectiveResolution X) (J : InjectiveResolution Y)
@@ -263,6 +266,7 @@ section
 
 variable [Abelian C] [EnoughInjectives C]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exact_f_d {X Y : C} (f : X ⟶ Y) :
     (ShortComplex.mk f (d f) (by simp)).Exact := by
   let α : ShortComplex.mk f (cokernel.π f) (by simp) ⟶ ShortComplex.mk f (d f) (by simp) :=
@@ -304,9 +308,8 @@ lemma ofCocomplex_d_0_1 :
 lemma ofCocomplex_exactAt_succ (n : ℕ) :
     (ofCocomplex Z).ExactAt (n + 1) := by
   rw [HomologicalComplex.exactAt_iff' _ n (n + 1) (n + 1 + 1) (by simp) (by simp)]
-  dsimp [ofCocomplex, CochainComplex.mk', CochainComplex.mk, HomologicalComplex.sc',
-      HomologicalComplex.shortComplexFunctor']
-  simp only [CochainComplex.of_d]
+  simp only [HomologicalComplex.sc', HomologicalComplex.shortComplexFunctor', ofCocomplex,
+    CochainComplex.mk', CochainComplex.mk, CochainComplex.of_d]
   match n with
   | 0 => apply exact_f_d ((CochainComplex.mkAux _ _ _
       (d (Injective.ι Z)) (d (d (Injective.ι Z))) _ _ 0).f)
@@ -316,6 +319,7 @@ lemma ofCocomplex_exactAt_succ (n : ℕ) :
 instance (n : ℕ) : Injective ((ofCocomplex Z).X n) := by
   obtain (_ | _ | _ | n) := n <;> apply Injective.injective_under
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In any abelian category with enough injectives,
 `InjectiveResolution.of Z` constructs an injective resolution of the object `Z`.
 -/
@@ -343,7 +347,7 @@ end InjectiveResolution
 
 variable [Abelian C]
 
-/-- Given an injective presentaion `M → I`, the short complex `0 → M → I → N → 0`. -/
+/-- Given an injective presentation `M → I`, the short complex `0 → M → I → N → 0`. -/
 noncomputable abbrev InjectivePresentation.shortComplex
     {X : C} (ip : InjectivePresentation X) : ShortComplex C :=
   ShortComplex.mk ip.f (Limits.cokernel.π ip.f) (Limits.cokernel.condition ip.f)

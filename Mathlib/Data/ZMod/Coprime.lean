@@ -24,6 +24,7 @@ assert_not_exists TwoSidedIdeal
 
 namespace ZMod
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coe_int_isUnit_iff_isCoprime (n : ℤ) (m : ℕ) :
     IsUnit (n : ZMod m) ↔ IsCoprime (m : ℤ) n := by
   rw [Int.isCoprime_iff_nat_coprime, Nat.coprime_comm, ← isUnit_iff_coprime, Associated.isUnit_iff]

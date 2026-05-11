@@ -71,7 +71,7 @@ instance [Countable ι] (m : ι → Measure α) [∀ n, SFinite (m n)] : SFinite
 
 instance [SFinite μ] [SFinite ν] : SFinite (μ + ν) := by
   have : ∀ b : Bool, SFinite (cond b μ ν) := by simp [*]
-  simpa using inferInstanceAs (SFinite (.sum (cond · μ ν)))
+  simpa using (inferInstance : SFinite (.sum (cond · μ ν)))
 
 instance [SFinite μ] (s : Set α) : SFinite (μ.restrict s) :=
   ⟨fun n ↦ (sfiniteSeq μ n).restrict s, fun n ↦ inferInstance,
@@ -198,6 +198,7 @@ namespace Measure
 
 /-- A set in a σ-finite space has zero measure if and only if its intersection with
 all members of the countable family of finite measure spanning sets has zero measure. -/
+@[deprecated forall_measure_inter_isCountablySpanning_eq_zero (since := "2026-03-13")]
 theorem forall_measure_inter_spanningSets_eq_zero [MeasurableSpace α] {μ : Measure α}
     [SigmaFinite μ] (s : Set α) : (∀ n, μ (s ∩ spanningSets μ n) = 0) ↔ μ s = 0 := by
   nth_rw 2 [show s = ⋃ n, s ∩ spanningSets μ n by
@@ -209,8 +210,9 @@ some member of the countable family of finite measure spanning sets has positive
 theorem exists_measure_inter_spanningSets_pos [MeasurableSpace α] {μ : Measure α} [SigmaFinite μ]
     (s : Set α) : (∃ n, 0 < μ (s ∩ spanningSets μ n)) ↔ 0 < μ s := by
   contrapose!
-  simp only [nonpos_iff_eq_zero]
-  exact forall_measure_inter_spanningSets_eq_zero s
+  rw [nonpos_iff_eq_zero, ← forall_measure_inter_isCountablySpanning_eq_zero
+    (isCountablySpanning_spanningSets μ)]
+  simp
 
 /-- If the union of a.e.-disjoint null-measurable sets has finite measure, then there are only
 finitely many members of the union whose measure exceeds any given positive number. -/

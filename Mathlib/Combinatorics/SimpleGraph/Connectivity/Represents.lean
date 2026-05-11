@@ -5,7 +5,7 @@ Authors: Pim Otte
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Finite
 public import Mathlib.Data.Set.Card
 
 /-!
@@ -35,6 +35,7 @@ namespace Represents
 
 variable {C : Set G.ConnectedComponent} {s : Set V} {c : G.ConnectedComponent}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma image_out (C : Set G.ConnectedComponent) :
     Represents (Quot.out '' C) C :=
   Set.BijOn.mk (by rintro c ⟨x, ⟨hx, rfl⟩⟩; simp_all [connectedComponentMk]) (by

@@ -160,6 +160,7 @@ namespace Module
 
 variable [IsLocalRing R]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `M` is of finite presentation over a local ring `(R, 𝔪, k)` such that
 `𝔪 ⊗ M → M` is injective, then every family of elements that is a `k`-basis of
 `k ⊗ M` is an `R`-basis of `M`. -/

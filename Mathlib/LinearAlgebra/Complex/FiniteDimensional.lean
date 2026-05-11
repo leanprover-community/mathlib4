@@ -18,7 +18,7 @@ This file contains the `FiniteDimensional ℝ ℂ` instance, as well as some res
 (`finrank` and `Module.rank`).
 -/
 
-@[expose] public section
+public section
 
 open Module
 

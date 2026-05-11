@@ -269,7 +269,7 @@ theorem coeffs_lc (l : ι →₀ R) : h.coeffs (DualBases.lc e l) = l := by
   ext i
   rw [h.coeffs_apply, h.dual_lc]
 
-/-- For any m : M n, \sum_{p ∈ Q n} (ε p m) • e p = m -/
+/-- For any `m : M n`, $\sum_{p ∈ Q n} (ε p m) • e p = m$ -/
 @[simp]
 theorem lc_coeffs (m : M) : DualBases.lc e (h.coeffs m) = m := h.total <| by simp [h.dual_lc]
 

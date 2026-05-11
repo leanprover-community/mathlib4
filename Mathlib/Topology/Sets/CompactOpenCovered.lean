@@ -111,7 +111,7 @@ lemma of_isCompact_of_forall_exists_isCompactOpenCovered [TopologicalSpace S] {U
   refine of_biUnion_eq_of_isCompact hU { Us x h | (x : S) (h : x ∈ U) } ?_ ?_
   · refine subset_antisymm (fun x ↦ ?_) fun x hx ↦ ?_
     · simp [Opens.forall]
-      aesop
+      grind
     · simpa using ⟨⟨Us x hx, hUo _ _⟩, ⟨x, by simpa⟩, hUx _ _⟩
   · grind
 
@@ -124,6 +124,7 @@ lemma of_finite {U : Set S} {κ : Type*} [Finite κ] (a : κ → ι) (V : ∀ k,
     IsCompactOpenCovered f U :=
   of_iUnion_eq_of_finite _ hU (fun _ ↦ .image _ (hV _))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `U` is compact-open covered and the `X i` have a basis of compact opens,
 `U` can be written as the union of images of elements of the basis. -/
 lemma exists_mem_of_isBasis {B : ∀ i, Set (Opens (X i))} (hB : ∀ i, IsBasis (B i))

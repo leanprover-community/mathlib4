@@ -69,6 +69,7 @@ theorem of_hasBinaryProduct [HasBinaryProduct X Y] :
   convert @of_is_product _ _ X Y 0 _ (limit.isLimit _) HasZeroObject.zeroIsTerminal
     <;> subsingleton
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The square with `0 : 0 ⟶ 0` on the left and `𝟙 X` on the right is a pullback square. -/
 @[simp]
 theorem zero_left (X : C) : IsPullback (0 : 0 ⟶ X) (0 : (0 : C) ⟶ 0) (𝟙 X) (0 : 0 ⟶ X) :=
@@ -178,6 +179,7 @@ theorem of_hasBinaryCoproduct [HasBinaryCoproduct X Y] :
   convert @of_is_coproduct _ _ 0 X Y _ (colimit.isColimit _) HasZeroObject.zeroIsInitial
     <;> subsingleton
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The square with `0 : 0 ⟶ 0` on the right and `𝟙 X` on the left is a pushout square. -/
 @[simp]
 theorem zero_right (X : C) : IsPushout (0 : X ⟶ 0) (𝟙 X) (0 : (0 : C) ⟶ 0) (0 : X ⟶ 0) :=

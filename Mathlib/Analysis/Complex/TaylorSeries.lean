@@ -50,7 +50,7 @@ lemma hasSum_taylorSeries_on_ball :
   lift r' to NNReal using hr'₀.le
   have hz' : z - c ∈ Metric.eball 0 r' := by
     rw [Metric.eball_coe]
-    exact mem_ball_zero_iff.mpr hzr'
+    simpa only [mem_ball_iff_norm, sub_zero] using hzr'
   have H := (hf.mono <| Metric.closedBall_subset_ball hr').hasFPowerSeriesOnBall hr'₀
       |>.hasSum_iteratedFDeriv hz'
   simp only [add_sub_cancel] at H

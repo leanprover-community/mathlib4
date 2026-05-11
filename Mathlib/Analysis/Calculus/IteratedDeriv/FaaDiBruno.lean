@@ -41,7 +41,7 @@ section vcomp
 
 variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {g : E → F} {f : 𝕜 → E} {s : Set 𝕜} {t : Set E} {x : 𝕜} {n : WithTop ℕ∞} {i : ℕ}
+  {g : E → F} {f : 𝕜 → E} {s : Set 𝕜} {t : Set E} {x : 𝕜} {n : ℕ∞ω} {i : ℕ}
 
 theorem iteratedDerivWithin_vcomp_eq_sum_orderedFinpartition
     (hg : ContDiffWithinAt 𝕜 n g t (f x)) (hf : ContDiffWithinAt 𝕜 n f s x)
@@ -62,6 +62,7 @@ theorem iteratedDeriv_vcomp_eq_sum_orderedFinpartition
   exact iteratedDerivWithin_vcomp_eq_sum_orderedFinpartition hg hf uniqueDiffOn_univ
     uniqueDiffOn_univ (mem_univ x) (mapsTo_univ f _) hi
 
+set_option backward.isDefEq.respectTransparency false in
 theorem iteratedDerivWithin_vcomp_two
     (hg : ContDiffWithinAt 𝕜 2 g t (f x)) (hf : ContDiffWithinAt 𝕜 2 f s x)
     (ht : UniqueDiffOn 𝕜 t) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (hst : MapsTo f s t) :
@@ -85,6 +86,7 @@ theorem iteratedDeriv_vcomp_two (hg : ContDiffAt 𝕜 2 g (f x)) (hf : ContDiffA
   exact iteratedDerivWithin_vcomp_two hg hf uniqueDiffOn_univ
     uniqueDiffOn_univ (mem_univ x) (mapsTo_univ f _)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem iteratedDerivWithin_vcomp_three
     (hg : ContDiffWithinAt 𝕜 3 g t (f x)) (hf : ContDiffWithinAt 𝕜 3 f s x)
     (ht : UniqueDiffOn 𝕜 t) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (hst : MapsTo f s t) :
@@ -127,7 +129,7 @@ end vcomp
 section scomp
 
 variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  {g : 𝕜 → E} {f : 𝕜 → 𝕜} {s : Set 𝕜} {t : Set 𝕜} {x : 𝕜} {n : WithTop ℕ∞} {i : ℕ}
+  {g : 𝕜 → E} {f : 𝕜 → 𝕜} {s : Set 𝕜} {t : Set 𝕜} {x : 𝕜} {n : ℕ∞ω} {i : ℕ}
 
 theorem iteratedDerivWithin_scomp_eq_sum_orderedFinpartition
     (hg : ContDiffWithinAt 𝕜 n g t (f x)) (hf : ContDiffWithinAt 𝕜 n f s x)
@@ -189,7 +191,7 @@ end scomp
 section comp
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {g f : 𝕜 → 𝕜} {s t : Set 𝕜} {x : 𝕜} {n : WithTop ℕ∞} {i : ℕ}
+  {g f : 𝕜 → 𝕜} {s t : Set 𝕜} {x : 𝕜} {n : ℕ∞ω} {i : ℕ}
 
 theorem iteratedDerivWithin_comp_eq_sum_orderedFinpartition
     (hg : ContDiffWithinAt 𝕜 n g t (f x)) (hf : ContDiffWithinAt 𝕜 n f s x)

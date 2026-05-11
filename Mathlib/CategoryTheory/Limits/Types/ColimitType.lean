@@ -88,6 +88,7 @@ def precompose (c : CoconeTypes.{w₁} F) {G : J ⥤ Type w₀'} (app : ∀ j, G
   ι_naturality f := by
     rw [Function.comp_assoc, naturality, ← Function.comp_assoc, ι_naturality]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `F : J ⥤ w₀`, `c : F.CoconeTypes` and `G : J' ⥤ J`, this is
 the induced cocone in `(G ⋙ F).CoconeTypes`. -/
 @[simps]
@@ -114,8 +115,14 @@ def ιColimitType (j : J) (x : F.obj j) : F.ColimitType :=
 
 lemma ιColimitType_eq_iff {j j' : J} (x : F.obj j) (y : F.obj j') :
     F.ιColimitType j x = F.ιColimitType j' y ↔
-      Relation.EqvGen F.ColimitTypeRel ⟨j, x⟩ ⟨ j', y⟩ :=
+      Relation.EqvGen F.ColimitTypeRel ⟨j, x⟩ ⟨j', y⟩ :=
   Quot.eq
+
+lemma ιColimitType_eq_of_map_eq_map {j j' : J} (x : F.obj j) (y : F.obj j')
+    {k : J} (f : j ⟶ k) (f' : j' ⟶ k) (H : F.map f x = F.map f' y) :
+    F.ιColimitType j x = F.ιColimitType j' y :=
+  (ιColimitType_eq_iff ..).mpr (.trans _ _ _ (.rel _ ⟨k, F.map f x⟩ ⟨f, rfl⟩)
+    (.symm _ _ (.rel _ _ ⟨f', H⟩)))
 
 lemma ιColimitType_jointly_surjective (t : F.ColimitType) :
     ∃ j x, F.ιColimitType j x = t := by
@@ -262,6 +269,7 @@ lemma fac_apply (hc : IsColimitCore.{w₂} c)
     hc.desc c' (c.ι j x) = c'.ι j x :=
   congr_fun (hc.fac c' j) x
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any structure `IsColimitCore.{max w₂ w₃} c` can be
 lowered to `IsColimitCore.{w₂} c` -/
 def down (hc : IsColimitCore.{max w₂ w₃} c) :
@@ -278,6 +286,7 @@ def down (hc : IsColimitCore.{max w₂ w₃} c) :
       simpa using congr_fun this x
     exact hc.funext (fun j ↦ by simp [Function.comp_assoc, h])
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A colimit cocone for `F : J ⥤ Type w₀` induces a colimit cocone
 for `G : J ⥤ Type w₉'` when we have a natural equivalence `G.obj j ≃ F.obj j`
 for all `j : J`. -/
@@ -306,6 +315,7 @@ noncomputable def IsColimit.isColimitCore (hc : c.IsColimit) :
   desc := hc.desc
   funext := hc.funext
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsColimitCore.isColimit (hc : IsColimitCore.{max u w₀ w₁} c) :
     c.IsColimit where
   bijective := by
@@ -330,6 +340,7 @@ lemma IsColimit.precompose (hc : c.IsColimit) {G : J ⥤ Type w₀'} (e : ∀ j,
     (c.precompose _ naturality).IsColimit :=
   (hc.isColimitCore.precompose e naturality).isColimit
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isColimit_precompose_iff {G : J ⥤ Type w₀'} (e : ∀ j, G.obj j ≃ F.obj j)
     (naturality : ∀ {j j'} (f : j ⟶ j'), e j' ∘ G.map f = F.map f ∘ e j) :
     (c.precompose _ naturality).IsColimit ↔ c.IsColimit :=
@@ -339,6 +350,7 @@ lemma isColimit_precompose_iff {G : J ⥤ Type w₀'} (e : ∀ j, G.obj j ≃ F.
 
 end CoconeTypes
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isColimit_coconeTypes : F.coconeTypes.IsColimit where
   bijective := by
     convert Function.bijective_id

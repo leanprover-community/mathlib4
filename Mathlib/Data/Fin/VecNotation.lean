@@ -6,7 +6,6 @@ Authors: Anne Baanen, Eric Wieser
 module
 
 public import Mathlib.Data.Fin.Tuple.Basic
-public import Aesop
 
 /-!
 # Matrix and vector notation
@@ -139,6 +138,34 @@ theorem cons_val_succ' {i : ℕ} (h : i.succ < m.succ) (x : α) (u : Fin m → �
     vecCons x u ⟨i.succ, h⟩ = u ⟨i, Nat.lt_of_succ_lt_succ h⟩ := by
   simp only [vecCons, Fin.cons, Fin.cases_succ']
 
+/-- We don't want to always simplify `Fin.cons` to `vecCons`.
+But in cases that we are already mixing the declarations for dependent tuples and non-dependent
+tuples, we can simplify to the non-dependent tuples. -/
+@[simp]
+lemma Fin.cons_vecEmpty {α : Type*} (x : α) : Fin.cons x ![] = ![x] := by rfl
+
+/-- Simplify `Fin.snoc` to `vecCons` in this case. -/
+@[simp]
+lemma Fin.snoc_vecEmpty {α : Type*} (x : α) : Fin.snoc ![] x = ![x] := by
+  ext i
+  cases Fin.fin_one_eq_zero i
+  rfl
+
+/-- We don't want to always simplify `Fin.cons` to `vecCons`.
+But in cases that we are already mixing the declarations for dependent tuples and non-dependent
+tuples, we can simplify to the non-dependent tuples.
+This allows us to simplify `Fin.cons 5 ![1, 3, 7]` to `![5, 1, 3, 7]`. -/
+@[simp]
+lemma Fin.cons_vecCons {α : Type*} (x y : α) (p : Fin n → α) :
+  Fin.cons x (vecCons y p) = vecCons x (vecCons y p) := by rfl
+
+/-- We push `Fin.snoc` inside `vecCons`. This allows us to simplify e.g.
+`Fin.snoc ![1, 3, 7] 5` to `![1, 3, 7, 5]`. -/
+@[simp]
+lemma Fin.snoc_vecCons {α : Type*} (x y : α) (p : Fin n → α) :
+    Fin.snoc (vecCons y p) x = vecCons y (Fin.snoc p x) :=
+  Fin.cons_snoc_eq_snoc_cons .. |>.symm
+
 section simprocs
 open Lean Qq
 
@@ -200,6 +227,10 @@ theorem head_cons (x : α) (u : Fin m → α) : vecHead (vecCons x u) = x :=
 theorem tail_cons (x : α) (u : Fin m → α) : vecTail (vecCons x u) = u := by
   ext
   simp [vecTail]
+
+@[simp]
+theorem _root_.Fin.tail_vecCons (x : α) (t : Fin n → α) : Fin.tail (Matrix.vecCons x t) = t :=
+  rfl
 
 theorem empty_val' {n' : Type*} (j : n') : (fun i => (![] : Fin 0 → n' → α) i j) = ![] :=
   empty_eq _
@@ -382,7 +413,8 @@ theorem vecAlt1_vecAppend (v : Fin (n + 1) → α) :
       simp only [Nat.mod_add_mod,
         Nat.mod_eq_sub_mod h, show 1 % (n + 2) = 1 from Nat.mod_eq_of_lt (by lia)]
       refine (Nat.mod_eq_of_lt ?_).symm
-      lia
+      #adaptation_note /-- After leanprover/lean4#13166, the `lia` tactic was timing out here. -/
+      omega
 
 @[simp]
 theorem vecHead_vecAlt0 (hm : m + 2 = n + 1 + (n + 1)) (v : Fin (m + 2) → α) :
@@ -434,5 +466,38 @@ end Val
 
 lemma const_fin1_eq (x : α) : (fun _ : Fin 1 => x) = ![x] :=
   (cons_fin_one x _).symm
+
+/-!
+### Interaction between cons and Equiv.swap
+-/
+
+section swap
+
+@[simp]
+lemma cons_cons_comp_swap_zero_one (a b : α) (x : Fin n → α) :
+    vecCons a (vecCons b x) ∘ (Equiv.swap 0 1) = vecCons b (vecCons a x) := by
+  ext j : 1
+  match j with
+  | 0 => simp
+  | 1 => simp
+  | ⟨i + 2, h⟩ =>
+    have h' : (⟨i + 2, h⟩ : Fin n.succ.succ) = Fin.succ (Fin.succ ⟨i, by lia⟩) := by grind
+    simp only [Nat.succ_eq_add_one, h', Function.comp_apply,
+      Equiv.swap_apply_of_ne_of_ne (Fin.succ_ne_zero _) (Fin.succ_succ_ne_one _), cons_val_succ]
+
+lemma cons_swap (a : α) (x : Fin n → α) (i j : Fin n) :
+    vecCons a (x ∘ (Equiv.swap i j)) = vecCons a x ∘ (Equiv.swap i.succ j.succ) := by
+  ext k : 1
+  rcases eq_or_ne k 0 with rfl | hk₀
+  · simp [Equiv.swap_apply_of_ne_of_ne (Fin.succ_ne_zero i).symm (Fin.succ_ne_zero j).symm]
+  rcases eq_or_ne k i.succ with rfl | hki
+  · simp
+  rcases eq_or_ne k j.succ with rfl | hkj
+  · simp
+  have hk : k = Fin.succ ⟨k - 1, by lia⟩ := by grind
+  rw [Function.comp_apply, Equiv.swap_apply_of_ne_of_ne hki hkj, hk, cons_val_succ,
+    Function.comp_apply, cons_val_succ, Equiv.swap_apply_of_ne_of_ne (by grind) (by grind)]
+
+end swap
 
 end Matrix

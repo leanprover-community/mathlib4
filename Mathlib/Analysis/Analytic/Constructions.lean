@@ -25,7 +25,7 @@ We show that the following are analytic:
 
 noncomputable section
 
-open scoped Topology
+open scoped Topology Ring
 open Filter Asymptotics ENNReal NNReal
 
 variable {α : Type*}
@@ -804,7 +804,7 @@ lemma formalMultilinearSeries_geometric_radius [NormOneClass A] :
     FormalMultilinearSeries.ofScalars_radius_eq_of_tendsto A _ one_ne_zero (by simp)
 
 lemma hasFPowerSeriesOnBall_inverse_one_sub [HasSummableGeomSeries A] :
-    HasFPowerSeriesOnBall (fun x : A ↦ Ring.inverse (1 - x))
+    HasFPowerSeriesOnBall (fun x : A ↦ (1 - x)⁻¹ʳ)
       (formalMultilinearSeries_geometric 𝕜 A) 0 1 := by
   constructor
   · exact one_le_formalMultilinearSeries_geometric_radius 𝕜 A
@@ -818,7 +818,7 @@ lemma hasFPowerSeriesOnBall_inverse_one_sub [HasSummableGeomSeries A] :
 
 @[fun_prop]
 lemma analyticAt_inverse_one_sub [HasSummableGeomSeries A] :
-    AnalyticAt 𝕜 (fun x : A ↦ Ring.inverse (1 - x)) 0 :=
+    AnalyticAt 𝕜 (fun x : A ↦ (1 - x)⁻¹ʳ) 0 :=
   ⟨_, ⟨_, hasFPowerSeriesOnBall_inverse_one_sub 𝕜 A⟩⟩
 
 end Geometric
@@ -831,9 +831,9 @@ lemma analyticAt_inverse [HasSummableGeomSeries A] (z : Aˣ) :
   rcases subsingleton_or_nontrivial A with hA | hA
   · convert analyticAt_const (v := (0 : A))
   · let f1 : A → A := fun a ↦ a * z.inv
-    let f2 : A → A := fun b ↦ Ring.inverse (1 - b)
+    let f2 : A → A := fun b ↦ (1 - b)⁻¹ʳ
     let f3 : A → A := fun c ↦ 1 - z.inv * c
-    have feq : ∀ᶠ y in 𝓝 (z : A), (f1 ∘ f2 ∘ f3) y = Ring.inverse y := by
+    have feq : ∀ᶠ y in 𝓝 (z : A), (f1 ∘ f2 ∘ f3) y = y⁻¹ʳ := by
       have : Metric.ball (z : A) (‖(↑z⁻¹ : A)‖⁻¹) ∈ 𝓝 (z : A) := by
         apply Metric.ball_mem_nhds
         simp

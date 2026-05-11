@@ -87,6 +87,12 @@ theorem Integrable.mono {f : α → β} {g : α → γ} (hg : Integrable g μ)
     (hf : AEStronglyMeasurable f μ) (h : ∀ᵐ a ∂μ, ‖f a‖ ≤ ‖g a‖) : Integrable f μ :=
   ⟨hf, hg.hasFiniteIntegral.mono h⟩
 
+theorem Integrable.mono_nonneg [Lattice β] [HasSolidNorm β] [AddLeftMono β] {f g : α → β}
+    (hg : Integrable g μ) (hf : AEStronglyMeasurable f μ) (hnonneg : ∀ᵐ a ∂μ, 0 ≤ f a)
+    (h : ∀ᵐ a ∂μ, f a ≤ g a) :
+    Integrable f μ :=
+  ⟨hf, hg.hasFiniteIntegral.mono_nonneg hnonneg h⟩
+
 theorem Integrable.mono'_enorm {f : α → ε} {g : α → ℝ≥0∞} (hg : Integrable g μ)
     (hf : AEStronglyMeasurable f μ) (h : ∀ᵐ a ∂μ, ‖f a‖ₑ ≤ g a) : Integrable f μ :=
   ⟨hf, hg.hasFiniteIntegral.mono_enorm h⟩
@@ -221,6 +227,23 @@ lemma integrable_norm_rpow_iff {f : α → β} {p : ℝ≥0∞}
   rw [← memLp_norm_rpow_iff (q := p) hf p_zero p_top, ← memLp_one_iff_integrable,
     ENNReal.div_self p_zero p_top]
 
+lemma integrable_norm_rpow_of_le [IsFiniteMeasure μ] {f : α → β} (hf : AEStronglyMeasurable f μ)
+    {p q : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q) (hpq : p ≤ q) (hint : Integrable (fun x ↦ ‖f x‖ ^ q) μ) :
+    Integrable (fun x ↦ ‖f x‖ ^ p) μ := by
+  rcases hp.eq_or_lt with (rfl | hp)
+  · simp
+  rcases hq.eq_or_lt with (rfl | hq)
+  · grind
+  rw [← ENNReal.toReal_ofReal hp.le, integrable_norm_rpow_iff hf (by simp [hp]) (by simp)]
+  rw [← ENNReal.toReal_ofReal hq.le, integrable_norm_rpow_iff hf (by simp [hq]) (by simp)] at hint
+  exact MemLp.mono_exponent hint (ENNReal.ofReal_le_ofReal hpq)
+
+lemma integrable_norm_pow_of_le [IsFiniteMeasure μ] {f : α → β} (hf : AEStronglyMeasurable f μ)
+    {p q : ℕ} (hpq : p ≤ q) (hint : Integrable (fun x ↦ ‖f x‖ ^ q) μ) :
+    Integrable (fun x ↦ ‖f x‖ ^ p) μ := by
+  simp_rw [← Real.rpow_natCast] at *
+  exact integrable_norm_rpow_of_le hf p.cast_nonneg q.cast_nonneg (by simpa) hint
+
 theorem Integrable.mono_measure {f : α → ε} (h : Integrable f ν) (hμ : μ ≤ ν) : Integrable f μ :=
   ⟨h.aestronglyMeasurable.mono_measure hμ, h.hasFiniteIntegral.mono_measure hμ⟩
 
@@ -274,11 +297,14 @@ lemma integrable_dirac' {a : α} {f : α → ε} (hf : StronglyMeasurable f) (hf
     Integrable f (Measure.dirac a) :=
   ⟨hf.aestronglyMeasurable, by simpa [HasFiniteIntegral, lintegral_dirac' _ hf.enorm]⟩
 
-theorem integrable_finset_sum_measure [PseudoMetrizableSpace ε]
+theorem integrable_finsetSum_measure [PseudoMetrizableSpace ε]
     {ι} {m : MeasurableSpace α} {f : α → ε} {μ : ι → Measure α}
     {s : Finset ι} : Integrable f (∑ i ∈ s, μ i) ↔ ∀ i ∈ s, Integrable f (μ i) := by
   classical
   induction s using Finset.induction_on <;> simp [*]
+
+@[deprecated (since := "2026-04-08")]
+alias integrable_finset_sum_measure := integrable_finsetSum_measure
 
 section
 
@@ -390,16 +416,13 @@ theorem Integrable.add' {f g : α → ε'} (hf : Integrable f μ) (hg : Integrab
     _ = _ := lintegral_enorm_add_left hf.aestronglyMeasurable _
     _ < ∞ := add_lt_top.2 ⟨hf.hasFiniteIntegral, hg.hasFiniteIntegral⟩
 
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem Integrable.add [ContinuousAdd ε']
     {f g : α → ε'} (hf : Integrable f μ) (hg : Integrable g μ) :
     Integrable (f + g) μ :=
   ⟨hf.aestronglyMeasurable.add hg.aestronglyMeasurable, hf.add' hg⟩
 
-@[fun_prop]
-theorem Integrable.add'' [ContinuousAdd ε']
-    {f g : α → ε'} (hf : Integrable f μ) (hg : Integrable g μ) :
-    Integrable (fun x ↦ f x + g x) μ := hf.add hg
+@[deprecated (since := "2026-03-19")] alias Integrable.add'' := Integrable.fun_add
 
 @[simp]
 lemma Integrable.of_subsingleton_codomain [Subsingleton ε'] {f : α → ε'} :
@@ -413,33 +436,36 @@ section ESeminormedAddCommMonoid
 variable {ε' : Type*} [TopologicalSpace ε'] [ESeminormedAddCommMonoid ε'] [ContinuousAdd ε']
 
 @[fun_prop]
-theorem integrable_finset_sum' {ι} (s : Finset ι) {f : ι → α → ε'}
+theorem integrable_finsetSum' {ι} (s : Finset ι) {f : ι → α → ε'}
     (hf : ∀ i ∈ s, Integrable (f i) μ) : Integrable (∑ i ∈ s, f i) μ :=
   Finset.sum_induction f (fun g => Integrable g μ) (fun _ _ => Integrable.add)
     (integrable_zero _ _ _) hf
 
+@[deprecated (since := "2026-04-08")] alias integrable_finset_sum' := integrable_finsetSum'
+
 @[fun_prop]
-theorem integrable_finset_sum {ι} (s : Finset ι) {f : ι → α → ε'}
+theorem integrable_finsetSum {ι} (s : Finset ι) {f : ι → α → ε'}
     (hf : ∀ i ∈ s, Integrable (f i) μ) : Integrable (fun a => ∑ i ∈ s, f i a) μ := by
-  simpa only [← Finset.sum_apply] using integrable_finset_sum' s hf
+  simpa only [← Finset.sum_apply] using integrable_finsetSum' s hf
+
+@[deprecated (since := "2026-04-08")] alias integrable_finset_sum := integrable_finsetSum
 
 end ESeminormedAddCommMonoid
 
-/-- If `f` is integrable, then so is `-f`.
-See `Integrable.neg'` for the same statement, but formulated with `x ↦ - f x` instead of `-f`. -/
-@[fun_prop]
+/-- If `f` is integrable, then so is `-f`. -/
+@[to_fun (attr := fun_prop)]
 theorem Integrable.neg {f : α → β} (hf : Integrable f μ) : Integrable (-f) μ :=
   ⟨hf.aestronglyMeasurable.neg, by fun_prop⟩
 
-/-- If `f` is integrable, then so is `fun x ↦ - f x`.
-See `Integrable.neg` for the same statement, but formulated with `-f` instead of `fun x ↦ - f x`. -/
-@[fun_prop]
-theorem Integrable.neg' {f : α → β} (hf : Integrable f μ) : Integrable (fun x ↦ - f x) μ :=
-  ⟨hf.aestronglyMeasurable.neg, hf.hasFiniteIntegral.neg⟩
+@[deprecated (since := "2026-03-19")] alias Integrable.neg' := Integrable.fun_neg
 
 @[simp]
 theorem integrable_neg_iff {f : α → β} : Integrable (-f) μ ↔ Integrable f μ :=
   ⟨fun h => neg_neg f ▸ h.neg, Integrable.neg⟩
+
+@[simp]
+theorem integrable_fun_neg_iff {f : α → β} : Integrable (fun x ↦ -f x) μ ↔ Integrable f μ :=
+  integrable_neg_iff
 
 /-- if `f` is integrable, then `f + g` is integrable iff `g` is.
 See `integrable_add_iff_integrable_right'` for the same statement with `fun x ↦ f x + g x` instead
@@ -675,14 +701,14 @@ lemma Integrable.measure_ge_lt_top {f : α → β} [Lattice β] [HasSolidNorm β
     μ {a : α | ε ≤ f a} < ∞ :=
   lt_of_le_of_lt (measure_mono fun x hx => norm_le_norm_of_abs_le_abs <|
     (abs_of_nonneg ε_pos.le).symm ▸ hx.trans (le_abs_self (f x)))
-    (hf.measure_norm_ge_lt_top (by simp; grind))
+    (hf.measure_norm_ge_lt_top (by positivity [ε_pos.ne']))
 
 /-- If `f` is integrable, then for any `c < 0` the set `{x | f x ≤ c}` has finite
 measure. -/
 lemma Integrable.measure_le_lt_top {f : α → β} [Lattice β] [HasSolidNorm β] [AddLeftMono β]
     (hf : Integrable f μ) {c : β} (c_neg : c < 0) :
     μ {a : α | f a ≤ c} < ∞ := by
-  have : 0 < ‖c‖ := by simp; grind
+  have : 0 < ‖c‖ := by positivity [c_neg.ne]
   refine lt_of_le_of_lt (measure_mono fun x hx => ?_) (hf.measure_norm_ge_lt_top this)
   have : -c ≤ -f x := by simp; grind
   exact norm_le_norm_of_abs_le_abs <| abs_of_nonpos c_neg.le ▸ this.trans (neg_le_abs _)

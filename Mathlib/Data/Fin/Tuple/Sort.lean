@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Group.End
 public import Mathlib.Data.Finset.Sort
-public import Mathlib.Data.Fintype.Sum
 public import Mathlib.Data.Prod.Lex
 public import Mathlib.Order.Interval.Finset.Fin
 public import Mathlib.Data.Fintype.Fin
@@ -47,6 +46,7 @@ def graph (f : Fin n → α) : Finset (α ×ₗ Fin n) :=
 -/
 def graph.proj {f : Fin n → α} : graph f → α := fun p => p.1.1
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem graph.card (f : Fin n → α) : (graph f).card = n := by
   rw [graph, Finset.card_image_of_injective]

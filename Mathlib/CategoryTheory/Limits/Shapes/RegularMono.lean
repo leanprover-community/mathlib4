@@ -6,7 +6,7 @@ Authors: Kim Morrison, Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.EffectiveEpi.Basic
-public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Equalizers
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 
@@ -20,9 +20,11 @@ In this file, we give the following definitions.
   monomorphism. That is, it carries a fork and data specifying `f` as the equalizer of that fork.
 * `IsRegularMono f`, which is a `Prop`-valued class stating that `f` is a regular monomorphism. In
   particular, this doesn't carry any data.
+
 and constructions
 * `IsSplitMono f → RegularMono f` and
 * `RegularMono f → Mono f`
+
 as well as the dual definitions/constructions for regular epimorphisms.
 
 Additionally, we give the constructions
@@ -30,7 +32,6 @@ Additionally, we give the constructions
   strong.
 * `regularEpiOfEffectiveEpi`: constructs a `RegularEpi f` instance from `EffectiveEpi f` and
   `HasPullback f f`.
-
 
 We also define classes `IsRegularMonoCategory` and `IsRegularEpiCategory` for categories in which
 every monomorphism or epimorphism is regular, and deduce that these categories are
@@ -78,6 +79,7 @@ def RegularMono.ofIso (e : X ≅ Y) : RegularMono e.hom where
   right := 𝟙 Y
   isLimit := Fork.IsLimit.mk _ (fun s ↦ s.ι ≫ e.inv) (by simp) fun s m w ↦ by simp [← w]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Regular monomorphisms are preserved by isomorphisms in the arrow category. -/
 def RegularMono.ofArrowIso {X'} {Y'} {f : X ⟶ Y} {g : X' ⟶ Y'}
     (e : Arrow.mk f ≅ Arrow.mk g) (h : RegularMono f) :
@@ -85,9 +87,7 @@ def RegularMono.ofArrowIso {X'} {Y'} {f : X ⟶ Y} {g : X' ⟶ Y'}
   Z := h.Z
   left := e.inv.right ≫ h.left
   right := e.inv.right ≫ h.right
-  w := by
-    have := Arrow.mk_hom g ▸ Arrow.w_mk_right e.inv
-    simp_rw [← reassoc_of% this, h.w]
+  w := by simp only [← (Arrow.w_mk_assoc e.inv), h.w]
   isLimit := Fork.isLimitOfIsos _ h.isLimit _
     (Arrow.rightFunc.mapIso e) (Iso.refl _) (Arrow.leftFunc.mapIso e)
 
@@ -172,6 +172,7 @@ lemma IsRegularMono.uniq {W : C} (f : X ⟶ Y) [IsRegularMono f] (k : W ⟶ Y)
 
 end IsRegularMono
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The chosen equalizer of a parallel pair is a regular monomorphism. -/
 def RegularMono.equalizer (g h : X ⟶ Y) [HasLimit (parallelPair g h)] :
     RegularMono (equalizer.ι g h) where
@@ -235,7 +236,7 @@ def regularOfIsPullbackSndOfRegular {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h
     have := hr.mono
     apply (PullbackCone.mk f g comm).equalizer_ext
     · simp only [PullbackCone.mk_π_app, ← cancel_mono h]
-      grind [Fork.ι_ofι]
+      grind [Fork.ofι, PullbackCone.mk]
     · exact z
 
 /-- The first leg of a pullback cone is a regular monomorphism if the left component is too.
@@ -322,6 +323,7 @@ def RegularEpi.ofIso (e : X ≅ Y) : RegularEpi e.hom where
   isColimit := Cofork.IsColimit.mk _ (fun s ↦ e.inv ≫ s.π) (by simp) fun s m w ↦ by
     simp [← w]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Regular epimorphisms are preserved by isomorphisms in the arrow category. -/
 def RegularEpi.ofArrowIso {X'} {Y'} {f : X ⟶ Y} {g : X' ⟶ Y'}
     (e : Arrow.mk f ≅ Arrow.mk g) (h : RegularEpi f) :
@@ -418,6 +420,7 @@ lemma IsRegularEpi.uniq {Z : C} (f : X ⟶ Y) [IsRegularEpi f] (k : X ⟶ Z)
 
 end IsRegularEpi
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The chosen coequalizer of a parallel pair is a regular epimorphism. -/
 def coequalizerRegular (g h : X ⟶ Y) [HasColimit (parallelPair g h)] :
     RegularEpi (coequalizer.π g h) where
@@ -443,6 +446,16 @@ def regularEpiOfKernelPair {B X : C} (f : X ⟶ B) [HasPullback f f]
   w := pullback.condition
   isColimit := hc
 
+set_option backward.isDefEq.respectTransparency false in
+lemma IsRegularEpi.of_epi_of_exists {X B : C} {f : X ⟶ B} [HasPullback f f] [Epi f]
+    (h : ∀ ⦃Z : C⦄ ⦃g : X ⟶ Z⦄, pullback.fst f f ≫ g = pullback.snd f f ≫ g →
+      ∃ (u : B ⟶ Z), f ≫ u = g) :
+    IsRegularEpi f := by
+  refine ⟨⟨regularEpiOfKernelPair _ <| Cofork.IsColimit.mk' _ fun s ↦ ?_⟩⟩
+  choose g hg using h s.condition
+  refine ⟨g, hg, fun hm ↦ ?_⟩
+  rwa [← cancel_epi f, hg]
+
 /-- The data of an `EffectiveEpi` structure on a `RegularEpi`. -/
 def effectiveEpiStructOfRegularEpi {B X : C} {f : X ⟶ B} (hf : RegularEpi f) :
     EffectiveEpiStruct f where
@@ -464,6 +477,7 @@ theorem effectiveEpi_of_kernelPair {B X : C} (f : X ⟶ B) [HasPullback f f]
 
 @[deprecated (since := "2025-11-20")] alias effectiveEpiOfKernelPair := effectiveEpi_of_kernelPair
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given a kernel pair of an effective epimorphism `f : X ⟶ B`, the induced cofork is a coequalizer.
 -/
@@ -581,6 +595,78 @@ lemma strongEpi_of_regularEpi (f : X ⟶ Y) (h : RegularEpi f) : StrongEpi f :=
 theorem isIso_of_regularEpi_of_mono (f : X ⟶ Y) (h : RegularEpi f) [Mono f] : IsIso f :=
   have := isRegularEpi_of_regularEpi h
   isIso_of_mono_of_strongEpi _
+
+section
+
+/-- A regular monomorphism in `C` induces a regular epimorphism in `Cᵒᵖ`. -/
+noncomputable def RegularMono.op {X Y : C} {f : X ⟶ Y} (hf : RegularMono f) :
+    RegularEpi f.op where
+  W := .op hf.Z
+  left := hf.left.op
+  right := hf.right.op
+  w := by simp [← op_comp, hf.w]
+  isColimit := Fork.isLimitOfιEquivIsColimitOp _ _ hf.w _ rfl hf.isLimit
+
+/-- A regular monomorphism in `Cᵒᵖ` induces a regular epimorphism in `C`. -/
+noncomputable def RegularMono.unop {X Y : Cᵒᵖ} {f : X ⟶ Y} (hf : RegularMono f) :
+    RegularEpi f.unop where
+  W := hf.Z.unop
+  left := hf.left.unop
+  right := hf.right.unop
+  w := by simp [← unop_comp, hf.w]
+  isColimit := Fork.isLimitOfιEquivIsColimitUnop _ _ hf.w _ rfl hf.isLimit
+
+/-- A regular epimorphism in `C` induces a regular monomorphism in `Cᵒᵖ`. -/
+noncomputable def RegularEpi.op {X Y : C} {f : X ⟶ Y} (hf : RegularEpi f) :
+    RegularMono f.op where
+  Z := .op hf.W
+  left := hf.left.op
+  right := hf.right.op
+  w := by simp [← op_comp, hf.w]
+  isLimit := Cofork.isColimitOfπEquivIsLimitOp _ _ hf.w _ rfl hf.isColimit
+
+/-- A regular epimorphism in `Cᵒᵖ` induces a regular monomorphism in `C`. -/
+noncomputable def RegularEpi.unop {X Y : Cᵒᵖ} {f : X ⟶ Y} (hf : RegularEpi f) :
+    RegularMono f.unop where
+  Z := hf.W.unop
+  left := hf.left.unop
+  right := hf.right.unop
+  w := by simp [← unop_comp, hf.w]
+  isLimit := Cofork.isColimitOfπEquivIsLimitUnop _ _ hf.w _ rfl hf.isColimit
+
+@[simp]
+lemma isRegularMono_op_iff_isRegularEpi {X Y : C} (f : X ⟶ Y) :
+    IsRegularMono f.op ↔ IsRegularEpi f :=
+  ⟨fun hf ↦ ⟨⟨hf.regularMono.some.unop⟩⟩, fun hf ↦ ⟨⟨hf.regularEpi.some.op⟩⟩⟩
+
+instance {X Y : C} (f : X ⟶ Y) [IsRegularEpi f] : IsRegularMono f.op := by
+  simpa
+
+@[simp]
+lemma isRegularMono_unop_iff_isRegularEpi {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+    IsRegularMono f.unop ↔ IsRegularEpi f :=
+  ⟨fun hf ↦ ⟨⟨hf.regularMono.some.op⟩⟩, fun hf ↦ ⟨⟨hf.regularEpi.some.unop⟩⟩⟩
+
+instance {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsRegularEpi f] : IsRegularMono f.unop := by
+  simpa
+
+@[simp]
+lemma isRegularEpi_op_iff_isRegularMono {X Y : C} (f : X ⟶ Y) :
+    IsRegularEpi f.op ↔ IsRegularMono f :=
+  ⟨fun hf ↦ ⟨⟨hf.regularEpi.some.unop⟩⟩, fun hf ↦ ⟨⟨hf.regularMono.some.op⟩⟩⟩
+
+instance {X Y : C} (f : X ⟶ Y) [IsRegularMono f] : IsRegularEpi f.op := by
+  simpa
+
+@[simp]
+lemma isRegularEpi_unop_iff_isRegularMono {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+    IsRegularEpi f.unop ↔ IsRegularMono f :=
+  ⟨fun hf ↦ ⟨⟨hf.regularEpi.some.op⟩⟩, fun hf ↦ ⟨⟨hf.regularMono.some.unop⟩⟩⟩
+
+instance {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsRegularMono f] : IsRegularEpi f.unop := by
+  simpa
+
+end
 
 section
 

@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.Push
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Set.Basic
@@ -147,3 +148,39 @@ example (a b c : α) (s : Set α) : a ∈ (∅ ∪ (Set.univ ∩ (({b, c} \ sᶜ
   exact test_sorry
 
 end membership
+
+section floor
+
+example (a : ℤ) (n : ℕ) : ⌊a + n⌋ = ⌊a⌋ + n := by
+  push Int.floor
+  rfl
+
+example (a : ℤ) : ⌊a + 3⌋ = ⌊a⌋ + 3 := by
+  push Int.floor
+  rfl
+
+example (a : ℤ) : ⌊a + 2⌋ = ⌊a⌋ + 2 := by
+  push Int.floor
+  rfl
+
+example (a : ℤ) : ⌊a + 1⌋ = ⌊a⌋ + 1 := by
+  push Int.floor
+  rfl
+
+example (a : ℤ) (ha : 0 ≤ a) (n : ℕ) : ⌊a + n⌋₊ = ⌊a⌋₊ + n := by
+  push (disch := positivity) Nat.floor
+  rfl
+
+example (a : ℤ) (ha : 0 ≤ a) : ⌊a + 3⌋₊ = ⌊a⌋₊ + 3 := by
+  push (disch := positivity) Nat.floor
+  rfl
+
+example (a : ℤ) (ha : 0 ≤ a) : ⌊a + 2⌋₊ = ⌊a⌋₊ + 2 := by
+  push (disch := positivity) Nat.floor
+  rfl
+
+example (a : ℤ) (ha : 0 ≤ a) : ⌊a + 1⌋₊ = ⌊a⌋₊ + 1 := by
+  push (disch := positivity) Nat.floor
+  rfl
+
+end floor

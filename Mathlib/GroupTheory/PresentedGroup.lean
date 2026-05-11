@@ -37,11 +37,9 @@ variable {α : Type*}
 generators `x : α` and relations `rels` as a quotient of `FreeGroup α`. -/
 def PresentedGroup (rels : Set (FreeGroup α)) :=
   FreeGroup α ⧸ Subgroup.normalClosure rels
+deriving Group
 
 namespace PresentedGroup
-
-instance (rels : Set (FreeGroup α)) : Group (PresentedGroup rels) :=
-  QuotientGroup.Quotient.group _
 
 /-- The canonical map from the free group on `α` to a presented group with generators `x : α`,
 where `x` is mapped to its equivalence class under the given set of relations `rels` -/
@@ -72,6 +70,7 @@ lemma mk_eq_mk_of_inv_mul_mem {rels : Set (FreeGroup α)} {x y : FreeGroup α}
     (hx : x⁻¹ * y ∈ rels) : mk rels x = mk rels y :=
   eq_of_inv_mul_eq_one <| one_of_mem hx
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The generators of a presented group generate the presented group. That is, the subgroup closure
 of the set of generators equals `⊤`. -/
 @[simp]

@@ -15,7 +15,7 @@ This file collects facts about algebraic structures on the one-element type, e.g
 GCD.
 -/
 
-@[expose] public section
+public section
 
 namespace PUnit
 

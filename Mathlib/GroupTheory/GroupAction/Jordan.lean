@@ -378,6 +378,7 @@ theorem isPretransitive_of_isCycle_mem {g : Perm α}
   obtain ⟨i, hi⟩ := hgc ((hs x).mpr hx)
   exact ⟨g' ^ i, hi.symm⟩
 
+set_option backward.isDefEq.respectTransparency false in
 omit [Fintype α] in variable [Finite α] in
 /-- A primitive subgroup of `Equiv.Perm α` that contains a swap
 is the full permutation group (Jordan). -/

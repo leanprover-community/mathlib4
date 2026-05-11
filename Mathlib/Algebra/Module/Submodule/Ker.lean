@@ -32,8 +32,7 @@ linear algebra, vector space, module
 @[expose] public section
 
 open Function
-
-open Pointwise
+open scoped Pointwise
 
 variable {R : Type*} {R₂ : Type*} {R₃ : Type*}
 variable {K : Type*}

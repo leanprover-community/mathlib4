@@ -72,6 +72,7 @@ noncomputable def ι' : (CochainComplex.singleFunctor C 0).obj X ⟶ R.cochainCo
   (HomologicalComplex.extendSingleIso _ _ _ _ (by simp)).inv ≫
     (ComplexShape.embeddingUpNat.extendFunctor C).map R.ι
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma ι'_f_zero :
     R.ι'.f 0 = (HomologicalComplex.singleObjXSelf (.up ℤ) 0 X).hom ≫ R.ι.f 0 ≫
@@ -85,6 +86,7 @@ end
 
 variable [Abelian C] {X : C} (R : InjectiveResolution X)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : QuasiIso R.ι' := by dsimp [ι']; infer_instance
 
 instance : R.cochainComplex.IsLE 0 := by
@@ -101,6 +103,7 @@ an (heterogeneous) morphism of injective resolutions. -/
 noncomputable def hom' : R.cochainComplex ⟶ R'.cochainComplex :=
   HomologicalComplex.extendMap φ.hom _
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma hom'_f (n : ℤ) (m : ℕ) (h : m = n) :
     φ.hom'.f n =
@@ -109,6 +112,7 @@ lemma hom'_f (n : ℤ) (m : ℕ) (h : m = n) :
     HomologicalComplex.extendMap_f _ ComplexShape.embeddingUpNat (i := m) (i' := n) (by simpa),
     cochainComplexXIso]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι'_comp_hom' :
     R.ι' ≫ φ.hom' = (CochainComplex.singleFunctor C 0).map f ≫ R'.ι' :=

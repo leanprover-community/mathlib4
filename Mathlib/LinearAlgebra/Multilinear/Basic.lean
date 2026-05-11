@@ -12,6 +12,7 @@ public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.Logic.Equiv.Fintype
 public import Mathlib.Tactic.Abel
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 
 /-!
@@ -212,6 +213,10 @@ theorem smul_apply (f : MultilinearMap R M₁ M₂) (c : S) (m : ∀ i, M₁ i) 
 theorem coe_smul (c : S) (f : MultilinearMap R M₁ M₂) : ⇑(c • f) = c • (⇑f) := rfl
 
 end SMul
+
+-- The `AddMonoid` instance exists to help speedup unification
+instance : AddMonoid (MultilinearMap R M₁ M₂) := fast_instance%
+  coe_injective.addMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 
 instance addCommMonoid : AddCommMonoid (MultilinearMap R M₁ M₂) := fast_instance%
   coe_injective.addCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
@@ -414,11 +419,11 @@ def compMultilinearMap (g : MultilinearMap R M₁ M₂) (f : (i : ι) → Multil
   toFun m := g fun i ↦ f i (Sigma.curry m i)
   map_update_add' {hDecEqSigma} := by
     classical
-    simp [Subsingleton.elim hDecEqSigma Sigma.instDecidableEqSigma,
+    simp +instances [Subsingleton.elim hDecEqSigma Sigma.instDecidableEqSigma,
       Sigma.curry_update, Function.apply_update (fun i ↦ f i)]
   map_update_smul' {hDecEqSigma} := by
     classical
-    simp [Subsingleton.elim hDecEqSigma Sigma.instDecidableEqSigma,
+    simp +instances [Subsingleton.elim hDecEqSigma Sigma.instDecidableEqSigma,
       Sigma.curry_update, Function.apply_update (fun i ↦ f i)]
 
 end compMultilinear
@@ -879,7 +884,7 @@ section Semiring
 variable [Semiring R] [(i : ι) → AddCommMonoid (M₁ i)] [(i : ι) → Module R (M₁ i)]
   [AddCommMonoid M₂] [Module R M₂]
 
-instance [Monoid S] [DistribMulAction S M₂] [Module R M₂] [SMulCommClass R S M₂] :
+instance [Monoid S] [DistribMulAction S M₂] [SMulCommClass R S M₂] :
     DistribMulAction S (MultilinearMap R M₁ M₂) := fast_instance%
   coe_injective.distribMulAction coeAddMonoidHom fun _ _ ↦ rfl
 
@@ -1324,12 +1329,12 @@ lemma map_update [DecidableEq ι] (x : (i : ι) → M₁ i) (i : ι) (v : M₁ i
     f (update x i v) = f x - f (update x i (x i - v)) := by
   rw [map_update_sub, update_eq_self, sub_sub_cancel]
 
-open Finset in
 lemma map_sub_map_piecewise [LinearOrder ι] (a b : (i : ι) → M₁ i) (s : Finset ι) :
     f a - f (s.piecewise b a) =
     ∑ i ∈ s, f (fun j ↦ if j ∈ s → j < i then a j else if i = j then a j - b j else b j) := by
-  refine s.induction_on_min ?_ fun k s hk ih ↦ ?_
-  · rw [Finset.piecewise_empty, sum_empty, sub_self]
+  induction s using induction_on_min with
+  | empty => rw [Finset.piecewise_empty, sum_empty, sub_self]
+  | insert k s hk ih => ?_
   rw [Finset.piecewise_insert, map_update, ← sub_add, ih,
       add_comm, sum_insert (lt_irrefl _ <| hk k ·)]
   simp_rw [s.mem_insert]
@@ -1340,7 +1345,7 @@ lemma map_sub_map_piecewise [LinearOrder ι] (a b : (i : ι) → M₁ i) (s : Fi
       · exact fun h ↦ (h₁ <| .inl h).ne h
     · cases h₂
       rw [update_self, s.piecewise_eq_of_notMem _ _ (lt_irrefl _ <| hk k ·)]
-    · push_neg at h₁
+    · push Not at h₁
       rw [update_of_ne (Ne.symm h₂), s.piecewise_eq_of_mem _ _ (h₁.1.resolve_left <| Ne.symm h₂)]
   · apply sum_congr rfl
     grind

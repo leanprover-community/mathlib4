@@ -221,9 +221,6 @@ theorem isChain_cons_toList_nonempty :
   | _, nil => .singleton _
   | _, cons p f => p.isChain_cons_toList_nonempty.cons_cons ⟨f⟩
 
-@[deprecated (since := "2025-09-19")]
-alias toList_chain_nonempty := isChain_cons_toList_nonempty
-
 variable [∀ a b : V, Subsingleton (a ⟶ b)]
 
 theorem toList_injective (a : V) : ∀ b, Injective (toList : Path a b → List V)
@@ -260,6 +257,7 @@ instance instSubsingletonBddPaths (v w : V) : Subsingleton (BoundedPaths v w 0) 
 def decidableEqBddPathsZero (v w : V) : DecidableEq (BoundedPaths v w 0) :=
   fun _ _ => isTrue <| Subsingleton.elim _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given decidable equality on paths of length up to `n`, we can construct
 decidable equality on paths of length up to `n + 1`. -/
 def decidableEqBddPathsOfDecidableEq (n : ℕ) (h₁ : DecidableEq V)

@@ -78,7 +78,7 @@ alias ⟨Eventually.exists_forall_of_atTop, _⟩ := eventually_atTop
 
 lemma exists_eventually_atTop {r : α → β → Prop} :
     (∃ b, ∀ᶠ a in atTop, r a b) ↔ ∀ᶠ a₀ in atTop, ∃ b, ∀ a ≥ a₀, r a b := by
-  simp_rw [eventually_atTop, ← exists_swap (α := α)]
+  simp_rw [eventually_atTop, ← exists_comm (α := α)]
   exact exists_congr fun a ↦ .symm <| forall_ge_iff <| Monotone.exists fun _ _ _ hb H n hn ↦
     H n (hb.trans hn)
 

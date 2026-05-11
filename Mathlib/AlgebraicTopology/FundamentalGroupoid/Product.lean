@@ -65,6 +65,7 @@ def piToPiTop : (∀ i, πₓ (X i)) ⥤ πₓ (TopCat.of (∀ i, X i)) where
     rfl
   map_comp f g := (Path.Homotopic.comp_pi_eq_pi_comp f g).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Shows `piToPiTop` is an isomorphism, whose inverse is precisely the pi product
 of the induced projections. This shows that `fundamentalGroupoidFunctor` preserves products.
 -/
@@ -93,7 +94,7 @@ open CategoryTheory
 /-- Equivalence between the categories of cones over the objects `π Xᵢ` written in two ways -/
 def coneDiscreteComp :
     Limits.Cone (Discrete.functor X ⋙ π) ≌ Limits.Cone (Discrete.functor fun i => πₓ (X i)) :=
-  Limits.Cones.postcomposeEquivalence (Discrete.compNatIsoDiscrete X π)
+  Limits.Cone.postcomposeEquivalence (Discrete.compNatIsoDiscrete X π)
 
 theorem coneDiscreteComp_obj_mapCone :
     (coneDiscreteComp X).functor.obj (Functor.mapCone π (TopCat.piFan X)) =
@@ -107,7 +108,7 @@ def piTopToPiCone :
 
 instance : IsIso (piTopToPiCone X) :=
   haveI : IsIso (piTopToPiCone X).hom := (inferInstance : IsIso (piIso X).inv)
-  Limits.Cones.cone_iso_of_hom_iso (piTopToPiCone X)
+  Limits.Cone.cone_iso_of_hom_iso (piTopToPiCone X)
 
 /-- The fundamental groupoid functor preserves products -/
 lemma preservesProduct : Limits.PreservesLimit (Discrete.functor X) π := by
@@ -167,6 +168,7 @@ theorem prodToProdTop_map {x₀ x₁ : πₓ A} {y₀ y₁ : πₓ B} (p₀ : x�
       Path.Homotopic.prod p₀ p₁ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Shows `prodToProdTop` is an isomorphism, whose inverse is precisely the product
 of the induced left and right projections.
 -/

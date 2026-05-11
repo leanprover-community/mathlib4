@@ -27,7 +27,7 @@ In most cases, the codomain will be a linear ordered additive monoid like
 
 -/
 
-@[expose] public section
+public section
 
 variable {X R : Type*}
 

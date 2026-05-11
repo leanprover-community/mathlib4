@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Module.Submodule.Pointwise
 public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.RingTheory.Localization.Module
 public import Mathlib.Algebra.Algebra.Operations
@@ -246,7 +245,7 @@ noncomputable def localizedEquiv : M'.localized p ≃ₗ[Localization p] Localiz
   IsLocalizedModule.linearEquiv p (M'.toLocalized p) (LocalizedModule.mkLinearMap _ _)
     |>.restrictScalars _
 
-open Pointwise
+open scoped Pointwise
 
 lemma localized₀_le_localized₀_of_smul_le {P Q : Submodule R M} (x : p) (h : x • P ≤ Q) :
     P.localized₀ p f ≤ Q.localized₀ p f := by
@@ -286,7 +285,7 @@ instance IsLocalizedModule.toLocalizedQuotient' (M' : Submodule R M) :
     IsLocalizedModule p (M'.toLocalizedQuotient' S p f) where
   map_units x := by
     refine (Module.End.isUnit_iff _).mpr ⟨fun m n e ↦ ?_, fun m ↦ ⟨(IsLocalization.mk' S 1 x) • m,
-        by rw [Module.algebraMap_end_apply, ← smul_assoc, smul_mk'_one, mk'_self', one_smul]⟩⟩
+      by rw [Module.algebraMap_end_apply, ← smul_assoc, smul_mk'_one, mk'_self', one_smul]⟩⟩
     obtain ⟨⟨m, rfl⟩, n, rfl⟩ := PProd.mk (mk_surjective _ m) (mk_surjective _ n)
     simp only [Module.algebraMap_end_apply, ← mk_smul, Submodule.Quotient.eq, ← smul_sub] at e
     replace e := Submodule.smul_mem _ (IsLocalization.mk' S 1 x) e

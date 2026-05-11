@@ -199,9 +199,6 @@ theorem trans_toOpenPartialHomeomorph : (e.trans e').toOpenPartialHomeomorph =
     e.toOpenPartialHomeomorph.trans e'.toOpenPartialHomeomorph :=
   OpenPartialHomeomorph.toPartialEquiv_injective <| Equiv.trans_toPartialEquiv _ _
 
-@[deprecated (since := "2025-08-29")] alias
-  trans_toPartialHomeomorph := trans_toOpenPartialHomeomorph
-
 /-- Precompose an open partial homeomorphism with a homeomorphism.
 We modify the source and target to have better definitional behavior. -/
 @[simps! -fullyApplied]
@@ -213,15 +210,9 @@ def transOpenPartialHomeomorph (e : X ≃ₜ Y) (f' : OpenPartialHomeomorph Y Z)
   continuousOn_toFun := f'.continuousOn.comp e.continuous.continuousOn fun _ => id
   continuousOn_invFun := e.symm.continuous.comp_continuousOn f'.symm.continuousOn
 
-@[deprecated (since := "2025-08-29")] alias
-  transPartialHomeomorph := transOpenPartialHomeomorph
-
 theorem transOpenPartialHomeomorph_eq_trans (e : X ≃ₜ Y) (f' : OpenPartialHomeomorph Y Z) :
     e.transOpenPartialHomeomorph f' = e.toOpenPartialHomeomorph.trans f' :=
   OpenPartialHomeomorph.toPartialEquiv_injective <| Equiv.transPartialEquiv_eq_trans _ _
-
-@[deprecated (since := "2025-08-29")] alias
-  transPartialHomeomorph_eq_trans := transOpenPartialHomeomorph_eq_trans
 
 @[simp, mfld_simps]
 theorem transOpenPartialHomeomorph_trans (e : X ≃ₜ Y) (f : OpenPartialHomeomorph Y Z)
@@ -229,17 +220,11 @@ theorem transOpenPartialHomeomorph_trans (e : X ≃ₜ Y) (f : OpenPartialHomeom
     (e.transOpenPartialHomeomorph f).trans f' = e.transOpenPartialHomeomorph (f.trans f') := by
   simp only [transOpenPartialHomeomorph_eq_trans, OpenPartialHomeomorph.trans_assoc]
 
-@[deprecated (since := "2025-08-29")] alias
-  transPartialHomeomorph_trans := transOpenPartialHomeomorph_trans
-
 @[simp, mfld_simps]
 theorem trans_transOpenPartialHomeomorph (e : X ≃ₜ Y) (e' : Y ≃ₜ Z)
     (f'' : OpenPartialHomeomorph Z Z') : (e.trans e').transOpenPartialHomeomorph f'' =
       e.transOpenPartialHomeomorph (e'.transOpenPartialHomeomorph f'') := by
   simp only [transOpenPartialHomeomorph_eq_trans, OpenPartialHomeomorph.trans_assoc,
     trans_toOpenPartialHomeomorph]
-
-@[deprecated (since := "2025-08-29")] alias
-  trans_transPartialHomeomorph := trans_transOpenPartialHomeomorph
 
 end Homeomorph

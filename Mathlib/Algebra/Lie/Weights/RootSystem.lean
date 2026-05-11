@@ -426,6 +426,7 @@ lemma biSup_corootSpace_eq_top :
   ext α
   simp [eq_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma biSup_corootSubmodule_eq_cartan :
     ⨆ α : Weight K H L, ⨆ (_ : α.IsNonZero), corootSubmodule α = H.toLieSubmodule := by

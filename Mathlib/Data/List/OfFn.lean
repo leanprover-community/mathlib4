@@ -37,15 +37,10 @@ namespace List
 theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f (Fin.cast (by simp) i) := by
   simp; congr
 
-@[simp]
-theorem map_ofFn {β : Type*} {n : ℕ} (f : Fin n → α) (g : α → β) :
-    map g (ofFn f) = ofFn (g ∘ f) :=
-  ext_get (by simp) fun i h h' => by simp
-
 /-- Useful if `rw [← map_ofFn]` complains that `g ∘ f` is not the same as `fun i => g (f i)`. -/
 theorem ofFn_comp' {β : Type*} {n : ℕ} (f : Fin n → α) (g : α → β) :
     ofFn (fun i => g (f i)) = map g (ofFn f) :=
-  (map_ofFn f g).symm
+  map_ofFn.symm
 
 @[congr]
 theorem ofFn_congr {m n : ℕ} (h : m = n) (f : Fin m → α) :
@@ -98,14 +93,6 @@ theorem ofFn_get : ∀ l : List α, (ofFn (get l)) = l
     exact ofFn_get l
 
 @[simp]
-theorem ofFn_getElem : ∀ l : List α, (ofFn (fun i : Fin l.length => l[(i : Nat)])) = l
-  | [] => by rw [ofFn_zero]
-  | a :: l => by
-    rw [ofFn_succ]
-    congr
-    exact ofFn_get l
-
-@[simp]
 theorem ofFn_getElem_eq_map {β : Type*} (l : List α) (f : α → β) :
     ofFn (fun i : Fin l.length => f <| l[(i : Nat)]) = l.map f := by
   rw [← Function.comp_def, ← map_ofFn, ofFn_getElem]
@@ -134,9 +121,6 @@ theorem pairwise_ofFn {R : α → α → Prop} {n} {f : Fin n → α} :
   simp only [pairwise_iff_getElem, length_ofFn, List.getElem_ofFn,
     Fin.forall_iff,
     Fin.mk_lt_mk, forall_comm (α := (_ : Prop)) (β := ℕ)]
-
-@[deprecated (since := "2025-10-11")]
-alias sorted_ofFn_iff := pairwise_ofFn
 
 lemma getLast_ofFn_succ {n : ℕ} (f : Fin n.succ → α) :
     (ofFn f).getLast (mt ofFn_eq_nil_iff.1 (Nat.succ_ne_zero _)) = f (Fin.last _) :=

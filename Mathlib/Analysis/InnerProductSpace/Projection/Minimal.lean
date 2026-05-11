@@ -97,7 +97,7 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
               change u + u - (wq + wp) = u - wq + (u - wp)
               abel
             rw [eq₁, eq₂]
-          _ = 2 * (‖a‖ * ‖a‖ + ‖b‖ * ‖b‖) := parallelogram_law_with_norm ℝ _ _
+          _ = 2 * (‖a‖ * ‖a‖ + ‖b‖ * ‖b‖) := parallelogram_law_with_norm_mul ℝ _ _
       have eq : δ ≤ ‖u - half • (wq + wp)‖ := by
         rw [smul_add]
         apply δ_le'

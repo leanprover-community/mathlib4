@@ -6,7 +6,6 @@ Authors: Lenny Taelman
 module
 
 public import Mathlib.Data.Set.SymmDiff  -- shake: keep (Qq dependency)
-public import Aesop
 public meta import Mathlib.Tactic.ToDual
 
 /-!

@@ -55,7 +55,8 @@ This file contains basic results on dual vector spaces.
     antitone Galois coinsertion.
   * `Subspace.quotAnnihilatorEquiv` is the equivalence
     `Dual K V ⧸ W.dualAnnihilator ≃ₗ[K] Dual K W`.
-  * `LinearMap.dualPairing_nondegenerate` says that `Module.dualPairing` is nondegenerate.
+  * `LinearMap.id_nondegenerate` says that `LinearMap.id` is nondegenerate as a bilinear pairing.
+  * `LinearMap.eval_nondegenerate` says that `Dual.eval` is nondegenerate.
   * `Subspace.is_compl_dualAnnihilator` says that the dual annihilator carries complementary
     subspaces to complementary subspaces.
 * Finite-dimensional vector spaces:
@@ -401,7 +402,7 @@ theorem dualAnnihilator_dualCoannihilator_eq {W : Subspace K V} :
   refine le_antisymm (fun v ↦ Function.mtr ?_) (le_dualAnnihilator_dualCoannihilator _)
   simp only [mem_dualAnnihilator, mem_dualCoannihilator]
   rw [← Quotient.mk_eq_zero W, ← Module.forall_dual_apply_eq_zero_iff K]
-  push_neg
+  push Not
   refine fun ⟨φ, hφ⟩ ↦ ⟨φ.comp W.mkQ, fun w hw ↦ ?_, hφ⟩
   rw [comp_apply, mkQ_apply, (Quotient.mk_eq_zero W).mpr hw, φ.map_zero]
 
@@ -567,12 +568,10 @@ simultaneously restricting to `W.dualAnnihilator`.
 
 See `Subspace.dualCopairing_nondegenerate`. -/
 def dualCopairing (W : Submodule R M) : W.dualAnnihilator →ₗ[R] M ⧸ W →ₗ[R] R :=
-  LinearMap.flip <|
-    W.liftQ ((Module.dualPairing R M).domRestrict W.dualAnnihilator).flip
-      (by
-        intro w hw
-        ext ⟨φ, hφ⟩
-        exact (mem_dualAnnihilator φ).mp hφ w hw)
+  LinearMap.flip <| W.liftQ W.dualAnnihilator.subtype.flip (by
+    intro w hw
+    ext ⟨φ, hφ⟩
+    exact (mem_dualAnnihilator φ).mp hφ w hw)
 
 instance (W : Submodule R M) : FunLike (W.dualAnnihilator) M R where
   coe φ := φ.val
@@ -779,13 +778,33 @@ end Module.Dual
 
 end
 
-variable {K V₁ V₂ : Type*} [Field K]
-variable [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂] [Module K V₂]
-
 namespace LinearMap
 
-theorem dualPairing_nondegenerate : (dualPairing K V₁).Nondegenerate :=
-  ⟨separatingLeft_iff_ker_eq_bot.mpr ker_id, fun x => (forall_dual_apply_eq_zero_iff K x).mp⟩
+variable {K V : Type*} [CommSemiring K] [AddCommMonoid V] [Module K V]
+
+theorem id_separatingLeft : SeparatingLeft (M₁ := V →ₗ[K] K) .id :=
+  separatingLeft_iff_ker_eq_bot.mpr ker_id
+
+theorem eval_separatingRight : SeparatingRight (Dual.eval K V) := id_separatingLeft
+
+variable [Module.Projective K V]
+
+theorem id_separatingRight : SeparatingRight (M₁ := V →ₗ[K] K) .id :=
+  fun x => (forall_dual_apply_eq_zero_iff K x).mp
+
+theorem eval_separatingLeft : SeparatingLeft (Dual.eval K V) := id_separatingRight
+
+theorem id_nondegenerate : Nondegenerate (M₁ := V →ₗ[K] K) .id :=
+  ⟨id_separatingLeft, id_separatingRight⟩
+
+@[deprecated (since := "2026-04-02")]
+alias dualPairing_nondegenerate := id_nondegenerate
+
+theorem eval_nondegenerate : Nondegenerate (Dual.eval K V) :=
+  ⟨eval_separatingLeft, eval_separatingRight⟩
+
+variable {K V₁ V₂ : Type*} [Field K]
+variable [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂] [Module K V₂]
 
 theorem dualMap_surjective_of_injective {f : V₁ →ₗ[K] V₂} (hf : Function.Injective f) :
     Function.Surjective f.dualMap := fun φ ↦
@@ -805,6 +824,9 @@ theorem dualMap_surjective_iff {f : V₁ →ₗ[K] V₂} :
       ← Submodule.dualAnnihilator_bot, Subspace.dualAnnihilator_inj, LinearMap.ker_eq_bot]
 
 end LinearMap
+
+variable {K V₁ V₂ : Type*} [Field K]
+variable [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂] [Module K V₂]
 
 namespace Subspace
 

@@ -330,9 +330,31 @@ theorem HasFDerivWithinAt.eventually_ne (h : HasFDerivWithinAt f f' s x)
     simpa [not_imp_not, sub_eq_zero] using (A.trans this.isBigO_symm).eq_zero_imp
   · exact (h.continuousWithinAt.eventually_ne hc).filter_mono <| by gcongr; apply diff_subset
 
-theorem HasFDerivAt.eventually_ne (h : HasFDerivAt f f' x) (hf' : ∃ C, ∀ z, ‖z‖ ≤ C * ‖f' z‖) :
+theorem HasFDerivWithinAt.eventually_ne (h : HasFDerivWithinAt f f' s x)
+    (hf' : ∃ C, AntilipschitzWith C f') : ∀ᶠ z in 𝓝[s \ {x}] x, f z ≠ c := by
+  rw [← eventually_map (m := f) (P := fun z ↦ z ≠ c)]
+  apply Eventually.filter_mono (h.tendsto_nhdsWithin_nhdsNE hf')
+  rcases eq_or_ne (f x) c with rfl | hc
+  · exact eventually_mem_nhdsWithin
+  · exact eventually_ne_nhdsWithin hc
+
+theorem HasFDerivWithinAt.eventually_notMem (h : HasFDerivWithinAt f f' s x)
+    (hf' : ∃ C, AntilipschitzWith C f') (t : Set F) (ht : ¬ AccPt (f x) (𝓟 t)) :
+    ∀ᶠ z in 𝓝[s \ {x}] x, f z ∉ t := by
+  rw [accPt_iff_frequently_nhdsNE, not_frequently] at ht
+  exact eventually_map.mp (ht.filter_mono (h.tendsto_nhdsWithin_nhdsNE hf'))
+
+theorem HasFDerivAt.tendsto_nhdsNE (h : HasFDerivAt f f' x)
+    (hf' : ∃ C, AntilipschitzWith C f') : Tendsto f (𝓝[≠] x) (𝓝[≠] f x) := by
+  simpa only [compl_eq_univ_diff] using (hasFDerivWithinAt_univ.2 h).tendsto_nhdsWithin_nhdsNE hf'
+
+theorem HasFDerivAt.eventually_ne (h : HasFDerivAt f f' x) (hf' : ∃ C, AntilipschitzWith C f') :
     ∀ᶠ z in 𝓝[≠] x, f z ≠ c := by
   simpa only [compl_eq_univ_diff] using (hasFDerivWithinAt_univ.2 h).eventually_ne hf'
+
+theorem HasFDerivAt.eventually_notMem (h : HasFDerivAt f f' x) (hf' : ∃ C, AntilipschitzWith C f')
+    (t : Set F) (ht : ¬ AccPt (f x) (𝓟 t)) : ∀ᶠ z in 𝓝[≠] x, f z ∉ t := by
+  simpa only [compl_eq_univ_diff] using (hasFDerivWithinAt_univ.2 h).eventually_notMem hf' t ht
 
 end
 
@@ -458,6 +480,7 @@ theorem hasFDerivWithinAt_comp_smul_iff_smul {c : 𝕜} (hc : c ≠ 0) :
   lift c to 𝕜ˣ using IsUnit.mk0 c hc
   exact (ContinuousLinearEquiv.smulLeft c).comp_hasFDerivWithinAt_iff.symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem fderivWithin_comp_smul_eq_fderivWithin_smul (c : 𝕜) :
     fderivWithin 𝕜 (f <| c • ·) s x = fderivWithin 𝕜 (c • f) (c • s) (c • x) := by
   rcases eq_or_ne c 0 with rfl | hc
@@ -475,5 +498,11 @@ theorem fderivWithin_comp_smul (c : 𝕜) (hs : UniqueDiffWithinAt 𝕜 s x) :
 theorem fderiv_comp_smul (c : 𝕜) : fderiv 𝕜 (f <| c • ·) x = c • fderiv 𝕜 f (c • x) := by
   rw [← fderivWithin_univ, fderivWithin_comp_smul _ uniqueDiffWithinAt_univ]
   rcases eq_or_ne c 0 with rfl | hc <;> simp [smul_set_univ₀, *]
+
+theorem fderivWithin_comp_neg {f : 𝕜 → F} {s : Set 𝕜} {x : 𝕜} :
+    fderivWithin 𝕜 (fun a => f (-a)) s x = -fderivWithin 𝕜 f (-s) (-x) := by
+  have t1 := fderivWithin_comp_smul_eq_fderivWithin_smul (-1 : 𝕜) (f := f) (s := s) (x := x)
+  simp only [neg_smul, one_smul, Set.neg_smul_set] at t1
+  exact t1.trans fderivWithin_neg'
 
 end SMulLeft

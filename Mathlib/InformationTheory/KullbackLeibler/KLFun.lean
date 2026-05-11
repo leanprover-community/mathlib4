@@ -27,7 +27,7 @@ extend to other finite measures: it is nonnegative and zero iff the two measures
 
 * `klFun`: the function `fun x : ℝ ↦ x * log x + 1 - x`.
 
-This is a continuous nonnegative, strictly convex function on [0,∞), with minimum value 0 at 1.
+This is a continuous nonnegative, strictly convex function on $[0,∞)$, with minimum value 0 at 1.
 
 ## Main statements
 
@@ -58,16 +58,16 @@ lemma klFun_zero : klFun 0 = 1 := by simp [klFun]
 
 lemma klFun_one : klFun 1 = 0 := by simp [klFun]
 
-/-- `klFun` is strictly convex on [0,∞). -/
+/-- `klFun` is strictly convex on $[0,∞)$. -/
 lemma strictConvexOn_klFun : StrictConvexOn ℝ (Ici 0) klFun :=
   (strictConvexOn_mul_log.add_convexOn (convexOn_const _ (convex_Ici _))).sub_concaveOn
     (concaveOn_id (convex_Ici _))
 
-/-- `klFun` is convex on [0,∞). -/
+/-- `klFun` is convex on $[0,∞)$. -/
 lemma convexOn_klFun : ConvexOn ℝ (Ici 0) klFun := strictConvexOn_klFun.convexOn
 
-/-- `klFun` is convex on (0,∞).
-This is an often useful consequence of `convexOn_klFun`, which states convexity on [0, ∞). -/
+/-- `klFun` is convex on $(0,∞)$.
+This is an often useful consequence of `convexOn_klFun`, which states convexity on $[0, ∞)$. -/
 lemma convexOn_Ioi_klFun : ConvexOn ℝ (Ioi 0) klFun :=
   convexOn_klFun.subset (Ioi_subset_Ici le_rfl) (convex_Ioi _)
 

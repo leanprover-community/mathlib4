@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Wojciech Nawrocki
 module
 
 public import Mathlib.Data.Nat.Notation
-public import Mathlib.Tactic.TypeStar
 public import Mathlib.Util.CompileInductive
 
 /-!

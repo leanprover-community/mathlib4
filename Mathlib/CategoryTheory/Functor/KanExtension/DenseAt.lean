@@ -23,7 +23,7 @@ corresponding property `isDenseAt F` of objects of `D`.
 
 * formalize dense subcategories
 * show the presheaves of types are canonical colimits relatively
-to the Yoneda embedding
+  to the Yoneda embedding
 
 ## References
 * https://ncatlab.org/nlab/show/dense+functor
@@ -67,7 +67,7 @@ then `G` is also dense at `Y`. -/
 def DenseAt.ofNatIso {G : C ⥤ D} (e : F ≅ G) : G.DenseAt Y :=
   (IsColimit.equivOfNatIsoOfIso
       ((Functor.associator _ _ _).symm ≪≫ Functor.isoWhiskerLeft _ e) _ _
-      (by exact Cocones.ext (Iso.refl _)))
+      (by exact Cocone.ext (Iso.refl _)))
     (hY.whiskerEquivalence (CostructuredArrow.mapNatIso e.symm))
 
 /-- If the canonical functor `CostructuredArrow (G ≫ F) Y ⥤ CostructuredArrow F Y` is final, then
@@ -95,7 +95,7 @@ noncomputable def DenseAt.postcompEquivalence
     {D' : Type*} [Category* D'] (G : D ⥤ D') [G.IsEquivalence] :
     (F ⋙ G).DenseAt (G.obj Y) :=
   IsColimit.ofWhiskerEquivalence (CostructuredArrow.post F G Y).asEquivalence
-    (IsColimit.ofIsoColimit ((isColimitOfPreserves G hY)) (Cocones.ext (Iso.refl _)))
+    (IsColimit.ofIsoColimit ((isColimitOfPreserves G hY)) (Cocone.ext (Iso.refl _)))
 
 variable (F) in
 /-- Given a functor `F : C ⥤ D`, this is the property of objects `Y : D` such

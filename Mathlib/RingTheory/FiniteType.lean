@@ -6,7 +6,7 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.FreeAlgebra
-public import Mathlib.RingTheory.Adjoin.Polynomial
+public import Mathlib.RingTheory.Adjoin.Polynomial.Basic
 public import Mathlib.RingTheory.Adjoin.Tower
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Noetherian.Orzech
@@ -140,10 +140,8 @@ theorem iff_quotient_mvPolynomial :
   · rintro ⟨s, hs⟩
     use s, MvPolynomial.aeval (↑)
     intro x
-    have hrw : (↑s : Set S) = fun x : S => x ∈ s.val := rfl
-    rw [← Set.mem_range, ← AlgHom.coe_range, ← adjoin_eq_range]
-    simp_rw [← hrw, hs]
-    exact Set.mem_univ x
+    rw [← Set.mem_range, ← AlgHom.coe_range, ← adjoin_eq_range, SetLike.mem_coe, hs]
+    apply mem_top
   · rintro ⟨s, f, hsur⟩
     exact .of_surjective f hsur
 
@@ -314,9 +312,6 @@ theorem of_comp_finiteType {f : A →ₐ[R] B} {g : B →ₐ[R] C} (h : (g.comp 
 end FiniteType
 
 end AlgHom
-
-@[deprecated (since := "2025-08-12")] alias algebraMap_finiteType_iff_algebra_finiteType :=
-  RingHom.finiteType_algebraMap
 
 section MonoidAlgebra
 

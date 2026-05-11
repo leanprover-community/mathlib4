@@ -107,6 +107,7 @@ lemma IsQuasiAffine.of_isAffineHom [IsAffineHom f] [Y.IsQuasiAffine] : X.IsQuasi
     (IsQuasiAffine.isBasis_basicOpen X).exists_subset_of_mem_open (Set.mem_univ x) isOpen_univ
   exact Opens.mem_iSup.mpr ⟨⟨r, hr⟩, hxr⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f : X ⟶ Y` is an affine morphism between quasi-affine schemes, then it is the pullback of
   `Spec Γ(X, ⊤) ⟶ Spec Γ(Y, ⊤)` along the open immersion `Y ⟶ Spec Γ(Y, ⊤)`. -/
 lemma isPullback_toSpecΓ_toSpecΓ (f : X ⟶ Y) [IsAffineHom f] [Y.IsQuasiAffine] :

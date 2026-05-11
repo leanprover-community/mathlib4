@@ -31,7 +31,7 @@ public import Mathlib.RingTheory.Etale.Locus
 
 ## Note
 
-For the converse that smooth imples flat, see `Mathlib/RingTheory/Smooth/Flat.lean`.
+For the converse that smooth implies flat, see `Mathlib/RingTheory/Smooth/Flat.lean`.
 
 -/
 
@@ -52,7 +52,7 @@ section IsLocalRing
 variable [IsLocalRing R] [IsLocalRing S] [IsLocalHom (algebraMap R S)]
   [Algebra.FormallySmooth 𝓀[R] (𝓀[R] ⊗[R] S)]
 
-attribute [local irreducible] KaehlerDifferential in
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] TensorProduct.rightAlgebra in
 /--
 Let `(R, m, k)` be a local ring, `(S, M, K)` be a local `R`-algebra that is `R`-flat such that
@@ -154,7 +154,7 @@ lemma FormallySmooth.of_formallySmooth_residueField_tensor (M : Submonoid P)
   -/
   classical
   obtain ⟨n, f₀, hf₀⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.mp
-    (inferInstanceAs (Algebra.FiniteType R P))
+    (inferInstance : Algebra.FiniteType R P)
   let M' := M.comap f₀
   let P' := Localization M'
   let fP : P' →ₐ[R] S := IsLocalization.liftAlgHom (M := M')
@@ -198,6 +198,7 @@ lemma IsSmoothAt.of_formallySmooth_fiber
   let Rp := Localization.AtPrime p
   let Sp := Localization (algebraMapSubmonoid S p.primeCompl)
   let Sq := Localization.AtPrime q
+  let := Localization.AtPrime.algebraOfLiesOver p q
   let f : Sp →ₐ[S] Sq := IsLocalization.liftAlgHom (M := algebraMapSubmonoid S p.primeCompl)
         (f := Algebra.ofId _ _) (by
       rintro ⟨_, x, hx, rfl⟩
@@ -225,7 +226,7 @@ lemma IsSmoothAt.of_formallySmooth_fiber
       ((TensorProduct.comm _ _ _).restrictScalars R).trans <|
       ((TensorProduct.congr (.refl (R := S)) e).restrictScalars R).trans <|
       ((TensorProduct.cancelBaseChange _ _ S _ _).restrictScalars R).trans <|
-      (TensorProduct.comm _ _ _).trans (TensorProduct.equivOfCompatibleSMul _ _ _ _)
+      (TensorProduct.comm _ _ _).trans (TensorProduct.equivOfCompatibleSMul ..)
     have : e'.toAlgHom.comp (IsScalarTower.toAlgHom R p.ResidueField _) =
         IsScalarTower.toAlgHom _ _ _ := by ext
     let e'' : (𝓀[Rp] ⊗[R] S) ⊗[S] Sq ≃ₐ[𝓀[Rp]] 𝓀[Rp] ⊗[Rp] Sq :=

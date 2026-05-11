@@ -107,6 +107,7 @@ lemma shape (n m : ℤ) (hnm : n + 1 ≠ m) : h.d n m = 0 :=
       · rfl
     · simp only [d]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma d_comp_d (n m p : ℤ) : h.d n m ≫ h.d m p = 0 := by
   by_cases hnm : n + 1 = m; swap
@@ -138,6 +139,7 @@ def cochainComplex : CochainComplex C ℤ where
 
 open HomologicalComplex
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `h : ConnectData K L`, then `h.cochainComplex` identifies to `L` in degrees `≥ 0`. -/
 @[simps!]
 def restrictionGEIso :
@@ -211,6 +213,7 @@ lemma map_comp_map :
      = h.map h'' (fK ≫ fK') (fL ≫ fL') (by simp [f_comm', reassoc_of% f_comm]) := by
   ext (m | _ | m) <;> simp; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma homologyMap_map_of_eq_succ (n : ℕ) [NeZero n] (m : ℤ) (hmn : m = n)
     [HasHomology h.cochainComplex m] [HasHomology L n]
     [HasHomology h'.cochainComplex m] [HasHomology L' n] :
@@ -225,6 +228,7 @@ lemma homologyMap_map_of_eq_succ (n : ℕ) [NeZero n] (m : ℤ) (hmn : m = n)
   subst hmn
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma homologyMap_map_of_eq_neg_succ (n : ℕ) [NeZero n] (m : ℤ) (hmn : m = -↑(n + 1))
     [HasHomology h.cochainComplex m] [HasHomology K n]
     [HasHomology h'.cochainComplex m] [HasHomology K' n] :

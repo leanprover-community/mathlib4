@@ -119,6 +119,12 @@ theorem AffineMap.lineMap_mem {k V P : Type*} [Ring k] [AddCommGroup V] [Module 
   rw [AffineMap.lineMap_apply]
   exact Q.smul_vsub_vadd_mem c h₁ h₀ h₀
 
+theorem AffineMap.homothety_mem {k V P : Type*} [CommRing k] [AddCommGroup V] [Module k V]
+    [AddTorsor V P] {s : AffineSubspace k P} {c : P} (hc : c ∈ s) (r : k) {p : P} (hp : p ∈ s) :
+    AffineMap.homothety c r p ∈ s := by
+  rw [AffineMap.homothety_eq_lineMap]
+  exact lineMap_mem r hc hp
+
 namespace AffineSubspace
 
 variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
@@ -252,7 +258,7 @@ theorem vectorSpan_eq_span_vsub_finset_right_ne [DecidableEq P] [DecidableEq V] 
 /-- The `vectorSpan` of the image of a function is the span of the pairwise subtractions with a
 given point on the left, excluding the subtraction of that point from itself. -/
 theorem vectorSpan_image_eq_span_vsub_set_left_ne (p : ι → P) {s : Set ι} {i : ι} (hi : i ∈ s) :
-    vectorSpan k (p '' s) = Submodule.span k ((p i -ᵥ ·) '' (p '' (s \ {i}))) := by
+    vectorSpan k (p '' s) = Submodule.span k ((p i -ᵥ ·) '' p '' (s \ {i})) := by
   conv_lhs =>
     rw [vectorSpan_eq_span_vsub_set_left k (Set.mem_image_of_mem p hi), ← Set.insert_eq_of_mem hi, ←
       Set.insert_diff_singleton, Set.image_insert_eq, Set.image_insert_eq]
@@ -261,7 +267,7 @@ theorem vectorSpan_image_eq_span_vsub_set_left_ne (p : ι → P) {s : Set ι} {i
 /-- The `vectorSpan` of the image of a function is the span of the pairwise subtractions with a
 given point on the right, excluding the subtraction of that point from itself. -/
 theorem vectorSpan_image_eq_span_vsub_set_right_ne (p : ι → P) {s : Set ι} {i : ι} (hi : i ∈ s) :
-    vectorSpan k (p '' s) = Submodule.span k ((· -ᵥ p i) '' (p '' (s \ {i}))) := by
+    vectorSpan k (p '' s) = Submodule.span k ((· -ᵥ p i) '' p '' (s \ {i})) := by
   conv_lhs =>
     rw [vectorSpan_eq_span_vsub_set_right k (Set.mem_image_of_mem p hi), ← Set.insert_eq_of_mem hi,
       ← Set.insert_diff_singleton, Set.image_insert_eq, Set.image_insert_eq]
@@ -703,7 +709,7 @@ theorem span_eq_top_iff {s : Set P₁} (e : P₁ ≃ᵃ[k] P₂) :
     affineSpan k s = ⊤ ↔ affineSpan k (e '' s) = ⊤ := by
   refine ⟨(e : P₁ →ᵃ[k] P₂).span_eq_top_of_surjective e.surjective, ?_⟩
   intro h
-  have : s = e.symm '' (e '' s) := by rw [← image_comp]; simp
+  have : s = e.symm '' e '' s := by rw [← image_comp]; simp
   rw [this]
   exact (e.symm : P₂ →ᵃ[k] P₁).span_eq_top_of_surjective e.symm.surjective h
 

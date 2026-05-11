@@ -16,7 +16,7 @@ colimits in `P.Over ⊤ X` for `X : Scheme` of locally directed diagrams of open
 exist and agree with the colimit in `Scheme`.
 -/
 
-@[expose] public section
+public section
 
 universe u
 
@@ -79,6 +79,7 @@ local instance {i j} (f : i ⟶ j) :
       ((F ⋙ MorphismProperty.Over.forget P ⊤ S) ⋙ Over.forget S).map f :=
   inferInstanceAs <| IsOpenImmersion (F.map f).left
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : CreatesColimit F (MorphismProperty.Over.forget P ⊤ S) := by
   have : HasColimit (F ⋙ MorphismProperty.Over.forget P ⊤ S) :=
     hasColimit_of_created _ (Over.forget S)
@@ -100,6 +101,7 @@ instance : PreservesColimit F (MorphismProperty.Over.forget P ⊤ S) :=
   -- this is only `inferInstance` with the local instances above
   inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 instance (j : J) : IsOpenImmersion (colimit.ι F j).left := by
   rw [← MorphismProperty.Over.forget_comp_forget_map]
   let e : (colimit F).left ≅ colimit (F ⋙ _) :=

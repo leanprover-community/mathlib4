@@ -29,7 +29,7 @@ of the ring of integers of a global field is finite.
   mapping `p : Polynomial 𝔽_q` to `q ^ degree p`, is admissible
 -/
 
-@[expose] public section
+public section
 
 local infixl:50 " ≺ " => EuclideanDomain.r
 
@@ -65,6 +65,7 @@ theorem exists_partition {ι : Type*} [Finite ι] {ε : ℝ} (hε : 0 < ε) {b :
   convert (config := { transparency := .default })
     ht (e i₀) (e i₁) h <;> simp only [e.symm_apply_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any large enough family of vectors in `R^n` has a pair of elements
 whose remainders are close together, pointwise. -/
 theorem exists_approx_aux (n : ℕ) (h : abv.IsAdmissible) :

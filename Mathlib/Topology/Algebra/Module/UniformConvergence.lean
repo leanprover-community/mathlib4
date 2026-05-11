@@ -98,7 +98,7 @@ lemma UniformOnFun.continuousSMul_induced_of_image_bounded (φ : hom) (hφ : IsI
     (h : ∀ u : H, ∀ s ∈ 𝔖, Bornology.IsVonNBounded 𝕜 ((φ u : α → E) '' s)) :
     ContinuousSMul 𝕜 H := by
   obtain rfl := hφ.eq_induced; clear hφ
-  simp only [induced_iInf, UniformOnFun.topologicalSpace_eq, induced_compose]
+  simp +instances only [induced_iInf, UniformOnFun.topologicalSpace_eq, induced_compose]
   refine continuousSMul_iInf fun s ↦ continuousSMul_iInf fun hs ↦ ?_
   letI : TopologicalSpace H :=
     .induced (UniformFun.ofFun ∘ s.restrict ∘ φ) (UniformFun.topologicalSpace s E)

@@ -5,7 +5,6 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Aesop
 public import Mathlib.Order.BoundedOrder.Lattice
 
 /-!
@@ -55,7 +54,7 @@ theorem disjoint_of_subsingleton [Subsingleton α] : Disjoint a b :=
 
 @[to_dual (attr := grind =)]
 theorem disjoint_comm : Disjoint a b ↔ Disjoint b a :=
-  forall_congr' fun _ ↦ forall_swap
+  forall_congr' fun _ ↦ forall_comm
 
 @[to_dual (attr := symm)]
 theorem Disjoint.symm ⦃a b : α⦄ : Disjoint a b → Disjoint b a :=
@@ -164,6 +163,17 @@ theorem disjoint_iff_inf_le : Disjoint a b ↔ a ⊓ b ≤ ⊥ :=
 @[to_dual]
 theorem disjoint_iff : Disjoint a b ↔ a ⊓ b = ⊥ :=
   disjoint_iff_inf_le.trans le_bot_iff
+
+@[to_dual (attr := simp)]
+lemma disjoint_subtype_iff {pr : α → Prop} (Pinf : ∀ ⦃s t : α⦄, pr s → pr t → pr (s ⊓ t))
+    (hbot : pr (⊥ : α)) {a b : Subtype pr} :
+    letI : SemilatticeInf (Subtype pr) := Subtype.semilatticeInf Pinf
+    letI : OrderBot (Subtype pr) := Subtype.orderBot hbot
+    Disjoint a b ↔ Disjoint a.val b.val := by
+  letI : SemilatticeInf (Subtype pr) := Subtype.semilatticeInf Pinf
+  letI : OrderBot (Subtype pr) := Subtype.orderBot hbot
+  rw [disjoint_iff, disjoint_iff, ← Subtype.coe_inf Pinf, ← Subtype.coe_bot hbot]
+  exact Subtype.coe_inj.symm
 
 @[to_dual top_le]
 theorem Disjoint.le_bot : Disjoint a b → a ⊓ b ≤ ⊥ :=
@@ -600,7 +610,7 @@ theorem mk_inf_mk {a b : α} (ha : IsComplemented a) (hb : IsComplemented b) :
     (⟨a, ha⟩ ⊓ ⟨b, hb⟩ : Complementeds α) = ⟨a ⊓ b, ha.inf hb⟩ := rfl
 
 instance : DistribLattice (Complementeds α) :=
-  Complementeds.coe_injective.distribLattice _ coe_sup coe_inf
+  Complementeds.coe_injective.distribLattice _ .rfl .rfl coe_sup coe_inf
 
 @[simp, norm_cast]
 theorem disjoint_coe : Disjoint (a : α) b ↔ Disjoint a b := by

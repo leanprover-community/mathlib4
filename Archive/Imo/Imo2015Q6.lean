@@ -86,10 +86,10 @@ lemma pool_subset_Icc : ∀ {t}, pool a t ⊆ Icc 0 2014
     intro x hx
     simp_rw [pool, mem_map, Equiv.coe_toEmbedding, Equiv.subRight_apply] at hx
     obtain ⟨y, my, rfl⟩ := hx
-    suffices y ∈ Icc 1 2015 by rw [mem_Icc] at this ⊢; lia
+    suffices y ∈ Icc 1 2015 by rw [mem_Icc] at this ⊢; grind
     rw [mem_insert, mem_erase] at my; rcases my with h | ⟨h₁, h₂⟩
     · exact h ▸ ha.1 t
-    · have := pool_subset_Icc h₂; rw [mem_Icc] at this ⊢; lia
+    · have := pool_subset_Icc h₂; rw [mem_Icc] at this ⊢; grind
 
 lemma notMem_pool_self : a t ∉ pool a t := by
   by_contra h

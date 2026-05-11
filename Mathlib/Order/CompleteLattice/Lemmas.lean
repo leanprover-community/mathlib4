@@ -34,7 +34,7 @@ In lemma names,
 * `⨅ i, f i` : `iInf f`, the infimum of the range of `f`.
 -/
 
-@[expose] public section
+public section
 
 open Function OrderDual Set
 
@@ -141,6 +141,38 @@ theorem sInf_sup_le_iInf_sup : sInf s ⊔ a ≤ ⨅ b ∈ s, b ⊔ a :=
 theorem iSup_inf_le_sSup_inf : ⨆ b ∈ s, b ⊓ a ≤ sSup s ⊓ a :=
   @sInf_sup_le_iInf_sup αᵒᵈ _ _ _
 
+theorem iInf_sup_le_iInf_sup (f : ι → α) (a : α) :
+    (⨅ i, f i) ⊔ a ≤ ⨅ i, (f i ⊔ a) :=
+  le_iInf fun i ↦ sup_le_sup_right (iInf_le f i) a
+
+theorem sup_iInf_le_iInf_sup (f : ι → α) (a : α) :
+    a ⊔ (⨅ i, f i) ≤ ⨅ i, (a ⊔ f i) :=
+  le_iInf fun i ↦ sup_le_sup_left (iInf_le f i) a
+
+theorem iSup_inf_le_iSup_inf (f : ι → α) (a : α) :
+    ⨆ i, (f i ⊓ a) ≤ (⨆ i, f i) ⊓ a :=
+  @iInf_sup_le_iInf_sup αᵒᵈ ι _ f a
+
+theorem iSup_inf_le_inf_iSup (f : ι → α) (a : α) :
+    ⨆ i, (a ⊓ f i) ≤ a ⊓ (⨆ i, f i) :=
+  @sup_iInf_le_iInf_sup αᵒᵈ ι _ f a
+
+lemma biInf_sup_le_biInf_sup (f : β → α) (s : Set β) (a : α) :
+    (⨅ i ∈ s, f i) ⊔ a ≤ ⨅ i ∈ s, f i ⊔ a :=
+  le_iInf₂ fun _ hi ↦ sup_le_sup_right (biInf_le f hi) a
+
+lemma sup_biInf_le_biInf_sup (f : β → α) (s : Set β) (a : α) :
+    a ⊔ (⨅ i ∈ s, f i) ≤ ⨅ i ∈ s, a ⊔ f i :=
+  le_iInf₂ fun _ hi ↦ sup_le_sup_left (biInf_le f hi) a
+
+lemma biSup_inf_le_biSup_inf (f : β → α) (s : Set β) (a : α) :
+    ⨆ i ∈ s, (f i ⊓ a) ≤ (⨆ i ∈ s, f i) ⊓ a :=
+  @biInf_sup_le_biInf_sup αᵒᵈ β _ f s a
+
+lemma biSup_inf_le_inf_biSup (f : β → α) (s : Set β) (a : α) :
+    ⨆ i ∈ s, (a ⊓ f i) ≤ a ⊓ (⨆ i ∈ s, f i) :=
+  @sup_biInf_le_biInf_sup αᵒᵈ β _ f s a
+
 theorem le_iSup_inf_iSup (f g : ι → α) : ⨆ i, f i ⊓ g i ≤ (⨆ i, f i) ⊓ ⨆ i, g i :=
   le_inf (iSup_mono fun _ => inf_le_left) (iSup_mono fun _ => inf_le_right)
 
@@ -192,7 +224,7 @@ theorem up_iInf [InfSet α] (f : ι → α) : up (⨅ i, f i) = ⨅ i, up (f i) 
   congr_arg ULift.up <| (down_iInf _).symm
 
 instance instCompleteLattice [CompleteLattice α] : CompleteLattice (ULift.{v} α) :=
-  ULift.down_injective.completeLattice _ down_sup down_inf
+  ULift.down_injective.completeLattice _ .rfl .rfl down_sup down_inf
     (fun s => by rw [sSup_eq_iSup', down_iSup, iSup_subtype''])
     (fun s => by rw [sInf_eq_iInf', down_iInf, iInf_subtype'']) down_top down_bot
 
@@ -205,10 +237,8 @@ instance instCompleteLinearOrder : CompleteLinearOrder PUnit where
   __ := instLinearOrder
   sSup := fun _ => unit
   sInf := fun _ => unit
-  le_sSup := by intros; trivial
-  sSup_le := by intros; trivial
-  sInf_le := by intros; trivial
-  le_sInf := by intros; trivial
+  isLUB_sSup _ := ⟨top_mem_upperBounds _, bot_mem_lowerBounds _⟩
+  isGLB_sInf _ := ⟨bot_mem_lowerBounds _, top_mem_upperBounds _⟩
   le_himp_iff := by intros; trivial
   himp_bot := by intros; trivial
   sdiff_le_iff := by intros; trivial

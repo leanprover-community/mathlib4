@@ -136,7 +136,7 @@ lemma differentiable_LFunction_of_sum_zero {Φ : ZMod N → ℂ} (hΦ : ∑ j, �
 lemma LFunction_residue_one (Φ : ZMod N → ℂ) :
     Tendsto (fun s ↦ (s - 1) * LFunction Φ s) (𝓝[≠] 1) (𝓝 (∑ j, Φ j / N)) := by
   simp only [LFunction, mul_sum]
-  refine tendsto_finset_sum _ fun j _ ↦ ?_
+  refine tendsto_finsetSum _ fun j _ ↦ ?_
   rw [(by ring : Φ j / N = Φ j * (1 / N * 1)), one_div, ← cpow_neg_one]
   simp only [show ∀ a b c d : ℂ, a * (b * (c * d)) = c * (b * (a * d)) by intros; ring]
   refine tendsto_const_nhds.mul (.mul ?_ <| hurwitzZeta_residue_one _)

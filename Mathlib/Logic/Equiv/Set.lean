@@ -82,7 +82,7 @@ protected theorem subset_symm_image {α β} (e : α ≃ β) (s : Set α) (t : Se
     _ ↔ e '' s ⊆ t := by rw [e.symm_symm]
 
 @[simp]
-theorem symm_image_image {α β} (e : α ≃ β) (s : Set α) : e.symm '' (e '' s) = s :=
+theorem symm_image_image {α β} (e : α ≃ β) (s : Set α) : e.symm '' e '' s = s :=
   e.leftInverse_symm.image_image s
 
 theorem eq_image_iff_symm_image_eq {α β} (e : α ≃ β) (s : Set α) (t : Set β) :
@@ -90,26 +90,26 @@ theorem eq_image_iff_symm_image_eq {α β} (e : α ≃ β) (s : Set α) (t : Set
   (e.symm.injective.image_injective.eq_iff' (e.symm_image_image s)).symm
 
 @[simp]
-theorem image_symm_image {α β} (e : α ≃ β) (s : Set β) : e '' (e.symm '' s) = s :=
+theorem image_symm_image {α β} (e : α ≃ β) (s : Set β) : e '' e.symm '' s = s :=
   e.symm.symm_image_image s
 
 @[simp]
-theorem image_preimage {α β} (e : α ≃ β) (s : Set β) : e '' (e ⁻¹' s) = s :=
+theorem image_preimage {α β} (e : α ≃ β) (s : Set β) : e '' e ⁻¹' s = s :=
   e.surjective.image_preimage s
 
 @[simp]
-theorem preimage_image {α β} (e : α ≃ β) (s : Set α) : e ⁻¹' (e '' s) = s :=
+theorem preimage_image {α β} (e : α ≃ β) (s : Set α) : e ⁻¹' e '' s = s :=
   e.injective.preimage_image s
 
 protected theorem image_compl {α β} (f : Equiv α β) (s : Set α) : f '' sᶜ = (f '' s)ᶜ :=
   image_compl_eq f.bijective
 
 @[simp]
-theorem symm_preimage_preimage {α β} (e : α ≃ β) (s : Set β) : e.symm ⁻¹' (e ⁻¹' s) = s :=
+theorem symm_preimage_preimage {α β} (e : α ≃ β) (s : Set β) : e.symm ⁻¹' e ⁻¹' s = s :=
   e.rightInverse_symm.preimage_preimage s
 
 @[simp]
-theorem preimage_symm_preimage {α β} (e : α ≃ β) (s : Set α) : e ⁻¹' (e.symm ⁻¹' s) = s :=
+theorem preimage_symm_preimage {α β} (e : α ≃ β) (s : Set α) : e ⁻¹' e.symm ⁻¹' s = s :=
   e.leftInverse_symm.preimage_preimage s
 
 theorem preimage_subset {α β} (e : α ≃ β) (s t : Set β) : e ⁻¹' s ⊆ e ⁻¹' t ↔ s ⊆ t :=
@@ -163,7 +163,7 @@ def setProdEquivSigma {α β : Type*} (s : Set (α × β)) :
 /-- The subtypes corresponding to equal sets are equivalent. -/
 @[simps! apply symm_apply]
 def setCongr {α : Type*} {s t : Set α} (h : s = t) : s ≃ t :=
-  subtypeEquivProp h
+  subtypeEquivProp <| h ▸ rfl
 
 -- We could construct this using `Equiv.Set.image e s e.injective`,
 -- but this definition provides an explicit inverse.
@@ -408,7 +408,7 @@ protected def compl {α : Type u} {β : Type v} {s : Set α} {t : Set β} [Decid
 
 /-- The set product of two sets is equivalent to the type product of their coercions to types. -/
 protected def prod {α β} (s : Set α) (t : Set β) : ↥(s ×ˢ t) ≃ s × t :=
-  @subtypeProdEquivProd α β s t
+  @subtypeProdEquivProd α β (· ∈ s) (· ∈ t)
 
 /-- The set `Set.pi Set.univ s` is equivalent to `Π a, s a`. -/
 @[simps]
@@ -438,7 +438,7 @@ protected theorem image_symm_apply {α β} (f : α → β) (s : Set α) (H : Inj
   (Equiv.symm_apply_eq _).2 rfl
 
 theorem image_symm_preimage {α β} {f : α → β} (hf : Injective f) (u s : Set α) :
-    (fun x => (Set.image f s hf).symm x : f '' s → α) ⁻¹' u = Subtype.val ⁻¹' (f '' u) := by
+    (fun x => (Set.image f s hf).symm x : f '' s → α) ⁻¹' u = Subtype.val ⁻¹' f '' u := by
   ext ⟨b, a, has, rfl⟩
   simp [hf.eq_iff]
 
@@ -450,7 +450,7 @@ protected def congr {α β : Type*} (e : α ≃ β) : Set α ≃ Set β :=
 /-- The set `{x ∈ s | t x}` is equivalent to the set of `x : s` such that `t x`. -/
 protected def sep {α : Type u} (s : Set α) (t : α → Prop) :
     ({ x ∈ s | t x } : Set α) ≃ { x : s | t x } :=
-  (Equiv.subtypeSubtypeEquivSubtypeInter s t).symm
+  (Equiv.subtypeSubtypeEquivSubtypeInter (· ∈ s) t).symm
 
 /-- The set `𝒫 S := {x | x ⊆ S}` is equivalent to the type `Set S`. -/
 protected def powerset {α} (S : Set α) :

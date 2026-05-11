@@ -1,7 +1,8 @@
 /-
 Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison, Johannes Hölzl, Reid Barton, Sean Leather, Yury Kudryashov, Anne Baanen, Dagur Asgeirsson
+Authors: Kim Morrison, Johannes Hölzl, Reid Barton, Sean Leather, Yury Kudryashov, Anne Baanen,
+  Dagur Asgeirsson
 -/
 module
 
@@ -54,6 +55,7 @@ Note that `ConcreteCategory` potentially depends on three independent universe l
 * the universe level `w` appearing in `forget : C ⥤ Type w`
 * the universe level `v` of the morphisms (i.e. we have a `Category.{v} C`)
 * the universe level `u` of the objects (i.e `C : Type u`)
+
 They are specified that order, to avoid unnecessary universe annotations.
 -/
 class ConcreteCategory (C : Type u) [Category.{v} C]
@@ -69,11 +71,10 @@ class ConcreteCategory (C : Type u) [Category.{v} C]
   (comp_apply : ∀ {X Y Z} (f : X ⟶ Y) (g : Y ⟶ Z) (x : CC X),
     hom (f ≫ g) x = hom g (hom f x) := by cat_disch)
 
-export ConcreteCategory (id_apply comp_apply)
+attribute [simp] ConcreteCategory.hom_ofHom ConcreteCategory.ofHom_hom
 
 variable {C : Type u} [Category.{v} C] {FC : C → C → Type*} {CC : C → Type w}
 variable [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
-variable [ConcreteCategory C FC]
 
 /-- `ToType X` converts the object `X` of the concrete category `C` to a type.
 
@@ -89,6 +90,8 @@ This is an `abbrev` so that instances (e.g. `RingHomClass`) do not need to be re
 @[nolint unusedArguments] -- Need the instance to trigger unification that finds `FC`.
 abbrev ToHom [ConcreteCategory C FC] := FC
 
+variable [ConcreteCategory C FC]
+
 namespace ConcreteCategory
 
 /-- We can apply morphisms of concrete categories by first casting them down
@@ -98,12 +101,16 @@ instance {X Y : C} : CoeFun (X ⟶ Y) (fun _ ↦ ToType X → ToType Y) where
   coe f := hom f
 
 /-- A non-instance `FunLike` instance on `X ⟶ Y`. -/
-abbrev _root_.CategoryTheory.HasForget.instFunLike {X Y : C} :
+@[deprecated "No replacement" (since := "2026-04-23")]
+abbrev instFunLike {X Y : C} :
     FunLike (X ⟶ Y) (ToType X) (ToType Y) where
   coe f := f
   coe_injective' f g h := by
     rw [← ofHom_hom f, ← ofHom_hom g]
     simp_all
+
+@[deprecated (since := "2026-04-03")] alias _root_.CategoryTheory.HasForget.instFunLike :=
+  instFunLike
 
 /--
 `ConcreteCategory.hom` bundled as an `Equiv`.
@@ -120,6 +127,9 @@ lemma hom_bijective {X Y : C} : Function.Bijective (hom : (X ⟶ Y) → ToHom X 
 lemma hom_injective {X Y : C} : Function.Injective (hom : (X ⟶ Y) → ToHom X Y) :=
   hom_bijective.injective
 
+lemma hom_surjective {X Y : C} : Function.Surjective (hom : (X ⟶ Y) → ToHom X Y) :=
+  hom_bijective.surjective
+
 /-- In any concrete category, we can test equality of morphisms by pointwise evaluations. -/
 @[ext] lemma ext {X Y : C} {f g : X ⟶ Y} (h : hom f = hom g) : f = g :=
   hom_injective h
@@ -132,9 +142,8 @@ lemma ext_apply {X Y : C} {f g : X ⟶ Y} (h : ∀ x, f x = g x) : f = g :=
 
 /-- In any concrete category, we can test equality of morphisms by pointwise evaluations. -/
 @[ext low]
-theorem hom_ext {X Y : C} (f g : X ⟶ Y) (w : ∀ x : ToType X, f x = g x) : f = g := by
-  apply ConcreteCategory.ext_apply
-  exact w
+theorem hom_ext {X Y : C} (f g : X ⟶ Y) (w : ∀ x, f x = g x) : f = g :=
+  ext (DFunLike.ext _ _ w)
 
 /-- Analogue of `congr_fun h x`,
 when `h : f = g` is an equality between morphisms in a concrete category.
@@ -151,8 +160,8 @@ theorem coe_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g : ToType X �
   simp [ConcreteCategory.comp_apply]
 
 @[simp] theorem _root_.CategoryTheory.id_apply {X : C} (x : ToType X) :
-    (𝟙 X : ToType X → ToType X) x = x := by
-  simp [ConcreteCategory.id_apply]
+    𝟙 X x = x := by
+  simp [ConcreteCategory.id_apply _]
 
 @[simp] theorem _root_.CategoryTheory.comp_apply {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
     (x : ToType X) : (f ≫ g) x = g (f x) := by
@@ -187,8 +196,7 @@ instance InducedCategory.concreteCategory {C : Type u} {D : Type u'} [Category.{
   comp_apply _ _ _ := ConcreteCategory.comp_apply _ _ _
   id_apply _ := ConcreteCategory.id_apply _
 
-open ObjectProperty in
-instance FullSubcategory.concreteCategory {C : Type u} [Category.{v} C]
+instance ObjectProperty.FullSubcategory.concreteCategory {C : Type u} [Category.{v} C]
     {FC : C → C → Type*} {CC : C → Type w} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
     [ConcreteCategory.{w} C FC]
     (P : ObjectProperty C) : ConcreteCategory P.FullSubcategory (fun X Y => FC X.1 Y.1) where
@@ -199,6 +207,21 @@ instance FullSubcategory.concreteCategory {C : Type u} [Category.{v} C]
   comp_apply _ _ _ := ConcreteCategory.comp_apply _ _ _
   id_apply _ := ConcreteCategory.id_apply _
 
+@[deprecated (since := "2026-04-18")] alias FullSubcategory.concreteCategory :=
+  ObjectProperty.FullSubcategory.concreteCategory
+
 end ConcreteCategory
+
+variable {C : Type u} [Category.{v} C]
+variable {D : Type*} [Category* D] {FD : outParam <| D → D → Type*}
+    {CD : outParam <| D → Type w}
+    [outParam <| ∀ X Y, FunLike (FD X Y) (CD X) (CD Y)] [ConcreteCategory.{w} D FD]
+
+-- TODO: generate this lemma with the `elementwise` attribute.
+@[simp]
+lemma NatTrans.naturality_apply {F G : C ⥤ D} (φ : F ⟶ G) {X Y : C} (f : X ⟶ Y)
+    (x : ToType (F.obj X)) :
+    φ.app Y (F.map f x) = G.map f (φ.app X x) := by
+  simp [← CategoryTheory.comp_apply]
 
 end CategoryTheory

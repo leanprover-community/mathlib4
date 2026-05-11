@@ -75,7 +75,7 @@ lemma EdgeDisjointTriangles.map (f : α ↪ β) (hG : G.EdgeDisjointTriangles) :
 
 lemma LocallyLinear.map (f : α ↪ β) (hG : G.LocallyLinear) : (G.map f).LocallyLinear := by
   refine ⟨hG.1.map _, ?_⟩
-  rintro _ _ ⟨a, b, h, rfl, rfl⟩
+  rintro _ _ ⟨-, a, b, h, rfl, rfl⟩
   obtain ⟨s, hs, ha, hb⟩ := hG.2 h
   exact ⟨s.map f, hs.map, mem_map_of_mem _ ha, mem_map_of_mem _ hb⟩
 
@@ -119,7 +119,7 @@ lemma edgeDisjointTriangles_iff_mem_sym2_subsingleton :
   constructor
   · rw [Sym2.forall]
     rintro hG a b hab
-    simp only [Sym2.isDiag_iff_proj_eq] at hab
+    simp only [Sym2.mk_isDiag_iff] at hab
     rw [this _ _ (Sym2.mk_isDiag_iff.not.2 hab)]
     rintro _ ⟨hab, c, hac, hbc, rfl⟩ _ ⟨-, d, had, hbd, rfl⟩
     refine hG.eq ?_ ?_ (Set.Nontrivial.not_subsingleton ⟨a, ?_, b, ?_, hab.ne⟩) <;>

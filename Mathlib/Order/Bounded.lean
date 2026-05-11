@@ -5,8 +5,10 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
+public import Mathlib.Tactic.Linter.DeprecatedModule
 public import Mathlib.Order.RelClasses
 public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.Order.Bounds.Defs
 
 /-!
 # Bounded and unbounded sets
@@ -14,6 +16,12 @@ We prove miscellaneous lemmas about bounded and unbounded sets. Many of these ar
 the same ideas, or similar results with a few minor differences. The file is divided into these
 different general ideas.
 -/
+
+deprecated_module "Use the following replacements:
+- `BddAbove` for `Set.Bounded (· ≤ ·)`
+- `BddBelow` for `Set.Bounded (· ≥ ·)`
+- `IsCofinal` for `Set.Unbounded (· < ·)` in a linear order
+- `IsCoinitial` for `Set.Unbounded (· > ·)` in a linear order" (since := "2026-04-16")
 
 public section
 

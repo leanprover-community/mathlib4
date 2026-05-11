@@ -98,6 +98,7 @@ def powZero [BraidedCategory C] {I : C} (t : IsInitial I) [MonoidalClosed C] : I
     rw [← curry_natural_left, curry_eq_iff, ← cancel_epi (mulZero t).inv]
     apply t.hom_ext
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: Generalise the below to its commuted variants.
 -- TODO: Define a distributive category, so that zero_mul and friends can be derived from this.
 /-- In a CCC with binary coproducts, the distribution morphism is an isomorphism. -/
@@ -143,6 +144,7 @@ variable [CartesianMonoidalCategory D]
 Note we didn't require any coherence between the choice of finite products here, since we transport
 along the `prodComparison` isomorphism.
 -/
+@[implicit_reducible]
 noncomputable def cartesianClosedOfEquiv (e : C ≌ D) [MonoidalClosed C] : MonoidalClosed D :=
   letI : e.inverse.Monoidal := .ofChosenFiniteProducts _
   MonoidalClosed.ofEquiv e.inverse e.symm.toAdjunction

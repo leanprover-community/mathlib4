@@ -70,11 +70,12 @@ theorem euler_criterion {a : ZMod p} (ha : a ≠ 0) : IsSquare (a : ZMod p) ↔ 
       simp [mul_zero, ne_eq] at ha
     refine ⟨Units.mk0 y hy, ?_⟩; simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `a : ZMod p` is nonzero, then `a^(p/2)` is either `1` or `-1`. -/
 theorem pow_div_two_eq_neg_one_or_one {a : ZMod p} (ha : a ≠ 0) :
     a ^ (p / 2) = 1 ∨ a ^ (p / 2) = -1 := by
-  rcases Prime.eq_two_or_odd (@Fact.out p.Prime _) with hp2 | hp_odd
-  · subst p; revert a ha; intro a; fin_cases a
+  rcases Prime.eq_two_or_odd (@Fact.out p.Prime _) with rfl | hp_odd
+  · revert a ha; intro a; fin_cases a
     · tauto
     · simp
   rw [← mul_self_eq_one_iff, ← pow_add, ← two_mul, two_mul_odd_div_two hp_odd]
@@ -110,6 +111,7 @@ def legendreSym (a : ℤ) : ℤ :=
 
 namespace legendreSym
 
+set_option backward.isDefEq.respectTransparency false in
 /-- We have the congruence `legendreSym p a ≡ a ^ (p / 2) mod p`. -/
 theorem eq_pow (a : ℤ) : (legendreSym p a : ZMod p) = (a : ZMod p) ^ (p / 2) := by
   rcases eq_or_ne (ringChar (ZMod p)) 2 with hc | hc
@@ -272,6 +274,10 @@ open ZMod
 theorem legendreSym.at_neg_one (hp : p ≠ 2) : legendreSym p (-1) = χ₄ p := by
   simp only [legendreSym, card p, quadraticChar_neg_one ((ringChar_zmod_n p).substr hp),
     Int.cast_neg, Int.cast_one]
+
+/-- The value of the Legendre symbol at `-a` is `χ₄ p` times the value at `a`. -/
+theorem legendreSym.at_neg (hp : p ≠ 2) (a : ℤ) : legendreSym p (-a) = χ₄ p * legendreSym p a := by
+  rw [neg_eq_neg_one_mul, legendreSym.mul p (-1) a, legendreSym.at_neg_one hp]
 
 namespace ZMod
 

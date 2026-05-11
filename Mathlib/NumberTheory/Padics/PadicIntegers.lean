@@ -114,6 +114,7 @@ theorem coe_one : ((1 : ℤ_[p]) : ℚ_[p]) = 1 := rfl
 @[simp, norm_cast]
 theorem coe_zero : ((0 : ℤ_[p]) : ℚ_[p]) = 0 := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma coe_eq_zero : (x : ℚ_[p]) = 0 ↔ x = 0 := by rw [← coe_zero, Subtype.coe_inj]
 
 lemma coe_ne_zero : (x : ℚ_[p]) ≠ 0 ↔ x ≠ 0 := coe_eq_zero.not
@@ -149,6 +150,7 @@ Otherwise, the inverse is defined to be `0`. -/
 def inv : ℤ_[p] → ℤ_[p]
   | ⟨k, _⟩ => if h : ‖k‖ = 1 then ⟨k⁻¹, by simp [h]⟩ else 0
 
+set_option backward.isDefEq.respectTransparency false in
 instance : CharZero ℤ_[p] where
   cast_injective m n h :=
     Nat.cast_injective (R := ℚ_[p]) (by rw [Subtype.ext_iff] at h; norm_cast at h)
@@ -175,7 +177,7 @@ We now show that `ℤ_[p]` is a
 
 variable (p)
 
-instance : MetricSpace ℤ_[p] := Subtype.metricSpace
+instance : MetricSpace ℤ_[p] := inferInstanceAs <| MetricSpace (Subtype _)
 
 instance : IsUltrametricDist ℤ_[p] := IsUltrametricDist.subtype _
 
@@ -189,8 +191,9 @@ variable {p} in
 theorem norm_def {z : ℤ_[p]} : ‖z‖ = ‖(z : ℚ_[p])‖ := rfl
 
 instance : NormedCommRing ℤ_[p] where
-  __ := instCommRing
-  dist_eq := fun ⟨_, _⟩ ⟨_, _⟩ ↦ rfl
+  dist_eq := by
+    rintro ⟨x, hx⟩ ⟨y, hy⟩
+    exact dist_eq_norm_neg_add x y
   norm_mul_le := by simp [norm_def]
 
 instance : NormOneClass ℤ_[p] :=
@@ -455,7 +458,7 @@ theorem mem_span_pow_iff_le_valuation (x : ℤ_[p]) (hx : x ≠ 0) (n : ℕ) :
     suffices c ≠ 0 by
       rw [valuation_p_pow_mul _ _ this]
       exact le_self_add
-    contrapose! hx
+    contrapose hx
     rw [hx, mul_zero]
   · nth_rewrite 2 [unitCoeff_spec hx]
     simpa [Units.isUnit, IsUnit.dvd_mul_left] using pow_dvd_pow _
@@ -499,8 +502,6 @@ instance : IsLocalRing ℤ_[p] :=
 theorem p_nonunit : (p : ℤ_[p]) ∈ nonunits ℤ_[p] := by
   have : (p : ℝ)⁻¹ < 1 := inv_lt_one_of_one_lt₀ <| mod_cast hp.out.one_lt
   rwa [← norm_p, ← mem_nonunits] at this
-
-@[deprecated (since := "2025-07-27")] alias p_nonnunit := p_nonunit
 
 theorem maximalIdeal_eq_span_p : maximalIdeal ℤ_[p] = Ideal.span {(p : ℤ_[p])} := by
   apply le_antisymm

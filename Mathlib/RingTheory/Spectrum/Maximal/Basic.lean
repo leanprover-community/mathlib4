@@ -5,6 +5,7 @@ Authors: David Kurniadi Angdinata
 -/
 module
 
+public import Mathlib.RingTheory.Ideal.Operations
 public import Mathlib.RingTheory.Spectrum.Maximal.Defs
 public import Mathlib.RingTheory.Spectrum.Prime.Defs
 
@@ -45,5 +46,8 @@ def toPrimeSpectrum (x : MaximalSpectrum R) : PrimeSpectrum R :=
 
 theorem toPrimeSpectrum_injective : (@toPrimeSpectrum R _).Injective := fun ⟨_, _⟩ ⟨_, _⟩ h => by
   simpa only [MaximalSpectrum.mk.injEq] using PrimeSpectrum.ext_iff.mp h
+
+theorem isCoprime_of_ne {I J : MaximalSpectrum R} (h : I ≠ J) : IsCoprime I.1 J.1 :=
+  Ideal.isCoprime_iff_sup_eq.mpr <| I.2.coprime_of_ne J.2 <| mt MaximalSpectrum.ext h
 
 end MaximalSpectrum

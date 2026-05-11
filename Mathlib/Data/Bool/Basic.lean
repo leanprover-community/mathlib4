@@ -93,7 +93,7 @@ theorem of_decide_false {p : Prop} [Decidable p] : decide p = false → ¬p :=
 theorem decide_congr {p q : Prop} [Decidable p] [Decidable q] (h : p ↔ q) : decide p = decide q :=
   decide_eq_decide.mpr h
 
-theorem coe_xor_iff (a b : Bool) : xor a b ↔ Xor' (a = true) (b = true) := by grind
+theorem coe_xor_iff (a b : Bool) : xor a b ↔ Xor (a = true) (b = true) := by grind
 
 end
 

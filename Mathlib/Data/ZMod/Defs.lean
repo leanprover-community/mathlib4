@@ -66,7 +66,7 @@ open scoped Fin.IntCast Fin.NatCast
 
 /-- Multiplicative commutative semigroup structure on `Fin n`. -/
 instance instCommSemigroup (n : ℕ) : CommSemigroup (Fin n) :=
-  { inferInstanceAs (Mul (Fin n)) with
+  { (inferInstance : Mul (Fin n)) with
     mul_assoc := fun ⟨a, _⟩ ⟨b, _⟩ ⟨c, _⟩ =>
       Fin.eq_of_val_eq <|
         calc
@@ -124,6 +124,7 @@ For example, for `x : Fin k` and `n : Nat`,
 it causes `x < n` to be elaborated as `x < ↑n` rather than `↑x < n`,
 silently introducing wraparound arithmetic.
 -/
+@[instance_reducible]
 def instCommRing (n : ℕ) [NeZero n] : CommRing (Fin n) where
   __ := Fin.instAddMonoidWithOne n
   __ := Fin.addCommGroup n
@@ -150,12 +151,12 @@ def ZMod : ℕ → Type
   | n + 1 => Fin (n + 1)
 
 instance ZMod.decidableEq : ∀ n : ℕ, DecidableEq (ZMod n)
-  | 0 => inferInstanceAs (DecidableEq ℤ)
-  | n + 1 => inferInstanceAs (DecidableEq (Fin (n + 1)))
+  | 0 => inferInstanceAs <| DecidableEq ℤ
+  | n + 1 => inferInstanceAs <| DecidableEq (Fin (n + 1))
 
 instance ZMod.repr : ∀ n : ℕ, Repr (ZMod n)
-  | 0 => by dsimp [ZMod]; infer_instance
-  | n + 1 => by dsimp [ZMod]; infer_instance
+  | 0 => inferInstanceAs <| Repr ℤ
+  | n + 1 => inferInstanceAs <| Repr (Fin (n + 1))
 
 namespace ZMod
 
@@ -188,24 +189,24 @@ instance commRing (n : ℕ) : CommRing (ZMod n) where
   sub := Nat.casesOn n (@Sub.sub Int _) fun n => @Sub.sub (Fin n.succ) _
   sub_eq_add_neg := Nat.casesOn n (@sub_eq_add_neg Int _) fun n => @sub_eq_add_neg (Fin n.succ) _
   zsmul := Nat.casesOn n
-    (inferInstanceAs (CommRing ℤ)).zsmul fun n => (inferInstanceAs (CommRing (Fin n.succ))).zsmul
+    ((inferInstance : CommRing ℤ)).zsmul fun n => ((inferInstance : CommRing (Fin n.succ))).zsmul
   zsmul_zero' := Nat.casesOn n
-    (inferInstanceAs (CommRing ℤ)).zsmul_zero'
-    fun n => (inferInstanceAs (CommRing (Fin n.succ))).zsmul_zero'
+    ((inferInstance : CommRing ℤ)).zsmul_zero'
+    fun n => ((inferInstance : CommRing (Fin n.succ))).zsmul_zero'
   zsmul_succ' := Nat.casesOn n
-    (inferInstanceAs (CommRing ℤ)).zsmul_succ'
-    fun n => (inferInstanceAs (CommRing (Fin n.succ))).zsmul_succ'
+    ((inferInstance : CommRing ℤ)).zsmul_succ'
+    fun n => ((inferInstance : CommRing (Fin n.succ))).zsmul_succ'
   zsmul_neg' := Nat.casesOn n
-    (inferInstanceAs (CommRing ℤ)).zsmul_neg'
-    fun n => (inferInstanceAs (CommRing (Fin n.succ))).zsmul_neg'
+    ((inferInstance : CommRing ℤ)).zsmul_neg'
+    fun n => ((inferInstance : CommRing (Fin n.succ))).zsmul_neg'
   nsmul := Nat.casesOn n
-    (inferInstanceAs (CommRing ℤ)).nsmul fun n => (inferInstanceAs (CommRing (Fin n.succ))).nsmul
+    ((inferInstance : CommRing ℤ)).nsmul fun n => ((inferInstance : CommRing (Fin n.succ))).nsmul
   nsmul_zero := Nat.casesOn n
-    (inferInstanceAs (CommRing ℤ)).nsmul_zero
-    fun n => (inferInstanceAs (CommRing (Fin n.succ))).nsmul_zero
+    ((inferInstance : CommRing ℤ)).nsmul_zero
+    fun n => ((inferInstance : CommRing (Fin n.succ))).nsmul_zero
   nsmul_succ := Nat.casesOn n
-    (inferInstanceAs (CommRing ℤ)).nsmul_succ
-    fun n => (inferInstanceAs (CommRing (Fin n.succ))).nsmul_succ
+    ((inferInstance : CommRing ℤ)).nsmul_succ
+    fun n => ((inferInstance : CommRing (Fin n.succ))).nsmul_succ
   neg_add_cancel := Nat.casesOn n (@neg_add_cancel Int _) fun n => @neg_add_cancel (Fin n.succ) _
   add_comm := Nat.casesOn n (@add_comm Int _) fun n => @add_comm (Fin n.succ) _
   mul := Nat.casesOn n (@Mul.mul Int _) fun n => @Mul.mul (Fin n.succ) _
@@ -227,13 +228,13 @@ instance commRing (n : ℕ) : CommRing (ZMod n) where
   zero_mul := Nat.casesOn n (@zero_mul Int _) fun n => @zero_mul (Fin n.succ) _
   mul_zero := Nat.casesOn n (@mul_zero Int _) fun n => @mul_zero (Fin n.succ) _
   npow := Nat.casesOn n
-    (inferInstanceAs (CommRing ℤ)).npow fun n => (inferInstanceAs (CommRing (Fin n.succ))).npow
+    ((inferInstance : CommRing ℤ)).npow fun n => ((inferInstance : CommRing (Fin n.succ))).npow
   npow_zero := Nat.casesOn n
-    (inferInstanceAs (CommRing ℤ)).npow_zero
-    fun n => (inferInstanceAs (CommRing (Fin n.succ))).npow_zero
+    ((inferInstance : CommRing ℤ)).npow_zero
+    fun n => ((inferInstance : CommRing (Fin n.succ))).npow_zero
   npow_succ := Nat.casesOn n
-    (inferInstanceAs (CommRing ℤ)).npow_succ
-    fun n => (inferInstanceAs (CommRing (Fin n.succ))).npow_succ
+    ((inferInstance : CommRing ℤ)).npow_succ
+    fun n => ((inferInstance : CommRing (Fin n.succ))).npow_succ
 
 instance inhabited (n : ℕ) : Inhabited (ZMod n) :=
   ⟨0⟩

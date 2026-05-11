@@ -176,8 +176,6 @@ theorem order_add_of_order_ne (φ ψ : R⟦X⟧) (h : order φ ≠ order ψ) :
   · apply order_add_of_order_ne.aux _ _ φ_lt_ψ
   · simpa only [add_comm, inf_comm] using order_add_of_order_ne.aux _ _ ψ_lt_φ
 
-@[deprecated (since := "2025-09-17")] alias order_add_of_order_eq := order_add_of_order_ne
-
 theorem le_order_map {S : Type*} [Semiring S] (f : R →+* S) :
     φ.order ≤ (φ.map f).order :=
   le_order _ _ fun i hi => by simp [coeff_of_lt_order i hi]
@@ -320,7 +318,7 @@ theorem X_pow_order_mul_divXPowOrder {f : R⟦X⟧} :
   rw [coeff_X_pow_mul']
   split_ifs with h
   · simp [h]
-  · push_neg at h
+  · push Not at h
     rw [coeff_of_lt_order_toNat _ h]
 
 theorem X_pow_order_dvd : X ^ φ.order.toNat ∣ φ := by

@@ -137,8 +137,8 @@ theorem circleTransformDeriv_bound {R : ℝ} (hR : 0 < R) {z x : ℂ} {f : ℂ �
   have hy2 : y1 ∈ [[0, 2 * π]] := Icc_subset_uIcc <| Ico_subset_Icc_self hy1
   simp only [isMaxOn_iff, mem_sphere_iff_norm] at HX2
   have := mul_le_mul (hab ⟨⟨v, y1⟩, ⟨ball_subset_closedBall (H hv), hy2⟩⟩)
-    (HX2 (circleMap z R y1) (circleMap_mem_sphere z hR.le y1)) (norm_nonneg _)
-    (norm_nonneg _)
+    (HX2 (circleMap z R y1) (mem_sphere_iff_norm.1 (circleMap_mem_sphere z hR.le y1)))
+    (norm_nonneg _) (norm_nonneg _)
   rw [hfun]
   simpa [V, circleTransformBoundingFunction, circleTransformDeriv, mul_assoc] using this
 

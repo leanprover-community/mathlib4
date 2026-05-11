@@ -84,6 +84,7 @@ end
 chosen pullbacks. Contrast this with the noncomputable instance provided by
 `CategoryTheory.Over.cartesianMonoidalCategory`.
 -/
+@[instance_reducible]
 def cartesianMonoidalCategoryOver [ChosenPullbacks C] (X : C) :
     CartesianMonoidalCategory (Over X) :=
   ofChosenFiniteProducts (C := Over X)
