@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Kenny Lau
+Authors: Johan Commelin, Kenny Lau, Ralf Stephan
 -/
 module
 
@@ -137,6 +137,9 @@ theorem monomial_mul_monomial (m n : ℕ) (a b : R) :
 def constantCoeff : R⟦X⟧ →+* R :=
   MvPowerSeries.constantCoeff
 
+theorem constantCoeff_eq (f : R⟦X⟧) :
+    constantCoeff f = MvPowerSeries.constantCoeff f := rfl
+
 /-- The constant formal power series. -/
 def C : R →+* R⟦X⟧ :=
   MvPowerSeries.C
@@ -189,10 +192,8 @@ theorem coeff_ne_zero_C {a : R} {n : ℕ} (h : n ≠ 0) : coeff n (C a) = 0 := b
 theorem coeff_succ_C {a : R} {n : ℕ} : coeff (n + 1) (C a) = 0 :=
   coeff_ne_zero_C n.succ_ne_zero
 
-theorem C_injective : Function.Injective (C (R := R)) := by
-  intro a b H
-  simp_rw [PowerSeries.ext_iff] at H
-  simpa only [coeff_zero_C] using H 0
+@[grind inj]
+theorem C_injective : Function.Injective (C (R := R)) := MvPowerSeries.C_injective
 
 protected theorem subsingleton_iff : Subsingleton R⟦X⟧ ↔ Subsingleton R := by
   refine ⟨fun h ↦ ?_, fun _ ↦ inferInstance⟩
@@ -619,7 +620,7 @@ theorem coeff_prod [DecidableEq ι] (f : ι → PowerSeries R) (d : ℕ) (s : Fi
 
 theorem prod_monomial (f : ι → ℕ) (g : ι → R) (s : Finset ι) :
     ∏ i ∈ s, monomial (f i) (g i) = monomial (∑ i ∈ s, f i) (∏ i ∈ s, g i) := by
-  simpa [monomial, Finsupp.single_finset_sum] using
+  simpa [monomial, Finsupp.single_finsetSum] using
     MvPowerSeries.prod_monomial (fun i ↦ Finsupp.single () (f i)) g s
 
 theorem monomial_pow (m : ℕ) (a : R) (n : ℕ) : (monomial m a) ^ n = monomial (n * m) (a ^ n) := by
@@ -857,21 +858,22 @@ section CommSemiring
 variable {R : Type*} [CommSemiring R] (φ ψ : R[X])
 
 theorem _root_.MvPolynomial.toMvPowerSeries_pUnitAlgEquiv {f : MvPolynomial PUnit R} :
-    (f.toMvPowerSeries : PowerSeries R) = (f.pUnitAlgEquiv R).toPowerSeries := by
+    (f.toMvPowerSeries : PowerSeries R) =
+      (MvPolynomial.uniqueAlgEquiv R PUnit f).toPowerSeries := by
   induction f using MvPolynomial.induction_on' with
   | monomial d r =>
     --Note: this `have` should be a generic `simp` lemma for a `Unique` type with `()` replaced
     --by any element.
     have : single () (d ()) = d := by ext; simp
-    simp only [MvPolynomial.coe_monomial, MvPolynomial.pUnitAlgEquiv_monomial,
+    simp only [MvPolynomial.coe_monomial, MvPolynomial.uniqueAlgEquiv_monomial,
       Polynomial.coe_monomial, PowerSeries.monomial, this]
   | add f g hf hg => simp [hf, hg]
 
 theorem pUnitAlgEquiv_symm_toPowerSeries {f : Polynomial R} :
     ((f.toPowerSeries) : MvPowerSeries PUnit R)
-      = ((MvPolynomial.pUnitAlgEquiv R).symm f).toMvPowerSeries := by
-  set g := (MvPolynomial.pUnitAlgEquiv R).symm f
-  have : f = MvPolynomial.pUnitAlgEquiv R g := by simp only [g, AlgEquiv.apply_symm_apply]
+      = ((MvPolynomial.uniqueAlgEquiv R PUnit).symm f).toMvPowerSeries := by
+  set g := (MvPolynomial.uniqueAlgEquiv R PUnit).symm f
+  have : f = MvPolynomial.uniqueAlgEquiv R PUnit g := by simp only [g, AlgEquiv.apply_symm_apply]
   rw [this, MvPolynomial.toMvPowerSeries_pUnitAlgEquiv]
 
 variable (A : Type*) [Semiring A] [Algebra R A]

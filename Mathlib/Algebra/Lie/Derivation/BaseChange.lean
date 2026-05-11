@@ -67,7 +67,7 @@ def ofLieDerivation : (LieDerivation R L L) →ₗ⁅R⁆ (LieDerivation R (A �
     { toFun := d.toLinearMap.lTensor A
       map_add' := by simp
       map_smul' := by simp
-      leibniz' x y:= by
+      leibniz' x y := by
         simp only [LinearMap.coe_mk, AddHom.coe_mk]
         refine x.induction_on (by simp) ?_ ?_
         · intros _ _

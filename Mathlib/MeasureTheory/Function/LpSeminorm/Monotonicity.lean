@@ -33,12 +33,13 @@ theorem eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul {f : α → F} {g : α →
   simp_rw [eLpNorm'_eq_lintegral_enorm]
   rw [← ENNReal.rpow_le_rpow_iff hp, ENNReal.smul_def, smul_eq_mul,
     ENNReal.mul_rpow_of_nonneg _ _ hp.le]
-  simp_rw [← ENNReal.rpow_mul, one_div, inv_mul_cancel₀ hp.ne.symm, ENNReal.rpow_one, enorm,
+  simp_rw [← ENNReal.rpow_mul, one_div, inv_mul_cancel₀ hp.ne', ENNReal.rpow_one, enorm,
     ← ENNReal.coe_rpow_of_nonneg _ hp.le, ← lintegral_const_mul' _ _ ENNReal.coe_ne_top,
     ← ENNReal.coe_mul]
   apply lintegral_mono_ae
-  simp_rw [ENNReal.coe_le_coe, ← NNReal.mul_rpow, NNReal.rpow_le_rpow_iff hp]
-  exact h
+  filter_upwards [h] with x hx
+  rw [← NNReal.mul_rpow]
+  gcongr
 
 -- TODO: eventually, deprecate and remove the nnnorm version
 theorem eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul' {f : α → ε} {g : α → ε'} {c : ℝ≥0}
@@ -204,7 +205,7 @@ theorem le_eLpNorm_of_bddBelow (hp : p ≠ 0) (hp' : p ≠ ∞) {f : α → F} (
   rw [ENNReal.smul_def, smul_eq_mul, eLpNorm_eq_lintegral_rpow_enorm_toReal hp hp',
     one_div, ENNReal.le_rpow_inv_iff (ENNReal.toReal_pos hp hp'),
     ENNReal.mul_rpow_of_nonneg _ _ ENNReal.toReal_nonneg, ← ENNReal.rpow_mul,
-    inv_mul_cancel₀ (ENNReal.toReal_pos hp hp').ne.symm, ENNReal.rpow_one, ← setLIntegral_const,
+    inv_mul_cancel₀ (ENNReal.toReal_pos hp hp').ne', ENNReal.rpow_one, ← setLIntegral_const,
     ← lintegral_indicator hs]
   refine lintegral_mono_ae ?_
   filter_upwards [hf] with x hx
