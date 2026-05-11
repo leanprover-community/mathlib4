@@ -12,7 +12,7 @@ public import Mathlib.Data.Fintype.Defs
 # Divisibility in finite types
 -/
 
-@[expose] public section
+public section
 
 variable {M : Type*} [Semigroup M]
 

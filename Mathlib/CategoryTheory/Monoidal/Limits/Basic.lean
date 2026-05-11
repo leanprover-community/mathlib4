@@ -21,7 +21,7 @@ satisfying the laws of a lax monoidal functor.
 Now that we have oplax monoidal functors, assemble `Limits.colim` into an oplax monoidal functor.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.Limits
 

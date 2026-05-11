@@ -239,7 +239,7 @@ theorem linearIndependent_iff'ₛ :
         refine _root_.by_contradiction fun hni ↦ hni <| hv (f.support ∪ g.support) f g ?_ _ ?_
         · rwa [← sum_subset subset_union_left, ← sum_subset subset_union_right] <;>
             rintro i - hi <;> rw [Finsupp.notMem_support_iff.mp hi, zero_smul]
-        · contrapose! hni
+        · contrapose hni
           simp_rw [notMem_union, Finsupp.notMem_support_iff] at hni
           rw [hni.1, hni.2]⟩
 
