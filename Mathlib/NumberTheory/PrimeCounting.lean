@@ -132,7 +132,7 @@ lemma primesLE_eq_filter_range (n : ℕ) : primesLE n = filter Nat.Prime (range 
 
 @[simp]
 lemma primesBelow_zero : primesBelow 0 = ∅ := by
-  simp [primesBelow_eq_filter_range]
+  decide
 
 @[simp]
 lemma primesBelow_one : primesBelow 1 = ∅ := by
