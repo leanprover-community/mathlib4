@@ -51,7 +51,6 @@ theorem Module.free_of_isStablyFree_of_invertible [IsStablyFree R M] [Module.Inv
     infer_instance
   obtain ⟨N, _, _, _, _, _⟩ := IsStablyFree.exist_free_prod R M
   obtain ⟨𝔪, h𝔪⟩ := Ideal.exists_maximal R
-  have : Free (Localization.AtPrime 𝔪) (LocalizedModule.AtPrime 𝔪 M) := free_of_flat_of_isLocalRing
   have h1 : rankAtStalk M ⟨𝔪, h𝔪.isPrime⟩ = 1 := by simp [rankAtStalk, Invertible.finrank_eq_one]
   let n := Module.finrank R N
   have hp : Module.finrank R (M × N) = n + 1 := by
@@ -59,7 +58,7 @@ theorem Module.free_of_isStablyFree_of_invertible [IsStablyFree R M] [Module.Inv
       Module.rankAtStalk_eq_finrank_of_free.symm.trans (Module.rankAtStalk_prod M N)
   let bN : Module.Basis (Fin n) R N := Module.finBasis R N
   let b : Module.Basis (Fin (n + 1)) R (M × N) := Module.finBasisOfFinrankEq R (M × N) hp
-  let e : R ≃ₗ[R] (⋀[R]^(n + 1) (M × N)) := Classical.choice <|
+  let e : R ≃ₗ[R] ⋀[R]^(n + 1) (M × N) := Classical.choice <|
     Module.nonempty_linearEquiv_of_finrank_eq_one <| by simp [exteriorPower.finrank_eq, hp]
   let f : R →ₗ[R] M := cofactorToLeft bN ∘ₗ e
   have hfs : Function.Surjective f := fun x ↦
