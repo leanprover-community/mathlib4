@@ -510,7 +510,6 @@ variable {R E : Type*} [Ring R] [LinearOrder R] [IsOrderedRing R] [AddCommMonoid
 
 local notation3 "R≥0" => {c : R // 0 ≤ c}
 
-set_option backward.isDefEq.respectTransparency false in
 private instance instModuleFiniteAux : Module.Finite R≥0 R := by
   simp_rw [Module.finite_def, Submodule.fg_def, Submodule.eq_top_iff']
   refine ⟨{1, -1}, by simp, fun x ↦ ?_⟩
@@ -520,7 +519,6 @@ private instance instModuleFiniteAux : Module.Finite R≥0 R := by
   · simpa using Submodule.smul_mem (M := R) (.span R≥0 {1, -1}) ⟨-x, neg_nonneg.mpr hx⟩ (x := -1)
       (Submodule.subset_span <| by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a module is finite over a linearly ordered ring, then it is also finite over the non-negative
 scalars. -/
 instance instModuleFinite [Module.Finite R E] : Module.Finite R≥0 E := .trans R E
