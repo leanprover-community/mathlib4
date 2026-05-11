@@ -82,12 +82,7 @@ instance : Min (Face C) where
 instance : InfSet (Face C) where
   sInf S :=
     { toSubmodule := C ⊓ sInf {s.1 | s ∈ S}
-      isFaceOf.le _ sm := sm.1,
-      isFaceOf.mem_of_smul_add_mem := by
-        simp only [Submodule.mem_inf, Submodule.mem_sInf, Set.mem_setOf_eq, forall_exists_index,
-          and_imp, forall_apply_eq_imp_iff₂]
-        intros _ _ a xc yc a0 _ h
-        simpa [xc] using fun F Fs ↦ F.isFaceOf.mem_of_smul_add_mem xc yc a0 (h F Fs)
+      isFaceOf := IsFaceOf.sInf _ (fun F Fs ↦ by obtain ⟨F, Fss, rfl⟩ := Fs; exact F.isFaceOf)
     }
 
 instance : SemilatticeInf (Face C) where
@@ -115,8 +110,6 @@ instance : CompleteLattice (Face C) where
 
 instance : Inhabited (Face C) := ⟨⊤⟩
 
-instance : Nonempty (Face C) := ⟨⊤⟩
-
 end Face
 
 end Semiring
@@ -130,7 +123,7 @@ variable [DivisionRing R] [LinearOrder R] [IsOrderedRing R] [AddCommGroup M] [Mo
 
 /-- The bottom face of `C` is its lineality space. -/
 theorem lineal_eq_bot : ((⊥ : Face C) : PointedCone R M) = C.lineal := by
-  apply le_antisymm _ (⊥ : Face C).isFaceOf.lineal_le
+  apply (⊥ : Face C).isFaceOf.lineal_le.antisymm'
   exact fun x hx ↦ bot_le (α := Face C) (a := ⟨_, IsFaceOf.lineal C⟩) hx
 
 /-! ### Product -/
