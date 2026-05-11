@@ -1054,4 +1054,3 @@ theorem LinearIsometry.adjoint_comp_self' {E E' : Type*}
   haveI := FiniteDimensional.complete 𝕜 E'
   ext x
   exact congr($(f.adjoint_comp_self) x)
-
