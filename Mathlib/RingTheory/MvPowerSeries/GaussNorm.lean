@@ -29,7 +29,7 @@ the set of all values of `v (coeff t f) * ∏ i : t.support, c i` for all `t : �
   is zero.
 
 * `MvPowerSeries.gaussNorm_add_le_max`: if `v` is a non-negative non-archimedean function and the
-  set of values `v (coeff t f) * ∏ i : t.support, c i` is bounded above (similarily for `g`), then
+  set of values `v (coeff t f) * ∏ i : t.support, c i` is bounded above (similarly for `g`), then
   the Gauss norm has the non-archimedean property.
 -/
 
