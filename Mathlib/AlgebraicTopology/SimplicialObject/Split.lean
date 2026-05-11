@@ -46,7 +46,7 @@ open Simplicial
 
 universe u
 
-variable {C D : Type*} [Category* C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
 
 namespace CategoryTheory.SimplicialObject
 
