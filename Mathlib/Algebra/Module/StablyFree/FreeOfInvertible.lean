@@ -49,13 +49,12 @@ theorem Module.free_of_isStablyFree_of_invertible [IsStablyFree R M] [Module.Inv
   rcases subsingleton_or_nontrivial R with _ | _
   · have : Subsingleton M := Module.Finite.subsingleton_of_ring_subsingleton R M
     infer_instance
-  obtain ⟨N, _, _, _, _, _⟩ := IsStablyFree.exist_free_prod R M
-  obtain ⟨𝔪, h𝔪⟩ := Ideal.exists_maximal R
-  have h1 : rankAtStalk M ⟨𝔪, h𝔪.isPrime⟩ = 1 := by simp [rankAtStalk, Invertible.finrank_eq_one]
-  let n := Module.finrank R N
   have hp : Module.finrank R (M × N) = n + 1 := by
-    simpa [← h1, n, Nat.add_comm] using congrArg (fun f ↦ f ⟨𝔪, h𝔪.isPrime⟩) <|
-      Module.rankAtStalk_eq_finrank_of_free.symm.trans (Module.rankAtStalk_prod M N)
+    let 𝔭 : PrimeSpectrum R := Nonempty.some inferInstance
+    have h1 : rankAtStalk M 𝔭 = 1 := by simp [rankAtStalk, Invertible.finrank_eq_one]
+    have := congr($(Module.rankAtStalk_prod M N) 𝔭)
+    simp only [rankAtStalk_eq_finrank_of_free, Pi.natCast_apply, Pi.add_apply] at this
+    grind [Module.rankAtStalk_eq_finrank_of_free]
   let bN : Module.Basis (Fin n) R N := Module.finBasis R N
   let b : Module.Basis (Fin (n + 1)) R (M × N) := Module.finBasisOfFinrankEq R (M × N) hp
   let e : R ≃ₗ[R] ⋀[R]^(n + 1) (M × N) := Classical.choice <|
