@@ -654,8 +654,6 @@ lemma isReduced_of_tensorProduct_adjoinPthRoots_reduced (p : ℕ) (hp : Nat.Prim
 
 lemma tensorProduct_isReduced_of_isGeometricallyReduced_field (K : Type*) [Field K] [Algebra k K]
     [Algebra.IsGeometricallyReduced k S] : IsReduced (K ⊗[k] S) := by
-  have : IsReduced (AlgebraicClosure k ⊗[k] S) :=
-    (Algebra.isGeometricallyReduced_field_iff k S).mp ‹_›
   rcases CharP.exists' k with char0|⟨p, hp, charp⟩
   · have : IsReduced S := isReduced_of_injective _
       (Algebra.TensorProduct.includeRight_injective (algebraMap k (AlgebraicClosure k)).injective)
@@ -673,7 +671,6 @@ lemma tensorProduct_isReduced_of_isGeometricallyReduced (R : Type*) [CommRing R]
     (K : Type*) [Field K] [Algebra R K] : IsReduced (K ⊗[R] S) := by
   let p := RingHom.ker (algebraMap R K)
   have : p.IsPrime := RingHom.ker_isPrime (algebraMap R K)
-  have redclos' := (Algebra.isGeometricallyReduced_iff R S).mp ‹_› p
   let f : p.ResidueField →ₐ[R] K := Ideal.ResidueField.liftₐ p (Algebra.ofId R K) (le_refl _)
     (fun x ↦ by simp [IsUnit.submonoid, p])
   let : Algebra p.ResidueField K := f.toRingHom.toAlgebra
