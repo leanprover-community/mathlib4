@@ -6,10 +6,9 @@ Authors: Mario Carneiro, Jeremy Avigad, Simon Hudon
 module
 
 public import Batteries.Tactic.GeneralizeProofs
+public import Mathlib.Data.FunLike.Basic
 public import Mathlib.Data.Part
 public import Mathlib.Data.Rel
-public import Mathlib.Data.FunLike.Basic
-
 /-!
 # Partial functions
 
@@ -154,7 +153,6 @@ protected def lift (f : α → β) : α →. β := PFun.mk fun a => Part.some (f
 theorem lift_apply (f : α → β) (x : α) : PFun.lift f x = Part.some (f x) :=
   rfl
 
-@[simp↓]
 theorem mem_lift_iff {f : α → β} {x : α} {y : β} : y ∈ PFun.lift f x ↔ y = f x :=
   Part.mem_some_iff
 
