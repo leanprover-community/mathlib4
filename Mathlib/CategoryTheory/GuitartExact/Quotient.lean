@@ -63,30 +63,27 @@ lemma quotient_of_nonempty_leftHomotopy (e : T ⋙ R ≅ L ⋙ B)
   let Z (s : S) : CostructuredArrowDownwards e.hom g :=
     CostructuredArrowDownwards.mk _ _ X₀ e₀.inv s.val (by simp [s.property])
   have : Nonempty (CostructuredArrowDownwards e.hom g) := ⟨Z (Classical.arbitrary _)⟩
-  have hZ₀ (s₀ s₁) : Zigzag (Z s₀) (Z s₁) := by
-    obtain ⟨P, hP, ⟨h⟩⟩ := he s₀.val s₁.val (by simp [s₀.property, s₁.property])
-    let Z' : CostructuredArrowDownwards e.hom g :=
-      CostructuredArrowDownwards.mk _ _ P.I (e₀.inv ≫ T.map P.i₀) h.h (by
-        simp [R.map_comp, ← B.map_comp, dsimp% h.h₀, s₀.property,
-          dsimp% e.hom.naturality_assoc P.i₀])
-    let f₀ : Z s₀ ⟶ Z' :=
-      CostructuredArrow.homMk (StructuredArrow.homMk P.i₀) (by simp [Z, Z', dsimp% h.h₀])
-    let f₁ : Z s₁ ⟶ Z' :=
-      CostructuredArrow.homMk (StructuredArrow.homMk P.i₁) (by simp [Z, Z', dsimp% h.h₁])
-    exact (Zigzag.of_hom f₀).trans (Zigzag.of_inv f₁)
+  refine zigzag_isConnected (fun A₀ A₁ ↦ ?_)
   have H (A : CostructuredArrowDownwards e.hom g) : ∃ s, Nonempty (Z s ⟶ A) := by
     obtain ⟨a, ha⟩ := T.map_surjective (e₀.hom ≫ A.left.hom)
     refine ⟨⟨L.map a ≫ A.hom.right, ?_⟩,
       ⟨CostructuredArrow.homMk (StructuredArrow.homMk a ?_)⟩⟩
-    · have := StructuredArrow.w A.hom
-      dsimp at this
-      simp only [Category.assoc] at this
-      simp [← dsimp% NatIso.naturality_1 e a, ha, this]
+    · simp [← dsimp% NatIso.naturality_1 e a, ha, dsimp% A.hom.w]
     · cat_disch
-  refine zigzag_isConnected (fun A₀ A₁ ↦ ?_)
   obtain ⟨s₀, ⟨f₀⟩⟩ := H A₀
   obtain ⟨s₁, ⟨f₁⟩⟩ := H A₁
-  exact (Zigzag.of_inv f₀).trans ((hZ₀ s₀ s₁).trans (Zigzag.of_hom f₁))
+  obtain ⟨P, hP, ⟨h⟩⟩ := he s₀.val s₁.val (by simp [s₀.property, s₁.property])
+  let Z' : CostructuredArrowDownwards e.hom g :=
+    CostructuredArrowDownwards.mk _ _ P.I (e₀.inv ≫ T.map P.i₀) h.h (by
+      simp [R.map_comp, ← B.map_comp, dsimp% h.h₀, s₀.property,
+        dsimp% e.hom.naturality_assoc P.i₀])
+  calc
+    Zigzag A₀ (Z s₀) := .of_inv f₀
+    Zigzag (Z s₀) Z' := .of_hom <|
+      CostructuredArrow.homMk (StructuredArrow.homMk P.i₀) (by simp [Z, Z', dsimp% h.h₀])
+    Zigzag Z' (Z s₁) := .of_inv <|
+      CostructuredArrow.homMk (StructuredArrow.homMk P.i₁) (by simp [Z, Z', dsimp% h.h₁])
+    Zigzag (Z s₁) A₁ := .of_hom f₁
 
 lemma quotient_of_nonempty_rightHomotopy (e : T ⋙ R ≅ L ⋙ B)
     (he : ∀ ⦃X : C⦄ ⦃Y₀ : C₀⦄ (f₀ f₁ : X ⟶ L.obj Y₀) (_ : B.map f₀ = B.map f₁),
