@@ -326,6 +326,27 @@ lemma coheight_le_coheight_apply_of_strictMono (f : α → β) (hf : StrictMono 
   apply height_le_height_apply_of_strictMono (α := αᵒᵈ)
   exact fun _ _ h ↦ hf h
 
+lemma coheight_eq_of_strictMono (f : α → β) (hf : StrictMono f)
+    (h : ∀ a : α, ∀ b : β, f a < b → ∃ (a' : α), a < a' ∧ f a' = b) (a : α) :
+    coheight a = coheight (f a) := by
+  refine le_antisymm (Order.coheight_le_coheight_apply_of_strictMono _ hf _) ?_
+  refine coheight_le_iff'.mpr fun p hp ↦ ?_
+  induction p using RelSeries.inductionOn generalizing a with
+  | singleton x => simp
+  | cons p x hx ih =>
+    simp only [RelSeries.head_cons] at hp
+    obtain ⟨a', haa', ha'⟩ := h a p.head (by grind)
+    grw [RelSeries.cons_length, Nat.cast_add, Nat.cast_one, ih a' ha'.symm]
+    exact coheight_add_one_le haa'
+
+lemma height_eq_of_strictMono (f : α → β) (hf : StrictMono f)
+    (h : ∀ a : α, ∀ b : β, b < f a → ∃ (a' : α), a' < a ∧ f a' = b) (a : α) :
+    height a = height (f a) := by
+  have : coheight (OrderDual.toDual a) = coheight (OrderDual.toDual (f a)) :=
+    coheight_eq_of_strictMono (α := αᵒᵈ) (β := βᵒᵈ) (f := OrderDual.toDual ∘ f ∘ OrderDual.toDual)
+    (strictMono_dual_iff.mp hf) (fun a b hab ↦ h a b hab) _
+  simpa [Order.coheight_toDual] using this
+
 @[simp]
 lemma height_orderIso (f : α ≃o β) (x : α) : height (f x) = height x := by
   apply le_antisymm
@@ -423,7 +444,7 @@ lemma height_eq_top_iff {x : α} :
     simp [h]
   mpr h := by
     rw [height_eq_iSup_last_eq, iSup_subtype', ENat.iSup_coe_eq_top, bddAbove_def]
-    push_neg
+    push Not
     intro n
     obtain ⟨p, hlast, hp⟩ := h (n + 1)
     exact ⟨p.length, ⟨⟨⟨p, hlast⟩, by simp [hp]⟩, by simp [hp]⟩⟩
@@ -893,6 +914,11 @@ lemma krullDim_ne_bot_of_finiteDimensionalOrder [FiniteDimensionalOrder α] : kr
 lemma krullDim_ne_top_of_finiteDimensionalOrder [FiniteDimensionalOrder α] : krullDim α ≠ ⊤ :=
   (finiteDimensionalOrder_iff_krullDim_ne_bot_and_top.mp ‹_›).2
 
+lemma coheight_lt_top [FiniteDimensionalOrder α] (x : α) : coheight x < ⊤ := by
+  rw [← WithBot.coe_lt_coe]
+  apply lt_of_le_of_lt (coheight_le_krullDim x)
+  simpa using krullDim_ne_top_of_finiteDimensionalOrder.lt_top
+
 end finiteDimensional
 
 section typeclass
@@ -1127,6 +1153,12 @@ lemma krullDim_le_of_krullDim_preimage_le' (f : α → β) (h_mono : Monotone f)
     (h : ∀ (x : β), Order.krullDim (f ⁻¹' {x}) ≤ m) :
     Order.krullDim α ≤ (m + 1) * Order.krullDim β + m :=
   Order.krullDim_le_of_krullDim_preimage_le ⟨f, h_mono⟩ h
+
+lemma krullDim_le_of_orderEmbedding (e : α ↪o β) : Order.krullDim α ≤ Order.krullDim β := by
+  have (b : β) : Subsingleton (e ⁻¹' {b}) := Set.Subsingleton.coe_sort <|
+    Set.Subsingleton.preimage Set.subsingleton_singleton e.injective
+  simpa using Order.krullDim_le_of_krullDim_preimage_le' e e.monotone fun _ ↦
+    Order.krullDim_nonpos_of_subsingleton
 
 end orderHom
 

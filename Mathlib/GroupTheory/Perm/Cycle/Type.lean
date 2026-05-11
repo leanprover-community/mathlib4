@@ -154,7 +154,6 @@ theorem sum_cycleType (σ : Perm α) : σ.cycleType.sum = #σ.support := by
 theorem sum_cycleType_le (σ : Perm α) : σ.cycleType.sum ≤ Fintype.card α :=
   σ.sum_cycleType ▸ Finset.card_le_univ σ.support
 
-set_option backward.isDefEq.respectTransparency false in
 theorem card_fixedPoints (σ : Equiv.Perm α) :
     Fintype.card (Function.fixedPoints σ) = Fintype.card α - σ.cycleType.sum := by
   rw [Equiv.Perm.sum_cycleType, ← Finset.card_compl, Fintype.card_ofFinset]
@@ -627,6 +626,10 @@ variable [DecidableEq α] {σ : Perm α}
 
 theorem cycleType (h : IsThreeCycle σ) : σ.cycleType = {3} :=
   h
+
+theorem ne_one (h : IsThreeCycle σ) : σ ≠ 1 := by
+  rintro rfl
+  simpa using h.cycleType
 
 theorem card_support (h : IsThreeCycle σ) : #σ.support = 3 := by
   rw [← sum_cycleType, h.cycleType, Multiset.sum_singleton]

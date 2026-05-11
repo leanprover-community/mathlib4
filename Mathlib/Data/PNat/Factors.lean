@@ -30,9 +30,8 @@ gives an equivalence between this set and ℕ+, as we will formalize
 below. -/
 def PrimeMultiset :=
   Multiset Nat.Primes
-deriving Inhabited, AddCommMonoid, DistribLattice,
-  SemilatticeSup, Sub,
-  IsOrderedCancelAddMonoid, CanonicallyOrderedAdd, OrderBot, OrderedSub
+deriving Inhabited, AddCommMonoid, SemilatticeSup, DistribLattice,
+  Sub, IsOrderedCancelAddMonoid, CanonicallyOrderedAdd, OrderBot, OrderedSub
 
 namespace PrimeMultiset
 
