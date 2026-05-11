@@ -45,7 +45,7 @@ open Algebra.TensorProduct
 
 variable {S} in
 /-- The localization of the fiber `p.Fiber S` is isomorphic to a quotient of a localization. -/
-noncomputable def Ideal.Fiber.localizationAlgEquivQuotient (q : Ideal (p.Fiber S)) [q.IsPrime]
+noncomputable def Fiber.localizationAlgEquivQuotient (q : Ideal (p.Fiber S)) [q.IsPrime]
     [Algebra (Localization.AtPrime p) (Localization.AtPrime (q.comap includeRight))]
     [Localization.AtPrime.IsLiesOverAlgebra p (q.comap includeRight)] :
     letI r := q.comap includeRight
