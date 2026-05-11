@@ -193,7 +193,7 @@ to module `Foo.Bar` (no `srcDir` indirection).
   `lake build` with `diagnostics=true`) and writes
   `scripts/.no_expose/{exposed,static_refs,decl_refs,diagnostics,report}.jsonl`.
   `report PATH...` renders per-file safe-to-unexpose / needed
-  classifications (text, tsv, or json). `edit PATH...` applies the
+  classifications (text or json). `edit PATH...` applies the
   removal (default; `--dry-run` previews) using a section-level or
   per-decl strategy auto-detected from the file. With `--verify`,
   re-runs `lake build` on the touched module and rolls back on

@@ -15,7 +15,7 @@ The user-facing core. For each target file:
 
 1. **Read** the report to find this file's safe-to-unexpose and
    needed-downstream decls.
-2. **Detect strategy**: `auto` picks `section` if the file has
+2. **Detect strategy**: pick `section` if the file has
    `@[expose] public section`; otherwise `individual`.
 3. **Compute edits** (text-level, deliberately not full Lean parse):
    * `section`: drop `@[expose] ` from the section line, then prepend
@@ -49,16 +49,13 @@ private def hasExposeSection (text : String) : Bool :=
     trimmed.startsWith "@[expose] public section"
 
 /-- Strategy used for a particular file. -/
-inductive ResolvedStrategy where
-  | section_   : ResolvedStrategy
-  | individual : ResolvedStrategy
+inductive Strategy where
+  | section_   : Strategy
+  | individual : Strategy
   deriving Repr, DecidableEq
 
-private def chooseStrategy (sel : EditStrategy) (text : String) : ResolvedStrategy :=
-  match sel with
-  | .section_   => .section_
-  | .individual => .individual
-  | .auto       => if hasExposeSection text then .section_ else .individual
+private def chooseStrategy (text : String) : Strategy :=
+  if hasExposeSection text then .section_ else .individual
 
 /-! ## Section-strategy edit
 
@@ -425,7 +422,7 @@ unsafe def editOneFile (file : FilePath) (records : Array ReportRecord)
     |>.filter (Verdict.classify · == .safeToUnexpose) |>.map (·.line))
   let neededDownstreamLines : Array Nat := dedupe (records
     |>.filter (Verdict.classify · == .neededDownstream) |>.map (·.line))
-  let strategy := chooseStrategy args.strategy originalText
+  let strategy := chooseStrategy originalText
   let (newText, skipped) : String × Array Nat ← do
     match strategy with
     | .section_ => do

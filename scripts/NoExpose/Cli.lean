@@ -17,15 +17,6 @@ namespace NoExpose
 inductive ReportFormat where
   | text
   | json
-  | tsv
-  deriving Repr, BEq
-
-/-- Strategy for `edit`. `auto` picks `section` if the file has
-`@[expose] public section`, else `individual`. -/
-inductive EditStrategy where
-  | auto
-  | section_
-  | individual
   deriving Repr, BEq
 
 structure CollectArgs where
@@ -42,7 +33,6 @@ structure EditArgs where
   paths : Array String := #[]
   dryRun : Bool := false
   verify : Bool := false
-  strategy : EditStrategy := .auto
   forceDirty : Bool := false
   forceStale : Bool := false
 
@@ -63,13 +53,12 @@ SUBCOMMANDS:
       Build Mathlib with `set_option diagnostics true`, walk the env,
       and write report data to scripts/.no_expose/.
 
-  report [PATH...] [--all] [--format text|json|tsv]
+  report [PATH...] [--all] [--format text|json]
       Render per-file recommendations from existing report data.
       Defaults to `--format text` and to listing `safe-to-unexpose`
       and `needed-downstream` decls in each PATH.
 
-  edit [PATH...] [--dry-run] [--verify] [--strategy auto|section|individual]
-       [--force-dirty] [--force-stale]
+  edit [PATH...] [--dry-run] [--verify] [--force-dirty] [--force-stale]
       Apply (default) or preview (--dry-run) the un-expose edits to
       each PATH. Refuses on dirty git tree or stale report unless the
       corresponding --force-* flag is given. With --verify, runs
@@ -85,14 +74,7 @@ SUBCOMMANDS:
 private def parseFormat : String → Except String ReportFormat
   | "text" => .ok .text
   | "json" => .ok .json
-  | "tsv"  => .ok .tsv
-  | s      => .error s!"unknown --format value: {s} (expected text|json|tsv)"
-
-private def parseStrategy : String → Except String EditStrategy
-  | "auto"       => .ok .auto
-  | "section"    => .ok .section_
-  | "individual" => .ok .individual
-  | s            => .error s!"unknown --strategy value: {s} (expected auto|section|individual)"
+  | s      => .error s!"unknown --format value: {s} (expected text|json)"
 
 /-- Parse a `collect` argument list. -/
 private partial def parseCollect (rest : List String) : Except String CollectArgs := loop rest {} where
@@ -123,9 +105,6 @@ private partial def parseEdit (rest : List String) : Except String EditArgs := l
     | "--verify" :: rest, acc => loop rest { acc with verify := true }
     | "--force-dirty" :: rest, acc => loop rest { acc with forceDirty := true }
     | "--force-stale" :: rest, acc => loop rest { acc with forceStale := true }
-    | "--strategy" :: v :: rest, acc => do
-      let s ← parseStrategy v
-      loop rest { acc with strategy := s }
     | arg :: rest, acc =>
       if arg.startsWith "--" then .error s!"edit: unknown flag {arg}"
       else loop rest { acc with paths := acc.paths.push arg }

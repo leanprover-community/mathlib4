@@ -143,16 +143,6 @@ def renderTextFile (file : String) (rs : Array ReportRecord) : String := Id.run 
         s!"{r.numUsingFiles} files)\n"
   return out
 
-/-- Render one file's records in TSV (no header per file; caller adds). -/
-def renderTsvFile (rs : Array ReportRecord) : String := Id.run do
-  let mut out := ""
-  for r in sortByPosition rs do
-    let top := String.intercalate ";" <|
-      r.topUsingFiles.toList.map fun (f, c) => s!"{f}:{c}"
-    out := out ++ s!"{r.name}\t{r.kind}\t{r.effect}\t{r.module}\t" ++
-      s!"{r.file}:{r.line}\t{r.downstreamUsage}\t{r.numUsingFiles}\t{top}\n"
-  return out
-
 /-- Render one file's records in JSON (one object per file, decls grouped). -/
 def renderJsonFile (file : String) (rs : Array ReportRecord) : Json := Id.run do
   let mkDecl (r : ReportRecord) : Json := Json.mkObj [
@@ -199,10 +189,6 @@ def runReport (args : ReportArgs) : IO UInt32 := do
     let objs := selectedFiles.map fun f =>
       renderJsonFile f (groups.getD f #[])
     IO.println (Json.arr objs).pretty
-  | .tsv => do
-    IO.println "name\tkind\teffect\tmodule\tsource\tdownstream_usage\tnum_using_files\ttop_using_files"
-    for f in selectedFiles do
-      IO.print (renderTsvFile (groups.getD f #[]))
   return 0
 
 /-! ## Build side: join raw signals into `report.jsonl` -/
