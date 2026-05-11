@@ -36,7 +36,7 @@ local extensions over `Λ` with a fixed residue field `k`.
 
 noncomputable section
 
-universe v u
+universe u
 
 open IsLocalRing Function TensorProduct CategoryTheory KaehlerDifferential Algebra.Extension
 

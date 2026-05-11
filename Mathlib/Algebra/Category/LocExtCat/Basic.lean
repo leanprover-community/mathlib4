@@ -39,7 +39,7 @@ import Mathlib.RingTheory.HopkinsLevitzki
 
 @[expose] public section
 
-universe v u
+universe u
 
 noncomputable section
 
@@ -125,10 +125,6 @@ lemma ker_toRingHom_toOfQuot [Nontrivial (A ⧸ I)] :
     RingHom.ker (A.toOfQuot I).hom.toRingHom = I := Ideal.mk_ker
 
 @[simp]
-lemma toAlgHom_toOfQuot_apply [Nontrivial (A ⧸ I)] (a : A) :
-    (A.toOfQuot I).toAlgHom a = Ideal.Quotient.mk I a := rfl
-
-@[simp]
 lemma ker_toAlgHom_toOfQuot [Nontrivial (A ⧸ I)] : RingHom.ker (A.toOfQuot I).toAlgHom = I :=
   Ideal.mk_ker
 
@@ -165,11 +161,6 @@ theorem toOfQuot_comp_mapOfQuot (f : A ⟶ B) {J : Ideal B} [Nontrivial (A ⧸ I
     [Nontrivial (B ⧸ J)] (hf : I ≤ J.comap f.toAlgHom) :
     A.toOfQuot I ≫ mapOfQuot f hf = f ≫ B.toOfQuot J := rfl
 
-@[simp]
-lemma toAlgHom_mapOfQuot_apply (f : A ⟶ B) {J : Ideal B} [Nontrivial (A ⧸ I)]
-    [Nontrivial (B ⧸ J)] (hf : I ≤ J.comap f.toAlgHom) (a : A) :
-    (mapOfQuot f hf).toAlgHom (Ideal.Quotient.mk I a) = Ideal.Quotient.mk J (f.toAlgHom a) := rfl
-
 /-- Lifts a morphism `f : A ⟶ B` to a morphism out of `A.ofQuot I`,
 given that `I` is contained in the kernel of `f`. -/
 def liftToOfQuot (I : Ideal A) [Nontrivial (A ⧸ I)] (f : A ⟶ B)
@@ -200,11 +191,6 @@ def ofQuotKerIsoOfSurjective (f : A ⟶ B) (h : Surjective f.toAlgHom) :
     obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
     exact DFunLike.congr_fun f.residue_comp x
     )) (Ideal.quotientKerAlgEquivOfSurjective h).bijective
-
-@[simp]
-lemma toAlgHom_ofQuotKerIsoOfSurjective_hom_apply {f : A ⟶ B} (h : Surjective f.toAlgHom)
-    (a : A) : (ofQuotKerIsoOfSurjective f h).hom.toAlgHom
-      (Ideal.Quotient.mk (RingHom.ker f.toAlgHom) a) = f.toAlgHom a := rfl
 
 @[simp]
 lemma toOfQuot_comp_ofQuotKerIsoOfSurjective_hom {f : A ⟶ B} (h : Surjective f.toAlgHom) :

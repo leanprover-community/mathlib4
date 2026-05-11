@@ -30,7 +30,7 @@ an ambient environment for formal deformation theory.
 
 -/
 
-universe v u
+universe u
 
 @[expose] public section
 
@@ -107,6 +107,7 @@ lemma residueEquiv_residue_apply {x : A} :
 /-- The type of morphisms in `LocExtCat` is the same as morphisms of the underlying extensions. -/
 @[ext]
 structure Hom (A B : LocExtCat Λ k) : Type u where
+  /-- The type of underlying extension homomorphisms. -/
   hom' : A.toExtension.Hom B.toExtension
 
 instance : Category (LocExtCat Λ k) where

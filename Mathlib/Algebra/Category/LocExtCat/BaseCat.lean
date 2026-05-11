@@ -34,7 +34,7 @@ of `LocExtCat Λ k` consisting of Artinian local algebras.
 
 @[expose] public section
 
-universe v u
+universe u
 
 noncomputable section
 
@@ -45,7 +45,7 @@ variable {Λ k : Type u} [CommRing Λ] [Field k] [Algebra Λ k]
 /-- The base category for deformation theory over `Λ`. This is the full subcategory of
 `LocExtCat Λ k` consisting of Artinian local `Λ`-algebras with residue field `k`. -/
 @[stacks 06GC]
-abbrev BaseCat (Λ : Type u) [CommRing Λ] (k : Type u) [Field k] [Algebra Λ k] : Type _ :=
+abbrev BaseCat (Λ k : Type u) [CommRing Λ] [Field k] [Algebra Λ k] : Type _ :=
   ObjectProperty.FullSubcategory fun A : LocExtCat Λ k ↦ IsArtinianRing A
 
 namespace BaseCat
