@@ -5,8 +5,8 @@ Authors: Allen Hao Zhu
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Sub
 public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
+public import Mathlib.MeasureTheory.Measure.Sub
 public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.JordanSub
 
 /-!
