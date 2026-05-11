@@ -465,7 +465,7 @@ partial def inv {u : Lean.Level} {α : Q(Type u)} (_sα : Q(CommSemiring $α))
     return some ⟨_, vc, q($pc)⟩
   | none => return none
 
-/-- Try to evaluate an expression as a rational constant using norm_num. -/
+/-- Try to evaluate an expression as a rational constant using `norm_num`. -/
 partial def derive {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α)) (x : Q($α)) :
     MetaM (Result (Common.ExSum RatCoeff sα) q($x)) := do
   let res ← NormNum.derive x

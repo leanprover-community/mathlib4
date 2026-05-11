@@ -305,6 +305,15 @@ lemma image_symm_eq_preimage (e : R ≃+* S) (s : Set S) : e.symm '' s = e ⁻¹
 lemma image_eq_preimage_symm (e : R ≃+* S) (s : Set R) : e '' s = e.symm ⁻¹' s :=
   e.toEquiv.image_eq_preimage_symm _
 
+@[simp]
+lemma coe_coe_toEquiv_symm (e : R ≃+* S) : ⇑(e : R ≃ S).symm = ⇑e.symm := rfl
+
+@[simp]
+lemma coe_coe_toMulEquiv_symm (e : R ≃+* S) : ⇑(e : R ≃* S).symm = ⇑e.symm := rfl
+
+@[simp]
+lemma coe_coe_toAddEquiv_symm (e : R ≃+* S) : ⇑(e : R ≃+ S).symm = ⇑e.symm := rfl
+
 @[deprecated (since := "2025-11-05")] alias image_eq_preimage := image_eq_preimage_symm
 
 theorem symm_apply_eq (e : R ≃+* S) {x : S} {y : R} :
