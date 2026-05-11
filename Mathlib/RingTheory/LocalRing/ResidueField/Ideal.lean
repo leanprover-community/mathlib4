@@ -140,6 +140,7 @@ lemma Ideal.algebraMap_residueField_surjective (I : Ideal R) [I.IsMaximal] :
 instance (I : Ideal R) [I.IsMaximal] : Module.Finite R I.ResidueField :=
   .of_surjective (Algebra.linearMap _ _) I.algebraMap_residueField_surjective
 
+/-- The equivalence between a field and residue field of its prime ideal, induced by algebra map. -/
 noncomputable def Ideal.AlgEquivResidueFieldOfField {k : Type*} [Field k]
     (p : Ideal k) [p.IsPrime] : k ≃ₐ[k] p.ResidueField :=
   AlgEquiv.ofBijective (Algebra.ofId k _) ⟨RingHom.injective _,
