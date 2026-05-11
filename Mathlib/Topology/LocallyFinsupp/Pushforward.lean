@@ -34,16 +34,15 @@ universe u v
 variable {X Y R : Type*} [TopologicalSpace X] [TopologicalSpace Y]
   {f : X → Y} (hf : IsSpectralMap f) (w : X → R)
 
-namespace Function
-namespace locallyFinsupp
+namespace Function.locallyFinsupp
 
 section map
 
-variable [Semiring R] {W : TopologicalSpace.Opens Y} (c : Function.locallyFinsupp X R)
+variable [Semiring R] {W : Set Y} (hW : IsOpen W) (c : Function.locallyFinsupp X R)
 
-lemma inter_preimageSupport_nonempty_finite (hf : IsSpectralMap f) (hW : IsCompact W.1) :
-    (W.carrier ∩ {z : Y | (f ⁻¹' {z} ∩ c.support).Nonempty}).Finite := by
-  suffices (f ⁻¹' (W.carrier ∩ {z | (f ⁻¹' {z} ∩ c.support).Nonempty}) ∩ c.support).Finite from
+lemma inter_preimageSupport_nonempty_finite (hf : IsSpectralMap f) (hW : IsOpen W)
+    (hW' : IsCompact W) : (W ∩ {z : Y | (f ⁻¹' {z} ∩ c.support).Nonempty}).Finite := by
+  suffices (f ⁻¹' (W ∩ {z | (f ⁻¹' {z} ∩ c.support).Nonempty}) ∩ c.support).Finite from
     (this.image f).subset (fun a ha ↦ by grind [Set.Nonempty])
   rw [preimage_inter]
   suffices (f ⁻¹' W ∩ ⋃ z, f ⁻¹' {z} ∩ c.support).Finite by
@@ -51,33 +50,13 @@ lemma inter_preimageSupport_nonempty_finite (hf : IsSpectralMap f) (hW : IsCompa
     rw [Set.inter_assoc]
     exact Set.inter_subset_inter_right _ (fun p hp ↦ by simp_all)
   rw [inter_iUnion]
-  suffices (f ⁻¹' W.carrier ∩ c.support).Finite by
+  suffices (f ⁻¹' W ∩ c.support).Finite by
     grind [Opens.carrier_eq_coe, iUnion_subset_iff, SetLike.mem_coe,
       Function.mem_support, Finite.subset]
   exact LocallyFiniteSupport.finite_inter_support_of_isCompact c.locallyFiniteSupport <|
-    hf.2 W.is_open' hW
+    hf.2 hW hW'
 
-variable {N : Type*} [PrespectralSpace Y]
-
-lemma map_locally_finite (hf : IsSpectralMap f) (hf' : HasCompactFibers f) (y : Y) :
-    ∃ t ∈ 𝓝 y, (t ∩ Function.support fun z ↦
-    ∑ x ∈ (c.locallyFiniteSupport.finite_inter_support_of_isCompact <| hf' z).toFinset,
-    (c x) * w x).Finite := by
-  obtain ⟨W, hW⟩ : ∃ W : TopologicalSpace.Opens Y, IsCompact W.1 ∧ y ∈ W := by
-    obtain ⟨U, hU⟩ := (PrespectralSpace.isTopologicalBasis (X := Y)).exists_subset_of_mem_open
-        (by simp : y ∈ ⊤) (by simp)
-    use ⟨U, hU.1.1⟩
-    exact ⟨hU.1.2, hU.2.1⟩
-  use W
-  refine ⟨IsOpen.mem_nhds (Opens.isOpen W) hW.2, ?_⟩
-  suffices (W.carrier ∩ {z : Y | (f ⁻¹' {z} ∩ support c.toFun).Nonempty}).Finite by
-    apply Finite.subset this
-    apply inter_subset_inter_right
-    intro x
-    contrapose!
-    simp +contextual only [mem_setOf_eq, not_nonempty_iff_eq_empty, mem_support, toFinite_toFinset,
-      toFinset_empty, Finset.sum_empty, ne_eq, not_true_eq_false, not_false_eq_true, implies_true]
-  exact inter_preimageSupport_nonempty_finite c hf hW.1
+variable [PrespectralSpace Y]
 
 variable (f) in
 /--
@@ -90,18 +69,35 @@ if the dimensions of the points correspond, and is zero otherwise).
 -/
 @[simps]
 noncomputable
-def map (hf : IsSpectralMap f) (hf' : HasCompactFibers f) : Function.locallyFinsupp Y R where
+def map (hf : IsSpectralMap f) (hf' : HasCompactFibers f) (c : locallyFinsupp X R) :
+    Function.locallyFinsupp Y R where
   toFun z := ∑ x ∈ (c.locallyFiniteSupport.finite_inter_support_of_isCompact <| hf' z).toFinset,
     (c x) * w x
   supportWithinDomain' := by simp
-  supportLocallyFiniteWithinDomain' z _ := map_locally_finite w c hf hf' z
+  supportLocallyFiniteWithinDomain' y _ := by
+    obtain ⟨W, hW⟩ : ∃ W : TopologicalSpace.Opens Y, IsCompact W.1 ∧ y ∈ W := by
+      obtain ⟨U, hU⟩ := (PrespectralSpace.isTopologicalBasis (X := Y)).exists_subset_of_mem_open
+          (by simp : y ∈ ⊤) (by simp)
+      use ⟨U, hU.1.1⟩
+      exact ⟨hU.1.2, hU.2.1⟩
+    use W
+    refine ⟨IsOpen.mem_nhds (Opens.isOpen W) hW.2, ?_⟩
+    suffices (W.carrier ∩ {z : Y | (f ⁻¹' {z} ∩ support c.toFun).Nonempty}).Finite by
+      apply Finite.subset this
+      apply inter_subset_inter_right
+      intro x
+      contrapose!
+      simp +contextual only [mem_setOf_eq, not_nonempty_iff_eq_empty, mem_support,
+        toFinite_toFinset, toFinset_empty, Finset.sum_empty, ne_eq, not_true_eq_false,
+        not_false_eq_true, implies_true]
+    exact inter_preimageSupport_nonempty_finite c hf W.2 hW.1
 
 /--
 Pushforward preserves cycles of pure dimension `d` in the dimension grading.
 -/
 lemma map_homogeneous (s : Set X) (t : Set Y) (hc : c.support ⊆ s) (hf' : HasCompactFibers f)
     (h : ∀ x : X, x ∈ s → w x ≠ 0 → f x ∈ t) :
-    (map f w c hf hf').support ⊆ t := by
+    (map f w hf hf' c).support ⊆ t := by
   intro y hy
   simp only [map, Function.mem_support, ne_eq] at hy
   obtain ⟨x, hx⟩ := Finset.exists_ne_zero_of_sum_ne_zero hy
@@ -117,7 +113,7 @@ condition that the weight function must be trivial here is less strange than it 
 -/
 @[simp]
 lemma map_id [PrespectralSpace X] (hw : ∀ z : X, w z = 1) :
-    map id w c isSpectralMap_id (by simp [HasCompactFibers]) = c := by
+    map id w isSpectralMap_id (by simp [HasCompactFibers]) c = c := by
   classical
   ext z
   change ∑ x ∈ _, c x * w x = c z
@@ -126,5 +122,4 @@ lemma map_id [PrespectralSpace X] (hw : ∀ z : X, w z = 1) :
   split_ifs with h <;> simp [hw, h]
 
 end map
-end locallyFinsupp
-end Function
+end Function.locallyFinsupp
