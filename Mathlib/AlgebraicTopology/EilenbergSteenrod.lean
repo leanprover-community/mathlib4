@@ -219,35 +219,65 @@ instance : IsClosedUnderIsomorphisms (C := HomologyPretheory C c) IsAdditive whe
     Functor.isoWhiskerLeft incl ((HomologyPretheory.forgetₚ _).mapIso e) ≪≫ (HP'.iso _).symm) }
 
 /-- This imposes that a `HomologyPretheory` has the long exact sequence of topological pairs
-`⋯ ⟶ H (c.next i) X.fst ⟶ Hₚ (c.next i) X) ⟶  H i X.snd ⟶ H i X.fst ⟶ ⋯`. -/
+`⋯ ⟶ H (c.next i) X.fst ⟶ Hₚ (c.next i) X) ⟶ H i X.snd ⟶ H i X.fst ⟶ ⋯`. -/
 class HasPairSequence where
-  exact (X : TopPair) : ∀ (i : ι), (ComposableArrows.mk₄ ((HP.Hₚ (c.next i)).map X.j)
-      ((HP.δ (c.next i) i).app X) ((HP.H i).map X.map)
-      ((HP.iso i).hom.app X.fst ≫ (HP.Hₚ i).map X.j)).Exact := by cat_disch
+  /-- Exactness of the sequence `H i X.fst ⟶ Hₚ i X ⟶ H j X.snd.` -/
+  exact_pair (X : TopPair) (i j : ι) (hij : c.Rel i j) :
+      (ComposableArrows.mk₂ ((HP.Hₚ i).map X.j) ((HP.δ i j).app _)).Exact := by cat_disch
+  /-- Exactness of the sequence `Hₚ i X ⟶ H j X.snd ⟶ H j X.fst`. -/
+  exact_snd (X : TopPair) (i j : ι) (hij : c.Rel i j) :
+      (ComposableArrows.mk₂ ((HP.δ i j).app _) ((HP.H j).map X.map)).Exact := by cat_disch
+  /-- Exactness of the sequence `H i X.snd ⟶ H i X.fst ⟶ Hₚ i X`. -/
+  exact_fst (X : TopPair) (i : ι) :
+      (ComposableArrows.mk₂ ((HP.H i).map X.map) ((HP.iso i).hom.app _
+      ≫ (HP.Hₚ i).map X.j)).Exact := by cat_disch
 
 set_option backward.isDefEq.respectTransparency false in
 instance : IsClosedUnderIsomorphisms (C := HomologyPretheory C c) HasPairSequence where
-  of_iso {HP HP'} e h := ⟨by
-    intro X i
-    let pairSeq := ComposableArrows.mk₄ ((HP.Hₚ (c.next i)).map X.j) ((HP.δ (c.next i) i).app X)
-      ((HP.H i).map X.map) ((HP.iso i).hom.app X.fst ≫ (HP.Hₚ i).map X.j)
-    let pairSeq' := ComposableArrows.mk₄ ((HP'.Hₚ (c.next i)).map X.j) ((HP'.δ (c.next i) i).app X)
-      ((HP'.H i).map X.map) ((HP'.iso i).hom.app X.fst ≫ (HP'.Hₚ i).map X.j)
-    have pairSeqIso : pairSeq ≅ pairSeq' :=
-      ComposableArrows.isoMk₄
-        (((HomologyPretheory.forgetₚ _).mapIso e).app _)
-        (((HomologyPretheory.forgetₚ _).mapIso e).app _)
-        ((proj₂.isoWhiskerLeft ((HP.iso _) ≪≫
-          incl.isoWhiskerLeft ((HomologyPretheory.forgetₚ _).mapIso e) ≪≫ (HP'.iso _).symm)).app _)
-        (((HP.iso _) ≪≫
-          incl.isoWhiskerLeft ((HomologyPretheory.forgetₚ _).mapIso e) ≪≫ (HP'.iso _).symm).app _)
-        (((HomologyPretheory.forgetₚ _).mapIso e).app _)
-        (by cat_disch)
-        (by simp [pairSeq, pairSeq', ComposableArrows.Precomp.map, Hom.w_congr_app])
-        (by simp [pairSeq, pairSeq', ComposableArrows.Precomp.map])
-        (by simp [pairSeq, pairSeq', ComposableArrows.Precomp.map]; simp only [← Category.assoc,
-          Hom.iso_comm_congr_app])
-    exact ComposableArrows.exact_of_iso pairSeqIso (h.exact _ _)⟩
+  of_iso {HP HP'} e hPS := {
+    exact_pair X i j hij := by
+      let pairSeq := ComposableArrows.mk₂ ((HP.Hₚ i).map X.j) ((HP.δ i j).app X)
+      let pairSeq' := ComposableArrows.mk₂ ((HP'.Hₚ i).map X.j) ((HP'.δ i j).app X)
+      have pairSeqIso : pairSeq ≅ pairSeq' :=
+        ComposableArrows.isoMk₂
+          (((HomologyPretheory.forgetₚ _).mapIso e).app _)
+          (((HomologyPretheory.forgetₚ _).mapIso e).app _)
+          ((proj₂.isoWhiskerLeft ((HP.iso _) ≪≫
+            incl.isoWhiskerLeft ((HomologyPretheory.forgetₚ _).mapIso e) ≪≫ (HP'.iso _).symm)).app _)
+          (by cat_disch)
+          (by simp [pairSeq, pairSeq', ComposableArrows.Precomp.map, Hom.w_congr_app])
+      exact ComposableArrows.exact_of_iso pairSeqIso (hPS.exact_pair _ _ _ hij)
+    exact_snd X i j hij := by
+      let pairSeq := ComposableArrows.mk₂ ((HP.δ i j).app X) ((HP.H j).map X.map)
+      let pairSeq' := ComposableArrows.mk₂ ((HP'.δ i j).app X) ((HP'.H j).map X.map)
+      have pairSeqIso : pairSeq ≅ pairSeq' :=
+        ComposableArrows.isoMk₂
+          (((HomologyPretheory.forgetₚ _).mapIso e).app _)
+          ((proj₂.isoWhiskerLeft ((HP.iso _) ≪≫
+            incl.isoWhiskerLeft ((HomologyPretheory.forgetₚ _).mapIso e) ≪≫
+            (HP'.iso _).symm)).app _)
+          (((HP.iso _) ≪≫ incl.isoWhiskerLeft ((HomologyPretheory.forgetₚ _).mapIso e) ≪≫
+            (HP'.iso _).symm).app _)
+          (by simp [pairSeq, pairSeq', ComposableArrows.Precomp.map, Hom.w_congr_app])
+          (by simp [pairSeq, pairSeq', ComposableArrows.Precomp.map])
+      exact ComposableArrows.exact_of_iso pairSeqIso (hPS.exact_snd _ _ _ hij)
+    exact_fst X i := by
+      let pairSeq := ComposableArrows.mk₂ ((HP.H i).map X.map)
+        ((HP.iso i).hom.app X.fst ≫ (HP.Hₚ i).map X.j)
+      let pairSeq' := ComposableArrows.mk₂ ((HP'.H i).map X.map)
+        ((HP'.iso i).hom.app X.fst ≫ (HP'.Hₚ i).map X.j)
+      have pairSeqIso : pairSeq ≅ pairSeq' :=
+        ComposableArrows.isoMk₂
+          ((proj₂.isoWhiskerLeft ((HP.iso _) ≪≫
+            incl.isoWhiskerLeft ((HomologyPretheory.forgetₚ _).mapIso e) ≪≫ (HP'.iso _).symm)).app _)
+          (((HP.iso _) ≪≫ incl.isoWhiskerLeft ((HomologyPretheory.forgetₚ _).mapIso e) ≪≫
+            (HP'.iso _).symm).app _)
+          (((HomologyPretheory.forgetₚ _).mapIso e).app _)
+          (by simp [pairSeq, pairSeq', ComposableArrows.Precomp.map])
+          (by simp [pairSeq, pairSeq', ComposableArrows.Precomp.map]; simp only [← Category.assoc,
+            Hom.iso_comm_congr_app])
+      exact ComposableArrows.exact_of_iso pairSeqIso (hPS.exact_fst _ _)
+  }
 
 /-- An extraordinary Eilenberg-Steenrod homology theory requires the homotopy, excision, additivity,
 and exactness axioms. -/
