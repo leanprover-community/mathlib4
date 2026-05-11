@@ -84,7 +84,7 @@ theorem isExtreme (h : F.IsFaceOf C) : IsExtreme R (C : Set M) F := by
   rwa [← hz] at zf
 
 /-- The intersection of two faces of two cones is a face of the intersection of the cones. -/
-theorem inf (h₁ : F₁.IsFaceOf C₁) (h₂ : F₂.IsFaceOf C₂) :
+protected theorem inf (h₁ : F₁.IsFaceOf C₁) (h₂ : F₂.IsFaceOf C₂) :
     (F₁ ⊓ F₂).IsFaceOf (C₁ ⊓ C₂) := by
   use le_inf_iff.mpr ⟨Set.inter_subset_left.trans h₁.le, Set.inter_subset_right.trans h₂.le⟩
   simp only [mem_inf, and_imp]
@@ -94,11 +94,19 @@ theorem inf (h₁ : F₁.IsFaceOf C₁) (h₂ : F₂.IsFaceOf C₂) :
 
 /-- The intersection of two faces of a cone is a face of the cone. -/
 theorem inf_left (h₁ : F₁.IsFaceOf C) (h₂ : F₂.IsFaceOf C) : (F₁ ⊓ F₂).IsFaceOf C :=
-  inf_idem C ▸ inf h₁ h₂
+  inf_idem C ▸ IsFaceOf.inf h₁ h₂
 
 /-- If a cone is a face of two cones simultaneously, then it's also a face of their intersection. -/
 theorem inf_right (h₁ : F.IsFaceOf C₁) (h₂ : F.IsFaceOf C₂) : F.IsFaceOf (C₁ ⊓ C₂) :=
-  inf_idem F ▸ inf h₁ h₂
+  inf_idem F ▸ IsFaceOf.inf h₁ h₂
+
+protected theorem sInf (F : Set (PointedCone R M)) (h : ∀ f ∈ F, f.IsFaceOf C) :
+    (C ⊓ sInf F).IsFaceOf C where
+  le _ sm := sm.1
+  mem_of_smul_add_mem := by
+    simp only [mem_inf, mem_sInf, and_imp]
+    intros _ _ a xc yc a0 _ h'
+    simpa [xc] using fun F Fs ↦ (h F Fs).mem_of_smul_add_mem xc yc a0 (h' F Fs)
 
 theorem mem_of_add_mem_left (hF : F.IsFaceOf C) {x y : M}
     (hx : x ∈ C) (hy : y ∈ C) (hxy : x + y ∈ F) : x ∈ F := by
