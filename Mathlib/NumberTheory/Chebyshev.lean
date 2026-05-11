@@ -441,7 +441,7 @@ theorem psi_sub_theta_le {x : ℝ} (hx : 1 ≤ x) : ψ x - θ x ≤ 2 * √x * l
   grw [← abs_psi_sub_theta_le_sqrt_mul_log hx]
   exact le_abs_self _
 
-/-- The Chebyshev lower bound for $\theta$. -/
+/-- The Chebyshev lower bound for `θ`. -/
 theorem theta_ge (n : ℕ) : n * log 2 - log (n + 1) - 2 * √n * log n ≤ θ n := by
   rcases n.eq_zero_or_pos with rfl | hn
   · simp
