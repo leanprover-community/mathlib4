@@ -79,6 +79,7 @@ structure Hom (HP HP' : HomologyPretheory C c) where
   /-- `homₚ` needs to be compatible with the boundary maps. -/
   w (i j : ι) : HP.δ i j ≫ proj₂.whiskerLeft (hom j) = homₚ i ≫ HP'.δ i j := by cat_disch
 
+attribute [reassoc (attr := simp)] Hom.iso_comm
 attribute [reassoc (attr := local simp)] Hom.w
 
 variable {HP HP' : HomologyPretheory C c}
@@ -135,9 +136,6 @@ instance : Category (HomologyPretheory C c) where
   comp f g := {
     homₚ i := f.homₚ i ≫ g.homₚ i
     hom i := f.hom i ≫ g.hom i
-    iso_comm i := by
-      simp only [Functor.whiskerLeft_comp, ← Category.assoc, Hom.iso_comm]
-      simp [Hom.iso_comm]
   }
 
 /-- The forgetful functor that sends a `HomologyPretheory` to it's relative homology functor `Hₚ`.
