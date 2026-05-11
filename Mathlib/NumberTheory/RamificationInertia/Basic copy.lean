@@ -37,11 +37,6 @@ public import Mathlib.RingTheory.Flat.TorsionFree
 section
 
 -- PRed
-instance {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime]
-    (q : Ideal (p.Fiber S)) [q.IsPrime] : Localization.AtPrime.IsLiesOverAlgebra p q where
-  algebraMap_eq := (Localization.localRingHom_unique p q _ Ideal.LiesOver.over fun _ ↦ rfl).symm
-
--- PRed
 open Module TensorProduct in
 lemma _root_.Ideal.finrank_fiber_eq_finrank {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
     [Module.Flat R M] [Module.Finite R M] [IsDomain R] (p : Ideal R) [p.IsPrime] :
@@ -60,28 +55,6 @@ open Ideal
 namespace Ideal
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime]
-
--- PRed
-attribute [local instance] Algebra.TensorProduct.rightAlgebra in
-open Algebra Algebra.TensorProduct in
-/-- `p.Fiber S` is isomorphic to the quotient `Sₚ ⧸ pSₚ`. -/
-noncomputable def Fiber.algEquivQuotient :
-    letI Rp := Localization p.primeCompl
-    letI pRp := IsLocalRing.maximalIdeal Rp
-    letI Sp := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
-    letI pSp := pRp.map (algebraMap Rp Sp)
-    p.Fiber S ≃ₐ[S] Sp ⧸ pSp :=
-  letI Rp := Localization p.primeCompl
-  letI pRp := IsLocalRing.maximalIdeal Rp
-  letI Sp := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
-  letI pSp := pRp.map (algebraMap Rp Sp)
-  (commRight R S p.ResidueField).symm.trans <| (tensorQuotientEquiv S Rp S pRp).trans <|
-    { __ := quotientEquiv _ _ (Localization.tensorLeftAlgEquiv p.primeCompl S) (by
-        rw [← Ideal.map_coe includeRight, Ideal.map_map]
-        congr
-        ext
-        simp [Localization.tensorLeftAlgEquiv_apply_one_tmul p.primeCompl])
-      commutes' := by simp }
 
 open TensorProduct
 
@@ -194,8 +167,8 @@ theorem sum_ramification_inertia''
     [Module.Flat R S] [Module.Finite R S] (p : Ideal R) [p.IsPrime] :
     Nat.card G =
       ∑ q : p.primesOver S, q.1.ramificationIdx' R * q.1.inertiaDeg' R := by
-  let := FractionRing.mulSemiringAction_of_isGaloisGroup G R S
   let := FractionRing.liftAlgebra R (FractionRing S)
+  let := IsFractionRing.mulSemiringAction G R S (FractionRing R) (FractionRing S)
   rw [← sum_ramification_inertia', (IsGaloisGroup.toFractionRing G R S).card_eq_finrank,
     Algebra.IsAlgebraic.finrank_of_isFractionRing R (FractionRing R) S (FractionRing S)]
 
