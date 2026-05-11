@@ -129,7 +129,7 @@ lemma prod_lt_prod' (hle : ∀ i ∈ s, f i ≤ g i) (hlt : ∃ i ∈ s, f i < g
 lemma prod_lt_prod_of_nonempty' (hs : s ≠ ∅) (hfg : ∀ i ∈ s, f i < g i) :
     (s.map f).prod < (s.map g).prod := by
   obtain ⟨i, hi⟩ := exists_mem_of_ne_zero hs
-  exact prod_lt_prod' (fun i hi => le_of_lt (hfg i hi)) ⟨i, hi, hfg i hi⟩
+  exact prod_lt_prod' (fun i hi ↦ (hfg i hi).le) ⟨i, hi, hfg i hi⟩
 
 end OrderedCancelCommMonoid
 

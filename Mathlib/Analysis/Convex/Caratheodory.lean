@@ -70,7 +70,7 @@ theorem mem_convexHull_erase [DecidableEq E] {t : Finset E} (h : ¬AffineIndepen
     exact mem.2
   have hi₀ : i₀ ∈ t := filter_subset _ _ mem
   let k : E → 𝕜 := fun z => f z - f i₀ / g i₀ * g z
-  have hk : k i₀ = 0 := by simp [k, ne_of_gt hg]
+  have hk : k i₀ = 0 := by simp [k, hg.ne']
   have ksum : ∑ e ∈ t.erase i₀, k e = 1 := by
     calc
       ∑ e ∈ t.erase i₀, k e = ∑ e ∈ t, k e := by
@@ -89,7 +89,7 @@ theorem mem_convexHull_erase [DecidableEq E] {t : Finset E} (h : ¬AffineIndepen
     · calc
         _ ≤ 0 := by
           apply mul_nonpos_of_nonneg_of_nonpos
-          · apply div_nonneg (fpos i₀ (mem_of_subset (filter_subset _ t) mem)) (le_of_lt hg)
+          · apply div_nonneg (fpos i₀ (mem_of_subset (filter_subset _ t) mem)) hg.le
           · simpa only [s, mem_filter, het, true_and, not_lt] using hes
         _ ≤ f e := fpos e het
   · rw [Subtype.coe_mk, centerMass_eq_of_sum_1 _ id ksum]

@@ -78,8 +78,8 @@ private theorem smoothingSeminormSeq_tendsto_aux {L : ℝ} (hL : 0 ≤ L) {ε : 
       exact Tendsto.neg h_exp
     rw [← rpow_zero (L + ε)]
     apply Tendsto.rpow tendsto_const_nhds h0
-    rw [ne_eq, add_eq_zero_iff_of_nonneg hL (le_of_lt hε)]
-    exact Or.inl (not_and_of_not_right _ (ne_of_gt hε))
+    rw [ne_eq, add_eq_zero_iff_of_nonneg hL hε.le]
+    exact Or.inl (not_and_of_not_right _ hε.ne')
   · simp_rw [mul_one, ← rpow_natCast, ← rpow_mul (apply_nonneg μ x), ← mul_div_assoc, mul_one,
       ← rpow_zero (μ x)]
     exact Tendsto.rpow tendsto_const_nhds h_exp (Or.inl hx)
@@ -143,7 +143,7 @@ theorem tendsto_smoothingFun_of_ne_zero (hμ1 : μ 1 ≤ 1) {x : R} (hx : μ x �
     intro n hn
     specialize hN n hn
     rw [Real.dist_eq, abs_lt] at hN
-    exact le_of_lt hN.right
+    exact hN.right.le
   /- We now show that for all `n ≥ max m1 m2`, we have
     `dist (smoothingSeminormSeq μ x n) (smoothingFun μ x) < ε`. -/
   use max (m1 : ℕ) m2
@@ -188,12 +188,12 @@ theorem tendsto_smoothingFun_of_ne_zero (hμ1 : μ 1 ≤ 1) {x : R} (hx : μ x �
         (L + ε / 2) ^ (1 - (((n % m1 : ℕ) : ℝ) / (n : ℝ)))`. -/
     have h1 : (μ (x ^ (m1 : ℕ)) ^ (n / (m1 : ℕ))) ^ (1 / (n : ℝ)) <
         (L + ε / 2) * (L + ε / 2) ^ (-(((n % m1 : ℕ) : ℝ) / (n : ℝ))) := by
-      have hm10 : (m1 : ℝ) ≠ 0 := cast_ne_zero.mpr (_root_.ne_of_gt (PNat.pos m1))
-      rw [← rpow_lt_rpow_iff (rpow_nonneg (apply_nonneg μ _) _) (le_of_lt hL0')
+      have hm10 : (m1 : ℝ) ≠ 0 := cast_ne_zero.mpr (PNat.pos m1).ne'
+      rw [← rpow_lt_rpow_iff (by positivity) hL0'.le
         (cast_pos.mpr (PNat.pos m1)), ← rpow_mul (apply_nonneg μ _), one_div_mul_cancel hm10,
         rpow_one] at hm1
       nth_rw 1 [← rpow_one (L + ε / 2)]
-      have : (n : ℝ) / n = (1 : ℝ) := div_self (cast_ne_zero.mpr (_root_.ne_of_gt hn0))
+      have : (n : ℝ) / n = (1 : ℝ) := div_self (cast_ne_zero.mpr hn0.ne')
       nth_rw 2 [← this]; clear this
       nth_rw 3 [← div_add_mod n m1]
       have h_lt : 0 < ((n / m1 : ℕ) : ℝ) / (n : ℝ) :=
@@ -201,14 +201,15 @@ theorem tendsto_smoothingFun_of_ne_zero (hμ1 : μ 1 ≤ 1) {x : R} (hx : μ x �
           (cast_pos.mpr hn0)
       rw [← rpow_natCast, ← rpow_add hL0', ← neg_div, ← add_div, Nat.cast_add,
         add_neg_cancel_right, Nat.cast_mul, ← rpow_mul (apply_nonneg μ _), mul_one_div,
-        mul_div_assoc, rpow_mul (le_of_lt hL0')]
-      exact rpow_lt_rpow (apply_nonneg μ _) hm1 h_lt
+        mul_div_assoc, rpow_mul hL0'.le]
+      gcongr
     /- We again use the submultiplicativity of `μ` to deduce
     `μ (x ^ (n % m1)) ^ (1 / n) ≤ (μ x ^ (n % m1)) ^ (1 / n)`. -/
     have h2 : μ (x ^ (n % m1)) ^ (1 / (n : ℝ)) ≤ (μ x ^ (n % m1)) ^ (1 / (n : ℝ)) := by
       by_cases hnm1 : n % m1 = 0
       · simpa [hnm1, pow_zero] using rpow_le_rpow (apply_nonneg μ _) hμ1 (one_div_cast_nonneg _)
-      · exact rpow_le_rpow (apply_nonneg μ _) (map_pow_le_pow μ _ hnm1) (one_div_cast_nonneg _)
+      · gcongr
+        exact map_pow_le_pow μ _ hnm1
     /- We bound `(L + ε / 2) ^ (1 -n % m1) / n) * (μ x ^ (n % m1)) ^ (1 / n)` by `L + ε`. -/
     have h3 : (L + ε / 2) * (L + ε / 2) ^ (-(((n % m1 : ℕ) : ℝ) / (n : ℝ))) *
           (μ x ^ (n % m1)) ^ (1 / (n : ℝ)) ≤ L + ε := by
@@ -218,14 +219,13 @@ theorem tendsto_smoothingFun_of_ne_zero (hμ1 : μ 1 ≤ 1) {x : R} (hx : μ x �
       rw [mul_assoc, ← mul_sub, mul_comm, ← le_div_iff₀ hL0', div_div]
       exact hm2 n (le_trans (le_max_right (m1 : ℕ) m2) hn)
     have h4 : 0 < μ (x ^ (n % ↑m1)) ^ (1 / (n : ℝ)) := rpow_pos_of_pos hxn' _
-    have h5 : 0 < (L + ε / 2) * (L + ε / 2) ^ (-(↑(n % ↑m1) / (n : ℝ))) :=
-      mul_pos hL0' (rpow_pos_of_pos hL0' _)
+    have h5 : 0 < (L + ε / 2) * (L + ε / 2) ^ (-(↑(n % ↑m1) / (n : ℝ))) := by positivity
     /- We combine the previous steps to deduce that
      `μ (x ^ (↑m1 * (n / ↑m1) + n % ↑m1)) ^ (1 / ↑n) < L + ε`. -/
     calc μ (x ^ ((m1 : ℕ) * (n / (m1 : ℕ)) + n % m1)) ^ (1 / (n : ℝ)) =
           μ (x ^ ((m1 : ℕ) * (n / (m1 : ℕ))) * x ^ (n % m1)) ^ (1 / (n : ℝ)) := by rw [pow_add]
-      _ ≤ (μ (x ^ ((m1 : ℕ) * (n / (m1 : ℕ)))) * μ (x ^ (n % m1))) ^ (1 / (n : ℝ)) :=
-        (rpow_le_rpow (apply_nonneg μ _) (map_mul_le_mul μ _ _) (one_div_cast_nonneg _))
+      _ ≤ (μ (x ^ ((m1 : ℕ) * (n / (m1 : ℕ)))) * μ (x ^ (n % m1))) ^ (1 / (n : ℝ)) := by
+        gcongr; exact map_mul_le_mul μ _ _
       _ = μ (x ^ ((m1 : ℕ) * (n / (m1 : ℕ)))) ^ (1 / (n : ℝ)) *
           μ (x ^ (n % m1)) ^ (1 / (n : ℝ)) :=
         (mul_rpow (apply_nonneg μ _) (apply_nonneg μ _))
@@ -340,8 +340,7 @@ private theorem μ_nonempty {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s n ≤ n) {
   by_cases hμx : μ x < 1
   · use 1
     simp only [eventually_map, eventually_atTop, ge_iff_le, Set.mem_setOf_eq]
-    exact ⟨0, fun _ _ ↦ rpow_le_one (apply_nonneg _ _) (le_of_lt hμx)
-      (mul_nonneg (cast_nonneg _) (one_div_nonneg.mpr (cast_nonneg _)))⟩
+    exact ⟨0, fun _ _ ↦ rpow_le_one (apply_nonneg _ _) hμx.le (by positivity)⟩
   · use μ x
     simp only [eventually_map, eventually_atTop, ge_iff_le, Set.mem_setOf_eq]
     use 0
@@ -362,8 +361,7 @@ private theorem μ_limsup_le_one {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s n ≤
     by_cases hμx : μ x < 1
     · apply hc_bd (1 : ℝ) 0
       intro b _
-      exact rpow_le_one (apply_nonneg _ _) (le_of_lt hμx)
-          (mul_nonneg (cast_nonneg _) (one_div_nonneg.mpr (cast_nonneg _)))
+      exact rpow_le_one (apply_nonneg _ _) hμx.le (by positivity)
     · have hμ_lim : Tendsto (fun n : ℕ => μ x ^ (↑(s (ψ n)) * (1 / (ψ n : ℝ)))) atTop (𝓝 1) := by
         nth_rw 1 [← rpow_zero (μ x)]
         convert Tendsto.rpow tendsto_const_nhds hψ_lim
@@ -376,7 +374,7 @@ private theorem μ_limsup_le_one {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s n ≤
       have h1 : (1 : ℝ) ∈ Set.Ioo 0 (1 + ε) := by
         simp only [Set.mem_Ioo, zero_lt_one, lt_add_iff_pos_right, hε, and_self]
       obtain ⟨k, hk⟩ := hμ_lim (Set.Ioo (0 : ℝ) (1 + ε)) h1 isOpen_Ioo
-      exact hc_bd (1 + ε) k fun b hb => le_of_lt (Set.mem_Ioo.mp (hk b hb)).2
+      exact hc_bd (1 + ε) k fun b hb ↦ (Set.mem_Ioo.mp (hk b hb)).2.le
 
 private theorem limsup_mu_le (hμ1 : μ 1 ≤ 1) {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s n ≤ n) {x : R}
     {a : ℝ} (a_in : a ∈ Set.Icc (0 : ℝ) 1) {ψ : ℕ → ℕ} (hψ_mono : StrictMono ψ)
@@ -491,7 +489,7 @@ theorem isNonarchimedean_smoothingFun (hμ1 : μ 1 ≤ 1) (hna : IsNonarchimedea
         (sub_nonneg.mpr a_in.2), add_sub, add_sub_cancel_left, rpow_one]
     · rw [add_le_add_iff_right]
       apply le_trans (mul_le_mul_of_nonneg_left
-        (rpow_le_rpow (smoothingFun_nonneg μ hμ1 _) (le_of_lt (not_le.mp h)) b_in.1)
+        (rpow_le_rpow (smoothingFun_nonneg μ hμ1 _) (not_le.mp h).le b_in.1)
         (rpow_nonneg (smoothingFun_nonneg μ hμ1 _) _))
       rw [hb, ← rpow_add_of_nonneg (smoothingFun_nonneg μ hμ1 _) a_in.1
         (sub_nonneg.mpr a_in.2), add_sub, add_sub_cancel_left, rpow_one]

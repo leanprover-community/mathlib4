@@ -563,7 +563,7 @@ lemma _root_.Monotone.linearGrowthSup_comp {a : EReal} (h : Monotone u)
   have hv₁ : 0 < liminf (fun n ↦ (v n : EReal) / n) atTop := by
     rw [← hv.liminf_eq] at ha
     exact ha.symm.lt_of_le (linearGrowthInf_natCast_nonneg v)
-  have v_top := tendsto_atTop_of_linearGrowthInf_natCast_pos hv₁.ne.symm
+  have v_top := tendsto_atTop_of_linearGrowthInf_natCast_pos hv₁.ne'
   -- Either `u = 0`, or `u` is non-zero and bounded by `1`, or `u` is eventually larger than one.
   -- In the latter case, we apply `le_linearGrowthSup_comp` and `linearGrowthSup_comp_le`.
   by_cases u_0 : u = ⊥
@@ -572,7 +572,7 @@ lemma _root_.Monotone.linearGrowthSup_comp {a : EReal} (h : Monotone u)
   · have u_0' : linearGrowthSup u = 0 := by
       apply le_antisymm _ (h.linearGrowthSup_nonneg u_0)
       apply (linearGrowthSup_eventually_monotone u_1).trans_eq
-      exact (linearGrowthSup_const zero_ne_bot zero_ne_top)
+      exact linearGrowthSup_const zero_ne_bot zero_ne_top
     rw [u_0', mul_zero]
     apply le_antisymm _ (linearGrowthSup_comp_nonneg h u_0 v_top)
     apply (linearGrowthSup_eventually_monotone (v_top.eventually u_1)).trans_eq
@@ -582,7 +582,7 @@ lemma _root_.Monotone.linearGrowthSup_comp {a : EReal} (h : Monotone u)
     · rw [← hv.limsup_eq] at ha ha' ⊢
       exact linearGrowthSup_comp_le u_1 ha ha' v_top
     · rw [← hv.liminf_eq]
-      exact h.le_linearGrowthSup_comp hv₁.ne.symm
+      exact h.le_linearGrowthSup_comp hv₁.ne'
 
 lemma _root_.Monotone.linearGrowthInf_comp_mul {m : ℕ} (h : Monotone u) (hm : m ≠ 0) :
     linearGrowthInf (fun n ↦ u (m * n)) = m * linearGrowthInf u := by

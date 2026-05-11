@@ -88,7 +88,7 @@ lemma rpowIntegrand₀₁_nonneg (hp : 0 < p) (ht : 0 ≤ t) (hx : 0 ≤ x) :
     0 ≤ rpowIntegrand₀₁ p t x := by
   unfold rpowIntegrand₀₁
   cases eq_or_lt_of_le' ht with
-  | inl ht_zero => simp [ht_zero, Real.zero_rpow (ne_of_gt hp)]
+  | inl ht_zero => simp [ht_zero, Real.zero_rpow hp.ne']
   | inr ht_pos =>
     refine mul_nonneg (by positivity) ?_
     rw [sub_nonneg]

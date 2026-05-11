@@ -86,7 +86,7 @@ theorem f_pos_of_pos {f : ℚ → ℝ} {q : ℚ} (hq : 0 < q)
     calc
       (0 : ℝ) < q.num := Int.cast_pos.mpr num_pos
       _ = ((q.num.natAbs : ℤ) : ℝ) := congr_arg Int.cast (Int.natAbs_of_nonneg num_pos.le).symm
-      _ ≤ f q.num.natAbs := (H4 q.num.natAbs ((@Int.natAbs_pos q.num).mpr num_pos.ne.symm))
+      _ ≤ f q.num.natAbs := (H4 q.num.natAbs ((@Int.natAbs_pos q.num).mpr num_pos.ne'))
       _ = f q.num := by rw [Nat.cast_natAbs, abs_of_nonneg num_pos.le]
       _ = f (q * q.den) := by rw [← Rat.mul_den_eq_num]
       _ ≤ f q * f q.den := H1 q q.den hq (Nat.cast_pos.mpr q.pos)

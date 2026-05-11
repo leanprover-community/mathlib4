@@ -161,7 +161,7 @@ theorem basisSets_smul (U) (hU : U ∈ p.basisSets) :
   refine ⟨Metric.ball 0 √r, Metric.ball_mem_nhds 0 (Real.sqrt_pos.mpr hr), ?_⟩
   refine ⟨(s.sup p).ball 0 √r, p.basisSets_mem s (Real.sqrt_pos.mpr hr), ?_⟩
   refine Set.Subset.trans (ball_smul_ball (s.sup p) √r √r) ?_
-  rw [hU, Real.mul_self_sqrt (le_of_lt hr)]
+  rw [hU, Real.mul_self_sqrt hr.le]
 
 variable [NormedField 𝕜] [AddCommGroup F] [Module 𝕜 F] (p : SeminormFamily 𝕜 F ι)
 
@@ -520,7 +520,7 @@ theorem WithSeminorms.isVonNBounded_iff_finset_seminorm_bounded {s : Set E} (hp 
     specialize h ((I.sup p).ball 0 1) (p.basisSets_mem I zero_lt_one)
     rcases h.exists_pos with ⟨r, hr, h⟩
     obtain ⟨a, ha⟩ := NormedField.exists_lt_norm 𝕜 r
-    specialize h a (le_of_lt ha)
+    specialize h a ha.le
     rw [Seminorm.smul_ball_zero (norm_pos_iff.1 <| hr.trans ha), mul_one] at h
     refine ⟨‖a‖, lt_trans hr ha, ?_⟩
     intro x hx

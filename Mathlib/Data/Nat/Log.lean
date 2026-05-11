@@ -321,10 +321,10 @@ lemma log_pow_left (b k n : ℕ) : log (b ^ k) n = log b n / k := by
     · simp
     · rcases Nat.lt_or_ge 1 b with hb | hb
       · refine eq_of_forall_le_iff fun c ↦ ?_
-        rw [le_log_iff_pow_le (Nat.one_lt_pow (Nat.ne_of_gt hk) hb) hn, Nat.le_div_iff_mul_le hk,
+        rw [le_log_iff_pow_le (Nat.one_lt_pow hk.ne' hb) hn, Nat.le_div_iff_mul_le hk,
           le_log_iff_pow_le hb hn, Nat.pow_mul']
       · rw [log_of_left_le_one hb, Nat.zero_div, log_of_left_le_one]
-        rwa [Nat.pow_le_one_iff (Nat.ne_of_gt hk)]
+        rwa [Nat.pow_le_one_iff hk.ne']
 
 /-! ### Ceil logarithm -/
 
@@ -503,7 +503,7 @@ theorem clog_pow_left (b k n : ℕ) : clog (b ^ k) n = (clog b n + (k - 1)) / k 
   · simp
   · rcases Nat.lt_or_ge 1 b with hb | hb
     · refine eq_of_forall_lt_iff fun c ↦ ?_
-      rw [lt_clog_iff_pow_lt (Nat.one_lt_pow (Nat.ne_of_gt hk) hb), Nat.lt_div_iff_mul_lt hk,
+      rw [lt_clog_iff_pow_lt (Nat.one_lt_pow hk.ne' hb), Nat.lt_div_iff_mul_lt hk,
         Nat.add_sub_cancel, lt_clog_iff_pow_lt hb, Nat.pow_mul']
     · suffices (k - 1) / k = 0 by grind [clog_of_left_le_one, Nat.pow_le_one_iff]
       apply Nat.div_eq_of_lt

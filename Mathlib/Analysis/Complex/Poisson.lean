@@ -199,7 +199,7 @@ private lemma DiffContOnCl.circleAverage_re_smul_on_ball_zero [CompleteSpace E]
       simp only [q, W, real_smul, ofReal_div, coe_algebraMap, mul_one]
       rw [← norm_mul_exp_arg_mul_I w, ← norm_mul_exp_arg_mul_I z, hzR,
         ← circleAverage_re_smul_on_ball_zero_aux, norm_mul_exp_arg_mul_I w]
-      field [hR.ne.symm]
+      field [hR.ne']
     _ = Real.circleAverage (fun z ↦ (z / (z - w)) • f z) 0 R
         - Real.circleAverage (fun z ↦ ((q • z) / (q • z - W)) • f z) 0 R := by
       simp_rw [sub_smul]

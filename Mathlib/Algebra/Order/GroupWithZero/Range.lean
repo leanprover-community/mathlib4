@@ -58,8 +58,8 @@ lemma embedding_unit_pos (a : (ValueGroup₀ f)ˣ) :
   rw [embedding_strictMono.lt_iff_lt]
   simp
 
-lemma embedding_unit_ne_zero (a : (ValueGroup₀ f)ˣ) :
-    embedding a.1 ≠ 0 := (embedding_unit_pos a).ne.symm
+lemma embedding_unit_ne_zero (a : (ValueGroup₀ f)ˣ) : embedding a.1 ≠ 0 :=
+  (embedding_unit_pos a).ne'
 
 end ValueGroup₀
 

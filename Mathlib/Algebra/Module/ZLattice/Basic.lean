@@ -225,7 +225,7 @@ theorem norm_fract_le [HasSolidNorm K] (m : E) : ‖fract b m‖ ≤ ∑ i, ‖b
   rw [(norm_one.symm : 1 = ‖(1 : K)‖)]
   apply norm_le_norm_of_abs_le_abs
   rw [abs_one, Int.abs_fract]
-  exact le_of_lt (Int.fract_lt_one _)
+  exact (Int.fract_lt_one _).le
 
 section Unique
 

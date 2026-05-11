@@ -97,13 +97,13 @@ theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds_aux (hf : AnalyticAt 
       nhds_basis_closedBall.mem_iff.mp (h2.and (eventually_nhdsWithin_iff.mp h1))
   replace h3 : DiffContOnCl ℂ f (ball z₀ ρ) :=
     ⟨h3.differentiableOn.mono ball_subset_closedBall,
-      (closure_ball z₀ hρ.lt.ne.symm).symm ▸ h3.continuousOn⟩
+      (closure_ball z₀ hρ.lt.ne') ▸ h3.continuousOn⟩
   let r := ρ ⊓ R
   have hr : 0 < r := lt_inf_iff.mpr ⟨hρ, hR⟩
   have h5 : closedBall z₀ r ⊆ closedBall z₀ ρ := closedBall_subset_closedBall inf_le_left
   have h6 : DiffContOnCl ℂ f (ball z₀ r) := h3.mono (ball_subset_ball inf_le_left)
   have h7 : ∀ z ∈ sphere z₀ r, f z ≠ f z₀ := fun z hz =>
-    h4 z (h5 (sphere_subset_closedBall hz)) (ne_of_mem_sphere hz hr.ne.symm)
+    h4 z (h5 (sphere_subset_closedBall hz)) (ne_of_mem_sphere hz hr.ne')
   have h8 : (sphere z₀ r).Nonempty := NormedSpace.sphere_nonempty.mpr hr.le
   have h9 : ContinuousOn (fun x => ‖f x - f z₀‖) (sphere z₀ r) := continuous_norm.comp_continuousOn
     ((h6.sub_const (f z₀)).continuousOn_ball.mono sphere_subset_closedBall)

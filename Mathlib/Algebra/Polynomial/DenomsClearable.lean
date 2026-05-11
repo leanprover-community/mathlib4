@@ -92,7 +92,7 @@ theorem one_le_pow_mul_abs_eval_div {K : Type*} [Field K] [LinearOrder K] [IsStr
       (by
         rw [eq_intCast, one_div_mul_cancel]
         rw [Int.cast_ne_zero]
-        exact b0.ne.symm)
+        exact b0.ne')
   obtain Fa := congr_arg abs hF
   rw [eq_one_div_of_mul_eq_one_left bu, eq_intCast, eq_intCast, abs_mul] at Fa
   rw [abs_of_pos (pow_pos (Int.cast_pos.mpr b0) _ : 0 < (b : K) ^ _), one_div, eq_intCast] at Fa

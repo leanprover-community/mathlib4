@@ -407,7 +407,7 @@ lemma strictMono_div_right_of_pos (h : 0 < b) (h' : b ≠ ⊤) : StrictMono fun 
   intro a a' a_lt_a'
   apply lt_of_le_of_ne <| div_le_div_right_of_nonneg (le_of_lt h) (le_of_lt a_lt_a')
   intro hyp
-  apply ne_of_lt a_lt_a'
+  apply a_lt_a'.ne
   rw [← @EReal.mul_div_cancel a b (ne_bot_of_gt h) h' h.ne', hyp,
     @EReal.mul_div_cancel a' b (ne_bot_of_gt h) h' h.ne']
 
@@ -429,11 +429,11 @@ lemma div_le_div_right_of_nonpos (h : c ≤ 0) (h' : a ≤ b) : b / c ≤ a / c 
 lemma strictAnti_div_right_of_neg (h : b < 0) (h' : b ≠ ⊥) : StrictAnti fun a ↦ a / b := by
   intro a a' a_lt_a'
   simp only
-  apply lt_of_le_of_ne <| div_le_div_right_of_nonpos (le_of_lt h) (le_of_lt a_lt_a')
+  apply lt_of_le_of_ne <| div_le_div_right_of_nonpos h.le a_lt_a'.le
   intro hyp
-  apply ne_of_lt a_lt_a'
-  rw [← @EReal.mul_div_cancel a b h' (ne_top_of_lt h) (ne_of_lt h), ← hyp,
-    @EReal.mul_div_cancel a' b h' (ne_top_of_lt h) (ne_of_lt h)]
+  apply a_lt_a'.ne
+  rw [← @EReal.mul_div_cancel a b h' h.ne_top h.ne, ← hyp,
+    @EReal.mul_div_cancel a' b h' h.ne_top h.ne]
 
 lemma div_lt_div_right_of_neg (h₁ : c < 0) (h₂ : c ≠ ⊥) (h₃ : a < b) : b / c < a / c :=
   strictAnti_div_right_of_neg h₁ h₂ h₃

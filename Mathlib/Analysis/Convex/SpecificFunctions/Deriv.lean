@@ -99,7 +99,7 @@ theorem int_prod_range_pos {m : ℤ} {n : ℕ} (hn : Even n) (hm : m ∉ Ico (0 
 theorem strictConvexOn_zpow {m : ℤ} (hm₀ : m ≠ 0) (hm₁ : m ≠ 1) :
     StrictConvexOn ℝ (Ioi 0) fun x : ℝ => x ^ m := by
   apply strictConvexOn_of_deriv2_pos' (convex_Ioi 0)
-  · exact (continuousOn_zpow₀ m).mono fun x hx => ne_of_gt hx
+  · exact (continuousOn_zpow₀ m).mono fun x hx ↦ hx.ne'
   intro x hx
   rw [mem_Ioi] at hx
   rw [iter_deriv_zpow]

@@ -239,7 +239,7 @@ theorem comp_rightInv_aux2 (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[�
   have : ∀ k, c.blocksFun k < n + 2 := by
     simp only [Set.mem_toFinset (s := {c : Composition (n + 2) | 1 < c.length}),
       Set.mem_setOf_eq] at hc
-    simp [← Composition.ne_single_iff N, Composition.eq_single_iff_length, ne_of_gt hc]
+    simp [← Composition.ne_single_iff N, Composition.eq_single_iff_length, hc.ne']
   simp [applyComposition, this]
 
 /-- The right inverse to a formal multilinear series is indeed a right inverse, provided its linear
@@ -397,7 +397,7 @@ theorem radius_right_inv_pos_of_radius_pos_aux1 (n : ℕ) (p : ℕ → ℝ) (hp 
       simp only [mem_compPartialSumTarget_iff]
       refine ⟨hd.2, c.length_le.trans_lt hd.1.2, fun j => ?_⟩
       have : c ≠ Composition.single k (zero_lt_two.trans_le hd.1.1) := by
-        simp [Composition.eq_single_iff_length, ne_of_gt hd.2]
+        simp [Composition.eq_single_iff_length, hd.2.ne']
       rw [Composition.ne_single_iff] at this
       exact (this j).trans_le (Nat.lt_succ_iff.mp hd.1.2)
     _ = ∑ e ∈ compPartialSumSource 2 (n + 1) n, ∏ j : Fin e.1, r * (a ^ e.2 j * p (e.2 j)) := by
@@ -595,7 +595,7 @@ lemma HasFPowerSeriesAt.tendsto_partialSum_prod_of_comp
           rw [Finset.prod_const, Finset.card_fin]
           gcongr
           rw [Metric.mem_eball, edist_zero_right] at hy
-          have := le_trans (le_of_lt hy) (min_le_right _ _)
+          have := le_trans hy.le (min_le_right _ _)
           rwa [enorm_le_coe, ← NNReal.coe_le_coe, coe_nnnorm] at this
     apply HasSum.of_sigma (fun b ↦ hasSum_fintype _) ?_ cau
     simpa [FormalMultilinearSeries.comp] using h0.hasSum hy0

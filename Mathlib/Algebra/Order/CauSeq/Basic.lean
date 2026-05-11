@@ -376,7 +376,7 @@ theorem mul_limZero_right (f : CauSeq β abv) {g} (hg : LimZero g) : LimZero (f 
   | ε, ε0 =>
     let ⟨F, F0, hF⟩ := f.bounded' 0
     (hg _ <| div_pos ε0 F0).imp fun _ H j ij => by
-      have := mul_lt_mul' (le_of_lt <| hF j) (H _ ij) (abv_nonneg abv _) F0
+      have := mul_lt_mul' (hF j).le (H _ ij) (abv_nonneg abv _) F0
       rwa [mul_comm F, div_mul_cancel₀ _ (ne_of_gt F0), ← abv_mul] at this
 
 theorem mul_limZero_left {f} (g : CauSeq β abv) (hg : LimZero f) : LimZero (f * g)
@@ -593,7 +593,7 @@ theorem pos_add_limZero {f g : CauSeq α abs} : Pos f → LimZero g → Pos (f +
     let ⟨i, h⟩ := exists_forall_ge_and hF (H _ (half_pos F0))
     ⟨_, half_pos F0, i, fun j ij => by
       obtain ⟨h₁, h₂⟩ := h j ij
-      have := add_le_add h₁ (le_of_lt (abs_lt.1 h₂).1)
+      have := add_le_add h₁ (abs_lt.1 h₂).1.le
       rwa [← sub_eq_add_neg, sub_self_div_two] at this⟩
 
 protected theorem mul_pos {f g : CauSeq α abs} : Pos f → Pos g → Pos (f * g)
@@ -601,7 +601,7 @@ protected theorem mul_pos {f g : CauSeq α abs} : Pos f → Pos g → Pos (f * g
     let ⟨i, h⟩ := exists_forall_ge_and hF hG
     ⟨_, mul_pos F0 G0, i, fun _ ij =>
       let ⟨h₁, h₂⟩ := h _ ij
-      mul_le_mul h₁ h₂ (le_of_lt G0) (le_trans (le_of_lt F0) h₁)⟩
+      mul_le_mul h₁ h₂ G0.le (le_trans F0.le h₁)⟩
 
 theorem trichotomy (f : CauSeq α abs) : Pos f ∨ LimZero f ∨ Pos (-f) := by
   rcases Classical.em (LimZero f) with h | h

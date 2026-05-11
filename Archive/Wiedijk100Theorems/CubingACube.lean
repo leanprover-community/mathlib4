@@ -53,8 +53,7 @@ structure Cube (n : ℕ) : Type where
 
 namespace Cube
 
-theorem hw' (c : Cube n) : 0 ≤ c.w :=
-  le_of_lt c.hw
+theorem hw' (c : Cube n) : 0 ≤ c.w := c.hw.le
 
 /-- The j-th side of a cube is the half-open interval `[b j, b j + w)` -/
 def side (c : Cube n) (j : Fin n) : Set ℝ :=
@@ -366,7 +365,7 @@ theorem smallest_onBoundary {j} (bi : OnBoundary (mi_mem_bcubes : mi h v ∈ _) 
   refine ⟨x, ⟨?_, ?_⟩, ?_⟩
   · simp only [side, neg_lt_zero, hw, add_lt_iff_neg_left, and_true, mem_Ico, sub_eq_add_neg, x]
     rw [add_assoc, le_add_iff_nonneg_right, ← sub_eq_add_neg, sub_nonneg]
-    apply le_of_lt (w_lt_w h v hi')
+    apply (w_lt_w h v hi').le
   · simp only [side, not_and_or, not_lt, not_le, mem_Ico]; left; exact hx
   intro i'' hi'' h2i'' h3i''; constructor; swap; · apply lt_trans hx h3i''.2
   rw [le_sub_iff_add_le]
@@ -459,7 +458,7 @@ theorem valley_mi : Valley cs (cs (mi h v)).shiftUp := by
     have : ∃ p3, p3 ∈ (cs i').tail.toSet ∧ p3 ∉ (cs i).tail.toSet ∧ p3 ∈ c.tail.toSet := by
       simp only [toSet, not_forall, mem_setOf_eq] at h2p1; obtain ⟨j, hj⟩ := h2p1
       rcases Ico_lemma (mi_not_onBoundary' j).1 (by simp [hw]) (mi_not_onBoundary' j).2
-          (le_trans (hp2 j).1 <| le_of_lt (h2p2 j).2) (le_trans (h2p2 j).1 <| le_of_lt (hp2 j).2)
+          (le_trans (hp2 j).1 <| le_of_lt (h2p2 j).2) (le_trans (h2p2 j).1 (hp2 j).2.le)
           ⟨hj, hp1 j⟩ with
         ⟨w, hw, h2w, h3w⟩
       refine ⟨fun j' => if j' = j then w else p2 j', ?_, ?_, ?_⟩

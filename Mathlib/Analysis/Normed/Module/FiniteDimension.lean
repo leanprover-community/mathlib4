@@ -383,8 +383,7 @@ instance [FiniteDimensional 𝕜 E] [SecondCountableTopology F] :
     use n
     replace hn : ∀ i : Fin d, ‖(φ - (v.constrL <| u ∘ n)) (v i)‖ ≤ ε / (2 * C) := by simp [hn]
     have : C * (ε / (2 * C)) = ε / 2 := by
-      rw [eq_div_iff (two_ne_zero : (2 : ℝ) ≠ 0), mul_comm, ← mul_assoc,
-        mul_div_cancel₀ _ (ne_of_gt h_2C)]
+      rw [eq_div_iff (two_ne_zero : (2 : ℝ) ≠ 0), mul_comm, ← mul_assoc, mul_div_cancel₀ _ h_2C.ne']
     specialize hC (le_of_lt hε2C) hn
     rwa [this] at hC
   choose n hn using this

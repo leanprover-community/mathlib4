@@ -404,12 +404,12 @@ theorem lt_inv_of_neg (ha : a < 0) (hb : b < 0) : a < b⁻¹ ↔ b < a⁻¹ := b
 theorem sub_inv_antitoneOn_Ioi :
     AntitoneOn (fun x ↦ (x - c)⁻¹) (Set.Ioi c) :=
   antitoneOn_iff_forall_lt.mpr fun _ ha _ hb hab ↦
-    inv_le_inv₀ (sub_pos.mpr hb) (sub_pos.mpr ha) |>.mpr <| sub_le_sub (le_of_lt hab) le_rfl
+    inv_le_inv₀ (sub_pos.mpr hb) (sub_pos.mpr ha) |>.mpr <| sub_le_sub hab.le le_rfl
 
 theorem sub_inv_antitoneOn_Iio :
     AntitoneOn (fun x ↦ (x - c)⁻¹) (Set.Iio c) :=
   antitoneOn_iff_forall_lt.mpr fun _ ha _ hb hab ↦
-    inv_le_inv_of_neg (sub_neg.mpr hb) (sub_neg.mpr ha) |>.mpr <| sub_le_sub (le_of_lt hab) le_rfl
+    inv_le_inv_of_neg (sub_neg.mpr hb) (sub_neg.mpr ha) |>.mpr <| sub_le_sub hab.le le_rfl
 
 theorem sub_inv_antitoneOn_Icc_right (ha : c < a) :
     AntitoneOn (fun x ↦ (x - c)⁻¹) (Set.Icc a b) := by
@@ -597,13 +597,13 @@ theorem div_lt_one_iff : a / b < 1 ↔ 0 < b ∧ a < b ∨ b = 0 ∨ b < 0 ∧ b
   rcases lt_trichotomy b 0 with (hb | rfl | hb)
   · simp [hb, hb.not_gt, hb.ne, div_lt_one_of_neg]
   · simp [zero_lt_one]
-  · simp [hb, hb.not_gt, div_lt_one, hb.ne.symm]
+  · simp [hb, hb.not_gt, div_lt_one, hb.ne']
 
 theorem div_le_one_iff : a / b ≤ 1 ↔ 0 < b ∧ a ≤ b ∨ b = 0 ∨ b < 0 ∧ b ≤ a := by
   rcases lt_trichotomy b 0 with (hb | rfl | hb)
   · simp [hb, hb.not_gt, hb.ne, div_le_one_of_neg]
   · simp [zero_le_one]
-  · simp [hb, hb.not_gt, div_le_one, hb.ne.symm]
+  · simp [hb, hb.not_gt, div_le_one, hb.ne']
 
 theorem le_of_forall_sub_le (h : ∀ ε > 0, b - ε ≤ a) : b ≤ a := by
   contrapose! h

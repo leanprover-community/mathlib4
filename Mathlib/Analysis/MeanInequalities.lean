@@ -158,7 +158,7 @@ theorem geom_mean_le_arith_mean {ι : Type*} (s : Finset ι) (w : ι → ℝ) (z
     refine Finset.prod_congr rfl (fun _ ih => ?_)
     rw [div_eq_mul_inv, rpow_mul (hz _ ih)]
   · simp_rw [div_eq_mul_inv, mul_assoc, mul_comm, ← mul_assoc, ← Finset.sum_mul, mul_comm]
-  · exact fun _ hi => div_nonneg (hw _ hi) (le_of_lt hw')
+  · exact fun _ hi ↦ div_nonneg (hw _ hi) hw'.le
   · simp_rw [div_eq_mul_inv, ← Finset.sum_mul]
     exact mul_inv_cancel₀ (by linarith)
 
@@ -345,7 +345,7 @@ theorem harm_mean_le_geom_mean_weighted (w z : ι → ℝ) (hs : s.Nonempty) (hw
     (∑ i ∈ s, w i / z i)⁻¹ ≤ ∏ i ∈ s, z i ^ w i := by
   have : ∏ i ∈ s, (1 / z) i ^ w i ≤ ∑ i ∈ s, w i * (1 / z) i :=
     geom_mean_le_arith_mean_weighted s w (1 / z) (fun i hi ↦ le_of_lt (hw i hi)) hw'
-    (fun i hi ↦ one_div_nonneg.2 (le_of_lt (hz i hi)))
+    (fun i hi ↦ one_div_nonneg.2 (hz i hi).le)
   have p_pos : 0 < ∏ i ∈ s, (z i)⁻¹ ^ w i :=
     prod_pos fun i hi => rpow_pos_of_pos (inv_pos.2 (hz i hi)) _
   have s_pos : 0 < ∑ i ∈ s, w i * (z i)⁻¹ :=
@@ -372,7 +372,7 @@ theorem harm_mean_le_geom_mean {ι : Type*} (s : Finset ι) (hs : s.Nonempty) (w
     convert this
     rw [← Real.finsetProd_rpow s _ (fun i hi ↦ by positivity [hz i hi])]
     refine Finset.prod_congr rfl (fun i hi => ?_)
-    rw [← Real.rpow_mul (le_of_lt <| hz i hi) (w _) n⁻¹, div_eq_mul_inv (w _) n]
+    rw [← Real.rpow_mul (hz i hi).le (w _) n⁻¹, div_eq_mul_inv (w _) n]
   · exact fun i hi ↦ div_pos (hw i hi) hw'
   · simp_rw [div_eq_mul_inv (w _) (∑ i ∈ s, w i), ← Finset.sum_mul _ _ (∑ i ∈ s, w i)⁻¹]
     exact mul_inv_cancel₀ hw'.ne'

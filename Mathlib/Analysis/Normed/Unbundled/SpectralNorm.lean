@@ -192,7 +192,7 @@ theorem spectralValue_eq_zero_iff [Nontrivial R] {p : R[X]} (hp : p.Monic) :
       have h_exp : 0 < 1 / ((p.natDegree : ℝ) - n) := by
         rw [one_div_pos, ← cast_sub (le_of_lt hn'), cast_pos]
         exact Nat.sub_pos_of_lt hn'
-      have h0 : (0 : ℝ) = 0 ^ (1 / ((p.natDegree : ℝ) - n)) := by rw [zero_rpow (ne_of_gt h_exp)]
+      have h0 : (0 : ℝ) = 0 ^ (1 / ((p.natDegree : ℝ) - n)) := by rw [zero_rpow h_exp.ne']
       rw [iSup, csSup_le_iff (spectralValueTerms_bddAbove p) (Set.range_nonempty _)] at h_le
       specialize h_le (spectralValueTerms p n) ⟨n, rfl⟩
       simp only [spectralValueTerms, if_pos hn'] at h_le
@@ -288,7 +288,7 @@ theorem norm_root_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
       have h_eq : f 0 = f (x ^ p.natDegree) := by
         rw [← hx, aeval_eq_sum_range, Finset.sum_range_succ, add_comm, hp.coeff_natDegree,
           one_smul, ← max_eq_left_of_lt h_lt]
-        exact IsNonarchimedean.add_eq_max_of_ne hf_na (ne_of_gt h_lt)
+        exact IsNonarchimedean.add_eq_max_of_ne hf_na (h_lt.ne')
       exact h_eq ▸ ne_of_gt (lt_of_le_of_lt (apply_nonneg _ _) h_lt)
     exact h0 (map_zero _)
 
@@ -319,7 +319,7 @@ theorem max_norm_root_eq_spectralValue [DecidableEq L] {f : AlgebraNorm K L} (hf
     · rw [spectralValueTerms_of_lt_natDegree _ hm]
       have h : 0 < (p.natDegree - m : ℝ) := by rw [sub_pos, Nat.cast_lt]; exact hm
       rw [← rpow_le_rpow_iff (rpow_nonneg (norm_nonneg _) _) h_le h, ← rpow_mul (norm_nonneg _),
-        one_div_mul_cancel (ne_of_gt h), rpow_one, ← Nat.cast_sub (le_of_lt hm), rpow_natCast]
+        one_div_mul_cancel h.ne', rpow_one, ← Nat.cast_sub (le_of_lt hm), rpow_natCast]
       have hps : card s = p.natDegree := by
         rw [← natDegree_map (algebraMap K L), ← mapAlg_eq_map, hp,
           natDegree_multiset_prod_X_sub_C_eq_card]

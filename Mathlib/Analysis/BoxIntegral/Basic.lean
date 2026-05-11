@@ -695,7 +695,7 @@ theorem integrable_of_bounded_and_ae_continuousWithinAt [CompleteSpace E] {I : B
         · exact h₂.isSubordinate.infPrepartition π₁.toPrepartition J
             ((π₁.mem_infPrepartition_comm).1 hJ.1) (Box.coe_subset_Icc xJ)
       rw [← Metric.eball_ofReal] at ineq
-      simpa only [edist_le_ofReal (le_of_lt ε₁0), dist_eq_norm, hJ.1] using ineq.trans (hr x hx)
+      simpa only [edist_le_ofReal ε₁0.le, dist_eq_norm, hJ.1] using ineq.trans (hr x hx)
     refine (norm_sum_le _ _).trans <| (sum_le_sum this).trans ?_
     rw [← sum_mul]
     trans μ.toBoxAdditive I * ε₁; swap
@@ -718,8 +718,8 @@ theorem integrable_of_bounded_and_ae_continuousWithinAt [CompleteSpace E] {I : B
       ← toReal_sum (fun J hJ ↦ μJ_ne_top J (hB' hJ))]
     suffices (∑ J ∈ B', μ J).toReal ≤ ε₂ by
       linarith [mul_le_mul_of_nonneg_right this <| (mul_nonneg_iff_of_pos_left two_pos).2 C0]
-    rw [← toReal_ofReal (le_of_lt ε₂0)]
-    refine toReal_mono ofReal_ne_top (le_trans ?_ (le_of_lt hU))
+    rw [← toReal_ofReal ε₂0.le]
+    refine toReal_mono ofReal_ne_top (le_trans ?_ hU.le)
     trans μ' (⋃ J ∈ B', J)
     · simp only [μ', μ.restrict_eq_self <| (un _ hB').trans I.coe_subset_Icc]
       exact le_of_eq <| Eq.symm <| measure_biUnion_finset

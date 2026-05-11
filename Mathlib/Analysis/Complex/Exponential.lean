@@ -36,7 +36,7 @@ theorem isCauSeq_norm_exp (z : ℂ) :
     IsCauSeq abs fun n => ∑ m ∈ range n, ‖z ^ m / m.factorial‖ :=
   let ⟨n, hn⟩ := exists_nat_gt ‖z‖
   have hn0 : (0 : ℝ) < n := lt_of_le_of_lt (norm_nonneg _) hn
-  IsCauSeq.series_ratio_test n (‖z‖ / n) (div_nonneg (norm_nonneg _) (le_of_lt hn0))
+  IsCauSeq.series_ratio_test n (‖z‖ / n) (div_nonneg (norm_nonneg _) hn0.le)
     (by rwa [div_lt_iff₀ hn0, one_mul]) fun m hm => by
       rw [abs_norm, abs_norm, Nat.factorial_succ, pow_succ', mul_comm m.succ, Nat.cast_mul,
         ← div_div, mul_div_assoc, mul_div_right_comm, Complex.norm_mul, Complex.norm_div,

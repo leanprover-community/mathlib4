@@ -116,7 +116,7 @@ theorem imp_fib {n : ℕ} (m : ℕ) (h : NatPredicate N m n) :
     have h5 : 1 ≤ m := succ_le_iff.mpr h.m_pos
     simpa using h3.antisymm h5
   · obtain (rfl : m = n) | (h6 : m < n) := h3.eq_or_lt
-    · exact absurd h.eq_imp_1 (Nat.ne_of_gt h4)
+    · exact absurd h.eq_imp_1 h4.ne'
     · have h7 : NatPredicate N (n - m) m := h.reduction h4
       obtain ⟨k : ℕ, hnm : n - m = fib k, rfl : m = fib (k + 1)⟩ := ih m h6 (n - m) h7
       use k + 1, rfl

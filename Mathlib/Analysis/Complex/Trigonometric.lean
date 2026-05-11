@@ -898,21 +898,21 @@ theorem sin_pos_of_pos_of_le_one {x : ℝ} (hx0 : 0 < x) (hx : x ≤ 1) : 0 < si
                 · calc
                     |x| ^ 4 ≤ |x| ^ 1 :=
                       pow_le_pow_of_le_one (abs_nonneg _)
-                        (by rwa [abs_of_nonneg (le_of_lt hx0)]) (by decide)
-                    _ = x := by simp [abs_of_nonneg (le_of_lt hx0)]
+                        (by rwa [abs_of_nonneg hx0.le]) (by decide)
+                    _ = x := by simp [abs_of_nonneg hx0.le]
                 · calc
-                    x ^ 3 ≤ x ^ 1 := pow_le_pow_of_le_one (le_of_lt hx0) hx (by decide)
+                    x ^ 3 ≤ x ^ 1 := pow_le_pow_of_le_one hx0.le hx (by decide)
                     _ = x := pow_one _
             _ < x := by linarith)
     _ ≤ sin x :=
-      sub_le_comm.1 (abs_sub_le_iff.1 (sin_bound (by rwa [abs_of_nonneg (le_of_lt hx0)]))).2
+      sub_le_comm.1 (abs_sub_le_iff.1 (sin_bound (by rwa [abs_of_nonneg hx0.le]))).2
 
 theorem sin_pos_of_pos_of_le_two {x : ℝ} (hx0 : 0 < x) (hx : x ≤ 2) : 0 < sin x :=
   have : x / 2 ≤ 1 := (div_le_iff₀ (by simp)).mpr (by simpa)
   calc
     0 < 2 * sin (x / 2) * cos (x / 2) :=
       mul_pos (mul_pos (by simp) (sin_pos_of_pos_of_le_one (half_pos hx0) this))
-        (cos_pos_of_le_one (by rwa [abs_of_nonneg (le_of_lt (half_pos hx0))]))
+        (cos_pos_of_le_one (by rwa [abs_of_nonneg (half_pos hx0).le]))
     _ = sin x := by rw [← sin_two_mul, two_mul, add_halves]
 
 theorem cos_one_le : cos 1 ≤ 5 / 9 :=
@@ -922,7 +922,7 @@ theorem cos_one_le : cos 1 ≤ 5 / 9 :=
     _ ≤ 5 / 9 := by norm_num
 
 theorem cos_one_pos : 0 < cos 1 :=
-  cos_pos_of_le_one (le_of_eq abs_one)
+  cos_pos_of_le_one abs_one.le
 
 theorem cos_two_neg : cos 2 < 0 :=
   calc cos 2 = cos (2 * 1) := congr_arg cos (mul_one _).symm

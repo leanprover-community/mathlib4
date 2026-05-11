@@ -221,7 +221,7 @@ public theorem StarAlgEquiv.eq_linearIsometryEquivConjStarAlgEquiv
     refine inv_mul_cancel₀ ?_
     simp only [β, ne_eq, map_eq_zero]
     rw [Real.rpow_eq_zero hα_pos.le (by simp)]
-    exact ne_of_gt hα_pos
+    exact hα_pos.ne'
   ext
   simp [U.conjStarAlgEquiv_apply, U, smul_smul, hβ₂, ← conjContinuousAlgEquiv_apply, ← hy]
 

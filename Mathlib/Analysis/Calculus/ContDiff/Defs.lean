@@ -738,8 +738,8 @@ theorem contDiffOn_of_continuousOn_differentiableOn {n : ℕ∞}
 theorem contDiffOn_of_differentiableOn {n : ℕ∞}
     (h : ∀ m : ℕ, m ≤ n → DifferentiableOn 𝕜 (iteratedFDerivWithin 𝕜 m f s) s) :
     ContDiffOn 𝕜 n f s :=
-  contDiffOn_of_continuousOn_differentiableOn (fun m hm => (h m hm).continuousOn) fun m hm =>
-    h m (le_of_lt hm)
+  contDiffOn_of_continuousOn_differentiableOn (fun m hm ↦ (h m hm).continuousOn)
+    fun m hm ↦ h m hm.le
 
 theorem contDiffOn_of_analyticOn_iteratedFDerivWithin
     (h : ∀ m, AnalyticOn 𝕜 (iteratedFDerivWithin 𝕜 m f s) s) :
@@ -1239,7 +1239,7 @@ theorem ContDiff.differentiable_iteratedFDeriv {m : ℕ} (hm : m < n) (hf : Cont
 theorem contDiff_of_differentiable_iteratedFDeriv {n : ℕ∞}
     (h : ∀ m : ℕ, m ≤ n → Differentiable 𝕜 (iteratedFDeriv 𝕜 m f)) : ContDiff 𝕜 n f :=
   contDiff_iff_continuous_differentiable.2
-    ⟨fun m hm => (h m hm).continuous, fun m hm => h m (le_of_lt hm)⟩
+    ⟨fun m hm ↦ (h m hm).continuous, fun m hm ↦ h m hm.le⟩
 
 /-- A function is `C^(n + 1)` if and only if it is differentiable,
 and its derivative (formulated in terms of `fderiv`) is `C^n`. -/

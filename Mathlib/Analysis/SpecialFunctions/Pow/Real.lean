@@ -104,7 +104,7 @@ theorem rpow_def_of_neg {x : ℝ} (hx : x < 0) (y : ℝ) : x ^ y = exp (log x * 
       Real.log_neg_eq_log]
     ring
   · rw [Complex.ofReal_eq_zero]
-    exact ne_of_lt hx
+    exact hx.ne
 
 -- simp is called on three goals at once (leaving one), with different simp sets
 set_option linter.flexible false in
@@ -533,10 +533,10 @@ in `Mathlib/Analysis/SpecialFunctions/Pow/NNReal.lean` instead. -/
 @[gcongr, bound]
 theorem rpow_lt_rpow (hx : 0 ≤ x) (hxy : x < y) (hz : 0 < z) : x ^ z < y ^ z := by
   rw [le_iff_eq_or_lt] at hx; rcases hx with hx | hx
-  · rw [← hx, zero_rpow (ne_of_gt hz)]
+  · rw [← hx, zero_rpow hz.ne']
     exact rpow_pos_of_pos (by rwa [← hx] at hxy) _
   · rw [rpow_def_of_pos hx, rpow_def_of_pos (lt_trans hx hxy), exp_lt_exp]
-    exact mul_lt_mul_of_pos_right (log_lt_log hx hxy) hz
+    gcongr
 
 theorem strictMonoOn_rpow_Ici_of_exponent_pos {r : ℝ} (hr : 0 < r) :
     StrictMonoOn (fun (x : ℝ) => x ^ r) (Set.Ici 0) :=

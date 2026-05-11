@@ -150,7 +150,7 @@ at least when the coefficient of the quadratic term is nonzero.
 -/
 theorem discrim_lt_zero (ha : a ≠ 0) (h : ∀ x : K, 0 < a * (x * x) + b * x + c) :
     discrim a b c < 0 := by
-  have : ∀ x : K, 0 ≤ a * (x * x) + b * x + c := fun x => le_of_lt (h x)
+  have : ∀ x : K, 0 ≤ a * (x * x) + b * x + c := fun x ↦ (h x).le
   refine lt_of_le_of_ne (discrim_le_zero this) fun h' ↦ ?_
   have := h (-b / (2 * a))
   have : a * (-b / (2 * a)) * (-b / (2 * a)) + b * (-b / (2 * a)) + c = 0 := by

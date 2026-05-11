@@ -113,7 +113,7 @@ theorem blimsup_cthickening_ae_le_of_eventually_mul_le_aux (p : ℕ → Prop) {s
         le_of_tendsto (hd' w (fun j => r₁ (f j)) hr <| Eventually.of_forall hw') hη'
     exact (lt_self_iff_false _).mp (lt_of_lt_of_le hη hη')
   refine ⟨1 - C⁻¹, tsub_lt_self zero_lt_one (inv_pos.mpr hC), ?_⟩
-  replace hC : C ≠ 0 := ne_of_gt hC
+  replace hC : C ≠ 0 := hC.ne'
   let b : ℕ → Set α := fun j => closedBall (w j) (M * r₁ (f j))
   let B : ℕ → Set α := fun j => closedBall (w j) (r₁ (f j))
   have h₁ : ∀ j, b j ⊆ B j := fun j =>

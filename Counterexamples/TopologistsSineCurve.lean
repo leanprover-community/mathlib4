@@ -67,7 +67,7 @@ lemma closure_S : closure S = T := by
     have x_nonneg : 0 ≤ x := by
       refine isClosed_Ici.mem_of_tendsto hf_lim.1 (.of_forall fun n ↦ ?_)
       obtain ⟨y, hy⟩ := hf_mem n
-      simpa [← hy.2] using le_of_lt hy.1
+      simpa [← hy.2] using hy.1.le
     -- Case split on whether limit point `(x, y)` has `x = 0`.
     rcases x_nonneg.eq_or_lt with rfl | h
     · -- If the limit has `x = 0`, show `y`-coord must be in `[-1, 1]` using closedness

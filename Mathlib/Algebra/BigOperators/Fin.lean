@@ -558,7 +558,7 @@ theorem inv_partialProd_mul_eq_contractNth {G : Type*} [Group G] (g : Fin (n + 1
     contractNth_apply_of_lt]
     · assumption
     · rw [castSucc_lt_iff_succ_le, succ_le_succ_iff, le_iff_val_le_val]
-      exact le_of_lt h
+      exact h.le
   · rwa [succAbove_of_castSucc_lt, succAbove_of_le_castSucc, partialProd_succ,
     castSucc_succ, ← mul_assoc,
       partialProd_right_inv, contractNth_apply_of_eq]
@@ -567,7 +567,7 @@ theorem inv_partialProd_mul_eq_contractNth {G : Type*} [Group G] (g : Fin (n + 1
       exact le_of_eq h
   · rwa [succAbove_of_le_castSucc, succAbove_of_le_castSucc, partialProd_succ, partialProd_succ,
       castSucc_succ, partialProd_succ, inv_mul_cancel_left, contractNth_apply_of_gt]
-    · exact le_iff_val_le_val.2 (le_of_lt h)
+    · exact le_iff_val_le_val.2 h.le
     · rw [le_iff_val_le_val, val_succ]
       exact Nat.succ_le_of_lt h
 

@@ -509,13 +509,13 @@ theorem top_rpow_of_pos {y : ℝ} (h : 0 < y) : (⊤ : ℝ≥0∞) ^ y = ⊤ := 
 
 @[simp]
 theorem top_rpow_of_neg {y : ℝ} (h : y < 0) : (⊤ : ℝ≥0∞) ^ y = 0 := by
-  simp [top_rpow_def, asymm h, ne_of_lt h]
+  simp [top_rpow_def, asymm h, h.ne]
 
 @[simp]
 theorem zero_rpow_of_pos {y : ℝ} (h : 0 < y) : (0 : ℝ≥0∞) ^ y = 0 := by
   rw [← ENNReal.coe_zero, ← ENNReal.some_eq_coe]
   dsimp only [(· ^ ·), rpow, Pow.pow]
-  simp [asymm h, ne_of_gt h]
+  simp [asymm h, h.ne']
 
 @[simp]
 theorem zero_rpow_of_neg {y : ℝ} (h : y < 0) : (0 : ℝ≥0∞) ^ y = ⊤ := by
@@ -822,7 +822,7 @@ theorem rpow_inv_lt_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x ^ z⁻¹ <
 
 theorem lt_rpow_inv_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x < y ^ z⁻¹ ↔ x ^ z < y := by
   nth_rw 1 [← rpow_one x]
-  nth_rw 1 [← @mul_inv_cancel₀ _ _ z (ne_of_lt hz).symm]
+  nth_rw 1 [← @mul_inv_cancel₀ _ _ z hz.ne']
   rw [rpow_mul, @rpow_lt_rpow_iff _ _ z⁻¹ (by simp [hz])]
 
 theorem rpow_inv_le_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x ^ z⁻¹ ≤ y ↔ x ≤ y ^ z := by
@@ -851,13 +851,13 @@ theorem rpow_lt_rpow_of_exponent_lt {x : ℝ≥0∞} {y z : ℝ} (hx : 1 < x) (h
 
 theorem rpow_lt_rpow_of_exponent_gt {x : ℝ≥0∞} {y z : ℝ} (hx0 : 0 < x) (hx1 : x < 1) (hyz : z < y) :
     x ^ y < x ^ z := by
-  lift x to ℝ≥0 using ne_of_lt (lt_of_lt_of_le hx1 le_top)
+  lift x to ℝ≥0 using (lt_of_lt_of_le hx1 le_top).ne
   simp only [coe_lt_one_iff, coe_pos] at hx0 hx1
-  simp [← coe_rpow_of_ne_zero (ne_of_gt hx0), NNReal.rpow_lt_rpow_of_exponent_gt hx0 hx1 hyz]
+  simp [← coe_rpow_of_ne_zero hx0.ne', NNReal.rpow_lt_rpow_of_exponent_gt hx0 hx1 hyz]
 
 theorem rpow_le_rpow_of_exponent_ge {x : ℝ≥0∞} {y z : ℝ} (hx1 : x ≤ 1) (hyz : z ≤ y) :
     x ^ y ≤ x ^ z := by
-  lift x to ℝ≥0 using ne_of_lt (lt_of_le_of_lt hx1 coe_lt_top)
+  lift x to ℝ≥0 using (lt_of_le_of_lt hx1 coe_lt_top).ne
   by_cases h : x = 0
   · rcases lt_trichotomy y 0 with (Hy | Hy | Hy) <;>
     rcases lt_trichotomy z 0 with (Hz | Hz | Hz) <;>
@@ -887,15 +887,15 @@ theorem rpow_pos {p : ℝ} {x : ℝ≥0∞} (hx_pos : 0 < x) (hx_ne_top : x ≠ 
   rcases lt_or_ge 0 p with hp_pos | hp_nonpos
   · exact rpow_pos_of_nonneg hx_pos (le_of_lt hp_pos)
   · rw [← neg_neg p, rpow_neg, ENNReal.inv_pos]
-    exact rpow_ne_top_of_nonneg (Right.nonneg_neg_iff.mpr hp_nonpos) hx_ne_top
+    finiteness
 
 theorem rpow_lt_one {x : ℝ≥0∞} {z : ℝ} (hx : x < 1) (hz : 0 < z) : x ^ z < 1 := by
-  lift x to ℝ≥0 using ne_of_lt (lt_of_lt_of_le hx le_top)
+  lift x to ℝ≥0 using (lt_of_lt_of_le hx le_top).ne
   simp only [coe_lt_one_iff] at hx
   simp [← coe_rpow_of_nonneg _ (le_of_lt hz), NNReal.rpow_lt_one hx hz]
 
 theorem rpow_le_one {x : ℝ≥0∞} {z : ℝ} (hx : x ≤ 1) (hz : 0 ≤ z) : x ^ z ≤ 1 := by
-  lift x to ℝ≥0 using ne_of_lt (lt_of_le_of_lt hx coe_lt_top)
+  lift x to ℝ≥0 using (lt_of_le_of_lt hx coe_lt_top).ne
   simp only [coe_le_one_iff] at hx
   simp [← coe_rpow_of_nonneg _ hz, NNReal.rpow_le_one hx hz]
 
@@ -927,16 +927,16 @@ theorem one_le_rpow {x : ℝ≥0∞} {z : ℝ} (hx : 1 ≤ x) (hz : 0 < z) : 1 �
 
 theorem one_lt_rpow_of_pos_of_lt_one_of_neg {x : ℝ≥0∞} {z : ℝ} (hx1 : 0 < x) (hx2 : x < 1)
     (hz : z < 0) : 1 < x ^ z := by
-  lift x to ℝ≥0 using ne_of_lt (lt_of_lt_of_le hx2 le_top)
+  lift x to ℝ≥0 using (lt_of_lt_of_le hx2 le_top).ne
   simp only [coe_lt_one_iff, coe_pos] at hx1 hx2 ⊢
-  simp [← coe_rpow_of_ne_zero (ne_of_gt hx1), NNReal.one_lt_rpow_of_pos_of_lt_one_of_neg hx1 hx2 hz]
+  simp [← coe_rpow_of_ne_zero hx1.ne', NNReal.one_lt_rpow_of_pos_of_lt_one_of_neg hx1 hx2 hz]
 
 theorem one_le_rpow_of_pos_of_le_one_of_neg {x : ℝ≥0∞} {z : ℝ} (hx1 : 0 < x) (hx2 : x ≤ 1)
     (hz : z < 0) : 1 ≤ x ^ z := by
-  lift x to ℝ≥0 using ne_of_lt (lt_of_le_of_lt hx2 coe_lt_top)
+  lift x to ℝ≥0 using (lt_of_le_of_lt hx2 coe_lt_top).ne
   simp only [coe_le_one_iff, coe_pos] at hx1 hx2 ⊢
-  simp [← coe_rpow_of_ne_zero (ne_of_gt hx1),
-    NNReal.one_le_rpow_of_pos_of_le_one_of_nonpos hx1 hx2 (le_of_lt hz)]
+  simp [← coe_rpow_of_ne_zero hx1.ne',
+    NNReal.one_le_rpow_of_pos_of_le_one_of_nonpos hx1 hx2 hz.le]
 
 @[simp] lemma toNNReal_rpow (x : ℝ≥0∞) (z : ℝ) : (x ^ z).toNNReal = x.toNNReal ^ z := by
   rcases lt_trichotomy z 0 with (H | H | H)

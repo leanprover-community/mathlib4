@@ -248,7 +248,7 @@ theorem IsSubordinate.diam_le [Fintype ι] {π : TaggedPrepartition I} (h : π.I
   calc
     diam (Box.Icc J) ≤ diam (closedBall (π.tag J) (r <| π.tag J)) :=
       diam_mono (h J hJ) isBounded_closedBall
-    _ ≤ 2 * r (π.tag J) := diam_closedBall (le_of_lt (r _).2)
+    _ ≤ 2 * r (π.tag J) := diam_closedBall (r _).2.le
 
 /-- Tagged prepartition with single box and prescribed tag. -/
 @[simps! -fullyApplied]

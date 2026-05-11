@@ -314,10 +314,10 @@ theorem ofScalars_radius_eq_inv_of_tendsto_ENNReal [NormOneClass E] {r : ℝ≥0
     filter_upwards [hc'.eventually_ne top_ne_zero] with n hn
     apply (ofReal_div_of_pos (Ne.lt_of_le (Ne.symm ?_) (norm_nonneg _))).symm
     simp_all
-  · have hr' := toReal_ne_zero.mp hr.ne.symm
+  · have hr' := toReal_ne_zero.mp hr.ne'
     have hr'' := toNNReal_ne_zero.mpr hr' -- this result could go in ENNReal
     convert ofScalars_radius_eq_inv_of_tendsto E c hr'' ?_
-    · simp [ENNReal.coe_inv hr'', ENNReal.coe_toNNReal (toReal_ne_zero.mp hr.ne.symm).2]
+    · simp [ENNReal.coe_inv hr'', ENNReal.coe_toNNReal (toReal_ne_zero.mp hr.ne').2]
     · simp_rw [ENNReal.coe_toNNReal_eq_toReal]
       refine Tendsto.congr' ?_ <| (tendsto_toReal hr'.2).comp hc'
       filter_upwards [hc'.eventually_ne hr'.1, hc'.eventually_ne hr'.2]
