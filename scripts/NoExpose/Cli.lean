@@ -66,7 +66,7 @@ SUBCOMMANDS:
   report [PATH...] [--all] [--format text|json|tsv]
       Render per-file recommendations from existing report data.
       Defaults to `--format text` and to listing `safe-to-unexpose`
-      and `load-bearing` decls in each PATH.
+      and `needed-downstream` decls in each PATH.
 
   edit [PATH...] [--dry-run] [--verify] [--strategy auto|section|individual]
        [--force-dirty] [--force-stale]

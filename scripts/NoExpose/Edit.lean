@@ -14,12 +14,12 @@ import NoExpose.Report
 The user-facing core. For each target file:
 
 1. **Read** the report to find this file's safe-to-unexpose and
-   load-bearing decls.
+   needed-downstream decls.
 2. **Detect strategy**: `auto` picks `section` if the file has
    `@[expose] public section`; otherwise `individual`.
 3. **Compute edits** (text-level, deliberately not full Lean parse):
    * `section`: drop `@[expose] ` from the section line, then prepend
-     `@[expose]` to each load-bearing decl line.
+     `@[expose]` to each needed-downstream decl line.
    * `individual`: for each safe-to-unexpose decl, drop `@[expose]`
      from its attribute list (only handles single-attribute lines in
      v1; multi-attribute lines are skipped with a logged diagnostic).
@@ -64,7 +64,7 @@ private def chooseStrategy (sel : EditStrategy) (text : String) : ResolvedStrate
 
 Algorithm:
 1. Find the line `@[expose] public section`. Replace with `public section`.
-2. For each load-bearing decl in the file (sorted by line desc, so
+2. For each needed-downstream decl in the file (sorted by line desc, so
    line numbers stay valid), insert a new line `@[expose]` *above* it.
    "Above" means: insert before the first preceding line that is the
    start of the decl's declaration block (skipping `@[...]` attribute
@@ -106,7 +106,7 @@ private partial def declKeywordLineFrom
 
 /-- Apply the section strategy. Returns the new file contents (or
 `none` to indicate "no changes needed"). -/
-def applySectionStrategy (text : String) (loadBearing : Array Nat) :
+def applySectionStrategy (text : String) (neededDownstream : Array Nat) :
     Option String := Id.run do
   let lines := (text.splitOn "\n").toArray
   -- Step 1: rewrite the section line.
@@ -123,11 +123,11 @@ def applySectionStrategy (text : String) (loadBearing : Array Nat) :
     else
       newLines := newLines.push line
   unless sectionRewritten do return none
-  -- Step 2: insert `@[expose]` above each load-bearing decl, processing
-  -- highest line first so earlier indices remain valid. Lean does not
-  -- allow stacked `@[...]` blocks before a decl, so if the first line
-  -- of the decl block is already `@[...]` we merge into it.
-  let sortedDesc := loadBearing.qsort (· > ·)
+  -- Step 2: insert `@[expose]` above each needed-downstream decl,
+  -- processing highest line first so earlier indices remain valid. Lean
+  -- does not allow stacked `@[...]` blocks before a decl, so if the
+  -- first line of the decl block is already `@[...]` we merge into it.
+  let sortedDesc := neededDownstream.qsort (· > ·)
   for declLine in sortedDesc do
     if declLine == 0 then continue
     let blockStart := declLine - 1
@@ -423,13 +423,13 @@ unsafe def editOneFile (file : FilePath) (records : Array ReportRecord)
       if seen.contains x then (acc, seen) else (acc.push x, seen.insert x)).1
   let safeLines : Array Nat := dedupe (records
     |>.filter (Verdict.classify · == .safeToUnexpose) |>.map (·.line))
-  let loadBearingLines : Array Nat := dedupe (records
-    |>.filter (Verdict.classify · == .loadBearing) |>.map (·.line))
+  let neededDownstreamLines : Array Nat := dedupe (records
+    |>.filter (Verdict.classify · == .neededDownstream) |>.map (·.line))
   let strategy := chooseStrategy args.strategy originalText
   let (newText, skipped) : String × Array Nat ← do
     match strategy with
     | .section_ => do
-      match applySectionStrategy originalText loadBearingLines with
+      match applySectionStrategy originalText neededDownstreamLines with
       | some t => pure (t, #[])
       | none => do
         IO.eprintln s!"no_expose edit: {file}: section strategy chosen but \

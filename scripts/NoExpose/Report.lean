@@ -47,14 +47,14 @@ structure ReportRecord where
 /-- The ordered groups we render. -/
 inductive Verdict where
   | safeToUnexpose
-  | loadBearing
+  | neededDownstream
   | noopAlwaysExported
   deriving BEq
 
 def Verdict.classify (r : ReportRecord) : Verdict :=
   if r.effect == "noop-always-exported" then .noopAlwaysExported
   else if r.downstreamUsage == 0 then .safeToUnexpose
-  else .loadBearing
+  else .neededDownstream
 
 private def jsonGetStr (j : Json) (field : String) : Except String String :=
   (j.getObjVal? field).bind (·.getStr?)
@@ -127,17 +127,17 @@ private def sortByPosition (rs : Array ReportRecord) : Array ReportRecord :=
 def renderTextFile (file : String) (rs : Array ReportRecord) : String := Id.run do
   let total := rs.size
   let safe := rs.filter (Verdict.classify · == .safeToUnexpose)
-  let load := rs.filter (Verdict.classify · == .loadBearing)
+  let needed := rs.filter (Verdict.classify · == .neededDownstream)
   let noop := rs.filter (Verdict.classify · == .noopAlwaysExported)
   let mut out := s!"{file}: {safe.size} safe-to-unexpose, " ++
-    s!"{load.size} load-bearing, {noop.size} noop ({total} total)\n"
+    s!"{needed.size} needed-downstream, {noop.size} noop ({total} total)\n"
   if !safe.isEmpty then
     out := out ++ "\n  safe-to-unexpose:\n"
     for r in sortByPosition safe do
       out := out ++ s!"    {padTo 60 r.name}  (line {r.line})\n"
-  if !load.isEmpty then
-    out := out ++ "\n  load-bearing (must keep @[expose]):\n"
-    for r in sortByPosition load do
+  if !needed.isEmpty then
+    out := out ++ "\n  needed downstream (must keep @[expose]):\n"
+    for r in sortByPosition needed do
       out := out ++ s!"    {padTo 60 r.name}  " ++
         s!"(line {r.line}; {r.downstreamUsage} uses across " ++
         s!"{r.numUsingFiles} files)\n"
@@ -163,12 +163,12 @@ def renderJsonFile (file : String) (rs : Array ReportRecord) : Json := Id.run do
   let bucket (vs : Array ReportRecord) : Json :=
     .arr (sortByPosition vs |>.map mkDecl)
   let safe := rs.filter (Verdict.classify · == .safeToUnexpose)
-  let load := rs.filter (Verdict.classify · == .loadBearing)
+  let needed := rs.filter (Verdict.classify · == .neededDownstream)
   let noop := rs.filter (Verdict.classify · == .noopAlwaysExported)
   return Json.mkObj [
     ("file", file),
     ("safe_to_unexpose", bucket safe),
-    ("load_bearing", bucket load),
+    ("needed_downstream", bucket needed),
     ("noop", bucket noop)]
 
 /-- Top-level `report` subcommand. -/
