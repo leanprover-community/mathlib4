@@ -965,6 +965,20 @@ theorem OrthonormalBasis.det_to_matrix_orthonormalBasis : ‖a.toBasis.det b‖ 
   norm_cast at this
   rwa [pow_eq_one_iff_of_nonneg (norm_nonneg _) two_ne_zero] at this
 
+/-- The matrix of a linear isometry equivalence between inner-product spaces, in orthonormal
+bases of the source and target indexed by the same finite type, is unitary. -/
+theorem LinearIsometryEquiv.toMatrix_mem_unitaryGroup {E' : Type*}
+    [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
+    (f : E ≃ₗᵢ[𝕜] E') (b : OrthonormalBasis ι 𝕜 E) (b' : OrthonormalBasis ι 𝕜 E') :
+    f.toMatrix b.toBasis b'.toBasis ∈ Matrix.unitaryGroup ι 𝕜 := by
+  have heq : f.toMatrix b.toBasis b'.toBasis
+              = b'.toBasis.toMatrix ((b.map f : OrthonormalBasis ι 𝕜 E') : ι → E') := by
+    ext i j
+    simp [LinearMap.toMatrix_apply, Basis.toMatrix_apply, OrthonormalBasis.map_apply,
+      OrthonormalBasis.coe_toBasis]
+  rw [heq]
+  exact b'.toMatrix_orthonormalBasis_mem_unitary (b.map f)
+
 end
 
 section Real
@@ -1079,22 +1093,10 @@ namespace LinearIsometryEquiv
 /-- The determinant of a linear isometry equivalence on a finite-dimensional
 inner-product space has unit norm. -/
 @[simp]
-theorem norm_det (R : E ≃ₗᵢ[𝕜] E) :
-    ‖LinearMap.det (R : E →ₗ[𝕜] E)‖ = 1 := by
-  classical
-  set n := Module.finrank 𝕜 E
-  let b : OrthonormalBasis (Fin n) 𝕜 E := stdOrthonormalBasis 𝕜 E
-  let b' : OrthonormalBasis (Fin n) 𝕜 E := b.map R
-  have h1 : LinearMap.det (R : E →ₗ[𝕜] E)
-              = b.toBasis.det ((R : E →ₗ[𝕜] E) ∘ b.toBasis) := by
-    have := b.toBasis.det_comp (R : E →ₗ[𝕜] E) b.toBasis
-    rw [Module.Basis.det_self, mul_one] at this
-    exact this.symm
-  have h2 : ((R : E →ₗ[𝕜] E) ∘ b.toBasis) = (b' : Fin n → E) := by
-    funext i
-    simp [b', OrthonormalBasis.map_apply, OrthonormalBasis.coe_toBasis]
-  rw [h1, h2]
-  exact b.det_to_matrix_orthonormalBasis b'
+theorem norm_det (R : E ≃ₗᵢ[𝕜] E) : ‖R.toLinearMap.det‖ = 1 := by
+  rw [← R.toLinearMap.det_toMatrix (stdOrthonormalBasis 𝕜 E).toBasis]
+  apply CStarRing.norm_of_mem_unitary
+  exact Matrix.det_of_mem_unitary <| R.toMatrix_mem_unitaryGroup _ _
 
 /-- The absolute value of the determinant of a linear isometry equivalence
 on a finite-dimensional real inner-product space is `1`. -/
