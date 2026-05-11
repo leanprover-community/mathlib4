@@ -80,10 +80,10 @@ private lemma qExpansion_norm_order_ge_qExpansion_order
 
 omit [𝒢.HasDetPlusMinusOne] in
 /-- **Sturm bound for arithmetic subgroups of `GL(2, ℝ)` commensurable with `SL(2, ℤ)`.** A
-modular form of weight `k` whose first `⌊k · [𝒮ℒ : 𝒢] / 12⌋ + 1` q-expansion coefficients at
-the cusp `∞` vanish is identically zero. -/
+modular form of weight `k` whose `q`-expansion coefficients at the cusp `∞` vanish for every
+`i ≤ k · [𝒮ℒ : 𝒢] / 12` is identically zero. -/
 theorem sturm_bound_finiteIndex [DiscreteTopology 𝒢.strictPeriods]
-    (h : ∀ i : ℕ, 12 * (i : ℤ) ≤ k * Nat.card (𝒮ℒ ⧸ 𝒢.subgroupOf 𝒮ℒ) →
+    (h : ∀ i : ℕ, (i : ℤ) ≤ k * Nat.card (𝒮ℒ ⧸ 𝒢.subgroupOf 𝒮ℒ) / 12 →
       (qExpansion 𝒢.strictWidthInfty f).coeff i = 0) : f = 0 := by
   rw [← coe_eq_zero_iff, ← ModularForm.norm_eq_zero_iff (ℋ := 𝒮ℒ)]
   refine sturm_bound_levelOne (ModularForm.norm 𝒮ℒ f) fun i hi => ?_
@@ -96,7 +96,7 @@ theorem sturm_bound_finiteIndex [DiscreteTopology 𝒢.strictPeriods]
 /-- **Classical Sturm bound for finite-index subgroups of `SL(2, ℤ)`.** -/
 theorem sturm_bound_finiteIndex_SL2Z {Γ : Subgroup SL(2, ℤ)} [Γ.FiniteIndex]
     {k : ℤ} (f : ModularForm (Γ : Subgroup (GL (Fin 2) ℝ)) k)
-    (h : ∀ i : ℕ, 12 * (i : ℤ) ≤ k * Γ.index →
+    (h : ∀ i : ℕ, (i : ℤ) ≤ k * Γ.index / 12 →
       (qExpansion (Γ : Subgroup (GL (Fin 2) ℝ)).strictWidthInfty f).coeff i = 0) : f = 0 := by
   have h_index : Nat.card (𝒮ℒ ⧸ (Γ : Subgroup (GL (Fin 2) ℝ)).subgroupOf 𝒮ℒ) = Γ.index := by
     change ((Γ.map (Matrix.SpecialLinearGroup.mapGL ℝ)).subgroupOf 𝒮ℒ).index = Γ.index
@@ -130,9 +130,7 @@ instance finiteDimensional_modularForm_finiteIndex
         simp [ModularForm.qExpansion_smul hh hΓ a f] }
   refine Module.Finite.of_injective T ((injective_iff_map_eq_zero T).mpr fun f hf => ?_)
   refine sturm_bound_finiteIndex f fun i hi => ?_
-  have h12i : 12 * i ≤ (k * μ).toNat := by
-    have := Int.toNat_le_toNat hi
-    rwa [show (12 * (i : ℤ)).toNat = 12 * i from rfl] at this
+  have hi' : (i : ℤ) ≤ k * μ / 12 := hi
   exact congr_fun hf ⟨i, hN ▸ by omega⟩
 
 
