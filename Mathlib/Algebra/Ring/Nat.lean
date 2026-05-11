@@ -18,7 +18,7 @@ This file contains the commutative semiring instance on the natural numbers.
 See note [foundational algebra order theory].
 -/
 
-@[expose] public section
+public section
 
 namespace Nat
 

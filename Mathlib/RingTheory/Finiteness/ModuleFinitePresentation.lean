@@ -26,7 +26,7 @@ finitely presented as a module.
 - [Grothendieck, EGA IV₁ 1.4.7][ega-iv-1]
 -/
 
-@[expose] public section
+public section
 
 universe u
 

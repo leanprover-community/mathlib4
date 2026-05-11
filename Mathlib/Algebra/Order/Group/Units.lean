@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Order.Monoid.Units
 # The units of an ordered commutative monoid form an ordered commutative group
 -/
 
-@[expose] public section
+public section
 
 
 variable {α : Type*}

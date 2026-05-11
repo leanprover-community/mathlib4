@@ -428,7 +428,6 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
       · exact one_le_coeffSubmodule
       · lia
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The main induction in the proof of Chevalley's theorem for `R →+* R[X]`.
 See the docstring of `induction_structure` for the overview. -/
 private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by

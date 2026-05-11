@@ -86,7 +86,6 @@ lemma homologyData₀_left_π :
 lemma homologyData₀_left_i :
     dsimp% (X.homologyData₀ R).left.i = 𝟙 _ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma homologyData₀_left_liftK {T : C} (f : T ⟶ (X.chainComplex R).X 0) :
     dsimp% (X.homologyData₀ R).left.liftK f (by cat_disch) = f :=
