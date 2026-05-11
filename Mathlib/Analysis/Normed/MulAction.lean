@@ -183,3 +183,37 @@ lemma NormedDivisionRing.toNormSMulClass : NormSMulClass α β where
       _ = ‖r • x‖ := by rw [norm_inv, ← mul_assoc, mul_inv_cancel₀ (mt norm_eq_zero.1 h), one_mul]
 
 end NormedDivisionRing
+
+section Real
+variable {α : Type*} [SeminormedAddCommGroup α] [Module ℝ α] [NormSMulClass ℝ α]
+
+theorem Metric.smul_image_ball {s : ℝ} (hs : s ≠ 0) (x : α) (ε : ℝ) :
+    (s • ·) '' ball x ε = ball (s • x) (|s| * ε) := by
+  ext p
+  simp_rw [Set.mem_image, mem_ball]
+  constructor
+  · rintro ⟨y, h1, rfl⟩
+    simpa [dist_smul₀] using mul_lt_mul_of_pos_left h1 (abs_pos.mpr hs)
+  · refine fun h ↦ ⟨s⁻¹ • p, ?_, by simp [smul_smul, hs]⟩
+    refine lt_of_mul_lt_mul_of_nonneg_left ?_ (norm_nonneg s)
+    rw [← dist_smul₀]
+    simpa [smul_smul, hs] using h
+
+theorem Metric.smul_image_closedBall {s : ℝ} (hs : s ≠ 0) (x : α) (ε : ℝ) :
+    (s • ·) '' closedBall x ε = closedBall (s • x) (|s| * ε) := by
+  ext p
+  simp_rw [Set.mem_image, mem_closedBall]
+  constructor
+  · rintro ⟨y, h1, rfl⟩
+    simpa [dist_smul₀] using mul_le_mul_of_nonneg_left h1 (abs_nonneg s)
+  · refine fun h ↦ ⟨s⁻¹ • p, ?_, by simp [smul_smul, hs]⟩
+    refine le_of_mul_le_mul_of_pos_left ?_ (norm_pos_iff.mpr hs)
+    rw [← dist_smul₀]
+    simpa [smul_smul, hs] using h
+
+theorem Metric.smul_image_sphere {s : ℝ} (hs : s ≠ 0) (x : α) (ε : ℝ) :
+    (s • ·) '' sphere x ε = sphere (s • x) (|s| * ε) := by
+  simp_rw [← Metric.closedBall_diff_ball, Set.image_diff (smul_right_injective α hs),
+    smul_image_ball hs, smul_image_closedBall hs]
+
+end Real
