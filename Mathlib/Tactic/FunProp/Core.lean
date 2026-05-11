@@ -71,17 +71,19 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr)
       else
         -- try user provided discharger
         let ctx : Context ← read
-        if (← isProp type) then
-          if let some proof ← ctx.disch type then
-            if (← isDefEq x proof) then
-              continue
-            else do
-              trace[Meta.Tactic.fun_prop]
-                "{← ppOrigin thmId}, failed to assign proof{indentExpr type}"
-              return false
-          else
-            logError s!"Failed to prove necessary assumption `{← ppExpr type}` \
-                        when applying theorem `{← ppOrigin' thmId}`."
+        -- we allow the discharger to both infer propositions (e.g., function properties)
+        -- and data arguments (e.g., models with corners for use with `ContMDiff` in the manifold
+        -- library)
+        if let some proof ← ctx.disch type then
+          if (← isDefEq x proof) then
+            continue
+          else do
+            trace[Meta.Tactic.fun_prop]
+              "{← ppOrigin thmId}, failed to assign proof{indentExpr type}"
+            return false
+        else
+          logError s!"Failed to prove necessary assumption `{← ppExpr type}` \
+                      when applying theorem `{← ppOrigin' thmId}`."
 
       if ¬(← isProp type) then
         postponed := postponed.push x
