@@ -250,24 +250,17 @@ theorem dimension_level_one (k : ℕ) (hk2 : Even k) :
     · simpa using levelOne_weight_zero_rank_one
     · grind
     · simpa [Nat.ModEq] using levelOne_weight_two_rank_zero
-  · -- `3 ≤ k < 12`: the lemma `rank_eq_one_add_rank_cuspForm` applies
-    -- and the mod form space of weight `k - 12` is zero
-    rw [rank_eq_one_add_rank_cuspForm hk.1 hk2, CuspForm.discriminantEquiv.rank_eq]
-    apply (congrArg _ (levelOne_neg_weight_rank_zero (by lia))).trans
+  · -- `3 ≤ k < 12`: rank decomposition + the weight `k - 12` space is zero
+    rw [rank_eq_one_add_rank_cuspForm hk.1 hk2, CuspForm.discriminantEquiv.rank_eq,
+      levelOne_neg_weight_rank_zero (by lia)]
     have : k ∈ (Finset.Icc 3 11).filter Even := by grind
     fin_cases this <;> simp [Nat.ModEq]
-  · -- `12 ≤ k`: use `CuspForm.discriminantEquiv` and induction hypothesis
-    rw [rank_eq_one_add_rank_cuspForm (by lia) hk2, CuspForm.discriminantEquiv.rank_eq]
-    have hk12 : (k - 12 : ℕ) = (k - 12 : ℤ) := by grind
-    simp only [hk12 ▸ ihn (k - 12) (by lia) (by grind)]
-    have h12 : k - 12 ≡ k [MOD 12] :=
-      (Nat.modEq_iff_dvd' (by omega : k - 12 ≤ k)).mpr ⟨1, by omega⟩
-    have hmod : (k - 12 ≡ 2 [MOD 12]) ↔ (k ≡ 2 [MOD 12]) :=
-      ⟨fun h ↦ h12.symm.trans h, fun h ↦ h12.trans h⟩
-    have hdiv : k / 12 = (k - 12) / 12 + 1 := by
-      rw [Nat.div_eq_sub_div (by decide) hk, add_comm]
-    rw [hdiv]
-    simp only [hmod]
+  · -- `12 ≤ k`: rank decomposition + induction hypothesis at weight `k - 12`
+    rw [rank_eq_one_add_rank_cuspForm (by lia) hk2, CuspForm.discriminantEquiv.rank_eq,
+      show ((k : ℤ) - 12 : ℤ) = ((k - 12 : ℕ) : ℤ) by omega,
+      ihn (k - 12) (by lia) (by grind)]
+    simp only [Nat.ModEq, show k / 12 = (k - 12) / 12 + 1 by omega,
+      show (k - 12) % 12 = k % 12 by omega]
     split_ifs <;> push_cast <;> ring
 
 instance (k : ℤ) : FiniteDimensional ℂ (ModularForm 𝒮ℒ k) := by
