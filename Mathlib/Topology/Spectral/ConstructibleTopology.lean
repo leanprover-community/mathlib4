@@ -192,15 +192,28 @@ def WithConstructibleTopology.equiv (X) [TopologicalSpace X] : WithConstructible
 Induced map `lift f : WithConstructibleTopology X → WithConstructibleTopology Y` by a map
 `f : X → Y`
 -/
-def WithConstructibleTopology.lift (f : X → Y) :
+def WithConstructibleTopology.map (f : X → Y) :
     WithConstructibleTopology X → WithConstructibleTopology Y :=
-  toConstructibleTopology Y ∘ f ∘ ofConstructibleTopology X
+  toConstructibleTopology Y ∘ f ∘ equiv X
+
+@[simp]
+lemma WithConstructibleTopology.map_id (x : WithConstructibleTopology X) :
+    WithConstructibleTopology.map id x = x := rfl
+
+@[simp]
+lemma WithConstructibleTopology.map_comp {Z : Type*} [TopologicalSpace Z] (f : X → Y) (g : Y → Z) :
+    WithConstructibleTopology.map (g ∘ f) =
+    WithConstructibleTopology.map g ∘ WithConstructibleTopology.map f := rfl
+
+lemma isOpen_ofConstructibleTopology_preimage_iff (s : Set X) :
+    IsOpen (WithConstructibleTopology.equiv X ⁻¹' s) ↔ IsOpen[constructibleTopology X] s :=
+  .rfl
 
 /--
 The map from `X` with the constructible topology to `X` is continuous if `X` is prespectral.
 -/
 lemma WithConstructibleTopology.continuous_equiv_symm [PrespectralSpace X] :
-    Continuous <| ofConstructibleTopology X := by
+    Continuous <| equiv X := by
   rw [TopologicalSpace.IsTopologicalBasis.continuous_iff (PrespectralSpace.isBasis_opens X)]
   simp only [Set.mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
   intro U hU
@@ -208,7 +221,7 @@ lemma WithConstructibleTopology.continuous_equiv_symm [PrespectralSpace X] :
   exact hU.isOpen_constructibleTopology_of_isOpen U.2
 
 lemma WithConstructibleTopology.lift_continuous {f : X → Y} (hf : IsSpectralMap f) :
-    Continuous <| WithConstructibleTopology.lift f := by
+    Continuous <| WithConstructibleTopology.map f := by
   apply continuous_generateFrom_iff.mpr
   intro s hs
   obtain ⟨hso, hsc⟩ | ⟨hscl, hsc⟩ := hs
