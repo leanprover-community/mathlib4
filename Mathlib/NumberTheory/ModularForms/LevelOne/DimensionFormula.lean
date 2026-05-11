@@ -6,6 +6,7 @@ Authors: Chris Birkbeck
 module
 
 public import Mathlib.Algebra.Order.Floor.Semifield
+public import Mathlib.Data.Nat.ModEq
 public import Mathlib.NumberTheory.ModularForms.CuspFormSubmodule
 public import Mathlib.NumberTheory.ModularForms.Discriminant
 public import Mathlib.Data.Rat.Star
@@ -240,7 +241,7 @@ theorem levelOne_weight_two_rank_zero : Module.rank ℂ (ModularForm 𝒮ℒ 2) 
 /-- The dimension formula for `𝒮ℒ` modular forms of even weight. -/
 theorem dimension_level_one (k : ℕ) (hk2 : Even k) :
     Module.rank ℂ (ModularForm 𝒮ℒ k) =
-      if 12 ∣ (k : ℤ) - 2 then ⌊(k / 12 : ℚ)⌋₊ else ⌊(k / 12 : ℚ)⌋₊ + 1 := by
+      if k ≡ 2 [MOD 12] then k / 12 else k / 12 + 1 := by
   induction k using Nat.strong_induction_on with | h k ihn =>
   have : k < 3 ∨ (3 ≤ k ∧ k < 12) ∨ 12 ≤ k := by grind
   rcases this with hk | hk | hk
@@ -248,23 +249,26 @@ theorem dimension_level_one (k : ℕ) (hk2 : Even k) :
     interval_cases k
     · simpa using levelOne_weight_zero_rank_one
     · grind
-    · convert levelOne_weight_two_rank_zero
-      norm_num
+    · simpa [Nat.ModEq] using levelOne_weight_two_rank_zero
   · -- `3 ≤ k < 12`: the lemma `rank_eq_one_add_rank_cuspForm` applies
     -- and the mod form space of weight `k - 12` is zero
     rw [rank_eq_one_add_rank_cuspForm hk.1 hk2, CuspForm.discriminantEquiv.rank_eq]
     apply (congrArg _ (levelOne_neg_weight_rank_zero (by lia))).trans
     have : k ∈ (Finset.Icc 3 11).filter Even := by grind
-    fin_cases this <;> norm_num
+    fin_cases this <;> simp [Nat.ModEq]
   · -- `12 ≤ k`: use `CuspForm.discriminantEquiv` and induction hypothesis
     rw [rank_eq_one_add_rank_cuspForm (by lia) hk2, CuspForm.discriminantEquiv.rank_eq]
     have hk12 : (k - 12 : ℕ) = (k - 12 : ℤ) := by grind
-    simp only [hk12 ▸ ihn (k - 12) (by lia) (by grind),
-      show ((k - 12 : ℕ) : ℚ) = k - 12 by norm_cast, sub_right_comm, dvd_sub_self_right]
-    have hfl : ⌊(k : ℚ) / 12⌋₊ = 1 + ⌊((k : ℚ) - 12) / 12⌋₊ := by
-      rw [Nat.floor_div_ofNat, Nat.floor_div_ofNat, Nat.floor_sub_ofNat,
-        Nat.div_eq_sub_div (by decide) (by simpa), add_comm, Nat.floor_natCast]
-    split_ifs <;> simp [hfl, add_assoc]
+    simp only [hk12 ▸ ihn (k - 12) (by lia) (by grind)]
+    have h12 : k - 12 ≡ k [MOD 12] :=
+      (Nat.modEq_iff_dvd' (by omega : k - 12 ≤ k)).mpr ⟨1, by omega⟩
+    have hmod : (k - 12 ≡ 2 [MOD 12]) ↔ (k ≡ 2 [MOD 12]) :=
+      ⟨fun h ↦ h12.symm.trans h, fun h ↦ h12.trans h⟩
+    have hdiv : k / 12 = (k - 12) / 12 + 1 := by
+      rw [Nat.div_eq_sub_div (by decide) hk, add_comm]
+    rw [hdiv]
+    simp only [hmod]
+    split_ifs <;> push_cast <;> ring
 
 instance (k : ℤ) : FiniteDimensional ℂ (ModularForm 𝒮ℒ k) := by
   rw [FiniteDimensional, ← Module.rank_lt_aleph0_iff]
@@ -279,11 +283,11 @@ instance (k : ℤ) : FiniteDimensional ℂ (ModularForm 𝒮ℒ k) := by
     exact Cardinal.aleph0_pos
 
 /-- **Sturm bound for level-1 modular forms.** If a modular form `f` of weight `k` for `SL(2, ℤ)`
-has zero coefficient on `q^i` in its q-expansion for every `i ≥ 0` with `12 * i ≤ k`, then
-`f` is identically zero. The proof iterates `CuspForm.discriminantEquiv` (division by `Δ`)
-until the weight goes negative, where everything is zero. -/
+has zero coefficient on `q^i` in its q-expansion for every `i ≤ k / 12`, then `f` is identically
+zero. The proof iterates `CuspForm.discriminantEquiv` (division by `Δ`) until the weight goes
+negative, where everything is zero. -/
 theorem sturm_bound_levelOne {k : ℤ} (f : ModularForm 𝒮ℒ k)
-    (h : ∀ i : ℕ, 12 * (i : ℤ) ≤ k → (qExpansion 1 f).coeff i = 0) : f = 0 := by
+    (h : ∀ i : ℕ, (i : ℤ) ≤ k / 12 → (qExpansion 1 f).coeff i = 0) : f = 0 := by
   induction hN : (k + 12).toNat using Nat.strong_induction_on generalizing k f with | _ N ih =>
   by_cases hk : k < 0
   · exact rank_zero_iff_forall_zero.mp (levelOne_neg_weight_rank_zero hk) f
