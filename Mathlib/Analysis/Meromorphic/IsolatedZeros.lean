@@ -5,7 +5,7 @@ Authors: Stefan Kebekus
 -/
 module
 
-public import Mathlib.Analysis.Meromorphic.Basic
+public import Mathlib.Analysis.Meromorphic.Order
 
 /-!
 # Principles of Isolated Zeros and Identity Principles for Meromorphic Functions
@@ -60,9 +60,21 @@ theorem eventuallyEq_zero_nhdsNE_of_eventuallyEq_zero_codiscreteWithin (hf : Mer
     (h₁x : x ∈ U) (h₂x : AccPt x (𝓟 U)) (h : f =ᶠ[codiscreteWithin U] 0) :
     f =ᶠ[𝓝[≠] x] 0 := by
   rw [← hf.frequently_zero_iff_eventuallyEq_zero]
-  apply ((accPt_iff_frequently_nhdsNE.1 h₂x).and_eventually
+  apply ((accPt_iff_frequently_nhdsNE.1 h₂x).and_eventually <| eventually_mem_set.2
     (mem_codiscreteWithin_iff_forall_mem_nhdsNE.1 h x h₁x)).mono
   simp +contextual
+
+/--
+Variant of the principle of isolated zeros, formulated in terms of orders: If `f` is nowhere locally
+constant zero, then its zero set is discrete within its domain of meromorphicity.
+-/
+theorem MeromorphicOn.codiscreteWithin_setOf_ne_zero (h₁f : MeromorphicOn f U)
+    (h₂f : ∀ u ∈ U, meromorphicOrderAt f u ≠ ⊤) :
+    ∀ᶠ x in codiscreteWithin U, f x ≠ 0 := by
+  filter_upwards [h₁f.analyticAt_mem_codiscreteWithin,
+    h₁f.codiscreteWithin_setOf_meromorphicOrderAt_eq_zero_or_top h₂f] with x h₁x h₂x
+  have := h₂f x h₂x.1
+  simp_all [← h₁x.analyticOrderAt_eq_zero, h₁x.meromorphicOrderAt_eq]
 
 /-!
 ## Identity Principles

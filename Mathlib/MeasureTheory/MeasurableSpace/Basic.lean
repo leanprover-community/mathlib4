@@ -237,7 +237,7 @@ variable [MeasurableSpace α] [MeasurableSpace β]
 theorem Subsingleton.measurable [Subsingleton α] : Measurable f := fun _ _ =>
   @Subsingleton.measurableSet α _ _ _
 
-@[nontriviality, measurability]
+@[nontriviality, fun_prop]
 theorem measurable_of_subsingleton_codomain [Subsingleton β] (f : α → β) : Measurable f :=
   fun s _ => Subsingleton.set_cases MeasurableSet.empty MeasurableSet.univ s
 
