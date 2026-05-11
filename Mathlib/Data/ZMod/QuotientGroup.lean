@@ -167,7 +167,7 @@ variable {a}
 @[to_additive (attr := simp)]
 lemma finite_zpowers : (zpowers a : Set α).Finite ↔ IsOfFinOrder a := by
   simp only [← orderOf_pos_iff, ← Nat.card_zpowers, Nat.card_pos_iff, ← SetLike.coe_sort_coe,
-    nonempty_coe_sort, Nat.card_pos_iff, Set.finite_coe_iff, Subgroup.coe_nonempty, true_and]
+    nonempty_coe_sort, Nat.card_pos_iff, Set.finite_coe_iff, OneMemClass.coe_nonempty, true_and]
 
 @[to_additive (attr := simp)]
 lemma infinite_zpowers : (zpowers a : Set α).Infinite ↔ ¬IsOfFinOrder a := finite_zpowers.not

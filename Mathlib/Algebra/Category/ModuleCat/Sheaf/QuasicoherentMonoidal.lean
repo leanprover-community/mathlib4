@@ -138,12 +138,12 @@ noncomputable def tensor (d₁ : M₁.QuasicoherentData) (d₂ : M₂.Quasicoher
             ((overFunctorOfCommRingCompOverPullbackOfCommRing.{w} R p).hom.app M₁)
               (Presentation.map (by exact (d₁.presentation i))
                   (overPullbackOfCommRing R p)
-                    (Functor.Monoidal.εIso _).symm)
+                    (Functor.Monoidal.εIso _))
         · exact Presentation.ofIsIso
             ((overFunctorOfCommRingCompOverPullbackOfCommRing.{w} R p').hom.app M₂)
               (Presentation.map (by exact (d₂.presentation i'))
                   (overPullbackOfCommRing R p')
-                    (Functor.Monoidal.εIso _).symm))
+                    (Functor.Monoidal.εIso _)))
 
 end QuasicoherentData
 

@@ -474,7 +474,7 @@ noncomputable def shrinkFunctorHomEquiv [LocallySmall.{w} C] {F : Cᵒᵖ ⥤ Ty
     rw! [shrinkYonedaObjObjEquiv_symm_comp]
     rfl⟩
   invFun t :=
-    { app X := TypeCat.ofHom fun f ↦ t.1 _ f.mem
+    { app X := ↾fun f ↦ t.1 _ f.mem
       naturality Y Z g := by
         ext ⟨f, hf⟩
         dsimp
@@ -911,7 +911,6 @@ lemma isSheafFor_over_map_op_comp_ofArrows_iff
     ← e.bijective.of_comp_iff']
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isSheafFor_over_map_op_comp_iff
     {B B' : C} (p : B ⟶ B') (P : (Over B')ᵒᵖ ⥤ Type w)
     {X : Over B} (R : Sieve X) {X' : Over B'}
