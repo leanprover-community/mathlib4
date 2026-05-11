@@ -329,7 +329,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem g_injective : Injective (g m) := by
   rw [g]
   intro x₁ x₂ h
-  simp only [V, LinearMap.prod_apply, LinearMap.id_apply, Prod.mk_inj, Pi.prod] at h
+  simp only [V, LinearMap.prod_apply, LinearMap.id_apply, Prod.mk_inj, Function.prod_apply] at h
   exact h.right
 
 set_option backward.isDefEq.respectTransparency false in

@@ -621,6 +621,29 @@ open scoped DirectSum in
 example (Γ : Subgroup (GL (Fin 2) ℝ)) [Γ.HasDetOne] : Algebra ℂ (⨁ i, ModularForm Γ i) :=
 inferInstance
 
+/-- Bridge between the auto-derived graded-monoid power `GradedMonoid.GMonoid.gnpow` and the
+bespoke `ModularForm.pow`: as elements of `GradedMonoid (ModularForm Γ)`, the pair
+`⟨n • k, gnpow n f⟩` agrees with `⟨n * k, f.pow n⟩`. -/
+theorem gnpow_eq_pow {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
+    {k : ℤ} (f : ModularForm Γ k) (n : ℕ) :
+    (⟨n • k, GradedMonoid.GMonoid.gnpow n f⟩ : GradedMonoid (ModularForm Γ)) =
+      ⟨(n : ℤ) * k, f.pow n⟩ := by
+  induction n with
+  | zero =>
+    refine (GradedMonoid.GMonoid.gnpow_zero' ⟨k, f⟩).trans ?_
+    exact gradedMonoid_eq_of_cast (zero_mul k).symm (ModularForm.ext fun _ ↦ rfl)
+  | succ n ih =>
+    refine (GradedMonoid.GMonoid.gnpow_succ' n ⟨k, f⟩).trans ?_
+    refine (congrArg (fun x : GradedMonoid (ModularForm Γ) ↦ x * ⟨k, f⟩) ih).trans ?_
+    exact gradedMonoid_eq_of_cast (show ((n : ℤ) * k + k = (n + 1) * k) by ring)
+      (ModularForm.ext fun _ ↦ rfl)
+
+/-- The `n`-th power of `DirectSum.of _ k f` lands in grade `n * k` and is given by `f.pow n`. -/
+lemma directSum_of_pow {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
+    {k : ℤ} (f : ModularForm Γ k) (n : ℕ) :
+    (DirectSum.of (ModularForm Γ) k f) ^ n = .of (ModularForm Γ) ((n : ℤ) * k) (f.pow n) := by
+  grind [DirectSum.ofPow, DirectSum.of_eq_of_gradedMonoid_eq (gnpow_eq_pow f n)]
+
 open Filter SlashInvariantForm
 
 /-- Given `ModularForm`'s `F i` of weight `k i` for `i : ι`, define the form which as a

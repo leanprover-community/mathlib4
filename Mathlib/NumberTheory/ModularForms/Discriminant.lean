@@ -194,7 +194,7 @@ lemma exp_isBigO_discriminant : (fun τ ↦ Real.exp (-2 * π * τ.im)) =O[atImI
 
 /-- The cusp function of the discriminant equals `q * ∏' n, (1 - q^(n+1))^24`
 on the open unit disc. -/
-private lemma discriminant_cuspFunction_eqOn : Set.EqOn (cuspFunction 1 Δ)
+lemma discriminant_cuspFunction_eqOn : Set.EqOn (cuspFunction 1 Δ)
     (fun q ↦ q * ∏' i, (1 - q ^ (i + 1)) ^ 24) (Metric.ball 0 1) := by
   intro q hq
   by_cases hq0 : q = 0
