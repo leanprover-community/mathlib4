@@ -180,6 +180,29 @@ lemma absNorm_mul_finprod_finitePlace_eq_one {ι : Type*} [Finite ι] {x : ι �
 end NumberField
 
 /-!
+### Positivity extension for totalWeight on number fields
+-/
+
+namespace Mathlib.Meta.Positivity
+
+open Lean.Meta Qq
+
+/-- Extension for the `positivity` tactic: `Height.totalWeight` is positive for number fields. -/
+@[positivity Height.totalWeight _]
+meta def evalHeightTotalWeight : PositivityExt where eval {u α} _ _ e := do
+  match u, α, e with
+  | 0, ~q(ℕ), ~q(@Height.totalWeight $K $KF $KA) =>
+    -- Check whether there is a `NumberField` instance for `$K` around.
+    match ← trySynthInstanceQ q(NumberField $K) with
+    | .some _instFinite =>
+      assertInstancesCommute
+      return .positive q(NumberField.totalWeight_pos $K)
+    | _ => throwError "field in Height.totalWeight not known to be a number field"
+  | _, _, _ => throwError "not Height.totalWeight"
+
+end Mathlib.Meta.Positivity
+
+/-!
 ### Heights over the rational numbers
 
 We show that the `Height.mulHeight` of a tuple of coprime integers (considered as rational numbers)
@@ -277,28 +300,5 @@ theorem logHeight₁_natCast (n : ℕ) [NeZero n] :
 end mulHeight₁
 
 end Rat
-
-/-!
-### Positivity extension for totalWeight on number fields
--/
-
-namespace Mathlib.Meta.Positivity
-
-open Lean.Meta Qq
-
-/-- Extension for the `positivity` tactic: `Height.totalWeight` is positive for number fields. -/
-@[positivity Height.totalWeight _]
-meta def evalHeightTotalWeight : PositivityExt where eval {u α} _ _ e := do
-  match u, α, e with
-  | 0, ~q(ℕ), ~q(@Height.totalWeight $K $KF $KA) =>
-    -- Check whether there is a `NumberField` instance for `$K` around.
-    match ← trySynthInstanceQ q(NumberField $K) with
-    | .some _instFinite =>
-      assertInstancesCommute
-      return .positive q(NumberField.totalWeight_pos $K)
-    | _ => throwError "field in Height.totalWeight not known to be a number field"
-  | _, _, _ => throwError "not Height.totalWeight"
-
-end Mathlib.Meta.Positivity
 
 end
