@@ -95,9 +95,8 @@ lemma eHolderNorm_zero [Zero Y] (r : ℝ≥0) : eHolderNorm r (0 : X → Y) = 0 
 variable (X) in
 @[simp]
 lemma nnHolderNorm_const (r : ℝ≥0) (c : Y) : nnHolderNorm r (Function.const X c) = 0 := by
-  refine le_antisymm (ENNReal.coe_le_coe.1 <|
-    le_trans coe_nnHolderNorm_le_eHolderNorm ?_) (zero_le _)
-  rw [eHolderNorm_const, ENNReal.coe_zero]
+  rw [← nonpos_iff_eq_zero, ← ENNReal.coe_le_coe, ENNReal.coe_zero, ← eHolderNorm_const X r c]
+  exact coe_nnHolderNorm_le_eHolderNorm
 
 variable (X) in
 @[simp]
@@ -207,7 +206,7 @@ lemma eHolderNorm_eq_zero {r : ℝ≥0} {f : X → Y} :
     by_cases hx : x₁ = x₂
     · rw [hx]
     · rw [eHolderNorm, ← ENNReal.bot_eq_zero, iInf₂_eq_bot] at h
-      rw [← edist_eq_zero, ← le_zero_iff]
+      rw [← edist_eq_zero, ← nonpos_iff_eq_zero]
       refine le_of_forall_gt fun b hb => ?_
       obtain ⟨C, hC, hC'⟩ := h (b / edist x₁ x₂ ^ (r : ℝ))
         (ENNReal.div_pos hb.ne.symm (ENNReal.rpow_lt_top_of_nonneg zero_le_coe

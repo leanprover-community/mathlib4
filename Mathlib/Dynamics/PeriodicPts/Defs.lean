@@ -273,9 +273,6 @@ theorem minimalPeriod_pos_of_mem_periodicPts (hx : x ∈ periodicPts f) : 0 < mi
 theorem minimalPeriod_eq_zero_of_notMem_periodicPts (hx : x ∉ periodicPts f) :
     minimalPeriod f x = 0 := by simp only [minimalPeriod, dif_neg hx]
 
-@[deprecated (since := "2025-05-24")]
-alias minimalPeriod_eq_zero_of_nmem_periodicPts := minimalPeriod_eq_zero_of_notMem_periodicPts
-
 theorem IsPeriodicPt.minimalPeriod_pos (hn : 0 < n) (hx : IsPeriodicPt f n x) :
     0 < minimalPeriod f x :=
   minimalPeriod_pos_of_mem_periodicPts <| mk_mem_periodicPts hn hx
@@ -287,9 +284,6 @@ theorem minimalPeriod_pos_iff_mem_periodicPts : 0 < minimalPeriod f x ↔ x ∈ 
 theorem minimalPeriod_eq_zero_iff_notMem_periodicPts :
     minimalPeriod f x = 0 ↔ x ∉ periodicPts f := by
   rw [← minimalPeriod_pos_iff_mem_periodicPts, not_lt, nonpos_iff_eq_zero]
-
-@[deprecated (since := "2025-05-24")]
-alias minimalPeriod_eq_zero_iff_nmem_periodicPts := minimalPeriod_eq_zero_iff_notMem_periodicPts
 
 theorem IsPeriodicPt.minimalPeriod_le (hn : 0 < n) (hx : IsPeriodicPt f n x) :
     minimalPeriod f x ≤ n := by
@@ -315,12 +309,9 @@ theorem le_of_lt_minimalPeriod_of_iterate_eq {m n : ℕ} (hm : m < minimalPeriod
     (hmn : f^[m] x = f^[n] x) : m ≤ n := by
   by_contra! hmn'
   rw [← Nat.add_sub_of_le hmn'.le, add_comm, iterate_add_apply] at hmn
-  exact
-    ((IsPeriodicPt.minimalPeriod_le (tsub_pos_of_lt hmn')
-              (isPeriodicPt_of_mem_periodicPts_of_isPeriodicPt_iterate
-                (minimalPeriod_pos_iff_mem_periodicPts.1 ((zero_le m).trans_lt hm)) hmn)).trans
-          (Nat.sub_le m n)).not_gt
-      hm
+  exact ((IsPeriodicPt.minimalPeriod_le (tsub_pos_of_lt hmn')
+    (isPeriodicPt_of_mem_periodicPts_of_isPeriodicPt_iterate
+      (minimalPeriod_pos_iff_mem_periodicPts.1 hm.pos) hmn)).trans (Nat.sub_le m n)).not_gt hm
 
 theorem iterate_injOn_Iio_minimalPeriod : (Iio <| minimalPeriod f x).InjOn (f^[·] x) :=
   fun _m hm _n hn hmn ↦ (le_of_lt_minimalPeriod_of_iterate_eq hm hmn).antisymm

@@ -45,6 +45,8 @@ namespace Functor
 class Full (F : C ⥤ D) : Prop where
   map_surjective {X Y : C} : Function.Surjective (F.map (X := X) (Y := Y))
 
+attribute [to_dual self] Full.map_surjective Full.mk
+
 /-- A functor `F : C ⥤ D` is faithful if for each `X Y : C`, `F.map` is injective. -/
 @[stacks 001C]
 class Faithful (F : C ⥤ D) : Prop where
@@ -52,9 +54,11 @@ class Faithful (F : C ⥤ D) : Prop where
   map_injective : ∀ {X Y : C}, Function.Injective (F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)) := by
     cat_disch
 
+attribute [to_dual self] Faithful.map_injective Faithful.mk
+
 variable {X Y : C}
 
-@[grind inj]
+@[grind inj, to_dual self]
 theorem map_injective (F : C ⥤ D) [Faithful F] :
     Function.Injective <| (F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)) :=
   Faithful.map_injective
@@ -72,10 +76,11 @@ theorem map_surjective (F : C ⥤ D) [Full F] :
   Full.map_surjective
 
 /-- The choice of a preimage of a morphism under a full functor. -/
+@[to_dual self]
 noncomputable def preimage (F : C ⥤ D) [Full F] (f : F.obj X ⟶ F.obj Y) : X ⟶ Y :=
   (F.map_surjective f).choose
 
-@[simp]
+@[simp, to_dual self]
 theorem map_preimage (F : C ⥤ D) [Full F] {X Y : C} (f : F.obj X ⟶ F.obj Y) :
     F.map (preimage F f) = f :=
   (F.map_surjective f).choose_spec
@@ -217,7 +222,20 @@ def isoEquiv {X Y : C} : (X ≅ Y) ≃ (F.obj X ≅ F.obj Y) where
 def comp {G : D ⥤ E} (hG : G.FullyFaithful) : (F ⋙ G).FullyFaithful where
   preimage f := hF.preimage (hG.preimage f)
 
+/-- If `F` is fully faithful and `F ≅ G`, then `G` is fully faithful. -/
+def ofIso {G : C ⥤ D} (e : F ≅ G) : G.FullyFaithful where
+  preimage f := hF.preimage (e.hom.app _ ≫ f ≫ e.inv.app _)
+  map_preimage f := by simp [← NatIso.naturality_1 e]
+
 end
+
+variable (F) in
+lemma nonempty_iff_map_bijective :
+    Nonempty F.FullyFaithful ↔ ∀ (X Y : C), Function.Bijective (F.map : (X ⟶ Y) → _) :=
+  ⟨fun ⟨hF⟩ ↦ hF.map_bijective, fun hF ↦ by
+    have : F.Faithful := ⟨fun h ↦ (hF _ _).injective h⟩
+    have : F.Full := ⟨(hF _ _).surjective⟩
+    exact ⟨.ofFullyFaithful _⟩⟩
 
 /-- If `F ⋙ G` is fully faithful and `G` is faithful, then `F` is fully faithful. -/
 def ofCompFaithful {G : D ⥤ E} [G.Faithful] (hFG : (F ⋙ G).FullyFaithful) :

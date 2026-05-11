@@ -42,10 +42,12 @@ we can still establish a form of spectral permanence.
   to its norm.
 + `IsStarNormal.spectralRadius_eq_nnnorm`: The spectral radius of a normal element is equal to
   its norm.
++ `spectralRadius_toReal_star_self_mul_self_eq_normSq`: The spectral radius of `a⋆ * a` is equal to
+  the square of the norm of `a`.
 + `IsSelfAdjoint.mem_spectrum_eq_re`: Any element of the spectrum of a selfadjoint element is real.
 * `StarSubalgebra.coe_isUnit`: for `x : S` in a C⋆-Subalgebra `S` of `A`, then `↑x : A` is a Unit
   if and only if `x` is a unit.
-* `StarSubalgebra.spectrum_eq`: **spectral_permanence** for `x : S`, where `S` is a C⋆-Subalgebra
+* `StarSubalgebra.spectrum_eq`: **spectral permanence** for `x : S`, where `S` is a C⋆-Subalgebra
   of `A`, `spectrum ℂ x = spectrum ℂ (x : A)`.
 
 ## TODO
@@ -55,7 +57,7 @@ we can still establish a form of spectral permanence.
 
 -/
 
-@[expose] public section
+public section
 
 
 local notation "σ" => spectrum
@@ -149,14 +151,36 @@ theorem IsStarNormal.spectralRadius_eq_nnnorm (a : A) [IsStarNormal a] :
   convert tendsto_nhds_unique h₂ (pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius (a⋆ * a))
   rw [(IsSelfAdjoint.star_mul_self a).spectralRadius_eq_nnnorm, sq, nnnorm_star_mul_self, coe_mul]
 
+namespace CStarAlgebra
+
+theorem toReal_spectralRadius_star_mul_self_eq_norm_sq (a : A) :
+    (spectralRadius ℂ (a⋆ * a)).toReal = ‖a‖ ^ 2 := by
+  rw [(IsSelfAdjoint.star_mul_self a).toReal_spectralRadius_complex_eq_norm,
+    CStarRing.norm_star_mul_self, ← pow_two]
+
+theorem toReal_spectralRadius_self_mul_star_eq_norm_sq (a : A) :
+    (spectralRadius ℂ (a * a⋆)).toReal = ‖a‖ ^ 2 := by
+  rw [← norm_star a, ← toReal_spectralRadius_star_mul_self_eq_norm_sq, star_star]
+
+theorem sqrt_toReal_spectralRadius_star_mul_self_eq_norm (a : A) :
+    (spectralRadius ℂ (a⋆ * a)).toReal.sqrt = ‖a‖ := by
+  simp [toReal_spectralRadius_star_mul_self_eq_norm_sq]
+
+theorem sqrt_toReal_spectralRadius_self_mul_star_eq_norm (a : A) :
+    (spectralRadius ℂ (a * a⋆)).toReal.sqrt = ‖a‖ := by
+  simp [toReal_spectralRadius_self_mul_star_eq_norm_sq]
+
+end CStarAlgebra
+
 variable [StarModule ℂ A]
 
 /-- Any element of the spectrum of a selfadjoint is real. -/
 theorem IsSelfAdjoint.mem_spectrum_eq_re {a : A} (ha : IsSelfAdjoint a) {z : ℂ}
     (hz : z ∈ spectrum ℂ a) : z = z.re := by
-  have hu := exp_mem_unitary_of_mem_skewAdjoint ℂ (ha.smul_mem_skewAdjoint conj_I)
+  let +nondep : NormedAlgebra ℚ A := .restrictScalars ℚ ℂ A
+  have hu := exp_mem_unitary_of_mem_skewAdjoint (ha.smul_mem_skewAdjoint conj_I)
   let Iu := Units.mk0 I I_ne_zero
-  have : NormedSpace.exp ℂ (I • z) ∈ spectrum ℂ (NormedSpace.exp ℂ (I • a)) := by
+  have : NormedSpace.exp (I • z) ∈ spectrum ℂ (NormedSpace.exp (I • a)) := by
     simpa only [Units.smul_def, Units.val_mk0] using
       spectrum.exp_mem_exp (Iu • a) (smul_mem_smul_iff.mpr hz)
   exact Complex.ext (ofReal_re _) <| by
@@ -311,12 +335,8 @@ noncomputable instance (priority := 100) Complex.instStarHomClass : StarHomClass
       rw [← realPart_add_I_smul_imaginaryPart a]
       simp only [map_add, map_smul, star_add, star_smul, hsa, selfAdjoint.star_val_eq]
     intro s
-    have := AlgHom.apply_mem_spectrum φ (s : A)
-    rw [selfAdjoint.val_re_map_spectrum s] at this
-    rcases this with ⟨⟨_, _⟩, _, heq⟩
-    simp only [Function.comp_apply] at heq
-    rw [← heq, RCLike.star_def]
-    exact RCLike.conj_ofReal _
+    rw [selfAdjoint.mem_spectrum_eq_re s (AlgHom.apply_mem_spectrum φ (s : A))]
+    simp
 
 /-- This is not an instance to avoid type class inference loops. See
 `WeakDual.Complex.instStarHomClass`. -/

@@ -45,7 +45,7 @@ namespace FreeBicategory
 
 section
 
-variable {B : Type u} [Quiver.{v + 1} B]
+variable {B : Type u} [Quiver.{v} B]
 
 /-- 1-morphisms in the free bicategory. -/
 inductive Hom : B → B → Type max u v
@@ -56,9 +56,10 @@ inductive Hom : B → B → Type max u v
 instance (a b : B) [Inhabited (a ⟶ b)] : Inhabited (Hom a b) :=
   ⟨Hom.of default⟩
 
-instance quiver : Quiver.{max u v + 1} (FreeBicategory B) where
+instance quiver : Quiver.{max u v} (FreeBicategory B) where
   Hom := fun a b : B => Hom a b
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 instance categoryStruct : CategoryStruct.{max u v} (FreeBicategory B) where
   id   := fun a : B => Hom.id a
   comp := @fun _ _ _ => Hom.comp
@@ -68,7 +69,7 @@ inductive Hom₂ : ∀ {a b : FreeBicategory B}, (a ⟶ b) → (a ⟶ b) → Typ
   | id {a b} (f : a ⟶ b) : Hom₂ f f
   | vcomp {a b} {f g h : a ⟶ b} (η : Hom₂ f g) (θ : Hom₂ g h) : Hom₂ f h
   | whisker_left {a b c} (f : a ⟶ b) {g h : b ⟶ c} (η : Hom₂ g h) :
-      Hom₂ (f ≫ g) (f ≫ h)-- `η` cannot be earlier than `h` since it is a recursive argument.
+      Hom₂ (f ≫ g) (f ≫ h) -- `η` cannot be earlier than `h` since it is a recursive argument.
   | whisker_right {a b c} {f g : a ⟶ b} (h : b ⟶ c) (η : Hom₂ f g) : Hom₂ (f.comp h) (g.comp h)
   | associator {a b c d} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
       Hom₂ ((f ≫ g) ≫ h) (f ≫ (g ≫ h))
@@ -277,7 +278,7 @@ end
 
 section
 
-variable {B : Type u₁} [Quiver.{v₁ + 1} B] {C : Type u₂} [CategoryStruct.{v₂} C]
+variable {B : Type u₁} [Quiver.{v₁} B] {C : Type u₂} [CategoryStruct.{v₂} C]
 variable (F : Prefunctor B C)
 
 /-- Auxiliary definition for `lift`. -/
@@ -300,7 +301,7 @@ end
 
 section
 
-variable {B : Type u₁} [Quiver.{v₁ + 1} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
+variable {B : Type u₁} [Quiver.{v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
 variable (F : Prefunctor B C)
 
 /-- Auxiliary definition for `lift`. -/

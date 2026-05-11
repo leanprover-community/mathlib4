@@ -32,7 +32,7 @@ and provide the others as corollaries.
   then we have `IsCoherentWith S`;
 -/
 
-@[expose] public section
+public section
 
 open Filter Set
 

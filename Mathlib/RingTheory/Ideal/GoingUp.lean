@@ -322,8 +322,8 @@ theorem exists_ideal_over_prime_of_isIntegral [Algebra.IsIntegral R S] (P : Idea
   obtain ⟨Q, hQ, hQ', hQ''⟩ := exists_ideal_over_prime_of_isIntegral_of_isPrime P P' hP''
   exact ⟨Q, hP.trans hQ, hQ', hQ''⟩
 
-instance nonempty_primesOver [Nontrivial S] [Algebra.IsIntegral R S] [NoZeroSMulDivisors R S]
-    (P : Ideal R) [P.IsPrime] :
+instance nonempty_primesOver [IsDomain R] [Nontrivial S] [Algebra.IsIntegral R S]
+    [Module.IsTorsionFree R S] (P : Ideal R) [P.IsPrime] :
     Nonempty (primesOver P S) := by
   obtain ⟨Q, _, hQ₁, hQ₂⟩ := exists_ideal_over_prime_of_isIntegral P (⊥ : Ideal S) (by simp)
   exact ⟨Q, ⟨hQ₁, (liesOver_iff _ _).mpr hQ₂.symm⟩⟩
@@ -361,6 +361,25 @@ lemma map_eq_top_iff {R S} [CommRing R] [CommRing S]
     (f : R →+* S) {I : Ideal R} (hf₁ : Function.Injective f) (hf₂ : f.IsIntegral) :
     I.map f = ⊤ ↔ I = ⊤ :=
   map_eq_top_iff_of_ker_le f (by simp [(RingHom.injective_iff_ker_eq_bot f).mp hf₁]) hf₂
+
+/-- If `S` is an integral `R`-algebra such that `q` is the unique prime of `S` lying over
+a prime `p` of `R`, then any `x ∉ q` divides some `r ∉ p`. -/
+lemma exists_notMem_dvd_algebraMap_of_primesOver_eq_singleton
+    {p : Ideal R} [p.IsPrime] {q : Ideal S} [q.IsPrime] (hq : p.primesOver S = {q})
+    [Algebra.IsIntegral R S] (x : S) (hx : x ∉ q) : ∃ r ∉ p, x ∣ algebraMap _ _ r := by
+  simp only [dvd_def, eq_comm, mul_comm x]
+  by_contra!
+  obtain ⟨Q, hQ, hxQ, hQp⟩ := Ideal.exists_le_prime_disjoint (.span {x})
+    (Algebra.algebraMapSubmonoid _ p.primeCompl)
+    (by simpa [Set.disjoint_iff_forall_ne, Ideal.mem_span_singleton',
+      Algebra.algebraMapSubmonoid, @forall_comm S])
+  have hQp' : Q.under _ ≤ p := by
+    intro x hxQ
+    by_contra hxp
+    exact Set.subset_compl_iff_disjoint_right.mpr hQp hxQ ⟨x, hxp, rfl⟩
+  obtain ⟨Q', hQ'Q, hQ', hQ'p⟩ := Ideal.exists_ideal_over_prime_of_isIntegral_of_isPrime _ _ hQp'
+  obtain rfl : Q' = q := hq.le ⟨hQ', ⟨hQ'p.symm⟩⟩
+  exact hx (hQ'Q (hxQ (Ideal.mem_span_singleton_self _)))
 
 end IsDomain
 
@@ -413,12 +432,12 @@ theorem isMaximal_of_mem_primesOver {P : Ideal B} (hP : P ∈ primesOver p B) : 
   primesOver.isMaximal ⟨P, hP⟩
 
 variable (A B) in
-lemma primesOver_bot [NoZeroSMulDivisors A B] [Nontrivial A] [IsDomain B] :
+lemma primesOver_bot [Module.IsTorsionFree A B] [IsDomain A] [IsDomain B] :
     primesOver (⊥ : Ideal A) B = {⊥} := by
   ext p
   refine ⟨fun ⟨_, ⟨h⟩⟩ ↦ p.eq_bot_of_comap_eq_bot h.symm, ?_⟩
   rintro rfl
-  exact ⟨Ideal.bot_prime, Ideal.bot_liesOver_bot A B⟩
+  exact ⟨Ideal.isPrime_bot, Ideal.bot_liesOver_bot A B⟩
 
 end IsIntegral
 

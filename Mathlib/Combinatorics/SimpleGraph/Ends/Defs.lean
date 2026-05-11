@@ -54,6 +54,8 @@ instance ComponentCompl.setLike : SetLike (G.ComponentCompl K) V where
   coe := ComponentCompl.supp
   coe_injective' _ _ := ComponentCompl.supp_inj.mp
 
+instance : PartialOrder (G.ComponentCompl K) := .ofSetLike (G.ComponentCompl K) V
+
 @[simp]
 theorem ComponentCompl.mem_supp_iff {v : V} {C : ComponentCompl G K} :
     v ∈ C ↔ ∃ vK : v ∉ K, G.componentComplMk vK = C :=
@@ -113,8 +115,6 @@ protected theorem disjoint_right (C : G.ComponentCompl K) : Disjoint K C := by
 
 theorem notMem_of_mem {C : G.ComponentCompl K} {c : V} (cC : c ∈ C) : c ∉ K := fun cK =>
   Set.disjoint_iff.mp C.disjoint_right ⟨cK, cC⟩
-
-@[deprecated (since := "2025-05-23")] alias not_mem_of_mem := notMem_of_mem
 
 protected theorem pairwise_disjoint :
     Pairwise fun C D : G.ComponentCompl K => Disjoint (C : Set V) (D : Set V) := by
@@ -257,11 +257,13 @@ The functor assigning, to a finite set in `V`, the set of connected components i
 @[simps]
 def componentComplFunctor : (Finset V)ᵒᵖ ⥤ Type u where
   obj K := G.ComponentCompl K.unop
-  map f := ComponentCompl.hom (le_of_op_hom f)
-  map_id _ := funext fun C => C.hom_refl
-  map_comp {_ Y Z} h h' := funext fun C => by
-    convert C.hom_trans (le_of_op_hom h) (le_of_op_hom _)
-    exact h'
+  map f := ↾(ComponentCompl.hom (le_of_op_hom f))
+  map_id _ := by
+    ext
+    simp [ComponentCompl.hom_refl]
+  map_comp {_ Y Z} h h' := by
+    ext C
+    simp [C.hom_trans (le_of_op_hom h) (le_of_op_hom h')]
 
 /-- The end of a graph, defined as the sections of the functor `component_compl_functor` . -/
 protected def «end» :=

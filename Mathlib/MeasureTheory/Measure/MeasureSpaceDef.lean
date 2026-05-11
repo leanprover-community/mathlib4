@@ -7,12 +7,11 @@ module
 
 public import Mathlib.MeasureTheory.OuterMeasure.Induced
 public import Mathlib.MeasureTheory.OuterMeasure.AE
-public import Mathlib.Order.Filter.CountableInter
 
 /-!
 # Measure spaces
 
-This file defines measure spaces, the almost-everywhere filter and ae_measurable functions.
+This file defines measure spaces, the almost-everywhere filter and `AEMeasurable` functions.
 See `MeasureTheory.MeasureSpace` for their properties and for extended documentation.
 
 Given a measurable space `α`, a measure on `α` is a function that sends measurable sets to the
@@ -37,7 +36,7 @@ This conveniently allows us to apply the measure to sets without proving that th
 We get countable subadditivity for all sets, but only countable additivity for measurable sets.
 
 See the documentation of `MeasureTheory.MeasureSpace` for ways to construct measures and proving
-that two measure are equal.
+that two measures are equal.
 
 A `MeasureSpace` is a class that is a measurable space with a canonical measure.
 The measure is denoted `volume`.
@@ -295,6 +294,7 @@ section ae
 predicate holds for almost every `x : β` and
 - `∅ : Set α`
 - a family of sets generating the σ-algebra of `α`
+
 Moreover, if for almost every `x : β`, the predicate is closed under complements and countable
 disjoint unions, then the predicate holds for almost every `x : β` and all measurable sets of `α`.
 
@@ -424,6 +424,7 @@ theorem Measurable.aemeasurable (h : Measurable f) : AEMeasurable f μ :=
 
 namespace AEMeasurable
 
+@[fun_prop]
 lemma of_discrete [DiscreteMeasurableSpace α] : AEMeasurable f μ :=
   Measurable.of_discrete.aemeasurable
 

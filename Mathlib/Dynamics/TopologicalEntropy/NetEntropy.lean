@@ -33,7 +33,7 @@ Instead of defining a new notion of topological entropy, we prove that
 - `IsDynNetIn`: property that dynamical balls centered on a subset `s` of `F` are disjoint.
 - `netMaxcard`: maximal cardinality of a dynamical net. Takes values in `ℕ∞`.
 - `netEntropyInfEntourage`/`netEntropyEntourage`: exponential growth of `netMaxcard`. The former is
-defined with a `liminf`, the latter with a `limsup`. Take values in `EReal`.
+  defined with a `liminf`, the latter with a `limsup`. Take values in `EReal`.
 
 ## Implementation notes
 As when using covers, there are two competing definitions `netEntropyInfEntourage` and
@@ -42,7 +42,7 @@ we chose the `limsup` definition as the default.
 
 ## Main results
 - `coverEntropy_eq_iSup_netEntropyEntourage`: equality between the notions of topological entropy
-defined with covers and with nets. Has a variant for `coverEntropyInf`.
+  defined with covers and with nets. Has a variant for `coverEntropyInf`.
 
 ## Tags
 net, entropy
@@ -83,15 +83,12 @@ lemma isDynNetIn_singleton (T : X → X) (U : SetRel X X) (n : ℕ) (h : x ∈ F
 /-- Given an entourage `U` and a time `n`, a dynamical net has a smaller cardinality than
   a dynamical cover. This lemma is the first of two key results to compare two versions of
   topological entropy: with cover and with nets, the second being `coverMincard_le_netMaxcard`. -/
-lemma IsDynNetIn.card_le_card_of_isDynCoverOf [U.IsSymm] {s t : Finset X}
+lemma IsDynNetIn.card_le_card_of_isDynCoverOf {s t : Finset X}
     (hs : IsDynNetIn T F U n s) (ht : IsDynCoverOf T F U n t) :
     s.card ≤ t.card := by
-  have (x : X) (x_s : x ∈ s) : ∃ z ∈ t, x ∈ ball z (dynEntourage T U n) := by
-    specialize ht (hs.1 x_s)
-    simp only [mem_iUnion, exists_prop] at ht
-    exact ht
+  have (x : X) (x_s : x ∈ s) : ∃ z ∈ t, z ∈ ball x (dynEntourage T U n) := by
+    simpa using ht (hs.1 x_s)
   choose! F s_t using this
-  simp only [mem_ball_symmetry] at s_t
   apply Finset.card_le_card_of_injOn F fun x x_s ↦ (s_t x x_s).1
   exact fun x x_s y y_s Fx_Fy ↦
     PairwiseDisjoint.elim_set hs.2 x_s y_s (F x) (s_t x x_s).2 (Fx_Fy ▸ (s_t y y_s).2)
@@ -115,6 +112,7 @@ lemma netMaxcard_antitone (T : X → X) (F : Set X) (n : ℕ) :
     Antitone fun U : SetRel X X ↦ netMaxcard T F U n :=
   fun _ _ U_V ↦ biSup_mono fun _ h ↦ h.of_entourage_subset U_V
 
+set_option backward.isDefEq.respectTransparency false in
 lemma netMaxcard_finite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ) :
     netMaxcard T F U n < ⊤ ↔
     ∃ s : Finset X, IsDynNetIn T F U n s ∧ (s.card : ℕ∞) = netMaxcard T F U n := by
@@ -125,7 +123,7 @@ lemma netMaxcard_finite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ)
     -- The criterion we want to use is `Nat.sSup_mem`. We rewrite `netMaxcard` with an `sSup`,
     -- then check its `BddAbove` and `Nonempty` hypotheses.
     have : netMaxcard T F U n
-      = sSup (WithTop.some '' (Finset.card '' {s : Finset X | IsDynNetIn T F U n s})) := by
+      = sSup (WithTop.some '' Finset.card '' {s : Finset X | IsDynNetIn T F U n s}) := by
       rw [netMaxcard, ← image_comp, sSup_image]
       simp only [mem_setOf_eq, ENat.some_eq_coe, Function.comp_apply]
     rw [this] at k_max
@@ -190,6 +188,7 @@ lemma netMaxcard_univ (T : X → X) (h : F.Nonempty) (n : ℕ) : netMaxcard T F 
   refine Finset.card_le_one.2 fun x x_s y y_s ↦ ?_
   exact PairwiseDisjoint.elim_set s_net x_s y_s x (mem_univ x) (mem_univ x)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma netMaxcard_infinite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ) :
     netMaxcard T F U n = ⊤ ↔ ∀ k : ℕ, ∃ s : Finset X, IsDynNetIn T F U n s ∧ k ≤ s.card := by
   apply Iff.intro <;> intro h
@@ -206,7 +205,7 @@ lemma netMaxcard_infinite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : �
     rw [ENat.some_eq_coe, Nat.cast_lt]
     exact (lt_add_one k).trans_le s_card
 
-lemma netMaxcard_le_coverMincard (T : X → X) (F : Set X) [U.IsSymm] (n : ℕ) :
+lemma netMaxcard_le_coverMincard (T : X → X) (F : Set X) (n : ℕ) :
     netMaxcard T F U n ≤ coverMincard T F U n := by
   rcases eq_top_or_lt_top (coverMincard T F U n) with h | h
   · exact h ▸ le_top
@@ -229,6 +228,7 @@ lemma coverMincard_le_netMaxcard (T : X → X) (F : Set X) [U.IsRefl] [U.IsSymm]
   --  We have to check that `s` is a cover for `dynEntourage T F (U ○ U) n`.
   -- If `s` is not a cover, then we can add to `s` a point `x` which is not covered
   -- and get a new net. This contradicts the maximality of `s`.
+  rw [IsDynCoverOf, isCover_iff_subset_iUnion_ball]
   by_contra h
   obtain ⟨x, x_F, x_uncov⟩ := not_subset.1 h
   simp only [Finset.mem_coe, mem_iUnion, exists_prop, not_exists, not_and] at x_uncov
@@ -304,7 +304,7 @@ lemma netEntropyEntourage_univ (T : X → X) {F : Set X} (h : F.Nonempty) :
   rw [← expGrowthSup_const one_ne_zero one_ne_top, netEntropyEntourage]
   simp only [netMaxcard_univ T h, ENat.toENNReal_one]
 
-lemma netEntropyInfEntourage_le_coverEntropyInfEntourage (T : X → X) (F : Set X) [U.IsSymm] :
+lemma netEntropyInfEntourage_le_coverEntropyInfEntourage (T : X → X) (F : Set X) :
     netEntropyInfEntourage T F U ≤ coverEntropyInfEntourage T F U :=
   expGrowthInf_monotone fun n ↦ ENat.toENNReal_mono (netMaxcard_le_coverMincard T F n)
 
@@ -313,7 +313,7 @@ lemma coverEntropyInfEntourage_le_netEntropyInfEntourage (T : X → X) (F : Set 
     coverEntropyInfEntourage T F (U ○ U) ≤ netEntropyInfEntourage T F U :=
   expGrowthInf_monotone fun n ↦ ENat.toENNReal_mono (coverMincard_le_netMaxcard T F n)
 
-lemma netEntropyEntourage_le_coverEntropyEntourage (T : X → X) (F : Set X) [U.IsSymm] :
+lemma netEntropyEntourage_le_coverEntropyEntourage (T : X → X) (F : Set X) :
     netEntropyEntourage T F U ≤ coverEntropyEntourage T F U :=
   expGrowthSup_monotone fun n ↦ ENat.toENNReal_mono (netMaxcard_le_coverMincard T F n)
 

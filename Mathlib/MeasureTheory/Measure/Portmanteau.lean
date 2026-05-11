@@ -82,7 +82,7 @@ probability measure
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -530,7 +530,7 @@ lemma integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure
     simp only [measure_univ, mul_one] at obs
     apply lt_of_le_of_lt _ (show (‖f‖₊ : ℝ≥0∞) < ∞ from ENNReal.coe_lt_top)
     apply liminf_le_of_le
-    · refine ⟨0, .of_forall (by simp only [ge_iff_le, zero_le, forall_const])⟩
+    · refine ⟨0, .of_forall (by simp)⟩
     · intro x hx
       obtain ⟨i, hi⟩ := hx.exists
       apply le_trans hi
@@ -645,17 +645,7 @@ theorem tendsto_of_forall_isClosed_limsup_le
 lemma tendsto_of_forall_isClosed_limsup_real_le' {L : Filter ι} [L.IsCountablyGenerated]
     (h : ∀ F : Set Ω, IsClosed F →
       limsup (fun i ↦ (μs i : Measure Ω).real F) L ≤ (μ : Measure Ω).real F) :
-    Tendsto μs L (𝓝 μ) := by
-  refine tendsto_of_forall_isClosed_limsup_le' fun F hF ↦ ?_
-  rcases L.eq_or_neBot with rfl | hne
-  · simp
-  specialize h F hF
-  simp only [Measure.real_def] at h
-  rwa [ENNReal.limsup_toReal_eq (b := 1) (by simp) (.of_forall fun i ↦ prob_le_one),
-    ENNReal.toReal_le_toReal _ (by finiteness)] at h
-  refine ne_top_of_le_ne_top (b := 1) (by simp) ?_
-  refine limsup_le_of_le ?_ (.of_forall fun i ↦ prob_le_one)
-  exact isCoboundedUnder_le_of_le L (x := 0) (by simp)
+    Tendsto μs L (𝓝 μ) := tendsto_of_forall_isClosed_limsup_le (by simpa using h)
 
 end Closed
 
@@ -741,7 +731,7 @@ lemma _root_.IsPiSystem.tendsto_measureReal_biUnion
       (fun s hs ↦ hμ _ (ht _ hs) i)
   simp_rw [A, measureReal_biUnion_eq_sum_powerset (fun s hs ↦ hmeas _ (ht _ hs))
     (fun s hs ↦ hν _ (ht _ hs))]
-  refine tendsto_finset_sum _ (fun u hu ↦ ?_)
+  refine tendsto_finsetSum _ (fun u hu ↦ ?_)
   simp only [Finset.mem_filter, Finset.mem_powerset] at hu
   apply Filter.Tendsto.const_mul
   rcases eq_empty_or_nonempty (⋂ s ∈ u, s) with h'u | h'u
@@ -802,7 +792,6 @@ lemma ProbabilityMeasure.exists_lt_measure_biUnion_of_isOpen
   refine ⟨(Finset.range (n + 1)).image f, by grind, ?_, ?_⟩
   · convert hn
     simp [accumulate_def]
-    grind
   · simpa [G_eq] using fun i _ ↦ subset_iUnion f i
 
 /-- Assume that, applied to all the elements of a π-system, a sequence of probability measures

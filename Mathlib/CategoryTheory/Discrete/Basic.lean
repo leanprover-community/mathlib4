@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.CategoryTheory.Pi.Basic
-public import Mathlib.Data.ULift
 
 /-!
 # Discrete categories
@@ -321,6 +320,12 @@ def piEquivalenceFunctorDiscrete (J : Type u₂) (C : Type u₁) [Category.{v₁
       obtain rfl : x = y := Discrete.eq_of_hom f
       obtain rfl : f = 𝟙 _ := rfl
       simp))) (by cat_disch)
+
+/-- `piEquivalenceFunctorDiscrete` is compatible with `evaluation`. -/
+@[simps!]
+def piEquivalenceFunctorDiscreteCompEvaluationIso (C : Type*) [Category* C] {J : Type*} (j : J) :
+    (piEquivalenceFunctorDiscrete J C).functor ⋙ (evaluation _ _).obj ⟨j⟩ ≅ Pi.eval _ j :=
+  NatIso.ofComponents fun _ ↦ Iso.refl _
 
 /-- A category is discrete when there is at most one morphism between two objects,
 in which case they are equal. -/

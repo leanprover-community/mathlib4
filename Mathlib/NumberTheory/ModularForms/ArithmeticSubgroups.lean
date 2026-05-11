@@ -5,10 +5,9 @@ Authors: David Loeffler
 -/
 module
 
+public import Mathlib.Analysis.Normed.Group.Uniform
+public import Mathlib.Topology.Algebra.Group.Matrix
 public import Mathlib.Topology.Algebra.IsUniformGroup.DiscreteSubgroup
-public import Mathlib.Topology.Algebra.Ring.Real
-public import Mathlib.Topology.Instances.Matrix
-public import Mathlib.Topology.MetricSpace.Isometry
 
 /-!
 # Arithmetic subgroups of `GL(2, ℝ)`
@@ -42,6 +41,11 @@ variable {Γ} in
 lemma HasDetPlusMinusOne.abs_det [LinearOrder R] [IsOrderedRing R] [HasDetPlusMinusOne Γ]
     {g} (hg : g ∈ Γ) : |g.det.val| = 1 := by
   rcases HasDetPlusMinusOne.det_eq hg with h | h <;> simp [h]
+
+lemma hasDetPlusMinusOne_iff_abs_det [LinearOrder R] [IsOrderedRing R] :
+    HasDetPlusMinusOne Γ ↔ ∀ {g}, g ∈ Γ → |g.det.val| = 1 := by
+  refine ⟨fun h {g} hg ↦ h.abs_det hg, fun h ↦ ⟨?_⟩⟩
+  simpa [-GeneralLinearGroup.val_det_apply, abs_eq zero_le_one] using @h
 
 /-- Typeclass saying that a subgroup of `GL(n, R)` is contained in `SL(n, R)`. Necessary so that
 the typeclass system can detect when the slash action is `ℂ`-linear. -/
@@ -102,8 +106,8 @@ instance IsArithmetic.finiteIndex_comap (𝒢 : Subgroup (GL (Fin 2) ℝ)) [IsAr
   ⟨𝒢.index_comap (mapGL (R := ℤ) ℝ) ▸ IsArithmetic.is_commensurable.1⟩
 
 instance {Γ : Subgroup (GL (Fin 2) ℝ)} [h : Γ.IsArithmetic] : HasDetPlusMinusOne Γ := by
-  refine ⟨fun {g} hg ↦ ?_⟩
-  suffices |g.det.val| = 1 by rcases abs_cases g.det.val <;> aesop
+  rw [hasDetPlusMinusOne_iff_abs_det]
+  intro g hg
   obtain ⟨n, hn, _, hgn⟩ := Subgroup.exists_pow_mem_of_relIndex_ne_zero
     Subgroup.IsArithmetic.is_commensurable.2 hg
   suffices |(g.det ^ n).val| = 1 by simpa [← abs_pow, abs_pow_eq_one _ (Nat.ne_zero_of_lt hn)]
@@ -130,11 +134,18 @@ end Subgroup
 
 namespace Matrix.SpecialLinearGroup
 
+/-- The image of `SL(n, ℤ)` in `GL(n, ℝ)` is discrete. -/
 instance discreteSpecialLinearGroupIntRange : DiscreteTopology (mapGL (n := n) (R := ℤ) ℝ).range :=
-  (isEmbedding_mapGL (Isometry.isEmbedding fun _ _ ↦ rfl)).toHomeomorph.discreteTopology
+  (isEmbedding_mapGL Real.isClosedEmbedding_intCast.1).toHomeomorph.discreteTopology
+
+/-- The image of `SL(n, ℤ)` in `SL(n, ℝ)` is discrete. -/
+instance discreteSpecialLinearGroupIntRangeSL :
+    DiscreteTopology (SpecialLinearGroup.map (Int.castRingHom ℝ) (n := n)).range := by
+  refine (Topology.IsEmbedding.toHomeomorph ?_).discreteTopology
+  exact Real.isClosedEmbedding_intCast.specialLinearGroup_map.1
 
 lemma isClosedEmbedding_mapGLInt : Topology.IsClosedEmbedding (mapGL ℝ : SL n ℤ → GL n ℝ) :=
-  ⟨isEmbedding_mapGL (Isometry.isEmbedding fun _ _ ↦ rfl), (mapGL ℝ).range.isClosed_of_discrete⟩
+  isClosedEmbedding_mapGL Real.isClosedEmbedding_intCast
 
 end Matrix.SpecialLinearGroup
 
@@ -169,8 +180,7 @@ def Subgroup.adjoinNegOne (𝒢 : Subgroup (GL n R)) : Subgroup (GL n R) where
 lemma Subgroup.le_adjoinNegOne (𝒢 : Subgroup (GL n R)) : 𝒢 ≤ 𝒢.adjoinNegOne :=
   fun _ hg ↦ .inl hg
 
-lemma Subgroup.negOne_mem_adjoinNegOne (𝒢 : Subgroup (GL n R)) : -1 ∈ 𝒢.adjoinNegOne :=
-  by simp
+lemma Subgroup.negOne_mem_adjoinNegOne (𝒢 : Subgroup (GL n R)) : -1 ∈ 𝒢.adjoinNegOne := by simp
 
 @[simp] lemma Subgroup.adjoinNegOne_eq_self_iff {𝒢 : Subgroup (GL n R)} :
     𝒢.adjoinNegOne = 𝒢 ↔ -1 ∈ 𝒢 :=

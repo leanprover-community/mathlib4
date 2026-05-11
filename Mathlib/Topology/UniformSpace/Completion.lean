@@ -124,8 +124,8 @@ instance : UniformSpace (CauchyFilter α) :=
     { uniformity := (𝓤 α).lift' gen
       refl := principal_le_lift'.2 fun _s hs ⟨a, b⟩ =>
         fun (a_eq_b : a = b) => a_eq_b ▸ a.property.right hs
-      symm := symm_gen
-      comp := comp_gen }
+      symm := by exact symm_gen
+      comp := by exact comp_gen }
 
 theorem mem_uniformity {s : Set (CauchyFilter α × CauchyFilter α)} :
     s ∈ 𝓤 (CauchyFilter α) ↔ ∃ t ∈ 𝓤 α, gen t ⊆ s :=
@@ -295,7 +295,7 @@ instance inhabited [Inhabited α] : Inhabited (Completion α) :=
   inferInstanceAs <| Inhabited (Quotient _)
 
 instance uniformSpace : UniformSpace (Completion α) :=
-  SeparationQuotient.instUniformSpace
+  fast_instance% SeparationQuotient.instUniformSpace
 
 instance completeSpace : CompleteSpace (Completion α) :=
   SeparationQuotient.instCompleteSpace
@@ -477,7 +477,7 @@ protected def map (f : α → β) : Completion α → Completion β :=
 theorem uniformContinuous_map : UniformContinuous (Completion.map f) :=
   cPkg.uniformContinuous_map cPkg f
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_map : Continuous (Completion.map f) :=
   cPkg.continuous_map cPkg f
 
@@ -498,6 +498,7 @@ theorem extension_map [CompleteSpace γ] [T0Space γ] {f : β → γ} {g : α �
   Completion.ext (continuous_extension.comp continuous_map) continuous_extension <| by
     simp [hf, hg, hf.comp hg, map_coe, extension_coe]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_comp {g : β → γ} {f : α → β} (hg : UniformContinuous g) (hf : UniformContinuous f) :
     Completion.map g ∘ Completion.map f = Completion.map (g ∘ f) :=
   extension_map ((uniformContinuous_coe _).comp hg) hf

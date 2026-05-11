@@ -79,7 +79,7 @@ open Lean Elab Tactic
 /- Pointing note: experimenting with manual scoping of aesop tactics. Attempted to define
 aesop rule directing on `WidePushoutOut` and it didn't take for some reason -/
 /-- An aesop tactic for bulk cases on morphisms in `WidePushoutShape` -/
-def evalCasesBash : TacticM Unit := do
+meta def evalCasesBash : TacticM Unit := do
   evalTactic
     (← `(tactic| casesm* WidePullbackShape _,
       (_ : WidePullbackShape _) ⟶ (_ : WidePullbackShape _)))
@@ -204,7 +204,7 @@ instance Hom.inhabited : Inhabited (Hom (none : WidePushoutShape J) none) :=
 open Lean Elab Tactic
 -- Pointing note: experimenting with manual scoping of aesop tactics; only this worked
 /-- An aesop tactic for bulk cases on morphisms in `WidePushoutShape` -/
-def evalCasesBash' : TacticM Unit := do
+meta def evalCasesBash' : TacticM Unit := do
   evalTactic
     (← `(tactic| casesm* WidePushoutShape _,
       (_ : WidePushoutShape _) ⟶ (_ : WidePushoutShape _)))
@@ -334,10 +334,12 @@ noncomputable abbrev lift {X : C} (f : X ⟶ B) (fs : ∀ j : J, X ⟶ objs j)
 
 variable {X : C} (f : X ⟶ B) (fs : ∀ j : J, X ⟶ objs j) (w : ∀ j, fs j ≫ arrows j = f)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem lift_π (j : J) : lift f fs w ≫ π arrows j = fs _ := by
   simp only [limit.lift_π, WidePullbackShape.mkCone_pt, WidePullbackShape.mkCone_π_app]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem lift_base : lift f fs w ≫ base arrows = f := by
   simp only [limit.lift_π, WidePullbackShape.mkCone_pt, WidePullbackShape.mkCone_π_app]
@@ -352,6 +354,7 @@ theorem eq_lift_of_comp_eq (g : X ⟶ widePullback _ _ arrows) :
   · apply h2
   · apply h1
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hom_eq_lift (g : X ⟶ widePullback _ _ arrows) :
     g = lift (g ≫ base arrows) (fun j => g ≫ π arrows j) (by simp) := by
   aesop
@@ -440,7 +443,7 @@ lemma IsLimit.lift_π {s : WidePullbackCone f} (hs : IsLimit s)
     IsLimit.lift hs b a w ≫ s.π i = a i :=
   hs.fac _ _
 
-/-- To show two wide pullback cones are isomorphic, it suffices to given a compatible isomorphism
+/-- To show two wide pullback cones are isomorphic, it suffices to give a compatible isomorphism
 of their cone points. -/
 def ext {ι : Type*}
     {X : C} {Y : ι → C} {f : ∀ i, Y i ⟶ X} {s t : WidePullbackCone f}
@@ -448,7 +451,7 @@ def ext {ι : Type*}
     (base : e.hom ≫ t.base = s.base := by cat_disch)
     (π : ∀ i, e.hom ≫ t.π i = s.π i := by cat_disch) :
     s ≅ t :=
-  Cones.ext e <| by
+  Cone.ext e <| by
     rintro (_ | _)
     · exact base.symm
     · exact (π _).symm
@@ -470,6 +473,7 @@ lemma reindex_π {ι : Type*} {X : C} {Y : ι → C} {f : ∀ i, Y i ⟶ X} (s :
     {ι' : Type*} (e : ι' ≃ ι) (i : ι') :
     (s.reindex e).π i = s.π (e i) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Reindexing a pullback cone preserves being limiting. -/
 def reindexIsLimitEquiv {ι : Type*} {X : C} {Y : ι → C} {f : ∀ i, Y i ⟶ X}
     (s : WidePullbackCone f) {ι' : Type*} (e : ι' ≃ ι) :
@@ -510,10 +514,12 @@ noncomputable abbrev desc {X : C} (f : B ⟶ X) (fs : ∀ j : J, objs j ⟶ X)
 
 variable {X : C} (f : B ⟶ X) (fs : ∀ j : J, objs j ⟶ X) (w : ∀ j, arrows j ≫ fs j = f)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem ι_desc (j : J) : ι arrows j ≫ desc f fs w = fs _ := by
   simp only [colimit.ι_desc, WidePushoutShape.mkCocone_pt, WidePushoutShape.mkCocone_ι_app]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem head_desc : head arrows ≫ desc f fs w = f := by
   simp only [colimit.ι_desc, WidePushoutShape.mkCocone_pt, WidePushoutShape.mkCocone_ι_app]
@@ -528,6 +534,7 @@ theorem eq_desc_of_comp_eq (g : widePushout _ _ arrows ⟶ X) :
   · apply h2
   · apply h1
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hom_eq_desc (g : widePushout _ _ arrows ⟶ X) :
     g =
       desc (head arrows ≫ g) (fun j => ι arrows j ≫ g) fun j => by

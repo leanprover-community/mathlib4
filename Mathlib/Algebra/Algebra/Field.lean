@@ -12,7 +12,7 @@ public import Mathlib.Data.Rat.Cast.Defs
 # Facts about `algebraMap` when the coefficient ring is a field.
 -/
 
-@[expose] public section
+public section
 
 namespace algebraMap
 

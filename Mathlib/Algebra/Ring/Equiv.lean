@@ -11,6 +11,7 @@ public import Mathlib.Algebra.GroupWithZero.InjSurj
 public import Mathlib.Algebra.Notation.Prod
 public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Logic.Equiv.Set
+public import Mathlib.Util.Delaborators
 
 /-!
 # (Semi)ring equivs
@@ -115,12 +116,6 @@ def toRingEquiv [Mul α] [Add α] [Mul β] [Add β] [EquivLike F α β] [RingEqu
   { (f : α ≃* β), (f : α ≃+ β) with }
 
 end RingEquivClass
-
-/-- Any type satisfying `RingEquivClass` can be cast into `RingEquiv` via
-`RingEquivClass.toRingEquiv`. -/
-instance [Mul α] [Add α] [Mul β] [Add β] [EquivLike F α β] [RingEquivClass F α β] :
-    CoeTC F (α ≃+* β) :=
-  ⟨RingEquivClass.toRingEquiv⟩
 
 namespace RingEquiv
 
@@ -309,6 +304,15 @@ lemma image_symm_eq_preimage (e : R ≃+* S) (s : Set S) : e.symm '' s = e ⁻¹
 
 lemma image_eq_preimage_symm (e : R ≃+* S) (s : Set R) : e '' s = e.symm ⁻¹' s :=
   e.toEquiv.image_eq_preimage_symm _
+
+@[simp]
+lemma coe_coe_toEquiv_symm (e : R ≃+* S) : ⇑(e : R ≃ S).symm = ⇑e.symm := rfl
+
+@[simp]
+lemma coe_coe_toMulEquiv_symm (e : R ≃+* S) : ⇑(e : R ≃* S).symm = ⇑e.symm := rfl
+
+@[simp]
+lemma coe_coe_toAddEquiv_symm (e : R ≃+* S) : ⇑(e : R ≃+ S).symm = ⇑e.symm := rfl
 
 @[deprecated (since := "2025-11-05")] alias image_eq_preimage := image_eq_preimage_symm
 

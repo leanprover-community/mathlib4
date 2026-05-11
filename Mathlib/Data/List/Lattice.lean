@@ -26,7 +26,7 @@ As opposed to `List.inter`, `List.bagInter` copes well with multiplicity. For ex
 `bagInter [0, 1, 2, 3, 2, 1, 0] [1, 0, 1, 4, 3] = [0, 1, 3, 1]`.
 -/
 
-@[expose] public section
+public section
 
 
 open Nat
@@ -116,8 +116,6 @@ theorem inter_cons (l₁ : List α) :
     (a :: l₁) ∩ l₂ = if a ∈ l₂ then a :: l₁ ∩ l₂ else l₁ ∩ l₂ := by
   split_ifs <;> simp_all
 
-@[deprecated (since := "2025-05-23")] alias inter_cons_of_not_mem := inter_cons_of_notMem
-
 @[simp, grind =]
 theorem inter_nil' (l : List α) : l ∩ [] = [] := by
   induction l with grind
@@ -131,7 +129,7 @@ theorem mem_inter_of_mem_of_mem (h₁ : a ∈ l₁) (h₂ : a ∈ l₂) : a ∈ 
   mem_filter_of_mem h₁ <| by simpa using h₂
 
 theorem inter_subset_left {l₁ l₂ : List α} : l₁ ∩ l₂ ⊆ l₁ :=
-  filter_subset' _
+  filter_subset_self _
 
 theorem inter_subset_right {l₁ l₂ : List α} : l₁ ∩ l₂ ⊆ l₂ := fun _ => mem_of_mem_inter_right
 

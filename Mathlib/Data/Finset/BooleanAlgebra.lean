@@ -21,7 +21,7 @@ This file provides the `BooleanAlgebra (Finset α)` instance, under the assumpti
 * `Finset.booleanAlgebra`: `Finset α` is a Boolean algebra if `α` is finite
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Monoid
 
@@ -59,6 +59,10 @@ theorem univ_nontrivial_iff :
     (Finset.univ : Finset α).Nontrivial ↔ Nontrivial α := by
   rw [Finset.Nontrivial, Finset.coe_univ, Set.nontrivial_univ_iff]
 
+lemma univ_neq_empty (α : Type*) [Fintype α] [Nonempty α] :
+    (Finset.univ : Finset α) ≠ ∅ :=
+  fun h ↦ (Finset.univ_eq_empty_iff.1 h).elim (Classical.arbitrary _)
+
 theorem univ_nontrivial [h : Nontrivial α] :
     (Finset.univ : Finset α).Nontrivial :=
   univ_nontrivial_iff.mpr h
@@ -76,7 +80,7 @@ theorem univ_unique [Unique α] : (univ : Finset α) = {default} :=
   Finset.ext fun x => iff_of_true (mem_univ _) <| mem_singleton.2 <| Subsingleton.elim x default
 
 instance boundedOrder : BoundedOrder (Finset α) :=
-  { inferInstanceAs (OrderBot (Finset α)) with
+  { (inferInstance : OrderBot (Finset α)) with
     top := univ
     le_top := subset_univ }
 
@@ -113,8 +117,6 @@ theorem compl_eq_univ_sdiff (s : Finset α) : sᶜ = univ \ s :=
 theorem mem_compl : a ∈ sᶜ ↔ a ∉ s := by simp [compl_eq_univ_sdiff]
 
 theorem notMem_compl : a ∉ sᶜ ↔ a ∈ s := by rw [mem_compl, not_not]
-
-@[deprecated (since := "2025-05-23")] alias not_mem_compl := notMem_compl
 
 @[simp, norm_cast]
 theorem coe_compl (s : Finset α) : ↑sᶜ = (↑s : Set α)ᶜ :=
@@ -271,8 +273,7 @@ section DecEq
 
 variable [Fintype α] [DecidableEq α]
 
-@[simp]
-lemma filter_univ_mem (s : Finset α) : univ.filter (· ∈ s) = s := by simp [filter_mem_eq_inter]
+lemma filter_univ_mem (s : Finset α) : univ.filter (· ∈ s) = s := by simp
 
 instance decidableCodisjoint : Decidable (Codisjoint s t) :=
   decidable_of_iff _ codisjoint_left.symm

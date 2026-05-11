@@ -19,7 +19,7 @@ public import Mathlib.GroupTheory.Index
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 

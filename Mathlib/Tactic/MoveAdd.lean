@@ -5,9 +5,11 @@ Authors: Arthur Paulino, Damiano Testa
 -/
 module
 
-public meta import Mathlib.Algebra.Group.Basic
 public meta import Mathlib.Lean.Meta
-public meta import Mathlib.Order.Defs.LinearOrder
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Order.Defs.LinearOrder
+public meta import Mathlib.Tactic.ToAdditive
+public meta import Mathlib.Tactic.ToDual
 
 /-!
 
@@ -49,11 +51,11 @@ A term preceded by `←` gets moved to the left, while a term without `←` gets
   right, *after* `a`.
   However, if the terms matched by `a` and `b` do not overlap, then `move_add [← a, ← b]`
   has the same effect as `move_add [b]; move_add [a]`:
-  first, we move `b` to the left, then we move `a` also to the left, *before* `a`.
+  first, we move `b` to the left, then we move `a` also to the left, *before* `b`.
   The behaviour in the situation where `a` and `b` overlap is unspecified: `move_add`
   will descend into subexpressions, but the order in which they are visited depends
   on which rearrangements have already happened.
-  Also note, though, that `move_add [a, b]` may differ `move_add [a]; move_add [b]`,
+  Also note, though, that `move_add [a, b]` may differ from `move_add [a]; move_add [b]`,
   for instance when `a` and `b` are `DefEq`.
 
 * Unification of inputs and repetitions: `move_add [_, ← _, a * _]`
@@ -86,7 +88,7 @@ needs to have inbuilt the lemmas asserting the analogues of
 `add_comm, add_assoc, add_left_comm` for the new operation.
 Currently, `move_oper` supports `HAdd.hAdd`, `HMul.hMul`, `And`, `Or`, `Max.max`, `Min.min`.
 
-These lemmas should be added to `Mathlib.MoveAdd.move_oper_simpCtx`.
+These lemmas should be added to `Mathlib.MoveAdd.moveOperSimpCtx`.
 
 See `MathlibTest/MoveAdd.lean` for sample usage of `move_oper`.
 
@@ -116,10 +118,6 @@ def Lean.Expr.getExprInputs : Expr → Array Expr
   | mdata _ e         => #[e]
   | proj _ _ e        => #[e]
   | _ => #[]
-
-/-- `size e` returns the number of subexpressions of `e`. -/
-@[deprecated Lean.Expr.sizeWithoutSharing (since := "2025-09-04")]
-partial def Lean.Expr.size (e : Expr) : ℕ := (e.getExprInputs.map size).foldl (· + ·) 1
 
 namespace Mathlib.MoveAdd
 
@@ -258,7 +256,7 @@ partial def getAddends (sum : Expr) : MetaM (Array Expr) := do
   else return #[sum]
 
 /-- Recursively compute the Array of `getAddends` Arrays by recursing into the expression `sum`
-looking for instance of the operation `op`.
+looking for instances of the operation `op`.
 
 Possibly returns duplicates!
 -/
@@ -305,12 +303,12 @@ def permuteExpr (tgt : Expr) (instructions : List (Expr × Bool)) : MetaM Expr :
     permTgt := permTgt.replace (if · == old then new else none)
   return permTgt
 
-/-- `pairUp L R` takes to lists `L R : List Expr` as inputs.
+/-- `pairUp L R` takes two lists `L R : List Expr` as inputs.
 It scans the elements of `L`, looking for a corresponding `DefEq` `Expr`ession in `R`.
 If it finds one such element `d`, then it sets the element `d : R` aside, removing it from `R`, and
 it continues with the matching on the remainder of `L` and on `R.erase d`.
 
-At the end, it returns the sublist of `R` of the elements that were matched to some element of `R`,
+At the end, it returns the sublist of `R` of the elements that were matched to some element of `L`,
 in the order in which they appeared in `L`,
 as well as the sublist of `L` of elements that were not matched, also in the order in which they
 appeared in `L`.
@@ -337,7 +335,7 @@ def pairUp : List (Expr × Bool × Syntax) → List Expr →
                   return ((d, m.2.1)::found, unfound)
   | _, _ => return ([], [])
 
-/-- `move_oper_simpCtx` is the `Simp.Context` for the reordering internal to `move_oper`.
+/-- `moveOperSimpCtx` is the `Simp.Context` for the reordering internal to `move_oper`.
 To support a new binary operation, extend the list in this definition, so that it contains
 enough lemmas to allow `simp` to close a generic permutation goal for the new binary operation.
 -/
@@ -424,20 +422,22 @@ def parseArrows : TSyntax `Lean.Parser.Tactic.rwRuleSeq → TermElabM (Array (Ex
 
 initialize registerTraceClass `Tactic.move_oper
 
-/-- The tactic `move_add` rearranges summands of expressions.
-Calling `move_add [a, ← b, ...]` matches `a, b,...` with summands in the main goal.
-It then moves `a` to the far right and `b` to the far left of each addition in which they appear.
-The side to which the summands are moved is determined by the presence or absence of the arrow `←`.
+/-- `move_oper op [a]` repeatedly moves `a` to the far right hand side in applications of `op`.
+Here the constant `op` refers to a binary associative commutative operation, and `a` is any term
+(potentially with underscores).
 
-The inputs `a, b,...` can be any terms, also with underscores.
-The tactic uses the first "new" summand that unifies with each one of the given inputs.
+If `a` contains underscores, they are filled in by unification with the first matching occurrence.
+Subterms with different values for the underscores are not matched, unless you repeat `a`.
 
-There is a multiplicative variant, called `move_mul`.
+Currently, `move_oper` supports the operators `HAdd.hAdd` (`· + ·`), `HMul.hMul` (`· * ·`),
+`And` (`· ∧ ·`), `Or` (`· ∨ ·`), `Max.max` and `Min.min`. To support more operations, add them to
+`Mathlib.MoveAdd.moveOperSimpCtx`.
 
-There is also a general tactic for a "binary associative commutative operation": `move_oper`.
-In this case the syntax requires providing first a term whose head symbol is the operation.
-E.g. `move_oper HAdd.hAdd [...]` is the same as `move_add`, while `move_oper Max.max [...]`
-rearranges `max`s.
+* `move_add [...]` uses addition as the operation: it abbreviates `move_oper HAdd.add [...]`.
+* `move_mul [...]` uses multiplication as the operation: it abbreviates `move_oper HMul.mul [...]`.
+* `move_oper op [← a]` moves the atoms matching `a` to the far left hand side instead of the right.
+* `move_oper op [a, b, ← c, ← d, ...]` moves multiple atoms simultaneously, in the order indicated
+  by the arguments: `c` will appear to the left of `d` and `a` will appear to the left of `b`.
 -/
 elab (name := moveOperTac) "move_oper" id:ident rws:rwRuleSeq : tactic => withMainContext do
   -- parse the operation
@@ -452,12 +452,12 @@ elab (name := moveOperTac) "move_oper" id:ident rws:rwRuleSeq : tactic => withMa
   -- move around the operands
   replaceMainGoal (← reorderAndSimp op (← getMainGoal) instr)
 
-@[inherit_doc moveOperTac]
+@[tactic_alt moveOperTac]
 elab "move_add" rws:rwRuleSeq : tactic => do
   let hadd := mkIdent ``HAdd.hAdd
   evalTactic (← `(tactic| move_oper $hadd $rws))
 
-@[inherit_doc moveOperTac]
+@[tactic_alt moveOperTac]
 elab "move_mul" rws:rwRuleSeq : tactic => do
   let hmul := mkIdent ``HMul.hMul
   evalTactic (← `(tactic| move_oper $hmul $rws))

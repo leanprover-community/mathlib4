@@ -150,8 +150,7 @@ lemma add'_zero (f : L.obj X ⟶ L.obj Y) :
     add' W f (L.map 0) = f := by
   obtain ⟨α, hα⟩ := exists_leftFraction L W f
   rw [add'_eq W f (L.map 0) (LeftFraction₂.mk α.f 0 α.s α.hs) hα, hα]; swap
-  · have := inverts L W _ α.hs
-    rw [← cancel_mono (L.map α.s), ← L.map_comp, Limits.zero_comp,
+  · rw [← cancel_mono (L.map α.s), ← L.map_comp, Limits.zero_comp,
       LeftFraction.map_comp_map_s]
   dsimp [LeftFraction₂.add]
   rw [add_zero]
@@ -163,7 +162,6 @@ lemma zero_add' (f : L.obj X ⟶ L.obj Y) :
 lemma neg'_add'_self (f : L.obj X ⟶ L.obj Y) :
     add' W (neg' W f) f = L.map 0 := by
   obtain ⟨α, rfl⟩ := exists_leftFraction L W f
-  have := inverts L W _ α.hs
   rw [add'_eq W _ _ (LeftFraction₂.mk (-α.f) α.f α.s α.hs) (neg'_eq W _ _ rfl) rfl]
   simp only [← cancel_mono (L.map α.s), LeftFraction.map_comp_map_s, ← L.map_comp,
     Limits.zero_comp, neg_add_cancel]
@@ -222,6 +220,7 @@ variable (L X Y)
 
 /-- The abelian group structure on `L.obj X ⟶ L.obj Y` when `L : C ⥤ D` is a localization
 functor, `C` is preadditive and there is a left calculus of fractions. -/
+@[implicit_reducible]
 noncomputable def addCommGroup' : AddCommGroup (L.obj X ⟶ L.obj Y) := by
   letI : Zero (L.obj X ⟶ L.obj Y) := ⟨L.map 0⟩
   letI : Add (L.obj X ⟶ L.obj Y) := ⟨add' W⟩
@@ -257,8 +256,6 @@ noncomputable def add (f₁ f₂ : X' ⟶ Y') : X' ⟶ Y' :=
 @[reassoc]
 lemma add_comp (f₁ f₂ : X' ⟶ Y') (g : Y' ⟶ Z') :
     add W eX eY f₁ f₂ ≫ g = add W eX eZ (f₁ ≫ g) (f₂ ≫ g) := by
-  obtain ⟨f₁, rfl⟩ := (homEquiv eX eY).symm.surjective f₁
-  obtain ⟨f₂, rfl⟩ := (homEquiv eX eY).symm.surjective f₂
   obtain ⟨g, rfl⟩ := (homEquiv eY eZ).symm.surjective g
   simp [add]
 
@@ -266,8 +263,6 @@ lemma add_comp (f₁ f₂ : X' ⟶ Y') (g : Y' ⟶ Z') :
 lemma comp_add (f : X' ⟶ Y') (g₁ g₂ : Y' ⟶ Z') :
     f ≫ add W eY eZ g₁ g₂ = add W eX eZ (f ≫ g₁) (f ≫ g₂) := by
   obtain ⟨f, rfl⟩ := (homEquiv eX eY).symm.surjective f
-  obtain ⟨g₁, rfl⟩ := (homEquiv eY eZ).symm.surjective g₁
-  obtain ⟨g₂, rfl⟩ := (homEquiv eY eZ).symm.surjective g₂
   simp [add]
 
 lemma add_eq_add {X'' Y'' : C} (eX' : L.obj X'' ≅ X') (eY' : L.obj Y'' ≅ Y')
@@ -282,6 +277,7 @@ lemma add_eq_add {X'' Y'' : C} (eX' : L.obj X'' ≅ X') (eY' : L.obj Y'' ≅ Y')
 variable (L X' Y') in
 /-- The abelian group structure on morphisms in `D`, when `L : C ⥤ D` is a localization
 functor, `C` is preadditive and there is a left calculus of fractions. -/
+@[implicit_reducible]
 noncomputable def addCommGroup : AddCommGroup (X' ⟶ Y') := by
   have := Localization.essSurj L W
   letI := addCommGroup' L W (L.objPreimage X') (L.objPreimage Y')
@@ -308,6 +304,7 @@ variable [W.HasLeftCalculusOfFractions]
 
 /-- The preadditive structure on `D`, when `L : C ⥤ D` is a localization
 functor, `C` is preadditive and there is a left calculus of fractions. -/
+@[implicit_reducible]
 noncomputable def preadditive : Preadditive D where
   homGroup := Preadditive.addCommGroup L W
   add_comp _ _ _ _ _ _ := by apply Preadditive.add_comp
@@ -320,6 +317,8 @@ lemma functor_additive :
   ⟨by apply Preadditive.map_add⟩
 
 attribute [irreducible] preadditive
+
+set_option backward.isDefEq.respectTransparency false in
 include W in
 lemma functor_additive_iff {E : Type*} [Category* E] [Preadditive E] [Preadditive D] [L.Additive]
     (G : D ⥤ E) :
@@ -339,7 +338,6 @@ lemma functor_additive_iff {E : Type*} [Category* E] [Preadditive E] [Preadditiv
         ← cancel_epi (G.map (L.objObjPreimageIso X).hom), eq]
     intro X Y f g
     obtain ⟨φ, rfl, rfl⟩ := exists_leftFraction₂ L W f g
-    have := Localization.inverts L W φ.s φ.hs
     rw [← φ.map_add L (inverts L W), ← cancel_mono (G.map (L.map φ.s)), ← G.map_comp,
       add_comp, ← G.map_comp, ← G.map_comp, LeftFraction.map_comp_map_s,
       LeftFraction.map_comp_map_s, LeftFraction.map_comp_map_s, ← Functor.comp_map,
@@ -356,5 +354,16 @@ instance : W.Q'.Additive := functor_additive W.Q' W
 instance [HasZeroObject C] : HasZeroObject W.Localization' := W.Q'.hasZeroObject_of_additive
 
 end Localization
+
+lemma Functor.faithful_of_comp_cancel_zero_of_hasLeftCalculusOfFractions
+    {E : Type*} [Category* E] (F : D ⥤ E)
+    [W.HasLeftCalculusOfFractions]
+    [Preadditive D] [Preadditive E] [L.Additive] [F.Additive]
+    (h : ∀ ⦃X₁ X₂ : C⦄ (f : X₁ ⟶ X₂), F.map (L.map f) = 0 → L.map f = 0) :
+    Faithful F :=
+  faithful_of_comp_of_hasLeftCalculusOfFractions L W F
+    (fun X₁ X₂ f g hfg => by
+      rw [← sub_eq_zero, ← L.map_sub]
+      exact h _ (by rw [L.map_sub, F.map_sub, hfg, sub_self]))
 
 end CategoryTheory

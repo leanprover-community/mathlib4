@@ -17,7 +17,7 @@ provided that it is monotone on `Set.Ici 0`, see `monotone_of_odd_of_monotoneOn_
 prove versions of this lemma for `Antitone`, `StrictMono`, and `StrictAnti`.
 -/
 
-@[expose] public section
+public section
 
 
 open Set

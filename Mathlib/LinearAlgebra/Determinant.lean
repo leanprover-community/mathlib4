@@ -5,16 +5,19 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
 module
 
+public import Mathlib.LinearAlgebra.Dual.Basis
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
-public import Mathlib.LinearAlgebra.Matrix.Reindex
-public import Mathlib.Tactic.FieldSimp
-public import Mathlib.LinearAlgebra.Dual.Basis
+public import Mathlib.LinearAlgebra.Matrix.Basis
 public import Mathlib.LinearAlgebra.Matrix.Dual
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
-public import Mathlib.LinearAlgebra.Matrix.Basis
+public import Mathlib.LinearAlgebra.Matrix.Reindex
 public import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 public import Mathlib.RingTheory.Finiteness.Cardinality
+public import Mathlib.Tactic.FieldSimp
+
+import Mathlib.LinearAlgebra.GeneralLinearGroup.AlgEquiv
+
 /-!
 # Determinant of families of vectors
 
@@ -182,6 +185,13 @@ theorem coe_det [DecidableEq M] :
   · congr -- use the correct `DecidableEq` instance
   rfl
 
+theorem _root_.Module.Free.of_det_ne_one {f : M →ₗ[R] M} (hf : f.det ≠ 1) :
+    Module.Free R M := by
+  by_cases H : ∃ s : Finset M, Nonempty (Module.Basis s R M)
+  · rcases H with ⟨s, ⟨hs⟩⟩
+    exact Module.Free.of_basis hs
+  · classical simp [LinearMap.coe_det, H] at hf
+
 end
 
 -- Auxiliary lemma, the `simp` normal form goes in the other direction
@@ -298,7 +308,7 @@ theorem det_conj {N : Type*} [AddCommGroup N] [Module A N] (f : M →ₗ[A] M) (
       · rw [← toMatrix_comp, LinearEquiv.comp_coe, e.self_trans_symm, LinearEquiv.refl_toLinearMap,
           toMatrix_id]
     · have H' : ¬∃ t : Finset N, Nonempty (Basis t A N) := by
-        contrapose! H
+        contrapose H
         rcases H with ⟨s, ⟨b⟩⟩
         exact ⟨_, ⟨(b.map e.symm).reindexFinsetRange⟩⟩
       simp only [coe_det, H, H', MonoidHom.one_apply, dif_neg, not_false_eq_true]
@@ -312,17 +322,19 @@ lemma isUnit_iff_isUnit_det [Module.Finite R M] [Module.Free R M] (f : M →ₗ[
   let b := Module.Free.chooseBasis R M
   rw [← isUnit_toMatrix_iff b, ← det_toMatrix b, Matrix.isUnit_iff_isUnit_det (toMatrix b b f)]
 
+/-- If a linear map has determinant different from `1`, then the module is free. -/
+theorem free_of_det_ne_one {f : M →ₗ[R] M} (hf : f.det ≠ 1) : Module.Free R M := by
+  by_cases H : ∃ s : Finset M, Nonempty (Basis s R M)
+  · rcases H with ⟨s, ⟨hs⟩⟩
+    exact Module.Free.of_basis hs
+  · classical simp [LinearMap.coe_det, H] at hf
+
 /-- If a linear map has determinant different from `1`, then the space is finite-dimensional. -/
 theorem finite_of_det_ne_one {f : M →ₗ[R] M} (hf : f.det ≠ 1) : Module.Finite R M := by
   by_cases H : ∃ s : Finset M, Nonempty (Basis s R M)
   · rcases H with ⟨s, ⟨hs⟩⟩
     exact Module.Finite.of_basis hs
   · classical simp [LinearMap.coe_det, H] at hf
-
-@[deprecated "use `finite_of_det_ne_one` instead" (since := "2025-09-15")]
-theorem finiteDimensional_of_det_ne_one {𝕜 : Type*} [Field 𝕜] [Module 𝕜 M] (f : M →ₗ[𝕜] M)
-    (hf : LinearMap.det f ≠ 1) : FiniteDimensional 𝕜 M :=
-  finite_of_det_ne_one hf
 
 /-- If the determinant of a map vanishes, then the map is not injective. -/
 theorem bot_lt_ker_of_det_eq_zero [IsDomain R] [Free R M] {f : M →ₗ[R] M} (hf : f.det = 0) :
@@ -435,6 +447,25 @@ attribute [irreducible] LinearEquiv.det
 
 end LinearEquiv
 
+@[simp] theorem LinearMap.det_map {K V W : Type*} [Field K] [AddCommGroup V] [Module K V]
+    [AddCommGroup W] [Module K W] {F : Type*} [EquivLike F (End K V) (End K W)]
+    [AlgEquivClass F K _ _] (f : F) (x : End K V) : (f x).det = x.det :=
+  have ⟨_, h⟩ := (AlgEquivClass.toAlgEquiv f).eq_linearEquivConjAlgEquiv
+  (by simpa using congr($h x)) ▸ det_conj _ _
+
+@[simp] theorem Matrix.det_map {K m n : Type*} [Field K] [Fintype m] [Fintype n]
+    [DecidableEq m] [DecidableEq n] {F : Type*} [EquivLike F (Matrix m m K) (Matrix n n K)]
+    [AlgEquivClass F K _ _] (f : F) (x : Matrix m m K) : (f x).det = x.det := by
+  simpa [toMatrixAlgEquiv', Matrix.toLinAlgEquiv'] using
+    LinearMap.det_map ((Matrix.toLinAlgEquiv'.symm.trans
+      (AlgEquivClass.toAlgEquiv f)).trans Matrix.toLinAlgEquiv') x.toLin'
+
+-- TODO: show `(f x).det = x.det` for when `f : Matrix m m K →ₐ[K] Matrix m m K`
+-- (using Skolem-Noether)
+proof_wanted Matrix.det_map' {K m F : Type*} [Field K] [Fintype m] [DecidableEq m]
+    [FunLike F (Matrix m m K) (Matrix m m K)] [AlgHomClass F K _ _] (f : F) (x : Matrix m m K) :
+    (f x).det = x.det
+
 /-- The determinants of a `LinearEquiv` and its inverse multiply to 1. -/
 @[simp]
 theorem LinearEquiv.det_mul_det_symm {A : Type*} [CommRing A] [Module A M] (f : M ≃ₗ[A] M) :
@@ -491,7 +522,6 @@ theorem LinearEquiv.coe_ofIsUnitDet {f : M →ₗ[R] M'} {v : Basis ι R M} {v' 
   ext x
   rfl
 
-set_option backward.proofsInPublic true in
 /-- Builds a linear equivalence from an endomorphism whose determinant is a unit. -/
 noncomputable def LinearMap.equivOfIsUnitDet
     [Module.Free R M] [Module.Finite R M]
@@ -502,7 +532,7 @@ noncomputable def LinearMap.equivOfIsUnitDet
     have : Finite ι := Module.Finite.finite_basis b
     have : Fintype ι := Fintype.ofFinite ι
     have : DecidableEq ι := Classical.typeDecidableEq ι
-    exact LinearEquiv.ofIsUnitDet (by rwa [det_toMatrix b])
+    exact LinearEquiv.ofIsUnitDet (v := b) (v' := b) (f := f) (by rwa [det_toMatrix b])
   · exact 1
 
 @[simp]
@@ -656,7 +686,7 @@ theorem det_basis (b : Basis ι A M) (b' : Basis ι A M) :
 
 theorem det_mul_det (b b' b'' : Basis ι A M) :
     b.det b' * b'.det b'' = b.det b'' := by
-  have : b'' = (b'.equiv b'' (Equiv.refl ι)).toLinearMap ∘ b'  := by
+  have : b'' = (b'.equiv b'' (Equiv.refl ι)).toLinearMap ∘ b' := by
     ext; simp
   conv_rhs =>
     rw [this, Basis.det_comp, det_basis, mul_comm]
@@ -692,7 +722,7 @@ end Module.Basis
 @[simp]
 theorem Pi.basisFun_det : (Pi.basisFun R ι).det = Matrix.detRowAlternating := by
   ext M
-  rw [Basis.det_apply, Basis.coePiBasisFun.toMatrix_eq_transpose, det_transpose]
+  rw [Basis.det_apply, Basis.coePiBasisFun.toMatrix_eq_transpose, det_transpose, det]
 
 theorem Pi.basisFun_det_apply (v : ι → ι → R) :
     (Pi.basisFun R ι).det v = (Matrix.of v).det := by

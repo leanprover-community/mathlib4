@@ -16,7 +16,7 @@ and develop the most basic lemmas about it.
 
 -/
 
-@[expose] public section
+public section
 
 open scoped Polynomial
 open PowerSeries Ideal Quotient
@@ -75,9 +75,6 @@ lemma degree_eq_coe_lift_order_map (distinguish : g.IsDistinguishedAt I)
   · simp [mapf, PowerSeries.coeff_X_pow_mul', eq_zero_iff_mem, notMem]
   · intro i hi
     simp [mapf, PowerSeries.coeff_X_pow_mul', hi]
-
-@[deprecated (since := "2025-05-19")]
-alias degree_eq_order_map := degree_eq_coe_lift_order_map
 
 lemma coe_natDegree_eq_order_map (distinguish : g.IsDistinguishedAt I)
     (notMem : PowerSeries.constantCoeff h ∉ I) (eq : f = g * h) :

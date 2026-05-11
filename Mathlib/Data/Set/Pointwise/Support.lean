@@ -14,10 +14,10 @@ public import Mathlib.Algebra.Notation.Support
 We show that the support of `x ↦ f (c⁻¹ • x)` is equal to `c • support f`.
 -/
 
-@[expose] public section
+public section
 
 
-open Pointwise
+open scoped Pointwise
 
 open Function Set
 

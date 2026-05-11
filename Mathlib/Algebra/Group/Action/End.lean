@@ -63,10 +63,10 @@ instance applyAddAction : AddAction (Additive (Function.End α)) α := inferInst
 
 @[simp] lemma smul_def (f : Function.End α) (a : α) : f • a = f a := rfl
 
---TODO - This statement should be somethting like `toFun (f * g) = toFun f ∘ toFun g`
+--TODO - This statement should be something like `toFun (f * g) = toFun f ∘ toFun g`
 lemma mul_def (f g : Function.End α) : (f * g) = f ∘ g := rfl
 
---TODO - This statement should be somethting like `toFun 1 = id`
+--TODO - This statement should be something like `toFun 1 = id`
 lemma one_def : (1 : Function.End α) = id := rfl
 
 /-- `Function.End.applyMulAction` is faithful. -/
@@ -199,7 +199,7 @@ lemma MulAction.coe_toPermHom :
   rfl
 
 lemma MulAction.toPerm_one :
-    (MulAction.toPerm (1 : G))  = (1 : Equiv.Perm α) := by
+    (MulAction.toPerm (1 : G)) = (1 : Equiv.Perm α) := by
   aesop
 
 end Group
@@ -217,7 +217,7 @@ lemma AddAction.coe_toPermHom :
   rfl
 
 theorem AddAction.toPerm_zero :
-    (AddAction.toPerm (0 : G))  = (1 : Equiv.Perm α) := by
+    (AddAction.toPerm (0 : G)) = (1 : Equiv.Perm α) := by
   aesop
 
 end AddGroup

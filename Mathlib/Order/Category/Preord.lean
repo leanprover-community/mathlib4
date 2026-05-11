@@ -7,7 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Category.Cat
 public import Mathlib.CategoryTheory.Category.Preorder
-public import Mathlib.CategoryTheory.Elementwise
+public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.Order.Hom.Basic
 public import Mathlib.Order.CompleteBooleanAlgebra
 
@@ -43,6 +43,7 @@ instance : CoeSort Preord (Type u) :=
 
 attribute [coe] Preord.carrier
 
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `Preord R`. -/
 @[ext]
 structure Hom (X Y : Preord.{u}) where
@@ -50,11 +51,15 @@ structure Hom (X Y : Preord.{u}) where
   /-- The underlying `OrderHom`. -/
   hom' : X →o Y
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category Preord.{u} where
   Hom X Y := Hom X Y
   id _ := ⟨OrderHom.id⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory Preord (· →o ·) where
   hom := Hom.hom'
   ofHom := Hom.mk
@@ -84,9 +89,7 @@ lemma coe_id {X : Preord} : (𝟙 X : X → X) = id := rfl
 @[simp]
 lemma coe_comp {X Y Z : Preord} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
-@[simp]
-lemma forget_map {X Y : Preord} (f : X ⟶ Y) :
-    (forget Preord).map f = f := rfl
+@[deprecated (since := "2026-02-15")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
 
 @[ext]
 lemma ext {X Y : Preord} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=

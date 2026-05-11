@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.CategoryTheory.ConcreteCategory.Basic
+public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Adjunction.Basic
 
 /-!
@@ -110,13 +110,13 @@ def typeToPointed : Type u ⥤ Pointed.{u} where
   obj X := ⟨Option X, none⟩
   map f := ⟨Option.map f, rfl⟩
   map_id _ := Pointed.Hom.ext Option.map_id
-  map_comp _ _ := Pointed.Hom.ext (Option.map_comp_map _ _).symm
+  map_comp _ _ := Pointed.Hom.ext <| by simp; rfl
 
 /-- `typeToPointed` is the free functor. -/
 def typeToPointedForgetAdjunction : typeToPointed ⊣ forget Pointed :=
-  Adjunction.mkOfHomEquiv
-    { homEquiv := fun X Y =>
-        { toFun := fun f => f.toFun ∘ Option.some
+  Adjunction.mkOfHomEquiv {
+    homEquiv := fun X Y =>
+        { toFun := fun f => ↾(f.toFun ∘ Option.some)
           invFun := fun f => ⟨fun o => o.elim Y.point f, rfl⟩
           left_inv := fun f => by
             apply Pointed.Hom.ext
@@ -124,7 +124,7 @@ def typeToPointedForgetAdjunction : typeToPointed ⊣ forget Pointed :=
             cases x
             · exact f.map_point.symm
             · rfl }
-      homEquiv_naturality_left_symm := fun f g => by
-        apply Pointed.Hom.ext
-        funext x
-        cases x <;> rfl }
+    homEquiv_naturality_left_symm := fun f g => by
+      apply Pointed.Hom.ext
+      funext x
+      cases x <;> rfl }

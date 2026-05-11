@@ -33,6 +33,7 @@ section Limits
 
 variable [∀ X, Small.{v} ((F ⋙ evaluation R X) ⋙ forget _).sections]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A cone in the category `PresheafOfModules R` is limit if it is so after the application
 of the functors `evaluation R X` for all `X`. -/
 def evaluationJointlyReflectsLimits (c : Cone F)
@@ -62,6 +63,7 @@ instance {X Y : Cᵒᵖ} (f : X ⟶ Y) :
   change HasLimit ((F ⋙ evaluation R Y) ⋙ ModuleCat.restrictScalars (R.map f).hom)
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `F : J ⥤ PresheafOfModules.{v} R`, this is the presheaf of modules obtained by
 taking a limit in the category of modules over `R.obj X` for all `X`. -/
 @[simps]
@@ -73,37 +75,20 @@ noncomputable def limitPresheafOfModules : PresheafOfModules R where
     dsimp
     rw [← cancel_mono (preservesLimitIso _ _).hom, assoc, Iso.inv_hom_id, comp_id]
     apply limit.hom_ext
-    intro j
-    dsimp
-    simp only [limMap_π, Functor.comp_obj, evaluation_obj, Functor.whiskerLeft_app,
-      restriction_app, assoc]
-    -- Here we should rewrite using `Functor.assoc` but that gives a "motive is type-incorrect"
-    erw [preservesLimitIso_hom_π]
-    rw [← ModuleCat.restrictScalarsId'App_inv_naturality, map_id,
+    simp [← Functor.assoc, ← ModuleCat.restrictScalarsId'App_inv_naturality,
       ModuleCat.restrictScalarsId'_inv_app]
-    dsimp
   map_comp {X Y Z} f g := by
     dsimp
     rw [← cancel_mono (preservesLimitIso _ _).hom, assoc, assoc, assoc, assoc, Iso.inv_hom_id,
       comp_id]
     apply limit.hom_ext
     intro j
-    simp only [Functor.comp_obj, evaluation_obj, limMap_π, Functor.whiskerLeft_app, restriction_app,
-      map_comp, ModuleCat.restrictScalarsComp'_inv_app, Functor.map_comp, assoc]
-    -- Here we should rewrite using `Functor.assoc` but that gives a "motive is type-incorrect"
-    erw [preservesLimitIso_hom_π]
-    rw [← ModuleCat.restrictScalarsComp'App_inv_naturality]
-    dsimp
-    rw [← Functor.map_comp_assoc, ← Functor.map_comp_assoc, assoc,
-      preservesLimitIso_inv_π]
-    -- Here we should rewrite using `Functor.assoc` but that gives a "motive is type-incorrect"
-    erw [limMap_π]
-    dsimp
-    simp only [Functor.map_comp, assoc, preservesLimitIso_inv_π_assoc]
-    -- Here we should rewrite using `Functor.assoc` but that gives a "motive is type-incorrect"
-    erw [limMap_π_assoc]
-    dsimp
+    simp only [Functor.map_comp, assoc, ← Functor.assoc, preservesLimitIso_hom_π,
+      ← ModuleCat.restrictScalarsComp'App_inv_naturality]
+    rw [← Functor.map_comp_assoc, ← Functor.map_comp_assoc, assoc, preservesLimitIso_inv_π]
+    simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The (limit) cone for `F : J ⥤ PresheafOfModules.{v} R` that is constructed from the limit
 of `F ⋙ evaluation R X` for all `X`. -/
 @[simps]
@@ -146,14 +131,13 @@ section Small
 variable [Small.{v} J]
 
 instance hasLimitsOfShape : HasLimitsOfShape J (PresheafOfModules.{v} R) where
-
 instance hasLimitsOfSize : HasLimitsOfSize.{v, v} (PresheafOfModules.{v} R) where
 
-noncomputable instance evaluation_preservesLimitsOfShape (X : Cᵒᵖ) :
-    PreservesLimitsOfShape J (evaluation R X : PresheafOfModules.{v} R ⥤ _) where
+instance (X : Cᵒᵖ) : PreservesLimitsOfShape J (evaluation.{v} R X) where
+instance (X : Cᵒᵖ) : PreservesLimitsOfSize.{v, v} (evaluation.{v} R X) where
 
-noncomputable instance toPresheaf_preservesLimitsOfShape :
-    PreservesLimitsOfShape J (toPresheaf.{v} R) where
+instance : PreservesLimitsOfShape J (toPresheaf.{v} R) where
+instance : PreservesLimitsOfSize.{v, v} (toPresheaf.{v} R) where
 
 end Small
 

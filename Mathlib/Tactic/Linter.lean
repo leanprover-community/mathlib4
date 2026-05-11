@@ -9,10 +9,10 @@ This file is ignored by `shake`:
 -/
 module
 
-public meta import Mathlib.Tactic.Linter.DeprecatedModule
-public meta import Mathlib.Tactic.Linter.HaveLetLinter
-public meta import Mathlib.Tactic.Linter.MinImports
-public meta import Mathlib.Tactic.Linter.PPRoundtrip
-public meta import Mathlib.Tactic.Linter.PrivateModule
-public meta import Mathlib.Tactic.Linter.UnusedInstancesInType
-public meta import Mathlib.Tactic.Linter.UpstreamableDecl
+public import Mathlib.Tactic.Linter.DeprecatedModule
+public import Mathlib.Tactic.Linter.HaveLetLinter
+public import Mathlib.Tactic.Linter.MinImports
+public import Mathlib.Tactic.Linter.PPRoundtrip
+public import Mathlib.Tactic.Linter.PrivateModule
+public import Mathlib.Tactic.Linter.UnusedInstancesInType
+public import Mathlib.Tactic.Linter.UpstreamableDecl

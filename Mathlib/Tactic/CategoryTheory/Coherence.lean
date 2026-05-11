@@ -5,10 +5,12 @@ Authors: Kim Morrison, Yuma Mizuno, Oleksandr Manzyuk
 -/
 module
 
-public meta import Mathlib.CategoryTheory.Monoidal.Free.Coherence
 public meta import Mathlib.Lean.Meta
-public meta import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
-public meta import Mathlib.Tactic.CategoryTheory.MonoidalComp
+public import Mathlib.CategoryTheory.Monoidal.Free.Basic
+public meta import Mathlib.CategoryTheory.Monoidal.Free.Basic
+public import Mathlib.Lean.Meta
+public import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
+public import Mathlib.Tactic.CategoryTheory.MonoidalComp
 
 /-!
 # A `coherence` tactic for monoidal categories
@@ -140,11 +142,15 @@ def monoidal_coherence (g : MVarId) : TermElabM Unit := g.withContext do
   let [] ← g₂.applyConst ``Subsingleton.elim
     | exception g "This shouldn't happen; Subsingleton.elim does not create goals."
 
-/-- Coherence tactic for monoidal categories.
-Use `pure_coherence` instead, which is a frontend to this one. -/
-elab "monoidal_coherence" : tactic => do monoidal_coherence (← getMainGoal)
-
 open Mathlib.Tactic.BicategoryCoherence
+
+/--
+If set to `false`, the warning on the use of the deprecated coherence tactic is disabled.
+-/
+register_option warn.refl_coherence : Bool := {
+  defValue := true
+  descr := "warn when the deprecated coherence tactic is used"
+}
 
 /--
 `pure_coherence` uses the coherence theorem for monoidal categories to prove the goal.
@@ -161,6 +167,16 @@ which can also cope with identities of the form
 where `a = a'`, `b = b'`, and `c = c'` can be proved using `pure_coherence`
 -/
 elab (name := pure_coherence) "pure_coherence" : tactic => do
+  if warn.refl_coherence.get (← getOptions) then
+    Lean.logWarning
+      "Usually, use `monoidal` or `bicategory` instead, depending on the context. \
+    They are given in `Mathlib.Tactic.CategoryTheory.Monoidal.Basic` and \
+    `Mathlib.Tactic.CategoryTheory.Bicategory.Basic.lean` respectively."
+  let g ← getMainGoal
+  monoidal_coherence g <|> bicategory_coherence g
+
+/-- The same as `pure_coherence`, but used internally in `coherence` without the warning. -/
+elab (name := pure_coherence_internal) "pure_coherence_internal" : tactic => do
   let g ← getMainGoal
   monoidal_coherence g <|> bicategory_coherence g
 
@@ -228,7 +244,7 @@ def coherence_loop (maxSteps := 37) : TacticM Unit :=
   | maxSteps' + 1 => do
     -- To prove an equality `f = g` in a monoidal category,
     -- first try the `pure_coherence` tactic on the entire equation:
-    evalTactic (← `(tactic| pure_coherence)) <|> do
+    evalTactic (← `(tactic| pure_coherence_internal)) <|> do
     -- Otherwise, rearrange so we have a maximal prefix of each side
     -- that is built out of unitors and associators:
     evalTactic (← `(tactic| liftable_prefixes)) <|>
@@ -238,7 +254,7 @@ def coherence_loop (maxSteps := 37) : TacticM Unit :=
     liftMetaTactic MVarId.congrCore
     -- and now we have two goals `f₀ = g₀` and `f₁ = g₁`.
     -- Discharge the first using `coherence`,
-    evalTactic (← `(tactic| { pure_coherence })) <|>
+    evalTactic (← `(tactic| { pure_coherence_internal })) <|>
       exception' "`coherence` tactic failed, subgoal not true in the free monoidal category"
     -- Then check that either `g₀` is identically `g₁`,
     evalTactic (← `(tactic| rfl)) <|> do
@@ -292,6 +308,11 @@ syntax (name := coherence) "coherence" : tactic
 @[inherit_doc coherence]
 elab_rules : tactic
 | `(tactic| coherence) => do
+  if warn.refl_coherence.get (← getOptions) then
+    Lean.logWarning
+      "Usually, use `monoidal` or `bicategory` instead, depending on the context. \
+    They are given in `Mathlib.Tactic.CategoryTheory.Monoidal.Basic` and \
+    `Mathlib.Tactic.CategoryTheory.Bicategory.Basic.lean` respectively."
   evalTactic (← `(tactic|
     (simp -failIfUnchanged only [bicategoricalComp, monoidalComp]);
     whisker_simps -failIfUnchanged;

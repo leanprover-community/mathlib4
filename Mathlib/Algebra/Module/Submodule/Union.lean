@@ -6,9 +6,10 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Module.Submodule.Lattice
-public import Mathlib.Data.Set.Card
 public import Mathlib.LinearAlgebra.Dual.Defs
-public import Mathlib.Tactic.Module
+public import Mathlib.SetTheory.Cardinal.Finite
+public import Mathlib.Tactic.NormNum.Inv
+public import Mathlib.Tactic.NormNum.Pow
 
 import Mathlib.LinearAlgebra.Dual.Lemmas
 
@@ -19,11 +20,11 @@ This file is a home for results about unions of submodules.
 
 ## Main results:
 * `Submodule.iUnion_ssubset_of_forall_ne_top_of_card_lt`: a finite union of proper submodules is
-a proper subset, provided the coefficients are a sufficiently large field.
+  a proper subset, provided the coefficients are a sufficiently large field.
 
 -/
 
-@[expose] public section
+public section
 
 open Function Set
 
@@ -39,10 +40,10 @@ lemma Submodule.iUnion_ssubset_of_forall_ne_top_of_card_lt (s : Finset ι) (p : 
   | insert j s hj hj' =>
     simp only [ssubset_univ_iff] at hj' ⊢
     rcases s.eq_empty_or_nonempty with rfl | hs
-    · simpa [← SetLike.coe_ne_coe] using h₁ j
+    · simpa using h₁ j
     replace h₂ : s.card + 1 < ENat.card K := by simpa [Finset.card_insert_of_notMem hj] using h₂
     specialize hj' (lt_trans ENat.natCast_lt_succ h₂)
-    contrapose! hj'
+    contrapose hj'
     replace hj' : (p j : Set M) ∪ (⋃ i ∈ s, p i) = univ := by
       simpa only [Finset.mem_insert, iUnion_iUnion_eq_or_left] using hj'
     suffices (p j : Set M) ⊆ ⋃ i ∈ s, p i by rwa [union_eq_right.mpr this] at hj'

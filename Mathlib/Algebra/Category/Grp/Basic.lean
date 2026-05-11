@@ -67,6 +67,7 @@ structure AddGrpCat.Hom (A B : AddGrpCat.{u}) where
   /-- The underlying monoid homomorphism. -/
   hom' : A →+ B
 
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `GrpCat R`. -/
 @[to_additive, ext]
 structure GrpCat.Hom (A B : GrpCat.{u}) where
@@ -76,12 +77,16 @@ structure GrpCat.Hom (A B : GrpCat.{u}) where
 
 namespace GrpCat
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : Category GrpCat.{u} where
   Hom X Y := Hom X Y
   id X := ⟨MonoidHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : ConcreteCategory GrpCat (· →* ·) where
   hom := Hom.hom'
@@ -115,7 +120,7 @@ lemma coe_id {X : GrpCat} : (𝟙 X : X → X) = id := rfl
 @[to_additive (attr := simp)]
 lemma coe_comp {X Y Z : GrpCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
-@[simp] lemma forget_map {X Y : GrpCat} (f : X ⟶ Y) : (forget GrpCat).map f = (f : X → Y) := rfl
+@[deprecated (since := "2026-02-10")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
 
 @[to_additive (attr := ext)]
 lemma ext {X Y : GrpCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -189,6 +194,9 @@ instance hasForgetToMonCat : HasForget₂ GrpCat MonCat where
 @[to_additive (attr := simp)] lemma forget₂_map_ofHom {X Y : Type u} [Group X] [Group Y]
     (f : X →* Y) :
     (forget₂ GrpCat MonCat).map (ofHom f) = MonCat.ofHom f := rfl
+
+@[to_additive (attr := simp)] lemma forget₂_map {R S : GrpCat} (f : R ⟶ S) (x) :
+    (forget₂ GrpCat MonCat).map f x = f x := rfl
 
 @[to_additive]
 instance : Coe GrpCat.{u} MonCat.{u} where coe := (forget₂ GrpCat MonCat).obj
@@ -276,6 +284,7 @@ structure AddCommGrpCat.Hom (A B : AddCommGrpCat.{u}) where
   /-- The underlying monoid homomorphism. -/
   hom' : A →+ B
 
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `CommGrpCat R`. -/
 @[to_additive, ext]
 structure CommGrpCat.Hom (A B : CommGrpCat.{u}) where
@@ -285,12 +294,16 @@ structure CommGrpCat.Hom (A B : CommGrpCat.{u}) where
 
 namespace CommGrpCat
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : Category CommGrpCat.{u} where
   Hom X Y := Hom X Y
   id X := ⟨MonoidHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : ConcreteCategory CommGrpCat (· →* ·) where
   hom := Hom.hom'
@@ -324,10 +337,7 @@ lemma coe_id {X : CommGrpCat} : (𝟙 X : X → X) = id := rfl
 @[to_additive (attr := simp)]
 lemma coe_comp {X Y Z : CommGrpCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
-@[to_additive (attr := simp)]
-lemma forget_map {X Y : CommGrpCat} (f : X ⟶ Y) :
-    (forget CommGrpCat).map f = (f : X → Y) :=
-  rfl
+@[deprecated (since := "2026-02-10")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
 
 @[to_additive (attr := ext)]
 lemma ext {X Y : CommGrpCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -401,6 +411,9 @@ instance hasForgetToGroup : HasForget₂ CommGrpCat GrpCat where
 @[to_additive (attr := simp)] lemma forget₂_grp_map_ofHom {X Y : Type u} [CommGroup X] [CommGroup Y]
     (f : X →* Y) :
     (forget₂ CommGrpCat GrpCat).map (ofHom f) = GrpCat.ofHom f := rfl
+
+@[to_additive (attr := simp)] lemma forget₂_map {R S : CommGrpCat} (f : R ⟶ S) (x) :
+    (forget₂ CommGrpCat GrpCat).map f x = f x := rfl
 
 @[to_additive]
 instance : Coe CommGrpCat.{u} GrpCat.{u} where coe := (forget₂ CommGrpCat GrpCat).obj
@@ -530,9 +543,9 @@ end CategoryTheory.Iso
 /-- multiplicative equivalences between `Group`s are the same as (isomorphic to) isomorphisms
 in `GrpCat` -/
 @[to_additive]
-def mulEquivIsoGroupIso {X Y : GrpCat.{u}} : X ≃* Y ≅ X ≅ Y where
-  hom e := e.toGrpIso
-  inv i := i.groupIsoToMulEquiv
+def mulEquivIsoGroupIso {X Y : GrpCat.{u}} : (X ≃* Y) ≅ (X ≅ Y) where
+  hom := ↾fun e ↦ e.toGrpIso
+  inv := ↾fun i ↦ i.groupIsoToMulEquiv
 
 /-- Additive equivalences between `AddGroup`s are the same
 as (isomorphic to) isomorphisms in `AddGrpCat`. -/
@@ -541,9 +554,9 @@ add_decl_doc addEquivIsoAddGroupIso
 /-- Multiplicative equivalences between `CommGroup`s are the same as (isomorphic to) isomorphisms
 in `CommGrpCat`. -/
 @[to_additive]
-def mulEquivIsoCommGroupIso {X Y : CommGrpCat.{u}} : X ≃* Y ≅ X ≅ Y where
-  hom e := e.toCommGrpIso
-  inv i := i.commGroupIsoToMulEquiv
+def mulEquivIsoCommGroupIso {X Y : CommGrpCat.{u}} : (X ≃* Y) ≅ (X ≅ Y) where
+  hom := ↾fun e ↦ e.toCommGrpIso
+  inv := ↾fun i ↦ i.commGroupIsoToMulEquiv
 
 /-- Additive equivalences between `AddCommGroup`s are
 the same as (isomorphic to) isomorphisms in `AddCommGrpCat`. -/
@@ -574,14 +587,14 @@ end CategoryTheory.Aut
 instance GrpCat.forget_reflects_isos : (forget GrpCat.{u}).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget GrpCat).map f)
-    let e : X ≃* Y := { i.toEquiv with map_mul' := map_mul _ }
+    let e : X ≃* Y := { i.toEquiv with map_mul' := by simp [Iso.toEquiv, i] }
     exact e.toGrpIso.isIso_hom
 
 @[to_additive]
 instance CommGrpCat.forget_reflects_isos : (forget CommGrpCat.{u}).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget CommGrpCat).map f)
-    let e : X ≃* Y := { i.toEquiv with map_mul' := map_mul _}
+    let e : X ≃* Y := { i.toEquiv with map_mul' := by simp [Iso.toEquiv, i] }
     exact e.toCommGrpIso.isIso_hom
 
 -- note: in the following definitions, there is a problem with `@[to_additive]`

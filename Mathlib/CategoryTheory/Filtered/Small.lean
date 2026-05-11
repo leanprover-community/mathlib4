@@ -43,9 +43,12 @@ inductive filteredClosure : ObjectProperty C
 /-- The full subcategory induced by the filtered closure of a family of objects is filtered. -/
 instance : IsFilteredOrEmpty (filteredClosure f).FullSubcategory where
   cocone_objs j j' :=
-    ⟨⟨max j.1 j'.1, filteredClosure.max j.2 j'.2⟩, leftToMax _ _, rightToMax _ _, trivial⟩
+    ⟨⟨max j.1 j'.1, filteredClosure.max j.2 j'.2⟩, ObjectProperty.homMk (leftToMax _ _),
+      ObjectProperty.homMk (rightToMax _ _), trivial⟩
   cocone_maps {j j'} f f' :=
-    ⟨⟨coeq f f', filteredClosure.coeq j.2 j'.2 f f'⟩, coeqHom (C := C) f f', coeq_condition _ _⟩
+    ⟨⟨coeq f.hom f'.hom, filteredClosure.coeq j.2 j'.2 f.hom f'.hom⟩,
+      ObjectProperty.homMk (coeqHom f.hom f'.hom),
+      ObjectProperty.hom_ext _ (coeq_condition _ _)⟩
 
 namespace FilteredClosureSmall
 /-! Our goal for this section is to show that the size of the filtered closure of an `α`-indexed
@@ -105,12 +108,10 @@ theorem small_fullSubcategory_filteredClosure :
   induction h with
   | base x =>
       refine ⟨⟨0, ?_⟩, ?_⟩
-      · #adaptation_note
-        /-- On nightly-2025-11-04 we need to add `-implicitDefEqProofs` here. -/
-        simp -implicitDefEqProofs only [FilteredClosureSmall.bundledAbstractFilteredClosure]
+      · simp only [FilteredClosureSmall.bundledAbstractFilteredClosure]
         exact ULift.up x
-      · simp only [FilteredClosureSmall.abstractFilteredClosureRealization]
-        rw! [FilteredClosureSmall.bundledAbstractFilteredClosure]
+      · simp only [FilteredClosureSmall.abstractFilteredClosureRealization,
+          FilteredClosureSmall.bundledAbstractFilteredClosure]
         rfl
   | max hj₁ hj₂ ih ih' =>
     rcases ih with ⟨⟨n, x⟩, rfl⟩
@@ -207,9 +208,11 @@ inductive cofilteredClosure : ObjectProperty C
 /-- The full subcategory induced by the cofiltered closure of a family is cofiltered. -/
 instance : IsCofilteredOrEmpty (cofilteredClosure f).FullSubcategory where
   cone_objs j j' :=
-    ⟨⟨min j.1 j'.1, cofilteredClosure.min j.2 j'.2⟩, minToLeft _ _, minToRight _ _, trivial⟩
+    ⟨⟨min j.1 j'.1, cofilteredClosure.min j.2 j'.2⟩,
+    ObjectProperty.homMk (minToLeft _ _), ObjectProperty.homMk (minToRight _ _), trivial⟩
   cone_maps {j j'} f f' :=
-    ⟨⟨eq f f', cofilteredClosure.eq j.2 j'.2 f f'⟩, eqHom (C := C) f f', eq_condition _ _⟩
+    ⟨⟨eq f.hom f'.hom, cofilteredClosure.eq j.2 j'.2 f.hom f'.hom⟩,
+    ObjectProperty.homMk (eqHom f.hom f'.hom), ObjectProperty.hom_ext _ (eq_condition _ _)⟩
 
 namespace CofilteredClosureSmall
 
@@ -256,12 +259,10 @@ theorem small_fullSubcategory_cofilteredClosure :
   induction h with
   | base x =>
     refine ⟨⟨0, ?_⟩,?_⟩
-    · #adaptation_note
-      /-- On nightly-2025-11-04 we need to add `-implicitDefEqProofs` here. -/
-      simp -implicitDefEqProofs only [CofilteredClosureSmall.bundledAbstractCofilteredClosure]
+    · simp only [CofilteredClosureSmall.bundledAbstractCofilteredClosure]
       exact ULift.up x
-    · simp only [CofilteredClosureSmall.abstractCofilteredClosureRealization]
-      rw! [CofilteredClosureSmall.bundledAbstractCofilteredClosure]
+    · simp only [CofilteredClosureSmall.abstractCofilteredClosureRealization,
+        CofilteredClosureSmall.bundledAbstractCofilteredClosure]
       rfl
   | min hj₁ hj₂ ih ih' =>
     rcases ih with ⟨⟨n, x⟩, rfl⟩

@@ -20,8 +20,8 @@ For the pointwise inverse of submonoids of groups, please refer to the file
 `Mathlib/Algebra/Group/Submonoid/Pointwise.lean`.
 
 `N.leftInv` is distinct from `N.units`, which is the subgroup of `Mˣ` containing all units that are
-in `N`. See the implementation notes of `Mathlib/GroupTheory/Submonoid/Units.lean` for more details
-on related constructions.
+in `N`. See the implementation notes of `Mathlib/Algebra/Group/Submonoid/Units.lean` for more
+details on related constructions.
 
 ## TODO
 
@@ -39,14 +39,14 @@ namespace Submonoid
 
 @[to_additive]
 noncomputable instance [Monoid M] : Group (IsUnit.submonoid M) :=
-  { inferInstanceAs (Monoid (IsUnit.submonoid M)) with
+  { (inferInstance : Monoid (IsUnit.submonoid M)) with
     inv := fun x ↦ ⟨x.prop.unit⁻¹.val, x.prop.unit⁻¹.isUnit⟩
     inv_mul_cancel := fun x ↦
       Subtype.ext ((Units.val_mul x.prop.unit⁻¹ _).trans x.prop.unit.inv_val) }
 
 @[to_additive]
 noncomputable instance [CommMonoid M] : CommGroup (IsUnit.submonoid M) :=
-  { inferInstanceAs (Group (IsUnit.submonoid M)) with
+  { (inferInstance : Group (IsUnit.submonoid M)) with
     mul_comm := fun a b ↦ by convert mul_comm a b }
 
 @[to_additive]
@@ -182,7 +182,7 @@ section Group
 
 variable [Group M] (S : Submonoid M)
 
-open Pointwise
+open scoped Pointwise
 
 @[to_additive]
 theorem leftInv_eq_inv : S.leftInv = S⁻¹ :=

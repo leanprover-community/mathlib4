@@ -216,6 +216,7 @@ theorem Filter.Eventually.prodMk_nhds {px : X → Prop} {x} (hx : ∀ᶠ x in �
     {y} (hy : ∀ᶠ y in 𝓝 y, py y) : ∀ᶠ p in 𝓝 (x, y), px (p : X × Y).1 ∧ py p.2 :=
   (hx.prod_inl_nhds y).and (hy.prod_inr_nhds x)
 
+@[fun_prop]
 theorem continuous_swap : Continuous (Prod.swap : X × Y → Y × X) :=
   continuous_snd.prodMk continuous_fst
 
@@ -416,10 +417,10 @@ theorem prod_eq_generateFrom :
       generateFrom { g | ∃ (s : Set X) (t : Set Y), IsOpen s ∧ IsOpen t ∧ g = s ×ˢ t } :=
   le_antisymm (le_generateFrom fun _ ⟨_, _, hs, ht, g_eq⟩ => g_eq.symm ▸ hs.prod ht)
     (le_inf
-      (forall_mem_image.2 fun t ht =>
-        GenerateOpen.basic _ ⟨t, univ, by simpa [Set.prod_eq] using ht⟩)
-      (forall_mem_image.2 fun t ht =>
-        GenerateOpen.basic _ ⟨univ, t, by simpa [Set.prod_eq] using ht⟩))
+      (coinduced_le_iff_le_induced.mp fun U hU ↦
+        .basic _ ⟨U, univ, hU, isOpen_univ, prod_univ.symm⟩)
+      (coinduced_le_iff_le_induced.mp fun U hU ↦
+        .basic _ ⟨univ, U, isOpen_univ, hU, univ_prod.symm⟩))
 
 -- TODO: align with `mem_nhds_prod_iff'`
 theorem isOpen_prod_iff {s : Set (X × Y)} :
@@ -520,6 +521,17 @@ theorem frontier_univ_prod_eq (s : Set Y) :
     frontier ((univ : Set X) ×ˢ s) = univ ×ˢ frontier s := by
   simp [frontier_prod_eq]
 
+/-- The hypotheses on `f` are slightly weaker here compared to `mem_map_closure₂`. That
+lemma requires `f` to be jointly continuous, whereas here we only require continuity in each
+variable separately. -/
+theorem map_mem_closure₂' {f : X → Y → Z} {x : X} {y : Y} {s : Set X} {t : Set Y} {u : Set Z}
+    (hf₁ : ∀ x, Continuous (f x)) (hf₂ : ∀ y, Continuous (f · y))
+    (hx : x ∈ closure s) (hy : y ∈ closure t) (h : ∀ a ∈ s, ∀ b ∈ t, f a b ∈ u) :
+    f x y ∈ closure u := by
+  rw [← isClosed_closure.closure_eq]
+  apply map_mem_closure (hf₁ x) hy fun b hb ↦ ?_
+  apply map_mem_closure (hf₂ b) hx fun a ha ↦ h a ha b hb
+
 theorem map_mem_closure₂ {f : X → Y → Z} {x : X} {y : Y} {s : Set X} {t : Set Y} {u : Set Z}
     (hf : Continuous (uncurry f)) (hx : x ∈ closure s) (hy : y ∈ closure t)
     (h : ∀ a ∈ s, ∀ b ∈ t, f a b ∈ u) : f x y ∈ closure u :=
@@ -581,6 +593,12 @@ protected lemma Topology.IsOpenEmbedding.prodMap {f : X → Y} {g : Z → W} (hf
     (hg : IsOpenEmbedding g) : IsOpenEmbedding (Prod.map f g) :=
   .of_isEmbedding_isOpenMap (hf.1.prodMap hg.1) (hf.isOpenMap.prodMap hg.isOpenMap)
 
+protected lemma Topology.IsClosedEmbedding.prodMap {f : X → Y} {g : Z → W}
+    (hf : IsClosedEmbedding f) (hg : IsClosedEmbedding g) :
+    IsClosedEmbedding (Prod.map f g) :=
+  { hf.isEmbedding.prodMap hg.isEmbedding with
+    isClosed_range := range_prodMap ▸ hf.isClosed_range.prod hg.isClosed_range }
+
 lemma isEmbedding_graph {f : X → Y} (hf : Continuous f) : IsEmbedding fun x => (x, f x) :=
   .of_comp (continuous_id.prodMk hf) continuous_fst .id
 
@@ -590,10 +608,14 @@ lemma isEmbedding_prodMkLeft (y : Y) : IsEmbedding (fun x : X ↦ (x, y)) :=
 lemma isEmbedding_prodMkRight (x : X) : IsEmbedding (Prod.mk x : Y → X × Y) :=
   .of_comp (.prodMk_right x) continuous_snd .id
 
-@[deprecated (since := "2025-06-12")] alias isEmbedding_prodMk := isEmbedding_prodMkRight
 theorem IsOpenQuotientMap.prodMap {f : X → Y} {g : Z → W} (hf : IsOpenQuotientMap f)
     (hg : IsOpenQuotientMap g) : IsOpenQuotientMap (Prod.map f g) :=
   ⟨.prodMap hf.1 hg.1, .prodMap hf.2 hg.2, .prodMap hf.3 hg.3⟩
+
+theorem TopologicalSpace.prod_mono {α β : Type*} {σ₁ σ₂ : TopologicalSpace α}
+    {τ₁ τ₂ : TopologicalSpace β} (hσ : σ₁ ≤ σ₂) (hτ : τ₁ ≤ τ₂) :
+    @instTopologicalSpaceProd α β σ₁ τ₁ ≤ @instTopologicalSpaceProd α β σ₂ τ₂ :=
+  le_inf (inf_le_left.trans <| induced_mono hσ) (inf_le_right.trans <| induced_mono hτ)
 
 -- Homeomorphisms between the various product: products of two homeomorphisms,
 -- as well as commutativity and associativity. See below for the analogous results for sums,
@@ -605,8 +627,6 @@ variable {X' Y' : Type*} [TopologicalSpace X'] [TopologicalSpace Y']
 /-- Product of two homeomorphisms. -/
 def prodCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : X × Y ≃ₜ X' × Y' where
   toEquiv := h₁.toEquiv.prodCongr h₂.toEquiv
-  continuous_toFun := by dsimp; fun_prop
-  continuous_invFun := by dsimp; fun_prop
 
 @[simp]
 theorem prodCongr_symm (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') :
@@ -621,8 +641,6 @@ variable (W X Y Z)
 
 /-- `X × Y` is homeomorphic to `Y × X`. -/
 def prodComm : X × Y ≃ₜ Y × X where
-  continuous_toFun := continuous_snd.prodMk continuous_fst
-  continuous_invFun := continuous_snd.prodMk continuous_fst
   toEquiv := Equiv.prodComm X Y
 
 @[simp]
@@ -635,8 +653,6 @@ theorem coe_prodComm : ⇑(prodComm X Y) = Prod.swap :=
 
 /-- `(X × Y) × Z` is homeomorphic to `X × (Y × Z)`. -/
 def prodAssoc : (X × Y) × Z ≃ₜ X × Y × Z where
-  continuous_toFun := continuous_fst.fst.prodMk (continuous_fst.snd.prodMk continuous_snd)
-  continuous_invFun := (continuous_fst.prodMk continuous_snd.fst).prodMk continuous_snd.snd
   toEquiv := Equiv.prodAssoc X Y Z
 
 @[simp]
@@ -645,14 +661,6 @@ lemma prodAssoc_toEquiv : (prodAssoc X Y Z).toEquiv = Equiv.prodAssoc X Y Z := r
 /-- Four-way commutativity of `prod`. The name matches `mul_mul_mul_comm`. -/
 def prodProdProdComm : (X × Y) × W × Z ≃ₜ (X × W) × Y × Z where
   toEquiv := Equiv.prodProdProdComm X Y W Z
-  continuous_toFun := by
-    unfold Equiv.prodProdProdComm
-    dsimp only
-    fun_prop
-  continuous_invFun := by
-    unfold Equiv.prodProdProdComm
-    dsimp only
-    fun_prop
 
 @[simp]
 theorem prodProdProdComm_symm : (prodProdProdComm X Y W Z).symm = prodProdProdComm X W Y Z :=
@@ -662,8 +670,6 @@ theorem prodProdProdComm_symm : (prodProdProdComm X Y W Z).symm = prodProdProdCo
 @[simps! -fullyApplied apply]
 def prodPUnit : X × PUnit ≃ₜ X where
   toEquiv := Equiv.prodPUnit X
-  continuous_toFun := continuous_fst
-  continuous_invFun := .prodMk_left _
 
 /-- `{*} × X` is homeomorphic to `X`. -/
 def punitProd : PUnit × X ≃ₜ X :=
@@ -837,8 +843,6 @@ variable {X' Y' : Type*} [TopologicalSpace X'] [TopologicalSpace Y']
 
 /-- Sum of two homeomorphisms. -/
 def sumCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : X ⊕ Y ≃ₜ X' ⊕ Y' where
-  continuous_toFun := h₁.continuous.sumMap h₂.continuous
-  continuous_invFun := h₁.symm.continuous.sumMap h₂.symm.continuous
   toEquiv := h₁.toEquiv.sumCongr h₂.toEquiv
 
 @[simp]
@@ -862,8 +866,6 @@ variable (W X Y Z)
 /-- `X ⊕ Y` is homeomorphic to `Y ⊕ X`. -/
 def sumComm : X ⊕ Y ≃ₜ Y ⊕ X where
   toEquiv := Equiv.sumComm X Y
-  continuous_toFun := continuous_sum_swap
-  continuous_invFun := continuous_sum_swap
 
 @[simp]
 theorem sumComm_symm : (sumComm X Y).symm = sumComm Y X :=
@@ -884,8 +886,6 @@ lemma continuous_sumAssoc_symm : Continuous (Equiv.sumAssoc X Y Z).symm :=
 /-- `(X ⊕ Y) ⊕ Z` is homeomorphic to `X ⊕ (Y ⊕ Z)`. -/
 def sumAssoc : (X ⊕ Y) ⊕ Z ≃ₜ X ⊕ Y ⊕ Z where
   toEquiv := Equiv.sumAssoc X Y Z
-  continuous_toFun := continuous_sumAssoc X Y Z
-  continuous_invFun := continuous_sumAssoc_symm X Y Z
 
 @[simp]
 lemma sumAssoc_toEquiv : (sumAssoc X Y Z).toEquiv = Equiv.sumAssoc X Y Z := rfl
@@ -893,13 +893,6 @@ lemma sumAssoc_toEquiv : (sumAssoc X Y Z).toEquiv = Equiv.sumAssoc X Y Z := rfl
 /-- Four-way commutativity of the disjoint union. The name matches `add_add_add_comm`. -/
 def sumSumSumComm : (X ⊕ Y) ⊕ W ⊕ Z ≃ₜ (X ⊕ W) ⊕ Y ⊕ Z where
   toEquiv := Equiv.sumSumSumComm X Y W Z
-  continuous_toFun := by
-    have : Continuous (Sum.map (Sum.map (@id X) ⇑(Homeomorph.sumComm Y W)) (@id Z)) := by fun_prop
-    fun_prop
-  continuous_invFun := by
-    have : Continuous (Sum.map (Sum.map (@id X) (Homeomorph.sumComm Y W).symm) (@id Z)) := by
-      fun_prop
-    fun_prop
 
 @[simp]
 lemma sumSumSumComm_toEquiv : (sumSumSumComm W X Y Z).toEquiv = (Equiv.sumSumSumComm W X Y Z) := rfl
@@ -911,8 +904,6 @@ lemma sumSumSumComm_symm : (sumSumSumComm X Y W Z).symm = (sumSumSumComm X W Y Z
 @[simps! -fullyApplied apply]
 def sumEmpty [IsEmpty Y] : X ⊕ Y ≃ₜ X where
   toEquiv := Equiv.sumEmpty X Y
-  continuous_toFun := Continuous.sumElim continuous_id (by fun_prop)
-  continuous_invFun := continuous_inl
 
 /-- The sum of `X` with any empty topological space is homeomorphic to `X`. -/
 def emptySum [IsEmpty Y] : Y ⊕ X ≃ₜ X := (sumComm Y X).trans (sumEmpty X Y)

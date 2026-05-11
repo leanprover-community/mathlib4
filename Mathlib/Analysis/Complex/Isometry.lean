@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Complex.Circle
 public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
+import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Isometries of the Complex Plane
@@ -17,6 +18,7 @@ Specifically, isometries with rotations but without translation.
 The proof involves:
 1. creating a linear isometry `g` with two fixed points, `g(0) = 0`, `g(1) = 1`
 2. applying `linear_isometry_complex_aux` to `g`
+
 The proof of `linear_isometry_complex_aux` is separated in the following parts:
 1. show that the real parts match up: `LinearIsometry.re_apply_eq_re`
 2. show that I maps to either I or -I
@@ -31,6 +33,7 @@ The proof of `linear_isometry_complex_aux` is separated in the following parts:
 
 
 noncomputable section
+suppress_compilation -- needed to avoid a panic!
 
 open Complex
 
@@ -112,7 +115,6 @@ theorem LinearIsometry.im_apply_eq_im {f : ℂ →ₗᵢ[ℝ] ℂ} (h : f 1 = 1)
 
 theorem LinearIsometry.re_apply_eq_re {f : ℂ →ₗᵢ[ℝ] ℂ} (h : f 1 = 1) (z : ℂ) : (f z).re = z.re := by
   apply LinearIsometry.re_apply_eq_re_of_add_conj_eq
-  intro z
   apply LinearIsometry.im_apply_eq_im h
 
 theorem linear_isometry_complex_aux {f : ℂ ≃ₗᵢ[ℝ] ℂ} (h : f 1 = 1) :

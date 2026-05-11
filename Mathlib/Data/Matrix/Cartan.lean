@@ -8,6 +8,8 @@ module
 public import Mathlib.Data.Fin.Basic
 public import Mathlib.LinearAlgebra.Matrix.Notation
 public import Mathlib.GroupTheory.Perm.Cycle.Concrete
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+public import Mathlib.LinearAlgebra.Matrix.Symmetric
 
 /-!
 # Cartan matrices
@@ -157,6 +159,8 @@ theorem D_off_diag_nonpos (i j : Fin n) (h : i ≠ j) : D n i j ≤ 0 := by
 @[simp] theorem A_transpose : (A n).transpose = A n := by
   ext; simp only [A, transpose_apply, of_apply]; grind
 
+theorem A_isSymm : (A n).IsSymm := A_transpose n
+
 @[simp] theorem B_transpose : (B n).transpose = C n := by
   ext; simp only [B, C, transpose_apply, of_apply]; grind
 
@@ -165,6 +169,8 @@ theorem D_off_diag_nonpos (i j : Fin n) (h : i ≠ j) : D n i j ≤ 0 := by
 
 @[simp] theorem D_transpose : (D n).transpose = D n := by
   ext; simp only [D, transpose_apply, of_apply]; grind
+
+theorem D_isSymm : (D n).IsSymm := D_transpose n
 
 /-! ### Small cases -/
 
@@ -216,6 +222,101 @@ theorem D_four : D 4 = !![ 2, -1,  0,  0;
 @[simp] theorem F₄_diag (i : Fin 4) : F₄ i i = 2 := by fin_cases i <;> decide
 
 @[simp] theorem G₂_diag (i : Fin 2) : G₂ i i = 2 := by fin_cases i <;> decide
+
+
+/-! ### Exceptional matrix off-diagonal entries -/
+
+theorem E₆_off_diag_nonpos (i j : Fin 6) (h : i ≠ j) : E₆ i j ≤ 0 := by
+  fin_cases i <;> fin_cases j <;> simp_all [E₆]
+
+theorem E₇_off_diag_nonpos (i j : Fin 7) (h : i ≠ j) : E₇ i j ≤ 0 := by
+  fin_cases i <;> fin_cases j <;> simp_all [E₇]
+
+theorem E₈_off_diag_nonpos (i j : Fin 8) (h : i ≠ j) : E₈ i j ≤ 0 := by
+  fin_cases i <;> fin_cases j <;> simp_all [E₈]
+
+theorem F₄_off_diag_nonpos (i j : Fin 4) (h : i ≠ j) : F₄ i j ≤ 0 := by
+  fin_cases i <;> fin_cases j <;> simp_all [F₄]
+
+theorem G₂_off_diag_nonpos (i j : Fin 2) (h : i ≠ j) : G₂ i j ≤ 0 := by
+  fin_cases i <;> fin_cases j <;> simp_all [G₂]
+
+/-! ### Exceptional matrix transpose properties -/
+
+@[simp] theorem E₆_transpose : E₆.transpose = E₆ := by decide
+@[simp] theorem E₇_transpose : E₇.transpose = E₇ := by decide
+@[simp] theorem E₈_transpose : E₈.transpose = E₈ := by decide
+
+theorem E₆_isSymm : E₆.IsSymm := E₆_transpose
+theorem E₇_isSymm : E₇.IsSymm := E₇_transpose
+theorem E₈_isSymm : E₈.IsSymm := E₈_transpose
+
+/-! ### Exceptional matrix determinants -/
+
+theorem G₂_det : G₂.det = 1 := by decide
+
+theorem F₄_det : F₄.det = 1 := by decide
+
+/-! The determinants of E₆, E₇, E₈ are 3, 2, 1 respectively.
+`decide` fails for these larger matrices without increasing the max recursion depth.
+We could write manual proofs (e.g., expanding via `det_succ_column_zero`),
+but prefer to wait for a more principled determinant tactic. -/
+
+proof_wanted E₆_det : E₆.det = 3
+
+proof_wanted E₇_det : E₇.det = 2
+
+proof_wanted E₈_det : E₈.det = 1
+
+/-- A Cartan matrix is simply laced if its off-diagonal entries are all `0` or `-1`. -/
+def _root_.Matrix.IsSimplyLaced {ι : Type*} (A : Matrix ι ι ℤ) : Prop :=
+  Pairwise fun i j ↦ A i j = 0 ∨ A i j = -1
+
+instance {ι : Type*} [Fintype ι] [DecidableEq ι] : DecidablePred (Matrix.IsSimplyLaced (ι := ι)) :=
+  inferInstanceAs <|
+    DecidablePred fun A : Matrix ι ι ℤ ↦ ∀ ⦃i j : ι⦄, i ≠ j → (fun i j ↦ A i j = 0 ∨ A i j = -1) i j
+
+lemma _root_.Matrix.isSimplyLaced_iff_of_linearOrder
+    {ι : Type*} [LinearOrder ι] (A : Matrix ι ι ℤ) (hA : A.IsSymm) :
+    A.IsSimplyLaced ↔ ∀ ⦃i j : ι⦄, j < i → (A i j = 0 ∨ A i j = -1) := by
+  constructor
+  · intro h i j hij
+    exact h hij.ne'
+  · intro h i j hij
+    obtain hij | hij := hij.lt_or_gt
+    · simpa only [hA.apply i j] using h hij
+    · exact h hij
+
+@[simp] theorem _root_.Matrix.isSimplyLaced_transpose {ι : Type*} (A : Matrix ι ι ℤ) :
+    A.transpose.IsSimplyLaced ↔ A.IsSimplyLaced := by
+  rw [IsSimplyLaced, IsSimplyLaced, Pairwise, Pairwise, forall_comm]
+  aesop
+
+theorem isSimplyLaced_A (n : ℕ) : IsSimplyLaced (A n) := by
+  intro i j h
+  simp only [A, of_apply]
+  grind
+
+theorem isSimplyLaced_D (n : ℕ) : IsSimplyLaced (D n) := by
+  intro i j h
+  simp only [D, of_apply]
+  grind
+
+theorem isSimplyLaced_E₆ : IsSimplyLaced E₆ := by
+  rw [Matrix.isSimplyLaced_iff_of_linearOrder E₆ E₆_isSymm]; decide
+
+theorem isSimplyLaced_E₇ : IsSimplyLaced E₇ := by
+  rw [Matrix.isSimplyLaced_iff_of_linearOrder E₇ E₇_isSymm]; decide
+
+theorem isSimplyLaced_E₈ : IsSimplyLaced E₈ := by
+  rw [Matrix.isSimplyLaced_iff_of_linearOrder E₈ E₈_isSymm]; decide
+
+/-! The Cartan matrices F₄ and G₂ are not simply laced because they contain
+off-diagonal entries that are neither 0 nor -1. -/
+
+theorem not_isSimplyLaced_F₄ : ¬ IsSimplyLaced F₄ := by decide
+
+theorem not_isSimplyLaced_G₂ : ¬ IsSimplyLaced G₂ := by decide
 
 end Properties
 

@@ -88,7 +88,7 @@ This is declared as the default coercion from `F` to `α →+*o β`. -/
 @[coe]
 def OrderRingHomClass.toOrderRingHom [NonAssocSemiring α] [Preorder α] [NonAssocSemiring β]
     [Preorder β] [OrderHomClass F α β] [RingHomClass F α β] (f : F) : α →+*o β :=
-{ (f : α →+* β) with monotone' := OrderHomClass.monotone f}
+  { (f : α →+* β) with monotone' := OrderHomClass.monotone f }
 
 /-- Any type satisfying `OrderRingHomClass` can be cast into `OrderRingHom` via
   `OrderRingHomClass.toOrderRingHom`. -/
@@ -108,7 +108,7 @@ This is declared as the default coercion from `F` to `α ≃+*o β`. -/
 @[coe]
 def OrderRingIsoClass.toOrderRingIso [Mul α] [Add α] [LE α] [Mul β] [Add β] [LE β]
     [OrderIsoClass F α β] [RingEquivClass F α β] (f : F) : α ≃+*o β :=
-{ (f : α ≃+* β) with map_le_map_iff' := map_le_map_iff f}
+  { (RingEquivClass.toRingEquiv f : α ≃+* β) with map_le_map_iff' := map_le_map_iff f }
 
 /-- Any type satisfying `OrderRingIsoClass` can be cast into `OrderRingIso` via
   `OrderRingIsoClass.toOrderRingIso`. -/
@@ -316,6 +316,8 @@ instance : RingEquivClass (α ≃+*o β) α β where
   map_mul f := f.map_mul'
   map_add f := f.map_add'
 
+instance : CoeOut (α ≃+*o β) (α ≃+* β) where coe := toRingEquiv
+
 theorem toFun_eq_coe (f : α ≃+*o β) : f.toFun = f :=
   rfl
 
@@ -331,7 +333,7 @@ theorem coe_mk (e : α ≃+* β) (h) : ⇑(⟨e, h⟩ : α ≃+*o β) = e :=
 theorem mk_coe (e : α ≃+*o β) (h) : (⟨e, h⟩ : α ≃+*o β) = e :=
   ext fun _ => rfl
 
-@[simp]
+@[deprecated "Now a syntactic equality" (since := "2026-04-09"), nolint synTaut]
 theorem toRingEquiv_eq_coe (f : α ≃+*o β) : f.toRingEquiv = f :=
   RingEquiv.ext fun _ => rfl
 
@@ -339,7 +341,7 @@ theorem toRingEquiv_eq_coe (f : α ≃+*o β) : f.toRingEquiv = f :=
 theorem toOrderIso_eq_coe (f : α ≃+*o β) : f.toOrderIso = f :=
   OrderIso.ext rfl
 
-@[simp, norm_cast]
+@[simp]
 theorem coe_toRingEquiv (f : α ≃+*o β) : ⇑(f : α ≃+* β) = f :=
   rfl
 

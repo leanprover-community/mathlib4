@@ -213,7 +213,7 @@ theorem elemExponent_le_exponent [HasExponent K L] (a : L) :
   elemExponent_le_of_pow_mem <| exponent_def K a
 
 variable {K} in
-instance hasExponent_of_finiteDimensional [IsPurelyInseparable K L] [FiniteDimensional K L] :
+instance hasExponent_of_finiteDimensional [FiniteDimensional K L] :
     HasExponent K L := by
   let ⟨p, _⟩ := ExpChar.exists K
   rcases ‹ExpChar K p› with _ | ⟨hp⟩
@@ -244,6 +244,7 @@ to avoid problems with definitional equality when using the semilinear map versi
 variable [Field K] [Field L] [Algebra K L] [HasExponent K L]
 variable (p : ℕ) [ExpChar K p]
 
+set_option backward.privateInPublic true in
 private noncomputable def iterateFrobeniusAux (n : ℕ) : L → K :=
   fun a ↦ elemReduct K a ^ p ^ (n - elemExponent K a)
 
@@ -256,6 +257,8 @@ private theorem algebraMap_iterateFrobeniusAux {n : ℕ} (hn : exponent K L ≤ 
 
 section RingHom
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Iterated Frobenius map (ring homomorphism) for purely inseparable field extension with exponent.
 If `n ≥ exponent K L`, it acts like `x ↦ x ^ p ^ n` but the codomain is the base field `K`. -/
 noncomputable def iterateFrobenius {n : ℕ} (hn : exponent K L ≤ n) : L →+* K where

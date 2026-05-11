@@ -41,7 +41,7 @@ Whenever you state a lemma about the coercion `ℚ≥0 → ℚ`, check that Lean
 
 assert_not_exists CompleteLattice IsOrderedMonoid
 
-library_note2 «specialised high priority simp lemma» /--
+library_note «specialised high priority simp lemma» /--
 It sometimes happens that a `@[simp]` lemma declared early in the library can be proved by `simp`
 using later, more general simp lemmas. In that case, the following reasons might be arguments for
 the early lemma to be tagged `@[simp high]` (rather than `@[simp, nolint simpNF]` or
@@ -59,9 +59,13 @@ instance Rat.instPosMulMono : PosMulMono ℚ where
     simpa [mul_sub, sub_nonneg] using Rat.mul_nonneg hr (sub_nonneg.2 hpq)
 
 deriving instance CommSemiring for NNRat
+
 deriving instance AddCancelCommMonoid for NNRat
+
 deriving instance LinearOrder for NNRat
+
 deriving instance Sub for NNRat
+
 deriving instance Inhabited for NNRat
 
 namespace NNRat
@@ -365,6 +369,7 @@ lemma mk_divInt (n d : ℕ) :
 lemma divNat_inj (h₁ : d₁ ≠ 0) (h₂ : d₂ ≠ 0) : divNat n₁ d₁ = divNat n₂ d₂ ↔ n₁ * d₂ = n₂ * d₁ := by
   rw [← coe_inj]; simp [Rat.mkRat_eq_iff, h₁, h₂]; norm_cast
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma divNat_zero (n : ℕ) : divNat n 0 = 0 := by simp [divNat]
 
 @[simp] lemma num_divNat_den (q : ℚ≥0) : divNat q.num q.den = q :=

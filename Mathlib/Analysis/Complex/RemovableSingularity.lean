@@ -18,7 +18,7 @@ of `c` (or, more generally, $f(z) - f(c)=o((z-c)^{-1})$), then it has a limit at
 function `update f c (limUnder (𝓝[≠] c) f)` is complex differentiable in a neighborhood of `c`.
 -/
 
-@[expose] public section
+public section
 
 
 open TopologicalSpace Metric Set Filter Asymptotics Function

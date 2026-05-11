@@ -51,10 +51,10 @@ allows us to work directly with `α`, `Option α`, `(ι → α) → κ`, and `ι
 ## TODO
 
 - Prove a finitary version of Van der Waerden's theorem (either by compactness or by modifying the
-current proof).
+  current proof).
 
 - One could reformulate the proof of Hales-Jewett to give explicit upper bounds on the number of
-coordinates needed.
+  coordinates needed.
 
 ## Tags
 
@@ -229,7 +229,7 @@ def toSubspace (l : Line (η → α) ι) : Subspace η α (ι × η) where
   cases h : l.idxFun ie.1 <;> simp [toSubspace, h, coe_apply, Subspace.coe_apply]
 
 @[simp] lemma toSubspace_isMono {l : Line (η → α) ι} {C : (ι × η → α) → κ} :
-    l.toSubspace.IsMono C ↔ l.IsMono fun x : ι → η → α  ↦ C fun (i, e) ↦ x i e := by
+    l.toSubspace.IsMono C ↔ l.IsMono fun x : ι → η → α ↦ C fun (i, e) ↦ x i e := by
   simp [Subspace.IsMono, IsMono, funext (toSubspace_apply _ _)]
 
 protected alias ⟨_, IsMono.toSubspace⟩ := toSubspace_isMono
@@ -263,6 +263,7 @@ instance {α ι κ : Type*} [Nonempty ι] [Inhabited κ] :
 - each line is only one color except possibly at its endpoint
 - the lines all have the same endpoint
 - the colors of the lines are distinct.
+
 Used in the proof `exists_mono_in_high_dimension`. -/
 structure ColorFocused {α ι κ : Type*} (C : (ι → Option α) → κ) where
   /-- The underlying multiset of almost monochromatic lines of a color-focused collection. -/
@@ -446,7 +447,7 @@ such that whenever the hypercube `ι → α` is `κ`-colored, there is a monochr
 line. -/
 theorem exists_mono_in_high_dimension (α : Type u) [Finite α] (κ : Type v) [Finite κ] :
     ∃ (ι : Type) (_ : Fintype ι), ∀ C : (ι → α) → κ, ∃ l : Line α ι, l.IsMono C :=
-  let ⟨ι, ιfin, hι⟩ := exists_mono_in_high_dimension'.{u,v} α (ULift.{u,v} κ)
+  let ⟨ι, ιfin, hι⟩ := exists_mono_in_high_dimension'.{u, v} α (ULift.{u, v} κ)
   ⟨ι, ιfin, fun C =>
     let ⟨l, c, hc⟩ := hι (ULift.up ∘ C)
     ⟨l, c.down, fun x => by rw [← hc x, Function.comp_apply]⟩⟩

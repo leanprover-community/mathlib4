@@ -314,11 +314,10 @@ lemma continuousOn_LFunctionResidueClassAux' :
   simp only [LFunctionResidueClassAux, sub_eq_add_neg]
   refine continuousOn_const.mul <| ContinuousOn.add ?_ ?_
   · refine (continuousOn_neg_logDeriv_LFunctionTrivChar₁ q).mono fun s hs ↦ ?_
-    have := LFunction_ne_zero_of_one_le_re (1 : DirichletCharacter ℂ q) (s := s)
     simp only [ne_eq, Set.mem_setOf_eq] at hs
     tauto
   · simp only [← Finset.sum_neg_distrib, mul_div_assoc, ← mul_neg, ← neg_div]
-    refine continuousOn_finset_sum _ fun χ hχ ↦ continuousOn_const.mul ?_
+    refine continuousOn_finsetSum _ fun χ hχ ↦ continuousOn_const.mul ?_
     replace hχ : χ ≠ 1 := by simpa only [ne_eq, Finset.mem_compl, Finset.mem_singleton] using hχ
     refine (continuousOn_neg_logDeriv_LFunction_of_nontriv hχ).mono fun s hs ↦ ?_
     simp only [ne_eq, Set.mem_setOf_eq] at hs
@@ -431,7 +430,7 @@ lemma not_summable_residueClass_prime_div (ha : IsUnit a) :
   have H₁ {x : ℝ} (hx : 1 < x) : ∑' n, residueClass a n / (n : ℝ) ^ x ≤ C := by
     refine Summable.tsum_le_tsum (fun n ↦ ?_) ?_ key
     · rcases n.eq_zero_or_pos with rfl | hn
-      · simp only [Nat.cast_zero, Real.zero_rpow (zero_lt_one.trans hx).ne', div_zero, le_refl]
+      · simp
       · refine div_le_div_of_nonneg_left (residueClass_nonneg a _) (mod_cast hn) ?_
         conv_lhs => rw [← Real.rpow_one n]
         exact Real.rpow_le_rpow_of_exponent_le (by norm_cast) hx.le
@@ -477,7 +476,7 @@ theorem infinite_setOf_prime_and_eq_mod (ha : IsUnit a) :
     {p : ℕ | p.Prime ∧ (p : ZMod q) = a}.Infinite := by
   by_contra! H
   exact not_summable_residueClass_prime_div ha <|
-    summable_of_finite_support <| support_residueClass_prime_div a ▸ H
+    summable_of_hasFiniteSupport <| show Set.Finite _ from support_residueClass_prime_div a ▸ H
 
 @[deprecated (since := "2025-11-01")]
 alias setOf_prime_and_eq_mod_infinite := infinite_setOf_prime_and_eq_mod
