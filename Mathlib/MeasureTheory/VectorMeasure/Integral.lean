@@ -78,6 +78,13 @@ vector measure. -/
 noncomputable def VectorMeasure.transpose (μ : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) :
     VectorMeasure X (E →L[ℝ] G) := μ.mapRange B.flip.toAddMonoidHom B.flip.continuous
 
+lemma restrict_transpose (μ : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) (s : Set X) :
+    (μ.transpose B).restrict s = (μ.restrict s).transpose B := by
+  by_cases hs : MeasurableSet s
+  · ext t ht : 1
+    simp [VectorMeasure.restrict_apply, hs, ht, transpose]
+  · simp [restrict_not_measurable _ hs, transpose]
+
 /-- Given a set `s`, return the continuous linear map `fun x : E ↦ B x (μ s)` (actually defined
 using `transpose` through `mapRange`), where the `B` is a `G`-valued bilinear form on `E × F` and
 `μ` is an `F`-valued vector measure. The extension of that set function through `setToFun` gives the
@@ -149,9 +156,19 @@ notation3 "∫ᵛ "(...)" in "s", "r:60:(scoped f => f)" ∂•"μ:70 =>
 
 variable {μ : VectorMeasure X F} {B : E →L[ℝ] F →L[ℝ] G}
 
+@[simp] lemma integrable_zero {f : X → E} : (0 : VectorMeasure X F).Integrable f B := by
+  simp [VectorMeasure.Integrable, transpose]
+
+lemma Integrable.restrict {f : X → E} (hf : μ.Integrable f B) (s : Set X) :
+    (μ.restrict s).Integrable f B := by
+  by_cases hs : MeasurableSet s
+  · simp only [VectorMeasure.Integrable, ← restrict_transpose, variation_restrict _ hs]
+    exact MeasureTheory.Integrable.restrict hf
+  · simp [restrict_not_measurable _ hs]
+
 @[simp] theorem integral_zero {f : X → E} : ∫ᵛ x, f x ∂[B; (0 : VectorMeasure X F)] = 0 := by
   apply setToFun_zero_left'
-  simp [VectorMeasure.transpose]
+  simp [transpose]
 
 theorem integral_fun_add {f g : X → E} (hf : μ.Integrable f B) (hg : μ.Integrable g B) :
     ∫ᵛ x, f x + g x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] + ∫ᵛ x, g x ∂[B; μ] :=

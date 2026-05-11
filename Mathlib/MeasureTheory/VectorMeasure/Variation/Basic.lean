@@ -41,7 +41,6 @@ section Basic
 
 variable [TopologicalSpace V] [ENormedAddCommMonoid V] [T2Space V]
 
-@[simp]
 lemma variation_apply (μ : VectorMeasure X V) (s : Set X) :
     μ.variation s = preVariation (‖μ ·‖ₑ) (isSigmaSubadditiveSetFun_enorm μ) (by simp) s := rfl
 
@@ -84,6 +83,32 @@ theorem enorm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) :
     ‖μ E‖ₑ = ∑ p ∈ (Finpartition.indiscrete hE').parts, ‖μ p‖ₑ := by simp
     _ ≤ preVariationFun (‖μ ·‖ₑ) E := by apply preVariation.sum_le
 
+lemma variation_apply_le_of_forall_enorm_le {μ : VectorMeasure X V} {ν : Measure X} {s : Set X}
+    (hs : MeasurableSet s) (hν : ∀ (t : Set X), MeasurableSet t → t ⊆ s → ‖μ t‖ₑ ≤ ν t) :
+    μ.variation s ≤ ν s := by
+  simp only [variation_apply, preVariation_apply, ennrealToMeasure_apply hs,
+    ennrealPreVariation_apply, preVariationFun, hs, ↓reduceDIte, iSup_le_iff]
+  intro P
+  calc ∑ t ∈ P.parts, ‖μ t‖ₑ
+  _ ≤ ∑ t ∈ P.parts, ν t := by
+    gcongr with t ht
+    apply hν _ t.2 (P.le ht)
+  _ = ν (⋃ t ∈ P.parts, t) := by
+    rw [measure_biUnion_finset _ (fun i hi ↦ i.2)]
+    intro i hi j hj hij
+    simpa [Function.onFun, disjoint_iff, Subtype.ext_iff] using P.disjoint hi hj hij
+  _ ≤ ν s := by
+    gcongr
+    simp only [Set.iUnion_subset_iff]
+    intro t ht
+    exact P.le ht
+
+/-- Characterization of the variation as the minimal measure larger than `‖μ ·‖`. -/
+lemma variation_le_of_forall_enorm_le {μ : VectorMeasure X V} {ν : Measure X}
+    (hν : ∀ (s : Set X), MeasurableSet s → ‖μ s‖ₑ ≤ ν s) :
+    μ.variation ≤ ν :=
+  Measure.le_iff.2 (fun _ hs ↦ variation_apply_le_of_forall_enorm_le hs (fun t ht _ ↦ hν t ht))
+
 @[simp]
 lemma variation_zero : (0 : VectorMeasure X V).variation = 0 := by
   simp only [variation, coe_zero, Pi.zero_apply, enorm_zero]
@@ -95,6 +120,27 @@ lemma absolutelyContinuous (μ : VectorMeasure X V) : μ ≪ᵥ μ.ennrealVariat
   · suffices ‖μ s‖ₑ ≤ 0 by simp_all
     grw [enorm_measure_le_variation, ← ennrealVariation_apply _ hsm, hs]
   · exact μ.not_measurable' hsm
+
+lemma variation_restrict (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) :
+    (μ.restrict s).variation = μ.variation.restrict s := by
+  apply le_antisymm
+  · apply variation_le_of_forall_enorm_le (fun t ht ↦ ?_)
+    simp only [ht, Measure.restrict_apply, VectorMeasure.restrict_apply, hs]
+    apply enorm_measure_le_variation
+  · apply Measure.le_iff.2 (fun t ht ↦ ?_)
+    simp only [ht, Measure.restrict_apply]
+    calc μ.variation (t ∩ s)
+    _ ≤ (μ.restrict s).variation (t ∩ s) := by
+      apply variation_apply_le_of_forall_enorm_le (ht.inter hs) (fun u u_meas hu ↦ ?_)
+      have : μ u = μ.restrict s u := by
+        rw [VectorMeasure.restrict_apply _ hs u_meas]
+        congr
+        grind
+      rw [this]
+      apply enorm_measure_le_variation
+    _ ≤ (μ.restrict s).variation t := by
+      gcongr
+      exact Set.inter_subset_left
 
 end Basic
 
