@@ -671,44 +671,15 @@ lemma mem_divisors_self (hz : z ≠ 0) : z ∈ divisors z :=
   simp
 
 @[simp]
-lemma mem_divisorsAntidiag :
-    ∀ {z} {xy : ℤ × ℤ}, xy ∈ divisorsAntidiag z ↔ xy.fst * xy.snd = z ∧ z ≠ 0
-  | (n : ℕ), ((x : ℕ), (y : ℕ)) => by
+lemma mem_divisorsAntidiag : xy ∈ divisorsAntidiag z ↔ xy.fst * xy.snd = z ∧ z ≠ 0 := by
+  rcases z, xy with ⟨_ | _, ⟨_ | _, _ | _⟩⟩
+  -- splitting this case saves about 1770 heartbeats i.e. 12.5% faster
+  case ofNat.negSucc.negSucc =>
     simp [divisorsAntidiag]
-    norm_cast
-    simp +contextual [eq_comm]
-  | (n : ℕ), (negSucc x, negSucc y) => by
-    simp [divisorsAntidiag, negSucc_eq, -neg_add_rev]
-    norm_cast
-    simp +contextual [eq_comm]
-  | (n : ℕ), ((x : ℕ), negSucc y) => by
-    simp [divisorsAntidiag, negSucc_eq, -neg_add_rev]
-    norm_cast
-    aesop
-  | (n : ℕ), (negSucc x, (y : ℕ)) => by
-    suffices
-      (∃ a, (n = a * y ∧ ¬n = 0) ∧ (a : ℤ) = -1 + -↑x) ↔ (n : ℤ) = (-1 + -↑x) * ↑y ∧ ¬n = 0 by
-      simpa [divisorsAntidiag, eq_comm, negSucc_eq]
-    simp only [← Int.neg_add, Int.add_comm 1, Int.neg_mul, Int.add_mul]
-    norm_cast
-    match n with
-    | 0 => simp
-    | n + 1 => simp
-  | .negSucc n, ((x : ℕ), (y : ℕ)) => by
+    grind [Nat.cast_inj]
+  all_goals
     simp [divisorsAntidiag]
-    norm_cast
-  | .negSucc n, (negSucc x, negSucc y) => by
-    simp [divisorsAntidiag, negSucc_eq, -neg_add_rev]
-    norm_cast
-    simp +contextual
-  | .negSucc n, ((x : ℕ), negSucc y) => by
-    simp [divisorsAntidiag, negSucc_eq, -neg_add_rev]
-    norm_cast
-    aesop
-  | .negSucc n, (negSucc x, (y : ℕ)) => by
-    simp [divisorsAntidiag, negSucc_eq, -neg_add_rev]
-    norm_cast
-    simp +contextual [eq_comm]
+    grind
 
 theorem image_fst_divisorsAntidiag : z.divisorsAntidiag.image Prod.fst = z.divisors := by
   ext
