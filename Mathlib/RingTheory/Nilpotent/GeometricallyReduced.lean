@@ -13,11 +13,10 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 # Geometrically reduced algebras
 
 In this file we introduce geometrically reduced algebras.
-For commutative ring `R` and `R`-algebra `A`, `A` is geometrically reduced
-(`IsGeometricallyReduced`) if base change of `A` to all algebraic closure of residue field of prime
-ideal of `R`.
-Especially, for field `k`, we say that a `k`-algebra `A` is geometrically reduced
-if the tensor product `AlgebraicClosure k ⊗[k] A` is reduced.
+For a commutative ring `R` and `R`-algebra `A`, we say that `A` is geometrically reduced
+(`IsGeometricallyReduced`) if for every prime ideal `p` of `R`, the base change of `A`
+to an algebraic closure of `κ(p)` is reduced.
+In the case of `R = k` a field, this is equivalent to `AlgebraicClosure k ⊗[k] A` being reduced.
 
 ## Main results
 - `IsGeometricallyReduced.of_forall_fg`: for a field `k` and a commutative `k`-algebra `A`, if all
@@ -31,7 +30,7 @@ if the tensor product `AlgebraicClosure k ⊗[k] A` is reduced.
 
 ## TODO
 - Prove that if `A` is a geometrically reduced `R`-algebra, then for every `R`-algebra `K` that is
-  a field, `K ⊗[k] A` is reduced.
+  a field, the tensor product `K ⊗[R] A` is reduced. (@Thmoas-Guan)
 
 -/
 
@@ -45,8 +44,8 @@ namespace Algebra
 
 variable {k A : Type*} [Field k] [Ring A] [Algebra k A]
 
-/-- An `R`-algebra `A` is geometrically reduced iff its base change to
-  all `AlgebraicClosure p.ResidueField` are reduced, wher `p` is a prime ideal of `R`. -/
+/-- An `R`-algebra `A` is geometrically reduced iff for every prime ideal `p` of R`
+  the base change to `AlgebraicClosure p.ResidueField` is reduced. -/
 @[mk_iff]
 class IsGeometricallyReduced (R A : Type*) [CommRing R] [Ring A] [Algebra R A] : Prop where
   isReduced_algebraicClosure_residueField_tensorProduct (p : Ideal R) [p.IsPrime] :
