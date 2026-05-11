@@ -32,6 +32,7 @@ and the exactness lemmas are
 
 @[expose] public section
 
+
 open KaehlerDifferential Module MvPolynomial TensorProduct
 
 namespace Algebra

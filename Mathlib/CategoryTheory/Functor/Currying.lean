@@ -21,6 +21,7 @@ categories `Cat.{u, u}` with a Cartesian closed structure.
 
 @[expose] public section
 
+
 namespace CategoryTheory
 
 namespace Functor

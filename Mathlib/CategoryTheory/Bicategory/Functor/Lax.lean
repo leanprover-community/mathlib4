@@ -38,6 +38,7 @@ be to mirror these constructions for lax functors.
 
 @[expose] public section
 
+
 namespace CategoryTheory
 
 open Category Bicategory

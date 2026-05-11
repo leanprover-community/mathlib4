@@ -23,6 +23,7 @@ If `r` is a relation on `α` then a relation series of length `n` is a series
 
 -/
 
+
 @[expose] public section
 
 open scoped SetRel

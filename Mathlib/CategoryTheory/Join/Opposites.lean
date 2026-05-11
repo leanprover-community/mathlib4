@@ -18,6 +18,7 @@ This equivalence is characterized in both directions.
 
 @[expose] public section
 
+
 namespace CategoryTheory.Join
 open Opposite Functor
 

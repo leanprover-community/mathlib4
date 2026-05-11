@@ -26,6 +26,7 @@ The duals of the above for functors `ℕᵒᵖ ⥤ C` are given by `Functor.ofOp
 
 @[expose] public section
 
+
 namespace CategoryTheory
 
 open Category
