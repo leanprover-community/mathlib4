@@ -118,6 +118,20 @@ alias ⟨HasFDerivAt.hasGradientAt, _⟩ := hasFDerivAt_iff_hasGradientAt
 theorem gradient_eq_zero_of_not_differentiableAt (h : ¬DifferentiableAt 𝕜 f x) : ∇ f x = 0 := by
   rw [gradient, fderiv_zero_of_not_differentiableAt h, map_zero]
 
+lemma toDual_gradientWithin :
+    (toDual 𝕜 F) (gradientWithin f s x) = fderivWithin 𝕜 f s x := by
+  rw [gradientWithin, (toDual 𝕜 F).apply_symm_apply]
+
+lemma toDual_gradient : (toDual 𝕜 F) (∇ f x) = fderiv 𝕜 f x := by
+  rw [gradient, (toDual 𝕜 F).apply_symm_apply]
+
+lemma toDual_comp_gradientWithin :
+    (toDual 𝕜 F) ∘ gradientWithin f s = fderivWithin 𝕜 f s :=
+  funext fun _ => toDual_gradientWithin
+
+lemma toDual_comp_gradient : (toDual 𝕜 F) ∘ ∇ f = fderiv 𝕜 f :=
+  funext fun _ => toDual_gradient
+
 theorem HasGradientAt.unique {gradf gradg : F}
     (hf : HasGradientAt f gradf x) (hg : HasGradientAt f gradg x) :
     gradf = gradg :=
@@ -125,7 +139,7 @@ theorem HasGradientAt.unique {gradf gradg : F}
 
 theorem DifferentiableAt.hasGradientAt (h : DifferentiableAt 𝕜 f x) :
     HasGradientAt f (∇ f x) x := by
-  rw [hasGradientAt_iff_hasFDerivAt, gradient, (toDual 𝕜 F).apply_symm_apply (fderiv 𝕜 f x)]
+  rw [hasGradientAt_iff_hasFDerivAt, toDual_gradient]
   exact h.hasFDerivAt
 
 theorem HasGradientAt.differentiableAt (h : HasGradientAt f f' x) :
@@ -134,8 +148,7 @@ theorem HasGradientAt.differentiableAt (h : HasGradientAt f f' x) :
 
 theorem DifferentiableWithinAt.hasGradientWithinAt (h : DifferentiableWithinAt 𝕜 f s x) :
     HasGradientWithinAt f (gradientWithin f s x) s x := by
-  rw [hasGradientWithinAt_iff_hasFDerivWithinAt, gradientWithin,
-    (toDual 𝕜 F).apply_symm_apply (fderivWithin 𝕜 f s x)]
+  rw [hasGradientWithinAt_iff_hasFDerivWithinAt, toDual_gradientWithin]
   exact h.hasFDerivWithinAt
 
 theorem HasGradientWithinAt.differentiableWithinAt (h : HasGradientWithinAt f f' s x) :
