@@ -145,10 +145,10 @@ public import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.Algebra.Category.GrpWithZero
 public import Mathlib.Algebra.Category.HopfAlgCat.Basic
 public import Mathlib.Algebra.Category.HopfAlgCat.Monoidal
-public import Mathlib.Algebra.Category.LocAlgCat.BaseCat
-public import Mathlib.Algebra.Category.LocAlgCat.Basic
-public import Mathlib.Algebra.Category.LocAlgCat.Cotangent
-public import Mathlib.Algebra.Category.LocAlgCat.Defs
+public import Mathlib.Algebra.Category.LocExtCat.BaseCat
+public import Mathlib.Algebra.Category.LocExtCat.Basic
+public import Mathlib.Algebra.Category.LocExtCat.Cotangent
+public import Mathlib.Algebra.Category.LocExtCat.Defs
 public import Mathlib.Algebra.Category.ModuleCat.AB
 public import Mathlib.Algebra.Category.ModuleCat.Abelian
 public import Mathlib.Algebra.Category.ModuleCat.Adjunctions

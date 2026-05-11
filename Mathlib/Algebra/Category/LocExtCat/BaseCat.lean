@@ -6,19 +6,22 @@ Authors: Bingyu Xia
 
 module
 
-public import Mathlib.Algebra.Category.LocAlgCat.Cotangent
+public import Mathlib.Algebra.Category.LocExtCat.Cotangent
 public import Mathlib.RingTheory.AdicCompletion.Noetherian
+
+import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
 /-!
 # The Base Category for Deformation Theory
 
 This file introduces `BaseCat`, the base category used in formal deformation theory
 (e.g., for Schlessinger's criteria and Artin's axioms). It is defined as the full subcategory
-of `LocAlgCat Λ k` consisting of Artinian local algebras.
+of `LocExtCat Λ k` consisting of Artinian local algebras.
 
 ## Main Results
 
-* `BaseCat`: The category of Artinian local `Λ`-algebras with a fixed residue field `k`.
+* `BaseCat`: The full subcategory of `LocExtCat Λ k` consisting of objects
+  whose underlying rings are artinian.
 
 * `BaseCat.IsSmallExtension`: The typeclass representing a small extension.
   A morphism `f : A ⟶ B` is a small extension if it is surjective and its kernel is a principal
@@ -31,52 +34,52 @@ of `LocAlgCat Λ k` consisting of Artinian local algebras.
 
 @[expose] public section
 
-universe w v u
+universe v u
 
-open IsLocalRing CategoryTheory Function
+noncomputable section
 
-variable {Λ : Type u} [CommRing Λ] {k : Type v} [Field k] [Algebra Λ k]
+open IsLocalRing CategoryTheory Function Algebra
+
+variable {Λ k : Type u} [CommRing Λ] [Field k] [Algebra Λ k]
 
 /-- The base category for deformation theory over `Λ`. This is the full subcategory of
-`LocAlgCat Λ k` consisting of Artinian local `Λ`-algebras with residue field `k`. -/
+`LocExtCat Λ k` consisting of Artinian local `Λ`-algebras with residue field `k`. -/
 @[stacks 06GC]
-abbrev BaseCat (Λ : Type u) [CommRing Λ] (k : Type v) [Field k] [Algebra Λ k] : Type _ :=
-  ObjectProperty.FullSubcategory fun A : LocAlgCat.{w} Λ k ↦ IsArtinianRing A
+abbrev BaseCat (Λ : Type u) [CommRing Λ] (k : Type u) [Field k] [Algebra Λ k] : Type _ :=
+  ObjectProperty.FullSubcategory fun A : LocExtCat Λ k ↦ IsArtinianRing A
 
 namespace BaseCat
 
-/-- A synonym for `A.obj.carrier`, which we can mark with `@[coe]`. -/
-@[reducible]
-def carrier (A : BaseCat.{w} Λ k) : Type w := A.obj.carrier
+instance (A : BaseCat Λ k) : IsArtinianRing A.obj := A.property
 
-instance : CoeSort (BaseCat.{w} Λ k) (Type w) := ⟨BaseCat.carrier⟩
+instance coeExtension : CoeOut (BaseCat Λ k) (Extension.{u} Λ k) := ⟨fun A ↦ A.obj.toExtension⟩
 
-attribute [coe] carrier
+instance coeRing : CoeSort (BaseCat Λ k) (Type u) := ⟨fun A ↦ A.obj.Ring⟩
 
-variable {A B C : BaseCat.{w} Λ k} {f : A ⟶ B}
-
-instance (A : BaseCat Λ k) : IsArtinianRing A := A.property
+variable {A B C : BaseCat Λ k} {f : A ⟶ B}
 
 variable (Λ k) in
-/-- The object in the base category associated to a type equipped with appropriate typeclasses.
-This is a preferred way to construct a term of `BaseCat`. -/
-abbrev of (X : Type w) [CommRing X] [IsLocalRing X] [Algebra Λ X] [Algebra X k]
-    [IsScalarTower Λ X k] [IsArtinianRing X] (hX : Surjective (algebraMap X k)) :
-    BaseCat Λ k := ⟨.of Λ k X hX, inferInstance⟩
+/-- Lift an unbundled extension whose underlying ring is local and Artinian
+to an object in `BaseCat Λ k`. -/
+abbrev of (X : Extension.{u} Λ k) [IsLocalRing X.Ring] [IsArtinianRing X.Ring] :
+    BaseCat Λ k := ⟨.of Λ k X, inferInstance⟩
+
+lemma coe_of (X : Extension.{u} Λ k) [IsLocalRing X.Ring] [IsArtinianRing X.Ring] :
+    (of Λ k X : Type u) = X.Ring := rfl
 
 /-- The object in `BaseCat` obtained from the quotient by a proper ideal. -/
-def ofQuot (A : BaseCat.{w} Λ k) (I : Ideal A) [Nontrivial (A ⧸ I)] : BaseCat Λ k :=
+def ofQuot (A : BaseCat Λ k) (I : Ideal A) [Nontrivial (A ⧸ I)] : BaseCat Λ k :=
   ⟨A.obj.ofQuot I, Ideal.Quotient.mk_surjective.isArtinianRing⟩
 
-/-- Upgrades the canonical quotient map from `A` to `A ⧸ I` to a morphism in `BaseCat`. -/
-abbrev toOfQuot (A : BaseCat.{w} Λ k) (I : Ideal A) [Nontrivial (A ⧸ I)] :
+/-- Upgrades the canonical quotient map `A → A ⧸ I` to a morphism in `BaseCat`. -/
+abbrev toOfQuot (A : BaseCat Λ k) (I : Ideal A) [Nontrivial (A ⧸ I)] :
     A ⟶ A.ofQuot I := ObjectProperty.homMk (A.obj.toOfQuot I)
 
 /-- The morphism between quotient objects in `BaseCat` induced by a morphism `f : A ⟶ B`.
 This is the categorical counterpart to `Ideal.quotientMapₐ` in the Artinian setting. -/
 abbrev mapOfQuot (f : A ⟶ B) {I : Ideal A} {J : Ideal B} [Nontrivial (A ⧸ I)]
     [Nontrivial (B ⧸ J)] (hf : I ≤ J.comap f.hom.toAlgHom) : A.ofQuot I ⟶ B.ofQuot J :=
-  ObjectProperty.homMk <| LocAlgCat.mapOfQuot f.hom hf
+  ObjectProperty.homMk <| LocExtCat.mapOfQuot f.hom hf
 
 lemma toOfQuot_comp_mapOfQuot (f : A ⟶ B) {I : Ideal A} {J : Ideal B}
     [Nontrivial (A ⧸ I)] [Nontrivial (B ⧸ J)] (hf : I ≤ J.comap f.hom.toAlgHom) :
@@ -84,33 +87,33 @@ lemma toOfQuot_comp_mapOfQuot (f : A ⟶ B) {I : Ideal A} {J : Ideal B}
 
 /-- The quotient of a local Artinian algebra by the `n`-th power of its maximal ideal,
 viewed as an object in `BaseCat`. -/
-abbrev infinitesimal (n : ℕ) [NeZero n] (A : BaseCat.{w} Λ k) : BaseCat Λ k :=
+abbrev infinitesimal (n : ℕ) [NeZero n] (A : BaseCat Λ k) : BaseCat Λ k :=
   A.ofQuot (maximalIdeal A ^ n)
 
 /-- The canonical quotient morphism from `A` to its infinitesimal neighborhood in `BaseCat`. -/
-abbrev toInfinitesimal (n : ℕ) [NeZero n] (A : BaseCat.{w} Λ k) : A ⟶ A.infinitesimal n :=
-  toOfQuot ..
+abbrev toInfinitesimal (n : ℕ) [NeZero n] (A : BaseCat Λ k) :
+    A ⟶ A.infinitesimal n := toOfQuot ..
 
 /-- The morphism between infinitesimal neighborhoods induced by a morphism in `BaseCat`. -/
 abbrev mapInfinitesimal (m n : ℕ) [NeZero m] [NeZero n] (hmn : n ≤ m) (f : A ⟶ B) :
     A.infinitesimal m ⟶ B.infinitesimal n :=
-  ObjectProperty.homMk (LocAlgCat.mapInfinitesimal m n hmn f.hom)
+  ObjectProperty.homMk (LocExtCat.mapInfinitesimal m n hmn f.hom)
 
 /-- The special fiber of `A` over `Λ` when `Λ` is a local ring, defined as the quotient by
 the extended maximal ideal of `Λ`, viewed as an object in `BaseCat`. -/
-abbrev specialFiber [IsLocalRing Λ] [Algebra.IsIntegral Λ k] (A : BaseCat.{w} Λ k) :
-    BaseCat.{w} Λ k :=
+abbrev specialFiber [IsLocalRing Λ] [Algebra.IsIntegral Λ k] (A : BaseCat Λ k) :
+    BaseCat Λ k :=
   ⟨A.obj.specialFiber, Ideal.Quotient.mk_surjective.isArtinianRing⟩
 
 /-- The canonical morphism from `A` to its special fiber in `BaseCat`. -/
-abbrev toSpecialFiber [IsLocalRing Λ] [Algebra.IsIntegral Λ k] (A : BaseCat.{w} Λ k) :
+abbrev toSpecialFiber [IsLocalRing Λ] [Algebra.IsIntegral Λ k] (A : BaseCat Λ k) :
     A ⟶ A.specialFiber :=
   ObjectProperty.homMk A.obj.toSpecialFiber
 
 /-- The morphism between special fibers induced by a morphism in `BaseCat`. -/
 abbrev mapSpecialFiber [IsLocalRing Λ] [Algebra.IsIntegral Λ k] (f : A ⟶ B) :
     A.specialFiber ⟶ B.specialFiber :=
-  ObjectProperty.homMk (LocAlgCat.mapSpecialFiber f.hom)
+  ObjectProperty.homMk (LocExtCat.mapSpecialFiber f.hom)
 
 /-- A morphism `f : A ⟶ B` in `BaseCat` is a small extension if it is a surjective map
 whose kernel is a principal ideal annihilated by the maximal ideal of `A`. -/
@@ -140,27 +143,24 @@ theorem isSmallExtension_of_bijective (h : Bijective f.hom.toAlgHom) : IsSmallEx
     rw [RingHom.injective_iff_ker_eq_bot] at this
     simp [this]⟩
 
-instance IsSmallExtension.hom_iso (e : A ≅ B) : IsSmallExtension e.hom := by
-  apply isSmallExtension_of_bijective
-  rw [bijective_iff_has_inverse]
-  use e.inv.hom.toAlgHom
-  simp [leftInverse_iff_comp, rightInverse_iff_comp, ← AlgHom.coe_comp, ← LocAlgCat.toAlgHom_comp]
+instance IsSmallExtension.hom_iso (e : A ≅ B) : IsSmallExtension e.hom :=
+  isSmallExtension_of_bijective <| ConcreteCategory.bijective_of_isIso e.hom
 
-theorem IsSmallExtension.toOfQuot_span_singleton (A : BaseCat.{w} Λ k) (x : A)
+theorem IsSmallExtension.toOfQuot_span_singleton (A : BaseCat Λ k) (x : A)
     [Nontrivial (A ⧸ (Ideal.span {x}))] (h : ∀ y ∈ maximalIdeal A, x * y = 0) :
     IsSmallExtension (A.toOfQuot (Ideal.span {x})) := by
   rw [isSmallExtenstion_iff]
   refine ⟨Ideal.Quotient.mk_surjective, x, ?_, h⟩
   change _ = RingHom.ker (A.obj.toOfQuot (Ideal.span {x})).toAlgHom
-  rw [LocAlgCat.ker_toAlgHom_toOfQuot]
+  rw [LocExtCat.ker_toAlgHom_toOfQuot]
 
 open Submodule in
 @[elab_as_elim, stacks 06GE]
 theorem induction_on_isSmallExtension (hf : Surjective f.hom.toAlgHom)
-    {P : ∀ {A B : BaseCat.{w} Λ k} (f : A ⟶ B), Surjective f.hom.toAlgHom → Prop}
-    (small_ext : ∀ {X Y : BaseCat.{w} Λ k} (f : X ⟶ Y) [IsSmallExtension f],
+    {P : ∀ {A B : BaseCat Λ k} (f : A ⟶ B), Surjective f.hom.toAlgHom → Prop}
+    (small_ext : ∀ {X Y : BaseCat Λ k} (f : X ⟶ Y) [IsSmallExtension f],
       P f (IsSmallExtension.surjective f))
-    (comp : ∀ {A B C : BaseCat.{w} Λ k} (f : A ⟶ B) (g : B ⟶ C) [IsSmallExtension f]
+    (comp : ∀ {A B C : BaseCat Λ k} (f : A ⟶ B) (g : B ⟶ C) [IsSmallExtension f]
       (hg : Surjective g.hom.toAlgHom), P g hg →
     P (f ≫ g) (hg.comp (IsSmallExtension.surjective f))) : P f hf := by
   obtain ⟨n, hn⟩ : ∃ n : ℕ, n = Module.length A A :=
@@ -182,22 +182,26 @@ theorem induction_on_isSmallExtension (hf : Surjective f.hom.toAlgHom)
       ((isArtinianRing_iff_isNilpotent_maximalIdeal A).mp inferInstance) hI)
     have x_in : x ∈ I := (mem_inf.mp hx).right
     replace hx : ∀ y ∈ maximalIdeal A, x * y = 0 := mem_annihilator.mp (mem_inf.mp hx).left
-    have : Nontrivial (A ⧸ Ideal.span {x}) := Ideal.Quotient.nontrivial_iff.mpr <|
-      Ideal.span_singleton_ne_top <| le_maximalIdeal (RingHom.ker_ne_top _) x_in
+    have : Nontrivial (A ⧸ Ideal.span {x}) := by
+      rw [Ideal.Quotient.nontrivial_iff]
+      refine Ideal.span_singleton_ne_top (le_maximalIdeal ?_ x_in)
+      rw [Ideal.ne_top_iff_exists_maximal]
+      exact ⟨maximalIdeal A, maximalIdeal.isMaximal A, le_maximalIdeal
+        (RingHom.ker_ne_top f.hom.toAlgHom)⟩
     have : IsLocalRing (A ⧸ Ideal.span {x}) := .of_surjective' _ Ideal.Quotient.mk_surjective
     let C := A.ofQuot (Ideal.span {x})
     let g : A ⟶ C := A.toOfQuot (Ideal.span {x})
     have hg : IsSmallExtension g := IsSmallExtension.toOfQuot_span_singleton A x hx
-    let f' : C ⟶ B := ObjectProperty.homMk (LocAlgCat.liftToOfQuot (Ideal.span {x}) f.hom
+    let f' : C ⟶ B := ObjectProperty.homMk (LocExtCat.liftToOfQuot (Ideal.span {x}) f.hom
       (by simpa [← RingHom.mem_ker, ← SetLike.le_def]))
-    have g_comp : g ≫ f' = f := by ext; simpa using LocAlgCat.toOfQuot_comp_liftToOfQuot ..
+    have g_comp : g ≫ f' = f := by ext1; simpa using LocExtCat.toOfQuot_comp_liftToOfQuot ..
     obtain ⟨m, hm⟩ : ∃ n : ℕ, n = Module.length C C :=
       ENat.ne_top_iff_exists.mp Module.length_ne_top
     suffices h : m < n by
-      simp_rw [← g_comp]; apply comp
-      · apply ih m h; exact hm
-      · exact Ideal.Quotient.lift_surjective_of_surjective (Ideal.span {x})
-          (by simpa [← RingHom.mem_ker, ← SetLike.le_def]) hf
+      simp_rw [← g_comp]
+      refine comp g f' ?_ (ih m h _ hm)
+      exact Ideal.Quotient.lift_surjective_of_surjective (Ideal.span {x}) (by
+        simpa [← RingHom.mem_ker, ← SetLike.le_def]) hf
     have := Submodule.length_le_length_restrictScalars (R := (A ⧸ Ideal.span {x}))
       (M := (A ⧸ Ideal.span {x})) A ⊤
     rw [Module.length_top, restrictScalars_top, Module.length_top] at this
@@ -211,20 +215,13 @@ condition: for any object `C` and morphism `g : C ⟶ A` in `BaseCat`, if the co
 @[stacks 06GF, mk_iff]
 class IsMinimallySurjective (f : A ⟶ B) : Prop where
   surjective (f) : Surjective f.hom.toAlgHom
-  surjective_of_comp_left (f) {C : BaseCat.{w} Λ k} (g : C ⟶ A) :
+  surjective_of_comp_left (f) {C : BaseCat Λ k} (g : C ⟶ A) :
     Surjective (g ≫ f).hom.toAlgHom → Surjective g.hom.toAlgHom
 
 instance IsMinimallySurjective.hom_iso (e : A ≅ B) : IsMinimallySurjective e.hom := by
-  constructor
-  · rw [surjective_iff_hasRightInverse]
-    use e.inv.hom.toAlgHom
-    simp [rightInverse_iff_comp, ← AlgHom.coe_comp, ← LocAlgCat.toAlgHom_comp]
-  · intro C g hg
-    rw [ObjectProperty.FullSubcategory.comp_hom, LocAlgCat.toAlgHom_comp, AlgHom.coe_comp] at hg
-    apply Surjective.of_comp_left hg
-    rw [injective_iff_hasLeftInverse]
-    use e.inv.hom.toAlgHom
-    simp [leftInverse_iff_comp, ← AlgHom.coe_comp, ← LocAlgCat.toAlgHom_comp]
+  refine ⟨(ConcreteCategory.bijective_of_isIso e.hom).surjective, fun {C} g hg ↦ ?_⟩
+  rw [ObjectProperty.FullSubcategory.comp_hom, LocExtCat.toAlgHom_comp, AlgHom.coe_comp] at hg
+  exact Surjective.of_comp_left hg (ConcreteCategory.bijective_of_isIso e.hom).injective
 
 instance IsMinimallySurjective.comp (f : A ⟶ B) (g : B ⟶ C) [IsMinimallySurjective f]
     [IsMinimallySurjective g] : IsMinimallySurjective (f ≫ g) :=
@@ -234,12 +231,12 @@ instance IsMinimallySurjective.comp (f : A ⟶ B) (g : B ⟶ C) [IsMinimallySurj
 
 theorem isMinimallySurjective_toOfQuot_of_le {I : Ideal A} [Nontrivial (A ⧸ I)]
     (h : I ≤ maximalIdeal A ^ 2) : IsMinimallySurjective (A.toOfQuot I) := by
-  rw [← LocAlgCat.bijective_mapCotangent_toOfQuot_iff] at h
+  rw [← LocExtCat.bijective_mapCotangent_toOfQuot_iff] at h
   refine ⟨Ideal.Quotient.mk_surjective, fun {C} g hg ↦ ?_⟩
-  apply LocAlgCat.surjective_of_surjective_mapCotangent
-  apply Surjective.of_comp_left (f := LocAlgCat.mapCotangent (A.obj.toOfQuot I))
-  · rw [← LinearMap.coe_comp, ← LocAlgCat.mapCotangent_comp]
-    exact LocAlgCat.surjective_mapCotangent_of_surjective hg
+  apply LocExtCat.surjective_of_surjective_mapCotangent
+  apply Surjective.of_comp_left (f := LocExtCat.mapCotangent (A.obj.toOfQuot I))
+  · rw [← LinearMap.coe_comp, ← LocExtCat.mapCotangent_comp]
+    exact LocExtCat.surjective_mapCotangent_of_surjective hg
   · exact h.injective
 
 section IsLocalRing
@@ -250,20 +247,20 @@ variable [IsLocalRing Λ] [Module.Finite Λ k]
 `ofPullback` is the object in `BaseCat` obtained from the pullback of the underlying
 algebra homomorphisms`. -/
 @[stacks 06GH "(1)"]
-def ofPullback (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.hom.toAlgHom) : BaseCat.{w} Λ k :=
-  ⟨.ofPullback f.hom g.hom hg, LocAlgCat.isArtinianRing_ofPullback ..⟩
+def ofPullback (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.hom.toAlgHom) : BaseCat Λ k :=
+  ⟨.ofPullback f.hom g.hom hg, LocExtCat.isArtinianRing_ofPullback ..⟩
 
 /-- Upgrades the first projection map from the pullback algebra to a morphism in `BaseCat`. -/
 abbrev pullbackFst (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.hom.toAlgHom) :
-    ofPullback f g hg ⟶ A := ObjectProperty.homMk (LocAlgCat.pullbackFst f.hom g.hom hg)
+    ofPullback f g hg ⟶ A := ObjectProperty.homMk (LocExtCat.pullbackFst f.hom g.hom hg)
 
 /-- Upgrades the second projection map from the pullback algebra to a morphism in `BaseCat`. -/
 abbrev pullbackSnd (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.hom.toAlgHom) :
-    ofPullback f g hg ⟶ B := ObjectProperty.homMk (LocAlgCat.pullbackSnd f.hom g.hom hg)
+    ofPullback f g hg ⟶ B := ObjectProperty.homMk (LocExtCat.pullbackSnd f.hom g.hom hg)
 
 lemma pullback_comm_sq (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.hom.toAlgHom) :
     pullbackFst f g hg ≫ f = pullbackSnd f g hg ≫ g := by
-  ext; simpa using LocAlgCat.pullback_comm_sq f.hom g.hom hg
+  ext1; simpa using LocExtCat.pullback_comm_sq f.hom g.hom hg
 
 @[stacks 06GH "(2)"]
 instance pullbackFst_isSmallExtension (f : A ⟶ C) (g : B ⟶ C) [IsSmallExtension g] :
@@ -283,14 +280,15 @@ instance pullbackFst_isSmallExtension (f : A ⟶ C) (g : B ⟶ C) [IsSmallExtens
       ∀ y ∈ maximalIdeal (f.hom.toAlgHom.pullback g.hom.toAlgHom), x * y = 0
   refine ⟨⟨(0, x), by simpa using g_apply.symm⟩, ?_, fun ⟨⟨a, b⟩, hab⟩ h ↦ ?_⟩
   · ext ⟨⟨u, v⟩, h⟩
-    suffices u = 0 → ∃ x_1 x_2, f.hom.toAlgHom x_1 = g.hom.toAlgHom x_2 ∧ v = x_2 * x by
-      simpa [Ideal.mem_span_singleton', eq_comm, and_left_comm]
+    suffices (∃ a b, f.hom.toAlgHom a = g.hom.toAlgHom b ∧ 0 = u ∧ b * x = v) ↔ u = 0 by
+      simpa [Ideal.mem_span_singleton']
+    simp_rw [and_left_comm, eq_comm, exists_and_left, and_iff_left_iff_imp]
     intro u_eq
     replace h : 0 = g.hom.toAlgHom v := by simpa [u_eq] using h
     rw [eq_comm, ← RingHom.mem_ker, ← x_span, Ideal.mem_span_singleton'] at h
     rcases h with ⟨w, hw⟩
-    rcases LocAlgCat.exists_mem_maximalIdeal_toAlgHom_apply_add_eq g.hom f.hom
-      w (IsSmallExtension.surjective g) with ⟨z, m, m_in, hm⟩
+    obtain ⟨z, m, m_in, hm⟩ := LocExtCat.exists_mem_maximalIdeal_toAlgHom_apply_add_eq
+      g.hom f.hom w (IsSmallExtension.surjective g)
     exact ⟨z, w + m, hm.symm, by rw [add_mul, hw, mul_comm, hx m m_in, add_zero]⟩
   · suffices x * b = 0 by simpa [← Subtype.val_inj]
     simp only [mem_maximalIdeal, mem_nonunits_iff, AlgHom.isUnit_pullback_mk_iff, not_and] at h
@@ -299,16 +297,7 @@ instance pullbackFst_isSmallExtension (f : A ⟶ C) (g : B ⟶ C) [IsSmallExtens
     apply hx; intro hb; revert h
     simpa [hb] using f.hom.isLocalHom_toAlgHom.map_nonunit a (hab ▸ IsUnit.map g.hom.toAlgHom hb)
 
-/-- When `Λ` is a local ring and `k / ResidueField Λ` is a finite separable field extension,
-`ofPullbackOfIsSeparable` is the object in `BaseCat` obtained from the pullback of
-the underlying algebra homomorphisms of two morphisms. -/
-def ofPullbackOfIsSeparable [Algebra.IsSeparable (ResidueField Λ) k] (f : A ⟶ C) (g : B ⟶ C) :
-    BaseCat Λ k :=
-  haveI : IsLocalRing ↥(f.hom.toAlgHom.pullback g.hom.toAlgHom) :=
-    AlgHom.isLocalRing_pullback f.hom.toAlgHom g.hom.toAlgHom g.hom.isLocalHom_toAlgHom
-  ⟨.of Λ k (f.hom.toAlgHom.pullback g.hom.toAlgHom)
-    (LocAlgCat.surjective_residue_comp_pullbackFst_of_isSeparable f.hom g.hom), inferInstance⟩
-
+open ObjectProperty.FullSubcategory in
 @[stacks 06S5]
 theorem isMinimallySurjective_iff_isMinimallySurjective_mapOfQuot (f : A ⟶ B) {I : Ideal A}
     {J : Ideal B} [Nontrivial (A ⧸ I)] [Nontrivial (B ⧸ J)] (hI : I ≤ maximalIdeal A ^ 2)
@@ -316,34 +305,31 @@ theorem isMinimallySurjective_iff_isMinimallySurjective_mapOfQuot (f : A ⟶ B) 
     IsMinimallySurjective f ↔ IsMinimallySurjective (mapOfQuot f hf) := by
   refine ⟨fun h ↦ ⟨?_, fun {C} g hg ↦ ?_⟩, fun h ↦ ⟨?_, fun {C} g hg ↦ ?_⟩⟩
   · apply Surjective.of_comp (g := (A.toOfQuot I).hom.toAlgHom)
-    rw [← AlgHom.coe_comp, ← LocAlgCat.toAlgHom_comp, ← ObjectProperty.FullSubcategory.comp_hom,
-      toOfQuot_comp_mapOfQuot]
+    rw [← AlgHom.coe_comp, ← LocExtCat.toAlgHom_comp, ← comp_hom, toOfQuot_comp_mapOfQuot]
     simpa using Surjective.comp (B.obj.surjective_toAlgHom_toOfQuot (I := J)) h.surjective
   · let C' := ofPullback g (A.toOfQuot I) Ideal.Quotient.mk_surjective
     let p : C' ⟶ C := pullbackFst g (A.toOfQuot I) Ideal.Quotient.mk_surjective
     apply Surjective.of_comp (g := p.hom.toAlgHom)
-    rw [← AlgHom.coe_comp, ← LocAlgCat.toAlgHom_comp, ← ObjectProperty.FullSubcategory.comp_hom,
-      pullback_comm_sq, ObjectProperty.FullSubcategory.comp_hom, LocAlgCat.toAlgHom_comp,
-      AlgHom.coe_comp]
+    rw [← AlgHom.coe_comp, ← LocExtCat.toAlgHom_comp, ← comp_hom, pullback_comm_sq, comp_hom,
+      LocExtCat.toAlgHom_comp, AlgHom.coe_comp]
     refine Surjective.comp Ideal.Quotient.mk_surjective ?_
     apply isMinimallySurjective_toOfQuot_of_le at hJ
     apply IsMinimallySurjective.surjective_of_comp_left (f ≫ B.toOfQuot J)
     rw [← toOfQuot_comp_mapOfQuot (I := I) f hf, Category.assoc', ← pullback_comm_sq,
-      Category.assoc, ObjectProperty.FullSubcategory.comp_hom, LocAlgCat.toAlgHom_comp,
-      AlgHom.coe_comp]
-    exact hg.comp (LocAlgCat.surjective_pullbackFst _ _ Ideal.Quotient.mk_surjective)
-  · apply LocAlgCat.surjective_of_surjective_mapCotangent
-    apply Surjective.of_comp_left (f := LocAlgCat.mapCotangent (B.toOfQuot J).hom)
-    · rw [← LinearMap.coe_comp, ← LocAlgCat.mapCotangent_comp,
-        ← ObjectProperty.FullSubcategory.comp_hom, ← toOfQuot_comp_mapOfQuot (I := I) f hf,
-        ObjectProperty.FullSubcategory.comp_hom, LocAlgCat.mapCotangent_comp, LinearMap.coe_comp]
-      exact Surjective.comp (LocAlgCat.surjective_mapCotangent_of_surjective h.surjective)
-        (LocAlgCat.surjective_mapCotangent_of_surjective Ideal.Quotient.mk_surjective)
-    · exact ((LocAlgCat.bijective_mapCotangent_toOfQuot_iff J).mpr hJ).injective
+      Category.assoc, comp_hom, LocExtCat.toAlgHom_comp, AlgHom.coe_comp]
+    exact hg.comp (LocExtCat.surjective_pullbackFst _ _ (fun _ ↦ Ideal.Quotient.mk_surjective _))
+  · apply LocExtCat.surjective_of_surjective_mapCotangent
+    apply Surjective.of_comp_left (f := LocExtCat.mapCotangent (B.toOfQuot J).hom)
+    · rw [← LinearMap.coe_comp, ← LocExtCat.mapCotangent_comp, ← comp_hom,
+        ← toOfQuot_comp_mapOfQuot (I := I) f hf, comp_hom, LocExtCat.mapCotangent_comp,
+        LinearMap.coe_comp]
+      exact Surjective.comp (LocExtCat.surjective_mapCotangent_of_surjective h.surjective)
+        (LocExtCat.surjective_mapCotangent_of_surjective Ideal.Quotient.mk_surjective)
+    · exact ((LocExtCat.bijective_mapCotangent_toOfQuot_iff J).mpr hJ).injective
   · apply isMinimallySurjective_toOfQuot_of_le at hI
     apply IsMinimallySurjective.surjective_of_comp_left (A.toOfQuot I ≫ (mapOfQuot f hf))
-    rw [toOfQuot_comp_mapOfQuot, Category.assoc', ObjectProperty.FullSubcategory.comp_hom,
-      LocAlgCat.toAlgHom_comp, AlgHom.coe_comp]
+    rw [toOfQuot_comp_mapOfQuot, Category.assoc', comp_hom, LocExtCat.toAlgHom_comp,
+      AlgHom.coe_comp]
     exact Ideal.Quotient.mk_surjective.comp hg
 
 end IsLocalRing
