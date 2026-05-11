@@ -73,7 +73,6 @@ instance (k A K : Type*) [Field k] [Ring A] [Algebra k A] [Field K] [Algebra k K
 
 lemma IsGeometricallyReduced.of_injective {B : Type*} [Ring B] [Algebra k B] (f : A →ₐ[k] B)
     (hf : Function.Injective f) [IsGeometricallyReduced k B] : IsGeometricallyReduced k A := by
-  have := (isGeometricallyReduced_field_iff k B).mp ‹_›
   rw [isGeometricallyReduced_field_iff]
   exact isReduced_of_injective (Algebra.TensorProduct.map 1 f)
     (Module.Flat.lTensor_preserves_injective_linearMap _ hf)
@@ -82,7 +81,7 @@ variable (k) in
 theorem isReduced_of_isGeometricallyReduced [IsGeometricallyReduced k A] : IsReduced A :=
   isReduced_of_injective
     (Algebra.TensorProduct.includeRight : A →ₐ[k] (AlgebraicClosure k) ⊗[k] A)
-    (Algebra.TensorProduct.includeRight_injective <| FaithfulSMul.algebraMap_injective _ _)
+    (Algebra.TensorProduct.includeRight_injective (RingHom.injective _))
 
 /-- If all finitely generated subalgebras of `A` are geometrically reduced, then `A` is
   geometrically reduced. -/
