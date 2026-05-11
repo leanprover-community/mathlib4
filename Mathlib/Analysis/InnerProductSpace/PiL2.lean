@@ -1104,8 +1104,7 @@ on a finite-dimensional real inner-product space is `1`. -/
 theorem abs_det {F' : Type*} [NormedAddCommGroup F'] [InnerProductSpace ℝ F']
     [FiniteDimensional ℝ F'] (R : F' ≃ₗᵢ[ℝ] F') :
     |LinearMap.det (R : F' →ₗ[ℝ] F')| = 1 := by
-  have h : ‖LinearMap.det (R : F' →ₗ[ℝ] F')‖ = 1 := norm_det (𝕜 := ℝ) (E := F') R
-  rwa [Real.norm_eq_abs] at h
+  simpa only [Real.norm_eq_abs] using R.norm_det
 
 end LinearIsometryEquiv
 
