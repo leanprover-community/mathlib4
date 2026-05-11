@@ -191,7 +191,7 @@ variable {X Y}
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma chainComplexMap_PInfty :
-    dsimp% chainComplexMap f R ≫ PInfty = PInfty ≫ chainComplexMap f R :=
+    chainComplexMap f R ≫ PInfty = PInfty ≫ chainComplexMap f R :=
   (natTransPInfty _).naturality _
 
 /-- The morphism `X.normalizedChainComplex R ⟶ Y.normalizedChainComplex R` induced
