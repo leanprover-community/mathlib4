@@ -193,22 +193,26 @@ valued in `A` supported at an arbitrary point is a flasque sheaf.
 theorem isFlasque_skyscraperSheaf_of_epi_from {X : TopCat} (p₀ : ↑X)
     [(U : Opens ↑X) → Decidable (p₀ ∈ U)] {C : Type*} [Category* C] (A : C) [HasTerminal C]
     (h : Epi <| terminalIsTerminal.from A) :
-    (skyscraperSheaf p₀ A).IsFlasque := by
-  constructor
-  intro U V r
-  by_cases h1 : p₀ ∈ unop U
-  · by_cases h2 : p₀ ∈ unop V
-    · simp_all only [skyscraperSheaf, skyscraperPresheaf_obj, skyscraperPresheaf_map, ↓reduceDIte]
+    (skyscraperSheaf p₀ A).IsFlasque where
+  epi {U V} r := by
+    by_cases h1 : p₀ ∈ unop U
+    · by_cases h2 : p₀ ∈ unop V
+      · -- `simp_all?` says:
+        simp_all only [skyscraperSheaf_obj_obj, skyscraperSheaf_obj_map, ↓reduceDIte]
+        infer_instance
+      · simp
+        grind
+    · have h2 : p₀ ∉ unop V := fun hV => h1 (r.unop.le hV)
+      have hU : IsTerminal ((skyscraperSheaf p₀ A).obj.obj U) := by
+        dsimp
+        rw [if_neg h1]
+        exact terminalIsTerminal
+      have hV : IsTerminal ((skyscraperSheaf p₀ A).obj.obj V) := by
+        dsimp
+        rw [if_neg h2]
+        exact terminalIsTerminal
+      have := isIso_of_isTerminal hU hV ((skyscraperSheaf p₀ A).obj.map r)
       infer_instance
-    · simp_all only [skyscraperSheaf, skyscraperPresheaf_obj, skyscraperPresheaf_map, ↓reduceDIte]
-      convert h <;> simp_all
-  · have h2 : p₀ ∉ unop V := fun hV => h1 (r.unop.le hV)
-    have hU : IsTerminal ((skyscraperSheaf p₀ A).obj.obj U) :=
-      show IsTerminal (if p₀ ∈ unop U then A else ⊤_ C) from if_neg h1 ▸ terminalIsTerminal
-    have hV : IsTerminal ((skyscraperSheaf p₀ A).obj.obj V) :=
-      show IsTerminal (if p₀ ∈ unop V then A else ⊤_ C) from if_neg h2 ▸ terminalIsTerminal
-    have := isIso_of_isTerminal hU hV ((skyscraperSheaf p₀ A).obj.map r)
-    infer_instance
 
 /--
 If the target category has a zero object, then any skyscraper sheaf valued in this category is a
