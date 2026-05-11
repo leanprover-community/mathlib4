@@ -38,7 +38,7 @@ theorem lcm_eq_prod {s : Finset ι} {f : ι → ℕ} (h : Set.Pairwise s <| Nat.
   exact associated_lcm_prod h |>.eq_of_normalized (normalize_eq _) (normalize_eq _)
 
 /-- An analogue of `Nat.factorization_lcm` for `Finset.lcm`. -/
-theorem factorization_lcm {β : Type*} {f : β → ℕ} {s : Finset β} (hf : ∀ k ∈ s, f k ≠ 0) (p : ℕ) :
+theorem factorization_lcm {f : ι → ℕ} {s : Finset ι} (hf : ∀ k ∈ s, f k ≠ 0) (p : ℕ) :
     (s.lcm f).factorization p = s.sup fun a ↦ (f a).factorization p := by
   classical
   induction s using Finset.induction with
