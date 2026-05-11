@@ -337,6 +337,16 @@ theorem Multipliable.hasProd_iff (h : Multipliable f L) :
   Iff.intro HasProd.tprod_eq fun eq ↦ eq ▸ h.hasProd
 
 @[to_additive]
+theorem HasProd.limUnder_eq (ha : HasProd f a L) :
+    L.filter.limUnder (fun s => ∏ i ∈ s, f i) = a :=
+  Filter.Tendsto.limUnder_eq ha
+
+@[to_additive]
+theorem Multipliable.limUnder_eq_tprod (h : Multipliable f L) :
+    L.filter.limUnder (fun s => ∏ i ∈ s, f i) = ∏'[L] b, f b :=
+  h.choose_spec.tprod_eq ▸ h.choose_spec.limUnder_eq
+
+@[to_additive]
 theorem tprod_eq_of_filter_le {L₁ L₂ : SummationFilter β} [L₁.NeBot]
     (h : L₁.filter ≤ L₂.filter) (hf : Multipliable f L₂) : ∏'[L₁] b, f b = ∏'[L₂] b, f b :=
   (hf.mono_filter h).hasProd_iff.mp (hf.hasProd.mono_left h)
