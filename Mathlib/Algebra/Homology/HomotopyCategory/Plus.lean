@@ -82,7 +82,7 @@ namespace HomotopyCategory
 underlying cochain complex is bounded below. (Note: this property of
 objects is not closed under isomorphisms.) -/
 def plus : ObjectProperty (HomotopyCategory C (.up ℤ)) :=
-  fun K ↦ ∃ (n : ℤ), CochainComplex.IsStrictlyGE K.1 n
+  fun K ↦ ∃ (n : ℤ), CochainComplex.IsStrictlyGE K.as n
 
 @[simp]
 lemma plus_quotient_obj_iff (K : CochainComplex C ℤ) :
@@ -102,12 +102,13 @@ instance : (plus C).IsStableUnderShift ℤ where
         simp only [plus_quotient_obj_iff] at hK
         obtain ⟨q, _⟩ := hK
         refine ⟨q - n, ?_⟩
-        have : (((HomotopyCategory.quotient _ _).obj K)⟦n⟧).as =
-          ((HomotopyCategory.quotient _ _).obj (K⟦n⟧)).as := by
-          congr 1; apply Quotient.functor_obj_shift
+        have : (((HomotopyCategory.quotient _ _).obj K)⟦n⟧) =
+          ((HomotopyCategory.quotient _ _).obj (K⟦n⟧)) :=
+          Quotient.functor_obj_shift ..
         rw [this]
         exact K.isStrictlyGE_shift q n (q - n) (by lia) }
 
+set_option backward.isDefEq.respectTransparency false in
 instance [HasZeroObject C] [HasBinaryBiproducts C] :
     (plus C).IsTriangulatedClosed₃ where
   ext₃' T hT := by
@@ -120,8 +121,7 @@ instance [HasZeroObject C] [HasBinaryBiproducts C] :
       simp only [plus_quotient_obj_iff]
       exact ⟨min (n₁ - 1) n₂, CochainComplex.isStrictlyGE_mappingCone f n₁ n₂ _
         (by simp) (by simp)⟩
-    · change _ ≫ 𝟙 _ = 𝟙 _ ≫ _
-      simp [hf]
+    · simp [hf]
 
 instance [HasZeroObject C] [HasBinaryBiproducts C] : (plus C).IsTriangulated where
   toIsTriangulatedClosed₂ := .of_isTriangulatedClosed₃
@@ -171,7 +171,7 @@ def quotient : CochainComplex.Plus C ⥤ Plus C :=
 
 /-- The functor
 `HomotopyCategory.Plus.quotient C : CochainComplex.Plus C ⥤ HomotopyCategory.Plus C`
-is unduced by the functor `HomotopyCategory.quotient C (.up ℤ)` from `CochainComplex C ℤ`
+is induced by the functor `HomotopyCategory.quotient C (.up ℤ)` from `CochainComplex C ℤ`
 to `HomotopyCategory C (.up ℤ)`. -/
 def quotientCompι :
     quotient C ⋙ ι C ≅ CochainComplex.Plus.ι C ⋙ HomotopyCategory.quotient C (.up ℤ) :=
