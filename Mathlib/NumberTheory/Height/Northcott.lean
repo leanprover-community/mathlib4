@@ -11,7 +11,7 @@ public import Mathlib.Order.Northcott
 /-!
 # Results on the Northcott property for heights
 
-We provide instances that, assuming a field `K` with a family of admissible absolute values
+We provide instances showing, assuming a field `K` with a family of admissible absolute values
 satisfies the Northcott property for `mulHeight₁`, that `K` also satisfies the Northcott
 property
 * for `logHeight₁`,
