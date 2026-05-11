@@ -23,9 +23,6 @@ namespace EReal
 
 open DedekindCut Concept Order
 
-theorem ratEmbedEReal_apply (x : ℚ) :
-  Rat.castOrderEmbedding.trans Real.coeOrderEmbedding x = ((x : ℝ) : EReal) := rfl
-
 @[simp]
 theorem upperBounds_setOf_ratCast_le (x : EReal) :
     upperBounds {q : ℚ | (q : ℝ) ≤ x} = {q : ℚ | x ≤ (q : ℝ)} := by
@@ -55,21 +52,17 @@ public noncomputable def dedekindCutOrderIso : DedekindCut ℚ ≃o EReal where
     upperPolar_extent := by simp
     lowerPolar_intent := by simp
   }
-  left_inv := by
-    intro x
+  left_inv x := by
     ext z
-    simp only [factorEmbedding_apply, ratEmbedEReal_apply, sSup_image, iSup_le_iff, extent_mk,
-      Set.mem_setOf_eq]
+    simp only [factorEmbedding_apply, sSup_image, extent_mk, Set.mem_setOf_eq]
     constructor
     · intro z_le_sup
       simp_rw [← x.lowerBounds_right, ← x.upperBounds_left, mem_lowerBounds, mem_upperBounds]
       intro r hr
       simp only [le_iSup_iff, iSup_le_iff] at z_le_sup
-      exact_mod_cast (z_le_sup ((r : ℝ) : EReal) (fun t ht => by simp [hr t ht]))
-    · exact fun z_mem_extent ↦ le_iSup₂_of_le z z_mem_extent le_rfl
-  right_inv := by
-    intro x
-    simp only [factorEmbedding_apply, ratEmbedEReal_apply]
+      exact_mod_cast z_le_sup (r : ℝ) fun t ht => by simp [hr t ht]
+    · exact (le_iSup₂_of_le z · le_rfl)
+  right_inv x := by
     apply sSup_eq_of_forall_le_of_forall_lt_exists_gt
     · simp [extent_mk]
     · simp only [Set.mem_image, exists_exists_and_eq_and]
@@ -93,23 +86,13 @@ theorem dedekindCutOrderIso_apply_eq_sInf (A : DedekindCut ℚ) :
     dedekindCutOrderIso A = sInf ((fun q : ℚ ↦ ((q : ℝ) : EReal)) '' A.right) := by
   simp only [dedekindCutOrderIso_apply_eq_sSup, sSup_image, sInf_image]
   apply le_antisymm
-  · simp only [← upperBounds_left, le_iInf_iff, iSup_le_iff, EReal.coe_le_coe_iff, Rat.cast_le]
-    intro _ mem_right _ mem_left
-    exact mem_right mem_left
-  · by_contra
-    simp only [not_le, lt_iInf_iff, le_iInf_iff] at this
-    obtain ⟨b, sup_lt_b, b_le_right⟩ := this
-    simp only [iSup_lt_iff, iSup_le_iff] at sup_lt_b
-    obtain ⟨c, c_lt_b, left_lt_c⟩ := sup_lt_b
+  · simp [← upperBounds_left, mem_upperBounds]
+  · by_contra!
+    simp_rw [lt_iInf_iff, le_iInf_iff, iSup_lt_iff, iSup_le_iff] at this
+    obtain ⟨b, ⟨c, c_lt_b, left_lt_c⟩, b_le_right⟩ := this
     obtain ⟨q, sup_lt_q, q_lt_b⟩ := exists_rat_btwn_of_lt c_lt_b
-    have left_lt_q : ∀ t ∈ A.left, t < q := by
-      intro t t_mem_left
-      have : ((t : ℝ) : EReal) < (q : ℝ) := by order [left_lt_c t t_mem_left]
-      simpa
-    have q_mem_right : q ∈ A.right := by
-      simp only [← upperBounds_left]
-      intro t t_mem_left
-      order [left_lt_q t t_mem_left]
-    order [b_le_right q q_mem_right]
+    apply (b_le_right q _).not_gt q_lt_b
+    rw [← upperBounds_left]
+    exact fun t ht ↦ mod_cast (left_lt_c t ht).trans sup_lt_q.le
 
 end EReal
