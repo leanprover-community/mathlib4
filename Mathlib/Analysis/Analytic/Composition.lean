@@ -115,7 +115,6 @@ theorem applyComposition_ones (p : FormalMultilinearSeries 𝕜 E F) (n : ℕ) :
   refine congr_arg v ?_
   rw [Fin.ext_iff, Fin.val_castLE, Composition.ones_embedding, Fin.val_mk]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem applyComposition_single (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ} (hn : 0 < n)
     (v : Fin n → E) : p.applyComposition (Composition.single n hn) v = fun _j => p n v := by
   ext j
@@ -125,8 +124,8 @@ theorem applyComposition_single (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
   convert Composition.single_embedding hn ⟨i, hi2⟩ using 1
   obtain ⟨j_val, j_property⟩ := j
   have : j_val = 0 := le_bot_iff.1 (Nat.lt_succ_iff.1 j_property)
-  congr!
-  simp
+  rw! [this]
+  rfl
 
 @[simp]
 theorem removeZero_applyComposition (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
@@ -1249,7 +1248,6 @@ namespace FormalMultilinearSeries
 
 open Composition
 
-set_option backward.isDefEq.respectTransparency false in
 theorem comp_assoc (r : FormalMultilinearSeries 𝕜 G H) (q : FormalMultilinearSeries 𝕜 F G)
     (p : FormalMultilinearSeries 𝕜 E F) : (r.comp q).comp p = r.comp (q.comp p) := by
   ext n v
@@ -1288,6 +1286,7 @@ theorem comp_assoc (r : FormalMultilinearSeries 𝕜 G H) (q : FormalMultilinear
   -- `sizeUpTo_sizeUpTo_add`.
   refine congr_arg v (Fin.ext ?_)
   dsimp [Composition.embedding]
-  rw [sizeUpTo_sizeUpTo_add _ _ hi1 hj1, add_assoc]
+  rw [← add_assoc, ← sizeUpTo_sizeUpTo_add _ _ hi1 hj1]
+  rfl
 
 end FormalMultilinearSeries
