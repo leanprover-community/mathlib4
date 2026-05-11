@@ -173,8 +173,8 @@ end
 variable {R : Type u} [CommSemiring R] {M : Type w} [AddCommMonoid M] [Module R M]
 
 /--
-If there exists a finite set `{ r }` of `R` such that `Mᵣ` is `Rᵣ`-finite for each `r`,
-then `M` is a finite `R`-module.
+If there exists a finite set `{ r }` of `R` that generates the unit ideal and such that `Mᵣ` is
+`Rᵣ`-finite for each `r`, then `M` is a finite `R`-module.
 
 General version for any modules `Mᵣ` and rings `Rᵣ` satisfying the correct universal properties.
 See `Module.Finite.of_localizationSpan_finite` for the specialized version.
@@ -211,8 +211,8 @@ theorem of_localizationSpan_finite' (t : Finset R) (ht : Ideal.span (t : Set R) 
   exact hn₂
 
 /--
-If there exists a set `{ r }` of `R` such that `Mᵣ` is `Rᵣ`-finite for each `r`,
-then `M` is a finite `R`-module.
+If there exists a set `{ r }` of `R` that generates the unit ideal and such that `Mᵣ` is `Rᵣ`-finite
+for each `r`, then `M` is a finite `R`-module.
 
 General version for any modules `Mᵣ` and rings `Rᵣ` satisfying the correct universal properties.
 See `Module.Finite.of_localizationSpan_finite` for the specialized version.
@@ -235,8 +235,8 @@ theorem of_localizationSpan' (t : Set R) (ht : Ideal.span t = ⊤)
     (fun g ↦ H ⟨g.val, hc g.property⟩)
 
 /--
-If there exists a finite set `{ r }` of `R` such that `Mᵣ` is `Rᵣ`-finite for each `r`,
-then `M` is a finite `R`-module.
+If there exists a finite set `{ r }` of `R` that generates the unit ideal and such that `Mᵣ` is
+`Rᵣ`-finite for each `r`, then `M` is a finite `R`-module.
 
 See `of_localizationSpan` for a version without the finite set assumption.
 -/
@@ -248,8 +248,8 @@ theorem of_localizationSpan_finite (t : Finset R) (ht : Ideal.span (t : Set R) =
     LocalizedModule.mkLinearMap (Submonoid.powers g.val) M
   of_localizationSpan_finite' t ht f H
 
-/-- If there exists a set `{ r }` of `R` such that `Mᵣ` is `Rᵣ`-finite for each `r`,
-then `M` is a finite `R`-module. -/
+/-- If there exists a set `{ r }` of `R` that generates the unit ideal and such that `Mᵣ` is
+`Rᵣ`-finite for each `r`, then `M` is a finite `R`-module. -/
 theorem of_localizationSpan (t : Set R) (ht : Ideal.span t = ⊤)
     (H : ∀ (g : t), Module.Finite (Localization.Away g.val)
       (LocalizedModule.Away g.val M)) :
@@ -300,8 +300,8 @@ namespace Ideal
 
 variable {R : Type u} [CommSemiring R]
 
-/-- If `I` is an ideal such that there exists a set `{ r }` of `R` such
-that the image of `I` in `Rᵣ` is finitely generated for each `r`, then `I` is finitely
+/-- If `I` is an ideal such that there exists a set `{ r }` of `R` that generates the unit ideal
+and such that the image of `I` in `Rᵣ` is finitely generated for each `r`, then `I` is finitely
 generated. -/
 lemma fg_of_localizationSpan {I : Ideal R} (t : Set R) (ht : Ideal.span t = ⊤)
     (H : ∀ (g : t), (I.map (algebraMap R (Localization.Away g.val))).FG) : I.FG := by

@@ -15,9 +15,9 @@ public import Mathlib.RingTheory.Localization.Finiteness
 In this file, we prove that `Module.FinitePresentation` is a local property.
 
 ## Main results
-* `Module.FinitePresentation.of_localizationSpan` : If there exists a set `{ r }` of `R` that generates the
-  unit ideal and such that `Mᵣ` is a finitely presented `Rᵣ`-module for each `r`, then `M` is a finitely presented
-  `R`-module.
+* `Module.FinitePresentation.of_localizationSpan` : If there exists a set `{ r }` of `R` that
+  generates the unit ideal and such that `Mᵣ` is a finitely presented `Rᵣ`-module for each `r`,
+  then `M` is a finitely presented `R`-module.
 -/
 
 public section
@@ -46,8 +46,8 @@ theorem Module.FinitePresentation.of_localizationSpan' (hs : Ideal.span s = ⊤)
   simp [← LinearMap.localized'_range_eq_range_localizedMap (Rₚ g) (Submonoid.powers g.1), fsurj]
 
 /-- If there exists a set `{ r }` of `R` that generates the unit ideal and such that
-`Mᵣ` is a finitely presented `Rᵣ`-module for each  `r`, then `M` is a finitely
-presented `R`-module. -/
+  `Mᵣ` is a finitely presented `Rᵣ`-module for each `r`, then `M` is a finitely presented
+  `R`-module. -/
 theorem Module.FinitePresentation.of_localizationSpan (hs : Ideal.span s = ⊤)
     (h : ∀ g : s, Module.FinitePresentation (Localization.Away g.1) (LocalizedModule.Away g.1 M)) :
     Module.FinitePresentation R M :=
