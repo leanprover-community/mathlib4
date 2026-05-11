@@ -22,7 +22,6 @@ comma, arrow
 @[expose] public section
 
 
-
 namespace CategoryTheory
 
 universe v u

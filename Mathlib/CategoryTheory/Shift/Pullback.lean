@@ -117,7 +117,7 @@ lemma pullbackShiftFunctorAdd'_inv_app :
         (pullbackShiftIso C φ a₃ b₃ h₃).inv.app X := by
   subst h₁ h₂ h
   obtain rfl : b₃ = φ a₁ + φ a₂ := by rw [h₃, φ.map_add]
-  simp only [ NatTrans.naturality_assoc]
+  simp only [NatTrans.naturality_assoc]
   erw [Functor.map_id, id_comp, id_comp, shiftFunctorAdd'_eq_shiftFunctorAdd,
     shiftFunctorAdd'_eq_shiftFunctorAdd]
   change _ ≫ _ = _

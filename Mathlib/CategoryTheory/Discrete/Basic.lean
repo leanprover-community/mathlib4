@@ -35,7 +35,6 @@ discrete categories.
 
 @[expose] public section
 
-
 namespace CategoryTheory
 
 -- morphism levels before object levels. See note [category theory universes].

@@ -14,7 +14,6 @@ The associator functor `((C × D) × E) ⥤ (C × (D × E))` and its inverse for
 @[expose] public section
 
 
-
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 open CategoryTheory

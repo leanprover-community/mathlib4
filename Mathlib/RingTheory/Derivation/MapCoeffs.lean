@@ -21,7 +21,6 @@ are generalizations of that for algebras. We also have a special case for `Diffe
 
 @[expose] public section
 
-
 noncomputable section
 
 open Polynomial Module

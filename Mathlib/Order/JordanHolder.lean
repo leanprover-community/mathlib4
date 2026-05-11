@@ -70,7 +70,6 @@ instances should not be a global instance.
 > See `JordanHolderModule.instJordanHolderLattice`.
 -/
 
-
 @[expose] public section
 
 

@@ -136,7 +136,7 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
           refine (Part.mem_bind_iff.trans ?_).trans PFun.mem_toSubtype_iff.symm
           obtain ⟨b | b, hb⟩ := b
           · exact (hb rfl).elim
-          · simp only [ ne_eq, Part.mem_some_iff]
+          · simp only [ne_eq, Part.mem_some_iff]
             classical
             refine ⟨fun ⟨w, hw, h⟩ ↦ ?_, fun h ↦ ⟨b, Part.mem_toOption.mp h.symm, rfl⟩⟩
             rw [Subtype.ext_iff] at h

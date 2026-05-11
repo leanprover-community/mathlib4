@@ -219,9 +219,8 @@ def spanCone [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] (hC : IsCompact C
   { app s := ConcreteCategory.ofHom ⟨ProjRestrict C (· ∈ unop s), continuous_projRestrict _ _⟩
     naturality := by
       intro X Y h
-      simp only [
-        Functor.const_obj_map, ← projRestricts_comp_projRestrict C
-        (leOfHom h.unop)]
+      simp only [Functor.const_obj_map,
+        ← projRestricts_comp_projRestrict C (leOfHom h.unop)]
       rfl }
 
 /-- The isomorphism `spanFunctor hC ≅ indexFunctor hC` when `hC : IsCompact C`. -/

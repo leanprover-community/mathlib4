@@ -139,7 +139,7 @@ lemma full_L_of_isSplitEpi_unit_app [∀ X, IsSplitEpi (h.unit.app X)] : L.Full 
     use ((h.homEquiv X (L.obj Y)) f ≫ section_ (h.unit.app Y))
     suffices L.map (section_ (h.unit.app Y)) = h.counit.app (L.obj Y) by simp [this]
     rw [← comp_id (L.map (section_ (h.unit.app Y)))]
-    simp only [ Functor.id_obj, ← h.left_triangle_components Y,
+    simp only [Functor.id_obj, ← h.left_triangle_components Y,
       ← assoc, ← Functor.map_comp, IsSplitEpi.id, Functor.map_id, id_comp]
 
 set_option backward.isDefEq.respectTransparency false in

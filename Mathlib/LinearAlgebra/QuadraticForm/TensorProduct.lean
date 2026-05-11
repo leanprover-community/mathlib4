@@ -21,7 +21,6 @@ public import Mathlib.Tactic.LinearCombination
 
 @[expose] public section
 
-
 universe uR uA uM₁ uM₂ uN₁ uN₂
 
 variable {R : Type uR} {A : Type uA} {M₁ : Type uM₁} {M₂ : Type uM₂} {N₁ : Type uN₁} {N₂ : Type uN₂}

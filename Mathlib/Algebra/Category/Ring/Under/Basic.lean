@@ -142,8 +142,7 @@ variable (S) in
 def tensorProdObjIsoPushoutObj (A : Under R) :
     mkUnder S (S ⊗[R] A) ≅ (Under.pushout (ofHom <| algebraMap R S)).obj A :=
   Under.isoMk (CommRingCat.isPushout_tensorProduct R S A).flip.isoPushout <| by
-    simp only [
-      mkUnder_hom, AlgHom.toRingHom_eq_coe, IsPushout.inr_isoPushout_hom]
+    simp only [mkUnder_hom, AlgHom.toRingHom_eq_coe, IsPushout.inr_isoPushout_hom]
     rfl
 
 set_option backward.isDefEq.respectTransparency false in

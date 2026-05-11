@@ -351,7 +351,7 @@ lemma isIso_eTruncGEIsoGEGE (a b : EInt) (hab : a ≤ b) :
     IsIso (t.eTruncGEToGEGE a b) := by
   rw [NatTrans.isIso_iff_isIso_app]
   intro
-  simp only [ eTruncGEToGEGE_app]
+  simp only [eTruncGEToGEGE_app]
   exact t.isIso_eTruncGE_obj_map_truncGEπ_app _ _ hab _
 
 section
@@ -391,7 +391,7 @@ lemma isIso_eTruncLTLTIsoLT (a b : EInt) (hab : b ≤ a) :
     IsIso (t.eTruncLTLTToLT a b) := by
   rw [NatTrans.isIso_iff_isIso_app]
   intro
-  simp only [ eTruncLTLTToLT_app]
+  simp only [eTruncLTLTToLT_app]
   exact t.isIso_eTruncLT_obj_map_truncLTπ_app _ _ hab _
 
 section
