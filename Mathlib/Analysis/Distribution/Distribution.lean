@@ -151,19 +151,25 @@ variable
   {F' : Type*} [AddCommGroup F'] [Module ℝ F'] [TopologicalSpace F']
   {n k : ℕ∞}
 
-
 -- TODO: def or abbrev?
 variable (Ω F n) in
+/-- `𝓓'^{n}(Ω, F) = Distribution Ω F n` is the space of `F`-valued distributions on `Ω` with
+order at most `n`.
+
+In most cases you want to use the space `𝓓'(Ω, F) = Distribution Ω F ⊤`. -/
 abbrev Distribution := 𝓓^{n}(Ω, ℝ) →L_c[ℝ] F
 
--- TODO: I'm not sure these notations are good
-/-- Notation for the space of distributions of order less than `n`. -/
+/-- We denote `𝓓'^{n}(Ω, F)` the space of `F`-valued distributions on `Ω` with order at most
+`n : ℕ∞`. Note that using `𝓓'` is a bit abusive since this is no longer a dual space unless
+`F = 𝕜`. -/
 scoped[Distributions] notation "𝓓'^{" n "}(" Ω ", " F ")" => Distribution Ω F n
 
 /-- We denote `𝓓'(Ω, F)` the space of `F`-valued distributions on `Ω`. Note that using `𝓓'`
 is a bit abusive since this is no longer a dual space unless `F = 𝕜`. -/
 scoped[Distributions] notation "𝓓'(" Ω ", " F ")" => Distribution Ω F ⊤
 
+variable [IsTopologicalAddGroup F] [ContinuousSMul ℝ F]
+variable [IsTopologicalAddGroup F'] [ContinuousSMul ℝ F']
 
 namespace Distribution
 
@@ -178,8 +184,7 @@ noncomputable def mapCLM (A : F →L[ℝ] F') : 𝓓'^{n}(Ω, F) →L[ℝ] 𝓓'
   A.postcompCompactConvergenceCLM _
 
 @[simp]
-lemma mapCLM_apply [IsTopologicalAddGroup F] [ContinuousSMul ℝ F] [IsTopologicalAddGroup F']
-    [ContinuousSMul ℝ F'] {A : F →L[ℝ] F'} {T : 𝓓'^{n}(Ω, F)} {f : 𝓓^{n}(Ω, ℝ)} :
+lemma mapCLM_apply {A : F →L[ℝ] F'} {T : 𝓓'^{n}(Ω, F)} {f : 𝓓^{n}(Ω, ℝ)} :
     mapCLM A T f = A (T f) := rfl
 
 variable [IsTopologicalAddGroup F] [ContinuousSMul ℝ F]
@@ -293,7 +298,6 @@ lemma lineDerivOpCLM_eq_lineDerivCLM {v : E} :
 end LineDerivCLM
 
 section ofFun
-
 
 variable [MeasurableSpace E] [OpensMeasurableSpace E]
 
