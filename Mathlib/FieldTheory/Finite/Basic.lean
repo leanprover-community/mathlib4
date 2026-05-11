@@ -648,7 +648,9 @@ theorem orderOf_dvd_card_sub_one {a : ZMod p} (ha : a ≠ 0) :
 open Polynomial
 
 theorem expand_card (f : Polynomial (ZMod p)) :
-    expand (ZMod p) p f = f ^ p := by have h := FiniteField.expand_card f; rwa [ZMod.card p] at h
+    expand (ZMod p) p f = f ^ p := by
+  have h := FiniteField.Polynomial.expand_card f
+  rwa [ZMod.card p] at h
 
 end ZMod
 
