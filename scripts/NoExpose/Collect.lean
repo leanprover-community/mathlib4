@@ -32,7 +32,13 @@ unsafe def runEnvScan (_project : ProjectInfo) (modules : Array Name)
     (scopePrefix : Array Name) : IO Unit := do
   IO.FS.createDirAll dataDir
   let searchPath ← addSearchPathFromEnv (← getBuiltinSearchPath (← findSysroot))
-  let recs : Array DeclRecord ← withImportModules modules
+  -- Write `exposed.jsonl` *inside* `withImportModules`: records carry
+  -- strings derived from `Name`s allocated in the imported environment,
+  -- and using those after the env is released triggers a use-after-free
+  -- (observed as SIGSEGV during any iteration over `recs` outside the
+  -- block). Serialising to disk inside the scope and then re-reading
+  -- from disk for the source-scan completely detaches the data.
+  withImportModules modules
       (searchPath := searchPath) (trustLevel := 1024) do
     let env ← getEnv
     let recs ← enumerate scopePrefix
@@ -43,12 +49,13 @@ unsafe def runEnvScan (_project : ProjectInfo) (modules : Array Name)
     -- Per-decl refs → decl_refs.jsonl
     IO.FS.withFile declRefsPath .write fun h => writeDeclRefs env h
     IO.eprintln s!"[no_expose collect] wrote per-decl refs to {declRefsPath}"
-    return recs
-  -- Source-scan augmentation (outside `withImportModules`).
-  IO.eprintln s!"[no_expose collect] source-scanning {recs.size} candidate decls"
-  let counts ← IO.FS.withFile exposedPath .write fun h => augmentAndWrite recs h
+    -- Initial `exposed.jsonl` with `exposeSource = .unknown` everywhere.
+    IO.FS.withFile exposedPath .write fun h => do
+      for r in recs do h.putStrLn r.toJsonLine
+    IO.eprintln s!"[no_expose collect] wrote {recs.size} exposed records to {exposedPath}"
+  -- Env released; now source-scan and rewrite `exposed.jsonl` in place.
+  let counts ← augmentExposedFile exposedPath
   IO.eprintln s!"[no_expose collect] expose-source breakdown: {counts.toList}"
-  IO.eprintln s!"[no_expose collect] wrote {recs.size} exposed records to {exposedPath}"
 
 /-- Run the `collect` subcommand. -/
 unsafe def runCollect (args : CollectArgs) : IO UInt32 := do

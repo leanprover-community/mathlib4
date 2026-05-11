@@ -48,13 +48,15 @@ def withImportModules {α : Type} (modules : Array Name) (run : CoreM α)
 
 /-! ## Enumeration -/
 
-/-- One row of the eventual `exposed.jsonl`. `exposeSource` is filled
-in by `augmentWithSourceScan` after the env walk closes; the env walk
-itself leaves it at `.unknown`. -/
+/-- One row of the eventual `exposed.jsonl`. `name` and `module` are
+stringified inside `enumerate` so the record carries no references
+back into the imported environment after `withImportModules` closes.
+`exposeSource` is filled in by `augmentAndWrite` after the env walk
+closes; the env walk itself leaves it at `.unknown`. -/
 structure DeclRecord where
-  name : Name
+  name : String
   kind : String
-  «module» : Name
+  «module» : String
   file : String
   line : Nat
   col : Nat
@@ -124,9 +126,9 @@ def enumerate (scopePrefix : Array Name) : CoreM (Array DeclRecord) := do
     let some ranges ← Lean.findDeclarationRanges? name | continue
     let pos := ranges.range.pos
     out := out.push {
-      name
+      name := name.toString
       kind
-      «module» := mod
+      «module» := mod.toString
       file := moduleToPath mod
       line := pos.line
       col := pos.column
@@ -160,52 +162,106 @@ def collectStaticRefs : CoreM RefMap := do
 /-! ## JSON serialisation -/
 
 def DeclRecord.toJsonLine (d : DeclRecord) : String :=
-  "{\"name\":\"" ++ jsonEscape d.name.toString ++
+  "{\"name\":\"" ++ jsonEscape d.name ++
   "\",\"kind\":\"" ++ d.kind ++
-  "\",\"module\":\"" ++ jsonEscape d.module.toString ++
+  "\",\"module\":\"" ++ jsonEscape d.module ++
   "\",\"file\":\"" ++ jsonEscape d.file ++
   "\",\"line\":" ++ toString d.line ++
   ",\"col\":" ++ toString d.col ++
   ",\"effect\":\"" ++ d.effect ++
   "\",\"expose_source\":\"" ++ d.exposeSource.toJsonString ++ "\"}"
 
-/-- Stream-augment `recs` into `out`: scan each unique source file
-once,
-join, write each record to `out` immediately so we never hold the
-full augmented array AND the lookup map in memory at the same time.
-Returns the per-`ExposeSource` count summary for the log. -/
-def augmentAndWrite (recs : Array DeclRecord) (out : IO.FS.Handle) :
+/-- Parse a single line of `exposed.jsonl` enough to extract the
+`file`, `line`, and the full original JSON text. The JSON text is
+preserved as-is so we can rewrite it later with a different
+`expose_source` value without losing fields we didn't parse. -/
+private def parseExposedLine (line : String) :
+    Option (String × Nat × String) := Id.run do
+  match Lean.Json.parse line with
+  | .error _ => none
+  | .ok j =>
+    let file := (j.getObjValAs? String "file").toOption
+    let lineNum := (j.getObjValAs? Nat "line").toOption
+    match file, lineNum with
+    | some f, some n => some (f, n, line)
+    | _, _ => none
+
+/-- Replace the `"expose_source":"…"` field in a JSON line. Falls back
+to appending the field if no such key was present (defensive). -/
+private def setExposeSourceField (line : String) (src : ExposeSource) : String :=
+  let needle := "\"expose_source\":\""
+  let parts := line.splitOn needle
+  if parts.length < 2 then
+    -- Append before the final `}`.
+    let body := line.dropEnd 1 |>.toString
+    body ++ ",\"expose_source\":\"" ++ src.toJsonString ++ "\"}"
+  else
+    let before := parts[0]!
+    let after := String.intercalate needle (parts.drop 1)
+    -- `after` starts with `<value>"...` — drop up to the next `"`.
+    let valueEnd := (after.splitOn "\"").drop 1
+    let rest := String.intercalate "\"" valueEnd
+    before ++ needle ++ src.toJsonString ++ "\"" ++ rest
+
+/-- Read `exposed.jsonl`, source-scan each referenced file, and rewrite
+the file in place with `expose_source` filled in. Returns the
+per-source count summary for the log. The env-walked records are read
+back from disk to ensure they no longer reference any data that was
+allocated inside `withImportModules`. -/
+def augmentExposedFile (path : System.FilePath) :
     IO (Std.HashMap String Nat) := do
-  let mut flat : Std.HashMap (String × Nat) ExposeSource := {}
+  IO.eprintln s!"[no_expose source-scan] re-reading {path}"
+  let raw ← IO.FS.readFile path
+  let lines := raw.splitOn "\n"
+  let mut parsed : Array (String × Nat × String) := #[]
+  for line in lines do
+    if let some r := parseExposedLine line then parsed := parsed.push r
+  IO.eprintln s!"[no_expose source-scan] parsed {parsed.size} records; grouping"
+  -- Group line-indices into `parsed` by source file.
+  let mut byFile : Std.HashMap String (Array Nat) := {}
+  let mut fileOrder : Array String := #[]
   let mut seenFile : Std.HashSet String := {}
+  for h : i in [:parsed.size] do
+    let (f, _, _) := parsed[i]
+    unless seenFile.contains f do
+      seenFile := seenFile.insert f
+      fileOrder := fileOrder.push f
+    byFile := byFile.insert f ((byFile.getD f #[]).push i)
+  IO.eprintln s!"[no_expose source-scan] grouped into {fileOrder.size} files"
+  -- Per-file scan + record per-line source.
+  let mut sources : Array ExposeSource := Array.replicate parsed.size .unknown
   let mut filesDone : Nat := 0
-  for r in recs do
-    if seenFile.contains r.file then continue
-    seenFile := seenFile.insert r.file
-    let path : System.FilePath := r.file
-    unless ← System.FilePath.pathExists path do
-      IO.eprintln s!"[no_expose source-scan] file not found: {path}; \
-        leaving its decls as .unknown"
-      continue
-    let text ← IO.FS.readFile path
-    let pairs := scanFile text
-    for (ln, src) in pairs do flat := flat.insert (r.file, ln) src
+  for f in fileOrder do
+    let indices := byFile.getD f #[]
+    let wanted : Std.HashSet Nat :=
+      indices.foldl (init := {}) fun acc i =>
+        let (_, n, _) := parsed[i]!
+        acc.insert n
+    let pth : System.FilePath := f
+    let mut byLine : Std.HashMap Nat ExposeSource := {}
+    if ← System.FilePath.pathExists pth then
+      let text ← IO.FS.readFile pth
+      for (ln, src) in scanFile text do
+        if wanted.contains ln then byLine := byLine.insert ln src
+    for i in indices do
+      let (_, n, _) := parsed[i]!
+      sources := sources.set! i (byLine.getD n .unknown)
     filesDone := filesDone + 1
     if filesDone % 500 == 0 then
-      IO.eprintln s!"[no_expose source-scan] scanned {filesDone} files"
-  IO.eprintln s!"[no_expose source-scan] scanned {filesDone} files total; applying"
-  let mut counts : Std.HashMap String Nat := {}
-  let mut applied : Nat := 0
-  for r in recs do
-    let src := flat.getD (r.file, r.line) .unknown
-    let k := src.toJsonString
-    counts := counts.insert k ((counts.getD k 0) + 1)
-    out.putStrLn { r with exposeSource := src }.toJsonLine
-    applied := applied + 1
-    if applied % 10000 == 0 then
-      IO.eprintln s!"[no_expose source-scan] applied {applied}/{recs.size}"
-  IO.eprintln s!"[no_expose source-scan] applied {applied} total"
-  return counts
+      IO.eprintln s!"[no_expose source-scan] processed {filesDone} files"
+  IO.eprintln s!"[no_expose source-scan] processed {filesDone} files total; rewriting"
+  -- Stream the rewritten JSONL back to disk. `counts` lives in an IORef
+  -- so the inner `withFile` closure can update it.
+  let countsRef ← IO.mkRef (∅ : Std.HashMap String Nat)
+  IO.FS.withFile path .write fun h => do
+    for h2 : i in [:parsed.size] do
+      let (_, _, orig) := parsed[i]
+      let src := sources[i]!
+      let k := src.toJsonString
+      countsRef.modify fun c => c.insert k ((c.getD k 0) + 1)
+      h.putStrLn (setExposeSourceField orig src)
+  IO.eprintln s!"[no_expose source-scan] rewrote {parsed.size} records to {path}"
+  countsRef.get
 
 /-- Write a `RefMap` aggregation as one JSONL record per pair. -/
 def writeStaticRefs (env : Environment) (acc : RefMap)
