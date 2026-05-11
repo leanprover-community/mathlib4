@@ -72,7 +72,7 @@ structure Hom (HP HP' : HomologyPretheory C c) where
   homₚ (i : ι) : HP.Hₚ i ⟶ HP'.Hₚ i
   /-- The natural transformation of homology functors in a morphism of
   `HomologyPretheory`s. -/
-  hom (i : ι) : HP.H i ⟶ HP'.H i
+  hom (i : ι) : HP.H i ⟶ HP'.H i := (HP.iso i).hom ≫ incl.whiskerLeft (homₚ i) ≫ (HP'.iso i).inv
   /-- `homₚ` and `hom` need to be compatible with `HomologyPretheory.iso`. -/
   iso_comm (i : ι) :
     (HP.iso i).hom ≫ incl.whiskerLeft (homₚ i) = hom i ≫ (HP'.iso i).hom := by cat_disch
@@ -116,26 +116,11 @@ lemma inv_hom_iso_homₚ_congr_app (f : HP.Hom HP') (i : ι) (X : TopCat) :
     dsimp% (HP.iso i).inv.app X ≫ (f.hom i).app X ≫ (HP'.iso i).hom.app X =
     (f.homₚ i).app (ofTopCat X) := congr($(inv_hom_iso_homₚ _ _).app _)
 
-/-- Constructor for a morphism in `HomologyPretheory` from only `homₚ`. -/
-def Hom.mkₚ (homₚ : (i : ι) → HP.Hₚ i ⟶ HP'.Hₚ i)
-    (w : ∀ (i j : ι), HP.δ i j ≫ proj₂.whiskerLeft (HP.iso j).hom ≫
-      proj₂.whiskerLeft (incl.whiskerLeft (homₚ j))
-      = homₚ i ≫ HP'.δ i j ≫ proj₂.whiskerLeft (HP'.iso j).hom := by cat_disch) : Hom HP HP' where
-  homₚ := homₚ
-  hom i := (HP.iso i).hom ≫ incl.whiskerLeft (homₚ i) ≫ (HP'.iso i).inv
-  w i j := by
-    have := proj₂.isoWhiskerLeft_hom (HP'.iso j) ▸ w i j
-    simp_all only [← Category.assoc, Functor.whiskerLeft_comp]
-    exact (Iso.comp_inv_eq _).mpr this
-
 @[simps]
 instance : Category (HomologyPretheory C c) where
   Hom := HomologyPretheory.Hom
-  id _ := { homₚ _ := 𝟙 _, hom _ := 𝟙 _ }
-  comp f g := {
-    homₚ i := f.homₚ i ≫ g.homₚ i
-    hom i := f.hom i ≫ g.hom i
-  }
+  id _ := { homₚ _ := 𝟙 _ }
+  comp f g := { homₚ _ := f.homₚ _ ≫ g.homₚ _ }
 
 /-- The forgetful functor that sends a `HomologyPretheory` to it's relative homology functor `Hₚ`.
 -/
