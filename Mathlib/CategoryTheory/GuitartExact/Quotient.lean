@@ -36,7 +36,7 @@ are the corresponding homotopy categories (TODO @joelriou).
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.TwoSquare.GuitartExact
 
