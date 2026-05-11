@@ -41,16 +41,43 @@ instance {Y : TopCat.{u}} {f : Y ⟶ X} :
 
 end
 
+lemma _root_.TopologicalSpace.IsOpenCover.def {ι X : Type*} [TopologicalSpace X] (U : ι → Opens X) :
+    IsOpenCover U ↔ ∀ i, ∃ x, x ∈ U i := sorry
+
+set_option backward.isDefEq.respectTransparency false in
+lemma base (F : TopCat.Sheaf AddCommGrpCat.{u} X) {B : Set (Opens X)}
+    (hB : Opens.IsBasis B) (c : H F 1) (x : X) : ∃ (U : Opens X),
+    (x ∈ U ∧ U ∈ B ∧ H.map ((toRestrict _ U).app F) 1 c = 0) := by
+  let pres := (EnoughInjectives.presentation F).some.shortComplex
+  have presEx : pres.ShortExact := (EnoughInjectives.presentation F).some.shortExact_shortComplex
+  obtain ⟨b, hb⟩ :=
+    Sheaf.H.longSequence_equiv₀_exact₁ presEx Limits.isTerminalTop c (Subsingleton.elim _ _)
+  have := presEx.3
+  rw [← isLocallySurjective_iff_epi, Presheaf.isLocallySurjective_iff] at this
+  obtain ⟨V', ⟨hV'₁, ⟨⟨s', hs'⟩, hV'₃⟩⟩⟩ := this ⊤ b x (Opens.mem_top x)
+  obtain ⟨V, ⟨hV₁, ⟨hV₂, hV₃⟩⟩⟩ := Opens.isBasis_iff_nbhd.mp hB hV'₃
+  refine ⟨V, ⟨hV₂, ⟨hV₁, ?_⟩⟩⟩
+  let s := pres.X₂.obj.map (homOfLE hV₃).op s'
+  have hs : pres.g.hom.app (op V) s = pres.X₃.obj.map V.leTop.op b := sorry
+  clear_value s
+  clear V' hV'₁ hV'₃ s' hs' hV₃ hV₁ hV₂ this
+
+  sorry
+
 set_option backward.isDefEq.respectTransparency false in
 theorem prop1 (F : TopCat.Sheaf AddCommGrpCat.{u} X) (n : ℕ) {B : Set (Opens X)}
     (hB : Opens.IsBasis B)
     (hinter : ∀ (U V : Opens X), U ∈ B → V ∈ B → U ⊓ V ∈ B)
     (vanish : ∀ (r : ℕ) (U : Opens X), 1 ≤ r → r ≤ n → U ∈ B →
     Subsingleton (H ((restrict AddCommGrpCat.{u} U.isOpenEmbedding).obj F) r))
-    (c : H F (n + 1)) : ∃ (I : Type u) (U : I → Opens X) (_ : IsOpenCover U),
+    (c : H F (n + 1)) : ∃ (I : Type u) (U : I → Opens X), (IsOpenCover U) ∧
     (∀ i, U i ∈ B ∧ H.map ((toRestrict _ (U i)).app F) (n + 1) c = 0) := by
   induction n generalizing F with
-  | zero => sorry
+  | zero =>
+    use X, (fun x => (base F hB c x).choose)
+    refine ⟨?_, fun x => (base F hB c x).choose_spec.2⟩
+    rw [IsOpenCover.def]
+    exact fun x => ⟨x, (base F hB c x).choose_spec.1⟩
   | succ n hn =>
     let pres := (EnoughInjectives.presentation F).some.shortComplex
     have presEx : pres.ShortExact := (EnoughInjectives.presentation F).some.shortExact_shortComplex

@@ -219,6 +219,10 @@ lemma longSequence_equiv₀_exact₃ (x₃ : S.X₃.obj.obj (op T))
   use equiv₀ S.X₂ hT x₂'
   simp [equiv₀_naturality, hx₂']
 
+lemma longSequence_equiv₀_exact₁ (x₁ : S.X₁.H 1)
+    (hx₁ : map S.f 1 x₁ = 0) : ∃ x₃ : S.X₃.obj.obj (op T),
+    (connectingHom hS 0 1 rfl) ((equiv₀ S.X₃ hT).symm x₃) = x₁ := sorry
+
 include hS hT in
 lemma longSequence_surjective_of_subsingleton_H [Subsingleton (S.X₁.H 1)] :
     Function.Surjective (S.g.hom.app (op T)) :=
