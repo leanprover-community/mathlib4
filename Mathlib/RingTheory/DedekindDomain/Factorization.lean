@@ -872,8 +872,6 @@ lemma count_normalizedFactors_eq_multiplicity :
   rw [← this]
   exact (finiteMultiplicity_of_emultiplicity_eq_natCast this).emultiplicity_eq_multiplicity
 
--- This is not `simp`; otherwise some `aesop` proofs break
--- in `Mathlib.Algebra.Module.Torsion.PrimaryComponent`.
 /-- Normalize the multiplicity of a prime ideal `p` in the factorization of `I`
 as `multiplicity p.asIdeal I`. -/
 lemma maxPowDividing_eq_pow_multiplicity :
