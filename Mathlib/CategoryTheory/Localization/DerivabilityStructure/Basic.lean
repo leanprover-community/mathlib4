@@ -198,7 +198,7 @@ lemma isRightDerivabilityStructure_iff_op :
   have eq : TwoSquare.GuitartExact e'.inv ↔ TwoSquare.GuitartExact e.hom :=
     TwoSquare.guitartExact_op_iff _
   refine ⟨fun ⟨_, _⟩ ↦ ?_, fun _ ↦ ?_⟩
-  · simpa only [Φ.op.isLeftDerivabilityStructure_iff _ _ _ e', op_functor, eq]
+  · simpa only [Φ.op.isLeftDerivabilityStructure_iff _ _ _ e', eq]
   · have : Φ.HasRightResolutions := by
       rw [hasRightResolutions_iff_op]
       infer_instance
