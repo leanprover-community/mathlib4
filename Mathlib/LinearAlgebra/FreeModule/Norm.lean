@@ -44,8 +44,7 @@ theorem associated_norm_prod_smith [Fintype ι] (b : Basis ι R S) {f : S} (hf :
     Finsupp.single_eq_pi_single, Matrix.diagonal_mulVec_single, Pi.single_apply, ite_smul,
     zero_smul, Finset.sum_ite_eq', mul_one, if_pos (Finset.mem_univ _), b'.equiv_apply]
   change _ = f * _
-  rw [mul_comm, ← smul_eq_mul, LinearEquiv.restrictScalars_apply]
-  erw [LinearEquiv.coord_apply_smul]
+  rw [mul_comm, ← smul_eq_mul, LinearEquiv.restrictScalars_apply, LinearEquiv.coord_apply_smul]
   grind [Ideal.selfBasis_def]
 
 end CommRing
