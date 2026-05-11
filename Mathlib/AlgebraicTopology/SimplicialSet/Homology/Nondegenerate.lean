@@ -119,7 +119,7 @@ lemma ιNormalizedChainComplex_d {n : ℕ} (x : X _⦋n + 1⦌) :
     -ιChainComplex_toNormalizedChainComplex_f]
 
 @[reassoc]
-lemma ιNormalizedChainComplex_fromNondegComplex_f (x : X _⦋n⦌) :
+lemma ιNormalizedChainComplex_fromNormalizedChainComplex_f (x : X _⦋n⦌) :
     X.ιNormalizedChainComplex x ≫ (X.fromNormalizedChainComplex R).f n =
       X.ιChainComplex x ≫ (PInfty).f n := by
   dsimp [ιNormalizedChainComplex]
