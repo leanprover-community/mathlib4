@@ -5,8 +5,7 @@ Authors: Fangming Li, Jujian Zhang
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.CommRing
-public import Mathlib.Algebra.Polynomial.Basic
+public import Mathlib.Algebra.MvPolynomial.Basic  -- shake: keep (used in `proof_wanted` only)
 public import Mathlib.Order.KrullDimension
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
@@ -169,8 +168,17 @@ lemma Ring.krullDimLE_one_iff_of_noZeroDivisors [NoZeroDivisors R] :
     Ring.KrullDimLE 1 R ↔ ∀ I : Ideal R, I ≠ ⊥ → I.IsPrime → I.IsMaximal := by
   cases subsingleton_or_nontrivial R
   · exact iff_of_true inferInstance fun I h ↦ (h <| Subsingleton.elim ..).elim
-  have := Ideal.bot_prime (α := R)
   exact Ring.krullDimLE_one_iff_of_isPrime_bot
+
+lemma Ideal.IsPrime.isMaximal_of_ne_bot [NoZeroDivisors R] [Ring.KrullDimLE 1 R]
+    {I : Ideal R} (hI : I.IsPrime) (hI' : I ≠ ⊥) :
+    I.IsMaximal :=
+  Ring.krullDimLE_one_iff_of_noZeroDivisors.mp ‹_› _ hI' hI
+
+lemma Ideal.isMaximal_of_isPrime_of_ne_bot [NoZeroDivisors R] [Ring.KrullDimLE 1 R]
+    (I : Ideal R) [I.IsPrime] (hI' : I ≠ ⊥) :
+    I.IsMaximal :=
+  Ideal.IsPrime.isMaximal_of_ne_bot ‹_› hI'
 
 /-- Alternative constructor for `Ring.KrullDimLE 1`, convenient for domains. -/
 lemma Ring.KrullDimLE.mk₁' (H : ∀ I : Ideal R, I ≠ ⊥ → I.IsPrime → I.IsMaximal) :
@@ -179,5 +187,15 @@ lemma Ring.KrullDimLE.mk₁' (H : ∀ I : Ideal R, I ≠ ⊥ → I.IsPrime → I
   · rwa [Ring.krullDimLE_one_iff_of_isPrime_bot]
   suffices Ring.KrullDimLE 0 R from inferInstance
   exact .mk₀ fun I hI ↦ H I (fun e ↦ hR (e ▸ hI)) hI
+
+lemma Prime.isMaximal_span_singleton [NoZeroDivisors R] [Ring.KrullDimLE 1 R]
+    {a : R} (ha : Prime a) : (Ideal.span {a}).IsMaximal :=
+  ((Ideal.span_singleton_prime ha.ne_zero).mpr ha).isMaximal_of_ne_bot (by simpa using ha.ne_zero)
+
+lemma Ideal.liesOver_span_iff [NoZeroDivisors R] [Ring.KrullDimLE 1 R] [Algebra R S]
+    {P : Ideal S} {p : R} (hP : P ≠ ⊤) (hp : Prime p) :
+      P.LiesOver (.span {p}) ↔ algebraMap R S p ∈ P := by
+  have hP : P.under R ≠ ⊤ := Ideal.comap_ne_top _ hP
+  simp [Ideal.liesOver_iff, Ideal.IsMaximal.eq_iff_le hp.isMaximal_span_singleton hP]
 
 end One

@@ -49,7 +49,7 @@ section
 
 variable
   {EB : Type*} [NormedAddCommGroup EB] [NormedSpace ℝ EB]
-  {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners ℝ EB HB} {n n' : WithTop ℕ∞}
+  {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners ℝ EB HB} {n n' : ℕ∞ω}
   {B : Type*} [TopologicalSpace B] [ChartedSpace HB B]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
   {E : B → Type*} [TopologicalSpace (TotalSpace F E)] [∀ x, NormedAddCommGroup (E x)]
@@ -74,11 +74,11 @@ lemma IsContMDiffRiemannianBundle.of_le [h : IsContMDiffRiemannianBundle IB n F 
   rcases h.exists_contMDiff with ⟨g, g_smooth, hg⟩
   exact ⟨g, g_smooth.of_le h', hg⟩
 
-instance {a : WithTop ℕ∞} [IsContMDiffRiemannianBundle IB ∞ F E] [h : LEInfty a] :
+instance {a : ℕ∞ω} [IsContMDiffRiemannianBundle IB ∞ F E] [h : LEInfty a] :
     IsContMDiffRiemannianBundle IB a F E :=
   IsContMDiffRiemannianBundle.of_le h.out
 
-instance {a : WithTop ℕ∞} [IsContMDiffRiemannianBundle IB ω F E] :
+instance {a : ℕ∞ω} [IsContMDiffRiemannianBundle IB ω F E] :
     IsContMDiffRiemannianBundle IB a F E :=
   IsContMDiffRiemannianBundle.of_le le_top
 
@@ -95,6 +95,7 @@ section Trivial
 
 variable {F₁ : Type*} [NormedAddCommGroup F₁] [InnerProductSpace ℝ F₁]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A trivial vector bundle, in which the model fiber has a scalar product,
 is a Riemannian bundle. -/
 instance : IsContMDiffRiemannianBundle IB n F₁ (Bundle.Trivial B F₁) := by
@@ -102,7 +103,7 @@ instance : IsContMDiffRiemannianBundle IB n F₁ (Bundle.Trivial B F₁) := by
   simp only [contMDiffAt_section]
   convert contMDiffAt_const (c := innerSL ℝ)
   ext v w
-  simp [hom_trivializationAt_apply, inCoordinates, Trivialization.linearMapAt_apply]
+  simp [hom_trivializationAt_apply, inCoordinates]
 
 end Trivial
 
@@ -156,7 +157,7 @@ their scalar product is smooth. -/
 lemma ContMDiff.inner_bundle
     (hv : ContMDiff IM (IB.prod 𝓘(ℝ, F)) n (fun m ↦ (v m : TotalSpace F E)))
     (hw : ContMDiff IM (IB.prod 𝓘(ℝ, F)) n (fun m ↦ (w m : TotalSpace F E))) :
-    ContMDiff IM 𝓘(ℝ) n (fun b ↦ ⟪v b, w b⟫) :=
+    CMDiff n (fun b ↦ ⟪v b, w b⟫) :=
   fun x ↦ (hv x).inner_bundle (hw x)
 
 end ContMDiff
@@ -175,7 +176,7 @@ their scalar product is differentiable. -/
 lemma MDifferentiableWithinAt.inner_bundle
     (hv : MDifferentiableWithinAt IM (IB.prod 𝓘(ℝ, F)) (fun m ↦ (v m : TotalSpace F E)) s x)
     (hw : MDifferentiableWithinAt IM (IB.prod 𝓘(ℝ, F)) (fun m ↦ (w m : TotalSpace F E)) s x) :
-    MDifferentiableWithinAt IM 𝓘(ℝ) (fun m ↦ ⟪v m, w m⟫) s x := by
+    MDiffAt[s] (fun m ↦ ⟪v m, w m⟫) x := by
   rcases h.exists_contMDiff with ⟨g, g_smooth, hg⟩
   have hb : MDifferentiableWithinAt IM IB b s x := by
     simp only [mdifferentiableWithinAt_totalSpace] at hv
@@ -196,7 +197,7 @@ their scalar product is differentiable. -/
 lemma MDifferentiableAt.inner_bundle
     (hv : MDifferentiableAt IM (IB.prod 𝓘(ℝ, F)) (fun m ↦ (v m : TotalSpace F E)) x)
     (hw : MDifferentiableAt IM (IB.prod 𝓘(ℝ, F)) (fun m ↦ (w m : TotalSpace F E)) x) :
-    MDifferentiableAt IM 𝓘(ℝ) (fun b ↦ ⟪v b, w b⟫) x :=
+    MDiffAt (fun b ↦ ⟪v b, w b⟫) x :=
   MDifferentiableWithinAt.inner_bundle hv hw
 
 /-- Given two differentiable maps into the same fibers of a Riemannian bundle,
@@ -204,7 +205,7 @@ their scalar product is differentiable. -/
 lemma MDifferentiableOn.inner_bundle
     (hv : MDifferentiableOn IM (IB.prod 𝓘(ℝ, F)) (fun m ↦ (v m : TotalSpace F E)) s)
     (hw : MDifferentiableOn IM (IB.prod 𝓘(ℝ, F)) (fun m ↦ (w m : TotalSpace F E)) s) :
-    MDifferentiableOn IM 𝓘(ℝ) (fun b ↦ ⟪v b, w b⟫) s :=
+    MDiff[s] (fun b ↦ ⟪v b, w b⟫) :=
   fun x hx ↦ (hv x hx).inner_bundle (hw x hx)
 
 /-- Given two differentiable maps into the same fibers of a Riemannian bundle,
@@ -212,7 +213,7 @@ their scalar product is differentiable. -/
 lemma MDifferentiable.inner_bundle
     (hv : MDifferentiable IM (IB.prod 𝓘(ℝ, F)) (fun m ↦ (v m : TotalSpace F E)))
     (hw : MDifferentiable IM (IB.prod 𝓘(ℝ, F)) (fun m ↦ (w m : TotalSpace F E))) :
-    MDifferentiable IM 𝓘(ℝ) (fun b ↦ ⟪v b, w b⟫) :=
+    MDiff (fun b ↦ ⟪v b, w b⟫) :=
   fun x ↦ (hv x).inner_bundle (hw x)
 
 end MDifferentiable
@@ -225,7 +226,7 @@ section Construction
 
 variable
   {EB : Type*} [NormedAddCommGroup EB] [NormedSpace ℝ EB]
-  {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners ℝ EB HB} {n n' : WithTop ℕ∞}
+  {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners ℝ EB HB} {n n' : ℕ∞ω}
   {B : Type*} [TopologicalSpace B] [ChartedSpace HB B]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
   {E : B → Type*} [TopologicalSpace (TotalSpace F E)]

@@ -477,7 +477,7 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
     obtain ⟨S, hS, hS'⟩ := H (R₀ := R₀) f
     refine ⟨S, Eq.trans ?_ hS, ?_⟩
     · rw [← zeroLocus_span (Set.range _), ← zeroLocus_span (Set.range _),
-        idealSpan_range_update_divByMonic hne _ hi]
+        idealSpan_range_update_divByMonic hne]
     · intro C hC
       let c' : InductionObj _ _ := ⟨update c.val j (c.val j %ₘ c.val i)⟩
       have deg_bound₁ : c'.degBound ≤ c.degBound := by
@@ -667,6 +667,7 @@ lemma degBound_pos (k : ℕ) (D : ℕ → ℕ) : ∀ n, 0 < degBound k D n
 
 end MvPolynomialC
 
+set_option backward.isDefEq.respectTransparency false in
 open MvPolynomialC in
 /-- The `C : R → R[X₁, ..., Xₘ]` case of **Chevalley's theorem** with complexity bound. -/
 lemma chevalley_mvPolynomialC
@@ -695,7 +696,7 @@ lemma chevalley_mvPolynomialC
   let S' := S.map e.toRingHom
   have hS' : S'.degBound ≤ k * (1 + d.count 0) := by
     apply Finset.sup_le fun x hxS ↦ ?_
-    simp only [ConstructibleSetData.map, AlgEquiv.toRingEquiv_eq_coe, RingEquiv.toRingHom_eq_coe,
+    simp only [ConstructibleSetData.map, RingEquiv.toRingHom_eq_coe,
       AlgEquiv.toRingEquiv_toRingHom, Finset.mem_image, BasicConstructibleSetData.map,
       RingHom.coe_coe, S'] at hxS
     obtain ⟨C, hxS, rfl⟩ := hxS
@@ -718,7 +719,7 @@ lemma chevalley_mvPolynomialC
       (coeffsIn _ M ⊓ (degreesLE _ _ B).restrictScalars ℤ)
       (by simpa [MvPolynomial.coeff_one, apply_ite] using hM)
       S' (fun x hxS j k ↦ by
-        simp only [ConstructibleSetData.map, AlgEquiv.toRingEquiv_eq_coe,
+        simp only [ConstructibleSetData.map,
           RingEquiv.toRingHom_eq_coe, AlgEquiv.toRingEquiv_toRingHom, Finset.mem_image,
           BasicConstructibleSetData.map, RingHom.coe_coe, S', e] at hxS
         obtain ⟨C, hxS, rfl⟩ := hxS

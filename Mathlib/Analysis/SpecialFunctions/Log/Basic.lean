@@ -165,6 +165,18 @@ theorem le_log_iff_exp_le (hy : 0 < y) : x ≤ log y ↔ exp x ≤ y := by rw [�
 
 theorem lt_log_iff_exp_lt (hy : 0 < y) : x < log y ↔ exp x < y := by rw [← exp_lt_exp, exp_log hy]
 
+/-- One direction of `Real.log_le_iff_le_exp` without positivity assumption. -/
+lemma le_exp_of_log_le (h : log x ≤ y) : x ≤ exp y := by
+  rcases le_or_gt x 0 with hx | hx
+  · exact hx.trans <| exp_nonneg y
+  · exact (log_le_iff_le_exp hx).mp h
+
+/-- One direction of `Real.log_lt_iff_lt_exp` without positivity assumption. -/
+lemma lt_exp_of_log_lt (h : log x < y) : x < exp y := by
+  rcases le_or_gt x 0 with hx | hx
+  · exact hx.trans_lt <| exp_pos y
+  · exact (log_lt_iff_lt_exp hx).mp h
+
 theorem log_pos_iff (hx : 0 ≤ x) : 0 < log x ↔ 1 < x := by
   rcases hx.eq_or_lt with (rfl | hx)
   · simp [zero_le_one]
@@ -202,7 +214,7 @@ theorem log_nonneg (hx : 1 ≤ x) : 0 ≤ log x :=
 
 theorem log_nonpos_iff (hx : 0 ≤ x) : log x ≤ 0 ↔ x ≤ 1 := by
   rcases hx.eq_or_lt with (rfl | hx)
-  · simp [le_refl, zero_le_one]
+  · simp [zero_le_one]
   rw [← not_lt, log_pos_iff hx.le, not_lt]
 
 @[bound]
@@ -391,12 +403,26 @@ protected theorem _root_.Finsupp.log_prod {α β : Type*} [Zero β] (f : α →�
     (hg : ∀ a, g a (f a) = 0 → f a = 0) : log (f.prod g) = f.sum fun a b ↦ log (g a b) :=
   log_prod fun _x hx h₀ ↦ Finsupp.mem_support_iff.1 hx <| hg _ h₀
 
+-- Note: This is wrong assuming only `f a ≠ 0` (as in `Real.log_prod`).
+-- E.g., `f = (2, -1, -1, ...)` (with infinitely many `-1`s).
+lemma log_finprod {α : Type*} {f : α → ℝ} (h : ∀ a, 0 < f a) :
+    log (∏ᶠ a, f a) = ∑ᶠ a, log (f a) := by
+  classical
+  have H : (fun i ↦ log (f i)).support = f.mulSupport := by
+    grind [mem_mulSupport, mem_support, log_eq_zero]
+  have H' : HasFiniteMulSupport f ↔ HasFiniteSupport fun a ↦ log (f a) := by
+    simp [HasFiniteMulSupport, HasFiniteSupport, H]
+  simp only [finprod_def, finsum_def]
+  by_cases h' : HasFiniteMulSupport f
+  · simp [h', log_prod (fun a _ ↦ (h a).ne'), H'.mp h', H]
+  · simp [h', mt H'.mpr h']
+
 theorem log_nat_eq_sum_factorization (n : ℕ) :
     log n = n.factorization.sum fun p t => t * log p := by
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp -- relies on junk values of `log` and `Nat.factorization`
   · simp only [← log_pow, ← Nat.cast_pow]
-    rw [← Finsupp.log_prod, ← Nat.cast_finsuppProd, Nat.factorization_prod_pow_eq_self hn]
+    rw [← Finsupp.log_prod, ← Nat.cast_finsuppProd, Nat.prod_factorization_pow_eq_self hn]
     intro p hp
     rw [eq_zero_of_pow_eq_zero (Nat.cast_eq_zero.1 hp), Nat.factorization_zero_right]
 

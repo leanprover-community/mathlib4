@@ -73,6 +73,19 @@ theorem powerset_empty : (∅ : Finset α).powerset = {∅} :=
 theorem powerset_eq_singleton_empty : s.powerset = {∅} ↔ s = ∅ := by
   rw [← powerset_empty, powerset_inj]
 
+theorem image_injOn_powerset_of_injOn {β : Type*} [DecidableEq β] {f : α → β} (H : Set.InjOn f s) :
+    Set.InjOn (α := Finset α) (·.image f) s.powerset := by
+  have {z a} (_ : z ⊆ s) (_ : a ∈ s) : a ∈ z ↔ f a ∈ z.image f := by grind [H.eq_iff]
+  exact fun _ _ _ _ _ => by grind
+
+theorem image_surjOn_powerset {β : Type*} [DecidableEq β] {f : α → β} :
+    Set.SurjOn (α := Finset α) (·.image f) s.powerset (s.image f).powerset :=
+  fun t ht => ⟨{ x ∈ s | f x ∈ t}, by grind⟩
+
+theorem powerset_image {β : Type*} [DecidableEq β] {f : α → β} :
+    (s.image f).powerset = s.powerset.image (·.image f) :=
+  ext fun a => ⟨fun _ => mem_image.mpr ⟨{ x ∈ s | f x ∈ a}, by grind⟩, by grind⟩
+
 /-- **Number of Subsets of a Set** -/
 @[simp]
 theorem card_powerset (s : Finset α) : card (powerset s) = 2 ^ card s :=
@@ -187,6 +200,36 @@ theorem powersetCard_mono {n} {s t : Finset α} (h : s ⊆ t) : powersetCard n s
 theorem card_powersetCard (n : ℕ) (s : Finset α) :
     card (powersetCard n s) = Nat.choose (card s) n :=
   (card_pmap _ _ _).trans (Multiset.card_powersetCard n s.1)
+
+/-- The `n`-element subsets of `t` containing `s` are exactly the `(n - s.card)`-element
+subsets of `t \ s`, unioned with `s`. -/
+theorem filter_powersetCard_subset [DecidableEq α] (s t : Finset α) (n : ℕ)
+    (hst : s ⊆ t) (hsn : #s ≤ n) :
+    (t.powersetCard n).filter (s ⊆ ·) = ((t \ s).powersetCard (n - #s)).image (· ∪ s) := by
+  ext x
+  simp only [mem_filter, mem_powersetCard, mem_image]
+  constructor
+  · intro ⟨⟨hxt, hxn⟩, hsx⟩
+    exact ⟨x \ s, ⟨fun y hy => mem_sdiff.mpr ⟨hxt (mem_sdiff.mp hy).1, (mem_sdiff.mp hy).2⟩,
+           by rw [card_sdiff_of_subset hsx, hxn]⟩, sdiff_union_of_subset hsx⟩
+  · rintro ⟨y, ⟨hyt, hyn⟩, rfl⟩
+    refine ⟨⟨union_subset (hyt.trans sdiff_subset) hst, ?_⟩, subset_union_right⟩
+    rw [card_union_of_disjoint (disjoint_of_subset_left hyt disjoint_sdiff_self_left), hyn]
+    omega
+
+/-- The number of `n`-element subsets of `t` containing `s` equals
+`Nat.choose (#t - #s) (n - #s)`. -/
+lemma card_filter_powersetCard_subset [DecidableEq α] (s t : Finset α) (n : ℕ)
+    (hst : s ⊆ t) (hsn : #s ≤ n) :
+    #((t.powersetCard n).filter (s ⊆ ·)) = Nat.choose (#t - #s) (n - #s) := by
+  have hinj : Set.InjOn (· ∪ s) ↑((t \ s).powersetCard (n - #s)) := fun a ha b hb hab =>
+    (union_sdiff_cancel_right
+      (disjoint_of_subset_left (mem_powersetCard.mp ha).1 disjoint_sdiff_self_left)).symm.trans
+    ((congrArg (· \ s) hab).trans
+      (union_sdiff_cancel_right
+        (disjoint_of_subset_left (mem_powersetCard.mp hb).1 disjoint_sdiff_self_left)))
+  simp only [filter_powersetCard_subset s t n hst hsn, card_image_of_injOn hinj,
+             card_powersetCard, card_sdiff_of_subset hst]
 
 @[simp]
 theorem powersetCard_zero (s : Finset α) : s.powersetCard 0 = {∅} := by

@@ -5,15 +5,16 @@ Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 -/
 module
 
-public meta import Mathlib.Algebra.Order.Group.PosPart
-public meta import Mathlib.Algebra.Order.Ring.Basic
-public meta import Mathlib.Algebra.Order.Hom.Basic
-public meta import Mathlib.Data.Int.CharZero
-public meta import Mathlib.Data.Nat.Factorial.Basic
-public meta import Mathlib.Data.NNRat.Defs
-public meta import Mathlib.Data.PNat.Defs
-public meta import Mathlib.Tactic.Positivity.Core
 public meta import Qq
+public import Mathlib.Algebra.Order.Group.PosPart  -- shake: keep (Qq dependency)
+public import Mathlib.Data.Nat.Factorial.Basic  -- shake: keep (Qq dependency)
+public import Mathlib.Data.Int.CharZero  -- shake: keep (Qq dependency)
+public import Mathlib.Data.PNat.Defs  -- shake: keep (Qq dependency)
+public import Mathlib.Algebra.Order.Ring.Basic  -- shake: keep (Qq dependency)
+public meta import Mathlib.Algebra.Notation.Defs
+public import Mathlib.Algebra.Order.Hom.Basic
+public import Mathlib.Data.NNRat.Defs
+public import Mathlib.Tactic.Positivity.Core
 
 /-!
 ## `positivity` core extensions
@@ -59,7 +60,7 @@ end ite
 such that `positivity` successfully recognises both `a` and `b`. -/
 @[positivity ite _ _ _] def evalIte : PositivityExt where eval {u α} zα pα e := do
   let .app (.app (.app (.app f (p : Q(Prop))) (_ : Q(Decidable $p))) (a : Q($α))) (b : Q($α))
-    ← withReducible (whnf e) | throwError "not ite"
+    ← whnfR e | throwError "not ite"
   haveI' : $e =Q ite $p $a $b := ⟨⟩
   let ra ← core zα pα a; let rb ← core zα pα b
   guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(ite (α := $α))
@@ -105,8 +106,7 @@ end LinearOrder
 /-- The `positivity` extension which identifies expressions of the form `min a b`,
 such that `positivity` successfully recognises both `a` and `b`. -/
 @[positivity min _ _] def evalMin : PositivityExt where eval {u α} zα pα e := do
-  let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← withReducible (whnf e)
-    | throwError "not min"
+  let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← whnfR e | throwError "not min"
   let _e_eq : $e =Q $f $a $b := ⟨⟩
   let _a ← synthInstanceQ q(LinearOrder $α)
   assumeInstancesCommute
@@ -124,8 +124,7 @@ such that `positivity` successfully recognises both `a` and `b`. -/
 /-- Extension for the `max` operator. The `max` of two numbers is nonnegative if at least one
 is nonnegative, strictly positive if at least one is positive, and nonzero if both are nonzero. -/
 @[positivity max _ _] def evalMax : PositivityExt where eval {u α} zα pα e := do
-  let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← withReducible (whnf e)
-    | throwError "not max"
+  let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← whnfR e | throwError "not max"
   let _e_eq : $e =Q $f $a $b := ⟨⟩
   let _a ← synthInstanceQ q(LinearOrder $α)
   assumeInstancesCommute
@@ -153,8 +152,7 @@ is nonnegative, strictly positive if at least one is positive, and nonzero if bo
 /-- The `positivity` extension which identifies expressions of the form `a + b`,
 such that `positivity` successfully recognises both `a` and `b`. -/
 @[positivity _ + _] def evalAdd : PositivityExt where eval {u α} zα pα e := do
-  let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← withReducible (whnf e)
-    | throwError "not +"
+  let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← whnfR e | throwError "not +"
   let _e_eq : $e =Q $f $a $b := ⟨⟩
   let _a ← synthInstanceQ q(AddZeroClass $α)
   assumeInstancesCommute
@@ -162,8 +160,8 @@ such that `positivity` successfully recognises both `a` and `b`. -/
   let ra ← core zα pα a; let rb ← core zα pα b
   match ra, rb with
   | .positive pa, .positive pb =>
-    let _a ← synthInstanceQ q(AddLeftStrictMono $α)
-    pure (.positive q(add_pos $pa $pb))
+    let _a ← synthInstanceQ q(AddLeftMono $α)
+    pure (.positive q(add_pos' $pa $pb))
   | .positive pa, .nonnegative pb =>
     let _a ← synthInstanceQ q(AddLeftMono $α)
     pure (.positive q(add_pos_of_pos_of_nonneg $pa $pb))
@@ -175,11 +173,52 @@ such that `positivity` successfully recognises both `a` and `b`. -/
     pure (.nonnegative q(add_nonneg $pa $pb))
   | _, _ => failure
 
+/-- The `positivity` extension which identifies expressions of the form `a - b`,
+such that there is a local hypothesis `b < a`, `b ≤ a`, `a ≠ b` or `b ≠ a`. -/
+@[positivity _ - _] def evalSub : PositivityExt where eval {u α} _zα pα e := do
+  let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← whnfR e | throwError "not -"
+  let _e_eq : $e =Q $f $a $b := ⟨⟩
+  let _a ← synthInstanceQ q(AddGroup $α)
+  assumeInstancesCommute
+  let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ q($f) q(HSub.hSub)
+  let mut result := .none
+  for decl in ← getLCtx do
+    unless decl.isImplementationDetail do
+      have e' : Q(Prop) := decl.type
+      have p : Q($e') := .fvar decl.fvarId
+      result ← orElse result do
+        match e' with
+        | ~q(@LE.le.{u} $β $le $lo $hi) =>
+          let .defEq (_ : $α =Q $β) ← isDefEqQ α β | return .none
+          let .defEq _ ← isDefEqQ q($le) q(($pα).toLE) | return .none
+          let .defEq (_ : $a =Q $hi) ← isDefEqQ a hi | return .none
+          let .defEq (_ : $b =Q $lo) ← isDefEqQ b lo | return .none
+          let _ ← synthInstanceQ q(AddRightMono $α)
+          return .nonnegative q(sub_nonneg_of_le $p)
+        | ~q(@LT.lt.{u} $β $lt $lo $hi) =>
+          let .defEq (_ : $α =Q $β) ← isDefEqQ α β | return .none
+          let .defEq _ ← isDefEqQ q($lt) q(($pα).toLT) | return .none
+          let .defEq (_ : $a =Q $hi) ← isDefEqQ a hi | return .none
+          let .defEq (_ : $b =Q $lo) ← isDefEqQ b lo | return .none
+          let _i ← synthInstanceQ q(AddRightStrictMono $α)
+          assumeInstancesCommute
+          return .positive (q(sub_pos_of_lt $p):)
+        | ~q(@Ne.{u + 1} $β $lhs $rhs) =>
+          let .defEq (_ : $α =Q $β) ← isDefEqQ α β | return .none
+          if let .defEq (_ : $a =Q $lhs) ← isDefEqQ a lhs then
+            let .defEq (_ : $b =Q $rhs) ← isDefEqQ b rhs | return .none
+            return .nonzero (q(sub_ne_zero_of_ne $p):)
+          if let .defEq _ ← isDefEqQ a rhs then
+            let .defEq _ ← isDefEqQ b lhs | return .none
+            return .nonzero (q(sub_ne_zero_of_ne ($p).symm):)
+          return .none
+        | _ => return .none
+  return result
+
 /-- The `positivity` extension which identifies expressions of the form `a * b`,
 such that `positivity` successfully recognises both `a` and `b`. -/
 @[positivity _ * _] def evalMul : PositivityExt where eval {u α} zα pα e := do
-  let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← withReducible (whnf e)
-    | throwError "not *"
+  let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← whnfR e | throwError "not *"
   let _e_eq : $e =Q $f $a $b := ⟨⟩
   let _a ← synthInstanceQ q(Mul $α)
   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ q($f) q(HMul.hMul)
@@ -255,7 +294,7 @@ theorem pow_zero_pos [Semiring α] [PartialOrder α] [IsOrderedRing α] [Nontriv
 This extension is run in addition to the general `a ^ b` extension (they are overlapping). -/
 @[positivity _ ^ (0 : ℕ)]
 meta def evalPowZeroNat : PositivityExt where eval {u α} _zα _pα e := do
-  let .app (.app _ (a : Q($α))) _ ← withReducible (whnf e) | throwError "not ^"
+  let .app (.app _ (a : Q($α))) _ ← whnfR e | throwError "not ^"
   let _a ← synthInstanceQ q(Semiring $α)
   let _a ← synthInstanceQ q(PartialOrder $α)
   let _a ← synthInstanceQ q(IsOrderedRing $α)
@@ -266,7 +305,7 @@ meta def evalPowZeroNat : PositivityExt where eval {u α} _zα _pα e := do
 such that `positivity` successfully recognises both `a` and `b`. -/
 @[positivity _ ^ (_ : ℕ)]
 meta def evalPow : PositivityExt where eval {u α} zα pα e := do
-  let .app (.app _ (a : Q($α))) (b : Q(ℕ)) ← withReducible (whnf e) | throwError "not ^"
+  let .app (.app _ (a : Q($α))) (b : Q(ℕ)) ← whnfR e | throwError "not ^"
   let result ← catchNone do
     let .true := b.isAppOfArity ``OfNat.ofNat 3 | throwError "not a ^ n where n is a literal"
     let some n := (b.getRevArg! 1).rawNatLit? | throwError "not a ^ n where n is a literal"
@@ -330,7 +369,7 @@ meta def evalAbs : PositivityExt where eval {_u} (α zα pα) (e : Q($α)) := do
     | .nonzero pa =>
       let pa' ← mkAppM ``abs_pos_of_ne_zero #[pa]
       pure (.positive pa')
-    | _ => pure .none
+    | _ => throwError "goto catch"
   catch _ => do
     let pa' ← mkAppM ``abs_nonneg #[a]
     pure (.nonnegative pa')
@@ -375,8 +414,11 @@ meta def evalNatCast : PositivityExt where eval {u α} _zα _pα e := do
   assumeInstancesCommute
   match ← core zα' pα' a with
   | .positive pa =>
-    let _nz ← synthInstanceQ q(NeZero (1 : $α))
-    pure (.positive q(Nat.cast_pos'.2 $pa))
+    try
+      let _nz ← synthInstanceQ q(NeZero (1 : $α))
+      pure (.positive q(Nat.cast_pos'.2 $pa))
+    catch _ =>
+      pure (.nonnegative q(Nat.cast_nonneg' _))
   | _ =>
     pure (.nonnegative q(Nat.cast_nonneg' _))
 

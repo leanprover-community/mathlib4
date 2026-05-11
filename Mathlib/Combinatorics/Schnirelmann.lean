@@ -10,6 +10,9 @@ public import Mathlib.Data.Nat.ModEq
 public import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.Data.Real.Archimedean
 public import Mathlib.Order.Interval.Finset.Nat
+public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+
+import Mathlib.Tactic.Rify
 
 /-!
 # Schnirelmann density
@@ -36,7 +39,6 @@ which reduces the proof obligations later that would arise with `Nat.card`.
 * Give other calculations of the density, for example powers and their sumsets.
 * Define other densities like the lower and upper asymptotic density, and the natural density,
   and show how these relate to the Schnirelmann density.
-* Show that if the sum of two densities is at least one, the sumset covers the positive naturals.
 * Prove Schnirelmann's theorem and Mann's theorem on the subadditivity of this density.
 
 ## References
@@ -48,7 +50,7 @@ which reduces the proof obligations later that would arise with `Nat.card`.
 
 open Finset
 
-/-- The Schnirelmann density is defined as the infimum of |A ∩ {1, ..., n}| / n as n ranges over
+/-- The Schnirelmann density is defined as the infimum of $|A ∩ {1, ..., n}| / n$ as n ranges over
 the positive naturals. -/
 noncomputable def schnirelmannDensity (A : Set ℕ) [DecidablePred (· ∈ A)] : ℝ :=
   ⨅ n : {n : ℕ // 0 < n}, #{a ∈ Ioc 0 n | a ∈ A} / n
@@ -260,11 +262,44 @@ lemma schnirelmannDensity_setOf_modeq_one {m : ℕ} :
   rcases eq_or_ne m 1 with rfl | hm
   · simp [Nat.modEq_one]
   rw [← schnirelmannDensity_setOf_mod_eq_one hm]
-  apply schnirelmannDensity_congr
-  ext n
-  simp only [Set.mem_setOf_eq, Nat.ModEq, Nat.one_mod_eq_one.mpr hm]
+  simp [Nat.ModEq, Nat.one_mod_eq_one.mpr hm]
 
 lemma schnirelmannDensity_setOf_Odd : schnirelmannDensity (setOf Odd) = 2⁻¹ := by
   have h : setOf Odd = {n | n % 2 = 1} := Set.ext fun _ => Nat.odd_iff
   simp only [h]
   rw [schnirelmannDensity_setOf_mod_eq_one (by norm_num1), Nat.cast_two]
+
+open scoped Pointwise
+
+/-- If two sets `A` and `B` have Schnirelmann densities with sum at least 1, and both sets
+contain zero, then every natural number is sum of an element of `A` and an element of `B`.
+Note that we cannot omit the assumption that both sets contain zero, as shown by the
+counterexample `A = B = Odd`.
+-/
+theorem add_eq_univ_of_one_le_schirelmannDensity_add_schnirelmannDensity {A B : Set ℕ}
+    [DecidablePred (· ∈ A)] [DecidablePred (· ∈ B)] (hA : 0 ∈ A) (hB : 0 ∈ B)
+    (h : 1 ≤ schnirelmannDensity A + schnirelmannDensity B) : A + B = .univ := by
+  rw [Set.eq_univ_iff_forall]
+  rintro (_ | m)
+  · exact ⟨0, hA, 0, ⟨hB, rfl⟩⟩
+  set n := m + 1
+  by_cases hnA : n ∈ A
+  · exact ⟨n, by simp [hnA], 0, ⟨hB, rfl⟩⟩
+  by_cases hnB : n ∈ B
+  · exact ⟨0, hA, n, ⟨hnB, by simp⟩⟩
+  let f : ℕ ⊕ ℕ → ℕ
+    | .inl x => x
+    | .inr y => n - y
+  let sA := {a ∈ Ioc 0 n | a ∈ A}
+  let sB := {b ∈ Ioc 0 n | b ∈ B}
+  have hc : #(image f (disjSum sA sB)) < #(disjSum sA sB) := calc
+    #(image f (disjSum sA sB)) ≤ #(Ioo 0 n) := by gcongr; grind [mem_disjSum]
+    _ < n := by simp [Nat.card_Ioo, n]
+    _ ≤ #(disjSum sA sB) := by
+      rw [card_disjSum]
+      rify
+      nlinarith [@schnirelmannDensity_mul_le_card_filter A _ n,
+        @schnirelmannDensity_mul_le_card_filter B _ n]
+  obtain ⟨a | b, ha, a | b, hb, _, hxy⟩ := exists_ne_map_eq_of_card_image_lt hc <;>
+  simp only [sA, sB, inl_mem_disjSum, mem_filter, mem_Ioc, inr_mem_disjSum] at ha hb <;>
+  first | grind [inr_mem_disjSum] | exact ⟨a, by simp [*], b, by simp [*], by grind⟩

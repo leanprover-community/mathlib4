@@ -88,9 +88,7 @@ theorem mul_self_mem_kIdeal_of_X_Y_Z_mul_mem {x : MvPolynomial (Fin 3) (ZMod 2)}
   refine ⟨i, Nat.add_le_add ?_ ?_⟩ <;> rwa [Nat.one_le_iff_ne_zero]
 
 /-- `𝔽₂[α, β, γ] / (α², β², γ²)` -/
-def K : Type _ := _ ⧸ kIdeal
-
-instance : CommRing K := Ideal.Quotient.commRing _
+abbrev K : Type _ := _ ⧸ kIdeal
 
 theorem comap_C_kIdeal : kIdeal.comap (C : ZMod 2 →+* MvPolynomial (Fin 3) (ZMod 2)) = ⊥ := by
   refine bot_unique ?_
@@ -290,7 +288,7 @@ theorem CliffordAlgebra.not_forall_algebraMap_injective.{v} :
 
 open Q60596 in
 /-- The general bonus statement: not every quadratic form is the diagonal of a bilinear form. -/
-theorem BilinMap.not_forall_toQuadraticMap_surjective.{v} :
+theorem LinearMap.BilinMap.not_forall_toQuadraticMap_surjective.{v} :
     -- TODO: make `R` universe polymorphic
     ¬∀ (R : Type) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M],
       Function.Surjective (BilinMap.toQuadraticMap : BilinForm R M → QuadraticForm R M) :=

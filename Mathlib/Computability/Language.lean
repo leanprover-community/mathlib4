@@ -9,7 +9,8 @@ public import Mathlib.Algebra.Order.Kleene
 public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Data.Set.Lattice
 public import Mathlib.Tactic.DeriveFintype
-import Mathlib.Data.Fintype.Sum
+public import Mathlib.Data.Fintype.Sum
+public import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # Languages
@@ -63,14 +64,13 @@ variable {α β γ : Type*}
 /-- A language is a set of strings over an alphabet. -/
 def Language (α) :=
   Set (List α)
+deriving CompleteAtomicBooleanAlgebra
 
 namespace Language
 
 instance : Membership (List α) (Language α) := ⟨Set.Mem⟩
 instance : Singleton (List α) (Language α) := ⟨Set.singleton⟩
 instance : Insert (List α) (Language α) := ⟨Set.insert⟩
-instance instCompleteAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Language α) :=
-  Set.instCompleteAtomicBooleanAlgebra
 
 variable {l m : Language α} {a b x : List α}
 
@@ -300,7 +300,7 @@ instance : KleeneAlgebra (Language α) where
     refine iSup_le fun n ↦ ?_
     induction n with
     | zero => simp
-    | succ n ih => grw [pow_succ, ← mul_assoc m (l^n) l, ih, h]
+    | succ n ih => grw [pow_succ, ← mul_assoc m (l ^ n) l, ih, h]
 
 @[deprecated add_le_add (since := "2025-10-26")]
 theorem le_add_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ + l₂ ≤ m₁ + m₂ :=
@@ -408,8 +408,8 @@ lemma reverse_kstar (l : Language α) : l∗.reverse = l.reverse∗ := by
 lemma mem_inf {x : List α} {l m : Language α} : x ∈ l ⊓ m ↔ x ∈ l ∧ x ∈ m := by
   apply Set.mem_inter_iff
 
-lemma compl_compl (l : Language α) : lᶜᶜ = l := by
-  simp [compl]
+lemma compl_compl (l : Language α) : lᶜᶜ = l :=
+  _root_.compl_compl l
 
 end Language
 

@@ -47,6 +47,7 @@ theorem IccExtendCM_of_mem {f : C(Icc a b, E)} {x : α} (hx : x ∈ Icc a b) :
     IccExtendCM f x = f ⟨x, hx⟩ := by
   simp [IccExtendCM, projIccCM, projIcc, hx.1, hx.2]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The concatenation of two continuous maps defined on adjacent intervals. If the values of the
 functions on the common bound do not agree, this is defined as an arbitrarily chosen constant
 map. See `concatCM` for the corresponding map on the subtype of compatible function pairs. -/
@@ -94,8 +95,8 @@ theorem tendsto_concat {ι : Type*} {p : Filter ι} {F : ι → C(Icc a b, E)} {
   rw [tendsto_nhds_compactOpen] at hf hg ⊢
   rintro K hK U hU hfgU
   have h : b ∈ Icc a c := ⟨Fact.out, Fact.out⟩
-  let K₁ : Set (Icc a b) := projIccCM '' (Subtype.val '' (K ∩ Iic ⟨b, h⟩))
-  let K₂ : Set (Icc b c) := projIccCM '' (Subtype.val '' (K ∩ Ici ⟨b, h⟩))
+  let K₁ : Set (Icc a b) := projIccCM '' Subtype.val '' (K ∩ Iic ⟨b, h⟩)
+  let K₂ : Set (Icc b c) := projIccCM '' Subtype.val '' (K ∩ Ici ⟨b, h⟩)
   have hK₁ : IsCompact K₁ :=
     hK.inter_right isClosed_Iic |>.image continuous_subtype_val |>.image projIccCM.continuous
   have hK₂ : IsCompact K₂ :=

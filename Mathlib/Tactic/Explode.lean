@@ -8,7 +8,8 @@ module
 public meta import Lean.Elab.Command
 public meta import Lean.PrettyPrinter
 public meta import Mathlib.Tactic.Explode.Datatypes
-public meta import Mathlib.Tactic.Explode.Pretty
+public import Mathlib.Tactic.Explode.Datatypes
+public import Mathlib.Tactic.Explode.Pretty
 
 /-!
 # Explode command
@@ -264,7 +265,7 @@ elab "#explode " stx:term : command => withoutModifyingEnv <| Command.runTermEla
     addCompletionInfo <| .id stx theoremName (danglingDot := false) {} none
     let decl ← getConstInfo theoremName
     let c : Expr := .const theoremName (decl.levelParams.map mkLevelParam)
-    pure (m!"{MessageData.ofConst c} : {decl.type}", decl.value!)
+    pure (m!"{MessageData.ofConst c} : {decl.type}", decl.value! (allowOpaque := true))
   catch _ =>
     let e ← Term.elabTerm stx none
     Term.synthesizeSyntheticMVarsNoPostponing

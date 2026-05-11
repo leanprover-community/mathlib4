@@ -19,7 +19,7 @@ In decomposition monoids (e.g., `ℕ`, `ℤ`), this predicate is equivalent to `
 (see `irreducible_iff_prime`), however this is not true in general.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero IsOrderedMonoid Multiset
 

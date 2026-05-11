@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Monoidal.Functor
 public import Mathlib.CategoryTheory.Monoidal.Types.Basic
 public import Mathlib.CategoryTheory.Types.Basic
 public import Mathlib.Tactic.Simps.Basic
+public import Mathlib.Control.Basic
 
 /-!
 # Convert from `Applicative` to `CategoryTheory.Functor.LaxMonoidal`
@@ -25,14 +26,14 @@ section
 
 variable (F : Type* → Type*) [Applicative F] [LawfulApplicative F]
 
-attribute [local simp] map_seq seq_map_assoc
+attribute [local simp] map_seq seq_map_assoc types_tensorObj_def types_tensorUnit_def
   LawfulApplicative.pure_seq LawfulApplicative.seq_assoc in
 /-- A lawful `Applicative` gives a category theory `LaxMonoidal` functor
 between categories of types. -/
 @[simps]
 instance : (ofTypeFunctor F).LaxMonoidal where
-  ε _ : F _ := pure PUnit.unit
-  μ _ _ p : F _ := Prod.mk <$> p.1 <*> p.2
+  ε := ↾fun _ ↦ (pure PUnit.unit : F _)
+  μ _ _ := ↾fun p ↦ (Prod.mk <$> p.1 <*> p.2 : F _)
 
 end
 

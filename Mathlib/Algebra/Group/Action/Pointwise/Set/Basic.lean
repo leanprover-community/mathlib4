@@ -114,16 +114,16 @@ lemma op_smul_set_mul_eq_mul_smul_set (a : α) (s : Set α) (t : Set α) :
 
 end Semigroup
 
-section IsLeftCancelMul
+section IsLeftCancelSMul
 
-variable [Mul α] [IsLeftCancelMul α] {s t : Set α}
+variable [SMul α β] [IsLeftCancelSMul α β] {s : Set α} {t : Set β}
 
 @[to_additive]
 theorem pairwiseDisjoint_smul_iff :
-    s.PairwiseDisjoint (· • t) ↔ (s ×ˢ t).InjOn fun p ↦ p.1 * p.2 :=
-  pairwiseDisjoint_image_right_iff fun _ _ ↦ mul_right_injective _
+    s.PairwiseDisjoint (· • t) ↔ (s ×ˢ t).InjOn fun p ↦ p.1 • p.2 :=
+  pairwiseDisjoint_image_right_iff fun a _ _ _ h ↦ IsLeftCancelSMul.left_cancel a _ _ h
 
-end IsLeftCancelMul
+end IsLeftCancelSMul
 
 @[to_additive]
 instance smulCommClass_set [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
@@ -168,7 +168,7 @@ instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α 
 
 /-- A multiplicative action of a monoid `α` on a type `β` gives a multiplicative action of `Set α`
 on `Set β`. -/
-@[to_additive
+@[to_additive (attr := implicit_reducible)
 /-- An additive action of an additive monoid `α` on a type `β` gives an additive action of `Set α`
 on `Set β` -/]
 protected noncomputable def mulAction [Monoid α] [MulAction α β] : MulAction (Set α) (Set β) where
@@ -176,7 +176,7 @@ protected noncomputable def mulAction [Monoid α] [MulAction α β] : MulAction 
   one_smul s := image2_singleton_left.trans <| by simp_rw [one_smul, image_id']
 
 /-- A multiplicative action of a monoid on a type `β` gives a multiplicative action on `Set β`. -/
-@[to_additive
+@[to_additive (attr := implicit_reducible)
 /-- An additive action of an additive monoid on a type `β` gives an additive action on `Set β`. -/]
 protected def mulActionSet [Monoid α] [MulAction α β] : MulAction α (Set β) where
   mul_smul _ _ _ := by simp only [← image_smul, image_image, ← mul_smul]

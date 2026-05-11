@@ -116,6 +116,7 @@ def mkFinite (X : Type*) [Finite X] [TopologicalSpace X] [DiscreteTopology X] : 
     intro U _
     apply isOpen_discrete (closure U)
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 A morphism in `Stonean` is an epi iff it is surjective.
 -/
