@@ -85,37 +85,30 @@ noncomputable def commShift : LF.CommShift A where
   commShiftIso_add a b := by
     ext : 1
     apply leftDerived_ext _ (postcomposeShiftNatTrans LF α (a + b)) W
-    sorry
-  /-
-  commShiftIso_add a b := by
-    ext : 1
-    apply rightDerived_ext _ (precomposeShiftNatTrans LF α (a + b)) W
     ext X
-    have ha := (shiftFunctor D b).congr_map (rightDerivedNatTrans_app _ _
+    have ha := (leftDerivedNatTrans_app _ _
       (precomposeShiftNatTrans LF α a) (postcomposeShiftNatTrans LF α _) W
       (F.commShiftIso _).hom X)
-    rw [precomposeShiftNatTrans_app, postcomposeShiftNatTrans_app,
-      map_comp, map_comp, map_comp, Category.assoc] at ha
-    have hb := rightDerivedNatTrans_app _ _ (precomposeShiftNatTrans LF α b)
-      (postcomposeShiftNatTrans LF α _) W (F.commShiftIso _).hom (X⟦a⟧) =≫
-        (LF.map ((L.commShiftIso a).hom.app X))⟦b⟧'
-    rw [Category.assoc, Category.assoc,
-      ← dsimp% (rightDerivedNatTrans _ _ (precomposeShiftNatTrans LF α b)
-        (postcomposeShiftNatTrans LF α b) W (commShiftIso F b).hom).naturality
-        ((L.commShiftIso a).hom.app X), precomposeShiftNatTrans_app] at hb
-    dsimp at ha hb ⊢
-    rw [dsimp% rightDerivedNatTrans_app _ _ (precomposeShiftNatTrans LF α (a + b))
-      (postcomposeShiftNatTrans LF α _) W (F.commShiftIso _).hom X]
-    simp only [postcomposeShiftNatTrans_app, precomposeShiftNatTrans_app,
-      CommShift.isoAdd_hom_app, comp_obj, rightDerivedNatIso_hom, Category.assoc,
-      L.commShiftIso_add a b, ← LF.map_comp_assoc, Iso.inv_hom_id_app,
-      Category.comp_id]
-    rw [LF.map_comp_assoc, LF.map_comp, Category.assoc,
-      ← dsimp% α.naturality_assoc ((shiftFunctorAdd C a b).hom.app X),
-      reassoc_of% hb, postcomposeShiftNatTrans_app _ _ b, reassoc_of% ha,
-      F.commShiftIso_add, CommShift.isoAdd_hom_app_assoc,
-      ← NatTrans.naturality]
-    dsimp-/
+    have hb := (leftDerivedNatTrans_app _ _
+      (precomposeShiftNatTrans LF α b) (postcomposeShiftNatTrans LF α _) W
+      (F.commShiftIso _).hom (X⟦a⟧))
+    simp only [comp_obj, postcomposeShiftNatTrans_app, precomposeShiftNatTrans_app,
+      Category.assoc] at ha hb
+    dsimp
+    rw [leftDerivedNatTrans_app]
+    simp only [precomposeShiftNatTrans_app, postcomposeShiftNatTrans_app,
+      CommShift.isoAdd_hom_app, CommShift.isoAdd_inv_app, comp_obj,
+      leftDerivedNatIso_hom, Category.assoc, commShiftIso_add,
+      ← dsimp% (shiftFunctorAdd D a b).inv.naturality (α.app X),
+      ← (shiftFunctor D b).map_comp_assoc, ha,
+      ← dsimp% ((shiftFunctor H b ⋙ LF).leftDerivedNatTrans (LF ⋙ shiftFunctor D b)
+        (precomposeShiftNatTrans LF α b)
+        (postcomposeShiftNatTrans LF α b) W (commShiftIso F b).hom).naturality_1
+      ((L.commShiftIso a).app X), ← LF.map_comp_assoc, Iso.hom_inv_id_app,
+      map_id, Category.id_comp]
+    simp only [map_comp_assoc, reassoc_of% hb,
+      ← dsimp% α.naturality_assoc ((shiftFunctorAdd C a b).hom.app X)]
+    simp [← Functor.map_comp_assoc, ← Functor.map_comp]
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
