@@ -102,9 +102,9 @@ instance : (plus C).IsStableUnderShift ℤ where
         simp only [plus_quotient_obj_iff] at hK
         obtain ⟨q, _⟩ := hK
         refine ⟨q - n, ?_⟩
-        have : (((HomotopyCategory.quotient _ _).obj K)⟦n⟧).as =
-          ((HomotopyCategory.quotient _ _).obj (K⟦n⟧)).as := by
-          congr 1; apply Quotient.functor_obj_shift
+        have : (((HomotopyCategory.quotient _ _).obj K)⟦n⟧) =
+          ((HomotopyCategory.quotient _ _).obj (K⟦n⟧)) :=
+          Quotient.functor_obj_shift ..
         rw [this]
         exact K.isStrictlyGE_shift q n (q - n) (by lia) }
 
