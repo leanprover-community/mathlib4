@@ -368,6 +368,39 @@ theorem MeromorphicNFOn.div {f : 𝕜 → 𝕜} {g : 𝕜 → 𝕜} {x : 𝕜} (
   · grind [meromorphicNFAt_mul_iff_right, hg.inv]
 
 /--
+If `f` is meromorphic in normal form and `g` is analytic, then `f ∘ g` is meromorphic in normal
+form.
+-/
+theorem MeromorphicNFAt.comp_analyticAt (hf : MeromorphicNFAt f (g x)) (hg : AnalyticAt 𝕜 g x) :
+    MeromorphicNFAt (f ∘ g) x := by
+  rcases hf with hf | ⟨n, q, hq_an, hq_ne, hf⟩
+  · exact Or.inl (hg.continuousAt.tendsto.eventually hf)
+  by_cases hord : analyticOrderAt (g · - g x) x = ⊤
+  · rw [analyticOrderAt_eq_top] at hord
+    by_cases h : f (g x) = 0
+    · apply Or.inl
+      filter_upwards [hord, hg.continuousAt.preimage_mem_nhds (hf.filter_mono (by simp))]
+        with a h₁a h₂a
+      simp_all [sub_eq_zero]
+    · apply Or.inr
+      use 0, fun _ ↦ f (g x), by fun_prop, h
+      filter_upwards [hord, hg.continuousAt.preimage_mem_nhds (hf.filter_mono (by simp))]
+        with a h₁a h₂a
+      simp_all [sub_eq_zero]
+  lift (analyticOrderAt (g · - g x) x) to ℕ using hord with m hm
+  obtain ⟨p, h₁p, h₂p, h₃p⟩ := (AnalyticAt.analyticOrderAt_eq_natCast (by fun_prop)).1 hm.symm
+  apply Or.inr
+  use n * m, fun z ↦ (p z) ^ n • q (g z), (h₁p.zpow h₂p).smul (by fun_prop)
+  simp_all only [ne_eq, smul_eq_mul, isUnit_iff_ne_zero, zpow_ne_zero n h₂p, not_false_eq_true,
+    IsUnit.smul_eq_zero, true_and]
+  filter_upwards [h₃p, hg.continuousAt.preimage_mem_nhds (hf.filter_mono (by simp))]
+    with a h₁a h₂a
+  simp_all only [Pi.smul_apply', Pi.pow_apply, Set.preimage_setOf_eq, Set.mem_setOf_eq,
+    Function.comp_apply, ← smul_assoc, mul_zpow, smul_eq_mul]
+  congr 2
+  rw [mul_comm, zpow_mul, zpow_natCast]
+
+/--
 A function is meromorphic in normal form at a point iff it is meromorphic in normal form after
 composition with an analytic function of nonvanishing derivative, such as translation.
 -/
