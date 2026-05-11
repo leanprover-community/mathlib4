@@ -237,42 +237,26 @@ lemma Topology.IsOpenEmbedding.isSpectralMap_of_compactSpace {f : X → Y} [Comp
     IsRetrocompact.preimage_of_isOpenEmbedding hf <| hU'.isRetrocompact hU⟩
 
 /--
-A spectral map between *quasi-separated* quasispectral, sober spaces has compact fibers.
-Somewhat strangely, this is the strongest such statement we can figure out how to show.
-This is weird because compactness of fibers is a purely topological property,
-and yet there is an analogous theorem in algebraic geometry saying that the fibers of a quasicompact
-morphism are quasicompact. The underlying space of a scheme is precisely a topological space which
-is locally a spectral space, which notably does not necessarily have any global quasi-separatedness
-assumptions. However, the proof of this fact is very algebraic (utilizing the fact that
-quasi-compactness of morphisms is closed under base change). So, we have that this purely
-topological property of quasicompact morphisms of schemes seems to be entirely a consequence of
-algebra.
+A spectral map between *quasi-separated* pre-spectral, sober spaces has compact fibers.
+Note that any quasi-compact morphism of schemes has compact fibers, although the underlying
+topological space of a schemes is not necessarily quasi-separated.
 -/
 lemma IsSpectralMap.hasCompactFibers [PrespectralSpace X] [T0Space X] [QuasiSeparatedSpace X]
     [QuasiSober X] [PrespectralSpace Y] [T0Space Y] [QuasiSeparatedSpace Y] [QuasiSober Y]
     {f : X → Y} (hf : IsSpectralMap f) : HasCompactFibers f := by
   intro y
   -- Take a compact open neighbourhood U of y (exists since Y is prespectral)
-  obtain ⟨U, ⟨hUo, hUc⟩, hyU, -⟩ :=
+  obtain ⟨U, ⟨hUo, hUc⟩, (hyU : y ∈ U), -⟩ :=
     (PrespectralSpace.isTopologicalBasis (X := Y)).mem_nhds_iff.mp (isOpen_univ.mem_nhds trivial)
-  -- f ⁻¹' U is compact and open (spectral map + U compact open)
   have hfUo : IsOpen (f ⁻¹' U) := hUo.preimage hf.continuous
   have hfUc : IsCompact (f ⁻¹' U) := hf.isCompact_preimage_of_isOpen hUo hUc
-  -- f ⁻¹' U is an open subspace, inheriting all the needed instances
-  have hfU_oe : IsOpenEmbedding (Subtype.val : ↥(f ⁻¹' U) → X) := hfUo.isOpenEmbedding_subtypeVal
-  have : CompactSpace ↥(f ⁻¹' U) := isCompact_iff_compactSpace.mp hfUc
-  have : PrespectralSpace ↥(f ⁻¹' U) := hfU_oe.prespectralSpace
-  have : QuasiSeparatedSpace ↥(f ⁻¹' U) := hfU_oe.quasiSeparatedSpace
-  have : QuasiSober ↥(f ⁻¹' U) := hfU_oe.quasiSober
+  have : CompactSpace (f ⁻¹' U) := isCompact_iff_compactSpace.mp hfUc
+  have : PrespectralSpace (f ⁻¹' U) := hfUo.isOpenEmbedding_subtypeVal.prespectralSpace
+  have : QuasiSeparatedSpace (f ⁻¹' U) := hfUo.isOpenEmbedding_subtypeVal.quasiSeparatedSpace
+  have : QuasiSober (f ⁻¹' U) := hfUo.isOpenEmbedding_subtypeVal.quasiSober
   let g := f ∘ (Subtype.val : f ⁻¹' U → X)
-  have hg : IsSpectralMap g :=
-    hf.comp hfUo.isOpenEmbedding_subtypeVal.isSpectralMap_of_compactSpace
-  suffices h : f ⁻¹' {y} = Subtype.val '' (g ⁻¹' {y}) by
-    rw [h]
-    exact
-      (isClosed_singleton.preimage (WithConstructibleTopology.lift_continuous hg)).isCompact.image
-      (continuous_subtype_val.comp ofConstructibleTopology_continuous)
-  ext x
-  simp only [Set.mem_preimage, Set.mem_singleton_iff, Set.mem_image, g, Function.comp,
-    Subtype.exists]
-  exact ⟨fun hfx => ⟨x, hfx ▸ hyU, hfx, rfl⟩, fun ⟨_, _, hfa, rfl⟩ => hfa⟩
+  have hg : IsSpectralMap g := hf.comp hfUo.isOpenEmbedding_subtypeVal.isSpectralMap_of_compactSpace
+  have heq : f ⁻¹' {y} = Subtype.val '' (g ⁻¹' {y}) := by grind [Subtype.exists]
+  rw [heq]
+  exact (isClosed_singleton.preimage (WithConstructibleTopology.lift_continuous hg)).isCompact.image
+    (continuous_subtype_val.comp ofConstructibleTopology_continuous)
