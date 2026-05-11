@@ -243,7 +243,8 @@ instance : IsClosedUnderIsomorphisms (C := HomologyPretheory C c) HasPairSequenc
           (((HomologyPretheory.forgetₚ _).mapIso e).app _)
           (((HomologyPretheory.forgetₚ _).mapIso e).app _)
           ((proj₂.isoWhiskerLeft ((HP.iso _) ≪≫
-            incl.isoWhiskerLeft ((HomologyPretheory.forgetₚ _).mapIso e) ≪≫ (HP'.iso _).symm)).app _)
+            incl.isoWhiskerLeft ((HomologyPretheory.forgetₚ _).mapIso e) ≪≫
+            (HP'.iso _).symm)).app _)
           (by cat_disch)
           (by simp [pairSeq, pairSeq', ComposableArrows.Precomp.map, Hom.w_congr_app])
       exact ComposableArrows.exact_of_iso pairSeqIso (hPS.exact_pair _ _ _ hij)
@@ -269,7 +270,8 @@ instance : IsClosedUnderIsomorphisms (C := HomologyPretheory C c) HasPairSequenc
       have pairSeqIso : pairSeq ≅ pairSeq' :=
         ComposableArrows.isoMk₂
           ((proj₂.isoWhiskerLeft ((HP.iso _) ≪≫
-            incl.isoWhiskerLeft ((HomologyPretheory.forgetₚ _).mapIso e) ≪≫ (HP'.iso _).symm)).app _)
+            incl.isoWhiskerLeft ((HomologyPretheory.forgetₚ _).mapIso e) ≪≫
+            (HP'.iso _).symm)).app _)
           (((HP.iso _) ≪≫ incl.isoWhiskerLeft ((HomologyPretheory.forgetₚ _).mapIso e) ≪≫
             (HP'.iso _).symm).app _)
           (((HomologyPretheory.forgetₚ _).mapIso e).app _)
