@@ -9,8 +9,8 @@ public import Mathlib.Analysis.Complex.TaylorSeries
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
 public import Mathlib.NumberTheory.ModularForms.Basic
 public import Mathlib.NumberTheory.ModularForms.Identities
+public import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 public import Mathlib.RingTheory.PowerSeries.Basic
-public import Mathlib.RingTheory.PowerSeries.NoZeroDivisors
 
 /-!
 # q-expansions of functions on the upper half plane
@@ -214,7 +214,6 @@ lemma qExpansionFormalMultilinearSeries_apply_norm (m : ℕ) :
     ← (ContinuousMultilinearMap.piFieldEquiv ℂ (Fin m) ℂ).symm.norm_map]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma qExpansionFormalMultilinearSeries_radius (hh : 0 < h)
     (hfper : Periodic (f ∘ ofComplex) h) (hfhol : MDiff f) (hfbdd : IsBoundedAtImInfty f) :
     1 ≤ (qExpansionFormalMultilinearSeries h f).radius := by
@@ -290,7 +289,6 @@ lemma qExpansion_coeff_eq_circleIntegral {f : ℍ → ℂ} (hh : 0 < h)
   simp_rw [qExpansion, PowerSeries.coeff_mk, ← this, sub_zero, smul_eq_mul, one_div_mul_eq_div,
     div_eq_inv_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `h` is a positive strict period of `f`, then the `q`-expansion coefficient can be expressed
 as an integral along a horizontal line in the upper half-plane from `t * I` to `h + t * I`, for
@@ -590,12 +588,10 @@ protected lemma qExpansion_pow [Γ.HasDetPlusMinusOne] (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) (f : ModularForm Γ k) (n : ℕ) :
     qExpansion h (f.pow n) = (qExpansion h f) ^ n := by
   induction n with
-  | zero =>
-    change qExpansion h (1 : ModularForm Γ 0) = _
-    rw [pow_zero, ModularForm.qExpansion_one]
+  | zero => simp only [coe_pow, pow_zero, qExpansion_one]
   | succ n ih =>
-    change qExpansion h ((f.pow n).mul f) = _
-    rw [ModularForm.qExpansion_mul hh hΓ, ih, pow_succ]
+    rw [coe_pow, pow_succ, ← coe_pow, ← coe_mul, ModularForm.qExpansion_mul hh hΓ, ih,
+      pow_succ]
 
 protected lemma mul_ne_zero [Γ.HasDetPlusMinusOne] (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods)
     {a b : ℤ} {f : ModularForm Γ a} {g : ModularForm Γ b} (hf : f ≠ 0) (hg : g ≠ 0) :
@@ -638,6 +634,34 @@ lemma qExpansion_of_pow [Γ.HasDetPlusMinusOne] (hh : 0 < h)
   simpa [DirectSum.ofPow]
 
 end ModularForm
+
+namespace ModularFormClass
+
+@[deprecated (since := "2026-05-05")]
+protected alias cuspFunction_smul := ModularForm.cuspFunction_smul
+
+@[deprecated (since := "2026-05-05")]
+protected alias cuspFunction_neg := ModularForm.cuspFunction_neg
+
+@[deprecated (since := "2026-05-05")]
+protected alias cuspFunction_add := ModularForm.cuspFunction_add
+
+@[deprecated (since := "2026-05-05")]
+protected alias cuspFunction_sub := ModularForm.cuspFunction_sub
+
+@[deprecated (since := "2026-05-05")]
+protected alias qExpansion_smul := ModularForm.qExpansion_smul
+
+@[deprecated (since := "2026-05-05")]
+protected alias qExpansion_neg := ModularForm.qExpansion_neg
+
+@[deprecated (since := "2026-05-05")]
+protected alias qExpansion_add := ModularForm.qExpansion_add
+
+@[deprecated (since := "2026-05-05")]
+protected alias qExpansion_sub := ModularForm.qExpansion_sub
+
+end ModularFormClass
 
 end ring
 

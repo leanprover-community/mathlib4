@@ -5,7 +5,7 @@ Authors: Chris Birkbeck
 -/
 module
 
-public import Mathlib.NumberTheory.ModularForms.DimensionFormulas.LevelOne
+public import Mathlib.NumberTheory.ModularForms.LevelOne.DimensionFormula
 public import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
 
 /-!
