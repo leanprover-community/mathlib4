@@ -32,20 +32,6 @@ namespace ModularForm
 
 variable {k : ℤ} (f : ModularForm 𝒮ℒ k)
 
-private lemma qExpansion_eq_qExpansion_discriminant_mul
-    (hcusp : (qExpansion 1 f).coeff 0 = 0) :
-    qExpansion 1 f = qExpansion 1 discriminant *
-      qExpansion 1 (discriminantEquiv (toCuspForm f hcusp)) := by
-  have hfun : (f : ℍ → ℂ) = discriminant *
-      (CuspForm.discriminantEquiv (toCuspForm f hcusp) : ℍ → ℂ) := by
-    funext z
-    simp [CuspForm.discriminantEquiv, mul_div_cancel₀ _ (discriminant_ne_zero z)]
-  rw [hfun]
-  exact UpperHalfPlane.qExpansion_mul
-    (CuspForm.coe_discriminant ▸ ModularFormClass.analyticAt_cuspFunction_zero
-      (CuspForm.discriminant : CuspForm 𝒮ℒ 12) one_pos one_mem_strictPeriods_SL)
-    (ModularFormClass.analyticAt_cuspFunction_zero _ one_pos one_mem_strictPeriods_SL)
-
 /-- **Sturm bound for level-1 modular forms.** If a modular form `f` of weight `k` for `SL(2, ℤ)`
 has zero coefficient on `q^i` in its q-expansion for every `i ≥ 0` with `12 * i ≤ k`, then
 `f` is identically zero. -/

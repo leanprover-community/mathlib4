@@ -7,13 +7,11 @@ module
 
 public import Mathlib.Analysis.Complex.SqrtDeriv
 public import Mathlib.Analysis.Normed.Ring.InfiniteProd
-public import Mathlib.NumberTheory.ModularForms.CuspFormSubmodule
 public import Mathlib.NumberTheory.ModularForms.DedekindEta
 public import Mathlib.NumberTheory.ModularForms.Basic
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Transform
 public import Mathlib.NumberTheory.ModularForms.LevelOne.Basic
 public import Mathlib.NumberTheory.ModularForms.QExpansion
-public import Mathlib.RingTheory.PowerSeries.Order
 
 /-!
 # The modular discriminant Δ
@@ -263,21 +261,6 @@ lemma exp_decay_isBigO_discriminant (f : CuspForm 𝒮ℒ k) :
     (by simpa using exp_isBigO_discriminant)
 
 end CuspForm
-
-namespace ModularForm
-
-/-- The order of the q-expansion of the modular discriminant is 1: its first coefficient
-vanishes (Δ is a cusp form) and its second coefficient equals 1. -/
-lemma discriminant_qExpansion_order :
-    (qExpansion 1 ModularForm.discriminant).order = 1 := by
-  refine PowerSeries.order_eq_nat.mpr
-    ⟨ModularForm.discriminant_qExpansion_coeff_one ▸ one_ne_zero, fun i hi ↦ ?_⟩
-  obtain rfl : i = 0 := by omega
-  have h0 := (isCuspForm_iff_coeffZero_eq_zero
-    ((CuspForm.discriminant : ModularForm 𝒮ℒ 12))).mp ⟨CuspForm.discriminant, rfl⟩
-  simpa using h0
-
-end ModularForm
 
 @[deprecated CuspForm.discriminant (since := "2026-04-30")]
 alias ModularForm.discriminantCuspForm := CuspForm.discriminant

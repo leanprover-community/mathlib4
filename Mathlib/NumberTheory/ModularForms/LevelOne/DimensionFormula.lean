@@ -10,6 +10,7 @@ public import Mathlib.NumberTheory.ModularForms.CuspFormSubmodule
 public import Mathlib.NumberTheory.ModularForms.Discriminant
 public import Mathlib.Data.Rat.Star
 public import Mathlib.LinearAlgebra.Dimension.Localization
+public import Mathlib.RingTheory.PowerSeries.Order
 
 /-!
 # Dimension formula for level 1 modular forms
@@ -91,6 +92,38 @@ def discriminantEquiv : CuspForm 𝒮ℒ k ≃ₗ[ℂ] ModularForm 𝒮ℒ (k - 
     exact mul_div_cancel_left₀ (f z) (discriminant_ne_zero z)
 
 end CuspForm
+
+namespace ModularForm
+
+/-- The order of the q-expansion of the modular discriminant is 1: the zeroth coefficient
+vanishes (Δ is a cusp form) and the first coefficient equals 1. -/
+lemma discriminant_qExpansion_order :
+    (qExpansion 1 ModularForm.discriminant).order = 1 := by
+  refine PowerSeries.order_eq_nat.mpr
+    ⟨ModularForm.discriminant_qExpansion_coeff_one ▸ one_ne_zero, fun i hi ↦ ?_⟩
+  obtain rfl : i = 0 := by omega
+  have h0 := (isCuspForm_iff_coeffZero_eq_zero
+    ((CuspForm.discriminant : ModularForm 𝒮ℒ 12))).mp ⟨CuspForm.discriminant, rfl⟩
+  simpa using h0
+
+/-- The q-expansion of a level-1 modular form whose zeroth coefficient vanishes factors as
+the q-expansion of `Δ` times the q-expansion of the corresponding form of weight `k - 12`
+obtained via `discriminantEquiv`. -/
+lemma qExpansion_eq_qExpansion_discriminant_mul (f : ModularForm 𝒮ℒ k)
+    (hcusp : (qExpansion 1 f).coeff 0 = 0) :
+    qExpansion 1 f = qExpansion 1 discriminant *
+      qExpansion 1 (CuspForm.discriminantEquiv (toCuspForm f hcusp)) := by
+  have hfun : (f : ℍ → ℂ) = discriminant *
+      (CuspForm.discriminantEquiv (toCuspForm f hcusp) : ℍ → ℂ) := by
+    funext z
+    simp [CuspForm.discriminantEquiv, mul_div_cancel₀ _ (discriminant_ne_zero z)]
+  rw [hfun]
+  exact UpperHalfPlane.qExpansion_mul
+    (CuspForm.coe_discriminant ▸ ModularFormClass.analyticAt_cuspFunction_zero
+      (CuspForm.discriminant : CuspForm 𝒮ℒ 12) one_pos one_mem_strictPeriods_SL)
+    (ModularFormClass.analyticAt_cuspFunction_zero _ one_pos one_mem_strictPeriods_SL)
+
+end ModularForm
 
 end DeltaIsomorphism
 
