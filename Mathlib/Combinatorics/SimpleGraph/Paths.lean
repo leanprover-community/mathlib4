@@ -417,9 +417,9 @@ lemma IsPath.getVert_eq_start_iff_of_not_nil {i : ℕ} {p : G.Walk u w} (hp : p.
 
 lemma IsPath.getVert_eq_start_iff {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (hi : i ≤ p.length) :
     p.getVert i = u ↔ i = 0 := by
-  by_cases h' : p.Nil
-  · simp_all [nil_iff_length_eq.mp h']
-  · exact hp.getVert_eq_start_iff_of_not_nil h'
+  cases p
+  · simpa using hi
+  · exact hp.getVert_eq_start_iff_of_not_nil not_nil_cons
 
 lemma IsPath.getVert_eq_end_iff {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (hi : i ≤ p.length) :
     p.getVert i = w ↔ i = p.length := by

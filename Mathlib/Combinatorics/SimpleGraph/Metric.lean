@@ -73,9 +73,8 @@ theorem edist_le (p : G.Walk u v) :
 protected alias Walk.edist_le := edist_le
 
 @[simp]
-theorem edist_eq_zero_iff :
-    G.edist u v = 0 ↔ u = v := by
-  apply Iff.intro <;> simp [edist, ENat.iInf_eq_zero]
+theorem edist_eq_zero_iff : G.edist u v = 0 ↔ u = v := by
+  simp [edist]
 
 @[simp]
 theorem edist_self : edist G v v = 0 :=
@@ -380,7 +379,7 @@ of length at least two: the first and third nodes are different and not connecte
 lemma Walk.exists_adj_adj_not_adj_ne {p : G.Walk v w} (hp : p.length = G.dist v w)
     (hl : 1 < G.dist v w) : ∃ (x a b : V), G.Adj x a ∧ G.Adj a b ∧ ¬ G.Adj x b ∧ x ≠ b := by
   use v, p.getVert 1, p.getVert 2
-  have hnp : ¬p.Nil := by simpa [nil_iff_length_eq, hp] using Nat.ne_zero_of_lt hl
+  have hnp : ¬p.Nil := by grind [Nil.length_eq]
   have : p.tail.tail.length < p.tail.length := by
     rw [← p.tail.length_tail_add_one (by
       simp only [not_nil_iff_lt_length, ← p.length_tail_add_one hnp] at hp ⊢

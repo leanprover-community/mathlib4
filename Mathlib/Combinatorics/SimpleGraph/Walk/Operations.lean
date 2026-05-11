@@ -653,7 +653,7 @@ lemma drop_zero {u v} (p : G.Walk u v) :
 
 lemma nil_drop_of_length_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
     (p.drop n).Nil := by
-  rw [nil_iff_length_eq, drop_length, Nat.sub_eq_zero_of_le h]
+  rw [← length_eq_zero_iff, drop_length, Nat.sub_eq_zero_of_le h]
 
 lemma drop_support_eq_support_drop_min {u v} (p : G.Walk u v) (n : ℕ) :
     (p.drop n).support = p.support.drop (n ⊓ p.length) := by
@@ -702,8 +702,8 @@ lemma dropLast_concat {t u v} (p : G.Walk u v) (h : G.Adj v t) :
     (p.concat h).dropLast = p.copy rfl (by simp) := by
   induction p
   · rfl
-  · simp_rw [concat_cons]
-    rw [dropLast_cons_of_not_nil] <;> simp [*, nil_iff_length_eq]
+  · rw! [concat_cons, dropLast_cons_of_not_nil] <;>
+      simp [*, ← length_eq_zero_iff]
 
 lemma cons_tail_eq (p : G.Walk u v) (hp : ¬ p.Nil) :
     cons (p.adj_snd hp) p.tail = p := by
@@ -756,11 +756,8 @@ protected lemma Nil.dropLast {p : G.Walk v w} (hp : p.Nil) : p.dropLast.Nil := b
   subst_vars
   rfl
 
-lemma Nil.eq_copy_nil {p : G.Walk u v} (h : p.Nil) :
-    p = Walk.nil.copy rfl h.eq := by
-  have := h.eq
-  subst this
-  simp [nil_iff_eq_nil.mp h]
+lemma Nil.eq_copy_nil {p : G.Walk u v} (h : p.Nil) : p = Walk.nil.copy rfl h.eq := by
+  grind [eq_nil_iff, copy_rfl_rfl]
 
 lemma drop_of_length_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
     p.drop n = nil.copy rfl (p.getVert_of_length_le h) :=
