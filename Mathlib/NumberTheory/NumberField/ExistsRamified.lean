@@ -140,18 +140,6 @@ theorem IsGaloisGroup.to_isFractionRing'
     use algebraMap A K b / algebraMap A K a
     simp [hc, div_eq_div_iff ha hy', ← map_mul, ← map_mul, hb]
 
--- PRed
-theorem Algebra.formallyUnramified_iff_forall
-    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] :
-    FormallyUnramified R S ↔ ∀ q : PrimeSpectrum S, IsUnramifiedAt R q.1 :=
-  unramifiedLocus_eq_univ_iff.symm.trans Set.eq_univ_iff_forall
-
--- PRed
-theorem Algebra.unramified_iff_forall
-    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [FiniteType R S] :
-    Unramified R S ↔ ∀ q : PrimeSpectrum S, IsUnramifiedAt R q.1 :=
-  .trans ⟨fun h ↦ h.formallyUnramified, fun h ↦ ⟨h, inferInstance⟩⟩ formallyUnramified_iff_forall
-
 theorem NumberField.supr_inertia_eq_top (S G : Type*) [CommRing S] [Module.Finite ℤ S]
     [IsDomain S] [FaithfulSMul ℤ S] [Group G] [MulSemiringAction G S] [IsGaloisGroup G ℤ S] :
     ⨆ m : MaximalSpectrum S, m.asIdeal.toAddSubgroup.inertia G = ⊤ := by
