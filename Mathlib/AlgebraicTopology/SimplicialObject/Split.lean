@@ -291,7 +291,7 @@ theorem cofan_inj_epi_naturality {Δ₁ Δ₂ : SimplexCategoryᵒᵖ} (A : Inde
 finite coproducts -/
 @[simps]
 def map (F : C ⥤ D) [PreservesFiniteCoproducts F] :
-    (((whiskering _ _).obj F).obj X).Splitting where
+    Splitting (X ⋙ F) where
   N n := F.obj (s.N n)
   ι n := F.map (s.ι n)
   isColimit' n :=
