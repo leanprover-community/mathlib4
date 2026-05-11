@@ -52,7 +52,7 @@ noncomputable def fromNormalizedChainComplex : X.normalizedChainComplex R ⟶ X.
 
 @[reassoc (attr := simp)]
 lemma PInfty_toNormalizedChainComplex :
-    dsimp% PInfty ≫ X.toNormalizedChainComplex R = X.toNormalizedChainComplex R :=
+    PInfty ≫ X.toNormalizedChainComplex R = X.toNormalizedChainComplex R :=
   SimplicialObject.Splitting.PInfty_toNondegComplex _
 
 instance : IsSplitEpi (X.toNormalizedChainComplex R) :=
