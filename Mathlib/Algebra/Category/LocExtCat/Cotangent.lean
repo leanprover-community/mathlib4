@@ -21,7 +21,7 @@ local extensions over `Λ` with a fixed residue field `k`.
 * `LocExtCat.mapCotangent`: The canonical `k`-linear map between cotangent spaces of
   the underlying extions induced by a morphism `f : A ⟶ B` in `LocExtCat`.
 
-* `LocExtCat.surjective_mapCotangent_toOfQuot`: The cotangent map induced by a surjective morphism
+* `LocExtCat.mapcotangent_toOfQuot_surjective`: The cotangent map induced by a surjective morphism
   is surjective.
 
 * `LocExtCat.baseCotangentMap`: The canonical linear map from the cotangent space
@@ -85,15 +85,15 @@ private lemma comap_hom_toRingHom_ker_eq (I : Ideal A) [Nontrivial (A ⧸ I)] :
   rw [maximalIdeal_comap, Ideal.mk_ker, right_eq_sup]
   exact le_maximalIdeal (Ideal.Quotient.nontrivial_iff.mp ‹_›)
 
-theorem surjective_mapCotangent_toOfQuot (I : Ideal A) [Nontrivial (A ⧸ I)] :
+theorem mapcotangent_toOfQuot_surjective (I : Ideal A) [Nontrivial (A ⧸ I)] :
     Surjective (mapCotangent (A.toOfQuot I)) :=
   Cotangent.map_surjective_of_comap_eq (A.toOfQuot I).hom Ideal.Quotient.mk_surjective
     (comap_hom_toRingHom_ker_eq I)
 
 open Submodule in
-theorem bijective_mapCotangent_toOfQuot_iff (I : Ideal A) [Nontrivial (A ⧸ I)] :
+theorem mapcotangent_toOfQuot_bijective_iff (I : Ideal A) [Nontrivial (A ⧸ I)] :
     Bijective (mapCotangent (A.toOfQuot I)) ↔ I ≤ maximalIdeal A ^ 2 := by
-  simp only [Bijective, surjective_mapCotangent_toOfQuot I, and_true, ← LinearMap.ker_eq_bot]
+  simp only [Bijective, mapcotangent_toOfQuot_surjective I, and_true, ← LinearMap.ker_eq_bot]
   rw [← Submodule.restrictScalars_inj A.Ring, Cotangent.map_ker_of_surjective _
     Ideal.Quotient.mk_surjective (comap_hom_toRingHom_ker_eq I)]
   simp only [ker_toRingHom_toOfQuot, ker_extension, comap_inf, comap_subtype_le_iff, Std.le_refl,
@@ -104,15 +104,15 @@ theorem bijective_mapCotangent_toOfQuot_iff (I : Ideal A) [Nontrivial (A ⧸ I)]
     ← right_eq_inf.mpr (le_maximalIdeal (Ideal.Quotient.nontrivial_iff.mp ‹_›))]
 
 @[stacks 06S3 "(1) => (2)"]
-theorem surjective_mapCotangent_of_surjective {f : A ⟶ B} (h : Surjective f.toAlgHom) :
+theorem mapcotangent_surjective_of_surjective {f : A ⟶ B} (h : Surjective f.toAlgHom) :
     Surjective (mapCotangent f) := by
   rw [← toOfQuot_comp_ofQuotKerIsoOfSurjective_hom h, mapCotangent_comp, LinearMap.coe_comp]
   exact Function.Surjective.comp (equivCotangent (ofQuotKerIsoOfSurjective f h)).surjective
-    (surjective_mapCotangent_toOfQuot _)
+    (mapcotangent_toOfQuot_surjective _)
 
-theorem bijective_mapCotangent_iff {f : A ⟶ B} (hf : Surjective f.toAlgHom) :
+theorem mapCotangent_bijective_iff {f : A ⟶ B} (hf : Surjective f.toAlgHom) :
     Function.Bijective (mapCotangent f) ↔ RingHom.ker f.toAlgHom ≤ maximalIdeal A ^ 2 := by
-  nth_rw 1 [← bijective_mapCotangent_toOfQuot_iff, ← toOfQuot_comp_ofQuotKerIsoOfSurjective_hom hf,
+  nth_rw 1 [← mapcotangent_toOfQuot_bijective_iff, ← toOfQuot_comp_ofQuotKerIsoOfSurjective_hom hf,
     mapCotangent_comp, LinearMap.coe_comp, Bijective.of_comp_iff']
   exact (equivCotangent (ofQuotKerIsoOfSurjective f hf)).bijective
 
@@ -122,12 +122,12 @@ theorem mapCotangent_mapOfQuot_surjective_of_mapCotangent_surjective {I : Ideal 
     (h : Surjective (mapCotangent f)) : Surjective (mapCotangent (mapOfQuot f hf)) := by
   have : Surjective ((mapCotangent (mapOfQuot f hf)) ∘ₗ (mapCotangent (A.toOfQuot I))) := by
     rw [← mapCotangent_comp, toOfQuot_comp_mapOfQuot, mapCotangent_comp, LinearMap.coe_comp]
-    exact .comp (surjective_mapCotangent_toOfQuot J) h
+    exact .comp (mapcotangent_toOfQuot_surjective J) h
   exact .of_comp this
 
 open Submodule in
 @[stacks 06GZ "(2) => (1)"]
-theorem surjective_of_surjective_mapCotangent [IsPrecomplete (maximalIdeal A) A]
+theorem surjective_of_mapcotangent_surjective [IsPrecomplete (maximalIdeal A) A]
     [IsNoetherianRing B] [haus : IsHausdorff (maximalIdeal B) B] (f : A ⟶ B)
     (h : Surjective (mapCotangent f)) : Surjective f.toAlgHom := by
   have map_eq : (maximalIdeal A).map f.toAlgHom = maximalIdeal B := by
@@ -158,9 +158,6 @@ section specialFiber
 open LinearMap
 
 variable [IsLocalRing Λ] [Algebra.IsIntegral Λ k]
-
-theorem surjective_mapCotangent_toSpecialFiber : Surjective (mapCotangent A.toSpecialFiber) :=
-  surjective_mapCotangent_toOfQuot _
 
 /-- The canonical linear map from the cotangent space of `Λ` to the cotangent space of `A`. -/
 def baseCotangentMap (A : LocExtCat Λ k) : CotangentSpace Λ →ₗ[Λ] A.Cotangent :=
@@ -228,11 +225,11 @@ theorem exact_liftBaseChange_baseCotangentMap_mapCotangent_toSpecialFiber :
   LinearMap.exact_iff.mpr A.range_liftBaseChange_baseCotangentMap.symm
 
 @[stacks 06S3 "(3) => (2)"]
-theorem surjective_mapCotangent_of_surjective_mapCotangent_mapSpecialFiber
+theorem mapCotangent_surjective_of_mapCotangent_mapSpecialFiber_surjective
     (f : A ⟶ B) (h : Surjective (mapCotangent (mapSpecialFiber f))) :
     Surjective (mapCotangent f) := fun y ↦ by
   obtain ⟨x, hx⟩ := h (mapCotangent B.toSpecialFiber y)
-  obtain ⟨x, rfl⟩ := surjective_mapCotangent_toSpecialFiber x
+  obtain ⟨x, rfl⟩ := mapcotangent_toOfQuot_surjective _ x
   rw [← LinearMap.comp_apply, ← mapCotangent_comp, toOfQuot_comp_mapOfQuot,
     mapCotangent_comp, LinearMap.comp_apply] at hx
   have h_ker : y - mapCotangent f x ∈ LinearMap.ker (mapCotangent B.toSpecialFiber) := by

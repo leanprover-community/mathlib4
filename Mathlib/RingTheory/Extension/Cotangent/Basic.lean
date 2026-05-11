@@ -626,6 +626,4 @@ instance [FinitePresentation R S] [Module.Projective S Ω[S⁄R]] :
   exact Module.FinitePresentation.fg_ker (N := LinearMap.range P.toExtension.cotangentComplex)
     _ P.toExtension.cotangentComplex.surjective_rangeRestrict
 
-open Function Algebra.Extension
-
 end Algebra
