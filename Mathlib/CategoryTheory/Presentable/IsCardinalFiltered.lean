@@ -8,7 +8,7 @@ module
 public import Mathlib.CategoryTheory.Filtered.Final
 public import Mathlib.CategoryTheory.Limits.Shapes.WideEqualizers
 public import Mathlib.CategoryTheory.Comma.CardinalArrow
-public import Mathlib.SetTheory.Cardinal.Cofinality
+public import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
 public import Mathlib.SetTheory.Cardinal.HasCardinalLT
 public import Mathlib.SetTheory.Cardinal.Arithmetic
 
@@ -150,9 +150,6 @@ lemma isFiltered_of_isCardinalFiltered (J : Type u) [Category.{v} J]
     simp only [hasCardinalLT_aleph0_iff]
     infer_instance
   exact ⟨cocone F hA⟩
-
-@[deprecated (since := "2025-10-07")] alias isFiltered_of_isCardinalDirected :=
-  isFiltered_of_isCardinalFiltered
 
 lemma IsCardinalFiltered.nonempty (J : Type u) [Category.{v} J]
     (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] [IsCardinalFiltered J κ] : Nonempty J :=
