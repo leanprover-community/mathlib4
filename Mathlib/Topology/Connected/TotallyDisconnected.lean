@@ -293,9 +293,35 @@ def Continuous.connectedComponentsMap {β : Type*} [TopologicalSpace β] {f : α
     (h : Continuous f) : ConnectedComponents α → ConnectedComponents β :=
   Continuous.connectedComponentsLift (ConnectedComponents.continuous_coe.comp h)
 
+@[simp]
+lemma Continuous.connectedComponentsMap_mk {β : Type*} [TopologicalSpace β] {f : α → β}
+    (hf : Continuous f) (x : α) :
+    hf.connectedComponentsMap (.mk x) = .mk (f x) :=
+  rfl
+
 theorem Continuous.connectedComponentsMap_continuous {β : Type*} [TopologicalSpace β] {f : α → β}
     (h : Continuous f) : Continuous h.connectedComponentsMap :=
   Continuous.connectedComponentsLift_continuous (ConnectedComponents.continuous_coe.comp h)
+
+lemma Topology.IsCoinducing.connectedComponentsMap {β : Type*} [TopologicalSpace β] {f : α → β}
+    (hf : IsCoinducing f) :
+    IsCoinducing hf.continuous.connectedComponentsMap := by
+  rw [← ConnectedComponents.isQuotientMap_coe.of_comp_iff]
+  exact ConnectedComponents.isQuotientMap_coe.isCoinducing.comp hf
+
+@[simp]
+lemma Continuous.connectedComponentsMap_surjective {β : Type*} [TopologicalSpace β] {f : α → β}
+    (hf : Continuous f) (h : Surjective f) :
+    Surjective hf.connectedComponentsMap :=
+  Quotient.lift_surjective _ _ <| ConnectedComponents.surjective_coe.comp h
+
+lemma Topology.IsCoinducing.connectedComponentsMap_bijective {β : Type*} [TopologicalSpace β]
+    {f : α → β} (hf : IsCoinducing f) (hf' : ∀ y, IsConnected (f ⁻¹' {y})) :
+    hf.continuous.connectedComponentsMap.Bijective := by
+  refine ⟨fun x y h ↦ ?_, Continuous.connectedComponentsMap_surjective _ fun y ↦ (hf' y).nonempty⟩
+  obtain ⟨x, rfl⟩ := ConnectedComponents.surjective_coe x
+  obtain ⟨y, rfl⟩ := ConnectedComponents.surjective_coe y
+  simp_all [← hf.preimage_connectedComponent hf']
 
 /-- A preconnected set `s` has the property that every map to a
 discrete space that is continuous on `s` is constant on `s` -/
