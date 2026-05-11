@@ -25,6 +25,10 @@ This module defines `Hypergraph α` for a vertex type `α` (edges are defined as
 
 ## Main definitions
 
+* `Hypergraph α` is an undirected hypergraph with vertices of type `α` and edges of type `Set α`. In
+    addition to vertices and hyperedges, a `Hypergraph` must have the property that all edges are
+    subsets of the vertex set.
+
 For `H : Hypergraph α`:
 
 * `H.vertexSet` (abbrev. `V(H)`) denotes the vertex set of `H` as a term in `Set α`.
