@@ -91,8 +91,31 @@ open CategoryTheory TensorProduct AlgebraTensorModule
 attribute [local ext high] ConcreteCategory.hom_ext
 
 variable {A : Type w} [CommRing A] [Algebra R A]
-variable {B : Type w} [CommRing B] [Algebra R B]
-variable (f : A →ₐ[R] B)
+variable (B : Type w) [CommRing B] [Algebra R B]
+
+section BaseChangeMkQ
+
+variable [Algebra A B] [IsScalarTower R A B] (N : Submodule A (A ⊗[R] M))
+
+/-- The surjective `B`-linear map `B ⊗[R] M → B ⊗[A] ((A ⊗[R] M) ⧸ N)` obtained as the base change
+of `N.mkQ` along `A → B` -/
+def baseChangeMkQ : B ⊗[R] M →ₗ[B] B ⊗[A] ((A ⊗[R] M) ⧸ N) :=
+  N.mkQ.baseChange B ∘ₗ (cancelBaseChange R A B B M).symm.toLinearMap
+
+variable {B}
+
+theorem baseChangeMkQ_surjective : Function.Surjective (baseChangeMkQ B N) :=
+  (LinearMap.baseChange_surjective B (Submodule.mkQ_surjective _)).comp
+    (cancelBaseChange R A B B M).symm.surjective
+
+/-- The `B`-linear equivalence `(B ⊗[R] M) ⧸ ker (baseChangeMkQ N) ≃ₗ[B] B ⊗[A] ((A ⊗[R] M) ⧸ N)`
+underlying `Module.Grassmannian.map`. -/
+noncomputable def baseChangeMkQEquiv :=
+  (baseChangeMkQ B N).quotKerEquivOfSurjective (baseChangeMkQ_surjective N)
+
+end BaseChangeMkQ
+
+variable {B} (f : A →ₐ[R] B)
 
 /-- The map on Grassmannians induced by base change along an algebra map `A → B`.
 Given a submodule `N` of `A ⊗[R] M`, the image is the kernel of the composition
@@ -100,11 +123,8 @@ B ⊗[R] M ≃ B ⊗[A] (A ⊗[R] M) → B ⊗[A] ((A ⊗[R] M) ⧸ N)`. -/
 def map (N : G(k, (A ⊗[R] M); A)) : G(k, (B ⊗[R] M); B) :=
   letI : Algebra A B := f.toAlgebra
   letI : IsScalarTower R A B := IsScalarTower.of_algebraMap_eq' <| IsScalarTower.algebraMap_eq R A B
-  letI f' := N.toSubmodule.mkQ.baseChange B ∘ₗ (cancelBaseChange R A B B M).symm.toLinearMap
-  haveI equiv := f'.quotKerEquivOfSurjective <|
-    (LinearMap.baseChange_surjective B (Submodule.mkQ_surjective _)).comp
-      (cancelBaseChange R A B B M).symm.surjective
-  { toSubmodule := f'.ker
+  haveI equiv := baseChangeMkQEquiv N.toSubmodule
+  { toSubmodule := (baseChangeMkQ B N.toSubmodule).ker
     finite_quotient := Module.Finite.equiv equiv.symm
     projective_quotient := Module.Projective.of_equiv equiv.symm
     rankAtStalk_eq p := by
@@ -117,11 +137,9 @@ def map (N : G(k, (A ⊗[R] M); A)) : G(k, (B ⊗[R] M); B) :=
         _ = k := N.rankAtStalk_eq _ }
 
 theorem map_toSubmodule (N : G(k, A ⊗[R] M; A)) :
-    letI : Algebra A B := f.toAlgebra
-    letI : IsScalarTower R A B := IsScalarTower.of_algebraMap_eq' <|
-      IsScalarTower.algebraMap_eq R A B
-    (map f N).toSubmodule = LinearMap.ker
-      (N.toSubmodule.mkQ.baseChange B ∘ₗ (cancelBaseChange R A B B M).symm.toLinearMap) := by rfl
+  letI : Algebra A B := f.toAlgebra
+  letI : IsScalarTower R A B := IsScalarTower.of_algebraMap_eq' <| IsScalarTower.algebraMap_eq R A B
+  (map f N).toSubmodule = (baseChangeMkQ B N.toSubmodule).ker := by rfl
 
 variable (k)
 
@@ -138,12 +156,9 @@ theorem map_comp (N : G(k, A ⊗[R] M; A)) :
   algebraize [f.toRingHom, g.toRingHom, (g.comp f).toRingHom]
   -- FIXME: `algebraize` doesn't generate this instance, even though it seems like it should
   let : IsScalarTower A B C := by apply IsScalarTower.of_algebraMap_eq'; rfl
-  let fAB := N.toSubmodule.mkQ.baseChange B ∘ₗ
-    (cancelBaseChange R A B B M).symm.toLinearMap
-  let fAC := N.toSubmodule.mkQ.baseChange C ∘ₗ
-    (cancelBaseChange R A C C M).symm.toLinearMap
-  let fBC := fAB.ker.mkQ.baseChange C ∘ₗ
-    (cancelBaseChange R B C C M).symm.toLinearMap
+  let fAB := baseChangeMkQ B N.toSubmodule
+  let fAC := baseChangeMkQ C N.toSubmodule
+  let fBC := baseChangeMkQ C fAB.ker
   have hfAB : Function.Surjective fAB :=
     (LinearMap.baseChange_surjective B (Submodule.mkQ_surjective _)).comp
       (cancelBaseChange R A B B M).symm.surjective
@@ -159,13 +174,12 @@ theorem map_comp (N : G(k, A ⊗[R] M; A)) :
     induction z using TensorProduct.induction_on with
     | zero => simp [fAC, fBC, e]
     | tmul c m =>
-      simp [fAB, fAC, fBC, e, LinearMap.baseChange_tmul,
-        cancelBaseChange_symm_tmul, LinearEquiv.baseChange_tmul,
-        cancelBaseChange_tmul,
-        LinearMap.quotKerEquivOfSurjective_apply_mk]
+      simp only [fAC, fBC, e, baseChangeMkQ, LinearMap.comp_apply, cancelBaseChange_symm_tmul,
+         LinearMap.baseChange_tmul, Submodule.mkQ_apply, LinearEquiv.coe_trans, LinearEquiv.coe_coe,
+         LinearEquiv.coe_baseChange, LinearMap.quotKerEquivOfSurjective_apply_mk]
+      simp [fAB, baseChangeMkQ]
     | add x y hx hy =>
-      simp only [LinearMap.coe_comp, LinearEquiv.coe_coe,
-        Function.comp_apply, map_add] at *
+      simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, map_add] at *
       rw [hx, hy]
   rw [hfAC_ker_eq, hfBC_ker_eq, hcomp, LinearEquiv.ker_comp]
 
