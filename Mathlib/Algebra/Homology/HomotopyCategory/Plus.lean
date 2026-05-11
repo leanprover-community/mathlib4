@@ -108,6 +108,7 @@ instance : (plus C).IsStableUnderShift ℤ where
         rw [this]
         exact K.isStrictlyGE_shift q n (q - n) (by lia) }
 
+set_option backward.isDefEq.respectTransparency false in
 instance [HasZeroObject C] [HasBinaryBiproducts C] :
     (plus C).IsTriangulatedClosed₃ where
   ext₃' T hT := by
@@ -120,8 +121,7 @@ instance [HasZeroObject C] [HasBinaryBiproducts C] :
       simp only [plus_quotient_obj_iff]
       exact ⟨min (n₁ - 1) n₂, CochainComplex.isStrictlyGE_mappingCone f n₁ n₂ _
         (by simp) (by simp)⟩
-    · change _ ≫ 𝟙 _ = 𝟙 _ ≫ _
-      simp [hf]
+    · simp [hf]
 
 instance [HasZeroObject C] [HasBinaryBiproducts C] : (plus C).IsTriangulated where
   toIsTriangulatedClosed₂ := .of_isTriangulatedClosed₃
