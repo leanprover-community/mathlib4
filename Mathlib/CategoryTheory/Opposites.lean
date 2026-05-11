@@ -23,7 +23,6 @@ Unfortunately, because we do not have a definitional equality `op (op X) = X`,
 there are quite a few variations that are needed in practice.
 -/
 
-
 @[expose] public section
 
 universe v₁ v₂ u₁ u₂
