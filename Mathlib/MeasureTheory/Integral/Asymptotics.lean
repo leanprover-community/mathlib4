@@ -87,12 +87,12 @@ theorem IsBigO.set_integral_isBigO (hf : f =O[𝓟 s ×ˢ l] (g ∘ Prod.snd)) (
     (fun x ↦ ∫ i in s, f (i, x) ∂μ) =O[l] g := by
   obtain ⟨C, hC⟩ := hf.bound
   obtain ⟨t, htl, ht⟩ := hC.exists_mem
-  obtain ⟨u, hu, v, hv, huv⟩ := Filter.mem_prod_iff.mp htl
+  obtain ⟨u, hu, v, hv, huv⟩ := mem_prod_iff.mp htl
   refine isBigO_iff.mpr ⟨C * μ.real s, eventually_iff_exists_mem.mpr ⟨v, hv, fun x hx ↦ ?_⟩⟩
   calc
-  _ ≤ C * ‖g x‖ * μ.real s :=
-    norm_setIntegral_le_of_norm_le_const (C := C * ‖g x‖) hμ fun y hy ↦ ht (y, x) <| huv ⟨hu hy, hx⟩
-  _ = _ := by ring
+    _ ≤ C * ‖g x‖ * μ.real s :=
+      norm_setIntegral_le_of_norm_le_const hμ fun y hy ↦ ht (y, x) <| huv ⟨hu hy, hx⟩
+    _ = _ := by ring
 
 end Asymptotics
 
