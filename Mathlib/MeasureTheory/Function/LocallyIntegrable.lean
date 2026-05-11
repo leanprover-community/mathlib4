@@ -226,7 +226,7 @@ protected theorem LocallyIntegrableOn.smul {𝕜 : Type*} [NormedField 𝕜] [No
 
 -- See `locallyIntegrableOn_smul_iff` below for the fully general version.
 -- It is placed below to make use of `locallyIntegrableOn_zero`.
-theorem locallyIntegrableOn_smul_iff' {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
+private theorem locallyIntegrableOn_smul_iff' {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
     {f : X → E} {c : 𝕜} (hc : c ≠ 0) :
     LocallyIntegrableOn (c • f) s μ ↔ LocallyIntegrableOn f s μ := by
   refine ⟨fun hf ↦ ?_, fun h ↦ h.smul c⟩
