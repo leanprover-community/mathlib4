@@ -165,6 +165,37 @@ lemma Algebra.isPushout_of_isLocalization [IsLocalization (Algebra.algebraMapSub
     Algebra.IsPushout R T A B :=
   (Algebra.isLocalization_iff_isPushout S _).mp inferInstance
 
+lemma Submonoid.map_isUnit_le_isUnit {M N : Type*} [Monoid M] [Monoid N]
+    {F : Type*} [FunLike F M N] [MonoidHomClass F M N] (f : F) :
+    Submonoid.map f (IsUnit.submonoid M) ≤ IsUnit.submonoid N := by
+  rintro x ⟨y, hy, rfl⟩
+  exact hy.map _
+
+lemma Algebra.algebraMapSubmonoid_isUnit_le_isUnit {R S : Type*} [CommSemiring R] [Semiring S]
+    [Algebra R S] :
+    Algebra.algebraMapSubmonoid S (IsUnit.submonoid R) ≤ IsUnit.submonoid S := by
+  rintro x ⟨y, hy, rfl⟩
+  exact hy.map _
+
+instance {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S] :
+    IsLocalization (Algebra.algebraMapSubmonoid S (IsUnit.submonoid R)) S :=
+  IsLocalization.of_le_isUnit Algebra.algebraMapSubmonoid_isUnit_le_isUnit
+
+lemma Algebra.IsPushout.of_bijective_left [Algebra A T] [IsScalarTower R A T]
+    (H : Function.Bijective (algebraMap R A)) :
+    IsPushout R T A T := by
+  have : IsLocalization (IsUnit.submonoid R) A :=
+    IsLocalization.of_le_isUnit_of_bijective Algebra.algebraMapSubmonoid_isUnit_le_isUnit H
+  apply isPushout_of_isLocalization (IsUnit.submonoid R)
+
+lemma Algebra.IsPushout.of_bijective_right [Algebra A T] [IsScalarTower R A T]
+    (H : Function.Bijective (algebraMap A T)) :
+    IsPushout R A R T := by
+  have : IsLocalization (algebraMapSubmonoid A (IsUnit.submonoid R)) T := by
+    apply IsLocalization.of_le_isUnit_of_bijective _ H
+    simpa using Algebra.algebraMapSubmonoid_isUnit_le
+  apply Algebra.isPushout_of_isLocalization (IsUnit.submonoid R)
+
 variable (R M) in
 open TensorProduct in
 instance {α} [IsLocalizedModule S f] :
