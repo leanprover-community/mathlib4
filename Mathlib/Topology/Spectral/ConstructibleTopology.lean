@@ -199,7 +199,7 @@ def WithConstructibleTopology.lift (f : X → Y) :
 /--
 The map from `X` with the constructible topology to `X` is continuous if `X` is prespectral.
 -/
-lemma ofConstructibleTopology_continuous [PrespectralSpace X] :
+lemma WithConstructibleTopology.continuous_equiv_symm [PrespectralSpace X] :
     Continuous <| ofConstructibleTopology X := by
   rw [TopologicalSpace.IsTopologicalBasis.continuous_iff (PrespectralSpace.isBasis_opens X)]
   intro U ⟨hU1, hU2, hU3⟩
