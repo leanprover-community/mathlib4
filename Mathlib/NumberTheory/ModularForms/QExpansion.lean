@@ -587,12 +587,10 @@ protected lemma qExpansion_pow [Γ.HasDetPlusMinusOne] (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) (f : ModularForm Γ k) (n : ℕ) :
     qExpansion h (f.pow n) = (qExpansion h f) ^ n := by
   induction n with
-  | zero =>
-    change qExpansion h (1 : ModularForm Γ 0) = _
-    rw [pow_zero, ModularForm.qExpansion_one]
+  | zero => simp only [coe_pow, pow_zero, qExpansion_one]
   | succ n ih =>
-    change qExpansion h ((f.pow n).mul f) = _
-    rw [ModularForm.qExpansion_mul hh hΓ, ih, pow_succ]
+    rw [coe_pow, pow_succ, ← coe_pow, ← coe_mul, ModularForm.qExpansion_mul hh hΓ, ih,
+      pow_succ]
 
 /-- The qExpansion map as an additive group hom. to power series over `ℂ`. -/
 def qExpansionAddHom (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (k : ℤ) :

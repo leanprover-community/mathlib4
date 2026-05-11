@@ -78,18 +78,13 @@ theorem discriminant_eq_E₄_cube_sub_E₆_sq (z : ℍ) :
 theorem discriminant_eq_E₄_cube_sub_E₆_sq_graded :
     DirectSum.of (ModularForm 𝒮ℒ) 12 CuspForm.discriminant =
       (1 / 1728 : ℂ) • (.of (ModularForm 𝒮ℒ) 4 E₄ ^ 3 - .of (ModularForm 𝒮ℒ) 6 E₆ ^ 2) := by
-  have hE4 : DirectSum.of (ModularForm 𝒮ℒ) 4 E₄ ^ 3 = DirectSum.of (ModularForm 𝒮ℒ) 12
-      (ModularForm.mcast (by decide) ((E₄.mul E₄).mul E₄)) := by
-    rw [pow_succ (n := 2), pow_two, DirectSum.of_mul_of, DirectSum.of_mul_of]
-    rfl
-  have hE6 : DirectSum.of (ModularForm 𝒮ℒ) 6 E₆ ^ 2 =
-      DirectSum.of (ModularForm 𝒮ℒ) 12 (ModularForm.mcast (by decide) (E₆.mul E₆)) := by
-    rw [pow_two, DirectSum.of_mul_of]
-    rfl
-  rw [hE4, hE6, ← map_sub (DirectSum.of (ModularForm 𝒮ℒ) 12), ← DirectSum.of_smul]
+  simp only [ModularForm.directSum_of_pow]
+  change DirectSum.of (ModularForm 𝒮ℒ) 12 CuspForm.discriminant = (1 / 1728 : ℂ) •
+    (DirectSum.of (ModularForm 𝒮ℒ) 12 (E₄.pow 3) - DirectSum.of (ModularForm 𝒮ℒ) 12 (E₆.pow 2))
+  rw [← map_sub (DirectSum.of (ModularForm 𝒮ℒ) 12), ← DirectSum.of_smul]
   congr 1
   ext z
-  change ModularForm.discriminant z = (1 / 1728 : ℂ) * (E₄ z * E₄ z * E₄ z - E₆ z * E₆ z)
+  change ModularForm.discriminant z = (1 / 1728 : ℂ) * (E₄ z ^ 3 - E₆ z ^ 2)
   grind [discriminant_eq_E₄_cube_sub_E₆_sq z]
 
 end ModularForm
