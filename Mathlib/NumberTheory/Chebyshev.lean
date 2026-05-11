@@ -99,7 +99,7 @@ theorem theta_eq_sum_Icc (x : ℝ) :
 
 theorem theta_eq_sum_primesLE (x : ℝ) :
     θ x = ∑ p ∈ primesLE ⌊x⌋₊, log p := by
-    simp [theta_eq_sum_Icc, primesLE_eq_filter_Icc_zero]
+  simp [theta_eq_sum_Icc, primesLE_eq_filter_Icc_zero]
 
 theorem theta_eq_sum_log (n : ℕ) : θ n = ∑ p ∈ primesLE n, log p := by simp [theta_eq_sum_primesLE]
 
