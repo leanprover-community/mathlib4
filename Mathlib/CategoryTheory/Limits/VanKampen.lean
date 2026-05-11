@@ -89,7 +89,6 @@ theorem IsInitial.isVanKampenColimit [HasStrictInitialObjects C] {X : C} (h : Is
 
 section Functor
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsUniversalColimit.of_iso {F : J ⥤ C} {c c' : Cocone F} (hc : IsUniversalColimit c)
     (e : c ≅ c') : IsUniversalColimit c' := by
   intro F' c'' α f h hα H
@@ -101,7 +100,6 @@ theorem IsUniversalColimit.of_iso {F : J ⥤ C} {c c' : Cocone F} (hc : IsUniver
   rw [← Category.comp_id (α.app j)]
   exact (H j).paste_vert (IsPullback.of_vert_isIso ⟨by simp⟩)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsVanKampenColimit.of_iso {F : J ⥤ C} {c c' : Cocone F} (H : IsVanKampenColimit c)
     (e : c ≅ c') : IsVanKampenColimit c' := by
   intro F' c'' α f h hα
@@ -194,7 +192,6 @@ theorem IsUniversalColimit.whiskerEquivalence {K : Type*} [Category* K] (e : J �
     refine (H (e.inverse.obj k)).paste_vert ?_
     exact IsPullback.of_vert_isIso ⟨by simp⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsUniversalColimit.whiskerEquivalence_iff {K : Type*} [Category* K] (e : J ≌ K)
     {F : K ⥤ C} {c : Cocone F} :
     IsUniversalColimit (c.whisker e.functor) ↔ IsUniversalColimit c :=
@@ -227,7 +224,6 @@ theorem IsVanKampenColimit.whiskerEquivalence {K : Type*} [Category* K] (e : J �
   · ext k
     simpa using congr_app e' (e.inverse.obj k)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsVanKampenColimit.whiskerEquivalence_iff {K : Type*} [Category* K] (e : J ≌ K)
     {F : K ⥤ C} {c : Cocone F} :
     IsVanKampenColimit (c.whisker e.functor) ↔ IsVanKampenColimit c :=
@@ -317,9 +313,8 @@ theorem IsUniversalColimit.map_reflective
       all_goals simp only [c'', PreservesPullback.iso_hom_fst, PreservesPullback.iso_hom_snd,
           pullback.lift_fst, pullback.lift_snd, Category.assoc,
           Functor.mapCocone_ι_app, ← Gl.map_comp]
-      · rw [IsIso.comp_inv_eq, adj.counit_naturality]
-        dsimp [β]
-        rw [Category.comp_id]
+      · dsimp [β]
+        simp only [IsIso.comp_inv_eq, adj.counit_naturality, Category.comp_id]
       · rw [Gl.map_comp, hα'', Category.assoc, hc'']
         dsimp [β]
         rw [Category.comp_id, Category.assoc]

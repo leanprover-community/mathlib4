@@ -76,8 +76,7 @@ lemma uses_norm_num : (0 + 1 : ℕ) = 1 := by norm_num
 #min_imports in uses_norm_num
 
 /--
-info: public import Mathlib.Tactic.Lemma
-public import Mathlib.Data.Nat.Notation
+info: public import Mathlib.Data.Nat.Notation
 ---
 info: theorem hi.extracted_1_1 (n : ℕ) : n = n := sorry
 -/

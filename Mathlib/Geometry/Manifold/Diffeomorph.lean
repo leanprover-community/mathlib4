@@ -70,7 +70,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
 
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {M' : Type*} [TopologicalSpace M']
   [ChartedSpace H' M'] {N : Type*} [TopologicalSpace N] [ChartedSpace G N] {N' : Type*}
-  [TopologicalSpace N'] [ChartedSpace G' N'] {n : WithTop ℕ∞}
+  [TopologicalSpace N'] [ChartedSpace G' N'] {n : ℕ∞ω}
 
 section Defs
 
@@ -254,11 +254,11 @@ nonrec theorem range_comp {α} (h : M ≃ₘ^n⟮I, J⟯ N) (f : α → M) :
   rw [range_comp, image_eq_preimage_symm]
 
 @[simp]
-theorem image_symm_image (h : M ≃ₘ^n⟮I, J⟯ N) (s : Set N) : h '' (h.symm '' s) = s :=
+theorem image_symm_image (h : M ≃ₘ^n⟮I, J⟯ N) (s : Set N) : h '' h.symm '' s = s :=
   h.toEquiv.image_symm_image s
 
 @[simp]
-theorem symm_image_image (h : M ≃ₘ^n⟮I, J⟯ N) (s : Set M) : h.symm '' (h '' s) = s :=
+theorem symm_image_image (h : M ≃ₘ^n⟮I, J⟯ N) (s : Set M) : h.symm '' h '' s = s :=
   h.toEquiv.symm_image_image s
 
 /-- A diffeomorphism is a homeomorphism. -/
@@ -336,9 +336,6 @@ theorem contMDiff_diffeomorph_comp_iff {m} (h : M ≃ₘ^n⟮I, J⟯ N) {f : M' 
 theorem toOpenPartialHomeomorph_mdifferentiable (h : M ≃ₘ^n⟮I, J⟯ N) (hn : n ≠ 0) :
     h.toHomeomorph.toOpenPartialHomeomorph.MDifferentiable I J :=
   ⟨h.mdifferentiableOn _ hn, h.symm.mdifferentiableOn _ hn⟩
-
-@[deprecated (since := "2025-08-29")] alias
-  toPartialHomeomorph_mdifferentiable := toOpenPartialHomeomorph_mdifferentiable
 
 theorem uniqueMDiffOn_image_aux (h : M ≃ₘ^n⟮I, J⟯ N) (hn : n ≠ 0) {s : Set M}
     (hs : UniqueMDiffOn I s) : UniqueMDiffOn J (h '' s) := by

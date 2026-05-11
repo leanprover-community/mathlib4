@@ -19,7 +19,7 @@ public import Mathlib.Topology.UniformSpace.Ultra.Constructions
 
 -/
 
-@[expose] public section
+public section
 
 variable {X Y : Type*} [UniformSpace X] [UniformSpace Y]
 

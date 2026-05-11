@@ -260,8 +260,6 @@ lemma equiv_of_fromSpecStalkOfMem_eq [IrreducibleSpace X]
     simpa only [fromSpecStalkOfMem, restrict_domain, Opens.fromSpecStalkOfMem, Spec.map_inv,
       restrict_hom, Category.assoc, IsIso.eq_inv_comp, IsIso.hom_inv_id_assoc] using H
 
-instance (U : X.Opens) [IsReduced X] : IsReduced U := isReduced_of_isOpenImmersion U.ι
-
 lemma Opens.isDominant_ι {U : X.Opens} (hU : Dense (X := X) U) : IsDominant U.ι :=
   ⟨by simpa [DenseRange] using hU⟩
 
@@ -446,7 +444,6 @@ lemma RationalMap.eq_of_fromFunctionField_eq [IsIntegral X] (f g : X.RationalMap
   refine PartialMap.toRationalMap_eq_iff.mpr ?_
   exact PartialMap.equiv_of_fromSpecStalkOfMem_eq _ _ _ _ H
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Given `S`-schemes `X` and `Y` such that `Y` is locally of finite type and `X` is integral,
 `S`-morphisms `Spec K(X) ⟶ Y` correspond bijectively to `S`-rational maps from `X` to `Y`.

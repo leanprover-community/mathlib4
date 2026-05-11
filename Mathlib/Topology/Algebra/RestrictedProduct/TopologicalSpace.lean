@@ -30,11 +30,11 @@ compact, then `Πʳ i, [R i, A i]` is a locally compact topological ring.
 
 The topology on the restricted product `Πʳ i, [R i, A i]_[𝓕]` is defined in the following way:
 1. If `𝓕` is some principal filter `𝓟 s`, recall that `Πʳ i, [R i, A i]_[𝓟 s]` is canonically
-identified with `(Π i ∈ s, A i) × (Π i ∉ s, R i)`. We endow it with the product topology,
-which is also the topology induced from the full product `Π i, R i`.
+   identified with `(Π i ∈ s, A i) × (Π i ∉ s, R i)`. We endow it with the product topology,
+   which is also the topology induced from the full product `Π i, R i`.
 2. In general, we note that `𝓕` is the infimum of the principal filters coarser than `𝓕`. We
-then endow `Πʳ i, [R i, A i]_[𝓕]` with the inductive limit / final topology associated to the
-inclusion maps `Πʳ i, [R i, A i]_[𝓟 s] → Πʳ i, [R i, A i]_[𝓕]` where `𝓕 ≤ 𝓟 s`.
+   then endow `Πʳ i, [R i, A i]_[𝓕]` with the inductive limit / final topology associated to the
+   inclusion maps `Πʳ i, [R i, A i]_[𝓟 s] → Πʳ i, [R i, A i]_[𝓕]` where `𝓕 ≤ 𝓟 s`.
 
 In particular:
 * On the classical restricted product, with respect to the cofinite filter, this corresponds to
@@ -110,11 +110,11 @@ section Topology
 
 The topology on the restricted product `Πʳ i, [R i, A i]_[𝓕]` is defined in the following way:
 1. If `𝓕` is some principal filter `𝓟 s`, recall that `Πʳ i, [R i, A i]_[𝓟 s]` is canonically
-identified with `(Π i ∈ s, A i) × (Π i ∉ s, R i)`. We endow it with the product topology,
-which is also the topology induced from the full product `Π i, R i`.
+   identified with `(Π i ∈ s, A i) × (Π i ∉ s, R i)`. We endow it with the product topology,
+   which is also the topology induced from the full product `Π i, R i`.
 2. In general, we note that `𝓕` is the infimum of the principal filters coarser than `𝓕`. We
-then endow `Πʳ i, [R i, A i]_[𝓕]` with the inductive limit / final topology associated to the
-inclusion maps `Πʳ i, [R i, A i]_[𝓟 s] → Πʳ i, [R i, A i]_[𝓕]` where `𝓕 ≤ 𝓟 s`.
+   then endow `Πʳ i, [R i, A i]_[𝓕]` with the inductive limit / final topology associated to the
+   inclusion maps `Πʳ i, [R i, A i]_[𝓟 s] → Πʳ i, [R i, A i]_[𝓕]` where `𝓕 ≤ 𝓟 s`.
 
 In particular:
 * On the classical restricted product, with respect to the cofinite filter, this corresponds to
@@ -181,7 +181,6 @@ section principal
 
 variable {S : Set ι}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem topologicalSpace_eq_of_principal :
     topologicalSpace R A (𝓟 S) =
       .induced ((↑) : Πʳ i, [R i, A i]_[𝓟 S] → Π i, R i) inferInstance :=
@@ -626,7 +625,7 @@ theorem locallyCompactSpace_of_group [Π i, Group (R i)] [∀ i, SubgroupClass (
     weaklyLocallyCompactSpace_of_cofinite hBopen.out hBcompact
   inferInstance
 
-open Pointwise in
+open scoped Pointwise in
 @[to_additive]
 instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)] [∀ i, IsTopologicalGroup (R i)]
     [hAcompact : ∀ i, CompactSpace (B i)] : LocallyCompactSpace (Πʳ i, [R i, B i]) :=

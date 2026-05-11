@@ -262,24 +262,15 @@ theorem orderTop_zero : orderTop (0 : R⟦Γ⟧) = ⊤ :=
 theorem orderTop_of_subsingleton [Subsingleton R] : x.orderTop = ⊤ :=
   (Subsingleton.eq_zero x) ▸ orderTop_zero
 
-@[deprecated (since := "2025-08-19")] alias orderTop_of_Subsingleton := orderTop_of_subsingleton
-
 theorem orderTop_of_ne_zero (hx : x ≠ 0) :
     orderTop x = x.isWF_support.min (support_nonempty_iff.2 hx) :=
   dif_neg hx
-
-@[deprecated (since := "2025-08-19")] alias orderTop_of_ne := orderTop_of_ne_zero
 
 @[simp] lemma orderTop_eq_top : orderTop x = ⊤ ↔ x = 0 := by simp [orderTop]
 
 @[simp] lemma orderTop_lt_top : orderTop x < ⊤ ↔ x ≠ 0 := by simp [lt_top_iff_ne_top]
 
 lemma orderTop_ne_top : orderTop x ≠ ⊤ ↔ x ≠ 0 := orderTop_eq_top.not
-
-@[deprecated (since := "2025-08-19")] alias orderTop_eq_top_iff := orderTop_eq_top
-
-@[deprecated orderTop_ne_top (since := "2025-08-19")]
-lemma ne_zero_iff_orderTop : x ≠ 0 ↔ orderTop x ≠ ⊤ := orderTop_ne_top.symm
 
 theorem orderTop_eq_of_le {x : R⟦Γ⟧} {g : Γ} (hg : g ∈ x.support)
     (hx : ∀ g' ∈ x.support, g ≤ g') : orderTop x = g := by
@@ -344,17 +335,12 @@ theorem leadingCoeff_of_ne_zero {x : R⟦Γ⟧} (hx : x ≠ 0) :
     x.leadingCoeff = x.coeff (x.orderTop.untop <| orderTop_ne_top.2 hx) := by
   simp [leadingCoeff, orderTop, hx]
 
-@[deprecated (since := "2025-08-19")] alias leadingCoeff_of_ne := leadingCoeff_of_ne_zero
-
 @[simp]
 theorem leadingCoeff_eq_zero {x : R⟦Γ⟧} : x.leadingCoeff = 0 ↔ x = 0 := by
   obtain rfl | hx := eq_or_ne x 0 <;> simp [leadingCoeff_of_ne_zero, coeff_orderTop_ne, *]
 
 theorem leadingCoeff_ne_zero {x : R⟦Γ⟧} : x.leadingCoeff ≠ 0 ↔ x ≠ 0 :=
   leadingCoeff_eq_zero.not
-
-@[deprecated (since := "2025-08-19")] alias leadingCoeff_eq_iff := leadingCoeff_eq_zero
-@[deprecated (since := "2025-08-19")] alias leadingCoeff_ne_iff := leadingCoeff_ne_zero
 
 @[simp]
 theorem leadingCoeff_of_single {a : Γ} {r : R} : leadingCoeff (single a r) = r := by
@@ -383,8 +369,6 @@ theorem order_of_ne {x : R⟦Γ⟧} (hx : x ≠ 0) :
 
 theorem order_eq_orderTop_of_ne_zero (hx : x ≠ 0) : order x = orderTop x := by
   rw [order_of_ne hx, orderTop_of_ne_zero hx]
-
-@[deprecated (since := "2025-08-19")] alias order_eq_orderTop_of_ne := order_eq_orderTop_of_ne_zero
 
 @[simp]
 theorem coeff_order_eq_zero {x : R⟦Γ⟧} : x.coeff x.order = 0 ↔ x = 0 := by
@@ -470,7 +454,7 @@ theorem embDomain_coeff {f : Γ ↪o Γ'} {x : R⟦Γ⟧} {a : Γ} :
   · rw [dif_pos (Set.mem_image_of_mem f ha)]
     exact congr rfl (f.injective (Classical.choose_spec (Set.mem_image_of_mem f ha)).2)
   · rw [dif_neg, Classical.not_not.1 fun c => ha ((mem_support _ _).2 c)]
-    contrapose! ha
+    contrapose ha
     obtain ⟨b, hb1, hb2⟩ := (Set.mem_image _ _ _).1 ha
     rwa [f.injective hb2] at hb1
 

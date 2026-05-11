@@ -231,7 +231,7 @@ theorem fourierSubalgebra_separatesPoints : (@fourierSubalgebra T).SeparatesPoin
   intro x y hxy
   refine ⟨_, ⟨fourier 1, subset_adjoin ⟨1, rfl⟩, rfl⟩, ?_⟩
   dsimp only; rw [fourier_one, fourier_one]
-  contrapose! hxy
+  contrapose hxy
   rw [Subtype.coe_inj] at hxy
   exact injective_toCircle hT.elim.ne' hxy
 
@@ -330,7 +330,7 @@ theorem fourierCoeff.sum {ι : Type*} (s : Finset ι) (f : ι → AddCircle T �
   | insert a s ha iha =>
       obtain ⟨hf₁, hf₂⟩ := by simpa using hf
       rw [s.sum_insert ha, s.sum_insert ha,
-        fourierCoeff.add hf₁ (integrable_finset_sum' s hf₂), iha hf₂]
+        fourierCoeff.add hf₁ (integrable_finsetSum' s hf₂), iha hf₂]
 
 
 theorem fourierCoeff.const_smul (f : AddCircle T → E) (c : ℂ) (n : ℤ) :
@@ -417,7 +417,6 @@ monomials `fourier n` on the circle considered as elements of `L²`. -/
 theorem coe_fourierBasis : ⇑(@fourierBasis T hT) = @fourierLp T hT 2 _ :=
   HilbertBasis.coe_mk _ _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Under the isometric isomorphism `fourierBasis` from `Lp ℂ 2 haarAddCircle` to `ℓ²(ℤ, ℂ)`, the
 `i`-th coefficient is `fourierCoeff f i`, i.e., the integral over `AddCircle T` of
 `fun t => fourier (-i) t * f t` with respect to the Haar measure of total mass 1. -/
@@ -455,7 +454,7 @@ theorem tsum_sq_fourierCoeff (f : Lp ℂ 2 <| @haarAddCircle T hT) :
     ∑' i : ℤ, ‖fourierCoeff f i‖ ^ 2 = ∫ t : AddCircle T, ‖f t‖ ^ 2 ∂haarAddCircle :=
   (hasSum_sq_fourierCoeff _).tsum_eq
 
-/-- **Parseval's identity**: for a function `f` which is square integrable on (a,b],
+/-- **Parseval's identity**: for a function `f` which is square integrable on `(a,b]`,
 the sum of the squared norms of the Fourier coefficients equals the `L²` norm of `f`. -/
 theorem hasSum_sq_fourierCoeffOn
     {a b : ℝ} {f : ℝ → ℂ} (hab : a < b) (hL2 : MemLp f 2 (volume.restrict (Ioc a b))) :
@@ -490,7 +489,6 @@ theorem fourierCoeff_toLp (n : ℤ) :
 
 variable {f}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the sequence of Fourier coefficients of `f` is summable, then the Fourier series converges
 uniformly to `f`. -/
 theorem hasSum_fourier_series_of_summable (h : Summable (fourierCoeff f)) :
@@ -556,7 +554,6 @@ theorem has_antideriv_at_fourier_neg (hT : Fact (0 < T)) {n : ℤ} (hn : n ≠ 0
   · ext1 y; rw [div_div_eq_mul_div]; ring
   · simp [mul_div_cancel_left₀, hn, (Fact.out : 0 < T).ne', Real.pi_pos.ne']
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Express Fourier coefficients of `f` on an interval in terms of those of its derivative. -/
 theorem fourierCoeffOn_of_hasDeriv_right {a b : ℝ} (hab : a < b) {f f' : ℝ → ℂ}
     {n : ℤ} (hn : n ≠ 0)

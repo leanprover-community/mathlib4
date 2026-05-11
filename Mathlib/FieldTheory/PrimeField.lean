@@ -28,7 +28,7 @@ contains a unique prime field: it is the smallest field contained in `K`.
 
 -/
 
-@[expose] public section
+public section
 
 instance : Subsingleton (Subfield ℚ) := subsingleton_of_top_le_bot fun x _ ↦
   have h := Subsingleton.elim ((⊥ : Subfield ℚ).subtype.comp (Rat.castHom _)) (.id _ : ℚ →+* ℚ)

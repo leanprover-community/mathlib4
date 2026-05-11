@@ -90,6 +90,30 @@ lemma ext_of_isTriangulatedClosed₃'
     (h₁ : P T.obj₁) (h₂ : P T.obj₂) : P.isoClosure T.obj₃ :=
   IsTriangulatedClosed₃.ext₃' T hT h₁ h₂
 
+protected lemma distinguished_cocone_triangle [P.IsTriangulatedClosed₃]
+    {X Y : C} (a : X ⟶ Y) (hX : P X) (hY : P Y) :
+    ∃ (Z : C) (_ : P Z) (b : Y ⟶ Z) (c : Z ⟶ X⟦(1 : ℤ)⟧), Triangle.mk a b c ∈ distTriang _ := by
+  obtain ⟨Z, b, c, h⟩ := distinguished_cocone_triangle a
+  obtain ⟨Z', hZ', ⟨e⟩⟩ := P.ext_of_isTriangulatedClosed₃' _ h hX hY
+  exact ⟨Z', hZ', b ≫ e.hom, e.inv ≫ c, isomorphic_distinguished _ h _
+    (Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) e.symm )⟩
+
+protected lemma distinguished_cocone_triangle₁ [P.IsTriangulatedClosed₁]
+    {Y Z : C} (b : Y ⟶ Z) (hY : P Y) (hZ : P Z) :
+    ∃ (X : C) (_ : P X) (a : X ⟶ Y) (c : Z ⟶ X⟦(1 : ℤ)⟧), Triangle.mk a b c ∈ distTriang _ := by
+  obtain ⟨X, a, c, h⟩ := distinguished_cocone_triangle₁ b
+  obtain ⟨X', hX', ⟨e⟩⟩ := P.ext_of_isTriangulatedClosed₁' _ h hY hZ
+  exact ⟨X', hX', e.inv ≫ a, c ≫ e.hom⟦1⟧', isomorphic_distinguished _ h _
+    (Triangle.isoMk _ _ e.symm (Iso.refl _) (Iso.refl _))⟩
+
+protected lemma distinguished_cocone_triangle₂ [P.IsTriangulatedClosed₂]
+    {X Z : C} (c : Z ⟶ X⟦(1 : ℤ)⟧) (hX : P X) (hZ : P Z) :
+    ∃ (Y : C) (_ : P Y) (a : X ⟶ Y) (b : Y ⟶ Z), Triangle.mk a b c ∈ distTriang _ := by
+  obtain ⟨Y, a, b, h⟩ := distinguished_cocone_triangle₂ c
+  obtain ⟨Y', hY', ⟨e⟩⟩ := P.ext_of_isTriangulatedClosed₂' _ h hX hZ
+  exact ⟨Y', hY', a ≫ e.hom, e.inv ≫ b, isomorphic_distinguished _ h _
+    (Triangle.isoMk _ _ (Iso.refl _) e.symm (Iso.refl _))⟩
+
 lemma ext_of_isTriangulatedClosed₁
     [P.IsTriangulatedClosed₁] [P.IsClosedUnderIsomorphisms]
     (T : Triangle C) (hT : T ∈ distTriang C)
@@ -154,6 +178,12 @@ instance [P.IsTriangulated] : P.IsTriangulatedClosed₃ where
 
 instance [P.IsTriangulated] : P.isoClosure.IsTriangulated where
 
+instance {Q : ObjectProperty C} [P.IsTriangulated] [Q.IsTriangulated]
+    [Q.IsClosedUnderIsomorphisms] :
+    (P ⊓ Q).IsTriangulated where
+  ext₂' T hT h₁ h₃ := by
+    obtain ⟨Y, hY, ⟨e⟩⟩ := P.ext_of_isTriangulatedClosed₂' T hT h₁.1 h₃.1
+    exact ⟨Y, ⟨hY, Q.prop_of_iso e (Q.ext_of_isTriangulatedClosed₂ T hT h₁.2 h₃.2)⟩, ⟨e⟩⟩
 
 section
 
@@ -168,6 +198,22 @@ def extensionProduct : ObjectProperty C :=
 lemma extensionProduct_iff (X : C) : extensionProduct P Q X ↔
   ∃ (Y Z : C) (f : Y ⟶ X) (g : X ⟶ Z) (h : Z ⟶ Y⟦(1 : ℤ)⟧),
     Triangle.mk f g h ∈ distTriang C ∧ P Y ∧ Q Z := Iff.rfl
+
+instance [P.Nonempty] [Q.Nonempty] : (extensionProduct P Q).Nonempty := by
+  obtain ⟨Y, f, g, hT⟩ := distinguished_cocone_triangle₂ (0 : Q.arbitrary ⟶ P.arbitrary⟦(1 : ℤ)⟧)
+  exact ⟨_, _, _, _, _, _, hT, P.prop_arbitrary, Q.prop_arbitrary⟩
+
+@[simp]
+lemma extensionProduct_bot_left : extensionProduct ⊥ P = ⊥ := by
+  rw [eq_bot_iff]
+  intro _ ⟨_, _, _, _, _, _, h, _⟩
+  exact h
+
+@[simp]
+lemma extensionProduct_bot_right : extensionProduct P ⊥ = ⊥ := by
+  rw [eq_bot_iff]
+  intro _ ⟨_, _, _, _, _, _, _, h⟩
+  exact h
 
 variable {P} in
 lemma monotone_extensionProduct_left {P' : ObjectProperty C} (h : P ≤ P') :
@@ -238,6 +284,158 @@ lemma extensionProduct_assoc [IsTriangulated C] :
     let o := someOctahedron' rfl hT hT' hT''
     exact ⟨_, _, _, _, _, hT'', ⟨_, _, _, _, _, o.mem, hP, hQ⟩, hR⟩
 
+lemma extensionProduct_le_of_isTriangulatedClosed₂' {P₁ P₂ Q : ObjectProperty C}
+    [Q.IsTriangulatedClosed₂] (h₁ : P₁ ≤ Q) (h₂ : P₂ ≤ Q) :
+    extensionProduct P₁ P₂ ≤ Q.isoClosure := by
+  intro _ ⟨_, _, _, _, _, hT, hY, hZ⟩
+  exact ext_of_isTriangulatedClosed₂' Q _ hT (h₁ _ hY) (h₂ _ hZ)
+
+lemma extensionProduct_le_of_isTriangulatedClosed₂ {P₁ P₂ Q : ObjectProperty C}
+    [Q.IsTriangulatedClosed₂] [Q.IsClosedUnderIsomorphisms] (h₁ : P₁ ≤ Q) (h₂ : P₂ ≤ Q) :
+    extensionProduct P₁ P₂ ≤ Q := by
+  intro _ ⟨_, _, _, _, _, hT, hY, hZ⟩
+  exact ext_of_isTriangulatedClosed₂ Q _ hT (h₁ _ hY) (h₂ _ hZ)
+
+@[stacks 0FX2 "first part"]
+lemma extensionProduct_retractClosure_retractClosure_le :
+    extensionProduct P.retractClosure Q.retractClosure ≤
+      (extensionProduct P Q).retractClosure := by
+  intro X ⟨A, B, f₁, f₂, f₃, hT, ⟨A', hP, ⟨a₁, b₁, h₁⟩⟩, ⟨B', hQ, ⟨a₃, b₃, h₃⟩⟩⟩
+  obtain ⟨X', g₁, g₂, hT'⟩ := distinguished_cocone_triangle₂ (b₃ ≫ f₃ ≫ a₁⟦(1 : ℤ)⟧')
+  obtain ⟨a₂ : X ⟶ X', ha₁₂, ha₂₃⟩ :=
+    complete_distinguished_triangle_morphism₂ _ _ hT hT' a₁ a₃ (by dsimp; grind)
+  obtain ⟨b₂ : X' ⟶ X, hb₁₂, hb₂₃⟩ :=
+    complete_distinguished_triangle_morphism₂ _ _ hT' hT b₁ b₃ (by dsimp; grind)
+  dsimp at ha₁₂ ha₂₃ hb₁₂ hb₂₃
+  refine ⟨X', ⟨_, _, _, _, _, hT', hP, hQ⟩, ⟨?_⟩⟩
+  let φ := Triangle.homMk (Triangle.mk f₁ f₂ f₃) (Triangle.mk f₁ f₂ f₃) (𝟙 A)
+    (a₂ ≫ b₂) (𝟙 B) (by dsimp; grind) (by dsimp; grind)
+  haveI : IsIso (a₂ ≫ b₂) := isIso₂_of_isIso₁₃ φ hT hT (IsIso.id _) (IsIso.id _)
+  exact ⟨a₂, b₂ ≫ inv (a₂ ≫ b₂), by grind⟩
+
+@[stacks 0FX2 "second part"]
+lemma retractClosure_extensionProduct_retractClosure_retractClosure :
+    (extensionProduct P.retractClosure Q.retractClosure).retractClosure =
+      (extensionProduct P Q).retractClosure := by
+  apply le_antisymm
+  · rw [retractClosure_le_iff]
+    exact extensionProduct_retractClosure_retractClosure_le P Q
+  · apply monotone_retractClosure
+    grw [monotone_extensionProduct_right _ (le_retractClosure Q),
+      monotone_extensionProduct_left _ (le_retractClosure P)]
+
+/-- All objects that can be reached by exactly `n` extensions from objects in `P`. -/
+def extensionProductIter (n : ℕ) : ObjectProperty C := (extensionProduct P)^[n] P
+
+@[simp]
+lemma extensionProductIter_zero : P.extensionProductIter 0 = P := rfl
+
+lemma extensionProductIter_succ (n : ℕ) :
+    P.extensionProductIter (n + 1) = extensionProduct P (P.extensionProductIter n) :=
+  Function.iterate_succ_apply' _ _ _
+
+lemma extensionProductIter_succ' [IsTriangulated C] (n : ℕ) :
+    P.extensionProductIter (n + 1) = extensionProduct (P.extensionProductIter n) P := by
+  induction n with
+  | zero => rfl
+  | succ n h =>
+    rw [extensionProductIter_succ, h, ← extensionProduct_assoc, ← extensionProductIter_succ, ← h]
+
+instance [P.Nonempty] (n : ℕ) : (P.extensionProductIter n).Nonempty := by
+  induction n with
+  | zero => rwa [extensionProductIter_zero]
+  | succ n h => rw [extensionProductIter_succ]; infer_instance
+
+lemma extensionProductIter_add [IsTriangulated C] {n m n' : ℕ} (h : n = n' + 1) :
+    P.extensionProductIter (n + m) =
+      extensionProduct (P.extensionProductIter n') (P.extensionProductIter m) := by
+  induction m with
+  | zero => rw [add_zero, extensionProductIter_zero, h, extensionProductIter_succ']
+  | succ m hm =>
+    rw [← add_assoc, extensionProductIter_succ', extensionProductIter_succ', hm,
+      extensionProduct_assoc]
+
+lemma extensionProductIter_add' [IsTriangulated C] {n m m' : ℕ} (h : m = m' + 1) :
+    P.extensionProductIter (n + m) =
+      extensionProduct (P.extensionProductIter n) (P.extensionProductIter m') := by
+  induction n with
+  | zero => rw [zero_add, extensionProductIter_zero, h, extensionProductIter_succ]
+  | succ n hn => rw [add_assoc, add_comm 1 m, ← add_assoc, extensionProductIter_succ,
+    extensionProductIter_succ, hn, extensionProduct_assoc]
+
+variable {P} in
+lemma monotone_extensionProductIter {Q : ObjectProperty C} (hPQ : P ≤ Q) (n : ℕ) :
+    P.extensionProductIter n ≤ Q.extensionProductIter n := by
+  induction n with
+  | zero => exact hPQ
+  | succ n h => grw [extensionProductIter_succ, extensionProductIter_succ,
+    monotone_extensionProduct_left _ hPQ, monotone_extensionProduct_right _ h]
+
+lemma monotone'_extensionProductIter [P.ContainsZero] {n m : ℕ} (h : n ≤ m) :
+    P.extensionProductIter n ≤ P.extensionProductIter m := by
+  induction m, h using Nat.le_induction
+  case base => rfl
+  case succ n m hnm h =>
+    refine le_trans h ?_
+    rw [extensionProductIter_succ]
+    exact le_extensionProduct_right P
+
+lemma le_extensionProductIter [P.ContainsZero] (n : ℕ) : P ≤ P.extensionProductIter n :=
+  P.monotone'_extensionProductIter (Nat.zero_le n)
+
+@[simp]
+lemma extensionProductIter_bot (n : ℕ) : extensionProductIter (⊥ : ObjectProperty C) n = ⊥ := by
+  cases n
+  case zero => rw [extensionProductIter_zero]
+  case succ n => rw [extensionProductIter_succ, extensionProduct_bot_left]
+
+@[simp]
+lemma extensionProductIter_top (n : ℕ) : extensionProductIter (⊤ : ObjectProperty C) n = ⊤ :=
+  eq_top_iff.mpr (le_extensionProductIter _ n)
+
+instance [P.IsStableUnderShift ℤ] (n : ℕ) : (P.extensionProductIter n).IsStableUnderShift ℤ := by
+  induction n with
+  | zero => assumption
+  | succ n h =>
+    rw [extensionProductIter_succ]
+    infer_instance
+
+lemma extensionProductIter_le_of_isTriangulatedClosed₂' {Q : ObjectProperty C}
+    [Q.IsTriangulatedClosed₂] (h : P ≤ Q) (n : ℕ) : P.extensionProductIter n ≤ Q.isoClosure := by
+  induction n with
+  | zero =>
+    rw [extensionProductIter_zero]
+    exact h.trans Q.le_isoClosure
+  | succ n H =>
+    rw [extensionProductIter_succ]
+    exact extensionProduct_le_of_isTriangulatedClosed₂ (h.trans Q.le_isoClosure) H
+
+lemma extensionProductIter_le_of_isTriangulatedClosed₂ {Q : ObjectProperty C}
+    [Q.IsTriangulatedClosed₂] [Q.IsClosedUnderIsomorphisms] (h : P ≤ Q) (n : ℕ) :
+    P.extensionProductIter n ≤ Q :=
+  Q.isoClosure_eq_self ▸ P.extensionProductIter_le_of_isTriangulatedClosed₂' h n
+
+instance [P.IsStableUnderShift ℤ] (n : ℕ) : (P.extensionProductIter n).IsStableUnderShift ℤ := by
+  induction n with
+  | zero => rwa [extensionProductIter_zero]
+  | succ n H => rw [extensionProductIter_succ]; infer_instance
+
+lemma extensionProductIter_retractClosure_le {n : ℕ} :
+    (P.retractClosure.extensionProductIter n) ≤ (P.extensionProductIter n).retractClosure := by
+  induction n with
+  | zero => simp
+  | succ n H =>
+    grw [extensionProductIter_succ, extensionProductIter_succ, monotone_extensionProduct_right _ H,
+      extensionProduct_retractClosure_retractClosure_le]
+
+lemma retractClosure_extensionProductIter_retractClosure {n : ℕ} :
+    (P.retractClosure.extensionProductIter n).retractClosure =
+      (P.extensionProductIter n).retractClosure := by
+  apply le_antisymm
+  · rw [retractClosure_le_iff]
+    exact extensionProductIter_retractClosure_le P
+  · exact monotone_retractClosure (monotone_extensionProductIter (le_retractClosure P) n)
+
 end
 
 /-- Given `P : ObjectProperty C` with `C` a pretriangulated category, this is the class
@@ -278,6 +476,13 @@ lemma trW_isoClosure : P.isoClosure.trW = P.trW := by
     exact Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) e.symm
   · rintro ⟨Z, g, h, mem, hZ⟩
     exact ⟨Z, g, h, mem, ObjectProperty.le_isoClosure _ _ hZ⟩
+
+variable {P} in
+lemma trW_monotone {Q : ObjectProperty C} (h : P ≤ Q) : P.trW ≤ Q.trW := by
+  intro X Y f hf
+  rw [trW_iff] at hf ⊢
+  obtain ⟨Z, a, b, hT, hZ⟩ := hf
+  exact ⟨Z, a, b, hT, h _ hZ⟩
 
 set_option backward.isDefEq.respectTransparency false in
 instance : P.trW.RespectsIso where
