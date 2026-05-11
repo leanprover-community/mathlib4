@@ -5,8 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Asymptotics.Theta
 public import Mathlib.Analysis.Normed.Group.Completion
+public import Mathlib.Analysis.Asymptotics.Defs
+public import Mathlib.Topology.Algebra.InfiniteSum.Order
 
 /-!
 # Asymptotics in the completion of a normed space

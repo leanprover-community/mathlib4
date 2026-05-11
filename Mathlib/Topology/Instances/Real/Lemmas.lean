@@ -42,10 +42,6 @@ theorem Real.isTopologicalBasis_Ioo_rat :
       exact ⟨q, p, Rat.cast_lt.1 <| hqa.trans hap, rfl⟩, ⟨hqa, hap⟩, fun _ ⟨hqa', ha'p⟩ =>
       h ⟨hlq.trans hqa', ha'p.trans hpu⟩⟩
 
-@[simp]
-theorem Real.cobounded_eq : cobounded ℝ = atBot ⊔ atTop := by
-  simp only [← comap_dist_right_atTop (0 : ℝ), Real.dist_eq, sub_zero, comap_abs_atTop]
-
 /- TODO(Mario): Prove that these are uniform isomorphisms instead of uniform embeddings
 lemma uniform_embedding_add_rat {r : ℚ} : uniform_embedding (fun p : ℚ => p + r) :=
 _
@@ -118,6 +114,9 @@ theorem closure_of_rat_image_lt {q : ℚ} :
   · congr!; aesop
   · exact (closure_Ioi _).symm
   · exact ⟨q + 1, show (q : ℝ) < _ by linarith, q + 2, show (q : ℝ) < _ by linarith, by simp⟩
+
+@[deprecated (since := "2026-04-07")]
+alias Real.cobounded_eq := IsOrderBornology.cobounded_eq
 
 /- TODO(Mario): Put these back only if needed later
 lemma closure_of_rat_image_le_eq {q : ℚ} : closure ((coe : ℚ → ℝ) '' {x | q ≤ x}) = {r | ↑q ≤ r} :=

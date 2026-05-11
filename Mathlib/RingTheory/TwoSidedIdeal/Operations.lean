@@ -204,7 +204,8 @@ lemma mem_span_iff_mem_addSubgroup_closure_absorbing {s : Set R}
     | add x y _ _ hx hy => exact J.add_mem hx hy
     | neg x _ hx => exact J.neg_mem hx
 
-open Pointwise Set
+open scoped Pointwise
+open Set
 
 lemma set_mul_subset {s : Set R} {I : TwoSidedIdeal R} (h : s ⊆ I) (t : Set R) :
     t * s ⊆ I := by
@@ -246,7 +247,8 @@ section Ring
 
 variable {R : Type*} [Ring R]
 
-open Pointwise Set in
+open scoped Pointwise in
+open Set in
 lemma mem_span_iff_mem_addSubgroup_closure {s : Set R} {z : R} :
     z ∈ span s ↔ z ∈ AddSubgroup.closure (univ * s * univ) := by
   trans z ∈ span (univ * s * univ)
@@ -400,8 +402,7 @@ lemma coe_toTwoSided (I : Ideal R) [I.IsTwoSided] : (I.toTwoSided : Set R) = I :
   simp [toTwoSided]
 
 @[simp]
-lemma toTwoSided_asIdeal (I : TwoSidedIdeal R) : I.asIdeal.toTwoSided = I :=
-  by ext; simp
+lemma toTwoSided_asIdeal (I : TwoSidedIdeal R) : I.asIdeal.toTwoSided = I := by ext; simp
 
 @[simp]
 lemma asIdeal_toTwoSided (I : Ideal R) [I.IsTwoSided] : I.toTwoSided.asIdeal = I := by

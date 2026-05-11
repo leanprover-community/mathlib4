@@ -22,7 +22,7 @@ If `R` has `NoZeroDivisors`, then so does `R⟦X⟧`.
 
 -/
 
-@[expose] public section
+public section
 
 
 variable {R : Type*}

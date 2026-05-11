@@ -34,7 +34,8 @@ supremum helps define the meaning of recursive procedures.
 ## Instances of `OmegaCompletePartialOrder`
 
 * `Part`
-* every `CompleteLattice`
+* every `CompleteLattice` (proved in `BourbakiWitt` as a special case of chain-complete
+  partial orders)
 * pi-types
 * product types
 * `OrderHom`
@@ -68,42 +69,52 @@ namespace OmegaCompletePartialOrder
 
 /-- A chain is a monotone sequence.
 
+This is made a one-field structure around order homomorphisms `ℕ →o α` because we want to endow
+chains with the domination order rather than the pointwise order. See `Chain.instLE`.
+
 See the definition on page 114 of [gunter1992]. -/
-def Chain (α : Type u) [Preorder α] :=
-  ℕ →o α
+structure Chain (α : Type u) [Preorder α] extends ℕ →o α
 
 namespace Chain
 variable [Preorder α] [Preorder β] [Preorder γ]
 
-instance : FunLike (Chain α) ℕ α := inferInstanceAs <| FunLike (ℕ →o α) ℕ α
-instance : OrderHomClass (Chain α) ℕ α := inferInstanceAs <| OrderHomClass (ℕ →o α) ℕ α
+instance : FunLike (Chain α) ℕ α where
+  coe c := c.toOrderHom
+  coe_injective' := by rintro ⟨f, hf⟩; congr!
+
+initialize_simps_projections Chain (toFun → apply)
+
+instance : OrderHomClass (Chain α) ℕ α where
+  map_rel c _m _n hmn := c.monotone hmn
 
 /-- See note [partially-applied ext lemmas]. -/
 @[ext] lemma ext ⦃f g : Chain α⦄ (h : ⇑f = ⇑g) : f = g := DFunLike.ext' h
 
+@[simp] lemma coe_toOrderHom (c : Chain α) : ⇑c.toOrderHom = c := rfl
+
 instance [Inhabited α] : Inhabited (Chain α) :=
   ⟨⟨default, fun _ _ _ => le_rfl⟩⟩
 
-instance : Membership α (Chain α) :=
-  ⟨fun (c : ℕ →o α) a => ∃ i, a = c i⟩
+instance : Membership α (Chain α) where
+  mem c a := ∃ i, a = c i
 
 variable (c c' : Chain α)
 variable (f : α →o β)
 variable (g : β →o γ)
 
-instance : LE (Chain α) where le x y := ∀ i, ∃ j, x i ≤ y j
+instance instLE : LE (Chain α) where le x y := ∀ i, ∃ j, x i ≤ y j
 
 lemma isChain_range : IsChain (· ≤ ·) (Set.range c) := Monotone.isChain_range (OrderHomClass.mono c)
 
-lemma directed : Directed (· ≤ ·) c := directedOn_range.2 c.isChain_range.directedOn
+lemma directed : Directed (· ≤ ·) c := directedOn_range.1 c.isChain_range.directedOn
 
 /-- `map` function for `Chain` -/
--- Not `@[simps]`: we need `@[simps!]` to see through the type synonym `Chain β = ℕ →o β`,
--- but then we'd get the `FunLike` instance for `OrderHom` instead.
-def map : Chain β :=
-  f.comp c
+@[simps toOrderHom]
+def map : Chain β where toOrderHom := f.comp c.toOrderHom
 
-@[simp] theorem map_coe : ⇑(map c f) = f ∘ c := rfl
+@[simp] lemma coe_map : ⇑(c.map f) = f ∘ c := rfl
+
+@[deprecated (since := "2026-03-27")] alias map_coe := coe_map
 
 /-- The constant chain consists of the same element repeated infinitely. -/
 def const (a : α) : Chain α := OrderHom.const ℕ a
@@ -125,25 +136,23 @@ theorem mem_map_iff {b : β} : b ∈ c.map f ↔ ∃ a, a ∈ c ∧ f a = b :=
     subst b
     apply mem_map c _ h⟩
 
-@[simp]
-theorem map_id : c.map OrderHom.id = c :=
-  OrderHom.comp_id _
+@[simp] lemma map_id : c.map OrderHom.id = c := by ext; simp
 
 theorem map_comp : (c.map f).map g = c.map (g.comp f) :=
   rfl
 
-@[mono]
-theorem map_le_map {g : α →o β} (h : f ≤ g) : c.map f ≤ c.map g :=
-  fun i => by simp only [map_coe, Function.comp_apply]; exists i; apply h
+@[gcongr, mono]
+theorem map_le_map {g : α →o β} (h : f ≤ g) : c.map f ≤ c.map g := fun _ ↦ ⟨_, h _⟩
 
 /-- `OmegaCompletePartialOrder.Chain.zip` pairs up the elements of two chains
 that have the same index. -/
--- Not `@[simps]`: we need `@[simps!]` to see through the type synonym `Chain β = ℕ →o β`,
--- but then we'd get the `FunLike` instance for `OrderHom` instead.
-def zip (c₀ : Chain α) (c₁ : Chain β) : Chain (α × β) :=
-  OrderHom.prod c₀ c₁
+@[simps toOrderHom]
+def zip (c₀ : Chain α) (c₁ : Chain β) : Chain (α × β) where
+  toOrderHom := c₀.toOrderHom.prod c₁.toOrderHom
 
-@[simp] theorem zip_coe (c₀ : Chain α) (c₁ : Chain β) (n : ℕ) : c₀.zip c₁ n = (c₀ n, c₁ n) := rfl
+@[simp] lemma zip_apply (c₀ : Chain α) (c₁ : Chain β) (n : ℕ) : c₀.zip c₁ n = (c₀ n, c₁ n) := rfl
+
+@[deprecated (since := "2026-03-27")] alias zip_coe := zip_apply
 
 /-- An example of a `Chain` constructed from an ordered pair. -/
 def pair (a b : α) (hab : a ≤ b) : Chain α where
@@ -160,7 +169,7 @@ def pair (a b : α) (hab : a ≤ b) : Chain α where
 
 @[simp] lemma pair_zip_pair (a₁ a₂ : α) (b₁ b₂ : β) (ha hb) :
     (pair a₁ a₂ ha).zip (pair b₁ b₂ hb) = pair (a₁, b₁) (a₂, b₂) (Prod.le_def.2 ⟨ha, hb⟩) := by
-  unfold Chain; ext n : 2; cases n <;> rfl
+  ext n : 2; cases n <;> rfl
 
 variable {ι : Type*} {ρ : ι → Type*} [∀ i, Preorder (ρ i)]
 
@@ -254,7 +263,7 @@ theorem ωSup_total {c : Chain α} {x : α} (h : ∀ i, c i ≤ x ∨ x ≤ c i)
       have : x ≤ c i := (h i).resolve_left hx
       Or.inr <| le_ωSup_of_le _ this)
 
-@[mono]
+@[gcongr, mono]
 theorem ωSup_le_ωSup_of_le {c₀ c₁ : Chain α} (h : c₀ ≤ c₁) : ωSup c₀ ≤ ωSup c₁ :=
   (ωSup_le _ _) fun i => by
     obtain ⟨_, h⟩ := h i
@@ -299,6 +308,7 @@ lemma ωSup_congr {c₁ c₂ : Chain α} (hc : ∀ n, c₁ n = c₂ n) : ωSup c
 
 /-- A subset `p : α → Prop` of the type closed under `ωSup` induces an
 `OmegaCompletePartialOrder` on the subtype `{a : α // p a}`. -/
+@[implicit_reducible]
 def subtype {α : Type*} [OmegaCompletePartialOrder α] (p : α → Prop)
     (hp : ∀ c : Chain α, (∀ i ∈ c, p i) → p (ωSup c)) : OmegaCompletePartialOrder (Subtype p) :=
   OmegaCompletePartialOrder.lift (OrderHom.Subtype.val p)
@@ -326,7 +336,7 @@ lemma ωScottContinuous.monotone (h : ωScottContinuous f) : Monotone f :=
 
 lemma ωScottContinuous.isLUB {c : Chain α} (hf : ωScottContinuous f) :
     IsLUB (Set.range (c.map ⟨f, hf.monotone⟩)) (f (ωSup c)) := by
-  simpa [map_coe, OrderHom.coe_mk, Set.range_comp]
+  simpa [Set.range_comp]
     using hf (by simp) (Set.range_nonempty _) (isChain_range c).directedOn (isLUB_range_ωSup c)
 
 @[fun_prop, to_fun (attr := simp)]
@@ -341,7 +351,7 @@ lemma ωScottContinuous_iff_monotone_map_ωSup :
   refine ⟨fun hf ↦ ⟨hf.monotone, hf.map_ωSup⟩, ?_⟩
   intro hf _ ⟨c, hc⟩ _ _ _ hda
   convert isLUB_range_ωSup (c.map { toFun := f, monotone' := hf.1 })
-  · rw [map_coe, OrderHom.coe_mk, ← hc, ← (Set.range_comp f ⇑c)]
+  · simp [← hc, ← (Set.range_comp f ⇑c)]
   · rw [← hc] at hda
     rw [← hf.2 c, ωSup_eq_of_isLUB hda]
 
@@ -429,14 +439,7 @@ section Inst
 theorem mem_ωSup (x : α) (c : Chain (Part α)) : x ∈ ωSup c ↔ some x ∈ c := by
   simp only [ωSup, Part.ωSup]
   constructor
-  · split_ifs with h
-    swap
-    · rintro ⟨⟨⟩⟩
-    intro h'
-    have hh := Classical.choose_spec h
-    simp only [mem_some_iff] at h'
-    subst x
-    exact hh
+  · exact fun a ↦ mem_chain_of_mem_ωSup a
   · intro h
     have h' : ∃ a : α, some a ∈ c := ⟨_, h⟩
     rw [dif_pos h']
@@ -737,7 +740,7 @@ protected theorem congr_arg (f : α →𝒄 β) {x y : α} (h : x = y) : f x = f
 protected theorem monotone (f : α →𝒄 β) : Monotone f :=
   f.monotone'
 
-@[mono]
+@[gcongr, mono]
 theorem apply_mono {f g : α →𝒄 β} {x y : α} (h₁ : f ≤ g) (h₂ : x ≤ y) : f x ≤ g y :=
   OrderHom.apply_mono (show (f : α →o β) ≤ g from h₁) h₂
 
@@ -752,15 +755,15 @@ theorem ωSup_bind {β γ : Type v} (c : Chain α) (f : α →o Part β) (g : α
     simp only [Part.mem_ωSup] at hb
     rcases hb with ⟨j, hb⟩
     replace hb := hb.symm
-    simp only [Part.eq_some_iff, Chain.map_coe, Function.comp_apply] at hy hb
+    simp only [Part.eq_some_iff, Chain.coe_map, Function.comp_apply] at hy hb
     replace hb : b ∈ f (c (max i j)) := f.mono (c.mono (le_max_right i j)) _ hb
     replace hy : y ∈ g (c (max i j)) b := g.mono (c.mono (le_max_left i j)) _ _ hy
     apply h''' (max i j)
-    simp only [Part.mem_bind_iff, Chain.map_coe,
+    simp only [Part.mem_bind_iff, Chain.coe_map,
       Function.comp_apply, OrderHom.partBind_coe]
     exact ⟨_, hb, hy⟩
   · intro i y hy
-    simp only [Part.mem_bind_iff, Chain.map_coe,
+    simp only [Part.mem_bind_iff, Chain.coe_map,
       Function.comp_apply, OrderHom.partBind_coe] at hy
     rcases hy with ⟨b, hb₀, hb₁⟩
     apply h''' b _
@@ -855,7 +858,7 @@ theorem forall_forall_merge (c₀ : Chain (α →𝒄 β)) (c₁ : Chain α) (z 
 @[simp]
 theorem forall_forall_merge' (c₀ : Chain (α →𝒄 β)) (c₁ : Chain α) (z : β) :
     (∀ j i : ℕ, (c₀ i) (c₁ j) ≤ z) ↔ ∀ i : ℕ, (c₀ i) (c₁ i) ≤ z := by
-  rw [forall_swap, forall_forall_merge]
+  rw [forall_comm, forall_forall_merge]
 
 /-- The `ωSup` operator for continuous functions, which takes the pointwise countable supremum
 of the functions in the `ω`-chain. -/
@@ -954,7 +957,7 @@ theorem ωSup_iterate_mem_fixedPoint (h : x ≤ f x) :
   apply le_antisymm
   · apply ωSup_le
     intro n
-    simp only [Chain.map_coe, OrderHomClass.coe_coe, comp_apply]
+    simp only [Chain.coe_map, OrderHomClass.coe_coe, comp_apply]
     have : iterateChain f x h (n.succ) = f (iterateChain f x h n) :=
       Function.iterate_succ_apply' ..
     rw [← this]
