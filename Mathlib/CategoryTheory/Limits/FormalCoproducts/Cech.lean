@@ -142,9 +142,7 @@ lemma mapPower_comp (U : FormalCoproduct.{w} C) {α β γ : Type t}
   · cat_disch
   · dsimp
     ext
-    dsimp
-    simp only [Category.comp_id, Category.assoc, Pi.lift_π]
-    apply Pi.lift_π
+    simp [Function.comp_def]
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
@@ -155,9 +153,7 @@ lemma mapPower_powerMap {U V : FormalCoproduct.{w} C} (f : U ⟶ V)
   · cat_disch
   · dsimp
     ext
-    simp only [Function.comp_apply, limit.lift_map, Cone.postcompose, Fan.mk_pt, Category.comp_id,
-      Category.assoc, limit.lift_π, Fan.mk_π_app, Pi.map_π]
-    apply limit.lift_π
+    simp [Function.comp_def]
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]

@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Squarefree.Basic
 public import Mathlib.Data.Nat.Choose.Factorization
 public import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.Data.Nat.Prime.Basic
+public import Mathlib.NumberTheory.PrimeCounting
 public import Mathlib.NumberTheory.SmoothNumbers
 
 import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
@@ -43,6 +44,8 @@ open Nat
 def primorial (n : ℕ) : ℕ := ∏ p ∈ range (n + 1) with p.Prime, p
 
 local notation x "#" => primorial x
+
+lemma primorial_eq_prod_primesLE (n : ℕ) : n # = ∏ p ∈ primesLE n, p := rfl
 
 @[simp] theorem primorial_zero : 0 # = 1 := by decide
 
@@ -88,7 +91,7 @@ theorem primorial_add_le {m n : ℕ} (h : n ≤ m) : (m + n)# ≤ m# * choose (m
 lemma Nat.Prime.dvd_primorial_iff {p n : ℕ} (hp : Prime p) : p ∣ n# ↔ p ≤ n := by
   refine ⟨?_, fun h ↦ dvd_prod_of_mem _ (by grind)⟩
   intro h
-  simp only [primorial, hp.prime.dvd_finset_prod_iff, mem_filter, mem_range_succ_iff] at h
+  simp only [primorial, hp.prime.dvd_finsetProd_iff, mem_filter, mem_range_succ_iff] at h
   obtain ⟨q, ⟨hqn, hq⟩, hpq⟩ := h
   exact (Nat.le_of_dvd hq.pos hpq).trans hqn
 
@@ -171,6 +174,10 @@ Base cases `n ∈ [3, 29]` by computation.
 - `two_pow_half_succ_le_primorial`: `2 ^ ((n + 1) / 2) ≤ n#` for `n ≥ 2`
 - `two_pow_div_two_le_primorial`: `2 ^ (n / 2) ≤ n#` for all `n`
 -/
+
+private lemma primesBelow_filter_le {m n : ℕ} (h : m < n) :
+    n.primesBelow.filter (· ≤ m) = (m + 1).primesBelow := by
+  ext p; simp [mem_primesBelow, Finset.mem_filter]; lia
 
 /-- `C(2n, n) ≤ (2n)^{π(√(2n))} * (2n)#` for `n ≥ 4`. -/
 theorem centralBinom_le_pow_mul_primorial {n : ℕ} (hn : 4 ≤ n) :
