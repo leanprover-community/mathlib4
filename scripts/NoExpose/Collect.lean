@@ -26,26 +26,29 @@ open Lean
 namespace NoExpose
 
 /-- Run the env-scan portion of `collect`: opens the env once via
-`withImportModules`, then writes all three JSONLs. Defaults to
-importing the project's lib roots. -/
+`withImportModules`, gathers static/decl refs, returns enumerated
+candidates; then post-scans source files and writes `exposed.jsonl`. -/
 unsafe def runEnvScan (_project : ProjectInfo) (modules : Array Name)
     (scopePrefix : Array Name) : IO Unit := do
   IO.FS.createDirAll dataDir
   let searchPath ← addSearchPathFromEnv (← getBuiltinSearchPath (← findSysroot))
-  withImportModules modules (searchPath := searchPath) (trustLevel := 1024) do
+  let recs : Array DeclRecord ← withImportModules modules
+      (searchPath := searchPath) (trustLevel := 1024) do
     let env ← getEnv
-    -- 1. Enumeration → exposed.jsonl
     let recs ← enumerate scopePrefix
-    IO.FS.withFile exposedPath .write fun h => do
-      for r in recs do h.putStrLn r.toJsonLine
-    IO.eprintln s!"[no_expose collect] wrote {recs.size} exposed records to {exposedPath}"
-    -- 2. Static refs → static_refs.jsonl
+    -- Static refs → static_refs.jsonl
     let refs ← collectStaticRefs
     IO.FS.withFile staticRefsPath .write fun h => writeStaticRefs env refs h
     IO.eprintln s!"[no_expose collect] wrote {refs.size} static-refs pairs to {staticRefsPath}"
-    -- 3. Per-decl refs → decl_refs.jsonl
+    -- Per-decl refs → decl_refs.jsonl
     IO.FS.withFile declRefsPath .write fun h => writeDeclRefs env h
     IO.eprintln s!"[no_expose collect] wrote per-decl refs to {declRefsPath}"
+    return recs
+  -- Source-scan augmentation (outside `withImportModules`).
+  IO.eprintln s!"[no_expose collect] source-scanning {recs.size} candidate decls"
+  let counts ← IO.FS.withFile exposedPath .write fun h => augmentAndWrite recs h
+  IO.eprintln s!"[no_expose collect] expose-source breakdown: {counts.toList}"
+  IO.eprintln s!"[no_expose collect] wrote {recs.size} exposed records to {exposedPath}"
 
 /-- Run the `collect` subcommand. -/
 unsafe def runCollect (args : CollectArgs) : IO UInt32 := do

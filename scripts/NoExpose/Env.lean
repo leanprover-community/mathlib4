@@ -5,6 +5,7 @@ Authors: Kim Morrison
 -/
 import Lean
 import NoExpose.Paths
+import NoExpose.SourceScan
 
 /-!
 # `NoExpose.Env` — env-walk pieces (enumeration + static refs)
@@ -47,7 +48,9 @@ def withImportModules {α : Type} (modules : Array Name) (run : CoreM α)
 
 /-! ## Enumeration -/
 
-/-- One row of the eventual `exposed.jsonl`. -/
+/-- One row of the eventual `exposed.jsonl`. `exposeSource` is filled
+in by `augmentWithSourceScan` after the env walk closes; the env walk
+itself leaves it at `.unknown`. -/
 structure DeclRecord where
   name : Name
   kind : String
@@ -56,6 +59,7 @@ structure DeclRecord where
   line : Nat
   col : Nat
   «effect» : String
+  exposeSource : ExposeSource := .unknown
 
 /-- Suffixes Lean uses for compiler-generated structure/inductive
 helpers; we exclude them since they aren't user-written `@[expose]`
@@ -162,7 +166,46 @@ def DeclRecord.toJsonLine (d : DeclRecord) : String :=
   "\",\"file\":\"" ++ jsonEscape d.file ++
   "\",\"line\":" ++ toString d.line ++
   ",\"col\":" ++ toString d.col ++
-  ",\"effect\":\"" ++ d.effect ++ "\"}"
+  ",\"effect\":\"" ++ d.effect ++
+  "\",\"expose_source\":\"" ++ d.exposeSource.toJsonString ++ "\"}"
+
+/-- Stream-augment `recs` into `out`: scan each unique source file
+once,
+join, write each record to `out` immediately so we never hold the
+full augmented array AND the lookup map in memory at the same time.
+Returns the per-`ExposeSource` count summary for the log. -/
+def augmentAndWrite (recs : Array DeclRecord) (out : IO.FS.Handle) :
+    IO (Std.HashMap String Nat) := do
+  let mut flat : Std.HashMap (String × Nat) ExposeSource := {}
+  let mut seenFile : Std.HashSet String := {}
+  let mut filesDone : Nat := 0
+  for r in recs do
+    if seenFile.contains r.file then continue
+    seenFile := seenFile.insert r.file
+    let path : System.FilePath := r.file
+    unless ← System.FilePath.pathExists path do
+      IO.eprintln s!"[no_expose source-scan] file not found: {path}; \
+        leaving its decls as .unknown"
+      continue
+    let text ← IO.FS.readFile path
+    let pairs := scanFile text
+    for (ln, src) in pairs do flat := flat.insert (r.file, ln) src
+    filesDone := filesDone + 1
+    if filesDone % 500 == 0 then
+      IO.eprintln s!"[no_expose source-scan] scanned {filesDone} files"
+  IO.eprintln s!"[no_expose source-scan] scanned {filesDone} files total; applying"
+  let mut counts : Std.HashMap String Nat := {}
+  let mut applied : Nat := 0
+  for r in recs do
+    let src := flat.getD (r.file, r.line) .unknown
+    let k := src.toJsonString
+    counts := counts.insert k ((counts.getD k 0) + 1)
+    out.putStrLn { r with exposeSource := src }.toJsonLine
+    applied := applied + 1
+    if applied % 10000 == 0 then
+      IO.eprintln s!"[no_expose source-scan] applied {applied}/{recs.size}"
+  IO.eprintln s!"[no_expose source-scan] applied {applied} total"
+  return counts
 
 /-- Write a `RefMap` aggregation as one JSONL record per pair. -/
 def writeStaticRefs (env : Environment) (acc : RefMap)

@@ -40,22 +40,17 @@ namespace NoExpose
 
 /-! ## Source-file location helpers -/
 
-/-- True if any line in `text` matches `@[expose] public section`
-(stripped of leading whitespace). -/
-private def hasExposeSection (text : String) : Bool :=
-  let lines := text.splitOn "\n"
-  lines.any fun line =>
-    let trimmed := line.trimAscii.toString
-    trimmed.startsWith "@[expose] public section"
-
 /-- Strategy used for a particular file. -/
 inductive Strategy where
   | section_   : Strategy
   | individual : Strategy
   deriving Repr, DecidableEq
 
-private def chooseStrategy (text : String) : Strategy :=
-  if hasExposeSection text then .section_ else .individual
+/-- Section strategy if any record's `ExposeSource` is `.sectionAttr`,
+otherwise individual. -/
+private def chooseStrategy (records : Array ReportRecord) : Strategy :=
+  if records.any (·.exposeSource == .sectionAttr) then .section_
+  else .individual
 
 /-! ## Section-strategy edit
 
@@ -446,7 +441,7 @@ unsafe def editOneFile (file : FilePath) (records : Array ReportRecord)
     |>.filter (Verdict.classify · == .safeToUnexpose) |>.map (·.line))
   let neededDownstreamLines : Array Nat := dedupe (records
     |>.filter (Verdict.classify · == .neededDownstream) |>.map (·.line))
-  let strategy := chooseStrategy originalText
+  let strategy := chooseStrategy records
   let (newText, skipped) : String × Array (Nat × SkipReason) ← do
     match strategy with
     | .section_ => do
