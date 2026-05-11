@@ -56,7 +56,7 @@ theorem step1_foward (A : Submodule 𝕜 E) (K : Submodule 𝕜 E) (A_closed : I
   constructor
   · rcases K_disj_A.exists_isCompl with ⟨S, K_le_S, S_compl_A⟩
     replace S_compl_A : IsTopCompl S A :=
-      S_compl_A.symm.isTopCompl_of_quotient_finiteDimensional A_closed |>.symm
+      S_compl_A.symm.isTopCompl_of_finiteDimensional_quotient A_closed |>.symm
     -- TODO: `Submodule.liftQL`
     let s : E ⧸ K →L[𝕜] A :=
       ⟨K.liftQ (A.projectionOntoL S S_compl_A.symm) (by simpa),
@@ -78,7 +78,7 @@ theorem step1_backward (A : Submodule 𝕜 E) (u : E →L[𝕜] F) (A_closed : I
     IsQuotientMap u := by
   rcases h_ker.exists_isCompl with ⟨S, ker_le_S, S_compl_A⟩
   replace S_compl_A : IsTopCompl S A :=
-      S_compl_A.symm.isTopCompl_of_quotient_finiteDimensional A_closed |>.symm
+      S_compl_A.symm.isTopCompl_of_finiteDimensional_quotient A_closed |>.symm
   have : FiniteDimensional 𝕜 S :=
     quotientEquivOfIsCompl A S S_compl_A.isCompl.symm |>.finiteDimensional
   have uA_closed : IsClosed (map u.toLinearMap A : Set F) := by
