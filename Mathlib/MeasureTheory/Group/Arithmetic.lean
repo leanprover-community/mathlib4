@@ -44,7 +44,7 @@ measurable function, arithmetic operator
   in the conclusion of `MeasurableSMul`.)
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory
 open scoped Pointwise

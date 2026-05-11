@@ -22,8 +22,7 @@ This file contains results in number theory relating to multiplicity.
 
 ## References
 
-* [Wikipedia, *Lifting-the-exponent lemma*]
-  (https://en.wikipedia.org/wiki/Lifting-the-exponent_lemma)
+* [Wikipedia, *Lifting-the-exponent lemma*](https://en.wikipedia.org/wiki/Lifting-the-exponent_lemma)
 -/
 
 public section
@@ -137,7 +136,7 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
       rw [mul_assoc, mul_assoc]
       refine mul_eq_zero_of_left ?_ _
       refine Ideal.Quotient.eq_zero_iff_mem.mpr ?_
-      simp [s, mem_span_singleton]
+      simp [s]
 
 section IntegralDomain
 
@@ -405,7 +404,7 @@ theorem pow_add_pow (hxy : p ∣ x + y) (hx : ¬p ∣ x) {n : ℕ} (hn : Odd n) 
   iterate 3 rw [padicValNat_eq_emultiplicity]
   · exact Nat.emultiplicity_pow_add_pow hp.out hp1 hxy hx hn
   · exact (Odd.pos hn).ne'
-  · simp only [← Nat.pos_iff_ne_zero, add_pos_iff, Nat.succ_pos', or_true]
+  · simp
   · exact (Nat.lt_add_left _ (pow_pos y.succ_pos _)).ne'
 
 end padicValNat
