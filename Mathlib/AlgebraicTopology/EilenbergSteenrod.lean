@@ -79,7 +79,7 @@ structure Hom (HP HP' : HomologyPretheory C c) where
   /-- `homₚ` needs to be compatible with the boundary maps. -/
   w (i j : ι) : HP.δ i j ≫ proj₂.whiskerLeft (hom j) = homₚ i ≫ HP'.δ i j := by cat_disch
 
-attribute [reassoc (attr:=local simp)] Hom.w
+attribute [reassoc (attr := local simp)] Hom.w
 
 variable {HP HP' : HomologyPretheory C c}
 
@@ -131,7 +131,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simps]
 instance : Category (HomologyPretheory C c) where
   Hom := HomologyPretheory.Hom
-  id _ := { homₚ _ := NatTrans.id _, hom _ := NatTrans.id _ }
+  id _ := { homₚ _ := 𝟙 _, hom _ := 𝟙 _ }
   comp f g := {
     homₚ i := f.homₚ i ≫ g.homₚ i
     hom i := f.hom i ≫ g.hom i
