@@ -13,15 +13,14 @@ public import Mathlib.Computability.TuringMachine.PostTuringMachine
 
 The files `Config` and `ToPartrec` define a simplified basis for partial recursive functions,
 and a `Turing.TM2` model
-Turing machine for evaluating these functions.
-This amounts to a constructive proof that every
+Turing machine for evaluating these functions. This amounts to a constructive proof that every
 `Partrec` function can be evaluated by a Turing machine.
 
 ## Main definitions
 
-* `ToPartrec.Code`: a simplified basis for partial recursive functions,
- valued in `List ℕ →. List ℕ`.
-* `ToPartrec.Code.eval`: semantics for a `ToPartrec.Code` program
+* `ToPartrec.Code`: a simplified basis for partial recursive functions, valued in
+  `List ℕ →. List ℕ`.
+  * `ToPartrec.Code.eval`: semantics for a `ToPartrec.Code` program
 -/
 
 @[expose] public section
@@ -38,8 +37,7 @@ namespace Turing
 ## A simplified basis for partrec
 
 This section constructs the type `Code`, which is a data type of programs with `List ℕ` input and
-output, with enough expressivity to write any partial recursive function.
-The primitives are:
+output, with enough expressivity to write any partial recursive function. The primitives are:
 
 * `zero'` appends a `0` to the input. That is, `zero' v = 0 :: v`.
 * `succ` returns the successor of the head of the input, defaulting to zero if there
@@ -67,8 +65,7 @@ The primitives are:
 This basis is convenient because it is closer to the Turing machine model - the key operations are
 splitting and merging of lists of unknown length, while the messy `n`-ary composition operation
 from the traditional basis for partial recursive functions is absent - but it retains a
-compositional semantics.
-The first step in transitioning to Turing machines is to make a sequential
+compositional semantics. The first step in transitioning to Turing machines is to make a sequential
 evaluator for this basis, which we take up in the next section.
 -/
 
@@ -221,16 +218,12 @@ It is implemented as:
     prec f g (a :: v) = [(F (a :: f v :: v)).head]
 
 Because `fix` always evaluates its body at least once, we must special case the `0` case to avoid
-calling `g` more times than necessary (which could be bad if `g` diverges).
-If the input is
-`0 :: v`, then `F (0 :: f v :: v) = (f v :: v)` so we return `[f v]`.
-If the input is `n+1 :: v`,
-we evaluate the function from the bottom up, with initial state `0 :: n :: f v :: v`.
-The first
+calling `g` more times than necessary (which could be bad if `g` diverges). If the input is
+`0 :: v`, then `F (0 :: f v :: v) = (f v :: v)` so we return `[f v]`. If the input is `n+1 :: v`,
+we evaluate the function from the bottom up, with initial state `0 :: n :: f v :: v`. The first
 number counts up, providing arguments for the applications to `g`, while the second number counts
 down, providing the exit condition (this is the initial `b` in the return value of `G`, which is
-stripped by `fix`).
-After the `fix` is complete, the final state is `n :: 0 :: res :: v` where
+stripped by `fix`). After the `fix` is complete, the final state is `n :: 0 :: res :: v` where
 `res` is the desired result, and the rest reduces this to `[res]`.
 -/
 def prec (f g : Code) : Code :=
@@ -427,8 +420,7 @@ Our initial sequential model is designed to be as similar as possible to the com
 semantics in terms of its primitives, but it is a sequential semantics, meaning that rather than
 defining an `eval c : List ℕ →. List ℕ` function for each program, defined by recursion on
 programs, we have a type `Cfg` with a step function `step : Cfg → Option cfg` that provides a
-deterministic evaluation order.
-In order to do this, we introduce the notion of a *continuation*,
+deterministic evaluation order. In order to do this, we introduce the notion of a *continuation*,
 which can be viewed as a `Code` with a hole in it where evaluation is currently taking place.
 Continuations can be assigned a `List ℕ →. List ℕ` semantics as well, with the interpretation
 being that given a `List ℕ` result returned from the code in the hole, the remainder of the
@@ -437,8 +429,7 @@ program will evaluate to a `List ℕ` final value.
 The continuations are:
 
 * `halt`: the empty continuation: the hole is the whole program, whatever is returned is the
-  final result.
-In our notation this is just `_`.
+  final result. In our notation this is just `_`.
 * `cons₁ fs v k`: evaluating the first part of a `cons`, that is `k (_ :: fs v)`, where `k` is the
   outer continuation.
 * `cons₂ ns k`: evaluating the second part of a `cons`: `k (ns.headI :: _)`.
@@ -757,18 +748,15 @@ theorem code_is_ok (c) : Code.Ok c := by
   induction c with (intro k v; rw [stepNormal])
   | cons f fs IHf IHfs =>
     rw [Code.cons_eval, IHf]
-    simp only [bind_assoc, pure_bind]; congr;
-    funext v'
+    simp only [bind_assoc, pure_bind]; congr; funext v'
     rw [reaches_eval]; swap
     · exact ReflTransGen.single rfl
-    rw [stepRet, IHfs];
-    congr; funext v''
+    rw [stepRet, IHfs]; congr; funext v''
     refine Eq.trans (b := eval step (stepRet (Cont.cons₂ v' k) v'')) ?_ (Eq.symm ?_) <;>
       exact reaches_eval (ReflTransGen.single rfl)
   | comp f g IHf IHg =>
     rw [Code.comp_eval, IHg]
-    simp only [bind_assoc]; congr;
-    funext v'
+    simp only [bind_assoc]; congr; funext v'
     rw [reaches_eval]; swap
     · exact ReflTransGen.single rfl
     rw [stepRet, IHf]
@@ -794,9 +782,7 @@ theorem stepRet_eval {k v} : eval step (stepRet k v) = Cfg.halt <$> k.eval v := 
     exact Part.eq_some_iff.2 (mem_eval.2 ⟨ReflTransGen.refl, rfl⟩)
   | cons₁ fs as k IH =>
     rw [Cont.cons₁_eval, stepRet, code_is_ok]
-    simp only [← bind_pure_comp, bind_assoc]
-    congr
-    funext v'
+    simp only [← bind_pure_comp, bind_assoc]; congr; funext v'
     rw [reaches_eval]; swap
     · exact ReflTransGen.single rfl
     rw [stepRet, IH, bind_pure_comp]
@@ -805,9 +791,7 @@ theorem stepRet_eval {k v} : eval step (stepRet k v) = Cfg.halt <$> k.eval v := 
     exact IH
   | comp f k IH =>
     rw [Cont.comp_eval, stepRet, code_is_ok]
-    simp only [← bind_pure_comp, bind_assoc]
-    congr
-    funext v'
+    simp only [← bind_pure_comp, bind_assoc]; congr; funext v'
     rw [reaches_eval]; swap
     · exact ReflTransGen.single rfl
     rw [IH, bind_pure_comp]
@@ -816,9 +800,8 @@ theorem stepRet_eval {k v} : eval step (stepRet k v) = Cfg.halt <$> k.eval v := 
     split_ifs
     · exact IH
     · rw [cont_eval_fix (code_is_ok f)]
-      simp only [← bind_pure_comp, bind_assoc]
-      congr;
-      funext x; rw [bind_pure_comp, ← IH]
+      simp only [← bind_pure_comp, bind_assoc]; congr; funext x
+      rw [bind_pure_comp, ← IH]
       exact reaches_eval (ReflTransGen.single rfl)
 
 end ToPartrec

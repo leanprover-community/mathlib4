@@ -146,14 +146,14 @@ theorem of_part : ∀ {n f}, Partrec f → @Partrec' n f :=
         (comp₁ (PFun.mk g) (this (PFun.mk g) hf) (prim Nat.Primrec'.encode)).of_eq fun i => by
           simp [g, encodek, Part.map_id']
     fun f hf => by
-    obtain ⟨c, rfl⟩ := exists_code.1 hf
-    simpa [eval_eq_rfindOpt, PFun.coe_mk] using
-      rfindOpt <|
-        of_prim <|
-          Primrec.encode_iff.2 <|
-            primrec_evaln.comp <|
-              (Primrec.vector_head.pair (_root_.Primrec.const c)).pair <|
-                Primrec.vector_head.comp Primrec.vector_tail)
+      obtain ⟨c, rfl⟩ := exists_code.1 hf
+      simpa [eval_eq_rfindOpt, PFun.coe_mk] using
+        rfindOpt <|
+          of_prim <|
+            Primrec.encode_iff.2 <|
+              primrec_evaln.comp <|
+                (Primrec.vector_head.pair (_root_.Primrec.const c)).pair <|
+                  Primrec.vector_head.comp Primrec.vector_tail)
 
 theorem part_iff {n f} : @Partrec' n f ↔ Partrec f :=
   ⟨to_part, of_part⟩

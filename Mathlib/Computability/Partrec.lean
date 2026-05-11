@@ -113,8 +113,7 @@ theorem rfind_dom' {p : ℕ →. Bool} :
 theorem mem_rfind {p : ℕ →. Bool} {n : ℕ} :
     n ∈ rfind p ↔ true ∈ p n ∧ ∀ {m : ℕ}, m < n → false ∈ p m :=
   ⟨fun h => ⟨rfind_spec h, @rfind_min _ _ h⟩, fun ⟨h₁, h₂⟩ => by
-    let ⟨m, hm⟩ := dom_iff_mem.1 <|
-      (@rfind_dom p).2 ⟨_, h₁, fun {m} mn => (h₂ mn).fst⟩
+    let ⟨m, hm⟩ := dom_iff_mem.1 <| (@rfind_dom p).2 ⟨_, h₁, fun {m} mn => (h₂ mn).fst⟩
     rcases lt_trichotomy m n with (h | h | h)
     · injection mem_unique (h₂ h) (rfind_spec hm)
     · rwa [← h]
@@ -122,8 +121,7 @@ theorem mem_rfind {p : ℕ →. Bool} {n : ℕ} :
 
 theorem rfind_min' {p : ℕ → Bool} {m : ℕ} (pm : p m) : ∃ n ∈ rfind p, n ≤ m :=
   have : true ∈ (p : ℕ →. Bool) m := ⟨trivial, pm⟩
-  let ⟨n, hn⟩ := dom_iff_mem.1 <|
-    (@rfind_dom p).2 ⟨m, this, fun {_} _ => ⟨⟩⟩
+  let ⟨n, hn⟩ := dom_iff_mem.1 <| (@rfind_dom p).2 ⟨m, this, fun {_} _ => ⟨⟩⟩
   ⟨n, hn, not_lt.1 fun h => by injection mem_unique this (rfind_min hn h)⟩
 
 theorem rfind_zero_none (p : ℕ →. Bool) (p0 : p 0 = Part.none) : rfind p = Part.none :=
@@ -156,8 +154,7 @@ theorem rfindOpt_mono {α} {f : ℕ → Option α} (H : ∀ {a m n}, m ≤ n →
     have h' := rfindOpt_dom.2 ⟨_, _, h⟩
     obtain ⟨k, hk⟩ := rfindOpt_spec ⟨h', rfl⟩
     have := (H (le_max_left _ _) h).symm.trans (H (le_max_right _ _) hk)
-    simp at this
-    simp [this, get_mem]⟩
+    simp at this; simp [this, get_mem]⟩
 
 /-- `Nat.Partrec f` means that the partial function `f : ℕ →. ℕ` is partially recursive.
 Note: Since `PFun` is a structure, all underlying functions in the constructors
@@ -265,9 +262,8 @@ def Computable₂ {α β σ} [Primcodable α] [Primcodable β] [Primcodable σ] 
 
 theorem Primrec.to_comp {α σ} [Primcodable α] [Primcodable σ] {f : α → σ} (hf : Primrec f) :
     Computable f :=
-  (Nat.Partrec.ppred.comp (Nat.Partrec.of_primrec hf)).of_eq
-    fun n => by
-      simp; cases decode (α := α) n <;> simp
+  (Nat.Partrec.ppred.comp (Nat.Partrec.of_primrec hf)).of_eq fun n => by
+    simp; cases decode (α := α) n <;> simp
 
 nonrec theorem Primrec₂.to_comp {α β σ} [Primcodable α] [Primcodable β] [Primcodable σ]
     {f : α → β → σ} (hf : Primrec₂ f) : Computable₂ f :=
@@ -439,10 +435,10 @@ theorem nat_rec {f : α → ℕ} {g : α →. σ} {h : α → ℕ × σ →. σ}
     (hg : Partrec g) (hh : Partrec₂ h) :
     Partrec (PFun.mk fun a => Nat.rec  (g a)
       (fun y IH => IH.bind fun i => h a (y, i)) (f a)) :=
-  (Nat.Partrec.prec' (hf : Nat.Partrec _)
-    (hg : Nat.Partrec _) (hh : Nat.Partrec _)).of_eq fun n => by
-      cases e : decode (α := α) n <;> simp [e, Part.bind_none]
-      induction f _ <;> simp_all
+  (Nat.Partrec.prec' (hf : Nat.Partrec _) (hg : Nat.Partrec _)
+  (hh : Nat.Partrec _)).of_eq fun n => by
+    cases e : decode (α := α) n <;> simp [e, Part.bind_none]
+    induction f _ <;> simp_all
 
 nonrec theorem comp {f : β →. σ} {g : α → β} (hf : Partrec f) (hg : Computable g) :
     Partrec (PFun.mk fun a => f (g a)) :=
@@ -562,6 +558,7 @@ theorem nat_casesOn_right {f : α → ℕ} {g : α → σ} {h : α → ℕ →. 
         (Partrec₂.comp hh Computable.fst
           (Computable.comp Computable.pred (Computable.comp hf Computable.fst))))).of_eq
     fun a => by cases e : f a <;> simp [e, bind_rec_const]
+
 theorem bind_decode₂_iff {f : α →. σ} :
     Partrec f ↔ Nat.Partrec (PFun.mk fun n => Part.bind (decode₂ α n) fun a => (f a).map encode) :=
   ⟨fun hf =>
@@ -569,8 +566,7 @@ theorem bind_decode₂_iff {f : α →. σ} :
       (Computable.ofOption Primrec.decode₂.to_comp).bind <|
         (Partrec.map hf (Computable.encode.comp Computable.snd).to₂).comp Computable.snd,
     fun h =>
-      map_encode_iff.1 <|
-        by simpa [encodek₂] using (nat_iff.2 h).comp (@Computable.encode α _)⟩
+    map_encode_iff.1 <| by simpa [encodek₂] using (nat_iff.2 h).comp (@Computable.encode α _)⟩
 
 theorem vector_mOfFn :
     ∀ {n} {f : Fin n → α →. σ},
@@ -600,8 +596,7 @@ variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
 theorem option_some_iff {f : α → σ} : (Computable fun a => Option.some (f a)) ↔ Computable f :=
-  ⟨fun h => encode_iff.1 <|
-      Primrec.pred.to_comp.comp <| encode_iff.2 h, option_some.comp⟩
+  ⟨fun h => encode_iff.1 <| Primrec.pred.to_comp.comp <| encode_iff.2 h, option_some.comp⟩
 
 theorem bind_decode_iff {f : α → β → Option σ} :
     (Computable₂ fun a n => (decode (α := β) n).bind (f a)) ↔ Computable₂ f :=
@@ -639,7 +634,7 @@ theorem nat_rec {f : α → ℕ} {g : α → σ} {h : α → ℕ × σ → σ} (
     (hh : Computable₂ h) :
     Computable fun a => Nat.rec (motive := fun _ => σ) (g a) (fun y IH => h a (y, IH)) (f a) :=
   (Partrec.nat_rec hf (hg : Partrec _) hh.partrec₂).of_eq fun a =>
-   by simp; induction f a <;> simp [*]
+  by simp; induction f a <;> simp [*]
 
 theorem nat_casesOn {f : α → ℕ} {g : α → σ} {h : α → ℕ → σ} (hf : Computable f) (hg : Computable g)
     (hh : Computable₂ h) :
@@ -655,9 +650,8 @@ theorem option_casesOn {o : α → Option β} {f : α → σ} {g : α → β →
     (hf : Computable f) (hg : Computable₂ g) :
     @Computable _ σ _ _ fun a => Option.casesOn (o a) (f a) (g a) :=
   option_some_iff.1 <|
-    (nat_casesOn (encode_iff.2 ho) (option_some_iff.2 hf)
-      (map_decode_iff.2 hg)).of_eq fun a => by
-        cases o a <;> simp [encodek]
+    (nat_casesOn (encode_iff.2 ho) (option_some_iff.2 hf) (map_decode_iff.2 hg)).of_eq fun a => by
+      cases o a <;> simp [encodek]
 
 theorem option_bind {f : α → Option β} {g : α → β → Option σ} (hf : Computable f)
     (hg : Computable₂ g) : Computable fun a => (f a).bind (g a) :=

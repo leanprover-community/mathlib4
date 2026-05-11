@@ -12,18 +12,19 @@ public import Mathlib.Data.PFun
 # The category of types with partial functions
 
 This defines `PartialFun`, the category of types equipped with partial functions.
-This category is classically equivalent to the category of pointed types.
-The reason it doesn't hold constructively stems from the difference between `Part` and `Option`.
-Both can model partial functions, but the latter forces a decidable domain.
+This category is classically equivalent to the category of pointed types. The reason it doesn't hold
+constructively stems from the difference between `Part` and `Option`. Both can model partial
+functions, but the latter forces a decidable domain.
 
 Precisely, `PartialFunToPointed` turns a partial function `α →. β` into a function
-`Option α → Option β` by sending to `none` the undefined values (and `none` to `none`).
-But being defined is (generally) undecidable while being sent to `none` is decidable.
-So it can't be constructive.
+`Option α → Option β` by sending to `none` the undefined values (and `none` to `none`). But being
+defined is (generally) undecidable while being sent to `none` is decidable. So it can't be
+constructive.
 
 ## References
 
-* [nLab, *The category of sets and partial functions*](https://ncatlab.org/nlab/show/partial+function)
+* [nLab, *The category of sets and partial functions*]
+  (https://ncatlab.org/nlab/show/partial+function)
 -/
 
 @[expose] public section

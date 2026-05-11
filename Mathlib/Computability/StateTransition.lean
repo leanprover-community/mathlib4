@@ -26,22 +26,20 @@ open Relation
 
 namespace StateTransition
 
-/-- Run a state transition function `σ → Option σ` "to completion".
-The return value is the last state returned before a `none` result.
-If the state transition function always returns `some`,
+/-- Run a state transition function `σ → Option σ` "to completion". The return value is the last
+state returned before a `none` result. If the state transition function always returns `some`,
 then the computation diverges, returning `Part.none`. -/
 def eval {σ} (f : σ → Option σ) : σ →. σ :=
   PFun.fix (PFun.lift fun s ↦ (f s).elim (Sum.inl s) Sum.inr)
 
-/-- The reflexive transitive closure of a state transition function.
-`Reaches f a b` means there is a finite sequence of steps `f a = some a₁`, `f a₁ = some a₂`, ...
-such that `aₙ = b`. This relation permits zero steps of the state transition function. -/
+/-- The reflexive transitive closure of a state transition function. `Reaches f a b` means
+there is a finite sequence of steps `f a = some a₁`, `f a₁ = some a₂`, ... such that `aₙ = b`.
+This relation permits zero steps of the state transition function. -/
 def Reaches {σ} (f : σ → Option σ) : σ → σ → Prop :=
   ReflTransGen fun a b ↦ b ∈ f a
 
-/-- The transitive closure of a state transition function.
-`Reaches₁ f a b` means there is a nonempty finite sequence of steps `f a = some a₁`,
-`f a₁ = some a₂`, ... such that `aₙ = b`.
+/-- The transitive closure of a state transition function. `Reaches₁ f a b` means there is a
+nonempty finite sequence of steps `f a = some a₁`, `f a₁ = some a₂`, ... such that `aₙ = b`.
 This relation does not permit zero steps of the state transition function. -/
 def Reaches₁ {σ} (f : σ → Option σ) : σ → σ → Prop :=
   TransGen fun a b ↦ b ∈ f a
@@ -57,12 +55,11 @@ theorem reaches_total {σ} {f : σ → Option σ} {a b c} (hab : Reaches f a b) 
 theorem reaches₁_fwd {σ} {f : σ → Option σ} {a b c} (h₁ : Reaches₁ f a c) (h₂ : b ∈ f a) :
     Reaches f b c := by
   rcases TransGen.head'_iff.1 h₁ with ⟨b', hab, hbc⟩
-  cases Option.mem_unique hab h₂
-  exact hbc
+  cases Option.mem_unique hab h₂; exact hbc
 
 /-- A variation on `Reaches`. `Reaches₀ f a b` holds if whenever `Reaches₁ f b c` then
-`Reaches₁ f a c`. This is a weaker property than `Reaches` and is useful for replacing
-states with equivalent states without taking a step. -/
+`Reaches₁ f a c`. This is a weaker property than `Reaches` and is useful for replacing states with
+equivalent states without taking a step. -/
 def Reaches₀ {σ} (f : σ → Option σ) (a b : σ) : Prop :=
   ∀ c, Reaches₁ f b c → Reaches₁ f a c
 
@@ -98,12 +95,10 @@ theorem Reaches₀.tail' {σ} {f : σ → Option σ} {a b c : σ} (h : Reaches�
     Reaches₁ f a c :=
   h _ (TransGen.single h₂)
 
-/-- (co-)Induction principle for `eval`.
-If a property `C` holds of any point `a` evaluating to `b`
+/-- (co-)Induction principle for `eval`. If a property `C` holds of any point `a` evaluating to `b`
 which is either terminal (meaning `a = b`) or where the next point also satisfies `C`, then it
-holds of any point where `eval f a` evaluates to `b`.
-This formalizes the notion that if `eval f a` evaluates to `b` then it reaches terminal
-state `b` in finitely many steps. -/
+holds of any point where `eval f a` evaluates to `b`. This formalizes the notion that if
+`eval f a` evaluates to `b` then it reaches terminal state `b` in finitely many steps. -/
 @[elab_as_elim]
 def evalInduction {σ} {f : σ → Option σ} {b : σ} {C : σ → Sort*} {a : σ}
     (h : b ∈ eval f a) (H : ∀ a, b ∈ eval f a → (∀ a', f a = some a' → C a') → C a) : C a :=

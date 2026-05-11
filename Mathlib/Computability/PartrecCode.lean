@@ -120,8 +120,8 @@ theorem const_inj : ∀ {n₁ n₂}, Nat.Partrec.Code.const n₁ = Nat.Partrec.C
 protected def id : Code :=
   pair left right
 
-/-- Given a code `c` taking a pair as input,
- returns a code using `n` as the first argument to `c`. -/
+/-- Given a code `c` taking a pair as input, returns a code using `n` as the first argument to `c`.
+-/
 def curry (c : Code) (n : ℕ) : Code :=
   comp c (pair (Code.const n) Code.id)
 
@@ -325,8 +325,7 @@ theorem primrec_recOn' {α σ}
     nat_casesOn snd (option_some_iff.2 (hr.comp (fst.comp <| fst.comp <| fst.comp fst))) <| .mk <|
     this.comp <|
       ((fst.pair snd).comp <| fst.comp <| fst.comp <| fst.comp <| fst).pair <|
-      snd.pair <| nat_div2.comp <|
-        nat_div2.comp snd
+      snd.pair <| nat_div2.comp <| nat_div2.comp snd
   refine (nat_strong_rec (fun a n => F a (ofNat Code n)) this.to₂ fun a n => ?_)
     |>.comp .id (encode_iff.2 hc) |>.of_eq fun a => by simp
   iterate 4 rcases n with - | n; · simp [ofNatCode_eq, ofNatCode]; rfl
@@ -438,8 +437,7 @@ theorem computable_recOn {α σ} [Primcodable α] [Primcodable σ] {c : α → C
     nat_casesOn snd (option_some_iff.2 (hr.comp (fst.comp <| fst.comp <| fst.comp fst))) <| .mk <|
     this.comp <|
       ((fst.pair snd).comp <| fst.comp <| fst.comp <| fst.comp <| fst).pair <|
-      snd.pair <| nat_div2.comp <|
-        nat_div2.comp snd
+      snd.pair <| nat_div2.comp <| nat_div2.comp snd
   refine (nat_strong_rec (fun a n => F a (ofNat Code n)) this.to₂ fun a n => ?_)
     |>.comp .id (encode_iff.2 hc) |>.of_eq fun a => by simp
   iterate 4 rcases n with - | n; · simp [ofNatCode_eq, ofNatCode]; rfl
@@ -524,9 +522,8 @@ theorem primrec_const : Primrec Code.const :=
       simp [*, Code.const, Function.iterate_succ', -Function.iterate_succ]
 
 theorem primrec₂_curry : Primrec₂ curry :=
-  primrec₂_comp.comp Primrec.fst <|
-    primrec₂_pair.comp (primrec_const.comp Primrec.snd)
-    (_root_.Primrec.const Code.id)
+  primrec₂_comp.comp Primrec.fst <| primrec₂_pair.comp (primrec_const.comp Primrec.snd)
+  (_root_.Primrec.const Code.id)
 
 theorem curry_inj {c₁ c₂ n₁ n₂} (h : curry c₁ n₁ = curry c₂ n₂) : c₁ = c₂ ∧ n₁ = n₂ :=
   ⟨by injection h, by
@@ -542,8 +539,8 @@ theorem smn :
     ∃ f : Code → ℕ → Code, Computable₂ f ∧ ∀ c n x, eval (f c n) x = eval c (Nat.pair n x) :=
   ⟨curry, Primrec₂.to_comp primrec₂_curry, eval_curry⟩
 
-/-- A function is partial recursive if and only if there is a code implementing it.
-Therefore, `eval` is a **universal partial recursive function**. -/
+/-- A function is partial recursive if and only if there is a code implementing it. Therefore,
+`eval` is a **universal partial recursive function**. -/
 theorem exists_code {f : ℕ →. ℕ} : Nat.Partrec f ↔ ∃ c : Code, eval c = f := by
   constructor
   · intro h

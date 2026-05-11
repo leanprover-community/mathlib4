@@ -30,7 +30,7 @@ theorem merge' {f g} (hf : Nat.Partrec f) (hg : Nat.Partrec g) :
   obtain ⟨cf, rfl⟩ := Code.exists_code.1 hf
   obtain ⟨cg, rfl⟩ := Code.exists_code.1 hg
   have h_partrec : Nat.Partrec (PFun.mk fun n => Nat.rfindOpt fun k =>
-   cf.evaln k n <|> cg.evaln k n) :=
+      cf.evaln k n <|> cg.evaln k n) :=
     Partrec.nat_iff.1
       (Partrec.rfindOpt <|
         (Primrec.option_orElse.to_comp.comp

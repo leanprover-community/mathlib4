@@ -387,4 +387,5 @@ theorem _root_.computable₂_ack : Computable₂ ack := by
     apply_rules only
       [Code.eval_part.comp₂, Computable.fst, Computable.snd, primrec_pappAck.to_comp.comp]
   · simp
+
 end Nat.Partrec.Code
