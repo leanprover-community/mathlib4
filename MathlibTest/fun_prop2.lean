@@ -108,3 +108,15 @@ example {α : Type*} {m₀ : MeasurableSpace α} {μ : MeasureTheory.Measure α}
     (hl : ∀ f ∈ l, MeasureTheory.AEStronglyMeasurable f μ) :
     MeasureTheory.AEStronglyMeasurable l.prod μ := by
   fun_prop (disch := assumption)
+
+/-! Test that `fun_prop` should work on `→` and `∀` -/
+
+attribute [fun_prop] Measurable.imp Measurable.forall
+
+example {α : Type*} [MeasurableSpace α] {p q : α → Prop} (hp : Measurable p) (hq : Measurable q) :
+    Measurable fun x => p x → q x := by
+  fun_prop
+
+example {α ι : Type*} [MeasurableSpace α] [Countable ι] {p : ι → α → Prop}
+    (hp : ∀ i, Measurable (p i)) : Measurable fun x => ∀ i, p i x := by
+  fun_prop

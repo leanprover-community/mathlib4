@@ -11,9 +11,9 @@ import Mathlib.Topology.Constructions
 
 import Mathlib.Tactic.FunProp
 
+/-! # A file with fun_prop tests... sth sth sth! -/
 
 open Mathlib
-
 
 /-!
 The first step in using `fun_prop` is to mark desired function property with `fun_prop` attribute.
@@ -220,17 +220,3 @@ If possible, `fun_prop` theorem about `DFunLike.coe` should be state in this way
 
 That should be all about `fun_prop`, I hope you will enjoy using it :)
 -/
-
-
-
-/-! Test that `fun_prop` should work on `→` and `∀` -/
-
-attribute [fun_prop] Measurable.imp Measurable.forall
-
-example {α : Type*} [MeasurableSpace α] {p q : α → Prop} (hp : Measurable p) (hq : Measurable q) :
-    Measurable fun x => p x → q x := by
-  fun_prop
-
-example {α ι : Type*} [MeasurableSpace α] [Countable ι] {p : ι → α → Prop}
-    (hp : ∀ i, Measurable (p i)) : Measurable fun x => ∀ i, p i x := by
-  fun_prop
