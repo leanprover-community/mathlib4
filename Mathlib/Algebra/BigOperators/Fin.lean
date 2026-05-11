@@ -5,6 +5,7 @@ Authors: Yury Kudryashov, Anne Baanen
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.Data.Fintype.Fin
@@ -747,7 +748,6 @@ theorem prod_take_ofFn {n : ℕ} (f : Fin n → M) (i : ℕ) :
 @[to_additive]
 theorem prod_ofFn {n : ℕ} {f : Fin n → M} : (ofFn f).prod = ∏ i, f i :=
   Fin.prod_ofFn f
-
 
 @[simp]
 theorem prod_ofFn_smul {R A : Type*} [CommMonoid R] [CommMonoid A] [MulAction R A]
