@@ -277,8 +277,7 @@ instance (k : ℤ) : FiniteDimensional ℂ (ModularForm 𝒮ℒ k) := by
 
 /-- **Sturm bound for level-1 modular forms.** If a modular form `f` of weight `k` for `SL(2, ℤ)`
 has zero coefficient on `q^i` in its q-expansion for every `i ≤ k / 12`, then `f` is identically
-zero. The proof iterates `CuspForm.discriminantEquiv` (division by `Δ`) until the weight goes
-negative, where everything is zero. -/
+zero. -/
 theorem sturm_bound_levelOne {k : ℤ} (f : ModularForm 𝒮ℒ k)
     (h : ∀ i : ℕ, (i : ℤ) ≤ k / 12 → (qExpansion 1 f).coeff i = 0) : f = 0 := by
   induction hN : (k + 12).toNat using Nat.strong_induction_on generalizing k f with | _ N ih =>
