@@ -53,16 +53,15 @@ structure IsFaceOf (F C : PointedCone R M) : Prop where
     x ∈ C → y ∈ C → 0 < a → a • x + y ∈ F → x ∈ F
 variable {C C₁ C₂ F F₁ F₂ : PointedCone R M}
 
-theorem isFaceOf_iff_mem_of_smul_add_smul_mem : F.IsFaceOf C ↔
-    F ≤ C ∧ ∀ {x y : M} {a b : R}, x ∈ C → y ∈ C → 0 < a → 0 < b → a • x + b • y ∈ F → x ∈ F where
-  mp h := ⟨h.1, fun xC yC a0 b0 ↦ h.2 xC (smul_mem _ b0.le yC) a0⟩
-  mpr h := by
-    refine ⟨h.1, ?_⟩
-    by_cases hc : 0 < (1 : R)
-    · exact fun xc yc a0 _ ↦ h.2 xc yc a0 hc (by simpa)
-    · simp [(subsingleton_of_zero_eq_one (zero_le_one.eq_or_lt.resolve_right hc)).eq_zero]
-
 namespace IsFaceOf
+
+theorem mem_of_smul_add_smul_mem_left {x y : M} {a b : R} (hF : F.IsFaceOf C) (hx : x ∈ C)
+    (hy : y ∈ C) (ha : 0 < a) (hb : 0 < b) (h : a • x + b • y ∈ F) : x ∈ F :=
+  hF.2 hx (smul_mem _ hb.le hy) ha h
+
+theorem mem_of_smul_add_smul_mem_right {x y : M} {a b : R} (hF : F.IsFaceOf C) (hx : x ∈ C)
+    (hy : y ∈ C) (ha : 0 < a) (hb : 0 < b) (h : a • x + b • y ∈ F) : y ∈ F :=
+  by apply hF.2 hy (smul_mem _ ha.le hx) hb; rw [add_comm]; exact h
 
 /-- A pointed cone `C` is a face of itself. -/
 @[refl, simp]
@@ -77,11 +76,9 @@ theorem isFaceOf_iff_le (h₁ : F₁.IsFaceOf C) (h₂ : F₂.IsFaceOf C) :
 
 /-- A face of a cone is an extreme subset of the cone. -/
 theorem isExtreme (h : F.IsFaceOf C) : IsExtreme R (C : Set M) F := by
-  apply isFaceOf_iff_mem_of_smul_add_smul_mem.mp at h
   refine ⟨h.1, ?_⟩
-  rintro x xc y yc z zf ⟨a, b, a0, b0, -, hz⟩
-  apply h.2 xc yc a0 b0
-  rwa [← hz] at zf
+  rintro x xc y yc z zf ⟨a, b, a0, b0, -, rfl⟩
+  exact h.mem_of_smul_add_smul_mem_left xc yc a0 b0 zf
 
 /-- The intersection of two faces of two cones is a face of the intersection of the cones. -/
 protected theorem inf (h₁ : F₁.IsFaceOf C₁) (h₂ : F₂.IsFaceOf C₂) :
@@ -217,18 +214,17 @@ variable [DivisionRing R] [LinearOrder R] [IsOrderedRing R]
 variable [AddCommGroup M] [Module R M]
 variable {C F F₁ F₂ : PointedCone R M}
 
-theorem isFaceOf_iff_mem_of_add_mem_left : F.IsFaceOf C ↔
-    (F ≤ C ∧ ∀ {x y : M}, x ∈ C → y ∈ C → x + y ∈ F → x ∈ F) := by
-  refine ⟨fun h ↦ ⟨h.le, h.mem_of_add_mem_left⟩, fun ⟨h₁, h₂⟩ ↦ ⟨h₁, fun hx hy ha haxy ↦ ?_⟩⟩
+namespace IsFaceOf
+
+theorem of_mem_of_add_mem_left (h₁ : F ≤ C) (h₂ : ∀ {x y : M}, x ∈ C → y ∈ C → x + y ∈ F → x ∈ F) :
+    F.IsFaceOf C := by
+  refine ⟨h₁, fun hx hy ha haxy ↦ ?_⟩
   simpa [← smul_assoc, inv_mul_cancel₀ (ne_of_gt ha)] using smul_mem _
     (inv_nonneg.mpr (le_of_lt ha)) <| h₂ (smul_mem _ (le_of_lt ha) hx) hy haxy
 
-namespace IsFaceOf
-
 /-- The lineality space of a cone is a face. -/
 lemma lineal (C : PointedCone R M) : IsFaceOf C.lineal C := by
-  rw [isFaceOf_iff_mem_of_add_mem_left]
-  simp only [lineal_le, true_and]
+  apply of_mem_of_add_mem_left (lineal_le C)
   intro _ _ xc yc xyf
   simp [neg_add_rev, xc, true_and] at xyf ⊢
   simpa [neg_add_cancel_comm] using add_mem xyf.2 yc
