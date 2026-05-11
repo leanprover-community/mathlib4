@@ -77,8 +77,7 @@ variable (Φ : LocalizerMorphism W₁ W₂)
 
 /-- The opposite localizer morphism `LocalizerMorphism W₁.op W₂.op` deduced
 from `Φ : LocalizerMorphism W₁ W₂`. -/
-@[simps]
-def op : LocalizerMorphism W₁.op W₂.op where
+abbrev op : LocalizerMorphism W₁.op W₂.op where
   functor := Φ.functor.op
   map _ _ _ hf := Φ.map _ hf
 
@@ -354,6 +353,71 @@ instance IsLocalizedFullyFaithful.comp
 def arrow : LocalizerMorphism W₁.arrow W₂.arrow where
   functor := Φ.functor.mapArrow
   map _ _ _ hf := ⟨Φ.map _ hf.1, Φ.map _ hf.2⟩
+
+/-- If `Φ : LocalizerMorphism W₁ W₂`, the typeclass `Φ.IsInduced`
+says that `W₂.inverseImage Φ.functor = W₁`. -/
+class IsInduced (Φ : LocalizerMorphism W₁ W₂) : Prop where
+  inverseImage_eq (Φ) : W₂.inverseImage Φ.functor = W₁
+
+export IsInduced (inverseImage_eq)
+
+instance [Φ.IsInduced] : Φ.op.IsInduced where
+  inverseImage_eq := by
+    simp [← Φ.inverseImage_eq]
+
+instance : (id W₁).IsInduced where
+  inverseImage_eq := rfl
+
+instance (Ψ : LocalizerMorphism W₂ W₃) [Φ.IsInduced] [Ψ.IsInduced] :
+    (Φ.comp Ψ).IsInduced where
+  inverseImage_eq := by
+    simp [← Φ.inverseImage_eq, ← Ψ.inverseImage_eq]
+
+section
+
+variable [Φ.functor.IsEquivalence] [Φ.IsInduced] [W₂.RespectsIso]
+
+attribute [local simp] Functor.asEquivalence_counitIso_hom_app
+  Functor.asEquivalence_counitIso_inv_app in
+/-- The inverse of a localizer morphism `Φ : LocalizerMorphism W₁ W₂`,
+when `Φ.functor` is an equivalence, `W₁` is induced by `W₂`
+and `W₂` respects isomorphisms. -/
+@[simps]
+noncomputable def inv : LocalizerMorphism W₂ W₁ where
+  functor := Φ.functor.inv
+  map := by
+    simp only [← Φ.inverseImage_eq]
+    intro X Y f hf
+    exact (W₂.arrow_mk_iso_iff
+      (Arrow.isoMk (Φ.functor.asEquivalence.counitIso.app _)
+        (Φ.functor.asEquivalence.counitIso.app _))).2 hf
+
+instance : Φ.inv.functor.IsEquivalence := by
+  dsimp
+  infer_instance
+
+attribute [local simp] Functor.asEquivalence_inverse
+  Functor.asEquivalence_counitIso_hom_app Functor.asEquivalence_counitIso_inv_app in
+instance : Φ.inv.IsInduced where
+  inverseImage_eq := by
+    ext X Y f
+    simp only [← Φ.inverseImage_eq]
+    exact W₂.arrow_mk_iso_iff
+      (Arrow.isoMk (Φ.functor.asEquivalence.counitIso.app _)
+        (Φ.functor.asEquivalence.counitIso.app _))
+
+lemma isLocalizedEquivalence_of_isInduced :
+    Φ.IsLocalizedEquivalence := by
+  refine IsLocalizedEquivalence.of_equivalence _ (fun X Y f hf ↦ ?_)
+  let e :
+      Arrow.mk (Φ.functor.map (Φ.functor.preimage
+        ((Φ.functor.objObjPreimageIso X).hom ≫ f ≫ (Φ.functor.objObjPreimageIso Y).inv))) ≅
+      Arrow.mk f :=
+    Arrow.isoMk (Φ.functor.objObjPreimageIso X) (Φ.functor.objObjPreimageIso Y)
+  simp only [← Φ.inverseImage_eq]
+  exact ⟨_, _, _, (W₂.arrow_mk_iso_iff e).2 hf, ⟨e⟩⟩
+
+end
 
 end LocalizerMorphism
 
