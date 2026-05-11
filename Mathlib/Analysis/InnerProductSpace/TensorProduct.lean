@@ -417,8 +417,7 @@ noncomputable def assocIsometry : E ⊗[𝕜] F ⊗[𝕜] G ≃ₗᵢ[𝕜] E �
 end isometry
 
 lemma exists_repr (x : E ⊗[𝕜] F) :
-    ∃ (n : ℕ) (e : Fin n → E) (g : Fin n → F),
-      x = ∑ i, e i ⊗ₜ[𝕜] g i := by
+    ∃ (n : ℕ) (e : Fin n → E) (g : Fin n → F), x = ∑ i, e i ⊗ₜ[𝕜] g i := by
   induction x using TensorProduct.induction_on with
   | zero =>
       exact ⟨0, Fin.elim0, Fin.elim0, by simp⟩
@@ -431,9 +430,11 @@ lemma exists_repr (x : E ⊗[𝕜] F) :
       rw [hx, hy, Fin.sum_univ_add]
       simp [Fin.append]
 
-noncomputable def mapL_id (f : E →L[𝕜] F) : (E ⊗[𝕜] G) →L[𝕜] (F ⊗[𝕜] G) :=
-  (TensorProduct.map f.toLinearMap LinearMap.id).mkContinuous ‖f‖ (fun x => by
+noncomputable def mapLId (f : E →L[𝕜] F) : (E ⊗[𝕜] G) →L[𝕜] (F ⊗[𝕜] G) :=
+  (map f.toLinearMap LinearMap.id).mkContinuous ‖f‖ (fun x => by
     obtain ⟨n, e, g, hx ⟩ := exists_repr x
+    obtain ⟨c, hc_supp, hc⟩ := Submodule.mem_span_set.mp
+      ((span_tmul_eq_top 𝕜 E G) ▸ Submodule.mem_top (x := x))
     obtain ⟨m, A, hA⟩  := Matrix.posSemidef_iff_eq_sum_vecMulVec.mp
       (Matrix.posSemidef_opNorm_smul_gram_sub_gram e f)
     apply (sq_le_sq₀ (norm_nonneg _) (by positivity)).mp
@@ -452,12 +453,27 @@ noncomputable def mapL_id (f : E →L[𝕜] F) : (E ⊗[𝕜] G) →L[𝕜] (F �
     exact Finset.sum_nonneg (fun x _ => by simp)
   )
 
-noncomputable def map_idL (g : G →L[𝕜] H) : (E ⊗[𝕜] G) →L[𝕜] (E ⊗[𝕜] H) :=
-  (commIsometry 𝕜 H E) ∘L (mapL_id g) ∘L
+theorem norm_mapLId (f : E →L[𝕜] F) : ‖mapLId (G:=G) f‖ ≤ ‖f‖ := by
+  apply LinearMap.mkContinuous_norm_le _ (norm_nonneg _) _
+
+noncomputable def mapIdL (g : G →L[𝕜] H) : (E ⊗[𝕜] G) →L[𝕜] (E ⊗[𝕜] H) :=
+  (commIsometry 𝕜 H E) ∘L (mapLId g) ∘L
     (commIsometry 𝕜 E G).toContinuousLinearEquiv.toContinuousLinearMap
 
+theorem norm_mapIdL (g : G →L[𝕜] H) : ‖mapIdL (E:=E) g‖ ≤ ‖g‖ := by
+  unfold mapIdL
+  simp_rw [← LinearIsometryEquiv.toContinuousLinearMap_toLinearIsometry]
+  grw [ContinuousLinearMap.opNorm_comp_le, ContinuousLinearMap.opNorm_comp_le, norm_mapLId,
+    (commIsometry 𝕜 E G).toLinearIsometry.norm_toContinuousLinearMap_le,
+    (commIsometry 𝕜 H E).toLinearIsometry.norm_toContinuousLinearMap_le]
+  simp
+
 noncomputable def mapL (f : E →L[𝕜] F) (g : G →L[𝕜] H) : (E ⊗[𝕜] G) →L[𝕜] (F ⊗[𝕜] H) :=
-  mapL_id f ∘L map_idL g
+  mapLId f ∘L mapIdL g
+
+theorem norm_mapL (f : E →L[𝕜] F) (g : G →L[𝕜] H) : ‖mapL f g‖ ≤ ‖f‖*‖g‖ := by
+  unfold mapL
+  grw [ContinuousLinearMap.opNorm_comp_le, norm_mapLId, norm_mapIdL]
 
 @[simp]
 theorem mapL_tmul (f : E →L[𝕜] F) (g : G →L[𝕜] H) (m : E) (n : G) :
