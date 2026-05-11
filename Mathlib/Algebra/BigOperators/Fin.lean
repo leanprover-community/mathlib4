@@ -5,6 +5,7 @@ Authors: Yury Kudryashov, Anne Baanen
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Algebra.Group.Action.Pi
 public import Mathlib.Data.Fintype.BigOperators
@@ -750,7 +751,7 @@ theorem prod_ofFn {n : ℕ} {f : Fin n → M} : (ofFn f).prod = ∏ i, f i :=
   Fin.prod_ofFn f
 
 @[simp]
-theorem List.prod_ofFn_smul {R A : Type*} [CommRing R] [CommRing A] [Algebra R A] {m : ℕ}
+theorem prod_ofFn_smul {R A : Type*} [CommRing R] [CommRing A] [Algebra R A] {m : ℕ}
     (g : Fin m → R) (f : Fin m → A) :
     (List.ofFn (fun i ↦ g i • f i)).prod = (List.ofFn g).prod • (List.ofFn f).prod := by
   simp [Algebra.smul_def, List.prod_ofFn, prod_mul_distrib, map_prod]
