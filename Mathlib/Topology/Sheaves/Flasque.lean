@@ -197,8 +197,7 @@ theorem isFlasque_skyscraperSheaf_of_epi_from {X : TopCat} (p₀ : ↑X)
   epi {U V} r := by
     by_cases h1 : p₀ ∈ unop U
     · by_cases h2 : p₀ ∈ unop V
-      · -- `simp_all?` says:
-        simp_all only [skyscraperSheaf_obj_obj, skyscraperSheaf_obj_map, ↓reduceDIte]
+      · simp_all only [skyscraperSheaf_obj_obj, skyscraperSheaf_obj_map, ↓reduceDIte]
         infer_instance
       · simp
         grind
@@ -220,6 +219,4 @@ flasque sheaf.
 -/
 theorem isFlasque_skyscraperSheaf_of_hasZeroObject {X : TopCat} (p₀ : ↑X)
     [(U : Opens ↑X) → Decidable (p₀ ∈ U)] {C : Type*} [Category* C] (A : C) [HasZeroObject C] :
-    (skyscraperSheaf p₀ A).IsFlasque :=
-  isFlasque_skyscraperSheaf_of_epi_from p₀ A
-    (((isZero_zero C).of_iso HasZeroObject.zeroIsoTerminal.symm).epi _)
+    (skyscraperSheaf p₀ A).IsFlasque := isFlasque_skyscraperSheaf_of_epi_from p₀ A

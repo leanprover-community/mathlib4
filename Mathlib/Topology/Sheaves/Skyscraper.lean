@@ -240,6 +240,7 @@ theorem skyscraperPresheaf_isSheaf : (skyscraperPresheaf p₀ A).IsSheaf := by
 The skyscraper presheaf supported at `p₀` with value `A` is the sheaf that assigns `A` to all opens
 `U` that contain `p₀` and assigns `*` otherwise.
 -/
+@[simps!]
 def skyscraperSheaf : Sheaf C X :=
   ⟨skyscraperPresheaf p₀ A, skyscraperPresheaf_isSheaf _ _⟩
 
