@@ -69,6 +69,7 @@ variable {ι 𝕜 ε ε' E F A : Type*} [NormedAddCommGroup E]
 interval `a..b` if it is integrable on both intervals `(a, b]` and `(b, a]`. One of these
 intervals is always empty, so this property is equivalent to `f` being integrable on
 `(min a b, max a b]`. -/
+@[fun_prop]
 def IntervalIntegrable (f : ℝ → ε) (μ : Measure ℝ) (a b : ℝ) : Prop :=
   IntegrableOn f (Ioc a b) μ ∧ IntegrableOn f (Ioc b a) μ
 
@@ -219,6 +220,7 @@ theorem trans_iterate {a : ℕ → ℝ} {n : ℕ}
     IntervalIntegrable f μ (a 0) (a n) :=
   trans_iterate_Ico bot_le fun k hk => hint k hk.2
 
+@[fun_prop]
 theorem neg {f : ℝ → E} (h : IntervalIntegrable f μ a b) : IntervalIntegrable (-f) μ a b :=
   ⟨h.1.neg, h.2.neg⟩
 
@@ -239,6 +241,7 @@ theorem intervalIntegrable_norm_iff {f : ℝ → E} {μ : Measure ℝ} {a b : �
     IntervalIntegrable (fun t => ‖f t‖) μ a b ↔ IntervalIntegrable f μ a b := by
   simp_rw [intervalIntegrable_iff, IntegrableOn, integrable_norm_iff hf]
 
+@[fun_prop]
 theorem abs {f : ℝ → ℝ} (h : IntervalIntegrable f μ a b) :
     IntervalIntegrable (fun x => |f x|) μ a b :=
   h.norm
@@ -304,17 +307,18 @@ end
 
 variable [NormedRing A] {f g : ℝ → ε} {a b : ℝ} {μ : Measure ℝ}
 
+@[fun_prop]
 theorem smul {R : Type*} [NormedAddCommGroup R] [SMulZeroClass R E] [IsBoundedSMul R E] {f : ℝ → E}
     (h : IntervalIntegrable f μ a b) (r : R) :
     IntervalIntegrable (r • f) μ a b :=
   ⟨h.1.smul r, h.2.smul r⟩
 
-@[simp]
+@[simp, fun_prop]
 theorem add [ContinuousAdd ε] (hf : IntervalIntegrable f μ a b) (hg : IntervalIntegrable g μ a b) :
     IntervalIntegrable (fun x => f x + g x) μ a b :=
   ⟨hf.1.add hg.1, hf.2.add hg.2⟩
 
-@[simp]
+@[simp, fun_prop]
 theorem sub {f g : ℝ → E} (hf : IntervalIntegrable f μ a b) (hg : IntervalIntegrable g μ a b) :
     IntervalIntegrable (fun x => f x - g x) μ a b :=
   ⟨hf.1.sub hg.1, hf.2.sub hg.2⟩
@@ -338,22 +342,24 @@ protected theorem finsum
 
 section Mul
 
+@[fun_prop]
 theorem mul_continuousOn {f g : ℝ → A} (hf : IntervalIntegrable f μ a b)
     (hg : ContinuousOn g [[a, b]]) : IntervalIntegrable (fun x => f x * g x) μ a b := by
   rw [intervalIntegrable_iff] at hf ⊢
   exact hf.mul_continuousOn_of_subset hg measurableSet_Ioc isCompact_uIcc Ioc_subset_Icc_self
 
+@[fun_prop]
 theorem continuousOn_mul {f g : ℝ → A} (hf : IntervalIntegrable f μ a b)
     (hg : ContinuousOn g [[a, b]]) : IntervalIntegrable (fun x => g x * f x) μ a b := by
   rw [intervalIntegrable_iff] at hf ⊢
   exact hf.continuousOn_mul_of_subset hg isCompact_uIcc measurableSet_Ioc Ioc_subset_Icc_self
 
-@[simp]
+@[simp, fun_prop]
 theorem const_mul {f : ℝ → A} (hf : IntervalIntegrable f μ a b) (c : A) :
     IntervalIntegrable (fun x => c * f x) μ a b :=
   hf.continuousOn_mul continuousOn_const
 
-@[simp]
+@[simp, fun_prop]
 theorem mul_const {f : ℝ → A} (hf : IntervalIntegrable f μ a b) (c : A) :
     IntervalIntegrable (fun x => f x * c) μ a b :=
   hf.mul_continuousOn continuousOn_const
@@ -364,11 +370,13 @@ section SMul
 
 variable {f : ℝ → 𝕜} {g : ℝ → E} [NormedRing 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E]
 
+@[fun_prop]
 theorem smul_continuousOn (hf : IntervalIntegrable f μ a b)
     (hg : ContinuousOn g [[a, b]]) : IntervalIntegrable (fun x => f x • g x) μ a b := by
   rw [intervalIntegrable_iff] at hf ⊢
   exact hf.smul_continuousOn_of_subset hg measurableSet_Ioc isCompact_uIcc Ioc_subset_Icc_self
 
+@[fun_prop]
 theorem continuousOn_smul (hg : IntervalIntegrable g μ a b)
     (hf : ContinuousOn f [[a, b]]) : IntervalIntegrable (fun x => f x • g x) μ a b := by
   rw [intervalIntegrable_iff] at hg ⊢
@@ -490,16 +498,19 @@ section
 
 variable {μ : Measure ℝ} [IsLocallyFiniteMeasure μ]
 
+@[fun_prop]
 theorem ContinuousOn.intervalIntegrable {u : ℝ → E} {a b : ℝ} (hu : ContinuousOn u (uIcc a b)) :
     IntervalIntegrable u μ a b :=
   (ContinuousOn.integrableOn_Icc hu).intervalIntegrable
 
+@[fun_prop]
 theorem ContinuousOn.intervalIntegrable_of_Icc {u : ℝ → E} {a b : ℝ} (h : a ≤ b)
     (hu : ContinuousOn u (Icc a b)) : IntervalIntegrable u μ a b :=
   ContinuousOn.intervalIntegrable ((uIcc_of_le h).symm ▸ hu)
 
 /-- A continuous function on `ℝ` is `IntervalIntegrable` with respect to any locally finite measure
 `ν` on ℝ. -/
+@[fun_prop]
 theorem Continuous.intervalIntegrable {u : ℝ → E} (hu : Continuous u) (a b : ℝ) :
     IntervalIntegrable u μ a b :=
   hu.continuousOn.intervalIntegrable

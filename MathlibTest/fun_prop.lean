@@ -8,6 +8,7 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
 import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.Topology.Constructions
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 import Mathlib.Tactic.FunProp
 
@@ -234,3 +235,11 @@ example {α : Type*} [MeasurableSpace α] {p q : α → Prop} (hp : Measurable p
 example {α ι : Type*} [MeasurableSpace α] [Countable ι] {p : ι → α → Prop}
     (hp : ∀ i, Measurable (p i)) : Measurable fun x => ∀ i, p i x := by
   fun_prop
+
+/--/
+Test that `fun_prop` works on `IntervalIntegrable`
+-/
+
+example {f g : ℝ → ℝ} (hf : ContinuousOn f (Set.Icc 0 1)) (hg : ContinuousOn g (Set.Icc 0 1)) :
+    IntervalIntegrable (fun x => |(|f x - g x|)|) MeasureTheory.volume 0 1 := by
+  fun_prop (disch := norm_num)
