@@ -170,6 +170,9 @@ theorem theta_le_log4_mul_x {x : ℝ} (hx : 0 ≤ x) : θ x ≤ log 4 * x := by
   gcongr
   exact floor_le hx
 
+end Chebyshev
+
+namespace Nat
 /-!
 ## Least common multiple of `{1,...,n}`
 
@@ -178,6 +181,10 @@ Basic facts about the least common multiple of the first `n` natural numbers
 
 /-- Least common multiple of $\{1, \dots, n\}$. -/
 def lcmUpto (n : ℕ) : ℕ := (Icc 1 n).lcm id
+
+end Nat
+
+namespace Chebyshev
 
 theorem lcmUpto_ne_zero (n : ℕ) : lcmUpto n ≠ 0 := by simp [lcmUpto]
 
