@@ -99,7 +99,7 @@ lemma filter_sigma (s : Finset ι) (t : ∀ i, Finset (α i)) (p : (i : ι) → 
   simp [Finset.mem_filter, Finset.mem_sigma, and_assoc]
 
 @[simp]
-lemma sigma_filter (s : Finset ι) (t : ∀ i, Finset (α i)) (p : (i : ι) × α i → Prop)
+lemma sigma_filter' (s : Finset ι) (t : ∀ i, Finset (α i)) (p : (i : ι) × α i → Prop)
     [DecidablePred p] : (s.sigma t).filter p = s.sigma fun i ↦ (t i).filter fun x => p ⟨i, x⟩ := by
   ext ⟨i, a⟩
   simp [Finset.mem_filter, Finset.mem_sigma, and_assoc]
