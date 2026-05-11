@@ -385,7 +385,7 @@ theorem inr_map_mul (b₁ b₂ : B) :
 
 end map_mul
 
-theorem range_eq_range_iff_map_ker_fst_eq_top {R M N P : Type*} [Semiring R]
+theorem range_le_range_iff_map_ker_fst_eq_top {R M N P : Type*} [Semiring R]
     [AddCommMonoid M] [Module R M] [AddCommGroup N] [Module R N]
     [AddCommGroup P] [Module R P] (f : M →ₗ[R] P) (g : N →ₗ[R] P) :
     f.range ≤ g.range ↔ (f.comp (.fst R M N) + g.comp (.snd R M N)).ker.map (.fst R M N) = ⊤ := by
@@ -397,7 +397,7 @@ theorem range_eq_range_iff_map_ker_fst_eq_top {R M N P : Type*} [Semiring R]
 theorem map_fst_ker_eq_top {R M N P : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
     [AddCommGroup N] [Module R N] [AddCommGroup P] [Module R P] {f : M × N →ₗ[R] P} :
     f.ker.map (.fst R M N) = ⊤ ↔ (f ∘ₗ .inl R M N).range ≤ (f ∘ₗ .inr R M N).range := by
-  rw [range_eq_range_iff_map_ker_fst_eq_top]
+  rw [range_le_range_iff_map_ker_fst_eq_top]
   simp only [comp_assoc, ← comp_add, ← coprod_def, coprod_inl_inr, comp_id]
 
 end LinearMap
