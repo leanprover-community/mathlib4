@@ -35,7 +35,7 @@ variable {E : Type*} [AddCommGroup E] [TopologicalSpace E] [IsTopologicalAddGrou
 variable {F : Type*} [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F]
 
 /-- **Hahn-Banach theorem** for continuous linear functions on locally convex spaces over `ℝ`. -/
-theorem Real.exists_extension [Module ℝ E] [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E]
+theorem StrongDual.exists_real_extension [Module ℝ E] [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E]
     (p : Subspace ℝ E) (f : StrongDual ℝ p) :
     ∃ g : StrongDual ℝ E, ∀ x : p, g x = f x := by
   have : PolynormableSpace ℝ E := LocallyConvexSpace.toPolynormableSpace
