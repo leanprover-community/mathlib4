@@ -307,7 +307,6 @@ theorem torsion_eq_torsion_submonoid : CommMonoid.torsion G = (torsion G).toSubm
 @[to_additive]
 theorem mem_torsion (g : G) : g ∈ torsion G ↔ IsOfFinOrder g := Iff.rfl
 
-
 @[to_additive]
 lemma torsion_eq_top_iff : torsion G = ⊤ ↔ IsTorsion G :=
   (torsion G).eq_top_iff'
