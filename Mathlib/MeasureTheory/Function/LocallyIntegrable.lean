@@ -34,7 +34,7 @@ variable {X Y ε ε' ε'' E F R : Type*} [MeasurableSpace X] [TopologicalSpace X
 variable [MeasurableSpace Y] [TopologicalSpace Y]
 variable [TopologicalSpace ε] [ContinuousENorm ε] [TopologicalSpace ε'] [ContinuousENorm ε']
   [TopologicalSpace ε''] [ESeminormedAddMonoid ε'']
-  [NormedAddCommGroup E] [NormedAddCommGroup F] {f g : X → ε} {μ : Measure X} {s : Set X}
+  [NormedAddCommGroup E] [NormedAddCommGroup F] {f g : X → ε} {μ ν : Measure X} {s : Set X}
 
 namespace MeasureTheory
 
@@ -214,7 +214,7 @@ protected theorem LocallyIntegrableOn.sub
 protected theorem LocallyIntegrableOn.neg {f : X → E} (hf : LocallyIntegrableOn f s μ) :
     LocallyIntegrableOn (-f) s μ := fun x hx ↦ (hf x hx).neg
 
-@[simp] theorem _root_.locallyIntegrableOn_neg_iff {f : X → E} :
+@[simp] theorem locallyIntegrableOn_neg_iff {f : X → E} :
     LocallyIntegrableOn (-f) s μ ↔ LocallyIntegrableOn f s μ := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.neg⟩
   convert h.neg; simp
@@ -226,7 +226,7 @@ protected theorem LocallyIntegrableOn.smul {𝕜 : Type*} [NormedField 𝕜] [No
 
 -- See `locallyIntegrableOn_smul_iff` below for the fully general version.
 -- It is placed below to make use of `locallyIntegrableOn_zero`.
-theorem _root_.locallyIntegrableOn_smul_iff' {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
+theorem locallyIntegrableOn_smul_iff' {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
     {f : X → E} {c : 𝕜} (hc : c ≠ 0) :
     LocallyIntegrableOn (c • f) s μ ↔ LocallyIntegrableOn f s μ := by
   refine ⟨fun hf ↦ ?_, fun h ↦ h.smul c⟩
@@ -382,7 +382,7 @@ theorem locallyIntegrableOn_zero : LocallyIntegrableOn (fun _ ↦ (0 : ε'')) s 
   locallyIntegrable_zero.locallyIntegrableOn s
 
 @[simp]
-theorem _root_.locallyIntegrableOn_smul_iff {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
+theorem locallyIntegrableOn_smul_iff {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
     {f : X → E} (c : 𝕜) :
     LocallyIntegrableOn (c • f) s μ ↔ c = 0 ∨ LocallyIntegrableOn f s μ := by
   by_cases hc : c = 0
