@@ -114,8 +114,8 @@ theorem lt_zarankiewicz_card_iff_of_nonneg
 
 open Classical in
 /-- The Zarankiewicz function is at most the corresponding extremal number. -/
-theorem zarankiewicz_le_extremalNumber :
-    zarankiewicz m n (card α) (card β) ≤ extremalNumber (m + n) (completeBipartiteGraph α β) := by
+theorem zarankiewicz_le_extremalNumber (hs : card α = s) (ht : card β = t) :
+    zarankiewicz m n s t ≤ extremalNumber (m + n) (completeBipartiteGraph α β) := by
   conv =>
     enter [2, 1]
     rw [← Fintype.card_fin (m + n)]
@@ -125,11 +125,12 @@ theorem zarankiewicz_le_extremalNumber :
   refine card_edgeFinset_le_extremalNumber <|
     (h.congr_left ?_).congr_right (Iso.map finSumFinEquiv B).symm
   exact completeBipartiteGraphCongr
-    (Fintype.equivFinOfCardEq rfl) (Fintype.equivFinOfCardEq rfl)
+    (Fintype.equivFinOfCardEq hs) (Fintype.equivFinOfCardEq ht)
 
 /-- The symmetric Zarankiewicz function is at least twice a corresponding extremal number. -/
-theorem two_mul_extremalNumber_le_zarankiewicz_symm [Nonempty α] [Nonempty β] :
-    2 * extremalNumber n (completeBipartiteGraph α β) ≤ zarankiewicz n n (card α) (card β) := by
+theorem two_mul_extremalNumber_le_zarankiewicz_symm
+    [Nonempty α] [Nonempty β] (hs : card α = s) (ht : card β = t) :
+    2 * extremalNumber n (completeBipartiteGraph α β) ≤ zarankiewicz n n s t := by
   conv =>
     enter [1, 2, 1]
     rw [← Fintype.card_fin n]
@@ -141,9 +142,11 @@ theorem two_mul_extremalNumber_le_zarankiewicz_symm [Nonempty α] [Nonempty β] 
   · simp_rw [mem_filter, mem_univ, true_and]
     refine ⟨bipartiteDoubleCover_le, ?_⟩
     contrapose! h
-    refine completeBipartiteGraph_isContained_bipartiteDoubleCover.mp <| h.trans' ⟨Iso.toCopy ?_⟩
+    rw [not_free] at h ⊢
+    refine completeBipartiteGraph_isContained_bipartiteDoubleCover.mp <|
+      h.trans' ⟨Iso.toCopy ?_⟩
     exact completeBipartiteGraphCongr
-      (Fintype.equivFinOfCardEq rfl) (Fintype.equivFinOfCardEq rfl)
+      (Fintype.equivFinOfCardEq hs) (Fintype.equivFinOfCardEq ht)
   · convert card_edgeFinset_bipartiteDoubleCover.symm.le
 
 end SimpleGraph
