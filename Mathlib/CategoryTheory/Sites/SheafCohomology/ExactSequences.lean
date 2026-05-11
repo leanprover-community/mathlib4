@@ -169,8 +169,8 @@ attribute [local simp] H.map_comp_apply in
 noncomputable def longSequenceFunctor :
     ObjectProperty.FullSubcategory (ShortComplex.ShortExact (C := (Sheaf J AddCommGrpCat.{w}))) ⥤
       ComposableArrows AddCommGrpCat.{w'} 5 where
-      obj S := longSequence S.property n₀ n₁ h
-      map {S₁ S₂} f := longSequence_hom n₀ n₁ h S₁.property S₂.property f.hom
+  obj S := longSequence S.property n₀ n₁ h
+  map {S₁ S₂} f := longSequence_hom n₀ n₁ h S₁.property S₂.property f.hom
 
 lemma longSequence_exact₁' :
     (ShortComplex.mk (ofHom (connectingHom hS n₀ n₁ h)) (ofHom (map S.f n₁)) (by
