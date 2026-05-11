@@ -130,7 +130,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma ιNormalizedChainComplex_eq_zero (x : X _⦋n⦌) (hx : x ∈ X.degenerate n) :
     X.ιNormalizedChainComplex (R := R) x = 0 := by
   rw [← cancel_mono ((X.fromNormalizedChainComplex R).f n), zero_comp,
-    ιNormalizedChainComplex_fromNondegComplex_f]
+    ιNormalizedChainComplex_fromNormalizedChainComplex_f]
   obtain _ | n := n
   · simp at hx
   · simp only [degenerate_eq_iUnion_range_σ, Set.mem_iUnion, Set.mem_range] at hx
