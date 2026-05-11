@@ -50,6 +50,8 @@ lemma val_step_eq {u v : V} (s : Step G u v) : s.val = (u, v) := by
   obtain ⟨d, hd, rfl, rfl⟩ := s
   rfl
 
+/-- The step from `u` to `v` from a pair of adjacent vertices. This is a computable version of
+`GraphLike.Adj.toStep`. -/
 @[expose] def Adj.toStep {u v : V} (h : Adj G u v) : Step G u v := ⟨(u, v), by simpa⟩
 
 @[simp]
