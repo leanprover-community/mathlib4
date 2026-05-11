@@ -5,9 +5,7 @@ Authors: Yury Kudryashov, Anne Baanen
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Defs
-public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.Data.Fintype.Fin
 public import Mathlib.Logic.Equiv.Fin.Basic
@@ -750,11 +748,12 @@ theorem prod_take_ofFn {n : ℕ} (f : Fin n → M) (i : ℕ) :
 theorem prod_ofFn {n : ℕ} {f : Fin n → M} : (ofFn f).prod = ∏ i, f i :=
   Fin.prod_ofFn f
 
+
 @[simp]
-theorem prod_ofFn_smul {R A : Type*} [CommRing R] [CommRing A] [Algebra R A] {m : ℕ}
-    (g : Fin m → R) (f : Fin m → A) :
+theorem prod_ofFn_smul {R A : Type*} [CommMonoid R] [CommMonoid A] [MulAction R A]
+    [IsScalarTower R A A] [SMulCommClass R A A] {m : ℕ} (g : Fin m → R) (f : Fin m → A) :
     (List.ofFn (fun i ↦ g i • f i)).prod = (List.ofFn g).prod • (List.ofFn f).prod := by
-  simp [Algebra.smul_def, List.prod_ofFn, prod_mul_distrib, map_prod]
+  simp [List.prod_ofFn, Finset.prod_smul]
 
 end CommMonoid
 
