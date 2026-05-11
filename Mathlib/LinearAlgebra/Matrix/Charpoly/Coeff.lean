@@ -440,7 +440,7 @@ theorem coeff_det_one_add_X_smul_eq_sum_minors
       _ = ∑ s : Finset n, ((X : R[X]) ^ s.card •
             D (Finset.piecewise s (fun i ↦ (M.map C) i)
               (fun i ↦ (1 : Matrix n n R[X]) i))).coeff k := by
-        simp only [Polynomial.finset_sum_coeff]
+        simp only [Polynomial.finsetSum_coeff]
       _ = _ := by
         simp_rw [h_det, smul_eq_mul, mul_comm (X ^ _) (C _)]
         simp_rw [C_mul_X_pow_eq_monomial, coeff_monomial]
