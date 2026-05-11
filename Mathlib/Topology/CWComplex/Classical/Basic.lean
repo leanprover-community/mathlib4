@@ -63,6 +63,19 @@ together.
   cells `cell C` of an absolute CW complex `C`, this actually refers to `RelCWComplex.cell C`
   through this instance. Again, we want typeclass inference to first consider absolute CW
   structures.
+* The namespaces `CWComplex` and `RelCWComplex` generally should not be opened at the same time
+  as they contain many declarations with identical names. Still, we want working with absolute
+  CW complexes to be  as convenient as possible. Thus every declaration about relative CW complexes
+  that doesn't have a modified version for absolute CW complexes should receive an alias in the
+  `CWComplex` namespace. It is recommended to use the `alias_in` attribute for this here. See
+  below for a restriction on when we want to create aliases.
+* For types and definitions relevant to CW complexes like `cell`, `openCell`, `closedCell`,
+  `cellFrontier`, `skeletonLT` and similar, we want there to exist only one actually used version,
+  namely the version in the `RelCWComplex` namespace (and thus no seperate definition in the
+  `CWComplex` namespace.) This is to avoid unnecessary duplication of lemmas. To achieve this,
+  definitions from the `RelCWComplex` namespace should be added to the `CWComplex` namespace with
+  `export` intead of `alias_in`/`alias`. These will then apply to the absolute CW complex through
+  the instance `CWComplex.instRelCWComplex`.
 * For statements, the auxiliary construction `skeletonLT` is preferred over `skeleton` as it makes
   the base case of inductions easier. The statement about `skeleton` should then be derived from the
   one about `skeletonLT`.
