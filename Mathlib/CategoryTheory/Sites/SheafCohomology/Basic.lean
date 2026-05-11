@@ -103,9 +103,9 @@ open AddCommGrpCat Opposite
 
 /-- The additive equivalence between `H F 0` and the evaluation of `F` at a terminal object -/
 noncomputable def H.equiv₀ : H F 0 ≃+ F.obj.obj (op T) :=
-    AddEquiv.trans Ext.addEquiv₀ <|
-      AddEquiv.trans ((constantSheafAdj J AddCommGrpCat hT).homAddEquiv _ F)
-        (uliftZMultiplesAddEquiv _)
+  AddEquiv.trans Ext.addEquiv₀ <|
+    AddEquiv.trans ((constantSheafAdj J AddCommGrpCat hT).homAddEquiv _ F)
+      (uliftZMultiplesAddEquiv _)
 
 variable {F G : Sheaf J AddCommGrpCat.{w}} (f : F ⟶ G)
 
