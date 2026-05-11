@@ -41,7 +41,7 @@ In this file, we prove **Krull's principal ideal theorem** (also known as
   by no more than `n` elements.
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*} [CommRing R] [IsNoetherianRing R]
 
@@ -125,6 +125,20 @@ theorem Ideal.map_height_le_one_of_mem_minimalPrimes {I p : Ideal R} {x : R}
         ⟨I.mk_ker.symm.trans_le <| ker_le_comap (Ideal.Quotient.mk I), le_comap_of_map_le hxr⟩⟩ <|
           (comap_mono hrp).trans <| Eq.le <|
             (p.comap_map_of_surjective _ Quotient.mk_surjective).trans <| sup_eq_left.mpr hfp⟩
+
+/-- In a Noetherian ring, the height of a principal ideal spanned by a non-unit is at most one. -/
+lemma Ideal.height_span_singleton_le_one {x : R} (hx' : ¬ IsUnit x) :
+    (span {x}).height ≤ 1 := by
+  obtain ⟨p, hp⟩ := (span {x}).nonempty_minimalPrimes (by simpa)
+  refine le_trans (height_mono hp.1.2) ?_
+  exact Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes (span {x}) _ hp
+
+/-- In a Noetherian ring, the height of a principal ideal spanned by a non-unit non-zero-divisor
+is one. -/
+lemma Ideal.height_span_singleton_eq_one_of_mem_nonZeroDivisors {x : R}
+    (hx : x ∈ nonZeroDivisors R) (hx' : ¬ IsUnit x) : (span {x}).height = 1 :=
+  le_antisymm (height_span_singleton_le_one hx')
+    (one_le_height_span_singleton_of_mem_nonZeroDivisors hx)
 
 /-- If `q < p` are prime ideals such that `p` is minimal over `span (s ∪ {x})` and
 `t` is a set contained in `q` such that `s ⊆ √span (t ∪ {x})`, then `q` is minimal over `span t`.
@@ -260,7 +274,7 @@ instance Ideal.finiteHeight_of_isNoetherianRing (I : Ideal R) :
     I.FiniteHeight := finiteHeight_iff_lt.mpr <| Or.elim (em (I = ⊤)) Or.inl
   fun h ↦ Or.inr <| (I.height_le_spanFinrank h).trans_lt (ENat.coe_lt_top _)
 
-instance [IsNoetherianRing R] [IsLocalRing R] : FiniteRingKrullDim R := by
+instance [IsLocalRing R] : FiniteRingKrullDim R := by
   apply finiteRingKrullDim_iff_ne_bot_and_top.mpr
   rw [← IsLocalRing.maximalIdeal_height_eq_ringKrullDim]
   constructor
@@ -481,3 +495,15 @@ lemma ringKrullDim_le_spanFinrank_maximalIdeal [IsLocalRing R] :
       Ideal.IsPrime.ne_top'))
 
 end Algebra
+
+/-- In a Noetherian local ring of positive Krull dimension,
+the square of the maximal ideal is strictly contained in the maximal ideal. -/
+lemma IsLocalRing.maximalIdeal_sq_lt [IsLocalRing R] (h : 0 < ringKrullDim R) :
+    (IsLocalRing.maximalIdeal R) ^ 2 < IsLocalRing.maximalIdeal R := by
+  refine lt_of_le_of_ne (Ideal.pow_le_self two_ne_zero) fun h_eq => h.ne' ?_
+  have : IsLocalRing.maximalIdeal R = ⊥ :=
+    Submodule.eq_bot_of_le_smul_of_le_jacobson_bot _ _
+      (IsNoetherian.noetherian _)
+      (by rw [Ideal.smul_eq_mul, ← sq]; exact h_eq.symm.le)
+      (IsLocalRing.maximalIdeal_le_jacobson ⊥)
+  rw [← IsLocalRing.maximalIdeal_height_eq_ringKrullDim, this, Ideal.height_bot, WithBot.coe_zero]

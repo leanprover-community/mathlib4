@@ -709,37 +709,37 @@ lemma addXYZ_of_Z_ne_zero [DecidableEq F] {P Q : Fin 3 → F} (hP : W.Equation P
 variable (f : R →+* S) (P Q : Fin 3 → R)
 
 @[simp]
-lemma map_negY : (W'.map f).toJacobian.negY (f ∘ P) = f (W'.negY P) := by
+lemma map_negY : (W'.map f).negY (f ∘ P) = f (W'.negY P) := by
   simp only [negY]
   map_simp
 
 @[simp]
-lemma map_dblU : (W'.map f).toJacobian.dblU (f ∘ P) = f (W'.dblU P) := by
+lemma map_dblU : (W'.map f).dblU (f ∘ P) = f (W'.dblU P) := by
   simp only [dblU_eq]
   map_simp
 
 @[simp]
-lemma map_dblZ : (W'.map f).toJacobian.dblZ (f ∘ P) = f (W'.dblZ P) := by
+lemma map_dblZ : (W'.map f).dblZ (f ∘ P) = f (W'.dblZ P) := by
   simp only [dblZ, negY]
   map_simp
 
 @[simp]
-lemma map_dblX : (W'.map f).toJacobian.dblX (f ∘ P) = f (W'.dblX P) := by
+lemma map_dblX : (W'.map f).dblX (f ∘ P) = f (W'.dblX P) := by
   simp only [dblX, map_dblU, map_negY]
   map_simp
 
 @[simp]
-lemma map_negDblY : (W'.map f).toJacobian.negDblY (f ∘ P) = f (W'.negDblY P) := by
+lemma map_negDblY : (W'.map f).negDblY (f ∘ P) = f (W'.negDblY P) := by
   simp only [negDblY, map_dblU, map_dblX, map_negY]
   simp
 
 @[simp]
-lemma map_dblY : (W'.map f).toJacobian.dblY (f ∘ P) = f (W'.dblY P) := by
+lemma map_dblY : (W'.map f).dblY (f ∘ P) = f (W'.dblY P) := by
   simp only [dblY, negY_eq, map_negDblY, map_dblX, map_dblZ]
   map_simp
 
 @[simp]
-lemma map_dblXYZ : (W'.map f).toJacobian.dblXYZ (f ∘ P) = f ∘ dblXYZ W' P := by
+lemma map_dblXYZ : (W'.map f).dblXYZ (f ∘ P) = f ∘ dblXYZ W' P := by
   simp only [dblXYZ, map_dblX, map_dblY, map_dblZ, comp_fin3]
 
 @[simp]
@@ -753,69 +753,58 @@ lemma map_addZ : addZ (f ∘ P) (f ∘ Q) = f (addZ P Q) := by
   map_simp
 
 @[simp]
-lemma map_addX : (W'.map f).toJacobian.addX (f ∘ P) (f ∘ Q) = f (W'.addX P Q) := by
+lemma map_addX : (W'.map f).addX (f ∘ P) (f ∘ Q) = f (W'.addX P Q) := by
   simp only [addX]
   map_simp
 
 @[simp]
-lemma map_negAddY : (W'.map f).toJacobian.negAddY (f ∘ P) (f ∘ Q) = f (W'.negAddY P Q) := by
+lemma map_negAddY : (W'.map f).negAddY (f ∘ P) (f ∘ Q) = f (W'.negAddY P Q) := by
   simp only [negAddY]
   map_simp
 
 @[simp]
-lemma map_addY : (W'.map f).toJacobian.addY (f ∘ P) (f ∘ Q) = f (W'.addY P Q) := by
+lemma map_addY : (W'.map f).addY (f ∘ P) (f ∘ Q) = f (W'.addY P Q) := by
   simp only [addY, negY_eq, map_negAddY, map_addX, map_addZ]
   map_simp
 
 @[simp]
-lemma map_addXYZ : (W'.map f).toJacobian.addXYZ (f ∘ P) (f ∘ Q) = f ∘ addXYZ W' P Q := by
+lemma map_addXYZ : (W'.map f).addXYZ (f ∘ P) (f ∘ Q) = f ∘ addXYZ W' P Q := by
   simp only [addXYZ, map_addX, map_addY, map_addZ, comp_fin3]
 
 variable [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Algebra R B] [Algebra S B]
   [IsScalarTower R S B] (f : A →ₐ[S] B) (P Q : Fin 3 → A)
 
-lemma baseChange_negY :
-    (W'.baseChange B).toJacobian.negY (f ∘ P) = f ((W'.baseChange A).toJacobian.negY P) := by
+lemma baseChange_negY : (W'⁄B).negY (f ∘ P) = f ((W'⁄A).negY P) := by
   rw [← RingHom.coe_coe, ← map_negY, map_baseChange]
 
-lemma baseChange_dblU :
-    (W'.baseChange B).toJacobian.dblU (f ∘ P) = f ((W'.baseChange A).toJacobian.dblU P) := by
+lemma baseChange_dblU : (W'⁄B).dblU (f ∘ P) = f ((W'⁄A).dblU P) := by
   rw [← RingHom.coe_coe, ← map_dblU, map_baseChange]
 
-lemma baseChange_dblZ :
-    (W'.baseChange B).toJacobian.dblZ (f ∘ P) = f ((W'.baseChange A).toJacobian.dblZ P) := by
+lemma baseChange_dblZ : (W'⁄B).dblZ (f ∘ P) = f ((W'⁄A).dblZ P) := by
   rw [← RingHom.coe_coe, ← map_dblZ, map_baseChange]
 
-lemma baseChange_dblX :
-    (W'.baseChange B).toJacobian.dblX (f ∘ P) = f ((W'.baseChange A).toJacobian.dblX P) := by
+lemma baseChange_dblX : (W'⁄B).dblX (f ∘ P) = f ((W'⁄A).dblX P) := by
   rw [← RingHom.coe_coe, ← map_dblX, map_baseChange]
 
-lemma baseChange_negDblY :
-    (W'.baseChange B).toJacobian.negDblY (f ∘ P) = f ((W'.baseChange A).toJacobian.negDblY P) := by
+lemma baseChange_negDblY : (W'⁄B).negDblY (f ∘ P) = f ((W'⁄A).negDblY P) := by
   rw [← RingHom.coe_coe, ← map_negDblY, map_baseChange]
 
-lemma baseChange_dblY :
-    (W'.baseChange B).toJacobian.dblY (f ∘ P) = f ((W'.baseChange A).toJacobian.dblY P) := by
+lemma baseChange_dblY : (W'⁄B).dblY (f ∘ P) = f ((W'⁄A).dblY P) := by
   rw [← RingHom.coe_coe, ← map_dblY, map_baseChange]
 
-lemma baseChange_dblXYZ :
-    (W'.baseChange B).toJacobian.dblXYZ (f ∘ P) = f ∘ (W'.baseChange A).toJacobian.dblXYZ P := by
+lemma baseChange_dblXYZ : (W'⁄B).dblXYZ (f ∘ P) = f ∘ (W'⁄A).dblXYZ P := by
   rw [← RingHom.coe_coe, ← map_dblXYZ, map_baseChange]
 
-lemma baseChange_addX : (W'.baseChange B).toJacobian.addX (f ∘ P) (f ∘ Q) =
-    f ((W'.baseChange A).toJacobian.addX P Q) := by
+lemma baseChange_addX : (W'⁄B).addX (f ∘ P) (f ∘ Q) = f ((W'⁄A).addX P Q) := by
   rw [← RingHom.coe_coe, ← map_addX, map_baseChange]
 
-lemma baseChange_negAddY : (W'.baseChange B).toJacobian.negAddY (f ∘ P) (f ∘ Q) =
-    f ((W'.baseChange A).toJacobian.negAddY P Q) := by
+lemma baseChange_negAddY : (W'⁄B).negAddY (f ∘ P) (f ∘ Q) = f ((W'⁄A).negAddY P Q) := by
   rw [← RingHom.coe_coe, ← map_negAddY, map_baseChange]
 
-lemma baseChange_addY : (W'.baseChange B).toJacobian.addY (f ∘ P) (f ∘ Q) =
-    f ((W'.baseChange A).toJacobian.addY P Q) := by
+lemma baseChange_addY : (W'⁄B).addY (f ∘ P) (f ∘ Q) = f ((W'⁄A).addY P Q) := by
   rw [← RingHom.coe_coe, ← map_addY, map_baseChange]
 
-lemma baseChange_addXYZ : (W'.baseChange B).toJacobian.addXYZ (f ∘ P) (f ∘ Q) =
-    f ∘ (W'.baseChange A).toJacobian.addXYZ P Q := by
+lemma baseChange_addXYZ : (W'⁄B).addXYZ (f ∘ P) (f ∘ Q) = f ∘ (W'⁄A).addXYZ P Q := by
   rw [← RingHom.coe_coe, ← map_addXYZ, map_baseChange]
 
 end Jacobian

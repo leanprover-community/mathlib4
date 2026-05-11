@@ -33,7 +33,7 @@ instance (X : Type u) : CoeFun (End X) (fun _ ↦ X → X) := (inferInstance : C
 /-- The group isomorphism between `Function.End X` and `CategoryTheory.End X`. -/
 @[simps apply symm_apply]
 def endEquiv (X : Type u) : Function.End X ≃* End X where
-  toFun f := TypeCat.ofHom f
+  toFun f := ↾f
   invFun f := (ConcreteCategory.hom f : _ → _)
   left_inv := by intro; rfl
   right_inv := by intro; rfl
@@ -70,7 +70,6 @@ theorem ofMulAction_apply {G : Type*} {H : Type*} [Monoid G] [MulAction G H] (g 
     (ofMulAction G H).ρ g x = (g • x : H) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a family `F` of types with `G`-actions, this is the limit cone demonstrating that the
 product of `F` as types is a product in the category of `G`-sets. -/
 def ofMulActionLimitCone {ι : Type v} (G : Type max v u) [Monoid G] (F : ι → Type max v u)
@@ -78,10 +77,10 @@ def ofMulActionLimitCone {ι : Type v} (G : Type max v u) [Monoid G] (F : ι →
     LimitCone (Discrete.functor fun i : ι => Action.ofMulAction G (F i)) where
   cone :=
     { pt := Action.ofMulAction G (∀ i : ι, F i)
-      π := Discrete.natTrans (fun i => ⟨TypeCat.ofHom (fun x => x i.as), fun _ => rfl⟩) }
+      π := Discrete.natTrans (fun i => ⟨↾fun x => x i.as, fun _ => rfl⟩) }
   isLimit :=
     { lift := fun s =>
-        { hom := TypeCat.ofHom fun x i => (s.π.app ⟨i⟩).hom x
+        { hom := ↾fun x i => (s.π.app ⟨i⟩).hom x
           comm := fun g => by
             ext x
             funext j
