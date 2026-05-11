@@ -68,8 +68,7 @@ lemma isLeftDerivabilityStructure_of_isLocalizedEquivalence
     exact ⟨{
       X₁ := L.functor.obj ρ.X₁
       w := iso.inv.app _ ≫ R.functor.map ρ.w ≫ e₂.hom
-      hw := (W₂'.arrow_mk_iso_iff (Arrow.isoMk (iso.app _) e₂)).1 (R.map _ ρ.hw)
-    }⟩
+      hw := (W₂'.arrow_mk_iso_iff (Arrow.isoMk (iso.app _) e₂)).1 (R.map _ ρ.hw) }⟩
   let F := B.localizedFunctor W₁'.Q W₂'.Q
   let e' := CatCommSq.iso B.functor W₁'.Q W₂'.Q F
   letI iso' : CatCommSq T.functor L.functor R.functor B.functor := ⟨iso⟩
