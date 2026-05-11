@@ -16,7 +16,7 @@ function. This property, called `AEMeasurable f μ`, is defined in the file `Mea
 We discuss several of its properties that are analogous to properties of measurable functions.
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory MeasureTheory.Measure Filter Set Function ENNReal
 
@@ -29,11 +29,11 @@ section
 theorem Subsingleton.aemeasurable [Subsingleton α] : AEMeasurable f μ :=
   Subsingleton.measurable.aemeasurable
 
-@[nontriviality, measurability]
+@[nontriviality, fun_prop]
 theorem aemeasurable_of_subsingleton_codomain [Subsingleton β] : AEMeasurable f μ :=
   (measurable_of_subsingleton_codomain f).aemeasurable
 
-@[simp, fun_prop, measurability]
+@[simp, fun_prop]
 theorem aemeasurable_zero_measure : AEMeasurable f (0 : Measure α) := by
   nontriviality α; inhabit α
   exact ⟨fun _ => f default, measurable_const, rfl⟩
@@ -71,7 +71,7 @@ theorem ae_mem_imp_eq_mk {s} (h : AEMeasurable f (μ.restrict s)) :
 theorem ae_inf_principal_eq_mk {s} (h : AEMeasurable f (μ.restrict s)) : f =ᶠ[ae μ ⊓ 𝓟 s] h.mk f :=
   le_ae_restrict h.ae_eq_mk
 
-@[measurability]
+@[fun_prop]
 theorem sum_measure [Countable ι] {μ : ι → Measure α} (h : ∀ i, AEMeasurable f (μ i)) :
     AEMeasurable f (sum μ) := by
   classical
@@ -122,7 +122,7 @@ theorem _root_.aemeasurable_add_measure_iff :
   rw [← sum_cond, aemeasurable_sum_measure_iff, Bool.forall_bool, and_comm]
   rfl
 
-@[measurability]
+@[fun_prop]
 theorem add_measure {f : α → β} (hμ : AEMeasurable f μ) (hν : AEMeasurable f ν) :
     AEMeasurable f (μ + ν) :=
   aemeasurable_add_measure_iff.2 ⟨hμ, hν⟩
@@ -133,7 +133,7 @@ protected theorem map_add₀ {μ ν : Measure α} {f : α → β}
   ext
   simp [*]
 
-@[measurability]
+@[fun_prop]
 protected theorem iUnion [Countable ι] {s : ι → Set α}
     (h : ∀ i, AEMeasurable f (μ.restrict (s i))) : AEMeasurable f (μ.restrict (⋃ i, s i)) :=
   (sum_measure h).mono_measure <| restrict_iUnion_le
@@ -149,7 +149,7 @@ theorem _root_.aemeasurable_union_iff {s t : Set α} :
       AEMeasurable f (μ.restrict s) ∧ AEMeasurable f (μ.restrict t) := by
   simp only [union_eq_iUnion, aemeasurable_iUnion_iff, Bool.forall_bool, cond, and_comm]
 
-@[measurability]
+@[fun_prop]
 theorem smul_measure [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
     (h : AEMeasurable f μ) (c : R) : AEMeasurable f (c • μ) :=
   ⟨h.mk f, h.measurable_mk, ae_smul_measure h.ae_eq_mk c⟩

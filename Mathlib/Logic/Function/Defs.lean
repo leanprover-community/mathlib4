@@ -31,6 +31,19 @@ def dcomp {β : α → Sort u₂} {φ : ∀ {x : α}, β x → Sort u₃} (f : �
 
 @[inherit_doc] infixr:80 " ∘' " => Function.dcomp
 
+/-- Product of functions: `Function.prod f g i = (f i, g i)`, where the types of `f i` and
+`g i` may depend on `i`. -/
+protected def prod {ι} {α β : ι → Type*} (f : ∀ i, α i) (g : ∀ i, β i) (i : ι) :
+    α i × β i := (f i, g i)
+
+@[simp] lemma prod_apply {ι} {α β : ι → Type*} (f : ∀ i, α i) (g : ∀ i, β i) (i : ι) :
+    Function.prod f g i = (f i , g i) := rfl
+
+lemma prod_fst_snd {α β} : Function.prod (Prod.fst : α × β → α) (Prod.snd : α × β → β) = id :=
+  rfl
+lemma prod_snd_fst {α β} : Function.prod (Prod.snd : α × β → β) (Prod.fst : α × β → α) = .swap :=
+  rfl
+
 /-- Given functions `f : β → β → φ` and `g : α → β`, produce a function `α → α → φ` that evaluates
 `g` on each argument, then applies `f` to the results. Can be used, e.g., to transfer a relation
 from `β` to `α`. -/
@@ -44,6 +57,8 @@ in the reverse order. `swap f y x = f x y`. -/
 abbrev swap {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : ∀ y x, φ x y := fun y x => f x y
 
 theorem swap_def {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : swap f = fun y x => f x y := rfl
+
+theorem onFun_swap_comm (f : β → β → φ) (g : α → β) : (swap f on g) = swap (f on g) := rfl
 
 attribute [mfld_simps] id_comp comp_id
 
@@ -65,6 +80,31 @@ variable {f : α → β}
 theorem Injective.beq_eq {α β : Type*} [BEq α] [LawfulBEq α] [BEq β] [LawfulBEq β] {f : α → β}
     (I : Injective f) {a b : α} : (f a == f b) = (a == b) := by
   by_cases h : a == b <;> simp [h] <;> simpa [I.eq_iff] using h
+
+section Bicomp
+
+variable {α β γ δ ε : Sort*}
+
+/-- Compose a binary function `f` with a pair of unary functions `g` and `h`.
+If both arguments of `f` have the same type and `g = h`, then `bicompl f g g = f on g`. -/
+def bicompl (f : γ → δ → ε) (g : α → γ) (h : β → δ) (a b) :=
+  f (g a) (h b)
+
+/-- Compose a unary function `f` with a binary function `g`. -/
+def bicompr (f : γ → δ) (g : α → β → γ) (a b) :=
+  f (g a b)
+
+-- Suggested local notation:
+local notation f " ∘₂ " g => bicompr f g
+
+theorem uncurry_bicompr {α β γ δ} (f : α → β → γ) (g : γ → δ) : uncurry (g ∘₂ f) = g ∘ uncurry f :=
+  rfl
+
+theorem uncurry_bicompl {α β γ δ ε} (f : γ → δ → ε) (g : α → γ) (h : β → δ) :
+    uncurry (bicompl f g h) = uncurry f ∘ Prod.map g h :=
+  rfl
+
+end Bicomp
 
 end Function
 
