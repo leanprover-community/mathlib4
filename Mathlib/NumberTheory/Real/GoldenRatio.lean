@@ -180,7 +180,7 @@ end Fibrec
 /-- Binet's formula as a function equality. -/
 theorem coe_fib_eq' :
     (fun n => Nat.fib n : ℕ → ℝ) = fun n => (φ ^ n - ψ ^ n) / √5 := by
-  rw [fibRec.sol_eq_of_eq_init]
+  rw [fibRec.eq_iff_eqOn_range_order]
   · intro i hi
     norm_cast at hi
     fin_cases hi <;> simp

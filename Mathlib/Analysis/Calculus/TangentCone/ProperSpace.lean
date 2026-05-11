@@ -52,7 +52,7 @@ theorem tangentConeAt_nonempty_of_properSpace [ProperSpace E]
       Metric.mem_ball, not_lt, true_and, le_c n]
   refine ⟨l, ?_, ?_⟩; swap
   · push _ ∈ _
-    contrapose! l_mem
+    contrapose l_mem
     simp only [one_div, l_mem, mem_diff, Metric.mem_closedBall, dist_self, zero_le_one,
       Metric.mem_ball, inv_pos, norm_pos_iff, ne_eq, not_not, true_and]
     contrapose! hr

@@ -251,7 +251,7 @@ def resCoindToHom (B : Rep k H) (A : Rep k G) (f : res φ B ⟶ A) : B ⟶ (coin
 
 @[simp]
 lemma resCoindToHom_hom_apply_coe (B : Rep k H) (A : Rep k G) (f : res φ B ⟶ A) (c : ↑B.V)
-    (i : H) : (DFunLike.coe (F := no_index(_)) (resCoindToHom φ B A f).hom c).1 i =
+    (i : H) : (DFunLike.coe (F := no_index (_)) (resCoindToHom φ B A f).hom c).1 i =
     (Hom.hom f) ((B.ρ i) c) := rfl
 
 -- this `no_index` is to prevent simp discrimination tree from acting weird, i.e before
@@ -308,7 +308,7 @@ noncomputable instance : (resFunctor.{max w t} (k := k) φ).IsLeftAdjoint :=
   (resCoindAdjunction k φ).isLeftAdjoint
 
 instance {G : Type w} [Group G] (S : Subgroup G) :
-    (resFunctor.{max w t} (k := k) S.subtype).PreservesProjectiveObjects  :=
+    (resFunctor.{max w t} (k := k) S.subtype).PreservesProjectiveObjects :=
   (resFunctor S.subtype).preservesProjectiveObjects_of_adjunction_of_preservesEpimorphisms
     (resCoindAdjunction k S.subtype)
 
