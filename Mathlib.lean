@@ -5617,6 +5617,10 @@ public import Mathlib.NumberTheory.EulerProduct.Basic
 public import Mathlib.NumberTheory.EulerProduct.DirichletLSeries
 public import Mathlib.NumberTheory.EulerProduct.ExpLog
 public import Mathlib.NumberTheory.FLT.Basic
+public import Mathlib.NumberTheory.FLT.Beal
+public import Mathlib.NumberTheory.FLT.BealAbcBridge
+public import Mathlib.NumberTheory.FLT.BealEichlerShimura
+public import Mathlib.NumberTheory.FLT.BealFreyCurve
 public import Mathlib.NumberTheory.FLT.Four
 public import Mathlib.NumberTheory.FLT.MasonStothers
 public import Mathlib.NumberTheory.FLT.Polynomial
