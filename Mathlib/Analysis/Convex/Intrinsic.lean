@@ -216,6 +216,8 @@ section ImageOfHomeomorphAffineSpan
 variable [AddCommGroup W] [Module 𝕜 W] [TopologicalSpace Q] [AddTorsor W Q]
   {f : P → Q} {s : Set P}
 
+/-- If `f` agrees with a homeomorphism between the affine spans of `s` and `f '' s`, then pulling
+`f '' s` back to the affine span of `s` recovers `s` itself. -/
 private theorem preimage_image_eq_of_homeomorph_affineSpan
     (e : affineSpan 𝕜 s ≃ₜ affineSpan 𝕜 (f '' s)) (he : ∀ x, e x = f x) :
     (f ∘ (↑)) ⁻¹' (f '' s) = ((↑) ⁻¹' s : Set <| affineSpan 𝕜 s) := by
@@ -231,8 +233,9 @@ variable (e : [Nonempty s] → affineSpan 𝕜 s ≃ₜ affineSpan 𝕜 (f '' s)
 include e he
 
 /-- Naturality of intrinsic interior under a map whose induced map on affine spans is a
-homeomorphism. -/
-theorem intrinsicInterior_image_of_homeomorph_affineSpan :
+homeomorphism. It is introduced here to share the proof of the affine equivalence and affine
+isometry versions below. -/
+private theorem intrinsicInterior_image_of_homeomorph_affineSpan :
     intrinsicInterior 𝕜 (f '' s) = f '' intrinsicInterior 𝕜 s := by
   rcases s.eq_empty_or_nonempty with rfl | hs
   · simp
@@ -241,8 +244,9 @@ theorem intrinsicInterior_image_of_homeomorph_affineSpan :
       preimage_image_eq_of_homeomorph_affineSpan e he, image_comp]; rfl
 
 /-- Naturality of intrinsic frontier under a map whose induced map on affine spans is a
-homeomorphism. -/
-theorem intrinsicFrontier_image_of_homeomorph_affineSpan :
+homeomorphism. It is introduced here to share the proof of the affine equivalence and affine
+isometry versions below. -/
+private theorem intrinsicFrontier_image_of_homeomorph_affineSpan :
     intrinsicFrontier 𝕜 (f '' s) = f '' intrinsicFrontier 𝕜 s := by
   rcases s.eq_empty_or_nonempty with rfl | hs
   · simp
@@ -251,8 +255,9 @@ theorem intrinsicFrontier_image_of_homeomorph_affineSpan :
       preimage_image_eq_of_homeomorph_affineSpan e he, image_comp]; rfl
 
 /-- Naturality of intrinsic closure under a map whose induced map on affine spans is a
-homeomorphism. -/
-theorem intrinsicClosure_image_of_homeomorph_affineSpan :
+homeomorphism. It is introduced here to share the proof of the affine equivalence and affine
+isometry versions below. -/
+private theorem intrinsicClosure_image_of_homeomorph_affineSpan :
     intrinsicClosure 𝕜 (f '' s) = f '' intrinsicClosure 𝕜 s := by
   rcases s.eq_empty_or_nonempty with rfl | hs
   · simp
@@ -344,17 +349,17 @@ variable [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
 @[simp]
 theorem intrinsicInterior_image (φ : P ≃ᵃ[𝕜] Q) (s : Set P) :
     intrinsicInterior 𝕜 (φ '' s) = φ '' intrinsicInterior 𝕜 s :=
-  φ.equivContinuousAffineEquivOfFiniteDimensional.intrinsicInterior_image s
+  φ.toContinuousAffineEquiv.intrinsicInterior_image s
 
 @[simp]
 theorem intrinsicFrontier_image (φ : P ≃ᵃ[𝕜] Q) (s : Set P) :
     intrinsicFrontier 𝕜 (φ '' s) = φ '' intrinsicFrontier 𝕜 s :=
-  φ.equivContinuousAffineEquivOfFiniteDimensional.intrinsicFrontier_image s
+  φ.toContinuousAffineEquiv.intrinsicFrontier_image s
 
 @[simp]
 theorem intrinsicClosure_image (φ : P ≃ᵃ[𝕜] Q) (s : Set P) :
     intrinsicClosure 𝕜 (φ '' s) = φ '' intrinsicClosure 𝕜 s :=
-  φ.equivContinuousAffineEquivOfFiniteDimensional.intrinsicClosure_image s
+  φ.toContinuousAffineEquiv.intrinsicClosure_image s
 
 end AffineEquiv
 
