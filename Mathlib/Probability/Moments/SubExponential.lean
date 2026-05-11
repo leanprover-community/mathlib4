@@ -5,9 +5,9 @@ Authors: Allen Hao Zhu
 -/
 module
 
+public import Mathlib.Analysis.SpecialFunctions.Exp
 public import Mathlib.Probability.Moments.Basic
 public import Mathlib.Probability.Moments.SubGaussian
-public import Mathlib.Analysis.SpecialFunctions.Exp
 
 /-!
 # Sub-exponential random variables
@@ -23,7 +23,7 @@ in the small-`s` regime `|s| · b < 1`. Setting `b = 0` removes the side
 condition and recovers the sub-Gaussian moment-generating function bound
 already formalized as `ProbabilityTheory.HasSubgaussianMGF`; the
 parameter `b` thus measures how far the variable departs from
-sub-Gaussian behaviour, i.e. how heavy its tails can be.
+sub-Gaussian behavior, i.e. how heavy its tails can be.
 
 This is the standard definition used in
 [wainwright2019high, §2.1.3] and [vershynin2018high, §2.7]. Combined
@@ -156,7 +156,7 @@ moment-generating function is bounded by `exp (s² · ν / 2)` for every
 `ProbabilityTheory.HasSubgaussianMGF` (modulo the additional
 integrability requirement that `HasSubgaussianMGF` packages into the
 structure). The scale parameter `b ≥ 0` therefore quantifies how far
-`X` departs from sub-Gaussian behaviour: as `b` grows the heavy-tail
+`X` departs from sub-Gaussian behavior: as `b` grows the heavy-tail
 regime `|s| · b ≥ 1` excluded from the MGF bound widens.
 
 The lemma below converts a `HasSubgaussianMGF`-sub-Gaussian variable
