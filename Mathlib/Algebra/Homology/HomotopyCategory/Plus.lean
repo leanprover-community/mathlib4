@@ -171,7 +171,7 @@ def quotient : CochainComplex.Plus C ⥤ Plus C :=
 
 /-- The functor
 `HomotopyCategory.Plus.quotient C : CochainComplex.Plus C ⥤ HomotopyCategory.Plus C`
-is unduced by the functor `HomotopyCategory.quotient C (.up ℤ)` from `CochainComplex C ℤ`
+is induced by the functor `HomotopyCategory.quotient C (.up ℤ)` from `CochainComplex C ℤ`
 to `HomotopyCategory C (.up ℤ)`. -/
 def quotientCompι :
     quotient C ⋙ ι C ≅ CochainComplex.Plus.ι C ⋙ HomotopyCategory.quotient C (.up ℤ) :=
