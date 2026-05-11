@@ -7,6 +7,12 @@ import Mathlib.Analysis.Complex.Trigonometric
 import Mathlib.Analysis.Meromorphic.Basic
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
 
+/-! # Main test file for fun_prop
+
+Use this file for `fun_prop` tests that depend on mathlib
+`fun_prop_dev` is for unit and synthetic tests avoiding mathlib.
+-/
+
 noncomputable
 def foo (x : ℝ) := x * (Real.log x) ^ 2 - Real.exp x / x
 
