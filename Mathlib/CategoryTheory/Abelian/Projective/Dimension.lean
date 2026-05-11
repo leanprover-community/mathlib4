@@ -343,14 +343,15 @@ lemma projectiveDimension_X₂_le_sup :
   | coe N =>
     induction N with
     | top => simp
-    | coe n => simpa [projectiveDimension_le_iff] using hS.hasProjectiveDimensionLT_X₂ (n + 1)
+    | coe n =>
+      simpa [projectiveDimension_le_iff] using hS.hasProjectiveDimensionLT_X₂ (n + 1)
 
 lemma projectiveDimension_X₃_le_sup :
     projectiveDimension S.X₃ ≤ projectiveDimension S.X₂ ⊔ (projectiveDimension S.X₁ + 1) := by
   refine le_of_forall_ge (fun N ↦ ?_)
   induction N with
   | bot =>
-    let := hS.3
+    have := hS.3
     simpa [projectiveDimension_eq_bot_iff] using fun h2 h1 ↦ h2.of_epi S.g
   | coe N =>
     induction N with
@@ -364,7 +365,7 @@ lemma hasProjectiveDimension_X₁_succ_le_sup :
   refine le_of_forall_ge (fun N ↦ ?_)
   induction N with
   | bot =>
-    let := hS.2
+    have := hS.2
     simpa [projectiveDimension_eq_bot_iff] using fun h2 h3 ↦ h2.of_mono S.f
   | coe N =>
     induction N with

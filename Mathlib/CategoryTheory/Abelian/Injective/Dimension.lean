@@ -346,7 +346,7 @@ lemma injectiveDimension_X₁_le_sup :
   refine le_of_forall_ge (fun N ↦ ?_)
   induction N with
   | bot =>
-    let := hS.2
+    have := hS.2
     simpa [injectiveDimension_eq_bot_iff] using fun h2 h3 ↦ h2.of_mono S.f
   | coe N =>
     induction N with
@@ -360,7 +360,7 @@ lemma hasinjectiveDimension_X₃_succ_le_sup :
   refine le_of_forall_ge (fun N ↦ ?_)
   induction N with
   | bot =>
-    let := hS.3
+    have := hS.3
     simpa [injectiveDimension_eq_bot_iff] using fun h2 h1 ↦ h2.of_epi S.g
   | coe N =>
     induction N with
