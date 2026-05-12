@@ -251,9 +251,7 @@ considering the localization at a prime (which is free of rank 1) using the stro
 The ≥ direction fails in general but holds for domains and Noetherian rings,
 see https://math.stackexchange.com/q/5089900 and https://mathoverflow.net/a/499611. -/
 protected theorem finrank_eq_one [Free R M] : finrank R M = 1 := by
-  cases subsingleton_or_nontrivial R
-  · rw [← rank_eq_one_iff_finrank_eq_one, rank_subsingleton]
-  · rw [(free_iff_linearEquiv.mp ‹_›).some.finrank_eq, CommSemiring.finrank_self]
+  rw [(free_iff_linearEquiv.mp ‹_›).some.finrank_eq, CommSemiring.finrank_self]
 
 theorem rank_eq_one [Free R M] : Module.rank R M = 1 :=
   rank_eq_one_iff_finrank_eq_one.mpr (Invertible.finrank_eq_one R M)
