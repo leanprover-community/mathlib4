@@ -593,13 +593,13 @@ protected lemma qExpansion_pow [Γ.HasDetPlusMinusOne] (hh : 0 < h)
     rw [coe_pow, pow_succ, ← coe_pow, ← coe_mul, ModularForm.qExpansion_mul hh hΓ, ih,
       pow_succ]
 
+/-- The product of two non-zero modular forms is non-zero. -/
 protected lemma mul_ne_zero [Γ.HasDetPlusMinusOne] (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods)
     {a b : ℤ} {f : ModularForm Γ a} {g : ModularForm Γ b} (hf : f ≠ 0) (hg : g ≠ 0) :
     f.mul g ≠ 0 := by
-  rw [Ne, ← ModularForm.qExpansion_eq_zero_iff hh hΓ,
-    ModularForm.qExpansion_mul hh hΓ, mul_eq_zero, not_or]
-  exact ⟨(ModularForm.qExpansion_eq_zero_iff hh hΓ _).not.mpr hf,
-    (ModularForm.qExpansion_eq_zero_iff hh hΓ _).not.mpr hg⟩
+  simp only [ne_eq, ← ModularForm.qExpansion_eq_zero_iff hh hΓ,
+    ModularForm.qExpansion_mul hh hΓ] at hf hg ⊢
+  exact mul_ne_zero hf hg
 
 /-- The qExpansion map as an additive group hom. to power series over `ℂ`. -/
 def qExpansionAddHom (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (k : ℤ) :

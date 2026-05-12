@@ -93,12 +93,12 @@ theorem mk_smul (s : Finset ι) (c : R) (x) : mk M s (c • x) = c • mk M s x 
 theorem of_smul (i : ι) (c : R) (x) : of M i (c • x) = c • of M i x :=
   (lof R ι M i).map_smul c x
 
+/-- Decompose `of M i f` as the sum of `of M i (f - c • g)` and `c • of M i g`. -/
 theorem of_eq_sub_add_smul {ι : Type*} [DecidableEq ι] {M : ι → Type*}
     [∀ i, AddCommGroup (M i)] {R : Type*} [Semiring R] [∀ i, Module R (M i)]
     {i : ι} (f g : M i) (c : R) :
     of M i f = of M i (f - c • g) + c • of M i g := by
-  rw [← of_smul, ← map_add]
-  exact (congr_arg (of M i) (sub_add_cancel f (c • g))).symm
+  rw [← of_smul, ← map_add, sub_add_cancel]
 
 variable {R}
 
