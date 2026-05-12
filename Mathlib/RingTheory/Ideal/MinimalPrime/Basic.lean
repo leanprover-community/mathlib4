@@ -36,16 +36,16 @@ section
 
 variable {R S : Type*} [CommSemiring R] [CommSemiring S] (I J : Ideal R)
 
-/-- The predicate for describing an ideal is minimal prime over certain ideal `I`. -/
-protected def Ideal.IsMinimalPrime (p : Ideal R) : Prop := Minimal (fun q ↦ q.IsPrime ∧ I ≤ q) p
+/-- `IsMinimalPrime I p` says that `p` is a minimal prime over `I`. -/
+def _root_.IsMinimalPrime (p : Ideal R) : Prop := Minimal (fun q ↦ q.IsPrime ∧ I ≤ q) p
 
-lemma Ideal.IsMinimalPrime.isPrime {p : Ideal R} (h : I.IsMinimalPrime p) : p.IsPrime := h.1.1
+lemma IsMinimalPrime.isPrime {p : Ideal R} (h : IsMinimalPrime I p) : p.IsPrime := h.1.1
 
-lemma Ideal.IsMinimalPrime.le {p : Ideal R} (h : I.IsMinimalPrime p) : I ≤ p := h.1.2
+lemma IsMinimalPrime.le {p : Ideal R} (h : IsMinimalPrime I p) : I ≤ p := h.1.2
 
 /-- `I.minimalPrimes` is the set of ideals that are minimal primes over `I`. -/
 protected abbrev Ideal.minimalPrimes : Set (Ideal R) :=
-  {p | I.IsMinimalPrime p}
+  {p | IsMinimalPrime I p}
 
 variable (R) in
 /-- `minimalPrimes R` is the set of minimal primes of `R`.
