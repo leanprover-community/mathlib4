@@ -458,13 +458,6 @@ theorem quasiMeasurePreserving_snd : QuasiMeasurePreserving Prod.snd (μ.prod ν
   refine (prod_prod_le _ _).trans_eq ?_
   rw [h2s, mul_zero]
 
-theorem measure_prod_null₀ {s : Set (α × β)} (hs : NullMeasurableSet s (μ.prod ν)) :
-    μ.prod ν s = 0 ↔ (fun x => ν (Prod.mk x ⁻¹' s)) =ᵐ[μ] 0 := by
-  rw [← measure_congr hs.toMeasurable_ae_eq, prod_apply (measurableSet_toMeasurable _ _),
-    lintegral_eq_zero_iff (measurable_measure_prodMk_left (measurableSet_toMeasurable _ _))]
-  have := (quasiMeasurePreserving_fst (μ := μ) (ν := ;n)).preimage_ae_eq hs.toMeasurable_ae_eq
-  filter_upwards [quasiMeasurePreserving_fst.preimage_ae_eq hs.toMeasurable_ae_eq] with x hx
-
 omit [SFinite ν] in
 lemma set_prod_ae_eq {s s' : Set α} {t t' : Set β} (hs : s =ᵐ[μ] s') (ht : t =ᵐ[ν] t') :
     (s ×ˢ t : Set (α × β)) =ᵐ[μ.prod ν] (s' ×ˢ t' : Set (α × β)) :=

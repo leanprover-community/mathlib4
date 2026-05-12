@@ -147,6 +147,81 @@ theorem lintegral_prod_eq_prod_lintegral_of_indepFun {ι : Type*}
     · exact (iIndepFun.indepFun_finsetProd_of_notMem hX x_mea hj).symm
 
 /-- The scalar product of two independent and integrable random variables is integrable. -/
+theorem IndepFun.integrable_bilin {α β γ : Type*} [MeasurableSpace α] [MeasurableSpace β]
+    {X : Ω → α} {Y : Ω → β} [NormedAddCommGroup α] [NormedSpace ℝ α]
+    [NormedAddCommGroup β] [NormedSpace ℝ β] [NormedAddCommGroup γ] [NormedSpace ℝ γ]
+    [OpensMeasurableSpace β] [OpensMeasurableSpace α]
+    (hXY : X ⟂ᵢ[μ] Y) (hX : Integrable X μ)
+    (hY : Integrable Y μ) (B : α →L[ℝ] β →L[ℝ] γ) : Integrable (fun ω ↦ B (X ω) (Y ω)) μ := by
+  refine ⟨Continuous.comp_aestronglyMeasurable₂ (g := fun x y ↦ B x y) ?_ hX.1 hY.1, ?_⟩
+  · fun_prop
+  unfold HasFiniteIntegral
+  calc
+  _ ≤ ‖B‖ₑ * ∫⁻ ω, ‖X ω‖ₑ * ‖Y ω‖ₑ ∂μ := by
+    rw [← lintegral_const_mul'' _ (by fun_prop)]
+    gcongr with ω
+    rw [← ENNReal.toReal_le_toReal]
+    · simp [← mul_assoc, B.le_opNorm₂]
+    all_goals finiteness
+  _ = ‖B‖ₑ * ((∫⁻ ω, ‖X ω‖ₑ ∂μ) * (∫⁻ ω, ‖Y ω‖ₑ ∂μ)) := by
+    rw [lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'' hX.1.enorm hY.1.enorm
+        (hXY.comp measurable_enorm measurable_enorm)]
+  _ < ∞ := ENNReal.mul_lt_top (by finiteness) (ENNReal.mul_lt_top hX.2 hY.2)
+
+/-- The scalar product of two independent and integrable random variables is integrable. -/
+theorem IndepFun.integral_bilin_comp_comp {𝓧 𝓨 α β γ : Type*}
+    [MeasurableSpace 𝓧] [MeasurableSpace 𝓨]
+    {X : Ω → 𝓧} {Y : Ω → 𝓨} [NormedAddCommGroup α] [NormedSpace ℝ α] [CompleteSpace α]
+    [NormedAddCommGroup β] [NormedSpace ℝ β] [CompleteSpace β]
+    [NormedAddCommGroup γ] [NormedSpace ℝ γ] [CompleteSpace γ]
+    {f : 𝓧 → α} (hf : AEStronglyMeasurable f (μ.map X)) {g : 𝓨 → β}
+    (hg : AEStronglyMeasurable g (μ.map Y))
+    (hXY : X ⟂ᵢ[μ] Y) (hX1 : Integrable f (μ.map X))
+    (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ)
+    (hY1 : Integrable g (μ.map Y)) (B : α →L[ℝ] β →L[ℝ] γ) :
+    ∫ ω, B (f (X ω)) (g (Y ω)) ∂μ = B (∫ ω, f (X ω) ∂μ) (∫ ω, g (Y ω) ∂μ) := by
+  by_cases h : ∀ᵐ ω ∂μ, f (X ω) = 0
+  · have h1 : ∀ᵐ ω ∂μ, B (f (X ω)) (g (Y ω)) = 0 := by
+      filter_upwards [h] with ω hω
+      simp [hω]
+    rw [integral_congr_ae h1, integral_congr_ae h]
+    simp
+  borelize α
+  borelize β
+  have : IsProbabilityMeasure μ :=
+      (hX1.comp_aemeasurable hX).isProbabilityMeasure_of_indepFun (f ∘ X) (g ∘ Y) h
+      (hXY.comp₀ hX hY hf.aemeasurable hg.aemeasurable)
+  change ∫ ω, (fun z ↦ B (f z.1) (g z.2)) (X ω, Y ω) ∂μ = _
+  rw [← integral_map (f := fun z ↦ B (f z.1) (g z.2)) (φ := fun ω ↦ (X ω, Y ω)),
+    (indepFun_iff_map_prod_eq_prod_map_map hX hY).1 hXY,
+    integral_prod_bilin, integral_map hX hf, integral_map hY hg]
+  exact hX1
+  exact hY1
+  fun_prop
+  rw [(indepFun_iff_map_prod_eq_prod_map_map hX hY).1 hXY]
+  exact Continuous.comp_aestronglyMeasurable₂ (g := fun x y ↦ B x y) (by fun_prop) hf.comp_fst hg.comp_snd
+
+/-- The scalar product of two independent and integrable random variables is integrable. -/
+theorem IndepFun.integral_bilin {α β γ : Type*} [MeasurableSpace α] [MeasurableSpace β]
+    {X : Ω → α} {Y : Ω → β} [NormedAddCommGroup α] [NormedSpace ℝ α]
+    [NormedAddCommGroup β] [NormedSpace ℝ β] [NormedAddCommGroup γ] [NormedSpace ℝ γ]
+    [BorelSpace β] [BorelSpace α]
+    (hXY : X ⟂ᵢ[μ] Y) (hX : Integrable X μ)
+    (hY : Integrable Y μ) (B : α →L[ℝ] β →L[ℝ] γ) :
+    ∫ ω, B (X ω) (Y ω) ∂μ = B μ[X] μ[Y] := by
+  by_cases h : X =ᵐ[μ] 0
+  · have h1 : ∀ᵐ ω ∂μ, B (X ω) (Y ω) = 0 := by
+      filter_upwards [h] with ω hω
+      simp [hω]
+    rw [integral_congr_ae h1, integral_congr_ae h]
+    simp
+  have : IsProbabilityMeasure μ := hX.isProbabilityMeasure_of_indepFun X Y h hXY
+  change ∫ ω, (fun z ↦ B z.1 z.2) (X ω, Y ω) ∂μ = _
+  rw [← integral_map (f := fun z ↦ B z.1 z.2) (φ := fun ω ↦ (X ω, Y ω)),
+    (indepFun_iff_map_prod_eq_prod_map_map hX.aemeasurable hY.aemeasurable).1 hXY,
+    integral_prod_bilin]
+
+/-- The scalar product of two independent and integrable random variables is integrable. -/
 theorem IndepFun.integrable_smul {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
     {X : Ω → α} {Y : Ω → β} [SeminormedAddGroup α] [SeminormedAddGroup β]
     [SMulZeroClass α β] [IsBoundedSMul α β] [BorelSpace β] [BorelSpace α]
