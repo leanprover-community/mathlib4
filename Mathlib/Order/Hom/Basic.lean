@@ -565,7 +565,7 @@ variable [LE α] [LE β] [LE γ] [LE δ]
 
 variable (α) in
 /-- Identity order embedding -/
-def id : α ↪o α :=
+abbrev id : α ↪o α :=
   RelEmbedding.refl (· ≤ ·)
 
 @[simp]
@@ -577,7 +577,7 @@ theorem id_toEmbedding : (id α).toEmbedding = Function.Embedding.refl α :=
   rfl
 
 /-- Composition of two order embeddings is an order embedding -/
-def comp (f : α ↪o β) (g : β ↪o γ) : α ↪o γ :=
+abbrev comp (f : α ↪o β) (g : β ↪o γ) : α ↪o γ :=
   RelEmbedding.trans f g
 
 @[simp]
