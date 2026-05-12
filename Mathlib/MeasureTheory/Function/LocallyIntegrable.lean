@@ -222,7 +222,7 @@ protected theorem LocallyIntegrableOn.neg {f : X → E} (hf : LocallyIntegrableO
 -- TODO: generalise this to ENormed spaces, once there are suitable typeclasses
 protected theorem LocallyIntegrableOn.smul {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
     {f : X → E} (hf : LocallyIntegrableOn f s μ) (c : 𝕜) :
-    LocallyIntegrableOn (c • f) s μ := fun x hx ↦ (hf x hx).smul c
+  LocallyIntegrableOn (c • f) s μ := fun x hx ↦ (hf x hx).smul c
 
 -- TODO: generalise this to ENormed spaces, once there are suitable typeclasses
 @[simp] theorem locallyIntegrableOn_smul_iff {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
