@@ -159,10 +159,7 @@ lemma char_mem_charPoly (w : W) : char he hL w ∈ charPoly he hL := by
   refine ⟨AddMonoidAlgebra.single w 1, ?_⟩
   ext v
   simp only [char_apply, AddMonoidAlgebra.single]
-  rw [Finset.sum_eq_single w]
-  · simp only [Finsupp.single_eq_same, one_mul]
-  · simp [Finsupp.single_apply_ne_zero]
-  · simp
+  rw [Finset.sum_eq_single w] <;> simp
 
 /-- The family `charPoly he hL w, w : W` separates points in `V`. -/
 lemma separatesPoints_charPoly (he : Continuous e) (he' : e ≠ 1)
