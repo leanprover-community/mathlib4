@@ -100,7 +100,7 @@ theorem mk_single (x : M) {nonneg total} : (mk (.single x (1 : R)) nonneg total)
     simp only [hwa, weights_single]
     congr
     simpa [hwa] using w.total
-  mpr := by rintro rfl; simp [support_single_ne_zero]
+  mpr := by rintro rfl; simp
 
 /-- A probability distribution with weight `s` on `x` and weight `t` on `y`. -/
 @[simps weights]
