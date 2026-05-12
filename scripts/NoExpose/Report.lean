@@ -6,7 +6,6 @@ Authors: Kim Morrison
 import Lean.Data.Json
 import NoExpose.Cli
 import NoExpose.Paths
-import NoExpose.SourceScan
 
 /-!
 # `NoExpose.Report` — read and render the joined report
@@ -17,13 +16,20 @@ and `edit` need:
 ```
 {"name": "Foo.bar", "kind": "def", "effect": "exposed",
  "module": "Mathlib.Foo", "file": "Mathlib/Foo.lean",
- "line": 42, "col": 0, "expose_source": "section",
+ "line": 42, "col": 0, "attr_line": 41,
+ "section_line": 25,                   -- present iff the `@[expose]`
+                                       --   is a section attribute
  "downstream_usage": 17, "num_using_files": 5,
  "top_using_files": [{"file": "...", "count": 4}, ...]}
 ```
 
+Every record corresponds to a literal `@[expose]` occurrence in source,
+intersected with one env decl whose start falls inside its scope.
+There is no `unknown`/`meta`/`nonAttrExposed` taxonomy because, by
+construction, every record represents an actually-editable attribute.
+
 This module parses those records and renders per-file output in text or
-JSON. Building `report.jsonl` from raw signals is the responsibility of
+JSON. Building `report.jsonl` is the responsibility of
 `NoExpose.Diagnostics` and the `collect` orchestrator.
 -/
 
@@ -40,7 +46,8 @@ structure ReportRecord where
   file : String
   line : Nat
   col : Nat
-  exposeSource : ExposeSource
+  attrLine : Nat
+  sectionLine : Option Nat
   downstreamUsage : Nat
   numUsingFiles : Nat
   topUsingFiles : Array (String × Nat)
@@ -51,18 +58,12 @@ inductive Verdict where
   | safeToUnexpose
   | neededDownstream
   | noopAlwaysExported
-  /-- Body exposed by `meta` keyword or by something the scanner didn't
-  recognise — there is no `@[expose]` attribute for the tool to edit. -/
-  | nonAttrExposed
   deriving BEq
 
 def Verdict.classify (r : ReportRecord) : Verdict :=
   if r.effect == "noop-always-exported" then .noopAlwaysExported
-  else match r.exposeSource with
-    | .metaExposed | .unknown => .nonAttrExposed
-    | .explicit | .sectionAttr =>
-      if r.downstreamUsage == 0 then .safeToUnexpose
-      else .neededDownstream
+  else if r.downstreamUsage == 0 then .safeToUnexpose
+  else .neededDownstream
 
 private def jsonGetStr (j : Json) (field : String) : Except String String :=
   (j.getObjVal? field).bind (·.getStr?)
@@ -89,9 +90,9 @@ private def parseTopUsing (j : Json) : Except String (Array (String × Nat)) := 
 def parseRecord (line : String) : Except String ReportRecord := do
   let j ← Json.parse line
   let topJ := j.getObjVal? "top_using_files" |>.toOption |>.getD (.arr #[])
-  let exposeSource :=
-    (j.getObjVal? "expose_source" |>.toOption.bind (·.getStr?.toOption)
-      |>.bind ExposeSource.ofJsonString?).getD .unknown
+  let sectionLine :=
+    (j.getObjVal? "section_line" |>.toOption.bind
+      (fun v => match v with | .num n => some n.mantissa.toNat | _ => none))
   return {
     name := ← jsonGetStr j "name"
     kind := ← jsonGetStr j "kind"
@@ -100,7 +101,8 @@ def parseRecord (line : String) : Except String ReportRecord := do
     file := ← jsonGetStr j "file"
     line := ← jsonGetNat j "line"
     col := ← jsonGetNat j "col"
-    exposeSource := exposeSource
+    attrLine := ← jsonGetNat j "attr_line"
+    sectionLine
     downstreamUsage := ← jsonGetNat j "downstream_usage"
     numUsingFiles := ← jsonGetNat j "num_using_files"
     topUsingFiles := ← parseTopUsing topJ
@@ -141,10 +143,8 @@ def renderTextFile (file : String) (rs : Array ReportRecord) : String := Id.run 
   let safe := rs.filter (Verdict.classify · == .safeToUnexpose)
   let needed := rs.filter (Verdict.classify · == .neededDownstream)
   let noop := rs.filter (Verdict.classify · == .noopAlwaysExported)
-  let nonAttr := rs.filter (Verdict.classify · == .nonAttrExposed)
   let mut out := s!"{file}: {safe.size} safe-to-unexpose, " ++
-    s!"{needed.size} needed-downstream, {noop.size} noop, " ++
-    s!"{nonAttr.size} non-`@[expose]` ({total} total)\n"
+    s!"{needed.size} needed-downstream, {noop.size} noop ({total} total)\n"
   if !safe.isEmpty then
     out := out ++ "\n  safe-to-unexpose:\n"
     for r in sortByPosition safe do
@@ -169,13 +169,11 @@ def renderJsonFile (file : String) (rs : Array ReportRecord) : Json := Id.run do
   let safe := rs.filter (Verdict.classify · == .safeToUnexpose)
   let needed := rs.filter (Verdict.classify · == .neededDownstream)
   let noop := rs.filter (Verdict.classify · == .noopAlwaysExported)
-  let nonAttr := rs.filter (Verdict.classify · == .nonAttrExposed)
   return Json.mkObj [
     ("file", file),
     ("safe_to_unexpose", bucket safe),
     ("needed_downstream", bucket needed),
-    ("noop", bucket noop),
-    ("non_attr_exposed", bucket nonAttr)]
+    ("noop", bucket noop)]
 
 /-- Top-level `report` subcommand. -/
 def runReport (args : ReportArgs) : IO UInt32 := do

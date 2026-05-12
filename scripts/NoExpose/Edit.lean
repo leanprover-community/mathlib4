@@ -46,10 +46,10 @@ inductive Strategy where
   | individual : Strategy
   deriving Repr, DecidableEq
 
-/-- Section strategy if any record's `ExposeSource` is `.sectionAttr`,
-otherwise individual. -/
+/-- Section strategy if any record carries a `sectionLine`, otherwise
+individual. -/
 private def chooseStrategy (records : Array ReportRecord) : Strategy :=
-  if records.any (·.exposeSource == .sectionAttr) then .section_
+  if records.any (·.sectionLine.isSome) then .section_
   else .individual
 
 /-! ## Section-strategy edit
@@ -437,10 +437,15 @@ unsafe def editOneFile (file : FilePath) (records : Array ReportRecord)
     let init : Array Nat × Std.HashSet Nat := (#[], {})
     (xs.foldl (init := init) fun (acc, seen) x =>
       if seen.contains x then (acc, seen) else (acc.push x, seen.insert x)).1
-  let safeLines : Array Nat := dedupe (records
-    |>.filter (Verdict.classify · == .safeToUnexpose) |>.map (·.line))
   let neededDownstreamLines : Array Nat := dedupe (records
     |>.filter (Verdict.classify · == .neededDownstream) |>.map (·.line))
+  -- A source line is only safe to unexpose if EVERY record at that
+  -- line is safe — i.e. no twin (`to_additive`/`to_dual`) is needed
+  -- downstream.
+  let neededSet : Std.HashSet Nat := neededDownstreamLines.foldl (·.insert ·) {}
+  let safeLines : Array Nat := dedupe (records
+    |>.filter (Verdict.classify · == .safeToUnexpose) |>.map (·.line))
+    |>.filter (fun ln => !neededSet.contains ln)
   let strategy := chooseStrategy records
   let (newText, skipped) : String × Array (Nat × SkipReason) ← do
     match strategy with

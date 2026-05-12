@@ -32,15 +32,13 @@ unsafe def runEnvScan (_project : ProjectInfo) (modules : Array Name)
     (scopePrefix : Array Name) : IO Unit := do
   IO.FS.createDirAll dataDir
   let searchPath ← addSearchPathFromEnv (← getBuiltinSearchPath (← findSysroot))
-  -- Everything happens *inside* `withImportModules`: the `Name`-derived
-  -- strings carried by `DeclRecord` are arena-allocated by the imported
-  -- environment and triggered SIGSEGV-on-use after the block exited.
-  -- Source-scanning here lets us write `exposed.jsonl` once with all
-  -- fields correct.
+  -- All env-dependent work happens inside `withImportModules`. The
+  -- `DeclRecord` fields are stringified (and `Name` references dropped)
+  -- before any iteration of the records, so the data is safe to write
+  -- without lifetime worries.
   withImportModules modules
       (searchPath := searchPath) (trustLevel := 1024) do
     let env ← getEnv
-    let recs ← enumerate scopePrefix
     -- Static refs → static_refs.jsonl
     let refs ← collectStaticRefs
     IO.FS.withFile staticRefsPath .write fun h => writeStaticRefs env refs h
@@ -48,13 +46,12 @@ unsafe def runEnvScan (_project : ProjectInfo) (modules : Array Name)
     -- Per-decl refs → decl_refs.jsonl
     IO.FS.withFile declRefsPath .write fun h => writeDeclRefs env h
     IO.eprintln s!"[no_expose collect] wrote per-decl refs to {declRefsPath}"
-    -- Source-scan + write exposed.jsonl with `expose_source` filled in.
-    let (sources, counts) ← sourceScanRecords recs
+    -- Source-driven enumeration: walk source for `@[expose]`,
+    -- intersect with env decl ranges.
+    let recs ← enumerate scopePrefix
     IO.FS.withFile exposedPath .write fun h => do
-      for h2 : i in [:recs.size] do
-        h.putStrLn { recs[i] with exposeSource := sources[i]! }.toJsonLine
+      for r in recs do h.putStrLn r.toJsonLine
     IO.eprintln s!"[no_expose collect] wrote {recs.size} exposed records to {exposedPath}"
-    IO.eprintln s!"[no_expose collect] expose-source breakdown: {counts.toList}"
 
 /-- Run the `collect` subcommand. -/
 unsafe def runCollect (args : CollectArgs) : IO UInt32 := do

@@ -45,11 +45,13 @@ def withImportModules {α : Type} (modules : Array Name) (run : CoreM α)
 
 /-! ## Enumeration -/
 
-/-- One row of the eventual `exposed.jsonl`. `name` and `module` are
-stringified inside `enumerate` so the record carries no references
-back into the imported environment after `withImportModules` closes.
-`exposeSource` is filled in by `augmentAndWrite` after the env walk
-closes; the env walk itself leaves it at `.unknown`. -/
+/-- One row of the eventual `exposed.jsonl`. Each record represents
+one source `@[expose]` occurrence intersected with one env decl whose
+range falls inside it. `name`/`module` come from the env (so we don't
+hand-parse identifiers); `line`/`col` are the decl's own start (used
+by `edit`). `attrLine` is the line of the `@[expose]` text that covers
+this decl; `sectionLine` is set iff the `@[expose]` came from a
+section attribute (and points at the `@[expose] section` line). -/
 structure DeclRecord where
   name : String
   kind : String
@@ -58,7 +60,8 @@ structure DeclRecord where
   line : Nat
   col : Nat
   «effect» : String
-  exposeSource : ExposeSource := .unknown
+  attrLine : Nat
+  sectionLine : Option Nat := none
   deriving Inhabited
 
 /-- Suffixes Lean uses for compiler-generated structure/inductive
@@ -102,12 +105,25 @@ private def isInScope (env : Environment) (scopePrefix : Array Name) (name : Nam
   else
     none
 
-/-- Collect the enumeration records. -/
-def enumerate (scopePrefix : Array Name) : CoreM (Array DeclRecord) := do
+/-- Per-decl info we need to perform the source-occurrence × env-range
+intersection: the project file the decl came from, its name/kind/etc.,
+and the line range its declaration source spans. -/
+private structure EnvDecl where
+  name : Name
+  kind : String
+  «module» : Name
+  file : String
+  startLine : Nat
+  endLine : Nat
+  col : Nat
+  isAbbrev : Bool
+
+/-- Walk the env, returning every project-scope decl that could carry
+`@[expose]`. The source-occurrence scanner will pick out which of these
+are actually covered by an `@[expose]` attribute. -/
+private def collectEnvDecls (scopePrefix : Array Name) : CoreM (Array EnvDecl) := do
   let env ← getEnv
-  let instSet := (Lean.Meta.instanceExtension.getState env).instanceNames
-  let mut out : Array DeclRecord := #[]
-  let mut instSkipped : Nat := 0
+  let mut out : Array EnvDecl := #[]
   for (name, info) in env.constants.toList do
     let .defnInfo defnVal := info | continue
     let some mod := isInScope env scopePrefix name | continue
@@ -115,25 +131,80 @@ def enumerate (scopePrefix : Array Name) : CoreM (Array DeclRecord) := do
     if name.isInternal then continue
     if ← isAutoGen env name then continue
     unless isBodyExported env name do continue
-    if instSet.contains name then
-      instSkipped := instSkipped + 1
-      continue
-    let isAbbrev := defnVal.hints.isAbbrev
-    let kind := "def"
-    let «effect» := if isAbbrev then "noop-always-exported" else "exposed"
     let some ranges ← Lean.findDeclarationRanges? name | continue
-    let pos := ranges.range.pos
     out := out.push {
-      name := name.toString
-      kind
-      «module» := mod.toString
+      name
+      kind := "def"
+      «module» := mod
       file := moduleToPath mod
-      line := pos.line
-      col := pos.column
-      «effect»
+      startLine := ranges.range.pos.line
+      endLine := ranges.range.endPos.line
+      col := ranges.range.pos.column
+      isAbbrev := defnVal.hints.isAbbrev
     }
-  IO.eprintln s!"[no_expose enumerate] excluded {instSkipped} instances (expose is a no-op)"
   return out
+
+/-- Source-occurrence-driven enumeration: scan each project file for
+`@[expose]` text occurrences, intersect with env decl ranges, and emit
+one `DeclRecord` per (occurrence, covered env decl) pair.
+
+This replaces the previous "walk every body-exposed def, then classify
+how it got exposed" approach. The new approach is honest about what
+the tool can actually edit: by construction every record corresponds
+to a literal `@[expose]` in source. -/
+unsafe def enumerate (scopePrefix : Array Name) : CoreM (Array DeclRecord) := do
+  let envDecls ← collectEnvDecls scopePrefix
+  -- Group decls by their source file.
+  let mut byFile : Std.HashMap String (Array EnvDecl) := {}
+  for d in envDecls do
+    byFile := byFile.insert d.file ((byFile.getD d.file #[]).push d)
+  IO.eprintln s!"[no_expose enumerate] {envDecls.size} candidate env decls \
+    across {byFile.size} files"
+  -- For each file, scan source for `@[expose]` occurrences and
+  -- intersect with the env decls in that file.
+  let mut out : Array DeclRecord := #[]
+  let mut filesDone : Nat := 0
+  for (file, decls) in byFile do
+    let path : System.FilePath := file
+    unless ← System.FilePath.pathExists path do
+      filesDone := filesDone + 1
+      continue
+    let text ← IO.FS.readFile path
+    let occurrences := scanExposeOccurrences text
+    -- Sort decls once by startLine for cheap binary-search-style lookup.
+    let sortedDecls := decls.qsort fun a b => a.startLine < b.startLine
+    for occ in occurrences do
+      match occ.scope with
+      | .decl =>
+        -- The covered decl is the one whose range starts on the
+        -- next line after `occ.attrLine` (allowing for the decl's
+        -- modifiers spanning the attribute line itself).
+        for d in sortedDecls do
+          if d.startLine ≥ occ.attrLine && d.startLine ≤ occ.attrLine + 1 then
+            out := out.push (declRecordOf d occ.attrLine none)
+      | .section_ closeLine =>
+        for d in sortedDecls do
+          if d.startLine ≥ occ.attrLine && d.startLine ≤ closeLine then
+            out := out.push (declRecordOf d occ.attrLine (some occ.attrLine))
+    filesDone := filesDone + 1
+    if filesDone % 500 == 0 then
+      IO.eprintln s!"[no_expose enumerate] scanned {filesDone} files \
+        ({out.size} records so far)"
+  IO.eprintln s!"[no_expose enumerate] {out.size} records from {filesDone} files"
+  return out
+where
+  declRecordOf (d : EnvDecl) (attrLine : Nat) (sectionLine : Option Nat) :
+      DeclRecord := {
+    name := d.name.toString
+    kind := d.kind
+    «module» := d.module.toString
+    file := d.file
+    line := d.startLine
+    col := d.col
+    «effect» := if d.isAbbrev then "noop-always-exported" else "exposed"
+    attrLine
+    sectionLine
+  }
 
 /-! ## Static references -/
 
@@ -160,6 +231,9 @@ def collectStaticRefs : CoreM RefMap := do
 /-! ## JSON serialisation -/
 
 def DeclRecord.toJsonLine (d : DeclRecord) : String :=
+  let sectionField := match d.sectionLine with
+    | none   => ""
+    | some l => ",\"section_line\":" ++ toString l
   "{\"name\":\"" ++ jsonEscape d.name ++
   "\",\"kind\":\"" ++ d.kind ++
   "\",\"module\":\"" ++ jsonEscape d.module ++
@@ -167,57 +241,8 @@ def DeclRecord.toJsonLine (d : DeclRecord) : String :=
   "\",\"line\":" ++ toString d.line ++
   ",\"col\":" ++ toString d.col ++
   ",\"effect\":\"" ++ d.effect ++
-  "\",\"expose_source\":\"" ++ d.exposeSource.toJsonString ++ "\"}"
-
-/-- Source-scan every file mentioned by `recs` and return a parallel
-array of `ExposeSource` (indexed the same as `recs`) plus a
-per-source count summary. Intended to be called inside the
-`withImportModules` block that produced `recs`, so the records are
-valid for the duration of the scan. -/
-def sourceScanRecords (recs : Array DeclRecord) :
-    IO (Array ExposeSource × Std.HashMap String Nat) := do
-  -- Group record indices by file.
-  let mut byFile : Std.HashMap String (Array Nat) := {}
-  let mut fileOrder : Array String := #[]
-  let mut seenFile : Std.HashSet String := {}
-  for h : i in [:recs.size] do
-    let f := recs[i].file
-    unless seenFile.contains f do
-      seenFile := seenFile.insert f
-      fileOrder := fileOrder.push f
-    byFile := byFile.insert f ((byFile.getD f #[]).push i)
-  IO.eprintln s!"[no_expose source-scan] grouped {recs.size} records into \
-    {fileOrder.size} files"
-  -- Per-file scan; each file's scan map is bounded by candidate count
-  -- (via `wanted`) and dropped before moving on.
-  let mut sources : Array ExposeSource := Array.replicate recs.size .unknown
-  let mut counts : Std.HashMap String Nat := {}
-  let mut filesDone : Nat := 0
-  for f in fileOrder do
-    let indices := byFile.getD f #[]
-    let wanted : Std.HashSet Nat :=
-      indices.foldl (init := {}) fun acc i => acc.insert recs[i]!.line
-    let pth : System.FilePath := f
-    let mut byLine : Std.HashMap Nat ExposeSource := {}
-    if ← System.FilePath.pathExists pth then
-      let text ← IO.FS.readFile pth
-      -- `findDeclarationRanges?` reports the block-start line for some
-      -- decl kinds (`def`/`theorem`) and the keyword line for others
-      -- (`macro`/`syntax`). Insert both into `byLine` so a lookup keyed
-      -- by either succeeds.
-      for (blockLn, headLn, src) in scanFile text do
-        if wanted.contains blockLn then byLine := byLine.insert blockLn src
-        if wanted.contains headLn  then byLine := byLine.insert headLn  src
-    for i in indices do
-      let src := byLine.getD recs[i]!.line .unknown
-      sources := sources.set! i src
-      let k := src.toJsonString
-      counts := counts.insert k ((counts.getD k 0) + 1)
-    filesDone := filesDone + 1
-    if filesDone % 500 == 0 then
-      IO.eprintln s!"[no_expose source-scan] scanned {filesDone} files"
-  IO.eprintln s!"[no_expose source-scan] scanned {filesDone} files total"
-  return (sources, counts)
+  "\",\"attr_line\":" ++ toString d.attrLine ++
+  sectionField ++ "}"
 
 /-- Write a `RefMap` aggregation as one JSONL record per pair. -/
 def writeStaticRefs (env : Environment) (acc : RefMap)
