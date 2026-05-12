@@ -756,6 +756,8 @@ section postcompose₂
 
 variable (F' : D ⥤ H) {L : C ⥤ D} {F : C ⥤ H}
 
+-- Note: the forward direction of this lemma becomes an instance if we import
+-- the file `Mathlib/CategoryTheory/Functor/KanExtension/PreservesAdjunction.lean`
 lemma isLeftKanExtension_postcompose₂_iff
     (α : F ⟶ L ⋙ F') (G : H ⥤ H') [G.IsEquivalence] :
     (F' ⋙ G).IsLeftKanExtension (whiskerRight α G ≫ (Functor.associator _ _ _).hom) ↔
@@ -765,10 +767,8 @@ lemma isLeftKanExtension_postcompose₂_iff
     (IsInitial.isInitialIffObj (LeftExtension.postcompose₂ L F G) (LeftExtension.mk _ α)).symm)
   exact StructuredArrow.isoMk (Iso.refl _)
 
-instance (α : F ⟶ L ⋙ F') (G : H ⥤ H') [G.IsEquivalence] [F'.IsLeftKanExtension α] :
-    (F' ⋙ G).IsLeftKanExtension (whiskerRight α G ≫ (associator _ _ _).hom) := by
-  rwa [isLeftKanExtension_postcompose₂_iff]
-
+-- Note: the forward direction of this lemma becomes an instance if we import
+-- the file `Mathlib/CategoryTheory/Functor/KanExtension/PreservesAdjunction.lean`
 lemma isRightKanExtension_postcompose₂_iff
     (β : L ⋙ F' ⟶ F) (G : H ⥤ H') [G.IsEquivalence] :
     (F' ⋙ G).IsRightKanExtension ((associator _ _ _).inv ≫ whiskerRight β G) ↔
@@ -778,10 +778,6 @@ lemma isRightKanExtension_postcompose₂_iff
     ((IsTerminal.isTerminalIffObj (RightExtension.postcompose₂ L F G)
       (RightExtension.mk _ β))).symm)
   exact CostructuredArrow.isoMk (Iso.refl _)
-
-instance (β : L ⋙ F' ⟶ F) (G : H ⥤ H') [G.IsEquivalence] [F'.IsRightKanExtension β] :
-    (F' ⋙ G).IsRightKanExtension ((associator _ _ _).inv ≫ whiskerRight β G) := by
-  rwa [isRightKanExtension_postcompose₂_iff]
 
 end postcompose₂
 

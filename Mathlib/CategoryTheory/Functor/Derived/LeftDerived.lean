@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.KanExtension.Basic
+public import Mathlib.CategoryTheory.Functor.KanExtension.AdjunctionPreserves
 public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 
 /-!
@@ -142,7 +142,7 @@ lemma isLeftDerivedFunctor_iff_isIso_leftDerivedLift (G : D ⥤ H) (β : L ⋙ G
   have := IsLeftDerivedFunctor.isRightKanExtension _ α W
   exact isRightKanExtension_iff_isIso _ α _ (by simp)
 
-instance (G : H ⥤ H') [G.IsEquivalence] :
+instance (G : H ⥤ H') [G.IsRightAdjoint] :
     (LF ⋙ G).IsLeftDerivedFunctor ((associator _ _ _).inv ≫ whiskerRight α G) W := by
   have : LF.IsRightKanExtension α := by
     rwa [← isLeftDerivedFunctor_iff_isRightKanExtension _ _ W]
