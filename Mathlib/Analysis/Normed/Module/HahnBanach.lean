@@ -5,10 +5,9 @@ Authors: Yury Kudryashov, Heather Macbeth
 -/
 module
 
-public import Mathlib.Analysis.Convex.Cone.Extension
+public import Mathlib.Analysis.LocallyConvex.HahnBanach
 public import Mathlib.Analysis.Normed.Module.RCLike.Extend
 public import Mathlib.Analysis.RCLike.Lemmas
-public import Mathlib.Topology.Algebra.Module.Complement
 
 /-!
 # Extension Hahn-Banach theorem
@@ -45,21 +44,13 @@ See also `exists_extension_norm_eq` in the root namespace for a more general ver
 that works both for `ℝ` and `ℂ`. -/
 theorem exists_extension_norm_eq (p : Subspace ℝ E) (f : StrongDual ℝ p) :
     ∃ g : StrongDual ℝ E, (∀ x : p, g x = f x) ∧ ‖g‖ = ‖f‖ := by
-  rcases exists_extension_of_le_sublinear ⟨p, f⟩ (fun x => ‖f‖ * ‖x‖)
-      (fun c hc x => by simp only [norm_smul c x, Real.norm_eq_abs, abs_of_pos hc, mul_left_comm])
-      (fun x y => by
-        rw [← left_distrib]
-        dsimp; gcongr
-        exact norm_add_le x y)
-      fun x => le_trans (le_abs_self _) (f.le_opNorm _) with ⟨g, g_eq, g_le⟩
-  set g' :=
-    g.mkContinuous ‖f‖ fun x => abs_le.2 ⟨neg_le.1 <| g.map_neg x ▸ norm_neg x ▸ g_le (-x), g_le x⟩
-  refine ⟨g', g_eq, ?_⟩
-  apply le_antisymm (g.mkContinuous_norm_le (norm_nonneg f) _)
-  refine f.opNorm_le_bound (norm_nonneg _) fun x => ?_
-  dsimp at g_eq
-  rw [← g_eq]
-  apply g'.le_opNorm
+  obtain ⟨g, hg, hl⟩ := by
+    refine f.toLinearMap.exists_real_extension p
+      (?_ : Continuous (‖f‖₊ • (normSeminorm ℝ E))) fun x => ?_
+    · simpa using (continuous_norm (E := E)).const_smul ‖f‖₊
+    · exact (le_abs_self (f x)).trans <| by simpa using f.le_opNorm x
+  refine ⟨g, hg, le_antisymm (g.mkContinuous_norm_le (norm_nonneg f) hl) ?_⟩
+  exact f.opNorm_le_bound (norm_nonneg _) fun x => by simpa [hg x] using g.le_opNorm x
 
 end Real
 

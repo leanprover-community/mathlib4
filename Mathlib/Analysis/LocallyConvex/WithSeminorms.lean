@@ -688,13 +688,17 @@ theorem continuous_normedSpace_rng (F) [SeminormedAddCommGroup F] [NormedSpace �
   rw [← Seminorm.isBounded_const (Fin 1)] at hf
   exact continuous_of_isBounded hp (norm_withSeminorms 𝕝₂ F) f hf
 
+lemma _root_.Seminorm.abs_le_seminorm_of_le_seminorm [Module ℝ E] [TopologicalSpace E]
+    {p : Seminorm ℝ E} {f : E →ₗ[ℝ] ℝ} (hfp : ∀ x, f x ≤ p x) (x : E) :
+    |f x| ≤ p x :=
+  abs_le.2 ⟨neg_le.1 (by simpa using hfp (-x)), hfp x⟩
+
 theorem continuous_real_rng [Module ℝ E] [TopologicalSpace E] {p : ι → Seminorm ℝ E}
     (hp : WithSeminorms p) (f : E →ₗ[ℝ] ℝ)
     (hf : ∃ (s : Finset ι) (C : ℝ≥0), ∀ x, f x ≤ (C • s.sup p) x) :
     Continuous f := by
   obtain ⟨s, C, hC⟩ := hf
-  exact continuous_normedSpace_rng ℝ hp f ⟨s, C,
-    fun x ↦ abs_le.2 ⟨neg_le.1 (by simpa using hC (-x)), hC x⟩⟩
+  exact continuous_normedSpace_rng ℝ hp f ⟨s, C, abs_le_seminorm_of_le_seminorm hC⟩
 
 @[deprecated (since := "2026-03-09")]
 alias _root_.Seminorm.cont_withSeminorms_normedSpace := continuous_normedSpace_rng

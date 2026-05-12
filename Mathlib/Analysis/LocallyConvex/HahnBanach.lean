@@ -39,13 +39,13 @@ over `ℝ`. -/
 theorem LinearMap.exists_real_extension [Module ℝ E] [ContinuousSMul ℝ E]
     [LocallyConvexSpace ℝ E] (S : Subspace ℝ E) (f : S →ₗ[ℝ] ℝ) {p : Seminorm ℝ E}
     (hp_cont : Continuous p) (hp : ∀ x, f x ≤ p x) :
-    ∃ g : StrongDual ℝ E, (∀ x : S, g x = f x) ∧ ∀ x, g x ≤ p x := by
+    ∃ g : StrongDual ℝ E, (∀ x : S, g x = f x) ∧ ∀ x, |g x| ≤ p x := by
   obtain ⟨g, hg, hl⟩ := by
     refine exists_extension_of_le_sublinear ⟨S, f⟩ p (fun _ hc _ => ?_) ?_ hp
     · simp [map_smul_eq_mul, abs_of_nonneg hc.le]
     · exact fun x y => map_add_le_add p x y
   exact ⟨⟨g, (PolynormableSpace.withSeminorms ℝ E).continuous_real_rng g
-    ⟨{⟨p, hp_cont⟩}, 1, fun x ↦ by simpa using hl x⟩⟩, hg, hl⟩
+    ⟨{⟨p, hp_cont⟩}, 1, fun x ↦ by simpa using hl x⟩⟩, hg, p.abs_le_seminorm_of_le_seminorm hl⟩
 
 /-- **Hahn-Banach theorem** for continuous linear functions on locally convex spaces over `ℝ`. -/
 theorem StrongDual.exists_real_extension [Module ℝ E] [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E]
@@ -54,11 +54,8 @@ theorem StrongDual.exists_real_extension [Module ℝ E] [ContinuousSMul ℝ E] [
   have : PolynormableSpace ℝ E := LocallyConvexSpace.toPolynormableSpace
   obtain ⟨q, hq_cont, hq⟩ := PolynormableSpace.exists_continuous_seminorm_le (f := S.subtype)
     (p := f.toSeminorm) f.continuous.norm IsInducing.subtypeVal
-  obtain ⟨g, hg, hl⟩ := by
-    refine f.toLinearMap.exists_real_extension S hq_cont fun x => ?_
-    calc
-      _ ≤ f.toSeminorm x := by simp [le_abs_self]
-      _ ≤ q x := hq x
+  obtain ⟨g, hg, hl⟩ := f.toLinearMap.exists_real_extension S hq_cont
+    fun x => (le_abs_self (f x)).trans (hq x)
   exact ⟨g, hg⟩
 
 variable [Module 𝕜 E] [ContinuousSMul 𝕜 E] [LocallyConvexSpace 𝕜 E]
