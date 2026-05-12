@@ -2731,6 +2731,7 @@ public import Mathlib.CategoryTheory.GuitartExact.HorizontalComposition
 public import Mathlib.CategoryTheory.GuitartExact.KanExtension
 public import Mathlib.CategoryTheory.GuitartExact.Opposite
 public import Mathlib.CategoryTheory.GuitartExact.Over
+public import Mathlib.CategoryTheory.GuitartExact.Quotient
 public import Mathlib.CategoryTheory.GuitartExact.VerticalComposition
 public import Mathlib.CategoryTheory.HomCongr
 public import Mathlib.CategoryTheory.Idempotents.Basic
@@ -4405,6 +4406,7 @@ public import Mathlib.Dynamics.Newton
 public import Mathlib.Dynamics.OmegaLimit
 public import Mathlib.Dynamics.PeriodicPts.Defs
 public import Mathlib.Dynamics.PeriodicPts.Lemmas
+public import Mathlib.Dynamics.SymbolicDynamics.Basic
 public import Mathlib.Dynamics.TopologicalEntropy.CoverEntropy
 public import Mathlib.Dynamics.TopologicalEntropy.DynamicalEntourage
 public import Mathlib.Dynamics.TopologicalEntropy.NetEntropy
@@ -7296,6 +7298,7 @@ public import Mathlib.Tactic.Says
 public import Mathlib.Tactic.ScopedNS
 public import Mathlib.Tactic.Set
 public import Mathlib.Tactic.SetLike
+public import Mathlib.Tactic.SetNotationForOrder
 public import Mathlib.Tactic.SimpIntro
 public import Mathlib.Tactic.SimpRw
 public import Mathlib.Tactic.Simproc.Divisors
