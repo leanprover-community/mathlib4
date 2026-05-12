@@ -27,9 +27,6 @@ open CategoryTheory Limits
 variable {R : Type u} [CommRing R] {J : Type*} [Category* J] {F : J ⥤ AlgCat.{v} R}
   [PreservesColimitsOfShape J (forget RingCat.{v})]
 
-instance (k : J) : Algebra R ((F ⋙ forget₂ (AlgCat R) RingCat).obj k) :=
-  inferInstanceAs <| Algebra R (F.obj k)
-
 section
 
 variable {c : Cocone (F ⋙ forget₂ _ RingCat)} [IsFilteredOrEmpty J]
