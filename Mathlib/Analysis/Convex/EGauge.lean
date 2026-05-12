@@ -269,7 +269,7 @@ theorem egauge_pi' {I : Set ι} (hI : I.Finite)
     · obtain ⟨i₀, hi₀I, hc_max⟩ : ∃ i₀ ∈ I, IsMaxOn (‖c ·‖ₑ) I i₀ :=
         exists_max_image _ (‖c ·‖ₑ) hI hIne
       by_cases! H : c i₀ ≠ 0 ∨ I = univ
-      · exact ⟨c i₀, H, fun i hi ↦ by simpa [enorm] using hc_max hi, hcr _ hi₀I⟩
+      · exact ⟨c i₀, H, fun i hi ↦ by simpa [enorm] using! hc_max hi, hcr _ hi₀I⟩
       · have hc0 (i : ι) (hi : i ∈ I) : c i = 0 := by simpa [H] using hc_max hi
         have heg0 (i : ι) (hi : i ∈ I) : x i = 0 :=
           zero_smul_set_subset (α := 𝕜) (U i) (hc0 i hi ▸ hc i hi)
