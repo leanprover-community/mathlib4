@@ -54,6 +54,18 @@ section conjugation
 @[simp] lemma isParabolic_conj'_iff : (g.val⁻¹ * m * g.val).IsParabolic ↔ m.IsParabolic := by
   simpa using isParabolic_conj_iff g⁻¹
 
+lemma IsParabolic.neg (h : IsParabolic m) : IsParabolic (-m) := by
+  constructor
+  · rw [← RingHom.coe_range, SetLike.mem_coe, neg_mem_iff]
+    exact h.1
+  · -- TODO: prove `discr_neg` for a matrix of any size, use it here
+    simpa [discr_fin_two, det_neg] using h.2
+
+lemma IsParabolic.of_neg (h : IsParabolic (-m)) : IsParabolic m := by
+  simpa using h.neg
+
+@[simp] lemma isParabolic_neg_iff : IsParabolic (-m) ↔ IsParabolic m := ⟨.of_neg, .neg⟩
+
 end conjugation
 
 lemma isParabolic_iff_of_upperTriangular [IsReduced R] (hm : m 1 0 = 0) :
@@ -150,13 +162,13 @@ lemma isElliptic_conj'_iff : (g.val⁻¹ * m * g.val).IsElliptic ↔ m.IsEllipti
 theorem isHyperbolic_neg_iff : (-m).IsHyperbolic ↔ m.IsHyperbolic := by
   simp [IsHyperbolic, discr_fin_two, det_neg]
 
-protected alias ⟨_, IsHyperbolic.neg⟩ := isHyperbolic_neg_iff
+protected alias ⟨IsHyperbolic.of_neg, IsHyperbolic.neg⟩ := isHyperbolic_neg_iff
 
 @[simp]
 theorem isElliptic_neg_iff : (-m).IsElliptic ↔ m.IsElliptic := by
   simp [IsElliptic, discr_fin_two, det_neg]
 
-protected alias ⟨_, IsElliptic.neg⟩ := isElliptic_neg_iff
+protected alias ⟨IsElliptic.of_neg, IsElliptic.neg⟩ := isElliptic_neg_iff
 
 end Preorder
 
