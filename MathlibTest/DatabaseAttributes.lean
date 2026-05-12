@@ -1,4 +1,4 @@
-import Mathlib.Tactic.StacksAttribute
+import Mathlib.Tactic.DatabaseAttributes
 import Mathlib.Util.ParseCommand
 
 /-- info: No tags found. -/
@@ -11,6 +11,47 @@ namespace X
 theorem tagged : True := .intro
 
 end X
+
+section informal
+
+/-- info: No tags found. -/
+#guard_msgs in
+#informal_concepts
+
+namespace Y
+
+@[informal "my concept"]
+theorem tagged : True := .intro
+
+@[informal "another concept" "with a comment"]
+theorem tagged' : True := .intro
+
+end Y
+
+/--
+info:
+informal concept "another concept" corresponds to declaration 'Y.tagged''. (with a comment)
+informal concept "my concept" corresponds to declaration 'Y.tagged'.
+-/
+#guard_msgs in
+#informal_concepts
+
+@[informal "concept1", informal "another concept"]
+theorem twice : True := .intro
+
+/--
+info:
+informal concept "another concept" corresponds to declaration 'twice'.
+informal concept "another concept" corresponds to declaration 'Y.tagged''. (with a comment)
+informal concept "concept1" corresponds to declaration 'twice'.
+informal concept "my concept" corresponds to declaration 'Y.tagged'.
+-/
+#guard_msgs in
+#informal_concepts
+
+end informal
+
+section StacksAttribute
 
 /--
 info: some ([Stacks Tag A04Q](https://stacks.math.columbia.edu/tag/A04Q) (A comment)
@@ -38,13 +79,13 @@ example : True := .intro
 example : True := .intro
 
 /-- error: <input>:1:3: Stacks tags must be exactly 4 characters -/
-#guard_msgs in #parse Mathlib.StacksTag.stacksTagFn => "A05"
+#guard_msgs in #parse Mathlib.DatabaseTag.stacksTagFn => "A05"
 
 /-- error: <input>:1:4: Stacks tags must consist only of digits and uppercase letters. -/
-#guard_msgs in #parse Mathlib.StacksTag.stacksTagFn => "A05b"
+#guard_msgs in #parse Mathlib.DatabaseTag.stacksTagFn => "A05b"
 
 /-- info: 0BD5 -/
-#guard_msgs in #parse Mathlib.StacksTag.stacksTagFn => "0BD5"
+#guard_msgs in #parse Mathlib.DatabaseTag.stacksTagFn => "0BD5"
 
 /--
 info:
@@ -71,7 +112,7 @@ True
 
 section errors
 
-open Lean Parser Mathlib.StacksTag
+open Lean Parser Mathlib.DatabaseTag
 
 def captureException (env : Environment) (s : ParserFn) (input : String) : Except String Syntax :=
   let ictx := mkInputContext input "<input>"
@@ -100,3 +141,5 @@ run_cmd do
   let _ ← Lean.ofExcept <| captureException env stacksTagFn "\"A04Q\""
 
 end errors
+
+end StacksAttribute

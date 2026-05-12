@@ -8,7 +8,7 @@ module
 public import Mathlib.Order.Minimal
 public import Mathlib.Order.Zorn
 public import Mathlib.Topology.ContinuousOn
-public import Mathlib.Tactic.StacksAttribute
+public import Mathlib.Tactic.DatabaseAttributes
 public import Mathlib.Topology.DiscreteSubset
 
 /-!
