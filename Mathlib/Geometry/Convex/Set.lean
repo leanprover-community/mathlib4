@@ -191,15 +191,13 @@ instance : SetLike (ConvexSet R X) X where
 
 instance : PartialOrder (ConvexSet R X) := .ofSetLike ..
 
-initialize_simps_projections ConvexSet (carrier → coe, as_prefix coe)
-
 variable {K K₁ K₂ : ConvexSet R X}
 
 variable (K) in
 @[simp] lemma carrier_eq_coe : K.carrier = K := rfl
 
 variable (K) in
-@[simp] theorem mem_coe (x : X) : x ∈ K.carrier ↔ x ∈ K := .rfl
+@[simp] theorem mem_carrier (x : X) : x ∈ K.carrier ↔ x ∈ K := .rfl
 
 @[ext] theorem ext (h : ∀ x, x ∈ K₁ ↔ x ∈ K₂) : K₁ = K₂ := SetLike.ext h
 
@@ -236,11 +234,11 @@ instance : CompleteSemilatticeInf (ConvexSet R X) where
 
 instance : OrderBot (ConvexSet R X) where
   bot := ⟨∅, IsConvexSet.empty⟩
-  bot_le _ _ hx := by simp [← mem_coe] at hx
+  bot_le _ _ hx := by simp [← mem_carrier] at hx
 
 instance : OrderTop (ConvexSet R X) where
   top := ⟨Set.univ, IsConvexSet.univ⟩
-  le_top _ _ _ := by simp [← mem_coe]
+  le_top _ _ _ := by simp [← mem_carrier]
 
 instance : Inhabited (ConvexSet R X) := ⟨⊤⟩
 
