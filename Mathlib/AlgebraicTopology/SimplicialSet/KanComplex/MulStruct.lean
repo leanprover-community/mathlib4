@@ -169,7 +169,7 @@ namespace MulStruct
 attribute [reassoc (attr := simp)] δ_castSucc_castSucc_map δ_succ_castSucc_map δ_succ_succ_map
   δ_map_of_lt δ_map_of_gt
 
-/-- The `Mulstruct` for `X.op` that is deduced from a `Mulstruct` for the simplicial
+/-- The `MulStruct` for `X.op` that is deduced from a `MulStruct` for the simplicial
 set `X`. -/
 def op {f g fg : X.PtSimplex n x} {i : Fin n} (h : MulStruct f g fg i) {j : Fin n}
     (hij : i.rev = j := by grind) :
