@@ -111,7 +111,7 @@ lemma variation_le_of_forall_enorm_le {m : Measure X} (h : ∀ E, MeasurableSet 
       simpa [disjoint_iff, Subtype.ext_iff] using i.disjoint ha hb hab
     _ ≤ m s := by
       rw [sup_set_eq_biUnion]
-      sorry
+      exact measure_mono <| Set.iUnion₂_subset fun _ hp => Subtype.coe_le_coe.mpr (i.le hp)
 
 lemma variation_add_le [ContinuousAdd V] : variation (μ + ν) ≤ variation μ + variation ν := by
   refine variation_le_of_forall_enorm_le fun E _ => ?_
