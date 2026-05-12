@@ -481,7 +481,7 @@ being allowed to use membership of the domain of the sum. -/]
 lemma prod_nbij (i : ι → κ) (hi : ∀ a ∈ s, i a ∈ t) (i_inj : (s : Set ι).InjOn i)
     (i_surj : (s : Set ι).SurjOn i t) (h : ∀ a ∈ s, f a = g (i a)) :
     ∏ x ∈ s, f x = ∏ x ∈ t, g x :=
-  prod_bij (fun a _ ↦ i a) hi i_inj (by simpa using i_surj) h
+  prod_bij (fun a _ ↦ i a) hi i_inj (by simpa using! i_surj) h
 
 /-- Reorder a product.
 
