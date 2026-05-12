@@ -20,17 +20,7 @@ respectively, (indexed by a `ComplexShape`) and a proof that they agree on `TopC
 require boundary morphisms `δ i j :  Hₚ i ⟶ proj₂ ⋙ H j` for the long exact sequence of
 topological pairs. These are nonzero only if `c.Rel i j`.
 
-TODO: We introduce a type class for each axiom. In addition, there are bundled type classes
-`IsExtraordinaryEilenbergSteenrod` with the homotopy, excision, additivity, and exactness axioms and
-`IsEilenbergSteenrod` on a `HomologyPretheory` on `ComplexShape.down ℕ : ComplexShape ℕ` which
-extends the former by the dimension axiom.
-
-TODO: Excision is formulated in terms of complements of topological pairs: Suppose `U` and `V` are
-complements of a topological pair `X` with embeddings `f : U ⟶ X` and `g : V ⟶ X`. Suppose further
-that the closure of `Hom.fst f (U.fst)` is a subset of the interior of the image of `X.snd` in
-`X.fst`. Then the excision axiom postulates that the homology of `X` is isomorphic to that of `V`.
-Note that this closure condition a priori seems weaker than in the literature. However, we prove
-that under these assumptions, `U` is actually an isomorphism.
+We introduce a typeclass `IsHomotopyInvariant` for the first axiom.
 -/
 
 @[expose] public section
