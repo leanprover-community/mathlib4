@@ -2240,8 +2240,8 @@ public import Mathlib.Analysis.NormedSpace.PiTensorProduct.InjectiveSeminorm
 public import Mathlib.Analysis.NormedSpace.PiTensorProduct.ProjectiveSeminorm
 public import Mathlib.Analysis.NormedSpace.RieszLemma
 public import Mathlib.Analysis.ODE.Basic
-public import Mathlib.Analysis.ODE.ExistUnique
 public import Mathlib.Analysis.ODE.DiscreteGronwall
+public import Mathlib.Analysis.ODE.ExistUnique
 public import Mathlib.Analysis.ODE.Gronwall
 public import Mathlib.Analysis.ODE.PicardLindelof
 public import Mathlib.Analysis.ODE.Transform
