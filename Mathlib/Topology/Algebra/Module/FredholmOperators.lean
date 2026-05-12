@@ -173,8 +173,8 @@ lemma index_smul (t : k) (ht : t ≠ 0) :
 
 lemma index_neg
     /- TODO required assumptions. -/ :
-    (-f).index = -f.index := by
-  sorry
+    (-f).index = f.index := by
+  rw [index, index, ker_neg, range_neg]
 
 lemma index_comp {G : Type*} [AddCommGroup G] [Module k G] (g : F →ₗ[k] G)
     /- TODO required assumptions. -/ :
