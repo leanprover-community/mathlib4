@@ -335,8 +335,7 @@ lemma Ideal.height_le_height_add_spanFinrank_of_le {I p : Ideal R} [p.IsPrime] (
   let p' := p.map (algebraMap R (R ⧸ I))
   have : p'.IsPrime := isPrime_map_quotientMk_of_isPrime hrp
   obtain ⟨s, hps, hs⟩ := exists_finset_card_eq_height_of_isNoetherianRing p'
-  have lep' := hps.le
-  have hsp' : (s : Set (R ⧸ I)) ⊆ (p' : Set _) := fun _ hx ↦ lep' (subset_span hx)
+  have hsp' : (s : Set (R ⧸ I)) ⊆ (p' : Set _) := fun _ hx ↦ hps.le (subset_span hx)
   have : Set.SurjOn (Ideal.Quotient.mk I) p s := by
     refine Set.SurjOn.mono subset_rfl hsp' fun x hx ↦ ?_
     obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
@@ -432,9 +431,8 @@ lemma Ideal.height_le_height_add_of_liesOver [IsNoetherianRing S] (p : Ideal R) 
   obtain ⟨s, hp, heq⟩ := p.exists_finset_card_eq_height_of_isNoetherianRing
   let P' := P.map (Ideal.Quotient.mk <| p.map (algebraMap R S))
   obtain ⟨s', hP', heq'⟩ := P'.exists_finset_card_eq_height_of_isNoetherianRing
-  have leP' := hP'.le
   have hsP'sub : (s' : Set <| S ⧸ (Ideal.map (algebraMap R S) p)) ⊆ (P' : Set <| S ⧸ _) :=
-    fun x hx ↦ leP' (Ideal.subset_span hx)
+    fun x hx ↦ hP'.le (Ideal.subset_span hx)
   have : Set.SurjOn (Ideal.Quotient.mk (p.map (algebraMap R S))) P s' := by
     refine Set.SurjOn.mono subset_rfl hsP'sub fun x hx ↦ ?_
     obtain ⟨y, rfl⟩ := Ideal.Quotient.mk_surjective x
