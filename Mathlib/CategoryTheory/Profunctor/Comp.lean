@@ -102,7 +102,6 @@ section Left
 variable (P : Profunctor.{max u w} C D) {Q R : Profunctor.{max u w} D E} (f : Q ⟶ R)
 
 set_option backward.isDefEq.respectTransparency false in
-attribute [local simp] chosenCoend.map_apply in
 /-- Left whiskering of a natural transformation of profunctors. -/
 @[simps app_app]
 def whiskerLeft : P.comp Q ⟶ P.comp R where
@@ -114,8 +113,8 @@ def whiskerLeft : P.comp Q ⟶ P.comp R where
         dsimp
         apply Prod.ext <;>
         simp [← comp_apply, -types_comp_apply] } }
-    naturality _ _ _ := by ext ⟨_, _, _⟩; simp }
-  naturality _ _ _ := by ext _ ⟨_, _, _⟩; simp
+    naturality _ _ _ := by ext ⟨_, _, _⟩; simp [chosenCoend_def, chosenCoend.map_apply] }
+  naturality _ _ _ := by ext _ ⟨_, _, _⟩; simp [chosenCoend_def, chosenCoend.map_apply]
 
 variable (Q) in
 @[simp]
@@ -136,7 +135,7 @@ section Right
 variable {P Q : Profunctor.{max u w} C D} (R : Profunctor.{max u w} D E) (f : P ⟶ Q)
 
 set_option backward.isDefEq.respectTransparency false in
-attribute [local simp] chosenCoend.map_apply in
+attribute [local simp] chosenCoend_def chosenCoend.map_apply in
 /-- Right whiskering of a natural transformation of profunctors. -/
 @[simps app_app]
 def whiskerRight : P.comp R ⟶ Q.comp R where
@@ -191,9 +190,10 @@ def leftUnitor (P : Profunctor.{u} C D) : Profunctor.id.comp P ≅ P :=
       rw [Types.coendRel_iff]
       exact ⟨f, ⟨𝟙 X, x⟩, by cat_disch⟩ })
     (fun f ↦ by dsimp; ext; simp [compDiagram, chosenCoend.ι_apply _]))
-    (fun f ↦ by ext _ ⟨_, _⟩; simp [chosenCoend.map_apply])
+    (fun f ↦ by ext _ ⟨_, _⟩; simp [Types.chosenCoend_def, chosenCoend.map_apply])
 
 set_option backward.isDefEq.respectTransparency false in
+attribute [local simp] Types.chosenCoend_def chosenCoend.map_apply in
 @[simp]
 lemma id_whiskerLeft {P Q : Profunctor.{u} C D} (f : P ⟶ Q) :
     (Profunctor.id (C := C)).whiskerLeft f =
@@ -225,9 +225,10 @@ def rightUnitor (P : Profunctor.{u} C D) : P.comp .id ≅ P :=
       rw [Types.coendRel_iff]
       exact ⟨f, ⟨x, 𝟙 (unop Y)⟩, by cat_disch⟩ })
     (fun f ↦ by dsimp; ext; simp [compDiagram, chosenCoend.ι_apply _]))
-    (fun f ↦ by ext _ ⟨_, _⟩; simp [chosenCoend.map_apply])
+    (fun f ↦ by ext _ ⟨_, _⟩; simp [Types.chosenCoend_def, chosenCoend.map_apply])
 
 set_option backward.isDefEq.respectTransparency false in
+attribute [local simp] Types.chosenCoend_def chosenCoend.map_apply in
 @[simp]
 lemma whiskerRight_id {P Q : Profunctor.{u} C D} (f : P ⟶ Q) :
     whiskerRight (Profunctor.id (C := D)) f =
@@ -250,7 +251,7 @@ variable {C D E F : Type u} [Category* C] [Category* D] [Category* E] [Category*
 open TypeCat Limits Types Functor
 
 set_option backward.isDefEq.respectTransparency false in
-attribute [local simp] chosenCoend.map_apply in
+attribute [local simp] Types.chosenCoend_def chosenCoend.map_apply in
 lemma associatorComponents_aux₁ {X : C} {Y : Fᵒᵖ} {e e' : E} {d d' : D}
     {p : (P.obj X).obj (Opposite.op d)} {q : (Q.obj d).obj (Opposite.op e)}
     {p' : (P.obj X).obj (Opposite.op d')} {q' : (Q.obj d').obj (Opposite.op e')}
@@ -275,7 +276,7 @@ lemma associatorComponents_aux₁ {X : C} {Y : Fᵒᵖ} {e e' : E} {d d' : D}
   exact ⟨𝟙 _, by simpa using (Quot.sound <| coendRel.mk (F := Q.compDiagram R _ _) f (_, _)).symm⟩
 
 set_option backward.isDefEq.respectTransparency false in
-attribute [local simp] chosenCoend.map_apply in
+attribute [local simp] Types.chosenCoend_def chosenCoend.map_apply in
 lemma associatorComponents_aux₂ {X : C} {Y : Fᵒᵖ} {d d' : D} {e e' : E}
   {q : (Q.obj d).obj (Opposite.op e)} {r : (R.obj e).obj Y}
   {q' : (Q.obj d').obj (Opposite.op e')}
@@ -299,7 +300,7 @@ lemma associatorComponents_aux₂ {X : C} {Y : Fᵒᵖ} {d d' : D} {e e' : E}
   exact ⟨𝟙 _, by simpa using Quot.sound <| coendRel.mk (F := P.compDiagram Q _ _) f (_, _)⟩
 
 set_option backward.isDefEq.respectTransparency false in
-attribute [local simp] chosenCoend.map_apply in
+attribute [local simp] Types.chosenCoend_def chosenCoend.map_apply in
 /-- The objectwise components of the associator isomorphism
 `(P.comp Q).comp R ≅ P.comp (Q.comp R)`. -/
 @[simps hom inv]
@@ -356,8 +357,8 @@ profunctors. -/
 @[simps! hom_app_app inv_app_app]
 def associator : (P.comp Q).comp R ≅ P.comp (Q.comp R) :=
   NatIso.ofComponents (fun X ↦ NatIso.ofComponents (fun Y ↦ associatorComponents P Q R X Y)
-    fun _ ↦ by ext ⟨_, ⟨_, _, _⟩, _⟩; simp [chosenCoend.map_apply, Quot.map])
-    fun _ ↦ by ext _ ⟨_, ⟨_, _, _⟩, _⟩; simp [chosenCoend.map_apply, Quot.map]
+    fun _ ↦ by ext ⟨_, ⟨_, _, _⟩, _⟩; simp [chosenCoend_def, chosenCoend.map_apply, Quot.map])
+    fun _ ↦ by ext _ ⟨_, ⟨_, _, _⟩, _⟩; simp [chosenCoend_def, chosenCoend.map_apply, Quot.map]
 
 @[simp]
 lemma comp_whiskerLeft {S : Profunctor.{max u w} E F} (f : R ⟶ S) :
