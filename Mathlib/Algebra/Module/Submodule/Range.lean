@@ -378,6 +378,11 @@ lemma codisjoint_map [RingHomSurjective τ₁₂] {f : M →ₛₗ[τ₁₂] M�
   rw [codisjoint_iff, ← Submodule.map_sup, codisjoint_iff.mp hpq, map_top,
     LinearMap.range_eq_top_of_surjective f hf]
 
+theorem isCompl_map [Module R M₂] (f : M ≃ₗ[R] M₂)
+    {p q : Submodule R M} (hpq : IsCompl p q) :
+    IsCompl (p.map f.toLinearMap) (q.map f.toLinearMap) :=
+  ⟨disjoint_map f.injective hpq.disjoint, (codisjoint_map f.surjective hpq.codisjoint)⟩
+
 end AddCommMonoid
 
 end Submodule
