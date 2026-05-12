@@ -200,8 +200,9 @@ variable (K) in
 
 @[ext] theorem ext (h : ∀ x, x ∈ K₁ ↔ x ∈ K₂) : K₁ = K₂ := SetLike.ext h
 
-@[simp]
-theorem mem_mk {s h x} : x ∈ (⟨s, h⟩ : ConvexSet R X) ↔ x ∈ s := .rfl
+@[simp] theorem mem_mk {s h x} : x ∈ (⟨s, h⟩ : ConvexSet R X) ↔ x ∈ s := .rfl
+
+@[simp] theorem mk_eq {s h} : (⟨s, h⟩ : ConvexSet R X) = s := by ext; simp
 
 example : (K₁ : Set X) ≤ K₂ ↔ K₁ ≤ K₂ := by simp only [le_eq_subset,
   SetLike.coe_subset_coe]
