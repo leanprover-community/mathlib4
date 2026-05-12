@@ -874,11 +874,12 @@ section UniqueUnit
 variable [CommMonoidWithZero α] [Subsingleton αˣ]
 
 -- see Note [lower instance priority]
-instance (priority := 100) NormalizationMonoid.ofUniqueUnits : NormalizationMonoid α where
-  normUnit _ := 1
-  normUnit_zero := rfl
-  normUnit_mul _ _ := (mul_one 1).symm
-  normUnit_coe_units _ := Subsingleton.elim _ _
+instance (priority := 100) NormalizationMonoid.ofUniqueUnits : NormalizationMonoid α :=
+  fast_instance% {
+    normUnit _ := 1
+    normUnit_zero := rfl
+    normUnit_mul _ _ := (mul_one 1).symm
+    normUnit_coe_units _ := Subsingleton.elim _ _ }
 
 instance uniqueNormalizationMonoidOfUniqueUnits : Unique (NormalizationMonoid α) where
   default := .ofUniqueUnits
@@ -1282,23 +1283,24 @@ namespace CommGroupWithZero
 variable (G₀ : Type*) [CommGroupWithZero G₀] [DecidableEq G₀]
 
 -- see Note [lower instance priority]
-instance (priority := 100) : NormalizedGCDMonoid G₀ where
-  normUnit x := if h : x = 0 then 1 else (Units.mk0 x h)⁻¹
-  normUnit_zero := dif_pos rfl
-  normUnit_mul {x y} x0 y0 := Units.ext <| by simp [x0, y0, mul_comm]
-  normUnit_coe_units u := by simp
-  gcd a b := if a = 0 ∧ b = 0 then 0 else 1
-  lcm a b := if a = 0 ∨ b = 0 then 0 else 1
-  gcd_dvd_left a b := by simp +contextual
-  gcd_dvd_right a b := by simp +contextual
-  dvd_gcd {a b c} hac hab := by simp_all
-  gcd_mul_lcm a b := by
-    split_ifs <;> simp_all [Associated.comm]
-  lcm_zero_left _ := if_pos (Or.inl rfl)
-  lcm_zero_right _ := if_pos (Or.inr rfl)
-  -- `split_ifs` wants to split `normalize`, so handle the cases manually
-  normalize_gcd a b := if h : a = 0 ∧ b = 0 then by simp [if_pos h] else by simp [if_neg h]
-  normalize_lcm a b := if h : a = 0 ∨ b = 0 then by simp [if_pos h] else by simp [if_neg h]
+instance (priority := 100) : NormalizedGCDMonoid G₀ :=
+  fast_instance% {
+    normUnit x := if h : x = 0 then 1 else (Units.mk0 x h)⁻¹
+    normUnit_zero := dif_pos rfl
+    normUnit_mul {x y} x0 y0 := Units.ext <| by simp [x0, y0, mul_comm]
+    normUnit_coe_units u := by simp
+    gcd a b := if a = 0 ∧ b = 0 then 0 else 1
+    lcm a b := if a = 0 ∨ b = 0 then 0 else 1
+    gcd_dvd_left a b := by simp +contextual
+    gcd_dvd_right a b := by simp +contextual
+    dvd_gcd {a b c} hac hab := by simp_all
+    gcd_mul_lcm a b := by
+      split_ifs <;> simp_all [Associated.comm]
+    lcm_zero_left _ := if_pos (Or.inl rfl)
+    lcm_zero_right _ := if_pos (Or.inr rfl)
+    -- `split_ifs` wants to split `normalize`, so handle the cases manually
+    normalize_gcd a b := if h : a = 0 ∧ b = 0 then by simp [if_pos h] else by simp [if_neg h]
+    normalize_lcm a b := if h : a = 0 ∨ b = 0 then by simp [if_pos h] else by simp [if_neg h] }
 
 @[simp]
 theorem coe_normUnit {a : G₀} (h0 : a ≠ 0) : (↑(normUnit a) : G₀) = a⁻¹ := by simp [normUnit, h0]

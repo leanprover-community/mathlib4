@@ -64,7 +64,7 @@ variable (R : Type v) [Semiring R]
 instance (priority := 100) MulSemiringAction.toMulDistribMulAction
     (M R) {_ : Monoid M} {_ : Semiring R} [h : MulSemiringAction M R] :
     MulDistribMulAction M R :=
-  { h with }
+  fast_instance% { h with }
 
 /-- Each element of the monoid defines a semiring homomorphism. -/
 @[simps!]

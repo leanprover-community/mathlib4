@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Group.Action.Opposite
 public import Mathlib.Algebra.GroupWithZero.Hom
 public import Mathlib.Algebra.GroupWithZero.Opposite
 public import Mathlib.Algebra.Notation.Pi.Basic
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Definitions of group actions
@@ -191,7 +192,7 @@ class MulActionWithZero extends MulAction M₀ A where
 -- see Note [lower instance priority]
 instance (priority := 100) MulActionWithZero.toSMulWithZero (M₀ A) {_ : MonoidWithZero M₀}
     {_ : Zero A} [m : MulActionWithZero M₀ A] : SMulWithZero M₀ A :=
-  { m with }
+  fast_instance% { m with }
 
 /-- See also `Semiring.toModule` -/
 instance (priority := 1100) MonoidWithZero.toMulActionWithZero : MulActionWithZero M₀ M₀ :=
@@ -355,7 +356,7 @@ variable [Monoid M] [AddMonoid A] [DistribMulAction M A]
 
 -- See note [lower instance priority]
 instance (priority := 100) DistribMulAction.toDistribSMul : DistribSMul M A :=
-  { ‹DistribMulAction M A› with }
+  fast_instance% { ‹DistribMulAction M A› with }
 
 /-! We make sure that the definition of `DistribMulAction.toDistribSMul` was done correctly,
 and the two paths from `DistribMulAction` to `SMul` are indeed definitionally equal. -/

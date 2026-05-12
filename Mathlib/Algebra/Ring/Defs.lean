@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.GroupWithZero.Defs
 public import Mathlib.Data.Int.Cast.Defs
+public import Mathlib.Tactic.FastInstance
 public import Mathlib.Tactic.Spread
 public import Mathlib.Tactic.StacksAttribute
 
@@ -235,12 +236,12 @@ instance (priority := 100) CommSemiring.toNonAssocCommSemiring [CommSemiring α]
 -- see Note [lower instance priority]
 instance (priority := 100) CommSemiring.toNonUnitalCommSemiring [CommSemiring α] :
     NonUnitalCommSemiring α :=
-  { (inferInstance : CommMonoid α), (inferInstance : CommSemiring α) with }
+  fast_instance% { (inferInstance : CommMonoid α), (inferInstance : CommSemiring α) with }
 
 -- see Note [lower instance priority]
 instance (priority := 100) CommSemiring.toCommMonoidWithZero [CommSemiring α] :
     CommMonoidWithZero α :=
-  { (inferInstance : CommMonoid α), (inferInstance : CommSemiring α) with }
+  fast_instance% { (inferInstance : CommMonoid α), (inferInstance : CommSemiring α) with }
 
 section CommSemiring
 
@@ -315,9 +316,10 @@ section MulZeroClass
 
 variable [MulZeroClass α] [HasDistribNeg α]
 
-instance (priority := 100) MulZeroClass.negZeroClass : NegZeroClass α where
-  __ := (inferInstance : Zero α); __ := (inferInstance : InvolutiveNeg α)
-  neg_zero := by rw [← zero_mul (0 : α), ← neg_mul, mul_zero, mul_zero]
+instance (priority := 100) MulZeroClass.negZeroClass : NegZeroClass α :=
+  fast_instance% {
+    __ := (inferInstance : Zero α), __ := (inferInstance : InvolutiveNeg α),
+    neg_zero := by rw [← zero_mul (0 : α), ← neg_mul, mul_zero, mul_zero] }
 
 end MulZeroClass
 
@@ -331,10 +333,13 @@ section NonUnitalNonAssocRing
 
 variable [NonUnitalNonAssocRing α]
 
-instance (priority := 100) NonUnitalNonAssocRing.toHasDistribNeg : HasDistribNeg α where
-  neg_neg := neg_neg
-  neg_mul a b := eq_neg_of_add_eq_zero_left <| by rw [← right_distrib, neg_add_cancel, zero_mul]
-  mul_neg a b := eq_neg_of_add_eq_zero_left <| by rw [← left_distrib, neg_add_cancel, mul_zero]
+instance (priority := 100) NonUnitalNonAssocRing.toHasDistribNeg : HasDistribNeg α :=
+  fast_instance% {
+    neg_neg := neg_neg
+    neg_mul := fun a b =>
+      eq_neg_of_add_eq_zero_left <| by rw [← right_distrib, neg_add_cancel, zero_mul]
+    mul_neg := fun a b =>
+      eq_neg_of_add_eq_zero_left <| by rw [← left_distrib, neg_add_cancel, mul_zero] }
 
 theorem mul_sub_left_distrib (a b c : α) : a * (b - c) = a * b - a * c := by
   simpa only [sub_eq_add_neg, neg_mul_eq_mul_neg] using mul_add a b (-c)
@@ -372,12 +377,12 @@ variable [Ring α]
 -- A (unital, associative) ring is a not-necessarily-unital ring
 -- see Note [lower instance priority]
 instance (priority := 100) Ring.toNonUnitalRing : NonUnitalRing α :=
-  { ‹Ring α› with }
+  fast_instance% { ‹Ring α› with }
 
 -- A (unital, associative) ring is a not-necessarily-associative ring
 -- see Note [lower instance priority]
 instance (priority := 100) Ring.toNonAssocRing : NonAssocRing α :=
-  { ‹Ring α› with }
+  fast_instance% { ‹Ring α› with }
 
 end Ring
 
@@ -400,7 +405,7 @@ attribute [instance 100] NonAssocCommRing.toNonAssocCommSemiring
 -- see Note [lower instance priority]
 instance (priority := 100) NonUnitalCommRing.toNonUnitalCommSemiring [s : NonUnitalCommRing α] :
     NonUnitalCommSemiring α :=
-  { s with }
+  fast_instance% { s with }
 
 /-- A commutative ring is a ring with commutative multiplication. -/
 class CommRing (α : Type u) extends Ring α, CommMonoid α
@@ -408,11 +413,11 @@ class CommRing (α : Type u) extends Ring α, CommMonoid α
 instance (priority := 100) CommRing.toNonAssocCommRing [CommRing α] : NonAssocCommRing α where
 
 instance (priority := 100) CommRing.toCommSemiring [s : CommRing α] : CommSemiring α :=
-  { s with }
+  fast_instance% { s with }
 
 -- see Note [lower instance priority]
 instance (priority := 100) CommRing.toNonUnitalCommRing [s : CommRing α] : NonUnitalCommRing α :=
-  { s with }
+  fast_instance% { s with }
 
 -- see Note [lower instance priority]
 instance (priority := 100) CommRing.toAddCommGroupWithOne [s : CommRing α] :

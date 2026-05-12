@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Notation.Defs
 public import Mathlib.Algebra.Regular.Defs
 public import Mathlib.Data.Int.Notation
 public import Mathlib.Data.Nat.BinaryRec
+public import Mathlib.Tactic.FastInstance
 public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Tactic.OfNat
 public import Mathlib.Data.Nat.Notation
@@ -853,7 +854,7 @@ attribute [instance 75] CancelCommMonoid.toCommMonoid -- See note [lower cancel 
 @[to_additive]
 instance (priority := 100) CancelCommMonoid.toCancelMonoid (M : Type u) [CancelCommMonoid M] :
     CancelMonoid M :=
-  { CommMagma.IsLeftCancelMul.toIsRightCancelMul M with }
+  fast_instance% { CommMagma.IsLeftCancelMul.toIsRightCancelMul M with }
 
 /-- Any `CancelMonoid G` satisfies `IsCancelMul G`. -/
 @[to_additive /-- Any `AddCancelMonoid G` satisfies `IsCancelAdd G`. -/]
@@ -1249,20 +1250,22 @@ theorem div_mul_cancel (a b : G) : a / b * b = a := by
   rw [div_eq_mul_inv, inv_mul_cancel_right a b]
 
 @[to_additive]
-instance (priority := 100) Group.toDivisionMonoid : DivisionMonoid G where
-  inv_inv a := by exact inv_eq_of_mul (inv_mul_cancel a)
-  mul_inv_rev a b := by
-    apply inv_eq_of_mul
-    rw [mul_assoc, mul_inv_cancel_left, mul_inv_cancel]
-  inv_eq_of_mul _ _ := by exact inv_eq_of_mul
+instance (priority := 100) Group.toDivisionMonoid : DivisionMonoid G :=
+  fast_instance% {
+    inv_inv := fun a => by exact inv_eq_of_mul (inv_mul_cancel a)
+    mul_inv_rev := fun a b => by
+      apply inv_eq_of_mul
+      rw [mul_assoc, mul_inv_cancel_left, mul_inv_cancel]
+    inv_eq_of_mul := fun _ _ => by exact inv_eq_of_mul }
 
 -- see Note [lower instance priority]
 @[to_additive]
-instance (priority := 100) Group.toCancelMonoid : CancelMonoid G where
-  mul_right_cancel := fun a b c h ↦ by
-    rw [← mul_inv_cancel_right b a, show b * a = c * a from h, mul_inv_cancel_right]
-  mul_left_cancel := fun a {b c} h ↦ by
-    rw [← inv_mul_cancel_left a b, show a * b = a * c from h, inv_mul_cancel_left]
+instance (priority := 100) Group.toCancelMonoid : CancelMonoid G :=
+  fast_instance% {
+    mul_right_cancel := fun a b c h ↦ by
+      rw [← mul_inv_cancel_right b a, show b * a = c * a from h, mul_inv_cancel_right]
+    mul_left_cancel := fun a {b c} h ↦ by
+      rw [← inv_mul_cancel_left a b, show a * b = a * c from h, inv_mul_cancel_left] }
 
 end Group
 
@@ -1281,12 +1284,12 @@ variable [CommGroup G]
 -- see Note [lower instance priority]
 @[to_additive]
 instance (priority := 100) CommGroup.toCancelCommMonoid : CancelCommMonoid G :=
-  { ‹CommGroup G›, Group.toCancelMonoid with }
+  fast_instance% { ‹CommGroup G›, Group.toCancelMonoid with }
 
 -- see Note [lower instance priority]
 @[to_additive]
 instance (priority := 100) CommGroup.toDivisionCommMonoid : DivisionCommMonoid G :=
-  { ‹CommGroup G›, Group.toDivisionMonoid with }
+  fast_instance% { ‹CommGroup G›, Group.toDivisionMonoid with }
 
 @[to_additive (attr := simp)] lemma inv_mul_cancel_comm (a b : G) : a⁻¹ * b * a = b := by
   rw [mul_comm, mul_inv_cancel_left]

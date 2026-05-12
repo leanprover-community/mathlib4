@@ -320,12 +320,14 @@ variable [Ring α] [LinearOrder α] [IsOrderedRing α] [FloorRing α]
 /-! #### A floor ring as a floor semiring -/
 
 -- see Note [lower instance priority]
-instance (priority := 100) FloorRing.toFloorSemiring : FloorSemiring α where
-  floor a := ⌊a⌋.toNat
-  ceil a := ⌈a⌉.toNat
-  floor_of_neg {_} ha := Int.toNat_of_nonpos (Int.floor_nonpos ha.le)
-  gc_floor {a n} ha := by rw [Int.le_toNat (Int.floor_nonneg.2 ha), Int.le_floor, Int.cast_natCast]
-  gc_ceil a n := by rw [Int.toNat_le, Int.ceil_le, Int.cast_natCast]
+instance (priority := 100) FloorRing.toFloorSemiring : FloorSemiring α :=
+  fast_instance% {
+    floor a := ⌊a⌋.toNat
+    ceil a := ⌈a⌉.toNat
+    floor_of_neg {_} ha := Int.toNat_of_nonpos (Int.floor_nonpos ha.le)
+    gc_floor {a n} ha := by
+      rw [Int.le_toNat (Int.floor_nonneg.2 ha), Int.le_floor, Int.cast_natCast]
+    gc_ceil a n := by rw [Int.toNat_le, Int.ceil_le, Int.cast_natCast] }
 
 theorem Int.floor_toNat (a : α) : ⌊a⌋.toNat = ⌊a⌋₊ :=
   rfl

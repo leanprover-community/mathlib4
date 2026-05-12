@@ -22,6 +22,7 @@ variable {K : Type*} [Field K]
 
 -- see Note [lower instance priority]
 instance (priority := 100) toEuclideanDomain : EuclideanDomain K :=
+fast_instance%
 { toCommRing := toCommRing
   quotient := (· / ·), remainder := fun a b => a - a * b / b, quotient_zero := div_zero,
   quotient_mul_add_remainder_eq := fun a b => by

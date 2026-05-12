@@ -159,21 +159,22 @@ lemma add_ne_top : a + b ≠ ⊤ ↔ a ≠ ⊤ ∧ b ≠ ⊤ := by simp [← isA
 
 @[simp] lemma sub_top : a - ⊤ = ⊤ := by simp [sub_eq_add_neg]
 
-instance (priority := 100) toSubtractionMonoid : SubtractionMonoid α where
-  neg_neg a := by
-    obtain rfl | ha := eq_or_ne a ⊤
-    · simp
-    · apply left_neg_eq_right_neg (a := -a) <;> simp [add_comm, add_neg_cancel_of_ne_top, ha]
-  neg_add_rev a b := by
-    obtain rfl | ha := eq_or_ne a ⊤
-    · simp
-    obtain rfl | hb := eq_or_ne b ⊤
-    · simp
-    · exact left_neg_eq_right_neg (a := a + b) (by simp [neg_add_cancel_of_ne_top, *])
-        (by simp [add_assoc, add_neg_cancel_of_ne_top, add_neg_cancel_left_of_ne_top, *])
-  neg_eq_of_add a b h := by
-    have ha : a ≠ ⊤ := by rintro rfl; simp at h
-    exact left_neg_eq_right_neg (a := a) (by simp [neg_add_cancel_of_ne_top, *]) h
+instance (priority := 100) toSubtractionMonoid : SubtractionMonoid α :=
+  fast_instance% {
+    neg_neg a := by
+      obtain rfl | ha := eq_or_ne a ⊤
+      · simp
+      · apply left_neg_eq_right_neg (a := -a) <;> simp [add_comm, add_neg_cancel_of_ne_top, ha]
+    neg_add_rev a b := by
+      obtain rfl | ha := eq_or_ne a ⊤
+      · simp
+      obtain rfl | hb := eq_or_ne b ⊤
+      · simp
+      · exact left_neg_eq_right_neg (a := a + b) (by simp [neg_add_cancel_of_ne_top, *])
+          (by simp [add_assoc, add_neg_cancel_of_ne_top, add_neg_cancel_left_of_ne_top, *])
+    neg_eq_of_add a b h := by
+      have ha : a ≠ ⊤ := by rintro rfl; simp at h
+      exact left_neg_eq_right_neg (a := a) (by simp [neg_add_cancel_of_ne_top, *]) h }
 
 @[deprecated (since := "2025-12-27")]
 alias injective_add_left_of_ne_top := add_left_injective_of_ne_top
