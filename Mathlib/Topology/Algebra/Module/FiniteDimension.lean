@@ -14,7 +14,9 @@ public import Mathlib.RingTheory.LocalRing.Basic
 public import Mathlib.Topology.Algebra.Module.Determinant
 public import Mathlib.Topology.Algebra.Module.ModuleTopology
 public import Mathlib.Topology.Algebra.Module.Simple
+public import Mathlib.Topology.Algebra.Module.Complement
 public import Mathlib.Topology.Algebra.SeparationQuotient.FiniteDimensional
+public import Mathlib.Topology.Maps.Strict.Basic
 
 /-!
 # Finite-dimensional topological vector spaces over complete fields
@@ -525,7 +527,7 @@ end IsUniformAddGroup
 variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
   [AddCommGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E] [Module 𝕜 E]
   [ContinuousSMul 𝕜 E]
-  [AddCommGroup F] [TopologicalSpace F] [T2Space F] [IsTopologicalAddGroup F] [Module 𝕜 F]
+  [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F] [Module 𝕜 F]
   [ContinuousSMul 𝕜 F]
 
 /-- A finite-dimensional subspace is closed. -/
@@ -552,12 +554,11 @@ theorem Submodule.isClosed_sup_finiteDimensional
   exact (map s.mkQ t).closed_of_finiteDimensional.preimage continuous_quot_mk
 
 /-- An injective linear map with finite-dimensional domain is a closed embedding. -/
-theorem LinearMap.isClosedEmbedding_of_injective [T2Space E] [FiniteDimensional 𝕜 E] {f : E →ₗ[𝕜] F}
-    (hf : LinearMap.ker f = ⊥) : IsClosedEmbedding f :=
+theorem LinearMap.isClosedEmbedding_of_injective [T2Space E] [FiniteDimensional 𝕜 E] [T2Space F]
+    {f : E →ₗ[𝕜] F} (hf : LinearMap.ker f = ⊥) : IsClosedEmbedding f :=
   let g := LinearEquiv.ofInjective f (LinearMap.ker_eq_bot.mp hf)
   { IsEmbedding.subtypeVal.comp g.toContinuousLinearEquiv.toHomeomorph.isEmbedding with
     isClosed_range := by
-      haveI := f.finiteDimensional_range
       simpa [LinearMap.coe_range f] using (LinearMap.range f).closed_of_finiteDimensional }
 
 theorem isClosedEmbedding_smul_left [T2Space E] {c : E} (hc : c ≠ 0) :
@@ -571,11 +572,26 @@ theorem isClosedMap_smul_left [T2Space E] (c : E) : IsClosedMap fun x : 𝕜 => 
     exact isClosedMap_const
   · exact (isClosedEmbedding_smul_left hc).isClosedMap
 
-theorem ContinuousLinearMap.exists_right_inverse_of_surjective [FiniteDimensional 𝕜 F]
-    (f : E →L[𝕜] F) (hf : f.range = ⊤) :
-    ∃ g : F →L[𝕜] E, f.comp g = ContinuousLinearMap.id 𝕜 F :=
+theorem ContinuousLinearMap.exists_rightInverse_of_surjective [T2Space F] [FiniteDimensional 𝕜 F]
+    (f : E →L[𝕜] F) (hf : f.range = ⊤) : ∃ g : F →L[𝕜] E, f.comp g = ContinuousLinearMap.id 𝕜 F :=
   let ⟨g, hg⟩ := (f : E →ₗ[𝕜] F).exists_rightInverse_of_surjective hf
   ⟨LinearMap.toContinuousLinearMap g, ContinuousLinearMap.coe_inj.1 hg⟩
+
+@[deprecated (since := "2026-04-24")]
+alias ContinuousLinearMap.exists_right_inverse_of_surjective :=
+  ContinuousLinearMap.exists_rightInverse_of_surjective
+
+theorem ContinuousLinearMap.isQuotientMap_of_finiteDimensional [T2Space F] [FiniteDimensional 𝕜 F]
+    (f : E →L[𝕜] F) (hf : f.range = ⊤) :
+    IsQuotientMap f :=
+  let ⟨g, hg⟩ := f.exists_rightInverse_of_surjective hf
+  .of_inverse g.continuous f.continuous (fun _ ↦ congr($hg _))
+
+theorem ContinuousLinearMap.isStrictMap_of_finiteDimensional [T2Space F] [FiniteDimensional 𝕜 F]
+    (f : E →L[𝕜] F) :
+    IsStrictMap f := by
+  rw [isStrictMap_iff_isQuotientMap_rangeFactorization]
+  exact f.rangeRestrict.isQuotientMap_of_finiteDimensional (by simp)
 
 /-- If `K` is a complete field and `V` is a finite-dimensional vector space over `K` (equipped with
 any topology so that `V` is a topological `K`-module, meaning `[IsTopologicalAddGroup V]`
@@ -598,19 +614,21 @@ theorem LocallyCompactSpace.of_finiteDimensional_of_complete (K V : Type*)
 section Riesz
 
 variable (𝕜 : Type*) [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
-  {E : Type*} [AddCommGroup E] [UniformSpace E] [T2Space E] [IsUniformAddGroup E]
-  [Module 𝕜 E] [ContinuousSMul 𝕜 E]
+  {E Eᵤ : Type*} [AddCommGroup E] [AddCommGroup Eᵤ] [Module 𝕜 E] [Module 𝕜 Eᵤ]
+  [TopologicalSpace E] [UniformSpace Eᵤ] [T2Space E] [T2Space Eᵤ]
+  [IsTopologicalAddGroup E] [IsUniformAddGroup Eᵤ]
+  [ContinuousSMul 𝕜 E] [ContinuousSMul 𝕜 Eᵤ]
 
 open scoped Pointwise in
 /-- **Riesz's theorem**: a T2 topological vector space over a complete non-trivial normed field
 which admits a totally bounded neighborhood of `0` is finite-dimensional. -/
-theorem FiniteDimensional.of_totallyBounded_nhds_zero {U : Set E} (hU_nhds : U ∈ 𝓝 (0 : E))
-    (hU_tb : TotallyBounded U) : FiniteDimensional 𝕜 E := by
+theorem FiniteDimensional.of_totallyBounded_nhds_zero {U : Set Eᵤ} (hU_nhds : U ∈ 𝓝 (0 : Eᵤ))
+    (hU_tb : TotallyBounded U) : FiniteDimensional 𝕜 Eᵤ := by
   obtain ⟨c, hc0, hc1⟩ : ∃ c : 𝕜, 0 < ‖c‖ ∧ ‖c‖ < 1 := NormedField.exists_norm_lt 𝕜 zero_lt_one
   have hc_ne : c ≠ 0 := norm_pos_iff.mp hc0
   obtain ⟨F, hF_finite, hF_cover⟩ := totallyBounded_iff_subset_finite_iUnion_nhds_zero.mp hU_tb
     (c • U) ((set_smul_mem_nhds_zero_iff hc_ne).mpr hU_nhds)
-  let M : Submodule 𝕜 E := Submodule.span 𝕜 F
+  let M : Submodule 𝕜 Eᵤ := Submodule.span 𝕜 F
   letI : FiniteDimensional 𝕜 M := Finite.span_of_finite 𝕜 hF_finite
   have h_cover : U ⊆ M + c • U := fun x hx ↦ by
     obtain ⟨f, hf, y, hy, rfl⟩ := Set.mem_iUnion₂.mp <| hF_cover hx
@@ -646,8 +664,8 @@ open scoped Pointwise in
 /-- **Riesz's theorem**: if a T2 topological vector space over a complete non-trivial
 normed field admits a totally bounded neighborhood of some point, then it is
 finite-dimensional. -/
-theorem FiniteDimensional.of_totallyBounded_nhds {x : E} {U : Set E} (hU_nhds : U ∈ 𝓝 x)
-    (hU_tb : TotallyBounded U) : FiniteDimensional 𝕜 E := by
+theorem FiniteDimensional.of_totallyBounded_nhds {x : Eᵤ} {U : Set Eᵤ} (hU_nhds : U ∈ 𝓝 x)
+    (hU_tb : TotallyBounded U) : FiniteDimensional 𝕜 Eᵤ := by
   replace hU_nhds : x +ᵥ (-x) +ᵥ U ∈ 𝓝 x := by simpa
   rw [vadd_mem_nhds_self] at hU_nhds
   refine .of_totallyBounded_nhds_zero _ hU_nhds ?_
@@ -657,13 +675,16 @@ theorem FiniteDimensional.of_totallyBounded_nhds {x : E} {U : Set E} (hU_nhds : 
 /-- **Riesz's theorem**: in a T2 topological vector space over a complete non-trivial normed field,
 if there exists a totally bounded neighborhood of some point, then the space is finite-dimensional.
 -/
-theorem FiniteDimensional.of_exists_totallyBounded_nhds (h : ∃ x : E, ∃ U ∈ 𝓝 x, TotallyBounded U) :
-    FiniteDimensional 𝕜 E := by
+theorem FiniteDimensional.of_exists_totallyBounded_nhds
+    (h : ∃ x : Eᵤ, ∃ U ∈ 𝓝 x, TotallyBounded U) : FiniteDimensional 𝕜 Eᵤ := by
   rcases h with ⟨x, U, hU_nhds, hU_tb⟩
   exact FiniteDimensional.of_totallyBounded_nhds (𝕜 := 𝕜) hU_nhds hU_tb
 
 /-- **Riesz's theorem**: a locally compact topological vector space is finite-dimensional. -/
-theorem FiniteDimensional.of_locallyCompactSpace [LocallyCompactSpace E] : FiniteDimensional 𝕜 E :=
+theorem FiniteDimensional.of_locallyCompactSpace [WeaklyLocallyCompactSpace E] :
+    FiniteDimensional 𝕜 E :=
+  let : UniformSpace E := IsTopologicalAddGroup.rightUniformSpace E
+  have : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
   let ⟨_, hU_compact, hU_nhds⟩ := exists_compact_mem_nhds (0 : E)
   .of_totallyBounded_nhds_zero 𝕜 hU_nhds hU_compact.totallyBounded
 
@@ -684,3 +705,45 @@ theorem HasCompactMulSupport.eq_one_or_finiteDimensional {X : Type*} [Topologica
   HasCompactSupport.eq_zero_or_finiteDimensional 𝕜 (X := Additive X) hf h'f
 
 end Riesz
+
+section Compl
+
+open Submodule
+
+/-- If `p` is a closed subspace with finite codimension, then any algebraic complement `q` to `p`
+is a topological complement. -/
+theorem Submodule.IsCompl.isTopCompl_of_finiteDimensional_quotient {p q : Submodule 𝕜 E}
+    (h : IsCompl p q) (hp : IsClosed (p : Set E)) [FiniteDimensional 𝕜 (E ⧸ p)] :
+    IsTopCompl p q := by
+  let φ : E ⧸ p →L[𝕜] q := (p.quotientEquivOfIsCompl q h).toLinearMap.toContinuousLinearMap
+  have := (φ ∘L p.mkQL).isTopCompl_of_proj fun x ↦ by simp [φ]
+  simpa [φ] using this.symm
+
+/-- Assume that `p q : Submodule 𝕜 E` are algebraic complements. If `p` is closed and `q`
+has finite dimension, then they are in fact topological complements.
+
+Note that this theorem does not help you to build a closed complement to a finite dimensional
+subspace. That requires the Hahn-Banach theorem, and you don't get much control over what the
+complement is. See `Submodule.ClosedComplemented.of_finiteDimensional`. -/
+theorem Submodule.IsCompl.isTopCompl_of_isClosed_of_finiteDimensional {p q : Submodule 𝕜 E}
+    (h : IsCompl p q) (hp : IsClosed (p : Set E)) [hq : FiniteDimensional 𝕜 q] :
+    IsTopCompl p q := by
+  suffices FiniteDimensional 𝕜 (E ⧸ p) from h.isTopCompl_of_finiteDimensional_quotient hp
+  exact (p.quotientEquivOfIsCompl q h).symm.finiteDimensional
+
+theorem Submodule.ClosedComplemented.of_finiteDimensional_quotient {p : Submodule 𝕜 E}
+    (hp : IsClosed (p : Set E)) [hq : FiniteDimensional 𝕜 (E ⧸ p)] : p.ClosedComplemented := by
+  obtain ⟨q, hq⟩ : ∃ q, IsCompl p q := p.exists_isCompl
+  exact hq.isTopCompl_of_finiteDimensional_quotient hp |>.closedComplemented
+
+@[deprecated (since := "2026-05-09")]
+alias Submodule.ClosedComplemented.of_quotient_finiteDimensional :=
+  Submodule.ClosedComplemented.of_finiteDimensional_quotient
+
+omit [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F] in
+theorem ContinuousLinearMap.ker_closedComplemented_of_finiteDimensional_range [T2Space F]
+    (f : E →L[𝕜] F) [FiniteDimensional 𝕜 f.range] : f.ker.ClosedComplemented := by
+  suffices FiniteDimensional 𝕜 (E ⧸ f.ker) from .of_finiteDimensional_quotient f.isClosed_ker
+  exact f.toLinearMap.quotKerEquivRange.symm.finiteDimensional
+
+end Compl

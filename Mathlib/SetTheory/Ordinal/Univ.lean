@@ -114,6 +114,11 @@ end Ordinal
 
 namespace Cardinal
 
+@[simp]
+theorem mk_ordinal : #Ordinal = univ.{u, u + 1} :=
+  (lift_id _).symm
+
+@[deprecated mk_ordinal (since := "2026-04-22")]
 theorem univ_id : univ.{u, u + 1} = #Ordinal :=
   lift_id _
 
@@ -133,14 +138,18 @@ theorem lift_lt_univ' (c : Cardinal) : lift.{max (u + 1) v, u} c < univ.{u, v} :
   rw [lift_lift, lift_univ, univ_umax.{u, v}] at this
   exact this
 
+@[simp]
 theorem aleph0_lt_univ : ℵ₀ < univ.{u, v} := by
   simpa using lift_lt_univ' ℵ₀
 
+@[simp]
 theorem nat_lt_univ (n : ℕ) : n < univ.{u, v} := natCast_lt_aleph0.trans aleph0_lt_univ
 
+@[simp]
 theorem univ_pos : 0 < univ.{u, v} :=
-  aleph0_pos.trans aleph0_lt_univ
+  aleph0_lt_univ.pos
 
+@[simp]
 theorem univ_ne_zero : univ.{u, v} ≠ 0 :=
   univ_pos.ne'
 
@@ -164,7 +173,7 @@ theorem lt_univ {c} : c < univ.{u, u + 1} ↔ ∃ c', c = lift.{u + 1, u} c' :=
 theorem lt_univ' {c} : c < univ.{u, v} ↔ ∃ c', c = lift.{max (u + 1) v, u} c' :=
   ⟨fun h => by
     let ⟨a, h', e⟩ := lt_lift_iff.1 h
-    rw [← univ_id] at h'
+    rw [mk_ordinal] at h'
     rcases lt_univ.{u}.1 h' with ⟨c', rfl⟩
     exact ⟨c', by simp only [e.symm, lift_lift]⟩, fun ⟨_, e⟩ => e.symm ▸ lift_lt_univ' _⟩
 
