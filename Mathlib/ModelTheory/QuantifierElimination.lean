@@ -160,7 +160,6 @@ theorem isEquivQF_iff_realize_iff_of_embeddings
         hψ.realize_embedding (f := g) (v := a) (xs := default)
     rw [hiff.realize_iff (M := M) (v := f ∘ a), hiff.realize_iff (M := N) (v := g ∘ a), hf, hg]
   · intro hcommon
-    classical
     by_cases hqe : ∃ ψ : L.Formula (Fin m), ψ.IsQF ∧ φ ⇔[T] ψ
     · exact hqe
     · let Q1 : Type _ := {ψ : L.Formula (Fin m) // ψ.IsQF ∧ φ ⟹[T] ψ}
@@ -315,7 +314,6 @@ private theorem exists_qf_equiv_ex_of_isQF
         ∃ ψ : L.Formula (Fin m), ψ.IsQF ∧ θ.ex ⇔[T] ψ)
     {m n : ℕ} {θ : L.BoundedFormula (Fin m) (n + 1)} (hθ : θ.IsQF) :
     ∃ ψ : L.BoundedFormula (Fin m) n, ψ.IsQF ∧ θ.ex ⇔[T] ψ := by
-  classical
   let toOne : Fin m ⊕ Fin (n + 1) → Fin (m + n) ⊕ Fin 1 :=
     Sum.elim (fun i => Sum.inl (Fin.castAdd n i))
       (Fin.lastCases (Sum.inr 0) fun i => Sum.inl (Fin.natAdd m i))
@@ -426,7 +424,6 @@ The hypothesis is a finitely generated variant of the extension property appeari
 theorem hasQuantifierElimination_of_isElementaryExtensionPairFG
     {T : L.Theory} (h : T.IsElementaryExtensionPairFG) :
     T.HasQuantifierElimination := by
-  classical
   refine hasQuantifierElimination_of_exists_realize_of_embeddings (T := T) ?_
   intro m φ hφ M N A _ _ _ _ _ _ _ f g a hM
   obtain ⟨b, hb⟩ := hM
