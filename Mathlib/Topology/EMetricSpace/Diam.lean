@@ -79,10 +79,9 @@ theorem ediam_iUnion_mem_option {ι : Type*} (o : Option ι) (s : ι → Set X) 
 theorem ediam_insert : ediam (insert x s) = max (⨆ y ∈ s, edist x y) (ediam s) :=
   eq_of_forall_ge_iff fun d => by simp +contextual [ediam_le_iff, edist_comm]
 
-theorem ediam_pair : ediam ({x, y} : Set X) = edist x y := by simp [ediam_insert]
+theorem ediam_pair : ediam {x, y} = edist x y := by simp [ediam_insert]
 
-theorem ediam_triple :
-    ediam ({x, y, z} : Set X) = max (max (edist x y) (edist x z)) (edist y z) := by
+theorem ediam_triple : ediam {x, y, z} = max (max (edist x y) (edist x z)) (edist y z) := by
   simp only [ediam_insert, iSup_insert, iSup_singleton, ediam_singleton, max_zero]
 
 /-- The extended diameter is monotonous with respect to inclusion -/
