@@ -6,7 +6,7 @@ Authors: Chris Birkbeck
 module
 
 public import Mathlib.NumberTheory.ModularForms.QExpansion
-public import Mathlib.NumberTheory.ModularForms.LevelOne
+public import Mathlib.NumberTheory.ModularForms.LevelOne.Basic
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.QExpansion
 
 /-!
@@ -101,8 +101,6 @@ lemma isZeroAtImInfty_of_valueAtInfty_eq_zero {F : Type*} [FunLike F ℍ ℂ]
     (fun τ ↦ SlashInvariantFormClass.eq_cuspFunction f τ hΓ hh.ne')
 
 section SL2Z
-
-open EisensteinSeries
 
 variable {k : ℤ}
 

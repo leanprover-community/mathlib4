@@ -27,7 +27,7 @@ We prove the following facts:
   is bounded.
 -/
 
-@[expose] public section
+public section
 
 -- TODO assert_not_exists Cardinal
 
