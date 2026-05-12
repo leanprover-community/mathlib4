@@ -22,7 +22,7 @@ of the integral curve API (`IsIntegralCurve`, `IsIntegralCurveOn`, `IsIntegralCu
 * `IsPicardLindelof.exists_forall_mem_closedBall_eq_isIntegralCurveOn_lipschitzOnWith`: the
   existence of a local flow that is Lipschitz continuous in the initial point.
 * `IsPicardLindelof.exists_forall_mem_closedBall_eq_isIntegralCurveOn_continuousOn`: the existence
-  of a local flow that is continuous on its domain as a map `E × ℝ → E`.
+  of a local flow that is continuous on its domain as a map `E × ℝ → E` (in uncurried form).
 * `IsPicardLindelof.exists_forall_mem_closedBall_eq_isIntegralCurveOn`: the existence of a local
   flow to a time-dependent vector field.
 * `ContDiffAt.exists_forall_mem_closedBall_exists_eq_isIntegralCurveOn`: a `C¹` vector field
@@ -109,11 +109,11 @@ theorem exists_forall_mem_closedBall_eq_isIntegralCurveOn_lipschitzOnWith
 existence of a local flow and that it is continuous on its domain as a (partial) map `E × ℝ → E`. -/
 theorem exists_forall_mem_closedBall_eq_isIntegralCurveOn_continuousOn
     (hf : IsPicardLindelof f t₀ x₀ a r L K) :
-    ∃ α : E × ℝ → E, (∀ x ∈ closedBall x₀ r, α ⟨x, t₀⟩ = x ∧
-      IsIntegralCurveOn (α ⟨x, ·⟩) f (Icc tmin tmax)) ∧
-      ContinuousOn α (closedBall x₀ r ×ˢ Icc tmin tmax) := by
+    ∃ α : E → ℝ → E, (∀ x ∈ closedBall x₀ r, α x t₀ = x ∧
+      IsIntegralCurveOn (α x) f (Icc tmin tmax)) ∧
+      ContinuousOn (uncurry α) (closedBall x₀ r ×ˢ Icc tmin tmax) := by
   obtain ⟨α, hα1, L', hα2⟩ := hf.exists_forall_mem_closedBall_eq_isIntegralCurveOn_lipschitzOnWith
-  refine ⟨uncurry α, hα1, ?_⟩
+  refine ⟨α, hα1, ?_⟩
   apply continuousOn_prod_of_continuousOn_lipschitzOnWith _ L' _ hα2
   exact fun x hx ↦ (hα1 x hx).2.continuousOn
 
