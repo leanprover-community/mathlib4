@@ -219,16 +219,16 @@ instance : SemilatticeInf (ConvexSet R X) where
   le_inf _ _ _ h₁₂ h₂₃ _ hx := ⟨h₁₂ hx, h₂₃ hx⟩
 
 instance : InfSet (ConvexSet R X) where
-  sInf S := ⟨sInf (ConvexSet.carrier '' S), .sInter (by simpa using fun K _ => K.2)⟩
+  sInf S := ⟨sInf (SetLike.coe '' S), .sInter (by simpa using fun K _ => K.2)⟩
 
 instance : CompleteSemilatticeInf (ConvexSet R X) where
   __ := instSemilatticeInf
   isGLB_sInf S := by
     constructor <;> intro L hL x hx
-    · simp only [sInf, carrier_eq_coe, mem_image, forall_exists_index, and_imp,
+    · simp only [sInf, mem_image, forall_exists_index, and_imp,
       forall_apply_eq_imp_iff₂, SetLike.mem_coe] at hx
       exact hx L hL
-    · simp only [sInf, carrier_eq_coe, mem_image, forall_exists_index, and_imp,
+    · simp only [sInf, mem_image, forall_exists_index, and_imp,
       forall_apply_eq_imp_iff₂, SetLike.mem_coe]
       exact fun l lS ↦ hL lS hx
 
