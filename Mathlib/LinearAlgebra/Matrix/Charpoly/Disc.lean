@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
 public import Mathlib.RingTheory.Polynomial.Resultant.Basic
+import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 
 
 /-!
@@ -24,6 +25,14 @@ variable {R n : Type*} [CommRing R] [Fintype n] [DecidableEq n]
 /-- The discriminant of a matrix is defined to be the discriminant of its characteristic
 polynomial. -/
 noncomputable def discr (A : Matrix n n R) : R := A.charpoly.discr
+
+@[simp]
+lemma discr_conj (g : GL n R) (m : Matrix n n R) : (g.val * m * g.val⁻¹).discr = m.discr := by
+  simp [discr]
+
+@[simp]
+lemma discr_conj' (g : GL n R) (m : Matrix n n R) : (g.val⁻¹ * m * g.val).discr = m.discr := by
+  simp [discr]
 
 lemma discr_of_card_eq_two (A : Matrix n n R) (hn : Fintype.card n = 2) :
     A.discr = A.trace ^ 2 - 4 * A.det := by
