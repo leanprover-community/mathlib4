@@ -172,21 +172,12 @@ theorem Ideal.minimalPrimes_eq_comap :
   rw [minimalPrimes, ← Ideal.comap_minimalPrimes_eq_of_surjective Ideal.Quotient.mk_surjective,
     ← RingHom.ker_eq_comap_bot, Ideal.mk_ker]
 
-/-- A ring has krull dimension at most zero if and only if all minimal primes are maximal. -/
-theorem ringKrullDimLE_zero_iff_forall_minimalPrimes_isMaximal :
-    Ring.KrullDimLE 0 R ↔ ∀ I ∈ minimalPrimes R, I.IsMaximal := by
-  rw [Ring.krullDimLE_zero_iff]
-  refine ⟨fun h I hI ↦ h I hI.1.1, fun h I hI ↦ ?_⟩
-  obtain ⟨J, hJ, hle⟩ := Ideal.exists_minimalPrimes_le bot_le (J := I)
-  rw [← (h J hJ).eq_of_le hI.ne_top hle]
-  exact h J hJ
-
 /-- A quotient `R ⧸ I` has krull dimension at most zero if and only if all minimal primes over `I`
 are maximal. -/
-theorem Ideal.ringKrullDimLE_zero_quotient_iff_forall_minimalPrimes_isMaximal
+theorem Ideal.krullDimLE_zero_quotient_iff_forall_minimalPrimes_isMaximal
     {R : Type*} [CommRing R] {I : Ideal R} :
     Ring.KrullDimLE 0 (R ⧸ I) ↔ ∀ J ∈ I.minimalPrimes, J.IsMaximal := by
-  rw [ringKrullDimLE_zero_iff_forall_minimalPrimes_isMaximal, minimalPrimes_eq_comap,
+  rw [Ring.krullDimLE_zero_iff_forall_minimalPrimes_isMaximal, minimalPrimes_eq_comap,
     Set.forall_mem_image]
   refine forall₂_congr fun J hJ ↦ ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · exact comap_isMaximal_of_surjective (Quotient.mk I) Quotient.mk_surjective
