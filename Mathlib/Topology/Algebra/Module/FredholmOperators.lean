@@ -161,7 +161,8 @@ def index : ℤ := finrank k f.ker - finrank k (F ⧸ f.range)
 
 @[simp] lemma index_id :
     (id : E →ₗ[k] E).index = 0 := by
-  sorry
+  have : Subsingleton (E ⧸ (⊤ : Submodule k E)) := Submodule.Quotient.subsingleton_iff.mpr rfl
+  simp [index, finrank_eq_zero_of_subsingleton]
 
 @[simp] lemma index_zero :
     (0 : E →ₗ[k] F).index = finrank k E - finrank k F := by
