@@ -245,7 +245,7 @@ omit [Fintype σ] in
 lemma IsSymmetric.antitone_supDegree [LinearOrder σ] {p : MvPolynomial σ R} (hp : p.IsSymmetric) :
     Antitone ↑(ofLex <| p.supDegree toLex) := by
   obtain rfl | h0 := eq_or_ne p 0
-  · rw [supDegree_zero, Finsupp.bot_eq_zero]
+  · rw [supDegree_zero, bot_eq_zero]
     exact Pi.zero_mono
   rw [Antitone]
   by_contra! ⟨i, j, hle, hlt⟩
