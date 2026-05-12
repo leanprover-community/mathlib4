@@ -50,6 +50,12 @@ theorem SlashAction.neg_slash {β G α : Type*} [Monoid G] [AddGroup α]
   eq_neg_of_add_eq_zero_left <| by
     rw [← add_slash, neg_add_cancel, zero_slash]
 
+@[simp]
+theorem SlashAction.sub_slash {β G α : Type*} [Monoid G] [AddGroup α]
+    [SlashAction β G α] (k : β) (g : G) (a b : α) :
+    (a - b) ∣[k] g = a ∣[k] g - b ∣[k] g := by
+  rw [sub_eq_add_neg, add_slash, neg_slash, ← sub_eq_add_neg]
+
 attribute [simp] SlashAction.zero_slash SlashAction.slash_one SlashAction.add_slash
 
 @[simp] lemma SlashAction.sum_slash {β G α ι : Type*} [Monoid G] [AddCommGroup α]
