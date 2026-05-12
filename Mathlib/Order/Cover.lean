@@ -402,12 +402,16 @@ theorem Set.Ioc_eq_singleton_iff : Ioc a b = {c} ↔ b = c ∧ a ⋖ b where
 @[to_dual existing]
 theorem Set.Ico_eq_singleton_iff : Ico a b = {c} ↔ a = c ∧ a ⋖ b where
   mp h := by
-    rw [Set.ext_iff] at h
+    simp_rw [Set.ext_iff, mem_Ico, mem_singleton_iff] at h
     have ⟨hac, hcb⟩ := (h c).mpr rfl
     have ha := (h a).mp ⟨le_refl a, hac.trans_lt hcb⟩
     rw [ha] at h ⊢
     exact ⟨rfl, ⟨hcb, fun d hcd hdb ↦ hcd.ne ((h d).mp ⟨hcd.le, hdb⟩).symm⟩⟩
   mpr := fun ⟨rfl, hcov⟩ ↦ hcov.Ico_eq
+
+@[to_dual Ioc_eq_singleton_right_iff]
+lemma Set.Ico_eq_singleton_left_iff : Ico a b = {a} ↔ a ⋖ b := by
+  simp [Ico_eq_singleton_iff]
 
 end PartialOrder
 
@@ -434,26 +438,30 @@ theorem CovBy.Iio_eq (h : a ⋖ b) : Iio b = Iic a := by
 theorem CovBy.Ioo_eq_Ico (h : a ⋖ b) (c : α) : Ioo a c = Ico b c :=
   subset_antisymm (fun _x hx ↦ ⟨h.ge_of_gt hx.1, hx.2⟩) <| Ico_subset_Ioo_left h.lt
 
+@[to_dual none]
 theorem Set.Ioo_eq_singleton_iff : Ioo a b = {c} ↔ a ⋖ c ∧ c ⋖ b where
   mp h := by
-    rw [Set.ext_iff] at h
+    simp_rw [Set.ext_iff, mem_Ioo, mem_singleton_iff] at h
     have ⟨hac, hcb⟩ := (h c).mpr rfl
     exact ⟨⟨hac, fun d had hdc ↦ hdc.ne ((h d).mp ⟨had, hdc.trans hcb⟩)⟩,
       ⟨hcb, fun d hcd hdb ↦ hcd.ne ((h d).mp ⟨hac.trans hcd, hdb⟩).symm⟩⟩
-  mpr := fun ⟨hac, hcb⟩ ↦ Set.ext_iff.mpr fun _x ↦
-    ⟨fun ⟨hxa, hxb⟩ ↦ le_antisymm (hcb.le_of_lt hxb) (hac.ge_of_gt hxa),
-      fun | rfl => ⟨hac.lt, hcb.lt⟩⟩
+  mpr := fun ⟨hac, hcb⟩ ↦ by
+    rw [← Ioc_union_Ico_eq_Ioo hac.lt hcb.lt, hac.Ioc_eq, hcb.Ico_eq, union_self]
 
 @[to_dual]
 theorem Set.Ioi_eq_singleton_iff : Ioi a = {b} ↔ IsTop b ∧ a ⋖ b where
-  mp h :=
-    have h := Set.ext_iff.mp h
+  mp h := by
+    simp_rw [Set.ext_iff, mem_Ioi, mem_singleton_iff] at h
     have hb : a < b := (h b).mpr rfl
-    ⟨fun c ↦ not_lt.mp fun hc ↦ hc.ne.symm ((h c).mp (hb.trans hc)),
+    exact ⟨fun c ↦ not_lt.mp fun hc ↦ hc.ne.symm ((h c).mp (hb.trans hc)),
       ⟨hb, fun c hac hcb ↦ hcb.ne ((h c).mp hac)⟩⟩
-  mpr := fun ⟨hb, ha⟩ ↦ Set.ext_iff.mpr fun c ↦
-    ⟨fun hc ↦ le_antisymm (hb c) (ha.ge_of_gt hc), fun | rfl => ha.lt⟩
+  mpr := fun ⟨hb, hab⟩ ↦ by
+    cases b, hb using IsTop.rec; rwa [← Ioc_top, Ioc_eq_singleton_right_iff]
 
+@[to_dual]
+lemma Set.Ioi_eq_singleton_top_iff [OrderTop α] : Ioi a = {⊤} ↔ a ⋖ ⊤ := by
+  simp [Ioi_eq_singleton_iff]
+  
 @[to_dual unique_right]
 theorem CovBy.unique_left (ha : a ⋖ c) (hb : b ⋖ c) : a = b :=
   (hb.le_of_lt ha.lt).antisymm <| ha.le_of_lt hb.lt
