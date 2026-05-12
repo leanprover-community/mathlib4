@@ -6,6 +6,7 @@ Authors: ...
 module
 
 public import Mathlib.LinearAlgebra.Dimension.LinearMap
+public import Mathlib.RingTheory.Finiteness.Cofinite
 public import Mathlib.Topology.Maps.Strict.Basic
 public import Mathlib.Topology.Algebra.Module.LinearMap
 public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
