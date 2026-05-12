@@ -398,6 +398,7 @@ lemma exists_finset_maximalFor_isTranscendenceBasis_separableClosure
     · convert hs.isAlgebraic_field <;> simp [s]
   have : Module.Finite ((separableClosure (adjoin F (s : Set E)) E).restrictScalars F) E :=
     inferInstanceAs <| Module.Finite (separableClosure (adjoin F (s : Set E)) E) E
+  stop
   exact d.not_lt_argminOn _ ht (by apply finrank_lt_of_gt H)
 
 @[deprecated (since := "2025-12-08")]

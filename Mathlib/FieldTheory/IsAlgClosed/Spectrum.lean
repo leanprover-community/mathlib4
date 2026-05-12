@@ -124,7 +124,8 @@ theorem map_polynomial_aeval_of_nonempty [IsAlgClosed 𝕜] (a : A) (p : 𝕜[X]
 
 /-- A specialization of `spectrum.subset_polynomial_aeval` to monic monomials for convenience. -/
 theorem pow_image_subset (a : A) (n : ℕ) : (fun x => x ^ n) '' σ a ⊆ σ (a ^ n) := by
-  simpa only [eval_X_pow, aeval_X_pow] using subset_polynomial_aeval a (X ^ n : 𝕜[X])
+  have := subset_polynomial_aeval a (X ^ n : 𝕜[X])
+  simpa only [eval_X_pow, aeval_X_pow] using this
 
 theorem pow_mem_pow (a : A) (n : ℕ) {k : 𝕜} (hk : k ∈ σ a) : k ^ n ∈ σ (a ^ n) :=
   pow_image_subset a n ⟨k, ⟨hk, rfl⟩⟩
@@ -133,14 +134,15 @@ theorem pow_mem_pow (a : A) (n : ℕ) {k : 𝕜} (hk : k ∈ σ a) : k ^ n ∈ �
 convenience. -/
 theorem map_pow_of_pos [IsAlgClosed 𝕜] (a : A) {n : ℕ} (hn : 0 < n) :
     σ (a ^ n) = (· ^ n) '' σ a := by
-  simpa only [aeval_X_pow, eval_X_pow]
-    using map_polynomial_aeval_of_degree_pos a (X ^ n : 𝕜[X]) (by rwa [degree_X_pow, Nat.cast_pos])
+  have := map_polynomial_aeval_of_degree_pos a (X ^ n : 𝕜[X]) (by rwa [degree_X_pow, Nat.cast_pos])
+  simpa only [aeval_X_pow, eval_X_pow] using this
 
 /-- A specialization of `spectrum.map_polynomial_aeval_of_nonempty` to monic monomials for
 convenience. -/
 theorem map_pow_of_nonempty [IsAlgClosed 𝕜] {a : A} (ha : (σ a).Nonempty) (n : ℕ) :
     σ (a ^ n) = (· ^ n) '' σ a := by
-  simpa only [aeval_X_pow, eval_X_pow] using map_polynomial_aeval_of_nonempty a (X ^ n) ha
+  have := map_polynomial_aeval_of_nonempty a (X ^ n) ha
+  simpa only [aeval_X_pow, eval_X_pow] using this
 
 variable (𝕜)
 

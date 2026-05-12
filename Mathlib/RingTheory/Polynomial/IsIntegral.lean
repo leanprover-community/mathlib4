@@ -215,7 +215,9 @@ theorem MvPolynomial.isIntegral_iff_isIntegral_coeff.{w} {σ : Type w} {f : MvPo
         convert H.map ((rename Subtype.val).comp
           (killCompl (f := ((↑) : f.vars → σ)) Subtype.val_injective)).toRingHom
         · exact RingHom.ext (by simp [MvPolynomial.killCompl_map])
-        · nth_rw 1 12 [← hg]; simp)) n (.of_fintype _)
+        · conv_lhs => rw [← hg]
+          conv_rhs => enter [2]; rw [← hg]
+          simp)) n (.of_fintype _)
     · rw [← hg, coeff_rename_eq_zero _ _ _ (by grind)]
       exact isIntegral_zero
   revert f n
