@@ -12,6 +12,8 @@ public import Mathlib.CategoryTheory.Limits.Chosen.End
 
 This file constructs explicit coends in `Type` as quotients and provides a
 `ChosenCoends` instance using this construction.
+
+TODO: dualize for ends (done in #38383)
 -/
 
 @[expose] public section
