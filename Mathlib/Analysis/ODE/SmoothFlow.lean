@@ -800,7 +800,7 @@ lemma exists_integralCurve_opNorm_fderivIntegralCurry0_lt_one {f : E → E} {x�
   exact ⟨u, hu_nhds, hu_open, hfu, ε, hεpos, α, hα_range, hT_zero, hα_norm⟩
 
 /-- When `f` is `C^k` at `x₀` (`k ≥ 1`), the implicit function theorem provides a local flow:
-there exists `ε > 0` and a function `lf : E → C(Icc (t₀ - ε) (t₀ + ε), E)` such that for `x` near
+there exist `ε > 0` and a function `lf : E → C(Icc (t₀ - ε) (t₀ + ε), E)` such that for `x` near
 `x₀`:
 - `lf x` is an integral curve of `f` on `Icc (t₀ - ε) (t₀ + ε)`
 - `lf x` passes through `x` at time `t₀`
