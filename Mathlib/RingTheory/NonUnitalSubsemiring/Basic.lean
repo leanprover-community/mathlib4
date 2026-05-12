@@ -635,6 +635,21 @@ theorem coe_sSup_of_directedOn {S : Set (NonUnitalSubsemiring R)} (Sne : S.Nonem
     (hS : DirectedOn (· ≤ ·) S) : (↑(sSup S) : Set R) = ⋃ s ∈ S, ↑s :=
   Set.ext fun x => by simp [mem_sSup_of_directedOn Sne hS]
 
+theorem isMulCommutative_iSup {ι : Sort*} [Nonempty ι]
+    {S : ι → NonUnitalSubsemiring R} [hS : ∀ i, IsMulCommutative (S i)]
+    (dir : Directed (· ≤ ·) S) : IsMulCommutative (⨆ i, S i : NonUnitalSubsemiring R) := by
+  refine .of_setLike_mul_comm ?_
+  simp_rw [← SetLike.mem_coe, coe_iSup_of_directed dir, Set.mem_iUnion,
+    SetLike.mem_coe, forall_exists_index]
+  intro a i ha b j hb
+  obtain ⟨k, hik, hjk⟩ := dir i j
+  exact setLike_mul_comm (hik ha) (hjk hb)
+
+instance instIsMulCommutative_iSup {ι : Type*} [Nonempty ι] [Preorder ι]
+    [IsDirectedOrder ι] {S : ι →o NonUnitalSubsemiring R} [hS : ∀ i, IsMulCommutative (S i)] :
+    IsMulCommutative (⨆ i, S i : NonUnitalSubsemiring R) :=
+  NonUnitalSubsemiring.isMulCommutative_iSup S.monotone.directed_le
+
 end NonUnitalSubsemiring
 
 namespace NonUnitalRingHom
