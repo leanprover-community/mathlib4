@@ -358,8 +358,8 @@ theorem archimedeanClassMk_mk_eq (m : M) (s s' : ℕ+) :
   simp_rw [zsmul_mk, mk_eq_mk_iff_smul_eq_smul, natCast_zsmul, smul_smul, mul_comm s'.val]
 
 variable (M) in
-/-- Forward direction of `archimedeanClassOrderIso`. -/
-private noncomputable
+/-- Forward direction of `DivisibleHull.archimedeanClassOrderIso`. -/
+noncomputable
 def archimedeanClassOrderHom : ArchimedeanClass M →o ArchimedeanClass (DivisibleHull M) :=
   ArchimedeanClass.orderHom (coeOrderAddMonoidHom M)
 
@@ -375,8 +375,8 @@ private theorem aux_archimedeanClassOrderHom_injective :
   ArchimedeanClass.orderHom_injective coe_injective
 
 variable (M) in
-/-- Backward direction of `archimedeanClassOrderIso`. -/
-private noncomputable
+/-- Backward direction of `DivisibleHull.archimedeanClassOrderIso`. -/
+noncomputable
 def archimedeanClassOrderHomInv : ArchimedeanClass (DivisibleHull M) →o ArchimedeanClass M :=
   ArchimedeanClass.liftOrderHom (fun x ↦ x.liftOn (fun m s ↦ ArchimedeanClass.mk m)
     (fun _ _ _ _ h ↦ by
@@ -392,18 +392,18 @@ def archimedeanClassOrderHomInv : ArchimedeanClass (DivisibleHull M) →o Archim
 
 variable (M) in
 /-- The Archimedean classes of `DivisibleHull M` are the same as those of `M`. -/
-@[no_expose] noncomputable
-def archimedeanClassOrderIso : ArchimedeanClass M ≃o ArchimedeanClass (DivisibleHull M) := by
-  apply OrderIso.ofHomInv (archimedeanClassOrderHom M) (archimedeanClassOrderHomInv M)
+noncomputable
+def archimedeanClassOrderIso : ArchimedeanClass M ≃o ArchimedeanClass (DivisibleHull M) :=
+  OrderIso.ofHomInv (archimedeanClassOrderHom M) (archimedeanClassOrderHomInv M) (by
   · ext a
     induction a with | mk a
     induction a with | mk m s
     suffices ArchimedeanClass.mk (mk m 1) = ArchimedeanClass.mk (mk m s) by
       simpa [archimedeanClassOrderHom, archimedeanClassOrderHomInv]
-    simp_rw [aux_archimedeanClassMk_mk]
+    simp_rw [aux_archimedeanClassMk_mk]) (by
   · ext a
     induction a with | mk _
-    simp [archimedeanClassOrderHom, archimedeanClassOrderHomInv]
+    simp [archimedeanClassOrderHom, archimedeanClassOrderHomInv])
 
 @[simp]
 theorem archimedeanClassOrderIso_apply (a : ArchimedeanClass M) :
