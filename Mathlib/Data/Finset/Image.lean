@@ -594,7 +594,7 @@ theorem mem_subtype {p : α → Prop} [DecidablePred p] {s : Finset α} :
 theorem subtype_eq_empty {p : α → Prop} [DecidablePred p] {s : Finset α} :
     s.subtype p = ∅ ↔ ∀ x, p x → x ∉ s := by simp [Finset.ext_iff, Subtype.forall]
 
-@[mono]
+@[gcongr, mono]
 theorem subtype_mono {p : α → Prop} [DecidablePred p] : Monotone (Finset.subtype p) :=
   fun _ _ h _ hx => mem_subtype.2 <| h <| mem_subtype.1 hx
 
