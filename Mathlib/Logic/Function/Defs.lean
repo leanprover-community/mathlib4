@@ -142,7 +142,7 @@ protected def map {ι} {α β : ι → Sort*} (f : ∀ i, α i → β i) : (∀ 
 lemma map_def {ι} {α β : ι → Sort*} (f : ∀ i, α i → β i) (g : ∀ i, α i) :
     Function.map f g = (fun {i} => f i) ∘' g := rfl
 
-@[simp]
+@[simp, grind =]
 lemma map_apply {ι} {α β : ι → Sort*} (f : ∀ i, α i → β i) (a : ∀ i, α i) (i : ι) :
     Function.map f a i = f i (a i) := rfl
 

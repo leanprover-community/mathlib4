@@ -766,23 +766,23 @@ theorem update_idem {α} [DecidableEq α] {β : α → Sort*} {a : α} (v w : β
   grind
 
 @[simp]
+theorem map_const {ι : Sort*} {α} {β : ι → Sort*}
+    {f : ∀ i, α → β i} (a : α) :
+    Function.map f (Function.const ι a) = swap f a := rfl
+
+@[simp]
 theorem map_update {ι : Sort*} [DecidableEq ι] {α β : ι → Sort*}
     {f : ∀ i, α i → β i}
     (g : ∀ i, α i) (i : ι) (a : α i) :
     Function.map f (Function.update g i a) = Function.update (Function.map f g) i (f i a) := by
-  ext j
-  obtain rfl | hij := eq_or_ne j i <;> simp [*]
+  grind [Function.update]
 
 @[simp]
 theorem map_injective
     {ι : Sort*} {α β : ι → Sort*} [∀ i, Nonempty (α i)] {f : ∀ i, α i → β i} :
     Injective (Function.map f) ↔ ∀ i, Injective (f i) where
-  mp h i x y hxy := by
-    classical
-    have : Inhabited (∀ i, α i) := ⟨fun _ => Classical.choice inferInstance⟩
-    replace h := @h (Function.update default i x) (Function.update default i y) ?_
-    · simpa using congrFun h i
-    rw [Function.map_update, Function.map_update, hxy]
+  mp h i x y hxy := by classical exact Function.update_injective Classical.ofNonempty i <| h <|
+    (map_update _ _ x ▸ map_update _ _ y ▸ hxy ▸ rfl)
   mpr := .piMap
 
 end Update
@@ -1213,6 +1213,9 @@ alias Pi.map_id := Function.map_id
 
 @[deprecated (since := "2026-05-11")]
 alias Pi.map_id' := Function.map_id'
+
+@[deprecated (since := "2026-05-11")]
+alias Pi.map_comp_map := Function.map_comp_map
 
 @[deprecated (since := "2026-05-11")]
 alias Pi.map_injective := Function.map_injective
