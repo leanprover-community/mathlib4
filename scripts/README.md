@@ -51,6 +51,10 @@ file used by the library's own linters.
   names used within namespaces (e.g., `lt_iff_val_lt_val`). Only processes files that exist in the
   current repository. Safe to run multiple times; processes all warnings in a single pass.
   Usage: `python3 scripts/fix_deprecations.py`
+- `update-integrability-tactic-counts.sh`
+  Updates the test-count header in `MathlibTest/IntegrabilityTactic.lean` by counting `example`
+  occurrences as total tests and `fail_if_success fun_prop` occurrences as tests not solved by
+  `fun_prop`.
 - `add_deprecations.sh` is a text-based script that automatically adds deprecation statements.
   It assumes that the only difference between master and the current status of the PR consists
   of renames. More precisely, any change on a line that contains a declaration name
