@@ -854,23 +854,6 @@ theorem exists_forall_mem_closedBall_exists_eq_forall_mem_Ioo_hasDerivAt₀
   have ⟨α, hα1, hα2⟩ := H x₀ (mem_closedBall_self (le_of_lt hr))
   ⟨α, hα1, ε, hε, hα2⟩
 
-open Classical in
-/-- If a vector field `f : E → E` is continuously differentiable at `x₀ : E`, then it admits a flow
-`α : E → ℝ → E` defined on an open domain, with initial condition `α x t₀ = x` for all `x` within
-the domain. -/
-theorem exists_eventually_eq_hasDerivAt
-    (hf : ContDiffAt ℝ 1 f x₀) (t₀ : ℝ) :
-    ∃ α : E → ℝ → E, ∀ᶠ xt in 𝓝 x₀ ×ˢ 𝓝 t₀,
-      α xt.1 t₀ = xt.1 ∧ HasDerivAt (α xt.1) (f (α xt.1 xt.2)) xt.2 := by
-  obtain ⟨r, hr, ε, hε, H⟩ := exists_forall_mem_closedBall_exists_eq_forall_mem_Ioo_hasDerivAt hf t₀
-  choose α hα using H
-  refine ⟨fun (x : E) ↦ if hx : x ∈ closedBall x₀ r then α x hx else 0, ?_⟩
-  rw [Filter.eventually_iff_exists_mem]
-  refine ⟨closedBall x₀ r ×ˢ Ioo (t₀ - ε) (t₀ + ε), ?_, ?_⟩
-  · rw [Filter.prod_mem_prod_iff]
-    exact ⟨closedBall_mem_nhds x₀ hr, Ioo_mem_nhds (by linarith) (by linarith)⟩
-  · grind
-
 theorem exists_eventually_eq_hasDerivAt_continuousAt
     (hf : ContDiffAt ℝ 1 f x₀) (t₀ : ℝ) :
     ∃ α : E × ℝ → E, ∀ᶠ xt in 𝓝 ⟨x₀, t₀⟩,
@@ -888,5 +871,16 @@ theorem exists_eventually_eq_hasDerivAt_continuousAt
     apply hα2.continuousAt (x := ⟨x, t⟩)
     rw [nhds_prod_eq, Filter.prod_mem_prod_iff]
     exact ⟨closedBall_mem_nhds_of_mem hx, Icc_mem_nhds ht.1 ht.2⟩
+
+/-- If a vector field `f : E → E` is continuously differentiable at `x₀ : E`, then it admits a flow
+`α : E → ℝ → E` defined on an open domain, with initial condition `α x t₀ = x` for all `x` within
+the domain. -/
+theorem exists_eventually_eq_hasDerivAt
+    (hf : ContDiffAt ℝ 1 f x₀) (t₀ : ℝ) :
+    ∃ α : E → ℝ → E, ∀ᶠ xt in 𝓝 x₀ ×ˢ 𝓝 t₀,
+      α xt.1 t₀ = xt.1 ∧ HasDerivAt (α xt.1) (f (α xt.1 xt.2)) xt.2 := by
+  simp_rw [← nhds_prod_eq]
+  obtain ⟨α, hα⟩ := exists_eventually_eq_hasDerivAt_continuousAt hf t₀
+  exact ⟨curry α, hα.mono <| by aesop⟩
 
 end ContDiffAt
