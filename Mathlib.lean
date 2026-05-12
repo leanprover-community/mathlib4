@@ -1555,6 +1555,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.HoFunctorMonoidal
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.Basic
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.HomologyZero
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.HomotopyInvariance
+public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.Nondegenerate
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homotopy
 public import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
 public import Mathlib.AlgebraicTopology.SimplicialSet.Horn
@@ -2732,6 +2733,7 @@ public import Mathlib.CategoryTheory.GuitartExact.HorizontalComposition
 public import Mathlib.CategoryTheory.GuitartExact.KanExtension
 public import Mathlib.CategoryTheory.GuitartExact.Opposite
 public import Mathlib.CategoryTheory.GuitartExact.Over
+public import Mathlib.CategoryTheory.GuitartExact.Quotient
 public import Mathlib.CategoryTheory.GuitartExact.VerticalComposition
 public import Mathlib.CategoryTheory.HomCongr
 public import Mathlib.CategoryTheory.Idempotents.Basic
@@ -2758,6 +2760,7 @@ public import Mathlib.CategoryTheory.LiftingProperties.Over
 public import Mathlib.CategoryTheory.LiftingProperties.ParametrizedAdjunction
 public import Mathlib.CategoryTheory.LiftingProperties.PushoutProduct
 public import Mathlib.CategoryTheory.Limits.Bicones
+public import Mathlib.CategoryTheory.Limits.Chosen.End
 public import Mathlib.CategoryTheory.Limits.ColimitLimit
 public import Mathlib.CategoryTheory.Limits.Comma
 public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
@@ -2943,6 +2946,7 @@ public import Mathlib.CategoryTheory.Limits.Types.ColimitType
 public import Mathlib.CategoryTheory.Limits.Types.ColimitTypeFiltered
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
 public import Mathlib.CategoryTheory.Limits.Types.Coproducts
+public import Mathlib.CategoryTheory.Limits.Types.End
 public import Mathlib.CategoryTheory.Limits.Types.Equalizers
 public import Mathlib.CategoryTheory.Limits.Types.Filtered
 public import Mathlib.CategoryTheory.Limits.Types.Images
@@ -5686,6 +5690,7 @@ public import Mathlib.NumberTheory.ModularForms.Cusps
 public import Mathlib.NumberTheory.ModularForms.DedekindEta
 public import Mathlib.NumberTheory.ModularForms.Delta
 public import Mathlib.NumberTheory.ModularForms.Derivative
+public import Mathlib.NumberTheory.ModularForms.DimensionFormulas.LevelOne
 public import Mathlib.NumberTheory.ModularForms.Discriminant
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
@@ -5703,6 +5708,7 @@ public import Mathlib.NumberTheory.ModularForms.JacobiTheta.Bounds
 public import Mathlib.NumberTheory.ModularForms.JacobiTheta.Manifold
 public import Mathlib.NumberTheory.ModularForms.JacobiTheta.OneVariable
 public import Mathlib.NumberTheory.ModularForms.JacobiTheta.TwoVariable
+public import Mathlib.NumberTheory.ModularForms.LevelOne
 public import Mathlib.NumberTheory.ModularForms.LevelOne.Basic
 public import Mathlib.NumberTheory.ModularForms.LevelOne.DimensionFormula
 public import Mathlib.NumberTheory.ModularForms.LevelOne.GradedRing
@@ -6399,6 +6405,7 @@ public import Mathlib.RingTheory.Etale.Locus
 public import Mathlib.RingTheory.Etale.Pi
 public import Mathlib.RingTheory.Etale.QuasiFinite
 public import Mathlib.RingTheory.Etale.StandardEtale
+public import Mathlib.RingTheory.Etale.Weakly
 public import Mathlib.RingTheory.EuclideanDomain
 public import Mathlib.RingTheory.Extension.Basic
 public import Mathlib.RingTheory.Extension.Cotangent.BaseChange
@@ -7300,6 +7307,7 @@ public import Mathlib.Tactic.Says
 public import Mathlib.Tactic.ScopedNS
 public import Mathlib.Tactic.Set
 public import Mathlib.Tactic.SetLike
+public import Mathlib.Tactic.SetNotationForOrder
 public import Mathlib.Tactic.SimpIntro
 public import Mathlib.Tactic.SimpRw
 public import Mathlib.Tactic.Simproc.Divisors
