@@ -522,7 +522,7 @@ theorem truncTotal_subst_eq_truncTotal_right_of_le (ha : HasSubst a) (hx : ∀ i
         · intro t ht
           have := DFunLike.congr_fun hl₁ t
           by_contra hc
-          simp only [Finsupp.coe_finset_sum, sum_apply] at this
+          simp only [Finsupp.coe_finsetSum, sum_apply] at this
           simp_all
         · intro t ht
           rw [sum_apply']
