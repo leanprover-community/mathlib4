@@ -6,9 +6,19 @@ Authors: Ziyan Wei
 module
 
 public import Mathlib.Topology.Maps.Basic
+<<<<<<< HEAD
+public import Mathlib.Topology.Constructions.SumProd
 public import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Topology.Constructions
 public import Mathlib.Data.Setoid.Basic
+public import Mathlib.GroupTheory.QuotientGroup.Basic
+public import Mathlib.Topology.Algebra.Group.Basic
+public import Mathlib.Topology.Algebra.Group.Quotient
+=======
+public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.Topology.Constructions
+public import Mathlib.Data.Setoid.Basic
+>>>>>>> upstream/master
 /-!
 # Bourbaki Strict Maps
 
@@ -26,6 +36,12 @@ Many important classes of maps are automatically continuous strict maps, includi
 - continuous open maps (`IsOpenMap.isStrictMap`);
 - continuous closed maps (`IsClosedMap.isStrictMap`).
 
+<<<<<<< HEAD
+* `Topology.IsStrictMap`: The condition that a map `f` is strict, meaning the natural
+  map to its image is a quotient map.
+
+=======
+>>>>>>> upstream/master
 ## Equivalent characterizations
 
 We provide several equivalent ways to characterize a strict map `f`:
@@ -33,15 +49,36 @@ We provide several equivalent ways to characterize a strict map `f`:
   the canonical bijection `Quotient (Setoid.ker f) ≃ Set.range f` is a homeomorphism.
 * `Topology.isStrictMap_iff_isEmbedding_kerLift`: `f` is strict if and only if
   the canonical injection `Quotient (Setoid.ker f) → Y` (`Setoid.kerLift f`) is an embedding.
+<<<<<<< HEAD
+
+### Group homomorphisms
+
+In general, the product (in the sense of `Prod.map`) of two strict maps need not be strict.
+But thanks to `MonoidHom.isOpenQuotientMap_of_isQuotientMap`, we can replace `IsQuotientMap`
+by `IsOpenQuotientMap` in the setting of group homomorphisms. Therefore we provide several
+impotant properties of a strict group homomorphisms `f` :
+
+* `isStrictMap_iff_isOpenQuotientMap_rangeRestrict`: `f` is a strict group homomorphism if
+  and only if the `rangeRestrict` of `f` is an open quotient map.
+* `isStrictMap_prodMap`: The product (in the sense of Prod.map) of group homomorphisms is strict
+=======
+>>>>>>> upstream/master
 -/
 
 @[expose] public section
 
 open Function Set Topology
 
+<<<<<<< HEAD
+
+namespace Topology
+
+variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] (f : X → Y)
+=======
 namespace Topology
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y)
+>>>>>>> upstream/master
 
 /-- A map is a strict map in the sense of Bourbaki if the natural map to its image
 is a quotient map. -/
@@ -96,5 +133,63 @@ lemma IsClosedMap.isStrictMap (hc : IsClosedMap f) (h_cont : Continuous f) :
   exact (hc.subtype_mk fun x => ⟨x, rfl⟩).isQuotientMap
     h_cont.rangeFactorization Set.rangeFactorization_surjective
 
+<<<<<<< HEAD
+/-- Strict maps stay strict when we compose them with homeomorphisms -/
+lemma Homeomorph.comp_isStrictMap (e : X ≃ₜ Y) {f : Y → Z} (hf : IsStrictMap f) :
+    IsStrictMap (f ∘ e) :=
+  by
+    rw [IsStrictMap] at hf ⊢
+    let erange : Set.range (f ∘ e) ≃ₜ Set.range f :=
+      Homeomorph.setCongr (by simp [Set.range_comp])
+    convert erange.symm.isQuotientMap.comp (hf.comp e.isQuotientMap) using 1
 
 end Topology
+
+namespace MonoidHom
+open Topology
+
+variable {G H G' H' : Type*} [Group G'] [Group H'] [Group G] [Group H]
+variable (f : G →* H) (g : G' →* H')
+
+/-- The range of a product of group homomorphisms is the product of their ranges. -/
+lemma range_prodMap :
+    (f.prodMap g).range = f.range.prod g.range := by
+  ext ⟨h, h'⟩
+  simp only [Subgroup.mem_prod, MonoidHom.mem_range, MonoidHom.coe_prodMap,
+             Prod.map_apply, Prod.exists, Prod.mk.injEq]
+  tauto
+
+variable [TopologicalSpace G] [IsTopologicalGroup G] [TopologicalSpace H]
+
+/-- A quotient group homomorphism from a topological group is automatically an open quotient map. -/
+lemma isQuotientMap_iff_isOpenQuotientMap :
+    IsOpenQuotientMap f ↔ IsQuotientMap f := by
+  exact ⟨fun hf => hf.isQuotientMap, MonoidHom.isOpenQuotientMap_of_isQuotientMap⟩
+
+/-- A group homomorphism is strict if and only if its rangeRestrict is an open quotient map. -/
+lemma isStrictMap_iff_isOpenQuotientMap_rangeRestrict :
+    IsStrictMap f ↔ IsOpenQuotientMap f.rangeRestrict := by
+  rw [isQuotientMap_iff_isOpenQuotientMap]
+  rfl
+
+variable [TopologicalSpace G'] [IsTopologicalGroup G'] [TopologicalSpace H']
+
+noncomputable def rangeProdMapHomeomorph :
+    (f.prodMap g).range ≃ₜ f.range × g.range :=
+  (Homeomorph.setCongr (by simp [range_prodMap, Subgroup.coe_prod])).trans
+    (Homeomorph.Set.prod _ _)
+
+/-- The product (in the sense of Prod.map) of group homomorphisms is strict -/
+lemma isStrictMap_prodMap (hf : IsStrictMap f) (hg : IsStrictMap g) :
+    IsStrictMap (f.prodMap g) := by
+  rw [isStrictMap_iff_isOpenQuotientMap_rangeRestrict]
+  have hf' := (isStrictMap_iff_isOpenQuotientMap_rangeRestrict (f := f)).mp hf
+  have hg' := (isStrictMap_iff_isOpenQuotientMap_rangeRestrict (f := g)).mp hg
+  convert (rangeProdMapHomeomorph (f := f) (g := g)).symm.isOpenQuotientMap.comp
+    (hf'.prodMap hg') using 1
+
+end MonoidHom
+=======
+
+end Topology
+>>>>>>> upstream/master
