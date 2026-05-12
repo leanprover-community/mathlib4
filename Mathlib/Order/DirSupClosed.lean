@@ -174,7 +174,7 @@ theorem DirSupClosedOn.union (hDL : IsLowerSet D)
   wlog h : DirectedOn (· ≤ ·) (d ∩ s) ∧ IsCofinalFor (d ∩ t) (d ∩ s)
   · rw [union_comm] at hdu hdst ⊢
     exact this hDL ht hs hD hdu hd₀ hd₁ ha hdst <|
-      (directedOn_union_iff.mp (by rw [hdst]; exact hd₁)).resolve_right h
+      (directedOn_union_iff.mp (by rwa [hdst])).resolve_right h
   obtain ⟨hds, hcof⟩ := h
   have hcof' : IsCofinalFor d (d ∩ s) := hcof.union_right.mono_left hdst.ge
   exact .inl <| hs (hDL inter_subset_left hD) inter_subset_right
@@ -210,15 +210,11 @@ theorem dirSupInaccOn_iff_inter_subset (hDL : IsLowerSet D) :
   mpr := .of_inter_subset
   mp h t hD ht₀ ht₁ a ha has := by
     by_contra! H
-    have H : ∀ b : t, ∃ c, b.1 ≤ c ∧ c ∈ t ∧ c ∉ s := by simpa [not_subset, and_assoc] using H
-    choose f hf using H
-    have := ht₀.to_subtype
-    have hft : range f ⊆ t := by grind
-    have hcof : IsCofinalFor t (range f) := fun c hc ↦
-      ⟨f ⟨c, hc⟩, ⟨_, rfl⟩, (hf ⟨c, hc⟩).1⟩
-    apply (h (hDL hft hD) (range_nonempty f) (ht₁.of_isCofinalFor hft hcof)
-      (ha.of_isCofinalFor hft hcof) has).ne_empty
-    aesop
+    have hcof : IsCofinalFor t (t \ s) := by grind [IsCofinalFor, not_subset]
+    obtain ⟨x, hx, hxs⟩ := h (hDL diff_subset hD) (hcof.nonempty ht₀)
+      (ht₁.of_isCofinalFor diff_subset hcof)
+      (ha.of_isCofinalFor diff_subset hcof) has
+    exact hx.2 hxs
 
 /-- The condition `(d ∩ s).Nonempty` in `DirSupInacc` can be replaced with the stronger
 `∃ b ∈ d, Ici b ∩ d ⊆ s`. -/
