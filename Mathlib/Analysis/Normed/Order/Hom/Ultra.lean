@@ -3,8 +3,10 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Analysis.Normed.Order.Hom.Basic
-import Mathlib.Topology.MetricSpace.Ultra.Basic
+module
+
+public import Mathlib.Analysis.Normed.Order.Hom.Basic
+public import Mathlib.Topology.MetricSpace.Ultra.Basic
 
 /-!
 # Constructing nonarchimedean (ultrametric) normed groups from nonarchimedean normed homs
@@ -20,6 +22,8 @@ hom-based `AddGroupSeminormClass.toSeminormedAddGroup f` construction. To help a
 the argument is an autoparam that resolves by definitional equality when using these constructions.
 -/
 
+public section
+
 variable {F α : Type*} [FunLike F α ℝ]
 
 /-- Proves that when a `SeminormedAddGroup` structure is constructed from an
@@ -28,5 +32,8 @@ lemma AddGroupSeminormClass.isUltrametricDist [AddGroup α] [AddGroupSeminormCla
     [inst : Dist α] {f : F} (hna : IsNonarchimedean f)
     (hd : inst = (AddGroupSeminormClass.toSeminormedAddGroup f).toDist := by rfl) :
     IsUltrametricDist α :=
-  ⟨fun x y z ↦ by simpa only [hd, dist_eq_norm, AddGroupSeminormClass.toSeminormedAddGroup_norm_eq,
-      ← sub_add_sub_cancel x y z] using hna _ _⟩
+  ⟨fun x y z ↦ by
+    simp +instances only [hd, dist_eq_norm_neg_add,
+      AddGroupSeminormClass.toSeminormedAddGroup_norm_eq]
+    convert hna (-x + y) (-y + z) using 2
+    rw [add_assoc, ← add_assoc y, add_neg_cancel, zero_add]⟩

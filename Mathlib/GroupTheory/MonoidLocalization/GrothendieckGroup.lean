@@ -3,7 +3,9 @@ Copyright (c) 2025 Alex J. Best, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Yaël Dillies
 -/
-import Mathlib.GroupTheory.MonoidLocalization.Basic
+module
+
+public import Mathlib.GroupTheory.MonoidLocalization.Maps
 
 /-!
 # Grothendieck group
@@ -20,6 +22,8 @@ obtained by formally making the last term of each short exact sequence invertibl
 * [*Grothendieck group*, Wikipedia](https://en.wikipedia.org/wiki/Grothendieck_group#Grothendieck_group_of_a_commutative_monoid)
 -/
 
+@[expose] public section
+
 open Function Localization
 
 namespace Algebra
@@ -28,7 +32,7 @@ variable {M G : Type*} [CommMonoid M] [CommGroup G]
 variable (M) in
 /-- The Grothendieck group of a monoid `M` is the localization at its top submonoid. -/
 @[to_additive
-"The Grothendieck group of an additive monoid `M` is the localization at its top submonoid."]
+/-- The Grothendieck group of an additive monoid `M` is the localization at its top submonoid. -/]
 abbrev GrothendieckGroup : Type _ := Localization (⊤ : Submonoid M)
 
 namespace GrothendieckGroup
@@ -37,9 +41,9 @@ namespace GrothendieckGroup
 
 Note that this is only injective if `M` is cancellative. -/
 @[to_additive
-"The inclusion from an additive commutative monoid `M` to its Grothendieck group.
+/-- The inclusion from an additive commutative monoid `M` to its Grothendieck group.
 
-Note that this is only injective if `M` is cancellative."]
+Note that this is only injective if `M` is cancellative. -/]
 abbrev of : M →* GrothendieckGroup M := (monoidOf ⊤).toMonoidHom
 
 @[to_additive]
@@ -55,12 +59,12 @@ instance : Inv (GrothendieckGroup M) where
 lemma inv_mk (m : M) (s : (⊤ : Submonoid M)) : (mk m s)⁻¹ = .mk s ⟨m, Submonoid.mem_top _⟩ := rfl
 
 /-- The Grothendieck group is a group. -/
-@[to_additive "The Grothendieck group is a group."]
+@[to_additive /-- The Grothendieck group is a group. -/]
 instance instCommGroup : CommGroup (GrothendieckGroup M) where
   __ : CommMonoid (GrothendieckGroup M) := inferInstance
   inv_mul_cancel a := by
-    induction' a using ind
-    rw [inv_mk, mk_eq_monoidOf_mk', ←Submonoid.LocalizationMap.mk'_mul]
+    cases a using ind
+    rw [inv_mk, mk_eq_monoidOf_mk', ← Submonoid.LocalizationMap.mk'_mul]
     convert Submonoid.LocalizationMap.mk'_self' _ _
     rw [mul_comm, Submonoid.coe_mul]
 
@@ -72,8 +76,8 @@ lemma mk_div_mk (m₁ m₂ : M) (s₁ s₂ : (⊤ : Submonoid M)) :
 /-- A monoid homomorphism from a monoid `M` to a group `G` lifts to a group homomorphism from the
 Grothendieck group of `M` to `G`. -/
 @[to_additive (attr := simps symm_apply)
-"A monoid homomorphism from a monoid `M` to a group `G` lifts to a group homomorphism from the
-Grothendieck group of `M` to `G`."]
+/-- A monoid homomorphism from a monoid `M` to a group `G` lifts to a group homomorphism from the
+Grothendieck group of `M` to `G`. -/]
 noncomputable def lift : (M →* G) ≃ (GrothendieckGroup M →* G) where
   toFun f := (monoidOf ⊤).lift (g := f) fun _ ↦ Group.isUnit _
   invFun f := f.comp of

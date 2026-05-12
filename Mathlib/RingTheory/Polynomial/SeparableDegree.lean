@@ -3,8 +3,10 @@ Copyright (c) 2021 Jakob Scholbach. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Scholbach
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.FieldTheory.Separable
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.FieldTheory.Separable
 
 /-!
 
@@ -32,6 +34,8 @@ This file contains basics about the separable degree of a polynomial.
 
 separable degree, degree, polynomial
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -109,7 +113,7 @@ theorem contraction_degree_eq_or_insep [hq : NeZero q] [CharP F q] (g g' : F[X])
     (h_expand : expand F (q ^ m) g = expand F (q ^ m') g') (hg : g.Separable) (hg' : g'.Separable) :
     g.natDegree = g'.natDegree := by
   wlog hm : m ≤ m'
-  · exact (this q g' g m' m h_expand.symm hg' hg (le_of_not_le hm)).symm
+  · exact (this q g' g m' m h_expand.symm hg' hg (le_of_not_ge hm)).symm
   obtain ⟨s, rfl⟩ := exists_add_of_le hm
   rw [pow_add, expand_mul, expand_inj (pow_pos (NeZero.pos q) m)] at h_expand
   subst h_expand

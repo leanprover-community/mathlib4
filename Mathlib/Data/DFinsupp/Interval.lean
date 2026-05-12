@@ -3,11 +3,13 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.DFinsupp.BigOperators
-import Mathlib.Data.DFinsupp.Order
-import Mathlib.Order.Interval.Finset.Basic
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+module
+
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Data.DFinsupp.BigOperators
+public import Mathlib.Data.DFinsupp.Order
+public import Mathlib.Order.Interval.Finset.Basic
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Finite intervals of finitely supported functions
@@ -16,10 +18,12 @@ This file provides the `LocallyFiniteOrder` instance for `Π₀ i, α i` when `�
 finite and calculates the cardinality of its finite intervals.
 -/
 
+@[expose] public section
+
 
 open DFinsupp Finset
 
-open Pointwise
+open scoped Pointwise
 
 variable {ι : Type*} {α : ι → Type*}
 

@@ -3,9 +3,11 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Analysis.Calculus.BumpFunction.Basic
-import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
-import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
+module
+
+public import Mathlib.Analysis.Calculus.BumpFunction.Basic
+public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
 /-!
 # Normed bump function
@@ -13,6 +15,8 @@ import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 In this file we define `ContDiffBump.normed f μ` to be the bump function `f` normalized so that
 `∫ x, f.normed μ x ∂μ = 1` and prove some properties of this function.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -78,7 +82,7 @@ theorem hasCompactSupport_normed : HasCompactSupport (f.normed μ) := by
 theorem tendsto_support_normed_smallSets {ι} {φ : ι → ContDiffBump c} {l : Filter ι}
     (hφ : Tendsto (fun i => (φ i).rOut) l (𝓝 0)) :
     Tendsto (fun i => Function.support fun x => (φ i).normed μ x) l (𝓝 c).smallSets := by
-  simp_rw [NormedAddCommGroup.tendsto_nhds_zero, Real.norm_eq_abs,
+  simp_rw [NormedAddGroup.tendsto_nhds_zero, Real.norm_eq_abs,
     abs_eq_self.mpr (φ _).rOut_pos.le] at hφ
   rw [nhds_basis_ball.smallSets.tendsto_right_iff]
   refine fun ε hε ↦ (hφ ε hε).mono fun i hi ↦ ?_

@@ -3,8 +3,10 @@ Copyright (c) 2025 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.Algebra.Polynomial.Bivariate
-import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
+module
+
+public import Mathlib.Algebra.Polynomial.Bivariate
+public import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
 
 /-!
 # Weierstrass equations and the nonsingular condition in affine coordinates
@@ -27,7 +29,7 @@ formulae for group operations in `Mathlib/AlgebraicGeometry/EllipticCurve/Affine
 ## Main statements
 
 * `WeierstrassCurve.Affine.equation_iff_nonsingular`: an elliptic curve in affine coordinates is
-    nonsingular at every point.
+  nonsingular at every point.
 
 ## Implementation notes
 
@@ -44,6 +46,8 @@ abbreviation for `WeierstrassCurve` that can be converted using `WeierstrassCurv
 elliptic curve, affine, Weierstrass equation, nonsingular
 -/
 
+@[expose] public section
+
 open Polynomial
 
 open scoped Polynomial.Bivariate
@@ -59,7 +63,7 @@ local macro "map_simp" : tactic =>
 
 universe r s u v
 
-variable {R : Type r} {S : Type s} {A : Type u} {B : Type v}
+variable {R : Type r}
 
 namespace WeierstrassCurve
 
@@ -74,7 +78,8 @@ abbrev Affine : Type r :=
 abbrev toAffine (W : WeierstrassCurve R) : Affine R :=
   W
 
-variable [CommRing R] [CommRing S] [CommRing A] [CommRing B] {W : Affine R}
+variable [CommRing R] {W : Affine R}
+  {S : Type s} [CommRing S] {A : Type u} [CommRing A] {B : Type v} [CommRing B]
 
 namespace Affine
 
@@ -113,7 +118,6 @@ lemma natDegree_polynomial [Nontrivial R] : W.polynomial.natDegree = 2 := by
   exact Cubic.natDegree_of_b_ne_zero' one_ne_zero
 
 lemma monic_polynomial : W.polynomial.Monic := by
-  nontriviality R
   simpa only [polynomial_eq] using Cubic.monic_of_b_eq_one'
 
 lemma irreducible_polynomial [IsDomain R] : Irreducible W.polynomial := by
@@ -123,7 +127,7 @@ lemma irreducible_polynomial [IsDomain R] : Irreducible W.polynomial := by
   simp only [polynomial_eq, Cubic.coeff_eq_c, Cubic.coeff_eq_d] at h0 h1
   apply_fun degree at h0 h1
   rw [Cubic.degree_of_a_ne_zero' <| neg_ne_zero.mpr <| one_ne_zero' R, degree_mul] at h0
-  apply (h1.symm.le.trans Cubic.degree_of_b_eq_zero').not_lt
+  apply (h1.symm.le.trans Cubic.degree_of_b_eq_zero').not_gt
   rcases Nat.WithBot.add_eq_three_iff.mp h0.symm with h | h | h | h
   iterate 2 rw [degree_add_eq_right_of_degree_lt] <;> simp only [h] <;> decide
   iterate 2 rw [degree_add_eq_left_of_degree_lt] <;> simp only [h] <;> decide
@@ -243,77 +247,83 @@ lemma equation_iff_nonsingular_of_Δ_ne_zero {x y : R} (hΔ : W.Δ ≠ 0) :
       rwa [variableChange_Δ, inv_one, Units.val_one, one_pow, one_mul]]
 
 lemma equation_iff_nonsingular [Nontrivial R] [W.IsElliptic] {x y : R} :
-    W.toAffine.Equation x y ↔ W.toAffine.Nonsingular x y :=
-  W.toAffine.equation_iff_nonsingular_of_Δ_ne_zero <| W.coe_Δ' ▸ W.Δ'.ne_zero
+    W.Equation x y ↔ W.Nonsingular x y :=
+  W.equation_iff_nonsingular_of_Δ_ne_zero <| W.coe_Δ' ▸ W.Δ'.ne_zero
 
-@[deprecated (since := "2025-03-01")] alias nonsingular_zero_of_Δ_ne_zero :=
-  equation_iff_nonsingular_of_Δ_ne_zero
-@[deprecated (since := "2025-03-01")] alias nonsingular_of_Δ_ne_zero :=
-  equation_iff_nonsingular_of_Δ_ne_zero
-@[deprecated (since := "2025-03-01")] alias nonsingular := equation_iff_nonsingular
+/-! ### Maps and base changes -/
 
-/-! ## Maps and base changes -/
+variable (W) (f : R →+* S)
 
-variable (f : R →+* S) (x y : R)
+/-- The Weierstrass curve in affine coordinates mapped over a ring homomorphism `f : R →+* S`. -/
+@[simps!]
+abbrev map : Affine S :=
+  WeierstrassCurve.map W f
 
-lemma map_polynomial : (W.map f).toAffine.polynomial = W.polynomial.map (mapRingHom f) := by
+variable (S) in
+/-- The Weierstrass curve in affine coordinates base changed to an algebra `S` over `R`. -/
+@[simps!]
+abbrev baseChange [Algebra R S] : Affine S :=
+  WeierstrassCurve.baseChange W S
+
+/-- The notation `\textf` for `WeierstrassCurve.Affine.baseChange W S`. -/
+scoped notation:max W:max "⁄" S:max => baseChange W S
+
+lemma map_polynomial : (W.map f).polynomial = W.polynomial.map (mapRingHom f) := by
   simp only [polynomial]
   map_simp
 
-variable {x y} in
-lemma Equation.map {x y : R} (h : W.Equation x y) : (W.map f).toAffine.Equation (f x) (f y) := by
+variable {W} in
+lemma Equation.map {x y : R} (h : W.Equation x y) : (W.map f).Equation (f x) (f y) := by
   rw [Equation, map_polynomial, map_mapRingHom_evalEval, h, map_zero]
 
 variable {f} in
-lemma map_equation (hf : Function.Injective f) :
-    (W.map f).toAffine.Equation (f x) (f y) ↔ W.Equation x y := by
+lemma map_equation (hf : Function.Injective f) (x y : R) :
+    (W.map f).Equation (f x) (f y) ↔ W.Equation x y := by
   simp only [Equation, map_polynomial, map_mapRingHom_evalEval, map_eq_zero_iff f hf]
 
-lemma map_polynomialX : (W.map f).toAffine.polynomialX = W.polynomialX.map (mapRingHom f) := by
+lemma map_polynomialX : (W.map f).polynomialX = W.polynomialX.map (mapRingHom f) := by
   simp only [polynomialX]
   map_simp
 
-lemma map_polynomialY : (W.map f).toAffine.polynomialY = W.polynomialY.map (mapRingHom f) := by
+lemma map_polynomialY : (W.map f).polynomialY = W.polynomialY.map (mapRingHom f) := by
   simp only [polynomialY]
   map_simp
 
 variable {f} in
-lemma map_nonsingular (hf : Function.Injective f) :
-    (W.map f).toAffine.Nonsingular (f x) (f y) ↔ W.Nonsingular x y := by
-  simp only [Nonsingular, evalEval, map_equation _ _ hf, map_polynomialX, map_polynomialY,
+lemma map_nonsingular (hf : Function.Injective f) (x y : R) :
+    (W.map f).Nonsingular (f x) (f y) ↔ W.Nonsingular x y := by
+  simp only [Nonsingular, evalEval, W.map_equation hf, map_polynomialX, map_polynomialY,
     map_mapRingHom_evalEval, map_ne_zero_iff f hf]
 
 variable [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Algebra R B] [Algebra S B]
-  [IsScalarTower R S B] (f : A →ₐ[S] B) (x y : A)
+  [IsScalarTower R S B] (f : A →ₐ[S] B)
 
-lemma baseChange_polynomial : (W.baseChange B).toAffine.polynomial =
-    (W.baseChange A).toAffine.polynomial.map (mapRingHom f) := by
+lemma map_baseChange : (W⁄A).map f = W⁄B :=
+  WeierstrassCurve.map_baseChange W f
+
+lemma baseChange_polynomial : (W⁄B).polynomial = (W⁄A).polynomial.map (mapRingHom f) := by
   rw [← map_polynomial, map_baseChange]
 
-variable {x y} in
-lemma Equation.baseChange (h : (W.baseChange A).toAffine.Equation x y) :
-    (W.baseChange B).toAffine.Equation (f x) (f y) := by
+variable {W} in
+lemma Equation.baseChange {x y : A} (h : (W⁄A).Equation x y) : (W⁄B).Equation (f x) (f y) := by
   convert Equation.map f.toRingHom h using 1
   rw [AlgHom.toRingHom_eq_coe, map_baseChange]
 
 variable {f} in
-lemma baseChange_equation (hf : Function.Injective f) :
-    (W.baseChange B).toAffine.Equation (f x) (f y) ↔ (W.baseChange A).toAffine.Equation x y := by
-  rw [← map_equation _ _ hf, AlgHom.toRingHom_eq_coe, map_baseChange, RingHom.coe_coe]
+lemma baseChange_equation (hf : Function.Injective f) (x y : A) :
+    (W⁄B).Equation (f x) (f y) ↔ (W⁄A).Equation x y := by
+  rw [← map_equation _ hf, AlgHom.toRingHom_eq_coe, map_baseChange, RingHom.coe_coe]
 
-lemma baseChange_polynomialX : (W.baseChange B).toAffine.polynomialX =
-    (W.baseChange A).toAffine.polynomialX.map (mapRingHom f) := by
+lemma baseChange_polynomialX : (W⁄B).polynomialX = (W⁄A).polynomialX.map (mapRingHom f) := by
   rw [← map_polynomialX, map_baseChange]
 
-lemma baseChange_polynomialY : (W.baseChange B).toAffine.polynomialY =
-    (W.baseChange A).toAffine.polynomialY.map (mapRingHom f) := by
+lemma baseChange_polynomialY : (W⁄B).polynomialY = (W⁄A).polynomialY.map (mapRingHom f) := by
   rw [← map_polynomialY, map_baseChange]
 
 variable {f} in
-lemma baseChange_nonsingular (hf : Function.Injective f) :
-    (W.baseChange B).toAffine.Nonsingular (f x) (f y) ↔
-      (W.baseChange A).toAffine.Nonsingular x y := by
-  rw [← map_nonsingular _ _ hf, AlgHom.toRingHom_eq_coe, map_baseChange, RingHom.coe_coe]
+lemma baseChange_nonsingular (hf : Function.Injective f) (x y : A) :
+    (W⁄B).Nonsingular (f x) (f y) ↔ (W⁄A).Nonsingular x y := by
+  rw [← map_nonsingular _ hf, AlgHom.toRingHom_eq_coe, map_baseChange, RingHom.coe_coe]
 
 end Affine
 

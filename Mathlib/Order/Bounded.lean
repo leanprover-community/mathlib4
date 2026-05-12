@@ -3,8 +3,12 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Order.RelClasses
-import Mathlib.Order.Interval.Set.Basic
+module
+
+public import Mathlib.Tactic.Linter.DeprecatedModule
+public import Mathlib.Order.RelClasses
+public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.Order.Bounds.Defs
 
 /-!
 # Bounded and unbounded sets
@@ -12,6 +16,14 @@ We prove miscellaneous lemmas about bounded and unbounded sets. Many of these ar
 the same ideas, or similar results with a few minor differences. The file is divided into these
 different general ideas.
 -/
+
+deprecated_module "Use the following replacements:
+- `BddAbove` for `Set.Bounded (· ≤ ·)`
+- `BddBelow` for `Set.Bounded (· ≥ ·)`
+- `IsCofinal` for `Set.Unbounded (· < ·)` in a linear order
+- `IsCoinitial` for `Set.Unbounded (· > ·)` in a linear order" (since := "2026-04-16")
+
+public section
 
 assert_not_exists RelIso
 
@@ -35,7 +47,7 @@ theorem Unbounded.mono (hst : s ⊆ t) (hs : Unbounded r s) : Unbounded r t := f
 theorem unbounded_le_of_forall_exists_lt [Preorder α] (h : ∀ a, ∃ b ∈ s, a < b) :
     Unbounded (· ≤ ·) s := fun a =>
   let ⟨b, hb, hb'⟩ := h a
-  ⟨b, hb, fun hba => hba.not_lt hb'⟩
+  ⟨b, hb, fun hba => hba.not_gt hb'⟩
 
 theorem unbounded_le_iff [LinearOrder α] : Unbounded (· ≤ ·) s ↔ ∀ a, ∃ b ∈ s, a < b := by
   simp only [Unbounded, not_le]
@@ -43,7 +55,7 @@ theorem unbounded_le_iff [LinearOrder α] : Unbounded (· ≤ ·) s ↔ ∀ a, �
 theorem unbounded_lt_of_forall_exists_le [Preorder α] (h : ∀ a, ∃ b ∈ s, a ≤ b) :
     Unbounded (· < ·) s := fun a =>
   let ⟨b, hb, hb'⟩ := h a
-  ⟨b, hb, fun hba => hba.not_le hb'⟩
+  ⟨b, hb, fun hba => hba.not_ge hb'⟩
 
 theorem unbounded_lt_iff [LinearOrder α] : Unbounded (· < ·) s ↔ ∀ a, ∃ b ∈ s, a ≤ b := by
   simp only [Unbounded, not_lt]
@@ -228,7 +240,7 @@ theorem bounded_ge_Icc [Preorder α] (a b : α) : Bounded (· ≥ ·) (Icc a b) 
 theorem unbounded_le_Ioi [SemilatticeSup α] [NoMaxOrder α] (a : α) :
     Unbounded (· ≤ ·) (Ioi a) := fun b =>
   let ⟨c, hc⟩ := exists_gt (a ⊔ b)
-  ⟨c, le_sup_left.trans_lt hc, (le_sup_right.trans_lt hc).not_le⟩
+  ⟨c, le_sup_left.trans_lt hc, (le_sup_right.trans_lt hc).not_ge⟩
 
 theorem unbounded_le_Ici [SemilatticeSup α] [NoMaxOrder α] (a : α) :
     Unbounded (· ≤ ·) (Ici a) :=
@@ -239,7 +251,7 @@ theorem unbounded_lt_Ioi [SemilatticeSup α] [NoMaxOrder α] (a : α) :
   unbounded_lt_of_unbounded_le (unbounded_le_Ioi a)
 
 theorem unbounded_lt_Ici [SemilatticeSup α] (a : α) : Unbounded (· < ·) (Ici a) := fun b =>
-  ⟨a ⊔ b, le_sup_left, le_sup_right.not_lt⟩
+  ⟨a ⊔ b, le_sup_left, le_sup_right.not_gt⟩
 
 /-! ### Bounded initial segments -/
 
@@ -274,7 +286,7 @@ theorem bounded_le_inter_lt [LinearOrder α] (a : α) :
 theorem unbounded_le_inter_lt [LinearOrder α] (a : α) :
     Unbounded (· ≤ ·) (s ∩ { b | a < b }) ↔ Unbounded (· ≤ ·) s := by
   convert @unbounded_le_inter_not_le _ s _ a
-  exact lt_iff_not_le
+  exact lt_iff_not_ge
 
 theorem bounded_le_inter_le [LinearOrder α] (a : α) :
     Bounded (· ≤ ·) (s ∩ { b | a ≤ b }) ↔ Bounded (· ≤ ·) s := by

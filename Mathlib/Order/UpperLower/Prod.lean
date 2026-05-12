@@ -3,7 +3,9 @@ Copyright (c) 2022 Yaël Dillies, Sara Rousta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Sara Rousta
 -/
-import Mathlib.Order.UpperLower.Closure
+module
+
+public import Mathlib.Order.UpperLower.Closure
 
 /-!
 # Upper and lower set product
@@ -15,6 +17,8 @@ defines said product over the types `UpperSet` and `LowerSet` and proves some of
 
 * `×ˢ` is notation for `UpperSet.prod` / `LowerSet.prod`.
 -/
+
+@[expose] public section
 
 open Set
 
@@ -95,7 +99,7 @@ theorem prod_sup_prod : s₁ ×ˢ t₁ ⊔ s₂ ×ˢ t₂ = (s₁ ⊔ s₂) ×ˢ
 
 variable {s s₁ s₂ t t₁ t₂}
 
-@[mono]
+@[gcongr, mono]
 theorem prod_mono : s₁ ≤ s₂ → t₁ ≤ t₂ → s₁ ×ˢ t₁ ≤ s₂ ×ˢ t₂ :=
   Set.prod_mono
 

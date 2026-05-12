@@ -3,9 +3,11 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Interval.Set.OrdConnectedComponent
-import Mathlib.Topology.Order.Basic
-import Mathlib.Topology.Separation.Regular
+module
+
+public import Mathlib.Order.Interval.Set.OrdConnectedComponent
+public import Mathlib.Topology.Order.Basic
+public import Mathlib.Topology.Separation.Regular
 
 /-!
 # Linear order is a completely normal Hausdorff topological space
@@ -13,6 +15,8 @@ import Mathlib.Topology.Separation.Regular
 In this file we prove that a linear order with order topology is a completely normal Hausdorff
 topological space.
 -/
+
+public section
 
 
 open Filter Set Function OrderDual Topology Interval
@@ -55,13 +59,9 @@ theorem compl_ordConnectedSection_ordSeparatingSet_mem_nhdsGE (hd : Disjoint s (
       suffices c < y by
         rw [uIcc_of_ge (hx.2.trans this).le]
         exact ⟨hx.2.le, this.le⟩
-      refine lt_of_not_le fun hyc => ?_
+      refine lt_of_not_ge fun hyc => ?_
       have hya : y < a := not_le.1 fun hay => hsub ⟨hay, hyc.trans hcb⟩ hyt
       exact hxy (Icc_subset_uIcc ⟨hya.le, hx.1⟩) ha
-
-@[deprecated (since := "2024-12-22")]
-alias compl_section_ordSeparatingSet_mem_nhdsWithin_Ici :=
-  compl_ordConnectedSection_ordSeparatingSet_mem_nhdsGE
 
 theorem compl_ordConnectedSection_ordSeparatingSet_mem_nhdsLE (hd : Disjoint s (closure t))
     (ha : a ∈ s) : (ordConnectedSection <| ordSeparatingSet s t)ᶜ ∈ 𝓝[≤] a := by
@@ -70,18 +70,11 @@ theorem compl_ordConnectedSection_ordSeparatingSet_mem_nhdsLE (hd : Disjoint s (
   simpa only [dual_ordSeparatingSet, dual_ordConnectedSection] using
     compl_ordConnectedSection_ordSeparatingSet_mem_nhdsGE hd' ha'
 
-@[deprecated (since := "2024-12-22")]
-alias compl_section_ordSeparatingSet_mem_nhdsWithin_Iic :=
-  compl_ordConnectedSection_ordSeparatingSet_mem_nhdsLE
-
 theorem compl_ordConnectedSection_ordSeparatingSet_mem_nhds (hd : Disjoint s (closure t))
     (ha : a ∈ s) : (ordConnectedSection <| ordSeparatingSet s t)ᶜ ∈ 𝓝 a := by
   rw [← nhdsLE_sup_nhdsGE, mem_sup]
   exact ⟨compl_ordConnectedSection_ordSeparatingSet_mem_nhdsLE hd ha,
     compl_ordConnectedSection_ordSeparatingSet_mem_nhdsGE hd ha⟩
-
-@[deprecated (since := "2024-12-22")]
-alias compl_section_ordSeparatingSet_mem_nhds := compl_ordConnectedSection_ordSeparatingSet_mem_nhds
 
 theorem ordT5Nhd_mem_nhdsSet (hd : Disjoint s (closure t)) : ordT5Nhd s t ∈ 𝓝ˢ s :=
   bUnion_mem_nhdsSet fun x hx => ordConnectedComponent_mem_nhds.2 <| inter_mem

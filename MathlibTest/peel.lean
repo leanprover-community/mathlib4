@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.Peel
 import Mathlib.Topology.Instances.Real.Lemmas
 
@@ -270,3 +271,34 @@ and
 #guard_msgs in
 example (h : ∀ᶠ n : ℕ in atTop, 0 ≤ n) : ∀ᶠ n : ℕ in atBot, 0 ≤ n := by
   peel 1 h
+
+/-! Testing **gcongr** on peel goals -/
+
+example (p q : ℝ → ℝ → Prop) (h : ∀ ε > 0, ∃ δ > 0, p ε δ)
+    (hpq : ∀ x y, x > 0 → y > 0 → p x y → q x y) :
+    ∀ ε > 0, ∃ δ > 0, q ε δ := by
+  revert h
+  gcongr with ε hε δ hδ
+  exact hpq ε δ hε hδ
+
+example (x y : ℚ) (h : ∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, x + n = y + ε) :
+    ∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, x - ε = y - n := by
+  revert h
+  gcongr ∀ ε > 0, ∃ N, ∀ n ≥ _, ?_ with ε hε _ n hn
+  intro this
+  guard_hyp this : x + ↑n = y + ε
+  guard_target =ₐ x - ε = y - n
+  linarith
+
+example {f : ℝ → ℝ} (h : ∀ x : ℝ, ∀ᶠ y in 𝓝 x, |f y - f x| ≤ |y - x|) :
+    ∀ x : ℝ, ∀ᶠ y in 𝓝 x, |f y - f x| ^ 2 ≤ |y - x| ^ 2 := by
+  revert h
+  gcongr ∀ x, ∀ᶠ y in _, ?_
+  intro
+  gcongr
+
+example (α : Type*) (f g : Filter α) (p q : α → α → Prop) (h : ∀ᶠ x in f, ∃ᶠ y in g, p x y)
+    (h₁ : ∀ x y, p x y → q x y) : ∀ᶠ x in f, ∃ᶠ y in g, q x y := by
+  revert h
+  gcongr
+  apply h₁

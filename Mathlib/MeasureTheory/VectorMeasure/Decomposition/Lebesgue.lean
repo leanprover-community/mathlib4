@@ -3,10 +3,12 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
-import Mathlib.MeasureTheory.Measure.Complex
-import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Jordan
-import Mathlib.MeasureTheory.VectorMeasure.WithDensity
+module
+
+public import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
+public import Mathlib.MeasureTheory.Measure.Complex
+public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Jordan
+public import Mathlib.MeasureTheory.VectorMeasure.WithDensity
 
 /-!
 # Lebesgue decomposition
@@ -18,9 +20,9 @@ to `ν`.
 
 ## Main definitions
 
-* `MeasureTheory.SignedMeasure.HaveLebesgueDecomposition` : A signed measure `s` and a
-  measure `μ` is said to `HaveLebesgueDecomposition` if both the positive part and negative
-  part of `s` `HaveLebesgueDecomposition` with respect to `μ`.
+* `MeasureTheory.SignedMeasure.HaveLebesgueDecomposition` : A signed measure `s` is said to have
+  Lebesgue decomposition with respect to a measure `μ` if both the positive part and negative part
+  of `s` have Lebesgue decomposition with respect to `μ`.
 * `MeasureTheory.SignedMeasure.singularPart` : The singular part between a signed measure `s`
   and a measure `μ` is simply the singular part of the positive part of `s` with respect to `μ`
   minus the singular part of the negative part of `s` with respect to `μ`.
@@ -38,6 +40,8 @@ to `ν`.
 
 Lebesgue decomposition theorem
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -98,11 +102,10 @@ instance haveLebesgueDecomposition_smul (s : SignedMeasure α) (μ : Measure α)
 
 instance haveLebesgueDecomposition_smul_real (s : SignedMeasure α) (μ : Measure α)
     [s.HaveLebesgueDecomposition μ] (r : ℝ) : (r • s).HaveLebesgueDecomposition μ := by
-  by_cases hr : 0 ≤ r
+  by_cases! hr : 0 ≤ r
   · lift r to ℝ≥0 using hr
     exact s.haveLebesgueDecomposition_smul μ _
-  · rw [not_le] at hr
-    refine
+  · refine
       { posPart := by
           rw [toJordanDecomposition_smul_real, JordanDecomposition.real_smul_posPart_neg _ _ hr]
           infer_instance
@@ -173,7 +176,7 @@ theorem rnDeriv_def (s : SignedMeasure α) (μ : Measure α) : rnDeriv s μ = fu
 
 variable {s t : SignedMeasure α}
 
-@[measurability]
+@[fun_prop]
 theorem measurable_rnDeriv (s : SignedMeasure α) (μ : Measure α) : Measurable (rnDeriv s μ) := by
   rw [rnDeriv_def]
   fun_prop
@@ -287,15 +290,10 @@ private theorem eq_singularPart' (t : SignedMeasure α) {f : α → ℝ} (hf : M
   rw [singularPart, ← t.toSignedMeasure_toJordanDecomposition,
     JordanDecomposition.toSignedMeasure]
   congr
-  -- NB: `measurability` proves this `have`, but is slow.
-  -- TODO: make `fun_prop` able to handle this
-  · have hfpos : Measurable fun x => ENNReal.ofReal (f x) := hf.real_toNNReal.coe_nnreal_ennreal
+  · have hfpos : Measurable fun x => ENNReal.ofReal (f x) := by fun_prop
     refine eq_singularPart hfpos htμ.1 ?_
     rw [toJordanDecomposition_eq_of_eq_add_withDensity hf hfi htμ' hadd]
-  · have hfneg : Measurable fun x => ENNReal.ofReal (-f x) :=
-      -- NB: `measurability` proves this, but is slow.
-      -- XXX: `fun_prop` doesn't work here yet
-      (measurable_neg_iff.mpr hf).real_toNNReal.coe_nnreal_ennreal
+  · have hfneg : Measurable fun x => ENNReal.ofReal (-f x) := by fun_prop
     refine eq_singularPart hfneg htμ.2 ?_
     rw [toJordanDecomposition_eq_of_eq_add_withDensity hf hfi htμ' hadd]
 
@@ -343,7 +341,7 @@ theorem singularPart_smul_nnreal (s : SignedMeasure α) (μ : Measure α) (r : �
 
 nonrec theorem singularPart_smul (s : SignedMeasure α) (μ : Measure α) (r : ℝ) :
     (r • s).singularPart μ = r • s.singularPart μ := by
-  cases le_or_lt 0 r with
+  cases le_or_gt 0 r with
   | inl hr =>
     lift r to ℝ≥0 using hr
     exact singularPart_smul_nnreal s μ r
@@ -426,7 +424,7 @@ theorem rnDeriv_sub (s t : SignedMeasure α) (μ : Measure α) [s.HaveLebesgueDe
     (s - t).rnDeriv μ =ᵐ[μ] s.rnDeriv μ - t.rnDeriv μ := by
   rw [sub_eq_add_neg] at hst
   rw [sub_eq_add_neg, sub_eq_add_neg]
-  exact ae_eq_trans (rnDeriv_add _ _ _) (Filter.EventuallyEq.add (ae_eq_refl _) (rnDeriv_neg _ _))
+  grw [rnDeriv_add, rnDeriv_neg]
 
 end SignedMeasure
 

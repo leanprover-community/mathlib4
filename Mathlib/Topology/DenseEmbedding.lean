@@ -3,8 +3,10 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Topology.Bases
-import Mathlib.Topology.Separation.Regular
+module
+
+public import Mathlib.Topology.Bases
+public import Mathlib.Topology.Separation.Regular
 
 /-!
 # Dense embeddings
@@ -21,6 +23,8 @@ The main theorem `continuous_extend` gives a criterion for a function
 has to be `IsDenseInducing` (not necessarily injective).
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -41,7 +45,7 @@ namespace IsDenseInducing
 variable [TopologicalSpace α] [TopologicalSpace β]
 
 theorem _root_.Dense.isDenseInducing_val {s : Set α} (hs : Dense s) :
-    IsDenseInducing (@Subtype.val α s) := ⟨IsInducing.subtypeVal, hs.denseRange_val⟩
+    IsDenseInducing ((↑) : s → α) := ⟨IsInducing.subtypeVal, hs.denseRange_val⟩
 
 variable {i : α → β}
 
@@ -66,8 +70,8 @@ theorem closure_image_mem_nhds {s : Set α} {a : α} (di : IsDenseInducing i) (h
   rcases hs with ⟨U, ⟨haU, hUo⟩, sub : i ⁻¹' U ⊆ s⟩
   refine mem_of_superset (hUo.mem_nhds haU) ?_
   calc
-    U ⊆ closure (i '' (i ⁻¹' U)) := di.dense.subset_closure_image_preimage_of_isOpen hUo
-    _ ⊆ closure (i '' s) := closure_mono (image_subset i sub)
+    U ⊆ closure (i '' i ⁻¹' U) := di.dense.subset_closure_image_preimage_of_isOpen hUo
+    _ ⊆ closure (i '' s) := closure_mono (image_mono sub)
 
 theorem dense_image (di : IsDenseInducing i) {s : Set α} : Dense (i '' s) ↔ Dense s := by
   refine ⟨fun H x => ?_, di.dense.dense_image di.continuous⟩
@@ -124,6 +128,10 @@ theorem comap_nhds_neBot (di : IsDenseInducing i) (b : β) : NeBot (comap i (�
     rcases mem_closure_iff_nhds.1 (di.dense b) s hs with ⟨_, ⟨ha, a, rfl⟩⟩
     exact ⟨a, ha⟩
 
+theorem _root_.Dense.comap_val_nhds_neBot {s : Set α} (hs : Dense s) (a : α) :
+    ((𝓝 a).comap ((↑) : s → α)).NeBot :=
+  hs.isDenseInducing_val.comap_nhds_neBot _
+
 variable [TopologicalSpace γ]
 
 /-- If `i : α → β` is a dense inducing, then any function `f : α → γ` "extends" to a function `g =
@@ -131,6 +139,15 @@ variable [TopologicalSpace γ]
   `g` is the unique such extension. In general, `g` might not be continuous or even extend `f`. -/
 def extend (di : IsDenseInducing i) (f : α → γ) (b : β) : γ :=
   @limUnder _ _ _ ⟨f (di.dense.some b)⟩ (comap i (𝓝 b)) f
+
+theorem tendsto_extend (di : IsDenseInducing i) {f : α → γ} {a : α} (hf : ContinuousAt f a) :
+    Tendsto f (𝓝 a) (𝓝 (di.extend f (i a))) := by
+  rw [IsDenseInducing.extend, ← di.nhds_eq_comap]
+  exact tendsto_nhds_limUnder ⟨_, hf⟩
+
+theorem inseparable_extend [R1Space γ] (di : IsDenseInducing i) {f : α → γ} {a : α}
+    (hf : ContinuousAt f a) : Inseparable (di.extend f (i a)) (f a) :=
+  tendsto_nhds_unique_inseparable (di.tendsto_extend hf) hf
 
 theorem extend_eq_of_tendsto [T2Space γ] (di : IsDenseInducing i) {b : β} {c : γ} {f : α → γ}
     (hf : Tendsto f (comap i (𝓝 b)) (𝓝 c)) : di.extend f b = c :=
@@ -276,9 +293,6 @@ theorem inj_iff (de : IsDenseEmbedding e) {x y} : e x = e y ↔ x = y :=
 
 theorem isEmbedding (de : IsDenseEmbedding e) : IsEmbedding e where __ := de
 
-@[deprecated (since := "2024-10-26")]
-alias to_embedding := isEmbedding
-
 /-- If the domain of a `IsDenseEmbedding` is a separable space, then so is its codomain. -/
 protected theorem separableSpace [SeparableSpace α] (de : IsDenseEmbedding e) : SeparableSpace β :=
   de.isDenseInducing.separableSpace
@@ -384,7 +398,7 @@ theorem Filter.HasBasis.hasBasis_of_isDenseInducing [TopologicalSpace α] [Topol
     obtain ⟨i, hi, hi'⟩ := (h _).mp hT₄
     exact
       ⟨i, hi,
-        (closure_mono (image_subset f hi')).trans
+        (closure_mono (image_mono hi')).trans
           (Subset.trans (closure_minimal (image_preimage_subset _ _) hT₂) hT₃)⟩
   · obtain ⟨i, hi, hi'⟩ := hT
     suffices closure (f '' s i) ∈ 𝓝 (f x) by filter_upwards [this] using hi'

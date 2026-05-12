@@ -3,19 +3,22 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Jujian Zhang
 -/
-import Mathlib.CategoryTheory.Abelian.FunctorCategory
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.CategoryTheory.Abelian.Transfer
-import Mathlib.CategoryTheory.Sites.Limits
+module
+
+public import Mathlib.CategoryTheory.Abelian.FunctorCategory
+public import Mathlib.CategoryTheory.Abelian.Transfer
+public import Mathlib.CategoryTheory.Sites.ConstantSheaf
 
 /-!
 # Category of sheaves is abelian
-Let `C, D` be categories and `J` be a grothendieck topology on `C`, when `D` is abelian and
+Let `C, D` be categories and `J` be a Grothendieck topology on `C`, when `D` is abelian and
 sheafification is possible in `C`, `Sheaf J D` is abelian as well (`sheafIsAbelian`).
 
 Hence, `presheafToSheaf` is an additive functor (`presheafToSheaf_additive`).
 
 -/
+
+public section
 
 
 noncomputable section
@@ -41,6 +44,11 @@ attribute [local instance] preservesBinaryBiproducts_of_preservesBinaryProducts
 
 instance presheafToSheaf_additive : (presheafToSheaf J D).Additive :=
   (presheafToSheaf J D).additive_of_preservesBinaryBiproducts
+
+instance : (Functor.const Cᵒᵖ : D ⥤ Cᵒᵖ ⥤ D).Additive where
+
+instance : (constantSheaf J D).Additive :=
+  inferInstanceAs (Functor.const _ ⋙ presheafToSheaf _ _).Additive
 
 end Abelian
 

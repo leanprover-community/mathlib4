@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Order.Filter.AtTopBot.Basic
-import Mathlib.Topology.Closure
+module
+
+public import Mathlib.Order.Filter.AtTopBot.Basic
+public import Mathlib.Topology.Closure
 
 /-!
 # Neighborhoods in topological spaces
@@ -15,6 +17,8 @@ Each point `x` of `X` gets a neighborhood filter `𝓝 x`.
 
 neighborhood
 -/
+
+public section
 
 open Set Filter Topology
 
@@ -63,7 +67,7 @@ theorem mem_nhds_iff : s ∈ 𝓝 x ↔ ∃ t ⊆ s, IsOpen t ∧ x ∈ t :=
 containing `x`. -/
 theorem eventually_nhds_iff {p : X → Prop} :
     (∀ᶠ y in 𝓝 x, p y) ↔ ∃ t : Set X, (∀ y ∈ t, p y) ∧ IsOpen t ∧ x ∈ t :=
-  mem_nhds_iff.trans <| by simp only [subset_def, exists_prop, mem_setOf_eq]
+  mem_nhds_iff.trans <| by simp only [subset_def, mem_setOf_eq]
 
 theorem frequently_nhds_iff {p : X → Prop} :
     (∃ᶠ y in 𝓝 x, p y) ↔ ∀ U : Set X, x ∈ U → IsOpen U → ∃ y ∈ U, p y :=
@@ -181,7 +185,7 @@ theorem tendsto_nhds {f : α → X} {l : Filter α} :
 theorem tendsto_atTop_nhds [Nonempty α] [SemilatticeSup α] {f : α → X} :
     Tendsto f atTop (𝓝 x) ↔ ∀ U : Set X, x ∈ U → IsOpen U → ∃ N, ∀ n, N ≤ n → f n ∈ U :=
   (atTop_basis.tendsto_iff (nhds_basis_opens x)).trans <| by
-    simp only [and_imp, exists_prop, true_and, mem_Ici]
+    simp only [and_imp, true_and, mem_Ici]
 
 theorem tendsto_const_nhds {f : Filter α} : Tendsto (fun _ : α => x) f (𝓝 x) :=
   tendsto_nhds.mpr fun _ _ ha => univ_mem' fun _ => ha
@@ -256,7 +260,7 @@ theorem isOpen_iff_eventually : IsOpen s ↔ ∀ x, x ∈ s → ∀ᶠ y in 𝓝
   isOpen_iff_mem_nhds
 
 theorem isOpen_singleton_iff_nhds_eq_pure (x : X) : IsOpen ({x} : Set X) ↔ 𝓝 x = pure x := by
-  simp [← (pure_le_nhds _).le_iff_eq, isOpen_iff_mem_nhds]
+  simp [← (pure_le_nhds _).ge_iff_eq', isOpen_iff_mem_nhds]
 
 theorem isOpen_singleton_iff_punctured_nhds (x : X) : IsOpen ({x} : Set X) ↔ 𝓝[≠] x = ⊥ := by
   rw [isOpen_singleton_iff_nhds_eq_pure, nhdsWithin, ← mem_iff_inf_principal_compl,

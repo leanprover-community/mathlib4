@@ -3,10 +3,12 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-import Mathlib.NumberTheory.Transcendental.Liouville.Residual
-import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleWith
-import Mathlib.Analysis.PSeries
+module
+
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+public import Mathlib.NumberTheory.Transcendental.Liouville.Residual
+public import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleWith
+public import Mathlib.Analysis.PSeries
 
 /-!
 # Volume of the set of Liouville numbers
@@ -24,6 +26,8 @@ measure. The fact that the filters are disjoint means that two mutually exclusiv
 
 Liouville number, Lebesgue measure, residual, generic property
 -/
+
+public section
 
 open scoped Filter ENNReal Topology NNReal
 
@@ -92,7 +96,7 @@ theorem volume_iUnion_setOf_liouvilleWith :
       volume (⋃ a ∈ Finset.Icc (0 : ℤ) b, B a b) ≤ ∑ a ∈ Finset.Icc (0 : ℤ) b, volume (B a b) :=
         measure_biUnion_finset_le _ _
       _ = ↑((b + 1) * (2 / (b : ℝ≥0) ^ r)) := by
-        simp only [hB, Int.card_Icc, Finset.sum_const, nsmul_eq_mul, sub_zero, ← Int.natCast_succ,
+        simp only [hB, Int.card_Icc, Finset.sum_const, nsmul_eq_mul, sub_zero,
           Int.toNat_natCast, ← Nat.cast_succ, ENNReal.coe_mul, ENNReal.coe_natCast]
       _ = _ := by
         have : 1 - r ≠ 0 := by linarith
