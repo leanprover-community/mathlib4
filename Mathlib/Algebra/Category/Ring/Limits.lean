@@ -320,7 +320,7 @@ instance : CreatesLimit F (forget₂ RingCat.{u} SemiRingCat.{u}) :=
       { app := fun x => ofHom <| SemiRingCat.limitπRingHom.{v, u} (F ⋙ forget₂ _ SemiRingCat) x
         naturality _ _ f := by
           ext
-          simpa using (Types.Small.limitCone (F ⋙ forget _)).π.naturality_apply f _ } }
+          simpa using! (Types.Small.limitCone (F ⋙ forget _)).π.naturality_apply f _ } }
   createsLimitOfReflectsIso fun c' t =>
     { liftedCone := c
       validLift := by apply IsLimit.uniqueUpToIso (SemiRingCat.HasLimits.limitConeIsLimit _) t
@@ -447,7 +447,7 @@ instance : CreatesLimit F (forget₂ CommRingCat.{u} RingCat.{u}) :=
         { app := fun x => ofHom <| SemiRingCat.limitπRingHom.{v, u} F' x
           naturality _ _ f := by
             ext
-            simpa using (Types.Small.limitCone (F ⋙ forget _)).π.naturality_apply f _ } }
+            simpa using! (Types.Small.limitCone (F ⋙ forget _)).π.naturality_apply f _ } }
     createsLimitOfReflectsIso fun _ t =>
     { liftedCone := c
       validLift := IsLimit.uniqueUpToIso (RingCat.limitConeIsLimit.{v, u} _) t
