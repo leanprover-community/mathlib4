@@ -101,7 +101,6 @@ section Real
 
 variable {μ : Measure ℝ} [IsFiniteMeasure μ]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iteratedDeriv_charFun {n : ℕ} {t : ℝ} (hint : MemLp id n μ) :
     iteratedDeriv n (charFun μ) t = I ^ n * ∫ x, x ^ n * exp (t * x * I) ∂μ := by
   rw [iteratedDeriv, iteratedFDeriv_charFun hint]
@@ -112,7 +111,6 @@ theorem iteratedDeriv_charFun_zero {n : ℕ} (hint : MemLp id n μ) :
   simp [iteratedDeriv_charFun hint]
   norm_cast
 
-set_option backward.isDefEq.respectTransparency false in
 lemma taylorWithinEval_charFun_zero {n : ℕ} (hint : MemLp id n μ) (t : ℝ) :
     taylorWithinEval (charFun μ) n univ 0 t
       = ∑ k ∈ Finset.range (n + 1), (k ! : ℂ)⁻¹ * (t * I) ^ k * ∫ x, x ^ k ∂μ := by
