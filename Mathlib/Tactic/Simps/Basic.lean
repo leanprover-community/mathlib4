@@ -911,7 +911,7 @@ structure Config where
 declare_core_config_elab elabSimpsConfig Config where
   except attrs
   option attr := fun cfg item => do
-    addConstInfo item.prevRoot ``Config.attrs
+    item.addConstInfo ``Config.attrs
     match item.ref with
     | `(Attr.simpsConfigAttrItem| (attr := $[$attrs],*)) =>
       let extraAttrs ← elabAttrs attrs
