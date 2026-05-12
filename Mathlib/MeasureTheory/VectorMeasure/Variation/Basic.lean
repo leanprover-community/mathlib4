@@ -95,6 +95,44 @@ lemma absolutelyContinuous (μ : VectorMeasure X V) : μ ≪ᵥ μ.ennrealVariat
     grw [enorm_measure_le_variation, ← ennrealVariation_apply _ hsm, hs]
   · exact μ.not_measurable' hsm
 
+lemma variation_apply_le_of_forall_enorm_le {m : Measure X} {s : Set X} (hs : MeasurableSet s)
+    (h : ∀ E, MeasurableSet E → E ⊆ s → ‖μ E‖ₑ ≤ m E) :
+    μ.variation s ≤ m s := by
+  simp only [variation_apply, preVariation, ennrealToMeasure_apply hs, ennrealPreVariation_apply,
+    preVariationFun, hs, dite_true, iSup_le_iff]
+  intro i
+  calc
+    ∑ x ∈ i.parts, ‖μ x‖ₑ ≤ ∑ x ∈ i.parts, m x := Finset.sum_le_sum
+        (fun s hs => h s s.property (i.le hs))
+    _ = m (i.parts.sup Subtype.val) := by
+      rw [sup_set_eq_biUnion]
+      refine (MeasureTheory.measure_biUnion_finset ?_ fun b _ => b.property).symm
+      intro a ha b hb hab
+      simpa [disjoint_iff, Subtype.ext_iff] using i.disjoint ha hb hab
+    _ ≤ m s := by
+      rw [sup_set_eq_biUnion]
+      exact measure_mono <| Set.iUnion₂_subset fun _ hp => Subtype.coe_le_coe.mpr (i.le hp)
+
+lemma variation_le_of_forall_enorm_le {m : Measure X} (h : ∀ E, MeasurableSet E → ‖μ E‖ₑ ≤ m E) :
+    μ.variation ≤ m :=
+  Measure.le_intro fun _ hs _ => variation_apply_le_of_forall_enorm_le hs (fun E hE _ ↦ h E hE)
+
+lemma variation_add_le [ContinuousAdd V] : variation (μ + ν) ≤ variation μ + variation ν := by
+  refine variation_le_of_forall_enorm_le fun E _ => ?_
+  calc
+    _ ≤ ‖μ E‖ₑ + ‖ν E‖ₑ := enorm_add_le _ _
+    _ ≤ μ.variation E + ν.variation E := by
+      gcongr <;> exact enorm_measure_le_variation _ E
+
+lemma variation_finsetSum_le [ContinuousAdd V] {ι} (s : Finset ι) (μ : ι → VectorMeasure X V) :
+    (∑ i ∈ s, μ i).variation ≤ ∑ i ∈ s, (μ i).variation := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert i s his ih =>
+    simpa [Finset.sum_insert his] using
+      variation_add_le.trans (add_le_add_right ih ((μ i).variation))
+
 lemma variation_restrict (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) :
     (μ.restrict s).variation = μ.variation.restrict s := by
   apply le_antisymm
@@ -115,43 +153,6 @@ lemma variation_restrict (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSe
     _ ≤ (μ.restrict s).variation t := by
       gcongr
       exact Set.inter_subset_left
-
-lemma variation_apply_le_of_forall_enorm_le {m : Measure X} {s : Set X}
-    (h : ∀ E, MeasurableSet E → E ⊆ s → ‖μ E‖ₑ ≤ m E) :
-    μ.variation s ≤ m s := by
-  simp only [variation_apply, preVariation, ennrealToMeasure_apply hs, ennrealPreVariation_apply,
-    preVariationFun, hs, dite_true, iSup_le_iff]
-  intro i
-  calc
-    ∑ x ∈ i.parts, ‖μ x‖ₑ ≤ ∑ x ∈ i.parts, m x := Finset.sum_le_sum (fun s hs => h s s.property)
-    _ = m (i.parts.sup Subtype.val) := by
-      rw [sup_set_eq_biUnion]
-      refine (MeasureTheory.measure_biUnion_finset ?_ fun b _ => b.property).symm
-      intro a ha b hb hab
-      simpa [disjoint_iff, Subtype.ext_iff] using i.disjoint ha hb hab
-    _ ≤ m s := by
-      rw [sup_set_eq_biUnion]
-      exact measure_mono <| Set.iUnion₂_subset fun _ hp => Subtype.coe_le_coe.mpr (i.le hp)
-
-lemma variation_le_of_forall_enorm_le {m : Measure X} (h : ∀ E, MeasurableSet E → ‖μ E‖ₑ ≤ m E) :
-    μ.variation ≤ m :=
-  Measure.le_intro fun s hs _ => variation_apply_le_of_forall_enorm_le (fun E hE _ ↦ h E hE)
-
-lemma variation_add_le [ContinuousAdd V] : variation (μ + ν) ≤ variation μ + variation ν := by
-  refine variation_le_of_forall_enorm_le fun E _ => ?_
-  calc
-    _ ≤ ‖μ E‖ₑ + ‖ν E‖ₑ := enorm_add_le _ _
-    _ ≤ μ.variation E + ν.variation E := by
-      gcongr <;> exact enorm_measure_le_variation _ E
-
-lemma variation_finsetSum_le [ContinuousAdd V] {ι} (s : Finset ι) (μ : ι → VectorMeasure X V) :
-    (∑ i ∈ s, μ i).variation ≤ ∑ i ∈ s, (μ i).variation := by
-  classical
-  induction s using Finset.induction_on with
-  | empty => simp
-  | insert i s his ih =>
-    simpa [Finset.sum_insert his] using
-      variation_add_le.trans (add_le_add_right ih ((μ i).variation))
 
 end Basic
 
