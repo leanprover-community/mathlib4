@@ -304,10 +304,27 @@ end
 
 variable [NormedRing A] {f g : ℝ → ε} {a b : ℝ} {μ : Measure ℝ}
 
+@[to_fun]
 theorem smul {R : Type*} [NormedAddCommGroup R] [SMulZeroClass R E] [IsBoundedSMul R E] {f : ℝ → E}
     (h : IntervalIntegrable f μ a b) (r : R) :
     IntervalIntegrable (r • f) μ a b :=
   ⟨h.1.smul r, h.2.smul r⟩
+
+@[simp]
+theorem _root_.intervalIntegrable_smul_iff {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
+    {f : ℝ → E} {c : 𝕜} :
+    IntervalIntegrable (c • f) μ a b ↔ c = 0 ∨ IntervalIntegrable f μ a b := by
+  rcases eq_or_ne c 0 with rfl | hc
+  · simp [IntervalIntegrable.zero]
+  · simp only [hc, false_or]
+    refine ⟨fun h ↦ ?_, (.smul · c)⟩
+    simpa [hc] using h.smul c⁻¹
+
+@[simp]
+theorem _root_.intervalIntegrable_fun_smul_iff {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
+    {f : ℝ → E} {c : 𝕜} :
+    IntervalIntegrable (c • f ·) μ a b ↔ c = 0 ∨ IntervalIntegrable f μ a b :=
+  intervalIntegrable_smul_iff
 
 @[simp]
 theorem add [ContinuousAdd ε] (hf : IntervalIntegrable f μ a b) (hg : IntervalIntegrable g μ a b) :
