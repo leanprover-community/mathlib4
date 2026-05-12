@@ -149,8 +149,7 @@ example : toLex (Finsupp.single 1 1) < toLex (Finsupp.single 0 2) := by
 variable {σ : Type*} [LinearOrder σ]
 
 /-- The lexicographic order on `σ →₀ ℕ`, as a `MonomialOrder` -/
-noncomputable def MonomialOrder.lex :
-    MonomialOrder σ where
+noncomputable def MonomialOrder.lex : MonomialOrder σ where
   syn := Lex (σ →₀ ℕ)
   toSyn :=
   { toEquiv := toLex
