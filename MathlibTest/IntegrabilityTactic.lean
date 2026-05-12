@@ -5,6 +5,8 @@ import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
 import Mathlib.MeasureTheory.Integral.Asymptotics
 import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 import Mathlib.MeasureTheory.Integral.CircleIntegral
+import Mathlib.MeasureTheory.Integral.IntegralEqImproper
+import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.MeasureTheory.Function.LocallyIntegrable
 import Mathlib.NumberTheory.Chebyshev
 
@@ -15,7 +17,7 @@ These examples collect small integrability goals found by grepping mathlib for `
 The proofs are all `sorry`: this file is a goal suite for a future integrability tactic.
 
 update by running: `scripts/update-integrability-tactic-counts.sh`
-CURRENT PASSING TEST: 47 / 161
+CURRENT PASSING TEST: 52 / 189
 
 -/
 
@@ -877,3 +879,166 @@ example {𝕜 E E' F G : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedAddC
   sorry
 
 end Database2RemainingGoals
+
+section DatabaseFullAdditionalGoals
+
+/-! Additional goal families from `integrable_database_full.txt`. -/
+
+-- Product-measure projection and map/product goals.
+example {α β E : Type*} [MeasurableSpace α] [MeasurableSpace β] [NormedAddCommGroup E]
+    {μ : Measure α} {ν : Measure β} [IsFiniteMeasure ν] {f : α → E} (hf : Integrable f μ) :
+    Integrable (fun x : α × β => f x.1) (μ.prod ν) := by
+  fail_if_success fun_prop
+  sorry
+
+example {α β E : Type*} [MeasurableSpace α] [MeasurableSpace β] [NormedAddCommGroup E]
+    {μ : Measure α} {ν : Measure β} [SFinite ν] [IsFiniteMeasure μ] {f : β → E}
+    (hf : Integrable f ν) : Integrable (fun x : α × β => f x.2) (μ.prod ν) := by
+  fail_if_success fun_prop
+  sorry
+
+example {Ω β F : Type*} [MeasurableSpace Ω] [MeasurableSpace β] [NormedAddCommGroup F]
+    {μ : Measure Ω} (X : Ω → β) {f : Ω → F} (hf : Integrable f μ) :
+    Integrable (fun x : β × Ω => f x.2) (Measure.map (fun ω => (X ω, ω)) μ) := by
+  fail_if_success fun_prop
+  sorry
+
+example {α β E : Type*} [MeasurableSpace α] [MeasurableSpace β] [NormedAddCommGroup E]
+    {μ : Measure α} {ν : Measure β} [SFinite ν] {f : β → E} (hμ : μ ≠ 0)
+    (hf : Integrable (fun x : α × β => f x.2) (μ.prod ν)) : Integrable f ν := by
+  fail_if_success fun_prop
+  sorry
+
+-- Measure transformations and measure sums.
+example {α ε : Type*} [MeasurableSpace α] [TopologicalSpace ε] [ESeminormedAddMonoid ε]
+    {μ μ' : Measure α} {c : ENNReal} {f : α → ε} (hf : Integrable f μ) (hc : c ≠ (⊤ : ENNReal))
+    (hμ'_le : μ' ≤ c • μ) : Integrable f μ' := by
+  fail_if_success fun_prop
+  sorry
+
+example {α : Type*} [MeasurableSpace α] {μ ν : Measure α} {f : α → ℝ}
+    (hμ : Integrable f μ) (hν : Integrable f ν) : Integrable f (μ + ν) := by
+  fun_prop
+
+example {α : Type*} [MeasurableSpace α] {μ ν : Measure α} {f : α → ℝ}
+    (h : Integrable f (μ + ν)) : Integrable f ν := by
+  fail_if_success fun_prop
+  sorry
+
+-- Scalar, lattice, real/complex coordinate, and inner-product projections.
+example {α : Type*} [MeasurableSpace α] {μ : Measure α} {f : α → ℝ} (hf : Integrable f μ) :
+    Integrable (fun x => |f x|) μ := by
+  fun_prop
+
+example {α : Type*} [MeasurableSpace α] {μ : Measure α} {f : α → ℝ} (hf : Integrable f μ) :
+    Integrable (fun x => max (f x) 0) μ := by
+  fun_prop
+
+example {α : Type*} [MeasurableSpace α] {μ : Measure α} {f : α → ℝ} (hf : Integrable f μ) :
+    Integrable (fun x => ((f x).toNNReal : ℝ)) μ := by
+  fun_prop
+
+example {α 𝕜 : Type*} [MeasurableSpace α] [RCLike 𝕜] {μ : Measure α} {f : α → 𝕜}
+    (hf : Integrable f μ) : Integrable (fun x => RCLike.re (f x)) μ := by
+  fun_prop
+
+example {α 𝕜 : Type*} [MeasurableSpace α] [RCLike 𝕜] {μ : Measure α} {f : α → 𝕜} :
+    Integrable (fun x => RCLike.re (f x)) μ ∧ Integrable (fun x => RCLike.im (f x)) μ ↔
+      Integrable f μ := by
+  fail_if_success fun_prop
+  sorry
+
+example {α 𝕜 E : Type*} [MeasurableSpace α] [RCLike 𝕜] [NormedAddCommGroup E]
+    [InnerProductSpace 𝕜 E] {μ : Measure α} {f : α → E} (c : E) (hf : Integrable f μ) :
+    Integrable (fun x => inner 𝕜 c (f x)) μ := by
+  fail_if_success fun_prop
+  sorry
+
+-- Piecewise and simple-function multiplier goals.
+example {α ε : Type*} [MeasurableSpace α] [TopologicalSpace ε] [ESeminormedAddMonoid ε]
+    {μ : Measure α} {s : Set α} {f g : α → ε} [∀ x, Decidable (x ∈ s)]
+    (hs : MeasurableSet s) (hf : IntegrableOn f s μ) (hg : IntegrableOn g sᶜ μ) :
+    Integrable (s.piecewise f g) μ := by
+  fail_if_success fun_prop
+  sorry
+
+example {X : Type*} [MeasurableSpace X] {μ : Measure X} {f : X → ℝ}
+    (g : SimpleFunc X ℝ) (hf : Integrable f μ) : Integrable (⇑g * f) μ := by
+  fail_if_success fun_prop
+  sorry
+
+example {X : Type*} [MeasurableSpace X] {μ : Measure X} {s : Set X} {f : X → ℝ}
+    (c : ℝ) (hf : Integrable f μ) (hs : MeasurableSet s) :
+    Integrable (s.indicator (fun x => c • f x)) μ := by
+  fail_if_success fun_prop
+  sorry
+
+example {X : Type*} [MeasurableSpace X] {μ : Measure X} {s : Set X} {f : X → ℝ}
+    (c : ℝ) (hf : Integrable f μ) (hs : MeasurableSet s) : IntegrableOn (c • f) s μ := by
+  fail_if_success fun_prop
+  sorry
+
+-- At-filter and half-line equivalence shapes.
+example {α : Type*} [MeasurableSpace α] {μ : Measure α} {f : α → ℝ} :
+    IntegrableAtFilter f ⊤ μ ↔ Integrable f μ := by
+  fail_if_success fun_prop
+  sorry
+
+example {μ : Measure ℝ} {f : ℝ → ℝ} :
+    IntegrableAtFilter f atBot μ ↔ ∃ a, IntegrableOn f (Iic a) μ := by
+  fail_if_success fun_prop
+  sorry
+
+example {μ : Measure ℝ} {f : ℝ → ℝ} :
+    IntegrableAtFilter f atTop μ ↔ ∃ a, IntegrableOn f (Ici a) μ := by
+  fail_if_success fun_prop
+  sorry
+
+example {μ : Measure ℝ} {f : ℝ → ℝ} {a : ℝ} :
+    IntegrableOn f (Iic a) μ ↔ IntegrableAtFilter f atBot μ ∧ LocallyIntegrableOn f (Iic a) μ := by
+  fail_if_success fun_prop
+  sorry
+
+-- One-dimensional change-of-variable and improper-integral shapes.
+example {E : Type*} [NormedAddCommGroup E] {f : ℝ → E} {a c : ℝ} (ha : 0 < a) :
+    IntegrableOn (fun x => f (a * x)) (Ioi c) volume ↔ IntegrableOn f (Ioi (a * c)) volume := by
+  fail_if_success fun_prop
+  sorry
+
+example {E : Type*} [NormedAddCommGroup E] {f : ℝ → E} {a c : ℝ} (ha : 0 < a) :
+    IntegrableOn (fun x => f (x * a)) (Ioi c) volume ↔ IntegrableOn f (Ioi (c * a)) volume := by
+  fail_if_success fun_prop
+  sorry
+
+example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : ℝ → E} {p : ℝ} (hp : p ≠ 0) :
+    IntegrableOn (fun x => (|p| * x ^ (p - 1)) • f (x ^ p)) (Ioi 0) volume ↔
+      IntegrableOn f (Ioi 0) volume := by
+  fail_if_success fun_prop
+  sorry
+
+example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : ℝ → E} {p : ℝ} (hp : p ≠ 0) :
+    IntegrableOn (fun x => x ^ (p - 1) • f (x ^ p)) (Ioi 0) volume ↔
+      IntegrableOn f (Ioi 0) volume := by
+  fail_if_success fun_prop
+  sorry
+
+-- Derivative criteria on half-lines.
+example {g g' : ℝ → ℝ} {a l : ℝ}
+    (hg : Tendsto g atTop (𝓝 l)) (hderiv : ∀ x ∈ Ioi a, HasDerivAt g (g' x) x)
+    (g'pos : ∀ x ∈ Ioi a, 0 ≤ g' x) : IntegrableOn g' (Ioi a) volume := by
+  fail_if_success fun_prop
+  sorry
+
+example {g g' : ℝ → ℝ} {a l : ℝ}
+    (hg : Tendsto g atTop (𝓝 l)) (hderiv : ∀ x ∈ Ioi a, HasDerivAt g (g' x) x)
+    (g'neg : ∀ x ∈ Ioi a, g' x ≤ 0) : IntegrableOn g' (Ioi a) volume := by
+  fail_if_success fun_prop
+  sorry
+
+example {g g' : ℝ → ℝ} {a l : ℝ}
+    (hg : Tendsto g atTop (𝓝 l)) (hderiv : ∀ x ∈ Ioi a, HasDerivAt g (g' x) x)
+    (g'neg : ∀ x ∈ Ioi a, g' x ≤ 0) : Integrable (-g') (volume.restrict (Ioi a)) := by
+  fail_if_success fun_prop
+  sorry
+
+end DatabaseFullAdditionalGoals
