@@ -6,14 +6,14 @@ Authors: Ziyan Wei
 module
 
 public import Mathlib.Topology.Maps.Basic
-public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.Topology.Homeomorph.Quotient
 public import Mathlib.Topology.Constructions
 public import Mathlib.Data.Setoid.Basic
 /-!
 # Bourbaki Strict Maps
 
 This file defines Bourbaki strict maps (`Topology.IsStrictMap`) and proves some of their
-basic properties. ?
+basic properties.
 
 A map `f : X → Y` between topological spaces is called *strict* in the sense of Bourbaki
 if the natural corestriction to its image (i.e., `Set.rangeFactorization f`) is a quotient map.
@@ -37,7 +37,7 @@ We provide several equivalent ways to characterize a strict map `f`:
 
 @[expose] public section
 
-open Function Set Topology
+open Function Set Topology Setoid
 
 namespace Topology
 
@@ -116,9 +116,13 @@ lemma IsQuotientMap.isStrictMap (f_quot : IsQuotientMap f) :
 
 lemma IsEmbedding.isStrictMap_iff (g_emb : IsEmbedding g) :
     IsStrictMap f ↔ IsStrictMap (g ∘ f) := by
-  have eq : Setoid.ker (g ∘ f) = Setoid.ker f := by ext; simp [g_emb.injective.eq_iff]
-  rw [isStrictMap_iff_isEmbedding_kerLift, isStrictMap_iff_isEmbedding_kerLift]
-  sorry
+  set Φ : Quotient (Setoid.ker (g ∘ f)) ≃ₜ Quotient (Setoid.ker (f)) :=
+    Homeomorph.Quotient.congrRight (fun _ _ ↦ by simp [g_emb.injective.eq_iff])
+  have key : g ∘ kerLift f ∘ Φ = kerLift (g ∘ f) :=
+    funext <| Quotient.ind fun _ ↦ rfl
+  simp_rw [isStrictMap_iff_isEmbedding_kerLift, ← g_emb.of_comp_iff, ← key]
+  exact ⟨fun H ↦ H.comp Φ.isEmbedding,
+    fun H ↦ by simpa [comp_assoc] using H.comp Φ.symm.isEmbedding⟩
 
 lemma IsEmbedding.isStrictMap (f_emb : IsEmbedding f) :
     IsStrictMap f :=
@@ -134,6 +138,9 @@ lemma isQuotientMap_iff_isStrictMap_surjective :
 lemma isEmbedding_iff_isStrictMap_injective :
     IsEmbedding f ↔ IsStrictMap f ∧ Injective f := by
   refine ⟨fun H ↦ ⟨H.isStrictMap, H.injective⟩, fun ⟨f_strict, f_inj⟩ ↦ ?_⟩
-  sorry
+  rw [isStrictMap_iff_isEmbedding_kerLift] at f_strict
+  set Φ : Quotient (ker f) ≃ₜ X :=
+    (Homeomorph.Quotient.congrRight <| by simp [f_inj.eq_iff]).trans Homeomorph.quotientBot
+  exact f_strict.comp Φ.symm.isEmbedding
 
 end Topology
