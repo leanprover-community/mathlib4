@@ -449,7 +449,7 @@ theorem sigma_eq_iff_blocks_eq {c : Σ n, Composition n} {c' : Σ n, Composition
   exact H
 
 lemma prod_univ_apply_embedding {A : Type*} [CommRing A] (a : Fin n → A) (x : Composition n) :
-    ∏ i, ∏ j, a ((x.embedding i) j) = ∏ i, a i := by
+    ∏ i, ∏ j, a (x.embedding i j) = ∏ i, a i := by
   simpa [Finset.prod_sigma', Finset.univ_sigma_univ] using x.blocksFinEquiv.prod_comp a
 
 /-! ### The composition `Composition.ones` -/
