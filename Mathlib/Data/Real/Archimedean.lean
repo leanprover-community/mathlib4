@@ -22,7 +22,8 @@ import Mathlib.Data.Int.LeastGreatest
 
 assert_not_exists Finset
 
-open Pointwise CauSeq
+open scoped Pointwise
+open CauSeq
 
 namespace Real
 variable {ι : Sort*} {f : ι → ℝ} {s : Set ℝ} {a : ℝ}

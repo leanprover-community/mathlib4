@@ -45,7 +45,7 @@ to for performance concerns.
 normed group
 -/
 
-@[expose] public section
+public section
 
 
 variable {𝓕 α ι κ E F G : Type*}

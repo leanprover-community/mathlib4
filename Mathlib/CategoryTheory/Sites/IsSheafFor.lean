@@ -474,7 +474,7 @@ noncomputable def shrinkFunctorHomEquiv [LocallySmall.{w} C] {F : Cᵒᵖ ⥤ Ty
     rw! [shrinkYonedaObjObjEquiv_symm_comp]
     rfl⟩
   invFun t :=
-    { app X := TypeCat.ofHom fun f ↦ t.1 _ f.mem
+    { app X := ↾fun f ↦ t.1 _ f.mem
       naturality Y Z g := by
         ext ⟨f, hf⟩
         dsimp
@@ -643,7 +643,7 @@ theorem isSheafFor_iff_generate (R : Presieve X) :
     intro t ht
     simpa [hx] using isAmalgamation_restrict (le_generate R) _ _ ht
 
-/-- Every presheaf is a sheaf for the family {𝟙 X}.
+/-- Every presheaf is a sheaf for the family `{𝟙 X}`.
 
 [Elephant] C2.1.5(i)
 -/

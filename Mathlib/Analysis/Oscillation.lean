@@ -57,7 +57,8 @@ namespace ContinuousWithinAt
 
 theorem oscillationWithin_eq_zero [TopologicalSpace E] {f : E → F} {D : Set E}
     {x : E} (hf : ContinuousWithinAt f D x) : oscillationWithin f D x = 0 := by
-  refine le_antisymm (_root_.le_of_forall_pos_le_add fun ε hε ↦ ?_) (zero_le _)
+  rw [← nonpos_iff_eq_zero]
+  refine _root_.le_of_forall_pos_le_add fun ε hε ↦ ?_
   rw [zero_add]
   have : eball (f x) (ε / 2) ∈ (𝓝[D] x).map f :=
     hf <| eball_mem_nhds _ (by simp [ne_of_gt hε])
