@@ -32,14 +32,14 @@ structure IsFredholm_struc : Prop where
 /-FAE: I don't like this definition that seems to fix `g` (making it a structure would be even more
   disgusting). -/
 def IsFredholm_exists : Prop := ∃ g : F →L[𝕜] E,
-  (f ∘L g - .id 𝕜 F).rank < Cardinal.aleph0 ∧ (g ∘L f - .id 𝕜 E).rank < Cardinal.aleph0
+  FiniteDimensional 𝕜 (f ∘L g - .id 𝕜 F).range  ∧ FiniteDimensional 𝕜 (g ∘L f - .id 𝕜 E).range
 
 namespace QuotFiniteSubmodules
 variable [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F] [ContinuousAdd E] [ContinuousAdd F]
 
 variable (𝕜 E F) in
 def FiniteRank : Submodule 𝕜 (E →L[𝕜] F) where
-  carrier := {u | u.rank < Cardinal.aleph0}
+  carrier := {u | FiniteDimensional 𝕜 u.range}
   add_mem' := sorry
   zero_mem' := sorry
   smul_mem' := sorry
