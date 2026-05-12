@@ -489,8 +489,8 @@ theorem continuous_dom_pi {n : Type*} [Finite n] {X : Type*}
     {C : (j : n) → (i : ι) → Set (A j i)}
     (hCopen : ∀ j i, IsOpen (C j i))
     {f : (Π j : n, Πʳ i : ι, [A j i, C j i]) → X} :
-    Continuous f ↔
-      ∀ (S : Set ι) (hS : cofinite ≤ 𝓟 S), Continuous (f ∘ Pi.map fun _ ↦ inclusion _ _ hS) := by
+    Continuous f ↔ ∀ (S : Set ι) (hS : cofinite ≤ 𝓟 S),
+      Continuous (f ∘ Function.map fun _ ↦ inclusion _ _ hS) := by
   refine ⟨by fun_prop, fun H ↦ ?_⟩
   simp_rw [continuous_iff_continuousAt, ContinuousAt]
   intro x
@@ -500,9 +500,9 @@ theorem continuous_dom_pi {n : Type*} [Finite n] {X : Type*}
     change ∀ᶠ i in cofinite, ∀ j : n, x j i ∈ C j i
     simp [-eventually_cofinite]
   let x' (j : n) : Πʳ i : ι, [A j i, C j i]_[𝓟 S] := .mk (fun i ↦ x j i) (fun i hi ↦ hi _)
-  have hxx' : Pi.map (fun j ↦ inclusion _ _ hS) x' = x := rfl
-  simp_rw [← hxx', nhds_pi, Pi.map_apply, nhds_eq_map_inclusion (hCopen _), ← map_piMap_pi_finite,
-    tendsto_map'_iff, ← nhds_pi]
+  have hxx' : Function.map (fun j ↦ inclusion _ _ hS) x' = x := rfl
+  simp_rw [← hxx', nhds_pi, Function.map_apply, nhds_eq_map_inclusion (hCopen _),
+    ← map_piMap_pi_finite, tendsto_map'_iff, ← nhds_pi]
   exact (H _ _).tendsto _
 
 end cofinite

@@ -141,16 +141,16 @@ variable {ι : Type*} {α : ι → Type*} {f : ∀ i, α i → α i} {x : ∀ i,
 /-- This `sInf` can be regarded as a generalized version of LCM
 for possibly infinite sets and types. -/
 theorem minimalPeriod_piMap :
-    minimalPeriod (Pi.map f) x = sInf { n > 0 | ∀ i, minimalPeriod (f i) (x i) ∣ n } := by
+    minimalPeriod (Function.map f) x = sInf { n > 0 | ∀ i, minimalPeriod (f i) (x i) ∣ n } := by
   conv_lhs => simp [minimalPeriod_eq_sInf_n_pos_IsPeriodicPt]
   simp [← isPeriodicPt_iff_minimalPeriod_dvd]
 
 theorem minimalPeriod_piMap_fintype [Fintype ι] :
-    minimalPeriod (Pi.map f) x = Finset.univ.lcm (fun i => minimalPeriod (f i) (x i)) :=
+    minimalPeriod (Function.map f) x = Finset.univ.lcm (fun i => minimalPeriod (f i) (x i)) :=
   eq_of_forall_dvd <| by simp [← isPeriodicPt_iff_minimalPeriod_dvd]
 
 theorem minimalPeriod_single_dvd_minimalPeriod_piMap (i : ι) :
-    minimalPeriod (f i) (x i) ∣ minimalPeriod (Pi.map f) x := by
+    minimalPeriod (f i) (x i) ∣ minimalPeriod (Function.map f) x := by
   simp only [minimalPeriod_piMap]
   by_cases h : {n | 0 < n ∧ ∀ (i : ι), minimalPeriod (f i) (x i) ∣ n}.Nonempty
   · exact (Nat.sInf_mem h).2 i

@@ -419,7 +419,7 @@ theorem dense_pi {ι : Type*} {α : ι → Type*} [∀ i, TopologicalSpace (α i
 
 theorem DenseRange.piMap {ι : Type*} {X Y : ι → Type*} [∀ i, TopologicalSpace (Y i)]
     {f : (i : ι) → (X i) → (Y i)} (hf : ∀ i, DenseRange (f i)) :
-    DenseRange (Pi.map f) := by
+    DenseRange (Function.map f) := by
   rw [DenseRange, Set.range_piMap]
   exact dense_pi Set.univ (fun i _ => hf i)
 

@@ -218,7 +218,7 @@ variable {ψ : ι → Type*} [∀ i, TopologicalSpace (ψ i)] [∀ i, AddCommMon
 
 /-- Construct a continuous linear map between two (dependent) function spaces
 by applying index-dependent linear maps to the coordinates.
-A bundled version of `Pi.map`.
+A bundled version of `Function.map`.
 
 If the index type is finite, then this map can be seen as a “block diagonal” map
 between indexed products of modules. -/
@@ -231,7 +231,7 @@ theorem coe_piMap (f : ∀ i, φ i →L[R] ψ i) :
   rfl
 
 @[simp]
-theorem coe_piMap' (f : ∀ i, φ i →L[R] ψ i) : ⇑(piMap f) = Pi.map fun i ↦ f i :=
+theorem coe_piMap' (f : ∀ i, φ i →L[R] ψ i) : ⇑(piMap f) = Function.map fun i ↦ f i :=
   rfl
 
 end PiMap
