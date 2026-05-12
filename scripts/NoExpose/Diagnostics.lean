@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2026 Kim Morrison. All rights reserved.
+Copyright (c) 2026 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
@@ -9,13 +9,11 @@ import NoExpose.Restore
 /-!
 # `NoExpose.Diagnostics` — lakefile patch + lake build + log parser
 
-Ports the responsibilities of `scripts/build_with_diagnostics.py` into
-Lean. Three pieces:
+Three pieces:
 
 * **patchLakefile**: insert two `mathlibLeanOptions` entries
-  (`diagnostics=true`, `diagnostics.threshold=0`). v1 is Mathlib-only:
-  recognises the existing `mathlibLeanOptions` `abbrev`. Anything else
-  errors out.
+  (`diagnostics=true`, `diagnostics.threshold=0`). Recognises Mathlib's
+  `mathlibLeanOptions` `abbrev`; errors out on any other lakefile shape.
 * **patchDiagnosticsOffFiles**: 5-file hardcoded list of source files
   that fail to elaborate under global `diagnostics=true`; we splice in
   `set_option diagnostics false` after the last import.
@@ -57,7 +55,7 @@ def patchLakefile (lakefilePath : FilePath) : IO Unit := do
   let anchorHits := (original.splitOn patchAnchor).length
   unless anchorHits > 1 do
     throw <| IO.userError s!"could not find insertion anchor in {lakefilePath}; \
-      v1 supports Mathlib-shaped lakefiles only. \
+      only Mathlib-shaped lakefiles are supported. \
       Pass --skip-build and enable diagnostics yourself, or run on Mathlib."
   -- Replace first occurrence only.
   let parts := original.splitOn patchAnchor

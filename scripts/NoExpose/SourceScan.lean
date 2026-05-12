@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2026 Kim Morrison. All rights reserved.
+Copyright (c) 2026 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
@@ -86,7 +86,14 @@ private partial def stripMods (s : String) : String × Bool := Id.run do
 private def declKws : Array String :=
   #["def ", "theorem ", "lemma ", "instance ", "abbrev ",
     "structure ", "inductive ", "class ", "axiom ", "opaque ",
-    "example "]
+    "example ",
+    -- `syntax` / `macro` / `notation` / `elab` declarations also
+    -- produce constants the env walk picks up. Without these the
+    -- scanner couldn't classify e.g. notation-defined terms and they
+    -- showed up as `.unknown`.
+    "syntax ", "macro ", "macro_rules ", "notation ", "elab ",
+    "elab_rules ", "infix ", "infixl ", "infixr ", "prefix ",
+    "postfix "]
 
 private def isDeclHead (s : String) : Bool :=
   declKws.any (fun kw => s.startsWith kw)

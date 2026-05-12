@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2026 Kim Morrison. All rights reserved.
+Copyright (c) 2026 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
@@ -67,7 +67,7 @@ unsafe def runCollect (args : CollectArgs) : IO UInt32 := do
   -- Step 1: full build with diagnostics, unless skipped.
   unless args.skipBuild do
     if project.name.toString != "mathlib" then
-      IO.eprintln s!"no_expose collect: full-build mode is Mathlib-only in v1 \
+      IO.eprintln s!"no_expose collect: full-build mode is Mathlib-only \
         (detected project: {project.name}); pass --skip-build."
       return 1
     let extraOff : Array System.FilePath := args.patchFiles.map .mk

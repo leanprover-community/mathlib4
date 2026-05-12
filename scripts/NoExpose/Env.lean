@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2026 Kim Morrison. All rights reserved.
+Copyright (c) 2026 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
@@ -21,19 +21,16 @@ block opened by the `collect` orchestrator:
 * **declRefs**: per-decl direct reference list, used downstream by
   `Report` for one-hop transitive closure.
 
-This module does NOT `import Mathlib`. The
-`CoreM.withImportModules` helper is inlined from `Mathlib.Lean.CoreM`
-(11 lines, MIT-licensed) so the exe links against just Lean core +
-Lake.
+This module does NOT `import Mathlib`; the exe links against just Lean
+core + Lake so it builds in seconds.
 -/
 
 open Lean Core
 
 namespace NoExpose
 
-/-- Inlined from `Mathlib/Lean/CoreM.lean`: run a `CoreM α` against a
-fresh `Environment` populated by importing `modules`. Mathlib import
-removed; depends only on Lean core APIs. -/
+/-- Run a `CoreM α` against a fresh `Environment` populated by
+importing `modules`. -/
 def withImportModules {α : Type} (modules : Array Name) (run : CoreM α)
     (searchPath : Option SearchPath := none) (options : Options := {})
     (trustLevel : UInt32 := 0) (fileName := "") :
@@ -74,7 +71,7 @@ private def autoGenSuffixes : Array String := #[
 ]
 
 /-- True if `name` is a compiler helper we should exclude from
-enumeration. Mirrors the predicate in the legacy `expose_enumerate`. -/
+enumeration. -/
 def isAutoGen (env : Environment) (name : Name) : CoreM Bool := do
   if Lean.isAuxRecursor env name then return true
   if Lean.isNoConfusion env name then return true
@@ -140,8 +137,8 @@ def enumerate (scopePrefix : Array Name) : CoreM (Array DeclRecord) := do
 
 /-! ## Static references -/
 
-/-- Mirrors the legacy `expose_static_refs.lean`: for each
-(referencing module, referenced name), `(total_count, theorem_count)`. -/
+/-- For each (referencing module, referenced name),
+`(total_count, theorem_count)`. -/
 abbrev RefMap := Std.HashMap (Nat × Name) (Nat × Nat)
 
 /-- Walk every constant in env; aggregate by (refModule, refName). -/

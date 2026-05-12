@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2026 Kim Morrison. All rights reserved.
+Copyright (c) 2026 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
@@ -247,7 +247,7 @@ private def readExposed (path : System.FilePath) : IO (Std.HashMap String Json) 
   return acc
 
 /-- Same-module-but-from-theorem references count; other same-module
-refs are skipped. Mirrors `expose_report.py:117`. -/
+refs are skipped. -/
 private def shouldCount (sameModule : Bool) (count theoremCount : Nat) : Option Nat :=
   if sameModule then
     if theoremCount > 0 then some theoremCount else none
@@ -280,7 +280,7 @@ private def absorbSignal (exposed : Std.HashMap String Json)
   return (usage, usingMap, absorbed)
 
 /-- One-hop transitive closure: a downstream use of decl `K` propagates
-to every decl in `K`'s body. Mirrors `expose_report.py:154`. -/
+to every decl in `K`'s body. -/
 private def applyTransitiveClosure (exposed : Std.HashMap String Json)
     (declRefsPath : System.FilePath)
     (usage : Std.HashMap String Nat)
