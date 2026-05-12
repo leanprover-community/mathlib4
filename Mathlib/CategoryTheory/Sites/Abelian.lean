@@ -6,9 +6,8 @@ Authors: Adam Topaz, Jujian Zhang
 module
 
 public import Mathlib.CategoryTheory.Abelian.FunctorCategory
-public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 public import Mathlib.CategoryTheory.Abelian.Transfer
-public import Mathlib.CategoryTheory.Sites.Limits
+public import Mathlib.CategoryTheory.Sites.ConstantSheaf
 
 /-!
 # Category of sheaves is abelian
@@ -45,6 +44,11 @@ attribute [local instance] preservesBinaryBiproducts_of_preservesBinaryProducts
 
 instance presheafToSheaf_additive : (presheafToSheaf J D).Additive :=
   (presheafToSheaf J D).additive_of_preservesBinaryBiproducts
+
+instance : (Functor.const Cᵒᵖ : D ⥤ Cᵒᵖ ⥤ D).Additive where
+
+instance : (constantSheaf J D).Additive :=
+  inferInstanceAs (Functor.const _ ⋙ presheafToSheaf _ _).Additive
 
 end Abelian
 

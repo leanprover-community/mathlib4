@@ -8,7 +8,7 @@ module
 public import Mathlib.Data.Real.Basic
 public import Mathlib.GroupTheory.Finiteness
 public import Mathlib.GroupTheory.Index
-public import Mathlib.NumberTheory.Height.Northcott
+public import Mathlib.Order.Northcott
 
 import Mathlib.Data.Set.Finite.Lemmas
 import Mathlib.Tactic.FieldSimp
