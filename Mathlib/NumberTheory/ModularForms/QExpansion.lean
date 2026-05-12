@@ -10,7 +10,7 @@ public import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
 public import Mathlib.NumberTheory.ModularForms.Basic
 public import Mathlib.NumberTheory.ModularForms.Identities
 public import Mathlib.RingTheory.PowerSeries.Basic
-public import Mathlib.RingTheory.PowerSeries.NoZeroDivisors
+public import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 
 /-!
 # q-expansions of functions on the upper half plane
@@ -521,7 +521,7 @@ lemma qExpansion_one (h) : qExpansion h (1 : ℍ → ℂ) = 1 := by
 
 end UpperHalfPlane
 
-namespace ModularFormClass
+namespace ModularForm
 
 protected lemma cuspFunction_smul (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (a : ℂ)
     (f : F) [ModularFormClass F Γ k] : cuspFunction h (a • f) = a • cuspFunction h f :=
@@ -541,6 +541,12 @@ protected lemma cuspFunction_sub {G : Type*} [FunLike G ℍ ℂ] (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) {a b : ℤ} (f : F) [ModularFormClass F Γ a] (g : G)
     [ModularFormClass G Γ b] : cuspFunction h (f - g) = cuspFunction h f - cuspFunction h g :=
   cuspFunction_sub (ModularFormClass.analyticAt_cuspFunction_zero f hh hΓ).continuousAt
+    (ModularFormClass.analyticAt_cuspFunction_zero g hh hΓ).continuousAt
+
+protected lemma cuspFunction_mul [Γ.HasDetPlusMinusOne] (hh : 0 < h)
+    (hΓ : h ∈ Γ.strictPeriods) {a b : ℤ} (f : ModularForm Γ a) (g : ModularForm Γ b) :
+    cuspFunction h (f.mul g) = cuspFunction h f * cuspFunction h g :=
+  cuspFunction_mul (ModularFormClass.analyticAt_cuspFunction_zero f hh hΓ).continuousAt
     (ModularFormClass.analyticAt_cuspFunction_zero g hh hΓ).continuousAt
 
 protected lemma qExpansion_smul (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (a : ℂ)
@@ -563,16 +569,6 @@ protected lemma qExpansion_sub {G : Type*} [FunLike G ℍ ℂ] (hh : 0 < h)
   qExpansion_sub (ModularFormClass.analyticAt_cuspFunction_zero f hh hΓ)
     (ModularFormClass.analyticAt_cuspFunction_zero g hh hΓ)
 
-end ModularFormClass
-
-namespace ModularForm
-
-protected lemma cuspFunction_mul [Γ.HasDetPlusMinusOne] (hh : 0 < h)
-    (hΓ : h ∈ Γ.strictPeriods) {a b : ℤ} (f : ModularForm Γ a) (g : ModularForm Γ b) :
-    cuspFunction h (f.mul g) = cuspFunction h f * cuspFunction h g :=
-  cuspFunction_mul (ModularFormClass.analyticAt_cuspFunction_zero f hh hΓ).continuousAt
-    (ModularFormClass.analyticAt_cuspFunction_zero g hh hΓ).continuousAt
-
 protected lemma qExpansion_mul [Γ.HasDetPlusMinusOne] (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) {a b : ℤ} (f : ModularForm Γ a) (g : ModularForm Γ b) :
     qExpansion h (f.mul g) = qExpansion h f * qExpansion h g :=
@@ -588,6 +584,15 @@ protected lemma qExpansion_one [Γ.HasDetPlusMinusOne] :
     qExpansion h (1 : ModularForm Γ 0) = 1 := by
   simp [qExpansion_one]
 
+protected lemma qExpansion_pow [Γ.HasDetPlusMinusOne] (hh : 0 < h)
+    (hΓ : h ∈ Γ.strictPeriods) (f : ModularForm Γ k) (n : ℕ) :
+    qExpansion h (f.pow n) = (qExpansion h f) ^ n := by
+  induction n with
+  | zero => simp only [coe_pow, pow_zero, qExpansion_one]
+  | succ n ih =>
+    rw [coe_pow, pow_succ, ← coe_pow, ← coe_mul, ModularForm.qExpansion_mul hh hΓ, ih,
+      pow_succ]
+
 protected lemma mul_ne_zero [Γ.HasDetPlusMinusOne] (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods)
     {a b : ℤ} {f : ModularForm Γ a} {g : ModularForm Γ b} (hf : f ≠ 0) (hg : g ≠ 0) :
     f.mul g ≠ 0 := by
@@ -596,13 +601,12 @@ protected lemma mul_ne_zero [Γ.HasDetPlusMinusOne] (hh : 0 < h) (hΓ : h ∈ Γ
   exact ⟨(ModularForm.qExpansion_eq_zero_iff hh hΓ _).not.mpr hf,
     (ModularForm.qExpansion_eq_zero_iff hh hΓ _).not.mpr hg⟩
 
-
 /-- The qExpansion map as an additive group hom. to power series over `ℂ`. -/
 def qExpansionAddHom (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (k : ℤ) :
     ModularForm Γ k →+ PowerSeries ℂ where
   toFun f := qExpansion h f
   map_zero' := qExpansion_zero h
-  map_add' f g := ModularFormClass.qExpansion_add hh hΓ f g
+  map_add' f g := ModularForm.qExpansion_add hh hΓ f g
 
 open scoped DirectSum in
 /-- The qExpansion map as a map from the graded ring of modular forms to power series over `ℂ`. -/
@@ -630,6 +634,34 @@ lemma qExpansion_of_pow [Γ.HasDetPlusMinusOne] (hh : 0 < h)
   simpa [DirectSum.ofPow]
 
 end ModularForm
+
+namespace ModularFormClass
+
+@[deprecated (since := "2026-05-05")]
+protected alias cuspFunction_smul := ModularForm.cuspFunction_smul
+
+@[deprecated (since := "2026-05-05")]
+protected alias cuspFunction_neg := ModularForm.cuspFunction_neg
+
+@[deprecated (since := "2026-05-05")]
+protected alias cuspFunction_add := ModularForm.cuspFunction_add
+
+@[deprecated (since := "2026-05-05")]
+protected alias cuspFunction_sub := ModularForm.cuspFunction_sub
+
+@[deprecated (since := "2026-05-05")]
+protected alias qExpansion_smul := ModularForm.qExpansion_smul
+
+@[deprecated (since := "2026-05-05")]
+protected alias qExpansion_neg := ModularForm.qExpansion_neg
+
+@[deprecated (since := "2026-05-05")]
+protected alias qExpansion_add := ModularForm.qExpansion_add
+
+@[deprecated (since := "2026-05-05")]
+protected alias qExpansion_sub := ModularForm.qExpansion_sub
+
+end ModularFormClass
 
 end ring
 
