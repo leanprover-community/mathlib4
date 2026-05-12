@@ -412,7 +412,7 @@ lemma RationalMap.isOver_iff [X.Over S] [Y.Over S] {f : X ⤏ Y} :
   · intro e
     obtain ⟨f, rfl⟩ := PartialMap.toRationalMap_surjective f
     obtain ⟨U, hU, hUl, hUr, e⟩ := PartialMap.toRationalMap_eq_iff.mp e
-    exact ⟨⟨f.restrict U hU hUl, by simpa using e, by simp⟩⟩
+    exact ⟨⟨f.restrict U hU hUl, by simpa using! e, by simp⟩⟩
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -479,7 +479,7 @@ def RationalMap.equivFunctionField [IsIntegral X] [LocallyOfFiniteType sY] :
   invFun f := ⟨f.1.fromFunctionField, by
     obtain ⟨f, hf⟩ := f
     obtain ⟨f, rfl⟩ := f.exists_rep
-    simpa [fromFunctionField_toRationalMap] using congr(RationalMap.fromFunctionField $hf)⟩
+    simpa [fromFunctionField_toRationalMap] using! congr(RationalMap.fromFunctionField $hf)⟩
   left_inv f := Subtype.ext (RationalMap.fromFunctionField_ofFunctionField _ _ _ _)
   right_inv f := Subtype.ext (RationalMap.eq_of_fromFunctionField_eq
       (ofFunctionField sX sY f.1.fromFunctionField _) f

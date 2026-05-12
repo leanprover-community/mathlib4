@@ -153,7 +153,7 @@ Useful to fix definitional equalities. -/
 protected def copy (S : NonUnitalSubalgebra R A) (s : Set A) (hs : s = ↑S) :
     NonUnitalSubalgebra R A :=
   { S.toNonUnitalSubsemiring.copy s hs with
-    smul_mem' r a := by simpa [hs] using S.smul_mem r }
+    smul_mem' r a := by simpa [hs] using! S.smul_mem r }
 
 @[simp, norm_cast]
 theorem coe_copy (S : NonUnitalSubalgebra R A) (s : Set A) (hs : s = ↑S) :
@@ -1171,7 +1171,7 @@ lemma adjoin_le_centralizer_centralizer (s : Set A) :
 lemma commute_of_mem_adjoin_of_forall_mem_commute {a b : A} {s : Set A}
     (hb : b ∈ adjoin R s) (h : ∀ b ∈ s, Commute a b) :
     Commute a b := by
-  have : a ∈ centralizer R s := by simpa only [Commute.symm_iff (a := a)] using h
+  have : a ∈ centralizer R s := by simpa only [Commute.symm_iff (a := a)] using! h
   exact adjoin_le_centralizer_centralizer R s hb a this
 
 lemma commute_of_mem_adjoin_singleton_of_commute {a b c : A}

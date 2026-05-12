@@ -261,7 +261,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω}
 @[to_additive]
 theorem contMDiff_pow : ∀ i : ℕ, CMDiff n fun a : G ↦ a ^ i
   | 0 => by simp only [pow_zero, contMDiff_const]
-  | k + 1 => by simpa [pow_succ] using (contMDiff_pow _).mul contMDiff_id
+  | k + 1 => by simpa [pow_succ] using! (contMDiff_pow _).mul contMDiff_id
 
 /-- Morphism of additive `C^n` monoids. -/
 structure ContMDiffAddMonoidMorphism (I : ModelWithCorners 𝕜 E H) (I' : ModelWithCorners 𝕜 E' H')
@@ -506,7 +506,7 @@ variable {f : M → G} {s : Set M} {x : M} (c : G)
 @[to_additive]
 theorem ContMDiffWithinAt.div_const (hf : CMDiffAt[s] n f x) :
     CMDiffAt[s] n (fun x ↦ f x / c) x := by
-  simpa only [div_eq_mul_inv] using hf.mul contMDiffWithinAt_const
+  simpa only [div_eq_mul_inv] using! hf.mul contMDiffWithinAt_const
 
 @[to_additive]
 nonrec theorem ContMDiffAt.div_const (hf : CMDiffAt n f x) :

@@ -40,7 +40,7 @@ def compCoyonedaSectionsEquiv (F : J ⥤ C) (X : C) :
         dsimp
         rw [Category.id_comp]
         exact (s.property f).symm }
-  invFun τ := ⟨τ.app, fun {j j'} f => by simpa using (τ.naturality f).symm⟩
+  invFun τ := ⟨τ.app, fun {j j'} f => by simpa using! (τ.naturality f).symm⟩
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -70,7 +70,7 @@ def compYonedaSectionsEquiv (F : J ⥤ Cᵒᵖ) (X : C) :
         rw [Category.id_comp]
         exact Quiver.Hom.unop_inj (s.property f).symm }
   invFun τ := ⟨fun j => (τ.app j).unop,
-    fun {j j'} f => Quiver.Hom.op_inj (by simpa using (τ.naturality f).symm)⟩
+    fun {j j'} f => Quiver.Hom.op_inj (by simpa using! (τ.naturality f).symm)⟩
 
 end
 
@@ -85,7 +85,7 @@ noncomputable def limitCompCoyonedaIsoCone (F : J ⥤ C) (X : C) :
     limit (F ⋙ coyoneda.obj (op X)) ≅ ((const J).obj X ⟶ F) where
   hom := ↾fun a ↦ {
     app j := limit.π (F ⋙ coyoneda.obj (op X)) j a
-    naturality _ _ _ := by simpa using (limit.w_apply _ _ _).symm }
+    naturality _ _ _ := by simpa using! (limit.w_apply _ _ _).symm }
   inv := ↾fun t ↦ limit.lift _ (Types.coneOfSection (s := t.app) <| by
     simp [Functor.sections, ← t.naturality]) ⟨⟩
 

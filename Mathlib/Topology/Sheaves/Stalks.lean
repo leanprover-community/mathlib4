@@ -267,7 +267,7 @@ lemma pullback_obj_obj_ext {Z : C} {f : X ⟶ Y} {F : Y.Presheaf C} (U : (Opens 
   apply ((Opens.map f).op.isPointwiseLeftKanExtensionLeftKanExtensionUnit F _).hom_ext
   rintro ⟨⟨V⟩, ⟨⟩, ⟨b⟩⟩
   simpa [pullbackPushforwardAdjunction, Functor.lanAdjunction_unit]
-    using h V (leOfHom b)
+    using! h V (leOfHom b)
 
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
@@ -277,7 +277,7 @@ lemma pullbackPushforwardAdjunction_unit_pullback_map_germToPullbackStalk
     ((pullbackPushforwardAdjunction C f).unit.app F).app (op V) ≫
       ((pullback C f).obj F).map (homOfLE hV).op ≫ germToPullbackStalk C f F U x hx =
         F.germ _ (f x) (hV hx) := by
-  simpa [pullbackPushforwardAdjunction] using
+  simpa [pullbackPushforwardAdjunction] using!
     ((Opens.map f).op.isPointwiseLeftKanExtensionLeftKanExtensionUnit F (op U)).fac _
       (CostructuredArrow.mk (homOfLE hV).op)
 
@@ -472,7 +472,7 @@ lemma germ_eq_of_isBasis (F : X.Presheaf C) {U V : Opens X} (x : X) (mU : x ∈ 
   obtain ⟨W, hxW, hWU, hWV, e⟩ := F.germ_eq x mU mV _ _ h
   obtain ⟨_, ⟨W', hW', rfl⟩, hxW', hW'W⟩ := hB.exists_subset_of_mem_open hxW W.2
   refine ⟨W', hxW', hW', hW'W.trans hWU.le, hW'W.trans hWV.le, ?_⟩
-  simpa only [← ConcreteCategory.comp_apply, ← F.map_comp] using
+  simpa only [← ConcreteCategory.comp_apply, ← F.map_comp] using!
     DFunLike.congr_arg (ConcreteCategory.hom (F.map (homOfLE hW'W).op)) e
 
 lemma stalkFunctor_map_injective_of_isBasis

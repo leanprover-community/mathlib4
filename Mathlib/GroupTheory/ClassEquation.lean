@@ -34,8 +34,8 @@ variable (G : Type*) [Group G]
 theorem sum_conjClasses_card_eq_card [Fintype <| ConjClasses G] [Fintype G]
     [∀ x : ConjClasses G, Fintype x.carrier] :
     ∑ x : ConjClasses G, x.carrier.toFinset.card = Fintype.card G := by
-  suffices (Σ x : ConjClasses G, x.carrier) ≃ G by simpa using (Fintype.card_congr this)
-  simpa [carrier_eq_preimage_mk] using Equiv.sigmaFiberEquiv ConjClasses.mk
+  suffices (Σ x : ConjClasses G, x.carrier) ≃ G by simpa using! (Fintype.card_congr this)
+  simpa [carrier_eq_preimage_mk] using! Equiv.sigmaFiberEquiv ConjClasses.mk
 
 /-- Conjugacy classes form a partition of G, stated in terms of cardinality. -/
 theorem Group.sum_card_conj_classes_eq_card [Finite G] :

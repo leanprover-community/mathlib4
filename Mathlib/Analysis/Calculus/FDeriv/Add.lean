@@ -797,7 +797,7 @@ theorem fderiv_sub_const (c : F) : fderiv ð•œ (fun y => f y - c) x = fderiv ð•
 
 theorem HasFDerivAtFilter.const_sub (hf : HasFDerivAtFilter f f' L) (c : F) :
     HasFDerivAtFilter (fun x => c - f x) (-f') L := by
-  simpa only [sub_eq_add_neg] using hf.neg.const_add c
+  simpa only [sub_eq_add_neg] using! hf.neg.const_add c
 
 @[fun_prop]
 theorem HasStrictFDerivAt.const_sub (hf : HasStrictFDerivAt f f' x) (c : F) :

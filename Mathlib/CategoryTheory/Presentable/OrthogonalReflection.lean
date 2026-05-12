@@ -452,7 +452,7 @@ lemma isRightAdjoint_ι :
     W.isLocal.ι.IsRightAdjoint := by
   rw [Functor.isRightAdjoint_iff_leftAdjointObjIsDefined_eq_top]
   ext Z
-  simpa using (corepresentableBy Z hW).isCorepresentable
+  simpa using! (corepresentableBy Z hW).isCorepresentable
 
 end OrthogonalReflection
 

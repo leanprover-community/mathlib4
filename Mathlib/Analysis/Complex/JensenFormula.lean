@@ -139,9 +139,9 @@ private theorem herglotzLogIntegrand_circleAverage_tendsto {ρ w : ℂ} {R : ℝ
       refine Classical.or_iff_not_imp_right.mpr fun h ↦ ?_
       apply norm_herglotzLogIntegrand_circleMap_le hR hρ (by positivity) (by linarith) hn
         (hr_lt n).le
-      simpa using h
+      simpa using! h
     apply measure_mono_null (t := {θ | ‖circleMap 0 R θ - ρ‖ = 0}) (by grind)
-    simpa [sub_eq_zero] using
+    simpa [sub_eq_zero] using!
       (countable_singleton ρ).preimage_circleMap 0 (hR.ne') |>.measure_zero _
   · -- IntervalIntegrable bound volume 0 (2 * π)
     apply (IntervalIntegrable.add (by simp) (by continuity)).add ?_ |>.const_mul

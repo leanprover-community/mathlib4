@@ -176,7 +176,7 @@ theorem Spec.basicOpen_hom_ext {X : RingedSpace.{u}} {R : CommRingCat.{u}}
       PrimeSpectrum.isBasis_basic_opens
     intro r
     apply (StructureSheaf.to_basicOpen_epi R r).1
-    simpa using h r
+    simpa using! h r
 
 -- `simps!` generates some garbage lemmas, so choose manually,
 -- if more is needed, add them here

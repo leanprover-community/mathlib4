@@ -527,14 +527,14 @@ theorem CompleteBipartiteGraph.chromaticNumber {V W : Type*} [Nonempty V] [Nonem
 
 theorem IsClique.card_le_of_colorable {s : Finset V} (h : G.IsClique s) (hc : G.Colorable n) :
     s.card ≤ n := by
-  simpa using hc.card_le_of_pairwise_adj (Subtype.val : s → V) <| by simpa [Pairwise] using h
+  simpa using! hc.card_le_of_pairwise_adj (Subtype.val : s → V) <| by simpa [Pairwise] using! h
 
 theorem IsClique.card_le_of_coloring {s : Finset V} (h : G.IsClique s) [Fintype α]
     (C : G.Coloring α) : s.card ≤ Fintype.card α := h.card_le_of_colorable C.colorable
 
 theorem IsClique.card_le_chromaticNumber {s : Finset V} (h : G.IsClique s) :
     s.card ≤ G.chromaticNumber :=
-  le_chromaticNumber_of_pairwise_adj (by simp) (Subtype.val : s → V) <| by simpa [Pairwise] using h
+  le_chromaticNumber_of_pairwise_adj (by simp) (Subtype.val : s → V) <| by simpa [Pairwise] using! h
 
 theorem cliqueNum_le_chromaticNumber : G.cliqueNum ≤ G.chromaticNumber := by
   have ⟨s, hs⟩ := G.exists_isNClique_cliqueNum

@@ -203,7 +203,7 @@ lemma IsSmoothAt.of_formallySmooth_fiber
   let f : Sp →ₐ[S] Sq := IsLocalization.liftAlgHom (M := algebraMapSubmonoid S p.primeCompl)
         (f := Algebra.ofId _ _) (by
       rintro ⟨_, x, hx, rfl⟩
-      simpa using IsLocalization.map_units (M := q.primeCompl) Sq ⟨algebraMap _ _ x,
+      simpa using! IsLocalization.map_units (M := q.primeCompl) Sq ⟨algebraMap _ _ x,
         by simp_all [q.over_def p]⟩)
   algebraize [f.toRingHom]
   have : IsScalarTower R Sp Sq := .to₁₃₄ _ S _ _

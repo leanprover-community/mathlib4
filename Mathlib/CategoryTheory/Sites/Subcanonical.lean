@@ -111,7 +111,7 @@ lemma hom_ext_yoneda {P Q : Sheaf J (Type v)} {f g : P ⟶ Q}
     f = g := by
   ext X x
   simpa only [yonedaEquiv_comp, Equiv.apply_symm_apply]
-    using congr_arg (J.yonedaEquiv) (h _ (J.yonedaEquiv.symm x))
+    using! congr_arg (J.yonedaEquiv) (h _ (J.yonedaEquiv.symm x))
 
 /-- The Yoneda lemma for sheaves. -/
 @[simps! +dsimpLhs hom_app_app_hom_apply_down inv_app_app]
@@ -239,7 +239,7 @@ lemma hom_ext_uliftYoneda {P Q : Sheaf J (Type (max v v'))} {f g : P ⟶ Q}
     f = g := by
   ext X x
   simpa only [uliftYonedaEquiv_comp, Equiv.apply_symm_apply]
-    using congr_arg (J.uliftYonedaEquiv) (h _ (J.uliftYonedaEquiv.symm x))
+    using! congr_arg (J.uliftYonedaEquiv) (h _ (J.uliftYonedaEquiv.symm x))
 
 @[deprecated (since := "2025-11-10")] alias hom_ext_yonedaULift := hom_ext_uliftYoneda
 

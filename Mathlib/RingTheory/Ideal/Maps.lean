@@ -542,10 +542,10 @@ theorem comap_map_of_bijective : (I.map f).comap f = I :=
   le_antisymm ((comap_le_iff_le_map f hf).mpr fun _ ↦ id) le_comap_map
 
 theorem isMaximal_map_iff_of_bijective : IsMaximal (map f I) ↔ IsMaximal I := by
-  simpa only [isMaximal_def] using (relIsoOfBijective _ hf).symm.isCoatom_iff _
+  simpa only [isMaximal_def] using! (relIsoOfBijective _ hf).symm.isCoatom_iff _
 
 theorem isMaximal_comap_iff_of_bijective : IsMaximal (comap f K) ↔ IsMaximal K := by
-  simpa only [isMaximal_def] using (relIsoOfBijective _ hf).isCoatom_iff _
+  simpa only [isMaximal_def] using! (relIsoOfBijective _ hf).isCoatom_iff _
 
 alias ⟨_, IsMaximal.map_bijective⟩ := isMaximal_map_iff_of_bijective
 alias ⟨_, IsMaximal.comap_bijective⟩ := isMaximal_comap_iff_of_bijective

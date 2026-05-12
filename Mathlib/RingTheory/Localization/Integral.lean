@@ -284,7 +284,7 @@ lemma IsLocalization.exists_isIntegral_smul_of_isIntegral_map
     IsLocalization.map_eq_zero_iff (Algebra.algebraMapSubmonoid S M), Algebra.algebraMapSubmonoid,
     Subtype.exists, Submonoid.mem_map, exists_prop, exists_exists_and_eq_and] at hp
   obtain ⟨m, hm, e⟩ := hp
-  exact ⟨m, hm, by simpa [Algebra.smul_def, leadingCoeff_mul_monic hpm] using
+  exact ⟨m, hm, by simpa [Algebra.smul_def, leadingCoeff_mul_monic hpm] using!
     RingHom.isIntegralElem_leadingCoeff_mul (algebraMap R S) (C m * p) x (by simpa)⟩
 
 /-- If `t` is `R`-integral in `S[1/r]` where `r : S` is integral over `R`,
@@ -467,7 +467,7 @@ protected lemma IsLocalization.integralClosure
   · rintro ⟨a, ha⟩ ⟨b, hb⟩ e
     have := congr(algebraMap _ Sf $e)
     have : algebraMap S Sf a = algebraMap S Sf b := by
-      simpa only [← IsScalarTower.algebraMap_apply] using this
+      simpa only [← IsScalarTower.algebraMap_apply] using! this
     obtain ⟨⟨_, m, hm, rfl⟩, h⟩ :=
       (IsLocalization.eq_iff_exists (Algebra.algebraMapSubmonoid S M) _).mp this
     refine ⟨⟨_, m, hm, rfl⟩, FaithfulSMul.algebraMap_injective (integralClosure R S) S ?_⟩

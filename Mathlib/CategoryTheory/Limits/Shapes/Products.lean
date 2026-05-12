@@ -323,7 +323,7 @@ def Cofan.isColimitTrans {X : α → C} (c : Cofan X) (hc : IsColimit c)
   · intro t m h
     refine hc.hom_ext fun ⟨a⟩ ↦ (hs a).hom_ext fun ⟨b⟩ ↦ ?_
     erw [hc.fac, (hs a).fac]
-    simpa using h ⟨a, b⟩
+    simpa using! h ⟨a, b⟩
 
 /-- Construct a morphism between categorical products (indexed by the same type)
 from a family of morphisms between the factors.

@@ -796,7 +796,7 @@ theorem affineIndependent_of_ne {p₁ p₂ : P} (h : p₁ ≠ p₂) : AffineInde
   haveI : Unique { x // x ≠ (0 : Fin 2) } := ⟨⟨i₁⟩, he'⟩
   refine .of_subsingleton default ?_
   rw [he' default]
-  simpa using h.symm
+  simpa using! h.symm
 
 variable {k}
 

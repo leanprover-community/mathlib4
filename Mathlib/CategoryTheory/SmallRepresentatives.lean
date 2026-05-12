@@ -130,9 +130,9 @@ noncomputable def arrowEquiv : Arrow h.smallCategoryOfSet.obj ≃ Arrow C :=
   Equiv.ofBijective h.functor.mapArrow.obj (by
     constructor
     · rintro ⟨x, y, f⟩ ⟨x', y', g⟩ hfg
-      obtain rfl : x = x' := by simpa using congr_arg Arrow.leftFunc.obj hfg
-      obtain rfl : y = y' := by simpa using congr_arg Arrow.rightFunc.obj hfg
-      obtain rfl : f = g := by simpa [Arrow.mk_eq_mk_iff] using hfg
+      obtain rfl : x = x' := by simpa using! congr_arg Arrow.leftFunc.obj hfg
+      obtain rfl : y = y' := by simpa using! congr_arg Arrow.rightFunc.obj hfg
+      obtain rfl : f = g := by simpa [Arrow.mk_eq_mk_iff] using! hfg
       rfl
     · rintro ⟨X, Y, f⟩
       obtain ⟨x, rfl⟩ := h.objEquiv.surjective X

@@ -125,7 +125,7 @@ lemma egauge_le_of_smul_mem (h : c • x ∈ s) : egauge 𝕜 s x ≤ ‖c‖ₑ
 
 lemma mem_smul_of_egauge_lt (hs : Balanced 𝕜 s) (hc : egauge 𝕜 s x < ‖c‖ₑ) : x ∈ c • s :=
   let ⟨a, hxa, ha⟩ := egauge_lt_iff.1 hc
-  hs.smul_mono (by simpa [enorm] using ha.le) hxa
+  hs.smul_mono (by simpa [enorm] using! ha.le) hxa
 
 lemma mem_of_egauge_lt_one (hs : Balanced 𝕜 s) (hx : egauge 𝕜 s x < 1) : x ∈ s :=
   one_smul 𝕜 s ▸ mem_smul_of_egauge_lt hs (by simpa)

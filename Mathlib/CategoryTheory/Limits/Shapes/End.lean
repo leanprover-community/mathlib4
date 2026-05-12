@@ -88,7 +88,7 @@ def ext {W₁ W₂ : Wedge F} (e : W₁.pt ≅ W₂.pt)
   Cone.ext e (fun j =>
     match j with
     | .left _ => he _
-    | .right f => by simpa using (he f.left) =≫ _)
+    | .right f => by simpa using! (he f.left) =≫ _)
 
 section Constructor
 
@@ -151,7 +151,7 @@ def ext {W₁ W₂ : Cowedge F} (e : W₁.pt ≅ W₂.pt)
   Cocone.ext e (fun j =>
     match j with
     | .right _ => he _
-    | .left f => by simpa using _ ≫= (he f.left))
+    | .left f => by simpa using! _ ≫= (he f.left))
 
 section Constructor
 

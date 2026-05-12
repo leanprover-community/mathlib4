@@ -264,11 +264,11 @@ theorem colimit_cocone_comp_aux (s : Cocone (F ⋙ G)) (j : C) :
   · intro j₁ j₂ k₁ k₂ f w h
     rw [← w]
     rw [← s.w f] at h
-    simpa using h
+    simpa using! h
   · intro j₁ j₂ k₁ k₂ f w h
     rw [← w] at h
     rw [← s.w f]
-    simpa using h
+    simpa using! h
   · exact s.w (𝟙 _)
 
 variable (F G)

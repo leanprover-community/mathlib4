@@ -214,7 +214,7 @@ theorem Valid'.node4L {l} {x : α} {m} {y : α} {r o₁ o₂} (hl : Valid' o₁ 
     · refine (mul_le_mul_iff_right₀ (by decide)).1 (le_trans this ?_)
       rw [two_mul, Nat.succ_le_iff]
       refine add_lt_add_of_lt_of_le ?_ mm₂
-      simpa using mul_lt_mul_of_pos_right (by decide : 1 < 3) ml0
+      simpa using! mul_lt_mul_of_pos_right (by decide : 1 < 3) ml0
     · exact Nat.le_of_lt_succ (Valid'.node4L_lemma₁ lr₂ mr₂ mm₁)
     · exact Valid'.node4L_lemma₂ mr₂
     · exact Valid'.node4L_lemma₃ mr₁ mm₁

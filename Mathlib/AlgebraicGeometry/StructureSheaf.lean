@@ -431,7 +431,7 @@ theorem toBasicOpenₗ_injective (f : R) : Function.Injective (toBasicOpenₗ R 
   suffices f ∈ ((⊥ : Submodule R M).colon {d • a - b • c}).radical by
     rw [LocalizedModule.mk_eq]
     obtain ⟨n, hn⟩ := this
-    exact ⟨⟨f ^ n, n, rfl⟩, by simpa [sub_eq_zero, smul_sub] using Submodule.mem_colon.mp hn _ rfl⟩
+    exact ⟨⟨f ^ n, n, rfl⟩, by simpa [sub_eq_zero, smul_sub] using! Submodule.mem_colon.mp hn _ rfl⟩
   simp only [toBasicOpenₗ_mk] at h_eq
   rw [← PrimeSpectrum.vanishingIdeal_zeroLocus_eq_radical, PrimeSpectrum.mem_vanishingIdeal]
   intro p hfp
@@ -974,7 +974,7 @@ def Localizations.comapFun (y : PrimeSpectrum.Top S) :
       convert this using 2 with a
       exact (IsScalarTower.algebraMap_smul ..).symm)
   { __ := g,
-    map_smul' r x := by simpa [Localizations] using (IsScalarTower.algebraMap_smul ..).symm }
+    map_smul' r x := by simpa [Localizations] using! (IsScalarTower.algebraMap_smul ..).symm }
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -1180,7 +1180,7 @@ lemma comap_basicOpen (f : R →+* S) (x : R) :
       IsLocalization.map (M := .powers x) (T := .powers (f x)) _ f
         (Submonoid.powers_le.mpr (Submonoid.mem_powers _)) :=
   IsLocalization.ringHom_ext (.powers x) <| by
-    simpa [CommRingCat.hom_ext_iff] using toOpen_comp_comap f _
+    simpa [CommRingCat.hom_ext_iff] using! toOpen_comp_comap f _
 
 end Ring
 

@@ -113,7 +113,7 @@ lemma isLocallyInjective_iff_equalizerSieve_mem_imp :
       equalizerSieve (F₁.map f.op x) ((F₁.map f.op y))
     refine J.superset_covering ?_ (J.transitive h (Sieve.bind S.1 T) ?_)
     · rintro Y f ⟨Z, a, g, hg, ha, rfl⟩
-      simpa using ha
+      simpa using! ha
     · intro Y f hf
       refine J.superset_covering (Sieve.le_pullback_bind S.1 T _ hf)
         (equalizerSieve_mem J φ _ _ ?_)

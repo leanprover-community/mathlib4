@@ -372,10 +372,10 @@ theorem resultant_C_left (r : R) :
   simp
 
 @[simp] theorem resultant_one_left : resultant 1 g m n = (-1) ^ (m * n) * g.coeff n ^ m := by
-  simpa [-resultant_C_left] using resultant_C_left g m n 1
+  simpa [-resultant_C_left] using! resultant_C_left g m n 1
 
 @[simp] theorem resultant_one_right : resultant f 1 m n = f.coeff m ^ n := by
-  simpa [-resultant_C_right] using resultant_C_right f m n 1
+  simpa [-resultant_C_right] using! resultant_C_right f m n 1
 
 /-- `Res(X - r, g) = g(r)` -/
 @[simp] lemma resultant_X_sub_C_left (r : R) (hg : g.natDegree ≤ n) :

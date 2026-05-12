@@ -491,7 +491,7 @@ variable {R E F : Type*} [Semiring R]
 /-- `g ∘ f = id` as `ContinuousLinearMap`s implies `g ∘ f = id` as functions. -/
 lemma leftInverse_of_comp {f : E →L[R] F} {g : F →L[R] E}
     (hinv : g.comp f = ContinuousLinearMap.id R E) : Function.LeftInverse g f := by
-  simpa [← Function.rightInverse_iff_comp] using congr(⇑$hinv)
+  simpa [← Function.rightInverse_iff_comp] using! congr(⇑$hinv)
 
 /-- `f ∘ g = id` as `ContinuousLinearMap`s implies `f ∘ g = id` as functions. -/
 lemma rightInverse_of_comp {f : E →L[R] F} {g : F →L[R] E}
@@ -1327,7 +1327,7 @@ both `range f` and `ker f` are invariant under `T`. -/
 lemma IsIdempotentElem.commute_iff {f T : M →L[R] M}
     (hf : IsIdempotentElem f) :
     Commute f T ↔ (f.range ∈ Module.End.invtSubmodule T ∧ f.ker ∈ Module.End.invtSubmodule T) := by
-  simpa [Commute, SemiconjBy, Module.End.mul_eq_comp, ← coe_comp] using
+  simpa [Commute, SemiconjBy, Module.End.mul_eq_comp, ← coe_comp] using!
     LinearMap.IsIdempotentElem.commute_iff (T := T) hf.toLinearMap
 
 variable [IsTopologicalAddGroup M]
@@ -1339,7 +1339,7 @@ theorem IsIdempotentElem.commute_iff_of_isUnit {f T : M →L[R] M} (hT : IsUnit 
     Commute f T ↔ f.range.map (T : M →ₗ[R] M) = f.range ∧ f.ker.map (T : M →ₗ[R] M) = f.ker := by
   have := hT.map ContinuousLinearMap.toLinearMapRingHom
   lift T to (M →L[R] M)ˣ using hT
-  simpa [Commute, SemiconjBy, Module.End.mul_eq_comp, ← ContinuousLinearMap.coe_comp] using
+  simpa [Commute, SemiconjBy, Module.End.mul_eq_comp, ← ContinuousLinearMap.coe_comp] using!
     LinearMap.IsIdempotentElem.commute_iff_of_isUnit this hf.toLinearMap
 
 @[deprecated (since := "2025-12-27")] alias IsIdempotentElem.range_eq_ker :=

@@ -46,7 +46,7 @@ theorem linear_ne_zero_of_im {cd : Fin 2 → ℝ} {z : ℂ} (hz : z.im ≠ 0) (h
     -- we will need this twice
     apply_fun Complex.im at h
     simpa only [Complex.add_im, Complex.mul_im, Complex.ofReal_im, zero_mul, add_zero,
-      Complex.zero_im, mul_eq_zero, hz, or_false] using h
+      Complex.zero_im, mul_eq_zero, hz, or_false] using! h
   simp only [this, zero_mul, Complex.ofReal_zero, zero_add, Complex.ofReal_eq_zero] at h
   ext i
   fin_cases i <;> assumption
@@ -144,7 +144,7 @@ lemma smulAux'_im (g : GL (Fin 2) ℝ) (z : ℂ) :
   split_ifs with h <;>
   [rw [abs_of_pos h]; rw [abs_of_nonpos (not_lt.mp h)]] <;>
   simpa only [Complex.conjCAE_apply, Complex.star_def, Complex.conj_im,
-    neg_mul, neg_div, neg_inj] using moebius_im g z
+    neg_mul, neg_div, neg_inj] using! moebius_im g z
 
 /-- Fractional linear transformation, also known as the Moebius transformation -/
 def smulAux (g : GL (Fin 2) ℝ) (z : ℍ) : ℍ :=
@@ -167,7 +167,7 @@ theorem mul_smul' (g h : GL (Fin 2) ℝ) (z : ℍ) :
   ext : 1
   simp only [smulAux, coe_mk, smulAux', map_div₀, σ_num, σ_denom, σ_mul]
   generalize hu : σ g (σ h z) = u
-  have hu : u.im ≠ 0 := by simpa only [← hu, σ_im_ne_zero] using z.im_ne_zero
+  have hu : u.im ≠ 0 := by simpa only [← hu, σ_im_ne_zero] using! z.im_ne_zero
   have hu' : (num h u / denom h u).im ≠ 0 := by
     rw [moebius_im]
     exact div_ne_zero (mul_ne_zero h.det_ne_zero hu) (normSq_denom_ne_zero _ hu)
@@ -287,13 +287,13 @@ theorem exists_SL2_smul_eq_of_apply_zero_one_ne_zero (g : SL(2, ℝ)) (hc : g 1 
         (w +ᵥ ·) ∘ (ModularGroup.S • · : ℍ → ℍ) ∘ (v +ᵥ · : ℍ → ℍ) ∘ (u • · : ℍ → ℍ) := by
   have h_denom (z : ℍ) := denom_ne_zero g z
   induction g using Matrix.SpecialLinearGroup.fin_two_induction with | _ a b c d h => ?_
-  replace hc : c ≠ 0 := by simpa using hc
+  replace hc : c ≠ 0 := by simpa using! hc
   refine ⟨⟨_, mul_self_pos.mpr hc⟩, c * d, a / c, ?_⟩
   ext1 ⟨z, hz⟩; ext1
   suffices (↑a * z + b) / (↑c * z + d) = a / c - (c * d + ↑c * ↑c * z)⁻¹ by
     simpa [modular_S_smul, coe_specialLinearGroup_apply]
   replace hc : (c : ℂ) ≠ 0 := by norm_cast
-  replace h_denom : ↑c * z + d ≠ 0 := by simpa using h_denom ⟨z, hz⟩
+  replace h_denom : ↑c * z + d ≠ 0 := by simpa using! h_denom ⟨z, hz⟩
   replace h : (a * d - b * c : ℂ) = (1 : ℂ) := by norm_cast
   grind
 

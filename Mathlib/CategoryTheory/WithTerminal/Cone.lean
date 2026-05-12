@@ -97,7 +97,7 @@ private def coneBack : Cone (liftFromOver.obj K) ⥤ Cone K where
   obj t := {
     pt := .mk (t.π.app star)
     π.app a := Over.homMk (t.π.app (of a)) (t.w (homFrom a))
-    π.naturality _ _ f := by ext; simpa using (t.w (incl.map f)).symm }
+    π.naturality _ _ f := by ext; simpa using! (t.w (incl.map f)).symm }
   map {t₁ t₂ f} :=
     { hom := Over.homMk f.hom (by simp [dsimp% f.w star] )
       w j := by ext; simp [dsimp% f.w (of j)] }
@@ -211,7 +211,7 @@ private def coconeBack : Cocone (liftFromUnder.obj K) ⥤ Cocone K where
   obj t := {
     pt := .mk (t.ι.app star)
     ι.app a := Under.homMk (t.ι.app (of a)) (t.w (homTo a))
-    ι.naturality _ _ f := by ext; simpa using t.ι.naturality (incl.map f) }
+    ι.naturality _ _ f := by ext; simpa using! t.ι.naturality (incl.map f) }
   map {t₁ t₂ f} :=
     { hom := Under.homMk f.hom (f.w .star)
       w j := by ext; simp [dsimp% f.w (of j)] }

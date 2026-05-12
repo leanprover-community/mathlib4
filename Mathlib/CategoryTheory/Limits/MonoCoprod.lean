@@ -82,7 +82,7 @@ theorem mono_inl_iff {A B : C} {c₁ c₂ : BinaryCofan A B} (hc₁ : IsColimit 
       Mono c₂.inl
     by exact ⟨fun h₁ => this _ _ hc₁ hc₂ h₁, fun h₂ => this _ _ hc₂ hc₁ h₂⟩
   intro c₁ c₂ hc₁ hc₂ _
-  simpa only [IsColimit.comp_coconePointUniqueUpToIso_hom] using
+  simpa only [IsColimit.comp_coconePointUniqueUpToIso_hom] using!
     mono_comp c₁.inl (hc₁.coconePointUniqueUpToIso hc₂).hom
 
 theorem mk' (h : ∀ A B : C, ∃ (c : BinaryCofan A B) (_ : IsColimit c), Mono c.inl) : MonoCoprod C :=

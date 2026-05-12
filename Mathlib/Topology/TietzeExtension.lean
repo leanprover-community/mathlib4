@@ -77,7 +77,7 @@ theorem ContinuousMap.exists_extension (he : IsClosedEmbedding e) (f : C(X₁, Y
     ∃ (g : C(X, Y)), g.comp ⟨e, he.continuous⟩ = f := by
   let e' : X₁ ≃ₜ Set.range e := he.isEmbedding.toHomeomorph
   obtain ⟨g, hg⟩ := (f.comp e'.symm).exists_restrict_eq he.isClosed_range
-  exact ⟨g, by ext x; simpa using congr($(hg) ⟨e' x, x, rfl⟩)⟩
+  exact ⟨g, by ext x; simpa using! congr($(hg) ⟨e' x, x, rfl⟩)⟩
 
 /-- **Tietze extension theorem** for `TietzeExtension` spaces. Let `e` be a closed embedding of a
 nonempty topological space `X₁` into a normal topological space `X`. Let `f` be a continuous

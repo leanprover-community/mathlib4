@@ -216,11 +216,11 @@ theorem hom_ext {W : C} {φ₁ φ₂ : W ⟶ pullbackObj f g} (h₁ : φ₁ ≫ 
   let adj := mapPullbackAdj g
   let U : Over Z := Over.mk (φ₁ ≫ snd f g)
   let φ₁' : U ⟶ (pullback g).obj (Over.mk f) := Over.homMk φ₁
-  let φ₂' : U ⟶ (pullback g).obj (Over.mk f) := Over.homMk φ₂ (by simpa using h₂.symm)
+  let φ₂' : U ⟶ (pullback g).obj (Over.mk f) := Over.homMk φ₂ (by simpa using! h₂.symm)
   have : φ₁' = φ₂' := by
     apply (adj.homEquiv U _).symm.injective
     apply (Over.forget X).map_injective
-    simpa using h₁
+    simpa using! h₁
   exact congr_arg CommaMorphism.left this
 
 section Lift
@@ -356,7 +356,7 @@ noncomputable def pullbackIsoOverPullback : ChosenPullbacksAlong.pullback g ≅ 
 @[reassoc (attr := simp)]
 theorem pullbackIsoOverPullback_hom_app_comp_fst (T : Over X) :
     ((pullbackIsoOverPullback g).hom.app T).left ≫ pullback.fst _ _ = fst _ _ := by
-  simpa using (Over.forget _).congr_map
+  simpa using! (Over.forget _).congr_map
     ((ChosenPullbacksAlong.mapPullbackAdj g).rightAdjointUniq_hom_app_counit
       (Over.mapPullbackAdj g) T)
 

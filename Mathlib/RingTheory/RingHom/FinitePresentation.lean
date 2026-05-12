@@ -32,7 +32,7 @@ theorem finitePresentation_stableUnderComposition : StableUnderComposition @Fini
 /-- Being finitely-presented respects isomorphisms. -/
 theorem finitePresentation_respectsIso : RingHom.RespectsIso @RingHom.FinitePresentation :=
   finitePresentation_stableUnderComposition.respectsIso
-    fun e ↦ .of_surjective _ e.surjective <| by simpa using Submodule.fg_bot
+    fun e ↦ .of_surjective _ e.surjective <| by simpa using! Submodule.fg_bot
 
 /-- Being finitely-presented is stable under base change. -/
 theorem finitePresentation_isStableUnderBaseChange :

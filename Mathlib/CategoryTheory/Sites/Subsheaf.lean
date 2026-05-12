@@ -112,7 +112,7 @@ theorem Subfunctor.sheafify_isSheaf (hF : Presieve.IsSheaf J F) :
   have : x''.Compatible := by
     intro V₁ V₂ V₃ g₁ g₂ g₃ g₄ S₁ S₂ e
     rw [← comp_apply, ← Functor.map_comp, ← comp_apply, Functor.map_comp]
-    simpa using
+    simpa using!
       congr_arg Subtype.val
         (hx (g₁ ≫ i₁ _ _ S₁) (g₂ ≫ i₁ _ _ S₂) (hi₂ _ _ S₁) (hi₂ _ _ S₂)
         (by simp only [Category.assoc, h₂, e]))

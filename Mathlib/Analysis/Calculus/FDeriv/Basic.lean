@@ -317,7 +317,7 @@ theorem DifferentiableWithinAt.of_subsingleton [T1Space E] (h : s.Subsingleton) 
 protected theorem HasStrictFDerivAt.hasFDerivAt (hf : HasStrictFDerivAt f f' x) :
     HasFDerivAt f f' x :=
   .of_isLittleOTVS <| by
-    simpa only using hf.isLittleOTVS.comp_tendsto (tendsto_id.prodMk_nhds tendsto_const_nhds)
+    simpa only using! hf.isLittleOTVS.comp_tendsto (tendsto_id.prodMk_nhds tendsto_const_nhds)
 
 protected theorem HasStrictFDerivAt.differentiableAt (hf : HasStrictFDerivAt f f' x) :
     DifferentiableAt 𝕜 f x :=
@@ -606,14 +606,14 @@ theorem HasStrictFDerivAt.isBigOTVS_sub (hf : HasStrictFDerivAt f f' x) :
 
 theorem HasFDerivWithinAt.isBigOTVS_sub (h : HasFDerivWithinAt f f' s x) :
     (f · - f x) =O[𝕜; 𝓝[s] x] (· - x) := by
-  simpa using HasFDerivAtFilter.isBigOTVS_sub h
+  simpa using! HasFDerivAtFilter.isBigOTVS_sub h
 
 lemma DifferentiableWithinAt.isBigOTVS_sub (h : DifferentiableWithinAt 𝕜 f s x) :
     (f · - f x) =O[𝕜; 𝓝[s] x] (· - x) :=
   h.hasFDerivWithinAt.isBigOTVS_sub
 
 theorem HasFDerivAt.isBigOTVS_sub (h : HasFDerivAt f f' x) : (f · - f x) =O[𝕜; 𝓝 x] (· - x) := by
-  simpa using HasFDerivAtFilter.isBigOTVS_sub h
+  simpa using! HasFDerivAtFilter.isBigOTVS_sub h
 
 theorem DifferentiableAt.isBigOTVS_sub (h : DifferentiableAt 𝕜 f x) :
     (f · - f x) =O[𝕜; 𝓝 x] (· - x) :=
@@ -632,9 +632,9 @@ theorem HasFDerivAtFilter.tendsto_nhds {L : Filter E} (hL : L ≤ 𝓝 x)
   have : (f · - f x) =o[𝕜; L] (1 : E → 𝕜) := by
     refine h.isBigOTVS_sub |>.comp_tendsto prod_pure.ge |>.trans_isLittleOTVS ?_
     rw [isLittleOTVS_one]
-    simpa [sub_eq_add_neg] using (tendsto_id'.mpr hL).add_const (-x)
+    simpa [sub_eq_add_neg] using! (tendsto_id'.mpr hL).add_const (-x)
   rw [isLittleOTVS_one] at this
-  simpa using this.add_const (f x)
+  simpa using! this.add_const (f x)
 
 theorem HasFDerivWithinAt.continuousWithinAt (h : HasFDerivWithinAt f f' s x) :
     ContinuousWithinAt f s x :=
@@ -763,21 +763,21 @@ theorem HasFDerivAtFilter.isThetaTVS_sub (hf : HasFDerivAtFilter f f' L)
 
 theorem HasFDerivAt.isEquivalent_sub (hf : HasFDerivAt f f' x) (hf' : Topology.IsInducing f') :
     (f · - f x) ~[𝓝 x] (f' <| · - x) := by
-  simpa using HasFDerivAtFilter.isEquivalent_sub hf hf'
+  simpa using! HasFDerivAtFilter.isEquivalent_sub hf hf'
 
 theorem HasFDerivAt.isThetaTVS_sub (hf : HasFDerivAt f f' x) (hf' : Topology.IsInducing f') :
     (f · - f x) =Θ[𝕜; 𝓝 x] (· - x) := by
-  simpa [IsThetaTVS] using HasFDerivAtFilter.isThetaTVS_sub hf hf'
+  simpa [IsThetaTVS] using! HasFDerivAtFilter.isThetaTVS_sub hf hf'
 
 theorem HasFDerivWithinAt.isEquivalent_sub (hf : HasFDerivWithinAt f f' s x)
     (hf' : Topology.IsInducing f') :
     (f · - f x) ~[𝓝[s] x] (f' <| · - x) := by
-  simpa using HasFDerivAtFilter.isEquivalent_sub hf hf'
+  simpa using! HasFDerivAtFilter.isEquivalent_sub hf hf'
 
 theorem HasFDerivWithinAt.isThetaTVS_sub (hf : HasFDerivWithinAt f f' s x)
     (hf' : Topology.IsInducing f') :
     (f · - f x) =Θ[𝕜; 𝓝[s] x] (· - x) := by
-  simpa [IsThetaTVS] using HasFDerivAtFilter.isThetaTVS_sub hf hf'
+  simpa [IsThetaTVS] using! HasFDerivAtFilter.isThetaTVS_sub hf hf'
 
 theorem HasStrictFDerivAt.isEquivalent_sub (hf : HasStrictFDerivAt f f' x)
     (hf' : Topology.IsInducing f') :

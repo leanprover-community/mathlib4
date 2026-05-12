@@ -184,7 +184,7 @@ theorem Orthonormal.linearIndependent {v : ι → E} (hv : Orthonormal 𝕜 v) :
   intro l hl
   ext i
   have key : ⟪v i, Finsupp.linearCombination 𝕜 v l⟫ = ⟪v i, 0⟫ := by rw [hl]
-  simpa only [hv.inner_right_finsupp, inner_zero_right] using key
+  simpa only [hv.inner_right_finsupp, inner_zero_right] using! key
 
 /-- A subfamily of an orthonormal family (i.e., a composition with an injective map) is an
 orthonormal family. -/

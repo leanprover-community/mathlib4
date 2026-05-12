@@ -65,7 +65,7 @@ noncomputable
 instance instAdmissibleAbsValues : AdmissibleAbsValues K where
   archAbsVal := multisetInfinitePlace K
   nonarchAbsVal := {v | IsFinitePlace v}
-  isNonarchimedean v hv := FinitePlace.add_le ⟨v, by simpa using hv⟩
+  isNonarchimedean v hv := FinitePlace.add_le ⟨v, by simpa using! hv⟩
   hasFiniteMulSupport := FinitePlace.hasFiniteMulSupport
   product_formula {x} hx := private prod_multisetInfinitePlace_eq (· x) ▸ prod_abs_eq_one hx
 

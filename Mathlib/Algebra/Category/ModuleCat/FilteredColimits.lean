@@ -156,7 +156,7 @@ def colimitCocone : Cocone F where
     { app := coconeMorphism F
       naturality _ _ f := by
         ext
-        simpa using (Types.TypeMax.colimitCocone
+        simpa using! (Types.TypeMax.colimitCocone
           (F ⋙ forget (ModuleCat R))).ι.naturality_apply f _ }
 
 set_option backward.isDefEq.respectTransparency false in

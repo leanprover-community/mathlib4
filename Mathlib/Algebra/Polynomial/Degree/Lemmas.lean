@@ -215,7 +215,7 @@ theorem natDegree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
       · rw [Finset.sup'_le_iff]
         intro b hb
         by_cases hb' : f b = 0
-        · simpa [hb'] using hs
+        · simpa [hb'] using! hs
         rw [degree_eq_natDegree hb', Nat.cast_withBot]
         exact Finset.le_sup' (fun i : S => (natDegree (f i) : WithBot ℕ)) hb
       · rw [Finset.sup'_le_iff]
@@ -224,7 +224,7 @@ theorem natDegree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
         by_cases hb' : f b = 0
         · refine ⟨x, hx, ?_⟩
           contrapose! hx'
-          simpa [← Nat.cast_withBot, hb', degree_eq_bot] using hx'
+          simpa [← Nat.cast_withBot, hb', degree_eq_bot] using! hx'
         exact ⟨b, hb, (degree_eq_natDegree hb').ge⟩
     · exact h.imp fun x y hxy hxy' => hxy (natDegree_eq_of_degree_eq hxy')
   · rw [Finset.sum_eq_zero H, natDegree_zero, eq_comm, show 0 = ⊥ from rfl, Finset.sup_eq_bot_iff]

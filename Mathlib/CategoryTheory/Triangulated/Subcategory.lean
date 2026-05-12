@@ -520,7 +520,7 @@ lemma trW_iff_of_distinguished' [P.IsStableUnderShift ℤ]
     [P.IsClosedUnderIsomorphisms] (T : Triangle C) (hT : T ∈ distTriang C) :
     P.trW T.mor₂ ↔ P T.obj₁ := by
   simpa [P.prop_shift_iff_of_isStableUnderShift]
-    using P.trW_iff_of_distinguished _ (rot_of_distTriang _ hT)
+    using! P.trW_iff_of_distinguished _ (rot_of_distTriang _ hT)
 
 section
 

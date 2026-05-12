@@ -66,11 +66,11 @@ def ofMon (M : Mon (C ⥤ C)) : Monad C where
   «η» := η[M.X]
   «μ» := μ[M.X]
   left_unit := fun X => by
-    simpa [-MonObj.mul_one] using congrArg (fun t ↦ t.app X) (mul_one M.X)
+    simpa [-MonObj.mul_one] using! congrArg (fun t ↦ t.app X) (mul_one M.X)
   right_unit := fun X => by
-    simpa [-MonObj.one_mul] using congrArg (fun t ↦ t.app X) (one_mul M.X)
+    simpa [-MonObj.one_mul] using! congrArg (fun t ↦ t.app X) (one_mul M.X)
   assoc := fun X => by
-    simpa [-MonObj.mul_assoc] using congrArg (fun t ↦ t.app X) (mul_assoc M.X)
+    simpa [-MonObj.mul_assoc] using! congrArg (fun t ↦ t.app X) (mul_assoc M.X)
 
 -- Porting note: `@[simps]` fails to generate `ofMon_obj`:
 @[simp] lemma ofMon_obj (M : Mon (C ⥤ C)) (X : C) : (ofMon M).obj X = M.X.obj X := rfl

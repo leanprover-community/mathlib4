@@ -240,7 +240,7 @@ lemma ker_mapQ (f : M →ₛₗ[τ₁₂] M₂) (h) : ker (p.mapQ q f h) = (coma
   simp [Submodule.mapQ, Submodule.ker_liftQ, LinearMap.ker_comp]
 
 theorem range_liftQ [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) (h) :
-    range (p.liftQ f h) = range f := by simpa only [range_eq_map] using map_liftQ _ _ _ _
+    range (p.liftQ f h) = range f := by simpa only [range_eq_map] using! map_liftQ _ _ _ _
 
 theorem ker_liftQ_eq_bot (f : M →ₛₗ[τ₁₂] M₂) (h) (h' : ker f ≤ p) : ker (p.liftQ f h) = ⊥ := by
   rw [ker_liftQ, le_antisymm h h', mkQ_map_self]

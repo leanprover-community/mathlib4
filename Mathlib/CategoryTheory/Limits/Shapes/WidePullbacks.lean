@@ -393,7 +393,7 @@ def base (s : WidePullbackCone f) : s.pt ⟶ X :=
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma condition (s : WidePullbackCone f) (i : ι) : s.π i ≫ f i = s.base := by
-  simpa using ((Cone.π s).naturality (.term i)).symm
+  simpa using! ((Cone.π s).naturality (.term i)).symm
 
 /-- Construct a wide pullback cone from the projections. -/
 @[simps! pt]

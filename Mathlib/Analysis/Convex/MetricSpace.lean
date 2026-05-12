@@ -256,7 +256,7 @@ noncomputable def ConvexSpace.ofConvex
   convexCombination f :=
     letI : ConvexSpace R E := inferInstance
     ⟨convexCombination (f.map (↑)), by
-    simpa [convexCombination_eq_sum, StdSimplex.map, Finsupp.sum_mapDomain_index, add_smul] using
+    simpa [convexCombination_eq_sum, StdSimplex.map, Finsupp.sum_mapDomain_index, add_smul] using!
       H.sum_mem (fun _ _ ↦ f.nonneg _) f.total fun i _ ↦ i.2⟩
   assoc f := by
     simp [convexCombination_eq_sum, StdSimplex.map, Finsupp.sum_mapDomain_index, add_smul,

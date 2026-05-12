@@ -89,7 +89,7 @@ abbrev gbar : D.T := D.g
 set_option backward.isDefEq.respectTransparency false in
 /-- `S` is the localization of `T` away from `S`. -/
 instance : IsLocalization.Away D.gbar S := by
-  refine .of_surjective_of_isScalarTower (n := 1) ?_ ?_ _ ?_ (by simpa using D.hg)
+  refine .of_surjective_of_isScalarTower (n := 1) ?_ ?_ _ ?_ (by simpa using! D.hg)
   · refine .of_comp (g := algebraMap P.Ring D.T) ?_
     convert P.algebraMap_surjective
     ext x
@@ -133,7 +133,7 @@ lemma ker_presLeft_le : D.presLeft.ker ≤ P.ker := by
   intro x hx
   simpa only [toExtension_commRing, toExtension_Ring, RingHom.mem_ker,
     toExtension_algebra₂, algebraMap_apply, Ideal.Quotient.algebraMap_eq,
-    map_zero] using (algebraMap D.T S).congr_arg hx
+    map_zero] using! (algebraMap D.T S).congr_arg hx
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The forward direction of the isomorphism `S ⊗[T] J/J² ≃ₗ[S] I/I²`. -/
@@ -175,7 +175,7 @@ def tensorCotangentEquiv :
   refine LinearEquiv.ofLinear D.tensorCotangentHom D.tensorCotangentInv ?_ ?_
   · refine b.ext fun i ↦ ?_
     simpa only [LinearMap.coe_comp, Function.comp_apply, tensorCotangentInv_apply,
-      tensorCotangentHom_tmul] using D.hf (b i)
+      tensorCotangentHom_tmul] using! D.hf (b i)
   · ext : 2
     refine LinearMap.ext_on_range D.span_range_mk_kerGen fun i ↦ ?_
     simp [-toExtension_commRing, -toExtension_Ring, -toExtension_algebra₂, tensorCotangentHom_tmul,
@@ -248,7 +248,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma basis_inl [Nontrivial S] :
     D.basis (.inl ()) =
       D.cotangentEquivProd.symm (Generators.cMulXSubOneCotangent S D.gbar, 0) := by
-  simpa [basis] using Generators.basisCotangentAway_apply _ _
+  simpa [basis] using! Generators.basisCotangentAway_apply _ _
 
 lemma basis_inr [Nontrivial S] (i : σ) :
     D.basis (.inr i) = D.cotangentEquivProd.symm (0, D.basisLeft i) := by
@@ -347,7 +347,7 @@ public lemma exists_presentation_of_free_cotangent [Algebra.FinitePresentation R
   · let P' : Presentation R S (Unit ⊕ α) (Unit ⊕ Fin (Module.finrank S P.toExtension.Cotangent)) :=
       { toGenerators := .ofSurjective (fun i : Unit ⊕ α ↦ 0) (Function.surjective_to_subsingleton _)
         relation _ := 1
-        span_range_relation_eq_ker := by simpa using (RingHom.ker_eq_top_of_subsingleton _).symm }
+        span_range_relation_eq_ker := by simpa using! (RingHom.ker_eq_top_of_subsingleton _).symm }
     have : Subsingleton P'.toExtension.Cotangent := Module.subsingleton S _
     exact ⟨P', default, by subsingleton, by subsingleton⟩
   have : Module.Finite S P.toExtension.Cotangent :=

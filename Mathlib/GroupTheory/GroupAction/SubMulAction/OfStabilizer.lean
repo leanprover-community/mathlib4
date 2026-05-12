@@ -215,7 +215,7 @@ lemma exists_smul_of_last_eq [IsPretransitive G α] {n : ℕ} (a : α) (x : Fin 
   use g, (Fin.Embedding.init (g • x)).codRestrict (ofStabilizer G a) H
   ext i
   rcases Fin.eq_castSucc_or_eq_last i with ⟨i, rfl⟩ | ⟨rfl⟩
-  · simpa [ofStabilizer.snoc] using
+  · simpa [ofStabilizer.snoc] using!
       Subtype.ext_iff.mp <| Function.Embedding.codRestrict_apply _ _ H i
   · simpa only [smul_apply, ofStabilizer.snoc, Fin.Embedding.snoc_last]
 

@@ -196,7 +196,7 @@ theorem add (hf : AbsolutelyContinuousOnInterval f a b)
 @[to_fun]
 theorem neg (hf : AbsolutelyContinuousOnInterval f a b) :
     AbsolutelyContinuousOnInterval (-f) a b := by
-  apply squeeze_zero (fun t ↦ ?_) (fun t ↦ ?_) (by simpa using hf)
+  apply squeeze_zero (fun t ↦ ?_) (fun t ↦ ?_) (by simpa using! hf)
   · exact Finset.sum_nonneg (fun i hi ↦ by positivity)
   · simp
 

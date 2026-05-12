@@ -622,7 +622,7 @@ instance (i) (R : ι → Type _) [∀ i, CommRing (R i)] :
     · intro x y
       constructor
       · intro e; ext j; by_cases h : j = i <;> aesop
-      · intro e; simpa using congr_fun e i
+      · intro e; simpa using! congr_fun e i
     · exact Function.surjective_eval _
   exact IsOpenImmersion.of_isLocalization (Function.update 0 i 1)
 
@@ -709,8 +709,8 @@ instance {U X Y : Scheme} (f : U ⟶ X) (g : U ⟶ Y) [IsOpenImmersion f] [IsOpe
     (i : WalkingPair) : Mono ((span f g ⋙ Scheme.forget).map (WidePushoutShape.Hom.init i)) := by
   rw [mono_iff_injective]
   cases i
-  · simpa using f.isOpenEmbedding.injective
-  · simpa using g.isOpenEmbedding.injective
+  · simpa using! f.isOpenEmbedding.injective
+  · simpa using! g.isOpenEmbedding.injective
 
 instance {U X Y : Scheme} (f : U ⟶ X) (g : U ⟶ Y) [IsOpenImmersion f] [IsOpenImmersion g]
     {i j : WalkingSpan} (t : i ⟶ j) : IsOpenImmersion ((span f g).map t) := by

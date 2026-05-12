@@ -485,7 +485,7 @@ theorem not_nonempty_empty : ¬(∅ : Set α).Nonempty := fun ⟨_, hx⟩ => hx
 
 @[simp]
 theorem isEmpty_coe_sort {s : Set α} : IsEmpty (↥s) ↔ s = ∅ :=
-  not_iff_not.1 <| by simpa using nonempty_iff_ne_empty
+  not_iff_not.1 <| by simpa using! nonempty_iff_ne_empty
 
 lemma eq_empty_of_isEmpty (s : Set α) [IsEmpty s] : s = ∅ := by
   simpa using ‹IsEmpty s›

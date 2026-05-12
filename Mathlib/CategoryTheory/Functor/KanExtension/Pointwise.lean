@@ -267,7 +267,7 @@ set_option backward.defeqAttrib.useBackward true in
 lemma ι_isoColimit_hom (g : CostructuredArrow L Y) :
     E.hom.app g.left ≫ E.right.map g.hom ≫ h.isoColimit.hom =
       colimit.ι (CostructuredArrow.proj L Y ⋙ F) g := by
-  simpa using h.comp_coconePointUniqueUpToIso_hom (colimit.isColimit _) g
+  simpa using! h.comp_coconePointUniqueUpToIso_hom (colimit.isColimit _) g
 
 end IsPointwiseLeftKanExtensionAt
 
@@ -447,7 +447,7 @@ lemma isoLimit_hom_π (g : StructuredArrow Y L) :
 lemma isoLimit_inv_π (g : StructuredArrow Y L) :
     h.isoLimit.inv ≫ E.left.map g.hom ≫ E.hom.app g.right =
       limit.π (StructuredArrow.proj Y L ⋙ F) g := by
-  simpa using h.conePointUniqueUpToIso_inv_comp (limit.isLimit _) g
+  simpa using! h.conePointUniqueUpToIso_inv_comp (limit.isLimit _) g
 
 end IsPointwiseRightKanExtensionAt
 

@@ -66,9 +66,9 @@ instance NonUnitalSeminormedRing.isBoundedSMul [NonUnitalSeminormedRing α] :
 instance NonUnitalSeminormedRing.isBoundedSMulOpposite [NonUnitalSeminormedRing α] :
     IsBoundedSMul αᵐᵒᵖ α where
   dist_smul_pair' x y₁ y₂ := by
-    simpa [sub_mul, dist_eq_norm, mul_comm] using norm_mul_le (y₁ - y₂) x.unop
+    simpa [sub_mul, dist_eq_norm, mul_comm] using! norm_mul_le (y₁ - y₂) x.unop
   dist_pair_smul' x₁ x₂ y := by
-    simpa [mul_sub, dist_eq_norm, mul_comm] using norm_mul_le y (x₁ - x₂).unop
+    simpa [mul_sub, dist_eq_norm, mul_comm] using! norm_mul_le y (x₁ - x₂).unop
 
 section SeminormedRing
 
@@ -81,7 +81,7 @@ theorem IsBoundedSMul.of_norm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖ 
 
 theorem IsBoundedSMul.of_enorm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖ₑ ≤ ‖r‖ₑ * ‖x‖ₑ) :
     IsBoundedSMul α β :=
-  .of_norm_smul_le (by simpa [enorm_eq_nnnorm, ← ENNReal.coe_mul, ENNReal.coe_le_coe] using h)
+  .of_norm_smul_le (by simpa [enorm_eq_nnnorm, ← ENNReal.coe_mul, ENNReal.coe_le_coe] using! h)
 
 theorem IsBoundedSMul.of_nnnorm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖₊ ≤ ‖r‖₊ * ‖x‖₊) :
     IsBoundedSMul α β := .of_norm_smul_le h

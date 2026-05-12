@@ -204,7 +204,7 @@ instance instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
   zero_le _ := (le_top : _ ≤ ⊤)
   mul_lt_mul_of_pos_left := by
     simpa [← ofAdd_add, ← toDual_add]
-      using fun a ha b c hbc ↦ add_right_strictMono_of_ne_top (by simpa using ha.ne') hbc
+      using! fun a ha b c hbc ↦ add_right_strictMono_of_ne_top (by simpa using! ha.ne') hbc
 
 @[deprecated "Use simp" (since := "2025-11-17")]
 theorem ofAdd_toDual_eq_zero_iff [LinearOrderedAddCommMonoidWithTop α]

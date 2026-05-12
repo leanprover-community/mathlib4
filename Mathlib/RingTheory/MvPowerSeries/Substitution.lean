@@ -99,7 +99,7 @@ theorem HasSubst.hasEval [TopologicalSpace S] (ha : HasSubst a) :
 
 theorem HasSubst.zero : HasSubst (fun (_ : σ) ↦ (0 : MvPowerSeries τ S)) := by
   letI : UniformSpace S := ⊥
-  simpa [hasSubst_iff_hasEval_of_discreteTopology] using HasEval.zero
+  simpa [hasSubst_iff_hasEval_of_discreteTopology] using! HasEval.zero
 
 theorem HasSubst.add {a b : σ → MvPowerSeries τ S} (ha : HasSubst a) (hb : HasSubst b) :
     HasSubst (a + b) := by
@@ -317,7 +317,7 @@ theorem constantCoeff_subst_eq_zero (ha : HasSubst a) (ha' : ∀ i, (a i).consta
       obtain ⟨i, hi⟩ : ∃ i : σ, d i ≠ 0 := by
         by_contra! hc
         exact hd <| Finsupp.ext hc
-      simpa [map_finsuppProd, ha'] using
+      simpa [map_finsuppProd, ha'] using!
         Finset.prod_eq_zero (i := i) (by simp [hi]) (by simp [zero_pow hi])
     rw [this, smul_zero]
 
@@ -425,7 +425,7 @@ theorem HasSubst.comp (ha : HasSubst a) (hb : HasSubst b) :
     letI : UniformSpace T := ⊥
     rw [← coeff_zero_iff]
     apply Filter.Tendsto.comp _ (ha.hasEval.tendsto_zero)
-    simpa [← map_zero (substAlgHom (R := S) hb)] using (continuous_subst hb).continuousAt
+    simpa [← map_zero (substAlgHom (R := S) hb)] using! (continuous_subst hb).continuousAt
 
 theorem substAlgHom_comp_substAlgHom (ha : HasSubst a) (hb : HasSubst b) :
     ((substAlgHom hb).restrictScalars R).comp (substAlgHom ha) = substAlgHom (ha.comp hb) := by

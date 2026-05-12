@@ -399,7 +399,7 @@ def quotientSubgroupOfEmbeddingOfLE (H : Subgroup α) (h : s ≤ t) :
   inj' :=
     Quotient.ind₂' <| by
       intro a b h
-      simpa only [Quotient.map'_mk'', QuotientGroup.eq] using h
+      simpa only [Quotient.map'_mk'', QuotientGroup.eq] using! h
 
 @[to_additive (attr := simp)]
 theorem quotientSubgroupOfEmbeddingOfLE_apply_mk (H : Subgroup α) (h : s ≤ t) (g : s) :

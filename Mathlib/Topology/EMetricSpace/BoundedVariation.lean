@@ -182,7 +182,7 @@ theorem edist_le (f : α → E) {s : Set α} {x y : α} (hx : x ∈ s) (hy : y �
   have us : ∀ i, u i ∈ s := fun
   | 0 => hy
   | (_ + 1) => hx
-  simpa only [Finset.sum_range_one] using sum_le (n := 1) hu us
+  simpa only [Finset.sum_range_one] using! sum_le (n := 1) hu us
 
 theorem eq_zero_iff (f : α → E) {s : Set α} :
     eVariationOn f s = 0 ↔ ∀ x ∈ s, ∀ y ∈ s, edist (f x) (f y) = 0 := by
@@ -228,7 +228,7 @@ protected theorem lowerSemicontinuous (s : Set α) :
     LowerSemicontinuous fun f : α →ᵤ[s.image singleton] E => eVariationOn f s := fun f ↦ by
   apply @lowerSemicontinuous_aux _ _ _ _ (UniformOnFun α E (s.image singleton)) id (𝓝 f) f s _
   simpa only [UniformOnFun.tendsto_iff_tendstoUniformlyOn, mem_image, forall_exists_index, and_imp,
-    forall_apply_eq_imp_iff₂, tendstoUniformlyOn_singleton_iff_tendsto] using @tendsto_id _ (𝓝 f)
+    forall_apply_eq_imp_iff₂, tendstoUniformlyOn_singleton_iff_tendsto] using! @tendsto_id _ (𝓝 f)
 
 /-- The map `(eVariationOn · s)` is lower semicontinuous for uniform convergence on `s`. -/
 theorem lowerSemicontinuous_uniformOn (s : Set α) :

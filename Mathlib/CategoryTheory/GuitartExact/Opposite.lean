@@ -44,7 +44,7 @@ def functor :
       w.CostructuredArrowDownwards g.unop where
   obj f := CostructuredArrowDownwards.mk _ _ f.unop.right.left.unop
       f.unop.right.hom.unop f.unop.hom.left.unop
-      (Quiver.Hom.op_inj (by simpa using CostructuredArrow.w f.unop.hom))
+      (Quiver.Hom.op_inj (by simpa using! CostructuredArrow.w f.unop.hom))
   map {f f'} φ :=
     CostructuredArrow.homMk
       (StructuredArrow.homMk (φ.unop.right.left.unop)

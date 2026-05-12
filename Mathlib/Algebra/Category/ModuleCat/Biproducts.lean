@@ -158,7 +158,7 @@ private noncomputable def lequivProdOfLeftSplitExact' {f : M →ₗ[R] A} (hg : 
   ((ShortComplex.Splitting.ofExactOfRetraction _
     (ShortComplex.Exact.moduleCat_of_range_eq_ker (ModuleCat.ofHom j)
     (ModuleCat.ofHom g) exac) (ModuleCat.ofHom f) (hom_ext h)
-    (by simpa only [ModuleCat.epi_iff_surjective] using hg)).isoBinaryBiproduct ≪≫
+    (by simpa only [ModuleCat.epi_iff_surjective] using! hg)).isoBinaryBiproduct ≪≫
     biprodIsoProd _ _).symm.toLinearEquiv
 
 end universe_monomorphic

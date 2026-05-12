@@ -425,7 +425,7 @@ variable (e b) in
 /-- The representation of `s` in a local frame at `x` only depends on `s` at `x`. -/
 lemma localFrame_coeff_congr {i : ι} (hss' : s x = s' x) :
     e.localFrame_coeff I b i x (s x) = e.localFrame_coeff I b i x (s' x) := by
-  simpa using (isLocalFrameOn_localFrame_baseSet I 1 e b).coeff_congr hss' i
+  simpa using! (isLocalFrameOn_localFrame_baseSet I 1 e b).coeff_congr hss' i
 
 variable {n}
 

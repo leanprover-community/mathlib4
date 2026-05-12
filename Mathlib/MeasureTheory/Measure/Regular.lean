@@ -275,7 +275,7 @@ protected theorem comap {α β} [MeasurableSpace α] {mβ : MeasurableSpace β}
 theorem smul (H : InnerRegularWRT μ p q) (c : ℝ≥0∞) : InnerRegularWRT (c • μ) p q := by
   intro U hU r hr
   rw [smul_apply, H.measure_eq_iSup hU, smul_eq_mul] at hr
-  simpa only [ENNReal.mul_iSup, lt_iSup_iff, exists_prop] using hr
+  simpa only [ENNReal.mul_iSup, lt_iSup_iff, exists_prop] using! hr
 
 theorem trans {q' : Set α → Prop} (H : InnerRegularWRT μ p q) (H' : InnerRegularWRT μ q q') :
     InnerRegularWRT μ p q' := by
@@ -420,7 +420,7 @@ protected theorem smul (μ : Measure α) [OuterRegular μ] {x : ℝ≥0∞} (hx 
     exact OuterRegular.zero
   · refine ⟨fun A _ r hr => ?_⟩
     rw [smul_apply, A.measure_eq_iInf_isOpen, smul_eq_mul] at hr
-    simpa only [ENNReal.mul_iInf_of_ne h0 hx, gt_iff_lt, iInf_lt_iff, exists_prop] using hr
+    simpa only [ENNReal.mul_iInf_of_ne h0 hx, gt_iff_lt, iInf_lt_iff, exists_prop] using! hr
 
 instance smul_nnreal (μ : Measure α) [OuterRegular μ] (c : ℝ≥0) :
     OuterRegular (c • μ) :=

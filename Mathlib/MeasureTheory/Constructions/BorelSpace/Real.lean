@@ -415,7 +415,7 @@ theorem EReal.measurable_of_measurable_real {f : EReal → α} (h : Measurable f
     (MeasurableEquiv.erealEquivReal.symm.measurable_comp_iff.1 h)
 
 theorem measurable_ereal_toReal : Measurable EReal.toReal :=
-  EReal.measurable_of_measurable_real (by simpa using measurable_id)
+  EReal.measurable_of_measurable_real (by simpa using! measurable_id)
 
 @[fun_prop]
 theorem Measurable.ereal_toReal {f : α → EReal} (hf : Measurable f) :

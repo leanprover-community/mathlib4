@@ -240,7 +240,7 @@ theorem intervalIntegrable_log' : IntervalIntegrable log volume a b := by
     · exact (continuous_mul_log.continuousOn.sub continuous_id.continuousOn).neg
     · intro s ⟨hs, _⟩
       norm_num at *
-      simpa using (hasDerivAt_id s).sub (hasDerivAt_mul_log hs.ne.symm)
+      simpa using! (hasDerivAt_id s).sub (hasDerivAt_mul_log hs.ne.symm)
     · intro s ⟨hs₁, hs₂⟩
       simp at *
       exact (log_nonpos_iff hs₁.le).mpr hs₂.le

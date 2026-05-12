@@ -170,7 +170,7 @@ theorem integral_zpow {n : ℤ} (h : 0 ≤ n ∨ n ≠ -1 ∧ (0 : ℝ) ∉ [[a,
 
 @[simp]
 theorem integral_pow : ∫ x in a..b, x ^ n = (b ^ (n + 1) - a ^ (n + 1)) / (n + 1) := by
-  simpa only [← Int.natCast_succ, zpow_natCast] using integral_zpow (Or.inl n.cast_nonneg)
+  simpa only [← Int.natCast_succ, zpow_natCast] using! integral_zpow (Or.inl n.cast_nonneg)
 
 /-- Integral of `|x - a| ^ n` over `Ι a b`. This integral appears in the proof of the
 Picard-Lindelöf/Cauchy-Lipschitz theorem. -/
@@ -245,7 +245,7 @@ theorem integral_exp_mul_complex {c : ℂ} (hc : c ≠ 0) :
     conv => congr
     rw [← mul_div_cancel_right₀ (Complex.exp (c * x)) hc]
     apply ((Complex.hasDerivAt_exp _).comp x _).div_const c
-    simpa only [mul_one] using ((hasDerivAt_id (x : ℂ)).const_mul _).comp_ofReal
+    simpa only [mul_one] using! ((hasDerivAt_id (x : ℂ)).const_mul _).comp_ofReal
   rw [integral_deriv_eq_sub' _ (funext fun x => (D x).deriv) fun x _ => (D x).differentiableAt]
   · ring
   · fun_prop
@@ -282,8 +282,8 @@ lemma integral_log_from_zero_of_pos (ht : 0 < b) : ∫ s in 0..b, log s = b * lo
   · abel
   · exact ht
   · intro s ⟨hs, _ ⟩
-    simpa using (hasDerivAt_mul_log hs.ne.symm).sub (hasDerivAt_id s)
-  · simpa [mul_comm] using ((tendsto_log_mul_rpow_nhdsGT_zero zero_lt_one).sub
+    simpa using! (hasDerivAt_mul_log hs.ne.symm).sub (hasDerivAt_id s)
+  · simpa [mul_comm] using! ((tendsto_log_mul_rpow_nhdsGT_zero zero_lt_one).sub
       (tendsto_nhdsWithin_of_tendsto_nhds Filter.tendsto_id))
   · exact tendsto_nhdsWithin_of_tendsto_nhds (ContinuousAt.tendsto (by fun_prop))
 
@@ -428,9 +428,9 @@ theorem integral_sin_pow_aux :
   have h : ∀ α β γ : ℝ, β * α * γ * α = β * (α * α * γ) := fun α β γ => by ring
   have hu : ∀ x ∈ [[a, b]],
       HasDerivAt (fun y => sin y ^ (n + 1)) ((n + 1 : ℕ) * cos x * sin x ^ n) x :=
-    fun x _ => by simpa only [mul_right_comm] using (hasDerivAt_sin x).pow (n + 1)
+    fun x _ => by simpa only [mul_right_comm] using! (hasDerivAt_sin x).pow (n + 1)
   have hv : ∀ x ∈ [[a, b]], HasDerivAt (-cos) (sin x) x := fun x _ => by
-    simpa only [neg_neg] using (hasDerivAt_cos x).neg
+    simpa only [neg_neg] using! (hasDerivAt_cos x).neg
   have H := integral_mul_deriv_eq_deriv_mul hu hv ?_ ?_
   · calc
       (∫ x in a..b, sin x ^ (n + 2)) = ∫ x in a..b, sin x ^ (n + 1) * sin x := by
@@ -502,7 +502,7 @@ theorem integral_cos_pow_aux :
   have hu : ∀ x ∈ [[a, b]],
       HasDerivAt (fun y => cos y ^ (n + 1)) (-(n + 1 : ℕ) * sin x * cos x ^ n) x :=
     fun x _ => by
-      simpa only [mul_right_comm, neg_mul, mul_neg] using (hasDerivAt_cos x).pow (n + 1)
+      simpa only [mul_right_comm, neg_mul, mul_neg] using! (hasDerivAt_cos x).pow (n + 1)
   have hv : ∀ x ∈ [[a, b]], HasDerivAt sin (cos x) x := fun x _ => hasDerivAt_sin x
   have H := integral_mul_deriv_eq_deriv_mul hu hv ?_ ?_
   · calc

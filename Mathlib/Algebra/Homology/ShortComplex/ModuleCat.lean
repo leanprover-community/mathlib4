@@ -90,7 +90,7 @@ def moduleCatMkOfKerLERange {X₁ X₂ X₃ : ModuleCat.{v} R} (f : X₁ ⟶ X�
 lemma Exact.moduleCat_of_range_eq_ker {X₁ X₂ X₃ : ModuleCat.{v} R}
     (f : X₁ ⟶ X₂) (g : X₂ ⟶ X₃) (hfg : LinearMap.range f.hom = LinearMap.ker g.hom) :
     (moduleCatMkOfKerLERange f g (by rw [hfg])).Exact := by
-  simpa only [moduleCat_exact_iff_range_eq_ker] using hfg
+  simpa only [moduleCat_exact_iff_range_eq_ker] using! hfg
 
 /-- The canonical linear map `S.X₁ →ₗ[R] LinearMap.ker S.g` induced by `S.f`. -/
 abbrev moduleCatToCycles : S.X₁ →ₗ[R] LinearMap.ker S.g.hom :=

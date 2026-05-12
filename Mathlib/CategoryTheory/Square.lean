@@ -357,10 +357,10 @@ def mapSquare (F : C ⥤ D) : Square C ⥤ Square D where
       τ₂ := F.map φ.τ₂
       τ₃ := F.map φ.τ₃
       τ₄ := F.map φ.τ₄
-      comm₁₂ := by simpa only [Functor.map_comp] using F.congr_map φ.comm₁₂
-      comm₁₃ := by simpa only [Functor.map_comp] using F.congr_map φ.comm₁₃
-      comm₂₄ := by simpa only [Functor.map_comp] using F.congr_map φ.comm₂₄
-      comm₃₄ := by simpa only [Functor.map_comp] using F.congr_map φ.comm₃₄ }
+      comm₁₂ := by simpa only [Functor.map_comp] using! F.congr_map φ.comm₁₂
+      comm₁₃ := by simpa only [Functor.map_comp] using! F.congr_map φ.comm₁₃
+      comm₂₄ := by simpa only [Functor.map_comp] using! F.congr_map φ.comm₂₄
+      comm₃₄ := by simpa only [Functor.map_comp] using! F.congr_map φ.comm₃₄ }
 
 end Functor
 

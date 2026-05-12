@@ -51,14 +51,14 @@ lemma norm_le_one (x : 𝒪[K]) : ‖x‖ ≤ 1 := mem_iff.mp x.prop
 
 @[simp]
 lemma norm_coe_unit (u : 𝒪[K]ˣ) : ‖((u : 𝒪[K]) : K)‖ = 1 := by
-  simpa [← NNReal.coe_inj] using
+  simpa [← NNReal.coe_inj] using!
     (Valuation.integer.integers (NormedField.valuation (K := K))).valuation_unit u
 
 lemma norm_unit (u : 𝒪[K]ˣ) : ‖(u : 𝒪[K])‖ = 1 := by
   simp
 
 lemma isUnit_iff_norm_eq_one {u : 𝒪[K]} : IsUnit u ↔ ‖u‖ = 1 := by
-  simpa [← NNReal.coe_inj] using
+  simpa [← NNReal.coe_inj] using!
     (Valuation.integer.integers (NormedField.valuation (K := K))).isUnit_iff_valuation_eq_one
 
 lemma norm_irreducible_lt_one {ϖ : 𝒪[K]} (h : Irreducible ϖ) : ‖ϖ‖ < 1 :=
@@ -149,7 +149,7 @@ lemma totallyBounded_iff_finite_residueField [(Valued.v : Valuation K Γ₀).Ran
     rw [Valued.maximalIdeal, hp.maximalIdeal_eq, ← SetLike.mem_coe,
       (Valuation.integer.integers _).coe_span_singleton_eq_setOf_le_v_algebraMap]
     rw [dist_comm] at hy'
-    simpa [dist_eq_norm] using hy'.le
+    simpa [dist_eq_norm] using! hy'.le
   · intro H
     rw [Metric.totallyBounded_iff]
     intro ε εpos

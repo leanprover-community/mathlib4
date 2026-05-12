@@ -96,7 +96,7 @@ private theorem exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_e
   · dsimp [-TensorProduct.algebraMap_apply]
     rw [aeval_C, AlgEquiv.commutes]
     simp [← Ideal.Quotient.mk_algebraMap, I]
-  · simpa [e] using Polynomial.fiberEquivQuotient_tmul _ hx' P 1 X
+  · simpa [e] using! Polynomial.fiberEquivQuotient_tmul _ hx' P 1 X
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 private theorem exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_top_aux₂

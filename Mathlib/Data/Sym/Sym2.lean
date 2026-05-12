@@ -695,7 +695,7 @@ def fromRelOrderIso : { r : α → α → Prop // Symmetric r } ≃o Set (Sym2 �
   invFun s := ⟨ToRel s, toRel_symmetric s⟩
   left_inv r := by simp [toRel_fromRel]
   right_inv s := by simp [fromRel_toRel]
-  map_rel_iff' {r₁ r₂} := by simpa using fromRel_mono_iff ..
+  map_rel_iff' {r₁ r₂} := by simpa using! fromRel_mono_iff ..
 
 /-- `fromRel` induces an order embedding from symmetric relations to `Sym2` sets. -/
 @[deprecated fromRelOrderIso (since := "2026-03-11")]

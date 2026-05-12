@@ -196,8 +196,8 @@ lemma complete_distinguished_triangle_morphism₁ (T₁ T₂ : Triangle C)
   · apply (shiftFunctor C (1 : ℤ)).map_injective
     dsimp at ha₂
     rw [neg_comp, comp_neg, neg_inj] at ha₂
-    simpa only [Functor.map_comp, Functor.map_preimage] using ha₂
-  · simpa only [Functor.map_preimage] using ha₁
+    simpa only [Functor.map_comp, Functor.map_preimage] using! ha₂
+  · simpa only [Functor.map_preimage] using! ha₁
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

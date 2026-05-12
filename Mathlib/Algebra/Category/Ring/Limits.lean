@@ -86,7 +86,7 @@ def limitCone : Cone F where
     { app := fun j ↦ SemiRingCat.ofHom <| limitπRingHom.{v, u} F j
       naturality _ _ f := by
         ext
-        simpa using (Types.Small.limitCone (F ⋙ forget _)).π.naturality_apply f _ }
+        simpa using! (Types.Small.limitCone (F ⋙ forget _)).π.naturality_apply f _ }
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

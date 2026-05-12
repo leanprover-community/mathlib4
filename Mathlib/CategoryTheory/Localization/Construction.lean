@@ -186,7 +186,7 @@ theorem uniq (G₁ G₂ : W.Localization ⥤ D) (h : W.Q ⋙ G₁ = W.Q ⋙ G₂
     cases X
     apply Functor.congr_obj h
   · rintro ⟨X⟩ ⟨Y⟩ (f | ⟨w, hw⟩)
-    · simpa only using Functor.congr_hom h f
+    · simpa only using! Functor.congr_hom h f
     · have hw : W.Q.map w = (wIso w hw).hom := rfl
       have hw' := Functor.congr_hom h w
       simp only [Functor.comp_map, hw] at hw'
@@ -227,10 +227,10 @@ theorem morphismProperty_eq_top (P : MorphismProperty W.Localization)
     suffices ∀ (X₁ X₂ : Paths (LocQuiver W)) (f : X₁ ⟶ X₂), P (G.map f) by
       rcases X with ⟨⟨X⟩⟩
       rcases Y with ⟨⟨Y⟩⟩
-      simpa only [Functor.map_preimage] using this _ _ (G.preimage f)
+      simpa only [Functor.map_preimage] using! this _ _ (G.preimage f)
     intro X₁ X₂ p
     induction p with
-    | nil => simpa only [Functor.map_id] using hP₁ (𝟙 X₁.obj)
+    | nil => simpa only [Functor.map_id] using! hP₁ (𝟙 X₁.obj)
     | @cons X₂ X₃ p g hp =>
       let p' : X₁ ⟶ X₂ := p
       rw [show p'.cons g = p' ≫ Quiver.Hom.toPath g by rfl, G.map_comp]
@@ -279,13 +279,13 @@ def natTransExtension {F₁ F₂ : W.Localization ⥤ D} (τ : W.Q ⋙ F₁ ⟶ 
   naturality := by
     suffices MorphismProperty.naturalityProperty (NatTransExtension.app τ) = ⊤ by
       intro X Y f
-      simpa only [← this] using MorphismProperty.top_apply f
+      simpa only [← this] using! MorphismProperty.top_apply f
     refine morphismProperty_eq_top'
       (MorphismProperty.naturalityProperty (NatTransExtension.app τ))
       ?_ (MorphismProperty.naturalityProperty.stableUnderInverse _)
     intro X Y f
     dsimp
-    simpa only [NatTransExtension.app_eq] using τ.naturality f
+    simpa only [NatTransExtension.app_eq] using! τ.naturality f
 
 @[simp]
 theorem whiskerLeft_natTransExtension {F G : W.Localization ⥤ D} (τ : W.Q ⋙ F ⟶ W.Q ⋙ G) :

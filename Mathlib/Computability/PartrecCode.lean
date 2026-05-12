@@ -1030,7 +1030,7 @@ end
 /-- There are only countably many partial recursive partial functions `ℕ →. ℕ`. -/
 instance : Countable {f : ℕ →. ℕ // Partrec f} := by
   apply Function.Surjective.countable (f := fun c => ⟨eval c, eval_part.comp (.const c) .id⟩)
-  intro ⟨f, hf⟩; simpa using exists_code.1 hf
+  intro ⟨f, hf⟩; simpa using! exists_code.1 hf
 
 /-- There are only countably many computable functions `ℕ → ℕ`. -/
 instance : Countable {f : ℕ → ℕ // Computable f} :=

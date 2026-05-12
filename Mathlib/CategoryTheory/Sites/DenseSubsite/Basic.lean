@@ -341,7 +341,7 @@ noncomputable def sheafYonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.obj) :
   app U :=
     let α := (sheafCoyonedaHom α)
     { app := fun X => (α.app X).app U
-      naturality := fun X Y f => by simpa using congr_app (α.naturality f) U }
+      naturality := fun X Y f => by simpa using! congr_app (α.naturality f) U }
   naturality U V i := by
     ext X x
     exact ConcreteCategory.congr_hom (((sheafCoyonedaHom α).app X).naturality i) x
@@ -354,7 +354,7 @@ transformation between presheaves.
 noncomputable def sheafHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.obj) : ℱ ⟶ ℱ'.obj :=
   let α' := sheafYonedaHom α
   { app := fun X => yoneda.preimage (α'.app X)
-    naturality := fun X Y f => yoneda.map_injective (by simpa using α'.naturality f) }
+    naturality := fun X Y f => yoneda.map_injective (by simpa using! α'.naturality f) }
 
 /--
 Given a natural isomorphism `G ⋙ ℱ ≅ G ⋙ ℱ'` between presheaves of arbitrary category,

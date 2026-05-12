@@ -192,7 +192,7 @@ def ModuleCat.matrixEquivalence (i : ι) : ModuleCat R ≌ ModuleCat (Matrix ι 
     ext1
     suffices (toModuleCatFromModuleCatLinearEquiv R ((ModuleCat.toMatrixModCat R ι).obj X)
       i).symm.toLinearMap ∘ₗ LinearMap.mapMatrixModule ι (ModuleCat.Hom.hom
-      ((unitIso R i).inv.app X)) = LinearMap.id by simpa using this
+      ((unitIso R i).inv.app X)) = LinearMap.id by simpa using! this
     ext x
     simp [unitIso, toModuleCatFromModuleCatLinearEquiv, fromModuleCatToModuleCatLinearEquiv,
       fromModuleCatToModuleCatLinearEquivtoModuleCatObj, Finset.univ_sum_single]

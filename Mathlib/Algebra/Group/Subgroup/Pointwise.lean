@@ -546,7 +546,7 @@ theorem normalCore_eq_iInf_conjAct (H : Subgroup G) :
   ext g
   simp only [Subgroup.normalCore, Subgroup.mem_iInf, Subgroup.mem_pointwise_smul_iff_inv_smul_mem]
   refine ⟨fun h x ↦ h x⁻¹, fun h x ↦ ?_⟩
-  simpa only [ConjAct.toConjAct_inv, inv_inv] using h x⁻¹
+  simpa only [ConjAct.toConjAct_inv, inv_inv] using! h x⁻¹
 
 lemma conjAct_pointwise_smul_iff {H : Subgroup G} {g : G} :
     ConjAct.toConjAct g • H = H ↔ g ∈ normalizer H := by

@@ -60,7 +60,7 @@ def pullbackConeIsLimit (f : X ⟶ Z) (g : Y ⟶ Z) : IsLimit (pullbackCone f g)
       constructor; swap
       · exact ofHom
           { toFun := fun x =>
-              ⟨⟨S.fst x, S.snd x⟩, by simpa using ConcreteCategory.congr_hom S.condition x⟩
+              ⟨⟨S.fst x, S.snd x⟩, by simpa using! ConcreteCategory.congr_hom S.condition x⟩
             continuous_toFun := by fun_prop }
       refine ⟨?_, ?_, ?_⟩
       · delta pullbackCone
@@ -74,8 +74,8 @@ def pullbackConeIsLimit (f : X ⟶ Z) (g : Y ⟶ Z) : IsLimit (pullbackCone f g)
         -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): used to be `ext x`.
         apply Subtype.ext
         apply Prod.ext
-        · simpa using ConcreteCategory.congr_hom h₁ x
-        · simpa using ConcreteCategory.congr_hom h₂ x)
+        · simpa using! ConcreteCategory.congr_hom h₁ x
+        · simpa using! ConcreteCategory.congr_hom h₂ x)
 
 /-- The pullback of two maps can be identified as a subspace of `X × Y`. -/
 def pullbackIsoProdSubtype (f : X ⟶ Z) (g : Y ⟶ Z) :

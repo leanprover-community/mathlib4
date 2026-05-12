@@ -298,7 +298,7 @@ lemma mono_pushoutSection_of_iSup_eq {ι : Type*} [Finite ι] (VX : ι → X.Ope
       (Algebra.TensorProduct.map (AlgHom.id Γ(T, UT) Γ(T, UT)) ψ).toRingHom by
     refine .of_comp (f := ψY) ?_
     convert (hφ.comp hψ').comp e.commRingCatIsoToRingEquiv.injective
-    ext1 x; simpa using congr($this (e.hom x))
+    ext1 x; simpa using! congr($this (e.hom x))
   ext1
   · have H₁ : e.inv.hom.comp Algebra.TensorProduct.includeLeftRingHom =
         (pushout.inr (C := CommRingCat) _ _).hom :=

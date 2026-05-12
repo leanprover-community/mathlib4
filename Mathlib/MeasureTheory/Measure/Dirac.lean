@@ -313,7 +313,7 @@ lemma dirac_ne_dirac_iff_exists_measurableSet {x y : α} :
   refine ⟨fun h A A_mble ↦ by simp only [h A A_mble, imp_self], fun h A A_mble ↦ ?_⟩
   by_cases x_in_A : x ∈ A
   · simp only [x_in_A, h A A_mble x_in_A]
-  · simpa only [x_in_A, false_iff] using h Aᶜ (MeasurableSet.compl_iff.mpr A_mble) x_in_A
+  · simpa only [x_in_A, false_iff] using! h Aᶜ (MeasurableSet.compl_iff.mpr A_mble) x_in_A
 
 open MeasurableSpace
 /-- Dirac delta measures at two different points are different, assuming the measurable space

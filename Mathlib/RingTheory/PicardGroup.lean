@@ -140,7 +140,7 @@ theorem bijective_curry : Function.Bijective (curry e.toLinearMap) := by
       rTensorHom N ∘ₗ (ringLmapEquivSelf R R M).symm.toLinearMap := by
     rw [← LinearEquiv.toLinearMap_symm_comp_eq]; ext
     simp [LinearEquiv.congrLeft, LinearEquiv.congrRight, LinearEquiv.arrowCongrAddEquiv]
-  simpa [this] using (rTensorEquiv R M <| TensorProduct.comm R N M ≪≫ₗ e).bijective
+  simpa [this] using! (rTensorEquiv R M <| TensorProduct.comm R N M ≪≫ₗ e).bijective
 
 /-- Given `M ⊗[R] N ≃ₗ[R] R`, this is the induced isomorphism `M ≃ₗ[R] Nᵛ`. -/
 noncomputable def linearEquivDual : M ≃ₗ[R] Dual R N := .ofBijective _ (bijective_curry e)
@@ -781,7 +781,7 @@ noncomputable def tensorSubmoduleAlgebraEquiv : A ⊗[R] submoduleAlgebra e ≃�
     refine x.induction_on (by simp) ?_ (by simp +contextual)
     intro a x
     obtain ⟨m, rfl⟩ := (submoduleAlgebraEquiv e).symm.surjective x
-    suffices a * toAlgebra e m = e (a ⊗ₜ[R] m) by simpa using this
+    suffices a * toAlgebra e m = e (a ⊗ₜ[R] m) by simpa using! this
     dsimp [toAlgebra]
     rw [map_one, ← smul_eq_mul, ← map_smul, smul_tmul', smul_eq_mul, mul_one]
 

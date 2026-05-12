@@ -142,7 +142,7 @@ lemma mk_eq_mk_iff {X Y X' Y' : T} (f : X ⟶ Y) (f' : X' ⟶ Y') :
   constructor
   · intro h
     refine ⟨congr_arg Arrow.left h, congr_arg Arrow.right h, ?_⟩
-    simpa [eqToHom_left, eqToHom_right] using iso_w (eqToIso h.symm)
+    simpa [eqToHom_left, eqToHom_right] using! iso_w (eqToIso h.symm)
   · rintro ⟨rfl, rfl, h⟩
     simp only [eqToHom_refl, Category.comp_id, Category.id_comp] at h
     rw [h]
@@ -313,7 +313,7 @@ in terms of the inverse of `p`. -/
 @[simp]
 theorem square_to_iso_invert (i : Arrow T) {X Y : T} (p : X ≅ Y) (sq : i ⟶ Arrow.mk p.hom) :
     i.hom ≫ sq.right ≫ p.inv = sq.left := by
-  simpa only [mk_right, Category.assoc] using (Iso.comp_inv_eq p).mpr (Arrow.w_mk_right sq).symm
+  simpa only [mk_right, Category.assoc] using! (Iso.comp_inv_eq p).mpr (Arrow.w_mk_right sq).symm
 
 /-- Given a square from an isomorphism `i` to an arrow `p`, express the target part of `sq`
 in terms of the inverse of `i`. -/

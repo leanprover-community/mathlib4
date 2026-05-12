@@ -711,7 +711,7 @@ lemma Cauchy.exists_lb_eventual_support {ℱ : Filter K⸨X⸩} (hℱ : Cauchy �
   intro g hg
   have h_prod : (f, g) ∈ S ×ˢ T := by simp [hf.1, hg.2]
   refine hN g (le_of_lt ?_)
-  simpa [Valuation.restrict_def, ← Valuation.restrict_lt_one_iff] using H h_prod
+  simpa [Valuation.restrict_def, ← Valuation.restrict_lt_one_iff] using! H h_prod
 
 /- The support of `Cauchy.coeff` has a lower bound. -/
 theorem Cauchy.exists_lb_support {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) :
@@ -755,7 +755,7 @@ theorem Cauchy.coeff_eventually_equal {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ
   have intersec₁ :
     (⋂ n ∈ Set.Iio D, φ n) ⊆ {x : K⸨X⸩ | ∀ d : ℤ, d < D → coeff hℱ d = x.coeff d} := by
     intro _ hf
-    simpa only [Set.mem_iInter] using hf
+    simpa only [Set.mem_iInter] using! hf
   -- The goal is now to show that the intersection of all `φ d` (for `d < D`) is in `ℱ`.
   let ℓ := (exists_lb_coeff_ne hℱ).choose
   let N := max ℓ D

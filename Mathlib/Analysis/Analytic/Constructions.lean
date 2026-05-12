@@ -238,20 +238,20 @@ theorem AnalyticOnNhd.const_smul (hf : AnalyticOnNhd 𝕜 f s) : AnalyticOnNhd �
 
 lemma AnalyticWithinAt.div_const {f : E → 𝕝} (hf : AnalyticWithinAt 𝕜 f s x) {c : 𝕝} :
     AnalyticWithinAt 𝕜 (f · / c) s x := by
-  simpa [div_eq_mul_inv] using hf.const_smul (R := 𝕝ᵐᵒᵖ)
+  simpa [div_eq_mul_inv] using! hf.const_smul (R := 𝕝ᵐᵒᵖ)
 
 @[fun_prop]
 lemma AnalyticAt.div_const {f : E → 𝕝} (hf : AnalyticAt 𝕜 f x) {c : 𝕝} :
     AnalyticAt 𝕜 (f · / c) x := by
-  simpa [div_eq_mul_inv] using hf.const_smul (R := 𝕝ᵐᵒᵖ)
+  simpa [div_eq_mul_inv] using! hf.const_smul (R := 𝕝ᵐᵒᵖ)
 
 lemma AnalyticOn.div_const {f : E → 𝕝} (hf : AnalyticOn 𝕜 f s) {c : 𝕝} :
     AnalyticOn 𝕜 (f · / c) s := by
-  simpa [div_eq_mul_inv] using hf.const_smul (R := 𝕝ᵐᵒᵖ)
+  simpa [div_eq_mul_inv] using! hf.const_smul (R := 𝕝ᵐᵒᵖ)
 
 lemma AnalyticOnNhd.div_const {f : E → 𝕝} (hf : AnalyticOnNhd 𝕜 f s) {c : 𝕝} :
     AnalyticOnNhd 𝕜 (f · / c) s := by
-  simpa [div_eq_mul_inv] using hf.const_smul (R := 𝕝ᵐᵒᵖ)
+  simpa [div_eq_mul_inv] using! hf.const_smul (R := 𝕝ᵐᵒᵖ)
 
 end
 

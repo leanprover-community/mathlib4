@@ -110,7 +110,7 @@ theorem isTopologicalBasis :
       forall_mem_insert, forall_mem_image, ← inter_assoc, inter_eq_left.mpr hs.1]
     refine ⟨⟨hv₂.image _, hU, fun V hV => hU.inter (hv₁ hV)⟩, by grind,
       fun t ⟨htU, _, ht⟩ => ⟨htU, mem_iInter₂_of_mem ?_⟩⟩
-    simpa only [inter_eq_left.mpr htU] using ht
+    simpa only [inter_eq_left.mpr htU] using! ht
 
 /-- Given a basis `B` on the underlying topological space, the Vietoris topology has a basis
 consisting of sets of the form `{s | s ⊆ V, s ∩ U₁ ≠ ∅, …, s ∩ Uₙ ≠ ∅}`, where `U₁, …, Uₙ ∈ B` are
@@ -276,7 +276,7 @@ private theorem isCompact_aux {K : Set α} (hK : IsCompact K)
 
 theorem _root_.IsCompact.powerset_vietoris {K : Set α} (hK : IsCompact K) :
     IsCompact K.powerset := by
-  simpa using isCompact_aux hK (s := ∅)
+  simpa using! isCompact_aux hK (s := ∅)
 
 instance [CompactSpace α] : CompactSpace (Set α) :=
   ⟨powerset_univ ▸ isCompact_univ.powerset_vietoris⟩

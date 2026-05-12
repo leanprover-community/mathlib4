@@ -482,7 +482,7 @@ theorem IsEquiv.uniformContinuous_equiv [hval : Valued R Γ₀'] (hv : Valued.v 
   rw [← hr, equiv_apply, Set.mem_setOf_eq, lt_div_iff₀ ((restrict_pos_iff Valued.v s).mpr hs₀), hv,
     ← map_mul, ← lt_def, ← ofVal_mul,
     ← hy, ← toVal_mul, ← h'.orderRingIso_apply, ← h'.orderRingIso.lt_symm_apply, lt_def]
-  simpa [lt_div_iff₀ hs0', ← map_mul] using hx
+  simpa [lt_div_iff₀ hs0', ← map_mul] using! hx
 
 set_option backward.isDefEq.respectTransparency false in
 theorem IsEquiv.uniformContinuous_equiv_symm [hval : Valued R Γ₀'] (hv : Valued.v = w)
@@ -596,7 +596,7 @@ theorem IsEquiv.valuedCompletion_le_one_iff {K : Type*} [Field K] {v : Valuation
     rw [restrict_le_one_iff]
     rfl
   | ih a =>
-    simpa [Valued.valuedCompletion_apply] using h.le_one_iff_le_one
+    simpa [Valued.valuedCompletion_apply] using! h.le_one_iff_le_one
 
 end Equivalence
 

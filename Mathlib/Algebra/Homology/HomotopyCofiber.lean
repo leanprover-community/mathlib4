@@ -150,9 +150,9 @@ lemma ext_to_X (i j : ι) (hij : c.Rel i j) {A : C} {f g : A ⟶ X φ i}
   haveI := HasHomotopyCofiber.hasBinaryBiproduct φ _ _ hij
   rw [← cancel_mono (XIsoBiprod φ i j hij).hom]
   apply biprod.hom_ext
-  · simpa using h₁
+  · simpa using! h₁
   · obtain rfl := c.next_eq' hij
-    simpa [sndX, dif_pos hij] using h₂
+    simpa [sndX, dif_pos hij] using! h₂
 
 lemma ext_to_X' (i : ι) (hi : ¬ c.Rel i (c.next i)) {A : C} {f g : A ⟶ X φ i}
     (h : f ≫ sndX φ i = g ≫ sndX φ i) : f = g := by

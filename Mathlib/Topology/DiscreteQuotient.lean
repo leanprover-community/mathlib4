@@ -231,7 +231,7 @@ instance [LocallyConnectedSpace X] : OrderBot (DiscreteQuotient X) where
       isOpen_setOf_rel := fun x => by
         convert isOpen_connectedComponent (x := x)
         ext y
-        simpa only [connectedComponentSetoid, ← connectedComponent_eq_iff_mem] using eq_comm }
+        simpa only [connectedComponentSetoid, ← connectedComponent_eq_iff_mem] using! eq_comm }
   bot_le S := fun x y (h : connectedComponent x = connectedComponent y) =>
     (S.isClopen_setOf_rel x).connectedComponent_subset (S.refl _) <| h.symm ▸ mem_connectedComponent
 
@@ -373,7 +373,7 @@ lemma comp_finsetClopens [CompactSpace X] :
   constructor
   · refine fun ⟨y, h⟩ ↦ ⟨Quotient.out (s := d.toSetoid) y, ?_⟩
     ext
-    simpa [← h] using Quotient.mk_eq_iff_out (s := d.toSetoid)
+    simpa [← h] using! Quotient.mk_eq_iff_out (s := d.toSetoid)
   · exact fun ⟨y, h⟩ ↦ ⟨d.proj y, by ext; simp [h, proj, Quotient.eq]⟩
 
 /-- `finsetClopens X` is injective. -/

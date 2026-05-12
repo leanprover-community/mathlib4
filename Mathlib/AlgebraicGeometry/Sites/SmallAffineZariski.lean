@@ -333,7 +333,7 @@ lemma PreservesLocalization.colimitDesc_preimage (F : X.AffineZariskiSiteᵒᵖ 
     (α : (AffineZariskiSite.toOpensFunctor X).op ⋙ X.presheaf ⟶ F)
     (H : α.Coequifibered) (U : X.AffineZariskiSite) :
     (relativeGluingData H).toBase ⁻¹ᵁ U.1 = ((relativeGluingData H).cover.f U).opensRange := by
-  simpa using (relativeGluingData H).toBase_preimage_eq_opensRange_ι U
+  simpa using! (relativeGluingData H).toBase_preimage_eq_opensRange_ι U
 
 @[deprecated (since := "2026-02-01")]
 alias _root_.AlgebraicGeometry.Scheme.preservesLocalization_toOpensFunctor :=

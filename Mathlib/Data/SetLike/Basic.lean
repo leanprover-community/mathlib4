@@ -262,7 +262,7 @@ alias ⟨_root_.mem_of_le_of_mem, _⟩ := le_def
 @[deprecated (since := "2026-01-07")] alias GCongr.mem_of_le_of_mem := _root_.mem_of_le_of_mem
 
 theorem not_le_iff_exists : ¬p ≤ q ↔ ∃ x ∈ p, x ∉ q := by
-  simpa [← coe_subset_coe] using Set.not_subset
+  simpa [← coe_subset_coe] using! Set.not_subset
 
 end LE
 
@@ -286,7 +286,7 @@ variable [PartialOrder A] [IsConcreteLE A B] {p q : A}
 theorem coe_strictMono : StrictMono (SetLike.coe : A → Set B) := fun _ _ => coe_ssubset_coe.mpr
 
 theorem exists_of_lt : p < q → ∃ x ∈ q, x ∉ p := by
-  simpa [← coe_ssubset_coe] using Set.exists_of_ssubset
+  simpa [← coe_ssubset_coe] using! Set.exists_of_ssubset
 
 theorem lt_iff_le_and_exists : p < q ↔ p ≤ q ∧ ∃ x ∈ q, x ∉ p := by
   rw [lt_iff_le_not_ge, not_le_iff_exists]

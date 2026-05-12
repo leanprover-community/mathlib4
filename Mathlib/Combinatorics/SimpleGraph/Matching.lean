@@ -265,7 +265,7 @@ lemma IsClique.even_iff_exists_isMatching {u : Set V} (hc : G.IsClique u)
   refine ⟨fun h ↦ ?_, by
     rintro ⟨M, rfl, hMr⟩
     simpa [Set.ncard_eq_toFinset_card _ hu, Set.toFinite_toFinset,
-      ← Set.toFinset_card] using @hMr.even_card _ _ _ hu.fintype⟩
+      ← Set.toFinset_card] using! @hMr.even_card _ _ _ hu.fintype⟩
   obtain ⟨t, u, rfl, hd, hcard⟩ := Set.exists_union_disjoint_ncard_eq_of_even h
   obtain ⟨f⟩ : Nonempty (t ≃ u) := by
     rw [← Cardinal.eq, ← t.cast_ncard (Set.finite_union.mp hu).1,

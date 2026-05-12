@@ -800,7 +800,7 @@ lemma hom_ext_yoneda {P Q : Cᵒᵖ ⥤ Type v₁} {f g : P ⟶ Q}
     f = g := by
   ext X x
   simpa only [yonedaEquiv_comp, Equiv.apply_symm_apply]
-    using congr_arg (yonedaEquiv) (h _ (yonedaEquiv.symm x))
+    using! congr_arg (yonedaEquiv) (h _ (yonedaEquiv.symm x))
 
 variable (C)
 
@@ -876,7 +876,7 @@ def largeCurriedYonedaLemma {C : Type u₁} [Category.{v₁} C] :
     (by
       intro Y Z f
       ext F g
-      simpa [← ULift.down_inj] using (yonedaEquiv_naturality _ _).symm)
+      simpa [← ULift.down_inj] using! (yonedaEquiv_naturality _ _).symm)
 
 /-- Version of the Yoneda lemma where the presheaf is fixed but the argument varies. -/
 def yonedaOpCompYonedaObj {C : Type u₁} [Category.{v₁} C] (P : Cᵒᵖ ⥤ Type v₁) :

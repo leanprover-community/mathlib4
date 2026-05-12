@@ -172,7 +172,7 @@ def ring_lmap_equiv_self : (𝕜 →L[𝕜] E) ≃ₗᵢ[𝕜] E where
   toLinearEquiv := ring_lmap_equiv_selfₗ 𝕜 E
   norm_map' := by
     refine fun f ↦ le_antisymm ?_ ?_
-    · simpa only [norm_one, mul_one] using le_opNorm f 1
+    · simpa only [norm_one, mul_one] using! le_opNorm f 1
     · refine opNorm_le_bound' f (norm_nonneg <| f 1) (fun x _ ↦ ?_)
       rw [(by rw [smul_eq_mul, mul_one] : f x = f (x • 1)), map_smul,
         norm_smul, mul_comm, (by rfl : ring_lmap_equiv_selfₗ 𝕜 E f = f 1)]
@@ -189,7 +189,7 @@ variable [NormedAlgebra 𝕜 R] [Module R E] [IsBoundedSMul R E] [IsScalarTower 
 /-- Scalar multiplication as a continuous bilinear map. -/
 def lsmul : R →L[𝕜] E →L[𝕜] E :=
   ((Algebra.lsmul 𝕜 𝕜 E).toLinearMap : R →ₗ[𝕜] E →ₗ[𝕜] E).mkContinuous₂ 1 fun c x => by
-    simpa only [one_mul] using norm_smul_le c x
+    simpa only [one_mul] using! norm_smul_le c x
 
 @[simp]
 theorem lsmul_apply (c : R) (x : E) : lsmul 𝕜 R c x = c • x :=

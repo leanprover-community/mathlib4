@@ -1212,7 +1212,7 @@ theorem integrableOn_Ioi_comp_rpow_iff [NormedSpace ℝ E] (f : ℝ → E) {p : 
 without `|p|` factor) -/
 theorem integrableOn_Ioi_comp_rpow_iff' [NormedSpace ℝ E] (f : ℝ → E) {p : ℝ} (hp : p ≠ 0) :
     IntegrableOn (fun x => x ^ (p - 1) • f (x ^ p)) (Ioi 0) ↔ IntegrableOn f (Ioi 0) := by
-  simpa only [← integrableOn_Ioi_comp_rpow_iff f hp, mul_smul] using
+  simpa only [← integrableOn_Ioi_comp_rpow_iff f hp, mul_smul] using!
     (integrable_smul_iff (abs_pos.mpr hp).ne' _).symm
 
 theorem integrableOn_Ioi_comp_mul_left_iff (f : ℝ → E) (c : ℝ) {a : ℝ} (ha : 0 < a) :
@@ -1300,7 +1300,7 @@ theorem integral_deriv_mul_eq_sub [CompleteSpace A]
     (h_bot : Tendsto (u * v) atBot (𝓝 a')) (h_top : Tendsto (u * v) atTop (𝓝 b')) :
     ∫ (x : ℝ), u' x * v x + u x * v' x = b' - a' := by
   refine integral_of_hasDerivAt_of_tendsto (fun x ↦ ?_) huv h_bot h_top
-  simpa [add_comm] using (ContinuousLinearMap.mul ℝ A).hasDerivAt_of_bilinear (hu x) (hv x)
+  simpa [add_comm] using! (ContinuousLinearMap.mul ℝ A).hasDerivAt_of_bilinear (hu x) (hv x)
 
 /-- **Integration by parts on (-∞, ∞).**
 For finite intervals, see: `intervalIntegral.integral_mul_deriv_eq_deriv_mul`. -/

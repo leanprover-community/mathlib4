@@ -163,7 +163,7 @@ lemma tendstoInDistribution_of_tendstoInMeasure_sub {X : ι → Ω'' → E}
     simp only [← hF_lip, integral_const, smul_eq_mul]
     have h_prob n : IsProbabilityMeasure (μ''.map (Y n)) := Measure.isProbabilityMeasure_map (hY n)
     have : IsProbabilityMeasure (μ'.map Z) := Measure.isProbabilityMeasure_map hZ
-    simpa using tendsto_const_nhds
+    simpa using! tendsto_const_nhds
   -- now `F` is `L`-Lipschitz with `L > 0`
   simp_rw [Metric.tendsto_nhds, Real.dist_eq]
   suffices ∀ ε > 0, ∀ᶠ n in l, |∫ ω, F ω ∂(μ''.map (Y n)) - ∫ ω, F ω ∂(μ'.map Z)| < L * ε by
@@ -241,9 +241,9 @@ lemma tendstoInDistribution_of_tendstoInMeasure_sub {X : ι → Ω'' → E}
       exact hXY (ε / 2) (by positivity)
     · replace hXZ := hXZ.tendsto
       simp_rw [tendsto_iff_forall_lipschitz_integral_tendsto] at hXZ
-      simpa [tendsto_iff_dist_tendsto_zero] using hXZ F ⟨M, hF_bounded⟩ ⟨L, hF_lip⟩
+      simpa [tendsto_iff_dist_tendsto_zero] using! hXZ F ⟨M, hF_bounded⟩ ⟨L, hF_lip⟩
   have h_lt : L * ε / 2 < L * ε := half_lt_self (by positivity)
-  filter_upwards [h_tendsto.eventually_lt_const h_lt] with n hn using (h_le n).trans_lt hn
+  filter_upwards [h_tendsto.eventually_lt_const h_lt] with n hn using! (h_le n).trans_lt hn
 
 /-- Convergence in probability (`TendstoInMeasure`) implies convergence in distribution
 (`TendstoInDistribution`). -/
@@ -290,11 +290,11 @@ theorem TendstoInDistribution.prodMk_of_tendstoInMeasure_const
         ∫ ω, F ω ∂μ''.map (fun ω ↦ (f ω, c)) = ∫ ω, F (ω, c) ∂(μ''.map f) := by
       rw [integral_map (by fun_prop) (by fun_prop), integral_map (by fun_prop) (by fun_prop)]
     simp_rw [ProbabilityMeasure.coe_mk, h_eq' (X _) (hX _), h_eq Z hZ]
-    simpa using hXZ Fc
+    simpa using! hXZ Fc
   · suffices TendstoInMeasure μ'' (fun n ω ↦ ((0 : E), Y n ω - c)) l 0 by
       convert this with n ω
       simp
-    simpa [tendstoInMeasure_iff_norm] using hY
+    simpa [tendstoInMeasure_iff_norm] using! hY
 
 /-- **Slutsky's theorem** for a continuous function: if `X n` converges in distribution to `Z`,
  `Y n` converges in probability to a constant `c`, and `g` is a continuous function, then

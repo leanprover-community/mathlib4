@@ -361,7 +361,7 @@ lemma op_δ : S.op.δ = S.δ.op := Quiver.Hom.unop_inj (by
     pushoutIsoUnopPullback_inr_hom, pullbackIsoUnopPushout_inv_snd_assoc,
     pushoutIsoUnopPullback_inl_hom, pullbackIsoUnopPushout_inv_fst_assoc]
   apply Quiver.Hom.op_inj
-  simpa only [op_comp, Quiver.Hom.op_unop, assoc] using S.op.snd_δ_inr)
+  simpa only [op_comp, Quiver.Hom.op_unop, assoc] using! S.op.snd_δ_inr)
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The duality isomorphism `S.L₂'.op ≅ S.op.L₁'`. -/

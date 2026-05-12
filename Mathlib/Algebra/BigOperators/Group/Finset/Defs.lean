@@ -393,7 +393,7 @@ theorem prod_map_toList (s : Finset ι) (f : ι → M) : (s.toList.map f).prod =
 @[to_additive (attr := simp, grind =)]
 theorem prod_toList {M : Type*} [CommMonoid M] (s : Finset M) :
     s.toList.prod = ∏ x ∈ s, x := by
-  simpa using s.prod_map_toList id
+  simpa using! s.prod_map_toList id
 
 end ToList
 

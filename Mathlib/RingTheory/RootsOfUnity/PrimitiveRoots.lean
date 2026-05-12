@@ -788,7 +788,7 @@ noncomputable def autToPow [NeZero n] : (S ≃ₐ[R] S) →* (ZMod n)ˣ :=
         generalize_proofs h1
         have h := h1.choose_spec
         replace h : μ' = μ' ^ h1.choose :=
-          rootsOfUnity.coe_injective (by simpa only [rootsOfUnity.coe_pow] using h)
+          rootsOfUnity.coe_injective (by simpa only [rootsOfUnity.coe_pow] using! h)
         nth_rw 1 [← pow_one μ'] at h
         convert ho ▸ (ZMod.natCast_eq_natCast_iff ..).mpr (pow_eq_pow_iff_modEq.mp h).symm
         exact Nat.cast_one.symm
@@ -803,7 +803,7 @@ noncomputable def autToPow [NeZero n] : (S ≃ₐ[R] S) →* (ZMod n)ˣ :=
           hx'.choose_spec ▸ hxy
         rw [← pow_mul] at hxy
         replace hxy : μ' ^ (hx'.choose * hy'.choose) = μ' ^ hxy'.choose :=
-          rootsOfUnity.coe_injective (by simpa only [rootsOfUnity.coe_pow] using hxy)
+          rootsOfUnity.coe_injective (by simpa only [rootsOfUnity.coe_pow] using! hxy)
         convert ho ▸ (ZMod.natCast_eq_natCast_iff ..).mpr (pow_eq_pow_iff_modEq.mp hxy).symm
         exact (Nat.cast_mul ..).symm }
 

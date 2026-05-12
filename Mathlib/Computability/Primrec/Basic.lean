@@ -366,7 +366,7 @@ theorem right : Primrec₂ fun (_ : α) (b : β) => b :=
 theorem natPair : Primrec₂ Nat.pair := by simp [Primrec₂, Primrec]; constructor
 
 theorem unpaired {f : ℕ → ℕ → α} : Primrec (Nat.unpaired f) ↔ Primrec₂ f :=
-  ⟨fun h => by simpa using h.comp natPair, fun h => h.comp Primrec.unpair⟩
+  ⟨fun h => by simpa using! h.comp natPair, fun h => h.comp Primrec.unpair⟩
 
 theorem unpaired' {f : ℕ → ℕ → ℕ} : Nat.Primrec (Nat.unpaired f) ↔ Primrec₂ f :=
   Primrec.nat_iff.symm.trans unpaired
@@ -583,7 +583,7 @@ theorem option_isSome : Primrec (@Option.isSome α) :=
 
 theorem bind_decode_iff {f : α → β → Option σ} :
     (Primrec₂ fun a n => (@decode β _ n).bind (f a)) ↔ Primrec₂ f :=
-  ⟨fun h => by simpa [encodek] using h.comp fst ((@Primrec.encode β _).comp snd), fun h =>
+  ⟨fun h => by simpa [encodek] using! h.comp fst ((@Primrec.encode β _).comp snd), fun h =>
     option_bind (Primrec.decode.comp snd) <| h.comp (fst.comp fst) snd⟩
 
 theorem map_decode_iff {f : α → β → σ} :

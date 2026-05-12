@@ -112,7 +112,7 @@ theorem hf : f = IsColimit.map (isColimit₁ f g P₁ P₂)
     (Cocone.mk B (ι₂ f g P₁ P₂)) (whiskerRight (ϕ f g P₁ P₂) yoneda) := by
   refine (isColimit₁ f g P₁ P₂).hom_ext (fun i => ?_)
   rw [IsColimit.ι_map]
-  simpa using i.hom.1.w.symm
+  simpa using! i.hom.1.w.symm
 
 /-- Implementation; see `nonempty_indParallelPairPresentation`. -/
 def ψ : F₁ f g P₁ P₂ ⟶ F₂ f g P₁ P₂ where
@@ -128,7 +128,7 @@ theorem hg : g = IsColimit.map (isColimit₁ f g P₁ P₂)
     (Cocone.mk B (ι₂ f g P₁ P₂)) (whiskerRight (ψ f g P₁ P₂) yoneda) := by
   refine (isColimit₁ f g P₁ P₂).hom_ext (fun i => ?_)
   rw [IsColimit.ι_map]
-  simpa using i.hom.2.w.symm
+  simpa using! i.hom.2.w.symm
 
 attribute [local instance] Comma.isFiltered_of_final in
 /-- Implementation; see `nonempty_indParallelPairPresentation`. -/

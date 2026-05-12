@@ -238,15 +238,15 @@ theorem eq_smul_self_of_isLocalExtrOn_real (hT : IsSelfAdjoint T) {x₀ : F}
   by_cases hx₀ : x₀ = 0
   · simp [hx₀]
   by_cases hb : b = 0
-  · have : a ≠ 0 := by simpa [hb] using h₁
+  · have : a ≠ 0 := by simpa [hb] using! h₁
     refine absurd ?_ hx₀
     apply smul_right_injective F this
-    simpa [hb] using h₂
+    simpa [hb] using! h₂
   have hc : T x₀ = (-b⁻¹ * a) • x₀ := by
     linear_combination (norm := match_scalars <;> field) b⁻¹ • h₂
   set c : ℝ := -b⁻¹ * a
   convert hc
-  simpa [field, inner_smul_left, mul_comm a] using congr_arg (fun x => ⟪x, x₀⟫_ℝ) hc
+  simpa [field, inner_smul_left, mul_comm a] using! congr_arg (fun x => ⟪x, x₀⟫_ℝ) hc
 
 end Real
 

@@ -462,8 +462,8 @@ theorem tendsto_div_comap_self (de : IsDenseInducing e) (x₀ : α) :
     ext t
     simp
   have lim : Tendsto (fun x : α × α => x.2 / x.1) (𝓝 (x₀, x₀)) (𝓝 (e 1)) := by
-    simpa using (continuous_div'.comp (@continuous_swap α α _ _)).tendsto (x₀, x₀)
-  simpa using de.tendsto_comap_nhds_nhds lim comm
+    simpa using! (continuous_div'.comp (@continuous_swap α α _ _)).tendsto (x₀, x₀)
+  simpa using! de.tendsto_comap_nhds_nhds lim comm
 
 end
 

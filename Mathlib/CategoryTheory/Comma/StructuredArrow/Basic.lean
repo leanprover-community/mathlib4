@@ -279,7 +279,7 @@ noncomputable def mkIdInitial [T.Full] [T.Faithful] : IsInitial (mk (𝟙 (T.obj
     apply CommaMorphism.ext
     · simp
     · apply T.map_injective
-      simpa only [homMk_right, T.map_preimage, ← w m] using (Category.id_comp _).symm
+      simpa only [homMk_right, T.map_preimage, ← w m] using! (Category.id_comp _).symm
 
 variable {A : Type u₃} [Category.{v₃} A] {B : Type u₄} [Category.{v₄} B]
 
@@ -678,7 +678,7 @@ noncomputable def mkIdTerminal [S.Full] [S.Faithful] : IsTerminal (mk (𝟙 (S.o
     rintro c m -
     ext
     apply S.map_injective
-    simpa only [homMk_left, S.map_preimage, ← w m] using (Category.comp_id _).symm
+    simpa only [homMk_left, S.map_preimage, ← w m] using! (Category.comp_id _).symm
 
 variable {A : Type u₃} [Category.{v₃} A] {B : Type u₄} [Category.{v₄} B]
 

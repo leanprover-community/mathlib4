@@ -583,7 +583,7 @@ def isLimitConeOfAdj (F : J ⥤ C) :
     have eq' := NatTrans.congr_app (adj.left_triangle_components s.pt) j
     dsimp at eq eq' ⊢
     rw [adj.homEquiv_unit, assoc, eq, reassoc_of% eq']
-  uniq s m hm := (adj.homEquiv _ _).symm.injective (by ext j; simpa using hm j)
+  uniq s m hm := (adj.homEquiv _ _).symm.injective (by ext j; simpa using! hm j)
 
 end Adjunction
 

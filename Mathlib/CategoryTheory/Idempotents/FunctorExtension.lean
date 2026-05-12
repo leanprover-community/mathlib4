@@ -48,8 +48,8 @@ namespace FunctorExtension₁
 @[simps]
 def obj (F : C ⥤ Karoubi D) : Karoubi C ⥤ Karoubi D where
   obj P :=
-    ⟨(F.obj P.X).X, (F.map P.p).f, by simpa only [F.map_comp, hom_ext_iff] using F.congr_map P.idem⟩
-  map f := ⟨(F.map f.f).f, by simpa only [F.map_comp, hom_ext_iff] using F.congr_map f.comm⟩
+    ⟨(F.obj P.X).X, (F.map P.p).f, by simpa only [F.map_comp, hom_ext_iff] using! F.congr_map P.idem⟩
+  map f := ⟨(F.map f.f).f, by simpa only [F.map_comp, hom_ext_iff] using! F.congr_map f.comm⟩
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Extension of a natural transformation `φ` between functors
@@ -124,27 +124,27 @@ def KaroubiUniversal₁.counitIso :
           { app := fun P =>
               { f := (G.map (decompId_p P)).f
                 comm := by
-                  simpa only [hom_ext_iff, G.map_comp, G.map_id] using
+                  simpa only [hom_ext_iff, G.map_comp, G.map_id] using!
                     G.congr_map
                       (show (toKaroubi C).map P.p ≫ P.decompId_p ≫ 𝟙 _ = P.decompId_p by simp) }
             naturality := fun P Q f => by
               simpa only [hom_ext_iff, G.map_comp]
-                using (G.congr_map (decompId_p_naturality f)).symm }
+                using! (G.congr_map (decompId_p_naturality f)).symm }
         inv :=
           { app := fun P =>
               { f := (G.map (decompId_i P)).f
                 comm := by
-                  simpa only [hom_ext_iff, G.map_comp, G.map_id] using
+                  simpa only [hom_ext_iff, G.map_comp, G.map_id] using!
                     G.congr_map
                       (show 𝟙 _ ≫ P.decompId_i ≫ (toKaroubi C).map P.p = P.decompId_i by simp) }
             naturality := fun P Q f => by
-              simpa only [hom_ext_iff, G.map_comp] using G.congr_map (decompId_i_naturality f) }
+              simpa only [hom_ext_iff, G.map_comp] using! G.congr_map (decompId_i_naturality f) }
         hom_inv_id := by
           ext P
-          simpa only [hom_ext_iff, G.map_comp, G.map_id] using G.congr_map P.decomp_p.symm
+          simpa only [hom_ext_iff, G.map_comp, G.map_id] using! G.congr_map P.decomp_p.symm
         inv_hom_id := by
           ext P
-          simpa only [hom_ext_iff, G.map_comp, G.map_id] using G.congr_map P.decompId.symm })
+          simpa only [hom_ext_iff, G.map_comp, G.map_id] using! G.congr_map P.decompId.symm })
     (fun {X Y} φ => by
       ext P
       dsimp

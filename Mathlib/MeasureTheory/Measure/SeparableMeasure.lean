@@ -273,9 +273,9 @@ theorem Measure.MeasureDense.of_generateFrom_isSetAlgebra_sigmaFinite (h𝒜 : I
     -- We use partial unions of (Sₙ) to get a monotone family spanning `X`.
     let T := accumulate S.set
     have T_mem (n) : T n ∈ 𝒜 := by
-      simpa using h𝒜.biUnion_mem {k | k ≤ n}.toFinset (fun k _ ↦ S.set_mem k)
+      simpa using! h𝒜.biUnion_mem {k | k ≤ n}.toFinset (fun k _ ↦ S.set_mem k)
     have T_finite (n) : μ (T n) < ∞ := by
-      simpa using measure_biUnion_lt_top {k | k ≤ n}.toFinset.finite_toSet
+      simpa using! measure_biUnion_lt_top {k | k ≤ n}.toFinset.finite_toSet
         (fun k _ ↦ S.finite k)
     have T_spanning : ⋃ n, T n = univ := S.spanning ▸ iUnion_accumulate
     -- We use the fact that we already know this is true for finite measures. As `⋃ n, T n = X`,

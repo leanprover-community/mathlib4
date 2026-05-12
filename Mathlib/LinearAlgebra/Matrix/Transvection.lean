@@ -223,7 +223,7 @@ theorem _root_.Matrix.mem_range_scalar_of_commute_transvectionStruct {M : Matrix
     M ∈ Set.range (Matrix.scalar n) := by
   refine mem_range_scalar_of_commute_single ?_
   intro i j hij
-  simpa [transvection, mul_add, add_mul] using (hM ⟨i, j, hij, 1⟩).eq
+  simpa [transvection, mul_add, add_mul] using! (hM ⟨i, j, hij, 1⟩).eq
 
 theorem _root_.Matrix.mem_range_scalar_iff_commute_transvectionStruct {M : Matrix n n R} :
     M ∈ Set.range (Matrix.scalar n) ↔ ∀ t : TransvectionStruct n R, Commute t.toMatrix M := by
@@ -459,7 +459,7 @@ theorem mul_listTransvecRow_last_row (hM : M (inr unit) (inr unit) ≠ 0) (i : F
     have A : (listTransvecRow M).length = r := by simp [listTransvecRow]
     rw [← List.take_length (l := listTransvecRow M), A]
     have : ¬r ≤ i := by simp
-    simpa only [this, ite_eq_right_iff] using H r le_rfl
+    simpa only [this, ite_eq_right_iff] using! H r le_rfl
   intro k hk
   induction k with
   | zero => simp only [if_true, Matrix.mul_one, List.take_zero, zero_le', List.prod_nil]
@@ -491,8 +491,8 @@ theorem mul_listTransvecRow_last_row (hM : M (inr unit) (inr unit) ≠ 0) (i : F
       rcases le_or_gt (n + 1) i with (hi | hi)
       · simp [hi, n.le_succ.trans hi]
       · rw [if_neg, if_neg]
-        · simpa only [not_le] using hi
-        · simpa only [hni.symm, not_le, or_false] using Nat.lt_succ_iff_lt_or_eq.1 hi
+        · simpa only [not_le] using! hi
+        · simpa only [hni.symm, not_le, or_false] using! Nat.lt_succ_iff_lt_or_eq.1 hi
 
 /-- Multiplying by all the matrices either in `listTransvecCol M` and `listTransvecRow M` kills
 all the coefficients in the last row but the last one. -/

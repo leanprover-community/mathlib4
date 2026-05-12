@@ -831,9 +831,9 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
       rintro i_mem ⟨j, rfl⟩ i_ne_last
       rcases Nat.exists_add_one_eq.mpr j.pos with ⟨n, rfl⟩
       obtain ⟨k, rfl⟩ : ∃ k : Fin n, k.castSucc = j := by
-        simpa [Fin.exists_castSucc_eq] using i_ne_last
+        simpa [Fin.exists_castSucc_eq] using! i_ne_last
       use k
-      simpa using i_mem
+      simpa using! i_mem
   right_inv := by
     intro s
     ext i

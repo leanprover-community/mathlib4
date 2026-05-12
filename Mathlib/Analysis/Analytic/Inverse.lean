@@ -666,24 +666,24 @@ theorem OpenPartialHomeomorph.hasFPowerSeriesAt_symm (f : OpenPartialHomeomorph 
     filter_upwards [f.open_source.mem_nhds h0] with x hx using by simp [hx]
   have B : ∀ᶠ (y : E) in 𝓝 0, HasSum (fun n ↦ (p.leftInv i a n) fun _ ↦ f (a + y) - f a)
       (f.symm (f (a + y))) := by
-    simpa using A.eventually_hasSum_of_comp h (radius_leftInv_pos_of_radius_pos h.radius_pos hp)
+    simpa using! A.eventually_hasSum_of_comp h (radius_leftInv_pos_of_radius_pos h.radius_pos hp)
   have C : ∀ᶠ (y : E) in 𝓝 a, HasSum (fun n ↦ (p.leftInv i a n) fun _ ↦ f y - f a)
       (f.symm (f y)) := by
     rw [← sub_eq_zero_of_eq (a := a) rfl] at B
     have : ContinuousAt (fun x ↦ x - a) a := by fun_prop
-    simpa using this.preimage_mem_nhds B
+    simpa using! this.preimage_mem_nhds B
   have D : ∀ᶠ (y : E) in 𝓝 (f.symm (f a)),
       HasSum (fun n ↦ (p.leftInv i a n) fun _ ↦ f y - f a) y := by
     simp only [h0, OpenPartialHomeomorph.left_inv]
     filter_upwards [C, f.open_source.mem_nhds h0] with x hx h'x
-    simpa [h'x] using hx
+    simpa [h'x] using! hx
   have E : ∀ᶠ z in 𝓝 (f a), HasSum (fun n ↦ (p.leftInv i a n) fun _ ↦ f (f.symm z) - f a)
       (f.symm z) := by
     have : ContinuousAt f.symm (f a) := f.continuousAt_symm (f.map_source h0)
     exact this D
   have F : ∀ᶠ z in 𝓝 (f a), HasSum (fun n ↦ (p.leftInv i a n) fun _ ↦ z - f a) (f.symm z) := by
     filter_upwards [f.open_target.mem_nhds (f.map_source h0), E] with z hz h'z
-    simpa [hz] using h'z
+    simpa [hz] using! h'z
   rcases EMetric.mem_nhds_iff.1 F with ⟨r, r_pos, hr⟩
   refine ⟨min r (p.leftInv i a).radius, min_le_right _ _,
     lt_min r_pos (radius_leftInv_pos_of_radius_pos h.radius_pos hp), fun {y} hy ↦ ?_⟩
@@ -691,4 +691,4 @@ theorem OpenPartialHomeomorph.hasFPowerSeriesAt_symm (f : OpenPartialHomeomorph 
     simp only [Metric.mem_eball, edist_eq_enorm_sub, sub_zero, lt_min_iff,
       add_sub_cancel_right] at hy ⊢
     exact hy.1
-  simpa [add_comm] using hr this
+  simpa [add_comm] using! hr this

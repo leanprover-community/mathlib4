@@ -102,7 +102,7 @@ def limitCone : Cone F where
     { app j := ofHom (limitπLinearMap F j)
       naturality _ _ f := by
         ext
-        simpa using (Types.Small.limitCone (F ⋙ forget _)).π.naturality_apply f _ }
+        simpa using! (Types.Small.limitCone (F ⋙ forget _)).π.naturality_apply f _ }
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -188,7 +188,7 @@ instance forget₂AddCommGroup_reflectsLimit :
   reflects {c} hc := ⟨by
     have : HasLimit (F ⋙ forget₂ (ModuleCat R) AddCommGrpCat) := ⟨_, hc⟩
     have : Small.{w} (Functor.sections (F ⋙ forget (ModuleCat R))) := by
-      simpa only [AddCommGrpCat.hasLimit_iff_small_sections] using this
+      simpa only [AddCommGrpCat.hasLimit_iff_small_sections] using! this
     have := reflectsLimit_of_reflectsIsomorphisms F (forget₂ (ModuleCat R) AddCommGrpCat)
     exact isLimitOfReflects _ hc⟩
 

@@ -370,7 +370,7 @@ theorem order_zero_of_unit {f : R⟦X⟧} : IsUnit f → f.order = 0 := by
 /-- The order of the formal power series `X` is `1`. -/
 @[simp]
 theorem order_X : order (X : R⟦X⟧) = 1 := by
-  simpa only [Nat.cast_one] using order_monomial_of_ne_zero 1 (1 : R) one_ne_zero
+  simpa only [Nat.cast_one] using! order_monomial_of_ne_zero 1 (1 : R) one_ne_zero
 
 /-- The order of the formal power series `X^n` is `n`. -/
 @[simp]

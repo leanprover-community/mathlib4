@@ -347,21 +347,21 @@ lemma finite_universalFactorizationMap :
       fun _ _ ↦ .all _ _
   have H₁ (i : _) : (universalFactorizationMap R n m k hn).IsIntegralElem (.X i ⊗ₜ 1) := by
     obtain ⟨p, hp, hp'⟩ : (universalFactorizationMap ℤ n m k hn).IsIntegralElem (.X i ⊗ₜ 1) := by
-      simpa [coeff_freeMonic] using Polynomial.isIntegral_coeff_of_dvd _ _ (monic_freeMonic _ _)
+      simpa [coeff_freeMonic] using! Polynomial.isIntegral_coeff_of_dvd _ _ (monic_freeMonic _ _)
         ((monic_freeMonic _ _).map _) ⟨_, universalFactorizationMap_freeMonic ℤ n m k hn⟩ i
     refine ⟨p.map (MvPolynomial.map (algebraMap ℤ R)), hp.map _, ?_⟩
     apply_fun F.toRingHom at hp'
     rw [Polynomial.hom_eval₂, ← MvPolynomial.universalFactorizationMap_comp_map] at hp'
-    simpa [← Polynomial.eval₂_map, F] using hp'
+    simpa [← Polynomial.eval₂_map, F] using! hp'
   have H₂ (i : _) : (universalFactorizationMap R n m k hn).IsIntegralElem (1 ⊗ₜ .X i) := by
     obtain ⟨p, hp, hp'⟩ : (universalFactorizationMap ℤ n m k hn).IsIntegralElem (1 ⊗ₜ .X i) := by
-      simpa [coeff_freeMonic] using Polynomial.isIntegral_coeff_of_dvd _ _ (monic_freeMonic _ _)
+      simpa [coeff_freeMonic] using! Polynomial.isIntegral_coeff_of_dvd _ _ (monic_freeMonic _ _)
         ((monic_freeMonic _ _).map _)
         ⟨_, (universalFactorizationMap_freeMonic ℤ n m k hn).trans (mul_comm _ _)⟩ i
     refine ⟨p.map (MvPolynomial.map (algebraMap ℤ R)), hp.map _, ?_⟩
     apply_fun F.toRingHom at hp'
     rw [Polynomial.hom_eval₂, ← MvPolynomial.universalFactorizationMap_comp_map] at hp'
-    simpa [← Polynomial.eval₂_map, F] using hp'
+    simpa [← Polynomial.eval₂_map, F] using! hp'
   intro x
   induction x with
   | zero => exact RingHom.isIntegralElem_zero _
@@ -369,15 +369,15 @@ lemma finite_universalFactorizationMap :
   | tmul x y =>
     suffices (universalFactorizationMap R n m k hn).IsIntegralElem (x ⊗ₜ 1 * 1 ⊗ₜ y) by simpa
     refine RingHom.IsIntegralElem.mul _ ?_ ?_
-    · induction x using MvPolynomial.induction_on with
-      | C a => simpa using (universalFactorizationMap R n m k hn).isIntegralElem_map (x := .C a)
+    · induction x using! MvPolynomial.induction_on with
+      | C a => simpa using! (universalFactorizationMap R n m k hn).isIntegralElem_map (x := .C a)
       | add p q _ _ => simp only [TensorProduct.add_tmul, RingHom.IsIntegralElem.add, *]
-      | mul_X p i IH => simpa [← map_mul] using IH.mul _ (H₁ i)
+      | mul_X p i IH => simpa [← map_mul] using! IH.mul _ (H₁ i)
     · induction y using MvPolynomial.induction_on with
-      | C a => simpa [← algebraMap_eq, ← algebraMap_apply, Algebra.algebraMap_eq_smul_one] using
+      | C a => simpa [← algebraMap_eq, ← algebraMap_apply, Algebra.algebraMap_eq_smul_one] using!
           (universalFactorizationMap R n m k hn).isIntegralElem_map (x := .C a)
       | add p q _ _ => simp only [TensorProduct.tmul_add, RingHom.IsIntegralElem.add, *]
-      | mul_X p i IH => simpa [← map_mul] using IH.mul _ (H₂ i)
+      | mul_X p i IH => simpa [← map_mul] using! IH.mul _ (H₂ i)
 
 end MvPolynomial
 

@@ -134,7 +134,7 @@ lemma extClass_naturality {S₁ S₂ : ShortComplex C}
       (Ext.mk₀ f.τ₃).comp h₂.extClass (zero_add 1) := by
   letI := HasDerivedCategory.standard C
   ext
-  simpa [ShiftedHom.comp_mk₀, ShiftedHom.mk₀_comp] using (singleTriangle.map h₁ h₂ f).comm₃
+  simpa [ShiftedHom.comp_mk₀, ShiftedHom.mk₀_comp] using! (singleTriangle.map h₁ h₂ f).comm₃
 
 end ShortExact
 

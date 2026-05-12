@@ -259,7 +259,7 @@ lemma over_forget_compatiblePreserving (X : C) :
   compatible {_ Z _ _ hx Y₁ Y₂ W f₁ f₂ g₁ g₂ hg₁ hg₂ h} := by
     let W' : Over X := Over.mk (f₁ ≫ Y₁.hom)
     let g₁' : W' ⟶ Y₁ := Over.homMk f₁
-    let g₂' : W' ⟶ Y₂ := Over.homMk f₂ (by simpa using h.symm =≫ Z.hom)
+    let g₂' : W' ⟶ Y₂ := Over.homMk f₂ (by simpa using! h.symm =≫ Z.hom)
     exact hx g₁' g₂' hg₁ hg₂ (by ext; exact h)
 
 instance (X : C) : (Over.forget X).IsCocontinuous (J.over X) J where
@@ -281,7 +281,7 @@ lemma over_map_coverPreserving {X Y : C} (f : X ⟶ Y) :
     obtain ⟨S, rfl⟩ := (Sieve.overEquiv U).symm.surjective S
     rw [Sieve.functorPushforward_over_map]
     apply overEquiv_symm_mem_over
-    simpa [mem_over_iff] using hS
+    simpa [mem_over_iff] using! hS
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -291,9 +291,9 @@ lemma over_map_compatiblePreserving {X Y : C} (f : X ⟶ Y) :
     let W' : Over X := Over.mk (f₁.left ≫ Y₁.hom)
     let g₁' : W' ⟶ Y₁ := Over.homMk f₁.left
     let g₂' : W' ⟶ Y₂ := Over.homMk f₂.left
-      (by simpa using (Over.forget _).congr_map h.symm =≫ Z.hom)
+      (by simpa using! (Over.forget _).congr_map h.symm =≫ Z.hom)
     let e : (Over.map f).obj W' ≅ W := Over.isoMk (Iso.refl _)
-      (by simpa [W'] using (Over.w f₁).symm)
+      (by simpa [W'] using! (Over.w f₁).symm)
     convert congr_arg (F.obj.map e.inv.op)
       (hx g₁' g₂' hg₁ hg₂ (by ext; exact (Over.forget _).congr_map h)) using 1
     all_goals

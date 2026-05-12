@@ -683,7 +683,7 @@ theorem eq_convergenceInDistribution :
     (inferInstance : TopologicalSpace (ProbabilityMeasure Ω))
       = TopologicalSpace.coinduced LevyProkhorov.toMeasure inferInstance :=
   le_convergenceInDistribution.antisymm' fun s hs ↦ by
-    simpa using hs.preimage continuous_ofMeasure_probabilityMeasure
+    simpa using! hs.preimage continuous_ofMeasure_probabilityMeasure
 
 @[deprecated (since := "2025-10-28")]
 alias _root_.MeasureTheory.levyProkhorov_eq_convergenceInDistribution :=

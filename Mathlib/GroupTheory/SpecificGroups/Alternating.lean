@@ -174,7 +174,7 @@ theorem isConj_of {σ τ : alternatingGroup α} (hc : IsConj (σ : Perm α) (τ 
   rcases Int.units_eq_one_or (Perm.sign π) with h | h
   · rw [isConj_iff]
     refine ⟨⟨π, mem_alternatingGroup.mp h⟩, Subtype.val_injective ?_⟩
-    simpa only [Subtype.val, Subgroup.coe_mul, coe_inv, coe_mk] using hπ
+    simpa only [Subtype.val, Subgroup.coe_mul, coe_inv, coe_mk] using! hπ
   · have h2 : 2 ≤ σ.supportᶜ.card := by
       rw [Finset.card_compl, le_tsub_iff_left σ.support.card_le_univ]
       exact hσ
@@ -316,7 +316,7 @@ theorem eq_bot_of_card_le_two (h2 : Nat.card α ≤ 2) : alternatingGroup α = �
     rw [Subgroup.eq_bot_iff_card, ← Nat.mul_right_inj (a := 2) (by simp),
       two_mul_nat_card_alternatingGroup, mul_one, Nat.card_perm, hα', Nat.factorial_two]
   refine h2.antisymm ?_
-  simpa [Nat.card_eq_fintype_card] using Fintype.one_lt_card
+  simpa [Nat.card_eq_fintype_card] using! Fintype.one_lt_card
 
 theorem nontrivial_of_three_le_card (h3 : 3 ≤ Nat.card α) : Nontrivial (alternatingGroup α) := by
   have : Nontrivial α := by

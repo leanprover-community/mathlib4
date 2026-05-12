@@ -117,7 +117,7 @@ protected lemma Commute.geom_sum₂_comm (n : ℕ) (h : Commute x y) :
   simp only [Nat.add_sub_cancel]
   rw [← Finset.sum_flip]
   refine Finset.sum_congr rfl fun i hi => ?_
-  simpa [Nat.sub_sub_self (Nat.succ_le_succ_iff.mp (Finset.mem_range.mp hi))] using h.pow_pow _ _
+  simpa [Nat.sub_sub_self (Nat.succ_le_succ_iff.mp (Finset.mem_range.mp hi))] using! h.pow_pow _ _
 
 -- TODO: for consistency, the next two lemmas should be moved to the root namespace
 lemma RingHom.map_geom_sum (x : R) (n : ℕ) (f : R →+* S) :

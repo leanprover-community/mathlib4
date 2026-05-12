@@ -382,7 +382,7 @@ lemma mlieBracketWithin_smul_right {f : M → 𝕜} (hf : MDiffAt[s] f x)
       hW.differentiableWithinAt_mpullbackWithin_vectorField hs
   -- We prove the equality of each summand separately.
   rw [← Pi.add_def, mpullback_add_apply]; congr
-  · simpa only [A] using mpullback_mfderivWithin_apply_smul hf
+  · simpa only [A] using! mpullback_mfderivWithin_apply_smul hf
   · simp [B, ← Pi.smul_def', mpullback_smul (V := lieBracketWithin 𝕜 V' W' s'), f']
 
 /--
@@ -428,7 +428,7 @@ lemma mlieBracket_smul_left {f : M → 𝕜} (hf : MDiffAt f x)
 lemma mlieBracketWithin_const_smul_left
     (hV : MDiffAt[s] (T% V) x) (hs : UniqueMDiffWithinAt I s x) :
     mlieBracketWithin I (c • V) W s x = c • mlieBracketWithin I V W s x := by
-  simpa [mfderivWithin_const] using
+  simpa [mfderivWithin_const] using!
     mlieBracketWithin_smul_left (mdifferentiableWithinAt_const (c := c)) (W := W) hV hs
 
 lemma mlieBracket_const_smul_left (hV : MDiffAt (T% V) x) :
@@ -439,7 +439,7 @@ lemma mlieBracket_const_smul_left (hV : MDiffAt (T% V) x) :
 lemma mlieBracketWithin_const_smul_right
     (hW : MDiffAt[s] (T% W) x) (hs : UniqueMDiffWithinAt I s x) :
     mlieBracketWithin I V (c • W) s x = c • mlieBracketWithin I V W s x := by
-  simpa [mfderivWithin_const] using
+  simpa [mfderivWithin_const] using!
     mlieBracketWithin_smul_right (mdifferentiableWithinAt_const (c := c)) (V := V) hW hs
 
 lemma mlieBracket_const_smul_right (hW : MDiffAt (T% W) x) :

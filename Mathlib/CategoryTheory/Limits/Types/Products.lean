@@ -232,7 +232,7 @@ noncomputable def productLimitCone :
     have : Small.{u} (∀ j, F j) := inferInstance
     { lift := fun s => ↾fun x => (equivShrink _) (fun j => s.π.app ⟨j⟩ x)
       uniq := fun s m w => ConcreteCategory.hom_ext _ _ fun x => Shrink.ext (funext fun j => by
-        simpa using ConcreteCategory.congr_hom (w ⟨j⟩) x) }
+        simpa using! ConcreteCategory.congr_hom (w ⟨j⟩) x) }
 
 /-- The categorical product in `Type u` indexed in `Type v`
 is the type-theoretic product `Π j, F j`, after shrinking back to `Type u`. -/

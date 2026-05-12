@@ -582,7 +582,7 @@ theorem Gamma_mul_Gamma_add_half (s : ℝ) :
     Gamma s * Gamma (s + 1 / 2) = Gamma (2 * s) * (2 : ℝ) ^ (1 - 2 * s) * √π := by
   rw [← ofReal_inj]
   simpa only [← Gamma_ofReal, ofReal_cpow zero_le_two, ofReal_mul, ofReal_add, ofReal_div,
-    ofReal_sub] using Complex.Gamma_mul_Gamma_add_half ↑s
+    ofReal_sub] using! Complex.Gamma_mul_Gamma_add_half ↑s
 
 end Real
 

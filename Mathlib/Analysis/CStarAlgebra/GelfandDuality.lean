@@ -152,7 +152,7 @@ theorem gelfandTransform_isometry : Isometry (gelfandTransform ℂ A) := by
   rw [map_mul, (IsSelfAdjoint.star_mul_self a).spectralRadius_eq_nnnorm, gelfandTransform_map_star,
     (IsSelfAdjoint.star_mul_self (gelfandTransform ℂ A a)).spectralRadius_eq_nnnorm] at this
   simp only [ENNReal.coe_inj, CStarRing.nnnorm_star_mul_self, ← sq] at this
-  simpa only [Function.comp_apply, NNReal.sqrt_sq] using
+  simpa only [Function.comp_apply, NNReal.sqrt_sq] using!
     congr_arg (((↑) : ℝ≥0 → ℝ) ∘ ⇑NNReal.sqrt) this
 
 set_option backward.defeqAttrib.useBackward true in

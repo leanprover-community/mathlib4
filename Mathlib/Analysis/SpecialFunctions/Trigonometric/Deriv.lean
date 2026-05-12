@@ -43,7 +43,7 @@ theorem hasStrictDerivAt_sin (x : ℂ) : HasStrictDerivAt sin (cos x) x := by
 theorem hasDerivAt_sin (x : ℂ) : HasDerivAt sin (cos x) x :=
   (hasStrictDerivAt_sin x).hasDerivAt
 
-theorem isEquivalent_sin : sin ~[𝓝 0] id := by simpa using (hasDerivAt_sin 0).isLittleO
+theorem isEquivalent_sin : sin ~[𝓝 0] id := by simpa using! (hasDerivAt_sin 0).isLittleO
 
 @[fun_prop]
 theorem contDiff_sin {n} : ContDiff ℂ n sin :=
@@ -315,7 +315,7 @@ theorem hasStrictDerivAt_sin (x : ℝ) : HasStrictDerivAt sin (cos x) x :=
 theorem hasDerivAt_sin (x : ℝ) : HasDerivAt sin (cos x) x :=
   (hasStrictDerivAt_sin x).hasDerivAt
 
-theorem isEquivalent_sin : sin ~[𝓝 0] id := by simpa using (hasDerivAt_sin 0).isLittleO
+theorem isEquivalent_sin : sin ~[𝓝 0] id := by simpa using! (hasDerivAt_sin 0).isLittleO
 
 @[fun_prop]
 theorem contDiff_sin {n} : ContDiff ℝ n sin :=

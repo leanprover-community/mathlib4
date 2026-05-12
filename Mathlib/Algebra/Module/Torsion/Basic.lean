@@ -340,7 +340,7 @@ theorem isTorsionBySet_singleton_iff : IsTorsionBySet R M {a} ↔ IsTorsionBy R 
 
 theorem isTorsionBySet_iff_is_torsion_by_span :
     IsTorsionBySet R M s ↔ IsTorsionBySet R M (Ideal.span s) := by
-  simpa only [isTorsionBySet_iff_subset_annihilator] using Ideal.span_le.symm
+  simpa only [isTorsionBySet_iff_subset_annihilator] using! Ideal.span_le.symm
 
 theorem isTorsionBySet_span_singleton_iff : IsTorsionBySet R M (R ∙ a) ↔ IsTorsionBy R M a :=
   (isTorsionBySet_iff_is_torsion_by_span _).symm.trans <| isTorsionBySet_singleton_iff _

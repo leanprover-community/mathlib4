@@ -162,7 +162,7 @@ theorem lengthParity_eq_ofAdd_length (w : W) :
 
 theorem length_mul_mod_two (w₁ w₂ : W) : ℓ (w₁ * w₂) % 2 = (ℓ w₁ + ℓ w₂) % 2 := by
   rw [← ZMod.natCast_eq_natCast_iff', Nat.cast_add]
-  simpa only [lengthParity_eq_ofAdd_length, ofAdd_add] using map_mul cs.lengthParity w₁ w₂
+  simpa only [lengthParity_eq_ofAdd_length, ofAdd_add] using! map_mul cs.lengthParity w₁ w₂
 
 @[simp]
 theorem length_simple (i : B) : ℓ (s i) = 1 := by

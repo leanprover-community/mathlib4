@@ -810,7 +810,7 @@ theorem HasFPowerSeriesWithinOnBall.isBigO_image_sub_image_sub_deriv_principal
       calc
         ‖A (n + 2)‖ ≤ ‖p (n + 2)‖ * ↑(n + 2) * ‖y - (x, x)‖ ^ (n + 1) * ‖y.1 - y.2‖ := by
           simpa only [Fintype.card_fin, pi_norm_const, Prod.norm_def, Pi.sub_def,
-            Prod.fst_sub, Prod.snd_sub, sub_sub_sub_cancel_right] using
+            Prod.fst_sub, Prod.snd_sub, sub_sub_sub_cancel_right] using!
             (p <| n + 2).norm_image_sub_le (fun _ => y.1 - x) fun _ => y.2 - x
         _ = ‖p (n + 2)‖ * ‖y - (x, x)‖ ^ n * (↑(n + 2) * ‖y - (x, x)‖ * ‖y.1 - y.2‖) := by
           rw [pow_succ ‖y - (x, x)‖]
