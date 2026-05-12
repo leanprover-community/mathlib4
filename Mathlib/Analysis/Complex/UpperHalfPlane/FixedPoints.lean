@@ -13,18 +13,18 @@ import Mathlib.Algebra.QuadraticDiscriminant
 /-!
 # Fixed points of isometries of the upper half-plane
 
-In this file we show that the scalar multiplication by an element `g : SL (Fin 2) ℝ`
+In this file we show that the scalar multiplication by an element `g : GL (Fin 2) ℝ`
 has the following set of fixed points, depending on `g`.
 
-- if `g` preserves orientation (i.e., has a positive determinant) and is an elliptic matrix,
+- if `g` preserves orientation (i.e., has positive determinant) and is an elliptic matrix,
   then `z ↦ g • z` has a unique fixed point;
 - if `g` is a scalar matrix, then it acts by the identity map (proved upstream of this file);
-- if `g` preserves orientation, but it is neither a sclar matrix, nor an elliptic map,
+- if `g` preserves orientation, and is a parabolic or a hyperbolic matrix,
   then it has no fixed points;
 - if `g` reverses orientation and has zero trace, then it has a geodesic line of fixed points;
   - if `g 1 0 = 0`, then this is the vertical line `re z = g 0 1 / (2 * g 1 1)`;
-  - otherwise, it's a half-circle with a center at the real axis;
-- if `g` reverses orientation and has a nonzero trace, then it has no fixed points.
+  - otherwise, it's a half-circle with its center on the real axis;
+- if `g` reverses orientation and has nonzero trace, then it has no fixed points.
 
 As a corollary of this classification, we conclude that `PSL(2, ℝ)` acts faithfully
 on the upper half-plane.
@@ -50,13 +50,13 @@ theorem gl_smul_eq_iff_num_eq :
 has a fixed point, then `a + d = 0`. -/
 theorem add_eq_zero_of_gl_smul_eq_self_of_det_neg (h : g.val.det < 0) (him : g • z = z) :
     g 0 0 + g 1 1 = 0 := by
-  rw [gl_smul_eq_iff_num_eq] at him
   linear_combination (norm := { simp [σ, h.not_gt, num, denom, z.im_ne_zero, field] })
-    congr($(him).im / z.im)
+    congr($(gl_smul_eq_iff_num_eq.mp him).im / z.im)
 
-theorem gl_smul_eq_self_iff_re_eq (h : g.val.det < 0) (hadd : g 0 0 + g 1 1 = 0) (hc : g 1 0 = 0) :
+/-- If `c = 0` and `a + d = 0`, then `g` fixes the vertical line `re z = b / (2 * d)`. -/
+theorem gl_smul_eq_self_iff_re_eq (hadd : g 0 0 + g 1 1 = 0) (hc : g 1 0 = 0) :
     g • z = z ↔ z.re = g 0 1 / (2 * g 1 1) := by
-  rw [← eq_neg_iff_add_eq_zero] at hadd
+  rw [add_eq_zero_iff_eq_neg] at hadd
   have h₀ : g 1 1 ≠ 0 := by
     intro h₀
     simp [Matrix.det_fin_two, h₀, hc, hadd] at h
@@ -77,10 +77,8 @@ theorem gl_smul_eq_self_iff_dist_eq (h : g.val.det < 0) (hadd : g 0 0 + g 1 1 = 
     (hc : g 1 0 ≠ 0) :
     g • z = z ↔ dist (z : ℂ) (-g 1 1 / g 1 0) = √(-g.val.det) / |g 1 0| := by
   rw [gl_smul_eq_self_iff_dist_sq_eq h hadd hc, eq_comm, ← Real.sqrt_eq_iff_eq_sq, eq_comm,
-    Real.sqrt_div', Real.sqrt_sq_eq_abs]
-  · apply sq_nonneg
-  · exact div_nonneg (by simpa using h.le) (sq_nonneg _)
-  · apply dist_nonneg
+    Real.sqrt_div', Real.sqrt_sq_eq_abs] <;>
+  positivity [neg_pos.mpr h]
 
 /-- An orientation-reversing isometry of the hyperbolic plane has a fixed point
 iff the corresponding matrix has zero trace. -/
@@ -88,8 +86,7 @@ theorem exists_gl_smul_eq_self_iff_trace_eq_zero (h : g.val.det < 0) :
     (∃ z : ℍ, g • z = z) ↔ g.val.trace = 0 := by
   rw [Matrix.trace_fin_two]
   constructor
-  · rintro ⟨z, hz⟩
-    exact add_eq_zero_of_gl_smul_eq_self_of_det_neg h hz
+  · exact fun ⟨z, hz⟩ ↦ add_eq_zero_of_gl_smul_eq_self_of_det_neg h hz
   · intro hadd
     by_cases hc : g 1 0 = 0
     · use ⟨⟨g 0 1 / (2 * g 1 1), 1⟩, one_pos⟩
