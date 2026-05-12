@@ -228,6 +228,14 @@ def map_sInf {S : Set (Setoid α)} {s : Setoid α} (h : s ∈ S) :
     Quotient (sInf S) → Quotient s :=
   Setoid.map_of_le fun _ _ a ↦ a s h
 
+/-- The quotient by the trivial relation is equivalent to the original space. -/
+def quotientBotEquiv :
+    Quotient (⊥ : Setoid α) ≃ α where
+  toFun := Quotient.lift id (fun _ _ ↦ id)
+  invFun := Quotient.mk''
+  left_inv := Quotient.ind fun _ ↦ rfl
+  right_inv := fun _ ↦ rfl
+
 section EqvGen
 
 open Relation
