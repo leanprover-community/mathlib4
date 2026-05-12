@@ -6,10 +6,12 @@ Authors: ...
 module
 
 public import Mathlib.LinearAlgebra.Dimension.LinearMap
+public import Mathlib.RingTheory.Finiteness.Cofinite
 public import Mathlib.Topology.Maps.Strict.Basic
 public import Mathlib.Topology.Algebra.Module.LinearMap
 public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 public import Mathlib.Topology.Algebra.Module.LinearMap
+public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E F : Type*} [AddCommGroup E] [AddCommGroup F] [TopologicalSpace E] [TopologicalSpace F]
@@ -17,7 +19,7 @@ variable {E F : Type*} [AddCommGroup E] [AddCommGroup F] [TopologicalSpace E] [T
 variable [Module 𝕜 E] [Module 𝕜 F]
 variable {f : E →L[𝕜] F}
 
-public section FredholmOperators
+public noncomputable section FredholmOperators
 
 open Topology ContinuousLinearMap
 
@@ -37,12 +39,33 @@ def IsFredholm_exists : Prop := ∃ g : F →L[𝕜] E,
 namespace QuotFiniteSubmodules
 variable [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F] [ContinuousAdd E] [ContinuousAdd F]
 
+-- TODO: MOVE
+@[simp]
+lemma FiniteDimensional.range_zero {R : Type*} {R₂ : Type*} {M : Type*} {M₂ : Type*} [Semiring R]
+  [DivisionRing R₂] [AddCommMonoid M] [AddCommGroup M₂] [Module R M] [Module R₂ M₂] {τ₁₂ : R →+* R₂}
+  [RingHomSurjective τ₁₂] : FiniteDimensional R₂ (0 : M →ₛₗ[τ₁₂] M₂).range := by
+  rw [← Submodule.fg_iff_finiteDimensional, LinearMap.range_zero]
+  exact Submodule.fg_bot
+
+-- TODO: MOVE next to LinearMap.range_smul
+lemma LinearMap.range_smul_le {K : Type*} {V : Type*} {V₂ : Type*} [Semifield K] [AddCommMonoid V]
+    [Module K V] [AddCommMonoid V₂] [Module K V₂] (f : V →ₗ[K] V₂) (a : K) :
+    (a • f).range ≤f.range := by
+  by_cases ha : a = 0
+  · simp_all
+  · exact f.range_smul a ha |>.le
+
 variable (𝕜 E F) in
 def FiniteRank : Submodule 𝕜 (E →L[𝕜] F) where
   carrier := {u | FiniteDimensional 𝕜 u.range}
-  add_mem' := sorry
-  zero_mem' := sorry
-  smul_mem' := sorry
+  add_mem' {u v} (hu : FiniteDimensional 𝕜 u.range) (hv : FiniteDimensional 𝕜 v.range) :=
+    Submodule.finiteDimensional_of_le <| LinearMap.range_add_le u.toLinearMap v.toLinearMap
+  zero_mem' := by simp
+  smul_mem' c {u} (hu : FiniteDimensional 𝕜 u.range) := by
+    dsimp
+    rw [← Submodule.fg_iff_finiteDimensional] at *
+    exact hu.of_le <| LinearMap.range_smul_le u c
+
 
 scoped instance : Setoid (E →L[𝕜] F) := (FiniteRank 𝕜 E F).quotientRel
 
@@ -64,6 +87,46 @@ def AnatoleDream_2_symm [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F
     [ContinuousAdd F] (hf : IsFredholm_quot f) : (IsFredholm_struc f) := sorry
 
 /- ## API -/
+
+namespace LinearMap
+
+open Module
+
+variable (k : Type*) [Field k] [Module k E] [Module k F] (f : E →ₗ[k] F)
+
+/-- The index of a linear map.
+
+In the case that either the kernel or cokernel is not finite-dimensional, the value is junk. -/
+def index : ℤ := finrank k f.ker - finrank k (F ⧸ f.range)
+
+@[simp] lemma index_id :
+    (id : E →ₗ[k] E).index = 0 := by
+  sorry
+
+@[simp] lemma index_zero :
+    (0 : E →ₗ[k] F).index = finrank k E - finrank k F := by
+  sorry
+
+lemma index_smul (t : k) (ht : t ≠ 0) :
+    (t • f).index = f.index := by
+  sorry
+
+lemma index_neg
+    /- TODO required assumptions. -/ :
+    (-f).index = -f.index := by
+  sorry
+
+lemma index_comp {G : Type*} [AddCommGroup G] [Module k G] (g : F →ₗ[k] G)
+    /- TODO required assumptions. -/ :
+    (g ∘ₗ f).index = g.index + f.index := by
+  sorry
+
+lemma index_eq_of_finiteDimensional [FiniteDimensional k E] [FiniteDimensional k F] :
+    f.index = finrank k E - finrank k F := by
+  -- 0 → f.ker → E → F → f.coker → 0
+  sorry
+
+end LinearMap
 
 /- ## Kernel -/
 
