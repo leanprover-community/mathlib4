@@ -120,10 +120,10 @@ class IsESeminormedAddMonoid (E : Type*)
 @[class_abbrev]
 structure ESeminormedAddMonoid (E : Type*) [TopologicalSpace E] where
   /-- missing doc -/
-  [a : ContinuousENorm E]
+  [toContinuousENorm : ContinuousENorm E]
   /-- missing doc -/
-  [b : AddMonoid E]
-  [c : IsESeminormedAddMonoid E]
+  [toAddMonoid : AddMonoid E]
+  [toIsESeminormedAddMonoid : IsESeminormedAddMonoid E]
 
 attribute [instance] ESeminormedAddMonoid.mk
 
@@ -138,10 +138,10 @@ class IsENormedAddMonoid (E : Type*) [TopologicalSpace E] [ContinuousENorm E] [A
 @[class_abbrev]
 structure ENormedAddMonoid (E : Type*) [TopologicalSpace E] where
   /-- missing doc -/
-  [a : ContinuousENorm E]
+  [toContinuousENorm : ContinuousENorm E]
   /-- missing doc -/
-  [b : AddMonoid E]
-  [c : IsENormedAddMonoid E]
+  [toAddMonoid : AddMonoid E]
+  [toIsENormedAddMonoid : IsENormedAddMonoid E]
 
 attribute [instance] ENormedAddMonoid.mk
 
@@ -156,10 +156,10 @@ class IsESeminormedMonoid (E : Type*) [TopologicalSpace E] [ContinuousENorm E] [
 @[class_abbrev, to_additive]
 structure ESeminormedMonoid (E : Type*) [TopologicalSpace E] where
   /-- missing doc -/
-  [a : ContinuousENorm E]
+  [toContinuousENorm : ContinuousENorm E]
   /-- missing doc -/
-  [b : Monoid E]
-  [c : IsESeminormedMonoid E]
+  [toMonoid : Monoid E]
+  [toIsESeminormedMonoid : IsESeminormedMonoid E]
 
 attribute [instance] ESeminormedMonoid.mk
 
@@ -181,10 +181,10 @@ instance [TopologicalSpace E] [ContinuousENorm E] [Monoid E] [IsENormedMonoid E]
 @[class_abbrev, to_additive]
 structure ENormedMonoid (E : Type*) [TopologicalSpace E] where
   /-- missing doc -/
-  [a : ContinuousENorm E]
+  [toContinuousENorm : ContinuousENorm E]
   /-- missing doc -/
-  [b : Monoid E]
-  [c : IsENormedMonoid E]
+  [toMonoid : Monoid E]
+  [toIsENormedMonoid : IsENormedMonoid E]
 
 attribute [instance] ENormedMonoid.mk
 
@@ -192,10 +192,10 @@ attribute [instance] ENormedMonoid.mk
 @[class_abbrev]
 structure ESeminormedAddCommMonoid (E : Type*) [TopologicalSpace E] where
   /-- missing doc -/
-  [a : ContinuousENorm E]
+  [toContinuousENorm : ContinuousENorm E]
   /-- missing doc -/
-  [b : AddCommMonoid E]
-  [c : IsESeminormedAddMonoid E]
+  [toAddCommMonoid : AddCommMonoid E]
+  [toIsESeminormedAddMonoid : IsESeminormedAddMonoid E]
 
 attribute [instance] ESeminormedAddCommMonoid.mk
 
@@ -203,10 +203,10 @@ attribute [instance] ESeminormedAddCommMonoid.mk
 @[class_abbrev]
 structure ENormedAddCommMonoid (E : Type*) [TopologicalSpace E] where
   /-- missing doc -/
-  [a : ContinuousENorm E]
+  [toContinuousENorm : ContinuousENorm E]
   /-- missing doc -/
-  [b : AddCommMonoid E]
-  [c : IsENormedAddMonoid E]
+  [toAddCommMonoid : AddCommMonoid E]
+  [toIsENormedAddMonoid : IsENormedAddMonoid E]
 
 attribute [instance] ENormedAddCommMonoid.mk
 
@@ -214,10 +214,10 @@ attribute [instance] ENormedAddCommMonoid.mk
 @[class_abbrev, to_additive]
 structure ESeminormedCommMonoid (E : Type*) [TopologicalSpace E] where
   /-- missing doc -/
-  [a : ContinuousENorm E]
+  [toContinuousENorm : ContinuousENorm E]
   /-- missing doc -/
-  [b : CommMonoid E]
-  [c : IsESeminormedMonoid E]
+  [toCommMonoid : CommMonoid E]
+  [toIsESeminormedMonoid : IsESeminormedMonoid E]
 
 attribute [instance] ESeminormedCommMonoid.mk
 
@@ -225,10 +225,10 @@ attribute [instance] ESeminormedCommMonoid.mk
 @[class_abbrev, to_additive]
 structure ENormedCommMonoid (E : Type*) [TopologicalSpace E] where
   /-- missing doc -/
-  [a : ContinuousENorm E]
+  [toContinuousENorm : ContinuousENorm E]
   /-- missing doc -/
-  [b : CommMonoid E]
-  [c : IsENormedMonoid E]
+  [toCommMonoid : CommMonoid E]
+  [toIsENormedMonoid : IsENormedMonoid E]
 
 attribute [instance] ENormedCommMonoid.mk
 
@@ -253,10 +253,10 @@ class IsNormedAddGroup (E : Type*) [NormPseudoMetric E] [AddGroup E] where
 @[class_abbrev]
 structure SeminormedAddGroup (E : Type*) where
   /-- missing doc -/
-  [a : NormPseudoMetric E]
+  [toNormPseudoMetric : NormPseudoMetric E]
   /-- missing doc -/
-  [b : AddGroup E]
-  [c : IsNormedAddGroup E]
+  [toAddGroup : AddGroup E]
+  [toIsNormedAddGroup : IsNormedAddGroup E]
 
 attribute [instance] SeminormedAddGroup.mk
 
@@ -271,10 +271,10 @@ class IsNormedGroup (E : Type*) [NormPseudoMetric E] [Group E] where
 @[class_abbrev, to_additive]
 structure SeminormedGroup (E : Type*) where
   /-- missing doc -/
-  [a : NormPseudoMetric E]
+  [toNormPseudoMetric : NormPseudoMetric E]
   /-- missing doc -/
-  [b : Group E]
-  [c : IsNormedGroup E]
+  [toGroup : Group E]
+  [toIsNormedGroup : IsNormedGroup E]
 
 attribute [instance] SeminormedGroup.mk
 
@@ -282,10 +282,10 @@ attribute [instance] SeminormedGroup.mk
 @[class_abbrev]
 structure NormedAddGroup (E : Type*) where
   /-- missing doc -/
-  [a : NormMetric E]
+  [toNormMetric : NormMetric E]
   /-- missing doc -/
-  [b : AddGroup E]
-  [c : IsNormedAddGroup E]
+  [toAddGroup : AddGroup E]
+  [toIsNormedAddGroup : IsNormedAddGroup E]
 
 attribute [instance] NormedAddGroup.mk
 
@@ -293,10 +293,10 @@ attribute [instance] NormedAddGroup.mk
 @[class_abbrev, to_additive]
 structure NormedGroup (E : Type*) where
   /-- missing doc -/
-  [a : NormMetric E]
+  [toNormMetric : NormMetric E]
   /-- missing doc -/
-  [b : Group E]
-  [c : IsNormedGroup E]
+  [toGroup : Group E]
+  [toIsNormedGroup : IsNormedGroup E]
 
 attribute [instance] NormedGroup.mk
 
@@ -304,10 +304,10 @@ attribute [instance] NormedGroup.mk
 @[class_abbrev]
 structure SeminormedAddCommGroup (E : Type*) where
   /-- missing doc -/
-  [a : NormPseudoMetric E]
+  [toNormPseudoMetric : NormPseudoMetric E]
   /-- missing doc -/
-  [b : AddCommGroup E]
-  [c : IsNormedAddGroup E]
+  [toAddCommGroup : AddCommGroup E]
+  [toIsNormedAddGroup : IsNormedAddGroup E]
 
 attribute [instance] SeminormedAddCommGroup.mk
 
@@ -315,10 +315,10 @@ attribute [instance] SeminormedAddCommGroup.mk
 @[class_abbrev, to_additive]
 structure SeminormedCommGroup (E : Type*) where
   /-- missing doc -/
-  [a : NormPseudoMetric E]
+  [toNormPseudoMetric : NormPseudoMetric E]
   /-- missing doc -/
-  [b : CommGroup E]
-  [c : IsNormedGroup E]
+  [toCommGroup : CommGroup E]
+  [toIsNormedGroup : IsNormedGroup E]
 
 attribute [instance] SeminormedCommGroup.mk
 
@@ -326,10 +326,10 @@ attribute [instance] SeminormedCommGroup.mk
 @[class_abbrev]
 structure NormedAddCommGroup (E : Type*) where
   /-- missing doc -/
-  [a : NormMetric E]
+  [toNormMetric : NormMetric E]
   /-- missing doc -/
-  [b : AddCommGroup E]
-  [c : IsNormedAddGroup E]
+  [toAddCommGroup : AddCommGroup E]
+  [toIsNormedAddGroup : IsNormedAddGroup E]
 
 attribute [instance] NormedAddCommGroup.mk
 
@@ -337,10 +337,10 @@ attribute [instance] NormedAddCommGroup.mk
 @[class_abbrev, to_additive]
 structure NormedCommGroup (E : Type*) where
   /-- missing doc -/
-  [a : NormMetric E]
+  [toNormMetric : NormMetric E]
   /-- missing doc -/
-  [b : CommGroup E]
-  [c : IsNormedGroup E]
+  [toCommGroup : CommGroup E]
+  [toIsNormedGroup : IsNormedGroup E]
 
 attribute [instance] NormedCommGroup.mk
 
@@ -408,7 +408,7 @@ instance creates bad definitional equalities (e.g., it does not take into accoun
 existing `UniformSpace` instance on `E`). -/]
 abbrev GroupSeminorm.toSeminormedGroup [Group E] (f : GroupSeminorm E) : SeminormedGroup E where
   __ := f.toNormPseudoMetric
-  c := f.toIsNormedGroup
+  toIsNormedGroup := f.toIsNormedGroup
 
 -- See note [reducible non-instances]
 /-- Construct a seminormed group from a seminorm, i.e., registering the pseudodistance and the
@@ -423,7 +423,7 @@ existing `UniformSpace` instance on `E`). -/]
 abbrev GroupSeminorm.toSeminormedCommGroup [CommGroup E] (f : GroupSeminorm E) :
     SeminormedCommGroup E where
   __ := f.toNormPseudoMetric
-  c := f.toIsNormedGroup
+  toIsNormedGroup := f.toIsNormedGroup
 
 -- See note [reducible non-instances]
 /-- missing doc -/
@@ -452,7 +452,7 @@ definitional equalities (e.g., it does not take into account a possibly existing
 instance on `E`). -/]
 abbrev GroupNorm.toNormedGroup [Group E] (f : GroupNorm E) : NormedGroup E where
   __ := f.toNormMetric
-  c := f.toIsNormedGroup
+  toIsNormedGroup := f.toIsNormedGroup
 
 -- See note [reducible non-instances]
 /-- Construct a normed group from a norm, i.e., registering the distance and the metric space
@@ -466,4 +466,4 @@ definitional equalities (e.g., it does not take into account a possibly existing
 instance on `E`). -/]
 abbrev GroupNorm.toNormedCommGroup [CommGroup E] (f : GroupNorm E) : NormedCommGroup E where
   __ := f.toNormMetric
-  c := f.toIsNormedGroup
+  toIsNormedGroup := f.toIsNormedGroup
