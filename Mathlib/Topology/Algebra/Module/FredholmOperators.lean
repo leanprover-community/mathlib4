@@ -166,7 +166,8 @@ def index : ℤ := finrank k f.ker - finrank k (F ⧸ f.range)
 
 @[simp] lemma index_zero :
     (0 : E →ₗ[k] F).index = finrank k E - finrank k F := by
-  sorry
+  rw [index, ker_zero, range_zero]
+  simpa using (Submodule.quotEquivOfEqBot _ rfl).finrank_eq
 
 lemma index_smul (t : k) (ht : t ≠ 0) :
     (t • f).index = f.index := by
