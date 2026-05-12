@@ -29,6 +29,21 @@ section SemiCartesianMonoidalCategory
 
 variable {D : Type*} [Category* D] [SemiCartesianMonoidalCategory D]
 
+namespace MonObj
+
+@[to_additive]
+instance (M : D) [MonObj M] : IsMonHom (toUnit M) where
+
+@[to_additive]
+instance (M : D) [MonObj M] : IsMonHom η[M] where
+  mul_hom := by simp [toUnit_unique (ρ_ (𝟙_ D)).hom (λ_ (𝟙_ D)).hom]
+
+-- The general `(f : 𝟙_ C ⟶ X) : Mono f` instance has a bad discrimination tree key.
+@[to_additive]
+instance (M : D) [MonObj M] : Mono η[M] := Limits.IsTerminal.mono_from isTerminalTensorUnit _
+
+end MonObj
+
 @[to_additive (attr := simps)]
 instance Mon.uniqueHomToTrivial (A : Mon D) : Unique (A ⟶ Mon.trivial D) where
   default.hom := toUnit A.X
@@ -37,14 +52,29 @@ instance Mon.uniqueHomToTrivial (A : Mon D) : Unique (A ⟶ Mon.trivial D) where
 
 @[deprecated (since := "2026-03-20")] alias uniqueHomToTrivial := Mon.uniqueHomToTrivial
 
-@[to_additive instHasZeroObjectAddMon]
-instance : HasZeroObject (Mon D) where
-  zero := ⟨Mon.trivial D,
-    fun A ↦ nonempty_unique (Mon.trivial D ⟶ A),
-    fun A ↦ nonempty_unique (A ⟶ Mon.trivial D)⟩
+namespace Mon
 
-@[to_additive instHasZeroMorphismsAddMon]
-noncomputable instance : HasZeroMorphisms (Mon D) := HasZeroObject.zeroMorphismsOfZeroObject
+variable (D) in
+@[to_additive]
+lemma isZero_trivial : IsZero (Mon.trivial D) where
+  unique_to A := nonempty_unique (Mon.trivial D ⟶ A)
+  unique_from A := nonempty_unique (A ⟶ Mon.trivial D)
+
+@[to_additive]
+instance : HasZeroObject (Mon D) where
+  zero := ⟨Mon.trivial D, Mon.isZero_trivial D⟩
+
+@[to_additive]
+instance (M N : Mon D) : Zero (M ⟶ N) where
+  zero := ⟨toUnit _ ≫ η⟩
+
+@[to_additive (attr := simp)]
+lemma zero_hom (M N : Mon D) : (0 : M ⟶ N).hom = toUnit _ ≫ η := rfl
+
+@[to_additive]
+noncomputable instance : HasZeroMorphisms (Mon D) where
+
+end Mon
 
 end SemiCartesianMonoidalCategory
 
@@ -54,13 +84,6 @@ variable {C D : Type*} [Category.{v} C] [CartesianMonoidalCategory C]
   {M N O X Y : C} [MonObj M] [MonObj N] [MonObj O]
 
 namespace MonObj
-
-@[to_additive]
-instance : IsMonHom (toUnit M) where
-
-@[to_additive]
-instance : IsMonHom η[M] where
-  mul_hom := by simp [toUnit_unique (ρ_ (𝟙_ C)).hom (λ_ (𝟙_ C)).hom]
 
 @[to_additive]
 theorem lift_lift_assoc {A : C} {B : C} [MonObj B] (f g h : A ⟶ B) :
@@ -269,6 +292,24 @@ scoped[CategoryTheory.MonObj] attribute [instance] Hom.commMonoid Hom.addCommMon
 
 end BraidedCategory
 
+/-- A monoid morphism `f : M ⟶ N` induces a monoid homomorphism `M(X) →* N(X)` for every `X`. -/
+@[to_additive (attr := simps!)
+/-- An additive monoid morphism `f : M ⟶ N` induces an additive monoid homomorphism
+`M(X) →+ N(X)` for every `X`. -/]
+def IsMonHom.monoidHom (f : M ⟶ N) [IsMonHom f] (X : C) : (X ⟶ M) →* (X ⟶ N) where
+  toFun := (· ≫ f)
+  map_one' := by simp [Hom.one_def]
+  map_mul' := by simp [Hom.mul_def]
+
+@[to_additive (attr := simp)]
+lemma IsMonHom.monoidHom_id : IsMonHom.monoidHom (𝟙 M) X = MonoidHom.id _ := by
+  cat_disch
+
+@[to_additive (attr := simp)]
+lemma IsMonHom.monoidHom_comp (f : M ⟶ N) (g : N ⟶ O) [IsMonHom f] [IsMonHom g] :
+    IsMonHom.monoidHom (f ≫ g) X = MonoidHom.comp (monoidHom g X) (monoidHom f X) := by
+  cat_disch
+
 variable (M) in
 /-- If `M` is a monoid object, then `Hom(-, M)` is a presheaf of monoids. -/
 @[to_additive (attr := simps)
@@ -312,15 +353,11 @@ def yonedaMonObjIsoOfRepresentableBy
 /-- The yoneda embedding of `AddMon C` into presheaves of additive monoids. -/]
 def yonedaMon : Mon C ⥤ Cᵒᵖ ⥤ MonCat.{v} where
   obj M := yonedaMonObj M.X
-  map {M N} ψ :=
-  { app Y := MonCat.ofHom
-      { toFun := (· ≫ ψ.hom)
-        map_one' := by simp [Hom.one_def, Hom.one_def]
-        map_mul' φ₁ φ₂ := by simp [Hom.mul_def] }
-    naturality {M N} φ := MonCat.hom_ext <| MonoidHom.ext fun f ↦ Category.assoc φ.unop f ψ.hom }
-  map_id M := NatTrans.ext <| funext fun _ ↦ MonCat.hom_ext <| MonoidHom.ext Category.comp_id
-  map_comp _ _ :=
-    NatTrans.ext <| funext fun _ ↦ MonCat.hom_ext <| MonoidHom.ext (.symm <| Category.assoc · _ _)
+  map ψ :=
+  { app _ := MonCat.ofHom <| IsMonHom.monoidHom _ _
+    naturality {_ _} φ := MonCat.hom_ext <| MonoidHom.ext fun f ↦ Category.assoc φ.unop f ψ.hom }
+  map_id _ := NatTrans.ext <| funext fun _ ↦ MonCat.hom_ext <| IsMonHom.monoidHom_id
+  map_comp _ _ := NatTrans.ext <| funext fun _ ↦ MonCat.hom_ext <| IsMonHom.monoidHom_comp _ _
 
 @[to_additive (attr := reassoc)]
 lemma yonedaMon_naturality (α : yonedaMonObj M ⟶ yonedaMonObj N) (f : X ⟶ Y) (g : Y ⟶ M) :
@@ -362,9 +399,7 @@ def yonedaMonFullyFaithful : yonedaMon (C := C).FullyFaithful where
           ← yonedaMon_naturality, Category.comp_id] }
   map_preimage {M N} α := by
     ext Y f
-    dsimp only [yonedaMon_obj, yonedaMon_map_app, MonCat.hom_ofHom]
-    simp_rw [← yonedaMon_naturality]
-    simp
+    simp [← dsimp% yonedaMon_naturality]
   preimage_map φ := Mon.Hom.ext (Category.id_comp φ.hom)
 
 @[to_additive]
