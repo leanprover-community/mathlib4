@@ -346,7 +346,8 @@ instance isRightDerivabilityStructure : (localizerMorphism C).IsRightDerivabilit
     (isRightDerivabilityStructure.iso C)
 
 instance : (HomotopyCategory.Plus.localizerMorphism C).arrow.HasRightResolutions :=
-  LocalizerMorphism.hasRightResolutions_arrow_of_catCommSq (isRightDerivabilityStructure.iso C)
+  LocalizerMorphism.hasRightResolutions_arrow_of_essSurj_of_full
+    (isRightDerivabilityStructure.iso C)
 
 noncomputable instance : (HomotopyCategory.Plus.localizerMorphism C).functor.CommShift ℤ := by
   dsimp; infer_instance
