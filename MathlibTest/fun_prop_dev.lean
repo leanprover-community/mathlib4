@@ -733,15 +733,16 @@ example {f : α → FooHom α} (hf : Con f) : Con fun x ↦ f x (f x x x) x := b
 
 end BundledMorphismWithFunctionValues
 
+/-! Test imitating the discharging of `ModelWithCorners` metavariables -/
 section MDifferentiableMock
 
-variable {α β γ δ : Type*} {ι : Type*} {E : ι → Type*}
+variable {α β γ δ ι : Type*} {E : ι → Type*}
 
 class Dummy (A : Type*)
 instance : Dummy A := ⟨⟩
 
 /-- Mock model-with-corners data.
-The `Dummy` nonsense it to just match arity of the real ModelWithCorners -/
+The `Dummy` parameters are necessary (only) to match the arity of the real `ModelWithCorners` -/
 structure ModelWithCorners (M : Type*) [Dummy M] [Dummy M] [Dummy M] [Dummy M] [Dummy M] [Dummy M] where
   name : Unit := ()
 
@@ -799,13 +800,12 @@ end MDifferentiable
 variable {Iα : ModelWithCorners α}
 
 @[fun_prop]
-theorem mdiff_add [Add α] : MDifferentiable (Iα.prod Iα) Iα (fun xy : α×α => xy.1 + xy.2) := silentSorry
+theorem mdiff_add [Add α] : MDifferentiable (Iα.prod Iα) Iα (fun x ↦ x.1 + x.2) := silentSorry
 @[fun_prop]
-theorem mdiff_mul [Mul α] : MDifferentiable (Iα.prod Iα) Iα (fun xy : α×α => xy.1 * xy.2) := silentSorry
+theorem mdiff_mul [Mul α] : MDifferentiable (Iα.prod Iα) Iα (fun x ↦ x.1 * x.2) := silentSorry
 
-example [Add α] [Mul α]  :
-    MDifferentiable Iα Iα (fun x => x * x + x) := by
+example [Add α] [Mul α] : MDifferentiable Iα Iα (fun x ↦ x * x + x) := by
   fail_if_success fun_prop
-  fun_prop (disch:=assumption)
+  fun_prop (disch := assumption)
 
 end MDifferentiableMock
