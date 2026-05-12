@@ -93,12 +93,10 @@ namespace Grp
 /-- An additive group object is an additive monoid object. -/]
 abbrev toMon (A : Grp C) : Mon C := ⟨A.X⟩
 
-set_option backward.inferInstanceAs.wrap.data false in
 variable (C) in
 /-- The trivial group object. -/
 @[to_additive (attr := simps!) /-- The trivial additive group object. -/]
-def trivial : Grp C :=
-  { Mon.trivial C with grp := inferInstanceAs (GrpObj (𝟙_ C)) }
+def trivial : Grp C := { Mon.trivial C with grp := GrpObj.instTensorUnit }
 
 @[to_additive]
 instance : Inhabited (Grp C) where

@@ -43,7 +43,7 @@ alias zero_le' := zero_le
 
 variable (α) in
 /-- Create an `OrderBot` instance, setting `1` as the bottom element. -/
-@[to_additive (attr := implicit_reducible)
+@[expose, to_additive (attr := implicit_reducible)
 /-- Create an `OrderBot` instance, setting `0` as the bottom element. -/]
 def IsBotOneClass.toOrderBot : OrderBot α where
   bot := 1
