@@ -85,8 +85,7 @@ def CuspForm.equivCuspFormSubmodule (Γ : Subgroup (GL (Fin 2) ℝ)) (k : ℤ) [
 /-- The underlying modular form of a `CuspForm` is itself a cusp form. -/
 lemma CuspForm.isCuspForm {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetOne] (f : CuspForm Γ k) :
     ModularForm.IsCuspForm f.toModularFormₗ := by
-  rw [← mem_cuspFormSubmodule_iff, ModularForm.cuspFormSubmodule]
-  simp
+  simp [← mem_cuspFormSubmodule_iff, ModularForm.cuspFormSubmodule]
 
 /-- A modular form is a cusp form if and only if it vanishes at every cusp. This is the
 general characterization valid for any subgroup. -/
