@@ -504,7 +504,7 @@ open Finset
 
 variable {f : MvPowerSeries σ R} [Finite τ] {x : σ → ℕ} {k : ℕ}
 
-theorem truncTotal_subst_eq_truncTotal_right_of_lt (ha : HasSubst a) (hx : ∀ i, k < x i) :
+theorem truncTotal_subst_eq_truncTotal_right_of_le (ha : HasSubst a) (hx : ∀ i, k ≤ x i) :
     (f.subst a).truncTotal k = (f.subst
       fun i ↦ ((a i).truncTotal (x i)).toMvPowerSeries).truncTotal k := by
   classical
@@ -560,20 +560,20 @@ theorem truncTotal_subst_eq_truncTotal_left [Finite σ] (ha : HasSubst a)
     rw [coeff_homogeneousComponent, if_neg ht.symm, zero_smul]
   simp_rw [coeff_truncTotal_eq_zero _ (not_lt.mp hd)]
 
-theorem truncTotal_subst_of_lt [Finite σ] (ha : HasSubst a) (h : ∀ i, (a i).constantCoeff = 0)
-    (hx : ∀ i, k < x i) :
+theorem truncTotal_subst_of_le [Finite σ] (ha : HasSubst a) (h : ∀ i, (a i).constantCoeff = 0)
+    (hx : ∀ i, k ≤ x i) :
     truncTotal k (f.subst a) = (∑ i ∈ range k, (f.homogeneousComponent i).subst
       (fun i ↦ ((a i).truncTotal (x i)).toMvPowerSeries)).truncTotal k := by
-  rw [truncTotal_subst_eq_truncTotal_right_of_lt ha hx]
+  rw [truncTotal_subst_eq_truncTotal_right_of_le ha hx]
   refine truncTotal_subst_eq_truncTotal_left (HasSubst.truncTotal ha) ?_
   intro i
   rw [← coeff_zero_eq_constantCoeff_apply, MvPolynomial.coeff_coe,
-    ← MvPolynomial.constantCoeff_eq, constantCoeff_truncTotal_eq_ite, if_pos (by grind), h i]
+    ← MvPolynomial.constantCoeff_eq, constantCoeff_truncTotal_eq_ite, h i, ite_self]
 
 theorem truncTotal_subst [Finite σ] (ha : HasSubst a) (h : ∀ i, (a i).constantCoeff = 0) :
     truncTotal k (f.subst a) = (∑ i ∈ range k, (f.homogeneousComponent i).subst
-      (fun i ↦ ((a i).truncTotal (k + 1)).toMvPowerSeries)).truncTotal k :=
-  truncTotal_subst_of_lt ha h fun _ ↦ lt_add_one k
+      (fun i ↦ ((a i).truncTotal k).toMvPowerSeries)).truncTotal k :=
+  truncTotal_subst_of_le ha h fun _ ↦ le_refl k
 
 end truncTotal
 
