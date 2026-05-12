@@ -6,9 +6,7 @@ Authors: Violeta Hernández Palacios
 module
 
 public import Mathlib.Algebra.Order.ZeroLEOne
-public import Mathlib.Tactic.ToAdditive
-public import Mathlib.Order.Max
-public import Mathlib.Order.BoundedOrder.Basic
+public import Mathlib.Order.BoundedOrder.Lattice
 
 /-!
 # Typeclasses expressing `IsBot 1` and `IsBot 0`
@@ -129,12 +127,26 @@ section LinearOrder
 variable [LinearOrder α] [One α] [IsBotOneClass α]
 
 @[to_additive]
-theorem one_min (a : α) : min 1 a = 1 :=
-  min_eq_left one_le
+theorem one_min (a : α) : min 1 a = 1 := by simp
 
 @[to_additive]
-theorem min_one (a : α) : min a 1 = 1 :=
-  min_eq_right one_le
+theorem min_one (a : α) : min a 1 = 1 := by simp
+
+@[to_additive]
+theorem one_max (a : α) : max 1 a = a := by simp
+
+@[to_additive]
+theorem max_one (a : α) : max a 1 = a := by simp
+
+@[to_additive (attr := simp)]
+theorem max_eq_one {a b : α} : max a b = 1 ↔ a = 1 ∧ b = 1 :=
+  let := IsBotOneClass.toOrderBot α
+  max_eq_bot
+
+@[to_additive (attr := simp)]
+theorem min_eq_one {a b : α} : min a b = 1 ↔ a = 1 ∨ b = 1 :=
+  let := IsBotOneClass.toOrderBot α
+  min_eq_bot
 
 end LinearOrder
 
