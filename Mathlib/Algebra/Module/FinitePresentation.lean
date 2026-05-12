@@ -7,8 +7,11 @@ module
 
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 public import Mathlib.LinearAlgebra.Isomorphisms
+public import Mathlib.LinearAlgebra.LeftExact
+public import Mathlib.LinearAlgebra.TensorProduct.Pi
 public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 public import Mathlib.RingTheory.Finiteness.Projective
+public import Mathlib.RingTheory.Flat.IsBaseChange
 public import Mathlib.RingTheory.Localization.BaseChange
 public import Mathlib.RingTheory.Noetherian.Basic
 public import Mathlib.RingTheory.TensorProduct.Finite
@@ -91,6 +94,16 @@ theorem Module.FinitePresentation.exists_fin [fp : Module.FinitePresentation R M
     (LinearMap.quotKerEquivOfSurjective _ <| LinearMap.range_eq_top.mp ?_).symm, ?_⟩
   · simpa [range_linearCombination] using hι₁
   · simpa [LinearMap.ker_comp, Submodule.comap_equiv_eq_map_symm] using hι₂.map _
+
+/-- An alternative version of `Module.FinitePresentation.exists_fin` that provides a right exact
+sequence. -/
+theorem Module.FinitePresentation.exists_fin' [fp : Module.FinitePresentation R M] :
+    ∃ (n m : ℕ) (f : (Fin n → R) →ₗ[R] M) (g : (Fin m → R) →ₗ[R] (Fin n → R)),
+    Function.Surjective f ∧ Function.Exact g f := by
+  obtain ⟨n, K, e, h⟩ := exists_fin R M
+  obtain ⟨m, g', hg'⟩ := K.fg_iff_exists_fin_linearMap.mp h
+  refine ⟨n, m, e.symm ∘ₗ K.mkQ, g', by simpa using K.mkQ_surjective,
+    e.symm.injective.comp_exact_iff_exact.mpr (LinearMap.exact_iff.mpr (by simpa using hg'.symm))⟩
 
 /-- A finitely presented module is isomorphic to the quotient of a finite free module by a finitely
 generated submodule. -/
@@ -651,5 +664,41 @@ lemma Module.FinitePresentation.linearEquivMapExtendScalars_symm_apply
     (LocalizedModule.mkLinearMap S N) (Localization S)) f) =
     (LocalizedModule.mkLinearMap S (M →ₗ[R] N)) f :=
   IsLocalizedModule.linearEquiv_symm_apply S _ _ f
+
+variable (N) in
+open TensorProduct in
+lemma Module.isBaseChange_map_of_finite_free (S : Type*) [CommRing S] [Algebra R S]
+    [Module.Flat R S] (n : ℕ) : IsBaseChange S (LinearMap.baseChangeHom R S (Fin n → R) N) := by
+  let e₁ := TensorProduct.piRight R S S (fun _ : Fin n ↦ R)
+  let e₂ := (LinearEquiv.piCongrRight (fun _ ↦ (LinearMap.ringLmapEquivSelf S S _).symm ≪≫ₗ
+    (LinearEquiv.congrLeft (S ⊗[R] N) S (AlgebraTensorModule.rid R S S).symm))) ≪≫ₗ
+    (LinearMap.lsum S (fun _ : Fin n ↦ _) S) ≪≫ₗ (e₁.symm.congrLeft (S ⊗[R] N) S)
+  let e₃ := (LinearMap.lsum R (fun _ : Fin n ↦ R) R).symm ≪≫ₗ
+    LinearEquiv.piCongrRight (fun _ ↦ LinearMap.ringLmapEquivSelf R R N)
+  refine IsBaseChange.of_equiv ((e₃.baseChange R S) ≪≫ₗ (TensorProduct.piRight R S S _) ≪≫ₗ e₂)
+    (fun f ↦ TensorProduct.AlgebraTensorModule.curry_injective (LinearMap.ext fun s ↦ ?_))
+  ext i
+  simpa [e₃, e₂, e₁, LinearEquiv.congrLeft, LinearEquiv.baseChange] using
+    (tmul_eq_smul_one_tmul s (f (Pi.single i 1))).symm
+
+variable (R M N) in
+open TensorProduct LinearMap in
+theorem Module.FinitePresentation.isBaseChange_map (S : Type*) [CommRing S] [Algebra R S]
+    [Module.Flat R S] [Module.FinitePresentation R M] :
+    IsBaseChange S (LinearMap.baseChangeHom R S M N) := by
+  obtain ⟨n, m, f, g, hf, hfg⟩ := Module.FinitePresentation.exists_fin' R M
+  refine IsBaseChange.of_left_exact S (f' := (f.baseChange S).lcomp S (S ⊗[R] N))
+    (g' := (g.baseChange S).lcomp S (S ⊗[R] N)) _ _ _ ?_ ?_
+    (Module.isBaseChange_map_of_finite_free N S n) (Module.isBaseChange_map_of_finite_free N S m)
+    (exact_lcomp_of_exact_of_surjective _ hfg hf) (lcomp_injective_of_surjective f hf) ?_ ?_
+  · exact LinearMap.ext fun φ ↦ TensorProduct.AlgebraTensorModule.curry_injective
+      (LinearMap.ext fun s ↦ (LinearMap.ext fun m ↦ (by simp)))
+  · exact LinearMap.ext fun φ ↦ TensorProduct.AlgebraTensorModule.curry_injective
+      (LinearMap.ext fun s ↦ (LinearMap.ext fun m ↦ (by simp)))
+  · apply exact_lcomp_of_exact_of_surjective
+    · exact (lTensor_exact S hfg hf)
+    · exact LinearMap.lTensor_surjective S hf
+  · apply lcomp_injective_of_surjective
+    exact LinearMap.lTensor_surjective S hf
 
 end CommRing
