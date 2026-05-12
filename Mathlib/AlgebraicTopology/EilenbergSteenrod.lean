@@ -113,11 +113,17 @@ protected def forgetₚ (i : ι) : HomologyPretheory C c ⥤ TopPair.{u} ⥤ C w
   obj HP := HP.Hₚ i
   map f := f.homₚ i
 
+instance (f : HP ⟶ HP') [IsIso f] (i : ι) : IsIso (f.homₚ i) :=
+  inferInstanceAs (IsIso ((HomologyPretheory.forgetₚ i).map f))
+
 /-- The forgetful functor that sends a `HomologyPretheory` to it's homology functor `H`. -/
 @[simps]
 protected def forget (i : ι) : HomologyPretheory C c ⥤ TopCat.{u} ⥤ C where
   obj HP := HP.H i
   map f := f.hom i
+
+instance (f : HP ⟶ HP') [IsIso f] (i : ι) : IsIso (f.hom i) :=
+  inferInstanceAs (IsIso ((HomologyPretheory.forget i).map f))
 
 end HomologyPretheory
 
