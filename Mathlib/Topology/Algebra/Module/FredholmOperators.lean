@@ -21,6 +21,75 @@ variable {f : E →L[𝕜] F}
 
 public noncomputable section FredholmOperators
 
+-- TODO: MOVE
+@[simp]
+lemma FiniteDimensional.range_zero {R : Type*} {R₂ : Type*} {M : Type*} {M₂ : Type*} [Semiring R]
+  [DivisionRing R₂] [AddCommMonoid M] [AddCommGroup M₂] [Module R M] [Module R₂ M₂] {τ₁₂ : R →+* R₂}
+  [RingHomSurjective τ₁₂] : FiniteDimensional R₂ (0 : M →ₛₗ[τ₁₂] M₂).range := by
+  rw [← Submodule.fg_iff_finiteDimensional, LinearMap.range_zero]
+  exact Submodule.fg_bot
+
+-- TODO: MOVE next to LinearMap.range_smul
+lemma LinearMap.range_smul_le {K : Type*} {V : Type*} {V₂ : Type*} [Semifield K] [AddCommMonoid V]
+    [Module K V] [AddCommMonoid V₂] [Module K V₂] (f : V →ₗ[K] V₂) (a : K) :
+    (a • f).range ≤ f.range := by
+  by_cases ha : a = 0
+  · simp_all
+  · exact f.range_smul a ha |>.le
+
+section
+variable {K : Type*} {V : Type*} {V₂ : Type*} [Field K] [AddCommMonoid V]
+    [Module K V] [AddCommGroup V₂] [Module K V₂]
+
+def LinearMap.hasFiniteRank (f : V →ₗ[K] V₂) := FiniteDimensional K f.range
+
+@[simp] def LinearMap.hasFiniteRank.smul {f : V →ₗ[K] V₂}
+    (hf : f.hasFiniteRank) (c : K) : (c • f).hasFiniteRank := by
+  unfold LinearMap.hasFiniteRank at *
+  rw [← Submodule.fg_iff_finiteDimensional] at *
+  exact hf.of_le <| LinearMap.range_smul_le _ c
+
+@[simp] def LinearMap.hasFiniteRank.zero : (0 : V →ₗ[K] V₂).hasFiniteRank := by
+  unfold LinearMap.hasFiniteRank
+  simp
+
+@[simp] def LinearMap.hasFiniteRank.neg {f : V →ₗ[K] V₂}
+    (hf : f.hasFiniteRank) : (-f).hasFiniteRank := by
+  rw [show -f = (-1 : K) • f by module]
+  apply hf.smul
+
+@[simp] lemma LinearMap.hasFiniteRank.add {f g : V →ₗ[K] V₂}
+    (hf : f.hasFiniteRank) (hg : g.hasFiniteRank) : (f + g).hasFiniteRank := by
+  unfold LinearMap.hasFiniteRank at *
+  exact Submodule.finiteDimensional_of_le <| LinearMap.range_add_le f g
+
+@[simp] def LinearMap.hasFiniteRank.sub {f g : V →ₗ[K] V₂}
+    (hf : f.hasFiniteRank) (hg : g.hasFiniteRank) : (f - g).hasFiniteRank := by
+  rw [sub_eq_add_neg]
+  exact hf.add hg.neg
+
+variable {V₃ : Type*} [AddCommGroup V₃] [Module K V₃]
+
+lemma LinearMap.hasFiniteRank.comp_right {u : V →ₗ[K] V₂} (h : u.hasFiniteRank)
+    (v : V₂ →ₗ[K] V₃) : (v ∘ₗ u).hasFiniteRank := by
+  unfold LinearMap.hasFiniteRank at *
+  rw [← Submodule.fg_iff_finiteDimensional, LinearMap.range_comp] at *
+  exact Submodule.FG.map v h
+
+lemma LinearMap.hasFiniteRank.comp_left {v : V₂ →ₗ[K] V₃} (h : v.hasFiniteRank)
+    (u : V →ₗ[K] V₂) : (v ∘ₗ u).hasFiniteRank := by
+  unfold LinearMap.hasFiniteRank at *
+  rw [← Submodule.fg_iff_finiteDimensional] at *
+  exact h.of_le <| u.range_comp_le_range v
+
+lemma LinearMap.hasFiniteRank.comp_sub_comp {u v : V →ₗ[K] V₂} {u' v' : V₂ →ₗ[K] V₃}
+    (h : (u - v).hasFiniteRank) (h' : (u' - v').hasFiniteRank) :
+    (u' ∘ₗ u - v' ∘ₗ v).hasFiniteRank := by
+  rw [show u' ∘ₗ u - v' ∘ₗ v = (u' - v') ∘ₗ u + v' ∘ₗ (u - v) by ext; simp]
+  exact (h'.comp_left u).add <| h.comp_right v'
+
+end
+
 open Topology ContinuousLinearMap
 
 variable (f)
@@ -39,35 +108,26 @@ def IsFredholm_exists : Prop := ∃ g : F →L[𝕜] E,
 namespace QuotFiniteSubmodules
 variable [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F] [ContinuousAdd E] [ContinuousAdd F]
 
--- TODO: MOVE
-@[simp]
-lemma FiniteDimensional.range_zero {R : Type*} {R₂ : Type*} {M : Type*} {M₂ : Type*} [Semiring R]
-  [DivisionRing R₂] [AddCommMonoid M] [AddCommGroup M₂] [Module R M] [Module R₂ M₂] {τ₁₂ : R →+* R₂}
-  [RingHomSurjective τ₁₂] : FiniteDimensional R₂ (0 : M →ₛₗ[τ₁₂] M₂).range := by
-  rw [← Submodule.fg_iff_finiteDimensional, LinearMap.range_zero]
-  exact Submodule.fg_bot
-
--- TODO: MOVE next to LinearMap.range_smul
-lemma LinearMap.range_smul_le {K : Type*} {V : Type*} {V₂ : Type*} [Semifield K] [AddCommMonoid V]
-    [Module K V] [AddCommMonoid V₂] [Module K V₂] (f : V →ₗ[K] V₂) (a : K) :
-    (a • f).range ≤f.range := by
-  by_cases ha : a = 0
-  · simp_all
-  · exact f.range_smul a ha |>.le
-
 variable (𝕜 E F) in
 def FiniteRank : Submodule 𝕜 (E →L[𝕜] F) where
-  carrier := {u | FiniteDimensional 𝕜 u.range}
-  add_mem' {u v} (hu : FiniteDimensional 𝕜 u.range) (hv : FiniteDimensional 𝕜 v.range) :=
-    Submodule.finiteDimensional_of_le <| LinearMap.range_add_le u.toLinearMap v.toLinearMap
+  carrier := {u | u.toLinearMap.hasFiniteRank}
+  add_mem' hu hv := by simp_all
   zero_mem' := by simp
-  smul_mem' c {u} (hu : FiniteDimensional 𝕜 u.range) := by
-    dsimp
-    rw [← Submodule.fg_iff_finiteDimensional] at *
-    exact hu.of_le <| LinearMap.range_smul_le u c
-
+  smul_mem' c hu := by simp_all
 
 scoped instance : Setoid (E →L[𝕜] F) := (FiniteRank 𝕜 E F).quotientRel
+
+lemma eqv_iff {u v : E →L[𝕜] F} : u ≈ v ↔ (u - v).toLinearMap.hasFiniteRank := by
+  erw [← @Quotient.eq_iff_equiv, Submodule.Quotient.eq]
+  rfl
+
+variable {G : Type*} [AddCommGroup G] [TopologicalSpace G] [IsTopologicalAddGroup G]  [Module 𝕜 G]
+  [ContinuousConstSMul 𝕜 G] [ContinuousAdd G]
+
+lemma rel_comp {u v : E →L[𝕜] F} {u' v' : F →L[𝕜] G} (h : u ≈ v) (h' : u' ≈ v') :
+    u' ∘L u ≈ v' ∘L v := by
+  rw [eqv_iff] at *
+  exact h.comp_sub_comp h'
 
 def IsFredholm_quot : Prop := ∃ g : F →L[𝕜] E,
   (f ∘L g ≈ .id 𝕜 F) ∧ (g ∘L f ≈ .id 𝕜 E)
