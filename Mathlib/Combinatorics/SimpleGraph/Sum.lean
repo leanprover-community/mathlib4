@@ -82,8 +82,8 @@ lemma Hom.sum_comp_sumComm (f : G →g G') (g : H →g H') :
     comp (sum f g) Iso.sumComm.toHom = comp Iso.sumComm.toHom (sum g f) := by
   ext (v | w) <;> simp
 
-lemma Hom.sum_comp_sumAssoc (f : G →g G') (g : H →g H') (h : I →g I') :
-    comp Iso.sumAssoc.toHom (sum (sum f g) h) = comp (sum f (sum g h)) Iso.sumAssoc.toHom := by
+lemma Hom.sum_sum_comp_sumAssoc (f : G →g G') (g : H →g H') (h : I →g I') :
+    comp (sum f (sum g h)) Iso.sumAssoc.toHom = comp Iso.sumAssoc.toHom (sum (sum f g) h) := by
   ext ((v | w) | u) <;> simp
 
 /-- Given embeddings `f : G ↪g G'` and `g : H ↪g H'`, returns an embedding from `G ⊕g H` to
@@ -98,12 +98,12 @@ lemma Embedding.toHom_sum (f : G ↪g G') (g : H ↪g H') :
   (Embedding.sum f g).toHom = Hom.sum f.toHom g.toHom := rfl
 
 lemma Embedding.sum_comp_sumComm (f : G ↪g G') (g : H ↪g H') :
-    comp Iso.sumComm.toEmbedding (sum f g) = comp (sum g f) Iso.sumComm.toEmbedding := by
+    comp (sum g f) Iso.sumComm.toEmbedding = comp Iso.sumComm.toEmbedding (sum f g) := by
   ext (v | w) <;> simp
 
-lemma Embedding.sum_comp_sumAssoc (f : G ↪g G') (g : H ↪g H') (h : I ↪g I') :
-    comp Iso.sumAssoc.toEmbedding (sum (sum f g) h) =
-      comp (sum f (sum g h)) Iso.sumAssoc.toEmbedding := by
+lemma Embedding.sum_sum_comp_sumAssoc (f : G ↪g G') (g : H ↪g H') (h : I ↪g I') :
+    comp (sum f (sum g h)) Iso.sumAssoc.toEmbedding =
+      comp Iso.sumAssoc.toEmbedding (sum (sum f g) h) := by
   ext ((v | w) | u) <;> simp
 
 /-- Given isomorphisms `f : G ≃g G'` and `g : H ≃g H'`, returns an isomorphism from `G ⊕g H` to
