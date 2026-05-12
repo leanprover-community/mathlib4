@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Ziyan Wei. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Ziyan Wei
+Authors: Ziyan Wei, Anatole Dedecker
 -/
 module
 
@@ -97,12 +97,16 @@ lemma IsClosedMap.isStrictMap (hc : IsClosedMap f) (h_cont : Continuous f) :
   exact (hc.subtype_mk fun x => ⟨x, rfl⟩).isQuotientMap
     h_cont.rangeFactorization Set.rangeFactorization_surjective
 
+/-- A homeomorphism is a strict map. -/
 lemma IsHomeomorph.isStrictMap (f_homeo : IsHomeomorph f) :
     IsStrictMap f :=
   f_homeo.isOpenMap.isStrictMap f_homeo.continuous
 
+/-- The identity is a strict map. -/
 lemma IsStrictMap.id : IsStrictMap (id : X → X) := IsHomeomorph.id.isStrictMap
 
+/-- Assume that `f : X → Y` is a quotient map. Then `g : Y → Z` is strict
+if and only if `g ∘ f` is strict. -/
 lemma IsQuotientMap.isStrictMap_iff (f_quot : IsQuotientMap f) :
     IsStrictMap g ↔ IsStrictMap (g ∘ f) := by
   set Φ : range (g ∘ f) ≃ₜ range g := .setCongr <| f_quot.surjective.range_comp g
@@ -110,10 +114,13 @@ lemma IsQuotientMap.isStrictMap_iff (f_quot : IsQuotientMap f) :
   simp_rw [isStrictMap_iff_isQuotientMap_rangeFactorization, ← f_quot.of_comp_iff, key]
   exact ⟨fun H ↦ by simpa using Φ.symm.isQuotientMap.comp H, fun H ↦ Φ.isQuotientMap.comp H⟩
 
+/-- A quotient map is strict. See also `isQuotientMap_iff_isStrictMap_surjective`. -/
 lemma IsQuotientMap.isStrictMap (f_quot : IsQuotientMap f) :
     IsStrictMap f :=
   f_quot.isStrictMap_iff.mp .id
 
+/-- Assume that `g : Y → Z` is an embedding. Then `f : X → Y` is strict
+if and only if `g ∘ f` is strict. -/
 lemma IsEmbedding.isStrictMap_iff (g_emb : IsEmbedding g) :
     IsStrictMap f ↔ IsStrictMap (g ∘ f) := by
   set Φ : Quotient (Setoid.ker (g ∘ f)) ≃ₜ Quotient (Setoid.ker (f)) :=
@@ -124,10 +131,12 @@ lemma IsEmbedding.isStrictMap_iff (g_emb : IsEmbedding g) :
   exact ⟨fun H ↦ H.comp Φ.isEmbedding,
     fun H ↦ by simpa [comp_assoc] using H.comp Φ.symm.isEmbedding⟩
 
+/-- An embedding is strict. See also `isEmbedding_iff_isStrictMap_injective`. -/
 lemma IsEmbedding.isStrictMap (f_emb : IsEmbedding f) :
     IsStrictMap f :=
   f_emb.isStrictMap_iff.mp .id
 
+/-- Quotient maps are precisely surjective strict maps. -/
 lemma isQuotientMap_iff_isStrictMap_surjective :
     IsQuotientMap f ↔ IsStrictMap f ∧ Surjective f := by
   refine ⟨fun H ↦ ⟨H.isStrictMap, H.surjective⟩, fun ⟨f_strict, f_surj⟩ ↦ ?_⟩
@@ -135,6 +144,7 @@ lemma isQuotientMap_iff_isStrictMap_surjective :
   set Φ : range f ≃ₜ Y := .trans (.setCongr f_surj.range_eq) (Homeomorph.Set.univ Y)
   exact Φ.isQuotientMap.comp f_strict
 
+/-- Embeddings are precisely injective strict maps. -/
 lemma isEmbedding_iff_isStrictMap_injective :
     IsEmbedding f ↔ IsStrictMap f ∧ Injective f := by
   refine ⟨fun H ↦ ⟨H.isStrictMap, H.injective⟩, fun ⟨f_strict, f_inj⟩ ↦ ?_⟩
