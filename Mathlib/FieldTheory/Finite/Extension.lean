@@ -174,4 +174,32 @@ theorem Irreducible.natDegree_dvd_of_dvd_X_pow_card_pow_sub_X {n : ℕ} {f : K[X
   · apply IsSplittingField.splits
   · exact map_ne_zero (X_pow_card_pow_sub_X_ne_zero K hn Finite.one_lt_card)
 
+theorem Irreducible.dvd_X_pow_card_pow_natDegree_sub_X [Finite K] {f : K[X]}
+   (hi : Irreducible f) : f ∣ X ^ (Nat.card K) ^ f.natDegree - X := by
+  let a := AdjoinRoot.root f
+  have : NeZero f.natDegree := NeZero.of_pos (Irreducible.natDegree_pos hi)
+  have : Fact <| Irreducible f := ⟨hi⟩
+  refine Irreducible.dvd_of_aeval_eq_zero hi (b := a) ?_ ?_
+  · rw [Polynomial.aeval_def]
+    exact AdjoinRoot.eval₂_root f
+  · let ⟨p, hp⟩ := CharP.exists K
+    have : Fact (Nat.Prime p) := ⟨CharP.char_is_prime K p⟩
+    let e := FiniteField.algEquivExtension K p f.natDegree (AdjoinRoot f)
+      (finrank_quotient_span_eq_natDegree (f := f))
+    have hpeval : (e a) ^ (Nat.card K) ^ f.natDegree - (e a) = 0 := by
+      have := Fintype.ofFinite (Extension K p f.natDegree)
+      rw [← (natCard_extension K p f.natDegree), ← Fintype.card_eq_nat_card,
+        pow_card (e a), sub_self]
+    apply_fun e.symm at hpeval
+    simpa using hpeval
+
+lemma Irreducible.dvd_X_pow_card_pow_sub_X_of_natDegree_dvd [Finite K] {n : ℕ} {f : K[X]}
+    (hi : Irreducible f) (hdvd : f.natDegree ∣ n) : f ∣ X ^ (Nat.card K) ^ n - X  :=
+  dvd_trans (Irreducible.dvd_X_pow_card_pow_natDegree_sub_X hi) (dvd_pow_pow_sub_self_of_dvd hdvd)
+
+theorem Irreducible.natDegree_dvd_iff_dvd_X_pow_card_pow_sub_X [Finite K] {n : ℕ} {f : K[X]}
+    (hi : Irreducible f) : f.natDegree ∣ n ↔ f ∣ X ^ (Nat.card K) ^ n - X  :=
+  ⟨Irreducible.dvd_X_pow_card_pow_sub_X_of_natDegree_dvd hi,
+    Irreducible.natDegree_dvd_of_dvd_X_pow_card_pow_sub_X hi⟩
+
 end Polynomial
