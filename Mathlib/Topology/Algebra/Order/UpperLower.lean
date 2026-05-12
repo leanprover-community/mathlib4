@@ -21,12 +21,12 @@ The same lemmas are true in the additive/multiplicative worlds. To avoid code du
 provide `HasUpperLowerClosure`, an ad hoc axiomatisation of the properties we need.
 -/
 
-@[expose] public section
+public section
 
 
 open Function Set
 
-open Pointwise
+open scoped Pointwise
 
 /-- Ad hoc class stating that the closure of an upper set is an upper set. This is used to state
 lemmas that do not mention algebraic operations for both the additive and multiplicative versions

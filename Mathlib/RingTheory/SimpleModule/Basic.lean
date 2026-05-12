@@ -98,6 +98,12 @@ theorem LinearMap.isSimpleModule_iff_of_bijective [Module S N] {σ : R →+* S} 
     (l : M →ₛₗ[σ] N) (hl : Function.Bijective l) : IsSimpleModule R M ↔ IsSimpleModule S N := by
   simp_rw [isSimpleModule_iff, (Submodule.orderIsoMapComapOfBijective l hl).isSimpleOrder_iff]
 
+lemma isSimpleModule_iff_isSimpleModule_of_algebraMap_surjective
+    {R : Type*} [CommRing R] [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M]
+    (h : Function.Surjective (algebraMap R S)) : IsSimpleModule R M ↔ IsSimpleModule S M := by
+  rw [isSimpleModule_iff, isSimpleModule_iff,
+    (Submodule.orderIsoOfAlgebraMapSurjective h).isSimpleOrder_iff]
+
 variable [Module R N]
 
 theorem IsSimpleModule.congr (e : M ≃ₗ[R] N) [IsSimpleModule R N] : IsSimpleModule R M where
@@ -218,7 +224,7 @@ variable [Module R₀ M] [SMulCommClass R R₀ M] [SMul R₀ R]
   [IsScalarTower R₀ R M] [Module.Finite R₀ (P →ₗ[R] M)]
 
 theorem of_isComplemented_codomain (h : IsComplemented m) : Module.Finite R₀ (P →ₗ[R] m) :=
-  .of_surjective (.compRight ..) (LinearMap.surjective_comp_linearProjOfIsCompl h.choose_spec)
+  .of_surjective (.compRight ..) (LinearMap.surjective_comp_projectionOnto h.choose_spec)
 
 instance [IsSemisimpleModule R M] : Module.Finite R₀ (P →ₗ[R] m) :=
   .of_isComplemented_codomain _ _ (exists_isCompl m)
@@ -386,7 +392,6 @@ theorem IsSemisimpleModule.exists_linearEquiv_dfinsupp [IsSemisimpleModule R M] 
   exact .symm <| .trans (.ofInjective _ ind.dfinsupp_lsum_injective) <| .trans (.ofEq _ ⊤ <|
     by rw [← Submodule.iSup_eq_range_dfinsupp_lsum, ← sSup, sSup_eq_iSup']) Submodule.topEquiv
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isSemisimpleModule_iff_exists_linearEquiv_dfinsupp : IsSemisimpleModule R M ↔
     ∃ (s : Set (Submodule R M)) (_ : M ≃ₗ[R] Π₀ m : s, m.1), ∀ m : s, IsSimpleModule R m.1 := by
   refine ⟨fun _ ↦ ?_, fun ⟨s, e, h⟩ ↦ .congr e⟩
@@ -563,7 +568,7 @@ end JordanHolderModule
 section jacobson_density
 
 open Module (End)
-open Submodule IsCompl
+open Submodule
 
 variable [IsSemisimpleModule R M]
 
@@ -572,7 +577,7 @@ theorem jacobson_density (f : End (End R M) M) (s : Finset M) :
     ∃ r : R, ∀ m ∈ s, f m = r • m :=
   let x := Finsupp.equivFunOnFinite.symm (·.1 : s → M)
   have ⟨_, h⟩ := exists_isCompl (R ∙ x)
-  let p := projection h
+  let p := projection _ _ h
   let f := End.ringHomEndFinsupp s f
   have : f (p • x) = f x := congr(f $(projection_apply_left h ⟨x, mem_span_singleton_self x⟩))
   have : f x ∈ R ∙ x := by rw [← this, map_smul, End.smul_def]; apply projection_apply_mem

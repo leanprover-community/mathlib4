@@ -33,7 +33,7 @@ Instead of defining a new notion of topological entropy, we prove that
 - `IsDynNetIn`: property that dynamical balls centered on a subset `s` of `F` are disjoint.
 - `netMaxcard`: maximal cardinality of a dynamical net. Takes values in `ℕ∞`.
 - `netEntropyInfEntourage`/`netEntropyEntourage`: exponential growth of `netMaxcard`. The former is
-defined with a `liminf`, the latter with a `limsup`. Take values in `EReal`.
+  defined with a `liminf`, the latter with a `limsup`. Take values in `EReal`.
 
 ## Implementation notes
 As when using covers, there are two competing definitions `netEntropyInfEntourage` and
@@ -42,7 +42,7 @@ we chose the `limsup` definition as the default.
 
 ## Main results
 - `coverEntropy_eq_iSup_netEntropyEntourage`: equality between the notions of topological entropy
-defined with covers and with nets. Has a variant for `coverEntropyInf`.
+  defined with covers and with nets. Has a variant for `coverEntropyInf`.
 
 ## Tags
 net, entropy
@@ -123,7 +123,7 @@ lemma netMaxcard_finite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ)
     -- The criterion we want to use is `Nat.sSup_mem`. We rewrite `netMaxcard` with an `sSup`,
     -- then check its `BddAbove` and `Nonempty` hypotheses.
     have : netMaxcard T F U n
-      = sSup (WithTop.some '' (Finset.card '' {s : Finset X | IsDynNetIn T F U n s})) := by
+      = sSup (WithTop.some '' Finset.card '' {s : Finset X | IsDynNetIn T F U n s}) := by
       rw [netMaxcard, ← image_comp, sSup_image]
       simp only [mem_setOf_eq, ENat.some_eq_coe, Function.comp_apply]
     rw [this] at k_max

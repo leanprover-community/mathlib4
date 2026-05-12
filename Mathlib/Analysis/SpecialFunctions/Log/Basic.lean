@@ -165,6 +165,18 @@ theorem le_log_iff_exp_le (hy : 0 < y) : x ≤ log y ↔ exp x ≤ y := by rw [�
 
 theorem lt_log_iff_exp_lt (hy : 0 < y) : x < log y ↔ exp x < y := by rw [← exp_lt_exp, exp_log hy]
 
+/-- One direction of `Real.log_le_iff_le_exp` without positivity assumption. -/
+lemma le_exp_of_log_le (h : log x ≤ y) : x ≤ exp y := by
+  rcases le_or_gt x 0 with hx | hx
+  · exact hx.trans <| exp_nonneg y
+  · exact (log_le_iff_le_exp hx).mp h
+
+/-- One direction of `Real.log_lt_iff_lt_exp` without positivity assumption. -/
+lemma lt_exp_of_log_lt (h : log x < y) : x < exp y := by
+  rcases le_or_gt x 0 with hx | hx
+  · exact hx.trans_lt <| exp_pos y
+  · exact (log_lt_iff_lt_exp hx).mp h
+
 theorem log_pos_iff (hx : 0 ≤ x) : 0 < log x ↔ 1 < x := by
   rcases hx.eq_or_lt with (rfl | hx)
   · simp [zero_le_one]
@@ -396,16 +408,21 @@ protected theorem _root_.Finsupp.log_prod {α β : Type*} [Zero β] (f : α →�
 lemma log_finprod {α : Type*} {f : α → ℝ} (h : ∀ a, 0 < f a) :
     log (∏ᶠ a, f a) = ∑ᶠ a, log (f a) := by
   classical
-  simp only [finprod_def, finsum_def, show (fun i ↦ log (f i)).support = f.mulSupport by
-    grind [mem_mulSupport, mem_support, log_eq_zero]]
-  grind [log_prod, log_eq_zero]
+  have H : (fun i ↦ log (f i)).support = f.mulSupport := by
+    grind [mem_mulSupport, mem_support, log_eq_zero]
+  have H' : HasFiniteMulSupport f ↔ HasFiniteSupport fun a ↦ log (f a) := by
+    simp [HasFiniteMulSupport, HasFiniteSupport, H]
+  simp only [finprod_def, finsum_def]
+  by_cases h' : HasFiniteMulSupport f
+  · simp [h', log_prod (fun a _ ↦ (h a).ne'), H'.mp h', H]
+  · simp [h', mt H'.mpr h']
 
 theorem log_nat_eq_sum_factorization (n : ℕ) :
     log n = n.factorization.sum fun p t => t * log p := by
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp -- relies on junk values of `log` and `Nat.factorization`
   · simp only [← log_pow, ← Nat.cast_pow]
-    rw [← Finsupp.log_prod, ← Nat.cast_finsuppProd, Nat.factorization_prod_pow_eq_self hn]
+    rw [← Finsupp.log_prod, ← Nat.cast_finsuppProd, Nat.prod_factorization_pow_eq_self hn]
     intro p hp
     rw [eq_zero_of_pow_eq_zero (Nat.cast_eq_zero.1 hp), Nat.factorization_zero_right]
 
@@ -444,6 +461,15 @@ theorem isLittleO_const_log_atTop {c : ℝ} : (fun _ => c) =o[atTop] log := by
   continuousOn_invFun x hx := (continuousAt_log (ne_of_gt hx)).continuousWithinAt
 
 end Real
+
+namespace Nat.Prime
+
+theorem log_pos {p : ℕ} (hp : p.Prime) : 0 < Real.log p :=
+  Real.log_pos <| mod_cast hp.one_lt
+
+theorem log_ne_zero {p : ℕ} (hp : p.Prime) : Real.log p ≠ 0 := hp.log_pos.ne'
+
+end Nat.Prime
 
 section Continuity
 

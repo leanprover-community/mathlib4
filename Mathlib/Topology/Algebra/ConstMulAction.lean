@@ -229,8 +229,6 @@ theorem continuous_const_smul_iff (c : G) : (Continuous fun x => c • f x) ↔ 
 @[to_additive (attr := simps!)]
 def Homeomorph.smul (γ : G) : α ≃ₜ α where
   toEquiv := MulAction.toPerm γ
-  continuous_toFun := continuous_const_smul γ
-  continuous_invFun := continuous_const_smul γ⁻¹
 
 /-- The homeomorphism given by affine-addition by an element of an additive group `Γ` acting on
   `T` is a homeomorphism from `T` to itself. -/
@@ -511,6 +509,12 @@ attribute [to_additive] ProperlyDiscontinuousSMul
 export ProperlyDiscontinuousSMul (finite_disjoint_inter_image)
 export ProperlyDiscontinuousVAdd (finite_disjoint_inter_image)
 
+@[to_additive]
+lemma properlyDiscontinuousSMul_iff [TopologicalSpace α] [SMul M α] :
+    ProperlyDiscontinuousSMul M α ↔
+      ∀ {K L : Set α}, IsCompact K → IsCompact L → {m : M | (m • K ∩ L).Nonempty}.Finite :=
+  ⟨fun _ _ _ ↦ ProperlyDiscontinuousSMul.finite_disjoint_inter_image, .mk⟩
+
 section
 
 variable (Γ : Type*) {T : Type*}
@@ -536,7 +540,6 @@ variable [T2Space T] [LocallyCompactSpace T] [ContinuousConstSMul Γ T] (x : T)
   let γ : Γ₀ := ⟨γ, ⟨_, ⟨z, hz.1, rfl⟩, hγz.1⟩, h⟩
   exact (u_v_disjoint γ).le_bot ⟨(hz.2 γ).1, (hγz.2 γ).2⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive] lemma ProperlyDiscontinuousSMul.exists_nhds_disjoint_image :
     ∃ U ∈ 𝓝 x, ∀ γ : Γ, γ • x ≠ x → Disjoint ((γ • ·) '' U) U := by
   convert exists_nhds_image_smul_eq_self Γ x using 4

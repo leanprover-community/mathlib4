@@ -66,7 +66,6 @@ is the Shannon entropy of a Bernoulli random variable with success probability `
 
 @[simp] lemma binEntropy_one : binEntropy 1 = 0 := by simp [binEntropy]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma binEntropy_two_inv : binEntropy 2⁻¹ = log 2 := by norm_num [binEntropy]; simp; ring
 
 lemma binEntropy_eq_negMulLog_add_negMulLog_one_sub (p : ℝ) :
@@ -198,17 +197,17 @@ lemma deriv_binEntropy (p : ℝ) : deriv binEntropy p = log (1 - p) - log p := b
     all_goals fun_prop (disch := assumption)
   -- pathological case where `deriv = 0` since `binEntropy` is not differentiable there
   · rw [deriv_zero_of_not_differentiableAt (differentiableAt_binEntropy_iff_ne_zero_one.not.2 hp)]
-    push_neg +distrib at hp
+    push +distrib Not at hp
     obtain rfl | rfl := hp <;> simp
 
 /-! ### `q`-ary entropy -/
 
 /-- Shannon q-ary Entropy function (measured in Nats, i.e., using natural logs).
 
-It's the Shannon entropy of a random variable with possible outcomes {1, ..., q}
+It's the Shannon entropy of a random variable with possible outcomes `{1, ..., q}`
 where outcome `1` has probability `1 - p` and all other outcomes are equally likely.
 
-The usual domain of definition is p ∈ [0,1], i.e., input is a probability.
+The usual domain of definition is `p ∈ [0,1]`, i.e., input is a probability.
 
 This is a generalization of the binary entropy function `binEntropy`. -/
 @[pp_nodot] noncomputable def qaryEntropy (q : ℕ) (p : ℝ) : ℝ := p * log (q - 1 : ℤ) + binEntropy p
@@ -274,7 +273,6 @@ private lemma tendsto_log_one_sub_sub_log_nhdsGT_atAtop :
     linarith [hx.2]
   · apply tendsto_neg_atTop_iff.mpr tendsto_log_nhdsGT_zero
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma tendsto_log_one_sub_sub_log_nhdsLT_one_atBot :
     Tendsto (fun p ↦ log (1 - p) - log p) (𝓝[<] 1) atBot := by
   apply Filter.tendsto_atBot_add_right_of_ge' (𝓝[<] 1) (-log (1 - 2⁻¹))
@@ -366,7 +364,6 @@ lemma deriv2_binEntropy : deriv^[2] binEntropy p = -1 / (p * (1 - p)) :=
 
 /-! ### Strict monotonicity of entropy -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Qary entropy is strictly increasing in the interval [0, 1 - q⁻¹]. -/
 lemma qaryEntropy_strictMonoOn (qLe2 : 2 ≤ q) :
     StrictMonoOn (qaryEntropy q) (Icc 0 (1 - 1 / q)) := by
@@ -395,7 +392,6 @@ lemma qaryEntropy_strictMonoOn (qLe2 : 2 ≤ q) :
         linarith
     exact (ne_of_gt (lt_add_neg_iff_lt.mp this : p < 1)).symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Qary entropy is strictly decreasing in the interval [1 - q⁻¹, 1]. -/
 lemma qaryEntropy_strictAntiOn (qLe2 : 2 ≤ q) :
     StrictAntiOn (qaryEntropy q) (Icc (1 - 1 / q) 1) := by
@@ -415,7 +411,6 @@ lemma qaryEntropy_strictAntiOn (qLe2 : 2 ≤ q) :
         linarith
       · have qpos : 0 < (q : ℝ) := by positivity
         ring_nf
-        simp only [add_lt_iff_neg_right, neg_add_lt_iff_lt_add, add_zero, gt_iff_lt]
         have : (q : ℝ) - 1 < p * q := by
           have h1 := mul_lt_mul_of_pos_right hp.1 qpos
           have h2 : (1 - (q : ℝ)⁻¹) * ↑q = q - 1 := by calc (1 - (q : ℝ)⁻¹) * ↑q

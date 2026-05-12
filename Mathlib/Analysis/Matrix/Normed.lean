@@ -77,7 +77,7 @@ declared as an instance because there are several natural choices for defining t
 matrix. -/
 @[instance_reducible]
 protected def seminormedAddCommGroup : SeminormedAddCommGroup (Matrix m n α) :=
-  Pi.seminormedAddCommGroup
+  fast_instance% Pi.seminormedAddCommGroup
 
 attribute [local instance] Matrix.seminormedAddCommGroup
 
@@ -154,7 +154,6 @@ theorem nnnorm_replicateRow (v : n → α) : ‖replicateRow ι v‖₊ = ‖v�
 theorem norm_replicateRow (v : n → α) : ‖replicateRow ι v‖ = ‖v‖ :=
   congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_replicateRow v
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem nnnorm_diagonal [DecidableEq n] (v : n → α) : ‖diagonal v‖₊ = ‖v‖₊ := by
   simp_rw [nnnorm_def, Pi.nnnorm_def]
@@ -162,8 +161,7 @@ theorem nnnorm_diagonal [DecidableEq n] (v : n → α) : ‖diagonal v‖₊ = �
   refine le_antisymm (Finset.sup_le fun j hj => ?_) ?_
   · obtain rfl | hij := eq_or_ne i j
     · rw [diagonal_apply_eq]
-    · rw [diagonal_apply_ne _ hij, nnnorm_zero]
-      exact zero_le _
+    · simp [hij]
   · refine Eq.trans_le ?_ (Finset.le_sup (Finset.mem_univ i))
     rw [diagonal_apply_eq]
 
@@ -182,7 +180,7 @@ declared as an instance because there are several natural choices for defining t
 matrix. -/
 @[instance_reducible]
 protected def normedAddCommGroup [NormedAddCommGroup α] : NormedAddCommGroup (Matrix m n α) :=
-  Pi.normedAddCommGroup
+  fast_instance% Pi.normedAddCommGroup
 
 section NormedSpace
 
@@ -205,7 +203,7 @@ declared as an instance because there are several natural choices for defining t
 matrix. -/
 @[instance_reducible]
 protected def normedSpace : NormedSpace R (Matrix m n α) :=
-  Pi.normedSpace
+  fast_instance% Pi.normedSpace
 
 namespace Norms.Elementwise
 
@@ -239,6 +237,7 @@ matrix. -/
 @[instance_reducible, local instance]
 protected def linftyOpSeminormedAddCommGroup [SeminormedAddCommGroup α] :
     SeminormedAddCommGroup (Matrix m n α) :=
+  fast_instance%
   @Pi.seminormedAddCommGroup m _ _ (fun _ ↦ PiLp.seminormedAddCommGroupToPi 1 (fun _ : n ↦ α))
 
 /-- Normed group instance (using sup norm of L1 norm) for matrices over a normed ring.  Not
@@ -247,6 +246,7 @@ matrix. -/
 @[instance_reducible, local instance]
 protected def linftyOpNormedAddCommGroup [NormedAddCommGroup α] :
     NormedAddCommGroup (Matrix m n α) :=
+  fast_instance%
   @Pi.normedAddCommGroup m _ _ (fun _ ↦ PiLp.normedAddCommGroupToPi 1 (fun _ : n ↦ α))
 
 /-- This applies to the sup norm of L1 norm. -/
@@ -431,7 +431,6 @@ For a matrix over a field, the norm defined in this section agrees with the oper
 section
 variable [NontriviallyNormedField α] [NormedAlgebra ℝ α]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma linfty_opNNNorm_eq_opNNNorm (A : Matrix m n α) :
     ‖A‖₊ = ‖ContinuousLinearMap.mk (Matrix.mulVecLin A)‖₊ := by
   rw [ContinuousLinearMap.opNNNorm_eq_of_bounds _ (linfty_opNNNorm_mulVec _) fun N hN => ?_]
@@ -501,6 +500,7 @@ matrix. -/
 @[instance_reducible, local instance]
 def frobeniusSeminormedAddCommGroup [SeminormedAddCommGroup α] :
     SeminormedAddCommGroup (Matrix m n α) :=
+  fast_instance%
   @PiLp.seminormedAddCommGroupToPi 2 _ _ _ _ (fun _ ↦ PiLp.seminormedAddCommGroupToPi 2 _)
 
 /-- Normed group instance (using the Frobenius norm) for matrices over a normed group.  Not
@@ -508,7 +508,7 @@ declared as an instance because there are several natural choices for defining t
 matrix. -/
 @[instance_reducible, local instance]
 def frobeniusNormedAddCommGroup [NormedAddCommGroup α] : NormedAddCommGroup (Matrix m n α) :=
-  @PiLp.normedAddCommGroupToPi 2 _ _ _ _ (fun _ ↦ PiLp.normedAddCommGroupToPi 2 _)
+  fast_instance% @PiLp.normedAddCommGroupToPi 2 _ _ _ _ (fun _ ↦ PiLp.normedAddCommGroupToPi 2 _)
 
 /-- This applies to the Frobenius norm. -/
 @[local instance]
@@ -534,6 +534,7 @@ matrix. -/
 @[instance_reducible, local instance]
 def frobeniusNormedSpace [NormedField R] [SeminormedAddCommGroup α] [NormedSpace R α] :
     NormedSpace R (Matrix m n α) :=
+  fast_instance%
   letI := PiLp.seminormedAddCommGroupToPi 2 (fun _ : n ↦ α)
   letI := PiLp.normedSpaceSeminormedAddCommGroupToPi (R := R) 2 (fun _ : n ↦ α)
   PiLp.normedSpaceSeminormedAddCommGroupToPi 2 _

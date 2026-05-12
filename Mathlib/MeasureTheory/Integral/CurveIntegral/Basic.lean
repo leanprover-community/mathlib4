@@ -215,7 +215,6 @@ theorem curveIntegral_symm (ω : E → E →L[𝕜] F) (γ : Path a b) :
     ∫ᶜ x in γ.symm, ω x = -∫ᶜ x in γ, ω x := by
   simp [curveIntegral, curveIntegralFun_symm]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem curveIntegralFun_trans_of_lt_half (ω : E → E →L[𝕜] F) (γab : Path a b) (γbc : Path b c)
     (ht : t < 1 / 2) :
     curveIntegralFun ω (γab.trans γbc) t = (2 : ℕ) • curveIntegralFun ω γab (2 * t) := by
@@ -272,7 +271,6 @@ protected theorem CurveIntegrable.trans (h₁ : CurveIntegrable ω γab) (h₂ :
   (h₁.intervalIntegrable_curveIntegralFun_trans_left γbc).trans
     (h₂.intervalIntegrable_curveIntegralFun_trans_right γab)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem curveIntegral_trans (h₁ : CurveIntegrable ω γab) (h₂ : CurveIntegrable ω γbc) :
     ∫ᶜ x in γab.trans γbc, ω x = (∫ᶜ x in γab, ω x) + ∫ᶜ x in γbc, ω x := by
   let instF := NormedSpace.restrictScalars ℝ 𝕜 F
@@ -534,7 +532,7 @@ theorem HasFDerivWithinAt.curveIntegral_segment_source' (hs : Convex ℝ s)
   · rw [curveIntegrable_segment]
     refine ContinuousOn.intervalIntegrable_of_Icc zero_le_one fun t ht ↦ ?_
     refine ((hδ ?_).1.eval_const _).comp AffineMap.lineMap_continuous.continuousWithinAt ?_
-    · refine hsub <| segment_eq_image_lineMap ℝ a b ▸ mem_image_of_mem _ ht
+    · exact hsub <| lineMap_mem_segment ℝ a b ht
     · rw [mapsTo_iff_image_subset, ← segment_eq_image_lineMap]
       exact hs.segment_subset ha hbs
   · rw [curveIntegrable_segment]

@@ -12,7 +12,7 @@ public import Mathlib.Data.Fintype.OfMap
 # fintype instances for sigma types
 -/
 
-@[expose] public section
+public section
 
 
 open Function

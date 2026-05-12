@@ -144,7 +144,6 @@ section s_gt_one
 ## Evaluation of the sum for `1 < s`
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 lemma term_of_lt {n : ℕ} (hn : 0 < n) {s : ℝ} (hs : 1 < s) :
     term n s = 1 / (s - 1) * (1 / n ^ (s - 1) - 1 / (n + 1) ^ (s - 1))
     - n / s * (1 / n ^ s - 1 / (n + 1) ^ s) := by
@@ -216,9 +215,8 @@ lemma term_tsum_of_lt {s : ℝ} (hs : 1 < s) :
     · exact_mod_cast (summable_nat_add_iff 1).mpr (summable_one_div_nat_rpow.mpr hs)
     · apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
       · change Tendsto (fun n : ℕ ↦ (1 / ↑(n + 1) : ℝ) ^ (s - 1)) ..
-        rw [show 𝓝 (0 : ℝ) = 𝓝 (0 ^ (s - 1)) by rw [zero_rpow]; linarith]
-        refine Tendsto.rpow_const ?_ (Or.inr <| by linarith)
-        exact (tendsto_const_div_atTop_nhds_zero_nat _).comp (tendsto_add_atTop_nat _)
+        exact ((tendsto_const_div_atTop_nhds_zero_nat _).comp
+          (tendsto_add_atTop_nat _)).rpow_const_nhds_zero (by linarith)
       · intro n
         positivity
       · intro n
@@ -283,7 +281,6 @@ lemma continuousOn_term_tsum : ContinuousOn term_tsum (Ici 1) := by
     · have : 1 ≤ x := le_trans (by simp) hx.1.le
       gcongr
       · exact sub_nonneg.mpr hx.1.le
-      · assumption
       · exact hs
   · rw [intervalIntegral.integral_of_le (by linarith)]
     refine setIntegral_nonneg measurableSet_Ioc (fun x hx ↦ div_nonneg ?_ (rpow_nonneg ?_ _))
@@ -420,6 +417,10 @@ lemma _root_.riemannZeta_one_ne_zero : riemannZeta 1 ≠ 0 := by
   · rw [lt_log_iff_exp_lt (by positivity)]
     exact (lt_trans Real.exp_one_lt_d9 (by norm_num)).trans_le
       <| mul_le_mul_of_nonneg_left two_le_pi (by simp)
+
+lemma _root_.riemannZeta_eventually_ne_zero_nhds_one : ∀ᶠ s in 𝓝 1, riemannZeta s ≠ 0 := by
+  filter_upwards [eventually_nhdsWithin_iff.1 <| riemannZeta_residue_one.eventually_ne one_ne_zero]
+  grind [riemannZeta_one_ne_zero]
 
 end val_at_one
 

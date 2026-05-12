@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.LocalProperties.Exactness
 
 # Being injective is a local property
 
-# Main Results
+## Main Results
 
 * `Module.injective_of_isLocalizedModule` : For module `M` over Noetherian ring `R`,
   being injective is preserved under localization.
@@ -27,7 +27,7 @@ public import Mathlib.RingTheory.LocalProperties.Exactness
 
 universe u v
 
-@[expose] public section
+public section
 
 variable {R : Type u} [CommRing R] {M : Type v} [AddCommGroup M] [Module R M] (S : Submonoid R)
 
@@ -35,7 +35,6 @@ section
 
 universe u' v'
 
-set_option backward.isDefEq.respectTransparency false in
 open IsLocalizedModule in
 theorem Module.injective_of_isLocalizedModule [Small.{v} R] [IsNoetherianRing R] {Rₛ : Type u'}
     [Small.{v'} Rₛ] [CommRing Rₛ] [Algebra R Rₛ] {Mₛ : Type v'} [AddCommGroup Mₛ] [Module R Mₛ]
@@ -45,7 +44,7 @@ theorem Module.injective_of_isLocalizedModule [Small.{v} R] [IsNoetherianRing R]
   simp only [← Baer.iff_injective, Module.Baer.iff_surjective] at MB ⊢
   intro Iₛ g
   obtain ⟨I, rfl⟩ : ∃ I, .localized' Rₛ S (Algebra.linearMap R Rₛ) I = Iₛ :=
-    ⟨Iₛ.comap (algebraMap R Rₛ), by simp [Ideal.localized'_eq_map, IsLocalization.map_comap S]⟩
+    ⟨Iₛ.comap (algebraMap R Rₛ), by simp [Ideal.localized'_eq_map, IsLocalization.map_under S]⟩
   have : FinitePresentation R I := finitePresentation_of_finite R I
   obtain ⟨⟨g', a⟩, e : a.1 • g = _⟩ := surj S (mapExtendScalars S (I.toLocalized' _ _ _) f Rₛ) g
   obtain ⟨g', rfl⟩ := MB I g'
@@ -60,7 +59,6 @@ theorem Module.injective_of_isLocalizedModule [Small.{v} R] [IsNoetherianRing R]
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Module.injective_of_localization_maximal [Small.{v} R] [IsNoetherianRing R]
     (H : ∀ (I : Ideal R) (_ : I.IsMaximal),
       Module.Injective (Localization.AtPrime I) (LocalizedModule I.primeCompl M)) :

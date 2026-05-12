@@ -654,7 +654,6 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
 
 variable [HasBesicovitchCovering α]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The **measurable Besicovitch covering theorem**. Assume that, for any `x` in a set `s`,
 one is given a set of admissible closed balls centered at `x`, with arbitrarily small radii.
 Then there exists a disjoint covering of almost all `s` by admissible closed balls centered at some
@@ -788,7 +787,7 @@ theorem exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux (μ : Measur
       rw [ENNReal.div_lt_iff, one_mul]
       · conv_lhs => rw [← add_zero (N : ℝ≥0∞)]
         exact ENNReal.add_lt_add_left (ENNReal.natCast_ne_top N) zero_lt_one
-      · simp only [true_or, add_eq_zero, Ne, not_false_iff, one_ne_zero, and_false]
+      · simp
       · left; finiteness
     rw [zero_mul] at C
     apply le_bot_iff.1
@@ -1042,8 +1041,7 @@ protected def vitaliFamily (μ : Measure α) [SFinite μ] : VitaliFamily μ wher
       obtain ⟨r, rpos, rfl⟩ : ∃ r : ℝ, 0 < r ∧ closedBall x r = t := by simpa using fsubset x xs tf
       rcases le_total r (δ / 2) with (H | H)
       · exact ⟨r, ⟨rpos, tf⟩, ⟨rpos, H.trans_lt (half_lt_self δpos)⟩⟩
-      · have : closedBall x r = closedBall x (δ / 2) :=
-          Subset.antisymm ht (closedBall_subset_closedBall H)
+      · have : closedBall x r = closedBall x (δ / 2) := Subset.antisymm ht (by gcongr)
         rw [this] at tf
         exact ⟨δ / 2, ⟨half_pos δpos, tf⟩, ⟨half_pos δpos, half_lt_self δpos⟩⟩
     obtain ⟨t, r, _, ts, tg, μt, tdisj⟩ :

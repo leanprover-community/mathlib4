@@ -315,13 +315,11 @@ instance [Subsingleton G] : Unique (Subgroup G) :=
 instance [Nontrivial G] : Nontrivial (Subgroup G) :=
   nontrivial_iff.mpr ‹_›
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance [Nontrivial G] : Nontrivial (⊤ : Subgroup G) := by
   rw [nontrivial_iff_ne_bot]
   exact top_ne_bot
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem eq_top_iff' : H = ⊤ ↔ ∀ x : G, x ∈ H :=
   eq_top_iff.trans ⟨fun h m => h <| mem_top m, fun h m _ => h m⟩
@@ -407,7 +405,6 @@ theorem closure_induction₂ {p : (x y : G) → x ∈ closure k → y ∈ closur
   | mul _ _ _ _ h₁ h₂ => exact mul_right _ _ _ _ _ hx h₁ h₂
   | inv _ _ h => exact inv_right _ _ _ _ h
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem closure_closure_coe_preimage {k : Set G} : closure (((↑) : closure k → G) ⁻¹' k) = ⊤ :=
   eq_top_iff.2 fun x _ ↦ Subtype.recOn x fun _ hx' ↦
@@ -436,7 +433,6 @@ theorem closure_mono ⦃h k : Set G⦄ (h' : h ⊆ k) : closure h ≤ closure k 
 theorem closure_eq : closure (K : Set G) = K :=
   (Subgroup.gi G).l_u_eq K
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem closure_empty : closure (∅ : Set G) = ⊥ :=
   (Subgroup.gi G).gc.l_bot
@@ -457,7 +453,6 @@ theorem sup_eq_closure (H H' : Subgroup G) : H ⊔ H' = closure ((H : Set G) ∪
 theorem closure_iUnion {ι} (s : ι → Set G) : closure (⋃ i, s i) = ⨆ i, closure (s i) :=
   (Subgroup.gi G).gc.l_iSup
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem closure_eq_bot_iff : closure k = ⊥ ↔ k ⊆ {1} := le_bot_iff.symm.trans <| closure_le _
 
@@ -500,7 +495,6 @@ theorem closure_eq_top_of_mclosure_eq_top {S : Set G} (h : Submonoid.closure S =
     closure S = ⊤ :=
   (eq_top_iff' _).2 fun _ => le_closure_toSubmonoid _ <| h.symm ▸ trivial
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem closure_insert_one (s : Set G) : closure (insert 1 s) = closure s := by
   rw [insert_eq, closure_union]
@@ -560,7 +554,7 @@ theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {K : ι → Subgroup G} (h
   rw [this, mem_biSup_of_directedOn trivial]
   · simp
   · simp only [setOf_true]
-    rw [directedOn_onFun_iff, Set.image_univ, ← directedOn_range]
+    rw [directedOn_onFun_iff, Set.image_univ, directedOn_range]
     -- `Directed.mono_comp` and much of the Set API requires `Type u` instead of `Sort u`
     intro i
     simp only [PLift.exists]
@@ -585,6 +579,23 @@ theorem mem_sSup_of_directedOn {K : Set (Subgroup G)} (Kne : K.Nonempty) (hK : D
     {x : G} : x ∈ sSup K ↔ ∃ s ∈ K, x ∈ s := by
   haveI : Nonempty K := Kne.to_subtype
   simp only [sSup_eq_iSup', mem_iSup_of_directed hK.directed_val, SetCoe.exists, exists_prop]
+
+@[to_additive]
+theorem isMulCommutative_iSup {ι : Sort*} [Nonempty ι]
+    {S : ι → Subgroup G} [hS : ∀ i, IsMulCommutative (S i)]
+    (dir : Directed (· ≤ ·) S) : IsMulCommutative (⨆ i, S i : Subgroup G) := by
+  refine .of_setLike_mul_comm ?_
+  simp_rw [← SetLike.mem_coe, coe_iSup_of_directed dir, Set.mem_iUnion,
+    SetLike.mem_coe, forall_exists_index]
+  intro a i ha b j hb
+  obtain ⟨k, hik, hjk⟩ := dir i j
+  exact setLike_mul_comm (hik ha) (hjk hb)
+
+@[to_additive]
+instance instIsMulCommutative_iSup {ι : Type*} [Nonempty ι] [Preorder ι] [IsDirectedOrder ι]
+    {S : ι →o Subgroup G} [hS : ∀ i, IsMulCommutative (S i)] :
+    IsMulCommutative (⨆ i, S i : Subgroup G) :=
+  isMulCommutative_iSup S.monotone.directed_le
 
 variable {C : Type*} [CommGroup C] {s t : Subgroup C} {x : C}
 
@@ -651,18 +662,15 @@ theorem mem_closure_pair {x y z : C} :
   rw [← Set.singleton_union, Subgroup.closure_union, mem_sup]
   simp_rw [mem_closure_singleton, exists_exists_eq_and]
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem disjoint_def {H₁ H₂ : Subgroup G} : Disjoint H₁ H₂ ↔ ∀ {x : G}, x ∈ H₁ → x ∈ H₂ → x = 1 :=
   disjoint_iff_inf_le.trans <| by simp only [SetLike.le_def, mem_inf, mem_bot, and_imp]
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem disjoint_def' {H₁ H₂ : Subgroup G} :
     Disjoint H₁ H₂ ↔ ∀ {x y : G}, x ∈ H₁ → y ∈ H₂ → x = y → x = 1 :=
   disjoint_def.trans ⟨fun h _x _y hx hy hxy ↦ h hx <| hxy.symm ▸ hy, fun h _x hx hx' ↦ h hx hx' rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem disjoint_iff_mul_eq_one {H₁ H₂ : Subgroup G} :
     Disjoint H₁ H₂ ↔ ∀ {x y : G}, x ∈ H₁ → y ∈ H₂ → x * y = 1 → x = 1 ∧ y = 1 :=
@@ -672,7 +680,6 @@ theorem disjoint_iff_mul_eq_one {H₁ H₂ : Subgroup G} :
       ⟨hx1, by simpa [hx1] using hxy⟩,
       fun h _ _ hx hy hxy => (h hx (H₂.inv_mem hy) (mul_inv_eq_one.mpr hxy)).1⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem mul_injective_of_disjoint {H₁ H₂ : Subgroup G} (h : Disjoint H₁ H₂) :
     Function.Injective (fun g => g.1 * g.2 : H₁ × H₂ → G) := by

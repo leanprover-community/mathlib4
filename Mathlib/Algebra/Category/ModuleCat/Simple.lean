@@ -17,7 +17,7 @@ public import Mathlib.RingTheory.SimpleModule.Basic
 We prove simple modules are exactly simple objects in the category of `R`-modules.
 -/
 
-@[expose] public section
+public section
 
 
 variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]

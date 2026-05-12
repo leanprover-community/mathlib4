@@ -5,6 +5,7 @@ Authors: Christopher Hoskin
 -/
 module
 
+public import Mathlib.Order.DirSupClosed
 public import Mathlib.Order.ScottContinuity
 public import Mathlib.Topology.Order.UpperLowerSetTopology
 
@@ -15,10 +16,8 @@ This file introduces the Scott topology on a preorder.
 
 ## Main definitions
 
-- `DirSupInacc` - a set `u` is said to be inaccessible by directed joins if, when the least upper
-  bound of a directed set `d` lies in `u` then `d` has non-empty intersection with `u`.
-- `DirSupClosed` - a set `s` is said to be closed under directed joins if, whenever a directed set
-  `d` has a least upper bound `a` and is a subset of `s` then `a` also lies in `s`.
+- `Topology.scottHausdorff`: the Scott-Hausdorff topology is the topology whose closed sets are
+  `DirSupClosed`, i.e. closed under directed suprema.
 - `Topology.scott` - the Scott topology is defined as the join of the topology of upper sets and the
   Scott-Hausdorff topology (the topological space where a set `u` is open if, when the least upper
   bound of a directed set `d` lies in `u` then there is a tail of `d` which is a subset of `u`).
@@ -67,87 +66,18 @@ open Set
 
 variable {α β : Type*}
 
-/-! ### Prerequisite order properties -/
-
-section Preorder
-variable [Preorder α] {s t : Set α}
-
-/-- A set `s` is said to be inaccessible by directed joins on `D` if, when the least upper bound of
-a directed set `d` in `D` lies in `s` then `d` has non-empty intersection with `s`. -/
-def DirSupInaccOn (D : Set (Set α)) (s : Set α) : Prop :=
-  ∀ ⦃d⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → a ∈ s → (d ∩ s).Nonempty
-
-/-- A set `s` is said to be inaccessible by directed joins if, when the least upper bound of a
-directed set `d` lies in `s` then `d` has non-empty intersection with `s`. -/
-def DirSupInacc (s : Set α) : Prop :=
-  ∀ ⦃d⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → a ∈ s → (d ∩ s).Nonempty
-
-@[simp] lemma dirSupInaccOn_univ : DirSupInaccOn univ s ↔ DirSupInacc s := by
-  simp [DirSupInaccOn, DirSupInacc]
-
-@[simp] lemma DirSupInacc.dirSupInaccOn {D : Set (Set α)} :
-    DirSupInacc s → DirSupInaccOn D s := fun h _ _ d₂ d₃ _ hda => h d₂ d₃ hda
-
-lemma DirSupInaccOn.mono {D₁ D₂ : Set (Set α)} (hD : D₁ ⊆ D₂) (hf : DirSupInaccOn D₂ s) :
-    DirSupInaccOn D₁ s := fun ⦃_⦄ a ↦ hf (hD a)
-
-/--
-A set `s` is said to be closed under directed joins if, whenever a directed set `d` has a least
-upper bound `a` and is a subset of `s` then `a` also lies in `s`.
--/
-def DirSupClosed (s : Set α) : Prop :=
-  ∀ ⦃d⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → d ⊆ s → a ∈ s
-
-set_option backward.isDefEq.respectTransparency false in
-@[simp] lemma dirSupInacc_compl : DirSupInacc sᶜ ↔ DirSupClosed s := by
-  simp [DirSupInacc, DirSupClosed, ← not_disjoint_iff_nonempty_inter, not_imp_not,
-    disjoint_compl_right_iff]
-
-@[simp] lemma dirSupClosed_compl : DirSupClosed sᶜ ↔ DirSupInacc s := by
-  rw [← dirSupInacc_compl, compl_compl]
-
-alias ⟨DirSupInacc.of_compl, DirSupClosed.compl⟩ := dirSupInacc_compl
-alias ⟨DirSupClosed.of_compl, DirSupInacc.compl⟩ := dirSupClosed_compl
-
-lemma DirSupClosed.inter (hs : DirSupClosed s) (ht : DirSupClosed t) : DirSupClosed (s ∩ t) :=
-  fun _d hd hd' _a ha hds ↦ ⟨hs hd hd' ha <| hds.trans inter_subset_left,
-    ht hd hd' ha <| hds.trans inter_subset_right⟩
-
-lemma DirSupInacc.union (hs : DirSupInacc s) (ht : DirSupInacc t) : DirSupInacc (s ∪ t) := by
-  rw [← dirSupClosed_compl, compl_union]; exact hs.compl.inter ht.compl
-
-lemma IsUpperSet.dirSupClosed (hs : IsUpperSet s) : DirSupClosed s :=
-  fun _d ⟨_b, hb⟩ _ _a ha hds ↦ hs (ha.1 hb) <| hds hb
-
-lemma IsLowerSet.dirSupInacc (hs : IsLowerSet s) : DirSupInacc s := hs.compl.dirSupClosed.of_compl
-
-lemma dirSupClosed_Iic (a : α) : DirSupClosed (Iic a) := fun _d _ _ _a ha ↦ (isLUB_le_iff ha).2
-
-end Preorder
-
-section CompleteLattice
-variable [CompleteLattice α] {s : Set α}
-
-lemma dirSupInacc_iff_forall_sSup :
-    DirSupInacc s ↔ ∀ ⦃d⦄, d.Nonempty → DirectedOn (· ≤ ·) d → sSup d ∈ s → (d ∩ s).Nonempty := by
-  simp [DirSupInacc, isLUB_iff_sSup_eq]
-
-lemma dirSupClosed_iff_forall_sSup :
-    DirSupClosed s ↔ ∀ ⦃d⦄, d.Nonempty → DirectedOn (· ≤ ·) d → d ⊆ s → sSup d ∈ s := by
-  simp [DirSupClosed, isLUB_iff_sSup_eq]
-
-end CompleteLattice
-
 namespace Topology
 
 /-! ### Scott-Hausdorff topology -/
 
-section ScottHausdorff
-
 /-- The Scott-Hausdorff topology.
 
 A set `u` is open in the Scott-Hausdorff topology iff when the least upper bound of a directed set
-`d` lies in `u` then there is a tail of `d` which is a subset of `u`. -/
+`d` lies in `u` then there is a tail of `d` which is a subset of `u`.
+
+For mild conditions on `D`, this is equivalent to saying that open sets are `DirSupInaccOn D`,
+and closed sets are `DirSupClosedOn D`. -/
+@[implicit_reducible]
 def scottHausdorff (α : Type*) (D : Set (Set α)) [Preorder α] : TopologicalSpace α where
   IsOpen u := ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a →
     a ∈ u → ∃ b ∈ d, Ici b ∩ d ⊆ u
@@ -161,56 +91,68 @@ def scottHausdorff (α : Type*) (D : Set (Set α)) [Preorder α] : TopologicalSp
     obtain ⟨b, hbd, hbds₀⟩ := h s₀ hs₀s hd₀ hd₁ hd₂ hd₃ has₀
     exact ⟨b, hbd, Set.subset_sUnion_of_subset s s₀ hbds₀ hs₀s⟩
 
-variable (α) (D : Set (Set α)) [Preorder α] [TopologicalSpace α]
-
 /-- Predicate for an ordered topological space to be equipped with its Scott-Hausdorff topology.
 
 A set `u` is open in the Scott-Hausdorff topology iff when the least upper bound of a directed set
-`d` lies in `u` then there is a tail of `d` which is a subset of `u`. -/
-class IsScottHausdorff : Prop where
+`d` lies in `u` then there is a tail of `d` which is a subset of `u`.
+
+For mild conditions on `D`, this is equivalent to saying that open sets are `DirSupInaccOn D`,
+and closed sets are `DirSupClosedOn D`. -/
+class IsScottHausdorff (α) (D : Set (Set α)) [Preorder α] [TopologicalSpace α] : Prop where
   topology_eq_scottHausdorff : ‹TopologicalSpace α› = scottHausdorff α D
 
-instance : @IsScottHausdorff α D _ (scottHausdorff α D) :=
+instance (α) (D : Set (Set α)) [Preorder α] [TopologicalSpace α] :
+    @IsScottHausdorff α D _ (scottHausdorff α D) :=
   @IsScottHausdorff.mk _ _ _ (scottHausdorff α D) rfl
 
 namespace IsScottHausdorff
-variable {s : Set α}
 
-lemma topology_eq [IsScottHausdorff α D] : ‹_› = scottHausdorff α D := topology_eq_scottHausdorff
+variable {s : Set α} {D : Set (Set α)} [Preorder α] [t : TopologicalSpace α]
 
-variable {α D}
+section General
 
-lemma isOpen_iff [IsScottHausdorff α D] :
+variable [IsScottHausdorff α D]
+
+variable (α D) in
+lemma topology_eq : ‹_› = scottHausdorff α D := topology_eq_scottHausdorff
+
+lemma isOpen_iff :
     IsOpen s ↔ ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a →
       a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s := by
   simp +instances [topology_eq_scottHausdorff (α := α) (D := D), IsOpen, scottHausdorff]
 
-lemma dirSupInaccOn_of_isOpen [IsScottHausdorff α D] (h : IsOpen s) : DirSupInaccOn D s :=
-  fun d hd₀ hd₁ hd₂ a hda hd₃ ↦ by
-    obtain ⟨b, hbd, hb⟩ := isOpen_iff.mp h hd₀ hd₁ hd₂ hda hd₃; exact ⟨b, hbd, hb ⟨le_rfl, hbd⟩⟩
+lemma dirSupInaccOn_of_isOpen (h : IsOpen s) : DirSupInaccOn D s :=
+  .of_inter_subset (isOpen_iff.1 h)
 
-lemma dirSupClosed_of_isClosed [IsScottHausdorff α univ] (h : IsClosed s) : DirSupClosed s := by
-  apply DirSupInacc.of_compl
-  rw [← dirSupInaccOn_univ]
-  exact (dirSupInaccOn_of_isOpen h.isOpen_compl)
+lemma dirSupClosedOn_of_isClosed (h : IsClosed s) : DirSupClosedOn D s :=
+  .of_compl (dirSupInaccOn_of_isOpen h.isOpen_compl)
 
+theorem isOpen_iff_dirSupInaccOn (hDL : IsLowerSet D) : IsOpen s ↔ DirSupInaccOn D s := by
+  rw [isOpen_iff (D := D), dirSupInaccOn_iff_inter_subset hDL]
+
+theorem isClosed_iff_dirSupClosedOn (hDL : IsLowerSet D) : IsClosed s ↔ DirSupClosedOn D s := by
+  rw [← isOpen_compl_iff, isOpen_iff_dirSupInaccOn hDL, dirSupInaccOn_compl]
+
+theorem isOpen_of_isLowerSet (hDL : IsLowerSet D) (h : IsLowerSet s) : IsOpen s :=
+  (isOpen_iff_dirSupInaccOn hDL).2 h.dirSupInaccOn
+
+theorem isClosed_of_isUpperSet (hDL : IsLowerSet D) (h : IsUpperSet s) : IsClosed s :=
+  (isClosed_iff_dirSupClosedOn hDL).2 h.dirSupClosedOn
+
+end General
+
+section univ
+
+variable [IsScottHausdorff α univ]
+
+theorem isOpen_iff_dirSupInacc : IsOpen s ↔ DirSupInacc s := by
+  rw [isOpen_iff_dirSupInaccOn isLowerSet_univ, dirSupInaccOn_univ]
+
+theorem isClosed_iff_dirSupClosed : IsClosed s ↔ DirSupClosed s := by
+  rw [isClosed_iff_dirSupClosedOn isLowerSet_univ, dirSupClosedOn_univ]
+
+end univ
 end IsScottHausdorff
-end ScottHausdorff
-
-section ScottHausdorff
-namespace IsScottHausdorff
-
-variable {s : Set α} [Preorder α] {t : TopologicalSpace α} [IsScottHausdorff α univ]
-
-lemma isOpen_of_isLowerSet (h : IsLowerSet s) : IsOpen s :=
-  (isOpen_iff (D := univ)).2 fun _d _ ⟨b, hb⟩ _ _ hda ha ↦
-    ⟨b, hb, fun _ hc ↦ h (mem_upperBounds.1 hda.1 _ hc.2) ha⟩
-
-lemma isClosed_of_isUpperSet (h : IsUpperSet s) : IsClosed s :=
-  isOpen_compl_iff.1 <| isOpen_of_isLowerSet h.compl
-
-end IsScottHausdorff
-end ScottHausdorff
 
 /-! ### Scott topology -/
 
@@ -220,6 +162,7 @@ section Preorder
 /-- The Scott topology.
 
 It is defined as the join of the topology of upper sets and the Scott-Hausdorff topology. -/
+@[implicit_reducible]
 def scott (α : Type*) (D : Set (Set α)) [Preorder α] : TopologicalSpace α :=
   upperSet α ⊔ scottHausdorff α D
 
@@ -253,7 +196,7 @@ lemma isOpen_iff_isUpperSet_and_dirSupInaccOn [IsScott α D] :
     IsOpen s ↔ IsUpperSet s ∧ DirSupInaccOn D s := by
   rw [isOpen_iff_isUpperSet_and_scottHausdorff_open (D := D)]
   refine and_congr_right fun h ↦
-    ⟨@IsScottHausdorff.dirSupInaccOn_of_isOpen _ _ _ (scottHausdorff α D) _ _,
+    ⟨IsScottHausdorff.dirSupInaccOn_of_isOpen (t := scottHausdorff α D),
       fun h' d d₀ d₁ d₂ _ d₃ ha ↦ ?_⟩
   obtain ⟨b, hbd, hbu⟩ := h' d₀ d₁ d₂ d₃ ha
   exact ⟨b, hbd, Subset.trans inter_subset_left (h.Ici_subset hbu)⟩
@@ -346,9 +289,9 @@ lemma isOpen_iff_Iic_compl_or_univ [TopologicalSpace α] [Topology.IsScott α un
     · apply Or.inr
       use sSup Uᶜ
       rw [compl_eq_comm, le_antisymm_iff]
-      exact ⟨fun _ ha ↦ le_sSup ha, (isLowerSet_of_isClosed hU.isClosed_compl).Iic_subset
-        (dirSupClosed_iff_forall_sSup.mp (dirSupClosed_of_isClosed hU.isClosed_compl)
-        neUc (isChain_of_trichotomous Uᶜ).directedOn le_rfl)⟩
+      refine ⟨fun _ ha ↦ le_sSup ha, (isLowerSet_of_isClosed hU.isClosed_compl).Iic_subset ?_⟩
+      exact dirSupClosed_iff_forall_sSup.mp (dirSupClosed_of_isClosed hU.isClosed_compl) le_rfl neUc
+        (isChain_of_trichotomous Uᶜ).directedOn
   · rintro (rfl | ⟨a, rfl⟩)
     · exact isOpen_univ
     · exact isClosed_Iic.isOpen_compl
@@ -410,7 +353,12 @@ instance [Inhabited α] : Inhabited (WithScott α) := ‹Inhabited α›
 variable [Preorder α]
 
 instance : Preorder (WithScott α) := ‹Preorder α›
-instance : TopologicalSpace (WithScott α) := scott α univ
+
+instance : TopologicalSpace (WithScott α) :=
+  -- fast_instance% scott α univ fails
+  letI : TopologicalSpace α := scott α univ
+  inferInstanceAs <| TopologicalSpace α
+
 instance : IsScott (WithScott α) univ := ⟨rfl⟩
 
 lemma isOpen_iff_isUpperSet_and_scottHausdorff_open' {u : Set α} :
@@ -422,8 +370,9 @@ end Scott
 variable [Preorder α]
 
 lemma scottHausdorff_le_lower : scottHausdorff α univ ≤ lower α :=
-  fun s h => IsScottHausdorff.isOpen_of_isLowerSet (t := scottHausdorff α univ)
-      <| (@IsLower.isLowerSet_of_isOpen (Topology.WithLower α) _ _ _ s h)
+  let : TopologicalSpace α := scottHausdorff α univ
+  fun s h ↦ IsScottHausdorff.isOpen_of_isLowerSet isLowerSet_univ <|
+    @IsLower.isLowerSet_of_isOpen (Topology.WithLower α) _ _ _ s h
 
 variable [TopologicalSpace α]
 
@@ -436,9 +385,8 @@ lemma IsScott.scottHausdorff_le [IsScott α univ] :
     scottHausdorff α univ ≤ ‹TopologicalSpace α› := by
   rw [IsScott.topology_eq α univ, scott]; exact le_sup_right
 
-lemma IsLower.scottHausdorff_le [IsLower α] : scottHausdorff α univ ≤ ‹TopologicalSpace α› :=
-  fun _ h ↦
-    IsScottHausdorff.isOpen_of_isLowerSet (t := scottHausdorff α univ)
-      <| IsLower.isLowerSet_of_isOpen h
+lemma IsLower.scottHausdorff_le [IsLower α] : scottHausdorff α univ ≤ ‹TopologicalSpace α› := by
+  rw [IsLower.topology_eq α]
+  exact scottHausdorff_le_lower
 
 end Topology

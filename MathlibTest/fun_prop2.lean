@@ -1,10 +1,17 @@
 import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 import Mathlib.MeasureTheory.MeasurableSpace.Basic
-
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
+import Mathlib.Analysis.Complex.Trigonometric
+import Mathlib.Analysis.Meromorphic.Basic
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
 
+/-! # Main test file for fun_prop
+
+Use this file for `fun_prop` tests that depend on mathlib
+`fun_prop_dev` is for unit and synthetic tests avoiding mathlib.
+-/
 
 noncomputable
 def foo (x : ℝ) := x * (Real.log x) ^ 2 - Real.exp x / x
@@ -38,11 +45,11 @@ example : Continuous fun ((_, _, z) : ℝ × ℝ × ℝ) ↦ z := by fun_prop
 @[fun_prop]
 theorem ContinuousOn.log' : ContinuousOn Real.log {0}ᶜ := ContinuousOn.log (by fun_prop) (by aesop)
 
--- Notice that no theorems about measuability of log are used. It is inferred from continuity.
+-- Notice that no theorems about measurability of log are used. It is inferred from continuity.
 example : Measurable (fun x ↦ x * (Real.log x) ^ 2 - Real.exp x / x) := by
   fun_prop
 
--- Notice that no theorems about measuability of log are used. It is inferred from continuity.
+-- Notice that no theorems about measurability of log are used. It is inferred from continuity.
 example : AEMeasurable (fun x ↦ x * (Real.log x) ^ 2 - Real.exp x / x) := by
   fun_prop (maxTransitionDepth := 2)
 
@@ -75,8 +82,12 @@ example : AEMeasurable T := by
   unfold T S
   fun_prop
 
+example (z : ℂ) : MeromorphicAt (fun t ↦ Complex.cosh t) z := by
+  fun_prop
 
-set_option backward.isDefEq.respectTransparency false in
+example (z : ℂ) : MeromorphicAt (fun t ↦ Complex.cosh (2 * t)) z := by
+  fun_prop
+
 private theorem t1 : (5: ℕ) + (1 : ℕ∞) ≤ (12 : WithTop ℕ∞) := by norm_cast
 
 example {f : ℝ → ℝ} (hf : ContDiff ℝ 12 f) :
@@ -97,3 +108,15 @@ example {α : Type*} {m₀ : MeasurableSpace α} {μ : MeasureTheory.Measure α}
     (hl : ∀ f ∈ l, MeasureTheory.AEStronglyMeasurable f μ) :
     MeasureTheory.AEStronglyMeasurable l.prod μ := by
   fun_prop (disch := assumption)
+
+/-! Test that `fun_prop` should work on `→` and `∀` -/
+
+attribute [fun_prop] Measurable.imp Measurable.forall
+
+example {α : Type*} [MeasurableSpace α] {p q : α → Prop} (hp : Measurable p) (hq : Measurable q) :
+    Measurable fun x => p x → q x := by
+  fun_prop
+
+example {α ι : Type*} [MeasurableSpace α] [Countable ι] {p : ι → α → Prop}
+    (hp : ∀ i, Measurable (p i)) : Measurable fun x => ∀ i, p i x := by
+  fun_prop

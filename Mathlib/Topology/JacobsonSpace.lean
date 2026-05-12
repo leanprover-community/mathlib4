@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Topology.LocalAtTarget
 public import Mathlib.Topology.Separation.Regular
-public import Mathlib.Tactic.StacksAttribute
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 
@@ -79,7 +79,6 @@ variable {X}
 lemma closure_closedPoints [JacobsonSpace X] : closure (closedPoints X) = Set.univ := by
   simpa using closure_inter_closedPoints isClosed_univ
 
-set_option backward.isDefEq.respectTransparency false in
 lemma jacobsonSpace_iff_locallyClosed :
     JacobsonSpace X ↔ ∀ Z, Z.Nonempty → IsLocallyClosed Z → (Z ∩ closedPoints X).Nonempty := by
   rw [jacobsonSpace_iff]

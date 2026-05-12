@@ -33,6 +33,7 @@ variable {X Y : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
 open TopologicalSpace Topology
 
 /-- The topology coinduced by all maps from ℝⁿ into a space. -/
+@[implicit_reducible]
 def TopologicalSpace.deltaGenerated (X : Type*) [TopologicalSpace X] : TopologicalSpace X :=
   ⨆ f : (n : ℕ) × C(((Fin n) → ℝ), X), coinduced f.2 inferInstance
 
@@ -85,7 +86,6 @@ lemma DeltaGeneratedSpace.isOpen_iff [DeltaGeneratedSpace X] {u : Set X} :
     IsOpen u ↔ ∀ (n : ℕ) (p : ContinuousMap ((Fin n) → ℝ) X), IsOpen (p ⁻¹' u) := by
   nth_rewrite 1 [eq_deltaGenerated (X := X)]; exact isOpen_deltaGenerated_iff
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A map out of a delta-generated space is continuous iff it preserves continuity of maps
   from ℝⁿ into X. -/
 lemma DeltaGeneratedSpace.continuous_iff [DeltaGeneratedSpace X] {f : X → Y} :
@@ -162,7 +162,7 @@ protected lemma DeltaGeneratedSpace.sup {X : Type*} {t₁ t₂ : TopologicalSpac
 /-- Quotients of delta-generated spaces are delta-generated. -/
 lemma Topology.IsQuotientMap.deltaGeneratedSpace [DeltaGeneratedSpace X]
     {f : X → Y} (h : IsQuotientMap f) : DeltaGeneratedSpace Y :=
-  h.2 ▸ DeltaGeneratedSpace.coinduced f
+  h.isCoinducing.eq_coinduced ▸ DeltaGeneratedSpace.coinduced f
 
 /-- Quotients of delta-generated spaces are delta-generated. -/
 instance Quot.deltaGeneratedSpace [DeltaGeneratedSpace X] {r : X → X → Prop} :

@@ -151,10 +151,10 @@ theorem lintegral_mul_le_Lp_mul_Lq (μ : Measure α) {p q : ℝ} (hpq : p.Holder
     {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     (∫⁻ a, (f * g) a ∂μ) ≤ (∫⁻ a, f a ^ p ∂μ) ^ (1 / p) * (∫⁻ a, g a ^ q ∂μ) ^ (1 / q) := by
   by_cases hf_zero : ∫⁻ a, f a ^ p ∂μ = 0
-  · refine Eq.trans_le ?_ (zero_le _)
+  · refine Eq.trans_le ?_ zero_le
     exact lintegral_mul_eq_zero_of_lintegral_rpow_eq_zero hpq.nonneg hf hf_zero
   by_cases hg_zero : ∫⁻ a, g a ^ q ∂μ = 0
-  · refine Eq.trans_le ?_ (zero_le _)
+  · refine Eq.trans_le ?_ zero_le
     rw [mul_comm]
     exact lintegral_mul_eq_zero_of_lintegral_rpow_eq_zero hpq.symm.nonneg hg hg_zero
   by_cases hf_top : ∫⁻ a, f a ^ p ∂μ = ⊤
@@ -185,7 +185,6 @@ theorem lintegral_mul_norm_pow_le {α} [MeasurableSpace α] {μ : Measure α}
     (hf.pow_const p) (hg.pow_const q)
   simpa [← ENNReal.rpow_mul, hp.ne', hq.ne'] using this
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A version of Hölder with multiple arguments -/
 theorem lintegral_prod_norm_pow_le {α ι : Type*} [MeasurableSpace α] {μ : Measure α}
     (s : Finset ι) {f : ι → α → ℝ≥0∞} (hf : ∀ i ∈ s, AEMeasurable (f i) μ)
@@ -264,29 +263,11 @@ theorem lintegral_mul_prod_norm_pow_le {α ι : Type*} [MeasurableSpace α] {μ 
 theorem lintegral_rpow_add_lt_top_of_lintegral_rpow_lt_top {p : ℝ} {f g : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hf_top : (∫⁻ a, f a ^ p ∂μ) < ⊤) (hg_top : (∫⁻ a, g a ^ p ∂μ) < ⊤)
     (hp1 : 1 ≤ p) : (∫⁻ a, (f + g) a ^ p ∂μ) < ⊤ := by
-  have hp0_lt : 0 < p := lt_of_lt_of_le zero_lt_one hp1
-  have hp0 : 0 ≤ p := le_of_lt hp0_lt
   calc
     (∫⁻ a : α, (f a + g a) ^ p ∂μ) ≤
         ∫⁻ a, (2 : ℝ≥0∞) ^ (p - 1) * f a ^ p + (2 : ℝ≥0∞) ^ (p - 1) * g a ^ p ∂μ := by
       refine lintegral_mono fun a => ?_
-      dsimp only
-      have h_zero_lt_half_rpow : (0 : ℝ≥0∞) < (1 / 2 : ℝ≥0∞) ^ p := by
-        rw [← ENNReal.zero_rpow_of_pos hp0_lt]
-        exact ENNReal.rpow_lt_rpow (by simp) hp0_lt
-      have h_rw : (1 / 2 : ℝ≥0∞) ^ p * (2 : ℝ≥0∞) ^ (p - 1) = 1 / 2 := by
-        rw [sub_eq_add_neg, ENNReal.rpow_add _ _ two_ne_zero ENNReal.coe_ne_top, ← mul_assoc, ←
-          ENNReal.mul_rpow_of_nonneg _ _ hp0, one_div,
-          ENNReal.inv_mul_cancel two_ne_zero ENNReal.coe_ne_top, ENNReal.one_rpow, one_mul,
-          ENNReal.rpow_neg_one]
-      rw [← ENNReal.mul_le_mul_iff_right h_zero_lt_half_rpow.ne']
-      · rw [mul_add, ← mul_assoc, ← mul_assoc, h_rw, ← ENNReal.mul_rpow_of_nonneg _ _ hp0, mul_add]
-        refine
-          ENNReal.rpow_arith_mean_le_arith_mean2_rpow (1 / 2 : ℝ≥0∞) (1 / 2 : ℝ≥0∞) (f a) (g a) ?_
-            hp1
-        rw [ENNReal.div_add_div_same, one_add_one_eq_two,
-          ENNReal.div_self two_ne_zero ENNReal.coe_ne_top]
-      · finiteness
+      simpa [mul_add] using ENNReal.rpow_add_le_mul_rpow_add_rpow (f a) (g a) hp1
     _ < ⊤ := by
       rw [lintegral_add_left', lintegral_const_mul'' _ (hf.pow_const p),
         lintegral_const_mul' _ _ (by finiteness), ENNReal.add_lt_top]
@@ -342,7 +323,7 @@ theorem lintegral_rpow_add_le_add_eLpNorm_mul_lintegral_rpow_add {p q : ℝ}
       gcongr with a
       by_cases h_zero : (f + g) a = 0
       · rw [h_zero, ENNReal.zero_rpow_of_pos hpq.pos]
-        exact zero_le _
+        exact zero_le
       by_cases h_top : (f + g) a = ⊤
       · rw [h_top, ENNReal.top_rpow_of_pos hpq.sub_one_pos, ENNReal.top_mul_top]
         exact le_top
@@ -416,7 +397,7 @@ theorem lintegral_Lp_add_le {p : ℝ} {f g : α → ℝ≥0∞} (hf : AEMeasurab
   have hpq := Real.HolderConjugate.conjExponent hp1_lt
   by_cases h0 : (∫⁻ a, (f + g) a ^ p ∂μ) = 0
   · rw [h0, @ENNReal.zero_rpow_of_pos (1 / p) (by simp [lt_of_lt_of_le zero_lt_one hp1])]
-    exact zero_le _
+    exact zero_le
   exact lintegral_Lp_add_le_aux hpq hf hg h0
     (lintegral_rpow_add_lt_top_of_lintegral_rpow_lt_top hf hf_top hg_top hp1).ne
 

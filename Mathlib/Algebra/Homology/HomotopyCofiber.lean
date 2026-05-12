@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Homology.HomologicalComplexBiprod
 public import Mathlib.Algebra.Homology.Homotopy
 public import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
 
-/-! The homotopy cofiber of a morphism of homological complexes
+/-! # The homotopy cofiber of a morphism of homological complexes
 
 In this file, we construct the homotopy cofiber of a morphism `φ : F ⟶ G`
 between homological complexes in `HomologicalComplex C c`. In degree `i`,
@@ -78,6 +78,16 @@ noncomputable def XIsoBiprod (i j : ι) (hij : c.Rel i j) [HasBinaryBiproduct (F
 noncomputable def XIso (i : ι) (hi : ¬ c.Rel i (c.next i)) :
     X φ i ≅ G.X i :=
   eqToIso (dif_neg hi)
+
+lemma isZero_X (i : ι) (hG : IsZero (G.X i))
+    (hF : ∀ (j : ι), c.Rel i j → IsZero (F.X j)) :
+    IsZero (X φ i) := by
+  by_cases h : c.Rel i (c.next i)
+  · haveI := HasHomotopyCofiber.hasBinaryBiproduct φ _ _ h
+    refine IsZero.of_iso ?_ (XIsoBiprod φ _ _ h)
+    simp only [biprod_isZero_iff]
+    exact ⟨hF _ h, hG⟩
+  · exact hG.of_iso (XIso φ i h)
 
 /-- The second projection `(homotopyCofiber φ).X i ⟶ G.X i`. -/
 noncomputable def sndX (i : ι) : X φ i ⟶ G.X i :=
@@ -376,7 +386,13 @@ section
 
 variable (K)
 variable [∀ i, HasBinaryBiproduct (K.X i) (K.X i)]
-  [HasHomotopyCofiber (biprod.lift (𝟙 K) (-𝟙 K))]
+
+/-- Given a homological complex `K`, this is the property that the morphism
+`K ⟶ K ⊞ K` induced by `𝟙 K` and `-𝟙 K` has a cofiber, which allows
+to define `K.cylinder` as this cofiber. -/
+abbrev HasCylinder : Prop := HasHomotopyCofiber (biprod.lift (𝟙 K) (-𝟙 K))
+
+variable [K.HasCylinder]
 
 /-- The cylinder object of a homological complex `K` is the homotopy cofiber
 of the morphism  `biprod.lift (𝟙 K) (-𝟙 K) : K ⟶ K ⊞ K`. -/
@@ -458,6 +474,7 @@ noncomputable def nullHomotopicMap : K.cylinder ⟶ K.cylinder :=
 noncomputable def nullHomotopy : Homotopy (nullHomotopicMap K) 0 :=
   Homotopy.nullHomotopy' _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma inlX_nullHomotopy_f (i j : ι) (hij : c.Rel j i) :
     inlX K i j hij ≫ (nullHomotopicMap K).f j =
       inlX K i j hij ≫ (π K ≫ ι₀ K - 𝟙 _).f j := by
@@ -524,6 +541,7 @@ noncomputable def πCompι₀Homotopy : Homotopy (π K ≫ ι₀ K) (𝟙 K.cyli
       (πCompι₀Homotopy.nullHomotopy K))
 
 /-- The homotopy equivalence between `K.cylinder` and `K`. -/
+@[simps]
 noncomputable def homotopyEquiv : HomotopyEquiv K.cylinder K where
   hom := π K
   inv := ι₀ K

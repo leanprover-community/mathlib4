@@ -9,7 +9,7 @@ public import Mathlib.CategoryTheory.Shift.CommShift
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
 
-/-! Shifted morphisms
+/-! # Shifted morphisms
 
 Given a category `C` endowed with a shift by an additive monoid `M` and two
 objects `X` and `Y` in `C`, we consider the types `ShiftedHom X Y m`
@@ -185,6 +185,7 @@ lemma comp_map {a : M} (f : ShiftedHom X Y a) (F : C ⥤ D) [F.CommShift M]
     (G : D ⥤ E) [G.CommShift M] : f.map (F ⋙ G) = (f.map F).map G := by
   simp [map, Functor.commShiftIso_comp_hom_app]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_naturality {a : M} (f : ShiftedHom X Y a) {F G : C ⥤ D} (τ : F ⟶ G)
     [F.CommShift M] [G.CommShift M] [NatTrans.CommShift τ M] :
     (f.map F).comp (mk₀ 0 rfl (τ.app Y)) (zero_add _) =
@@ -213,9 +214,8 @@ lemma map_comp {a b c : M} (f : ShiftedHom X Y a) (g : ShiftedHom Y Z b)
     (h : b + a = c) (F : C ⥤ D) [F.CommShift M] :
     (f.comp g h).map F = (f.map F).comp (g.map F) h := by
   dsimp [comp, map]
-  simp only [Functor.map_comp, assoc]
-  erw [← NatTrans.naturality_assoc]
-  simp only [Functor.comp_map, F.commShiftIso_add' h, Functor.CommShift.isoAdd'_hom_app,
+  simp only [Functor.map_comp, assoc, ← Functor.commShiftIso_hom_naturality_assoc]
+  simp only [F.commShiftIso_add' h, Functor.CommShift.isoAdd'_hom_app,
     ← Functor.map_comp_assoc, Iso.inv_hom_id_app, Functor.comp_obj, comp_id]
 
 section Preadditive

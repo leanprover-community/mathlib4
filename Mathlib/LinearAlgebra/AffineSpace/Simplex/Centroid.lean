@@ -72,7 +72,7 @@ theorem centroid_eq_affineCombination (s : Simplex k P n) :
     s.centroid = affineCombination k univ s.points (centroidWeights k univ) := by rfl
 
 /-- The centroid of a simplex does not lie in the affine span of any proper subset of its
- vertices. -/
+vertices. -/
 theorem centroid_notMem_affineSpan_of_ne_univ [CharZero k] (s : Simplex k P n)
     {t : Set (Fin (n + 1))} (ht : t ≠ Set.univ) :
     s.centroid ∉ affineSpan k (s.points '' t) := by
@@ -238,7 +238,7 @@ theorem faceOppositeCentroid_mem_affineSpan_face [CharZero k] (s : Simplex k P n
   centroid_mem_affineSpan (s.faceOpposite i)
 
 /-- The `faceOppositeCentroid` is the affine combination of the complement vertices with equal
- weights `1/n`. -/
+weights `1/n`. -/
 theorem faceOppositeCentroid_eq_affineCombination (s : Affine.Simplex k P n) (i : Fin (n + 1)) :
     s.faceOppositeCentroid i = ((affineCombination k {i}ᶜ s.points) fun _ ↦ (↑n)⁻¹) := by
   unfold faceOppositeCentroid
@@ -250,7 +250,7 @@ theorem faceOppositeCentroid_eq_affineCombination (s : Affine.Simplex k P n) (i 
   rfl
 
 /-- The vector from a vertex to the corresponding `faceOppositeCentroid` equals the average of the
- displacements to the other vertices. -/
+displacements to the other vertices. -/
 theorem faceOppositeCentroid_vsub_point_eq_smul_sum_vsub [CharZero k] (s : Affine.Simplex k P n)
     (i : Fin (n + 1)) :
     s.faceOppositeCentroid i -ᵥ (s.points i) = (n : k)⁻¹ • ∑ x, (s.points x -ᵥ s.points i) := by
@@ -303,14 +303,14 @@ theorem faceOppositeCentroid_vsub_faceOppositeCentroid [CharZero k] (s : Affine.
   rw [faceOppositeCentroid_eq_sum_vsub_vadd s i, faceOppositeCentroid_eq_sum_vsub_vadd s j,
     vadd_vsub_vadd_comm _ _ (s.points i) (s.points j)]
   have h1 (i : Fin (n + 1)) : ∑ x, (s.points x -ᵥ s.points i) =
-      ∑ x, (s.points x -ᵥ s.points 0 - (s.points i-ᵥ s.points 0)) := by
+      ∑ x, (s.points x -ᵥ s.points 0 - (s.points i -ᵥ s.points 0)) := by
     apply sum_congr rfl
     simp
   simp_rw [h1 i, h1 j, sum_sub_distrib]
   rw [smul_sub, smul_sub, sub_sub_sub_cancel_left, ← smul_sub, ← sum_sub_distrib,
     vsub_sub_vsub_cancel_right, sum_const, card_univ, Fintype.card_fin]
   have : (s.points i -ᵥ s.points j) = -(s.points j -ᵥ s.points i) := by simp
-  rw [this, ← sub_eq_add_neg, add_smul, sub_eq_iff_eq_add , one_smul, smul_add, add_comm]
+  rw [this, ← sub_eq_add_neg, add_smul, sub_eq_iff_eq_add, one_smul, smul_add, add_comm]
   have : (n : k)⁻¹ • n • (s.points j -ᵥ s.points i) =
       (n : k)⁻¹ • (n : k) • (s.points j -ᵥ s.points i) := by
     norm_cast0
@@ -318,7 +318,7 @@ theorem faceOppositeCentroid_vsub_faceOppositeCentroid [CharZero k] (s : Affine.
   rw [this, smul_smul, inv_eq_one_div, one_div_mul_cancel (NeZero.ne (n : k)), one_smul]
 
 /-- The vector from a vertex to its `faceOppositeCentroid` is `(n+1)` times the vector from the
- `centroid` to that `faceOppositeCentroid`. -/
+`centroid` to that `faceOppositeCentroid`. -/
 theorem faceOppositeCentroid_vsub_point_eq_smul_vsub [CharZero k] (s : Simplex k P n)
     (i : Fin (n + 1)) :
     s.faceOppositeCentroid i -ᵥ s.points i =
@@ -419,7 +419,7 @@ theorem faceOppositeCentroid_eq_smul_vsub_vadd_point [CharZero k] (s : Simplex k
 section median
 
 /-- The median of a simplex is the line through a vertex and its corresponding
- `faceOppositeCentroid`.
+`faceOppositeCentroid`.
 -/
 def median (s : Simplex k P n) (i : Fin (n + 1)) : AffineSubspace k P :=
   line[k, s.points i, s.faceOppositeCentroid i]
@@ -487,7 +487,6 @@ theorem median_eq_line_point_centroid [CharZero k] (s : Simplex k P n) (i : Fin 
     exact centroid_mem_median s i
   exact le_antisymm h1 h2
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The medians of a simplex are concurrent at its centroid. -/
 theorem eq_centroid_of_forall_mem_median [CharZero k] (s : Simplex k P n) {hn : 1 < n} {p : P}
     (h : ∀ i, p ∈ s.median i) :
@@ -559,7 +558,7 @@ theorem medial_map {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [Affi
   ext i
   simp [medial_points]
 
-open Pointwise in
+open scoped Pointwise in
 @[simp]
 theorem affineSpan_range_medial [CharZero k] (s : Simplex k P n) :
     affineSpan k (Set.range (s.medial.points)) = affineSpan k (Set.range (s.points)) := by

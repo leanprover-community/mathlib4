@@ -25,7 +25,7 @@ we show that the nerve of a category is a quasicategory.
 
 -/
 
-@[expose] public section
+public section
 
 namespace SSet
 
@@ -58,7 +58,6 @@ lemma Quasicategory.hornFilling {S : SSet} [Quasicategory S] ⦃n : ℕ⦄ ⦃i 
 instance (S : SSet) [KanComplex S] : Quasicategory S where
   hornFilling' _ _ σ₀ _ _ := KanComplex.hornFilling σ₀
 
-set_option backward.isDefEq.respectTransparency false in
 lemma quasicategory_of_filler (S : SSet)
     (filler : ∀ ⦃n : ℕ⦄ ⦃i : Fin (n + 3)⦄ (σ₀ : (Λ[n + 2, i] : SSet) ⟶ S)
       (_h0 : 0 < i) (_hn : i < Fin.last (n + 2)),
@@ -71,5 +70,24 @@ lemma quasicategory_of_filler (S : SSet)
     intro j hj
     rw [← h j hj, NatTrans.comp_app]
     rfl
+
+lemma quasicategory_of_hasLiftingProperty (S : SSet) {X : SSet} (t : Limits.IsTerminal X)
+    (h : ∀ {n : ℕ} {i : Fin (n + 1)} (_ : 0 < i) (_ : i < Fin.last n),
+      HasLiftingProperty Λ[n, i].ι (t.from S)) :
+    Quasicategory S where
+  hornFilling' n i σ₀ h0 hn :=
+    let := h h0 hn
+    ⟨(CommSq.mk (t.hom_ext (σ₀ ≫ t.from S) (Λ[n + 2, i].ι ≫ t.from Δ[n + 2]))).lift, by simp⟩
+
+lemma Quasicategory.hasLiftingProperty (S : SSet) [Quasicategory S] {X : SSet}
+    (t : Limits.IsTerminal X) {n : ℕ} {i : Fin (n + 1)} (h0 : 0 < i) (hn : i < Fin.last n) :
+    HasLiftingProperty Λ[n, i].ι (t.from S) where
+  sq_hasLift _ :=
+    ⟨(hornFilling h0 hn _).choose, (hornFilling h0 hn _).choose_spec.symm, t.hom_ext _ _⟩
+
+lemma quasicategory_iff_hasLiftingProperty (S : SSet) {X : SSet} (t : Limits.IsTerminal X) :
+    Quasicategory S ↔ ∀ {n : ℕ} {i : Fin (n + 1)} (_ : 0 < i) (_ : i < Fin.last n),
+      HasLiftingProperty Λ[n, i].ι (t.from S) :=
+  ⟨fun _ ↦ Quasicategory.hasLiftingProperty S t, quasicategory_of_hasLiftingProperty S t⟩
 
 end SSet

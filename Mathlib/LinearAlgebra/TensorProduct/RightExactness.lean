@@ -138,6 +138,12 @@ theorem LinearMap.lTensor_range :
   apply lTensor_surjective
   rw [← range_eq_top, range_rangeRestrict]
 
+/-- If `g` is surjective, then `g.baseChange A` is surjective. -/
+theorem LinearMap.baseChange_surjective (A : Type*) [Semiring A] [Algebra R A]
+    (hg : Function.Surjective g) : Function.Surjective (g.baseChange A) := by
+  rw [LinearMap.baseChange_eq_ltensor]
+  exact lTensor_surjective _ hg
+
 /-- If `g` is surjective, then `rTensor Q g` is surjective -/
 theorem LinearMap.rTensor_surjective (hg : Function.Surjective g) :
     Function.Surjective (rTensor Q g) := by
@@ -570,6 +576,14 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
     | add x y hx hy =>
         rw [map_add]
         apply Submodule.add_mem _ hx hy
+
+variable (A) in
+lemma TensorProduct.AlgebraTensorModule.range_lTensor_idealMap (S : Type*) [CommSemiring S]
+    [Algebra R S] [Algebra S A] [IsScalarTower R S A] (I : Ideal B) :
+    LinearMap.range (lTensor S A (I.subtype.restrictScalars R)) =
+      (I.map (includeRight (A := A) (R := R))).restrictScalars S := by
+  rw [← (Submodule.restrictScalars_injective R _ _).eq_iff]
+  exact (I.map_includeRight_eq (R := R) (A := A)).symm
 
 -- Now, we can prove the right exactness properties of the tensor product,
 -- in its versions for algebras

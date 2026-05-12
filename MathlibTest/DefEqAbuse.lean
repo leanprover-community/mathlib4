@@ -1,3 +1,4 @@
+module
 import Mathlib.Algebra.Group.Subgroup.Defs
 import Mathlib.Order.CompleteLattice.Basic
 import Mathlib.Tactic.DefEqAbuse
@@ -123,20 +124,7 @@ instance mySub₂MyAction {G : Type} [AddCommGroup G] (s : MySub₂ G) :
 def myOp {α : Type} [AddCommGroup α] [MyAction ℕ α] (x : α) : α :=
   -(MyAction.mySmul (R := ℕ) 1 x)
 
--- The warning output contains fvar IDs that vary between runs, so we just check it produces
--- a warning (not info or error).
--- It should produce something like:
-/-
-warning: #defeq_abuse: command fails with `backward.isDefEq.respectTransparency true` but succeeds with `false`.
-The following synthesis applications fail due to transparency:
-  ❌️ apply @mySub₂MyAction to MyAction ℕ ↥s
-    ❌️ s.toAddSubgroup =?= s.1
-    ❌️ s.toAddSubgroup =?= s.toAddSubmonoid
-    ❌️ s.toAddSubgroup.1 =?= s.1
-    ❌️ ↑s.toAddSubgroup =?= ↑s.toAddSubmonoid
--/
-#guard_msgs (drop warning) in
-#defeq_abuse in
+#guard_msgs in
 def testVirtualParent {G : Type} [AddCommGroup G] (s : MySub₂ G) (x : s) : s :=
   myOp x
 
@@ -152,100 +140,57 @@ def testVirtualParentFixed {G : Type} [AddCommGroup G] (s : MySub₂ G) (x : s) 
 
 end VirtualParentAbuse
 
-section ZeroInstanceAbuse
-/-! ### Zero instance mismatch during `rw`
+section IdenticalSidesAbuse
+/-! ### Identical-sides disambiguation
 
-In Mathlib, `rw [sub_nonneg]` on `ℤ` failed because the lemma (for generic
-`[OrderedAddCommGroup α]`) has `0` elaborated as `@Zero.zero α ...` while the
-goal's `0` is `@OfNat.ofNat ℤ 0 ...` (which reduces to `Int.ofNat 0`). These are
-definitionally equal, but not at instance transparency. Detecting it with `#defeq_abuse`
-looked like:
+In real Mathlib, instance diamonds sometimes produce isDefEq failures like `⊤ =?= ⊤` or
+`Quiver C =?= Quiver C` where both sides render identically at default pp settings (the
+difference is only in hidden instance arguments or universe levels). `#defeq_abuse`
+automatically escalates pp options (`pp.explicit`) to disambiguate these.
 
-```lean
-example (a b : ℤ) : 0 ≤ a - b ↔ b ≤ a := by
-  #defeq_abuse in rw [sub_nonneg]
-  -- reported: ❌️ Zero.zero =?= Int.ofNat 0
-```
+The test below reproduces this pattern. `ZoC` has two fields: `zo` (projected value) and
+`extra` (differentiator). Two `def`-level instances have the same `zo` value but different
+`extra`, so:
+- The instance sub-check `zoDirectC =?= zoFromGrC` fails at ALL transparencies
+  (structurally different due to `extra`), so it's NOT a transition point.
+- The parent check `@ZoC.zo Int inst₁ =?= @ZoC.zo Int inst₂` fails at instance
+  transparency (defs don't unfold) but succeeds at default transparency (both project
+  to `0` via WHNF), making it the deepest transition point.
+- At default pp, both sides render as `ZoC.zo` (identical sides).
+- `disambiguateFailures` detects identical sides and escalates to `pp.explicit`,
+  revealing the different instance arguments. -/
 
-Matthew Jasper's Mathlib-free minimization
-(https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/backward.2EisDefEq.2ErespectTransparency/near/576388498)
-reproduces this pattern below. -/
-
-class Zo' (α : Type _) where
+class ZoC (α : Type _) where
+  extra : Prop
   zo : α
 
-class Num' (α : Type _) (n : Nat) where
-  fromNat : α
-
-class Gr' (α : Type _) extends Zo' α where
+class GrC (α : Type _) extends ZoC α where
   add : α → α → α
-  inv : α → α
 
-class Sm' (α : Type _) extends Zo' α where
-  inv : α → α
+set_option warn.classDefReducibility false in
+def zoDirectC : ZoC Int := ⟨True, 0⟩
+set_option warn.classDefReducibility false in
+def zoFromGrC : ZoC Int := ⟨False, 0⟩
 
-instance {α} [h : Gr' α] : Sm' α := { h with }
-
-instance : Zo' Int where
-  zo := 0
-
-instance {n} : Num' Int n where
-  fromNat := Int.ofNat n
-
-instance {α} [Zo' α] : Num' α 0 where
-  fromNat := Zo'.zo
-
-instance : Gr' Int where
+instance instZoCInt : ZoC Int := zoDirectC
+instance instGrCInt : GrC Int where
+  toZoC := zoFromGrC
   add a b := a + b
-  inv a := -a
 
-theorem zo_eq_iff {α} [Gr' α] (a : α) : Num'.fromNat 0 = a ↔ a = Gr'.add a a := test_sorry
+class NumC (α : Type _) (n : Nat) where fromNat : α
+instance {α} [ZoC α] : NumC α 0 where fromNat := ZoC.zo
 
+theorem zoC_eq_iff {α} [GrC α] (a : α) : NumC.fromNat 0 = a ↔ a = GrC.add a a := test_sorry
+
+-- Without disambiguation, the failure would render as "ZoC.zo =?= ZoC.zo" (unhelpful).
+-- With disambiguation (pp.explicit), the different instances are revealed.
 /--
 warning: #defeq_abuse: tactic fails with `backward.isDefEq.respectTransparency true` but succeeds with `false`.
 The following isDefEq checks are the root causes of the failure:
-  ❌️ Int.ofNat 0 =?= Zo'.zo
+  ❌️ @ZoC.zo Int instZoCInt =?= @ZoC.zo Int (@GrC.toZoC Int ?m.11)
 -/
 #guard_msgs in
-example (a : Int) : Num'.fromNat 0 = a ↔ a = Gr'.add a a := by
-  #defeq_abuse in rw [zo_eq_iff]
+example (a : Int) : NumC.fromNat 0 = a ↔ a = GrC.add a a := by
+  #defeq_abuse in rw [zoC_eq_iff]
 
--- Command-level test: same abuse should be detected for a theorem with `by rw`.
-/--
-warning: #defeq_abuse: command fails with `backward.isDefEq.respectTransparency true` but succeeds with `false`.
-The following isDefEq checks are the root causes of the failure:
-  ❌️ Int.ofNat 0 =?= Zo'.zo
--/
-#guard_msgs in
-#defeq_abuse in
-theorem test_zo_cmd_abuse (a : Int) : Num'.fromNat 0 = a ↔ a = Gr'.add a a := by
-  rw [zo_eq_iff]
-
--- Verify: abuse is detected even when the outer scope has `respectTransparency false`.
--- This simulates the Mathlib lakefile setting.
--- (Must appear BEFORE the unif_hint below, which fixes the underlying issue.)
-section
-set_option backward.isDefEq.respectTransparency false
-/--
-warning: #defeq_abuse: tactic fails with `backward.isDefEq.respectTransparency true` but succeeds with `false`.
-The following isDefEq checks are the root causes of the failure:
-  ❌️ Int.ofNat 0 =?= Zo'.zo
--/
-#guard_msgs in
-example (a : Int) : Num'.fromNat 0 = a ↔ a = Gr'.add a a := by
-  #defeq_abuse in rw [zo_eq_iff]
-end
-
--- A potential fix: a unif_hint telling Lean that two different `Num'` instances applied to
--- the same type at `0` should unify. This bridges the gap between `Int.ofNat 0`
--- (from the specific `Num' Int n` instance) and `Zo'.zo` (from the generic
--- `Num' α 0` instance via `Zo'`).
-unif_hint (α : Type _) (inst₁ : Num' α 0) (inst₂ : Num' α 0) where ⊢
-    @Num'.fromNat α 0 inst₁ ≟ @Num'.fromNat α 0 inst₂
-
-/-- info: #defeq_abuse: tactic succeeds with `backward.isDefEq.respectTransparency true`. No abuse detected. -/
-#guard_msgs in
-example (a : Int) : Num'.fromNat 0 = a ↔ a = Gr'.add a a := by
-  #defeq_abuse in rw [zo_eq_iff]
-
-end ZeroInstanceAbuse
+end IdenticalSidesAbuse

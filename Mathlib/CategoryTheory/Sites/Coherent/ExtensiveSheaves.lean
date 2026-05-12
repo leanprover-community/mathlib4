@@ -21,7 +21,7 @@ This file characterises sheaves for the extensive topology.
   extensive topology are precisely those preserving finite products.
 -/
 
-@[expose] public section
+public section
 
 universe w
 
@@ -128,7 +128,7 @@ theorem Presheaf.isSheaf_iff_preservesFiniteProducts (F : Cᵒᵖ ⥤ D) :
     rw [Presieve.isSheaf_iff_preservesFiniteProducts]
     exact ⟨inferInstance⟩
 
-instance (F : Sheaf (extensiveTopology C) D) : PreservesFiniteProducts F.val :=
-  (Presheaf.isSheaf_iff_preservesFiniteProducts F.val).mp F.cond
+instance (F : Sheaf (extensiveTopology C) D) : PreservesFiniteProducts F.obj :=
+  (Presheaf.isSheaf_iff_preservesFiniteProducts F.obj).mp F.property
 
 end CategoryTheory

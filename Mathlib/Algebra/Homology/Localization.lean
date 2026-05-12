@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Homology.QuasiIso
 public import Mathlib.CategoryTheory.Localization.Composition
 public import Mathlib.CategoryTheory.Localization.HasLocalization
 
-/-! The category of homological complexes up to quasi-isomorphisms
+/-! # The category of homological complexes up to quasi-isomorphisms
 
 Given a category `C` with homology and any complex shape `c`, we define
 the category `HomologicalComplexUpToQuasiIso C c` which is the localized
@@ -123,6 +123,15 @@ instance respectsIso_quasiIso : (quasiIso C c).RespectsIso := by
   exact ((MorphismProperty.isomorphisms C).arrow_mk_iso_iff
     ((homologyFunctor C c i).mapArrow.mapIso e)).1 (hf i)
 
+instance : (quasiIso C c).IsMultiplicative where
+  id_mem K := by
+    rw [mem_quasiIso_iff]
+    infer_instance
+  comp_mem f g hf hg := by
+    rw [mem_quasiIso_iff] at hf hg ⊢
+    simp only [Functor.map_comp]
+    infer_instance
+
 lemma homologyFunctor_inverts_quasiIso (i : ι) :
     (quasiIso C c).IsInvertedBy (homologyFunctor C c i) := fun _ _ _ hf => hf i
 
@@ -191,6 +200,26 @@ noncomputable def homologyFunctorFactorsh (i : ι) :
     Functor.isoWhiskerRight (quotientCompQhIso C c) _ ≪≫
     homologyFunctorFactors C c i ≪≫ (HomotopyCategory.homologyFunctorFactors C c i).symm)
 
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc]
+lemma homologyFunctorFactorsh_hom_app_quotient_obj
+    (K : HomologicalComplex C c) (i : ι) :
+    (homologyFunctorFactorsh C c i).hom.app ((HomotopyCategory.quotient _ _).obj K) =
+    (homologyFunctor C c i).map ((quotientCompQhIso C c).hom.app K) ≫
+      (homologyFunctorFactors C c i).hom.app K ≫
+        (HomotopyCategory.homologyFunctorFactors C c i).inv.app K :=
+  (Quotient.natTransLift_app ..).trans (by simp)
+
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc]
+lemma homologyFunctorFactorsh_inv_app_quotient_obj
+    (K : HomologicalComplex C c) (i : ι) :
+    (homologyFunctorFactorsh C c i).inv.app ((HomotopyCategory.quotient _ _).obj K) =
+    (HomotopyCategory.homologyFunctorFactors C c i).hom.app K ≫
+      (homologyFunctorFactors C c i).inv.app K ≫
+        (homologyFunctor C c i).map ((quotientCompQhIso C c).inv.app K) :=
+  (Quotient.natTransLift_app ..).trans (by simp)
+
 section
 
 variable [(HomotopyCategory.quotient C c).IsLocalization
@@ -240,7 +269,6 @@ lemma ComplexShape.quotient_isLocalization :
 lemma ComplexShape.QFactorsThroughHomotopy_of_exists_prev [CategoryWithHomology C] :
     c.QFactorsThroughHomotopy C where
   areEqualizedByLocalization {K L f g} h := by
-    have : DecidableRel c.Rel := by classical infer_instance
     exact h.map_eq_of_inverts_homotopyEquivalences hc _
       (MorphismProperty.IsInvertedBy.of_le _ _ _
         (Localization.inverts _ (HomologicalComplex.quasiIso C _))

@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 public import Mathlib.Algebra.Module.Equiv.Basic
 public import Mathlib.Tactic.Linarith
 
-/-! Shifting cochains
+/-! # Shifting cochains
 
 Let `C` be a preadditive category. Given two cochain complexes (indexed by `ℤ`),
 the type of cochains `HomComplex.Cochain K L n` of degree `n` was introduced
@@ -282,6 +282,7 @@ lemma leftUnshift_add {n' a : ℤ} (γ₁ γ₂ : Cochain (K⟦a⟧) L n') (n : 
   change (leftShiftAddEquiv K L n a n' hn).symm (γ₁ + γ₂) = _
   apply map_add
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma rightShift_smul (a n' : ℤ) (hn' : n' + a = n) (x : R) :
     (x • γ).rightShift a n' hn' = x • γ.rightShift a n' hn' := by

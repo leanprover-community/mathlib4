@@ -59,7 +59,7 @@ def IsPushout.IsVanKampen (_ : IsPushout f g h i) : Prop :=
     (_ : IsPullback g' αW αY g) (_ : CommSq h' αX αZ h) (_ : CommSq i' αY αZ i)
     (_ : CommSq f' g' h' i'), IsPushout f' g' h' i' ↔ IsPullback h' αX αZ h ∧ IsPullback i' αY αZ i
 
-/-- If a van Kampem pushout forms the bottom face of a commutative "half-cube" whose front faces
+/-- If a van Kampen pushout forms the bottom face of a commutative "half-cube" whose front faces
 are pullbacks, then there exist two back faces which are pullbacks and a top face which is a
 pushout. -/
 lemma IsPushout.IsVanKampen.exists_cube_filling {H : IsPushout f g h i} (H' : H.IsVanKampen)
@@ -74,7 +74,7 @@ lemma IsPushout.IsVanKampen.exists_cube_filling {H : IsPushout f g h i} (H' : H.
   · refine IsPullback.of_right' ?_ hi
     rw [← H.w]
     exact IsPullback.paste_horiz (IsPullback.of_hasPullback αX f) hh
-  · refine (H' (pullback.fst αX f) l  h' i' (pullback.snd αX f) αX αY αZ
+  · refine (H' (pullback.fst αX f) l h' i' (pullback.snd αX f) αX αY αZ
       (IsPullback.of_hasPullback αX f) ?_
         hh.toCommSq hi.toCommSq ⟨by simp only [IsPullback.lift_fst, l]⟩).2 ⟨hh, hi⟩
     · refine IsPullback.of_right' ?_ hi
@@ -102,7 +102,7 @@ theorem IsPushout.isVanKampen_iff (H : IsPushout f g h i) :
       rw [(IsColimit.equivOfNatIsoOfIso (diagramIsoSpan F') c' (PushoutCocone.mk _ _ this)
             _).nonempty_congr]
       · exact ⟨fun h => ⟨⟨this⟩, h⟩, fun h => h.2⟩
-      · refine Cocones.ext (Iso.refl c'.pt) ?_
+      · refine Cocone.ext (Iso.refl c'.pt) ?_
         rintro (_ | _ | _) <;> dsimp <;>
           simp only [c'.w, Category.id_comp, Category.comp_id]
     · exact ⟨NatTrans.congr_app eα.symm _⟩

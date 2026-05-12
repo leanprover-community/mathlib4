@@ -47,7 +47,7 @@ variable {α : Type*}
 namespace FirstOrder
 
 /-- The type of Ring functions, to be used in the definition of the language of rings.
-It contains the operations (+,*,-,0,1) -/
+It contains the operations `(+,*,-,0,1)` -/
 inductive ringFunc : ℕ → Type
   | add : ringFunc 2
   | mul : ringFunc 2
@@ -56,7 +56,7 @@ inductive ringFunc : ℕ → Type
   | one : ringFunc 0
   deriving DecidableEq
 
-/-- The language of rings contains the operations (+,*,-,0,1) -/
+/-- The language of rings contains the operations `(+,*,-,0,1)` -/
 def Language.ring : Language :=
   { Functions := ringFunc
     Relations := fun _ => Empty }
@@ -123,6 +123,7 @@ instance (α : Type*) : Neg (Language.ring.Term α) :=
 theorem neg_def (α : Type*) (t : Language.ring.Term α) :
     -t = negFunc.apply₁ t := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Fintype Language.ring.Symbols :=
   ⟨⟨Multiset.ofList
       [Sum.inl ⟨2, .add⟩,
