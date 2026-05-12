@@ -178,7 +178,8 @@ noncomputable instance instCompleteLattice : CompleteLattice (Filtration ι m) w
   inf_le_right _ _ _ := inf_le_right
   le_inf _ _ _ h_fg h_fh i := le_inf (h_fg i) (h_fh i)
   isLUB_sSup _ :=
-    .of_image (f := seq) .rfl (by simpa only [isLUB_pi, Set.image_image] using! fun _ ↦ isLUB_sSup _)
+    .of_image (f := seq) .rfl (by simpa only [isLUB_pi, Set.image_image]
+      using! fun _ ↦ isLUB_sSup _)
   isGLB_sInf _ := by
     dsimp +instances [instInfSet]
     split_ifs with hn

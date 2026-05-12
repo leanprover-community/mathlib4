@@ -334,7 +334,8 @@ lemma isUnramified_mk_iff_forall_isConj [IsGalois k K] {φ : K →+* ℂ} :
   letI := (φ.comp (algebraMap k K)).toAlgebra
   letI := φ.toAlgebra
   have : IsScalarTower k K ℂ := IsScalarTower.of_algebraMap_eq' rfl
-  let φ' : K →ₐ[k] ℂ := { star φ with commutes' := fun r ↦ by simpa using! RingHom.congr_fun hφ.2 r }
+  let φ' : K →ₐ[k] ℂ := { star φ with commutes' := fun r ↦ by simpa
+    using! RingHom.congr_fun hφ.2 r }
   have : ComplexEmbedding.IsConj φ (AlgHom.restrictNormal' φ' K) :=
     (RingHom.ext <| AlgHom.restrictNormal_commutes φ' K).symm
   exact hφ.1 (H _ this ▸ this)

@@ -179,7 +179,8 @@ theorem hammingNorm_le_card_fintype {x : ∀ i, β i} : hammingNorm x ≤ Fintyp
 
 theorem hammingNorm_comp_le_hammingNorm (f : ∀ i, γ i → β i) {x : ∀ i, γ i} (hf : ∀ i, f i 0 = 0) :
     (hammingNorm fun i => f i (x i)) ≤ hammingNorm x := by
-  simpa only [← hammingDist_zero_right, hf] using! hammingDist_comp_le_hammingDist f (y := fun _ ↦ 0)
+  simpa only [← hammingDist_zero_right, hf]
+    using! hammingDist_comp_le_hammingDist f (y := fun _ ↦ 0)
 
 theorem hammingNorm_comp (f : ∀ i, γ i → β i) {x : ∀ i, γ i} (hf₁ : ∀ i, Injective (f i))
     (hf₂ : ∀ i, f i 0 = 0) : (hammingNorm fun i => f i (x i)) = hammingNorm x := by

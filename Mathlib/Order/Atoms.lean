@@ -460,7 +460,8 @@ theorem Set.OrdConnected.isStronglyAtomic [IsStronglyAtomic α] {s : Set α}
     rintro ⟨c, hc⟩ ⟨d, hd⟩ hcd
     obtain ⟨x, hcx, hxd⟩ := (Subtype.mk_lt_mk.1 hcd).exists_covby_le
     exact ⟨⟨x, h.out' hc hd ⟨hcx.le, hxd⟩⟩,
-      ⟨by simpa using! hcx.lt, fun y hy hy' ↦ hcx.2 (by simpa using! hy) (by simpa using! hy')⟩, hxd⟩
+      ⟨by simpa
+        using! hcx.lt, fun y hy hy' ↦ hcx.2 (by simpa using! hy) (by simpa using! hy')⟩, hxd⟩
 
 theorem Set.OrdConnected.isStronglyCoatomic [IsStronglyCoatomic α] {s : Set α}
     (h : Set.OrdConnected s) : IsStronglyCoatomic s :=

@@ -596,7 +596,8 @@ theorem _root_.IsOpen.isOpen_inter_preimage_of_fderiv_eq_zero
 
 theorem _root_.isLocallyConstant_of_fderiv_eq_zero (h₁ : Differentiable 𝕜 f)
     (h₂ : ∀ x, fderiv 𝕜 f x = 0) : IsLocallyConstant f := by
-  simpa using! isOpen_univ.isOpen_inter_preimage_of_fderiv_eq_zero h₁.differentiableOn fun _ _ ↦ h₂ _
+  simpa using!
+    isOpen_univ.isOpen_inter_preimage_of_fderiv_eq_zero h₁.differentiableOn fun _ _ ↦ h₂ _
 
 /-- If `f` has zero derivative on a connected open set, then `f` is constant on `s`. -/
 theorem _root_.IsOpen.exists_is_const_of_fderiv_eq_zero

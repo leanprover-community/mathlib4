@@ -295,7 +295,8 @@ instance isLocallySurjective_toPlus (P : Cᵒᵖ ⥤ Type (max u v)) :
     rw [toPlus_eq_mk, res_mk_eq_mk_pullback, eq_mk_iff_exists]
     refine ⟨S.pullback f, homOfLE le_top, 𝟙 _, ?_⟩
     ext ⟨Z, g, hg⟩
-    simpa using! x.2 { fst.hf := hf, snd.hf := S.1.downward_closed hf g, r.g₁ := g, r.g₂ := 𝟙 Z, .. }
+    simpa using!
+      x.2 { fst.hf := hf, snd.hf := S.1.downward_closed hf g, r.g₁ := g, r.g₂ := 𝟙 Z, .. }
 
 set_option backward.isDefEq.respectTransparency false in
 instance isLocallySurjective_toSheafify (P : Cᵒᵖ ⥤ Type (max u v)) :

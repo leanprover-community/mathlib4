@@ -231,7 +231,8 @@ private lemma hasSum_cuspFunction_of_hasSum_punctured {f : ℍ → ℂ} (hh : 0 
   have h1 := Periodic.im_invQParam_pos_of_norm_lt_one hh hq hq1
   let τ : ℍ := ⟨Periodic.invQParam h q, h1⟩
   have h2 := (Periodic.cuspFunction_eq_of_nonzero h (f ∘ ofComplex) hq1)
-  have : cuspFunction h f q = f τ := by simpa [UpperHalfPlane.ofComplex_apply_of_im_pos h1] using! h2
+  have : cuspFunction h f q = f τ := by simpa [UpperHalfPlane.ofComplex_apply_of_im_pos h1]
+    using! h2
   grind [hf τ, Periodic.qParam_right_inv]
 
 private lemma hasFPowerSeriesOnBall_update {f : ℍ → ℂ} (hh : 0 < h) {c : ℕ → ℂ}

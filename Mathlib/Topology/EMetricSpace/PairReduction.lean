@@ -352,8 +352,9 @@ lemma logSizeRadius_le_card_smallBall (hJ : J.Nonempty) (i : ℕ) (ha : 1 < a) :
       using! pow_logSizeRadius_le_card_le_logSizeRadius ha (Exists.choose_spec hJ)
   | i + 1 =>
     by_cases! h : (logSizeBallSeq J hJ a c (i + 1)).finset.Nonempty
-    · simpa [h, logSizeBallStruct.smallBall, radius_logSizeBallSeq_add_one]
-        using! pow_logSizeRadius_le_card_le_logSizeRadius ha (point_mem_finset_logSizeBallSeq hJ _ h)
+    · simpa [h, logSizeBallStruct.smallBall, radius_logSizeBallSeq_add_one] using!
+        pow_logSizeRadius_le_card_le_logSizeRadius ha
+          (point_mem_finset_logSizeBallSeq hJ _ h)
     simp [h]
 
 lemma card_pairSet_le (ha : 1 < a) : #(pairSet J a c) ≤ a * #J := by
