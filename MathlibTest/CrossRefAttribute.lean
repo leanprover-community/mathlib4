@@ -1,4 +1,4 @@
-import Mathlib.Tactic.StacksAttribute
+import Mathlib.Tactic.CrossRefAttribute
 import Mathlib.Util.ParseCommand
 
 /-- info: No tags found. -/
