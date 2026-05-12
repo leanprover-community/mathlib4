@@ -165,7 +165,7 @@ See also `map_piMap_pi_finite` for the case of a finite index type.
 -/
 theorem map_piMap_pi {α β : ι → Type*} {f : ∀ i, α i → β i}
     (hf : ∀ᶠ i in cofinite, Surjective (f i)) (l : ∀ i, Filter (α i)) :
-    map (Pi.map f) (pi l) = pi fun i ↦ map (f i) (l i) := by
+    map (Function.map f) (pi l) = pi fun i ↦ map (f i) (l i) := by
   refine le_antisymm (tendsto_piMap_pi fun _ ↦ tendsto_map) ?_
   refine ((hasBasis_pi fun i ↦ (l i).basis_sets).map _).ge_iff.2 ?_
   rintro ⟨I, s⟩ ⟨hI : I.Finite, hs : ∀ i ∈ I, s i ∈ l i⟩
@@ -186,7 +186,7 @@ See also `map_piMap_pi` for a more general case.
 -/
 theorem map_piMap_pi_finite {α β : ι → Type*} [Finite ι]
     (f : ∀ i, α i → β i) (l : ∀ i, Filter (α i)) :
-    map (Pi.map f) (pi l) = pi fun i ↦ map (f i) (l i) :=
+    map (Function.map f) (pi l) = pi fun i ↦ map (f i) (l i) :=
   map_piMap_pi (by simp) l
 
 end Filter

@@ -242,7 +242,7 @@ lemma powersetCard_empty_subsingleton (n : ℕ) :
 @[simp]
 theorem map_val_val_powersetCard (s : Finset α) (i : ℕ) :
     (s.powersetCard i).val.map Finset.val = s.1.powersetCard i := by
-  simp [Finset.powersetCard, map_pmap, pmap_eq_map, map_id']
+  simp [Finset.powersetCard, map_pmap, pmap_eq_map, Multiset.map_id']
 
 theorem powersetCard_one (s : Finset α) :
     s.powersetCard 1 = s.map ⟨_, Finset.singleton_injective⟩ :=

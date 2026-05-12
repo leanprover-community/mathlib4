@@ -395,7 +395,7 @@ theorem of_sections
   of_nhds_le fun x =>
     let ⟨g, hgc, hgx, hgf⟩ := h x
     calc
-      𝓝 (f x) = map f (map g (𝓝 (f x))) := by rw [map_map, hgf.comp_eq_id, map_id]
+      𝓝 (f x) = map f (map g (𝓝 (f x))) := by rw [map_map, hgf.comp_eq_id, Filter.map_id]
       _ ≤ map f (𝓝 (g (f x))) := map_mono hgc
       _ = map f (𝓝 x) := by rw [hgx]
 
