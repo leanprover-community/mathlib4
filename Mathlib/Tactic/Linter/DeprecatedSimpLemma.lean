@@ -5,9 +5,7 @@ Authors: Paul Lezeau
 -/
 
 module
--- Import this linter explicitly to ensure that
--- this file has a valid copyright header and module docstring.
-public meta import Mathlib.Tactic.Linter.Header
+public import Mathlib.Init
 
 /-!
 # Linter against deprecated simp lemmas
@@ -27,6 +25,8 @@ register_option linter.deprecatedSimpLemma : Bool := {
   descr := "enable the deprecatedSimpLemma linter"
 }
 
+-- For some reason the empty docstring linter fires here
+set_option linter.style.docString.empty false in
 /-- Extract the attributes from a `Syntax` term. -/
 private def extractAttributes (stx : Syntax) : Array (TSyntax `Lean.Parser.Term.attrInstance) :=
   match stx with
@@ -41,7 +41,8 @@ private def getAttributesFromDecl {m : Type → Type} [Monad m] [MonadEnv m] [Mo
     | throwError s!"{stx} does not have any declaration modifiers."
   elabAttrs (extractAttributes modifiersStx)
 
-/-- The deprecated simp lemma linter flags when a deprecated declaration has the `simp` attribute. -/
+/-- The deprecated simp lemma linter flags when a deprecated declaration has the `simp`
+attribute. -/
 def deprecatedSimpLemmaLinter : Linter where run stx := do
   unless getLinterValue linter.deprecatedSimpLemma (← getLinterOptions) do return
   if (← get).messages.hasErrors then return
