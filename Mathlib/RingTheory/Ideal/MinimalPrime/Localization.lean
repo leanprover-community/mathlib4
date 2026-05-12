@@ -194,12 +194,12 @@ theorem IsLocalization.minimalPrimes_map [IsLocalization S A] (J : Ideal R) :
     · exact IsLocalization.under_map_of_isPrime_disjoint S A hI.1 hI'
   · intro hp
     refine ⟨⟨?_, Ideal.map_le_iff_le_comap.mpr hp.le⟩, ?_⟩
-    · rw [IsLocalization.isPrime_iff_isPrime_disjoint S A, IsLocalization.disjoint_comap_iff S]
+    · rw [IsLocalization.isPrime_iff_isPrime_disjoint S A, IsLocalization.disjoint_under_iff S]
       refine ⟨hp.isPrime, ?_⟩
       rintro rfl
       exact hp.isPrime.ne_top rfl
     · intro I hI e
-      rw [← IsLocalization.map_comap S A I, ← IsLocalization.map_comap S A p]
+      rw [← IsLocalization.map_under S A I, ← IsLocalization.map_under S A p]
       exact Ideal.map_mono (hp.2 ⟨hI.1.comap _, Ideal.map_le_iff_le_comap.mp hI.2⟩
         (Ideal.comap_mono e))
 
@@ -221,7 +221,7 @@ theorem IsLocalization.AtPrime.radical_map_of_mem_minimalPrimes
       AtPrime.map_eq_maximalIdeal q A, AtPrime.under_maximalIdeal A q]
     apply hIq.2 hJ.1
     have := hJ.isPrime.ne_top
-    rw [ne_eq, Ideal.comap_eq_top_iff, ← ne_eq, ← disjoint_comap_iff q.primeCompl A J] at this
+    rw [ne_eq, Ideal.comap_eq_top_iff, ← ne_eq, ← disjoint_under_iff q.primeCompl A J] at this
     exact Set.disjoint_compl_left_iff_subset.mp this
 
 end
