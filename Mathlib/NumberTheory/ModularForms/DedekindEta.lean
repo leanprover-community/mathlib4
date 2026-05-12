@@ -165,6 +165,45 @@ lemma summable_logDeriv_one_sub_eta_q {z : ℂ} (hz : z ∈ ℍₒ) :
   convert ((summable_nat_add_iff 1).mpr this).mul_left (-2 * π * I) using 1 with n
   grind [one_sub_eta_logDeriv_eq]
 
+/-! ## T-transformation of the Dedekind eta function
+
+The T-transformation `η(z + 1) = exp(π·I/12) · η(z)` for the parabolic generator
+of `SL(2, ℤ)`. Companion to `eta_comp_eq_csqrt_I_inv` (the S-transformation)
+in `Mathlib/NumberTheory/ModularForms/Discriminant.lean`. -/
+
+/-- The q-parameter at scale `24` picks up the factor `exp(π·I/12) = exp(2π·I / 24)`
+under the shift `z ↦ z + 1`. -/
+lemma qParam_24_add_one (z : ℂ) :
+    𝕢 24 (z + 1) = cexp ((π : ℂ) * I / 12) * 𝕢 24 z := by
+  unfold Periodic.qParam
+  rw [show (2 * π * I * (z + 1) / ((24 : ℝ) : ℂ) : ℂ)
+        = ((π : ℂ) * I / 12) + (2 * π * I * z / ((24 : ℝ) : ℂ)) by push_cast; ring,
+      Complex.exp_add]
+
+/-- Each `eta_q n` factor is `1`-periodic in `z`: `eta_q n (z + 1) = eta_q n z`. -/
+lemma eta_q_add_one (n : ℕ) (z : ℂ) :
+    eta_q n (z + 1) = eta_q n z := by
+  rw [eta_q_eq_cexp, eta_q_eq_cexp,
+      show (2 * π * I * (n + 1) * (z + 1) : ℂ)
+        = (2 * π * I * (n + 1) * z) + ((n + 1 : ℕ) : ℂ) * (2 * π * I) by push_cast; ring,
+      Complex.exp_add, Complex.exp_nat_mul_two_pi_mul_I (n + 1), mul_one]
+
+/-- The infinite product factor defining `η` is `1`-periodic in `z`. -/
+lemma tprod_one_sub_eta_q_add_one (z : ℂ) :
+    ∏' n, (1 - eta_q n (z + 1)) = ∏' n, (1 - eta_q n z) :=
+  tprod_congr (fun n => by rw [eta_q_add_one])
+
+/-- **T-transformation of the Dedekind eta function**: `η(z + 1) = exp(π·I/12) · η(z)`.
+
+Companion to the S-transformation `eta_comp_eq_csqrt_I_inv` for the parabolic generator
+of `SL(2, ℤ)`. Together the two transformations determine `η` as a weight-`1/2`
+multiplier modular form on the generators of `SL(2, ℤ)`. -/
+theorem eta_add_one (z : ℂ) :
+    eta (z + 1) = cexp ((π : ℂ) * I / 12) * eta z := by
+  unfold eta
+  rw [qParam_24_add_one, tprod_one_sub_eta_q_add_one]
+  ring
+
 open EisensteinSeries in
 lemma logDeriv_eta_eq_E2 (z : ℍ) : logDeriv eta z = (π * I / 12) * E2 z := by
   unfold eta
