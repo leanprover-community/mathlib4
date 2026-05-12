@@ -36,18 +36,11 @@ section DComp
 variable {ι} {β : ι → Sort*} {φ : ∀ {i : ι}, β i → Sort*} (f : ∀ {i : ι} (y : β i), φ y)
     (g : ∀ i, β i) (i : ι)
 
-theorem dcomp_def : f ∘' g = fun i => f (g i) := rfl
+theorem dcomp_def : @f ∘' g = fun i => f (g i) := rfl
 
-theorem dcomp_apply : dcomp f g i = f (g i) := rfl
+theorem dcomp_apply : dcomp @f g i = f (g i) := rfl
 
 @[simp] theorem dcomp_eq_comp {α β γ} (f : β → γ) (g : α → β) : f ∘' g = f ∘ g := rfl
-@[simp] theorem id_dcomp {α β} (f : α → β) : id ∘' f = f := rfl
-@[simp] theorem dcomp_id {α β} (f : α → β) : f ∘' id = f := rfl
-
-theorem dcomp_assoc {κ : Sort*} (h : κ → ι) : f ∘' g ∘' h = (f ∘' g) ∘' h := rfl
-
-@[simp] theorem const_dcomp {α β γ} (a : α) (g : γ → β) : const β a ∘' g = const γ a := rfl
-@[simp] theorem dcomp_const {α β δ} (f : α → δ) (a : α) : f ∘' const β a = const β (f a) := rfl
 
 end DComp
 
