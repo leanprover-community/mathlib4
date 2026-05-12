@@ -31,59 +31,56 @@ namespace PiTensorProduct
 
 variable (R : Type*)
 
-section equivTensorPiTensorComplSingleto
+section equivPiTensorComplSingletonTensor
 
 variable {ι : Type*} [DecidableEq ι] (M : ι → Type*)
   [CommSemiring R] [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
 
-/-- The linear equivalence between `⨂[R] i, M i` and the tensor product of `M i₀`
-(for some `i₀ : ι`) and the pi tensor product indexed by the complement of `{i₀}`. -/
-noncomputable def equivTensorPiTensorComplSingleton (i₀ : ι) :
-    (⨂[R] i, M i) ≃ₗ[R] (M i₀ ⊗[R] (⨂[R] (i : ({i₀}ᶜ : Set ι)), M i)) :=
-  ((reindex R (s := M) (e := (unitSumSubtypeNeEquiv i₀).symm)).trans
-    (tmulEquivDep R
-        (fun i => M (unitSumSubtypeNeEquiv i₀ i))).symm).trans
-      (LinearEquiv.rTensor _ (subsingletonEquiv (R := R) Unit.unit))
+/-- The linear equivalence between `⨂[R] i, M i` and the tensor product of
+the pi tensor product indexed by the complement of `{i₀}` and `M i₀`. -/
+noncomputable def equivPiTensorComplSingletonTensor (i₀ : ι) :
+    (⨂[R] i, M i) ≃ₗ[R] ((⨂[R] (i : ({i₀}ᶜ : Set ι)), M i) ⊗[R] M i₀) :=
+  (reindex R (s := M) (Equiv.subtypeNeSumPUnit.{0} i₀).symm).trans
+    ((tmulEquivDep R (fun i ↦ M (Equiv.subtypeNeSumPUnit i₀ i))).symm.trans
+      (LinearEquiv.lTensor _ (subsingletonEquiv Unit.unit)))
 
 variable (i₀ : ι)
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-lemma equivTensorPiTensorComplSingleton_tprod (i₀ : ι) (m : ∀ i, M i) :
-    equivTensorPiTensorComplSingleton R M i₀ (⨂ₜ[R] i, m i) =
-      m i₀ ⊗ₜ (⨂ₜ[R] (j : ((Set.singleton i₀)ᶜ : Set ι)), m j) := by
-  dsimp [equivTensorPiTensorComplSingleton]
-  have h₁ : (reindex R M (unitSumSubtypeNeEquiv i₀).symm) (⨂ₜ[R] (i : ι), m i) =
-      ⨂ₜ[R] j, m ((unitSumSubtypeNeEquiv i₀) j) := by
+lemma equivPiTensorComplSingletonTensor_tprod (i₀ : ι) (m : ∀ i, M i) :
+    equivPiTensorComplSingletonTensor R M i₀ (⨂ₜ[R] i, m i) =
+      (⨂ₜ[R] (j : ((Set.singleton i₀)ᶜ : Set ι)), m j) ⊗ₜ m i₀:= by
+  dsimp [equivPiTensorComplSingletonTensor]
+  have : (reindex R M (Equiv.subtypeNeSumPUnit.{0} i₀).symm) (⨂ₜ[R] (i : ι), m i) =
+      ⨂ₜ[R] j, m ((Equiv.subtypeNeSumPUnit.{0} i₀) j) := by
     simp_rw [reindex_tprod (R := R) (s := M), Equiv.symm_symm]
-  have h₂ := tmulEquivDep_symm_apply (R := R)
-    (N := fun i ↦ (M ((unitSumSubtypeNeEquiv i₀) i)))
-  dsimp at h₁ h₂
-  rw [h₁, h₂]
-  exact (LinearEquiv.rTensor_tmul _ _ _ _).trans (by congr; simp)
+  rw [dsimp% this, dsimp% tmulEquivDep_symm_apply R
+    (fun i ↦ M ((Equiv.subtypeNeSumPUnit.{0} i₀) i))]
+  exact (LinearEquiv.lTensor_tmul _ _ _ _).trans (by congr; simp)
 
 @[simp]
-lemma equivTensorPiTensorComplSingleton_symm_tmul (i₀ : ι)
-    (x : M i₀) (m : ∀ (i : ((Set.singleton i₀)ᶜ : Set ι)), M i) :
-    (equivTensorPiTensorComplSingleton R M i₀).symm
-      (x ⊗ₜ (⨂ₜ[R] (j : ((Set.singleton i₀)ᶜ : Set ι)), m j)) =
-      (⨂ₜ[R] i, Function.subtypeNeLift i₀ m x i) := by
-  apply (equivTensorPiTensorComplSingleton R M i₀).injective
-  simp only [LinearEquiv.apply_symm_apply, equivTensorPiTensorComplSingleton_tprod,
+lemma equivPiTensorComplSingletonTensor_symm_tmul (i₀ : ι)
+    (m : ∀ (i : ((Set.singleton i₀)ᶜ : Set ι)), M i) (x : M i₀) :
+    (equivPiTensorComplSingletonTensor R M i₀).symm
+      ((⨂ₜ[R] (j : ((Set.singleton i₀)ᶜ : Set ι)), m j) ⊗ₜ x) =
+    (⨂ₜ[R] i, Function.subtypeNeLift i₀ m x i) := by
+  apply (equivPiTensorComplSingletonTensor R M i₀).injective
+  simp only [LinearEquiv.apply_symm_apply, equivPiTensorComplSingletonTensor_tprod,
     Function.subtypeNeLift_self]
   congr
   ext ⟨i, hi⟩
   rw [Function.subtypeNeLift_of_neq _ _ _ _ hi]
   rfl
 
-end equivTensorPiTensorComplSingleto
+end equivPiTensorComplSingletonTensor
 
 variable {R} {ι : Type*} [Finite ι] {M : ι → Type*} {N : Type*} {γ : ι → Type*}
 
 section AddCommMonoid
-variable
-  [CommSemiring R] [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)] [AddCommMonoid N] [Module R N]
-  {g : ⦃i : ι⦄ → (j : γ i) → M i}
+
+variable [CommSemiring R] [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
+  [AddCommMonoid N] [Module R N] {g : ⦃i : ι⦄ → (j : γ i) → M i}
 
 lemma ext_of_span_eq_top
     (hg : ∀ i, Submodule.span R (Set.range (@g i)) = ⊤)
@@ -102,7 +99,7 @@ lemma ext_of_span_eq_top
     classical
     have : Nonempty ι := ((Nat.card_pos_iff (α := ι)).1 (by omega)).1
     have i₀ : ι := Classical.arbitrary _
-    let e := equivTensorPiTensorComplSingleton R M i₀
+    let e := (equivPiTensorComplSingletonTensor R M i₀).trans (TensorProduct.comm _ _ _)
     obtain ⟨ψ, rfl⟩ : ∃ ψ, φ = LinearMap.comp ψ e.toLinearMap :=
       ⟨φ.comp e.symm.toLinearMap, by ext; simp⟩
     obtain ⟨ψ', rfl⟩ : ∃ ψ', φ' = LinearMap.comp ψ' e.toLinearMap :=
@@ -113,17 +110,19 @@ lemma ext_of_span_eq_top
     rw [Submodule.linearMap_eq_iff_of_span_eq_top _ _ (hg i₀)]
     rintro ⟨_, ⟨g₀, rfl⟩⟩
     apply hn (g := fun i (j : γ i.1) ↦ by exact g j)
-    · intro i
+    · intro
       exact hg _
     · intro j
-      simp only [lift.equiv_symm_apply]
-      convert h (Function.subtypeNeLift i₀ j g₀) using 1
-      all_goals
-        simp only [equivTensorPiTensorComplSingleton_tprod, Function.subtypeNeLift_self]
+      have : (g g₀ ⊗ₜ[R] (tprod R) fun i ↦ g (j i)) =
+          TensorProduct.comm R _ _ ((equivPiTensorComplSingletonTensor R M i₀)
+            (⨂ₜ[R] (i : ι), g (Function.subtypeNeLift i₀ j g₀ i))) := by
+        simp only [equivPiTensorComplSingletonTensor_tprod, Function.subtypeNeLift_self]
         congr
         ext ⟨x, hx⟩
         congr
-        rw [Function.subtypeNeLift_of_neq]
+        rw [Function.subtypeNeLift_of_neq _ _ _ _ (by assumption)]
+        rfl
+      simpa only [lift.equiv_symm_apply, this] using h (Function.subtypeNeLift i₀ j g₀)
     · exact Nat.card_compl_of_card_eq_add _ (by simpa)
 
 lemma _root_.MultilinearMap.ext_of_span_eq_top

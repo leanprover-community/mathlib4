@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Logic.Equiv.Option
 
 /-!
 # Extending a function from the complement of a singleton
@@ -19,37 +19,12 @@ extend a (dependent) function defined on the complement of a singleton.
 
 variable {ι : Type*} [DecidableEq ι] (i₀ : ι)
 
-/-- The bijection `Unit ⊕ { i // i ≠ i₀ } ≃ ι` for any `i₀ : ι` -/
-def unitSumSubtypeNeEquiv :
-    Unit ⊕ { i // i ≠ i₀ } ≃ ι where
-  toFun x := match x with
-    | Sum.inl _ => i₀
-    | Sum.inr i => i.1
-  invFun i := if h : i = i₀ then Sum.inl .unit else Sum.inr ⟨i, h⟩
-  left_inv := by
-    rintro (_ | ⟨i, hi⟩)
-    · simp
-    · apply dif_neg
-  right_inv i := by
-    by_cases h : i = i₀
-    · subst h
-      simp
-    · simp [dif_neg h]
-
-@[simp]
-lemma unitSumSubtypeNeEquiv_inl (u : Unit) :
-    unitSumSubtypeNeEquiv i₀ (.inl u) = i₀ := rfl
-
-@[simp]
-lemma unitSumSubtypeNeEquiv_inr (j : { i // i ≠ i₀ }) :
-    unitSumSubtypeNeEquiv i₀ (.inr j) = j := rfl
-
 namespace Function
 
 variable {ι : Type*} [DecidableEq ι] {M : ι → Type*} (i₀ : ι)
   (f : ∀ (j : { i // i ≠ i₀ }), M j) (x : M i₀)
 
-/-- Given `i₀ : ι` and `x : M i₀`, this is (dependent) map `(i : ι) → M i`
+/-- Given `i₀ : ι` and `x : M i₀`, this is the (dependent) map `(i : ι) → M i`
 whose value at `i₀` is `x` and which extends a given map on the complement of `{i₀}`. -/
 def subtypeNeLift (i : ι) : M i :=
   if h : i = i₀ then by rw [h]; exact x else f ⟨i, h⟩
