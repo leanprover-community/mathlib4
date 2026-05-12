@@ -513,7 +513,7 @@ private local derive_eval_expr_instance_using_meta_eval Linarith.LinarithConfig
 -- Enable using Meta.evalExpr' for `(oracle := ...)` option
 private local derive_eval_expr_instance_using_meta_eval Linarith.CertificateOracle
 -- Enable using Meta.evalExpr' for `(preprocessors := ...)` option
-private derive_eval_expr_instance_using_meta_eval Linarith.GlobalBranchingPreprocessor
+private local derive_eval_expr_instance_using_meta_eval Linarith.GlobalBranchingPreprocessor
 /--
 Allow elaboration of `LinarithConfig` arguments to tactics.
 -/

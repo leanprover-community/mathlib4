@@ -909,7 +909,7 @@ structure Config where
 
 /-- Function elaborating `Config`. -/
 declare_core_config_elab elabSimpsConfig Config where
-  except attrs
+  omit attrs
   option attr := fun cfg item => do
     item.addConstInfo ``Config.attrs
     match item.ref with
