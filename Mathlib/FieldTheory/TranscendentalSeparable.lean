@@ -600,12 +600,14 @@ lemma isReduced_of_perfectField [PerfectField k] [IsReduced S]
 
 lemma tensorProduct_isReduced_of_localization_of_finiteType [IsReduced S] [Algebra.FiniteType k S]
     (h : ∀ (p : Ideal S) (h : p ∈ minimalPrimes S),
-      letI := Ideal.minimalPrimes_isPrime h
+      letI := h.isPrime
       IsReduced (K ⊗[k] (Localization.AtPrime p))) :
     IsReduced (K ⊗[k] S) := by
   have (x : k) (y : S) : (toLocalizationMinimal S) (x • y) = x • (toLocalizationMinimal S) y := by
+    rw [Algebra.smul_def, map_mul]
     ext p
-    simp [toLocalizationMinimal, Algebra.smul_def, ← IsScalarTower.algebraMap_apply]
+    rw [Pi.mul_apply, Pi.smul_apply, Algebra.smul_def, IsScalarTower.algebraMap_apply k S]
+    rfl
   let g := AlgHom.mk' (toLocalizationMinimal S) this
   have inj : Function.Injective (Algebra.TensorProduct.lTensor K g) :=
     Module.Flat.lTensor_preserves_injective_linearMap _
@@ -613,10 +615,10 @@ lemma tensorProduct_isReduced_of_localization_of_finiteType [IsReduced S] [Algeb
   have : IsNoetherianRing S := Algebra.FiniteType.isNoetherianRing k S
   have : Fintype (minimalPrimes S) := (minimalPrimes.finite_of_isNoetherianRing S).fintype
   have (p : minimalPrimes S) :
-    letI := Ideal.minimalPrimes_isPrime p.2
+    letI := p.2.isPrime
     IsReduced (K ⊗[k] Localization.AtPrime p.1) := h p.1 p.2
   have red : IsReduced (K ⊗[k] ((p : minimalPrimes S) →
-      letI := Ideal.minimalPrimes_isPrime p.2
+      letI := p.2.isPrime
       Localization.AtPrime p.1)) :=
     isReduced_of_injective _ (Algebra.TensorProduct.piRight k k K _).injective
   exact isReduced_of_injective _ inj
@@ -628,7 +630,7 @@ lemma isReduced_of_tensorProduct_adjoinPthRoots_reduced_of_finiteType (p : ℕ) 
   have redS : IsReduced S := isReduced_of_injective _
     (Algebra.TensorProduct.includeRight_injective (algebraMap k (adjoinPthRoots k p)).injective)
   refine tensorProduct_isReduced_of_localization_of_finiteType k K S (fun q hq ↦ ?_)
-  have := Ideal.minimalPrimes_isPrime hq
+  have := hq.isPrime
   let := (localization_minimal_isField q hq).toField
   have h : IsReduced ((adjoinPthRoots k p) ⊗[k] (Localization.AtPrime q)) := by
     let : Algebra (adjoinPthRoots k p ⊗[k] S) (adjoinPthRoots k p ⊗[k] Localization.AtPrime q) :=
