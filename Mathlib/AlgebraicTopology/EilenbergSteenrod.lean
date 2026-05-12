@@ -125,16 +125,7 @@ protected def forget (i : ι) : HomologyPretheory C c ⥤ TopCat.{u} ⥤ C where
 instance (f : HP ⟶ HP') [IsIso f] (i : ι) : IsIso (f.hom i) :=
   inferInstanceAs (IsIso ((HomologyPretheory.forget i).map f))
 
-end HomologyPretheory
-
-end TopPair
-
-namespace EilenbergSteenrod
-
-open HomologyPretheory
-
-variable {C : Type v} [Category C] [Limits.HasZeroMorphisms C] {ι : Type*} {c : ComplexShape ι}
-  (HP HP' : HomologyPretheory.{u} C c)
+variable (HP HP' : HomologyPretheory.{u} C c)
 
 /-- A `HomologyPretheory` is homotopy-invariant if its homology functor `Hₚ` takes homotopic maps to
 the same map in homology -/
@@ -152,4 +143,6 @@ instance : IsClosedUnderIsomorphisms (C := HomologyPretheory C c) IsHomotopyInva
       forgetₚ_map, ← (e.hom.homₚ _).naturality]
     cat_disch⟩
 
-end EilenbergSteenrod
+end HomologyPretheory
+
+end TopPair
