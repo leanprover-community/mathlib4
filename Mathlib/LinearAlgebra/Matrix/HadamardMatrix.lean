@@ -37,9 +37,9 @@ open scoped Kronecker
 orthogonal with respect to the conjugate transpose.
 
 Over a ring with trivial star (e.g. `ℝ`, `ℤ`) this specializes to the classical Hadamard condition
-of [deLauneyFlannery2011, Definition 2.3.1]: entries `±1` and `A * Aᵀ = n • 1`. Over `ℂ`, the entry
+of [Definition 2.3.1][deLauneyFlannery2011]: entries `±1` and `A * Aᵀ = n • 1`. Over `ℂ`, the entry
 condition becomes `‖A i j‖ = 1`, recovering the complex Hadamard matrices of
-[deLauneyFlannery2011, Definition 2.7.1]. -/
+[Definition 2.7.1][deLauneyFlannery2011]. -/
 def IsHadamard [Fintype n] [DecidableEq n] [Ring R] [StarRing R] (A : Matrix n n R) : Prop :=
   (∀ i j, A i j * star (A i j) = 1) ∧
     A * Aᴴ = (Fintype.card n : R) • (1 : Matrix n n R)
@@ -61,7 +61,7 @@ theorem IsHadamard.det_ne_zero [Fintype n] [DecidableEq n] [CommRing R] [StarRin
 /-- The conjugate transpose of a Hadamard matrix over an integral domain is Hadamard, provided the
 order is nonzero in `R`.
 
-This is the matrix form of [deLauneyFlannery2011, Theorem 2.3.6]. -/
+This is the matrix form of [Theorem 2.3.6][deLauneyFlannery2011]. -/
 theorem IsHadamard.conjTranspose [Fintype n] [DecidableEq n] [CommRing R] [StarRing R]
     [IsDomain R] {A : Matrix n n R} (hA : A.IsHadamard) (hcard : (Fintype.card n : R) ≠ 0) :
     Aᴴ.IsHadamard := by
@@ -73,7 +73,7 @@ theorem IsHadamard.conjTranspose [Fintype n] [DecidableEq n] [CommRing R] [StarR
 /-- A Hadamard matrix with constant row sum `s` has order `s ^ 2`, provided the order is
 nonzero in `R` and the star is trivial.
 
-This is a slightly stronger form of [deLauneyFlannery2011, Theorem 2.3.7]:
+This is a slightly stronger form of [Theorem 2.3.7][deLauneyFlannery2011]:
 the constant column sum hypothesis follows from orthogonality over a field. -/
 theorem IsHadamard.card_eq_sq_of_const_row_sum [Fintype n] [DecidableEq n]
     [CommRing R] [StarRing R] [TrivialStar R] [IsDomain R] {A : Matrix n n R} {s : R}
@@ -106,7 +106,7 @@ theorem IsHadamard.kronecker [Fintype m] [DecidableEq m] [Fintype n]
 
 /-- A Hadamard matrix of order greater than two has order divisible by four.
 
-This is the standard divisibility obstruction in [deLauneyFlannery2011, Section 2.3]. -/
+This is the standard divisibility obstruction in [Section 2.3][deLauneyFlannery2011]. -/
 theorem IsHadamard.four_dvd_card [Fintype n] [DecidableEq n] {A : Matrix n n ℤ}
     (hA : A.IsHadamard) (hcard : 2 < Fintype.card n) : 4 ∣ Fintype.card n := by
   classical
