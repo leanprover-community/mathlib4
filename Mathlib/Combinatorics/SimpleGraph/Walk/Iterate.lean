@@ -23,7 +23,7 @@ namespace SimpleGraph
 
 namespace Walk
 
-variable {α : Type*} {G : SimpleGraph α}
+variable {V : Type*} {G : SimpleGraph α}
 
 /-- Build a walk of length `n` from `v` to `f^[n] v` following `f`,
 given that each step is adjacent in `G`. -/
