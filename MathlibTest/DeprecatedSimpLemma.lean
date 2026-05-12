@@ -48,3 +48,6 @@ info: Deprecated declarations should not have the simp attribute
 #guard_msgs in
 @[deprecated "We now believe 1 + 1 = 3" (since := "Today"), simp ← high]
 abbrev test7 := test6
+
+#guard_msgs in
+theorem test8 : 1 + 1 = 2 := rfl

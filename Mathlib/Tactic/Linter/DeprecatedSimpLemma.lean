@@ -5,7 +5,8 @@ Authors: Paul Lezeau
 -/
 
 module
-public import Mathlib.Init
+
+public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 
 /-!
 # Linter against deprecated simp lemmas
@@ -25,13 +26,11 @@ register_option linter.deprecatedSimpLemma : Bool := {
   descr := "enable the deprecatedSimpLemma linter"
 }
 
--- For some reason the empty docstring linter fires here
-set_option linter.style.docString.empty false in
 /-- Extract the attributes from a `Syntax` term. -/
 private def extractAttributes (stx : Syntax) : Array (TSyntax `Lean.Parser.Term.attrInstance) :=
   match stx with
   | `(declModifiers| $(_)? @[$[$atts],*] $(_)? $(_)? $(_)? $(_)?) => atts
-  | _ => panic! s!"No attributes found in {stx}."
+  | _ => #[]
 
 private def getAttributesFromDecl {m : Type → Type} [Monad m] [MonadEnv m] [MonadResolveName m]
     [MonadError m] [MonadMacroAdapter m] [MonadRecDepth m] [MonadTrace m] [MonadOptions m]
