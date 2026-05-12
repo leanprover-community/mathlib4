@@ -26,10 +26,8 @@ for `𝒮ℒ` (= `SL(2, ℤ)`) of even weight.
 * `ModularForm.dimension_level_one`: the full dimension formula for all even `k : ℕ`.
 * `ModularForm.levelOne_odd_weight_rank_zero`: modular forms of odd weight are zero.
 * A `FiniteDimensional ℂ (ModularForm 𝒮ℒ k)` instance for every `k : ℤ`.
-* `ModularForm.sturm_bound_levelOne_nat`: a modular form `f : ModularForm 𝒮ℒ k` of natural weight
-  whose q-expansion has order strictly greater than `k / 12` is identically zero.
-* `ModularForm.sturm_bound_levelOne`: the same statement for `k : ℤ`, obtained as a corollary
-  of the natural weight version (using `k.toNat / 12`).
+* `ModularForm.sturm_bound_levelOne`: a modular form `f : ModularForm 𝒮ℒ k` whose q-expansion
+  has order strictly greater than `k / 12` is identically zero.
 -/
 
 @[expose] public noncomputable section
@@ -132,8 +130,8 @@ lemma qExpansion_eq_qExpansion_discriminant_mul (f : ModularForm 𝒮ℒ k)
   have hfun : (f : ℍ → ℂ) = discriminant *
       (CuspForm.discriminantEquiv (toCuspForm f hcusp) : ℍ → ℂ) := by
     rw [CuspForm.discriminant_mul_discriminantEquiv]
-    exact DFunLike.ext'_iff.mp rfl
-  rw [hfun, show (Δ : ℍ → ℂ) = CuspForm.discriminant from rfl]
+    rfl
+  rw [hfun, ← CuspForm.coe_discriminant]
   refine UpperHalfPlane.qExpansion_mul ?_ ?_ <;>
     exact ModularFormClass.analyticAt_cuspFunction_zero _ one_pos one_mem_strictPeriods_SL
 
@@ -286,47 +284,31 @@ instance (k : ℤ) : FiniteDimensional ℂ (ModularForm 𝒮ℒ k) := by
   · rw [levelOne_odd_weight_rank_zero hk_odd]
     exact Cardinal.aleph0_pos
 
-/-- **Sturm bound for level-1 modular forms (natural weight).** If a modular form `f` of weight
-`k : ℕ` for `SL(2, ℤ)` has q-expansion of order strictly greater than `k / 12`, then `f` is
-identically zero. -/
-theorem sturm_bound_levelOne_nat {k : ℕ} (f : ModularForm 𝒮ℒ (k : ℤ))
-    (h : (↑(k / 12) : ℕ∞) < (qExpansion 1 f).order) : f = 0 := by
-  induction k using Nat.strong_induction_on with | _ k ih =>
-  have h0 : (qExpansion 1 f).coeff 0 = 0 :=
-    PowerSeries.coeff_of_lt_order _ (lt_of_le_of_lt (Nat.cast_nonneg _) h)
-  set g := CuspForm.discriminantEquiv (toCuspForm f h0) with hg_def
-  have hg_zero : g = 0 := by
-    rcases lt_or_ge k 12 with hk12 | hk12
-    · exact rank_zero_iff_forall_zero.mp (levelOne_neg_weight_rank_zero (by lia)) g
-    have hcast : ((k : ℤ) - 12) = ((k - 12 : ℕ) : ℤ) := by omega
-    -- Move `g` to weight `((k - 12 : ℕ) : ℤ)` so it matches the IH.
-    set g' : ModularForm 𝒮ℒ ((k - 12 : ℕ) : ℤ) := ModularForm.mcast hcast g with hg'_def
-    have hg'_zero : g' = 0 := by
-      refine ih (k - 12) (by omega) g' ?_
-      rw [qExpansion_eq_qExpansion_discriminant_mul f h0, PowerSeries.order_mul,
-        discriminant_qExpansion_order, add_comm, ← hg_def] at h
-      rw [show qExpansion 1 g' = qExpansion 1 g by simp [qExpansion, hg'_def]]
-      cases ha : (qExpansion 1 g).order with
-      | top => simp
-      | coe a => rw [ha] at h
-                 norm_cast at h ⊢
-                 omega
-    -- Transfer `g' = 0` back to `g = 0` via extensionality (mcast preserves coercion).
-    rw [← coe_eq_zero_iff] at hg'_zero ⊢
-    simpa [hg'_def] using hg'_zero
-  have := CuspForm.discriminant_mul_discriminantEquiv <| f.toCuspForm h0
-  ext z
-  simpa [← hg_def, hg_zero] using funext_iff.mp this _ |>.symm
-
-/-- **Sturm bound for level-1 modular forms.** If a modular form `f` of weight `k : ℤ` for
-`SL(2, ℤ)` has q-expansion of order strictly greater than `k.toNat / 12`, then `f` is identically
-zero. This is a corollary of `sturm_bound_levelOne_nat`. -/
+/-- **Sturm bound for level-1 modular forms.** If a modular form `f` of weight `k` for `SL(2, ℤ)`
+has q-expansion of order strictly greater than `k / 12`, then `f` is identically zero. -/
 theorem sturm_bound_levelOne {k : ℤ} (f : ModularForm 𝒮ℒ k)
     (h : (↑(k.toNat / 12) : ℕ∞) < (qExpansion 1 f).order) : f = 0 := by
+  induction hN : (k + 12).toNat using Nat.strong_induction_on generalizing k f with | _ N ih =>
   rcases lt_or_ge k 0 with hk | hk
   · exact rank_zero_iff_forall_zero.mp (levelOne_neg_weight_rank_zero hk) f
-  obtain ⟨n, rfl⟩ : ∃ n : ℕ, k = (n : ℤ) := ⟨k.toNat, (Int.toNat_of_nonneg hk).symm⟩
-  exact sturm_bound_levelOne_nat f (by simpa using h)
+  · have h0 : (qExpansion 1 f).coeff 0 = 0 :=
+      PowerSeries.coeff_of_lt_order _ (lt_of_le_of_lt (Nat.cast_nonneg _) h)
+    set g := CuspForm.discriminantEquiv (toCuspForm f h0) with hg_def
+    have hg_zero : g = 0 := by
+      rcases lt_or_ge k 12 with hk12 | hk12
+      · exact rank_zero_iff_forall_zero.mp (levelOne_neg_weight_rank_zero (by lia)) g
+      · refine ih k.toNat (by lia) g ?_ (by lia)
+        rw [qExpansion_eq_qExpansion_discriminant_mul f h0, PowerSeries.order_mul,
+          discriminant_qExpansion_order, add_comm, ← hg_def] at h
+        cases ha : (qExpansion 1 g).order with
+        | top => simp
+        | coe a =>
+          rw [ha] at h
+          norm_cast at h ⊢
+          lia
+    have := CuspForm.discriminant_mul_discriminantEquiv <| f.toCuspForm h0
+    ext z
+    simpa [← hg_def, hg_zero] using funext_iff.mp this _ |>.symm
 
 end ModularForm
 
