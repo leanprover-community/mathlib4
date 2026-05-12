@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Joël Riou. All rights reserved.
+Copyright (c) 2026 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.SubtypeNeLift
 public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
 public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.LinearAlgebra.TensorProduct.Map
 public import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
@@ -46,6 +47,7 @@ noncomputable def equivTensorPiTensorComplSingleton (i₀ : ι) :
 
 variable (i₀ : ι)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma equivTensorPiTensorComplSingleton_tprod (i₀ : ι) (m : ∀ i, M i) :
     equivTensorPiTensorComplSingleton R M i₀ (⨂ₜ[R] i, m i) =
@@ -71,7 +73,8 @@ lemma equivTensorPiTensorComplSingleton_symm_tmul (i₀ : ι)
     Function.subtypeNeLift_self]
   congr
   ext ⟨i, hi⟩
-  rw [Function.subtypeNeLift_of_neq]
+  rw [Function.subtypeNeLift_of_neq _ _ _ _ hi]
+  rfl
 
 end equivTensorPiTensorComplSingleto
 
