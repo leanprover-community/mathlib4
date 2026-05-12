@@ -837,7 +837,7 @@ theorem map_prod_map {δ} [MeasurableSpace δ] {f : α → β} {g : γ → δ} (
 -- hence it is placed in the `WithDensity` file, where the instance is defined.
 lemma prod_smul_left {μ : Measure α} (c : ℝ≥0∞) : (c • μ).prod ν = c • (μ.prod ν) := by
   ext s hs
-  rw [Measure.prod_apply hs, Measure.smul_apply, Measure.prod_apply hs]
+  rw [prod_apply hs, Measure.smul_apply, prod_apply hs]
   simp
 
 end Measure
@@ -873,7 +873,7 @@ theorem skew_product [SFinite μa] [SFinite μc] {f : α → β} (hf : MeasurePr
     infer_instance
   -- Thus we can use the integral formula for the product measure, and compute things explicitly
   ext s hs
-  rw [map_apply this hs, prod_apply (this hs), prod_apply hs,
+  rw [map_apply this hs, Measure.prod_apply (this hs), Measure.prod_apply hs,
     ← hf.lintegral_comp (measurable_measure_prodMk_left hs)]
   apply lintegral_congr_ae
   filter_upwards [hg] with a ha
@@ -898,7 +898,7 @@ theorem prod_of_right {f : α × β → γ} {μ : Measure α} {ν : Measure β} 
     QuasiMeasurePreserving f (μ.prod ν) τ := by
   refine ⟨hf, ?_⟩
   refine AbsolutelyContinuous.mk fun s hs h2s => ?_
-  rw [map_apply hf hs, prod_apply (hf hs)]; simp_rw [preimage_preimage]
+  rw [map_apply hf hs, Measure.prod_apply (hf hs)]; simp_rw [preimage_preimage]
   rw [lintegral_congr_ae (h2f.mono fun x hx => hx.preimage_null h2s), lintegral_zero]
 
 theorem prod_of_left {α β γ} [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
@@ -1222,8 +1222,9 @@ theorem _root_.MeasureTheory.measurePreserving_prodAssoc (μa : Measure α) (μb
     have A (x : α) : MeasurableSet (Prod.mk x ⁻¹' s) := measurable_prodMk_left hs
     have B : MeasurableSet (MeasurableEquiv.prodAssoc ⁻¹' s) :=
       MeasurableEquiv.prodAssoc.measurable hs
-    simp_rw [map_apply MeasurableEquiv.prodAssoc.measurable hs, prod_apply hs, prod_apply (A _),
-      prod_apply B, lintegral_prod _ (measurable_measure_prodMk_left B).aemeasurable]
+    simp_rw [map_apply MeasurableEquiv.prodAssoc.measurable hs, Measure.prod_apply hs,
+    Measure.prod_apply (A _), Measure.prod_apply B,
+    lintegral_prod _ (measurable_measure_prodMk_left B).aemeasurable]
     rfl
 
 theorem _root_.MeasureTheory.volume_preserving_prodAssoc {α₁ β₁ γ₁ : Type*} [MeasureSpace α₁]

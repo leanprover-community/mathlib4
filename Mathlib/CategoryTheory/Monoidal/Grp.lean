@@ -93,12 +93,10 @@ namespace Grp
 /-- An additive group object is an additive monoid object. -/]
 abbrev toMon (A : Grp C) : Mon C := ⟨A.X⟩
 
-set_option backward.inferInstanceAs.wrap.data false in
 variable (C) in
 /-- The trivial group object. -/
 @[to_additive (attr := simps!) /-- The trivial additive group object. -/]
-def trivial : Grp C :=
-  { Mon.trivial C with grp := inferInstanceAs (GrpObj (𝟙_ C)) }
+def trivial : Grp C := { Mon.trivial C with grp := GrpObj.instTensorUnit }
 
 @[to_additive]
 instance : Inhabited (Grp C) where
@@ -352,7 +350,7 @@ def ofInvertible (G : C) [MonObj G] (h : ∀ X (f : X ⟶ G), Invertible f) : Gr
   inv := Yoneda.fullyFaithful.preimage
     ⟨fun X ↦ ↾fun f ↦ (h X.unop f).invOf, fun X Y f ↦ by
       ext g
-      simp only [ yoneda_obj_map, TypeCat.Fun.toFun_apply, comp_apply,
+      simp only [yoneda_obj_map, TypeCat.Fun.toFun_apply, comp_apply,
         ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk, invOf_eq_iff_left]
       rw [← comp_mul, invOf_mul_self, comp_one]⟩
   left_inv := by simp [Yoneda.fullyFaithful_preimage, ← Hom.mul_def, Hom.one_def]

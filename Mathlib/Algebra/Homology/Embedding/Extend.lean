@@ -325,6 +325,20 @@ lemma extendSingleIso_inv_f (h : e.f i = i') :
 
 end
 
+instance [HasZeroMorphisms C] (e : c.Embedding c') (K : HomologicalComplex C c)
+    [∀ i, Projective (K.X i)] (i' : ι') : Projective ((K.extend e).X i') := by
+  by_cases! hi' : ∃ i, e.f i = i'
+  · obtain ⟨i, hi⟩ := hi'
+    exact Projective.of_iso (K.extendXIso e hi).symm inferInstance
+  · exact (isZero_extend_X K e i' hi').projective
+
+instance [HasZeroMorphisms C] (e : c.Embedding c') (K : HomologicalComplex C c)
+    [∀ i, Injective (K.X i)] (i' : ι') : Injective ((K.extend e).X i') := by
+  by_cases! hi' : ∃ i, e.f i = i'
+  · obtain ⟨i, hi⟩ := hi'
+    exact Injective.of_iso (K.extendXIso e hi).symm inferInstance
+  · exact (isZero_extend_X K e i' hi').injective
+
 end HomologicalComplex
 
 namespace ComplexShape.Embedding

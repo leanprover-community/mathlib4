@@ -167,7 +167,7 @@ def basicOpenIsoSpec : (basicOpen 𝒜 f).toScheme ≅ Spec (.of <| Away 𝒜 f)
     convert ProjectiveSpectrum.Proj.isIso_toSpec 𝒜 f f_deg hm using 1
     refine Eq.trans ?_ (ΓSpec.locallyRingedSpaceAdjunction.homEquiv_apply _ _ _).symm
     dsimp [basicOpenToSpec, Scheme.Opens.toSpecΓ]
-    simp only [ Category.assoc, ← Spec.map_comp]
+    simp only [Category.assoc, ← Spec.map_comp]
     rfl
   asIso (basicOpenToSpec 𝒜 f)
 

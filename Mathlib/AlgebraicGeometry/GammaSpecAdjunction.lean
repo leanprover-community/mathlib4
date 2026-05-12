@@ -205,8 +205,8 @@ theorem toStalk_stalkMap_toΓSpec (x : X) :
   rw [PresheafedSpace.Hom.stalkMap,
     ← algebraMap_germ (basicOpen (1 : Γ.obj (op X))) _ (by rw [basicOpen_one]; trivial),
     ← Category.assoc, Category.assoc (CommRingCat.ofHom _), stalkFunctor_map_germ, ← Category.assoc,
-    X.toΓSpecSheafedSpace_app_eq, X.toΓSpecCApp_spec, Γgerm]
-  erw [← stalkPushforward_germ _ _ X.presheaf ⊤]
+    X.toΓSpecSheafedSpace_app_eq, X.toΓSpecCApp_spec, Γgerm,
+    ← dsimp% stalkPushforward_germ _ _ X.presheaf ⊤]
   congr 1
   exact (X.toΓSpecBase _* X.presheaf).germ_res le_top.hom _ _
 
@@ -333,7 +333,7 @@ def locallyRingedSpaceAdjunction : Γ.rightOp ⊣ Spec.toLocallyRingedSpace.{u} 
       Quiver.Hom.unop_op, NatIso.op_inv, NatTrans.op_app, SpecΓIdentity_inv_app]
     exact congr_arg Quiver.Hom.op (left_triangle X)
   right_triangle_components R := by
-    simp only [ Functor.id_obj, NatIso.op_inv, NatTrans.op_app, SpecΓIdentity_inv_app,
+    simp only [Functor.id_obj, NatIso.op_inv, NatTrans.op_app, SpecΓIdentity_inv_app,
       Spec.toLocallyRingedSpace_map]
     exact right_triangle R.unop
 

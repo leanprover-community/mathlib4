@@ -135,19 +135,15 @@ instance : Epi (Limits.Pi.map f) :=
       Functor.ofOpSequence_map_homOfLE_succ]
     infer_instance)
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 instance : (lim (J := Discrete ℕ) (C := LightCondMod R)).PreservesEpimorphisms where
   preserves f _ := by
     have : lim.map f = (Pi.isoLimit _).inv ≫ Limits.Pi.map (f.app ⟨·⟩) ≫ (Pi.isoLimit _).hom := by
       apply limit.hom_ext
       intro ⟨n⟩
-      simp only [ lim_map, limMap, IsLimit.map, limit.isLimit_lift, limit.lift_π, limit.cone_x,
-        Cone.postcompose_obj_π, NatTrans.comp_app, limit.cone_π, Pi.isoLimit, Limits.Pi.map,
-        Category.assoc, limit.conePointUniqueUpToIso_hom_comp, Pi.cone_π, Discrete.natTrans_app,
-        Discrete.functor_obj_eq_as]
-      erw [IsLimit.conePointUniqueUpToIso_inv_comp_assoc]
-      rfl
+      simp
     rw [this]
+    dsimp
     infer_instance
 
 end LightCondensed

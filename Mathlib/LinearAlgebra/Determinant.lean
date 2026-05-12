@@ -48,9 +48,6 @@ basis, det, determinant
 @[expose] public section
 
 
-
-
-
 noncomputable section
 
 open Matrix Module LinearMap Submodule Set Function
@@ -417,6 +414,14 @@ theorem det_pi [Module.Free R M] [Module.Finite R M] (f : ι → M →ₗ[R] M) 
 
 end LinearMap
 
+namespace Algebra
+
+variable {R S : Type*} [CommRing R] [Ring S] [Algebra R S] [Free R S]
+
+lemma det_lsmul (x : R) : LinearMap.det (lsmul R R S x) = x ^ finrank R S := by
+  rw [lsmul_eq_smul_one, LinearMap.det_smul, map_one, mul_one]
+
+end Algebra
 
 namespace LinearEquiv
 

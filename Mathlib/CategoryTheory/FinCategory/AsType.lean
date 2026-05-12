@@ -14,8 +14,6 @@ public import Mathlib.Data.Fintype.EquivFin
 
 @[expose] public section
 
-
-
 universe w v u
 
 noncomputable section

@@ -48,8 +48,6 @@ comma, slice, coslice, over, under, arrow
 
 @[expose] public section
 
-
-
 namespace CategoryTheory
 
 open Category

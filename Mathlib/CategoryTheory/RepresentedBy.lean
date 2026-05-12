@@ -32,7 +32,6 @@ The relations to these other notions are given as
 
 @[expose] public section
 
-
 universe w v u
 
 namespace CategoryTheory.Functor

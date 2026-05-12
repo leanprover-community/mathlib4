@@ -72,7 +72,8 @@ theorem commProb_pos [h : Nonempty M] : 0 < commProb M :=
 
 theorem commProb_le_one : commProb M ≤ 1 := by
   refine div_le_one_of_le₀ ?_ (sq_nonneg (Nat.card M : ℚ))
-  rw [← Nat.cast_pow, Nat.cast_le, sq, ← Nat.card_prod]
+  norm_cast
+  rw [sq, ← Nat.card_prod]
   apply Finite.card_subtype_le
 
 variable {M}
