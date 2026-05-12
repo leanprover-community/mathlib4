@@ -115,7 +115,7 @@ def invariantsEquivIntertwiningMap : (linHom ρ σ).invariants ≃ₗ[k] Intertw
   invFun g :=
     { val := g.toLinearMap
       property := (mem_linHom_invariants_iff_isIntertwining g.toLinearMap).mpr
-        {isIntertwining := g.isIntertwining} }
+        { isIntertwining := g.isIntertwining } }
 
 section
 
@@ -211,7 +211,7 @@ end Rep
 
 section FDRep
 
-variable {k : Type u} [Field k] {G : Type u} [Group G]
+variable {k : Type u} [Field k] {G : Type v} [Group G]
 
 /-- The invariants of the representation `linHom X.ρ Y.ρ` correspond to the representation
 homomorphisms from `X` to `Y`. -/

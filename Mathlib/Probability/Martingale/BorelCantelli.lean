@@ -107,7 +107,7 @@ theorem Submartingale.eLpNorm_stoppedAbove_le [IsFiniteMeasure μ] (hf : Submart
   refine eLpNorm_one_le_of_le' ((hf.stoppedAbove r).integrable _) ?_
     (stoppedAbove_le hr hf0 hbdd i)
   rw [← setIntegral_univ]
-  refine le_trans ?_ ((hf.stoppedAbove r).setIntegral_le (zero_le _) MeasurableSet.univ)
+  refine le_trans ?_ ((hf.stoppedAbove r).setIntegral_le zero_le MeasurableSet.univ)
   simp [stoppedAbove, stoppedProcess, hf0]
 
 @[deprecated (since := "2025-10-25")] alias Submartingale.stoppedValue_leastGE_eLpNorm_le :=
@@ -280,7 +280,7 @@ theorem process_difference_le (s : ℕ → Set Ω) (ω : Ω) (n : ℕ) :
 
 theorem integrable_process (μ : Measure Ω) [IsFiniteMeasure μ] (hs : ∀ n, MeasurableSet[ℱ n] (s n))
     (n : ℕ) : Integrable (process s n) μ :=
-  integrable_finset_sum' _ fun _ _ =>
+  integrable_finsetSum' _ fun _ _ =>
     IntegrableOn.integrable_indicator (integrable_const 1) <| ℱ.le _ _ <| hs _
 
 end BorelCantelli

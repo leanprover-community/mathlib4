@@ -421,7 +421,6 @@ variable {Z : C} (g : Y ⟶ Z)
 @[simp] lemma coimage.comp_π_eq_zero : f ≫ coimage.π g = 0 ↔ f ≫ g = 0 := by
   simp [← cancel_mono (Abelian.factorThruCoimage _)]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `Abelian.image` as a functor from the arrow category. -/
 @[simps]
 def im : Arrow C ⥤ C where
@@ -430,7 +429,6 @@ def im : Arrow C ⥤ C where
 
 @[deprecated (since := "2025-10-31")] noncomputable alias imageFunctor := im
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `Abelian.coimage` as a functor from the arrow category. -/
 @[simps]
 def coim : Arrow C ⥤ C where
@@ -440,7 +438,6 @@ def coim : Arrow C ⥤ C where
 
 @[deprecated (since := "2025-10-31")] noncomputable alias coimageFunctor := coim
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The image and coimage of an arrow are naturally isomorphic. -/
 @[simps!]
 def coimIsoIm : coim (C := C) ≅ im :=

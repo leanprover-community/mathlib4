@@ -113,10 +113,10 @@ structure Adjunction (F : C ⥤ D) (G : D ⥤ C) where
   counit : G.comp F ⟶ 𝟭 D
   /-- Equality of the composition of the unit and counit with the identity `F ⟶ FGF ⟶ F = 𝟙` -/
   left_triangle_components (X : C) :
-      F.map (unit.app X) ≫ counit.app (F.obj X) = 𝟙 (F.obj X) := by cat_disch
+    dsimp% F.map (unit.app X) ≫ counit.app (F.obj X) = 𝟙 (F.obj X) := by cat_disch
   /-- Equality of the composition of the unit and counit with the identity `G ⟶ GFG ⟶ G = 𝟙` -/
   right_triangle_components (Y : D) :
-      unit.app (G.obj Y) ≫ G.map (counit.app Y) = 𝟙 (G.obj Y) := by cat_disch
+    dsimp% unit.app (G.obj Y) ≫ G.map (counit.app Y) = 𝟙 (G.obj Y) := by cat_disch
 
 /-- The notation `F ⊣ G` stands for `Adjunction F G` representing that `F` is left adjoint to `G` -/
 infixl:15 " ⊣ " => Adjunction
@@ -266,34 +266,30 @@ theorem homEquiv_naturality_right_square_iff (f : X' ⟶ X) (g : X ⟶ G.obj Y')
       using homEquiv_naturality_left_square adj _ _ _ _ w,
     homEquiv_naturality_right_square adj f g h k⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem left_triangle : whiskerRight adj.unit F ≫ whiskerLeft F adj.counit = 𝟙 _ := by
   ext; simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem right_triangle : whiskerLeft G adj.unit ≫ whiskerRight adj.counit G = 𝟙 _ := by
   ext; simp
 
 @[reassoc (attr := simp)]
 theorem counit_naturality {X Y : D} (f : X ⟶ Y) :
-    F.map (G.map f) ≫ adj.counit.app Y = adj.counit.app X ≫ f :=
+    dsimp% F.map (G.map f) ≫ adj.counit.app Y = adj.counit.app X ≫ f :=
   adj.counit.naturality f
 
 @[reassoc (attr := simp)]
 theorem unit_naturality {X Y : C} (f : X ⟶ Y) :
-    adj.unit.app X ≫ G.map (F.map f) = f ≫ adj.unit.app Y :=
+    dsimp% adj.unit.app X ≫ G.map (F.map f) = f ≫ adj.unit.app Y :=
   (adj.unit.naturality f).symm
 
-set_option backward.isDefEq.respectTransparency false in
 lemma unit_comp_map_eq_iff {A : C} {B : D} (f : F.obj A ⟶ B) (g : A ⟶ G.obj B) :
-    adj.unit.app A ≫ G.map f = g ↔ f = F.map g ≫ adj.counit.app B :=
+    dsimp% adj.unit.app A ≫ G.map f = g ↔ f = F.map g ≫ adj.counit.app B :=
   ⟨fun h => by simp [← h], fun h => by simp [h]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma eq_unit_comp_map_iff {A : C} {B : D} (f : F.obj A ⟶ B) (g : A ⟶ G.obj B) :
-    g = adj.unit.app A ≫ G.map f ↔ F.map g ≫ adj.counit.app B = f :=
+    dsimp% g = adj.unit.app A ≫ G.map f ↔ F.map g ≫ adj.counit.app B = f :=
   ⟨fun h => by simp [h], fun h => by simp [← h]⟩
 
 theorem homEquiv_apply_eq {A : C} {B : D} (f : F.obj A ⟶ B) (g : A ⟶ G.obj B) :
@@ -520,7 +516,6 @@ lemma homEquiv_ofNatIsoLeft_symm_apply {F G : C ⥤ D} {H : D ⥤ C} (adj : F �
     ((ofNatIsoLeft adj iso).homEquiv X Y).symm f = iso.inv.app _ ≫ (adj.homEquiv _ _).symm f := by
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Transport an adjunction along a natural isomorphism on the right. -/
 @[simps]
 def ofNatIsoRight {F : C ⥤ D} {G H : D ⥤ C} (adj : F ⊣ G) (iso : G ≅ H) : F ⊣ H where
@@ -544,7 +539,6 @@ lemma homEquiv_ofNatIsoRight_symm_apply {F : C ⥤ D} {G H : D ⥤ C} (adj : F �
       (adj.homEquiv _ _).symm (f ≫ iso.inv.app _) := by
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism which an adjunction `F ⊣ G` induces on `G ⋙ yoneda`. This states that
 `Adjunction.homEquiv` is natural in both arguments. -/
 @[simps!]
@@ -686,7 +680,6 @@ def adjunctionOfEquivRight (he : ∀ X' X Y f g, e X' Y (F.map f ≫ g) = f ≫ 
 
 end ConstructRight
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If the unit and counit of a given adjunction are (pointwise) isomorphisms, then we can upgrade the
 adjunction to an equivalence.
@@ -699,7 +692,6 @@ noncomputable def toEquivalence (adj : F ⊣ G) [∀ X, IsIso (adj.unit.app X)]
   unitIso := NatIso.ofComponents fun X => asIso (adj.unit.app X)
   counitIso := NatIso.ofComponents fun Y => asIso (adj.counit.app Y)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma map_comp_bijective_iff (adj : F ⊣ G) {X Y : C} (f : X ⟶ Y) (Z : D) :
     Function.Bijective (fun (g : F.obj Y ⟶ Z) ↦ F.map f ≫ g) ↔
       Function.Bijective (fun (g : Y ⟶ G.obj Z) ↦ f ≫ g) := by

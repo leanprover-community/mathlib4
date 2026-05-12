@@ -37,16 +37,15 @@ generators `x : α` and relations `rels` as a quotient of a congruence structure
 @[to_additive /-- Given a set of relations, `rels`, over a type `α`, `PresentedAddMonoid` constructs
 the monoid with generators `x : α` and relations `rels` as a quotient of an AddCon structure over
 rels -/]
-def PresentedMonoid (rel : FreeMonoid α → FreeMonoid α → Prop) := (conGen rel).Quotient
+def PresentedMonoid (rels : FreeMonoid α → FreeMonoid α → Prop) := (conGen rels).Quotient
 
 namespace PresentedMonoid
 
 open Set Submonoid
 
-
 @[to_additive]
 instance {rels : FreeMonoid α → FreeMonoid α → Prop} : Monoid (PresentedMonoid rels) :=
-  Con.monoid (conGen rels)
+  inferInstanceAs <| Monoid (conGen rels).Quotient
 
 /-- The quotient map from the free monoid on `α` to the presented monoid with the same generators
 and the given relations `rels`. -/
