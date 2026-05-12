@@ -88,6 +88,75 @@ lemma LinearMap.hasFiniteRank.comp_sub_comp {u v : V →ₗ[K] V₂} {u' v' : V�
   rw [show u' ∘ₗ u - v' ∘ₗ v = (u' - v') ∘ₗ u + v' ∘ₗ (u - v) by ext; simp]
   exact (h'.comp_left u).add <| h.comp_right v'
 
+variable (K V V₂) in
+def LinearMap.FiniteRank : Submodule K (V →ₗ[K] V₂) where
+  carrier := {u | u.hasFiniteRank}
+  add_mem' hu hv := by simp_all
+  zero_mem' := by simp
+  smul_mem' c hu := by simp_all
+
+namespace QuotFiniteRank
+scoped instance : Setoid (V →ₗ[K] V₂) := (LinearMap.FiniteRank K V V₂).quotientRel
+
+lemma eqv_iff {u v : V →ₗ[K] V₂} : u ≈ v ↔ (u - v).hasFiniteRank := by
+  erw [← @Quotient.eq_iff_equiv, Submodule.Quotient.eq]
+  rfl
+
+lemma rel_comp {u v : V →ₗ[K] V₂} {u' v' : V₂ →ₗ[K] V₃} (h : u ≈ v) (h' : u' ≈ v') :
+    u' ∘ₗ u ≈ v' ∘ₗ v := by
+  rw [eqv_iff] at *
+  exact h.comp_sub_comp h'
+
+lemma rel_comp_right {u : V →ₗ[K] V₂} {u' v' : V₂ →ₗ[K] V₃} (h' : u' ≈ v') :
+    u' ∘ₗ u ≈ v' ∘ₗ u :=
+  rel_comp (Quotient.exact rfl) h'
+
+lemma rel_comp_left {u v : V →ₗ[K] V₂} {u' : V₂ →ₗ[K] V₃} (h : u ≈ v) :
+    u' ∘ₗ u ≈ u' ∘ₗ v :=
+  rel_comp h (Quotient.exact rfl)
+end QuotFiniteRank
+
+section
+open scoped QuotFiniteRank
+
+def LinearMap.LeftQuasiInverse (u : V →ₗ[K] V₂) (v : V₂ →ₗ[K] V) := u ∘ₗ v ≈ .id
+
+def LinearMap.RightQuasiInverse (u : V₃ →ₗ[K] V₂) (v : V₂ →ₗ[K] V₃) := v ∘ₗ u ≈ .id
+
+def LinearMap.QuasiInverse (u : V₃ →ₗ[K] V₂) (v : V₂ →ₗ[K] V₃) :=
+  u.LeftQuasiInverse v ∧ u.RightQuasiInverse v
+
+@[symm]
+lemma LinearMap.QuasiInverse.symm {u : V₃ →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
+    (h : u.QuasiInverse v) : v.QuasiInverse u :=
+  And.symm h
+
+lemma LinearMap.QuasiInverse_congr {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ →ₗ[K] V₃}
+    (h : u.QuasiInverse v) (hu : u' ≈ u) (hv : v' ≈ v) :
+    u'.QuasiInverse v' := by
+  simp only [QuasiInverse, LeftQuasiInverse, RightQuasiInverse, QuotFiniteRank.eqv_iff] at *
+  constructor
+  · rw [show u' ∘ₗ v' - id = (u' ∘ₗ v' - u ∘ₗ v) + (u ∘ₗ v - id) by simp]
+    exact (hv.comp_sub_comp hu).add h.1
+  · rw [show v' ∘ₗ u' - id = (v' ∘ₗ u' - v ∘ₗ u) + (v ∘ₗ u - id) by simp]
+    exact (hu.comp_sub_comp  hv).add h.2
+
+lemma LinearMap.equiv_of_quasiInverse {u : V₃ →ₗ[K] V₂} {v v' : V₂ →ₗ[K] V₃}
+    (h : u.QuasiInverse v) (h' : u.QuasiInverse v') :
+    v ≈ v' :=
+  calc
+    v = v ∘ₗ .id := by simp
+    _ ≈ v ∘ₗ (u ∘ₗ v') := by apply QuotFiniteRank.rel_comp_left; symm; exact h'.1
+    _ = (v ∘ₗ u) ∘ₗ v' := by rw [comp_assoc]
+    _ ≈ (.id) ∘ₗ v' := by apply QuotFiniteRank.rel_comp_right; exact h.2
+    _ = v' := by simp
+
+lemma LinearMap.equiv_of_quasiInverse' {u u' : V₃ →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
+    (h : u.QuasiInverse v) (h' : u'.QuasiInverse v) :
+    u ≈ u' := by
+  symm at h h'
+  exact equiv_of_quasiInverse h h'
+end
 end
 
 open Topology ContinuousLinearMap
