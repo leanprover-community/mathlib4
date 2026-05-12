@@ -27,7 +27,7 @@ variable [SuccOrder α]
 
 @[to_dual]
 theorem isOpen_singleton_of_not_isSuccPrelimit (ha : ¬ IsSuccPrelimit a) : IsOpen {a} := by
-  obtain ⟨b, hb⟩ := not_isSuccPrelimit_iff_exists_covBy a |>.mp ha
+  obtain ⟨b, hb⟩ := not_isSuccPrelimit_iff.1 ha
   by_cases ha' : IsMax a
   · convert isOpen_Ioi (a := b) using 1
     rw [hb.Ioi_eq]

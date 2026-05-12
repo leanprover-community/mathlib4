@@ -123,6 +123,15 @@ instance respectsIso_quasiIso : (quasiIso C c).RespectsIso := by
   exact ((MorphismProperty.isomorphisms C).arrow_mk_iso_iff
     ((homologyFunctor C c i).mapArrow.mapIso e)).1 (hf i)
 
+instance : (quasiIso C c).IsMultiplicative where
+  id_mem K := by
+    rw [mem_quasiIso_iff]
+    infer_instance
+  comp_mem f g hf hg := by
+    rw [mem_quasiIso_iff] at hf hg ⊢
+    simp only [Functor.map_comp]
+    infer_instance
+
 lemma homologyFunctor_inverts_quasiIso (i : ι) :
     (quasiIso C c).IsInvertedBy (homologyFunctor C c i) := fun _ _ _ hf => hf i
 
