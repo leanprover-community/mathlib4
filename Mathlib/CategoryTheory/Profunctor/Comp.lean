@@ -193,7 +193,7 @@ def leftUnitor (P : Profunctor.{u} C D) : Profunctor.id.comp P ≅ P :=
     (fun f ↦ by ext _ ⟨_, _⟩; simp [Types.chosenCoend_def, chosenCoend.map_apply])
 
 set_option backward.isDefEq.respectTransparency false in
-attribute [local simp] Types.chosenCoend_def chosenCoend.map_apply in
+attribute [local simp] Types.chosenCoend_def in
 @[simp]
 lemma id_whiskerLeft {P Q : Profunctor.{u} C D} (f : P ⟶ Q) :
     (Profunctor.id (C := C)).whiskerLeft f =
@@ -228,7 +228,7 @@ def rightUnitor (P : Profunctor.{u} C D) : P.comp .id ≅ P :=
     (fun f ↦ by ext _ ⟨_, _⟩; simp [Types.chosenCoend_def, chosenCoend.map_apply])
 
 set_option backward.isDefEq.respectTransparency false in
-attribute [local simp] Types.chosenCoend_def chosenCoend.map_apply in
+attribute [local simp] Types.chosenCoend_def in
 @[simp]
 lemma whiskerRight_id {P Q : Profunctor.{u} C D} (f : P ⟶ Q) :
     whiskerRight (Profunctor.id (C := D)) f =

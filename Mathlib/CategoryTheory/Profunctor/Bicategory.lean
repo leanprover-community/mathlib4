@@ -52,6 +52,7 @@ lemma pentagon {C D E F G : Type u} [Category* C] [Category* D] [Category* E]
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
+attribute [local simp] Types.chosenCoend_def in
 @[reassoc (attr := simp)]
 lemma triangle {C D E : Type u} [Category* C] [Category.{u} D] [Category* E]
     (P : Profunctor.{u} C D) (Q : Profunctor.{u} D E) :
