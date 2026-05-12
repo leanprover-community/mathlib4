@@ -69,9 +69,8 @@ lemma DerivedCategory.map_triangleOfSESδ [HasDerivedCategory.{t} C] [HasDerived
     descShortComplex_triangleOfSESδ, F.mapDerivedCategoryFactors_hom_naturality_assoc,
     ← CochainComplex.mappingCone.mapHomologicalComplexIso_hom_descShortComplex,
     Functor.map_comp_assoc, descShortComplex_triangleOfSESδ_assoc]
-  erw [Category.assoc]
-  rw  [← Functor.map_comp_assoc]
   dsimp
+  rw  [← Functor.map_comp_assoc]
   rw [← CochainComplex.mappingCone.map_δ, Functor.map_comp_assoc,
     ← F.mapDerivedCategoryFactors_hom_naturality_assoc, Functor.map_comp]
   simp [NatTrans.shift_app, Functor.commShiftIso_comp_hom_app, Functor.commShiftIso_comp_inv_app,
