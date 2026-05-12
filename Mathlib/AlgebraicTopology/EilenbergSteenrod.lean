@@ -135,15 +135,14 @@ class IsHomotopyInvariant (HP : HomologyPretheory.{u} C c) where
 
 export IsHomotopyInvariant (map_eq_of_homotopy)
 
-instance : IsClosedUnderIsomorphisms (C := HomologyPretheory C c) IsHomotopyInvariant where
-  of_iso {HP HP'} e _ := ⟨by
-    intro _ _ _ _ F _
-    have := HP.map_eq_of_homotopy F
-    apply ((((HomologyPretheory.forgetₚ _).mapIso e).app _).cancel_iso_hom_left
-      ((HP'.Hₚ _).map _) ((HP'.Hₚ _).map _)).mp
-    simp only [CategoryTheory.Iso.app_hom, HomologyPretheory.forgetₚ_obj, Functor.mapIso_hom,
-      forgetₚ_map, ← (e.hom.homₚ _).naturality]
-    cat_disch⟩
+variable (C c) in
+abbrev isHomotopyInvariant : ObjectProperty (HomologyPretheory C c) :=
+  IsHomotopyInvariant
+
+instance : IsClosedUnderIsomorphisms (isHomotopyInvariant C c) where
+  of_iso e _ := ⟨fun F _ ↦ by
+    simp only [← cancel_epi ((e.hom.homₚ _).app _), ← NatTrans.naturality,
+      map_eq_of_homotopy _ F _]⟩
 
 end HomologyPretheory
 
