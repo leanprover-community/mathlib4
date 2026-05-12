@@ -241,7 +241,7 @@ class NormMetric (E : Type*) extends Norm E, MetricSpace E where
 attribute [instance 100] NormPseudoMetric.toNorm NormMetric.toNorm
 attribute [instance 100] NormPseudoMetric.toPseudoMetricSpace NormMetric.toMetricSpace
 
-instance (priority := 100) [NormMetric E] : NormPseudoMetric E where
+instance (priority := 100) NormMetric.toNormPseudoMetric [NormMetric E] : NormPseudoMetric E where
 
 /-- A seminormed group is an additive group endowed with a norm for which `dist x y = ‖-x + y‖`
 defines a pseudometric space structure. -/
@@ -397,15 +397,37 @@ lemma GroupSeminorm.toIsNormedGroup [Group E] (f : GroupSeminorm E) :
   { dist_eq _ _ := rfl }
 
 -- See note [reducible non-instances]
-/-- Construct a normed group from a norm, i.e., registering the distance and the metric space
-structure from the norm properties. Note that in most cases this instance creates bad definitional
-equalities (e.g., it does not take into account a possibly existing `UniformSpace` instance on
-`E`). -/
+/-- Construct a seminormed group from a seminorm, i.e., registering the pseudodistance and the
+pseudometric space structure from the seminorm properties. Note that in most cases this instance
+creates bad definitional equalities (e.g., it does not take into account a possibly existing
+`UniformSpace` instance on `E`). -/
 @[to_additive
-  /-- Construct a normed group from a norm, i.e., registering the distance and the metric
-space structure from the norm properties. Note that in most cases this instance creates bad
-definitional equalities (e.g., it does not take into account a possibly existing `UniformSpace`
-instance on `E`). -/]
+  /-- Construct a seminormed group from a seminorm, i.e., registering the pseudodistance
+and the pseudometric space structure from the seminorm properties. Note that in most cases this
+instance creates bad definitional equalities (e.g., it does not take into account a possibly
+existing `UniformSpace` instance on `E`). -/]
+abbrev GroupSeminorm.toSeminormedGroup [Group E] (f : GroupSeminorm E) : SeminormedGroup E where
+  __ := f.toNormPseudoMetric
+  c := f.toIsNormedGroup
+
+-- See note [reducible non-instances]
+/-- Construct a seminormed group from a seminorm, i.e., registering the pseudodistance and the
+pseudometric space structure from the seminorm properties. Note that in most cases this instance
+creates bad definitional equalities (e.g., it does not take into account a possibly existing
+`UniformSpace` instance on `E`). -/
+@[to_additive
+  /-- Construct a seminormed group from a seminorm, i.e., registering the pseudodistance
+and the pseudometric space structure from the seminorm properties. Note that in most cases this
+instance creates bad definitional equalities (e.g., it does not take into account a possibly
+existing `UniformSpace` instance on `E`). -/]
+abbrev GroupSeminorm.toSeminormedCommGroup [CommGroup E] (f : GroupSeminorm E) :
+    SeminormedCommGroup E where
+  __ := f.toNormPseudoMetric
+  c := f.toIsNormedGroup
+
+-- See note [reducible non-instances]
+/-- missing doc -/
+@[to_additive /-- missing doc -/]
 abbrev GroupNorm.toNormMetric [Group E] (f : GroupNorm E) : NormMetric E :=
   { f.toGroupSeminorm.toNormPseudoMetric with
     eq_of_dist_eq_zero := fun h => inv_mul_eq_one.1 <| eq_one_of_map_eq_zero f h }
@@ -417,3 +439,31 @@ lemma GroupNorm.toIsNormedGroup [Group E] (f : GroupNorm E) :
     IsNormedGroup E :=
   letI := f.toNormMetric
   { dist_eq _ _ := rfl }
+
+-- See note [reducible non-instances]
+/-- Construct a normed group from a norm, i.e., registering the distance and the metric space
+structure from the norm properties. Note that in most cases this instance creates bad definitional
+equalities (e.g., it does not take into account a possibly existing `UniformSpace` instance on
+`E`). -/
+@[to_additive
+  /-- Construct a normed group from a norm, i.e., registering the distance and the metric
+space structure from the norm properties. Note that in most cases this instance creates bad
+definitional equalities (e.g., it does not take into account a possibly existing `UniformSpace`
+instance on `E`). -/]
+abbrev GroupNorm.toNormedGroup [Group E] (f : GroupNorm E) : NormedGroup E where
+  __ := f.toNormMetric
+  c := f.toIsNormedGroup
+
+-- See note [reducible non-instances]
+/-- Construct a normed group from a norm, i.e., registering the distance and the metric space
+structure from the norm properties. Note that in most cases this instance creates bad definitional
+equalities (e.g., it does not take into account a possibly existing `UniformSpace` instance on
+`E`). -/
+@[to_additive
+  /-- Construct a normed group from a norm, i.e., registering the distance and the metric
+space structure from the norm properties. Note that in most cases this instance creates bad
+definitional equalities (e.g., it does not take into account a possibly existing `UniformSpace`
+instance on `E`). -/]
+abbrev GroupNorm.toNormedCommGroup [CommGroup E] (f : GroupNorm E) : NormedCommGroup E where
+  __ := f.toNormMetric
+  c := f.toIsNormedGroup
