@@ -54,6 +54,7 @@ def coend.ι (j : J) : (F.obj (op j)).obj j ⟶ coend F := ↾fun x ↦ Quot.mk 
 
 variable {F}
 
+@[reassoc]
 lemma coend.condition {j j' : J} (f : j ⟶ j') :
     (F.map f.op).app _ ≫ coend.ι F j = (F.obj _).map f ≫ coend.ι F j' := by
   ext
@@ -123,6 +124,7 @@ def end_.π (j : J) : end_ F ⟶ (F.obj (op j)).obj j := ↾fun x ↦ x.1 j
 
 variable {F}
 
+@[reassoc]
 lemma end_.condition {i j : J} (f : i ⟶ j) :
     end_.π F i ≫ (F.obj (op i)).map f = end_.π F j ≫ (F.map f.op).app j := by
   ext x
