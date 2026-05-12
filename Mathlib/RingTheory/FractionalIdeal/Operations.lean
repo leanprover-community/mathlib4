@@ -382,7 +382,7 @@ theorem _root_.IsFractional.div_of_nonzero {I J : Submodule R₁ K} :
       apply notMem_zero
       simpa
     intro b hb
-    convert hI _ (hb _ (Submodule.smul_mem _ aJ mem_J)) using! 1
+    convert hI _ (hb _ (Submodule.smul_mem _ aJ mem_J)) using 1
     rw [← hy', mul_comm b, ← Algebra.smul_def, mul_smul]
 
 theorem isFractional_div_of_ne_zero {I J : FractionalIdeal R₁⁰ K} (h : J ≠ 0) :

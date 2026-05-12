@@ -369,7 +369,7 @@ lemma finite_universalFactorizationMap :
   | tmul x y =>
     suffices (universalFactorizationMap R n m k hn).IsIntegralElem (x ⊗ₜ 1 * 1 ⊗ₜ y) by simpa
     refine RingHom.IsIntegralElem.mul _ ?_ ?_
-    · induction x using! MvPolynomial.induction_on with
+    · induction x using MvPolynomial.induction_on with
       | C a => simpa using! (universalFactorizationMap R n m k hn).isIntegralElem_map (x := .C a)
       | add p q _ _ => simp only [TensorProduct.add_tmul, RingHom.IsIntegralElem.add, *]
       | mul_X p i IH => simpa [← map_mul] using! IH.mul _ (H₁ i)

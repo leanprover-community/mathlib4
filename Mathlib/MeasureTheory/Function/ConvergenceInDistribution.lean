@@ -243,7 +243,7 @@ lemma tendstoInDistribution_of_tendstoInMeasure_sub {X : ι → Ω'' → E}
       simp_rw [tendsto_iff_forall_lipschitz_integral_tendsto] at hXZ
       simpa [tendsto_iff_dist_tendsto_zero] using! hXZ F ⟨M, hF_bounded⟩ ⟨L, hF_lip⟩
   have h_lt : L * ε / 2 < L * ε := half_lt_self (by positivity)
-  filter_upwards [h_tendsto.eventually_lt_const h_lt] with n hn using! (h_le n).trans_lt hn
+  filter_upwards [h_tendsto.eventually_lt_const h_lt] with n hn using (h_le n).trans_lt hn
 
 /-- Convergence in probability (`TendstoInMeasure`) implies convergence in distribution
 (`TendstoInDistribution`). -/
