@@ -172,7 +172,7 @@ noncomputable def normAddPair (X : Type*) [SeminormedAddCommGroup X] :
 
 theorem uniformConvexSpace_of_comap_le
     (X : Type*) [SeminormedAddCommGroup X]
-    (h : Filter.comap (normAddPair X) (nhds 2) ≤ uniformity (Metric.sphere (0 : X) 1)) :
+    (h : Filter.comap (normAddPair X) (nhds 2) ≤ 𝒰 (Metric.sphere (0 : X) 1)) :
     UniformConvexSpace X := by
   constructor
   intro ε hε
