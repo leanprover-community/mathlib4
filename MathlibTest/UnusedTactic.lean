@@ -1,6 +1,6 @@
 module
-import Mathlib.Tactic.Linter.UnusedTactic
-import Mathlib.Tactic.AdaptationNote
+import MathlibInit.Tactic.Linter.UnusedTactic
+import MathlibInit.Tactic.AdaptationNote
 
 example (h : 0 + 1 = 0) : False := by
   change 1 = 0 at h

@@ -5,7 +5,7 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 /-!
 # Nonempty types
 

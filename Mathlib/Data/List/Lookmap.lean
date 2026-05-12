@@ -7,7 +7,7 @@ module
 
 public import Batteries.Logic
 public import Batteries.Data.List.Basic
-public import Mathlib.Init
+public import MathlibInit
 import all Init.Data.Array.Basic
 
 /-! ### lookmap -/

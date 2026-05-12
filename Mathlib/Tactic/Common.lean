@@ -25,7 +25,7 @@ public import Batteries.CodeAction
 public import LeanSearchClient
 
 -- Import Mathlib-specific linters.
-public import Mathlib.Tactic.Linter.Lint
+public import MathlibInit.Tactic.Linter.Lint
 
 -- Now import all tactics defined in Mathlib that do not require theory files.
 public import Mathlib.Tactic.ApplyCongr
@@ -57,7 +57,7 @@ public import Mathlib.Tactic.DSimpPercent
 public import Mathlib.Tactic.ErwQuestion
 public import Mathlib.Tactic.Eqns
 public import Mathlib.Tactic.ExistsI
-public import Mathlib.Tactic.ExtractGoal
+public import MathlibInit.Tactic.ExtractGoal
 public import Mathlib.Tactic.FailIfNoProgress
 public import Mathlib.Tactic.Find
 public import Mathlib.Tactic.FunProp

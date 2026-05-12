@@ -5,7 +5,7 @@ Authors: Leonardo de Moura
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 public import Batteries.Control.AlternativeMonad
 /-!
 # Monad instances for `List`

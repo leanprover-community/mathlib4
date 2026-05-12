@@ -5,7 +5,7 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 
 /-!
 # Additional functions using `CoreM` state.

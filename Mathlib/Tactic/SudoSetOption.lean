@@ -5,7 +5,7 @@ Authors: Gabriel Ebner
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 
 /-!
 # Defines the `sudo set_option` command.

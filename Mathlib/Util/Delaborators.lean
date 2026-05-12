@@ -5,7 +5,7 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 public meta import Lean.PrettyPrinter.Delaborator.Builtins
 public import Mathlib.Util.PPOptions
 

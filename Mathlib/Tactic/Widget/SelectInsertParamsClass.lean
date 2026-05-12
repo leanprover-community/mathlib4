@@ -5,7 +5,7 @@ Authors: Patrick Massot
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 public meta import Lean.Widget.InteractiveGoal
 public meta import Lean.Elab.Deriving.Basic
 public import Lean.Widget.InteractiveGoal

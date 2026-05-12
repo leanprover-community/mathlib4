@@ -5,7 +5,7 @@ Authors: Leonardo de Moura
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 public import Batteries.Util.ExtendedBinder
 
 import Mathlib.Tactic.ToDual

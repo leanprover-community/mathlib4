@@ -5,7 +5,7 @@ Authors: Mario Carneiro, Heather Macbeth
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 
 /-!
 # Environment extension for the forward-reasoning part of the `gcongr` tactic

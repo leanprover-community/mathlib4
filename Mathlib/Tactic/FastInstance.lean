@@ -5,7 +5,7 @@ Authors: Eric Wieser, Kyle Miller, Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 
 /-!
 # The `fast_instance%` and `inferInstanceAs%` term elaborators

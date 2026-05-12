@@ -6,7 +6,7 @@ Authors: Yury Kudryashov, Malo Jaffré
 module
 
 public import Mathlib.Analysis.Convex.Function
-public import Mathlib.Tactic.AdaptationNote
+public import MathlibInit.Tactic.AdaptationNote
 public import Mathlib.Tactic.FieldSimp
 public import Mathlib.Tactic.Linarith
 

@@ -1,4 +1,4 @@
-import Mathlib.Tactic.Linter.Style
+import MathlibInit.Tactic.Linter.Style
 
 set_option linter.style.nameCheck true
 variable (n : Nat)

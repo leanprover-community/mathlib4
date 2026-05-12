@@ -6,7 +6,7 @@ Authors: Eric Wieser
 module
 
 public import Batteries.Logic
-public import Mathlib.Init
+public import MathlibInit
 
 /-!
 # Extra facts about `PProd`

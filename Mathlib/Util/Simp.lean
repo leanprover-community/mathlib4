@@ -6,7 +6,7 @@ Authors: Paul Lezeau
 module
 
 public meta import Lean.Meta.Tactic.Simp.Types
-public import Mathlib.Init
+public import MathlibInit
 public import Qq
 
 /-! # Additional simp utilities

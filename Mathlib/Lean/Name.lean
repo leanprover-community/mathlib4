@@ -5,7 +5,7 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 public import Lean.Meta.Match.MatcherInfo
 public import Std.Data.HashMap.Basic
 

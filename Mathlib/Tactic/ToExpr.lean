@@ -5,7 +5,7 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 
 /-!
 # `ToExpr` instances for Mathlib

@@ -8,7 +8,7 @@ module  -- shake: keep-all, shake: keep-downstream
 public meta import Lean
 public import Mathlib.Tactic.PPWithUniv
 public import Mathlib.Tactic.ExtendDoc
-public import Mathlib.Tactic.Linter.OldObtain
+public import MathlibInit.Tactic.Linter.OldObtain
 public import Batteries.Util.LibraryNote -- For `library_note` command.
 
 /-!

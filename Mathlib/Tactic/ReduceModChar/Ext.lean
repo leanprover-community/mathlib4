@@ -5,7 +5,7 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 public meta import Lean.Meta.Tactic.Simp.Attr
 
 /-!

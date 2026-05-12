@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.ModEq
 public import Mathlib.Algebra.Field.Basic
-public import Mathlib.Tactic.MinImports
+public import MathlibInit.Tactic.MinImports
 
 /-!
 # Congruence modulo multiples of an element in a (semi)field

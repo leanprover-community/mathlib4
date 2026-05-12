@@ -5,7 +5,7 @@ Authors: Damiano Testa
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 public import Lean.Elab.Import
 
 /-!

@@ -5,7 +5,7 @@ Authors: Kim Morrison, Eric Wieser
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 public import Batteries.Util.LibraryNote
 
 /-!

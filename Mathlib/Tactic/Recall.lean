@@ -5,7 +5,7 @@ Authors: Mac Malone, Kyle Miller
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 public meta import Lean.Elab.Command
 public meta import Lean.Elab.DeclUtil
 public meta import Lean.Meta.Tactic.TryThis

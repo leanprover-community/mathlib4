@@ -1,7 +1,7 @@
 module
 
-import Mathlib.Init
-import Mathlib.Tactic.Linter.PrivateModule
+import MathlibInit
+import MathlibInit.Tactic.Linter.PrivateModule
 public import Lean.Elab.Command
 
 @[expose] public section

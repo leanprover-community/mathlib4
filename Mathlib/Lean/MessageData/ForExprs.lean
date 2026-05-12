@@ -6,7 +6,7 @@ Authors: Eric Wieser, Kim Morrison
 
 module
 
-import Mathlib.Init
+import MathlibInit
 public import Lean.Message
 public import Lean.Meta.Basic
 

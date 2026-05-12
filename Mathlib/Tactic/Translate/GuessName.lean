@@ -7,7 +7,7 @@ module
 
 public meta import Std.Data.TreeMap.Basic
 public meta import Mathlib.Data.String.Defs
-public import Mathlib.Init
+public import MathlibInit
 
 /-!
 # Name generation APIs for `to_additive`-like attributes

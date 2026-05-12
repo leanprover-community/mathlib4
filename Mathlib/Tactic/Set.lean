@@ -5,7 +5,7 @@ Authors: Ian Benway
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 public meta import Lean.Elab.Tactic.ElabTerm
 
 /-!

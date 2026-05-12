@@ -1,6 +1,6 @@
 import Mathlib.Tactic.Linter.DeprecatedModule
-import Mathlib.Tactic.Linter.DocPrime
-import Mathlib.Tactic.Linter.DocString
+import MathlibInit.Tactic.Linter.DocPrime
+import MathlibInit.Tactic.Linter.DocString
 
 deprecated_module (since := "2025-04-10")
 

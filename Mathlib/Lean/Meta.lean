@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 public import Lean.Elab.Term
 public import Lean.Elab.Tactic.Basic
 public import Lean.Meta.Tactic.Assert

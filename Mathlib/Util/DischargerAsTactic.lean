@@ -5,7 +5,7 @@ Authors: Alex J. Best
 -/
 module
 
-public import Mathlib.Init
+public import MathlibInit
 public import Batteries.Tactic.Exact
 public import Lean.Meta.Tactic.Simp
 
