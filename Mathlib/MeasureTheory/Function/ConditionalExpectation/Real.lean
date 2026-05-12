@@ -59,11 +59,11 @@ theorem rnDeriv_ae_eq_condExp {hm : m ≤ m0} [hμm : SigmaFinite (μ.trim hm)] 
 -- for the conditional expectation (not in mathlib yet) .
 theorem eLpNorm_one_condExp_le_eLpNorm (f : α → ℝ) : eLpNorm (μ[f | m]) 1 μ ≤ eLpNorm f 1 μ := by
   by_cases hf : Integrable f μ
-  swap; · rw [condExp_of_not_integrable hf, eLpNorm_zero]; exact zero_le _
+  swap; · rw [condExp_of_not_integrable hf, eLpNorm_zero]; exact zero_le
   by_cases hm : m ≤ m0
-  swap; · rw [condExp_of_not_le hm, eLpNorm_zero]; exact zero_le _
+  swap; · rw [condExp_of_not_le hm, eLpNorm_zero]; exact zero_le
   by_cases hsig : SigmaFinite (μ.trim hm)
-  swap; · rw [condExp_of_not_sigmaFinite hm hsig, eLpNorm_zero]; exact zero_le _
+  swap; · rw [condExp_of_not_sigmaFinite hm hsig, eLpNorm_zero]; exact zero_le
   calc
     eLpNorm (μ[f | m]) 1 μ ≤ eLpNorm (μ[(|f|) | m]) 1 μ := by
       refine eLpNorm_mono_ae ?_
@@ -184,7 +184,7 @@ theorem Integrable.uniformIntegrable_condExp {ι : Type*} [IsFiniteMeasure μ] {
   · rw [eLpNorm_eq_zero_iff hg.1 one_ne_zero] at hne
     refine ⟨0, fun n => (le_of_eq <|
       (eLpNorm_eq_zero_iff ((stronglyMeasurable_condExp.mono (hℱ n)).aestronglyMeasurable.indicator
-        (hmeas n 0)) one_ne_zero).2 ?_).trans (zero_le _)⟩
+        (hmeas n 0)) one_ne_zero).2 ?_).trans zero_le⟩
     filter_upwards [condExp_congr_ae (m := ℱ n) hne] with x hx
     simp only [zero_le', Set.setOf_true, Set.indicator_univ, Pi.zero_apply, hx, condExp_zero]
   obtain ⟨δ, hδ, h⟩ := hg.eLpNorm_indicator_le le_rfl ENNReal.one_ne_top hε
