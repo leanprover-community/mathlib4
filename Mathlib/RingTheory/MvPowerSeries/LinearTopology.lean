@@ -168,7 +168,7 @@ theorem isTopologicallyNilpotent_iff_constantCoeff
   refine ⟨fun H ↦ ?_, isTopologicallyNilpotent_of_constantCoeff⟩
   replace H : Tendsto (fun n ↦ constantCoeff (f ^ n)) atTop (nhds 0) :=
     continuous_constantCoeff R |>.tendsto' 0 0 constantCoeff_zero |>.comp H
-  simpa only [map_pow] using H
+  simpa only [map_pow] using! H
 
 end LinearTopology
 

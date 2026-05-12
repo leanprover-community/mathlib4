@@ -204,7 +204,7 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow
     suffices S.Nonempty from
       ⟨totalDegree.argminOn S this, totalDegree.argminOn_mem ..,
         fun _ h₁ h₂ ↦ totalDegree.argminOn_le S ⟨h₁, h₂⟩⟩
-    suffices ¬ AlgebraicIndependent k a by simpa [S, algebraicIndependent_iff, and_comm] using this
+    suffices ¬ AlgebraicIndependent k a by simpa [S, algebraicIndependent_iff, and_comm] using! this
     intro h
     refine h.transcendental_adjoin (i := n) (s := {n}ᶜ) (by simp) ?_
     have : a '' {n}ᶜ = Set.range (ι := {i // i ≠ n}) (a ·) := by aesop

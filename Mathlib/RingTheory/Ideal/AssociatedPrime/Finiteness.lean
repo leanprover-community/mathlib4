@@ -199,7 +199,7 @@ theorem Ideal.bot_lt_annihilator_of_disjoint_nonZeroDivisors {I : Ideal A}
   rw [AssociatedPrimes.mem_iff, isAssociatedPrime_iff] at h
   obtain ⟨prime, x, rfl⟩ := h
   exact SetLike.lt_iff_le_and_exists.mpr ⟨bot_le, x, Submodule.mem_annihilator.mpr <| by
-    simpa only [smul_eq_mul, mul_comm x, SetLike.le_def, Submodule.mem_colon_singleton] using hP,
+    simpa only [smul_eq_mul, mul_comm x, SetLike.le_def, Submodule.mem_colon_singleton] using! hP,
       fun h : x = 0 ↦ prime.ne_top <| by simp [h]⟩
 
 theorem Ideal.nonempty_inter_nonZeroDivisors_of_faithfulSMul {I : Ideal A} [FaithfulSMul A I] :

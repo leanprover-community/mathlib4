@@ -224,7 +224,7 @@ lemma iSup_cartan_borelLower_borelUpper_eq_top :
   suffices b.cartan.toLieSubmodule ⊔ b.borelLower ⊔ b.borelUpper = ⊤ by simpa
   refine eq_top_iff.mpr fun x hx ↦ ?_
   replace hx : x ∈ lieSpan R L (range b.e ∪ range b.f) := by simp [b.span_ef]
-  induction hx using! lieSpan_induction with
+  induction hx using lieSpan_induction with
   | mem u hu =>
     rcases (mem_union _ _ _).mpr hu with hu | hu
     · exact LieSubmodule.mem_sup_right <| subset_lieSpan hu
