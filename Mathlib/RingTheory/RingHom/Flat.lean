@@ -245,6 +245,8 @@ open CategoryTheory Limits
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `S ⊗[R] S → S` is flat, then also `T ⊗[R] A → T ⊗[S] A` is flat. -/
+-- TODO: If necessary, generalize the universes here by composing with suitable `ULift`
+-- isomorphisms.
 lemma RingHom.Flat.mapOfCompatibleSMul {R S : Type u} (T A : Type u)
     [CommRing R] [CommRing S] [CommRing T] [CommRing A] [Algebra R S]
     [Algebra R T] [Algebra S T] [IsScalarTower R S T]
