@@ -116,9 +116,6 @@ lemma σ_sq (g : GL (Fin 2) ℝ) (z : ℂ) : σ g (σ g z) = z := by
   simp only [σ]
   split_ifs <;> simp
 
-theorem σ_bijective (g : GL (Fin 2) ℝ) : Function.Bijective (σ g) :=
-  Function.Involutive.bijective (σ_sq g)
-
 lemma σ_im_ne_zero {g z} : (σ g z).im ≠ 0 ↔ z.im ≠ 0 := by
   simp only [σ]
   split_ifs <;> simp

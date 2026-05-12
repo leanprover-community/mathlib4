@@ -43,7 +43,7 @@ variable {g : GL (Fin 2) ℝ} {z w : ℍ}
 
 theorem gl_smul_eq_iff_num_eq :
     g • z = w ↔ num g z = σ g w * denom g z := by
-  rw [← (σ_bijective g).injective.eq_iff]
+  rw [← (σ g).injective.eq_iff]
   simp [UpperHalfPlane.ext_iff, coe_smul, div_eq_iff]
 
 /-- If the action of a matrix `!![a, b; c, d]`, `a * d - b * c < 0`, on the upper half plane
