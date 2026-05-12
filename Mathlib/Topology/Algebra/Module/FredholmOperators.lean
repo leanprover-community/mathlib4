@@ -21,7 +21,7 @@ variable {f : E →L[𝕜] F}
 
 public section FredholmOperators
 
-open Topology ContinuousLinearMap
+open Topology ContinuousLinearMap Submodule
 
 variable (f)
 
@@ -62,10 +62,7 @@ def FiniteRank : Submodule 𝕜 (E →L[𝕜] F) where
     Submodule.finiteDimensional_of_le <| LinearMap.range_add_le u.toLinearMap v.toLinearMap
   zero_mem' := by simp
   smul_mem' c {u} (hu : FiniteDimensional 𝕜 u.range) := by
-    dsimp
-    rw [← Submodule.fg_iff_finiteDimensional] at *
-    exact hu.of_le <| LinearMap.range_smul_le u c
-
+    sorry
 
 scoped instance : Setoid (E →L[𝕜] F) := (FiniteRank 𝕜 E F).quotientRel
 
@@ -96,7 +93,34 @@ def AnatoleDream_2_symm [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F
 
 /- ## IsStrict Using Technical Lemma -/
 
+/- ## Quasi-inverse is inverse on a finite codim space -/
 
+section LinearMap
+
+variable {E F : Type*} [AddCommGroup E] [AddCommGroup F] [Module 𝕜 E] [Module 𝕜 F]
+
+theorem LinearMap.mem_ker_of_mem_ker (u : E →ₗ[𝕜] F) (v : F →ₗ[𝕜] E)
+    (x : E) (hx : x ∈ (.id - v ∘ₗ u).ker) :
+    u x ∈ (.id - u ∘ₗ v).ker := by
+  simp_all [← map_sub]
+
+theorem LinearMap.restrict_inverse (u : E →ₗ[𝕜] F) (v : F →ₗ[𝕜] E) :
+    (u.restrict (u.mem_ker_of_mem_ker v)) ∘ₗ (v.restrict (v.mem_ker_of_mem_ker u)) = id := by
+  ext x
+  sorry
+
+end LinearMap
+
+variable {u : E →L[𝕜] F} {v : F →L[𝕜] E} [T1Space E]
+
+theorem lemma2 (hr : v ∘L u ≈ .id 𝕜 E) :
+    ∃ (E₁ : Submodule 𝕜 E) (F₁ : Submodule 𝕜 F),
+      IsClosed E₁.carrier ∧ E₁.CoFG ∧ map u.toLinearMap E₁ ≤ F₁ ∧ map v.toLinearMap F₁ ≤ E₁ := by
+  refine ⟨(.id 𝕜 E - v ∘L u).ker, (.id 𝕜 F - u ∘L v).ker, ContinuousLinearMap.isClosed_ker _,
+    ?_, ?_⟩
+  rw [← range_fg_iff_ker_cofg]
+  sorry
+  sorry
 
 
 end FredholmOperators
