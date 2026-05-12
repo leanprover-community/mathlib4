@@ -115,4 +115,44 @@ lemma IsAffineMap.image_convexHull {f : X → Y} (hf : IsAffineMap R f) (s : Set
     ← image_subset_iff, (IsConvexSet.convexHull.image hf).convexHull_subset_iff]
   exact ⟨subset_convexHull_self, image_mono subset_convexHull_self⟩
 
-end Convexity
+namespace ConvexSet
+
+variable {K K₁ K₂ : ConvexSet R X}
+
+variable (R) in
+def convexHull (s : Set X) : ConvexSet R X := ⟨Convexity.convexHull R s, .convexHull⟩
+
+instance : Max (ConvexSet R X) where
+  max K₁ K₂ := convexHull R (K₁ ∪ K₂)
+
+lemma sup_eq_convexHull_union : (K₁ ⊔ K₂).carrier = Convexity.convexHull R (K₁ ∪ K₂) := by rfl
+
+instance : SemilatticeSup (ConvexSet R X) where
+  sup := max
+  le_sup_left _ _ _ hs := by
+    apply subset_convexHull_self
+    simp [hs]
+  le_sup_right _ _ _ hs := by
+    apply subset_convexHull_self
+    simp [hs]
+  sup_le K₁ K₂ K₃ h₁₂ h₂₃ x hx := by
+    rw [← mem_coe, sup_eq_convexHull_union, mem_convexHull_iff] at hx
+    refine hx K₃ ?_ K₃.isConvexSet
+    simp [h₂₃, h₁₂]
+
+instance : SupSet (ConvexSet R X) where
+  sSup S := convexHull R (⋃ s ∈ S, s)
+
+instance : CompleteSemilatticeSup (ConvexSet R X) where
+  __ := instSemilatticeSup
+  isLUB_sSup K := by
+    constructor <;> intro L hL
+    · intro l hl
+      exact (subset_iUnion₂_of_subset _ hL fun ⦃_⦄ a ↦ a).trans subset_convexHull_self hl
+    · simp only [sSup, convexHull, Convexity.convexHull, ClosureOperator.ofCompletePred_apply,
+      le_eq_subset, iInf_eq_iInter]
+      intro x xm
+      simp only [← mem_coe, mem_iInter, Subtype.forall, iUnion_subset_iff, and_imp] at xm
+      exact xm _ hL L.isConvexSet
+
+end Convexity.ConvexSet

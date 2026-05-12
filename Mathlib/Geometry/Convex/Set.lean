@@ -173,4 +173,79 @@ lemma IsConvexSet.of_convexComboPair_mem
     (by simp [← hsw]; grind)
 
 end Field
+
+section Semiring
+
+variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] [ConvexSpace R X]
+
+variable (R X) in
+structure ConvexSet where
+  carrier : Set X
+  isConvexSet : IsConvexSet R carrier
+
+namespace ConvexSet
+
+instance : SetLike (ConvexSet R X) X where
+  coe := ConvexSet.carrier
+  coe_injective' K₁ K₂ _ := by cases K₁; cases K₂; congr
+
+instance : PartialOrder (ConvexSet R X) := .ofSetLike ..
+
+initialize_simps_projections ConvexSet (carrier → coe, as_prefix coe)
+
+variable {K K₁ K₂ : ConvexSet R X}
+
+variable (K) in
+@[simp] lemma carrier_eq_coe : K.carrier = K := rfl
+
+variable (K) in
+@[simp] theorem mem_coe (x : X) : x ∈ K.carrier ↔ x ∈ K := .rfl
+
+@[ext] theorem ext (h : ∀ x, x ∈ K₁ ↔ x ∈ K₂) : K₁ = K₂ := SetLike.ext h
+
+example : (K₁ : Set X) ≤ K₂ ↔ K₁ ≤ K₂ := by simp only [le_eq_subset,
+  SetLike.coe_subset_coe]
+
+/-!
+### Infimum, supremum and lattice
+-/
+
+/-- The infimum of two convex sets is a convex set. -/
+instance : Min (ConvexSet R X) where
+  min K₁ K₂ := ⟨_, K₁.isConvexSet.inter K₂.isConvexSet⟩
+
+instance : SemilatticeInf (ConvexSet R X) where
+  inf := min
+  inf_le_left _ _ _ hx := hx.1
+  inf_le_right _ _ _ hx := hx.2
+  le_inf _ _ _ h₁₂ h₂₃ _ hx := ⟨h₁₂ hx, h₂₃ hx⟩
+
+instance : InfSet (ConvexSet R X) where
+  sInf S := ⟨sInf (ConvexSet.carrier '' S), .sInter (by simpa using fun K _ => K.2)⟩
+
+instance : CompleteSemilatticeInf (ConvexSet R X) where
+  __ := instSemilatticeInf
+  isGLB_sInf S := by
+    constructor <;> intro L hL x hx
+    · simp only [sInf, carrier_eq_coe, mem_image, forall_exists_index, and_imp,
+      forall_apply_eq_imp_iff₂, SetLike.mem_coe] at hx
+      exact hx L hL
+    · simp only [sInf, carrier_eq_coe, mem_image, forall_exists_index, and_imp,
+      forall_apply_eq_imp_iff₂, SetLike.mem_coe]
+      exact fun l lS ↦ hL lS hx
+
+instance : OrderBot (ConvexSet R X) where
+  bot := ⟨∅, IsConvexSet.empty⟩
+  bot_le _ _ hx := by simp [← mem_coe] at hx
+
+instance : OrderTop (ConvexSet R X) where
+  top := ⟨Set.univ, IsConvexSet.univ⟩
+  le_top _ _ _ := by simp [← mem_coe]
+
+instance : Inhabited (ConvexSet R X) := ⟨⊤⟩
+
+end ConvexSet
+
+end Semiring
+
 end Convexity
