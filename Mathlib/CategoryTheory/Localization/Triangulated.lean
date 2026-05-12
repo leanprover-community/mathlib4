@@ -159,8 +159,6 @@ lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
   obtain ⟨α, hα⟩ := exists_leftFraction L W a
   obtain ⟨β, hβ⟩ := (MorphismProperty.RightFraction.mk α.s α.hs T₂.mor₁).exists_leftFraction
   obtain ⟨γ, hγ⟩ := exists_leftFraction L W (b ≫ L.map β.s)
-  have := inverts L W β.s β.hs
-  have := inverts L W γ.s γ.hs
   dsimp at hβ
   obtain ⟨Z₂, σ, hσ, fac⟩ := (MorphismProperty.map_eq_iff_postcomp L W
     (α.f ≫ β.f ≫ γ.s) (T₁.mor₁ ≫ γ.f)).1 (by
