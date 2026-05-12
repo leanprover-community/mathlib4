@@ -320,6 +320,19 @@ theorem continuousAt_totalSpace (f : X → TotalSpace F E) {x₀ : X} :
         ContinuousAt (fun x => ((trivializationAt F E (f x₀).proj) (f x)).2) x₀ :=
   (trivializationAt F E (f x₀).proj).tendsto_nhds_iff mem_trivializationAt_proj_source
 
+/-- Characterization of continuous sections within a set at a point of a vector bundle. -/
+theorem continuousWithinAt_section {s : ∀ x, E x} {a : Set B} {x₀ : B} :
+    ContinuousWithinAt (fun x ↦ TotalSpace.mk' F x (s x)) a x₀ ↔
+      ContinuousWithinAt (fun x ↦ (trivializationAt F E x₀ ⟨x, s x⟩).2) a x₀ := by
+  simp_rw [continuousWithinAt_totalSpace, and_iff_right_iff_imp]
+  intro; exact continuousWithinAt_id
+
+/-- Characterization of continuous sections of a vector bundle. -/
+theorem continuousAt_section {s : ∀ x, E x} (x₀ : B) :
+    ContinuousAt (fun x ↦ TotalSpace.mk' F x (s x)) x₀ ↔
+      ContinuousAt (fun x ↦ (trivializationAt F E x₀ ⟨x, s x⟩).2) x₀ := by
+  simp_rw [← continuousWithinAt_univ]; exact continuousWithinAt_section F
+
 end FiberBundle
 
 variable (F)
@@ -388,7 +401,7 @@ theorem FiberBundle.exists_trivialization_Icc_subset [ConditionallyCompleteLinea
   · /- If `(c, d)` is nonempty, then take `d' ∈ (c, d)`. Since the base set of `ec` includes
           `[a, d)`, it includes `[a, d'] ⊆ [a, d)` as well. -/
     rw [disjoint_left] at he
-    push_neg at he
+    push Not at he
     rcases he with ⟨d', hdd' : d' < d, hd'c⟩
     exact ⟨d', ⟨hd'c, hdd'.le.trans hdcb.2⟩, ec, (Icc_subset_Ico_right hdd').trans had⟩
 

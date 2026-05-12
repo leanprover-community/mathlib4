@@ -14,7 +14,7 @@ public import Mathlib.Data.Fintype.OfMap
 We derive some `EquivFunctor` instances, to enable `equiv_rw` to rewrite under these functions.
 -/
 
-@[expose] public section
+public section
 
 
 open Equiv

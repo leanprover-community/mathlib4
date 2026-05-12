@@ -80,6 +80,10 @@ theorem eps_mul_eps [Semiring R] : (ε * ε : R[ε]) = 0 :=
   inr_mul_inr _ _ _
 
 @[simp]
+lemma eps_pow_two [Semiring R] : (ε : R[ε]) ^ 2 = 0 := by
+  simp [pow_two]
+
+@[simp]
 theorem inv_eps [DivisionRing R] : (ε : R[ε])⁻¹ = 0 :=
   TrivSqZeroExt.inv_inr 1
 
@@ -115,6 +119,23 @@ theorem algHom_ext ⦃f g : R[ε] →ₐ[R] A⦄ (hε : f ε = g ε) : f = g := 
   ext
   dsimp
   simp only [one_smul, hε]
+
+/-- A ring morphism `R[ε] →+* R'` is determined by its restriction
+on `R` and its value on `ε`. -/
+@[ext high]
+lemma ringHom_ext {R' : Type*} [CommSemiring R'] {f g : R[ε] →+* R'}
+    (h₀ : f.comp (algebraMap R R[ε]) = g.comp (algebraMap R R[ε]))
+    (hε : f ε = g ε) : f = g := by
+  letI : Algebra R R' := by
+    letI := f.toAlgebra
+    exact Algebra.compHom _ (algebraMap R R[ε])
+  let f' : R[ε] →ₐ[R] R' :=
+    { toRingHom := f
+      commutes' _ := rfl }
+  let g' : R[ε] →ₐ[R] R' :=
+    { toRingHom := g
+      commutes' r := (DFunLike.congr_fun h₀ r).symm }
+  exact congr_arg AlgHom.toRingHom (show f' = g' from algHom_ext hε)
 
 /-- A universal property of the dual numbers, providing a unique `A[ε] →ₐ[R] B` for every map
 `f : A →ₐ[R] B` and a choice of element `e : B` which squares to `0` and commutes with the range of
@@ -202,7 +223,7 @@ theorem range_lift
     AlgHom.map_adjoin, ← AlgHom.range_comp, Set.image_singleton, lift_apply_eps, lift_comp_inlHom,
     Algebra.map_top]
 
-/-- Show DualNumber with values x and y as an "x + y*ε" string -/
+/-- Show DualNumber with values x and y as an `"x + y*ε"` string -/
 instance instRepr [Repr R] : Repr (DualNumber R) where
   reprPrec f p :=
     (if p > 65 then (Std.Format.bracket "(" · ")") else (·)) <|

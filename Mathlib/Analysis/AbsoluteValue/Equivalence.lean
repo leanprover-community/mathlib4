@@ -362,7 +362,13 @@ theorem IsEquiv.isEmbedding_equivWithAbs (h : v.IsEquiv w) :
   refine IsInducing.isEmbedding <| isInducing_iff_nhds_zero.2 <| Filter.ext fun U ↦
     ⟨fun hU ↦ ?_, fun hU ↦ ?_⟩
   · exact ⟨WithAbs.congr v w (.refl F)'' U, h.equivWithAbs_image_mem_nhds_zero hU,
-      by grind [RingEquiv.image_eq_preimage_symm, Set.preimage_preimage]⟩
+      by
+        #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+        (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this
+        goal. It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in
+        the new canonicalizer; a minimization would help. The original proof was:
+        `grind [RingEquiv.image_eq_preimage_symm, Set.preimage_preimage]` -/
+        rw [RingEquiv.image_eq_preimage_symm, Set.preimage_preimage]; simp⟩
   · rw [← RingEquiv.coe_toEquiv, ← Filter.map_equiv_symm] at hU
     obtain ⟨s, hs, hss⟩ := Filter.mem_map_iff_exists_image.1 hU
     rw [← RingEquiv.coe_toEquiv_symm, WithAbs.congr_symm] at hss

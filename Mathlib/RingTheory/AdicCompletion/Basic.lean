@@ -263,7 +263,6 @@ end IsPrecomplete
 
 namespace AdicCompletion
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `AdicCompletion` is the submodule of compatible families in
 `∀ n : ℕ, M ⧸ (I ^ n • ⊤)`. -/
 def submodule : Submodule R (∀ n : ℕ, M ⧸ (I ^ n • ⊤ : Submodule R M)) where
@@ -403,7 +402,6 @@ variable {I M}
 
 variable (I M)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsHausdorff I (AdicCompletion I M) where
   haus' x h := ext fun n ↦ by
     refine smul_induction_on (SModEq.zero.1 <| h n) (fun r hr x _ ↦ ?_) (fun x y hx hy ↦ ?_)
@@ -678,14 +676,12 @@ theorem of_ofLinearEquiv_symm (x : AdicCompletion I M) :
 
 end Bijective
 
-set_option backward.isDefEq.respectTransparency false in
 theorem pow_smul_top_le_ker_eval (n : ℕ) : I ^ n • ⊤ ≤ (eval I M n).ker := by
   simp only [smul_le, mem_top, LinearMap.mem_ker, map_smul, coe_eval, forall_const]
   intro r r_in x
   rw [← Submodule.Quotient.mk_out (x.val n), ← Quotient.mk_smul, Quotient.mk_eq_zero]
   exact smul_mem_smul r_in mem_top
 
-set_option backward.isDefEq.respectTransparency false in
 lemma val_apply_mem_smul_top_iff {m n : ℕ} {x : AdicCompletion I M}
     (m_ge : n ≤ m) : x.val m ∈ I ^ n • (⊤ : Submodule R (M ⧸ I ^ m • ⊤)) ↔ x.val n = 0 := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
@@ -701,7 +697,7 @@ namespace IsAdicComplete
 open AdicCompletion
 
 theorem map_algebraMap_iff [CommRing S] [Module S M] [Algebra R S]
-    [IsScalarTower R S M] :  IsAdicComplete (I.map (algebraMap R S)) M ↔ IsAdicComplete I M := by
+    [IsScalarTower R S M] : IsAdicComplete (I.map (algebraMap R S)) M ↔ IsAdicComplete I M := by
   simp [isAdicComplete_iff, IsPrecomplete.map_algebraMap_iff, IsHausdorff.map_algebraMap_iff]
 
 section lift

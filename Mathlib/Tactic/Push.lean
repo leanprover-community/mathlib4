@@ -13,10 +13,10 @@ public import Mathlib.Tactic.Push.Attr
 public import Mathlib.Util.AtLocation
 
 /-!
-# The `push`, `push_neg` and `pull` tactics
+# The `push` and `pull` tactics
 
 The `push` tactic pushes a given constant inside expressions: it can be applied to goals as well
-as local hypotheses and also works as a `conv` tactic. `push_neg` is a macro for `push Not`.
+as local hypotheses and also works as a `conv` tactic.
 
 The `pull` tactic does the reverse: it pulls the given constant towards the head of the expression.
 -/
@@ -59,7 +59,7 @@ theorem not_and_eq : (¬ (p ∧ q)) = (p → ¬ q) := propext not_and
 theorem not_and_or_eq : (¬ (p ∧ q)) = (¬ p ∨ ¬ q) := propext not_and_or
 theorem not_forall_eq : (¬ ∀ x, s x) = (∃ x, ¬ s x) := propext not_forall
 
-/-- Set `distrib` to true in `push_neg` and related tactics. -/
+/-- Set `distrib` to true in `push Not` and related tactics. -/
 register_option push_neg.use_distrib : Bool :=
   { defValue := false
     descr := "Set `distrib` to true in `push_neg` and related tactics." }
@@ -197,7 +197,7 @@ def elabHead (stx : Term) : TermElabM Head := withRef stx do
   | _ =>
     match ← resolvePushId? stx with
     | some (.const c _) => return .const c
-    | _ => throwError "Could not resolve `push` argument {stx}. \
+    | _ => throwError "Could not resolve `push` argument `{stx}`. \
       Expected either a constant, e.g. `push Not`, \
       or notation with underscores, e.g. `push ¬ _`"
 
@@ -209,9 +209,9 @@ def elabDischarger (stx : TSyntax ``discharger) : TacticM Simp.Discharge :=
 
 /-- Run the `push` tactic. -/
 def push (cfg : Config) (disch? : Option Simp.Discharge) (head : Head) (loc : Location)
-    (failIfUnchanged : Bool := true) : TacticM Unit := do
+    (ifUnchanged : BehaviorIfUnchanged := .error) : TacticM Unit := do
   let cfg := { distrib := cfg.distrib || (← getBoolOption `push_neg.use_distrib) }
-  transformAtLocation (pushCore head cfg disch? ·) "`push`" loc failIfUnchanged
+  transformAtLocation (pushCore head cfg disch? ·) s!"push {head}" loc ifUnchanged
 
 /--
 `push c` rewrites the goal by pushing the constant `c` deeper into an expression.
@@ -227,13 +227,15 @@ To instead move a constant closer to the head of the expression, use the `pull` 
 * `push _ ~ _` pushes the (binary) operator `~`, `push ~ _` pushes the (unary) operator `~`.
 * `push c at l1 l2 ...` rewrites at the given locations.
 * `push c at *` rewrites at all hypotheses and the goal.
+* `push +distrib Not` rewrites `¬ (p ∧ q)` into `¬ p ∨ ¬ q` (without `+distrib`, it rewrites it
+  into `p → ¬ q` instead).
 * `push (disch := tac) c` uses the tactic `tac` to discharge any hypotheses for `@[push]` lemmas.
 
 Examples:
+* `push Not` is the same as `push ¬ _`, and it rewrites `¬ ∀ ε > 0, ∃ δ > 0, δ < ε` into
+  `∃ ε > 0, ∀ δ > 0, ε ≤ δ`. Notably, this preserves the binder names.
 * `push _ ∈ _` rewrites `x ∈ {y} ∪ zᶜ` into `x = y ∨ ¬ x ∈ z`.
 * `push (disch := positivity) Real.log` rewrites `log (a * b ^ 2)` into `log a + 2 * log b`.
-* `push ¬ _` is the same as `push_neg` or `push Not`, and it rewrites
-  `¬ ∀ ε > 0, ∃ δ > 0, δ < ε` into `∃ ε > 0, ∀ δ > 0, ε ≤ δ`.
 * `push fun _ ↦ _` rewrites `fun x => f x ^ 2 + 5` into `f ^ 2 + 5`
 * `push ∀ _, _` rewrites `∀ a, p a ∧ q a` into `(∀ a, p a) ∧ (∀ a, q a)`.
 -/
@@ -272,6 +274,15 @@ example (h : ¬ ∀ ε > 0, ∃ δ > 0, ∀ x, |x - x₀| ≤ δ → |f x - y₀
 ```
 -/
 elab (name := push_neg) "push_neg" cfg:optConfig loc:(location)? : tactic => do
+  -- (since := "2026-03-29")
+  logWarning "`push_neg` has been deprecated. Prefer using `push Not` instead.
+If you'd rather continue using `push_neg` in your project, you can implement it as follows:
+```
+open Lean.Parser.Tactic in
+macro \"push_neg\" cfg:optConfig loc:(location)? : tactic =>
+  `(tactic| push $cfg:optConfig Not $[$loc]?)
+```
+"
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   push (← elabPushConfig cfg) none (.const ``Not) loc
 
@@ -307,7 +318,7 @@ elab (name := pull) "pull" disch?:(discharger)? head:(ppSpace colGt term) loc:(l
   let disch? ← disch?.mapM elabDischarger
   let head ← elabHead head
   let loc := (loc.map expandLocation).getD (.targets #[] true)
-  transformAtLocation (pullCore head · disch?) "`pull`" loc (failIfUnchanged := true) false
+  transformAtLocation (pullCore head · disch?) "pull" loc (ifUnchanged := .error) false
 
 /-- A simproc variant of `push fun _ ↦ _`, to be used as `simp [↓pushFun]`. -/
 simproc_decl _root_.pushFun (fun _ ↦ ?_) := pushStep .lambda {}
@@ -329,7 +340,16 @@ elab "push" cfg:optConfig disch?:(discharger)? head:(ppSpace colGt term) : conv 
   Conv.applySimpResult (← pushCore head cfg disch? (← instantiateMVars (← Conv.getLhs)))
 
 @[inherit_doc push_neg]
-macro "push_neg" cfg:optConfig : conv => `(conv| push $cfg Not)
+elab "push_neg" cfg:optConfig : conv => do
+  -- (since := "2026-03-29")
+  logWarning "`push_neg` has been deprecated. Prefer using `push Not` instead.
+If you'd rather continue using `push_neg` in your project, you can implement it as follows:
+```
+open Lean.Parser.Tactic in
+macro \"push_neg\" cfg:optConfig : conv => `(conv| push $cfg:optConfig Not)
+```
+"
+  evalTactic (← `(conv| push $cfg Not))
 
 /--
 `#push head e`, where `head` is a constant and `e` is an expression,
@@ -340,15 +360,6 @@ prints the `push head` form of `e`.
 macro (name := pushCommand) tk:"#push" cfg:optConfig disch?:(discharger)? ppSpace head:term " => "
     e:term : command =>
   `(command| #conv%$tk push $cfg $[$disch?:discharger]? $head:term => $e)
-
-/--
-`#push_neg e`, where `e` is an expression,
-prints the `push_neg` form of `e`.
-
-`#push_neg` understands local variables, so you can use them to introduce parameters.
--/
-macro (name := pushNegCommand) tk:"#push_neg" cfg:optConfig ppSpace e:term : command =>
- `(command| #push%$tk $cfg Not => $e)
 
 @[inherit_doc pull]
 elab "pull" disch?:(discharger)? head:(ppSpace colGt term) : conv => withMainContext do
