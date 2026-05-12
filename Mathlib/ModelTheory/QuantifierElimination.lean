@@ -160,152 +160,151 @@ theorem isEquivQF_iff_realize_iff_of_embeddings
         hψ.realize_embedding (f := g) (v := a) (xs := default)
     rw [hiff.realize_iff (M := M) (v := f ∘ a), hiff.realize_iff (M := N) (v := g ∘ a), hf, hg]
   · intro hcommon
-    by_cases hqe : ∃ ψ : L.Formula (Fin m), ψ.IsQF ∧ φ ⇔[T] ψ
-    · exact hqe
-    · let Q1 : Type _ := {ψ : L.Formula (Fin m) // ψ.IsQF ∧ φ ⟹[T] ψ}
-      let base1 : L[[Fin m]].Theory :=
-        (L.lhomWithConstants (Fin m)).onTheory T ∪ {Formula.equivSentence φ.not}
-      let U1 : Option Q1 → L[[Fin m]].Theory
-        | none => base1
-        | some ψ => base1 ∪ {Formula.equivSentence ψ.1}
-      have hsat1 : Theory.IsSatisfiable (⋃ i, U1 i) := by
-        by_contra hsat1
-        rw [Theory.isSatisfiable_iUnion_iff_isSatisfiable_iUnion_finset] at hsat1
-        push_neg at hsat1
-        rcases hsat1 with ⟨s, hs⟩
-        let qfs : Finset Q1 :=
-          s.filterMap id (by
-            intro a a' b ha ha'
-            simpa using ha.trans ha'.symm)
-        let lqfs : List Q1 := qfs.toList
-        let θ : L.Formula (Fin m) := (lqfs.map Subtype.val).foldr (· ⊓ ·) ⊤
-        have hθQF : θ.IsQF := by
-          change ((lqfs.map Subtype.val).foldr (· ⊓ ·) ⊤).IsQF
-          induction lqfs with
-          | nil => exact BoundedFormula.IsQF.top
-          | cons q _ ih => exact q.2.1.inf (by simpa using ih)
-        have hφθ : φ ⟹[T] θ := fun M v xs hφ => by
-          change BoundedFormula.Realize ((lqfs.map Subtype.val).foldr (· ⊓ ·) ⊤) v xs
-          rw [BoundedFormula.realize_foldr_inf, List.forall_mem_map]
-          exact fun q _ => q.2.2 M v xs hφ
-        have hθφ : θ ⟹[T] φ := by
-          intro M v xs hθ
-          by_contra hφ
-          letI : (constantsOn (Fin m)).Structure M := constantsOn.structure v
-          have hθall : ∀ ψ ∈ lqfs.map Subtype.val, BoundedFormula.Realize ψ v xs := by
-            rw [← BoundedFormula.realize_foldr_inf]; exact hθ
-          have hbase : ∀ τ ∈ base1, M ⊨ τ := by
-            rintro τ (hT | hnot)
-            · exact ((LHom.onTheory_model _ _).mpr inferInstance).realize_of_mem _ hT
-            · rw [Set.mem_singleton_iff] at hnot
-              subst hnot
-              refine (Formula.realize_equivSentence (M := M) φ.not).mpr ?_
-              simpa [Formula.realize_not, Formula.boundedFormula_realize_eq_realize] using hφ
-          have hmodel : M ⊨ ⋃ i ∈ s, U1 i := ⟨fun σ hσ => by
-            simp only [Set.mem_iUnion] at hσ
-            obtain ⟨i, hi, hσ⟩ := hσ
-            cases i with
-            | none => exact hbase _ hσ
-            | some q =>
-              rcases hσ with hbase' | hq
-              · exact hbase _ hbase'
-              · rw [Set.mem_singleton_iff] at hq
-                subst hq
-                refine (Formula.realize_equivSentence (M := M) q.1).mpr ?_
-                have hqlist : q.1 ∈ lqfs.map Subtype.val :=
-                  List.mem_map.mpr ⟨q, Finset.mem_toList.mpr (by simpa [qfs] using hi), rfl⟩
-                exact (Formula.boundedFormula_realize_eq_realize ..).mp (hθall q.1 hqlist)⟩
-          exact hs (Theory.Model.isSatisfiable M)
-        exact hqe ⟨θ, hθQF, Theory.imp_antisymm hφθ hθφ⟩
-      obtain ⟨M1⟩ := hsat1
-      letI : L.Structure M1 := (L.lhomWithConstants (Fin m)).reduct M1
-      haveI : T.Model M1 := (LHom.onTheory_model _ _).mp <| M1.is_model.mono fun _ hσ =>
-        Set.mem_iUnion.mpr ⟨none, .inl hσ⟩
-      haveI : (L.lhomWithConstants (Fin m)).IsExpansionOn M1 := LHom.isExpansionOn_reduct _ _
-      let v0 : Fin m → M1 := fun i => (L.con i : M1)
-      have hnotφv0 : ¬ φ.Realize v0 := by
-        have := (Formula.realize_equivSentence (M := M1) φ.not).mp
-          (M1.is_model.realize_of_mem _ (Set.mem_iUnion.mpr ⟨none, by simp [U1, base1]⟩))
-        simpa [Formula.realize_not] using this
-      have hqfConseq : ∀ q : Q1, q.1.Realize v0 := fun q =>
-        (Formula.realize_equivSentence (M := M1) q.1).mp
-          (M1.is_model.realize_of_mem _ (Set.mem_iUnion.mpr ⟨some q, by simp [U1, base1]⟩))
-      let P : Type _ := {ψ : L.Formula (Fin m) // ψ.IsQF ∧ ψ.Realize v0}
-      let base2 : L[[Fin m]].Theory :=
-        (L.lhomWithConstants (Fin m)).onTheory T ∪ {Formula.equivSentence φ}
-      let U2 : Option P → L[[Fin m]].Theory
-        | none => base2
-        | some ψ => base2 ∪ {Formula.equivSentence ψ.1}
-      have hsat2 : Theory.IsSatisfiable (⋃ i, U2 i) := by
-        by_contra hsat2
-        rw [Theory.isSatisfiable_iUnion_iff_isSatisfiable_iUnion_finset] at hsat2
-        push_neg at hsat2
-        rcases hsat2 with ⟨s, hs⟩
-        let qfs : Finset P :=
-          s.filterMap id (by intro a a' b ha ha'; simpa using ha.trans ha'.symm)
-        let lqfs : List P := qfs.toList
-        let θ : L.Formula (Fin m) := (lqfs.map Subtype.val).foldr (· ⊓ ·) ⊤
-        have hθQF : θ.IsQF := by
-          change ((lqfs.map Subtype.val).foldr (· ⊓ ·) ⊤).IsQF
-          induction lqfs with
-          | nil => exact BoundedFormula.IsQF.top
-          | cons q _ ih => exact q.2.1.inf (by simpa using ih)
-        have hφnotθ : φ ⟹[T] θ.not := by
-          intro M v xs hφ
-          by_contra hnotθ
-          have hθ : BoundedFormula.Realize θ v xs := by
-            simpa [BoundedFormula.realize_not] using hnotθ
-          letI : (constantsOn (Fin m)).Structure M := constantsOn.structure v
-          have hθall : ∀ ψ ∈ lqfs.map Subtype.val, BoundedFormula.Realize ψ v xs := by
-            rw [← BoundedFormula.realize_foldr_inf]; exact hθ
-          have hbase : ∀ τ ∈ base2, M ⊨ τ := by
-            rintro τ (hT | hφ')
-            · exact ((LHom.onTheory_model _ _).mpr inferInstance).realize_of_mem _ hT
-            · rw [Set.mem_singleton_iff] at hφ'
-              subst hφ'
-              exact (Formula.realize_equivSentence (M := M) φ).mpr
-                ((Formula.boundedFormula_realize_eq_realize ..).mp hφ)
-          have hmodel : M ⊨ ⋃ i ∈ s, U2 i := ⟨fun σ hσ => by
-            simp only [Set.mem_iUnion] at hσ
-            obtain ⟨i, hi, hσ⟩ := hσ
-            cases i with
-            | none => exact hbase _ hσ
-            | some q =>
-              rcases hσ with hbase' | hq
-              · exact hbase _ hbase'
-              · rw [Set.mem_singleton_iff] at hq
-                subst hq
-                refine (Formula.realize_equivSentence (M := M) q.1).mpr ?_
-                have hqlist : q.1 ∈ lqfs.map Subtype.val :=
-                  List.mem_map.mpr ⟨q, Finset.mem_toList.mpr (by simpa [qfs] using hi), rfl⟩
-                exact (Formula.boundedFormula_realize_eq_realize ..).mp (hθall q.1 hqlist)⟩
-          exact hs (Theory.Model.isSatisfiable M)
-        have hθv0 : θ.Realize v0 := by
-          change BoundedFormula.Realize ((lqfs.map Subtype.val).foldr (· ⊓ ·) ⊤) v0 default
-          rw [BoundedFormula.realize_foldr_inf, List.forall_mem_map]
-          exact fun q _ => q.2.2
-        exact hqfConseq ⟨θ.not, hθQF.not, hφnotθ⟩ hθv0
-      obtain ⟨N1⟩ := hsat2
-      letI : L.Structure N1 := (L.lhomWithConstants (Fin m)).reduct N1
-      haveI : T.Model N1 := (LHom.onTheory_model _ _).mp <| N1.is_model.mono fun _ hσ =>
-        Set.mem_iUnion.mpr ⟨none, .inl hσ⟩
-      haveI : (L.lhomWithConstants (Fin m)).IsExpansionOn N1 := LHom.isExpansionOn_reduct _ _
-      let w : Fin m → N1 := fun i => (L.con i : N1)
-      have hφw : φ.Realize w :=
-        (Formula.realize_equivSentence (M := N1) φ).mp
-          (N1.is_model.realize_of_mem _ (Set.mem_iUnion.mpr ⟨none, by simp [U2, base2]⟩))
-      have hqfIncl : ∀ ψ : L.Formula (Fin m), ψ.IsQF → ψ.Realize v0 → ψ.Realize w :=
-        fun ψ hψ hψv0 => (Formula.realize_equivSentence (M := N1) ψ).mp
-          (N1.is_model.realize_of_mem _
-            (Set.mem_iUnion.mpr ⟨some ⟨ψ, hψ, hψv0⟩, .inr rfl⟩))
-      have hqfEq : ∀ ψ : L.Formula (Fin m), ψ.IsQF → (ψ.Realize v0 ↔ ψ.Realize w) := fun ψ hψ =>
-        ⟨hqfIncl ψ hψ, fun hψw => by
-          by_contra hψv0
-          exact hqfIncl ψ.not hψ.not (by simpa [Formula.realize_not] using hψv0) hψw⟩
-      obtain ⟨S, g, a, ha, hg⟩ := exists_substructure_embedding_of_agree_qf v0 w hqfEq
-      have hsame := hcommon (M := M1.Carrier) (N := N1.Carrier) (A := S) S.subtype g a
-      have hφga : φ.Realize (g ∘ a) := by simpa [hg] using hφw
-      exact (hnotφv0 (by simpa [ha] using hsame.mpr hφga)).elim
+    by_contra hqe
+    let Q1 : Type _ := {ψ : L.Formula (Fin m) // ψ.IsQF ∧ φ ⟹[T] ψ}
+    let base1 : L[[Fin m]].Theory :=
+      (L.lhomWithConstants (Fin m)).onTheory T ∪ {Formula.equivSentence φ.not}
+    let U1 : Option Q1 → L[[Fin m]].Theory
+      | none => base1
+      | some ψ => base1 ∪ {Formula.equivSentence ψ.1}
+    have hsat1 : Theory.IsSatisfiable (⋃ i, U1 i) := by
+      by_contra hsat1
+      rw [Theory.isSatisfiable_iUnion_iff_isSatisfiable_iUnion_finset] at hsat1
+      push_neg at hsat1
+      rcases hsat1 with ⟨s, hs⟩
+      let qfs : Finset Q1 :=
+        s.filterMap id (by
+          intro a a' b ha ha'
+          simpa using ha.trans ha'.symm)
+      let lqfs : List Q1 := qfs.toList
+      let θ : L.Formula (Fin m) := (lqfs.map Subtype.val).foldr (· ⊓ ·) ⊤
+      have hθQF : θ.IsQF := by
+        change ((lqfs.map Subtype.val).foldr (· ⊓ ·) ⊤).IsQF
+        induction lqfs with
+        | nil => exact BoundedFormula.IsQF.top
+        | cons q _ ih => exact q.2.1.inf (by simpa using ih)
+      have hφθ : φ ⟹[T] θ := fun M v xs hφ => by
+        change BoundedFormula.Realize ((lqfs.map Subtype.val).foldr (· ⊓ ·) ⊤) v xs
+        rw [BoundedFormula.realize_foldr_inf, List.forall_mem_map]
+        exact fun q _ => q.2.2 M v xs hφ
+      have hθφ : θ ⟹[T] φ := by
+        intro M v xs hθ
+        by_contra hφ
+        letI : (constantsOn (Fin m)).Structure M := constantsOn.structure v
+        have hθall : ∀ ψ ∈ lqfs.map Subtype.val, BoundedFormula.Realize ψ v xs := by
+          rw [← BoundedFormula.realize_foldr_inf]; exact hθ
+        have hbase : ∀ τ ∈ base1, M ⊨ τ := by
+          rintro τ (hT | hnot)
+          · exact ((LHom.onTheory_model _ _).mpr inferInstance).realize_of_mem _ hT
+          · rw [Set.mem_singleton_iff] at hnot
+            subst hnot
+            refine (Formula.realize_equivSentence (M := M) φ.not).mpr ?_
+            simpa [Formula.realize_not, Formula.boundedFormula_realize_eq_realize] using hφ
+        have hmodel : M ⊨ ⋃ i ∈ s, U1 i := ⟨fun σ hσ => by
+          simp only [Set.mem_iUnion] at hσ
+          obtain ⟨i, hi, hσ⟩ := hσ
+          cases i with
+          | none => exact hbase _ hσ
+          | some q =>
+            rcases hσ with hbase' | hq
+            · exact hbase _ hbase'
+            · rw [Set.mem_singleton_iff] at hq
+              subst hq
+              refine (Formula.realize_equivSentence (M := M) q.1).mpr ?_
+              have hqlist : q.1 ∈ lqfs.map Subtype.val :=
+                List.mem_map.mpr ⟨q, Finset.mem_toList.mpr (by simpa [qfs] using hi), rfl⟩
+              exact (Formula.boundedFormula_realize_eq_realize ..).mp (hθall q.1 hqlist)⟩
+        exact hs (Theory.Model.isSatisfiable M)
+      exact hqe ⟨θ, hθQF, Theory.imp_antisymm hφθ hθφ⟩
+    obtain ⟨M1⟩ := hsat1
+    letI : L.Structure M1 := (L.lhomWithConstants (Fin m)).reduct M1
+    haveI : T.Model M1 := (LHom.onTheory_model _ _).mp <| M1.is_model.mono fun _ hσ =>
+      Set.mem_iUnion.mpr ⟨none, .inl hσ⟩
+    haveI : (L.lhomWithConstants (Fin m)).IsExpansionOn M1 := LHom.isExpansionOn_reduct _ _
+    let v0 : Fin m → M1 := fun i => (L.con i : M1)
+    have hnotφv0 : ¬ φ.Realize v0 := by
+      have := (Formula.realize_equivSentence (M := M1) φ.not).mp
+        (M1.is_model.realize_of_mem _ (Set.mem_iUnion.mpr ⟨none, by simp [U1, base1]⟩))
+      simpa [Formula.realize_not] using this
+    have hqfConseq : ∀ q : Q1, q.1.Realize v0 := fun q =>
+      (Formula.realize_equivSentence (M := M1) q.1).mp
+        (M1.is_model.realize_of_mem _ (Set.mem_iUnion.mpr ⟨some q, by simp [U1, base1]⟩))
+    let P : Type _ := {ψ : L.Formula (Fin m) // ψ.IsQF ∧ ψ.Realize v0}
+    let base2 : L[[Fin m]].Theory :=
+      (L.lhomWithConstants (Fin m)).onTheory T ∪ {Formula.equivSentence φ}
+    let U2 : Option P → L[[Fin m]].Theory
+      | none => base2
+      | some ψ => base2 ∪ {Formula.equivSentence ψ.1}
+    have hsat2 : Theory.IsSatisfiable (⋃ i, U2 i) := by
+      by_contra hsat2
+      rw [Theory.isSatisfiable_iUnion_iff_isSatisfiable_iUnion_finset] at hsat2
+      push_neg at hsat2
+      rcases hsat2 with ⟨s, hs⟩
+      let qfs : Finset P :=
+        s.filterMap id (by intro a a' b ha ha'; simpa using ha.trans ha'.symm)
+      let lqfs : List P := qfs.toList
+      let θ : L.Formula (Fin m) := (lqfs.map Subtype.val).foldr (· ⊓ ·) ⊤
+      have hθQF : θ.IsQF := by
+        change ((lqfs.map Subtype.val).foldr (· ⊓ ·) ⊤).IsQF
+        induction lqfs with
+        | nil => exact BoundedFormula.IsQF.top
+        | cons q _ ih => exact q.2.1.inf (by simpa using ih)
+      have hφnotθ : φ ⟹[T] θ.not := by
+        intro M v xs hφ
+        by_contra hnotθ
+        have hθ : BoundedFormula.Realize θ v xs := by
+          simpa [BoundedFormula.realize_not] using hnotθ
+        letI : (constantsOn (Fin m)).Structure M := constantsOn.structure v
+        have hθall : ∀ ψ ∈ lqfs.map Subtype.val, BoundedFormula.Realize ψ v xs := by
+          rw [← BoundedFormula.realize_foldr_inf]; exact hθ
+        have hbase : ∀ τ ∈ base2, M ⊨ τ := by
+          rintro τ (hT | hφ')
+          · exact ((LHom.onTheory_model _ _).mpr inferInstance).realize_of_mem _ hT
+          · rw [Set.mem_singleton_iff] at hφ'
+            subst hφ'
+            exact (Formula.realize_equivSentence (M := M) φ).mpr
+              ((Formula.boundedFormula_realize_eq_realize ..).mp hφ)
+        have hmodel : M ⊨ ⋃ i ∈ s, U2 i := ⟨fun σ hσ => by
+          simp only [Set.mem_iUnion] at hσ
+          obtain ⟨i, hi, hσ⟩ := hσ
+          cases i with
+          | none => exact hbase _ hσ
+          | some q =>
+            rcases hσ with hbase' | hq
+            · exact hbase _ hbase'
+            · rw [Set.mem_singleton_iff] at hq
+              subst hq
+              refine (Formula.realize_equivSentence (M := M) q.1).mpr ?_
+              have hqlist : q.1 ∈ lqfs.map Subtype.val :=
+                List.mem_map.mpr ⟨q, Finset.mem_toList.mpr (by simpa [qfs] using hi), rfl⟩
+              exact (Formula.boundedFormula_realize_eq_realize ..).mp (hθall q.1 hqlist)⟩
+        exact hs (Theory.Model.isSatisfiable M)
+      have hθv0 : θ.Realize v0 := by
+        change BoundedFormula.Realize ((lqfs.map Subtype.val).foldr (· ⊓ ·) ⊤) v0 default
+        rw [BoundedFormula.realize_foldr_inf, List.forall_mem_map]
+        exact fun q _ => q.2.2
+      exact hqfConseq ⟨θ.not, hθQF.not, hφnotθ⟩ hθv0
+    obtain ⟨N1⟩ := hsat2
+    letI : L.Structure N1 := (L.lhomWithConstants (Fin m)).reduct N1
+    haveI : T.Model N1 := (LHom.onTheory_model _ _).mp <| N1.is_model.mono fun _ hσ =>
+      Set.mem_iUnion.mpr ⟨none, .inl hσ⟩
+    haveI : (L.lhomWithConstants (Fin m)).IsExpansionOn N1 := LHom.isExpansionOn_reduct _ _
+    let w : Fin m → N1 := fun i => (L.con i : N1)
+    have hφw : φ.Realize w :=
+      (Formula.realize_equivSentence (M := N1) φ).mp
+        (N1.is_model.realize_of_mem _ (Set.mem_iUnion.mpr ⟨none, by simp [U2, base2]⟩))
+    have hqfIncl : ∀ ψ : L.Formula (Fin m), ψ.IsQF → ψ.Realize v0 → ψ.Realize w :=
+      fun ψ hψ hψv0 => (Formula.realize_equivSentence (M := N1) ψ).mp
+        (N1.is_model.realize_of_mem _
+          (Set.mem_iUnion.mpr ⟨some ⟨ψ, hψ, hψv0⟩, .inr rfl⟩))
+    have hqfEq : ∀ ψ : L.Formula (Fin m), ψ.IsQF → (ψ.Realize v0 ↔ ψ.Realize w) := fun ψ hψ =>
+      ⟨hqfIncl ψ hψ, fun hψw => by
+        by_contra hψv0
+        exact hqfIncl ψ.not hψ.not (by simpa [Formula.realize_not] using hψv0) hψw⟩
+    obtain ⟨S, g, a, ha, hg⟩ := exists_substructure_embedding_of_agree_qf v0 w hqfEq
+    have hsame := hcommon (M := M1.Carrier) (N := N1.Carrier) (A := S) S.subtype g a
+    have hφga : φ.Realize (g ∘ a) := by simpa [hg] using hφw
+    exact (hnotφv0 (by simpa [ha] using hsame.mpr hφga)).elim
 
 private theorem exists_qf_equiv_ex_of_isQF
     {T : L.Theory}
