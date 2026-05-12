@@ -52,17 +52,21 @@ open MeasureTheory ProbabilityTheory Set
 
 variable {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 
-namespace ProbabilityTheory.Kernel
+namespace ProbabilityTheory
 
 /-- A kernel is deterministic if copying then applying the kernel to the two copies is the same
 as first applying the kernel then copying. -/
 class IsDeterministic (κ : Kernel α β) : Prop where
-  parallelComp_self_comp_copy : (κ ∥ₖ κ) ∘ₖ copy α = copy β ∘ₖ κ
+  parallelComp_self_comp_copy' : (κ ∥ₖ κ) ∘ₖ Kernel.copy α = Kernel.copy β ∘ₖ κ
 
-export IsDeterministic (parallelComp_self_comp_copy)
+namespace Kernel
+
+lemma parallelComp_self_comp_copy {κ : Kernel α β} [IsDeterministic κ] :
+    (κ ∥ₖ κ) ∘ₖ Kernel.copy α = Kernel.copy β ∘ₖ κ :=
+  IsDeterministic.parallelComp_self_comp_copy'
 
 instance {f : α → β} (hf : Measurable f) : IsDeterministic (deterministic f hf) where
-  parallelComp_self_comp_copy := by
+  parallelComp_self_comp_copy' := by
     simp_rw [parallelComp_comp_copy, deterministic_prod_deterministic, copy,
       deterministic_comp_deterministic, Function.comp_def]
 
