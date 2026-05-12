@@ -15,6 +15,7 @@ public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Tactic.OfNat
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Tactic.Simps.Basic
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Typeclasses for (semi)groups and monoids
@@ -1189,6 +1190,7 @@ with a default so that `a / b = a * b⁻¹` holds by definition.
 Use `Group.ofLeftAxioms` or `Group.ofRightAxioms` to define a group structure
 on a type with the minimum proof obligations.
 -/
+@[wikidata Q83478]
 class Group (G : Type u) extends DivInvMonoid G where
   protected inv_mul_cancel : ∀ a : G, a⁻¹ * a = 1
 
