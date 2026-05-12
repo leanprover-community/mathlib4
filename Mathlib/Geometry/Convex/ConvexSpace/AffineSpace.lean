@@ -5,7 +5,7 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.LinearAlgebra.ConvexSpace
+public import Mathlib.Geometry.Convex.ConvexSpace.Defs
 public import Mathlib.LinearAlgebra.AffineSpace.Combination
 public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 
@@ -39,7 +39,7 @@ public def convexCombination (s : StdSimplex R P) : P :=
 public theorem convexCombination_single (x : P) :
     convexCombination (StdSimplex.single x : StdSimplex R P) = x := by
   simp only [convexCombination, StdSimplex.single]
-  rw [Finsupp.support_single_ne_zero _ one_ne_zero]
+  rw [Finsupp.support_single _ one_ne_zero]
   exact ({x} : Finset P).affineCombination_of_eq_one_of_eq_zero _ _
     (Finset.mem_singleton_self x) Finsupp.single_eq_same fun j _ hne => Finsupp.single_eq_of_ne hne
 
@@ -70,11 +70,11 @@ public theorem convexCombination_assoc (f : StdSimplex R (StdSimplex R P)) :
         _ _ d.total b, vadd_vsub, Finset.weightedVSubOfPoint_apply]
     simp only [id]
   simp_rw [Finset.smul_sum, smul_smul]
-  -- Expand RHS using sum_finset_sum_index
+  -- Expand RHS using sum_finsetSum_index
   let h : P → R → V := fun x w => w • (x -ᵥ b)
   have h_rhs : (∑ d ∈ f.weights.support, f.weights d • d.weights).sum h
       = ∑ d ∈ f.weights.support, (f.weights d • d.weights).sum h :=
-    (Finsupp.sum_finset_sum_index (h := h) (fun _ => zero_smul _ _)
+    (Finsupp.sum_finsetSum_index (h := h) (fun _ => zero_smul _ _)
       (fun _ _ _ => add_smul _ _ _)).symm
   simp only [Finsupp.sum] at h_rhs ⊢
   rw [h_rhs]

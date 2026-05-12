@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Data.Finset.Lattice.Fold
 public import Mathlib.Data.Finset.Order
-public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Data.Set.Finite.Basic  -- shake: keep (IsAtomic α), cf. lean#13417
 public import Mathlib.Data.Set.Finite.Range
 public import Mathlib.Order.Atoms
 
@@ -189,10 +189,11 @@ theorem Directed.finite_set_le (D : Directed r f) {s : Set γ} (hs : s.Finite) :
     ∃ z, ∀ i ∈ s, r (f i) (f z) := by
   convert D.finset_le hs.toFinset using 3; rw [Set.Finite.mem_toFinset]
 
-theorem Directed.finite_le (D : Directed r f) (g : β → γ) : ∃ z, ∀ i, r (f (g i)) (f z) := by
+lemma Directed.finite_le {ι κ : Sort*} [Nonempty ι] [Finite κ] {f : ι → α} (hf : Directed r f)
+    (g : κ → ι) : ∃ z, ∀ i, r (f (g i)) (f z) := by
   classical
-    obtain ⟨z, hz⟩ := D.finite_set_le (Set.finite_range g)
-    exact ⟨z, fun i => hz (g i) ⟨i, rfl⟩⟩
+  simpa using
+    (hf.comp_of_surjective PLift.down_surjective).finite_set_le (Set.finite_range (PLift.up ∘ g))
 
 variable [Nonempty α] [Preorder α]
 
@@ -225,6 +226,34 @@ theorem Finite.bddBelow_range [IsCodirectedOrder α] (f : β → α) : BddBelow 
   exact hM b
 
 end DirectedOrders
+
+section
+variable {ι : Sort*} {α : Type*} [CompleteLattice α] {s : Set α} {a : α} {f : ι → α}
+
+lemma le_iSup_iff_of_directed [Nonempty ι] [Finite ι] (hf : Directed (· ≤ ·) f) :
+    a ≤ ⨆ i, f i ↔ ∃ i, a ≤ f i where
+  mp ha := by obtain ⟨i, hi⟩ := hf.finite_le id; exact ⟨i, ha.trans <| iSup_le hi⟩
+  mpr := by rintro ⟨i, hai⟩; exact le_iSup_of_le i hai
+
+lemma le_sSup_iff_of_directedOn (hs : s.Nonempty) (hs' : s.Finite) (hs'' : DirectedOn (· ≤ ·) s) :
+    a ≤ sSup s ↔ ∃ b ∈ s, a ≤ b := by
+  have := hs.to_subtype
+  have := hs'.to_subtype
+  simp [sSup_eq_iSup', le_iSup_iff_of_directed hs''.directed_val]
+
+end
+
+namespace Set
+variable {ι : Sort*} {α : Type*} {S : Set (Set α)} {s : Set α} {f : ι → Set α}
+
+lemma subset_iUnion_iff_of_directed [Nonempty ι] [Finite ι] (hf : Directed (· ≤ ·) f) :
+    s ⊆ ⋃ i, f i ↔ ∃ i, s ⊆ f i := le_iSup_iff_of_directed hf
+
+lemma subset_sUnion_iff_of_directed (hS : S.Nonempty) (hS' : S.Finite)
+    (hS'' : DirectedOn (· ≤ ·) S) : s ⊆ sSup S ↔ ∃ t ∈ S, s ⊆ t :=
+  le_sSup_iff_of_directedOn hS hS' hS''
+
+end Set
 
 /-!
 ### Suprema and infima over finite types
