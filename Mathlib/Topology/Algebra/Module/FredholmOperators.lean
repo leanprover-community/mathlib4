@@ -169,7 +169,7 @@ def index : ℤ := finrank k f.ker - finrank k (F ⧸ f.range)
 
 lemma index_smul (t : k) (ht : t ≠ 0) :
     (t • f).index = f.index := by
-  sorry
+  rw [index, index, ker_smul _ _ ht, range_smul _ _ ht]
 
 @[simp] lemma index_neg :
     (-f).index = f.index := by
