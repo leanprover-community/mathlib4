@@ -269,6 +269,15 @@ lemma isOpen_upperHalfPlaneSet : IsOpen ℍₒ := isOpen_lt continuous_const Com
 theorem range_coe : Set.range UpperHalfPlane.coe = ℍₒ := by
   ext; simp [UpperHalfPlane.exists]
 
+/-- The upper half-plane (as a subset of `ℂ`) is infinite. -/
+theorem upperHalfPlaneSet_infinite : Set.Infinite ℍₒ := by
+  rw [← range_coe]
+  exact Set.infinite_range_of_injective UpperHalfPlane.coe_injective
+
+/-- The image of `ℍ` under the canonical map `ℍ → ℂ` is infinite. -/
+theorem range_coe_infinite : Set.Infinite (Set.range ((↑) : ℍ → ℂ)) :=
+  Set.infinite_range_of_injective UpperHalfPlane.coe_injective
+
 end upperHalfPlaneSet
 
 end UpperHalfPlane
