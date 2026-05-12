@@ -380,17 +380,13 @@ theorem MeromorphicNFAt.comp_analyticAt (hf : MeromorphicNFAt f (g x)) (hg : Ana
     by_cases h : f (g x) = 0
     · apply Or.inl
       filter_upwards [hord, hg.continuousAt.preimage_mem_nhds (hf.filter_mono (by simp))]
-        with a h₁a h₂a
-      simp_all [sub_eq_zero]
-    · apply Or.inr
-      use 0, fun _ ↦ f (g x), by fun_prop, h
+        using by simp_all [sub_eq_zero]
+    · refine Or.inr ⟨0, fun _ ↦ f (g x), by fun_prop, h, ?_⟩
       filter_upwards [hord, hg.continuousAt.preimage_mem_nhds (hf.filter_mono (by simp))]
-        with a h₁a h₂a
-      simp_all [sub_eq_zero]
-  lift (analyticOrderAt (g · - g x) x) to ℕ using hord with m hm
+        using by simp_all [sub_eq_zero]
+  lift analyticOrderAt (g · - g x) x to ℕ using hord with m hm
   obtain ⟨p, h₁p, h₂p, h₃p⟩ := (AnalyticAt.analyticOrderAt_eq_natCast (by fun_prop)).1 hm.symm
-  apply Or.inr
-  use n * m, fun z ↦ (p z) ^ n • q (g z), (h₁p.zpow h₂p).smul (by fun_prop)
+  refine Or.inr ⟨n * m, fun z ↦ (p z) ^ n • q (g z), (h₁p.zpow h₂p).smul (by fun_prop), ?_⟩
   simp_all only [ne_eq, smul_eq_mul, isUnit_iff_ne_zero, zpow_ne_zero n h₂p, not_false_eq_true,
     IsUnit.smul_eq_zero, true_and]
   filter_upwards [h₃p, hg.continuousAt.preimage_mem_nhds (hf.filter_mono (by simp))]
