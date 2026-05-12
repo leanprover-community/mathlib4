@@ -561,6 +561,8 @@ theorem RelEmbedding.orderEmbeddingOfLTEmbedding_apply [PartialOrder α] [Partia
 
 namespace OrderEmbedding
 
+section LE
+
 variable [LE α] [LE β] [LE γ] [LE δ]
 
 variable (α) in
@@ -598,9 +600,9 @@ theorem comp_assoc (f : α ↪o β) (g : β ↪o γ) (h : γ ↪o δ) :
     (f.comp g).comp h = f.comp (g.comp h) :=
   rfl
 
-end OrderEmbedding
+end LE
 
-namespace OrderEmbedding
+section Preorder
 
 variable [Preorder α] [Preorder β] (f : α ↪o β)
 
@@ -701,6 +703,8 @@ def toOrderHom {X Y : Type*} [Preorder X] [Preorder Y] (f : X ↪o Y) : X →o Y
 
 @[simp, norm_cast]
 lemma coe_ofIsEmpty [IsEmpty α] : (ofIsEmpty : α ↪o β) = (isEmptyElim : α → β) := rfl
+
+end Preorder
 
 end OrderEmbedding
 
