@@ -114,6 +114,20 @@ theorem log_I : log I = π / 2 * I := by simp [log]
 
 theorem log_neg_I : log (-I) = -(π / 2) * I := by simp [log]
 
+/-- If `0 < z.im`, then `log (-z) = log z - π * I`. -/
+theorem log_neg_eq_log_sub_pi_I_of_im_pos {z : ℂ} (hz : 0 < z.im) :
+    log (-z) = log z - π * I := by
+  apply Complex.ext
+  · simp [log_re]
+  · simp [log_im, arg_neg_eq_arg_sub_pi_of_im_pos hz]
+
+/-- If `z.im < 0`, then `log (-z) = log z + π * I`. -/
+theorem log_neg_eq_log_add_pi_I_of_im_neg {z : ℂ} (hz : z.im < 0) :
+    log (-z) = log z + π * I := by
+  apply Complex.ext
+  · simp [log_re]
+  · simp [log_im, arg_neg_eq_arg_add_pi_of_im_neg hz]
+
 theorem log_conj_eq_ite (x : ℂ) : log (conj x) = if x.arg = π then log x else conj (log x) := by
   simp_rw [log, norm_conj, arg_conj, map_add, map_mul, conj_ofReal]
   split_ifs with hx
