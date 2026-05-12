@@ -272,7 +272,7 @@ def limit.homIso (F : J ⥤ C) [HasLimit F] (W : C) :
 
 @[simp]
 theorem limit.homIso_hom (F : J ⥤ C) [HasLimit F] {W : C} :
-    (limit.homIso F W).hom = TypeCat.ofHom (fun f ↦ (const J).map f.down ≫ (limit.cone F).π) :=
+    (limit.homIso F W).hom = ↾fun f ↦ (const J).map f.down ≫ (limit.cone F).π :=
   (limit.isLimit F).homIso_hom
 
 /-- The isomorphism (in `Type`) between
@@ -486,6 +486,11 @@ def lim : (J ⥤ C) ⥤ C where
   map_comp α β := by
     apply Limits.limit.hom_ext; intro j
     simp [assoc]
+
+/-- The natural transformation induced by `limit.π`. -/
+@[simps]
+def lim.π (j : J) : lim ⟶ (evaluation J C).obj j where
+  app F := limit.π F j
 
 end
 
@@ -833,7 +838,7 @@ def colimit.homIso (F : J ⥤ C) [HasColimit F] (W : C) :
 @[simp]
 theorem colimit.homIso_hom (F : J ⥤ C) [HasColimit F] {W : C} :
     (colimit.homIso F W).hom =
-      TypeCat.ofHom (fun f ↦ (colimit.cocone F).ι ≫ (const J).map f.down) :=
+      ↾fun f ↦ (colimit.cocone F).ι ≫ (const J).map f.down :=
   (colimit.isColimit F).homIso_hom
 
 /-- The isomorphism (in `Type`) between
@@ -1061,6 +1066,11 @@ section
 def colim : (J ⥤ C) ⥤ C where
   obj F := colimit F
   map α := colimMap α
+
+/-- The natural transformation induced by `colimit.ι`. -/
+@[simps]
+def colim.ι (j : J) : (evaluation J C).obj j ⟶ colim where
+  app F := colimit.ι F j
 
 end
 

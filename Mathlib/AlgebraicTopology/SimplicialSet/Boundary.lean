@@ -94,7 +94,6 @@ lemma boundary_zero : boundary.{u} 0 = ⊥ := by
   simp only [boundary, Nat.reduceAdd, Set.mem_setOf_eq, Subfunctor.bot_obj, Set.bot_eq_empty,
     Set.mem_empty_iff_false, iff_false, Decidable.not_not]
   intro x
-  fin_cases x
   exact ⟨0, by subsingleton⟩
 
 lemma op_boundary (n : ℕ) :
@@ -139,6 +138,14 @@ lemma le_boundary_iff :
     · simp [boundary_obj_eq_univ m n h₃]
     · simp [← A.mem_nonDegenerate_iff ⟨x, h₂⟩,
         nonDegenerate_eq_empty_of_hasDimensionLT _ _ _ h₃] at h₁
+
+lemma eq_boundary_iff :
+    A = boundary n ↔ boundary n ≤ A ∧ A ≠ ⊤ := by
+  constructor
+  · rintro rfl
+    exact ⟨by rfl, (boundary_lt_top n).ne⟩
+  · rintro ⟨h₁, h₂⟩
+    exact le_antisymm (by rwa [le_boundary_iff]) h₁
 
 end stdSimplex
 
