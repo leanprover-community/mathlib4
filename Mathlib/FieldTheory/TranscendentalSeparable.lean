@@ -333,7 +333,6 @@ lemma tensorProduct_isReduced_of_isTranscendentalBasis_of_isReduced [IsReduced S
   have h (x : k) (y : S) : (toLocalizationMinimal S) (x • y) = x • (toLocalizationMinimal S) y := by
     rw [Algebra.smul_def, map_mul]
     ext p
-    have := p.2.isPrime
     rw [Pi.mul_apply, Pi.smul_apply, Algebra.smul_def, IsScalarTower.algebraMap_apply k S]
     rfl
   let g := AlgHom.mk' (toLocalizationMinimal S) h
