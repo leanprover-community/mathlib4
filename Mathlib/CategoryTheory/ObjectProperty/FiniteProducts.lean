@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinary
 public import Mathlib.CategoryTheory.Limits.FullSubcategory
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsClosure
 public import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
+public import Mathlib.Data.Fintype.Shrink
 
 /-!
 # Properties of objects that are stable under finite products
@@ -23,7 +24,9 @@ has finite products.
 
 -/
 
-@[expose] public section
+universe w
+
+public section
 
 namespace CategoryTheory.ObjectProperty
 
@@ -54,6 +57,11 @@ lemma prop_terminal [P.IsClosedUnderLimitsOfShape (Discrete.{0} PEmpty)] [HasTer
     P (⊤_ C) :=
   P.prop_of_isTerminal _ terminalIsTerminal
 
+-- see Note [lower instance priority]
+instance (priority := 100) [P.IsClosedUnderLimitsOfShape (Discrete.{0} PEmpty)] [HasTerminal C] :
+    P.Nonempty :=
+  nonempty_of_prop P.prop_terminal
+
 lemma IsClosedUnderBinaryProducts.closedUnderIsomorphisms [HasTerminal C]
     [P.IsClosedUnderLimitsOfShape (Discrete.{0} PEmpty)] [P.IsClosedUnderBinaryProducts] :
     P.IsClosedUnderIsomorphisms where
@@ -77,6 +85,15 @@ lemma binaryProductsClosure_le_iff [HasTerminal C] {P Q : ObjectProperty C}
 class IsClosedUnderFiniteProducts : Prop where
   isClosedUnderLimitsOfShape (J : Type) [Finite J] :
     P.IsClosedUnderLimitsOfShape (Discrete J) := by infer_instance
+
+variable {P} in
+/-- `IsClosedUnderFiniteProducts` may be checked at any universe. -/
+lemma IsClosedUnderFiniteProducts.of_isClosedUnderLimitsOfShape
+    (H : ∀ (J : Type w) [Finite J], P.IsClosedUnderLimitsOfShape (Discrete J)) :
+    P.IsClosedUnderFiniteProducts where
+  isClosedUnderLimitsOfShape J _ := by
+    rw [P.isClosedUnderLimitsOfShape_iff_of_equivalence (Discrete.equivalence (equivShrink.{w} _))]
+    exact H _
 
 instance [P.IsClosedUnderFiniteProducts] (J : Type*) [Finite J] :
     P.IsClosedUnderLimitsOfShape (Discrete J) := by
@@ -143,6 +160,11 @@ lemma prop_initial [P.IsClosedUnderColimitsOfShape (Discrete.{0} PEmpty)] [HasIn
     P (⊥_ C) :=
   P.prop_of_isInitial _ initialIsInitial
 
+-- see Note [lower instance priority]
+instance (priority := 100) [P.IsClosedUnderColimitsOfShape (Discrete.{0} PEmpty)] [HasInitial C] :
+    P.Nonempty :=
+  nonempty_of_prop P.prop_initial
+
 lemma IsClosedUnderBinaryCoproducts.closedUnderIsomorphisms [HasInitial C]
     [P.IsClosedUnderColimitsOfShape (Discrete.{0} PEmpty)] [P.IsClosedUnderBinaryCoproducts] :
     P.IsClosedUnderIsomorphisms where
@@ -166,6 +188,16 @@ lemma binaryCoproductsClosure_le_iff [HasInitial C] {P Q : ObjectProperty C}
 class IsClosedUnderFiniteCoproducts : Prop where
   isClosedUnderColimitsOfShape (J : Type) [Finite J] :
     P.IsClosedUnderColimitsOfShape (Discrete J) := by infer_instance
+
+variable {P} in
+/-- `IsClosedUnderFiniteProducts` may be checked at any universe. -/
+lemma IsClosedUnderFiniteCoproducts.of_isClosedUnderColimitsOfShape
+    (H : ∀ (J : Type w) [Finite J], P.IsClosedUnderColimitsOfShape (Discrete J)) :
+    P.IsClosedUnderFiniteCoproducts where
+  isClosedUnderColimitsOfShape J _ := by
+    rw [P.isClosedUnderColimitsOfShape_iff_of_equivalence
+      (Discrete.equivalence (equivShrink.{w} _))]
+    exact H _
 
 instance [P.IsClosedUnderFiniteCoproducts] (J : Type*) [Finite J] :
     P.IsClosedUnderColimitsOfShape (Discrete J) := by

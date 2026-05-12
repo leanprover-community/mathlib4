@@ -5,6 +5,7 @@ Authors: Heather Macbeth, Floris van Doorn, Michael Rothgang
 -/
 module
 
+public import Mathlib.Geometry.Manifold.Algebra.SMul
 public import Mathlib.Geometry.Manifold.Algebra.LieGroup
 public import Mathlib.Geometry.Manifold.MFDeriv.Basic
 public import Mathlib.Geometry.Manifold.Notation
@@ -35,7 +36,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
 
 variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   -- `F` model fiber
-  (n : WithTop ℕ∞)
+  (n : ℕ∞ω)
   (V : M → Type*) [TopologicalSpace (TotalSpace F V)]
   -- `V` vector bundle
   [∀ x : M, TopologicalSpace (V x)] [FiberBundle F V]

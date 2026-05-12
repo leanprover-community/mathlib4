@@ -22,7 +22,7 @@ on an absolute value. This is useful when dealing with several absolute values o
 In particular this allows us to define the completion of a field at a given absolute value.
 -/
 
-@[expose] public section
+public section
 
 open Topology
 
@@ -34,14 +34,12 @@ section Field
 
 variable [Field R] {T : Type*} [Field T] (v : AbsoluteValue R S)
 
-instance : Field (WithAbs v) := (equiv v).field
+instance : Field (WithAbs v) := fast_instance% (equiv v).field
 
 noncomputable instance normedField (v : AbsoluteValue R ℝ) : NormedField (WithAbs v) :=
   letI := v.toNormedField
-  (equiv v).normedField
+  fast_instance% (equiv v).normedField
 
-set_option backward.isDefEq.respectTransparency false in
-attribute [local instance] moduleLeft in
 instance [Module R T] [FiniteDimensional R T] :
     FiniteDimensional (WithAbs v) T :=
   Module.Finite.of_restrictScalars_finite R (WithAbs v) T
@@ -50,8 +48,6 @@ instance [Module T R] [FiniteDimensional T R] :
     FiniteDimensional T (WithAbs v) :=
   Module.Finite.equiv (linearEquiv T v).symm
 
-set_option backward.isDefEq.respectTransparency false in
-attribute [local instance] algebraLeft in
 instance [Algebra R T] [Algebra.IsSeparable R T] :
     Algebra.IsSeparable (WithAbs v) T :=
   .of_equiv_equiv (equiv v).symm (.refl T) (by ext; simp [algebraMap_left_apply])
@@ -66,7 +62,6 @@ instance [Algebra T R] [Algebra.IsSeparable T R] :
 @[simp] lemma toAbs_inv (x : R) : toAbs v x⁻¹ = (toAbs v x)⁻¹ := rfl
 @[simp] lemma ofAbs_inv (x : WithAbs v) : ofAbs (x⁻¹) = (ofAbs x)⁻¹ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /- Note that `AbsoluteValue.tendsto_div_one_add_pow_nhds_one` would follow from the below
 result if `WithAbs v` had a topology for general value rings `S`. Currently `WithAbs v` only has
 a topology when `S = ℝ`. -/
@@ -81,7 +76,6 @@ section CommRing
 
 variable [CommRing R] {T : Type*} [Field T] [Algebra R T] (w : AbsoluteValue T ℝ)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : UniformContinuousConstSMul R (WithAbs w) where
   uniformContinuous_const_smul r := by
     simp_rw [Algebra.smul_def]
@@ -146,7 +140,6 @@ noncomputable instance : Coe K v.Completion where
 
 variable {L : Type*} [NormedField L] [CompleteSpace L] {f : WithAbs v →+* L} {v}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the absolute value of a normed field factors through an embedding into another normed field
 `L`, then we can extend that embedding to an embedding on the completion `v.Completion →+* L`. -/
 @[deprecated "Use `Isometry.extensionHom` in combination with `AddMonoidHomClass.isometry_of_norm`"
@@ -154,14 +147,12 @@ set_option backward.isDefEq.respectTransparency false in
 noncomputable abbrev extensionEmbedding_of_comp (h : ∀ x, ‖f x‖ = v x.ofAbs) :
     v.Completion →+* L := (AddMonoidHomClass.isometry_of_norm _ h).extensionHom
 
-set_option backward.isDefEq.respectTransparency false in
 @[deprecated "Use `Isometry.extensionHom_coe` in combination with
   `AddMonoidHomClass.isometry_of_norm`" (since := "2025-11-28")]
 theorem extensionEmbedding_of_comp_coe (h : ∀ x, ‖f x‖ = v x.ofAbs) (x : K) :
     (AddMonoidHomClass.isometry_of_norm _ h).extensionHom x = f ((equiv v).symm x) :=
   AddMonoidHomClass.isometry_of_norm _ h |>.extensionHom_coe _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the absolute value of a normed field factors through an embedding into another normed field,
 then the extended embedding `v.Completion →+* L` preserves distances. -/
 @[deprecated "Use `Isometry.dist_eq` in combination with `AddMonoidHomClass.isometry_of_norm`"
@@ -171,7 +162,6 @@ theorem extensionEmbedding_dist_eq_of_comp (h : ∀ x, ‖f x‖ = v x.ofAbs) (x
     dist (f x) (f y) = dist x y :=
   AddMonoidHomClass.isometry_of_norm _ h |>.completion_extension.dist_eq _ _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the absolute value of a normed field factors through an embedding into another normed field,
 then the extended embedding `v.Completion →+* L` is an isometry. -/
 @[deprecated "Use `Isometry.completion_extension` in combination with
@@ -180,7 +170,6 @@ theorem isometry_extensionEmbedding_of_comp (h : ∀ x, ‖f x‖ = v x.ofAbs) :
     Isometry (AddMonoidHomClass.isometry_of_norm _ h |>.extensionHom) :=
   AddMonoidHomClass.isometry_of_norm _ h |>.completion_extension
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the absolute value of a normed field factors through an embedding into another normed field,
 then the extended embedding `v.Completion →+* L` is a closed embedding. -/
 @[deprecated "Use `Isometry.isClosedEmbedding` in combination with `Isometry.completion_extension`

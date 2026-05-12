@@ -78,7 +78,7 @@ variable {R : Type u} {S₁ : Type v} {S₂ : Type w} {S₃ : Type x}
 
 /-- Multivariate polynomial, where `σ` is the index set of the variables and
   `R` is the coefficient ring -/
-def MvPolynomial (σ : Type*) (R : Type*) [CommSemiring R] :=
+abbrev MvPolynomial (σ : Type*) (R : Type*) [CommSemiring R] :=
   AddMonoidAlgebra R (σ →₀ ℕ)
 
 namespace MvPolynomial
@@ -86,64 +86,6 @@ namespace MvPolynomial
 variable {σ : Type*} {a a' a₁ a₂ : R} {e : ℕ} {n m : σ} {s : σ →₀ ℕ}
 
 section CommSemiring
-
-section Instances
-
-instance decidableEqMvPolynomial [CommSemiring R] [DecidableEq σ] [DecidableEq R] :
-    DecidableEq (MvPolynomial σ R) :=
-  Finsupp.instDecidableEq
-
-instance commSemiring [CommSemiring R] : CommSemiring (MvPolynomial σ R) :=
-  AddMonoidAlgebra.commSemiring
-
-instance inhabited [CommSemiring R] : Inhabited (MvPolynomial σ R) :=
-  ⟨0⟩
-
-instance distribuMulAction [Monoid R] [CommSemiring S₁] [DistribMulAction R S₁] :
-    DistribMulAction R (MvPolynomial σ S₁) :=
-  AddMonoidAlgebra.distribMulAction
-
-instance smulZeroClass [CommSemiring S₁] [SMulZeroClass R S₁] :
-    SMulZeroClass R (MvPolynomial σ S₁) :=
-  AddMonoidAlgebra.smulZeroClass
-
-instance faithfulSMul [CommSemiring S₁] [SMulZeroClass R S₁] [FaithfulSMul R S₁] :
-    FaithfulSMul R (MvPolynomial σ S₁) :=
-  AddMonoidAlgebra.faithfulSMul
-
-instance module [Semiring R] [CommSemiring S₁] [Module R S₁] : Module R (MvPolynomial σ S₁) :=
-  AddMonoidAlgebra.module
-
-instance isScalarTower [CommSemiring S₂] [SMul R S₁] [SMulZeroClass R S₂] [SMulZeroClass S₁ S₂]
-    [IsScalarTower R S₁ S₂] : IsScalarTower R S₁ (MvPolynomial σ S₂) :=
-  AddMonoidAlgebra.isScalarTower
-
-instance smulCommClass [CommSemiring S₂] [SMulZeroClass R S₂] [SMulZeroClass S₁ S₂]
-    [SMulCommClass R S₁ S₂] : SMulCommClass R S₁ (MvPolynomial σ S₂) :=
-  AddMonoidAlgebra.smulCommClass
-
-instance isCentralScalar [CommSemiring S₁] [SMulZeroClass R S₁] [SMulZeroClass Rᵐᵒᵖ S₁]
-    [IsCentralScalar R S₁] : IsCentralScalar R (MvPolynomial σ S₁) :=
-  AddMonoidAlgebra.isCentralScalar
-
-instance algebra [CommSemiring R] [CommSemiring S₁] [Algebra R S₁] :
-    Algebra R (MvPolynomial σ S₁) :=
-  AddMonoidAlgebra.algebra
-
-instance isScalarTower_right [CommSemiring S₁] [DistribSMul R S₁] [IsScalarTower R S₁ S₁] :
-    IsScalarTower R (MvPolynomial σ S₁) (MvPolynomial σ S₁) :=
-  AddMonoidAlgebra.isScalarTower_self _
-
-instance smulCommClass_right [CommSemiring S₁] [DistribSMul R S₁] [SMulCommClass R S₁ S₁] :
-    SMulCommClass R (MvPolynomial σ S₁) (MvPolynomial σ S₁) :=
-  AddMonoidAlgebra.smulCommClass_self _
-
-/-- If `R` is a subsingleton, then `MvPolynomial σ R` has a unique element -/
-instance unique [CommSemiring R] [Subsingleton R] : Unique (MvPolynomial σ R) :=
-  AddMonoidAlgebra.unique
-
-end Instances
-
 variable [CommSemiring R] [CommSemiring S₁] {p q : MvPolynomial σ R}
 
 /-- `monomial s a` is the monomial with coefficient `a` and exponents given by `s` -/
@@ -198,11 +140,10 @@ theorem C_0 : C 0 = (0 : MvPolynomial σ R) := map_zero _
 theorem C_1 : C 1 = (1 : MvPolynomial σ R) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem C_mul_monomial : C a * monomial s a' = monomial s (a * a') := by
-  -- Porting note: this `change` feels like defeq abuse, but I can't find the appropriate lemmas
-  change AddMonoidAlgebra.single _ _ * AddMonoidAlgebra.single _ _ = AddMonoidAlgebra.single _ _
-  simp [single_mul_single]
+  have := single_mul_single 0 s a a'
+  rw [zero_add] at this
+  exact this
 
 @[simp]
 theorem C_add : (C (a + a') : MvPolynomial σ R) = C a + C a' :=
@@ -216,6 +157,7 @@ theorem C_mul : (C (a * a') : MvPolynomial σ R) = C a * C a' :=
 theorem C_pow (a : R) (n : ℕ) : (C (a ^ n) : MvPolynomial σ R) = C a ^ n :=
   map_pow _ _ _
 
+@[grind inj]
 theorem C_injective (σ : Type*) (R : Type*) [CommSemiring R] :
     Function.Injective (C : R → MvPolynomial σ R) :=
   Finsupp.single_injective _
@@ -348,6 +290,10 @@ theorem monomial_sum_index {α : Type*} (s : Finset α) (f : α → σ →₀ �
     monomial (∑ i ∈ s, f i) a = C a * ∏ i ∈ s, monomial (f i) 1 := by
   rw [← monomial_sum_one, C_mul', ← (monomial _).map_smul, smul_eq_mul, mul_one]
 
+theorem monomial_sum_prod {α : Type*} (s : Finset α) (f : α → σ →₀ ℕ) (g : α → R) :
+    monomial (∑ i ∈ s, f i) (∏ i ∈ s, g i) = ∏ i ∈ s, monomial (f i) (g i) := by
+  simp_rw [monomial_sum_index, map_prod, ← Finset.prod_mul_distrib, C_mul_monomial, mul_one]
+
 theorem monomial_finsupp_sum_index {α β : Type*} [Zero β] (f : α →₀ β) (g : α → β → σ →₀ ℕ)
     (a : R) : monomial (f.sum g) a = C a * f.prod fun a b => monomial (g a b) 1 :=
   monomial_sum_index _ _ _
@@ -362,6 +308,14 @@ theorem monomial_eq : monomial s a = C a * (s.prod fun n e => X n ^ e : MvPolyno
 @[simp]
 lemma prod_X_pow_eq_monomial : ∏ x ∈ s.support, X x ^ s x = monomial s (1 : R) := by
   simp only [monomial_eq, map_one, one_mul, Finsupp.prod]
+
+theorem prod_X_pow (x : σ → ℕ) (t : Finset σ) :
+    ∏ y ∈ t, (X y : MvPolynomial σ R) ^ x y = monomial (indicator t (fun i _ ↦ x i)) (1 : R) := by
+  rw [monomial_eq, C_1, one_mul, Finsupp.prod, Finset.prod_subset (support_indicator_subset _ _)]
+  · exact Finset.prod_congr rfl (fun _ hi ↦ by simp [Finsupp.indicator, hi])
+  · intro i hi hi'
+    rw [Finsupp.mem_support_iff, ne_eq, not_not] at hi'
+    rw [hi', pow_zero]
 
 @[elab_as_elim]
 theorem induction_on_monomial {motive : MvPolynomial σ R → Prop}
@@ -448,8 +402,10 @@ theorem ringHom_ext {A : Type*} [Semiring A] {f g : MvPolynomial σ R →+* A}
     apply MonoidHom.ext_mnat
     exact hX _
 
-/-- See note [partially-applied ext lemmas]. -/
-@[ext 1100]
+/-- See note [partially-applied ext lemmas].
+
+We set the priority higher than that of `AddMonoidAlgebra.ringHom_ext'`. -/
+@[ext high + 1]
 theorem ringHom_ext' {A : Type*} [Semiring A] {f g : MvPolynomial σ R →+* A}
     (hC : f.comp C = g.comp C) (hX : ∀ i, f (X i) = g (X i)) : f = g :=
   ringHom_ext (RingHom.ext_iff.1 hC) hX
@@ -462,7 +418,10 @@ theorem is_id (f : MvPolynomial σ R →+* MvPolynomial σ R) (hC : f.comp C = C
     (hX : ∀ n : σ, f (X n) = X n) (p : MvPolynomial σ R) : f p = p :=
   hom_eq_hom f (RingHom.id _) hC hX p
 
-@[ext 1100]
+/-- See note [partially-applied ext lemmas].
+
+We set the priority higher than that of `AddMonoidAlgebra.algHom_ext'`. -/
+@[ext high + 1]
 theorem algHom_ext' {A B : Type*} [CommSemiring A] [CommSemiring B] [Algebra R A] [Algebra R B]
     {f g : MvPolynomial σ A →ₐ[R] B}
     (h₁ :
@@ -471,7 +430,10 @@ theorem algHom_ext' {A B : Type*} [CommSemiring A] [CommSemiring B] [Algebra R A
     (h₂ : ∀ i, f (X i) = g (X i)) : f = g :=
   AlgHom.coe_ringHom_injective (MvPolynomial.ringHom_ext' (congr_arg AlgHom.toRingHom h₁) h₂)
 
-@[ext 1200]
+/-- See note [partially-applied ext lemmas].
+
+We set the priority higher than that of `MvPolynomial.algHom_ext'`. -/
+@[ext high + 2]
 theorem algHom_ext {A : Type*} [Semiring A] [Algebra R A] {f g : MvPolynomial σ R →ₐ[R] A}
     (hf : ∀ i : σ, f (X i) = g (X i)) : f = g :=
   AddMonoidAlgebra.algHom_ext' (mulHom_ext' fun X : σ => MonoidHom.ext_mnat (hf X))
@@ -542,7 +504,7 @@ theorem support_smul {S₁ : Type*} [SMulZeroClass S₁ R] {a : S₁} {f : MvPol
 
 theorem support_sum {α : Type*} [DecidableEq σ] {s : Finset α} {f : α → MvPolynomial σ R} :
     (∑ x ∈ s, f x).support ⊆ s.biUnion fun x => (f x).support :=
-  Finsupp.support_finset_sum
+  Finsupp.support_finsetSum
 
 end Support
 
@@ -592,9 +554,12 @@ theorem coeff_zero (m : σ →₀ ℕ) : coeff m (0 : MvPolynomial σ R) = 0 :=
 theorem coeff_zero_X (i : σ) : coeff 0 (X i : MvPolynomial σ R) = 0 :=
   single_eq_of_ne' fun h => by cases Finsupp.single_eq_zero.1 h
 
+-- TODO: Remove once its use in the Witt vector API has been removed.
 @[simp]
-theorem coeff_mapRange (g : S₁ → R) (hg : g 0 = 0) (φ : MvPolynomial σ S₁) (m) :
-    coeff m (mapRange g hg φ) = g (coeff m φ) := rfl
+lemma coeff_addMonoidAlgebraMap (g : S₁ →+ R) (φ : MvPolynomial σ S₁) (m) :
+    coeff m (φ.map g) = g (coeff m φ) := rfl
+
+@[deprecated (since := "2026-03-27")] alias coeff_mapRange := coeff_addMonoidAlgebraMap
 
 /-- `MvPolynomial.coeff m` but promoted to an `AddMonoidHom`. -/
 @[simps]
@@ -700,6 +665,11 @@ lemma coeff_single_X [DecidableEq σ] (s s' : σ) (n : ℕ) :
     (X s).coeff (R := R) (Finsupp.single s' n) = if n = 1 ∧ s = s' then 1 else 0 := by
   simpa [eq_comm, and_comm] using coeff_single_X_pow s s' 1 n
 
+theorem coeff_prod_X_pow [DecidableEq σ] (d : σ →₀ ℕ) (x : σ → ℕ) (s : Finset σ) :
+    coeff d (∏ y ∈ s, (X y : MvPolynomial σ R) ^ x y) =
+      if d = Finsupp.indicator s (fun i _ ↦ x i) then 1 else 0 := by
+  simp_rw [prod_X_pow x s, coeff_monomial, eq_comm]
+
 @[simp]
 theorem support_mul_X (s : σ) (p : MvPolynomial σ R) :
     (p * X s).support = p.support.map (addRightEmbedding (Finsupp.single s 1)) :=
@@ -768,7 +738,7 @@ theorem eq_zero_iff {p : MvPolynomial σ R} : p = 0 ↔ ∀ d, coeff d p = 0 := 
 
 theorem ne_zero_iff {p : MvPolynomial σ R} : p ≠ 0 ↔ ∃ d, coeff d p ≠ 0 := by
   rw [Ne, eq_zero_iff]
-  push_neg
+  push Not
   rfl
 
 @[simp]
@@ -1052,7 +1022,7 @@ lemma coeffsIn_eq_span_monomial : coeffsIn σ M = .span R {monomial i m | (m ∈
 lemma coeffsIn_le {N : Submodule R (MvPolynomial σ S)} :
     coeffsIn σ M ≤ N ↔ ∀ m ∈ M, ∀ i, monomial i m ∈ N := by
   simp [coeffsIn_eq_span_monomial, Submodule.span_le, Set.subset_def,
-    forall_swap (α := MvPolynomial σ S)]
+    forall_comm (α := MvPolynomial σ S)]
 
 lemma mem_coeffsIn_iff_coeffs_subset : p ∈ coeffsIn σ M ↔ (p.coeffs : Set S) ⊆ M := by
   simp only [mem_coeffsIn, coeffs, Finset.coe_image, image_subset_iff]
@@ -1082,12 +1052,10 @@ lemma coeffsIn_mul (M N : Submodule R S) : coeffsIn σ (M * N) = coeffsIn σ M *
     rw [MvPolynomial.coeff_mul]
     exact sum_mem fun c hc ↦ Submodule.mul_mem_mul (hx _) (hy _)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma coeffsIn_pow : ∀ {n}, n ≠ 0 → ∀ M : Submodule R S, coeffsIn σ (M ^ n) = coeffsIn σ M ^ n
   | 1, _, M => by simp
   | n + 2, _, M => by rw [pow_succ, coeffsIn_mul, coeffsIn_pow, ← pow_succ]; exact n.succ_ne_zero
 
-set_option backward.isDefEq.respectTransparency false in
 lemma le_coeffsIn_pow : ∀ {n}, coeffsIn σ M ^ n ≤ coeffsIn σ (M ^ n)
   | 0 => by simpa using ⟨1, map_one _⟩
   | n + 1 => (coeffsIn_pow n.succ_ne_zero _).ge

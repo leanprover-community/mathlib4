@@ -209,12 +209,10 @@ section CommRing
 
 variable {R : Type*} [CommRing R]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma homogenize_neg (p : R[X]) (n : ℕ) : (-p).homogenize n = -p.homogenize n :=
   map_neg (homogenizeLM n) p
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma homogenize_sub (p q : R[X]) (n : ℕ) :
     (p - q).homogenize n = p.homogenize n - q.homogenize n :=
@@ -256,11 +254,14 @@ lemma toTupleMvPolynomial_one_eq (p : R[X]) :
     p.toTupleMvPolynomial 1 = (MvPolynomial.X 1) ^ p.natDegree :=
   rfl
 
-lemma isHomogenous_toTupleMvPolynomial (p : R[X]) (i : Fin 2) :
+lemma isHomogeneous_toTupleMvPolynomial (p : R[X]) (i : Fin 2) :
     (p.toTupleMvPolynomial i).IsHomogeneous p.natDegree := by
   fin_cases i
   · simp [toTupleMvPolynomial]
   · simpa [toTupleMvPolynomial] using MvPolynomial.isHomogeneous_X_pow 1 p.natDegree
+
+@[deprecated (since := "2026-04-06")]
+alias isHomogenous_toTupleMvPolynomial := isHomogeneous_toTupleMvPolynomial
 
 lemma eval_X_toTupleMvPolynomial_zero_eq (p : R[X]) :
     MvPolynomial.aeval ![X, 1] (p.toTupleMvPolynomial 0) =

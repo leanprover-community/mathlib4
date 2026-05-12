@@ -7,6 +7,7 @@ module
 
 public import Mathlib.GroupTheory.MonoidLocalization.Away
 public import Mathlib.RingTheory.Ideal.IsPrimary
+public import Mathlib.RingTheory.Ideal.Over
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Localization.Defs
 public import Mathlib.RingTheory.Spectrum.Prime.Defs
@@ -14,11 +15,17 @@ public import Mathlib.Algebra.Algebra.Tower
 
 /-!
 # Ideals in localizations of commutative rings
+
 ## Implementation notes
 See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
+
+## TODO
+Restate the file in terms of `Ideal.under`.
+
 ## Tags
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
+
 -/
 
 @[expose] public section
@@ -138,7 +145,7 @@ theorem comap_map_of_isPrimary_disjoint
     {I : Ideal R} (hI : I.IsPrimary) (hM : Disjoint (M : Set R) I) :
     Ideal.comap (algebraMap R S) (Ideal.map (algebraMap R S) I) = I := by
   have key : Disjoint (M : Set R) I.radical := by
-    contrapose! hM
+    contrapose hM
     rw [Set.not_disjoint_iff] at hM ⊢
     obtain ⟨a, ha, k, hk⟩ := hM
     exact ⟨a ^ k, pow_mem ha k, hk⟩
@@ -167,6 +174,11 @@ def orderEmbedding : Ideal S ↪o Ideal R where
     constructor
     · exact fun hJ => (map_comap M S) J₁ ▸ (map_comap M S) J₂ ▸ Ideal.map_mono hJ
     · exact fun hJ => Ideal.comap_mono hJ
+
+include M in
+theorem comap_le_comap_iff {I J : Ideal S} :
+    I.comap (algebraMap R S) ≤ J.comap (algebraMap R S) ↔ I ≤ J := by
+  exact (IsLocalization.orderEmbedding M S).le_iff_le
 
 /-- If `R` is a ring, then prime ideals in the localization at `M`
 correspond to prime ideals in the original ring `R` that are disjoint from `M`.
@@ -282,7 +294,6 @@ section CommRing
 variable {R : Type*} [CommRing R] (M : Submonoid R) (S : Type*) [CommRing S]
 variable [Algebra R S] [IsLocalization M S]
 
-set_option backward.isDefEq.respectTransparency false in
 include M in
 /-- `quotientMap` applied to maximal ideals of a localization is `surjective`.
   The quotient by a maximal ideal is a field, so inverses to elements already exist,
@@ -376,6 +387,11 @@ lemma of_surjective {R' S' : Type*} [CommRing R'] [CommRing S'] [Algebra R' S']
       ← IsLocalization.mk'_one (M := M)] at e
     obtain ⟨r, hr, hr'⟩ := (IsLocalization.mk'_mem_map_algebraMap_iff M _ _ _ _).mp (H' e)
     exact ⟨⟨_, r, hr, rfl⟩, by simpa [sub_eq_zero, mul_sub] using hr'⟩
+
+instance (I : Ideal R) :
+    IsLocalization (Algebra.algebraMapSubmonoid (R ⧸ I) M) (S ⧸ I.map (algebraMap R S)) :=
+  of_surjective M S (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective
+    (Ideal.Quotient.mk (I.map (algebraMap R S))) Ideal.Quotient.mk_surjective rfl (by simp)
 
 open Algebra in
 instance {P : Ideal R} [P.IsPrime] [IsDomain R] [IsDomain S] [FaithfulSMul R S] :

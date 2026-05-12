@@ -21,7 +21,7 @@ results in the file `Mathlib/CategoryTheory/ObjectProperty/LimitsClosure.lean`.)
 
 -/
 
-@[expose] public section
+public section
 
 universe w w' t v' u' v u
 
@@ -43,6 +43,9 @@ inductive colimitsClosure : ObjectProperty C
 @[simp]
 lemma le_colimitsClosure : P ≤ P.colimitsClosure J :=
   fun X hX ↦ .of_mem X hX
+
+instance [P.Nonempty] : (P.colimitsClosure J).Nonempty :=
+  .mono (P.le_colimitsClosure J)
 
 instance : (P.colimitsClosure J).IsClosedUnderIsomorphisms where
   of_iso e hX := .of_isoClosure e hX
@@ -66,6 +69,19 @@ variable {P} in
 lemma colimitsClosure_monotone {Q : ObjectProperty C} (h : P ≤ Q) :
     P.colimitsClosure J ≤ Q.colimitsClosure J :=
   colimitsClosure_le (h.trans (Q.le_colimitsClosure J))
+
+lemma colimitsClosure_eq_self [P.IsClosedUnderIsomorphisms]
+    [∀ (a : α), P.IsClosedUnderColimitsOfShape (J a)] : P.colimitsClosure J = P :=
+  le_antisymm (colimitsClosure_le (le_refl P)) (P.le_colimitsClosure J)
+
+@[simp]
+lemma colimitsClosure_bot [∀ (a : α), Nonempty (J a)] :
+    colimitsClosure (⊥ : ObjectProperty C) J = ⊥ :=
+  colimitsClosure_eq_self _ _
+
+@[simp]
+lemma colimitsClosure_top : colimitsClosure (⊤ : ObjectProperty C) J = ⊤ :=
+  colimitsClosure_eq_self _ _
 
 lemma colimitsClosure_isoClosure :
     P.isoClosure.colimitsClosure J = P.colimitsClosure J := by

@@ -168,7 +168,7 @@ theorem centralBinom_le_of_no_bertrand_prime (n : ℕ) (n_large : 2 < n)
   let f x := x ^ n.centralBinom.factorization x
   have : ∏ x ∈ S, f x = ∏ x ∈ Finset.range (2 * n / 3 + 1), f x := by
     refine Finset.prod_filter_of_ne fun p _ h => ?_
-    contrapose! h; dsimp only [f]
+    contrapose h; dsimp only [f]
     rw [factorization_eq_zero_of_not_prime n.centralBinom h, _root_.pow_zero]
   rw [centralBinom_factorization_small n n_large no_prime, ← this, ←
     Finset.prod_filter_mul_prod_filter_not S (· ≤ sqrt (2 * n))]
@@ -180,7 +180,7 @@ theorem centralBinom_le_of_no_bertrand_prime (n : ℕ) (n_large : 2 < n)
     refine pow_right_mono₀ n2_pos ((Finset.card_le_card fun x hx => ?_).trans this.le)
     obtain ⟨h1, h2⟩ := Finset.mem_filter.1 hx
     exact Finset.mem_Icc.mpr ⟨(Finset.mem_filter.1 h1).2.one_lt.le, h2⟩
-  · refine le_trans ?_ (primorial_le_4_pow (2 * n / 3))
+  · refine le_trans ?_ (primorial_le_four_pow (2 * n / 3))
     refine (Finset.prod_le_prod' fun p hp => (?_ : f p ≤ p)).trans ?_
     · obtain ⟨h1, h2⟩ := Finset.mem_filter.1 hp
       refine (pow_right_mono₀ (Finset.mem_filter.1 h1).2.one_lt.le ?_).trans (pow_one p).le
@@ -237,20 +237,6 @@ theorem exists_prime_lt_and_le_two_mul (n : ℕ) (hn0 : n ≠ 0) :
   exact fun h2 => ⟨2, prime_two, h2, Nat.mul_le_mul_left 2 (Nat.pos_of_ne_zero hn0)⟩
 
 alias bertrand := Nat.exists_prime_lt_and_le_two_mul
-
-lemma le_primorial_self {n : ℕ} : n ≤ primorial n := by
-  rcases lt_or_ge n 4 with hn | hn
-  · interval_cases n <;> decide
-  · suffices ∃ p ≥ 3, p.Prime ∧ p ≤ n ∧ n ≤ 2 * p by
-      obtain ⟨p, _, pp, _, hp⟩ := this
-      apply hp.trans
-      have rearr : 2 * p = ∏ q ∈ {2, p}, if q.Prime then q else 1 := by
-        simp (disch := grind) [pp, prime_two]
-      rw [rearr, primorial, Finset.prod_filter]
-      refine Finset.prod_le_prod_of_subset_of_one_le' (by grind) fun _ _ _ ↦ ?_
-      exact iteInduction Prime.one_le fun _ ↦ le_rfl
-    obtain ⟨p, pp, _, _⟩ := bertrand (n / 2) (by lia)
-    exact ⟨p, by lia, pp, by lia, by lia⟩
 
 end Nat
 

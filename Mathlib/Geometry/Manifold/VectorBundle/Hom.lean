@@ -22,7 +22,7 @@ Indeed, semilinear maps are typically not smooth. For instance, complex conjugat
 `ℂ`-differentiable.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

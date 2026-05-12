@@ -128,7 +128,8 @@ def tryTheoremWithHint? (e : Expr) (thmOrigin : Origin)
     FunPropM (Option Result) := do
   let go : FunPropM (Option Result) := do
     let thmProof ← thmOrigin.getValue
-    let type ← inferType thmProof
+    -- for `fvar`s we need to instantiate the metavariables of its type.
+    let type ← instantiateMVars <| ← inferType thmProof
     let (xs, _, type) ← forallMetaTelescope type
 
     for (i,x) in hint do
@@ -321,6 +322,17 @@ def applyMorRules (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
   trace[Debug.Meta.Tactic.fun_prop] "applying morphism theorems to {← ppExpr e}"
 
+  -- get theorems
+  let candidates ← getMorphismTheorems e
+  trace[Meta.Tactic.fun_prop]
+    "candidate morphism theorems: {← candidates.mapM fun c => ppOrigin (.decl c.thmName)}"
+
+  -- try theorems
+  for c in candidates do
+    if let some r ← tryTheorem? e (.decl c.thmName) funProp then
+      return r
+
+  -- if all failed try to add/remove arguments
   match ← fData.isMorApplication with
   | .none => throwError "fun_prop bug: invalid use of mor rules on {← ppExpr e}"
   | .underApplied =>
@@ -329,16 +341,6 @@ def applyMorRules (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     let some (f, g) ← fData.peeloffArgDecomposition | return none
     applyCompRule funPropDecl e f g funProp
   | .exact =>
-
-    let candidates ← getMorphismTheorems e
-
-    trace[Meta.Tactic.fun_prop]
-      "candidate morphism theorems: {← candidates.mapM fun c => ppOrigin (.decl c.thmName)}"
-
-    for c in candidates do
-      if let some r ← tryTheorem? e (.decl c.thmName) funProp then
-        return r
-
     trace[Debug.Meta.Tactic.fun_prop] "no theorem matched"
     return none
 

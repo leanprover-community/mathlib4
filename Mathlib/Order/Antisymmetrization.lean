@@ -140,11 +140,11 @@ def toAntisymmetrization : α → Antisymmetrization α r :=
 noncomputable def ofAntisymmetrization : Antisymmetrization α r → α :=
   Quotient.out
 
-instance [Inhabited α] : Inhabited (Antisymmetrization α r) := by
-  unfold Antisymmetrization; infer_instance
+instance [Inhabited α] : Inhabited (Antisymmetrization α r) :=
+  inferInstanceAs <| Inhabited (Quotient _)
 
-instance [Subsingleton α] : Subsingleton (Antisymmetrization α r) := by
-  unfold Antisymmetrization; infer_instance
+instance [Subsingleton α] : Subsingleton (Antisymmetrization α r) :=
+  inferInstanceAs <| Subsingleton (Quotient _)
 
 @[elab_as_elim]
 protected theorem Antisymmetrization.ind {p : Antisymmetrization α r → Prop} :
@@ -331,7 +331,7 @@ theorem ofAntisymmetrization_lt_ofAntisymmetrization_iff {a b : Antisymmetrizati
     ofAntisymmetrization (· ≤ ·) a < ofAntisymmetrization (· ≤ ·) b ↔ a < b :=
   (Quotient.outRelEmbedding _).map_rel_iff
 
-@[mono]
+@[gcongr, mono]
 theorem toAntisymmetrization_mono : Monotone (toAntisymmetrization (α := α) (· ≤ ·)) :=
   fun _ _ => id
 
