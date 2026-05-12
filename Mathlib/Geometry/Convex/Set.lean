@@ -198,6 +198,9 @@ variable (K) in
 
 @[ext] theorem ext (h : ∀ x, x ∈ K₁ ↔ x ∈ K₂) : K₁ = K₂ := SetLike.ext h
 
+@[simp]
+theorem mem_mk {s h x} : x ∈ (⟨s, h⟩ : ConvexSet R X) ↔ x ∈ s := .rfl
+
 example : (K₁ : Set X) ≤ K₂ ↔ K₁ ≤ K₂ := by simp only [le_eq_subset,
   SetLike.coe_subset_coe]
 
@@ -231,11 +234,11 @@ instance : CompleteSemilatticeInf (ConvexSet R X) where
 
 instance : OrderBot (ConvexSet R X) where
   bot := ⟨∅, IsConvexSet.empty⟩
-  bot_le _ _ hx := by simp [← SetLike.mem_coe, ← carrier_eq_coe] at hx
+  bot_le _ _ hx := by simp at hx
 
 instance : OrderTop (ConvexSet R X) where
   top := ⟨Set.univ, IsConvexSet.univ⟩
-  le_top _ _ _ := by simp [← SetLike.mem_coe, ← carrier_eq_coe]
+  le_top _ _ _ := by simp
 
 instance : Inhabited (ConvexSet R X) := ⟨⊤⟩
 
