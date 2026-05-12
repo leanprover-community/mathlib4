@@ -12,6 +12,7 @@ public import Mathlib.Topology.Algebra.Module.LinearMap
 public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 public import Mathlib.Topology.Algebra.Module.LinearMap
 public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
+public import Mathlib.LinearAlgebra.Dual.Lemmas
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E F : Type*} [AddCommGroup E] [AddCommGroup F] [TopologicalSpace E] [TopologicalSpace F]
@@ -36,55 +37,55 @@ structure IsFredholm_struc : Prop where
 def IsFredholm_exists : Prop := ∃ g : F →L[𝕜] E,
   FiniteDimensional 𝕜 (f ∘L g - .id 𝕜 F).range  ∧ FiniteDimensional 𝕜 (g ∘L f - .id 𝕜 E).range
 
-namespace QuotFiniteSubmodules
-variable [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F] [ContinuousAdd E] [ContinuousAdd F]
-
--- TODO: MOVE
-@[simp]
-lemma FiniteDimensional.range_zero {R : Type*} {R₂ : Type*} {M : Type*} {M₂ : Type*} [Semiring R]
-  [DivisionRing R₂] [AddCommMonoid M] [AddCommGroup M₂] [Module R M] [Module R₂ M₂] {τ₁₂ : R →+* R₂}
-  [RingHomSurjective τ₁₂] : FiniteDimensional R₂ (0 : M →ₛₗ[τ₁₂] M₂).range := by
-  rw [← Submodule.fg_iff_finiteDimensional, LinearMap.range_zero]
-  exact Submodule.fg_bot
-
--- TODO: MOVE next to LinearMap.range_smul
-lemma LinearMap.range_smul_le {K : Type*} {V : Type*} {V₂ : Type*} [Semifield K] [AddCommMonoid V]
-    [Module K V] [AddCommMonoid V₂] [Module K V₂] (f : V →ₗ[K] V₂) (a : K) :
-    (a • f).range ≤f.range := by
-  by_cases ha : a = 0
-  · simp_all
-  · exact f.range_smul a ha |>.le
-
-variable (𝕜 E F) in
-def FiniteRank : Submodule 𝕜 (E →L[𝕜] F) where
-  carrier := {u | FiniteDimensional 𝕜 u.range}
-  add_mem' {u v} (hu : FiniteDimensional 𝕜 u.range) (hv : FiniteDimensional 𝕜 v.range) :=
-    Submodule.finiteDimensional_of_le <| LinearMap.range_add_le u.toLinearMap v.toLinearMap
-  zero_mem' := by simp
-  smul_mem' c {u} (hu : FiniteDimensional 𝕜 u.range) := by
-    dsimp
-    rw [← Submodule.fg_iff_finiteDimensional] at *
-    exact hu.of_le <| LinearMap.range_smul_le u c
-
-
-scoped instance : Setoid (E →L[𝕜] F) := (FiniteRank 𝕜 E F).quotientRel
-
-def IsFredholm_quot : Prop := ∃ g : F →L[𝕜] E,
-  (f ∘L g ≈ .id 𝕜 F) ∧ (g ∘L f ≈ .id 𝕜 E)
-
-end QuotFiniteSubmodules
-
-theorem AnatoleDream_1 (hf : IsFredholm_struc f) : IsFredholm_exists f:= sorry
-
-def AnatoleDream_1_symm (hf : IsFredholm_exists f) : IsFredholm_struc f := sorry
-
-open QuotFiniteSubmodules in
-theorem AnatoleDream_2 [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F] [ContinuousAdd E]
-    [ContinuousAdd F] (hf : IsFredholm_struc f) : IsFredholm_quot f := sorry
-
-open QuotFiniteSubmodules in
-def AnatoleDream_2_symm [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F] [ContinuousAdd E]
-    [ContinuousAdd F] (hf : IsFredholm_quot f) : (IsFredholm_struc f) := sorry
+-- namespace QuotFiniteSubmodules
+-- variable [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F] [ContinuousAdd E] [ContinuousAdd F]
+--
+-- -- TODO: MOVE
+-- @[simp]
+-- lemma FiniteDimensional.range_zero {R : Type*} {R₂ : Type*} {M : Type*} {M₂ : Type*} [Semiring R]
+--   [DivisionRing R₂] [AddCommMonoid M] [AddCommGroup M₂] [Module R M] [Module R₂ M₂] {τ₁₂ : R →+* R₂}
+--   [RingHomSurjective τ₁₂] : FiniteDimensional R₂ (0 : M →ₛₗ[τ₁₂] M₂).range := by
+--   rw [← Submodule.fg_iff_finiteDimensional, LinearMap.range_zero]
+--   exact Submodule.fg_bot
+--
+-- -- TODO: MOVE next to LinearMap.range_smul
+-- lemma LinearMap.range_smul_le {K : Type*} {V : Type*} {V₂ : Type*} [Semifield K] [AddCommMonoid V]
+--     [Module K V] [AddCommMonoid V₂] [Module K V₂] (f : V →ₗ[K] V₂) (a : K) :
+--     (a • f).range ≤f.range := by
+--   by_cases ha : a = 0
+--   · simp_all
+--   · exact f.range_smul a ha |>.le
+--
+-- variable (𝕜 E F) in
+-- def FiniteRank : Submodule 𝕜 (E →L[𝕜] F) where
+--   carrier := {u | FiniteDimensional 𝕜 u.range}
+--   add_mem' {u v} (hu : FiniteDimensional 𝕜 u.range) (hv : FiniteDimensional 𝕜 v.range) :=
+--     Submodule.finiteDimensional_of_le <| LinearMap.range_add_le u.toLinearMap v.toLinearMap
+--   zero_mem' := by simp
+--   smul_mem' c {u} (hu : FiniteDimensional 𝕜 u.range) := by
+--     dsimp
+--     rw [← Submodule.fg_iff_finiteDimensional] at *
+--     exact hu.of_le <| LinearMap.range_smul_le u c
+--
+--
+-- scoped instance : Setoid (E →L[𝕜] F) := (FiniteRank 𝕜 E F).quotientRel
+--
+-- def IsFredholm_quot : Prop := ∃ g : F →L[𝕜] E,
+--   (f ∘L g ≈ .id 𝕜 F) ∧ (g ∘L f ≈ .id 𝕜 E)
+--
+-- end QuotFiniteSubmodules
+--
+-- theorem AnatoleDream_1 (hf : IsFredholm_struc f) : IsFredholm_exists f:= sorry
+--
+-- def AnatoleDream_1_symm (hf : IsFredholm_exists f) : IsFredholm_struc f := sorry
+--
+-- open QuotFiniteSubmodules in
+-- theorem AnatoleDream_2 [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F] [ContinuousAdd E]
+--     [ContinuousAdd F] (hf : IsFredholm_struc f) : IsFredholm_quot f := sorry
+--
+-- open QuotFiniteSubmodules in
+-- def AnatoleDream_2_symm [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F] [ContinuousAdd E]
+--     [ContinuousAdd F] (hf : IsFredholm_quot f) : (IsFredholm_struc f) := sorry
 
 /- ## API -/
 
@@ -129,23 +130,47 @@ lemma index_eq_of_finiteDimensional [FiniteDimensional k E] [FiniteDimensional k
 end LinearMap
 
 /- ## Kernel -/
+variable {R : Type*} [CommRing R] [IsNoetherianRing R]
+variable {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
 
-lemma KernelFG_of_isFredholm (hf : IsFredholm_exists f) : FiniteDimensional 𝕜 f.ker := by
-  obtain ⟨g, -, hg_left⟩ := hf
-  have : f.ker ≤ (g.comp f - 1).range := by
+variable {u : M →ₗ[R] N}
+
+variable (u) in
+def IsFredholm_existsₗ : Prop := ∃ v : N →ₗ[R] M,
+  ((u ∘ₗ v - 1).range).FG ∧ ((v ∘ₗ u - 1).range).FG
+
+lemma KernelFG_of_isFredholmₗ (hu : IsFredholm_existsₗ u) : u.ker.FG := by
+  obtain ⟨v, -, hv_left⟩ := hu
+  have : u.ker ≤ (v.comp u - 1).range := by
     intro x hx
     use -x
-    simp only [LinearMap.mem_ker, coe_coe] at hx
+    simp only [LinearMap.mem_ker] at hx
+    simp
     simp [hx]
-  rw [← Submodule.fg_iff_finiteDimensional]
   apply Submodule.FG.of_le _ this
-  exact Module.Finite.iff_fg.mp hg_left
-
-
-
+  exact hv_left
 
 
 /- ## Coernel -/
+
+lemma CokernelFG_of_isFredholmₗ (hu : IsFredholm_existsₗ u) [Module.Free R (N ⧸ u.range)]:
+    Module.Finite R (N ⧸ u.range) := by
+  obtain ⟨v, hv_right, hv_left⟩ := hu
+  let φ := u.dualMap
+  have : IsFredholm_existsₗ φ := by
+    unfold IsFredholm_existsₗ
+    use v.dualMap
+    sorry
+    -- constructor
+    -- · rw [LinearMap.dualMap_comp_dualMap]
+    --   sorry
+  have FG_ker_dual : φ.ker.FG := KernelFG_of_isFredholmₗ this
+  have one := u.ker_dualMap_eq_dualAnnihilator_range
+  rw [one] at FG_ker_dual
+  let two := (u.range).dualQuotEquivDualAnnihilator
+  rw [← Module.finite_dual_iff, Module.Finite.equiv_iff two]
+  exact Module.Finite.iff_fg.mpr FG_ker_dual
+
 
 /- ## GoodRelation -/
 
