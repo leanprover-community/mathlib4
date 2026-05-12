@@ -172,19 +172,34 @@ noncomputable def longSequenceFunctor :
       obj S := longSequence S.property n₀ n₁ h
       map {S₁ S₂} f := longSequence_hom n₀ n₁ h S₁.property S₂.property f.hom
 
+include hS in
+lemma longSequence_comp_zero₁ (x : S.X₃.H n₀) : map S.f n₁ (connectingHom hS n₀ n₁ h x) = 0 := by
+  simpa using congr($(((longSequence_exact hS n₀ n₁ h).sc 2).zero) x)
+
 lemma longSequence_exact₁' :
     (ShortComplex.mk (ofHom (connectingHom hS n₀ n₁ h)) (ofHom (map S.f n₁)) (by
-      convert ((longSequence_exact hS n₀ n₁ h).sc 2).zero)).Exact := by
+      ext x
+      simpa using longSequence_comp_zero₁ hS n₀ n₁ h x)).Exact := by
   convert (longSequence_exact hS n₀ n₁ h).exact 2
+
+include hS in
+lemma longSequence_comp_zero₃ (x : S.X₂.H n₀) : connectingHom hS n₀ n₁ h (map S.g n₀ x) = 0 := by
+  simpa using congr($(((longSequence_exact hS n₀ n₁ h).sc 1).zero) x)
 
 lemma longSequence_exact₃' :
     (ShortComplex.mk (ofHom (map S.g n₀)) (ofHom (connectingHom hS n₀ n₁ h)) (by
-      convert ((longSequence_exact hS n₀ n₁ h).sc 1).zero)).Exact := by
+      ext x
+      simpa using longSequence_comp_zero₃ hS n₀ n₁ h x)).Exact := by
   convert (longSequence_exact hS n₀ n₁ h).exact 1
+
+include hS in
+lemma longSequence_comp_zero₂ (n : ℕ) (x : S.X₁.H n) : map S.g n (map S.f n x) = 0 := by
+  simpa using congr($(((longSequence_exact hS n _ rfl).sc 0).zero) x)
 
 lemma longSequence_exact₂' (n : ℕ) :
     (ShortComplex.mk (ofHom (map S.f n)) (ofHom (map S.g n)) (by
-      convert ((longSequence_exact hS n _ rfl).sc 0).zero)).Exact := by
+      ext x
+      simpa using longSequence_comp_zero₂ hS n x)).Exact := by
   convert (longSequence_exact hS n _ rfl).exact 0
 
 include hS in
@@ -221,7 +236,10 @@ lemma longSequence_equiv₀_exact₃ (x₃ : S.X₃.obj.obj (op T))
 
 lemma longSequence_equiv₀_exact₁ (x₁ : S.X₁.H 1)
     (hx₁ : map S.f 1 x₁ = 0) : ∃ x₃ : S.X₃.obj.obj (op T),
-    (connectingHom hS 0 1 rfl) ((equiv₀ S.X₃ hT).symm x₃) = x₁ := sorry
+    (connectingHom hS 0 1 rfl) ((equiv₀ S.X₃ hT).symm x₃) = x₁ := by
+  obtain ⟨x₃', hx₃'⟩ := longSequence_exact₁ hS 0 1 rfl x₁ hx₁
+  use equiv₀ S.X₃ hT x₃'
+  simpa using hx₃'
 
 include hS hT in
 lemma longSequence_surjective_of_subsingleton_H [Subsingleton (S.X₁.H 1)] :

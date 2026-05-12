@@ -6,8 +6,10 @@ Authors: Brian Nugent
 
 module
 
-public import Mathlib
-public import Mathlib.AlgebraicGeometry.Modules.Quasicoherent
+public import Mathlib.CategoryTheory.Abelian.Injective.Resolution
+public import Mathlib.Topology.Sets.OpenCover
+public import Mathlib.Topology.Sheaves.Flasque
+public import Mathlib.Topology.Sheaves.Restrict
 
 @[expose] public section
 
@@ -67,7 +69,7 @@ lemma base (F : TopCat.Sheaf AddCommGrpCat.{u} X) {B : Set (Opens X)}
   have hs : pres.g.hom.app (op V) s = pres.X₃.obj.map V.leTop.op b := sorry
   clear_value s
   clear V' hV'₁ hV'₃ s' hs' hV₃ hV₁ hV₂ this
-  
+
   sorry
 
 set_option backward.isDefEq.respectTransparency false in
@@ -135,3 +137,4 @@ theorem prop1 (F : TopCat.Sheaf AddCommGrpCat.{u} X) (n : ℕ) {B : Set (Opens X
     erw [map_zero]
 
 end TopCat.Sheaf
+#min_imports

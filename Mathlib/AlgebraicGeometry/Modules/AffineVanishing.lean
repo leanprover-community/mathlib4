@@ -8,6 +8,7 @@ module
 
 public import Mathlib
 public import Mathlib.AlgebraicGeometry.Modules.Quasicoherent
+public import Mathlib.AlgebraicGeometry.Modules.KempfProp1
 
 @[expose] public section
 
@@ -49,15 +50,6 @@ end
 namespace TopCat.Sheaf
 
 variable {X : TopCat.{u}}
-
-set_option backward.isDefEq.respectTransparency false in
-theorem prop1 (F : TopCat.Sheaf AddCommGrpCat.{u} X) (n : ℕ) {B : Set (Opens X)}
-    (hB : Opens.IsBasis B)
-    (hinter : ∀ (U V : Opens X), U ∈ B → V ∈ B → U ⊓ V ∈ B)
-    (vanish : ∀ (r : ℕ) (U : Opens X), 1 ≤ r → r ≤ n → U ∈ B →
-    Subsingleton (H ((restrict AddCommGrpCat.{u} U.isOpenEmbedding).obj F) r))
-    (c : H F (n + 1)) : ∃ (I : Type u) (U : I → Opens X) (_ : IsOpenCover U),
-    (∀ i, U i ∈ B ∧ H.map ((toRestrict _ (U i)).app F) (n + 1) c = 0) := sorry
 
 end TopCat.Sheaf
 
@@ -246,7 +238,7 @@ instance [IsAffine X] [F.IsQuasicoherent] (n : ℕ) : Subsingleton (H F.sheaf (n
     obtain ⟨x₃, hx₃⟩ := Sheaf.H.longSequence_exact₁ hSsheaf 0 1 rfl c <|
       F.toCoverSheaf_H_map_zero U 1 c (fun i => (vanish i).right)
     obtain ⟨x₂, hx₂⟩ := this x₃
-    simpa [← hx₃, ← hx₂] using Sheaf.H.map_comp_connectingHom_zero hSsheaf 0 1 rfl x₂
+    simpa [← hx₃, ← hx₂] using Sheaf.H.longSequence_comp_zero₃ hSsheaf 0 1 rfl x₂
   -- Inductive Step
   refine fun n hi X F _ _ => subsingleton_of_forall_eq 0 (fun c => ?_)
   obtain ⟨I, ⟨(U' : I → X.Opens) , ⟨hU', vanish⟩⟩⟩ := Sheaf.prop1 F.sheaf (n + 1)
