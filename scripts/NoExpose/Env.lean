@@ -201,8 +201,13 @@ def sourceScanRecords (recs : Array DeclRecord) :
     let mut byLine : Std.HashMap Nat ExposeSource := {}
     if ← System.FilePath.pathExists pth then
       let text ← IO.FS.readFile pth
-      for (ln, src) in scanFile text do
-        if wanted.contains ln then byLine := byLine.insert ln src
+      -- `findDeclarationRanges?` reports the block-start line for some
+      -- decl kinds (`def`/`theorem`) and the keyword line for others
+      -- (`macro`/`syntax`). Insert both into `byLine` so a lookup keyed
+      -- by either succeeds.
+      for (blockLn, headLn, src) in scanFile text do
+        if wanted.contains blockLn then byLine := byLine.insert blockLn src
+        if wanted.contains headLn  then byLine := byLine.insert headLn  src
     for i in indices do
       let src := byLine.getD recs[i]!.line .unknown
       sources := sources.set! i src

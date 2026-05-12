@@ -144,17 +144,21 @@ end SourceScan
 
 open SourceScan in
 /-- Walk `text` once, classifying each top-level declaration. Returns
-`(declStartLine, ExposeSource)` per decl, where `declStartLine` is
-1-based and matches the start of the decl block as returned by
-`Lean.findDeclarationRanges?.range.pos.line` (the first line of any
-leading doc-comment or attribute block). -/
-partial def scanFile (text : String) : Array (Nat × ExposeSource) := Id.run do
+`(blockStartLine, headLine, ExposeSource)` per decl, both lines 1-based.
+`blockStartLine` is the first line of any leading doc-comment or
+attribute block; `headLine` is the line containing the actual decl
+keyword (`def`/`theorem`/`macro`/…). They differ when a multi-line
+doc-comment or attribute list precedes the keyword.
+`Lean.findDeclarationRanges?.range.pos.line` returns the block-start
+for `def`-shaped decls and the head line for `macro`/`syntax` shapes,
+so callers need to look up against *either*. -/
+partial def scanFile (text : String) : Array (Nat × Nat × ExposeSource) := Id.run do
   let lines := (text.splitOn "\n").toArray
   let mut stack : List Frame := []
   let mut blockStart : Option Nat := none
   let mut pendingExpose : Bool := false
   let mut inBlockComment : Bool := false
-  let mut out : Array (Nat × ExposeSource) := #[]
+  let mut out : Array (Nat × Nat × ExposeSource) := #[]
   let mut i := 0
   while i < lines.size do
     let line := lines[i]!
@@ -206,7 +210,7 @@ partial def scanFile (text : String) : Array (Nat × ExposeSource) := Id.run do
         else if stack.any (·.hasExpose) then .sectionAttr
         else if stack.any (·.isMeta) then .metaExposed
         else .unknown
-      out := out.push (startLine, src)
+      out := out.push (startLine, lineNum, src)
       blockStart := none; pendingExpose := false
       continue
     -- Attribute-only line (e.g. `@[expose]` on its own).
