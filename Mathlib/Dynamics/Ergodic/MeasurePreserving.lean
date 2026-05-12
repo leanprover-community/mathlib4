@@ -28,7 +28,7 @@ Isabelle formalization.
 measure-preserving map, measure
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory.Measure Function Set
 open scoped ENNReal
