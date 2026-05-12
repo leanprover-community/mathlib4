@@ -41,8 +41,8 @@ deriving BEq
 
 private def getSimprocsAsArray : CoreM (Array Name) := do
   let currentSimprocs ← getSimprocs
-  let currentSimprocsAsArray := currentSimprocs.pre.toArray ++ currentSimprocs.post.toArray
-  return currentSimprocsAsArray.map fun simprocEntry ↦ simprocEntry.snd.declName
+  let currentSimprocsAsArray := currentSimprocs.pre.elements ++ currentSimprocs.post.elements
+  return currentSimprocsAsArray.map fun simprocEntry ↦ simprocEntry.declName
 
 /-- Get all simprocs in the environment and output a `DiscrTree Name` structure.
 
@@ -54,7 +54,7 @@ private def getAllSimprocs : CoreM (DiscrTree SimprocData) := do
   let mut simprocs : DiscrTree SimprocData := {}
   for (simprocName, simprocKeys) in state.builtin.union state.newEntries.toHashMap do
     unless ← hasConst simprocName do continue
-    simprocs := simprocs.insertCore simprocKeys
+    simprocs := simprocs.insertKeyValue simprocKeys
       ⟨simprocName, currentSimprocs.contains simprocName, ← checkSimprocType simprocName⟩
   return simprocs
 
