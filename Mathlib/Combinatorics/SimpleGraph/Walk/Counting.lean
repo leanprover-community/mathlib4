@@ -33,7 +33,7 @@ namespace SimpleGraph
 variable {V : Type u} (G : SimpleGraph V)
 
 theorem set_walk_self_length_zero_eq (u : V) : {p : G.Walk u u | p.length = 0} = {.nil} := by
-  simp [Walk.length_eq_zero_iff, ← Walk.eq_nil_iff]
+  simp [Walk.length_eq_zero_iff, ← Walk.eq_nil_iff_nil]
 
 theorem set_walk_length_zero_eq_of_ne {u v : V} (h : u ≠ v) : {p : G.Walk u v | p.length = 0} = ∅ :=
   Set.eq_empty_of_forall_notMem (h <| ·.eq_of_length_eq_zero ·)
@@ -83,7 +83,7 @@ def finsetWalkLength (n : ℕ) (u v : V) : Finset (G.Walk u v) :=
 theorem coe_finsetWalkLength_eq (n : ℕ) (u v : V) :
     (G.finsetWalkLength n u v : Set (G.Walk u v)) = {p : G.Walk u v | p.length = n} := by
   induction n generalizing u v with
-  | zero => grind [finsetWalkLength, Walk.length_eq_zero_iff, Walk.eq_nil_iff, Walk.Nil.eq]
+  | zero => grind [finsetWalkLength, Walk.length_eq_zero_iff, Walk.eq_nil_iff_nil, Walk.Nil.eq]
   | succ n ih =>
     simp only [finsetWalkLength, set_walk_length_succ_eq, Finset.coe_biUnion, Finset.mem_coe,
       Finset.mem_univ, Set.iUnion_true, Finset.coe_map, Set.iUnion_coe_set]

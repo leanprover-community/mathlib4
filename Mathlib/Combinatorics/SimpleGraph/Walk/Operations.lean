@@ -757,7 +757,7 @@ protected lemma Nil.dropLast {p : G.Walk v w} (hp : p.Nil) : p.dropLast.Nil := b
   rfl
 
 lemma Nil.eq_copy_nil {p : G.Walk u v} (h : p.Nil) : p = Walk.nil.copy rfl h.eq := by
-  grind [eq_nil_iff, copy_rfl_rfl]
+  grind [eq_nil_iff_nil, copy_rfl_rfl]
 
 lemma drop_of_length_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
     p.drop n = nil.copy rfl (p.getVert_of_length_le h) :=

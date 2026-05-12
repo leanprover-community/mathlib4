@@ -382,14 +382,14 @@ lemma not_nil_iff {p : G.Walk v w} :
 
 /-- A walk with its endpoints defeq is `Nil` if and only if it is equal to `nil`. -/
 @[simp]
-theorem eq_nil_iff {p : G.Walk v v} : p = nil ↔ p.Nil := by
+theorem eq_nil_iff_nil {p : G.Walk v v} : p = nil ↔ p.Nil := by
   cases p <;> simp
 
-alias ⟨_, Nil.eq_nil⟩ := eq_nil_iff
+alias ⟨_, Nil.eq_nil⟩ := eq_nil_iff_nil
 
-@[deprecated eq_nil_iff (since := "2026-05-11")]
+@[deprecated eq_nil_iff_nil (since := "2026-05-11")]
 lemma nil_iff_eq_nil : ∀ {p : G.Walk v v}, p.Nil ↔ p = nil :=
-  eq_nil_iff.symm
+  eq_nil_iff_nil.symm
 
 lemma nil_of_subsingleton [Subsingleton V] (p : G.Walk v w) : p.Nil :=
   match p with
