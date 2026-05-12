@@ -248,7 +248,7 @@ section Convex
 
 /-- A convex subset of a vector space is a convex space. -/
 -- TODO: this should generalize to arbitrary convex space once `Convex` is redefined.
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def ConvexSpace.ofConvex
     {R E : Type*} [LinearOrder R] [Field R] [IsStrictOrderedRing R]
       [AddCommGroup E] [Module R E] {S : Set E} (H : Convex R S) :

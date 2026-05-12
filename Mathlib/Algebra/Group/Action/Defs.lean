@@ -60,11 +60,11 @@ variable {M N G H α β γ δ : Type*}
 attribute [instance 1100, to_additive /-- See also `AddMonoid.toAddAction` -/] instSMulOfMul
 
 /-- See also `Monoid.toMulAction` and `MulZeroClass.toSMulWithZero`. -/
-@[deprecated instSMulOfMul (since := "2025-10-18"), implicit_reducible]
+@[deprecated instSMulOfMul (since := "2025-10-18"), instance_reducible]
 def Mul.toSMul (α : Type*) [Mul α] : SMul α α := ⟨(· * ·)⟩
 
 /-- See also `AddMonoid.toAddAction` -/
-@[deprecated instVAddOfAdd (since := "2025-10-18"), implicit_reducible]
+@[deprecated instVAddOfAdd (since := "2025-10-18"), instance_reducible]
 def Add.toVAdd (α : Type*) [Add α] : VAdd α α := ⟨(· + ·)⟩
 
 /-- Like `Mul.toSMul`, but multiplies on the right.

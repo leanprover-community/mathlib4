@@ -60,7 +60,7 @@ class ShiftSequence where
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The tautological shift sequence on a functor. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def ShiftSequence.tautological : ShiftSequence F M where
   sequence n := shiftFunctor C n ⋙ F
   isoZero := isoWhiskerRight (shiftFunctorZero C M) F ≪≫ F.leftUnitor

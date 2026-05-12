@@ -47,7 +47,7 @@ instance {X : FintypeCat} : Finite X :=
 
 /-- A `Fintype` instance on objects on `FintypeCat`, that should be turned on as needed.
 Prefer the `Finite` instance if possible. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def fintype {X : FintypeCat} : Fintype X :=
   Fintype.ofFinite X.obj
 

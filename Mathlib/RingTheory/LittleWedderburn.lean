@@ -55,7 +55,7 @@ open Module Polynomial
 
 variable {D}
 
-@[implicit_reducible]
+@[instance_reducible]
 private def field (hD : InductionHyp D) {R : Subring D} (hR : R < ⊤)
     [Fintype D] [DecidableEq D] [DecidablePred (· ∈ R)] :
     Field R :=
