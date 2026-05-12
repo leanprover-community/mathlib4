@@ -81,25 +81,30 @@ instance : ChosenCoends.{v, u} (Type max w u) where
 
 variable {J : Type u} [Category.{v} J] {F : Jᵒᵖ ⥤ J ⥤ Type max w u}
 
+lemma Types.chosenCoend_def : chosenCoend F = Quot (coendRel F) := rfl
+
+attribute [local simp] Types.chosenCoend_def
+
 lemma chosenCoend.ι_apply (j : J) (x : (F.obj (op j)).obj j) :
-    chosenCoend.ι F j x = Quot.mk _ ⟨j, x⟩ :=
+    dsimp% chosenCoend.ι F j x = Quot.mk _ ⟨j, x⟩ :=
   rfl
 
 lemma chosenCoend.desc_apply {X : Type max w u} (f : ∀ j, (F.obj (op j)).obj j ⟶ X)
     (hf : ∀ ⦃i j : J⦄ (g : i ⟶ j), (F.map g.op).app i ≫ f i = (F.obj (op j)).map g ≫ f j)
-    (x : chosenCoend F) : chosenCoend.desc f hf x =
+    (x : chosenCoend F) : dsimp% chosenCoend.desc f hf x =
       Quot.lift (fun j ↦ f j.fst j.snd) (fun _ _ h ↦ by
         cases h with | mk f x => exact ConcreteCategory.congr_hom (hf f) _) x :=
   rfl
 
 lemma chosenCoend.map_apply {G : Jᵒᵖ ⥤ J ⥤ Type max w u} (f : F ⟶ G) (x : chosenCoend F) :
-    chosenCoend.map f x = Quot.lift (fun ⟨j, y⟩ ↦ Quot.mk _ ⟨j, (f.app _).app _ y⟩) (fun _ _ ↦ by
-      rintro ⟨g, y⟩
-      apply Quot.sound
-      rw [Types.coendRel_iff]
-      refine ⟨g, (f.app _).app _ y, ?_, ?_⟩
-      · simp only [← NatTrans.comp_app_apply, f.naturality]
-      · simp [← NatTrans.naturality_apply]) x :=
+    dsimp% chosenCoend.map f x =
+      Quot.lift (fun ⟨j, y⟩ ↦ Quot.mk _ ⟨j, (f.app _).app _ y⟩) (fun _ _ ↦ by
+        rintro ⟨g, y⟩
+        apply Quot.sound
+        rw [Types.coendRel_iff]
+        refine ⟨g, (f.app _).app _ y, ?_, ?_⟩
+        · simp only [← NatTrans.comp_app_apply, f.naturality]
+        · simp [← NatTrans.naturality_apply]) x :=
   rfl
 
 namespace Types
@@ -149,19 +154,23 @@ instance : ChosenEnds.{v, u} (Type max w u) where
 
 variable {J : Type u} [Category.{v} J] {F : Jᵒᵖ ⥤ J ⥤ Type max w u}
 
+lemma Types.chosenEnd_def : chosenEnd F = Types.end_ F := rfl
+
+attribute [local simp] Types.chosenEnd_def
+
 lemma chosenEnd.π_apply (j : J) (x : Types.end_ F) :
-    chosenEnd.π (C := Type max w u) F j x = x.1 j :=
+    dsimp% chosenEnd.π (C := Type max w u) F j x = x.1 j :=
   rfl
 
 lemma chosenEnd.lift_apply {X : Type max w u} (f : ∀ j, X ⟶ (F.obj (op j)).obj j)
     (hf : ∀ ⦃i j : J⦄ (g : i ⟶ j), f i ≫ (F.obj (op i)).map g = f j ≫ (F.map g.op).app j)
-    (x : X) : chosenEnd.lift (C := Type max w u) (F := F) f hf x =
+    (x : X) : dsimp% chosenEnd.lift (C := Type max w u) (F := F) f hf x =
       (⟨fun j ↦ f j x, fun _ _ g ↦ ConcreteCategory.congr_hom (hf g) x⟩ : Types.end_ F) :=
   rfl
 
 lemma chosenEnd.map_apply {G : Jᵒᵖ ⥤ J ⥤ Type max w u} (f : F ⟶ G)
     (x : Types.end_ F) :
-    chosenEnd.map (C := Type max w u) f x =
+    dsimp% chosenEnd.map (C := Type max w u) f x =
       ⟨fun j ↦ (f.app (op j)).app j (x.1 j), by
         intro i j g
         rw [← (f.app (op i)).naturality_apply]
