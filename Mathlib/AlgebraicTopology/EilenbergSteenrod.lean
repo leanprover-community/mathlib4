@@ -68,43 +68,43 @@ structure Hom (HP HP' : HomologyPretheory C c) where
 attribute [reassoc (attr := simp)] Hom.iso_comm
 attribute [reassoc (attr := local simp)] Hom.w
 
-variable {HP HP' : HomologyPretheory C c}
-
-@[reassoc]
-lemma Hom.iso_comm_congr_app (f : HP.Hom HP') (i : ι) (X : TopCat.{u}) :
-    dsimp% (HP.iso i).hom.app X ≫ (incl.whiskerLeft (f.homₚ i)).app X =
-    (f.hom i).app X ≫ (HP'.iso i).hom.app X :=
-  congr($(f.iso_comm _).app _)
-
-@[reassoc]
-lemma Hom.w_congr_app (f : HP.Hom HP') (i j : ι) (X : TopPair) :
-    dsimp% (HP.δ i j).app X ≫ (f.hom j).app X.left = (f.homₚ i).app X ≫ (HP'.δ i j).app X :=
-  congr($(f.w _ _).app _)
-
-@[reassoc]
-lemma iso_homₚ_inv_hom (f : HP.Hom HP') (i : ι) :
-    (HP.iso i).hom ≫ incl.whiskerLeft (f.homₚ i) ≫ (HP'.iso i).inv = f.hom i := by simp
-
-@[reassoc (attr := simp)]
-lemma iso_homₚ_inv_hom_congr_app (f : HP.Hom HP') (i : ι) (X : TopCat) :
-    dsimp% (HP.iso i).hom.app X ≫ (f.homₚ i).app (ofTopCat X) ≫ (HP'.iso i).inv.app X =
-    (f.hom i).app X := congr($(iso_homₚ_inv_hom _ _).app _)
-
-@[reassoc (attr := simp)]
-lemma inv_hom_iso_homₚ (f : HP.Hom HP') (i : ι) :
-    (HP.iso i).inv ≫ f.hom i ≫ (HP'.iso i).hom = incl.whiskerLeft (f.homₚ i) :=
-  ((Iso.inv_comp_eq (HP.iso i)).mpr (f.iso_comm i).symm)
-
-@[reassoc (attr := simp)]
-lemma inv_hom_iso_homₚ_congr_app (f : HP.Hom HP') (i : ι) (X : TopCat) :
-    dsimp% (HP.iso i).inv.app X ≫ (f.hom i).app X ≫ (HP'.iso i).hom.app X =
-    (f.homₚ i).app (ofTopCat X) := congr($(inv_hom_iso_homₚ _ _).app _)
-
 @[simps]
 instance : Category (HomologyPretheory C c) where
   Hom := HomologyPretheory.Hom
   id _ := { homₚ _ := 𝟙 _ }
   comp f g := { homₚ _ := f.homₚ _ ≫ g.homₚ _ }
+
+variable {HP HP' : HomologyPretheory C c}
+
+@[reassoc]
+lemma Hom.iso_comm_congr_app (f : HP ⟶ HP') (i : ι) (X : TopCat.{u}) :
+    dsimp% (HP.iso i).hom.app X ≫ (incl.whiskerLeft (f.homₚ i)).app X =
+    (f.hom i).app X ≫ (HP'.iso i).hom.app X :=
+  congr($(f.iso_comm _).app _)
+
+@[reassoc]
+lemma Hom.w_congr_app (f : HP ⟶ HP') (i j : ι) (X : TopPair) :
+    dsimp% (HP.δ i j).app X ≫ (f.hom j).app X.left = (f.homₚ i).app X ≫ (HP'.δ i j).app X :=
+  congr($(f.w _ _).app _)
+
+@[reassoc]
+lemma iso_homₚ_inv_hom (f : HP ⟶ HP') (i : ι) :
+    (HP.iso i).hom ≫ incl.whiskerLeft (f.homₚ i) ≫ (HP'.iso i).inv = f.hom i := by simp
+
+@[reassoc (attr := simp)]
+lemma iso_homₚ_inv_hom_congr_app (f : HP ⟶ HP') (i : ι) (X : TopCat) :
+    dsimp% (HP.iso i).hom.app X ≫ (f.homₚ i).app (ofTopCat X) ≫ (HP'.iso i).inv.app X =
+    (f.hom i).app X := congr($(iso_homₚ_inv_hom _ _).app _)
+
+@[reassoc (attr := simp)]
+lemma inv_hom_iso_homₚ (f : HP ⟶ HP') (i : ι) :
+    (HP.iso i).inv ≫ f.hom i ≫ (HP'.iso i).hom = incl.whiskerLeft (f.homₚ i) :=
+  ((Iso.inv_comp_eq (HP.iso i)).mpr (f.iso_comm i).symm)
+
+@[reassoc (attr := simp)]
+lemma inv_hom_iso_homₚ_congr_app (f : HP ⟶ HP') (i : ι) (X : TopCat) :
+    dsimp% (HP.iso i).inv.app X ≫ (f.hom i).app X ≫ (HP'.iso i).hom.app X =
+    (f.homₚ i).app (ofTopCat X) := congr($(inv_hom_iso_homₚ _ _).app _)
 
 /-- The forgetful functor that sends a `HomologyPretheory` to it's relative homology functor `Hₚ`.
 -/
