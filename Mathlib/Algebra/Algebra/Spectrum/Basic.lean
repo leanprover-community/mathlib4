@@ -32,6 +32,7 @@ This theory will serve as the foundation for spectral theory in Banach algebras.
 * `spectrum.left_add_coset_eq`: elements of the scalar ring commute (addition) with the spectrum.
 * `spectrum.unit_mem_mul_comm` and `spectrum.preimage_units_mul_comm`: the
   units (of `R`) in `σ (a*b)` coincide with those in `σ (b*a)`.
+* `spectrum.resolvent_sub_resolvent`: the second resolvent identity.
 * `spectrum.scalar_eq`: in a nontrivial algebra over a field, the spectrum of a scalar is
   a singleton.
 
@@ -156,6 +157,21 @@ theorem of_subsingleton [Subsingleton A] (a : A) : spectrum R a = ∅ := by
 
 theorem resolvent_eq {a : A} {r : R} (h : r ∈ resolventSet R a) : resolvent a r = ↑h.unit⁻¹ :=
   Ring.inverse_unit h.unit
+
+/-- The second resolvent identity: for `r` in the resolvent set of both
+`a` and `b`,
+`resolvent a r - resolvent b r = resolvent a r * (a - b) * resolvent b r`. -/
+theorem resolvent_sub_resolvent {a b : A} {r : R}
+    (ha : r ∈ resolventSet R a) (hb : r ∈ resolventSet R b) :
+    resolvent a r - resolvent b r
+      = resolvent a r * (a - b) * resolvent b r := by
+  rw [resolvent_eq ha, resolvent_eq hb]
+  have h_units : (↑ha.unit⁻¹ : A) - (↑hb.unit⁻¹ : A)
+      = (↑ha.unit⁻¹ : A) * ((hb.unit : A) - (ha.unit : A)) * (↑hb.unit⁻¹ : A) := by
+    rw [mul_sub, sub_mul, mul_assoc, Units.mul_inv, mul_one, Units.inv_mul, one_mul]
+  have h_diff : (hb.unit : A) - (ha.unit : A) = a - b := by
+    rw [ha.unit_spec, hb.unit_spec]; abel
+  rw [h_units, h_diff]
 
 theorem units_smul_resolvent {r : Rˣ} {s : R} {a : A} :
     r • resolvent a (s : R) = resolvent (r⁻¹ • a) (r⁻¹ • s : R) := by
