@@ -36,7 +36,7 @@ final can be restated. We show:
 
 -/
 
-@[expose] public section
+public section
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
@@ -60,7 +60,6 @@ theorem Functor.initial_of_isCofiltered_costructuredArrow
     [∀ d, IsCofiltered (CostructuredArrow F d)] : Initial F where
   out _ := IsCofiltered.isConnected _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isFiltered_structuredArrow_of_isFiltered_of_exists [IsFilteredOrEmpty C]
     (h₁ : ∀ d, ∃ c, Nonempty (d ⟶ F.obj c)) (h₂ : ∀ {d : D} {c : C} (s s' : d ⟶ F.obj c),
       ∃ (c' : C) (t : c ⟶ c'), s ≫ F.map t = s' ≫ F.map t) (d : D) :

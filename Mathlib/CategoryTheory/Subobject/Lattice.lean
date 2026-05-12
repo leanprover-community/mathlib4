@@ -129,7 +129,6 @@ section Inf
 
 variable [HasPullbacks C]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- When `[HasPullbacks C]`, `MonoOver A` has "intersections", functorial in both arguments.
 
 As `MonoOver A` is only a preorder, this doesn't satisfy the axioms of `SemilatticeInf`,
@@ -184,7 +183,6 @@ def leSupRight {A : C} (f g : MonoOver A) : g ⟶ (sup.obj f).obj g := by
   erw [Category.assoc, image.fac, coprod.inr_desc]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A morphism version of `sup_le`. -/
 def supLe {A : C} (f g h : MonoOver A) : (f ⟶ h) → (g ⟶ h) → ((sup.obj f).obj g ⟶ h) := by
   intro k₁ k₂
@@ -335,7 +333,7 @@ variable (C)
 @[simps]
 def functor [HasPullbacks C] : Cᵒᵖ ⥤ Type max u₁ v₁ where
   obj X := Subobject X.unop
-  map f := TypeCat.ofHom (pullback f.unop).obj
+  map f := ↾(pullback f.unop).obj
   map_id _ := by ext : 3; simp [pullback_id]
   map_comp _ _ := by ext : 3; simp [pullback_comp]
 

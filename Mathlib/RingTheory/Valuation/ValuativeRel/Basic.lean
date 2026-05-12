@@ -617,7 +617,7 @@ theorem ValueGroupWithZero.inv_mk (x : R) (y : posSubmonoid R) (hx : ¬x ≤ᵥ 
 
 /-- The value group-with-zero is a linearly ordered commutative group with zero. -/
 instance : LinearOrderedCommGroupWithZero (ValueGroupWithZero R) where
-  zero_le _ := bot_le
+  isBot_zero _ := bot_le
   exists_pair_ne := by
     refine ⟨0, 1, fun h => ?_⟩
     apply ge_of_eq at h
@@ -722,9 +722,6 @@ lemma vlt_iff_lt : x <ᵥ y ↔ v x < v y := by
   simp [lt_iff_not_ge, ← Compatible.vle_iff_le]
 
 @[deprecated (since := "2025-12-20")] alias srel_iff_lt := vlt_iff_lt
-
-@[deprecated (since := "2025-10-09")]
-alias Compatible.srel_iff_lt := vlt_iff_lt
 
 lemma veq_iff_eq : x =ᵥ y ↔ v x = v y := by
   simp_rw [veq_def, vle_iff_le v, antisymm_iff]
