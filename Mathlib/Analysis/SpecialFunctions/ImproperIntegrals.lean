@@ -115,8 +115,9 @@ theorem integral_exp_mul_Iic {a : ℝ} (ha : 0 < a) (c : ℝ) :
 /-! ### Tail integrals of `x ^ m * exp (-(a * x))`
 
 The integral `∫ x in Ioi R, x ^ m * exp (-(a * x))` is the upper incomplete Gamma function
-evaluated at the integer `m + 1`. The lemmas below give explicit closed forms for `m = 0, 1, 2`.
-They are useful for tail bounds in the theory of Dirichlet series, modular forms, and `L`-functions.
+evaluated at the integer `m + 1`. The lemmas below give explicit closed forms for
+`m = 0, 1, 2, 3, 4, 5`. They are useful for tail bounds in the theory of Dirichlet series,
+modular forms, and `L`-functions.
 -/
 
 /-- The tail integral of `exp (-(a * x))` on `(R, +∞)`. -/
@@ -247,6 +248,300 @@ theorem integral_pow_two_mul_exp_neg_mul_Ioi {a : ℝ} (ha : 0 < a) (R : ℝ) :
     rw [heq]
     have := ((key2.const_mul (-a ^ 2 / a ^ 3)).add
       (key1.const_mul (-2 * a / a ^ 3))).add (key0.const_mul (-2 / a ^ 3))
+    simpa using this
+  have hint := integral_Ioi_of_hasDerivAt_of_nonneg' hderiv hnn htendsto
+  rw [hint]
+  change 0 - F R = _
+  simp only [F]
+  ring
+
+/-- The tail integral of `x ^ 3 * exp (-(a * x))` on `(R, +∞)`, for `0 < a` and `0 ≤ R`. -/
+theorem integral_pow_three_mul_exp_neg_mul_Ioi {a : ℝ} (ha : 0 < a) {R : ℝ} (hR : 0 ≤ R) :
+    ∫ x : ℝ in Set.Ioi R, x ^ 3 * Real.exp (-(a * x)) =
+      ((a * R) ^ 3 + 3 * (a * R) ^ 2 + 6 * (a * R) + 6) * Real.exp (-(a * R)) / a ^ 4 := by
+  set F : ℝ → ℝ := fun x =>
+    -((a * x) ^ 3 + 3 * (a * x) ^ 2 + 6 * (a * x) + 6) * Real.exp (-(a * x)) / a ^ 4 with hF
+  have ha' : a ≠ 0 := ne_of_gt ha
+  have hderiv : ∀ x ∈ Set.Ici R, HasDerivAt F (x ^ 3 * Real.exp (-(a * x))) x := by
+    intro x _
+    have e1 : HasDerivAt (fun y : ℝ => a * y) a x := by
+      have := (hasDerivAt_id x).const_mul a
+      simpa using this
+    have h1 : HasDerivAt (fun y : ℝ => -((a * y) ^ 3 + 3 * (a * y) ^ 2 + 6 * (a * y) + 6))
+        (-(3 * a ^ 3 * x ^ 2 + 6 * a ^ 2 * x + 6 * a)) x := by
+      have e2 : HasDerivAt (fun y : ℝ => (a * y) ^ 3) (3 * (a * x) ^ 2 * a) x := by
+        simpa using e1.pow 3
+      have e3 : HasDerivAt (fun y : ℝ => 3 * (a * y) ^ 2) (3 * (2 * (a * x) * a)) x := by
+        have := (e1.pow 2).const_mul 3
+        simpa using this
+      have e4 : HasDerivAt (fun y : ℝ => 6 * (a * y)) (6 * a) x := by
+        have := e1.const_mul 6
+        simpa using this
+      have e5 : HasDerivAt (fun y : ℝ => (a * y) ^ 3 + 3 * (a * y) ^ 2 + 6 * (a * y) + 6)
+          (3 * (a * x) ^ 2 * a + 3 * (2 * (a * x) * a) + 6 * a) x := by
+        have := ((e2.add e3).add e4).add_const (6 : ℝ)
+        simpa using this
+      exact e5.neg.congr_deriv (by ring)
+    have h2 : HasDerivAt (fun y : ℝ => Real.exp (-(a * y))) (-a * Real.exp (-(a * x))) x := by
+      have hd : HasDerivAt (fun y : ℝ => -(a * y)) (-a) x := by
+        have := e1.neg
+        simpa using this
+      have hc := (Real.hasDerivAt_exp (-(a * x))).comp x hd
+      exact hc.congr_deriv (by ring)
+    have hprod := (h1.mul h2).div_const (a ^ 4)
+    refine hprod.congr_deriv ?_
+    field_simp
+    ring
+  have hnn : ∀ x ∈ Set.Ioi R, 0 ≤ x ^ 3 * Real.exp (-(a * x)) := fun x hx => by
+    have hxR : 0 ≤ x := le_of_lt (lt_of_le_of_lt hR hx)
+    exact mul_nonneg (by positivity) (Real.exp_pos _).le
+  have htendsto : Tendsto F atTop (𝓝 0) := by
+    have key3 : Tendsto (fun x : ℝ => x ^ 3 * Real.exp (-(a * x))) atTop (𝓝 0) := by
+      have h := tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero 3 a ha
+      refine h.congr' ?_
+      filter_upwards [eventually_ge_atTop (0 : ℝ)] with x hx
+      rw [show (3 : ℝ) = ((3 : ℕ) : ℝ) from by norm_num, Real.rpow_natCast,
+        show -a * x = -(a * x) from by ring]
+    have key2 : Tendsto (fun x : ℝ => x ^ 2 * Real.exp (-(a * x))) atTop (𝓝 0) := by
+      have h := tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero 2 a ha
+      refine h.congr' ?_
+      filter_upwards [eventually_ge_atTop (0 : ℝ)] with x hx
+      rw [show (2 : ℝ) = ((2 : ℕ) : ℝ) from by norm_num, Real.rpow_natCast,
+        show -a * x = -(a * x) from by ring]
+    have key1 : Tendsto (fun x : ℝ => x * Real.exp (-(a * x))) atTop (𝓝 0) := by
+      have h := tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero 1 a ha
+      refine h.congr' ?_
+      filter_upwards with x
+      rw [Real.rpow_one, show -a * x = -(a * x) from by ring]
+    have key0 : Tendsto (fun x : ℝ => Real.exp (-(a * x))) atTop (𝓝 0) := by
+      have h := tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero 0 a ha
+      refine h.congr' ?_
+      filter_upwards [eventually_ge_atTop (1 : ℝ)] with x hx
+      have hx' : (0 : ℝ) < x := lt_of_lt_of_le zero_lt_one hx
+      rw [Real.rpow_zero, one_mul, show -a * x = -(a * x) from by ring]
+    have heq : F = fun x => (-a ^ 3 / a ^ 4) * (x ^ 3 * Real.exp (-(a * x))) +
+        (-3 * a ^ 2 / a ^ 4) * (x ^ 2 * Real.exp (-(a * x))) +
+        (-6 * a / a ^ 4) * (x * Real.exp (-(a * x))) +
+        (-6 / a ^ 4) * Real.exp (-(a * x)) := by
+      ext x
+      simp only [F]
+      field_simp
+      ring
+    rw [heq]
+    have := (((key3.const_mul (-a ^ 3 / a ^ 4)).add
+      (key2.const_mul (-3 * a ^ 2 / a ^ 4))).add
+      (key1.const_mul (-6 * a / a ^ 4))).add (key0.const_mul (-6 / a ^ 4))
+    simpa using this
+  have hint := integral_Ioi_of_hasDerivAt_of_nonneg' hderiv hnn htendsto
+  rw [hint]
+  change 0 - F R = _
+  simp only [F]
+  ring
+
+/-- The tail integral of `x ^ 4 * exp (-(a * x))` on `(R, +∞)`, for `0 < a`. -/
+theorem integral_pow_four_mul_exp_neg_mul_Ioi {a : ℝ} (ha : 0 < a) (R : ℝ) :
+    ∫ x : ℝ in Set.Ioi R, x ^ 4 * Real.exp (-(a * x)) =
+      ((a * R) ^ 4 + 4 * (a * R) ^ 3 + 12 * (a * R) ^ 2 + 24 * (a * R) + 24) *
+        Real.exp (-(a * R)) / a ^ 5 := by
+  set F : ℝ → ℝ := fun x =>
+    -((a * x) ^ 4 + 4 * (a * x) ^ 3 + 12 * (a * x) ^ 2 + 24 * (a * x) + 24) *
+      Real.exp (-(a * x)) / a ^ 5 with hF
+  have ha' : a ≠ 0 := ne_of_gt ha
+  have hderiv : ∀ x ∈ Set.Ici R, HasDerivAt F (x ^ 4 * Real.exp (-(a * x))) x := by
+    intro x _
+    have e1 : HasDerivAt (fun y : ℝ => a * y) a x := by
+      have := (hasDerivAt_id x).const_mul a
+      simpa using this
+    have h1 : HasDerivAt
+        (fun y : ℝ => -((a * y) ^ 4 + 4 * (a * y) ^ 3 + 12 * (a * y) ^ 2 + 24 * (a * y) + 24))
+        (-(4 * a ^ 4 * x ^ 3 + 12 * a ^ 3 * x ^ 2 + 24 * a ^ 2 * x + 24 * a)) x := by
+      have e2 : HasDerivAt (fun y : ℝ => (a * y) ^ 4) (4 * (a * x) ^ 3 * a) x := by
+        simpa using e1.pow 4
+      have e3 : HasDerivAt (fun y : ℝ => 4 * (a * y) ^ 3) (4 * (3 * (a * x) ^ 2 * a)) x := by
+        have := (e1.pow 3).const_mul 4
+        simpa using this
+      have e4 : HasDerivAt (fun y : ℝ => 12 * (a * y) ^ 2) (12 * (2 * (a * x) * a)) x := by
+        have := (e1.pow 2).const_mul 12
+        simpa using this
+      have e5 : HasDerivAt (fun y : ℝ => 24 * (a * y)) (24 * a) x := by
+        have := e1.const_mul 24
+        simpa using this
+      have e6 : HasDerivAt
+          (fun y : ℝ => (a * y) ^ 4 + 4 * (a * y) ^ 3 + 12 * (a * y) ^ 2 + 24 * (a * y) + 24)
+          (4 * (a * x) ^ 3 * a + 4 * (3 * (a * x) ^ 2 * a) +
+            12 * (2 * (a * x) * a) + 24 * a) x := by
+        have := (((e2.add e3).add e4).add e5).add_const (24 : ℝ)
+        simpa using this
+      exact e6.neg.congr_deriv (by ring)
+    have h2 : HasDerivAt (fun y : ℝ => Real.exp (-(a * y))) (-a * Real.exp (-(a * x))) x := by
+      have hd : HasDerivAt (fun y : ℝ => -(a * y)) (-a) x := by
+        have := e1.neg
+        simpa using this
+      have hc := (Real.hasDerivAt_exp (-(a * x))).comp x hd
+      exact hc.congr_deriv (by ring)
+    have hprod := (h1.mul h2).div_const (a ^ 5)
+    refine hprod.congr_deriv ?_
+    field_simp
+    ring
+  have hnn : ∀ x ∈ Set.Ioi R, 0 ≤ x ^ 4 * Real.exp (-(a * x)) := fun x _ =>
+    mul_nonneg (by positivity) (Real.exp_pos _).le
+  have htendsto : Tendsto F atTop (𝓝 0) := by
+    have key4 : Tendsto (fun x : ℝ => x ^ 4 * Real.exp (-(a * x))) atTop (𝓝 0) := by
+      have h := tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero 4 a ha
+      refine h.congr' ?_
+      filter_upwards [eventually_ge_atTop (0 : ℝ)] with x hx
+      rw [show (4 : ℝ) = ((4 : ℕ) : ℝ) from by norm_num, Real.rpow_natCast,
+        show -a * x = -(a * x) from by ring]
+    have key3 : Tendsto (fun x : ℝ => x ^ 3 * Real.exp (-(a * x))) atTop (𝓝 0) := by
+      have h := tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero 3 a ha
+      refine h.congr' ?_
+      filter_upwards [eventually_ge_atTop (0 : ℝ)] with x hx
+      rw [show (3 : ℝ) = ((3 : ℕ) : ℝ) from by norm_num, Real.rpow_natCast,
+        show -a * x = -(a * x) from by ring]
+    have key2 : Tendsto (fun x : ℝ => x ^ 2 * Real.exp (-(a * x))) atTop (𝓝 0) := by
+      have h := tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero 2 a ha
+      refine h.congr' ?_
+      filter_upwards [eventually_ge_atTop (0 : ℝ)] with x hx
+      rw [show (2 : ℝ) = ((2 : ℕ) : ℝ) from by norm_num, Real.rpow_natCast,
+        show -a * x = -(a * x) from by ring]
+    have key1 : Tendsto (fun x : ℝ => x * Real.exp (-(a * x))) atTop (𝓝 0) := by
+      have h := tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero 1 a ha
+      refine h.congr' ?_
+      filter_upwards with x
+      rw [Real.rpow_one, show -a * x = -(a * x) from by ring]
+    have key0 : Tendsto (fun x : ℝ => Real.exp (-(a * x))) atTop (𝓝 0) := by
+      have h := tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero 0 a ha
+      refine h.congr' ?_
+      filter_upwards [eventually_ge_atTop (1 : ℝ)] with x hx
+      have hx' : (0 : ℝ) < x := lt_of_lt_of_le zero_lt_one hx
+      rw [Real.rpow_zero, one_mul, show -a * x = -(a * x) from by ring]
+    have heq : F = fun x => (-a ^ 4 / a ^ 5) * (x ^ 4 * Real.exp (-(a * x))) +
+        (-4 * a ^ 3 / a ^ 5) * (x ^ 3 * Real.exp (-(a * x))) +
+        (-12 * a ^ 2 / a ^ 5) * (x ^ 2 * Real.exp (-(a * x))) +
+        (-24 * a / a ^ 5) * (x * Real.exp (-(a * x))) +
+        (-24 / a ^ 5) * Real.exp (-(a * x)) := by
+      ext x
+      simp only [F]
+      field_simp
+      ring
+    rw [heq]
+    have := ((((key4.const_mul (-a ^ 4 / a ^ 5)).add
+      (key3.const_mul (-4 * a ^ 3 / a ^ 5))).add
+      (key2.const_mul (-12 * a ^ 2 / a ^ 5))).add
+      (key1.const_mul (-24 * a / a ^ 5))).add (key0.const_mul (-24 / a ^ 5))
+    simpa using this
+  have hint := integral_Ioi_of_hasDerivAt_of_nonneg' hderiv hnn htendsto
+  rw [hint]
+  change 0 - F R = _
+  simp only [F]
+  ring
+
+/-- The tail integral of `x ^ 5 * exp (-(a * x))` on `(R, +∞)`, for `0 < a` and `0 ≤ R`. -/
+theorem integral_pow_five_mul_exp_neg_mul_Ioi {a : ℝ} (ha : 0 < a) {R : ℝ} (hR : 0 ≤ R) :
+    ∫ x : ℝ in Set.Ioi R, x ^ 5 * Real.exp (-(a * x)) =
+      ((a * R) ^ 5 + 5 * (a * R) ^ 4 + 20 * (a * R) ^ 3 + 60 * (a * R) ^ 2 +
+        120 * (a * R) + 120) * Real.exp (-(a * R)) / a ^ 6 := by
+  set F : ℝ → ℝ := fun x =>
+    -((a * x) ^ 5 + 5 * (a * x) ^ 4 + 20 * (a * x) ^ 3 + 60 * (a * x) ^ 2 +
+      120 * (a * x) + 120) * Real.exp (-(a * x)) / a ^ 6 with hF
+  have ha' : a ≠ 0 := ne_of_gt ha
+  have hderiv : ∀ x ∈ Set.Ici R, HasDerivAt F (x ^ 5 * Real.exp (-(a * x))) x := by
+    intro x _
+    have e1 : HasDerivAt (fun y : ℝ => a * y) a x := by
+      have := (hasDerivAt_id x).const_mul a
+      simpa using this
+    have h1 : HasDerivAt
+        (fun y : ℝ => -((a * y) ^ 5 + 5 * (a * y) ^ 4 + 20 * (a * y) ^ 3 + 60 * (a * y) ^ 2 +
+          120 * (a * y) + 120))
+        (-(5 * a ^ 5 * x ^ 4 + 20 * a ^ 4 * x ^ 3 + 60 * a ^ 3 * x ^ 2 +
+          120 * a ^ 2 * x + 120 * a)) x := by
+      have e2 : HasDerivAt (fun y : ℝ => (a * y) ^ 5) (5 * (a * x) ^ 4 * a) x := by
+        simpa using e1.pow 5
+      have e3 : HasDerivAt (fun y : ℝ => 5 * (a * y) ^ 4) (5 * (4 * (a * x) ^ 3 * a)) x := by
+        have := (e1.pow 4).const_mul 5
+        simpa using this
+      have e4 : HasDerivAt (fun y : ℝ => 20 * (a * y) ^ 3) (20 * (3 * (a * x) ^ 2 * a)) x := by
+        have := (e1.pow 3).const_mul 20
+        simpa using this
+      have e5 : HasDerivAt (fun y : ℝ => 60 * (a * y) ^ 2) (60 * (2 * (a * x) * a)) x := by
+        have := (e1.pow 2).const_mul 60
+        simpa using this
+      have e6 : HasDerivAt (fun y : ℝ => 120 * (a * y)) (120 * a) x := by
+        have := e1.const_mul 120
+        simpa using this
+      have e7 : HasDerivAt
+          (fun y : ℝ => (a * y) ^ 5 + 5 * (a * y) ^ 4 + 20 * (a * y) ^ 3 + 60 * (a * y) ^ 2 +
+            120 * (a * y) + 120)
+          (5 * (a * x) ^ 4 * a + 5 * (4 * (a * x) ^ 3 * a) + 20 * (3 * (a * x) ^ 2 * a) +
+            60 * (2 * (a * x) * a) + 120 * a) x := by
+        have := ((((e2.add e3).add e4).add e5).add e6).add_const (120 : ℝ)
+        simpa using this
+      exact e7.neg.congr_deriv (by ring)
+    have h2 : HasDerivAt (fun y : ℝ => Real.exp (-(a * y))) (-a * Real.exp (-(a * x))) x := by
+      have hd : HasDerivAt (fun y : ℝ => -(a * y)) (-a) x := by
+        have := e1.neg
+        simpa using this
+      have hc := (Real.hasDerivAt_exp (-(a * x))).comp x hd
+      exact hc.congr_deriv (by ring)
+    have hprod := (h1.mul h2).div_const (a ^ 6)
+    refine hprod.congr_deriv ?_
+    field_simp
+    ring
+  have hnn : ∀ x ∈ Set.Ioi R, 0 ≤ x ^ 5 * Real.exp (-(a * x)) := fun x hx => by
+    have hxR : 0 ≤ x := le_of_lt (lt_of_le_of_lt hR hx)
+    exact mul_nonneg (by positivity) (Real.exp_pos _).le
+  have htendsto : Tendsto F atTop (𝓝 0) := by
+    have key5 : Tendsto (fun x : ℝ => x ^ 5 * Real.exp (-(a * x))) atTop (𝓝 0) := by
+      have h := tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero 5 a ha
+      refine h.congr' ?_
+      filter_upwards [eventually_ge_atTop (0 : ℝ)] with x hx
+      rw [show (5 : ℝ) = ((5 : ℕ) : ℝ) from by norm_num, Real.rpow_natCast,
+        show -a * x = -(a * x) from by ring]
+    have key4 : Tendsto (fun x : ℝ => x ^ 4 * Real.exp (-(a * x))) atTop (𝓝 0) := by
+      have h := tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero 4 a ha
+      refine h.congr' ?_
+      filter_upwards [eventually_ge_atTop (0 : ℝ)] with x hx
+      rw [show (4 : ℝ) = ((4 : ℕ) : ℝ) from by norm_num, Real.rpow_natCast,
+        show -a * x = -(a * x) from by ring]
+    have key3 : Tendsto (fun x : ℝ => x ^ 3 * Real.exp (-(a * x))) atTop (𝓝 0) := by
+      have h := tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero 3 a ha
+      refine h.congr' ?_
+      filter_upwards [eventually_ge_atTop (0 : ℝ)] with x hx
+      rw [show (3 : ℝ) = ((3 : ℕ) : ℝ) from by norm_num, Real.rpow_natCast,
+        show -a * x = -(a * x) from by ring]
+    have key2 : Tendsto (fun x : ℝ => x ^ 2 * Real.exp (-(a * x))) atTop (𝓝 0) := by
+      have h := tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero 2 a ha
+      refine h.congr' ?_
+      filter_upwards [eventually_ge_atTop (0 : ℝ)] with x hx
+      rw [show (2 : ℝ) = ((2 : ℕ) : ℝ) from by norm_num, Real.rpow_natCast,
+        show -a * x = -(a * x) from by ring]
+    have key1 : Tendsto (fun x : ℝ => x * Real.exp (-(a * x))) atTop (𝓝 0) := by
+      have h := tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero 1 a ha
+      refine h.congr' ?_
+      filter_upwards with x
+      rw [Real.rpow_one, show -a * x = -(a * x) from by ring]
+    have key0 : Tendsto (fun x : ℝ => Real.exp (-(a * x))) atTop (𝓝 0) := by
+      have h := tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero 0 a ha
+      refine h.congr' ?_
+      filter_upwards [eventually_ge_atTop (1 : ℝ)] with x hx
+      have hx' : (0 : ℝ) < x := lt_of_lt_of_le zero_lt_one hx
+      rw [Real.rpow_zero, one_mul, show -a * x = -(a * x) from by ring]
+    have heq : F = fun x => (-a ^ 5 / a ^ 6) * (x ^ 5 * Real.exp (-(a * x))) +
+        (-5 * a ^ 4 / a ^ 6) * (x ^ 4 * Real.exp (-(a * x))) +
+        (-20 * a ^ 3 / a ^ 6) * (x ^ 3 * Real.exp (-(a * x))) +
+        (-60 * a ^ 2 / a ^ 6) * (x ^ 2 * Real.exp (-(a * x))) +
+        (-120 * a / a ^ 6) * (x * Real.exp (-(a * x))) +
+        (-120 / a ^ 6) * Real.exp (-(a * x)) := by
+      ext x
+      simp only [F]
+      field_simp
+      ring
+    rw [heq]
+    have := (((((key5.const_mul (-a ^ 5 / a ^ 6)).add
+      (key4.const_mul (-5 * a ^ 4 / a ^ 6))).add
+      (key3.const_mul (-20 * a ^ 3 / a ^ 6))).add
+      (key2.const_mul (-60 * a ^ 2 / a ^ 6))).add
+      (key1.const_mul (-120 * a / a ^ 6))).add (key0.const_mul (-120 / a ^ 6))
     simpa using this
   have hint := integral_Ioi_of_hasDerivAt_of_nonneg' hderiv hnn htendsto
   rw [hint]
