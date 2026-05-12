@@ -367,7 +367,7 @@ lemma edges_eq_nil {p : G.Walk v w} : p.edges = [] ↔ p.Nil := by
 theorem length_eq_zero_iff {p : G.Walk u v} : p.length = 0 ↔ p.Nil := by
   cases p <;> simp
 
-alias ⟨_, Nil.length_eq⟩ := length_eq_zero_iff
+alias ⟨_, Nil.length_eq_zero⟩ := length_eq_zero_iff
 
 @[deprecated length_eq_zero_iff (since := "2026-05-11")]
 lemma nil_iff_length_eq {p : G.Walk v w} : p.Nil ↔ p.length = 0 :=
