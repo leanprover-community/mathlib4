@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Semi
 public import Mathlib.Algebra.Category.Grp.Preadditive
 public import Mathlib.CategoryTheory.Linear.Basic
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+public import Mathlib.LinearAlgebra.BilinearMap
 
 /-!
 # The category of `R`-modules
@@ -60,6 +61,7 @@ structure ModuleCat where
   [isAddCommGroup : AddCommGroup carrier]
   [isModule : Module R carrier]
 
+initialize_simps_projections ModuleCat (-isModule, -isAddCommGroup)
 attribute [instance] ModuleCat.isAddCommGroup
 attribute [instance 1100] ModuleCat.isModule
 
@@ -385,9 +387,11 @@ lemma isZero_iff_subsingleton : IsZero M ↔ Subsingleton M where
 lemma isZero_of_iff_subsingleton {M : Type*} [AddCommGroup M] [Module R M] :
     IsZero (of R M) ↔ Subsingleton M := isZero_iff_subsingleton
 
+@[simp]
 lemma ofHom_zero {M N : Type v} [AddCommGroup M] [Module R M]
     [AddCommGroup N] [Module R N] : ModuleCat.ofHom (0 : M →ₗ[R] N) = 0 := rfl
 
+@[simp]
 lemma ofHom_add {M N : Type v} [AddCommGroup M] [Module R M]
     [AddCommGroup N] [Module R N] (f g : M →ₗ[R] N) :
     ModuleCat.ofHom (f + g) = ModuleCat.ofHom f + ModuleCat.ofHom g := rfl
@@ -461,6 +465,9 @@ section
 variable {S : Type u} [CommRing S]
 
 instance : Linear S (ModuleCat.{v} S) := ModuleCat.Algebra.instLinear
+
+lemma lsmul_eq_smul_id (M : ModuleCat.{v} S) (s : S) :
+    ModuleCat.ofHom (LinearMap.lsmul S M s) = s • 𝟙 M := rfl
 
 variable {X Y X' Y' : ModuleCat.{v} S}
 

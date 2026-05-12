@@ -95,6 +95,12 @@ lemma Ideal.disjoint_nonZeroDivisors_of_mem_minimalPrimes {p : Ideal R} (hp : p 
     exists_prop, @and_comm (_ * _ = _), ← mul_comm]
   exact fun _ ↦ Ideal.exists_mul_mem_of_mem_minimalPrimes hp
 
+/-- An element of a minimal prime is a zero divisor. -/
+lemma notMem_nonZeroDivisors_of_mem_mem_minimalPrimes
+    {x : R} {q : Ideal R} (hx : x ∈ q) (hq : q ∈ minimalPrimes R) :
+    x ∉ nonZeroDivisors R :=
+  Set.disjoint_left.mp (Ideal.disjoint_nonZeroDivisors_of_mem_minimalPrimes hq) hx
+
 theorem Ideal.exists_comap_eq_of_mem_minimalPrimes {I : Ideal S} (f : R →+* S) (p)
     (H : p ∈ (I.comap f).minimalPrimes) : ∃ p' : Ideal S, p'.IsPrime ∧ I ≤ p' ∧ p'.comap f = p :=
   have := H.isPrime
