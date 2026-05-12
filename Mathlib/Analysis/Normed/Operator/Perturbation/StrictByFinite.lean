@@ -57,10 +57,7 @@ theorem step1_foward (A : Submodule 𝕜 E) (K : Submodule 𝕜 E) (A_closed : I
   · rcases K_disj_A.exists_isCompl with ⟨S, K_le_S, S_compl_A⟩
     replace S_compl_A : IsTopCompl S A :=
       S_compl_A.symm.isTopCompl_of_finiteDimensional_quotient A_closed |>.symm
-    -- TODO: `Submodule.liftQL`
-    let s : E ⧸ K →L[𝕜] A :=
-      ⟨K.liftQ (A.projectionOntoL S S_compl_A.symm) (by simpa),
-        continuous_quot_lift _ (A.projectionOntoL S S_compl_A.symm).continuous⟩
+    let s : E ⧸ K →L[𝕜] A := K.liftQL (A.projectionOntoL S S_compl_A.symm) (by simpa)
     have leftInv : LeftInverse s (restrict A K.mkQ) := fun x ↦ by simp [s]
     refine .of_leftInverse leftInv s.continuous (by fun_prop)
   · rw [← K.isQuotientMap_mkQ.isClosed_preimage, range_restrict, ← Submodule.map_coe,
@@ -106,8 +103,7 @@ a closed embedding.
 theorem step2_forward (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E))
     [codim_A : FiniteDimensional 𝕜 (E ⧸ A)] (h_ker : Disjoint u.ker A) (h_strict : IsStrictMap u)
     (h_closed : IsClosed (range u)) : IsClosedEmbedding (restrict A u) := by
-  -- TODO: `Submodule.liftQL` ?
-  let u' : E ⧸ u.ker →ₗ[𝕜] F := u.ker.liftQ u le_rfl
+  let u' : E ⧸ u.ker →L[𝕜] F := u.ker.liftQL u le_rfl
   have u'_clemb : IsClosedEmbedding u' := by
     constructor
     · sorry -- should be fixed with more API on strict homs
@@ -151,7 +147,7 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict (u : 
     (IsStrictMap u ∧ IsClosed (range u)) ↔
       (IsStrictMap (restrict A u) ∧ IsClosed (u '' A)) := by
   set N : Submodule 𝕜 E := A ⊓ u.ker
-  set v : E ⧸ N →L[𝕜] F := ⟨N.liftQ u inf_le_right, continuous_quot_lift _ u.continuous⟩
+  set v : E ⧸ N →L[𝕜] F := N.liftQL u inf_le_right
   have v_eq_u : v ∘L N.mkQL = u := rfl
   set B : Submodule 𝕜 (E ⧸ N) := map N.mkQ A
   have comap_B : comap N.mkQ B = A := by simp [B, N]
