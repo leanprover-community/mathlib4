@@ -5,16 +5,62 @@ Authors: ...
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.Equiv
-public import Mathlib.LinearAlgebra.Determinant
+public import Mathlib.LinearAlgebra.Dimension.LinearMap
 public import Mathlib.Topology.Maps.Strict.Basic
+public import Mathlib.Topology.Algebra.Module.LinearMap
+public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
+public import Mathlib.Topology.Algebra.Module.LinearMap
 
-variable (E F : Type*) [AddCommMonoid E] [AddCommMonoid F] [TopologicalSpace E]
-  [TopologicalSpace F]
-variable (𝕜 : Type*) [Field 𝕜] [PartialOrder 𝕜] [Module 𝕜 E] [Module 𝕜 F]
-variable (f : E →L[𝕜] F)
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {E F : Type*} [AddCommGroup E] [AddCommGroup F] [TopologicalSpace E] [TopologicalSpace F]
+  [IsTopologicalAddGroup E] [IsTopologicalAddGroup F]
+variable [Module 𝕜 E] [Module 𝕜 F]
+variable {f : E →L[𝕜] F}
 
-open Topology
+public section FredholmOperators
 
-lemma technical {A : Submodule 𝕜 E} (hA_closed : IsClosed A)
-  (hA_fcodim : FiniteDimensional 𝕜 (E ⧸ A)) : IsStrictMap f ↔ True := sorry
+open Topology ContinuousLinearMap
+
+variable (f)
+
+structure IsFredholm_struc : Prop where
+  isStrict : IsStrictMap f
+  isClosed_range : IsClosed (f.range : Set F)
+  kerFG : FiniteDimensional 𝕜 f.toLinearMap.ker
+  cokerFG : FiniteDimensional 𝕜 (F ⧸ f.range)
+
+/-FAE: I don't like this definition that seems to fix `g` (making it a structure would be even more
+  disgusting). -/
+def IsFredholm_exists : Prop := ∃ g : F →L[𝕜] E,
+  (f ∘L g - .id 𝕜 F).rank < Cardinal.aleph0 ∧ (g ∘L f - .id 𝕜 E).rank < Cardinal.aleph0
+
+namespace QuotFiniteSubmodules
+variable [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F] [ContinuousAdd E] [ContinuousAdd F]
+
+variable (𝕜 E F) in
+def FiniteRank : Submodule 𝕜 (E →L[𝕜] F) where
+  carrier := {u | u.rank < Cardinal.aleph0}
+  add_mem' := sorry
+  zero_mem' := sorry
+  smul_mem' := sorry
+
+scoped instance : Setoid (E →L[𝕜] F) := (FiniteRank 𝕜 E F).quotientRel
+
+def IsFredholm_quot : Prop := ∃ g : F →L[𝕜] E,
+  (f ∘L g ≈ .id 𝕜 F) ∧ (g ∘L f ≈ .id 𝕜 E)
+
+end QuotFiniteSubmodules
+
+theorem AnatoleDream_1 (hf : IsFredholm_struc f) : IsFredholm_exists f:= sorry
+
+def AnatoleDream_1_symm (hf : IsFredholm_exists f) : IsFredholm_struc f := sorry
+
+open QuotFiniteSubmodules in
+theorem AnatoleDream_2 [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F] [ContinuousAdd E]
+    [ContinuousAdd F] (hf : IsFredholm_struc f) : IsFredholm_quot f := sorry
+
+open QuotFiniteSubmodules in
+def AnatoleDream_2_symm [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F] [ContinuousAdd E]
+    [ContinuousAdd F] (hf : IsFredholm_quot f) : (IsFredholm_struc f) := sorry
+
+end FredholmOperators

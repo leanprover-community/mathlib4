@@ -4,11 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ziyan Wei
 -/
 module
+public import Mathlib.Analysis.Normed.Field.Basic
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+public import Mathlib.Topology.Algebra.Module.LinearMap
 
-public import Mathlib.Topology.Maps.Basic
-public import Mathlib.Topology.Homeomorph.Lemmas
-public import Mathlib.Topology.Constructions
-public import Mathlib.Data.Setoid.Basic
 /-!
 # Bourbaki Strict Maps
 
@@ -96,5 +95,16 @@ lemma IsClosedMap.isStrictMap (hc : IsClosedMap f) (h_cont : Continuous f) :
   exact (hc.subtype_mk fun x => ⟨x, rfl⟩).isQuotientMap
     h_cont.rangeFactorization Set.rangeFactorization_surjective
 
+section Field
+
+variable [AddCommGroup X] [AddCommMonoid Y]
+variable (𝕜 : Type*) [NontriviallyNormedField 𝕜] [Module 𝕜 X] [Module 𝕜 Y]
+variable (u : X →L[𝕜] Y)
+
+lemma isStrictMap_isClosedRange_iff {V : Submodule 𝕜 X} (hV_closed : IsClosed (V : Set X))
+    (hV_fcodim : FiniteDimensional 𝕜 (X ⧸ V)) : IsStrictMap u ∧ IsClosed (Set.range u) ↔
+      IsStrictMap (u ∘L V.subtypeL) ∧ IsClosed (Set.range (u ∘L V.subtypeL)):= by sorry
+
+end Field
 
 end Topology
