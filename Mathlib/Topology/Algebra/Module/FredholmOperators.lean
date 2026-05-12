@@ -185,7 +185,11 @@ lemma index_comp {G : Type*} [AddCommGroup G] [Module k G] (g : F →ₗ[k] G)
 lemma index_eq_of_finiteDimensional [FiniteDimensional k E] [FiniteDimensional k F] :
     f.index = finrank k E - finrank k F := by
   -- 0 → f.ker → E → F → f.coker → 0
-  sorry
+  rw [index]
+  have h₁ := f.range.finrank_quotient_add_finrank
+  have h₂ := f.quotKerEquivRange.finrank_eq
+  have h₃ := f.ker.finrank_quotient_add_finrank
+  grind
 
 end LinearMap
 
