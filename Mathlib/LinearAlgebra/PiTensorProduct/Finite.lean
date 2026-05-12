@@ -3,13 +3,17 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.RingTheory.Finiteness.Basic
-import Mathlib.LinearAlgebra.PiTensorProduct.Generators
+module
+
+public import Mathlib.RingTheory.Finiteness.Basic
+public import Mathlib.LinearAlgebra.PiTensorProduct.Generators
 
 /-!
 # A multiple tensor product of finitely generated modules is finitely generated
 
 -/
+
+public section
 
 open TensorProduct
 
