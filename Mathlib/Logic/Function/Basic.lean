@@ -1209,13 +1209,13 @@ instance {α β : Type*} {r : α × β → Prop} {a : α} {b : β} [Decidable (r
   ‹Decidable _›
 
 @[deprecated (since := "2026-05-11")]
-alias Pi.map_id := Function.map_injective
+alias Pi.map_id := Function.map_id
 
 @[deprecated (since := "2026-05-11")]
 alias Pi.map_id' := Function.map_id'
 
 @[deprecated (since := "2026-05-11")]
-alias Pi.map_comp_map := Function.map_injective
+alias Pi.map_injective := Function.map_injective
 
 @[deprecated (since := "2026-05-11")]
 alias Pi.map_update := Function.map_update
