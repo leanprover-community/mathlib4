@@ -36,12 +36,21 @@ section
 
 variable {R S : Type*} [CommSemiring R] [CommSemiring S] (I J : Ideal R)
 
-/-- The predicate for describing an ideal is minimal prime over certain ideal `I`. -/
+/-- `IsMinimalPrime I p` says that `p` is a minimal prime over `I`. -/
 protected def Ideal.IsMinimalPrime (p : Ideal R) : Prop := Minimal (fun q ↦ q.IsPrime ∧ I ≤ q) p
 
+variable {I} in
 lemma Ideal.IsMinimalPrime.isPrime {p : Ideal R} (h : I.IsMinimalPrime p) : p.IsPrime := h.1.1
 
+variable {I} in
 lemma Ideal.IsMinimalPrime.le {p : Ideal R} (h : I.IsMinimalPrime p) : I ≤ p := h.1.2
+
+abbrev IsMinimalPrime (p : Ideal R) : Prop := (⊥ : Ideal R).IsMinimalPrime p
+
+lemma IsMinimalPrime.isPrime {p : Ideal R} (h : IsMinimalPrime p) : p.IsPrime := h.1.1
+
+lemma IsMinimalPrime.iff_minimal (p : Ideal R) : IsMinimalPrime p ↔ Minimal Ideal.IsPrime p := by
+  simp [Ideal.IsMinimalPrime]
 
 /-- `I.minimalPrimes` is the set of ideals that are minimal primes over `I`. -/
 protected abbrev Ideal.minimalPrimes : Set (Ideal R) :=
@@ -51,7 +60,7 @@ variable (R) in
 /-- `minimalPrimes R` is the set of minimal primes of `R`.
 This is defined as `Ideal.minimalPrimes ⊥`. -/
 abbrev minimalPrimes : Set (Ideal R) :=
-  Ideal.minimalPrimes ⊥
+  {p | IsMinimalPrime p}
 
 lemma minimalPrimes_eq_minimals : minimalPrimes R = {x | Minimal Ideal.IsPrime x} :=
   congr_arg Minimal (by simp)
