@@ -18,7 +18,7 @@ In this file we show that the forgetful functor from `R`-algebras to rings
 creates filtered colimits.
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 
@@ -38,7 +38,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation): The algebra instance on the cocone point of the underlying diagram of rings
 is induced from the `j`-th inclusion map. Any choice of `j` gives a propositionally equal algebra
 instance. -/
-abbrev AlgCat.algebraOfIsFiltered (hc : IsColimit c) (j : J) : Algebra R c.pt :=
+private abbrev AlgCat.algebraOfIsFiltered (hc : IsColimit c) (j : J) : Algebra R c.pt :=
   (c.ι.app j).hom.comp (algebraMap R (F.obj j)) |>.toAlgebra' <| by
     intro r x
     obtain ⟨k, hjk, y, rfl⟩ := Concrete.exists_hom_ι_eq_of_isColimit _ hc x j
@@ -47,7 +47,7 @@ abbrev AlgCat.algebraOfIsFiltered (hc : IsColimit c) (j : J) : Algebra R c.pt :=
 set_option backward.isDefEq.respectTransparency false in
 /-- The cocone of the underlying diagram of rings lifted to `AlgCat R`. The algebra instance
 on the cocone point is induced from the `j`-th inclusion map. -/
-def AlgCat.coconeOfIsFiltered (hc : IsColimit c) (j : J) : Cocone F where
+private def AlgCat.coconeOfIsFiltered (hc : IsColimit c) (j : J) : Cocone F where
   pt :=
     letI : Algebra R c.pt := algebraOfIsFiltered hc j
     AlgCat.of R c.pt
@@ -62,7 +62,7 @@ def AlgCat.coconeOfIsFiltered (hc : IsColimit c) (j : J) : Cocone F where
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The lifted cocone is colimiting. -/
-def AlgCat.isColimitCoconeOfIsFiltered (hc : IsColimit c) (j : J) :
+private def AlgCat.isColimitCoconeOfIsFiltered (hc : IsColimit c) (j : J) :
     IsColimit (AlgCat.coconeOfIsFiltered hc j) where
   desc s := by
     letI : Algebra R c.pt := algebraOfIsFiltered hc j
@@ -79,7 +79,7 @@ def AlgCat.isColimitCoconeOfIsFiltered (hc : IsColimit c) (j : J) :
 
 end
 
-noncomputable instance [IsFiltered J] :
+@[no_expose] noncomputable instance [IsFiltered J] :
     CreatesColimitsOfShape J (forget₂ (AlgCat.{v} R) RingCat.{v}) where
   CreatesColimit := createsColimitOfReflectsIso fun _ hc ↦
     ⟨⟨AlgCat.coconeOfIsFiltered hc IsFiltered.nonempty.some, Iso.refl _⟩,
