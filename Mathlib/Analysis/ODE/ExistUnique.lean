@@ -22,7 +22,7 @@ of the integral curve API (`IsIntegralCurve`, `IsIntegralCurveOn`, `IsIntegralCu
 * `IsPicardLindelof.exists_forall_mem_closedBall_eq_isIntegralCurveOn_lipschitzOnWith`: the
   existence of a local flow that is Lipschitz continuous in the initial point.
 * `IsPicardLindelof.exists_forall_mem_closedBall_eq_isIntegralCurveOn_continuousOn`: the existence
-  of a local flow that is continuous on its domain as a map `E × ℝ → E` (in uncurried form).
+  of a local flow `E → ℝ → E` that is continuous on its domain in `E × ℝ`.
 * `IsPicardLindelof.exists_forall_mem_closedBall_eq_isIntegralCurveOn`: the existence of a local
   flow to a time-dependent vector field.
 * `ContDiffAt.exists_forall_mem_closedBall_exists_eq_isIntegralCurveOn`: a `C¹` vector field
