@@ -77,4 +77,3 @@ theorem isCompl_baseChange (hM : IsCompl M₁ M₂) (R : Type*) [CommRing R] [Al
   exact isCompl_lTensor R hM
 
 end LinearMap
-
