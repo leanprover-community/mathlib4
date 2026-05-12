@@ -492,50 +492,6 @@ theorem isAugmentation_tensorProduct (A : Type*) [CommRing A] {R S : Type*} [Com
 
 end Ideal
 
-variable (R : Type*) [CommRing R]
-    {A : Type*} [CommRing A] [Algebra R A] (J : Ideal A)
-
-open TensorProduct Ideal LinearMap Submodule
-
-def Ideal.isHomogeneous {A : Type*} [CommSemiring A]
-    {R : Type*} [CommSemiring R] [Algebra A R]
-    (S : Subalgebra A R) (I : Ideal R) (J : Ideal R) : Prop :=
-  IsCompl (Subalgebra.toSubmodule S ⊓ J.restrictScalars A)
-    (I.restrictScalars A ⊓ J.restrictScalars A)
-
-example {A : Type*} [CommSemiring A]
-    {R : Type*} [CommSemiring R] [Algebra A R]
-    {S : Subalgebra A R} (FS : S) : R := FS.val
-
-example {A : Type*} [CommSemiring A]
-    {R : Type*} [CommSemiring R] [Algebra A R]
-    {S : Subalgebra A R} (FS : Set S) : Set R := S.val '' FS
-
-example {A : Type*} [CommSemiring A]
-    {R : Type*} [CommSemiring R] [Algebra A R] {I : Ideal R} (FI : Set I) : Set R :=
-  I.subtype '' FI
-
-
-open TensorProduct Ideal LinearMap Submodule
-
-variable
-    {A : Type*} [CommSemiring A]
-    {R : Type*} [CommSemiring R] [Algebra A R]
-    {S : Type*} [CommSemiring S] [Algebra A S]
-#synth CommSemiring (R ⊗[A] S)
-/-- If `R` is a `CommRing` and an `A`-algebra, then the ideal `R ⊗[A] I` of `R ⊗[A] S` is an
-  augmentation ideal. -/
-theorem isAugmentation_baseChange
-    {A : Type*} [CommSemiring A]
-    {R : Type*} [CommSemiring R] [Algebra A R]
-    {S : Type*} [CommSemiring S] [Algebra A S]
-    {I : Ideal S} (hI : IsCompl (1 : Submodule A S) (I.restrictScalars A)) :
-    (Ideal.map Algebra.TensorProduct.includeRight I : Ideal (R ⊗[A] S)).IsAugmentation R := by
-  unfold IsAugmentation
-  rw [Algebra.baseChange_bot, Algebra.TensorProduct.map_includeRight_eq_range_baseChange]
-  exact isCompl_baseChange hI R
-
-
-end Ideal
+end Augmentation
 
 end
