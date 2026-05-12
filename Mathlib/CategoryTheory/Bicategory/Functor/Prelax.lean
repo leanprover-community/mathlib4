@@ -41,7 +41,6 @@ corresponding hom types.
 
 @[expose] public section
 
-
 namespace CategoryTheory
 
 open Category Bicategory

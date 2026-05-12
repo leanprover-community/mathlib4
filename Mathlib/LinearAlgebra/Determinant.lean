@@ -48,9 +48,6 @@ basis, det, determinant
 @[expose] public section
 
 
-
-
-
 noncomputable section
 
 open Matrix Module LinearMap Submodule Set Function

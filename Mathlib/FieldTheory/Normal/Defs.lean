@@ -22,7 +22,6 @@ In this file we define normal field extensions.
 
 @[expose] public section
 
-
 noncomputable section
 
 open Polynomial IsScalarTower

@@ -23,7 +23,6 @@ public import Mathlib.RingTheory.Flat.Localization
 
 @[expose] public section
 
-
 universe u
 
 variable (R S T : Type*) [CommRing R] [CommRing S] [CommRing T]
@@ -274,7 +273,6 @@ end Extension
 
 variable {S}
 
-set_option backward.inferInstanceAs.wrap.data false in
 set_option backward.isDefEq.respectTransparency false in
 /-- let `p` be a submonoid of an `R`-algebra `S`. Then `Sₚ ⊗ H¹(L_{S/R}) ≃ H¹(L_{Sₚ/R})`. -/
 noncomputable

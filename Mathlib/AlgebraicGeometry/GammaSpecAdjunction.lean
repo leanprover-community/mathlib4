@@ -333,7 +333,7 @@ def locallyRingedSpaceAdjunction : Γ.rightOp ⊣ Spec.toLocallyRingedSpace.{u} 
       Quiver.Hom.unop_op, NatIso.op_inv, NatTrans.op_app, SpecΓIdentity_inv_app]
     exact congr_arg Quiver.Hom.op (left_triangle X)
   right_triangle_components R := by
-    simp only [ Functor.id_obj, NatIso.op_inv, NatTrans.op_app, SpecΓIdentity_inv_app,
+    simp only [Functor.id_obj, NatIso.op_inv, NatTrans.op_app, SpecΓIdentity_inv_app,
       Spec.toLocallyRingedSpace_map]
     exact right_triangle R.unop
 

@@ -63,7 +63,6 @@ Then `f` is friendly iff it is `1`-Lipschitz.
 
 @[expose] public section
 
-
 namespace Tactic.ComputeAsymptotics.Seq
 
 open Stream' Seq

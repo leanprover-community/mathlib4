@@ -163,7 +163,7 @@ theorem exists_locallyConstant_finite_nonempty {α : Type*} [Finite α] [Nonempt
   let σ : (α → Fin 2) → α := fun f => if h : ∃ a : α, ι a = f then h.choose else default
   refine ⟨j, gg.map σ, ?_⟩
   ext x
-  simp only [ LocallyConstant.coe_comap, LocallyConstant.map_apply,
+  simp only [LocallyConstant.coe_comap, LocallyConstant.map_apply,
     Function.comp_apply]
   dsimp [σ]
   have h1 : ι (f x) = gg (C.π.app j x) := by

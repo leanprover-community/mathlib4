@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.ComposableArrows.Basic
 
 @[expose] public section
 
-
 universe v u
 
 namespace CategoryTheory

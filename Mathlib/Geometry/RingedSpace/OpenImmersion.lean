@@ -233,7 +233,7 @@ theorem app_inv_app' (U : Opens Y) (hU : (U : Set Y) ⊆ Set.range f.base) :
             (le_antisymm (Set.image_preimage_subset f.base U.1) <|
               (Set.image_preimage_eq_inter_range (f := f.base) (t := U.1)).symm ▸
                 Set.subset_inter_iff.mpr ⟨fun _ h => h, hU⟩)).op := by
-  simp only [ app_invApp, Opens.carrier_eq_coe,
+  simp only [app_invApp, Opens.carrier_eq_coe,
     homOfLE_leOfHom, eqToHom_op]
   tauto
 

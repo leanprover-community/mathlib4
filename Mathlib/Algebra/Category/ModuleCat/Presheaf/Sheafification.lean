@@ -162,8 +162,7 @@ instance : IsIso (sheafificationAdjunction α).counit := by
   rw [NatTrans.isIso_iff_isIso_app]
   intro F
   rw [← isIso_iff_of_reflects_iso _ (SheafOfModules.toSheaf.{v} R)]
-  simp only [ Functor.id_obj,
-    toSheaf_map_sheafificationAdjunction_counit_app]
+  simp only [Functor.id_obj, toSheaf_map_sheafificationAdjunction_counit_app]
   infer_instance
 
 instance : (SheafOfModules.forget.{v} R ⋙ restrictScalars α).Full :=

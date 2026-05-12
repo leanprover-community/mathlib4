@@ -113,7 +113,7 @@ private lemma Subgraph.IsMatching.exists_verts_compl_subset_universalVerts
     by_cases h : v ∈ M1.verts
     · exact M1.verts.mem_union_left _ h
     right
-    simp only [ Subgraph.verts_iSup, Set.mem_iUnion, M2,
+    simp only [Subgraph.verts_iSup, Set.mem_iUnion, M2,
       hcomplMatch_compl]
     use G.deleteUniversalVerts.coe.connectedComponentMk ⟨v, hv⟩
     aesop

@@ -30,7 +30,6 @@ transformations are used to encode 2-functoriality of categorical pullback squar
 
 @[expose] public section
 
-
 namespace CategoryTheory.Limits
 
 universe v₁ v₂ v₃ v₄ v₅ v₆ v₇ v₈ v₉ v₁₀ v₁₁ v₁₂ v₁₃ v₁₄ v₁₅

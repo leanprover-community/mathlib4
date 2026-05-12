@@ -148,7 +148,7 @@ def overMapCompPresheafHomIso {S' : C} (q : S' ⟶ S) :
       rintro ⟨T₁⟩ ⟨T₂⟩ ⟨f⟩
       ext g
       dsimp [pullHom]
-      simp only [ Category.assoc,
+      simp only [Category.assoc,
         Functor.map_comp]
       rw [F.mapComp'₀₁₃_inv_comp_mapComp'₀₂₃_hom_app_assoc _ _ _ _ _ _ rfl _ rfl,
         F.mapComp'₀₂₃_inv_comp_mapComp'₀₁₃_hom_app _ _ _ _ _ _ _ _ (by

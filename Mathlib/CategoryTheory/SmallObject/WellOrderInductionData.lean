@@ -30,7 +30,6 @@ which restricts to `val₀`.
 
 @[expose] public section
 
-
 universe v u
 
 namespace CategoryTheory

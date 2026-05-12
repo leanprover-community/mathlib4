@@ -479,13 +479,6 @@ lemma trW.mk' [P.IsStableUnderShift ℤ] {T : Triangle C} (hT : T ∈ distTriang
   rw [trW_iff']
   exact ⟨_, _, _, hT, h⟩
 
-variable {P} in
-lemma trW_monotone {Q : ObjectProperty C} (h : P ≤ Q) : P.trW ≤ Q.trW := by
-  intro X Y f hf
-  rw [trW_iff] at hf ⊢
-  obtain ⟨Z, a, b, hT, hZ⟩ := hf
-  exact ⟨Z, a, b, hT, h _ hZ⟩
-
 set_option backward.defeqAttrib.useBackward true in
 lemma trW_isoClosure : P.isoClosure.trW = P.trW := by
   ext X Y f
@@ -495,6 +488,13 @@ lemma trW_isoClosure : P.isoClosure.trW = P.trW := by
     exact Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) e.symm
   · rintro ⟨Z, g, h, mem, hZ⟩
     exact ⟨Z, g, h, mem, ObjectProperty.le_isoClosure _ _ hZ⟩
+
+variable {P} in
+lemma trW_monotone {Q : ObjectProperty C} (h : P ≤ Q) : P.trW ≤ Q.trW := by
+  intro X Y f hf
+  rw [trW_iff] at hf ⊢
+  obtain ⟨Z, a, b, hT, hZ⟩ := hf
+  exact ⟨Z, a, b, hT, h _ hZ⟩
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

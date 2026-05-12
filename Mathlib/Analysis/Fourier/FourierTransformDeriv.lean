@@ -784,7 +784,6 @@ lemma pow_mul_norm_iteratedFDeriv_fourier_le
 @[deprecated (since := "2025-11-16")]
 alias pow_mul_norm_iteratedFDeriv_fourierIntegral_le := pow_mul_norm_iteratedFDeriv_fourier_le
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasDerivAt_fourier
     {f : ℝ → E} (hf : Integrable f) (hf' : Integrable (fun x : ℝ ↦ x • f x)) (w : ℝ) :
     HasDerivAt (𝓕 f) (𝓕 (fun x : ℝ ↦ (-2 * π * I * x) • f x) w) w := by

@@ -27,7 +27,6 @@ public import Mathlib.RingTheory.LocalProperties.Submodule
 
 -/
 
-
 public section
 
 universe uM

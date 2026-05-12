@@ -177,7 +177,7 @@ lemma ideal_le_ker_glueDataObjι (U V : X.affineOpens) :
   convert RingHom.map_zero _ using 2
   rw [← RingHom.mem_ker, ker_glueDataObjι_appTop, ← Ideal.mem_comap, Ideal.comap_comap,
     ← CommRingCat.hom_comp]
-  simp only [ homOfLE_leOfHom, Scheme.Hom.comp_base,
+  simp only [homOfLE_leOfHom, Scheme.Hom.comp_base,
     TopologicalSpace.Opens.map_comp_obj, eqToHom_op, eqToHom_unop, ← Functor.map_comp,
     Scheme.Opens.topIso_hom, Category.assoc]
   exact I.ideal_le_comap_ideal (U := X.affineBasicOpen f) (V := V)
