@@ -24,7 +24,6 @@ The following meta-property is defined
 
 @[expose] public section
 
-
 universe w v v' u u'
 
 open CategoryTheory Opposite
