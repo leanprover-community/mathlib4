@@ -136,6 +136,7 @@ class IsHomotopyInvariant (HP : HomologyPretheory.{u} C c) where
 export IsHomotopyInvariant (map_eq_of_homotopy)
 
 variable (C c) in
+/-- An abbreviation for `HomologyPretheory.IsHomotopyInvariant` as `ObjectProperty`. -/
 abbrev isHomotopyInvariant : ObjectProperty (HomologyPretheory C c) :=
   IsHomotopyInvariant
 
