@@ -192,12 +192,17 @@ instance : (fibrantObjectLocalizerMorphism C).IsInduced where
 instance : (fibrantObjectLocalizerMorphism C).functor.IsEquivalence := by
   dsimp; infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance : (localizerMorphism C).IsRightDerivabilityStructure := by
   rw [LocalizerMorphism.isRightDerivabilityStructure_iff_of_equivalences
-    (T := localizerMorphism C) (B := (FibrantObject.localizerMorphism (Plus C)))
+    (T := localizerMorphism C) (B := FibrantObject.localizerMorphism (Plus C))
     (R := .id _) (L := fibrantObjectLocalizerMorphism C) (Iso.refl _)]
-  infer_instance
+  exact inferInstanceAs (FibrantObject.localizerMorphism (Plus C)).IsRightDerivabilityStructure
+
+instance : (localizerMorphism C).arrow.HasRightResolutions := by
+  rw [LocalizerMorphism.hasRightResolutions_arrow_iff_of_equivalences
+    (T := localizerMorphism C) (B := FibrantObject.localizerMorphism (Plus C))
+    (R := .id _) (L := fibrantObjectLocalizerMorphism C) (Iso.refl _)]
+  exact inferInstanceAs (FibrantObject.localizerMorphism (Plus C)).arrow.HasRightResolutions
 
 end CochainComplex.Plus
 
@@ -340,34 +345,8 @@ instance isRightDerivabilityStructure : (localizerMorphism C).IsRightDerivabilit
   LocalizerMorphism.isRightDerivabilityStructure_of_isLocalizedEquivalence
     (isRightDerivabilityStructure.iso C)
 
-set_option backward.isDefEq.respectTransparency false in
-instance : (HomotopyCategory.Plus.localizerMorphism C).arrow.HasRightResolutions := by
-  intro f
-  obtain ⟨K₁, K₂, f, rfl⟩ := Arrow.mk_surjective f
-  let r₁ : (HomotopyCategory.Plus.localizerMorphism C).RightResolution K₁ :=
-    Classical.arbitrary _
-  let r₂ : (HomotopyCategory.Plus.localizerMorphism C).RightResolution K₂ :=
-    Classical.arbitrary _
-  obtain ⟨φ, hφ⟩ : ∃ φ, r₁.w ≫ φ = f ≫ r₂.w := by
-    obtain ⟨α, hα⟩ :=
-      (HomotopyCategory.quotient _ _).map_surjective ((HomotopyCategory.Plus.ι C).map r₁.w)
-    let L := ((InjectiveObject.ι C).mapHomologicalComplex _).obj r₂.X₁.obj.as
-    have : QuasiIso α := by
-      change HomologicalComplex.quasiIso C _ α
-      rw [← quotient_map_mem_quasiIso_iff, hα]
-      exact r₁.hw
-    have (n : ℤ) : Injective (L.X n) := (r₂.X₁.obj.as.X n).property
-    obtain ⟨d, hd⟩ := r₂.X₁.property
-    have := CochainComplex.isKInjective_of_injective L d
-    obtain ⟨β, hβ⟩ := (CochainComplex.IsKInjective.bijective_precomp α L).2
-      ((HomotopyCategory.Plus.ι C).map (f ≫ r₂.w))
-    exact ⟨ObjectProperty.homMk β, (ι C).map_injective (by rw [← hβ, hα]; dsimp)⟩
-  obtain ⟨φ, rfl⟩ := (InjectiveObject.ι C).mapHomotopyCategoryPlus.map_surjective φ
-  exact ⟨{
-    X₁ := Arrow.mk φ
-    w := Arrow.homMk r₁.w r₂.w hφ
-    hw := ⟨r₁.hw, r₂.hw⟩
-  }⟩
+instance : (HomotopyCategory.Plus.localizerMorphism C).arrow.HasRightResolutions :=
+  LocalizerMorphism.hasRightResolutions_arrow_of_catCommSq (isRightDerivabilityStructure.iso C)
 
 noncomputable instance : (HomotopyCategory.Plus.localizerMorphism C).functor.CommShift ℤ := by
   dsimp; infer_instance

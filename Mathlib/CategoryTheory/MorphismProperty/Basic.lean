@@ -557,6 +557,12 @@ def arrow (W : MorphismProperty C) :
     MorphismProperty (Arrow C) :=
   fun _ _ f => W f.left ∧ W f.right
 
+instance (W : MorphismProperty C) [W.RespectsIso] : W.arrow.RespectsIso where
+  precomp f (_ : IsIso f) _ h :=
+    ⟨RespectsIso.precomp _ _ _ h.1, RespectsIso.precomp _ _ _ h.2⟩
+  postcomp f (_ : IsIso f) _ h :=
+    ⟨RespectsIso.postcomp _ _ _ h.1, RespectsIso.postcomp _ _ _ h.2⟩
+
 end MorphismProperty
 
 namespace NatTrans
