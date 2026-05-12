@@ -94,9 +94,14 @@ def discriminantEquiv : CuspForm 𝒮ℒ k ≃ₗ[ℂ] ModularForm 𝒮ℒ (k - 
     ext z
     exact mul_div_cancel_left₀ (f z) (discriminant_ne_zero z)
 
-@[simp]
 lemma discriminantEquiv_apply (f : CuspForm 𝒮ℒ k) (z : ℍ) :
     (discriminantEquiv f) z = f z / Δ z := divDiscriminant_apply f z
+
+@[simp]
+lemma discriminant_mul_discriminantEquiv (f : CuspForm 𝒮ℒ k) :
+    (Δ : ℍ → ℂ) * (discriminantEquiv f : ℍ → ℂ) = f := by
+  ext z
+  rw [Pi.mul_apply, discriminantEquiv_apply, mul_div_cancel₀ _ (discriminant_ne_zero z)]
 
 @[simp]
 lemma discriminant_mul_discriminantEquiv_apply (f : CuspForm 𝒮ℒ k) (z : ℍ) :
@@ -126,10 +131,10 @@ lemma qExpansion_eq_qExpansion_discriminant_mul (f : ModularForm 𝒮ℒ k)
     qExpansion 1 f = qExpansion 1 discriminant *
       qExpansion 1 (CuspForm.discriminantEquiv (toCuspForm f hcusp)) := by
   have hfun : (f : ℍ → ℂ) = discriminant *
-      (CuspForm.discriminantEquiv (toCuspForm f hcusp) : ℍ → ℂ) :=
-    funext fun z ↦ by
-      simpa [toCuspForm_apply] using
-        (CuspForm.discriminant_mul_discriminantEquiv_apply (toCuspForm f hcusp) z).symm
+      (CuspForm.discriminantEquiv (toCuspForm f hcusp) : ℍ → ℂ) := by
+    rw [CuspForm.discriminant_mul_discriminantEquiv (toCuspForm f hcusp)]
+    ext z
+    exact (toCuspForm_apply f hcusp z).symm
   rw [hfun]
   exact UpperHalfPlane.qExpansion_mul
     (CuspForm.coe_discriminant ▸ ModularFormClass.analyticAt_cuspFunction_zero
@@ -269,8 +274,8 @@ theorem dimension_level_one (k : ℕ) (hk2 : Even k) :
     rw [rank_eq_one_add_rank_cuspForm (by lia) hk2, CuspForm.discriminantEquiv.rank_eq,
       show ((k : ℤ) - 12 : ℤ) = ((k - 12 : ℕ) : ℤ) by lia,
       ihn (k - 12) (by lia) (by grind)]
-    simp only [Nat.ModEq, show k / 12 = (k - 12) / 12 + 1 by omega,
-      show (k - 12) % 12 = k % 12 by omega]
+    simp only [Nat.ModEq, show k / 12 = (k - 12) / 12 + 1 by lia,
+      show (k - 12) % 12 = k % 12 by lia]
     split_ifs <;> push_cast <;> ring
 
 instance (k : ℤ) : FiniteDimensional ℂ (ModularForm 𝒮ℒ k) := by
@@ -298,11 +303,11 @@ theorem sturm_bound_levelOne {k : ℤ} (f : ModularForm 𝒮ℒ k)
   have hg_zero : g = 0 := by
     rcases lt_or_ge k 12 with hk12 | hk12
     · exact rank_zero_iff_forall_zero.mp (levelOne_neg_weight_rank_zero (by lia)) g
-    refine ih k.toNat (by omega) g ?_ (by omega)
+    refine ih k.toNat (by lia) g ?_ (by lia)
     rw [qExpansion_eq_qExpansion_discriminant_mul f h0, PowerSeries.order_mul,
       discriminant_qExpansion_order, add_comm] at h
     rw [show (↑(k.toNat / 12) : ℕ∞) = ↑((k - 12).toNat / 12) + 1 from
-      mod_cast (by omega : k.toNat / 12 = (k - 12).toNat / 12 + 1)] at h
+      mod_cast (by lia : k.toNat / 12 = (k - 12).toNat / 12 + 1)] at h
     exact (ENat.add_lt_add_iff_right ENat.one_ne_top).mp h
   exact (ModularForm.qExpansion_eq_zero_iff one_pos one_mem_strictPeriods_SL f).mp <| by
     simp [qExpansion_eq_qExpansion_discriminant_mul f h0, ← hg_def, hg_zero, qExpansion_zero]
