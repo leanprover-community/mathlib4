@@ -11,7 +11,11 @@ import Mathlib.Topology.Constructions
 
 import Mathlib.Tactic.FunProp
 
-/-! # A file with fun_prop tests... sth sth sth! -/
+/-! # Literate documentation for `fun_prop`
+
+This file serves as a user's guide for `fun_prop` written in automatically checked Lean.
+For adding more test cases that are not part of documentation, please use `MathlibTest/fun_prop2.lean`.
+-/
 
 open Mathlib
 
