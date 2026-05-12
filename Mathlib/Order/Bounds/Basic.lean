@@ -152,17 +152,6 @@ theorem DirectedOn.of_isCofinalFor (hd : DirectedOn (· ≤ ·) t)
   obtain ⟨w, hw, hzw⟩ := hc hz
   exact ⟨w, hw, hxz.trans hzw, hyz.trans hzw⟩
 
-/-- If `b` is not an upper bound of a directed set `s`, then the elements of `s` not below `b`
-form a cofinal subset of `s`. -/
-@[to_dual /-- If `b` is not a lower bound of a coinitially-directed set `s`, then the elements of
-`s` not above `b` form a coinitial subset of `s`. -/]
-theorem DirectedOn.isCofinalFor_sdiff_Iic (hd : DirectedOn (· ≤ ·) s) (hb : b ∉ upperBounds s) :
-    IsCofinalFor s (s \ Iic b) := by
-  obtain ⟨w, hw, hwb⟩ : ∃ w ∈ s, ¬ w ≤ b := by simpa [upperBounds] using hb
-  intro x hx
-  obtain ⟨z, hz, hxz, hwz⟩ := hd x hx w hw
-  exact ⟨z, ⟨hz, fun hzb ↦ hwb (hwz.trans hzb)⟩, hxz⟩
-
 theorem isCofinalFor_or_isCofinalFor_of_directedOn_union (h : DirectedOn (· ≤ ·) (s ∪ t)) :
     IsCofinalFor t s ∨ IsCofinalFor s t := by
   rw [or_iff_not_imp_left]

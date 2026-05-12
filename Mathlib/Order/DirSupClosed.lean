@@ -171,24 +171,14 @@ theorem DirSupClosedOn.union (hDL : IsLowerSet D)
     (hs : DirSupClosedOn D s) (ht : DirSupClosedOn D t) : DirSupClosedOn D (s ∪ t) := by
   intro d hD hdu hd₀ hd₁ a ha
   have hdst : d ∩ s ∪ d ∩ t = d := by grind
-  rw [← hdst] at hd₀ hd₁
-  wlog h : DirectedOn (· ≤ ·) (d ∩ s) ∧ (d ∩ s).Nonempty
-  · rw [union_comm] at hdu hd₀ hd₁ hdst ⊢
+  wlog h : DirectedOn (· ≤ ·) (d ∩ s) ∧ IsCofinalFor (d ∩ t) (d ∩ s)
+  · rw [union_comm] at hdu hdst ⊢
     exact this hDL ht hs hD hdu hd₀ hd₁ ha hdst <|
-      (directedOn_or_directedOn_of_union' hd₀ hd₁).resolve_right h
-  obtain ⟨hds, hn⟩ := h
-  by_cases had : a ∈ lowerBounds (upperBounds (d ∩ s))
-  · exact .inl <| hs (hDL inter_subset_left hD) inter_subset_right hn hds
-      ⟨upperBounds_mono_set inter_subset_left ha.1, had⟩
-  · obtain ⟨b, hb, hb'⟩ : ∃ b ∈ upperBounds (d ∩ s), ¬ a ≤ b := by
-      simpa [lowerBounds] using had
-    have hdd : DirectedOn (· ≤ ·) d := hdst ▸ hd₁
-    have hcof : IsCofinalFor d (d \ Iic b) :=
-      hdd.isCofinalFor_sdiff_Iic fun h ↦ hb' (ha.2 h)
-    have hsub : d \ Iic b ⊆ d ∩ t := by grind [mem_upperBounds]
-    exact .inr <| ht (hDL diff_subset hD) (hsub.trans inter_subset_right)
-      (hcof.nonempty (hdst ▸ hd₀)) (hdd.of_isCofinalFor diff_subset hcof)
-      (ha.of_isCofinalFor diff_subset hcof)
+      (directedOn_union_iff.mp (by rw [hdst]; exact hd₁)).resolve_right h
+  obtain ⟨hds, hcof⟩ := h
+  have hcof' : IsCofinalFor d (d ∩ s) := hcof.union_right.mono_left hdst.ge
+  exact .inl <| hs (hDL inter_subset_left hD) inter_subset_right
+    (hcof'.nonempty hd₀) hds (ha.of_isCofinalFor inter_subset_left hcof')
 
 theorem DirSupInaccOn.inter (hDL : IsLowerSet D)
     (hs : DirSupInaccOn D s) (ht : DirSupInaccOn D t) : DirSupInaccOn D (s ∩ t) := by
