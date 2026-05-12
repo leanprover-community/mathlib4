@@ -770,7 +770,7 @@ jobs:
     name: Lint style
     runs-on: ubuntu-latest
     steps:
-      - uses: leanprover-community/lint-style-action@a7e7428fa44f9635d6eb8e01919d16fd498d387a # 2025-08-18
+      - uses: leanprover-community/lint-style-action@91923b046cc6a468e9ae340f32f8defe586bd08f # 2026-05-12
         with:
           mode: check
           lint-bib-file: true
