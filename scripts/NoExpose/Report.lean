@@ -17,14 +17,14 @@ and `edit` need:
 ```
 {"name": "Foo.bar", "kind": "def", "effect": "exposed",
  "module": "Mathlib.Foo", "file": "Mathlib/Foo.lean",
- "line": 42, "col": 0,
- "downstream_usage": 17, "num_usingMap_files": 5,
- "top_usingMap_files": [{"file": "...", "count": 4}, ...]}
+ "line": 42, "col": 0, "expose_source": "section",
+ "downstream_usage": 17, "num_using_files": 5,
+ "top_using_files": [{"file": "...", "count": 4}, ...]}
 ```
 
-This module parses those records and renders per-file output in three
-formats. Building `report.jsonl` from raw signals is the responsibility
-of `NoExpose.Diagnostics` and the `collect` orchestrator.
+This module parses those records and renders per-file output in text or
+JSON. Building `report.jsonl` from raw signals is the responsibility of
+`NoExpose.Diagnostics` and the `collect` orchestrator.
 -/
 
 open Lean (Json)

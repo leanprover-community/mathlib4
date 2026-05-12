@@ -21,8 +21,8 @@ The user-facing core. For each target file:
    * `section`: drop `@[expose] ` from the section line, then prepend
      `@[expose]` to each needed-downstream decl line.
    * `individual`: for each safe-to-unexpose decl, drop `@[expose]`
-     from its attribute list (only handles single-attribute lines in
-     v1; multi-attribute lines are skipped with a logged diagnostic).
+     from its attribute list. Only single-attribute lines are handled;
+     multi-attribute lines are skipped with a logged diagnostic.
 4. **Safety checks**:
    * stale-data check: report.jsonl mtime ≥ source mtime
    * clean-tree check: `git status --porcelain PATH` is empty
@@ -153,8 +153,8 @@ def applySectionStrategy (text : String) (neededDownstream : Array Nat) :
 /-! ## Individual-strategy edit
 
 For each safe-to-unexpose decl on a recorded line, look for an
-`@[expose]` attribute on or above the decl line and remove it. This v1
-only handles two shapes:
+`@[expose]` attribute on or above the decl line and remove it. Only
+two shapes are handled:
 
 * `@[expose]` on its own line → delete the entire line.
 * Decl line is `@[expose] def foo …` → strip the `@[expose] ` prefix
@@ -169,7 +169,7 @@ inductive SkipReason where
   exposed via an enclosing `public meta section` or similar. -/
   | noAttribute
   /-- `@[expose]` is present but bundled with other attributes
-  (e.g. `@[expose, simp]`); v1 doesn't unbundle. -/
+  (e.g. `@[expose, simp]`); the tool doesn't unbundle. -/
   | multiAttribute
   deriving Repr, BEq
 

@@ -62,6 +62,7 @@ structure DeclRecord where
   col : Nat
   «effect» : String
   exposeSource : ExposeSource := .unknown
+  deriving Inhabited
 
 /-- Suffixes Lean uses for compiler-generated structure/inductive
 helpers; we exclude them since they aren't user-written `@[expose]`
@@ -171,72 +172,34 @@ def DeclRecord.toJsonLine (d : DeclRecord) : String :=
   ",\"effect\":\"" ++ d.effect ++
   "\",\"expose_source\":\"" ++ d.exposeSource.toJsonString ++ "\"}"
 
-/-- Parse a single line of `exposed.jsonl` enough to extract the
-`file`, `line`, and the full original JSON text. The JSON text is
-preserved as-is so we can rewrite it later with a different
-`expose_source` value without losing fields we didn't parse. -/
-private def parseExposedLine (line : String) :
-    Option (String × Nat × String) := Id.run do
-  match Lean.Json.parse line with
-  | .error _ => none
-  | .ok j =>
-    let file := (j.getObjValAs? String "file").toOption
-    let lineNum := (j.getObjValAs? Nat "line").toOption
-    match file, lineNum with
-    | some f, some n => some (f, n, line)
-    | _, _ => none
-
-/-- Replace the `"expose_source":"…"` field in a JSON line. Falls back
-to appending the field if no such key was present (defensive). -/
-private def setExposeSourceField (line : String) (src : ExposeSource) : String :=
-  let needle := "\"expose_source\":\""
-  let parts := line.splitOn needle
-  if parts.length < 2 then
-    -- Append before the final `}`.
-    let body := line.dropEnd 1 |>.toString
-    body ++ ",\"expose_source\":\"" ++ src.toJsonString ++ "\"}"
-  else
-    let before := parts[0]!
-    let after := String.intercalate needle (parts.drop 1)
-    -- `after` starts with `<value>"...` — drop up to the next `"`.
-    let valueEnd := (after.splitOn "\"").drop 1
-    let rest := String.intercalate "\"" valueEnd
-    before ++ needle ++ src.toJsonString ++ "\"" ++ rest
-
-/-- Read `exposed.jsonl`, source-scan each referenced file, and rewrite
-the file in place with `expose_source` filled in. Returns the
-per-source count summary for the log. The env-walked records are read
-back from disk to ensure they no longer reference any data that was
-allocated inside `withImportModules`. -/
-def augmentExposedFile (path : System.FilePath) :
-    IO (Std.HashMap String Nat) := do
-  IO.eprintln s!"[no_expose source-scan] re-reading {path}"
-  let raw ← IO.FS.readFile path
-  let lines := raw.splitOn "\n"
-  let mut parsed : Array (String × Nat × String) := #[]
-  for line in lines do
-    if let some r := parseExposedLine line then parsed := parsed.push r
-  IO.eprintln s!"[no_expose source-scan] parsed {parsed.size} records; grouping"
-  -- Group line-indices into `parsed` by source file.
+/-- Source-scan every file mentioned by `recs` and return a parallel
+array of `ExposeSource` (indexed the same as `recs`) plus a
+per-source count summary. Intended to be called inside the
+`withImportModules` block that produced `recs`, so the records are
+valid for the duration of the scan. -/
+def sourceScanRecords (recs : Array DeclRecord) :
+    IO (Array ExposeSource × Std.HashMap String Nat) := do
+  -- Group record indices by file.
   let mut byFile : Std.HashMap String (Array Nat) := {}
   let mut fileOrder : Array String := #[]
   let mut seenFile : Std.HashSet String := {}
-  for h : i in [:parsed.size] do
-    let (f, _, _) := parsed[i]
+  for h : i in [:recs.size] do
+    let f := recs[i].file
     unless seenFile.contains f do
       seenFile := seenFile.insert f
       fileOrder := fileOrder.push f
     byFile := byFile.insert f ((byFile.getD f #[]).push i)
-  IO.eprintln s!"[no_expose source-scan] grouped into {fileOrder.size} files"
-  -- Per-file scan + record per-line source.
-  let mut sources : Array ExposeSource := Array.replicate parsed.size .unknown
+  IO.eprintln s!"[no_expose source-scan] grouped {recs.size} records into \
+    {fileOrder.size} files"
+  -- Per-file scan; each file's scan map is bounded by candidate count
+  -- (via `wanted`) and dropped before moving on.
+  let mut sources : Array ExposeSource := Array.replicate recs.size .unknown
+  let mut counts : Std.HashMap String Nat := {}
   let mut filesDone : Nat := 0
   for f in fileOrder do
     let indices := byFile.getD f #[]
     let wanted : Std.HashSet Nat :=
-      indices.foldl (init := {}) fun acc i =>
-        let (_, n, _) := parsed[i]!
-        acc.insert n
+      indices.foldl (init := {}) fun acc i => acc.insert recs[i]!.line
     let pth : System.FilePath := f
     let mut byLine : Std.HashMap Nat ExposeSource := {}
     if ← System.FilePath.pathExists pth then
@@ -244,24 +207,15 @@ def augmentExposedFile (path : System.FilePath) :
       for (ln, src) in scanFile text do
         if wanted.contains ln then byLine := byLine.insert ln src
     for i in indices do
-      let (_, n, _) := parsed[i]!
-      sources := sources.set! i (byLine.getD n .unknown)
+      let src := byLine.getD recs[i]!.line .unknown
+      sources := sources.set! i src
+      let k := src.toJsonString
+      counts := counts.insert k ((counts.getD k 0) + 1)
     filesDone := filesDone + 1
     if filesDone % 500 == 0 then
-      IO.eprintln s!"[no_expose source-scan] processed {filesDone} files"
-  IO.eprintln s!"[no_expose source-scan] processed {filesDone} files total; rewriting"
-  -- Stream the rewritten JSONL back to disk. `counts` lives in an IORef
-  -- so the inner `withFile` closure can update it.
-  let countsRef ← IO.mkRef (∅ : Std.HashMap String Nat)
-  IO.FS.withFile path .write fun h => do
-    for h2 : i in [:parsed.size] do
-      let (_, _, orig) := parsed[i]
-      let src := sources[i]!
-      let k := src.toJsonString
-      countsRef.modify fun c => c.insert k ((c.getD k 0) + 1)
-      h.putStrLn (setExposeSourceField orig src)
-  IO.eprintln s!"[no_expose source-scan] rewrote {parsed.size} records to {path}"
-  countsRef.get
+      IO.eprintln s!"[no_expose source-scan] scanned {filesDone} files"
+  IO.eprintln s!"[no_expose source-scan] scanned {filesDone} files total"
+  return (sources, counts)
 
 /-- Write a `RefMap` aggregation as one JSONL record per pair. -/
 def writeStaticRefs (env : Environment) (acc : RefMap)

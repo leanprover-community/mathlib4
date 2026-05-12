@@ -32,12 +32,11 @@ unsafe def runEnvScan (_project : ProjectInfo) (modules : Array Name)
     (scopePrefix : Array Name) : IO Unit := do
   IO.FS.createDirAll dataDir
   let searchPath ← addSearchPathFromEnv (← getBuiltinSearchPath (← findSysroot))
-  -- Write `exposed.jsonl` *inside* `withImportModules`: records carry
-  -- strings derived from `Name`s allocated in the imported environment,
-  -- and using those after the env is released triggers a use-after-free
-  -- (observed as SIGSEGV during any iteration over `recs` outside the
-  -- block). Serialising to disk inside the scope and then re-reading
-  -- from disk for the source-scan completely detaches the data.
+  -- Everything happens *inside* `withImportModules`: the `Name`-derived
+  -- strings carried by `DeclRecord` are arena-allocated by the imported
+  -- environment and triggered SIGSEGV-on-use after the block exited.
+  -- Source-scanning here lets us write `exposed.jsonl` once with all
+  -- fields correct.
   withImportModules modules
       (searchPath := searchPath) (trustLevel := 1024) do
     let env ← getEnv
@@ -49,13 +48,13 @@ unsafe def runEnvScan (_project : ProjectInfo) (modules : Array Name)
     -- Per-decl refs → decl_refs.jsonl
     IO.FS.withFile declRefsPath .write fun h => writeDeclRefs env h
     IO.eprintln s!"[no_expose collect] wrote per-decl refs to {declRefsPath}"
-    -- Initial `exposed.jsonl` with `exposeSource = .unknown` everywhere.
+    -- Source-scan + write exposed.jsonl with `expose_source` filled in.
+    let (sources, counts) ← sourceScanRecords recs
     IO.FS.withFile exposedPath .write fun h => do
-      for r in recs do h.putStrLn r.toJsonLine
+      for h2 : i in [:recs.size] do
+        h.putStrLn { recs[i] with exposeSource := sources[i]! }.toJsonLine
     IO.eprintln s!"[no_expose collect] wrote {recs.size} exposed records to {exposedPath}"
-  -- Env released; now source-scan and rewrite `exposed.jsonl` in place.
-  let counts ← augmentExposedFile exposedPath
-  IO.eprintln s!"[no_expose collect] expose-source breakdown: {counts.toList}"
+    IO.eprintln s!"[no_expose collect] expose-source breakdown: {counts.toList}"
 
 /-- Run the `collect` subcommand. -/
 unsafe def runCollect (args : CollectArgs) : IO UInt32 := do
