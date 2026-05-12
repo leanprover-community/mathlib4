@@ -67,6 +67,21 @@ def AnatoleDream_2_symm [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F
 
 /- ## Kernel -/
 
+lemma KernelFG_of_isFredholm (hf : IsFredholm_exists f) : FiniteDimensional 𝕜 f.ker := by
+  obtain ⟨g, -, hg_left⟩ := hf
+  have : f.ker ≤ (g.comp f - 1).range := by
+    intro x hx
+    use -x
+    simp only [LinearMap.mem_ker, coe_coe] at hx
+    simp [hx]
+  rw [← Submodule.fg_iff_finiteDimensional]
+  apply Submodule.FG.of_le _ this
+  exact Module.Finite.iff_fg.mp hg_left
+
+
+
+
+
 /- ## Coernel -/
 
 /- ## GoodRelation -/
