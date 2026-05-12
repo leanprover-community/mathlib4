@@ -114,12 +114,7 @@ theorem Topology.IsEmbedding.perfectlyNormalSpace {e : X → Y} (he : IsEmbeddin
   obtain ⟨f, rfl, hf⟩ :=
     perfectlyNormalSpace_iff_forall_isClosed_preimage_zero.1 inferInstance c hc.1
   refine ⟨⟨f ∘ e, f.continuous.comp he.continuous⟩, ?_, fun x => hf (e x)⟩
-  ext x
-  refine ⟨fun hx => ?_, fun hx => ?_⟩
-  · have hx' : e x ∈ e '' t := mem_image_of_mem e hx
-    simp_all
-  · have hx' : e x ∈ e '' t := by simp_all
-    exact he.injective.mem_set_image.1 hx'
+  simpa [Set.ext_iff, he.injective.preimage_image] using congr(e ⁻¹' $(hc.2))
 
 instance {s : Set X} [PerfectlyNormalSpace X] : PerfectlyNormalSpace s :=
   IsEmbedding.subtypeVal.perfectlyNormalSpace
