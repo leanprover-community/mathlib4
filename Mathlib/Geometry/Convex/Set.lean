@@ -196,9 +196,6 @@ variable {K K₁ K₂ : ConvexSet R X}
 variable (K) in
 @[simp] lemma carrier_eq_coe : K.carrier = K := rfl
 
-variable (K) in
-@[simp] theorem mem_carrier (x : X) : x ∈ K.carrier ↔ x ∈ K := .rfl
-
 @[ext] theorem ext (h : ∀ x, x ∈ K₁ ↔ x ∈ K₂) : K₁ = K₂ := SetLike.ext h
 
 example : (K₁ : Set X) ≤ K₂ ↔ K₁ ≤ K₂ := by simp only [le_eq_subset,
@@ -234,11 +231,11 @@ instance : CompleteSemilatticeInf (ConvexSet R X) where
 
 instance : OrderBot (ConvexSet R X) where
   bot := ⟨∅, IsConvexSet.empty⟩
-  bot_le _ _ hx := by simp [← mem_carrier] at hx
+  bot_le _ _ hx := by simp [← SetLike.mem_coe, ← carrier_eq_coe] at hx
 
 instance : OrderTop (ConvexSet R X) where
   top := ⟨Set.univ, IsConvexSet.univ⟩
-  le_top _ _ _ := by simp [← mem_carrier]
+  le_top _ _ _ := by simp [← SetLike.mem_coe, ← carrier_eq_coe]
 
 instance : Inhabited (ConvexSet R X) := ⟨⊤⟩
 

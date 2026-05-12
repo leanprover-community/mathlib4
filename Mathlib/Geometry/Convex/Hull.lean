@@ -136,7 +136,7 @@ instance : SemilatticeSup (ConvexSet R X) where
     apply subset_convexHull_self
     simp [hs]
   sup_le K₁ K₂ K₃ h₁₂ h₂₃ x hx := by
-    rw [← mem_carrier, sup_eq_convexHull_union, mem_convexHull_iff] at hx
+    rw [← SetLike.mem_coe, ← carrier_eq_coe, sup_eq_convexHull_union, mem_convexHull_iff] at hx
     refine hx K₃ ?_ K₃.isConvexSet
     simp [h₂₃, h₁₂]
 
@@ -152,7 +152,8 @@ instance : CompleteSemilatticeSup (ConvexSet R X) where
     · simp only [sSup, convexHull, Convexity.convexHull, ClosureOperator.ofCompletePred_apply,
       le_eq_subset, iInf_eq_iInter]
       intro x xm
-      simp only [← mem_carrier, mem_iInter, Subtype.forall, iUnion_subset_iff, and_imp] at xm
+      simp only [← SetLike.mem_coe, ← carrier_eq_coe, mem_iInter, Subtype.forall, iUnion_subset_iff,
+        and_imp] at xm
       exact xm _ hL L.isConvexSet
 
 end Convexity.ConvexSet
