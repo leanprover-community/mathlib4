@@ -593,13 +593,14 @@ def constAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     if let some r ← applyMorRules funPropDecl e fData funProp then
       return r
 
-  if let some (f, g) ← fData.nontrivialDecomposition then
-    trace[Meta.Tactic.fun_prop]
-      s!"failed applying `{funPropDecl.funPropName}` theorems for `{funName}`
-         trying again after decomposing function as: `({← ppExpr f}) ∘ ({← ppExpr g})`"
+  if (← getLambdaTheorems funPropDecl.funPropName .comp).size != 0 then
+    if let some (f, g) ← fData.nontrivialDecomposition then
+      trace[Meta.Tactic.fun_prop]
+        s!"failed applying `{funPropDecl.funPropName}` theorems for `{funName}`
+           trying again after decomposing function as: `({← ppExpr f}) ∘ ({← ppExpr g})`"
 
-    if let some r ← applyCompRule funPropDecl e f g funProp then
-      return r
+      if let some r ← applyCompRule funPropDecl e f g funProp then
+        return r
   else
     trace[Meta.Tactic.fun_prop]
       s!"failed applying `{funPropDecl.funPropName}` theorems for `{funName}`
@@ -607,7 +608,6 @@ def constAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
 
     if let some r ← applyTransitionRules e funProp then
       return r
-
 
   return none
 
