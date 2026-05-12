@@ -129,14 +129,16 @@ variable (HP HP' : HomologyPretheory.{u} C c)
 
 /-- A `HomologyPretheory` is homotopy-invariant if its homology functor `Hₚ` takes homotopic maps to
 the same map in homology -/
-class IsHomotopyInvariant where
-  homotopy ⦃X Y : TopPair⦄ (f g : X ⟶ Y) (hfg : Homotopic f g) :
-      ∀ (i : ι), (HP.Hₚ i).map f = (HP.Hₚ i).map g := by cat_disch
+class IsHomotopyInvariant (HP : HomologyPretheory.{u} C c) where
+  map_eq_of_homotopy (HP) {X Y : TopPair} {f g : X ⟶ Y} (F : Homotopy f g) (i : ι) :
+    (HP.Hₚ i).map f = (HP.Hₚ i).map g := by cat_disch
+
+export IsHomotopyInvariant (map_eq_of_homotopy)
 
 instance : IsClosedUnderIsomorphisms (C := HomologyPretheory C c) IsHomotopyInvariant where
-  of_iso {HP HP'} e hHP := ⟨by
-    intro _ _ _ _ hfg _
-    have := hHP.homotopy _ _ hfg
+  of_iso {HP HP'} e _ := ⟨by
+    intro _ _ _ _ F _
+    have := HP.map_eq_of_homotopy F
     apply ((((HomologyPretheory.forgetₚ _).mapIso e).app _).cancel_iso_hom_left
       ((HP'.Hₚ _).map _) ((HP'.Hₚ _).map _)).mp
     simp only [CategoryTheory.Iso.app_hom, HomologyPretheory.forgetₚ_obj, Functor.mapIso_hom,
