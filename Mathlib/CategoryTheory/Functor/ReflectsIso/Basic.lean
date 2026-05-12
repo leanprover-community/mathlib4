@@ -19,7 +19,7 @@ It is formalized as a `Prop`-valued typeclass `ReflectsIsomorphisms F`.
 Any fully faithful functor reflects isomorphisms.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
@@ -38,6 +38,8 @@ Note that we do not assume or require that `F` is faithful.
 class Functor.ReflectsIsomorphisms (F : C ⥤ D) : Prop where
   /-- For any `f`, if `F.map f` is an iso, then so was `f`. -/
   reflects : ∀ {A B : C} (f : A ⟶ B) [IsIso (F.map f)], IsIso f
+
+attribute [to_dual self] Functor.ReflectsIsomorphisms.reflects Functor.ReflectsIsomorphisms.mk
 
 /-- If `F` reflects isos and `F.map f` is an iso, then `f` is an iso. -/
 theorem isIso_of_reflects_iso {A B : C} (f : A ⟶ B) (F : C ⥤ D) [IsIso (F.map f)]
@@ -79,6 +81,17 @@ instance (F : D ⥤ E) [F.ReflectsIsomorphisms] :
     rw [← isIso_iff_of_reflects_iso _ F]
     change IsIso ((((whiskeringRight C D E).obj F).map f).app Z)
     infer_instance
+
+lemma reflectsIsomorphisms_of_iso {F G : C ⥤ D} (α : F ≅ G) [F.ReflectsIsomorphisms] :
+    G.ReflectsIsomorphisms where
+  reflects f _ := by
+    rw [← isIso_iff_of_reflects_iso _ F, ← NatIso.naturality_2 α f]
+    infer_instance
+
+lemma reflectsIsomorphisms_iso_iff {F G : C ⥤ D} (α : F ≅ G) :
+    F.ReflectsIsomorphisms ↔ G.ReflectsIsomorphisms :=
+  ⟨fun _ => reflectsIsomorphisms_of_iso α,
+  fun _ => reflectsIsomorphisms_of_iso α.symm⟩
 
 end ReflectsIso
 

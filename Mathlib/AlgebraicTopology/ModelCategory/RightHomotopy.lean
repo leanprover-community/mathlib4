@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.ModelCategory.PathObject
+public import Mathlib.AlgebraicTopology.ModelCategory.LeftHomotopy
 public import Mathlib.CategoryTheory.Localization.Quotient
 
 /-!
@@ -67,6 +68,7 @@ are homotopic relative to `P.symm` -/
 def symm {f g : X ⟶ Y} (h : P.RightHomotopy f g) : P.symm.RightHomotopy g f where
   h := h.h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f₀` is homotopic to `f₁` relative to a pre-path object `P`,
 and `f₁` is homotopic to `f₂` relative to `P'`, then
 `f₀` is homotopic to `f₂` relative to `P.trans P'`. -/
@@ -82,6 +84,24 @@ noncomputable def trans {f₀ f₁ f₂ : X ⟶ Y}
 def precomp {f g : X ⟶ Y} (h : P.RightHomotopy f g) {Z : C} (i : Z ⟶ X) :
     P.RightHomotopy (i ≫ f) (i ≫ g) where
   h := i ≫ h.h
+
+/-- Right homotopies in a full subcategory identify to right homotopies in the
+ambient category. -/
+noncomputable def fullSubcategoryEquiv {P : ObjectProperty C} {X Y : P.FullSubcategory}
+    {Q : PrepathObject Y} {f g : X ⟶ Y} :
+    Q.RightHomotopy f g ≃ (Q.map P.ι).RightHomotopy f.hom g.hom where
+  toFun h :=
+    { h := h.h.hom
+      h₀ := by
+        dsimp
+        simp only [← h.h₀, ObjectProperty.FullSubcategory.comp_hom]
+      h₁ := by
+        dsimp
+        simp only [← h.h₁, ObjectProperty.FullSubcategory.comp_hom] }
+  invFun h :=
+    { h := P.homMk h.h
+      h₀ := by ext; exact h.h₀
+      h₁ := by ext; exact h.h₁ }
 
 end RightHomotopy
 
@@ -122,14 +142,8 @@ lemma weakEquivalence_iff [(weakEquivalences C).HasTwoOutOfThreeProperty]
     [(weakEquivalences C).ContainsIdentities]
     {f₀ f₁ : X ⟶ Y} (h : P.RightHomotopy f₀ f₁) :
     WeakEquivalence f₀ ↔ WeakEquivalence f₁ := by
-  revert P f₀ f₁
-  suffices ∀ (P : PathObject Y) {f₀ f₁ : X ⟶ Y} (h : P.RightHomotopy f₀ f₁),
-      WeakEquivalence f₀ → WeakEquivalence f₁
-    from fun _ _ _ h ↦ ⟨this _ h, this _ h.symm⟩
-  intro P f₀ f₁ h h₀
-  have := weakEquivalence_of_postcomp_of_fac h.h₀
-  rw [← h.h₁]
-  infer_instance
+  induction h
+  grind [weakEquivalence_postcomp_iff]
 
 end
 
@@ -254,6 +268,7 @@ lemma equivalence [ModelCategory C] (X Y : C) [IsFibrant Y] :
   symm h := h.symm
   trans h h' := h.trans h'
 
+set_option backward.isDefEq.respectTransparency false in
 lemma postcomp [ModelCategory C] {f g : X ⟶ Y} [IsCofibrant X] (h : RightHomotopyRel f g)
     {Z : C} (p : Y ⟶ Z) : RightHomotopyRel (f ≫ p) (g ≫ p) := by
   obtain ⟨P, _, ⟨h⟩⟩ := h.exists_very_good_pathObject
@@ -310,5 +325,41 @@ lemma mk_eq_mk_iff [ModelCategory C] [IsFibrant Y] (f g : X ⟶ Y) :
   exact Quot.eq
 
 end RightHomotopyClass
+
+/-- The left homotopy in the opposite category that is deduced from a right homotopy. -/
+@[simps]
+protected def PrepathObject.RightHomotopy.op
+    {X Y : C} {P : PrepathObject Y} {f g : X ⟶ Y} (h : P.RightHomotopy f g) :
+    P.op.LeftHomotopy f.op g.op where
+  h := h.h.op
+  h₀ := Quiver.Hom.unop_inj (by simp)
+  h₁ := Quiver.Hom.unop_inj (by simp)
+
+/-- The left homotopy that is deduced from a right homotopy in the opposite category. -/
+@[simps]
+protected def PrepathObject.RightHomotopy.unop
+    {X Y : Cᵒᵖ} {P : PrepathObject Y} {f g : X ⟶ Y} (h : P.RightHomotopy f g) :
+    P.unop.LeftHomotopy f.unop g.unop where
+  h := h.h.unop
+  h₀ := Quiver.Hom.op_inj (by simp)
+  h₁ := Quiver.Hom.op_inj (by simp)
+
+/-- The right homotopy in the opposite category that is deduced from a left homotopy. -/
+@[simps]
+protected def Precylinder.LeftHomotopy.op
+    {X Y : C} {P : Precylinder X} {f g : X ⟶ Y} (h : P.LeftHomotopy f g) :
+    P.op.RightHomotopy f.op g.op where
+  h := h.h.op
+  h₀ := Quiver.Hom.unop_inj (by simp)
+  h₁ := Quiver.Hom.unop_inj (by simp)
+
+/-- The right homotopy that is deduced from a left homotopy in the opposite category. -/
+@[simps]
+protected def Precylinder.LeftHomotopy.unop
+    {X Y : Cᵒᵖ} {P : Precylinder X} {f g : X ⟶ Y} (h : P.LeftHomotopy f g) :
+    P.unop.RightHomotopy f.unop g.unop where
+  h := h.h.unop
+  h₀ := Quiver.Hom.op_inj (by simp)
+  h₁ := Quiver.Hom.op_inj (by simp)
 
 end HomotopicalAlgebra

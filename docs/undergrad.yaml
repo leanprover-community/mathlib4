@@ -24,7 +24,7 @@ Linear algebra:
     dual vector space: 'Module.Dual'
     dual basis: 'Module.Basis.dualBasis'
     transpose of a linear map: 'Module.Dual.transpose'
-    orthogonality: 'https://en.wikipedia.org/wiki/Dual_space#Quotient_spaces_and_annihilators'
+    orthogonality: 'Submodule.dualAnnihilator'
   Finite-dimensional vector spaces:
     finite-dimensionality : 'FiniteDimensional'
     isomorphism with $K^n$: 'Module.Basis.equivFun'
@@ -36,7 +36,7 @@ Linear algebra:
     multilinear map: 'MultilinearMap'
     determinant of vectors: 'Module.Basis.det'
     determinant of endomorphisms: 'LinearMap.det'
-    special linear group: 'https://en.wikipedia.org/wiki/Special_linear_group'
+    special linear group: 'Matrix.SpecialLinearGroup'
     orientation of a $\R$-vector space: 'Orientation'
   Matrices:
     commutative-ring-valued matrices: 'Matrix'
@@ -48,7 +48,7 @@ Linear algebra:
     invertibility: 'Matrix.inv'
     elementary row operations: 'https://en.wikipedia.org/wiki/Elementary_matrix#Operations'
     elementary column operations: 'https://en.wikipedia.org/wiki/Elementary_matrix#Operations'
-    Gaussian elimination: 'https://en.wikipedia.org/wiki/Gaussian_elimination'
+    Gaussian elimination: 'Matrix.Pivot.exists_list_transvec_mul_mul_list_transvec_eq_diagonal'
     row-reduced matrices: 'https://en.wikipedia.org/wiki/Row_echelon_form#Reduced_row_echelon_form'
   Endomorphism polynomials:
     annihilating polynomials: 'Polynomial.annIdeal'
@@ -60,13 +60,13 @@ Linear algebra:
     eigenvector: 'Module.End.HasEigenvector'
     diagonalization: 'https://en.wikipedia.org/wiki/Diagonalizable_matrix'
     triangularization: 'https://en.wikipedia.org/wiki/Triangular_matrix#Triangularisability'
-    invariant subspaces of an endomorphism: 'https://en.wikipedia.org/wiki/Invariant_subspace'
+    invariant subspaces of an endomorphism: 'Module.End.invtSubmodule'
     generalized eigenspaces: 'Module.End.genEigenspace'
     kernels lemma: 'https://fr.wikipedia.org/wiki/Lemme_des_noyaux'
     Jordan-Chevalley-Dunford decomposition: 'Module.End.exists_isNilpotent_isSemisimple'
     Jordan normal form: 'https://en.wikipedia.org/wiki/Jordan_normal_form'
   Linear representations:
-    irreducible representation: 'https://en.wikipedia.org/wiki/Irreducible_representation'
+    irreducible representation: 'Representation.IsIrreducible'
     Schur's lemma: 'FDRep.finrank_hom_simple_simple'
     examples: ''
   Exponential:
@@ -105,9 +105,9 @@ Group Theory:
     general linear group: 'Matrix.GeneralLinearGroup'
     special linear group: 'Matrix.SpecialLinearGroup'
     orthogonal group: 'Matrix.orthogonalGroup'
-    special orthogonal group: 'https://en.wikipedia.org/wiki/Orthogonal_group#SO(n)'
+    special orthogonal group: 'Matrix.specialOrthogonalGroup'
     unitary group: 'Matrix.unitaryGroup'
-    special unitary group: 'https://en.wikipedia.org/wiki/Special_unitary_group'
+    special unitary group: 'Matrix.specialUnitaryGroup'
   Representation theory of finite groups:
     representations of abelian groups: 'https://proofwiki.org/wiki/Irreducible_Representations_of_Abelian_Group'
     dual groups: 'https://kconrad.math.uconn.edu/blurbs/grouptheory/charthy.pdf'
@@ -172,7 +172,7 @@ Ring Theory:
     characteristic of a ring: 'ringChar'
     characteristic zero: 'CharZero'
     characteristic p: 'CharP'
-    Subfields: 'field_theory/subfield.html'
+    Subfields: 'Subfield'
     Frobenius morphisms: 'frobenius'
     field $\Q$ of rational numbers: 'Rat.instField'
     field $\R$ of real numbers: 'Real.instField'
@@ -185,7 +185,7 @@ Ring Theory:
     algebraically closed fields: 'IsAlgClosed'
     rupture fields: 'AdjoinRoot'
     splitting fields: 'Polynomial.SplittingField'
-    finite fields: 'field_theory/finite.html'
+    finite fields: 'Mathlib/FieldTheory/Finite/Basic.html'
     rational fraction fields with one indeterminate over a field: 'RatFunc'
     $\R(X)$-partial fraction decomposition: 'https://en.wikipedia.org/wiki/Partial_fraction_decomposition#General_result'
     $\C(X)$-partial fraction decomposition: 'https://en.wikipedia.org/wiki/Partial_fraction_decomposition#Statement'
@@ -197,8 +197,8 @@ Bilinear and Quadratic Forms Over a Vector Space:
     alternating bilinear forms: 'LinearMap.BilinForm.IsAlt'
     symmetric bilinear forms: 'LinearMap.BilinForm.IsSymm'
     nondegenerate forms: 'LinearMap.BilinForm.Nondegenerate'
-    matrix representation: 'BilinForm.toMatrix'
-    change of coordinates: 'BilinForm.toMatrix_comp'
+    matrix representation: 'LinearMap.BilinForm.toMatrix'
+    change of coordinates: 'LinearMap.BilinForm.toMatrix_comp'
     rank of a bilinear form: ''
   Quadratic forms:
     quadratic form: 'QuadraticForm'
@@ -206,9 +206,10 @@ Bilinear and Quadratic Forms Over a Vector Space:
   Orthogonality:
     orthogonal elements: 'LinearMap.BilinForm.IsOrtho'
     adjoint endomorphism: 'LinearMap.BilinForm.leftAdjointOfNondegenerate'
-    Sylvester's law of inertia: 'https://en.wikipedia.org/wiki/Sylvester%27s_law_of_inertia'
-    real classification: 'https://en.wikipedia.org/wiki/Sylvester%27s_law_of_inertia'
-    complex classification: ''
+    Sylvester's law of inertia (existence): 'QuadraticForm.equivalent_one_zero_neg_one_weighted_sum_squared'
+    Sylvester's law of inertia (uniqueness): 'QuadraticForm.sigPos_of_equiv_weightedSumSquares'
+    real classification: 'QuadraticForm.equivalent_one_zero_neg_one_weighted_sum_squared'
+    complex classification: 'QuadraticForm.equivalent_weightedSumSquares_of_isAlgClosed'
     Gram-Schmidt orthogonalisation: 'InnerProductSpace.gramSchmidt_orthogonal'
   Euclidean and Hermitian spaces:
     Euclidean vector spaces: 'InnerProductSpace'
@@ -221,10 +222,10 @@ Bilinear and Quadratic Forms Over a Vector Space:
   Endomorphisms:
     orthogonal group: 'Matrix.orthogonalGroup'
     unitary group: 'Matrix.unitaryGroup'
-    special orthogonal group: ''
-    special unitary group: ''
+    special orthogonal group: 'Matrix.specialOrthogonalGroup'
+    special unitary group: 'Matrix.specialUnitaryGroup'
     self-adjoint endomorphism: 'IsSelfAdjoint'
-    normal endomorphism: 'https://en.wikipedia.org/wiki/Normal_operator'
+    normal endomorphism: 'IsStarNormal'
     diagonalization of a self-adjoint endomorphism: 'LinearMap.IsSymmetric.eigenvectorBasis_apply_self_apply'
     diagonalization of normal endomorphisms: 'https://en.wikipedia.org/wiki/Spectral_theorem#Normal_matrices'
     simultaneous diagonalization of two real quadratic forms, with one positive-definite: 'https://fr.wikipedia.org/wiki/Th%C3%A9or%C3%A8me_spectral#Formalisation_alg%C3%A9brique'
@@ -262,7 +263,7 @@ Affine and Euclidean Geometry:
     classification of isometries in two and three dimensions: ''
     angles between vectors: 'InnerProductGeometry.angle'
     angles between planes: ''
-    inscribed angle theorem: ''
+    inscribed angle theorem: 'Orientation.two_zsmul_oangle_sub_eq_two_zsmul_oangle_sub_of_norm_eq'
     cocyclicity: 'EuclideanGeometry.Concyclic'
     group of isometries stabilizing a subset of the plane or of space: ''
     regular polygons: ''
@@ -283,7 +284,7 @@ Single Variable Real Analysis:
     convergence: 'Filter.Tendsto'
     limit point: 'MapClusterPt'
     recurrent sequences: 'Nat'
-    limit infimum and supremum: 'order/liminf_limsup.html'
+    limit infimum and supremum: 'Mathlib/Order/LiminfLimsup.html'
     Cauchy sequences: 'CauchySeq'
   Topology of R:
     metric structure: 'Real.metricSpace'
@@ -322,7 +323,7 @@ Single Variable Real Analysis:
     Leibniz formula: 'deriv_mul'
   Taylor-like theorems:
     Taylor's theorem with little-o remainder: "https://en.wikipedia.org/wiki/Taylor%27s_theorem#Taylor's_theorem_in_one_real_variable"
-    Taylor's theorem with integral form for remainder: 'https://en.wikipedia.org/wiki/Taylor%27s_theorem#Explicit_formulas_for_the_remainder'
+    Taylor's theorem with integral form for remainder: 'taylor_integral_remainder_of_absolutelyContinuous'
     Taylor's theorem with Lagrange form for remainder: 'taylor_mean_remainder_lagrange'
     Taylor series expansions: 'https://en.wikipedia.org/wiki/Taylor_series'
   Elementary functions (trigonometric, rational, $\exp$, $\log$, etc):
@@ -339,7 +340,7 @@ Single Variable Real Analysis:
     integral over a segment of piecewise continuous functions: ''
     Riemann sums: 'BoxIntegral.integralSum'
     antiderivative of a continuous function: 'Continuous.deriv_integral'
-    change of variable: 'intervalIntegral.integral_comp_smul_deriv'
+    change of variable: 'intervalIntegral.integral_deriv_smul_comp'
     integration by parts: 'intervalIntegral.integral_mul_deriv_eq_deriv_mul'
     improper integrals: 'https://en.wikipedia.org/wiki/Improper_integral'
     absolute vs conditional convergence of improper integrals: 'https://en.wikipedia.org/wiki/Conditional_convergence'
@@ -360,7 +361,7 @@ Single Variable Real Analysis:
       continuity: 'ConvexOn.continuousOn'
       differentiability: 'https://en.wikipedia.org/wiki/Convex_function#Functions_of_one_variable'
     characterizations of convexity: 'convexOn_of_deriv2_nonneg'
-    convexity inequalities: 'analysis/mean_inequalities.html'
+    convexity inequalities: 'Mathlib/Analysis/MeanInequalities.html'
 
 # 7.
 Single Variable Complex Analysis:
@@ -516,7 +517,7 @@ Measures and integral calculus:
     dominated convergence theorem: 'MeasureTheory.tendsto_integral_of_dominated_convergence'
     finite-dimensional vector-valued integrable functions: 'MeasureTheory.Integrable'
     continuity of integrals with respect to parameters: 'intervalIntegral.continuous_of_dominated_interval'
-    differentiability of integrals with respect to parameters: ''
+    differentiability of integrals with respect to parameters: 'IntervalIntegrable.ae_hasDerivAt_integral'
     $\mathrm{L}^p$ spaces where $1 ≤ p ≤ ∞$: 'MeasureTheory.Lp'
     Completeness of $\mathrm{L}^p$ spaces: 'MeasureTheory.Lp.instCompleteSpace'
     Holder's inequality: 'NNReal.lintegral_mul_le_Lp_mul_Lq'
@@ -563,13 +564,13 @@ Probability Theory:
     transfer theorem: ''
     moments: 'ProbabilityTheory.moment'
     Bernoulli law: 'PMF.bernoulli'
-    binomial law: ''
-    geometric law: ''
-    Poisson law: ''
+    binomial law: 'ProbabilityTheory.binomial'
+    geometric law: 'ProbabilityTheory.geometricMeasure'
+    Poisson law: 'ProbabilityTheory.poissonMeasure'
     uniform law: ''
-    exponential law: ''
-    Gaussian law: ''
-    characteristic function: ''
+    exponential law: 'ProbabilityTheory.expMeasure'
+    Gaussian law: 'ProbabilityTheory.gaussianReal'
+    characteristic function: 'MeasureTheory.charFun'
     probability generating functions: ''
     applications of probability generating functions to sums of independent random variables: ''
   Convergence of a sequence of random variables:
@@ -581,7 +582,7 @@ Probability Theory:
     Lévy's theorem: ''
     weak law of large numbers: ''
     strong law of large numbers: 'ProbabilityTheory.strong_law_ae'
-    central limit theorem: ''
+    central limit theorem: 'ProbabilityTheory.tendstoInDistribution_inv_sqrt_mul_sum_sub'
 
 # 12.
 Distribution calculus:
@@ -617,8 +618,8 @@ Distribution calculus:
     $L^p$ functions: 'MeasureTheory.Lp.toTemperedDistributionCLM'
     periodic functions: ''
     Dirac comb: ''
-    Fourier transforms: 'TemperedDistribution.fourierTransformCLM'
-    inverse Fourier transform: 'TemperedDistribution.fourierTransformInvCLM'
+    Fourier transforms: 'FourierTransform.fourierCLM'
+    inverse Fourier transform: 'FourierTransform.fourierInvCLM'
     Fourier transform and derivation: ''
     Fourier transform and convolution product: ''
   Applications:

@@ -19,7 +19,7 @@ This file contains the basic results on `Submodule.FG` and `Module.Finite` that 
 further imports.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Module.Basis Ideal.radical Matrix Subalgebra
 
@@ -127,18 +127,29 @@ protected theorem fg_top (N : Submodule R M) : (⊤ : Submodule R N).FG ↔ N.FG
 theorem fg_of_linearEquiv (e : M ≃ₗ[R] P) (h : (⊤ : Submodule R P).FG) : (⊤ : Submodule R M).FG :=
   e.symm.range ▸ map_top (e.symm : P →ₗ[R] M) ▸ h.map _
 
-theorem fg_induction (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
-    (P : Submodule R M → Prop) (h₁ : ∀ x, P (Submodule.span R {x}))
-    (h₂ : ∀ M₁ M₂, P M₁ → P M₂ → P (M₁ ⊔ M₂)) (N : Submodule R M) (hN : N.FG) : P N := by
-  classical
-    obtain ⟨s, rfl⟩ := hN
-    induction s using Finset.induction with
-    | empty =>
-      rw [Finset.coe_empty, span_empty, ← span_zero_singleton]
-      exact h₁ _
-    | insert _ _ _ ih =>
-      rw [Finset.coe_insert, span_insert]
-      exact h₂ _ _ (h₁ _) ih
+theorem fg_induction {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+    {motive : ∀ N : Submodule R M, N.FG → Prop}
+    (singleton : ∀ x : M, motive (R ∙ x) (fg_span_singleton _))
+    (sup : ∀ (N₁ N₂ : Submodule R M) (hN₁ : N₁.FG) (hN₂ : N₂.FG),
+      motive N₁ hN₁ → motive N₂ hN₂ → motive (N₁ ⊔ N₂) (hN₁.sup hN₂))
+    (N : Submodule R M) (hN : N.FG) : motive N hN := by classical
+  obtain ⟨s, rfl⟩ := hN
+  induction s using Finset.induction with
+  | empty => simpa using singleton 0
+  | insert x s hxs ih =>
+    simpa [span_insert, sup_comm] using
+      sup (span R s) (R ∙ x) _ (fg_span_singleton _) ih (singleton x)
+
+theorem fg_sup_span_induction {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+    {motive : ∀ N : Submodule R M, N.FG → Prop}
+    (bot : motive ⊥ fg_bot)
+    (sup : ∀ (N : Submodule R M) (x : M) (hN : N.FG),
+      motive N hN → motive (N ⊔ (R ∙ x)) (hN.sup <| fg_span_singleton x))
+    (N : Submodule R M) (hN : N.FG) : motive N hN := by classical
+  obtain ⟨s, rfl⟩ := hN
+  induction s using Finset.induction with
+  | empty => simp [bot]
+  | insert x s hxs ih => simpa [span_insert, sup_comm] using sup (span R s) x (by use s) ih
 
 section RestrictScalars
 
@@ -310,8 +321,10 @@ instance [Module.Finite R M] : Module.Finite R Mᵐᵒᵖ := equiv (MulOpposite.
 instance ulift [Module.Finite R M] : Module.Finite R (ULift M) := equiv ULift.moduleEquiv.symm
 
 universe u in
-instance Module.finite_shrink [Module.Finite R M] [Small.{u} M] : Module.Finite R (Shrink.{u} M) :=
+instance shrink [Module.Finite R M] [Small.{u} M] : Module.Finite R (Shrink.{u} M) :=
   Module.Finite.equiv (Shrink.linearEquiv R M).symm
+
+@[deprecated (since := "2026-04-18")] alias Module.finite_shrink := shrink
 
 /-- A submodule is finite as a module iff it is finitely generated. -/
 theorem iff_fg {N : Submodule R M} : Module.Finite R N ↔ N.FG := finite_def.trans N.fg_top
@@ -328,6 +341,12 @@ variable (R M)
 instance bot : Module.Finite R (⊥ : Submodule R M) := .of_fg fg_bot
 
 instance top [Module.Finite R M] : Module.Finite R (⊤ : Submodule R M) := .of_fg fg_top
+
+instance top_left [Module.Finite R M] : Module.Finite (⊤ : Subsemiring R) M :=
+  have : RingHomSurjective (Subsemiring.topEquiv (R := R)).symm.toRingHom :=
+    RingHomSurjective.instToRingHomRingEquiv Subsemiring.topEquiv.symm
+  of_surjective (σ := (Subsemiring.topEquiv (R := R)).symm.toRingHom)
+      ⟨⟨id, fun _ _ ↦ rfl⟩, fun _ _ ↦ rfl⟩ Function.surjective_id
 
 variable {M}
 
@@ -356,6 +375,7 @@ theorem trans {R : Type*} (A M : Type*) [Semiring R] [Semiring A] [Module R A]
         Finite.image2 _ s.finite_toSet t.finite_toSet,
         by rw [image2_smul, span_smul_of_span_eq_top hs (↑t : Set M), ht, restrictScalars_top]⟩⟩
 
+/-- See also `Module.Finite.of_surjective` and `LinearMap.finite_iff_of_bijective`. -/
 lemma of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommSemiring A₁] [CommSemiring B₁]
     [CommSemiring A₂] [Semiring B₂] [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂)
     (e₂ : B₁ ≃+* B₂)
@@ -411,6 +431,7 @@ variable {M : Type*} [AddCommMonoid M] [Module R M]
 variable {A : Type*} [Semiring A] [Module R A] [Module A M] [IsScalarTower R A M]
 variable {S : Submodule A M}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem FG.restrictScalars [Module.Finite R A] (hS : S.FG) : (S.restrictScalars R).FG := by
   rw [← Module.Finite.iff_fg] at *
   exact Module.Finite.trans A S

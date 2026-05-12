@@ -79,6 +79,22 @@ theorem _root_.Submodule.eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submo
   rw [bS_eq, Basis.coe_ofVectorSpace, Subtype.range_coe] at this
   rw [this, Submodule.map_top (Submodule.subtype S), range_subtype]
 
+theorem _root_.Submodule.exists_linearEquiv_restrict_eq
+    {W W' : Submodule K V} [FiniteDimensional K W] (f : W ≃ₗ[K] W') :
+    ∃ g : V ≃ₗ[K] V, ∀ x : W, f x = g x := by
+  obtain ⟨Q, hQ⟩ := Submodule.exists_isCompl W
+  let eQ := W.prodEquivOfIsCompl Q hQ
+  obtain ⟨Q', hQ'⟩ := Submodule.exists_isCompl W'
+  let eQ' := W'.prodEquivOfIsCompl Q' hQ'
+  suffices Nonempty (Q ≃ₗ[K] Q') from
+    ⟨eQ.symm ≪≫ₗ (LinearEquiv.prodCongr f this.some) ≪≫ₗ eQ', by aesop⟩
+  refine LinearEquiv.nonempty_equiv_iff_rank_eq.mpr ?_
+  rw [← Cardinal.add_right_inj_of_lt_aleph0 (γ := Module.rank K W),
+    add_comm, ← rank_prod', LinearEquiv.nonempty_equiv_iff_rank_eq.mp ⟨eQ⟩,
+    add_comm, LinearEquiv.nonempty_equiv_iff_rank_eq.mp ⟨f⟩,
+    ← rank_prod', LinearEquiv.nonempty_equiv_iff_rank_eq.mp ⟨eQ'⟩]
+  exact Module.rank_lt_aleph0 K ↥W
+
 section
 
 open Finset
@@ -100,7 +116,7 @@ theorem exists_relation_sum_zero_pos_coefficient_of_finrank_succ_lt_card [Finite
 
 end
 
-/-- In a vector space with dimension 1, each set {v} is a basis for `v ≠ 0`. -/
+/-- In a vector space with dimension 1, each set `{v}` is a basis for `v ≠ 0`. -/
 @[simps repr_apply]
 noncomputable def basisSingleton (ι : Type*) [Unique ι] (h : finrank K V = 1) (v : V)
     (hv : v ≠ 0) : Basis ι K V :=
@@ -312,6 +328,13 @@ instance (priority := low) : IsStablyFiniteRing K := by
   have : f * (g * i) = f * 1 := congr_arg _ hi
   rw [← mul_assoc, hfg, one_mul, mul_one] at this; rwa [← this]
 
+/-- A domain finitely generated as a module over a field is a field. -/
+theorem _root_.IsField.of_isDomain_of_finite (K L : Type*) [Field K] [CommRing L] [IsDomain L]
+    [Algebra K L] [Module.Finite K L] : IsField L where
+  exists_pair_ne := Nontrivial.exists_pair_ne
+  mul_comm := mul_comm
+  mul_inv_cancel {x} hx := (mulLeft K x).surjective_of_injective (mul_right_injective₀ hx) 1
+
 section Semiring
 
 variable (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] [Free R M] [Module.Finite R M]
@@ -376,7 +399,7 @@ theorem ker_noncommProd_eq_of_supIndep_ker [FiniteDimensional K V] {ι : Type*} 
       ker_comp_eq_of_commute_of_disjoint_ker]
     · simp_rw [Finset.mem_insert_coe, iSup_insert, Finset.mem_coe, ih]
     · exact s.noncommProd_commute _ _ _ fun j hj ↦
-        comm (s.mem_insert_self i) (Finset.mem_insert_of_mem hj) (by aesop)
+        comm (s.mem_insert_self i) (Finset.mem_insert_of_mem hj) (by lia)
     · replace h := Finset.supIndep_iff_disjoint_erase.mp h i (s.mem_insert_self i)
       simpa [ih, hi, Finset.sup_eq_iSup] using h
 
@@ -479,6 +502,7 @@ lemma FiniteDimensional.exists_mul_eq_one (F : Type*) {K : Type*} [Field F] [Rin
   exact this 1
 
 /-- A domain that is module-finite as an algebra over a field is a division ring. -/
+@[implicit_reducible]
 noncomputable def divisionRingOfFiniteDimensional (F K : Type*) [Field F] [Ring K] [IsDomain K]
     [Algebra F K] [FiniteDimensional F K] : DivisionRing K where
   __ := ‹IsDomain K›
@@ -499,6 +523,7 @@ lemma FiniteDimensional.isUnit (F : Type*) {K : Type*} [Field F] [Ring K] [IsDom
   let _ := divisionRingOfFiniteDimensional F K; H.isUnit
 
 /-- An integral domain that is module-finite as an algebra over a field is a field. -/
+@[implicit_reducible]
 noncomputable def fieldOfFiniteDimensional (F K : Type*) [Field F] [h : CommRing K] [IsDomain K]
     [Algebra F K] [FiniteDimensional F K] : Field K :=
   { divisionRingOfFiniteDimensional F K with
@@ -520,6 +545,22 @@ theorem finrank_span_singleton {v : V} (hv : v ≠ 0) : finrank K (K ∙ v) = 1 
     use ⟨v, mem_span_singleton_self v⟩, 0
     apply Subtype.coe_ne_coe.mp
     simp [hv]
+
+/-- A submodule over a division ring is an atom of the submodule lattice iff it has `finrank` 1. -/
+theorem Submodule.isAtom_iff_finrank_eq_one {S : Submodule K V} :
+    IsAtom S ↔ finrank K S = 1 := by
+  refine ⟨fun hS ↦ ?_, fun hS ↦ ⟨by aesop, fun T hT ↦ ?_⟩⟩
+  · obtain ⟨v : V, hv : v ∈ S, hv_ne : v ≠ 0⟩ := S.ne_bot_iff.mp hS.ne_bot
+    suffices K ∙ v = S by rw [← this, finrank_span_singleton hv_ne]
+    have : K ∙ v ≠ ⊥ := by
+      rw [Submodule.ne_bot_iff]
+      exact ⟨v, mem_span_singleton_self v, hv_ne⟩
+    rwa [← hS.le_iff_eq this, span_le, Set.singleton_subset_iff]
+  · have : FiniteDimensional K S := .of_finrank_eq_succ hS
+    have : FiniteDimensional K T := .of_injective (inclusion hT.le) (inclusion_injective hT.le)
+    rw [← finrank_eq_zero (R := K)]
+    by_contra h
+    exact hT.ne <| eq_of_le_of_finrank_le hT.le <| by lia
 
 /-- In a one-dimensional space, any vector is a multiple of any nonzero vector -/
 lemma exists_smul_eq_of_finrank_eq_one

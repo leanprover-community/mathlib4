@@ -15,7 +15,7 @@ This file proves that the 0-th grade of a Noetherian ring is
 also a Noetherian ring.
 -/
 
-@[expose] public section
+public section
 
 variable {ι A σ : Type*}
 variable [Ring A] [IsNoetherianRing A]

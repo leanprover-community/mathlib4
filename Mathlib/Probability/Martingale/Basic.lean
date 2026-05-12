@@ -101,6 +101,12 @@ theorem setIntegral_eq [SigmaFiniteFiltration μ ℱ] (hf : Martingale f ℱ μ)
   refine setIntegral_congr_ae (ℱ.le i s hs) ?_
   filter_upwards [hf.2 i j hij] with _ heq _ using heq.symm
 
+lemma congr (hf : Martingale f ℱ μ) (hg : StronglyAdapted ℱ g) (h_eq : ∀ t, f t =ᵐ[μ] g t) :
+    Martingale g ℱ μ := by
+  refine ⟨hg, fun i j hij ↦ ?_⟩
+  calc μ[g j | ℱ i] =ᵐ[μ] μ[f j | ℱ i] := (condExp_congr_ae (h_eq j)).symm
+    _ =ᵐ[μ] g i := (hf.2 i j hij).trans (h_eq i)
+
 theorem add (hf : Martingale f ℱ μ) (hg : Martingale g ℱ μ) : Martingale (f + g) ℱ μ := by
   refine ⟨hf.stronglyAdapted.add hg.stronglyAdapted, fun i j hij => ?_⟩
   exact (condExp_add (hf.integrable j) (hg.integrable j) _).trans
@@ -158,6 +164,13 @@ theorem setIntegral_le [PartialOrder E] [IsOrderedAddMonoid E] [IsOrderedModule 
   refine setIntegral_mono_ae integrable_condExp.integrableOn (hf.integrable i).integrableOn ?_
   filter_upwards [hf.2.1 i j hij] with _ heq using heq
 
+lemma congr [LE E] (hf : Supermartingale f ℱ μ) (hg : StronglyAdapted ℱ g)
+    (h_eq : ∀ t, f t =ᵐ[μ] g t) :
+    Supermartingale g ℱ μ := by
+  refine ⟨hg, fun i j hij ↦ ?_, fun i ↦ (integrable_congr (h_eq i)).mp (hf.integrable i)⟩
+  filter_upwards [condExp_ae_le hf hij, condExp_congr_ae (h_eq j), h_eq i] with ω h_le hcond h_eq
+  rwa [← hcond, ← h_eq]
+
 theorem add [Preorder E] [AddLeftMono E] (hf : Supermartingale f ℱ μ)
     (hg : Supermartingale g ℱ μ) : Supermartingale (f + g) ℱ μ := by
   refine ⟨hf.1.add hg.1, fun i j hij => ?_, fun i => (hf.2.2 i).add (hg.2.2 i)⟩
@@ -194,6 +207,12 @@ protected theorem integrable [LE E] (hf : Submartingale f ℱ μ) (i : ι) : Int
 theorem ae_le_condExp [LE E] (hf : Submartingale f ℱ μ) {i j : ι} (hij : i ≤ j) :
     f i ≤ᵐ[μ] μ[f j | ℱ i] :=
   hf.2.1 i j hij
+
+lemma congr [LE E] (hf : Submartingale f ℱ μ) (hg : StronglyAdapted ℱ g)
+    (h_eq : ∀ t, f t =ᵐ[μ] g t) :
+    Submartingale g ℱ μ := by
+  refine ⟨hg, fun i j hij ↦ ?_, fun i ↦ (integrable_congr (h_eq i)).mp (hf.integrable i)⟩
+  exact (Filter.eventuallyLE_congr (h_eq i) (condExp_congr_ae (h_eq j))).mp (ae_le_condExp hf hij)
 
 theorem add [Preorder E] [AddLeftMono E] (hf : Submartingale f ℱ μ)
     (hg : Submartingale g ℱ μ) : Submartingale (f + g) ℱ μ := by
@@ -490,39 +509,28 @@ theorem Martingale.eq_zero_of_predictable [SigmaFiniteFiltration μ 𝒢] {f : �
     exact ((Germ.coe_eq.mp (congr_arg Germ.ofFun <| condExp_of_stronglyMeasurable (𝒢.le _) (hfadp _)
       (hfmgle.integrable _))).symm.trans (hfmgle.2 k (k + 1) k.le_succ)).trans ih
 
-section IsPredictable
+section IsStronglyPredictable
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [CompleteSpace E] [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
-/-- A predictable submartingale is a.e. greater than or equal to its initial state.
-
-In contrast to the non-primed version, this result requires second countability as
-`StronglyAdapted` is defined using strong measurability while `IsPredictable` only provides
-measurable. -/
+/-- A predictable submartingale is a.e. greater than or equal to its initial state. -/
 theorem Submartingale.zero_le_of_predictable' [Preorder E] [SigmaFiniteFiltration μ 𝒢]
-    {f : ℕ → Ω → E} (hfmgle : Submartingale f 𝒢 μ) (hf : IsPredictable 𝒢 f) (n : ℕ) :
+    {f : ℕ → Ω → E} (hfmgle : Submartingale f 𝒢 μ) (hf : IsStronglyPredictable 𝒢 f) (n : ℕ) :
     f 0 ≤ᵐ[μ] f n :=
-  zero_le_of_predictable hfmgle (fun _ ↦ (hf.measurable_add_one _).stronglyMeasurable) n
+  zero_le_of_predictable hfmgle hf.measurable_add_one n
 
-/-- A predictable supermartingale is a.e. less than or equal to its initial state.
-
-In contrast to the non-primed version, this result requires second countability as `StronglyAdapted`
-is defined using strong measurability while `IsPredictable` only provides measurable. -/
+/-- A predictable supermartingale is a.e. less than or equal to its initial state. -/
 theorem Supermartingale.le_zero_of_predictable' [Preorder E] [SigmaFiniteFiltration μ 𝒢]
-    {f : ℕ → Ω → E} (hfmgle : Supermartingale f 𝒢 μ) (hfadp : IsPredictable 𝒢 f)
+    {f : ℕ → Ω → E} (hfmgle : Supermartingale f 𝒢 μ) (hfadp : IsStronglyPredictable 𝒢 f)
     (n : ℕ) : f n ≤ᵐ[μ] f 0 :=
-  le_zero_of_predictable hfmgle (fun _ ↦ (hfadp.measurable_add_one _).stronglyMeasurable) n
+  le_zero_of_predictable hfmgle hfadp.measurable_add_one n
 
-/-- A predictable martingale is a.e. equal to its initial state.
-
-In contrast to the non-primed version, this result requires second countability as `StronglyAdapted`
-is defined using strong measurability while `IsPredictable` only provides measurable. -/
+/-- A predictable martingale is a.e. equal to its initial state. -/
 theorem Martingale.eq_zero_of_predictable' [SigmaFiniteFiltration μ 𝒢] {f : ℕ → Ω → E}
-    (hfmgle : Martingale f 𝒢 μ) (hfadp : IsPredictable 𝒢 f) (n : ℕ) : f n =ᵐ[μ] f 0 :=
-  eq_zero_of_predictable hfmgle (fun _ ↦ (hfadp.measurable_add_one _).stronglyMeasurable) n
+    (hfmgle : Martingale f 𝒢 μ) (hfadp : IsStronglyPredictable 𝒢 f) (n : ℕ) : f n =ᵐ[μ] f 0 :=
+  eq_zero_of_predictable hfmgle hfadp.measurable_add_one n
 
-end IsPredictable
+end IsStronglyPredictable
 
 namespace Submartingale
 
@@ -545,7 +553,7 @@ theorem Submartingale.sum_smul_sub [IsFiniteMeasure μ] {R : ℝ} {f : ℕ → �
     ⟨R, fun ω => (abs_of_nonneg (hnonneg i ω)).trans_le (hbdd i ω)⟩
   choose C hC using hξbdd
   have hint : ∀ m, Integrable (∑ k ∈ Finset.range m, ξ k • (f (k + 1) - f k)) μ := fun m =>
-      integrable_finset_sum' _ fun i _ => Integrable.bdd_smul
+      integrable_finsetSum' _ fun i _ => Integrable.bdd_smul
         ((hf.integrable _).sub (hf.integrable _)) (C i)
         hξ.stronglyMeasurable.aestronglyMeasurable (ae_of_all _ (hC i))
   have hadp : StronglyAdapted 𝒢 fun n => ∑ k ∈ Finset.range n, ξ k • (f (k + 1) - f k) := by

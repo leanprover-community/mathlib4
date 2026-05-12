@@ -70,7 +70,7 @@ section MittagLeffler
 
 open Filter Function
 
-open scoped Topology BigOperators Nat Complex
+open scoped Topology Nat Complex
 
 variable {x : ℂ} {Z : Set ℂ}
 
@@ -132,7 +132,7 @@ lemma HasProdUniformlyOn_sineTerm_prod_on_compact (hZ2 : Z ⊆ ℂ_ℤ)
 lemma HasProdLocallyUniformlyOn_euler_sin_prod :
     HasProdLocallyUniformlyOn (fun n : ℕ => fun z : ℂ => (1 + sineTerm z n))
     (fun x => (Complex.sin (π * x) / (π * x))) ℂ_ℤ := by
-  apply hasProdLocallyUniformlyOn_of_forall_compact isOpen_compl_range_intCast
+  apply hasProdLocallyUniformlyOn_of_forall_compact Complex.isOpen_compl_range_intCast
   exact fun _ hZ hZC => HasProdUniformlyOn_sineTerm_prod_on_compact hZ hZC
 
 /-- `sin π z` is non vanishing on the complement of the integers in `ℂ`. -/
@@ -163,7 +163,7 @@ lemma logDeriv_sin_div_eq_cot (hz : x ∈ ℂ_ℤ) :
   rw [this, logDeriv_div _ (by apply sin_pi_mul_ne_zero hz) ?_
     (DifferentiableAt.comp _ (Complex.differentiableAt_sin) (by fun_prop)) (by fun_prop),
     logDeriv_comp (Complex.differentiableAt_sin) (by fun_prop), Complex.logDeriv_sin,
-    deriv_const_mul _ (by fun_prop), deriv_id'', logDeriv_const_mul, logDeriv_id']
+    deriv_const_mul_id, logDeriv_const_mul, logDeriv_id']
   · ring
   · simp
   · simp only [ne_eq, mul_eq_zero, ofReal_eq_zero, not_or]
@@ -261,16 +261,16 @@ lemma eqOn_iteratedDeriv_cotTerm (d : ℕ) :
     rw [h2, h3]
     ring
   · simpa [sub_eq_add_neg] using (contDiffOn_inv_linear k (-(d + 1))).contDiffAt
-      ((isOpen_compl_range_intCast).mem_nhds hz)
+      (isOpen_compl_range_intCast.mem_nhds hz)
   · simpa using (contDiffOn_inv_linear k (d + 1)).contDiffAt
-      ((isOpen_compl_range_intCast).mem_nhds hz)
+      (isOpen_compl_range_intCast.mem_nhds hz)
 
 lemma eqOn_iteratedDerivWithin_cotTerm_integerComplement (d : ℕ) :
     EqOn
       (iteratedDerivWithin k (fun z ↦ cotTerm z d) ℂ_ℤ)
       (fun z ↦ (-1) ^ k * k ! * ((z + (d + 1)) ^ (-1 - k : ℤ) + (z - (d + 1)) ^ (-1 - k : ℤ)))
       ℂ_ℤ := by
-  apply Set.EqOn.trans (iteratedDerivWithin_of_isOpen isOpen_compl_range_intCast)
+  apply Set.EqOn.trans (iteratedDerivWithin_of_isOpen Complex.isOpen_compl_range_intCast)
   exact eqOn_iteratedDeriv_cotTerm ..
 
 lemma eqOn_iteratedDerivWithin_cotTerm_upperHalfPlaneSet (d : ℕ) :

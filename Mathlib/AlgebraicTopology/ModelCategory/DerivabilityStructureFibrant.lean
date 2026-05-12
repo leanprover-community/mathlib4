@@ -23,7 +23,7 @@ Corollaire 10.10 in [the paper by Kahn and Maltsiniotis][KahnMaltsiniotis2008].
 
 universe v u
 
-@[expose] public section
+public section
 
 open CategoryTheory Limits
 
@@ -37,6 +37,7 @@ instance {X : C} (R : (localizerMorphism C).RightResolution X) :
     WeakEquivalence R.w := by
   simpa only [weakEquivalence_iff] using R.hw
 
+set_option backward.isDefEq.respectTransparency false in
 instance (X : C) : IsConnected ((localizerMorphism C).RightResolution X) := by
   let R₀ : (localizerMorphism C).RightResolution X :=
     { X₁ := mk (HoCat.resolutionObj X)

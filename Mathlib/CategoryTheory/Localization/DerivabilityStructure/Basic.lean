@@ -55,7 +55,7 @@ not depend on the choice of the localization functors.
 
 -/
 
-@[expose] public section
+public section
 universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
@@ -85,6 +85,7 @@ attribute [instance] IsRightDerivabilityStructure.hasRightResolutions
 variable {D₁ D₂ : Type*} [Category* D₁] [Category* D₂] (L₁ : C₁ ⥤ D₁) (L₂ : C₂ ⥤ D₂)
   [L₁.IsLocalization W₁] [L₂.IsLocalization W₂] (F : D₁ ⥤ D₂)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isRightDerivabilityStructure_iff [Φ.HasRightResolutions] (e : Φ.functor ⋙ L₂ ≅ L₁ ⋙ F) :
     Φ.IsRightDerivabilityStructure ↔ TwoSquare.GuitartExact e.hom := by
   have : Φ.IsRightDerivabilityStructure ↔
@@ -144,6 +145,7 @@ class IsLeftDerivabilityStructure : Prop where
 attribute [instance] IsLeftDerivabilityStructure.hasLeftResolutions
   IsLeftDerivabilityStructure.guitartExact'
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isLeftDerivabilityStructure_iff_op :
     Φ.IsLeftDerivabilityStructure ↔
       Φ.op.IsRightDerivabilityStructure := by
@@ -186,6 +188,29 @@ instance [W₁.ContainsIdentities] : (LocalizerMorphism.id W₁).IsLeftDerivabil
     (Iso.refl _)]
   dsimp
   exact TwoSquare.guitartExact_id' W₁.Q
+
+lemma isRightDerivabilityStructure_iff_op :
+    Φ.IsRightDerivabilityStructure ↔
+      Φ.op.IsLeftDerivabilityStructure := by
+  let F := Φ.localizedFunctor W₁.Q W₂.Q
+  let e : Φ.functor ⋙ W₂.Q ≅ W₁.Q ⋙ F := (Φ.catCommSq W₁.Q W₂.Q).iso
+  let e' : Φ.functor.op ⋙ W₂.Q.op ≅ W₁.Q.op ⋙ F.op := NatIso.op e.symm
+  have eq : TwoSquare.GuitartExact e'.inv ↔ TwoSquare.GuitartExact e.hom :=
+    TwoSquare.guitartExact_op_iff _
+  refine ⟨fun ⟨_, _⟩ ↦ ?_, fun _ ↦ ?_⟩
+  · simpa only [Φ.op.isLeftDerivabilityStructure_iff _ _ _ e', eq]
+  · have : Φ.HasRightResolutions := by
+      rw [hasRightResolutions_iff_op]
+      infer_instance
+    refine ⟨inferInstance, ?_⟩
+    rw [← eq]
+    exact Φ.op.guitartExact_of_isLeftDerivabilityStructure' _ _ _ e'
+
+instance [Φ.IsLeftDerivabilityStructure] : Φ.op.IsRightDerivabilityStructure := by
+  rwa [← isLeftDerivabilityStructure_iff_op]
+
+instance [Φ.IsRightDerivabilityStructure] : Φ.op.IsLeftDerivabilityStructure := by
+  rwa [← isRightDerivabilityStructure_iff_op]
 
 end LocalizerMorphism
 

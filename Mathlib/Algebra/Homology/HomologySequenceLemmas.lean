@@ -32,11 +32,11 @@ for `φ.τ₁` and `φ.τ₂` shall also be obtained (TODO).
 
 open CategoryTheory ComposableArrows Abelian
 
-namespace HomologicalComplex
-
 variable {C ι : Type*} [Category* C] [Abelian C] {c : ComplexShape ι}
   {S S₁ S₂ : ShortComplex (HomologicalComplex C c)} (φ : S₁ ⟶ S₂)
   (hS₁ : S₁.ShortExact) (hS₂ : S₂.ShortExact)
+
+namespace HomologicalComplex
 
 namespace HomologySequence
 
@@ -83,6 +83,7 @@ lemma composableArrows₅_exact (i j : ι) (hij : c.Rel i j) :
       (exact_of_δ₀ (hS₁.homology_exact₁ i j hij).exact_toComposableArrows
         (hS₁.homology_exact₂ j).exact_toComposableArrows))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map between the exact sequences `S₁.X₁.homology i ⟶ S₁.X₂.homology i ⟶ S₁.X₃.homology i`
 and `S₂.X₁.homology i ⟶ S₂.X₂.homology i ⟶ S₂.X₃.homology i` that is induced by `φ : S₁ ⟶ S₂`. -/
 @[simp]
@@ -175,3 +176,62 @@ lemma quasiIso_τ₃ (h₁ : QuasiIso φ.τ₁) (h₂ : QuasiIso φ.τ₂) :
 end HomologySequence
 
 end HomologicalComplex
+
+namespace CategoryTheory.ShortComplex.ShortExact
+
+open HomologicalComplex Limits
+
+lemma exactAt_X₁ (hS : S.ShortExact) (j : ι)
+    (h₁ : Mono (HomologicalComplex.homologyMap S.g j) := by infer_instance)
+    (h₂ : ∀ (i : ι), c.Rel i j → Epi (HomologicalComplex.homologyMap S.g i) := by infer_instance) :
+    S.X₁.ExactAt j := by
+  rw [exactAt_iff_isZero_homology]
+  by_cases! hj : ∃ i, c.Rel i j
+  · obtain ⟨i, hij⟩ := hj
+    have := h₂ i hij
+    apply (hS.homology_exact₁ i j hij).isZero_X₂
+    · simp [← cancel_epi (HomologicalComplex.homologyMap S.g i)]
+    · simp [← cancel_mono (HomologicalComplex.homologyMap S.g j),
+        ← HomologicalComplex.homologyMap_comp]
+  · have := hS.mono_f
+    have := HomologicalComplex.mono_homologyMap_of_mono_of_not_rel S.f j hj
+    rw [IsZero.iff_id_eq_zero,
+      ← cancel_mono (HomologicalComplex.homologyMap S.f j),
+      ← cancel_mono (HomologicalComplex.homologyMap S.g j)]
+    simp [← HomologicalComplex.homologyMap_comp]
+
+lemma exactAt_X₂ (hS : S.ShortExact) (i : ι) (h₁ : S.X₁.ExactAt i) (h₃ : S.X₃.ExactAt i) :
+    S.X₂.ExactAt i := by
+  rw [exactAt_iff_isZero_homology] at h₁ h₃ ⊢
+  exact (hS.homology_exact₂ i).isZero_X₂ (h₁.eq_of_src _ _) (h₃.eq_of_tgt _ _)
+
+lemma exactAt_X₃ (hS : S.ShortExact) (i : ι)
+    (h₁ : Epi (HomologicalComplex.homologyMap S.f i) := by infer_instance)
+    (h₂ : ∀ (j : ι), c.Rel i j → Mono (HomologicalComplex.homologyMap S.f j) := by infer_instance) :
+    S.X₃.ExactAt i := by
+  rw [exactAt_iff_isZero_homology]
+  by_cases! hi : ∃ j, c.Rel i j
+  · obtain ⟨j, hij⟩ := hi
+    have := h₂ j hij
+    apply (hS.homology_exact₃ i j hij).isZero_X₂
+    · simp [← cancel_epi (HomologicalComplex.homologyMap S.f i),
+        ← HomologicalComplex.homologyMap_comp]
+    · simp [← cancel_mono (HomologicalComplex.homologyMap S.f j)]
+  · have := hS.epi_g
+    have := HomologicalComplex.epi_homologyMap_of_epi_of_not_rel S.g i hi
+    rw [IsZero.iff_id_eq_zero,
+      ← cancel_epi (HomologicalComplex.homologyMap S.g i),
+      ← cancel_epi (HomologicalComplex.homologyMap S.f i)]
+    simp [← HomologicalComplex.homologyMap_comp]
+
+lemma acyclic_X₁ (hS : S.ShortExact) (hg : _root_.QuasiIso S.g) : S.X₁.Acyclic :=
+  fun j ↦ hS.exactAt_X₁ j
+
+lemma acyclic_X₂ (hS : S.ShortExact) (h₁ : S.X₁.Acyclic) (h₃ : S.X₃.Acyclic) :
+    S.X₂.Acyclic :=
+  fun i ↦ hS.exactAt_X₂ i (h₁ _) (h₃ _)
+
+lemma acyclic_X₃ (hS : S.ShortExact) (h : _root_.QuasiIso S.f) : S.X₃.Acyclic :=
+  fun i ↦ hS.exactAt_X₃ i
+
+end CategoryTheory.ShortComplex.ShortExact

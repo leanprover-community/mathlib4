@@ -75,7 +75,8 @@ def toContinuousAlgHom (e : A ≃A[R] B) : A →A[R] B where
   __ := e.toAlgHom
   cont := e.continuous_toFun
 
-instance coe : Coe (A ≃A[R] B) (A →A[R] B) := ⟨toContinuousAlgHom⟩
+instance : CoeOut (A ≃A[R] B) (A →A[R] B) where coe := toContinuousAlgHom
+instance : CoeOut (A ≃A[R] B) (A ≃ₐ[R] B) where coe := toAlgEquiv
 
 instance equivLike : EquivLike (A ≃A[R] B) A B where
   coe f := f.toFun
@@ -128,6 +129,10 @@ def toContinuousLinearEquiv (e : A ≃A[R] B) : A ≃L[R] B :=
   { e with __ := e.toLinearEquiv }
 
 instance : Coe (A ≃A[R] B) (A ≃L[R] B) := ⟨toContinuousLinearEquiv⟩
+
+@[simp] theorem coeCLE_apply (e : A ≃A[R] B) (a : A) : (e : A ≃L[R] B) a = e a := rfl
+
+@[simp] theorem coe_coeCLE (e : A ≃A[R] B) : ⇑(e : A ≃L[R] B) = e := rfl
 
 @[simp]
 theorem toContinuousLinearEquiv_apply (e : A ≃A[R] B) (a : A) :
@@ -200,6 +205,9 @@ theorem refl_apply (a : A) : refl R A a = a := rfl
 theorem coe_refl : refl R A = ContinuousAlgHom.id R A := rfl
 
 @[simp]
+theorem coeCLE_refl : (refl R A).toContinuousLinearEquiv = ContinuousLinearEquiv.refl R A := rfl
+
+@[simp]
 theorem coe_refl' : ⇑(refl R A) = id := rfl
 
 @[simp]
@@ -224,11 +232,11 @@ theorem symm_apply_apply (e : A ≃A[R] B) (a : A) : e.symm (e a) = a :=
   e.1.left_inv a
 
 @[simp]
-theorem symm_image_image (e : A ≃A[R] B) (S : Set A) : e.symm '' (e '' S) = S :=
+theorem symm_image_image (e : A ≃A[R] B) (S : Set A) : e.symm '' e '' S = S :=
   e.toEquiv.symm_image_image S
 
 @[simp]
-theorem image_symm_image (e : A ≃A[R] B) (S : Set B) : e '' (e.symm '' S) = S :=
+theorem image_symm_image (e : A ≃A[R] B) (S : Set B) : e '' e.symm '' S = S :=
   e.symm.symm_image_image S
 
 @[simp]
@@ -317,11 +325,11 @@ theorem image_symm_eq_preimage (e : A ≃A[R] B) (S : Set B) : e.symm '' S = e �
   rw [e.symm.image_eq_preimage_symm, e.symm_symm]
 
 @[simp]
-theorem symm_preimage_preimage (e : A ≃A[R] B) (S : Set B) : e.symm ⁻¹' (e ⁻¹' S) = S :=
+theorem symm_preimage_preimage (e : A ≃A[R] B) (S : Set B) : e.symm ⁻¹' e ⁻¹' S = S :=
   e.toEquiv.symm_preimage_preimage S
 
 @[simp]
-theorem preimage_symm_preimage (e : A ≃A[R] B) (S : Set A) : e ⁻¹' (e.symm ⁻¹' S) = S :=
+theorem preimage_symm_preimage (e : A ≃A[R] B) (S : Set A) : e ⁻¹' e.symm ⁻¹' S = S :=
   e.symm.symm_preimage_preimage S
 
 theorem isUniformEmbedding {E₁ E₂ : Type*} [UniformSpace E₁] [UniformSpace E₂] [Ring E₁]

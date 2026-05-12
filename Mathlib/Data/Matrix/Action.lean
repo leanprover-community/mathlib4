@@ -15,7 +15,7 @@ This file provides the left- and right- module structures of square matrices on 
 `Matrix.mulVec` and `Matrix.vecMul`.
 -/
 
-@[expose] public section
+public section
 
 variable {n R S : Type*}
 

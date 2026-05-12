@@ -30,7 +30,12 @@ public section
 namespace NumberField
 
 variable (K 𝒪 : Type*) [Field K] [NumberField K] [CommRing 𝒪] [Algebra 𝒪 K]
-variable [IsFractionRing 𝒪 K] [IsIntegralClosure 𝒪 ℤ K] [IsDedekindDomain 𝒪] [CharZero 𝒪]
+
+open IntermediateField IsDedekindDomain
+
+section
+
+variable [IsFractionRing 𝒪 K] [IsDedekindDomain 𝒪] [CharZero 𝒪]
 variable [Module.Finite ℤ 𝒪]
 
 open nonZeroDivisors IntermediateField Module
@@ -75,9 +80,9 @@ lemma discr_mem_differentIdeal : ↑(discr K) ∈ differentIdeal ℤ 𝒪 := by
   have := (differentIdeal ℤ 𝒪).absNorm_mem
   cases (discr K).natAbs_eq with
   | inl h =>
-    rwa [absNorm_differentIdeal (K := K), ← Int.cast_natCast, ← h] at this
+    rwa [absNorm_differentIdeal K, ← Int.cast_natCast, ← h] at this
   | inr h =>
-    rwa [absNorm_differentIdeal (K := K), ← Int.cast_natCast, Int.eq_neg_comm.mp h,
+    rwa [absNorm_differentIdeal K, ← Int.cast_natCast, Int.eq_neg_comm.mp h,
       Int.cast_neg, neg_mem_iff] at this
 
 attribute [local instance] FractionRing.liftAlgebra in
@@ -125,6 +130,7 @@ theorem discr_dvd_discr [Algebra K L] :
     mul_comm _ (discr K ^ _), mul_assoc]
   exact Int.dvd_mul_right _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Let `K₁` and `K₂` be two number fields and assume that `K₁/ℚ` is Galois. If `discr K₁` and
 `discr K₂` are coprime, then they are linear disjoint over `ℚ`.
@@ -140,8 +146,6 @@ theorem linearDisjoint_of_isGalois_isCoprime_discr (K₁ K₂ : IntermediateFiel
       rwa [ne_eq, ← IntermediateField.finrank_eq_one_iff] at this
     exact Int.isUnit_iff_abs_eq.not.mpr <| by linarith [abs_discr_gt_two this]
   exact h.isUnit_of_dvd' (NumberField.discr_dvd_discr _ _) (NumberField.discr_dvd_discr _ _)
-
-open IntermediateField IsDedekindDomain
 
 /--
 Let `K₁` and `K₂` be two number fields and assume that their different ideals (over ℤ) are coprime.
@@ -164,5 +168,41 @@ theorem natAbs_discr_eq_natAbs_discr_pow_mul_natAbs_discr_pow (K₁ K₂ : Inter
   ext
   exact IsFractionRing.algEquiv_commutes (FractionRing.algEquiv (𝓞 K₁) K₁)
     (FractionRing.algEquiv (𝓞 L) L) _
+
+end
+
+/-- Also see `not_dvd_discr_iff_forall_mem` for a slightly easier to use RHS. -/
+lemma not_dvd_discr_iff_forall_liesOver [IsIntegralClosure 𝒪 ℤ K] {p : ℤ} (hp : Prime p) :
+    ¬ p ∣ discr K ↔ ∀ (P : Ideal 𝒪) (_ : P.IsMaximal), P.LiesOver (.span {p}) →
+      Algebra.IsUnramifiedAt ℤ P := by
+  have := (IsIntegralClosure.algebraMap_injective 𝒪 ℤ K).isDomain
+  have := IsIntegralClosure.isDedekindDomain ℤ ℚ K 𝒪
+  have := IsIntegralClosure.isFractionRing_of_finite_extension ℤ ℚ K 𝒪
+  have := IsIntegralClosure.finite ℤ ℚ K 𝒪
+  have := CharZero.of_module (R := 𝒪) K
+  simp_rw [← not_dvd_differentIdeal_iff]
+  contrapose!
+  constructor
+  · intro h
+    rw [← Int.dvd_natAbs, ← absNorm_differentIdeal K 𝒪] at h
+    obtain ⟨P, hP, h₁, h₂⟩ := Ideal.exists_isMaximal_dvd_of_dvd_absNorm hp _ h
+    exact ⟨P, hP, ⟨h₁.symm⟩, h₂⟩
+  · rintro ⟨P, hP, hP', hP''⟩
+    have := Ideal.absNorm_dvd_absNorm_of_le (Ideal.dvd_iff_le.mp hP'')
+    rw [absNorm_differentIdeal K, Ideal.absNorm_eq_pow_inertiaDeg P hp,
+      ← Int.natAbs_pow, Int.natAbs_dvd_natAbs] at this
+    exact (dvd_pow_self _ (Ideal.inertiaDeg_pos' ..).ne').trans this
+
+/-- Also see `not_dvd_discr_iff_forall_liesOver` for a slightly easier to prove RHS. -/
+lemma not_dvd_discr_iff_forall_mem [IsIntegralClosure 𝒪 ℤ K] {p : ℤ} (hp : Prime p) :
+    ¬ p ∣ discr K ↔ ∀ (P : Ideal 𝒪) (_ : P.IsPrime), ↑p ∈ P →
+      Algebra.IsUnramifiedAt ℤ P := by
+  have := (IsIntegralClosure.algebraMap_injective 𝒪 ℤ K).isDomain
+  have := IsIntegralClosure.isDedekindDomain ℤ ℚ K 𝒪
+  have := CharZero.of_module (R := 𝒪) K
+  rw [NumberField.not_dvd_discr_iff_forall_liesOver K 𝒪 hp]
+  exact ⟨fun H P hP h ↦ H P (hP.isMaximal (by aesop))
+    ((Ideal.liesOver_span_iff hP.ne_top hp).mpr h),
+    fun H P _ h ↦ H P _ (h.1.le (Ideal.mem_span_singleton_self _))⟩
 
 end NumberField

@@ -26,7 +26,7 @@ open scoped ContDiff
 open Set
 
 variable {𝕜 F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {m n : WithTop ℕ∞} {f : 𝕜 → F} {s : Set 𝕜}
+  {m n : ℕ∞ω} {f : 𝕜 → F} {s : Set 𝕜}
 
 /-- A function is `C^(n + 1)` on a domain with unique derivatives if and only if it is
 differentiable there, and its derivative (formulated with `derivWithin`) is `C^n`. -/
@@ -37,6 +37,11 @@ theorem contDiffOn_succ_iff_derivWithin (hs : UniqueDiffOn 𝕜 s) :
       ContinuousLinearMap.toSpanSingletonCLE.symm ∘ fderivWithin 𝕜 f s := by
     ext; simp [← fderivWithin_derivWithin]
   simp [contDiffOn_succ_iff_fderivWithin hs, this, ContinuousLinearEquiv.comp_contDiffOn_iff]
+
+theorem contDiffOn_one_iff_derivWithin (hs : UniqueDiffOn 𝕜 s) :
+    ContDiffOn 𝕜 1 f s ↔ DifferentiableOn 𝕜 f s ∧ ContinuousOn (derivWithin f s) s := by
+  rw [show (1 : ℕ∞ω) = 0 + 1 from rfl, contDiffOn_succ_iff_derivWithin hs]
+  simp
 
 theorem contDiffOn_infty_iff_derivWithin (hs : UniqueDiffOn 𝕜 s) :
     ContDiffOn 𝕜 ∞ f s ↔ DifferentiableOn 𝕜 f s ∧ ContDiffOn 𝕜 ∞ (derivWithin f s) s := by
@@ -66,12 +71,12 @@ theorem ContDiffOn.deriv_of_isOpen (hf : ContDiffOn 𝕜 n f s) (hs : IsOpen s) 
 
 theorem ContDiffOn.continuousOn_derivWithin (h : ContDiffOn 𝕜 n f s) (hs : UniqueDiffOn 𝕜 s)
     (hn : 1 ≤ n) : ContinuousOn (derivWithin f s) s := by
-  rw [show (1 : WithTop ℕ∞) = 0 + 1 from rfl] at hn
+  rw [show (1 : ℕ∞ω) = 0 + 1 from rfl] at hn
   exact ((contDiffOn_succ_iff_derivWithin hs).1 (h.of_le hn)).2.2.continuousOn
 
 theorem ContDiffOn.continuousOn_deriv_of_isOpen (h : ContDiffOn 𝕜 n f s) (hs : IsOpen s)
     (hn : 1 ≤ n) : ContinuousOn (deriv f) s := by
-  rw [show (1 : WithTop ℕ∞) = 0 + 1 from rfl] at hn
+  rw [show (1 : ℕ∞ω) = 0 + 1 from rfl] at hn
   exact ((contDiffOn_succ_iff_deriv_of_isOpen hs).1 (h.of_le hn)).2.2.continuousOn
 
 @[fun_prop]
@@ -92,16 +97,16 @@ theorem contDiff_succ_iff_deriv :
 
 theorem contDiff_one_iff_deriv :
     ContDiff 𝕜 1 f ↔ Differentiable 𝕜 f ∧ Continuous (deriv f) := by
-  rw [show (1 : WithTop ℕ∞) = 0 + 1 from rfl, contDiff_succ_iff_deriv]
+  rw [show (1 : ℕ∞ω) = 0 + 1 from rfl, contDiff_succ_iff_deriv]
   simp
 
 theorem contDiff_infty_iff_deriv :
     ContDiff 𝕜 ∞ f ↔ Differentiable 𝕜 f ∧ ContDiff 𝕜 ∞ (deriv f) := by
-  rw [show (∞ : WithTop ℕ∞) = ∞ + 1 from rfl, contDiff_succ_iff_deriv]
+  rw [show (∞ : ℕ∞ω) = ∞ + 1 from rfl, contDiff_succ_iff_deriv]
   simp
 
 theorem ContDiff.continuous_deriv (h : ContDiff 𝕜 n f) (hn : 1 ≤ n) : Continuous (deriv f) := by
-  rw [show (1 : WithTop ℕ∞) = 0 + 1 from rfl] at hn
+  rw [show (1 : ℕ∞ω) = 0 + 1 from rfl] at hn
   exact (contDiff_succ_iff_deriv.mp (h.of_le hn)).2.2.continuous
 
 @[fun_prop]
