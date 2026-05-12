@@ -243,7 +243,7 @@ lemma isClosed_iUnion_closure_singleton_of_not_tendsto {x : ℕ → E} [Sequenti
 
 /-- If a sequential space is countably compact, then it is sequentially compact. We follow the proof
 in [kremsater1972sequential]. -/
-instance [SequentialSpace E] [CountablyCompactSpace E] :
+instance (priority := 50) [SequentialSpace E] [CountablyCompactSpace E] :
     SeqCompactSpace E := by
   -- We prove by contradiction. If `E` is not sequentially compact, then there exists a sequence
   -- `x : ℕ → E` with no convergent subsequence.
@@ -256,7 +256,7 @@ instance [SequentialSpace E] [CountablyCompactSpace E] :
   let A := ⋃ i, closure {x i}
   have : IsCountablyCompact A :=
     (isCountablyCompact_univ_iff.2 inferInstance).of_isClosed_subset
-      (isClosed_of_not_tendsto hx) (by simp)
+      (isClosed_iUnion_closure_singleton_of_not_tendsto hx) (by simp)
   -- We use the countably compactness of `A` to find a cluster point `a`. Eventually `a` does not
   -- belong to the closure of `{x n}` as `x` has no convergent subsequence, and this contradicts `a`
   -- being a cluster point.
@@ -274,7 +274,8 @@ instance [SequentialSpace E] [CountablyCompactSpace E] :
   apply this
   have := mapClusterPt_atTop_iff_forall_mem_closure.1 ha.2 (k + 1)
   suffices h : closure (x '' Ici (k + 1)) ⊆ ⋃ i, closure {x (i + (k + 1))} from h this
-  refine (IsClosed.closure_subset_iff (isClosed_of_not_tendsto fun l φ hφ => ?_)).2 ?_
+  refine (IsClosed.closure_subset_iff
+    (isClosed_iUnion_closure_singleton_of_not_tendsto fun l φ hφ => ?_)).2 ?_
   · exact hx l _ ((strictMono_id.add_const _).comp hφ)
   · simp only [image_eq_iUnion, mem_Ici, iUnion_ge_eq_iUnion_nat_add _ (k + 1)]
     exact iUnion_mono fun i => subset_closure
