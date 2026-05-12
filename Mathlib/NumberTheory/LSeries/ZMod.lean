@@ -191,7 +191,7 @@ lemma LFunction_stdAddChar_eq_expZeta (j : ZMod N) (s : ℂ) (hjs : j ≠ 0 ∨ 
     rwa [ne_eq, toAddCircle_eq_zero]
   have hUc : IsPreconnected U := by
     by_cases h : j = 0
-    · simpa only [h, ↓reduceIte, U] using
+    · simpa only [h, ↓reduceIte, U] using!
         (isConnected_compl_singleton_of_one_lt_rank (by simp) _).isPreconnected
     · simpa only [h, ↓reduceIte, U] using isPreconnected_univ
   have hV : V ∈ 𝓝 2 := (continuous_re.isOpen_preimage _ isOpen_Ioi).mem_nhds (by simp)
