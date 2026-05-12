@@ -130,6 +130,7 @@ end LinearMap
 
 /- ## Kernel -/
 
+-- uses only `g.comp f ≃ 1`
 lemma KernelFG_of_isFredholm (hf : IsFredholm_exists f) : FiniteDimensional 𝕜 f.ker := by
   obtain ⟨g, -, hg_left⟩ := hf
   have : f.ker ≤ (g.comp f - 1).range := by
