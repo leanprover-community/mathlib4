@@ -29,7 +29,7 @@ variable {α : Type*} [Fintype α] [DecidableEq α] {G : SimpleGraph α}
 sends each vertex to an adjacent one, then the graph is hamiltonian. -/
 theorem IsHamiltonian.of_perm {σ : Perm α}
     (hcycle : σ.IsCycle) (hsupport : σ.support = .univ)
-    (hadj : ∀ x, G.Adj x (σ x))
+    (hadj : ∀ v, G.Adj v (σ v))
     (hcard3 : 3 ≤ Fintype.card α) : G.IsHamiltonian := by
   intro _
   obtain ⟨x, hx_mem⟩ := hcycle.nonempty_support
