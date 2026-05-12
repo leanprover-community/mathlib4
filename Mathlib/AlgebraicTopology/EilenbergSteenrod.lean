@@ -97,9 +97,7 @@ lemma Hom.w_congr_app (f : HP.Hom HP') (i j : ι) (X : TopPair) :
 
 @[reassoc]
 lemma iso_homₚ_inv_hom (f : HP.Hom HP') (i : ι) :
-    (HP.iso i).hom ≫ incl.whiskerLeft (f.homₚ i) ≫ (HP'.iso i).inv = f.hom i := by
-  rw [← Category.assoc]
-  exact ((Iso.comp_inv_eq (HP'.iso i)).mpr (f.iso_comm i))
+    (HP.iso i).hom ≫ incl.whiskerLeft (f.homₚ i) ≫ (HP'.iso i).inv = f.hom i := by simp
 
 @[reassoc (attr := simp)]
 lemma iso_homₚ_inv_hom_congr_app (f : HP.Hom HP') (i : ι) (X : TopCat) :
