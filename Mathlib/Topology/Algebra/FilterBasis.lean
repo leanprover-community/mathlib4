@@ -130,7 +130,7 @@ def N (B : GroupFilterBasis G) : G → Filter G :=
 
 @[to_additive (attr := simp)]
 theorem N_one (B : GroupFilterBasis G) : B.N 1 = B.toFilterBasis.filter := by
-  simp only [N, one_mul, map_id']
+  simp only [N, one_mul, Filter.map_id']
 
 @[to_additive]
 protected theorem hasBasis (B : GroupFilterBasis G) (x : G) :

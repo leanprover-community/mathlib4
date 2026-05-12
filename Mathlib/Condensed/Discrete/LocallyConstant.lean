@@ -276,7 +276,7 @@ noncomputable def counit [HasExplicitFiniteCoproducts.{u} P] : haveI := CompHaus
     apply presheaf_ext (f.comap (sigmaIncl _ _).hom.hom)
     intro b
     simp only [counitAppAppImage, ← Functor.map_comp_apply, ← op_comp,
-      map_apply, IsTerminal.comp_from, ← map_preimage_eq_image_map]
+      LocallyConstant.map_apply, IsTerminal.comp_from, ← map_preimage_eq_image_map]
     change (_ ≫ Y.obj.map _) _ = (_ ≫ Y.obj.map _) _
     simp only [← g.hom.naturality]
     rw [show sigmaIncl (f.comap (sigmaIncl (f.map _) a).hom.hom) b ≫ sigmaIncl (f.map _) a =

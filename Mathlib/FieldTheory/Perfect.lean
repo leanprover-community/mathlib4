@@ -269,7 +269,7 @@ theorem injective_pow_p {x y : R} (h : x ^ p = y ^ p) : x = y := (frobeniusEquiv
 lemma polynomial_expand_eq (f : R[X]) :
     expand R p f = (f.map (frobeniusEquiv R p).symm) ^ p := by
   rw [← (f.map (S := R) (frobeniusEquiv R p).symm).map_frobenius_expand p, map_expand, map_map,
-    frobenius_comp_frobeniusEquiv_symm, map_id]
+    frobenius_comp_frobeniusEquiv_symm, Polynomial.map_id]
 
 @[simp]
 theorem not_irreducible_expand (R p) [CommSemiring R] [Fact p.Prime] [CharP R p] [PerfectRing R p]
@@ -421,7 +421,7 @@ theorem roots_X_pow_char_sub_C_pow {y : R} {m : ℕ} :
 theorem roots_expand_pow_map_iterateFrobenius :
     (expand R (p ^ n) f).roots.map (iterateFrobenius R p n) = p ^ n • f.roots := by
   simp_rw [← coe_iterateFrobeniusEquiv, roots_expand_pow, Multiset.map_nsmul,
-    Multiset.map_map, comp_apply, RingEquiv.apply_symm_apply, map_id']
+    Multiset.map_map, comp_apply, RingEquiv.apply_symm_apply, Multiset.map_id']
 
 theorem roots_expand_map_frobenius : (expand R p f).roots.map (frobenius R p) = p • f.roots := by
   simp [roots_expand, Multiset.map_nsmul]

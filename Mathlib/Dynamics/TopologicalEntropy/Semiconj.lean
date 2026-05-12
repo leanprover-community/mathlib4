@@ -84,7 +84,7 @@ lemma IsDynCoverOf.preimage (h : Semiconj φ S T) [V.IsSymm] {t : Finset Y}
   choose! f _ φ_f using fun (y : Y) (hy : y ∈ φ '' F) ↦ hy
   refine ⟨s.image (f ∘ g), fun x hx ↦ ?_, Finset.card_image_le.trans s_card⟩
   simp only [Finset.coe_image, comp_apply, mem_image, SetLike.mem_coe, ← h.preimage_dynEntourage,
-    mem_preimage, map_apply, exists_exists_and_eq_and]
+    mem_preimage, Prod.map_apply, exists_exists_and_eq_and]
   obtain ⟨y, hy, hxy⟩ := s_cover (Set.mem_image_of_mem _ hx)
   refine ⟨y, hy, dynEntourage_comp_subset _ _ _ _ ⟨_, hxy, ?_⟩⟩
   rw [φ_f _ (g_mem _ hy)]
