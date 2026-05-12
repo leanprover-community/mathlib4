@@ -313,6 +313,17 @@ theorem Disjoint.le_of_codisjoint (hab : Disjoint a b) (hbc : Codisjoint b c) : 
   rw [← @inf_top_eq _ _ _ a, ← @bot_sup_eq _ _ _ c, ← hab.eq_bot, ← hbc.eq_top, sup_inf_right]
   exact inf_le_inf_right _ le_sup_left
 
+theorem Disjoint.assoc_of_disjoint_left {x y z : α}
+    (hxy : Disjoint x y) (h : Disjoint (x ⊔ y) z) :
+    Disjoint x (y ⊔ z) := fun a ha ha' ↦ by
+  refine h (le_trans ha le_sup_left) ?_
+  rw [← left_eq_inf, inf_sup_left] at ha'
+  rw [ha']
+  simp only [sup_le_iff, inf_le_right, and_true]
+  suffices a ⊓ y = ⊥ by simp [this, bot_le]
+  rw [eq_bot_iff]
+  exact hxy (inf_le_of_left_le ha) inf_le_right
+
 end DistribLattice
 
 section IsCompl
@@ -426,6 +437,11 @@ theorem sup_inf {x' y'} (h : IsCompl x y) (h' : IsCompl x' y') : IsCompl (x ⊔ 
 
 theorem inf_sup {x' y'} (h : IsCompl x y) (h' : IsCompl x' y') : IsCompl (x ⊓ x') (y ⊔ y') :=
   (h.symm.sup_inf h'.symm).symm
+
+theorem assoc_of_disjoint_left (hxy : Disjoint x y) (h : IsCompl (x ⊔ y) z) :
+    IsCompl x (y ⊔ z) := by
+  rcases h with ⟨hd, hc⟩
+  refine ⟨Disjoint.assoc_of_disjoint_left hxy hd, by rwa [← codisjoint_assoc]⟩
 
 end IsCompl
 
