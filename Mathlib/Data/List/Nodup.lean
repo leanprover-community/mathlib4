@@ -28,9 +28,6 @@ protected theorem Pairwise.nodup {l : List α} {r : α → α → Prop} [Std.Irr
     Nodup l :=
   h.imp ne_of_irrefl
 
-@[deprecated (since := "2025-10-11")]
-alias Sorted.nodup := Pairwise.nodup
-
 open scoped Relator in
 theorem rel_nodup {r : α → β → Prop} (hr : Relator.BiUnique r) : (Forall₂ r ⇒ (· ↔ ·)) Nodup Nodup
   | _, _, Forall₂.nil => by simp only [nodup_nil]
@@ -284,7 +281,7 @@ theorem nodup_flatMap {l₁ : List α} {f : α → List β} :
   simp only [List.flatMap, nodup_flatten, pairwise_map, and_comm, mem_map,
     exists_imp, and_imp]
   rw [show (∀ (l : List β) (x : α), f x = l → x ∈ l₁ → Nodup l) ↔ ∀ x : α, x ∈ l₁ → Nodup (f x)
-      from forall_swap.trans <| forall_congr' fun _ => forall_eq']
+      from forall_comm.trans <| forall_congr' fun _ => forall_eq']
 
 protected theorem Nodup.product {l₂ : List β} (d₁ : l₁.Nodup) (d₂ : l₂.Nodup) :
     (l₁ ×ˢ l₂).Nodup :=

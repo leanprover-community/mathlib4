@@ -34,7 +34,6 @@ private lemma continuousOn_herglotz_riesz (_ : w ∈ ball c R) :
     grind [mem_ball, mem_sphere]
   fun_prop (disch := assumption)
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 **Poisson integral formula** for harmonic functions on arbitrary disks in the complex plane,
 formulated with the real part of the Herglotz–Riesz kernel of integration.
@@ -79,8 +78,7 @@ theorem HarmonicContOnCl.circleAverage_re_herglotzRieszKernel_smul
     · rw [herglotzRieszKernel_fun_def]
       apply (continuousOn_herglotz_riesz hw).smul (hf.2.mono _)
       grind [closure_ball c (pos_of_mem_ball hw).ne', mem_closedBall_iff_norm]
-    · simp only [Set.mem_Ioc, and_imp]
-      grind [norm_nonneg (w - c)]
+    · grind [norm_nonneg (w - c)]
   · grind [mem_ball_iff_norm]
   · intro r hr
     rw [HarmonicOnNhd.circleAverage_re_herglotzRieszKernel_smul

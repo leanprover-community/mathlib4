@@ -18,7 +18,7 @@ attached to `X`.
 ## TODO
 
 * Redefine the stalks functors in `Mathlib/Topology/Sheaves/Stalks.lean`
-using `GrothendieckTopology.Point.presheafFiber`.
+  using `GrothendieckTopology.Point.presheafFiber`.
 
 -/
 
@@ -32,12 +32,11 @@ open CategoryTheory GrothendieckTopology TopologicalSpace
 
 variable {X : Type u} [TopologicalSpace X] (x : X)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a topological space `X` and `x : X`, this is the point of the site
 `(Opens X, Opens.grothendieckTopology X)` corresponding to `x`. -/
 def pointGrothendieckTopology : Point.{u} (grothendieckTopology X) where
   fiber.obj U := ULift.{u} (PLift (x ∈ U))
-  fiber.map f h := ⟨⟨leOfHom f h.down.down⟩⟩
+  fiber.map f := ↾fun h ↦ ⟨⟨leOfHom f h.down.down⟩⟩
   isCofiltered :=
     { nonempty := ⟨⊤, ⟨⟨by simp⟩⟩⟩
       cone_objs := by
@@ -69,7 +68,6 @@ instance : HasEnoughPoints.{u} (grothendieckTopology X) where
   exists_objectProperty :=
     ⟨_, inferInstance, isConservativeFamilyOfPoints_pointsGrothendieckTopology X⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance (U : Opens X) (Φ : Point.{u} (grothendieckTopology X)) :
     Subsingleton (Φ.fiber.obj U) :=
   Φ.subsingleton_fiber_obj (homOfLE le_top) Limits.isTerminalTop
@@ -83,7 +81,8 @@ there is a (unique) morphism between the corresponding points of the site
 def pointGrothendieckTopologyHomEquiv {x y : X} :
     (pointGrothendieckTopology x ⟶ pointGrothendieckTopology y) ≃ x ⤳ y where
   toFun f := specializes_iff_forall_open.2 (fun U h₁ h₂ ↦ (f.hom.app ⟨U, h₁⟩ ⟨⟨h₂⟩⟩).down.down)
-  invFun s := { hom.app U hU := ⟨⟨specializes_iff_forall_open.1 s _ U.2 hU.down.down⟩⟩ }
+  invFun s := { hom.app U := ↾fun hU ↦
+    ⟨⟨specializes_iff_forall_open.1 s _ U.2 hU.down.down⟩⟩ }
   left_inv _ := by subsingleton
   right_inv _ := rfl
 

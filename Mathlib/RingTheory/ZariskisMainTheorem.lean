@@ -40,6 +40,7 @@ We follow https://stacks.math.columbia.edu/tag/00PI and proceed in the following
     One first reduces to when `R ⊆ S` are domains, and then to when `R` is integrally closed.
     A going down theorem is now available, which could be applied to
     `Polynomial.map_under_lt_comap_of_quasiFiniteAt`:`(p ∩ R)[X] < p ∩ R<x>` to get a contradiction.
+
   The second result applied to `S/√𝔣` together with the first result implies that
   `p` does not contain `𝔣`.
   The claim then follows from `Localization.localRingHom_bijective_of_not_conductor_le`.
@@ -117,7 +118,7 @@ lemma ZariskisMainProperty.trans [Algebra S T] [IsScalarTower R S T] (p : Ideal 
   obtain ⟨m, hm⟩ := Hs t
   refine ⟨algebraMap _ _ (s ^ (m + 1) * t), ?_, fun x ↦ ?_⟩
   · simpa using ‹p.IsPrime›.mul_notMem
-      (mt ((inferInstanceAs (p.under S).IsPrime).mem_of_pow_mem (m + 1)) hsp) htp
+      (mt ((inferInstance : (p.under S).IsPrime).mem_of_pow_mem (m + 1)) hsp) htp
   obtain ⟨_, ⟨n, rfl⟩, a, ha⟩ := Ht.ge (Set.mem_univ x)
   obtain ⟨k, hk⟩ := Hs a
   refine ⟨k + n, ?_⟩
@@ -289,7 +290,6 @@ lemma exists_leadingCoeff_pow_smul_mem_radical_conductor
   rw [_root_.smul_pow, pow_add, add_comm, pow_add, mul_smul_mul_comm, hi]
   exact Ideal.mul_mem_right _ _ hk
 
-set_option backward.isDefEq.respectTransparency false in
 @[stacks 00PY]
 lemma isStronglyTranscendental_mk_radical_conductor
     (hRS : integralClosure R S = ⊥) -- `IsIntegrallyClosedIn` but without injective assumption
@@ -338,7 +338,7 @@ private lemma not_isStronglyTranscendental_of_weaklyQuasiFiniteAt_of_isIntegrall
   ext
   simp [Ideal.mem_map_C_iff, coeff_C, apply_ite]
 
-/-- This asks for an explict `K = Frac(R)`, `L = Frac(S)`,
+/-- This asks for an explicit `K = Frac(R)`, `L = Frac(S)`,
 `R'` the integral closure of `R` in `K`, and `S' ⊆ L` the subalgebra spanned by `R'` and `S`,
 to aid typeclass synthesis.
 
@@ -374,8 +374,7 @@ private lemma not_isStronglyTranscendental_of_weaklyQuasiFiniteAt_of_isDomain_au
   have hf₄ : f.IsIntegral := by
     have : f = (g.restrictScalars R).comp ((Algebra.TensorProduct.comm _ _ _).toAlgHom.comp
         (IsScalarTower.toAlgHom _ _ _)) := by ext; simp [g]
-    simp only [this, AlgEquiv.toAlgHom_eq_coe, AlgHom.toRingHom_eq_coe,
-      AlgHom.comp_toRingHom, ← RingHom.comp_assoc]
+    simp only [this, AlgHom.toRingHom_eq_coe, AlgHom.comp_toRingHom, ← RingHom.comp_assoc]
     refine .trans _ _ (algebraMap_isIntegral_iff.mpr inferInstance) ?_
     exact RingHom.isIntegral_of_surjective _
       (hf₁.comp (Algebra.TensorProduct.comm _ _ _).surjective)
@@ -502,7 +501,6 @@ private lemma ZariskisMainProperty.of_adjoin_eq_top
     refine Algebra.adjoin_singleton_le ⟨_, ⟨1, rfl⟩, ?_⟩
     simpa [Algebra.smul_def] using isIntegral_leadingCoeff_smul f x hf
 
-set_option backward.isDefEq.respectTransparency false in
 -- Subsumed by `ZariskisMainProperty.of_finiteType`.
 private lemma ZariskisMainProperty.of_algHom_polynomial
     (p : Ideal S) [p.IsPrime] [Algebra.WeaklyQuasiFiniteAt R p]
@@ -516,7 +514,7 @@ private lemma ZariskisMainProperty.of_algHom_polynomial
     refine RingHom.Finite.of_comp_finite (f := mapRingHom (algebraMap R _)) ?_
     convert (show f.toRingHom.Finite from hf)
     ext <;> simp [show ∀ x, f (C x) = algebraMap _ _ x from f.commutes]
-  have : ¬ conductor R (f X) ≤ p := by
+  replace hf : ¬ conductor R (f X) ≤ p := by
     intro hp
     rw [← ‹p.IsPrime›.isRadical.radical_le_iff] at hp
     set J := (conductor R (f X)).radical
@@ -533,13 +531,14 @@ private lemma ZariskisMainProperty.of_algHom_polynomial
       (isStronglyTranscendental_mk_radical_conductor H (f X) (by convert hf; ext; simp))
     convert (RingHom.Finite.of_surjective _ (Ideal.Quotient.mk_surjective (I := J))).comp hf using 1
     ext <;> simp [show ∀ x, f (C x) = algebraMap _ _ x from f.commutes, J]
-  obtain ⟨x, hx, hxp⟩ := SetLike.not_le_iff_exists.mp this
+  obtain ⟨x, hx, hxp⟩ := SetLike.not_le_iff_exists.mp hf
   replace hx (a : _) : x * a ∈ f.range := by simpa [← AlgHom.map_adjoin_singleton f] using hx a
   refine ZariskisMainProperty.trans (S := f.range) _ ?_ ?_
   · have : Algebra.WeaklyQuasiFiniteAt R (p.under f.range) := by
+      let := Localization.AtPrime.algebraOfLiesOver (p.under f.range) p
       let e : Localization.AtPrime (p.under f.range) ≃ₐ[R] Localization.AtPrime p :=
         .ofBijective (IsScalarTower.toAlgHom _ _ _)
-          (Localization.localRingHom_bijective_of_not_conductor_le this
+          (Localization.localRingHom_bijective_of_not_conductor_le hf
             (by simp [← AlgHom.map_adjoin_singleton f]) _)
       exact .of_algHom_localization _ _ e.symm.toAlgHom e.symm.surjective
     refine .of_adjoin_eq_top _ ⟨f X, X, rfl⟩ ?_
@@ -548,7 +547,6 @@ private lemma ZariskisMainProperty.of_algHom_polynomial
   · refine ⟨⟨x, by simpa using hx 1⟩, hxp, top_le_iff.mp fun s _ ↦ ⟨_, ⟨1, rfl⟩, ?_⟩⟩
     simpa [Algebra.mem_bot] using hx s
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Pointwise in
 -- Subsumed by `ZariskisMainProperty.of_finiteType`.
 private lemma ZariskisMainProperty.of_algHom_mvPolynomial
@@ -581,6 +579,7 @@ private lemma ZariskisMainProperty.of_algHom_mvPolynomial
       Algebra.adjoin R ↑(Finset.univ.image (f ∘ .X ∘ Fin.succ) ∪ r ^ (s.sup m) • s ∪ {r})
     have hrR' : r ∈ R' := Algebra.subset_adjoin (by simp)
     have : Algebra.WeaklyQuasiFiniteAt R (p.under R') := by
+      let := Localization.AtPrime.algebraOfLiesOver (p.under R') p
       let e : Localization.AtPrime (p.under R') ≃ₐ[R] Localization.AtPrime p :=
         .ofBijective (IsScalarTower.toAlgHom _ _ _) <| by
           refine Localization.localRingHom_bijective_of_saturated_inf_eq_top _ ?_ _
@@ -727,7 +726,6 @@ lemma QuasiFiniteAt.of_weaklyQuasiFiniteAt
     Algebra.QuasiFiniteAt R p :=
   ZariskisMainProperty.quasiFiniteAt _ (.of_finiteType_of_weaklyQuasiFiniteAt _)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma QuasiFiniteAt.of_quasiFiniteAt_residueField
     [FiniteType R S] (p : Ideal R) (q : Ideal S) [q.IsPrime]
     [p.IsPrime] [q.LiesOver p]
@@ -738,7 +736,6 @@ lemma QuasiFiniteAt.of_quasiFiniteAt_residueField
   have : Algebra.WeaklyQuasiFiniteAt R q := .of_quasiFiniteAt_residueField p q Q hQ
   .of_weaklyQuasiFiniteAt _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma QuasiFiniteAt.of_isOpen_singleton_fiber
     [FiniteType R S] (q : PrimeSpectrum S)
     (H : IsOpen (X := .comap (algebraMap R S) ⁻¹' {q.comap (algebraMap R S)}) {⟨q, rfl⟩}) :
@@ -751,7 +748,6 @@ lemma QuasiFiniteAt.of_isOpen_singleton_fiber
   refine .of_isOpen_singleton _ ?_
   rwa [← Set.image_singleton, e.isOpen_image]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma quasiFiniteAt_iff_isOpen_singleton_fiber
     [FiniteType R S] (q : PrimeSpectrum S) :
     Algebra.QuasiFiniteAt R q.asIdeal ↔

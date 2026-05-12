@@ -21,11 +21,11 @@ import Mathlib.NumberTheory.Niven
 
 ## Main statements
 
-* `T_n(x) ∈ [-1, 1]` iff `x ∈ [-1, 1]`: abs_eval_T_real_le_one_iff
-* Zeroes of `T` and `U`: roots_T_real, roots_U_real
-* Local extrema of `T`: isLocalExtr_T_real_iff, isExtrOn_T_real_iff
-* Irrationality of zeroes of `T` other than zero: irrational_of_isRoot_T_real
-* `|T_n^{(k)} (x)| ≤ T_n^{(k)} (1)` for `x ∈ [-1, 1]`: abs_iterate_derivative_T_real_le
+* `T_n(x) ∈ [-1, 1]` iff `x ∈ [-1, 1]`: `abs_eval_T_real_le_one_iff`
+* Zeroes of `T` and `U`: `roots_T_real`, `roots_U_real`
+* Local extrema of `T`: `isLocalExtr_T_real_iff`, `isExtrOn_T_real_iff`
+* Irrationality of zeroes of `T` other than zero: `irrational_of_isRoot_T_real`
+* `|T_n^{(k)} (x)| ≤ T_n^{(k)} (1)` for `x ∈ [-1, 1]`: `abs_iterate_derivative_T_real_le`
 
 ## TODO
 
@@ -333,7 +333,7 @@ theorem abs_iterate_derivative_T_real_le (n : ℤ) (k : ℕ) {x : ℝ} (hx : |x|
   replace hfderiv : ∑ p ∈ f.support, f p • p = derivative^[k] (T ℝ n) := by rw [← hfderiv]; rfl
   have hf (y : ℝ) :
       ∑ p ∈ f.support, f p • p.eval y = (derivative^[k] (T ℝ n)).eval y := by
-    rw [← hfderiv, Polynomial.eval_finset_sum]
+    rw [← hfderiv, Polynomial.eval_finsetSum]
     simp_rw [Polynomial.eval_smul]
   rw [← hf x, ← hf 1]
   grw [Finset.abs_sum_le_sum_abs]
