@@ -52,7 +52,7 @@ for `n = 3` or `n = 4`, this gives an Iwasawa structure of `alternatingGroup α`
 
 ## TODO
 
-This file contains one uncomfortable use of `convert`: on line 81, to identify `MulAut.conj`
+This file contains one uncomfortable use of `convert`: on line 78, to identify `MulAut.conj`
 and `ConjAct.toConjAct`.
 
 -/
