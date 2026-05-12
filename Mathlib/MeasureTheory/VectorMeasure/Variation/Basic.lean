@@ -107,11 +107,11 @@ lemma variation_le_of_forall_enorm_le {m : Measure X} (h : ∀ E, MeasurableSet 
     _ = m (i.parts.sup Subtype.val) := by
       rw [sup_set_eq_biUnion]
       refine (MeasureTheory.measure_biUnion_finset ?_ fun b _ => b.property).symm
-      sorry
+      intro a ha b hb hab
+      simpa [disjoint_iff, Subtype.ext_iff] using i.disjoint ha hb hab
     _ ≤ m s := by
-      apply measure_mono
       rw [sup_set_eq_biUnion]
-      exact Set.iUnion₂_subset (by intro _ hp; exact Subtype.coe_le_coe.mpr (i.le hp))
+      sorry
 
 lemma variation_add_le [ContinuousAdd V] : variation (μ + ν) ≤ variation μ + variation ν := by
   refine variation_le_of_forall_enorm_le fun E _ => ?_
