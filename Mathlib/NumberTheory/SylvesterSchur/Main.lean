@@ -31,7 +31,8 @@ induction step.
 
 ## References
 
-The proof follows Erdős's proof of the Sylvester-Schur theorem.
+The proof follows Erdős's proof of the Sylvester-Schur theorem
+[Erdős, *A theorem of Sylvester and Schur*][erdos1934SylvesterSchur].
 
 ## Tags
 
