@@ -390,16 +390,7 @@ theorem CovBy.Ico_eq (h : a ⋖ b) : Ico a b = {a} := by
 theorem CovBy.Icc_eq (h : a ⋖ b) : Icc a b = {a, b} :=
   h.wcovBy.Icc_eq
 
-theorem Set.Ioc_eq_singleton_iff : Ioc a b = {c} ↔ b = c ∧ a ⋖ b where
-  mp h := by
-    rw [Set.ext_iff] at h
-    have ⟨hac, hcb⟩ := (h c).mpr rfl
-    have hb := (h b).mp ⟨hac.trans_le hcb, le_refl b⟩
-    rw [hb] at h ⊢
-    exact ⟨rfl, ⟨hac, fun d had hdc ↦ hdc.ne ((h d).mp ⟨had, hdc.le⟩)⟩⟩
-  mpr := fun ⟨rfl, hcov⟩ ↦ hcov.Ioc_eq
-
-@[to_dual existing]
+@[to_dual]
 theorem Set.Ico_eq_singleton_iff : Ico a b = {c} ↔ a = c ∧ a ⋖ b where
   mp h := by
     simp_rw [Set.ext_iff, mem_Ico, mem_singleton_iff] at h
@@ -461,7 +452,7 @@ theorem Set.Ioi_eq_singleton_iff : Ioi a = {b} ↔ IsTop b ∧ a ⋖ b where
 @[to_dual]
 lemma Set.Ioi_eq_singleton_top_iff [OrderTop α] : Ioi a = {⊤} ↔ a ⋖ ⊤ := by
   simp [Ioi_eq_singleton_iff]
-  
+
 @[to_dual unique_right]
 theorem CovBy.unique_left (ha : a ⋖ c) (hb : b ⋖ c) : a = b :=
   (hb.le_of_lt ha.lt).antisymm <| ha.le_of_lt hb.lt
