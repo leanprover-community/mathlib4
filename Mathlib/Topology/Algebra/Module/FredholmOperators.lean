@@ -171,8 +171,7 @@ lemma index_smul (t : k) (ht : t ≠ 0) :
     (t • f).index = f.index := by
   sorry
 
-lemma index_neg
-    /- TODO required assumptions. -/ :
+lemma index_neg :
     (-f).index = f.index := by
   rw [index, index, ker_neg, range_neg]
 
