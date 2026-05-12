@@ -454,6 +454,7 @@ open HomologicalComplex
 
 variable {V : Type*} [Category* V] {ι : Type*} {c : ComplexShape ι} [Preadditive V]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The opposite of a homotopy between morphisms of homological complexes. -/
 @[simps]
 def op {F G : HomologicalComplex V c} {φ₁ φ₂ : F ⟶ G} (h : Homotopy φ₁ φ₂) :
@@ -466,6 +467,7 @@ def op {F G : HomologicalComplex V c} {φ₁ φ₂ : F ⟶ G} (h : Homotopy φ�
     nth_rw 2 [add_comm]
     rfl)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The homotopy between morphisms of homological complexes that is deduced
 from a homotopy in the opposite category. -/
 @[simps]
