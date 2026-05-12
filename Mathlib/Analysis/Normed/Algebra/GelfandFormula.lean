@@ -207,7 +207,7 @@ noncomputable def _root_.NormedRing.algEquivComplexOfComplete (hA : ∀ {a : A},
     toFun := algebraMap ℂ A
     invFun := fun a => (@spectrum.nonempty _ _ _ _ nt a).some
     left_inv := fun z => by
-      simpa only [@scalar_eq _ _ _ _ _ nt _] using
+      simpa only [@scalar_eq _ _ _ _ _ nt _] using!
         (@spectrum.nonempty _ _ _ _ nt <| algebraMap ℂ A z).some_mem
     right_inv := fun a => algebraMap_eq_of_mem (@hA) (@spectrum.nonempty _ _ _ _ nt a).some_mem }
 

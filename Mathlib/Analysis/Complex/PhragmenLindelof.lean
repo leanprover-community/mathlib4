@@ -451,7 +451,7 @@ theorem quadrant_II (hd : DiffContOnCl ℂ f (Iio 0 ×ℂ Ioi 0))
   simp only [mul_I_re, mul_I_im, neg_nonpos] at hz_re hz_im
   change ‖(f ∘ (· * I)) z‖ ≤ C
   have H : MapsTo (· * I) (Ioi 0 ×ℂ Ioi 0) (Iio 0 ×ℂ Ioi 0) := fun w hw ↦ by
-    simpa only [mem_reProdIm, mul_I_re, mul_I_im, neg_lt_zero, mem_Iio] using hw.symm
+    simpa only [mem_reProdIm, mul_I_re, mul_I_im, neg_lt_zero, mem_Iio] using! hw.symm
   rcases hB with ⟨c, hc, B, hO⟩
   refine quadrant_I (hd.comp (differentiable_id.mul_const _).diffContOnCl H) ⟨c, hc, B, ?_⟩ him
     (fun x hx => ?_) hz_im hz_re
@@ -514,7 +514,7 @@ theorem quadrant_III (hd : DiffContOnCl ℂ f (Iio 0 ×ℂ Iio 0))
   change ‖(f ∘ Neg.neg) z‖ ≤ C
   have H : MapsTo Neg.neg (Ioi 0 ×ℂ Ioi 0) (Iio 0 ×ℂ Iio 0) := by
     intro w hw
-    simpa only [mem_reProdIm, neg_re, neg_im, neg_lt_zero, mem_Iio] using hw
+    simpa only [mem_reProdIm, neg_re, neg_im, neg_lt_zero, mem_Iio] using! hw
   refine
     quadrant_I (hd.comp differentiable_neg.diffContOnCl H) ?_ (fun x hx => ?_) (fun x hx => ?_)
       hz_re hz_im
@@ -674,7 +674,7 @@ theorem right_half_plane_of_tendsto_zero_on_real (hd : DiffContOnCl ℂ f {z | 0
     rcases h₀ with ⟨x₀, hx₀, hne⟩
     have hlt : ‖(0 : E)‖ < ‖f x₀‖ := by rwa [norm_zero, norm_pos_iff]
     suffices ∀ᶠ x : ℝ in cocompact ℝ ⊓ 𝓟 (Ici 0), ‖f x‖ ≤ ‖f x₀‖ by
-      simpa only [exists_prop] using hfc.norm.exists_isMaxOn' isClosed_Ici hx₀ this
+      simpa only [exists_prop] using! hfc.norm.exists_isMaxOn' isClosed_Ici hx₀ this
     rw [cocompact_eq_atBot_atTop, inf_sup_right, (disjoint_atBot_principal_Ici (0 : ℝ)).eq_bot,
       bot_sup_eq]
     exact (hre.norm.eventually <| ge_mem_nhds hlt).filter_mono inf_le_left
@@ -763,7 +763,7 @@ theorem eq_zero_on_right_half_plane_of_superexponential_decay (hd : DiffContOnCl
   rcases him with ⟨C, hC⟩
   -- Due to continuity, it suffices to prove the equality on the open right half-plane.
   suffices ∀ z : ℂ, 0 < z.re → f z = 0 by
-    simpa only [closure_setOf_lt_re] using
+    simpa only [closure_setOf_lt_re] using!
       EqOn.of_subset_closure this hd.continuousOn continuousOn_const subset_closure Subset.rfl
   -- Consider $g_n(z)=e^{nz}f(z)$.
   set g : ℕ → ℂ → E := fun (n : ℕ) (z : ℂ) => exp z ^ n • f z

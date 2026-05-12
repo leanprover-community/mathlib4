@@ -675,7 +675,7 @@ lemma summable_weierstrassPExceptSummand (l₀ z x : ℂ)
   apply Summable.sum
   · -- for the degree zero term, this is the usual summability of the definition of `℘`.
     simpa [weierstrassPExceptSummand, e, Function.comp_def, Function.uncurry, sub_sq_comm x,
-      Denumerable.eqv] using (L.hasSum_weierstrassPExcept l₀ x).summable
+      Denumerable.eqv] using! (L.hasSum_weierstrassPExcept l₀ x).summable
   · -- for the remaining terms, we bound it by `(i + 2) κ⁻ⁱ * ‖l - x‖⁻³ * ‖z - x‖`.
     dsimp [e, Function.comp_def, Function.uncurry_def, Denumerable.eqv, weierstrassPExceptSummand]
     have H₁ : Summable fun i : ℕ ↦ ((i + 2) * κ ^ (-i : ℤ)) := by

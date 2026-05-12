@@ -335,7 +335,7 @@ theorem MeromorphicOn.circleAverage_log_norm {c : ℂ} {R : ℝ} {f : ℂ → �
         apply compl_notMem
         apply mem_nhdsWithin.mpr
         use ball c |R|
-        simpa [hR] using fun _ ⟨h, _⟩ ↦ ball_subset_closedBall h
+        simpa [hR] using! fun _ ⟨h, _⟩ ↦ ball_subset_closedBall h
       simp [MeromorphicOn.log_norm_meromorphicTrailingCoeffAt_extract_zeros_poles h₃f t₀ t₁
         (h₁f c t₀) (h₁g c t₀) (h₂g ⟨c, t₀⟩) h₃g]
     _ = ∑ᶠ u, divisor f CB u * log R - ∑ᶠ u, divisor f CB u * log ‖c - u‖
