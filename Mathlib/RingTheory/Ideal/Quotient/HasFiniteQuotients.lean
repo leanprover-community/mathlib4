@@ -6,7 +6,7 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Data.ZMod.QuotientRing
-public import Mathlib.NumberTheory.Height.Northcott
+public import Mathlib.Order.Northcott
 public import Mathlib.RingTheory.DedekindDomain.Basic
 public import Mathlib.RingTheory.IntegralDomain
 public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
