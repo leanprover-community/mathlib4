@@ -17,8 +17,6 @@ extend a (dependent) function defined on the complement of a singleton.
 
 @[expose] public section
 
-variable {ι : Type*} [DecidableEq ι] (i₀ : ι)
-
 namespace Function
 
 variable {ι : Type*} [DecidableEq ι] {M : ι → Type*} (i₀ : ι)
