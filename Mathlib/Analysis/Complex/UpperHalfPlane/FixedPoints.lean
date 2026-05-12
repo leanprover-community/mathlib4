@@ -59,7 +59,8 @@ theorem gl_smul_eq_self_iff_re_eq (hadd : g 0 0 + g 1 1 = 0) (hc : g 1 0 = 0) :
   rw [add_eq_zero_iff_eq_neg] at hadd
   have h₀ : g 1 1 ≠ 0 := by
     intro h₀
-    simp [Matrix.det_fin_two, h₀, hc, hadd] at h
+    simpa [Matrix.det_fin_two, hc, h₀] using g.det_ne_zero
+  have h : g.val.det < 0 := by simp [Matrix.det_fin_two, *]
   simp [gl_smul_eq_iff_num_eq, Complex.ext_iff, hadd, hc, num, denom, σ, h.not_gt, mul_comm,
     eq_div_iff, h₀]
   grind
@@ -171,7 +172,7 @@ theorem forall_smul_eq_self_iff_mem_center {g : GL (Fin 2) ℝ} :
     · obtain ⟨ha, hb⟩ := (gl_smul_I_eq_I_iff_of_neg hlt).mp (hg _)
       rcases eq_or_ne (g 1 0) 0 with hc | hc
       · specialize hg ⟨1 + .I, by simp⟩
-        rw [gl_smul_eq_self_iff_re_eq hlt (by simp [ha]) hc] at hg
+        rw [gl_smul_eq_self_iff_re_eq (by simp [ha]) hc] at hg
         simp_all
       · have : 0 < 1 + √(-g.val.det) / |g 1 0| := by simp [add_pos, *]
         specialize hg ⟨⟨-g 1 1 / g 1 0, 1 + √(-g.val.det) / |g 1 0|⟩, this⟩
