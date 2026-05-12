@@ -1,0 +1,159 @@
+/-
+Copyright (c) 2026 Jakob Scharmberg. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jakob Scharmberg
+-/
+
+module
+
+public import Mathlib.Algebra.Homology.ComplexShape
+public import Mathlib.Combinatorics.Quiver.ReflQuiver
+public import Mathlib.Topology.Category.TopPair
+/-!
+# Eilenberg-Steenrod homology theories
+
+In this file we introduce the Eilenberg-Steenrod axioms for homology theories.
+
+The data for a homology theory is bundled in a structure `HomologyPretheory` consisting of functors
+`Hₚ i : TopPair ⥤ C` and `H i : TopCat ⥤ C` which represent the `i`th relative and regular homology,
+respectively, (indexed by a `ComplexShape`) and a proof that they agree on `TopCat`. They also
+require boundary morphisms `δ i j :  Hₚ i ⟶ proj₂ ⋙ H j` for the long exact sequence of
+topological pairs. These are nonzero only if `c.Rel i j`.
+
+TODO: We introduce a type class for each axiom. In addition, there are bundled type classes
+`IsExtraordinaryEilenbergSteenrod` with the homotopy, excision, additivity, and exactness axioms and
+`IsEilenbergSteenrod` on a `HomologyPretheory` on `ComplexShape.down ℕ : ComplexShape ℕ` which
+extends the former by the dimension axiom.
+
+TODO: Excision is formulated in terms of complements of topological pairs: Suppose `U` and `V` are
+complements of a topological pair `X` with embeddings `f : U ⟶ X` and `g : V ⟶ X`. Suppose further
+that the closure of `Hom.fst f (U.fst)` is a subset of the interior of the image of `X.snd` in
+`X.fst`. Then the excision axiom postulates that the homology of `X` is isomorphic to that of `V`.
+Note that this closure condition a priori seems weaker than in the literature. However, we prove
+that under these assumptions, `U` is actually an isomorphism.
+-/
+
+@[expose] public section
+
+open CategoryTheory TopPair ObjectProperty
+
+universe u v
+
+namespace TopPair
+
+/-- A `HomologyPretheory` is the data of an Eilenberg-Steenrod homology theory. -/
+@[ext]
+structure HomologyPretheory
+    (C : Type v) [Category C] [Limits.HasZeroMorphisms C] {ι : Type*} (c : ComplexShape ι) where
+  /-- The relative homology functor of a `HomologyPretheory`. -/
+  Hₚ (i : ι) : TopPair.{u} ⥤ C
+  /-- The regular homology functor of a `HomologyPretheory`. -/
+  H (i : ι) : TopCat.{u} ⥤ C
+  /-- The proof that `Hₚ` and `H` agree on `TopCat` -/
+  iso (i : ι) : H i ≅ incl ⋙ Hₚ i
+  /-- The boundary natural transformation of a `HomologyPretheory`. -/
+  δ (i j : ι) : (Hₚ i) ⟶ proj₂ ⋙ H j
+  /-- The boundary map is only nonzero if `c.Rel i j`. -/
+  shape_δ (i j : ι) (h : ¬ c.Rel i j) : δ i j = 0 := by cat_disch
+
+namespace HomologyPretheory
+
+variable {C : Type v} [Category C] [Limits.HasZeroMorphisms C] {ι : Type*} {c : ComplexShape ι}
+
+/-- A morphism in the category `HomologyPretheory`. -/
+@[ext]
+structure Hom (HP HP' : HomologyPretheory C c) where
+  /-- The natural transformation of relative homology functors in a morphism of
+  `HomologyPretheory`s. -/
+  homₚ (i : ι) : HP.Hₚ i ⟶ HP'.Hₚ i
+  /-- The natural transformation of homology functors in a morphism of
+  `HomologyPretheory`s. -/
+  hom (i : ι) : HP.H i ⟶ HP'.H i := (HP.iso i).hom ≫ incl.whiskerLeft (homₚ i) ≫ (HP'.iso i).inv
+  /-- `homₚ` and `hom` need to be compatible with `HomologyPretheory.iso`. -/
+  iso_comm (i : ι) :
+    (HP.iso i).hom ≫ incl.whiskerLeft (homₚ i) = hom i ≫ (HP'.iso i).hom := by cat_disch
+  /-- `homₚ` needs to be compatible with the boundary maps. -/
+  w (i j : ι) : HP.δ i j ≫ proj₂.whiskerLeft (hom j) = homₚ i ≫ HP'.δ i j := by cat_disch
+
+attribute [reassoc (attr := simp)] Hom.iso_comm
+attribute [reassoc (attr := local simp)] Hom.w
+
+variable {HP HP' : HomologyPretheory C c}
+
+@[reassoc]
+lemma Hom.iso_comm_congr_app (f : HP.Hom HP') (i : ι) (X : TopCat.{u}) :
+    dsimp% (HP.iso i).hom.app X ≫ (incl.whiskerLeft (f.homₚ i)).app X =
+    (f.hom i).app X ≫ (HP'.iso i).hom.app X :=
+  congr($(f.iso_comm _).app _)
+
+@[reassoc]
+lemma Hom.w_congr_app (f : HP.Hom HP') (i j : ι) (X : TopPair) :
+    dsimp% (HP.δ i j).app X ≫ (f.hom j).app X.left = (f.homₚ i).app X ≫ (HP'.δ i j).app X :=
+  congr($(f.w _ _).app _)
+
+@[reassoc]
+lemma iso_homₚ_inv_hom (f : HP.Hom HP') (i : ι) :
+    (HP.iso i).hom ≫ incl.whiskerLeft (f.homₚ i) ≫ (HP'.iso i).inv = f.hom i := by simp
+
+@[reassoc (attr := simp)]
+lemma iso_homₚ_inv_hom_congr_app (f : HP.Hom HP') (i : ι) (X : TopCat) :
+    dsimp% (HP.iso i).hom.app X ≫ (f.homₚ i).app (ofTopCat X) ≫ (HP'.iso i).inv.app X =
+    (f.hom i).app X := congr($(iso_homₚ_inv_hom _ _).app _)
+
+@[reassoc (attr := simp)]
+lemma inv_hom_iso_homₚ (f : HP.Hom HP') (i : ι) :
+    (HP.iso i).inv ≫ f.hom i ≫ (HP'.iso i).hom = incl.whiskerLeft (f.homₚ i) :=
+  ((Iso.inv_comp_eq (HP.iso i)).mpr (f.iso_comm i).symm)
+
+@[reassoc (attr := simp)]
+lemma inv_hom_iso_homₚ_congr_app (f : HP.Hom HP') (i : ι) (X : TopCat) :
+    dsimp% (HP.iso i).inv.app X ≫ (f.hom i).app X ≫ (HP'.iso i).hom.app X =
+    (f.homₚ i).app (ofTopCat X) := congr($(inv_hom_iso_homₚ _ _).app _)
+
+@[simps]
+instance : Category (HomologyPretheory C c) where
+  Hom := HomologyPretheory.Hom
+  id _ := { homₚ _ := 𝟙 _ }
+  comp f g := { homₚ _ := f.homₚ _ ≫ g.homₚ _ }
+
+/-- The forgetful functor that sends a `HomologyPretheory` to it's relative homology functor `Hₚ`.
+-/
+@[simps]
+protected def forgetₚ (i : ι) : HomologyPretheory C c ⥤ TopPair.{u} ⥤ C where
+  obj HP := HP.Hₚ i
+  map f := f.homₚ i
+
+/-- The forgetful functor that sends a `HomologyPretheory` to it's homology functor `H`. -/
+@[simps]
+protected def forget (i : ι) : HomologyPretheory C c ⥤ TopCat.{u} ⥤ C where
+  obj HP := HP.H i
+  map f := f.hom i
+
+end HomologyPretheory
+
+end TopPair
+
+namespace EilenbergSteenrod
+
+open HomologyPretheory
+
+variable {C : Type v} [Category C] [Limits.HasZeroMorphisms C] {ι : Type*} {c : ComplexShape ι}
+  (HP HP' : HomologyPretheory.{u} C c)
+
+/-- A `HomologyPretheory` is homotopy-invariant if its homology functor `Hₚ` takes homotopic maps to
+the same map in homology -/
+class IsHomotopyInvariant where
+  homotopy ⦃X Y : TopPair⦄ (f g : X ⟶ Y) (hfg : Homotopic f g) :
+      ∀ (i : ι), (HP.Hₚ i).map f = (HP.Hₚ i).map g := by cat_disch
+
+instance : IsClosedUnderIsomorphisms (C := HomologyPretheory C c) IsHomotopyInvariant where
+  of_iso {HP HP'} e hHP := ⟨by
+    intro _ _ _ _ hfg _
+    have := hHP.homotopy _ _ hfg
+    apply ((((HomologyPretheory.forgetₚ _).mapIso e).app _).cancel_iso_hom_left
+      ((HP'.Hₚ _).map _) ((HP'.Hₚ _).map _)).mp
+    simp only [CategoryTheory.Iso.app_hom, HomologyPretheory.forgetₚ_obj, Functor.mapIso_hom,
+      forgetₚ_map, ← (e.hom.homₚ _).naturality]
+    cat_disch⟩
+
+end EilenbergSteenrod
