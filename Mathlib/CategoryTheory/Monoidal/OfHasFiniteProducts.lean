@@ -68,21 +68,24 @@ theorem tensor_ext {X Y Z : C} (f g : X ⟶ Y ⊗ Z)
     (w₁ : f ≫ prod.fst = g ≫ prod.fst) (w₂ : f ≫ prod.snd = g ≫ prod.snd) : f = g :=
   Limits.prod.hom_ext w₁ w₂
 
+set_option linter.deprecatedSimpLemma false in
 @[deprecated "This is an implementation detail." (since := "2025-10-19"), simp]
 theorem tensorUnit : 𝟙_ C = ⊤_ C := rfl
 
+set_option linter.deprecatedSimpLemma false in
 @[deprecated "This is an implementation detail." (since := "2025-10-19"), simp]
 theorem tensorObj (X Y : C) : X ⊗ Y = (X ⨯ Y) :=
   rfl
 
-@[deprecated CartesianMonoidalCategory.leftUnitor_hom (since := "2025-10-19"), simp]
+@[deprecated CartesianMonoidalCategory.leftUnitor_hom (since := "2025-10-19")]
 theorem leftUnitor_hom (X : C) : (λ_ X).hom = Limits.prod.snd :=
   rfl
 
-@[deprecated CartesianMonoidalCategory.rightUnitor_hom (since := "2025-10-19"), simp]
+@[deprecated CartesianMonoidalCategory.rightUnitor_hom (since := "2025-10-19")]
 theorem rightUnitor_hom (X : C) : (ρ_ X).hom = Limits.prod.fst :=
   rfl
 
+set_option linter.deprecatedSimpLemma false in
 @[deprecated "Use the `CartesianMonoidalCategory.associator_hom_...` lemmas"
   (since := "2025-10-19"), simp]
 theorem associator_hom (X Y Z : C) :
@@ -102,7 +105,8 @@ set_option backward.isDefEq.respectTransparency false in
 set_option linter.deprecated false in
 @[deprecated CartesianMonoidalCategory.associator_hom_fst (since := "2025-10-19")]
 theorem associator_hom_fst (X Y Z : C) :
-    (α_ X Y Z).hom ≫ prod.fst = prod.fst ≫ prod.fst := by simp [associator_hom]
+    (α_ X Y Z).hom ≫ prod.fst = prod.fst ≫ prod.fst := by
+  simp [associator_hom]
 
 set_option backward.isDefEq.respectTransparency false in
 set_option linter.deprecated false in

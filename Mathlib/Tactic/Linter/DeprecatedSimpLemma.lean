@@ -7,6 +7,7 @@ Authors: Paul Lezeau
 module
 
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
+public meta import Lean.Linter.Basic
 
 /-!
 # Linter against deprecated simp lemmas
@@ -48,7 +49,8 @@ def deprecatedSimpLemmaLinter : Linter where run stx := do
   unless [``Lean.Parser.Command.declaration, `lemma].contains stx.getKind do return
   let attributeNames := (← getAttributesFromDecl stx).map (·.name)
   unless attributeNames.contains `simp && attributeNames.contains `deprecated do return
-  Lean.logInfo "Deprecated declarations should not have the simp attribute"
+  Linter.logLintIf linter.deprecatedSimpLemma
+    stx "Deprecated declarations should not have the simp attribute"
 
 initialize addLinter deprecatedSimpLemmaLinter
 
