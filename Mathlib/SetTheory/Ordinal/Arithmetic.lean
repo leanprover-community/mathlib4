@@ -793,7 +793,7 @@ theorem mul_div_mul_cancel {a : Ordinal} (ha : a ≠ 0) (b c) : a * b / (a * c) 
 
 @[simp]
 theorem div_one (a : Ordinal) : a / 1 = a := by
-  simpa only [one_mul] using mul_div_cancel a Ordinal.one_ne_zero
+  simpa only [one_mul] using mul_div_cancel a one_ne_zero
 
 @[simp]
 theorem div_self {a : Ordinal} (h : a ≠ 0) : a / a = 1 := by
