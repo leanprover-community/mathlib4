@@ -120,6 +120,7 @@ namespace ConvexSet
 variable {K K₁ K₂ : ConvexSet R X}
 
 variable (R) in
+/-- The convex hull of a set `s`, bundled as a `ConvexSet`. -/
 def convexHull (s : Set X) : ConvexSet R X := ⟨Convexity.convexHull R s, .convexHull⟩
 
 instance : Max (ConvexSet R X) where

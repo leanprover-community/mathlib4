@@ -179,7 +179,9 @@ section Semiring
 variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] [ConvexSpace R X]
 
 variable (R X) in
+/-- A bundled convex set. -/
 structure ConvexSet where
+  /-- The carrier set. -/
   carrier : Set X
   isConvexSet : IsConvexSet R carrier
 
