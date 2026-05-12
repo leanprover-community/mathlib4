@@ -152,9 +152,9 @@ lemma localization_minimal_isField {S : Type*} [CommRing S] [IsReduced S]
   apply IsReduced.eq_zero x (nilpotent_iff_mem_prime.mpr (fun q hq ↦ ?_))
   convert hx
   have : Ideal.comap (algebraMap S (Localization.AtPrime p)) q ≤ p := by
-    apply le_of_le_of_eq _ (IsLocalization.AtPrime.comap_maximalIdeal (Localization.AtPrime p) p)
+    apply le_of_le_of_eq _ (IsLocalization.AtPrime.under_maximalIdeal (Localization.AtPrime p) p)
     exact Ideal.comap_mono (IsLocalRing.le_maximalIdeal_of_isPrime q)
-  rw [← Localization.AtPrime.eq_maximalIdeal_iff_comap_eq]
+  rw [← Localization.AtPrime.eq_maximalIdeal_iff_under_eq]
   exact le_antisymm this (min.2 ⟨q.comap_isPrime _, bot_le⟩ this)
 
 /-- The map of a ring to product of its localizations at minimal primes. -/
@@ -172,7 +172,7 @@ lemma isReduced_injective_to_prod_localizations (S : Type*) [CommRing S] [IsRedu
   rcases Ideal.exists_minimalPrimes_le (bot_le (a := q)) with ⟨p, min, hp⟩
   let := min.isPrime
   apply hp
-  rw [← IsLocalization.AtPrime.comap_maximalIdeal (Localization.AtPrime p) p, Ideal.mem_comap]
+  rw [← IsLocalization.AtPrime.under_maximalIdeal (Localization.AtPrime p) p, Ideal.mem_comap]
   have : (toLocalizationMinimal S) x ⟨p, min⟩ = 0 := by
     rw [hx, Pi.zero_apply]
   simp only [toLocalizationMinimal, Pi.ringHom_apply] at this
