@@ -204,7 +204,7 @@ lemma Ideal.one_le_height_span_singleton_of_mem_nonZeroDivisors
     {x : R} (hx : x ∈ nonZeroDivisors R) : 1 ≤ (span {x}).height := by
   dsimp [Ideal.height]
   refine le_iInf₂ fun q hq => ?_
-  have : q.IsPrime := minimalPrimes_isPrime hq
+  have : q.IsPrime := hq.isPrime
   rw [ENat.one_le_iff_ne_zero, Ne, primeHeight_eq_zero_iff]
   intro hmin
   exact absurd hx <| notMem_nonZeroDivisors_of_mem_mem_minimalPrimes
