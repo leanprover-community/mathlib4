@@ -361,7 +361,7 @@ lemma π_natTransTruncGEOfLE_app (a b : ℤ) (h : a ≤ b) (X : C) :
 
 @[reassoc]
 lemma truncGEδLT_comp_natTransTruncLTOfLE_app (a b : ℤ) (h : a ≤ b) (X : C) :
-  (t.truncGEδLT a).app X ≫ ((natTransTruncLTOfLE t a b h).app X)⟦(1 :ℤ)⟧' =
+  (t.truncGEδLT a).app X ≫ ((natTransTruncLTOfLE t a b h).app X)⟦(1 : ℤ)⟧' =
     (t.natTransTruncGEOfLE a b h).app X ≫ (t.truncGEδLT b).app X :=
   ((TruncAux.triangleFunctorNatTransOfLE t a b h).app X).comm₃
 
@@ -581,7 +581,7 @@ variable {X Y : C} (f : X ⟶ Y) (n : ℤ) [t.IsGE Y n]
 lemma descTruncGE_aux :
   ∃ (f' : (t.truncGE n).obj X ⟶ Y), f = (t.truncGEπ n).app X ≫ f' :=
   Triangle.yoneda_exact₂ _ (t.triangleLTGE_distinguished n X) f
-    (t.zero_of_isLE_of_isGE _ (n-1)  n (by lia) (by dsimp; infer_instance) inferInstance)
+    (t.zero_of_isLE_of_isGE _ (n-1) n (by lia) (by dsimp; infer_instance) inferInstance)
 
 /-- Constructor for morphisms from `(t.truncGE n).obj X`. -/
 noncomputable def descTruncGE :
@@ -590,7 +590,7 @@ noncomputable def descTruncGE :
 
 @[reassoc (attr := simp)]
 lemma π_descTruncGE {X Y : C} (f : X ⟶ Y) (n : ℤ) [t.IsGE Y n] :
-    (t.truncGEπ n).app X ≫ t.descTruncGE f n  = f :=
+    (t.truncGEπ n).app X ≫ t.descTruncGE f n = f :=
   (t.descTruncGE_aux f n).choose_spec.symm
 
 end
@@ -609,10 +609,10 @@ lemma isGE_iff_orthogonal (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (X : C) :
 
 lemma isLE₂ (T : Triangle C) (hT : T ∈ distTriang C) (n : ℤ) (h₁ : t.IsLE T.obj₁ n)
     (h₃ : t.IsLE T.obj₃ n) : t.IsLE T.obj₂ n := by
-  rw [t.isLE_iff_orthogonal n (n+1) rfl]
+  rw [t.isLE_iff_orthogonal n (n + 1) rfl]
   intro Y f hY
   obtain ⟨f', hf'⟩ := Triangle.yoneda_exact₂ _ hT f
-    (t.zero _ n (n + 1) (by lia) )
+    (t.zero _ n (n + 1) (by lia))
   rw [hf', t.zero f' n (n + 1) (by lia), comp_zero]
 
 lemma isGE₂ (T : Triangle C) (hT : T ∈ distTriang C) (n : ℤ) (h₁ : t.IsGE T.obj₁ n)
@@ -850,7 +850,7 @@ instance (a b : ℤ) : IsIso (t.truncGELTToLTGE a b) := by
     have eq : u₁₂ ≫ u₂₃ = u₁₃ := by simp [u₁₂, u₂₃, u₁₃]
     have H := someOctahedron eq (t.triangleLTLTGELT_distinguished a b h X)
       (t.triangleLTGE_distinguished b X) (t.triangleLTGE_distinguished a X)
-    let m₁ : (t.truncGELT a b).obj X ⟶  _ := H.m₁
+    let m₁ : (t.truncGELT a b).obj X ⟶ _ := H.m₁
     have : IsIso ((t.truncLT b).map H.m₁) :=
       t.isIso₁_truncLT_map_of_isGE _ H.mem b (by dsimp; infer_instance)
     have eq' : t.liftTruncLT m₁ (b - 1) b (by lia) = (t.truncGELTToLTGE a b).app X :=

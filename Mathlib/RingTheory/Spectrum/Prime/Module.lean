@@ -35,7 +35,7 @@ lemma IsLocalRing.closedPoint_mem_support [IsLocalRing R] [Nontrivial M] :
 
 /-- `M[1/f] = 0` if and only if `D(f) ∩ Supp M = 0`. -/
 lemma LocalizedModule.subsingleton_iff_disjoint {f : R} :
-    Subsingleton (LocalizedModule (.powers f) M) ↔
+    Subsingleton (LocalizedModule.Away f M) ↔
       Disjoint ↑(PrimeSpectrum.basicOpen f) (Module.support R M) := by
   rw [subsingleton_iff_support_subset, PrimeSpectrum.basicOpen_eq_zeroLocus_compl,
     disjoint_compl_left_iff, Set.le_iff_subset]
