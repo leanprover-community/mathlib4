@@ -809,12 +809,10 @@ def findModels (e : Expr) (es : Option Expr) : TermElabM (Expr × Expr) := do
 topological space, using information from the local context and a few hard-coded rules. -/
 -- FIXME: do we need to handle baseInfo again? perhaps not, let's try without!
 def findModelForFunpropInner (field model top : Expr) :
-    TermElabM <| Option (Expr × NormedSpaceInfo) := do
+    TermElabM <| Option FindModelResult := do
   trace[Elab.DiffGeo.FunPropM] "Trying to solve a goal `ModelWithCorners {field} {model} {top}`"
-  if let some m ← tryStrategy m!"Assumption"    fromAssumption   then
-    return some (m, none)
-  if let some m ← tryStrategy m!"Normed space"  fromNormedSpace  then
-    return some (m, none)
+  if let some m ← tryStrategy m!"Assumption"    fromAssumption   then return some m
+  if let some m ← tryStrategy m!"Normed space"  fromNormedSpace  then return some m
   -- TODO: implement the remaining strategies, and then the inner to outer part!
   return none
 where
@@ -839,19 +837,19 @@ where
     -- Check for a space of continuous linear maps. We omit a check if E is a normed space over 𝕜:
     -- for `E →L[𝕜] F` to type-check in the first place, both `E` and `F` must have been normed
     -- spaces over `𝕜`.
-    if (← isCLMReduciblyDefeqCoefficients model).isSome then
+    try
+      let (_k, _V, _W) ← isCLMReduciblyDefeqCoefficients model
       trace[Elab.DiffGeo.FunProp] "`{model}` is a space of continuous linear maps"
       -- XXX: check K and the model are defeq?
       let eK : Term ← Term.exprToSyntax field
       let eT : Term ← Term.exprToSyntax model
       Term.elabTerm (← ``(𝓘($eK, $eT))) none
-    else
-    -- Check for a normed space in the assumptions.
-
-    if let some (K, inst) ← fromNormedSpace.fromAssumption field model then
-      mkAppOptM ``modelWithCornersSelf #[K, none, model, none, inst] -- omit (K, model)) for now
-    else
-    throwError "Couldn't find a `NormedSpace` structure on `{model}` among local instances."
+    catch _ =>
+      -- Check for a normed space in the assumptions.
+      if let some (K, inst) ← fromNormedSpace.fromAssumption field model then
+        mkAppOptM ``modelWithCornersSelf #[K, none, model, none, inst] -- omit (K, model)) for now
+      else
+      throwError "Couldn't find a `NormedSpace` structure on `{model}` among local instances."
   fromNormedSpace.fromAssumption (field space : Expr) : TermElabM <| Option (Expr × Expr) := do
     let some (K, inst) ← findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
         match_expr type with
@@ -870,16 +868,16 @@ and a few hard-coded rules. No typeclass search is performed. -/
 def findModelForFunprop (field model top : Expr) : TermElabM <| Option Expr := do
   trace[Elab.DiffGeo.FunPropM] "Searching for some `ModelWithCorners {field} {model} {top}`"
   match ← go field model top with
-  | some (u, _) => return u
+  | some { model := u } => return u
   | _ =>
     trace[Elab.DiffGeo.FunPropM] "Could not find a `ModelWithCorners {field} {model} {top}`"
     return none
 where
   /-- Workhorse method for `findModelForFunprop`: also return whether we synthesised a model
   with corners on a product of normed spaces. -/
-  go (field model top : Expr) : TermElabM <| Option (Expr × NormedSpaceInfo) := do
+  go (field model top : Expr) : TermElabM <| Option FindModelResult := do
     -- At first, try finding a model on the space itself.
-    if let some (m, r) ← findModelForFunpropInner field model top then return some (m, r)
+    if let some m ← findModelForFunpropInner field model top then return some m
     throwError ""
 
 /-- The main entry point of the `find_model` tactic: connects the workhose definition
