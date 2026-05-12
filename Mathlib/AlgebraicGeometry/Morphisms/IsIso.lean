@@ -15,7 +15,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.OpenImmersion
 
 universe u
 
-@[expose] public section
+public section
 
 open CategoryTheory MorphismProperty
 

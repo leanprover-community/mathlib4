@@ -463,13 +463,11 @@ namespace MonoOver
 
 variable {P Q : MonoOver X} (f : P ⟶ Q)
 
-set_option backward.isDefEq.respectTransparency false in
 include f in
 lemma subobjectMk_le_mk_of_hom :
     Subobject.mk P.obj.hom ≤ Subobject.mk Q.obj.hom :=
   Subobject.mk_le_mk_of_comm f.hom.left (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isIso_hom_left_iff_subobjectMk_eq :
     IsIso f.hom.left ↔ Subobject.mk P.1.hom = Subobject.mk Q.1.hom :=
   ⟨fun _ ↦ Subobject.mk_eq_mk_of_comm _ _ (asIso f.hom.left) (by simp),

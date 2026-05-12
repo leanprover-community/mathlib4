@@ -108,7 +108,6 @@ noncomputable def limit.toUnder (F : J ⥤ C) [HasLimit F] :
 def Cone.mapConeToUnder {F : J ⥤ C} (c : Cone F) : (Under.forget c.pt).mapCone c.toUnder ≅ c :=
   Iso.refl _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a diagram of `StructuredArrow X F`s, we may obtain a cone with cone point `X`. -/
 @[simps!]
 def Cone.fromStructuredArrow (F : C ⥤ D) {X : D} (G : J ⥤ StructuredArrow X F) :
@@ -268,7 +267,6 @@ noncomputable def colimit.toOver (F : J ⥤ C) [HasColimit F] :
 def Cocone.mapCoconeToOver {F : J ⥤ C} (c : Cocone F) : (Over.forget c.pt).mapCocone c.toOver ≅ c :=
   Iso.refl _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a diagram `CostructuredArrow F X`s, we may obtain a cocone with cone point `X`. -/
 @[simps!]
 def Cocone.fromCostructuredArrow (F : C ⥤ D) {X : D} (G : J ⥤ CostructuredArrow F X) :
@@ -299,9 +297,7 @@ def Cocone.fromStructuredArrow (F : J ⥤ C) : StructuredArrow F (const J) ⥤ C
   obj c := ⟨c.right, c.hom⟩
   map f :=
     { hom := f.right
-      w := fun j => by
-        convert (congr_fun (congr_arg NatTrans.app f.w) j).symm
-        simp }
+      w j := by simp [dsimp% congr_app f.w j] }
 
 /-- The category of cocones on `F` is just the comma category `(F ↓ Δ)`, where `Δ` is the constant
     functor. -/
