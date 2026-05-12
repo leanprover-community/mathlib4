@@ -97,6 +97,8 @@ abbrev under : Ideal A := Ideal.comap (algebraMap A B) P
 
 theorem under_def : P.under A = Ideal.comap (algebraMap A B) P := rfl
 
+theorem mem_under {x : A} : x ∈ P.under A ↔ algebraMap A B x ∈ P := mem_comap
+
 instance IsPrime.under [hP : P.IsPrime] : (P.under A).IsPrime :=
   hP.comap (algebraMap A B)
 
@@ -143,7 +145,8 @@ theorem LiesOver.of_eq_comap [Q.LiesOver p] {F : Type*} [FunLike F B C]
   over := by
     rw [h]
     exact (over_def Q p).trans <|
-      congrFun (congrFun (congrArg comap ((f : B →ₐ[A] C).comp_algebraMap.symm)) _) Q
+      congrFun (congrFun (congrArg
+        comap ((AlgHomClass.toAlgHom f : B →ₐ[A] C).comp_algebraMap.symm)) _) Q
 
 theorem LiesOver.of_eq_map_equiv [P.LiesOver p] {E : Type*} [EquivLike E B C]
     [AlgEquivClass E A B C] (σ : E) (h : Q = P.map σ) : Q.LiesOver p := by

@@ -64,6 +64,7 @@ instance : ContainsIdentities @IsFinite :=
 
 instance : IsMultiplicative @IsFinite where
 
+@[simp]
 lemma SpecMap_iff {R S : CommRingCat.{u}} (f : R ⟶ S) :
     IsFinite (Spec.map f) ↔ f.hom.Finite := by
   rw [HasAffineProperty.iff_of_isAffine (P := @IsFinite), and_iff_right (by infer_instance),
@@ -152,6 +153,11 @@ instance {U V X : Scheme.{u}} (f : U ⟶ X) (g : V ⟶ X) [IsFinite f] [IsFinite
   refine RingHom.finite_algebraMap.mpr inferInstance
 
 end IsFinite
+
+lemma Scheme.Hom.finite_appTop {X Y : Scheme.{u}} (f : X ⟶ Y) [IsAffine X] [IsAffine Y]
+    [IsFinite f] :
+    f.appTop.hom.Finite :=
+  (HasAffineProperty.iff_of_isAffine (P := @IsFinite).mp inferInstance).2
 
 /-- If `X` is a Jacobson scheme and `k` is a field,
 `Spec(k) ⟶ X` is finite iff it is (locally) of finite type.
