@@ -206,9 +206,8 @@ lemma det_one_add_smul (r : R) (M : Matrix n n R) :
       1 + trace M * r + (det (1 + (X : R[X]) • M.map C)).divX.divX.eval r * r ^ 2 := by
   simpa [eval_det, ← smul_eq_mul_diagonal] using congr_arg (eval r) (Matrix.det_one_add_X_smul M)
 
-lemma charpoly_of_card_eq_two (hn : Fintype.card n = 2) :
+lemma charpoly_of_card_eq_two [Nontrivial R] (hn : Fintype.card n = 2) :
     M.charpoly = X ^ 2 - C M.trace * X + C M.det := by
-  nontriviality R
   have : Nonempty n := by rw [← Fintype.card_pos_iff]; lia
   ext i
   by_cases hi : i ∈ Finset.range 3

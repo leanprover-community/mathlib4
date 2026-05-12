@@ -92,15 +92,12 @@ theorem finRotate_succ_eq_decomposeFin {n : ℕ} :
       swap_apply_of_ne_of_ne (Nat.succ_ne_zero _) (Nat.succ_succ_ne_one _)]
 
 @[simp]
-theorem sign_finRotate (n : ℕ) : Perm.sign (finRotate n) = (-1) ^ (n - 1) := by
-  cases n with
+theorem sign_finRotate (n : ℕ) : Perm.sign (finRotate (n + 1)) = (-1) ^ n := by
+  induction n with
   | zero => simp
-  | succ n =>
-    induction n with
-    | zero => simp
-    | succ n ih =>
-      rw [finRotate_succ_eq_decomposeFin]
-      simp [ih, pow_succ]
+  | succ n ih =>
+    rw [finRotate_succ_eq_decomposeFin]
+    simp [ih, pow_succ]
 
 @[simp]
 theorem support_finRotate {n : ℕ} : support (finRotate (n + 2)) = Finset.univ := by

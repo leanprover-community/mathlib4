@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Group.Fin.Basic
 public import Mathlib.Logic.Equiv.Fin.Basic
-public import Mathlib.Algebra.Group.End
 
 /-!
 # Cyclic permutations on `Fin n`
@@ -81,32 +80,6 @@ theorem finRotate_apply (i : Fin n) : haveI := i.neZero; finRotate n i = i + 1 :
 theorem finRotate_succ_apply (i : Fin (n + 1)) : finRotate (n + 1) i = i + 1 := by
   simp
 
-theorem coe_finRotate_eq_add_one' :
-    (finRotate n : Fin n → Fin n) = fun i ↦ haveI : NeZero n := i.neZero; i + 1 := by
-  ext i
-  obtain ⟨m, rfl⟩ : ∃ m, m + 1 = n := by simp [i.pos]
-  simp
-
-theorem coe_finRotate_eq_add_one [NeZero n] : (finRotate n : Fin n → Fin n) = (· + 1) :=
-  coe_finRotate_eq_add_one'
-
-@[simp]
-theorem finAddFlip_trans_finCongr (m n : ℕ) :
-    finAddFlip.trans (finCongr (Nat.add_comm m n)) = (finRotate (n + m)) ^ m := by
-  ext i
-  have := i.neZero
-  open Fin.NatCast in
-  simp [← Equiv.Perm.iterate_eq_pow, coe_finRotate_eq_add_one, coe_finAddFlip_apply, Fin.val_add]
-
-@[simp]
-theorem finCongr_trans_finAddFlip (m n : ℕ) :
-    (finCongr (Nat.add_comm m n)).trans finAddFlip = (finRotate (m + n)) ^ m := by
-  ext i
-  have := i.neZero
-  open Fin.NatCast in
-  simp [← Equiv.Perm.iterate_eq_pow, coe_finRotate_eq_add_one, coe_finAddFlip_apply, Fin.val_add,
-    n.add_comm]
-
 theorem finRotate_apply_zero : finRotate n.succ 0 = 1 := by
   simp
 
@@ -160,5 +133,12 @@ def finCycle (k : Fin n) : Equiv.Perm (Fin n) where
   right_inv i := by haveI := NeZero.of_pos k.pos; simp
 
 lemma finCycle_eq_finRotate_iterate {k : Fin n} : finCycle k = (finRotate n)^[k.1] := by
-  have := k.neZero
-  open Fin.NatCast in simp [coe_finRotate_eq_add_one, finCycle]
+  match n with
+  | 0 => exact k.elim0
+  | n + 1 =>
+    ext i; induction k using Fin.induction with
+    | zero => simp
+    | succ k ih =>
+      rw [Fin.val_eq_val, Fin.val_castSucc] at ih
+      rw [Fin.val_succ, Function.iterate_succ', Function.comp_apply, ← ih, finRotate_apply,
+        finCycle_apply, finCycle_apply, add_assoc, Fin.coeSucc_eq_succ]
