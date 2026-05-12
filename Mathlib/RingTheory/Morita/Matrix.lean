@@ -177,7 +177,7 @@ def MatrixModCat.counitIso (i : ι) :
     simp [toModuleCatFromModuleCatLinearEquiv]
 
 set_option backward.isDefEq.respectTransparency false in
-set_option maxHeartbeats 300000 in
+set_option maxHeartbeats 400000 in
 -- This declaration has been on the tipping point of timeout ever since nightly-2026-02-23.
 /-- `ModuleCat.toMatrixModCat R ι` and `MatrixModCat.toModuleCat R i` together form
   an equivalence of categories. -/
