@@ -1974,6 +1974,7 @@ public import Mathlib.Analysis.Fourier.Notation
 public import Mathlib.Analysis.Fourier.PoissonSummation
 public import Mathlib.Analysis.Fourier.RiemannLebesgueLemma
 public import Mathlib.Analysis.Fourier.ZMod
+public import Mathlib.Analysis.FunctionalSpaces.Sobolev.Basic
 public import Mathlib.Analysis.FunctionalSpaces.SobolevInequality
 public import Mathlib.Analysis.Hofer
 public import Mathlib.Analysis.InnerProductSpace.Adjoint

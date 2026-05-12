@@ -366,6 +366,56 @@ lemma monoLM_eq_of_scalars (𝕜' : Type*)
   rfl
 
 variable (n k) in
+/-- `fderivWithOrderLM 𝕜 n k` is the `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to
+its derivative as an element of `𝓓^{k}_{K}(E, E →L[ℝ] F)`.
+This only makes mathematical sense if `k + 1 ≤ n`, otherwise we define it as the zero map.
+
+See `fderivLM` for the very common case where everything is infinitely differentiable.
+
+This is subsumed by `fderivWithOrderCLM`, which also bundles the continuity. -/
+noncomputable def fderivWithOrderLM :
+    𝓓^{n}_{K}(E, F) →ₗ[𝕜] 𝓓^{k}_{K}(E, E →L[ℝ] F) where
+  toFun f :=
+    if hk : k + 1 ≤ n then
+      .of_support_subset
+        (f.contDiff.fderiv_right <| mod_cast hk)
+        ((support_fderiv_subset ℝ).trans f.tsupport_subset)
+    else 0
+  map_add' f g := by
+    split_ifs with hk
+    · have hk' : (n : WithTop ℕ∞) ≠ 0 := sorry --mod_cast (le_of_add_le_right hk)
+      ext
+      simp [fderiv_add (f.contDiff.differentiable hk').differentiableAt
+                       (g.contDiff.differentiable hk').differentiableAt]
+    · simp
+  map_smul' c f := by
+    split_ifs with hk
+    · have hk' : (n : WithTop ℕ∞) ≠ 0 := sorry -- mod_cast (le_of_add_le_right hk)
+      ext
+      simp [fderiv_const_smul (f.contDiff.differentiable hk').differentiableAt]
+    · simp
+
+@[simp]
+lemma fderivWithOrderLM_apply (f : 𝓓^{n}_{K}(E, F)) :
+    fderivWithOrderLM 𝕜 n k f = if k + 1 ≤ n then fderiv ℝ f else 0 := by
+  rw [fderivWithOrderLM]
+  split_ifs <;> rfl
+
+lemma fderivWithOrderLM_apply_of_le (f : 𝓓^{n}_{K}(E, F)) (hk : k + 1 ≤ n) :
+    fderivWithOrderLM 𝕜 n k f = fderiv ℝ f := by
+  simp [hk]
+
+lemma fderivWithOrderLM_apply_of_gt (f : 𝓓^{n}_{K}(E, F)) (hk : ¬ (k + 1 ≤ n)) :
+    fderivWithOrderLM 𝕜 n k f = 0 := by
+  ext : 1
+  simp [hk]
+
+lemma fderivWithOrderLM_eq_of_scalars (𝕜' : Type*) [NontriviallyNormedField 𝕜']
+    [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
+    (fderivWithOrderLM 𝕜 n k : 𝓓^{n}_{K}(E, F) → _) = fderivWithOrderLM 𝕜' n k :=
+  rfl
+
+variable (n k) in
 /-- `fderivLM 𝕜 n k` is the `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to
 its derivative as an element of `𝓓^{k}_{K}(E, E →L[ℝ] F)`.
 This only makes mathematical sense if `k + 1 ≤ n`, otherwise we define it as the zero map.
@@ -863,6 +913,16 @@ lemma fderivCLM_eq_of_scalars (𝕜' : Type*) [NontriviallyNormedField 𝕜']
     [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
     (fderivCLM 𝕜 n k : 𝓓^{n}_{K}(E, F) → _) = fderivCLM 𝕜' n k :=
   rfl
+
+theorem seminorm_fderivWithOrderLM_le {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) :
+    N[𝕜]_{K, k, i} (fderivWithOrderLM 𝕜 n k f) ≤ N[𝕜]_{K, n, i+1} f := by
+  by_cases hk : k + 1 ≤ n
+  · rw [ContDiffMapSupportedIn.seminorm_le_iff 𝕜 (apply_nonneg _ _)]
+    intro hi x hx
+    have hi' : i + 1 ≤ n := (add_le_add_left hi 1).trans hk
+    simpa [hk, norm_iteratedFDeriv_fderiv] using
+      norm_iteratedFDeriv_apply_le_seminorm 𝕜 hi'
+  · simp [fderivWithOrderLM_apply_of_gt 𝕜 f hk]
 
 end Topology
 
