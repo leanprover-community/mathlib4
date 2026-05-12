@@ -7,6 +7,8 @@ module
 
 public import Mathlib.NumberTheory.RamificationInertia.Ramification
 public import Mathlib.RingTheory.Flat.Localization
+public import Mathlib.RingTheory.HopkinsLevitzki
+public import Mathlib.RingTheory.Ideal.Quotient.Noetherian
 public import Mathlib.RingTheory.LocalRing.Length
 
 /-!
@@ -59,6 +61,65 @@ theorem ramificationIdx'_def [q.IsPrime] :
 
 theorem ramificationIdx'_of_not_isPrime (hq : ¬ q.IsPrime) : q.ramificationIdx' R = 0 :=
   dif_neg hq
+
+/-- A ring has krull dimension at most zero if and only if all minimal primes are maximal. -/
+theorem _root_.ringKrullDimLE_zero_iff_forall_minimalPrimes_isMaximal
+    {R : Type*} [CommRing R] : Ring.KrullDimLE 0 R ↔ ∀ I ∈ minimalPrimes R, I.IsMaximal := by
+  rw [Ring.krullDimLE_zero_iff]
+  refine ⟨fun h I hI ↦ h I hI.1.1, fun h I hI ↦ ?_⟩
+  obtain ⟨J, hJ, hle⟩ := exists_minimalPrimes_le bot_le (J := I)
+  rw [← (h J hJ).eq_of_le hI.ne_top hle]
+  exact h J hJ
+
+/-- A quotient `R ⧸ I` has krull dimension at most zero if and only if all minimal primes over `I`
+are maximal. -/
+theorem _root_.ringKrullDimLE_zero_quotient_iff_forall_minimalPrimes_isMaximal
+    {R : Type*} [CommRing R] {I : Ideal R} :
+    Ring.KrullDimLE 0 (R ⧸ I) ↔ ∀ J ∈ I.minimalPrimes, J.IsMaximal := by
+  have := comap_minimalPrimes_eq_of_surjective (f := Quotient.mk I) Quotient.mk_surjective ⊥
+  rw [← RingHom.ker_eq_comap_bot, mk_ker] at this
+  rw [this, Set.forall_mem_image, ringKrullDimLE_zero_iff_forall_minimalPrimes_isMaximal]
+  refine forall₂_congr fun J hJ ↦ ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · exact comap_isMaximal_of_surjective (Quotient.mk I) Quotient.mk_surjective
+  · have := map_eq_top_or_isMaximal_of_surjective (Quotient.mk I) Quotient.mk_surjective h
+    rw [map_comap_of_surjective (Quotient.mk I) Quotient.mk_surjective] at this
+    exact this.resolve_left hJ.1.1.ne_top
+
+theorem ramificationIdx'_pos [hq : q.IsPrime] [IsNoetherianRing S] [Algebra.IsIntegral R S] :
+    0 < q.ramificationIdx' R := by
+  let p := q.under R
+  let Rp := Localization.AtPrime p
+  let Sq := Localization.AtPrime q
+  rw [ramificationIdx'_def, Nat.pos_iff_ne_zero, ne_eq, ENat.toNat_eq_zero, not_or]
+  constructor
+  · rw [Module.length_eq_zero_iff, Submodule.Quotient.subsingleton_iff,
+      IsScalarTower.algebraMap_eq R S, ← map_map, ← ne_eq, ← lt_top_iff_ne_top]
+    grw [map_mono map_comap_le, Localization.AtPrime.map_eq_maximalIdeal]
+    exact (IsLocalRing.maximalIdeal.isMaximal Sq).lt_top
+  · rw [Module.length_eq_of_surjective (R := Sq ⧸ p.map (algebraMap R Sq)) Quotient.mk_surjective,
+      ← ne_eq, Module.length_ne_top_iff, ← isArtinianRing_iff_isFiniteLength,
+      isArtinianRing_iff_krullDimLE_zero,
+      ringKrullDimLE_zero_quotient_iff_forall_minimalPrimes_isMaximal,
+      IsScalarTower.algebraMap_eq R S, ← map_map]
+    intro r hr
+    have hr' := hr.1.1
+    rw [IsLocalization.minimalPrimes_map q.primeCompl, Set.mem_preimage] at hr
+    have : q ∈ (p.map (algebraMap R S)).minimalPrimes := by
+      refine ⟨⟨hq, map_comap_le⟩, ?_⟩
+      intro r ⟨hr, hpr⟩ hrq
+      rw [map_le_iff_le_comap] at hpr
+      contrapose! hpr
+      exact not_le_of_gt (IsIntegral.comap_lt_comap (lt_of_le_not_ge hrq hpr))
+    have tada : r.under S ≤ q := by
+      have := IsLocalization.AtPrime.under_maximalIdeal Sq q
+      simp only [← this]
+      apply comap_mono
+      apply IsLocalRing.le_maximalIdeal_of_isPrime
+    have := this.2 ⟨hr.1.1, hr.1.2⟩ tada
+    rw [← IsLocalization.map_under q.primeCompl Sq r]
+    rw [le_antisymm tada this]
+    rw [Localization.AtPrime.map_eq_maximalIdeal]
+    exact IsLocalRing.maximalIdeal.isMaximal Sq
 
 end
 
@@ -121,3 +182,5 @@ theorem ramificationIdx'_tower [r.LiesOver q] [Module.Flat S T] :
 end
 
 end Ideal
+
+#min_imports
