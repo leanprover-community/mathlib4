@@ -32,22 +32,28 @@ namespace SimpleGraph
 
 variable {V : Type u} (G : SimpleGraph V)
 
-theorem set_walk_self_length_zero_eq (u : V) : {p : G.Walk u u | p.length = 0} = {.nil} := by
+theorem Walk.setOf_length_eq_zero (u : V) : {p : G.Walk u u | p.length = 0} = {.nil} := by
   simp [Walk.length_eq_zero_iff, ← Walk.eq_nil_iff_nil]
 
-theorem set_walk_length_zero_eq_of_ne {u v : V} (h : u ≠ v) : {p : G.Walk u v | p.length = 0} = ∅ :=
+@[deprecated (since := "2026-05-12")]
+alias set_walk_self_length_zero_eq := Walk.setOf_length_eq_zero
+
+theorem Walk.setOf_length_eq_zero_of_ne {u v : V} (h : u ≠ v) :
+    {p : G.Walk u v | p.length = 0} = ∅ :=
   Set.eq_empty_of_forall_notMem (h <| ·.eq_of_length_eq_zero ·)
 
-theorem set_walk_length_succ_eq (u v : V) (n : ℕ) :
-    {p : G.Walk u v | p.length = n.succ} =
+@[deprecated (since := "2026-05-12")]
+alias set_walk_length_zero_eq_of_ne := Walk.setOf_length_eq_zero_of_ne
+
+theorem Walk.setOf_length_eq_add_one (u v : V) (n : ℕ) :
+    {p : G.Walk u v | p.length = n + 1} =
       ⋃ (w : V) (h : G.Adj u w), Walk.cons h '' {p' : G.Walk w v | p'.length = n} := by
   ext p
   cases p with
   | nil => simp [eq_comm]
-  | cons huw pwv =>
-    simp only [Nat.succ_eq_add_one, Set.mem_setOf_eq, Walk.length_cons, add_left_inj,
-      Set.mem_iUnion, Set.mem_image]
-    grind
+  | cons huw pwv => grind [length_cons, Set.mem_iUnion]
+
+@[deprecated (since := "2026-05-12")] alias set_walk_length_succ_eq := Walk.setOf_length_eq_add_one
 
 /-- Walks of length two from `u` to `v` correspond bijectively to common neighbours of `u` and `v`.
 Note that `u` and `v` may be the same. -/
@@ -85,7 +91,7 @@ theorem coe_finsetWalkLength_eq (n : ℕ) (u v : V) :
   induction n generalizing u v with
   | zero => grind [finsetWalkLength, Walk.length_eq_zero_iff, Walk.eq_nil_iff_nil, Walk.Nil.eq]
   | succ n ih =>
-    simp only [finsetWalkLength, set_walk_length_succ_eq, Finset.coe_biUnion, Finset.mem_coe,
+    simp only [finsetWalkLength, Walk.setOf_length_eq_add_one, Finset.coe_biUnion, Finset.mem_coe,
       Finset.mem_univ, Set.iUnion_true, Finset.coe_map, Set.iUnion_coe_set]
     congr!
     grind
