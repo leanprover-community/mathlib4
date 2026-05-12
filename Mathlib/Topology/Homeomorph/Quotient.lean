@@ -20,21 +20,21 @@ variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 namespace Quot
 
 /-- An homeomorphism `e : X ≃ₜ Y` generXtes an homeomorphism between quotient spaces,
-if `rX a₁ a₂ ↔ rY (e a₁) (e a₂)`. -/
+if `rX x₁ x₂ ↔ rY (e x₁) (e x₂)`. -/
 protected def congr {rX : X → X → Prop} {rY : Y → Y → Prop} (e : X ≃ₜ Y)
-    (eq : ∀ a₁ a₂, rX a₁ a₂ ↔ rY (e a₁) (e a₂)) : Quot rX ≃ₜ Quot rY where
+    (eq : ∀ x₁ x₂, rX x₁ x₂ ↔ rY (e x₁) (e x₂)) : Quot rX ≃ₜ Quot rY where
   toEquiv := _root_.Quot.congr e eq
   continuous_toFun := continuous_quot_map (fun x y ↦ by simp [eq]) e.continuous
   continuous_invFun := continuous_quot_map (fun x y ↦ by simp [eq]) e.symm.continuous
 
 /-- Quotient spaces for equal relations are homeomorphic. -/
-protected def congrRight {r r' : X → X → Prop} (eq : ∀ a₁ a₂, r a₁ a₂ ↔ r' a₁ a₂) :
+protected def congrRight {r r' : X → X → Prop} (eq : ∀ x₁ x₂, r x₁ x₂ ↔ r' x₁ x₂) :
     Quot r ≃ₜ Quot r' := Quot.congr (Homeomorph.refl X) eq
 
 /-- An homeomorphism `e : X ≃ₜ Y` generXtes an equivalence between the quotient space of `X`
 by a relation `rX` and the quotient space of `Y` by the image of this relation under `e`. -/
 protected def congrLeft {r : X → X → Prop} (e : X ≃ₜ Y) :
-    Quot r ≃ₜ Quot fun b b' ↦ r (e.symm b) (e.symm b') :=
+    Quot r ≃ₜ Quot fun y₁ y₂ ↦ r (e.symm y₁) (e.symm y₂) :=
   Quot.congr e fun _ _ ↦ by simp only [e.symm_apply_apply]
 
 end Quot
@@ -42,14 +42,14 @@ end Quot
 namespace Quotient
 
 /-- An homeomorphism `e : X ≃ₜ Y` generXtes an homeomorphism between quotient spaces,
-if `rX a₁ a₂ ↔ rY (e a₁) (e a₂)`. -/
+if `rX x₁ x₂ ↔ rY (e x₁) (e x₂)`. -/
 protected def congr {rX : Setoid X} {rY : Setoid Y} (e : X ≃ₜ Y)
-    (eq : ∀ a₁ a₂, rX a₁ a₂ ↔ rY (e a₁) (e a₂)) :
+    (eq : ∀ x₁ x₂, rX x₁ x₂ ↔ rY (e x₁) (e x₂)) :
     Quotient rX ≃ₜ Quotient rY := Quot.congr e eq
 
 /-- Quotient spaces for equal relations are homeomorphic. -/
 protected def congrRight {r r' : Setoid X}
-    (eq : ∀ a₁ a₂, r a₁ a₂ ↔ r' a₁ a₂) : Quotient r ≃ₜ Quotient r' :=
+    (eq : ∀ x₁ x₂, r x₁ x₂ ↔ r' x₁ x₂) : Quotient r ≃ₜ Quotient r' :=
   Quot.congrRight eq
 
 end Quotient
