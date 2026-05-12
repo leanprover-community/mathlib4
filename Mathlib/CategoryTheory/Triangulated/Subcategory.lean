@@ -155,6 +155,13 @@ lemma IsTriangulatedClosed₃.mk' [P.IsClosedUnderIsomorphisms]
       (_ : P T.obj₁) (_ : P T.obj₂), P T.obj₃) : P.IsTriangulatedClosed₃ where
   ext₃' := by simpa only [isoClosure_eq_self] using hP
 
+lemma IsTriangulatedClosed₂.of_isTriangulatedClosed₃
+    [P.IsTriangulatedClosed₃] [P.IsStableUnderShift ℤ] :
+    P.IsTriangulatedClosed₂ where
+  ext₂' _ hT h₁ h₃ :=
+    P.ext_of_isTriangulatedClosed₃' _ (inv_rot_of_distTriang _ hT)
+      (P.le_shift _ _ h₃) h₁
+
 variable (P)
 
 set_option backward.defeqAttrib.useBackward true in

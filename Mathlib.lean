@@ -635,6 +635,7 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
 public import Mathlib.Algebra.Homology.HomotopyCategory.KProjective
 public import Mathlib.Algebra.Homology.HomotopyCategory.MappingCocone
 public import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
+public import Mathlib.Algebra.Homology.HomotopyCategory.Plus
 public import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
 public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 public import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
@@ -654,6 +655,7 @@ public import Mathlib.Algebra.Homology.Localization
 public import Mathlib.Algebra.Homology.ModelCategory.Lifting
 public import Mathlib.Algebra.Homology.Monoidal
 public import Mathlib.Algebra.Homology.Opposite
+public import Mathlib.Algebra.Homology.Precylinder
 public import Mathlib.Algebra.Homology.QuasiIso
 public import Mathlib.Algebra.Homology.Refinements
 public import Mathlib.Algebra.Homology.ShortComplex.Ab
@@ -812,6 +814,7 @@ public import Mathlib.Algebra.Module.SnakeLemma
 public import Mathlib.Algebra.Module.SpanRank
 public import Mathlib.Algebra.Module.SpanRankOperations
 public import Mathlib.Algebra.Module.StablyFree.Basic
+public import Mathlib.Algebra.Module.StablyFree.FreeOfInvertible
 public import Mathlib.Algebra.Module.Submodule.Basic
 public import Mathlib.Algebra.Module.Submodule.Bilinear
 public import Mathlib.Algebra.Module.Submodule.Defs
@@ -2972,6 +2975,7 @@ public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Constructor
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Derives
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.OfFunctorialResolutions
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.OfLocalizedEquivalences
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.PointwiseRightDerived
 public import Mathlib.CategoryTheory.Localization.Equivalence
 public import Mathlib.CategoryTheory.Localization.FiniteProducts
@@ -4495,6 +4499,8 @@ public import Mathlib.Geometry.Convex.Cone.DualFinite
 public import Mathlib.Geometry.Convex.Cone.Pointed
 public import Mathlib.Geometry.Convex.Cone.Simplicial
 public import Mathlib.Geometry.Convex.Cone.TensorProduct
+public import Mathlib.Geometry.Convex.ConvexSpace.AffineSpace
+public import Mathlib.Geometry.Convex.ConvexSpace.Defs
 public import Mathlib.Geometry.Diffeology.Basic
 public import Mathlib.Geometry.Euclidean.Altitude
 public import Mathlib.Geometry.Euclidean.Angle.Bisector
@@ -4895,8 +4901,6 @@ public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 public import Mathlib.LinearAlgebra.Complex.Module
 public import Mathlib.LinearAlgebra.Complex.Orientation
 public import Mathlib.LinearAlgebra.Contraction
-public import Mathlib.LinearAlgebra.ConvexSpace
-public import Mathlib.LinearAlgebra.ConvexSpace.AffineSpace
 public import Mathlib.LinearAlgebra.Countable
 public import Mathlib.LinearAlgebra.CrossProduct
 public import Mathlib.LinearAlgebra.DFinsupp
@@ -5631,7 +5635,6 @@ public import Mathlib.NumberTheory.Harmonic.Int
 public import Mathlib.NumberTheory.Harmonic.ZetaAsymp
 public import Mathlib.NumberTheory.Height.Basic
 public import Mathlib.NumberTheory.Height.MvPolynomial
-public import Mathlib.NumberTheory.Height.Northcott
 public import Mathlib.NumberTheory.Height.NumberField
 public import Mathlib.NumberTheory.Height.Projectivization
 public import Mathlib.NumberTheory.JacobiSum.Basic
@@ -6038,6 +6041,7 @@ public import Mathlib.Order.Monotone.Odd
 public import Mathlib.Order.Monotone.Union
 public import Mathlib.Order.Nat
 public import Mathlib.Order.NonemptyFiniteChains
+public import Mathlib.Order.Northcott
 public import Mathlib.Order.Notation
 public import Mathlib.Order.Nucleus
 public import Mathlib.Order.OmegaCompletePartialOrder
