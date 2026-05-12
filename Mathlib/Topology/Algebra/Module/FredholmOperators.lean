@@ -63,4 +63,17 @@ open QuotFiniteSubmodules in
 def AnatoleDream_2_symm [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F] [ContinuousAdd E]
     [ContinuousAdd F] (hf : IsFredholm_quot f) : (IsFredholm_struc f) := sorry
 
+/- ## API -/
+
+/- ## Kernel -/
+
+/- ## Coernel -/
+
+/- ## GoodRelation -/
+
+/- ## IsStrict Using Technical Lemma -/
+
+
+
+
 end FredholmOperators
