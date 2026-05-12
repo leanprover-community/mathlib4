@@ -19,7 +19,7 @@ variable {E F : Type*} [AddCommGroup E] [AddCommGroup F] [TopologicalSpace E] [T
 variable [Module 𝕜 E] [Module 𝕜 F]
 variable {f : E →L[𝕜] F}
 
-public section FredholmOperators
+public noncomputable section FredholmOperators
 
 open Topology ContinuousLinearMap
 
@@ -87,6 +87,46 @@ def AnatoleDream_2_symm [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F
     [ContinuousAdd F] (hf : IsFredholm_quot f) : (IsFredholm_struc f) := sorry
 
 /- ## API -/
+
+namespace LinearMap
+
+open Module
+
+variable (k : Type*) [Field k] [Module k E] [Module k F] (f : E →ₗ[k] F)
+
+/-- The index of a linear map.
+
+In the case that either the kernel or cokernel is not finite-dimensional, the value is junk. -/
+def index : ℤ := finrank k f.ker - finrank k (F ⧸ f.range)
+
+@[simp] lemma index_id :
+    (id : E →ₗ[k] E).index = 0 := by
+  sorry
+
+@[simp] lemma index_zero :
+    (0 : E →ₗ[k] F).index = finrank k E - finrank k F := by
+  sorry
+
+lemma index_smul (t : k) (ht : t ≠ 0) :
+    (t • f).index = f.index := by
+  sorry
+
+lemma index_neg
+    /- TODO required assumptions. -/ :
+    (-f).index = -f.index := by
+  sorry
+
+lemma index_comp {G : Type*} [AddCommGroup G] [Module k G] (g : F →ₗ[k] G)
+    /- TODO required assumptions. -/ :
+    (g ∘ₗ f).index = g.index + f.index := by
+  sorry
+
+lemma index_eq_of_finiteDimensional [FiniteDimensional k E] [FiniteDimensional k F] :
+    f.index = finrank k E - finrank k F := by
+  -- 0 → f.ker → E → F → f.coker → 0
+  sorry
+
+end LinearMap
 
 /- ## Kernel -/
 
