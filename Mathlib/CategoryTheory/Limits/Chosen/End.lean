@@ -45,6 +45,7 @@ for any `j : J`. -/
 def chosenCoend.ι (j : J) : (F.obj (op j)).obj j ⟶ chosenCoend F :=
   (ChosenCoendsOfShape.cowedge F).π j
 
+@[reassoc]
 lemma chosenCoend.condition {i j : J} (f : i ⟶ j) :
     (F.map f.op).app _ ≫ chosenCoend.ι F i = (F.obj _).map f ≫ chosenCoend.ι F j :=
   (ChosenCoendsOfShape.cowedge F).condition f
@@ -117,6 +118,7 @@ for any `j : J`. -/
 def chosenEnd.π (j : J) : chosenEnd F ⟶ (F.obj (op j)).obj j :=
   (ChosenEndsOfShape.wedge F).ι j
 
+@[reassoc]
 lemma chosenEnd.condition {i j : J} (f : i ⟶ j) :
     chosenEnd.π F i ≫ (F.obj (op i)).map f = chosenEnd.π F j ≫ (F.map f.op).app j :=
   (ChosenEndsOfShape.wedge F).condition f
