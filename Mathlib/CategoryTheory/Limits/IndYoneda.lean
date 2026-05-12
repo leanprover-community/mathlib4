@@ -85,7 +85,7 @@ set_option backward.defeqAttrib.useBackward true in
 lemma colimitHomIsoLimitYoneda_inv_comp_π [HasLimitsOfShape Iᵒᵖ (Type u₂)] (A : C) (i : I) :
     dsimp% (colimitHomIsoLimitYoneda F A).inv ≫ (yoneda.obj A).map (colimit.ι F i).op =
       limit.π (F.op ⋙ yoneda.obj A) ⟨i⟩ := by
-  rw [← dsimp% @colimitHomIsoLimitYoneda_hom_comp_π, ← Category.assoc,
+  rw [← dsimp% colimitHomIsoLimitYoneda_hom_comp_π, ← Category.assoc,
     Iso.inv_hom_id, Category.id_comp]
 
 end HomCocontinuousCovariant
@@ -136,7 +136,7 @@ set_option backward.defeqAttrib.useBackward true in
 lemma colimitHomIsoLimitYoneda'_inv_comp_π [HasLimitsOfShape I (Type u₂)] (A : C) (i : I) :
     dsimp% (colimitHomIsoLimitYoneda' F A).inv ≫ (yoneda.obj A).map (colimit.ι F ⟨i⟩).op =
       limit.π (F.rightOp ⋙ yoneda.obj A) i := by
-  rw [← dsimp% @colimitHomIsoLimitYoneda'_hom_comp_π, ← Category.assoc,
+  rw [← dsimp% colimitHomIsoLimitYoneda'_hom_comp_π, ← Category.assoc,
     Iso.inv_hom_id, Category.id_comp]
 
 end HomCocontinuousContravariant

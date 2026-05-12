@@ -185,7 +185,7 @@ structure Congr!.Config where
 /-- A configuration option that makes `congr!` do the sorts of aggressive unfoldings that `congr`
 does while also similarly preventing `congr!` from considering partial applications or congruences
 between different functions being applied. -/
-def Congr!.Config.unfoldSameFun : Congr!.Config where
+@[expose] def Congr!.Config.unfoldSameFun : Congr!.Config where
   partialApp := false
   sameFun := true
   transparency := .default
