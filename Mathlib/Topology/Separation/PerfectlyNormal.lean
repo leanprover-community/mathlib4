@@ -89,20 +89,20 @@ theorem perfectlyNormalSpace_iff_forall_isClosed_preimage_zero :
       closed_gdelta s hs := by
         by_cases! hse : s = ∅
         · simp_all
-        -- pick `f` such that `s = f ⁻¹' {0} = ⋂ n, f ⁻¹' {(-1, 1 / (n + 1))}`
+        -- pick `f` such that `s = f ⁻¹' {0} = ⋂ n, f ⁻¹' (Iio (1 / (n + 1)))`
         obtain ⟨f, hf, hfr⟩ := h s hs
-        refine isGδ_iff_eq_iInter_nat.2 ⟨fun n => f ⁻¹' (Ioo (-1 : ℝ) (1 / (n + 1))),
+        refine isGδ_iff_eq_iInter_nat.2 ⟨fun n => f ⁻¹' (Iio (1 / (n + 1))),
           fun n => ?_, ?_⟩
-        · exact f.continuous.isOpen_preimage _ isOpen_Ioo
+        · exact f.continuous.isOpen_preimage _ isOpen_Iio
         · simp only [hf, ← preimage_iInter,
-            ← preimage_range_inter (s := ⋂ (n : ℕ), Ioo (-1 : ℝ) (1 / (n + 1))), inter_iInter]
+            ← preimage_range_inter (s := ⋂ (n : ℕ), Iio (1 / (n + 1) : ℝ)), inter_iInter]
           congr
           rw [eq_comm, eq_singleton_iff_unique_mem]
           refine ⟨mem_iInter_of_mem fun n => ?_, fun x h => ?_⟩
-          · exact ⟨(hf ▸ hse : (f ⁻¹' {0}).Nonempty), by norm_num, by positivity⟩
+          · exact ⟨(hf ▸ hse : (f ⁻¹' {0}).Nonempty), show 0 < (1 / (n + 1) : ℝ) by positivity⟩
           · apply le_antisymm
-            · simp only [mem_iInter, mem_inter_iff, mem_Ioo] at h
-              exact ge_of_tendsto' tendsto_one_div_add_atTop_nhds_zero_nat (fun n => (h n).2.2.le)
+            · simp only [mem_iInter, mem_inter_iff, mem_Iio] at h
+              exact ge_of_tendsto' tendsto_one_div_add_atTop_nhds_zero_nat (fun n => (h n).2.le)
             · rcases (mem_iInter.1 h 0).1 with ⟨x, rfl⟩
               exact (hfr x).1 }
 
