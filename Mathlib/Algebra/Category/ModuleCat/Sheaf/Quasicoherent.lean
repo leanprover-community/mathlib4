@@ -341,7 +341,7 @@ def QuasicoherentData.pushforward
     letI e : (SheafOfModules.pushforward ψ).obj (unit (R.over (P.X i.snd.fst))) ≅
       unit (S.over i.fst) := overS.mapIso η
     haveI : PreservesColimitsOfSize.{u, u, _} (SheafOfModules.pushforward ψ) := h _ _ _
-    exact (P.presentation i.2.1).map (SheafOfModules.pushforward ψ) e
+    exact (P.presentation i.2.1).map (SheafOfModules.pushforward ψ) e.symm
 
 omit [HasSheafify J AddCommGrpCat] [J.WEqualsLocallyBijective
 AddCommGrpCat] [HasSheafify J' AddCommGrpCat] [J'.WEqualsLocallyBijective AddCommGrpCat] in
@@ -358,20 +358,6 @@ lemma isQuasicoherent_pushforward
     {M : SheafOfModules.{u} R} [IsQuasicoherent M] :
     IsQuasicoherent ((pushforward φ).obj M) :=
   IsQuasicoherent.nonempty_quasicoherentData.some.pushforward G φ h η |>.isQuasicoherent
-
-@[simp]
-lemma _root_.CategoryTheory.PreOneHypercover.map_toPreZeroHypercover
-    {C D : Type*} [Category* C] [Category* D]
-    (F : C ⥤ D) {X : C} (E : PreOneHypercover X) :
-    (E.map F).toPreZeroHypercover = E.toPreZeroHypercover.map F :=
-  rfl
-
-lemma _root_.CategoryTheory.PreZeroHypercover.sieve₀_map
-    {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D) {S : C}
-    (E : PreZeroHypercover.{w} S) :
-    (E.map F).sieve₀ = Sieve.functorPushforward _ E.sieve₀ := by
-  rw [PreZeroHypercover.sieve₀, Sieve.ofArrows, ← PreZeroHypercover.presieve₀,
-    PreZeroHypercover.presieve₀_map, Sieve.generate_map_eq_functorPushforward]
 
 lemma _root_.CategoryTheory.PreOneHypercover.sieve₀_map
     {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D) {S : C}
@@ -391,7 +377,7 @@ instance {C : Type*} [Category* C] (X : C) (J : GrothendieckTopology C) :
     let p₁' : W' ⟶ E.X i₁ := Over.homMk p₁ rfl
     let p₂' : W' ⟶ E.X i₂ := Over.homMk p₂ <| by
       dsimp at h
-      simp only [Over.forget_obj, Over.mk_left, Functor.const_obj_obj, Over.mk_hom, W']
+      simp only [Over.forget_obj, Over.mk_left, Over.mk_hom, W']
       rw [← Over.w (E.f i₂), ← reassoc_of% h]
       simp
     have := E.mem₁ _ _ p₁' p₂' (by ext; exact h)
@@ -419,25 +405,12 @@ lemma _root_.CategoryTheory.coverPreserving_of_preservesOneHypercovers {C : Type
     let E := GrothendieckTopology.Cover.oneHypercover ⟨_, hS⟩
     simpa [CategoryTheory.PreZeroHypercover.sieve₀_map, E] using (E.map F K).mem₀
 
-lemma _root_.CategoryTheory.Sieve.functorPushforward_ofArrows {C D : Type*} [Category* C]
-    [Category* D] (F : C ⥤ D) {ι : Type*} {X : C} {Y : ι → C} (f : ∀ i, Y i ⟶ X) :
-    Sieve.functorPushforward F (Sieve.ofArrows Y f) = Sieve.ofArrows _ (fun i ↦ F.map (f i)) := by
-  rw [Sieve.ofArrows, ← Sieve.generate_map_eq_functorPushforward, Presieve.map_ofArrows]
-
 instance {C : Type*} [Category* C] {A : Type*} [Category* A]
     (J : GrothendieckTopology C) {F G : Sheaf J A} (f : F ⟶ G) [IsIso f] :
     IsIso f.hom := by
   refine ⟨(inv f).hom, ?_, ?_⟩
-  · simp [← ObjectProperty.FullSubcategory.comp_hom, IsIso.hom_inv_id]
-  · simp [← ObjectProperty.FullSubcategory.comp_hom, IsIso.inv_hom_id]
-
-@[simp]
-lemma _root_.CategoryTheory.Sheaf.inv_hom {C : Type*} [Category* C]
-    {A : Type*} [Category* A]
-    (J : GrothendieckTopology C) {F G : Sheaf J A} (f : F ⟶ G) [IsIso f] :
-    (inv f).hom = inv f.hom := by
-  apply IsIso.eq_inv_of_inv_hom_id
-  simp [← ObjectProperty.FullSubcategory.comp_hom]
+  · simp [IsIso.hom_inv_id]
+  · simp [IsIso.inv_hom_id]
 
 omit
   [HasSheafify J AddCommGrpCat]
@@ -467,8 +440,8 @@ lemma isLeftAdjoint_pushforward_of_isIso (G : C' ⥤ C) [G.IsContinuous J' J] [G
     · ext U : 2
       have := (inv φ).hom.naturality
       simp only [Functor.sheafPushforwardContinuous_obj_obj_obj,
-        Functor.sheafPushforwardContinuous_obj_obj_map, Sheaf.inv_hom, NatIso.isIso_inv_app,
-        IsIso.eq_inv_comp] at this
+        Functor.sheafPushforwardContinuous_obj_obj_map, ObjectProperty.hom_inv,
+        NatIso.isIso_inv_app, IsIso.eq_inv_comp] at this
       simp [ψ, shAdj, ← this, ← Functor.map_comp_assoc, ← op_comp]
   exact adj.isLeftAdjoint
 

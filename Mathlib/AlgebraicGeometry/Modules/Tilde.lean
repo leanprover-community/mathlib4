@@ -437,6 +437,139 @@ instance (priority := low) {C D : Type*} [Category* C] [Category* D] [Quiver.IsT
   intro K
   exact Limits.preservesLimit_walkingParallelPair_of_eq (Subsingleton.elim _ _) _
 
+universe w in
+lemma _root_.CategoryTheory.PreOneHypercover.functorPushforward_sieve₁_map_le
+    {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
+    {X : C} {E : PreOneHypercover.{w} X} {W : C} {i₁ i₂ : E.I₀} (p₁ : W ⟶ E.X i₁)
+    (p₂ : W ⟶ E.X i₂) :
+    Sieve.functorPushforward F (E.sieve₁ p₁ p₂) ≤ (E.map F).sieve₁ (F.map p₁) (F.map p₂) := by
+  rw [Sieve.functorPushforward_le_iff_le_functorPullback]
+  intro Y f ⟨k, u, hf₁, hf₂⟩
+  exact ⟨k, F.map u, by simp [← Functor.map_comp, hf₁], by simp [← Functor.map_comp, hf₂]⟩
+
+universe w in
+@[reassoc (attr := simp)]
+lemma _root_.CategoryTheory.PreOneHypercover.toPullback_fst
+    {C : Type*} [Category* C] {S : C} (E : PreOneHypercover.{w} S)
+    {i₁ i₂ : E.I₀} [HasPullback (E.f i₁) (E.f i₂)] (k : E.I₁ i₁ i₂) :
+    E.toPullback k ≫ pullback.fst _ _ = E.p₁ k := by
+  rw [pullback.lift_fst]
+
+universe w in
+@[reassoc (attr := simp)]
+lemma _root_.CategoryTheory.PreOneHypercover.toPullback_snd
+    {C : Type*} [Category* C] {S : C} (E : PreOneHypercover.{w} S)
+    {i₁ i₂ : E.I₀} [HasPullback (E.f i₁) (E.f i₂)] (k : E.I₁ i₁ i₂) :
+    E.toPullback k ≫ pullback.snd _ _ = E.p₂ k := by
+  rw [pullback.lift_snd]
+
+set_option backward.isDefEq.respectTransparency false in
+universe w in
+lemma _root_.CategoryTheory.PreOneHypercover.functorPushforward_sieve₁'
+    {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
+    {X : C} {E : PreOneHypercover.{w} X} {i₁ i₂ : E.I₀}
+    [HasPullback (E.f i₁) (E.f i₂)] [PreservesLimit (cospan (E.f i₁) (E.f i₂)) F] :
+    Sieve.functorPushforward F (E.sieve₁' i₁ i₂) =
+      (E.map F).sieve₁ (F.map <| pullback.fst _ _) (F.map <| pullback.snd _ _) := by
+  have : HasPullback ((E.map F).f i₁) ((E.map F).f i₂) :=
+    hasPullback_of_preservesPullback F (E.f i₁) (E.f i₂)
+  refine le_antisymm ?_ ?_
+  · rw [PreOneHypercover.sieve₁'_eq_sieve₁]
+    apply PreOneHypercover.functorPushforward_sieve₁_map_le
+  · rw [PreOneHypercover.sieve₁_eq_pullback_sieve₁' _ _ _
+      (by simp [← Functor.map_comp, pullback.condition])]
+    intro W f hf
+    obtain ⟨Z, u, v, ⟨k⟩, h⟩ := hf
+    use E.Y k, pullback.lift (E.p₁ k) (E.p₂ k) (E.w _), u
+    refine ⟨?_, ?_⟩
+    · use E.Y k, 𝟙 _, pullback.lift (E.p₁ k) (E.p₂ k) (E.w _)
+      use ⟨k⟩
+      simp
+    · rw [pullback.hom_ext_iff] at h
+      simp only [PreOneHypercover.map_toPreZeroHypercover, PreZeroHypercover.map_X,
+        PreZeroHypercover.map_f, PreOneHypercover.map_Y, Category.assoc, limit.lift_π,
+        PullbackCone.mk_pt, PullbackCone.mk_π_app] at h
+      apply IsPullback.hom_ext (IsPullback.map _ (.of_hasPullback _ _))
+      · simp [← h.left, PreOneHypercover.toPullback, ← Functor.map_comp]
+      · simp [← h.right, PreOneHypercover.toPullback, ← Functor.map_comp]
+
+set_option backward.isDefEq.respectTransparency false in
+universe w in
+lemma _root_.CategoryTheory.PreOneHypercover.functorPushforward_sieve₁_map
+    {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
+    {X : C} {E : PreOneHypercover.{w} X} {W : C} {i₁ i₂ : E.I₀} (p₁ : W ⟶ E.X i₁)
+    (p₂ : W ⟶ E.X i₂) (h : p₁ ≫ E.f _ = p₂ ≫ E.f _) [HasPullbacks C]
+    [PreservesLimitsOfShape WalkingCospan F] :
+    Sieve.functorPushforward F (E.sieve₁ p₁ p₂) = (E.map F).sieve₁ (F.map p₁) (F.map p₂) := by
+  refine le_antisymm (PreOneHypercover.functorPushforward_sieve₁_map_le _ _ _) ?_
+  have : HasPullback ((E.map F).f i₁) ((E.map F).f i₂) :=
+    hasPullback_of_preservesPullback F (E.f i₁) (E.f i₂)
+  intro T f hf
+  dsimp at hf
+  obtain ⟨k, u, hf₁, hf₂⟩ := hf
+  simp only [Sieve.functorPushforward_apply]
+  let l : W ⟶ pullback (E.f i₁) (E.f i₂) := pullback.lift p₁ p₂ h
+  have hl₁ : l ≫ pullback.fst _ _ = p₁ := by simp [l]
+  have hl₂ : l ≫ pullback.snd _ _ = p₂ := by simp [l]
+  let r : E.Y k ⟶ pullback (E.f i₁) (E.f i₂) := pullback.lift (E.p₁ _) (E.p₂ _) (E.w _)
+  refine ⟨pullback l r, pullback.fst _ _, IsPullback.lift
+    (IsPullback.map _ (.of_hasPullback _ _)) f u ?_, ?_, ?_⟩
+  · simp only [l, r]
+    apply (IsPullback.map _ (.of_hasPullback _ _)).hom_ext
+    · simp [← Functor.map_comp, hf₁]
+    · simp [← Functor.map_comp, hf₂]
+  · refine ⟨k, pullback.snd _ _, ?_, ?_⟩
+    · simp [← hl₁, pullback.condition_assoc, r]
+    · simp [← hl₂, pullback.condition_assoc, r]
+  · simp
+
+lemma _root_.CategoryTheory.PreOneHypercover.pullback_sieve₁.{w} {C : Type*} [Category* C]
+    {X : C} {E : PreOneHypercover.{w} X}
+    {i₁ i₂ : E.I₀} {W : C} (p₁ : W ⟶ E.X i₁) (p₂ : W ⟶ E.X i₂)
+    {T : C} (f : T ⟶ W) :
+    Sieve.pullback f (E.sieve₁ p₁ p₂) = E.sieve₁ (f ≫ p₁) (f ≫ p₂) := by
+  refine le_antisymm ?_ ?_ <;>
+  · intro Z g ⟨k, u, hu₁, hu₂⟩
+    use k, u
+    simp_all
+
+lemma _root_.CategoryTheory.Functor.PreservesOneHypercovers.of_coverPreserving
+    {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
+    [HasPullbacks C] [PreservesLimitsOfShape WalkingCospan F]
+    (J : GrothendieckTopology C) (K : GrothendieckTopology D) (H : CoverPreserving J K F) :
+    Functor.PreservesOneHypercovers F J K := by
+  intro U E
+  constructor
+  · simp [PreZeroHypercover.sieve₀_map, H.cover_preserve E.mem₀]
+  · intro i₁ i₂ W p₁ p₂ h
+    let P : C := pullback (E.f i₁) (E.f i₂)
+    have : HasPullback ((E.toPreOneHypercover.map F).f i₁) ((E.toPreOneHypercover.map F).f i₂) :=
+      hasPullback_of_preservesPullback F (E.f i₁) (E.f i₂)
+    have := H.cover_preserve (E.mem₁ i₁ i₂ (pullback.fst (E.f i₁) (E.f i₂)) _ pullback.condition)
+    rw [CategoryTheory.PreOneHypercover.functorPushforward_sieve₁_map] at this
+    · refine K.superset_covering ?_
+        (K.pullback_stable (IsPullback.lift (IsPullback.map _ (.of_hasPullback _ _))
+        p₁ p₂ h) this)
+      rw [PreOneHypercover.pullback_sieve₁]
+      simp
+    · exact pullback.condition
+
+instance {X Y : TopCat.{u}} (f : X ⟶ Y) (hf : Topology.IsOpenEmbedding f) :
+    PreservesLimitsOfShape WalkingCospan hf.functor :=
+  sorry
+
+#exit
+instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
+    PreservesLimitsOfShape WalkingCospan (Scheme.Hom.opensFunctor f) := by
+  dsimp [Scheme.Hom.opensFunctor]
+  infer_instance
+
+instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
+    Functor.PreservesOneHypercovers f.opensFunctor (Opens.grothendieckTopology _)
+      (Opens.grothendieckTopology _) := by
+  apply Functor.PreservesOneHypercovers.of_coverPreserving
+  exact Scheme.Hom.coverPreserving_opensFunctor f
+
 set_option backward.isDefEq.respectTransparency false in
 lemma Scheme.Modules.isQuasicoherent_restrictFunctor {X Y : Scheme.{u}} (f : X ⟶ Y)
     [IsOpenImmersion f] (M : Y.Modules) [M.IsQuasicoherent] :
@@ -444,20 +577,6 @@ lemma Scheme.Modules.isQuasicoherent_restrictFunctor {X Y : Scheme.{u}} (f : X �
   letI α : X.presheaf ⟶ f.opensFunctor.op ⋙ Y.presheaf := { app U := (f.appIso U.unop).inv }
   have hα : IsIso α := NatIso.isIso_of_isIso_app _
   dsimp [restrictFunctor]
-  have (Z : TopologicalSpace.Opens X) :
-      (Over.post (Hom.opensFunctor f)).IsContinuous ((Opens.grothendieckTopology ↥X).over Z)
-        ((Opens.grothendieckTopology Y).over ((Hom.opensFunctor f).obj Z)) := by
-    refine Functor.isContinuous_of_coverPreserving ?_ (.overPost _ f.coverPreserving_opensFunctor)
-    refine compatiblePreservingOfDownwardsClosed _ _ fun {U V} a ↦ ?_
-    refine ⟨Over.mk (Y := (Opens.map f.base).obj V.left) ?_, ?_⟩
-    · refine homOfLE fun x hx ↦ ?_
-      obtain ⟨u, hu, heq⟩ := V.hom.le hx
-      obtain rfl := f.isOpenEmbedding.injective heq
-      exact hu
-    · refine Over.isoMk (eqToIso <| Opens.ext ?_) (Subsingleton.elim _ _)
-      refine Set.image_preimage_eq_of_subset fun x h ↦ ?_
-      obtain ⟨_, _, rfl⟩ := a.left.le h
-      exact ⟨_, rfl⟩
   convert SheafOfModules.isQuasicoherent_pushforward_of_isLeftAdjoint.{u}
     (J := Opens.grothendieckTopology _) (J' := Opens.grothendieckTopology _) f.opensFunctor _ _
   · convert isIso_of_reflects_iso _ (ObjectProperty.ι _)
@@ -467,7 +586,7 @@ lemma Scheme.Modules.isQuasicoherent_restrictFunctor {X Y : Scheme.{u}} (f : X �
   · refine (SheafOfModules.fullyFaithfulForget _).preimageIso ?_
     refine PresheafOfModules.isoMk ?_ ?_
     · intro U
-      dsimp [SheafOfModules.pushforward, PresheafOfModules.pushforward₀_obj, PresheafOfModules.unit]
+      dsimp [SheafOfModules.pushforward, PresheafOfModules.unit]
       exact ModuleCat.restrictScalarsIsoOfEquiv (f.appIso U.unop).symm.commRingCatIsoToRingEquiv
     · intro U V g
       ext x
