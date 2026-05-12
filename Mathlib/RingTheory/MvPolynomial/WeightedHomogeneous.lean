@@ -254,10 +254,9 @@ theorem sub {R : Type*} [CommRing R] {w : σ → M} {φ ψ : MvPolynomial σ R}
 
 /-- A weighted homogeneous polynomial of degree `n` is zero if no monomial has weight `n`. -/
 theorem eq_zero_of_no_monomials {w : σ → M} (hφ : IsWeightedHomogeneous w φ n)
-    (hno : ∀ d : σ →₀ ℕ, weight w d ≠ n) : φ = 0 := by
-  rw [← support_eq_empty, ← Finset.not_nonempty_iff_eq_empty]
-  rintro ⟨d, hd⟩
-  exact hno _ (hφ (mem_support_iff.mp hd))
+    (hno : ∀ d : σ →₀ ℕ, weight w d ≠ n) : φ = 0 :=
+  support_eq_empty.mp <| Finset.eq_empty_of_forall_notMem
+    fun _ hd => hno _ (hφ (mem_support_iff.mp hd))
 
 /-- A weighted homogeneous polynomial of degree `n` whose support degrees are all equal to a
 fixed `d₀` is a single monomial. -/
@@ -266,10 +265,10 @@ theorem eq_monomial_of_unique_weight {w : σ → M} (hφ : IsWeightedHomogeneous
   classical
   ext d
   rw [coeff_monomial]
-  by_cases hd : d = d₀
-  · simp [hd]
-  rw [if_neg (Ne.symm hd)]
-  exact hφ.coeff_eq_zero d (fun h => hd (huniq d h))
+  rcases eq_or_ne d d₀ with rfl | hd
+  · rw [if_pos rfl]
+  rw [if_neg hd.symm]
+  exact hφ.coeff_eq_zero d fun h ↦ hd (huniq d h)
 
 /-- The sum of weighted homogeneous polynomials of degree `n` is weighted homogeneous of
   weighted degree `n`. -/
