@@ -41,11 +41,12 @@ variable [hF : SGMonoidal F] [hG : SGMonoidal G] [hH : SGMonoidal H]
 
 TC search distinguishes the two instances; `rfl` rightfully fails. -/
 
+set_option pp.mvars.anonymous false in
 /--
 error: Type mismatch
   rfl
 has type
-  ?m.73 = ?m.73
+  ?_ = ?_
 but is expected to have type
   SGMonoidal.n (F ⋙ G ⋙ H) = SGMonoidal.n ((F ⋙ G) ⋙ H)
 -/
@@ -62,11 +63,12 @@ instances remain distinct. -/
 section ImplicitReducible
 attribute [local implicit_reducible] Functor.comp
 
+set_option pp.mvars.anonymous false in
 /--
 error: Type mismatch
   rfl
 has type
-  ?m.73 = ?m.73
+  ?_ = ?_
 but is expected to have type
   SGMonoidal.n (F ⋙ G ⋙ H) = SGMonoidal.n ((F ⋙ G) ⋙ H)
 -/
