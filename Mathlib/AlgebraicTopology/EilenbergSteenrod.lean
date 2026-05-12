@@ -3,12 +3,12 @@ Copyright (c) 2026 Jakob Scharmberg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Scharmberg
 -/
-
 module
 
 public import Mathlib.Algebra.Homology.ComplexShape
 public import Mathlib.Combinatorics.Quiver.ReflQuiver
 public import Mathlib.Topology.Category.TopPair
+
 /-!
 # Eilenberg-Steenrod homology theories
 
@@ -39,10 +39,10 @@ structure HomologyPretheory
   Hₚ (i : ι) : TopPair.{u} ⥤ C
   /-- The regular homology functor of a `HomologyPretheory`. -/
   H (i : ι) : TopCat.{u} ⥤ C
-  /-- The proof that `Hₚ` and `H` agree on `TopCat` -/
+  /-- `Hₚ` and `H` agree on `TopCat` -/
   iso (i : ι) : H i ≅ incl ⋙ Hₚ i
   /-- The boundary natural transformation of a `HomologyPretheory`. -/
-  δ (i j : ι) : (Hₚ i) ⟶ proj₂ ⋙ H j
+  δ (i j : ι) : Hₚ i ⟶ proj₂ ⋙ H j
   /-- The boundary map is only nonzero if `c.Rel i j`. -/
   shape_δ (i j : ι) (h : ¬ c.Rel i j) : δ i j = 0 := by cat_disch
 
