@@ -15,7 +15,7 @@ public import Mathlib.Tactic.FastInstance
 * `Field.toEuclideanDomain`: shows that any field is a Euclidean domain.
 -/
 
-@[expose] public section
+public section
 
 namespace Field
 

@@ -47,7 +47,7 @@ def isOpenEmbedding : MorphismProperty TopCat :=
   fun _ _ f ↦ Topology.IsOpenEmbedding f
 
 @[simp]
-lemma isOpenEmbedding_iff {X Y : TopCat} (f : X ⟶ Y) :
+lemma isOpenEmbedding_iff {X Y : TopCat.{u}} (f : X ⟶ Y) :
     isOpenEmbedding f ↔ Topology.IsOpenEmbedding f := .rfl
 
 instance : isOpenEmbedding.IsMultiplicative where
@@ -72,11 +72,11 @@ jointly surjective open embeddings. -/
 abbrev grothendieckTopology : GrothendieckTopology TopCat.{u} :=
   precoverage.toGrothendieck
 
-lemma exists_mem_zeroHypercover_range {X : TopCat} (E : precoverage.ZeroHypercover X) :
+lemma exists_mem_zeroHypercover_range {X : TopCat.{u}} (E : precoverage.ZeroHypercover X) :
     ∀ x, ∃ (i : E.I₀), x ∈ Set.range (E.f i) := by
   simpa using E.mem₀.left
 
-lemma isOpenEmbedding_f_zeroHypercover {X : TopCat} (E : precoverage.ZeroHypercover X) :
+lemma isOpenEmbedding_f_zeroHypercover {X : TopCat.{u}} (E : precoverage.ZeroHypercover X) :
     ∀ i, Topology.IsOpenEmbedding (E.f i) := by
   simpa using E.mem₀.right
 
@@ -106,9 +106,10 @@ instance subcanonical_grothendieckTopology : grothendieckTopology.Subcanonical :
     · intro x
       obtain ⟨i, hi⟩ := exists_mem_zeroHypercover_range 𝒰 x
       exact ⟨i, (isOpenEmbedding_f_zeroHypercover 𝒰 i).isOpen_range.mem_nhds hi⟩
-  · dsimp
-    ext
-    simp only [hom_comp, hom_ofHom, ContinuousMap.comp_apply]
+  · apply ConcreteCategory.hom_ext
+    intro
+    simp only [yoneda_obj_map, Quiver.Hom.unop_op, ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk,
+      hom_comp, ContinuousMap.comp_apply]
     rw [heq, ContinuousMap.liftCover_coe]
     simp
   · dsimp
@@ -124,8 +125,8 @@ lemma precoverage_le_comap_uliftFunctor :
   refine Precoverage.le_of_zeroHypercover fun X E ↦ ?_
   refine ⟨?_, ?_⟩
   · simp only [Presieve.map_ofArrows, Precoverage.mem_comap_iff,
-      ConcreteCategory.forget_map_eq_coe, Types.ofArrows_mem_jointlySurjectivePrecoverage_iff,
-      Set.mem_range]
+      Types.ofArrows_mem_jointlySurjectivePrecoverage_iff, ConcreteCategory.hom_ofHom,
+      Set.mem_range, TypeCat.Fun.coe_mk]
     intro ⟨x⟩
     obtain ⟨i, y, rfl⟩ := exists_mem_zeroHypercover_range E x
     use i, ⟨y⟩

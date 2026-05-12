@@ -22,7 +22,7 @@ proves that they form a `ℕ`-graded order.
 * `Finset.instGradeMinOrder_nat`: Finsets are `ℕ`-graded
 -/
 
-@[expose] public section
+public section
 
 open Order
 

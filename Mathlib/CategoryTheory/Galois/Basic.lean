@@ -201,7 +201,7 @@ lemma mulAction_def {X : C} (σ : Aut F) (x : F.obj X) :
 
 lemma mulAction_naturality {X Y : C} (σ : Aut F) (f : X ⟶ Y) (x : F.obj X) :
     σ • F.map f x = F.map f (σ • x) :=
-  FunctorToFintypeCat.naturality F F σ.hom f x
+  NatTrans.naturality_apply σ.hom f x
 
 /-- An object that is neither initial or connected has a non-trivial subobject. -/
 lemma has_non_trivial_subobject_of_not_isConnected_of_not_initial (X : C) (hc : ¬ IsConnected X)
@@ -258,6 +258,7 @@ lemma fiberEqualizerEquiv_symm_ι_apply {X Y : C} {f g : X ⟶ Y} (x : F.obj X)
   simp only [fiberEqualizerEquiv, comp_obj, FintypeCat.incl_obj, Functor.comp_map, Iso.toEquiv_comp]
   change ((Types.equalizerIso _ _).inv ≫ _ ≫ (F ⋙ FintypeCat.incl).map (equalizer.ι f g)) _ = _
   erw [PreservesEqualizer.iso_inv_ι, Types.equalizerIso_inv_comp_ι]
+  rfl
 
 /-- The fiber of the pullback is the fiber product of the fibers. -/
 noncomputable def fiberPullbackEquiv {X A B : C} (f : A ⟶ X) (g : B ⟶ X) :
@@ -274,6 +275,7 @@ lemma fiberPullbackEquiv_symm_fst_apply {X A B : C} {f : A ⟶ X} {g : B ⟶ X}
   change ((Types.pullbackIsoPullback _ _).inv ≫ _ ≫
     (F ⋙ FintypeCat.incl).map (pullback.fst f g)) _ = _
   erw [PreservesPullback.iso_inv_fst, Types.pullbackIsoPullback_inv_fst]
+  rfl
 
 @[simp]
 lemma fiberPullbackEquiv_symm_snd_apply {X A B : C} {f : A ⟶ X} {g : B ⟶ X}
@@ -284,6 +286,7 @@ lemma fiberPullbackEquiv_symm_snd_apply {X A B : C} {f : A ⟶ X} {g : B ⟶ X}
   change ((Types.pullbackIsoPullback _ _).inv ≫ _ ≫
     (F ⋙ FintypeCat.incl).map (pullback.snd f g)) _ = _
   erw [PreservesPullback.iso_inv_snd, Types.pullbackIsoPullback_inv_snd]
+  rfl
 
 /-- The fiber of the binary product is the binary product of the fibers. -/
 noncomputable def fiberBinaryProductEquiv (X Y : C) :
@@ -298,6 +301,7 @@ lemma fiberBinaryProductEquiv_symm_fst_apply {X Y : C} (x : F.obj X) (y : F.obj 
     Equiv.symm_trans_apply, Iso.toEquiv_symm_fun]
   change ((Types.binaryProductIso _ _).inv ≫ _ ≫ (F ⋙ FintypeCat.incl).map prod.fst) _ = _
   erw [PreservesLimitPair.iso_inv_fst, Types.binaryProductIso_inv_comp_fst]
+  rfl
 
 @[simp]
 lemma fiberBinaryProductEquiv_symm_snd_apply {X Y : C} (x : F.obj X) (y : F.obj Y) :
@@ -306,6 +310,7 @@ lemma fiberBinaryProductEquiv_symm_snd_apply {X Y : C} (x : F.obj X) (y : F.obj 
     Equiv.symm_trans_apply, Iso.toEquiv_symm_fun]
   change ((Types.binaryProductIso _ _).inv ≫ _ ≫ (F ⋙ FintypeCat.incl).map prod.snd) _ = _
   erw [PreservesLimitPair.iso_inv_snd, Types.binaryProductIso_inv_comp_snd]
+  rfl
 
 /-- The evaluation map is injective for connected objects. -/
 lemma evaluation_injective_of_isConnected (A X : C) [IsConnected A] (a : F.obj A) :

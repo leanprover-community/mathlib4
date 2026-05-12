@@ -356,7 +356,7 @@ lemma ae_mem_finset_iff : (∀ᵐ a ∂μ, a ∈ s) ↔ μ = ∑ a ∈ s, μ {a}
     simp_rw [Finset.mem_coe, Set.inter_iUnion]
     rw [measure_biUnion_finset (fun i hi j hj hij ↦ .inter_left' _ <| .inter_right' _ ?_)
       (by measurability)]
-    · simp only [coe_finset_sum, Finset.sum_apply, smul_apply]
+    · simp only [coe_finsetSum, Finset.sum_apply, smul_apply]
       congr with a
       by_cases ha : a ∈ t <;> simp [*]
     simpa

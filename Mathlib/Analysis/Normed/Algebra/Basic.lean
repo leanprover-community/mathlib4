@@ -28,7 +28,7 @@ normed algebra, character space, continuous functional calculus
 
 -/
 
-@[expose] public section
+public section
 
 namespace IntermediateField
 
@@ -37,7 +37,7 @@ variable {K L : Type*} [NontriviallyNormedField K] [NormedField L] [NormedAlgebr
 instance (F : IntermediateField K L) : NontriviallyNormedField F where
   __ := SubfieldClass.toNormedField F
   non_trivial := by
-    obtain ⟨k, hk⟩ :=  @NontriviallyNormedField.non_trivial K _
+    obtain ⟨k, hk⟩ := @NontriviallyNormedField.non_trivial K _
     use algebraMap K F k
     simp [hk]
 

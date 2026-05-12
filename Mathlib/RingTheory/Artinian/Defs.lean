@@ -36,7 +36,7 @@ Artinian, artinian, Artinian ring, Artinian module, artinian ring, artinian modu
 
 -/
 
-@[expose] public section
+public section
 
 /-- `IsArtinian R M` is the proposition that `M` is an Artinian `R`-module,
 implemented as the well-foundedness of submodule inclusion. -/
@@ -67,7 +67,3 @@ abbrev IsArtinianRing (R) [Semiring R] :=
   IsArtinian R R
 
 theorem isArtinianRing_iff {R} [Semiring R] : IsArtinianRing R ↔ IsArtinian R R := Iff.rfl
-
-namespace IsArtinianRing
-
-end IsArtinianRing

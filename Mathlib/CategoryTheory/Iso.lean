@@ -311,12 +311,8 @@ variable {f : X ⟶ Y} {h : Y ⟶ Z}
 instance inv_isIso [IsIso f] : IsIso (inv f) :=
   (asIso f).isIso_inv
 
-/- The following instance has lower priority for the following reason:
-Suppose we are given `f : X ≅ Y` with `X Y : Type u`.
-Without the lower priority, typeclass inference cannot deduce `IsIso f.hom`
-because `f.hom` is defeq to `(fun x ↦ x) ≫ f.hom`, triggering a loop. -/
 @[to_dual self (reorder := X Z, f h, 8 9)]
-instance (priority := 900) comp_isIso [IsIso f] [IsIso h] : IsIso (f ≫ h) :=
+instance comp_isIso [IsIso f] [IsIso h] : IsIso (f ≫ h) :=
   (asIso f ≪≫ asIso h).isIso_hom
 
 /--
@@ -505,6 +501,15 @@ theorem map_inv (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) [IsIso f] : F.map (inv f) 
 @[to_dual (attr := reassoc) map_inv_hom]
 theorem map_hom_inv (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) [IsIso f] :
     F.map f ≫ F.map (inv f) = 𝟙 (F.obj X) := by simp
+
+-- The following two lemmas are needed to generate good elementwise lemmas
+@[reassoc]
+theorem map_hom_inv' (F : C ⥤ D) {X Y : C} (f : X ≅ Y) :
+    F.map f.hom ≫ F.map f.inv = 𝟙 (F.obj X) := by simp
+
+@[reassoc]
+theorem map_inv_hom' (F : C ⥤ D) {X Y : C} (f : X ≅ Y) :
+    F.map f.inv ≫ F.map f.hom = 𝟙 (F.obj Y) := by simp
 
 end Functor
 
