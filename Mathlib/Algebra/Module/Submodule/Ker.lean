@@ -170,6 +170,8 @@ variable {f : M →ₛₗ[τ₁₂] M₂}
 
 open Submodule
 
+@[simp] theorem ker_neg (f : M →ₛₗ[τ₁₂] M₂) : (-f).ker = f.ker := by ext; simp
+
 theorem ker_toAddSubgroup (f : M →ₛₗ[τ₁₂] M₂) : (ker f).toAddSubgroup = f.toAddMonoidHom.ker :=
   rfl
 
