@@ -23,7 +23,7 @@ For convenience we also define `ENNReal.HolderConjugate` (with arguments `p q`) 
 abbreviation for `ENNReal.HolderTriple p q 1`.
 -/
 
-@[expose] public section
+public section
 
 namespace ENNReal
 

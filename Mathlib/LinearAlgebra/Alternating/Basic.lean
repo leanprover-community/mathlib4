@@ -621,6 +621,16 @@ theorem map_update_sum {α : Type*} [DecidableEq ι] (t : Finset α) (i : ι) (g
     f (update m i (∑ a ∈ t, g a)) = ∑ a ∈ t, f (update m i (g a)) :=
   f.toMultilinearMap.map_update_sum t i g m
 
+theorem map_add_univ [DecidableEq ι] [Fintype ι] (m m' : ι → M) :
+    f (m + m') = ∑ s : Finset ι, f (s.piecewise m m') :=
+  f.toMultilinearMap.map_add_univ m m'
+
+theorem map_smul_univ {R : Type*} [CommSemiring R] {M : Type*} [AddCommMonoid M]
+    [Module R M] {N : Type*} [AddCommMonoid N] [Module R N] [Fintype ι]
+    (f : M [⋀^ι]→ₗ[R] N) (c : ι → R) (m : ι → M) :
+    (f fun i => c i • m i) = (∏ i, c i) • f m :=
+  f.toMultilinearMap.map_smul_univ c m
+
 end
 
 /-!

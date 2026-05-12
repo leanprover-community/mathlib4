@@ -69,7 +69,7 @@ theorem recF_eq {α : TypeVec n} {β : Type u} (g : F (α.append1 β) → β) (a
 set_option backward.isDefEq.respectTransparency false in
 theorem recF_eq' {α : TypeVec n} {β : Type u} (g : F (α.append1 β) → β) (x : q.P.W α) :
     recF g x = g (abs (appendFun id (recF g) <$$> q.P.wDest' x)) := by
-  induction x using  q.P.wCases
+  induction x using q.P.wCases
   case ih a f' f =>
     rw [recF_eq, q.P.wDest'_wMk, MvPFunctor.map_eq, appendFun_comp_splitFun, TypeVec.id_comp]
 

@@ -76,7 +76,8 @@ public def isSetOption : Syntax → Bool :=
 /-- The `setOption` linter: this lints any `set_option` command, term or tactic
 which sets a `debug`, `pp`, `profiler` or `trace` option.
 This also warns if an option containing `maxHeartbeats` (typically, the `maxHeartbeats` or
-`synthInstance.maxHeartbeats` option) or the `linter.flexible` option is set.
+`synthInstance.maxHeartbeats` option) or the `linter.flexible`, `linter.style.commandStart` or
+`backward.inferInstanceAs.wrap.reuseSubInstances ` option is set.
 
 **Why is this bad?** The `debug`, `pp`, `profiler` and `trace` options are good for debugging,
 but should not be used in production code.
@@ -88,6 +89,8 @@ The `linter.flexible` option should be scoped as `set_option opt in ...`.
 **How to fix this?** The `maxHeartbeats` and `linter.flexible` option changes can be scoped to
 individual commands, if they are truly necessary. The `linter.style.commandStart` option is
 deprecated and should be replaced by `linter.style.whitespace`.
+New `backward.inferInstanceAs.wrap.reuseSubInstances` instances are technical debt,
+and should not be introduced.
 
 The `debug`, `pp`, `profiler` and `trace` are usually not necessary for production code,
 so you can simply remove them. (Some tests will intentionally use one of these options;
@@ -115,6 +118,9 @@ def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
         else if name == `linter.style.commandStart then
           logWarningAt stx "The `linter.style.commandStart` option is deprecated, \
             use `linter.style.whitespace` instead."
+        else if name == `backward.inferInstanceAs.wrap.reuseSubInstances then
+          logWarningAt stx "The `backward.inferInstanceAs.wrap.reuseSubInstances` option \
+            marks the introduction of technical debt, so please don't use it."
 
 initialize addLinter setOptionLinter
 
@@ -189,7 +195,7 @@ public register_option linter.style.cdot : Bool := {
 /-- `isCDot? stx` checks whether `stx` is a `Syntax` node corresponding to a `cdot` typed with
 the character `·`. -/
 public def isCDot? : Syntax → Bool
-  | .node _ ``cdotTk #[.node _ `patternIgnore #[.node _ _ #[.atom _ v]]] => v == "·"
+  | .node _ ``cdotTk #[.atom _ v] => v == "·"
   | .node _ ``Lean.Parser.Term.cdot #[.atom _ v, _] => v == "·"
   | _ => false
 
@@ -225,12 +231,14 @@ def cdotLinter : Linter where run := withSetOptionIn fun stx ↦ do
         m!"Please, use '·' (typed as `\\.`) instead of '.' as 'cdot'."
     -- We also check for isolated cdot's, i.e. when the cdot is on its own line.
     for cdot in Mathlib.Linter.findCDot stx do
-      match cdot.find? (·.isOfKind `token.«· ») with
-      | some (.node _ _ #[.atom (.original _ _ afterCDot _) _]) =>
-        if (afterCDot.takeWhile (·.isWhitespace)).contains '\n' then
-          Linter.logLint linter.style.cdot cdot
-            m!"This central dot `·` is isolated; please merge it with the next line."
-      | _ => return
+      -- Apply this only to cdot tactics
+      if cdot.isOfKind ``cdotTk then
+        match cdot.getTrailing? with
+        |  some afterCDot =>
+          if (afterCDot.takeWhile (·.isWhitespace)).contains '\n' then
+            Linter.logLint linter.style.cdot cdot
+              m!"This central dot `·` is isolated; please merge it with the next line."
+        | _ => return
 
 initialize addLinter cdotLinter
 
@@ -410,11 +418,20 @@ end Style.longFile
 
 /-! ### The "longLine linter" -/
 
-/-- The "longLine" linter emits a warning on lines longer than 100 characters.
+/-- The "longLine" linter emits a warning on lines longer than
+`linter.style.longLine.maxLineLength` (which defaults to 100) characters.
 We allow lines containing URLs to be longer, though. -/
 public register_option linter.style.longLine : Bool := {
   defValue := false
   descr := "enable the longLine linter"
+}
+
+/-- Configuration option for the "longLine" linter. This option determines the
+maximum allowed length of a line before the linter emits a warning.
+This defaults to 100. -/
+public register_option linter.style.longLine.maxLineLength : Nat := {
+  defValue := 100
+  descr := "maximum line length before the longLine linter emits a warning"
 }
 
 namespace Style.longLine
@@ -446,8 +463,9 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
       else return stx
     let sstr := stx.getSubstring?
     let fm ← getFileMap
+    let maxLineLength := linter.style.longLine.maxLineLength.get (← getOptions)
     let longLines := ((sstr.getD default).splitOn "\n").filter fun line ↦
-      (100 < (fm.toPosition line.stopPos).column)
+      (maxLineLength < (fm.toPosition line.stopPos).column)
     for line in longLines do
       if (line.splitOn "http").length ≤ 1 && !(isImport line.toString) then
         let stringMsg := if line.contains '"' then
@@ -455,8 +473,10 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
           using a '\\' at the end of a line allows you to continue the string on the following \
           line, removing all intervening whitespace."
         else ""
-        Linter.logLint linter.style.longLine (.ofRange ⟨(line.drop 100).startPos, line.stopPos⟩)
-          m!"This line exceeds the 100 character limit, please shorten it!{stringMsg}"
+        Linter.logLint linter.style.longLine
+          (.ofRange ⟨(line.drop maxLineLength).startPos, line.stopPos⟩)
+          m!"This line exceeds the {maxLineLength} character limit, please shorten it!{stringMsg}"
+
 initialize addLinter longLineLinter
 
 end Style.longLine

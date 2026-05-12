@@ -74,7 +74,7 @@ noncomputable def asTypeEquivObjAsType : AsType α ≌ ObjAsType α where
 noncomputable instance asTypeFinCategory : FinCategory (AsType α) where
   fintypeHom := fun _ _ => show Fintype (Fin _) from inferInstance
 
-/-- The constructed category (`ObjAsType α`) is indeed equivalent to `α`. -/
+/-- The constructed category (`AsType α`) is indeed equivalent to `α`. -/
 noncomputable def equivAsType : AsType α ≌ α :=
   (asTypeEquivObjAsType α).trans (objAsTypeEquiv α)
 
