@@ -215,7 +215,7 @@ lemma Ideal.height_bot [Nontrivial R] : (⊥ : Ideal R).height = 0 := by
   obtain ⟨p, hp⟩ := Ideal.nonempty_minimalPrimes (R := R) (I := ⊥) top_ne_bot.symm
   simp only [Ideal.height, ENat.iInf_eq_zero]
   refine ⟨p, hp, ?_⟩
-  have := Ideal.IsPrime.of_mem_minimalPrimes' hp
+  have := Ideal.IsPrime.of_mem_minimalPrimes hp
   rw [primeHeight_eq_zero_iff.mpr hp]
 
 /-- In a trivial commutative ring, the height of any ideal is `∞`. -/
