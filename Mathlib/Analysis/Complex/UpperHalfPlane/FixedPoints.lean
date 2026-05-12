@@ -46,14 +46,6 @@ theorem gl_smul_eq_iff_num_eq :
   rw [← (σ g).injective.eq_iff]
   simp [UpperHalfPlane.ext_iff, coe_smul, div_eq_iff]
 
-/-- If the action of a matrix `!![a, b; c, d]`, `a * d - b * c < 0`, on the upper half plane
-has a fixed point, then `a + d = 0`. -/
-theorem trace_eq_zero_of_gl_smul_eq_self_of_det_neg (h : g.val.det < 0) (him : g • z = z) :
-    g.val.trace = 0 := by
-  linear_combination
-    (norm := { simp [σ, h.not_gt, num, denom, z.im_ne_zero, Matrix.trace_fin_two, field] })
-    congr($(gl_smul_eq_iff_num_eq.mp him).im / z.im)
-
 /-- If `g` is an upper triangular matrix with trace zero,
 then `g` fixes the vertical line `re z = b / (2 * d)`. -/
 theorem gl_smul_eq_self_iff_re_eq (htrace : g.val.trace = 0) (hc : g 1 0 = 0) :
@@ -95,7 +87,10 @@ iff the corresponding matrix has zero trace. -/
 theorem exists_gl_smul_eq_self_iff_trace_eq_zero (h : g.val.det < 0) :
     (∃ z : ℍ, g • z = z) ↔ g.val.trace = 0 := by
   constructor
-  · exact fun ⟨z, hz⟩ ↦ trace_eq_zero_of_gl_smul_eq_self_of_det_neg h hz
+  · rintro ⟨z, hz⟩
+    linear_combination
+      (norm := { simp [σ, h.not_gt, num, denom, z.im_ne_zero, Matrix.trace_fin_two, field] })
+      congr($(gl_smul_eq_iff_num_eq.mp hz).im / z.im)
   · intro hadd
     by_cases hc : g 1 0 = 0
     · use ⟨⟨g 0 1 / (2 * g 1 1), 1⟩, one_pos⟩
