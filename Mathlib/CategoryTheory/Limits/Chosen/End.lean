@@ -10,8 +10,9 @@ public import Mathlib.CategoryTheory.Limits.Shapes.End
 /-!
 # Chosen ends and coends
 
-This file defines typeclasses `ChosenCoends` and `ChosenEnds` which contain the data of a chosen
-coend and end in `C` for each functor `Jᵒᵖ ⥤ J ⥤ C`.
+This file defines typeclasses `ChosenCoendsOfShape` and `ChosenEndsOfShape` which contain the data
+of a chosen coend and end in `C` for each functor `Jᵒᵖ ⥤ J ⥤ C` of a fixed shape `J`. It also
+provides `ChosenCoends` and `ChosenEnds` abbreviations for chosen coends and ends of all shapes.
 -/
 
 @[expose] public section
@@ -22,29 +23,31 @@ open Opposite
 
 namespace CategoryTheory.Limits
 
-/-- The data of chosen coends in `C`. -/
-@[nolint checkUnivs, univ_out_params, pp_with_univ]
-class ChosenCoends (C : Type*) [Category* C] where
+/-- The data of chosen coends of shape `J` in `C`. -/
+class ChosenCoendsOfShape (J : Type*) [Category* J] (C : Type*) [Category* C] where
   /-- The chosen cowedge for each functor `Jᵒᵖ ⥤ J ⥤ C`. -/
-  cowedge {J : Type u} [Category.{v} J] (F : Jᵒᵖ ⥤ J ⥤ C) : Cowedge F
+  cowedge (F : Jᵒᵖ ⥤ J ⥤ C) : Cowedge F
   /-- The chosen cowedge is colimiting. -/
-  isCoend {J : Type u} [Category.{v} J] (F : Jᵒᵖ ⥤ J ⥤ C) : IsColimit (cowedge F)
+  isCoend (F : Jᵒᵖ ⥤ J ⥤ C) : IsColimit (cowedge F)
 
-variable {C : Type*} [Category* C] [ChosenCoends.{v, u} C]
+/-- The data of chosen coends in `C`. -/
+@[nolint checkUnivs, pp_with_univ]
+abbrev ChosenCoends (C : Type*) [Category* C] :=
+  ∀ {J : Type u} [Category.{v} J], ChosenCoendsOfShape J C
 
-variable {J : Type u} [Category.{v} J] (F : Jᵒᵖ ⥤ J ⥤ C)
+variable {J C : Type*} [Category* C] [Category* J] (F : Jᵒᵖ ⥤ J ⥤ C) [ChosenCoendsOfShape J C]
 
 /-- The chosen coend of a functor `Jᵒᵖ ⥤ J ⥤ C`. -/
-def chosenCoend : C := (ChosenCoends.cowedge F).pt
+def chosenCoend : C := (ChosenCoendsOfShape.cowedge F).pt
 
 /-- Given `F : Jᵒᵖ ⥤ J ⥤ C`, this is the inclusion `(F.obj (op j)).obj j ⟶ chosenCoend F`
 for any `j : J`. -/
 def chosenCoend.ι (j : J) : (F.obj (op j)).obj j ⟶ chosenCoend F :=
-  (ChosenCoends.cowedge F).π j
+  (ChosenCoendsOfShape.cowedge F).π j
 
 lemma chosenCoend.condition {i j : J} (f : i ⟶ j) :
     (F.map f.op).app _ ≫ chosenCoend.ι F i = (F.obj _).map f ≫ chosenCoend.ι F j :=
-  (ChosenCoends.cowedge F).condition f
+  (ChosenCoendsOfShape.cowedge F).condition f
 
 variable {F}
 
@@ -52,7 +55,7 @@ variable {F}
 @[ext]
 lemma chosenCoend.hom_ext {X : C} {f g : chosenCoend F ⟶ X}
     (h : ∀ j, chosenCoend.ι F j ≫ f = chosenCoend.ι F j ≫ g) : f = g := by
-  apply (ChosenCoends.isCoend F).hom_ext
+  apply (ChosenCoendsOfShape.isCoend F).hom_ext
   rintro (a | a)
   · simpa using _ ≫= h _
   · exact h _
@@ -62,7 +65,7 @@ variable {X : C} (f : ∀ j, (F.obj (op j)).obj j ⟶ X)
 
 /-- Constructor for morphisms out of the chosen coend of a functor. -/
 def chosenCoend.desc : chosenCoend F ⟶ X :=
-  Cowedge.IsColimit.desc (ChosenCoends.isCoend F) f hf
+  Cowedge.IsColimit.desc (ChosenCoendsOfShape.isCoend F) f hf
 
 @[reassoc (attr := simp)]
 lemma chosenCoend.ι_desc (j : J) : chosenCoend.ι F j ≫ chosenCoend.desc f hf = f j := by
@@ -89,31 +92,34 @@ lemma chosenCoend.map_comp {G H : Jᵒᵖ ⥤ J ⥤ C} (f : F ⟶ G) (g : G ⟶ 
 /-- The chosen coend construction as a functor out of the bifunctor category. -/
 @[simps]
 def chosenCoendFunctor : (Jᵒᵖ ⥤ J ⥤ C) ⥤ C where
-  obj := chosenCoend
-  map := chosenCoend.map
+  obj F := chosenCoend F
+  map f := chosenCoend.map f
+
+/-- The data of chosen ends of shape `J` in `C`. -/
+class ChosenEndsOfShape (J : Type*) [Category* J] (C : Type*) [Category* C] where
+  /-- The chosen wedge for each functor `Jᵒᵖ ⥤ J ⥤ C`. -/
+  wedge (F : Jᵒᵖ ⥤ J ⥤ C) : Wedge F
+  /-- The chosen wedge is limiting. -/
+  isEnd (F : Jᵒᵖ ⥤ J ⥤ C) : IsLimit (wedge F)
 
 /-- The data of chosen ends in `C`. -/
-@[nolint checkUnivs, univ_out_params, pp_with_univ]
-class ChosenEnds (C : Type*) [Category* C] where
-  /-- The chosen wedge for each functor `Jᵒᵖ ⥤ J ⥤ C`. -/
-  wedge {J : Type u} [Category.{v} J] (F : Jᵒᵖ ⥤ J ⥤ C) : Wedge F
-  /-- The chosen wedge is limiting. -/
-  isEnd {J : Type u} [Category.{v} J] (F : Jᵒᵖ ⥤ J ⥤ C) : IsLimit (wedge F)
+@[nolint checkUnivs, pp_with_univ]
+abbrev ChosenEnds (C : Type*) [Category* C] :=
+  ∀ {J : Type u} [Category.{v} J], ChosenEndsOfShape J C
 
-variable {C : Type*} [Category* C] [ChosenEnds.{v, u} C]
-variable {J : Type u} [Category.{v} J] (F : Jᵒᵖ ⥤ J ⥤ C)
+variable {J C : Type*} [Category* C] [Category* J] (F : Jᵒᵖ ⥤ J ⥤ C) [ChosenEndsOfShape J C]
 
 /-- The chosen end of a functor `Jᵒᵖ ⥤ J ⥤ C`. -/
-def chosenEnd : C := (ChosenEnds.wedge F).pt
+def chosenEnd : C := (ChosenEndsOfShape.wedge F).pt
 
 /-- Given `F : Jᵒᵖ ⥤ J ⥤ C`, this is the projection `chosenEnd F ⟶ (F.obj (op j)).obj j`
 for any `j : J`. -/
 def chosenEnd.π (j : J) : chosenEnd F ⟶ (F.obj (op j)).obj j :=
-  (ChosenEnds.wedge F).ι j
+  (ChosenEndsOfShape.wedge F).ι j
 
 lemma chosenEnd.condition {i j : J} (f : i ⟶ j) :
     chosenEnd.π F i ≫ (F.obj (op i)).map f = chosenEnd.π F j ≫ (F.map f.op).app j :=
-  (ChosenEnds.wedge F).condition f
+  (ChosenEndsOfShape.wedge F).condition f
 
 variable {F}
 
@@ -121,14 +127,14 @@ variable {F}
 @[ext]
 lemma chosenEnd.hom_ext {X : C} {f g : X ⟶ chosenEnd F}
     (h : ∀ j, f ≫ chosenEnd.π F j = g ≫ chosenEnd.π F j) : f = g :=
-  Wedge.IsLimit.hom_ext (ChosenEnds.isEnd F) h
+  Wedge.IsLimit.hom_ext (ChosenEndsOfShape.isEnd F) h
 
 variable {X : C} (f : ∀ j, X ⟶ (F.obj (op j)).obj j)
   (hf : ∀ ⦃i j : J⦄ (g : i ⟶ j), f i ≫ (F.obj (op i)).map g = f j ≫ (F.map g.op).app j)
 
 /-- Constructor for morphisms into the chosen end of a functor. -/
 def chosenEnd.lift : X ⟶ chosenEnd F :=
-  Wedge.IsLimit.lift (ChosenEnds.isEnd F) f hf
+  Wedge.IsLimit.lift (ChosenEndsOfShape.isEnd F) f hf
 
 @[reassoc (attr := simp)]
 lemma chosenEnd.lift_π (j : J) : chosenEnd.lift f hf ≫ chosenEnd.π F j = f j := by
@@ -158,7 +164,7 @@ lemma chosenEnd.map_comp {G H : Jᵒᵖ ⥤ J ⥤ C} (f : F ⟶ G) (g : G ⟶ H)
 /-- The chosen end construction as a functor out of the bifunctor category. -/
 @[simps]
 def chosenEndFunctor : (Jᵒᵖ ⥤ J ⥤ C) ⥤ C where
-  obj := chosenEnd
-  map := chosenEnd.map
+  obj F := chosenEnd F
+  map f := chosenEnd.map f
 
 end CategoryTheory.Limits
