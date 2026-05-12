@@ -1,4 +1,3 @@
-
 import Mathlib.Geometry.Manifold.Notation
 import Mathlib.Geometry.Manifold.Instances.Sphere
 
@@ -54,13 +53,13 @@ error: ⏎
 ---
 trace: [Elab.DiffGeo.FunPropM] Searching for some `ModelWithCorners 𝕜 E →L[𝕜] E E →L[𝕜] E`
 [Elab.DiffGeo.FunPropM] Trying to solve a goal `ModelWithCorners 𝕜 E →L[𝕜] E E →L[𝕜] E`
-[Elab.DiffGeo.MDiff] ❌️ Assumption
+[Elab.DiffGeo.MDiff] 💥️ Assumption
   [Elab.DiffGeo.MDiff] Failed with error:
       Couldn't find a `ModelWithCorners 𝕜 E →L[𝕜] E E →L[𝕜] E` in the local context.
-[Elab.DiffGeo.MDiff] ❌️ Normed space
+[Elab.DiffGeo.MDiff] 💥️ Normed space
+  [Elab.DiffGeo.MDiff] `E →L[𝕜] E` is a space of continuous (semi-)linear maps
   [Elab.DiffGeo.MDiff] Failed with error:
-      elaboration function for `Manifold.«term𝓘(_,_)»` has not been implemented
-        𝓘(?m✝, ?m✝¹)
+      Couldn't find a `NormedSpace` structure on `E →L[𝕜] E` among local instances.
 -/
 #guard_msgs in
 #find_model ModelWithCorners 𝕜 (E →L[𝕜] E) (E →L[𝕜] E)
@@ -73,10 +72,10 @@ error: ⏎
 ---
 trace: [Elab.DiffGeo.FunPropM] Searching for some `ModelWithCorners 𝕜 E H'`
 [Elab.DiffGeo.FunPropM] Trying to solve a goal `ModelWithCorners 𝕜 E H'`
-[Elab.DiffGeo.MDiff] ❌️ Assumption
+[Elab.DiffGeo.MDiff] 💥️ Assumption
   [Elab.DiffGeo.MDiff] Failed with error:
       Couldn't find a `ModelWithCorners 𝕜 E H'` in the local context.
-[Elab.DiffGeo.MDiff] ❌️ Normed space
+[Elab.DiffGeo.MDiff] 💥️ Normed space
   [Elab.DiffGeo.MDiff] Failed with error:
       `E` is a normed space, but `H'` is not defeq to it
 -/
