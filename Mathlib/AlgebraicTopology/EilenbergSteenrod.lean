@@ -78,7 +78,7 @@ variable {HP HP' : HomologyPretheory C c}
 
 @[reassoc]
 lemma Hom.iso_comm_app (f : HP ⟶ HP') (i : ι) (X : TopCat.{u}) :
-    dsimp% (HP.iso i).hom.app X ≫ (incl.whiskerLeft (f.homₚ i)).app X =
+    dsimp% (HP.iso i).hom.app X ≫ (f.homₚ i).app (ofTopCat X) =
     (f.hom i).app X ≫ (HP'.iso i).hom.app X :=
   congr($(f.iso_comm _).app _)
 
