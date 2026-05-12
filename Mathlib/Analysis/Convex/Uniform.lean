@@ -166,9 +166,31 @@ open scoped Topology NNReal
 
 variable {E : Type*} [SeminormedAddCommGroup E]
 
+noncomputable def normAddPair (X : Type*) [SeminormedAddCommGroup X] :
+    (Metric.sphere (0 : X) 1) × (Metric.sphere (0 : X) 1) → ℝ :=
+  fun p => ‖(p.1 : X) + (p.2 : X)‖
+
+theorem uniformConvexSpace_of_comap_le
+    (X : Type*) [SeminormedAddCommGroup X]
+    (h : Filter.comap (normAddPair X) (nhds 2) ≤ uniformity (Metric.sphere (0 : X) 1)) :
+    UniformConvexSpace X := by
+  constructor
+  intro ε hε
+  contrapose! h
+  simp [ Filter.le_def ]
+  refine ⟨{p : (sphere (0 : X) 1) × (sphere (0 : X) 1) | ‖(p.1 : X) - (p.2 : X)‖ < ε }, _, _⟩
+  · refine Metric.mem_uniformity_dist.2 ⟨ε, hε, _⟩
+    simp [dist_eq_norm, Subtype.dist_eq]
+  · intro U hU
+    rcases Metric.mem_nhds_iff.1 hU with ⟨δ, δpos, hδ⟩
+    rcases h δ δpos with ⟨x, hx, y, hy, hxy, hxy'⟩
+    simp [Set.not_subset]
+    exact ⟨x, hx, y, ⟨hy, hδ <| mem_ball_iff_norm.mpr <| abs_lt.mpr
+      ⟨by linarith [norm_add_le x y], by linarith [norm_add_le x y]⟩⟩, hxy⟩
+
 /-- The filter on `E × E` capturing pairs on the unit sphere with `‖x + y‖` close to `2`. -/
-def uniformConvexFilter (E : Type*) [SeminormedAddCommGroup E] : Filter (E × E) :=
-  (𝓝 2).comap (fun p : E × E => ‖p.1 + p.2‖) ⊓ 𝓟 {p | ‖p.1‖ = 1 ∧ ‖p.2‖ = 1}
+def uniformConvexFilter (X : Type*) [SeminormedAddCommGroup X] : Filter (X × X) :=
+  (𝓝 2).comap (normAddPair X) ⊓ 𝓟 {p | ‖p.1‖ = 1 ∧ ‖p.2‖ = 1}
 
 /-- In a uniformly convex space, the map `(x, y) ↦ ‖x - y‖` tends to `0` along the filter of
 pairs on the unit sphere with `‖x + y‖` close to `2`. -/
