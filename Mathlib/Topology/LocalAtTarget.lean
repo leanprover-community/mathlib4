@@ -21,6 +21,8 @@ We show that the following properties of continuous maps are local at the target
 - `IsOpenEmbedding`
 - `IsClosedEmbedding`
 - `GeneralizingMap`
+- `IsProperMap`
+- `IsOpenQuotientMap`
 
 We show that the following properties of continuous maps are local at the source:
 - `IsOpenMap`
@@ -93,6 +95,10 @@ lemma IsProperMap.restrictPreimage (H : IsProperMap f) (s : Set β) :
   refine ⟨H.continuous.restrictPreimage, H.isClosedMap.restrictPreimage _, fun y ↦ ?_⟩
   rw [IsEmbedding.subtypeVal.isCompact_iff, image_val_preimage_restrictPreimage, image_singleton]
   exact H.isCompact_preimage isCompact_singleton
+
+lemma IsOpenQuotientMap.restrictPreimage (H : IsOpenQuotientMap f) (s : Set β) :
+    IsOpenQuotientMap (s.restrictPreimage f) :=
+  ⟨H.surjective.restrictPreimage _, H.continuous.restrictPreimage, H.isOpenMap.restrictPreimage _⟩
 
 namespace TopologicalSpace.IsOpenCover
 
