@@ -541,8 +541,7 @@ theorem truncTotal_subst_eq_subst_sum (ha : HasSubst a) (ha₁ : ∀ i, (a i).co
     obtain h1 := coeff_subst_finite ha f d
     obtain h2 := coeff_subst_finite ha (∑ i ∈ range k, (homogeneousComponent i) f) d
     rw [finsum_eq_sum _ h1, finsum_eq_sum _ h2]
-    have : Set.Finite.toFinset h2 ⊆ Set.Finite.toFinset h1 := by
-      simp +contextual [coeff_homogeneousComponent]
+    have : h2.toFinset ⊆ h1.toFinset := by simp +contextual [coeff_homogeneousComponent]
     have aux₀ {n : σ →₀ ℕ} : coeff d (n.prod fun s e ↦ a s ^ e) ≠ 0 → n.degree ≤ d.degree := by
       contrapose!
       intro hc
@@ -574,8 +573,7 @@ theorem truncTotal_subst_eq_sum_subst (ha : HasSubst a) (ha₁ : ∀ i, (a i).co
 
 theorem truncTotal_subst_eq_truncTotal_left [Finite σ] (ha : HasSubst a)
     (ha₁ : ∀ i, (a i).constantCoeff = 0) :
-    truncTotal k (f.subst a) =
-      ((f.truncTotal k).toMvPowerSeries.subst a).truncTotal k := by
+    truncTotal k (f.subst a) = ((f.truncTotal k).toMvPowerSeries.subst a).truncTotal k := by
   rw [truncTotal_subst_eq_subst_sum ha ha₁, truncTotal_eq_sum]
 
 theorem truncTotal_subst_eq_sum_subst_of_le (ha : HasSubst a) (h : ∀ i, (a i).constantCoeff = 0)
