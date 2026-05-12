@@ -235,7 +235,7 @@ lemma IsAcyclic.mem_support_of_ne_mem_support_of_adj_of_isPath (hG : G.IsAcyclic
     {p : G.Walk u v} {q : G.Walk u w} (hp : p.IsPath) (hq : q.IsPath) (hadj : G.Adj v w)
     (hv : v ∉ q.support) : w ∈ p.support := by
   rw [Subtype.mk.inj <| isAcyclic_iff_path_unique.mp hG ⟨p, hp⟩ ⟨_, hq.concat hv hadj.symm⟩]
-  exact q.support_subset_support_concat _ q.end_mem_support
+  exact q.subset_support_concat _ q.end_mem_support
 
 lemma IsAcyclic.ne_mem_support_of_support_of_adj_of_isPath (hG : G.IsAcyclic) {u v w : V}
     {p : G.Walk u v} {q : G.Walk u w} (hp : p.IsPath) (hq : q.IsPath) (hadj : G.Adj v w)

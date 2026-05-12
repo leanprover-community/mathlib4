@@ -375,31 +375,33 @@ theorem mem_support_append_iff {t u v w : V} (p : G.Walk u v) (p' : G.Walk v w) 
     -- this `have` triggers the unusedHavesSuffices linter:
     (try have := h'.symm) <;> simp [*]
 
-theorem support_prefix_support_concat {u v w : V} (p : G.Walk u v) (hadj : G.Adj v w) :
+theorem prefix_support_concat {u v w : V} (p : G.Walk u v) (hadj : G.Adj v w) :
     p.support <+: (p.concat hadj).support := by
   simp
 
-theorem support_subset_support_concat {u v w : V} (p : G.Walk u v) (hadj : G.Adj v w) :
+theorem subset_support_concat {u v w : V} (p : G.Walk u v) (hadj : G.Adj v w) :
     p.support ⊆ (p.concat hadj).support := by
   simp
 
-theorem support_prefix_support_append {V : Type u} {G : SimpleGraph V} {u v w : V}
+@[deprecated (since := "2026-05-12")] alias support_subset_support_concat := subset_support_concat
+
+theorem prefix_support_append {V : Type u} {G : SimpleGraph V} {u v w : V}
     (p : G.Walk u v) (q : G.Walk v w) : p.support <+: (p.append q).support := by
   simp [support_append]
 
 @[simp]
 theorem subset_support_append_left {V : Type u} {G : SimpleGraph V} {u v w : V}
     (p : G.Walk u v) (q : G.Walk v w) : p.support ⊆ (p.append q).support :=
-  support_prefix_support_append p q |>.subset
+  prefix_support_append p q |>.subset
 
-theorem support_suffix_support_append {V : Type u} {G : SimpleGraph V} {u v w : V}
+theorem suffix_support_append {V : Type u} {G : SimpleGraph V} {u v w : V}
     (p : G.Walk u v) (q : G.Walk v w) : q.support <:+ (p.append q).support := by
   simp [support_append_eq_support_dropLast_append]
 
 @[simp]
 theorem subset_support_append_right {V : Type u} {G : SimpleGraph V} {u v w : V}
     (p : G.Walk u v) (q : G.Walk v w) : q.support ⊆ (p.append q).support :=
-  support_suffix_support_append p q |>.subset
+  suffix_support_append p q |>.subset
 
 theorem coe_support_append {u v w : V} (p : G.Walk u v) (p' : G.Walk v w) :
     ((p.append p').support : Multiset V) = {u} + p.support.tail + p'.support.tail := by
