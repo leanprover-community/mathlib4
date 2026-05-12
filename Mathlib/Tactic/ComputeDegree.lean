@@ -412,7 +412,7 @@ def splitApply (mvs static : List MVarId) : MetaM ((List MVarId) × (List MVarId
 
 /-- `miscomputedDegree? deg false_goals` takes as input
 *  an `Expr`ession `deg`, representing the degree of a polynomial
-   (i.e. an `Expr`ession of inferred type either `ℕ` or `WithBot ℕ`);
+  (i.e. an `Expr`ession of inferred type either `ℕ` or `WithBot ℕ`);
 *  a list of `MVarId`s `false_goals`.
 
 Although inconsequential for this function, the list of goals `false_goals` reduces to `False`
