@@ -55,6 +55,13 @@ theorem restrictScalars_mem (V : Submodule R M) (m : M) : m ∈ V.restrictScalar
 theorem restrictScalars_self (V : Submodule R M) : V.restrictScalars R = V :=
   SetLike.coe_injective rfl
 
+@[simp] theorem restrictScalars_restrictScalars
+    (T : Type*) [Semiring T] [SMul T R] [SMul S T] [IsScalarTower S T R]
+    [Module T M] [IsScalarTower S T M] [IsScalarTower T R M]
+    (V : Submodule R M) :
+    (V.restrictScalars T).restrictScalars S = V.restrictScalars S :=
+  rfl
+
 variable (R M)
 
 theorem restrictScalars_injective :
@@ -68,18 +75,20 @@ theorem restrictScalars_inj {V₁ V₂ : Submodule R M} :
 
 /-- Even though `p.restrictScalars S` has type `Submodule S M`, it is still an `R`-module. -/
 instance restrictScalars.origModule (p : Submodule R M) : Module R (p.restrictScalars S) :=
-  (by infer_instance : Module R p)
+  inferInstanceAs <| Module R p
 
 instance restrictScalars.isScalarTower (p : Submodule R M) :
     IsScalarTower S R (p.restrictScalars S) where
   smul_assoc r s x := Subtype.ext <| smul_assoc r s (x : M)
 
 variable {R M} in
+@[gcongr]
 lemma restrictScalars_le {s t : Submodule R M} :
     s.restrictScalars S ≤ t.restrictScalars S ↔ s ≤ t :=
   Iff.rfl
 
 variable {R M} in
+@[gcongr]
 lemma restrictScalars_lt {s t : Submodule R M} :
     s.restrictScalars S < t.restrictScalars S ↔ s < t :=
   Iff.rfl
@@ -167,5 +176,20 @@ lemma restrictScalars_sup (s t : Submodule R M) :
 lemma toIntSubmodule_toAddSubgroup {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
     (N : Submodule R M) :
     N.toAddSubgroup.toIntSubmodule = N.restrictScalars ℤ := rfl
+
+@[simp]
+theorem codisjoint_restrictScalars_iff {s t : Submodule R M} :
+    Codisjoint (s.restrictScalars S) (t.restrictScalars S) ↔ Codisjoint s t := by
+  simp [codisjoint_iff, ← restrictScalars_sup]
+
+@[simp]
+theorem disjoint_restrictScalars_iff {s t : Submodule R M} :
+    Disjoint (s.restrictScalars S) (t.restrictScalars S) ↔ Disjoint s t := by
+  simp [disjoint_def]
+
+@[simp]
+theorem isCompl_restrictScalars_iff {s t : Submodule R M} :
+    IsCompl (s.restrictScalars S) (t.restrictScalars S) ↔ IsCompl s t := by
+  simp [isCompl_iff]
 
 end Submodule
