@@ -49,7 +49,7 @@ info: Try this:
 ---
 info: `exact Nat.le_succ_of_le h` modifies the current goal, which was modified by a flexible tactic!
 -/
-#guard_msgs in
+--#guard_msgs in
 example {a b : Nat} (h : a ≤ b) : a + 0 ≤ b + 1 := by
   simp_all
   exact Nat.le_succ_of_le h
@@ -64,7 +64,7 @@ info: Try this:
 ---
 info: `exact
   Nat.le_succ_of_le
-    h` is a rigid tactic. Previously, a flexible tactic, which potentially modified all hypotheses and the goal, was used.
+    h` uses a rigid tactic. Previously, a flexible tactic, which potentially modified all hypotheses and the goal, was used.
 ---
 warning: `simp at *` is a flexible tactic that potentially modifies all hypotheses and the goal. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
 
@@ -75,9 +75,9 @@ info: Try this:
 ---
 info: `exact
   Nat.le_succ_of_le
-    h` is a rigid tactic. Previously, a flexible tactic, which potentially modified all hypotheses and the goal, was used.
+    h` uses a rigid tactic. Previously, a flexible tactic, which potentially modified all hypotheses and the goal, was used.
 -/
---#guard_msgs in
+#guard_msgs in
 example {a b : Nat} (h : a ≤ b) : a + 0 ≤ b + 1 := by
   simp at *
   exact Nat.le_succ_of_le h
@@ -88,14 +88,14 @@ warning: `simp at *` is a flexible tactic that potentially modifies all hypothes
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
 info: `exact
-  h2` is a rigid tactic. Previously, a flexible tactic, which potentially modified all hypotheses and the goal, was used.
+  h2` uses a rigid tactic. Previously, a flexible tactic, which potentially modified all hypotheses and the goal, was used.
 ---
 warning: `simp at *` is a flexible tactic that potentially modifies all hypotheses and the goal. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
 
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
 info: `exact
-  h2` is a rigid tactic. Previously, a flexible tactic, which potentially modified all hypotheses and the goal, was used.
+  h2` uses a rigid tactic. Previously, a flexible tactic, which potentially modified all hypotheses and the goal, was used.
 -/
 #guard_msgs in
 example {a b : Nat} (h1 : 0 + 0 = 0) (h2 : a ≤ b) : a ≤ b := by
@@ -108,14 +108,14 @@ warning: `simp at *` is a flexible tactic that potentially modifies all hypothes
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
 info: `exact
-  h2` is a rigid tactic. Previously, a flexible tactic, which potentially modified all hypotheses and the goal, was used.
+  h2` uses a rigid tactic. Previously, a flexible tactic, which potentially modified all hypotheses and the goal, was used.
 ---
 warning: `simp at *` is a flexible tactic that potentially modifies all hypotheses and the goal. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
 
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
 info: `exact
-  h2` is a rigid tactic. Previously, a flexible tactic, which potentially modified all hypotheses and the goal, was used.
+  h2` uses a rigid tactic. Previously, a flexible tactic, which potentially modified all hypotheses and the goal, was used.
 -/
 #guard_msgs in
 example {a b : Nat} (h1 : 0 + 0 = 0) (h2 : a ≤ b) : a ≤ b := by
@@ -131,7 +131,7 @@ info: Try this:
   [apply] simp only [Nat.add_zero] at *
 ---
 info: `exact
-  h` is a rigid tactic. Previously, a flexible tactic, which potentially modified all hypotheses and the goal, was used.
+  h` uses a rigid tactic. Previously, a flexible tactic, which potentially modified all hypotheses and the goal, was used.
 ---
 warning: `simp at *` is a flexible tactic that potentially modifies all hypotheses and the goal. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
 
@@ -141,7 +141,7 @@ info: Try this:
   [apply] simp only [Nat.add_zero] at *
 ---
 info: `exact
-  h` is a rigid tactic. Previously, a flexible tactic, which potentially modified all hypotheses and the goal, was used.
+  h` uses a rigid tactic. Previously, a flexible tactic, which potentially modified all hypotheses and the goal, was used.
 -/
 #guard_msgs in
 example {a b : Nat} (h : a = b) : a + 0 = b := by
