@@ -10,9 +10,9 @@ public import Mathlib.RingTheory.Finiteness.Cofinite
 public import Mathlib.Topology.Maps.Strict.Basic
 public import Mathlib.Topology.Algebra.Module.LinearMap
 public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
-public import Mathlib.Topology.Algebra.Module.LinearMap
 public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
-public import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.Topology.Algebra.Module.Complement
+public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E F : Type*} [AddCommGroup E] [AddCommGroup F] [TopologicalSpace E] [TopologicalSpace F]
@@ -287,7 +287,7 @@ lemma KernelFG_of_isFredholmₗ (hu : IsFredholm_existsₗ u) : u.ker.FG := by
 
 /- ## Cokernel -/
 
-lemma CokernelFG_of_isFredholm' (hu : IsFredholm_existsₗ u) : Module.Finite R (N ⧸ u.range) := by
+lemma CokernelFG_of_isFredholm' (hu : IsFredholm_existsₗ u) : (u.range).CoFG := by
   obtain ⟨v, hv, -⟩ := hu
   have : (u ∘ₗ v - (1 : N →ₗ[R] N)).ker ≤ Submodule.comap (1 : N →ₗ[R] N) u.range :=
     fun x hx ↦ by
@@ -395,3 +395,24 @@ so `u.ker` is complemented.
 -/
 
 end FredholmOperators
+open Submodule
+
+variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [AddCommGroup E]
+   [TopologicalSpace E] [Module 𝕜 E] [ContinuousSMul 𝕜 E] [IsTopologicalAddGroup E] [T2Space E]
+
+lemma thingy (A B : Submodule 𝕜 E) (hA : FiniteDimensional 𝕜 A) (hA1 : A.ClosedComplemented)
+    (hB : B ≤ A) : B.ClosedComplemented := by
+  obtain ⟨p, hp⟩ := hA1
+  obtain ⟨q, hq⟩ := B.exists_isCompl
+  let f :=  ((projectionOnto B q hq).domRestrict A).toContinuousLinearMap
+  use f.comp p
+  intro x
+  let x' : A := ⟨x, hB x.2⟩
+  calc
+    f.comp p x = f (p x) := rfl
+    _          = f (p x') := rfl
+    _          = f x' := by rw [hp]
+    _          = projectionOnto B q hq x := rfl
+    _          = x := projectionOnto_apply_left _ x
+
+--PR this
