@@ -1,7 +1,3 @@
-import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
-import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
-import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
-import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
 import Mathlib.MeasureTheory.Integral.Asymptotics
 import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 import Mathlib.MeasureTheory.Integral.CircleIntegral
@@ -17,7 +13,7 @@ These examples collect small integrability goals found by grepping mathlib for `
 The proofs are all `sorry`: this file is a goal suite for a future integrability tactic.
 
 update by running: `scripts/update-integrability-tactic-counts.sh`
-CURRENT PASSING TEST: 52 / 189
+CURRENT PASSING TEST: 18 / 189
 
 -/
 
@@ -596,11 +592,13 @@ example {α E F : Type*} [MeasurableSpace α] [NormedAddCommGroup E] [NormedAddC
     {μ : Measure α} {l : Filter α} [l.IsMeasurablyGenerated] {f : α → E} {g : α → F}
     (hf : f =O[l] g) (hfm : StronglyMeasurableAtFilter f l μ)
     (hg : IntegrableAtFilter g l μ) : IntegrableAtFilter f l μ := by
+  fail_if_success fun_prop
   sorry
 
 example {α E F : Type*} [MeasurableSpace α] [NormedAddCommGroup E] [NormedAddCommGroup F]
     {μ : Measure α} {f : α → E} {g : α → F} (hf : f =O[⊤] g)
     (hfm : AEStronglyMeasurable f μ) (hg : Integrable g μ) : Integrable f μ := by
+  fail_if_success fun_prop
   sorry
 
 -- BddAbove.convolutionExistsAt'
@@ -608,6 +606,7 @@ example {E F G : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAdd
     [NormedSpace ℝ E] [NormedSpace ℝ F] [NormedSpace ℝ G]
     {μ : Measure ℝ} {f : ℝ → E} {g : ℝ → F} (L : E →L[ℝ] F →L[ℝ] G) (x₀ : ℝ) :
     Integrable (fun t => L (f t) (g (x₀ - t))) μ := by
+  fail_if_success fun_prop
   sorry
 
 example {E F G : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
@@ -615,6 +614,7 @@ example {E F G : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAdd
     {μ : Measure ℝ} {s : Set ℝ} {f : ℝ → E} {g : ℝ → F}
     (L : E →L[ℝ] F →L[ℝ] G) (x₀ : ℝ) :
     IntegrableOn (fun t => L (f t) (g (x₀ - t))) s μ := by
+  fail_if_success fun_prop
   sorry
 
 example {E F G : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E]
@@ -622,6 +622,7 @@ example {E F G : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpa
     {μ : Measure ℝ} {s : Set ℝ} {f : ℝ → E} {g : ℝ → F}
     (L : E →L[ℝ] F →L[ℝ] G) (C : ℝ) :
     Integrable (s.indicator fun t => ‖L‖ * ‖f t‖ * C) (μ.restrict s) := by
+  fail_if_success fun_prop
   sorry
 
 -- BoundedContinuousFunction.integrable / integrable_of_nnreal / norm_integral_le_mul_norm
@@ -629,17 +630,20 @@ example {X E : Type*} [MeasurableSpace X] [TopologicalSpace X] [OpensMeasurableS
     [NormedAddCommGroup E] [TopologicalSpace E] [MeasurableSpace E] [BorelSpace E]
     [ContinuousENorm E] [SecondCountableTopology E] {μ : Measure X} [IsFiniteMeasure μ] (f : X →ᵇ E) :
     Integrable (⇑f) μ := by
+  fail_if_success fun_prop
   sorry
 
 example {X : Type*} [MeasurableSpace X] [TopologicalSpace X] [OpensMeasurableSpace X]
     {μ : Measure X} [IsFiniteMeasure μ] (f : BoundedContinuousFunction X NNReal) :
     Integrable (NNReal.toReal ∘ ⇑f) μ := by
+  fail_if_success fun_prop
   sorry
 
 example {X E : Type*} [MeasurableSpace X] [TopologicalSpace X] [OpensMeasurableSpace X]
     [NormedAddCommGroup E] [TopologicalSpace E] [MeasurableSpace E] [BorelSpace E]
     [ContinuousENorm E] [SecondCountableTopology E] {μ : Measure X} [IsFiniteMeasure μ] (f : X →ᵇ E) :
     Integrable (fun x => ‖f x‖) μ := by
+  fail_if_success fun_prop
   sorry
 
 -- Continuous.integrableAt_nhds
@@ -647,12 +651,14 @@ example {α E : Type*} [TopologicalSpace α] [MeasurableSpace α] [OpensMeasurab
     [NormedAddCommGroup E] [TopologicalSpace E] [MeasurableSpace E] [BorelSpace E]
     [ContinuousENorm E] [SecondCountableTopologyEither α E] {μ : Measure α} [IsLocallyFiniteMeasure μ]
     {f : α → E} (hf : Continuous f) (a : α) : IntegrableAtFilter f (𝓝 a) μ := by
+  fail_if_success fun_prop
   sorry
 
 example {α E : Type*} [TopologicalSpace α] [MeasurableSpace α] [OpensMeasurableSpace α]
     [NormedAddCommGroup E] [TopologicalSpace E] [MeasurableSpace E] [BorelSpace E]
     [ContinuousENorm E] [SecondCountableTopologyEither α E] {μ : Measure α} [IsLocallyFiniteMeasure μ]
     {f : α → E} (hf : Continuous f) (a : α) : IntegrableAtFilter f (𝓝[univ] a) μ := by
+  fail_if_success fun_prop
   sorry
 
 -- ContinuousOn.integrableOn_of_subset_isCompact
@@ -661,6 +667,7 @@ example {X E : Type*} [TopologicalSpace X] [MeasurableSpace X] [OpensMeasurableS
     {μ : Measure X} {K s : Set X} {f : X → E}
     (hf : ContinuousOn f K) (hK : IsCompact K) (hs : MeasurableSet s) (h's : s ⊆ K)
     (mus : (μ s) < ⊤) : IntegrableOn f s μ := by
+  fail_if_success fun_prop
   sorry
 
 -- ContinuousLinearMap.comp_condExp_comm / ContinuousLinearEquiv.integrable_comp_iff shapes
@@ -668,31 +675,38 @@ example {α E F : Type*} [MeasurableSpace α] [NormedAddCommGroup E] [NormedAddC
     [NormedSpace ℝ E] [NormedSpace ℝ F]
     {μ : Measure α} {f : α → E} (T : E →L[ℝ] F) (hf : Integrable f μ) :
     Integrable (fun x => T (f x)) μ := by
+  fail_if_success fun_prop
   sorry
 
 example {α E F : Type*} [MeasurableSpace α] [NormedAddCommGroup E] [NormedAddCommGroup F]
     [NormedSpace ℝ E] [NormedSpace ℝ F]
     {μ : Measure α} {φ : α → E} (L : E ≃L[ℝ] F)
     (h : Integrable (fun a => L (φ a)) μ) : Integrable φ μ := by
+  fail_if_success fun_prop
   sorry
 
 -- IntervalIntegrable.comp_add_right / comp_mul_left / continuous multiplier shapes
 example {E : Type*} [NormedAddCommGroup E] {f : ℝ → E} {a b c : ℝ}
     (hf : IntervalIntegrable f volume a b) :
     IntervalIntegrable (fun x => f (x + c)) volume (a - c) (b - c) := by
+  fail_if_success fun_prop
   sorry
 
 example {E : Type*} [NormedAddCommGroup E] {f : ℝ → E} {a b c : ℝ}
     (hf : IntervalIntegrable f volume a b) :
     IntervalIntegrable (fun x => f (c * x)) volume (a / c) (b / c) := by
+  fail_if_success fun_prop
   sorry
 
 example {f g : ℝ → ℝ} {a b : ℝ} (hf : IntervalIntegrable f volume a b)
     (hg : ContinuousOn g [[a, b]]) : IntervalIntegrable (fun x => f x * g x) volume a b := by
+  fail_if_success fun_prop
   sorry
 
 example {f : ℝ → ℝ} {g : ℝ → ℂ} {a b : ℝ} (hf : IntervalIntegrable f volume a b)
     (hg : ContinuousOn g [[a, b]]) : IntervalIntegrable (fun x => f x • g x) volume a b := by
+  fail_if_success fun_prop
+  sorryfail_if_success fun_prop
   sorry
 
 -- MeasureTheory.IntegrableAtFilter API shapes
@@ -700,79 +714,95 @@ example {α E : Type*} [MeasurableSpace α] [NormedAddCommGroup E] [ContinuousAd
     {μ : Measure α} {l : Filter α} {f g : α → E}
     (hf : IntegrableAtFilter f l μ) (hg : IntegrableAtFilter g l μ) :
     IntegrableAtFilter (f + g) l μ := by
+  fail_if_success fun_prop
   sorry
 
 example {α E : Type*} [MeasurableSpace α] [NormedAddCommGroup E]
     {μ : Measure α} {l : Filter α} {f : α → E} (hf : IntegrableAtFilter f l μ) :
     IntegrableAtFilter (-f) l μ := by
+  fail_if_success fun_prop
   sorry
 
 example {α E : Type*} [MeasurableSpace α] [NormedAddCommGroup E] [NormedSpace ℝ E]
     {μ : Measure α} {l : Filter α} {f : α → E} (c : ℝ)
     (hf : IntegrableAtFilter f l μ) : IntegrableAtFilter (c • f) l μ := by
+  fail_if_success fun_prop
   sorry
 
 example {α E : Type*} [MeasurableSpace α] [NormedAddCommGroup E]
     {μ : Measure α} {l : Filter α} {f g : α → E}
     (hf : IntegrableAtFilter f l μ) (hg : IntegrableAtFilter g l μ) :
     IntegrableAtFilter (f - g) l μ := by
+  fail_if_success fun_prop
   sorry
 
 example {α E : Type*} [MeasurableSpace α] [NormedAddCommGroup E]
     {μ : Measure α} {l l' : Filter α} {f : α → E} :
     IntegrableAtFilter f (l ⊔ l') μ ↔
       IntegrableAtFilter f l μ ∧ IntegrableAtFilter f l' μ := by
+  fail_if_success fun_prop
   sorry
 
 example {α E : Type*} [MeasurableSpace α] [NormedAddCommGroup E]
     {μ : Measure α} {l : Filter α} {f : α → E} :
     IntegrableAtFilter f (l ⊓ ae μ) μ ↔ IntegrableAtFilter f l μ := by
+  fail_if_success fun_prop
   sorry
 
 example {α E : Type*} [TopologicalSpace α] [MeasurableSpace α] [NormedAddCommGroup E]
     {μ : Measure α} {s : Set α} {x : α} {f : α → E} :
     IntegrableAtFilter (s.indicator f) (𝓝 x) μ := by
+  fail_if_success fun_prop
   sorry
 
 -- Improper-integral / special-function AtFilter shapes
 example {s : ℝ} :
     IntegrableAtFilter (fun t : ℝ => t ^ (-s)) atTop volume := by
+  fail_if_success fun_prop
   sorry
 
 example {s : ℝ} :
     IntegrableAtFilter (fun t : ℝ => t ^ s) atTop volume ↔ s < -1 := by
+  fail_if_success fun_prop
   sorry
 
 -- Gamma/Gaussian style goals from the database.
 example {s : ℂ} (hs : 0 < s.re) :
     IntegrableOn (fun x : ℝ => ((Real.exp (-x) : ℝ) : ℂ) * (x : ℂ) ^ (s - 1)) (Ioi 0) volume := by
+  fail_if_success fun_prop
   sorry
 
 example {s Y : ℂ} :
     IntegrableOn (fun x : ℝ => s * (((Real.exp (-x) : ℝ) : ℂ) * (x : ℂ) ^ (s - 1))) (Ioc 0 Y.re) volume := by
+  fail_if_success fun_prop
   sorry
 
 example {b : ℂ} (hb : 0 < b.re) :
     Integrable (fun x : ℝ => Real.exp (-b.re * x ^ 2)) volume := by
+  fail_if_success fun_prop
   sorry
 
 example {b c : ℂ} (hb : 0 < b.re) :
     Integrable (fun x : ℝ => Complex.exp (-b * ((x : ℂ) + c * Complex.I) ^ 2)) volume := by
+  fail_if_success fun_prop
   sorry
 
 example {ι : Type*} [Fintype ι] (b : ι → ℂ) (c : ι → ℂ) :
     Integrable (fun v : ι → ℝ =>
       Complex.exp (-∑ i, b i * (v i : ℂ) ^ 2 + ∑ i, c i * (v i : ℂ))) volume := by
+  fail_if_success fun_prop
   sorry
 
 -- Norm and indicator goals from measure restrictions.
 example {α E : Type*} [MeasurableSpace α] [NormedAddCommGroup E]
     {μ : Measure α} {s : Set α} {f : α → E} :
     IntegrableOn (fun a => ‖f a‖) s μ := by
+  fail_if_success fun_prop
   sorry
 
 example {α : Type*} [MeasurableSpace α] {μ : Measure α} {s : Set α} {f : α → ℝ} :
     Integrable (s.indicator f) (μ.restrict s) := by
+  fail_if_success fun_prop
   sorry
 
 end Database1SelectedGoals
