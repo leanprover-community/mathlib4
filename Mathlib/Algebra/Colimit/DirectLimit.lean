@@ -944,7 +944,7 @@ variable (G f) in
 noncomputable def of (i) : G i →⋆ₐ[R] DirectLimit G f where
   toFun x := ⟦⟨i, x⟩⟧
   __ := (Algebra.of G f i)
-  map_star' x := by rw [star_def]
+  map_star' _ := (star_def ..).symm
 
 @[simp] lemma of_f {i j} (hij) (x) : of G f j (f i j hij x) = of G f i x := .symm <| eq_of_le ..
 
