@@ -5,6 +5,7 @@ import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.MeasureTheory.Function.LocallyIntegrable
 import Mathlib.NumberTheory.Chebyshev
+import Mathlib.MeasureTheory.Integral.IntegrabilityLemmas
 
 /-!
 # Integrability tactic examples
@@ -13,7 +14,7 @@ These examples collect small integrability goals found by grepping mathlib for `
 The proofs are all `sorry`: this file is a goal suite for a future integrability tactic.
 
 update by running: `scripts/update-integrability-tactic-counts.sh`
-CURRENT PASSING TEST: 18 / 189
+CURRENT PASSING TEST: 20 / 189
 
 -/
 
@@ -124,20 +125,16 @@ end IntervalIntegrable
 section IntegrableOn
 
 example (a b : ℝ) : IntegrableOn (fun x : ℝ => Real.sin x + x ^ 2) (Icc a b) := by
-  fail_if_success fun_prop
-  sorry
+  fun_prop
 
 example (a b : ℝ) : IntegrableOn (fun x : ℝ => Real.exp x) (Icc a b) := by
-  fail_if_success fun_prop
-  sorry
+  fun_prop
 
 example (a b : ℝ) : IntegrableOn (fun x : ℝ => (x, Real.exp x)) (Icc a b) := by
-  fail_if_success fun_prop
-  sorry
+  fun_prop
 
 example (a b : ℝ) : IntegrableOn (fun x : ℝ => (Real.sin x : ℂ)) (Icc a b) := by
-  fail_if_success fun_prop
-  sorry
+  fun_prop
 
 example {f : ℝ → ℝ} {s t : Set ℝ} (hf : IntegrableOn f t) (hst : s ⊆ t) : IntegrableOn f s := by
   fail_if_success fun_prop
@@ -675,8 +672,7 @@ example {α E F : Type*} [MeasurableSpace α] [NormedAddCommGroup E] [NormedAddC
     [NormedSpace ℝ E] [NormedSpace ℝ F]
     {μ : Measure α} {f : α → E} (T : E →L[ℝ] F) (hf : Integrable f μ) :
     Integrable (fun x => T (f x)) μ := by
-  fail_if_success fun_prop
-  sorry
+  fun_prop
 
 example {α E F : Type*} [MeasurableSpace α] [NormedAddCommGroup E] [NormedAddCommGroup F]
     [NormedSpace ℝ E] [NormedSpace ℝ F]
