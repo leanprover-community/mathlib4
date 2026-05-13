@@ -197,20 +197,12 @@ protected theorem map_smulₛₗ (c : R) (x : E) : f (c • x) = σ₁₂ c • 
 protected theorem map_smul [Module R E₂] (f : E →ₗᵢ[R] E₂) (c : R) (x : E) : f (c • x) = c • f x :=
   f.toLinearMap.map_smul c x
 
-@[simp]
-theorem norm_map (x : E) : ‖f x‖ = ‖x‖ :=
-  SemilinearIsometryClass.norm_map f x
-
-@[simp] -- Should be replaced with `SemilinearIsometryClass.nnorm_map` when https://github.com/leanprover/lean4/issues/3107 is fixed.
-theorem nnnorm_map (x : E) : ‖f x‖₊ = ‖x‖₊ :=
-  NNReal.eq <| norm_map f x
-
-@[simp] -- Should be replaced with `SemilinearIsometryClass.enorm_map` when https://github.com/leanprover/lean4/issues/3107 is fixed.
-theorem enorm_map (x : E) : ‖f x‖ₑ = ‖x‖ₑ := by
-  simp [enorm]
+protected lemma norm_map (x : E) : ‖f x‖ = ‖x‖ := by simp
+protected lemma nnnorm_map (x : E) : ‖f x‖₊ = ‖x‖₊ := by simp
+protected lemma enorm_map (x : E) : ‖f x‖ₑ = ‖x‖ₑ := by simp
 
 protected theorem isometry : Isometry f :=
-  AddMonoidHomClass.isometry_of_norm f.toLinearMap (norm_map _)
+  AddMonoidHomClass.isometry_of_norm f.toLinearMap f.norm_map
 
 lemma isEmbedding (f : F →ₛₗᵢ[σ₁₂] E₂) : IsEmbedding f := f.isometry.isEmbedding
 
@@ -541,9 +533,9 @@ def ofBounds (e : E ≃ₛₗ[σ₁₂] E₂) (h₁ : ∀ x, ‖e x‖ ≤ ‖x�
     E ≃ₛₗᵢ[σ₁₂] E₂ :=
   ⟨e, fun x => le_antisymm (h₁ x) <| by simpa only [e.symm_apply_apply] using h₂ (e x)⟩
 
-@[simp]
-theorem norm_map (x : E) : ‖e x‖ = ‖x‖ :=
-  e.norm_map' x
+protected lemma norm_map (x : E) : ‖e x‖ = ‖x‖ := by simp
+protected lemma nnnorm_map (x : E) : ‖e x‖₊ = ‖x‖₊ := by simp
+protected lemma enorm_map (x : E) : ‖e x‖ₑ = ‖x‖ₑ := by simp
 
 /-- Reinterpret a `LinearIsometryEquiv` as a `LinearIsometry`. -/
 def toLinearIsometry : E →ₛₗᵢ[σ₁₂] E₂ :=
@@ -878,9 +870,6 @@ theorem map_smulₛₗ (c : R) (x : E) : e (c • x) = σ₁₂ c • e x :=
 theorem map_smul [Module R E₂] {e : E ≃ₗᵢ[R] E₂} (c : R) (x : E) : e (c • x) = c • e x :=
   e.1.map_smul c x
 
-@[simp] -- Should be replaced with `SemilinearIsometryClass.nnorm_map` when https://github.com/leanprover/lean4/issues/3107 is fixed.
-theorem nnnorm_map (x : E) : ‖e x‖₊ = ‖x‖₊ :=
-  SemilinearIsometryClass.nnnorm_map e x
 
 @[simp]
 theorem dist_map (x y : E) : dist (e x) (e y) = dist x y :=
