@@ -695,7 +695,15 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_le [FiniteDimensional ℝ F]
         have h2u' : HasCompactSupport u := by
           apply HasCompactSupport.of_support_subset_isCompact hs.isCompact_closure
           exact h2u.trans subset_closure
-        rel [eLpNorm_le_eLpNorm_fderiv_of_eq μ hu h2u' hp (mod_cast h2p.pos) hp']
+        have hp'' : p' ≠ 0 := by
+          simp only [ne_eq, inv_eq_zero, p']
+          contrapose! h2p
+          rw [tsub_eq_zero_iff_le] at h2p
+          have pp : 0 < p := lt_of_lt_of_le one_pos hp
+          refine (inv_le_inv₀ pp ?_).mp h2p
+          contrapose! h2p
+          simp_all
+        rel [eLpNorm_le_eLpNorm_fderiv_of_eq μ hu h2u' hp (mod_cast h2p.pos) hp' hp'']
     _ = eLpNormLESNormFDerivOfLeConst F μ s p q * eLpNorm (fderiv ℝ u) p μ := by
       simp_rw [eLpNormLESNormFDerivOfLeConst, ENNReal.coe_mul]; ring
 

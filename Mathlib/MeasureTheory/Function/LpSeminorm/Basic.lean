@@ -455,10 +455,11 @@ theorem eLpNorm_le_of_ae_enorm_bound {ε} [TopologicalSpace ε] [ESeminormedAddM
   refine (eLpNorm_mono_enorm_ae this).trans_eq ?_
   rw [eLpNorm_const _ hp (NeZero.ne μ), one_div, enorm_eq_self, smul_eq_mul]
 
-theorem eLpNorm_le_of_ae_nnnorm_bound {f : α → F} {C : ℝ≥0} (hfC : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ C) :
+theorem eLpNorm_le_of_ae_nnnorm_bound {f : α → F} {C : ℝ≥0} (hfC : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ C)
+    (hp : p ≠ 0) :
     eLpNorm f p μ ≤ C • μ Set.univ ^ p.toReal⁻¹ := by
   simpa [C.enorm_eq, ENNReal.smul_def, smul_eq_mul] using
-    (eLpNorm_le_of_ae_enorm_bound (f := f) (C := (C : ℝ≥0∞))
+    (eLpNorm_le_of_ae_enorm_bound (f := f) (C := (C : ℝ≥0∞)) (hp := hp)
       (hfC.mono fun _ hx => by simpa using hx))
 
 theorem eLpNorm_le_of_ae_bound {f : α → F} {C : ℝ} (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) (hp : p ≠ 0) :
