@@ -219,7 +219,16 @@ each term. This is `Sigma.uncurry` for continuous maps.
 @[simps]
 def sigma (f : ∀ i, C(X i, A)) : C((Σ i, X i), A) where
   toFun ig := f ig.fst ig.snd
-  continuous_toFun := by continuity
+  continuous_toFun := continuous_sigma (by grind [map_continuous])
+    --show_term continuity
+    --intro i
+    --have : Continuous (f i) := by show_term fun_prop
+    --show_term continuity
+    --grind [map_continuous]
+    --dsimp
+    --show_term fun_prop
+    --#check continuous_sigma_iff
+    --sorry--dsimp; fun_prop
 
 variable (A X) in
 /--
