@@ -3,7 +3,7 @@ import Mathlib
 open CategoryTheory Limits AlgebraicTopology SimplicialObject
   Simplicial
 
-universe w
+universe u w
 
 variable {C : Type*} [Category* C] (X : SimplicialObject C) (K : SSet.{w})
 
