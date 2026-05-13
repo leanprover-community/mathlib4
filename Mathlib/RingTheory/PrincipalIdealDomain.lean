@@ -314,7 +314,8 @@ end
 
 theorem IsField.isPrincipalIdealRing {R : Type*} [Ring R] (h : IsField R) :
     IsPrincipalIdealRing R :=
-  @EuclideanDomain.to_principal_ideal_domain R (@Field.toEuclideanDomain R h.toField)
+  letI := h.toField
+  @EuclideanDomain.to_principal_ideal_domain R _ _ (@Field.toEuclideanDomain R h.toField)
 
 namespace PrincipalIdealRing
 
