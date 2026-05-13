@@ -376,7 +376,7 @@ section NNNorm
 -- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) SeminormedGroup.toNNNorm : NNNorm E :=
-  ⟨fun a => ⟨‖a‖, norm_nonneg' a⟩⟩
+  ⟨fun a => .mk ‖a‖ (norm_nonneg' a)⟩
 
 @[to_additive (attr := simp, norm_cast) coe_nnnorm]
 theorem coe_nnnorm' (a : E) : (‖a‖₊ : ℝ) = ‖a‖ := rfl
@@ -713,7 +713,7 @@ structure on the domain. -/
 `SeminormedAddGroup` induces a `SeminormedAddGroup` structure on the domain. -/]
 abbrev SeminormedGroup.induced [Group E] [SeminormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕) :
     SeminormedGroup E :=
-  { PseudoMetricSpace.induced f toPseudoMetricSpace with
+  fast_instance% { PseudoMetricSpace.induced f toPseudoMetricSpace with
     norm := fun x => ‖f x‖
     dist_eq := fun x y => by simp only [map_mul, map_inv, ← dist_eq_norm_inv_mul]; rfl }
 
@@ -725,7 +725,7 @@ abbrev SeminormedGroup.induced [Group E] [SeminormedGroup F] [MonoidHomClass �
 abbrev SeminormedCommGroup.induced
     [CommGroup E] [SeminormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕) :
     SeminormedCommGroup E :=
-  { SeminormedGroup.induced E F f with
+  fast_instance% { SeminormedGroup.induced E F f with
     mul_comm := mul_comm }
 
 -- See note [reducible non-instances].
@@ -736,7 +736,7 @@ structure on the domain. -/
 abbrev NormedGroup.induced
     [Group E] [NormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕) (h : Injective f) :
     NormedGroup E :=
-  { SeminormedGroup.induced E F f, MetricSpace.induced f h _ with }
+  fast_instance% { SeminormedGroup.induced E F f, MetricSpace.induced f h _ with }
 
 -- See note [reducible non-instances].
 /-- An injective group homomorphism from a `CommGroup` to a `NormedGroup` induces a
@@ -745,8 +745,7 @@ abbrev NormedGroup.induced
 `NormedCommGroup` induces a `NormedCommGroup` structure on the domain. -/]
 abbrev NormedCommGroup.induced [CommGroup E] [NormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕)
     (h : Injective f) : NormedCommGroup E :=
-  { SeminormedGroup.induced E F f, MetricSpace.induced f h _ with
-    mul_comm := mul_comm }
+  fast_instance% { SeminormedCommGroup.induced E F f, MetricSpace.induced f h _ with }
 
 end Induced
 
