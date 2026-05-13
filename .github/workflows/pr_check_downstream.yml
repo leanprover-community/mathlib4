@@ -7,10 +7,15 @@ name: PR check downstream
 #
 # Comment grammar (the `!` prefix mirrors other bot directives like `!bench`):
 #
-#   !downstream-check <name>[@<rev>] [--merge-branch][, ...]
+#   !downstream-check <name-or-slug>[@<rev>] [--merge-branch][, ...]
 #
 # Each comma-separated entry:
-#   • <name>             — must match an inventory entry (case-sensitive).
+#   • <name-or-slug>     — either the downstream's short inventory name
+#                          (e.g. `FLT`) or its GitHub `owner/repo` slug
+#                          (e.g. `leanprover-community/FLT`). The short-name
+#                          match is case-sensitive; the slug match is
+#                          case-insensitive. Resolved by the dispatched
+#                          downstream-reports workflow.
 #   • [@<rev>]           — optional. Git refspec (branch / tag / commit SHA)
 #                          for the downstream checkout. Defaults to the
 #                          inventory's default_branch.
@@ -103,7 +108,7 @@ jobs:
       - name: Get mathlib-ci
         uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
-      - name: Validate downstreams against inventory
+      - name: Validate downstream entries
         id: validate
         env:
           GH_TOKEN:    ${{ secrets.GITHUB_TOKEN }}
