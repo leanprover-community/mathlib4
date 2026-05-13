@@ -247,10 +247,9 @@ lemma Ideal.one_le_height_span_singleton_of_mem_nonZeroDivisors
 @[simp]
 lemma Ideal.height_bot [Nontrivial R] : (⊥ : Ideal R).height = 0 := by
   obtain ⟨p, hp⟩ := Ideal.nonempty_minimalPrimes (R := R) (I := ⊥) top_ne_bot.symm
-  simp only [Ideal.height, ENat.iInf_eq_zero]
-  refine ⟨p, hp, ?_⟩
-  have := hp.isPrime
-  rw [← Ideal.height_eq_primeHeight, height_eq_zero_iff.mpr hp]
+  rw [Ideal.height_eq_inf_minimalPrimes]
+  simp only [ENat.iInf_eq_zero]
+  refine ⟨p, hp, haveI := hp.isPrime; height_eq_zero_iff.mpr hp⟩
 
 /-- In a trivial commutative ring, the height of any ideal is `∞`. -/
 @[simp, nontriviality]
