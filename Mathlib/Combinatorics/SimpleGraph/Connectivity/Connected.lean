@@ -741,7 +741,7 @@ variable {u v : V}
 /-- An edge of a graph is a *bridge* if without it, its incident vertices
 are not reachable from one another. -/
 def IsBridge (G : SimpleGraph V) (e : Sym2 V) : Prop :=
-  Sym2.lift ⟨fun v w => ¬(G.deleteEdges {e}).Reachable v w, by simp [reachable_comm]⟩ e
+  Sym2.lift ⟨fun v w ↦ ¬ (G.deleteEdges {e}).Reachable v w, by simp [reachable_comm]⟩ e
 
 theorem isBridge_iff {u v : V} :
     G.IsBridge s(u, v) ↔ ¬ (G.deleteEdges {s(u, v)}).Reachable u v := .rfl
