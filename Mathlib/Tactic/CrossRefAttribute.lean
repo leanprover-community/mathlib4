@@ -9,42 +9,57 @@ public meta import Lean.Elab.Command
 public import Mathlib.Init
 
 /-!
-# The `stacks` and `kerodon` attributes
+# Cross-reference attributes
 
-This allows tagging of mathlib results with the corresponding
-tags from the [Stacks Project](https://stacks.math.columbia.edu/tags) and
-[Kerodon](https://kerodon.net/tag/).
+This file provides attributes for tagging Mathlib results with cross-references
+to entries in external mathematical databases:
 
-While the Stacks Project is the main focus, because the tag format at Kerodon is
-compatible, the attribute can be used to tag results with Kerodon tags as well.
+* `@[stacks TAG]` — [Stacks Project](https://stacks.math.columbia.edu/tags)
+* `@[kerodon TAG]` — [Kerodon](https://kerodon.net/tag/)
+
+Each attribute records the cross-reference in an environment extension and appends
+a link to the declaration's docstring.
+
+The shared infrastructure (`Database`, `Tag`, `tagExt`, `addCrossRefDoc`,
+`traceCrossRefs`) is database-agnostic; per-database code defines a parser, the
+attribute syntax, and the trace command.
 -/
 
 public meta section
 
 open Lean Elab
 
-namespace Mathlib.StacksTag
+namespace Mathlib.CrossRef
 
-/-- Web database users of projects tags -/
+/-- The supported external databases. -/
 inductive Database where
   | kerodon
   | stacks
   deriving BEq, Hashable
 
-/-- `Tag` is the structure that carries the data of a project tag and a corresponding
-Mathlib declaration. -/
+/-- The base URL for an external database's tag pages. Always ends with `/`. -/
+def databaseURL : Database → String
+  | .kerodon => "https://kerodon.net/tag/"
+  | .stacks => "https://stacks.math.columbia.edu/tag/"
+
+/-- The display label used in docstring links and trace output. -/
+def databaseName : Database → String
+  | .kerodon => "Kerodon Tag"
+  | .stacks => "Stacks Tag"
+
+/-- A cross-reference from a Mathlib declaration to an entry in an external database. -/
 structure Tag where
-  /-- The name of the declaration with the given tag. -/
+  /-- The name of the declaration carrying the cross-reference. -/
   declName : Name
-  /-- The online database where the tag is found. -/
+  /-- The external database the entry belongs to. -/
   database : Database
-  /-- The database tag. -/
+  /-- The database identifier. -/
   tag : String
-  /-- The (optional) comment that comes with the given tag. -/
+  /-- An optional comment supplied with the attribute. -/
   comment : String
   deriving BEq, Hashable
 
-/-- Defines the `tagExt` extension for storing all `Tag`s in the environment.
+/-- The environment extension storing all cross-references.
 `addImportedFn` is a constant function to avoid a performance overhead during initialization. -/
 initialize tagExt : SimplePersistentEnvExtension Tag (Array (Array Tag)) ←
   registerSimplePersistentEnvExtension {
@@ -52,16 +67,20 @@ initialize tagExt : SimplePersistentEnvExtension Tag (Array (Array Tag)) ←
     addEntryFn tags _ := tags
   }
 
-/--
-`addTagEntry declName db tag comment` takes as input the `Name` `declName` of a declaration,
-whether it is a Kerodon or Stacks tag (`db`) and
-the `String`s `tag` and `comment` of the `stacks` or `kerodon` attribute.
-It extends the `Tag` environment extension with the data `declName, db, tag, comment`.
--/
+/-- `addTagEntry declName db tag comment` records a cross-reference for `declName` in `tagExt`. -/
 def addTagEntry {m : Type → Type} [MonadEnv m]
     (declName : Name) (db : Database) (tag comment : String) : m Unit :=
   modifyEnv (tagExt.addEntry ·
     { declName := declName, database := db, tag := tag, comment := comment })
+
+/-- Append a cross-reference link to the docstring of `decl` and record it in `tagExt`.
+This is the database-agnostic core of every cross-reference attribute's `add` handler. -/
+def addCrossRefDoc (db : Database) (decl : Name) (idStr comment : String) : CoreM Unit := do
+  let oldDoc := (← findDocString? (← getEnv) decl).getD ""
+  let commentInDoc := if comment.isEmpty then "" else s!" ({comment})"
+  let link := s!"[{databaseName db} {idStr}]({databaseURL db}{idStr}){commentInDoc}"
+  addDocStringCore decl <| "\n\n".intercalate ([oldDoc, link].filter (· != ""))
+  addTagEntry decl db idStr comment
 
 open Parser
 
@@ -98,9 +117,9 @@ def stacksTagNoAntiquot : Parser := {
 def stacksTagParser : Parser :=
   withAntiquot (mkAntiquot "stacksTag" stacksTagKind) stacksTagNoAntiquot
 
-end Mathlib.StacksTag
+end Mathlib.CrossRef
 
-open Mathlib.StacksTag
+open Mathlib.CrossRef
 
 /-- Extract the underlying tag as a string from a `stacksTag` node. -/
 def Lean.TSyntax.getStacksTag (stx : TSyntax stacksTagKind) : CoreM String := do
@@ -124,7 +143,7 @@ namespace Parenthesizer
 
 end Lean.PrettyPrinter.Parenthesizer
 
-namespace Mathlib.StacksTag
+namespace Mathlib.CrossRef
 
 /-- The syntax category for the database name. -/
 declare_syntax_cat stacksTagDB
@@ -149,63 +168,42 @@ initialize Lean.registerBuiltinAttribute {
   name := `stacksTag
   descr := "Apply a Stacks or Kerodon project tag to a theorem."
   add := fun decl stx _attrKind => do
-    let oldDoc := (← findDocString? (← getEnv) decl).getD ""
-    let (SorK, database, url, tag, comment) := ← match stx with
-      | `(attr| stacks $tag $[$comment]?) =>
-        return ("Stacks", Database.stacks, "https://stacks.math.columbia.edu/tag", tag, comment)
-      | `(attr| kerodon $tag $[$comment]?) =>
-        return ("Kerodon", Database.kerodon, "https://kerodon.net/tag", tag, comment)
+    let (db, tag, comment) := ← match stx with
+      | `(attr| stacks $tag $[$comment]?) => return (Database.stacks, tag, comment)
+      | `(attr| kerodon $tag $[$comment]?) => return (Database.kerodon, tag, comment)
       | _ => throwUnsupportedSyntax
-    let tagStr ← tag.getStacksTag
-    let comment := (comment.map (·.getString)).getD ""
-    let commentInDoc := if comment = "" then "" else s!" ({comment})"
-    let newDoc := [oldDoc, s!"[{SorK} Tag {tagStr}]({url}/{tagStr}){commentInDoc}"]
-    addDocStringCore decl <| "\n\n".intercalate (newDoc.filter (· != ""))
-    addTagEntry decl database tagStr <| comment
+    addCrossRefDoc db decl (← tag.getStacksTag) ((comment.map (·.getString)).getD "")
   -- docstrings are immutable once an asynchronous elaboration task has been started
   applicationTime := .beforeElaboration
 }
 
-end Mathlib.StacksTag
+end Mathlib.CrossRef
 
-/--
-`getSortedStackProjectTags env` returns the array of `Tags`, sorted by alphabetical order of tag.
--/
-private def Lean.Environment.getSortedStackProjectTags (env : Environment) : Array Tag :=
+/-- Returns the array of `Tag`s in the environment, sorted alphabetically by tag. -/
+private def Lean.Environment.getSortedCrossRefs (env : Environment) : Array Tag :=
   let tags := PersistentEnvExtension.getState tagExt env
   tags.2.flatten.appendList tags.1 |>.qsort (·.tag < ·.tag)
 
-/--
-`getSortedStackProjectDeclNames env tag` returns the array of declaration names of results
-with Stacks Project tag equal to `tag`.
--/
-private def Lean.Environment.getSortedStackProjectDeclNames (env : Environment) (tag : String) :
+/-- Returns the declaration names of results carrying the cross-reference `tag`. -/
+private def Lean.Environment.getCrossRefDeclNames (env : Environment) (tag : String) :
     Array Name :=
-  let tags := env.getSortedStackProjectTags
-  tags.filterMap fun d => if d.tag == tag then some d.declName else none
+  env.getSortedCrossRefs.filterMap fun d => if d.tag == tag then some d.declName else none
 
-namespace Mathlib.StacksTag
+namespace Mathlib.CrossRef
 
-private def databaseURL (db : Database) : String :=
-  match db with
-  | .kerodon => "https://kerodon.net/tag/"
-  | .stacks => "https://stacks.math.columbia.edu/tag/"
-
-/--
-`traceStacksTags db verbose` prints the tags of the database `db` to the user and
-inlines the theorem statements if `verbose` is `true`.
--/
-def traceStacksTags (db : Database) (verbose : Bool := false) :
+/-- `traceCrossRefs db verbose` prints the cross-references of database `db` and
+inlines the declaration types if `verbose` is `true`. -/
+def traceCrossRefs (db : Database) (verbose : Bool := false) :
     Command.CommandElabM Unit := do
   let env ← getEnv
-  let entries := env.getSortedStackProjectTags |>.filter (·.database == db)
+  let entries := env.getSortedCrossRefs |>.filter (·.database == db)
   if entries.isEmpty then logInfo "No tags found." else
   let mut msgs := #[m!""]
   for d in entries do
     let (parL, parR) := if d.comment.isEmpty then ("", "") else (" (", ")")
     let cmt := parL ++ d.comment ++ parR
     msgs := msgs.push
-      m!"[Stacks Tag {d.tag}]({databaseURL db ++ d.tag}) \
+      m!"[{databaseName db} {d.tag}]({databaseURL db ++ d.tag}) \
         corresponds to declaration '{.ofConstName d.declName}'.{cmt}"
     if verbose then
       let dType := ((env.find? d.declName).getD default).type
@@ -224,7 +222,7 @@ The variant `#stacks_tags!` also adds the theorem statement (for theorems)
 or declaration type (for definitions, structures, instances, etc.) after each summary line.
 -/
 elab (name := stacksTags) "#stacks_tags" tk:("!")? : command =>
-  traceStacksTags .stacks (tk.isSome)
+  traceCrossRefs .stacks (tk.isSome)
 
 /-- The `#kerodon_tags` command retrieves all declarations that have the `kerodon` attribute.
 
@@ -236,6 +234,6 @@ The variant `#kerodon_tags!` also adds the theorem statement (for theorems)
 or declaration type (for definitions, structures, instances, etc.) after each summary line.
 -/
 elab (name := kerodonTags) "#kerodon_tags" tk:("!")? : command =>
-  traceStacksTags .kerodon (tk.isSome)
+  traceCrossRefs .kerodon (tk.isSome)
 
-end Mathlib.StacksTag
+end Mathlib.CrossRef
