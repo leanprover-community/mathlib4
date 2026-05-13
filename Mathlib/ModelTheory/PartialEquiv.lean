@@ -26,10 +26,14 @@ This file defines partial isomorphisms between first-order structures.
 - `FirstOrder.Language.IsExtensionPair` is defined so that `L.IsExtensionPair M N` indicates that
   any finitely-generated partial equivalence from `M` to `N` can be extended to include an arbitrary
   element `m : M` in its domain.
+- `FirstOrder.Language.IsElementaryExtensionPairFor` is the underlying extension-pair property for
+  a pair `(M, N)` of `L`-structures, parametrized by a type family `E` of partial equivalences and
+  a coercion of `E` into `PartialEquiv`.
 - `FirstOrder.Language.Theory.IsElementaryExtensionPair`,
   `FirstOrder.Language.Theory.IsElementaryExtensionPairFG`, and
-  `FirstOrder.Language.Theory.IsElementaryExtensionPairCardinalLTGenerated` are
-  elementary-extension variants for partial equivalences between models of a theory.
+  `FirstOrder.Language.Theory.IsElementaryExtensionPairCardinalLTGenerated` specialize the property
+  above to pairs of models of a theory, using `PartialEquiv`, `FGEquiv`, and `CardinalLTEquiv`
+  respectively.
 
 ## Main Results
 - `FirstOrder.Language.embedding_from_cg` shows that if structures `M` and `N` form an equivalence
@@ -403,57 +407,62 @@ def IsExtensionPair : Prop := ∀ (f : L.FGEquiv M N) (m : M), ∃ g, m ∈ g.1.
 
 variable {M N L}
 
-namespace Theory
-
-/-- A theory has the core elementary extension-pair property for a given type of partial equivalence
-if every partial equivalence between substructures of nonempty models of the theory can be extended,
-after passing to an elementary extension of the codomain model, to include any prescribed element of
-the domain model. -/
-def IsElementaryExtensionPairCore
+/-- A pair `(M, N)` of `L`-structures has the elementary extension-pair property for a given
+type family `E` of partial equivalences if every `E`-equivalence from `M` to `N` can be extended,
+after passing to an elementary extension of `N`, to include any prescribed element of `M`. The
+elementary extension-pair properties for full, finitely generated, and `< κ`-generated partial
+equivalences are obtained from this by specializing `E`. -/
+def IsElementaryExtensionPairFor
     (E : (M N : Type (max u v)) → [L.Structure M] → [L.Structure N] → Type (max u v))
     (toPartialEquiv :
       ∀ {M N : Type (max u v)} [L.Structure M] [L.Structure N], E M N → M ≃ₚ[L] N)
-    (T : L.Theory) : Prop :=
-  ∀ {M N : Type (max u v)} [L.Structure M] [L.Structure N]
-    [T.Model M] [T.Model N] [Nonempty M] [Nonempty N]
-    (f : E M N) (a : M),
+    (M N : Type (max u v)) [L.Structure M] [L.Structure N] : Prop :=
+  ∀ (f : E M N) (a : M),
     ∃ (N' : Type (max u v)) (_ : L.Structure N')
       (e : N ↪ₑ[L] N') (g : E M N'),
       a ∈ (toPartialEquiv g).dom ∧
         (toPartialEquiv f).ExtendsAlong e.toEmbedding (toPartialEquiv g)
 
-/-- A theory has the elementary extension-pair property if every partial isomorphism between
-substructures of nonempty models of the theory can be extended, after passing to an elementary
-extension of the codomain model, to include any prescribed element of the domain model.
+namespace Theory
 
-This is implemented via `IsElementaryExtensionPairCore` to share logic with the finitely
-generated variant (`IsElementaryExtensionPairFG`). -/
-def IsElementaryExtensionPair (T : L.Theory) : Prop :=
-  IsElementaryExtensionPairCore (fun M N _ _ => M ≃ₚ[L] N) (fun f => f) T
+/-- A pair `(M, N)` of nonempty models of a theory `T` has the elementary extension-pair property
+if every partial isomorphism between substructures of `M` and `N` can be extended, after passing
+to an elementary extension of `N`, to include any prescribed element of `M`.
 
-/-- A theory has the finitely generated elementary extension-pair property if every partial
-isomorphism between finitely generated substructures of nonempty models of the theory can be
-extended, after passing to an elementary extension of the codomain model, to include any prescribed
-element of the domain model.
+This is implemented via `IsElementaryExtensionPairFor` to share logic with the finitely generated
+variant (`IsElementaryExtensionPairFG`). -/
+def IsElementaryExtensionPair (T : L.Theory) (M N : Type (max u v))
+    [L.Structure M] [L.Structure N] [T.Model M] [T.Model N] [Nonempty M] [Nonempty N] : Prop :=
+  IsElementaryExtensionPairFor (fun M N _ _ => M ≃ₚ[L] N) (fun f => f) M N
 
-This is implemented via `IsElementaryExtensionPairCore` to share logic with the general
-variant (`IsElementaryExtensionPair`). -/
-def IsElementaryExtensionPairFG (T : L.Theory) : Prop :=
-  IsElementaryExtensionPairCore (fun M N _ _ => L.FGEquiv M N) (fun f => f.1) T
+/-- A pair `(M, N)` of nonempty models of a theory `T` has the finitely generated elementary
+extension-pair property if every partial isomorphism between finitely generated substructures of
+`M` and `N` can be extended, after passing to an elementary extension of `N`, to include any
+prescribed element of `M`.
 
-/-- A theory has the `< κ`-generated elementary extension-pair property if every partial
-isomorphism between substructures generated by fewer than `κ` elements can be extended, after
-passing to an elementary extension of the codomain model, to include any prescribed element of the
-domain model. -/
-def IsElementaryExtensionPairCardinalLTGenerated (T : L.Theory) (κ : Cardinal) : Prop :=
-  IsElementaryExtensionPairCore (fun M N _ _ => L.CardinalLTEquiv M N κ) (fun f => f.1) T
+This is implemented via `IsElementaryExtensionPairFor` to share logic with the general variant
+(`IsElementaryExtensionPair`). -/
+def IsElementaryExtensionPairFG (T : L.Theory) (M N : Type (max u v))
+    [L.Structure M] [L.Structure N] [T.Model M] [T.Model N] [Nonempty M] [Nonempty N] : Prop :=
+  IsElementaryExtensionPairFor (fun M N _ _ => L.FGEquiv M N) (fun f => f.1) M N
+
+/-- A pair `(M, N)` of nonempty models of a theory `T` has the `< κ`-generated elementary
+extension-pair property if every partial isomorphism between substructures of `M` and `N`
+generated by fewer than `κ` elements can be extended, after passing to an elementary extension
+of `N`, to include any prescribed element of `M`. -/
+def IsElementaryExtensionPairCardinalLTGenerated (T : L.Theory) (κ : Cardinal)
+    (M N : Type (max u v)) [L.Structure M] [L.Structure N]
+    [T.Model M] [T.Model N] [Nonempty M] [Nonempty N] : Prop :=
+  IsElementaryExtensionPairFor (fun M N _ _ => L.CardinalLTEquiv M N κ) (fun f => f.1) M N
 
 /-- The general elementary extension-pair property implies the `< κ`-generated variant for
 infinite `κ`. -/
 theorem IsElementaryExtensionPair.cardinalLTGenerated {T : L.Theory} {κ : Cardinal}
-    (hκ : Cardinal.aleph0 ≤ κ) (h : T.IsElementaryExtensionPair) :
-    T.IsElementaryExtensionPairCardinalLTGenerated κ := by
-  rintro M N _ _ _ _ _ _ f a
+    {M N : Type (max u v)} [L.Structure M] [L.Structure N]
+    [T.Model M] [T.Model N] [Nonempty M] [Nonempty N]
+    (hκ : Cardinal.aleph0 ≤ κ) (h : T.IsElementaryExtensionPair M N) :
+    T.IsElementaryExtensionPairCardinalLTGenerated κ M N := by
+  intro f a
   obtain ⟨N', _, e, g, hg_dom, hg_ext⟩ := h (f : M ≃ₚ[L] N) a
   let S : L.Substructure M := (f : M ≃ₚ[L] N).dom ⊔ Substructure.closure L {a}
   have hS : S.CardinalLTGenerated κ :=
@@ -469,9 +478,11 @@ theorem IsElementaryExtensionPair.cardinalLTGenerated {T : L.Theory} {κ : Cardi
 This follows by specializing the `< κ`-generated variant to `κ = ℵ₀`, since being generated by
 fewer than `ℵ₀` elements is equivalent to being finitely generated. -/
 theorem IsElementaryExtensionPair.FG {T : L.Theory}
-    (h : T.IsElementaryExtensionPair) : T.IsElementaryExtensionPairFG := by
-  rintro M N _ _ _ _ _ _ f a
-  have hcard : T.IsElementaryExtensionPairCardinalLTGenerated Cardinal.aleph0.{max u v} :=
+    {M N : Type (max u v)} [L.Structure M] [L.Structure N]
+    [T.Model M] [T.Model N] [Nonempty M] [Nonempty N]
+    (h : T.IsElementaryExtensionPair M N) : T.IsElementaryExtensionPairFG M N := by
+  intro f a
+  have hcard : T.IsElementaryExtensionPairCardinalLTGenerated Cardinal.aleph0.{max u v} M N :=
     h.cardinalLTGenerated le_rfl
   have hf_cardinal :
       (f : M ≃ₚ[L] N).dom.CardinalLTGenerated Cardinal.aleph0.{max u v} :=
@@ -483,9 +494,11 @@ theorem IsElementaryExtensionPair.FG {T : L.Theory}
 /-- The finitely generated elementary extension-pair property is the same as the `ℵ₀`-generated
 one in the direction needed to apply results stated for `< κ`-generated partial equivalences. -/
 theorem IsElementaryExtensionPairFG.toCardinalLTGenerated_aleph0 {T : L.Theory}
-    (h : T.IsElementaryExtensionPairFG) :
-    T.IsElementaryExtensionPairCardinalLTGenerated Cardinal.aleph0.{max u v} := by
-  rintro M N _ _ _ _ _ _ f a
+    {M N : Type (max u v)} [L.Structure M] [L.Structure N]
+    [T.Model M] [T.Model N] [Nonempty M] [Nonempty N]
+    (h : T.IsElementaryExtensionPairFG M N) :
+    T.IsElementaryExtensionPairCardinalLTGenerated Cardinal.aleph0.{max u v} M N := by
+  intro f a
   have hf_fg : (f : M ≃ₚ[L] N).dom.FG :=
     Substructure.cardinalLTGenerated_aleph0_iff.1 f.property
   obtain ⟨N', hN', e, g, hg_dom, hg_ext⟩ := h ⟨f.1, hf_fg⟩ a

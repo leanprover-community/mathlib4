@@ -430,14 +430,16 @@ private theorem isQF_realize_partialEquiv
       hφ.realize_embedding (f := p.toEmbedding) (v := vdom) (xs := default)
   exact hcod.trans hdom.symm
 
-/-- If a theory has the `< κ`-generated elementary extension-pair property for an infinite `κ`,
-then it has quantifier elimination.
+/-- If, for every pair of nonempty models of `T`, the `< κ`-generated elementary extension-pair
+property holds for an infinite `κ`, then `T` has quantifier elimination.
 
 The hypothesis is a `< κ`-generated variant of the extension property appearing as condition (2)
 in van den Dries--Henson, Theorem 7.11. -/
 theorem hasQuantifierElimination_of_isElementaryExtensionPairCardinalLTGenerated
     {T : L.Theory} {κ : Cardinal} (hκ : Cardinal.aleph0 ≤ κ)
-    (h : T.IsElementaryExtensionPairCardinalLTGenerated κ) :
+    (h : ∀ ⦃M N : Type (max u v)⦄ [L.Structure M] [L.Structure N]
+      [T.Model M] [T.Model N] [Nonempty M] [Nonempty N],
+      T.IsElementaryExtensionPairCardinalLTGenerated κ M N) :
     T.HasQuantifierElimination := by
   refine hasQuantifierElimination_of_exists_realize_of_embeddings (T := T) ?_
   intro m φ hφ M N A _ _ _ _ _ _ _ f g a hM
@@ -493,25 +495,33 @@ theorem hasQuantifierElimination_of_isElementaryExtensionPairCardinalLTGenerated
   obtain ⟨c, hc⟩ := BoundedFormula.realize_ex.mp hθN
   exact ⟨c, (Formula.realize_relabel_finSumFinEquiv_symm_snoc φ).mp hc⟩
 
-/-- If a theory has the finitely generated elementary extension-pair property, then it has
-quantifier elimination.
+/-- If every pair of nonempty models of `T` has the finitely generated elementary extension-pair
+property, then `T` has quantifier elimination.
 
 The hypothesis is a finitely generated variant of the extension property appearing as condition
 (2) in van den Dries--Henson, Theorem 7.11. -/
 theorem hasQuantifierElimination_of_isElementaryExtensionPairFG
-    {T : L.Theory} (h : T.IsElementaryExtensionPairFG) :
+    {T : L.Theory}
+    (h : ∀ ⦃M N : Type (max u v)⦄ [L.Structure M] [L.Structure N]
+      [T.Model M] [T.Model N] [Nonempty M] [Nonempty N],
+      T.IsElementaryExtensionPairFG M N) :
     T.HasQuantifierElimination :=
   hasQuantifierElimination_of_isElementaryExtensionPairCardinalLTGenerated le_rfl
-    h.toCardinalLTGenerated_aleph0
+    fun ⦃M N⦄ _ _ _ _ _ _ => (@h M N _ _ _ _ _ _).toCardinalLTGenerated_aleph0
 
-/-- If a theory has the elementary extension-pair property, then it has quantifier elimination.
+/-- If every pair of nonempty models of `T` has the elementary extension-pair property, then `T`
+has quantifier elimination.
 
 The hypothesis is condition (2) in van den Dries--Henson, Theorem 7.11; this theorem proves the
 implication from that extension property to condition (1). -/
 theorem hasQuantifierElimination_of_isElementaryExtensionPair
-    {T : L.Theory} (h : T.IsElementaryExtensionPair) :
+    {T : L.Theory}
+    (h : ∀ ⦃M N : Type (max u v)⦄ [L.Structure M] [L.Structure N]
+      [T.Model M] [T.Model N] [Nonempty M] [Nonempty N],
+      T.IsElementaryExtensionPair M N) :
     T.HasQuantifierElimination :=
-  hasQuantifierElimination_of_isElementaryExtensionPairFG h.FG
+  hasQuantifierElimination_of_isElementaryExtensionPairFG
+    fun ⦃M N⦄ _ _ _ _ _ _ => (@h M N _ _ _ _ _ _).FG
 
 end Theory
 
