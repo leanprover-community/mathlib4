@@ -244,7 +244,9 @@ variable {M' N' L' : Type*} [AddCommGroup M'] [AddCommGroup N'] [AddCommGroup L'
 variable (eM : M ≃ₗ[R] M') (eN : N ≃ₗ[R] N') (eL : L ≃ₗ[R] L') (f : M' →ₗ[R] N') (g : N' →ₗ[R] L')
 
 /--
-Suppose that `f` and `g` are linear maps that compose to zero, and that `eM`, `eN`, and `eL` indicated in the diagram below are linear equivalences to modules that all belong to the same universe. Then this is the short complex in `ModuleCat` given by the bottom row in the diagram 
+Suppose that `f` and `g` are linear maps that compose to zero, and that `eM`, `eN`, and `eL`
+indicated in the diagram below are linear equivalences to modules that all belong to the same
+universe. Then this is the short complex in `ModuleCat` given by the bottom row in the diagram.
 M --f--> N --g--> L
 |        |        |
 eM       eN       eL
