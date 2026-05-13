@@ -1,19 +1,27 @@
 name: PR check downstream
 
-# Triggered by a `/check-downstream …` comment on a mathlib4 PR. Validates
+# Triggered by a `!downstream-check …` comment on a mathlib4 PR. Validates
 # the request, then dispatches the heavy validation workflow in
 # `leanprover-community/downstream-reports`. The result is posted back as a
 # comment on the same PR by the dispatched workflow.
 #
-# Accepted comment shapes:
-#   /check-downstream <name>[@lkg][, <name>[@lkg]...]
-#   /check-downstream all          — every enabled downstream, merge-SHA mode
-#   /check-downstream all@lkg      — every enabled downstream, LKG mode
+# Comment grammar (the `!` prefix mirrors other bot directives like `!bench`):
 #
-# The optional `@lkg` suffix selects rebase-onto-LKG mode (cherry-pick the
-# PR's commits onto the downstream's last-known-good mathlib commit). See
-# `docs/internal/pr-validation-workflow.md` in downstream-reports for the
-# full design.
+#   !downstream-check <name>[@<rev>] [--merge-branch][, ...]
+#
+# Each comma-separated entry:
+#   • <name>             — must match an inventory entry (case-sensitive).
+#   • [@<rev>]           — optional. Git refspec (branch / tag / commit SHA)
+#                          for the downstream checkout. Defaults to the
+#                          inventory's default_branch.
+#   • [--merge-branch]   — optional, per entry. Switches that single entry
+#                          from the default LKG mode to merge mode (i.e.
+#                          test against the PR's would-be-merged tree
+#                          instead of cherry-picking onto the downstream's
+#                          last-known-good mathlib commit).
+#
+# See `docs/internal/pr-validation-workflow.md` in downstream-reports for
+# the full design.
 
 on:
   issue_comment:
@@ -25,8 +33,7 @@ on:
         type: string
       downstreams:
         required: true
-        # Comma-separated names, optionally with `@lkg` per name; also
-        # accepts `all` and `all@lkg`.
+        # Comma-separated `<name>[@<rev>] [--merge-branch]` entries.
         type: string
 
 permissions:
@@ -47,7 +54,7 @@ jobs:
     if: |
       github.event_name == 'workflow_dispatch' ||
       (github.event.issue.pull_request &&
-       startsWith(github.event.comment.body, '/check-downstream'))
+       startsWith(github.event.comment.body, '!downstream-check'))
     runs-on: ubuntu-latest
     steps:
       - name: Authorize commenter
@@ -66,14 +73,14 @@ jobs:
         env:
           BODY: ${{ github.event.comment.body }}
         run: |
-          # First line only; strip the directive; the remainder is comma-separated
-          # names (or "all"). Anything after the first line is contextual prose
-          # and is ignored.
+          # First line only; strip the directive; the remainder is the
+          # comma-separated `<name>[@<rev>] [--merge-branch]` list. Anything
+          # after the first line is contextual prose and is ignored.
           line="$(printf '%s' "$BODY" | head -n1 | tr -d '\r')"
-          rest="${line#/check-downstream}"
+          rest="${line#!downstream-check}"
           rest="$(echo "$rest" | sed -E 's/^[[:space:]]+//;s/[[:space:]]+$//')"
           if [ -z "$rest" ]; then
-            echo "::error::usage: /check-downstream <name>[, <name>...] | all"
+            echo "::error::usage: !downstream-check <name>[@<rev>] [--merge-branch][, <name>...]"
             exit 1
           fi
           # Use a delimiter to safely round-trip values that contain spaces.
@@ -100,13 +107,9 @@ jobs:
           GH_TOKEN:    ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER:   ${{ github.event.issue.number || inputs.pr_number }}
           DS:          ${{ steps.parse.outputs.downstreams || inputs.downstreams }}
-          # For workflow_dispatch, author_association is empty; default to OWNER
-          # (triggering a workflow_dispatch requires write access to the repo).
-          ASSOC:       ${{ github.event.comment.author_association || 'OWNER' }}
         run: |
           "$CI_SCRIPTS_DIR/pr_check_downstream/validate_names.sh" \
             --names "$DS" \
-            --author-association "$ASSOC" \
             --output "$GITHUB_OUTPUT"
 
       - name: Mint App token (for downstream-reports)
