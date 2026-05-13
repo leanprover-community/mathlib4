@@ -44,8 +44,10 @@ permissions:
 
 concurrency:
   # Do not cancel a running validation on a new comment. Both runs are useful
-  # and the dispatch itself is cheap; the heavy job runs in downstream-reports
-  # under its own concurrency key keyed on (PR, merge SHA).
+  # and the dispatch itself is cheap; the heavy job in downstream-reports has
+  # its own per-PR concurrency group that serialises requeues without
+  # cancelling, so a fresh dispatch queues behind the running one rather
+  # than discarding it.
   group: pr-check-downstream-${{ github.event.issue.number || inputs.pr_number }}
   cancel-in-progress: false
 
@@ -131,8 +133,9 @@ jobs:
           MERGE_SHA:    ${{ steps.validate.outputs.merge_sha }}
           DOWNSTREAMS:  ${{ steps.validate.outputs.resolved_names }}
           # The commenter (issue_comment trigger) or the manual dispatcher
-          # (workflow_dispatch trigger). Forwarded so the per-entry result
-          # comments lead with `_Requested by @<user>._` and notify them.
+          # (workflow_dispatch trigger). Forwarded so the dispatch-level
+          # result comment leads with `_Requested by @<user>._` and
+          # notifies them when the run finishes.
           TRIGGERED_BY: ${{ github.event.comment.user.login || github.actor }}
         run: |
           gh workflow run mathlib-pr-validation.yml \
@@ -142,7 +145,7 @@ jobs:
             -f downstreams="$DOWNSTREAMS" \
             -f triggered_by="$TRIGGERED_BY"
 
-      - name: Post / update ack comment
+      - name: Post ack comment
         env:
           GITHUB_TOKEN:    ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER:       ${{ github.event.issue.number || inputs.pr_number }}
