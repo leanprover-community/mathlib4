@@ -99,6 +99,19 @@ theorem exists_gl_smul_eq_self_iff_trace_eq_zero (h : g.val.det < 0) :
       simp [gl_smul_eq_self_iff_dist_sq_eq, *, dist_eq_norm, ← Complex.normSq_eq_norm_sq,
         Complex.normSq_apply, ← pow_two, div_pow, h.le]
 
+/-- If `g` is an orientation-preserving map,
+then the fixed points of its action on the upper half-plane
+can be found from a quadratic equation.
+
+If `c ≠ 0`, then this equation has a unique solution in the upper half-plane
+given by `UpperHalfPlane.fixedPt`.
+If `c = 0`, then the equation degenerates to a linear equation,
+which has no solutions in the upper half-plane unless `g` is a scalar matrix.
+
+See also `Matrix.GeneralLinearGroup.fixpointPolynomial_aeval_eq_zero_iff`
+for a similar lemma about the action on the projective line,
+encoded as `OnePoint R`, where `R` is the ring of coefficients.
+-/
 theorem gl_smul_eq_self_iff_quadratic (h : 0 < g.val.det) :
     g • z = z ↔ (g 1 0 * (z * z) + (g 1 1 - g 0 0) * z + -g 0 1 : ℂ) = 0 := by
   simp [gl_smul_eq_iff_num_eq, σ, h, num, denom]
