@@ -79,7 +79,7 @@ theorem apply_ne_zero_iff [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix 
     ¬A i j = 0 ↔ A i j = 1 := by rw [← apply_ne_one_iff h, Classical.not_not]
 
 @[simp]
-theorem diag_eq [Zero α] [One α] (h : IsAdjMatrix A) : A.diag = 0 := by
+theorem diag_eq_zero [Zero α] [One α] (h : IsAdjMatrix A) : A.diag = 0 := by
   ext
   simp [h.apply_diag]
 
