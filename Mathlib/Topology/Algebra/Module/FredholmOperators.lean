@@ -256,14 +256,17 @@ lemma index_comp {G : Type*} [AddCommGroup G] [Module k G] (g : F →ₗ[k] G)
   let f₁ : f.ker →ₗ[k] (g ∘ₗ f).ker := Submodule.inclusion <| ker_le_ker_comp f g
   let f₂ : (g ∘ₗ f).ker →ₗ[k] g.ker := f.restrict <| by simp
   let f₃ : g.ker →ₗ[k] F ⧸ f.range := f.range.mkQ ∘ₗ g.ker.subtype
-  let f₄ : (F ⧸ f.range) →ₗ[k] G ⧸ (g ∘ₗ f).range := sorry
+  let f₄ : (F ⧸ f.range) →ₗ[k] G ⧸ (g ∘ₗ f).range :=
+    f.range.mapQ (g ∘ₗ f).range g <| by rw [← map_le_iff_le_comap, range_comp]
   let f₅ : (G ⧸ (g ∘ₗ f).range) →ₗ[k] G ⧸ g.range := factor <| range_comp_le_range f g
 
   have h₀ : Injective f₁ := Submodule.inclusion_injective _
   have h₁ : Exact f₁ f₂ := fun ⟨x, hx⟩ ↦ by simp [f₁, f₂, restrict_apply, Submodule.inclusion_apply]
   have h₂ : Exact f₂ f₃ := fun ⟨x, hx⟩ ↦ by aesop (add simp restrict_apply)
-  have h₃ : Exact f₃ f₄ := sorry
-  have h₄ : Exact f₄ f₅ := sorry
+  have h₃ : Exact f₃ f₄ := fun x ↦ by
+    sorry
+  have h₄ : Exact f₄ f₅ := fun x ↦ by
+    sorry
   have h₅ : Surjective f₅ := factor_surjective _
 
   -- TODO What API should we write for `Function.Exact` to make the goal trivial from here?
