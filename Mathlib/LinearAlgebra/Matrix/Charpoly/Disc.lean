@@ -7,7 +7,6 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
 public import Mathlib.RingTheory.Polynomial.Resultant.Basic
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 
 
 /-!
