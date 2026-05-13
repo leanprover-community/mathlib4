@@ -29,7 +29,7 @@ change to something less misleading.
   to the definition given above.
 * `Submodule.ClosedComplemented`: we say that a submodule is (topologically) *complemented* if
   there exists a continuous projection `M →ₗ[R] p`.
-* `Submodule.IsTopCompl.projectionOntoL`: if `h : IsTopCompl p q`, `p.projectionOntoL q h` is the
+* `Submodule.projectionOntoL`: if `h : IsTopCompl p q`, `p.projectionOntoL q h` is the
   continuous linear projection `M →L[R] p` along `q`. This is the continuous version of
   `Submodule.projectionOnto`.
 * `Submodule.IsTopCompl.projectionL`: if `h : IsTopCompl p q`, `p.projectionL q h` is the continuous
