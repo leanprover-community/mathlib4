@@ -649,6 +649,7 @@ partial def main (goal : Goal) : FunPropM (Option Result) := do
       if fData.isConstantFun then
         if let some r ← applyConstRule goal then
           return r
+
       match fData.fn with
       | .fvar id =>
         if id == fData.mainVar.fvarId! then
