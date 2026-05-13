@@ -395,4 +395,15 @@ For `E = F` this follows from `Units.isOpen`. Then for the general case either
 `E ≃L F` is empty or you reduce to the `E = F` case.
 -/
 
+/- ## Fredholm_struct ==> good decomposition
+
+If `u` satisfies `Fredholm_struct`, then there are decompositions `E = E₁ ⊕ E₂`,
+`F = F₁ ⊕ F₂` such that `E₂` and `F₂` are FG and, in this decomposition, u is of the form
+
+Φ 0
+0 0
+
+with Φ an isomorphism.
+-/
+
 end FredholmOperators
