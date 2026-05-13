@@ -32,7 +32,7 @@ open Lean Elab
 
 namespace Mathlib.CrossRef
 
-/-- The supported external databases. -/
+/-- The supported external databases -/
 inductive Database where
   | kerodon
   | stacks
