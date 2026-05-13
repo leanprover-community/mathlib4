@@ -8,8 +8,8 @@ module
 public import Mathlib.Order.Minimal
 public import Mathlib.Order.Zorn
 public import Mathlib.Topology.ContinuousOn
-public import Mathlib.Tactic.StacksAttribute
 public import Mathlib.Topology.DiscreteSubset
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Irreducibility in topological spaces

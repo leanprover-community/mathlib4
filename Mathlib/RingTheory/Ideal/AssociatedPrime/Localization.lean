@@ -43,7 +43,7 @@ lemma mem_associatedPrimes_of_comap_mem_associatedPrimes_of_isLocalizedModule
   rcases ass with ⟨hp, x, hx⟩
   constructor
   · refine (IsLocalization.isPrime_iff_isPrime_disjoint S _ _).mpr
-      ⟨hp, (IsLocalization.disjoint_comap_iff S R' p).mpr ?_⟩
+      ⟨hp, (IsLocalization.disjoint_under_iff S R' p).mpr ?_⟩
     by_contra eqtop
     simp [eqtop, Ideal.comap_top, Ideal.isPrime_iff] at hp
   · use f x
@@ -73,7 +73,7 @@ lemma mem_associatedPrimes_atPrime_of_mem_associatedPrimes
     associatedPrimes (Localization.AtPrime p) (LocalizedModule.AtPrime p M) := by
   apply mem_associatedPrimes_of_comap_mem_associatedPrimes_of_isLocalizedModule
     p.primeCompl (LocalizedModule.mkLinearMap p.primeCompl M)
-  simpa [Localization.AtPrime.comap_maximalIdeal] using ass
+  simpa [Localization.AtPrime.under_maximalIdeal] using ass
 
 @[deprecated (since := "2025-11-27")]
 alias mem_associatePrimes_localizedModule_atPrime_of_mem_associated_primes :=
@@ -112,7 +112,7 @@ lemma comap_mem_associatedPrimes_of_mem_associatedPrimes_of_isLocalizedModule_of
     apply hp.mem_of_pow_mem k
     rw [← map_pow]
     exact ((hp.under R).mul_mem_iff_mem_or_mem.mp mem).resolve_right
-      (Set.disjoint_left.mp ((IsLocalization.disjoint_comap_iff S R' p).mpr hp.1) (∏ a, g a).2)
+      (Set.disjoint_left.mp ((IsLocalization.disjoint_under_iff S R' p).mpr hp.1) (∏ a, g a).2)
 
 variable (R')
 
@@ -142,7 +142,7 @@ lemma minimalPrimes_annihilator_subset_associatedPrimes [IsNoetherianRing R] [Mo
   have ann_le : Module.annihilator R M ≤ Ideal.comap (algebraMap R Rₚ) q :=
     le_of_eq_of_le Submodule.annihilator_top.symm (IsAssociatedPrime.annihilator_le hq)
   have le : Ideal.comap (algebraMap R Rₚ) q ≤ p := by
-    have := (IsLocalization.disjoint_comap_iff p.primeCompl Rₚ q).mpr q_prime.ne_top
+    have := (IsLocalization.disjoint_under_iff p.primeCompl Rₚ q).mpr q_prime.ne_top
     simpa only [Ideal.primeCompl, Submonoid.coe_set_mk, Subsemigroup.coe_set_mk,
       Set.disjoint_compl_left_iff_subset] using this
   simpa [Minimal.eq_of_le hp.out ⟨IsAssociatedPrime.isPrime hq, ann_le⟩ le] using hq

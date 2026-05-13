@@ -65,6 +65,21 @@ theorem IsGaloisGroup.of_mulEquiv [hG : IsGaloisGroup G A B] {H : Type*} [Group 
     have he' : ∀ (g : G) (x : B), e.symm g • x = g • x := fun g x ↦ by simp [← he]
     hG.isInvariant.isInvariant b (fun g ↦ by simpa [he'] using h (e.symm g))⟩
 
+variable {G A B} in
+theorem IsGaloisGroup.iff_of_mulEquiv {H : Type*} [Group H] [MulSemiringAction H B]
+    (e : H ≃* G) (he : ∀ h (x : B), e h • x = h • x) :
+    IsGaloisGroup H A B ↔ IsGaloisGroup G A B := by
+  refine ⟨fun h ↦ h.of_mulEquiv e.symm fun g x ↦ ?_, fun h ↦ h.of_mulEquiv e he⟩
+  rw [← he, e.apply_symm_apply]
+
+variable {G A B} in
+@[simp]
+theorem IsGaloisGroup.top_iff : IsGaloisGroup (⊤ : Subgroup G) A B ↔ IsGaloisGroup G A B :=
+  iff_of_mulEquiv Subgroup.topEquiv fun _ _ ↦ rfl
+
+instance [IsGaloisGroup G A B] : IsGaloisGroup (⊤ : Subgroup G) A B :=
+  IsGaloisGroup.top_iff.mpr ‹_›
+
 attribute [instance low] IsGaloisGroup.commutes IsGaloisGroup.isInvariant
 
 theorem IsGaloisGroup.smul_eq_self (H : Subgroup G) (C : Type*) [CommSemiring C] [Algebra C B]
