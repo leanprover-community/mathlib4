@@ -21,6 +21,8 @@ In this file we define residually finite groups and prove some basic properties.
 
 @[expose] public section
 
+universe u
+
 /-- An additive group `G` is residually finite if the intersection of all finite index normal
 additive subgroups is trivial. -/
 class AddGroup.ResiduallyFinite (G : Type*) [AddGroup G] : Prop where
@@ -70,6 +72,22 @@ theorem residuallyFinite_iff_exists_finiteIndex :
     ResiduallyFinite G ↔ ∀ g : G, g ≠ 1 → ∃ (H : Subgroup G), H.FiniteIndex ∧ g ∉ H := by
   simp_rw [residuallyFinite_iff_forall_finiteIndex, ← Classical.not_imp, ← not_forall,
     not_imp_not]
+
+/-- `G` is residually finite iff for every pair of distinct elements `g` and `h` there exists a
+group homomorphism `f` to a finite group `H` such that `f g ≠ f h`. -/
+@[to_additive]
+theorem residuallyFinite_iff_forall_exists_finite_monoidHom {G : Type u} [Group G] :
+    ResiduallyFinite G ↔
+      ∀ g h : G, g ≠ h → ∃ (H : Type u) (_ : Group H) (_ : Finite H) (f : G →* H), f g ≠ f h := by
+  refine ⟨fun h' g h hgh ↦ ?_, fun h ↦ ?_⟩
+  · obtain ⟨H, _⟩ := residuallyFinite_iff_exists_finiteIndexNormalSubgroup.mp h' (g⁻¹ * h)
+      (fun h ↦ hgh <| eq_of_inv_mul_eq_one h)
+    refine ⟨_, QuotientGroup.Quotient.group _,
+      Subgroup.finiteIndex_iff_finite_quotient.mp H.isFiniteIndex', QuotientGroup.mk' _, ?_⟩
+    simpa [QuotientGroup.eq, FiniteIndexNormalSubgroup.mem_toSubgroup_iff]
+  · refine residuallyFinite_iff_exists_finiteIndex.mpr fun g hg ↦ ?_
+    obtain ⟨_, _, _, f, hf⟩ := h g 1 hg
+    exact ⟨f.ker, Subgroup.finiteIndex_ker f, by simpa using hf⟩
 
 @[to_additive]
 instance [Finite G] : ResiduallyFinite G :=
