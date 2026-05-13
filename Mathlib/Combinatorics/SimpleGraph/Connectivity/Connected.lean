@@ -771,7 +771,7 @@ alias reachable_delete_edges_iff_exists_walk := reachable_deleteEdges_iff_exists
 
 theorem isBridge_iff_forall_walk_mem_edges {v w : V} :
     G.IsBridge s(v, w) ↔ ∀ p : G.Walk v w, s(v, w) ∈ p.edges := by
-  rw [isBridge_iff,reachable_deleteEdges_iff_exists_walk, not_exists_not]
+  rw [isBridge_iff, reachable_deleteEdges_iff_exists_walk, not_exists_not]
 
 @[deprecated (since := "2026-04-02")]
 alias isBridge_iff_adj_and_forall_walk_mem_edges := isBridge_iff_forall_walk_mem_edges
