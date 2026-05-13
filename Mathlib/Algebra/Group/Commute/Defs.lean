@@ -198,11 +198,3 @@ theorem mul_inv_cancel_assoc (h : Commute a b) : a * (b * a⁻¹) = b := by
 end Group
 
 end Commute
-
-@[to_additive] protected lemma IsLeftRegular.mul_eq_of_comm [Monoid M] {a b c : M}
-    (reg : IsLeftRegular a) (eq : a * b = c) (hc : Commute c a) : b * a = c :=
-  reg <| show a * (b * a) = a * c by rw [← mul_assoc, eq, hc.eq]
-
-@[to_additive] protected lemma IsRightRegular.mul_eq_of_comm [Monoid M] {a b c : M}
-    (reg : IsRightRegular a) (eq : b * a = c) (hc : Commute a c) : a * b = c :=
-  reg <| show a * b * a = c * a by rw [mul_assoc, eq, hc.eq]
