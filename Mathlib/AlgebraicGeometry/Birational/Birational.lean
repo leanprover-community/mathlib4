@@ -146,7 +146,7 @@ lemma isOver_restrictTarget (f : X.PartialIso Y)
   isOver_symm _ (isOver_restrictSource _ (isOver_symm f hf) U hU hU')
 
 /-- Compose two partial isomorphisms, restricting to the intersection of the intermediate opens. -/
-@[trans, simps! source target, simps! -isSimp iso]
+@[trans, simps! source target iso]
 noncomputable def trans (f : X.PartialIso Y) (g : Y.PartialIso Z) : X.PartialIso Z :=
   have := f.dense_target.inter_of_isOpen_right g.dense_source g.source.2
   (f.restrictTarget _ this inf_le_left).trans' (g.restrictSource _ this inf_le_right) rfl
