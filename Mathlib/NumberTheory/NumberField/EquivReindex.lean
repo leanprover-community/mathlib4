@@ -18,7 +18,7 @@ index set of the chosen basis of the ring of integers of `K`.
 house, number field, algebraic number
 -/
 
-@[expose] public section
+public section
 
 variable (K : Type*) [Field K] [NumberField K]
 

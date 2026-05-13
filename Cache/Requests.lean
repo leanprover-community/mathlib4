@@ -13,6 +13,9 @@ namespace Cache.Requests
 
 open System (FilePath)
 
+/-- The full name of the main Mathlib GitHub repository. -/
+def MATHLIBREPO := "leanprover-community/mathlib4"
+
 /--
 Structure to hold repository information with priority ordering
 -/
@@ -37,7 +40,7 @@ def isRemoteURL (url : String) : Bool :=
 /--
 Helper function to get repository from a remote name
 -/
-def getRepoFromRemote (mathlibDepPath : FilePath) (remoteName : String) (errorContext : String) : IO String := do
+def getRepoFromRemote (mathlibDepPath : FilePath) (remoteName : String) (errorContext : String) : IO (Option String) := do
   -- If the remote is already a valid URL, attempt to extract the repo from it. This happens with `gh pr checkout`
   if isRemoteURL remoteName then
     repoFromURL remoteName
@@ -46,23 +49,25 @@ def getRepoFromRemote (mathlibDepPath : FilePath) (remoteName : String) (errorCo
   -- standard name like `origin` or `upstream` or it errors out.
   let out ← IO.Process.output
     {cmd := "git", args := #["remote", "get-url", remoteName], cwd := mathlibDepPath}
-  -- If `git remote get-url` fails then bail out with an error to help debug
+  -- If `git remote get-url` fails then return none.
   let output := out.stdout.trimAscii
   unless out.exitCode == 0 do
-    throw <| IO.userError s!"\
-      Failed to run Git to determine Mathlib's repository from {remoteName} remote (exit code: {out.exitCode}).\n\
+    IO.println s!"\
+      Warning: failed to run Git to determine Mathlib's repository from {remoteName} remote\n\
       {errorContext}\n\
-      Stdout:\n{output}\nStderr:\n{out.stderr.trimAscii}\n"
+      Continuing to fetch the cache from {MATHLIBREPO}."
+    return none
   -- Finally attempt to extract the repository from the remote URL returned by `git remote get-url`
   repoFromURL output.copy
-where repoFromURL (url : String) : IO String := do
+where repoFromURL (url : String) : IO (Option String) := do
     if let some repo := extractRepoFromUrl url then
-      return repo
+      return some repo
     else
-      throw <| IO.userError s!"\
-        Failed to extract repository from remote URL: {url}.\n\
+      IO.println s!"\
+        Warning: Failed to extract repository from remote URL: {url}.\n\
         {errorContext}\n\
-        Please ensure the remote URL is valid and points to a GitHub repository."
+        Continuing to fetch the cache from {MATHLIBREPO}."
+      return none
 
 /--
 Finds the remote name that points to `leanprover-community/mathlib4` repository.
@@ -146,7 +151,7 @@ Attempts to determine the GitHub repository of a version of Mathlib from its Git
 If the current commit coincides with a PR ref, it will determine the source fork
 of that PR rather than just using the origin remote.
 -/
-def getRemoteRepo (mathlibDepPath : FilePath) : IO RepoInfo := do
+def getRemoteRepo (mathlibDepPath : FilePath) : IO (Option RepoInfo) := do
 
   -- Since currently we need to push a PR to `leanprover-community/mathlib` build a user cache,
   -- we check if we are a special branch or a branch with PR. This leaves out non-PRed fork
@@ -176,7 +181,7 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO RepoInfo := do
       let repo := "leanprover-community/mathlib4-nightly-testing"
       let cacheService := if useCloudflareCache then "Cloudflare" else "Azure"
       IO.println s!"Using cache ({cacheService}) from nightly-testing remote: {repo}"
-      return {repo := repo, useFirst := true}
+      return some {repo := repo, useFirst := true}
 
     -- Only search for PR refs if we're not on a regular branch like master, bump/*, or nightly-testing*
     -- let isSpecialBranch := branchName == "master" || branchName.startsWith "bump/" ||
@@ -234,11 +239,16 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO RepoInfo := do
     -- If no tracking remote is configured, fall back to origin
     "origin"
 
-  let repo ← getRepoFromRemote mathlibDepPath remoteName
+  let repo? ← getRepoFromRemote mathlibDepPath remoteName
     s!"Ensure Git is installed and the '{remoteName}' remote points to its GitHub repository."
   let cacheService := if useCloudflareCache then "Cloudflare" else "Azure"
-  IO.println s!"Using cache ({cacheService}) from {remoteName}: {repo}"
-  return {repo := repo, useFirst := false}
+  match repo? with
+  | some repo =>
+    IO.println s!"Using cache ({cacheService}) from {remoteName}: {repo?}"
+    return some {repo := repo, useFirst := false}
+  | none =>
+    IO.println s!"Using cache ({cacheService}) from {MATHLIBREPO}."
+    return none
 
 /-- Public URL for mathlib cache -/
 initialize URL : String ← do
@@ -274,9 +284,6 @@ def getUploadAuth : IO UploadAuth := do
         return .azureSas token
     throw <| IO.userError
       "environment variable MATHLIB_CACHE_AZURE_BEARER_TOKEN or MATHLIB_CACHE_SAS must be set to upload caches"
-
-/-- The full name of the main Mathlib GitHub repository. -/
-def MATHLIBREPO := "leanprover-community/mathlib4"
 
 /--
 Given a file name like `"1234.tar.gz"`, makes the URL to that file on the server.
@@ -526,8 +533,12 @@ def downloadFiles
     if warnOnMissing && s.success + s.failed < s.done then
       IO.eprintln "Warning: some files were not found in the cache."
       IO.eprintln "This usually means that your local checkout of mathlib4 has diverged from upstream."
-      IO.eprintln "If you push your commits to a branch of the mathlib4 repository, CI will build the oleans and they will be available later."
-      IO.eprintln "Alternatively, if you already have pushed your commits to a branch, this may mean the CI build has failed part-way through building."
+      IO.eprintln ""
+      IO.eprintln "  * If you push your commits to a PR to the mathlib4 repository"
+      IO.eprintln "    (use a draft PR if it is not ready for review),"
+      IO.eprintln "    then CI will build the oleans and they will be available later."
+      IO.eprintln "  * If you have already opened a PR, this may mean"
+      IO.eprintln "    the CI build has failed part-way through building."
     pure (s.failed, s)
   else
     let r ← hashMap.foldM (init := []) fun acc _ hash => do
@@ -641,63 +652,33 @@ def checkForManifestMismatch : IO.CacheM Unit := do
         precedence, then run `lake update`."
     IO.Process.exit 1
 
-/-- Fetches the ProofWidgets cloud release and prunes non-JS files. -/
-def getProofWidgets (buildDir : FilePath) : IO Unit := do
-  if (← buildDir.pathExists) then
-    -- Check if the ProofWidgets build is out-of-date via `lake`.
-    -- This is done through Lake as cache has no simple heuristic
-    -- to determine whether the ProofWidgets JS is out-of-date.
-    let out ← IO.Process.output
-      {cmd := "lake", args := #["-v", "build", "--no-build", "proofwidgets:release"]}
-    if out.exitCode == 0 then -- up-to-date
-      return
-    else if out.exitCode == 3 then -- needs fetch (`--no-build` triggered)
-      pure ()
-    else
-      printLakeOutput out
-      throw <| IO.userError s!"Failed to validate ProofWidgets cloud release: \
-        lake failed with error code {out.exitCode}"
-  -- Download and unpack the ProofWidgets cloud release (for its `.js` files)
-  IO.print "Fetching ProofWidgets cloud release..."
-  let out ← IO.Process.output
-     {cmd := "lake", args := #["-v", "build", "proofwidgets:release"]}
-  if out.exitCode == 0 then
-    IO.println " done!"
-  else
-    IO.print "\n"
-    printLakeOutput out
-    throw <| IO.userError s!"Failed to fetch ProofWidgets cloud release: \
-      lake failed with error code {out.exitCode}"
-  -- Prune non-JS ProofWidgets files (e.g., `olean`, `.c`)
-  try
-    IO.FS.removeDirAll (buildDir / "lib")
-    IO.FS.removeDirAll (buildDir / "ir")
-  catch e =>
-    throw <| IO.userError s!"Failed to prune ProofWidgets cloud release: {e}"
-where
-  printLakeOutput out := do
-    unless out.stdout.isEmpty do
-      IO.eprintln "lake stdout:"
-      IO.eprint out.stdout
-    unless out.stderr.isEmpty do
-      IO.eprintln "lake stderr:"
-      IO.eprint out.stderr
-
 /-- Downloads missing files, and unpacks files. -/
 def getFiles
     (repo? : Option String) (hashMap : IO.ModuleHashMap)
-    (forceDownload forceUnpack parallel decompress skipProofWidgets : Bool)
+    (forceDownload forceUnpack parallel decompress : Bool)
     : IO.CacheM Unit := do
   let isMathlibRoot ← IO.isMathlibRoot
   unless isMathlibRoot do
     checkForToolchainMismatch
     checkForManifestMismatch
-  if skipProofWidgets then
-    IO.println "Skipping ProofWidgets release fetch"
-  else
-    getProofWidgets (← read).proofWidgetsBuildDir
 
   let mathlibDepPath := (← read).mathlibDepPath
+  let startTime ← IO.monoMsNow
+
+  -- Start background decompression of already-cached files before downloading.
+  -- Skip when forceDownload is set, since downloadFiles will re-download (and pipeline-decompress)
+  -- all files including already-cached ones, which would race with this background task.
+  let bgDecomp ← if decompress && !forceDownload then
+    if let some plan := ← IO.prepareDecompConfig hashMap forceUnpack then
+      if plan.alreadyDecompressed > 0 then
+        IO.println s!"Decompressing {plan.needsDecomp} already-cached file(s) \
+          ({plan.alreadyDecompressed} already decompressed)"
+      else
+        IO.println s!"Decompressing {plan.needsDecomp} already-cached file(s)"
+      let task ← IO.asTask (IO.spawnLeanTarDecompress plan.config forceUnpack)
+      pure (some (task, plan.needsDecomp))
+    else pure none
+  else pure none
 
   if let some repo := repo? then
     let failed ← downloadFiles repo hashMap forceDownload parallel (warnOnMissing := true)
@@ -705,16 +686,19 @@ def getFiles
       isMathlibRoot mathlibDepPath
     if failed > 0 then IO.Process.exit 1
   else
-    let repoInfo ← getRemoteRepo (← read).mathlibDepPath
+    let repoInfo? ← getRemoteRepo (← read).mathlibDepPath
 
     -- Build list of repositories to download from in order
     let repos : List String :=
-      if repoInfo.repo == MATHLIBREPO then
-        [repoInfo.repo]
-      else if repoInfo.useFirst then
-        [repoInfo.repo, MATHLIBREPO]
+      if let some repoInfo := repoInfo? then
+        if repoInfo.repo == MATHLIBREPO then
+          [MATHLIBREPO]
+        else if repoInfo.useFirst then
+          [repoInfo.repo, MATHLIBREPO]
+        else
+          [MATHLIBREPO, repoInfo.repo]
       else
-        [MATHLIBREPO, repoInfo.repo]
+        [MATHLIBREPO]
 
     let mut failed : Nat := 0
     for h : i in [0:repos.length] do
@@ -729,9 +713,26 @@ def getFiles
       IO.println s!"Downloading {failed} files failed"
       IO.Process.exit 1
 
+  -- Wait for decompression of already-cached files to complete
+  if let some (task, size) := bgDecomp then
+    match task.get with
+    | .ok exitCode =>
+      if exitCode != 0 then
+        IO.eprintln s!"Decompression of already-cached files failed (exit code {exitCode})"
+        IO.Process.exit 1
+      IO.println s!"Decompressed {size} already-cached file(s)"
+    | .error e =>
+      IO.eprintln s!"Decompression of already-cached files error: {e}"
+      IO.Process.exit 1
+
+  let elapsed := (← IO.monoMsNow) - startTime
   if decompress then
-    -- decompress anything which hasn't already been decompressed during download
-    IO.unpackCache hashMap forceUnpack
+    if bgDecomp.isSome && parallel then
+      -- Background task handled pre-cached files, download pipeline handled new files
+      IO.println s!"Completed successfully in {elapsed} ms!"
+    else
+      -- Either no background decompression ran, or non-parallel mode needs final sweep
+      IO.unpackCache hashMap forceUnpack
   else
     IO.println "Downloaded all files successfully!"
 

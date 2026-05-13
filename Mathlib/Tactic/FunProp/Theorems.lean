@@ -245,7 +245,7 @@ def getTransitionTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
     trace[Debug.Meta.Tactic.fun_prop] m!"look up key {← RefinedDiscrTree.encodeExpr e true}"
     thms.getMatch e false true
   modify ({ · with transitionTheorems := ⟨thms⟩ })
-  return (← MonadExcept.ofExcept candidates).toArray
+  return candidates.toArray
 
 /-- Environment extension for morphism theorems. -/
 initialize morTheoremsExt : GeneralTheoremsExt ←
@@ -268,7 +268,7 @@ def getMorphismTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
     trace[Debug.Meta.Tactic.fun_prop] m!"look up key {← RefinedDiscrTree.encodeExpr e true}"
     thms.getMatch e false true
   modify ({ · with morTheorems := ⟨thms⟩ })
-  return (← MonadExcept.ofExcept candidates).toArray
+  return candidates.toArray
 
 
 --------------------------------------------------------------------------------

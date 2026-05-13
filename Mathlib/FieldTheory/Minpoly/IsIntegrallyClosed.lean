@@ -245,15 +245,12 @@ noncomputable def _root_.PowerBasis.ofAdjoinEqTop' {x : S} (hx : IsIntegral R x)
     PowerBasis R S :=
   (adjoin.powerBasis' hx).map ((Subalgebra.equivOfEq _ _ hx').trans Subalgebra.topEquiv)
 
+open Algebra in
 example {x : S} (B : PowerBasis R S)
-    (hint : IsIntegral R x) (hx : B.gen ∈ Algebra.adjoin R {x}) :
+    (hint : IsIntegral R x) (hx : B.gen ∈ R[x]) :
     PowerBasis R S := by
   apply PowerBasis.ofAdjoinEqTop' hint
   exact PowerBasis.adjoin_eq_top_of_gen_mem_adjoin hx
-
-@[deprecated "Use in combination with `PowerBasis.adjoin_eq_top_of_gen_mem_adjoin` to recover the \
-  deprecated definition" (since := "2025-09-28")] alias _root_.PowerBasis.ofGenMemAdjoin' :=
-  _root_.PowerBasis.ofAdjoinEqTop'
 
 @[simp]
 theorem _root_.PowerBasis.ofAdjoinEqTop'_dim {x : S} (hx : IsIntegral R x)
@@ -264,14 +261,6 @@ theorem _root_.PowerBasis.ofAdjoinEqTop'_dim {x : S} (hx : IsIntegral R x)
 theorem _root_.PowerBasis.ofAdjoinEqTop'_gen {x : S} (hx : IsIntegral R x)
     (hx' : adjoin R {x} = ⊤) : (PowerBasis.ofAdjoinEqTop' hx hx').gen = x := by
   simp [PowerBasis.ofAdjoinEqTop']
-
-@[deprecated "Use in combination with `PowerBasis.adjoin_eq_top_of_gen_mem_adjoin` to recover the \
-  deprecated definition" (since := "2025-09-28")] alias _root_.PowerBasis.ofGenMemAdjoin'_dim :=
-   _root_.PowerBasis.ofAdjoinEqTop'_dim
-
-@[deprecated "Use in combination with `PowerBasis.adjoin_eq_top_of_gen_mem_adjoin` to recover the \
-  deprecated definition" (since := "2025-09-28")] alias _root_.PowerBasis.ofGenMemAdjoin'_gen :=
-  _root_.PowerBasis.ofAdjoinEqTop'_gen
 
 end AdjoinRoot
 

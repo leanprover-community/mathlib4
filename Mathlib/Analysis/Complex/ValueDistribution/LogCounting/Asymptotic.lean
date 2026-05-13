@@ -27,7 +27,7 @@ Establish the analogous characterization of meromorphic functions with finite se
 functions whose logarithmic counting function is big-O of `log`.
 -/
 
-@[expose] public section
+public section
 
 open Asymptotics Filter Function Real Set
 
@@ -82,7 +82,7 @@ lemma zero_iff_logCounting_bounded [ProperSpace E]
   intro h₁
   obtain ⟨e, he⟩ := exists_single_le_pos (lt_of_le_of_ne h (h₁ ·.symm))
   rw [isBigO_iff'']
-  push_neg
+  push Not
   intro a ha
   simp only [Pi.one_apply, norm_eq_abs, frequently_atTop, abs_one]
   intro b

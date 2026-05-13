@@ -39,6 +39,7 @@ variable (F : J ⥤ GrpCat.{u})
 instance groupObj (j) : Group ((F ⋙ forget GrpCat).obj j) :=
   inferInstanceAs <| Group (F.obj j)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The flat sections of a functor into `GrpCat` form a subgroup of all sections. -/
 @[to_additive
 /-- The flat sections of a functor into `AddGrpCat` form an additive subgroup of all sections. -/]
@@ -74,7 +75,6 @@ noncomputable instance limitGroup :
 instance : Small.{u} (Functor.sections ((F ⋙ forget₂ GrpCat MonCat) ⋙ forget MonCat)) :=
   inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget GrpCat))
 
-set_option backward.inferInstanceAs.wrap false in
 /-- We show that the forgetful functor `GrpCat ⥤ MonCat` creates limits.
 
 All we need to do is notice that the limit point has a `Group` instance available, and then reuse

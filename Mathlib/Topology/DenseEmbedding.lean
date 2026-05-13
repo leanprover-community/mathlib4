@@ -45,7 +45,7 @@ namespace IsDenseInducing
 variable [TopologicalSpace α] [TopologicalSpace β]
 
 theorem _root_.Dense.isDenseInducing_val {s : Set α} (hs : Dense s) :
-    IsDenseInducing ((↑) : s →  α) := ⟨IsInducing.subtypeVal, hs.denseRange_val⟩
+    IsDenseInducing ((↑) : s → α) := ⟨IsInducing.subtypeVal, hs.denseRange_val⟩
 
 variable {i : α → β}
 
@@ -70,7 +70,7 @@ theorem closure_image_mem_nhds {s : Set α} {a : α} (di : IsDenseInducing i) (h
   rcases hs with ⟨U, ⟨haU, hUo⟩, sub : i ⁻¹' U ⊆ s⟩
   refine mem_of_superset (hUo.mem_nhds haU) ?_
   calc
-    U ⊆ closure (i '' (i ⁻¹' U)) := di.dense.subset_closure_image_preimage_of_isOpen hUo
+    U ⊆ closure (i '' i ⁻¹' U) := di.dense.subset_closure_image_preimage_of_isOpen hUo
     _ ⊆ closure (i '' s) := closure_mono (image_mono sub)
 
 theorem dense_image (di : IsDenseInducing i) {s : Set α} : Dense (i '' s) ↔ Dense s := by
