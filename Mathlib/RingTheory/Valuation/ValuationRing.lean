@@ -187,7 +187,7 @@ noncomputable instance linearOrderedCommGroupWithZero :
     LinearOrderedCommGroupWithZero (ValueGroup A K) where
   bot := 0
   bot_le := by rintro ⟨a⟩; exact ⟨0, zero_smul ..⟩
-  zero_le := by rintro ⟨a⟩; exact ⟨0, zero_smul ..⟩
+  isBot_zero := by rintro ⟨a⟩; exact ⟨0, zero_smul ..⟩
   mul_lt_mul_of_pos_left := by
     simp_rw [← not_le]
     rintro ⟨a⟩ ha ⟨b⟩ ⟨c⟩ hbc

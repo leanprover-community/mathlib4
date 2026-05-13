@@ -243,7 +243,7 @@ end Polynomials
 /-- A set `S ⊆ ℕ^α` is Diophantine if there exists a polynomial on
   `α ⊕ β` such that `v ∈ S` iff there exists `t : ℕ^β` with `p (v, t) = 0`. -/
 def Dioph {α : Type u} (S : Set (α → ℕ)) : Prop :=
-  ∃ (β : Type u) (p : Poly (α ⊕ β)), ∀ v, S v ↔ ∃ t, p (v ⊗ t) = 0
+  ∃ (β : Type u) (p : Poly (α ⊕ β)), ∀ v, v ∈ S ↔ ∃ t, p (v ⊗ t) = 0
 
 namespace Dioph
 
@@ -253,7 +253,7 @@ variable {α β γ : Type u} {S S' : Set (α → ℕ)}
 
 theorem ext (d : Dioph S) (H : ∀ v, v ∈ S ↔ v ∈ S') : Dioph S' := by rwa [← Set.ext H]
 
-theorem of_no_dummies (S : Set (α → ℕ)) (p : Poly α) (h : ∀ v, S v ↔ p v = 0) : Dioph S :=
+theorem of_no_dummies (S : Set (α → ℕ)) (p : Poly α) (h : ∀ v, v ∈ S ↔ p v = 0) : Dioph S :=
   ⟨PEmpty, ⟨p.map inl, fun v => (h v).trans ⟨fun h => ⟨PEmpty.elim, h⟩, fun ⟨_, ht⟩ => ht⟩⟩⟩
 
 theorem inject_dummies_lem (f : β → γ) (g : γ → Option β) (inv : ∀ x, g (f x) = some x)
@@ -267,8 +267,8 @@ theorem inject_dummies_lem (f : β → γ) (g : γ → Option β) (inv : ∀ x, 
     exact ⟨t ∘ f, by rwa [this]⟩
 
 theorem inject_dummies (f : β → γ) (g : γ → Option β) (inv : ∀ x, g (f x) = some x)
-    (p : Poly (α ⊕ β)) (h : ∀ v, S v ↔ ∃ t, p (v ⊗ t) = 0) :
-    ∃ q : Poly (α ⊕ γ), ∀ v, S v ↔ ∃ t, q (v ⊗ t) = 0 :=
+    (p : Poly (α ⊕ β)) (h : ∀ v, v ∈ S ↔ ∃ t, p (v ⊗ t) = 0) :
+    ∃ q : Poly (α ⊕ γ), ∀ v, v ∈ S ↔ ∃ t, q (v ⊗ t) = 0 :=
   ⟨p.map (inl ⊗ inr ∘ f), fun v => (h v).trans <| inject_dummies_lem f g inv _ _⟩
 
 variable (β) in
@@ -281,7 +281,7 @@ theorem reindex_dioph (f : α → β) : Dioph S → Dioph {v | v ∘ f ∈ S}
 
 theorem DiophList.forall (l : List (Set <| α → ℕ)) (d : l.Forall Dioph) :
     Dioph {v | l.Forall fun S : Set (α → ℕ) => v ∈ S} := by
-  suffices ∃ (β : _) (pl : List (Poly (α ⊕ β))), ∀ v, List.Forall (fun S : Set _ => S v) l ↔
+  suffices ∃ (β : _) (pl : List (Poly (α ⊕ β))), ∀ v, List.Forall (fun S : Set _ => v ∈ S) l ↔
           ∃ t, List.Forall (fun p : Poly (α ⊕ β) => p (v ⊗ t) = 0) pl
     from
     let ⟨β, pl, h⟩ := this
@@ -335,7 +335,7 @@ theorem union : ∀ (_ : Dioph S) (_ : Dioph S'), Dioph (S ∪ S')
 
 /-- A partial function is Diophantine if its graph is Diophantine. -/
 def DiophPFun (f : (α → ℕ) →. ℕ) : Prop :=
-  Dioph {v : Option α → ℕ | f.graph (v ∘ some, v none)}
+  Dioph {v : Option α → ℕ | (v ∘ some, v none) ∈ f.graph}
 
 /-- A function is Diophantine if its graph is Diophantine. -/
 def DiophFn (f : (α → ℕ) → ℕ) : Prop :=
@@ -419,7 +419,7 @@ open Vector3
 open scoped Vector3
 
 theorem diophFn_vec_comp1 {S : Set (Vector3 ℕ (succ n))} (d : Dioph S) {f : Vector3 ℕ n → ℕ}
-    (df : DiophFn f) : Dioph {v : Vector3 ℕ n | (f v::v) ∈ S} :=
+    (df : DiophFn f) : Dioph {v : Vector3 ℕ n | (f v :: v) ∈ S} :=
   Dioph.ext (diophFn_comp1 (reindex_dioph _ (none :: some) d) df) (fun v => by
     dsimp
     -- TODO: `apply iff_of_eq` is required here, even though `congr!` works on iff below.
@@ -430,7 +430,7 @@ theorem diophFn_vec_comp1 {S : Set (Vector3 ℕ (succ n))} (d : Dioph S) {f : Ve
 set_option backward.isDefEq.respectTransparency false in
 /-- Deleting the first component preserves the Diophantine property. -/
 theorem vec_ex1_dioph (n) {S : Set (Vector3 ℕ (succ n))} (d : Dioph S) :
-    Dioph {v : Fin2 n → ℕ | ∃ x, (x::v) ∈ S} :=
+    Dioph {v : Fin2 n → ℕ | ∃ x, (x :: v) ∈ S} :=
   ext (ex1_dioph <| reindex_dioph _ (none :: some) d) fun v =>
     exists_congr fun x => by
       dsimp
@@ -440,7 +440,7 @@ theorem vec_ex1_dioph (n) {S : Set (Vector3 ℕ (succ n))} (d : Dioph S) :
 theorem diophFn_vec (f : Vector3 ℕ n → ℕ) : DiophFn f ↔ Dioph {v | f (v ∘ fs) = v fz} :=
   ⟨reindex_dioph _ (fz ::ₒ fs), reindex_dioph _ (none::some)⟩
 
-theorem diophPFun_vec (f : Vector3 ℕ n →. ℕ) : DiophPFun f ↔ Dioph {v | f.graph (v ∘ fs, v fz)} :=
+theorem diophPFun_vec (f : Vector3 ℕ n →. ℕ) : DiophPFun f ↔ Dioph {v | (v ∘ fs, v fz) ∈ f.graph} :=
   ⟨reindex_dioph _ (fz ::ₒ fs), reindex_dioph _ (none::some)⟩
 
 theorem diophFn_compn :
@@ -466,7 +466,7 @@ theorem diophFn_compn :
                 congr! 1
                 ext x; obtain _ | _ | _ := x <;> rfl
           have : Dioph {v | (v ⊗ f v::fun i : Fin2 n => fl i v) ∈ S} :=
-            @diophFn_compn n (fun v => S (v ∘ inl ⊗ f (v ∘ inl) :: v ∘ inr)) this _ dfl
+            @diophFn_compn n (fun v => (v ∘ inl ⊗ f (v ∘ inl) :: v ∘ inr) ∈ S) this _ dfl
           ext this fun v => by
             dsimp
             congr! 3 with x
@@ -511,14 +511,14 @@ section
 variable {f g : (α → ℕ) → ℕ} (df : DiophFn f) (dg : DiophFn g)
 include df dg
 
-theorem dioph_comp2 {S : ℕ → ℕ → Prop} (d : Dioph fun v : Vector3 ℕ 2 => S (v &0) (v &1)) :
-    Dioph fun v => S (f v) (g v) := dioph_comp d [f, g] ⟨df, dg⟩
+theorem dioph_comp2 {S : ℕ → ℕ → Prop} (d : Dioph {v : Vector3 ℕ 2 | S (v &0) (v &1)}) :
+    Dioph {v | S (f v) (g v)} := dioph_comp d [f, g] ⟨df, dg⟩
 
 theorem diophFn_comp2 {h : ℕ → ℕ → ℕ} (d : DiophFn fun v : Vector3 ℕ 2 => h (v &0) (v &1)) :
     DiophFn fun v => h (f v) (g v) := diophFn_comp d [f, g] ⟨df, dg⟩
 
 /-- The set of places where two Diophantine functions are equal is Diophantine. -/
-theorem eq_dioph : Dioph fun v => f v = g v :=
+theorem eq_dioph : Dioph {v | f v = g v} :=
   dioph_comp2 df dg <|
     of_no_dummies _ (Poly.proj &0 - Poly.proj &1) fun v => by
       exact Int.ofNat_inj.symm.trans ⟨@sub_eq_zero_of_eq ℤ _ (v &0) (v &1), eq_of_sub_eq_zero⟩
@@ -573,7 +573,7 @@ theorem sub_dioph : DiophFn fun v ↦ f v - g v :=
 scoped infixl:80 " D- " => Dioph.sub_dioph
 
 /-- The set of places where one Diophantine function divides another is Diophantine. -/
-theorem dvd_dioph : Dioph fun v => f v ∣ g v :=
+theorem dvd_dioph : Dioph {v | f v ∣ g v} :=
   dioph_comp ((D∃) 2 <| D&2 D= D&1 D* D&0) [f, g] ⟨df, dg⟩
 
 @[inherit_doc]
@@ -581,7 +581,7 @@ scoped infixl:50 " D∣ " => Dioph.dvd_dioph
 
 /-- Diophantine functions are closed under the modulo operation. -/
 theorem mod_dioph : DiophFn fun v => f v % g v :=
-  have : Dioph fun v : Vector3 ℕ 3 => (v &2 = 0 ∨ v &0 < v &2) ∧ ∃ x : ℕ, v &0 + v &2 * x = v &1 :=
+  have : Dioph {v : Vector3 ℕ 3 | (v &2 = 0 ∨ v &0 < v &2) ∧ ∃ x : ℕ, v &0 + v &2 * x = v &1} :=
     (D&2 D= D.0 D∨ D&0 D< D&2) D∧ (D∃) 3 <| D&1 D+ D&3 D* D&0 D= D&2
   diophFn_comp2 df dg <|
     (diophFn_vec _).2 <|
@@ -601,7 +601,7 @@ scoped infixl:80 " D% " => Dioph.mod_dioph
 
 /-- The set of places where two Diophantine functions are congruent modulo a third
 is Diophantine. -/
-theorem modEq_dioph {h : (α → ℕ) → ℕ} (dh : DiophFn h) : Dioph fun v => f v ≡ g v [MOD h v] :=
+theorem modEq_dioph {h : (α → ℕ) → ℕ} (dh : DiophFn h) : Dioph {v | f v ≡ g v [MOD h v]} :=
   df D% dh D= dg D% dh
 
 @[inherit_doc]
@@ -610,8 +610,7 @@ scoped notation "D≡ " => Dioph.modEq_dioph
 /-- Diophantine functions are closed under integer division. -/
 theorem div_dioph : DiophFn fun v => f v / g v :=
   have :
-    Dioph fun v : Vector3 ℕ 3 =>
-      v &2 = 0 ∧ v &0 = 0 ∨ v &0 * v &2 ≤ v &1 ∧ v &1 < (v &0 + 1) * v &2 :=
+    Dioph {v : Vector3 ℕ 3 | v &2 = 0 ∧ v &0 = 0 ∨ v &0 * v &2 ≤ v &1 ∧ v &1 < (v &0 + 1) * v &2} :=
     (D&2 D= D.0 D∧ D&0 D= D.0) D∨ D&0 D* D&2 D≤ D&1 D∧ D&1 D< (D&0 D+ D.1) D* D&2
   diophFn_comp2 df dg <|
     (diophFn_vec _).2 <|
@@ -631,7 +630,7 @@ scoped infixl:80 " D/ " => Dioph.div_dioph
 open Pell
 
 theorem pell_dioph :
-    Dioph fun v : Vector3 ℕ 4 => ∃ h : 1 < v &0, xn h (v &1) = v &2 ∧ yn h (v &1) = v &3 := by
+    Dioph {v : Vector3 ℕ 4 | ∃ h : 1 < v &0, xn h (v &1) = v &2 ∧ yn h (v &1) = v &3} := by
   have : Dioph {v : Vector3 ℕ 4 |
     1 < v &0 ∧ v &1 ≤ v &3 ∧
     (v &2 = 1 ∧ v &3 = 0 ∨
@@ -656,7 +655,7 @@ theorem pell_dioph :
   exact Dioph.ext this fun v => matiyasevic.symm
 
 theorem xn_dioph : DiophPFun fun v : Vector3 ℕ 2 => ⟨1 < v &0, fun h => xn h (v &1)⟩ :=
-  have : Dioph fun v : Vector3 ℕ 3 => ∃ y, ∃ h : 1 < v &1, xn h (v &2) = v &0 ∧ yn h (v &2) = y :=
+  have : Dioph {v : Vector3 ℕ 3 | ∃ y, ∃ h : 1 < v &1, xn h (v &2) = v &0 ∧ yn h (v &2) = y} :=
     let D_pell := pell_dioph.reindex_dioph (Fin2 4) [&2, &3, &1, &0]
     (D∃) 3 D_pell
   (diophPFun_vec _).2 <|

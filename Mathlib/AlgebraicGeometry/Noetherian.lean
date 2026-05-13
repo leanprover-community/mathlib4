@@ -85,8 +85,8 @@ theorem isNoetherianRing_of_away : IsNoetherianRing R := by
   use N
   have hN : ∀ s : S, minN s ≤ N := fun s => Finset.le_sup s.prop
   intro n hn
-  rw [IsLocalization.ideal_eq_iInf_comap_map_away hS (I N),
-      IsLocalization.ideal_eq_iInf_comap_map_away hS (I n),
+  rw [IsLocalization.ideal_eq_iInf_under_map_away hS (I N),
+      IsLocalization.ideal_eq_iInf_under_map_away hS (I n),
       iInf_subtype', iInf_subtype']
   apply iInf_congr
   intro s

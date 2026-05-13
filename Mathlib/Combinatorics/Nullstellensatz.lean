@@ -174,7 +174,7 @@ private lemma Alon.of_mem_P_support {ι : Type*} (i : ι) (S : Finset R) (m : ι
     (hm : m ∈ (Alon.P S i).support) :
     ∃ e ≤ S.card, m = single i e := by
   classical
-  have hP : Alon.P S i = .rename (fun _ ↦ i) (Alon.P S ()) := by simp [Alon.P, map_prod]
+  have hP : Alon.P S i = .rename (fun _ ↦ i) (Alon.P S ()) := by simp [Alon.P]
   rw [hP, support_rename_of_injective (Function.injective_of_subsingleton _)] at hm
   simp only [Finset.mem_image, mem_support_iff, ne_eq] at hm
   obtain ⟨e, he, hm⟩ := hm
@@ -228,7 +228,7 @@ theorem combinatorial_nullstellensatz_exists_linearCombination
     intro i _
     rw [smul_eq_mul, map_mul]
     convert! mul_zero _
-    rw [Alon.P, map_prod]
+    rw [Alon.P, _root_.map_prod]
     apply Finset.prod_eq_zero (hx i)
     simp
 

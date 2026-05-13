@@ -72,7 +72,7 @@ theorem centroid_eq_affineCombination (s : Simplex k P n) :
     s.centroid = affineCombination k univ s.points (centroidWeights k univ) := by rfl
 
 /-- The centroid of a simplex does not lie in the affine span of any proper subset of its
- vertices. -/
+vertices. -/
 theorem centroid_notMem_affineSpan_of_ne_univ [CharZero k] (s : Simplex k P n)
     {t : Set (Fin (n + 1))} (ht : t ≠ Set.univ) :
     s.centroid ∉ affineSpan k (s.points '' t) := by
@@ -238,7 +238,7 @@ theorem faceOppositeCentroid_mem_affineSpan_face [CharZero k] (s : Simplex k P n
   centroid_mem_affineSpan (s.faceOpposite i)
 
 /-- The `faceOppositeCentroid` is the affine combination of the complement vertices with equal
- weights `1/n`. -/
+weights `1/n`. -/
 theorem faceOppositeCentroid_eq_affineCombination (s : Affine.Simplex k P n) (i : Fin (n + 1)) :
     s.faceOppositeCentroid i = ((affineCombination k {i}ᶜ s.points) fun _ ↦ (↑n)⁻¹) := by
   unfold faceOppositeCentroid
@@ -250,7 +250,7 @@ theorem faceOppositeCentroid_eq_affineCombination (s : Affine.Simplex k P n) (i 
   rfl
 
 /-- The vector from a vertex to the corresponding `faceOppositeCentroid` equals the average of the
- displacements to the other vertices. -/
+displacements to the other vertices. -/
 theorem faceOppositeCentroid_vsub_point_eq_smul_sum_vsub [CharZero k] (s : Affine.Simplex k P n)
     (i : Fin (n + 1)) :
     s.faceOppositeCentroid i -ᵥ (s.points i) = (n : k)⁻¹ • ∑ x, (s.points x -ᵥ s.points i) := by
@@ -318,7 +318,7 @@ theorem faceOppositeCentroid_vsub_faceOppositeCentroid [CharZero k] (s : Affine.
   rw [this, smul_smul, inv_eq_one_div, one_div_mul_cancel (NeZero.ne (n : k)), one_smul]
 
 /-- The vector from a vertex to its `faceOppositeCentroid` is `(n+1)` times the vector from the
- `centroid` to that `faceOppositeCentroid`. -/
+`centroid` to that `faceOppositeCentroid`. -/
 theorem faceOppositeCentroid_vsub_point_eq_smul_vsub [CharZero k] (s : Simplex k P n)
     (i : Fin (n + 1)) :
     s.faceOppositeCentroid i -ᵥ s.points i =
@@ -419,7 +419,7 @@ theorem faceOppositeCentroid_eq_smul_vsub_vadd_point [CharZero k] (s : Simplex k
 section median
 
 /-- The median of a simplex is the line through a vertex and its corresponding
- `faceOppositeCentroid`.
+`faceOppositeCentroid`.
 -/
 def median (s : Simplex k P n) (i : Fin (n + 1)) : AffineSubspace k P :=
   line[k, s.points i, s.faceOppositeCentroid i]

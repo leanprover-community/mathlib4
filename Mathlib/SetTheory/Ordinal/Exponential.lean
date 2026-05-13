@@ -150,6 +150,18 @@ theorem one_lt_opow {a b : Ordinal} : 1 < a ^ b ↔ 1 < a ∧ b ≠ 0 := by
 theorem one_lt_pow {a : Ordinal} {n : ℕ} : 1 < a ^ n ↔ 1 < a ∧ n ≠ 0 :=
   mod_cast one_lt_opow (b := n)
 
+@[simp]
+theorem opow_eq_one_iff {a b : Ordinal} : a ^ b = 1 ↔ a = 1 ∨ b = 0 := by
+  refine ⟨fun h ↦ ?_, by simp +contextual [or_imp]⟩
+  contrapose! h
+  obtain ha | ha := le_or_gt a 1
+  · simp_all [le_one_iff]
+  · simpa using ((opow_lt_opow_iff_right ha).2 h.2.pos).ne'
+
+@[simp]
+theorem pow_eq_one_iff {a : Ordinal} {n : ℕ} : a ^ n = 1 ↔ a = 1 ∨ n = 0 :=
+  mod_cast opow_eq_one_iff (b := n)
+
 theorem isSuccLimit_opow {a b : Ordinal} (a1 : 1 < a) : IsSuccLimit b → IsSuccLimit (a ^ b) :=
   (isNormal_opow a1).map_isSuccLimit
 

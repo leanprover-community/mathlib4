@@ -103,19 +103,22 @@ theorem aleph0_mul_mk_eq {α : Type*} [Infinite α] : ℵ₀ * #α = #α :=
 theorem mk_mul_aleph0_eq {α : Type*} [Infinite α] : #α * ℵ₀ = #α :=
   mul_aleph0_eq (aleph0_le_mk α)
 
-@[simp]
-theorem aleph0_mul_aleph (o : Ordinal) : ℵ₀ * ℵ_ o = ℵ_ o :=
-  aleph0_mul_eq (aleph0_le_aleph o)
+theorem aleph0_mul_aleph (o : Ordinal) : ℵ₀ * ℵ_ o = ℵ_ o := by
+  simp
 
-@[simp]
-theorem aleph_mul_aleph0 (o : Ordinal) : ℵ_ o * ℵ₀ = ℵ_ o :=
-  mul_aleph0_eq (aleph0_le_aleph o)
+theorem aleph_mul_aleph0 (o : Ordinal) : ℵ_ o * ℵ₀ = ℵ_ o := by
+  simp
 
-theorem mul_lt_of_lt {a b c : Cardinal} (hc : ℵ₀ ≤ c) (h1 : a < c) (h2 : b < c) : a * b < c :=
-  (mul_le_mul' (le_max_left a b) (le_max_right a b)).trans_lt <|
-    (lt_or_ge (max a b) ℵ₀).elim (fun h => (mul_lt_aleph0 h h).trans_le hc) fun h => by
-      rw [mul_eq_self h]
-      exact max_lt h1 h2
+theorem mul_le_of_le {a b c : Cardinal} (hc : ℵ₀ ≤ c) (ha : a ≤ c) (hb : b ≤ c) : a * b ≤ c := by
+  rw [← Cardinal.mul_eq_self hc]
+  exact mul_le_mul' ha hb
+
+theorem mul_lt_of_lt {a b c : Cardinal} (hc : ℵ₀ ≤ c) (ha : a < c) (hb : b < c) : a * b < c := by
+  apply (mul_le_mul' (le_max_left a b) (le_max_right a b)).trans_lt
+  obtain h | h := lt_or_ge (max a b) ℵ₀
+  · exact (mul_lt_aleph0 h h).trans_le hc
+  · rw [mul_eq_self h]
+    exact max_lt ha hb
 
 theorem mul_le_max_of_aleph0_le_left {a b : Cardinal} (h : ℵ₀ ≤ a) : a * b ≤ max a b := by
   convert! mul_le_mul' (le_max_left a b) (le_max_right a b) using 1

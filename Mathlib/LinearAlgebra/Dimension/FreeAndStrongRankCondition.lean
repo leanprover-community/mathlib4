@@ -295,4 +295,11 @@ alias ⟨_, bot_eq_top_of_finrank_eq_one⟩ := bot_eq_top_iff_finrank_eq_one
 
 attribute [simp] bot_eq_top_of_finrank_eq_one bot_eq_top_of_rank_eq_one
 
+lemma _root_.Algebra.finrank_eq_one_iff_bijective_algebraMap [Module.Free F E] :
+    Module.finrank F E = 1 ↔ Function.Bijective (algebraMap F E) := by
+  refine ⟨?_, Module.finrank_of_bijective_algebraMap⟩
+  nontriviality E
+  refine fun h ↦ ⟨FaithfulSMul.algebraMap_injective F E, ?_⟩
+  rwa [Algebra.surjective_algebraMap_iff, eq_comm, Subalgebra.bot_eq_top_iff_finrank_eq_one]
+
 end Subalgebra

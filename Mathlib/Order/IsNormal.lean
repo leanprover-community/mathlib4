@@ -5,6 +5,7 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
+public import Mathlib.Order.DirSupClosed
 public import Mathlib.Order.SuccPred.CompleteLinearOrder
 public import Mathlib.Order.SuccPred.InitialSeg
 
@@ -225,6 +226,23 @@ theorem exists_map_le_lt_map_succ_of_exists_ge [NoMaxOrder α] [OrderBot α] [We
 theorem exists_map_le_lt_map_succ [NoMaxOrder α] [OrderBot α] {f : α → α} {x : α}
     (hf : IsNormal f) (hx : f ⊥ ≤ x) : ∃ a, f a ≤ x ∧ x < f (succ a) :=
   exists_map_le_lt_map_succ_of_exists_ge hf ⟨x, hf.strictMono.le_apply⟩ hx
+
+omit [SuccOrder α] in
+theorem dirSupClosed_range {f : α → α} (hf : IsNormal f) : DirSupClosed (range f) := by
+  intro s hs hs₀ _ a ha
+  have hf' : (f ⁻¹' s).Nonempty := by
+    obtain ⟨b, hb⟩ := hs₀
+    obtain ⟨c, rfl⟩ := hs hb
+    exact ⟨c, hb⟩
+  have : Nonempty α := ⟨a⟩
+  let := WellFoundedLT.toOrderBot α
+  let := WellFoundedLT.conditionallyCompleteLinearOrderBot α
+  have hfl : IsLUB (f ⁻¹' s) (sSup (f ⁻¹' s)) :=
+    isLUB_csSup hf' ⟨a, fun b hb ↦ hf.strictMono.le_apply.trans (ha.1 hb)⟩
+  have ha' := hf.map_isLUB hfl hf'
+  rw [image_preimage_eq_of_subset hs] at ha'
+  obtain rfl := ha.unique ha'
+  exact mem_range_self _
 
 end WellFoundedLT
 end IsNormal

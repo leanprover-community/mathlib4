@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.Convex.Combination
 public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.Analysis.Normed.Module.Basic
-public import Mathlib.LinearAlgebra.ConvexSpace.AffineSpace
+public import Mathlib.Geometry.Convex.ConvexSpace.AffineSpace
 
 /-!
 
@@ -26,9 +26,7 @@ which is what one would expect from the triangle inequality.
 ## TODO
 - Equip `StdSimplex` with a topology and show the analogous continuity result for n-ary
   convex combinations.
-- Tidy up the imports with `Mathlib.LinearAlgebra.ConvexSpace.AffineSpace` etc once those files
-  are moved to proper places.
-
+- Tidy up the imports with `Mathlib.Geometric.Convex.ConvexSpace.AffineSpace`.
 -/
 
 @[expose] public section

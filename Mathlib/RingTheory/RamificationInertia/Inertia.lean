@@ -6,6 +6,7 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.NumberTheory.RamificationInertia.Inertia
+public import Mathlib.RingTheory.QuasiFinite.Basic
 
 /-!
 # Inertia degree
@@ -53,6 +54,11 @@ theorem inertiaDeg'_def [hq : q.IsPrime]
 
 theorem inertiaDeg'_of_not_isPrime (hq : ¬ q.IsPrime) : q.inertiaDeg' R = 0 :=
   dif_neg hq
+
+theorem inertiaDeg'_pos [hq : q.IsPrime] [Module.Finite R S] : 0 < q.inertiaDeg' R := by
+  let := Localization.AtPrime.algebraOfLiesOver (q.under R) q
+  rw [inertiaDeg'_def]
+  apply Module.finrank_pos
 
 end
 

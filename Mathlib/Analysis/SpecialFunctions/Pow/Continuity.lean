@@ -49,12 +49,8 @@ theorem cpow_eq_nhds {a b : ℂ} (ha : a ≠ 0) :
 
 theorem cpow_eq_nhds' {p : ℂ × ℂ} (hp_fst : p.fst ≠ 0) :
     (fun x => x.1 ^ x.2) =ᶠ[𝓝 p] fun x => exp (log x.1 * x.2) := by
-  suffices ∀ᶠ x : ℂ × ℂ in 𝓝 p, x.1 ≠ 0 from
-    this.mono fun x hx ↦ by
-      dsimp only
-      rw [cpow_def_of_ne_zero hx]
-  refine IsOpen.eventually_mem ?_ hp_fst
-  change IsOpen { x : ℂ × ℂ | x.1 = 0 }ᶜ
+  suffices IsOpen {x : ℂ × ℂ | x.1 = 0}ᶜ from
+    mem_nhds_iff.mpr ⟨_, fun x hx ↦ by simp_all [cpow_def_of_ne_zero], this, hp_fst⟩
   rw [isOpen_compl_iff]
   exact isClosed_eq continuous_fst continuous_const
 
@@ -246,6 +242,11 @@ theorem Filter.Tendsto.rpow_const {l : Filter α} {f : α → ℝ} {x p : ℝ} (
     (h : x ≠ 0 ∨ 0 ≤ p) : Tendsto (fun a => f a ^ p) l (𝓝 (x ^ p)) :=
   if h0 : 0 = p then h0 ▸ by simp [tendsto_const_nhds]
   else hf.rpow tendsto_const_nhds (h.imp id fun h' => h'.lt_of_ne h0)
+
+theorem Filter.Tendsto.rpow_const_nhds_zero {l : Filter α} {f : α → ℝ} {p : ℝ}
+    (hf : Tendsto f l (𝓝 0)) (hp : 0 < p) :
+    Tendsto (fun t ↦ f t ^ p) l (𝓝 0) :=
+  Real.zero_rpow hp.ne' ▸ hf.rpow_const (.inr hp.le)
 
 variable [TopologicalSpace α] {f g : α → ℝ} {s : Set α} {x : α} {p : ℝ}
 

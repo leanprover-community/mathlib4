@@ -281,17 +281,39 @@ theorem _root_.IsCompact.powerset_vietoris {K : Set α} (hK : IsCompact K) :
 instance [CompactSpace α] : CompactSpace (Set α) :=
   ⟨powerset_univ ▸ isCompact_univ.powerset_vietoris⟩
 
+theorem subset_closure_of_specializes {s t : Set α} (h : s ⤳ t) : t ⊆ closure s :=
+  h.mem_closed isClosed_closure.powerset_vietoris subset_closure
+
+theorem specializes_iff {s t : Set α} : s ⤳ t ↔ (∀ x ∈ s, ∃ y ∈ t, x ⤳ y) ∧ t ⊆ closure s := by
+  refine ⟨fun h => ⟨fun x hx => ?_, subset_closure_of_specializes h⟩, fun ⟨hst, hts⟩ => ?_⟩
+  · obtain ⟨y, hyt, hxy⟩ := h.mem_closed (s := {u | (u ∩ closure {x}).Nonempty})
+      (isClosed_inter_nonempty_of_isClosed isClosed_closure) ⟨x, hx, subset_closure rfl⟩
+    exact ⟨y, hyt, specializes_iff_mem_closure.mpr hxy⟩
+  · simp_rw [Specializes, nhds_generateFrom, le_iInf₂_iff]
+    rintro _ ⟨hs, ⟨U, hU, rfl⟩ | ⟨U, hU, rfl⟩⟩
+    · refine iInf₂_le U.powerset ⟨fun x hx => ?_, .inl <| mem_image_of_mem _ hU⟩
+      obtain ⟨y, hyt, hxy⟩ := hst x hx
+      exact hxy.mem_open hU <| hs hyt
+    · obtain ⟨x, hxt, hxU⟩ := hs
+      obtain ⟨y, hyU, hys⟩ := mem_closure_iff.mp (hts hxt) U hU hxU
+      exact iInf₂_le {t | (t ∩ U).Nonempty} ⟨⟨y, hys, hyU⟩, .inr <| mem_image_of_mem _ hU⟩
+
+theorem specializes_iff_of_t1Space {s t : Set α} [T1Space α] : s ⤳ t ↔ s ⊆ t ∧ t ⊆ closure s := by
+  simp_rw [specializes_iff, specializes_iff_eq, existsAndEq, and_true, ← subset_def]
+
+theorem subset_of_specializes {s t : Set α} [T1Space α] (h : s ⤳ t) : s ⊆ t :=
+  (specializes_iff_of_t1Space.mp h).1
+
 theorem specializes_of_subset_closure {s t : Set α} (hst : s ⊆ t) (hts : t ⊆ closure s) :
     s ⤳ t := by
-  simp_rw [Specializes, nhds_generateFrom, le_iInf₂_iff]
-  rintro _ ⟨hs, ⟨U, hU, rfl⟩ | ⟨U, hU, rfl⟩⟩
-  · exact iInf₂_le U.powerset ⟨hst.trans hs, .inl <| mem_image_of_mem _ hU⟩
-  · obtain ⟨x, hxt, hxU⟩ := hs
-    obtain ⟨y, hyU, hys⟩ := mem_closure_iff.mp (hts hxt) U hU hxU
-    exact iInf₂_le {t | (t ∩ U).Nonempty} ⟨⟨y, hys, hyU⟩, .inr <| mem_image_of_mem _ hU⟩
+  aesop (add simp specializes_iff)
 
 theorem specializes_closure {s : Set α} : s ⤳ closure s :=
   specializes_of_subset_closure subset_closure .rfl
+
+instance [T1Space α] : T0Space (Set α) where
+  t0 _ _ h :=
+    subset_antisymm (subset_of_specializes h.specializes) (subset_of_specializes h.specializes')
 
 end vietoris
 
@@ -455,6 +477,54 @@ instance [DiscreteTopology α] : DiscreteTopology (Compacts α) := by
 @[simp]
 theorem discreteTopology_iff : DiscreteTopology (Compacts α) ↔ DiscreteTopology α :=
   ⟨fun _ => isEmbedding_singleton.discreteTopology, fun _ => inferInstance⟩
+
+instance [T1Space α] : T0Space (Compacts α) :=
+  isEmbedding_coe.t0Space
+
+instance [T2Space α] : T2Space (Compacts α) where
+  t2 K₁ K₂ h := by
+    wlog h' : ¬(K₁ ≤ K₂) generalizing K₁ K₂
+    · grind [Disjoint.symm, le_antisymm]
+    rw [SetLike.not_le_iff_exists] at h'
+    obtain ⟨x, hx₁, hx₂⟩ := h'
+    obtain ⟨U, V, hU, hV, hU', hV', hUV⟩ := K₂.isCompact.separation_of_notMem hx₂
+    exact ⟨_, _, isOpen_inter_nonempty_of_isOpen hV, isOpen_subsets_of_isOpen hU, ⟨x, hx₁, hV'⟩,
+      hU', by grind [Set.Nonempty]⟩
+
+@[simp]
+theorem t2Space_iff : T2Space (Compacts α) ↔ T2Space α :=
+  ⟨fun _ => isEmbedding_singleton.t2Space, fun _ => inferInstance⟩
+
+instance [RegularSpace α] : RegularSpace (Compacts α) := by
+  simp_rw [regularSpace_generateFrom induced_generateFrom_eq, image_union, image_image, powerset,
+    preimage_setOf_eq, Filter.disjoint_iff]
+  rintro _ (⟨U, hU, rfl⟩ | ⟨U, hU, rfl⟩) K hK
+  · obtain ⟨V, W, hV, hW, hKV, hUW, hVW⟩ :=
+      SeparatedNhds.of_isCompact_isClosed K.isCompact hU.isClosed_compl
+        (disjoint_compl_right_iff_subset.mpr hK)
+    refine ⟨{K | (↑K ∩ W).Nonempty}, ?_, {K | ↑K ⊆ V},
+      (isOpen_subsets_of_isOpen hV).mem_nhds_iff.mpr hKV, by grind [Set.Nonempty]⟩
+    simp_rw [(isOpen_inter_nonempty_of_isOpen hW).mem_nhdsSet, compl_setOf,
+      ← inter_compl_nonempty_iff]
+    grw [hUW]
+  · obtain ⟨x, hx₁, hx₂⟩ := hK
+    obtain ⟨V, W, hV, hW, hxV, hUW, hVW⟩ :=
+      SeparatedNhds.of_isCompact_isClosed (isCompact_singleton (x := x)) hU.isClosed_compl
+        (by simpa)
+    refine ⟨{K | ↑K ⊆ W}, ?_, {K | (↑K ∩ V).Nonempty}, ?_, by grind [Set.Nonempty]⟩
+    · simp_rw [(isOpen_subsets_of_isOpen hW).mem_nhdsSet, compl_setOf, not_nonempty_iff_eq_empty,
+        ← disjoint_iff_inter_eq_empty, ← subset_compl_iff_disjoint_right]
+      gcongr
+    · rw [(isOpen_inter_nonempty_of_isOpen hV).mem_nhds_iff]
+      exact ⟨x, hx₁, hxV <| Set.mem_singleton x⟩
+
+@[simp]
+theorem regularSpace_iff : RegularSpace (Compacts α) ↔ RegularSpace α :=
+  ⟨fun _ => isEmbedding_singleton.regularSpace, fun _ => inferInstance⟩
+
+@[simp]
+theorem t3Space_iff : T3Space (Compacts α) ↔ T3Space α :=
+  ⟨fun _ => isEmbedding_singleton.t3Space, fun _ => inferInstance⟩
 
 theorem isCompact_subsets_of_isCompact {K : Set α} (hK : IsCompact K) :
     IsCompact {L : Compacts α | ↑L ⊆ K} := by
@@ -678,6 +748,27 @@ instance [DiscreteTopology α] : DiscreteTopology (NonemptyCompacts α) :=
 @[simp]
 theorem discreteTopology_iff : DiscreteTopology (NonemptyCompacts α) ↔ DiscreteTopology α :=
   ⟨fun _ => isEmbedding_singleton.discreteTopology, fun _ => inferInstance⟩
+
+instance [T1Space α] : T0Space (NonemptyCompacts α) :=
+  isEmbedding_toCompacts.t0Space
+
+instance [T2Space α] : T2Space (NonemptyCompacts α) :=
+  isEmbedding_toCompacts.t2Space
+
+@[simp]
+theorem t2Space_iff : T2Space (NonemptyCompacts α) ↔ T2Space α :=
+  ⟨fun _ => isEmbedding_singleton.t2Space, fun _ => inferInstance⟩
+
+instance [RegularSpace α] : RegularSpace (NonemptyCompacts α) :=
+  isEmbedding_toCompacts.regularSpace
+
+@[simp]
+theorem regularSpace_iff : RegularSpace (NonemptyCompacts α) ↔ RegularSpace α :=
+  ⟨fun _ => isEmbedding_singleton.regularSpace, fun _ => inferInstance⟩
+
+@[simp]
+theorem t3Space_iff : T3Space (NonemptyCompacts α) ↔ T3Space α :=
+  ⟨fun _ => isEmbedding_singleton.t3Space, fun _ => inferInstance⟩
 
 instance [CompactSpace α] : CompactSpace (NonemptyCompacts α) :=
   isClosedEmbedding_toCompacts.compactSpace
