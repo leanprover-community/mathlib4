@@ -74,29 +74,6 @@ theorem isAugmentation_baseChange
     Algebra.baseChange_one]
   exact isCompl_baseChange hI R
 
-section
-
-variable {A M M' N N' : Type*} [CommSemiring A]
-    [AddCommMonoid M] [Module A M] [AddCommMonoid M'] [Module A M'] (f : M →ₗ[A] M')
-    [AddCommMonoid N] [Module A N] [AddCommMonoid N'] [Module A N'] (g : N →ₗ[A] N')
-
-theorem _root_.LinearMap.subtype_comp_rangeRestrict :
-    f.range.subtype ∘ₗ f.rangeRestrict = f := by
-  rw [rangeRestrict, subtype_comp_codRestrict]
-
-theorem _root_.TensorProduct.map_range_eq :
-    (TensorProduct.map f g).range = (TensorProduct.map f.range.subtype g.range.subtype).range := by
-  nth_rewrite 1 [← subtype_comp_rangeRestrict f]
-  nth_rewrite 1 [← subtype_comp_rangeRestrict g]
-  rw [TensorProduct.map_comp]
-  apply range_comp_of_range_eq_top
-  rw [range_eq_top]
-  exact TensorProduct.map_surjective (surjective_rangeRestrict f)
-    (surjective_rangeRestrict g)
-
-#find_home! TensorProduct.map_range_eq
-end
-
 theorem isAugmentation_tensorProduct
     (A : Type*) [CommRing A] {R S : Type*} [CommRing R]
     [Algebra A R] {R₀ : Subalgebra A R} {I : Ideal R} (hI : I.IsAugmentation R₀) [CommRing S]
