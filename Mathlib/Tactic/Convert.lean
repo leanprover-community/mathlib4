@@ -77,6 +77,14 @@ public meta section
 
 open Lean Meta Elab Tactic
 
+/-- Configuration for the `convert` family of tactics.
+This is `Congr!.Config` with different, less aggressive, defaults.
+-/
+structure Convert.Config extends Congr!.Config where
+  postTransparency := .reducible
+
+declare_config_elab Convert.elabConfig Convert.Config
+
 /--
 Close the goal `g` using `Eq.mp v e`,
 where `v` is a metavariable asserting that the type of `g` and `e` are equal.
@@ -201,7 +209,7 @@ def elabTermForConvert (term : Syntax) (expectedType? : Option Expr) :
 elab_rules : tactic
 | `(tactic| convert%$tk $[!%$semired]? $cfg $[←%$sym]? $term $[using $n]? $[with $ps?*]?) =>
   withMainContext do
-    let baseConfig ← Congr!.elabConfig (mkOptionalNode cfg)
+    let baseConfig := { ← Convert.elabConfig cfg with }
     let mut config := baseConfig
     if semired.isSome then
       config := { config with
@@ -276,7 +284,7 @@ elab_rules : tactic
 | `(tactic| convert_to $[!%$semireducible]? $cfg $[←%$sym]? $newType $[using $n]?
     $[with $ps?*]? $[$loc?:location]?) => do
   let n : ℕ := n |>.map (·.getNat) |>.getD 1
-  let config ← Congr!.elabConfig (mkOptionalNode cfg)
+  let config := { ← Convert.elabConfig cfg with }
   let patterns := (ps?.getD #[]).toList
   withLocation (expandOptLocation (mkOptionalNode loc?))
     (atLocal := fun fvarId ↦ do
@@ -321,7 +329,9 @@ syntax (name := acChange) "ac_change " term (" using " num)? : tactic
 syntax (name := acChange!) "ac_change! " term (" using " num)? : tactic
 
 macro_rules
-| `(tactic| ac_change $t $[using $n]?) => `(tactic| convert_to $t:term $[using $n]? <;> try ac_rfl)
-| `(tactic| ac_change! $t $[using $n]?) => `(tactic| convert_to! $t:term $[using $n]? <;> try ac_rfl)
+| `(tactic| ac_change $t $[using $n]?) =>
+    `(tactic| convert_to $t:term $[using $n]? <;> try ac_rfl)
+| `(tactic| ac_change! $t $[using $n]?) =>
+    `(tactic| convert_to! $t:term $[using $n]? <;> try ac_rfl)
 
 end Mathlib.Tactic
