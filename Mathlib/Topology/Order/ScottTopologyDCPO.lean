@@ -5,7 +5,6 @@ Authors: Edwin Fernando, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Order.CompletePartialOrder
 public import Mathlib.Topology.Order.ScottTopology
 public import Mathlib.Topology.Sets.Opens
 
