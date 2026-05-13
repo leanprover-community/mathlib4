@@ -732,3 +732,80 @@ example {f : α → FooHom α} (hf : Con f) : Con fun x ↦ f x (f x x x) x := b
   fun_prop
 
 end BundledMorphismWithFunctionValues
+
+/-! Test imitating the discharging of `ModelWithCorners` metavariables -/
+section MDifferentiableMock
+
+variable {α β γ δ ι : Type*} {E : ι → Type*}
+
+class Dummy (A : Type*)
+instance : Dummy A := ⟨⟩
+
+/-- Mock model-with-corners data.
+The `Dummy` parameters are necessary (only) to match the arity of the real `ModelWithCorners` -/
+structure ModelWithCorners (M : Type*) [Dummy M] [Dummy M] [Dummy M] [Dummy M] [Dummy M] [Dummy M] where
+  name : Unit := ()
+
+def ModelWithCorners.prod (I : ModelWithCorners α) (J : ModelWithCorners β) :
+  ModelWithCorners (α × β) := {name:=()}
+
+/-- Mock manifold differentiability.  The source and target model data are explicit arguments,
+as for real `MDifferentiable I I' f`. -/
+@[fun_prop]
+opaque MDifferentiable {M M' : Type*} (I : ModelWithCorners M) (I' : ModelWithCorners M') (f : M → M') : Prop
+
+namespace MDifferentiable
+
+variable {I : ModelWithCorners α} {I' : ModelWithCorners β} {I'' : ModelWithCorners γ} {I''' : ModelWithCorners δ}
+
+@[fun_prop]
+theorem id (I : ModelWithCorners α) : MDifferentiable I I (id : α → α) := silentSorry
+
+@[fun_prop]
+theorem const (I : ModelWithCorners α) (I' : ModelWithCorners β) (y : β) :
+    MDifferentiable I I' (fun _ : α => y) := silentSorry
+
+@[fun_prop]
+theorem comp (g : β → γ) (f : α → β)
+    (hg : MDifferentiable I' I'' g) (hf : MDifferentiable I I' f) :
+    MDifferentiable I I'' (fun x => g (f x)) := silentSorry
+
+@[fun_prop]
+theorem apply (i : ι) (I : ModelWithCorners ((x : ι) → E x)) (I' : ModelWithCorners (E i)) :
+    MDifferentiable I I' (fun f : (x : ι) → E x => f i) := silentSorry
+
+@[fun_prop]
+theorem pi (f : α → (i : ι) → E i)
+    (Iα : ModelWithCorners α) (IE : (i : ι) → ModelWithCorners (E i))
+    (IPi : ModelWithCorners ((i : ι) → E i))
+    (hf : ∀ i, MDifferentiable Iα (IE i) (fun x => f x i)) :
+    MDifferentiable Iα IPi (fun x i => f x i) := silentSorry
+
+@[fun_prop]
+theorem prod_mk (f : α → β) (g : α → γ)
+    (Iβγ : ModelWithCorners (β × γ))
+    (hf : MDifferentiable I I' f) (hg : MDifferentiable I I'' g) :
+    MDifferentiable I Iβγ (fun x => (f x, g x)) := silentSorry
+
+@[fun_prop]
+theorem fst (Iαβ : ModelWithCorners (α × β)) :
+    MDifferentiable Iαβ I (fun x : α × β => x.1) := silentSorry
+
+@[fun_prop]
+theorem snd (Iαβ : ModelWithCorners (α × β)) :
+    MDifferentiable Iαβ I' (fun x : α × β => x.2) := silentSorry
+
+end MDifferentiable
+
+variable {Iα : ModelWithCorners α}
+
+@[fun_prop]
+theorem mdiff_add [Add α] : MDifferentiable (Iα.prod Iα) Iα (fun x ↦ x.1 + x.2) := silentSorry
+@[fun_prop]
+theorem mdiff_mul [Mul α] : MDifferentiable (Iα.prod Iα) Iα (fun x ↦ x.1 * x.2) := silentSorry
+
+example [Add α] [Mul α] : MDifferentiable Iα Iα (fun x ↦ x * x + x) := by
+  fail_if_success fun_prop
+  fun_prop (disch := assumption)
+
+end MDifferentiableMock

@@ -805,6 +805,123 @@ def findModels (e : Expr) (es : Option Expr) : TermElabM (Expr × Expr) := do
     return (srcI, tgtI)
   | _ => throwError "Expected{indentD e}\nof type{indentD etype}\nto be a function"
 
+/-- Try to find a `ModelWithCorners` for a given base field, model normed space and model
+topological space, using information from the local context and a few hard-coded rules. -/
+-- FIXME: do we need to handle baseInfo again? perhaps not, let's try without!
+def findModelForFunpropInner (field model top : Expr) :
+    TermElabM <| Option FindModelResult := do
+  trace[Elab.DiffGeo.FunPropM] "Trying to solve a goal `ModelWithCorners {field} {model} {top}`"
+  if let some m ← tryStrategy m!"Assumption"    fromAssumption   then return some m
+  if let some m ← tryStrategy m!"Normed space"  fromNormedSpace  then return some m
+  -- TODO: implement the remaining strategies, and then the inner to outer part!
+  return none
+where
+  -- TODO: go over this entire logic and make it somewhat sound and complete!
+  /-- Try to find a model with corners with given base field, model space and topological space
+  within the local hypotheses: throw an error if this is not successful. -/
+  fromAssumption : TermElabM Expr := do
+    let some m ← findSomeLocalHyp? fun fvar type ↦ do
+        match_expr type with
+        | ModelWithCorners k _ E _ _ H _ => do
+          if (← withReducible (pureIsDefEq k field)) && (← withReducible (pureIsDefEq E model)) &&
+            (← withReducible (pureIsDefEq H top)) then
+            return some fvar
+          else return none
+        | _ => return none
+      | throwError "Couldn't find a `ModelWithCorners {field} {model} {top}` in the local context."
+    return m
+  -- TODO: replace this with `fromSelf` above!
+  fromNormedSpace : TermElabM Expr := do
+    if !(← withReducible (pureIsDefEq model top)) then
+      throwError "`{model}` is a normed space, but `{top}` is not defeq to it"
+    -- Check for a space of continuous linear maps. We omit a check if E is a normed space over 𝕜:
+    -- for `E →L[𝕜] F` to type-check in the first place, both `E` and `F` must have been normed
+    -- spaces over `𝕜`.
+    try
+      let (_k, _V, _W) ← isCLMReduciblyDefeqCoefficients model
+      trace[Elab.DiffGeo.FunProp] "`{model}` is a space of continuous linear maps"
+      -- XXX: check K and the model are defeq?
+      let eK : Term ← Term.exprToSyntax field
+      let eT : Term ← Term.exprToSyntax model
+      Term.elabTerm (← ``(𝓘($eK, $eT))) none
+    catch _ =>
+      -- Check for a normed space in the assumptions.
+      if let some (K, inst) ← fromNormedSpace.fromAssumption field model then
+        mkAppOptM ``modelWithCornersSelf #[K, none, model, none, inst] -- omit (K, model)) for now
+      else
+      throwError "Couldn't find a `NormedSpace` structure on `{model}` among local instances."
+  fromNormedSpace.fromAssumption (field space : Expr) : TermElabM <| Option (Expr × Expr) := do
+    let some (K, inst) ← findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
+        match_expr type with
+        | NormedSpace K E _ _ =>
+          if (← withReducible (pureIsDefEq K field)) && (← withReducible (pureIsDefEq E space)) then
+            return some (K, inst)
+          else return none
+        | _ => return none
+      | throwError "Couldn't find a `NormedSpace` structure on `{model}` among local instances."
+    trace[Elab.DiffGeo.FunPropM] "`{model}` is a normed space over the field `{K}`"
+    return some (K, inst)
+
+/-- The workhorse method for the `find_model` tactic: try to find a `ModelWithCorners` with given
+base field `field`, model normed space `model` and topological space `top`, using local hypotheses
+and a few hard-coded rules. No typeclass search is performed. -/
+def findModelForFunprop (field model top : Expr) : TermElabM <| Option Expr := do
+  trace[Elab.DiffGeo.FunPropM] "Searching for some `ModelWithCorners {field} {model} {top}`"
+  match ← go field model top with
+  | some { model := u } => return u
+  | _ =>
+    trace[Elab.DiffGeo.FunPropM] "Could not find a `ModelWithCorners {field} {model} {top}`"
+    return none
+where
+  /-- Workhorse method for `findModelForFunprop`: also return whether we synthesised a model
+  with corners on a product of normed spaces. -/
+  go (field model top : Expr) : TermElabM <| Option FindModelResult := do
+    -- At first, try finding a model on the space itself.
+    if let some m ← findModelForFunpropInner field model top then return some m
+    throwError ""
+
+/-- The main entry point of the `find_model` tactic: connects the workhose definition
+`findModelForFunProp` with the tactic world. -/
+def findModelForFunprop' (g : MVarId) : TermElabM Unit := do
+  match_expr (← withReducible g.getType') with
+  | ModelWithCorners k _ E _ _ H _ =>
+    match ← findModelForFunprop k E H with
+    -- TODO: is this the way? how to do this correctly?
+    | some e => g.assign e
+    | none => throwError "Could not find a `ModelWithCorners {k} {E} {H}`"
+  | _ => throwError "Goal is not of the form `ModelWithCorners 𝕜 E H`"
+
+/-- The `find_model` tactic solves goals of the form `ModelWithCorners k E H`:
+models with corners are constructed using the local context and a few built-in rules.
+No typeclass search is performed for this tactic.
+
+This tactic is used within `fun_prop` to work with differentiability goals on manifolds.
+-/
+elab (name := findModelTac) "find_model" : tactic => withMainContext do
+  -- We manually inline `liftMetaFinishingTactic` to allow `findModelForFunprop'` to use
+  -- the `TermElabM` monad (and `tryStrategy`), as this is more ergonomic.
+  findModelForFunprop' (← getMainGoal)
+  replaceMainGoal []
+
+open Command in
+/-- Tries to find a model with corners of a given type: if `e` is a term of type
+`ModelWithCorners 𝕜 E H`, construct a model with corners using the local hypotheses and a few
+built-in rules. This is the core routine for the `#find_model` command. -/
+def findModelCmd (goal : TSyntax `term) : CommandElabM Unit := do
+  withoutModifyingEnv <| do
+    runTermElabM <| fun _vars => do
+      -- TODO: does this do what I want it to?
+      let eE ← Term.elabTerm goal none
+      let m ← mkFreshExprMVar eE
+      -- TODO: how to surface error messages from the inner loop here?
+      findModelForFunprop' m.mvarId!
+
+
+/-- `#find_model t` tries to construct a `ModelWithCorners` of a given type: assumes `t` is a term
+of type `ModelWithCorners k E H`. This can be used to test the `find_model` tactic.
+This uses local hypotheses and a few built-in rules, but does not perform typeclass search. -/
+elab (name := findModelCommand) "#find_model " goal:term : command => do findModelCmd goal
+
 end Elab
 
 open Elab
@@ -970,6 +1087,12 @@ Trace class for the `MDiff` elaborator and friends, which infer a model with cor
 (resp. codomain) of the map in question.
 -/
 initialize registerTraceClass `Elab.DiffGeo.MDiff (inherited := true)
+
+/--
+Trace class for the use `fun_prop` on manifolds, for trying to solve goals of the form
+`ModelWithCorners 𝕜 E H` using local hypotheses and a few hard-coded rules.
+-/
+initialize registerTraceClass `Elab.DiffGeo.FunPropM (inherited := true)
 
 end trace
 

@@ -71,7 +71,11 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr)
       else
         -- try user provided discharger
         let ctx : Context ← read
-        if (← isProp type) then
+        -- to use fun_prop for MDifferentiable we need provide specialize discharger for
+        -- ModelWithCorners. For now it is hardcoded here as this is the only case we can think of
+        -- when to use discharger on non-Prop hypothesis. In future, we might want to generalize
+        -- this with an attribute or something similar.
+        if ((← isProp type) || type.isAppOfArity' `ModelWithCorners 7) then
           if let some proof ← ctx.disch type then
             if (← isDefEq x proof) then
               continue
