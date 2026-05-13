@@ -590,9 +590,8 @@ integral closure of `ℤ` in `K`. -/
 lemma exists_nsmul_eq {x : K} [IsIntegralClosure R ℤ K] (hx : IsAlgebraic ℤ x) :
     ∃ (m : ℕ) (r : R), m ≠ 0 ∧ m • x = algebraMap R K r := by
   obtain ⟨a, r, ha, h⟩ := hx.exists_smul_eq R
-  refine ⟨a.natAbs, a.sign * r, Int.natAbs_ne_zero.mpr ha, ?_⟩
-  simp only [zsmul_eq_mul, nsmul_eq_mul, Nat.cast_natAbs, map_mul, map_intCast] at h ⊢
-  rw [← h, ← mul_assoc]
-  rw_mod_cast [Int.sign_mul_self_eq_abs a]
+  obtain ⟨n, rfl | rfl⟩ := a.eq_nat_or_neg
+  · exact ⟨n, r, mod_cast ha, mod_cast h⟩
+  · exact ⟨n, -r, by simpa using ha, by simp [map_neg, ← h]⟩
 
 end IsAlgebraic
