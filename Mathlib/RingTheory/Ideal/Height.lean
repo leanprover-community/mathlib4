@@ -247,10 +247,9 @@ lemma Ideal.one_le_height_span_singleton_of_mem_nonZeroDivisors
 @[simp]
 lemma Ideal.height_bot [Nontrivial R] : (⊥ : Ideal R).height = 0 := by
   obtain ⟨p, hp⟩ := Ideal.nonempty_minimalPrimes (R := R) (I := ⊥) top_ne_bot.symm
-  simp only [Ideal.height, ENat.iInf_eq_zero]
-  refine ⟨p, hp, ?_⟩
-  have := Ideal.IsPrime.of_mem_minimalPrimes hp
-  rw [← Ideal.height_eq_primeHeight, height_eq_zero_iff.mpr hp]
+  rw [Ideal.height_eq_inf_minimalPrimes]
+  simp only [ENat.iInf_eq_zero]
+  refine ⟨p, hp, haveI := hp.isPrime; height_eq_zero_iff.mpr hp⟩
 
 /-- In a trivial commutative ring, the height of any ideal is `∞`. -/
 @[simp, nontriviality]
@@ -468,8 +467,7 @@ lemma exists_spanRank_le_and_le_height_of_le_height [IsNoetherianRing R] (I : Id
       apply hx₂ p
       · refine ⟨mem_minimalPrimes_of_height_eq (le_sup_left.trans hp.le) (e.symm.trans_le h₃),
           e.symm⟩
-      · apply hp.le
-        exact Ideal.mem_sup_right <| mem_span_singleton_self x
+      · apply hp.le <| Ideal.mem_sup_right <| mem_span_singleton_self x
 
 /-- In a nontrivial commutative ring `R`, the supremum of heights of all ideals is equal to the
 Krull dimension of `R`. -/
