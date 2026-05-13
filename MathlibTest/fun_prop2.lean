@@ -101,4 +101,4 @@ example {α : Type*} {m₀ : MeasurableSpace α} {μ : MeasureTheory.Measure α}
     [CommMonoid M] [TopologicalSpace M] [ContinuousMul M] (l : Multiset (α → M))
     (hl : ∀ f ∈ l, MeasureTheory.AEStronglyMeasurable f μ) :
     MeasureTheory.AEStronglyMeasurable l.prod μ := by
-  fun_prop (disch := assumption)
+  fun_prop

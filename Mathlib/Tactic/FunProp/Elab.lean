@@ -63,6 +63,9 @@ private def emptyDischarge : Expr → MetaM (Option Expr) :=
       (fun _ => do pure s!"discharging: {← ppExpr e}") do
       pure none
 
+private def assumptionDischarge : Expr → MetaM (Option Expr) :=
+  fun e => do tacticToDischarge (← `(tactic| with_reducible assumption)) e
+
 /-- Tactic to prove function properties -/
 @[tactic funPropTacStx]
 def funPropTac : Tactic
@@ -87,11 +90,12 @@ def funPropTac : Tactic
 
       let disch ← show MetaM (Expr → MetaM (Option Expr)) from do
         match d with
-        | none => pure emptyDischarge
+        | none => pure assumptionDischarge
         | some d =>
           match d with
-          | `(discharger| (discharger:=$tac)) => pure <| tacticToDischarge (← `(tactic| ($tac)))
-          | _ => pure emptyDischarge
+          | `(discharger| (discharger:=$tac)) =>
+            pure <| tacticToDischarge (← `(tactic| first | with_reducible assumption | ($tac)))
+          | _ => pure assumptionDischarge
 
       let namesToUnfold : Array Name :=
         match names with
