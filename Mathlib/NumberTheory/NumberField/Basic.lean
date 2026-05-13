@@ -411,26 +411,28 @@ theorem mem_span_integralBasis {x : K} :
 theorem RingOfIntegers.rank : Module.finrank ℤ (𝓞 K) = Module.finrank ℚ K :=
   IsIntegralClosure.rank ℤ ℚ K (𝓞 K)
 
-variable {K}
-
-lemma exists_zsmul_eq_integer (x : K) : ∃ (m : ℤ) (r : 𝓞 K), m ≠ 0 ∧  m • x = r := by
-    obtain ⟨num, ⟨d, hd⟩, h⟩ :=
-      IsLocalization.exists_mk'_eq (Algebra.algebraMapSubmonoid (𝓞 K) (nonZeroDivisors ℤ)) x
-    rw [Algebra.algebraMapSubmonoid, Submonoid.mem_map] at hd
-    choose a hamem ha using hd
-    refine ⟨a, num, mem_nonZeroDivisors_iff_ne_zero.mp hamem, ?_⟩
-    rw [← h, zsmul_eq_mul, ← show (a : 𝓞 K) • _ = (a : K) * _ from smul_eq_mul ..,
-      IsLocalization.smul_mk', Int.cast_comm a num, ← IsLocalization.smul_mk']
-    simp [← ha, Algebra.smul_def]
-
-lemma exists_nsmul_eq_integer (x : K) : ∃ (m : ℕ) (r : 𝓞 K), m ≠ 0 ∧  m • x = r := by
-    obtain ⟨a, r, ha, h⟩ := exists_zsmul_eq_integer x
-    refine ⟨a.natAbs, a.sign * r, Int.natAbs_ne_zero.mpr ha, ?_⟩
-    simp only [zsmul_eq_mul, nsmul_eq_mul, Nat.cast_natAbs, map_mul, map_intCast] at h ⊢
-    rw [← r.coe_eq_algebraMap, ← h, ← mul_assoc]
-    rw_mod_cast [Int.sign_mul_self_eq_abs a]
-
 end NumberField
+
+namespace IsAlgebraic
+
+variable {R K : Type*} [Field K] [CommRing R] [Algebra R K] [CharZero K] [IsIntegralClosure R ℤ K]
+
+lemma exists_zsmul_eq {x : K} (hx : IsAlgebraic ℚ x) :
+    ∃ (m : ℤ) (r : R), m ≠ 0 ∧ m • x = algebraMap R K r := by
+  rw [← IsFractionRing.isAlgebraic_iff (A := ℤ)] at hx
+  obtain ⟨m, hm, h⟩ := IsAlgebraic.iff_exists_smul_integral.mp hx
+  obtain ⟨r, hr⟩ := IsIntegralClosure.isIntegral_iff (A := R) |>.mp h
+  exact ⟨m, r, hm, hr.symm⟩
+
+lemma exists_nsmul_eq {x : K} (hx : IsAlgebraic ℚ x) :
+    ∃ (m : ℕ) (r : R), m ≠ 0 ∧ m • x = algebraMap R K r := by
+  obtain ⟨a, r, ha, h⟩ := hx.exists_zsmul_eq (R := R)
+  refine ⟨a.natAbs, a.sign * r, Int.natAbs_ne_zero.mpr ha, ?_⟩
+  simp only [zsmul_eq_mul, nsmul_eq_mul, Nat.cast_natAbs, map_mul, map_intCast] at h ⊢
+  rw [← h, ← mul_assoc]
+  rw_mod_cast [Int.sign_mul_self_eq_abs a]
+
+end IsAlgebraic
 
 namespace Rat
 
