@@ -258,18 +258,28 @@ theorem Scheme.homOfLE_base {U V : X.Opens} (e : U ≤ V) :
   ext a; refine Subtype.ext ?_ -- Porting note: `ext` did not pick up `Subtype.ext`
   exact congr($(X.homOfLE_ι e) a)
 
-@[simp]
-theorem Scheme.homOfLE_apply {U V : X.Opens} (e : U ≤ V) (x : U) :
-    (X.homOfLE e x).1 = x := by
+theorem Scheme.homOfLE_apply' {U V : X.Opens} (e : U ≤ V) (x : X) (hx : x ∈ U) :
+    X.homOfLE e ⟨x, hx⟩ = ⟨x, e hx⟩ := by
   rw [homOfLE_base]
   rfl
 
+@[simp]
+theorem Scheme.homOfLE_apply {U V : X.Opens} (e : U ≤ V) (x : U) :
+    (X.homOfLE e x).1 = x := by
+  rw [Scheme.homOfLE_apply']
+
+theorem Scheme.ι_image_homOfLE_eq_ι_image_inf {U V : X.Opens} (e : U ≤ V) (W : Opens V) :
+    U.ι ''ᵁ X.homOfLE e ⁻¹ᵁ W = V.ι ''ᵁ W ⊓ U := by
+  ext x
+  constructor
+  · rintro ⟨⟨y, hyU⟩, hyW, rfl⟩
+    exact ⟨⟨⟨y, e hyU⟩, by simpa [homOfLE_apply'] using hyW, rfl⟩, hyU⟩
+  · rintro ⟨⟨y, hyW, rfl⟩, hyU⟩
+    exact ⟨⟨y.1, hyU⟩, by simpa [homOfLE_apply'] using hyW, rfl⟩
+
 theorem Scheme.ι_image_homOfLE_le_ι_image {U V : X.Opens} (e : U ≤ V) (W : Opens V) :
     U.ι ''ᵁ X.homOfLE e ⁻¹ᵁ W ≤ V.ι ''ᵁ W := by
-  simp only [homOfLE_base, homOfLE_leOfHom, ← SetLike.coe_subset_coe, Hom.coe_image, Opens.ι_apply,
-    Opens.map_coe, Set.image_subset_iff]
-  rintro _ h
-  exact ⟨_, h, rfl⟩
+  simp [Scheme.ι_image_homOfLE_eq_ι_image_inf]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
