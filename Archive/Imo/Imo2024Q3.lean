@@ -403,7 +403,7 @@ lemma not_medium_of_N'aux_lt {j : ℕ} (h : N'aux a N < j) : ¬Medium a (a j) :=
     rintro i ⟨hk, -⟩
     rwa [hc.finite_setOf_apply_eq_iff_not_small (by lia), Small, not_le]
   exact fun hm ↦ notMem_of_csSup_lt (le_sup_left.trans_lt h)
-    (hf.subset fun i hi ↦ (by simpa [s] using hi)).bddAbove hm
+    (hf.subset fun i hi ↦ (by simpa [s] using! hi)).bddAbove hm
 
 lemma small_or_big_of_N'aux_lt {j : ℕ} (h : N'aux a N < j) : Small a (a j) ∨ Big a (a j) := by
   have _ := hc.not_medium_of_N'aux_lt h
