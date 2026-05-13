@@ -308,7 +308,12 @@ lemma CokernelFG_of_isFredholm' (hu : IsFredholm_existsₗ u) : Module.Finite R 
   let q := u.range.mkQ
   obtain ⟨v, hv, -⟩ := hu
   let Q := (u ∘ₗ v - (1 : N →ₗ[R] N)).range.mkQ
-  have crux : (u ∘ₗ v - (1 : N →ₗ[R] N)).ker ≤ Submodule.comap (1 : N →ₗ[R] N) u.range := by sorry
+  have crux : (u ∘ₗ v - (1 : N →ₗ[R] N)).ker ≤ Submodule.comap (1 : N →ₗ[R] N) u.range := by
+    erw [comap_id]
+    intro x hx
+    use v x
+    rwa [LinearMap.mem_ker, LinearMap.sub_apply, LinearMap.coe_comp, Function.comp_apply,
+      Module.End.one_apply, sub_eq_zero] at hx
   have hmap := Submodule.mapQ (u ∘ₗ v - (1 : N →ₗ[R] N)).ker u.range (1 : N →ₗ[R] N) crux
   have hpre := (u ∘ₗ v - (1 : N →ₗ[R] N)).quotKerEquivRange.symm.toLinearMap
   have hfin := hmap.comp hpre
