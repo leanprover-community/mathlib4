@@ -257,14 +257,14 @@ lemma index_comp {G : Type*} [AddCommGroup G] [Module k G] (g : F →ₗ[k] G)
   let f₂ : (g ∘ₗ f).ker →ₗ[k] g.ker := f.restrict <| by simp
   let f₃ : g.ker →ₗ[k] F ⧸ f.range := f.range.mkQ ∘ₗ g.ker.subtype
   let f₄ : (F ⧸ f.range) →ₗ[k] G ⧸ (g ∘ₗ f).range := sorry
-  let f₅ : (G ⧸ (g ∘ₗ f).range) →ₗ[k] G ⧸ g.range := sorry
+  let f₅ : (G ⧸ (g ∘ₗ f).range) →ₗ[k] G ⧸ g.range := factor <| range_comp_le_range f g
 
   have h₀ : Injective f₁ := Submodule.inclusion_injective _
-  have h₁ : Exact f₁ f₂ := sorry
-  have h₂ : Exact f₂ f₃ := sorry
+  have h₁ : Exact f₁ f₂ := fun ⟨x, hx⟩ ↦ by simp [f₁, f₂, restrict_apply, Submodule.inclusion_apply]
+  have h₂ : Exact f₂ f₃ := fun ⟨x, hx⟩ ↦ by aesop (add simp restrict_apply)
   have h₃ : Exact f₃ f₄ := sorry
   have h₄ : Exact f₄ f₅ := sorry
-  have h₅ : Surjective f₅ := sorry
+  have h₅ : Surjective f₅ := factor_surjective _
 
   -- TODO What API should we write for `Function.Exact` to make the goal trivial from here?
   -- Should it be a `simproc` for finite exact sequences of any length saying the Euler
