@@ -256,18 +256,14 @@ theorem card_lt_of_injective_of_notMem (f : α → β) (h : Function.Injective f
 
 /-- Given an injective map `f : α → β` such that `β` has cardinality one more
 than `α`, there exists a unique element of `β` not in the image of `f`. -/
-theorem existsUnique_notMem_image_of_injective_of_card_succ [DecidableEq β] (f : α ↪ β)
-    (h : card β = card α + 1) : ∃! x, x ∉ Finset.image f ⊤ := by
-  have hcard : (Finset.univ \ Finset.image f Finset.univ).card = 1 := by
-    have h := Finset.card_image_of_injective Finset.univ f.inj'
-    simp only [Function.Embedding.toFun_eq_coe, Finset.card_univ] at h
-    simp only [Finset.card_sdiff, Finset.inter_univ, Finset.card_univ, h]
-    lia
-  obtain ⟨x, hx⟩ := Finset.card_eq_one.mp hcard
-  refine ⟨x, ?_, ?_⟩
-  · exact (Finset.mem_sdiff.mp (hx ▸ Finset.mem_singleton_self x)).2
-  · intro y hy
-    exact Finset.mem_singleton.mp (hx ▸ Finset.mem_sdiff.mpr ⟨Finset.mem_univ _, hy⟩)
+theorem existsUnique_notMem_image_of_injective_of_card_eq_add_one [DecidableEq β]
+    (f : α → β) (hf : f.Injective) (h : card β = card α + 1) : ∃! x, x ∉ univ.image f := by
+  obtain ⟨x, hx⟩ : ∃ a, univ \ univ.image f = {a} := by
+    rw [← card_eq_one]
+    grind [card_image_of_injective]
+  have := mem_singleton_self x
+  refine ⟨x, ?_, fun _ _ ↦ ?_⟩
+  all_goals simp_all [← mem_singleton, ← hx]
 
 theorem card_lt_of_injective_not_surjective (f : α → β) (h : Function.Injective f)
     (h' : ¬Function.Surjective f) : card α < card β :=
