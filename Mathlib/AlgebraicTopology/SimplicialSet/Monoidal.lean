@@ -5,6 +5,7 @@ Authors: Joël Riou, Jack McKoen
 -/
 module
 
+public import Mathlib.AlgebraicTopology.SimplicialSet.Op
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexColimits
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
@@ -114,6 +115,11 @@ instance : (𝟙_ SSet.{u}).Finite :=
 instance : HasDimensionLE (𝟙_ SSet.{u}) 0 :=
   (hasDimensionLT_iff_of_iso (stdSimplex.isTerminalObj₀.{u}.uniqueUpToIso
     CartesianMonoidalCategory.isTerminalTensorUnit) _).1 inferInstance
+
+instance : opFunctor.{u}.Monoidal :=
+  Functor.CoreMonoidal.toMonoidal
+    { εIso := Iso.refl _
+      μIso X Y := Iso.refl _ }
 
 namespace Subcomplex
 
@@ -252,6 +258,14 @@ lemma prod_top_le_unionProd : (S.prod ⊤) ≤ S.unionProd T := le_sup_right
 
 lemma prod_le_unionProd : S.prod T ≤ S.unionProd T :=
   (prod_le_prod_top S T).trans (prod_top_le_unionProd S T)
+
+lemma preimage_op_unionProd :
+    (unionProd S T).op.preimage (Functor.LaxMonoidal.μ opFunctor _ _) =
+      unionProd S.op T.op := rfl
+
+lemma preimage_unionProd {X' Y' : SSet.{u}} (f : X' ⟶ X) (g : Y' ⟶ Y) :
+    (unionProd S T).preimage (f ⊗ₘ g) =
+      unionProd (S.preimage f) (T.preimage g) := rfl
 
 namespace unionProd
 

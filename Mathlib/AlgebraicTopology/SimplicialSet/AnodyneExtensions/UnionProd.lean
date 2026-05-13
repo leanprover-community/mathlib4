@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.PairingCore
+public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Op
 public import Mathlib.AlgebraicTopology.SimplicialSet.Boundary
 public import Mathlib.AlgebraicTopology.SimplicialSet.Horn
 public import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
@@ -30,11 +31,10 @@ namespace SSet
 
 namespace prodStdSimplex
 
-variable {m : ℕ} {k : Fin (m + 1)} {n : ℕ}
-
 namespace pairingCore
 
-variable (x : (Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] ∂Δ[n]).N) {d : ℕ}
+variable {m : ℕ} {k : Fin (m + 1)} {n : ℕ}
+  (x : (Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] ∂Δ[n]).N) {d : ℕ}
 
 section
 
@@ -276,9 +276,7 @@ end pairingCore
 
 open pairingCore
 
-variable (k n)
-
-noncomputable def pairingCore :
+noncomputable def pairingCore {m : ℕ} (k : Fin (m + 1)) (n : ℕ) :
     (Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] ∂Δ[n]).PairingCore where
   ι := Type₁.{u} k n
   dim s := s.d
@@ -299,6 +297,24 @@ noncomputable def pairingCore :
     rw [← hst] at this
     exact this _ _ _ s.isIndex
   surjective' := sorry
+
+noncomputable def pairing {m : ℕ} (k : Fin (m + 2)) (n : ℕ) :
+    (Subcomplex.unionProd.{u} Λ[m + 1, k] ∂Δ[n]).Pairing :=
+  if hk : k = Fin.last (m + 1) then
+    (pairingCore (0 : Fin (m + 1)) n).pairing.op.ofIso
+      (((stdSimplex.opIso _).symm ⊗ᵢ (stdSimplex.opIso _).symm) ≪≫
+        Functor.Monoidal.μIso opFunctor _ _) (by
+          dsimp
+          rw [hk, Subcomplex.preimage_comp,
+            Subcomplex.preimage_op_unionProd,
+            Subcomplex.preimage_unionProd,
+            op_boundary, op_horn, Fin.rev_zero])
+  else
+    (pairingCore.{u} (k.castPred hk) n).pairing
+
+lemma pairing_castSucc {m : ℕ} (k : Fin (m + 1)) (n : ℕ) :
+    pairing.{u} k.castSucc n = (pairingCore.{u} k n).pairing :=
+  dif_neg (by grind)
 
 end prodStdSimplex
 
