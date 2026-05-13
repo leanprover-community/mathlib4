@@ -253,7 +253,8 @@ eM       eN       eL
 |        |        |
 v        v        v
 M'-----> N'-----> L'
-This complex is exact when we have `Function.Exact f g`, see `ModuleCat.shortComplexOfConj_exact`.
+This complex is exact when we have `Function.Exact f g`, see
+`ModuleCat.shortComplexOfConj_exact`.
 -/
 abbrev ModuleCat.shortComplexOfConj (eq0 : g ∘ₗ f = 0) :
     ShortComplex (ModuleCat.{v} R) :=
