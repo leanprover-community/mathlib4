@@ -240,13 +240,13 @@ lemma BirationalOver.trans {S X Y Z : Scheme.{u}} [X.Over S] [Y.Over S] [Z.Over 
 affine space `𝔸(n; S)`. -/
 @[mk_iff]
 class IsRationalOver (S X : Scheme.{u}) [X.Over S] : Prop where
-  exists_birationalOver_affineSpace' : ∃ (n : Type), BirationalOver S X 𝔸(n; S)
+  exists_birationalOver_affineSpace' : ∃ (n : Type u), BirationalOver S X 𝔸(n; S)
 
 lemma exists_birationalOver_affineSpace (S X : Scheme.{u}) [X.Over S]
-    [IsRationalOver S X] : ∃ (n : Type), BirationalOver S X 𝔸(n; S) :=
+    [IsRationalOver S X] : ∃ (n : Type u), BirationalOver S X 𝔸(n; S) :=
   IsRationalOver.exists_birationalOver_affineSpace'
 
-instance (S : Scheme.{u}) (n : Type) : IsRationalOver S 𝔸(n; S) where
+instance (S : Scheme.{u}) (n : Type u) : IsRationalOver S 𝔸(n; S) where
   exists_birationalOver_affineSpace' := ⟨n, .refl S 𝔸(n; S)⟩
 
 /-- If a scheme `X` is `S`-birational to an `S`-rational scheme `Y`, then `X` is `S`-rational. -/
