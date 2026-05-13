@@ -334,4 +334,8 @@ def isInitialPEmpty : IsInitial (TopCat.of PEmpty.{u + 1}) :=
 def initialIsoPEmpty : ⊥_ TopCat.{u} ≅ TopCat.of PEmpty :=
   initialIsInitial.uniqueUpToIso isInitialPEmpty
 
+/-- The unique map ∅ ⟶ X is inducing. -/
+lemma IsInducing.empty (X : TopCat) : Topology.IsInducing (TopCat.isInitialPEmpty.to X) where
+  eq_induced := by ext; simp
+
 end TopCat

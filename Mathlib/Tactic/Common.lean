@@ -144,17 +144,17 @@ public meta section
 
 section Hint
 
-register_hint 200 grind
 register_hint 1000 trivial
-register_hint 500 tauto
 register_hint 1000 split
 register_hint 1000 intro
-register_hint 80 aesop
+register_hint 1000 decide
 register_hint 800 simp_all?
 register_hint 600 exact?
-register_hint 1000 decide
+register_hint 500 tauto
+register_hint 200 grind
 register_hint 200 omega
 register_hint 200 fun_prop
+register_hint 80 aesop
 
 end Hint
 

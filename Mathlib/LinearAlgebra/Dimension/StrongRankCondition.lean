@@ -158,7 +158,7 @@ theorem Module.Basis.le_span {J : Set M} (v : Basis ι R M) (hJ : span R J = ⊤
         span_le.2 fun j hj x hx => ⟨_, ⟨⟨j, hj⟩, rfl⟩, hx⟩
       rw [hJ] at this
       replace : v.repr (v i) ∈ Finsupp.supported R R (⋃ j, S j) := this trivial
-      rw [v.repr_self, Finsupp.mem_supported, Finsupp.support_single_ne_zero _ one_ne_zero] at this
+      rw [v.repr_self, Finsupp.mem_supported, Finsupp.support_single _ one_ne_zero] at this
       · subst b
         rcases mem_iUnion.1 (this (Finset.mem_singleton_self _)) with ⟨j, hj⟩
         exact mem_iUnion.2 ⟨j, (mem_image _ _ _).2 ⟨i, hj, rfl⟩⟩
@@ -530,7 +530,7 @@ theorem finrank_eq_zero_iff_of_free [Module.Free R M] [Module.Finite R M] :
   rw [← not_le] at this
   simp [Module.finrank, this, Module.rank_zero_iff_of_free]
 
-@[simp]
+@[nontriviality]
 theorem finrank_eq_zero_of_subsingleton [Module.Free R M] [Subsingleton M] :
     Module.finrank R M = 0 :=
   (finrank_eq_zero_iff_of_free R M).mpr inferInstance

@@ -17,7 +17,7 @@ In an abelian category `C`, the class of morphisms
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 
