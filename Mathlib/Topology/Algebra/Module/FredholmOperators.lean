@@ -247,10 +247,28 @@ lemma index_smul (t : k) (ht : t ≠ 0) :
     (-f).index = f.index := by
   rw [index, index, ker_neg, range_neg]
 
+open Function in
 lemma index_comp {G : Type*} [AddCommGroup G] [Module k G] (g : F →ₗ[k] G)
     /- TODO required assumptions. -/ :
     (g ∘ₗ f).index = g.index + f.index := by
   -- 0 → f.ker → (g ∘ₗ f).ker → g.ker → f.coker → (g ∘ₗ f).coker → g.coker → 0
+
+  let f₁ : f.ker →ₗ[k] (g ∘ₗ f).ker := Submodule.inclusion <| ker_le_ker_comp f g
+  let f₂ : (g ∘ₗ f).ker →ₗ[k] g.ker := f.restrict <| by simp
+  let f₃ : g.ker →ₗ[k] F ⧸ f.range := f.range.mkQ ∘ₗ g.ker.subtype
+  let f₄ : (F ⧸ f.range) →ₗ[k] G ⧸ (g ∘ₗ f).range := sorry
+  let f₅ : (G ⧸ (g ∘ₗ f).range) →ₗ[k] G ⧸ g.range := sorry
+
+  have h₀ : Injective f₁ := Submodule.inclusion_injective _
+  have h₁ : Exact f₁ f₂ := sorry
+  have h₂ : Exact f₂ f₃ := sorry
+  have h₃ : Exact f₃ f₄ := sorry
+  have h₄ : Exact f₄ f₅ := sorry
+  have h₅ : Surjective f₅ := sorry
+
+  -- TODO What API should we write for `Function.Exact` to make the goal trivial from here?
+  -- Should it be a `simproc` for finite exact sequences of any length saying the Euler
+  -- characteristic is zero?
   sorry
 
 lemma index_eq_of_finiteDimensional [FiniteDimensional k E] [FiniteDimensional k F] :
