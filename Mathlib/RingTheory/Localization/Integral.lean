@@ -592,6 +592,6 @@ lemma exists_nsmul_eq {x : K} [IsIntegralClosure R ℤ K] (hx : IsAlgebraic ℤ 
   obtain ⟨a, r, ha, h⟩ := hx.exists_smul_eq R
   obtain ⟨n, rfl | rfl⟩ := a.eq_nat_or_neg
   · exact ⟨n, r, mod_cast ha, mod_cast h⟩
-  · exact ⟨n, -r, by simpa using ha, by simp [map_neg, ← h]⟩
+  · exact ⟨n, -r, by simpa using ha, by simp [← h]⟩
 
 end IsAlgebraic
