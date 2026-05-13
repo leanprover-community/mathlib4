@@ -83,6 +83,7 @@ def postcomp {f g : X ⟶ Y} (h : P.LeftHomotopy f g) {Z : C} (p : Y ⟶ Z) :
     P.LeftHomotopy (f ≫ p) (g ≫ p) where
   h := h.h ≫ p
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Left homotopies in a full subcategory identify to left homotopies in the
 ambient category. -/
 noncomputable def fullSubcategoryEquiv {P : ObjectProperty C} {X Y : P.FullSubcategory}
