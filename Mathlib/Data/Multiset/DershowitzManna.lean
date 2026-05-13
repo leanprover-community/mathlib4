@@ -34,7 +34,7 @@ the Dershowitz-Manna ordering defined over multisets is also well-founded.
 
 -/
 
-@[expose] public section
+public section
 
 open Relation
 

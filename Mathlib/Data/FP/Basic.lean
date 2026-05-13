@@ -16,7 +16,7 @@ public import Mathlib.Algebra.Order.Group.Unbundled.Basic
 # Implementation of floating-point numbers (experimental).
 -/
 
-@[expose] public section
+public section
 
 -- TODO add docs and remove `@[nolint docBlame]`
 

@@ -22,7 +22,7 @@ coevaluation, dual module, tensor product
 * Prove that this is independent of the choice of basis on `V`.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

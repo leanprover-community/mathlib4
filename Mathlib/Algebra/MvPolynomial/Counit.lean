@@ -24,7 +24,7 @@ obtained by `X a ↦ a`.
 
 -/
 
-@[expose] public section
+public section
 
 
 namespace MvPolynomial

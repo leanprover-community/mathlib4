@@ -23,7 +23,7 @@ and strictly less than `n`.
 - Once the above is done, get rid of `Int.range` (and maybe `List.range'`?).
 -/
 
-@[expose] public section
+public section
 
 
 open Nat

@@ -17,7 +17,7 @@ a preadditive category are such that for all `i : ι`, the binary biproduct
 
 -/
 
-@[expose] public section
+public section
 open CategoryTheory Limits
 
 namespace HomologicalComplex

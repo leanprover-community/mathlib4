@@ -40,7 +40,7 @@ the polynomial's value on the unit circle.
 -/
 
 
-@[expose] public section supnorm_seminorm
+public section supnorm_seminorm
 
 variable {A : Type*} [SeminormedRing A] (p : Polynomial A)
 
@@ -96,7 +96,7 @@ lemma supNorm_eq_iSup : p.supNorm = ⨆ i, ‖p.coeff i‖ := p.isGreatest_supNo
 end Polynomial
 end supnorm_seminorm
 
-@[expose] public section supnorm_norm
+public section supnorm_norm
 
 namespace Polynomial
 

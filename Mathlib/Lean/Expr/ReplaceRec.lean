@@ -21,7 +21,7 @@ deprecated_module (since := "2026-01-26")
 
 set_option linter.deprecated false
 
-@[expose] public section
+public section
 
 namespace Lean.Expr
 

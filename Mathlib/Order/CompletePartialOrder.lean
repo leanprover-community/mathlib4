@@ -34,7 +34,7 @@ These are partial orders for which every directed set has a least upper bound.
 complete partial order, directedly complete partial order
 -/
 
-@[expose] public section
+public section
 
 variable {ι : Sort*} {α β : Type*}
 

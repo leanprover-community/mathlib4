@@ -24,7 +24,7 @@ Note that we cannot talk about `Int.fract`, which currently only works for rings
 nnrat, rationals, ℚ≥0, floor
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finset
 

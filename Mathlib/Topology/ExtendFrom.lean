@@ -24,7 +24,7 @@ it suffices that `f` converges within `A` at any point of `B`, provided that
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

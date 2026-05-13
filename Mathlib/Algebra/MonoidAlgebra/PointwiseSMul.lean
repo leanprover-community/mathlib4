@@ -16,7 +16,7 @@ algebra `R[G]` on the set of functions `P → V`.
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

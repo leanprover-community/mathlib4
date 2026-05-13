@@ -16,7 +16,7 @@ and proves some properties of it.
 
 -/
 
-@[expose] public section
+public section
 
 open Filter Topology
 

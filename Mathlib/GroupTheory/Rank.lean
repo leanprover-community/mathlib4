@@ -19,7 +19,7 @@ Should we define `erank G : ℕ∞` the rank of a not necessarily finitely gener
 then redefine `rank G` as `(erank G).toNat`? Maybe a `Cardinal`-valued version too?
 -/
 
-@[expose] public section
+public section
 
 open Function Group
 

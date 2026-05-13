@@ -17,7 +17,7 @@ The same results are obtained here for squares `sq : Square C` where
 
 -/
 
-@[expose] public section
+public section
 namespace CategoryTheory
 
 open Category Limits

@@ -17,7 +17,7 @@ builds a derivation from its values on `X i`s and a linear equivalence
 `MvPolynomial.mkDerivationEquiv` between `σ → A` and `Derivation (MvPolynomial σ R) A`.
 -/
 
-@[expose] public section
+public section
 
 
 namespace MvPolynomial

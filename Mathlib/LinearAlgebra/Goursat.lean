@@ -22,7 +22,7 @@ Equivalently, `L` is equal to the preimage in `M × N` of the graph of this isom
 respectively.
 -/
 
-@[expose] public section
+public section
 
 open Function Set LinearMap
 

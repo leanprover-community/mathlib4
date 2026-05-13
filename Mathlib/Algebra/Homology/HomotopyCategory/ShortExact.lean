@@ -22,7 +22,7 @@ distinguished triangle attached to the mapping cone of `S.f`.
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists TwoSidedIdeal
 

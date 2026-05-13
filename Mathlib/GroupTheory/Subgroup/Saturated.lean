@@ -15,7 +15,7 @@ subgroup, subgroups
 
 -/
 
-@[expose] public section
+public section
 
 
 namespace Submonoid

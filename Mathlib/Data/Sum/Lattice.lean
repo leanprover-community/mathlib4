@@ -15,7 +15,7 @@ This file proves that we can combine two lattices `α` and `β` into a lattice `
 everything in `α` is declared smaller than everything in `β`.
 -/
 
-@[expose] public section
+public section
 
 open OrderDual
 

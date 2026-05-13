@@ -32,7 +32,7 @@ TODO: formalize the relations corresponding to more powerful (e.g. Kirby–Paris
 hydras, and prove their well-foundedness.
 -/
 
-@[expose] public section
+public section
 
 
 namespace Relation

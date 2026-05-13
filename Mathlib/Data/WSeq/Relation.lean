@@ -22,7 +22,7 @@ ignoring computation time (`none` elements). Equivalence is then defined in the 
 * `Stream'.WSeq.Equiv`: Two sequences are equivalent if they are `LiftRel (· = ·)`-related.
 -/
 
-@[expose] public section
+public section
 
 universe u v w
 

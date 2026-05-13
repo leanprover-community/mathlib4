@@ -17,7 +17,7 @@ proofs about these definitions.
 
 deprecated_module (since := "2026-03-05")
 
-@[expose] public section
+public section
 
 namespace Array
 

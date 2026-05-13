@@ -18,7 +18,7 @@ the category `D` is locally `w`-small.
 
 -/
 
-@[expose] public section
+public section
 
 universe w v₁ v₂ u₁ u₂
 
