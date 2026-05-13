@@ -61,8 +61,8 @@ variable {L : Language.{u, v}}
 variable {M : Type w} {N A : Type*} [L.Structure M] [L.Structure N] [L.Structure A]
 
 /-- A formula is equivalent to a quantifier-free formula over a theory. -/
-def IsQFEquivalent (T : L.Theory) {m : ℕ} (φ : L.Formula (Fin m)) : Prop :=
-  ∃ ψ : L.Formula (Fin m), ψ.IsQF ∧ φ ⇔[T] ψ
+def IsQFEquivalent (T : L.Theory) {α : Type*} (φ : L.Formula α) : Prop :=
+  ∃ ψ : L.Formula α, ψ.IsQF ∧ φ ⇔[T] ψ
 
 /-- A theory has quantifier elimination if every formula in finitely many free variables is
 equivalent, over the theory, to a quantifier-free formula. -/
@@ -70,22 +70,22 @@ def HasQuantifierElimination (T : L.Theory) : Prop :=
   ∀ {m : ℕ} (φ : L.Formula (Fin m)), T.IsQFEquivalent φ
 
 /-- Finite conjunction of a list of quantifier-free formulas bundled with an auxiliary property. -/
-private def qfConj {m : ℕ} {P : L.Formula (Fin m) → Prop}
-    (l : List {ψ : L.Formula (Fin m) // ψ.IsQF ∧ P ψ}) : L.Formula (Fin m) :=
+private def qfConj {α : Type*} {P : L.Formula α → Prop}
+    (l : List {ψ : L.Formula α // ψ.IsQF ∧ P ψ}) : L.Formula α :=
   (l.map Subtype.val).foldr (· ⊓ ·) ⊤
 
 /-- A finite conjunction of quantifier-free formulas is quantifier-free. -/
-private theorem qfConj_isQF {m : ℕ} {P : L.Formula (Fin m) → Prop}
-    (l : List {ψ : L.Formula (Fin m) // ψ.IsQF ∧ P ψ}) :
+private theorem qfConj_isQF {α : Type*} {P : L.Formula α → Prop}
+    (l : List {ψ : L.Formula α // ψ.IsQF ∧ P ψ}) :
     (qfConj (L := L) l).IsQF := by
   induction l with
   | nil => exact BoundedFormula.IsQF.top
   | cons ψ _ ih => simpa [qfConj] using ψ.2.1.inf ih
 
 /-- Realizing a finite conjunction is the same as realizing every formula in the list. -/
-private theorem realize_qfConj {m : ℕ} {P : L.Formula (Fin m) → Prop}
-    (l : List {ψ : L.Formula (Fin m) // ψ.IsQF ∧ P ψ}) {M : Type*} [L.Structure M]
-    (v : Fin m → M) (xs : Fin 0 → M) :
+private theorem realize_qfConj {α : Type*} {P : L.Formula α → Prop}
+    (l : List {ψ : L.Formula α // ψ.IsQF ∧ P ψ}) {M : Type*} [L.Structure M]
+    (v : α → M) (xs : Fin 0 → M) :
     BoundedFormula.Realize (qfConj (L := L) l) v xs ↔
       ∀ ψ ∈ l, BoundedFormula.Realize ψ.1 v xs := by
   induction l with
@@ -93,25 +93,25 @@ private theorem realize_qfConj {m : ℕ} {P : L.Formula (Fin m) → Prop}
   | cons ψ l ih => simp [qfConj]
 
 private theorem exists_substructure_embedding_of_agree_qf
-    {m : ℕ} {M N : Type*} [L.Structure M] [L.Structure N]
-    (v : Fin m → M) (w : Fin m → N)
-    (hQF : ∀ ψ : L.Formula (Fin m), ψ.IsQF → (ψ.Realize v ↔ ψ.Realize w)) :
-    ∃ S : L.Substructure M, ∃ g : S ↪[L] N, ∃ a : Fin m → S,
+    {α : Type*} {M N : Type*} [L.Structure M] [L.Structure N]
+    (v : α → M) (w : α → N)
+    (hQF : ∀ ψ : L.Formula α, ψ.IsQF → (ψ.Realize v ↔ ψ.Realize w)) :
+    ∃ S : L.Substructure M, ∃ g : S ↪[L] N, ∃ a : α → S,
       ((↑) ∘ a = v) ∧ g ∘ a = w := by
   classical
   let S : L.Substructure M := Substructure.closure L (Set.range v)
   choose idx hidx using fun x : Set.range v => x.2
-  have hQFeq : ∀ {t u : L.Term (Fin m)},
-      ((t.equal u : L.Formula (Fin m)).Realize v ↔ (t.equal u).Realize w) := fun {t u} =>
+  have hQFeq : ∀ {t u : L.Term α},
+      ((t.equal u : L.Formula α).Realize v ↔ (t.equal u).Realize w) := fun {t u} =>
     hQF _ <| by
       simpa [Term.equal] using
         (BoundedFormula.IsAtomic.equal (t.relabel Sum.inl) (u.relabel Sum.inl)).isQF
-  have hQFrel : ∀ {k} (R : L.Relations k) (ts : Fin k → L.Term (Fin m)),
-      ((R.formula ts : L.Formula (Fin m)).Realize v ↔ (R.formula ts).Realize w) :=
+  have hQFrel : ∀ {k} (R : L.Relations k) (ts : Fin k → L.Term α),
+      ((R.formula ts : L.Formula α).Realize v ↔ (R.formula ts).Realize w) :=
     fun R ts => hQF _ <| by
       simpa [Relations.formula] using
         (BoundedFormula.IsAtomic.rel R fun i => (ts i).relabel Sum.inl).isQF
-  have hvar : ∀ {i j : Fin m}, v i = v j → w i = w j := fun {i j} hij => by
+  have hvar : ∀ {i j : α}, v i = v j → w i = w j := fun {i j} hij => by
     have hv : (Term.equal (L := L) (Term.var i) (Term.var j)).Realize v := by
       simpa [Formula.realize_equal] using hij
     simpa [Formula.realize_equal] using hQFeq.mp hv
@@ -123,7 +123,7 @@ private theorem exists_substructure_embedding_of_agree_qf
   have hterm_eq : ∀ {t u : L.Term (Set.range v)},
       t.realize ((↑) : Set.range v → M) = u.realize ((↑) : Set.range v → M) →
         (t.relabel idx).realize w = (u.relabel idx).realize w := fun {t u} htu => by
-    have hv : (Term.equal (t.relabel idx) (u.relabel idx) : L.Formula (Fin m)).Realize v := by
+    have hv : (Term.equal (t.relabel idx) (u.relabel idx) : L.Formula α).Realize v := by
       simpa [Formula.realize_equal, hterm_realize t, hterm_realize u] using htu
     simpa [Formula.realize_equal] using hQFeq.mp hv
   choose repr hrepr using fun x : S =>
@@ -134,7 +134,7 @@ private theorem exists_substructure_embedding_of_agree_qf
       intro x y hxy
       apply Subtype.ext
       have hw : (Term.equal ((repr x).relabel idx) ((repr y).relabel idx) :
-          L.Formula (Fin m)).Realize w := by
+          L.Formula α).Realize w := by
         simpa [Formula.realize_equal] using hxy
       simpa [hterm_realize (repr x), hterm_realize (repr y), hrepr x, hrepr y]
         using (Formula.realize_equal.mp (hQFeq.mpr hw))
@@ -151,8 +151,8 @@ private theorem exists_substructure_embedding_of_agree_qf
       intro n R x
       simpa [hterm_realize, hrepr] using (hQFrel R fun i => (repr (x i)).relabel idx).symm
   }
-  let a : Fin m → S := fun i => ⟨v i, Substructure.subset_closure ⟨i, rfl⟩⟩
-  have ha : ((↑) ∘ a : Fin m → M) = v := rfl
+  let a : α → S := fun i => ⟨v i, Substructure.subset_closure ⟨i, rfl⟩⟩
+  have ha : ((↑) ∘ a : α → M) = v := rfl
   have hg : g ∘ a = w := by
     funext i
     let xi : Set.range v := ⟨v i, ⟨i, rfl⟩⟩
