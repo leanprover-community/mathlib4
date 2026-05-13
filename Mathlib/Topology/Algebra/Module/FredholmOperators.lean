@@ -250,6 +250,7 @@ lemma index_smul (t : k) (ht : t ≠ 0) :
 lemma index_comp {G : Type*} [AddCommGroup G] [Module k G] (g : F →ₗ[k] G)
     /- TODO required assumptions. -/ :
     (g ∘ₗ f).index = g.index + f.index := by
+  -- 0 → f.ker → (g ∘ₗ f).ker → g.ker → f.coker → (g ∘ₗ f).coker → g.coker → 0
   sorry
 
 lemma index_eq_of_finiteDimensional [FiniteDimensional k E] [FiniteDimensional k F] :
