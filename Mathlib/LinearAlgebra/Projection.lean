@@ -147,7 +147,7 @@ For the projection from `E` to `E`, see `Submodule.projection`. See also:
 See also `LinearMap.linearProjOfIsCompl`. -/
 def projectionOnto (h : IsCompl p q) : E →ₗ[R] p :=
   LinearMap.fst R p q ∘ₗ ↑(prodEquivOfIsCompl p q h).symm
-
+#check LinearMap.linearProjOfIsCompl
 /-- The linear projection onto a subspace along its complement
 as a map from the full space to itself, as opposed to `Submodule.projectionOnto`,
 which maps into the subtype.

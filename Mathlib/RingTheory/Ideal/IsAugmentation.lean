@@ -75,6 +75,8 @@ variable (M' N') in
 noncomputable def TensorProduct : Submodule A (M ⊗[A] N) :=
   (TensorProduct.mapIncl M' N').range
 
+#find_home! TensorProduct
+
 namespace TensorProduct
 
 variable (A M N) in
