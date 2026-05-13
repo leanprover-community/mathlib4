@@ -76,7 +76,8 @@ The implementation strategy is identical to the one for immersions. See the impl
 
 ## References
 
-* [Alexander Schmeding, *An introduction to infinite-dimensional differential geometry*][schmeding2023]
+* [Alexander Schmeding, *An introduction to infinite-dimensional differential geometry*]
+  [schmeding2023]
 * Note that Margelef-Roig and Dominguez have a slightly different definition of submersions.
 
 **Please do not work** on this file without prior discussion with Michael Rothgang.
