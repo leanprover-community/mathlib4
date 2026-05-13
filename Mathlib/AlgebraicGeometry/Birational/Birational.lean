@@ -278,7 +278,7 @@ end DenseOpen
 
 section OpenImmersion
 
-variable {X U S : Scheme.{u}} 
+variable {X U S : Scheme.{u}}
 
 /-- A dominant open immersion `f : U ⟶ X` induced a partial isomorphism between `U` and `X`. -/
 @[simps! source target iso]
