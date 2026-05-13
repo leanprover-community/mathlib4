@@ -127,8 +127,7 @@ theorem isClosed_specialUnitaryGroup :
 /-- The special unitary group is compact, as a closed subset of the unitary group. -/
 theorem isCompact_specialUnitaryGroup :
     IsCompact (Matrix.specialUnitaryGroup n 𝕜 : Set (Matrix n n 𝕜)) :=
-  isCompact_unitaryGroup.of_isClosed_subset isClosed_specialUnitaryGroup
-    Matrix.specialUnitaryGroup_le_unitaryGroup
+  isCompact_unitaryGroup.inter_right <| isClosed_singleton.preimage (by dsimp; fun_prop)
 
 /-- The special unitary group is a compact topological space. -/
 instance Matrix.specialUnitaryGroup.instCompactSpace :
