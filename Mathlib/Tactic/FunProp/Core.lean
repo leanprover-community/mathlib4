@@ -530,8 +530,12 @@ def tryTheorems (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
 def fvarAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
 
+  let hasCompTheorems := (← getLambdaTheorems funPropDecl.funPropName .comp).size != 0
+  let dec? ← fData.nontrivialDecomposition
+
   -- fvar theorems are almost exclusively in uncurried form so we decompose if we can
-  if let some (f, g) ← fData.nontrivialDecomposition then
+  if hasCompTheorems && dec?.isSome then
+    let some (f, g) := dec? | unreachable!
     applyCompRule funPropDecl e f g funProp
   else
     let .fvar id := fData.fn | throwError "fun_prop bug: invalid use of fvar app case"
@@ -552,9 +556,8 @@ def fvarAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
       if let some r ← applyMorRules funPropDecl e fData funProp then
         return r
 
-    if (← fData.nontrivialDecomposition).isNone then
-      if let some r ← applyTransitionRules e funProp then
-        return r
+    if let some r ← applyTransitionRules e funProp then
+      return r
 
     if thms.size = 0 then
       logError s!"No theorems found for `{← ppExpr (.fvar id)}` in order to prove `{← ppExpr e}`"
@@ -593,14 +596,18 @@ def constAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     if let some r ← applyMorRules funPropDecl e fData funProp then
       return r
 
-  if (← getLambdaTheorems funPropDecl.funPropName .comp).size != 0 then
-    if let some (f, g) ← fData.nontrivialDecomposition then
-      trace[Meta.Tactic.fun_prop]
-        s!"failed applying `{funPropDecl.funPropName}` theorems for `{funName}`
-           trying again after decomposing function as: `({← ppExpr f}) ∘ ({← ppExpr g})`"
+  let hasCompTheorems := (← getLambdaTheorems funPropDecl.funPropName .comp).size != 0
+  let dec? ← fData.nontrivialDecomposition
 
-      if let some r ← applyCompRule funPropDecl e f g funProp then
-        return r
+  if hasCompTheorems && dec?.isSome then
+    let some (f, g) := dec? | unreachable!
+
+    trace[Meta.Tactic.fun_prop]
+      s!"failed applying `{funPropDecl.funPropName}` theorems for `{funName}`
+         trying again after decomposing function as: `({← ppExpr f}) ∘ ({← ppExpr g})`"
+
+    if let some r ← applyCompRule funPropDecl e f g funProp then
+      return r
   else
     trace[Meta.Tactic.fun_prop]
       s!"failed applying `{funPropDecl.funPropName}` theorems for `{funName}`
