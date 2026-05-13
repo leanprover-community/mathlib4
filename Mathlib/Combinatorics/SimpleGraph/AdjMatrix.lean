@@ -89,7 +89,7 @@ protected theorem submatrix [Zero α] [One α] (h : IsAdjMatrix A) (f : W → V)
   symm := h.symm.submatrix f
   apply_diag i := by simp [h.apply_diag]
 
-theorem submatrix_iff [Zero α] [One α] {f : W → V} (hf : f.Surjective) :
+theorem _root_.Matrix.isAdjMatrix_submatrix_iff [Zero α] [One α] {f : W → V} (hf : f.Surjective) :
     (A.submatrix f f).IsAdjMatrix ↔ A.IsAdjMatrix := by
   refine ⟨fun h ↦ ?_, (·.submatrix f)⟩
   rw [← A.submatrix_id_id, ← f.comp_surjInv hf]
@@ -98,8 +98,9 @@ theorem submatrix_iff [Zero α] [One α] {f : W → V} (hf : f.Surjective) :
 theorem reindex [Zero α] [One α] (h : IsAdjMatrix A) (f : V ≃ W) : A.reindex f f |>.IsAdjMatrix :=
   h.submatrix f.symm
 
-theorem reindex_iff [Zero α] [One α] (f : V ≃ W) : (A.reindex f f).IsAdjMatrix ↔ A.IsAdjMatrix :=
-  submatrix_iff f.symm.surjective
+theorem _root_.Matrix.isAdjMatrix_reindex_iff [Zero α] [One α] (f : V ≃ W) :
+    (A.reindex f f).IsAdjMatrix ↔ A.IsAdjMatrix :=
+  isAdjMatrix_submatrix_iff f.symm.surjective
 
 /-- For `A : Matrix V V α` and `h : IsAdjMatrix A`,
 `h.toGraph` is the simple graph whose adjacency matrix is `A`. -/
