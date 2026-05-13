@@ -277,7 +277,7 @@ section
 
 open EuclideanDomain
 
-variable [EuclideanDomain R]
+variable [CommRing R] [Nontrivial R] [EuclideanDomain R]
 
 theorem mod_mem_iff {S : Ideal R} {x y : R} (hy : y ∈ S) : x % y ∈ S ↔ x ∈ S :=
   ⟨fun hxy => div_add_mod x y ▸ S.add_mem (S.mul_mem_right _ hy) hxy, fun hx =>
@@ -545,7 +545,8 @@ end Ideal
 end PrincipalOfPrime
 
 open Ideal in
-lemma span_singleton_inf_span_singleton [EuclideanDomain R] [GCDMonoid R] (n m : R) :
+lemma span_singleton_inf_span_singleton [CommRing R] [Nontrivial R] [EuclideanDomain R]
+    [GCDMonoid R] (n m : R) :
     span {n} ⊓ span {m} = span {lcm n m} := by
   rw [Ideal.ext_iff]
   intro x

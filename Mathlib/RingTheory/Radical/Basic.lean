@@ -358,8 +358,8 @@ end UniqueFactorizationDomain
 open UniqueFactorizationDomain
 namespace EuclideanDomain
 
-variable {E : Type*} [EuclideanDomain E] [NormalizationMonoid E] [UniqueFactorizationMonoid E]
-  {a b u x : E}
+variable {E : Type*} [CommRing E] [Nontrivial E] [EuclideanDomain E] [NormalizationMonoid E]
+  [UniqueFactorizationMonoid E] {a b u x : E}
 
 /-- Division of an element by its radical in a Euclidean domain. -/
 def divRadical (a : E) : E := a / radical a

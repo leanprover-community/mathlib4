@@ -27,7 +27,7 @@ universe u
 namespace EuclideanDomain
 
 variable {R : Type u}
-variable [EuclideanDomain R]
+variable [CommRing R] [Nontrivial R] [EuclideanDomain R]
 
 /-- The well-founded relation in a Euclidean Domain satisfying `a % b ≺ b` for `b ≠ 0` -/
 local infixl:50 " ≺ " => EuclideanDomain.r
@@ -41,7 +41,8 @@ instance (priority := 100) toMulDivCancelClass : MulDivCancelClass R where
     rw [sub_mul, mul_comm (_ / _), sub_eq_iff_eq_add'.2 (div_add_mod (a * b) b).symm] at this
     exact this (mod_lt _ hb)
 
-theorem mod_eq_sub_mul_div {R : Type*} [EuclideanDomain R] (a b : R) : a % b = a - b * (a / b) :=
+theorem mod_eq_sub_mul_div {R : Type*} [CommRing R] [Nontrivial R] [EuclideanDomain R] (a b : R) :
+    a % b = a - b * (a / b) :=
   calc
     a % b = b * (a / b) + a % b - b * (a / b) := (add_sub_cancel_left _ _).symm
     _ = a - b * (a / b) := by rw [div_add_mod]
@@ -217,7 +218,8 @@ instance (priority := 70) (R : Type*) [e : EuclideanDomain R] : IsDomain R :=
       or_iff_not_and_not.2 fun h0 ↦ h0.1 <| by rw [← mul_div_cancel_right₀ a h0.2, h, zero_div] }
   { e, NoZeroDivisors.to_isDomain R with }
 
-theorem div_pow {R : Type*} [EuclideanDomain R] {a b : R} {n : ℕ} (hab : b ∣ a) :
+theorem div_pow {R : Type*} [CommRing R] [Nontrivial R] [EuclideanDomain R] {a b : R} {n : ℕ}
+    (hab : b ∣ a) :
     (a / b) ^ n = a ^ n / b ^ n := by
   obtain ⟨c, rfl⟩ := hab
   obtain rfl | hb := eq_or_ne b 0
