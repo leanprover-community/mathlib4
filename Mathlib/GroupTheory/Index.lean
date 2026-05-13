@@ -725,6 +725,11 @@ theorem finiteIndex_iff_finite_quotient : FiniteIndex H ↔ Finite (G ⧸ H) :=
 instance (priority := 100) finiteIndex_of_finite [Finite G] : FiniteIndex H :=
   finiteIndex_of_finite_quotient
 
+@[to_additive]
+instance finiteIndex_of_prod (H : Subgroup G) (H' : Subgroup G') [FiniteIndex H] [FiniteIndex H'] :
+    FiniteIndex (H.prod H') := by
+  simp_all [finiteIndex_iff]
+
 variable (H) in
 @[to_additive]
 theorem finite_iff_finite_and_finiteIndex : Finite G ↔ Finite H ∧ H.FiniteIndex where
