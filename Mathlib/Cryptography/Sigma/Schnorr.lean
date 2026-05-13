@@ -112,7 +112,10 @@ The challenge `c` is supplied externally — in the interactive sigma
 protocol by the verifier, in the non-interactive Fiat-Shamir variant by
 a hash function `H : G → M → ZMod q`. -/
 structure Sig (G : Type*) (q : ℕ) where
+  /-- The prover's commitment `R = g^k`, where `k` is the ephemeral random nonce. -/
   commitment : G
+  /-- The prover's response `s = k + c · x`, where `c` is the challenge and `x` is the
+  secret key. -/
   response : Exp q
 
 /-- The honest signer's algorithm. Given a private key `x`, ephemeral
