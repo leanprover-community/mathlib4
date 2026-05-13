@@ -99,7 +99,6 @@ variable {α : Type*}
 /-- The extended nonnegative real numbers. This is usually denoted [0, ∞],
   and is relevant as the codomain of a measure. -/
 def ENNReal := WithTop ℝ≥0
-  deriving Zero, Top, AddCommMonoidWithOne, SemilatticeSup, DistribLattice, Nontrivial
 
 @[inherit_doc]
 scoped[ENNReal] notation "ℝ≥0∞" => ENNReal
@@ -110,6 +109,21 @@ scoped[ENNReal] notation "ℝ≥0∞" => ENNReal
 scoped[ENNReal] notation3 "∞" => (⊤ : ENNReal)
 
 namespace ENNReal
+
+/-- Coercion from `ℝ≥0` to `ℝ≥0∞`. -/
+@[coe, match_pattern] def ofNNReal : ℝ≥0 → ℝ≥0∞ := WithTop.some
+
+instance : Coe ℝ≥0 ℝ≥0∞ := ⟨ofNNReal⟩
+
+/- Declare these instances by hand for good defeqs -/
+instance : Zero ℝ≥0∞ := ⟨ofNNReal 0⟩
+instance : One ℝ≥0∞ := ⟨ofNNReal 1⟩
+instance : Bot ℝ≥0∞ := ⟨0⟩
+
+example : (0 : ℝ≥0∞) = ⊥ := by with_reducible_and_instances rfl
+
+deriving instance Top, LE, PartialOrder, Add, AddCommMonoidWithOne, SemilatticeSup, DistribLattice,
+  Nontrivial for ENNReal
 
 instance : OrderBot ℝ≥0∞ := inferInstanceAs (OrderBot (WithTop ℝ≥0))
 
@@ -125,9 +139,6 @@ instance : Max ℝ≥0∞ := SemilatticeSup.toMax
 
 noncomputable instance : CommSemiring ℝ≥0∞ :=
   inferInstanceAs (CommSemiring (WithTop ℝ≥0))
-
-instance : PartialOrder ℝ≥0∞ :=
-  inferInstanceAs (PartialOrder (WithTop ℝ≥0))
 
 instance : IsOrderedRing ℝ≥0∞ :=
   inferInstanceAs (IsOrderedRing (WithTop ℝ≥0))
@@ -174,11 +185,6 @@ instance : Unique (AddUnits ℝ≥0∞) where
   uniq a := AddUnits.ext <| nonpos_iff_eq_zero.1 <| by rw [← a.add_neg]; exact le_self_add
 
 instance : Inhabited ℝ≥0∞ := ⟨0⟩
-
-/-- Coercion from `ℝ≥0` to `ℝ≥0∞`. -/
-@[coe, match_pattern] def ofNNReal : ℝ≥0 → ℝ≥0∞ := WithTop.some
-
-instance : Coe ℝ≥0 ℝ≥0∞ := ⟨ofNNReal⟩
 
 /-- A version of `WithTop.recTopCoe` that uses `ENNReal.ofNNReal`. -/
 @[elab_as_elim, induction_eliminator, cases_eliminator]
@@ -248,7 +254,7 @@ theorem coe_nnreal_eq (r : ℝ≥0) : (r : ℝ≥0∞) = ENNReal.ofReal r := by
   rw [ENNReal.ofReal, Real.toNNReal_coe]
 
 theorem ofReal_eq_coe_nnreal {x : ℝ} (h : 0 ≤ x) :
-    ENNReal.ofReal x = ofNNReal ⟨x, h⟩ :=
+    ENNReal.ofReal x = ofNNReal (NNReal.mk x h) :=
   (coe_nnreal_eq ⟨x, h⟩).symm
 
 theorem ofNNReal_toNNReal (x : ℝ) : (Real.toNNReal x : ℝ≥0∞) = ENNReal.ofReal x := rfl
@@ -554,14 +560,19 @@ theorem toReal_le_coe_of_le_coe {a : ℝ≥0∞} {b : ℝ≥0} (h : a ≤ b) : a
   lift a to ℝ≥0 using ne_top_of_le_ne_top coe_ne_top h
   simpa using h
 
-@[simp] theorem max_eq_zero_iff : max a b = 0 ↔ a = 0 ∧ b = 0 := max_eq_bot
-@[simp] theorem min_eq_zero_iff : min a b = 0 ↔ a = 0 ∨ b = 0 := min_eq_bot
+@[deprecated max_eq_zero (since := "2026-05-07")]
+theorem max_eq_zero_iff : max a b = 0 ↔ a = 0 ∧ b = 0 := max_eq_bot
 
+@[deprecated min_eq_zero (since := "2026-05-07")]
+theorem min_eq_zero_iff : min a b = 0 ↔ a = 0 ∨ b = 0 := min_eq_bot
+
+@[deprecated zero_max (since := "2026-05-07")]
 theorem max_zero_left : max 0 a = a :=
-  max_eq_right (zero_le a)
+  max_eq_right zero_le
 
+@[deprecated max_zero (since := "2026-05-07")]
 theorem max_zero_right : max a 0 = a :=
-  max_eq_left (zero_le a)
+  max_eq_left zero_le
 
 theorem lt_iff_exists_rat_btwn :
     a < b ↔ ∃ q : ℚ, 0 ≤ q ∧ a < Real.toNNReal q ∧ (Real.toNNReal q : ℝ≥0∞) < b :=
@@ -687,11 +698,7 @@ lemma iInf_coe_lt_top : ⨅ i, (f i : ℝ≥0∞) < ⊤ ↔ Nonempty ι := WithT
 
 end CompleteLattice
 
-section Bit
-
 -- TODO: add lemmas about `OfNat.ofNat`
-
-end Bit
 
 end ENNReal
 

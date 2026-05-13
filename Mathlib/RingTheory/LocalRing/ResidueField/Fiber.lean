@@ -38,7 +38,7 @@ instance [IsLocalRing R] [IsLocalRing S] [IsLocalHom (algebraMap R S)] :
   have : Nontrivial (IsLocalRing.ResidueField R ⊗[R] S) := by
     rw [eSp.nontrivial_congr, Ideal.Quotient.nontrivial_iff]
     exact ((((local_hom_TFAE (algebraMap R S)).out 0 2 rfl rfl).mp inferInstance).trans_lt
-      (inferInstance : (maximalIdeal S).IsMaximal).ne_top.lt_top).ne
+      (inferInstance : (maximalIdeal S).IsMaximal).lt_top).ne
   .of_surjective' TensorProduct.includeRight.toRingHom
     (TensorProduct.mk_surjective _ _ _ residue_surjective)
 
@@ -61,7 +61,7 @@ lemma Ideal.ResidueField.exists_smul_eq_tmul_one
 
 See `PrimeSpectrum.preimageHomeomorphFiber` for the homeomorphism between the spectrum of it
 and the actual set-theoretic fiber of `PrimeSpectrum S → PrimeSpectrum R` at `p`. -/
-abbrev Ideal.Fiber (p : Ideal R) [p.IsPrime] (S : Type*) [CommRing S] [Algebra R S] : Type _ :=
+abbrev Ideal.Fiber (p : Ideal R) [p.IsPrime] (S : Type*) [AddCommGroup S] [Module R S] : Type _ :=
   p.ResidueField ⊗[R] S
 
 instance (p : Ideal R) [p.IsPrime] (q : Ideal (p.Fiber S)) [q.IsPrime] : q.LiesOver p :=
@@ -71,6 +71,22 @@ lemma Ideal.Fiber.exists_smul_eq_one_tmul (x : p.Fiber S) : ∃ r ∉ p, ∃ s, 
   obtain ⟨r, hr, s, e⟩ := Ideal.ResidueField.exists_smul_eq_tmul_one _
     (Algebra.TensorProduct.comm _ _ _ x)
   refine ⟨r, hr, s, by simpa using congr((Algebra.TensorProduct.comm _ _ _).symm $e)⟩
+
+attribute [local instance] Algebra.TensorProduct.rightAlgebra in
+/-- `p.Fiber S` is isomorphic to the quotient `Sₚ ⧸ pSₚ`. -/
+noncomputable def Fiber.algEquivQuotient :
+    letI Rp := Localization p.primeCompl
+    letI pRp := IsLocalRing.maximalIdeal Rp
+    letI Sp := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
+    letI pSp := pRp.map (algebraMap Rp Sp)
+    p.Fiber S ≃ₐ[S] Sp ⧸ pSp :=
+  (commRight R S p.ResidueField).symm.trans <| (tensorQuotientEquiv S _ S _).trans <|
+    { __ := Ideal.quotientEquiv _ _ (Localization.tensorLeftAlgEquiv p.primeCompl S) (by
+        rw [← Ideal.map_coe includeRight, Ideal.map_map]
+        congr
+        ext
+        simp [Localization.tensorLeftAlgEquiv_apply_one_tmul p.primeCompl])
+      commutes' := by simp }
 
 set_option backward.isDefEq.respectTransparency false in
 variable (R S) in

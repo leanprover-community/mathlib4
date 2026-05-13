@@ -40,7 +40,7 @@ For the classical statement of Krasner's lemma, please see the
 Krasner's lemma, normed field
 -/
 
-@[expose] public section
+public section
 
 open IntermediateField
 
@@ -55,7 +55,7 @@ of the conclusion of Krasner's lemma. That is, `IsKrasner K L` means that given 
 -/
 class IsKrasner [Field K] [Algebra K L] : Prop where
   krasner' {x y : L} : IsSeparable K x → ((minpoly K x).map (algebraMap K L)).Splits →
-    IsIntegral K y → (∀ x' : L, IsConjRoot K x x' →  x ≠ x' → ‖x - y‖ < ‖x - x'‖) → x ∈ K⟮y⟯
+    IsIntegral K y → (∀ x' : L, IsConjRoot K x x' → x ≠ x' → ‖x - y‖ < ‖x - x'‖) → x ∈ K⟮y⟯
 
 namespace IsKrasner
 

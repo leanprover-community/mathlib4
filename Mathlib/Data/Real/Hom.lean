@@ -5,7 +5,7 @@ Authors: Alex J. Best
 -/
 module
 
-public import Mathlib.Algebra.Order.Archimedean.Hom
+public import Mathlib.Algebra.Order.Archimedean.Hom  -- shake: keep (Subsingleton (ℝ →+*o ℝ)), cf. lean#13417
 public import Mathlib.Data.Real.Sqrt
 import Mathlib.Algebra.Order.CompleteField
 
@@ -21,7 +21,7 @@ This file contains results about ring homomorphisms to `ℝ`.
 * `Real.RingHom.unique`: There exists no nontrivial ring homomorphism `ℝ →+* ℝ`.
 -/
 
-@[expose] public section
+public section
 
 -- Note that we already know `Subsingleton (α →+*o ℝ)` here.
 -- We intentionally do not define instance `Unique (α →+*o ℝ)` to avoid instance diamonds.

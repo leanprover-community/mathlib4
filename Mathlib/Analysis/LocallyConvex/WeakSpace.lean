@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.LocallyConvex.Separation
 public import Mathlib.Analysis.LocallyConvex.SeparatingDual
 public import Mathlib.LinearAlgebra.Dual.Defs
-public import Mathlib.Topology.Algebra.Module.WeakDual
+public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
 
 /-! # Closures of convex sets in locally convex spaces
 

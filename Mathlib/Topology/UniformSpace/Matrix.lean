@@ -13,7 +13,7 @@ public import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 # Uniform space structure on matrices
 -/
 
-@[expose] public section
+public section
 
 
 open Uniformity Topology

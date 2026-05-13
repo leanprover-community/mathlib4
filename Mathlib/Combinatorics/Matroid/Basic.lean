@@ -157,7 +157,7 @@ There are a few design decisions worth discussing.
 
 * [J. Oxley, Matroid Theory][oxley2011]
 * [H. Bruhn, R. Diestel, M. Kriesell, R. Pendavingh, P. Wollan, Axioms for infinite matroids,
-  Adv. Math 239 (2013), 18-46][bruhnDiestelKriesselPendavinghWollan2013]
+  Adv. Math 239 (2013), 18-46][bruhnDiestelKriesellPendavinghWollan2013]
 * [N. Bowler, S. Geschke, Self-dual uniform matroids on infinite sets,
   Proc. Amer. Math. Soc. 144 (2016), 459-471][bowlerGeschke2015]
 -/

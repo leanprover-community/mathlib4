@@ -362,9 +362,8 @@ theorem hausdorffEDist_triangle : hausdorffEDist s u ≤ hausdorffEDist s t + ha
 /-- Two sets are at zero Hausdorff edistance if and only if they have the same closure. -/
 theorem hausdorffEDist_zero_iff_closure_eq_closure :
     hausdorffEDist s t = 0 ↔ closure s = closure t := by
-  nth_rw 2 [subset_antisymm_iff]
-  simp only [hausdorffEDist_def, ENNReal.max_eq_zero_iff, ENNReal.iSup_eq_zero, ← subset_def,
-    ← mem_closure_iff_infEDist_zero, isClosed_closure.closure_subset_iff]
+  simp [hausdorffEDist_def, ← subset_def, ← mem_closure_iff_infEDist_zero,
+    subset_antisymm_iff (a := closure s), isClosed_closure.closure_subset_iff]
 
 /-- The Hausdorff edistance between a set and its closure vanishes. -/
 @[simp]
