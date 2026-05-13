@@ -52,7 +52,7 @@ theorem factorization_eq_zero_iff' (n : ℕ) : n.factorization = 0 ↔ n = 0 ∨
 theorem factorization_prod_apply {α : Type*} {p : ℕ}
     {S : Finset α} {g : α → ℕ} (hS : ∀ x ∈ S, g x ≠ 0) :
     (S.prod g).factorization p = S.sum fun x => (g x).factorization p := by
-  rw [factorization_prod hS, finset_sum_apply]
+  rw [factorization_prod hS, finsetSum_apply]
 
 /-- A product over `n.factorization` can be written as a product over `n.primeFactors`; -/
 lemma prod_factorization_eq_prod_primeFactors {β : Type*} [CommMonoid β] (f : ℕ → ℕ → β) :

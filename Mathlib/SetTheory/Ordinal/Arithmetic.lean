@@ -72,9 +72,8 @@ theorem lift_add_one (a : Ordinal.{v}) : lift.{u} (a + 1) = lift.{u} a + 1 := by
 theorem lift_succ (a : Ordinal.{v}) : lift.{u} (succ a) = succ (lift.{u} a) :=
   lift_add_one a
 
-instance instAddLeftReflectLE :
-    AddLeftReflectLE Ordinal.{u} where
-  elim c a b := by
+instance instAddLeftReflectLE : AddLeftReflectLE Ordinal.{u} where
+  le_of_add_le_add_left {c a b} := by
     refine inductionOn₃ a b c fun α r _ β s _ γ t _ ⟨f⟩ ↦ ?_
     have H₁ a : f (Sum.inl a) = Sum.inl a := by
       simpa using ((InitialSeg.leAdd t r).trans f).eq (InitialSeg.leAdd t s) a
@@ -526,33 +525,13 @@ theorem isSuccLimit_sub {a b : Ordinal} (ha : IsSuccPrelimit a) (h : b < a) :
 `b × a`. -/
 instance monoid : Monoid Ordinal.{u} where
   mul a b :=
-    Quotient.liftOn₂ a b
-      (fun ⟨α, r, _⟩ ⟨β, s, _⟩ => ⟦⟨β × α, Prod.Lex s r, inferInstance⟩⟧ :
-        WellOrder → WellOrder → Ordinal)
-      fun ⟨_, _, _⟩ _ _ _ ⟨f⟩ ⟨g⟩ => Quot.sound ⟨RelIso.prodLexCongr g f⟩
+    Quotient.liftOn₂ a b (fun ⟨α, r, _⟩ ⟨β, s, _⟩ => ⟦⟨β × α, Prod.Lex s r, inferInstance⟩⟧)
+      fun _ _ _ _ ⟨f⟩ ⟨g⟩ ↦ Quot.sound ⟨RelIso.prodLexCongr g f⟩
   mul_assoc a b c :=
-    Quotient.inductionOn₃ a b c fun ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨γ, t, _⟩ =>
-      Eq.symm <|
-        Quotient.sound
-          ⟨⟨prodAssoc _ _ _, @fun a b => by
-              rcases a with ⟨⟨a₁, a₂⟩, a₃⟩
-              rcases b with ⟨⟨b₁, b₂⟩, b₃⟩
-              simp [Prod.lex_def, and_or_left, or_assoc, and_assoc]⟩⟩
-  mul_one a :=
-    inductionOn a fun α r _ =>
-      Quotient.sound
-        ⟨⟨punitProd _, @fun a b => by
-            rcases a with ⟨⟨⟨⟩⟩, a⟩; rcases b with ⟨⟨⟨⟩⟩, b⟩
-            simp only [Prod.lex_def, emptyRelation, false_or]
-            simp only [true_and]
-            rfl⟩⟩
-  one_mul a :=
-    inductionOn a fun α r _ =>
-      Quotient.sound
-        ⟨⟨prodPUnit _, @fun a b => by
-            rcases a with ⟨a, ⟨⟨⟩⟩⟩; rcases b with ⟨b, ⟨⟨⟩⟩⟩
-            simp only [Prod.lex_def, emptyRelation, and_false, or_false]
-            rfl⟩⟩
+    Quotient.inductionOn₃ a b c fun _ _ _ ↦
+      .symm <| Quotient.sound ⟨⟨prodAssoc .., by grind [Prod.mk.injEq]⟩⟩
+  mul_one a := inductionOn a fun α _ _ ↦ Quotient.sound ⟨⟨punitProd α, by simp [Prod.lex_def]⟩⟩
+  one_mul a := inductionOn a fun α _ _ ↦ Quotient.sound ⟨⟨prodPUnit α, by simp [Prod.lex_def]⟩⟩
 
 @[simp]
 theorem type_prod_lex {α β : Type u} (r : α → α → Prop) (s : β → β → Prop) [IsWellOrder α r]
@@ -627,29 +606,9 @@ private theorem mul_le_of_limit_aux {α β r s} [IsWellOrder α r] [IsWellOrder 
   refine (RelEmbedding.ofMonotone (fun a => ?_) fun a b => ?_).ordinal_type_le.trans_lt this
   · rcases a with ⟨⟨b', a'⟩, h⟩
     by_cases e : b = b'
-    · refine Sum.inr ⟨a', ?_⟩
-      subst e
-      obtain ⟨-, -, h⟩ | ⟨-, h⟩ := h
-      · exact (irrefl _ h).elim
-      · exact h
-    · refine Sum.inl (⟨b', ?_⟩, a')
-      obtain ⟨-, -, h⟩ | ⟨e, h⟩ := h
-      · exact h
-      · exact (e rfl).elim
-  · rcases a with ⟨⟨b₁, a₁⟩, h₁⟩
-    rcases b with ⟨⟨b₂, a₂⟩, h₂⟩
-    intro h
-    by_cases e₁ : b = b₁ <;> by_cases e₂ : b = b₂
-    · substs b₁ b₂
-      simpa only [subrel_val, Prod.lex_def, @irrefl _ s _ b, true_and, false_or,
-        eq_self_iff_true, dif_pos, Sum.lex_inr_inr] using h
-    · subst b₁
-      simp only [subrel_val, Prod.lex_def, e₂, Prod.lex_def, dif_pos, subrel_val,
-        or_false, dif_neg, not_false_iff, Sum.lex_inr_inl, false_and] at h ⊢
-      obtain ⟨-, -, h₂_h⟩ | e₂ := h₂ <;> [exact asymm h h₂_h; exact e₂ rfl]
-    · simp [e₂, show b₂ ≠ b₁ from e₂ ▸ e₁]
-    · simpa only [dif_neg e₁, dif_neg e₂, Prod.lex_def, subrel_val, Subtype.mk_eq_mk,
-        Sum.lex_inl_inl] using h
+    · exact .inr ⟨a', by grind [asymm_of s]⟩
+    · exact .inl (⟨b', by grind⟩, a')
+  · grind [subrel_val, Sum.Lex.sep, asymm_of s]
 
 theorem mul_le_iff_of_isSuccLimit {a b c : Ordinal} (h : IsSuccLimit b) :
     a * b ≤ c ↔ ∀ b' < b, a * b' ≤ c := by
@@ -787,7 +746,7 @@ theorem mul_lt_of_lt_div {a b c : Ordinal} : a < b / c → c * a < b :=
   lt_imp_lt_of_le_imp_le div_le_of_le_mul
 
 @[simp]
-theorem zero_div (a : Ordinal) : 0 / a = 0 := nonpos_iff_eq_zero.1 <| div_le_of_le_mul <| zero_le _
+theorem zero_div (a : Ordinal) : 0 / a = 0 := nonpos_iff_eq_zero.1 <| div_le_of_le_mul zero_le
 
 theorem mul_div_le (a b : Ordinal) : b * (a / b) ≤ a :=
   if b0 : b = 0 then by simp [b0] else (mul_le_iff_le_div b0).2 le_rfl
@@ -816,10 +775,9 @@ theorem mul_div_cancel (a) {b : Ordinal} (b0 : b ≠ 0) : b * a / b = a := by
 
 theorem mul_add_div_mul {a c : Ordinal} (hc : c < a) (b d : Ordinal) :
     (a * b + c) / (a * d) = b / d := by
-  have ha : a ≠ 0 := ((zero_le c).trans_lt hc).ne'
   obtain rfl | hd := eq_or_ne d 0
   · rw [mul_zero, div_zero, div_zero]
-  · have H := mul_ne_zero ha hd
+  · have H := mul_ne_zero hc.ne_zero hd
     apply le_antisymm
     · rw [← lt_succ_iff, ← lt_mul_iff_div_lt H, mul_assoc]
       · apply (add_lt_add_right hc _).trans_le
@@ -832,6 +790,26 @@ theorem mul_add_div_mul {a c : Ordinal} (hc : c < a) (b d : Ordinal) :
 theorem mul_div_mul_cancel {a : Ordinal} (ha : a ≠ 0) (b c) : a * b / (a * c) = b / c := by
   convert mul_add_div_mul (pos_iff_ne_zero.2 ha) b c using 1
   rw [add_zero]
+
+theorem div_eq {a b c : Ordinal} (hle : b * c ≤ a) (hlt : a < b * (c + 1)) : a / b = c := by
+  rcases eq_or_ne b 0 with (rfl | hb)
+  · simp at hlt
+  exact le_antisymm (div_le hb |>.mpr hlt) (mul_le_iff_le_div hb |>.mp hle)
+
+/-- Characterization of `a / b = c` assuming `b ≠ 0`.
+See `div_eq_iff'` for a version assuming `c ≠ 0` instead. -/
+theorem div_eq_iff {a b c : Ordinal} (hb : b ≠ 0) : a / b = c ↔ b * c ≤ a ∧ a < b * (c + 1) :=
+  ⟨fun h ↦ h ▸ ⟨mul_div_le a b, lt_mul_succ_div a hb⟩, fun ⟨hle, hlt⟩ ↦ div_eq hle hlt⟩
+
+/-- Characterization of `a / b = c` assuming `c ≠ 0`.
+See `div_eq_iff` for a version assuming `b ≠ 0` instead. -/
+theorem div_eq_iff' {a b c : Ordinal} (hc : c ≠ 0) : a / b = c ↔ b * c ≤ a ∧ a < b * (c + 1) := by
+  rcases eq_or_ne b 0 with (rfl | hb)
+  · simp [hc.symm]
+  exact div_eq_iff hb
+
+theorem div_eq_one_iff {a b : Ordinal} : a / b = 1 ↔ b ≤ a ∧ a < b * 2 := by
+  rw [div_eq_iff' one_ne_zero, mul_one, one_add_one_eq_two]
 
 @[simp]
 theorem div_one (a : Ordinal) : a / 1 = a := by
@@ -849,19 +827,11 @@ theorem mul_sub (a b c : Ordinal) : a * (b - c) = a * b - a * c := by
 
 theorem isSuccLimit_add_iff {a b : Ordinal} :
     IsSuccLimit (a + b) ↔ IsSuccLimit b ∨ b = 0 ∧ IsSuccLimit a := by
-  constructor <;> intro h
-  · by_cases h' : b = 0
-    · rw [h', add_zero] at h
-      right
-      exact ⟨h', h⟩
-    left
-    rw [← add_sub_cancel a b]
-    apply isSuccLimit_sub h.isSuccPrelimit
-    suffices a + 0 < a + b by simpa only [add_zero] using this
-    rwa [add_lt_add_iff_left, pos_iff_ne_zero]
-  rcases h with (h | ⟨rfl, h⟩)
-  · exact isSuccLimit_add a h
-  · simpa only [add_zero]
+  refine ⟨fun h ↦ ?_, by grind [isSuccLimit_add]⟩
+  rcases eq_or_ne b 0 with (rfl | h')
+  · grind
+  rw [← add_sub_cancel a b]
+  exact .inl <| isSuccLimit_sub h.isSuccPrelimit <| lt_add_of_pos_right a h'.pos
 
 theorem isSuccLimit_add_iff_of_isSuccLimit {a b : Ordinal} (h : IsSuccLimit a) :
     IsSuccLimit (a + b) ↔ IsSuccPrelimit b := by
@@ -879,13 +849,9 @@ theorem dvd_add_iff : ∀ {a b c : Ordinal}, a ∣ b → (a ∣ b + c ↔ a ∣ 
 theorem div_mul_cancel : ∀ {a b : Ordinal}, a ≠ 0 → a ∣ b → a * (b / a) = b
   | a, _, a0, ⟨b, rfl⟩ => by rw [mul_div_cancel _ a0]
 
-theorem le_of_dvd : ∀ {a b : Ordinal}, b ≠ 0 → a ∣ b → a ≤ b
-  | a, _, b0, ⟨b, e⟩ => by
-    subst e
-    simpa only [mul_one] using
-      mul_le_mul_right
-        (one_le_iff_ne_zero.2 fun h : b = 0 => by simp [h] at b0)
-        a
+theorem le_of_dvd {a b : Ordinal} (b0 : b ≠ 0) (h : a ∣ b) : a ≤ b := by
+  rcases h with ⟨b, rfl⟩
+  simpa using mul_le_mul_right (one_le_iff_ne_zero.mpr fun h ↦ by simp [h] at b0) a
 
 theorem dvd_antisymm {a b : Ordinal} (h₁ : a ∣ b) (h₂ : b ∣ a) : a = b :=
   if a0 : a = 0 then by subst a; exact (eq_zero_of_zero_dvd h₁).symm
@@ -893,8 +859,10 @@ theorem dvd_antisymm {a b : Ordinal} (h₁ : a ∣ b) (h₂ : b ∣ a) : a = b :
     if b0 : b = 0 then by subst b; exact eq_zero_of_zero_dvd h₂
     else (le_of_dvd b0 h₁).antisymm (le_of_dvd a0 h₂)
 
-instance antisymm : @Std.Antisymm Ordinal (· ∣ ·) :=
-  ⟨@dvd_antisymm⟩
+instance : IsPartialOrder Ordinal (· ∣ ·) where
+  refl := dvd_refl
+  trans _ _ _ := dvd_trans
+  antisymm := @dvd_antisymm
 
 /-- `a % b` is the unique ordinal `r` satisfying `a = b * q + r` with `r < b`. -/
 instance mod : Mod Ordinal where

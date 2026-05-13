@@ -273,9 +273,9 @@ theorem lift_two_power (a : Cardinal) : lift.{v} (2 ^ a) = 2 ^ lift.{v} a := by
 
 /-! ### Order properties -/
 
-protected theorem zero_le : ∀ a : Cardinal, 0 ≤ a := by
-  rintro ⟨α⟩
-  exact ⟨Embedding.ofIsEmpty⟩
+instance orderBot : OrderBot Cardinal.{u} where
+  bot := 0
+  bot_le := by rintro ⟨α⟩; exact ⟨Embedding.ofIsEmpty⟩
 
 private theorem add_le_add' : ∀ {a b c d : Cardinal}, a ≤ b → c ≤ d → a + c ≤ b + d := by
   rintro ⟨α⟩ ⟨β⟩ ⟨γ⟩ ⟨δ⟩ ⟨e₁⟩ ⟨e₂⟩; exact ⟨e₁.sumMap e₂⟩
@@ -294,15 +294,14 @@ instance canonicallyOrderedAdd : CanonicallyOrderedAdd Cardinal.{u} where
         exact (Equiv.sumCongr (Equiv.ofInjective f hf) (Equiv.refl _)).trans <|
           Equiv.Set.sumCompl (range f)
       ⟨#(↥(range f)ᶜ), mk_congr this.symm⟩
-  le_self_add a b := (add_zero a).ge.trans <| by grw [Cardinal.zero_le b]
-  le_add_self a _ := (zero_add a).ge.trans <| by grw [Cardinal.zero_le]
+  le_self_add a b := (add_zero a).ge.trans <| add_right_mono bot_le
+  le_add_self a b := (zero_add a).ge.trans <| add_left_mono bot_le
+
+@[deprecated zero_le (since := "2026-04-17")]
+protected theorem zero_le (a : Cardinal) : 0 ≤ a := zero_le
 
 instance isOrderedRing : IsOrderedRing Cardinal.{u} :=
   CanonicallyOrderedAdd.toIsOrderedRing
-
-instance orderBot : OrderBot Cardinal.{u} where
-  bot := 0
-  bot_le := zero_le
 
 instance noZeroDivisors : NoZeroDivisors Cardinal.{u} where
   eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} =>
@@ -330,7 +329,7 @@ theorem power_le_power_left : ∀ {a b c : Cardinal}, a ≠ 0 → b ≤ c → a 
 
 theorem self_le_power (a : Cardinal) {b : Cardinal} (hb : 1 ≤ b) : a ≤ a ^ b := by
   rcases eq_or_ne a 0 with (rfl | ha)
-  · exact zero_le _
+  · exact zero_le
   · convert power_le_power_left ha hb
     exact (power_one a).symm
 
@@ -529,7 +528,6 @@ variable (α) in
 every type has a linear order which satisfies `WellFoundedGT` -/
 lemma exists_wellFoundedGT : ∃ (_ : LinearOrder α), WellFoundedGT α := by
   classical
-  have : IsStrictTotalOrder α _ := IsStrictTotalOrder.swap WellOrderingRel
   exact ⟨linearOrderOfSTO (Function.swap WellOrderingRel),
     by simpa [isWellFounded_iff] using WellOrderingRel.isWellOrder.wf⟩
 
@@ -612,7 +610,7 @@ theorem aleph0_eq_lift {c : Cardinal.{u}} : ℵ₀ = lift.{v} c ↔ ℵ₀ = c :
 
 @[simp]
 theorem lift_eq_aleph0 {c : Cardinal.{u}} : lift.{v} c = ℵ₀ ↔ c = ℵ₀ := by
-  simpa using lift_inj (b := ℵ₀)
+  simp [eqComm]
 
 /-! ### Properties about the cast from `ℕ` -/
 
@@ -643,12 +641,12 @@ theorem nat_eq_lift_iff {n : ℕ} {a : Cardinal.{u}} :
 @[simp]
 theorem zero_eq_lift_iff {a : Cardinal.{u}} :
     (0 : Cardinal) = lift.{v} a ↔ 0 = a := by
-  simpa using nat_eq_lift_iff (n := 0)
+  simp [eqComm]
 
 @[simp]
 theorem one_eq_lift_iff {a : Cardinal.{u}} :
     (1 : Cardinal) = lift.{v} a ↔ 1 = a := by
-  simpa using nat_eq_lift_iff (n := 1)
+  simp [eqComm]
 
 @[simp]
 theorem ofNat_eq_lift_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :

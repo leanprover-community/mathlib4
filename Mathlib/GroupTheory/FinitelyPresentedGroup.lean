@@ -34,9 +34,9 @@ finitely presented group, finitely generated normal closure
 
 variable {G H α β : Type*} [Group G] [Group H]
 
-/-- `IsNormalClosureFG N` says that the subgroup `N` is the normal closure of a finitely-generated
+/-- `N.IsNormalClosureFG` says that the subgroup `N` is the normal closure of a finitely-generated
 subgroup. -/
-@[to_additive /-- `IsNormalClosureFG N` says that the additive subgroup `N` is the normal closure
+@[to_additive /-- `N.IsNormalClosureFG` says that the additive subgroup `N` is the normal closure
 of an additive finitely-generated subgroup. -/]
 def Subgroup.IsNormalClosureFG (N : Subgroup G) : Prop :=
   ∃ S : Set G, S.Finite ∧ Subgroup.normalClosure S = N
@@ -46,7 +46,7 @@ namespace Subgroup.IsNormalClosureFG
 /-- Being the normal closure of a finite set is invariant under surjective homomorphism. -/
 @[to_additive /-- Being the additive normal closure of a finite set is invariant under
 surjective homomorphism. -/]
-protected theorem map {N : Subgroup G} (hN : IsNormalClosureFG N)
+protected theorem map {N : Subgroup G} (hN : N.IsNormalClosureFG)
     {f : G →* H} (hf : Function.Surjective f) : (N.map f).IsNormalClosureFG := by
   obtain ⟨S, hSfinite, hSclosure⟩ := hN
   refine ⟨f '' S, hSfinite.image _, ?_⟩
@@ -59,7 +59,7 @@ theorem of_FG (N : Subgroup G) [N.Normal] [h : Group.FG N] : N.IsNormalClosureFG
 
 /-- The trivial group is the normal closure of a finite set of relations. -/
 @[to_additive /-- The trivial additive group is the normal closure of a finite set of relations. -/]
-protected theorem bot : IsNormalClosureFG (⊥ : Subgroup G) := of_FG _
+protected theorem bot : (⊥ : Subgroup G).IsNormalClosureFG := of_FG _
 
 end Subgroup.IsNormalClosureFG
 
@@ -84,7 +84,7 @@ namespace Group.IsFinitelyPresented
 theorem equiv (iso : G ≃* H) (h : IsFinitelyPresented G) : IsFinitelyPresented H := by
   obtain ⟨n, φ, hφsurj, hNC⟩ := h
   refine ⟨n, (iso : G →* H).comp φ, iso.surjective.comp hφsurj, ?_⟩
-  rwa [MonoidHom.ker_mulEquiv_comp φ iso]
+  rwa [φ.ker_mulEquiv_comp iso]
 
 /-- A free group with a finite number of generators is finitely presented. -/
 @[to_additive /-- A free additive group with a finite number of generators is finitely presented. -/
@@ -93,7 +93,7 @@ instance [Finite α] : IsFinitelyPresented (FreeGroup α) := by
   have ⟨n, _, f, hf_surj, hf_inj⟩ := Finite.exists_equiv_fin α
   refine ⟨n, FreeGroup.map f, FreeGroup.map_surjective hf_surj.surjective, ?_⟩
   · rw [(FreeGroup.map f).ker_eq_bot_iff.mpr (FreeGroup.map_injective hf_inj.injective)]
-    exact Subgroup.IsNormalClosureFG.bot
+    exact .bot
 
 /-- `Multiplicative ℤ` is finitely presented. -/
 instance : IsFinitelyPresented (Multiplicative ℤ) :=
