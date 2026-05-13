@@ -58,123 +58,19 @@ theorem isAugmentation_subalgebra_iff [CommSemiring A] [Algebra R A]
     I.IsAugmentation S ↔ IsCompl S.toSubmodule (I.restrictScalars R) := by
   simp [Ideal.IsAugmentation, ← Submodule.isCompl_restrictScalars_iff R]
 
-end Ideal
+variable [CommSemiring A] [Algebra A R] (J : Ideal A)
 
-end
-
-namespace Submodule
-
-/- This section proves the complementary property for tensor products that is necessary to prove
-  that the tensor product of algebras with augmentation ideals has an augmentation ideal -/
-open TensorProduct LinearMap
-
-variable {A M : Type*} [CommRing A] [AddCommGroup M] [Module A M] {M' M'' : Submodule A M}
-  {N : Type*} [AddCommGroup N] [Module A N] {N' N'' : Submodule A N}
-
-variable (M' N') in
-/-- The submodule of M ⊗[A] N image of M' ⊗[A] N' -/
-noncomputable def TensorProduct : Submodule A (M ⊗[A] N) :=
-  (TensorProduct.mapIncl M' N').range
-
-namespace TensorProduct
-
-variable (N') in
-lemma disjoint_left (hM : IsCompl M' M'') :
-    Disjoint (TensorProduct M' N') (TensorProduct M'' N') := by
-  have hq : M'.subtype.comp (projectionOnto _ _ hM) +
-      M''.subtype.comp (projectionOnto _ _ hM.symm) = LinearMap.id := by
-    ext; simp [projection_add_projection_eq_self]
-  rw [disjoint_def]
-  intro x h h'
-  rw [← id_apply x (R := A), ← rTensor_id, ← projection_add_projection_eq_id hM]
-  simp only [rTensor_add, rTensor_comp, add_apply, coe_comp, Function.comp_apply]
---  simp only [rTensor_add, rTensor_comp, add_apply, coe_comp, Function.comp_apply]
-
-  change x ∈ (TensorProduct.map _ N'.subtype).range at h h'
-  rw [← rTensor_comp_lTensor] at h h'
-  replace h : x ∈ (LinearMap.rTensor N M'.subtype).range :=
-    range_comp_le_range _ _ h
-  replace h' : x ∈ (LinearMap.rTensor N M''.subtype).range :=
-    range_comp_le_range _ _ h'
-  rw [← ker_rTensor_projectionOnto hM.symm N, mem_ker] at h
-  rw [← ker_rTensor_projectionOnto hM N, mem_ker] at h'
-  rw [h', h]
-  simp only [h, h', _root_.map_zero, add_zero]
-
-variable (M') in
-lemma disjoint_right {N' N'' : Submodule A N} (hN : IsCompl N' N'') :
-    Disjoint (TensorProduct M' N') (TensorProduct M' N'') := by
-  have hq : N'.subtype.comp (projectionOnto _ _ hN) +
-      N''.subtype.comp (projectionOnto _ _ hN.symm) = LinearMap.id := by
-    ext x
-    simp only [LinearMap.add_apply, LinearMap.coe_comp, coe_subtype, Function.comp_apply,
-      LinearMap.id_coe, id_eq]
-    erw [projection_add_projection_eq_self]
-  rw [disjoint_def]
-  intro x h h'
-  rw [← LinearMap.id_apply x (R := A), ← LinearMap.lTensor_id, ← hq]
-  simp only [LinearMap.lTensor_add, LinearMap.lTensor_comp, LinearMap.add_apply,
-    LinearMap.coe_comp, Function.comp_apply]
-  change x ∈ LinearMap.range (TensorProduct.map M'.subtype _) at h h'
-  rw [← LinearMap.lTensor_comp_rTensor] at h h'
-  replace h : x ∈ LinearMap.range (LinearMap.lTensor M N'.subtype) :=
-    LinearMap.range_comp_le_range _ _ h
-  replace h' : x ∈ LinearMap.range (LinearMap.lTensor M N''.subtype) :=
-    LinearMap.range_comp_le_range _ _ h'
-  rw [← ker_lTensor_projectionOnto hN.symm M, LinearMap.mem_ker] at h
-  rw [← ker_lTensor_projectionOnto hN M, LinearMap.mem_ker] at h'
-  simp only [h, h', _root_.map_zero, add_zero]
-
-variable (N) in
-theorem isCompl_left_top (hM : IsCompl M' M'') :
-    IsCompl (TensorProduct M' (⊤ : Submodule A N)) (TensorProduct M'' ⊤) := by
-  apply IsCompl.mk
-  · exact disjoint_left ⊤ hM
-  · rw [codisjoint_iff, ← sup_left, codisjoint_iff.mp hM.codisjoint]
-    exact top_top A M N
-
-variable (M) in
-theorem isCompl_right_top {N' N'' : Submodule A N} (hN : IsCompl N' N'') :
-    IsCompl (TensorProduct (⊤ : Submodule A M) N') (TensorProduct ⊤ N'') := by
-  apply IsCompl.mk
-  · exact disjoint_right ⊤ hN
-  · rw [codisjoint_iff, ← sup_right, codisjoint_iff.mp hN.codisjoint]
-    exact top_top A M N
-
-theorem isCompl_left_left (hM : IsCompl M' M'') (hN : IsCompl N' N'') :
-    IsCompl (TensorProduct M' N') (TensorProduct ⊤ N'' ⊔ TensorProduct M'' ⊤) := by
-  suffices TensorProduct M' N'' ⊔ TensorProduct M'' ⊤
-    = TensorProduct ⊤ N'' ⊔ M''.TensorProduct ⊤ by
-    rw [← this]
-    apply Submodule.isCompl_assoc_of_disjoint_left
-    · exact disjoint_right M' hN
-    · rw [← sup_right, codisjoint_iff.mp hN.codisjoint]
-      exact isCompl_left_top N hM
-  rw [← codisjoint_iff.mp hM.codisjoint, sup_left, ← codisjoint_iff.mp hN.codisjoint, sup_right]
-  simp only [sup_assoc]
-  apply congr_arg₂ _ rfl
-  nth_rewrite 3 [sup_comm]
-  rw [← sup_assoc, sup_idem, sup_comm]
-
-end Submodule.TensorProduct
-
-section Augmentation
-
-namespace Ideal
-
-variable (R : Type*) [CommSemiring R] {A : Type*} [CommSemiring A] [Algebra A R] (J : Ideal A)
-
-open TensorProduct Ideal LinearMap Submodule
+open TensorProduct Ideal LinearMap Submodule Algebra.TensorProduct
 
 /-- If `I` is an augmentation ideal of the `A`-algebra `R` and `R` is an `A`-algebra,
 then the ideal `R ⊗[A] I` of `R ⊗[A] S` is an augmentation ideal. -/
 theorem isAugmentation_baseChange
     {A : Type*} [CommRing A]
+    {R : Type*} [CommRing R] [Algebra A R]
     {S : Type*} [Ring S] [Algebra A S]
-    {I : Ideal S} (hI : IsAugmentation A I)
-    {R : Type*} [CommRing R] [Algebra A R] :
-    (Ideal.map Algebra.TensorProduct.includeRight I : Ideal (R ⊗[A] S)).IsAugmentation R := by
-  rw [isAugmentation_iff, Algebra.TensorProduct.map_includeRight_eq_range_baseChange,
+    {I : Ideal S} (hI : IsAugmentation A I) :
+    (I.map includeRight : Ideal (R ⊗[A] S)).IsAugmentation R := by
+  rw [isAugmentation_iff, map_includeRight_eq_range_baseChange,
     Algebra.baseChange_one]
   exact isCompl_baseChange hI R
 
@@ -214,36 +110,37 @@ theorem _root_.Subalgebra.val_toLinearMap (A : Type*) [CommSemiring A] {R : Type
     R₀.val.toLinearMap = R₀.toSubmodule.subtype := by
   rfl
 
-theorem isAugmentation_tensorProduct (A : Type*) [CommRing A] {R S : Type*} [CommRing R]
+theorem isAugmentation_tensorProduct
+    (A : Type*) [CommRing A] {R S : Type*} [CommRing R]
     [Algebra A R] {R₀ : Subalgebra A R} {I : Ideal R} (hI : I.IsAugmentation R₀) [CommRing S]
     [Algebra A S] {S₀ : Subalgebra A S} {J : Ideal S} (hJ : J.IsAugmentation S₀) :
-    let K : Ideal (R ⊗[A] S) := I.map (Algebra.TensorProduct.includeLeft (S := A)) ⊔
+    let K : Ideal (R ⊗[A] S) := I.map (includeLeft (S := A)) ⊔
       J.map Algebra.TensorProduct.includeRight
     let T₀ : Subalgebra A (R ⊗[A] S) := Subalgebra.map (Algebra.TensorProduct.map R₀.val S₀.val) ⊤
     K.IsAugmentation T₀ := by
-  rw [Ideal.isAugmentation_subalgebra_iff] at hI hJ ⊢
-  convert Submodule.TensorProduct.isCompl_left_left hI hJ
+  rw [isAugmentation_subalgebra_iff] at hI hJ ⊢
+  convert isCompl_left_left hI hJ
   · simp only [Submodule.TensorProduct, Algebra.map_top, mapIncl]
     rw [← SetLike.coe_set_eq, Subalgebra.coe_toSubmodule, AlgHom.coe_range,
       ← AlgHom.coe_toLinearMap, ← LinearMap.coe_range,
-        Algebra.TensorProduct.toLinearMap_map, AlgebraTensorModule.map_eq]
+        toLinearMap_map, AlgebraTensorModule.map_eq]
     simp [Subalgebra.val_toLinearMap]
   · simp only [restrictScalars_sup, Submodule.TensorProduct, mapIncl]
-    have : (I.map (Algebra.TensorProduct.includeLeft : R →ₐ[A] R ⊗[A] S)).restrictScalars A =
+    have : (I.map (includeLeft : R →ₐ[A] R ⊗[A] S)).restrictScalars A =
         (TensorProduct.map (I.restrictScalars A).subtype (⊤ : Submodule A S).subtype).range := by
-      rw [Ideal.map_includeLeft_eq, rTensor_def]
-      rw [← id_comp (⊤: Submodule A S).subtype, ← comp_id (Submodule.restrictScalars A
-      I).subtype, TensorProduct.map_comp, range_comp, comp_id, LinearMap.range_eq_map]
+      rw [Ideal.map_includeLeft_eq, rTensor_def, ← id_comp (⊤: Submodule A S).subtype,
+        ← comp_id (Submodule.restrictScalars A I).subtype, TensorProduct.map_comp, range_comp,
+        comp_id, LinearMap.range_eq_map]
       congr
       rw [eq_comm, range_eq_top]
       apply TensorProduct.map_surjective Function.surjective_id
       rw [← LinearMap.range_eq_top, range_subtype]
     rw [sup_comm, this]
-    have : (J.map (Algebra.TensorProduct.includeRight : S →ₐ[A] R ⊗[A] S)).restrictScalars A =
+    have : (J.map (includeRight : S →ₐ[A] R ⊗[A] S)).restrictScalars A =
         (TensorProduct.map (⊤ : Submodule A R).subtype (J.restrictScalars  A).subtype).range := by
-      rw [Ideal.map_includeRight_eq, lTensor_def]
-      rw [← id_comp (⊤: Submodule A R).subtype, ← comp_id (Submodule.restrictScalars A
-      J).subtype, TensorProduct.map_comp, range_comp, comp_id, LinearMap.range_eq_map]
+      rw [map_includeRight_eq, lTensor_def, ← id_comp (⊤: Submodule A R).subtype,
+        ← comp_id (Submodule.restrictScalars A J).subtype, TensorProduct.map_comp, range_comp,
+        comp_id, LinearMap.range_eq_map]
       congr
       rw [eq_comm, range_eq_top]
       apply TensorProduct.map_surjective _ Function.surjective_id
@@ -252,4 +149,4 @@ theorem isAugmentation_tensorProduct (A : Type*) [CommRing A] {R S : Type*} [Com
 
 end Ideal
 
-end Augmentation
+end
