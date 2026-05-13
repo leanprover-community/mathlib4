@@ -88,7 +88,7 @@ such that `(f x) ^ n = g x` for all `x`. -/
 protected theorem exists_continuousOn_pow_eq
     (hUc : IsSimplyConnected U) (hUo : IsOpen U) {g : X → 𝔻}
     (hgc : ContinuousOn g U) (hU₀ : 0 ∉ g '' U) (n : ℕ+) :
-    ∃ f : X → UnitDisc, ContinuousOn f U ∧ ∀ x, f x ^ n = g x := by
+    ∃ f : X → 𝔻, ContinuousOn f U ∧ ∀ x, f x ^ n = g x := by
   rcases exists_continuousOn_pow_eq hUc hUo
     (continuous_coe.comp_continuousOn hgc)
     (by simpa using hU₀) n.ne_zero with ⟨f, hfc, hf⟩
