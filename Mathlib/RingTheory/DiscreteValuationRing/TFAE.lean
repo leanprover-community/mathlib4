@@ -187,8 +187,8 @@ theorem tfae_of_isNoetherianRing_of_isLocalRing_of_isDomain
     intro H
     constructor
     intro I J
-    by_cases hI : I = ⊥; · order
-    by_cases hJ : J = ⊥; · order
+    rcases eq_or_ne I ⊥ with rfl | hI; · left; exact bot_le
+    rcases eq_or_ne J ⊥ with rfl | hJ; · right; exact bot_le
     obtain ⟨n, rfl⟩ := H I hI
     obtain ⟨m, rfl⟩ := H J hJ
     exact (le_total m n).imp Ideal.pow_le_pow_right Ideal.pow_le_pow_right
