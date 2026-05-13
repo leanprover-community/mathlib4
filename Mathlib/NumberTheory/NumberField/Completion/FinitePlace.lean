@@ -352,15 +352,13 @@ theorem maximalIdeal_mk (v : HeightOneSpectrum (𝓞 K)) : maximalIdeal (mk v) =
   rw [← mk_eq_iff, mk_maximalIdeal]
 
 /-- The equivalence between finite places and maximal ideals. -/
+@[simps apply]
 noncomputable def equivHeightOneSpectrum :
     FinitePlace K ≃ HeightOneSpectrum (𝓞 K) where
   toFun := maximalIdeal
   invFun := mk
   left_inv := mk_maximalIdeal
   right_inv := maximalIdeal_mk
-
-lemma equivHeightOneSpectrum_apply (v : FinitePlace K) :
-    v.equivHeightOneSpectrum = v.maximalIdeal := rfl
 
 lemma maximalIdeal_injective : (fun w : FinitePlace K ↦ maximalIdeal w).Injective :=
   equivHeightOneSpectrum.injective
