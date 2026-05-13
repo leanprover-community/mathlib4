@@ -671,66 +671,6 @@ instance completeSpace_eqLocus {M' : Type*} [UniformSpace M'] [CompleteSpace M']
     (f g : M' →SL[σ₁₂] M₂) : CompleteSpace (LinearMap.eqLocus f g) :=
   IsClosed.completeSpace_coe (hs := isClosed_eq (map_continuous f) (map_continuous g))
 
-/-- Restrict codomain of a continuous linear map. -/
-def codRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₂ M₂) (h : ∀ x, f x ∈ p) :
-    M₁ →SL[σ₁₂] p where
-  cont := f.continuous.subtype_mk _
-  toLinearMap := (f : M₁ →ₛₗ[σ₁₂] M₂).codRestrict p h
-
-@[norm_cast]
-theorem coe_codRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₂ M₂) (h : ∀ x, f x ∈ p) :
-    (f.codRestrict p h : M₁ →ₛₗ[σ₁₂] p) = (f : M₁ →ₛₗ[σ₁₂] M₂).codRestrict p h :=
-  rfl
-
-@[simp]
-theorem coe_codRestrict_apply (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₂ M₂) (h : ∀ x, f x ∈ p) (x) :
-    (f.codRestrict p h x : M₂) = f x :=
-  rfl
-
-@[simp]
-theorem ker_codRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₂ M₂) (h : ∀ x, f x ∈ p) :
-    ker (f.codRestrict p h : M₁ →ₛₗ[σ₁₂] p) = ker (f : M₁ →ₛₗ[σ₁₂] M₂) :=
-  (f : M₁ →ₛₗ[σ₁₂] M₂).ker_codRestrict p h
-
-/-- Restrict the codomain of a continuous linear map `f` to `f.range`. -/
-abbrev rangeRestrict [RingHomSurjective σ₁₂] (f : M₁ →SL[σ₁₂] M₂) :=
-  f.codRestrict (LinearMap.range (f : M₁ →ₛₗ[σ₁₂] M₂)) (LinearMap.mem_range_self _)
-
-@[simp]
-theorem coe_rangeRestrict [RingHomSurjective σ₁₂] (f : M₁ →SL[σ₁₂] M₂) :
-    (f.rangeRestrict : M₁ →ₛₗ[σ₁₂] LinearMap.range (f : M₁ →ₛₗ[σ₁₂] M₂)) =
-      (f : M₁ →ₛₗ[σ₁₂] M₂).rangeRestrict :=
-  rfl
-
-/-- Restrict codomain of a continuous linear map. -/
-def restrict (f : M₁ →SL[σ₁₂] M₂) {p : Submodule R₁ M₁} {q : Submodule R₂ M₂}
-    (h : ∀ x ∈ p, f x ∈ q) :
-    p →SL[σ₁₂] q where
-  toLinearMap := f.toLinearMap.restrict h
-  cont := f.continuous.restrict h
-
-@[simp, norm_cast]
-theorem toLinearMap_restrict {f : M₁ →SL[σ₁₂] M₂} {p : Submodule R₁ M₁} {q : Submodule R₂ M₂}
-    (h : ∀ x ∈ p, f x ∈ q) :
-    (f.restrict h).toLinearMap = f.toLinearMap.restrict h :=
-  rfl
-
-@[simp]
-theorem coe_restrict_apply {f : M₁ →SL[σ₁₂] M₂} {p : Submodule R₁ M₁} {q : Submodule R₂ M₂}
-    (hf : ∀ x ∈ p, f x ∈ q) (x : p) : ↑(f.restrict hf x) = f x :=
-  rfl
-
-theorem restrict_apply {f : M₁ →SL[σ₁₂] M₂} {p : Submodule R₁ M₁} {q : Submodule R₂ M₂}
-    (hf : ∀ x ∈ p, f x ∈ q) (x : p) : f.restrict hf x = ⟨f x, hf x.1 x.2⟩ :=
-  rfl
-
-open Set in
-lemma restrict_comp {p : Submodule R₁ M₁} {p₂ : Submodule R₂ M₂} {p₃ : Submodule R₃ M₃}
-    {f : M₁ →SL[σ₁₂] M₂} {g : M₂ →SL[σ₂₃] M₃}
-    (hf : MapsTo f p p₂) (hg : MapsTo g p₂ p₃) (hfg : MapsTo (g.comp f) p p₃ := hg.comp hf) :
-    (g.comp f).restrict hfg = (g.restrict hg).comp (f.restrict hf) :=
-  rfl
-
 section
 
 variable {R S : Type*} [Semiring R] [Semiring S] [Module R M₁] [Module R M₂] [Module R S]
@@ -1339,6 +1279,74 @@ theorem liftQL_apply (f : M →SL[σ] M₂) (h : S ≤ f.ker) (x : M ⧸ S) :
 end Ring
 
 end Submodule
+
+section Restrict
+
+namespace ContinuousLinearMap
+
+/-- Restrict codomain of a continuous linear map. -/
+def codRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₂ M₂) (h : ∀ x, f x ∈ p) :
+    M₁ →SL[σ₁₂] p where
+  cont := f.continuous.subtype_mk _
+  toLinearMap := (f : M₁ →ₛₗ[σ₁₂] M₂).codRestrict p h
+
+@[norm_cast]
+theorem coe_codRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₂ M₂) (h : ∀ x, f x ∈ p) :
+    (f.codRestrict p h : M₁ →ₛₗ[σ₁₂] p) = (f : M₁ →ₛₗ[σ₁₂] M₂).codRestrict p h :=
+  rfl
+
+@[simp]
+theorem coe_codRestrict_apply (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₂ M₂) (h : ∀ x, f x ∈ p) (x) :
+    (f.codRestrict p h x : M₂) = f x :=
+  rfl
+
+@[simp]
+theorem ker_codRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₂ M₂) (h : ∀ x, f x ∈ p) :
+    ker (f.codRestrict p h : M₁ →ₛₗ[σ₁₂] p) = ker (f : M₁ →ₛₗ[σ₁₂] M₂) :=
+  (f : M₁ →ₛₗ[σ₁₂] M₂).ker_codRestrict p h
+
+/-- Restrict the codomain of a continuous linear map `f` to `f.range`. -/
+abbrev rangeRestrict [RingHomSurjective σ₁₂] (f : M₁ →SL[σ₁₂] M₂) :=
+  f.codRestrict (LinearMap.range (f : M₁ →ₛₗ[σ₁₂] M₂)) (LinearMap.mem_range_self _)
+
+@[simp]
+theorem coe_rangeRestrict [RingHomSurjective σ₁₂] (f : M₁ →SL[σ₁₂] M₂) :
+    (f.rangeRestrict : M₁ →ₛₗ[σ₁₂] LinearMap.range (f : M₁ →ₛₗ[σ₁₂] M₂)) =
+      (f : M₁ →ₛₗ[σ₁₂] M₂).rangeRestrict :=
+  rfl
+
+/-- Restrict codomain of a continuous linear map. -/
+def restrict (f : M₁ →SL[σ₁₂] M₂) {p : Submodule R₁ M₁} {q : Submodule R₂ M₂}
+    (h : ∀ x ∈ p, f x ∈ q) :
+    p →SL[σ₁₂] q where
+  toLinearMap := f.toLinearMap.restrict h
+  cont := f.continuous.restrict h
+
+@[simp, norm_cast]
+theorem toLinearMap_restrict {f : M₁ →SL[σ₁₂] M₂} {p : Submodule R₁ M₁} {q : Submodule R₂ M₂}
+    (h : ∀ x ∈ p, f x ∈ q) :
+    (f.restrict h).toLinearMap = f.toLinearMap.restrict h :=
+  rfl
+
+@[simp]
+theorem coe_restrict_apply {f : M₁ →SL[σ₁₂] M₂} {p : Submodule R₁ M₁} {q : Submodule R₂ M₂}
+    (hf : ∀ x ∈ p, f x ∈ q) (x : p) : ↑(f.restrict hf x) = f x :=
+  rfl
+
+theorem restrict_apply {f : M₁ →SL[σ₁₂] M₂} {p : Submodule R₁ M₁} {q : Submodule R₂ M₂}
+    (hf : ∀ x ∈ p, f x ∈ q) (x : p) : f.restrict hf x = ⟨f x, hf x.1 x.2⟩ :=
+  rfl
+
+open Set in
+lemma restrict_comp {p : Submodule R₁ M₁} {p₂ : Submodule R₂ M₂} {p₃ : Submodule R₃ M₃}
+    {f : M₁ →SL[σ₁₂] M₂} {g : M₂ →SL[σ₂₃] M₃}
+    (hf : MapsTo f p p₂) (hg : MapsTo g p₂ p₃) (hfg : MapsTo (g.comp f) p p₃ := hg.comp hf) :
+    (g.comp f).restrict hfg = (g.restrict hg).comp (f.restrict hf) :=
+  rfl
+
+end ContinuousLinearMap
+
+end Restrict
 
 namespace ContinuousLinearMap
 
