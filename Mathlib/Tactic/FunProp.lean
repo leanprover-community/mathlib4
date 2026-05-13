@@ -37,8 +37,10 @@ checks if every single elementary function is, e.g., `Continuous`.
 For `ContinuousAt/On/Within` variants, one has to specify a tactic to solve potential side goals
 with `disch := <tactic>`. For example:
 ```lean
-example (y : ℝ) (hy : y ≠ 0) : ContinuousAt (fun x : ℝ ↦ 1/x) y := by fun_prop (disch := assumption)
+example (y : ℝ) (hy : y ≠ 0) : ContinuousAt (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) y := by
+  fun_prop (disch := aesop)
 ```
+Note that `fun_prop` discharges hypothesis from the local context automatically.
 
 **Basic debugging:**
 The most common issue is that a function is missing the appropriate theorem. For example:
