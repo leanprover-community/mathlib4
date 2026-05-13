@@ -153,6 +153,4 @@ lemma isEmbedding_iff_isStrictMap_injective :
     (Homeomorph.Quotient.congrRight <| by simp [f_inj.eq_iff]).trans Homeomorph.quotientBot
   exact f_strict.comp Φ.symm.isEmbedding
 
-#check IsOpenQuotientMap
-
 end Topology
