@@ -62,7 +62,7 @@ jobs:
       - name: Cleanup explain.txt
         if: steps.shake.outputs.changed == 'true'
         run: |
-          rm explain.txt
+          rm -f explain.txt
 
       - name: Build PR body
         id: pr_body
