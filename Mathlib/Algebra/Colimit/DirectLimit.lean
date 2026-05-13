@@ -946,7 +946,7 @@ noncomputable def of (i) : G i →⋆ₐ[R] DirectLimit G f where
   __ := (Algebra.of G f i)
   map_star' _ := (star_def ..).symm
 
-@[simp] lemma of_f {i j} (hij) (x) : of G f j (f i j hij x) = of G f i x := .symm <| eq_of_le ..
+lemma of_f {i j} (hij) (x) : of G f j (f i j hij x) = of G f i x := .symm <| eq_of_le ..
 
 variable (G f) in
 noncomputable def lift (g : ∀ i, (G i) →⋆ₐ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
