@@ -1292,7 +1292,8 @@ lemma vanishingIdeal_isMinimalPrime_iff {s : Set (PrimeSpectrum R)} :
       ← vanishingIdeal_closure]
     exact Set.mem_image_of_mem _
 
-@[deprecated "Use `PrimeSpectrum.vanishingIdeal_isMinimalPrime` instead." (since := "2026-05-13")]
+@[deprecated "Use `PrimeSpectrum.vanishingIdeal_isMinimalPrime_iff` instead."
+  (since := "2026-05-13")]
 alias vanishingIdeal_mem_minimalPrimes := vanishingIdeal_isMinimalPrime_iff
 
 lemma zeroLocus_ideal_mem_irreducibleComponents {I : Ideal R} :

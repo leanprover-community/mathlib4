@@ -76,9 +76,9 @@ protected theorem isAssociatedPrime_iff [IsNoetherianRing R] :
     N.IsAssociatedPrime I ↔ I.IsPrime ∧ ∃ x, I = colon N {x} := by
   constructor
   · rintro ⟨hx, x, rfl⟩
-    refine ⟨hx, exists_eq_colon_of_mem_minimalPrimes (x := x) ?_⟩
-    rw [← Ideal.radical_minimalPrimes, Ideal.minimalPrimes_eq_subsingleton_self,
-      Set.mem_singleton_iff]
+    refine ⟨hx, Submodule.exists_eq_colon_of_isMinimalPrime (x := x) ?_⟩
+    rw [← (Set.ext_iff.mp Ideal.radical_minimalPrimes _).trans Set.mem_setOf,
+      Ideal.minimalPrimes_eq_subsingleton_self, Set.mem_singleton_iff]
   · rintro ⟨hx, x, rfl⟩
     exact ⟨hx, x, hx.radical.symm⟩
 
