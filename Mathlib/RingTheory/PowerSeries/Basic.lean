@@ -504,8 +504,8 @@ section toSubring
 variable [Ring R] (p : PowerSeries R) (T : Subring R) (hp : ∀ n, p.coeff n ∈ T)
 
 /-- Given a formal power series `p` and a subring `T` that contains the
- coefficients of `p`, return the corresponding formal power series
- whose coefficients are in `T`. -/
+coefficients of `p`, return the corresponding formal power series
+whose coefficients are in `T`. -/
 def toSubring : PowerSeries T := mk fun n => ⟨p.coeff n, hp n⟩
 
 @[simp]
