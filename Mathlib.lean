@@ -4375,10 +4375,12 @@ public import Mathlib.Data.WSeq.Productive
 public import Mathlib.Data.WSeq.Relation
 public import Mathlib.Data.ZMod.Aut
 public import Mathlib.Data.ZMod.Basic
+public import Mathlib.Data.ZMod.CRTInstances
 public import Mathlib.Data.ZMod.Coprime
 public import Mathlib.Data.ZMod.Defs
 public import Mathlib.Data.ZMod.Factorial
 public import Mathlib.Data.ZMod.IntUnitsPower
+public import Mathlib.Data.ZMod.LinearModularSurjective
 public import Mathlib.Data.ZMod.QuotientGroup
 public import Mathlib.Data.ZMod.QuotientRing
 public import Mathlib.Data.ZMod.Units
