@@ -74,41 +74,28 @@ theorem isAugmentation_baseChange
     Algebra.baseChange_one]
   exact isCompl_baseChange hI R
 
-theorem _root_.Algebra.TensorProduct.map_toLinearMap (A : Type*) [CommSemiring A]
-    {R R₀ S S₀ : Type*} [Semiring R] [Semiring R₀] [Semiring S] [Semiring S₀]
-    [Algebra A R] [Algebra A R₀] [Algebra A S] [Algebra A S₀] (f : R₀ →ₐ[A] R) (g : S₀ →ₐ[A] S) :
-    (Algebra.TensorProduct.map f g).toLinearMap =
-      (TensorProduct.map f.toLinearMap g.toLinearMap) := by
-  rw [Algebra.TensorProduct.toLinearMap_map, AlgebraTensorModule.map_eq]
+section
 
-theorem AlgHom.toLinearMap_eq_coe {A R₀ R : Type*} [CommSemiring A] [Semiring R₀] [Semiring R]
-    [Algebra A R] [Algebra A R₀] (f : R₀ →ₐ[A] R) :
-    f.toLinearMap = f := by
-  exact LinearMap.ext (congrFun rfl)
+variable {A M M' N N' : Type*} [CommSemiring A]
+    [AddCommMonoid M] [Module A M] [AddCommMonoid M'] [Module A M'] (f : M →ₗ[A] M')
+    [AddCommMonoid N] [Module A N] [AddCommMonoid N'] [Module A N'] (g : N →ₗ[A] N')
 
-theorem _root_.Algebra.TensorProduct.coe_map (A : Type*) [CommSemiring A]
-    {R R₀ S S₀ : Type*} [Semiring R] [Semiring R₀] [Semiring S] [Semiring S₀]
-    [Algebra A R] [Algebra A R₀] [Algebra A S] [Algebra A S₀] (f : R₀ →ₐ[A] R) (g : S₀ →ₐ[A] S) :
-    (Algebra.TensorProduct.map f g : R₀ ⊗[A] S₀ →ₗ[A] R ⊗[A] S) =
-      TensorProduct.map f g := by
-  rw [← DFunLike.coe_fn_eq, coe_coe, ← AlgHom.coe_toLinearMap,
-    Algebra.TensorProduct.map_toLinearMap]
-  simp [AlgHom.toLinearMap_eq_coe]
+theorem _root_.LinearMap.subtype_comp_rangeRestrict :
+    f.range.subtype ∘ₗ f.rangeRestrict = f := by
+  rw [rangeRestrict, subtype_comp_codRestrict]
 
-theorem _root_.Algebra.TensorProduct.map_range_toSubmodule
-    (A : Type*) [CommSemiring A]
-    {R R₀ S S₀ : Type*} [Semiring R] [Semiring R₀] [Semiring S] [Semiring S₀]
-    [Algebra A R] [Algebra A R₀] [Algebra A S] [Algebra A S₀]
-    (f : R₀ →ₐ[A] R) (g : S₀ →ₐ[A] S) :
-    Subalgebra.toSubmodule (Algebra.TensorProduct.map f g).range =
-      (TensorProduct.map f.toLinearMap g.toLinearMap).range := by
-  rw [← SetLike.coe_set_eq, Subalgebra.coe_toSubmodule, AlgHom.coe_range, ← AlgHom.coe_toLinearMap,
-    ← LinearMap.coe_range, Algebra.TensorProduct.toLinearMap_map, AlgebraTensorModule.map_eq]
+theorem _root_.TensorProduct.map_range_eq :
+    (TensorProduct.map f g).range = (TensorProduct.map f.range.subtype g.range.subtype).range := by
+  nth_rewrite 1 [← subtype_comp_rangeRestrict f]
+  nth_rewrite 1 [← subtype_comp_rangeRestrict g]
+  rw [TensorProduct.map_comp]
+  apply range_comp_of_range_eq_top
+  rw [range_eq_top]
+  exact TensorProduct.map_surjective (surjective_rangeRestrict f)
+    (surjective_rangeRestrict g)
 
-theorem _root_.Subalgebra.val_toLinearMap (A : Type*) [CommSemiring A] {R : Type*} [Semiring R]
-    [Algebra A R] {R₀ : Subalgebra A R} :
-    R₀.val.toLinearMap = R₀.toSubmodule.subtype := by
-  rfl
+#find_home! TensorProduct.map_range_eq
+end
 
 theorem isAugmentation_tensorProduct
     (A : Type*) [CommRing A] {R S : Type*} [CommRing R]
@@ -124,28 +111,26 @@ theorem isAugmentation_tensorProduct
     rw [← SetLike.coe_set_eq, Subalgebra.coe_toSubmodule, AlgHom.coe_range,
       ← AlgHom.coe_toLinearMap, ← LinearMap.coe_range,
         toLinearMap_map, AlgebraTensorModule.map_eq]
-    simp [Subalgebra.val_toLinearMap]
+    simp [AlgHom.toLinearMap_eq_coe]
   · simp only [restrictScalars_sup, Submodule.TensorProduct, mapIncl]
-    have : (I.map (includeLeft : R →ₐ[A] R ⊗[A] S)).restrictScalars A =
-        (TensorProduct.map (I.restrictScalars A).subtype (⊤ : Submodule A S).subtype).range := by
-      rw [Ideal.map_includeLeft_eq, rTensor_def, ← id_comp (⊤: Submodule A S).subtype,
-        ← comp_id (Submodule.restrictScalars A I).subtype, TensorProduct.map_comp, range_comp,
-        comp_id, LinearMap.range_eq_map]
-      congr
-      rw [eq_comm, range_eq_top]
-      apply TensorProduct.map_surjective Function.surjective_id
-      rw [← LinearMap.range_eq_top, range_subtype]
-    rw [sup_comm, this]
-    have : (J.map (includeRight : S →ₐ[A] R ⊗[A] S)).restrictScalars A =
-        (TensorProduct.map (⊤ : Submodule A R).subtype (J.restrictScalars  A).subtype).range := by
-      rw [map_includeRight_eq, lTensor_def, ← id_comp (⊤: Submodule A R).subtype,
+    rw [sup_comm]
+    apply congr_arg₂
+    · simp only [Ideal.map_includeRight_eq, LinearMap.lTensor]
+      rw [← id_comp (⊤: Submodule A R).subtype,
         ← comp_id (Submodule.restrictScalars A J).subtype, TensorProduct.map_comp, range_comp,
         comp_id, LinearMap.range_eq_map]
       congr
       rw [eq_comm, range_eq_top]
       apply TensorProduct.map_surjective _ Function.surjective_id
       rw [← LinearMap.range_eq_top, range_subtype]
-    rw [this]
+    · simp only [Ideal.map_includeLeft_eq, LinearMap.rTensor]
+      rw [← id_comp (⊤: Submodule A S).subtype,
+        ← comp_id (Submodule.restrictScalars A I).subtype, TensorProduct.map_comp, range_comp,
+        comp_id, LinearMap.range_eq_map]
+      congr
+      rw [eq_comm, range_eq_top]
+      apply TensorProduct.map_surjective Function.surjective_id
+      rw [← LinearMap.range_eq_top, range_subtype]
 
 end Ideal
 
