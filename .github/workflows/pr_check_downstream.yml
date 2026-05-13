@@ -130,12 +130,17 @@ jobs:
           PR_NUMBER:    ${{ github.event.issue.number || inputs.pr_number }}
           MERGE_SHA:    ${{ steps.validate.outputs.merge_sha }}
           DOWNSTREAMS:  ${{ steps.validate.outputs.resolved_names }}
+          # The commenter (issue_comment trigger) or the manual dispatcher
+          # (workflow_dispatch trigger). Forwarded so the per-entry result
+          # comments lead with `_Requested by @<user>._` and notify them.
+          TRIGGERED_BY: ${{ github.event.comment.user.login || github.actor }}
         run: |
           gh workflow run mathlib-pr-validation.yml \
             -R leanprover-community/downstream-reports \
             -f pr_number="$PR_NUMBER" \
             -f merge_sha="$MERGE_SHA" \
-            -f downstreams="$DOWNSTREAMS"
+            -f downstreams="$DOWNSTREAMS" \
+            -f triggered_by="$TRIGGERED_BY"
 
       - name: Post / update ack comment
         env:
