@@ -796,10 +796,13 @@ theorem div_eq {a b c : Ordinal} (hle : b * c ≤ a) (hlt : a < b * (c + 1)) : a
   · simp at hlt
   exact le_antisymm (div_le hb |>.mpr hlt) (mul_le_iff_le_div hb |>.mp hle)
 
+/-- Characterization of `a / b = c` assuming `b ≠ 0`.
+See `div_eq_iff'` for a version assuming `c ≠ 0` instead. -/
 theorem div_eq_iff {a b c : Ordinal} (hb : b ≠ 0) : a / b = c ↔ b * c ≤ a ∧ a < b * (c + 1) :=
   ⟨fun h ↦ h ▸ ⟨mul_div_le a b, lt_mul_succ_div a hb⟩, fun ⟨hle, hlt⟩ ↦ div_eq hle hlt⟩
 
-/-- Assumes `c ≠ 0` instead of `b ≠ 0` -/
+/-- Characterization of `a / b = c` assuming `c ≠ 0`.
+See `div_eq_iff` for a version assuming `b ≠ 0` instead. -/
 theorem div_eq_iff' {a b c : Ordinal} (hc : c ≠ 0) : a / b = c ↔ b * c ≤ a ∧ a < b * (c + 1) := by
   rcases eq_or_ne b 0 with (rfl | hb)
   · simp [hc.symm]
