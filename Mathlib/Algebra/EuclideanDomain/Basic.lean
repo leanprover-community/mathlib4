@@ -206,12 +206,13 @@ theorem xgcdAux_P (a b : R) {r r' : R} {s t s' t'} (p : P a b (r, s, t))
 /-- An explicit version of **Bézout's lemma** for Euclidean domains. -/
 theorem gcd_eq_gcd_ab (a b : R) : (gcd a b : R) = a * gcdA a b + b * gcdB a b := by
   have :=
-    @xgcdAux_P _ _ _ a b a b 1 0 0 1 (by dsimp [P]; rw [mul_one, mul_zero, add_zero])
+    @xgcdAux_P _ _ _ _ _ a b a b 1 0 0 1 (by dsimp [P]; rw [mul_one, mul_zero, add_zero])
       (by dsimp [P]; rw [mul_one, mul_zero, zero_add])
   rwa [xgcdAux_val, xgcd_val] at this
 
 -- see Note [lower instance priority]
-instance (priority := 70) (R : Type*) [e : EuclideanDomain R] : IsDomain R :=
+instance (priority := 70) (R : Type*) [CommRing R] [Nontrivial R] [e : EuclideanDomain R] :
+    IsDomain R :=
   haveI := Classical.decEq R
   have : NoZeroDivisors R :=
   { eq_zero_or_eq_zero_of_mul_eq_zero {a b} h :=
