@@ -6,6 +6,7 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Topology.Maps.Strict.Basic
+public import Mathlib.Topology.LocalAtTarget
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-!
@@ -145,18 +146,34 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict (u : 
     (IsStrictMap u ∧ IsClosed (range u)) ↔
       (IsStrictMap (restrict A u) ∧ IsClosed (u '' A)) := by
   set N : Submodule 𝕜 E := A ⊓ u.ker
+  set π : E →L[𝕜] E ⧸ N := N.mkQL
   set v : E ⧸ N →L[𝕜] F := N.liftQL u inf_le_right
-  have v_eq_u : v ∘L N.mkQL = u := rfl
+  have π_quot : IsOpenQuotientMap π := N.isOpenQuotientMap_mkQL
+  have v_comp_π_eq_u : v ∘ π = u := rfl
   set B : Submodule 𝕜 (E ⧸ N) := map N.mkQ A
-  have comap_B : comap N.mkQ B = A := by simp [B, N]
+  have comap_B : comap π.toLinearMap B = A := by simp [B, N, π]
+  have A_mapsTo_B : MapsTo π A B := fun _ ↦ by simp [← comap_B]
   have B_closed : IsClosed (B : Set <| E ⧸ N) := by
-    rwa [← N.isQuotientMap_mkQ.isClosed_preimage, ← comap_coe, comap_B]
+    rwa [← π_quot.isQuotientMap.isClosed_preimage, ← π.coe_coe, ← comap_coe, comap_B]
   have codim_B : FiniteDimensional 𝕜 ((E ⧸ N) ⧸ B) :=
     quotientQuotientEquivQuotient N A inf_le_left |>.symm.finiteDimensional
+  set π' : A →L[𝕜] B :=
+    ⟨π.restrict A_mapsTo_B, π.continuous.restrict A_mapsTo_B⟩
+  have π'_quot : IsOpenQuotientMap π' := by
+    let φ : (N.mkQL ⁻¹' B) ≃ₜ A := .setCongr congr(SetLike.coe $comap_B)
+    exact N.isOpenQuotientMap_mkQL.restrictPreimage B |>.comp
+      φ.symm.isOpenQuotientMap
+  have v_comp_π'_eq_u : restrict B v ∘ π' = restrict A u := rfl
+  have h_ker : Disjoint v.ker B :=
+    sorry
+  have h_inj : Injective (restrict B v) :=
+    sorry
   have range_eq : range v = range u := range_quot_lift _
-  have image_eq : v '' B = u '' A := by simp [B, ← v_eq_u, ← image_comp]
-  rw [← range_eq, ← image_eq]
-  sorry
+  have image_eq : v '' B = u '' A := by simp [B, ← v_comp_π_eq_u, π, ← image_comp]
+  rw [← range_eq, ← image_eq, ← v_comp_π'_eq_u, ← v_comp_π_eq_u,
+    ← π_quot.isQuotientMap.isStrictMap_iff, ← π'_quot.isQuotientMap.isStrictMap_iff]
+  simp [step2 v B B_closed h_ker, isClosedEmbedding_iff, range_restrict v,
+    isEmbedding_iff_isStrictMap_injective, h_inj]
 
 end FiniteCodimSubspace
 
