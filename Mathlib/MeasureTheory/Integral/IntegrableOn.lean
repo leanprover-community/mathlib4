@@ -539,6 +539,10 @@ lemma integrableAtFilter_congr (h : f =ᵐ[μ] g) :
     IntegrableAtFilter f l μ ↔ IntegrableAtFilter g l μ :=
   ⟨(·.congr h), (·.congr h.symm)⟩
 
+@[simp]
+lemma integrableAtFilter_zero : IntegrableAtFilter (0 : α → E) l μ :=
+  ⟨univ, by simp, integrableOn_univ.mpr (integrable_zero ..)⟩
+
 protected theorem IntegrableAtFilter.add [ContinuousAdd ε'] {f g : α → ε'}
     (hf : IntegrableAtFilter f l μ) (hg : IntegrableAtFilter g l μ) :
     IntegrableAtFilter (f + g) l μ := by
@@ -552,6 +556,12 @@ protected theorem IntegrableAtFilter.neg {f : α → E} (hf : IntegrableAtFilter
   rcases hf with ⟨s, sl, hs⟩
   exact ⟨s, sl, hs.neg⟩
 
+@[simp]
+protected theorem integrableAtFilter_neg_iff {f : α → E} :
+    IntegrableAtFilter (-f) l μ ↔ IntegrableAtFilter f l μ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h.neg⟩
+  convert h.neg; simp
+
 protected theorem IntegrableAtFilter.sub {f g : α → E}
     (hf : IntegrableAtFilter f l μ) (hg : IntegrableAtFilter g l μ) :
     IntegrableAtFilter (f - g) l μ := by
@@ -563,6 +573,21 @@ protected theorem IntegrableAtFilter.smul {𝕜 : Type*} [NormedAddCommGroup �
     IntegrableAtFilter (c • f) l μ := by
   rcases hf with ⟨s, sl, hs⟩
   exact ⟨s, sl, hs.smul c⟩
+
+-- See `integrableAtFilter_smul_iff` below for the fully general version.
+private theorem integrableAtFilter_smul_iff' {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
+    {f : α → E} {c : 𝕜} (hc : c ≠ 0) :
+    IntegrableAtFilter (c • f) l μ ↔ IntegrableAtFilter f l μ := by
+  refine ⟨fun hf ↦ ?_, fun h ↦ h.smul c⟩
+  convert hf.smul c⁻¹
+  simp [← smul_assoc, inv_mul_cancel₀ hc]
+
+theorem integrableAtFilter_smul_iff {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
+    {f : α → E} (c : 𝕜) :
+    IntegrableAtFilter (c • f) l μ ↔ c = 0 ∨ IntegrableAtFilter f l μ := by
+  by_cases hc : c = 0
+  · simp [hc]
+  · simpa [hc] using MeasureTheory.integrableAtFilter_smul_iff' hc
 
 protected theorem IntegrableAtFilter.enorm (hf : IntegrableAtFilter f l μ) :
     IntegrableAtFilter (fun x => ‖f x‖ₑ) l μ :=
