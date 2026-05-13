@@ -164,16 +164,17 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict (u : 
     exact N.isOpenQuotientMap_mkQL.restrictPreimage B |>.comp
       φ.symm.isOpenQuotientMap
   have v_comp_π'_eq_u : restrict B v ∘ π' = restrict A u := rfl
-  have h_ker : Disjoint v.ker B :=
-    sorry
-  have h_inj : Injective (restrict B v) :=
-    sorry
+  have v_ker : Disjoint v.ker B := by
+    simp [disjoint_iff, v, B, toLinearMap_liftQL, ker_liftQ,
+      map_inf_eq_map_inf_comap, comap_map_mkQ, N, inf_comm]
+  have v_restr_inj : Injective (restrict B v) :=
+    injOn_iff_injective.mp <| LinearMap.injOn_of_disjoint_ker subset_rfl v_ker.symm
   have range_eq : range v = range u := range_quot_lift _
   have image_eq : v '' B = u '' A := by simp [B, ← v_comp_π_eq_u, π, ← image_comp]
   rw [← range_eq, ← image_eq, ← v_comp_π'_eq_u, ← v_comp_π_eq_u,
     ← π_quot.isQuotientMap.isStrictMap_iff, ← π'_quot.isQuotientMap.isStrictMap_iff]
-  simp [step2 v B B_closed h_ker, isClosedEmbedding_iff, range_restrict v,
-    isEmbedding_iff_isStrictMap_injective, h_inj]
+  simp [step2 v B B_closed v_ker, isClosedEmbedding_iff, range_restrict v,
+    isEmbedding_iff_isStrictMap_injective, v_restr_inj]
 
 end FiniteCodimSubspace
 
