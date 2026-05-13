@@ -99,7 +99,7 @@ theorem apply_aeval_eq [IsScalarTower R A B] [IsScalarTower A B M'] (d : Derivat
     (x : B) (p : A[X]) :
     d (aeval x p) = PolynomialModule.eval x ((d.compAlgebraMap A).mapCoeffs p) +
       aeval x (derivative p) • d x := by
-  convert! apply_aeval_eq' (d.compAlgebraMap A) d LinearMap.id _ x p
+  convert apply_aeval_eq' (d.compAlgebraMap A) d LinearMap.id _ x p
   · apply Finsupp.ext
     intro x
     rfl

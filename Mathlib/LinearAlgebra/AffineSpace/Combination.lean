@@ -432,7 +432,7 @@ theorem affineCombination_of_eq_one_of_eq_zero (w : ι → k) (p : ι → P) {i 
   have h1 : ∑ i ∈ s, w i = 1 := hwi ▸ sum_eq_single i hw0 fun h => False.elim (h his)
   rw [s.affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one w p h1 (p i),
     weightedVSubOfPoint_apply]
-  convert! zero_vadd V (p i)
+  convert zero_vadd V (p i)
   refine sum_eq_zero ?_
   intro i2 hi2
   by_cases h : i2 = i
@@ -906,7 +906,7 @@ lemma affineCombination_mem_affineSpan_image [Nontrivial k] {s : Finset ι} {w :
     simp only [Finset.mem_sdiff, Finset.mem_filter, not_and] at hi
     exact hs' i hi.1 (hi.2 hi.1)
   rw [← Finset.sum_subtype_eq_sum_filter] at h'
-  convert! affineCombination_mem_affineSpan h' (fun x ↦ p x)
+  convert affineCombination_mem_affineSpan h' (fun x ↦ p x)
   rw [Finset.affineCombination_subtype_eq_filter, Finset.affineCombination_indicator_subset w p
     (Finset.filter_subset _ _)]
   refine Finset.affineCombination_congr _ (fun i hi ↦ ?_) (fun _ _ ↦ rfl)

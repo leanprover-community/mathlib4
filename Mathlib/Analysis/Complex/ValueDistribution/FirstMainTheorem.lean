@@ -147,7 +147,7 @@ theorem abs_characteristic_sub_characteristic_shift_le {r : ℝ} (h : Meromorphi
         using (posLog_norm_add_le (f θ - a₀) a₀)
     · simp only [abs_of_nonpos (le_of_not_ge h), neg_sub, tsub_le_iff_right,
         add_comm (log⁺ ‖a₀‖ + log 2), ← add_assoc]
-      convert! posLog_norm_add_le (-f θ) (a₀) using 2
+      convert posLog_norm_add_le (-f θ) (a₀) using 2
       · rw [← norm_neg]
         abel_nf
       · simp

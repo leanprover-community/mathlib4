@@ -290,7 +290,7 @@ theorem iterated_kk (h₁ : (𝒜 : Set (Finset (Fin n))).Sized r) (h₂ : #𝒞
   | zero => simpa
   | succ _ ih =>
     refine ih h₁.shadow (kruskal_katona h₁ h₂ h₃) ?_
-    convert! h₃.shadow
+    convert h₃.shadow
 
 /-- The **Lovasz formulation of the Kruskal-Katona theorem**.
 
@@ -350,7 +350,7 @@ theorem erdos_ko_rado {𝒜 : Finset (Finset (Fin n))} {r : ℕ}
     #𝒜 ≤ (n - 1).choose (r - 1) := by
   -- Take care of the r=0 case first: it's not very interesting.
   rcases Nat.eq_zero_or_pos r with b | h1r
-  · convert! Nat.zero_le _
+  · convert Nat.zero_le _
     rw [Finset.card_eq_zero, eq_empty_iff_forall_notMem]
     refine fun A HA ↦ h𝒜 HA HA ?_
     rw [disjoint_self_iff_empty, ← Finset.card_eq_zero, ← b]
@@ -377,7 +377,7 @@ theorem erdos_ko_rado {𝒜 : Finset (Finset (Fin n))} {r : ℕ}
   -- But this gives a contradiction: `n choose r < |𝒜| + |∂^[n-2k] 𝒜ᶜˢ|`
   have := calc
     n.choose r = (n - 1).choose (r - 1) + (n - 1).choose r := by
-      convert! Nat.choose_succ_succ _ _ using 3 <;> rwa [Nat.sub_one, Nat.succ_pred_eq_of_pos]
+      convert Nat.choose_succ_succ _ _ using 3 <;> rwa [Nat.sub_one, Nat.succ_pred_eq_of_pos]
     _ < #𝒜 + #(∂^[n - 2 * r] 𝒜ᶜˢ) := add_lt_add_of_lt_of_le size kk
     _ = #(𝒜 ∪ ∂^[n - 2 * r] 𝒜ᶜˢ) := by rw [card_union_of_disjoint ‹_›]
   apply this.not_ge
@@ -385,7 +385,7 @@ theorem erdos_ko_rado {𝒜 : Finset (Finset (Fin n))} {r : ℕ}
   · rw [Fintype.card_fin]
   rw [coe_union, Set.sized_union]
   refine ⟨‹_›, ?_⟩
-  convert! h𝒜bar.shadow_iterate
+  convert h𝒜bar.shadow_iterate
   lia
 
 end Finset

@@ -254,7 +254,7 @@ theorem integral_compProd :
     simp_rw [integral_add' i_f i_g, Kernel.integral_integral_add' i_f i_g, hf, hg]
   · exact isClosed_eq continuous_integral Kernel.continuous_integral_integral
   · intro f g hfg _ hf
-    convert! hf using 1
+    convert hf using 1
     · exact integral_congr_ae hfg.symm
     · apply integral_congr_ae
       filter_upwards [ae_ae_of_ae_compProd hfg] with x hfgx using
@@ -429,7 +429,7 @@ theorem integral_comp : ∀ {f : γ → E} (_ : Integrable f ((η ∘ₖ κ) a))
     simp_rw [integral_add' i_f i_g, integral_integral_add'_comp i_f i_g, hf, hg]
   · exact isClosed_eq continuous_integral Kernel.continuous_integral_integral_comp
   · rintro f g hfg - hf
-    convert! hf using 1
+    convert hf using 1
     · exact integral_congr_ae hfg.symm
     · apply integral_congr_ae
       filter_upwards [ae_ae_of_ae_comp hfg] with x hfgx using integral_congr_ae (ae_eq_symm hfgx)

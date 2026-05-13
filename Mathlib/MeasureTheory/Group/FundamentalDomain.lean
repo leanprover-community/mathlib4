@@ -818,7 +818,7 @@ theorem IsFundamentalDomain.quotientMeasureEqMeasurePreimage_of_zero
   apply fund_dom_s.quotientMeasureEqMeasurePreimage
   ext U meas_U
   simp only [Measure.coe_zero, Pi.zero_apply]
-  convert! (measure_inter_null_of_null_right (h := vol_s) (Quotient.mk α_mod_G ⁻¹' U)).symm
+  convert (measure_inter_null_of_null_right (h := vol_s) (Quotient.mk α_mod_G ⁻¹' U)).symm
   rw [measure_map_restrict_apply (meas_U := meas_U)]
 
 /-- If a measure `μ` on a quotient satisfies `QuotientMeasureEqMeasurePreimage` with respect to a
@@ -857,7 +857,7 @@ theorem QuotientMeasureEqMeasurePreimage.isFiniteMeasure_quotient
   rw [h𝓕.projection_respects_measure (μ := μ)]
   have : Fact (ν 𝓕 < ∞) := by
     apply Fact.mk
-    convert! Ne.lt_top h
+    convert Ne.lt_top h
     exact (h𝓕.covolume_eq_volume ν).symm
   infer_instance
 

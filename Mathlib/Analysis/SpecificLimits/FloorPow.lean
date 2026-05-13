@@ -203,7 +203,7 @@ theorem tendsto_div_of_monotone_of_tendsto_div_floor_pow (u : ℕ → ℝ) (l : 
       exact tendsto_pow_atTop_atTop_of_one_lt (cone k)
   have B : Tendsto (fun n : ℕ => (⌊c k ^ (n + 1)⌋₊ : ℝ) / ⌊c k ^ n⌋₊) atTop (𝓝 (c k)) := by
     simp only [one_mul, div_one] at A
-    convert! A using 1
+    convert A using 1
     ext1 n
     field [(zero_lt_one.trans (cone k)).ne']
   filter_upwards [(tendsto_order.1 B).2 a hk] with n hn

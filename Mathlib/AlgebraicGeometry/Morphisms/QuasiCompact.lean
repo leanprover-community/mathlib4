@@ -267,7 +267,7 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
   swap
   · change (X.presheaf.map (homOfLE _).op) ((X.presheaf.map (homOfLE _).op).hom x) = 0
     have H : (X.presheaf.map (homOfLE _).op) x = 0 := H
-    convert! congr_arg (X.presheaf.map (homOfLE _).op).hom H
+    convert congr_arg (X.presheaf.map (homOfLE _).op).hom H
     · simp only [← CommRingCat.comp_apply, ← Functor.map_comp]
       · rfl
     · rw [map_zero]

@@ -129,7 +129,7 @@ instance : Mono (coequalizer.desc f pullback.condition) := by
     infer_instance
   -- We precompose with the epimorphism `g₁ ≫ pullback.snd e k₁`, and finish
   rw [← cancel_epi (g₁ ≫ pullback.snd e k₁)]
-  convert! coequalizer.condition (pullback.fst f f) (pullback.snd f f) using 1
+  convert coequalizer.condition (pullback.fst f f) (pullback.snd f f) using 1
   all_goals cat_disch
 
 set_option backward.isDefEq.respectTransparency false in

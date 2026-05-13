@@ -638,7 +638,7 @@ namespace Normal
 @[to_additive]
 theorem conj_mem' (nH : H.Normal) (n : G) (hn : n ∈ H) (g : G) :
     g⁻¹ * n * g ∈ H := by
-  convert! nH.conj_mem n hn g⁻¹
+  convert nH.conj_mem n hn g⁻¹
   rw [inv_inv]
 
 @[to_additive]

@@ -180,7 +180,7 @@ lemma derivative_det_one_add_X_smul (M : Matrix n n R) :
     (derivative <| det (1 + (X : R[X]) • M.map C)).eval 0 = trace M := by
   let e := Matrix.reindexLinearEquiv R R (Fintype.equivFin n) (Fintype.equivFin n)
   rw [← Matrix.det_reindexLinearEquiv_self R[X] (Fintype.equivFin n)]
-  convert! derivative_det_one_add_X_smul_aux (e M)
+  convert derivative_det_one_add_X_smul_aux (e M)
   · ext; simp [map_add, e]
   · delta trace
     rw [← (Fintype.equivFin n).symm.sum_comp]
@@ -197,7 +197,7 @@ lemma det_one_add_X_smul (M : Matrix n n R) :
   rw [Algebra.smul_def (trace M), ← C_eq_algebraMap, pow_two, ← mul_assoc, add_assoc,
     ← add_mul, ← coeff_det_one_add_X_smul_one, ← coeff_divX, add_comm (C _), divX_mul_X_add,
     add_comm (1 : R[X]), ← C.map_one]
-  convert! (divX_mul_X_add _).symm
+  convert (divX_mul_X_add _).symm
   rw [coeff_zero_eq_eval_zero, eval_det_add_X_smul, det_one, eval_one]
 
 /-- The first two terms of the Taylor expansion of `det (1 + r • M)` at `r = 0`. -/
@@ -340,7 +340,7 @@ lemma isUnit_charpolyRev_of_isNilpotent (hM : IsNilpotent M) :
     IsUnit M.charpolyRev := by
   obtain ⟨k, hk⟩ := hM
   replace hk : 1 - (X : R[X]) • M.map C ∣ 1 := by
-    convert! one_sub_dvd_one_sub_pow ((X : R[X]) • M.map C) k
+    convert one_sub_dvd_one_sub_pow ((X : R[X]) • M.map C) k
     rw [← C.mapMatrix_apply, smul_pow, ← map_pow, hk, map_zero, smul_zero, sub_zero]
   apply isUnit_of_dvd_one
   rw [← det_one (R := R[X]) (n := n)]

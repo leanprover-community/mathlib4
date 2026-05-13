@@ -179,9 +179,10 @@ theorem IsUniversalColimit.whiskerEquivalence {K : Type*} [Category* K] (e : J �
     {F : K ⥤ C} {c : Cocone F} (hc : IsUniversalColimit c) :
     IsUniversalColimit (c.whisker e.functor) := by
   intro F' c' α f e' hα H
-  convert!
+  convert
     hc (c'.whisker e.inverse) (whiskerLeft e.inverse α ≫ (e.invFunIdAssoc F).hom) f ?_
-      ((hα.whiskerLeft _).comp (.of_isIso _)) ?_ using 1
+      ((hα.whiskerLeft _).comp (.of_isIso _)) ?_ using
+    1
   · exact (IsColimit.whiskerEquivalenceEquiv e.symm).nonempty_congr
   · convert! congr_arg (whiskerLeft e.inverse) e'
     ext
@@ -202,9 +203,10 @@ theorem IsVanKampenColimit.whiskerEquivalence {K : Type*} [Category* K] (e : J �
     {F : K ⥤ C} {c : Cocone F} (hc : IsVanKampenColimit c) :
     IsVanKampenColimit (c.whisker e.functor) := by
   intro F' c' α f e' hα
-  convert!
+  convert
     hc (c'.whisker e.inverse) (whiskerLeft e.inverse α ≫ (e.invFunIdAssoc F).hom) f ?_
-      ((hα.whiskerLeft _).comp (.of_isIso _)) using 1
+      ((hα.whiskerLeft _).comp (.of_isIso _)) using
+    1
   · exact (IsColimit.whiskerEquivalenceEquiv e.symm).nonempty_congr
   · simp only [Functor.const_obj_obj, Functor.comp_obj, Cocone.whisker_pt, Cocone.whisker_ι,
       whiskerLeft_app, NatTrans.comp_app, Equivalence.invFunIdAssoc_hom_app, Functor.id_obj]

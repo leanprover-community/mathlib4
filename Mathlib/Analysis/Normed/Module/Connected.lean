@@ -101,12 +101,12 @@ theorem Set.Countable.isPathConnected_compl_of_one_lt_rank
   have JA : JoinedIn sᶜ a z := by
     apply JoinedIn.of_segment_subset
     rw [subset_compl_iff_disjoint_right, disjoint_iff_inter_eq_empty]
-    convert! ht.2
+    convert ht.2
     exact Ia.symm
   have JB : JoinedIn sᶜ b z := by
     apply JoinedIn.of_segment_subset
     rw [subset_compl_iff_disjoint_right, disjoint_iff_inter_eq_empty]
-    convert! ht.1
+    convert ht.1
     exact Ib.symm
   exact JA.trans JB.symm
 

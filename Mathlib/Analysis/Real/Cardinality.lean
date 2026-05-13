@@ -136,7 +136,7 @@ theorem increasing_cantorFunction (h1 : 0 < c) (h2 : c < 1 / 2) {n : ℕ} {f g :
     refine lt_of_lt_of_le ?_ (cantorFunction_le (le_of_lt h1) h3 hg_min)
     have : c / (1 - c) < 1 := by
       rw [div_lt_one, lt_sub_iff_add_lt]
-      · convert! _root_.add_lt_add h2 h2
+      · convert _root_.add_lt_add h2 h2
         norm_num
       rwa [sub_pos]
     convert! this
@@ -212,12 +212,12 @@ theorem mk_Ioi_real (a : ℝ) : #(Ioi a) = 𝔠 := by
   intro h
   refine _root_.ne_of_lt ?_ mk_univ_real
   have hu : Iio a ∪ {a} ∪ Ioi a = Set.univ := by
-    convert! @Iic_union_Ioi ℝ _ _
+    convert @Iic_union_Ioi ℝ _ _
     exact Iio_union_right
   rw [← hu]
   grw [mk_union_le, mk_union_le]
   have h2 : (fun x => a + a - x) '' Ioi a = Iio a := by
-    convert! @image_const_sub_Ioi ℝ _ _ _
+    convert @image_const_sub_Ioi ℝ _ _ _
     simp
   rw [← h2]
   refine add_lt_of_lt (cantor _).le ?_ h

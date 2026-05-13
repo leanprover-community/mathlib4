@@ -53,7 +53,7 @@ private lemma rot_coprime
   rw [add_eq_zero_iff_neg_eq] at heq
   rw [← IsCoprime.pow_iff hq.bot_lt hr.bot_lt, ← isCoprime_mul_units_left hCv hCw,
     ← heq, IsCoprime.neg_right_iff]
-  convert! IsCoprime.add_mul_left_right hab.symm 1 using 2
+  convert IsCoprime.add_mul_left_right hab.symm 1 using 2
   rw [mul_one]
 
 private lemma ineq_pqr_contradiction {p q r a b c : ℕ}

@@ -76,7 +76,7 @@ lemma starAlgHom_id {a : A} {φ : C(spectrum S a, S) →⋆ₐ[S] A} {f : C(S, R
     (h : SpectrumRestricts a f) (h_id : φ (.restrict (spectrum S a) <| .id S) = a) :
     h.starAlgHom φ (.restrict (spectrum R a) <| .id R) = a := by
   simp only [SpectrumRestricts.starAlgHom_apply]
-  convert! h_id
+  convert h_id
   ext x
   exact h.rightInvOn x.2
 
@@ -239,7 +239,7 @@ lemma nonUnitalStarAlgHom_id {a : A} {φ : C(σₙ S a, S)₀ →⋆ₙₐ[S] A}
     (h : QuasispectrumRestricts a f) (h_id : φ (.id _) = a) :
     h.nonUnitalStarAlgHom φ (.id _) = a := by
   simp only [QuasispectrumRestricts.nonUnitalStarAlgHom_apply]
-  convert! h_id
+  convert h_id
   ext x
   exact h.rightInvOn x.2
 

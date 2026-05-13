@@ -136,7 +136,7 @@ def basicOpen {U : Opens X} (f : X.presheaf.obj (op U)) : Opens X where
     refine ⟨?_, V.2, hxV⟩
     intro y hy
     use i.le hy
-    convert! RingHom.isUnit_map (X.presheaf.germ _ y hy).hom hf
+    convert RingHom.isUnit_map (X.presheaf.germ _ y hy).hom hf
     exact (X.presheaf.germ_res_apply i y hy f).symm
 
 theorem mem_basicOpen {U : Opens X} (f : X.presheaf.obj (op U)) (x : X) (hx : x ∈ U) :
@@ -162,7 +162,7 @@ theorem isUnit_res_basicOpen {U : Opens X} (f : X.presheaf.obj (op U)) :
     IsUnit (X.presheaf.map (@homOfLE (Opens X) _ _ _ (X.basicOpen_le f)).op f) := by
   apply isUnit_of_isUnit_germ
   rintro x ⟨hxU, hx⟩
-  convert! hx
+  convert hx
   exact X.presheaf.germ_res_apply _ _ _ _
 
 @[simp]

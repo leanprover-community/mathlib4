@@ -54,7 +54,7 @@ theorem integrable_prod_sub (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {f₁ : E
   have : Integrable (fun x ↦ ((∫ y, ‖f₁ y‖) * ‖f₂ x‖)) := by
     apply hf₂.norm.bdd_mul (by fun_prop) (c := ‖(∫ y, ‖f₁ y‖)‖)
     filter_upwards with; rfl
-  convert! this using 1
+  convert this using 1
   ext x
   simp_rw [norm_mul, norm_norm]
   rw [integral_mul_const]

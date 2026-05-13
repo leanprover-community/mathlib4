@@ -411,7 +411,7 @@ theorem exists_nonempty_inter_of_measureReal_univ_lt_sum_measureReal [IsFiniteMe
     (fun i mi ↦ (h i mi).nullMeasurableSet)
   simp only [Measure.real] at H
   apply (ENNReal.toReal_lt_toReal (by finiteness) _).1
-  · convert! H
+  · convert H
     rw [ENNReal.toReal_sum (by finiteness)]
   · exact (ENNReal.sum_lt_top.mpr (fun i hi ↦ measure_lt_top ..)).ne
 

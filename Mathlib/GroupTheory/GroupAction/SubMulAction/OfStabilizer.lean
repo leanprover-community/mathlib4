@@ -232,7 +232,7 @@ variable (G : Type*) [Group G] (α : Type*) [MulAction G α]
 instance _root_.SMul.ofStabilizer (s : Set α) :
     SMul (stabilizer G s) s where
   smul g x := ⟨g • ↑x, by
-    convert! Set.smul_mem_smul_set x.prop
+    convert Set.smul_mem_smul_set x.prop
     exact (mem_stabilizer_iff.mp g.prop).symm⟩
 
 @[simp]

@@ -67,10 +67,25 @@ class IsConvexDist [inst₁ : ConvexSpace ℝ X] [inst₂ : MetricSpace X] : Pro
 variable [ConvexSpace ℝ X] [MetricSpace X] [IsConvexDist X]
 
 /-- `dist(∑ tᵢ xᵢ, ∑ tᵢ yᵢ) ≤ ∑ tᵢ dist(xᵢ, yᵢ)` -/
-lemma dist_iConvexComb_le {ι : Type*} (f : StdSimplex ℝ ι) (x y : ι → X) :
-    dist (f.iConvexComb x) (f.iConvexComb y) ≤ f.iConvexComb fun i ↦ dist (x i) (y i) := by
-  simpa [iConvexComb_map, Finsupp.sum_mapDomain_index, add_mul]
-    using IsConvexDist.dist_iConvexComb_fst_snd_le (f.map fun i ↦ (x i, y i))
+lemma dist_convexCombination_map_le {ι : Type*} (f : StdSimplex ℝ ι) (x y : ι → X) :
+    dist (convexCombination (f.map x)) (convexCombination (f.map y)) ≤
+      f.weights.sum fun i r ↦ r * dist (x i) (y i) := by
+  classical
+  let e : ι → ℕ := Function.extend (↑) (f.support.equivFin ·) 0
+  have he (x : _) (hx : x ∈ f.support) : e x = ↑(f.support.equivFin ⟨x, hx⟩) :=
+      Function.Injective.extend_apply Subtype.val_injective _ _ ⟨x, hx⟩
+  let einv : ℕ → ι := Function.extend (↑) (f.support.equivFin.symm ·) (fun _ ↦ f.nonempty.some)
+  have H (x : _) (hx : x ∈ f.support) : einv (e x) = x := by simp [he, hx, einv, Fin.val_injective]
+  convert IsConvexMetricSpace.dist_convexCombination_map_le' (f.map e) (x ∘ einv) (y ∘ einv) using 3
+  · ext1
+    simp only [StdSimplex.map, ← Finsupp.mapDomain_comp]
+    exact Finsupp.mapDomain_congr fun x hx ↦ by simp [H, hx]
+  · ext1
+    simp only [StdSimplex.map, ← Finsupp.mapDomain_comp]
+    exact Finsupp.mapDomain_congr fun x hx ↦ by simp [H, hx]
+  · simp only [StdSimplex.map, Function.comp_apply, zero_mul, implies_true, add_mul,
+      Finsupp.sum_mapDomain_index]
+    exact Finsupp.sum_congr fun x hx ↦ by simp [H, hx]
 
 @[deprecated (since := "2026-05-15")] alias dist_convexCombination_right_le := dist_iConvexComb_le
 
@@ -145,8 +160,8 @@ lemma dist_convexCombPair_convexCombPair
   { weights := Finsupp.equivFunOnFinite.symm ![s', s - s', t]
     nonneg i := by fin_cases i <;> simp [*]
     total := by simp [Finsupp.sum_fintype, Fin.sum_univ_succ, ← add_assoc, h] }
-  convert dist_iConvexComb_le f ![x, x, y] ![x, y, y] using 1
-  swap; · simp [Finsupp.sum_fintype, Fin.sum_univ_succ, f, hss', iConvexComb_eq_sum]
+  convert dist_convexCombination_map_le f ![x, x, y] ![x, y, y] using 1
+  swap; · simp [Finsupp.sum_fintype, Fin.sum_univ_succ, f, hss']
   congr 1
   · delta convexCombPair
     congr 1
@@ -167,10 +182,10 @@ lemma dist_convexCombPair_convexCombPair_le
     {s t : ℝ} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) (x y x' y' : X) :
     dist (convexCombPair s t hs ht h x y) (convexCombPair s t hs ht h x' y') ≤
       s * dist x x' + t * dist y y' := by
-  convert dist_iConvexComb_le (.duple (M := Fin 2) 0 1 hs ht h) ![x, y] ![x', y']
-  · simp [convexCombPair_def]
-  · simp [convexCombPair_def]
-  · simp [Finsupp.sum_fintype, Fin.sum_univ_succ, StdSimplex.duple, iConvexComb_eq_sum]
+  convert dist_convexCombination_map_le (.duple (M := Fin 2) 0 1 hs ht h) ![x, y] ![x', y']
+  · simp [convexComboPair]
+  · simp [convexComboPair]
+  · simp [Finsupp.sum_fintype, Fin.sum_univ_succ, StdSimplex.duple]
 
 /-- The convex combination `(t, p, q) ↦ t • p + (1 - t) • q` is continuous on `[0, 1] × X × X`
 for a convex metric space `X`. -/

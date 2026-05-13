@@ -740,7 +740,7 @@ set_option linter.deprecated false in
 @[deprecated "no replacement" (since := "2026-03-30")]
 theorem convexHull_toCone_isLeast (s : Set M) :
     IsLeast { t : ConvexCone 𝕜 M | s ⊆ t } ((convex_convexHull 𝕜 s).toCone _) := by
-  convert! (convex_convexHull 𝕜 s).toCone_isLeast using 1
+  convert (convex_convexHull 𝕜 s).toCone_isLeast using 1
   ext t
   exact ⟨fun h => convexHull_min h t.convex, (subset_convexHull 𝕜 s).trans⟩
 

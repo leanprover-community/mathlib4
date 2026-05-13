@@ -110,10 +110,10 @@ theorem locally_surjective_iff_surjective_on_stalks (T : ℱ ⟶ 𝒢) :
     have key_W := 𝒢.germ_eq x hxV hxU (T.app _ s) t <| by
       convert! hs_x using 1
       symm
-      convert! stalkFunctor_map_germ_apply _ _ _ _ s
+      convert stalkFunctor_map_germ_apply _ _ _ _ s
     obtain ⟨W, hxW, hWV, hWU, h_eq⟩ := key_W
     refine ⟨W, hWU, ⟨ℱ.map hWV.op s, ?_⟩, hxW⟩
-    convert! h_eq using 1
+    convert h_eq using 1
     simp only [← ConcreteCategory.comp_apply, T.naturality]
 
 end SurjectiveOnStalks

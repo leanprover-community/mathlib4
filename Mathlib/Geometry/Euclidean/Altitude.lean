@@ -348,7 +348,7 @@ lemma abs_inner_vsub_altitudeFoot_lt_mul {i j : Fin (n + 1)} (hij : i ≠ j) :
           simp_rw [← Set.image_univ, ← Set.compl_inter]
           rw [Set.inter_singleton_eq_empty.mpr ?_, Set.compl_empty]
           simpa using hij.symm
-        convert! AffineSubspace.vectorSpan_union_of_mem_of_mem ℝ hki' hkj'
+        convert AffineSubspace.vectorSpan_union_of_mem_of_mem ℝ hki' hkj'
       rw [hs, ← Submodule.inf_orthogonal, Submodule.mem_inf]
       refine ⟨?_, ?_⟩
       · rw [h, ← direction_affineSpan]

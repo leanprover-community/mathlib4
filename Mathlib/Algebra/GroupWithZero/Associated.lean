@@ -173,7 +173,7 @@ theorem Associated.mul_mul [CommMonoid M] {a₁ a₂ b₁ b₂ : M}
 theorem Associated.pow_pow [CommMonoid M] {a b : M} {n : ℕ} (h : a ~ᵤ b) : a ^ n ~ᵤ b ^ n := by
   induction n with
   | zero => simp [Associated.refl]
-  | succ n ih => convert! h.mul_mul ih <;> rw [pow_succ']
+  | succ n ih => convert h.mul_mul ih <;> rw [pow_succ']
 
 protected theorem Associated.dvd [Monoid M] {a b : M} : a ~ᵤ b → a ∣ b := fun ⟨u, hu⟩ =>
   ⟨u, hu.symm⟩

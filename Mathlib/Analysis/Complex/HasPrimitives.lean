@@ -70,12 +70,12 @@ private lemma mem_closedBall_aux (z_in_ball : z ∈ closedBall c r) (y_in_I : y 
 
 private lemma mem_ball_of_map_re_aux {a₁ a₂ b : ℝ} (ha₁ : a₁ + b * I ∈ ball c r)
     (ha₂ : a₂ + b * I ∈ ball c r) : (fun (x : ℝ) ↦ x + b * I) '' [[a₁, a₂]] ⊆ ball c r := by
-  convert! Convex.rectangle_subset (convex_ball c r) ha₁ ha₂ ?_ ?_ using 1 <;>
+  convert Convex.rectangle_subset (convex_ball c r) ha₁ ha₂ ?_ ?_ using 1 <;>
   simp [horizontalSegment_eq a₁ a₂ b, ha₁, ha₂, Rectangle]
 
 private lemma mem_ball_of_map_im_aux₁ {a b₁ b₂ : ℝ} (hb₁ : a + b₁ * I ∈ ball c r)
     (hb₂ : a + b₂ * I ∈ ball c r) : (fun (y : ℝ) ↦ a + y * I) '' [[b₁, b₂]] ⊆ ball c r := by
-  convert! Convex.rectangle_subset (convex_ball c r) hb₁ hb₂ ?_ ?_ using 1 <;>
+  convert Convex.rectangle_subset (convex_ball c r) hb₁ hb₂ ?_ ?_ using 1 <;>
   simp [verticalSegment_eq a b₁ b₂, hb₁, hb₂, Rectangle]
 
 private lemma mem_ball_of_map_im_aux₂ {w : ℂ} (hw : w ∈ ball z (r - dist z c)) :

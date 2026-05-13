@@ -228,7 +228,7 @@ lemma prob_compl_lt_one_sub_of_lt_prob {p : ℝ≥0∞} (hμs : p < μ s) (s_mbl
   · simp at hμs
   · rw [prob_compl_eq_one_sub s_mble]
     apply ENNReal.sub_lt_of_sub_lt prob_le_one (Or.inl one_ne_top)
-    convert! hμs
+    convert hμs
     exact ENNReal.sub_sub_cancel one_ne_top (lt_of_lt_of_le hμs prob_le_one).le
 
 lemma prob_compl_le_one_sub_of_le_prob {p : ℝ≥0∞} (hμs : p ≤ μ s) (s_mble : MeasurableSet s) :

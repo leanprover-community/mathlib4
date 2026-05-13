@@ -54,7 +54,7 @@ instance (priority := 900) {M : Type*} [GroupWithZero M]
     [TopologicalSpace M] [ContinuousInv₀ M] [T1Space M] : IsOpenUnits M where
   isOpenEmbedding_unitsVal := by
     refine ⟨Units.isEmbedding_val₀, ?_⟩
-    convert! (isClosed_singleton (X := M) (x := 0)).isOpen_compl
+    convert (isClosed_singleton (X := M) (x := 0)).isOpen_compl
     ext
     simp only [Set.mem_range, Set.mem_compl_iff, Set.mem_singleton_iff]
     exact isUnit_iff_ne_zero

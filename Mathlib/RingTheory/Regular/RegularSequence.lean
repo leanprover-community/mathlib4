@@ -162,7 +162,7 @@ private lemma _root_.AddHom.map_smul_top_toAddSubgroup_of_surjective
       (Ideal.ofList bs • ⊤ : Submodule S M₂).toAddSubgroup := by
   induction h with
   | nil =>
-    convert! AddSubgroup.map_bot f using 1 <;>
+    convert AddSubgroup.map_bot f using 1 <;>
       rw [Ideal.ofList_nil, bot_smul, bot_toAddSubgroup]
   | @cons r s _ _ h _ ih =>
     conv => congr <;> rw [Ideal.ofList_cons, sup_smul, sup_toAddSubgroup,

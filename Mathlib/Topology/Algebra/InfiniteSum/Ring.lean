@@ -328,7 +328,7 @@ theorem tprod_one_add_ordered [ContinuousAdd α]
   · simp
   obtain ⟨x, hx⟩ := hprod
   obtain ⟨a, ha⟩ := hsum
-  convert! hx.tprod_eq
+  convert hx.tprod_eq
   unfold HasProd at hx
   conv at hx in fun _ ↦ _ => ext _; rw [prod_one_add_ordered] -- simp_rw would cause loop
   rw [ha.tsum_eq]

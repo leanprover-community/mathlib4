@@ -90,7 +90,7 @@ set_option backward.isDefEq.respectTransparency false in
 instance : IsLocalization.Away D.gbar S := by
   refine .of_surjective_of_isScalarTower (n := 1) ?_ ?_ _ ?_ (by simpa using D.hg)
   · refine .of_comp (g := algebraMap P.Ring D.T) ?_
-    convert! P.algebraMap_surjective
+    convert P.algebraMap_surjective
     ext x
     exact (IsScalarTower.algebraMap_apply _ D.T S x).symm
   · simp [T, Ideal.Quotient.mk_surjective]
@@ -297,7 +297,7 @@ public lemma exists_presentation_of_basis_cotangent [Algebra.FinitePresentation 
   have hJfg : P.ker.FG := by
     rw [P.ker_eq_ker_aeval_val]
     apply FinitePresentation.ker_fG_of_surjective
-    convert! P.algebraMap_surjective
+    convert P.algebraMap_surjective
     simp [P.algebraMap_eq]
   have hJ : J ≤ P.ker := by simp [J, Ideal.span_le, Set.range_subset_iff]
   suffices hJ : P.ker ≤ J ⊔ P.ker • P.ker by

@@ -433,7 +433,7 @@ lemma leIdeal_v_le_of_mem {K : Type*} [Field K] (v : Valuation K Γ₀)
   · simp
   intro y hy
   have : v ((y : K) / x) ≤ 1 := by simpa using div_le_one_of_le₀ hy zero_le'
-  convert! I.smul_mem ⟨_, this⟩ hx using 1
+  convert I.smul_mem ⟨_, this⟩ hx using 1
   simp [Subtype.ext_iff, div_mul_cancel₀ _ (ZeroMemClass.coe_eq_zero.not.mpr hx0)]
 
 lemma ltIdeal_v_le_of_mem {K : Type*} [Field K] {v : Valuation K Γ₀}

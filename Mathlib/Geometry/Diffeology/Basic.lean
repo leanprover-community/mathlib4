@@ -356,7 +356,7 @@ protected theorem DSmooth.continuous' {X Y : Type*}
     [TopologicalSpace X] [DiffeologicalSpace X] [IsDTopologyCompatible X]
     [TopologicalSpace Y] [DiffeologicalSpace Y] [IsDTopologyCompatible Y]
     {f : X → Y} (hf : DSmooth f) : Continuous f := by
-  convert! hf.continuous
+  convert hf.continuous
   · rw [IsDTopologyCompatible.dTop_eq X]
   · rw [IsDTopologyCompatible.dTop_eq Y]
 

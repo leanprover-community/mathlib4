@@ -68,7 +68,7 @@ lemma isProperMap_dist (x : α) : IsProperMap (dist x) :=
 omit [ProperSpace α] in
 lemma properSpace_iff_isProperMap_dist : ProperSpace α ↔ ∀ x : α, IsProperMap (dist x) := by
   refine ⟨fun _ ↦ isProperMap_dist, fun H ↦ ⟨fun x r ↦ ?_⟩⟩
-  convert! (H x).isCompact_preimage (isCompact_closedBall 0 r)
+  convert (H x).isCompact_preimage (isCompact_closedBall 0 r)
   ext
   simp [dist_comm, Real.dist_eq]
 

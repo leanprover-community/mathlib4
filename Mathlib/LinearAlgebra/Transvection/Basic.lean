@@ -609,7 +609,7 @@ private theorem det_ofField [FiniteDimensional K V] (f : Dual K V) (v : V) :
     · simp [← hxy, hxi]
     · rw [Finsupp.single_eq_of_ne hxi]; simp [hxy]
     · rw [Finsupp.single_eq_of_ne hxy, zero_add, mul_assoc]
-      convert! mul_zero _
+      convert mul_zero _
       by_cases hxi : x = i
       · simp [← hxi, Finsupp.single_eq_of_ne hxy]
       · simp [Finsupp.single_eq_of_ne hxi]

@@ -118,7 +118,7 @@ lemma symmetricIcc_eq_symmetricIoo_int : symmetricIcc ℤ = symmetricIoo ℤ := 
   simp only [← Nat.map_cast_int_atTop, Filter.map_map, Filter.mem_map, mem_atTop_sets, ge_iff_le,
     Set.mem_preimage, comp_apply]
   refine ⟨fun ⟨a, ha⟩ ↦ ⟨a + 1, fun b hb ↦ ?_⟩, fun ⟨a, ha⟩ ↦ ⟨a - 1, fun b hb ↦ ?_⟩⟩ <;>
-  [convert! ha (b - 1) (by grind) using 1; convert! ha (b + 1) (by grind) using 1] <;>
+  [convert ha (b - 1) (by grind) using 1; convert ha (b + 1) (by grind) using 1] <;>
   simp [Finset.ext_iff] <;> grind
 
 @[to_additive]
@@ -182,7 +182,7 @@ lemma _root_.Summable.tendsto_zero_of_even_summable_symmetricIcc {F : Type*} [No
   filter_upwards [eventually_ge_atTop 1] with x hx
   have : Finset.Icc (-x) x = Icc (-(x - 1)) (x - 1) ∪ {-x, x} := by
     lift x to ℕ using by positivity
-    convert! Finset.Icc_succ_succ (x - 1) (x - 1) <;> grind
+    convert Finset.Icc_succ_succ (x - 1) (x - 1) <;> grind
   rw [this, Finset.sum_union, Finset.sum_insert, Finset.sum_singleton,
     hs x, add_comm, add_sub_cancel_right, ← two_zsmul, norm_smul, Int.norm_eq_abs,
     Int.cast_two, abs_two, inv_mul_cancel_left₀ two_ne_zero] <;>

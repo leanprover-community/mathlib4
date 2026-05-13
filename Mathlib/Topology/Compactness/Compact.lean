@@ -113,7 +113,7 @@ theorem IsCompact.image_of_continuousOn {f : X → Y} (hs : IsCompact s) (hf : C
   haveI := hx.neBot
   use f x, mem_image_of_mem f hxs
   have : Tendsto f (𝓝 x ⊓ (comap f l ⊓ 𝓟 s)) (𝓝 (f x) ⊓ l) := by
-    convert! (hf x hxs).inf (@tendsto_comap _ _ f l) using 1
+    convert (hf x hxs).inf (@tendsto_comap _ _ f l) using 1
     rw [nhdsWithin]
     ac_rfl
   exact this.neBot
@@ -160,16 +160,10 @@ lemma IsCompact.le_nhdsSet_of_clusterPt (hs : IsCompact s) {l : Filter X} {s' : 
 then the filter is less than or equal to `𝓝 y`. -/
 lemma IsCompact.le_nhds_of_unique_clusterPt (hs : IsCompact s) {l : Filter X} {y : X}
     (hmem : s ∈ l) (h : ∀ x ∈ s, ClusterPt x l → x = y) : l ≤ 𝓝 y := by
-  rw [← nhdsSet_singleton]
-  exact hs.le_nhdsSet_of_clusterPt hmem h
-
-/-- If values of `f : Y → X` belong to a compact set `s` eventually along a filter `l`
-and `s'` is the set of `MapClusterPt` for `f` along `l` in `s`,
-then `f` tends to `𝓝ˢ s'` along `l`. -/
-lemma IsCompact.tendsto_nhdsSet_of_mapClusterPt {Y} {l : Filter Y} {s' : Set X} {f : Y → X}
-    (hs : IsCompact s) (hmem : ∀ᶠ x in l, f x ∈ s) (h : ∀ x ∈ s, MapClusterPt x l f → x ∈ s') :
-    Tendsto f l (𝓝ˢ s') :=
-  hs.le_nhdsSet_of_clusterPt (mem_map.2 hmem) h
+  refine le_iff_ultrafilter.2 fun f hf ↦ ?_
+  rcases hs.ultrafilter_le_nhds' f (hf hmem) with ⟨x, hxs, hx⟩
+  convert ← hx
+  exact h x hxs (.mono (.of_le_nhds hx) hf)
 
 /-- If values of `f : Y → X` belong to a compact set `s` eventually along a filter `l`
 and `y` is a unique `MapClusterPt` for `f` along `l` in `s`,
@@ -1155,7 +1149,7 @@ theorem isCompact_pi_infinite {s : ∀ i, Set (X i)} :
 /-- **Tychonoff's theorem** formulated using `Set.pi`: product of compact sets is compact. -/
 theorem isCompact_univ_pi {s : ∀ i, Set (X i)} (h : ∀ i, IsCompact (s i)) :
     IsCompact (pi univ s) := by
-  convert! isCompact_pi_infinite h
+  convert isCompact_pi_infinite h
   simp only [← mem_univ_pi, setOf_mem_eq]
 
 instance Pi.compactSpace [∀ i, CompactSpace (X i)] : CompactSpace (∀ i, X i) :=

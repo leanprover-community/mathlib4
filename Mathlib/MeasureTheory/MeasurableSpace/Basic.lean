@@ -315,7 +315,7 @@ which takes a constant value `b ≠ 0` on a set `A` and `0` elsewhere. -/
 lemma measurable_indicator_const_iff [Zero β] [MeasurableSingletonClass β] (b : β) [NeZero b] :
     Measurable (s.indicator (fun (_ : α) ↦ b)) ↔ MeasurableSet s := by
   constructor <;> intro h
-  · convert! h (MeasurableSet.singleton (0 : β)).compl
+  · convert h (MeasurableSet.singleton (0 : β)).compl
     ext a
     simp [NeZero.ne b]
   · exact measurable_const.indicator h

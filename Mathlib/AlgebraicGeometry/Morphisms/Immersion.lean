@@ -221,7 +221,7 @@ theorem comp_iff {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsImmersion g] :
 set_option backward.isDefEq.respectTransparency false in
 instance : IsImmersion (prod.lift (𝟙 X) (𝟙 X)) := by
   rw [← MorphismProperty.cancel_right_of_respectsIso @IsImmersion _ (prodIsoPullback X X).hom]
-  convert! (inferInstance : IsImmersion (pullback.diagonal (terminal.from X)))
+  convert (inferInstance : IsImmersion (pullback.diagonal (terminal.from X)))
   ext : 1 <;> simp
 
 instance (f g : X ⟶ Y) : IsImmersion (equalizer.ι f g) :=

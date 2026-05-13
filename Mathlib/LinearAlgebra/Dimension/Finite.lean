@@ -476,7 +476,7 @@ theorem finrank_eq_zero_of_basis_imp_false (h : ∀ s : Finset M, Basis.{v} (s :
   finrank_eq_zero_of_basis_imp_not_finite fun s b hs =>
     h hs.toFinset
       (by
-        convert! b
+        convert b
         simp)
 
 theorem finrank_eq_zero_of_not_exists_basis

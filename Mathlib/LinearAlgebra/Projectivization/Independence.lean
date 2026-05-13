@@ -50,7 +50,7 @@ theorem independent_iff : Independent f ↔ LinearIndependent K (Projectivizatio
   refine ⟨?_, fun h => ?_⟩
   · rintro ⟨ff, hff, hh⟩
     choose a ha using fun i : ι => exists_smul_eq_mk_rep K (ff i) (hff i)
-    convert! hh.units_smul a
+    convert hh.units_smul a
     ext i
     exact (ha i).symm
   · convert! Independent.mk _ _ h
@@ -83,7 +83,7 @@ theorem dependent_iff : Dependent f ↔ ¬LinearIndependent K (Projectivization.
   · rintro ⟨ff, hff, hh1⟩
     contrapose hh1
     choose a ha using fun i : ι => exists_smul_eq_mk_rep K (ff i) (hff i)
-    convert! hh1.units_smul a⁻¹
+    convert hh1.units_smul a⁻¹
     ext i
     simp only [← ha, inv_smul_smul, Pi.smul_apply', Pi.inv_apply, Function.comp_apply]
   · convert! Dependent.mk _ _ h

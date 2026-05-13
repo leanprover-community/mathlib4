@@ -360,7 +360,7 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
     apply ((this ε hε).filter_mono curry_le_prod).mono
     intro n hn
     rw [dist_eq_norm] at hn ⊢
-    convert! hn using 2
+    convert hn using 2
     module
   · -- (Almost) the definition of the derivatives
     rw [Metric.tendsto_nhds]

@@ -72,7 +72,7 @@ variable {C : Type*} [SetLike C α]
 theorem inv_mem_of_isUnit [DivisionMonoid α] [SubmonoidClass C α] {S : C} {a : S} (ha : IsUnit a) :
     (a : α)⁻¹ ∈ S := by
   obtain ⟨u, rfl⟩ := ha
-  convert! u⁻¹.1.2
+  convert u⁻¹.1.2
   exact (map_inv ((subtype <| ofClass S).comp <| Units.coeHom S) u).symm
 
 section Group

@@ -136,10 +136,10 @@ theorem lift_rank_lt_rank_dual {K : Type u} {V : Type v} [Field K] [AddCommGroup
 
 theorem rank_lt_rank_dual' {V : Type u} [AddCommGroup V] [Module K V] (h : ℵ₀ ≤ Module.rank K V) :
     Module.rank K V < Module.rank Kᵐᵒᵖ (V →ₗ[K] K) := by
-  convert! lift_rank_lt_rank_dual' h; rw [lift_id]
+  convert lift_rank_lt_rank_dual' h; rw [lift_id]
 
 theorem rank_lt_rank_dual {K V : Type u} [Field K] [AddCommGroup V] [Module K V]
     (h : ℵ₀ ≤ Module.rank K V) : Module.rank K V < Module.rank K (V →ₗ[K] K) := by
-  convert! lift_rank_lt_rank_dual h; rw [lift_id]
+  convert lift_rank_lt_rank_dual h; rw [lift_id]
 
 end Cardinal

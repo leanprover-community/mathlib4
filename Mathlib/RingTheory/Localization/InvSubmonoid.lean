@@ -70,7 +70,7 @@ theorem mul_toInvSubmonoid (m : M) : algebraMap R S m * (toInvSubmonoid M S m : 
 
 @[simp]
 theorem smul_toInvSubmonoid (m : M) : m • (toInvSubmonoid M S m : S) = 1 := by
-  convert! mul_toInvSubmonoid M S m
+  convert mul_toInvSubmonoid M S m
   ext
   rw [← Algebra.smul_def]
   rfl

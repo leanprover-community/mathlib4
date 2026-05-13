@@ -215,7 +215,7 @@ theorem volumeForm_robust_neg (b : OrthonormalBasis (Fin n) ℝ E) (hb : b.toBas
   let e : OrthonormalBasis (Fin n.succ) ℝ E := o.finOrthonormalBasis n.succ_pos Fact.out
   simp_rw [volumeForm]
   apply e.det_eq_neg_det_of_opposite_orientation b
-  convert! hb.symm
+  convert hb.symm
   exact o.finOrthonormalBasis_orientation _ _
 
 @[simp]
@@ -311,7 +311,7 @@ theorem volumeForm_comp_linearIsometryEquiv (φ : E ≃ₗᵢ[ℝ] E)
   rcases n with - | n
   · refine o.eq_or_eq_neg_of_isEmpty.elim ?_ ?_ <;> rintro rfl <;> simp
   have : FiniteDimensional ℝ E := .of_fact_finrank_eq_succ n
-  convert! o.volumeForm_map φ (φ ∘ x)
+  convert o.volumeForm_map φ (φ ∘ x)
   · symm
     rwa [← o.map_eq_iff_det_pos φ.toLinearEquiv] at hφ
     rw [_i.out, Fintype.card_fin]

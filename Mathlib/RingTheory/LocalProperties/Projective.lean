@@ -56,7 +56,7 @@ theorem Module.lift_rank_of_isLocalizedModule_of_free
   have := (IsLocalizedModule.isBaseChange S Rₛ f).equiv.lift_rank_eq.symm
   simp only [rank_tensorProduct, rank_self,
     Cardinal.lift_one, one_mul, Cardinal.lift_lift] at this ⊢
-  convert! this
+  convert this
   exact Cardinal.lift_umax
 
 theorem Module.finrank_of_isLocalizedModule_of_free
@@ -92,7 +92,7 @@ theorem LinearMap.split_surjective_of_localization_maximal
   rw [LocalizedModule.map_id]
   have : LinearMap.id ∈ LinearMap.range (LinearMap.llcomp _
     (LocalizedModule I.primeCompl N) _ _ (LocalizedModule.map I.primeCompl f)) := H I hI
-  convert! this
+  convert this
   · ext f
     constructor
     · intro hf
@@ -137,7 +137,7 @@ theorem Module.projective_of_localization_maximal (H : ∀ (I : Ideal R) (_ : I.
   let f : N →ₗ[R] M := Finsupp.linearCombination R (Subtype.val : s → M)
   have hf : Function.Surjective f := by
     rw [← LinearMap.range_eq_top, Finsupp.range_linearCombination, Subtype.range_val]
-    convert! hs
+    convert hs
   have (I : Ideal R) (hI : I.IsMaximal) :=
     letI := H I hI
     Module.projective_lifting_property (LocalizedModule.map I.primeCompl f) LinearMap.id

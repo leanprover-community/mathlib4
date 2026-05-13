@@ -594,7 +594,7 @@ lemma toMulEquiv_toContinuousMulEquiv : (e.toContinuousMulEquiv he : G ≃* H) =
 @[to_additive]
 lemma symm_toContinuousMulEquiv :
     (e.toContinuousMulEquiv he).symm = e.symm.toContinuousMulEquiv
-      (fun s ↦ by convert! (he _).symm; exact (e.preimage_symm_preimage s).symm) :=
+      (fun s ↦ by convert (he _).symm; exact (e.preimage_symm_preimage s).symm) :=
   rfl
 
 end MulEquiv

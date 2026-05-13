@@ -728,17 +728,17 @@ variable [SMulCommClass R Rᵐᵒᵖ M]
 abbrev invertibleOfInvertibleFst (x : tsze R M) [Invertible x.fst] : Invertible x where
   invOf := (⅟x.fst, -(⅟x.fst •> x.snd <• ⅟x.fst))
   invOf_mul_self := by
-    convert! mul_left_eq_one _ _ (invOf_mul_self x.fst)
+    convert mul_left_eq_one _ _ (invOf_mul_self x.fst)
     ext <;> simp
   mul_invOf_self := by
-    convert! mul_right_eq_one _ _ (mul_invOf_self x.fst)
+    convert mul_right_eq_one _ _ (mul_invOf_self x.fst)
     ext <;> simp [smul_comm]
 
 theorem snd_invOf (x : tsze R M) [Invertible x] [Invertible x.fst] :
     (⅟x).snd = -(⅟x.fst •> x.snd <• ⅟x.fst) := by
   letI := invertibleOfInvertibleFst x
   convert! congr_arg (TrivSqZeroExt.snd (R := R) (M := M)) (_ : _ = ⅟x)
-  convert! rfl
+  convert rfl
 
 /-- Together `TrivSqZeroExt.detInvertibleOfInvertible` and `TrivSqZeroExt.invertibleOfDetInvertible`
 form an equivalence, although both sides of the equiv are subsingleton anyway. -/
@@ -788,7 +788,7 @@ protected theorem inv_one : (1 : tsze R M)⁻¹ = (1 : tsze R M) := by
   rw [← inl_one, TrivSqZeroExt.inv_inl, inv_one]
 
 protected theorem inv_mul_cancel {x : tsze R M} (hx : fst x ≠ 0) : x⁻¹ * x = 1 := by
-  convert! mul_left_eq_one _ _ (_root_.inv_mul_cancel₀ hx) using 2
+  convert mul_left_eq_one _ _ (_root_.inv_mul_cancel₀ hx) using 2
   ext <;> simp
 
 variable [SMulCommClass R Rᵐᵒᵖ M]

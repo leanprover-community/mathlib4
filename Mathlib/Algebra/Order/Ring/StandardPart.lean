@@ -216,7 +216,7 @@ instance : Archimedean (FiniteResidueField K) where
     · obtain ⟨n, hn⟩ := ((mk_ne_zero.1 hy.ne').trans (mk_ne_zero.1 hx.ne').symm).le
       refine ⟨n, mk.monotone' ?_⟩
       change x.1 ≤ n • y.1
-      convert! ← hn
+      convert ← hn
       · exact abs_of_pos <| lt_of_mk_lt_mk hx
       · exact abs_of_pos <| lt_of_mk_lt_mk hy
 
@@ -461,10 +461,10 @@ theorem stdPart_eq_sInf (f : ℝ →+*o K) (x : K) : stdPart x = sInf {r | x < f
   · rw [stdPart_of_mk_ne_zero hx.ne]
     have hr {r} := hx.trans_le (mk_map_nonneg_of_archimedean f r)
     obtain h | h := le_or_gt 0 x
-    · convert! Real.sInf_empty.symm
+    · convert Real.sInf_empty.symm
       rw [Set.eq_empty_iff_forall_notMem]
       exact fun r ↦ (lt_of_mk_lt_mk_of_nonneg hr h).not_gt
-    · convert! Real.sInf_univ.symm
+    · convert Real.sInf_univ.symm
       rw [Set.eq_univ_iff_forall]
       exact fun r ↦ lt_of_mk_lt_mk_of_nonpos hr h.le
 

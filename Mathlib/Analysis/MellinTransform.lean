@@ -390,7 +390,7 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [NormedSpace ℂ E] {a b : ℝ}
     refine (ae_restrict_mem measurableSet_Ioi).mono fun t ht y _ => ?_
     have ht' : (t : ℂ) ≠ 0 := ofReal_ne_zero.mpr (ne_of_gt ht)
     have u1 : HasDerivAt (fun z : ℂ => (t : ℂ) ^ (z - 1)) (t ^ (y - 1) * log t) y := by
-      convert! ((hasDerivAt_id' y).sub_const 1).const_cpow (Or.inl ht') using 1
+      convert ((hasDerivAt_id' y).sub_const 1).const_cpow (Or.inl ht') using 1
       rw [ofReal_log (le_of_lt ht)]
       ring
     exact u1.smul_const (f t)

@@ -80,7 +80,7 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : Highe
   · rintro ⟨k, hk⟩
     suffices φ ≫ X.δ (⟨a + 2 + k, by lia⟩ : Fin (n + 2)) = 0 by
       simp only [this, Fin.natAdd_mk, Fin.cast_mk, zero_comp, smul_zero]
-    convert! v ⟨a + k + 1, by lia⟩ (by rw [Fin.val_mk]; lia)
+    convert v ⟨a + k + 1, by lia⟩ (by rw [Fin.val_mk]; lia)
     dsimp
     lia
   -- cleaning up the second sum

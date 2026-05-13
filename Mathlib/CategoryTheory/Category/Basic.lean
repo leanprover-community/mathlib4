@@ -295,16 +295,16 @@ scoped infixr:80 " ≫= " => whisker_eq
 @[to_dual eq_of_comp_right_eq]
 theorem eq_of_comp_left_eq {f g : X ⟶ Y} (w : ∀ {Z : C} (h : Y ⟶ Z), f ≫ h = g ≫ h) :
     f = g := by
-  convert! w (𝟙 Y) <;> simp
+  convert w (𝟙 Y) <;> simp
 
 @[to_dual eq_of_comp_right_eq']
 theorem eq_of_comp_left_eq' (f g : X ⟶ Y)
     (w : (fun {Z} (h : Y ⟶ Z) => f ≫ h) = fun {Z} (h : Y ⟶ Z) => g ≫ h) : f = g :=
-  eq_of_comp_left_eq @fun Z h => by convert! congr_fun (congr_fun w Z) h
+  eq_of_comp_left_eq @fun Z h => by convert congr_fun (congr_fun w Z) h
 
 @[to_dual id_of_comp_right_id]
 theorem id_of_comp_left_id (f : X ⟶ X) (w : ∀ {Y : C} (g : X ⟶ Y), f ≫ g = g) : f = 𝟙 X := by
-  convert! w (𝟙 X)
+  convert w (𝟙 X)
   simp
 
 @[to_dual (reorder := f g' g) ite_comp]
@@ -344,7 +344,7 @@ theorem cancel_epi_assoc_iff (f : X ⟶ Y) [Epi f] {g h : Y ⟶ Z} {W : C} {k l 
 
 @[to_dual]
 theorem cancel_epi_id (f : X ⟶ Y) [Epi f] {h : Y ⟶ Y} : f ≫ h = f ↔ h = 𝟙 Y := by
-  convert! cancel_epi f
+  convert cancel_epi f
   simp
 
 /-- The composition of epimorphisms is again an epimorphism. This version takes `Epi f` and `Epi g`

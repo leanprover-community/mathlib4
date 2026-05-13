@@ -665,7 +665,7 @@ set_option linter.deprecated false in
 @[deprecated "lsub is deprecated" (since := "2026-03-27")]
 theorem lsub_le_of_range_subset {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
     (h : Set.range f ⊆ Set.range g) : lsub.{u, max v w} f ≤ lsub.{v, max u w} g :=
-  csSup_le_csSup' bddAbove_of_small (by convert! Set.image_mono h <;> apply Set.range_comp)
+  csSup_le_csSup' bddAbove_of_small (by convert Set.image_mono h <;> apply Set.range_comp)
 
 set_option linter.deprecated false in
 @[deprecated "lsub is deprecated" (since := "2026-03-27")]
