@@ -167,8 +167,8 @@ variable (f)
 structure IsFredholm_struc : Prop where
   isStrict : IsStrictMap f
   isClosed_range : IsClosed (f.range : Set F)
-  kerFG : FiniteDimensional 𝕜 f.toLinearMap.ker
-  cokerFG : FiniteDimensional 𝕜 (F ⧸ f.range)
+  kerFG : f.toLinearMap.ker.FG
+  cokerFG : f.range.CoFG
 
 /-FAE: I don't like this definition that seems to fix `g` (making it a structure would be even more
   disgusting). -/
@@ -333,6 +333,8 @@ lemma CokernelFG_of_isFredholm' (hu : IsFredholm_existsₗ u) : Module.Finite R 
 
 open QuotFiniteSubmodules
 
+section
+
 variable {u : E →L[𝕜] F} {v : F →L[𝕜] E}
 
 variable [ContinuousConstSMul 𝕜 E]
@@ -371,13 +373,33 @@ theorem aaron (hr : IsFredholm_quot u) :
   <;> intro x hx
   <;> simp_all [← map_sub]
 
-/- ## Injections from closed finite codimension subspaces are Fredholm (Aaron)
+end
+
+/- ## Inclusions from closed finite codimension subspaces are Fredholm (Aaron)
 
 Easy for every definition.
 The index is the codimension of the range.
 
 (The same is true for quotient by finite dimensional complemented subspaces)
 -/
+
+omit [IsTopologicalAddGroup E] [IsTopologicalAddGroup F] in
+theorem IsClosedEmbedding.isFredholm_struc {f : E →L[𝕜] F} [CompleteSpace 𝕜] [ContinuousSMul 𝕜 E]
+    [ContinuousSMul 𝕜 F] (hf : IsClosedEmbedding f) (hc : f.range.CoFG) :
+    IsFredholm_struc f := by
+  constructor
+  · exact hf.isStrictMap
+  · simpa using hf.isClosed_range
+  · rw [LinearMap.ker_eq_bot.2 hf.injective]
+    exact Submodule.fg_bot
+  · simp [hc]
+
+omit [IsTopologicalAddGroup E] in
+theorem Submodule.isFredholm_struc [CompleteSpace 𝕜] [ContinuousSMul 𝕜 E] {p : Submodule 𝕜 E}
+    (hp : IsClosed p.carrier) (hc : p.CoFG) :
+    IsFredholm_struc p.subtypeL := by
+  refine IsClosedEmbedding.isFredholm_struc (IsClosedEmbedding.subtypeVal hp) ?_
+  simpa using hc
 
 /- ## Composition of Fredholm (with the inverse definition) (Patrick)
 
