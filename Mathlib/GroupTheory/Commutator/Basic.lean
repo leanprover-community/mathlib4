@@ -194,16 +194,22 @@ theorem commutator_le_sup : ⁅H₁, H₂⁆ ≤ H₁ ⊔ H₂ :=
   commutator_le.mpr <| by grind [mul_assoc, mul_mem, mul_mem_sup, inv_mem]
 
 @[to_additive]
-instance normal_subgroupOf_commutator_sup : (⁅H₁, H₂⁆.subgroupOf <| H₁ ⊔ H₂).Normal := by
-  refine normal_subgroupOf_of_le_normalizer <| sup_le ?_ ?_ <;>
-    apply le_normalizer_closure_iff.mpr <;>
-    rintro g hg _ ⟨g₁, hg₁, g₂, hg₂, rfl⟩
-  · apply (mul_mem_cancel_right <| commutator_mem_commutator hg hg₂).mp
-    rw [← commutatorElement_mul_left_eq_conj_mul g g₁ g₂]
-    exact commutator_mem_commutator (mul_mem hg hg₁) hg₂
-  · apply (mul_mem_cancel_left <| commutator_mem_commutator hg₁ hg).mp
-    rw [← mul_assoc, ← mul_assoc, ← commutatorElement_mul_right_eq_mul_conj]
-    exact commutator_mem_commutator hg₁ <| mul_mem hg hg₂
+theorem normalizer_commutator_ge_left : H₁ ≤ normalizer (⁅H₁, H₂⁆ : Subgroup G) := by
+  apply le_normalizer_closure_iff.mpr
+  rintro g hg _ ⟨g₁, hg₁, g₂, hg₂, rfl⟩
+  apply (mul_mem_cancel_right <| commutator_mem_commutator hg hg₂).mp
+  rw [← commutatorElement_mul_left_eq_conj_mul g g₁ g₂]
+  exact commutator_mem_commutator (mul_mem hg hg₁) hg₂
+
+@[to_additive]
+theorem normalizer_commutator_ge_right : H₂ ≤ normalizer (⁅H₁, H₂⁆ : Subgroup G) := by
+  rw [commutator_comm]
+  apply normalizer_commutator_ge_left
+
+@[to_additive]
+instance normal_subgroupOf_commutator_sup : (⁅H₁, H₂⁆.subgroupOf <| H₁ ⊔ H₂).Normal :=
+  normal_subgroupOf_of_le_normalizer <| sup_le
+    (normalizer_commutator_ge_left H₁ H₂) (normalizer_commutator_ge_right H₁ H₂)
 
 @[to_additive]
 theorem map_commutator (f : G →* G') : map f ⁅H₁, H₂⁆ = ⁅map f H₁, map f H₂⁆ := by
