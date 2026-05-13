@@ -104,12 +104,9 @@ theorem isClosed_unitaryGroup :
 finite-dimensional normed space `Matrix n n 𝕜` and bounded by `1` in the entrywise sup norm. -/
 theorem isCompact_unitaryGroup :
     IsCompact (Matrix.unitaryGroup n 𝕜 : Set (Matrix n n 𝕜)) := by
-  rw [Metric.isCompact_iff_isClosed_bounded]
-  refine ⟨isClosed_unitaryGroup, ?_⟩
-  refine (Metric.isBounded_closedBall (x := (0 : Matrix n n 𝕜)) (r := 1)).subset ?_
-  intro U hU
-  rw [Metric.mem_closedBall, dist_zero_right]
-  exact entrywise_sup_norm_bound_of_unitary hU
+  open scoped Matrix.Norms.Elementwise in
+  exact Metric.isCompact_of_isClosed_isBounded isClosed_unitary <|
+    isBounded_iff_forall_norm_le.mpr ⟨1, fun _ ↦ entrywise_sup_norm_bound_of_unitary⟩
 
 /-- The unitary group is a compact topological space. -/
 instance Matrix.unitaryGroup.instCompactSpace :
