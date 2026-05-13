@@ -65,7 +65,7 @@ The following notation is declared in scope `SimpleGraph`:
 * Add densities `copyDensity G H`, `subDensity G H`, and `homDensity G H`.
 -/
 
-@[expose] public section
+public section
 
 open Finset Function
 open Fintype (card)
@@ -128,10 +128,12 @@ def mapNeighborSet (f : Copy G H) (a : V) :
     exact f.injective h
 
 /-- A copy gives rise to an embedding of vertex types. -/
-def toEmbedding (f : Copy G H) : V ↪ W := ⟨f, f.injective⟩
+@[expose] def toEmbedding (f : Copy G H) : V ↪ W := ⟨f, f.injective⟩
+
+@[simp] lemma toEmbedding_apply (f : Copy G H) (a : V) : f.toEmbedding a = f a := rfl
 
 /-- The identity copy from a simple graph to itself. -/
-@[refl] def id (G : SimpleGraph V) : Copy G G := ⟨Hom.id, Function.injective_id⟩
+@[expose, refl] def id (G : SimpleGraph V) : Copy G G := ⟨Hom.id, Function.injective_id⟩
 
 @[simp, norm_cast] lemma coe_id : ⇑(id G) = _root_.id := rfl
 
@@ -146,7 +148,8 @@ theorem comp_apply (g : Copy H I) (f : Copy G H) (a : V) : g.comp f a = g (f a) 
   RelHom.comp_apply g.toHom f.toHom a
 
 /-- The copy from a subgraph to the supergraph. -/
-def ofLE (G₁ G₂ : SimpleGraph V) (h : G₁ ≤ G₂) : Copy G₁ G₂ := ⟨Hom.ofLE h, Function.injective_id⟩
+@[expose] def ofLE (G₁ G₂ : SimpleGraph V) (h : G₁ ≤ G₂) : Copy G₁ G₂ :=
+    ⟨Hom.ofLE h, Function.injective_id⟩
 
 @[simp, norm_cast]
 theorem coe_comp (g : Copy H I) (f : Copy G H) : ⇑(g.comp f) = g ∘ f := by ext; simp
@@ -203,10 +206,12 @@ instance [Fintype {f : G →g H // Injective f}] : Fintype (G.Copy H) :=
   }
 
 /-- A copy of `⊤` gives rise to an embedding of `⊤`. -/
-@[simps!]
-def topEmbedding (f : Copy (⊤ : SimpleGraph V) H) : (⊤ : SimpleGraph V) ↪g H :=
+@[expose] def topEmbedding (f : Copy (⊤ : SimpleGraph V) H) : (⊤ : SimpleGraph V) ↪g H :=
   { f.toEmbedding with
-    map_rel_iff' := fun {v w} ↦ ⟨fun h ↦ by simpa using h.ne, f.toHom.map_adj⟩}
+    map_rel_iff' := fun {_ _} ↦ ⟨fun h ↦ f.injective.ne_iff.mp h.ne, f.toHom.map_adj⟩ }
+
+@[simp] lemma topEmbedding_apply (f : Copy (⊤ : SimpleGraph V) H) (v : V) :
+    f.topEmbedding v = f v := rfl
 
 end Copy
 
@@ -381,7 +386,7 @@ end Free
 
 /-- A simple graph `G` is inducingly contained in a simple graph `H` if there exists an induced
 subgraph of `H` isomorphic to `G`. This is denoted by `G ⊴ H`. -/
-def IsIndContained (G : SimpleGraph V) (H : SimpleGraph W) : Prop := Nonempty (G ↪g H)
+abbrev IsIndContained (G : SimpleGraph V) (H : SimpleGraph W) : Prop := Nonempty (G ↪g H)
 
 @[inherit_doc] scoped infixl:50 " ⊴ " => SimpleGraph.IsIndContained
 
