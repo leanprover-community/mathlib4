@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.MorphismProperty.Limits
 # Equivalence relations
 
 We define internal equivalence relations (sometimes called congruences) in any category `C`, as a
-structure on pairs of parallel morphisms `p₁, p₂ : R ⟶ X` .
+structure on pairs of parallel morphisms `p₁, p₂ : R ⟶ X`.
 We also define effective and universally effective equivalence relations.
 
 We prove that equivalence relations on types provide internal equivalence relation structures in the
