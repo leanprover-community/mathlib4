@@ -42,7 +42,6 @@ This file develops the following aspects of the theory of gradients:
 
 public section
 
-public section
 
 open ComplexConjugate Topology InnerProductSpace Function Set
 
