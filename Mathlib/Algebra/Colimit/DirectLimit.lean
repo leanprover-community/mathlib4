@@ -881,7 +881,7 @@ end Algebra
 
 namespace NonUnitalAlgebra
 
-variable [CommSemiring R]
+variable [Monoid R]
 variable [∀ i, NonUnitalNonAssocSemiring (G i)] [∀ i, DistribMulAction R (G i)]
 variable [∀ i j h, NonUnitalAlgHomClass (T h) R (G i) (G j)]
 variable [Nonempty ι]
@@ -929,7 +929,7 @@ end NonUnitalAlgebra
 
 namespace NonUnitalStarAlgebra
 
-variable [CommSemiring R]
+variable [Monoid R]
 variable [∀ i, NonUnitalNonAssocSemiring (G i)]
 variable [∀ i, Star (G i)]
 variable [∀ i, DistribMulAction R (G i)]
