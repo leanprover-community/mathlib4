@@ -53,7 +53,7 @@ theorem natDegree_cancelLeads_lt_of_natDegree_le_natDegree_of_comm
     (h : p.natDegree ≤ q.natDegree) (hq : 0 < q.natDegree) :
     (p.cancelLeads q).natDegree < q.natDegree := by
   by_cases hp : p = 0
-  · convert! hq
+  · convert hq
     simp [hp, cancelLeads]
   rw [cancelLeads, sub_eq_add_neg, tsub_eq_zero_iff_le.mpr h, pow_zero, mul_one]
   by_cases h0 :

@@ -366,7 +366,7 @@ lemma outsidePart_add : (p + q).outsidePart = p.outsidePart + q := by
 @[simp]
 lemma insidePart_nest : p.nest.insidePart = p := by
   simp_rw [insidePart, nest_ne_zero, dite_false, firstReturn_nest]
-  convert! p.denest_nest; rw [DyckWord.ext_iff]; apply take_of_length_le
+  convert p.denest_nest; rw [DyckWord.ext_iff]; apply take_of_length_le
   simp_rw [nest, length_append, length_singleton]; lia
 
 @[simp]
@@ -546,7 +546,7 @@ instance {n : ℕ} : Fintype { p : DyckWord // p.semilength = n } :=
 theorem card_dyckWord_semilength_eq_catalan (n : ℕ) :
     Fintype.card { p : DyckWord // p.semilength = n } = catalan n := by
   rw [← Fintype.ofEquiv_card (equivTreesOfNumNodesEq n), ← treesOfNumNodesEq_card_eq_catalan]
-  convert! Fintype.card_coe _
+  convert Fintype.card_coe _
 
 end Tree
 

@@ -46,7 +46,7 @@ lemma preimage_closedPoints_subset (hf : Function.Injective f) (hf' : Continuous
     f ⁻¹' closedPoints Y ⊆ closedPoints X := by
   intro x hx
   rw [mem_closedPoints_iff]
-  convert! continuous_iff_isClosed.mp hf' _ hx
+  convert continuous_iff_isClosed.mp hf' _ hx
   rw [← Set.image_singleton, Set.preimage_image_eq _ hf]
 
 lemma Topology.IsClosedEmbedding.preimage_closedPoints (hf : IsClosedEmbedding f) :
@@ -182,12 +182,13 @@ lemma TopologicalSpace.IsOpenCover.jacobsonSpace_iff {ι : Type*} {U : ι → Op
   · convert_to! IsClosed {(⟨y, h⟩ : U j)}
     · ext; simp [← Subtype.coe_inj]
     apply isClosed_singleton_of_isLocallyClosed_singleton
-    convert! (hy'.isLocallyClosed.image IsEmbedding.subtypeVal.isInducing
-      (U i).2.isOpenEmbedding_subtypeVal.isOpen_range.isLocallyClosed).preimage
-      continuous_subtype_val
+    convert
+      (hy'.isLocallyClosed.image IsEmbedding.subtypeVal.isInducing
+            (U i).2.isOpenEmbedding_subtypeVal.isOpen_range.isLocallyClosed).preimage
+        continuous_subtype_val
     ext
     simp [← Subtype.coe_inj]
-  · convert! isClosed_empty
+  · convert isClosed_empty
     rw [Set.eq_empty_iff_forall_notMem]
     intro z (hz : z.1 = y.1)
     exact h (hz ▸ z.2)

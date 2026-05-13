@@ -205,7 +205,7 @@ theorem prime_X_sub_C (r : R) : Prime (X - C r) :=
     exact id⟩
 
 theorem prime_X : Prime (X : R[X]) := by
-  convert! prime_X_sub_C (0 : R)
+  convert prime_X_sub_C (0 : R)
   simp
 
 theorem Monic.prime_of_degree_eq_one (hp1 : degree p = 1) (hm : Monic p) : Prime p :=

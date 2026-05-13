@@ -92,7 +92,7 @@ theorem integral_sin_mul_sin_mul_cos_pow_eq (hn : 2 ≤ n) (hz : z ≠ 0) :
           ((cos x : ℂ) ^ n - (n - 1) * (sin x : ℂ) ^ 2 * (cos x : ℂ) ^ (n - 2)) x := by
     intro x _
     have c := HasDerivAt.comp (x : ℂ) (hasDerivAt_pow (n - 1) _) (Complex.hasDerivAt_cos x)
-    convert! ((Complex.hasDerivAt_sin x).fun_mul c).comp_ofReal using 1
+    convert ((Complex.hasDerivAt_sin x).fun_mul c).comp_ofReal using 1
     · simp only [Complex.ofReal_sin, Complex.ofReal_cos, Function.comp]
     · simp only [Complex.ofReal_cos, Complex.ofReal_sin]
       rw [mul_neg, mul_neg, ← sub_eq_add_neg, Function.comp_apply]
@@ -139,7 +139,7 @@ theorem integral_cos_mul_cos_pow (hn : 2 ≤ n) (hz : z ≠ 0) :
   have := integral_cos_mul_cos_pow_aux hn hz
   rw [integral_sin_mul_sin_mul_cos_pow_eq hn hz, sub_eq_neg_add, mul_add, ← sub_eq_iff_eq_add]
     at this
-  convert! congr_arg (fun u : ℂ => -u * (2 * z) ^ 2 / n ^ 2) this using 1 <;> field
+  convert congr_arg (fun u : ℂ => -u * (2 * z) ^ 2 / n ^ 2) this using 1 <;> field
 
 /-- Note this also holds for `z = 0`, but we do not need this case for `sin_pi_mul_eq`. -/
 theorem integral_cos_mul_cos_pow_even (n : ℕ) (hz : z ≠ 0) :
@@ -229,11 +229,11 @@ theorem sin_pi_mul_eq (z : ℂ) (n : ℕ) :
       rw [this, Complex.ofReal_mul, Complex.ofReal_div]
       have : (C : ℂ) ≠ 0 := Complex.ofReal_ne_zero.mpr (integral_cos_pow_pos _).ne'
       have : 2 * (n : ℂ) + 1 ≠ 0 := by
-        convert! (Nat.cast_add_one_ne_zero (2 * n) : (↑(2 * n) + 1 : ℂ) ≠ 0)
+        convert (Nat.cast_add_one_ne_zero (2 * n) : (↑(2 * n) + 1 : ℂ) ≠ 0)
         simp
       have : (n : ℂ) + 1 ≠ 0 := Nat.cast_add_one_ne_zero n
       simp [field]
-    convert! integral_cos_mul_cos_pow_even n hz
+    convert integral_cos_mul_cos_pow_even n hz
     rw [Nat.cast_succ]
 
 end IntegralRecursion
@@ -280,13 +280,13 @@ theorem _root_.Complex.tendsto_euler_sin_prod (z : ℂ) :
     Tendsto.congr (fun n => sin_pi_mul_eq z n) tendsto_const_nhds
   have : 𝓝 (Complex.sin (π * z)) = 𝓝 (Complex.sin (π * z) * 1) := by rw [mul_one]
   simp_rw [this, mul_div_assoc] at A
-  convert! (tendsto_mul_iff_of_ne_zero _ one_ne_zero).mp A
+  convert (tendsto_mul_iff_of_ne_zero _ one_ne_zero).mp A
   suffices Tendsto (fun n : ℕ =>
         (∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ n) /
           (∫ x in (0 : ℝ)..π / 2, cos x ^ n : ℝ)) atTop (𝓝 1) from
     this.comp (tendsto_id.const_mul_atTop' zero_lt_two)
   have : ContinuousOn (fun x : ℝ ↦ Complex.cos (2 * z * x)) (Icc 0 (π / 2)) := by fun_prop
-  convert! tendsto_integral_cos_pow_mul_div this using 1
+  convert tendsto_integral_cos_pow_mul_div this using 1
   · ext1 n; congr 2 with x : 1; rw [mul_comm]
   · rw [Complex.ofReal_zero, mul_zero, Complex.cos_zero]
 
@@ -294,7 +294,7 @@ theorem _root_.Complex.tendsto_euler_sin_prod (z : ℂ) :
 theorem _root_.Real.tendsto_euler_sin_prod (x : ℝ) :
     Tendsto (fun n : ℕ => π * x * ∏ j ∈ Finset.range n, ((1 : ℝ) - x ^ 2 / ((j : ℝ) + 1) ^ 2))
       atTop (𝓝 <| sin (π * x)) := by
-  convert! (Complex.continuous_re.tendsto _).comp (Complex.tendsto_euler_sin_prod x) using 1
+  convert (Complex.continuous_re.tendsto _).comp (Complex.tendsto_euler_sin_prod x) using 1
   · ext1 n
     rw [Function.comp_apply, ← Complex.ofReal_mul, Complex.re_ofReal_mul]
     suffices

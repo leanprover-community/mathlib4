@@ -163,7 +163,7 @@ theorem subsingleton_iff [Subsingleton B] :
   · refine subset_pair_iff.mpr fun s hs ↦ or_iff_not_imp_left.mpr fun hs' ↦ ?_
     obtain ⟨ζ, hζ⟩ := hprim hs hs'
     exact mod_cast hζ.unique (IsPrimitiveRoot.of_subsingleton ζ)
-  · refine ⟨fun {s} hs hs' ↦ ?_, fun x ↦ by convert! (mem_top (R := A) : x ∈ ⊤)⟩
+  · refine ⟨fun {s} hs hs' ↦ ?_, fun x ↦ by convert (mem_top (R := A) : x ∈ ⊤)⟩
     · have : s = 1 := (subset_pair_iff.mp hS s hs).resolve_left hs'
       exact ⟨0, this ▸ IsPrimitiveRoot.of_subsingleton 0⟩
 
@@ -195,7 +195,7 @@ theorem union_left [h : IsCyclotomicExtension T A B] (hS : S ⊆ T) :
   · obtain ⟨b, hb⟩ := ((isCyclotomicExtension_iff _ _ _).1 h).1 (hS hn) hn'
     refine ⟨⟨b, subset_adjoin ⟨n, hn, hn', hb.pow_eq_one⟩⟩, ?_⟩
     rwa [← IsPrimitiveRoot.coe_submonoidClass_iff, Subtype.coe_mk]
-  · convert! mem_top (R := A) (x := b)
+  · convert mem_top (R := A) (x := b)
     rw [← adjoin_adjoin_coe_preimage, preimage_setOf_eq]
     norm_cast
 
@@ -275,8 +275,8 @@ variable {A B}
 /-- If `(⊥ : SubAlgebra A B) = ⊤`, then `IsCyclotomicExtension {1} A B`. -/
 theorem singleton_one_of_bot_eq_top (h : (⊥ : Subalgebra A B) = ⊤) :
     IsCyclotomicExtension {1} A B := by
-  convert! eq_self_sdiff_zero _ A B ▸
-    (iff_union_singleton_one _ A _).1 (singleton_zero_of_bot_eq_top h)
+  convert
+    eq_self_sdiff_zero _ A B ▸ (iff_union_singleton_one _ A _).1 (singleton_zero_of_bot_eq_top h)
   simp
 
 /-- If `Function.Surjective (algebraMap A B)`, then `IsCyclotomicExtension {1} A B`. -/
@@ -580,7 +580,7 @@ theorem isGalois [IsCyclotomicExtension S K L] : IsGalois K L := by
     use n, hn, h1
     rw [← map_pow, ← map_one f, h2]
   | algebraMap x =>
-    convert! IntermediateField.algebraMap_mem _ x
+    convert IntermediateField.algebraMap_mem _ x
     exact AlgHom.commutes _ x
   | add x y hx hy ihx ihy =>
     rw [map_add]

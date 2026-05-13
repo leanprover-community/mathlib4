@@ -155,7 +155,7 @@ theorem mul [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsLp
 
 theorem join [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsLprojection X Q) :
     IsLprojection X (P + Q - P * Q) := by
-  convert! (Lcomplement_iff _).mp (h₁.Lcomplement.mul h₂.Lcomplement) using 1
+  convert (Lcomplement_iff _).mp (h₁.Lcomplement.mul h₂.Lcomplement) using 1
   noncomm_ring
 
 instance Subtype.instCompl : Compl { f : M // IsLprojection X f } :=

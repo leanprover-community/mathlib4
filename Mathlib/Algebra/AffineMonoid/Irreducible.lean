@@ -74,7 +74,7 @@ lemma Submonoid.closure_irreducible [Monoid.FG M] :
   -- Pick a minimal set `S` generating `M`.
   obtain ⟨S, hSgen, hSmax⟩ := Submonoid.exists_minimal_closure_eq_top M
   -- We claim that `S` is the set of irreducible elements of `M`.
-  convert! hSgen
+  convert hSgen
   -- We already know that `S` contains all irreducible elements...
   refine (irreducible_subset_of_submonoidClosure_eq_top hSgen).antisymm fun r hrS ↦ ?_
   -- So let us for contradiction assume that `r ∈ S` is reducible.

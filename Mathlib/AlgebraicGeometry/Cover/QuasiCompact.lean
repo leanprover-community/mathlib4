@@ -150,7 +150,7 @@ instance [IsAffine S] {P : MorphismProperty Scheme.{u}} (𝒰 : S.AffineCover P)
 
 instance [IsEmpty S] : QuasiCompactCover 𝒰 where
   isCompactOpenCovered_of_isAffineOpen {U} hU := by
-    convert! IsCompactOpenCovered.empty
+    convert IsCompactOpenCovered.empty
     simp [eq_bot_iff]
 
 variable {P : MorphismProperty Scheme.{u}}

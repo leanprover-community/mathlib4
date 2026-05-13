@@ -98,11 +98,13 @@ lemma Convex.rectangle_subset {U : Set ℂ} (U_convex : Convex ℝ U) {z w : ℂ
 instance : PathConnectedSpace ℂˣ :=
   have : PathConnectedSpace { z : ℂ // z ≠ 0 } :=
     (isPathConnected_iff_pathConnectedSpace (F := {0}ᶜ)).mp (by
-      convert! (((convex_halfSpace_im_gt 0).isPathConnected ⟨.I, by simp⟩).union
-        ((convex_halfSpace_re_gt 0).isPathConnected ⟨1, by simp⟩) ⟨1 + .I, by simp⟩).union
-        (((convex_halfSpace_im_lt 0).isPathConnected ⟨-.I, by simp⟩).union
-        ((convex_halfSpace_re_lt 0).isPathConnected ⟨-1, by simp⟩) ⟨-1 - .I, by simp⟩)
-        ⟨1 - .I, by simp⟩ using 1
+      convert
+        (((convex_halfSpace_im_gt 0).isPathConnected ⟨.I, by simp⟩).union
+              ((convex_halfSpace_re_gt 0).isPathConnected ⟨1, by simp⟩) ⟨1 + .I, by simp⟩).union
+          (((convex_halfSpace_im_lt 0).isPathConnected ⟨-.I, by simp⟩).union
+            ((convex_halfSpace_re_lt 0).isPathConnected ⟨-1, by simp⟩) ⟨-1 - .I, by simp⟩)
+          ⟨1 - .I, by simp⟩ using
+        1
       ext x
       refine ⟨?_, by aesop⟩
       simp +contextual [Complex.ext_iff, -not_and, not_and_or, or_imp, ← ne_eq, ← lt_or_lt_iff_ne])

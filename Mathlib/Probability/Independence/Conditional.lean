@@ -853,11 +853,11 @@ theorem condIndepFun_iff_map_prod_eq_prod_condDistrib_prod_condDistrib
     rw [@Measure.dirac_apply' _ (mγ.comap k) _ _ (hk_meas hs)]
     congr
   refine ⟨fun h s t u hs ht hu ↦ ?_, fun h ↦ ?_⟩
-  · convert! h (hk_meas hs) ht hu
+  · convert h (hk_meas hs) ht hu
     · exact h_left hs ht hu
     · exact h_right hs ht hu
   · rintro - t u ⟨s, hs, rfl⟩ ht hu
-    convert! h hs ht hu
+    convert h hs ht hu
     · exact (h_left hs ht hu).symm
     · exact (h_right hs ht hu).symm
 

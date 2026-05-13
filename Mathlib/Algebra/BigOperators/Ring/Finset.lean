@@ -164,7 +164,7 @@ lemma sum_prod_piFinset [Fintype ι] (s : Finset κ) (g : ι → κ → R) :
 
 lemma sum_pow' (s : Finset κ) (f : κ → R) (n : ℕ) :
     (∑ a ∈ s, f a) ^ n = ∑ p ∈ piFinset fun _i : Fin n ↦ s, ∏ i, f (p i) := by
-  convert! @prod_univ_sum (Fin n) _ _ _ _ _ (fun _i ↦ s) fun _i d ↦ f d; simp
+  convert @prod_univ_sum (Fin n) _ _ _ _ _ (fun _i ↦ s) fun _i d ↦ f d; simp
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The product of `f a + g a` over all of `s` is the sum over the powerset of `s` of the product of
@@ -267,7 +267,7 @@ lemma prod_sub_ordered [LinearOrder ι] (s : Finset ι) (f g : ι → R) :
       (∏ i ∈ s, f i) -
         ∑ i ∈ s, g i * (∏ j ∈ s with j < i, (f j - g j)) * ∏ j ∈ s with i < j, f j := by
   simp only [sub_eq_add_neg]
-  convert! prod_add_ordered s f fun i => -g i
+  convert prod_add_ordered s f fun i => -g i
   simp
 
 /-- `∏ i, (1 - f i) = 1 - ∑ i, f i * (∏ j < i, 1 - f j)`. This formula is useful in construction of

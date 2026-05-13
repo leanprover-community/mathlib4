@@ -123,7 +123,7 @@ lemma norm_one_add_mul_inv_le {t : ℝ} (ht : t ∈ Set.Icc 0 1) {z : ℂ} (hz :
       rw [norm_mul, Complex.norm_of_nonneg ht.1]
     _ ≤ ‖1 + t * z‖ := by
       rw [← norm_neg (t * z), ← sub_neg_eq_add]
-      convert! norm_sub_norm_le 1 (-(t * z))
+      convert norm_sub_norm_le 1 (-(t * z))
       exact norm_one.symm
 
 lemma integrable_pow_mul_norm_one_add_mul_inv (n : ℕ) {z : ℂ} (hz : ‖z‖ < 1) :
@@ -151,7 +151,7 @@ lemma norm_log_sub_logTaylor_le (n : ℕ) {z : ℂ} (hz : ‖z‖ < 1) :
     exact (Continuous.continuousOn (by fun_prop)).mul <|
       continuousOn_one_add_mul_inv <| mem_slitPlane_of_norm_lt_one hz
   have H : f z = z * ∫ t in (0 : ℝ)..1, (-(t * z)) ^ n * (1 + t * z)⁻¹ := by
-    convert! (integral_unitInterval_deriv_eq_sub hcont hderiv).symm using 1
+    convert (integral_unitInterval_deriv_eq_sub hcont hderiv).symm using 1
     · simp only [f, zero_add, add_zero, log_one, logTaylor_at_zero, sub_self, sub_zero]
     · simp only [f', real_smul, zero_add,
         smul_eq_mul]
@@ -175,7 +175,7 @@ lemma norm_log_sub_logTaylor_le (n : ℕ) {z : ℂ} (hz : ‖z‖ < 1) :
 /-- The difference `log (1+z) - z` is bounded by `‖z‖^2/(2*(1-‖z‖))` when `‖z‖ < 1`. -/
 lemma norm_log_one_add_sub_self_le {z : ℂ} (hz : ‖z‖ < 1) :
     ‖log (1 + z) - z‖ ≤ ‖z‖ ^ 2 * (1 - ‖z‖)⁻¹ / 2 := by
-  convert! norm_log_sub_logTaylor_le 1 hz using 2
+  convert norm_log_sub_logTaylor_le 1 hz using 2
   · simp [logTaylor_succ, logTaylor_zero, sub_eq_add_neg]
   · norm_num
 
@@ -229,12 +229,12 @@ lemma norm_log_one_sub_inv_add_logTaylor_neg_le (n : ℕ) {z : ℂ} (hz : ‖z�
   rw [sub_eq_add_neg,
     log_inv _ <| slitPlane_arg_ne_pi <| mem_slitPlane_of_norm_lt_one <| (norm_neg z).symm ▸ hz,
     ← sub_neg_eq_add, ← neg_sub', norm_neg]
-  convert! norm_log_sub_logTaylor_le n <| (norm_neg z).symm ▸ hz using 4 <;> rw [norm_neg]
+  convert norm_log_sub_logTaylor_le n <| (norm_neg z).symm ▸ hz using 4 <;> rw [norm_neg]
 
 /-- The difference `log (1-z)⁻¹ - z` is bounded by `‖z‖^2/(2*(1-‖z‖))` when `‖z‖ < 1`. -/
 lemma norm_log_one_sub_inv_sub_self_le {z : ℂ} (hz : ‖z‖ < 1) :
     ‖log (1 - z)⁻¹ - z‖ ≤ ‖z‖ ^ 2 * (1 - ‖z‖)⁻¹ / 2 := by
-  convert! norm_log_one_sub_inv_add_logTaylor_neg_le 1 hz using 2
+  convert norm_log_one_sub_inv_add_logTaylor_neg_le 1 hz using 2
   · simp [logTaylor_succ, logTaylor_zero, sub_eq_add_neg]
   · norm_num
 
@@ -365,7 +365,7 @@ lemma tendsto_pow_exp_of_isLittleO_sub_add_div {f : ℕ → ℂ} (t : ℂ)
     Tendsto (fun n ↦ f n ^ n) atTop (𝓝 (exp t)) := by
   rw [show (fun n ↦ f n ^ n) = (fun n ↦ (1 + (f n - 1)) ^ n) by ext; simp]
   refine tendsto_one_add_pow_exp_of_tendsto (tendsto_sub_nhds_zero_iff.1 ?_)
-  convert! hf.tendsto_inv_smul_nhds_zero.congr' ?_
+  convert hf.tendsto_inv_smul_nhds_zero.congr' ?_
   filter_upwards [eventually_ne_atTop 0] with n h0
   simp
   field_simp [n.cast_ne_zero.2 h0]

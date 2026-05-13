@@ -613,7 +613,7 @@ theorem dvd_term_of_dvd_eval_of_dvd_terms {z p : S} {f : S[X]} (i : ℕ) (dvd_ev
     apply Finset.dvd_sum
     intro j hj
     exact dvd_terms j (Finset.ne_of_mem_erase hj)
-  · convert! dvd_zero p
+  · convert dvd_zero p
     rw [notMem_support_iff] at hi
     simp [hi]
 

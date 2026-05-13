@@ -653,7 +653,7 @@ theorem map_update_update [DecidableEq ι] {i j : ι} (hij : i ≠ j) (m : M) :
 theorem map_swap_add [DecidableEq ι] {i j : ι} (hij : i ≠ j) :
     f (v ∘ Equiv.swap i j) + f v = 0 := by
   rw [Equiv.comp_swap_eq_update]
-  convert! f.map_update_update v hij (v i + v j)
+  convert f.map_update_update v hij (v i + v j)
   simp [f.map_update_self _ hij, f.map_update_self _ hij.symm,
     Function.update_comm hij (v i + v j) (v _) v, Function.update_comm hij.symm (v i) (v i) v]
 

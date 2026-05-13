@@ -74,10 +74,13 @@ theorem IsLocalization.smul_mem_finsetIntegerMultiple_span [Algebra R S] [Algebr
   obtain ⟨⟨_, a, ha₁, rfl⟩, ha₂⟩ :=
     (IsLocalization.eq_iff_exists (M.map (algebraMap R S)) S').mp hx''
   use (⟨a, ha₁⟩ : M) * (⟨y', hy'⟩ : M)
-  convert! (Submodule.span R
-    (IsLocalization.finsetIntegerMultiple (Submonoid.map (algebraMap R S) M) s : Set S)).smul_mem
-      a hx' using 1
-  convert! ha₂.symm using 1
+  convert
+    (Submodule.span R
+          (IsLocalization.finsetIntegerMultiple (Submonoid.map (algebraMap R S) M) s :
+            Set S)).smul_mem
+      a hx' using
+    1
+  convert ha₂.symm using 1
   · rw [Subtype.coe_mk, Submonoid.smul_def, Submonoid.coe_mul, ← smul_smul]
     exact Algebra.smul_def _ _
   · exact Algebra.smul_def _ _

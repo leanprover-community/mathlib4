@@ -83,7 +83,7 @@ theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ :
         -- We could add a `@[simp]` lemma fixing this, but it breaks later steps of the proof.
         erw [hr] at this
         rw [RingEquiv.toRingHom_eq_coe] at this
-        convert! this using 1
+        convert this using 1
         · exact (IsDenseInducing.extend_eq di hc.continuous _).symm
         · rw [← ofRealHom.coe_rangeRestrict, hr]
           rfl
@@ -110,7 +110,7 @@ theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ :
   · let j : { x // x ∈ closure (id '' K) } → (K.topologicalClosure : Set ℂ) :=
       fun x =>
       ⟨x, by
-        convert! x.prop
+        convert x.prop
         simp only [id, Set.image_id']
         rfl ⟩
     convert! DenseRange.comp (Function.Surjective.denseRange _)
@@ -118,7 +118,7 @@ theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ :
     rintro ⟨y, hy⟩
     use
       ⟨y, by
-        convert! hy
+        convert hy
         simp only [id, Set.image_id']
         rfl ⟩
 

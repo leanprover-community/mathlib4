@@ -664,7 +664,7 @@ def mapNeighborSet (v : V) : G.neighborSet v ≃ G'.neighborSet (f v) where
 include f in
 theorem card_eq [Fintype V] [Fintype W] : Fintype.card V = Fintype.card W := by
   rw [← Fintype.ofEquiv_card f.toEquiv]
-  convert! rfl
+  convert rfl
 
 /-- Given a bijection, there is an embedding from the comapped graph into the original
 graph. -/

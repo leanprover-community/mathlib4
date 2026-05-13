@@ -289,10 +289,10 @@ lemma of_map {Ω'' : Type*} {mΩ'' : MeasurableSpace Ω''} {κ : Kernel Ω' Ω''
       at h1
   mgf_le := by
     filter_upwards [h.ae_forall_integrable_exp_mul, h.mgf_le] with ω' h_int h_mgf t
-    convert! h_mgf t
+    convert h_mgf t
     ext t
     rw [map_apply _ hY, mgf_map hY.aemeasurable]
-    convert! (h_int t).1
+    convert (h_int t).1
     rw [map_apply _ hY]
 
 lemma id_map_iff (hX : Measurable X) :
@@ -653,7 +653,7 @@ lemma of_map {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ : Measure Ω'}
     have h1 := h.integrable_exp_mul t
     rwa [integrable_map_measure h1.aestronglyMeasurable (by fun_prop)] at h1
   mgf_le t := by
-    convert! h.mgf_le t using 1
+    convert h.mgf_le t using 1
     rw [mgf_map hY (h.integrable_exp_mul t).1]
 
 lemma id_map_iff (hX : AEMeasurable X μ) :
@@ -831,7 +831,7 @@ protected lemma mgf_le_of_mem_Icc_of_integral_eq_zero [IsProbabilityMeasure μ] 
   _ = Var[X; μ.tilted (u * X ·)] := by
     rw [← variance_tilted_mul (hs (Set.mem_Icc_of_Ioo h1))]
   _ ≤ ((b - a) / 2) ^ 2 := by
-    convert! variance_le_sq_of_bounded ((tilted_absolutelyContinuous μ (u * X ·)) hb) _
+    convert variance_le_sq_of_bounded ((tilted_absolutelyContinuous μ (u * X ·)) hb) _
     · exact isProbabilityMeasure_tilted (hi u)
     · exact hm.mono_ac (tilted_absolutelyContinuous μ (u * X ·))
   _ = (‖b - a‖₊ / 2) ^ 2 := by simp [field]

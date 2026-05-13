@@ -176,10 +176,11 @@ lemma RingHom.Finite.tensorProductMap
     [Algebra R S] [Algebra R T] [Algebra R S'] [Algebra R T']
     {f : S →ₐ[R] S'} (Hf : f.Finite) {g : T →ₐ[R] T'} (Hg : g.Finite) :
     (Algebra.TensorProduct.map f g).toRingHom.Finite := by
-  convert! RingHom.Finite.tensorProductMap_id (T := T') Hf |>.comp <|
-    (Algebra.TensorProduct.comm _ _ _).toRingEquiv.finite |>.comp <|
-    RingHom.Finite.tensorProductMap_id (T := S) Hg |>.comp <|
-    (Algebra.TensorProduct.comm _ _ _).toRingEquiv.finite
+  convert
+    RingHom.Finite.tensorProductMap_id (T := T') Hf |>.comp <|
+      (Algebra.TensorProduct.comm _ _ _).toRingEquiv.finite |>.comp <|
+        RingHom.Finite.tensorProductMap_id (T := S) Hg |>.comp <|
+          (Algebra.TensorProduct.comm _ _ _).toRingEquiv.finite
   simp only [AlgHom.toRingHom_eq_coe, RingEquiv.toRingHom_eq_coe,
     AlgEquiv.toRingEquiv_toRingHom, ← AlgEquiv.toAlgHom_toRingHom, ← AlgHom.comp_toRingHom]
   congr

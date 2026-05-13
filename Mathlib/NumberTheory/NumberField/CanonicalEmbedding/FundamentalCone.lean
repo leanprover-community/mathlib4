@@ -225,7 +225,7 @@ theorem smul_mem_of_mem (hx : x ∈ fundamentalCone K) (hc : c ≠ 0) :
 theorem smul_mem_iff_mem (hc : c ≠ 0) :
     c • x ∈ fundamentalCone K ↔ x ∈ fundamentalCone K := by
   refine ⟨fun h ↦ ?_, fun h ↦ smul_mem_of_mem h hc⟩
-  convert! smul_mem_of_mem h (inv_ne_zero hc)
+  convert smul_mem_of_mem h (inv_ne_zero hc)
   rw [eq_inv_smul_iff₀ hc]
 
 theorem exists_unit_smul_mem (hx : mixedEmbedding.norm x ≠ 0) :

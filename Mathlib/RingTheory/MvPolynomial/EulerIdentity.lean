@@ -39,7 +39,7 @@ protected lemma IsWeightedHomogeneous.pderiv [AddCancelCommMonoid M] {w : σ →
     simp_rw [single_eq_monomial, pderiv_monomial, one_mul]
     by_cases hi : m i = 0
     · rw [hi, Nat.cast_zero, monomial_zero]; apply isWeightedHomogeneous_zero
-    convert! isWeightedHomogeneous_monomial ..
+    convert isWeightedHomogeneous_monomial ..
     rw [← add_right_cancel_iff (a := w i), h', ← hm, weight_sub_single_add hi]
   · rw [map_zero]; apply isWeightedHomogeneous_zero
   · rw [map_add]; exact hp.add hq

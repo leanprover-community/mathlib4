@@ -745,7 +745,7 @@ include 𝕜 in
 is an isometry if `f` is one. -/
 theorem vadd_vsub {f : P → P₂} (hf : Isometry f) {p : P} {g : V → V₂}
     (hg : ∀ v, g v = f (v +ᵥ p) -ᵥ f p) : Isometry g := by
-  convert! (vaddConst 𝕜 (f p)).symm.isometry.comp (hf.comp (vaddConst 𝕜 p).isometry)
+  convert (vaddConst 𝕜 (f p)).symm.isometry.comp (hf.comp (vaddConst 𝕜 p).isometry)
   exact funext hg
 
 variable (𝕜) in

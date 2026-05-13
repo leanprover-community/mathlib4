@@ -61,7 +61,7 @@ theorem tendsto_nhdsNE_of_tendsto_atTop_nhds_of_eq [TopologicalSpace α] {a b : 
     (h_pos : Tendsto (fun x ↦ f (c + x⁻¹)) atTop (𝓝 b)) (h_eq : a = b) :
     Tendsto f (𝓝[≠] c) (𝓝 a) := by
   apply tendsto_nhdsNE_of_tendsto_atTop _ _ h_neg
-  convert! h_pos
+  convert h_pos
 
 theorem isBigOWith_of_tendsto_top {C : ℝ} {f g : ℝ → ℝ} {l : Filter ℝ}
     (h : Tendsto (fun x ↦ g x / f x) l atTop) (hC : 0 < C) :

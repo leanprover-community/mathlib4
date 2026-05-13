@@ -58,7 +58,7 @@ theorem sq_dvd_add_pow_sub_sub (p x : R) (n : ℕ) :
       Nat.cast_succ, tsub_self, pow_zero, mul_one, Nat.choose_self, Nat.cast_zero, zero_add,
       Nat.succ_sub_succ_eq_sub, Nat.sub_zero]
     suffices p ^ 2 ∣ ∑ i ∈ range n, x ^ i * p ^ (n + 1 - i) * ↑((n + 1).choose i) by
-      convert! this; abel
+      convert this; abel
     apply Finset.dvd_sum
     intro y hy
     calc
@@ -318,7 +318,7 @@ theorem Int.two_pow_sub_pow {x y : ℤ} {n : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 
   have hy : Odd y := by
     rw [← even_iff_two_dvd, Int.not_even_iff_odd] at hx
     replace hxy := (@even_neg _ _ (x - y)).mpr (even_iff_two_dvd.mpr hxy)
-    convert! Even.add_odd hxy hx
+    convert Even.add_odd hxy hx
     abel
   obtain ⟨d, rfl⟩ := hn
   simp only [← two_mul, pow_mul]

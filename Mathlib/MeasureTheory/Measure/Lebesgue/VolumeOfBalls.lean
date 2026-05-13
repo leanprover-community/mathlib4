@@ -94,7 +94,7 @@ theorem MeasureTheory.measure_lt_one_eq_integral_div_gamma {p : ℝ} (hp : 0 < p
   -- The measure `ν` is the measure on `F` defined by `μ`
   -- Since we have two different topologies, it is necessary to specify the topology of E
   let ν : Measure F := @Measure.map E F mE _ φ μ
-  convert! (measure_unitBall_eq_integral_div_gamma ν hp) using 1
+  convert (measure_unitBall_eq_integral_div_gamma ν hp) using 1
   · rw [@Measure.map_apply E F mE _ μ φ _ _ measurableSet_ball]
     · congr!
       simp_rw [Metric.ball, dist_zero_right]
@@ -127,7 +127,7 @@ theorem MeasureTheory.measure_le_eq_lt [Nontrivial E] (r : ℝ) :
   -- The measure `ν` is the measure on `F` defined by `μ`
   -- Since we have two different topologies, it is necessary to specify the topology of E
   let ν : Measure F := @Measure.map E F mE _ φ μ
-  convert! addHaar_closedBall_eq_addHaar_ball ν 0 r using 1
+  convert addHaar_closedBall_eq_addHaar_ball ν 0 r using 1
   · rw [@Measure.map_apply E F mE _ μ φ _ _ measurableSet_closedBall]
     · congr!
       simp_rw [Metric.closedBall, dist_zero_right]
@@ -194,7 +194,7 @@ theorem MeasureTheory.volume_sum_rpow_lt [Nonempty ι] {p : ℝ} (hp : 1 ≤ p) 
       exact not_le.mpr (lt_of_lt_of_le (Set.mem_setOf.mp hx) hr) (h₂ x)
     rw [this, measure_empty, ← zero_eq_ofReal.mpr hr, zero_pow Fin.pos'.ne', zero_mul]
   · rw [← volume_sum_rpow_lt_one _ hp, ← ofReal_pow (le_of_lt hr), ← finrank_pi ℝ]
-    convert! addHaar_smul_of_nonneg volume (le_of_lt hr) {x : ι → ℝ | ∑ i, |x i| ^ p < 1} using 2
+    convert addHaar_smul_of_nonneg volume (le_of_lt hr) {x : ι → ℝ | ∑ i, |x i| ^ p < 1} using 2
     simp_rw [← Set.preimage_smul_inv₀ (ne_of_gt hr), Set.preimage_setOf_eq, Pi.smul_apply,
       smul_eq_mul, abs_mul, mul_rpow (abs_nonneg _) (abs_nonneg _), abs_inv,
       inv_rpow (abs_nonneg _), ← Finset.mul_sum, abs_eq_self.mpr (le_of_lt hr),
@@ -268,7 +268,7 @@ theorem Complex.volume_sum_rpow_lt [Nonempty ι] {p : ℝ} (hp : 1 ≤ p) (r : �
       exact not_le.mpr (lt_of_lt_of_le (Set.mem_setOf.mp hx) hr) (h₂ x)
     rw [this, measure_empty, ← zero_eq_ofReal.mpr hr, zero_pow Fin.pos'.ne', zero_mul]
   · rw [← Complex.volume_sum_rpow_lt_one _ hp, ← ENNReal.ofReal_pow (le_of_lt hr)]
-    convert! addHaar_smul_of_nonneg volume (le_of_lt hr) {x : ι → ℂ |  ∑ i, ‖x i‖ ^ p < 1} using 2
+    convert addHaar_smul_of_nonneg volume (le_of_lt hr) {x : ι → ℂ | ∑ i, ‖x i‖ ^ p < 1} using 2
     · simp_rw [← Set.preimage_smul_inv₀ (ne_of_gt hr), Set.preimage_setOf_eq, Pi.smul_apply,
         norm_smul, mul_rpow (norm_nonneg _) (norm_nonneg _), Real.norm_eq_abs, abs_inv, inv_rpow
         (abs_nonneg _), ← Finset.mul_sum, abs_eq_self.mpr (le_of_lt hr), inv_mul_lt_iff₀
@@ -350,7 +350,7 @@ theorem volume_ball (x : E) (r : ℝ) :
   have : Nonempty (Fin (finrank ℝ E)) := Fin.pos_iff_nonempty.mp finrank_pos
   have := EuclideanSpace.volume_ball (Fin (finrank ℝ E)) ((stdOrthonormalBasis ℝ E).repr x) r
   simp_rw [Fintype.card_fin] at this
-  convert! this
+  convert this
   simp only [LinearIsometryEquiv.preimage_ball, LinearIsometryEquiv.symm_symm]
 
 theorem volume_closedBall (x : E) (r : ℝ) :

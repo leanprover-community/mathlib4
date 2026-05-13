@@ -599,11 +599,11 @@ theorem truncate_self {a b : X} (γ : Path a b) (t : ℝ) :
 
 theorem truncate_zero_zero {a b : X} (γ : Path a b) :
     γ.truncate 0 0 = (Path.refl a).cast (by rw [min_self, γ.extend_zero]) γ.extend_zero := by
-  convert! γ.truncate_self 0
+  convert γ.truncate_self 0
 
 theorem truncate_one_one {a b : X} (γ : Path a b) :
     γ.truncate 1 1 = (Path.refl b).cast (by rw [min_self, γ.extend_one]) γ.extend_one := by
-  convert! γ.truncate_self 1
+  convert γ.truncate_self 1
 
 @[simp]
 theorem truncate_zero_one {a b : X} (γ : Path a b) :

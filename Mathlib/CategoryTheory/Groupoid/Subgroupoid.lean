@@ -117,7 +117,7 @@ theorem mem_objs_of_tgt {c d : C} {f : c ⟶ d} (h : f ∈ S.arrows c d) : d ∈
 
 theorem id_mem_of_nonempty_isotropy (c : C) : c ∈ objs S → 𝟙 c ∈ S.arrows c c := by
   rintro ⟨γ, hγ⟩
-  convert! S.mul hγ (S.inv hγ)
+  convert S.mul hγ (S.inv hγ)
   simp only [inv_eq_inv, IsIso.hom_inv_id]
 
 theorem id_mem_of_src {c d : C} {f : c ⟶ d} (h : f ∈ S.arrows c d) : 𝟙 c ∈ S.arrows c c :=
@@ -305,7 +305,7 @@ structure IsNormal : Prop extends IsWide S where
 
 theorem IsNormal.conj' {S : Subgroupoid C} (Sn : IsNormal S) :
     ∀ {c d} (p : d ⟶ c) {γ : c ⟶ c}, γ ∈ S.arrows c c → p ≫ γ ≫ Groupoid.inv p ∈ S.arrows d d :=
-  fun p γ hs => by convert! Sn.conj (Groupoid.inv p) hs; simp
+  fun p γ hs => by convert Sn.conj (Groupoid.inv p) hs; simp
 
 theorem IsNormal.conjugation_bij (Sn : IsNormal S) {c d} (p : c ⟶ d) :
     Set.BijOn (fun γ : c ⟶ c => Groupoid.inv p ≫ γ ≫ p) (S.arrows c c) (S.arrows d d) := by

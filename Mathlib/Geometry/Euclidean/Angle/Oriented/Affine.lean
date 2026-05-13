@@ -317,7 +317,7 @@ theorem oangle_eq_pi_sub_two_zsmul_oangle_of_dist_eq {p₁ p₂ p₃ : P} (hn : 
     (h : dist p₁ p₂ = dist p₁ p₃) : ∡ p₃ p₁ p₂ = π - (2 : ℤ) • ∡ p₁ p₂ p₃ := by
   simp_rw [dist_eq_norm_vsub V] at h
   rw [oangle, oangle]
-  convert! o.oangle_eq_pi_sub_two_zsmul_oangle_sub_of_norm_eq _ h using 1
+  convert o.oangle_eq_pi_sub_two_zsmul_oangle_sub_of_norm_eq _ h using 1
   · rw [← neg_vsub_eq_vsub_rev p₁ p₃, ← neg_vsub_eq_vsub_rev p₁ p₂, o.oangle_neg_neg]
   · rw [← o.oangle_sub_eq_oangle_sub_rev_of_norm_eq h]; simp
   · simpa using hn
@@ -748,7 +748,7 @@ theorem _root_.Collinear.oangle_sign_of_sameRay_vsub {p₁ p₂ p₃ p₄ : P} (
         (Set.mem_insert_of_mem _ (Set.mem_insert_of_mem _ (Set.mem_insert _ _))) hp₁p₂⟩, p₄ -ᵥ p₃⟩,
         ⟨hr, vsub_ne_zero.2 hp₃p₄.symm⟩, ?_⟩
       simp
-    convert! Real.Angle.sign_eq_of_continuousOn hco hf hsp hp₃p₄s hp₁p₂s
+    convert Real.Angle.sign_eq_of_continuousOn hco hf hsp hp₃p₄s hp₁p₂s
 
 /-- Given three points in strict order on the same line, and a fourth point, the angles at the
 fourth point between the first and second or second and third points have the same sign. -/
@@ -831,7 +831,7 @@ theorem _root_.AffineSubspace.SSameSide.oangle_sign_eq {s : AffineSubspace ℝ P
   have hp₃ : (p₁, p₃, p₂) ∈ sp :=
     Set.mem_image_of_mem _ (sSameSide_self_iff.2 ⟨hp₃p₄.nonempty, hp₃p₄.2.1⟩)
   have hp₄ : (p₁, p₄, p₂) ∈ sp := Set.mem_image_of_mem _ hp₃p₄
-  convert! Real.Angle.sign_eq_of_continuousOn hc hf hsp hp₃ hp₄
+  convert Real.Angle.sign_eq_of_continuousOn hc hf hsp hp₃ hp₄
 
 /-- Given two points in an affine subspace, the angles between those two points at two other
 points on opposite sides of that subspace have opposite signs. -/

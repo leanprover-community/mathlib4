@@ -152,7 +152,7 @@ end
 theorem span_smul_eq_of_isUnit (s : Set M) (r : R) (hr : IsUnit r) : span R (r • s) = span R s := by
   apply le_antisymm
   · apply span_smul_le
-  · convert! span_smul_le (r • s) ((hr.unit⁻¹ :) : R)
+  · convert span_smul_le (r • s) ((hr.unit⁻¹ :) : R)
     simp [smul_smul]
 
 /-- We can regard `coe_iSup_of_chain` as the statement that `(↑) : (Submodule R M) → Set M` is

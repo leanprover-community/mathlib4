@@ -101,7 +101,7 @@ theorem Filter.Eventually.germ_congr_set
   intro x hx
   apply ((hf x hx).and (h x hx).eventually_nhds).mono
   intro y hy
-  convert! hy.1 using 1
+  convert hy.1 using 1
   exact Germ.coe_eq.mpr hy.2
 
 theorem restrictGermPredicate_congr {P : ∀ x : X, Germ (𝓝 x) Y → Prop}

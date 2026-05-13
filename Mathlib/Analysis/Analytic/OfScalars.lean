@@ -237,9 +237,9 @@ theorem ofScalars_radius_eq_of_tendsto [NormOneClass E] {r : NNReal} (hr : r ≠
     (hc : Tendsto (fun n ↦ ‖c n‖ / ‖c n.succ‖) atTop (𝓝 r)) :
       (ofScalars E c).radius = ofNNReal r := by
   suffices Tendsto (fun n ↦ ‖c n.succ‖ / ‖c n‖) atTop (𝓝 r⁻¹) by
-    convert! ofScalars_radius_eq_inv_of_tendsto E c (inv_ne_zero hr) this
+    convert ofScalars_radius_eq_inv_of_tendsto E c (inv_ne_zero hr) this
     simp
-  convert! hc.inv₀ (NNReal.coe_ne_zero.mpr hr) using 1
+  convert hc.inv₀ (NNReal.coe_ne_zero.mpr hr) using 1
   simp
 
 /-- The ratio test stating that if `‖c n.succ‖ / ‖c n‖` tends to zero, the radius is unbounded.
@@ -279,7 +279,7 @@ theorem ofScalars_radius_eq_zero_of_tendsto [NormOneClass E]
   · filter_upwards [hc.eventually_ge_atTop (2 * r⁻¹), eventually_ne_atTop 0] with n hc hn
     simp only [ofScalars_norm, norm_mul, norm_norm, norm_pow, NNReal.norm_eq]
     rw [mul_comm ‖c n‖, ← mul_assoc, ← div_le_div_iff₀, mul_div_assoc]
-    · convert! hc
+    · convert hc
       rw [pow_succ, div_mul_cancel_left₀, NNReal.coe_inv]
       aesop
     · simp_all
@@ -316,7 +316,7 @@ theorem ofScalars_radius_eq_inv_of_tendsto_ENNReal [NormOneClass E] {r : ℝ≥0
     simp_all
   · have hr' := toReal_ne_zero.mp hr.ne.symm
     have hr'' := toNNReal_ne_zero.mpr hr' -- this result could go in ENNReal
-    convert! ofScalars_radius_eq_inv_of_tendsto E c hr'' ?_
+    convert ofScalars_radius_eq_inv_of_tendsto E c hr'' ?_
     · simp [ENNReal.coe_inv hr'', ENNReal.coe_toNNReal (toReal_ne_zero.mp hr.ne.symm).2]
     · simp_rw [ENNReal.coe_toNNReal_eq_toReal]
       refine Tendsto.congr' ?_ <| (tendsto_toReal hr'.2).comp hc'

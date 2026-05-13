@@ -485,9 +485,10 @@ lemma dlo_isExtensionPair
   let g' :
     ((Substructure.closure Language.order).toFun {m} ⊔ S : Language.order.Substructure M) ↪o N :=
     ((OrderIso.setCongr _ _ (by
-      convert! LowerAdjoint.closure_eq_self_of_mem_closed _
-        (Substructure.mem_closed_of_isRelational Language.order
-        ((insert m hS.toFinset : Finset M) : Set M))
+      convert
+        LowerAdjoint.closure_eq_self_of_mem_closed _
+          (Substructure.mem_closed_of_isRelational Language.order
+            ((insert m hS.toFinset : Finset M) : Set M))
       simp only [Finset.coe_insert, Set.Finite.coe_toFinset, Substructure.closure_insert,
         Substructure.closure_eq])).toOrderEmbedding.trans g)
   use StrongHomClass.toEmbedding g'

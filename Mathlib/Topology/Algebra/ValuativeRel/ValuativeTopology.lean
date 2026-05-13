@@ -137,7 +137,7 @@ namespace Valuation
 
 lemma mem_nhds_iff {s : Set R} {x : R} : s ∈ 𝓝 x ↔
     ∃ γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ, { z | v.restrict (z - x) < γ.val } ⊆ s := by
-  convert! IsValuativeTopology.mem_nhds_iff (s := s) using 4
+  convert IsValuativeTopology.mem_nhds_iff (s := s) using 4
   simpa [neg_add_eq_sub] using v.exists_setOf_restrict_le_iff _ _
 
 lemma mem_nhds_zero_iff (s : Set R) : s ∈ 𝓝 0 ↔

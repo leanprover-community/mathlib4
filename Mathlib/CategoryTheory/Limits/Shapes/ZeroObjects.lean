@@ -267,7 +267,7 @@ instance {X : C} (f : 0 ⟶ X) : Mono f where right_cancellation g h _ := by ext
 instance {X : C} (f : X ⟶ 0) : Epi f where left_cancellation g h _ := by ext
 
 instance zero_to_zero_isIso (f : (0 : C) ⟶ 0) : IsIso f := by
-  convert! show IsIso (𝟙 (0 : C)) by infer_instance
+  convert show IsIso (𝟙 (0 : C)) by infer_instance
   subsingleton
 
 /-- A zero object is in particular initial. -/

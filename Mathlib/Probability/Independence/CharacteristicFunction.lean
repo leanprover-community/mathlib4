@@ -145,11 +145,12 @@ lemma iIndepFun.charFunDual_map_finsetSum_eq_prod [NormedSpace ℝ E]
     · exact mX i (mem_insert_self i s)
     · exact Finset.aemeasurable_sum s (fun i hi ↦ (mX i (mem_insert_of_mem hi)))
     symm
-    convert! iIndepFun.indepFun_finsetSum_of_notMem₀ (i := ⟨i, mem_insert_self i s⟩)
-      (f := fun (x : (insert i s : Finset ι)) ↦ X x.1) (s := {x | x.1 ∈ s}) hX
-      (fun i ↦ (mX i.1 i.2)) (by simpa)
+    convert
+      iIndepFun.indepFun_finsetSum_of_notMem₀ (i := ⟨i, mem_insert_self i s⟩) (f :=
+        fun (x : (insert i s : Finset ι)) ↦ X x.1) (s := {x | x.1 ∈ s}) hX (fun i ↦ (mX i.1 i.2))
+        (by simpa)
     let e : ((insert i s) : Finset ι) → ι := Subtype.val
-    convert! (Finset.sum_of_injOn Subtype.val ?_ ?_ ?_ ?_).symm
+    convert (Finset.sum_of_injOn Subtype.val ?_ ?_ ?_ ?_).symm
     · simp
     · intro _ _; grind
     · simp; grind

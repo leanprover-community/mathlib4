@@ -317,7 +317,7 @@ theorem norm_image_sub_le_of_norm_deriv_right_le_segment {f' : ℝ → E} {C : �
   have hB : ∀ x, HasDerivAt B C x := by
     intro x
     simpa using (hasDerivAt_const x C).mul ((hasDerivAt_id x).sub (hasDerivAt_const x a))
-  convert! image_norm_le_of_norm_deriv_right_le_deriv_boundary hg hg' _ hB bound
+  convert image_norm_le_of_norm_deriv_right_le_deriv_boundary hg hg' _ hB bound
   simp only [g, B]; rw [sub_self, norm_zero, sub_self, mul_zero]
 
 /-- A function on `[a, b]` with the norm of the derivative within `[a, b]`
@@ -662,9 +662,11 @@ lemma isLittleO_pow_succ {x₀ : E} {n : ℕ} (hs : Convex ℝ s) (hx₀s : x₀
     gcongr
     exact norm_sub_le_of_mem_segment hy
   filter_upwards [this] with x ⟨h_segment, h⟩
-  convert! (convex_segment x₀ x).norm_image_sub_le_of_norm_hasFDerivWithin_le
-    (f := fun x ↦ f x - f x₀) (y := x) (x := x₀) (s := segment ℝ x₀ x) ?_ h
-    (left_mem_segment ℝ x₀ x) (right_mem_segment ℝ x₀ x) using 1
+  convert
+    (convex_segment x₀ x).norm_image_sub_le_of_norm_hasFDerivWithin_le (f := fun x ↦ f x - f x₀)
+      (y := x) (x := x₀) (s := segment ℝ x₀ x) ?_ h (left_mem_segment ℝ x₀ x)
+      (right_mem_segment ℝ x₀ x) using
+    1
   · simp
   · simp only [hasFDerivWithinAt_sub_const_iff]
     exact fun x hx ↦ (hff' x (h_segment hx)).mono h_segment

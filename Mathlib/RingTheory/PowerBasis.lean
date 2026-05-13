@@ -235,7 +235,7 @@ protected theorem leftMulMatrix (pb : PowerBasis A S) : Algebra.leftMulMatrix pb
   apply (pow_succ' _ _).symm.trans
   split_ifs with h
   · simp_rw [h, neg_smul, Finset.sum_neg_distrib, eq_neg_iff_add_eq_zero]
-    convert! pb.aeval_minpolyGen
+    convert pb.aeval_minpolyGen
     rw [add_comm, aeval_eq_sum_range, Finset.sum_range_succ, ← leadingCoeff,
       pb.minpolyGen_monic.leadingCoeff, one_smul, natDegree_minpolyGen, Finset.sum_range]
   · rw [Fintype.sum_eq_single (⟨(k : ℕ) + 1, lt_of_le_of_ne k.2 h⟩ : Fin pb.dim), if_pos, one_smul]
@@ -270,11 +270,11 @@ theorem constr_pow_aeval (pb : PowerBasis A S) {y : S'} (hy : aeval y (minpoly A
 
 theorem constr_pow_gen (pb : PowerBasis A S) {y : S'} (hy : aeval y (minpoly A pb.gen) = 0) :
     pb.basis.constr A (fun i => y ^ (i : ℕ)) pb.gen = y := by
-  convert! pb.constr_pow_aeval hy X <;> rw [aeval_X]
+  convert pb.constr_pow_aeval hy X <;> rw [aeval_X]
 
 theorem constr_pow_algebraMap (pb : PowerBasis A S) {y : S'} (hy : aeval y (minpoly A pb.gen) = 0)
     (x : A) : pb.basis.constr A (fun i => y ^ (i : ℕ)) (algebraMap A S x) = algebraMap A S' x := by
-  convert! pb.constr_pow_aeval hy (C x) <;> rw [aeval_C]
+  convert pb.constr_pow_aeval hy (C x) <;> rw [aeval_C]
 
 theorem constr_pow_mul (pb : PowerBasis A S) {y : S'} (hy : aeval y (minpoly A pb.gen) = 0)
     (x x' : S) : pb.basis.constr A (fun i => y ^ (i : ℕ)) (x * x') =

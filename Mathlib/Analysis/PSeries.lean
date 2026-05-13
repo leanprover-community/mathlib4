@@ -62,7 +62,7 @@ theorem le_sum_schlomilch' (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f 
       exacts [hu n.zero_le, hu n.le_succ]
     have : ∀ k ∈ Ico (u n) (u (n + 1)), f k ≤ f (u n) := fun k hk =>
       hf (Nat.succ_le_of_lt (h_pos n)) (mem_Ico.mp hk).1
-    convert! sum_le_sum this
+    convert sum_le_sum this
     simp
 
 theorem le_sum_condensed' (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
@@ -96,7 +96,7 @@ theorem sum_schlomilch_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f 
     have : ∀ k ∈ Ico (u n + 1) (u (n + 1) + 1), f (u (n + 1)) ≤ f k := fun k hk =>
       hf (Nat.lt_of_le_of_lt (Nat.succ_le_of_lt (h_pos n)) <| (Nat.lt_succ_of_le le_rfl).trans_le
         (mem_Ico.mp hk).1) (Nat.le_of_lt_succ <| (mem_Ico.mp hk).2)
-    convert! sum_le_sum this
+    convert sum_le_sum this
     simp
 
 theorem sum_condensed_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
@@ -122,7 +122,7 @@ theorem sum_schlomilch_le {C : ℕ} (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f
     gcongr
     · exact h_nonneg (u (k + 1))
     exact mod_cast h_succ_diff k
-  convert! sum_le_sum this
+  convert sum_le_sum this
   simp [smul_sum]
 
 theorem sum_condensed_le (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
@@ -243,7 +243,7 @@ theorem summable_condensed_iff_of_eventually_nonneg {f : ℕ → ℝ} (h_nonneg 
   rw [Filter.eventually_atTop] at h_mono
   rcases h_nonneg with ⟨n, hn⟩
   rcases h_mono with ⟨m, hm⟩
-  convert! summable_condensed_iff_of_nonneg (f := fun k ↦ f (max k (n + m))) _ _ using 1
+  convert summable_condensed_iff_of_nonneg (f := fun k ↦ f (max k (n + m))) _ _ using 1
   · rw [summable_congr_atTop]
     have h_pow := tendsto_pow_atTop_atTop_of_one_lt (r := 2) (by simp)
     filter_upwards [h_pow.eventually_ge_atTop (n + m)] with _ hk using by simp [max_eq_left hk]

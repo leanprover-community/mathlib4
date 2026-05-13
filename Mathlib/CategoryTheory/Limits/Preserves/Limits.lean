@@ -99,7 +99,7 @@ variable [HasLimit F] [HasLimit (F ⋙ G)]
 preserves limits of `F`. -/
 lemma preservesLimit_of_isIso_post [IsIso (limit.post F G)] : PreservesLimit F G :=
   preservesLimit_of_preserves_limit_cone (limit.isLimit F) (by
-    convert! IsLimit.ofPointIso (limit.isLimit (F ⋙ G))
+    convert IsLimit.ofPointIso (limit.isLimit (F ⋙ G))
     assumption)
 
 end
@@ -172,7 +172,7 @@ variable [HasColimit F] [HasColimit (F ⋙ G)]
 preserves colimits of `F`. -/
 lemma preservesColimit_of_isIso_post [IsIso (colimit.post F G)] : PreservesColimit F G :=
   preservesColimit_of_preserves_colimit_cocone (colimit.isColimit F) (by
-    convert! IsColimit.ofPointIso (colimit.isColimit (F ⋙ G))
+    convert IsColimit.ofPointIso (colimit.isColimit (F ⋙ G))
     assumption)
 
 end

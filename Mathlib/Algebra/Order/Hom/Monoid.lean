@@ -736,7 +736,7 @@ protected lemma strictMono : StrictMono f :=
 protected lemma strictMono_symm : StrictMono f.symm :=
   strictMono_of_le_iff_le <| fun a b ↦ by
     rw [← map_le_map_iff f]
-    convert! Iff.rfl <;>
+    convert Iff.rfl <;>
     exact f.toEquiv.apply_symm_apply _
 
 end Preorder

@@ -96,7 +96,7 @@ lemma hasGaussianLaw_fun_sub (hX : IsGaussianProcess X P) {s t : T} :
 
 lemma hasGaussianLaw_sum (hX : IsGaussianProcess X P) {I : Finset T} :
     HasGaussianLaw (∑ i ∈ I, X i) P := by
-  convert! (hX.hasGaussianLaw I).sum
+  convert (hX.hasGaussianLaw I).sum
   simp [I.sum_attach X]
 
 lemma hasGaussianLaw_fun_sum (hX : IsGaussianProcess X P) {I : Finset T} :

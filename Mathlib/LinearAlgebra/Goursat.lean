@@ -131,7 +131,7 @@ lemma goursat : ∃ (M' : Submodule R M) (N' : Submodule R N) (M'' : Submodule R
       Subtype.exists, Prod.exists, LinearMap.prodMap_apply, subtype_apply, Prod.mk.injEq,
       snd_apply, fst_apply, Subtype.ext_iff, submoduleMap_coe_apply]
       grind
-  · convert! goursatFst_prod_goursatSnd_le (range <| P.prod Q)
+  · convert goursatFst_prod_goursatSnd_le (range <| P.prod Q)
     simp only [ker_prodMap, ker_mkQ, Submodule.ext_iff]
     grind
 

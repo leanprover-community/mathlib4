@@ -552,7 +552,7 @@ lemma map_posFittingComp_eq (e : M ≃ₗ⁅R,L⁆ M₂) :
     rw [this]
     exact LieSubmodule.map_mono (map_posFittingComp_le _)
   rw [← LieSubmodule.map_comp]
-  convert! LieSubmodule.map_id
+  convert LieSubmodule.map_id
   ext
   simp
 

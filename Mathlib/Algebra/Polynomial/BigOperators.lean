@@ -266,7 +266,7 @@ theorem prod_X_sub_C_nextCoeff {s : Finset ι} (f : ι → R) :
 theorem multiset_prod_X_sub_C_coeff_card_pred (t : Multiset R) (ht : 0 < Multiset.card t) :
     (t.map fun x => X - C x).prod.coeff ((Multiset.card t) - 1) = -t.sum := by
   nontriviality R
-  convert! multiset_prod_X_sub_C_nextCoeff (by assumption)
+  convert multiset_prod_X_sub_C_nextCoeff (by assumption)
   rw [nextCoeff, if_neg]
   swap
   · rw [natDegree_multiset_prod_of_monic]

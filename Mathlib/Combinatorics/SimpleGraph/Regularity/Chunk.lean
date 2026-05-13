@@ -113,8 +113,8 @@ private theorem card_nonuniformWitness_sdiff_biUnion_star (hV : V ∈ P.parts) (
     intro B hB
     unfold chunk
     split_ifs with h₁
-    · convert! card_parts_equitabilise_subset_le _ (card_aux₁ h₁) hB
-    · convert! card_parts_equitabilise_subset_le _ (card_aux₂ hP hU h₁) hB
+    · convert card_parts_equitabilise_subset_le _ (card_aux₁ h₁) hB
+    · convert card_parts_equitabilise_subset_le _ (card_aux₂ hP hU h₁) hB
   grw [sum_const, smul_eq_mul, card_filter_atomise_le_two_pow (s := U) hX,
     Finpartition.card_nonuniformWitnesses_le, filter_subset] <;> simp
 

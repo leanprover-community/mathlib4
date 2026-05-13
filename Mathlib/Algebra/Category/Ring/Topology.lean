@@ -97,7 +97,7 @@ lemma isClosedEmbedding_precomp_of_surjective
   refine ⟨isEmbedding_precomp_of_surjective f hf, ?_⟩
   have : IsClosed (⋂ i : RingHom.ker f.hom, { f : A ⟶ R | f i = 0 }) :=
     isClosed_iInter fun x ↦ (isClosed_singleton (x := 0)).preimage (continuous_apply (R := R) x.1)
-  convert! this
+  convert this
   ext x
   simp only [Set.mem_range, Set.mem_iInter, Set.mem_setOf_eq, Subtype.forall, RingHom.mem_ker]
   constructor
@@ -177,8 +177,9 @@ lemma isEmbedding_pushout [IsTopologicalRing R] (φ : A ⟶ B) (ψ : A ⟶ C) :
     ((isEmbedding_graph continuous_id).prodMap Homeomorph.sumArrowHomeomorphProdArrow.isEmbedding)
   have H := (mvPolynomialHomeomorph B R A).symm.isEmbedding.prodMap
     (mvPolynomialHomeomorph C R A).symm.isEmbedding
-  convert! ((H.comp hF).comp (mvPolynomialHomeomorph _ R A).isEmbedding).comp
-    (isEmbedding_precomp_of_surjective (R := R) fBC hfBC)
+  convert
+    ((H.comp hF).comp (mvPolynomialHomeomorph _ R A).isEmbedding).comp
+      (isEmbedding_precomp_of_surjective (R := R) fBC hfBC)
   have (s : _) : (pushout.inr φ ψ).hom (ψ.hom s) = (pushout.inl φ ψ).hom (φ.hom s) :=
     congr($(pushout.condition (f := φ)).hom s).symm
   ext f s <;> simp [fB, fC, fBC, PB, PC, PBC, F, this]

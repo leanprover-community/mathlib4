@@ -141,7 +141,7 @@ theorem tendsto_measure_cthickening {μ : Measure α} {s : Set α}
     apply Tendsto.congr' _ tendsto_const_nhds
     filter_upwards [self_mem_nhdsWithin (α := ℝ)] with _ hr
     rw [cthickening_of_nonpos hr]
-  convert! B.sup A
+  convert B.sup A
   exact (nhdsLE_sup_nhdsGT 0).symm
 
 /-- If a closed set has a closed thickening with finite measure, then the measure of its closed
@@ -149,7 +149,7 @@ theorem tendsto_measure_cthickening {μ : Measure α} {s : Set α}
 theorem tendsto_measure_cthickening_of_isClosed {μ : Measure α} {s : Set α}
     (hs : ∃ R > 0, μ (cthickening R s) ≠ ∞) (h's : IsClosed s) :
     Tendsto (fun r => μ (cthickening r s)) (𝓝 0) (𝓝 (μ s)) := by
-  convert! tendsto_measure_cthickening hs
+  convert tendsto_measure_cthickening hs
   exact h's.closure_eq.symm
 
 /-- If a set has a thickening with finite measure, then the measures of its `r`-thickenings
@@ -166,7 +166,7 @@ theorem tendsto_measure_thickening {μ : Measure α} {s : Set α}
 theorem tendsto_measure_thickening_of_isClosed {μ : Measure α} {s : Set α}
     (hs : ∃ R > 0, μ (thickening R s) ≠ ∞) (h's : IsClosed s) :
     Tendsto (fun r => μ (thickening r s)) (𝓝[>] 0) (𝓝 (μ s)) := by
-  convert! tendsto_measure_thickening hs
+  convert tendsto_measure_thickening hs
   exact h's.closure_eq.symm
 
 variable [SecondCountableTopology α]

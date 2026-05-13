@@ -80,7 +80,7 @@ theorem mul_iff (k : ℤ) (hk : k ≠ 0) :
   simp only [PythagoreanTriple]
   intro h
   rw [← mul_left_inj' (mul_ne_zero hk hk)]
-  convert! h using 1 <;> ring
+  convert h using 1 <;> ring
 
 /-- A Pythagorean triple `x, y, z` is “classified” if there exist integers `k, m, n` such that
 either
@@ -181,8 +181,9 @@ theorem isClassified_of_isPrimitiveClassified (hp : h.IsPrimitiveClassified) : h
 
 theorem isClassified_of_normalize_isPrimitiveClassified (hc : h.normalize.IsPrimitiveClassified) :
     h.IsClassified := by
-  convert! h.normalize.mul_isClassified (Int.gcd x y)
-        (isClassified_of_isPrimitiveClassified h.normalize hc) <;>
+  convert
+    h.normalize.mul_isClassified (Int.gcd x y)
+      (isClassified_of_isPrimitiveClassified h.normalize hc) <;>
     rw [Int.mul_ediv_cancel']
   · exact Int.gcd_dvd_left ..
   · exact Int.gcd_dvd_right ..
@@ -252,7 +253,7 @@ def circleEquivGen (hk : ∀ x : K, 1 + x ^ 2 ≠ 0) :
   left_inv x := by
     have h2 : (1 + 1 : K) = 2 := by norm_num
     have h3 : (2 : K) ≠ 0 := by
-      convert! hk 1
+      convert hk 1
       rw [one_pow 2, h2]
     simp [field, hk x, h2, add_assoc, add_comm, add_sub_cancel, mul_comm]
   right_inv := fun ⟨⟨x, y⟩, hxy, hy⟩ => by
@@ -262,7 +263,7 @@ def circleEquivGen (hk : ∀ x : K, 1 + x ^ 2 ≠ 0) :
       rw [(add_neg_eq_iff_eq_add.mpr hxy.symm).symm]
       ring
     have h4 : (2 : K) ≠ 0 := by
-      convert! hk 1
+      convert hk 1
       rw [one_pow 2]
       ring
     simp only [Prod.mk_inj, Subtype.mk_eq_mk]

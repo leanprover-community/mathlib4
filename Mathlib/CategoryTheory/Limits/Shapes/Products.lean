@@ -282,7 +282,7 @@ theorem Sigma.ι_desc {β : Type w} {f : β → C} [HasCoproduct f] {P : C} (p :
 
 set_option backward.isDefEq.respectTransparency false in
 instance {f : β → C} [HasCoproduct f] : IsIso (Sigma.desc (fun a ↦ Sigma.ι f a)) := by
-  convert! IsIso.id _
+  convert IsIso.id _
   ext
   simp
 

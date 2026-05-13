@@ -182,8 +182,10 @@ theorem integral_mul_cexp_neg_mul_sq {b : ℂ} (hb : 0 < b.re) :
     simp_rw [norm_cexp_neg_mul_sq b]
     exact tendsto_exp_atBot.comp
       ((tendsto_pow_atTop two_ne_zero).const_mul_atTop_of_neg (neg_lt_zero.2 hb))
-  convert! integral_Ioi_of_hasDerivAt_of_tendsto' (fun x _ => (A ↑x).comp_ofReal)
-    (integrable_mul_cexp_neg_mul_sq hb).integrableOn B using 1
+  convert
+    integral_Ioi_of_hasDerivAt_of_tendsto' (fun x _ => (A ↑x).comp_ofReal)
+      (integrable_mul_cexp_neg_mul_sq hb).integrableOn B using
+    1
   simp only [mul_zero, ofReal_zero, zero_pow, Ne,
     not_false_iff, Complex.exp_zero, mul_one, sub_neg_eq_add, zero_add, reduceCtorEq]
 
@@ -270,7 +272,7 @@ theorem integral_gaussian_complex {b : ℂ} (hb : 0 < re b) :
       · rw [← ofReal_one, ← ofReal_div]
       · rw [← ofReal_one, ← ofReal_ofNat, ← ofReal_div]
     rw [← ofReal_cpow, ofReal_inj]
-    · convert! integral_gaussian (1 : ℝ) using 1
+    · convert integral_gaussian (1 : ℝ) using 1
       rw [sqrt_eq_rpow]
     · rw [div_one]; exact pi_pos.le
   · -- squares of both sides agree
@@ -328,7 +330,7 @@ set_option linter.unusedSimpArgs false in
 /-- The special-value formula `Γ(1/2) = √π`, which is equivalent to the Gaussian integral. -/
 theorem Real.Gamma_one_half_eq : Real.Gamma (1 / 2) = √π := by
   rw [Gamma_eq_integral one_half_pos, ← integral_comp_rpow_Ioi_of_pos zero_lt_two]
-  convert! congr_arg (fun x : ℝ => 2 * x) (integral_gaussian_Ioi 1) using 1
+  convert congr_arg (fun x : ℝ => 2 * x) (integral_gaussian_Ioi 1) using 1
   · rw [← integral_const_mul]
     refine setIntegral_congr_fun measurableSet_Ioi fun x hx => ?_
     dsimp only
@@ -343,7 +345,7 @@ theorem Real.Gamma_one_half_eq : Real.Gamma (1 / 2) = √π := by
 
 /-- The special-value formula `Γ(1/2) = √π`, which is equivalent to the Gaussian integral. -/
 theorem Complex.Gamma_one_half_eq : Complex.Gamma (1 / 2) = (π : ℂ) ^ (1 / 2 : ℂ) := by
-  convert! congr_arg ((↑) : ℝ → ℂ) Real.Gamma_one_half_eq
+  convert congr_arg ((↑) : ℝ → ℂ) Real.Gamma_one_half_eq
   · simpa only [one_div, ofReal_inv, ofReal_ofNat] using Gamma_ofReal (1 / 2)
   · rw [sqrt_eq_rpow, ofReal_cpow pi_pos.le, ofReal_div, ofReal_ofNat, ofReal_one]
 

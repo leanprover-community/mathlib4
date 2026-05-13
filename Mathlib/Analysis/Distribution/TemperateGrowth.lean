@@ -205,7 +205,7 @@ theorem HasTemperateGrowth.add (hf : f.HasTemperateGrowth) (hg : g.HasTemperateG
 @[to_fun (attr := fun_prop)]
 theorem HasTemperateGrowth.sub (hf : f.HasTemperateGrowth) (hg : g.HasTemperateGrowth) :
     (f - g).HasTemperateGrowth := by
-  convert! hf.add hg.neg using 1
+  convert hf.add hg.neg using 1
   grind
 
 @[fun_prop]

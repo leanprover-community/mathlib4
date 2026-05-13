@@ -135,8 +135,8 @@ and the additive opposite of Hahn series over `Γ` with coefficients `R`.
 -/
 @[simps -isSimp]
 def addOppositeEquiv : Rᵃᵒᵖ⟦Γ⟧ ≃+ R⟦Γ⟧ᵃᵒᵖ where
-  toFun x := .op ⟨fun a ↦ (x.coeff a).unop, by convert! x.isPWO_support; ext; simp⟩
-  invFun x := ⟨fun a ↦ .op (x.unop.coeff a), by convert! x.unop.isPWO_support; ext; simp⟩
+  toFun x := .op ⟨fun a ↦ (x.coeff a).unop, by convert x.isPWO_support; ext; simp⟩
+  invFun x := ⟨fun a ↦ .op (x.unop.coeff a), by convert x.unop.isPWO_support; ext; simp⟩
   left_inv x := by simp
   right_inv x := by
     apply AddOpposite.unop_injective

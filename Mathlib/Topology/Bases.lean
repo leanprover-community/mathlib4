@@ -95,7 +95,7 @@ theorem isTopologicalBasis_of_subbasis {s : Set (Set α)} (hs : t = generateFrom
 
 theorem isTopologicalBasis_of_subbasis_of_finiteInter {s : Set (Set α)} (hsg : t = generateFrom s)
     (hsi : FiniteInter s) : IsTopologicalBasis s := by
-  convert! isTopologicalBasis_of_subbasis hsg
+  convert isTopologicalBasis_of_subbasis hsg
   refine le_antisymm (fun t ht ↦ ⟨{t}, by simpa using ht⟩) ?_
   rintro _ ⟨g, ⟨hg, hgs⟩, rfl⟩
   lift g to Finset (Set α) using hg
@@ -991,7 +991,7 @@ lemma IsTopologicalBasis.exists_countable
     obtain ⟨u, u_mem, xu, uv⟩ : ∃ u ∈ countableBasis α, x ∈ u ∧ u ⊆ v :=
       (isBasis_countableBasis α).isOpen_iff.1 hv _ hx
     have : x ∈ ⋃ a ∈ s u, a := by
-      convert! xu
+      convert xu
       exact (hs u u_mem).symm
     obtain ⟨w, ws, xw⟩ : ∃ w ∈ s u, x ∈ w := by simpa using this
     refine ⟨w, ⟨u, u_mem, ws⟩, xw, ?_⟩

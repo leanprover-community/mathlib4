@@ -745,7 +745,7 @@ protected theorem map_iff [BorelSpace α] [MeasurableSpace β] [TopologicalSpace
     [BorelSpace β] (f : α ≃ₜ β) :
     InnerRegular (Measure.map f μ) ↔ InnerRegular μ := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.map f⟩
-  convert! h.map f.symm
+  convert h.map f.symm
   rw [map_map f.symm.continuous.measurable f.continuous.measurable]
   simp
 
@@ -1122,7 +1122,7 @@ protected theorem map_iff [BorelSpace α] [MeasurableSpace β] [TopologicalSpace
     [BorelSpace β] (f : α ≃ₜ β) :
     Regular (Measure.map f μ) ↔ Regular μ := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.map f⟩
-  convert! h.map f.symm
+  convert h.map f.symm
   rw [map_map f.symm.continuous.measurable f.continuous.measurable]
   simp
 

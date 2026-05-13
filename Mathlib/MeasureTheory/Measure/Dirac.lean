@@ -175,7 +175,7 @@ lemma exists_sum_smul_dirac [Countable α] (μ : Measure α) :
       simp only at h_points_mem
       rw [← hz, ← hsy]
       refine measurableAtom_eq_of_mem ?_
-      convert! h_points_mem
+      convert h_points_mem
     rw [← h2, h1]
 
 /-- Given that `α` is a countable, measurable space with all singleton sets measurable,

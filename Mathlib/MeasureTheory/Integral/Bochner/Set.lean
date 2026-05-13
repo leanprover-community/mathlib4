@@ -298,7 +298,7 @@ theorem tendsto_setIntegral_of_antitone
   rcases hfi with ⟨i₀, hi₀⟩
   suffices Tendsto (∫ x in s i₀, f x ∂μ - ∫ x in s i₀ \ s ·, f x ∂μ) atTop
       (𝓝 (∫ x in s i₀, f x ∂μ - ∫ x in ⋃ i, s i₀ \ s i, f x ∂μ)) by
-    convert! this.congr' <| (eventually_ge_atTop i₀).mono fun i hi ↦ ?_
+    convert this.congr' <| (eventually_ge_atTop i₀).mono fun i hi ↦ ?_
     · rw [← diff_iInter, setIntegral_diff _ hi₀ (iInter_subset _ _), sub_sub_cancel]
       exact .iInter_of_antitone h_anti hsm
     · rw [setIntegral_diff (hsm i) hi₀ (h_anti hi), sub_sub_cancel]

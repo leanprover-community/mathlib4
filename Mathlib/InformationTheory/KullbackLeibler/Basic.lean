@@ -84,7 +84,7 @@ lemma klDiv_self (μ : Measure α) [SigmaFinite μ] : klDiv μ μ = 0 := by
 
 @[simp]
 lemma klDiv_zero_left [IsFiniteMeasure ν] : klDiv 0 ν = ν univ := by
-  convert! klDiv_of_ac_of_integrable (Measure.AbsolutelyContinuous.zero _) integrable_zero_measure
+  convert klDiv_of_ac_of_integrable (Measure.AbsolutelyContinuous.zero _) integrable_zero_measure
   simp
 
 @[simp]

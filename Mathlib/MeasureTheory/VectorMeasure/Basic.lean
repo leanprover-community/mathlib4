@@ -1199,7 +1199,7 @@ def trim {m n : MeasurableSpace α} (v : VectorMeasure α M) (hle : m ≤ n) :
     (fun f hf₁ hf₂ => by
       dsimp only
       have hf₁' : ∀ k, MeasurableSet[n] (f k) := fun k => hle _ (hf₁ k)
-      convert! v.m_iUnion hf₁' hf₂ using 1
+      convert v.m_iUnion hf₁' hf₂ using 1
       · ext n
         rw [if_pos (hf₁ n)]
       · rw [if_pos (@MeasurableSet.iUnion _ _ m _ _ hf₁)])

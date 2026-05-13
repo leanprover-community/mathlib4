@@ -77,7 +77,7 @@ theorem ae_empty_or_univ_of_forall_vadd_ae_eq_self {s : Set <| AddCircle T}
       refine tendsto_nhdsWithin_iff.mpr ⟨?_, hδ₀⟩
       replace hu₂ : Tendsto (fun j => T⁻¹ * 2 * n j) l atTop :=
         (tendsto_natCast_atTop_iff.mpr hu₂).const_mul_atTop (by positivity : 0 < T⁻¹ * 2)
-      convert! hu₂.inv_tendsto_atTop
+      convert hu₂.inv_tendsto_atTop
       ext j
       simp only [δ, Pi.inv_apply, mul_inv_rev, inv_inv, div_eq_inv_mul, ← mul_assoc]
     have hw : ∀ᶠ j in l, d ∈ closedBall d (1 * δ j) := hδ₀.mono fun j hj => by
@@ -108,8 +108,8 @@ theorem ergodic_zsmul {n : ℤ} (hn : 1 < |n|) : Ergodic fun y : AddCircle T => 
       let u : ℕ → AddCircle T := fun j => ↑((↑1 : ℝ) / ↑(n.natAbs ^ j) * T)
       replace hn : 1 < n.natAbs := by rwa [Int.abs_eq_natAbs, Nat.one_lt_cast] at hn
       have hu₀ : ∀ j, addOrderOf (u j) = n.natAbs ^ j := fun j => by
-        convert! addOrderOf_div_of_gcd_eq_one (p := T) (m := 1)
-          (pow_pos (pos_of_gt hn) j) (gcd_one_left _)
+        convert
+          addOrderOf_div_of_gcd_eq_one (p := T) (m := 1) (pow_pos (pos_of_gt hn) j) (gcd_one_left _)
         norm_cast
       have hnu : ∀ j, n ^ j • u j = 0 := fun j => by
         rw [← addOrderOf_dvd_iff_zsmul_eq_zero, hu₀, Int.natCast_pow, Int.natCast_natAbs, ← abs_pow,

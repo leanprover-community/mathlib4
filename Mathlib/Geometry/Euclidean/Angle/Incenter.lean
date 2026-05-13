@@ -90,9 +90,11 @@ lemma dist_orthogonalProjectionSpan_faceOpposite_eq_iff_two_zsmul_oangle_eq {p :
       dist p ((t.faceOpposite i₂).orthogonalProjectionSpan p) ↔
         (2 : ℤ) • ∡ (t.points i₂) (t.points i₁) p = (2 : ℤ) • ∡ p (t.points i₁) (t.points i₃) := by
   have ha : AffineIndependent ℝ ![t.points i₁, t.points i₂, t.points i₃] := by
-    convert! t.independent.comp_embedding ⟨![i₁, i₂, i₃], by
-      intro i j hij
-      fin_cases i <;> fin_cases j <;> simp_all⟩
+    convert
+      t.independent.comp_embedding
+        ⟨![i₁, i₂, i₃], by
+          intro i j hij
+          fin_cases i <;> fin_cases j <;> simp_all⟩
     ext i
     fin_cases i <;> rfl
   rw [orthogonalProjectionSpan, orthogonalProjectionSpan,
@@ -164,7 +166,7 @@ lemma eq_excenter_of_two_zsmul_oangle_eq {p : P}
   rw [← dist_orthogonalProjectionSpan_faceOpposite_eq_iff_two_zsmul_oangle_eq h₂₃ h₁₂.symm h₁₃.symm]
     at h₂
   have hp : p ∈ affineSpan ℝ (Set.range t.points) := by
-    convert! AffineSubspace.mem_top ℝ V p
+    convert AffineSubspace.mem_top ℝ V p
     rw [t.independent.affineSpan_eq_top_iff_card_eq_finrank_add_one]
     simp [hd2.out]
   have hr : ∃ r : ℝ, ∀ i, dist p ((t.faceOpposite i).orthogonalProjectionSpan p) = r := by

@@ -420,7 +420,7 @@ private theorem span_basisSet : span ℚ (toRatVec '' hs.basisSet) = ⊤ := by
     ← top_le_iff]
   apply (span_mono (image_mono subset_union_right)).trans'
   rw [top_le_iff]
-  convert! (Pi.basisFun ℚ ι).span_eq
+  convert (Pi.basisFun ℚ ι).span_eq
   ext
   simp only [mem_image, mem_range, exists_exists_eq_and]
   congr!
@@ -749,8 +749,10 @@ end IsProperLinearSet
 
 private lemma Nat.isSemilinearSet_compl_of_isProperLinearSet [Finite ι] {s : Set (ι → ℕ)}
     (hs : IsProperLinearSet s) : IsSemilinearSet sᶜ := by
-  convert! hs.isSemilinearSet_setOfFractNe.union <| hs.isSemilinearSet_setOfFloorNeg.union <|
-    hs.isSemilinearSet_setOfFloorPos using 1
+  convert
+    hs.isSemilinearSet_setOfFractNe.union <|
+      hs.isSemilinearSet_setOfFloorNeg.union <| hs.isSemilinearSet_setOfFloorPos using
+    1
   ext
   simp only [mem_compl_iff, hs.mem_iff_fract_eq_and_floor_nonneg, IsProperLinearSet.setOfFractNe,
     IsProperLinearSet.setOfFloorNeg, IsProperLinearSet.setOfFloorPos, mem_union, mem_setOf_eq]

@@ -303,7 +303,7 @@ noncomputable instance [BoundedSpace β] : PseudoMetricSpace (α →ᵤ[𝔖] β
 
 noncomputable instance [BoundedSpace β] : BoundedSpace (α →ᵤ[𝔖] β) where
   bounded_univ := by
-    convert! lipschitzWith_one_ofFun_toFun (𝔖 := 𝔖) (β := β) |>.isBounded_image (.all Set.univ)
+    convert lipschitzWith_one_ofFun_toFun (𝔖 := 𝔖) (β := β) |>.isBounded_image (.all Set.univ)
     ext f
     simp only [Set.mem_univ, Function.comp_apply, Set.image_univ, Set.mem_range, true_iff]
     exact ⟨UniformFun.ofFun (toFun 𝔖 f), by simp⟩

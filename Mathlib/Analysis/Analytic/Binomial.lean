@@ -184,7 +184,7 @@ theorem one_div_sub_pow_hasFPowerSeriesOnBall_zero (a : ℕ) {z : ℂ} (hz : z �
   have := this.compContinuousLinearMap
   have H : 1 / ‖(z⁻¹ • 1 : ℂ →L[ℂ] ℂ)‖ₑ = ‖z‖ₑ := by simp [enorm_smul, enorm_inv, hz]
   simp only [one_div, ContinuousLinearMap.coe_smul', H, Function.comp_def] at this
-  convert! (this.const_smul (c := (z ^ (a + 1))⁻¹)).congr ?_ using 2
+  convert (this.const_smul (c := (z ^ (a + 1))⁻¹)).congr ?_ using 2
   · ext n
     simp only [FormalMultilinearSeries.smul_apply, ContinuousMultilinearMap.smul_apply,
       FormalMultilinearSeries.compContinuousLinearMap_apply]
@@ -226,7 +226,7 @@ lemma one_div_sub_sq_sub_one_div_sq_hasFPowerSeriesOnBall_zero (w x : ℂ) (hw :
   · simpa only [sub_sub_sub_cancel_right, zero_add, sub_sq_comm w, zpow_neg, zpow_natCast, mul_comm]
       using (one_div_sub_sq_hasFPowerSeriesOnBall_zero
         (z := w - x) (by simp [sub_eq_zero, hw])).comp_sub x
-  · convert! hasFPowerSeriesOnBall_const.mono _ le_top
+  · convert hasFPowerSeriesOnBall_const.mono _ le_top
     · ext (_ | _) <;> simp [zpow_ofNat]
     · simpa [sub_eq_zero]
 
@@ -241,7 +241,7 @@ theorem one_add_rpow_hasFPowerSeriesOnBall_zero {a : ℝ} :
   have H : binomialSeries ℂ a = (binomialSeries ℂ (a : ℂ)).restrictScalars (𝕜 := ℝ) := by aesop
   have : HasFPowerSeriesOnBall (fun x ↦ (1 + x) ^ (a : ℂ)) (binomialSeries ℂ a) (.ofRealCLM 0) 1 :=
     Complex.ofRealCLM.map_zero ▸ H ▸ Complex.one_add_cpow_hasFPowerSeriesOnBall_zero.restrictScalars
-  convert! (Complex.reCLM.comp_hasFPowerSeriesOnBall this.compContinuousLinearMap).congr ?_
+  convert (Complex.reCLM.comp_hasFPowerSeriesOnBall this.compContinuousLinearMap).congr ?_
   · ext; simp [Function.comp_def]
   · simp
   · intro x hx; simp_all; norm_cast
@@ -261,7 +261,7 @@ theorem one_div_one_sub_rpow_hasFPowerSeriesOnBall_zero (a : ℝ) :
       (.ofScalars ℝ fun n ↦ Ring.choose (a + n - 1) n) 0 1 := by
   have := (Complex.one_div_one_sub_cpow_hasFPowerSeriesOnBall_zero a).restrictScalars (𝕜 := ℝ)
   rw [← Complex.ofRealCLM.map_zero] at this
-  convert! (Complex.reCLM.comp_hasFPowerSeriesOnBall this.compContinuousLinearMap).congr ?_ using 1
+  convert (Complex.reCLM.comp_hasFPowerSeriesOnBall this.compContinuousLinearMap).congr ?_ using 1
   · ext n
     simp only [ContinuousLinearMap.compFormalMultilinearSeries_apply,
       ContinuousLinearMap.compContinuousMultilinearMap_coe, Function.comp_apply,

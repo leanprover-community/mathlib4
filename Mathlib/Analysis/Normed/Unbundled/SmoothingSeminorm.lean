@@ -330,7 +330,7 @@ private theorem μ_bddAbove (hμ1 : μ 1 ≤ 1) {s : ℕ → ℕ} (hs : ∀ n : 
 private theorem μ_bddAbove' (hμ1 : μ 1 ≤ 1) {s : ℕ → ℕ} (hs : ∀ n : ℕ, s n ≤ n) (x : R)
     (ψ : ℕ → ℕ) : BddAbove ((fun n : ℕ => μ (x ^ s (ψ n)) ^ (1 / (ψ n : ℝ))) '' Set.univ) := by
   rw [Set.image_eq_range]
-  convert! μ_bddAbove μ hμ1 hs x ψ
+  convert μ_bddAbove μ hμ1 hs x ψ
   ext
   simp [one_div, Set.mem_range, Subtype.exists, Set.mem_univ, exists_const]
 

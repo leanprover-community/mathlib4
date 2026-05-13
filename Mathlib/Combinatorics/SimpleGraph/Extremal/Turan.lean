@@ -244,7 +244,7 @@ theorem card_parts [DecidableEq V] : #h.finpartition.parts = min (card V) r := b
       fp.part_mem.2 (mem_univ a)
   use G ⊔ edge x y, inferInstance, cf.sup_edge x y
   convert! Nat.lt_add_one #G.edgeFinset
-  convert! G.card_edgeFinset_sup_edge _ hn
+  convert G.card_edgeFinset_sup_edge _ hn
   rwa [h.not_adj_iff_part_eq]
 
 /-- **Turán's theorem**, forward direction.
@@ -373,7 +373,7 @@ theorem card_edgeFinset_turanGraph {n r : ℕ} :
   rcases r.eq_zero_or_pos with rfl | hr
   · rw [Nat.mod_zero, tsub_self, zero_mul, Nat.zero_div, zero_add]
     have := card_edgeFinset_top_eq_card_choose_two (V := Fin n)
-    rw [Fintype.card_fin] at this; convert! this; exact turanGraph_zero
+    rw [Fintype.card_fin] at this; convert this; exact turanGraph_zero
   · have ring₁ (n) : (n ^ 2 - (n % r) ^ 2) * (r - 1) / (2 * r) =
         n % r * (n / r) * (r - 1) + r * (r - 1) * (n / r) ^ 2 / 2 := by
       nth_rw 1 [← Nat.mod_add_div n r, Nat.sq_sub_sq, add_tsub_cancel_left,
@@ -383,7 +383,7 @@ theorem card_edgeFinset_turanGraph {n r : ℕ} :
     rcases lt_or_ge n r with h | h
     · rw [Nat.mod_eq_of_lt h, tsub_self, zero_mul, Nat.zero_div, zero_add]
       have := card_edgeFinset_top_eq_card_choose_two (V := Fin n)
-      rw [Fintype.card_fin] at this; convert! this
+      rw [Fintype.card_fin] at this; convert this
       rw [turanGraph_eq_top]; exact .inr h.le
     · let n' := n - r
       have n'r : n = n' + r := by lia
@@ -425,7 +425,7 @@ theorem CliqueFree.card_edgeFinset_le (cf : G.CliqueFree (r + 1)) :
     simp_rw [zero_tsub, mul_zero, Nat.mod_zero, Nat.div_zero, zero_add]
     exact card_edgeFinset_le_card_choose_two
   · obtain ⟨H, _, maxH⟩ := exists_isTuranMaximal (V := V) hr
-    convert! maxH.2 cf
+    convert maxH.2 cf
     rw [((isTuranMaximal_iff_nonempty_iso_turanGraph hr).mp maxH).some.card_edgeFinset_eq,
       card_edgeFinset_turanGraph]
 

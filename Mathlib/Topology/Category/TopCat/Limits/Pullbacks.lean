@@ -156,13 +156,13 @@ def pullbackHomeoPreimage
     intro x
     ext <;> dsimp
     apply hg.injective
-    convert! x.prop
+    convert x.prop
     exact Exists.choose_spec (p := fun y ↦ g y = f (↑x : X × Y).1) _
   continuous_toFun := by fun_prop
   continuous_invFun := by
     apply Continuous.subtype_mk
     refine continuous_subtype_val.prodMk <| hg.isInducing.continuous_iff.mpr ?_
-    convert! hf.comp continuous_subtype_val
+    convert hf.comp continuous_subtype_val
     ext x
     exact Exists.choose_spec x.2
 
@@ -280,17 +280,19 @@ theorem pullback_map_isOpenEmbedding {W X Y Z S T : TopCat.{u}} (f₁ : W ⟶ S)
 set_option backward.isDefEq.respectTransparency false in
 lemma snd_isEmbedding_of_left {X Y S : TopCat.{u}} {f : X ⟶ S} (H : IsEmbedding f) (g : Y ⟶ S) :
     IsEmbedding <| ⇑(pullback.snd f g) := by
-  convert! (homeoOfIso (asIso (pullback.snd (𝟙 S) g))).isEmbedding.comp
-      (pullback_map_isEmbedding (i₂ := 𝟙 Y)
-        f g (𝟙 S) g H (homeoOfIso (Iso.refl _)).isEmbedding (𝟙 _) rfl (by simp))
+  convert
+    (homeoOfIso (asIso (pullback.snd (𝟙 S) g))).isEmbedding.comp
+      (pullback_map_isEmbedding (i₂ := 𝟙 Y) f g (𝟙 S) g H (homeoOfIso (Iso.refl _)).isEmbedding
+        (𝟙 _) rfl (by simp))
   simp [homeoOfIso, ← coe_comp]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem fst_isEmbedding_of_right {X Y S : TopCat.{u}} (f : X ⟶ S) {g : Y ⟶ S}
     (H : IsEmbedding g) : IsEmbedding <| ⇑(pullback.fst f g) := by
-  convert! (homeoOfIso (asIso (pullback.fst f (𝟙 S)))).isEmbedding.comp
-      (pullback_map_isEmbedding (i₁ := 𝟙 X)
-        f g f (𝟙 _) (homeoOfIso (Iso.refl _)).isEmbedding H (𝟙 _) rfl (by simp))
+  convert
+    (homeoOfIso (asIso (pullback.fst f (𝟙 S)))).isEmbedding.comp
+      (pullback_map_isEmbedding (i₁ := 𝟙 X) f g f (𝟙 _) (homeoOfIso (Iso.refl _)).isEmbedding H
+        (𝟙 _) rfl (by simp))
   simp [homeoOfIso, ← coe_comp]
 
 theorem isEmbedding_of_pullback {X Y S : TopCat.{u}} {f : X ⟶ S} {g : Y ⟶ S} (H₁ : IsEmbedding f)
@@ -302,7 +304,8 @@ theorem isEmbedding_of_pullback {X Y S : TopCat.{u}} {f : X ⟶ S} {g : Y ⟶ S}
 set_option backward.isDefEq.respectTransparency false in
 theorem snd_isOpenEmbedding_of_left {X Y S : TopCat.{u}} {f : X ⟶ S} (H : IsOpenEmbedding f)
     (g : Y ⟶ S) : IsOpenEmbedding <| ⇑(pullback.snd f g) := by
-  convert! (homeoOfIso (asIso (pullback.snd (𝟙 S) g))).isOpenEmbedding.comp
+  convert
+    (homeoOfIso (asIso (pullback.snd (𝟙 S) g))).isOpenEmbedding.comp
       (pullback_map_isOpenEmbedding (i₂ := 𝟙 Y) f g (𝟙 _) g H
         (homeoOfIso (Iso.refl _)).isOpenEmbedding (𝟙 _) rfl (by simp))
   simp [homeoOfIso, ← coe_comp]
@@ -310,7 +313,8 @@ theorem snd_isOpenEmbedding_of_left {X Y S : TopCat.{u}} {f : X ⟶ S} (H : IsOp
 set_option backward.isDefEq.respectTransparency false in
 theorem fst_isOpenEmbedding_of_right {X Y S : TopCat.{u}} (f : X ⟶ S) {g : Y ⟶ S}
     (H : IsOpenEmbedding g) : IsOpenEmbedding <| ⇑(pullback.fst f g) := by
-  convert! (homeoOfIso (asIso (pullback.fst f (𝟙 S)))).isOpenEmbedding.comp
+  convert
+    (homeoOfIso (asIso (pullback.fst f (𝟙 S)))).isOpenEmbedding.comp
       (pullback_map_isOpenEmbedding (i₁ := 𝟙 X) f g f (𝟙 _)
         (homeoOfIso (Iso.refl _)).isOpenEmbedding H (𝟙 _) rfl (by simp))
   simp [homeoOfIso, ← coe_comp]
@@ -359,7 +363,7 @@ theorem pullback_snd_image_fst_preimage (f : X ⟶ Z) (g : Y ⟶ Z) (U : Set X) 
   -- `exact ⟨(TopCat.pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, eq⟩, by simpa, by simp⟩` before https://github.com/leanprover-community/mathlib4/pull/13170
     refine ⟨(TopCat.pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, eq⟩, ?_, ?_⟩
     · simp only [coe_of, Set.mem_preimage]
-      convert! hy
+      convert hy
       rw [pullbackIsoProdSubtype_inv_fst_apply]
     · rw [pullbackIsoProdSubtype_inv_snd_apply]
 
@@ -378,7 +382,7 @@ theorem pullback_fst_image_snd_preimage (f : X ⟶ Z) (g : Y ⟶ Z) (U : Set Y) 
     -- before https://github.com/leanprover-community/mathlib4/pull/13170
     refine ⟨(TopCat.pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, eq.symm⟩, ?_, ?_⟩
     · simp only [coe_of, Set.mem_preimage]
-      convert! hy
+      convert hy
       rw [pullbackIsoProdSubtype_inv_snd_apply]
     · rw [pullbackIsoProdSubtype_inv_fst_apply]
 

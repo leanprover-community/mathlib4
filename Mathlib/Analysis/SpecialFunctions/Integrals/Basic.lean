@@ -152,7 +152,7 @@ theorem integral_rpow {r : ℝ} (h : -1 < r ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[a, 
   have :
     (∫ x in a..b, (x : ℂ) ^ (r : ℂ)) = ((b : ℂ) ^ (r + 1 : ℂ) - (a : ℂ) ^ (r + 1 : ℂ)) / (r + 1) :=
     integral_cpow h'
-  apply_fun Complex.re at this; convert! this
+  apply_fun Complex.re at this; convert this
   · simp_rw [intervalIntegral_eq_integral_uIoc, Complex.real_smul, Complex.re_ofReal_mul, rpow_def,
       ← RCLike.re_eq_complex_re, smul_eq_mul]
     rw [integral_re]
@@ -409,7 +409,7 @@ theorem integral_mul_rpow_one_add_sq {t : ℝ} (ht : t ≠ -1) :
     rw [ofReal_cpow, ofReal_add, ofReal_pow, ofReal_one]
     exact add_nonneg zero_le_one (sq_nonneg x)
   rw [← ofReal_inj]
-  convert! integral_mul_cpow_one_add_sq (_ : (t : ℂ) ≠ -1)
+  convert integral_mul_cpow_one_add_sq (_ : (t : ℂ) ≠ -1)
   · rw [← intervalIntegral.integral_ofReal]
     congr with x : 1
     rw [ofReal_mul, this x t]
@@ -453,7 +453,7 @@ theorem integral_sin_pow :
       (sin a ^ (n + 1) * cos a - sin b ^ (n + 1) * cos b) / (n + 2) +
         (n + 1) / (n + 2) * ∫ x in a..b, sin x ^ n := by
   field_simp
-  convert! eq_sub_iff_add_eq.mp (integral_sin_pow_aux n) using 1
+  convert eq_sub_iff_add_eq.mp (integral_sin_pow_aux n) using 1
   ring
 
 @[simp]
@@ -526,7 +526,7 @@ theorem integral_cos_pow :
       (cos b ^ (n + 1) * sin b - cos a ^ (n + 1) * sin a) / (n + 2) +
         (n + 1) / (n + 2) * ∫ x in a..b, cos x ^ n := by
   field_simp
-  convert! eq_sub_iff_add_eq.mp (integral_cos_pow_aux n) using 1
+  convert eq_sub_iff_add_eq.mp (integral_cos_pow_aux n) using 1
   ring
 
 @[simp]
@@ -611,7 +611,7 @@ theorem integral_sin_pow_even_mul_cos_pow_even (m n : ℕ) :
 @[simp]
 theorem integral_sin_sq_mul_cos_sq :
     ∫ x in a..b, sin x ^ 2 * cos x ^ 2 = (b - a) / 8 - (sin (4 * b) - sin (4 * a)) / 32 := by
-  convert! integral_sin_pow_even_mul_cos_pow_even 1 1 using 1
+  convert integral_sin_pow_even_mul_cos_pow_even 1 1 using 1
   have h1 : ∀ c : ℝ, (↑1 - c) / ↑2 * ((↑1 + c) / ↑2) = (↑1 - c ^ 2) / 4 := fun c => by ring
   have h2 : Continuous fun x => cos (2 * x) ^ 2 := by fun_prop
   have h3 : ∀ x, cos x * sin x = sin (2 * x) / 2 := by intro; rw [sin_two_mul]; ring

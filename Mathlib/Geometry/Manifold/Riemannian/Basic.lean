@@ -281,7 +281,7 @@ lemma eventually_norm_mfderivWithin_symm_extChartAt_lt (x : M) :
     extChartAt_target_mem_nhdsWithin x] with y hy h'y
   have : y = (extChartAt I x) ((extChartAt I x).symm y) := by simp [-extChartAt, h'y]
   simp only [preimage_setOf_eq, mem_setOf_eq] at hy
-  convert! hy
+  convert hy
 
 lemma eventually_enorm_mfderivWithin_symm_extChartAt_lt (x : M) :
     ∃ C > (0 : ℝ≥0), ∀ᶠ y in 𝓝[range I] (extChartAt I x x),
@@ -486,7 +486,7 @@ lemma setOf_riemannianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
     rw [← Metric.eball_coe, Metric.mem_eball, edist_eq_enorm_sub]
     convert! this
     simp [γ', hγx]
-  convert! mem_preimage.1 this
+  convert mem_preimage.1 this
   simp only [Function.comp_apply, γ', (extChartAt I x).left_inv <| uc <| t₁_mem
     (right_mem_Icc.mpr ht₁0)]
 

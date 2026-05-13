@@ -462,7 +462,7 @@ theorem MDifferentiableWithinAt.prodMap (hf : MDiffAt[s] f x) (hg : MDiffAt[r] g
 theorem MDifferentiableAt.prodMap (hf : MDiffAt f x) (hg : MDiffAt g y) :
     MDiffAt (Prod.map f g) (x, y) := by
   rw [← mdifferentiableWithinAt_univ] at *
-  convert! hf.prodMap hg
+  convert hf.prodMap hg
   exact univ_prod_univ.symm
 
 /-- Variant of `MDifferentiableAt.prod_map` in which the point in the product is given as `p`
@@ -587,7 +587,7 @@ theorem mfderiv_prod_eq_add {f : M × M' → M''} {p : M × M'}
     mdifferentiableAt_const.mfderiv_prod mdifferentiableAt_snd, mfderiv_fst,
     mfderiv_snd, mfderiv_const, mfderiv_const]
   symm
-  convert! ContinuousLinearMap.comp_id <| mfderiv% f (p.1, p.2)
+  convert ContinuousLinearMap.comp_id <| mfderiv% f (p.1, p.2)
   exact ContinuousLinearMap.coprod_inl_inr
 
 /-- The total derivative of a function in two variables is the sum of the partial derivatives.
@@ -854,7 +854,7 @@ theorem MDifferentiableOn.neg {s : Set M} (hf : MDiff[s] f) : MDiff[s] (-f) :=
   fun x hx ↦ (hf x hx).neg
 
 theorem mdifferentiableAt_neg : MDiffAt (-f) z ↔ MDiffAt f z :=
-  ⟨fun hf ↦ by convert! hf.neg; rw [neg_neg], fun hf ↦ hf.neg⟩
+  ⟨fun hf ↦ by convert hf.neg; rw [neg_neg], fun hf ↦ hf.neg⟩
 
 theorem MDifferentiable.neg (hf : MDiff f) : MDiff (-f) := fun x ↦ (hf x).neg
 
@@ -942,7 +942,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem HasMFDerivWithinAt.mul (hp : HasMFDerivWithinAt I 𝓘(𝕜, F') p s z p')
     (hq : HasMFDerivWithinAt I 𝓘(𝕜, F') q s z q') :
     HasMFDerivWithinAt I 𝓘(𝕜, F') (p * q) s z (p z • q' + q z • p' : E →L[𝕜] F') := by
-  convert! hp.mul' hq; ext _; apply mul_comm
+  convert hp.mul' hq; ext _; apply mul_comm
 
 theorem HasMFDerivAt.mul (hp : HasMFDerivAt I 𝓘(𝕜, F') p z p')
     (hq : HasMFDerivAt I 𝓘(𝕜, F') q z q') :
@@ -1058,7 +1058,7 @@ variable {z : M} {F' : Type*} [NormedField F'] [NormedAlgebra 𝕜 F'] {p q : M 
 
 lemma HasMFDerivWithinAt.inv (hp : HasMFDerivWithinAt I 𝓘(𝕜, F') p s z p') (hp_ne : p z ≠ 0) :
     HasMFDerivWithinAt I 𝓘(𝕜, F') (p⁻¹) s z (-(p z ^ 2)⁻¹ • p' : E →L[𝕜] F') := by
-  convert! hp.inv' hp_ne
+  convert hp.inv' hp_ne
   ext
   simp
   ring_nf

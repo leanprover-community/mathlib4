@@ -1261,7 +1261,7 @@ protected theorem induction {α γ} [MeasurableSpace α] [AddZeroClass γ]
   induction s using Finset.induction generalizing f with
   | empty =>
     rw [Finset.coe_empty, diff_eq_empty, range_subset_singleton] at h
-    convert! const 0 MeasurableSet.univ
+    convert const 0 MeasurableSet.univ
     ext x
     simp [h]
   | insert x s hxs ih =>
@@ -1273,10 +1273,10 @@ protected theorem induction {α γ} [MeasurableSpace α] [AddZeroClass γ]
       rw [image_compl_preimage, union_diff_distrib, diff_diff_comm, h, Finset.coe_insert,
         insert_diff_self_of_notMem, diff_eq_empty.mpr, Set.empty_union]
       · rw [Set.image_subset_iff]
-        convert! Set.subset_univ _
+        convert Set.subset_univ _
         exact preimage_const_of_mem (mem_singleton _)
       · rwa [Finset.mem_coe]
-    convert! add _ Pg (const x mx)
+    convert add _ Pg (const x mx)
     · ext1 y
       by_cases hy : y ∈ f ⁻¹' {x}
       · simpa [g, hy]
@@ -1303,7 +1303,7 @@ protected theorem induction' {α γ} [MeasurableSpace α] [Nonempty γ] {P : Sim
   induction s using Finset.induction generalizing f with
   | empty =>
     rw [Finset.coe_empty, diff_eq_empty, range_subset_singleton] at h
-    convert! const c
+    convert const c
     ext x
     simp [h]
   | insert x s hxs ih =>
@@ -1315,10 +1315,10 @@ protected theorem induction' {α γ} [MeasurableSpace α] [Nonempty γ] {P : Sim
       rw [image_compl_preimage, union_diff_distrib, diff_diff_comm, h, Finset.coe_insert,
         insert_diff_self_of_notMem, diff_eq_empty.mpr, Set.empty_union]
       · rw [Set.image_subset_iff]
-        convert! Set.subset_univ _
+        convert Set.subset_univ _
         exact preimage_const_of_mem (mem_singleton _)
       · rwa [Finset.mem_coe]
-    convert! pcw mx.compl Pg (const x)
+    convert pcw mx.compl Pg (const x)
     · ext1 y
       by_cases hy : y ∈ f ⁻¹' {x}
       · simpa [g, hy]

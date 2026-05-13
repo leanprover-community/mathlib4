@@ -524,11 +524,12 @@ lemma copyCount_le_labelledCopyCount [Fintype W] : G.copyCount H ≤ G.labelledC
 @[simp] lemma copyCount_bot (G : SimpleGraph V) : copyCount G (⊥ : SimpleGraph V) = 1 := by
   classical
   rw [copyCount]
-  convert! card_singleton (α := G.Subgraph)
-    { verts := .univ
-      Adj := ⊥
-      adj_sub := False.elim
-      edge_vert := False.elim }
+  convert
+    card_singleton (α := G.Subgraph)
+      { verts := .univ
+        Adj := ⊥
+        adj_sub := False.elim
+        edge_vert := False.elim }
   simp only [eq_singleton_iff_unique_mem, mem_filter_univ, Nonempty.forall]
   refine ⟨⟨⟨(Equiv.Set.univ _).symm, by simp⟩⟩, fun H' e ↦
     Subgraph.ext ((set_fintype_card_eq_univ_iff _).1 <| Fintype.card_congr e.toEquiv.symm) ?_⟩

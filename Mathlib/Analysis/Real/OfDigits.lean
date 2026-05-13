@@ -102,8 +102,9 @@ theorem abs_ofDigits_sub_ofDigits_le {b : ℕ} {x y : ℕ → Fin b} {n : ℕ}
     Finset.sum_congr rfl fun i hi ↦ by simp [ofDigitsTerm, hxy i (Finset.mem_range.mp hi)]
   rw [this, add_sub_add_left_eq_sub, ← mul_sub, abs_mul, abs_of_nonneg (by positivity)]
   apply mul_le_of_le_one_right (by positivity)
-  convert! abs_sub_le_of_le_of_le (ofDigits_nonneg _) (ofDigits_le_one _)
-    (ofDigits_nonneg _) (ofDigits_le_one _)
+  convert
+    abs_sub_le_of_le_of_le (ofDigits_nonneg _) (ofDigits_le_one _) (ofDigits_nonneg _)
+      (ofDigits_le_one _)
   simp
 
 /-- Converts a real number `x` from the interval `[0, 1)` into sequence of
@@ -149,7 +150,7 @@ theorem hasSum_ofDigitsTerm_digits (x : ℝ) {b : ℕ} [NeZero b] (hb : 1 < b) (
   rw [hasSum_iff_tendsto_nat_of_summable_norm (by exact summable_ofDigitsTerm.abs)]
   refine tendsto_of_tendsto_of_tendsto_of_le_of_le ?_ tendsto_const_nhds
     (le_sum_ofDigitsTerm_digits hx) (sum_ofDigitsTerm_digits_le hx)
-  convert! tendsto_const_nhds.sub (tendsto_pow_atTop_nhds_zero_of_abs_lt_one _)
+  convert tendsto_const_nhds.sub (tendsto_pow_atTop_nhds_zero_of_abs_lt_one _)
   · simp
   · simp [abs_of_nonneg, inv_lt_one_iff₀, hb]
 

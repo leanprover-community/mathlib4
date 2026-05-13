@@ -126,7 +126,7 @@ theorem Set.Finite.multipliable_compl_iff {s : Set β} (hs : s.Finite) :
 @[to_additive]
 theorem hasProd_ite_div_hasProd [L.LeAtTop] [DecidableEq β] (hf : HasProd f a L) (b : β) :
     HasProd (fun n ↦ ite (n = b) 1 (f n)) (a / f b) L := by
-  convert! hf.update b 1 using 1
+  convert hf.update b 1 using 1
   · ext n
     rw [Function.update_apply]
   · rw [div_mul_eq_mul_div, one_mul]

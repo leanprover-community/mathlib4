@@ -142,7 +142,7 @@ lemma mem_coverings_of_isPullback {J : Precoverage C} [IsStableUnderBaseChange J
     exact .mk' (Sum.inr ⟨⟨_, _⟩, hg⟩) (by cat_disch) (by cat_disch)
   · refine IsStableUnderBaseChange.mem_coverings_of_isPullback (fun i ↦ f (a i)) ?_ g _
       (fun i ↦ p₂ (a i)) fun i ↦ h _
-    convert! hR
+    convert hR
     refine le_antisymm (fun Z g ⟨i⟩ ↦ .mk _) fun Z g hg ↦ ?_
     exact .mk' (Sum.inl ⟨⟨_, _⟩, hg⟩) (by cat_disch) (by cat_disch)
 
@@ -170,10 +170,10 @@ lemma comp_mem_coverings {J : Precoverage C} [IsStableUnderComposition J] {ι : 
     exact .mk' ⟨Sum.inr ⟨⟨_, _⟩, hu⟩, .inl ⟨⟩⟩ hu.obj_idx.symm hu.eq_eqToHom_comp_hom_idx
   · refine IsStableUnderComposition.comp_mem_coverings (f := fun i ↦ f (incl i))
         (g := fun i j ↦ g (incl i) (fibincl i j)) ?_ fun i ↦ ?_
-    · convert! hf
+    · convert hf
       refine le_antisymm (fun T u ⟨p⟩ ↦ .mk _) fun T u hu ↦ ?_
       exact .mk' (Sum.inl ⟨⟨_, _⟩, hu⟩) (by cat_disch) (by cat_disch)
-    · convert! hg (incl i)
+    · convert hg (incl i)
       refine le_antisymm (fun T u ⟨p⟩ ↦ .mk _) fun T u hu ↦ ?_
       match i with
       | .inl i => exact .mk' ⟨⟨_, _⟩, hu⟩ (by cat_disch) (by cat_disch)

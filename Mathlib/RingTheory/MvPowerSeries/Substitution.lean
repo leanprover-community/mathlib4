@@ -134,7 +134,7 @@ protected theorem HasSubst.map {a : σ → MvPowerSeries τ R} (ha : HasSubst a)
 
 theorem HasSubst.smul_X (a : σ → R) :
     HasSubst (a • X : σ → MvPowerSeries σ R) := by
-  convert! HasSubst.X.mul_left (fun s ↦ algebraMap R (MvPowerSeries σ R) (a s))
+  convert HasSubst.X.mul_left (fun s ↦ algebraMap R (MvPowerSeries σ R) (a s))
   simp [funext_iff, algebra_compatible_smul (MvPowerSeries σ R)]
 
 /-- Families of `MvPowerSeries` that can be substituted, as an `Ideal` -/
@@ -207,7 +207,7 @@ theorem substAlgHom_eq_aeval
     (ha : HasSubst a) :
     (substAlgHom ha : MvPowerSeries σ R → MvPowerSeries τ S) = MvPowerSeries.aeval ha.hasEval := by
   simp only [substAlgHom, coe_aeval ha.hasEval]
-  convert! coe_aeval (R := R) (hasSubst_iff_hasEval_of_discreteTopology.mp ha) <;>
+  convert coe_aeval (R := R) (hasSubst_iff_hasEval_of_discreteTopology.mp ha) <;>
   exact DiscreteUniformity.eq_bot.symm
 
 @[simp]
@@ -552,7 +552,7 @@ theorem rescale_zero :
   split_ifs with h
   · simp [h, coeff_apply, ← @coeff_zero_eq_constantCoeff_apply, coeff_apply]
   · simp only [coeff_apply]
-    convert! zero_mul _
+    convert zero_mul _
     simp only [DFunLike.ext_iff, not_forall, Finsupp.coe_zero, Pi.zero_apply] at h
     obtain ⟨s, h⟩ := h
     simp only [Finsupp.prod]

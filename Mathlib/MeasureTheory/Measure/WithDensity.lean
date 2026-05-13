@@ -252,7 +252,7 @@ theorem withDensity_apply_eq_zero' {f : α → ℝ≥0∞} {s : Set α} (hf : AE
     swap
     · simp only [measurableSet_toMeasurable, MeasurableSet.nullMeasurableSet]
     simp only [Pi.zero_apply] at A
-    convert! A using 2
+    convert A using 2
     ext x
     simp only [and_comm, exists_prop, mem_inter_iff, mem_setOf_eq,
       not_forall]

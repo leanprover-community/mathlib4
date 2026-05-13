@@ -65,7 +65,7 @@ lemma MonotoneOn.exists_tendsto_deriv_liminf_lintegral_enorm_le
     rw [hfg (by grind [Icc_diff_both])]
     exact hx₁.hasDerivAt.tendsto_slope.comp <|
       tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
-      (by convert! tendsto_const_nhds.add (tendsto_inv_atTop_nhds_zero_nat (𝕜 := ℝ)); simp)
+      (by convert tendsto_const_nhds.add (tendsto_inv_atTop_nhds_zero_nat (𝕜 := ℝ)); simp)
       (by simp [eventually_ne_atTop 0])
   · calc
       _ = liminf (fun (n : ℕ) ↦ ENNReal.ofReal (∫ (x : ℝ) in Icc a b, (G (n : ℝ)⁻¹) x)) atTop := by
@@ -78,8 +78,8 @@ lemma MonotoneOn.exists_tendsto_deriv_liminf_lintegral_enorm_le
         refine Filter.liminf_le_of_frequently_le'
           (Filter.Frequently.of_forall fun n ↦ ENNReal.ofReal_le_ofReal ?_)
         rw [integral_Icc_eq_integral_Ioc, ← intervalIntegral.integral_of_le hab]
-        convert! hg.monotoneOn (Icc a (b + (n : ℝ)⁻¹)) |>.intervalIntegral_slope_le hab (by simp)
-          using 2
+        convert
+          hg.monotoneOn (Icc a (b + (n : ℝ)⁻¹)) |>.intervalIntegral_slope_le hab (by simp) using 2
         simp [g]
       _ = ENNReal.ofReal (f b - f a) := by grind
 

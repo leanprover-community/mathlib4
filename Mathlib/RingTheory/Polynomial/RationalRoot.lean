@@ -41,7 +41,7 @@ open Finsupp IsFractionRing IsLocalization Polynomial
 
 theorem scaleRoots_aeval_eq_zero_of_aeval_mk'_eq_zero {p : A[X]} {r : A} {s : M}
     (hr : aeval (mk' S r s) p = 0) : aeval (algebraMap A S r) (scaleRoots p s) = 0 := by
-  convert! scaleRoots_eval₂_eq_zero (algebraMap A S) hr
+  convert scaleRoots_eval₂_eq_zero (algebraMap A S) hr
   funext
   rw [aeval_def, mk'_spec' _ r s]
 
@@ -76,11 +76,11 @@ theorem num_dvd_of_is_root {p : A[X]} {r : K} (hr : aeval r p = 0) : num A r ∣
       intro q dvd_num dvd_denom_pow hq
       apply hq.not_unit
       exact num_den_reduced A r dvd_num (hq.dvd_of_dvd_pow dvd_denom_pow)
-  convert! dvd_term_of_isRoot_of_dvd_terms 0 (num_isRoot_scaleRoots_of_aeval_eq_zero hr) _
+  convert dvd_term_of_isRoot_of_dvd_terms 0 (num_isRoot_scaleRoots_of_aeval_eq_zero hr) _
   · rw [pow_zero, mul_one]
   intro j hj
   apply dvd_mul_of_dvd_right
-  convert! pow_dvd_pow (num A r) (Nat.succ_le_of_lt (bot_lt_iff_ne_bot.mpr hj))
+  convert pow_dvd_pow (num A r) (Nat.succ_le_of_lt (bot_lt_iff_ne_bot.mpr hj))
   exact (pow_one _).symm
 
 /-- Rational root theorem part 2:
@@ -101,7 +101,7 @@ theorem den_dvd_of_is_root {p : A[X]} {r : K} (hr : aeval r p = 0) :
   by_cases! h : j < p.natDegree
   · rw [coeff_scaleRoots]
     refine (dvd_mul_of_dvd_right ?_ _).mul_right _
-    convert! pow_dvd_pow (den A r : A) (Nat.succ_le_iff.mpr (lt_tsub_iff_left.mpr _))
+    convert pow_dvd_pow (den A r : A) (Nat.succ_le_iff.mpr (lt_tsub_iff_left.mpr _))
     · exact (pow_one _).symm
     simpa using h
   rw [← natDegree_scaleRoots p (den A r)] at *

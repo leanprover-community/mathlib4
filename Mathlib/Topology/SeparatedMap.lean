@@ -161,7 +161,7 @@ theorem discreteTopology_iff_locallyInjective (y : Y) :
     DiscreteTopology X ↔ IsLocallyInjective fun _ : X ↦ y := by
   rw [discreteTopology_iff_singleton_mem_nhds, isLocallyInjective_iff_nhds]
   refine forall_congr' fun x ↦ ⟨fun h ↦ ⟨{x}, h, Set.injOn_singleton _ _⟩, fun ⟨U, hU, inj⟩ ↦ ?_⟩
-  convert! hU; ext x'; refine ⟨?_, fun h ↦ inj h (mem_of_mem_nhds hU) rfl⟩
+  convert hU; ext x'; refine ⟨?_, fun h ↦ inj h (mem_of_mem_nhds hU) rfl⟩
   rintro rfl; exact mem_of_mem_nhds hU
 
 theorem IsLocallyInjective.comp_left {A} {f : X → Y} (hf : IsLocallyInjective f) {g : Y → A}

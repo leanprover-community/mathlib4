@@ -352,7 +352,7 @@ theorem NormedGroup.nhds_basis_norm_lt (x : E) :
 @[to_additive]
 theorem NormedGroup.nhds_one_basis_norm_lt :
     (𝓝 (1 : E)).HasBasis (fun ε : ℝ => 0 < ε) fun ε => { y | ‖y‖ < ε } := by
-  convert! NormedGroup.nhds_basis_norm_lt (1 : E) using 1
+  convert NormedGroup.nhds_basis_norm_lt (1 : E) using 1
   simp
 
 @[deprecated (since := "2026-02-17")]
@@ -364,7 +364,7 @@ alias NormedAddCommGroup.nhds_zero_basis_norm_lt := NormedAddGroup.nhds_zero_bas
 @[to_additive]
 theorem NormedGroup.uniformity_basis_dist :
     (𝓤 E).HasBasis (fun ε : ℝ => 0 < ε) fun ε => { p : E × E | ‖p.fst⁻¹ * p.snd‖ < ε } := by
-  convert! Metric.uniformity_basis_dist (α := E) using 1
+  convert Metric.uniformity_basis_dist (α := E) using 1
   simp [dist_eq_norm_inv_mul]
 
 open Finset

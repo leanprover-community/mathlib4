@@ -170,8 +170,10 @@ lemma IsStable.locally_and_iff (hp : IsStable 𝓕 p) (hq : IsStable 𝓕 q) :
     simp_rw [inf_comm hpX.localSeq]
     exact this q p hq hp hqX hpX
   intro p q hp hq hpX hqX
-  convert! hp _ (hpX.stoppedProcess_localSeq n) _ <|
-    hqX.isLocalizingSequence_localSeq.isStoppingTime n using 1
+  convert
+    hp _ (hpX.stoppedProcess_localSeq n) _ <|
+      hqX.isLocalizingSequence_localSeq.isStoppingTime n using
+    1
   ext i ω
   simp_rw [stoppedProcess_indicator_comm, Pi.inf_apply, lt_inf_iff, inf_comm (hpX.localSeq n)]
   rw [← stoppedProcess_stoppedProcess, ← stoppedProcess_indicator_comm, Set.setOf_and,
@@ -214,8 +216,8 @@ lemma IsStable.locally_of_isPreLocalizingSequence
   rw [stoppedProcess_indicator_comm', ← stoppedProcess_stoppedProcess_of_le_right
     (τ := fun ω ↦ τ n ω) (fun _ ↦ (iInf_le _ n).trans <| iInf_le _ le_rfl),
     ← stoppedProcess_indicator_comm']
-  convert! hp _ (hpτ n) (fun ω ↦ ⨅ j ≥ n, τ j ω) <|
-    hτ.isLocalizingSequence_biInf.isStoppingTime n using 2
+  convert
+    hp _ (hpτ n) (fun ω ↦ ⨅ j ≥ n, τ j ω) <| hτ.isLocalizingSequence_biInf.isStoppingTime n using 2
   ext i ω
   rw [stoppedProcess_indicator_comm', Set.indicator_indicator]
   congr with ω
@@ -310,7 +312,7 @@ lemma IsStable.locally_locally_iff [IsRightContinuous 𝓕] (hp : IsStable 𝓕 
   obtain ⟨nk, hnk, hpre⟩ :=
     hL.isLocalizingSequence_localSeq.isPrelocalizingSequence_inf_extraction hτ₁
   refine locally_of_isPreLocalizingSequence hp hpre <| fun n ↦ ?_
-  convert! hτ₂ n (nk n) using 1 with
+  convert hτ₂ n (nk n) using 1 with
   ext i ω
   rw [stoppedProcess_indicator_comm', stoppedProcess_indicator_comm',
     stoppedProcess_stoppedProcess, stoppedProcess_indicator_comm']

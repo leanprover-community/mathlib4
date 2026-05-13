@@ -150,7 +150,7 @@ lemma exists_finite_approximation_of_mem_nhds_diagonal (hS : S ∈ nhdsSet (diag
     simpa [← SetLike.coe_set_eq, ← nonempty_iff_ne_empty] using hEne i
   choose r hr using h_ex -- for each `i`, choose an `r i ∈ E i`
   refine ⟨n, g, f ∘ r, continuous_discrete_rng.mpr fun j ↦ ?_, fun x ↦ (hES _) _ (hg _) _ (hr _)⟩
-  convert! (E j).isOpen
+  convert (E j).isOpen
   exact Set.ext fun x ↦ ⟨fun hj ↦ hj ▸ hg x, fun hx ↦ (hg' _ _ hx).symm⟩
 
 /--
@@ -170,7 +170,7 @@ lemma exists_finite_sum_const_mulIndicator_approximation_of_mem_nhds_diagonal [C
     ∀ x, (f x, ∏ n, mulIndicator (U n) (fun _ ↦ v n) x) ∈ S := by
   obtain ⟨n, g, h, hg, hgh⟩ := exists_finite_approximation_of_mem_nhds_diagonal f hS
   refine ⟨n, fun i ↦ ⟨_, (isClopen_discrete {i}).preimage hg⟩, h, fun x ↦ ?_⟩
-  convert! hgh x
+  convert hgh x
   exact (Fintype.prod_eq_single _ fun i hi ↦ mulIndicator_of_notMem hi.symm _).trans
     (mulIndicator_of_mem rfl _)
 

@@ -370,9 +370,9 @@ theorem sort_roots_charpoly_eq_eigenvalues (hT : T.IsSymmetric) (hn : Module.fin
   simp_rw [hT.roots_charpoly_eq_eigenvalues, Fin.univ_val_map, Multiset.map_coe, List.map_ofFn,
     Function.comp_def, RCLike.ofReal_re, Multiset.coe_sort]
   have := hn.symm
-  convert! List.mergeSort_of_pairwise ?_
+  convert List.mergeSort_of_pairwise ?_
   simp_rw [decide_eq_true_eq, ← List.sortedGE_iff_pairwise]
-  convert! (hT.eigenvalues_antitone hn).sortedGE_ofFn
+  convert (hT.eigenvalues_antitone hn).sortedGE_ofFn
 
 theorem eigenvalues_eq_eigenvalues_iff {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
     [FiniteDimensional 𝕜 E'] {T' : E' →ₗ[𝕜] E'} (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n)

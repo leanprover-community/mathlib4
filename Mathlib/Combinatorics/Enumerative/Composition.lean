@@ -222,7 +222,7 @@ theorem sizeUpTo_zero : c.sizeUpTo 0 = 0 := by simp [sizeUpTo]
 
 theorem sizeUpTo_ofLength_le (i : ℕ) (h : c.length ≤ i) : c.sizeUpTo i = n := by
   dsimp [sizeUpTo]
-  convert! c.blocks_sum
+  convert c.blocks_sum
   exact take_of_length_le h
 
 @[simp]
@@ -826,7 +826,7 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
     · rintro (rfl | rfl | ⟨j, hj1, hj2⟩)
       · exact c.zero_mem
       · exact c.getLast_mem
-      · convert! hj1
+      · convert hj1
     · simp only [or_iff_not_imp_left, ← ne_eq, ← Fin.exists_succ_eq]
       rintro i_mem ⟨j, rfl⟩ i_ne_last
       rcases Nat.exists_add_one_eq.mpr j.pos with ⟨n, rfl⟩
@@ -931,7 +931,7 @@ theorem mem_boundaries_iff_exists_blocks_sum_take_eq {j : Fin (n + 1)} :
     rw [← hi, c.blocks_partial_sum i.2]
     rfl
   · rintro ⟨i, hi, H⟩
-    convert! (c.boundaries.orderIsoOfFin rfl ⟨i, hi⟩).2
+    convert (c.boundaries.orderIsoOfFin rfl ⟨i, hi⟩).2
     have : c.boundary ⟨i, hi⟩ = j := by rwa [Fin.ext_iff, ← c.blocks_partial_sum hi]
     exact this.symm
 

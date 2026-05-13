@@ -279,7 +279,7 @@ theorem IsBigOWith.smul (h₁ : IsBigOWith c l k₁ k₂) (h₂ : IsBigOWith c' 
   simp only [IsBigOWith_def] at *
   filter_upwards [h₁, h₂] with _ hx₁ hx₂
   apply le_trans (norm_smul_le _ _)
-  convert! mul_le_mul hx₁ hx₂ (norm_nonneg _) (le_trans (norm_nonneg _) hx₁) using 1
+  convert mul_le_mul hx₁ hx₂ (norm_nonneg _) (le_trans (norm_nonneg _) hx₁) using 1
   rw [norm_smul, mul_mul_mul_comm]
 
 theorem IsBigO.smul (h₁ : k₁ =O[l] k₂) (h₂ : f' =O[l] g') :

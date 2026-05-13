@@ -89,7 +89,7 @@ private lemma absq_le {K : Set ℍ} (hK : IsCompact K) :
   let S : SL(2, ℝ) := ⟨!![0, -1; 1, 0], by simp⟩
   obtain ⟨A, hA⟩ := cdsq_le (K := S • K) (hK.image <| continuous_const_smul S)
   refine ⟨A, fun g hg ↦ ?_⟩
-  convert! hA (S * g) (by rwa [mul_smul, Set.smul_mem_smul_set_iff]) using 1
+  convert hA (S * g) (by rwa [mul_smul, Set.smul_mem_smul_set_iff]) using 1
   rw [Matrix.SpecialLinearGroup.coe_mul, Matrix.eta_fin_two g.val, Matrix.mul_fin_two]
   simp
 

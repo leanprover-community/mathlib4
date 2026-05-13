@@ -148,8 +148,7 @@ theorem pow_length_le_mul_ofDigits {b : ℕ} {l : List ℕ} (hl : l ≠ []) (hl2
 theorem base_pow_length_digits_le' (b m : ℕ) (hm : m ≠ 0) :
     (b + 2) ^ (digits (b + 2) m).length ≤ (b + 2) * m := by
   have : digits (b + 2) m ≠ [] := digits_ne_nil_iff_ne_zero.mpr hm
-  convert! @pow_length_le_mul_ofDigits b (digits (b + 2) m)
-    this (getLast_digit_ne_zero _ hm)
+  convert @pow_length_le_mul_ofDigits b (digits (b + 2) m) this (getLast_digit_ne_zero _ hm)
   rw [ofDigits_digits]
 
 /-- Any non-zero natural number `m` is greater than
@@ -288,7 +287,7 @@ theorem modEq_digits_sum (b b' : ℕ) (h : b' % b = 1) (n : ℕ) : n ≡ (digits
     congr
     · skip
     · rw [← ofDigits_digits b' n]
-  convert! ofDigits_modEq b' b (digits b' n)
+  convert ofDigits_modEq b' b (digits b' n)
   exact h.symm
 
 theorem zmodeq_ofDigits_digits (b b' : ℕ) (c : ℤ) (h : b' ≡ c [ZMOD b]) (n : ℕ) :
@@ -421,7 +420,7 @@ This spelling can be helpful for some proofs.
 theorem _root_.Nat.bijOn_ofDigits' {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Set.BijOn (ofDigits b) (fixedLengthDigits hb l) (Finset.range (b ^ l)) := by
   rw [fixedLengthDigits, Set.coe_toFinset]
-  convert! bijOn_ofDigits hb l
+  convert bijOn_ofDigits hb l
   ext; simp
 
 /--
@@ -431,7 +430,7 @@ This spelling can be helpful for some proofs.
 theorem _root_.Nat.bijOn_digitsAppend' {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Set.BijOn (digitsAppend b l) (Finset.range (b ^ l)) (fixedLengthDigits hb l) := by
   rw [fixedLengthDigits, Set.coe_toFinset]
-  convert! bijOn_digitsAppend hb l
+  convert bijOn_digitsAppend hb l
   ext; simp
 
 @[simp]

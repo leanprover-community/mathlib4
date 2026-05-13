@@ -313,7 +313,7 @@ theorem tendsto_card_div_pow (b : Basis ι ℤ L) {s : Set (ι → ℝ)} (hs₁ 
     Tendsto (fun n : ℕ ↦ (Nat.card (s ∩ (n : ℝ)⁻¹ • L : Set (ι → ℝ)) : ℝ) / n ^ card ι)
       atTop (𝓝 (volume.real s / covolume L)) := by
   classical
-  convert! tendsto_card_div_pow'' b hs₁ hs₂ ?_
+  convert tendsto_card_div_pow'' b hs₁ hs₂ ?_
   · simp only [measureReal_def]
     rw [volume_image_eq_volume_div_covolume L b, ENNReal.toReal_div,
       ENNReal.toReal_ofReal (covolume_pos L volume).le]
@@ -331,7 +331,7 @@ theorem tendsto_card_le_div {X : Set (ι → ℝ)} (hX : ∀ ⦃x⦄ ⦃r : ℝ�
     refine Fintype.equivOfCardEq ?_
     rw [← finrank_eq_card_chooseBasisIndex, ZLattice.rank ℝ, finrank_fintype_fun_eq_card]
   let b := (Module.Free.chooseBasis ℤ L).reindex e
-  convert! tendsto_card_le_div'' b hX h₁ h₂ h₃ ?_
+  convert tendsto_card_le_div'' b hX h₁ h₂ h₃ ?_
   · simp only [measureReal_def]
     rw [volume_image_eq_volume_div_covolume L b, ENNReal.toReal_div,
       ENNReal.toReal_ofReal (covolume_pos L volume).le]
@@ -373,7 +373,7 @@ theorem tendsto_card_le_div' [Nontrivial E] {X : Set E} {F : E → ℝ}
       Nat.card ({x ∈ X | F x ≤ c} ∩ L : Set E) / (c : ℝ))
         atTop (𝓝 (volume.real {x ∈ X | F x ≤ 1} / covolume L)) := by
   let b := Module.Free.chooseBasis ℤ L
-  convert! tendsto_card_le_div'' b hX ?_ h₂ h₃ ?_
+  convert tendsto_card_le_div'' b hX ?_ h₂ h₃ ?_
   · simp only [measureReal_def]
     rw [volume_image_eq_volume_div_covolume' L b h₃.nullMeasurableSet, ENNReal.toReal_div,
       ENNReal.toReal_ofReal (covolume_pos L volume).le]

@@ -376,8 +376,9 @@ theorem IsMaximal.comap_piEvalRingHom {ι : Type*} {R : ι → Type*} [∀ i, Se
   refine isMaximal_iff.mpr ⟨I.ne_top_iff_one.mp h.ne_top, fun J x le hxI hxJ ↦ ?_⟩
   have ⟨r, y, hy, eq⟩ := h.exists_inv hxI
   classical
-  convert! J.add_mem (J.mul_mem_left (update 0 i r) hxJ)
-    (b := update 1 i y) (le <| by apply update_self i y 1 ▸ hy)
+  convert
+    J.add_mem (J.mul_mem_left (update 0 i r) hxJ) (b := update 1 i y)
+      (le <| by apply update_self i y 1 ▸ hy)
   ext j
   obtain rfl | ne := eq_or_ne j i
   · simpa [eq_comm] using eq
@@ -1087,7 +1088,7 @@ theorem map_isPrime_of_surjective {f : F} (hf : Function.Surjective f) {I : Idea
     rcases hxy with ⟨c, hc, hc'⟩
     rw [← sub_eq_zero, ← map_sub] at hc'
     have : a * b ∈ I := by
-      convert! I.sub_mem hc (hk (hc' : c - a * b ∈ RingHom.ker f)) using 1
+      convert I.sub_mem hc (hk (hc' : c - a * b ∈ RingHom.ker f)) using 1
       abel
     exact
       (H.mem_or_mem this).imp (fun h => ha ▸ mem_map_of_mem f h) fun h => hb ▸ mem_map_of_mem f h
@@ -1118,7 +1119,7 @@ theorem map_radical_of_surjective {f : R →+* S} (hf : Function.Surjective f) {
     (h : RingHom.ker f ≤ I) : map f I.radical = (map f I).radical := by
   rw [radical_eq_sInf, radical_eq_sInf]
   have : ∀ J ∈ {J : Ideal R | I ≤ J ∧ J.IsPrime}, RingHom.ker f ≤ J := fun J hJ => h.trans hJ.left
-  convert! map_sInf hf this
+  convert map_sInf hf this
   ext j
   constructor
   · rintro ⟨hj, hj'⟩

@@ -385,7 +385,7 @@ theorem Subalgebra.SeparatesPoints.rclike_to_real {A : StarSubalgebra 𝕜 C(X, 
   refine ⟨_, ⟨⟨(‖F ·‖ ^ 2), by fun_prop⟩, ?_, rfl⟩, ?_⟩
   · -- This is also an element of the subalgebra, and takes only real values
     rw [SetLike.mem_coe, Subalgebra.mem_comap]
-    convert! (A.restrictScalars ℝ).mul_mem hFA (star_mem hFA : star F ∈ A)
+    convert (A.restrictScalars ℝ).mul_mem hFA (star_mem hFA : star F ∈ A)
     ext1
     simp [← RCLike.mul_conj]
   · -- And it also separates the points `x₁`, `x₂`
@@ -428,7 +428,7 @@ theorem ContinuousMap.starSubalgebra_topologicalClosure_eq_top_of_separatesPoint
   -- So `f_re + I • f_im` is in the closure of `A`
   have := A.topologicalClosure.add_mem h_f_re (A.topologicalClosure.smul_mem h_f_im RCLike.I)
   rw [StarSubalgebra.mem_toSubalgebra] at this
-  convert! this
+  convert this
   -- And this, of course, is just `f`
   ext
   apply Eq.symm
@@ -613,7 +613,7 @@ lemma ker_evalStarAlgHom_eq_closure_adjoin_id (s : Set 𝕜) (h0 : 0 ∈ s) [Com
       closure (adjoin 𝕜 {(restrict s (.id 𝕜))}) := by
   rw [← ker_evalStarAlgHom_inter_adjoin_id s h0,
     AlgHom.closure_ker_inter (φ := evalStarAlgHom 𝕜 𝕜 (X := s) ⟨0, h0⟩) (continuous_eval_const _) _]
-  convert! (Set.univ_inter _).symm
+  convert (Set.univ_inter _).symm
   rw [← Polynomial.toContinuousMapOn_X_eq_restrict_id, ← Polynomial.toContinuousMapOnAlgHom_apply,
     ← polynomialFunctions.starClosure_eq_adjoin_X s]
   congrm (($(polynomialFunctions.starClosure_topologicalClosure s) : Set C(s, 𝕜)))

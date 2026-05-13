@@ -417,7 +417,7 @@ theorem Circle.isQuotientCoveringMap_zpow (n : ℤ) [NeZero n] :
     convert! e.isQuotientMap.comp <| IsUnit.isQuotientMap_zsmul (M := ℝ)
       (QuotientAddGroup.mk' (AddSubgroup.zmultiples (1 : ℝ))) isQuotientMap_quotient_mk' n hn
     ext; simp [zpowGroupHom, e, homeomorphCircle_apply, toCircle_zsmul]
-  · convert! finite_torsion_of_isSMulRegular_int (1 : ℝ) n fun _ ↦ by simp [NeZero.ne]
+  · convert finite_torsion_of_isSMulRegular_int (1 : ℝ) n fun _ ↦ by simp [NeZero.ne]
     ext
     simp [e, homeomorphCircle_apply, ← toCircle_zsmul, ← (injective_toCircle one_ne_zero).eq_iff]
 

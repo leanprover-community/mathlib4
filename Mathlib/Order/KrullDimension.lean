@@ -198,13 +198,13 @@ lemma length_le_height {p : LTSeries α} {x : α} (hlast : p.last ≤ x) :
   · let p' := p.eraseLast.snoc x (by
       apply lt_of_lt_of_le
       · apply p.step ⟨p.length - 1, by lia⟩
-      · convert! hlast
+      · convert hlast
         simp only [Fin.succ_mk, RelSeries.last, Fin.last]
         congr; lia)
     suffices p'.length ≤ height x by
       simp only [RelSeries.snoc_length, RelSeries.eraseLast_length, Nat.cast_add, ENat.coe_sub,
         Nat.cast_one, p'] at this
-      convert! this
+      convert this
       norm_cast
       lia
     refine le_iSup₂_of_le p' ?_ le_rfl

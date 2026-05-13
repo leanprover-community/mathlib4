@@ -105,7 +105,7 @@ theorem Ideal.mul_add_mem_pow_succ_inj (P : Ideal S) {i : ℕ} (a d d' e e' : S)
   have : a * d - a * d' ∈ P ^ (i + 1) := by
     simp only [← mul_sub]
     exact Ideal.mul_mem_mul a_mem h
-  convert! Ideal.add_mem _ this (Ideal.sub_mem _ e_mem e'_mem) using 1
+  convert Ideal.add_mem _ this (Ideal.sub_mem _ e_mem e'_mem) using 1
   ring
 
 section PPrime
@@ -144,7 +144,7 @@ theorem Ideal.mul_add_mem_pow_succ_unique [IsDedekindDomain S] (hP : P ≠ ⊥)
     (a_notMem : a ∉ P ^ (i + 1)) (e_mem : e ∈ P ^ (i + 1)) (e'_mem : e' ∈ P ^ (i + 1))
     (h : a * d + e - (a * d' + e') ∈ P ^ (i + 1)) : d - d' ∈ P := by
   have h' : a * (d - d') ∈ P ^ (i + 1) := by
-    convert! Ideal.add_mem _ h (Ideal.sub_mem _ e'_mem e_mem) using 1
+    convert Ideal.add_mem _ h (Ideal.sub_mem _ e'_mem e_mem) using 1
     ring
   exact Ideal.mem_prime_of_mul_mem_pow hP a_notMem h'
 

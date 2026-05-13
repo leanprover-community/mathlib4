@@ -129,7 +129,7 @@ lemma isNilpotent_e :
       apply IsReduced.linearIndependent P ?_ ?_
       · rintro rfl
         apply P.nsmul_notMem_range_root (n := P.chainTopCoeff i i + 2) (i := i)
-        convert! hk₁ using 1
+        convert hk₁ using 1
         module
       · contrapose hij
         rw [root_eq_neg_iff] at hij

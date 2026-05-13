@@ -129,7 +129,7 @@ variable [IsDomain A] [IsFractionRing A K] [FiniteDimensional K L] [Algebra.IsSe
 
 lemma traceDual_top [Decidable (IsField A)] :
     (⊤ : Submodule B L)ᵛ = if IsField A then ⊤ else ⊥ := by
-  convert! traceDual_top'
+  convert traceDual_top'
   rw [← IsFractionRing.surjective_iff_isField (R := A) (K := K),
     LinearMap.range_eq_top.mpr (Algebra.trace_surjective K L),
     ← RingHom.range_eq_top, _root_.eq_top_iff]
@@ -240,7 +240,7 @@ def dual (I : FractionalIdeal B⁰ L) :
     · rw [← (IsIntegralClosure.algebraMap_injective B A L).ne_iff, hy, map_zero,
         ← (algebraMap K L).map_zero, (algebraMap K L).injective.ne_iff]
       exact discr_not_zero_of_basis K b
-    · convert! isIntegral_discr_mul_of_mem_traceDual I hb hx' hz using 1
+    · convert isIntegral_discr_mul_of_mem_traceDual I hb hx' hz using 1
       · ext w; exact (IsIntegralClosure.isIntegral_iff (A := B)).symm
       · rw [Algebra.smul_def, map_mul, hy, ← Algebra.smul_def]⟩
 
@@ -297,7 +297,7 @@ lemma dual_ne_zero (hI : I ≠ 0) :
   apply IsIntegrallyClosed.isIntegral_iff.mp
   apply isIntegral_trace
   dsimp
-  convert! hb' a ha using 1
+  convert hb' a ha using 1
   · ext w
     exact IsIntegralClosure.isIntegral_iff (A := B)
   · exact (Algebra.smul_def _ _).symm
@@ -913,8 +913,9 @@ theorem not_dvd_differentIdeal_iff
     let K := FractionRing A
     let L := FractionRing B
     have : IsLocalization B⁰ (Localization.AtPrime (⊥ : Ideal B)) := by
-      convert! (inferInstance :
-        IsLocalization (⊥ : Ideal B).primeCompl (Localization.AtPrime (⊥ : Ideal B)))
+      convert
+        (inferInstance :
+          IsLocalization (⊥ : Ideal B).primeCompl (Localization.AtPrime (⊥ : Ideal B)))
       ext; simp [Ideal.primeCompl]
     refine (Algebra.FormallyUnramified.iff_of_equiv (A := L)
       ((IsLocalization.algEquiv B⁰ _ _).restrictScalars A)).mp ?_

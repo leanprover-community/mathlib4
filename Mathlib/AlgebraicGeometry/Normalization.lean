@@ -350,8 +350,9 @@ instance [IsReduced X] : IsReduced f.normalization :=
 instance [IsIntegral X] : IsIntegral f.normalization :=
   have : IrreducibleSpace f.normalization := by
     rw [irreducibleSpace_def]
-    convert! ((IrreducibleSpace.isIrreducible_univ X).image _
-      f.toNormalization.continuous.continuousOn).closure
+    convert
+      ((IrreducibleSpace.isIrreducible_univ X).image _
+          f.toNormalization.continuous.continuousOn).closure
     simpa using f.toNormalization.denseRange.closure_range.symm
   isIntegral_of_irreducibleSpace_of_isReduced _
 
@@ -641,7 +642,7 @@ instance [Smooth g] : IsIso (f.normalizationPullback g) := by
     ((pullback.snd f g).normalizationObjIso hV).inv ≫
     (pullback.snd f g).normalization.presheaf.map (eqToHom
       (by simp only [W, ← Scheme.Hom.comp_preimage, Scheme.Hom.normalizationPullback_snd])).op
-  convert! show IsIso φ by dsimp only [φ]; infer_instance using 1
+  convert show IsIso φ by dsimp only [φ]; infer_instance using 1
   ext1
   · dsimp [φ]
     simp only [Scheme.Hom.app_eq_appLE, colimit.ι_desc_assoc, span_left, PushoutCocone.mk_pt,

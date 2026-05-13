@@ -96,13 +96,13 @@ protected theorem induct' (motive : ℤ → Prop)
     ∀ (a : ℤ), motive a := by
   refine Chebyshev.induct motive zero one add_two ?_
   have neg' (n : ℤ) (h : motive (-n)) : motive n := by
-    convert! neg (-n) h; rw [neg_neg]
+    convert neg (-n) h; rw [neg_neg]
   intro n h₀ h₁
   cases n with
   | zero => exact neg 1 h₁
   | succ n =>
     apply neg (n + 2) (add_two n (neg' _ h₀) (neg' n ?_))
-    convert! h₁ using 1; omega
+    convert h₁ using 1; omega
 
 @[simp]
 theorem T_add_two : ∀ n, T R (n + 2) = 2 * X * T R (n + 1) - T R n
@@ -876,7 +876,7 @@ theorem T_derivative_mem_span_T (n : ℕ) :
   · simp [hn]
   rw [T_derivative_eq_U, ← smul_eq_mul]; norm_cast
   refine Submodule.smul_of_tower_mem _ n ?_
-  convert! U_mem_span_T R (n - 1) using 2 <;> grind
+  convert U_mem_span_T R (n - 1) using 2 <;> grind
 
 theorem T_iterate_derivative_mem_span_T (n k : ℕ) :
     derivative^[k] (T R n) ∈ Submodule.span ℕ ((fun m : ℕ => T R m) '' Set.Icc 0 (n - k)) := by

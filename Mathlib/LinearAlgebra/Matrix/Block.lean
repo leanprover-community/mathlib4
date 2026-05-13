@@ -68,7 +68,7 @@ protected theorem BlockTriangular.submatrix {f : n → m} (h : M.BlockTriangular
 theorem blockTriangular_reindex_iff {b : n → α} {e : m ≃ n} :
     (reindex e e M).BlockTriangular b ↔ M.BlockTriangular (b ∘ e) := by
   refine ⟨fun h => ?_, fun h => ?_⟩
-  · convert! h.submatrix
+  · convert h.submatrix
     simp only [reindex_apply, submatrix_submatrix, submatrix_id_id, Equiv.symm_comp_self]
   · convert! h.submatrix
     simp only [comp_assoc b e e.symm, Equiv.self_comp_symm, comp_id]
@@ -257,7 +257,7 @@ protected theorem BlockTriangular.det [DecidableEq α] [LinearOrder α] (hM : Bl
     let b' := fun i : { a // b a ≠ k } => b ↑i
     have h' : BlockTriangular (M.toSquareBlockProp fun i => b i ≠ k) b' := hM.submatrix
     have hb' : image b' univ = (image b univ).erase k := by
-      convert! image_subtype_ne_univ_eq_image_erase k b
+      convert image_subtype_ne_univ_eq_image_erase k b
     rw [ih _ (max'_mem _ _) h' hb']
     refine Finset.prod_congr rfl fun l hl => ?_
     let he : { a // b' a = l } ≃ { a // b a = l } :=
@@ -377,8 +377,8 @@ theorem blockTriangular_inv_of_blockTriangular [LinearOrder α] [Invertible M]
   haveI : Invertible A := hM.invertibleToBlock _
   have hA : A.BlockTriangular b' := hM.submatrix
   have hb' : image b' univ ⊂ image b univ := by
-    convert! image_subtype_univ_ssubset_image_univ k b _ (fun a => a < k) (lt_irrefl _)
-    convert! max'_mem (α := α) _ _
+    convert image_subtype_univ_ssubset_image_univ k b _ (fun a => a < k) (lt_irrefl _)
+    convert max'_mem (α := α) _ _
   have hij' : b' ⟨j, hij.trans hi⟩ < b' ⟨i, hi⟩ := by simp_rw [b', hij]
   simp [A, hM.inv_toBlock k, (ih (image b' univ) hb' hA rfl hij').symm]
 

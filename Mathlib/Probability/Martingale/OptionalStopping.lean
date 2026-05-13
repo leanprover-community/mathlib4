@@ -50,7 +50,7 @@ theorem Submartingale.expected_stoppedValue_mono {E : Type*} [NormedAddCommGroup
     have : ∀ i, MeasurableSet[𝒢 i] {ω : Ω | τ ω ≤ i ∧ i < π ω} := by
       intro i
       refine (hτ i).inter ?_
-      convert! (hπ i).compl using 1
+      convert (hπ i).compl using 1
       ext x
       simp; rfl
     rw [integral_finsetSum]
@@ -172,7 +172,7 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
           f n ω ∂μ) := by
       rw [← ENNReal.ofReal_add, ← setIntegral_union]
       · rw [← setIntegral_univ]
-        convert! rfl
+        convert rfl
         ext ω
         change (ε : ℝ) ≤ _ ∨ _ < (ε : ℝ) ↔ _
         simp only [le_or_gt, Set.mem_univ]
@@ -210,7 +210,7 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
         (∫ ω, stoppedValue f (fun ω ↦ (hittingBtwn f {y : ℝ | ε ≤ y} 0 n ω : ℕ)) ω ∂μ) := by
       rw [← ENNReal.ofReal_add, ← setIntegral_union]
       · rw [← setIntegral_univ (μ := μ)]
-        convert! rfl
+        convert rfl
         ext ω
         change _ ↔ (ε : ℝ) ≤ _ ∨ _ < (ε : ℝ)
         simp only [le_or_gt, Set.mem_univ]

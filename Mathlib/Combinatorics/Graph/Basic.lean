@@ -354,7 +354,7 @@ to the definition of `Graph`, so it doesn't require equality of the edge sets.) 
 protected lemma ext {G₁ G₂ : Graph α β} (hV : V(G₁) = V(G₂))
     (h : ∀ e x y, G₁.IsLink e x y ↔ G₂.IsLink e x y) : G₁ = G₂ := by
   rw [← G₁.mk_eq_self G₁.edge_mem_iff_exists_isLink, ← G₂.mk_eq_self G₂.edge_mem_iff_exists_isLink]
-  convert! rfl using 2
+  convert rfl using 2
   · exact hV.symm
   · simp [funext_iff, h]
   simp [edgeSet_eq_setOf_exists_isLink, h]

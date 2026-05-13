@@ -380,8 +380,9 @@ lemma comp_jacobian_eq_jacobian_smul_jacobian [Finite σ] [Finite σ'] :
     (aeval (Q.comp P).val) (Q.comp P).jacobiMatrix.toBlocks₂₂.det = P.jacobian • Q.jacobian
   · simp only [Generators.algebraMap_apply, ← map_mul]
     congr
-    convert! Matrix.det_fromBlocks_zero₁₂ (Q.comp P).jacobiMatrix.toBlocks₁₁
-      (Q.comp P).jacobiMatrix.toBlocks₂₁ (Q.comp P).jacobiMatrix.toBlocks₂₂
+    convert
+      Matrix.det_fromBlocks_zero₁₂ (Q.comp P).jacobiMatrix.toBlocks₁₁
+        (Q.comp P).jacobiMatrix.toBlocks₂₁ (Q.comp P).jacobiMatrix.toBlocks₂₂
   · rw [jacobiMatrix_comp_₁₁_det, jacobiMatrix_comp_₂₂_det, mul_comm, Algebra.smul_def]
 
 end Composition
@@ -607,7 +608,7 @@ noncomputable def aevalDifferentialEquiv (P : SubmersivePresentation R S ι σ) 
   haveI : Fintype σ := Fintype.ofFinite σ
   have :
       IsUnit (LinearMap.toMatrix (Pi.basisFun S σ) (Pi.basisFun S σ) P.aevalDifferential).det := by
-    convert! P.jacobian_isUnit
+    convert P.jacobian_isUnit
     rw [LinearMap.toMatrix_eq_toMatrix', jacobian_eq_jacobiMatrix_det,
       aevalDifferential_toMatrix'_eq_mapMatrix_jacobiMatrix, P.algebraMap_eq]
     simp [RingHom.map_det]

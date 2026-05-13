@@ -183,7 +183,7 @@ theorem ContinuousOn.isOpen_inter_preimage {t : Set β}
 
 theorem ContinuousOn.isOpen_preimage {t : Set β} (h : ContinuousOn f s)
     (hs : IsOpen s) (hp : f ⁻¹' t ⊆ s) (ht : IsOpen t) : IsOpen (f ⁻¹' t) := by
-  convert! (continuousOn_open_iff hs).mp h t ht
+  convert (continuousOn_open_iff hs).mp h t ht
   rw [inter_comm, inter_eq_self_of_subset_left hp]
 
 theorem ContinuousOn.preimage_isClosed_of_isClosed {t : Set β}

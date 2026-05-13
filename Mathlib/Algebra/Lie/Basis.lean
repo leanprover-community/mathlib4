@@ -367,10 +367,10 @@ lemma borelUpper_le_biSup :
         ext i
         simpa using congr_fun χ.property.choose_spec.2.symm i
     replace hu : u ∈ ⨆ χ, ⨆ (_ : χ ∈ s), rootSpace b.cartan χ := by
-      convert! hu; rw [iSup_subtype', iSup_subtype', ← e.iSup_comp]; rfl
+      convert hu; rw [iSup_subtype', iSup_subtype', ← e.iSup_comp]; rfl
     replace hv : v ∈ ⨆ χ, ⨆ (_ : χ ∈ s), rootSpace b.cartan χ := by
-      convert! hv; rw [iSup_subtype', iSup_subtype', ← e.iSup_comp]; rfl
-    convert! mem_biSup_genWeightSpace_of hs hu hv
+      convert hv; rw [iSup_subtype', iSup_subtype', ← e.iSup_comp]; rfl
+    convert mem_biSup_genWeightSpace_of hs hu hv
     rw [iSup_subtype', iSup_subtype', ← e.iSup_comp]; rfl
 
 /-- Lemma 4.4 from [Geck](Geck2017). -/

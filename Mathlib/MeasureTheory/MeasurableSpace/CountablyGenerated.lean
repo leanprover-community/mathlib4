@@ -231,7 +231,7 @@ instance (priority := 50) MeasurableSingletonClass.of_separatesPoints [Measurabl
     [Countable α] [SeparatesPoints α] : MeasurableSingletonClass α where
   measurableSet_singleton x := by
     choose s hsm hxs hys using fun y (h : x ≠ y) ↦ exists_measurableSet_of_ne h
-    convert! MeasurableSet.iInter fun y ↦ .iInter fun h ↦ hsm y h
+    convert MeasurableSet.iInter fun y ↦ .iInter fun h ↦ hsm y h
     ext y
     rcases eq_or_ne x y with rfl | h
     · simpa

@@ -110,7 +110,7 @@ def conesEquivSieveCompatibleFamily :
         have := x.2 f.unop.1.hom g.unop.hom.left f.unop.2
         dsimp at this ⊢
         rw [id_comp, ← this]
-        convert! rfl
+        convert rfl
         simp only [Over.w] }
 
 variable {P S E}

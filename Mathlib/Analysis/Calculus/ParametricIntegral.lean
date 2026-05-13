@@ -111,7 +111,7 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip' {F' : α → H →L[𝕜] 
   by_cases hE : CompleteSpace E; swap
   · rcases subsingleton_or_nontrivial H with hH | hH
     · have : Subsingleton (H →L[𝕜] E) := inferInstance
-      convert! hasFDerivAt_of_subsingleton _ x₀
+      convert hasFDerivAt_of_subsingleton _ x₀
     · have : ¬(CompleteSpace (H →L[𝕜] E)) := by
         simpa [SeparatingDual.completeSpace_continuousLinearMap_iff] using hE
       simp only [integral, hE, ↓reduceDIte, this]

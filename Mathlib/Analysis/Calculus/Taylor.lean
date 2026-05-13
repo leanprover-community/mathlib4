@@ -152,7 +152,7 @@ theorem hasDerivWithinAt_taylor_coeff_within {f : ℝ → E} {x y : ℝ} {k : �
         ((k ! : ℝ)⁻¹ * (x - y) ^ k) • iteratedDerivWithin (k + 1) f s y) t y := by
   replace hf :
     HasDerivWithinAt (iteratedDerivWithin (k + 1) f s) (iteratedDerivWithin (k + 2) f s y) t y := by
-    convert! (hf.mono_of_mem_nhdsWithin hs).hasDerivWithinAt using 1
+    convert (hf.mono_of_mem_nhdsWithin hs).hasDerivWithinAt using 1
     rw [iteratedDerivWithin_succ]
     exact (derivWithin_of_mem_nhdsWithin hs ht hf).symm
   have : HasDerivWithinAt (fun t => ((k + 1 : ℝ) * k !)⁻¹ * (x - t) ^ (k + 1))
@@ -250,8 +250,10 @@ theorem taylor_isLittleO {f : ℝ → E} {x₀ : ℝ} {n : ℕ} {s : Set ℝ}
     · simp
     replace hs' := uniqueDiffOn_convex hs (hs.nontrivial_iff_nonempty_interior.1 hs')
     simp only [Nat.cast_add, Nat.cast_one] at hf
-    convert! Convex.isLittleO_pow_succ_real hs hx₀s ?_ (h (hf.derivWithin hs' le_rfl))
-      (f := fun x ↦ f x - taylorWithinEval f (n + 1) s x₀ x) using 1
+    convert
+      Convex.isLittleO_pow_succ_real hs hx₀s ?_ (h (hf.derivWithin hs' le_rfl)) (f := fun x ↦
+        f x - taylorWithinEval f (n + 1) s x₀ x) using
+      1
     · simp
     · intro x hx
       refine HasDerivWithinAt.sub ?_ (hasDerivAt_taylorWithinEval_succ f n).hasDerivWithinAt
@@ -479,7 +481,7 @@ theorem taylor_integral_remainder_aux [NormedAddCommGroup F] [NormedSpace ℝ F]
     rw [sub_add_eq_sub_sub, ih]
     simp only [Nat.factorial, Nat.succ_eq_add_one, Nat.cast_mul, Nat.cast_add, Nat.cast_one]
     have := hf (n + 1) (by rfl)
-    convert! this.symm using 1
+    convert this.symm using 1
     · simp only [sub_self, ne_eq, Nat.add_eq_zero_iff, one_ne_zero, and_false, not_false_eq_true,
         zero_pow, zero_div, zero_smul, zero_sub, deriv_div_const, Nat.factorial]
       apply fun (a b c d : F) (_ : b = c) (_ : a = -d) ↦ show a - b = -c - d by grind

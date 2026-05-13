@@ -294,7 +294,7 @@ theorem integral_cexp_neg_sum_mul_add {ι : Type*} [Fintype ι] {b : ι → ℂ}
   rw [integral_fintype_prod_volume_eq_prod (f := fun i (v : ℝ) ↦ cexp (-b i * v ^ 2 + c i * v))]
   congr with i
   have : (-b i).re < 0 := by simpa using hb i
-  convert! integral_cexp_quadratic this (c i) 0 using 1 <;> simp [div_neg]
+  convert integral_cexp_quadratic this (c i) 0 using 1 <;> simp [div_neg]
 
 theorem integral_cexp_neg_mul_sum_add {ι : Type*} [Fintype ι] (hb : 0 < b.re) (c : ι → ℂ) :
     ∫ v : ι → ℝ, cexp (-b * ∑ i, (v i : ℂ) ^ 2 + ∑ i, c i * v i)
@@ -341,7 +341,7 @@ theorem integral_cexp_neg_mul_sq_norm (hb : 0 < b.re) :
 theorem integral_rexp_neg_mul_sq_norm {b : ℝ} (hb : 0 < b) :
     ∫ v : V, rexp (-b * ‖v‖ ^ 2) = (π / b) ^ (Module.finrank ℝ V / 2 : ℝ) := by
   rw [← ofReal_inj]
-  convert! integral_cexp_neg_mul_sq_norm (show 0 < (b : ℂ).re from hb) (V := V)
+  convert integral_cexp_neg_mul_sq_norm (show 0 < (b : ℂ).re from hb) (V := V)
   · change ofRealLI (∫ (v : V), rexp (-b * ‖v‖ ^ 2)) = ∫ (v : V), cexp (-↑b * ↑‖v‖ ^ 2)
     rw [← ofRealLI.integral_comp_comm]
     simp [ofRealLI]

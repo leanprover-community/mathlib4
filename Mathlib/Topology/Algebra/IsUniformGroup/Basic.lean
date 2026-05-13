@@ -138,7 +138,7 @@ theorem totallyBounded_iff_subset_finite_iUnion_nhds_one {s : Set α} :
 
 @[to_additive]
 theorem totallyBounded_inv {s : Set α} (hs : TotallyBounded s) : TotallyBounded (s⁻¹) := by
-  convert! TotallyBounded.image hs uniformContinuous_inv
+  convert TotallyBounded.image hs uniformContinuous_inv
   aesop
 
 section UniformConvergence

@@ -35,10 +35,12 @@ theorem Finset.exists_between' (s t : Finset α) [NoMaxOrder α] [NoMinOrder α]
 theorem Set.Finite.exists_between {s t : Set α}
     (hsf : s.Finite) (hs : s.Nonempty) (htf : t.Finite) (ht : t.Nonempty)
     (H : ∀ x ∈ s, ∀ y ∈ t, x < y) : ∃ b, (∀ x ∈ s, x < b) ∧ (∀ y ∈ t, b < y) := by
-  convert! Finset.exists_between (s := hsf.toFinset) (t := htf.toFinset)
-    (by simpa) (by simpa) (by simpa) using 1; simp
+  convert
+    Finset.exists_between (s := hsf.toFinset) (t := htf.toFinset) (by simpa) (by simpa)
+      (by simpa) using
+    1; simp
 
 theorem Set.Finite.exists_between' [NoMaxOrder α] [NoMinOrder α] [Nonempty α]
     {s t : Set α} (hs : s.Finite) (ht : t.Finite)
     (H : ∀ x ∈ s, ∀ y ∈ t, x < y) : ∃ b, (∀ x ∈ s, x < b) ∧ (∀ y ∈ t, b < y) := by
-  convert! hs.toFinset.exists_between' ht.toFinset (by simpa) using 1; simp
+  convert hs.toFinset.exists_between' ht.toFinset (by simpa) using 1; simp

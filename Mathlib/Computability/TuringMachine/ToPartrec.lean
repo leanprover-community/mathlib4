@@ -920,7 +920,7 @@ theorem tr_ret_respects (k v s) : ∃ b₂,
       rw [trCont, tr]; simp only [pop', TM2.stepAux, elim_main, this.1]
       convert! clear_ok (splitAtPred_eq _ _ (trNat v.headI).tail (some Γ'.cons) _ _ _) using 2
       · simp
-        convert! rfl
+        convert rfl
       · exact fun x h => trNat_natEnd _ _ (List.tail_subset _ h)
       · exact ⟨rfl, this.2⟩
 

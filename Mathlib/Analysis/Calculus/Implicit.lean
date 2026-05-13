@@ -261,7 +261,7 @@ theorem hasStrictFDerivAt_implicitFunction (g'inv : G →L[𝕜] E)
     (hg'inv : φ.rightDeriv.comp g'inv = ContinuousLinearMap.id 𝕜 G)
     (hg'invf : φ.leftDeriv.comp g'inv = 0) :
     HasStrictFDerivAt (φ.implicitFunction (φ.leftFun φ.pt)) g'inv (φ.rightFun φ.pt) := by
-  convert! φ.hasStrictFDerivAt_implicitFunction_fderiv
+  convert φ.hasStrictFDerivAt_implicitFunction_fderiv
   ext1 x
   rw [eq_comm, fderiv_implicitFunction_apply_eq_iff]
   simp_all [DFunLike.ext_iff]

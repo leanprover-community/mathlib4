@@ -145,8 +145,7 @@ nonrec lemma Scheme.Hom.isLocallyConstructible_image (f : X ⟶ Y)
     refine .iUnion fun i ↦ ?_
     have inst : QuasiCompact (𝒰.f i ≫ f) :=
       HasAffineProperty.iff_of_isAffine.mpr (inferInstanceAs (CompactSpace (Spec _)))
-    convert! this (hs.preimage_of_isOpenEmbedding (𝒰.f i).isOpenEmbedding) _
-      (𝒰.f i ≫ f) ⟨_, rfl⟩
+    convert this (hs.preimage_of_isOpenEmbedding (𝒰.f i).isOpenEmbedding) _ (𝒰.f i ≫ f) ⟨_, rfl⟩
     rw [Scheme.Hom.comp_base, ← TopCat.Hom.hom, ← TopCat.Hom.hom, TopCat.hom_comp,
       ContinuousMap.coe_comp, Set.image_comp, Set.image_preimage_eq_inter_range, coe_opensRange]
   obtain ⟨S, rfl⟩ := hX

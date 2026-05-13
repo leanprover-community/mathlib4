@@ -206,7 +206,7 @@ theorem gcd_mul_of_coprime_of_dvd {a b c : ℕ} (hac : Coprime a c) (b_dvd_c : b
     gcd (a * b) c = b := by
   rcases exists_eq_mul_left_of_dvd b_dvd_c with ⟨d, rfl⟩
   rw [gcd_mul_right]
-  convert! one_mul b
+  convert one_mul b
   exact Coprime.coprime_mul_right_right hac
 
 theorem Coprime.eq_of_mul_eq_zero {m n : ℕ} (h : m.Coprime n) (hmn : m * n = 0) :

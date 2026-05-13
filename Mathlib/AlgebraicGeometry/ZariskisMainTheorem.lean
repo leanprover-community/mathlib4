@@ -103,14 +103,14 @@ theorem exists_etale_isCompl_of_quasiFiniteAt [IsSeparated f]
   refine ⟨Spec (.of R), Spec.map φ ≫ hU.fromSpec, inferInstance,
     ⟨⟨P, ‹_›⟩, ?_⟩, W₁, W₂, ⟨g ⟨P', ‹_›⟩, ?_⟩, ?_, ‹_›, ?_⟩
   · dsimp [Spec.map_apply]
-    convert! hU.fromSpec_primeIdealOf ⟨f x, hxU⟩
+    convert hU.fromSpec_primeIdealOf ⟨f x, hxU⟩
     · exact PrimeSpectrum.ext (Ideal.over_def _ _).symm
     · simp [h]
   · exact ⟨⟨P', ‹_›⟩, heP', rfl⟩
   · simp [isCompl_iff, disjoint_iff, codisjoint_iff, W₂, SetLike.ext'_iff]
   · trans hV.fromSpec ⟨P'.comap Algebra.TensorProduct.includeRight.toRingHom, inferInstance⟩
     · simp [← Scheme.Hom.comp_apply, -Scheme.Hom.comp_base, g, reassoc_of% he₁]; rfl
-    convert! hV.fromSpec_primeIdealOf ⟨x, hxV⟩
+    convert hV.fromSpec_primeIdealOf ⟨x, hxV⟩
 
 variable {X Y S : Scheme.{u}} (f : X ⟶ Y)
 
@@ -154,7 +154,7 @@ lemma Scheme.Hom.exists_mem_and_isIso_morphismRestrict_toNormalization
       · rw [← Scheme.Hom.inv_image, ← SetLike.coe_subset_coe]
         simpa [← Scheme.Hom.opensRange_comp, ι, e, Scheme.Hom.normalizationCoprodIso,
           Set.range_comp] using Set.subset_preimage_image _ _
-    convert! (inferInstance : IsIso (Scheme.isoOfEq _ Heq).hom)
+    convert (inferInstance : IsIso (Scheme.isoOfEq _ Heq).hom)
     rw [Iso.comp_inv_eq, ← Iso.inv_comp_eq, ← cancel_mono (Scheme.Opens.ι _)]
     have : V.ι ≫ (H.coconePointUniqueUpToIso (colimit.isColimit _)).hom = coprod.inl :=
       H.comp_coconePointUniqueUpToIso_hom _ ⟨.left⟩
@@ -214,7 +214,7 @@ lemma Scheme.Hom.exists_isIso_morphismRestrict_toNormalization
       ((morphismRestrictRestrict ..).symm ≪≫ morphismRestrictOpensRange ..)).mp ?_
     have : Opens.ι _ ''ᵁ (𝒰.f x).opensRange = V x := by
       simp only [Opens.iSupOpenCover, 𝒰, ← opensRange_comp, homOfLE_ι, Opens.opensRange_ι]
-    convert! hV x
+    convert hV x
   refine ⟨⨆ x : { x | f.QuasiFiniteAt x }, V x, this, ?_⟩
   ext x
   suffices (∃ i : { x | f.QuasiFiniteAt x }, toNormalization f x ∈ V i) ↔ f.QuasiFiniteAt x by
@@ -275,7 +275,7 @@ lemma Scheme.Hom.exists_isIso_morphismRestrict_toNormalization
     exact .of_isIntegral_of_finiteType (IsIntegralHom.isIntegral_app f.fromNormalization _ hU)
       ⟨r, (hU.preimage f.fromNormalization).isLocalization_basicOpen _⟩ this
   have hxU : f x ∈ U := by
-    convert! show _ ∈ U from (normalization f).basicOpen_le _ hxV
+    convert show _ ∈ U from (normalization f).basicOpen_le _ hxV
     rw [← Scheme.Hom.comp_apply, f.toNormalization_fromNormalization]
   refine .of_comp (g := (Y.presheaf.germ U _ hxU).hom) ?_
   rw [← CommRingCat.hom_comp, f.germ_stalkMap, ← X.presheaf.germ_res (homOfLE H) _ hxV,
@@ -321,8 +321,12 @@ lemma Scheme.Hom.mem_quasiFiniteLocus [LocallyOfFiniteType f]
 instance [LocallyOfFiniteType f] [IsSeparated f] [QuasiCompact f] :
     IsOpenImmersion (f.quasiFiniteLocus.ι ≫ f.toNormalization) := by
   obtain ⟨U, hU, e⟩ := Scheme.Hom.exists_isIso_morphismRestrict_toNormalization f
-  convert! (inferInstance : IsOpenImmersion ((X.isoOfEq (U := f.quasiFiniteLocus)
-    (SetLike.coe_injective e.symm)).hom ≫ f.toNormalization ∣_ U ≫ U.ι)) using 1
+  convert
+    (inferInstance :
+      IsOpenImmersion
+        ((X.isoOfEq (U := f.quasiFiniteLocus) (SetLike.coe_injective e.symm)).hom ≫
+          f.toNormalization ∣_ U ≫ U.ι)) using
+    1
   simp
 
 lemma Scheme.Hom.quasiFiniteLocus_eq_top [LocallyQuasiFinite f] [LocallyOfFiniteType f] :
@@ -351,8 +355,13 @@ instance [LocallyOfFiniteType f] :
 
 instance [LocallyQuasiFinite f] [LocallyOfFiniteType f] [IsSeparated f] [QuasiCompact f] :
     IsOpenImmersion f.toNormalization := by
-  convert! (inferInstance : IsOpenImmersion (X.topIso.inv ≫ (X.isoOfEq
-    f.quasiFiniteLocus_eq_top).inv ≫ f.quasiFiniteLocus.ι ≫ f.toNormalization)) using 1
+  convert
+    (inferInstance :
+      IsOpenImmersion
+        (X.topIso.inv ≫
+          (X.isoOfEq f.quasiFiniteLocus_eq_top).inv ≫
+            f.quasiFiniteLocus.ι ≫ f.toNormalization)) using
+    1
   simp
 
 -- In particular it is surjective (by infer_instance), since it is a priori dominant.

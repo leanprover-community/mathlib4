@@ -454,7 +454,7 @@ theorem comp_inter_Icc_eq_of_monotoneOn (f : α → E) {t : Set β} (φ : β →
     {x y : β} (hx : x ∈ t) (hy : y ∈ t) :
     eVariationOn (f ∘ φ) (t ∩ Icc x y) = eVariationOn f (φ '' t ∩ Icc (φ x) (φ y)) := by
   rcases le_total x y with (h | h)
-  · convert! comp_eq_of_monotoneOn f φ (hφ.mono Set.inter_subset_left)
+  · convert comp_eq_of_monotoneOn f φ (hφ.mono Set.inter_subset_left)
     apply le_antisymm
     · rintro _ ⟨⟨u, us, rfl⟩, vφx, vφy⟩
       rcases le_total x u with (xu | ux)
@@ -487,7 +487,7 @@ open OrderDual
 
 @[simp] theorem comp_ofDual (f : α → E) (s : Set α) :
     eVariationOn (f ∘ ofDual) (ofDual ⁻¹' s) = eVariationOn f s := by
-  convert! comp_eq_of_antitoneOn f ofDual fun _ _ _ _ => id
+  convert comp_eq_of_antitoneOn f ofDual fun _ _ _ _ => id
   simp only [Equiv.image_preimage]
 
 lemma _root_.BoundedVariationOn.ofDual {f : α → E} {s : Set α} (hf : BoundedVariationOn f s) :
@@ -699,7 +699,7 @@ theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Icc_zero_left
       grind [Set.Subsingleton]
   have W := eVariationOn_inter_Iio_eq_inter_Iic_of_continuousWithinAt (f := f)
     (s := s ∩ Icc y x) (a := x) ?_ ?_
-  · convert! W using 2 <;> grind
+  · convert W using 2 <;> grind
   · rwa [show s ∩ Icc y x ∩ Iio x = (s ∩ Iio x) ∩ Ici y by grind, nhdsWithin_inter_of_mem']
     apply mem_nhdsWithin_of_mem_nhds
     exact Ici_mem_nhds hy

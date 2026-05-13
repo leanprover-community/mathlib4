@@ -410,12 +410,12 @@ theorem Continuous.subtype_mk {f : Y → X} (h : Continuous f) (hp : ∀ x, p (f
 
 theorem IsOpenMap.subtype_mk {f : Y → X} (hf : IsOpenMap f) (hp : ∀ x, p (f x)) :
     IsOpenMap fun x ↦ (⟨f x, hp x⟩ : Subtype p) := fun u hu ↦ by
-  convert! (hf u hu).preimage continuous_subtype_val
+  convert (hf u hu).preimage continuous_subtype_val
   exact Set.ext fun _ ↦ exists_congr fun _ ↦ and_congr_right' Subtype.ext_iff
 
 theorem IsClosedMap.subtype_mk {f : Y → X} (hf : IsClosedMap f) (hp : ∀ x, p (f x)) :
     IsClosedMap fun x ↦ (⟨f x, hp x⟩ : Subtype p) := fun u hu ↦ by
-  convert! (hf u hu).preimage continuous_subtype_val
+  convert (hf u hu).preimage continuous_subtype_val
   exact Set.ext fun _ ↦ exists_congr fun _ ↦ and_congr_right' Subtype.ext_iff
 
 @[fun_prop]

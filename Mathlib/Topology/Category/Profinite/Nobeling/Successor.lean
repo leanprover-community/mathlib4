@@ -150,7 +150,7 @@ include hsC in
 theorem swapTrue_mem_C1 (f : π (C1 C ho) (ord I · < o)) :
     SwapTrue o f.val ∈ C1 C ho := by
   obtain ⟨f, g, hg, rfl⟩ := f
-  convert! hg
+  convert hg
   dsimp +unfoldPartialApp [SwapTrue]
   ext i
   split_ifs with h

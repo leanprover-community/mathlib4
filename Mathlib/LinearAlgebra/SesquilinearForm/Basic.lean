@@ -709,7 +709,7 @@ theorem Nondegenerate.congr (h : B.Nondegenerate) :
 theorem separatingLeft_congr_iff :
     (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R M)) B).SeparatingLeft ↔ B.SeparatingLeft :=
   ⟨fun h ↦ by
-    convert! h.congr e₁.symm e₂.symm
+    convert h.congr e₁.symm e₂.symm
     ext x y
     simp,
    SeparatingLeft.congr e₁ e₂⟩

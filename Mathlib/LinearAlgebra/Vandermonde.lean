@@ -211,7 +211,7 @@ theorem det_projVandermonde (v w : Fin n → R) : (projVandermonde v w).det =
   rw [projVandermonde_map, ← RingHom.map_det, IsFractionRing.coe_inj] at hdet
   apply_fun MvPolynomial.eval₂Hom (Int.castRingHom R) (fun x ↦ (if x.2 then v else w) x.1) at hdet
   rw [RingHom.map_det] at hdet
-  convert! hdet <;>
+  convert hdet <;>
   simp [← Matrix.ext_iff, projVandermonde_apply]
 
 /-- The formula for the determinant of a Vandermonde matrix. -/

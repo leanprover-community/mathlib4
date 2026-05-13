@@ -50,7 +50,7 @@ lemma IsLocalRing.quotient_artinian_of_mem_minimalPrimes_of_isLocalRing
     IsArtinianRing (R ⧸ I) :=
   have : Ring.KrullDimLE 0 (R ⧸ I) := Ring.krullDimLE_zero_iff.mpr fun J prime ↦
     Ideal.isMaximal_of_isIntegral_of_isMaximal_comap _ <| by
-      convert! IsLocalRing.maximalIdeal.isMaximal R
+      convert IsLocalRing.maximalIdeal.isMaximal R
       rw [Ideal.minimalPrimes, Set.mem_setOf] at hp
       have := prime.comap (Ideal.Quotient.mk I)
       exact hp.eq_of_le ⟨this, .trans (by simp) (Ideal.ker_le_comap _)⟩ (le_maximalIdeal this.1)
@@ -228,7 +228,7 @@ nonrec lemma Ideal.height_le_spanRank_toENat_of_mem_minimalPrimes
           simpa using Finset.card_lt_card (Finset.ssubset_insert hxs')).trans_le hn)
         (H _ (tcard.trans_lt n.lt_succ_self) q t hq rfl).trans (by norm_cast)
       rw [Finset.coe_insert] at hp
-      convert! mem_minimalPrimes_span_of_mem_minimalPrimes_span_insert hpq _ _ hp _ ht ?_
+      convert mem_minimalPrimes_span_of_mem_minimalPrimes_span_insert hpq _ _ hp _ ht ?_
       · simp [t]
       refine hspan.trans <| radical_mono ?_
       rw [← Set.union_singleton, span_union]
@@ -392,12 +392,12 @@ lemma Ideal.height_le_ringKrullDim_quotient_add_encard {p : Ideal R} [p.IsPrime]
 
 lemma Ideal.height_le_height_add_one_of_mem {r : R} {p : Ideal R} [p.IsPrime] (hrm : r ∈ p) :
     p.height ≤ (p.map (Quotient.mk (span {r}))).height + 1 := by
-  convert! height_le_height_add_encard_of_subset {r} (p := p) (by simpa)
+  convert height_le_height_add_encard_of_subset { r } (p := p) (by simpa)
   simp
 
 lemma Ideal.height_le_ringKrullDim_quotient_add_one {r : R} {p : Ideal R} [p.IsPrime]
     (hrp : r ∈ p) : p.height ≤ ringKrullDim (R ⧸ span {r}) + 1 := by
-  convert! Ideal.height_le_ringKrullDim_quotient_add_encard {r} (by simpa)
+  convert Ideal.height_le_ringKrullDim_quotient_add_encard { r } (by simpa)
   simp
 
 lemma ringKrullDim_le_ringKrullDim_quotient_add_encard (s : Set R) (hs : s ⊆ Ring.jacobson R) :
@@ -409,7 +409,7 @@ lemma ringKrullDim_le_ringKrullDim_quotient_add_encard (s : Set R) (hs : s ⊆ R
 lemma ringKrullDim_le_ringKrullDim_quotient_add_card (s : Finset R)
     (hs : (s : Set R) ⊆ Ring.jacobson R) :
     ringKrullDim R ≤ ringKrullDim (R ⧸ Ideal.span (s : Set R)) + s.card := by
-  convert! ringKrullDim_le_ringKrullDim_quotient_add_encard s hs
+  convert ringKrullDim_le_ringKrullDim_quotient_add_encard s hs
   norm_cast
 
 section Algebra

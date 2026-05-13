@@ -264,7 +264,7 @@ theorem MemSobolev.fourier_memL1 {s : ℝ} (hs : Module.finrank ℝ E < 2 * s) {
   use this.toLp • u
   rw [MeasureTheory.Lp.toTemperedDistribution_smul_eq]
   · rw [← hu, smulLeftCLM_smulLeftCLM_apply (by fun_prop) (by fun_prop)]
-    convert! (smulLeftCLM_const 1 (𝓕 f)).symm using 1
+    convert (smulLeftCLM_const 1 (𝓕 f)).symm using 1
     · simp
     · congr
       ext x

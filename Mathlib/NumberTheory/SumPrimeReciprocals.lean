@@ -49,7 +49,7 @@ lemma one_half_le_sum_primes_ge_one_div (k : ℕ) :
   set N₀ : ℕ := 2 * m ^ 2 with hN₀
   let S : ℝ := ((2 * N₀).succ.primesBelow \ k.primesBelow).sum (fun p ↦ (1 / p : ℝ))
   suffices 1 / 2 ≤ S by
-    convert! this using 5
+    convert this using 5
     rw [show 4 = 2 ^ 2 by simp, pow_right_comm]
     ring
   suffices 2 * N₀ ≤ m * (2 * N₀).sqrt + 2 * N₀ * S by

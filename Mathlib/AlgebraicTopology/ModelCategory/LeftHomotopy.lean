@@ -167,7 +167,7 @@ lemma exists_good_cylinder {f g : X ⟶ Y} (h : P.LeftHomotopy f g) :
       i₁ := coprod.inr ≫ d.i
       π := d.p ≫ P.π }, ⟨by
         rw [cofibration_iff]
-        convert! d.hi
+        convert d.hi
         aesop⟩, ⟨{ h := d.p ≫ h.h }⟩⟩
 
 /-- The covering homotopy theorem: if `p : E ⟶ B` is a fibration,

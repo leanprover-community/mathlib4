@@ -59,8 +59,7 @@ lemma dist_convexCombination_map_le {ι : Type*} (f : StdSimplex ℝ ι) (x y : 
       Function.Injective.extend_apply Subtype.val_injective _ _ ⟨x, hx⟩
   let einv : ℕ → ι := Function.extend (↑) (f.support.equivFin.symm ·) (fun _ ↦ f.nonempty.some)
   have H (x : _) (hx : x ∈ f.support) : einv (e x) = x := by simp [he, hx, einv, Fin.val_injective]
-  convert! IsConvexMetricSpace.dist_convexCombination_map_le' (f.map e) (x ∘ einv) (y ∘ einv)
-    using 3
+  convert IsConvexMetricSpace.dist_convexCombination_map_le' (f.map e) (x ∘ einv) (y ∘ einv) using 3
   · ext1
     simp only [StdSimplex.map, ← Finsupp.mapDomain_comp]
     exact Finsupp.mapDomain_congr fun x hx ↦ by simp [H, hx]
@@ -134,7 +133,7 @@ lemma dist_convexComboPair_convexComboPair
   { weights := Finsupp.equivFunOnFinite.symm ![s', s - s', t]
     nonneg i := by fin_cases i <;> simp [*]
     total := by simp [Finsupp.sum_fintype, Fin.sum_univ_succ, ← add_assoc, h] }
-  convert! dist_convexCombination_map_le f ![x, x, y] ![x, y, y] using 1
+  convert dist_convexCombination_map_le f ![x, x, y] ![x, y, y] using 1
   swap; · simp [Finsupp.sum_fintype, Fin.sum_univ_succ, f, hss']
   congr 1
   · delta convexComboPair
@@ -156,7 +155,7 @@ lemma dist_convexComboPair_convexComboPair_le
     {s t : ℝ} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) (x y x' y' : X) :
     dist (convexComboPair s t hs ht h x y) (convexComboPair s t hs ht h x' y') ≤
       s * dist x x' + t * dist y y' := by
-  convert! dist_convexCombination_map_le (.duple (M := Fin 2) 0 1 hs ht h) ![x, y] ![x', y']
+  convert dist_convexCombination_map_le (.duple (M := Fin 2) 0 1 hs ht h) ![x, y] ![x', y']
   · simp [convexComboPair]
   · simp [convexComboPair]
   · simp [Finsupp.sum_fintype, Fin.sum_univ_succ, StdSimplex.duple]

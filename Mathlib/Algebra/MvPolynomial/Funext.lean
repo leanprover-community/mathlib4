@@ -66,7 +66,7 @@ theorem funext_set (h : ∀ x ∈ Set.pi .univ s, eval x p = eval x q) :
   suffices p = 0 by rw [this, map_zero]
   refine funext_fin (s ∘ f) (fun _ ↦ hs _) fun x hx ↦ ?_
   choose g hg using fun i ↦ (hs i).nonempty
-  convert! h (Function.extend f x g) fun i _ ↦ ?_
+  convert h (Function.extend f x g) fun i _ ↦ ?_
   · simp only [eval, eval₂Hom_rename, Function.extend_comp hf]
   obtain ⟨i, rfl⟩ | nex := em (∃ x, f x = i)
   · rw [hf.extend_apply]; exact hx _ ⟨⟩

@@ -504,7 +504,7 @@ theorem support_convolution_subset_swap : support (f ⋆[L, μ] g) ⊆ support g
   apply h2x
   simp_rw [Set.mem_add, ← exists_and_left, not_exists, not_and_or, notMem_support] at hx
   rw [convolution_def]
-  convert! integral_zero G F using 2
+  convert integral_zero G F using 2
   ext t
   rcases hx (x - t) t with (h | h | h)
   · rw [h, (L _).map_zero]
@@ -904,7 +904,7 @@ theorem convolution_assoc (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z =
     (measurePreserving_sub_prod μ ν).map_eq
   suffices Integrable (uncurry fun x y => L₃ (f y) (L₄ (g x) (k (x₀ - y - x)))) (μ.prod ν) by
     rw [← h3] at this
-    convert! this.comp_measurable (measurable_sub.prodMk measurable_snd)
+    convert this.comp_measurable (measurable_sub.prodMk measurable_snd)
     ext ⟨x, y⟩
     simp +unfoldPartialApp only [uncurry, Function.comp_apply,
       sub_sub_sub_cancel_right]

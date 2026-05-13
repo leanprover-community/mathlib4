@@ -244,12 +244,12 @@ protected theorem induction_on {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹]) (h_C
     · exact fun m => h_C_mul_T_Z m a
   have B : ∀ s : Finset ℤ, M (s.sum fun n : ℤ => C (p n) * T n) := by
     apply Finset.induction
-    · convert! h_C 0
+    · convert h_C 0
       simp only [Finset.sum_empty, map_zero]
     · intro n s ns ih
       rw [Finset.sum_insert ns]
       exact h_add A ih
-  convert! B p.support
+  convert B p.support
   ext a
   simp_rw [← single_eq_C_mul_T]
   rw [Finset.sum_apply', Finset.sum_eq_single a, single_eq_same]
@@ -268,7 +268,7 @@ protected theorem induction_on' {motive : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹]
     (C_mul_T : ∀ (n : ℤ) (a : R), motive (C a * T n)) : motive p := by
   refine p.induction_on (fun a => ?_) (fun {p q} => add p q) ?_ ?_ <;>
       try exact fun n f _ => C_mul_T _ f
-  convert! C_mul_T 0 a
+  convert C_mul_T 0 a
   exact (mul_one _).symm
 
 theorem commute_T (n : ℤ) (f : R[T;T⁻¹]) : Commute (T n) f :=
@@ -375,7 +375,7 @@ theorem reduce_to_polynomial_of_mul_T (f : R[T;T⁻¹]) {Q : R[T;T⁻¹] → Pro
   induction f using LaurentPolynomial.induction_on_mul_T with | _ f n
   induction n with
   | zero => simpa only [Nat.cast_zero, neg_zero, T_zero, mul_one] using Qf _
-  | succ n hn => convert! QT _ _; simpa using hn
+  | succ n hn => convert QT _ _; simpa using hn
 
 section Support
 

@@ -194,7 +194,7 @@ theorem atBot_le_cocompact [NoMinOrder α] [ClosedIicTopology α] :
   obtain ⟨t, ht, hts⟩ := mem_cocompact.mp hs
   refine (Set.eq_empty_or_nonempty t).casesOn (fun h_empty ↦ ?_) (fun h_nonempty ↦ ?_)
   · rewrite [compl_univ_iff.mpr h_empty, univ_subset_iff] at hts
-    convert! univ_mem
+    convert univ_mem
   · haveI := h_nonempty.nonempty
     obtain ⟨a, ha⟩ := ht.exists_isLeast h_nonempty
     obtain ⟨b, hb⟩ := exists_lt a

@@ -87,7 +87,7 @@ theorem isCoveringMapOn_zpow (n : ℤ) (hn : (n : 𝕜) ≠ 0) :
     IsCoveringMapOn (fun x : 𝕜 ↦ x ^ n) {0}ᶜ := by
   have (x : 𝕜) : x ^ n = 0 ↔ x = 0 := zpow_eq_zero_iff (by aesop)
   refine .of_isCoveringMap_restrictPreimage _ (by simp) ?_ ?_
-  · convert! isClosed_singleton (x := (0 : 𝕜)).isOpen_compl using 1
+  · convert isClosed_singleton (x := (0 : 𝕜)).isOpen_compl using 1
     ext; simp [this]
   · convert! (isCoveringMap_zpow n hn).comp_homeomorph (.ofEqSubtypes _) using 1
     ext; simpa using (this _).not
@@ -120,7 +120,7 @@ theorem isQuotientCoveringMap_zpow (n : ℤ) (hn : (n : 𝕜) ≠ 0)
   obtain ⟨n, rfl | rfl⟩ := n.eq_nat_or_neg
   · exact isQuotientCoveringMap_npow n (by aesop) (by simpa using surj)
   rw [show (zpowGroupHom (α := 𝕜ˣ) (-n)).ker = (powMonoidHom n).ker by ext; simp]
-  convert! (isQuotientCoveringMap_npow n (by aesop) _).homeomorph_comp (.inv 𝕜ˣ) using 1
+  convert (isQuotientCoveringMap_npow n (by aesop) _).homeomorph_comp (.inv 𝕜ˣ) using 1
   · ext; simp
   convert! inv_involutive.surjective.comp surj; simp
 

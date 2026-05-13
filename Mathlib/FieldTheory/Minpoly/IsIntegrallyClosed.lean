@@ -153,7 +153,7 @@ theorem IsIntegrallyClosed.isIntegral_iff_leadingCoeff_dvd {s : S} {p : R[X]} (h
     convert! pmin _ (minpoly.monic hInt) (minpoly.aeval ..)
     · rw [hMul, degree_mul]
     · rw [add_zero]
-  · convert! right_ne_zero_of_mul <| hMul ▸ h₀
+  · convert right_ne_zero_of_mul <| hMul ▸ h₀
     refine IsIntegrallyClosed.minpoly.unique ?_ ?_ ?_ |>.symm
     · have := hMul ▸ leadingCoeff_mul .. |>.symm
       simp only [leadingCoeff_C, ne_eq, leadingCoeff_eq_zero, h₀, not_false_eq_true, mul_eq_left₀]

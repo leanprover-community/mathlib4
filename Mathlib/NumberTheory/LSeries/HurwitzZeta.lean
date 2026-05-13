@@ -172,7 +172,7 @@ lemma expZeta_one_sub (a : UnitAddCircle) {s : ℂ} (hs : ∀ (n : ℕ), s ≠ 1
     expZeta a (1 - s) = (2 * π) ^ (-s) * Gamma s *
     (exp (π * I * s / 2) * hurwitzZeta a s + exp (-π * I * s / 2) * hurwitzZeta (-a) s) := by
   have hs' (n : ℕ) : s ≠ -↑n := by
-    convert! hs (n + 1) using 1
+    convert hs (n + 1) using 1
     push_cast
     ring
   rw [expZeta, cosZeta_one_sub a hs, sinZeta_one_sub a hs', hurwitzZeta, hurwitzZeta,

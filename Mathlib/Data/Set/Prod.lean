@@ -857,7 +857,7 @@ theorem update_preimage_pi [DecidableEq ι] {f : ∀ i, α i} (hi : i ∈ s)
     (hf : ∀ j ∈ s, j ≠ i → f j ∈ t j) : update f i ⁻¹' s.pi t = t i := by
   ext x
   refine ⟨fun h => ?_, fun hx j hj => ?_⟩
-  · convert! h i hi
+  · convert h i hi
     simp
   · obtain rfl | h := eq_or_ne j i
     · simpa

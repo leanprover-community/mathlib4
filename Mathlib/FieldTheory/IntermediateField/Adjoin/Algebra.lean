@@ -334,7 +334,7 @@ theorem algHom_fieldRange_eq_of_comp_eq (h : RingHom.comp f (algebraMap A K) = (
     f.fieldRange = IntermediateField.adjoin F g.range := by
   apply IntermediateField.toSubfield_injective
   simp_rw [AlgHom.fieldRange_toSubfield, IntermediateField.adjoin_toSubfield]
-  convert! ringHom_fieldRange_eq_of_comp_eq h using 2
+  convert ringHom_fieldRange_eq_of_comp_eq h using 2
   exact Set.union_eq_self_of_subset_left fun _ ⟨x, hx⟩ ↦ ⟨algebraMap F A x, by simp [← hx]⟩
 
 /-- If `F` is a field, `A` is an `F`-algebra with fraction field `K`, `L` is a field,

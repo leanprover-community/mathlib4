@@ -182,7 +182,7 @@ theorem HasFPowerSeriesWithinOnBall.hasFDerivWithinAt [CompleteSpace F]
     HasFDerivWithinAt f (continuousMultilinearCurryFin1 𝕜 E F (p.changeOrigin y 1))
       (insert x s) (x + y) := by
   rcases eq_or_ne y 0 with rfl | h''y
-  · convert! (h.changeOrigin hy h'y).hasFPowerSeriesWithinAt.hasFDerivWithinAt
+  · convert (h.changeOrigin hy h'y).hasFPowerSeriesWithinAt.hasFDerivWithinAt
     simp
   · have Z := (h.changeOrigin hy h'y).hasFPowerSeriesWithinAt.hasFDerivWithinAt
     apply (Z.mono (subset_insert _ _)).mono_of_mem_nhdsWithin
@@ -245,7 +245,7 @@ protected theorem HasFPowerSeriesWithinOnBall.fderivWithin_of_mem [CompleteSpace
     HasFPowerSeriesWithinOnBall (fderivWithin 𝕜 f s) p.derivSeries s x r := by
   have : insert x s = s := insert_eq_of_mem hx
   rw [← this] at hu
-  convert! h.fderivWithin hu
+  convert h.fderivWithin hu
   exact this.symm
 
 /-- If a function is analytic on a set `s`, so is its Fréchet derivative. -/
@@ -274,7 +274,7 @@ protected theorem AnalyticOnNhd.iteratedFDeriv [CompleteSpace F] (h : AnalyticOn
   | succ n IH =>
     rw [iteratedFDeriv_succ_eq_comp_left]
     -- Porting note: for reasons that I do not understand at all, `?g` cannot be inlined.
-    convert! ContinuousLinearMap.comp_analyticOnNhd ?g IH.fderiv
+    convert ContinuousLinearMap.comp_analyticOnNhd ?g IH.fderiv
     case g => exact ↑(continuousMultilinearCurryLeftEquiv 𝕜 (fun _ : Fin (n + 1) ↦ E) F).symm
     simp
 
@@ -542,7 +542,7 @@ theorem CPolynomialOn.iteratedFDeriv (h : CPolynomialOn 𝕜 f s) (n : ℕ) :
     exact ((continuousMultilinearCurryFin0 𝕜 E F).symm : F →L[𝕜] E [×0]→L[𝕜] F).comp_cpolynomialOn h
   | succ n IH =>
     rw [iteratedFDeriv_succ_eq_comp_left]
-    convert! ContinuousLinearMap.comp_cpolynomialOn ?g IH.fderiv
+    convert ContinuousLinearMap.comp_cpolynomialOn ?g IH.fderiv
     case g => exact ↑(continuousMultilinearCurryLeftEquiv 𝕜 (fun _ : Fin (n + 1) ↦ E) F).symm
     simp
 
@@ -653,8 +653,9 @@ theorem _root_.HasStrictFDerivAt.continuousMultilinearMap_apply {G : Type*}
     HasStrictFDerivAt (fun x ↦ f x (g · x))
       (ContinuousMultilinearMap.apply 𝕜 E F (g · x) ∘L f' +
         ∑ i, (f x).toContinuousLinearMap (g · x) i ∘L g' i) x := by
-  convert! ContinuousMultilinearMap.hasStrictFDerivAt_uncurry (f x, (g · x))
-    |>.comp x (hf.prodMk (hasStrictFDerivAt_pi.2 hg))
+  convert
+    ContinuousMultilinearMap.hasStrictFDerivAt_uncurry (f x, (g · x)) |>.comp x
+      (hf.prodMk (hasStrictFDerivAt_pi.2 hg))
   ext
   simp
 

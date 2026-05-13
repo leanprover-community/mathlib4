@@ -631,7 +631,7 @@ instance : LE (CauSeq α abs) :=
 
 theorem lt_of_lt_of_eq {f g h : CauSeq α abs} (fg : f < g) (gh : g ≈ h) : f < h :=
   show Pos (h - f) by
-    convert! pos_add_limZero fg (neg_limZero gh) using 1
+    convert pos_add_limZero fg (neg_limZero gh) using 1
     simp
 
 theorem lt_of_eq_of_lt {f g h : CauSeq α abs} (fg : f ≈ g) (gh : g < h) : f < h := by
@@ -640,7 +640,7 @@ theorem lt_of_eq_of_lt {f g h : CauSeq α abs} (fg : f ≈ g) (gh : g < h) : f <
 
 theorem lt_trans {f g h : CauSeq α abs} (fg : f < g) (gh : g < h) : f < h :=
   show Pos (h - f) by
-    convert! add_pos fg gh using 1
+    convert add_pos fg gh using 1
     simp
 
 theorem lt_irrefl {f : CauSeq α abs} : ¬f < f

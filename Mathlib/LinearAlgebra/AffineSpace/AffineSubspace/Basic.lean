@@ -330,7 +330,8 @@ spans `P`. -/
 theorem affineSpan_singleton_union_vadd_eq_top_of_span_eq_top {s : Set V} (p : P)
     (h : Submodule.span k (Set.range ((↑) : s → V)) = ⊤) :
     affineSpan k ({p} ∪ (fun v => v +ᵥ p) '' s) = ⊤ := by
-  convert! ext_of_direction_eq _
+  convert
+    ext_of_direction_eq _
       ⟨p, mem_affineSpan k (Set.mem_union_left _ (Set.mem_singleton _)), mem_top k V p⟩
   rw [direction_affineSpan, direction_top,
     vectorSpan_eq_span_vsub_set_right k (Set.mem_union_left _ (Set.mem_singleton _) : p ∈ _),
@@ -954,9 +955,9 @@ lemma affineSpan_pair_eq_of_mem_of_mem_of_ne {p₁ p₂ p₃ p₄ : P} (hp₁ : 
     simp [sub_smul, hp₁, hp₂]
   rw [← eq_inv_smul_iff₀ hr₀] at hr
   refine affineSpan_pair_le_of_mem_of_mem ?_ ?_
-  · convert! smul_vsub_vadd_mem_affineSpan_pair (-r₁ * (r₂ - r₁)⁻¹) p₁ p₂
+  · convert smul_vsub_vadd_mem_affineSpan_pair (-r₁ * (r₂ - r₁)⁻¹) p₁ p₂
     simp [mul_smul, ← hr, hp₁]
-  · convert! smul_vsub_vadd_mem_affineSpan_pair ((1 - r₁) * (r₂ - r₁)⁻¹) p₁ p₂
+  · convert smul_vsub_vadd_mem_affineSpan_pair ((1 - r₁) * (r₂ - r₁)⁻¹) p₁ p₂
     simp [mul_smul, ← hr, sub_smul, hp₁]
 
 /-- One line equals another differing in the first point if the first point of the first line is

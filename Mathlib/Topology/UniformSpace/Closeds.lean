@@ -372,8 +372,7 @@ theorem isClosed_subsets_of_isClosed {s : Set α} (hs : IsClosed s) :
   isClosed_induced hs.powerset_hausdorff
 
 theorem isClopen_singleton_bot : IsClopen {(⊥ : Closeds α)} := by
-  convert! UniformSpace.hausdorff.isClopen_singleton_empty.preimage
-    uniformContinuous_coe.continuous
+  convert UniformSpace.hausdorff.isClopen_singleton_empty.preimage uniformContinuous_coe.continuous
   ext; simp
 
 theorem totallyBounded_subsets_of_totallyBounded {t : Set α} (ht : TotallyBounded t) :
@@ -536,7 +535,7 @@ theorem isClosedEmbedding_toCloseds [T2Space α] [CompleteSpace α] :
     IsClosedEmbedding (toCloseds (α := α)) where
   __ := isEmbedding_toCloseds
   isClosed_range := by
-    convert! Closeds.isClosed_setOf_totallyBounded
+    convert Closeds.isClosed_setOf_totallyBounded
     exact subset_antisymm
       (Set.range_subset_iff.mpr fun K => K.isCompact.totallyBounded)
       (fun K hK => ⟨⟨K, hK.isCompact_of_isClosed K.isClosed⟩, rfl⟩)

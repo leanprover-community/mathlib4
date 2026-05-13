@@ -122,7 +122,7 @@ theorem le_gronwallBound_of_liminf_deriv_right_le {f f' : ℝ → ℝ} {δ K ε 
     · exact hx
   intro x hx
   change f x ≤ (fun ε' => gronwallBound δ K ε' (x - a)) ε
-  convert! continuousWithinAt_const.closure_le _ _ (H x hx)
+  convert continuousWithinAt_const.closure_le _ _ (H x hx)
   · simp only [closure_Ioi, self_mem_Ici]
   exact (gronwallBound_continuous_ε δ K (x - a)).continuousWithinAt
 
@@ -281,18 +281,20 @@ theorem ODE_solution_unique_of_mem_Icc_left
     fun _ ht' ↦ mem_Iic.mpr <| neg_le_neg ht'
   suffices EqOn (f ∘ Neg.neg) (g ∘ Neg.neg) (Icc (-b) (-a)) by
     rw [eqOn_comp_right_iff] at this
-    convert! this
+    convert this
     simp
   apply ODE_solution_unique_of_mem_Icc_right hv'
     (hf.comp continuousOn_neg hmt1) _ (fun _ ht ↦ hfs _ (hmt2 ht))
     (hg.comp continuousOn_neg hmt1) _ (fun _ ht ↦ hgs _ (hmt2 ht)) (by simp [hb])
   · intro t ht
-    convert! HasFDerivWithinAt.comp_hasDerivWithinAt t (hf' (-t) (hmt2 ht))
-      (hasDerivAt_neg t).hasDerivWithinAt (hmt3 t)
+    convert
+      HasFDerivWithinAt.comp_hasDerivWithinAt t (hf' (-t) (hmt2 ht))
+        (hasDerivAt_neg t).hasDerivWithinAt (hmt3 t)
     simp
   · intro t ht
-    convert! HasFDerivWithinAt.comp_hasDerivWithinAt t (hg' (-t) (hmt2 ht))
-      (hasDerivAt_neg t).hasDerivWithinAt (hmt3 t)
+    convert
+      HasFDerivWithinAt.comp_hasDerivWithinAt t (hg' (-t) (hmt2 ht))
+        (hasDerivAt_neg t).hasDerivWithinAt (hmt3 t)
     simp
 
 /-- A version of `ODE_solution_unique_of_mem_Icc_right` for uniqueness in a closed interval whose

@@ -157,7 +157,7 @@ theorem HasFPowerSeriesOnBall.comp_sub (hf : HasFPowerSeriesOnBall f p x r) (y :
   { r_le := hf.r_le
     r_pos := hf.r_pos
     hasSum := fun {z} hz => by
-      convert! hf.hasSum hz using 2
+      convert hf.hasSum hz using 2
       abel }
 
 theorem HasFPowerSeriesWithinOnBall.comp_sub (hf : HasFPowerSeriesWithinOnBall f p s x r) (y : E) :
@@ -169,7 +169,7 @@ theorem HasFPowerSeriesWithinOnBall.comp_sub (hf : HasFPowerSeriesWithinOnBall f
       simp only [add_singleton, image_add_right, mem_insert_iff, add_eq_left, mem_preimage] at hz1 ⊢
       abel_nf at hz1
       assumption
-    convert! hf.hasSum this hz2 using 2
+    convert hf.hasSum this hz2 using 2
     abel
 
 theorem HasFPowerSeriesAt.comp_sub (hf : HasFPowerSeriesAt f p x) (y : E) :
@@ -192,7 +192,7 @@ theorem AnalyticOnNhd.comp_sub (hf : AnalyticOnNhd 𝕜 f s) (y : E) :
   intro x hx
   simp only [add_singleton, image_add_right, mem_preimage] at hx
   rw [show x = (x - y) + y by abel]
-  apply (hf (x - y) (by convert! hx using 1; abel)).comp_sub
+  apply (hf (x - y) (by convert hx using 1; abel)).comp_sub
 
 theorem AnalyticWithinAt.comp_sub (hf : AnalyticWithinAt 𝕜 f s x) (y : E) :
     AnalyticWithinAt 𝕜 (fun z ↦ f (z - y)) (s + {y}) (x + y) := by
@@ -204,7 +204,7 @@ theorem AnalyticOn.comp_sub (hf : AnalyticOn 𝕜 f s) (y : E) :
   intro x hx
   simp only [add_singleton, image_add_right, mem_preimage] at hx
   rw [show x = (x - y) + y by abel]
-  apply (hf (x - y) (by convert! hx using 1; abel)).comp_sub
+  apply (hf (x - y) (by convert hx using 1; abel)).comp_sub
 
 theorem HasFPowerSeriesWithinOnBall.hasSum_sub (hf : HasFPowerSeriesWithinOnBall f p s x r) {y : E}
     (hy : y ∈ (insert x s) ∩ Metric.eball x r) :
@@ -243,7 +243,7 @@ lemma HasFPowerSeriesWithinOnBall.congr {f g : E → F} {p : FormalMultilinearSe
     HasFPowerSeriesWithinOnBall g p s x r := by
   refine ⟨h.r_le, h.r_pos, ?_⟩
   intro y hy h'y
-  convert! h.hasSum hy h'y using 1
+  convert h.hasSum hy h'y using 1
   simp only [mem_insert_iff, add_eq_left] at hy
   rcases hy with rfl | hy
   · simpa using h''
@@ -258,7 +258,7 @@ lemma HasFPowerSeriesWithinOnBall.congr' {f g : E → F} {p : FormalMultilinearS
     (h' : EqOn g f (insert x s ∩ Metric.eball x r)) :
     HasFPowerSeriesWithinOnBall g p s x r := by
   refine ⟨h.r_le, h.r_pos, fun {y} hy h'y ↦ ?_⟩
-  convert! h.hasSum hy h'y using 1
+  convert h.hasSum hy h'y using 1
   exact h' ⟨hy, by simpa [edist_eq_enorm_sub] using h'y⟩
 
 lemma HasFPowerSeriesWithinAt.congr {f g : E → F} {p : FormalMultilinearSeries 𝕜 E F} {s : Set E}
@@ -279,7 +279,7 @@ theorem HasFPowerSeriesOnBall.congr (hf : HasFPowerSeriesOnBall f p x r)
   { r_le := hf.r_le
     r_pos := hf.r_pos
     hasSum := fun {y} hy => by
-      convert! hf.hasSum hy using 1
+      convert hf.hasSum hy using 1
       apply hg.symm
       simpa [edist_eq_enorm_sub] using hy }
 
@@ -798,8 +798,10 @@ theorem HasFPowerSeriesWithinOnBall.isBigO_image_sub_image_sub_deriv_principal
       exact Metric.eball_subset_eball hr.le hy'
     set A : ℕ → F := fun n => (p n fun _ => y.1 - x) - p n fun _ => y.2 - x
     have hA : HasSum (fun n => A (n + 2)) (f y.1 - f y.2 - p 1 fun _ => y.1 - y.2) := by
-      convert! (hasSum_nat_add_iff' 2).2
-        ((hf.hasSum_sub ⟨ys.1, hy.1⟩).sub (hf.hasSum_sub ⟨ys.2, hy.2⟩)) using 1
+      convert
+        (hasSum_nat_add_iff' 2).2
+          ((hf.hasSum_sub ⟨ys.1, hy.1⟩).sub (hf.hasSum_sub ⟨ys.2, hy.2⟩)) using
+        1
       rw [Finset.sum_range_succ, Finset.sum_range_one, hf.coeff_zero, hf.coeff_zero, sub_self,
         zero_add, ← Subsingleton.pi_single_eq (0 : Fin 1) (y.1 - x), Pi.single,
         ← Subsingleton.pi_single_eq (0 : Fin 1) (y.2 - x), Pi.single, ← (p 1).map_update_sub,

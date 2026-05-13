@@ -69,13 +69,13 @@ theorem isAddQuotientCoveringMap_zsmul_of_ne_zero [Algebra ℚ 𝕜] (n : ℤ) [
     IsAddQuotientCoveringMap (n • · : AddCircle p → _)
       (zsmulAddGroupHom (α := AddCircle p) n).ker :=
   isAddQuotientCoveringMap_zsmul p (n := n) <| by
-    convert! (Int.cast_ne_zero.mpr <| NeZero.ne n).isUnit.map (algebraMap ℚ 𝕜); simp
+    convert (Int.cast_ne_zero.mpr <| NeZero.ne n).isUnit.map (algebraMap ℚ 𝕜); simp
 
 theorem isAddQuotientCoveringMap_nsmul_of_ne_zero [Algebra ℚ 𝕜] (n : ℕ) [NeZero n] :
     IsAddQuotientCoveringMap (n • · : AddCircle p → _)
       (nsmulAddMonoidHom (α := AddCircle p) n).ker :=
   isAddQuotientCoveringMap_nsmul p (n := n) <| by
-    convert! (Nat.cast_ne_zero.mpr <| NeZero.ne n).isUnit.map (algebraMap ℚ 𝕜); simp
+    convert (Nat.cast_ne_zero.mpr <| NeZero.ne n).isUnit.map (algebraMap ℚ 𝕜); simp
 
 end Field
 

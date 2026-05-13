@@ -312,7 +312,7 @@ lemma IsLocalization.Away.exists_isIntegral_mul_of_isIntegral_mk'
     (hx : IsIntegral R (IsLocalization.mk' Sₘ x a)) : ∃ n, IsIntegral R (r ^ n * x) := by
   refine IsLocalization.Away.exists_isIntegral_mul_of_isIntegral_algebraMap (Sₘ := Sₘ) hr ?_
   obtain ⟨_, ⟨n, rfl⟩⟩ := a
-  convert! (hr.pow n).algebraMap.mul hx
+  convert (hr.pow n).algebraMap.mul hx
   exact (mk'_spec'_mk ..).symm
 
 /-- If `t` is integral over `R[1/t]`, then it is integral over `R`. -/
@@ -481,7 +481,7 @@ protected lemma IsLocalization.Away.integralClosure
     [IsScalarTower (integralClosure R S) (integralClosure Rf Sf) Sf]
     [IsScalarTower R (integralClosure R S) (integralClosure Rf Sf)] :
     IsLocalization.Away (algebraMap R (integralClosure R S) f) (integralClosure Rf Sf) := by
-  convert! IsLocalization.integralClosure (S := S) (Rf := Rf) (Sf := Sf) (.powers f)
+  convert IsLocalization.integralClosure (S := S) (Rf := Rf) (Sf := Sf) (.powers f)
   simp
 
 end

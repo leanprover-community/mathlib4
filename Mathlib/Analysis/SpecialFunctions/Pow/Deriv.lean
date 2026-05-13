@@ -287,7 +287,7 @@ theorem hasDerivAt_ofReal_cpow_const' {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r
     suffices HasDerivAt (fun y : ℂ => y ^ (r + 1)) ((r + 1) * ↑(-x) ^ r) ↑(-x) by
       exact this.comp_ofReal
     conv in ↑_ ^ _ => rw [(by ring : r = r + 1 - 1)]
-    convert! HasDerivAt.cpow_const ?_ ?_ using 1
+    convert HasDerivAt.cpow_const ?_ ?_ using 1
     · rw [add_sub_cancel_right, add_sub_cancel_right]; exact (mul_one _).symm
     · exact hasDerivAt_id ((-x : ℝ) : ℂ)
     · simp [hx]
@@ -668,7 +668,7 @@ variable {f g : ℝ → ℝ} {f' g' x y p : ℝ} {s : Set ℝ}
 theorem HasDerivWithinAt.rpow (hf : HasDerivWithinAt f f' s x) (hg : HasDerivWithinAt g g' s x)
     (h : 0 < f x) : HasDerivWithinAt (fun x => f x ^ g x)
       (f' * g x * f x ^ (g x - 1) + g' * f x ^ g x * Real.log (f x)) s x := by
-  convert! (hf.hasFDerivWithinAt.rpow hg.hasFDerivWithinAt h).hasDerivWithinAt using 1
+  convert (hf.hasFDerivWithinAt.rpow hg.hasFDerivWithinAt h).hasDerivWithinAt using 1
   dsimp; ring
 
 theorem HasDerivAt.rpow (hf : HasDerivAt f f' x) (hg : HasDerivAt g g' x) (h : 0 < f x) :
@@ -722,7 +722,7 @@ variable {a : ℝ}
 
 theorem HasDerivWithinAt.const_rpow (ha : 0 < a) (hf : HasDerivWithinAt f f' s x) :
     HasDerivWithinAt (a ^ f ·) (Real.log a * f' * a ^ f x) s x := by
-  convert! (hasDerivWithinAt_const x s a).rpow hf ha using 1
+  convert (hasDerivWithinAt_const x s a).rpow hf ha using 1
   ring
 
 theorem HasDerivAt.const_rpow (ha : 0 < a) (hf : HasDerivAt f f' x) :

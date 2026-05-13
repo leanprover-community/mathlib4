@@ -217,7 +217,7 @@ then it is `(C, r * t₁ + s * t₂)`-Hölder for all `t₁ t₂ : ℝ≥0` such
 lemma interpolate_const {C s t₁ t₂ : ℝ≥0} {A : Set X}
     (hf₁ : HolderOnWith C r f A) (hf₂ : HolderOnWith C s f A) (ht : t₁ + t₂ = 1) :
     HolderOnWith C (r * t₁ + s * t₂) f A := by
-  convert! hf₁.interpolate hf₂ ht
+  convert hf₁.interpolate hf₂ ht
   simp [← NNReal.rpow_add_of_nonneg, ← NNReal.coe_add, ht]
 
 variable (f) in

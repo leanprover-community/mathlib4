@@ -457,7 +457,7 @@ protected def vitaliFamily [PseudoMetricSpace α] [MeasurableSpace α] [OpensMea
       exact t'_disj hq hq' (ne_of_apply_ne _ hqq')
     · rintro - ⟨q, hq, rfl⟩
       exact (t't hq).2.2.2.2.1
-    · convert! μt' using 3
+    · convert μt' using 3
       rw [biUnion_image]
 
 end Vitali

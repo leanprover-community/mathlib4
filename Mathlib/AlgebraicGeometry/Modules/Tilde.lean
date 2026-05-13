@@ -384,7 +384,7 @@ def presentationTilde (s : Set M) (hs : Submodule.span R s = ⊤)
           tilde.map (ModuleCat.ofHom (Finsupp.linearCombination R (↑)))) (by
     simp only [Category.assoc, Iso.hom_inv_id_assoc, Preadditive.IsIso.comp_left_eq_zero]
     rw [← tilde.map_comp, ← ModuleCat.ofHom_comp]
-    convert! tilde.map_zero
+    convert tilde.map_zero
     exact congr(ModuleCat.ofHom $(H₁.linearMap_comp_eq_zero))) ?_
   letI h₁ := ModuleCat.isColimitCokernelCofork _ _ H₁
     (by simp [← LinearMap.range_eq_top, Finsupp.range_linearCombination, hs])

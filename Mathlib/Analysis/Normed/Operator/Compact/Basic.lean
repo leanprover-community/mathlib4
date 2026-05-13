@@ -445,7 +445,7 @@ theorem isClosed_setOf_isCompactOperator {𝕜₁ 𝕜₂ : Type*} [Nontrivially
   rcases hTv with ⟨t, ht, htx⟩
   refine ⟨t, ht, ?_⟩
   rw [mem_preimage, mem_vadd_set_iff_neg_vadd_mem, vadd_eq_add, neg_add_eq_sub] at htx ⊢
-  convert! hVU _ htx _ (huv x hx) using 1
+  convert hVU _ htx _ (huv x hx) using 1
   rw [ContinuousLinearMap.sub_apply]
   abel
 

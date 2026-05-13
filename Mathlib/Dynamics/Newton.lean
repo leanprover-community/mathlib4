@@ -92,7 +92,7 @@ theorem aeval_pow_two_pow_dvd_aeval_iterate_newtonMap
     rw [eval_map_algebraMap, eval_map_algebraMap] at hd
     rw [iterate_succ', comp_apply, newtonMap_apply, sub_eq_add_neg, neg_mul_eq_neg_mul, hd]
     refine dvd_add ?_ (dvd_mul_of_dvd_right ?_ _)
-    · convert! dvd_zero _
+    · convert dvd_zero _
       have : IsUnit (aeval (P.newtonMap^[n] x) <| derivative P) :=
         isUnit_aeval_of_isUnit_aeval_of_isNilpotent_sub h' <|
         isNilpotent_iterate_newtonMap_sub_of_isNilpotent h n

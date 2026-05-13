@@ -45,7 +45,7 @@ lemma root_sub_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
     rw [add_comm, add_sub_assoc, left_eq_add, sub_eq_zero, P.root.injective.eq_iff] at hl
     exact hkj hl
   suffices 0 < P.pairingIn ℤ l i by
-    convert! P.root_sub_root_mem_of_pairingIn_pos this hli using 1
+    convert P.root_sub_root_mem_of_pairingIn_pos this hli using 1
     rw [hl]
     module
   have hkl : l ≠ k := by rintro rfl; exact hij <| by simpa [add_sub_assoc, sub_eq_zero] using hl
@@ -88,12 +88,14 @@ lemma root_add_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
   let _i := P.indexNeg
   replace hk : α (-k) + α j - α i ∈ Φ := by
     rw [← neg_mem_range_root_iff]
-    convert! hk using 1
+    convert hk using 1
     simp only [indexNeg_neg, root_reflectionPerm, reflection_apply_self]
     module
   rw [← neg_mem_range_root_iff]
-  convert! b.root_sub_root_mem_of_mem_of_mem j i (-k) hij.symm hj hi hk (by contrapose hkj; aesop)
-    (by convert! P.neg_mem_range_root_iff.mpr hk' using 1; simp [neg_add_eq_sub]) using 1
+  convert
+    b.root_sub_root_mem_of_mem_of_mem j i (-k) hij.symm hj hi hk (by contrapose hkj; aesop)
+      (by convert! P.neg_mem_range_root_iff.mpr hk' using 1; simp [neg_add_eq_sub]) using
+    1
   simp only [indexNeg_neg, root_reflectionPerm, reflection_apply_self]
   module
 
@@ -170,25 +172,25 @@ lemma chainBotCoeff_mul_chainTopCoeff.isNotG2 : P.IsNotG2 := by
         ← two_nsmul, h₂] at h₃
     exact P.nsmul_notMem_range_root ⟨_, h₃.symm⟩
   replace h₁ : 2 * (x + 1) + A * y ∈ s := by
-    convert! IsG2.pairingIn_mem_zero_one_three P l i hli hli'
+    convert IsG2.pairingIn_mem_zero_one_three P l i hli hli'
     replace h₁ : P.root l = (x + 1) • P.root i + y • P.root j := by rw [← h₁, ← h₀]; module
     rw [pairingIn_eq_add_of_root_eq_smul_add_smul (S := ℤ) (j := i) h₁, pairingIn_same,
       Int.zsmul_eq_mul, Int.zsmul_eq_mul]
     ring
   replace h₂ : 2 * x + A * (y - 1) ∈ s := by
-    convert! IsG2.pairingIn_mem_zero_one_three P m i hmi hmi'
+    convert IsG2.pairingIn_mem_zero_one_three P m i hmi hmi'
     replace h₂ : P.root m = x • P.root i + (y - 1) • P.root j := by rw [← h₂, ← h₀]; module
     rw [pairingIn_eq_add_of_root_eq_smul_add_smul (S := ℤ) (j := i) h₂, pairingIn_same,
       Int.zsmul_eq_mul, Int.zsmul_eq_mul]
     ring
   replace h₃ : 2 * (x + 1) + A * (y - 1) ∈ s := by
-    convert! IsG2.pairingIn_mem_zero_one_three P n i hni hni'
+    convert IsG2.pairingIn_mem_zero_one_three P n i hni hni'
     replace h₃ : P.root n = (x + 1) • P.root i + (y - 1) • P.root j := by rw [h₃, ← h₀]; module
     rw [pairingIn_eq_add_of_root_eq_smul_add_smul (S := ℤ) (j := i) h₃, pairingIn_same,
       Int.zsmul_eq_mul, Int.zsmul_eq_mul]
     ring
   replace h₀ : 2 * x + A * y ∈ s := by
-    convert! IsG2.pairingIn_mem_zero_one_three P k i hki hki'
+    convert IsG2.pairingIn_mem_zero_one_three P k i hki hki'
     rw [pairingIn_eq_add_of_root_eq_smul_add_smul (j := i) h₀.symm, pairingIn_same,
       Int.zsmul_eq_mul, Int.zsmul_eq_mul]
     ring
@@ -218,7 +220,7 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_1
   have hkj_ne : k ≠ j ∧ P.root k ≠ -P.root j := (IsReduced.linearIndependent_iff _).mp <|
     P.linearIndependent_of_sub_mem_range_root <| h₂ ▸ mem_range_self m
   have hnk_notMem : P.root n - P.root k ∉ range P.root := by
-    convert! b.sub_notMem_range_root hi hj using 2; rw [hn]; module
+    convert b.sub_notMem_range_root hi hj using 2; rw [hn]; module
   /- Calculate some auxiliary relationships between root pairings. -/
   have aux₀ : P.pairingIn ℤ j i = - P.pairingIn ℤ m i := by
     suffices P.pairing j i = - P.pairing m i from
@@ -340,12 +342,12 @@ lemma chainBotCoeff_mul_chainTopCoeff :
   suffices (P.chainBotCoeff i m + 1) * (P.chainBotCoeff j (-k) + 1) =
       (P.chainBotCoeff j (-l) + 1) * (P.chainBotCoeff i k + 1) by simpa
   /- Establish basic relationships about roots and their sums / differences. -/
-  have him_mem : P.root i + P.root m ∈ range P.root := by rw [← h₂]; convert! h₃ using 1; abel
+  have him_mem : P.root i + P.root m ∈ range P.root := by rw [← h₂]; convert h₃ using 1; abel
   have hik_mem : P.root k + P.root i ∈ range P.root := h₁ ▸ mem_range_self l
   have hjk_mem : P.root j + P.root (-k) ∈ range P.root := by
-    convert! mem_range_self (-m) using 1; simpa [sub_eq_add_neg] using congr(-$h₂)
+    convert mem_range_self (-m) using 1; simpa [sub_eq_add_neg] using congr(-$h₂)
   have hjl_mem : P.root j + P.root (-l) ∈ range P.root := by
-    rw [h₁, ← neg_mem_range_root_iff] at h₃; convert! h₃ using 1; simp [sub_eq_add_neg]
+    rw [h₁, ← neg_mem_range_root_iff] at h₃; convert h₃ using 1; simp [sub_eq_add_neg]
   have h₁' : P.root (-k) - P.root i = P.root (-l) := by
     simp only [root_reflectionPerm, reflection_apply_self, indexNeg_neg]; rw [← h₁]; abel
   have h₂' : P.root (-k) + P.root j = P.root (-m) := by

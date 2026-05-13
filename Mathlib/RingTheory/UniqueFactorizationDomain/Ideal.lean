@@ -44,7 +44,7 @@ lemma Ideal.setOf_isPrincipal_wellFoundedOn_gt [CommSemiring α] [WfDvdMonoid α
     ext
     simp [Submodule.isPrincipal_iff, eq_comm]
   rw [this, Set.wellFoundedOn_image, Set.wellFoundedOn_univ]
-  convert! wellFounded_dvdNotUnit (α := α)
+  convert wellFounded_dvdNotUnit (α := α)
   ext
   exact Ideal.span_singleton_lt_span_singleton
 
@@ -55,7 +55,7 @@ lemma WfDvdMonoid.of_setOf_isPrincipal_wellFoundedOn_gt [CommSemiring α] [IsDom
     WfDvdMonoid α := by
   have : WellFounded (α := {I : Ideal α // I.IsPrincipal}) (· > ·) := h
   constructor
-  convert! InvImage.wf (fun a => ⟨Ideal.span ({a} : Set α), _, rfl⟩) this
+  convert InvImage.wf (fun a => ⟨Ideal.span ({ a } : Set α), _, rfl⟩) this
   ext
   exact Ideal.span_singleton_lt_span_singleton.symm
 

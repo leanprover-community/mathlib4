@@ -110,7 +110,7 @@ lemma preservesLimitsOfShape_discrete_of_isSheaf_zariskiTopology {F : Scheme.{u}
   refine Presieve.preservesProduct_of_isSheafFor F ?_ initialIsInitial
       (Sigma.cocone (Discrete.functor <| unop ∘ X)) (coproductIsCoproduct' _) ?_ ?_
   · apply hF.isSheafFor
-    convert! (⊥_ Scheme).bot_mem_grothendieckTopology
+    convert (⊥_ Scheme).bot_mem_grothendieckTopology
     rw [eq_bot_iff]
     rintro Y f ⟨g, _, _, ⟨i⟩, _⟩
     exact i.elim

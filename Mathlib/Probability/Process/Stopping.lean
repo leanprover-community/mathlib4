@@ -917,7 +917,7 @@ theorem isStronglyProgressive_min_stopping_time [PseudoMetrizableSpace ι]
     · lift τ (ω : Set.Iic i × Ω).2 to ι using h with t ht
       norm_cast
       refine hx_fst_le.trans (le_of_lt ?_)
-      convert! ω.prop
+      convert ω.prop
       simp only [sc, s, not_le, Set.mem_compl_iff, Set.mem_setOf_eq, ← ht]
       norm_cast
 
@@ -1157,7 +1157,7 @@ theorem memLp_stoppedProcess_of_mem_finset (hτ : IsStoppingTime ℱ τ) (hu : �
   refine MemLp.add ?_ ?_
   · exact MemLp.indicator (ℱ.le n {a : Ω | n ≤ τ a} (hτ.measurableSet_ge n)) (hu n)
   · suffices MemLp (fun ω => ∑ i ∈ s with i < n, {a : Ω | τ a = i}.indicator (u i) ω) p μ by
-      convert! this using 1; ext1 ω; simp only [Finset.sum_apply]
+      convert this using 1; ext1 ω; simp only [Finset.sum_apply]
     refine memLp_finsetSum _ fun i _ => MemLp.indicator ?_ (hu i)
     exact ℱ.le i {a : Ω | τ a = i} (hτ.measurableSet_eq i)
 

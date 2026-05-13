@@ -345,7 +345,7 @@ theorem WfDvdMonoid.of_exists_prime_factors : WfDvdMonoid α :=
           _ = Multiset.card (Classical.choose (pf b h)) :=
             Multiset.card_eq_card_of_rel
             (prime_factors_unique ?_ (Classical.choose_spec (pf _ h)).1 ?_)
-        · convert! (Classical.choose_spec (pf c cne0)).2.symm
+        · convert (Classical.choose_spec (pf c cne0)).2.symm
           rw [con, Multiset.prod_zero]
         · intro x hadd
           rw [Multiset.mem_add] at hadd
@@ -390,7 +390,7 @@ theorem MulEquiv.uniqueFactorizationMonoid (e : α ≃* β) (hα : UniqueFactori
   obtain ⟨w, hp, u, h⟩ :=
     hα (e.symm a) fun h =>
       ha <| by
-        convert! ← map_zero e
+        convert ← map_zero e
         simp [← h]
   exact
     ⟨w.map e, fun b hb =>

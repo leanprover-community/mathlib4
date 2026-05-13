@@ -102,7 +102,7 @@ theorem gauge_zero' : gauge (0 : Set E) = 0 := by
   obtain rfl | hx := eq_or_ne x 0
   · simp only [csInf_Ioi, mem_zero, Pi.zero_apply, sep_true, smul_zero]
   · simp only [mem_zero, Pi.zero_apply, inv_eq_zero, smul_eq_zero]
-    convert! Real.sInf_empty
+    convert Real.sInf_empty
     exact eq_empty_iff_forall_notMem.2 fun r hr => hr.2.elim (ne_of_gt hr.1) hx
 
 @[simp]
@@ -203,7 +203,7 @@ theorem Convex.gauge_le (hs : Convex ℝ s) (h₀ : (0 : E) ∈ s) (absorbs : Ab
   by_cases ha : 0 ≤ a
   · rw [gauge_le_eq hs h₀ absorbs ha]
     exact convex_iInter fun i => convex_iInter fun _ => hs.smul _
-  · convert! convex_empty (𝕜 := ℝ)
+  · convert convex_empty (𝕜 := ℝ)
     exact eq_empty_iff_forall_notMem.2 fun x hx => ha <| (gauge_nonneg _).trans hx
 
 theorem Balanced.starConvex (hs : Balanced ℝ s) : StarConvex ℝ 0 s :=
@@ -360,7 +360,7 @@ theorem interior_subset_gauge_lt_one (s : Set E) : interior s ⊆ { x | gauge s 
 theorem gauge_lt_one_eq_self_of_isOpen (hs₁ : Convex ℝ s) (hs₀ : (0 : E) ∈ s) (hs₂ : IsOpen s) :
     { x | gauge s x < 1 } = s := by
   refine (gauge_lt_one_subset_self hs₁ ‹_› <| absorbent_nhds_zero <| hs₂.mem_nhds hs₀).antisymm ?_
-  convert! interior_subset_gauge_lt_one s
+  convert interior_subset_gauge_lt_one s
   exact hs₂.interior_eq.symm
 
 theorem gauge_lt_one_of_mem_of_isOpen (hs₂ : IsOpen s) {x : E} (hx : x ∈ s) :

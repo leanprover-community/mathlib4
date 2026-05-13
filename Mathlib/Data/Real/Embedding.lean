@@ -132,7 +132,7 @@ theorem ratLt_add (x y : M) : ratLt (x + y) = ratLt x + ratLt y := by
     · have hk' : 1 + (k • a.num • 1 - k • a.den • y) ≤ k • a.den • x - 1 := by
         rw [smul_add, smul_sub, smul_add, le_sub_iff_add_le, ← sub_le_iff_le_add] at hk
         rw [le_sub_iff_add_le]
-        convert! hk using 1
+        convert hk using 1
         abel
       have : k • a.num • 1 - k • a.den • y < m • 1 :=
         lt_of_lt_of_le (lt_add_of_pos_left _ zero_lt_one) (by simpa using hk'.trans hm1)

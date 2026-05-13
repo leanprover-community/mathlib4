@@ -186,7 +186,7 @@ theorem eq_pow_second_of_chain_of_has_chain {q : Associates M} {n : ℕ} (hn : n
     (h₂ : ∀ {r : Associates M}, r ≤ q ↔ ∃ i, r = c i) (hq : q ≠ 0) : q = c 1 ^ n := by
   classical
     obtain ⟨i, hi'⟩ := element_of_chain_eq_pow_second_of_chain hn h₁ (@fun r => h₂) (dvd_refl q) hq
-    convert! hi'
+    convert hi'
     refine (Nat.lt_succ_iff.1 i.prop).antisymm' (Nat.le_of_succ_le_succ ?_)
     calc
       n + 1 = (Finset.univ : Finset (Fin (n + 1))).card := (Finset.card_fin _).symm
@@ -387,7 +387,7 @@ theorem mem_normalizedFactors_factor_dvd_iso_of_mem_normalizedFactors {m p : M} 
       associatesEquivOfUniqueUnits_symm_apply] at this
     obtain ⟨q, hq, hq'⟩ :=
       exists_mem_normalizedFactors_of_dvd hn this.irreducible
-        (d ⟨p, by apply dvd_of_mem_normalizedFactors; convert! hp⟩).prop
+        (d ⟨p, by apply dvd_of_mem_normalizedFactors; convert hp⟩).prop
     rwa [associated_iff_eq.mp hq']
   have :
     Associates.mk
@@ -404,7 +404,7 @@ theorem mem_normalizedFactors_factor_dvd_iso_of_mem_normalizedFactors {m p : M} 
   refine map_prime_of_factor_orderIso (mk_ne_zero.mpr hn) ?_ _
   obtain ⟨q, hq, hq'⟩ :=
     exists_mem_normalizedFactors_of_dvd (mk_ne_zero.mpr hm)
-      (prime_mk.mpr (prime_of_normalized_factor p (by convert! hp))).irreducible
+      (prime_mk.mpr (prime_of_normalized_factor p (by convert hp))).irreducible
       (mk_le_mk_of_dvd (dvd_of_mem_normalizedFactors hp))
   simpa only [associated_iff_eq.mp hq', associatesEquivOfUniqueUnits_symm_apply] using hq
 

@@ -771,7 +771,7 @@ theorem BijOn.insert (h₁ : BijOn f s t) (h₂ : f a ∉ t) :
 
 theorem BijOn.sdiff_singleton (h₁ : BijOn f s t) (h₂ : a ∈ s) :
     BijOn f (s \ {a}) (t \ {f a}) := by
-  convert! h₁.subset_left diff_subset
+  convert h₁.subset_left diff_subset
   simp [h₁.injOn.image_diff, h₁.image_eq, h₂, inter_eq_self_of_subset_right]
 
 end bijOn

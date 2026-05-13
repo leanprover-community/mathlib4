@@ -176,7 +176,7 @@ theorem HasStrictFDerivAt.mul' {x : E} (ha : HasStrictFDerivAt a a' x)
 @[to_fun (attr := fun_prop)]
 theorem HasStrictFDerivAt.mul (hc : HasStrictFDerivAt c c' x) (hd : HasStrictFDerivAt d d' x) :
     HasStrictFDerivAt (c * d) (c x • d' + d x • c') x := by
-  convert! hc.mul' hd
+  convert hc.mul' hd
   ext z
   apply mul_comm
 
@@ -190,7 +190,7 @@ theorem HasFDerivWithinAt.mul' (ha : HasFDerivWithinAt a a' s x) (hb : HasFDeriv
 @[to_fun (attr := fun_prop)]
 theorem HasFDerivWithinAt.mul (hc : HasFDerivWithinAt c c' s x) (hd : HasFDerivWithinAt d d' s x) :
     HasFDerivWithinAt (c * d) (c x • d' + d x • c') s x := by
-  convert! hc.mul' hd
+  convert hc.mul' hd
   ext z
   apply mul_comm
 
@@ -204,7 +204,7 @@ theorem HasFDerivAt.mul' (ha : HasFDerivAt a a' x) (hb : HasFDerivAt b b' x) :
 @[to_fun (attr := fun_prop)]
 theorem HasFDerivAt.mul (hc : HasFDerivAt c c' x) (hd : HasFDerivAt d d' x) :
     HasFDerivAt (c * d) (c x • d' + d x • c') x := by
-  convert! hc.mul' hd
+  convert hc.mul' hd
   ext z
   apply mul_comm
 
@@ -274,7 +274,7 @@ theorem HasStrictFDerivAt.mul_const' (ha : HasStrictFDerivAt a a' x) (b : 𝔸) 
 @[fun_prop]
 theorem HasStrictFDerivAt.mul_const (hc : HasStrictFDerivAt c c' x) (d : 𝔸') :
     HasStrictFDerivAt (fun y => c y * d) (d • c') x := by
-  convert! hc.mul_const' d
+  convert hc.mul_const' d
   ext z
   apply mul_comm
 
@@ -286,7 +286,7 @@ theorem HasFDerivWithinAt.mul_const' (ha : HasFDerivWithinAt a a' s x) (b : 𝔸
 @[fun_prop]
 theorem HasFDerivWithinAt.mul_const (hc : HasFDerivWithinAt c c' s x) (d : 𝔸') :
     HasFDerivWithinAt (fun y => c y * d) (d • c') s x := by
-  convert! hc.mul_const' d
+  convert hc.mul_const' d
   ext z
   apply mul_comm
 
@@ -298,7 +298,7 @@ theorem HasFDerivAt.mul_const' (ha : HasFDerivAt a a' x) (b : 𝔸) :
 @[fun_prop]
 theorem HasFDerivAt.mul_const (hc : HasFDerivAt c c' x) (d : 𝔸') :
     HasFDerivAt (fun y => c y * d) (d • c') x := by
-  convert! hc.mul_const' d
+  convert hc.mul_const' d
   ext z
   apply mul_comm
 

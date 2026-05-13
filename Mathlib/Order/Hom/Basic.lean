@@ -189,7 +189,7 @@ variable [LE α] [LE β] [EquivLike F α β] [OrderIsoClass F α β]
 
 @[to_dual (attr := simp) le_map_inv_iff]
 theorem map_inv_le_iff (f : F) {a : α} {b : β} : EquivLike.inv f b ≤ a ↔ b ≤ f a := by
-  convert! (map_le_map_iff f).symm
+  convert (map_le_map_iff f).symm
   exact (EquivLike.right_inv f _).symm
 
 @[to_dual self]

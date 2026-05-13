@@ -666,7 +666,7 @@ lemma IsDedekindDomain.exists_sup_span_eq {I J : Ideal R} (hIJ : I ≤ J) (hI : 
   rintro ⟨q, hq⟩
   by_cases hqp : q = p'
   · subst hqp
-    convert! sub_mem H₁ H₂
+    convert sub_mem H₁ H₂
     rw [Finset.sum_eq_add_sum_diff_singleton_of_mem hp's, add_sub_cancel_right]
   · refine Ideal.mul_mono_right ?_ (ha p' hp's)
     exact Ideal.prod_le_inf.trans (Finset.inf_le (b := q) (by simpa [hq] using hqp))

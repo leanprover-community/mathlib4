@@ -96,7 +96,7 @@ theorem extremalNumber_of_fintypeCard_eq [Fintype V] (hc : card V = n) :
     rw [mem_filter, ← free_congr .refl (.map e G)]
     simpa using h
   rw [Iso.card_edgeFinset_eq (.map e G)]
-  convert! @le_sup _ _ _ _ { G | H.Free G } (#·.edgeFinset) G' h'
+  convert @le_sup _ _ _ _ {G | H.Free G} (#·.edgeFinset) G' h'
 
 variable [Fintype V] [DecidableRel G.Adj]
 
@@ -118,7 +118,7 @@ theorem extremalNumber_le_iff (H : SimpleGraph W) (m : ℕ) :
     extremalNumber (card V) H ≤ m ↔
       ∀ ⦃G : SimpleGraph V⦄ [DecidableRel G.Adj], H.Free G → #G.edgeFinset ≤ m := by
   simp_rw [extremalNumber_of_fintypeCard_eq rfl, Finset.sup_le_iff, mem_filter_univ]
-  exact ⟨fun h _ _ h' ↦ by convert! h _ h', fun h _ h' ↦ by convert! h h'⟩
+  exact ⟨fun h _ _ h' ↦ by convert! h _ h', fun h _ h' ↦ by convert h h'⟩
 
 /-- `extremalNumber (card V) H` is greater than `x` if and only if there exists a `H`-free simple
 graph `G` with more than `x` edges. -/

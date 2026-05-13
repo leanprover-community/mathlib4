@@ -55,7 +55,7 @@ theorem prod_X_add_C_eq_sum_esymm (s : Multiset R) :
 through a multiset `s` : the `k`th coefficient is the symmetric function `esymm (card s - k) s`. -/
 theorem prod_X_add_C_coeff (s : Multiset R) {k : ℕ} (h : k ≤ Multiset.card s) :
     (s.map fun r => X + C r).prod.coeff k = s.esymm (Multiset.card s - k) := by
-  convert! Polynomial.ext_iff.mp (prod_X_add_C_eq_sum_esymm s) k using 1
+  convert Polynomial.ext_iff.mp (prod_X_add_C_eq_sum_esymm s) k using 1
   simp_rw [finsetSum_coeff, coeff_C_mul_X_pow]
   rw [Finset.sum_eq_single_of_mem (Multiset.card s - k) _] <;> grind
 
@@ -94,7 +94,7 @@ theorem prod_X_sub_X_eq_sum_esymm (s : Multiset R) :
     ext x
     rw [sub_eq_add_neg]
     rw [← map_neg C x]
-  convert! prod_X_add_C_eq_sum_esymm (map (fun t => -t) s) using 1
+  convert prod_X_add_C_eq_sum_esymm (map (fun t => -t) s) using 1
   · rw [map_map]; rfl
   · simp only [esymm_neg, card_map, mul_assoc, map_mul, map_pow, map_neg, map_one]
 
@@ -108,7 +108,7 @@ theorem prod_X_sub_C_coeff (s : Multiset R) {k : ℕ} (h : k ≤ Multiset.card s
     ext x
     rw [sub_eq_add_neg]
     rw [← map_neg C x]
-  convert! prod_X_add_C_coeff (map (fun t => -t) s) _ using 1
+  convert prod_X_add_C_coeff (map (fun t => -t) s) _ using 1
   · rw [map_map]; rfl
   · rw [esymm_neg, card_map]
   · rwa [card_map]
@@ -121,7 +121,7 @@ theorem _root_.Polynomial.coeff_eq_esymm_roots_of_card [IsDomain R] {p : R[X]}
   conv_lhs => rw [← C_leadingCoeff_mul_prod_multiset_X_sub_C hroots]
   rw [coeff_C_mul, mul_assoc]; congr
   have : k ≤ card (roots p) := by rw [hroots]; exact h
-  convert! p.roots.prod_X_sub_C_coeff this using 3 <;> rw [hroots]
+  convert p.roots.prod_X_sub_C_coeff this using 3 <;> rw [hroots]
 
 /-- Vieta's formula for split polynomials over a field. -/
 theorem _root_.Polynomial.coeff_eq_esymm_roots_of_splits {F} [Field F] {p : F[X]}
@@ -150,7 +150,7 @@ theorem MvPolynomial.prod_C_add_X_eq_sum_esymm :
   have : Fintype.card σ = Multiset.card s := by
     rw [Multiset.card_map, ← Finset.card_univ, Finset.card_def]
   simp_rw [this, MvPolynomial.esymm_eq_multiset_esymm σ R, Finset.prod_eq_multiset_prod]
-  convert! Multiset.prod_X_add_C_eq_sum_esymm s
+  convert Multiset.prod_X_add_C_eq_sum_esymm s
   simp_rw [s, Multiset.map_map, Function.comp_apply]
 
 theorem MvPolynomial.prod_X_add_C_coeff (k : ℕ) (h : k ≤ card σ) :

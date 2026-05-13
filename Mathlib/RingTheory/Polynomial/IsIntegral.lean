@@ -212,8 +212,10 @@ theorem MvPolynomial.isIntegral_iff_isIntegral_coeff.{w} {σ : Type w} {f : MvPo
         (g := (rename ((↑) : f.vars → σ)).toRingHom) (rename_injective _ Subtype.val_injective)
         (.of_comp (f := (killCompl (f := ((↑) : f.vars → σ)) Subtype.val_injective).toRingHom) <| by
         simp only [AlgHom.toRingHom_eq_coe, algebraMap_def, RingHom.coe_coe, hg]
-        convert! H.map ((rename Subtype.val).comp
-          (killCompl (f := ((↑) : f.vars → σ)) Subtype.val_injective)).toRingHom
+        convert
+          H.map
+            ((rename Subtype.val).comp
+                (killCompl (f := ((↑) : f.vars → σ)) Subtype.val_injective)).toRingHom
         · exact RingHom.ext (by simp [MvPolynomial.killCompl_map])
         · nth_rw 1 12 [← hg]; simp)) n (.of_fintype _)
     · rw [← hg, coeff_rename_eq_zero _ _ _ (by grind)]
@@ -223,13 +225,13 @@ theorem MvPolynomial.isIntegral_iff_isIntegral_coeff.{w} {σ : Type w} {f : MvPo
   · intro α β e IH f H n
     have := @IH (rename e.symm f) (.of_map (g := (rename e).toRingHom)
       (rename_injective _ e.injective) <| .of_comp (f := (rename e.symm).toRingHom)
-        (by convert! H <;> aesop)) (n.embDomain e.symm)
+        (by convert H <;> aesop)) (n.embDomain e.symm)
     simpa [Finsupp.embDomain_eq_mapDomain, coeff_rename_mapDomain _ e.symm.injective] using this
   · intro f H n
     refine .of_map (g := (isEmptyAlgEquiv _ PEmpty).symm.toRingHom)
       (isEmptyAlgEquiv _ PEmpty).symm.injective
       (.of_comp (f := (isEmptyAlgEquiv _ PEmpty).toRingHom) ?_)
-    convert! H
+    convert H
     · aesop (add simp MvPolynomial.isEmptyAlgEquiv)
     · obtain rfl := Subsingleton.elim n 0
       have : constantCoeff = (isEmptyAlgEquiv S PEmpty).toRingHom := by aesop
@@ -240,7 +242,7 @@ theorem MvPolynomial.isIntegral_iff_isIntegral_coeff.{w} {σ : Type w} {f : MvPo
       (p := optionEquivLeft _ _ f) (.of_map
       (g := (optionEquivLeft _ _).symm.toRingHom) (optionEquivLeft _ _).symm.injective
       (.of_comp (f := (optionEquivLeft _ _).toRingHom) (by
-        convert! H
+        convert H
         · ext i m
           · aesop
           · cases i <;> aesop

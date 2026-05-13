@@ -549,7 +549,7 @@ lemma bijective_toDescentData_map_iff (M N : F.obj (.mk (op S))) :
   rw [Presieve.isSheafFor_ofArrows_iff_bijective_toCompabible,
     ← (DescentData.subtypeCompatibleHomEquiv F f).bijective.of_comp_iff',
     ← Function.Bijective.of_comp_iff _ (presheafHomObjHomEquiv F).bijective]
-  convert! Iff.rfl
+  convert Iff.rfl
   ext φ : 1
   apply DescentData.subtypeCompatibleHomEquiv_toCompatible_presheafHomObjHomEquiv
 
@@ -560,7 +560,7 @@ lemma isPrestackFor_iff_isSheafFor {S : C} (R : Sieve S) :
   rw [isPrestackFor_iff, Functor.FullyFaithful.nonempty_iff_map_bijective]
   refine forall_congr' (fun M ↦ forall_congr' (fun N ↦ ?_))
   rw [bijective_toDescentData_map_iff]
-  convert! Iff.rfl
+  convert Iff.rfl
   refine le_antisymm ?_ ?_
   · rintro X f (hf : R.arrows f.left)
     obtain ⟨X, g, rfl⟩ := Over.mk_surjective X
@@ -578,7 +578,7 @@ lemma isPrestackFor_iff_isSheafFor' {S : C} (R : Sieve S) :
   rw [← Presieve.isSheafFor_iff_of_iso (F.overMapCompPresheafHomIso M N a),
     Presieve.isSheafFor_over_map_op_comp_iff (X' := Over.mk a)
       (e := Over.isoMk (Iso.refl _))] at h
-  convert! h
+  convert h
   refine le_antisymm ?_ ?_
   · intro Y f hf
     exact ⟨Over.mk f.left, Over.homMk f.left, Over.homMk (𝟙 _) (by simpa using Over.w f),

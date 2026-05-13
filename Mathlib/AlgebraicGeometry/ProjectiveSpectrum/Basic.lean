@@ -117,15 +117,17 @@ lemma iSup_basicOpen_eq_top' {ι : Type*} (f : ι → A)
     · rw [DirectSum.decompose_of_mem_ne 𝒜 hn hn', sub_zero]
       exact Ideal.subset_span ⟨_, rfl⟩
   | algebraMap r =>
-    convert! zero_mem (Ideal.span _)
+    convert zero_mem (Ideal.span _)
     rw [sub_eq_zero]
     exact (DirectSum.decompose_of_mem_same 𝒜 r.2).symm
   | add x y hx hy _ _ =>
     rw [map_add, add_sub_add_comm]
     exact add_mem ‹_› ‹_›
   | mul x y hx hy hx' hy' =>
-    convert! add_mem (Ideal.mul_mem_left _ x hy')
-      (Ideal.mul_mem_right (GradedRing.projZeroRingHom 𝒜 y) _ hx') using 1
+    convert
+      add_mem (Ideal.mul_mem_left _ x hy')
+        (Ideal.mul_mem_right (GradedRing.projZeroRingHom 𝒜 y) _ hx') using
+      1
     rw [map_mul]
     ring
 
@@ -344,7 +346,7 @@ def affineOpenCover : (Proj 𝒜).AffineOpenCover :=
   rw [← DirectSum.sum_support_decompose 𝒜 z]
   refine Ideal.sum_mem _ fun c hc ↦ if hc0 : c = 0 then ?_ else
     Ideal.subset_span ⟨⟨⟨c, Nat.pos_iff_ne_zero.mpr hc0⟩, _⟩, rfl⟩
-  convert! Ideal.zero_mem _
+  convert Ideal.zero_mem _
   subst hc0
   exact hz
 

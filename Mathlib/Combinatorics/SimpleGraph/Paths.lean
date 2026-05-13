@@ -149,7 +149,7 @@ theorem IsTrail.reverse {u v : V} (p : G.Walk u v) (h : p.IsTrail) : p.reverse.I
 theorem reverse_isTrail_iff {u v : V} (p : G.Walk u v) : p.reverse.IsTrail ↔ p.IsTrail := by
   constructor <;>
     · intro h
-      convert! h.reverse _
+      convert h.reverse _
       try rw [reverse_reverse]
 
 theorem IsTrail.of_append_left {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
@@ -206,7 +206,7 @@ theorem IsPath.reverse {u v : V} {p : G.Walk u v} (h : p.IsPath) : p.reverse.IsP
 
 @[simp]
 theorem isPath_reverse_iff {u v : V} (p : G.Walk u v) : p.reverse.IsPath ↔ p.IsPath := by
-  constructor <;> intro h <;> convert! h.reverse; simp
+  constructor <;> intro h <;> convert h.reverse; simp
 
 theorem IsPath.of_append_left {u v w : V} {p : G.Walk u v} {q : G.Walk v w} :
     (p.append q).IsPath → p.IsPath := by

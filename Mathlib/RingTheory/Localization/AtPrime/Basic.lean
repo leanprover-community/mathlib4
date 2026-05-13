@@ -209,7 +209,7 @@ it is the unique maximal ideal given by the local ring structure `AtPrime.isLoca
 theorem AtPrime.map_eq_maximalIdeal :
     Ideal.map (algebraMap R (Localization.AtPrime I)) I =
       IsLocalRing.maximalIdeal (Localization I.primeCompl) := by
-  convert! congr_arg (Ideal.map _) AtPrime.under_maximalIdeal.symm
+  convert congr_arg (Ideal.map _) AtPrime.under_maximalIdeal.symm
   rw [map_under I.primeCompl]
 
 lemma AtPrime.eq_maximalIdeal_iff_under_eq {J : Ideal (Localization.AtPrime I)} :
@@ -483,7 +483,7 @@ theorem isPrime_map_of_liesOver [P.IsPrime] [P.LiesOver p] : (P.map (algebraMap 
   isPrime_of_isPrime_disjoint _ _ _ inferInstance (Ideal.disjoint_primeCompl_of_liesOver P p)
 
 theorem map_eq_maximalIdeal : p.map (algebraMap R Rₚ) = maximalIdeal Rₚ := by
-  convert! congr_arg (Ideal.map (algebraMap R Rₚ)) (under_maximalIdeal Rₚ p).symm
+  convert congr_arg (Ideal.map (algebraMap R Rₚ)) (under_maximalIdeal Rₚ p).symm
   rw [map_under p.primeCompl]
 
 instance isMaximal_map : (p.map (algebraMap R Rₚ)).IsMaximal := by

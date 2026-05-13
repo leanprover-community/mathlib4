@@ -279,7 +279,7 @@ theorem closure_singleton (a : α) : closure {a} = Ici a :=
     (isUpperSet_of_isClosed isClosed_closure).Ici_subset <| subset_closure rfl
 
 protected theorem isTopologicalBasis : IsTopologicalBasis (lowerBasis α) := by
-  convert! isTopologicalBasis_of_subbasis (topology_eq α)
+  convert isTopologicalBasis_of_subbasis (topology_eq α)
   simp_rw [lowerBasis, coe_upperClosure, compl_iUnion]
   ext s
   constructor
@@ -341,7 +341,7 @@ lemma isTopologicalSpace_basis (U : Set α) : IsOpen U ↔ U = univ ∨ ∃ a, (
   refine ⟨?_, isTopologicalBasis_insert_univ_subbasis.isOpen⟩
   intro hO
   apply Or.inr
-  convert! IsTopologicalBasis.open_eq_sUnion isTopologicalBasis_insert_univ_subbasis hO
+  convert IsTopologicalBasis.open_eq_sUnion isTopologicalBasis_insert_univ_subbasis hO
   constructor
   · intro ⟨a, ha⟩
     use {U}
@@ -511,7 +511,7 @@ variable [CompleteLattice α] [CompleteLattice β] [TopologicalSpace α] [IsLowe
 
 protected lemma _root_.sInfHom.continuous (f : sInfHom α β) : Continuous f := by
   refine IsLower.continuous_iff_Ici.2 fun b => ?_
-  convert! isClosed_Ici (a := sInf <| f ⁻¹' Ici b)
+  convert isClosed_Ici (a := sInf <| f ⁻¹' Ici b)
   refine Subset.antisymm (fun a => sInf_le) fun a ha => le_trans ?_ <|
     OrderHomClass.mono (f : α →o β) ha
   refine LE.le.trans ?_ (map_sInf f _).ge

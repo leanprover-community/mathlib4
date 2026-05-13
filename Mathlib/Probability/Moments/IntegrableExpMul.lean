@@ -223,7 +223,7 @@ lemma rpow_abs_le_mul_max_exp_of_pos (x : ℝ) {t p : ℝ} (hp : 0 ≤ p) (ht : 
   calc |x| ^ p
   _ ≤ ((t / p)⁻¹ * max (exp (t / p * x)) (exp (-t / p * x))) ^ p := by
     gcongr
-    convert! h_abs_le (t / p) (div_pos ht (hp.lt_of_ne' hp_zero)) using 5
+    convert h_abs_le (t / p) (div_pos ht (hp.lt_of_ne' hp_zero)) using 5
     rw [neg_div]
   _ = (p / t) ^ p * max (exp (t * x)) (exp (-t * x)) := by
     rw [mul_rpow (by positivity) (by positivity)]
@@ -500,7 +500,7 @@ then `|X| ^ n` is integrable for all nonnegative `p : ℝ`. -/
 lemma integrable_rpow_abs_of_mem_interior_integrableExpSet
     (h : 0 ∈ interior (integrableExpSet X μ)) {p : ℝ} (hp : 0 ≤ p) :
     Integrable (fun ω ↦ |X ω| ^ p) μ := by
-  convert! integrable_rpow_abs_mul_exp_of_mem_interior_integrableExpSet h hp using 1
+  convert integrable_rpow_abs_mul_exp_of_mem_interior_integrableExpSet h hp using 1
   simp
 
 /-- If 0 belongs to the interior of the interval `integrableExpSet X μ`,
@@ -516,7 +516,7 @@ then `X ^ n` is integrable for all nonnegative `p : ℝ`. -/
 lemma integrable_rpow_of_mem_interior_integrableExpSet
     (h : 0 ∈ interior (integrableExpSet X μ)) {p : ℝ} (hp : 0 ≤ p) :
     Integrable (fun ω ↦ X ω ^ p) μ := by
-  convert! integrable_rpow_mul_exp_of_mem_interior_integrableExpSet h hp using 1
+  convert integrable_rpow_mul_exp_of_mem_interior_integrableExpSet h hp using 1
   simp
 
 /-- If 0 belongs to the interior of the interval `integrableExpSet X μ`,

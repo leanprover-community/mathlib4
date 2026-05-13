@@ -359,7 +359,7 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux₂
       (Localization.Away (φ e))
       (Localization.Away (Algebra.ofId R' (Localization.Away e) f))
   refine RingHom.finite_algebraMap.mp ?_
-  convert! equiv.symm.toRingEquiv.finite.comp hf
+  convert equiv.symm.toRingEquiv.finite.comp hf
   apply IsLocalization.ringHom_ext (.powers f)
   dsimp [-AlgEquiv.symm_toRingEquiv,
     ← AlgEquiv.toAlgHom_toRingHom, -AlgHomClass.toRingHom_toAlgHom]
@@ -426,7 +426,7 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq
     rwa [← P'f.over_def P']
   · suffices Function.Bijective ⇑(Ideal.ResidueField.mapₐ P Pf
         (IsScalarTower.toAlgHom R R' (Localization.Away f)) (Pf.over_def P)) by
-      convert! this.comp hpP; rw [← AlgHom.coe_comp]; congr; ext
+      convert this.comp hpP; rw [← AlgHom.coe_comp]; congr; ext
     exact (RingHom.surjectiveOnStalks_of_isLocalization (.powers f)
       _).residueFieldMap_bijective _ _ _
   · intro P'' _ _ hP''

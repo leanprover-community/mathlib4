@@ -301,7 +301,7 @@ theorem changeLevel_primitiveCharacter :
 lemma primitiveCharacter_isPrimitive : IsPrimitive (χ.primitiveCharacter) := by
   by_cases h : χ.conductor = 0
   · rw [isPrimitive_def]
-    convert! conductor_eq_zero_iff_level_eq_zero.mpr h
+    convert conductor_eq_zero_iff_level_eq_zero.mpr h
   · exact le_antisymm (Nat.le_of_dvd (Nat.pos_of_ne_zero h) (conductor_dvd_level _)) <|
       conductor_le_conductor_mem_conductorSet <| conductor_mem_conductorSet χ
 

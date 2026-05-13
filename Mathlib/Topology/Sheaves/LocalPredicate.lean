@@ -264,7 +264,7 @@ theorem isSheaf (P : LocalPredicate T) : (subpresheafToTypes P.toPrelocalPredica
       -- We claim that the predicate holds in `U i`
       use U i, hi, Opens.leSupr U i
       -- This follows, since our original family `sf` satisfies the predicate
-      convert! (sf i).property using 1
+      convert (sf i).property using 1
       exact gl_spec i
     -- It remains to show that the chosen lift is really a gluing for the subsheaf and
     -- that it is unique. Both of which follow immediately from the corresponding facts

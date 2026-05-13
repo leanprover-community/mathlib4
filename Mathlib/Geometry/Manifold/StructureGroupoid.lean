@@ -320,7 +320,7 @@ def Pregroupoid.groupoid (PG : Pregroupoid H) : StructureGroupoid H where
       simp only [ee'.1, he.1]
     · have A := EqOnSource.symm' ee'
       apply PG.congr e'.symm.open_source A.2
-      convert! he.2 using 1
+      convert he.2 using 1
       rw [A.1, symm_toPartialEquiv, PartialEquiv.symm_source]
 
 theorem mem_groupoid_of_pregroupoid {PG : Pregroupoid H} {e : OpenPartialHomeomorph H H} :
@@ -434,7 +434,7 @@ theorem closedUnderRestriction_iff_id_le (G : StructureGroupoid H) :
     rw [StructureGroupoid.le_iff]
     rintro e ⟨s, hs, hes⟩
     refine G.mem_of_eqOnSource ?_ hes
-    convert! closedUnderRestriction' G.id_mem hs
+    convert closedUnderRestriction' G.id_mem hs
     ext <;> simp [hs.interior_eq]
   · intro h
     constructor

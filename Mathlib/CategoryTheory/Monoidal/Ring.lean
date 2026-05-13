@@ -47,7 +47,7 @@ lemma mul_add_iff (R : C) [MonObj R] [AddMonObj R] :
     cat_disch
   · replace h := h (fst R (R ⊗ R)) (snd _ _ ≫ fst _ _) (snd _ _ ≫ snd _ _)
     simp only [Hom.mul_def, Hom.add_def] at h
-    convert! h using 2
+    convert h using 2
     · cat_disch
     · ext
       · simp only [lift_fst]
@@ -67,7 +67,7 @@ lemma add_mul_iff (R : C) [MonObj R] [AddMonObj R] :
     cat_disch
   · replace h := h (fst (R ⊗ R) R ≫ fst _ _) (fst _ _ ≫ snd _ _) (snd _ _)
     simp only [Hom.mul_def, Hom.add_def] at h
-    convert! h using 2
+    convert h using 2
     · cat_disch
     · ext
       · simp only [lift_fst]

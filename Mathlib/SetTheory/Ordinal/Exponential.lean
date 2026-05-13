@@ -449,7 +449,7 @@ theorem log_opow_mul {b v : Ordinal} (hb : 1 < b) (u : Ordinal) (hv : v ≠ 0) :
   simpa using log_opow_mul_add hb hv (opow_pos u (bot_lt_of_lt hb))
 
 theorem log_opow {b : Ordinal} (hb : 1 < b) (x : Ordinal) : log b (b ^ x) = x := by
-  convert! log_opow_mul hb x zero_ne_one.symm using 1
+  convert log_opow_mul hb x zero_ne_one.symm using 1
   · rw [mul_one]
   · rw [log_one_right, add_zero]
 
@@ -469,7 +469,7 @@ theorem div_two_opow_log {o : Ordinal} (ho : o ≠ 0) : o / 2 ^ log 2 o = 1 := b
   · simpa [one_le_iff_ne_zero, pos_iff_ne_zero] using div_opow_log_pos 2 ho
 
 theorem two_opow_log_add {o : Ordinal} (ho : o ≠ 0) : 2 ^ log 2 o + o % 2 ^ log 2 o = o := by
-  convert! div_add_mod .. using 2
+  convert div_add_mod .. using 2
   rw [div_two_opow_log ho, mul_one]
 
 theorem add_log_le_log_mul {x y : Ordinal} (b : Ordinal) (hx : x ≠ 0) (hy : y ≠ 0) :

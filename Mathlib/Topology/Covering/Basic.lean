@@ -161,11 +161,11 @@ theorem comp_subtypeVal (hs : IsOpen s) (hfs : IsOpen (f ⁻¹' s)) {x : X} (hx 
   (isEmpty_or_nonempty I).elim (fun _ ↦ .of_preimage_eq_empty _ ((hs.inter hU).mem_nhds ⟨hx, hxU⟩)
     <| Set.not_nonempty_iff_eq_empty.mp fun ⟨e, he⟩ ↦ isEmptyElim (H ⟨⟨e, he.1⟩, he.2⟩).2) fun _ ↦
   have hUs : U ⊆ s := fun y hy ↦ by
-    convert! Set.mem_preimage.mp (H.symm (⟨y, hy⟩, Classical.arbitrary I)).1.2; simp [← hH]
+    convert Set.mem_preimage.mp (H.symm (⟨y, hy⟩, Classical.arbitrary I)).1.2; simp [← hH]
   have : Subtype.val '' (fun e : f ⁻¹' s ↦ f e) ⁻¹' U = f ⁻¹' U := by ext; simpa using @hUs _
   ⟨inst, U, hxU, hU, this ▸ hfs.isOpenMap_subtype_val _ hfU, .trans (.symm <| .trans
     (IsEmbedding.subtypeVal.homeomorphImage _) <| .setCongr this) H, fun x ↦ by
-    dsimp; convert! hH ⟨⟨x, hUs x.2⟩, x.2⟩ using 4; rw [Homeomorph.symm_apply_eq]; rfl⟩
+    dsimp; convert hH ⟨⟨x, hUs x.2⟩, x.2⟩ using 4; rw [Homeomorph.symm_apply_eq]; rfl⟩
 
 theorem comp_homeomorph {x : X} (h : IsEvenlyCovered f x I) {E'} [TopologicalSpace E']
     (g : E' ≃ₜ E) : IsEvenlyCovered (f ∘ g) x I :=
@@ -175,7 +175,7 @@ theorem comp_homeomorph {x : X} (h : IsEvenlyCovered f x I) {E'} [TopologicalSpa
 
 @[simp] theorem comp_homeomorph_iff {x : X} {E'} [TopologicalSpace E'] (g : E' ≃ₜ E) :
     IsEvenlyCovered (f ∘ g) x I ↔ IsEvenlyCovered f x I where
-  mp h := by convert! h.comp_homeomorph g.symm; ext; simp
+  mp h := by convert h.comp_homeomorph g.symm; ext; simp
   mpr h := h.comp_homeomorph g
 
 theorem homeomorph_comp {x : X} (h : IsEvenlyCovered f x I) {Y} [TopologicalSpace Y] (g : X ≃ₜ Y) :
@@ -187,7 +187,7 @@ theorem homeomorph_comp {x : X} (h : IsEvenlyCovered f x I) {Y} [TopologicalSpac
 
 @[simp] theorem homeomorph_comp_iff {x : X} {Y} [TopologicalSpace Y] (g : X ≃ₜ Y) :
     IsEvenlyCovered (g ∘ f) (g x) I ↔ IsEvenlyCovered f x I where
-  mp h := by convert! h.homeomorph_comp g.symm <;> ((try ext); simp)
+  mp h := by convert h.homeomorph_comp g.symm <;> ((try ext); simp)
   mpr h := h.homeomorph_comp g
 
 end IsEvenlyCovered
@@ -268,7 +268,7 @@ theorem comp_homeomorph (hf : IsCoveringMapOn f s) {E'} [TopologicalSpace E'] (g
 
 @[simp] theorem comp_homeomorph_iff {E'} [TopologicalSpace E'] (g : E' ≃ₜ E) :
     IsCoveringMapOn (f ∘ g) s ↔ IsCoveringMapOn f s where
-  mp h := by convert! h.comp_homeomorph g.symm; ext; simp
+  mp h := by convert h.comp_homeomorph g.symm; ext; simp
   mpr h := h.comp_homeomorph g
 
 theorem homeomorph_comp (hf : IsCoveringMapOn f s) {Y} [TopologicalSpace Y] (g : X ≃ₜ Y) :
@@ -277,7 +277,7 @@ theorem homeomorph_comp (hf : IsCoveringMapOn f s) {Y} [TopologicalSpace Y] (g :
 
 @[simp] theorem homeomorph_comp_iff {Y} [TopologicalSpace Y] (g : X ≃ₜ Y) :
     IsCoveringMapOn (g ∘ f) (g.symm ⁻¹' s) ↔ IsCoveringMapOn f s where
-  mp h := by convert! h.homeomorph_comp g.symm <;> (ext; simp)
+  mp h := by convert h.homeomorph_comp g.symm <;> (ext; simp)
   mpr h := h.homeomorph_comp g
 
 end IsCoveringMapOn
@@ -397,12 +397,12 @@ omit hf
 
 theorem comp_homeomorph_iff {E'} [TopologicalSpace E'] (g : E' ≃ₜ E) :
     IsCoveringMap (f ∘ g) ↔ IsCoveringMap f where
-  mp h := by convert! h.comp_homeomorph g.symm; ext; simp
+  mp h := by convert h.comp_homeomorph g.symm; ext; simp
   mpr h := h.comp_homeomorph g
 
 theorem homeomorph_comp_iff {Y} [TopologicalSpace Y] (g : X ≃ₜ Y) :
     IsCoveringMap (g ∘ f) ↔ IsCoveringMap f where
-  mp h := by convert! h.homeomorph_comp g.symm; ext; simp
+  mp h := by convert h.homeomorph_comp g.symm; ext; simp
   mpr h := h.homeomorph_comp g
 
 end IsCoveringMap
@@ -462,7 +462,7 @@ Then `f` admits a `Bundle.Trivialization` over the base set `V`. -/
       rw [dif_pos ((f_inv _ hx.1).symm ▸ hx.1)]
       by_contra h; exact (disjoint h).le_bot ⟨idx_U .., inv_U _ _⟩ }
   have open_preim {W} (hWV : W ⊆ V) (open_W : IsOpen W) : IsOpen (f ⁻¹' W) := by
-    convert! isOpen_iUnion (fun i ↦ (open_iff i hWV).mp open_W)
+    convert isOpen_iUnion (fun i ↦ (open_iff i hWV).mp open_W)
     rw [← Set.inter_iUnion, eq_comm, Set.inter_eq_left]
     exact (Set.preimage_mono hWV).trans exhaustive'
   have open_source : IsOpen F.source := open_preim subset_rfl open_V
@@ -487,7 +487,7 @@ Then `f` admits a `Bundle.Trivialization` over the base set `V`. -/
   · simp_rw [F, Set.prodMk_mem_set_prod_eq, Set.mem_univ, and_true]
     refine (continuousOn_open_iff open_V).mpr fun W open_W ↦ ?_
     rw [open_iff i Set.inter_subset_left]
-    convert! ((open_iff i subset_rfl).mp open_V).inter open_W using 1
+    convert ((open_iff i subset_rfl).mp open_V).inter open_W using 1
     refine Set.ext fun e ↦ and_right_comm.trans (and_congr_right fun ⟨hV, hU⟩ ↦ ?_)
     rw [Set.mem_preimage, dif_pos hV, inj i (inv_U i _) hU (f_inv i _)]
 
@@ -540,17 +540,17 @@ theorem IsClosedMap.isEvenlyCovered_of_openPartialHomeomorph [T2Space E] {x : X}
     (pairwise_disjoint_mono disj.subtype fun e ↦ inter_subset_left)
     ((preimage_mono (inter_subset_left.trans hUW)).trans hWV))
     ⟨hxU, Set.mem_iInter.mpr fun e ↦ ⟨e, ⟨(hV e).1, (hφ e).1⟩, e.2⟩⟩
-  · convert! ((φ e).isOpen_inter_preimage h).inter (hV e).2 using 1
+  · convert ((φ e).isOpen_inter_preimage h).inter (hV e).2 using 1
     simp_rw [(hφ e).2, V']; ac_rfl
   · have : s ⊆ (φ e).target := hs.trans <| (hUV e).trans <| by
       rw [← (φ e).image_source_eq_target, (hφ e).2]; exact image_mono inter_subset_right
     rw [← (φ e).isOpen_symm_image_iff_of_subset_target this,
       (φ e).symm_image_eq_source_inter_preimage this, (hφ e).2, inter_comm]
-    convert! h using 1
+    convert h using 1
     refine inter_eq_inter_iff_left.mpr ⟨fun e' h ↦ h.2.2, fun e' h ↦ ⟨?_ , h.2⟩⟩
     have ⟨e'', ⟨_, mem⟩, eq⟩ := mem_iInter.mp (hs h.1).2 e
     rwa [← (φ e).injOn mem h.2 (by rwa [(hφ e).2])]
-  · convert! ← (φ e).injOn.mono inter_subset_right; exact (hφ e).2
+  · convert ← (φ e).injOn.mono inter_subset_right; exact (hφ e).2
 
 /-- If `f : E → X` is a closed map between topological spaces with `E` Hausdorff, and `s` is
 a subset of `X` on which `f` has finite fibers, such that `f` restricts to a homeomorphism on

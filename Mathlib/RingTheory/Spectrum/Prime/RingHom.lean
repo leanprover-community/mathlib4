@@ -192,7 +192,7 @@ lemma exists_comap_evalRingHom_eq
   let h₁ : Function.Surjective (Pi.evalRingHom R i) := RingHomSurjective.is_surjective
   have h₂ : RingHom.ker (Pi.evalRingHom R i) ≤ p.asIdeal := by
     intro x hx
-    convert! p.asIdeal.mul_mem_left x hi
+    convert p.asIdeal.mul_mem_left x hi
     ext j
     by_cases hj : i = j
     · subst hj; simpa [e]

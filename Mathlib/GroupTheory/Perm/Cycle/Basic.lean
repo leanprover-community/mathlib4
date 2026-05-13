@@ -363,7 +363,7 @@ theorem IsCycle.zpowersEquivSupport_symm_apply {σ : Perm α} (hσ : IsCycle σ)
 
 protected theorem IsCycle.orderOf (hf : IsCycle f) : orderOf f = #f.support := by
   rw [← Fintype.card_zpowers, ← Fintype.card_coe]
-  convert! Fintype.card_congr (IsCycle.zpowersEquivSupport hf)
+  convert Fintype.card_congr (IsCycle.zpowersEquivSupport hf)
 
 theorem isCycle_swap_mul_aux₁ {α : Type*} [DecidableEq α] :
     ∀ (n : ℕ) {b x : α} {f : Perm α} (_ : (swap x (f x) * f) b ≠ b) (_ : (f ^ n) (f x) = b),
@@ -398,7 +398,7 @@ theorem isCycle_swap_mul_aux₂ {α : Type*} [DecidableEq α] :
     obtain ⟨i, hi⟩ := isCycle_swap_mul_aux₁ n hb <| by
       rw [← mul_apply, ← pow_succ]; simpa [pow_succ', eq_symm_apply] using h
     refine ⟨-i, (swap x (f⁻¹ x) * f⁻¹).injective ?_⟩
-    convert! hi using 1
+    convert hi using 1
     · rw [zpow_neg, ← inv_zpow, ← mul_apply, mul_inv_rev, swap_inv, mul_swap_eq_swap_mul]
       simp [swap_comm _ x, ← mul_apply, -coe_mul, ← inv_def, -coe_inv, ← inv_def, mul_assoc _ f⁻¹,
         ← mul_zpow_mul, mul_assoc _ _ f]
@@ -688,7 +688,7 @@ alias ⟨IsCycleOn.of_inv, IsCycleOn.inv⟩ := isCycleOn_inv
 theorem IsCycleOn.conj (h : f.IsCycleOn s) : (g * f * g⁻¹).IsCycleOn ((g : Perm α) '' s) :=
   ⟨(g.bijOn_image.comp h.1).comp g.bijOn_symm_image, fun x hx y hy => by
     rw [Equiv.image_eq_preimage_symm] at hx hy
-    convert! Equiv.Perm.SameCycle.conj (h.2 hx hy) (g := g) <;> simp⟩
+    convert Equiv.Perm.SameCycle.conj (h.2 hx hy) (g := g) <;> simp⟩
 
 theorem isCycleOn_swap [DecidableEq α] (hab : a ≠ b) : (swap a b).IsCycleOn {a, b} :=
   ⟨bijOn_swap (by simp) (by simp), fun x hx y hy => by
@@ -736,7 +736,7 @@ protected theorem IsCycleOn.subtypePerm (hf : f.IsCycleOn s) :
   obtain hs | hs := s.subsingleton_or_nontrivial
   · haveI := hs.coe_sort
     exact isCycleOn_of_subsingleton _ _
-  convert! (hf.isCycle_subtypePerm hs).isCycleOn
+  convert (hf.isCycle_subtypePerm hs).isCycleOn
   rw [eq_comm, Set.eq_univ_iff_forall]
   exact fun x => ne_of_apply_ne ((↑) : s → α) (hf.apply_ne hs x.2)
 
@@ -855,7 +855,7 @@ theorem exists_cycleOn (s : Finset α) :
     ∃ f : Perm α, f.IsCycleOn s ∧ f.support ⊆ s := by
   refine ⟨s.toList.formPerm, ?_, fun x hx => by
     simpa using List.mem_of_formPerm_apply_ne (Perm.mem_support.1 hx)⟩
-  convert! s.nodup_toList.isCycleOn_formPerm
+  convert s.nodup_toList.isCycleOn_formPerm
   simp
 
 end Finset
@@ -870,14 +870,14 @@ theorem Countable.exists_cycleOn (hs : s.Countable) :
   obtain hs' | hs' := s.finite_or_infinite
   · refine ⟨hs'.toFinset.toList.formPerm, ?_, fun x hx => by
       simpa using List.mem_of_formPerm_apply_ne hx⟩
-    convert! hs'.toFinset.nodup_toList.isCycleOn_formPerm
+    convert hs'.toFinset.nodup_toList.isCycleOn_formPerm
     simp
   · haveI := hs.to_subtype
     haveI := hs'.to_subtype
     obtain ⟨f⟩ : Nonempty (ℤ ≃ s) := inferInstance
     refine ⟨(Equiv.addRight 1).extendDomain f, ?_, fun x hx =>
       of_not_not fun h => hx <| Perm.extendDomain_apply_not_subtype _ _ h⟩
-    convert! Int.addRight_one_isCycle.isCycleOn.extendDomain f
+    convert Int.addRight_one_isCycle.isCycleOn.extendDomain f
     rw [Set.image_comp, Equiv.image_eq_preimage_symm]
     ext
     simp

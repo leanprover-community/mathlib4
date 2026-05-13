@@ -144,7 +144,7 @@ variable [Fintype ι]
 theorem EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp :
     MeasurePreserving (MeasurableEquiv.toLp 2 (ι → ℝ)).symm := by
   suffices volume = map (MeasurableEquiv.toLp 2 (ι → ℝ)) volume by
-    convert! ((MeasurableEquiv.toLp 2 (ι → ℝ)).measurable.measurePreserving _).symm
+    convert ((MeasurableEquiv.toLp 2 (ι → ℝ)).measurable.measurePreserving _).symm
   rw [← addHaarMeasure_eq_volume_pi, ← Basis.parallelepiped_basisFun, ← Basis.addHaar_def,
     MeasurableEquiv.coe_toLp, ← PiLp.coe_symm_continuousLinearEquiv 2 ℝ, Basis.map_addHaar]
   exact (EuclideanSpace.basisFun _ _).addHaar_eq_volume.symm
@@ -209,7 +209,7 @@ private noncomputable def volumePreservingSymmMeasurableEquivToLpProdAux :
 theorem WithLp.volume_preserving_symm_measurableEquiv_toLp_prod :
     MeasurePreserving (MeasurableEquiv.toLp 2 (U × V)).symm := by
   suffices MeasurePreserving (volumePreservingSymmMeasurableEquivToLpProdAux U V) by
-    convert! this
+    convert this
     ext uv
     <;> simp [volumePreservingSymmMeasurableEquivToLpProdAux, MeasurableEquiv.coe_sumPiEquivProdPi,
       LinearEquiv.prodCongr_symm, MeasurableEquiv.prodCongr]

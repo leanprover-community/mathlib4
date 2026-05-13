@@ -72,7 +72,7 @@ lemma smul (r : R) (x y : ⨂[R] _, M) (h : addConGen (Rel R ι M) x y) :
   | of x y h => cases h with
     | perm e f =>
       apply isEmpty_or_nonempty ι |>.elim <;> intro h
-      · convert! addConGen (Rel R ι M) |>.refl _
+      · convert addConGen (Rel R ι M) |>.refl _
       · let i := Nonempty.some h
         classical
         convert! AddConGen.Rel.of _ _ <| SymmetricPower.Rel.perm (R := R) (ι := ι) e

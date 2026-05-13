@@ -514,7 +514,7 @@ protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField' {u : Set M
     CMDiffAt[s] m (T% (mpullbackWithin I I' f V u)) x₀ := by
   have hn : 1 ≤ n := le_trans (by simp) hmn
   have hh : (mfderiv[s] f x₀).IsInvertible := by
-    convert! hf' using 1
+    convert hf' using 1
     exact (hf.mdifferentiableWithinAt <| by positivity).mfderivWithin_mono (hs _ hx₀) hu
   apply (hV.mpullbackWithin_vectorField_of_mem (hf.mono hu) hh hx₀ hs hmn
     hst).congr_of_eventuallyEq_of_mem _ hx₀

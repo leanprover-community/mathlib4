@@ -52,7 +52,7 @@ theorem Continuous.image_derivedSet {β : Type*} [TopologicalSpace β] {A : Set 
   intro x hx
   simp only [Set.mem_image, mem_derivedSet] at hx
   obtain ⟨y, hy1, rfl⟩ := hx
-  convert! hy1.map hf1.continuousAt hf2
+  convert hy1.map hf1.continuousAt hf2
   simp
 
 lemma derivedSet_subset_closure (A : Set X) : derivedSet A ⊆ closure A :=

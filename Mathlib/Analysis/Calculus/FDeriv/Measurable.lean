@@ -859,7 +859,7 @@ lemma isOpen_B_with_param {r s t : ℝ} (hf : Continuous f.uncurry) (K : Set (E 
     IsOpen {p : α × E | p.2 ∈ B (f p.1) K r s t} := by
   suffices H : IsOpen (⋃ L ∈ K,
       {p : α × E | p.2 ∈ A (f p.1) L r t ∧ p.2 ∈ A (f p.1) L s t}) by
-    convert! H; ext p; simp [B]
+    convert H; ext p; simp [B]
   refine isOpen_biUnion (fun L _ ↦ ?_)
   exact (isOpen_A_with_param hf L).inter (isOpen_A_with_param hf L)
 

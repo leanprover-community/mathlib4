@@ -101,7 +101,7 @@ theorem Measure.MeasureDense.nonempty' (h𝒜 : μ.MeasureDense 𝒜) :
     {s | s ∈ 𝒜 ∧ μ s ≠ ∞}.Nonempty := by
   rcases h𝒜.approx ∅ MeasurableSet.empty (by simp) 1 (by simp) with ⟨t, ht, hμt⟩
   refine ⟨t, ht, ?_⟩
-  convert! ne_top_of_lt hμt
+  convert ne_top_of_lt hμt
   rw [← bot_eq_empty, bot_symmDiff]
 
 /-- The set of measurable sets is measure-dense. -/
@@ -115,7 +115,7 @@ theorem Measure.MeasureDense.completion (h𝒜 : μ.MeasureDense 𝒜) : μ.comp
     obtain ⟨t, ht, hμst⟩ :=
       h𝒜.approx (toMeasurable μ s) (measurableSet_toMeasurable μ s) (by simpa) ε ε_pos
     refine ⟨t, ht, ?_⟩
-    convert! hμst using 1
+    convert hμst using 1
     rw [completion_apply]
     exact measure_congr <| ae_eq_set_symmDiff (NullMeasurableSet.toMeasurable_ae_eq hs).symm
       Filter.EventuallyEq.rfl

@@ -106,7 +106,7 @@ lemma IsFlat.iInter {ι : Type*} [Nonempty ι] {Fs : ι → Set α}
     (iInter_subset _ (Classical.arbitrary _)).trans (hFs _).subset_ground⟩
   obtain ⟨J, hIJ, hJ⟩ := hI.indep.subset_isBasis_of_subset (hI.subset.trans (iInter_subset _ i))
   refine subset_union_right.trans ((hFs i).1 (X := Fs i ∪ X) hIJ ?_)
-  convert! hIJ.isBasis_union (hIX.isBasis_union_of_subset hIJ.indep hJ) using 1
+  convert hIJ.isBasis_union (hIX.isBasis_union_of_subset hIJ.indep hJ) using 1
   rw [← union_assoc, union_eq_self_of_subset_right hIJ.subset]
 
 /-- The property of being a flat gives rise to a `ClosureOperator` on the subsets of `M.E`,
@@ -118,7 +118,7 @@ def subtypeClosure (M : Matroid α) : ClosureOperator (Iic M.E) :=
     obtain (rfl | hne) := s.eq_empty_or_nonempty
     · simp
     have _ := hne.coe_sort
-    convert! IsFlat.iInter (M := M) (Fs := fun (F : s) ↦ F.1.1) (fun F ↦ hs F.1 F.2)
+    convert IsFlat.iInter (M := M) (Fs := fun (F : s) ↦ F.1.1) (fun F ↦ hs F.1 F.2)
     ext
     aesop
 
@@ -243,7 +243,7 @@ lemma mem_ground_of_mem_closure (he : e ∈ M.closure X) : e ∈ M.E :=
 lemma closure_iUnion_closure_eq_closure_iUnion (M : Matroid α) (Xs : ι → Set α) :
     M.closure (⋃ i, M.closure (Xs i)) = M.closure (⋃ i, Xs i) := by
   simp_rw [closure_eq_subtypeClosure, iUnion_inter, Subtype.coe_inj]
-  convert! M.subtypeClosure.closure_iSup_closure (fun i ↦ ⟨Xs i ∩ M.E, inter_subset_right⟩) <;>
+  convert M.subtypeClosure.closure_iSup_closure (fun i ↦ ⟨Xs i ∩ M.E, inter_subset_right⟩) <;>
   simp [← iUnion_inter, subtypeClosure]
 
 lemma closure_iUnion_congr (Xs Ys : ι → Set α) (h : ∀ i, M.closure (Xs i) = M.closure (Ys i)) :
@@ -501,7 +501,7 @@ lemma closure_biInter_eq_biInter_closure_of_biUnion_indep {ι : Type*} {A : Set 
     {I : ι → Set α} (h : M.Indep (⋃ i ∈ A, I i)) :
     M.closure (⋂ i ∈ A, I i) = ⋂ i ∈ A, M.closure (I i) := by
   have := hA.coe_sort
-  convert! closure_iInter_eq_iInter_closure_of_iUnion_indep (Is := fun i : A ↦ I i) (by simpa) <;>
+  convert closure_iInter_eq_iInter_closure_of_iUnion_indep (Is := fun i : A ↦ I i) (by simpa) <;>
   simp
 
 lemma Indep.closure_iInter_eq_biInter_closure_of_forall_subset [Nonempty ι] {Js : ι → Set α}
@@ -525,8 +525,9 @@ lemma Indep.inter_isBasis_biInter {ι : Type*} (hI : M.Indep I) {X : ι → Set 
 
 lemma Indep.inter_isBasis_iInter [Nonempty ι] {X : ι → Set α} (hI : M.Indep I)
     (h : ∀ i, M.IsBasis ((X i) ∩ I) (X i)) : M.IsBasis ((⋂ i, X i) ∩ I) (⋂ i, X i) := by
-  convert! hI.inter_isBasis_biInter (ι := PLift ι) univ_nonempty (X := fun i ↦ X i.down)
-    (by simpa using fun (i : PLift ι) ↦ h i.down) <;>
+  convert
+    hI.inter_isBasis_biInter (ι := PLift ι) univ_nonempty (X := fun i ↦ X i.down)
+      (by simpa using fun (i : PLift ι) ↦ h i.down) <;>
   · simp only [mem_univ, iInter_true]
     exact (iInter_plift_down X).symm
 
@@ -596,7 +597,7 @@ lemma indep_iff_forall_notMem_closure_diff (hI : I ⊆ M.E := by aesop_mat) :
   use fun h e heI he ↦ ((h.closure_inter_eq_self_of_subset diff_subset).subset ⟨he, heI⟩).2 rfl
   intro h
   obtain ⟨J, hJ⟩ := M.exists_isBasis I
-  convert! hJ.indep
+  convert hJ.indep
   refine hJ.subset.antisymm' (fun e he ↦ by_contra fun heJ ↦ h he ?_)
   exact mem_of_mem_of_subset
     (hJ.subset_closure he) (M.closure_subset_closure (subset_diff_singleton hJ.subset heJ))

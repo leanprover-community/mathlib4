@@ -71,7 +71,7 @@ noncomputable def toPerfPair : M ≃ₗ[R] Dual R N :=
 include p in
 lemma _root_.Module.IsReflexive.of_isPerfPair : IsReflexive R M where
   bijective_dual_eval' := by
-    convert! (p.toPerfPair.trans p.flip.toPerfPair.dualMap.symm).bijective
+    convert (p.toPerfPair.trans p.flip.toPerfPair.dualMap.symm).bijective
     ext x f
     simp
 

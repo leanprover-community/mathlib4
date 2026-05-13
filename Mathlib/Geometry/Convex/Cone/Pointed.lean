@@ -131,10 +131,10 @@ def _root_.ConvexCone.toPointedCone (C : ConvexCone R E) (hC : C.Pointed) : Poin
     simp_rw [SetLike.mem_coe]
     rcases eq_or_lt_of_le hc with hzero | hpos
     · unfold ConvexCone.Pointed at hC
-      convert! hC
+      convert hC
       simp [← hzero]
     · apply ConvexCone.smul_mem
-      · convert! hpos
+      · convert hpos
       · exact hx
 
 @[simp]

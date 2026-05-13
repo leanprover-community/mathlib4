@@ -224,7 +224,7 @@ lemma iIndepSets.precomp (hg : Function.Injective g) (h : iIndepSets π κ μ) :
 lemma iIndepSets.of_precomp (hg : Function.Surjective g) (h : iIndepSets (π ∘ g) κ μ) :
     iIndepSets π κ μ := by
   obtain ⟨g', hg'⟩ := hg.hasRightInverse
-  convert! h.precomp hg'.injective
+  convert h.precomp hg'.injective
   rw [Function.comp_assoc, hg'.comp_eq_id, Function.comp_id]
 
 lemma iIndepSets_precomp_of_bijective (hg : Function.Bijective g) :

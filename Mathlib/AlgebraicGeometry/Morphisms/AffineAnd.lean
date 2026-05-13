@@ -304,11 +304,11 @@ lemma HasAffineProperty.coprodDesc_affineAnd {P : MorphismProperty Scheme.{u}}
   refine this _ ?_ ?_
   · have : (Limits.coprod.desc f g).app W ≫ e.hom ≫ Limits.prod.fst = f.app W := by
       simp [e, Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_comp_appLE]
-    convert! (hf W hW).2
+    convert (hf W hW).2
     exact congr(($this).1)
   · have : (Limits.coprod.desc f g).app W ≫ e.hom ≫ Limits.prod.snd = g.app W := by
       simp [e, Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_comp_appLE]
-    convert! (hg W hW).2
+    convert (hg W hW).2
     exact congr(($this).1)
 
 end

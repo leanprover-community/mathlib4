@@ -351,7 +351,7 @@ theorem isClosed_inter_nonempty_of_isClosed {F : Set α} (h : IsClosed F) :
   exact (isOpen_subsets_of_isOpen h.isOpen_compl).isClosed_compl
 
 theorem isClopen_singleton_bot : IsClopen {(⊥ : Compacts α)} := by
-  convert! vietoris.isClopen_singleton_empty.preimage continuous_coe
+  convert vietoris.isClopen_singleton_empty.preimage continuous_coe
   rw [← coe_bot, ← image_singleton (f := SetLike.coe), SetLike.coe_injective.preimage_image]
 
 /-- Given a basis `B` on a topological space `α`, the topology of `Compacts α` has a basis
@@ -468,9 +468,10 @@ theorem _root_.Topology.IsClosedEmbedding.compacts_map (hf : IsClosedEmbedding f
 instance [DiscreteTopology α] : DiscreteTopology (Compacts α) := by
   rw [discreteTopology_iff_isOpen_singleton]
   intro K
-  convert! (isOpen_subsets_of_isOpen (isOpen_discrete (K : Set α))).inter
-    (K.isCompact.finite_of_discrete.isOpen_biInter fun x hx =>
-      isOpen_inter_nonempty_of_isOpen (isOpen_discrete {x}))
+  convert
+    (isOpen_subsets_of_isOpen (isOpen_discrete (K : Set α))).inter
+      (K.isCompact.finite_of_discrete.isOpen_biInter fun x hx =>
+        isOpen_inter_nonempty_of_isOpen (isOpen_discrete { x }))
   simp_rw [← setOf_forall, inter_singleton_nonempty, ← Set.subset_def, ← setOf_and,
     ← subset_antisymm_iff, SetLike.coe_set_eq, setOf_eq_eq_singleton]
 
@@ -554,7 +555,7 @@ theorem isCompact_biUnion_coe_of_isCompact {S : Set (Compacts α)} (hS : IsCompa
 @[simp]
 theorem compactSpace_iff : CompactSpace (Compacts α) ↔ CompactSpace α := by
   refine ⟨fun h => ⟨?_⟩, fun _ => inferInstance⟩
-  convert! isCompact_biUnion_coe_of_isCompact (α := α) isCompact_univ
+  convert isCompact_biUnion_coe_of_isCompact (α := α) isCompact_univ
   symm
   simp_rw [biUnion_univ, eq_univ_iff_forall, mem_iUnion]
   exact fun x => ⟨{x}, Set.mem_singleton x⟩
@@ -779,13 +780,13 @@ theorem isCompact_subsets_of_isCompact {K : Set α} (hK : IsCompact K) :
 
 theorem isCompact_biUnion_coe_of_isCompact {S : Set (NonemptyCompacts α)} (hs : IsCompact S) :
     IsCompact (⋃ K ∈ S, (K : Set α)) := by
-  convert! Compacts.isCompact_biUnion_coe_of_isCompact (hs.image continuous_toCompacts)
+  convert Compacts.isCompact_biUnion_coe_of_isCompact (hs.image continuous_toCompacts)
   simp_rw [biUnion_image, coe_toCompacts]
 
 @[simp]
 theorem compactSpace_iff : CompactSpace (NonemptyCompacts α) ↔ CompactSpace α := by
   refine ⟨fun h => ⟨?_⟩, fun _ => inferInstance⟩
-  convert! isCompact_biUnion_coe_of_isCompact (α := α) isCompact_univ
+  convert isCompact_biUnion_coe_of_isCompact (α := α) isCompact_univ
   symm
   simp_rw [biUnion_univ, eq_univ_iff_forall, mem_iUnion]
   exact fun x => ⟨{x}, Set.mem_singleton x⟩

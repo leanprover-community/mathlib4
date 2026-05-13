@@ -250,7 +250,7 @@ lemma levyProkhorovDist_le_of_forall_le
     refine (ofReal_lt_ofReal_iff ?_).mp ?_
     · exact ENNReal.toReal_pos ε_gt.bot_lt.ne' ε_lt_top.ne
     · simpa [ofReal_toReal_eq_iff.mpr ε_lt_top.ne] using ε_gt
-  convert! h ε.toReal B ε_gt' B_mble
+  convert h ε.toReal B ε_gt' B_mble
   exact (ENNReal.ofReal_toReal ε_lt_top.ne).symm
 
 /-! ### Equipping measures with the Lévy-Prokhorov metric -/
@@ -393,8 +393,10 @@ lemma BoundedContinuousFunction.integral_le_of_levyProkhorovEDist_lt (μ ν : Me
               ≤ (fun (t : ℝ) ↦ ν.real (thickening ε {a | t ≤ f a}) + ε) := by
     intro t
     simp only [measureReal_def]
-    convert! ENNReal.toReal_mono ?_ <| left_measure_le_of_levyProkhorovEDist_lt hμν
-      (B := {a | t ≤ f a}) (f.continuous.measurable measurableSet_Ici)
+    convert
+      ENNReal.toReal_mono ?_ <|
+        left_measure_le_of_levyProkhorovEDist_lt hμν (B := {a | t ≤ f a})
+          (f.continuous.measurable measurableSet_Ici)
     · rw [ENNReal.toReal_add (measure_ne_top ν _) ofReal_ne_top, ENNReal.toReal_ofReal ε_pos.le]
     · exact ENNReal.add_ne_top.mpr ⟨measure_ne_top ν _, ofReal_ne_top⟩
   have intble₁ : IntegrableOn (fun t ↦ μ.real {a | t ≤ f a}) (Ioc 0 ‖f‖) := by
@@ -540,7 +542,7 @@ lemma ProbabilityMeasure.toMeasure_add_pos_gt_mem_nhds (P : ProbabilityMeasure �
   filter_upwards [gt_mem_sets_of_limsInf_gt (α := ℝ≥0∞) isBounded_ge_of_bot
       (show P.toMeasure G - ε < limsInf ((𝓝 P).map (fun Q ↦ Q.toMeasure G)) from aux)] with Q hQ
   simp only [preimage_setOf_eq, mem_setOf_eq] at hQ
-  convert! ENNReal.add_lt_add_right ε_top hQ
+  convert ENNReal.add_lt_add_right ε_top hQ
   exact (tsub_add_cancel_of_le easy).symm
 
 variable [SeparableSpace Ω]

@@ -196,7 +196,7 @@ theorem consCases_cons {motive : (∀ i : Fin n.succ, α i) → Sort v}
 def consInduction {α : Sort*} {motive : ∀ {n : ℕ}, (Fin n → α) → Sort v} (elim0 : motive Fin.elim0)
     (cons : ∀ {n} (x₀) (x : Fin n → α), motive x → motive (Fin.cons x₀ x)) :
     ∀ {n : ℕ} (x : Fin n → α), motive x
-  | 0, x => by convert! elim0
+  | 0, x => by convert elim0
   | _ + 1, x => consCases (fun _ _ ↦ cons _ _ <| consInduction elim0 cons _) x
 
 theorem cons_injective_of_injective {α} {x₀ : α} {x : Fin n → α} (hx₀ : x₀ ∉ Set.range x)
@@ -729,7 +729,7 @@ def snocInduction {α : Sort*}
     (elim0 : motive Fin.elim0)
     (snoc : ∀ {n} (x : Fin n → α) (x₀), motive x → motive (Fin.snoc x x₀)) :
     ∀ {n : ℕ} (x : Fin n → α), motive x
-  | 0, x => by convert! elim0
+  | 0, x => by convert elim0
   | _ + 1, x => snocCases (fun _ _ ↦ snoc _ _ <| snocInduction elim0 snoc _) x
 
 theorem snoc_injective_of_injective {α} {x₀ : α} {x : Fin n → α}

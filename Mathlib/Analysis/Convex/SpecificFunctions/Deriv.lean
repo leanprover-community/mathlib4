@@ -83,7 +83,7 @@ theorem int_prod_range_nonneg (m : ℤ) (n : ℕ) (hn : Even n) :
     refine mul_nonneg ihn ?_; generalize (1 + 1) * n = k
     rcases le_or_gt m k with hmk | hmk
     · have : m ≤ k + 1 := hmk.trans (lt_add_one (k : ℤ)).le
-      convert! mul_nonneg_of_nonpos_of_nonpos (sub_nonpos_of_le hmk) _
+      convert mul_nonneg_of_nonpos_of_nonpos (sub_nonpos_of_le hmk) _
       convert! sub_nonpos_of_le this
     · exact mul_nonneg (sub_nonneg_of_le hmk.le) (sub_nonneg_of_le hmk)
 

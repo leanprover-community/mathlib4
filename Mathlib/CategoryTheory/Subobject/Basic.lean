@@ -245,7 +245,7 @@ theorem mk_arrow (P : Subobject X) : mk P.arrow = P :=
 
 theorem le_of_comm {B : C} {X Y : Subobject B} (f : (X : C) ⟶ (Y : C)) (w : f ≫ Y.arrow = X.arrow) :
     X ≤ Y := by
-  convert! mk_le_mk_of_comm _ w <;> simp
+  convert mk_le_mk_of_comm _ w <;> simp
 
 theorem le_mk_of_comm {B A : C} {X : Subobject B} {f : A ⟶ B} [Mono f] (g : (X : C) ⟶ A)
     (w : g ≫ f = X.arrow) : X ≤ mk f :=
@@ -448,7 +448,7 @@ lemma mk_lt_mk_of_comm {X A₁ A₂ : C} {i₁ : A₁ ⟶ X} {i₂ : A₂ ⟶ X}
   · assumption
   · exfalso
     apply hf
-    convert! (isoOfMkEqMk i₁ i₂ h).isIso_hom
+    convert (isoOfMkEqMk i₁ i₂ h).isIso_hom
     rw [← cancel_mono i₂, isoOfMkEqMk_hom, ofMkLEMk_comp, fac]
 
 lemma mk_lt_mk_iff_of_comm {X A₁ A₂ : C} {i₁ : A₁ ⟶ X} {i₂ : A₂ ⟶ X} [Mono i₁] [Mono i₂]

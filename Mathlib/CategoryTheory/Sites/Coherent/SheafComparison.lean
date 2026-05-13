@@ -79,7 +79,7 @@ theorem exists_effectiveEpiFamily_iff_mem_induced (X : C) (S : Sieve X) :
       simpa using this
     · obtain ⟨W, g₁, g₂, h₁, h₂⟩ := H₂ a
       rw [h₂]
-      convert! S.downward_closed h₁ (F.preimage (g₀ a ≫ g₂))
+      convert S.downward_closed h₁ (F.preimage (g₀ a ≫ g₂))
       exact F.map_injective (by simp)
 
 lemma eq_induced : haveI := F.reflects_precoherent
@@ -179,7 +179,7 @@ theorem exists_effectiveEpi_iff_mem_induced (X : C) (S : Sieve X) :
       infer_instance
     · obtain ⟨W, g₁, g₂, h₁, h₂⟩ := H₂
       rw [h₂]
-      convert! S.downward_closed h₁ (F.preimage (g₀ ≫ g₂))
+      convert S.downward_closed h₁ (F.preimage (g₀ ≫ g₂))
       exact F.map_injective (by simp)
 
 lemma eq_induced : haveI := F.reflects_preregular

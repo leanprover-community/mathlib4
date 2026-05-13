@@ -277,7 +277,7 @@ sets on a finite type are finite.) -/
 noncomputable def finsetEquivSet : Finset α ≃ Set α where
   toFun := (↑)
   invFun := by classical exact fun s => s.toFinset
-  left_inv s := by convert! Finset.toFinset_coe s
+  left_inv s := by convert Finset.toFinset_coe s
   right_inv s := by classical exact s.coe_toFinset
 
 @[simp, norm_cast] lemma coe_finsetEquivSet : ⇑finsetEquivSet = ((↑) : Finset α → Set α) := rfl

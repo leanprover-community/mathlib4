@@ -226,7 +226,7 @@ lemma fac_apply (c' : CoconeTypes.{w₂} F) (j : J) (x : F.obj j) :
 lemma of_equiv {c' : CoconeTypes.{w₂} F} (e : c.pt ≃ c'.pt)
     (he : ∀ j x, c'.ι j x = e (c.ι j x)) : c'.IsColimit where
   bijective := by
-    convert! Function.Bijective.comp e.bijective hc.bijective
+    convert Function.Bijective.comp e.bijective hc.bijective
     ext y
     obtain ⟨j, x, rfl⟩ := F.ιColimitType_jointly_surjective y
     simp_all
@@ -237,7 +237,7 @@ lemma iff_bijective {c' : CoconeTypes.{w₂} F}
   refine ⟨fun hc' ↦ ?_, fun h ↦ hc.of_equiv (Equiv.ofBijective _ h) hf⟩
   have h₁ := hc.bijective
   rw [← Function.Bijective.of_comp_iff _ hc.bijective]
-  convert! hc'.bijective
+  convert hc'.bijective
   ext x
   obtain ⟨j, x, rfl⟩ := F.ιColimitType_jointly_surjective x
   simp [hf]
@@ -353,7 +353,7 @@ end CoconeTypes
 set_option backward.isDefEq.respectTransparency false in
 lemma isColimit_coconeTypes : F.coconeTypes.IsColimit where
   bijective := by
-    convert! Function.bijective_id
+    convert Function.bijective_id
     ext y
     obtain ⟨j, x, rfl⟩ := F.ιColimitType_jointly_surjective y
     rfl

@@ -494,7 +494,7 @@ expectation. This follows from convergence and Cesàro averaging. -/
 theorem strong_law_aux3 :
     (fun n => 𝔼[∑ i ∈ range n, truncation (X i) i] - n * 𝔼[X 0]) =o[atTop] ((↑) : ℕ → ℝ) := by
   have A : Tendsto (fun i => 𝔼[truncation (X i) i]) atTop (𝓝 𝔼[X 0]) := by
-    convert! (tendsto_integral_truncation hint).comp tendsto_natCast_atTop_atTop using 1
+    convert (tendsto_integral_truncation hint).comp tendsto_natCast_atTop_atTop using 1
     ext i
     exact (hident i).truncation.integral_eq
   convert! Asymptotics.isLittleO_sum_range_of_tendsto_zero (tendsto_sub_nhds_zero_iff.2 A) using 1
@@ -526,7 +526,7 @@ theorem strong_law_aux5 :
     ∀ᵐ ω, (fun n : ℕ => ∑ i ∈ range n, truncation (X i) i ω - ∑ i ∈ range n, X i ω) =o[atTop]
     fun n : ℕ => (n : ℝ) := by
   have A : (∑' j : ℕ, ℙ {ω | X j ω ∈ Set.Ioi (j : ℝ)}) < ∞ := by
-    convert! tsum_prob_mem_Ioi_lt_top hint (hnonneg 0) using 2
+    convert tsum_prob_mem_Ioi_lt_top hint (hnonneg 0) using 2
     ext1 j
     exact (hident j).measure_mem_eq measurableSet_Ioi
   have B : ∀ᵐ ω, Tendsto (fun n : ℕ => truncation (X n) n ω - X n ω) atTop (𝓝 0) := by
@@ -680,7 +680,7 @@ lemma strong_law_ae_simpleFunc_comp (X : ℕ → Ω → E) (h' : Measurable (X 0
     simp [F, Y, ← sum_smul, smul_smul]
   · rintro φ ψ - hφ hψ
     filter_upwards [hφ, hψ] with ω hωφ hωψ
-    convert! hωφ.add hωψ using 1
+    convert hωφ.add hωψ using 1
     · simp [sum_add_distrib]
     · congr 1
       rw [← integral_add]

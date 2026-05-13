@@ -137,7 +137,7 @@ lemma Flat.generalizingMap [Flat f] : GeneralizingMap f := by
   intro U V e
   algebraize [(f.appLE U V e).hom]
   apply Algebra.HasGoingDown.iff_generalizingMap_primeSpectrumComap.mp
-  convert! Algebra.HasGoingDown.of_flat
+  convert Algebra.HasGoingDown.of_flat
   exact HasRingHomProperty.appLE @Flat f ‹_› U V e
 
 /-- A flat morphism, locally of finite presentation is universally open. -/

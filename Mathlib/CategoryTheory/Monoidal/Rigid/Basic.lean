@@ -118,11 +118,11 @@ lemma evaluation_coevaluation :
 
 lemma coevaluation_evaluation'' :
     Y ◁ η_ X Y ⊗≫ ε_ X Y ▷ Y = ⊗𝟙.hom := by
-  convert! coevaluation_evaluation X Y <;> simp [monoidalComp]
+  convert coevaluation_evaluation X Y <;> simp [monoidalComp]
 
 lemma evaluation_coevaluation'' :
     η_ X Y ▷ X ⊗≫ X ◁ ε_ X Y = ⊗𝟙.hom := by
-  convert! evaluation_coevaluation X Y <;> simp [monoidalComp]
+  convert evaluation_coevaluation X Y <;> simp [monoidalComp]
 
 end ExactPairing
 

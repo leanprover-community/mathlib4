@@ -81,7 +81,7 @@ theorem measure_of_cont_bdd_of_tendsto_filter_indicator {ι : Type*} {L : Filter
     (fs_bdd : ∀ᶠ i in L, ∀ᵐ ω : Ω ∂μ, fs i ω ≤ c)
     (fs_lim : ∀ᵐ ω ∂μ, Tendsto (fun i ↦ fs i ω) L (𝓝 (indicator E (fun _ ↦ (1 : ℝ≥0)) ω))) :
     Tendsto (fun n ↦ lintegral μ fun ω ↦ fs n ω) L (𝓝 (μ E)) := by
-  convert! tendsto_lintegral_nn_filter_of_le_const μ fs_bdd fs_lim
+  convert tendsto_lintegral_nn_filter_of_le_const μ fs_bdd fs_lim
   have aux : ∀ ω, indicator E (fun _ ↦ (1 : ℝ≥0∞)) ω = ↑(indicator E (fun _ ↦ (1 : ℝ≥0)) ω) :=
     fun ω ↦ by simp only [ENNReal.coe_indicator, ENNReal.coe_one]
   simp_rw [← aux, lintegral_indicator E_mble]

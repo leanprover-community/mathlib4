@@ -344,7 +344,7 @@ theorem geom_series_eq_inverse (x : R) (h : ‖x‖ < 1) :
 
 theorem hasSum_geom_series_inverse (x : R) (h : ‖x‖ < 1) :
     HasSum (fun i ↦ x ^ i) (1 - x)⁻¹ʳ := by
-  convert! (summable_geometric_of_norm_lt_one h).hasSum
+  convert (summable_geometric_of_norm_lt_one h).hasSum
   exact (geom_series_eq_inverse x h).symm
 
 lemma isUnit_one_sub_of_norm_lt_one {x : R} (h : ‖x‖ < 1) : IsUnit (1 - x) :=
@@ -469,7 +469,7 @@ lemma tsum_choose_mul_geometric_of_norm_lt_one' (k : ℕ) {r : R} (hr : ‖r‖ 
 lemma hasSum_choose_mul_geometric_of_norm_lt_one
     (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     HasSum (fun n ↦ (n + k).choose k * r ^ n) (1 / (1 - r) ^ (k + 1)) := by
-  convert! hasSum_choose_mul_geometric_of_norm_lt_one' k hr
+  convert hasSum_choose_mul_geometric_of_norm_lt_one' k hr
   simp
 
 lemma tsum_choose_mul_geometric_of_norm_lt_one (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
@@ -505,7 +505,7 @@ theorem summable_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr : ‖r�
     simp_rw [mul_assoc]
     simp only [Finset.mem_range] at hi
     exact (hk _ hi).mul_left _
-  convert! this using 1
+  convert this using 1
   ext n
   simp [ha n, add_mul, sum_mul]
 
@@ -538,7 +538,7 @@ theorem tsum_coe_mul_geometric_of_norm_lt_one'
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`, `HasSum` version. -/
 theorem hasSum_coe_mul_geometric_of_norm_lt_one {r : 𝕜} (hr : ‖r‖ < 1) :
     HasSum (fun n ↦ n * r ^ n : ℕ → 𝕜) (r / (1 - r) ^ 2) := by
-  convert! hasSum_coe_mul_geometric_of_norm_lt_one' hr using 1
+  convert hasSum_coe_mul_geometric_of_norm_lt_one' hr using 1
   simp [div_eq_mul_inv]
 
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`. -/
@@ -638,7 +638,7 @@ theorem summable_of_ratio_norm_eventually_le {α : Type*} [SeminormedAddCommGrou
     simp only
     conv_rhs => rw [mul_comm, ← zero_add N]
     refine le_geom (u := fun n ↦ ‖f (n + N)‖) hr₀ n fun i _ ↦ ?_
-    convert! hN (i + N) (N.le_add_left i) using 3
+    convert hN (i + N) (N.le_add_left i) using 3
     ac_rfl
   · refine .of_norm_bounded_eventually_nat summable_zero ?_
     filter_upwards [h] with _ hn
@@ -663,7 +663,7 @@ theorem not_summable_of_ratio_norm_eventually_ge {α : Type*} [SeminormedAddComm
   rw [← @summable_nat_add_iff α _ _ _ _ N]
   refine mt Summable.tendsto_atTop_zero
     fun h' ↦ not_tendsto_atTop_of_tendsto_nhds (tendsto_norm_zero.comp h') ?_
-  convert! tendsto_atTop_of_geom_le _ hr _
+  convert tendsto_atTop_of_geom_le _ hr _
   · refine lt_of_le_of_ne (norm_nonneg _) ?_
     intro h''
     specialize hN₀ N hNN₀
@@ -742,7 +742,7 @@ theorem Antitone.cauchySeq_series_mul_of_tendsto_zero_of_bounded (hfa : Antitone
     CauchySeq fun n ↦ ∑ i ∈ range n, f i • z i := by
   have hfa' : Monotone fun n ↦ -f n := fun _ _ hab ↦ neg_le_neg <| hfa hab
   have hf0' : Tendsto (fun n ↦ -f n) atTop (𝓝 0) := by
-    convert! hf0.neg
+    convert hf0.neg
     simp
   convert! (hfa'.cauchySeq_series_mul_of_tendsto_zero_of_bounded hf0' hzb).neg
   simp

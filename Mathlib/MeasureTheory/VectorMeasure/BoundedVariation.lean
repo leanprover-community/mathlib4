@@ -96,7 +96,7 @@ private lemma exists_vectorMeasure_le_measureAux (hf : BoundedVariationOn f univ
     exact eVariationOn.edist_le _ (by grind) (by grind)
   have B : hα = generateFrom {s | ∃ u v, u ≤ v ∧ s = Ioc u v} := by
     borelize α
-    convert! borel_eq_generateFrom_Ioc_le α using 2
+    convert borel_eq_generateFrom_Ioc_le α using 2
     grind only
   rcases VectorMeasure.exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom
     IsSetSemiring.Ioc A B with ⟨m', hm', h'm'⟩

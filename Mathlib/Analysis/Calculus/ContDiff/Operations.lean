@@ -928,7 +928,7 @@ theorem OpenPartialHomeomorph.contDiffAt_symm [CompleteSpace E] (f : OpenPartial
         have h_deriv : HasFDerivAt f (e : E →L[𝕜] F) (f.symm x) := by
           rw [he]
           exact hff' (f.symm x) hxu
-        convert! f.hasFDerivAt_symm hx.1 h_deriv
+        convert f.hasFDerivAt_symm hx.1 h_deriv
         simp [← he]
       · -- Then we check that the formula, being a composition of `ContDiff` pieces, is
         -- itself `ContDiff`

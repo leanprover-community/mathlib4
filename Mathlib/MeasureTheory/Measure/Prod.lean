@@ -1038,7 +1038,7 @@ theorem setLIntegral_prod_symm [SFinite μ] {s : Set α} {t : Set β} (f : α ×
     setLIntegral_prod]
   · rfl
   · refine AEMeasurable.comp_measurable ?_ measurable_swap
-    convert! hf
+    convert hf
     rw [← Measure.prod_restrict, Measure.prod_swap, Measure.prod_restrict]
 
 /-- The reversed version of **Tonelli's Theorem**. In this version `f` is in curried form, which

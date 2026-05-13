@@ -165,7 +165,7 @@ lemma AlgHom.eq_piEvalAlgHom {k G : Type*} [CommSemiring k] [NoZeroDivisors k] [
   have h2 : ∀ t ≠ s, φ (Pi.single t 1) = 0 := by
     refine fun _ _ ↦ (eq_zero_or_eq_zero_of_mul_eq_zero ?_).resolve_left hs
     rw [← map_mul]
-    convert! map_zero φ
+    convert map_zero φ
     ext u
     by_cases u = s <;> simp_all
   have h3 : φ (Pi.single s 1) = 1 := by

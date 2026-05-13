@@ -155,7 +155,7 @@ theorem two_nsmul_eq_iff {ψ θ : Angle} : (2 : ℕ) • ψ = (2 : ℕ) • θ �
   simp_rw [← natCast_zsmul, Nat.cast_ofNat, two_zsmul_eq_iff]
 
 theorem two_nsmul_eq_zero_iff {θ : Angle} : (2 : ℕ) • θ = 0 ↔ θ = 0 ∨ θ = π := by
-  convert! two_nsmul_eq_iff <;> simp
+  convert two_nsmul_eq_iff <;> simp
 
 theorem two_nsmul_ne_zero_iff {θ : Angle} : (2 : ℕ) • θ ≠ 0 ↔ θ ≠ 0 ∧ θ ≠ π := by
   rw [← not_or, ← two_nsmul_eq_zero_iff]
@@ -580,11 +580,11 @@ theorem toReal_coe_eq_self_sub_two_mul_int_mul_pi_iff {θ : ℝ} {k : ℤ} :
 
 theorem toReal_coe_eq_self_sub_two_pi_iff {θ : ℝ} :
     (θ : Angle).toReal = θ - 2 * π ↔ θ ∈ Set.Ioc π (3 * π) := by
-  convert! @toReal_coe_eq_self_sub_two_mul_int_mul_pi_iff θ 1 <;> norm_num
+  convert @toReal_coe_eq_self_sub_two_mul_int_mul_pi_iff θ 1 <;> norm_num
 
 theorem toReal_coe_eq_self_add_two_pi_iff {θ : ℝ} :
     (θ : Angle).toReal = θ + 2 * π ↔ θ ∈ Set.Ioc (-3 * π) (-π) := by
-  convert! @toReal_coe_eq_self_sub_two_mul_int_mul_pi_iff θ (-1) using 2 <;> norm_num
+  convert @toReal_coe_eq_self_sub_two_mul_int_mul_pi_iff θ (-1) using 2 <;> norm_num
 
 theorem two_nsmul_toReal_eq_two_mul_sub_two_pi {θ : Angle} :
     ((2 : ℕ) • θ).toReal = 2 * θ.toReal - 2 * π ↔ π / 2 < θ.toReal := by
@@ -936,7 +936,7 @@ lemma abs_toReal_add_eq_two_pi_sub_abs_toReal_add_abs_toReal {θ ψ : Angle} (hs
   · obtain ⟨hθ', hψ'⟩ : (-θ).sign = 1 ∧ (-ψ).sign = 1 := by grind [sign_neg, neg_neg]
     have hsa' : (-θ + -ψ).sign ≠ 1 := by
       rwa [← hθ', ne_comm, ← neg_add, sign_neg, sign_neg, neg_injective.ne_iff]
-    convert! abs_toReal_add_eq_two_pi_sub_abs_toReal_add_abs_toReal_aux hθ' hψ' hsa' using 1
+    convert abs_toReal_add_eq_two_pi_sub_abs_toReal_add_abs_toReal_aux hθ' hψ' hsa' using 1
     all_goals simp [-neg_add_rev, ← neg_add, abs_toReal_neg]
   · grind [sign_eq_zero_iff, coe_pi_add_coe_pi]
   · exact abs_toReal_add_eq_two_pi_sub_abs_toReal_add_abs_toReal_aux h (hs ▸ h) (h ▸ hsa.symm)

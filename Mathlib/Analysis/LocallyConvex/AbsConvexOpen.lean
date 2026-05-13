@@ -110,7 +110,7 @@ theorem with_gaugeSeminormFamily : WithSeminorms (gaugeSeminormFamily 𝕜 E) :=
   refine SeminormFamily.withSeminorms_of_hasBasis _ ?_
   refine (nhds_hasBasis_absConvex_open 𝕜 E).to_hasBasis (fun s hs => ?_) fun s hs => ?_
   · refine ⟨s, ⟨?_, rfl.subset⟩⟩
-    convert! (gaugeSeminormFamily _ _).basisSets_singleton_mem ⟨s, hs⟩ one_pos
+    convert (gaugeSeminormFamily _ _).basisSets_singleton_mem ⟨s, hs⟩ one_pos
     rw [gaugeSeminormFamily_ball, Subtype.coe_mk]
   refine ⟨s, ⟨?_, rfl.subset⟩⟩
   rw [SeminormFamily.basisSets_iff] at hs

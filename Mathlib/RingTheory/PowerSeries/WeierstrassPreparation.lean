@@ -478,8 +478,9 @@ noncomputable def _root_.Polynomial.IsDistinguishedAt.algEquivQuotient :
       rw [Eq.comm, Ideal.Quotient.mk_eq_mk_iff_sub_mem, Ideal.mem_span_singleton']
       exact ⟨f /ₘ g, by rw [Polynomial.modByMonic_eq_sub_mul_div]; ring⟩
     have h1 : g.degree = ((g : A⟦X⟧).map (Ideal.Quotient.mk I)).order.toNat := by
-      convert! H.degree_eq_coe_lift_order_map g 1
-        (by rwa [constantCoeff_one, ← Ideal.ne_top_iff_one]) (by simp)
+      convert
+        H.degree_eq_coe_lift_order_map g 1 (by rwa [constantCoeff_one, ← Ideal.ne_top_iff_one])
+          (by simp)
       exact (ENat.lift_eq_toNat_of_lt_top _).symm
     dsimp
     rw [Ideal.Quotient.mk_eq_mk_iff_sub_mem, Ideal.mem_span_singleton']

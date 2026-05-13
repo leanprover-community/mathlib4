@@ -365,7 +365,7 @@ lemma IsNonloop.isNonloop_of_mem_closure (he : M.IsNonloop e) (hef : e ∈ M.clo
     M.IsNonloop f := by
   rw [isNonloop_iff, and_comm]
   by_contra! h; apply he.not_isLoop
-  rw [isLoop_iff] at *; convert! hef using 1
+  rw [isLoop_iff] at *; convert hef using 1
   obtain (hf | hf) := em (f ∈ M.E)
   · rw [← closure_loops, ← insert_eq_of_mem (h hf), closure_insert_congr_right M.closure_loops,
       insert_empty_eq]

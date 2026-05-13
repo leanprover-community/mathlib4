@@ -325,7 +325,7 @@ theorem nonneg_pi_iff {P} [Fintype ι] [AddCommMonoid P] [PartialOrder P] [IsOrd
   -- TODO: does this generalize to a useful lemma independent of `QuadraticMap`?
   · intro h i x
     classical
-    convert! h (Pi.single i x) using 1
+    convert h (Pi.single i x) using 1
     rw [Finset.sum_eq_single_of_mem i (Finset.mem_univ _) fun j _ hji => ?_, Pi.single_eq_same]
     rw [Pi.single_eq_of_ne hji, map_zero]
   · rintro h x

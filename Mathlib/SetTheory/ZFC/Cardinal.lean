@@ -57,7 +57,7 @@ theorem card_singleton : card {x} = 1 := by
   simpa [notMem_singleton] using card_insert (notMem_empty x)
 
 theorem card_pair_of_ne (h : x ≠ y) : card {x, y} = 2 := by
-  convert! card_insert (notMem_singleton.2 h)
+  convert card_insert (notMem_singleton.2 h)
   rw [card_singleton, one_add_one_eq_two]
 
 theorem card_union_le : card (x ∪ y) ≤ card x + card y := by

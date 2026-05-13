@@ -99,7 +99,7 @@ theorem aeval_zeta [IsDomain B] [NeZero (n : B)] :
   exact zeta_spec n A B
 
 theorem zeta_isRoot [IsDomain B] [NeZero (n : B)] : IsRoot (cyclotomic n B) (zeta n A B) := by
-  convert! aeval_zeta n A B using 0
+  convert aeval_zeta n A B using 0
   rw [IsRoot.def, aeval_def, eval₂_eq_eval_map, map_cyclotomic]
 
 theorem zeta_pow : zeta n A B ^ n = 1 :=
@@ -197,7 +197,7 @@ theorem _root_.IsPrimitiveRoot.lcm_totient_le_finrank [FiniteDimensional K L] {p
   let k := PNat.lcm ⟨p, hppos⟩ ⟨q, hqpos⟩
   have : IsPrimitiveRoot z k := hx.pow_mul_pow_lcm hy hppos.ne' hqpos.ne'
   haveI := IsPrimitiveRoot.adjoin_isCyclotomicExtension K this
-  convert! Submodule.finrank_le (Subalgebra.toSubmodule (adjoin K {z}))
+  convert Submodule.finrank_le (Subalgebra.toSubmodule (adjoin K { z }))
   rw [show Nat.lcm p q = (k : ℕ) from rfl] at hirr
   simpa using (IsCyclotomicExtension.finrank (Algebra.adjoin K {z}) hirr).symm
 
@@ -245,7 +245,7 @@ theorem exists_neg_pow_of_isOfFinOrder [IsCyclotomicExtension {n} ℚ K]
     (hno : Odd n) {ζ x : K} (hζ : IsPrimitiveRoot ζ n) (hx : IsOfFinOrder x) :
     ∃ r : ℕ, x = (-ζ) ^ r := by
   have hnegζ : IsPrimitiveRoot (-ζ) (2 * n) := by
-    convert! IsPrimitiveRoot.orderOf (-ζ)
+    convert IsPrimitiveRoot.orderOf (-ζ)
     rw [neg_eq_neg_one_mul, (Commute.all _ _).orderOf_mul_eq_mul_orderOf_of_coprime]
     · simp [hζ.eq_orderOf]
     · simp [← hζ.eq_orderOf, hno]

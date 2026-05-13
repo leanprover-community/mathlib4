@@ -114,7 +114,7 @@ protected lemma totallyDisconnectedSpace (h : X ≃ₜ Y) [tdc : TotallyDisconne
 
 @[simp]
 theorem map_punctured_nhds_eq (h : X ≃ₜ Y) (x : X) : map h (𝓝[≠] x) = 𝓝[≠] (h x) := by
-  convert! h.isEmbedding.map_nhdsWithin_eq ({x}ᶜ) x
+  convert h.isEmbedding.map_nhdsWithin_eq ({ x }ᶜ) x
   rw [h.image_compl, Set.image_singleton]
 
 @[simp]

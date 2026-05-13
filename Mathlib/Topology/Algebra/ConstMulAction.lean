@@ -470,7 +470,7 @@ nonrec theorem smul_mem_nhds_smul_iff (hc : IsUnit c) {s : Set α} {a : α} :
 theorem isQuotientMap_smul {S β} [SMul S M] [SMul S α] [IsScalarTower S M α]
     [SMul S β] (f : α →[S] β) [TopologicalSpace β] (hf : IsQuotientMap f)
     (c : S) (hc : IsUnit (c • 1 : M)) : IsQuotientMap (c • · : β → β) :=
-  hf.of_comp_isQuotientMap <| by convert! hf.comp hc.isHomeomorph_smul.isQuotientMap; ext; simp
+  hf.of_comp_isQuotientMap <| by convert hf.comp hc.isHomeomorph_smul.isQuotientMap; ext; simp
 
 theorem isQuotientMap_nsmul {M β} [Semiring M] [AddCommMonoid α] [Module M α]
     [ContinuousConstSMul M α] [AddMonoid β] (f : α →+ β) [TopologicalSpace β]

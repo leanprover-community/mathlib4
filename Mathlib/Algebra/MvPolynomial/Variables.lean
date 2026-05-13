@@ -72,7 +72,7 @@ def vars (p : MvPolynomial σ R) : Finset σ :=
 
 theorem vars_def [DecidableEq σ] (p : MvPolynomial σ R) : p.vars = p.degrees.toFinset := by
   rw [vars]
-  convert! rfl
+  convert rfl
 
 @[simp]
 theorem vars_0 : (0 : MvPolynomial σ R).vars = ∅ := by

@@ -73,7 +73,7 @@ lemma measurable_memPartitionSet_subtype (ht : ∀ n, MeasurableSet (t n)) (n : 
     (partitionFiltration ht n) _ (fun s ↦ ?_)
   rcases s with ⟨s, hs⟩
   suffices MeasurableSet[partitionFiltration ht n] {x | memPartitionSet t n x = s} by
-    convert! this
+    convert this
     ext x
     simp
   simp_rw [memPartitionSet_eq_iff _ hs]

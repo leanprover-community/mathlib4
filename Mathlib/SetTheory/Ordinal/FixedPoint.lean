@@ -328,7 +328,7 @@ theorem nfp_eq_self {a} (h : f a = a) : nfp f a = a :=
 /-- The fixed point lemma for normal functions: any normal function has an unbounded set of
 fixed points. -/
 theorem not_bddAbove_fp (H : IsNormal f) : ¬ BddAbove (Function.fixedPoints f) := by
-  convert! not_bddAbove_fp_family fun _ : Unit => H
+  convert not_bddAbove_fp_family fun _ : Unit => H
   exact (Set.iInter_const _).symm
 
 /-- The derivative of a normal function `f` is the sequence of fixed points of `f`.

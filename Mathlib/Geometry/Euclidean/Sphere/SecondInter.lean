@@ -110,8 +110,8 @@ theorem Sphere.eq_or_eq_secondInter_of_mem_mk'_span_singleton_iff_mem {s : Spher
 lemma Sphere.eq_or_eq_secondInter_iff_mem_of_mem_affineSpan_pair {s : Sphere P} {p q : P}
     (hp : p ∈ s) {p' : P} (hp' : p' ∈ line[ℝ, p, q]) :
     p' = p ∨ p' = s.secondInter p (q -ᵥ p) ↔ p' ∈ s := by
-  convert! s.eq_or_eq_secondInter_of_mem_mk'_span_singleton_iff_mem hp ?_
-  convert! hp'
+  convert s.eq_or_eq_secondInter_of_mem_mk'_span_singleton_iff_mem hp ?_
+  convert hp'
   rw [AffineSubspace.eq_iff_direction_eq_of_mem (AffineSubspace.self_mem_mk' p _)
     (left_mem_affineSpan_pair _ _ _)]
   simp [direction_affineSpan, vectorSpan_pair_rev]
@@ -140,8 +140,8 @@ theorem Sphere.secondInter_secondInter (s : Sphere P) (p : P) (v : V) :
   simp only [Sphere.secondInter, vadd_vsub_assoc, vadd_vadd, inner_add_right, inner_smul_right,
     div_mul_cancel₀ _ hv']
   rw [← @vsub_eq_zero_iff_eq V, vadd_vsub, ← add_smul, ← add_div]
-  convert! zero_smul ℝ _
-  convert! zero_div (G₀ := ℝ) _
+  convert zero_smul ℝ _
+  convert zero_div (G₀ := ℝ) _
   ring
 
 /-- If the vector passed to `secondInter` is given by a subtraction involving the point in

@@ -125,8 +125,9 @@ only if the polynomial is zero. -/
 theorem gaussNorm_eq_zero_iff (h_eq_zero : ∀ x : R, v x = 0 → x = 0) (hc : 0 < c) :
     p.gaussNorm v c = 0 ↔ p = 0 := by
   rw [← gaussNorm_coe_powerSeries _ _ (le_of_lt hc)]
-  convert! PowerSeries.gaussNorm_eq_zero_iff v c p (by grind) (by simp) h_eq_zero hc
-    (by simpa [PowerSeries.HasGaussNorm] using aux_bdd v p)
+  convert
+    PowerSeries.gaussNorm_eq_zero_iff v c p (by grind) (by simp) h_eq_zero hc
+      (by simpa [PowerSeries.HasGaussNorm] using aux_bdd v p)
   exact Iff.symm coe_eq_zero_iff
 
 omit [ZeroHomClass F R ℝ] in

@@ -107,7 +107,7 @@ theorem theta_eq_sum_primesLE_log (n : ℕ) : θ n = ∑ p ∈ primesLE n, log p
 theorem psi_eq_zero_of_lt_two {x : ℝ} (hx : x < 2) : ψ x = 0 := by
   apply sum_eq_zero fun n hn ↦ ?_
   simp only [mem_Ioc] at hn
-  convert! vonMangoldt_apply_one
+  convert vonMangoldt_apply_one
   have := lt_of_le_of_lt (le_floor_iff' hn.1.ne' |>.mp hn.2) hx
   norm_cast at this
   linarith
@@ -120,7 +120,7 @@ theorem psi_one : ψ 1 = 0 := psi_eq_zero_of_lt_two one_lt_two
 
 theorem theta_eq_zero_of_lt_two {x : ℝ} (hx : x < 2) : θ x = 0 := by
   apply sum_eq_zero fun n hn ↦ ?_
-  convert! log_one
+  convert log_one
   simp only [mem_filter, mem_Ioc] at hn
   have := lt_of_le_of_lt (le_floor_iff' hn.1.1.ne' |>.mp hn.1.2) hx
   norm_cast at ⊢ this

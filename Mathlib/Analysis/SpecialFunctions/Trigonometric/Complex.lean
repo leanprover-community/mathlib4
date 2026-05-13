@@ -145,7 +145,7 @@ theorem tan_sub {x y : ℂ}
     rcases h with ⟨x_ne, minus_y_ne⟩ | ⟨x_eq, minus_y_eq⟩
     · refine .inl ⟨x_ne, fun l => ?_⟩
       rw [Ne, neg_eq_iff_eq_neg]
-      convert! minus_y_ne (-l - 1) using 2
+      convert minus_y_ne (-l - 1) using 2
       push_cast
       ring
     · refine .inr ⟨x_eq, ?_⟩
@@ -181,7 +181,7 @@ theorem tan_eq {z : ℂ}
         (∃ k : ℤ, (z.re : ℂ) = (2 * k + 1) * π / 2) ∧
           ∃ l : ℤ, (z.im : ℂ) * I = (2 * l + 1) * π / 2) :
     tan z = (tan z.re + tanh z.im * I) / (1 - tan z.re * tanh z.im * I) := by
-  convert! tan_add_mul_I h; exact (re_add_im z).symm
+  convert tan_add_mul_I h; exact (re_add_im z).symm
 
 /-- `tan x` takes the junk value `0` when `cos x = 0` -/
 lemma tan_eq_zero_of_cos_eq_zero {x} (h : cos x = 0) : tan x = 0 := by
@@ -237,7 +237,7 @@ theorem cos_surjective : Function.Surjective cos := by
     simp only [zero_add, one_ne_zero, mul_zero] at hw
   refine ⟨log w / I, cos_eq_iff_quadratic.2 ?_⟩
   rw [div_mul_cancel₀ _ I_ne_zero, exp_log w₀]
-  convert! hw using 1
+  convert hw using 1
   ring
 
 @[simp]

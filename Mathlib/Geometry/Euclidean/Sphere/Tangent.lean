@@ -246,7 +246,7 @@ lemma IsTangent.eq_orthRadius_or_eq_orthRadius_pointReflection_of_parallel_orthR
     rcases eq_or_eq_neg_of_abs_eq hr' with rfl | rfl
     · simp_all
     · right
-      convert! rfl
+      convert rfl
       rw [← eq_vadd_iff_vsub_eq] at hr
       rw [hr]
       simp [Equiv.pointReflection_apply]

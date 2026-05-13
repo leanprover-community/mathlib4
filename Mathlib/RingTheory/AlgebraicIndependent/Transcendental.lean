@@ -118,7 +118,7 @@ theorem AlgebraicIndepOn.insert_iff {s : Set ι} {i : ι} (h : i ∉ s) :
       AlgebraicIndepOn R x s ∧ Transcendental (adjoin R (x '' s)) (x i) := by
   classical simp_rw [← algebraicIndependent_equiv (subtypeInsertEquivOption h).symm,
     AlgebraicIndepOn]
-  convert! option_iff (x := fun i : s ↦ x i) (a := x i) using 2
+  convert option_iff (x := fun i : s ↦ x i) (a := x i) using 2
   · ext (_ | _) <;> rfl
   · rw [Set.image_eq_range]
 
@@ -232,13 +232,13 @@ theorem adjoin_iff_disjoint [Nontrivial A] {s t : Set ι} :
 
 theorem transcendental_adjoin {s : Set ι} {i : ι} (hi : i ∉ s) :
     Transcendental (adjoin R (x '' s)) (x i) := by
-  convert! ← hx.adjoin_of_disjoint (Set.disjoint_singleton_right.mpr hi)
+  convert ← hx.adjoin_of_disjoint (Set.disjoint_singleton_right.mpr hi)
   rw [algebraicIndependent_singleton_iff ⟨i, rfl⟩]
 
 theorem transcendental_adjoin_iff [Nontrivial A] {s : Set ι} {i : ι} :
     Transcendental (adjoin R (x '' s)) (x i) ↔ i ∉ s := by
   rw [← Set.disjoint_singleton_right]
-  convert! ← hx.adjoin_iff_disjoint (t := {i})
+  convert ← hx.adjoin_iff_disjoint (t := { i })
   rw [algebraicIndependent_singleton_iff ⟨i, rfl⟩]
 
 end AlgebraicIndependent

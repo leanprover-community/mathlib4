@@ -292,7 +292,7 @@ lemma exists_lt_locally_constant_of_riemannianEDist_lt
       fun_prop
     · intro t ht
       exact ⟨Real.smoothTransition.nonneg _, Real.smoothTransition.le_one _⟩
-  · convert! hγ using 1
+  · convert hγ using 1
     rw [← A a haa', ← B b hb'b]
     apply pathELength_comp_of_monotoneOn hab.le
     · apply Monotone.monotoneOn
@@ -331,7 +331,7 @@ lemma riemannianEDist_comm : riemannianEDist I x y = riemannianEDist I y x := by
   · exact differentiableOn_neg _
   · exact h_smooth.contMDiffOn.mdifferentiableOn one_ne_zero
   apply this.trans_lt
-  convert! hγ
+  convert hγ
   ext t
   simp [η]
 

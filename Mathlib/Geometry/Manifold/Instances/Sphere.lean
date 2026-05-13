@@ -140,7 +140,7 @@ theorem stereoInvFunAux_mem (hv : ‖v‖ = 1) {w : E} (hw : w ∈ (ℝ ∙ v)�
 theorem hasFDerivAt_stereoInvFunAux (v : E) :
     HasFDerivAt (stereoInvFunAux v) (ContinuousLinearMap.id ℝ E) 0 := by
   have h₀ : HasFDerivAt (fun w : E => ‖w‖ ^ 2) (0 : StrongDual ℝ E) 0 := by
-    convert! (hasStrictFDerivAt_norm_sq (0 : E)).hasFDerivAt
+    convert (hasStrictFDerivAt_norm_sq (0 : E)).hasFDerivAt
     simp only [map_zero, smul_zero]
   have h₁ : HasFDerivAt (fun w : E => (‖w‖ ^ 2 + 4)⁻¹) (0 : StrongDual ℝ E) 0 := by
     convert! (hasFDerivAt_inv _).comp _ (h₀.add (hasFDerivAt_const 4 0)) <;> simp
@@ -215,7 +215,7 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
   have hvy : ⟪v, y⟫_ℝ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp y.2
   have pythag : 1 = a ^ 2 + ‖y‖ ^ 2 := by
     have hvy' : ⟪a • v, y⟫_ℝ = 0 := by simp only [inner_smul_left, hvy, mul_zero]
-    convert! norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero _ _ hvy' using 2
+    convert norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero _ _ hvy' using 2
     · simp [← split]
     · simp [norm_smul, hv, ← sq, sq_abs]
     · exact sq _
@@ -287,7 +287,7 @@ theorem stereographic_apply_neg (v : sphere (0 : E) 1) :
 @[simp]
 theorem stereographic_neg_apply (v : sphere (0 : E) 1) :
     stereographic (norm_eq_of_mem_sphere (-v)) v = 0 := by
-  convert! stereographic_apply_neg (-v)
+  convert stereographic_apply_neg (-v)
   ext1
   simp
 

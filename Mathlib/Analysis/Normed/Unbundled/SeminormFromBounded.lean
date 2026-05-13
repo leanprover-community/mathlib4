@@ -317,7 +317,7 @@ theorem seminormFromBounded_of_mul_le (f_nonneg : 0 ≤ f) {x : R}
       · rw [← mul_one (f x), ← div_self hy0, ← mul_div_assoc,
           div_le_iff₀ (lt_of_le_of_ne' (f_nonneg _) hy0), mul_div_assoc, div_self hy0, mul_one]
         exact hx y
-    convert! le_ciSup h_bdd (1 : R)
+    convert le_ciSup h_bdd (1 : R)
     by_cases h0 : f x = 0
     · rw [mul_one, h0, zero_div]
     · have heq : f 1 = 1 := by

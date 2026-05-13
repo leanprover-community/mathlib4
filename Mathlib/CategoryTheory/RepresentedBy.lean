@@ -87,8 +87,9 @@ set_option backward.isDefEq.respectTransparency false in
 lemma RepresentableBy.isRepresentedBy (R : F.RepresentableBy X) :
     F.IsRepresentedBy (R.homEquiv (𝟙 X)) := by
   rw [IsRepresentedBy.iff_isIso_uliftYonedaEquiv]
-  convert! (RepresentableBy.equivUliftYonedaIso _ _ <|
-    representableByUliftFunctorEquiv.{v}.symm R).isIso_hom
+  convert
+    (RepresentableBy.equivUliftYonedaIso _ _ <|
+        representableByUliftFunctorEquiv.{v}.symm R).isIso_hom
   ext
   simpa [uliftYonedaEquiv] using (homEquiv_eq _ _).symm
 

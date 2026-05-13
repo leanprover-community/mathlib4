@@ -102,7 +102,7 @@ theorem summableLocallyUniformlyOn_iteratedDerivWithin_smul_cexp (k l : ℕ) {f 
     norm_natCast, abs_norm, ge_iff_le, r, c] at *
   rw [← mul_assoc]
   gcongr
-  convert! h0
+  convert h0
   rw [← norm_pow, ← exp_nsmul']
 
 /-- This is a version of `summableLocallyUniformlyOn_iteratedDerivWithin_smul_cexp` for level one

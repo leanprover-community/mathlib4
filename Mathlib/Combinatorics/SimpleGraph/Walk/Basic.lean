@@ -274,7 +274,7 @@ theorem mem_darts_iff_infix_support {u' v'} {p : G.Walk u v} (h : G.Adj u' v') :
     exact ⟨i, by grind, fun j hj ↦ by grind [fst_darts_getElem, snd_darts_getElem]⟩
   · have := h 0
     have := h 1
-    convert! p.darts.getElem_mem (n := i) (by grind)
+    convert p.darts.getElem_mem (n := i) (by grind)
       <;> grind [fst_darts_getElem, snd_darts_getElem]
 
 theorem mem_darts_iff_fst_snd_infix_support {p : G.Walk u v} {d : G.Dart} :

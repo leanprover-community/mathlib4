@@ -85,7 +85,7 @@ variable {R S A B}
 
 theorem of_surjective [FiniteType R A] (f : A →ₐ[R] B) (hf : Surjective f) : FiniteType R B :=
   ⟨by
-    convert! ‹FiniteType R A›.1.map f
+    convert ‹FiniteType R A›.1.map f
     simpa only [map_top f, @eq_comm _ ⊤, eq_top_iff, AlgHom.mem_range] using hf⟩
 
 theorem equiv (hRA : FiniteType R A) (e : A ≃ₐ[R] B) : FiniteType R B :=

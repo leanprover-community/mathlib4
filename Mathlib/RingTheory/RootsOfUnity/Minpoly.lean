@@ -199,7 +199,7 @@ theorem is_roots_of_minpoly [DecidableEq K] :
   intro x hx
   obtain ⟨m, _, hcop, rfl⟩ := (isPrimitiveRoot_iff h).1 ((mem_primitiveRoots hpos).1 hx)
   simp only [Multiset.mem_toFinset]
-  convert! pow_isRoot_minpoly h hcop using 0
+  convert pow_isRoot_minpoly h hcop using 0
   rw [← mem_roots]
   exact map_monic_ne_zero <| minpoly.monic <| isIntegral h hpos
 

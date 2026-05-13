@@ -121,8 +121,8 @@ def mk' [DecidableEq ι] (f : (∀ i, M₁ i) → M₂)
       f (update m i (c • x)) = c • f (update m i x) := by aesop) :
     MultilinearMap R M₁ M₂ where
   toFun := f
-  map_update_add' m i x y := by convert! h₁ m i x y
-  map_update_smul' m i c x := by convert! h₂ m i c x
+  map_update_add' m i x y := by convert h₁ m i x y
+  map_update_smul' m i c x := by convert h₂ m i c x
 
 @[simp]
 theorem toFun_eq_coe : f.toFun = ⇑f :=

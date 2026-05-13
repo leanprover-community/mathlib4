@@ -240,7 +240,7 @@ lemma factorial_isEquivalent_stirling :
   apply Asymptotics.isEquivalent_of_tendsto_one
   have : sqrt π ≠ 0 := by positivity
   nth_rewrite 2 [← div_self this]
-  convert! tendsto_stirlingSeq_sqrt_pi.div tendsto_const_nhds this using 1
+  convert tendsto_stirlingSeq_sqrt_pi.div tendsto_const_nhds this using 1
   ext n
   simp [field, stirlingSeq, mul_right_comm]
 

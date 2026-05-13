@@ -189,7 +189,7 @@ theorem convexComboPair_one {x y : M} :
 theorem convexComboPair_same {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) {x : M} :
     convexComboPair s t hs ht h x x = x := by
   unfold convexComboPair
-  convert! ConvexSpace.single x
+  convert ConvexSpace.single x
   simp only [StdSimplex.duple, StdSimplex.single, ← Finsupp.single_add, h]
 
 theorem convexComboPair_symm {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) {x y : M} :

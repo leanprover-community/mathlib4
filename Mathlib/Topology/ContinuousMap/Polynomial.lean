@@ -184,7 +184,7 @@ theorem polynomialFunctions.comap_compRightAlgHom_iccHomeoI (a b : ℝ) (h : a <
         smul_eq_mul, Polynomial.eval_mul, Polynomial.eval_add,
         Polynomial.eval_comp, Polynomial.toContinuousMapOnAlgHom_apply,
         Polynomial.toContinuousMapOn_apply, Polynomial.toContinuousMap_apply]
-      convert! w ⟨_, _⟩
+      convert w ⟨_, _⟩
       · ext
         simp only [iccHomeoI_symm_apply_coe]
         replace h : b - a ≠ 0 := sub_ne_zero_of_ne h.ne.symm

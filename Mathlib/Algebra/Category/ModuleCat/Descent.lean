@@ -60,7 +60,8 @@ def comonadicExtendScalars (hf : f.FaithfullyFlat) :
     ComonadicLeftAdjoint (extendScalars f) := by
   have := preservesFiniteLimits_extendScalars_of_flat hf.flat
   have := reflectsIsomorphisms_extendScalars_of_faithfullyFlat hf
-  convert! Comonad.comonadicOfHasPreservesFSplitEqualizersOfReflectsIsomorphisms
+  convert
+    Comonad.comonadicOfHasPreservesFSplitEqualizersOfReflectsIsomorphisms
       (extendRestrictScalarsAdj f)
   · exact ⟨inferInstance⟩
   · exact ⟨inferInstance⟩

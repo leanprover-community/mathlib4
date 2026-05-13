@@ -65,7 +65,7 @@ lemma boundedSub_of_lipschitzWith_sub [PseudoMetricSpace R] [Sub R] {K : NNReal}
     BoundedSub R where
   isBounded_sub {s t} s_bdd t_bdd := by
     have bdd : Bornology.IsBounded (s ×ˢ t) := Bornology.IsBounded.prod s_bdd t_bdd
-    convert! lip.isBounded_image bdd
+    convert lip.isBounded_image bdd
     simp
 
 end bounded_sub
@@ -137,7 +137,7 @@ instance [PseudoMetricSpace R] [Monoid R] [LipschitzMul R] : BoundedMul R where
   isBounded_mul {s t} s_bdd t_bdd := by
     have bdd : Bornology.IsBounded (s ×ˢ t) := Bornology.IsBounded.prod s_bdd t_bdd
     obtain ⟨C, mul_lip⟩ := ‹LipschitzMul R›.lipschitz_mul
-    convert! mul_lip.isBounded_image bdd
+    convert mul_lip.isBounded_image bdd
     ext p
     simp only [Set.mem_image, Set.mem_prod, Prod.exists]
     constructor
@@ -157,7 +157,7 @@ variable {R : Type*} [SeminormedAddCommGroup R]
 
 lemma SeminormedAddCommGroup.lipschitzWith_sub :
     LipschitzWith 2 (fun (p : R × R) ↦ p.1 - p.2) := by
-  convert! LipschitzWith.prod_fst.sub LipschitzWith.prod_snd
+  convert LipschitzWith.prod_fst.sub LipschitzWith.prod_snd
   norm_num
 
 instance : BoundedSub R := boundedSub_of_lipschitzWith_sub SeminormedAddCommGroup.lipschitzWith_sub
@@ -177,7 +177,7 @@ lemma tendsto_add_const_cobounded (x : R) :
   rw [mem_map]
   rw [← isCobounded_def, ← isBounded_compl_iff] at hs ⊢
   rw [← Set.preimage_compl]
-  convert! isBounded_sub hs (t := {x}) isBounded_singleton using 1
+  convert isBounded_sub hs (t := { x }) isBounded_singleton using 1
   ext y
   simp [sub_eq_iff_eq_add]
 
@@ -188,7 +188,7 @@ lemma tendsto_const_add_cobounded (x : R) :
   rw [mem_map]
   rw [← isCobounded_def, ← isBounded_compl_iff] at hs ⊢
   rw [← Set.preimage_compl]
-  convert! isBounded_add isBounded_singleton (s := {-x}) hs using 1
+  convert isBounded_add isBounded_singleton (s := {-x}) hs using 1
   ext y
   simp
 
