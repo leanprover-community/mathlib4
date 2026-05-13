@@ -36,7 +36,9 @@ criteria for establishing it.
 - `FirstOrder.Language.Theory.hasQuantifierElimination_of_isElementaryExtensionPair` and
   `FirstOrder.Language.Theory.hasQuantifierElimination_of_isElementaryExtensionPairFG` prove
   quantifier elimination from the extension property appearing in van den Dries--Henson,
-  Theorem 7.11, and from a finitely generated variant.
+  Theorem 7.11, and from a finitely generated variant. The theorem
+  `hasQuantifierElimination_of_isElementaryExtensionPairCardinalLTGenerated`
+  gives the corresponding `< κ`-generated version.
 
 ## TODO
 
@@ -55,7 +57,6 @@ namespace Language
 namespace Theory
 
 open Structure
---TODO: generalize Fin m to alpha
 variable {L : Language.{u, v}}
 variable {M : Type w} {N A : Type*} [L.Structure M] [L.Structure N] [L.Structure A]
 
@@ -429,13 +430,14 @@ private theorem isQF_realize_partialEquiv
       hφ.realize_embedding (f := p.toEmbedding) (v := vdom) (xs := default)
   exact hcod.trans hdom.symm
 
-/-- If a theory has the finitely generated elementary extension-pair property, then it has
-quantifier elimination.
+/-- If a theory has the `< κ`-generated elementary extension-pair property for an infinite `κ`,
+then it has quantifier elimination.
 
-The hypothesis is a finitely generated variant of the extension property appearing as condition
-(2) in van den Dries--Henson, Theorem 7.11. -/
-theorem hasQuantifierElimination_of_isElementaryExtensionPairFG
-    {T : L.Theory} (h : T.IsElementaryExtensionPairFG) :
+The hypothesis is a `< κ`-generated variant of the extension property appearing as condition (2)
+in van den Dries--Henson, Theorem 7.11. -/
+theorem hasQuantifierElimination_of_isElementaryExtensionPairCardinalLTGenerated
+    {T : L.Theory} {κ : Cardinal} (hκ : Cardinal.aleph0 ≤ κ)
+    (h : T.IsElementaryExtensionPairCardinalLTGenerated κ) :
     T.HasQuantifierElimination := by
   refine hasQuantifierElimination_of_exists_realize_of_embeddings (T := T) ?_
   intro m φ hφ M N A _ _ _ _ _ _ _ f g a hM
@@ -444,9 +446,14 @@ theorem hasQuantifierElimination_of_isElementaryExtensionPairFG
   have hSrange : S ≤ f.toHom.range :=
     Substructure.closure_le.mpr <| Set.range_subset_iff.mpr fun i => f.toHom.mem_range_self (a i)
   let k : S ↪[L] N := g.comp (f.equivRange.symm.toEmbedding.comp (Substructure.inclusion hSrange))
-  let p₀ : L.FGEquiv M N :=
+  have hS_cardinal : S.CardinalLTGenerated κ := by
+    have hS_finite : (Set.range (f ∘ a)).Finite := Set.finite_range (f ∘ a)
+    haveI : Finite (Set.range (f ∘ a)) := hS_finite.to_subtype
+    exact Substructure.cardinalLTGenerated_closure
+      (hasCardinalLT_of_finite (Set.range (f ∘ a)) κ hκ)
+  let p₀ : L.CardinalLTEquiv M N κ :=
     ⟨{ dom := S, cod := k.toHom.range, toEquiv := k.equivRange },
-      Substructure.fg_closure (Set.finite_range (f ∘ a))⟩
+      hS_cardinal⟩
   have hp_dom (i : Fin m) : f (a i) ∈ (p₀ : M ≃ₚ[L] N).dom := Substructure.subset_closure ⟨i, rfl⟩
   have hp_apply (i : Fin m) : ((p₀ : M ≃ₚ[L] N).toEquiv ⟨f (a i), hp_dom i⟩ : N) = g (a i) := by
     change g (f.equivRange.symm (Substructure.inclusion hSrange ⟨f (a i), hp_dom i⟩)) = g (a i)
@@ -485,6 +492,17 @@ theorem hasQuantifierElimination_of_isElementaryExtensionPairFG
     (e.map_boundedFormula θ.ex (g ∘ a) default).mp (by simpa [Function.comp_def] using hθN')
   obtain ⟨c, hc⟩ := BoundedFormula.realize_ex.mp hθN
   exact ⟨c, (Formula.realize_relabel_finSumFinEquiv_symm_snoc φ).mp hc⟩
+
+/-- If a theory has the finitely generated elementary extension-pair property, then it has
+quantifier elimination.
+
+The hypothesis is a finitely generated variant of the extension property appearing as condition
+(2) in van den Dries--Henson, Theorem 7.11. -/
+theorem hasQuantifierElimination_of_isElementaryExtensionPairFG
+    {T : L.Theory} (h : T.IsElementaryExtensionPairFG) :
+    T.HasQuantifierElimination :=
+  hasQuantifierElimination_of_isElementaryExtensionPairCardinalLTGenerated le_rfl
+    h.toCardinalLTGenerated_aleph0
 
 /-- If a theory has the elementary extension-pair property, then it has quantifier elimination.
 
