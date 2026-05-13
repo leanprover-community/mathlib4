@@ -6,6 +6,7 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Tower
+public import Mathlib.LinearAlgebra.TensorProduct.Projection
 public import Mathlib.LinearAlgebra.TensorProduct.Submodule
 public import Mathlib.RingTheory.Ideal.Maps
 
@@ -77,66 +78,18 @@ noncomputable def TensorProduct : Submodule A (M ⊗[A] N) :=
 
 namespace TensorProduct
 
-variable (A M N) in
-theorem top_top : TensorProduct (⊤ : Submodule A M) (⊤ : Submodule A N) = ⊤ := by
-  simp [ -mapIncl, TensorProduct, range_mapIncl, map₂_mk_top_top_eq_top, ← span_tmul_eq_top]
-
-variable (N') in
-lemma mono_left (h : M' ≤ M'') : TensorProduct M' N' ≤ TensorProduct M'' N' :=
-  TensorProduct.range_mapIncl_mono  h le_rfl
-
-variable (M') in
-lemma mono_right (h : N' ≤ N'') : TensorProduct M' N' ≤ TensorProduct M' N'' :=
-  TensorProduct.range_mapIncl_mono le_rfl h
-
-variable (N') in
-lemma sup_left : TensorProduct (M' ⊔ M'') N' = TensorProduct M' N' ⊔ TensorProduct M'' N' := by
-  apply le_antisymm
-  · rintro _ ⟨x, rfl⟩
-    induction x using TensorProduct.induction_on with
-    | zero => simp only [_root_.map_zero, zero_mem]
-    | tmul m n =>
-      rcases m with ⟨_, hm⟩
-      rcases mem_sup.mp hm with ⟨m', hm', m'', hm'', rfl⟩
-      simp only [mapIncl, map_tmul, coe_subtype, add_tmul]
-      refine add_mem (Submodule.mem_sup_left ?_) (Submodule.mem_sup_right ?_)
-      · exact ⟨⟨m', hm'⟩ ⊗ₜ[A] n, rfl⟩
-      · exact ⟨⟨m'', hm''⟩ ⊗ₜ[A] n, rfl⟩
-    | add x y hx hy => simp only [map_add, add_mem hx hy]
-  · simp only [sup_le_iff]
-    refine ⟨range_mapIncl_mono le_sup_left le_rfl,
-      range_mapIncl_mono le_sup_right le_rfl⟩
-
-variable (M') in
-lemma sup_right : TensorProduct M' (N' ⊔ N'') = TensorProduct M' N' ⊔ TensorProduct M' N'' := by
-  apply le_antisymm
-  · rintro _ ⟨x, rfl⟩
-    induction x using TensorProduct.induction_on with
-    | zero => simp only [_root_.map_zero, zero_mem]
-    | tmul m n =>
-      rcases n with ⟨_, hn⟩
-      rcases mem_sup.mp hn with ⟨n', hn', n'', hn'', rfl⟩
-      simp only [mapIncl, map_tmul, coe_subtype, tmul_add]
-      refine add_mem (Submodule.mem_sup_left ?_) (Submodule.mem_sup_right ?_)
-      · exact ⟨m ⊗ₜ[A] ⟨n', hn'⟩, rfl⟩
-      · exact ⟨m ⊗ₜ[A] ⟨n'', hn''⟩, rfl⟩
-    | add x y hx hy => simp only [map_add, add_mem hx hy]
-  · simp only [sup_le_iff]
-    refine ⟨range_mapIncl_mono le_rfl le_sup_left,
-      range_mapIncl_mono le_rfl le_sup_right⟩
-
 variable (N') in
 lemma disjoint_left (hM : IsCompl M' M'') :
     Disjoint (TensorProduct M' N') (TensorProduct M'' N') := by
   have hq : M'.subtype.comp (projectionOnto _ _ hM) +
       M''.subtype.comp (projectionOnto _ _ hM.symm) = LinearMap.id := by
-    ext x
-    simp only [add_apply, coe_comp, coe_subtype, Function.comp_apply, id_coe, id_eq]
-    erw [projection_add_projection_eq_self]
+    ext; simp [projection_add_projection_eq_self]
   rw [disjoint_def]
   intro x h h'
-  rw [← id_apply x (R := A), ← rTensor_id, ← hq]
+  rw [← id_apply x (R := A), ← rTensor_id, ← projection_add_projection_eq_id hM]
   simp only [rTensor_add, rTensor_comp, add_apply, coe_comp, Function.comp_apply]
+--  simp only [rTensor_add, rTensor_comp, add_apply, coe_comp, Function.comp_apply]
+
   change x ∈ (TensorProduct.map _ N'.subtype).range at h h'
   rw [← rTensor_comp_lTensor] at h h'
   replace h : x ∈ (LinearMap.rTensor N M'.subtype).range :=
@@ -145,6 +98,7 @@ lemma disjoint_left (hM : IsCompl M' M'') :
     range_comp_le_range _ _ h'
   rw [← ker_rTensor_projectionOnto hM.symm N, mem_ker] at h
   rw [← ker_rTensor_projectionOnto hM N, mem_ker] at h'
+  rw [h', h]
   simp only [h, h', _root_.map_zero, add_zero]
 
 variable (M') in
