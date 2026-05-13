@@ -978,6 +978,98 @@ instance {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [P.IsStableUnderCobaseChangeAlo
     IsStableUnderCobaseChangeAlong.of_isPushout (IsPushout.of_left' pb right.flip)
       (IsStableUnderCobaseChangeAlong.of_isPushout right.flip hp)
 
+/-- `P.IsStableUnderBaseChangeAgainst P'` states that for any morphism `f` satisfying `P` and
+any morphism `g` with the same codomain as `f` satisfying `P'`, any pullback of `f` along `g`
+also satisfies `P`. -/
+class IsStableUnderBaseChangeAgainst
+    (P P' : MorphismProperty C) : Prop where
+  isStableUnderBaseChangeAlong ⦃X Y : C ⦄ (f : X ⟶ Y) (hf : P' f) :
+    P.IsStableUnderBaseChangeAlong f
+
+instance (P : MorphismProperty C) [P.IsStableUnderBaseChange]
+    (P' : MorphismProperty C) :
+    P.IsStableUnderBaseChangeAgainst P' where
+  isStableUnderBaseChangeAlong := inferInstance
+
+lemma isStableUnderBaseChangeAgainst_top_iff
+    (P : MorphismProperty C) :
+    P.IsStableUnderBaseChangeAgainst ⊤ ↔ P.IsStableUnderBaseChange :=
+  ⟨ fun h ↦ ⟨fun {_ _ _ _} _ _ _ _ h' h'' ↦
+      (h.isStableUnderBaseChangeAlong _ (by tauto)).of_isPullback h' h''⟩,
+    fun _ ↦ inferInstance ⟩
+
+/-- `P.HasPullbacksAgainst P'` states that for any morphism `f` satisfying `P'`,
+`P` has pullbacks along `f`. -/
+class HasPullbacksAgainst
+    (P P' : MorphismProperty C) : Prop where
+  hasPullbacksAlong ⦃X Y : C ⦄ (f : X ⟶ Y) (hf : P' f) :
+    P.HasPullbacksAlong f
+
+instance (P : MorphismProperty C) [P.HasPullbacks] (P' : MorphismProperty C) :
+    P.HasPullbacksAgainst P' where
+  hasPullbacksAlong := inferInstance
+
+lemma HasPullbacksAgainst_top_iff
+    (P : MorphismProperty C) :
+    P.IsStableUnderBaseChangeAgainst ⊤ ↔ P.IsStableUnderBaseChange :=
+  ⟨ fun h ↦ ⟨fun {_ _ _ _} _ _ _ _ h' h'' ↦
+      (h.isStableUnderBaseChangeAlong _ (by tauto)).of_isPullback h' h''⟩,
+    fun _ ↦ inferInstance⟩
+
+lemma hasPullback_ofHasPullbacksAgainst
+    {P : MorphismProperty C} {P' : MorphismProperty C} {c c' c'' : C}
+    {f : c ⟶ c'} {g : c'' ⟶ c'} [P.HasPullbacksAgainst P'] (hf : P f) (hg : P' g) :
+    Limits.HasPullback f g :=
+  letI : P.HasPullbacksAlong g :=
+    MorphismProperty.HasPullbacksAgainst.hasPullbacksAlong g hg
+  MorphismProperty.HasPullbacksAlong.hasPullback f hf
+
+/-- `P.IsStableUnderCobaseChangeAgainst P'` states that for any morphism `f` satisfying `P` and
+any morphism `g` with the same codomain as `f` satisfying `P'`, any pullback of `f` along `g`
+also satisfies `P`. -/
+class IsStableUnderCobaseChangeAgainst
+    (P P' : MorphismProperty C) : Prop where
+  isStableUnderCobaseChangeAlong ⦃X Y : C ⦄ (f : X ⟶ Y) (hf : P' f) :
+    P.IsStableUnderCobaseChangeAlong f
+
+instance (P : MorphismProperty C) [P.IsStableUnderCobaseChange]
+    (P' : MorphismProperty C) :
+    P.IsStableUnderCobaseChangeAgainst P' where
+  isStableUnderCobaseChangeAlong := inferInstance
+
+lemma isStableUnderCobaseChangeAgainst_top_iff
+    (P : MorphismProperty C) :
+    P.IsStableUnderCobaseChangeAgainst ⊤ ↔ P.IsStableUnderCobaseChange :=
+  ⟨ fun h ↦ ⟨fun {_ _ _ _} _ _ _ _ h' h'' ↦
+      (h.isStableUnderCobaseChangeAlong _ (by tauto)).of_isPushout h' h''⟩,
+    fun _ ↦ inferInstance ⟩
+
+/-- `P.HasPullbacksAgainst P'` states that for any morphism `f` satisfying `P'`,
+`P` has pullbacks along `f`. -/
+class HasPushoutsAgainst
+    (P P' : MorphismProperty C) : Prop where
+  hasPushoutsAlong ⦃X Y : C ⦄ (f : X ⟶ Y) (hf : P' f) :
+    P.HasPushoutsAlong f
+
+instance (P : MorphismProperty C) [P.HasPushouts] (P' : MorphismProperty C) :
+    P.HasPushoutsAgainst P' where
+  hasPushoutsAlong := inferInstance
+
+lemma HasPushoutsAgainst_top_iff
+    (P : MorphismProperty C) :
+    P.IsStableUnderCobaseChangeAgainst ⊤ ↔ P.IsStableUnderCobaseChange :=
+  ⟨ fun h ↦ ⟨fun {_ _ _ _} _ _ _ _ h' h'' ↦
+      (h.isStableUnderCobaseChangeAlong _ (by tauto)).of_isPushout h' h''⟩,
+    fun _ ↦ inferInstance⟩
+
+lemma hasPullback_ofHasPushoutsAgainst
+    {P : MorphismProperty C} {P' : MorphismProperty C} {c c' c'' : C}
+    {f : c ⟶ c'} {g : c ⟶ c''} [P.HasPushoutsAgainst P'] (hf : P f) (hg : P' g) :
+    Limits.HasPushout f g :=
+  letI : P.HasPushoutsAlong g :=
+    MorphismProperty.HasPushoutsAgainst.hasPushoutsAlong g hg
+  MorphismProperty.HasPushoutsAlong.hasPushout f hf
+
 end MorphismProperty
 
 end CategoryTheory
