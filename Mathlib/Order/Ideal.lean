@@ -541,8 +541,7 @@ instance : SemilatticeSup (Ideal P) where
   le_sup_right I _ j hj :=
     let ⟨w, hw⟩ := I.nonempty
     ⟨w, hw, j, hj, le_sup_right⟩
-  sup_le _ _ K hIK hJK _
-    | ⟨_, hi, _, hj, ha⟩ =>
+  sup_le _ _ K hIK hJK _ := fun ⟨_, hi, _, hj, ha⟩ ↦
     K.lower ha <| sup_mem (mem_of_mem_of_le hi hIK) (mem_of_mem_of_le hj hJK)
 
 instance instLattice : Lattice (Ideal P) where
