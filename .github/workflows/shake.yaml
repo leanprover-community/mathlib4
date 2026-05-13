@@ -35,6 +35,10 @@ jobs:
           use-github-cache: false
           use-mathlib-cache: true
 
+      - name: lake build
+        run: |
+          lake build Mathlib Archive Counterexamples
+
       - name: lake shake
         id: shake
         run: |
@@ -53,7 +57,7 @@ jobs:
 
       - name: Upload explain.txt
         id: upload-artifact
-        if: steps.shake.outputs.changed == 'true'
+        if: failure() || steps.shake.outputs.changed == 'true'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: shake-explain
@@ -123,7 +127,7 @@ jobs:
           api-key: ${{ secrets.ZULIP_API_KEY }}
           email: 'github-mathlib4-bot@leanprover.zulipchat.com'
           organization-url: 'https://leanprover.zulipchat.com'
-          to: 'nightly-testing'
+          to: 'nightly-testing-mathlib'
           type: 'stream'
           topic: 'Mathlib `shake --fix`'
           content: |
