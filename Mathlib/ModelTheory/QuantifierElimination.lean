@@ -55,7 +55,7 @@ namespace Language
 namespace Theory
 
 open Structure
-
+--TODO: generalize Fin m to alpha
 variable {L : Language.{u, v}}
 variable {M : Type w} {N A : Type*} [L.Structure M] [L.Structure N] [L.Structure A]
 

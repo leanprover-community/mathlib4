@@ -47,6 +47,10 @@ namespace Substructure
 def FG (N : L.Substructure M) : Prop :=
   ∃ S : Finset M, closure L S = N
 
+open Cardinal
+def LTKappaGenerated (N : L.Substructure M) (κ : Cardinal) : Prop :=
+  ∃ S : Set M, #S < κ ∧  closure L S = N
+
 theorem fg_def {N : L.Substructure M} : N.FG ↔ ∃ S : Set M, S.Finite ∧ closure L S = N :=
   ⟨fun ⟨t, h⟩ => ⟨_, Finset.finite_toSet t, h⟩, by
     rintro ⟨t', h, rfl⟩
