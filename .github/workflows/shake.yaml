@@ -37,7 +37,7 @@ jobs:
 
       # - name: lake build
       #   run: |
-      #     lake build Mathlib Archive Counterexamples
+      #     lake build Archive Counterexamples
 
       - name: lake shake
         id: shake
