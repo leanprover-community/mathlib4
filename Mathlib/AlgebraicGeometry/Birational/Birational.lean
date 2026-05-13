@@ -49,13 +49,7 @@ structure PartialIso (X Y : Scheme.{u}) where
 
 namespace PartialIso
 
-variable {X Y Z S : Scheme.{u}}
-
-variable (S) in
-/-- A partial isomorphism `f : X.PartialIso Y` is over `S` if its underlying isomorphism
-is a morphism over `S`. -/
-abbrev IsOver (f : X.PartialIso Y) [X.Over S] [Y.Over S] : Prop :=
-  f.iso.hom.IsOver S
+variable {X Y Z S : Scheme.{u}} {sX : X ⟶ S} {sY : Y ⟶ S} {sZ : Z ⟶ S}
 
 lemma ext_iff (f g : X.PartialIso Y) :
     f = g ↔ ∃ (e : f.source = g.source) (e' : g.target = f.target),
@@ -85,9 +79,6 @@ def refl : X.PartialIso X where
   dense_target := dense_univ
   iso := Iso.refl _
 
-set_option backward.isDefEq.respectTransparency false in
-instance isOver_refl [X.Over S] : (refl X).IsOver S := by simp
-
 /-- The inverse of a partial isomorphism. -/
 @[symm, simps]
 def symm (f : X.PartialIso Y) : Y.PartialIso X where
@@ -97,10 +88,9 @@ def symm (f : X.PartialIso Y) : Y.PartialIso X where
   dense_target := f.dense_source
   iso := f.iso.symm
 
-set_option backward.isDefEq.respectTransparency false in
-instance isOver_symm [X.Over S] [Y.Over S] (f : X.PartialIso Y) [f.IsOver S] :
-    f.symm.IsOver S := by
-  simp
+lemma isOver_symm (f : X.PartialIso Y) (hf : f.iso.hom ≫ f.target.ι ≫ sY = f.source.ι ≫ sX) :
+    f.symm.iso.hom ≫ f.symm.target.ι ≫ sX = f.symm.source.ι ≫ sY := by
+  simpa [← cancel_epi f.iso.hom] using hf.symm
 
 /-- Compose two partial isomorphisms along a proof that the target of `f` equals the source
 of `g`. See `trans` for the version that does not require this. -/
@@ -113,13 +103,14 @@ noncomputable def trans' (f : X.PartialIso Y) (g : Y.PartialIso Z) (e : f.target
   dense_target := g.dense_target
   iso := f.iso ≪≫ Y.isoOfEq e ≪≫ g.iso
 
-set_option backward.isDefEq.respectTransparency false in
-instance isOver_trans' [X.Over S] [Y.Over S] [Z.Over S] (f : X.PartialIso Y) (g : Y.PartialIso Z)
-    [f.IsOver S] [g.IsOver S] (e : f.target = g.source) : (trans' f g e).IsOver S := by
-  simp [isoOfEq_hom]
+lemma isOver_trans' (f : X.PartialIso Y) (g : Y.PartialIso Z) (e : f.target = g.source)
+    (hf : f.iso.hom ≫ f.target.ι ≫ sY = f.source.ι ≫ sX)
+    (hg : g.iso.hom ≫ g.target.ι ≫ sZ = g.source.ι ≫ sY) :
+    (trans' f g e).iso.hom ≫ (trans' f g e).target.ι ≫ sZ = (trans' f g e).source.ι ≫ sX := by
+  simp [← hf, hg]
 
 /-- Restrict the source of a partial isomorphism to a smaller dense open. -/
-@[simps source target, simps -isSimp iso]
+@[simps source target iso]
 noncomputable def restrictSource (f : X.PartialIso Y) (U : Opens X) (hU : Dense (U : Set X))
     (hU' : U ≤ f.source) : X.PartialIso Y where
   source := U
@@ -134,26 +125,25 @@ noncomputable def restrictSource (f : X.PartialIso Y) (U : Opens X) (hU : Dense 
     (f.iso.hom.isoImage (f.source.ι ⁻¹ᵁ U)) ≪≫
     (f.target.ι.isoImage (f.iso.hom ''ᵁ f.source.ι ⁻¹ᵁ U))
 
-set_option backward.isDefEq.respectTransparency false in
-instance isOver_restrictSource [X.Over S] [Y.Over S] (f : X.PartialIso Y) [f.IsOver S]
+lemma isOver_restrictSource (f : X.PartialIso Y)
+    (hf : f.iso.hom ≫ f.target.ι ≫ sY = f.source.ι ≫ sX)
     (U : Opens X) (hU : Dense (U : Set X)) (hU' : U ≤ f.source) :
-    (f.restrictSource U hU hU').IsOver S := by
-  simp only [Hom.isOver_iff, restrictSource_source, restrictSource_target, restrictSource_iso,
-    Iso.trans_hom, Iso.symm_hom, Category.assoc]
-  rw [← Opens.ι_comp_over, f.target.ι.isoImage_hom_ι_assoc, f.iso.hom.isoImage_hom_ι_assoc,
-    Opens.ι_comp_over, comp_over, ← f.source.ι_comp_over, Opens.isoOfLE_inv_ι_assoc,
-    Opens.ι_comp_over]
+    (f.restrictSource U hU hU').iso.hom ≫ (f.restrictSource U hU hU').target.ι ≫ sY =
+      (f.restrictSource U hU hU').source.ι ≫ sX := by
+  simp [hf]
 
 /-- Restrict the target of a partial isomorphism to a smaller dense open. -/
-@[simps! source target, simps! -isSimp iso]
+@[simps! source target iso]
 noncomputable def restrictTarget (f : X.PartialIso Y) (U : Opens Y) (hU : Dense (U : Set Y))
     (hU' : U ≤ f.target) : X.PartialIso Y :=
   (f.symm.restrictSource U hU hU').symm
 
-instance isOver_restrictTarget [X.Over S] [Y.Over S] (f : X.PartialIso Y) [f.IsOver S]
-    (U : Opens Y) (hU : Dense (U : Set Y)) (hU' : U ≤ f.target) :
-    (f.restrictTarget U hU hU').IsOver S :=
-  (f.symm.restrictSource U hU hU').isOver_symm
+lemma isOver_restrictTarget (f : X.PartialIso Y)
+    (hf : f.iso.hom ≫ f.target.ι ≫ sY = f.source.ι ≫ sX) (U : Opens Y) (hU : Dense (U : Set Y))
+    (hU' : U ≤ f.target) :
+    (f.restrictTarget U hU hU').iso.hom ≫ (f.restrictTarget U hU hU').target.ι ≫ sY =
+      (f.restrictTarget U hU hU').source.ι ≫ sX :=
+  isOver_symm _ (isOver_restrictSource _ (isOver_symm f hf) U hU hU')
 
 /-- Compose two partial isomorphisms, restricting to the intersection of the intermediate opens. -/
 @[trans, simps! source target, simps! -isSimp iso]
@@ -161,9 +151,11 @@ noncomputable def trans (f : X.PartialIso Y) (g : Y.PartialIso Z) : X.PartialIso
   have := f.dense_target.inter_of_isOpen_right g.dense_source g.source.2
   (f.restrictTarget _ this inf_le_left).trans' (g.restrictSource _ this inf_le_right) rfl
 
-instance isOver_trans [X.Over S] [Y.Over S] [Z.Over S] (f : X.PartialIso Y) (g : Y.PartialIso Z)
-    [f.IsOver S] [g.IsOver S] : (f.trans g).IsOver S :=
-  isOver_trans' _ _ _
+lemma isOver_trans (f : X.PartialIso Y) (g : Y.PartialIso Z)
+    (hf : f.iso.hom ≫ f.target.ι ≫ sY = f.source.ι ≫ sX)
+    (hg : g.iso.hom ≫ g.target.ι ≫ sZ = g.source.ι ≫ sY) :
+    (f.trans g).iso.hom ≫ (f.trans g).target.ι ≫ sZ = (f.trans g).source.ι ≫ sX :=
+  isOver_trans' _ _ rfl (isOver_restrictTarget _ hf _ _ _) (isOver_restrictSource _ hg _ _ _)
 
 /-- The underlying partial map of a partial isomorphism. -/
 @[simps]
@@ -209,50 +201,52 @@ lemma Birational.trans {X Y Z : Scheme.{u}} (h₁ : Birational X Y) (h₂ : Bira
 
 /-- `X` and `Y` are birational over `S` if there exists a partial isomorphism between them
 that is compatible with the structure maps to `S`. -/
-def BirationalOver (S X Y : Scheme.{u}) [X.Over S] [Y.Over S] : Prop :=
-  ∃ f : PartialIso X Y, f.IsOver S
+def BirationalOver {S X Y : Scheme.{u}} (sX : X ⟶ S) (sY : Y ⟶ S) : Prop :=
+  ∃ f : PartialIso X Y, f.iso.hom ≫ f.target.ι ≫ sY = f.source.ι ≫ sX
 
 /-- Choose a partial isomorphism witnessing that `X` and `Y` are birational over `S`. -/
-noncomputable def BirationalOver.partialIso {S X Y : Scheme.{u}} [X.Over S] [Y.Over S]
-    (h : BirationalOver S X Y) :=
+noncomputable def BirationalOver.partialIso {S X Y : Scheme.{u}} (sX : X ⟶ S) (sY : Y ⟶ S)
+    (h : BirationalOver sX sY) :=
   h.choose
 
-instance BirationalOver.partialIso_isOver {S X Y : Scheme.{u}} [X.Over S] [Y.Over S]
-    (h : BirationalOver S X Y) : h.partialIso.IsOver S :=
+lemma BirationalOver.partialIso_isOver {S X Y : Scheme.{u}} (sX : X ⟶ S) (sY : Y ⟶ S)
+    (h : BirationalOver sX sY) :
+    h.partialIso.iso.hom ≫ h.partialIso.target.ι ≫ sY = h.partialIso.source.ι ≫ sX :=
   h.choose_spec
 
 @[refl]
-lemma BirationalOver.refl (S X : Scheme.{u}) [X.Over S] : BirationalOver S X X :=
-  ⟨.refl X, inferInstance⟩
+lemma BirationalOver.refl {S X : Scheme.{u}} (sX : X ⟶ S) : BirationalOver sX sX :=
+  ⟨.refl X, by simp⟩
 
 @[symm]
-lemma BirationalOver.symm {S X Y : Scheme.{u}} [X.Over S] [Y.Over S] (h : BirationalOver S X Y) :
-    BirationalOver S Y X :=
-  ⟨h.partialIso.symm, inferInstance⟩
+lemma BirationalOver.symm {S X Y : Scheme.{u}} (sX : X ⟶ S) (sY : Y ⟶ S)
+    (h : BirationalOver sX sY) : BirationalOver sY sX :=
+  ⟨h.partialIso.symm, PartialIso.isOver_symm _ h.partialIso_isOver⟩
 
 @[trans]
-lemma BirationalOver.trans {S X Y Z : Scheme.{u}} [X.Over S] [Y.Over S] [Z.Over S]
-    (h₁ : BirationalOver S X Y) (h₂ : BirationalOver S Y Z) :
-    BirationalOver S X Z :=
-  ⟨h₁.partialIso.trans h₂.partialIso, inferInstance⟩
+lemma BirationalOver.trans {S X Y Z : Scheme.{u}} {sX : X ⟶ S} {sY : Y ⟶ S} {sZ : Z ⟶ S}
+    (h₁ : BirationalOver sX sY) (h₂ : BirationalOver sY sZ) :
+    BirationalOver sX sZ :=
+  ⟨h₁.partialIso.trans h₂.partialIso,
+    PartialIso.isOver_trans _ _ h₁.partialIso_isOver h₂.partialIso_isOver⟩
 
 /-- `X` is rational over `S` (or `S`-rational) if it is birational over `S` to some
 affine space `𝔸(n; S)`. -/
 @[mk_iff]
-class IsRationalOver (S X : Scheme.{u}) [X.Over S] : Prop where
-  exists_birationalOver_affineSpace' : ∃ (n : Type u), BirationalOver S X 𝔸(n; S)
+class IsRationalOver {S X : Scheme.{u}} (sX : X ⟶ S) : Prop where
+  exists_birationalOver_affineSpace' : ∃ (n : Type u), BirationalOver sX (𝔸(n; S) ↘ S)
 
-lemma exists_birationalOver_affineSpace (S X : Scheme.{u}) [X.Over S]
-    [IsRationalOver S X] : ∃ (n : Type u), BirationalOver S X 𝔸(n; S) :=
+lemma exists_birationalOver_affineSpace {S X : Scheme.{u}} (sX : X ⟶ S)
+    [IsRationalOver sX] : ∃ (n : Type u), BirationalOver sX (𝔸(n; S) ↘ S) :=
   IsRationalOver.exists_birationalOver_affineSpace'
 
-instance (S : Scheme.{u}) (n : Type u) : IsRationalOver S 𝔸(n; S) where
-  exists_birationalOver_affineSpace' := ⟨n, .refl S 𝔸(n; S)⟩
+instance (S : Scheme.{u}) (n : Type u) : IsRationalOver (𝔸(n; S) ↘ S) where
+  exists_birationalOver_affineSpace' := ⟨n, .refl _⟩
 
 /-- If a scheme `X` is `S`-birational to an `S`-rational scheme `Y`, then `X` is `S`-rational. -/
-lemma BirationalOver.isRationalOver {S X Y : Scheme.{u}} [X.Over S] [Y.Over S]
-    [IsRationalOver S Y] (h : BirationalOver S X Y) : IsRationalOver S X := by
-  obtain ⟨n, hn⟩ := exists_birationalOver_affineSpace S Y
+lemma BirationalOver.isRationalOver {S X Y : Scheme.{u}} (sX : X ⟶ S) (sY : Y ⟶ S)
+    [IsRationalOver sY] (h : BirationalOver sX sY) : IsRationalOver sX := by
+  obtain ⟨n, hn⟩ := exists_birationalOver_affineSpace sY
   exact ⟨n, h.trans hn⟩
 
 section DenseOpen
