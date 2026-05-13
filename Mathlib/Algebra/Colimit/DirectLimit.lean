@@ -931,12 +931,11 @@ namespace NonUnitalStarAlgebra
 
 variable [CommSemiring R]
 variable [∀ i, NonUnitalNonAssocSemiring (G i)]
-variable [∀ i, StarRing (G i)]
+variable [∀ i, Star (G i)]
 variable [∀ i, DistribMulAction R (G i)]
 variable [∀ i j h, StarHomClass (T h) (G i) (G j)]
 variable [∀ i j h, NonUnitalAlgHomClass (T h) R (G i) (G j)]
 variable [Nonempty ι]
-variable (P : Type*) [Semiring P] [StarRing P] [Algebra R P]
 
 variable (G f) in
 /-- The canonical map from a component to the direct limit. -/
@@ -946,6 +945,8 @@ noncomputable def of (i) : G i →⋆ₙₐ[R] DirectLimit G f where
   map_star' _ := (star_def ..).symm
 
 lemma of_f {i j} (hij) (x) : of G f j (f i j hij x) = of G f i x := .symm <| eq_of_le ..
+
+variable (P : Type*) [Star P] [NonUnitalNonAssocSemiring P] [DistribMulAction R P]
 
 variable (G f) in
 /-- The universal property of the direct limit: maps from the components to another
@@ -979,13 +980,11 @@ namespace StarAlgebra
 
 variable [CommSemiring R]
 variable [∀ i, Semiring (G i)]
-variable [∀ i, StarRing (G i)]
+variable [∀ i, Star (G i)]
 variable [∀ i, Algebra R (G i)]
 variable [∀ i j h, StarHomClass (T h) (G i) (G j)]
 variable [∀ i j h, AlgHomClass (T h) R (G i) (G j)]
 variable [Nonempty ι]
-
-variable (P : Type*) [Semiring P] [StarRing P] [Algebra R P]
 
 variable (G f) in
 /-- The canonical map from a component to the direct limit. -/
@@ -995,6 +994,8 @@ noncomputable def of (i) : G i →⋆ₐ[R] DirectLimit G f where
   map_star' _ := (star_def ..).symm
 
 lemma of_f {i j} (hij) (x) : of G f j (f i j hij x) = of G f i x := .symm <| eq_of_le ..
+
+variable (P : Type*) [Semiring P] [Star P] [Algebra R P]
 
 variable (G f) in
 /-- The universal property of the direct limit: maps from the components to another star R-algebra
