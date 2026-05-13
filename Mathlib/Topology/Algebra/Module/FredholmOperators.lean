@@ -345,7 +345,7 @@ theorem aaron (hr : IsFredholm_quot u) :
   <;> intro x hx
   <;> simp_all [← map_sub]
 
-/- ## Injections from closed finite codimension subspaces
+/- ## Injections from closed finite codimension subspaces are Fredholm
 
 Easy for every definition.
 The index is the codimension of the range.
