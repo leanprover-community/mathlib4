@@ -929,19 +929,14 @@ end NonUnitalAlgebra
 
 namespace NonUnitalStarAlgebra
 
-variable [CommSemiring R] --[Star R]
+variable [CommSemiring R]
 variable [∀ i, NonUnitalNonAssocSemiring (G i)]
 variable [∀ i, StarRing (G i)]
 variable [∀ i, DistribMulAction R (G i)]
---variable [∀ i, StarModule R (G i)]
 variable [∀ i j h, StarHomClass (T h) (G i) (G j)]
 variable [∀ i j h, NonUnitalAlgHomClass (T h) R (G i) (G j)]
 variable [Nonempty ι]
-
 variable (P : Type*) [Semiring P] [StarRing P] [Algebra R P]
-
-#synth DistribMulAction R (DirectLimit G f)
-
 
 variable (G f) in
 /-- The canonical map from a component to the direct limit. -/
