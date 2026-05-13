@@ -535,7 +535,11 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
     if let some suggStx := suggestion? then
       liftCoreM <| Lean.Meta.Tactic.TryThis.addSuggestion stainStx
         { suggestion := .tsyntax (kind := `tactic) ⟨suggStx⟩ } (origSpan? := stainStx)
-    logInfoAt s m!"`{s}` uses `{d}`!"
+    match d with
+    | .name _ => logInfoAt s m!"`{s}` uses `{d}`, which was modified by a flexible tactic!"
+    | .goal =>
+        logInfoAt s m!"`{s}` modifies the current goal, which was modified by a flexible tactic!"
+    | _ => logInfoAt s m!"`{s}` uses `{d}`test!" -- this case should not appear
 
 initialize addLinter flexibleLinter
 
