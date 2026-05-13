@@ -171,14 +171,12 @@ lemma ae_forall_integrable_exp_mul (h : HasSubgaussianMGF X c κ ν) :
   filter_upwards [h_int] with ω' h_int t
   exact integrable_exp_mul_of_le_of_le (h_int _) (h_int _) (Int.floor_le t) (Int.le_ceil t)
 
-lemma ae_forall_memLp_exp_mul (h : HasSubgaussianMGF X c κ ν) (p : ℝ≥0) :
+lemma ae_forall_memLp_exp_mul (h : HasSubgaussianMGF X c κ ν) (p : ℝ≥0) (hp : p ≠ 0) :
     ∀ᵐ ω' ∂ν, ∀ t, MemLp (fun ω ↦ exp (t * X ω)) p (κ ω') := by
   filter_upwards [h.ae_forall_integrable_exp_mul] with ω' hi t
   constructor
   · exact (hi t).1
-  · by_cases hp : p = 0
-    · simp [hp]
-    rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top (mod_cast hp) (by simp),
+  · rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top (mod_cast hp) (by simp),
       ENNReal.coe_toReal]
     have hf := (hi (p * t)).lintegral_lt_top
     convert hf using 3 with ω
@@ -186,10 +184,8 @@ lemma ae_forall_memLp_exp_mul (h : HasSubgaussianMGF X c κ ν) (p : ℝ≥0) :
       ← exp_mul, mul_comm, ← mul_assoc]
     positivity
 
-lemma memLp_exp_mul (h : HasSubgaussianMGF X c κ ν) (t : ℝ) (p : ℝ≥0) :
+lemma memLp_exp_mul (h : HasSubgaussianMGF X c κ ν) (t : ℝ) (p : ℝ≥0) (hp0 : p ≠ 0) :
     MemLp (fun ω ↦ exp (t * X ω)) p (κ ∘ₘ ν) := by
-  by_cases hp0 : p = 0
-  · simpa [hp0] using (h.integrable_exp_mul t).1
   constructor
   · exact (h.integrable_exp_mul t).1
   · rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top (mod_cast hp0) (by simp)]
@@ -418,14 +414,15 @@ lemma add {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF X cX κ ν)
   exact
   { integrable_exp_mul t := by
       simp_rw [mul_add, exp_add]
-      convert MemLp.integrable_mul (hX.memLp_exp_mul t 2) (hY.memLp_exp_mul t 2)
+      convert MemLp.integrable_mul (hX.memLp_exp_mul t 2 two_ne_zero)
+        (hY.memLp_exp_mul t 2 two_ne_zero)
       norm_cast
       infer_instance
     mgf_le := by
       let p := (cX.sqrt + cY.sqrt) / cX.sqrt
       let q := (cX.sqrt + cY.sqrt) / cY.sqrt
-      filter_upwards [hX.mgf_le, hY.mgf_le, hX.ae_forall_memLp_exp_mul p,
-        hY.ae_forall_memLp_exp_mul q] with ω' hmX hmY hlX hlY t
+      filter_upwards [hX.mgf_le, hY.mgf_le, hX.ae_forall_memLp_exp_mul p (by simp [p, *]),
+        hY.ae_forall_memLp_exp_mul q (by simp [q, *])] with ω' hmX hmY hlX hlY t
       calc (κ ω')[fun ω ↦ exp (t * (X ω + Y ω))]
       _ ≤ (κ ω')[fun ω ↦ exp (t * X ω) ^ (p : ℝ)] ^ (1 / (p : ℝ)) *
           (κ ω')[fun ω ↦ exp (t * Y ω) ^ (q : ℝ)] ^ (1 / (q : ℝ)) := by
@@ -474,12 +471,12 @@ lemma integrable_exp_add_compProd {η : Kernel (Ω' × Ω) Ω''} [IsZeroOrMarkov
   · simp
   simp_rw [mul_add, exp_add]
   refine MemLp.integrable_mul (p := 2) (q := 2) ?_ ?_
-  · have h := hX.memLp_exp_mul t 2
+  · have h := hX.memLp_exp_mul t 2 two_ne_zero
     simp only [ENNReal.coe_ofNat] at h
     have : κ ∘ₘ ν = ((κ ⊗ₖ η) ∘ₘ ν).map Prod.fst := by
       rw [Measure.map_comp _ _ measurable_fst, ← fst_eq, fst_compProd]
     rwa [this, memLp_map_measure_iff h.1 measurable_fst.aemeasurable] at h
-  · have h := hY.memLp_exp_mul t 2
+  · have h := hY.memLp_exp_mul t 2 two_ne_zero
     rwa [ENNReal.coe_ofNat, Measure.comp_compProd_comm, Measure.snd,
       memLp_map_measure_iff h.1 measurable_snd.aemeasurable] at h
 
@@ -579,8 +576,13 @@ lemma fun_zero : HasCondSubgaussianMGF m hm (fun _ ↦ 0) 0 μ := Kernel.HasSubg
 lemma zero : HasCondSubgaussianMGF m hm 0 0 μ := Kernel.HasSubgaussianMGF.zero
 
 lemma memLp_exp_mul (h : HasCondSubgaussianMGF m hm X c μ) (t : ℝ) (p : ℝ≥0) :
-    MemLp (fun ω ↦ exp (t * X ω)) p μ :=
-  condExpKernel_comp_trim (μ := μ) hm ▸ Kernel.HasSubgaussianMGF.memLp_exp_mul h t p
+    MemLp (fun ω ↦ exp (t * X ω)) p μ := by
+  by_cases hp : p = 0
+  · simp only [hp, ENNReal.coe_zero, memLp_zero_iff_aestronglyMeasurable_and_volume_support_lt_top,
+      measure_lt_top, and_true]
+    rw [← condExpKernel_comp_trim (μ := μ) hm]
+    exact (h.integrable_exp_mul t).1
+  exact condExpKernel_comp_trim (μ := μ) hm ▸ Kernel.HasSubgaussianMGF.memLp_exp_mul h t p hp
 
 lemma integrable_exp_mul (h : HasCondSubgaussianMGF m hm X c μ) (t : ℝ) :
     Integrable (fun ω ↦ exp (t * X ω)) μ :=
@@ -627,10 +629,10 @@ lemma congr (h : HasSubgaussianMGF X c μ) {Y : Ω → ℝ} (h' : X =ᵐ[μ] Y) 
   apply h.congr
   simpa
 
-lemma memLp_exp_mul (h : HasSubgaussianMGF X c μ) (t : ℝ) (p : ℝ≥0) :
+lemma memLp_exp_mul (h : HasSubgaussianMGF X c μ) (t : ℝ) (p : ℝ≥0) (hp : p ≠ 0) :
     MemLp (fun ω ↦ exp (t * X ω)) p μ := by
   rw [HasSubgaussianMGF_iff_kernel] at h
-  simpa using h.memLp_exp_mul t p
+  simpa using h.memLp_exp_mul t p hp
 
 lemma cgf_le (h : HasSubgaussianMGF X c μ) (t : ℝ) : cgf X μ t ≤ c * t ^ 2 / 2 := by
   rw [HasSubgaussianMGF_iff_kernel] at h
@@ -692,8 +694,8 @@ lemma integrableExpSet_eq_univ (hX : HasSubgaussianMGF X c μ) :
   ext t
   simpa using hX.integrable_exp_mul t
 
-lemma memLp (hX : HasSubgaussianMGF X c μ) (p : ℝ≥0) : MemLp X p μ :=
-  memLp_of_mem_interior_integrableExpSet (by simp [integrableExpSet_eq_univ hX]) p
+lemma memLp (hX : HasSubgaussianMGF X c μ) (p : ℝ≥0) (hp : p ≠ 0) : MemLp X p μ :=
+  memLp_of_mem_interior_integrableExpSet (by simp [integrableExpSet_eq_univ hX]) hp
 
 lemma integrable (hX : HasSubgaussianMGF X c μ) : Integrable X μ :=
   integrable_of_mem_interior_integrableExpSet (by simp [integrableExpSet_eq_univ hX])
@@ -728,7 +730,8 @@ lemma add_of_indepFun {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF
     HasSubgaussianMGF (fun ω ↦ X ω + Y ω) (cX + cY) μ where
   integrable_exp_mul t := by
     simp_rw [mul_add, exp_add]
-    convert MemLp.integrable_mul (hX.memLp_exp_mul t 2) (hY.memLp_exp_mul t 2)
+    convert MemLp.integrable_mul (hX.memLp_exp_mul t 2 two_ne_zero)
+      (hY.memLp_exp_mul t 2 two_ne_zero)
     norm_cast
     infer_instance
   mgf_le t := by

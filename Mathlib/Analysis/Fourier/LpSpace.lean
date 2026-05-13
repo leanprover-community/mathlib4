@@ -95,7 +95,8 @@ theorem inner_fourier_eq (f g : Lp (α := E) F 2) : ⟪𝓕 f, 𝓕 g⟫ = ⟪f,
 end MeasureTheory.Lp
 
 @[simp]
-theorem SchwartzMap.toLp_fourier_eq (f : 𝓢(E, F)) : 𝓕 (f.toLp 2) = (𝓕 f).toLp 2 := by
+theorem SchwartzMap.toLp_fourier_eq (f : 𝓢(E, F)) :
+    𝓕 (f.toLp two_ne_zero) = (𝓕 f).toLp two_ne_zero := by
   apply LinearMap.extendOfNorm_eq
   · exact SchwartzMap.denseRange_toLpCLM ENNReal.ofNat_ne_top
   use 1
@@ -107,7 +108,8 @@ theorem SchwartzMap.toLp_fourier_eq (f : 𝓢(E, F)) : 𝓕 (f.toLp 2) = (𝓕 f
 alias SchwartzMap.toLp_fourierTransform_eq := SchwartzMap.toLp_fourier_eq
 
 @[simp]
-theorem SchwartzMap.toLp_fourierInv_eq (f : 𝓢(E, F)) : 𝓕⁻ (f.toLp 2) = (𝓕⁻ f).toLp 2 := by
+theorem SchwartzMap.toLp_fourierInv_eq (f : 𝓢(E, F)) :
+    𝓕⁻ (f.toLp two_ne_zero) = (𝓕⁻ f).toLp two_ne_zero := by
   apply LinearMap.extendOfNorm_eq
   · exact SchwartzMap.denseRange_toLpCLM ENNReal.ofNat_ne_top
   use 1

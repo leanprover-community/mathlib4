@@ -202,7 +202,8 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Schwartz functions are in every Sobolev space. -/
 theorem _root_.SchwartzMap.memSobolev {s : ℝ} {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f : 𝓢(E, F)) :
     MemSobolev s p (f : 𝓢'(E, F)) := by
-  use (SchwartzMap.fourierMultiplierCLM F (fun x ↦ ((1 + ‖x‖ ^ 2) ^ (s / 2) : ℝ)) f).toLp p
+  use (SchwartzMap.fourierMultiplierCLM F (fun x ↦ ((1 + ‖x‖ ^ 2) ^ (s / 2) : ℝ)) f).toLp
+    (ENNReal.ne_zero_of_ge_one hp.out)
   rw [besselPotential, Lp.toTemperedDistribution_toLp_eq,
     fourierMultiplierCLM_toTemperedDistributionCLM_eq (by fun_prop)]
   congr 1

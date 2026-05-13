@@ -74,15 +74,12 @@ lemma toLpₗ_of_not_memLp (h_Lp : ¬ MemLp id p μ) (L : StrongDual 𝕜 E) :
     L.toLpₗ μ p = 0 := by
   simp [toLpₗ, dif_neg h_Lp]
 
-lemma norm_toLpₗ_le [OpensMeasurableSpace E] (L : StrongDual 𝕜 E) :
+lemma norm_toLpₗ_le [OpensMeasurableSpace E] (L : StrongDual 𝕜 E) (hp : p ≠ 0) :
     ‖L.toLpₗ μ p‖ ≤ ‖L‖ * (eLpNorm id p μ).toReal := by
   by_cases h_Lp : MemLp id p μ
   swap
   · simp only [h_Lp, not_false_eq_true, toLpₗ_of_not_memLp, Lp.norm_zero]
     positivity
-  by_cases hp : p = 0
-  · simp only [h_Lp, toLpₗ_apply, Lp.norm_toLp]
-    simp [hp]
   by_cases hp_top : p = ∞
   · simp only [hp_top, StrongDual.toLpₗ_apply h_Lp, Lp.norm_toLp, eLpNorm_exponent_top] at h_Lp ⊢
     simp only [eLpNormEssSup, id_eq]
@@ -131,7 +128,7 @@ variable {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] [OpensMeasurableSpace
 /-- Continuous linear map from the dual to `Lp` equal to `MemLp.toLp` if `MemLp id p μ`
 and to 0 otherwise. -/
 noncomputable
-def toLp (μ : Measure E) (p : ℝ≥0∞) [Fact (1 ≤ p)] :
+def toLp (μ : Measure E) (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] :
     StrongDual 𝕜 E →L[𝕜] Lp 𝕜 p μ where
   toLinearMap := StrongDual.toLpₗ μ p
   cont := by
@@ -141,7 +138,7 @@ def toLp (μ : Measure E) (p : ℝ≥0∞) [Fact (1 ≤ p)] :
     obtain ⟨r, hxr⟩ := hs
     refine ⟨r * (eLpNorm id p μ).toReal, fun L hLs ↦ ?_⟩
     specialize hxr L hLs
-    refine (StrongDual.norm_toLpₗ_le L).trans ?_
+    refine (StrongDual.norm_toLpₗ_le L (ENNReal.ne_zero_of_ge_one hp.out)).trans ?_
     gcongr
 
 @[simp]
@@ -233,7 +230,7 @@ def covarianceBilinDual (μ : Measure E) : StrongDual ℝ E →L[ℝ] StrongDual
   uncenteredCovarianceBilinDual (μ.map (fun x ↦ x - ∫ x, x ∂μ))
 
 omit [BorelSpace E] in
-lemma _root_.MeasureTheory.memLp_id_of_self_sub_integral {p : ℝ≥0∞}
+lemma _root_.MeasureTheory.memLp_id_of_self_sub_integral {p : ℝ≥0∞} (hp0 : p ≠ 0)
     (h_Lp : MemLp (fun x ↦ x - ∫ y, y ∂μ) p μ) : MemLp id p μ := by
   have : (id : E → E) = fun x ↦ x - ∫ x, x ∂μ + ∫ x, x ∂μ := by ext; simp
   rw [this]
@@ -248,8 +245,6 @@ lemma _root_.MeasureTheory.memLp_id_of_self_sub_integral {p : ℝ≥0∞}
   are in `L^p` by assumptions, so the constant `c` also is. -/
   by_cases hx : c = 0
   · simp [hx]
-  rcases eq_or_ne p 0 with rfl | hp0
-  · simp [aestronglyMeasurable_const]
   rcases eq_or_ne p ∞ with rfl | hptop
   · exact memLp_top_const c
   apply (integrable_norm_rpow_iff (by fun_prop) hp0 hptop).1
@@ -294,7 +289,7 @@ lemma covarianceBilinDual_of_not_memLp (h : ¬ MemLp id 2 μ) (L₁ L₂ : Stron
     covarianceBilinDual μ L₁ L₂ = 0 := by
   apply covarianceBilinDual_of_not_memLp'
   contrapose h
-  exact memLp_id_of_self_sub_integral h
+  exact memLp_id_of_self_sub_integral two_ne_zero h
 
 @[simp]
 lemma covarianceBilinDual_zero : covarianceBilinDual (0 : Measure E) = 0 := by

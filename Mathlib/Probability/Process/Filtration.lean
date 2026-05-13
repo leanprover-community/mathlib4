@@ -459,12 +459,12 @@ theorem stronglyMeasurable_limit_process' : StronglyMeasurable[m] (limitProcess 
 
 theorem memLp_limitProcess_of_eLpNorm_bdd {R : ℝ≥0} {p : ℝ≥0∞} {F : Type*} [NormedAddCommGroup F]
     {ℱ : Filtration ℕ m} {f : ℕ → Ω → F} (hfm : ∀ n, AEStronglyMeasurable (f n) μ)
-    (hbdd : ∀ n, eLpNorm (f n) p μ ≤ R) : MemLp (limitProcess f ℱ μ) p μ := by
+    (hbdd : ∀ n, eLpNorm (f n) p μ ≤ R) (hp : p ≠ 0) : MemLp (limitProcess f ℱ μ) p μ := by
   rw [limitProcess]
   split_ifs with h
   · refine ⟨StronglyMeasurable.aestronglyMeasurable
       ((Classical.choose_spec h).1.mono (sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _)),
-      lt_of_le_of_lt (Lp.eLpNorm_lim_le_liminf_eLpNorm hfm _ (Classical.choose_spec h).2)
+      lt_of_le_of_lt (Lp.eLpNorm_lim_le_liminf_eLpNorm hfm _ (Classical.choose_spec h).2 hp)
         (lt_of_le_of_lt ?_ (ENNReal.coe_lt_top : ↑R < ∞))⟩
     simp_rw [liminf_eq, eventually_atTop]
     exact sSup_le fun b ⟨a, ha⟩ => (ha a le_rfl).trans (hbdd _)

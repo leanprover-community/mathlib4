@@ -130,7 +130,8 @@ theorem tendstoInDistribution_inv_sqrt_mul_sum_sub
   obtain h | h := eq_or_ne Var[X 0; P] 0
   · have : ∀ᵐ ω ∂P, ∀ n, X n ω = P[X 0] := by
       refine ae_all_iff.2 fun n ↦ ?_
-      convert (ae_eq_integral_of_variance_eq_zero ((hident n).memLp_iff.2 hX)) ?_ using 3
+      convert (ae_eq_integral_of_variance_eq_zero (((hident n).memLp_iff two_ne_zero).2 hX)) ?_
+        using 3
       · rw [(hident n).integral_eq]
       · rwa [(hident n).variance_eq]
     have mX (n : ℕ) := (hident n).aemeasurable_fst

@@ -201,34 +201,32 @@ theorem integral_eq [NormedAddCommGroup γ] [NormedSpace ℝ γ] [BorelSpace γ]
     rw [integral_non_aestronglyMeasurable hf]
 
 theorem eLpNorm_eq [NormedAddCommGroup γ] [OpensMeasurableSpace γ] (h : IdentDistrib f g μ ν)
-    (p : ℝ≥0∞) : eLpNorm f p μ = eLpNorm g p ν := by
-  by_cases h0 : p = 0
-  · simp [h0]
+    {p : ℝ≥0∞} (hp : p ≠ 0) : eLpNorm f p μ = eLpNorm g p ν := by
   by_cases h_top : p = ∞
   · simp only [h_top, eLpNorm, eLpNormEssSup, ENNReal.top_ne_zero, if_true,
       if_false]
     apply essSup_eq
     exact h.comp (measurable_coe_nnreal_ennreal.comp measurable_nnnorm)
-  simp only [eLpNorm_eq_eLpNorm' h0 h_top, eLpNorm', one_div]
+  simp only [eLpNorm_eq_eLpNorm' hp h_top, eLpNorm', one_div]
   congr 1
   apply lintegral_eq
   exact h.comp (Measurable.pow_const (measurable_coe_nnreal_ennreal.comp measurable_nnnorm)
     p.toReal)
 
-theorem memLp_snd [NormedAddCommGroup γ] [BorelSpace γ] {p : ℝ≥0∞} (h : IdentDistrib f g μ ν)
-    (hf : MemLp f p μ) : MemLp g p ν := by
+theorem memLp_snd [NormedAddCommGroup γ] [BorelSpace γ] {p : ℝ≥0∞} (hp : p ≠ 0)
+    (h : IdentDistrib f g μ ν) (hf : MemLp f p μ) : MemLp g p ν := by
   refine ⟨h.aestronglyMeasurable_snd hf.aestronglyMeasurable, ?_⟩
-  rw [← h.eLpNorm_eq]
+  rw [← h.eLpNorm_eq hp]
   exact hf.2
 
-theorem memLp_iff [NormedAddCommGroup γ] [BorelSpace γ] {p : ℝ≥0∞} (h : IdentDistrib f g μ ν) :
-    MemLp f p μ ↔ MemLp g p ν :=
-  ⟨fun hf => h.memLp_snd hf, fun hg => h.symm.memLp_snd hg⟩
+theorem memLp_iff [NormedAddCommGroup γ] [BorelSpace γ] {p : ℝ≥0∞} (hp : p ≠ 0)
+    (h : IdentDistrib f g μ ν) : MemLp f p μ ↔ MemLp g p ν :=
+  ⟨fun hf => h.memLp_snd hp hf, fun hg => h.symm.memLp_snd hp hg⟩
 
 theorem integrable_snd [NormedAddCommGroup γ] [BorelSpace γ] (h : IdentDistrib f g μ ν)
     (hf : Integrable f μ) : Integrable g ν := by
   rw [← memLp_one_iff_integrable] at hf ⊢
-  exact h.memLp_snd hf
+  exact h.memLp_snd one_ne_zero hf
 
 theorem integrable_iff [NormedAddCommGroup γ] [BorelSpace γ] (h : IdentDistrib f g μ ν) :
     Integrable f μ ↔ Integrable g ν :=
@@ -307,6 +305,7 @@ theorem MemLp.uniformIntegrable_of_identDistrib_aux {ι : Type*} {f : ι → α 
   by_cases hι : Nonempty ι
   swap; · exact ⟨0, fun i => False.elim (hι <| Nonempty.intro i)⟩
   obtain ⟨C, hC₁, hC₂⟩ := hℒp.eLpNorm_indicator_norm_ge_pos_le (hfmeas _) hε
+    (ENNReal.ne_zero_of_ge_one hp)
   refine ⟨⟨C, hC₁.le⟩, fun i => le_trans (le_of_eq ?_) hC₂⟩
   have : {x | (⟨C, hC₁.le⟩ : ℝ≥0) ≤ ‖f i x‖₊} = {x | C ≤ ‖f i x‖} := by
     ext x

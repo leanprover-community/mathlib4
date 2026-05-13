@@ -546,14 +546,15 @@ lemma variance_id_gaussianReal : Var[id; gaussianReal μ v] = v :=
 
 /-- All the moments of a real Gaussian distribution are finite. That is, the identity is in Lp for
 all finite `p`. -/
-lemma memLp_id_gaussianReal (p : ℝ≥0) : MemLp id p (gaussianReal μ v) :=
-  memLp_of_mem_interior_integrableExpSet (by simp) p
+lemma memLp_id_gaussianReal {p : ℝ≥0} (hp : p ≠ 0) : MemLp id p (gaussianReal μ v) :=
+  memLp_of_mem_interior_integrableExpSet (by simp) hp
 
 /-- All the moments of a real Gaussian distribution are finite. That is, the identity is in Lp for
 all finite `p`. -/
-lemma memLp_id_gaussianReal' (p : ℝ≥0∞) (hp : p ≠ ∞) : MemLp id p (gaussianReal μ v) := by
-  lift p to ℝ≥0 using hp
-  exact memLp_id_gaussianReal p
+lemma memLp_id_gaussianReal' {p : ℝ≥0∞} (hp : p ≠ 0) (hp' : p ≠ ∞) :
+    MemLp id p (gaussianReal μ v) := by
+  lift p to ℝ≥0 using hp'
+  exact memLp_id_gaussianReal (ENNReal.coe_ne_zero.mp hp)
 
 end Moments
 
