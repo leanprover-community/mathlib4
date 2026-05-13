@@ -289,8 +289,7 @@ theorem toMatrix_reindexEquiv (e : n ≃ p) (t : TransvectionStruct n R) :
     (t.reindexEquiv e).toMatrix = reindexAlgEquiv R _ e t.toMatrix := by
   rcases t with ⟨t_i, t_j, _⟩
   ext a b
-  simp only [reindexEquiv, transvection, toMatrix_mk,
-    submatrix_apply, reindex_apply, reindexAlgEquiv_apply]
+  simp only [reindexEquiv, transvection, toMatrix_mk]
   by_cases ha : e t_i = a <;> by_cases hb : e t_j = b <;> by_cases hab : a = b <;>
     simp [ha, hb, hab, ← e.apply_eq_iff_eq_symm_apply, single]
 
@@ -298,10 +297,7 @@ theorem toMatrix_reindexEquiv_prod (e : n ≃ p) (L : List (TransvectionStruct n
     (L.map (toMatrix ∘ reindexEquiv e)).prod = reindexAlgEquiv R _ e (L.map toMatrix).prod := by
   induction L with
   | nil => simp
-  | cons t L IH =>
-    simp only [toMatrix_reindexEquiv, IH, Function.comp_apply, List.prod_cons,
-      reindexAlgEquiv_apply, List.map]
-    exact (reindexAlgEquiv_mul R _ _ _ _).symm
+  | cons t L IH => simp [toMatrix_reindexEquiv, IH]
 
 end TransvectionStruct
 
@@ -626,13 +622,10 @@ theorem reindex_exists_list_transvec_mul_mul_list_transvec_eq_diagonal (M : Matr
       (L.map toMatrix).prod * M * (L'.map toMatrix).prod = diagonal D := by
   rcases H with ⟨L₀, L₀', D₀, h₀⟩
   refine ⟨L₀.map (reindexEquiv e.symm), L₀'.map (reindexEquiv e.symm), D₀ ∘ e, ?_⟩
-  have : M = reindexAlgEquiv 𝕜 _ e.symm (reindexAlgEquiv 𝕜 _ e M) := by
-    simp only [Equiv.symm_symm, submatrix_submatrix, reindex_apply, submatrix_id_id,
-      Equiv.symm_comp_self, reindexAlgEquiv_apply]
+  have : M = reindexAlgEquiv 𝕜 _ e.symm (reindexAlgEquiv 𝕜 _ e M) := by simp
   rw [this]
-  simp only [toMatrix_reindexEquiv_prod, List.map_map, reindexAlgEquiv_apply]
-  simp only [← reindexAlgEquiv_apply 𝕜, ← reindexAlgEquiv_mul, h₀]
-  simp only [Equiv.symm_symm, reindex_apply, submatrix_diagonal_equiv, reindexAlgEquiv_apply]
+  simp_rw [List.map_map, toMatrix_reindexEquiv_prod, ← map_mul, h₀]
+  simp
 
 /-- Any matrix can be reduced to diagonal form by elementary operations. Formulated here on `Type 0`
 because we will make an induction using `Fin r`.

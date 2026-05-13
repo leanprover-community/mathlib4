@@ -227,9 +227,7 @@ theorem toMatrix_reindex' [DecidableEq ι] [DecidableEq ι'] (b : Basis ι R M) 
     (e : ι ≃ ι') : (b.reindex e).toMatrix v =
     Matrix.reindexAlgEquiv R R e (b.toMatrix (v ∘ e)) := by
   ext
-  simp only [Basis.toMatrix_apply, Basis.repr_reindex, Matrix.reindexAlgEquiv_apply,
-    Matrix.reindex_apply, Matrix.submatrix_apply, Function.comp_apply, e.apply_symm_apply,
-    Finsupp.mapDomain_equiv_apply]
+  simp [Basis.toMatrix_apply]
 
 omit [Fintype ι'] in
 @[simp]
