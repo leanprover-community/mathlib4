@@ -49,7 +49,7 @@ info: Try this:
 ---
 info: `exact Nat.le_succ_of_le h` modifies the current goal, which was modified by a flexible tactic!
 -/
---#guard_msgs in
+#guard_msgs in
 example {a b : Nat} (h : a ≤ b) : a + 0 ≤ b + 1 := by
   simp_all
   exact Nat.le_succ_of_le h
