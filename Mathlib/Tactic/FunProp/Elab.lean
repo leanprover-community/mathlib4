@@ -32,8 +32,8 @@ by importing or adding new theorems tagged with the `@[fun_prop]` attribute. See
 documentation for `Mathlib/Tactic/FunProp.lean` for a detailed explanation.
 
 * `fun_prop (disch := tac)` uses `tac` to solve potential side goals. Setting this option is
-  required to solve `ContinuousAt/On/Within` goals. The default discharger is `assumption` at
-  reducible transparency.
+  required to solve `ContinuousAt/On/Within` goals. Assumptions from the local context are
+  automatically discharged.
 * `fun_prop [c, ...]` will unfold the constant(s) `c`, ... before decomposing `f`.
 * `fun_prop (config := cfg)` sets advanced configuration options using `cfg : FunProp.Config`
   (see `FunProp.Config` for details).
@@ -46,7 +46,10 @@ example : Continuous (fun x : ℝ ↦ x * sin x) := by fun_prop
 ```
 
 ```lean
--- Specify a discharger to solve `ContinuousAt`/`Within`/`On` goals:
+-- Solving `ContinuousAt`/`Within`/`On` goals might require using dischargers:
+example (y : ℝ) (hy : y ≠ 0) : ContinuousAt (fun x : ℝ ↦ 1/x) y := by
+  fun_prop
+
 example (y : ℝ) (hy : y ≠ 0) : ContinuousAt (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) y := by
   fun_prop (disch := aesop)
 ```
