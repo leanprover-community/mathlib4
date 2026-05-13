@@ -371,7 +371,7 @@ theorem aaron (hr : IsFredholm_quot u) :
   <;> intro x hx
   <;> simp_all [← map_sub]
 
-/- ## Injections from closed finite codimension subspaces are Fredholm
+/- ## Injections from closed finite codimension subspaces are Fredholm (Aaron)
 
 Easy for every definition.
 The index is the codimension of the range.
@@ -379,7 +379,7 @@ The index is the codimension of the range.
 (The same is true for quotient by finite dimensional complemented subspaces)
 -/
 
-/- ## Composition of Fredholm (with the inverse definition)
+/- ## Composition of Fredholm (with the inverse definition) (Patrick)
 
 Consider the three CLMs `u`, `v` and `v ∘L u`. If two of them are Fredholm,
 the third one is.
@@ -390,13 +390,7 @@ I'm not sure what the set of statements should look like, but I imagine the foll
 3. If `v` is Fredholm, then `u` Fredholm ↔ `v ∘ u` Fredholm
 -/
 
-/- ## ContinuousLinearEquiv is open in ContinuousLinearMap for Banach spaces
-
-For `E = F` this follows from `Units.isOpen`. Then for the general case either
-`E ≃L F` is empty or you reduce to the `E = F` case.
--/
-
-/- ## Fredholm_struct ==> good decomposition
+/- ## Fredholm_struct ==> good decomposition (Filippo)
 
 If `u` satisfies `Fredholm_struct`, then there are decompositions `E = E₁ ⊕ E₂`,
 `F = F₁ ⊕ F₂` such that `E₂` and `F₂` are FG and, in this decomposition, u is of the form
@@ -411,7 +405,7 @@ F₁ = u.range
 The others are arbitrary complements
 -/
 
-/- ## FredholmQuot ==> complemented kernel
+/- ## FredholmQuot ==> complemented kernel (Jon)
 
 Lemma : if `A` is finite dimensional is complemented and if `B ≤ A` then `B` is complemented.
 
