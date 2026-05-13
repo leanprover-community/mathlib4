@@ -35,7 +35,7 @@ namespace pairingCore
 variable (x : (Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] ∂Δ[n]).N)
   {d : ℕ} (hd : x.dim = d)
 
-/-- Let `x` be a nondegenerate `d`-simplex `d` of `Δ[m + 1] ⊗ Δ[n]` which
+/-- Let `x` be a nondegenerate `d`-simplex of `Δ[m + 1] ⊗ Δ[n]` which
 does not belong to `Λ[m + 1, k.castSucc].unionProd ∂Δ[n]`. In particular,
 `x` induces a strictly monotone map from `Fin (d + 1)` to
 `{0, ..., m + 1} × {0, ..., n}`. We introduce a predicate on elements in
@@ -75,6 +75,10 @@ lemma mem_range_right (i : Fin (n + 1)) :
   simp at this
   tauto
 
+/-- Let `x` be a nondegenerate `d`-simplex of `Δ[m + 1] ⊗ Δ[n]` which
+does not belong to `Λ[m + 1, k.castSucc].unionProd ∂Δ[n]`. This is
+the finite subset of `Fin (d + 1)` consisting of those `l` such
+that `x l` is of the form `(k.succ, _)`. -/
 noncomputable def finset : Finset (Fin (d + 1)) :=
   { l : Fin (d + 1) | (x.cast hd).simplex.1 l = k.succ }
 
@@ -84,10 +88,12 @@ lemma mem_finset_iff (l : Fin (d + 1)) :
   simp [finset]
 
 lemma nonempty_finset : (finset x hd).Nonempty := by
-  obtain ⟨i, hi⟩ := mem_range_left x hd k.succ
-    (fun h ↦ by simp [Fin.ext_iff] at h)
+  obtain ⟨i, hi⟩ := mem_range_left x hd k.succ (by grind)
   exact ⟨i, by simpa using hi⟩
 
+/-- Let `x` be a nondegenerate `d`-simplex of `Δ[m + 1] ⊗ Δ[n]` which
+does not belong to `Λ[m + 1, k.castSucc].unionProd ∂Δ[n]`. This is
+the smallest `l : Fin (d + 1)` such that `x l` is of the form `(k.succ, _)`. -/
 noncomputable def min : Fin (d + 1) := (finset x hd).min' (nonempty_finset x hd)
 
 lemma simplex_left_min : dsimp% (x.cast hd).simplex.1 (min x hd) = k.succ := by
