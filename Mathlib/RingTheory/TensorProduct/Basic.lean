@@ -868,4 +868,3 @@ theorem TensorProduct.map_includeRight_eq_range_baseChange :
       exact Ideal.add_mem _ hx hy
 
 end Algebra
-
