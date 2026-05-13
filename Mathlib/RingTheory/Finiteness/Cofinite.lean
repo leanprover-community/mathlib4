@@ -76,7 +76,7 @@ protected theorem CoFG.ker [IsNoetherian R N] (f : M →ₗ[R] N) : (ker f).CoFG
 
 end LinearMap
 
-section IsNoetherianRings
+section IsNoetherianRing
 
 variable [IsNoetherianRing R]
 
