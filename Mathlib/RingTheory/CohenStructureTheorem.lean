@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.AdicCompletion.RingHom
 public import Mathlib.RingTheory.Flat.Extension
 public import Mathlib.RingTheory.Flat.TorsionFree
 public import Mathlib.RingTheory.Ideal.Int
-public import Mathlib.RingTheory.KrullDimension.Field
+public import Mathlib.RingTheory.MvPowerSeries.Evaluation
 public import Mathlib.RingTheory.Smooth.AdicCompletion
 public import Mathlib.RingTheory.Smooth.Field
 public import Mathlib.RingTheory.Smooth.Quotient
@@ -418,3 +418,49 @@ lemma exists_isCohenRing_residueField_map_bijective [IsAdicComplete (maximalIdea
   exact e.bijective
 
 end
+
+variable {R} in
+set_option backward.isDefEq.respectTransparency false in
+open MvPowerSeries in
+lemma exists_mvPowerSeries_surjective_of_residueField_map_bijective [IsLocalRing R]
+    [IsAdicComplete (maximalIdeal R) R] (fg : (maximalIdeal R).FG)
+    (S : Type u) [CommRing S] [IsLocalRing S]
+    (f : S →+* R) [IsLocalHom f] (bij : Function.Bijective (ResidueField.map f)) :
+    ∃ (n : ℕ) (g : MvPowerSeries (Fin n) S →+* R),
+    Function.Surjective g ∧ g.comp MvPowerSeries.C = f := by
+  let : WithIdeal R := { i := maximalIdeal R }
+  let : WithIdeal S := { i := maximalIdeal S }
+  have f_cont : Continuous f := (WithIdeal.uniformContinuous_of_map_le
+    (((IsLocalRing.local_hom_TFAE f).out 0 2).mp ‹_›)).continuous
+  have : CompleteSpace R := (IsAdic.isPrecomplete_iff (by rfl)).mp inferInstance
+  have : T2Space R := (IsAdic.isHausdorff_iff (by rfl)).mp inferInstance
+  rcases fg with ⟨s, hs⟩
+  have hasEval_equivFin : HasEval (Subtype.val ∘ s.equivFin.symm) := by
+    refine ⟨fun j ↦ ?_, by simp [Filter.cofinite_eq_bot]⟩
+    have : (Subtype.val ∘ s.equivFin.symm) j ∈ maximalIdeal R := by
+      simpa [← hs] using Submodule.mem_span_of_mem (by simp)
+    exact WithIdeal.isTopologicallyNilpotent_of_mem this
+  let F : MvPowerSeries (Fin s.card) S →+* R := eval₂Hom f_cont hasEval_equivFin
+  let : UniformSpace (MvPolynomial (Fin s.card) S) :=
+    (Pi.uniformSpace _).comap MvPolynomial.toMvPowerSeries
+  let I : Ideal (MvPowerSeries (Fin s.card) S) := Ideal.span (Set.range X)
+  have aux_cont : Continuous (MvPolynomial.eval₂ f (Subtype.val ∘ s.equivFin.symm)) :=
+    (MvPolynomial.toMvPowerSeries_uniformContinuous f_cont hasEval_equivFin).continuous
+  have map_F_I : I.map F = maximalIdeal R := by
+    rw [Ideal.map_span, ← hs]
+    congr
+    ext r
+    suffices (∃ a, (s.equivFin.symm a) = r) ↔ r ∈ s by
+      simpa [eval₂Hom_eq_extend, F, ← MvPolynomial.coe_X, IsDenseInducing.extend_eq _ aux_cont]
+    exact ⟨fun ⟨i, hi⟩ ↦ by simp [← hi], fun h ↦ ⟨s.equivFin ⟨r, h⟩, by simp⟩⟩
+  have : IsAdicComplete (I.map F) R := by simpa [map_F_I]
+  have F_C (s : S) : F (C s) = f s := by
+    simp [eval₂Hom_eq_extend, F, ← MvPolynomial.coe_C, IsDenseInducing.extend_eq _ aux_cont]
+  refine ⟨s.card, F, ?_, RingHom.ext fun x ↦ F_C x⟩
+  refine surjective_of_mk_map_comp_surjective (I := I) F fun z ↦ ?_
+  rcases bij.surjective (Ideal.quotEquivOfEq map_F_I z) with ⟨w, hw⟩
+  induction w using Submodule.Quotient.induction_on with
+  | H s =>
+    use C s
+    rw [RingHom.comp_apply, F_C, ← (Ideal.quotEquivOfEq map_F_I).injective.eq_iff, ← hw]
+    rfl
