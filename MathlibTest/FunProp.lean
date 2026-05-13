@@ -120,3 +120,50 @@ example {α : Type*} [MeasurableSpace α] {p q : α → Prop} (hp : Measurable p
 example {α ι : Type*} [MeasurableSpace α] [Countable ι] {p : ι → α → Prop}
     (hp : ∀ i, Measurable (p i)) : Measurable fun x => ∀ i, p i x := by
   fun_prop
+
+
+section IntegrableOn
+
+
+variable {f g : α → ε'}
+
+example [ContinuousAdd ε'] (hf : IntegrableOn f s μ) (hg : IntegrableOn g s μ) :
+    IntegrableOn (fun x ↦ f x + g x) s μ := by
+  fun_prop
+
+example [ContinuousAdd ε'] (hf : IntegrableOn f s μ) (hg : Integrable g μ) :
+    IntegrableOn (fun x ↦ f x + g x) s μ := by
+  fun_prop
+
+example [ContinuousAdd ε'] (ht : MeasurableSet t) (hf : IntegrableOn f s μ) (hg : Integrable g μ) :
+    IntegrableOn (fun x ↦ f x + t.indicator g x) s μ := by
+  fun_prop (disch := measurability)
+
+example [ContinuousAdd ε'] (ht : NullMeasurableSet t <| μ.restrict s) (hf : IntegrableOn f s μ)
+    (hg : IntegrableOn g s μ) :
+    IntegrableOn (fun x ↦ f x + t.indicator g x) s μ := by
+  fun_prop (disch := measurability)
+
+example [ContinuousAdd ε'] (hf : IntegrableOn f s μ) (hg : IntegrableOn g t μ) :
+    IntegrableOn (fun x ↦ f x + g x) (s ∩ t) μ := by
+  fun_prop
+
+example {𝕜 : Type*} [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 E]
+    [IsBoundedSMul 𝕜 E] {f : α → E} (hf : IntegrableOn f s μ) (c : 𝕜) :
+    IntegrableOn (fun x ↦ c • f x) (s ∩ t) μ := by
+  fun_prop
+
+example (a b : ℝ) : IntegrableOn (fun x : ℝ => Real.sin x + x ^ 2) (Icc a b) := by
+  fun_prop
+
+example (a b : ℝ) : IntegrableOn (fun x : ℝ => Real.exp x) (Icc a b) := by
+  fun_prop
+
+example (a b : ℝ) : IntegrableOn (fun x : ℝ => (x, Real.exp x)) (Icc a b) := by
+  fun_prop
+
+example {f : ℝ → ℝ} {s t : Set ℝ} (hf : IntegrableOn f t) (hst : s ⊆ t) : IntegrableOn f s := by
+  fun_prop
+
+
+end IntegrableOn
