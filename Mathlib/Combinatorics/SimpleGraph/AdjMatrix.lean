@@ -83,7 +83,7 @@ theorem diag_eq [Zero α] [One α] (h : IsAdjMatrix A) : A.diag = 0 := by
   ext
   simp [h.apply_diag]
 
-theorem submatrix [Zero α] [One α] (h : IsAdjMatrix A) (f : W → V) :
+protected theorem submatrix [Zero α] [One α] (h : IsAdjMatrix A) (f : W → V) :
     A.submatrix f f |>.IsAdjMatrix where
   zero_or_one i j := by simp [h.zero_or_one]
   symm := h.symm.submatrix f
