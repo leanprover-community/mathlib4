@@ -148,7 +148,7 @@ in some settings, such as proving that embedded submanifolds are locally given e
 immersion or a submersion.
 Unless you have a particular reason, prefer to use `IsSubmersionAt` instead.
 -/
-@[no_expose] def IsSubmersionAtOfComplement (f : M → N) (x : M) : Prop :=
+def IsSubmersionAtOfComplement (f : M → N) (x : M) : Prop :=
   LiftSourceTargetPropertyAt I J n f x (SubmersionAtProp F I J M N)
 
 -- Lift the universe from `E`, to avoid a free universe parameter.
@@ -166,7 +166,7 @@ a submersion at `x` includes a choice of linear isomorphism between `E` and `E''
 where the choice of `F` enters.
 If you need stronger control over the complement `F`, use `IsSubmersionAtOfComplement` instead.
 -/
-@[no_expose] def IsSubmersionAt (f : M → N) (x : M) : Prop :=
+def IsSubmersionAt (f : M → N) (x : M) : Prop :=
   ∃ (F : Type u) (_ : NormedAddCommGroup F) (_ : NormedSpace 𝕜 F),
     IsSubmersionAtOfComplement F I J n f x
 
@@ -205,7 +205,7 @@ w.r.t. this chart and the data `h.codChart` and `h.equiv`,
 `f` will look like a projection `(u,v) ↦ u` in these extended charts.
 The particular chart is arbitrary, but this choice matches the witnesses given by
 `h.codChart` and `h.codChart`. -/
-@[no_expose] def domChart (h : IsSubmersionAtOfComplement F I J n f x) :
+def domChart (h : IsSubmersionAtOfComplement F I J n f x) :
     OpenPartialHomeomorph M H :=
   LiftSourceTargetPropertyAt.domChart h
 
@@ -214,7 +214,7 @@ w.r.t. this chart and the data `h.domChart` and `h.equiv`,
 `f` will look like a projection `(u, v) ↦ u` in these extended charts.
 The particular chart is arbitrary, but this choice matches the witnesses given by
 `h.equiv` and `h.domChart`. -/
-@[no_expose] def codChart (h : IsSubmersionAtOfComplement F I J n f x) :
+def codChart (h : IsSubmersionAtOfComplement F I J n f x) :
     OpenPartialHomeomorph N G :=
   LiftSourceTargetPropertyAt.codChart h
 
@@ -239,7 +239,7 @@ lemma source_subset_preimage_source (h : IsSubmersionAtOfComplement F I J n f x)
 /-- A linear equivalence `E ≃L[𝕜] E'' × F` which belongs to the data of a submersion `f` at `x`:
 the particular equivalence is arbitrary, but this choice matches the witnesses given by
 `h.domChart` and `h.codChart`. -/
-@[no_expose] def equiv (h : IsSubmersionAtOfComplement F I J n f x) : E ≃L[𝕜] (E'' × F) :=
+def equiv (h : IsSubmersionAtOfComplement F I J n f x) : E ≃L[𝕜] (E'' × F) :=
   Classical.choose <| LiftSourceTargetPropertyAt.property h
 
 lemma writtenInCharts (h : IsSubmersionAtOfComplement F I J n f x) :
@@ -388,7 +388,7 @@ lemma mk_of_continuousAt {f : M → N} {x : M} (hf : ContinuousAt f x) (equiv : 
 
 /-- A choice of complement of the model normed space `E` of `M` in the model normed space
 `E'` of `N` -/
-@[no_expose] def complement (h : IsSubmersionAt I J n f x) : Type u := Classical.choose h
+def complement (h : IsSubmersionAt I J n f x) : Type u := Classical.choose h
 
 @[no_expose] instance (h : IsSubmersionAt I J n f x) : NormedAddCommGroup h.complement :=
   Classical.choose (Classical.choose_spec h)
