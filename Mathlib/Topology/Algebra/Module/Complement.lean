@@ -399,7 +399,7 @@ variable [IsTopologicalAddGroup M]
 
 /-- Two submodules `p` and `q` are topological complements if and only if the algebraic equivalence
 `p.prodEquivOfIsCompl q h` is continuous in the inverse direction. -/
-theorem isTopCompl_iff_continuous_prodEquiv_symm (h : IsCompl p q) :
+theorem IsCompl.isTopCompl_iff_continuous_prodEquiv_symm (h : IsCompl p q) :
     IsTopCompl p q ↔ Continuous (p.prodEquivOfIsCompl q h).symm :=
   ⟨fun hTop ↦ ((p.projectionOntoL q hTop).prod (q.projectionOntoL p hTop.symm)).continuous.congr
     fun x ↦ (prodEquivOfIsCompl_symm_apply h x).symm,
@@ -412,7 +412,7 @@ theorem continuous_prodEquivOfIsCompl (h : IsCompl p q) : Continuous (p.prodEqui
 
 /-- Two submodules `p` and `q` are topological complements if and only if the algebraic equivalence
 `p.prodEquivOfIsCompl q h` is a homeomorphism. -/
-theorem isTopCompl_iff_isHomeomorph_prodEquiv (h : IsCompl p q) :
+theorem IsCompl.isTopCompl_iff_isHomeomorph_prodEquiv (h : IsCompl p q) :
     IsTopCompl p q ↔ IsHomeomorph (p.prodEquivOfIsCompl q h) := by
   rw [(p.prodEquivOfIsCompl q h).isHomeomorph_iff, isTopCompl_iff_continuous_prodEquiv_symm,
     and_iff_right]
@@ -425,7 +425,7 @@ variable (p q) in
 noncomputable def prodEquivOfIsTopCompl (h : IsTopCompl p q) : (p × q) ≃L[R] M :=
   { p.prodEquivOfIsCompl q h.isCompl with
     continuous_toFun := continuous_prodEquivOfIsCompl h.isCompl
-    continuous_invFun := (isTopCompl_iff_continuous_prodEquiv_symm h.isCompl).mp h }
+    continuous_invFun := h.isCompl.isTopCompl_iff_continuous_prodEquiv_symm.mp h }
 
 @[simp]
 theorem coe_prodEquivOfIsTopCompl (h : IsTopCompl p q) :
@@ -451,7 +451,7 @@ theorem prodEquivOfIsTopCompl_symm_apply (h : IsTopCompl p q) (x : M) :
 
 /-- Two submodules `p` and `q` are topological complements if and only if the algebraic equivalence
 `p.quotientEquivOfIsCompl q h` is continuous. -/
-theorem isTopCompl_iff_continuous_quotientEquiv (h : IsCompl p q) :
+theorem IsCompl.isTopCompl_iff_continuous_quotientEquiv (h : IsCompl p q) :
     IsTopCompl p q ↔ Continuous (p.quotientEquivOfIsCompl q h) := by
   have hproj : ⇑(p.quotientEquivOfIsCompl q h) ∘ ⇑p.mkQ = ⇑(q.projectionOnto p h.symm) := by
     funext; simp
@@ -464,7 +464,7 @@ variable (p q) in
 equivalence. -/
 noncomputable def quotientEquivOfIsTopCompl (h : IsTopCompl p q) : (M ⧸ p) ≃L[R] q :=
   { p.quotientEquivOfIsCompl q h.isCompl with
-    continuous_toFun := (isTopCompl_iff_continuous_quotientEquiv h.isCompl).mp h
+    continuous_toFun := h.isCompl.isTopCompl_iff_continuous_quotientEquiv.mp h
     continuous_invFun := (p.mkQL.comp q.subtypeL).continuous }
 
 @[simp]
