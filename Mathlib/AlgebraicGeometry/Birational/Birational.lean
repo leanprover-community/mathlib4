@@ -28,7 +28,7 @@ birationality and rationality.
 
 @[expose] public section
 
-universe u v
+universe u
 
 open CategoryTheory
 
@@ -215,16 +215,13 @@ lemma BirationalOver.partialIso_isOver {S X Y : Scheme.{u}} (sX : X ⟶ S) (sY :
     h.partialIso.iso.hom ≫ h.partialIso.target.ι ≫ sY = h.partialIso.source.ι ≫ sX :=
   h.choose_spec
 
-@[refl]
 lemma BirationalOver.refl {S X : Scheme.{u}} (sX : X ⟶ S) : BirationalOver sX sX :=
   ⟨.refl X, by simp⟩
 
-@[symm]
-lemma BirationalOver.symm {S X Y : Scheme.{u}} (sX : X ⟶ S) (sY : Y ⟶ S)
+lemma BirationalOver.symm {S X Y : Scheme.{u}} {sX : X ⟶ S} {sY : Y ⟶ S}
     (h : BirationalOver sX sY) : BirationalOver sY sX :=
   ⟨h.partialIso.symm, PartialIso.symm_over _ h.partialIso_isOver⟩
 
-@[trans]
 lemma BirationalOver.trans {S X Y Z : Scheme.{u}} {sX : X ⟶ S} {sY : Y ⟶ S} {sZ : Z ⟶ S}
     (h₁ : BirationalOver sX sY) (h₂ : BirationalOver sY sZ) :
     BirationalOver sX sZ :=
