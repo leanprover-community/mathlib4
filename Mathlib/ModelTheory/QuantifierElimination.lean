@@ -17,17 +17,17 @@ criteria for establishing it.
 
 ## Main Definitions
 
-- `FirstOrder.Language.Theory.isEquivQF` says that a formula is equivalent over a theory to a
+- `FirstOrder.Language.Theory.IsQFEquivalent` says that a formula is equivalent over a theory to a
   quantifier-free formula.
 - `FirstOrder.Language.Theory.HasQuantifierElimination` says that every formula in finitely many
   free variables is equivalent over the theory to a quantifier-free formula.
 
 ## Main Results
 
-- `FirstOrder.Language.Theory.isEquivQF_iff_realize_iff_of_embeddings` characterizes
+- `FirstOrder.Language.Theory.isQFEquivalent_iff_realize_iff_of_embeddings` characterizes
   quantifier-free definability by invariance under embeddings from a common substructure. This
   corresponds to Marker, Theorem 3.1.4.
-- `FirstOrder.Language.Theory.hasQuantifierElimination_of_ex_isEquivQF_of_isQF` shows that it
+- `FirstOrder.Language.Theory.hasQuantifierElimination_of_ex_isQFEquivalent_of_isQF` shows that it
   suffices to eliminate one existential quantifier from quantifier-free formulas. This corresponds
   to Marker, Theorem 3.1.5.
 - `FirstOrder.Language.Theory.hasQuantifierElimination_of_exists_realize_of_embeddings` is a
@@ -60,13 +60,13 @@ variable {L : Language.{u, v}}
 variable {M : Type w} {N A : Type*} [L.Structure M] [L.Structure N] [L.Structure A]
 
 /-- A formula is equivalent to a quantifier-free formula over a theory. -/
-def isEquivQF (T : L.Theory) {m : ℕ} (φ : L.Formula (Fin m)) :=
+def IsQFEquivalent (T : L.Theory) {m : ℕ} (φ : L.Formula (Fin m)) : Prop :=
   ∃ ψ : L.Formula (Fin m), ψ.IsQF ∧ φ ⇔[T] ψ
 
 /-- A theory has quantifier elimination if every formula in finitely many free variables is
 equivalent, over the theory, to a quantifier-free formula. -/
 def HasQuantifierElimination (T : L.Theory) : Prop :=
-  ∀ {m : ℕ} (φ : L.Formula (Fin m)), T.isEquivQF φ
+  ∀ {m : ℕ} (φ : L.Formula (Fin m)), T.IsQFEquivalent φ
 
 /-- Finite conjunction of a list of quantifier-free formulas bundled with an auxiliary property. -/
 private def qfConj {m : ℕ} {P : L.Formula (Fin m) → Prop}
@@ -165,9 +165,9 @@ private theorem exists_substructure_embedding_of_agree_qf
 pairs of embeddings from a common structure into nonempty models of `T`.
 
 This corresponds to Marker, Theorem 3.1.4. -/
-theorem isEquivQF_iff_realize_iff_of_embeddings
+theorem isQFEquivalent_iff_realize_iff_of_embeddings
     {T : L.Theory} {m : ℕ} (φ : L.Formula (Fin m)) :
-    T.isEquivQF φ ↔
+    T.IsQFEquivalent φ ↔
       (∀ {M N A : Type (max u v)} [L.Structure M] [L.Structure N] [L.Structure A]
         [T.Model M] [T.Model N] [Nonempty M] [Nonempty N]
         (f : A ↪[L] M) (g : A ↪[L] N)
@@ -356,9 +356,9 @@ private theorem exists_qf_equiv_ex_of_isQF
 every quantifier-free formula with one bound variable.
 
 This corresponds to Marker, Theorem 3.1.5. -/
-theorem hasQuantifierElimination_of_ex_isEquivQF_of_isQF
+theorem hasQuantifierElimination_of_ex_isQFEquivalent_of_isQF
     {T : L.Theory} :
-    (∀ {m : ℕ} (θ : L.BoundedFormula (Fin m) 1), θ.IsQF → T.isEquivQF θ.ex) →
+    (∀ {m : ℕ} (θ : L.BoundedFormula (Fin m) 1), θ.IsQF → T.IsQFEquivalent θ.ex) →
     HasQuantifierElimination T := by
   intro h m φ
   refine φ.induction_on_exists_not
@@ -389,9 +389,9 @@ theorem hasQuantifierElimination_of_exists_realize_of_embeddings {T : L.Theory} 
       (∃ (c : N), φ.Realize (Fin.snoc (g ∘ a) c))) →
     T.HasQuantifierElimination := by
   intro h
-  apply hasQuantifierElimination_of_ex_isEquivQF_of_isQF
+  apply hasQuantifierElimination_of_ex_isQFEquivalent_of_isQF
   intro m θ hθ
-  refine (isEquivQF_iff_realize_iff_of_embeddings (T := T) (φ := θ.ex)).mpr ?_
+  refine (isQFEquivalent_iff_realize_iff_of_embeddings (T := T) (φ := θ.ex)).mpr ?_
   intro M N A _ _ _ _ _ _ _ f g a
   let φ : L.Formula (Fin m.succ) := θ.toFormula.relabel finSumFinEquiv
   have hφQF : φ.IsQF := hθ.toFormula.relabel _
