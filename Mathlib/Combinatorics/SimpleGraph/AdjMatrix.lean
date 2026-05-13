@@ -98,7 +98,7 @@ theorem _root_.Matrix.isAdjMatrix_submatrix_iff [Zero α] [One α] {f : W → V}
 theorem reindex [Zero α] [One α] (h : IsAdjMatrix A) (f : V ≃ W) : A.reindex f f |>.IsAdjMatrix :=
   h.submatrix f.symm
 
-theorem _root_.Matrix.isAdjMatrix_reindex_iff [Zero α] [One α] (f : V ≃ W) :
+theorem _root_.Matrix.isAdjMatrix_reindex_iff [Zero α] [One α] {f : V ≃ W} :
     (A.reindex f f).IsAdjMatrix ↔ A.IsAdjMatrix :=
   isAdjMatrix_submatrix_iff f.symm.surjective
 
