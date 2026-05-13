@@ -77,6 +77,7 @@ initialize_simps_projections Functor
 
 -- We don't use `@[simps]` here because we want `C` implicit for the simp lemmas.
 /-- `𝟭 C` is the identity functor on a category `C`. -/
+@[implicit_reducible]
 protected def id : C ⥤ C where
   obj X := X
   map f := f
