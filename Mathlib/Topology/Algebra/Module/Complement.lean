@@ -13,7 +13,7 @@ public import Mathlib.Topology.Algebra.Module.Equiv
 
 Let `M` be a topological `R`-module. Two submodules `p, q` of `M` are said to be
 *topological complements* (`Submodule.IsTopCompl`) if they are algebraic complements and the
-algebraic isomorphism `M ≃ p × q` is an homeomorphism.
+algebraic isomorphism `M ≃ p × q` is a homeomorphism.
 
 Not all submodules of `M` admit such a topological complements (even if they admit algebraic
 complements). In the literature, such a submodule is called *topologically complemented*
@@ -60,6 +60,18 @@ map `M ≃ p × q`.
 Because the condition is symmetric, a lot of lemmas could have a left and a right variation.
 In general we only include the left version, the right one being accessible through
 `Submodule.IsTopCompl.symm`.
+
+## TODO
+
+There is still a significant part of the algebraic API which should be ported to the
+topological setting. Notably, we should:
+* show that `Submodule.prodEquivOfIsCompl` is a homeomorphism if and only if
+  the two subspaces are topological complements, and bundle it as a `ContinuousLinearEquiv` when
+  this is the case. (See the existing `ClosedComplemented.exists_submodule_equiv_prod`).
+* show that `Submodule.quotientEquivOfIsCompl` is a homeomorphism if and only if
+  the two subspaces are topological complements, and bundle it as a `ContinuousLinearEquiv` when
+  this is the case.
+* define `ContinuousLinearMap.ofIsTopCompl`, analogous to `LinearMap.ofIsCompl`.
 
 -/
 
