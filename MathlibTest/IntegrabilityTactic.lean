@@ -706,7 +706,6 @@ example {f g : ℝ → ℝ} {a b : ℝ} (hf : IntervalIntegrable f volume a b)
 example {f : ℝ → ℝ} {g : ℝ → ℂ} {a b : ℝ} (hf : IntervalIntegrable f volume a b)
     (hg : ContinuousOn g [[a, b]]) : IntervalIntegrable (fun x => f x • g x) volume a b := by
   fail_if_success fun_prop
-  sorryfail_if_success fun_prop
   sorry
 
 -- MeasureTheory.IntegrableAtFilter API shapes
