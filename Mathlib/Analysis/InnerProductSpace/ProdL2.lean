@@ -157,7 +157,7 @@ def quotientEquivOrthogonal : (E ⧸ K) ≃ₗᵢ[𝕜] ↥Kᗮ where
 @[simp]
 theorem coe_quotientEquivOrthogonal :
     K.quotientEquivOrthogonal =
-      (K.quotientEquivOfIsCompl Kᗮ K.isCompl_orthogonal_of_hasOrthogonalProjection) :=
+      K.quotientEquivOfIsCompl Kᗮ K.isCompl_orthogonal_of_hasOrthogonalProjection :=
   rfl
 
 @[simp]
@@ -178,8 +178,8 @@ theorem quotientEquivOrthogonal_mk (x : E) (hx : x ∈ Kᗮ) :
     K.isCompl_orthogonal_of_hasOrthogonalProjection ⟨x, hx⟩]
   rfl
 
-theorem quotientEquivOrthogonal_mk_symm (x : E) (hx : x ∈ Kᗮ) :
-    Quotient.mk x = K.quotientEquivOrthogonal.symm ⟨x, hx⟩ := by
+theorem quotientEquivOrthogonal_symm_eq_mk (x : E) (hx : x ∈ Kᗮ) :
+    K.quotientEquivOrthogonal.symm ⟨x, hx⟩ = Quotient.mk x := by
   rw [← K.quotientEquivOfIsCompl_symm_apply Kᗮ
     K.isCompl_orthogonal_of_hasOrthogonalProjection ⟨x, hx⟩]
   rfl
@@ -193,15 +193,13 @@ noncomputable instance instQuotientInnerProductSpace :
   norm_sq_eq_re_inner y := by rw [inner_self_eq_norm_sq, LinearIsometryEquiv.norm_map]
 
 @[simp]
-theorem inner_eq (x y : E ⧸ K) :
+theorem inner_quotient_eq (x y : E ⧸ K) :
     ⟪x, y⟫_𝕜 = ⟪K.quotientEquivOrthogonal x, K.quotientEquivOrthogonal y⟫_𝕜 :=
   rfl
 
 theorem inner_mk_mk (x y : E) (hx : x ∈ Kᗮ) (hy : y ∈ Kᗮ) :
-    ⟪K.quotientEquivOrthogonal (Quotient.mk x), K.quotientEquivOrthogonal (Quotient.mk y)⟫_𝕜 =
-      ⟪x, y⟫_𝕜 := by
-  rw [K.quotientEquivOrthogonal_mk x hx, K.quotientEquivOrthogonal_mk y hy]
-  rfl
+    ⟪Quotient.mk (p := K) x, Quotient.mk y⟫_𝕜 = ⟪x, y⟫_𝕜 := by
+  simp [K.quotientEquivOrthogonal_mk x hx, K.quotientEquivOrthogonal_mk y hy]
 
 end Submodule
 
