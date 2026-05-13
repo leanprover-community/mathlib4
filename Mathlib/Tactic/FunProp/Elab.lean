@@ -58,9 +58,6 @@ example (y : ℝ) (hy : y ≠ 0) : ContinuousAt (fun x => x * (Real.log x) ^ 2 -
 syntax (name := funPropTacStx)
   "fun_prop" optConfig (discharger)? (" [" withoutPosition(ident,*,?) "]")? : tactic
 
-private def emptyDischarge : Expr → MetaM (Option Expr) :=
-  fun e => do tacticToDischarge (← `(tactic| skip)) e
-
 private def assumptionDischarge : Expr → MetaM (Option Expr) :=
   fun e => do tacticToDischarge (← `(tactic| with_reducible assumption)) e
 
