@@ -22,6 +22,8 @@ open MeasureTheory Set
 open Filter Asymptotics
 open scoped Topology BoundedContinuousFunction Interval
 
+attribute [fun_prop] Integrable.restrict
+
 section BasicClosure
 
 variable {α : Type*} [MeasurableSpace α] {μ : Measure α}
@@ -71,9 +73,9 @@ example {f : α → ℂ} (hf : Integrable f μ) : Integrable (fun x => Complex.i
   sorry
 
 example {f : α → ℝ} (hf : Integrable f μ) {s : Set α} : Integrable f (μ.restrict s) := by
-  fail_if_success fun_prop
-  sorry
+  fun_prop
 
+-- bad test
 example {β : Type*} [MeasurableSpace β] {ν : Measure β} {f : α → β} {g : β → ℝ}
     (hg : Integrable g (Measure.map f μ)) : Integrable (fun x => g (f x)) μ := by
   fail_if_success fun_prop
@@ -185,8 +187,7 @@ example : LocallyIntegrableOn (fun x : ℝ => x⁻¹) ({0}ᶜ : Set ℝ) := by
   sorry
 
 example (a b : ℝ) : IntegrableOn (fun x : ℝ => Real.sin x + x ^ 2) (Icc a b) := by
-  fail_if_success fun_prop
-  sorry
+  fun_prop
 
 example {f : ℝ → ℝ} (hf : LocallyIntegrable f) (a b : ℝ) : IntegrableOn f (Icc a b) := by
   fail_if_success fun_prop
