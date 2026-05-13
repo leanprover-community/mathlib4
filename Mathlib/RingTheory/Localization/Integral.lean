@@ -571,3 +571,16 @@ lemma isAlgebraic_of_isFractionRing {R S} (K L) [CommRing R] [CommRing S] [Field
     apply IsIntegral.tower_top (R := R)
     apply IsIntegral.map (IsScalarTower.toAlgHom R S L)
     exact Algebra.IsIntegral.isIntegral (s : S)
+
+namespace IsAlgebraic
+
+variable {Z R K : Type*} [Field K] [CommRing R] [Algebra R K] [CommRing Z] [IsDomain Z]
+  [Algebra Z K] [IsIntegralClosure R Z K]
+
+lemma exists_smul_eq {x : K} (hx : IsAlgebraic Z x) :
+    ∃ (m : Z) (r : R), m ≠ 0 ∧ m • x = algebraMap R K r := by
+  obtain ⟨m, hm, h⟩ := IsAlgebraic.iff_exists_smul_integral.mp hx
+  obtain ⟨r, hr⟩ := IsIntegralClosure.isIntegral_iff (A := R) |>.mp h
+  exact ⟨m, r, hm, hr.symm⟩
+
+end IsAlgebraic
