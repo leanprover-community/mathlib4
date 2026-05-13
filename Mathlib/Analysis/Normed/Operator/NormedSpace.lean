@@ -187,11 +187,11 @@ variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [Nontr
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜₃ G] [NormedSpace 𝕜 Fₗ]
   {σ₂₃ : 𝕜₂ →+* 𝕜₃}
 
-variable {𝕜₂' : Type*} [NontriviallyNormedField 𝕜₂'] {F' : Type*} [SeminormedAddCommGroup F']
-  [NontrivialTopology F'] [NormedSpace 𝕜₂' F'] {σ₂' : 𝕜₂' →+* 𝕜₂} {σ₂'' : 𝕜₂ →+* 𝕜₂'}
-  {σ₂₃' : 𝕜₂' →+* 𝕜₃} [RingHomInvPair σ₂' σ₂''] [RingHomInvPair σ₂'' σ₂']
-  [RingHomCompTriple σ₂' σ₂₃ σ₂₃'] [RingHomCompTriple σ₂'' σ₂₃' σ₂₃] [RingHomIsometric σ₂₃]
-  [RingHomIsometric σ₂'] [RingHomIsometric σ₂''] [RingHomIsometric σ₂₃']
+variable {𝕜₂' : Type*} [NontriviallyNormedField 𝕜₂'] {F' : Type*} [NormedAddCommGroup F']
+  [NormedSpace 𝕜₂' F'] {σ₂' : 𝕜₂' →+* 𝕜₂} {σ₂'' : 𝕜₂ →+* 𝕜₂'} {σ₂₃' : 𝕜₂' →+* 𝕜₃}
+  [RingHomInvPair σ₂' σ₂''] [RingHomInvPair σ₂'' σ₂'] [RingHomCompTriple σ₂' σ₂₃ σ₂₃']
+  [RingHomCompTriple σ₂'' σ₂₃' σ₂₃] [RingHomIsometric σ₂₃] [RingHomIsometric σ₂']
+  [RingHomIsometric σ₂''] [RingHomIsometric σ₂₃']
 
 /-- Precomposition with a linear isometry preserves the operator norm. -/
 theorem opNorm_comp_linearIsometryEquiv (f : F →SL[σ₂₃] G) (g : F' ≃ₛₗᵢ[σ₂'] F) :
