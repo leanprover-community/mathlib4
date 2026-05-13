@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Topology.Order.ScottTopology
 public import Mathlib.Topology.Sets.Opens
+public import Mathlib.Order.CompactlyGenerated.Basic
+public import Mathlib.Order.CompletePartialOrder
 
 /-!
 # Scott Complete Partial Order
@@ -68,13 +70,14 @@ class AlgebraicDCPO (α : Type*) extends CompletePartialOrder α where
   directedOn_isCompactElement_le (x : α) : DirectedOn (· ≤ ·) {y : α | IsCompactElement y ∧ y ≤ x}
   isLUB_isCompactElement_le (x : α) : IsLUB {y : α | IsCompactElement y ∧ y ≤ x} x
 
+export AlgebraicDCPO (directedOn_isCompactElement_le isLUB_isCompactElement_le)
+
 namespace Topology
 namespace IsScott
 open Topology.IsScott TopologicalSpace Set Topology CompletePartialOrder
 section CompletePartialOrder
 
-variable {α : Type*} [TopologicalSpace α] [CompletePartialOrder α]
-  [IsScott α univ]
+variable {α : Type*} [TopologicalSpace α] [CompletePartialOrder α] [IsScott α univ]
 
 /-- The order from `CompletePartialOrder` and the specialization order induced by the Scott
 topology, correspond. Unfortunately Mathlib's specialization order `⤳` is opposite to `≤`.
@@ -111,26 +114,19 @@ abbrev CompactElement.toOpen (c : CompactElement α) : Opens α :=
 end CompletePartialOrder
 
 section AlgebraicDCPO
-variable {D : Type*} [TopologicalSpace D] [AlgebraicDCPO D] [IsScott D univ]
-open Opens
 
-/-- Given any point `x` in `D` in an open set `u`, there exists
-an upward closure of a compact element (`Ici e`), within `u` which contains `x`. -/
-lemma exists_Ici_isCompactElement_Ici_mem (x : D) (u : Set D) (x_in_u : x ∈ u) (hu : IsOpen u)
-    : ∃ c, IsCompactElement c ∧ x ∈ Ici c ∧ Ici c ⊆ u := by
-  rw [isOpen_iff_isUpperSet_and_dirSupInaccOn univ] at hu
-  obtain ⟨upper, hausdorff⟩ := hu
-  have compactLowerBounded : ∃ c: D, c ≤ x ∧ c ∈ u ∧ IsCompactElement c := by
-    have nonempty : {y | IsCompactElement y ∧ y ≤ x}.Nonempty :=
-      ⟨⊥, ⟨isCompactElement_bot, OrderBot.bot_le x⟩⟩
-    -- We use the innacessible joins property to get a nonempty intersection
-    -- The intersection contains exactly what we want, a compact point in u and ≤ x
-    have nonempty_inter := hausdorff (mem_univ _) nonempty
-      (AlgebraicDCPO.directedOn_isCompactElement_le x) (AlgebraicDCPO.isLUB_isCompactElement_le x)
-      x_in_u
-    grind [inter_nonempty]
-  choose c hc₀ hc₁ hc₂ using compactLowerBounded
-  exact ⟨c, hc₂, hc₀, upper.Ici_subset hc₁⟩
+/-- Given any point `x` in `D` in a set which is 'inaccessible by directed suprema', there exists
+an upward closure of a compact element below `x` in the set. -/
+lemma DirSupInaccOn.exists_le_isCompactElement {D : Type*} [AlgebraicDCPO D]
+    (x : D) (u : Set D) (x_in_u : x ∈ u) (hu : DirSupInaccOn univ u)
+    : ∃ c ≤ x, IsCompactElement c ∧ c ∈ u := by
+  have := hu (mem_univ _) ⟨⊥, by simp⟩
+    (directedOn_isCompactElement_le x) (isLUB_isCompactElement_le x) x_in_u
+  simp [inter_nonempty] at this
+  grind
+
+open Opens
+variable {D : Type*} [TopologicalSpace D] [AlgebraicDCPO D] [IsScott D univ]
 
 /-- The upward closures of compact elements form a topological
 basis under the Scott Topology. Prop 3.5.2 in [renata2024] -/
@@ -138,7 +134,15 @@ theorem isTopologicalBasis_Ici_image_compactSet
     : IsBasis (CompactElement.toOpen '' (@Set.univ (CompactElement D))) := by
   apply isTopologicalBasis_of_isOpen_of_nhds
   · grind [IsCompactElement.isOpen_Ici, coe_mk]
-  · grind [exists_Ici_isCompactElement_Ici_mem, Subtype.exists, coe_mk]
+  · intro x u x_in_u hu
+    -- there exists an upward closure of a compact element (`Ici c`), within `u` which contains `x`
+    have : ∃ c, IsCompactElement c ∧ x ∈ Ici c ∧ Ici c ⊆ u := by
+      rw [isOpen_iff_isUpperSet_and_dirSupInaccOn univ] at hu
+      obtain ⟨upper, dirSupInaccOn⟩ := hu
+      grind [upper.Ici_subset, dirSupInaccOn.exists_le_isCompactElement x u x_in_u]
+    grind [Subtype.exists, coe_mk]
+
+
 
 end AlgebraicDCPO
 end IsScott
