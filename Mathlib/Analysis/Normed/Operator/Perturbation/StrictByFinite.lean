@@ -130,16 +130,14 @@ theorem step2_backward (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : I
 
 theorem step2 (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E))
     [codim_A : FiniteDimensional 𝕜 (E ⧸ A)] (h_ker : Disjoint u.ker A) :
-    (IsStrictMap u ∧ IsClosed (range u)) ↔ IsClosedEmbedding (restrict A u) := by
-  sorry
+    (IsStrictMap u ∧ IsClosed (range u)) ↔ IsClosedEmbedding (restrict A u) :=
+  ⟨fun H ↦ step2_forward u A A_closed h_ker H.1 H.2, step2_backward u A A_closed h_ker⟩
 
 /-!
 ### Step 3
 
 We now deduce from the two previous step the full strength of the theorem.
 -/
-
-#check IsOpenQuotientMap
 
 public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict (u : E →L[𝕜] F)
     (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E))
