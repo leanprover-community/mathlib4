@@ -6,7 +6,7 @@ Authors: Leonardo de Moura
 module
 
 public import Batteries.Util.ExtendedBinder
-public import Mathlib.Tactic.SetNotation
+public import Mathlib.Tactic.SetNotationForOrder
 
 import Mathlib.Tactic.ToDual
 
