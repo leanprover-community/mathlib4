@@ -87,7 +87,7 @@ theorem IsGaloisGroup.smul_eq_self (H : Subgroup G) (C : Type*) [CommSemiring C]
     g • algebraMap C B x = algebraMap C B x :=
   smul_algebraMap (⟨g, hg⟩ : H) x
 
-theorem smul_mem_of_normal (C : Type*) [CommSemiring C] [Algebra C B] (N : Subgroup G)
+theorem IsGaloisGroup.smul_mem_of_normal (C : Type*) [CommSemiring C] [Algebra C B] (N : Subgroup G)
     [hN : N.Normal] [hC : IsGaloisGroup N C B] (g : G) (x : C) :
     g • algebraMap C B x ∈ Set.range (algebraMap C B) := by
   have : ∀ (n : N), n • g • (algebraMap C B x) = g • algebraMap C B x := by
@@ -312,7 +312,6 @@ variable {G K L H F} in
 theorem subgroup_iff [hGKL : IsGaloisGroup G K L] :
     IsGaloisGroup H F L ↔ FixedPoints.intermediateField H = F :=
   ⟨fun _ ↦ fixedPoints_of_isGaloisGroup G K L H F, fun h ↦ of_fixedPoints_eq G K L H F h⟩
-
 
 @[simp]
 theorem finrank_fixedPoints_eq_card_subgroup [IsGaloisGroup G K L] :

@@ -363,7 +363,7 @@ end FaithfulSMul
 /-- If `R` embeds faithfully into `A` and `G` satisfies `SMulDistribClass G R A`, then
 the `SMul` of `G` on `R` extends to a `MulSemiringAction`. -/
 @[implicit_reducible]
-noncomputable def mulSemiringAction_of_smulDistribClass (G : Type*) [Group G]
+noncomputable def mulSemiringAction_of_smulDistribClass (G : Type*) [Monoid G]
     [MulSemiringAction G A] [SMul G R] [SMulDistribClass G R A] :
     MulSemiringAction G R where
   one_smul _ := by
