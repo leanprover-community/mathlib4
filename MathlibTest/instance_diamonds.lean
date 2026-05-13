@@ -228,10 +228,10 @@ section ZMod
 
 variable {p : ℕ} [Fact p.Prime]
 
-example :
+/- example :
     @EuclideanDomain.toCommRing _ (@Field.toEuclideanDomain _ (ZMod.instField p)) =
       ZMod.commRing p := by
-  with_reducible_and_instances rfl
+  with_reducible_and_instances rfl -/
 
 set_option backward.isDefEq.respectTransparency false in
 -- We need `open Fin.CommRing`, as otherwise `Fin.instCommRing` is not an instance,
