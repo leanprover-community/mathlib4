@@ -10,6 +10,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.Boundary
 public import Mathlib.AlgebraicTopology.SimplicialSet.Horn
 public import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
 public import Mathlib.AlgebraicTopology.SimplicialSet.ProdStdSimplex
+public import Mathlib.AlgebraicTopology.SimplicialSet.WeaklyPolyhedralLike
 
 /-!
 # ...
@@ -67,16 +68,14 @@ lemma mem_range_left (i : Fin (m + 2)) (hi : i ≠ k.castSucc) :
     i ∈ Set.range (x.cast hd).simplex.1 := by
   subst hd
   have := x.notMem
-  rw [Subcomplex.mem_unionProd_iff, mem_horn_iff_notMem_range] at this
-  simp at this
+  simp [Subcomplex.mem_unionProd_iff, mem_horn_iff_notMem_range] at this
   tauto
 
 lemma mem_range_right (i : Fin (n + 1)) :
     i ∈ Set.range (x.cast hd).simplex.2 := by
   subst hd
   have := x.notMem
-  rw [Subcomplex.mem_unionProd_iff, mem_boundary_iff_notMem_range] at this
-  simp at this
+  simp [Subcomplex.mem_unionProd_iff, mem_boundary_iff_notMem_range] at this
   tauto
 
 /-- Let `x` be a nondegenerate `d`-simplex of `Δ[m + 1] ⊗ Δ[n]` which
@@ -176,10 +175,25 @@ noncomputable def δ :
     ((horn.{u} (m + 1) k.castSucc).unionProd (boundary n)).N where
   dim := d
   simplex := (Δ[m + 1] ⊗ Δ[n]).δ l.castSucc (x.cast hd).simplex
-  nonDegenerate := sorry
+  nonDegenerate := nonDegenerate_δ _ (x.cast hd).nonDegenerate _
   notMem := by
-    have := hl
-    sorry
+    dsimp
+    simp only [Subcomplex.mem_unionProd_iff, prod_δ_snd, mem_boundary_iff_notMem_range,
+      Set.mem_range, stdSimplex.δ_apply, not_exists, prod_δ_fst, mem_horn_iff_notMem_range,
+      ne_eq, exists_prop, not_or, not_forall, Decidable.not_not, not_and]
+    refine ⟨fun j ↦ ?_, fun j hj ↦ ?_⟩
+    · obtain ⟨i, hi⟩ := mem_range_right x hd j
+      dsimp at hi
+      obtain rfl | ⟨i, rfl⟩ := Fin.eq_self_or_eq_succAbove l.castSucc i
+      · refine ⟨l, ?_⟩
+        rw [Fin.succAbove_castSucc_self, ← hi, ← hl.simplex_snd_succ]
+        rfl
+      · exact ⟨_, hi⟩
+    · obtain ⟨i, hi⟩ := mem_range_left x hd j hj
+      dsimp at hi
+      obtain rfl | ⟨i, rfl⟩ := Fin.eq_self_or_eq_succAbove l.castSucc i
+      · exact (hj (by rw [← hi, hl.simplex_fst_castSucc])).elim
+      · exact ⟨_, hi⟩
 
 end
 
@@ -224,6 +238,40 @@ lemma φ_succ_fst : (φ x hd (min x hd).succ).1 = k.succ := by
 
 end IsType₂
 
+namespace IsIndex
+
+variable {hd : x.dim = d + 1} {l : Fin (d + 1)} (hl : IsIndex x hd l.succ)
+
+include hl
+
+lemma isType₂_δ : IsType₂ hl.δ := sorry
+
+end IsIndex
+
+variable (k n) in
+structure Type₁ where
+  x : ((horn.{u} (m + 1) k.castSucc).unionProd (boundary n)).N
+  d : ℕ
+  hd : x.dim = d + 1
+  index : Fin (d + 1)
+  isIndex : IsIndex x hd index.succ
+
+namespace Type₁
+
+lemma ext_iff {s t : Type₁.{u} k n} :
+    s = t ↔ s.x = t.x := by
+  refine ⟨fun h ↦ by rw [h], fun h ↦ ?_⟩
+  have hs := s.isIndex.min_eq
+  have ht := t.isIndex.min_eq
+  obtain ⟨x, d, hd, l, isIndex⟩ := s
+  obtain ⟨y, d', hd', l', isIndex'⟩ := t
+  subst h
+  obtain rfl : d = d' := by grind
+  obtain rfl : l = l' := by grind
+  rfl
+
+end Type₁
+
 end pairingCore
 
 open pairingCore
@@ -231,7 +279,26 @@ open pairingCore
 variable (k n)
 
 noncomputable def pairingCore :
-    (Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] ∂Δ[n]).PairingCore := sorry
+    (Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] ∂Δ[n]).PairingCore where
+  ι := Type₁.{u} k n
+  dim s := s.d
+  simplex s := (s.x.cast s.hd).simplex
+  index s := s.index.castSucc
+  nonDegenerate₁ s := (s.x.cast s.hd).nonDegenerate
+  nonDegenerate₂ s := s.isIndex.δ.nonDegenerate
+  notMem₁ s := (s.x.cast s.hd).notMem
+  notMem₂ s := s.isIndex.δ.notMem
+  injective_type₁' {s t} h := by
+    rw [Type₁.ext_iff, Subcomplex.N.ext_iff, N.ext_iff]
+    rwa [← s.x.toS.cast_eq_self s.hd, ← t.x.toS.cast_eq_self t.hd]
+  injective_type₂' := sorry
+  type₁_ne_type₂' s t hst := by
+    replace hst : s.x = t.isIndex.δ := by
+      rwa [Subcomplex.N.ext_iff, N.ext_iff, ← s.x.cast_eq_self s.hd]
+    have := t.isIndex.isType₂_δ
+    rw [← hst] at this
+    exact this _ _ _ s.isIndex
+  surjective' := sorry
 
 end prodStdSimplex
 

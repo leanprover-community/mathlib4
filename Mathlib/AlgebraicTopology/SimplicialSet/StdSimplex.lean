@@ -197,6 +197,12 @@ lemma yonedaEquiv_symm_app_objEquiv_symm {X : SSet.{u}} {n : SimplexCategory}
 
 namespace stdSimplex
 
+lemma δ_apply {n d : ℕ} (x : (Δ[n] _⦋d + 1⦌ : Type u)) (i : Fin (d + 2)) (j : Fin (d + 1)) :
+    Δ[n].δ i x j = x (i.succAbove j) := rfl
+
+lemma σ_apply {n d : ℕ} (x : (Δ[n] _⦋d⦌ : Type u)) (i : Fin (d + 1)) (j : Fin (d + 2)) :
+    Δ[n].σ i x j = x (i.predAbove j) := rfl
+
 @[simp]
 lemma objEquiv_yonedaEquiv_id (n : ℕ) :
     dsimp% objEquiv (yonedaEquiv.{u} (𝟙 Δ[n])) = 𝟙 _ := rfl

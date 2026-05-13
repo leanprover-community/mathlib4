@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
+public import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
 
 /-!
 # ...
@@ -19,11 +19,11 @@ public section
 
 universe u
 
-open CategoryTheory Simplicial
+open CategoryTheory MonoidalCategory Simplicial
 
 namespace SSet
 
-variable (X : SSet.{u})
+variable (X Y : SSet.{u})
 
 class IsWeaklyPolyhedralLike where
   mono {n : ℕ} (x : X.nonDegenerate n) : Mono (yonedaEquiv.symm x.val)
@@ -40,5 +40,10 @@ lemma nonDegenerate_δ [X.IsWeaklyPolyhedralLike]
   rw [this, nonDegenerate_iff_of_mono, stdSimplex.mem_nonDegenerate_iff_mono,
     Equiv.apply_symm_apply]
   infer_instance
+
+instance (n : SimplexCategory) : (stdSimplex.{u}.obj n).IsWeaklyPolyhedralLike := sorry
+
+instance [X.IsWeaklyPolyhedralLike] [Y.IsWeaklyPolyhedralLike] :
+    (X ⊗ Y).IsWeaklyPolyhedralLike := sorry
 
 end SSet
