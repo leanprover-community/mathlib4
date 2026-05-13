@@ -52,6 +52,11 @@ theorem coe_reindexAddEquiv (eₘ : m ≃ m') (eₙ : n ≃ n') :
   rfl
 
 @[simp]
+theorem toEquiv_reindexAddEquiv (eₘ : m ≃ m') (eₙ : n ≃ n') :
+    (reindexAddEquiv R eₘ eₙ : Matrix m n R ≃ Matrix m' n' R) = reindex eₘ eₙ :=
+  rfl
+
+@[simp]
 theorem reindexAddEquiv_symm (eₘ : m ≃ m') (eₙ : n ≃ n') :
     (reindexAddEquiv R eₘ eₙ).symm = reindexAddEquiv R eₘ.symm eₙ.symm :=
   rfl
@@ -79,6 +84,15 @@ def reindexRingEquiv (e : m ≃ n) : Matrix m m R ≃+* Matrix n n R where
 
 @[simp]
 theorem coe_reindexRingEquiv (e : m ≃ n) : ⇑(reindexRingEquiv R e) = reindex e e :=
+  rfl
+
+@[simp]
+theorem toEquiv_reindexRingEquiv (e : m ≃ n) :
+    (reindexRingEquiv R e : Matrix m m R ≃ Matrix n n R) = reindex e e :=
+  rfl
+
+@[simp]
+theorem toAddEquiv_reindexRingEquiv (e : m ≃ n) : reindexRingEquiv R e = reindexAddEquiv R e e :=
   rfl
 
 @[simp]
@@ -110,6 +124,16 @@ def reindexLinearEquiv (eₘ : m ≃ m') (eₙ : n ≃ n') : Matrix m n A ≃ₗ
 @[simp]
 theorem coe_reindexLinearEquiv (eₘ : m ≃ m') (eₙ : n ≃ n') :
     ⇑(reindexLinearEquiv R A eₘ eₙ) = reindex eₘ eₙ :=
+  rfl
+
+@[simp]
+theorem toEquiv_reindexLinearEquiv (eₘ : m ≃ m') (eₙ : n ≃ n') :
+    (reindexLinearEquiv R A eₘ eₙ : Matrix m n A ≃ Matrix m' n' A) = reindex eₘ eₙ :=
+  rfl
+
+@[simp]
+theorem toAddEquiv_reindexLinearEquiv (eₘ : m ≃ m') (eₙ : n ≃ n') :
+    reindexLinearEquiv R A eₘ eₙ = reindexAddEquiv A eₘ eₙ :=
   rfl
 
 @[deprecated "Use `by simp` instead." (since := "2026-05-13")]
@@ -183,6 +207,20 @@ def reindexAlgEquiv (e : m ≃ n) : Matrix m m A ≃ₐ[R] Matrix n n A where
 
 @[simp]
 theorem coe_reindexAlgEquiv (e : m ≃ n) : ⇑(reindexAlgEquiv R A e) = reindex e e :=
+  rfl
+
+@[simp]
+theorem toEquiv_reindexAlgEquiv (e : m ≃ n) :
+    (reindexAlgEquiv R A e : Matrix m m A ≃ Matrix n n A) = reindex e e :=
+  rfl
+
+@[simp]
+theorem toAddEquiv_reindexAlgEquiv (e : m ≃ n) : reindexAlgEquiv R A e = reindexAddEquiv A e e :=
+  rfl
+
+@[simp]
+theorem toLinearEquiv_reindexAlgEquiv (e : m ≃ n) :
+    reindexAlgEquiv R A e = reindexLinearEquiv R A e e :=
   rfl
 
 @[deprecated "Use `by simp` instead." (since := "2026-05-13")]
