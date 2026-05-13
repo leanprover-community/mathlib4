@@ -8,6 +8,7 @@ module
 public import Mathlib.Order.BoundedOrder.Basic
 public import Mathlib.Order.OmegaCompletePartialOrder
 public import Mathlib.Order.ConditionallyCompletePartialOrder.Defs
+public import Mathlib.Order.CompactlyGenerated.Basic
 
 /-!
 # Complete Partial Orders
@@ -108,3 +109,26 @@ instance (priority := 100) CompleteLattice.toCompletePartialOrder [CompleteLatti
     CompletePartialOrder α where
   sSup := sSup
   lubOfDirected _ _ := isLUB_sSup _
+
+section IsCompactElement
+variable {α : Type*} [CompletePartialOrder α]
+
+/-- An element `k` is compact in a complete partial order if and only if
+any directed set with `sSup` above `k` already got above `k` at some point in the set. -/
+theorem isCompactElement_iff_le_of_directed_sSup_le (k : α) :
+    IsCompactElement k ↔
+      ∀ s : Set α, s.Nonempty → DirectedOn (· ≤ ·) s → k ≤ sSup s → ∃ x : α, x ∈ s ∧ k ≤ x := by
+  constructor
+  · intro hk s hs hs' h_le
+    exact hk s (sSup s) hs hs' hs'.isLUB_sSup h_le
+  · intro h s u hs hs' hu h_le
+    have u_eq_sSup : u = sSup s := hu.unique hs'.isLUB_sSup
+    rw [u_eq_sSup] at h_le
+    exact h s hs hs' h_le
+
+/-- `⊥` in a `CompletePartialOrder` is compact. -/
+lemma isCompactElement_bot : IsCompactElement (⊥ : α) := by
+  intro s _ ⟨e, he⟩ _ _ _
+  exact ⟨e, he, bot_le⟩
+
+end IsCompactElement
