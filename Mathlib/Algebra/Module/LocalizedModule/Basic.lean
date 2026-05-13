@@ -491,7 +491,6 @@ noncomputable def divBy (s : S) : LocalizedModule S M →ₗ[R] LocalizedModule 
     refine x.induction_on (fun _ _ ↦ ?_)
     simp_rw [smul'_mk, liftOn_mk, smul'_mk]
     congr!
-    simp
 
 theorem divBy_mul_by (s : S) (p : LocalizedModule S M) :
     divBy s (algebraMap R (Module.End R (LocalizedModule S M)) s p) = p :=

@@ -614,7 +614,7 @@ def UniversalCoprimeFactorizationRing.homEquiv :
     ext; simp
   right_inv q := by
     apply Subtype.ext
-    convert! congr($((UniversalFactorizationRing.homEquiv S m k hn p).apply_symm_apply
+    convert congr($((UniversalFactorizationRing.homEquiv S m k hn p).apply_symm_apply
       ⟨_, q.2.1⟩).1) using 1
     dsimp
     congr 2

@@ -138,7 +138,7 @@ theorem matrixDecomposition_id (o : HomOrthogonal s) {α : Type} [Finite α] {f 
   · cases h
     simp
   · simp only [Subtype.mk.injEq] at h
-    convert! comp_zero
+    convert comp_zero
     simpa using biproduct.ι_π_ne _ (Ne.symm h)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -159,10 +159,10 @@ theorem matrixDecomposition_comp (o : HomOrthogonal s) {α β γ : Type} [Finite
   · intro b nm
     simp only [Set.mem_preimage, Set.mem_singleton_iff] at nm
     simp only [Category.assoc]
-    convert! comp_zero
-    convert! comp_zero
-    convert! comp_zero
-    convert! comp_zero
+    convert comp_zero
+    convert comp_zero
+    convert comp_zero
+    convert comp_zero
     simp only [o.eq_zero nm]
 
 section

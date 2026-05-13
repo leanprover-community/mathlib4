@@ -234,7 +234,7 @@ theorem measure_mul_lintegral_eq [IsMulLeftInvariant ν] (sm : MeasurableSet s) 
     fun x => measurable_const.indicator (measurable_mul_const _ sm)
   have : ∀ x y, s.indicator (fun _ : G => (1 : ℝ≥0∞)) (y * x) =
       ((fun z => z * x) ⁻¹' s).indicator (fun b : G => 1) y := by
-    intro x y; symm; convert! indicator_comp_right (M := ℝ≥0∞) fun y => y * x using 2; ext1; rfl
+    intro x y; symm; convert! indicator_comp_right (M := ℝ≥0∞) fun y => y * x using 2
   simp_rw [this, lintegral_mul_const _ (ms _), lintegral_indicator (measurable_mul_const _ sm),
     setLIntegral_one]
 

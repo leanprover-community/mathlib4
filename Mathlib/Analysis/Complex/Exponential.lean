@@ -93,7 +93,7 @@ variable (x y : ℂ)
 theorem exp_zero : exp 0 = 1 := by
   rw [exp]
   refine lim_eq_of_equiv_const fun ε ε0 => ⟨1, fun j hj => ?_⟩
-  convert! (config := .unfoldSameFun) ε0 -- ε0 : ε > 0 but goal is _ < ε
+  convert (config := { __ := Congr!.Config.unfoldSameFun }) ε0 -- ε0 : ε > 0 but goal is _ < ε
   rcases j with - | j
   · exact absurd hj (not_le_of_gt zero_lt_one)
   · dsimp [exp']

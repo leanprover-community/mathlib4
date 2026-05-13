@@ -60,7 +60,6 @@ theorem integrable_prod_sub (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {f₁ : E
   rw [integral_mul_const]
   congr 1
   convert! integral_sub_right_eq_self _ x (μ := volume)
-  rfl
 
 open FourierTransform
 
