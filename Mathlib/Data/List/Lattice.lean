@@ -183,7 +183,7 @@ theorem cons_bagInter_of_mem (l₁ : List α) (h : a ∈ l₂) :
     (a :: l₁).bagInter l₂ = a :: l₁.bagInter (l₂.erase a) := by
   cases l₂ with grind [List.bagInter]
 
-@[deprecated (since := "2026-02-28")]
+@[deprecated (since := "2026-05-13")]
 alias cons_bagInter_of_pos := cons_bagInter_of_mem
 
 @[simp]
@@ -191,7 +191,7 @@ theorem cons_bagInter_of_not_mem (l₁ : List α) (h : a ∉ l₂) :
     (a :: l₁).bagInter l₂ = l₁.bagInter l₂ := by
   cases l₂ with grind [List.bagInter]
 
-@[deprecated (since := "2026-02-28")]
+@[deprecated (since := "2026-05-13")]
 alias cons_bagInter_of_neg := cons_bagInter_of_not_mem
 
 @[grind =]
@@ -199,7 +199,7 @@ theorem cons_bagInter :
     (a :: l₁).bagInter l₂ = if a ∈ l₂ then a :: l₁.bagInter (l₂.erase a) else l₁.bagInter l₂ := by
   split_ifs <;> simp_all
 
-@[deprecated (since := "2026-02-28")]
+@[deprecated (since := "2026-05-13")]
 alias cons_bagInteger := cons_bagInter
 
 @[simp]
