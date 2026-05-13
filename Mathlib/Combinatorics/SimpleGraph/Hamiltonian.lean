@@ -5,8 +5,6 @@ Authors: Bhavik Mehta, Rishi Mehta, Linus Sommer, Yue Sun
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Nat
-public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.EdgeConnectivity

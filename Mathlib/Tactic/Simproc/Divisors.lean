@@ -8,6 +8,12 @@ module
 public meta import Mathlib.NumberTheory.Divisors -- Ideally this wouldn't need to be a `meta` import: someone could investigate?
 public meta import Mathlib.Tactic.ToAdditive
 public import Mathlib.Util.Qq
+public import Mathlib.Data.Finset.Attr
+public import Mathlib.Tactic.Bound.Init
+public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.Finiteness.Attr
+public import Mathlib.Tactic.SetLike
+public import Mathlib.Util.CompileInductive
 
 /-! # Divisor Simprocs
 

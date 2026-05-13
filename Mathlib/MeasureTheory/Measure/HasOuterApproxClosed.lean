@@ -7,6 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 public import Mathlib.Topology.MetricSpace.ThickenedIndicator
+public import Mathlib.MeasureTheory.Integral.IntegrableOn
 
 /-!
 # Spaces where indicators of closed sets have decreasing approximations by continuous functions

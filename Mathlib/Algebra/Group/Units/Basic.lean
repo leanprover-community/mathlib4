@@ -13,7 +13,6 @@ public import Mathlib.Tactic.Lift
 public import Mathlib.Tactic.Subsingleton
 public import Mathlib.Tactic.Attr.Core
 
-import Mathlib.Tactic.Attr.Register
 
 /-!
 # Units (i.e., invertible elements) of a monoid

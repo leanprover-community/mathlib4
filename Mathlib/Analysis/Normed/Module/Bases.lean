@@ -8,7 +8,12 @@ module
 public import Mathlib.Analysis.Normed.Group.InfiniteSum
 public import Mathlib.Analysis.Normed.Operator.BanachSteinhaus
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-public import Mathlib.Topology.Algebra.Module.FiniteDimension
+public import Mathlib.Algebra.Order.Field.Power
+public import Mathlib.Data.Nat.Totient
+public import Mathlib.Data.Sym.Sym2
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.RingTheory.LocalRing.Basic
+public import Mathlib.Tactic.NormNum.GCD
 
 /-!
 # Schauder Bases and Generalized Bases

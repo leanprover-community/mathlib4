@@ -5,10 +5,10 @@ Authors: Bingyu Xia
 -/
 module
 
-public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.RingTheory.AdicCompletion.Algebra
 public import Mathlib.RingTheory.MvPolynomial.Ideal
 public import Mathlib.RingTheory.MvPowerSeries.Trunc
+public import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-!
 # Equivalences related to power series rings

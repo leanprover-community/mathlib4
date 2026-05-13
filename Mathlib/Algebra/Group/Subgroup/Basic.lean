@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Group.Conj
 public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.Algebra.Group.Subgroup.Ker
 public import Mathlib.Algebra.Group.Torsion
+public import Mathlib.Algebra.Group.End
 
 /-!
 # Basic results on subgroups

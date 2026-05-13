@@ -5,7 +5,6 @@ Authors: Kim Morrison, Kyle Miller
 -/
 module
 
-public meta import Mathlib.Util.AddRelatedDecl
 public import Mathlib.CategoryTheory.ConcreteCategory.Basic
 public meta import Mathlib.Tactic.ToAdditive
 

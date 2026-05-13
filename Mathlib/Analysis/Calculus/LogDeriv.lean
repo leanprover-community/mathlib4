@@ -8,8 +8,6 @@ module
 public import Mathlib.Analysis.Calculus.Deriv.ZPow
 public import Mathlib.Analysis.Calculus.MeanValue
 
-import Mathlib.Analysis.Analytic.IsolatedZeros
-import Mathlib.Analysis.Calculus.Deriv.Slope
 /-!
 # Logarithmic Derivatives
 
