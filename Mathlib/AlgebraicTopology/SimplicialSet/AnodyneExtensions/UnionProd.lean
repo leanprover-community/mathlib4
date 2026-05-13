@@ -298,6 +298,15 @@ noncomputable def pairingCore {m : ℕ} (k : Fin (m + 1)) (n : ℕ) :
     exact this _ _ _ s.isIndex
   surjective' := sorry
 
+instance {m : ℕ} (k : Fin (m + 1)) (n : ℕ) :
+    (pairingCore k n).IsProper := sorry
+
+instance {m : ℕ} (k : Fin (m + 1)) (n : ℕ) :
+    (pairingCore k n).IsRegular := sorry
+
+instance {m : ℕ} (k : Fin m) (n : ℕ) :
+    (pairingCore k.succ n).IsInner := sorry
+
 noncomputable def pairing {m : ℕ} (k : Fin (m + 2)) (n : ℕ) :
     (Subcomplex.unionProd.{u} Λ[m + 1, k] ∂Δ[n]).Pairing :=
   if hk : k = Fin.last (m + 1) then
@@ -315,6 +324,23 @@ noncomputable def pairing {m : ℕ} (k : Fin (m + 2)) (n : ℕ) :
 lemma pairing_castSucc {m : ℕ} (k : Fin (m + 1)) (n : ℕ) :
     pairing.{u} k.castSucc n = (pairingCore.{u} k n).pairing :=
   dif_neg (by grind)
+
+set_option backward.isDefEq.respectTransparency false in
+instance {m : ℕ} (k : Fin (m + 2)) (n : ℕ) :
+    (pairing.{u} k n).IsRegular := by
+  by_cases! hk : k = Fin.last (m + 1)
+  · subst hk
+    dsimp [pairing]
+    rw [dif_pos rfl]
+    infer_instance
+  · obtain ⟨k, rfl⟩ := Fin.eq_castSucc_of_ne_last hk
+    rw [pairing_castSucc]
+    infer_instance
+
+instance {m : ℕ} (k : Fin m) (n : ℕ) :
+    (pairing.{u} k.castSucc.succ n).IsInner := by
+  simp only [← Fin.castSucc_succ, pairing_castSucc]
+  infer_instance
 
 end prodStdSimplex
 
