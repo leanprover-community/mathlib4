@@ -18,7 +18,7 @@ they are obtained as the `i`th iteration of `δ 0` or `σ 0`.
 
 @[expose] public section
 
-open Simplicial
+open Simplicial Opposite
 
 namespace CategoryTheory.SimplicialObject
 
@@ -144,5 +144,21 @@ instance (i : ℕ) {n m : ℕ} (hi : n + i = m) : Mono (X.σ₀Iter i hi) :=
 
 instance (i : ℕ) {n m : ℕ} (hi : n + i = m) : Epi (X.δ₀Iter i hi) :=
   epi_of_epi_fac (X.σ₀Iter_δ₀Iter i hi)
+
+namespace Augmented
+
+variable (Y : Augmented C)
+
+@[reassoc (attr := simp)]
+lemma δ₀Iter_hom_app {n m : ℕ} (i : ℕ) (hi : n + i = m := by lia) :
+    dsimp% Y.left.δ₀Iter i hi ≫ Y.hom.app (op ⦋n⦌) = Y.hom.app (op ⦋m⦌) := by
+  simpa using Y.hom.naturality (SimplexCategory.δ₀Iter i hi).op
+
+@[reassoc (attr := simp)]
+lemma σ₀Iter_hom_app {n m : ℕ} (i : ℕ) (hi : n + i = m := by lia) :
+    dsimp% Y.left.σ₀Iter i hi ≫ Y.hom.app (op ⦋m⦌) = Y.hom.app (op ⦋n⦌) := by
+  simpa using Y.hom.naturality (SimplexCategory.σ₀Iter i hi).op
+
+end Augmented
 
 end CategoryTheory.SimplicialObject

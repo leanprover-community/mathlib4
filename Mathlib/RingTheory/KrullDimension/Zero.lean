@@ -34,7 +34,8 @@ lemma Ring.KrullDimLE.mem_minimalPrimes_iff_le_of_isPrime {I J : Ideal R} [I.IsP
 variable (R) in
 lemma Ring.KrullDimLE.minimalPrimes_eq_setOf_isPrime :
     minimalPrimes R = { I | I.IsPrime } := by
-  ext; simp [minimalPrimes, mem_minimalPrimes_iff]
+  ext
+  exact Ideal.mem_minimalPrimes_iff_isPrime
 
 variable (R) in
 lemma Ring.KrullDimLE.minimalPrimes_eq_setOf_isMaximal :

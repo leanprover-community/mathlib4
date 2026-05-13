@@ -97,7 +97,7 @@ lemma sigmoid_lt_iff {a b : ℝ} : sigmoid a < sigmoid b ↔ a < b := sigmoid_st
 @[gcongr]
 lemma sigmoid_lt {a b : ℝ} : a < b → sigmoid a < sigmoid b := sigmoid_lt_iff.mpr
 
-@[gcongr, mono]
+@[mono]
 lemma sigmoid_monotone : Monotone sigmoid := sigmoid_strictMono.monotone
 
 lemma sigmoid_injective : Function.Injective sigmoid := sigmoid_strictMono.injective
@@ -237,7 +237,7 @@ lemma sigmoid_lt_iff {a b : ℝ} : sigmoid a < sigmoid b ↔ a < b := Real.sigmo
 @[gcongr]
 lemma sigmoid_lt {a b : ℝ} : a < b → sigmoid a < sigmoid b := sigmoid_lt_iff.mpr
 
-@[gcongr, mono]
+@[mono]
 lemma sigmoid_monotone : Monotone sigmoid := sigmoid_strictMono.monotone
 
 lemma sigmoid_injective : Function.Injective sigmoid := sigmoid_strictMono.injective

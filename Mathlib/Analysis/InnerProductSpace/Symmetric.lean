@@ -80,8 +80,8 @@ theorem IsSymmetric.apply_clm {T : E →L[𝕜] E} (hT : IsSymmetric (T : E →�
 protected theorem IsSymmetric.zero : (0 : E →ₗ[𝕜] E).IsSymmetric := fun x y =>
   (inner_zero_right x : ⟪x, 0⟫ = 0).symm ▸ (inner_zero_left y : ⟪0, y⟫ = 0)
 
-@[simp]
-protected theorem IsSymmetric.id : (LinearMap.id : E →ₗ[𝕜] E).IsSymmetric := fun _ _ => rfl
+@[simp] protected lemma IsSymmetric.id : (.id : E →ₗ[𝕜] E).IsSymmetric := fun _ _ ↦ rfl
+@[simp] protected lemma IsSymmetric.one : (1 : E →ₗ[𝕜] E).IsSymmetric := fun _ _ ↦ rfl
 
 @[aesop safe apply]
 theorem IsSymmetric.add {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.IsSymmetric) :

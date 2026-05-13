@@ -173,7 +173,7 @@ end Module
 
 section CommMonoid
 
-variable (G) [CommMonoid G]
+variable (G) [CommMonoid G] [CommMonoid H]
 
 namespace CommMonoid
 
@@ -186,6 +186,13 @@ def torsion : Submonoid G where
   carrier := { x | IsOfFinOrder x }
   one_mem' := IsOfFinOrder.one
   mul_mem' hx hy := hx.mul hy
+
+@[to_additive]
+theorem mem_torsion (g : G) : g ∈ torsion G ↔ IsOfFinOrder g := Iff.rfl
+
+@[to_additive]
+lemma torsion_prod : torsion (G × H) = (torsion G).prod (torsion H) := by
+  simp [Submonoid.ext_iff, Submonoid.mem_prod, mem_torsion, IsOfFinOrder.prod_iff]
 
 variable {G}
 
@@ -280,7 +287,7 @@ end CommMonoid
 
 section CommGroup
 
-variable (G) [CommGroup G]
+variable (G) [CommGroup G] [CommGroup H]
 
 namespace CommGroup
 
@@ -307,6 +314,10 @@ lemma torsion_eq_top_iff : torsion G = ⊤ ↔ IsTorsion G :=
 lemma isMulTorsionFree_iff_torsion_eq_bot : IsMulTorsionFree G ↔ CommGroup.torsion G = ⊥ := by
   rw [isMulTorsionFree_iff_not_isOfFinOrder, eq_bot_iff, SetLike.le_def]
   simp [not_imp_not, CommGroup.mem_torsion]
+
+@[to_additive]
+lemma torsion_prod : torsion (G × H) = (torsion G).prod (torsion H) := by
+  simp [Subgroup.ext_iff, Subgroup.mem_prod, mem_torsion, IsOfFinOrder.prod_iff]
 
 @[to_additive]
 lemma isTorsion_quotient_range_powMonoidHom {n : ℕ} (hn : n ≠ 0) :

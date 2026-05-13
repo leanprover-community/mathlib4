@@ -175,8 +175,8 @@ variable [Monoid G] [Monoid H] [Semiring A] [CommSemiring k] [Algebra k A] [MulS
   [MulSemiringAction H A] [SMulCommClass G k A] [SMulCommClass H k A]
 
 /-- If `e : G ≃* H` is a multiplicative equivalence between two monoids and
- ` ∀ (a : G) (x : A), a • x = (e a) • x`, then `SkewMonoidAlgebra.domCongr e` is an
-  algebra equivalence between their skew monoid algebras. -/
+` ∀ (a : G) (x : A), a • x = (e a) • x`, then `SkewMonoidAlgebra.domCongr e` is an
+algebra equivalence between their skew monoid algebras. -/
 def domCongrAlg {e : G ≃* H} (he : ∀ (a : G) (x : A), a • x = (e a) • x) :
     SkewMonoidAlgebra A G ≃ₐ[k] SkewMonoidAlgebra A H :=
   AlgEquiv.ofLinearEquiv

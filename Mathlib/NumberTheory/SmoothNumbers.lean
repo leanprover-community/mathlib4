@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Nat.Factorization.Defs
 public import Mathlib.Data.Nat.Squarefree
+public import Mathlib.NumberTheory.PrimeCounting
 
 /-!
 # Smooth numbers
@@ -18,8 +19,6 @@ we provide some API for this.
 We then define the set `Nat.smoothNumbers n` consisting of the positive natural numbers all of
 whose prime factors are strictly less than `n`. This is the special case `s = Finset.range n`
 of the set of `s`-factored numbers.
-
-We also define the finite set `Nat.primesBelow n` to be the set of prime numbers less than `n`.
 
 The main definition `Nat.equivProdNatSmoothNumbers` establishes the bijection between
 `ℕ × (smoothNumbers p)` and `smoothNumbers (p+1)` given by sending `(e, n)` to `p^e * n`.
@@ -36,29 +35,6 @@ and we provide some API, in particular bounds for their cardinalities; see
 
 open scoped Finset
 namespace Nat
-
-/-- `primesBelow n` is the set of primes less than `n` as a `Finset`. -/
-def primesBelow (n : ℕ) : Finset ℕ := {p ∈ Finset.range n | p.Prime}
-
-@[simp]
-lemma primesBelow_zero : primesBelow 0 = ∅ := by
-  rw [primesBelow, Finset.range_zero, Finset.filter_empty]
-
-lemma mem_primesBelow {k n : ℕ} :
-    n ∈ primesBelow k ↔ n < k ∧ n.Prime := by simp [primesBelow]
-
-lemma prime_of_mem_primesBelow {p n : ℕ} (h : p ∈ n.primesBelow) : p.Prime :=
-  (Finset.mem_filter.mp h).2
-
-lemma lt_of_mem_primesBelow {p n : ℕ} (h : p ∈ n.primesBelow) : p < n :=
-  Finset.mem_range.mp <| Finset.mem_of_mem_filter p h
-
-lemma primesBelow_succ (n : ℕ) :
-    primesBelow (n + 1) = if n.Prime then insert n (primesBelow n) else primesBelow n := by
-  rw [primesBelow, primesBelow, Finset.range_add_one, Finset.filter_insert]
-
-lemma notMem_primesBelow (n : ℕ) : n ∉ primesBelow n :=
-  fun hn ↦ (lt_of_mem_primesBelow hn).false
 
 /-!
 ### `s`-factored numbers

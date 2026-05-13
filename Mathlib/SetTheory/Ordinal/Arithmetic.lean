@@ -791,6 +791,26 @@ theorem mul_div_mul_cancel {a : Ordinal} (ha : a ≠ 0) (b c) : a * b / (a * c) 
   convert mul_add_div_mul (pos_iff_ne_zero.2 ha) b c using 1
   rw [add_zero]
 
+theorem div_eq {a b c : Ordinal} (hle : b * c ≤ a) (hlt : a < b * (c + 1)) : a / b = c := by
+  rcases eq_or_ne b 0 with (rfl | hb)
+  · simp at hlt
+  exact le_antisymm (div_le hb |>.mpr hlt) (mul_le_iff_le_div hb |>.mp hle)
+
+/-- Characterization of `a / b = c` assuming `b ≠ 0`.
+See `div_eq_iff'` for a version assuming `c ≠ 0` instead. -/
+theorem div_eq_iff {a b c : Ordinal} (hb : b ≠ 0) : a / b = c ↔ b * c ≤ a ∧ a < b * (c + 1) :=
+  ⟨fun h ↦ h ▸ ⟨mul_div_le a b, lt_mul_succ_div a hb⟩, fun ⟨hle, hlt⟩ ↦ div_eq hle hlt⟩
+
+/-- Characterization of `a / b = c` assuming `c ≠ 0`.
+See `div_eq_iff` for a version assuming `b ≠ 0` instead. -/
+theorem div_eq_iff' {a b c : Ordinal} (hc : c ≠ 0) : a / b = c ↔ b * c ≤ a ∧ a < b * (c + 1) := by
+  rcases eq_or_ne b 0 with (rfl | hb)
+  · simp [hc.symm]
+  exact div_eq_iff hb
+
+theorem div_eq_one_iff {a b : Ordinal} : a / b = 1 ↔ b ≤ a ∧ a < b * 2 := by
+  rw [div_eq_iff' one_ne_zero, mul_one, one_add_one_eq_two]
+
 @[simp]
 theorem div_one (a : Ordinal) : a / 1 = a := by
   simpa only [one_mul] using mul_div_cancel a Ordinal.one_ne_zero
@@ -829,13 +849,9 @@ theorem dvd_add_iff : ∀ {a b c : Ordinal}, a ∣ b → (a ∣ b + c ↔ a ∣ 
 theorem div_mul_cancel : ∀ {a b : Ordinal}, a ≠ 0 → a ∣ b → a * (b / a) = b
   | a, _, a0, ⟨b, rfl⟩ => by rw [mul_div_cancel _ a0]
 
-theorem le_of_dvd : ∀ {a b : Ordinal}, b ≠ 0 → a ∣ b → a ≤ b
-  | a, _, b0, ⟨b, e⟩ => by
-    subst e
-    simpa only [mul_one] using
-      mul_le_mul_right
-        (one_le_iff_ne_zero.2 fun h : b = 0 => by simp [h] at b0)
-        a
+theorem le_of_dvd {a b : Ordinal} (b0 : b ≠ 0) (h : a ∣ b) : a ≤ b := by
+  rcases h with ⟨b, rfl⟩
+  simpa using mul_le_mul_right (one_le_iff_ne_zero.mpr fun h ↦ by simp [h] at b0) a
 
 theorem dvd_antisymm {a b : Ordinal} (h₁ : a ∣ b) (h₂ : b ∣ a) : a = b :=
   if a0 : a = 0 then by subst a; exact (eq_zero_of_zero_dvd h₁).symm
@@ -843,8 +859,10 @@ theorem dvd_antisymm {a b : Ordinal} (h₁ : a ∣ b) (h₂ : b ∣ a) : a = b :
     if b0 : b = 0 then by subst b; exact eq_zero_of_zero_dvd h₂
     else (le_of_dvd b0 h₁).antisymm (le_of_dvd a0 h₂)
 
-instance antisymm : @Std.Antisymm Ordinal (· ∣ ·) :=
-  ⟨@dvd_antisymm⟩
+instance : IsPartialOrder Ordinal (· ∣ ·) where
+  refl := dvd_refl
+  trans _ _ _ := dvd_trans
+  antisymm := @dvd_antisymm
 
 /-- `a % b` is the unique ordinal `r` satisfying `a = b * q + r` with `r < b`. -/
 instance mod : Mod Ordinal where

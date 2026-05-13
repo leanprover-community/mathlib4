@@ -282,7 +282,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- When the left and right functors of a 2-square are equivalences, and the natural
 transformation of the 2-square is an isomorphism, then the 2-square is Guitart exact. -/
 instance (priority := 100) guitartExact_of_isEquivalence_of_isIso
-    [L.IsEquivalence] [R.IsEquivalence] [IsIso w] : GuitartExact w := by
+    [L.IsEquivalence] [R.IsEquivalence] [IsIso w.natTrans] : GuitartExact w := by
   rw [guitartExact_iff_initial]
   intro X₂
   have := StructuredArrow.isEquivalence_post X₂ T R

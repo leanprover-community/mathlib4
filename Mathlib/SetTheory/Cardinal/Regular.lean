@@ -8,6 +8,9 @@ module
 public import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
 public import Mathlib.SetTheory.Ordinal.FixedPoint
 
+import Mathlib.SetTheory.Cardinal.Ordinal
+import Mathlib.SetTheory.Ordinal.FundamentalSequence
+
 /-!
 # Regular cardinals
 
@@ -73,27 +76,17 @@ theorem isRegular_aleph0 : IsRegular ℵ₀ :=
 lemma fact_isRegular_aleph0 : Fact (IsRegular ℵ₀) where
   out := isRegular_aleph0
 
-theorem isRegular_succ {c : Cardinal.{u}} (h : ℵ₀ ≤ c) : IsRegular (succ c) :=
-  ⟨h.trans (le_succ c),
-    succ_le_of_lt
-      (by
-        have αe := Cardinal.mk_out (succ c)
-        set α := (succ c).out
-        rcases exists_ord_eq α with ⟨r, wo, re⟩
-        have := isSuccLimit_ord (h.trans (le_succ _))
-        rw [← αe, re] at this ⊢
-        rcases cof_eq' r this with ⟨S, H, Se⟩
-        rw [← Se]
-        apply lt_imp_lt_of_le_imp_le fun h => mul_le_mul_left h c
-        rw [mul_eq_self h, ← succ_le_iff, ← αe, ← sum_const']
-        refine le_trans ?_ (sum_le_sum (fun (x : S) => card (typein r (x : α))) _ fun i => ?_)
-        · simp only [card_typein, ← mk_sigma]
-          exact
-            ⟨Embedding.ofSurjective (fun x => x.2.1) fun a =>
-                let ⟨b, h, ab⟩ := H a
-                ⟨⟨⟨_, h⟩, _, ab⟩, rfl⟩⟩
-        · rw [← lt_succ_iff, ← lt_ord, ← αe, re]
-          apply typein_lt_type)⟩
+theorem isRegular_succ {c : Cardinal} (hc : ℵ₀ ≤ c) : IsRegular (succ c) := by
+  have hc₀ := hc.trans (le_succ c)
+  use hc₀
+  by_contra! hc'
+  obtain ⟨f, hf⟩ := exists_isFundamentalSeq (o := (succ c).ord) rfl
+  apply hf.iSup_add_one_eq.not_lt
+  rw [← card_le_iff]
+  refine card_iSup_Iio_le ?_ fun i ↦ ?_
+  · simpa using hc'
+  · rw [card_le_iff]
+    exact (isSuccLimit_ord hc₀).add_one_lt (f i).2
 
 theorem isRegular_aleph_one : IsRegular ℵ₁ := by
   rw [← succ_aleph0]

@@ -74,7 +74,7 @@ theorem tendstoUniformlyOn_tsum_of_cofinite_eventually {ι : Type*} {f : ι → 
   apply lt_of_le_of_lt _ (ht n (Finset.union_subset_right hn))
   apply (norm_tsum_le_tsum_norm (A.subtype _)).trans
   apply (A.subtype _).tsum_le_tsum _ (hu.subtype _)
-  simp only [comp_apply, Subtype.forall, imp_false]
+  simp only [comp_apply, Subtype.forall]
   apply fun i hi => HN i ?_ x hx
   have : i ∉ hN.toFinset := fun hg ↦ hi (Finset.union_subset_left hn hg)
   simp_all

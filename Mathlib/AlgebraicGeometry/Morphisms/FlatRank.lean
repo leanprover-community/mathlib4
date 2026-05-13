@@ -90,7 +90,6 @@ def Scheme.Hom.finrank {X S : Scheme.{u}} (f : X ⟶ S) (s : S) : ℕ :=
   IsAffine.finrank (pullback.snd f (S.affineOpenCover.f <| S.affineOpenCover.idx s))
     (S.affineOpenCover.covers s).choose
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma Scheme.Hom.finrank_eq_finrank_snd_of_isAffine (g : T ⟶ S) [IsAffine T] (t : T)
     [Flat f] [IsFinite f] :
     f.finrank (g t) = IsAffine.finrank (pullback.snd f g) t := by

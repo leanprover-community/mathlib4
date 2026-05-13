@@ -354,9 +354,6 @@ protected theorem not_lt_zero (o : Ordinal) : ¬o < 0 :=
 @[deprecated eq_zero_or_pos (since := "2025-11-21")]
 protected theorem eq_zero_or_pos : ∀ a : Ordinal, a = 0 ∨ 0 < a := eq_bot_or_bot_lt
 
-instance : ZeroLEOneClass Ordinal :=
-  ⟨bot_le⟩
-
 instance instNeZeroOne : NeZero (1 : Ordinal) :=
   ⟨Ordinal.one_ne_zero⟩
 
@@ -875,15 +872,17 @@ protected theorem le_add_right (a b : Ordinal) : a ≤ a + b := le_self_add
 @[deprecated le_add_self (since := "2025-11-21")]
 protected theorem le_add_left (a b : Ordinal) : a ≤ b + a := le_add_self
 
+@[deprecated zero_max (since := "2026-05-07")]
 theorem max_zero_left : ∀ a : Ordinal, max 0 a = a :=
-  max_bot_left
+  zero_max
 
+@[deprecated max_zero (since := "2026-05-07")]
 theorem max_zero_right : ∀ a : Ordinal, max a 0 = a :=
-  max_bot_right
+  max_zero
 
-@[simp]
-theorem max_eq_zero {a b : Ordinal} : max a b = 0 ↔ a = 0 ∧ b = 0 :=
-  max_eq_bot
+@[deprecated _root_.max_eq_zero (since := "2026-05-07")]
+protected theorem max_eq_zero {a b : Ordinal} : max a b = 0 ↔ a = 0 ∧ b = 0 :=
+  max_eq_zero
 
 @[simp]
 theorem sInf_empty : sInf (∅ : Set Ordinal) = 0 :=
