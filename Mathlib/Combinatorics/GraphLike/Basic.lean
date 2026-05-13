@@ -21,7 +21,6 @@ of graph structures including `SimpleGraph`, `Graph`, and `Digraph`.
   the field `edges` gives the set of edges of a graph-like structure,
   and the field `Adj` gives the adjacency relation between vertices.
 * `NoMultiEdgeGraphLike`: is the typeclass for graph-like structures with no multi-edge.
-* `darts G` is the direct generalization of `Dart` in `SimpleGraph`.
 
 ## Notes
 
@@ -113,26 +112,26 @@ graph-like structures.
 
 /-- A graph-like structure with no multi-edge. This includes `SimpleGraph` and `Digraph`. -/
 class NoMultiEdgeGraphLike (V D E : outParam Type*) (Gr : Type*) extends GraphLike V D E Gr where
-  protected src_tgt_inj (G : Gr) : Function.Injective (fun d ↦ (source G d, target G d))
+  protected source_target_inj (G : Gr) : Function.Injective fun d ↦ (source G d, target G d)
 
 variable [NoMultiEdgeGraphLike V D E Gr]
 
 lemma dart_eq_of_src_tgt_eq {d₁ d₂ : D} (h : source G d₁ = source G d₂)
     (h' : target G d₁ = target G d₂) : d₁ = d₂ := by
-  apply NoMultiEdgeGraphLike.src_tgt_inj G
+  apply NoMultiEdgeGraphLike.source_target_inj G
   grind
 
-lemma src_tgt_inj (d₁ d₂ : D) : source G d₁ = source G d₂ ∧ target G d₁ = target G d₂ ↔ d₁ = d₂ :=
+lemma source_target_inj (d₁ d₂ : D) : source G d₁ = source G d₂ ∧ target G d₁ = target G d₂ ↔ d₁ = d₂ :=
   ⟨fun h => dart_eq_of_src_tgt_eq h.1 h.2, by grind⟩
 
 @[simp]
-lemma mem_darts_iff_adj : d ∈ darts G ↔ Adj G (source G d) (target G d) := by
+lemma mem_darts_iff_adj : d ∈ D(G) ↔ Adj G (source G d) (target G d) := by
   rw [← exists_darts_iff_adj]
   refine ⟨fun h => (by use d), fun ⟨d', hd', hs, ht⟩ => ?_⟩
-  obtain rfl := src_tgt_inj d' d |>.mp ⟨hs, ht⟩
+  obtain rfl := source_target_inj d' d |>.mp ⟨hs, ht⟩
   exact hd'
 
-instance [DecidableRel (Adj G)] : DecidablePred (· ∈ darts G) :=
+instance [DecidableRel (Adj G)] : DecidablePred (· ∈ D(G)) :=
   fun d => decidable_of_iff (Adj G (source G d) (target G d)) mem_darts_iff_adj.symm
 
 end noMultiEdgeGraphLike
