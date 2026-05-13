@@ -41,13 +41,14 @@ equalities.
 
 @[expose] public section
 
-universe v₁ v₂ u₁ u₂
+universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
 open Functor Category IsHomLift
 
-variable {𝒮 : Type u₁} {𝒳 : Type u₂} [Category.{v₁} 𝒮] [Category.{v₂} 𝒳]
+variable {𝒮 : Type u₁} {𝒳 : Type u₂} {𝒴 : Type u₃} [Category.{v₁} 𝒮] [Category.{v₂} 𝒳]
+  [Category.{v₃} 𝒴]
 
 /-- Definition of a prefibered category.
 
@@ -118,6 +119,14 @@ instance isStronglyCartesian_of_isCartesian (p : 𝒳 ⥤ 𝒮) [p.IsFibered] {R
     apply map_uniq
     rwa [← assoc, IsCartesian.fac]
 
+instance (p : 𝒴 ⥤ 𝒳) [p.IsFibered] (q : 𝒳 ⥤ 𝒮) [q.IsPreFibered] : (p ⋙ q).IsPreFibered where
+  exists_isCartesian' {X Z} f := by
+    dsimp at f
+    obtain ⟨Y,g,hg⟩ := IsPreFibered.exists_isCartesian q rfl f
+    obtain ⟨X', Z₂, h₂⟩ := IsPreFibered.exists_isCartesian p rfl g
+    use X', Z₂
+    exact Functor.IsCartesian.paste_vert p q Z₂ g f
+
 /-- In a category which admits strongly Cartesian pullbacks, any Cartesian morphism is
 strongly Cartesian. This is a helper-lemma for the fact that admitting strongly Cartesian pullbacks
 implies being fibered. -/
@@ -167,6 +176,15 @@ lemma of_exists_isStronglyCartesian {p : 𝒳 ⥤ 𝒮}
     have : p.IsStronglyCartesian g ψ := isStronglyCartesian_of_exists_isCartesian p h _ _
     inferInstance
 
+instance (p : 𝒴 ⥤ 𝒳) (q : 𝒳 ⥤ 𝒮)
+    [p.IsFibered] [q.IsFibered] : (p ⋙ q).IsFibered := .of_exists_isStronglyCartesian
+  fun X₂ Z h => by
+    dsimp at h
+    obtain ⟨Y₁,g,hg⟩ := ‹q.IsFibered›.exists_isCartesian' h
+    obtain ⟨X₁,f,hf⟩ := ‹p.IsFibered›.exists_isCartesian' g
+    use X₁,f
+    exact .paste_vert q p f g h
+
 /-- Given a diagram
 ```
                   a
@@ -183,5 +201,60 @@ noncomputable def pullbackPullbackIso {p : 𝒳 ⥤ 𝒮} [IsFibered p]
     (pullbackMap ha (g ≫ f))
 
 end Functor.IsFibered
+
+lemma Equivalence.functor_isFibered_of_counit_app_eq_eqToHom {C D : Type*}
+    [Category* C] [Category* D] (e : C ≌ D) (he : ∀ Y : D, dsimp% ∃ h, e.counit.app Y = eqToHom h) :
+    e.functor.IsFibered :=
+  .of_exists_isStronglyCartesian fun X₂ Y₁ g => by
+    have he' : e.inverse ⋙ e.functor = 𝟭 _ := Functor.ext
+      (fun x => by obtain ⟨h, _⟩ := he x; exact h)
+      (fun X Y f => by
+        simp only [Functor.comp_obj, Functor.comp_map, Equivalence.fun_inv_map, Functor.id_obj,
+          Functor.id_map, ← Equivalence.cancel_counit_right, Category.assoc,
+          counitIso_inv_hom_id_app, comp_id]
+        obtain ⟨h₁,h₁'⟩ := he X
+        obtain ⟨h₂,h₂'⟩ := he Y
+        rw [h₁',h₂']
+        simp)
+    obtain ⟨hY₁, h'⟩ := he Y₁
+    use e.inverse.obj Y₁
+    use e.inverse.map g ≫ e.unitInv.app X₂
+    have : dsimp% e.functor.IsHomLift g (e.inverse.map g ≫ e.unitInv.app X₂) := by
+      apply IsHomLift.of_fac _ _ _ hY₁ rfl
+      simp [h']
+    constructor
+    intro X' f' φ hφ
+    use e.unit.app _ ≫ e.inverse.map f'
+    simp only [Functor.comp_obj, Category.assoc, and_imp,and_assoc]
+    refine ⟨?_,?_,?_⟩
+    · apply IsHomLift.of_fac _ _ _ rfl hY₁
+      simp only [eqToHom_refl, Functor.map_comp, Equivalence.fun_inv_map, Functor.comp_obj,
+        Functor.id_obj, Equivalence.functor_unit_comp_assoc, Category.assoc, Category.id_comp]
+      rw [← cancel_mono (eqToIso hY₁.symm ≪≫ e.counitIso.app Y₁).hom]
+      simp only [id_obj, Iso.trans_hom, eqToIso.hom, Iso.app_hom, assoc, eqToHom_trans_assoc,
+        eqToHom_refl, id_comp, counitIso_inv_hom_id_app, comp_id]
+      rw [h']
+      simp
+    · have := congr(e.inverse.map $(IsHomLift.fac e.functor (f' ≫ g) φ))
+      simp only [Functor.map_comp, eqToHom_refl, Category.comp_id, Category.id_comp,
+        Equivalence.inv_fun_map, Functor.comp_obj, Functor.id_obj] at this
+      rw [reassoc_of% this]
+      simp
+    · intro y hy₁ _
+      rw [IsHomLift.fac e.functor f' y]
+      simp [← h']
+
+lemma Equivalence.inverse_isFibered_of_unit_app_eq_eqToHom {C D : Type*}
+    [Category* C] [Category* D] (e : C ≌ D) (he : ∀ X : C, dsimp% ∃ h, e.unit.app X = eqToHom h) :
+    e.inverse.IsFibered := by
+  apply e.symm.functor_isFibered_of_counit_app_eq_eqToHom
+  intro X
+  simp only [symm_functor, symm_inverse, symm_counit]
+  obtain ⟨h₁,h₂⟩ := he X
+  use h₁.symm
+  apply Mono.right_cancellation (f := e.unit.app X)
+  simp_rw [comp_obj, id_obj, dsimp% e.unitIso.inv_hom_id_app,
+    h₂, eqToHom_trans, eqToHom_refl]
+
 
 end CategoryTheory

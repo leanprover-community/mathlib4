@@ -40,13 +40,14 @@ equalities.
 
 @[expose] public section
 
-universe v₁ v₂ u₁ u₂
+universe v₁ v₂ v₃ u₁ u₂ u₃
 
 open CategoryTheory Functor Category IsHomLift
 
 namespace CategoryTheory.Functor
 
-variable {𝒮 : Type u₁} {𝒳 : Type u₂} [Category.{v₁} 𝒮] [Category.{v₂} 𝒳] (p : 𝒳 ⥤ 𝒮)
+variable {𝒮 : Type u₁} {𝒳 : Type u₂} {𝒴 : Type u₃} [Category.{v₁} 𝒮] [Category.{v₂} 𝒳]
+  [Category.{v₃} 𝒴] (p : 𝒳 ⥤ 𝒮) (q : 𝒴 ⥤ 𝒳)
 
 section
 
@@ -83,7 +84,7 @@ end
 
 namespace IsCartesian
 
-variable {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) [IsCartesian p f φ]
+variable {R S : 𝒮} {a b : 𝒳} {x y : 𝒴} (f : R ⟶ S) (φ : a ⟶ b) (ψ : x ⟶ y) [IsCartesian p f φ]
 
 section
 
@@ -169,6 +170,30 @@ instance of_iso_comp {a' : 𝒳} (φ' : a' ≅ a) [IsHomLift p (𝟙 R) φ'.hom]
     rw [Iso.eq_comp_inv]
     apply map_uniq
     simp only [assoc, hτ₂]
+
+lemma Functor.IsCartesian.of_bot [q.IsHomLift φ ψ] [p.IsCartesian f φ]
+    [(q ⋙ p).IsCartesian f ψ] : q.IsCartesian φ ψ := by
+  constructor
+  intro X' φ' hφ'
+  have := IsHomLift.comp_vert q p φ' φ f
+  use Functor.IsCartesian.map (q ⋙ p) f ψ φ', ⟨?_, Functor.IsCartesian.fac ..⟩,?_
+  · have := Functor.IsCartesian.map_isHomLift (q ⋙ p) f ψ φ'
+    subst_hom_lift q φ ψ
+    fapply IsHomLift.of_fac _ _ _ _ rfl _
+    · exact IsHomLift.domain_eq q (q.map ψ) φ'
+    · apply +allowSynthFailures ‹p.IsCartesian f (q.map ψ)›.ext
+      · subst_hom_lift p f (q.map ψ)
+        infer_instance
+      · exact IsHomLift.of_functor_comp_right q p (Functor.IsCartesian.map (q ⋙ p) f ψ φ') _ _
+      · simp only [Category.id_comp, eqToHom_refl, Category.comp_id, Category.assoc, ← q.map_comp,
+        Functor.IsCartesian.fac]
+        nth_rw 1 [IsHomLift.fac q (q.map ψ) φ']
+        simp
+  intro y' ⟨hy₁,hy₂⟩
+  apply +allowSynthFailures Functor.IsCartesian.map_uniq
+  · cases IsHomLift.domain_eq p f φ
+    exact IsHomLift.comp_vert q p y' (𝟙 a) (𝟙 _)
+  · exact hy₂
 
 end IsCartesian
 
@@ -286,7 +311,7 @@ end
 
 section
 
-variable {R S T : 𝒮} {a b c : 𝒳} {f : R ⟶ S} {g : S ⟶ T} {φ : a ⟶ b} {ψ : b ⟶ c}
+variable {R S T : 𝒮} {a b c : 𝒳} {x y : 𝒴} {f : R ⟶ S} {g : S ⟶ T} {φ : a ⟶ b} {ψ : b ⟶ c}
 
 /-- Given two strongly Cartesian morphisms `φ`, `ψ` as follows
 ```
@@ -332,6 +357,49 @@ protected lemma of_comp [IsStronglyCartesian p g ψ] [IsStronglyCartesian p (f �
     · intro π' ⟨hπ'₁, hπ'₂⟩
       apply map_uniq
       simp [hπ'₂.symm]
+
+variable (f g φ ψ) (η : x ⟶ y)
+
+lemma paste_vert (η : x ⟶ y) (φ : a ⟶ b) (f : R ⟶ S)
+    [q.IsStronglyCartesian φ η]
+    [p.IsStronglyCartesian f φ] : (q ⋙ p).IsStronglyCartesian f η := by
+  have := IsHomLift.comp_vert q p η φ f
+  constructor
+  intro X' z' z hz
+  have : p.IsHomLift (z' ≫ f) (q.map z) := IsHomLift.of_functor_comp_right q p z _ _
+  subst_hom_lift q φ η
+  let χ' := ‹p.IsStronglyCartesian f (q.map η)›.map _ _ _ (.refl (z' ≫ f)) (q.map z)
+  use ‹q.IsStronglyCartesian (q.map η) η›.map _ _ _ (g := χ') (f' := q.map z) (by simp [χ']) z
+  simp_rw [Functor.IsStronglyCartesian.fac, and_true, and_imp]
+  refine ⟨IsHomLift.comp_vert q p _ χ' z',?_⟩
+  intro y' hy₁ hy₂
+  have := IsHomLift.of_functor_comp_right q p y' (q.map y') z'
+  apply +allowSynthFailures ‹q.IsStronglyCartesian (q.map η) η›.map_uniq
+  · apply IsHomLift.of_eq
+    exact ‹p.IsStronglyCartesian f (q.map η)›.map_uniq _ _ _ (by simp) _ _
+      (by simp [← q.map_comp, hy₂])
+  · exact hy₂
+
+lemma of_bot [q.IsHomLift φ η] [p.IsStronglyCartesian f φ]
+    [(q ⋙ p).IsStronglyCartesian f η] : q.IsStronglyCartesian φ η := by
+  constructor
+  intro X' z' z hz
+  have := IsHomLift.comp_vert q p z (z' ≫ φ) (p.map z' ≫ p.map φ)
+  subst_hom_lift p f φ
+  let φ' := ‹(q ⋙ p).IsStronglyCartesian (p.map φ) η›.map _ _ _ (g := p.map z') rfl z
+  use φ'
+  simp_rw [φ', Functor.IsStronglyCartesian.fac, and_true, and_imp]
+  constructor
+  · subst_hom_lift q φ η
+    apply IsHomLift.of_eq
+    apply +allowSynthFailures Functor.IsStronglyCartesian.ext p (p.map (q.map η)) (q.map η)
+    case g => exact (p.map z')
+    · exact IsHomLift.of_functor_comp_right q p φ' _ (p.map z')
+    · infer_instance
+    · simp [← q.map_comp, IsHomLift.eq_of_isHomLift q (z' ≫ q.map η) z]
+  · intro y hy₁ hy₂
+    have := IsHomLift.comp_vert q p y z' (p.map z')
+    exact Functor.IsStronglyCartesian.map_uniq _ _ _ _ _ _ hy₂
 
 end
 
@@ -397,5 +465,32 @@ instance domainUniqueUpToIso_hom_isHomLift (h : f' = g.hom ≫ f) (φ : a ⟶ b)
 end
 
 end IsStronglyCartesian
+
+namespace IsCartesian
+
+lemma paste_vert (q : 𝒴 ⥤ 𝒳) (p : 𝒳 ⥤ 𝒮) {X₁ X₂ : 𝒴} {Y₁ Y₂ : 𝒳}
+    {Z₁ Z₂ : 𝒮} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) (h : Z₁ ⟶ Z₂)
+    [q.IsStronglyCartesian g f] [p.IsCartesian h g] : (q ⋙ p).IsCartesian h f := by
+  have := IsHomLift.comp_vert q p f g h
+  constructor
+  intro X' f' hf'
+  have : p.IsHomLift h (q.map f') :=
+    IsHomLift.of_functor_comp_right q p f' _ _
+  subst_hom_lift q g f
+  let φ := Functor.IsCartesian.map p h (q.map f) (q.map f')
+  use Functor.IsStronglyCartesian.map q (q.map f) f
+      (Functor.IsCartesian.fac p h (q.map f) (q.map f')).symm f',
+    ⟨IsHomLift.comp_vert q p _ φ (𝟙 Z₁),
+      (Functor.IsStronglyCartesian.fac q (q.map f) f _ _)⟩
+  intro y ⟨_, hy⟩
+  have := IsHomLift.of_functor_comp_right q p y (q.map y) (𝟙 Z₁)
+  apply +allowSynthFailures Functor.IsStronglyCartesian.map_uniq
+  · apply IsHomLift.of_fac _ _ _ rfl rfl
+    simp only [eqToHom_refl, Category.comp_id, Category.id_comp, Eq.comm]
+    apply Functor.IsCartesian.map_uniq
+    simp [← q.map_comp, hy]
+  · exact hy
+
+end IsCartesian
 
 end CategoryTheory.Functor
