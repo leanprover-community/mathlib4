@@ -121,6 +121,15 @@ def IsRegularMono.getStruct (f : X ⟶ Y) [IsRegularMono f] : RegularMono f :=
 @[deprecated (since := "2025-12-01")] noncomputable alias regularMonoOfIsRegularMono :=
   IsRegularMono.getStruct
 
+/-- An equalizer diagram gives rise to a regular monomorphism. -/
+def Fork.IsLimit.regularMono {A B : C} {p₁ p₂ : A ⟶ B} {c : Fork p₁ p₂} (h : IsLimit c) :
+    RegularMono c.ι where
+  Z := B
+  left := p₁
+  right := p₂
+  isLimit := h.ofIsoLimit c.isoForkOfι
+  w := c.condition
+
 section IsRegularMono
 
 /-!
@@ -368,12 +377,12 @@ def IsRegularEpi.getStruct (f : X ⟶ Y) [h : IsRegularEpi f] : RegularEpi f :=
   IsRegularEpi.getStruct
 
 /-- A coequalizer diagram gives rise to a regular epimorphism. -/
-def Cofork.IsColimit.regularEpi {R A : C} {p₁ p₂ : R ⟶ A} {c : Cofork p₁ p₂} (h : IsColimit c) :
+def Cofork.IsColimit.regularEpi {A B : C} {p₁ p₂ : A ⟶ B} {c : Cofork p₁ p₂} (h : IsColimit c) :
     RegularEpi c.π where
-  W := R
+  W := A
   left := p₁
   right := p₂
-  isColimit := .ofIsoColimit h c.isoCoforkOfπ
+  isColimit := h.ofIsoColimit c.isoCoforkOfπ
   w := c.condition
 
 section IsRegularEpi
