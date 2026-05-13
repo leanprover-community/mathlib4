@@ -134,7 +134,6 @@ theorem enum_eq_iff {f : α → α} : Subtype.val ∘ enum s hs = f ↔ StrictMo
     simp
     rfl
 
-@[simp]
 theorem enum_range {f : α → α} (hf : StrictMono f) :
     enum (range f) (isCofinal_range_of_strictMono hf) = hf.orderIso := by
   ext x
