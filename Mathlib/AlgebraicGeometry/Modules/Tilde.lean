@@ -554,8 +554,16 @@ lemma _root_.CategoryTheory.Functor.PreservesOneHypercovers.of_coverPreserving
       simp
     · exact pullback.condition
 
+def fooooo {C : Type*} [Category* C] [Quiver.IsThin C]
+    {P X Y Z : C} {fst : P ⟶ X} {snd : P ⟶ Y} {f : X ⟶ Z} {g : Y ⟶ Z}
+    (h : IsPullback fst snd f g) :
+    IsLimit (BinaryFan.mk fst snd) :=
+  BinaryFan.IsLimit.mk _ _ _ _ _
+
 instance {X Y : TopCat.{u}} (f : X ⟶ Y) (hf : Topology.IsOpenEmbedding f) :
-    PreservesLimitsOfShape WalkingCospan hf.functor :=
+    PreservesLimitsOfShape WalkingCospan hf.functor := by
+  constructor
+  intro K
   sorry
 
 #exit
