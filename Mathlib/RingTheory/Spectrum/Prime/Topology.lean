@@ -349,7 +349,7 @@ theorem localization_comap_injective [Algebra R S] (M : Submonoid R) [IsLocaliza
   intro p q h
   replace h := _root_.congr_arg (fun x : PrimeSpectrum R => Ideal.map (algebraMap R S) x.asIdeal) h
   dsimp only [comap] at h
-  rw [IsLocalization.map_comap M S, IsLocalization.map_comap M S] at h
+  rw [IsLocalization.map_under M S, IsLocalization.map_under M S] at h
   ext1
   exact h
 
@@ -363,7 +363,7 @@ theorem localization_comap_range [Algebra R S] (M : Submonoid R) [IsLocalization
     exact ((IsLocalization.isPrime_iff_isPrime_disjoint ..).mp p.2).2
   · use ⟨x.asIdeal.map (algebraMap R S), IsLocalization.isPrime_of_isPrime_disjoint M S _ x.2 h⟩
     ext1
-    exact IsLocalization.comap_map_of_isPrime_disjoint M S x.2 h
+    exact IsLocalization.under_map_of_isPrime_disjoint M S x.2 h
 
 @[deprecated (since := "2025-12-10")] alias localization_specComap_range := localization_comap_range
 
@@ -375,7 +375,7 @@ theorem localization_comap_isInducing [Algebra R S] (M : Submonoid R) [IsLocaliz
   constructor
   · rintro ⟨s, rfl⟩
     refine ⟨(Ideal.span s).comap (algebraMap R S), ?_⟩
-    rw [← zeroLocus_span, ← zeroLocus_span s, ← Ideal.map, IsLocalization.map_comap M S]
+    rw [← zeroLocus_span, ← zeroLocus_span s, ← Ideal.map, IsLocalization.map_under M S]
   · rintro ⟨s, rfl⟩
     exact ⟨_, rfl⟩
 

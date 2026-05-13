@@ -7,6 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Constructions.Polish.StronglyMeasurable
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+import Mathlib.Topology.Algebra.IsUniformGroup.Order
 
 /-!
 # The dominated convergence theorem
@@ -220,6 +221,26 @@ nonrec theorem tendsto_integral_filter_of_dominated_convergence {ι} {l : Filter
     ← ae_restrict_iff' (α := ℝ) (μ := μ) measurableSet_uIoc] at *
   exact tendsto_const_nhds.smul <|
     tendsto_integral_filter_of_dominated_convergence bound hF_meas h_bound bound_integrable h_lim
+
+theorem _root_.TendstoUniformlyOn.tendsto_intervalIntegral_of_continuousOn
+    {l : Filter ι} [l.IsCountablyGenerated] {F : ι → ℝ → E}
+    [IsLocallyFiniteMeasure μ] (hF : ∀ᶠ i in l, ContinuousOn (F i) [[a, b]])
+    (h_lim : TendstoUniformlyOn F f l [[a, b]]) :
+    Tendsto (fun n => ∫ x in a..b, F n x ∂μ) l (𝓝 <| ∫ x in a..b, f x ∂μ) := by
+  rcases l.eq_or_neBot with rfl | hl
+  · simp
+  rcases isCompact_uIcc.bddAbove_image (h_lim.continuousOn hF.frequently).norm with ⟨C, hC⟩
+  apply tendsto_integral_filter_of_dominated_convergence (bound := fun _ ↦ C + 1)
+  case hF_meas =>
+    exact hF.mono fun i hi ↦ hi.mono uIoc_subset_uIcc |>.aestronglyMeasurable measurableSet_uIoc
+  case h_bound =>
+    have := uniformContinuous_norm.comp_tendstoUniformlyOn h_lim
+      |>.eventually_forall_le (show C < C + 1 by simp) (by simpa [upperBounds] using hC)
+    exact this.mono fun i hi ↦ .of_forall fun x hx ↦ hi x <| uIoc_subset_uIcc hx
+  case bound_integrable =>
+    exact intervalIntegrable_const
+  case h_lim =>
+    exact .of_forall fun x hx ↦ h_lim.tendsto_at <| uIoc_subset_uIcc hx
 
 /-- Lebesgue dominated convergence theorem for parametric interval integrals. -/
 nonrec theorem hasSum_integral_of_dominated_convergence {ι} [Countable ι] {F : ι → ℝ → E}
