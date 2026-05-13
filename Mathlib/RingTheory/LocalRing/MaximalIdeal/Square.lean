@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.Nakayama
 
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*} [CommRing R] [IsLocalRing R] [IsNoetherianRing R]
 
