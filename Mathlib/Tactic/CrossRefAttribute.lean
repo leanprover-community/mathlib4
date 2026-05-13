@@ -57,7 +57,7 @@ structure Tag where
   declName : Name
   /-- The external database the entry belongs to. -/
   database : Database
-  /-- The database identifier (a tag string or Q-number). -/
+  /-- The database identifier. -/
   tag : String
   /-- An optional comment supplied with the attribute. -/
   comment : String
