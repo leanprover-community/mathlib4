@@ -99,7 +99,7 @@ lemma filter_sigma (s : Finset ι) (t : ∀ i, Finset (α i)) (p : (i : ι) × �
 lemma filter_sigma' (s : Finset ι) (t : ∀ i, Finset (α i)) (p : (i : ι) → α i → Prop)
     [∀ i, DecidablePred (p i)] :
     (s.sigma t).filter (fun x ↦ p x.fst x.snd) = s.sigma fun i ↦ (t i).filter (p i)  := by
-  simp
+  simp [filter_sigma]
 
 variable (s t) (f : (Σ i, α i) → β)
 
