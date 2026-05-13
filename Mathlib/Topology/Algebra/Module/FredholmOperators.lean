@@ -160,7 +160,7 @@ lemma LinearMap.equiv_of_quasiInverse' {u u' : V₃ →ₗ[K] V₂} {v : V₂ �
 end
 end
 
-open Topology ContinuousLinearMap
+open Topology ContinuousLinearMap Submodule Set
 
 variable (f)
 
@@ -176,7 +176,7 @@ def IsFredholm_exists : Prop := ∃ g : F →L[𝕜] E,
   FiniteDimensional 𝕜 (f ∘L g - .id 𝕜 F).range  ∧ FiniteDimensional 𝕜 (g ∘L f - .id 𝕜 E).range
 
 namespace QuotFiniteSubmodules
-variable [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F] [ContinuousAdd E] [ContinuousAdd F]
+variable [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F]
 
 variable (𝕜 E F) in
 def FiniteRank : Submodule 𝕜 (E →L[𝕜] F) where
@@ -336,7 +336,57 @@ Sorry for the deviation from notation...I'm writing a note for tomorrow! -/
 
 /- ## IsStrict Using Technical Lemma -/
 
+/- ## Fredholm operator is an isomorphism on a finite codim space -/
 
+open QuotFiniteSubmodules
 
+variable {u : E →L[𝕜] F} {v : F →L[𝕜] E}
+
+variable [ContinuousConstSMul 𝕜 E]
+
+omit [IsTopologicalAddGroup F] in
+theorem ContinuousLinearMap.id_sub_comp_ker_coFG (hgf : v ∘L u ≈ .id 𝕜 E) :
+    (.id 𝕜 E - v ∘L u).ker.CoFG := by
+  rw [← range_fg_iff_ker_cofg, Submodule.fg_iff_finiteDimensional]
+  exact eqv_iff.1 (Setoid.symm hgf)
+
+variable [T1Space E] [T1Space F] [ContinuousConstSMul 𝕜 F]
+
+/-- Need rename. -/
+theorem aaron (hr : IsFredholm_quot u) :
+    ∃ (E₁ : Submodule 𝕜 E) (F₁ : Submodule 𝕜 F), IsClosed E₁.carrier ∧ E₁.CoFG ∧
+      IsClosed F₁.carrier ∧ F₁.CoFG ∧ BijOn u E₁ F₁ := by
+  obtain ⟨v, huv, hvu⟩ := hr
+  refine ⟨(.id 𝕜 E - v ∘L u).ker, (.id 𝕜 F - u ∘L v).ker, (.id 𝕜 E - v ∘L u).isClosed_ker,
+    ContinuousLinearMap.id_sub_comp_ker_coFG hvu, (.id 𝕜 F - u ∘L v).isClosed_ker,
+    ContinuousLinearMap.id_sub_comp_ker_coFG huv,
+    InvOn.bijOn ⟨fun _ hx => (sub_eq_zero.mp hx).symm, fun _ hx => (sub_eq_zero.mp hx).symm⟩ ?_ ?_⟩
+  <;> intro x hx
+  <;> simp_all [← map_sub]
+
+/- ## Injections from closed finite codimension subspaces
+
+Easy for every definition.
+The index is the codimension of the range.
+
+(The same is true for quotient by finite dimensional complemented subspaces)
+-/
+
+/- ## Composition of Fredholm (with the inverse definition)
+
+Consider the three CLMs `u`, `v` and `v ∘L u`. If two of them are Fredholm,
+the third one is.
+
+I'm not sure what the set of statements should look like, but I imagine the following :
+1. If `u` and `v` are Fredholm, `v ∘L u` is
+2. If `u` is Fredholm, then `v` Fredholm ↔ `v ∘ u` Fredholm
+3. If `v` is Fredholm, then `u` Fredholm ↔ `v ∘ u` Fredholm
+-/
+
+/- ## ContinuousLinearEquiv is open in ContinuousLinearMap for Banach spaces
+
+For `E = F` this follows from `Units.isOpen`. Then for the general case either
+`E ≃L F` is empty or you reduce to the `E = F` case.
+-/
 
 end FredholmOperators
