@@ -204,8 +204,10 @@ theorem summable_condensed_iff {f : ℕ → ℝ≥0} (hf : ∀ ⦃m n⦄, 0 < m 
   have h_succ_diff : SuccDiffBounded 2 (2 ^ ·) := by
     intro n
     simp [pow_succ, mul_two, two_mul]
-  convert! summable_schlomilch_iff hf (pow_pos zero_lt_two) (pow_right_strictMono₀ _root_.one_lt_two)
-    two_ne_zero h_succ_diff
+  convert! summable_schlomilch_iff hf (pow_pos zero_lt_two)
+    (pow_right_strictMono₀ _root_.one_lt_two)
+    two_ne_zero
+    h_succ_diff
   simp [pow_succ, mul_two]
 
 end NNReal

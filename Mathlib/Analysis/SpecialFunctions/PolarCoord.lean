@@ -285,7 +285,8 @@ theorem lintegral_comp_pi_polarCoord_symm (f : (ι → ℝ × ℝ) → ℝ≥0�
     ∫⁻ p in (Set.univ.pi fun _ : ι ↦ polarCoord.target),
       (∏ i, .ofReal (p i).1) * f (fun i ↦ polarCoord.symm (p i)) = ∫⁻ p, f p := by
   rw [← setLIntegral_univ f, ← setLIntegral_congr pi_polarCoord_symm_target_ae_eq_univ]
-  convert! (lintegral_image_eq_lintegral_abs_det_fderiv_mul volume measurableSet_pi_polarCoord_target
+  convert! (lintegral_image_eq_lintegral_abs_det_fderiv_mul volume
+    measurableSet_pi_polarCoord_target
     (fun p _ ↦ (hasFDerivAt_pi_polarCoord_symm p).hasFDerivWithinAt)
       injOn_pi_polarCoord_symm f).symm using 1
   refine setLIntegral_congr_fun measurableSet_pi_polarCoord_target (fun x hx ↦ ?_)

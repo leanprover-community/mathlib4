@@ -147,8 +147,9 @@ abbrev pushoutInl (F : WalkingParallelPair ⥤ C) :
 set_option backward.isDefEq.respectTransparency false in
 theorem pushoutInl_eq_pushout_inr (F : WalkingParallelPair ⥤ C) :
     pushoutInl F = pushout.inr _ _ := by
-  convert
-    (whisker_eq Limits.coprod.inl pushout.condition : (_ : F.obj _ ⟶ constructCoequalizer _) = _) <;> simp
+  convert (whisker_eq Limits.coprod.inl pushout.condition :
+      (_ : F.obj _ ⟶ constructCoequalizer _) = _) <;>
+    simp
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Define the equalizing cocone -/

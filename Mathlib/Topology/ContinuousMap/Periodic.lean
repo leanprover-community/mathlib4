@@ -34,8 +34,6 @@ theorem periodic_tsum_comp_add_zsmul [AddCommGroup X] [ContinuousAdd X] [AddComm
   by_cases h : Summable fun n : ℤ => f.comp (ContinuousMap.addRight (n • p))
   · convert congr_arg (fun f : C(X, Y) => f x) ((Equiv.addRight (1 : ℤ)).tsum_eq _) using 1
     -- This `have` unfolds the function composition in `Equiv.summable_iff`.
-    
-    -- This `have` unfolds the function composition in `Equiv.summable_iff`.
     have : Summable fun (c : ℤ) => f.comp (ContinuousMap.addRight (Equiv.addRight 1 c • p)) :=
       (Equiv.addRight (1 : ℤ)).summable_iff.mpr h
     simp_rw [← tsum_apply h, ← tsum_apply this]

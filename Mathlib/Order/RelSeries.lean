@@ -296,7 +296,7 @@ def append (p q : RelSeries r) (connect : p.last ~[r] q.head) : RelSeries r wher
   step i := by
     obtain hi | rfl | hi :=
       lt_trichotomy i (Fin.castLE (by lia) (Fin.last _ : Fin (p.length + 1)))
-    · convert p.step ⟨i.1, hi⟩ <;> convert! Fin.append_left p q _ <;> rfl
+    · convert p.step ⟨i.1, hi⟩ <;> convert! Fin.append_left p q _
     · convert connect
       · convert! Fin.append_left p q _
       · convert! Fin.append_right p q _; rfl

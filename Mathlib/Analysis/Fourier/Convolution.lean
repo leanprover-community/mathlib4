@@ -88,8 +88,7 @@ theorem fourier_bilin_convolution_eq_integral (B : F₁ →L[𝕜] F₂ →L[�
     congr
     ext y
     -- Linear change of variables
-    convert! integral_sub_right_eq_self _ y (μ := volume)
-    congr
+    convert integral_sub_right_eq_self _ y (μ := volume)
     simp
 
 variable [CompleteSpace F₁] [CompleteSpace F₂] [CompleteSpace F₃]

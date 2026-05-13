@@ -94,8 +94,8 @@ lemma root_add_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
   rw [← neg_mem_range_root_iff]
   convert
     b.root_sub_root_mem_of_mem_of_mem j i (-k) hij.symm hj hi hk (by contrapose hkj; aesop)
-      (by convert! P.neg_mem_range_root_iff.mpr hk' using 1; simp [neg_add_eq_sub]) using
-    1
+      (by convert P.neg_mem_range_root_iff.mpr hk' using 1; simp [neg_add_eq_sub])
+    using 1
   simp only [indexNeg_neg, root_reflectionPerm, reflection_apply_self]
   module
 
