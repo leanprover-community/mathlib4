@@ -23,18 +23,27 @@ section CommSemiring
 
 variable {R : Type*} [CommSemiring R] [Ring.KrullDimLE 0 R] (I : Ideal R)
 
-lemma Ring.KrullDimLE.mem_minimalPrimes_iff {I J : Ideal R} :
-    I ∈ J.minimalPrimes ↔ I.IsPrime ∧ J ≤ I :=
+lemma Ring.KrullDimLE.isMinimalPrime_iff {I J : Ideal R} :
+    J.IsMinimalPrime I ↔ I.IsPrime ∧ J ≤ I :=
   ⟨fun H ↦ H.1, fun H ↦ ⟨H, fun _ h e ↦ (h.1.isMaximal'.eq_of_le H.1.ne_top e).ge⟩⟩
 
-lemma Ring.KrullDimLE.mem_minimalPrimes_iff_le_of_isPrime {I J : Ideal R} [I.IsPrime] :
-    I ∈ J.minimalPrimes ↔ J ≤ I := by
-  rwa [mem_minimalPrimes_iff, and_iff_right]
+@[deprecated "Use `Ring.KrullDimLE.isMinimalPrime_iff` instead." (since := "2026-05-13")]
+alias Ring.KrullDimLE.mem_minimalPrimes_iff := Ring.KrullDimLE.isMinimalPrime_iff
+
+lemma Ring.KrullDimLE.isMinimalPrime_iff_le_of_isPrime {I J : Ideal R} [I.IsPrime] :
+    J.IsMinimalPrime I ↔ J ≤ I := by
+  simp [isMinimalPrime_iff, and_iff_right]
+
+@[deprecated "Use `Ring.KrullDimLE.isMinimalPrime_iff_le_of_isPrime` instead."
+  (since := "2026-05-13")]
+alias Ring.KrullDimLE.mem_minimalPrimes_iff_le_of_isPrime :=
+  Ring.KrullDimLE.isMinimalPrime_iff_le_of_isPrime
 
 variable (R) in
 lemma Ring.KrullDimLE.minimalPrimes_eq_setOf_isPrime :
     minimalPrimes R = { I | I.IsPrime } := by
-  ext; simp [minimalPrimes, mem_minimalPrimes_iff]
+  ext
+  simp [isMinimalPrime_iff]
 
 variable (R) in
 lemma Ring.KrullDimLE.minimalPrimes_eq_setOf_isMaximal :

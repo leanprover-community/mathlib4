@@ -158,9 +158,9 @@ theorem Ideal.minimalPrimes_eq_empty_iff (I : Ideal R) :
   · rintro rfl
     exact Ideal.minimalPrimes_top
 
-lemma Ideal.mem_minimalPrimes_sup {R : Type*} [CommRing R] {p I J : Ideal R} [p.IsPrime]
-    (hle : I ≤ p) (h : p.map (Ideal.Quotient.mk I) ∈ (J.map (Ideal.Quotient.mk I)).minimalPrimes) :
-    p ∈ (I ⊔ J).minimalPrimes := by
+lemma Ideal.isMinimalPrime_sup {R : Type*} [CommRing R] {p I J : Ideal R} [p.IsPrime]
+    (hle : I ≤ p) (h : (J.map (Ideal.Quotient.mk I)).IsMinimalPrime (p.map (Ideal.Quotient.mk I))) :
+    (I ⊔ J).IsMinimalPrime p := by
   refine ⟨⟨‹_›, ?_⟩, fun q ⟨_, hq⟩ hqp ↦ ?_⟩
   · rw [sup_le_iff]
     exact ⟨hle, by simpa [hle] using Ideal.comap_mono (f := Ideal.Quotient.mk I) h.1.2⟩
@@ -169,17 +169,20 @@ lemma Ideal.mem_minimalPrimes_sup {R : Type*} [CommRing R] {p I J : Ideal R} [p.
       h.2 ⟨isPrime_map_quotientMk_of_isPrime hq.1, map_mono hq.2⟩ (map_mono hqp)
     simpa [comap_map_quotientMk, hq.1, sup_le_iff] using comap_mono (f := Ideal.Quotient.mk I) h2
 
+@[deprecated "Use `Ideal.isMinimalPrime_sup` instead." (since := "2026-05-13")]
+alias Ideal.mem_minimalPrimes_sup := Ideal.isMinimalPrime_sup
+
 variable {S : Type*} [CommRing S] [Algebra R S]
 
 /-- If `P` lies over `p`, `p` is a minimal prime over `I` and the image of `P` is
 a minimal prime over the image of `J` in `S ⧸ p S`, then `P` is a minimal prime
 over `I S ⊔ J`. -/
-lemma Ideal.map_sup_mem_minimalPrimes_of_map_quotientMk_mem_minimalPrimes
+lemma Ideal.map_sup_isMinimalPrime_of_map_quotientMk_isMinimalPrime
     {I p : Ideal R} {P : Ideal S} [P.IsPrime] [P.LiesOver p]
-    (hI : p ∈ I.minimalPrimes) {J : Ideal S} (hJP : J ≤ P)
-    (hJ : P.map (Ideal.Quotient.mk _) ∈
-      (J.map (Ideal.Quotient.mk (p.map (algebraMap R S)))).minimalPrimes) :
-    P ∈ (I.map (algebraMap R S) ⊔ J).minimalPrimes := by
+    (hI : I.IsMinimalPrime p) {J : Ideal S} (hJP : J ≤ P)
+    (hJ : (J.map (Ideal.Quotient.mk (p.map (algebraMap R S)))).IsMinimalPrime
+      (P.map (Ideal.Quotient.mk _))) :
+    (I.map (algebraMap R S) ⊔ J).IsMinimalPrime P := by
   refine ⟨⟨inferInstance, sup_le_iff.mpr ?_⟩, fun q ⟨_, hleq⟩ hqle ↦ ?_⟩
   · refine ⟨?_, hJP⟩
     rw [Ideal.map_le_iff_le_comap, ← Ideal.under_def, ← Ideal.over_def P p]
@@ -195,5 +198,10 @@ lemma Ideal.map_sup_mem_minimalPrimes_of_map_quotientMk_mem_minimalPrimes
       hJ.2 ⟨Ideal.isPrime_map_quotientMk_of_isPrime h1, Ideal.map_mono hleq.2⟩
         (Ideal.map_mono hqle)
     simpa [h1] using Ideal.comap_mono (f := Ideal.Quotient.mk (p.map (algebraMap R S))) h2
+
+@[deprecated "Use `Ideal.map_sup_isMinimalPrime_of_map_quotientMk_isMinimalPrime` instead."
+  (since := "2026-05-13")]
+alias Ideal.map_sup_mem_minimalPrimes_of_map_quotientMk_mem_minimalPrimes :=
+  Ideal.map_sup_isMinimalPrime_of_map_quotientMk_isMinimalPrime
 
 end
