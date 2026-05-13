@@ -52,7 +52,7 @@ theorem IsClub.union (hs : IsClub s) (ht : IsClub t) : IsClub (s ∪ t) :=
   ⟨hs.dirSupClosed.union ht.dirSupClosed, hs.isCofinal.mono Set.subset_union_left⟩
 
 theorem IsClub.isLUB_mem (hs : IsClub s) (ht : t ⊆ s) (ht₀ : t.Nonempty) (hx : IsLUB t x) : x ∈ s :=
-  hs.dirSupClosed ht ht₀ (Std.Total.directedOn _) hx
+  hs.dirSupClosed ht ht₀ (.of_linearOrder _) hx
 
 theorem IsClub.csSup_mem {α} [ConditionallyCompleteLinearOrder α] {s t : Set α}
     (hs : IsClub s) (ht : t ⊆ s) (ht₀ : t.Nonempty) (ht₁ : BddAbove t) : sSup t ∈ s :=
@@ -124,6 +124,9 @@ theorem IsClub.inter {s t : Set α} (hα : cof α ≠ ℵ₀) (hs : IsClub s) (h
   · rw [cof_lt_aleph0_iff] at hα
     exact .sInter_of_cof_le_one hα H
   · exact .sInter hα (hα'.trans_le' <| by simp) H
+
+theorem Order.IsNormal.isClub_range {f : α → α} (hf : IsNormal f) : IsClub (.range f) :=
+  ⟨hf.dirSupClosed_range, fun x ↦ ⟨_, ⟨x, rfl⟩, hf.strictMono.le_apply⟩⟩
 
 theorem Order.IsNormal.isClub_fixedPoints {f : α → α} (hα : cof α ≠ ℵ₀) (hf : IsNormal f) :
     IsClub f.fixedPoints := by
