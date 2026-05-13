@@ -287,56 +287,14 @@ lemma KernelFG_of_isFredholmₗ (hu : IsFredholm_existsₗ u) : u.ker.FG := by
 
 /- ## Cokernel -/
 
-lemma CokernelFG_of_isFredholmₗ (hu : IsFredholm_existsₗ u) [Module.Free R (N ⧸ u.range)] :
-    Module.Finite R (N ⧸ u.range) := by
-  obtain ⟨v, hv_right, hv_left⟩ := hu
-  let φ := u.dualMap
-  have : IsFredholm_existsₗ φ := by
-    unfold IsFredholm_existsₗ
-    use v.dualMap
-    sorry
-    -- constructor
-    -- · rw [LinearMap.dualMap_comp_dualMap]
-    --   sorry
-  have FG_ker_dual : φ.ker.FG := KernelFG_of_isFredholmₗ this
-  have one := u.ker_dualMap_eq_dualAnnihilator_range
-  rw [one] at FG_ker_dual
-  let two := (u.range).dualQuotEquivDualAnnihilator
-  rw [← Module.finite_dual_iff, Module.Finite.equiv_iff two]
-  exact Module.Finite.iff_fg.mpr FG_ker_dual
-
 lemma CokernelFG_of_isFredholm' (hu : IsFredholm_existsₗ u) : Module.Finite R (N ⧸ u.range) := by
-  let q := u.range.mkQ
   obtain ⟨v, hv, -⟩ := hu
-  let Q := (u ∘ₗ v - (1 : N →ₗ[R] N)).range.mkQ
-  have crux : (u ∘ₗ v - (1 : N →ₗ[R] N)).ker ≤ Submodule.comap (1 : N →ₗ[R] N) u.range := by
-    erw [comap_id]
-    intro x hx
-    use v x
-    rwa [LinearMap.mem_ker, LinearMap.sub_apply, LinearMap.coe_comp, Function.comp_apply,
-      Module.End.one_apply, sub_eq_zero] at hx
-  have hmap := Submodule.mapQ (u ∘ₗ v - (1 : N →ₗ[R] N)).ker u.range (1 : N →ₗ[R] N) crux
-  have hpre := (u ∘ₗ v - (1 : N →ₗ[R] N)).quotKerEquivRange.symm.toLinearMap
-  have hfin := hmap.comp hpre
-  have h2 : -q ∘ (u ∘ₗ v - (1 : N →ₗ[R] N)) = q := by aesop
-  have h3 := Set.rangeFactorization (u ∘ₗ v - (1 : N →ₗ[R] N)).toFun
-  have K : Module.Finite R (u ∘ₗ v - 1).range := sorry
-  apply Module.Finite.of_surjective (R := R) (M := (u ∘ₗ v - 1).range) hfin
-
-  sorry
-
--- Quot.surjective_lift
-
-
-
-
-/- In case Fredholm folks can't sleep, here's the right way to go about the above. The idea is
-to look at the quotient via maps. Let `q : E → E⧸ImT`. This is characterized by (see one of the
-annihilator results above) the equation `q ∘ T = 0`. This implies `q ∘ (T ∘ u - id_F)= -q` and so
-`q` factors as `-q ∘ (T ∘ u - id_F)`. Since `q` is surjective, so is `-q|(T ∘ u - id_F).range` (onto
-`E/Im T`). Since that range is assumed finite dimensional, and a surjective linear map from a finite
-dimensional space has finite dimensional range, it follows that `E/Im T` must be finite dimensional.
-Sorry for the deviation from notation...I'm writing a note for tomorrow! -/
+  have : (u ∘ₗ v - (1 : N →ₗ[R] N)).ker ≤ Submodule.comap (1 : N →ₗ[R] N) u.range :=
+    fun x hx ↦ by
+      use v x
+      rwa [LinearMap.mem_ker, LinearMap.sub_apply, LinearMap.coe_comp, Function.comp_apply,
+        Module.End.one_apply, sub_eq_zero] at hx
+  exact CoFG.of_cofg_le this <| range_fg_iff_ker_cofg.mp hv
 
 /- ## GoodRelation -/
 
