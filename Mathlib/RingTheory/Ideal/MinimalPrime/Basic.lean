@@ -184,8 +184,7 @@ lemma Ideal.mem_minimalPrimes_sup {R : Type*} [CommRing R] {p I J : Ideal R} [p.
     p ∈ (I ⊔ J).minimalPrimes := by
   refine ⟨⟨‹_›, ?_⟩, fun q ⟨_, hq⟩ hqp ↦ ?_⟩
   · rw [sup_le_iff]
-    refine ⟨hle, ?_⟩
-    simpa [hle] using Ideal.comap_mono (f := Ideal.Quotient.mk I) h.le
+    refine ⟨hle, by simpa [hle] using Ideal.comap_mono (f := Ideal.Quotient.mk I) h.le⟩
   · rw [sup_le_iff] at hq
     have h2 : p.map (Quotient.mk I) ≤ q.map (Quotient.mk I) :=
       h.2 ⟨isPrime_map_quotientMk_of_isPrime hq.1, map_mono hq.2⟩ (map_mono hqp)
