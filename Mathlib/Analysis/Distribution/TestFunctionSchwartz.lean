@@ -191,7 +191,6 @@ noncomputable def restrictToTestFunctionsCLM (T : 𝓢'(E, F)) : 𝓓(Ω, ℝ) �
       ← algebraMap_smul (A := ℂ) c (T _)]
     exact T.map_smul (c : ℂ) _
 
-
 /--
 The distribution associated to a tempered distribution by restricting
 to ℝ-valued test functions, repackaging `restrictToTestFunctionsCLM`.
