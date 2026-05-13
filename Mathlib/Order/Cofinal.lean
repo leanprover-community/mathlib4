@@ -42,9 +42,8 @@ theorem isCofinal_empty_iff : IsCofinal (∅ : Set α) ↔ IsEmpty α := by
   simpa using h a
 
 theorem IsCofinal.nonempty [Nonempty α] {s : Set α} (hs : IsCofinal s) : s.Nonempty := by
-  contrapose! hs
-  subst hs
-  rwa [isCofinal_empty_iff, not_isEmpty_iff]
+  inhabit α
+  exact (hs default).imp fun _ ↦ And.left
 
 @[simp]
 theorem isCofinal_singleton_iff {x : α} : IsCofinal {x} ↔ IsTop x := by
