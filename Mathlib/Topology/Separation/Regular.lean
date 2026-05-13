@@ -60,7 +60,7 @@ If the space is also Lindelöf:
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists UniformSpace
 
@@ -89,7 +89,7 @@ theorem regularSpace_TFAE (X : Type u) [TopologicalSpace X] :
       ∀ x : X, (𝓝 x).lift' closure ≤ 𝓝 x,
       ∀ x : X, (𝓝 x).lift' closure = 𝓝 x] := by
   tfae_have 1 ↔ 5 := by
-    rw [regularSpace_iff, (@compl_surjective (Set X) _).forall, forall_swap]
+    rw [regularSpace_iff, (@compl_surjective (Set X) _).forall, forall_comm]
     simp only [isClosed_compl_iff, mem_compl_iff, Classical.not_not, @and_comm (_ ∈ _),
       (nhds_basis_opens _).lift'_closure.le_basis_iff (nhds_basis_opens _), and_imp,
       (nhds_basis_opens _).disjoint_iff_right, ← subset_interior_iff_mem_nhdsSet,

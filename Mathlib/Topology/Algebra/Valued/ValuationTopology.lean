@@ -182,7 +182,11 @@ theorem mem_nhds_zero {s : Set R} : s ∈ 𝓝 (0 : R) ↔
     ∃ γ : (MonoidWithZeroHom.ValueGroup₀ _i.v)ˣ, { x | v.restrict x < γ.1 } ⊆ s := by
   simp only [mem_nhds, sub_zero]
 
-theorem loc_const {x : R} (h : (v x : Γ₀) ≠ 0) : { y : R | v y = v x } ∈ 𝓝 x := by
+/-- The set `{ y : R | v y = v x }` is a neighbourhood of `x`.
+This does not imply that `v` is locally constant everywhere (since `v ⁻¹' {0}` is not open),
+but it is equivalent to the restriction of `v` to the complement of its support being
+locally constant. -/
+theorem locally_const {x : R} (h : (v x : Γ₀) ≠ 0) : { y : R | v y = v x } ∈ 𝓝 x := by
   rw [mem_nhds]
   have h' : v.restrict x ≠ 0 := by simp [h]
   use Units.mk0 _ h'
@@ -261,9 +265,6 @@ theorem isOpen_closedBall {r : ValueGroup₀ _i.v} (hr : r ≠ 0) :
   simp only [setOf_subset_setOf]
   exact ⟨Units.mk0 _ hr, fun y hy ↦
     (sub_add_cancel y x).symm ▸ le_trans (v.restrict.map_add _ _) (max_le (le_of_lt hy) hx)⟩
-
-@[deprecated (since := "2025-10-09")]
-alias isOpen_closedball := isOpen_closedBall
 
 /-- A closed ball centred at the origin in a valued ring is closed. -/
 theorem isClosed_closedBall (r : ValueGroup₀ _i.v) : IsClosed (X := R) {x | v.restrict x ≤ r} := by

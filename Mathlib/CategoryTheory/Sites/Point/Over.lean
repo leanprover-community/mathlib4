@@ -79,7 +79,7 @@ lemma IsConservativeFamilyOfPoints.over
       (⟨by exact y, by rw [FunctorToTypes.mem_fromOverSubfunctor_iff]; rfl⟩)
     rw [Subtype.ext_iff] at hz₂
     exact ⟨i, Φ.obj.fiber.map b z,
-      (congr_fun (Φ.obj.fiber.map_comp b (g i)) _).symm.trans (by rwa [hb])⟩)
+      (ConcreteCategory.congr_hom (Φ.obj.fiber.map_comp b (g i)) _).symm.trans (by rwa [hb])⟩)
 
 end ObjectProperty
 

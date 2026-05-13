@@ -217,7 +217,7 @@ instance [SMul S R] [FaithfulSMul S R] : FaithfulSMul S (WithVal v) where
     simp only [smul_right_def, toVal.injEq] at h
     exact FaithfulSMul.eq_of_smul_eq_smul fun r ↦ h (toVal v r)
 
-instance {P : Type*} [Ring R] [SMul S P] [SMul R S] [SMul R P]
+instance {P : Type*} [SMul S P] [SMul R S] [SMul R P]
     [IsScalarTower R S P] (v : Valuation R Γ₀) : IsScalarTower (WithVal v) S P where
   smul_assoc := by simp [smul_left_def]
 
@@ -253,7 +253,7 @@ def linearEquiv : WithVal v ≃ₗ[R] S := (equiv v).linearEquiv R
 
 @[simp] theorem linearEquiv_symm_apply (x : S) : (linearEquiv R v).symm x = toVal v x := rfl
 
-instance [Module R S] [Module.Finite R S] :
+instance [Module.Finite R S] :
     Module.Finite R (WithVal v) := .equiv (linearEquiv R v).symm
 
 end Module
@@ -267,7 +267,7 @@ section left
 variable [CommRing R] (v : Valuation R Γ₀) [Semiring S] [Algebra R S]
 
 instance : Algebra (WithVal v) S where
-  __ := inferInstanceAs (Module (WithVal v) S)
+  __ := (inferInstance : Module (WithVal v) S)
   __ := Algebra.compHom S (equiv v).toRingHom
 
 theorem algebraMap_left_apply (s : WithVal v) :
@@ -292,8 +292,6 @@ theorem algebraMap_right_apply (r : R) :
 
 theorem algebraMap_right_injective (h : Function.Injective (algebraMap R S)) :
     Function.Injective (algebraMap R (WithVal v)) := (toVal_injective v).comp h
-
-variable {R : Type*} [CommRing R] (v : Valuation R Γ₀) (w : Valuation S Γ₀) [Algebra R S]
 
 end right
 
@@ -483,12 +481,8 @@ theorem IsEquiv.uniformContinuous_equiv [hval : Valued R Γ₀'] (hv : Valued.v 
   have h' : v.restrict.IsEquiv w.restrict := h.restrict
   rw [← hr, equiv_apply, Set.mem_setOf_eq, lt_div_iff₀ ((restrict_pos_iff Valued.v s).mpr hs₀), hv,
     ← map_mul, ← lt_def, ← ofVal_mul,
-    ← hy, ← toVal_mul, ←  h'.orderRingIso_apply, ← h'.orderRingIso.lt_symm_apply]
-  simp only [toVal_mul, orderRingIso_symm_apply, lt_def, ofVal_mul, restrict_lt_iff]
-  simp only [equiv_symm_apply, Units.val_mk0, Set.mem_setOf_eq, lt_div_iff₀ hs0'] at hx
-  erw [← map_mul] at hx -- Why erw?
-  rw [restrict_lt_iff] at hx
-  exact hx
+    ← hy, ← toVal_mul, ← h'.orderRingIso_apply, ← h'.orderRingIso.lt_symm_apply, lt_def]
+  simpa [lt_div_iff₀ hs0', ← map_mul] using hx
 
 set_option backward.isDefEq.respectTransparency false in
 theorem IsEquiv.uniformContinuous_equiv_symm [hval : Valued R Γ₀'] (hv : Valued.v = w)
@@ -507,7 +501,7 @@ theorem IsEquiv.uniformContinuous_equiv_symm [hval : Valued R Γ₀'] (hv : Valu
   intro x hx
   simp only [equiv_symm_apply, Set.mem_setOf_eq]
   simp only [equiv_apply, Units.val_mk0, Set.mem_setOf_eq] at hx
-  erw [lt_div_iff₀ , ← map_mul, restrict_lt_iff, hv, h.lt_iff_lt, map_mul] at hx
+  rw [lt_div_iff₀, ← map_mul, restrict_lt_iff, hv, h.lt_iff_lt, map_mul] at hx
   · rw [← hr, lt_div_iff₀ ((restrict_pos_iff Valued.v s).mpr hs₀), ← map_mul, ← lt_def,
       ← h.orderRingIso_apply]
     simp only [orderRingIso_apply, toVal_mul, lt_def, ofVal_mul, restrict_lt_iff]

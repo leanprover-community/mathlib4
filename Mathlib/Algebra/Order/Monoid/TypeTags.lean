@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
 /-! # Bundled ordered monoid structures on `Multiplicative α` and `Additive α`. -/
 
-@[expose] public section
+public section
 
 variable {α : Type*}
 

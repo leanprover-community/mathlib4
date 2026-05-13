@@ -173,7 +173,7 @@ theorem measurableSet_normLeOne :
     measurableSet_le (mixedEmbedding.continuous_norm K).measurable measurable_const
 
 theorem normLeOne_eq_preimage_image :
-    normLeOne K = normAtAllPlaces ⁻¹' (normAtAllPlaces '' (normLeOne K)) := by
+    normLeOne K = normAtAllPlaces ⁻¹' normAtAllPlaces '' (normLeOne K) := by
   refine subset_antisymm (Set.subset_preimage_image _ _) ?_
   rintro x ⟨y, hy₁, hy₂⟩
   rw [mem_normLeOne, ← normAtAllPlaces_mem_fundamentalCone_iff, ← norm_normAtAllPlaces,
@@ -513,7 +513,7 @@ theorem prod_expMapBasis_pow (x : realSpace K) :
   simp_rw [expMapBasis_apply', Pi.smul_def, smul_eq_mul, mul_pow, prod_mul_distrib,
     prod_pow_eq_pow_sum, sum_mult_eq, ← prod_pow]
   rw [prod_comm]
-  simp_rw [Real.rpow_pow_comm (apply_nonneg _ _), Real.finset_prod_rpow _ _
+  simp_rw [Real.rpow_pow_comm (apply_nonneg _ _), Real.finsetProd_rpow _ _
     fun _ _ ↦ pow_nonneg (apply_nonneg _ _) _, prod_eq_abs_norm, Units.norm, Rat.cast_one,
     Real.one_rpow, prod_const_one, mul_one]
 
@@ -544,13 +544,13 @@ theorem logMap_expMapBasis (x : realSpace K) :
     rw [if_neg i.prop]
   simp_rw [sum_apply, ← sum_fn, map_sum, Pi.smul_apply, ← Pi.smul_def, map_smul,
     completeBasis_apply_of_ne, expMap_symm_apply, normAtAllPlaces_mixedEmbedding,
-    ← logEmbedding_component, logEmbedding_fundSystem, Finsupp.coe_finset_sum, Finsupp.coe_smul,
+    ← logEmbedding_component, logEmbedding_fundSystem, Finsupp.coe_finsetSum, Finsupp.coe_smul,
     sum_apply, Pi.smul_apply, Basis.ofZLatticeBasis_repr_apply, Basis.repr_self,
     Finsupp.single_apply, EmbeddingLike.apply_eq_iff_eq, Int.cast_ite, Int.cast_one, Int.cast_zero,
     smul_ite, smul_eq_mul, mul_one, mul_zero, Fintype.sum_ite_eq']
 
 theorem normAtAllPlaces_image_preimage_expMapBasis (s : Set (realSpace K)) :
-    normAtAllPlaces '' (normAtAllPlaces ⁻¹' (expMapBasis '' s)) = expMapBasis '' s := by
+    normAtAllPlaces '' normAtAllPlaces ⁻¹' expMapBasis '' s = expMapBasis '' s := by
   apply normAtAllPlaces_image_preimage_of_nonneg
   rintro _ ⟨x, _, rfl⟩ w
   exact (expMapBasis_pos _ _).le
@@ -647,9 +647,6 @@ theorem interior_paramSet :
     interior (paramSet K) = Set.univ.pi fun w ↦ if w = w₀ then Set.Iio 0 else Set.Ioo 0 1 := by
   simp [interior_pi_set Set.finite_univ, apply_ite]
 
-@[deprecated (since := "2025-08-26")] alias measurableSet_interior_paramSet :=
-  measurableSet_interior
-
 open scoped Classical in
 theorem closure_paramSet :
     closure (paramSet K) = Set.univ.pi fun w ↦ if w = w₀ then Set.Iic 0 else Set.Icc 0 1 := by
@@ -675,11 +672,11 @@ theorem normAtAllPlaces_normLeOne_eq_image :
       exact (hx fun w ↦ expMapBasis_pos a w).elim
 
 theorem normLeOne_eq_preimage :
-    normLeOne K = normAtAllPlaces ⁻¹' (expMapBasis '' (paramSet K)) := by
+    normLeOne K = normAtAllPlaces ⁻¹' expMapBasis '' (paramSet K) := by
   rw [normLeOne_eq_preimage_image, normAtAllPlaces_normLeOne_eq_image]
 
 theorem subset_interior_normLeOne :
-    normAtAllPlaces ⁻¹' (expMapBasis '' interior (paramSet K)) ⊆ interior (normLeOne K) := by
+    normAtAllPlaces ⁻¹' expMapBasis '' interior (paramSet K) ⊆ interior (normLeOne K) := by
   rw [normLeOne_eq_preimage]
   refine subset_trans (Set.preimage_mono ?_) <|
     preimage_interior_subset_interior_preimage (continuous_normAtAllPlaces K)
@@ -715,7 +712,7 @@ section compactSet
 
 variable [NumberField K]
 
-open Pointwise
+open scoped Pointwise
 
 open scoped Classical in
 /--
@@ -851,7 +848,7 @@ theorem volume_interior_eq_volume_closure :
     volume (interior (normLeOne K)) = volume (closure (normLeOne K)) := by
   have h₁ : MeasurableSet (normAtAllPlaces ⁻¹' compactSet K) :=
     (isCompact_compactSet K).measurableSet.preimage (continuous_normAtAllPlaces K).measurable
-  have h₂ : MeasurableSet (normAtAllPlaces ⁻¹' (expMapBasis '' interior (paramSet K))) := by
+  have h₂ : MeasurableSet (normAtAllPlaces ⁻¹' expMapBasis '' interior (paramSet K)) := by
     refine MeasurableSet.preimage ?_ (continuous_normAtAllPlaces K).measurable
     refine MeasurableSet.image_of_continuousOn_injOn ?_ (continuous_expMapBasis K).continuousOn
       (injective_expMapBasis K).injOn

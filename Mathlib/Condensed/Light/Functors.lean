@@ -5,7 +5,8 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.Condensed.Light.CartesianClosed
+public import Mathlib.CategoryTheory.Sites.CartesianMonoidal
+public import Mathlib.CategoryTheory.Sites.PreservesLimits
 public import Mathlib.Condensed.Light.TopCatAdjunction
 public import Mathlib.Topology.Category.LightProfinite.Cartesian
 
@@ -53,10 +54,10 @@ The functor from `LightProfinite` to `LightCondSet` factors through `TopCat`.
 @[simps!]
 noncomputable def lightProfiniteToLightCondSetIsoTopCatToLightCondSet :
     lightProfiniteToLightCondSet.{u} ≅ LightProfinite.toTopCat.{u} ⋙ topCatToLightCondSet.{u} :=
-  NatIso.ofComponents fun X ↦ FullyFaithful.preimageIso (fullyFaithfulSheafToPresheaf _ _) <|
+  dsimp% NatIso.ofComponents fun X ↦ FullyFaithful.preimageIso (fullyFaithfulSheafToPresheaf _ _) <|
     NatIso.ofComponents fun S ↦ {
-      hom f := { toFun := f.hom }
-      inv f := InducedCategory.homMk (TopCat.ofHom f) }
+      hom := ↾fun f ↦ { toFun := f.hom }
+      inv := ↾fun f ↦ InducedCategory.homMk (TopCat.ofHom f) }
 
 /--
 The functor from `LightProfinite` to `LightCondSet` preserves countable limits.
@@ -79,8 +80,8 @@ instance : PreservesFiniteLimits lightProfiniteToLightCondSet.{u} where
 The functor from `LightProfinite` to `LightCondSet` is monoidal with respect to the cartesian
 monoidal structure.
 -/
-noncomputable instance : lightProfiniteToLightCondSet.Monoidal := by
-  have : Nonempty lightProfiniteToLightCondSet.Monoidal := by
-    rw [Functor.Monoidal.nonempty_monoidal_iff_preservesFiniteProducts]
-    infer_instance
-  exact this.some
+noncomputable instance : lightProfiniteToLightCondSet.{u}.Monoidal :=
+  (Functor.Monoidal.nonempty_monoidal_iff_preservesFiniteProducts _).mpr inferInstance |>.some
+
+instance : PreservesFiniteCoproducts lightProfiniteToLightCondSet.{u} :=
+  inferInstanceAs <| PreservesFiniteCoproducts (coherentTopology _).yoneda

@@ -822,7 +822,7 @@ theorem quadratic_root_cos_pi_div_five :
   suffices 2 * c = 4 * c ^ 2 - 1 by simp [this]
   have hs : s ≠ 0 := by
     rw [ne_eq, sin_eq_zero_iff, hθ]
-    push_neg
+    push Not
     intro n hn
     replace hn : n * 5 = 1 := by field_simp at hn; norm_cast at hn
     lia
@@ -1210,6 +1210,10 @@ theorem exp_pi_mul_I : exp (π * I) = -1 :=
   exp_zero ▸ exp_antiperiodic.eq
 
 @[simp]
+theorem exp_neg_pi_mul_I : exp (-(π * I)) = -1 := by
+  simp [Complex.exp_neg]
+
+@[simp]
 theorem exp_two_pi_mul_I : exp (2 * π * I) = 1 :=
   exp_periodic.eq.trans exp_zero
 
@@ -1255,5 +1259,46 @@ theorem norm_exp_mul_exp_add_exp_neg_le_of_abs_im_le {a b : ℝ} (ha : a ≤ 0) 
         (hb.trans <| half_le_self <| Real.pi_pos.le) hz
   · refine Real.cos_nonneg_of_mem_Icc ⟨?_, hb⟩
     exact (neg_nonpos.2 <| Real.pi_div_two_pos.le).trans ((_root_.abs_nonneg _).trans hz)
+
+theorem sinh_antiperiodic : Function.Antiperiodic sinh (π * I) := by
+  simp [Complex.sinh_add, sinh_mul_I, cosh_mul_I]
+
+@[simp]
+theorem sinh_add_pi_mul_I (z : ℂ) : sinh (z + π * I) = -sinh z :=
+  sinh_antiperiodic z
+
+theorem sinh_periodic : Function.Periodic sinh (2 * π * I) := by
+  convert sinh_antiperiodic.periodic_two_mul using 1
+  ring
+
+@[simp]
+theorem sinh_sub_pi_mul_I (z : ℂ) : sinh (z - π * I) = -sinh z :=
+  sinh_antiperiodic.sub_eq z
+
+theorem cosh_antiperiodic : Function.Antiperiodic cosh (π * I) := by
+  simp [Complex.cosh_add, cosh_mul_I, sinh_mul_I]
+
+@[simp]
+theorem cosh_add_pi_mul_I (z : ℂ) : cosh (z + π * I) = -cosh z :=
+  cosh_antiperiodic z
+
+theorem cosh_periodic : Function.Periodic cosh (2 * π * I) := by
+  convert cosh_antiperiodic.periodic_two_mul using 1
+  ring
+
+@[simp]
+theorem cosh_sub_pi_mul_I (z : ℂ) : cosh (z - π * I) = -cosh z :=
+  cosh_antiperiodic.sub_eq z
+
+theorem tanh_periodic : Function.Periodic tanh (π * I) := by
+  simp [tanh_eq_sinh_div_cosh]
+
+@[simp]
+theorem tanh_add_pi_mul_I (z : ℂ) : tanh (z + π * I) = tanh z :=
+  tanh_periodic z
+
+@[simp]
+theorem tanh_sub_pi_mul_I (z : ℂ) : tanh (z - π * I) = tanh z :=
+  tanh_periodic.sub_eq z
 
 end Complex

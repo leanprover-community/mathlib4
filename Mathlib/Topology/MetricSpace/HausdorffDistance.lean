@@ -362,8 +362,8 @@ theorem hausdorffEDist_triangle : hausdorffEDist s u ≤ hausdorffEDist s t + ha
 /-- Two sets are at zero Hausdorff edistance if and only if they have the same closure. -/
 theorem hausdorffEDist_zero_iff_closure_eq_closure :
     hausdorffEDist s t = 0 ↔ closure s = closure t := by
-  simp only [hausdorffEDist_def, ENNReal.max_eq_zero_iff, ENNReal.iSup_eq_zero, ← subset_def,
-    ← mem_closure_iff_infEDist_zero, subset_antisymm_iff, isClosed_closure.closure_subset_iff]
+  simp [hausdorffEDist_def, ← subset_def, ← mem_closure_iff_infEDist_zero,
+    subset_antisymm_iff, isClosed_closure.closure_subset_iff]
 
 /-- The Hausdorff edistance between a set and its closure vanishes. -/
 @[simp]
@@ -408,9 +408,9 @@ theorem nonempty_of_hausdorffEDist_ne_top (hs : s.Nonempty) (fin : hausdorffEDis
 
 theorem empty_or_nonempty_of_hausdorffEDist_ne_top (fin : hausdorffEDist s t ≠ ⊤) :
     (s = ∅ ∧ t = ∅) ∨ (s.Nonempty ∧ t.Nonempty) := by
-  rcases s.eq_empty_or_nonempty with hs | hs
-  · rcases t.eq_empty_or_nonempty with ht | ht
-    · exact Or.inl ⟨hs, ht⟩
+  rcases s.eq_empty_or_nonempty with rfl | hs
+  · rcases t.eq_empty_or_nonempty with rfl | ht
+    · exact Or.inl ⟨rfl, rfl⟩
     · rw [hausdorffEDist_comm] at fin
       exact Or.inr ⟨nonempty_of_hausdorffEDist_ne_top ht fin, ht⟩
   · exact Or.inr ⟨hs, nonempty_of_hausdorffEDist_ne_top hs fin⟩
@@ -421,7 +421,6 @@ theorem hausdorffEDist_singleton : hausdorffEDist {x} {y} = edist x y := by
   nth_rw 2 [edist_comm]
   exact max_self _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem hausdorffEDist_iUnion_le {ι : Sort*} {s t : ι → Set α} :
     hausdorffEDist (⋃ i, s i) (⋃ i, t i) ≤ ⨆ i, hausdorffEDist (s i) (t i) := by
   simp_rw [hausdorffEDist, max_le_iff, iSup_iUnion, iSup_le_iff, infEDist_iUnion]
@@ -434,7 +433,6 @@ theorem hausdorffEDist_union_le {s₁ s₂ t₁ t₂ : Set α} :
   simp_rw [union_eq_iUnion, sup_eq_iSup]
   convert hausdorffEDist_iUnion_le with (_ | _)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem hausdorffEDist_prod_le {s₁ t₁ : Set α} {s₂ t₂ : Set β} :
     hausdorffEDist (s₁ ×ˢ s₂) (t₁ ×ˢ t₂) ≤ max (hausdorffEDist s₁ t₁) (hausdorffEDist s₂ t₂) := by
   refine le_of_forall_ge fun _ _ => ?_
@@ -829,10 +827,10 @@ theorem hausdorffDist_empty' : hausdorffDist ∅ s = 0 := by simp [hausdorffDist
 in each set to the other set -/
 theorem hausdorffDist_le_of_infDist {r : ℝ} (hr : 0 ≤ r) (H1 : ∀ x ∈ s, infDist x t ≤ r)
     (H2 : ∀ x ∈ t, infDist x s ≤ r) : hausdorffDist s t ≤ r := by
-  rcases s.eq_empty_or_nonempty with hs | hs
-  · rwa [hs, hausdorffDist_empty']
-  rcases t.eq_empty_or_nonempty with ht | ht
-  · rwa [ht, hausdorffDist_empty]
+  rcases s.eq_empty_or_nonempty with rfl | hs
+  · rwa [hausdorffDist_empty']
+  rcases t.eq_empty_or_nonempty with rfl | ht
+  · rwa [hausdorffDist_empty]
   have : hausdorffEDist s t ≤ ENNReal.ofReal r := by
     apply hausdorffEDist_le_of_infEDist _ _
     · simpa only [infDist, ← ENNReal.le_ofReal_iff_toReal_le (infEDist_ne_top ht) hr] using H1

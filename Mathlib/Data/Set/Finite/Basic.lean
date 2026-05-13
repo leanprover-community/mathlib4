@@ -145,11 +145,11 @@ theorem subset_toFinset {s : Finset α} : s ⊆ ht.toFinset ↔ ↑s ⊆ t := by
 theorem ssubset_toFinset {s : Finset α} : s ⊂ ht.toFinset ↔ ↑s ⊂ t := by
   rw [← Finset.coe_ssubset, Finite.coe_toFinset]
 
-@[mono]
+@[gcongr, mono]
 protected theorem toFinset_subset_toFinset : hs.toFinset ⊆ ht.toFinset ↔ s ⊆ t := by
   simp only [← Finset.coe_subset, Finite.coe_toFinset]
 
-@[mono]
+@[gcongr, mono]
 protected theorem toFinset_ssubset_toFinset : hs.toFinset ⊂ ht.toFinset ↔ s ⊂ t := by
   simp only [← Finset.coe_ssubset, Finite.coe_toFinset]
 
@@ -698,8 +698,8 @@ theorem finite_option {s : Set (Option α)} : s.Finite ↔ { x : α | some x ∈
 /-- Induction principle for finite sets: To prove a property `motive` of a finite set `s`, it's
 enough to prove for the empty set and to prove that `motive t → motive ({a} ∪ t)` for all `t`.
 
-See also `Set.Finite.induction_on` for the version requiring to check `motive t → motive ({a} ∪ t)`
-only for `t ⊆ s`. -/
+See also `Set.Finite.induction_on_subset` for the version requiring to check
+`motive t → motive ({a} ∪ t)` only for `t ⊆ s`. -/
 @[elab_as_elim]
 theorem Finite.induction_on {motive : ∀ s : Set α, s.Finite → Prop} (s : Set α) (hs : s.Finite)
     (empty : motive ∅ finite_empty)
@@ -715,7 +715,7 @@ theorem Finite.induction_on {motive : ∀ s : Set α, s.Finite → Prop} (s : Se
 to prove for the empty set and to prove that `C t → C ({a} ∪ t)` for all `t ⊆ s`.
 
 This is analogous to `Finset.induction_on'`. See also `Set.Finite.induction_on` for the version
-requiring `C t → C ({a} ∪ t)` for all `t`. -/
+requiring `motive t → motive ({a} ∪ t)` for all `t`. -/
 @[elab_as_elim]
 theorem Finite.induction_on_subset {motive : ∀ s : Set α, s.Finite → Prop} (s : Set α)
     (hs : s.Finite) (empty : motive ∅ finite_empty)
@@ -852,6 +852,10 @@ theorem Finite.infinite_compl [Infinite α] {s : Set α} (hs : s.Finite) : sᶜ.
 theorem Infinite.diff {s t : Set α} (hs : s.Infinite) (ht : t.Finite) : (s \ t).Infinite := fun h =>
   hs <| h.of_diff ht
 
+lemma Infinite.inter_of_finite_diff {α : Type*} {s t : Set α} (hs : s.Infinite)
+    (ht : (s \ t).Finite) : (s ∩ t).Infinite := by
+  simpa using hs.diff ht
+
 @[simp]
 theorem infinite_union {s t : Set α} : (s ∪ t).Infinite ↔ s.Infinite ∨ t.Infinite := by
   simp only [Set.Infinite, finite_union, not_and_or]
@@ -893,7 +897,7 @@ theorem not_injOn_infinite_finite_image {f : α → β} {s : Set α} (h_inf : s.
   have : Infinite s := infinite_coe_iff.mpr h_inf
   have h := not_injective_infinite_finite
             ((f '' s).codRestrict (s.restrict f) fun x => ⟨x, x.property, rfl⟩)
-  contrapose! h
+  contrapose h
   rwa [injective_codRestrict, ← injOn_iff_injective]
 
 theorem finite_range_findGreatest {P : α → ℕ → Prop} [∀ x, DecidablePred (P x)] {b : ℕ} :

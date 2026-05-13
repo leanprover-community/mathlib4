@@ -5,9 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
 module
 
-public import Mathlib.Tactic.Lemma
 public import Mathlib.Tactic.Simps.NotationClass
-public import Mathlib.Tactic.TypeStar
 public import Mathlib.Tactic.ToAdditive
 
 /-!
@@ -33,7 +31,7 @@ Note `Zero` has already been defined in core Lean.
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Function.Bijective
 

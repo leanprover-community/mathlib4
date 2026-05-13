@@ -6,7 +6,7 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-public import Mathlib.CategoryTheory.Monoidal.Mon_
+public import Mathlib.CategoryTheory.Monoidal.Mon
 
 /-!
 # The category of commutative monoids in a braided monoidal category.
@@ -30,8 +30,6 @@ structure CommMon where
   [mon : MonObj X]
   [comm : IsCommMonObj X]
 
-@[deprecated (since := "2025-09-15")] alias CommMon_ := CommMon
-
 attribute [instance] CommMon.mon CommMon.comm
 
 namespace CommMon
@@ -39,8 +37,6 @@ namespace CommMon
 /-- A commutative monoid object is a monoid object. -/
 @[simps X]
 def toMon (A : CommMon C) : Mon C := ⟨A.X⟩
-
-@[deprecated (since := "2025-09-15")] alias toMon_ := toMon
 
 variable (C) in
 /-- The trivial commutative monoid object. We later show this is initial in `CommMon C`.
@@ -83,16 +79,12 @@ variable (C)
 def forget₂Mon : CommMon C ⥤ Mon C :=
   inducedFunctor CommMon.toMon
 
-@[deprecated (since := "2025-09-15")] alias forget₂Mon_ := forget₂Mon
-
 /-- The forgetful functor from commutative monoid objects to monoid objects
 is fully faithful. -/
 def fullyFaithfulForget₂Mon : (forget₂Mon C).FullyFaithful :=
   fullyFaithfulInducedFunctor _
 -- The `Full, Faithful` instances should be constructed by a deriving handler.
 -- https://github.com/leanprover-community/mathlib4/issues/380
-
-@[deprecated (since := "2025-09-15")] alias fullyFaithfulForget₂Mon_ := fullyFaithfulForget₂Mon
 
 instance : (forget₂Mon C).Full := InducedCategory.full _
 instance : (forget₂Mon C).Faithful := InducedCategory.faithful _
@@ -263,7 +255,6 @@ open Functor
 namespace Adjunction
 variable {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) [F.Braided] [G.LaxBraided] [a.IsMonoidal]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An adjunction of braided functors lifts to an adjunction of their lifts to commutative monoid
 objects. -/
 @[simps] def mapCommMon : F.mapCommMon ⊣ G.mapCommMon where
