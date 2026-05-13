@@ -63,38 +63,113 @@ Algorithm:
    lines and `/-- ... -/` doccomments).
 -/
 
-/-- Starting at `idx` (a 0-based index pointing somewhere inside the
-"decl block" — i.e. doc-comment lines, attribute lines, or the decl
-keyword itself), advance forward past doc comments and attribute lines
+/-- Starting at `idx` (0-based, pointing into the "decl block" — doc
+comments, attribute lines, or the decl keyword itself), advance past
+blank lines, doc comments and attribute blocks (single or multi-line)
 until we reach the line containing the decl keyword (`def`,
-`theorem`, `instance`, `abbrev`, …). Returns that line's index.
-
-Doc comments are handled in two shapes: single-line `/-- ... -/` and
-multi-line `/-- ...` … `... -/`. Attributes are single-line
-`@[...]`. Other modifier-only lines (`noncomputable`) are also
-skipped. -/
+`theorem`, `instance`, `abbrev`, …). Returns that line's index. -/
 private partial def declKeywordLineFrom
     (lines : Array String) (idx : Nat) : Nat := Id.run do
   let mut i := idx
   while i < lines.size do
     let line : String := lines[i]!
     let trimmed : String := line.trimAscii.toString
-    if trimmed.startsWith "/--" then
-      -- Single-line doc on this same line?
+    if trimmed.isEmpty then
+      i := i + 1
+    else if trimmed.startsWith "/--" then
       if trimmed.endsWith "-/" && trimmed.length > "/----/".length then
         i := i + 1
       else
-        -- Multi-line doc; skip until the closing `-/`.
         i := i + 1
         while i < lines.size do
           let l2 := (lines[i]!).trimAscii.toString
           i := i + 1
           if l2.endsWith "-/" then break
     else if trimmed.startsWith "@[" then
-      i := i + 1
+      -- Multi-line `@[...]` blocks (e.g. `@[to_dual (attr := simps)
+      -- /-- doc -/]` spanning two lines) close with a line ending in
+      -- `]`. Without this branch the walker would misread the embedded
+      -- `/--` on the close-line as a standalone doc-comment and
+      -- overshoot the decl.
+      if trimmed.endsWith "]" then
+        i := i + 1
+      else
+        i := i + 1
+        while i < lines.size do
+          let l2 := (lines[i]!).trimAscii.toString
+          i := i + 1
+          if l2.endsWith "]" then break
     else
       break
   return i
+
+/-- Find the contiguous `@[...]` attribute block immediately before
+the decl-keyword line at `declIdx`. Returns `(blockStart, blockEnd)`
+as 0-based line indices (inclusive on both ends), or `none` if no
+attribute block precedes the decl. Lean's `declModifiers` grammar
+requires doc-comment → attribute → decl in that order, so the
+attribute (if present) must sit on the line immediately before the
+decl-keyword line. We bound the upward walk for the `@[` opener to a
+fixed window so we can never match a `]` in an unrelated earlier
+line's content. -/
+private partial def attrBlockBefore (lines : Array String) (declIdx : Nat) :
+    Option (Nat × Nat) := Id.run do
+  if declIdx == 0 then return none
+  let endLine := declIdx - 1
+  let endTrim := (lines[endLine]!).trimAscii.toString
+  -- The line immediately before the decl must end with `]`, otherwise
+  -- there is no attribute block here.
+  if endTrim.isEmpty || !endTrim.endsWith "]" then return none
+  -- Single-line attribute: opener and closer are the same line.
+  if endTrim.startsWith "@[" then return some (endLine, endLine)
+  -- Multi-line attribute: walk upward (bounded) for the line that
+  -- *opens* this block with `@[`. The intermediate lines are part of
+  -- the attribute body and can contain anything (including embedded
+  -- `/-- doc -/`), so we don't filter on content — but we do bound
+  -- the walk and require that no intermediate line itself ends with
+  -- `]` (which would belong to a different, prior block).
+  let lowerBound := if endLine ≥ 10 then endLine - 10 else 0
+  let mut k := endLine
+  while k > lowerBound do
+    k := k - 1
+    let t := (lines[k]!).trimAscii.toString
+    if t.startsWith "@[" then return some (k, endLine)
+    if t.endsWith "]" then return none
+  return none
+
+/-- Inside `body` (an `@[...]` block body), locate the
+`(attr := …)` clause and return `(before, attrsList, after)` where
+`before ++ "(attr := " ++ attrsList ++ ")" ++ after == body`. Returns
+`none` if there is no `(attr := …)` clause. -/
+private def splitAttrClause (body : String) : Option (String × String × String) := Id.run do
+  let needle := "(attr := "
+  let parts := body.splitOn needle
+  if parts.length < 2 then return none
+  let before := parts[0]!
+  let after := String.intercalate needle (parts.drop 1)
+  -- Find the matching `)` for the opening paren.
+  let bytes := after.toUTF8
+  let n := bytes.size
+  let mut depth : Nat := 1
+  let mut i : Nat := 0
+  while i < n do
+    let b := bytes[i]!
+    if b == 0x28 then depth := depth + 1            -- '('
+    else if b == 0x29 then                          -- ')'
+      depth := depth - 1
+      if depth == 0 then break
+    i := i + 1
+  if depth != 0 then return none
+  let attrsList := String.fromUTF8! (bytes.extract 0 i)
+  let rest      := String.fromUTF8! (bytes.extract (i + 1) n)
+  return some (before, attrsList, rest)
+
+/-- True iff a comma-separated attribute list `s` already contains
+`expose` as one of its tokens. -/
+private def attrListHasExpose (s : String) : Bool := Id.run do
+  for tok in s.splitOn "," do
+    if tok.trimAscii.toString == "expose" then return true
+  return false
 
 /-- Apply the section strategy. Returns the new file contents (or
 `none` to indicate "no changes needed"). -/
@@ -115,39 +190,71 @@ def applySectionStrategy (text : String) (neededDownstream : Array Nat) :
     else
       newLines := newLines.push line
   unless sectionRewritten do return none
-  -- Step 2: insert `@[expose]` above each needed-downstream decl,
-  -- processing highest line first so earlier indices remain valid. Lean
-  -- does not allow stacked `@[...]` blocks before a decl, so if the
-  -- first line of the decl block is already `@[...]` we merge into it.
+  -- Step 2: re-apply `@[expose]` to each needed-downstream decl.
+  -- Process highest line first so earlier indices stay valid. Three
+  -- placement strategies depending on what attribute block already
+  -- exists on the decl:
+  --   1. None             → insert `@[expose]` on its own new line.
+  --   2. Plain attributes → merge into the block: `@[X]` → `@[X, expose]`.
+  --   3. Propagator macro (`to_dual`/`to_additive`) → modify the
+  --      macro's `(attr := …)` clause so the macro applies `@[expose]`
+  --      to both source and twin.
+  -- Stacked attribute blocks (`@[expose]\n@[X]`) are a Lean syntax
+  -- error — `declModifiers` only accepts one `@[…]` block per decl.
   let sortedDesc := neededDownstream.qsort (· > ·)
+  -- Multiple records can resolve to the same decl-keyword line (e.g.
+  -- the `to_dual` twin and the source decl both report a position
+  -- inside the same source decl block). Track which declIdx values
+  -- we've already touched so we don't inject twice.
+  let mut seen : Std.HashSet Nat := {}
   for declLine in sortedDesc do
     if declLine == 0 then continue
     let blockStart := declLine - 1
     if blockStart ≥ newLines.size then continue
-    -- Walk forward to the actual decl-keyword line.
     let declIdx := declKeywordLineFrom newLines blockStart
     if declIdx == 0 || declIdx ≥ newLines.size then continue
-    -- Look at the line immediately above the decl. If it's an attribute
-    -- list, merge `@[expose, ...]`; otherwise insert a new line above
-    -- the decl (so the order is `/-- doc -/`, then `@[expose]`, then
-    -- the decl keyword).
-    let above : String := newLines[declIdx - 1]!
-    let aboveTrim : String := above.trimAscii.toString
-    if aboveTrim.startsWith "@[" then
-      -- Already-exposed shapes: skip.
-      if aboveTrim == "@[expose]" || aboveTrim.startsWith "@[expose " ||
-         aboveTrim.startsWith "@[expose," then
-        continue
-      let leading : String := (above.takeWhile Char.isWhitespace).toString
-      let body : String :=
-        (above.drop (leading.length + "@[".length)).toString
-      let merged : String := leading ++ "@[expose, " ++ body
-      newLines := newLines.set! (declIdx - 1) merged
-    else
-      let declLineStr : String := newLines[declIdx]!
-      let leading : String := (declLineStr.takeWhile Char.isWhitespace).toString
-      let attrLine : String := leading ++ "@[expose]"
-      newLines := newLines.insertIdx! declIdx attrLine
+    if seen.contains declIdx then continue
+    seen := seen.insert declIdx
+    match attrBlockBefore newLines declIdx with
+    | none =>
+      -- Case 1: no existing attribute block. Insert on a new line.
+      let declLineStr := newLines[declIdx]!
+      let leading := (declLineStr.takeWhile Char.isWhitespace).toString
+      newLines := newLines.insertIdx! declIdx (leading ++ "@[expose]")
+    | some (openIdx, closeIdx) =>
+      -- Concatenate the block body (between `@[` and `]`) across lines.
+      let mut body : String := ""
+      for k in [openIdx:closeIdx + 1] do
+        let t := (newLines[k]!).trimAscii.toString
+        let chunk := if k == openIdx then t.drop 2 |>.toString else t
+        let chunk := if k == closeIdx then chunk.dropEnd 1 |>.toString else chunk
+        body := if body.isEmpty then chunk else body ++ " " ++ chunk
+      -- Already-exposed: skip. We check both the outer attribute
+      -- list (for top-level `expose`) and the inner `(attr := ...)`
+      -- clause (for macros like `to_dual`/`to_additive` that
+      -- propagate exposure to their twin).
+      let outerHasExpose :=
+        body == "expose" || body.startsWith "expose " || body.startsWith "expose," ||
+        (body.splitOn ", expose").length > 1 || (body.splitOn ",expose").length > 1
+      let innerHasExpose := match splitAttrClause body with
+        | some (_, attrsList, _) => attrListHasExpose attrsList
+        | none                   => false
+      if outerHasExpose || innerHasExpose then continue
+      -- Append `, expose` to the outer attribute list. `@[expose]` is
+      -- consumed at decl elaboration, so it must sit in the decl's
+      -- modifier list (not in `(attr := …)`, which would try to apply
+      -- it post-hoc — Lean's expose attribute rejects that).
+      -- For propagator macros (`to_dual` / `to_additive`), the macro
+      -- already re-exposes the twin when the source is exposed (see
+      -- `Mathlib.Tactic.Translate.Core` ~line 784), so we don't need
+      -- to touch `(attr := …)`.
+      let newBody := body ++ ", expose"
+      -- Replace lines [openIdx..closeIdx] with a single rebuilt line.
+      let leading := ((newLines[openIdx]!).takeWhile Char.isWhitespace).toString
+      let rebuilt := leading ++ "@[" ++ newBody ++ "]"
+      newLines := newLines.set! openIdx rebuilt
+      for _ in [openIdx + 1:closeIdx + 1] do
+        newLines := newLines.eraseIdx! (openIdx + 1)
   return some (String.intercalate "\n" newLines.toList)
 
 /-! ## Individual-strategy edit
