@@ -104,15 +104,14 @@ lemma EquivalenceRelation.isEquivalenceRelation (h : EquivalenceRelation p₁ p�
 
 /-- A kernel pair gives rise to an equivalence relation. -/
 noncomputable def IsKernelPair.equivalenceRelation {X Y : C} (f : X ⟶ Y) {R : C} (p₁ p₂ : R ⟶ X)
-    [HasPullback p₂ p₁] (h : IsKernelPair f p₁ p₂) :
+    {t : PullbackCone p₂ p₁} (ht : IsLimit t) (h : IsKernelPair f p₁ p₂) :
     EquivalenceRelation p₁ p₂ where
   right_cancellation A a b h₁ h₂ := h.hom_ext h₁ h₂
   r := h.lift (𝟙 _) (𝟙 _) (by simp)
   s := h.lift p₂ p₁ h.w.symm
-  c := PullbackCone.mk (pullback.fst p₂ p₁) _ pullback.condition
-  isLimit := pullbackIsPullback _ _
-  t := h.lift (pullback.fst _ _ ≫ p₁) (pullback.snd _ _ ≫ p₂)
-    (by simp [h.w, pullback.condition_assoc])
+  c := t
+  isLimit := ht
+  t := h.lift (t.fst ≫ p₁) (t.snd ≫ p₂) (by simp [reassoc_of% t.condition, h.w])
 
 /-- Given a functor `F : C ⥤ D`, if `F.map p₁` and `F.map p₂` form a jointly monic pair of
 morphisms, then `F` preserves reflexive relations. -/
