@@ -702,6 +702,35 @@ theorem coe_rangeRestrict [RingHomSurjective σ₁₂] (f : M₁ →SL[σ₁₂]
       (f : M₁ →ₛₗ[σ₁₂] M₂).rangeRestrict :=
   rfl
 
+/-- Restrict codomain of a continuous linear map. -/
+def restrict (f : M₁ →SL[σ₁₂] M₂) {p : Submodule R₁ M₁} {q : Submodule R₂ M₂}
+    (h : ∀ x ∈ p, f x ∈ q) :
+    p →SL[σ₁₂] q where
+  toLinearMap := f.toLinearMap.restrict h
+  cont := f.continuous.restrict h
+
+@[simp, norm_cast]
+theorem toLinearMap_restrict {f : M₁ →SL[σ₁₂] M₂} {p : Submodule R₁ M₁} {q : Submodule R₂ M₂}
+    (h : ∀ x ∈ p, f x ∈ q) :
+    (f.restrict h).toLinearMap = f.toLinearMap.restrict h :=
+  rfl
+
+@[simp]
+theorem coe_restrict_apply {f : M₁ →SL[σ₁₂] M₂} {p : Submodule R₁ M₁} {q : Submodule R₂ M₂}
+    (hf : ∀ x ∈ p, f x ∈ q) (x : p) : ↑(f.restrict hf x) = f x :=
+  rfl
+
+theorem restrict_apply {f : M₁ →SL[σ₁₂] M₂} {p : Submodule R₁ M₁} {q : Submodule R₂ M₂}
+    (hf : ∀ x ∈ p, f x ∈ q) (x : p) : f.restrict hf x = ⟨f x, hf x.1 x.2⟩ :=
+  rfl
+
+open Set in
+lemma restrict_comp {p : Submodule R₁ M₁} {p₂ : Submodule R₂ M₂} {p₃ : Submodule R₃ M₃}
+    {f : M₁ →SL[σ₁₂] M₂} {g : M₂ →SL[σ₂₃] M₃}
+    (hf : MapsTo f p p₂) (hg : MapsTo g p₂ p₃) (hfg : MapsTo (g.comp f) p p₃ := hg.comp hf) :
+    (g.comp f).restrict hfg = (g.restrict hg).comp (f.restrict hf) :=
+  rfl
+
 section
 
 variable {R S : Type*} [Semiring R] [Semiring S] [Module R M₁] [Module R M₂] [Module R S]
