@@ -36,7 +36,6 @@ variable {C : Type*} [SmallCategory C] [IsFiltered C] (R : C ⥤ RingCat) (M : C
     [∀ i, Module (R.obj i) (M.obj i)]
     (H : ∀ {i j} (f : i ⟶ j) r m, M.map f (r • m) = R.map f r • M.map f m)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation). The scalar multiplication function on `ColimitType`. -/
 protected noncomputable
 def colimit.smul (r : (R ⋙ forget _).ColimitType) (m : (M ⋙ forget _).ColimitType) :

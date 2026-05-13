@@ -91,7 +91,6 @@ lemma ProjectiveResolution.isoLeftDerivedToHomotopyCategoryObj_inv_naturality
   erw [(F.mapHomotopyCategoryFactors (ComplexShape.down ℕ)).inv.naturality_assoc]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma ProjectiveResolution.isoLeftDerivedToHomotopyCategoryObj_hom_naturality
     {X Y : C} (f : X ⟶ Y) (P : ProjectiveResolution X) (Q : ProjectiveResolution Y)
@@ -120,7 +119,6 @@ noncomputable def ProjectiveResolution.isoLeftDerivedObj {X : C} (P : Projective
     (HomotopyCategory.homologyFunctorFactors D (ComplexShape.down ℕ) n).app _
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma ProjectiveResolution.isoLeftDerivedObj_hom_naturality
     {X Y : C} (f : X ⟶ Y) (P : ProjectiveResolution X) (Q : ProjectiveResolution Y)
@@ -136,7 +134,6 @@ lemma ProjectiveResolution.isoLeftDerivedObj_hom_naturality
   erw [(HomotopyCategory.homologyFunctorFactors D (ComplexShape.down ℕ) n).hom.naturality]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma ProjectiveResolution.isoLeftDerivedObj_inv_naturality
     {X Y : C} (f : X ⟶ Y) (P : ProjectiveResolution X) (Q : ProjectiveResolution Y)
@@ -266,7 +263,6 @@ noncomputable def fromLeftDerivedZero' {X : C}
     dsimp
     rw [← F.map_comp, complex_d_comp_π_f_zero, F.map_zero])
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma pOpcycles_comp_fromLeftDerivedZero' {C} [Category* C] [Abelian C] {X : C}
     (P : ProjectiveResolution X) (F : C ⥤ D) [F.Additive] :

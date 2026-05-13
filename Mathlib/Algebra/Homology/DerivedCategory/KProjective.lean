@@ -47,7 +47,6 @@ lemma Qh_map_bijective [HasDerivedCategory C]
       ((HomotopyCategory.quotient _ _).obj K ⟶ L) → _) :=
   (CochainComplex.IsKProjective.leftOrthogonal K).map_bijective_of_isTriangulated _ _
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] HasDerivedCategory.standard in
 lemma quasiIso_iff {K L : CochainComplex C ℤ} [K.IsKProjective] [L.IsKProjective] (f : K ⟶ L) :
     QuasiIso f ↔ homotopyEquivalences C (.up ℤ) f := by
@@ -67,7 +66,6 @@ namespace HomComplex.CohomologyClass
 variable (K L : CochainComplex C ℤ) (n : ℤ)
   [HasSmallLocalizedShiftedHom.{w} (HomologicalComplex.quasiIso C (.up ℤ)) ℤ K L]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma bijective_toSmallShiftedHom_of_isKProjective [K.IsKProjective] :
     Function.Bijective (toSmallShiftedHom.{w} (K := K) (L := L) (n := n)) := by
   letI := HasDerivedCategory.standard C

@@ -323,7 +323,6 @@ attribute [inherit_doc BinaryBicone.IsBilimit] BinaryBicone.IsBilimit.isLimit
   BinaryBicone.IsBilimit.isColimit
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- If a binary bicone for `P` and `Q` is bilimit, then the binary bicone for `P'` and `Q'`
 obtained using isomorphisms `P ≅ P'` and `Q ≅ Q'` is also bilimit. -/
 def BinaryBicone.IsBilimit.ofIso {P Q P' Q' : C} {b : BinaryBicone P Q} (hb : b.IsBilimit)

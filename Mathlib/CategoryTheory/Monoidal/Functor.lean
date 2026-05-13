@@ -1020,7 +1020,6 @@ section OplaxMonoidal
 variable [G.LaxMonoidal]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The left adjoint of a lax monoidal functor is oplax monoidal. -/
 @[simps -isSimp, instance_reducible]
 def leftAdjointOplaxMonoidal : F.OplaxMonoidal where
@@ -1079,7 +1078,6 @@ instance :
 end OplaxMonoidal
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] leftAdjointOplaxMonoidal_η leftAdjointOplaxMonoidal_δ
   rightAdjointLaxMonoidal_ε rightAdjointLaxMonoidal_μ in
 /-- If `F ⊣ G` is an adjunction, the `G` is lax monoidal iff `F` is oplax monoidal.

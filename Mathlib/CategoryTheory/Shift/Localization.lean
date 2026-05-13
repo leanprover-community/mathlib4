@@ -237,7 +237,6 @@ lemma commShiftOfLocalization_iso_inv_app (a : A) (X : C) :
 end Functor
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance NatTrans.commShift_iso_hom_of_localization :
     letI := Functor.commShiftOfLocalization L W A F F'
     NatTrans.CommShift (Lifting.iso L W F F').hom A := by
@@ -303,7 +302,6 @@ lemma commShift_iso_inv_app (m : M) (X : C₁) :
     Functor.commShiftIso_comp_inv_app]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma natTransCommShift_hom :
     letI := Φ.commShift M L₁ L₂ G e
     NatTrans.CommShift e.hom M := by

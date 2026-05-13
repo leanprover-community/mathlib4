@@ -230,7 +230,6 @@ def postcomp (G : D ⥤ E) [G.CommShift A] :
 variable (C A)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor `SingleFunctors C D A ⥤ SingleFunctors C E A` given by the postcomposition
 by a functor `G : D ⥤ E` which commutes with the shift. -/
 @[simps]

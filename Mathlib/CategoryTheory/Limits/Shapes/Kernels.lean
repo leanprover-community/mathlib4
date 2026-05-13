@@ -1035,7 +1035,6 @@ def cokernel.zeroCokernelCofork : CokernelCofork f :=
 @[simp]
 lemma cokernel.zeroCokernelCofork_π : (cokernel.zeroCokernelCofork f).π = 0 := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The morphism to the zero object is a cokernel of an epimorphism -/
 def cokernel.isColimitCoconeZeroCocone [Epi f] : IsColimit (cokernel.zeroCokernelCofork f) :=
   Cofork.IsColimit.mk _ (fun _ => 0)
