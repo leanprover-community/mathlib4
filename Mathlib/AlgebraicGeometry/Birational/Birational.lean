@@ -278,6 +278,24 @@ lemma Opens.isRationalOver_of_dense (hU : Dense (U : Set X)) [IsRationalOver sX]
 
 end DenseOpen
 
+section OpenImmersion
+
+variable {X U S : Scheme.{u}} 
+
+/-- A dominant open immersion `f : U ⟶ X` induced a partial isomorphism between `U` and `X`. -/
+@[simps! source target iso]
+noncomputable def Hom.partialIso (f : U ⟶ X) [IsOpenImmersion f] [IsDominant f] :=
+  f.isoOpensRange.toPartialIso.trans' (f.opensRange.partialIso_of_dense f.denseRange) rfl
+
+lemma Hom.birational (f : U ⟶ X) [IsOpenImmersion f] [IsDominant f] : Birational U X :=
+  ⟨f.partialIso⟩
+
+lemma Hom.birationalOver (f : U ⟶ X) [IsOpenImmersion f] [IsDominant f] (sX : X ⟶ S) (sU : U ⟶ S)
+    (hf : f ≫ sX = sU) : BirationalOver sU sX :=
+  ⟨f.partialIso, by simp [hf]⟩
+
+end OpenImmersion
+
 end Scheme
 
 end AlgebraicGeometry
