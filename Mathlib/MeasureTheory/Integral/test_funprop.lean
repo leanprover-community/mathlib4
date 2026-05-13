@@ -75,7 +75,7 @@ end missing_lemmas
 
 section testing
 
-variable [TopologicalSpace ε'] [ESeminormedAddMonoid ε']
+--variable [TopologicalSpace ε'] [ESeminormedAddMonoid ε']
 
 variable {f g : α → ε'}
 

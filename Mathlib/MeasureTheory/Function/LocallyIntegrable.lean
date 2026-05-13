@@ -562,31 +562,38 @@ theorem ContinuousOn.integrableOn_compact'
     IntegrableOn f K μ :=
   hf.integrableOn_of_subset_isCompact hK h'K Subset.rfl hK.measure_ne_top
 
+@[fun_prop]
 theorem ContinuousOn.integrableOn_compact [T2Space X]
     (hK : IsCompact K) (hf : ContinuousOn f K) : IntegrableOn f K μ :=
   hf.integrableOn_compact' hK hK.measurableSet
 
+@[fun_prop]
 theorem ContinuousOn.integrableOn_Icc [Preorder X] [CompactIccSpace X] [T2Space X]
     (hf : ContinuousOn f (Icc a b)) : IntegrableOn f (Icc a b) μ :=
   hf.integrableOn_compact isCompact_Icc
 
+@[fun_prop]
 theorem Continuous.integrableOn_Icc [Preorder X] [CompactIccSpace X] [T2Space X]
     (hf : Continuous f) : IntegrableOn f (Icc a b) μ :=
   hf.continuousOn.integrableOn_Icc
 
+@[fun_prop]
 theorem Continuous.integrableOn_Ioc [Preorder X] [CompactIccSpace X] [T2Space X]
     (hf : Continuous f) : IntegrableOn f (Ioc a b) μ :=
   hf.integrableOn_Icc.mono_set Ioc_subset_Icc_self
 
+@[fun_prop]
 theorem ContinuousOn.integrableOn_uIcc [LinearOrder X] [CompactIccSpace X] [T2Space X]
     (hf : ContinuousOn f [[a, b]]) : IntegrableOn f [[a, b]] μ :=
   hf.integrableOn_Icc
 
+@[fun_prop]
 theorem Continuous.integrableOn_uIcc [LinearOrder X] [CompactIccSpace X] [T2Space X]
     (hf : Continuous f) : IntegrableOn f [[a, b]] μ :=
   hf.integrableOn_Icc
 
 open scoped Interval in
+@[fun_prop]
 theorem Continuous.integrableOn_uIoc [LinearOrder X] [CompactIccSpace X] [T2Space X]
     (hf : Continuous f) : IntegrableOn f (Ι a b) μ :=
   hf.integrableOn_Ioc
