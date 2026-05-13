@@ -38,7 +38,7 @@ jobs:
       - name: lake shake
         id: shake
         run: |
-          lake shake --add-public --keep-implied --keep-prefix --fix --explain > explain.txt 2>&1
+          lake shake --add-public --keep-implied --keep-prefix --fix --explain Mathlib Archive Counterexamples > explain.txt 2>&1
           if git diff --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
@@ -58,6 +58,11 @@ jobs:
         with:
           name: shake-explain
           path: explain.txt
+
+      - name: Cleanup explain.txt
+        if: steps.shake.outputs.changed == 'true'
+        run: |
+          rm -f explain.txt
 
       - name: Build PR body
         id: pr_body
