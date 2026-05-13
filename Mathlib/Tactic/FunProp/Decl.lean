@@ -32,6 +32,8 @@ structure FunPropDecl where
   /-- argument index of a function this function property talks about.
   For example, this would be 4 for `@Continuous α β _ _ f` -/
   funArgId : Nat
+  /-- funciton properties like Integrability should apply transition theorems eagerly -/
+  eagerTransition : Bool := false
   deriving Inhabited, BEq
 
 /-- Discrimination tree for function properties. -/
@@ -55,7 +57,7 @@ initialize funPropDeclsExt : FunPropDeclsExt ←
   }
 
 /-- Register new function property. -/
-def addFunPropDecl (declName : Name) : MetaM Unit := do
+def addFunPropDecl (declName : Name) (eagerTransition := false) : MetaM Unit := do
 
   let info ← getConstInfo declName
 
@@ -80,6 +82,7 @@ def addFunPropDecl (declName : Name) : MetaM Unit := do
     funPropName := declName
     path := path
     funArgId := funArgId
+    eagerTransition
   }
 
   modifyEnv fun env => funPropDeclsExt.addEntry env decl

@@ -22,18 +22,24 @@ namespace Meta.FunProp
 private def funPropHelpString : String :=
 "`fun_prop` tactic to prove function properties like `Continuous`, `Differentiable`, `IsLinearMap`"
 
+syntax (name:=fun_prop) "fun_prop" (&"eager_transition")? : attr
+
+
 /-- Initialization of `funProp` attribute -/
 initialize
   registerBuiltinAttribute {
     name  := `fun_prop
     descr := funPropHelpString
     applicationTime := AttributeApplicationTime.afterCompilation
-    add   := fun declName _stx attrKind =>
+    add   := fun declName stx attrKind =>
        discard <| MetaM.run do
+       let eagerTransition :=
+         match stx with
+         | `(attr| fun_prop eager_transition) => true | _ => false
        let info ← getConstInfo declName
        forallTelescope info.type fun _ b => do
          if b.isProp then
-           addFunPropDecl declName
+           addFunPropDecl declName eagerTransition
          else
            addTheorem declName attrKind
     erase := fun _declName =>
