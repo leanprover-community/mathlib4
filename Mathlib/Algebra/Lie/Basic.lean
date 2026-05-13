@@ -77,6 +77,9 @@ identity. Forgetting the scalar multiplication, every Lie algebra is a Lie ring.
   Lie algebra has a natural Lie module action on itself, see `LieModule`. -/
   protected lie_smul : ∀ (t : R) (x y : L), ⁅x, t • y⁆ = t • ⁅x, y⁆
 
+/- Reduce the priority of this instance to avoid wasteful type class searches. -/
+attribute [instance 900] LieAlgebra.toModule
+
 /-- A Lie ring module is an additive group, together with an additive action of a
 Lie ring on this group, such that the Lie bracket acts as the commutator of endomorphisms.
 (For representations of Lie *algebras* see `LieModule`.) -/
