@@ -495,21 +495,3 @@ lemma ringKrullDim_le_spanFinrank_maximalIdeal [IsLocalRing R] :
       Ideal.IsPrime.ne_top'))
 
 end Algebra
-
-variable (R) in
-lemma IsLocalRing.maximalIdeal_sq_lt_maximalIdeal [IsLocalRing R] :
-    maximalIdeal R ^ 2 < maximalIdeal R ↔ ¬ IsField R := by
-  trans ¬ maximalIdeal R ^ 2 = maximalIdeal R
-  · simp [lt_iff_le_and_ne, Ideal.pow_le_self]
-  · rw [IsLocalRing.isField_iff_maximalIdeal_eq, pow_two]
-    refine Iff.not ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
-    exact Submodule.eq_bot_of_eq_ideal_smul_of_le_jacobson_annihilator (IsNoetherian.noetherian _)
-      h.symm (maximalIdeal_le_jacobson _)
-
-/-- In a Noetherian local ring of positive Krull dimension,
-the square of the maximal ideal is strictly contained in the maximal ideal. -/
-lemma IsLocalRing.maximalIdeal_sq_lt [IsLocalRing R] (h : 0 < ringKrullDim R) :
-    (maximalIdeal R) ^ 2 < maximalIdeal R := by
-  rw [maximalIdeal_sq_lt_maximalIdeal R, IsLocalRing.isField_iff_maximalIdeal_eq]
-  contrapose h
-  simp [← IsLocalRing.maximalIdeal_height_eq_ringKrullDim, h, Ideal.height_bot]
