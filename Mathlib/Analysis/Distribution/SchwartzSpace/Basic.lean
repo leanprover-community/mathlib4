@@ -530,7 +530,7 @@ instance instIsTopologicalAddGroup : IsTopologicalAddGroup 𝓢(E, F) :=
   (schwartzSeminormFamily ℝ E F).addGroupFilterBasis.isTopologicalAddGroup
 
 instance instUniformSpace : UniformSpace 𝓢(E, F) :=
-  (schwartzSeminormFamily ℝ E F).addGroupFilterBasis.uniformSpace
+  fast_instance% (schwartzSeminormFamily ℝ E F).addGroupFilterBasis.uniformSpace
 
 instance instIsUniformAddGroup : IsUniformAddGroup 𝓢(E, F) :=
   (schwartzSeminormFamily ℝ E F).addGroupFilterBasis.isUniformAddGroup

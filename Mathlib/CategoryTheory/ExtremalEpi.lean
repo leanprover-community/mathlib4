@@ -25,7 +25,7 @@ the category has pullbacks.
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

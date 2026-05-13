@@ -222,6 +222,10 @@ theorem closure_subset_preimage_closure_image (h : Continuous f) :
     closure s ⊆ f ⁻¹' closure (f '' s) :=
   (mapsTo_image _ _).closure h
 
+lemma nonempty_preimage_closure_image (h : Continuous f) (t : Set X) (ht : t.Nonempty) :
+    (f ⁻¹' (closure (f '' t))).Nonempty :=
+  (Nonempty.mono (closure_subset_preimage_closure_image h (s := t)) (closure_nonempty_iff.mpr ht))
+
 theorem continuous_iff_image_closure_subset_closure_image :
     Continuous f ↔ ∀ s, f '' closure s ⊆ closure (f '' s) where
   mp h s := image_closure_subset_closure_image h
@@ -288,7 +292,7 @@ theorem DenseRange.dense_image {f : X → Y} (hf' : DenseRange f) (hf : Continuo
 /-- If `f` has dense range and `s` is an open set in the codomain of `f`, then the image of the
 preimage of `s` under `f` is dense in `s`. -/
 theorem DenseRange.subset_closure_image_preimage_of_isOpen (hf : DenseRange f) (hs : IsOpen s) :
-    s ⊆ closure (f '' (f ⁻¹' s)) := by
+    s ⊆ closure (f '' f ⁻¹' s) := by
   rw [image_preimage_eq_inter_range]
   exact hf.open_subset_closure_inter hs
 
