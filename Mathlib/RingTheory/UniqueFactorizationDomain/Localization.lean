@@ -26,7 +26,7 @@ theorem UniqueFactorizationMonoid.of_isLocalization {M : Submonoid R} (hM : M �
   rw [UniqueFactorizationMonoid.iff_exists_prime_mem_of_isPrime]
   intro p hpb _
   obtain ⟨x, hxp, hpx⟩ := Ideal.IsPrime.exists_mem_prime_of_ne_bot
-    inferInstance (IsLocalization.bot_lt_comap_prime M S hM p hpb).ne'
+    inferInstance (IsLocalization.bot_lt_under_prime M S hM p hpb).ne'
   use algebraMap R S x, hxp
   rw [← Ideal.span_singleton_prime]
   · rw [← Set.image_singleton, ← Ideal.map_span]
