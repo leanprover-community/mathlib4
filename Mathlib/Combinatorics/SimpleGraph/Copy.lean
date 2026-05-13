@@ -65,6 +65,11 @@ The following notation is declared in scope `SimpleGraph`:
 * Make `copyCount`/`subCount` computable (not necessarily efficiently).
 * Count the number of graph homomorphisms `G →g H` with `homCount G H`.
 * Add densities `copyDensity G H`, `subDensity G H`, and `homDensity G H`.
+* Generalize `subCount_emptyGraph` to cross-universe `V`:
+  `H.subCount (⊥ : SimpleGraph V) = (Nat.card W).choose (Nat.card V)`, subsuming
+  `subCount_of_isEmpty` and the current diagonal `V = W` case.
+* Add `subCount_completeGraph` (clique count, naturally lives in `Clique.lean` since it
+  imports this file).
 -/
 
 public section
@@ -535,8 +540,8 @@ lemma subCount_le_copyCount [Finite V] [Finite W] : H.subCount G ≤ H.copyCount
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-private lemma subgraph_iso_bot [Finite W] (H' : H.Subgraph) (e : (⊥ : SimpleGraph W) ≃g H'.coe) :
-    H'.verts = Set.univ ∧ H'.Adj = ⊥ := by
+private lemma subgraph_iso_emptyGraph [Finite W] (H' : H.Subgraph)
+    (e : (⊥ : SimpleGraph W) ≃g H'.coe) : H'.verts = Set.univ ∧ H'.Adj = ⊥ := by
   refine ⟨Set.eq_univ_of_forall fun v ↦ ?_,
     funext₂ fun a b ↦ eq_false fun hadj ↦ absurd (e.symm.map_rel_iff.mpr hadj.coe) (by simp)⟩
   obtain ⟨w, hw⟩ := (Finite.injective_iff_surjective.mp
@@ -545,15 +550,20 @@ private lemma subgraph_iso_bot [Finite W] (H' : H.Subgraph) (e : (⊥ : SimpleGr
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-instance uniqueSubBot [Finite W] (H : SimpleGraph W) : Unique ((⊥ : SimpleGraph W).Sub H) where
+instance uniqueSubEmptyGraph [Finite W] (H : SimpleGraph W) :
+    Unique ((⊥ : SimpleGraph W).Sub H) where
   default := ⟨{ verts := .univ, Adj := ⊥, adj_sub := False.elim, edge_vert := False.elim },
               ⟨(Equiv.Set.univ _).symm, by simp⟩⟩
   uniq := fun ⟨H', ⟨e⟩⟩ ↦ Subtype.ext <|
-    Subgraph.ext (subgraph_iso_bot H' e).1 (subgraph_iso_bot H' e).2
+    Subgraph.ext (subgraph_iso_emptyGraph H' e).1 (subgraph_iso_emptyGraph H' e).2
 
-@[simp] lemma subCount_bot [Finite W] (H : SimpleGraph W) :
+@[deprecated (since := "2026-05-13")] alias uniqueSubBot := uniqueSubEmptyGraph
+
+@[simp] lemma subCount_emptyGraph [Finite W] (H : SimpleGraph W) :
     H.subCount (⊥ : SimpleGraph W) = 1 :=
   Nat.card_unique
+
+@[deprecated (since := "2026-05-13")] alias subCount_bot := subCount_emptyGraph
 
 @[simp] lemma subCount_of_isEmpty [Finite V] [Finite W] [IsEmpty V]
     (H : SimpleGraph W) (G : SimpleGraph V) : H.subCount G = 1 :=
