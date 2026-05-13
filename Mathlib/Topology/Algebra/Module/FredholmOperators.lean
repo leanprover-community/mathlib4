@@ -160,7 +160,7 @@ lemma LinearMap.equiv_of_quasiInverse' {u u' : V₃ →ₗ[K] V₂} {v : V₂ �
 end
 end
 
-open Topology ContinuousLinearMap Submodule
+open Topology ContinuousLinearMap Submodule Set
 
 variable (f)
 
@@ -176,7 +176,7 @@ def IsFredholm_exists : Prop := ∃ g : F →L[𝕜] E,
   FiniteDimensional 𝕜 (f ∘L g - .id 𝕜 F).range  ∧ FiniteDimensional 𝕜 (g ∘L f - .id 𝕜 E).range
 
 namespace QuotFiniteSubmodules
-variable [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F] [ContinuousAdd E] [ContinuousAdd F]
+variable [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F]
 
 variable (𝕜 E F) in
 def FiniteRank : Submodule 𝕜 (E →L[𝕜] F) where
@@ -317,34 +317,32 @@ range. Sorry for the deviation from notation...I'm writing a note for tomorrow! 
 
 /- ## IsStrict Using Technical Lemma -/
 
-/- ## Quasi-inverse is inverse on a finite codim space -/
+/- ## Fredholm operator is an isomorphism on a finite codim space -/
 
-section LinearMap
+open QuotFiniteSubmodules
 
-variable {E F : Type*} [AddCommGroup E] [AddCommGroup F] [Module 𝕜 E] [Module 𝕜 F]
+variable {u : E →L[𝕜] F} {v : F →L[𝕜] E}
 
-theorem LinearMap.mem_ker_of_mem_ker (u : E →ₗ[𝕜] F) (v : F →ₗ[𝕜] E)
-    (x : E) (hx : x ∈ (.id - v ∘ₗ u).ker) :
-    u x ∈ (.id - u ∘ₗ v).ker := by
-  simp_all [← map_sub]
+variable [ContinuousConstSMul 𝕜 E]
 
-theorem LinearMap.restrict_inverse (u : E →ₗ[𝕜] F) (v : F →ₗ[𝕜] E) :
-    (u.restrict (u.mem_ker_of_mem_ker v)) ∘ₗ (v.restrict (v.mem_ker_of_mem_ker u)) = id := by
-  ext x
-  sorry
+omit [IsTopologicalAddGroup F] in
+theorem ContinuousLinearMap.id_sub_comp_ker_coFG (hgf : v ∘L u ≈ .id 𝕜 E) :
+    (.id 𝕜 E - v ∘L u).ker.CoFG := by
+  rw [← range_fg_iff_ker_cofg, Submodule.fg_iff_finiteDimensional]
+  exact eqv_iff.1 (Setoid.symm hgf)
 
-end LinearMap
+variable [T1Space E] [T1Space F] [ContinuousConstSMul 𝕜 F]
 
-variable {u : E →L[𝕜] F} {v : F →L[𝕜] E} [T1Space E]
-
-theorem lemma2 (hr : v ∘L u ≈ .id 𝕜 E) :
-    ∃ (E₁ : Submodule 𝕜 E) (F₁ : Submodule 𝕜 F),
-      IsClosed E₁.carrier ∧ E₁.CoFG ∧ map u.toLinearMap E₁ ≤ F₁ ∧ map v.toLinearMap F₁ ≤ E₁ := by
-  refine ⟨(.id 𝕜 E - v ∘L u).ker, (.id 𝕜 F - u ∘L v).ker, ContinuousLinearMap.isClosed_ker _,
-    ?_, ?_⟩
-  rw [← range_fg_iff_ker_cofg]
-  sorry
-  sorry
-
+/-- Need rename. -/
+theorem aaron (hr : IsFredholm_quot u) :
+    ∃ (E₁ : Submodule 𝕜 E) (F₁ : Submodule 𝕜 F), IsClosed E₁.carrier ∧ E₁.CoFG ∧
+      IsClosed F₁.carrier ∧ F₁.CoFG ∧ BijOn u E₁ F₁ := by
+  obtain ⟨v, huv, hvu⟩ := hr
+  refine ⟨(.id 𝕜 E - v ∘L u).ker, (.id 𝕜 F - u ∘L v).ker, (.id 𝕜 E - v ∘L u).isClosed_ker,
+    ContinuousLinearMap.id_sub_comp_ker_coFG hvu, (.id 𝕜 F - u ∘L v).isClosed_ker,
+    ContinuousLinearMap.id_sub_comp_ker_coFG huv,
+    InvOn.bijOn ⟨fun _ hx => (sub_eq_zero.mp hx).symm, fun _ hx => (sub_eq_zero.mp hx).symm⟩ ?_ ?_⟩
+  <;> intro x hx
+  <;> simp_all [← map_sub]
 
 end FredholmOperators
