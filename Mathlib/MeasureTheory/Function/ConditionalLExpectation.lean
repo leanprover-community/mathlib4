@@ -151,14 +151,14 @@ theorem lintegral_condLExp (P : Measure[mΩ₀] Ω) [hσ : SigmaFinite (P.trim h
     ∫⁻ ω, P⁻[X|mΩ] ω ∂P = ∫⁻ ω, X ω ∂P := by
   simpa [← setLIntegral_univ] using setLIntegral_condLExp _ _ _ .univ
 
-lemma condLExp_lt_top {f : Ω → ℝ≥0∞} (hf : ∫⁻ x, f x ∂P ≠ ∞) : ∀ᵐ x ∂P, P⁻[f | mΩ] x < ∞ := by
+lemma condLExp_lt_top {f : Ω → ℝ≥0∞} (hf : ∫⁻ x, f x ∂P ≠ ∞) : ∀ᵐ x ∂P, P⁻[f|mΩ] x < ∞ := by
   by_cases hm : mΩ ≤ mΩ₀
   swap; · simp [condLExp_of_not_le hm]
   by_cases hσ : SigmaFinite (P.trim hm)
   · exact ae_lt_top' (by fun_prop) (by rwa [lintegral_condLExp])
   · simp [condLExp_of_not_sigmaFinite hm hσ]
 
-lemma condLExp_ne_top {f : Ω → ℝ≥0∞} (hf : ∫⁻ x, f x ∂P ≠ ∞) : ∀ᵐ x ∂P, P⁻[f | mΩ] x ≠ ∞ := by
+lemma condLExp_ne_top {f : Ω → ℝ≥0∞} (hf : ∫⁻ x, f x ∂P ≠ ∞) : ∀ᵐ x ∂P, P⁻[f|mΩ] x ≠ ∞ := by
   filter_upwards [condLExp_lt_top hf] with x hx using hx.ne
 
 theorem ae_eq_condLExp₀ {P : Measure[mΩ₀] Ω} [hσ : SigmaFinite (P.trim hm)]
@@ -333,12 +333,14 @@ theorem condLExp_tsum [Countable ι] {X : ι → Ω → ℝ≥0∞}
   congr with i
   exact setLIntegral_condLExp hm P (X i) hs
 
-theorem condLExp_finset_sum (s : Finset ι) {X : ι → Ω → ℝ≥0∞}
+theorem condLExp_finsetSum (s : Finset ι) {X : ι → Ω → ℝ≥0∞}
     (hX : ∀ i, AEMeasurable[mΩ₀] (X i) P) :
     P⁻[∑ i ∈ s, X i|mΩ] =ᵐ[P] ∑ i ∈ s, P⁻[X i|mΩ] := by
   convert condLExp_tsum mΩ (fun i : s ↦ hX i)
   · simp [Finset.sum_attach]
   · simp [Finset.sum_attach _ (f := (P⁻[X ·|mΩ]))]
+
+@[deprecated (since := "2026-04-08")] alias condLExp_finset_sum := condLExp_finsetSum
 
 end Sum
 

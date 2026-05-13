@@ -226,6 +226,7 @@ lemma tendsto_nhds_iff {f : ι → Y} {l : Filter ι} {y : Y} (hg : IsEmbedding 
 lemma continuous_iff (hg : IsEmbedding g) : Continuous f ↔ Continuous (g ∘ f) :=
   hg.isInducing.continuous_iff
 
+@[fun_prop]
 lemma continuous (hf : IsEmbedding f) : Continuous f := hf.isInducing.continuous
 
 lemma closure_eq_preimage_closure_image (hf : IsEmbedding f) (s : Set X) :
@@ -290,6 +291,10 @@ protected lemma of_comp (hf : Continuous f) (hg : Continuous g) (hgf : IsCoinduc
     IsCoinducing g :=
   ⟨le_antisymm (by grw [hgf.eq_coinduced, ← coinduced_compose, hf.coinduced_le]) hg.coinduced_le⟩
 
+lemma isOpenMap_of_injective (hf : IsCoinducing f) (hf' : Injective f) : IsOpenMap f := by
+  intro s hs
+  rwa [← hf.isOpen_preimage, preimage_image_eq _ hf']
+
 end IsCoinducing
 
 end IsCoinducing
@@ -322,6 +327,10 @@ theorem of_comp_of_isCoinducing (hgf : IsQuotientMap (g ∘ f)) (hf : IsCoinduci
 
 @[deprecated (since := "2026-03-21")]
 alias of_comp_of_eq_coinduced := of_comp_of_isCoinducing
+
+protected theorem of_comp_iff (hf : IsQuotientMap f) :
+    IsQuotientMap (g ∘ f) ↔ IsQuotientMap g := by
+  rw [isQuotientMap_iff, isQuotientMap_iff, hf.isCoinducing.of_comp_iff, hf.surjective.of_comp_iff]
 
 theorem of_comp_isQuotientMap (hf : IsQuotientMap f) (hgf : IsQuotientMap (g ∘ f)) :
     IsQuotientMap g := of_comp_of_isCoinducing hgf hf.isCoinducing
@@ -422,6 +431,10 @@ theorem preimage_closure_subset_closure_preimage (hf : IsOpenMap f) {s : Set Y} 
 theorem preimage_closure_eq_closure_preimage (hf : IsOpenMap f) (hfc : Continuous f) (s : Set Y) :
     f ⁻¹' closure s = closure (f ⁻¹' s) :=
   hf.preimage_closure_subset_closure_preimage.antisymm (hfc.closure_preimage_subset s)
+
+lemma preimage_closure_image (h₁ : IsOpenMap f) (h₂ : Function.Injective f)
+    (h₃ : Continuous f) (s : Set X) (hs' : IsClosed s) : f ⁻¹' closure (f '' s) = s := by
+  rw [h₁.preimage_closure_eq_closure_preimage h₃, Set.preimage_image_eq _ h₂, hs'.closure_eq]
 
 theorem preimage_frontier_subset_frontier_preimage (hf : IsOpenMap f) {s : Set Y} :
     f ⁻¹' frontier s ⊆ frontier (f ⁻¹' s) := by

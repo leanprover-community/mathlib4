@@ -32,6 +32,7 @@ so as to make the operations (addition etc.) "computable".
 @[expose] public section
 
 suppress_compilation
+noncomputable section -- needed for `deriving`
 
 variable {R : Type*} [Semiring R] {ι : Type*} [Preorder ι] {G : ι → Type*}
 
@@ -247,9 +248,11 @@ def linearEquiv : DirectLimit G f ≃ₗ[R] _root_.DirectLimit G f :=
     (by ext; simp)
     (by ext; simp)
 
+@[simp]
 theorem linearEquiv_of {i g} : linearEquiv _ _ (of _ _ G f i g) = ⟦⟨i, g⟩⟧ := by
-  simp [linearEquiv]; rfl
+  simp [linearEquiv]
 
+@[simp]
 theorem linearEquiv_symm_mk {g} : (linearEquiv _ _).symm ⟦g⟧ = of _ _ G f g.1 g.2 := rfl
 
 end equiv
@@ -282,6 +285,7 @@ variable (G) [∀ i, AddCommMonoid (G i)]
 /-- The direct limit of a directed system is the abelian groups glued together along the maps. -/
 def DirectLimit [DecidableEq ι] (f : ∀ i j, i ≤ j → G i →+ G j) : Type _ :=
   @Module.DirectLimit ℕ _ ι _ G _ _ (fun i j hij ↦ (f i j hij).toNatLinearMap) _
+deriving AddCommMonoid, Inhabited
 
 namespace DirectLimit
 
@@ -293,17 +297,12 @@ local instance directedSystem [h : DirectedSystem G fun i j h ↦ f i j h] :
 
 variable [DecidableEq ι]
 
-instance : AddCommMonoid (DirectLimit G f) :=
-  Module.DirectLimit.addCommMonoid G fun i j hij ↦ (f i j hij).toNatLinearMap
-
 instance addCommGroup (G : ι → Type*) [∀ i, AddCommGroup (G i)]
     (f : ∀ i j, i ≤ j → G i →+ G j) : AddCommGroup (DirectLimit G f) :=
-  Module.DirectLimit.addCommGroup G fun i j hij ↦ (f i j hij).toNatLinearMap
+  inferInstanceAs <| AddCommGroup (Module.DirectLimit G _)
 
-instance : Inhabited (DirectLimit G f) :=
-  ⟨0⟩
-
-instance [IsEmpty ι] : Unique (DirectLimit G f) := Module.DirectLimit.unique _ _
+instance [IsEmpty ι] : Unique (DirectLimit G f) :=
+  inferInstanceAs <| Unique (Module.DirectLimit G _)
 
 /-- The canonical map from a component to the direct limit. -/
 def of (i) : G i →+ DirectLimit G f :=
