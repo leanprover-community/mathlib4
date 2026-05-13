@@ -51,6 +51,7 @@ lemma chosenCoend.condition {i j : J} (f : i ⟶ j) :
 
 variable {F}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Morphisms out of the chosen coend are determined by their composites with `chosenCoend.ι`. -/
 @[ext]
 lemma chosenCoend.hom_ext {X : C} {f g : chosenCoend F ⟶ X}
