@@ -8,6 +8,8 @@ module
 public import Mathlib.NumberTheory.NumberField.Discriminant.Basic
 public import Mathlib.NumberTheory.NumberField.Discriminant.Different
 public import Mathlib.NumberTheory.RamificationInertia.Galois
+public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients
+public import Mathlib.RingTheory.RamificationInertia.Ramification
 public import Mathlib.RingTheory.Unramified.Dedekind
 
 /-!
@@ -140,9 +142,65 @@ theorem IsGaloisGroup.to_isFractionRing'
     use algebraMap A K b / algebraMap A K a
     simp [hc, div_eq_div_iff ha hy', ← map_mul, ← map_mul, hb]
 
+namespace Ideal
+
+variable {S : Type*} [CommRing S] (q : Ideal S) (R : Type*) [CommRing R] [Algebra R S]
+
+-- PRed
+theorem ramificationIdx'_eq_one [q.IsPrime] [Algebra.EssFiniteType R S]
+    [Algebra.IsUnramifiedAt R q] : q.ramificationIdx' R = 1 := by
+  let p := q.under R
+  let Rp := Localization.AtPrime p
+  let Sq := Localization.AtPrime q
+  let : Algebra Rp Sq := Localization.AtPrime.algebraOfLiesOver p q
+  have : Algebra.EssFiniteType Rp Sq := Algebra.EssFiniteType.of_comp R Rp Sq
+  rw [ramificationIdx'_def, ENat.toNat_eq_iff_eq_coe, Nat.cast_one, Module.length_eq_one_iff,
+    isSimpleModule_iff_isCoatom, ← Ideal.isMaximal_def, IsLocalRing.isMaximal_iff,
+    IsScalarTower.algebraMap_eq R Rp Sq, ← map_map, Localization.AtPrime.map_eq_maximalIdeal]
+  exact Algebra.FormallyUnramified.map_maximalIdeal
+
+-- PRed
+theorem ramificationIdx'_eq_one_iff [q.IsPrime] [Algebra.EssFiniteType R S]
+    [Algebra.IsIntegral R S] [PerfectField (q.under R).ResidueField] :
+    q.ramificationIdx' R = 1 ↔ Algebra.IsUnramifiedAt R q := by
+  refine ⟨fun h ↦ ?_, fun _ ↦ ramificationIdx'_eq_one q R⟩
+  rw [ramificationIdx'_def, ENat.toNat_eq_iff_eq_coe, Nat.cast_one, Module.length_eq_one_iff,
+    isSimpleModule_iff_isCoatom, ← Ideal.isMaximal_def, IsLocalRing.isMaximal_iff] at h
+  let p := q.under R
+  let Rp := Localization.AtPrime p
+  let Sq := Localization.AtPrime q
+  let := Localization.AtPrime.algebraOfLiesOver p q
+  have := Algebra.EssFiniteType.of_comp R Rp Sq
+  suffices Algebra.FormallyUnramified Rp Sq from Algebra.FormallyUnramified.comp R Rp Sq
+  rw [Algebra.FormallyUnramified.iff_map_maximalIdeal_eq,
+    ← Localization.AtPrime.map_eq_maximalIdeal, map_map, ← IsScalarTower.algebraMap_eq]
+  exact ⟨Algebra.IsAlgebraic.isSeparable_of_perfectField, h⟩
+
+end Ideal
+
+instance {R : Type*} [CommRing R] [IsDomain R] [Ring.HasFiniteQuotients R] {I : Ideal R} [I.IsPrime]
+    [PerfectField (FractionRing R)] :
+    PerfectField I.ResidueField := by
+  by_cases hI : I = ⊥
+  · suffices IsFractionRing R I.ResidueField by
+      sorry
+    sorry
+  · have : Finite (R ⧸ I) := Ring.HasFiniteQuotients.finiteQuotient hI
+    have : Finite I.ResidueField := sorry
+    infer_instance
+
+instance {I : Ideal ℤ} [I.IsPrime] : PerfectField I.ResidueField :=
+  inferInstance
+
+section
+
+variable (G A B C : Type*) [Group G]
+    [CommRing A] [CommRing B] [CommRing C] [IsDomain C] [Algebra A B]
+    [Algebra A C] [Algebra B C] [FaithfulSMul A C] [FaithfulSMul B C] [IsScalarTower A B C]
+
 theorem NumberField.supr_inertia_eq_top (S G : Type*) [CommRing S] [Module.Finite ℤ S]
     [IsDomain S] [FaithfulSMul ℤ S] [Group G] [MulSemiringAction G S] [IsGaloisGroup G ℤ S] :
-    ⨆ m : MaximalSpectrum S, m.asIdeal.toAddSubgroup.inertia G = ⊤ := by
+    ⨆ m : PrimeSpectrum S, m.asIdeal.toAddSubgroup.inertia G = ⊤ := by
   have : Finite G := by -- PRed
     let : Algebra (FractionRing ℤ) (FractionRing S) := FractionRing.liftAlgebra ℤ (FractionRing S)
     let : MulSemiringAction G (FractionRing S) :=
@@ -150,51 +208,53 @@ theorem NumberField.supr_inertia_eq_top (S G : Type*) [CommRing S] [Module.Finit
     have : IsGaloisGroup G (FractionRing ℤ) (FractionRing S) :=
       IsGaloisGroup.to_isFractionRing' G ℤ S (FractionRing ℤ) (FractionRing S)
     exact IsGaloisGroup.finite G (FractionRing ℤ) (FractionRing S)
-  let H : Subgroup G := ⨆ m : MaximalSpectrum S, m.asIdeal.toAddSubgroup.inertia G
+  let H : Subgroup G := ⨆ m : PrimeSpectrum S, m.asIdeal.toAddSubgroup.inertia G
   let R : Subalgebra ℤ S := FixedPoints.subalgebra ℤ S H
+  have hH : IsGaloisGroup H R S := inferInstance -- temp
   have : Module.Finite ℤ R := Module.IsNoetherian.finite ℤ R.toSubmodule
-  have h5 : Algebra.Unramified ℤ R := by
-    rw [Algebra.unramified_iff_forall]
-    rintro ⟨mF, hmF⟩
-    by_cases hmF0 : mF = ⊥
-    · simp only [hmF0]
-      rw [Algebra.IsUnramifiedAt]
-      change Algebra.FormallyUnramified ℤ (Localization ((⊥ : Ideal R).primeCompl))
-      rw [Ideal.primeCompl_bot]
-      change Algebra.FormallyUnramified ℤ (FractionRing R)
-      let : Algebra (FractionRing ℤ) (FractionRing R) := FractionRing.liftAlgebra _ _
-      suffices Algebra.FormallyUnramified (FractionRing ℤ) (FractionRing ↥R) by
-        exact Algebra.FormallyUnramified.comp ℤ (FractionRing ℤ) (FractionRing R)
-      apply Algebra.FormallyUnramified.of_isSeparable
-    have : IsDedekindDomain R := sorry
-    have : IsDedekindDomain S := sorry
+  suffices h5 : Algebra.Unramified ℤ R by
+    have h4 : Function.Bijective (algebraMap ℤ R) :=
+      @bijective_algebraMap_int_of_finite_of_unramified R _ _ h5 _ _
+    rw [← IsGaloisGroup.fixingSubgroup_range_algebraMap G ℤ ℤ S ⊤,
+      IsScalarTower.algebraMap_eq ℤ R S, RingHom.coe_comp, h4.surjective.range_comp,
+      IsGaloisGroup.fixingSubgroup_range_algebraMap G ℤ R S H]
+  rw [Algebra.unramified_iff_forall]
+  rintro ⟨mF, hmF⟩ -- todo: rename this m's
+  simp only
+  have : Algebra.IsUnramifiedAt ℤ mF := by
+    rw [← Ideal.ramificationIdx'_eq_one_iff]
+    have : H.Normal := sorry
+    have : IsGaloisGroup (G ⧸ H) ℤ R := sorry
+    have : mF.ramificationIdx' ℤ = Nat.card (Ideal.inertia (G ⧸ H) mF) := sorry -- Flat over ℤ
+    rw [this, Subgroup.card_eq_one, Subgroup.eq_bot_iff_forall, QuotientGroup.forall_mk]
+    intro g hg
+    rw [QuotientGroup.eq_one_iff]
+    rw [Ideal.inertia, AddSubgroup.inertia] at hg
+    simp at hg
+    -- Can we go more directly? The quotient `G ⧸ H` is the Galois group of `R/ℤ`,
+    -- and the ramification index equals the cardinality of the inertia subgroup (hopefully?),
+    -- but the inertia subgroup is trivial (argue directly?)
     have : Module.Finite R S := Module.Finite.of_restrictScalars_finite ℤ R S
-    replace hmF : mF.IsMaximal := hmF.isMaximal hmF0
-    obtain ⟨mK, hmK, ⟨rfl⟩⟩ := mF.exists_maximal_ideal_liesOver_of_isIntegral (S := S)
-    rw [Algebra.isUnramifiedAt_iff_of_isDedekindDomain hmF0, Ideal.under_under]
-    have hm1 := Ideal.IsMaximal.ne_bot_of_isIntegral_int (mK.under ℤ)
-    have h : mK.toAddSubgroup.inertia G ≤ H :=
-      le_iSup (fun m : MaximalSpectrum S ↦ m.asIdeal.toAddSubgroup.inertia G) ⟨mK, hmK⟩
-    replace h : Nat.card (mK.toAddSubgroup.inertia H) = Nat.card (mK.toAddSubgroup.inertia G) := by
+    obtain ⟨mK, -, hmK, h⟩ := mF.exists_ideal_over_prime_of_isIntegral (S := S) ⊥ (by simp) -- add liesOver version like the one that exists for maximal
+    replace h : mK.LiesOver mF := ⟨h.symm⟩
+    have h : mK.inertia G ≤ H :=
+      le_iSup (fun m : PrimeSpectrum S ↦ m.asIdeal.inertia G) ⟨mK, hmK⟩
+    apply h
+    intro x
+    specialize hg x
+    have : Module.Flat R S := sorry
+    have := Ideal.ramificationIdx'_tower (R := ℤ) mF mK -- would be enough to have inequality (is that true in general?)
+    have h1 : mK.ramificationIdx' ℤ = Nat.card (Ideal.inertia G mK) := sorry -- doable?
+    have h2 : mK.ramificationIdx' R = Nat.card (Ideal.inertia H mK) := sorry -- doable?
+    rw [h1, h2] at this
+    have h : mK.inertia G ≤ H :=
+      le_iSup (fun m : PrimeSpectrum S ↦ m.asIdeal.inertia G) ⟨mK, hmK⟩
+    replace h : Nat.card (mK.inertia H) = Nat.card (mK.inertia G) := by
       rw [← Subgroup.map_subgroupOf_eq_of_le h, Subgroup.card_subtype,
         AddSubgroup.subgroupOf_inertia]
-    let := Ideal.Quotient.field mK
-    let := Ideal.Quotient.field (mK.under R)
-    let := Ideal.Quotient.field (mK.under ℤ)
-    have : Algebra.IsSeparable (R ⧸ mK.under R) (S ⧸ mK) := sorry
-    have : Algebra.IsSeparable (ℤ ⧸ mK.under ℤ) (S ⧸ mK) := sorry
-    rw [Ideal.card_inertia_eq_ramificationIdxIn (G := H) (mK.under R) hmF0 mK,
-      Ideal.card_inertia_eq_ramificationIdxIn (G := G) (mK.under ℤ) hm1 mK,
-      Ideal.ramificationIdxIn_eq_ramificationIdx (mK.under R) mK H,
-      Ideal.ramificationIdxIn_eq_ramificationIdx (mK.under ℤ) mK G] at h
-    have key := Ideal.ramificationIdx_algebra_tower (Ideal.map_ne_bot_of_ne_bot hmF0)
-      (Ideal.map_ne_bot_of_ne_bot hm1) Ideal.map_comap_le
-    rwa [h, right_eq_mul₀ (Ideal.IsDedekindDomain.ramificationIdx_ne_zero_of_liesOver mK hm1)] at key
-  have h4 : Function.Bijective (algebraMap ℤ R) := by
-    exact @bijective_algebraMap_int_of_finite_of_unramified R _ _ h5 _ _
-  rw [← IsGaloisGroup.fixingSubgroup_range_algebraMap G ℤ ℤ S ⊤,
-    IsScalarTower.algebraMap_eq ℤ R S, RingHom.coe_comp, h4.surjective.range_comp,
-    IsGaloisGroup.fixingSubgroup_range_algebraMap G ℤ R S H]
+    rwa [h, eq_comm, Nat.mul_eq_right] at this
+    exact Nat.card_pos.ne'
+  exact this
 
 theorem NumberField.supr_inertia_eq_top' (K : Type*) [Field K] [NumberField K]
     (G : Type*) [Group G] [MulSemiringAction G K] [IsGaloisGroup G ℚ K] :
