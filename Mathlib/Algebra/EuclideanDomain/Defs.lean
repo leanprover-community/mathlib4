@@ -93,6 +93,17 @@ class EuclideanDomain (R : Type u) [CommRing R] [Nontrivial R] where
   /-- An additional constraint on `r`. -/
   mul_left_not_lt : ∀ (a) {b}, b ≠ 0 → ¬r (a * b) a
 
+/-
+Lean has far more theorems about fields than about Euclidean domains. We thus
+lower the priority of `Euclideandomain.toCommRing`, encouraging typeclass inference
+to try `Field.toCommRing` first. Without this priority-lowering, typeclass inference
+finds the more inefficient path `Field.toEuclideanDomain.toCommRing` by default. This
+priority change saves over 500G instructions across mathlib. See
+https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/We.20need.20to.20talk.20about.20Euclidean.20Domains/near/594655420
+-/
+-- see Note [lower instance priority]
+attribute [instance 100] EuclideanDomain.toCommRing
+
 namespace EuclideanDomain
 
 variable {R : Type u} [CommRing R] [Nontrivial R] [EuclideanDomain R]
