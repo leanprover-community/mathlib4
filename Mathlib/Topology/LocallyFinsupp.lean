@@ -674,4 +674,28 @@ lemma restrict_negPart {V : Set X} (D : locallyFinsuppWithin U ℤ) (h : V ⊆ U
   simp only [locallyFinsuppWithin.restrict_apply, locallyFinsuppWithin.negPart_apply]
   aesop
 
+lemma exists_nhd_mem_support_implies_specializes
+    [Zero Y] (f : locallyFinsuppWithin U Y) (p : X) (hp : p ∈ U) :
+    ∃ V : Set X, IsOpen V ∧ p ∈ V ∧ ∀ x ∈ V ∩ f.support, x ⤳ p := by
+  obtain ⟨t, h₁t, h₂t⟩ := f.supportLocallyFiniteWithinDomain p hp
+  obtain ⟨t₀, ht₀_sub, ht₀_open, hp_mem⟩ := mem_nhds_iff.mp h₁t
+  have hS_fin : (t₀ ∩ f.support).Finite :=
+    h₂t.subset (inter_subset_inter_left _ ht₀_sub)
+  set S := {y ∈ t₀ ∩ f.support | ¬(y ⤳ p)} with hS_def
+  have hS_fin' : S.Finite := hS_fin.subset fun _ h => h.1
+  have hS_nhds : ∀ y ∈ S, (closure ({y} : Set X))ᶜ ∈ 𝓝 p := by
+    intro y hy
+    have : ¬(y ⤳ p) := hy.2
+    rw [specializes_iff_mem_closure] at this
+    exact (isOpen_compl_iff.mpr isClosed_closure).mem_nhds (mem_compl this)
+  have hV : t₀ ∩ (⋂ y ∈ S, (closure ({y} : Set X))ᶜ) ∈ 𝓝 p :=
+    inter_mem (ht₀_open.mem_nhds hp_mem) ((biInter_mem hS_fin').mpr hS_nhds)
+  obtain ⟨V, hV_sub, hV_open, hp_V⟩ := mem_nhds_iff.mp hV
+  refine ⟨V, hV_open, hp_V, fun x ⟨hxV, hxs⟩ => ?_⟩
+  by_contra hspec
+  have hxt₀ : x ∈ t₀ := (hV_sub hxV).1
+  have hxS : x ∈ S := ⟨⟨hxt₀, hxs⟩, hspec⟩
+  have := (hV_sub hxV).2
+  exact (mem_iInter₂.mp this x hxS) (subset_closure rfl)
+
 end Function.locallyFinsuppWithin
