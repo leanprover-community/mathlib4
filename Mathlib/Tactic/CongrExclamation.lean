@@ -117,8 +117,9 @@ structure Congr!.Config where
   preTransparency : TransparencyMode := TransparencyMode.reducible
   /-- The transparency level to use when trying to close goals after no more congruence lemmas can
   be applied. This includes trying to prove the goal by `rfl` and using the `assumption` tactic.
-  By default this is `.reducible`, which prevents unfolding of most definitions. -/
-  postTransparency : TransparencyMode := TransparencyMode.reducible
+  For backwards compatibility this is set to `.default`, which will be changed soon to `.reducible`.
+  -/
+  postTransparency : TransparencyMode := TransparencyMode.default
   /-- For passes that synthesize a congruence lemma using one side of the equality,
   we run the pass both for the left-hand side and the right-hand side. If `preferLHS` is `true`
   then we start with the left-hand side.
