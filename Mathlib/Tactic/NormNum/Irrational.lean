@@ -56,7 +56,7 @@ private theorem not_power_nat_pow {n p q : ℕ} (h_coprime : p.Coprime q) (hq : 
   contrapose! h
   let f := n.factorization.mapRange (· / q) <| by simp
   suffices hf : n.factorization = q • f by
-    have hf0 : f 0 = 0 := by simpa [hq.ne'] using congr($hf 0)
+    have hf0 : f 0 = 0 := by simpa [hq.ne'] using Eq.symm congr($hf 0)
     refine ⟨f.prod (· ^ ·), Nat.factorization_inj hn (by simp [hf0]) ?_⟩
     rwa [Nat.factorization_pow, n.factorization_prod_pow_eq_self_of_le_factorization ?_]
     exact hf ▸ le_self_nsmul zero_le (by lia)

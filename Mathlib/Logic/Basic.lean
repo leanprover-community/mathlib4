@@ -27,6 +27,94 @@ open Function
 
 section Miscellany
 
+section CommSimproc
+
+open Lean Meta Simp
+
+/-- Run `e` while the entries in `declNames` are erased from the default `simp` set. -/
+meta def Lean.Meta.Simp.withoutTheorems {α} (declNames : Array Name) (e : SimpM α) : SimpM α := do
+  let mut theorems ← getSimpTheorems
+  let mut procs ← getSimprocs
+  for name in declNames do
+    -- Erase all variants of the theorem, not just the forward post-proc.
+    theorems := theorems
+      |>.eraseTheorem (.decl name)
+      |>.eraseTheorem (.decl name (inv := true))
+      |>.eraseTheorem (.decl name (post := false))
+      |>.eraseTheorem (.decl name (inv := true) (post := false))
+    procs := procs.erase name
+  let oldMethods ← getMethods
+  let methods := mkMethods #[procs] oldMethods.discharge? oldMethods.wellBehavedDischarge
+  withPreservedCache <| withSimpTheorems theorems do
+    let (x, s) ← e.run (← getContext) (← get) methods
+    set s
+    return x
+
+theorem eq_comm_eq {α : Sort*} (a b : α) : (a = b) = (b = a) := by rw [@eq_comm _ a b]
+theorem iff_comm_eq (a b : Prop) : (a ↔ b) = (b ↔ a) := by rw [@iff_comm a b]
+
+/-- On a goal of the form of `x = y`, first tries to apply lemmas to `y = x`. -/
+simproc eqComm (_ = _) := fun e => do
+  trace[Meta.Tactic.simp] m!"eqComm {e}"
+  let_expr Eq _ x y := e | return .continue
+  let symmExpr ← mkEq y x
+  let r ← withoutTheorems #[`eqComm,
+    -- These theorems would cause an infinite loop:
+    ``eq_comm, ``Bool.not_eq_eq_eq_not, `inv_eq_iff_eq_inv, `eq_inv_mul_iff_mul_eq,
+    `eq_mul_inv_iff_mul_eq, `neg_eq_iff_eq_neg, `Function.Involutive.eq_iff,
+    `vadd_eq_iff_eq_neg_vadd, `Equiv.apply_eq_iff_eq_symm_apply,
+    -- These theorems aren't commute-resistant (they turn an equality into a non-equality in a
+    -- non-commutative way.)
+    ``beq_iff_eq, ``funext_iff, ``eq_iff_iff, `Prod.swap_eq_iff_eq_swap, ``left_eq_dite_iff,
+    ``right_eq_dite_iff] do
+    withTraceNode `Meta.Tactic.simp (fun _ => return m!"commuting the eq {e}") <| simp symmExpr
+  -- Don't do anything if we didn't make progress.
+  -- TODO: why can't we check for `r.expr == e || r.expr == symmExpr` (always returns false)?
+  match_expr r.expr with
+  | Eq _ y' x' =>
+    if (y' == y && x' == x) || (y' == x && x' == y) then do
+      trace[Meta.Tactic.simp] m!"nothing to do here with {e}"
+      return .continue none
+  | _ => pure ()
+  trace[Meta.Tactic.simp] m!"{e} became {symmExpr} became {r.expr}"
+  let symmR ← Result.mkEqTrans { expr := symmExpr, proof? := ← mkAppM ``eq_comm_eq #[x, y] } r
+  -- If we go `x = y` --symm-> `y = x` --simp--> `y' = x'`, then we want to end up with `x' = y'`.
+  match_expr r.expr with
+  | Eq _ y' x' => do
+    trace[Meta.Tactic.simp] m!"decommuting the equality {r.expr}"
+    return .visit (← symmR.mkEqTrans
+      { expr := ← mkEq x' y', proof? := ← mkAppM ``eq_comm_eq #[y', x'] })
+  | _ => do
+   trace[Meta.Tactic.simp] "no decommuting the eq needed in {r.expr}"
+    return .done symmR
+
+/-- On a goal of the form of `x ↔ y`, first tries to apply lemmas to `y ↔ x`. -/
+simproc iffComm (_ ↔ _) := fun e => do
+  let_expr Iff x y := e | return .continue
+  let symmExpr := .app (.app (.const ``Iff []) y) x
+  let r ← withoutTheorems #[`iffComm,
+      -- These theorems would cause an infinite loop:
+      ``Iff.comm,
+      -- These theorems aren't commute-resistant (they turn an iff into a non-iff in a
+      -- non-commutative way).
+      ``and_congr_left_iff, ``and_congr_right_iff,  ``iff_def, ``iff_def',
+      ``iff_iff_implies_and_implies, ``Bool.coe_iff_coe] do
+    withTraceNode `Meta.Tactic.simp (fun _ => return m!"commuting the iff {e}") <| simp symmExpr
+  -- Don't do anything if we didn't make progress.
+  if r.expr == symmExpr || r.expr == e then return .continue
+  let symmR ← Result.mkEqTrans { expr := symmExpr, proof? := ← mkAppM ``iff_comm_eq #[x, y] } r
+  -- If we go `x ↔ y` --symm-> `y ↔ x` --simp--> `y' ↔ x'`, then we want to end up with `x' ↔ y'`.
+  match_expr r.expr with
+  | Iff y' x' => do
+    trace[Meta.Tactic.simp] m!"decommuting the iff {r.expr}"
+    return .visit (← symmR.mkEqTrans
+      { expr := .app (.app (.const ``Iff []) x') y', proof? := ← mkAppM ``iff_comm_eq #[y', x'] })
+  | _ => do
+   trace[Meta.Tactic.simp] "no decommuting the iff needed in {r.expr}"
+   return .done symmR
+
+end CommSimproc
+
 -- attribute [refl] HEq.refl -- FIXME This is still rejected after https://github.com/leanprover-community/mathlib4/pull/857
 
 /-- An identity function with its main argument implicit. This will be printed as `hidden` even

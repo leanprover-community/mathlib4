@@ -171,7 +171,15 @@ lemma Set.pairwiseDisjoint_pair_insert {s : Set α} {a : α} (ha : a ∉ s) :
   rw [pairwiseDisjoint_iff]
   rintro i hi j hj
   have := insert_erase_invOn.2.injOn (notMem_subset hi ha) (notMem_subset hj ha)
-  aesop (add simp [Set.Nonempty, Set.subset_def])
+  -- FIXME: was `aesop`
+  unfold Set.Nonempty
+  simp only [mem_inter_iff, mem_insert_iff, mem_singleton_iff, exists_eq_or_imp, ↓existsAndEq,
+    true_and]
+  rintro ((h | rfl) | (rfl | h))
+  · assumption
+  · simp at this; simp [this]
+  · simp at this; simp [this]
+  · exact this h
 
 theorem Set.PairwiseDisjoint.subset_of_biUnion_subset_biUnion (h₀ : (s ∪ t).PairwiseDisjoint f)
     (h₁ : ∀ i ∈ s, (f i).Nonempty) (h : ⋃ i ∈ s, f i ⊆ ⋃ i ∈ t, f i) : s ⊆ t := by
