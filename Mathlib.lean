@@ -1539,6 +1539,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.PairingC
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Rank
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.RankNat
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.RelativeCellComplex
+public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.UnionProd
 public import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 public import Mathlib.AlgebraicTopology.SimplicialSet.Boundary
 public import Mathlib.AlgebraicTopology.SimplicialSet.CategoryWithFibrations
