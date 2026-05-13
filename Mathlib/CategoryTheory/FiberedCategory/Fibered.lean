@@ -204,57 +204,17 @@ end Functor.IsFibered
 
 lemma Equivalence.functor_isFibered_of_counit_app_eq_eqToHom {C D : Type*}
     [Category* C] [Category* D] (e : C ≌ D) (he : ∀ Y : D, dsimp% ∃ h, e.counit.app Y = eqToHom h) :
-    e.functor.IsFibered :=
-  .of_exists_isStronglyCartesian fun X₂ Y₁ g => by
-    have he' : e.inverse ⋙ e.functor = 𝟭 _ := Functor.ext
-      (fun x => by obtain ⟨h, _⟩ := he x; exact h)
-      (fun X Y f => by
-        simp only [Functor.comp_obj, Functor.comp_map, Equivalence.fun_inv_map, Functor.id_obj,
-          Functor.id_map, ← Equivalence.cancel_counit_right, Category.assoc,
-          counitIso_inv_hom_id_app, comp_id]
-        obtain ⟨h₁,h₁'⟩ := he X
-        obtain ⟨h₂,h₂'⟩ := he Y
-        rw [h₁',h₂']
-        simp)
-    obtain ⟨hY₁, h'⟩ := he Y₁
-    use e.inverse.obj Y₁
-    use e.inverse.map g ≫ e.unitInv.app X₂
-    have : dsimp% e.functor.IsHomLift g (e.inverse.map g ≫ e.unitInv.app X₂) := by
-      apply IsHomLift.of_fac _ _ _ hY₁ rfl
-      simp [h']
-    constructor
-    intro X' f' φ hφ
-    use e.unit.app _ ≫ e.inverse.map f'
-    simp only [Functor.comp_obj, Category.assoc, and_imp,and_assoc]
-    refine ⟨?_,?_,?_⟩
-    · apply IsHomLift.of_fac _ _ _ rfl hY₁
-      simp only [eqToHom_refl, Functor.map_comp, Equivalence.fun_inv_map, Functor.comp_obj,
-        Functor.id_obj, Equivalence.functor_unit_comp_assoc, Category.assoc, Category.id_comp]
-      rw [← cancel_mono (eqToIso hY₁.symm ≪≫ e.counitIso.app Y₁).hom]
-      simp only [id_obj, Iso.trans_hom, eqToIso.hom, Iso.app_hom, assoc, eqToHom_trans_assoc,
-        eqToHom_refl, id_comp, counitIso_inv_hom_id_app, comp_id]
-      rw [h']
-      simp
-    · have := congr(e.inverse.map $(IsHomLift.fac e.functor (f' ≫ g) φ))
-      simp only [Functor.map_comp, eqToHom_refl, Category.comp_id, Category.id_comp,
-        Equivalence.inv_fun_map, Functor.comp_obj, Functor.id_obj] at this
-      rw [reassoc_of% this]
-      simp
-    · intro y hy₁ _
-      rw [IsHomLift.fac e.functor f' y]
-      simp [← h']
+    e.functor.IsFibered := .of_exists_isStronglyCartesian fun X₂ Y₁ g => by
+  obtain ⟨hY₁, h'⟩ := he Y₁
+  use e.inverse.obj Y₁, e.inverse.map g ≫ e.unitInv.app X₂
+  exact functor_isStronglyCartesian_of_counit_app_eq_eqToHom e hY₁ h' g
 
 lemma Equivalence.inverse_isFibered_of_unit_app_eq_eqToHom {C D : Type*}
     [Category* C] [Category* D] (e : C ≌ D) (he : ∀ X : C, dsimp% ∃ h, e.unit.app X = eqToHom h) :
-    e.inverse.IsFibered := by
-  apply e.symm.functor_isFibered_of_counit_app_eq_eqToHom
-  intro X
-  simp only [symm_functor, symm_inverse, symm_counit]
-  obtain ⟨h₁,h₂⟩ := he X
-  use h₁.symm
-  apply Mono.right_cancellation (f := e.unit.app X)
-  simp_rw [comp_obj, id_obj, dsimp% e.unitIso.inv_hom_id_app,
-    h₂, eqToHom_trans, eqToHom_refl]
+    e.inverse.IsFibered := .of_exists_isStronglyCartesian fun X₂ Y₁ g => by
+  obtain ⟨hX₁,h'⟩ := he Y₁
+  use e.functor.obj Y₁, e.functor.map g ≫ e.counit.app X₂
+  exact inverse_isStronglyCartesian_of_unit_app_eq_eqToHom e hX₁ h' g
 
 
 end CategoryTheory

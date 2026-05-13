@@ -288,8 +288,7 @@ lemma comp_vert {C D E : Type*} [Category* C] [Category* D]
     (g : Y₁ ⟶ Y₂) (h : Z₁ ⟶ Z₂) [F.IsHomLift g f] [G.IsHomLift h g] : (F ⋙ G).IsHomLift h f := by
   subst_hom_lift G h g
   subst_hom_lift F g f
-  rw [← Functor.comp_map]
-  exact .map f
+  simp [← Functor.comp_map, ← Functor.comp_obj]
 
 lemma of_functor_comp_right {C D E : Type*} [Category* C]
     [Category* D] [Category* E] (F : C ⥤ D) (G : D ⥤ E) {X₁ X₂ : C} {Y₁ Y₂ : D} {Z₁ Z₂ : E}
@@ -297,8 +296,7 @@ lemma of_functor_comp_right {C D E : Type*} [Category* C]
     G.IsHomLift h g := by
   subst_hom_lift F g f
   subst_hom_lift (F ⋙ G) h f
-  rw [Functor.comp_map]
-  exact .map (F.map f)
+  simp [Functor.comp_obj]
 
 lemma comp_iff_of_isHomLift_left {C D E : Type*} [Category* C]
     [Category* D] [Category* E] (F : C ⥤ D) (G : D ⥤ E) {X₁ X₂ : C} {Y₁ Y₂ : D} {Z₁ Z₂ : E}
@@ -309,7 +307,7 @@ lemma comp_iff_of_isHomLift_left {C D E : Type*} [Category* C]
 lemma of_eq {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
     {X Y : C} {f : X ⟶ Y} {φ : F.obj X ⟶ F.obj Y} (h : F.map f = φ) : F.IsHomLift φ f := by
   cases h
-  exact .map f
+  simp
 
 end IsHomLift
 
