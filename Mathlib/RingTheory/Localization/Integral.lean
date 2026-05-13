@@ -574,13 +574,25 @@ lemma isAlgebraic_of_isFractionRing {R S} (K L) [CommRing R] [CommRing S] [Field
 
 namespace IsAlgebraic
 
-variable {Z R K : Type*} [Field K] [CommRing R] [Algebra R K] [CommRing Z] [IsDomain Z]
-  [Algebra Z K] [IsIntegralClosure R Z K]
+variable {Z : Type*} [CommRing Z] [IsDomain Z] (R : Type*) [CommRing R] {K : Type*} [Field K]
+  [Algebra R K] [Algebra Z K] [IsIntegralClosure R Z K]
 
+/-- If `x : K` is algebraic over some ring `Z`, then a nonzero `Z`-multiple of it is contained
+in the integral closure of `Z` in `K`. -/
 lemma exists_smul_eq {x : K} (hx : IsAlgebraic Z x) :
     ∃ (m : Z) (r : R), m ≠ 0 ∧ m • x = algebraMap R K r := by
   obtain ⟨m, hm, h⟩ := IsAlgebraic.iff_exists_smul_integral.mp hx
   obtain ⟨r, hr⟩ := IsIntegralClosure.isIntegral_iff (A := R) |>.mp h
   exact ⟨m, r, hm, hr.symm⟩
+
+/-- If `x : K` is algebraic over `ℤ`, then a nonzero `ℕ`-multiple of it is contained in the
+integral closure of `ℤ` in `K`. -/
+lemma exists_nsmul_eq {x : K} [IsIntegralClosure R ℤ K] (hx : IsAlgebraic ℤ x) :
+    ∃ (m : ℕ) (r : R), m ≠ 0 ∧ m • x = algebraMap R K r := by
+  obtain ⟨a, r, ha, h⟩ := hx.exists_smul_eq R
+  refine ⟨a.natAbs, a.sign * r, Int.natAbs_ne_zero.mpr ha, ?_⟩
+  simp only [zsmul_eq_mul, nsmul_eq_mul, Nat.cast_natAbs, map_mul, map_intCast] at h ⊢
+  rw [← h, ← mul_assoc]
+  rw_mod_cast [Int.sign_mul_self_eq_abs a]
 
 end IsAlgebraic

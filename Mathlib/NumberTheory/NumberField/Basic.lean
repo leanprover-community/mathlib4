@@ -413,28 +413,6 @@ theorem RingOfIntegers.rank : Module.finrank ℤ (𝓞 K) = Module.finrank ℚ K
 
 end NumberField
 
-namespace IsAlgebraic
-
-variable (R : Type*) {K : Type*} [Field K] [CommRing R] [Algebra R K] [CharZero K]
-  [IsIntegralClosure R ℤ K]
-
-lemma exists_zsmul_eq {x : K} (hx : IsAlgebraic ℚ x) :
-    ∃ (m : ℤ) (r : R), m ≠ 0 ∧ m • x = algebraMap R K r := by
-  rw [← IsFractionRing.isAlgebraic_iff (A := ℤ)] at hx
-  obtain ⟨m, hm, h⟩ := iff_exists_smul_integral.mp hx
-  obtain ⟨r, hr⟩ := IsIntegralClosure.isIntegral_iff (A := R) |>.mp h
-  exact ⟨m, r, hm, hr.symm⟩
-
-lemma exists_nsmul_eq {x : K} (hx : IsAlgebraic ℚ x) :
-    ∃ (m : ℕ) (r : R), m ≠ 0 ∧ m • x = algebraMap R K r := by
-  obtain ⟨a, r, ha, h⟩ := hx.exists_zsmul_eq R
-  refine ⟨a.natAbs, a.sign * r, Int.natAbs_ne_zero.mpr ha, ?_⟩
-  simp only [zsmul_eq_mul, nsmul_eq_mul, Nat.cast_natAbs, map_mul, map_intCast] at h ⊢
-  rw [← h, ← mul_assoc]
-  rw_mod_cast [Int.sign_mul_self_eq_abs a]
-
-end IsAlgebraic
-
 namespace Rat
 
 open NumberField
