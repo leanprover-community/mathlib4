@@ -1289,7 +1289,7 @@ theorem isQuotientMap_mkQL : IsQuotientMap S.mkQL := isQuotientMap_quot_mk
 theorem isOpenQuotientMap_mkQL [ContinuousAdd M] : IsOpenQuotientMap S.mkQL :=
   S.isOpenQuotientMap_mkQ
 
-/-- `Submodule.mkQ` as a `ContinuousLinearMap`. -/
+/-- `Submodule.liftQ` as a `ContinuousLinearMap`. -/
 def liftQL (f : M →SL[σ] M₂) (h : S ≤ f.ker) : M ⧸ S →SL[σ] M₂ where
   toLinearMap := S.liftQ f h
   cont := continuous_quot_lift _ f.continuous
