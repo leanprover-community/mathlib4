@@ -17,8 +17,9 @@ vertices of `G` into those of `H` that preserves adjacency, picking out a (not n
 induced) subgraph of `H` isomorphic to `G`. An *unlabeled copy* drops the labeling and retains
 only the resulting subgraph.
 
-If `H` contains a copy of `G`, we say that `H` *contains* `G`. If the copy is induced (i.e., the
-vertex map also *reflects* adjacency), we say that `H` *inducingly contains* `G`.
+If `H` contains a copy of `G`, we say that `H` *contains* `G`. The induced analogue — counting
+graph embeddings `G ↪g H` and induced subgraphs of `H` isomorphic to `G` — is developed in
+`Mathlib/Combinatorics/SimpleGraph/InducedCopy.lean`.
 
 Throughout, `G` denotes the smaller guest, `H` the larger host, and `I` a third graph for
 transitivity, with letters in size order (`G < H < I`) matching the hom direction `G →g H` and
@@ -46,21 +47,13 @@ Containment:
 * `SimpleGraph.killCopies H G` is a subgraph of `H` that does not contain `G`, obtained by
   arbitrarily removing an edge from each copy of `G` in `H`.
 
-Induced containment:
-* Induced copies of `G` inside `H` are already defined as `G ↪g H`.
-* `SimpleGraph.IsIndContained G H` is the relation that `G` is contained as an induced subgraph
-  in `H`.
-
 ## Notation
 
 The following notation is declared in scope `SimpleGraph`:
 * `G ⊑ H` for `SimpleGraph.IsContained G H`.
-* `G ⊴ H` for `SimpleGraph.IsIndContained G H`.
 
 ## TODO
 
-* Relate `⊥ ⊴ H` to there being an independent set in `H`.
-* Count induced copies of a graph inside another.
 * Make `copyCount`/`subCount` computable (not necessarily efficiently).
 * Count the number of graph homomorphisms `G →g H` with `homCount G H`.
 * Add densities `copyDensity G H`, `subDensity G H`, and `homDensity G H`.
@@ -319,6 +312,19 @@ theorem isContained_iff_exists_iso_subgraph :
 alias ⟨IsContained.exists_iso_subgraph, IsContained.of_exists_iso_subgraph⟩ :=
   isContained_iff_exists_iso_subgraph
 
+theorem isContained_iff_exists_le_comap : G ⊑ H ↔ ∃ f : V ↪ W, G ≤ H.comap f :=
+  ⟨fun ⟨f⟩ ↦ ⟨f.toEmbedding, f.toHom.le_comap⟩, fun ⟨f, h⟩ ↦ ⟨⟨f, (h ·)⟩, f.injective⟩⟩
+
+protected lemma Copy.isContained (f : Copy G H) : G ⊑ H := ⟨f⟩
+
+protected lemma Embedding.isContained (f : G ↪g H) : G ⊑ H := f.toCopy.isContained
+
+/-- If `G` is isomorphic to `H`, then `G` is contained in `H`. -/
+protected lemma Iso.isContained (e : G ≃g H) : G ⊑ H := e.toCopy.isContained
+
+/-- If `G` is isomorphic to `H`, then `H` is contained in `G`. -/
+protected lemma Iso.isContained' (e : G ≃g H) : H ⊑ G := e.symm.isContained
+
 theorem Copy.degree_le (f : Copy G H) (v : V) [Fintype <| G.neighborSet v]
     [Fintype <| H.neighborSet (f v)] : G.degree v ≤ H.degree (f v) := by
   simpa using Fintype.card_le_of_injective _ (f.mapNeighborSet v).injective
@@ -381,89 +387,6 @@ lemma free_bot (h : G ≠ ⊥) : G.Free (⊥ : SimpleGraph W) := by
   exact Set.notMem_empty (h.choose.map f)
 
 end Free
-
-/-!
-#### Induced containment
-
-`G ⊴ H` (`\trianglelefteq`).
--/
-
-/-- A simple graph `G` is inducingly contained in a simple graph `H` if there exists an induced
-subgraph of `H` isomorphic to `G`. This is denoted by `G ⊴ H`. -/
-abbrev IsIndContained (G : SimpleGraph V) (H : SimpleGraph W) : Prop := Nonempty (G ↪g H)
-
-@[inherit_doc] scoped infixl:50 " ⊴ " => SimpleGraph.IsIndContained
-
-protected lemma Copy.isContained (f : Copy G H) : G ⊑ H := ⟨f⟩
-
-protected lemma Embedding.isIndContained (f : G ↪g H) : G ⊴ H := ⟨f⟩
-
-protected lemma Embedding.isContained (f : G ↪g H) : G ⊑ H := f.toCopy.isContained
-
-protected lemma IsIndContained.isContained : G ⊴ H → G ⊑ H := fun ⟨f⟩ ↦ f.isContained
-
-/-- If `G` is isomorphic to `H`, then `G` is contained in `H`. -/
-protected lemma Iso.isContained (e : G ≃g H) : G ⊑ H := e.toCopy.isContained
-
-/-- If `G` is isomorphic to `H`, then `H` is contained in `G`. -/
-protected lemma Iso.isContained' (e : G ≃g H) : H ⊑ G := e.symm.isContained
-
-/-- If `G` is isomorphic to `H`, then `G` is inducingly contained in `H`. -/
-protected lemma Iso.isIndContained (e : G ≃g H) : G ⊴ H := e.toEmbedding.isIndContained
-
-/-- If `G` is isomorphic to `H`, then `H` is inducingly contained in `G`. -/
-protected lemma Iso.isIndContained' (e : G ≃g H) : H ⊴ G := e.symm.isIndContained
-
-protected lemma Subgraph.IsInduced.isIndContained {G' : G.Subgraph} (hG' : G'.IsInduced) :
-    G'.coe ⊴ G := Embedding.ofIsInduced _ hG' |>.isIndContained
-
-@[refl] lemma IsIndContained.refl (G : SimpleGraph V) : G ⊴ G := ⟨Embedding.refl⟩
-lemma IsIndContained.rfl : G ⊴ G := .refl _
-@[trans] lemma IsIndContained.trans : G ⊴ H → H ⊴ I → G ⊴ I := fun ⟨f⟩ ⟨g⟩ ↦ ⟨g.comp f⟩
-
-instance : IsPreorder (SimpleGraph V) IsIndContained where
-  refl := .refl
-  trans _ _ _ := .trans
-
-instance :
-    Trans (α := SimpleGraph V) (β := SimpleGraph W) (γ := SimpleGraph X)
-      IsIndContained IsIndContained IsIndContained where
-  trans := .trans
-
-lemma IsIndContained.of_isEmpty [IsEmpty V] : G ⊴ H :=
-  ⟨{ toFun := isEmptyElim
-     inj' := isEmptyElim
-     map_rel_iff' := fun {a} ↦ isEmptyElim a }⟩
-
-lemma isIndContained_iff_exists_iso_subgraph :
-    G ⊴ H ↔ ∃ (H' : H.Subgraph) (_e : G ≃g H'.coe), H'.IsInduced := by
-  constructor
-  · rintro ⟨f⟩
-    refine ⟨Subgraph.map f.toHom ⊤, f.toCopy.isoToSubgraph, ?_⟩
-    simp [Subgraph.IsInduced, Relation.map_apply_apply, f.injective]
-  · rintro ⟨H', e, hH'⟩
-    exact e.isIndContained.trans hH'.isIndContained
-
-alias ⟨IsIndContained.exists_iso_subgraph, IsIndContained.of_exists_iso_subgraph⟩ :=
-  isIndContained_iff_exists_iso_subgraph
-
-theorem isIndContained_iff_exists_iso_induce : G ⊴ H ↔ ∃ s, Nonempty (G ≃g H.induce s) :=
-  ⟨fun ⟨f⟩ ↦ ⟨Set.range f, ⟨f.isoInduceRange⟩⟩, fun ⟨s, ⟨f⟩⟩ ↦ ⟨.comp (.induce s) f⟩⟩
-
-@[simp] lemma top_isIndContained_iff_top_isContained :
-    (⊤ : SimpleGraph V) ⊴ H ↔ (⊤ : SimpleGraph V) ⊑ H :=
-  ⟨IsIndContained.isContained, fun ⟨f⟩ ↦ ⟨f.topEmbedding⟩⟩
-
-@[simp] lemma compl_isIndContained_compl : Gᶜ ⊴ Hᶜ ↔ G ⊴ H :=
-  Embedding.complEquiv.symm.nonempty_congr
-
-protected alias ⟨IsIndContained.of_compl, IsIndContained.compl⟩ := compl_isIndContained_compl
-
-theorem isContained_iff_exists_le_comap : G ⊑ H ↔ ∃ (f : V ↪ W), G ≤ H.comap f :=
-  ⟨fun ⟨f⟩ ↦ ⟨f.toEmbedding, f.toHom.le_comap⟩, fun ⟨f, h⟩ ↦ ⟨⟨f, (h ·)⟩, f.injective⟩⟩
-
-theorem isIndContained_iff_exists_comap_eq : G ⊴ H ↔ ∃ (f : V ↪ W), H.comap f = G :=
-  ⟨fun ⟨f⟩ ↦ ⟨f.toEmbedding, f.comap_eq⟩, fun ⟨f, h⟩ ↦ ⟨f, h ▸ .rfl⟩⟩
 
 /-!
 ### Counting copies

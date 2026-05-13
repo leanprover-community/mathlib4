@@ -5,7 +5,7 @@ Authors: Bhavik Mehta, Snir Broshi
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Copy
+public import Mathlib.Combinatorics.SimpleGraph.InducedCopy
 
 /-!
 # LineGraph
