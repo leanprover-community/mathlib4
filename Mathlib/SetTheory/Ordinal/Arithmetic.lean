@@ -861,10 +861,6 @@ instance : IsPartialOrder Ordinal (· ∣ ·) where
   trans _ _ _ := dvd_trans
   antisymm := @dvd_antisymm
 
-@[deprecated inferInstance (since := "2026-03-19")]
-instance antisymm : @Std.Antisymm Ordinal (· ∣ ·) :=
-  inferInstance
-
 /-- `a % b` is the unique ordinal `r` satisfying `a = b * q + r` with `r < b`. -/
 instance mod : Mod Ordinal where
   mod a b := a - b * (a / b)
