@@ -113,7 +113,7 @@ theorem SameCycle.eq_of_right (h : SameCycle f x y) (hy : IsFixedPt f y) : x = y
 @[simp]
 theorem sameCycle_apply_left : SameCycle f (f x) y ↔ SameCycle f x y :=
   (Equiv.addRight 1).exists_congr_left.trans <| by
-    simp [zpow_sub, SameCycle, Int.add_neg_one, Function.comp]
+    simp [zpow_sub, SameCycle, Int.add_neg_one]
 
 @[simp]
 theorem sameCycle_apply_right : SameCycle f x (f y) ↔ SameCycle f x y := by
@@ -258,7 +258,7 @@ theorem isCycle_inv : IsCycle f⁻¹ ↔ IsCycle f :=
 
 theorem IsCycle.conj : IsCycle f → IsCycle (g * f * g⁻¹) := by
   rintro ⟨x, hx, h⟩
-  refine ⟨g x, by simp [coe_mul, hx], fun y hy => ?_⟩
+  refine ⟨g x, by simp [hx], fun y hy => ?_⟩
   simpa using (h <| eq_inv_iff_eq.not.2 hy).conj (g := g)
 
 protected theorem IsCycle.extendDomain {p : β → Prop} [DecidablePred p] (f : α ≃ Subtype p) :
