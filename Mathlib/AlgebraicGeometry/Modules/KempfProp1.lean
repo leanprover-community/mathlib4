@@ -15,7 +15,7 @@ public import Mathlib.Topology.Sheaves.Restrict
 
 universe u v
 
-open CategoryTheory TopologicalSpace Opposite
+open CategoryTheory Limits TopologicalSpace Opposite
 
 namespace TopCat.Sheaf
 
@@ -52,8 +52,31 @@ lemma _root_.TopologicalSpace.IsOpenCover.def {ι X : Type*} [TopologicalSpace X
   ext
   simp [hU]
 
+abbrev restrictOfEq {C : Type*} [Category* C] (F : Sheaf C X) {U V : Opens X} (h : U = V) :=
+  F.obj.map (homOfLE (le_of_eq h)).op
+
+lemma comp_app_apply {A : Type*} [Category.{u} A] {FC : A → A → Type*} {CC : A → Type u}
+    [∀ X Y : A, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory.{u} A FC]
+    {F G H : Sheaf A X} {f : F ⟶ G} {g : G ⟶ H} {φ : F ⟶ H} (h : f ≫ g = φ)
+    (V : (Opens X)ᵒᵖ) (x : ToType (F.obj.obj V)) :
+    g.hom.app V (f.hom.app V x) = φ.hom.app V x := by
+  simpa [Sheaf.comp_app] using congr($(h).hom.app V x)
+
+lemma restrict_restrict_apply {A : Type*} [Category.{u} A] {FC : A → A → Type*} {CC : A → Type u}
+    [∀ X Y : A, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory.{u} A FC]
+    {F : Sheaf A X} {U V W : (Opens X)ᵒᵖ} (s : ToType (F.obj.obj U)) (hUW : U ⟶ W) (hUV : U ⟶ V)
+    (hVW : V ⟶ W) :
+    F.obj.map hVW (F.obj.map hUV s) = F.obj.map hUW s := by
+  have : hUV ≫ hVW = hUW := Subsingleton.elim _ _
+  simpa using congr(F.obj.map $(this) s)
+
+lemma hom_naturality_apply {A : Type*} [Category.{u} A] {FC : A → A → Type*} {CC : A → Type u}
+    [∀ X Y : A, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory.{u} A FC]
+    {F G : Sheaf A X} (f : F ⟶ G) {U V : (Opens X)ᵒᵖ} (hUV : U ⟶ V) (s : ToType (F.obj.obj U)) :
+    f.hom.app V (F.obj.map hUV s) = G.obj.map hUV (f.hom.app U s) := by simp
+
 set_option backward.isDefEq.respectTransparency false in
-lemma base (F : TopCat.Sheaf AddCommGrpCat.{u} X) {B : Set (Opens X)}
+lemma one_ex_opens_toRestrict_app_zero (F : TopCat.Sheaf AddCommGrpCat.{u} X) {B : Set (Opens X)}
     (hB : Opens.IsBasis B) (c : H F 1) (x : X) : ∃ (U : Opens X),
     (x ∈ U ∧ U ∈ B ∧ H.map ((toRestrict _ U).app F) 1 c = 0) := by
   let pres := (EnoughInjectives.presentation F).some.shortComplex
@@ -66,11 +89,48 @@ lemma base (F : TopCat.Sheaf AddCommGrpCat.{u} X) {B : Set (Opens X)}
   obtain ⟨V, ⟨hV₁, ⟨hV₂, hV₃⟩⟩⟩ := Opens.isBasis_iff_nbhd.mp hB hV'₃
   refine ⟨V, ⟨hV₂, ⟨hV₁, ?_⟩⟩⟩
   let s := pres.X₂.obj.map (homOfLE hV₃).op s'
-  have hs : pres.g.hom.app (op V) s = pres.X₃.obj.map V.leTop.op b := sorry
+  have hs : pres.g.hom.app (op V) s = pres.X₃.obj.map V.leTop.op b := by
+    dsimp [s]
+    rw [hom_naturality_apply, hs']
+    exact restrict_restrict_apply b ..
   clear_value s
   clear V' hV'₁ hV'₃ s' hs' hV₃ hV₁ hV₂ this
-
-  sorry
+  let presᵥ := ShortComplex.mk ((restrict AddCommGrpCat V.isOpenEmbedding ⋙
+    pushforward AddCommGrpCat V.inclusion').map pres.f)
+    (cokernel.π ((restrict AddCommGrpCat V.isOpenEmbedding ⋙ pushforward AddCommGrpCat
+    V.inclusion').map pres.f)) (by simp)
+  have presᵥEx : presᵥ.ShortExact := ShortComplex.ShortExact.mk (ShortComplex.exact_cokernel _)
+  let presᵥ' := pres.map (restrict AddCommGrpCat V.isOpenEmbedding ⋙ pushforward AddCommGrpCat
+    V.inclusion')
+  have presᵥ'Ex : presᵥ'.Exact :=
+    ((_ ⋙ pushforward _ _).preservesFiniteLimits_tfae.out 3 1 rfl rfl).mp inferInstance pres
+      ⟨presEx.1, presEx.2⟩ |>.1
+  let φ : presᵥ.X₃ ⟶ presᵥ'.X₃ := cokernel.desc presᵥ'.f presᵥ'.g presᵥ'.zero
+  have : Mono φ := ShortComplex.Exact.mono_cokernelDesc presᵥ'Ex
+  let res : pres ⟶ presᵥ := ShortComplex.Hom.mk ((toRestrict _ V).app pres.X₁)
+    ((toRestrict _ V).app pres.X₂) (ShortComplex.Exact.desc presEx.exact
+      ((toRestrict _ V).app pres.X₂ ≫ presᵥ.g)
+      (by
+        have : pres.f ≫ (toRestrict AddCommGrpCat V).app pres.X₂ =
+          (toRestrict AddCommGrpCat V).app pres.X₁ ≫ presᵥ.f := by simp [pres, presᵥ]
+        rw [← Category.assoc, this, Category.assoc]
+        simp))
+    (by simp [pres, presᵥ]) (by simp)
+  have φ₁ : presᵥ.g ≫ φ = (restrict AddCommGrpCat V.isOpenEmbedding ⋙ pushforward AddCommGrpCat
+    V.inclusion').map pres.g := cokernel.π_desc presᵥ'.f presᵥ'.g presᵥ'.zero
+  have φ₂ : res.τ₃ ≫ φ = (toRestrict _ V).app pres.X₃ := by
+    rw [← cancel_epi pres.g, ← res.comm₂₃_assoc, φ₁]
+    simp [pres, res]
+  change (H.map res.τ₁ 1) c = 0
+  subst hb
+  rw [← Sheaf.H.connectingHom_naturality 0 1 rfl presEx presᵥEx, Sheaf.H.equiv₀_symm_naturality]
+  have : res.τ₃.hom.app (op ⊤) b = presᵥ.g.hom.app (op ⊤)
+    (pres.X₂.restrictOfEq (Opens.isOpenEmbedding_obj_top V) s) := by
+    apply ConcreteCategory.injective_of_mono_of_preservesPullback (φ.hom.app (op ⊤))
+    rw [comp_app_apply φ₁, comp_app_apply φ₂]
+    erw [hom_naturality_apply pres.g]
+    simpa [hs] using (restrict_restrict_apply b ..).symm
+  rw [this, ← Sheaf.H.equiv₀_symm_naturality, Sheaf.H.longSequence_comp_zero₃]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem prop1 (F : TopCat.Sheaf AddCommGrpCat.{u} X) (n : ℕ) {B : Set (Opens X)}
@@ -82,10 +142,10 @@ theorem prop1 (F : TopCat.Sheaf AddCommGrpCat.{u} X) (n : ℕ) {B : Set (Opens X
     (∀ i, U i ∈ B ∧ H.map ((toRestrict _ (U i)).app F) (n + 1) c = 0) := by
   induction n generalizing F with
   | zero =>
-    use X, (fun x => (base F hB c x).choose)
-    refine ⟨?_, fun x => (base F hB c x).choose_spec.2⟩
+    use X, (fun x => (one_ex_opens_toRestrict_app_zero F hB c x).choose)
+    refine ⟨?_, fun x => (one_ex_opens_toRestrict_app_zero F hB c x).choose_spec.2⟩
     rw [IsOpenCover.def]
-    exact fun x => ⟨x, (base F hB c x).choose_spec.1⟩
+    exact fun x => ⟨x, (one_ex_opens_toRestrict_app_zero F hB c x).choose_spec.1⟩
   | succ n hn =>
     let pres := (EnoughInjectives.presentation F).some.shortComplex
     have presEx : pres.ShortExact := (EnoughInjectives.presentation F).some.shortExact_shortComplex
@@ -126,8 +186,8 @@ theorem prop1 (F : TopCat.Sheaf AddCommGrpCat.{u} X) (n : ℕ) {B : Set (Opens X
         have : Subsingleton (presᵥ.X₁.H 1) := vanish 1 V (le_refl 1) (by omega) hV
         exact Sheaf.H.longSequence_surjective_of_subsingleton_H presᵥEx Limits.isTerminalTop
       have : (U i).isOpenEmbedding.functor.obj ((Opens.map (U i).inclusion').obj W) ∈ B := by
-        rw [func_inc]
-        exact hinter _ _ (hU₂ i).1 hW.1
+        rw [Opens.functor_map_eq_inf]
+        exact hinter _ _ hW.1 (hU₂ i).1
       apply fs this
     have r₁ := Sheaf.H.connectingHom_naturality (n + 1) (n + 1 + 1) rfl presEx this
       (pres.mapNatTrans (toRestrict AddCommGrpCat (U i))) b
@@ -137,4 +197,3 @@ theorem prop1 (F : TopCat.Sheaf AddCommGrpCat.{u} X) (n : ℕ) {B : Set (Opens X
     erw [map_zero]
 
 end TopCat.Sheaf
-#min_imports

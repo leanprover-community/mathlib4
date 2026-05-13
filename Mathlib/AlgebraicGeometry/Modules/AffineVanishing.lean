@@ -93,7 +93,7 @@ noncomputable instance : CategoryTheory.Reflective (toPresheafOfModules X) where
   adj := PresheafOfModules.sheafificationAdjunction (𝟙 X.ringCatSheaf.obj)
 
 instance : PreservesColimitsOfSize.{v, u} (toSheaf X) :=
-  haveI : PreservesColimitsOfSize.{v, u} (reflector (toPresheafOfModules X) ⋙
+  have : PreservesColimitsOfSize.{v, u} (reflector (toPresheafOfModules X) ⋙
     toSheaf X) := comp_preservesColimits (PresheafOfModules.toPresheaf X.ringCatSheaf.obj)
       (presheafToSheaf (Opens.grothendieckTopology X) AddCommGrpCat)
   preservesColimitsOfSize_of_reflector_comp (toPresheafOfModules X) _
@@ -157,7 +157,7 @@ lemma toCoverSheaf_comp_pi_sheafHom_hom_app {V : X.Opens} (s : F.sheaf.obj.obj (
 set_option backward.isDefEq.respectTransparency false in
 variable {U} in
 theorem toCoverSheaf_mono (h : IsOpenCover U) : Mono (F.toCoverSheaf U) := by
-  haveI : Mono (F.toCoverSheaf U).sheafHom := by
+  have : Mono (F.toCoverSheaf U).sheafHom := by
     refine Sheaf.mono_of_injective _ (fun W => ?_)
     rw [injective_iff_map_eq_zero]
     refine fun s hs => TopCat.Presheaf.IsSheaf.section_ext F.sheaf.property (fun x hx => ?_)
@@ -188,7 +188,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem toCoverSheaf_H_map_zero (n : ℕ) (c : H F.sheaf n) [Finite I]
     (h : (∀ i, H.map ((toRestrict _ (U i)).app F.sheaf) n c = 0)) :
     H.map (F.toCoverSheaf U).sheafHom n c = 0 := by
-  haveI : (SheafOfModules.toSheaf X.ringCatSheaf ⋙ functorH X n).Additive := inferInstance
+  have : (SheafOfModules.toSheaf X.ringCatSheaf ⋙ functorH X n).Additive := inferInstance
   conv_lhs => change (SheafOfModules.toSheaf _ ⋙ functorH X n).map (F.toCoverSheaf U) c
   conv_rhs => equals (SheafOfModules.toSheaf _ ⋙ functorH X n).map (F.toCoverSheaf U) 0 =>
     rw [map_zero]
@@ -218,7 +218,7 @@ instance [IsAffine X] [F.IsQuasicoherent] (n : ℕ) : Subsingleton (H F.sheaf (n
       (by intros; lia) c
     obtain ⟨ι, hU⟩ := CompactSpace.isOpenCover_elim_finite_subcover hU'
     let U : ι → X.Opens := ι.restrict U'
-    haveI : Mono (F.toCoverSheaf U) := F.toCoverSheaf_mono hU
+    have : Mono (F.toCoverSheaf U) := F.toCoverSheaf_mono hU
     let S := ShortComplex.mk (F.toCoverSheaf U) (cokernel.π (F.toCoverSheaf U)) (by cat_disch)
     have hS : S.ShortExact :=
       ShortComplex.ShortExact.mk (ShortComplex.exact_cokernel (F.toCoverSheaf U))
@@ -230,9 +230,9 @@ instance [IsAffine X] [F.IsQuasicoherent] (n : ℕ) : Subsingleton (H F.sheaf (n
         ext
         simp [H.equiv₀_naturality]
       rw [Equiv.surjective_comp (H.equiv₀ Ssheaf.X₂).toEquiv (Ssheaf.g.hom.app (op ⊤))]
-      haveI : ∀ i, IsAffine (U i) := fun i => (vanish i).left
-      haveI : S.X₂.IsQuasicoherent := F.coverSheaf_isQuasicoherent U
-      haveI : S.X₃.IsQuasicoherent := (isQuasicoherent X).prop_colimit (parallelPair _ 0)
+      have : ∀ i, IsAffine (U i) := fun i => (vanish i).left
+      have : S.X₂.IsQuasicoherent := F.coverSheaf_isQuasicoherent U
+      have : S.X₃.IsQuasicoherent := (isQuasicoherent X).prop_colimit (parallelPair _ 0)
         (by rintro ⟨_, _⟩; all_goals simpa)
       exact isQuasicoherent_surjective_of_epi S.g
     obtain ⟨x₃, hx₃⟩ := Sheaf.H.longSequence_exact₁ hSsheaf 0 1 rfl c <|
@@ -246,26 +246,26 @@ instance [IsAffine X] [F.IsQuasicoherent] (n : ℕ) : Subsingleton (H F.sheaf (n
     ((diagonal_isAffine_iff_forall_isAffineOpen_inf (𝟙 X)).mp (fun _ _ _ _ => inferInstance))
     (by
       intro r (U : X.Opens) hr1 hr2 hU
-      haveI : IsAffine U := hU
+      have : IsAffine U := hU
       have := hi (r - 1) (by lia) (F.restrict U.ι)
       rw [Nat.sub_add_cancel hr1] at this
       exact this) c
   obtain ⟨ι, hU⟩ := CompactSpace.isOpenCover_elim_finite_subcover hU'
   let U : ι → X.Opens := ι.restrict U'
-  haveI : Mono (F.toCoverSheaf U) := F.toCoverSheaf_mono hU
+  have : Mono (F.toCoverSheaf U) := F.toCoverSheaf_mono hU
   let S := ShortComplex.mk (F.toCoverSheaf U) (cokernel.π (F.toCoverSheaf U)) (by cat_disch)
   have hS : S.ShortExact :=
     ShortComplex.ShortExact.mk (ShortComplex.exact_cokernel (F.toCoverSheaf U))
   let Ssheaf := S.map (toSheaf X)
   have hSsheaf : Ssheaf.ShortExact := ShortComplex.ShortExact.map_of_exact hS (toSheaf X)
   have : Function.Injective (H.map (F.toCoverSheaf U).sheafHom (n + 1 + 1)) := by
-    haveI : ∀ i, IsAffine (U i) := fun i => (vanish i).left
-    haveI : S.X₂.IsQuasicoherent := F.coverSheaf_isQuasicoherent U
-    haveI : S.X₃.IsQuasicoherent := (isQuasicoherent X).prop_colimit (parallelPair _ 0)
+    have : ∀ i, IsAffine (U i) := fun i => (vanish i).left
+    have : S.X₂.IsQuasicoherent := F.coverSheaf_isQuasicoherent U
+    have : S.X₃.IsQuasicoherent := (isQuasicoherent X).prop_colimit (parallelPair _ 0)
       (by rintro ⟨_, _⟩; all_goals simpa)
     refine (injective_iff_map_eq_zero _).mpr (fun c hc => ?_)
     obtain ⟨x₃, hx₃⟩ := Sheaf.H.longSequence_exact₁ hSsheaf (n + 1) (n + 1 + 1) rfl c hc
-    haveI : Subsingleton (H Ssheaf.X₃ (n + 1)) := hi n (le_refl n) S.X₃
+    have : Subsingleton (H Ssheaf.X₃ (n + 1)) := hi n (le_refl n) S.X₃
     rw [← hx₃, Subsingleton.elim x₃ 0, map_zero]
   apply this
   rw [map_zero]

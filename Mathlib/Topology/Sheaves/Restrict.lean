@@ -45,8 +45,6 @@ lemma toRestrict_obj_obj_obj :
     ((restrict C U.isOpenEmbedding ⋙ pushforward C U.inclusion').obj F).obj.obj (op V) =
     F.obj.obj (op (U.isOpenEmbedding.functor.obj ((Opens.map U.inclusion').obj V))) := rfl
 
-lemma func_inc : U.isOpenEmbedding.functor.obj ((Opens.map U.inclusion').obj V) = U ⊓ V := by aesop
-
 lemma toRestrict_app_hom_app : ((toRestrict C U).app F).hom.app (op V) =
     F.obj.map (U.isOpenEmbedding.isOpenMap.adjunction.counit.app V).op := by simp
 

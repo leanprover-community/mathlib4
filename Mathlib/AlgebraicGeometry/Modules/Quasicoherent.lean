@@ -72,10 +72,10 @@ set_option backward.isDefEq.respectTransparency false in
 instance epi_of_epi {M N : (Spec R).Modules} (f : M ⟶ N) [M.IsQuasicoherent] [N.IsQuasicoherent]
     [Epi f] : Epi (moduleSpecΓFunctor.map f) := by
   apply (tilde.functor R).epi_of_epi_map
-  haveI : IsIso (tilde.adjunction.counit.app N) := isQuasicoherent_IsIso_fromTildeΓ N
+  have : IsIso (tilde.adjunction.counit.app N) := isQuasicoherent_IsIso_fromTildeΓ N
   rw [← epi_comp_iff_of_isIso _ (tilde.adjunction.counit.app N),
     tilde.adjunction.counit_naturality f]
-  haveI : Epi (tilde.adjunction.counit.app M) := (isQuasicoherent_IsIso_fromTildeΓ M).epi_of_iso
+  have : Epi (tilde.adjunction.counit.app M) := (isQuasicoherent_IsIso_fromTildeΓ M).epi_of_iso
   infer_instance
 
 theorem isQuasicoherent_spec_surjective_of_epi {M N : (Spec R).Modules} (f : M ⟶ N)
@@ -146,7 +146,7 @@ instance isQuasicoherent_of_pushforward {X Y : Scheme.{u}} [IsAffine X] [IsAffin
   let φ := (pushforward X.isoSpec.hom).isoWhiskerLeft
       (pushforwardComp (Spec.map (Hom.appTop f)) Y.isoSpec.inv) ≪≫
       pushforwardComp X.isoSpec.hom (Spec.map (Hom.appTop f) ≫ Y.isoSpec.inv)
-  haveI : ((pushforward X.isoSpec.hom ⋙ pushforward (Spec.map (Hom.appTop f)) ⋙
+  have : ((pushforward X.isoSpec.hom ⋙ pushforward (Spec.map (Hom.appTop f)) ⋙
       pushforward Y.isoSpec.inv).obj M).IsQuasicoherent := by
     simp only [Functor.comp_obj]
     infer_instance
