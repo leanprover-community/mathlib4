@@ -66,8 +66,6 @@ class ModObj (X : D) where
 
 attribute [to_additive existing (attr := reassoc (attr := simp))] ModObj.mul_smul ModObj.one_smul
 
-set_option linter.existingAttributeWarning false in
-attribute [to_additive existing] ModObj.one_smul_assoc ModObj.mul_smul_assoc
 
 namespace AddModObj
 
