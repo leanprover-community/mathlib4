@@ -32,7 +32,7 @@ change to something less misleading.
 * `Submodule.projectionOntoL`: if `h : IsTopCompl p q`, `p.projectionOntoL q h` is the
   continuous linear projection `M →L[R] p` along `q`. This is the continuous version of
   `Submodule.projectionOnto`.
-* `Submodule.IsTopCompl.projectionL`: if `h : IsTopCompl p q`, `p.projectionL q h` is the continuous
+* `Submodule.projectionL`: if `h : IsTopCompl p q`, `p.projectionL q h` is the continuous
   linear projection `M →L[R] M` onto `p` along `q`. This is the continuous version of
   `Submodule.IsCompl.projection`.
 * `Submodule.ClosedComplemented.complement`: an arbitrary topological complement of a topologically
