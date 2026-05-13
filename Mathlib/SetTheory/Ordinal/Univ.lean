@@ -143,6 +143,10 @@ theorem aleph0_lt_univ : ℵ₀ < univ.{u, v} := by
   simpa using lift_lt_univ' ℵ₀
 
 @[simp]
+theorem univ_ne_aleph0 : univ.{u, v} ≠ ℵ₀ :=
+  aleph0_lt_univ.ne'
+
+@[simp]
 theorem nat_lt_univ (n : ℕ) : n < univ.{u, v} := natCast_lt_aleph0.trans aleph0_lt_univ
 
 @[simp]
@@ -188,5 +192,9 @@ theorem small_iff_lift_mk_lt_univ {α : Type u} :
     exact ⟨#β, lift_mk_eq.{u, _, v + 1}.2 e⟩
   · rintro ⟨c, hc⟩
     exact ⟨⟨c.out, lift_mk_eq.{u, _, v + 1}.1 (hc.trans (congr rfl c.mk_out.symm))⟩⟩
+
+theorem small_iff_lift_mk_lt_univ' {α : Type (u + 1)} :
+    Small.{u} α ↔ #α < univ.{u, u + 1} := by
+  simp [small_iff_lift_mk_lt_univ]
 
 end Cardinal
