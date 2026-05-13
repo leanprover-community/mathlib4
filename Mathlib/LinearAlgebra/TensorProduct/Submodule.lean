@@ -1,13 +1,14 @@
 /-
 Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jz Pan
+Authors: Jz Pan, Antoine Chambert-Loir, María-Inés de Frutos-Fernández
 -/
 module
 
 public import Mathlib.Algebra.Algebra.Operations
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import Mathlib.LinearAlgebra.DirectSum.Finsupp
+public import Mathlib.LinearAlgebra.Projection
 
 /-!
 
@@ -281,6 +282,10 @@ theorem mulMap_comm : mulMap N M = (mulMap M N).comp (TensorProduct.comm R N M).
 
 end CommSemiring
 
+/- Tensor product operations on submodules -/
+
+section CommSemiring
+
 variable {R M N : Type*} [CommSemiring R]
   [AddCommMonoid M] [Module R M] {p p' : Submodule R M}
   [AddCommMonoid N] [Module R N] {q q' : Submodule R N}
@@ -323,8 +328,7 @@ lemma sup_left : TensorProduct (p ⊔ p') q = TensorProduct p q ⊔ TensorProduc
       · exact ⟨⟨m'', hm''⟩ ⊗ₜ[R] n, rfl⟩
     | add x y hx hy => simp only [map_add, add_mem hx hy]
   · simp only [sup_le_iff]
-    refine ⟨range_mapIncl_mono le_sup_left le_rfl,
-      range_mapIncl_mono le_sup_right le_rfl⟩
+    exact ⟨range_mapIncl_mono le_sup_left le_rfl, range_mapIncl_mono le_sup_right le_rfl⟩
 
 variable (p) in
 lemma sup_right : TensorProduct p (q ⊔ q') = TensorProduct p q ⊔ TensorProduct p q' := by
@@ -341,52 +345,60 @@ lemma sup_right : TensorProduct p (q ⊔ q') = TensorProduct p q ⊔ TensorProdu
       · exact ⟨m ⊗ₜ[R] ⟨n'', hn''⟩, rfl⟩
     | add x y hx hy => simp only [map_add, add_mem hx hy]
   · simp only [sup_le_iff]
-    refine ⟨range_mapIncl_mono le_rfl le_sup_left,
-      range_mapIncl_mono le_rfl le_sup_right⟩
+    refine ⟨range_mapIncl_mono le_rfl le_sup_left, range_mapIncl_mono le_rfl le_sup_right⟩
+
+end TensorProduct
+
+end CommSemiring
+
+section Ring
+
+namespace TensorProduct
+
+open LinearMap Submodule
+
+variable {R M N : Type*} [CommRing R]
+  [AddCommGroup M] [Module R M] {p p' : Submodule R M}
+  [AddCommGroup N] [Module R N] {q q' : Submodule R N}
 
 variable (q) in
 lemma disjoint_left (h : IsCompl p p') :
     Disjoint (TensorProduct p q) (TensorProduct p' q) := by
-  have hq : p.subtype.comp (projectionOnto _ _ hM) +
-      p'.subtype.comp (projectionOnto _ _ hM.symm) = LinearMap.id := by
-    ext x
-    simp only [add_apply, coe_comp, coe_subtype, Function.comp_apply, id_coe, id_eq]
-    erw [projection_add_projection_eq_self]
   rw [disjoint_def]
   intro x h h'
-  rw [← id_apply x (R := R), ← rTensor_id, ← hq]
+  rw [← id_apply x (R := R), ← rTensor_id, ← projection_add_projection_eq_id]
   simp only [rTensor_add, rTensor_comp, add_apply, coe_comp, Function.comp_apply]
-  change x ∈ (TensorProduct.map _ N'.subtype).range at h h'
+  change x ∈ (TensorProduct.map _ q.subtype).range at h h'
   rw [← rTensor_comp_lTensor] at h h'
-  replace h : x ∈ (LinearMap.rTensor N M'.subtype).range :=
+  replace h : x ∈ (LinearMap.rTensor N p.subtype).range :=
     range_comp_le_range _ _ h
-  replace h' : x ∈ (LinearMap.rTensor N M''.subtype).range :=
+  replace h' : x ∈ (LinearMap.rTensor N p'.subtype).range :=
     range_comp_le_range _ _ h'
   rw [← ker_rTensor_projectionOnto hM.symm N, mem_ker] at h
   rw [← ker_rTensor_projectionOnto hM N, mem_ker] at h'
   simp only [h, h', _root_.map_zero, add_zero]
 
-variable (M') in
-lemma disjoint_right {N' N'' : Submodule R N} (hN : IsCompl N' N'') :
-    Disjoint (TensorProduct M' N') (TensorProduct M' N'') := by
-  have hq : N'.subtype.comp (projectionOnto _ _ hN) +
-      N''.subtype.comp (projectionOnto _ _ hN.symm) = LinearMap.id := by
-    ext x
-    simp only [LinearMap.add_apply, LinearMap.coe_comp, coe_subtype, Function.comp_apply,
-      LinearMap.id_coe, id_eq]
-    erw [projection_add_projection_eq_self]
+lemma _root_.IsCompl.subtype_comp_projectionOnto_add (h : IsCompl p p') :
+    p.subtype.comp (projectionOnto _ _ h) +
+      p'.subtype.comp (projectionOnto (R := R) _ _ h.symm) = LinearMap.id := by
+  apply projection_add_projection_eq_id h
+
+variable (p) in
+lemma disjoint_right (hqq' : IsCompl q q') :
+    Disjoint (TensorProduct p q) (TensorProduct p q') := by
   rw [disjoint_def]
   intro x h h'
-  rw [← LinearMap.id_apply x (R := R), ← LinearMap.lTensor_id, ← hq]
+  rw [← LinearMap.id_apply x (R := R), ← LinearMap.lTensor_id,
+    ← projection_add_projection_eq_id hqq' ]
   simp only [LinearMap.lTensor_add, LinearMap.lTensor_comp, LinearMap.add_apply,
     LinearMap.coe_comp, Function.comp_apply]
-  change x ∈ LinearMap.range (TensorProduct.map M'.subtype _) at h h'
+  change x ∈ LinearMap.range (TensorProduct.map p.subtype _) at h h'
   rw [← LinearMap.lTensor_comp_rTensor] at h h'
-  replace h : x ∈ LinearMap.range (LinearMap.lTensor M N'.subtype) :=
+  replace h : x ∈ LinearMap.range (LinearMap.lTensor M q.subtype) :=
     LinearMap.range_comp_le_range _ _ h
-  replace h' : x ∈ LinearMap.range (LinearMap.lTensor M N''.subtype) :=
+  replace h' : x ∈ LinearMap.range (LinearMap.lTensor M q'.subtype) :=
     LinearMap.range_comp_le_range _ _ h'
-  rw [← ker_lTensor_projectionOnto hN.symm M, LinearMap.mem_ker] at h
+  rw [← ker_lTensor_projectionOnto hqq'.symm M, LinearMap.mem_ker] at h
   rw [← ker_lTensor_projectionOnto hN M, LinearMap.mem_ker] at h'
   simp only [h, h', _root_.map_zero, add_zero]
 

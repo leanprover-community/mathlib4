@@ -6,7 +6,7 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Tower
-public import Mathlib.LinearAlgebra.TensorProduct.Projection
+public import Mathlib.LinearAlgebra.TensorProduct.Submodule
 public import Mathlib.RingTheory.Ideal.Maps
 
 /-! # Augmentation ideals
@@ -74,8 +74,6 @@ variable (M' N') in
 /-- The submodule of M ⊗[A] N image of M' ⊗[A] N' -/
 noncomputable def TensorProduct : Submodule A (M ⊗[A] N) :=
   (TensorProduct.mapIncl M' N').range
-
-#find_home! TensorProduct
 
 namespace TensorProduct
 
