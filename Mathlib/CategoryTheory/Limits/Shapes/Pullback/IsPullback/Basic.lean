@@ -923,6 +923,7 @@ variable {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullbacksAlong g]
 
 namespace IsPullback
 
+set_option backward.defeqAttrib.useBackward true in
 /-- An `IsPullback` square yields an isomorphism `Over.mk fst ≅ Over.mk (pullback.fst f g)`
 in `Over X`. -/
 noncomputable def isoOverPullback {P : C} {fst : P ⟶ X} {snd : P ⟶ Y}
@@ -930,12 +931,14 @@ noncomputable def isoOverPullback {P : C} {fst : P ⟶ X} {snd : P ⟶ Y}
     Over.mk fst ≅ Over.mk (pullback.fst f g) :=
   Over.isoMk (h.isoIsPullback _ _ (IsPullback.of_hasPullback f g)) (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma isoOverPullback_hom_left_comp_snd {P : C} {fst : P ⟶ X} {snd : P ⟶ Y}
     (h : IsPullback fst snd f g) :
     dsimp% h.isoOverPullback.hom.left ≫ pullback.snd f g = snd :=
   h.isoIsPullback_hom_snd _ _ (IsPullback.of_hasPullback f g)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- An isomorphism `Over.mk p ≅ Over.mk (pullback.fst f g)` in `Over X` yields
 an `IsPullback` square. -/
 lemma of_over_iso {P : C} {p : P ⟶ X}
@@ -945,6 +948,7 @@ lemma of_over_iso {P : C} {p : P ⟶ X}
     ((Over.forget X).mapIso e) (Iso.refl _) (Iso.refl _) (Iso.refl _)
     (by simpa using Over.w e.hom) (by simp) (by simp) (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- An `IsPullback` square over a cospan `(f, g)` is equivalent to an isomorphism
 `Over.mk fst ≅ Over.mk (pullback.fst f g)` in `Over X`, together with the
 second projection being determined by the isomorphism. -/

@@ -289,6 +289,7 @@ theorem cofan_inj_epi_naturality {Δ₁ Δ₂ : SimplexCategoryᵒᵖ} (A : Inde
   rw [assoc, ← X.map_comp]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The image of a splitting of simplicial object by a functor which preserves
 finite coproducts -/
 @[simps]
