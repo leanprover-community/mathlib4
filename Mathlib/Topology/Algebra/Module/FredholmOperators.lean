@@ -358,6 +358,20 @@ theorem ContinuousLinearMap.id_sub_comp_ker_coFG (hgf : v ∘L u ≈ .id 𝕜 E)
 
 variable [T1Space E] [T1Space F] [ContinuousConstSMul 𝕜 F]
 
+#check InvOn
+
+/-- Need rename and more convenient statement. -/
+theorem aaron' (huv : u ∘L v ≈ .id 𝕜 F) (hvu : v ∘L u ≈ .id 𝕜 E) :
+    ∃ (E₁ : Submodule 𝕜 E) (F₁ : Submodule 𝕜 F), IsClosed E₁.carrier ∧ E₁.CoFG ∧
+      IsClosed F₁.carrier ∧ F₁.CoFG ∧ InvOn v u (E₁ : Set E) (F₁ : Set F) ∧
+        MapsTo u E₁ F₁ ∧ MapsTo v F₁ E₁ := by
+  refine ⟨(.id 𝕜 E - v ∘L u).ker, (.id 𝕜 F - u ∘L v).ker, (.id 𝕜 E - v ∘L u).isClosed_ker,
+    ContinuousLinearMap.id_sub_comp_ker_coFG hvu, (.id 𝕜 F - u ∘L v).isClosed_ker,
+    ContinuousLinearMap.id_sub_comp_ker_coFG huv,
+    ⟨fun _ hx => (sub_eq_zero.mp hx).symm, fun _ hx => (sub_eq_zero.mp hx).symm⟩, ?_, ?_⟩
+  <;> intro x hx
+  <;> simp_all [← map_sub]
+
 /-- Need rename. -/
 theorem aaron (hr : IsFredholm_quot u) :
     ∃ (E₁ : Submodule 𝕜 E) (F₁ : Submodule 𝕜 F), IsClosed E₁.carrier ∧ E₁.CoFG ∧
@@ -408,6 +422,18 @@ with Φ an isomorphism.
 E₂ = u.ker
 F₁ = u.range
 The others are arbitrary complements
+-/
+
+/- ## FredholmQuot ==> complemented kernel
+
+Lemma : if `A` is finite dimensional is complemented and if `B ≤ A` then `B` is complemented.
+
+Proof: project onto `A`, then the projection from `A` to `B` is continuous because findim.
+
+If `u` is Fredholm, by `aaron`, we have a finite codim subspace `E₁` on which `u` is injective.
+Pick `S` a complement of `E₁` containing `u.ker`. Then `S` is complemented and finite dimensional,
+so `u.ker` is complemented.
+
 -/
 
 end FredholmOperators
