@@ -404,6 +404,10 @@ If `u` satisfies `Fredholm_struct`, then there are decompositions `E = E₁ ⊕ 
 0 0
 
 with Φ an isomorphism.
+
+E₂ = u.ker
+F₁ = u.range
+The others are arbitrary complements
 -/
 
 end FredholmOperators
