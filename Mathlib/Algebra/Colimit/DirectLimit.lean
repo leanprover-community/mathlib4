@@ -927,6 +927,55 @@ theorem hom_ext {g₁ g₂ : DirectLimit G f →ₙₐ[R] P}
 
 end NonUnitalAlgebra
 
+namespace NonUnitalStarAlgebra
+
+variable [CommSemiring R] --[Star R]
+variable [∀ i, NonUnitalNonAssocSemiring (G i)]
+variable [∀ i, StarRing (G i)]
+variable [∀ i, DistribMulAction R (G i)]
+--variable [∀ i, StarModule R (G i)]
+variable [∀ i j h, StarHomClass (T h) (G i) (G j)]
+variable [∀ i j h, NonUnitalAlgHomClass (T h) R (G i) (G j)]
+variable [Nonempty ι]
+
+variable (P : Type*) [Semiring P] [StarRing P] [Algebra R P]
+
+#synth DistribMulAction R (DirectLimit G f)
+
+
+variable (G f) in
+/-- The canonical map from a component to the direct limit. -/
+noncomputable def of (i) : G i →⋆ₙₐ[R] DirectLimit G f where
+  toFun x := ⟦⟨i, x⟩⟧
+  __ := (NonUnitalAlgebra.of G f i)
+  map_star' _ := (star_def ..).symm
+
+lemma of_f {i j} (hij) (x) : of G f j (f i j hij x) = of G f i x := .symm <| eq_of_le ..
+
+variable (G f) in
+noncomputable def lift (g : ∀ i, (G i) →⋆ₙₐ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
+    DirectLimit G f →⋆ₙₐ[R] P where
+  toFun := _root_.DirectLimit.lift _ (g · ·) fun i j h x ↦ (Hg i j h x).symm
+  __ := DirectLimit.NonUnitalAlgebra.lift G f P (g := fun i => ((g i): G i →ₙₐ[R] P)) Hg
+  map_star' := lift_star _ _
+
+variable (g : ∀ i, G i →⋆ₙₐ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
+
+@[simp]
+theorem lift_comp_of {i} : (lift G f P g Hg).comp (of G f i) = g i := rfl
+
+@[simp] theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x := rfl
+
+@[ext]
+theorem hom_ext {g₁ g₂ : DirectLimit G f →⋆ₙₐ[R] P}
+    (h : ∀ i, g₁.comp (of G f i) = g₂.comp (of G f i)) :
+    g₁ = g₂ := by
+  ext x
+  induction x using DirectLimit.induction with | _ i x
+  exact congr($(h i) x)
+
+end NonUnitalStarAlgebra
+
 namespace StarAlgebra
 
 variable [CommSemiring R]
