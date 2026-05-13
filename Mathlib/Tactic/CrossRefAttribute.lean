@@ -16,6 +16,7 @@ to entries in external mathematical databases:
 
 * `@[stacks TAG]` — [Stacks Project](https://stacks.math.columbia.edu/tags)
 * `@[kerodon TAG]` — [Kerodon](https://kerodon.net/tag/)
+* `@[wikidata QID]` — [Wikidata](https://www.wikidata.org)
 
 Each attribute records the cross-reference in an environment extension and appends
 a link to the declaration's docstring.
@@ -35,17 +36,20 @@ namespace Mathlib.CrossRef
 inductive Database where
   | kerodon
   | stacks
+  | wikidata
   deriving BEq, Hashable
 
 /-- The base URL for an external database's tag pages. Always ends with `/`. -/
 def databaseURL : Database → String
   | .kerodon => "https://kerodon.net/tag/"
   | .stacks => "https://stacks.math.columbia.edu/tag/"
+  | .wikidata => "https://www.wikidata.org/wiki/"
 
 /-- The display label used in docstring links and trace output. -/
 def databaseName : Database → String
   | .kerodon => "Kerodon Tag"
   | .stacks => "Stacks Tag"
+  | .wikidata => "Wikidata"
 
 /-- A cross-reference from a Mathlib declaration to an entry in an external database. -/
 structure Tag where
@@ -53,7 +57,7 @@ structure Tag where
   declName : Name
   /-- The external database the entry belongs to. -/
   database : Database
-  /-- The database identifier. -/
+  /-- The database identifier (a tag string or Q-number). -/
   tag : String
   /-- An optional comment supplied with the attribute. -/
   comment : String
@@ -83,6 +87,8 @@ def addCrossRefDoc (db : Database) (decl : Name) (idStr comment : String) : Core
   addTagEntry decl db idStr comment
 
 open Parser
+
+/-! ### Stacks (and Kerodon) parser -/
 
 /-- `stacksTag` is the node kind of Stacks Project Tags: a sequence of digits and
 uppercase letters. -/
@@ -117,6 +123,42 @@ def stacksTagNoAntiquot : Parser := {
 def stacksTagParser : Parser :=
   withAntiquot (mkAntiquot "stacksTag" stacksTagKind) stacksTagNoAntiquot
 
+/-! ### Wikidata parser -/
+
+/-- `wikidataId` is the node kind of Wikidata identifiers: the letter `Q` followed by digits. -/
+abbrev wikidataIdKind : SyntaxNodeKind := `wikidataId
+
+/-- The main parser for Wikidata identifiers: it accepts `Q` followed by one or more digits. -/
+def wikidataIdFn : ParserFn := fun c s =>
+  let i := s.pos
+  let s := takeWhileFn (fun c => c.isAlphanum) c s
+  if s.hasError then
+    s
+  else if s.pos == i then
+    ParserState.mkError s "wikidata id"
+  else
+    let id := c.extract i s.pos
+    match id.toList with
+    | 'Q' :: rest@(_ :: _) =>
+      if rest.all Char.isDigit then
+        mkNodeToken wikidataIdKind i true c s
+      else
+        ParserState.mkUnexpectedError s
+          "Wikidata ids must consist of the letter Q followed by digits."
+    | _ =>
+      ParserState.mkUnexpectedError s
+        "Wikidata ids must start with the letter Q followed by one or more digits."
+
+@[inherit_doc wikidataIdFn]
+def wikidataIdNoAntiquot : Parser := {
+  fn   := wikidataIdFn
+  info := mkAtomicInfo "wikidataId"
+}
+
+@[inherit_doc wikidataIdFn]
+def wikidataIdParser : Parser :=
+  withAntiquot (mkAntiquot "wikidataId" wikidataIdKind) wikidataIdNoAntiquot
+
 end Mathlib.CrossRef
 
 open Mathlib.CrossRef
@@ -124,6 +166,11 @@ open Mathlib.CrossRef
 /-- Extract the underlying tag as a string from a `stacksTag` node. -/
 def Lean.TSyntax.getStacksTag (stx : TSyntax stacksTagKind) : CoreM String := do
   let some val := Syntax.isLit? stacksTagKind stx | throwError "Malformed Stacks tag"
+  return val
+
+/-- Extract the underlying identifier as a string from a `wikidataId` node. -/
+def Lean.TSyntax.getWikidataId (stx : TSyntax wikidataIdKind) : CoreM String := do
+  let some val := Syntax.isLit? wikidataIdKind stx | throwError "Malformed Wikidata id"
   return val
 
 namespace Lean.PrettyPrinter
@@ -134,6 +181,10 @@ namespace Formatter
 @[combinator_formatter stacksTagNoAntiquot] def stacksTagNoAntiquot.formatter :=
   visitAtom stacksTagKind
 
+/-- The formatter for Wikidata identifier syntax. -/
+@[combinator_formatter wikidataIdNoAntiquot] def wikidataIdNoAntiquot.formatter :=
+  visitAtom wikidataIdKind
+
 end Formatter
 
 namespace Parenthesizer
@@ -141,9 +192,14 @@ namespace Parenthesizer
 /-- The parenthesizer for Stacks Project Tags syntax. -/
 @[combinator_parenthesizer stacksTagNoAntiquot] def stacksTagAntiquot.parenthesizer := visitToken
 
+/-- The parenthesizer for Wikidata identifier syntax. -/
+@[combinator_parenthesizer wikidataIdNoAntiquot] def wikidataIdAntiquot.parenthesizer := visitToken
+
 end Lean.PrettyPrinter.Parenthesizer
 
 namespace Mathlib.CrossRef
+
+/-! ### Stacks / Kerodon attribute -/
 
 /-- The syntax category for the database name. -/
 declare_syntax_cat stacksTagDB
@@ -173,6 +229,28 @@ initialize Lean.registerBuiltinAttribute {
       | `(attr| kerodon $tag $[$comment]?) => return (Database.kerodon, tag, comment)
       | _ => throwUnsupportedSyntax
     addCrossRefDoc db decl (← tag.getStacksTag) ((comment.map (·.getString)).getD "")
+  -- docstrings are immutable once an asynchronous elaboration task has been started
+  applicationTime := .beforeElaboration
+}
+
+/-! ### Wikidata attribute -/
+
+/-- The `wikidata` attribute.
+Use it as `@[wikidata Q12345 "Optional comment"]` to associate a Mathlib declaration with
+the corresponding [Wikidata](https://www.wikidata.org) item.
+
+The identifier must be the letter `Q` followed by one or more digits.
+-/
+syntax (name := wikidataTag) "wikidata" wikidataIdParser (ppSpace str)? : attr
+
+initialize Lean.registerBuiltinAttribute {
+  name := `wikidataTag
+  descr := "Apply a Wikidata identifier to a declaration."
+  add := fun decl stx _attrKind => do
+    let (id, comment) := ← match stx with
+      | `(attr| wikidata $id $[$comment]?) => return (id, comment)
+      | _ => throwUnsupportedSyntax
+    addCrossRefDoc .wikidata decl (← id.getWikidataId) ((comment.map (·.getString)).getD "")
   -- docstrings are immutable once an asynchronous elaboration task has been started
   applicationTime := .beforeElaboration
 }
@@ -235,5 +313,17 @@ or declaration type (for definitions, structures, instances, etc.) after each su
 -/
 elab (name := kerodonTags) "#kerodon_tags" tk:("!")? : command =>
   traceCrossRefs .kerodon (tk.isSome)
+
+/-- The `#wikidata_tags` command retrieves all declarations that have the `wikidata` attribute.
+
+For each found declaration, it prints a line
+```
+'declaration_name' corresponds to tag 'declaration_tag'.
+```
+The variant `#wikidata_tags!` also adds the theorem statement (for theorems)
+or declaration type (for definitions, structures, instances, etc.) after each summary line.
+-/
+elab (name := wikidataTags) "#wikidata_tags" tk:("!")? : command =>
+  traceCrossRefs .wikidata (tk.isSome)
 
 end Mathlib.CrossRef
