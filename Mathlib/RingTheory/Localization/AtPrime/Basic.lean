@@ -651,6 +651,16 @@ noncomputable def equivQuotientMapMaximalIdeal : S ⧸ pS ≃+* Sₚ ⧸ pSₚ :
       IsLocalization.mk'_mul_cancel_left, ← map_mul, ← e, ← Algebra.smul_def, smul_smul,
       hβ, ← map_sub, add_smul, one_smul, add_comm x, add_sub_cancel_right]
 
+@[simp]
+lemma equivQuotientMapMaximalIdeal_apply_mk (s : S) :
+    equivQuotientMapMaximalIdeal S p Rₚ Sₚ (Ideal.Quotient.mk _ s) = (algebraMap S _) s := by
+  simp [equivQuotientMapMaximalIdeal]
+
+@[simp]
+lemma equivQuotientMapMaximalIdeal_symm_apply_mk (s : S) :
+    (equivQuotientMapMaximalIdeal S p Rₚ Sₚ).symm (algebraMap S _ s) = Ideal.Quotient.mk _ s := by
+  simp [equivQuotientMapMaximalIdeal]
+
 end isomorphisms
 
 lemma map_eq_top_of_not_le {I : Ideal R} {p : Ideal R} [p.IsPrime] [IsLocalization.AtPrime S p]

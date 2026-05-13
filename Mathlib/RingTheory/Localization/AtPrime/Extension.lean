@@ -158,14 +158,6 @@ theorem algebraMap_equivQuotMaximalIdeal_symm_apply [p.IsMaximal] [P.IsMaximal]
   simp [equivQuotMaximalIdeal_symm_apply_mk, map_mul, Quotient.algebraMap_mk_of_liesOver,
     IsLocalization.algebraMap_mk' S Rₚ Sₚ]
 
--- Lean thinks that the instance [p.IsPrime] is not necessary here, but it is needed
--- for the definition of `Rₚ`.
-set_option linter.unusedSectionVars false in
-@[simp]
-theorem equivQuotientMapMaximalIdeal_apply_mk [p.IsMaximal] (x : S) :
-    equivQuotientMapMaximalIdeal S p Rₚ Sₚ (Ideal.Quotient.mk _ x) =
-      (Ideal.Quotient.mk _ (algebraMap S Sₚ x)) := rfl
-
 theorem inertiaDeg_map_eq_inertiaDeg [p.IsMaximal] [P.IsMaximal]
     [(Ideal.map (algebraMap S Sₚ) P).LiesOver (maximalIdeal Rₚ)] :
     (maximalIdeal Rₚ).inertiaDeg (P.map (algebraMap S Sₚ)) = p.inertiaDeg P := by
