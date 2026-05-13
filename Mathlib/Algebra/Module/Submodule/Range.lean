@@ -453,6 +453,10 @@ theorem surjective_rangeRestrict : Surjective f.rangeRestrict := by
 @[simp] theorem injective_rangeRestrict_iff : Injective f.rangeRestrict ↔ Injective f :=
   Set.injective_codRestrict _
 
+theorem subtype_comp_rangeRestrict :
+    f.range.subtype.comp f.rangeRestrict = f := by
+  rw [rangeRestrict, subtype_comp_codRestrict]
+
 end rangeRestrict
 
 end Semiring
