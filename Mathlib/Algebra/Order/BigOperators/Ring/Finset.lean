@@ -141,8 +141,8 @@ lemma sum_sq_le_sum_mul_sum_of_sq_le_mul [CommSemiring R] [LinearOrder R] [IsStr
           gcongr with i hi
           have ht : (r i * (∑ j ∈ s, g j) * (∑ j ∈ s, r j)) ^ 2 ≤
               (f i * (∑ j ∈ s, g j) ^ 2) * (g i * (∑ j ∈ s, r j) ^ 2) := by
-            rw [mul_mul_mul_comm, ← mul_pow, mul_assoc, mul_pow]
-            exact mul_le_mul_of_nonneg_right (ht i hi) (sq_nonneg _)
+            grw [mul_mul_mul_comm, ← mul_pow, mul_assoc, mul_pow, ht i hi]
+            exact sq_nonneg _
           refine le_of_eq_of_le ?_ (two_mul_le_add_of_sq_le_mul
             (mul_nonneg (hf i hi) (sq_nonneg _)) (mul_nonneg (hg i hi) (sq_nonneg _)) ht)
           repeat rw [mul_assoc]
