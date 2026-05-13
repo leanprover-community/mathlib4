@@ -223,7 +223,7 @@ nonrec theorem tendsto_integral_filter_of_dominated_convergence {ι} {l : Filter
     tendsto_integral_filter_of_dominated_convergence bound hF_meas h_bound bound_integrable h_lim
 
 theorem _root_.TendstoUniformlyOn.tendsto_intervalIntegral_of_continuousOn
-    {ι : Type*} {l : Filter ι} [l.IsCountablyGenerated] {F : ι → ℝ → E}
+    {l : Filter ι} [l.IsCountablyGenerated] {F : ι → ℝ → E}
     [IsLocallyFiniteMeasure μ] (hF : ∀ᶠ i in l, ContinuousOn (F i) [[a, b]])
     (h_lim : TendstoUniformlyOn F f l [[a, b]]) :
     Tendsto (fun n => ∫ x in a..b, F n x ∂μ) l (𝓝 <| ∫ x in a..b, f x ∂μ) := by
