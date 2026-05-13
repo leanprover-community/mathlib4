@@ -31,7 +31,7 @@ open Lean Elab
 
 namespace Mathlib.CrossRef
 
-/-- The supported external databases. -/
+/-- The supported external databases -/
 inductive Database where
   | kerodon
   | stacks
@@ -43,7 +43,7 @@ def databaseURL : Database → String
   | .stacks => "https://stacks.math.columbia.edu/tag/"
 
 /-- The display label used in docstring links and trace output. -/
-def databaseName : Database → String
+def databaseLabel : Database → String
   | .kerodon => "Kerodon Tag"
   | .stacks => "Stacks Tag"
 
@@ -179,12 +179,12 @@ initialize Lean.registerBuiltinAttribute {
 
 end Mathlib.CrossRef
 
-/-- Returns the array of `Tag`s in the environment, sorted alphabetically by tag. -/
+/-- Return the array of `Tag`s in the environment, sorted alphabetically by tag. -/
 private def Lean.Environment.getSortedCrossRefs (env : Environment) : Array Tag :=
   let tags := PersistentEnvExtension.getState tagExt env
   tags.2.flatten.appendList tags.1 |>.qsort (·.tag < ·.tag)
 
-/-- Returns the declaration names of results carrying the cross-reference `tag`. -/
+/-- Return the declaration names of results carrying the cross-reference `tag`. -/
 private def Lean.Environment.getCrossRefDeclNames (env : Environment) (tag : String) :
     Array Name :=
   env.getSortedCrossRefs.filterMap fun d => if d.tag == tag then some d.declName else none
