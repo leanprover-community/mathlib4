@@ -174,7 +174,10 @@ lemma smul_eq_self_iff {g : GL (Fin 2) K} {x : OnePoint K} :
   apply Projectivization.smul_eq_self_iff
 
 /-- The roots of `g.fixpointPolynomial` are the fixed points of `g ∈ GL(2, K)` acting on the finite
-part of `OnePoint K`. -/
+part of `OnePoint K`.
+
+See also `gl_smul_eq_self_iff_quadratic` for a similar lemma
+about the fixed points of the action of `GL(2, ℝ)` on the upper half-plane. -/
 lemma fixpointPolynomial_aeval_eq_zero_iff {c : K} {g : GL (Fin 2) K} :
     g.fixpointPolynomial.aeval c = 0 ↔ g • (c : OnePoint K) = c := by
   simp only [fixpointPolynomial, map_sub, map_mul, map_add, aeval_X_pow, aeval_C, aeval_X,

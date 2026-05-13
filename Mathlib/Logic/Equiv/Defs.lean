@@ -156,6 +156,8 @@ theorem left_inv' (e : α ≃ β) : Function.LeftInverse e.symm e := e.left_inv
 /-- Restatement of `Equiv.right_inv` in terms of `Function.RightInverse`. -/
 theorem right_inv' (e : α ≃ β) : Function.RightInverse e.symm e := e.right_inv
 
+@[simp] lemma symm_mk (f : α → β) (g hl hr) : (mk f g hl hr).symm = mk g f hr hl := rfl
+
 /-- Composition of equivalences `e₁ : α ≃ β` and `e₂ : β ≃ γ`. -/
 @[trans]
 protected def trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
@@ -828,6 +830,14 @@ lemma ofBijective_apply_symm_apply (f : α → β) (hf : Bijective f) (x : β) :
 lemma ofBijective_symm_apply_apply (f : α → β) (hf : Bijective f) (x : α) :
     (ofBijective f hf).symm (f x) = x :=
   (ofBijective f hf).symm_apply_apply x
+
+/-- Bijective functions are equivalent to equivalences. -/
+@[simps]
+noncomputable def bijectiveEquiv : { f : α → β // Bijective f } ≃ (α ≃ β) where
+  toFun f := .ofBijective f f.prop
+  invFun f := ⟨f, f.bijective⟩
+  left_inv _ := rfl
+  right_inv _ := by ext; rfl
 
 end Equiv
 

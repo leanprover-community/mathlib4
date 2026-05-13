@@ -88,8 +88,8 @@ theorem quasiCompact_affineProperty_iff_quasiSeparatedSpace [IsAffine Y] (f : X 
   · intro H U V
     let g : pullback U.1.ι V.1.ι ⟶ X := pullback.fst _ _ ≫ U.1.ι
     have e := g.isOpenEmbedding.isEmbedding.toHomeomorph
-    rw [IsOpenImmersion.range_pullback_to_base_of_left] at e
-    erw [Subtype.range_coe, Subtype.range_coe] at e
+    rw [IsOpenImmersion.range_pullback_to_base_of_left, Scheme.Opens.range_ι, Scheme.Opens.range_ι]
+      at e
     rw [isCompact_iff_compactSpace]
     exact @Homeomorph.compactSpace _ _ _ _ (H _ _) e
   · introv H h₁ h₂
@@ -257,7 +257,7 @@ theorem exists_eq_pow_mul_of_isAffineOpen (X : Scheme) (U : X.Opens) (hU : IsAff
   use n, y
   simpa [mul_comm x] using d.symm
 
-theorem exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux_aux {X : TopCat}
+theorem exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux_aux {X : TopCat.{u}}
     (F : X.Presheaf CommRingCat) {U₁ U₂ U₃ U₄ U₅ U₆ U₇ : Opens X} {n₁ n₂ : ℕ}
     {y₁ : F.obj (op U₁)} {y₂ : F.obj (op U₂)} {f : F.obj (op <| U₁ ⊔ U₂)}
     {x : F.obj (op U₃)} (h₄₁ : U₄ ≤ U₁) (h₄₂ : U₄ ≤ U₂) (h₅₁ : U₅ ≤ U₁) (h₅₃ : U₅ ≤ U₃)
