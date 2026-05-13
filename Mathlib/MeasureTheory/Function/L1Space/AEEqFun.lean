@@ -100,7 +100,7 @@ end AEEqFun
 
 namespace L1
 
-
+@[fun_prop]
 theorem integrable_coeFn (f : α →₁[μ] β) : Integrable f μ := by
   rw [← memLp_one_iff_integrable]
   exact Lp.memLp f

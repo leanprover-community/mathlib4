@@ -133,40 +133,38 @@ variable [TopologicalSpace 𝕜] [IsTopologicalRing 𝕜] [TopologicalSpace V] [
   [TopologicalSpace W] {e : AddChar 𝕜 𝕊} {μ : Measure V} {L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜}
 
 /-- For any `w`, the Fourier integral is convergent iff `f` is integrable. -/
+@[fun_prop]
+theorem integrable_fourierIntegral (he : Continuous e)
+    (hL : Continuous fun p : V × W ↦ L p.1 p.2) {f : V → E} (hf : Integrable f μ) (w : W) :
+    Integrable (fun v : V ↦ e (-L v w) • f v) μ := by
+  have c : Continuous fun v ↦ e (-L v w) := by fun_prop
+  simp_rw [← integrable_norm_iff (c.aestronglyMeasurable.smul hf.1), Circle.norm_smul]
+  fun_prop
+
+/-- For any `w`, the Fourier integral is convergent iff `f` is integrable. -/
 theorem fourierIntegral_convergent_iff (he : Continuous e)
     (hL : Continuous fun p : V × W ↦ L p.1 p.2) {f : V → E} (w : W) :
     Integrable (fun v : V ↦ e (-L v w) • f v) μ ↔ Integrable f μ := by
-  -- first prove one-way implication
-  have aux {g : V → E} (hg : Integrable g μ) (x : W) :
-      Integrable (fun v : V ↦ e (-L v x) • g v) μ := by
-    have c : Continuous fun v ↦ e (-L v x) := he.comp (hL.comp (.prodMk_left _)).neg
-    simp_rw [← integrable_norm_iff (c.aestronglyMeasurable.smul hg.1), Circle.norm_smul]
-    exact hg.norm
-  -- then use it for both directions
-  refine ⟨fun hf ↦ ?_, fun hf ↦ aux hf w⟩
-  have := aux hf (-w)
+  refine ⟨fun hf ↦ ?_, fun hf ↦ integrable_fourierIntegral he hL hf w⟩
+  convert integrable_fourierIntegral he hL hf (-w) with x
   simp_rw [← mul_smul (e _) (e _) (f _), ← e.map_add_eq_mul, map_neg, neg_add_cancel,
-    e.map_zero_eq_one, one_smul] at this -- the `(e _)` speeds up elaboration considerably
-  exact this
+    e.map_zero_eq_one, one_smul] -- the `(e _)` speeds up elaboration considerably
 
 theorem fourierIntegral_add (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
     {f g : V → E} (hf : Integrable f μ) (hg : Integrable g μ) :
     fourierIntegral e μ L (f + g) = fourierIntegral e μ L f + fourierIntegral e μ L g := by
   ext1 w
-  dsimp only [Pi.add_apply, fourierIntegral]
-  simp_rw [smul_add]
-  rw [integral_add]
-  · exact (fourierIntegral_convergent_iff he hL w).2 hf
-  · exact (fourierIntegral_convergent_iff he hL w).2 hg
+  simp only [fourierIntegral, Pi.add_apply, smul_add]
+  rw [integral_add (by fun_prop) (by fun_prop)]
 
 /-- The Fourier integral of an `L^1` function is a continuous function. -/
 theorem fourierIntegral_continuous [FirstCountableTopology W] (he : Continuous e)
     (hL : Continuous fun p : V × W ↦ L p.1 p.2) {f : V → E} (hf : Integrable f μ) :
     Continuous (fourierIntegral e μ L f) := by
-  apply continuous_of_dominated
+  apply continuous_of_dominated (bound := (‖f ·‖))
   · exact fun w ↦ ((fourierIntegral_convergent_iff he hL w).2 hf).1
-  · exact fun w ↦ ae_of_all _ fun v ↦ le_of_eq (Circle.norm_smul _ _)
-  · exact hf.norm
+  · exact fun w ↦ ae_of_all _ fun v ↦ (Circle.norm_smul _ _).le
+  · fun_prop
   · filter_upwards with v
     fun_prop
 
@@ -191,21 +189,22 @@ theorem integral_fourierIntegral_swap
     ∫ ξ, (∫ x, M (g ξ) (e (-L x ξ) • f x) ∂μ) ∂ν =
     ∫ x, (∫ ξ, M (g ξ) (e (-L x ξ) • f x) ∂ν) ∂μ := by
   rw [integral_integral_swap]
-  have : Integrable (fun (p : W × V) ↦ ‖M‖ * (‖g p.1‖ * ‖f p.2‖)) (ν.prod μ) :=
-    (hg.norm.mul_prod hf.norm).const_mul _
+  have : Integrable (fun (p : W × V) ↦ ‖M‖ * (‖g p.1‖ * ‖f p.2‖)) (ν.prod μ) := by
+    --fun_prop
+    apply (hg.norm.mul_prod hf.norm).const_mul _
   apply this.mono
   · change AEStronglyMeasurable (fun p : W × V ↦ (M (g p.1) (e (-(L p.2) p.1) • f p.2))) _
     have A : AEStronglyMeasurable (fun (p : W × V) ↦ e (-L p.2 p.1) • f p.2) (ν.prod μ) := by
       refine (Continuous.aestronglyMeasurable ?_).smul hf.1.comp_snd
-      exact he.comp (hL.comp continuous_swap).neg
+      fun_prop
     have A' : AEStronglyMeasurable (fun p ↦ (g p.1, e (-(L p.2) p.1) • f p.2) : W × V → F × E)
       (Measure.prod ν μ) := hg.1.comp_fst.prodMk A
     have hM : Continuous (fun q ↦ M q.1 q.2 : F × E → G) :=
       -- There is no `Continuous.clm_apply` for semilinear continuous maps
       (M.flip.cont.comp continuous_snd).clm_apply continuous_fst
-    apply hM.comp_aestronglyMeasurable A' -- `exact` works, but `apply` is 10x faster!
+    fun_prop
   · filter_upwards with ⟨ξ, x⟩
-    simp only [Function.uncurry_apply_pair, norm_mul, norm_norm, ge_iff_le, ← mul_assoc]
+    simp only [Function.uncurry_apply_pair, norm_mul, norm_norm, ← mul_assoc]
     convert M.le_opNorm₂ (g ξ) (e (-L x ξ) • f x) using 2
     simp
 
@@ -225,8 +224,7 @@ theorem integral_bilin_fourierIntegral_eq_flip
   ∫ ξ, M.flip (g ξ) (∫ x, e (-L x ξ) • f x ∂μ) ∂ν
     = ∫ ξ, (∫ x, M.flip (g ξ) (e (-L x ξ) • f x) ∂μ) ∂ν := by
     congr with ξ
-    apply (ContinuousLinearMap.integral_comp_comm _ _).symm
-    exact (fourierIntegral_convergent_iff he hL _).2 hf
+    exact (ContinuousLinearMap.integral_comp_comm _ (by fun_prop)).symm
   _ = ∫ x, (∫ ξ, M.flip (g ξ) (e (-L x ξ) • f x) ∂ν) ∂μ :=
     integral_fourierIntegral_swap M.flip he hL hf hg
   _ = ∫ x, (∫ ξ, M (f x) (e (-L.flip ξ x) • g ξ) ∂ν) ∂μ := by
@@ -236,7 +234,7 @@ theorem integral_bilin_fourierIntegral_eq_flip
     congr with x
     apply ContinuousLinearMap.integral_comp_comm
     apply (fourierIntegral_convergent_iff he _ _).2 hg
-    exact hL.comp continuous_swap
+    simp only [LinearMap.flip_apply]; fun_prop
 
 /-- The Fourier transform satisfies `∫ 𝓕 f * g = ∫ f * 𝓕 g`, i.e., it is self-adjoint. -/
 theorem integral_fourierIntegral_smul_eq_flip
@@ -261,8 +259,7 @@ theorem integral_sesq_fourierIntegral_eq_neg_flip
   ∫ ξ, M.flip (g ξ) (∫ x, e (-L x ξ) • f x ∂μ) ∂ν
     = ∫ ξ, (∫ x, M.flip (g ξ) (e (-L x ξ) • f x) ∂μ) ∂ν := by
     congr with ξ
-    apply (ContinuousLinearMap.integral_comp_commSL RCLike.conj_smul _ _).symm
-    exact (fourierIntegral_convergent_iff he hL _).2 hf
+    apply (ContinuousLinearMap.integral_comp_commSL RCLike.conj_smul _ (by fun_prop)).symm
   _ = ∫ x, (∫ ξ, M.flip (g ξ) (e (-L x ξ) • f x) ∂ν) ∂μ :=
     integral_fourierIntegral_swap M.flip he hL hf hg
   _ = ∫ x, (∫ ξ, M (f x) (e (L.flip ξ x) • g ξ) ∂ν) ∂μ := by
@@ -278,8 +275,7 @@ theorem integral_sesq_fourierIntegral_eq_neg_flip
   _ = ∫ x, M (f x) (∫ ξ, e (-(-L.flip ξ) x) • g ξ ∂ν) ∂μ := by
     congr with x
     apply ContinuousLinearMap.integral_comp_comm
-    have hLflip : Continuous fun (p : W × V) => (-L.flip p.1) p.2 :=
-      (continuous_neg.comp hL).comp continuous_swap
+    have hLflip : Continuous fun (p : W × V) => -(L p.2) p.1 := by fun_prop
     exact (fourierIntegral_convergent_iff (L := -L.flip) he hLflip x).2 hg
 
 end Fubini
@@ -546,16 +542,15 @@ alias fourierIntegral_continuousMultilinearMap_apply := fourier_continuousMultil
 
 open scoped BoundedContinuousFunction
 
+theorem Lp.norm_fourier_apply (f : Lp (α := V) E 1) (x : V) : ‖𝓕 (f : V → E) x‖ ≤ ‖f‖ := calc
+  _ ≤ ∫ (a : V), ‖𝐞 (-innerₗ V a x) • f a‖ := norm_integral_le_integral_norm _
+  _ = _ := by simp [L1.norm_eq_integral_norm f]
+
 /-- The Fourier transform from `L1` functions to bounded continuous functions. -/
 def Lp.fourierTransform (f : Lp (α := V) E 1) : V →ᵇ E :=
   BoundedContinuousFunction.ofNormedAddCommGroup (𝓕 (f : V → E))
   (VectorFourier.fourierIntegral_continuous Real.continuous_fourierChar
-    (innerSL ℝ).continuous₂ (L1.integrable_coeFn f))
-  ‖f‖ fun x ↦ by
-    rw [Real.fourier_eq]
-    apply (norm_integral_le_integral_norm _).trans
-    simp_rw [Circle.norm_smul]
-    exact (L1.norm_eq_integral_norm f).symm.le
+    (innerSL ℝ).continuous₂ (L1.integrable_coeFn f)) ‖f‖ (Lp.norm_fourier_apply f)
 
 @[norm_cast]
 theorem Lp.coe_fourierTransform (f : Lp (α := V) E 1) :
@@ -588,9 +583,9 @@ def Lp.fourierTransformCLM : Lp (α := V) E 1 →L[ℂ] V →ᵇ E :=
           rw [h₁]
           simp
         · rw [Real.fourierIntegral_convergent_iff]
-          exact L1.integrable_coeFn f
+          fun_prop
         · rw [Real.fourierIntegral_convergent_iff]
-          exact L1.integrable_coeFn g
+          fun_prop
       map_smul' c f := by
         ext x
         simp only [Lp.fourierTransform_apply, BoundedContinuousFunction.coe_smul, Real.fourier_eq]
@@ -602,10 +597,7 @@ def Lp.fourierTransformCLM : Lp (α := V) E 1 →L[ℂ] V →ᵇ E :=
     1 fun f ↦ by
       rw [one_mul, BoundedContinuousFunction.norm_le (by positivity)]
       intro x
-      rw [LinearMap.coe_mk, AddHom.coe_mk, Lp.fourierTransform_apply, Real.fourier_eq]
-      apply (norm_integral_le_integral_norm _).trans
-      simp_rw [Circle.norm_smul]
-      exact (L1.norm_eq_integral_norm f).symm.le
+      simp [Lp.norm_fourier_apply]
 
 @[simp]
 theorem Lp.fourierTransformCLM_apply (f : Lp (α := V) E 1) :
