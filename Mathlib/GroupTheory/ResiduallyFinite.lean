@@ -21,8 +21,6 @@ In this file we define residually finite groups and prove some basic properties.
 
 @[expose] public section
 
-universe u
-
 /-- An additive group `G` is residually finite if the intersection of all finite index normal
 additive subgroups is trivial. -/
 class AddGroup.ResiduallyFinite (G : Type*) [AddGroup G] : Prop where
@@ -76,7 +74,7 @@ theorem residuallyFinite_iff_exists_finiteIndex :
 /-- `G` is residually finite iff for every pair of distinct elements `g` and `h` there exists a
 group homomorphism `f` to a finite group `H` such that `f g ≠ f h`. -/
 @[to_additive]
-theorem residuallyFinite_iff_forall_exists_finite_monoidHom {G : Type u} [Group G] :
+theorem residuallyFinite_iff_forall_exists_finite_monoidHom.{u} {G : Type u} [Group G] :
     ResiduallyFinite G ↔
       ∀ g h : G, g ≠ h → ∃ (H : Type u) (_ : Group H) (_ : Finite H) (f : G →* H), f g ≠ f h := by
   refine ⟨fun h' g h hgh ↦ ?_, fun h ↦ ?_⟩
