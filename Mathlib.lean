@@ -3743,6 +3743,7 @@ public import Mathlib.Control.Traversable.Instances
 public import Mathlib.Control.Traversable.Lemmas
 public import Mathlib.Control.ULift
 public import Mathlib.Control.ULiftable
+public import Mathlib.Cryptography.Sigma.Schnorr
 public import Mathlib.Data.Analysis.Filter
 public import Mathlib.Data.Analysis.Topology
 public import Mathlib.Data.Array.Defs
