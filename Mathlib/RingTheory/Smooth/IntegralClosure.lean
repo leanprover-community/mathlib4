@@ -323,7 +323,7 @@ theorem mem_adjoin_map_integralClosure_of_isStandardEtale [Algebra.IsStandardEta
   -- And `gᵏ • a` is still `R`-integral for `k` large enough.
   obtain ⟨k, hk⟩ : ∃ k, IsIntegral R (AdjoinRoot.mk 𝓟'.f 𝓟'.g ^ k * a) := by
     have H : ∀ k, e (1 ⊗ₜ (aeval 𝓟.x 𝓟.g ^ k)) = algebraMap _ _ (AdjoinRoot.mk 𝓟'.f 𝓟'.g ^ k) := by
-      intro k; convert! congr($(heg 𝓟.g) ^ k) <;>
+      intro k; convert congr($(heg 𝓟.g) ^ k) <;>
         simp [← map_pow, 𝓟', StandardEtalePresentation.baseChange]
     have := ((hx m).map (Algebra.TensorProduct.comm _ _ _).symm).map e
     simp only [Algebra.smul_def, Algebra.TensorProduct.algebraMap_apply, Algebra.algebraMap_self,

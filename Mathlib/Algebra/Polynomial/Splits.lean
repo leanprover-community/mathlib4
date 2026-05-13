@@ -467,7 +467,6 @@ lemma map_sub_sprod_roots_eq_prod_map_eval
   conv_rhs => rw [this]
   simp_rw [eval_multiset_prod, Multiset.prod_map_product_eq_prod_prod, Multiset.map_map]
   congr! with x hx
-  · rfl
   ext; simp
 
 lemma map_sub_roots_sprod_eq_prod_map_eval

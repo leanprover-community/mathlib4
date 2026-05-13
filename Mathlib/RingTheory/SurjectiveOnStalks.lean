@@ -62,7 +62,7 @@ lemma surjective_localRingHom_iff (P : Ideal S) [P.IsPrime] :
         IsLocalization.mk'_eq_iff_eq, IsLocalization.eq_iff_exists P.primeCompl]
       refine ⟨⟨yc, hyc⟩ * ⟨yt, hyt⟩, ?_⟩
       simp only [Submonoid.coe_mul]
-      convert! congr($(ey.symm) * $(et)) using 1 <;> ring
+      convert congr($(ey.symm) * $(et)) using 1 <;> ring
 
 lemma surjectiveOnStalks_iff_forall_ideal :
     f.SurjectiveOnStalks ↔

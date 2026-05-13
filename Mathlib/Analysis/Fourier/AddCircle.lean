@@ -259,7 +259,7 @@ theorem coeFn_fourierLp (p : ℝ≥0∞) [Fact (1 ≤ p)] (n : ℤ) :
 `Lp ℂ p haarAddCircle`. -/
 theorem span_fourierLp_closure_eq_top {p : ℝ≥0∞} [Fact (1 ≤ p)] (hp : p ≠ ∞) :
     (span ℂ (range (@fourierLp T _ p _))).topologicalClosure = ⊤ := by
-  convert
+  convert!
     (ContinuousMap.toLp_denseRange ℂ (@haarAddCircle T hT) ℂ hp).topologicalClosure_map_submodule
       span_fourier_closure_eq_top
   rw [map_span]

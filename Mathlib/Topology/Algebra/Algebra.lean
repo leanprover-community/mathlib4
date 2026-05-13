@@ -611,7 +611,7 @@ theorem Subalgebra.le_topologicalClosure (s : Subalgebra R A) : s ≤ s.topologi
   subset_closure
 
 theorem Subalgebra.isClosed_topologicalClosure (s : Subalgebra R A) :
-    IsClosed (s.topologicalClosure : Set A) := by convert @isClosed_closure A _ s
+    IsClosed (s.topologicalClosure : Set A) := by convert! @isClosed_closure A _ s
 
 theorem Subalgebra.topologicalClosure_minimal {s t : Subalgebra R A} (h : s ≤ t)
     (ht : IsClosed (t : Set A)) : s.topologicalClosure ≤ t :=

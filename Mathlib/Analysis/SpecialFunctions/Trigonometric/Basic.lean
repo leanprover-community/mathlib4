@@ -1268,7 +1268,7 @@ theorem sinh_add_pi_mul_I (z : ℂ) : sinh (z + π * I) = -sinh z :=
   sinh_antiperiodic z
 
 theorem sinh_periodic : Function.Periodic sinh (2 * π * I) := by
-  convert sinh_antiperiodic.periodic_two_mul using 1
+  convert! sinh_antiperiodic.periodic_two_mul using 1
   ring
 
 @[simp]
@@ -1283,7 +1283,7 @@ theorem cosh_add_pi_mul_I (z : ℂ) : cosh (z + π * I) = -cosh z :=
   cosh_antiperiodic z
 
 theorem cosh_periodic : Function.Periodic cosh (2 * π * I) := by
-  convert cosh_antiperiodic.periodic_two_mul using 1
+  convert! cosh_antiperiodic.periodic_two_mul using 1
   ring
 
 @[simp]

@@ -444,7 +444,7 @@ theorem π_ιInvApp_π (i j : D.J) (U : Opens (D.U i).carrier) :
     iterate 3 rw [← Functor.map_comp_assoc]
     rw [NatTrans.naturality_assoc]
     erw [← (D.V (i, j)).presheaf.map_comp]
-    convert
+    convert!
       limit.w (componentwiseDiagram 𝖣.diagram.multispan _)
         (Quiver.Hom.op (WalkingMultispan.Hom.fst (i, j)))
   · rw [Category.comp_id]

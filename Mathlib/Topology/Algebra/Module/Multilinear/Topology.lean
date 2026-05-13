@@ -161,8 +161,8 @@ theorem isUniformEmbedding_restrictScalars :
   letI : NontriviallyNormedField 𝕜 :=
     ⟨let ⟨x, hx⟩ := @NontriviallyNormedField.non_trivial 𝕜' _; ⟨algebraMap 𝕜' 𝕜 x, by simpa⟩⟩
   rw [← isUniformEmbedding_toUniformOnFun.of_comp_iff]
-  convert! isUniformEmbedding_toUniformOnFun using 4 with s
-  exact ⟨fun h ↦ h.extend_scalars _, fun h ↦ h.restrict_scalars _⟩
+  convert! isUniformEmbedding_toUniformOnFun using 4 with s <;>
+    exact ⟨fun h ↦ h.extend_scalars _, fun h ↦ h.restrict_scalars _⟩
 
 theorem uniformContinuous_restrictScalars :
     UniformContinuous

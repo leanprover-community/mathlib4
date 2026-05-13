@@ -111,7 +111,6 @@ theorem HasAffineProperty.diagonal_of_diagonal_of_isPullback
   convert! HasAffineProperty.of_isPullback (P := P) (.of_hasPullback _ _) H
   · apply pullback.hom_ext <;> simp
   · infer_instance
-  · infer_instance
 
 theorem HasAffineProperty.diagonal_iff
     (P) {Q} [HasAffineProperty P Q] {X Y : Scheme.{u}} {f : X ⟶ Y} [IsAffine Y] :

@@ -380,7 +380,7 @@ set_option backward.isDefEq.respectTransparency false in
 See `CategoryTheory.Abelian.ofCoimageImageComparisonIsIso` for the converse.
 -/
 instance : IsIso (coimageImageComparison f) := by
-  convert
+  convert!
     Iso.isIso_hom
       (IsImage.isoExt (coimageStrongEpiMonoFactorisation f).toMonoIsImage
         (imageStrongEpiMonoFactorisation f).toMonoIsImage)

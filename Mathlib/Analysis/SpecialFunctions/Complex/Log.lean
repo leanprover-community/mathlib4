@@ -200,7 +200,7 @@ alias ⟨_, _root_.Set.Countable.preimage_cexp⟩ := countable_preimage_exp
 
 theorem tendsto_log_nhdsWithin_im_neg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0)
     (him : z.im = 0) : Tendsto log (𝓝[{ z : ℂ | z.im < 0 }] z) (𝓝 <| Real.log ‖z‖ - π * I) := by
-  convert
+  convert!
     (continuous_ofReal.continuousAt.comp_continuousWithinAt
             (continuous_norm.continuousWithinAt.log _)).tendsto.add
       (((continuous_ofReal.tendsto _).comp <|
@@ -212,7 +212,7 @@ theorem tendsto_log_nhdsWithin_im_neg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re
 
 theorem continuousWithinAt_log_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0) (him : z.im = 0) :
     ContinuousWithinAt log { z : ℂ | 0 ≤ z.im } z := by
-  convert
+  convert!
     (continuous_ofReal.continuousAt.comp_continuousWithinAt
             (continuous_norm.continuousWithinAt.log _)).tendsto.add
       ((continuous_ofReal.continuousAt.comp_continuousWithinAt <|
