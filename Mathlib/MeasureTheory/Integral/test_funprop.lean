@@ -130,8 +130,7 @@ example (a b : ℝ) : IntegrableOn (fun x : ℝ => (x, Real.exp x)) (Icc a b) :=
   fun_prop
 
 example (a b : ℝ) : IntegrableOn (fun x : ℝ => (Real.sin x : ℂ)) (Icc a b) := by
-  fail_if_success fun_prop
-  sorry
+  fun_prop
 
 example {f : ℝ → ℝ} {s t : Set ℝ} (hf : IntegrableOn f t) (hst : s ⊆ t) : IntegrableOn f s := by
   fun_prop (disch := with_reducible assumption)
