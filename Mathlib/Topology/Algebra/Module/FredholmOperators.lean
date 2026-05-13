@@ -167,8 +167,8 @@ variable (f)
 structure IsFredholm_struc : Prop where
   isStrict : IsStrictMap f
   isClosed_range : IsClosed (f.range : Set F)
-  kerFG : FiniteDimensional 𝕜 f.toLinearMap.ker
-  cokerFG : FiniteDimensional 𝕜 (F ⧸ f.range)
+  kerFG : f.toLinearMap.ker.FG
+  cokerFG : f.range.CoFG
 
 /-FAE: I don't like this definition that seems to fix `g` (making it a structure would be even more
   disgusting). -/
@@ -247,10 +247,39 @@ lemma index_smul (t : k) (ht : t ≠ 0) :
     (-f).index = f.index := by
   rw [index, index, ker_neg, range_neg]
 
+open Function in
 lemma index_comp {G : Type*} [AddCommGroup G] [Module k G] (g : F →ₗ[k] G)
     /- TODO required assumptions. -/ :
     (g ∘ₗ f).index = g.index + f.index := by
   -- 0 → f.ker → (g ∘ₗ f).ker → g.ker → f.coker → (g ∘ₗ f).coker → g.coker → 0
+
+  let f₁ : f.ker →ₗ[k] (g ∘ₗ f).ker := Submodule.inclusion <| ker_le_ker_comp f g
+  let f₂ : (g ∘ₗ f).ker →ₗ[k] g.ker := f.restrict <| by simp
+  let f₃ : g.ker →ₗ[k] F ⧸ f.range := f.range.mkQ ∘ₗ g.ker.subtype
+  let f₄ : (F ⧸ f.range) →ₗ[k] G ⧸ (g ∘ₗ f).range :=
+    f.range.mapQ (g ∘ₗ f).range g <| by rw [← map_le_iff_le_comap, range_comp]
+  let f₅ : (G ⧸ (g ∘ₗ f).range) →ₗ[k] G ⧸ g.range := factor <| range_comp_le_range f g
+
+  have h₀ : Injective f₁ := Submodule.inclusion_injective _
+  have h₁ : Exact f₁ f₂ := fun ⟨x, hx⟩ ↦ by simp [f₁, f₂, restrict_apply, Submodule.inclusion_apply]
+  have h₂ : Exact f₂ f₃ := fun ⟨x, hx⟩ ↦ by aesop (add simp restrict_apply)
+  have h₃ : Exact f₃ f₄ := fun x ↦ by
+    simp only [coe_comp, coe_subtype, Set.mem_range, Function.comp_apply, mkQ_apply, Subtype.exists,
+      mem_ker, exists_prop, f₄, f₃, mapQ_eq_zero_iff, mkQ_apply, mem_range]
+    -- This should be tidier
+    constructor
+    · rintro ⟨z, rfl, y, hzy⟩
+      use z - f y
+      simp [hzy]
+    · rintro ⟨y, hy, rfl⟩
+      exact ⟨y, rfl, 0, by simp [hy]⟩
+  have h₄ : Exact f₄ f₅ := fun x ↦ by
+    sorry
+  have h₅ : Surjective f₅ := factor_surjective _
+
+  -- TODO What API should we write for `Function.Exact` to make the goal trivial from here?
+  -- Should it be a `simproc` for finite exact sequences of any length saying the Euler
+  -- characteristic is zero?
   sorry
 
 lemma index_eq_of_finiteDimensional [FiniteDimensional k E] [FiniteDimensional k F] :
@@ -304,6 +333,8 @@ lemma CokernelFG_of_isFredholm' (hu : IsFredholm_existsₗ u) : (u.range).CoFG :
 
 open QuotFiniteSubmodules
 
+section
+
 variable {u : E →L[𝕜] F} {v : F →L[𝕜] E}
 
 variable [ContinuousConstSMul 𝕜 E]
@@ -342,7 +373,9 @@ theorem aaron (hr : IsFredholm_quot u) :
   <;> intro x hx
   <;> simp_all [← map_sub]
 
-/- ## Injections from closed finite codimension subspaces are Fredholm
+end
+
+/- ## Inclusions from closed finite codimension subspaces are Fredholm (Aaron)
 
 Easy for every definition.
 The index is the codimension of the range.
@@ -350,7 +383,25 @@ The index is the codimension of the range.
 (The same is true for quotient by finite dimensional complemented subspaces)
 -/
 
-/- ## Composition of Fredholm (with the inverse definition)
+omit [IsTopologicalAddGroup E] [IsTopologicalAddGroup F] in
+theorem IsClosedEmbedding.isFredholm_struc {f : E →L[𝕜] F} [CompleteSpace 𝕜] [ContinuousSMul 𝕜 E]
+    [ContinuousSMul 𝕜 F] (hf : IsClosedEmbedding f) (hc : f.range.CoFG) :
+    IsFredholm_struc f := by
+  constructor
+  · exact hf.isStrictMap
+  · simpa using hf.isClosed_range
+  · rw [LinearMap.ker_eq_bot.2 hf.injective]
+    exact Submodule.fg_bot
+  · simp [hc]
+
+omit [IsTopologicalAddGroup E] in
+theorem Submodule.isFredholm_struc [CompleteSpace 𝕜] [ContinuousSMul 𝕜 E] {p : Submodule 𝕜 E}
+    (hp : IsClosed p.carrier) (hc : p.CoFG) :
+    IsFredholm_struc p.subtypeL := by
+  refine IsClosedEmbedding.isFredholm_struc (IsClosedEmbedding.subtypeVal hp) ?_
+  simpa using hc
+
+/- ## Composition of Fredholm (with the inverse definition) (Patrick)
 
 Consider the three CLMs `u`, `v` and `v ∘L u`. If two of them are Fredholm,
 the third one is.
@@ -361,13 +412,7 @@ I'm not sure what the set of statements should look like, but I imagine the foll
 3. If `v` is Fredholm, then `u` Fredholm ↔ `v ∘ u` Fredholm
 -/
 
-/- ## ContinuousLinearEquiv is open in ContinuousLinearMap for Banach spaces
-
-For `E = F` this follows from `Units.isOpen`. Then for the general case either
-`E ≃L F` is empty or you reduce to the `E = F` case.
--/
-
-/- ## Fredholm_struct ==> good decomposition
+/- ## Fredholm_struct ==> good decomposition (Filippo)
 
 If `u` satisfies `Fredholm_struct`, then there are decompositions `E = E₁ ⊕ E₂`,
 `F = F₁ ⊕ F₂` such that `E₂` and `F₂` are FG and, in this decomposition, u is of the form
@@ -382,7 +427,7 @@ F₁ = u.range
 The others are arbitrary complements
 -/
 
-/- ## FredholmQuot ==> complemented kernel
+/- ## FredholmQuot ==> complemented kernel (Jon)
 
 Lemma : if `A` is finite dimensional is complemented and if `B ≤ A` then `B` is complemented.
 
@@ -392,6 +437,18 @@ If `u` is Fredholm, by `aaron`, we have a finite codim subspace `E₁` on which 
 Pick `S` a complement of `E₁` containing `u.ker`. Then `S` is complemented and finite dimensional,
 so `u.ker` is complemented.
 
+-/
+
+/- ## A topological lemma
+
+**Note** : this will be useful a bit later (to prove that Fredholm operators are
+stable under compact perturbation) so this is not a priority.
+
+Lemma : let `E`, `F` be (Hausdorff) TVSs, `u : E →L[𝕜] F`,
+and `A` a neighborhood of `0` in `E`. If `restrict A u` is a
+closed embedding, then `u` is a closed embedding.
+
+This is TS III, § 5, p 71, lemme 1
 -/
 
 end FredholmOperators
