@@ -156,13 +156,13 @@ def quotientEquivOrthogonal : (E ⧸ K) ≃ₗᵢ[𝕜] ↥Kᗮ where
 
 @[simp]
 theorem coe_quotientEquivOrthogonal :
-    K.quotientEquivOrthogonal =
+    ⇑K.quotientEquivOrthogonal =
       K.quotientEquivOfIsCompl Kᗮ K.isCompl_orthogonal_of_hasOrthogonalProjection :=
   rfl
 
 @[simp]
 theorem coe_quotientEquivOrthogonal_symm :
-    K.quotientEquivOrthogonal.symm =
+    ⇑K.quotientEquivOrthogonal.symm =
       (K.quotientEquivOfIsCompl Kᗮ K.isCompl_orthogonal_of_hasOrthogonalProjection).symm :=
   rfl
 
@@ -174,15 +174,12 @@ lemma toLinearEquiv_quotientEquivOrthogonal :
 
 theorem quotientEquivOrthogonal_mk (x : E) (hx : x ∈ Kᗮ) :
     K.quotientEquivOrthogonal (Quotient.mk x) = ⟨x, hx⟩ := by
-  rw [← K.quotientEquivOfIsCompl_apply_mk_coe Kᗮ
+  simp [← K.quotientEquivOfIsCompl_apply_mk_right
     K.isCompl_orthogonal_of_hasOrthogonalProjection ⟨x, hx⟩]
-  rfl
 
 theorem quotientEquivOrthogonal_symm_eq_mk (x : E) (hx : x ∈ Kᗮ) :
     K.quotientEquivOrthogonal.symm ⟨x, hx⟩ = Quotient.mk x := by
-  rw [← K.quotientEquivOfIsCompl_symm_apply Kᗮ
-    K.isCompl_orthogonal_of_hasOrthogonalProjection ⟨x, hx⟩]
-  rfl
+  simp
 
 noncomputable instance instQuotientInnerProductSpace :
     InnerProductSpace 𝕜 (E ⧸ K) where
