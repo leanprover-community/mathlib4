@@ -116,13 +116,14 @@ class NoMultiEdgeGraphLike (V D E : outParam Type*) (Gr : Type*) extends GraphLi
 
 variable [NoMultiEdgeGraphLike V D E Gr]
 
-lemma dart_eq_of_src_tgt_eq {d₁ d₂ : D} (h : source G d₁ = source G d₂)
+lemma dart_eq_of_source_target_eq {d₁ d₂ : D} (h : source G d₁ = source G d₂)
     (h' : target G d₁ = target G d₂) : d₁ = d₂ := by
   apply NoMultiEdgeGraphLike.source_target_inj G
   grind
 
-lemma source_target_inj (d₁ d₂ : D) : source G d₁ = source G d₂ ∧ target G d₁ = target G d₂ ↔ d₁ = d₂ :=
-  ⟨fun h => dart_eq_of_src_tgt_eq h.1 h.2, by grind⟩
+lemma source_target_inj (d₁ d₂ : D) :
+    source G d₁ = source G d₂ ∧ target G d₁ = target G d₂ ↔ d₁ = d₂ :=
+  ⟨fun h => dart_eq_of_source_target_eq h.1 h.2, by grind⟩
 
 @[simp]
 lemma mem_darts_iff_adj : d ∈ D(G) ↔ Adj G (source G d) (target G d) := by
