@@ -23,7 +23,7 @@ For any type equipped with the Scott-Hausdorff topology (which includes well-ord
 topology), `DirSupClosed s` and `IsClosed s` are equivalent predicates.
 -/
 
-@[expose] public section
+public section
 
 universe u v
 
@@ -41,8 +41,8 @@ structure IsClub {α : Type*} [LinearOrder α] (s : Set α) where
 variable {α : Type v} {s t : Set α} {x : α} [LinearOrder α]
 
 @[simp]
-theorem IsClub.of_isEmpty [IsEmpty α] (s : Set α) : IsClub s :=
-  ⟨.of_isEmpty s, .of_isEmpty s⟩
+theorem IsClub.of_isEmpty [IsEmpty α] {s : Set α} : IsClub s :=
+  ⟨.of_isEmpty, .of_isEmpty⟩
 
 @[simp]
 theorem IsClub.univ : IsClub (α := α) .univ :=
