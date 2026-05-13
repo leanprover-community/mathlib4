@@ -282,7 +282,7 @@ epimorphism. -/
 structure UniversallyEffectiveEquivalenceRelation {R A : C} (p₁ p₂ : R ⟶ A)
     extends EffectiveEquivalenceRelation p₁ p₂ where
   universally_effectiveEpi_π : MorphismProperty.universally (fun _ _ f => EffectiveEpi f)
-    (toEffectiveEquivalenceRelation.π)
+    toEffectiveEquivalenceRelation.π
 
 /-- The typeclass associated with the structure `UniversallyEffectiveEquivalenceRelation`. -/
 class IsUniversallyEffectiveEquivalenceRelation {R A : C} (p₁ p₂ : R ⟶ A) : Prop where
