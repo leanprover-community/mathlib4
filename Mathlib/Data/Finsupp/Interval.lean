@@ -119,7 +119,7 @@ theorem card_uIcc :
 
 end Lattice
 
-section CanonicallyOrdered
+section IsBotZeroClass
 
 variable [AddCommMonoid α] [PartialOrder α] [IsBotZeroClass α]
   [OrderBot α] [LocallyFiniteOrder α]
@@ -131,6 +131,6 @@ theorem card_Iic : #(Iic f) = ∏ i ∈ f.support, #(Iic (f i)) := by
 theorem card_Iio : #(Iio f) = ∏ i ∈ f.support, #(Iic (f i)) - 1 := by
   rw [card_Iio_eq_card_Iic_sub_one, card_Iic]
 
-end CanonicallyOrdered
+end IsBotZeroClass
 
 end Finsupp
