@@ -394,4 +394,16 @@ so `u.ker` is complemented.
 
 -/
 
+/- ## A topological lemma
+
+**Note** : this will be useful a bit later (to prove that Fredholm operators are
+stable under compact perturbation) so this is not a priority.
+
+Lemma : let `E`, `F` be (Hausdorff) TVSs, `u : E →L[𝕜] F`,
+and `A` a neighborhood of `0` in `E`. If `restrict A u` is a
+closed embedding, then `u` is a closed embedding.
+
+This is TS III, § 5, p 71, lemme 1
+-/
+
 end FredholmOperators
