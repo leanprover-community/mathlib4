@@ -167,7 +167,7 @@ instance : Std.Symm (Adj G) where
   symm _ _ h := by
     rw [← exists_darts_iff_adj] at h ⊢
     obtain ⟨d, hd, rfl, rfl⟩ := h
-    exact ⟨SymmGraphLike.inv Gr d, inv_mem_darts hd, inv_source G d, inv_target G d⟩
+    exact ⟨inv Gr d, inv_mem_darts hd, inv_source G d, inv_target G d⟩
 
 @[symm] lemma Adj.symm (h : Adj G v w) : Adj G w v := symm_of (Adj G) h
 
