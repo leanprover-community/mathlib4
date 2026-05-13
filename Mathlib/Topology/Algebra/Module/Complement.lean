@@ -536,10 +536,7 @@ theorem ofIsTopCompl_add (h : IsTopCompl p q) (φ₁ φ₂ : p →L[R] F) (ψ₁
     ofIsTopCompl h (φ₁ + φ₂) (ψ₁ + ψ₂) = ofIsTopCompl h φ₁ ψ₁ + ofIsTopCompl h φ₂ ψ₂ := by
   ext; simp [ofIsTopCompl, add_add_add_comm]
 
-@[simp]
 theorem range_ofIsTopCompl (h : IsTopCompl p q) (φ : p →L[R] F) (ψ : q →L[R] F) :
-    LinearMap.range (ofIsTopCompl h φ ψ : E →ₗ[R] F) = φ.range ⊔ ψ.range := by
-  rw [coe_ofIsTopCompl]
-  exact LinearMap.range_ofIsCompl h.isCompl
+    LinearMap.range (ofIsTopCompl h φ ψ : E →ₗ[R] F) = φ.range ⊔ ψ.range := by simp
 
 end ContinuousLinearMap
