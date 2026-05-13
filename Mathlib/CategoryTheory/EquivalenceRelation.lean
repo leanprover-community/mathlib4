@@ -5,10 +5,6 @@ Authors: Benoît Guillemet, Christian Merten
 -/
 module
 
-public import Batteries
-
-public import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
-public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
@@ -32,28 +28,18 @@ In general, kernel pairs in any category are internal equivalence relations.
 
 @[expose] public section
 
-universe w v u
+universe w
 
 namespace CategoryTheory
 
 open Limits
 
-open scoped TypeCat
-
-variable {C : Type u} [Category.{v} C] {D : Type*} [Category D]
+variable {C : Type*} [Category* C] {D : Type*} [Category* D]
 variable {R X : C} {p₁ p₂ : R ⟶ X}
 
 /-- A typeclass for pairs of morphisms that are jointly monic. -/
 class JointlyMono₂ {R X₁ X₂ : C} (p₁ : R ⟶ X₁) (p₂ : R ⟶ X₂) : Prop where
   right_cancellation : ∀ ⦃Y : C⦄ (f g : Y ⟶ R), f ≫ p₁ = g ≫ p₁ → f ≫ p₂ = g ≫ p₂ → f = g
-
-lemma Types.jointlyMono₂ {X : Type w} (φ : X → X → Prop) :
-    JointlyMono₂ (R := Subtype φ.uncurry) (↾(_root_.Prod.fst ∘ Subtype.val))
-      (↾(_root_.Prod.snd ∘ Subtype.val)) where
-  right_cancellation Y f g h₁ h₂ := by
-    ext y
-    · exact congr($h₁ y)
-    · exact congr($h₂ y)
 
 /-- A reflexive relation is a jointly monic pair of parallel morphisms `p₁, p₂ : R ⟶ X`, together
 with a section `r : X ⟶ R` of both `p₁` and `p₂`. -/
@@ -65,20 +51,6 @@ structure ReflexiveRelation {R X : C} (p₁ p₂ : R ⟶ X) extends JointlyMono�
 
 attribute [reassoc (attr := simp)] ReflexiveRelation.reflexivity₁ ReflexiveRelation.reflexivity₂
 
-/-- Standard reflexive relations on types are internal reflexive relations in the category of
-types. -/
-def Types.reflexiveRelation {X : Type w} {φ : X → X → Prop} (hφ : Std.Refl φ) :
-    ReflexiveRelation (R := Subtype φ.uncurry) (↾(_root_.Prod.fst ∘ Subtype.val))
-      (↾(_root_.Prod.snd ∘ Subtype.val)) where
-  __ := Types.jointlyMono₂ φ
-  r := (↾(fun x => ⟨⟨x, x⟩, hφ.refl x⟩))
-
-/-- An internal reflexive relation in the category of types gives rise to a standard reflexive
-relation. -/
-lemma Types.of_reflexiveRelation {R X : Type w} {p₁ p₂ : R ⟶ X} (e : ReflexiveRelation p₁ p₂) :
-    Std.Refl (fun x₁ x₂ => ∃ r : R, p₁ r = x₁ ∧ p₂ r = x₂) where
-  refl x := ⟨e.r x, congr($e.reflexivity₁ x), congr($e.reflexivity₂ x)⟩
-
 /-- A symmetric relation is a jointly monic pair of parallel morphisms `p₁, p₂ : R ⟶ X` together
 with a morphism `s : R ⟶ R` which interchanges `p₁` and `p₂`. -/
 structure SymmetricRelation {R X : C} (p₁ p₂ : R ⟶ X) extends JointlyMono₂ p₁ p₂ where
@@ -88,22 +60,6 @@ structure SymmetricRelation {R X : C} (p₁ p₂ : R ⟶ X) extends JointlyMono�
   symmetry₂ : s ≫ p₂ = p₁ := by cat_disch
 
 attribute [reassoc (attr := simp)] SymmetricRelation.symmetry₁ SymmetricRelation.symmetry₂
-
-/-- Standard symmetric relations on types are internal symmetric relations in the category of
-types. -/
-def Types.symmetricRelation {X : Type w} {φ : X → X → Prop} (hφ : _root_.Symmetric φ) :
-    SymmetricRelation (R := Subtype φ.uncurry) (↾(_root_.Prod.fst ∘ Subtype.val))
-      (↾(_root_.Prod.snd ∘ Subtype.val)) where
-  __ := Types.jointlyMono₂ φ
-  s := ↾(fun ⟨⟨x₁, x₂⟩, h⟩ => ⟨⟨x₂, x₁⟩, hφ h⟩)
-
-/-- An internal symmetric relation in the category of types gives rise to a standard symmetric
-relation. -/
-lemma Types.of_symmetricRelation {R X : Type w} {p₁ p₂ : R ⟶ X} (e : SymmetricRelation p₁ p₂) :
-    _root_.Symmetric (fun x₁ x₂ => ∃ r : R, p₁ r = x₁ ∧ p₂ r = x₂) := by
-  refine fun x₁ x₂ ⟨r, hr₁, hr₂⟩ => ⟨e.s r, ?_⟩
-  rw [← hr₁, ← hr₂]
-  exact ⟨congr($e.symmetry₁ r), congr($e.symmetry₂ r)⟩
 
 /-- A transitive relation is a jointly monic pair of parallel morphisms `p₁, p₂ : R ⟶ X`, together
 with a limiting pullback cone `c` for `p₁` and `p₂` and a map `c.pt ⟶ R` which factors the two
@@ -118,35 +74,9 @@ structure TransitiveRelation {R X : C} (p₁ p₂ : R ⟶ X) extends JointlyMono
   transitivity₁ : t ≫ p₁ = c.fst ≫ p₁ := by cat_disch
   transitivity₂ : t ≫ p₂ = c.snd ≫ p₂ := by cat_disch
 
+initialize_simps_projections TransitiveRelation (-isLimit)
+
 attribute [reassoc (attr := simp)] TransitiveRelation.transitivity₁ TransitiveRelation.transitivity₂
-
-/-- Standard transitive relations on types are internal transitive relations in the category of
-types. -/
-def Types.transitiveRelation {X : Type w} {φ : X → X → Prop} (hφ : IsTrans _ φ) :
-    TransitiveRelation (R := Subtype φ.uncurry) (↾(_root_.Prod.fst ∘ Subtype.val))
-      (↾(_root_.Prod.snd ∘ Subtype.val)) where
-  __ := Types.jointlyMono₂ φ
-  c := Types.pullbackCone _ _
-  isLimit := (Types.pullbackLimitCone _ _).isLimit
-  t := ↾(fun ⟨⟨⟨⟨x₁, _⟩, h⟩, ⟨⟨_, x₂'⟩, h'⟩⟩, h₁₂⟩ => by
-    dsimp at h₁₂
-    rw [← h₁₂] at h'
-    refine ⟨⟨x₁, x₂'⟩, hφ.trans _ _ _ h h'⟩)
-
-/-- An internal transitive relation in the category of types gives rise to a standard transitive
-relation. -/
-lemma Types.of_transitiveRelation {R X : Type w} {p₁ p₂ : R ⟶ X} (e : TransitiveRelation p₁ p₂) :
-    IsTrans _ (fun x₁ x₂ => ∃ r : R, p₁ r = x₁ ∧ p₂ r = x₂) where
-  trans x₁ x₂ x₃ := by
-    refine fun ⟨r, ⟨hr₁, hr₂⟩⟩ ⟨r', ⟨hr₁', hr₂'⟩⟩ =>
-      ⟨e.t ((PullbackCone.IsLimit.equivPullbackObj e.isLimit).symm ⟨(r, r'), hr₂.trans hr₁'.symm⟩),
-        ⟨?_, ?_⟩⟩
-    · simpa only [comp_apply, hr₁, PullbackCone.IsLimit.equivPullbackObj_symm_apply_fst] using
-        congr($e.transitivity₁
-          ((PullbackCone.IsLimit.equivPullbackObj e.isLimit).symm ⟨(r, r'), hr₂.trans hr₁'.symm⟩))
-    · simpa only [comp_apply, hr₂', PullbackCone.IsLimit.equivPullbackObj_symm_apply_snd] using
-        congr($e.transitivity₂
-          ((PullbackCone.IsLimit.equivPullbackObj e.isLimit).symm ⟨(r, r'), hr₂.trans hr₁'.symm⟩))
 
 /-- An equivalence relation is a reflexive, symmetric and transitive relation. -/
 structure EquivalenceRelation {R X : C} (p₁ p₂ : R ⟶ X) extends ReflexiveRelation p₁ p₂,
@@ -181,23 +111,6 @@ noncomputable def IsKernelPair.equivalenceRelation {X Y : C} (f : X ⟶ Y) {R : 
   t := h.lift (pullback.fst _ _ ≫ p₁) (pullback.snd _ _ ≫ p₂)
     (by simp [h.w, pullback.condition_assoc])
 
-/-- Standard equivalence relations on types are internal equivalence relations in the category of
-types. -/
-def Types.equivalenceRelation {X : Type w} {φ : X → X → Prop} (hφ : _root_.Equivalence φ) :
-    EquivalenceRelation (R := Subtype φ.uncurry) (↾(_root_.Prod.fst ∘ Subtype.val))
-      (↾(_root_.Prod.snd ∘ Subtype.val)) where
-  __ := Types.reflexiveRelation hφ.stdRefl
-  __ := Types.symmetricRelation hφ.symmetric
-  __ := Types.transitiveRelation hφ.isTrans
-
-/-- An internal equivalence relation in the category of types gives rise to a standard equivalence
-relation. -/
-lemma Types.of_equivalenceRelation {R X : Type w} {p₁ p₂ : R ⟶ X} (e : EquivalenceRelation p₁ p₂) :
-    _root_.Equivalence (fun x₁ x₂ => ∃ r : R, p₁ r = x₁ ∧ p₂ r = x₂) where
-  refl := (Types.of_reflexiveRelation e.toReflexiveRelation).refl
-  symm h := Types.of_symmetricRelation e.toSymmetricRelation h
-  trans := (Types.of_transitiveRelation e.toTransitiveRelation).trans _ _ _
-
 /-- Given a functor `F : C ⥤ D`, if `F.map p₁` and `F.map p₂` form a jointly monic pair of
 morphisms, then `F` preserves reflexive relations. -/
 def ReflexiveRelation.map (e : ReflexiveRelation p₁ p₂) (F : C ⥤ D)
@@ -231,6 +144,111 @@ noncomputable def TransitiveRelation.map (e : TransitiveRelation p₁ p₂) (F :
     dsimp
     rw [← F.map_comp, ← F.map_comp, transitivity₂]
 
+end CategoryTheory
+
+namespace TypeCat
+
+open CategoryTheory Limits
+
+variable {X : Type w} (φ : X → X → Prop)
+
+abbrev ROfRel := Subtype φ.uncurry
+abbrev p₁OfRel : ROfRel φ ⟶ X := ↾(Prod.fst ∘ Subtype.val)
+abbrev p₂OfRel : ROfRel φ ⟶ X := ↾(Prod.snd ∘ Subtype.val)
+
+lemma jointlyMono₂ :
+    JointlyMono₂ (p₁OfRel φ) (p₂OfRel φ) where
+  right_cancellation Y f g h₁ h₂ := by
+    ext y
+    · exact congr($h₁ y)
+    · exact congr($h₂ y)
+
+/-- Standard reflexive relations on types are internal reflexive relations in the category of
+types. -/
+def ReflexiveRelation.ofRefl {X : Type w} {φ : X → X → Prop} (hφ : Std.Refl φ) :
+    ReflexiveRelation (p₁OfRel φ) (p₂OfRel φ) where
+  __ := jointlyMono₂ φ
+  r := (↾(fun x => ⟨⟨x, x⟩, hφ.refl x⟩))
+
+/-- Standard symmetric relations on types are internal symmetric relations in the category of
+types. -/
+def SymmetricRelation.ofSymmetric {X : Type w} {φ : X → X → Prop} (hφ : Symmetric φ) :
+    SymmetricRelation (p₁OfRel φ) (p₂OfRel φ) where
+  __ := jointlyMono₂ φ
+  s := ↾(fun ⟨⟨x₁, x₂⟩, h⟩ => ⟨⟨x₂, x₁⟩, hφ h⟩)
+
+/-- Standard transitive relations on types are internal transitive relations in the category of
+types. -/
+def TransitiveRelation.ofIsTrans {X : Type w} {φ : X → X → Prop} (hφ : IsTrans _ φ) :
+    TransitiveRelation (p₁OfRel φ) (p₂OfRel φ) where
+  __ := jointlyMono₂ φ
+  c := Types.pullbackCone _ _
+  isLimit := (Types.pullbackLimitCone _ _).isLimit
+  t := ↾(fun ⟨⟨⟨⟨x₁, _⟩, h⟩, ⟨⟨_, x₂'⟩, h'⟩⟩, h₁₂⟩ => by
+    dsimp at h₁₂
+    rw [← h₁₂] at h'
+    refine ⟨⟨x₁, x₂'⟩, hφ.trans _ _ _ h h'⟩)
+
+/-- Standard equivalence relations on types are internal equivalence relations in the category of
+types. -/
+def EquivalenceRelation.ofEquivalence {X : Type w} {φ : X → X → Prop} (hφ : Equivalence φ) :
+    EquivalenceRelation (p₁OfRel φ) (p₂OfRel φ) where
+  __ := ReflexiveRelation.ofRefl hφ.stdRefl
+  __ := SymmetricRelation.ofSymmetric hφ.symmetric
+  __ := TransitiveRelation.ofIsTrans hφ.isTrans
+
+variable {R : Type w} (p₁ p₂ : R ⟶ X)
+
+abbrev Rel.ofPair := fun x₁ x₂ => ∃ r : R, p₁ r = x₁ ∧ p₂ r = x₂
+
+variable {p₁ p₂}
+
+/-- An internal reflexive relation in the category of types gives rise to a standard reflexive
+relation. -/
+lemma of_reflexiveRelation (e : ReflexiveRelation p₁ p₂) :
+    Std.Refl (Rel.ofPair p₁ p₂) where
+  refl x := ⟨e.r x, congr($e.reflexivity₁ x), congr($e.reflexivity₂ x)⟩
+
+/-- An internal symmetric relation in the category of types gives rise to a standard symmetric
+relation. -/
+lemma of_symmetricRelation (e : SymmetricRelation p₁ p₂) :
+    Symmetric (Rel.ofPair p₁ p₂) := by
+  refine fun x₁ x₂ ⟨r, hr₁, hr₂⟩ => ⟨e.s r, ?_⟩
+  rw [← hr₁, ← hr₂]
+  exact ⟨congr($e.symmetry₁ r), congr($e.symmetry₂ r)⟩
+
+/-- An internal transitive relation in the category of types gives rise to a standard transitive
+relation. -/
+lemma of_transitiveRelation (e : TransitiveRelation p₁ p₂) :
+    IsTrans _ (Rel.ofPair p₁ p₂) where
+  trans x₁ x₂ x₃ := by
+    refine fun ⟨r, ⟨hr₁, hr₂⟩⟩ ⟨r', ⟨hr₁', hr₂'⟩⟩ =>
+      ⟨e.t ((PullbackCone.IsLimit.equivPullbackObj e.isLimit).symm ⟨(r, r'), hr₂.trans hr₁'.symm⟩),
+        ⟨?_, ?_⟩⟩
+    · simpa only [comp_apply, hr₁, PullbackCone.IsLimit.equivPullbackObj_symm_apply_fst] using
+        congr($e.transitivity₁
+          ((PullbackCone.IsLimit.equivPullbackObj e.isLimit).symm ⟨(r, r'), hr₂.trans hr₁'.symm⟩))
+    · simpa only [comp_apply, hr₂', PullbackCone.IsLimit.equivPullbackObj_symm_apply_snd] using
+        congr($e.transitivity₂
+          ((PullbackCone.IsLimit.equivPullbackObj e.isLimit).symm ⟨(r, r'), hr₂.trans hr₁'.symm⟩))
+
+/-- An internal equivalence relation in the category of types gives rise to a standard equivalence
+relation. -/
+lemma of_equivalenceRelation (e : EquivalenceRelation p₁ p₂) :
+    Equivalence (Rel.ofPair p₁ p₂) where
+  refl := (of_reflexiveRelation e.toReflexiveRelation).refl
+  symm h := of_symmetricRelation e.toSymmetricRelation h
+  trans := (of_transitiveRelation e.toTransitiveRelation).trans _ _ _
+
+end TypeCat
+
+namespace CategoryTheory
+
+open Limits
+
+variable {C : Type*} [Category* C]
+variable {R A : C} (p₁ p₂ : R ⟶ A)
+
 section Effective
 
 /-- An effective equivalence relation is an equivalence relation `p₁, p₂ : R ⟶ A` together with a
@@ -256,9 +274,9 @@ noncomputable def EffectiveEquivalenceRelation.isCoequalizer {R A : C} (p₁ p�
     IsColimit (Cofork.ofπ e.π e.isPushout.w) :=
   e.isPushout.isLimitFork
 
-instance {R A : C} (p₁ p₂ : R ⟶ A) (e : EffectiveEquivalenceRelation p₁ p₂) :
-    IsRegularEpi e.π :=
-  ⟨⟨Cofork.IsColimit.regularEpi e.isCoequalizer⟩⟩
+instance (e : EffectiveEquivalenceRelation p₁ p₂) :
+    IsRegularEpi e.π where
+  regularEpi := ⟨Cofork.IsColimit.regularEpi e.isCoequalizer⟩
 
 /-- A universally effective equivalence relation is an effective equivalence relation
 `p₁, p₂ : R ⟶ A` such that the corresponding morphism `π : A ⟶ B` is a universal effective
