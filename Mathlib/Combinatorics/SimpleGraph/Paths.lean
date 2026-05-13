@@ -618,7 +618,7 @@ theorem isPath_iff_isSubwalk_nil {u v} {p : G.Walk u v} :
     p.IsPath ↔ ∀ (v : V) (w : G.Walk v v), w.IsSubwalk p → w.Nil := by
   refine ⟨fun hp v w hwp ↦ ?_, fun h ↦ .mk' ?_⟩
   · simp [w.isPath_iff_eq_nil.mp <| isPath_of_isSubwalk hwp hp]
-  · refine List.pairwise_iff_getElem.mpr fun i j hi hj hij heq ↦ ?_
+  · refine List.pairwise_iff_getElem.mpr fun i j _ _ _ _ ↦ ?_
     let p' := p.take j |>.drop i
     have : ¬p'.Nil := by grind [nil_drop_iff, take_length]
     have : p'.IsSubwalk p := isSubwalk_drop _ i |>.trans <| p.isSubwalk_take j
@@ -635,8 +635,8 @@ theorem IsTrail.isPath_iff_isSubwalk_not_isCycle {u v} {p : G.Walk u v} (ht : p.
     refine cons_isPath_iff .. |>.mpr ⟨hp, fun hup ↦ h u (p.takeUntil u hup |>.cons hadj) ?_ ?_⟩
     · rw [isSubwalk_iff_support_isInfix, support_cons, support_cons]
       exact (List.prefix_cons_inj u |>.mpr <| p.support_takeUntil_prefix hup).isInfix
-    refine cons_isCycle_iff .. |>.mpr ⟨hp.takeUntil hup, fun he ↦ ?_⟩
-    exact ht.edges_nodup.notMem <| p.edges_takeUntil_subset hup he
+    · refine cons_isCycle_iff .. |>.mpr ⟨hp.takeUntil hup, fun he ↦ ?_⟩
+      exact ht.edges_nodup.notMem <| p.edges_takeUntil_subset hup he
 
 end Walk
 
