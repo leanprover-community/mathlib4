@@ -27,14 +27,14 @@ We introduce a typeclass `IsHomotopyInvariant` for the first axiom.
 
 open CategoryTheory TopPair ObjectProperty
 
-universe u v
+universe u
 
 namespace TopPair
 
 /-- A `HomologyPretheory` is the data of an Eilenberg-Steenrod homology theory. -/
 @[ext]
 structure HomologyPretheory
-    (C : Type v) [Category C] [Limits.HasZeroMorphisms C] {ι : Type*} (c : ComplexShape ι) where
+    (C : Type*) [Category* C] [Limits.HasZeroMorphisms C] {ι : Type*} (c : ComplexShape ι) where
   /-- The relative homology functor of a `HomologyPretheory`. -/
   Hₚ (i : ι) : TopPair.{u} ⥤ C
   /-- The regular homology functor of a `HomologyPretheory`. -/
@@ -48,7 +48,7 @@ structure HomologyPretheory
 
 namespace HomologyPretheory
 
-variable {C : Type v} [Category C] [Limits.HasZeroMorphisms C] {ι : Type*} {c : ComplexShape ι}
+variable {C : Type*} [Category* C] [Limits.HasZeroMorphisms C] {ι : Type*} {c : ComplexShape ι}
 
 /-- A morphism in the category `HomologyPretheory`. -/
 @[ext]
