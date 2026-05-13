@@ -49,8 +49,8 @@ lemma Ideal.height_eq_primeHeight [I.IsPrime] : I.height = I.primeHeight := by
 lemma Ideal.exists_isPrime_height_eq {I : Ideal R} {n : ℕ} (hI : I.height = n) :
     ∃ (p : Ideal R) (_ : p.IsPrime) (_  : I ≤ p), p.height = n := by
   simp only [Ideal.height, ENat.iInf_eq_coe_iff] at hI
-  rcases hI with ⟨⟨p, ⟨⟨⟨hpp, hIp⟩, _⟩, _⟩, _⟩, _⟩
-  use p, hpp, hIp, by rwa [p.height_eq_primeHeight]
+  rcases hI with ⟨⟨p, ⟨⟨⟨hpp, hIp⟩, _⟩, h⟩, -⟩, -⟩
+  use p, hpp, hIp, by rw [p.height_eq_primeHeight, h]
 
 /-- An ideal has finite height if it is either the unit ideal or its height is finite.
 We include the unit ideal in order to have the instance `IsNoetherianRing R → FiniteHeight I`. -/

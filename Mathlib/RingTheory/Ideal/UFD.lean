@@ -36,9 +36,9 @@ theorem UniqueFactorizationMonoid.of_height_one_primes_principal [IsNoetherianRi
   intro I hIn _
   rcases I.ne_bot_iff.1 hIn with ⟨x, hxI, hx0⟩
   rcases Ideal.exists_minimalPrimes_le (I.span_singleton_le_iff_mem.2 hxI) with ⟨p, hpmin, hpl⟩
-  have : p.IsPrime := Ideal.minimalPrimes_isPrime hpmin
+  have : p.IsPrime := hpmin.isPrime
   have hpn : p ≠ ⊥ := fun hpb ↦ hx0 <|
-    Ideal.span_singleton_eq_bot.1 <| bot_unique (hpmin.1.2.trans_eq hpb)
+    Ideal.span_singleton_eq_bot.1 <| bot_unique (hpmin.le.trans_eq hpb)
   have hpp : p.IsPrincipal := h p <| le_antisymm
     ((Ideal.span {x}).height_le_one_of_isPrincipal_of_mem_minimalPrimes p hpmin)
       (ENat.one_le_iff_ne_zero.2 (p.height_eq_zero_iff_eq_bot.not.2 hpn))
@@ -72,7 +72,7 @@ theorem Ideal.isPrincipal_of_isPrincipal_isLocalization_away_of_prime
     have haeq : map (algebraMap R S) p = map (algebraMap R S) (span {a}) := by
       simp [hg, map_span, ← span_singleton_mul_left_unit hu (algebraMap R S a), hag]
     refine ⟨a, le_antisymm (fun z hz ↦ ?_) (p.span_singleton_le_iff_mem.2 <| by
-      rwa [← IsLocalization.comap_map_of_isPrime_disjoint (Submonoid.powers x) S ‹_› hd])⟩
+      rwa [← IsLocalization.under_map_of_isPrime_disjoint (Submonoid.powers x) S ‹_› hd])⟩
     have hzmap := mem_map_of_mem (algebraMap R S) hz
     rw [haeq, IsLocalization.algebraMap_mem_map_algebraMap_iff (Submonoid.powers x)] at hzmap
     rcases hzmap with ⟨s, ⟨n, rfl⟩, hsz⟩
@@ -101,8 +101,8 @@ theorem UniqueFactorizationMonoid.iff_isLocalization_away_of_prime
     have := IsLocalization.isPrime_of_isPrime_disjoint (Submonoid.powers x) S p hp hd
     exact p.isPrincipal_of_isPrincipal_isLocalization_away_of_prime hx hxp S <|
       height_one_primes_principal <| by
-        rw [← IsLocalization.height_comap (Submonoid.powers x),
-          IsLocalization.comap_map_of_isPrime_disjoint (Submonoid.powers x) S hp hd, h1]
+        rw [← IsLocalization.height_under (Submonoid.powers x),
+          IsLocalization.under_map_of_isPrime_disjoint (Submonoid.powers x) S hp hd, h1]
 
 /-- Let `R` be a Noetherian domain, `x ∈ R` be a prime element. Then `R` is a UFD if and only if
   `Rₓ` is a UFD. -/
