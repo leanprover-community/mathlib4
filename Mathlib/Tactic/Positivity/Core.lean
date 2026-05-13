@@ -524,13 +524,12 @@ def solve (t : Q(Prop)) : MetaM Expr := do
       | .ne', .nonnegative _ => throw "nonzeroness" "nonnegativity"
       | _, .none => throwError "failed to prove positivity/nonnegativity/nonzeroness"
     else
-      let p ← match relDesired, r with
+      match relDesired, r with
       | .ne, .nonzero p => pure p
       | .ne', .nonzero p => pure q(Ne.symm $p)
       | .lt, .nonzero _ => throw "strict positivity" "nonzeroness"
       | .le, .nonzero _ => throw "nonnegativity" "nonzeroness"
       | _, _ => throwError "failed to prove nonzeroness"
-      pure p
   match t with
   | ~q(@LE.le $α $_a $z $e) => rest α z e .le
   | ~q(@LT.lt $α $_a $z $e) => rest α z e .lt
