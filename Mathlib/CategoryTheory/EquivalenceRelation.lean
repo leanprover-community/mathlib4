@@ -49,7 +49,8 @@ structure ReflexiveRelation {R X : C} (p₁ p₂ : R ⟶ X) extends JointlyMono�
   reflexivity₁ : r ≫ p₁ = 𝟙 _ := by cat_disch
   reflexivity₂ : r ≫ p₂ = 𝟙 _ := by cat_disch
 
-attribute [reassoc (attr := simp)] ReflexiveRelation.reflexivity₁ ReflexiveRelation.reflexivity₂
+attribute [reassoc (attr := simp), elementwise (attr := simp)]
+  ReflexiveRelation.reflexivity₁ ReflexiveRelation.reflexivity₂
 
 /-- A symmetric relation is a jointly monic pair of parallel morphisms `p₁, p₂ : R ⟶ X` together
 with a morphism `s : R ⟶ R` which interchanges `p₁` and `p₂`. -/
@@ -59,7 +60,8 @@ structure SymmetricRelation {R X : C} (p₁ p₂ : R ⟶ X) extends JointlyMono�
   symmetry₁ : s ≫ p₁ = p₂ := by cat_disch
   symmetry₂ : s ≫ p₂ = p₁ := by cat_disch
 
-attribute [reassoc (attr := simp)] SymmetricRelation.symmetry₁ SymmetricRelation.symmetry₂
+attribute [reassoc (attr := simp), elementwise (attr := simp)]
+  SymmetricRelation.symmetry₁ SymmetricRelation.symmetry₂
 
 /-- A transitive relation is a jointly monic pair of parallel morphisms `p₁, p₂ : R ⟶ X`, together
 with a limiting pullback cone `c` for `p₁` and `p₂` and a map `c.pt ⟶ R` which factors the two
@@ -76,7 +78,8 @@ structure TransitiveRelation {R X : C} (p₁ p₂ : R ⟶ X) extends JointlyMono
 
 initialize_simps_projections TransitiveRelation (-isLimit)
 
-attribute [reassoc (attr := simp)] TransitiveRelation.transitivity₁ TransitiveRelation.transitivity₂
+attribute [reassoc (attr := simp), elementwise (attr := simp)]
+  TransitiveRelation.transitivity₁ TransitiveRelation.transitivity₂
 
 /-- An equivalence relation is a reflexive, symmetric and transitive relation. -/
 structure EquivalenceRelation {R X : C} (p₁ p₂ : R ⟶ X) extends ReflexiveRelation p₁ p₂,
@@ -137,12 +140,8 @@ noncomputable def TransitiveRelation.map (e : TransitiveRelation p₁ p₂) (F :
   t := F.map e.t
   c := e.c.map F
   isLimit := isLimitPullbackConeMapOfIsLimit F e.c.condition (.ofIsoLimit e.isLimit e.c.eta)
-  transitivity₁ := by
-    dsimp
-    rw [← F.map_comp, ← F.map_comp, transitivity₁]
-  transitivity₂ := by
-    dsimp
-    rw [← F.map_comp, ← F.map_comp, transitivity₂]
+  transitivity₁ := by simp [← Functor.map_comp]
+  transitivity₂ := by simp [← Functor.map_comp]
 
 end CategoryTheory
 
@@ -207,15 +206,14 @@ variable {p₁ p₂}
 relation. -/
 lemma of_reflexiveRelation (e : ReflexiveRelation p₁ p₂) :
     Std.Refl (Rel.ofPair p₁ p₂) where
-  refl x := ⟨e.r x, congr($e.reflexivity₁ x), congr($e.reflexivity₂ x)⟩
+  refl x := ⟨e.r x, congr($e.reflexivity₁ x), by simp⟩
 
 /-- An internal symmetric relation in the category of types gives rise to a standard symmetric
 relation. -/
 lemma of_symmetricRelation (e : SymmetricRelation p₁ p₂) :
     Symmetric (Rel.ofPair p₁ p₂) := by
-  refine fun x₁ x₂ ⟨r, hr₁, hr₂⟩ => ⟨e.s r, ?_⟩
-  rw [← hr₁, ← hr₂]
-  exact ⟨congr($e.symmetry₁ r), congr($e.symmetry₂ r)⟩
+  refine fun x₁ x₂ ⟨r, hr₁, hr₂⟩ => ⟨e.s r, ?_, ?_⟩
+  all_goals simpa
 
 /-- An internal transitive relation in the category of types gives rise to a standard transitive
 relation. -/
@@ -225,12 +223,7 @@ lemma of_transitiveRelation (e : TransitiveRelation p₁ p₂) :
     refine fun ⟨r, ⟨hr₁, hr₂⟩⟩ ⟨r', ⟨hr₁', hr₂'⟩⟩ =>
       ⟨e.t ((PullbackCone.IsLimit.equivPullbackObj e.isLimit).symm ⟨(r, r'), hr₂.trans hr₁'.symm⟩),
         ⟨?_, ?_⟩⟩
-    · simpa only [comp_apply, hr₁, PullbackCone.IsLimit.equivPullbackObj_symm_apply_fst] using
-        congr($e.transitivity₁
-          ((PullbackCone.IsLimit.equivPullbackObj e.isLimit).symm ⟨(r, r'), hr₂.trans hr₁'.symm⟩))
-    · simpa only [comp_apply, hr₂', PullbackCone.IsLimit.equivPullbackObj_symm_apply_snd] using
-        congr($e.transitivity₂
-          ((PullbackCone.IsLimit.equivPullbackObj e.isLimit).symm ⟨(r, r'), hr₂.trans hr₁'.symm⟩))
+    all_goals simpa
 
 /-- An internal equivalence relation in the category of types gives rise to a standard equivalence
 relation. -/
