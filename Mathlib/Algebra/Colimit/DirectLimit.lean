@@ -953,7 +953,7 @@ noncomputable def lift (g : ∀ i, (G i) →⋆ₐ[R] P) (Hg : ∀ i j hij x, g 
     DirectLimit G f →⋆ₐ[R] P where
   toFun := _root_.DirectLimit.lift _ (g · ·) fun i j h x ↦ (Hg i j h x).symm
   __ := DirectLimit.Algebra.lift G f P (g := fun i => (g i).toAlgHom) Hg
-  __ := DirectLimit.NonUnitalStarRing.lift G f P (g := fun i => ((g i): (G i) →⋆ₙₐ[R] P)) Hg
+  map_star' := lift_star _ _
 
 variable (g : ∀ i, G i →⋆ₐ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
 
