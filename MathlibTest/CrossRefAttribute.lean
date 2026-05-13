@@ -1,4 +1,4 @@
-import Mathlib.Tactic.StacksAttribute
+import Mathlib.Tactic.CrossRefAttribute
 import Mathlib.Util.ParseCommand
 
 /-- info: No tags found. -/
@@ -38,13 +38,13 @@ example : True := .intro
 example : True := .intro
 
 /-- error: <input>:1:3: Stacks tags must be exactly 4 characters -/
-#guard_msgs in #parse Mathlib.StacksTag.stacksTagFn => "A05"
+#guard_msgs in #parse Mathlib.CrossRef.stacksTagFn => "A05"
 
 /-- error: <input>:1:4: Stacks tags must consist only of digits and uppercase letters. -/
-#guard_msgs in #parse Mathlib.StacksTag.stacksTagFn => "A05b"
+#guard_msgs in #parse Mathlib.CrossRef.stacksTagFn => "A05b"
 
 /-- info: 0BD5 -/
-#guard_msgs in #parse Mathlib.StacksTag.stacksTagFn => "0BD5"
+#guard_msgs in #parse Mathlib.CrossRef.stacksTagFn => "0BD5"
 
 /--
 info:
@@ -63,7 +63,7 @@ True
 
 /--
 info:
-[Stacks Tag B15R](https://kerodon.net/tag/B15R) corresponds to declaration 'X.tagged'. (Also a comment)
+[Kerodon Tag B15R](https://kerodon.net/tag/B15R) corresponds to declaration 'X.tagged'. (Also a comment)
 True
 -/
 #guard_msgs in
@@ -71,7 +71,7 @@ True
 
 section errors
 
-open Lean Parser Mathlib.StacksTag
+open Lean Parser Mathlib.CrossRef
 
 def captureException (env : Environment) (s : ParserFn) (input : String) : Except String Syntax :=
   let ictx := mkInputContext input "<input>"
