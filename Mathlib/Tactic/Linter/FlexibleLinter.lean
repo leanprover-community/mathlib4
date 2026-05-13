@@ -518,8 +518,12 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
     let suggestion? ← liftCoreM <| generateSimpSuggestion stainData stainStx
     -- Emit warning and suggestion
     let msg := match stainStx.getKind with
-      | ``Lean.Parser.Tactic.simp =>
-        m!"`{stainStr}` is a flexible tactic modifying `{d}`. \
+      | ``Lean.Parser.Tactic.simp => match d with
+        | .wildcard => m!"`{stainStr}` is a flexible tactic that potentially modifies all \
+          hypotheses and the goal. \
+          Try `simp?` and use the suggested `simp only [...]`. \
+          Alternatively, use `suffices` to explicitly state the simplified form."
+        | _ => m!"`{stainStr}` is a flexible tactic modifying `{d}`. \
           Try `simp?` and use the suggested `simp only [...]`. \
           Alternatively, use `suffices` to explicitly state the simplified form."
       | ``Lean.Parser.Tactic.simpAll =>
@@ -538,8 +542,9 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
     match d with
     | .name _ => logInfoAt s m!"`{s}` uses `{d}`, which was modified by a flexible tactic!"
     | .goal =>
-        logInfoAt s m!"`{s}` modifies the current goal, which was modified by a flexible tactic!"
-    | _ => logInfoAt s m!"`{s}` uses `{d}`test!" -- this case should not appear
+      logInfoAt s m!"`{s}` modifies the current goal, which was modified by a flexible tactic!"
+    | _ => logInfoAt s m!"`{s}` uses a rigid tactic. Previously, a flexible tactic, which \
+      potentially modified all hypotheses and the goal, was used."
 
 initialize addLinter flexibleLinter
 
