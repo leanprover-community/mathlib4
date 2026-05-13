@@ -1864,6 +1864,7 @@ public import Mathlib.Analysis.Complex.Trigonometric
 public import Mathlib.Analysis.Complex.UnitDisc.Basic
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
+public import Mathlib.Analysis.Complex.UpperHalfPlane.FixedPoints
 public import Mathlib.Analysis.Complex.UpperHalfPlane.FunctionsBoundedAtInfty
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Measure
@@ -4606,6 +4607,7 @@ public import Mathlib.Geometry.Manifold.SmoothApprox
 public import Mathlib.Geometry.Manifold.SmoothEmbedding
 public import Mathlib.Geometry.Manifold.StructureGroupoid
 public import Mathlib.Geometry.Manifold.VectorBundle.Basic
+public import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Basic
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Torsion
 public import Mathlib.Geometry.Manifold.VectorBundle.FiberwiseLinear
@@ -4614,7 +4616,6 @@ public import Mathlib.Geometry.Manifold.VectorBundle.LocalFrame
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 public import Mathlib.Geometry.Manifold.VectorBundle.Pullback
 public import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
-public import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
 public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 public import Mathlib.Geometry.Manifold.VectorBundle.Tensoriality
 public import Mathlib.Geometry.Manifold.VectorField.LieBracket
@@ -7102,6 +7103,7 @@ public import Mathlib.Tactic.Contrapose
 public import Mathlib.Tactic.Conv
 public import Mathlib.Tactic.Convert
 public import Mathlib.Tactic.Core
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.DSimpPercent
 public import Mathlib.Tactic.DeclarationNames
 public import Mathlib.Tactic.DefEqAbuse
@@ -7318,7 +7320,6 @@ public import Mathlib.Tactic.Simps.Basic
 public import Mathlib.Tactic.Simps.NotationClass
 public import Mathlib.Tactic.SplitIfs
 public import Mathlib.Tactic.Spread
-public import Mathlib.Tactic.StacksAttribute
 public import Mathlib.Tactic.Subsingleton
 public import Mathlib.Tactic.Substs
 public import Mathlib.Tactic.SuccessIfFailWithMsg
@@ -7724,6 +7725,7 @@ public import Mathlib.Topology.Hom.ContinuousEvalConst
 public import Mathlib.Topology.Hom.Open
 public import Mathlib.Topology.Homeomorph.Defs
 public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.Topology.Homeomorph.Quotient
 public import Mathlib.Topology.Homeomorph.TransferInstance
 public import Mathlib.Topology.Homotopy.Affine
 public import Mathlib.Topology.Homotopy.Basic
@@ -8018,6 +8020,7 @@ public import Mathlib.Topology.UrysohnsBounded
 public import Mathlib.Topology.UrysohnsLemma
 public import Mathlib.Topology.VectorBundle.Basic
 public import Mathlib.Topology.VectorBundle.Constructions
+public import Mathlib.Topology.VectorBundle.ContinuousAlternatingMap
 public import Mathlib.Topology.VectorBundle.FiniteDimensional
 public import Mathlib.Topology.VectorBundle.Hom
 public import Mathlib.Topology.VectorBundle.Riemannian
