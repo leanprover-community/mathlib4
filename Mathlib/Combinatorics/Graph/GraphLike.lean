@@ -5,7 +5,7 @@ Authors: Jun Kwon, Laura Monk, Freddie Nash
 -/
 module
 
-public import Mathlib.Combinatorics.GraphLike.Symm
+public import Mathlib.Combinatorics.GraphLike.Basic
 public import Mathlib.Combinatorics.Graph.Basic
 
 /-!
@@ -30,15 +30,15 @@ open Dart GraphLike SymmGraphLike
 
 @[simps (attr := grind =) -isSimp]
 instance : SymmGraphLike α (Dart α β) β (Graph α β) where
-  src d := match d with
+  source G d := match d with
     | dir _ u _ _ => u
     | fwd _ u => u
     | bwd _ u => u
-  tgt d := match d with
+  target G d := match d with
     | dir _ _ v _ => v
     | fwd _ v => v
     | bwd _ v => v
-  edge d := match d with
+  edge G d := match d with
     | dir e _ _ _ => e
     | fwd e _ => e
     | bwd e _ => e
@@ -47,8 +47,8 @@ instance : SymmGraphLike α (Dart α β) β (Graph α β) where
     | fwd e u => bwd e u
     | bwd e u => fwd e u
   inv_invol := by grind
-  inv_src d := by grind
-  inv_tgt d := by grind
+  inv_source G d := by grind
+  inv_target G d := by grind
   verts G := V(G)
   darts G :=
     let s : Dart α β → α := fun d ↦ match d with
@@ -65,8 +65,8 @@ instance : SymmGraphLike α (Dart α β) β (Graph α β) where
       | bwd e _ => e
     {d : Dart α β | G.IsLink (e d) (s d) (t d)}
   edges G := E(G)
-  src_mem_of_darts _ _ := IsLink.left_mem
-  tgt_mem_of_darts _ _ := IsLink.right_mem
+  source_mem_of_darts _ _ := IsLink.left_mem
+  target_mem_of_darts _ _ := IsLink.right_mem
   edge_mem_of_darts _ _ := IsLink.edge_mem
   inv_ne G d hd := by grind
   inv_mem_darts_iff G d := by grind [isLink_comm]
@@ -78,5 +78,7 @@ instance : SymmGraphLike α (Dart α β) β (Graph α β) where
     obtain rfl | hne := eq_or_ne u v
     · exact ⟨Dart.fwd e u, by grind⟩
     exact ⟨Dart.dir e u v hne, by grind⟩
+
+attribute [simp] source_def target_def edge_def
 
 end Graph
