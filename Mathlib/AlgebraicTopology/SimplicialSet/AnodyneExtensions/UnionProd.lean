@@ -9,6 +9,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.PairingC
 public import Mathlib.AlgebraicTopology.SimplicialSet.Boundary
 public import Mathlib.AlgebraicTopology.SimplicialSet.Horn
 public import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
+public import Mathlib.AlgebraicTopology.SimplicialSet.ProdStdSimplex
 
 /-!
 # ...
@@ -32,8 +33,11 @@ variable {m : ℕ} {k : Fin (m + 1)} {n : ℕ}
 
 namespace pairingCore
 
-variable (x : (Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] ∂Δ[n]).N)
-  {d : ℕ} (hd : x.dim = d)
+variable (x : (Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] ∂Δ[n]).N) {d : ℕ}
+
+section
+
+variable (hd : x.dim = d)
 
 /-- Let `x` be a nondegenerate `d`-simplex of `Δ[m + 1] ⊗ Δ[n]` which
 does not belong to `Λ[m + 1, k.castSucc].unionProd ∂Δ[n]`. In particular,
@@ -96,11 +100,11 @@ does not belong to `Λ[m + 1, k.castSucc].unionProd ∂Δ[n]`. This is
 the smallest `l : Fin (d + 1)` such that `x l` is of the form `(k.succ, _)`. -/
 noncomputable def min : Fin (d + 1) := (finset x hd).min' (nonempty_finset x hd)
 
-lemma simplex_left_min : dsimp% (x.cast hd).simplex.1 (min x hd) = k.succ := by
+lemma simplex_fst_min : dsimp% (x.cast hd).simplex.1 (min x hd) = k.succ := by
   rw [← mem_finset_iff]
   apply Finset.min'_mem
 
-lemma simplex_left_le_castSucc_iff (i : Fin (d + 1)) :
+lemma simplex_fst_le_castSucc_iff (i : Fin (d + 1)) :
     dsimp% (x.cast hd).simplex.1 i ≤ k.castSucc ↔ i < min x hd := by
   contrapose!
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
@@ -109,15 +113,19 @@ lemma simplex_left_le_castSucc_iff (i : Fin (d + 1)) :
     · by_contra! h'
       have := stdSimplex.monotone_apply (x.cast hd).simplex.1 h'.le
       dsimp at this
-      rw [simplex_left_min, ← not_lt] at this
+      rw [simplex_fst_min, ← not_lt] at this
       tauto
     · exact Finset.min'_le _ _ (by simpa using h.symm)
-  · rw [Fin.castSucc_lt_iff_succ_le, ← simplex_left_min x hd]
+  · rw [Fin.castSucc_lt_iff_succ_le, ← simplex_fst_min x hd]
     exact stdSimplex.monotone_apply _ h
+
+end
 
 namespace IsIndex
 
-variable {x hd} {l : Fin d} (hl : IsIndex x hd l.succ)
+section
+
+variable {hd : x.dim = d} {l : Fin d} (hl : IsIndex x hd l.succ)
 
 include hl
 
@@ -155,7 +163,66 @@ lemma min_eq : min x hd = l.succ :=
 lemma unique {l' : Fin d} (hl' : IsIndex x hd l'.succ) : l = l' := by
   rw [← Fin.succ_inj, ← hl.min_eq, hl'.min_eq]
 
+end
+
+section
+
+variable {hd : x.dim = d + 1} {l : Fin (d + 1)} (hl : IsIndex x hd l.succ)
+
+include hl
+
+@[simps]
+noncomputable def δ :
+    ((horn.{u} (m + 1) k.castSucc).unionProd (boundary n)).N where
+  dim := d
+  simplex := (Δ[m + 1] ⊗ Δ[n]).δ l.castSucc (x.cast hd).simplex
+  nonDegenerate := sorry
+  notMem := by
+    have := hl
+    sorry
+
+end
+
 end IsIndex
+
+/-- Let `x` be a nondegenerate simplex of `Δ[m + 1] ⊗ Δ[n]` which
+does not belong to `Λ[m + 1, k.castSucc].unionProd ∂Δ[n]`. This is
+the property that `x` is a type (II) simplex for the pairing
+`prodStdSimplex.pairingCore` that is constructed below. -/
+def IsType₂ : Prop :=
+  ∀ (d : ℕ) (hd : x.dim = d) (l : Fin (d + 1)), ¬ IsIndex x hd l
+
+namespace IsType₂
+
+variable (hx : IsType₂ x) {d : ℕ} (hd : x.dim = d)
+
+noncomputable def φ (i : Fin (d + 1 + 1)) : Fin (m + 1 + 1) × Fin (n + 1) :=
+  if i = (min x hd).castSucc
+  then ⟨k.castSucc, (x.cast hd).simplex.2 (min x hd)⟩
+  else objEquiv (x.cast hd).simplex ((min x hd).predAbove i)
+
+lemma φ_castSucc :
+    φ x hd (min x hd).castSucc = ⟨k.castSucc, (x.cast hd).simplex.2 (min x hd)⟩ := by
+  simp [φ]
+
+lemma φ_succAbove (i : Fin (d + 1)) :
+    φ x hd ((min x hd).castSucc.succAbove i) =
+      objEquiv (x.cast hd).simplex i := by
+  simp [φ]
+
+lemma φ_succ_snd : (φ x hd (min x hd).succ).2 = (φ x hd (min x hd).castSucc).2 := by
+  have := φ_succAbove x hd (min x hd)
+  rw [Fin.succAbove_castSucc_self] at this
+  rw [this, φ_castSucc]
+  rfl
+
+lemma φ_succ_fst : (φ x hd (min x hd).succ).1 = k.succ := by
+  have := φ_succAbove x hd (min x hd)
+  rw [Fin.succAbove_castSucc_self] at this
+  rw [this]
+  exact simplex_fst_min x hd
+
+end IsType₂
 
 end pairingCore
 
