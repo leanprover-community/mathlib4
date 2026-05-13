@@ -185,13 +185,12 @@ end Lattice
 section CanonicallyOrdered
 
 variable [DecidableEq ι] [∀ i, DecidableEq (α i)]
-variable [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, CanonicallyOrderedAdd (α i)]
+variable [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, IsBotZeroClass (α i)]
   [∀ i, OrderBot (α i)] [∀ i, LocallyFiniteOrder (α i)]
 variable (f : Π₀ i, α i)
 
 lemma card_Iic : #(Iic f) = ∏ i ∈ f.support, #(Iic (f i)) := by
-  simp_rw [Iic_eq_Icc, card_Icc, bot_eq_zero, support_zero, empty_union, zero_apply,
-    bot_eq_zero]
+  simp [Iic_eq_Icc, card_Icc, bot_eq_zero]
 
 lemma card_Iio : #(Iio f) = (∏ i ∈ f.support, #(Iic (f i))) - 1 := by
   rw [card_Iio_eq_card_Iic_sub_one, card_Iic]

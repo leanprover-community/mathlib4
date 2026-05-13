@@ -121,13 +121,12 @@ end Lattice
 
 section CanonicallyOrdered
 
-variable [AddCommMonoid α] [PartialOrder α] [CanonicallyOrderedAdd α]
+variable [AddCommMonoid α] [PartialOrder α] [IsBotZeroClass α]
   [OrderBot α] [LocallyFiniteOrder α]
 variable [DecidableEq ι] [DecidableEq α] (f : ι →₀ α)
 
 theorem card_Iic : #(Iic f) = ∏ i ∈ f.support, #(Iic (f i)) := by
-  classical simp_rw [Iic_eq_Icc, card_Icc, bot_eq_zero, support_zero, empty_union,
-      zero_apply, bot_eq_zero]
+  classical simp [Iic_eq_Icc, card_Icc, bot_eq_zero]
 
 theorem card_Iio : #(Iio f) = ∏ i ∈ f.support, #(Iic (f i)) - 1 := by
   rw [card_Iio_eq_card_Iic_sub_one, card_Iic]
