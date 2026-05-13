@@ -207,11 +207,11 @@ def elabTermForConvert (term : Syntax) (expectedType? : Option Expr) :
       return t
 
 elab_rules : tactic
-| `(tactic| convert%$tk $[!%$semired]? $cfg $[←%$sym]? $term $[using $n]? $[with $ps?*]?) =>
+| `(tactic| convert%$tk $[!%$semireducible]? $cfg $[←%$sym]? $term $[using $n]? $[with $ps?*]?) =>
   withMainContext do
     let baseConfig := { ← Convert.elabConfig cfg with }
     let mut config := baseConfig
-    if semired.isSome then
+    if semireducible.isSome then
       config := { config with
         -- TODO: also enable this in the future? (Not right now, for backwards compatibility).
         -- transparency := default,
@@ -220,7 +220,7 @@ elab_rules : tactic
     let patterns := (ps?.getD #[]).toList
     let expectedType ← mkFreshExprMVar (mkSort (← getLevel (← getMainTarget)))
     let (e, gs) ← elabTermForConvert term expectedType
-    if semired.isSome then
+    if semireducible.isSome then
       liftMetaTactic fun g ↦ do
         -- Suggest `convert` instead of `convert!` if that gives us the same goals.
         let redGoals ← g.convert e sym.isSome (n.map (·.getNat)) baseConfig patterns
@@ -284,7 +284,13 @@ elab_rules : tactic
 | `(tactic| convert_to $[!%$semireducible]? $cfg $[←%$sym]? $newType $[using $n]?
     $[with $ps?*]? $[$loc?:location]?) => do
   let n : ℕ := n |>.map (·.getNat) |>.getD 1
-  let config := { ← Convert.elabConfig cfg with }
+    let mut config := { ← Convert.elabConfig cfg with }
+    if semireducible.isSome then
+      config := { config with
+        -- TODO: also enable this in the future? (Not right now, for backwards compatibility).
+        -- transparency := default,
+        -- preTransparency := default,
+        postTransparency := default }
   let patterns := (ps?.getD #[]).toList
   withLocation (expandOptLocation (mkOptionalNode loc?))
     (atLocal := fun fvarId ↦ do
