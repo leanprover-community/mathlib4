@@ -732,3 +732,29 @@ example {f : α → FooHom α} (hf : Con f) : Con fun x ↦ f x (f x x x) x := b
   fun_prop
 
 end BundledMorphismWithFunctionValues
+
+
+
+namespace EagerTransition
+
+
+@[fun_prop] opaque Triv {α β} (f : α → β) : Prop
+@[fun_prop eager_transition] opaque Eager {α β} (f : α → β) : Prop
+@[fun_prop] opaque NonEager {α β} (f : α → β) : Prop
+
+@[fun_prop]
+theorem triv (f : α → β) : Triv f := silentSorry
+@[fun_prop]
+theorem eager_triv (f : α → β) (hf : Triv f) : Eager f := silentSorry
+@[fun_prop]
+theorem noneager_triv (f : α → β) (hf : Triv f) : NonEager f := silentSorry
+
+example (f : α → β) : Triv f := by fun_prop
+example (f : β → γ) (g : α → β) : Eager (fun x => f x) := by
+  fun_prop (config:={maxTransitionDepth:=10})
+example (f : β → γ) (g : α → β) : NonEager (fun x => f (g x)) := by
+  fail_if_success fun_prop (config:={maxTransitionDepth:=10})
+  apply silentSorry
+
+
+end EagerTransition

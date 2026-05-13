@@ -530,39 +530,42 @@ def tryTheorems (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
 def fvarAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
 
-  let hasCompTheorems := (← getLambdaTheorems funPropDecl.funPropName .comp).size != 0
+  -- the logic for fvarAppCase application seems to be unnecesarily different from constAppCase
+
   let dec? ← fData.nontrivialDecomposition
 
   -- fvar theorems are almost exclusively in uncurried form so we decompose if we can
-  if hasCompTheorems && dec?.isSome then
+  if dec?.isSome then
     let some (f, g) := dec? | unreachable!
-    applyCompRule funPropDecl e f g funProp
-  else
-    let .fvar id := fData.fn | throwError "fun_prop bug: invalid use of fvar app case"
-    let thms ← getLocalTheorems funPropDecl (.fvar id) fData.mainArgs fData.args.size
-    trace[Meta.Tactic.fun_prop]
-      s!"candidate local theorems for {←ppExpr (.fvar id)} \
-         {← thms.mapM fun thm => ppOrigin' thm.thmOrigin}"
-
-    if let some r ← tryTheorems funPropDecl e fData thms funProp then
+    if let some r ← applyCompRule funPropDecl e f g funProp then
       return r
 
-    if let some f ← fData.unfoldHeadFVar? then
-      let e' := e.setArg funPropDecl.funArgId f
-      if let some r ← funProp e' then
-        return r
+  let .fvar id := fData.fn | throwError "fun_prop bug: invalid use of fvar app case"
+  let thms ← getLocalTheorems funPropDecl (.fvar id) fData.mainArgs fData.args.size
+  trace[Meta.Tactic.fun_prop]
+    s!"candidate local theorems for {←ppExpr (.fvar id)} \
+       {← thms.mapM fun thm => ppOrigin' thm.thmOrigin}"
 
-    if (← fData.isMorApplication) != .none then
-      if let some r ← applyMorRules funPropDecl e fData funProp then
-        return r
+  if let some r ← tryTheorems funPropDecl e fData thms funProp then
+    return r
 
+  if let some f ← fData.unfoldHeadFVar? then
+    let e' := e.setArg funPropDecl.funArgId f
+    if let some r ← funProp e' then
+      return r
+
+  if (← fData.isMorApplication) != .none then
+    if let some r ← applyMorRules funPropDecl e fData funProp then
+      return r
+
+  if dec?.isNone || funPropDecl.eagerTransition then
     if let some r ← applyTransitionRules e funProp then
       return r
 
-    if thms.size = 0 then
-      logError s!"No theorems found for `{← ppExpr (.fvar id)}` in order to prove `{← ppExpr e}`"
+  if thms.size = 0 then
+    logError s!"No theorems found for `{← ppExpr (.fvar id)}` in order to prove `{← ppExpr e}`"
 
-    return none
+  return none
 
 
 /-- Prove function property of `fun x ↦ f x₁ ... xₙ` where `f` is declared function. -/
@@ -596,10 +599,9 @@ def constAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     if let some r ← applyMorRules funPropDecl e fData funProp then
       return r
 
-  let hasCompTheorems := (← getLambdaTheorems funPropDecl.funPropName .comp).size != 0
   let dec? ← fData.nontrivialDecomposition
 
-  if hasCompTheorems && dec?.isSome then
+  if dec?.isSome then
     let some (f, g) := dec? | unreachable!
 
     trace[Meta.Tactic.fun_prop]
@@ -608,7 +610,8 @@ def constAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
 
     if let some r ← applyCompRule funPropDecl e f g funProp then
       return r
-  else
+
+  if dec?.isNone || funPropDecl.eagerTransition then
     trace[Meta.Tactic.fun_prop]
       s!"failed applying `{funPropDecl.funPropName}` theorems for `{funName}`
          now trying to prove `{funPropDecl.funPropName}` from another function property"
