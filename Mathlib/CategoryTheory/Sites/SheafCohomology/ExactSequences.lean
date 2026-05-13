@@ -73,11 +73,8 @@ theorem δ_naturality (x : H S₁.X₃ n₀) :
 `Hⁿ(S.X₁) ⟶ Hⁿ(S.X₂) ⟶ Hⁿ(S.X₃) ⟶ Hⁿ⁺¹(S.X₁) ⟶ Hⁿ⁺¹(S.X₂) ⟶ Hⁿ⁺¹(S.X₃)`. -/
 noncomputable def longSequence (h : n₀ + 1 = n₁ := by lia) :
     ComposableArrows AddCommGrpCat.{w'} 5 := ComposableArrows.mk₅
-  (ofHom (map S.f n₀))
-  (ofHom (map S.g n₀))
-  (ofHom (δ hS n₀ n₁ h))
-  (ofHom (map S.f n₁))
-  (ofHom (map S.g n₁))
+  (ofHom (map S.f n₀)) (ofHom (map S.g n₀)) (ofHom (δ hS n₀ n₁ h))
+  (ofHom (map S.f n₁)) (ofHom (map S.g n₁))
 
 open ComposableArrows
 
@@ -123,7 +120,7 @@ theorem longSequence_exact : (longSequence hS n₀ n₁ h).Exact :=
   Ext.covariantSequence_exact _ hS n₀ n₁ h
 
 /-- The induced homomorphism of long exact equences obtained by applying `H.map` everywhere. -/
-noncomputable abbrev longSequenceHom :
+noncomputable abbrev longSequenceHom (h : n₀ + 1 = n₁ := by lia) :
     longSequence h₁ n₀ n₁ h ⟶ longSequence h₂ n₀ n₁ h := by
   refine ComposableArrows.homMk₅
     (ofHom (map f.τ₁ n₀))
@@ -139,27 +136,27 @@ noncomputable abbrev longSequenceHom :
 
 @[simp]
 lemma longSequenceHom_app₀ :
-    (longSequenceHom n₀ n₁ h h₁ h₂ f).app 0 = ofHom (map f.τ₁ n₀) := rfl
+    (longSequenceHom n₀ n₁ h₁ h₂ f h).app 0 = ofHom (map f.τ₁ n₀) := rfl
 
 @[simp]
 lemma longSequenceHom_app₁ :
-    (longSequenceHom n₀ n₁ h h₁ h₂ f).app 1 = ofHom (map f.τ₂ n₀) := rfl
+    (longSequenceHom n₀ n₁ h₁ h₂ f h).app 1 = ofHom (map f.τ₂ n₀) := rfl
 
 @[simp]
 lemma longSequenceHom_app₂ :
-    (longSequenceHom n₀ n₁ h h₁ h₂ f).app 2 = ofHom (map f.τ₃ n₀) := rfl
+    (longSequenceHom n₀ n₁ h₁ h₂ f h).app 2 = ofHom (map f.τ₃ n₀) := rfl
 
 @[simp]
 lemma longSequenceHom_app₃ :
-    (longSequenceHom n₀ n₁ h h₁ h₂ f).app 3 = ofHom (map f.τ₁ n₁) := rfl
+    (longSequenceHom n₀ n₁ h₁ h₂ f h).app 3 = ofHom (map f.τ₁ n₁) := rfl
 
 @[simp]
 lemma longSequenceHom_app₄ :
-    (longSequenceHom n₀ n₁ h h₁ h₂ f).app 4 = ofHom (map f.τ₂ n₁) := rfl
+    (longSequenceHom n₀ n₁ h₁ h₂ f h).app 4 = ofHom (map f.τ₂ n₁) := rfl
 
 @[simp]
 lemma longSequenceHom_app₅ :
-    (longSequenceHom n₀ n₁ h h₁ h₂ f).app 5 = ofHom (map f.τ₃ n₁) := rfl
+    (longSequenceHom n₀ n₁ h₁ h₂ f h).app 5 = ofHom (map f.τ₃ n₁) := rfl
 
 set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] H.map_comp_apply in
@@ -169,14 +166,14 @@ noncomputable def longSequenceFunctor :
     ObjectProperty.FullSubcategory (ShortComplex.ShortExact (C := (Sheaf J AddCommGrpCat.{w}))) ⥤
       ComposableArrows AddCommGrpCat.{w'} 5 where
   obj S := longSequence S.property n₀ n₁ h
-  map {S₁ S₂} f := longSequenceHom n₀ n₁ h S₁.property S₂.property f.hom
+  map {S₁ S₂} f := longSequenceHom n₀ n₁ S₁.property S₂.property f.hom h
 
-lemma longSequence_exact₁' :
+lemma longSequence_exact₁' (h : n₀ + 1 = n₁ := by lia) :
     (ShortComplex.mk (ofHom (δ hS n₀ n₁ h)) (ofHom (map S.f n₁))
       ((longSequence_exact hS n₀ n₁ h).zero 2)).Exact :=
   (longSequence_exact hS n₀ n₁ h).exact 2
 
-lemma longSequence_exact₃' :
+lemma longSequence_exact₃' (h : n₀ + 1 = n₁ := by lia) :
     (ShortComplex.mk (ofHom (map S.g n₀)) (ofHom (δ hS n₀ n₁ h))
       ((longSequence_exact hS n₀ n₁ h).zero 1)).Exact :=
   (longSequence_exact hS n₀ n₁ h).exact 1
