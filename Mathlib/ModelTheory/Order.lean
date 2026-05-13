@@ -557,13 +557,8 @@ theorem dlo_hasQuantifierElimination :
   apply hasQuantifierElimination_of_isElementaryExtensionPairFG
   intro M N _ iN _ _ _ _ f a
   obtain ⟨g, ha, hfg⟩ := Language.dlo_isExtensionPair M N f a
-  use N
-  use iN
-  use ElementaryEmbedding.refl Language.order N
-  use g
-  constructor
-  · exact ha
-  · simpa [PartialEquiv.ExtendsAlong, PartialEquiv.codMap] using hfg
+  refine ⟨N, iN, ElementaryEmbedding.refl Language.order N, g, ha, ?_⟩
+  simpa [PartialEquiv.ExtendsAlong, PartialEquiv.codMap] using hfg
 
 end Theory
 

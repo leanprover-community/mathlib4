@@ -449,8 +449,7 @@ theorem IsElementaryExtensionPair.FG {T : L.Theory}
   let S : L.Substructure M := (f : M ≃ₚ[L] N).dom ⊔ Substructure.closure L {a}
   have hS_fg : S.FG := f.property.sup (Substructure.fg_closure_singleton a)
   have hS_le : S ≤ g.dom :=
-    sup_le (dom_le_dom hg_ext) <|
-      Substructure.closure_le.mpr (Set.singleton_subset_iff.mpr hg_dom)
+    sup_le (dom_le_dom hg_ext) <| Substructure.closure_le.mpr (by simpa using hg_dom)
   refine ⟨N', inferInstance, e, ⟨g.domRestrict hS_le, hS_fg⟩, ?_, ?_⟩
   · exact mem_of_le_of_mem le_sup_right (Substructure.subset_closure rfl)
   · exact PartialEquiv.le_domRestrict _ _ le_sup_left hS_le hg_ext

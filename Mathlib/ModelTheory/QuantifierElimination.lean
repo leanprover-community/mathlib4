@@ -68,6 +68,29 @@ equivalent, over the theory, to a quantifier-free formula. -/
 def HasQuantifierElimination (T : L.Theory) : Prop :=
   ∀ {m : ℕ} (φ : L.Formula (Fin m)), T.isEquivQF φ
 
+/-- Finite conjunction of a list of quantifier-free formulas bundled with an auxiliary property. -/
+private def qfConj {m : ℕ} {P : L.Formula (Fin m) → Prop}
+    (l : List {ψ : L.Formula (Fin m) // ψ.IsQF ∧ P ψ}) : L.Formula (Fin m) :=
+  (l.map Subtype.val).foldr (· ⊓ ·) ⊤
+
+/-- A finite conjunction of quantifier-free formulas is quantifier-free. -/
+private theorem qfConj_isQF {m : ℕ} {P : L.Formula (Fin m) → Prop}
+    (l : List {ψ : L.Formula (Fin m) // ψ.IsQF ∧ P ψ}) :
+    (qfConj (L := L) l).IsQF := by
+  induction l with
+  | nil => exact BoundedFormula.IsQF.top
+  | cons ψ _ ih => simpa [qfConj] using ψ.2.1.inf ih
+
+/-- Realizing a finite conjunction is the same as realizing every formula in the list. -/
+private theorem realize_qfConj {m : ℕ} {P : L.Formula (Fin m) → Prop}
+    (l : List {ψ : L.Formula (Fin m) // ψ.IsQF ∧ P ψ}) {M : Type*} [L.Structure M]
+    (v : Fin m → M) (xs : Fin 0 → M) :
+    BoundedFormula.Realize (qfConj (L := L) l) v xs ↔
+      ∀ ψ ∈ l, BoundedFormula.Realize ψ.1 v xs := by
+  induction l with
+  | nil => simp [qfConj]
+  | cons ψ l ih => simp [qfConj]
+
 private theorem exists_substructure_embedding_of_agree_qf
     {m : ℕ} {M N : Type*} [L.Structure M] [L.Structure N]
     (v : Fin m → M) (w : Fin m → N)
@@ -76,8 +99,7 @@ private theorem exists_substructure_embedding_of_agree_qf
       ((↑) ∘ a = v) ∧ g ∘ a = w := by
   classical
   let S : L.Substructure M := Substructure.closure L (Set.range v)
-  let idx : Set.range v → Fin m := fun x => Classical.choose x.2
-  have hidx (x : Set.range v) : v (idx x) = x.1 := Classical.choose_spec x.2
+  choose idx hidx using fun x : Set.range v => x.2
   have hQFeq : ∀ {t u : L.Term (Fin m)},
       ((t.equal u : L.Formula (Fin m)).Realize v ↔ (t.equal u).Realize w) := fun {t u} =>
     hQF _ <| by
@@ -106,7 +128,7 @@ private theorem exists_substructure_embedding_of_agree_qf
   choose repr hrepr using fun x : S =>
     (Substructure.mem_closure_iff_exists_term (L := L) (s := Set.range v) (x := (x : M))).mp x.2
   let g : S ↪[L] N := {
-    toFun := fun x => (repr x).relabel idx |>.realize w
+    toFun := fun x => ((repr x).relabel idx).realize w
     inj' := by
       intro x y hxy
       apply Subtype.ext
@@ -177,22 +199,19 @@ theorem isEquivQF_iff_realize_iff_of_embeddings
           intro a a' b ha ha'
           simpa using ha.trans ha'.symm)
       let lqfs : List Q1 := qfs.toList
-      let θ : L.Formula (Fin m) := (lqfs.map Subtype.val).foldr (· ⊓ ·) ⊤
-      have hθQF : θ.IsQF := by
-        change ((lqfs.map Subtype.val).foldr (· ⊓ ·) ⊤).IsQF
-        induction lqfs with
-        | nil => exact BoundedFormula.IsQF.top
-        | cons q _ ih => exact q.2.1.inf (by simpa using ih)
+      let θ : L.Formula (Fin m) := qfConj lqfs
+      have hθQF : θ.IsQF := qfConj_isQF lqfs
       have hφθ : φ ⟹[T] θ := fun M v xs hφ => by
-        change BoundedFormula.Realize ((lqfs.map Subtype.val).foldr (· ⊓ ·) ⊤) v xs
-        rw [BoundedFormula.realize_foldr_inf, List.forall_mem_map]
+        change BoundedFormula.Realize (qfConj lqfs) v xs
+        rw [realize_qfConj]
         exact fun q _ => q.2.2 M v xs hφ
       have hθφ : θ ⟹[T] φ := by
         intro M v xs hθ
         by_contra hφ
         letI : (constantsOn (Fin m)).Structure M := constantsOn.structure v
-        have hθall : ∀ ψ ∈ lqfs.map Subtype.val, BoundedFormula.Realize ψ v xs := by
-          rw [← BoundedFormula.realize_foldr_inf]; exact hθ
+        have hθall : ∀ q ∈ lqfs, BoundedFormula.Realize q.1 v xs := by
+          change BoundedFormula.Realize (qfConj lqfs) v xs at hθ
+          exact (realize_qfConj lqfs v xs).mp hθ
         have hbase : ∀ τ ∈ base1, M ⊨ τ := by
           rintro τ (hT | hnot)
           · exact ((LHom.onTheory_model _ _).mpr inferInstance).realize_of_mem _ hT
@@ -211,9 +230,8 @@ theorem isEquivQF_iff_realize_iff_of_embeddings
             · rw [Set.mem_singleton_iff] at hq
               subst hq
               refine (Formula.realize_equivSentence (M := M) q.1).mpr ?_
-              have hqlist : q.1 ∈ lqfs.map Subtype.val :=
-                List.mem_map.mpr ⟨q, Finset.mem_toList.mpr (by simpa [qfs] using hi), rfl⟩
-              exact (Formula.boundedFormula_realize_eq_realize ..).mp (hθall q.1 hqlist)⟩
+              have hqlist : q ∈ lqfs := Finset.mem_toList.mpr (by simpa [qfs] using hi)
+              exact (Formula.boundedFormula_realize_eq_realize ..).mp (hθall q hqlist)⟩
         exact hs (Theory.Model.isSatisfiable M)
       exact hqe ⟨θ, hθQF, Theory.imp_antisymm hφθ hθφ⟩
     obtain ⟨M1⟩ := hsat1
@@ -243,20 +261,17 @@ theorem isEquivQF_iff_realize_iff_of_embeddings
       let qfs : Finset P :=
         s.filterMap id (by intro a a' b ha ha'; simpa using ha.trans ha'.symm)
       let lqfs : List P := qfs.toList
-      let θ : L.Formula (Fin m) := (lqfs.map Subtype.val).foldr (· ⊓ ·) ⊤
-      have hθQF : θ.IsQF := by
-        change ((lqfs.map Subtype.val).foldr (· ⊓ ·) ⊤).IsQF
-        induction lqfs with
-        | nil => exact BoundedFormula.IsQF.top
-        | cons q _ ih => exact q.2.1.inf (by simpa using ih)
+      let θ : L.Formula (Fin m) := qfConj lqfs
+      have hθQF : θ.IsQF := qfConj_isQF lqfs
       have hφnotθ : φ ⟹[T] θ.not := by
         intro M v xs hφ
         by_contra hnotθ
         have hθ : BoundedFormula.Realize θ v xs := by
           simpa [BoundedFormula.realize_not] using hnotθ
         letI : (constantsOn (Fin m)).Structure M := constantsOn.structure v
-        have hθall : ∀ ψ ∈ lqfs.map Subtype.val, BoundedFormula.Realize ψ v xs := by
-          rw [← BoundedFormula.realize_foldr_inf]; exact hθ
+        have hθall : ∀ q ∈ lqfs, BoundedFormula.Realize q.1 v xs := by
+          change BoundedFormula.Realize (qfConj lqfs) v xs at hθ
+          exact (realize_qfConj lqfs v xs).mp hθ
         have hbase : ∀ τ ∈ base2, M ⊨ τ := by
           rintro τ (hT | hφ')
           · exact ((LHom.onTheory_model _ _).mpr inferInstance).realize_of_mem _ hT
@@ -275,13 +290,12 @@ theorem isEquivQF_iff_realize_iff_of_embeddings
             · rw [Set.mem_singleton_iff] at hq
               subst hq
               refine (Formula.realize_equivSentence (M := M) q.1).mpr ?_
-              have hqlist : q.1 ∈ lqfs.map Subtype.val :=
-                List.mem_map.mpr ⟨q, Finset.mem_toList.mpr (by simpa [qfs] using hi), rfl⟩
-              exact (Formula.boundedFormula_realize_eq_realize ..).mp (hθall q.1 hqlist)⟩
+              have hqlist : q ∈ lqfs := Finset.mem_toList.mpr (by simpa [qfs] using hi)
+              exact (Formula.boundedFormula_realize_eq_realize ..).mp (hθall q hqlist)⟩
         exact hs (Theory.Model.isSatisfiable M)
       have hθv0 : θ.Realize v0 := by
-        change BoundedFormula.Realize ((lqfs.map Subtype.val).foldr (· ⊓ ·) ⊤) v0 default
-        rw [BoundedFormula.realize_foldr_inf, List.forall_mem_map]
+        change BoundedFormula.Realize (qfConj lqfs) v0 default
+        rw [realize_qfConj]
         exact fun q _ => q.2.2
       exact hqfConseq ⟨θ.not, hθQF.not, hφnotθ⟩ hθv0
     obtain ⟨N1⟩ := hsat2

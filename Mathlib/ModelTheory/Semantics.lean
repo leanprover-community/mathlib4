@@ -603,10 +603,12 @@ theorem realize_relabel_finSumFinEquiv_symm_snoc {m : ℕ} (φ : L.Formula (Fin 
     (BoundedFormula.relabel (fun i => finSumFinEquiv.symm i) φ).Realize v (Fin.snoc default x) ↔
       φ.Realize (Fin.snoc v x) := by
   rw [realize_relabel_finSumFinEquiv_symm]
-  refine iff_of_eq (congrArg _ (funext fun i => ?_))
-  induction i using Fin.lastCases with
-  | last => simp [Fin.snoc_zero]
-  | cast i => simp
+  have h : Sum.elim v (Fin.snoc default x) ∘ finSumFinEquiv.symm = Fin.snoc v x := by
+    funext i
+    induction i using Fin.lastCases with
+    | last => simp [Fin.snoc_zero]
+    | cast i => simp
+  rw [h]
 
 @[simp]
 theorem realize_equal {t₁ t₂ : L.Term α} {x : α → M} :
