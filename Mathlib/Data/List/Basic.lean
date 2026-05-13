@@ -890,9 +890,6 @@ theorem length_eq_length_filter_add {l : List (α)} (f : α → Bool) :
   simp_rw [← List.countP_eq_length_filter, l.length_eq_countP_add_countP f, Bool.not_eq_true,
     Bool.decide_eq_false]
 
-theorem sum_filter_ne_zero (l : List ℕ) : (l.filter (· ≠ 0)).sum = l.sum := by
-  induction l <;> grind
-
 /-! ### filterMap -/
 
 theorem filterMap_eq_flatMap_toList (f : α → Option β) (l : List α) :
