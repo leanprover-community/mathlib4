@@ -151,6 +151,7 @@ Unless you have a particular reason, prefer to use `IsSubmersionAt` instead.
   LiftSourceTargetPropertyAt I J n f x (SubmersionAtProp F I J M N)
 
 -- Lift the universe from `E`, to avoid a free universe parameter.
+
 variable (I J n) in
 /-- `f : M → N` is a `C^n` submersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
 around `x` and `f x`, respectively such that in these charts, `f` looks like `(u, v) ↦ u`.
@@ -388,9 +389,8 @@ lemma mk_of_continuousAt {f : M → N} {x : M} (hf : ContinuousAt f x) (equiv : 
 `E'` of `N` -/
 @[no_expose] def complement (h : IsSubmersionAt I J n f x) : Type u := Classical.choose h
 
-instance (h : IsSubmersionAt I J n f x) : NormedAddCommGroup h.complement := by
-  unfold IsSubmersionAt at h--rw [IsSubmersionAt_def] at h
-  exact Classical.choose <| Classical.choose_spec h
+@[no_expose] instance (h : IsSubmersionAt I J n f x) : NormedAddCommGroup h.complement :=
+  Classical.choose (Classical.choose_spec h)
 
 @[no_expose] instance (h : IsSubmersionAt I J n f x) : NormedSpace 𝕜 h.complement :=
   Classical.choose <| Classical.choose_spec <| Classical.choose_spec h
