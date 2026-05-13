@@ -70,7 +70,7 @@ theorem step1_foward (A : Submodule 𝕜 E) (K : Submodule 𝕜 E) (A_closed : I
 
 Note the hypothesis `h_ker` is implied `h_clemb`, but since this is a private theorem
 we just write the most convenient statement to prove and use. -/
-theorem step1_backward (A : Submodule 𝕜 E) (u : E →L[𝕜] F) (A_closed : IsClosed (A : Set E))
+theorem step1_backward (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E))
     [codim_A : FiniteDimensional 𝕜 (E ⧸ A)] (h_ker : Disjoint u.ker A) (h_range : u.range = ⊤)
     (h_clemb : IsClosedEmbedding (restrict A u)) :
     IsQuotientMap u := by
@@ -107,7 +107,9 @@ theorem step2_forward (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : Is
   let u' : E ⧸ u.ker →L[𝕜] F := u.ker.liftQL u le_rfl
   have u'_clemb : IsClosedEmbedding u' := by
     constructor
-    · sorry -- should be fixed with more API on strict homs
+    · have : Injective u' := by simp [u', ← LinearMap.ker_eq_bot, ker_liftQ_eq_bot]
+      simpa [isEmbedding_iff_isStrictMap_injective, this, and_true,
+        u.ker.isQuotientMap_mkQL.isStrictMap_iff]
     · simpa [u', ← LinearMap.coe_range, Submodule.range_liftQ]
   let π : E →L[𝕜] E ⧸ u.ker := u.ker.mkQL
   have π_restr_clemb : IsClosedEmbedding (restrict A π) :=
@@ -122,12 +124,17 @@ theorem step2_backward (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : I
   rcases A.exists_isCompl with ⟨S, A_compl_S⟩
   have : FiniteDimensional 𝕜 S :=
     quotientEquivOfIsCompl A S A_compl_S |>.finiteDimensional
-  rw [isClosedEmbedding_iff, range_restrict] at h_clemb
-  have : range u = (map u.toLinearMap A ⊔ map u.toLinearMap S) := by
-    rw [← Submodule.map_sup, A_compl_S.sup_eq_top, Submodule.map_top,
-      LinearMap.coe_range, ContinuousLinearMap.coe_coe]
-  refine ⟨?_, this ▸ Submodule.isClosed_sup_finiteDimensional _ _ h_clemb.2⟩
-  sorry
+  have range_u_closed : IsClosed (u.range : Set F) := by
+    rw [isClosedEmbedding_iff, range_restrict] at h_clemb
+    have : u.range = (map u.toLinearMap A ⊔ map u.toLinearMap S) := by
+      rw [← Submodule.map_sup, A_compl_S.sup_eq_top, Submodule.map_top]
+    exact this ▸ Submodule.isClosed_sup_finiteDimensional _ _ h_clemb.2
+  refine ⟨?_, range_u_closed⟩
+  set u' : E →L[𝕜] u.range := u.rangeRestrict
+  have h_clemb' : IsClosedEmbedding (restrict A u') := by
+    rw [← range_u_closed.isClosedEmbedding_subtypeVal.of_comp_iff]
+    exact h_clemb
+  exact step1_backward u' A A_closed (by simpa [u']) (by simp [u']) h_clemb'
 
 theorem step2 (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E))
     [codim_A : FiniteDimensional 𝕜 (E ⧸ A)] (h_ker : Disjoint u.ker A) :
