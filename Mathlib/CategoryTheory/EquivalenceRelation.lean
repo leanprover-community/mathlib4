@@ -151,8 +151,13 @@ open CategoryTheory Limits
 
 variable {X : Type w} (φ : X → X → Prop)
 
+/-- The subtype of `X × X` corresponding to a relation `φ : X → X → Prop`. -/
 abbrev ROfRel := Subtype φ.uncurry
+
+/-- The first projection `ROfRel ⟶ X`. -/
 abbrev p₁OfRel : ROfRel φ ⟶ X := ↾(Prod.fst ∘ Subtype.val)
+
+/-- The second projection `ROfRel ⟶ X`. -/
 abbrev p₂OfRel : ROfRel φ ⟶ X := ↾(Prod.snd ∘ Subtype.val)
 
 lemma jointlyMono₂ :
@@ -198,6 +203,7 @@ def EquivalenceRelation.ofEquivalence {X : Type w} {φ : X → X → Prop} (hφ 
 
 variable {R : Type w} (p₁ p₂ : R ⟶ X)
 
+/-- The relation on a type `X` coming from a pair of maps `R ⟶ X`. -/
 abbrev Rel.ofPair := fun x₁ x₂ => ∃ r : R, p₁ r = x₁ ∧ p₂ r = x₂
 
 variable {p₁ p₂}
