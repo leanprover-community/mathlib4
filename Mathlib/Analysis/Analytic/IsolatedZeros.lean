@@ -99,23 +99,18 @@ theorem iterate_dslope_fslope_ne_zero (hp : HasFPowerSeriesAt f p z₀) (h : p �
   rw [← coeff_zero (has_fpower_series_iterate_dslope_fslope p.order hp) 1]
   simpa [coeff_eq_zero] using apply_order_ne_zero h
 
-theorem eq_pow_order_mul_iterate_dslope (hp : HasFPowerSeriesAt f p z₀) :
-    ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ p.order • (swap dslope z₀)^[p.order] f z := by
-  have hq := hasFPowerSeriesAt_iff'.mp (has_fpower_series_iterate_dslope_fslope p.order hp)
-  filter_upwards [hq, hasFPowerSeriesAt_iff'.mp hp] with x hx1 hx2
-  have : ∀ k < p.order, p.coeff k = 0 := fun k hk => by
-    simpa [coeff_eq_zero] using apply_eq_zero_of_lt_order hk
-  obtain ⟨s, hs1, hs2⟩ := HasSum.exists_hasSum_smul_of_apply_eq_zero hx2 this
-  convert hs1.symm
-  simp only [coeff_iterate_fslope] at hx1
-  exact hx1.unique hs2
+theorem eq_pow_order_mul_iterate_dslope (hp : HasFPowerSeriesAt f p z₀) (z : 𝕜) :
+    f z = (z - z₀) ^ p.order • (swap dslope z₀)^[p.order] f z := by
+  refine (pow_sub_smul_iterate_dslope_of_zero _ (fun k hk ↦ ?_) z).symm
+  rw [← (has_fpower_series_iterate_dslope_fslope k hp).coeff_zero 1, ← coeff, coeff_iterate_fslope,
+    zero_add, coeff, p.apply_eq_zero_of_lt_order hk, ContinuousMultilinearMap.zero_apply]
 
 theorem locally_ne_zero (hp : HasFPowerSeriesAt f p z₀) (h : p ≠ 0) : ∀ᶠ z in 𝓝[≠] z₀, f z ≠ 0 := by
   rw [eventually_nhdsWithin_iff]
   have h2 := (has_fpower_series_iterate_dslope_fslope p.order hp).continuousAt
   have h3 := h2.eventually_ne (iterate_dslope_fslope_ne_zero hp h)
-  filter_upwards [eq_pow_order_mul_iterate_dslope hp, h3] with z e1 e2 e3
-  simpa [e1, e2, e3] using pow_ne_zero p.order (sub_ne_zero.mpr e3)
+  filter_upwards [h3] with z e1 e2
+  simpa [eq_pow_order_mul_iterate_dslope hp, e1, e2] using pow_ne_zero p.order (sub_ne_zero.mpr e2)
 
 theorem locally_zero_iff (hp : HasFPowerSeriesAt f p z₀) : (∀ᶠ z in 𝓝 z₀, f z = 0) ↔ p = 0 :=
   ⟨fun hf => hp.eq_zero_of_eventually hf, fun h => eventually_eq_zero (𝕜 := 𝕜) (by rwa [h] at hp)⟩
@@ -187,18 +182,16 @@ lemma unique_eventuallyEq_pow_smul_nonzero {m n : ℕ}
 /-- If `f` is analytic at `z₀`, then exactly one of the following two possibilities occurs: either
 `f` vanishes identically near `z₀`, or locally around `z₀` it has the form `z ↦ (z - z₀) ^ n • g z`
 for some `n` and some `g` which is analytic and non-vanishing at `z₀`. -/
-theorem exists_eventuallyEq_pow_smul_nonzero_iff (hf : AnalyticAt 𝕜 f z₀) :
+theorem exists_eq_pow_smul_nonzero_iff (hf : AnalyticAt 𝕜 f z₀) :
     (∃ (n : ℕ), ∃ (g : 𝕜 → E), AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧
-    ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ n • g z) ↔ (¬∀ᶠ z in 𝓝 z₀, f z = 0) := by
+    ∀ z, f z = (z - z₀) ^ n • g z) ↔ (¬∀ᶠ z in 𝓝 z₀, f z = 0) := by
   constructor
   · rintro ⟨n, g, hg_an, hg_ne, hg_eq⟩
     contrapose hg_ne
     apply EventuallyEq.eq_of_nhds
     rw [EventuallyEq, ← AnalyticAt.frequently_eq_iff_eventually_eq hg_an analyticAt_const]
-    refine (eventually_nhdsWithin_iff.mpr ?_).frequently
-    filter_upwards [hg_eq, hg_ne] with z hf_eq hf0 hz
-    rwa [hf0, eq_comm, smul_eq_zero_iff_right] at hf_eq
-    exact pow_ne_zero _ (sub_ne_zero.mpr hz)
+    refine (eventually_nhdsWithin_iff.mpr <| hg_ne.mono ?_).frequently
+    simp +contextual [hg_eq, sub_eq_zero, or_imp]
   · intro hf_ne
     rcases hf with ⟨p, hp⟩
     exact ⟨p.order, _, ⟨_, hp.has_fpower_series_iterate_dslope_fslope p.order⟩,
