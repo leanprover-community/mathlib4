@@ -10,9 +10,11 @@ public import Mathlib.Order.Ideal
 
 /-!
 # Partial Isomorphisms
+
 This file defines partial isomorphisms between first-order structures.
 
 ## Main Definitions
+
 - `FirstOrder.Language.PartialEquiv` is defined so that `L.PartialEquiv M N`, annotated
   `M ≃ₚ[L] N`, is the type of equivalences between substructures of `M` and `N`. These can be
   ordered, with an order that is defined here in terms of a commutative square, but could also be
@@ -25,6 +27,7 @@ This file defines partial isomorphisms between first-order structures.
   element `m : M` in its domain.
 
 ## Main Results
+
 - `FirstOrder.Language.embedding_from_cg` shows that if structures `M` and `N` form an equivalence
   pair with `M` countably-generated, then any finite-generated partial equivalence between them
   can be extended to an embedding `M ↪[L] N`.
@@ -239,7 +242,7 @@ theorem toEmbedding_apply {f : M ≃ₚ[L] N} (m : f.dom) :
   rfl
 
 /-- Given a partial equivalence which has the whole structure as domain,
-  returns the corresponding embedding. -/
+returns the corresponding embedding. -/
 def toEmbeddingOfEqTop {f : M ≃ₚ[L] N} (h : f.dom = ⊤) : M ↪[L] N :=
   (h ▸ f.toEmbedding).comp topEquiv.symm.toEmbedding
 
@@ -252,7 +255,7 @@ theorem toEmbeddingOfEqTop_apply {f : M ≃ₚ[L] N} (h : f.dom = ⊤) (m : M) :
 
 set_option linter.style.nameCheck false in
 /-- Given a partial equivalence which has the whole structure as domain and
-  as codomain, returns the corresponding equivalence. -/
+as codomain, returns the corresponding equivalence. -/
 def toEquivOfEqTop {f : M ≃ₚ[L] N} (h_dom : f.dom = ⊤)
     (h_cod : f.cod = ⊤) : M ≃[L] N :=
   (topEquiv (M := N)).comp ((h_dom ▸ h_cod ▸ f.toEquiv).comp (topEquiv (M := M)).symm)

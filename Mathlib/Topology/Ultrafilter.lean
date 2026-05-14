@@ -36,7 +36,7 @@ theorem isOpen_iff_ultrafilter :
   simp_rw [isOpen_iff_mem_nhds, ← mem_iff_ultrafilter]
 
 /-- `x` belongs to the closure of `s` if and only if some ultrafilter
-  supported on `s` converges to `x`. -/
+supported on `s` converges to `x`. -/
 theorem mem_closure_iff_ultrafilter :
     x ∈ closure s ↔ ∃ u : Ultrafilter X, s ∈ u ∧ ↑u ≤ 𝓝 x := by
   simp [closure_eq_cluster_pts, ClusterPt, ← exists_ultrafilter_iff, and_comm]

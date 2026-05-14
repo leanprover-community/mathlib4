@@ -13,6 +13,7 @@ public import Mathlib.LinearAlgebra.Finsupp.Supported
 This file provides the following results in the `Pointwise` locale:
 
 When we consider subsets of `R` acting on `M`
+
 - `Submodule.pointwiseSetDistribMulAction` : the action described above is distributive.
 - `Submodule.mem_set_smul` : `x ∈ s • N` iff `x` can be written as `r₀ n₀ + ... + rₖ nₖ` where
   `rᵢ ∈ s` and `nᵢ ∈ N`.

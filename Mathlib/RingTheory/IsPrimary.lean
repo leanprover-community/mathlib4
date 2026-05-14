@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.Ideal.Operations
 # Primary submodules
 
 A proper submodule `S : Submodule R M` is primary iff
-  `r • x ∈ S` implies `x ∈ S` or `∃ n : ℕ, r ^ n • (⊤ : Submodule R M) ≤ S`.
+`r • x ∈ S` implies `x ∈ S` or `∃ n : ℕ, r ^ n • (⊤ : Submodule R M) ≤ S`.
 
 ## Main results
 
@@ -47,8 +47,8 @@ section CommSemiring
 variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 /-- A proper submodule `S : Submodule R M` is primary iff
-  `r • x ∈ S` implies `x ∈ S` or `∃ n : ℕ, r ^ n • (⊤ : Submodule R M) ≤ S`.
-  This generalizes `Ideal.IsPrimary`. -/
+`r • x ∈ S` implies `x ∈ S` or `∃ n : ℕ, r ^ n • (⊤ : Submodule R M) ≤ S`.
+This generalizes `Ideal.IsPrimary`. -/
 protected def IsPrimary (S : Submodule R M) : Prop :=
   S ≠ ⊤ ∧ ∀ {r : R} {x : M}, r • x ∈ S → x ∈ S ∨ ∃ n : ℕ, (r ^ n • ⊤ : Submodule R M) ≤ S
 

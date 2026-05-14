@@ -20,15 +20,15 @@ prove that it is solvable when the Lie algebra is Noetherian.
 
 ## Main definitions
 
-  * `LieAlgebra.derivedSeriesOfIdeal`
-  * `LieAlgebra.derivedSeries`
-  * `LieAlgebra.IsSolvable`
-  * `LieAlgebra.isSolvableAdd`
-  * `LieAlgebra.radical`
-  * `LieAlgebra.radicalIsSolvable`
-  * `LieAlgebra.derivedLengthOfIdeal`
-  * `LieAlgebra.derivedLength`
-  * `LieAlgebra.derivedAbelianOfIdeal`
+* `LieAlgebra.derivedSeriesOfIdeal`
+* `LieAlgebra.derivedSeries`
+* `LieAlgebra.IsSolvable`
+* `LieAlgebra.isSolvableAdd`
+* `LieAlgebra.radical`
+* `LieAlgebra.radicalIsSolvable`
+* `LieAlgebra.derivedLengthOfIdeal`
+* `LieAlgebra.derivedLength`
+* `LieAlgebra.derivedAbelianOfIdeal`
 
 ## Tags
 

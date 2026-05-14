@@ -232,7 +232,7 @@ theorem finite_tsupport : {i | x₀ ∈ tsupport (ρ i)}.Finite := by
   exact mem_closure_iff_nhds.mp hi t t_in
 
 /-- The tsupport of a partition of unity at a point `x₀` as a `Finset`.
-  This is the set of `i : ι` such that `x₀ ∈ tsupport f i`. -/
+This is the set of `i : ι` such that `x₀ ∈ tsupport f i`. -/
 def fintsupport (x₀ : X) : Finset ι :=
   (ρ.finite_tsupport x₀).toFinset
 

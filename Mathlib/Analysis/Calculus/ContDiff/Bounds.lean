@@ -14,8 +14,8 @@ public import Mathlib.Data.Nat.Choose.Multinomial
 # Bounds on higher derivatives
 
 `norm_iteratedFDeriv_comp_le` gives the bound `n! * C * D ^ n` for the `n`-th derivative
-  of `g ∘ f` assuming that the derivatives of `g` are bounded by `C` and the `i`-th
-  derivative of `f` is bounded by `D ^ i`.
+of `g ∘ f` assuming that the derivatives of `g` are bounded by `C` and the `i`-th
+derivative of `f` is bounded by `D ^ i`.
 -/
 
 public section

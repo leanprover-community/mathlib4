@@ -47,29 +47,31 @@ The theorems `fderivWithin_derivWithin` and `fderiv_deriv` show that the
 one-dimensional derivatives coincide with the general Fréchet derivatives.
 
 We also show the existence and compute the derivatives of:
-  - constants
-  - the identity function
-  - linear maps (in `Linear.lean`)
-  - addition (in `Add.lean`)
-  - sum of finitely many functions (in `Add.lean`)
-  - negation (in `Add.lean`)
-  - subtraction (in `Add.lean`)
-  - star (in `Star.lean`)
-  - multiplication of two functions in `𝕜 → 𝕜` (in `Mul.lean`)
-  - multiplication of a function in `𝕜 → 𝕜` and of a function in `𝕜 → E` (in `Mul.lean`)
-  - powers of a function (in `Pow.lean` and `ZPow.lean`)
-  - inverse `x → x⁻¹` (in `Inv.lean`)
-  - division (in `Inv.lean`)
-  - composition of a function in `𝕜 → F` with a function in `𝕜 → 𝕜` (in `Comp.lean`)
-  - composition of a function in `F → E` with a function in `𝕜 → F` (in `Comp.lean`)
-  - inverse function (assuming that it exists; the inverse function theorem is in `Inverse.lean`)
-  - polynomials (in `Polynomial.lean`)
+
+- constants
+- the identity function
+- linear maps (in `Linear.lean`)
+- addition (in `Add.lean`)
+- sum of finitely many functions (in `Add.lean`)
+- negation (in `Add.lean`)
+- subtraction (in `Add.lean`)
+- star (in `Star.lean`)
+- multiplication of two functions in `𝕜 → 𝕜` (in `Mul.lean`)
+- multiplication of a function in `𝕜 → 𝕜` and of a function in `𝕜 → E` (in `Mul.lean`)
+- powers of a function (in `Pow.lean` and `ZPow.lean`)
+- inverse `x → x⁻¹` (in `Inv.lean`)
+- division (in `Inv.lean`)
+- composition of a function in `𝕜 → F` with a function in `𝕜 → 𝕜` (in `Comp.lean`)
+- composition of a function in `F → E` with a function in `𝕜 → F` (in `Comp.lean`)
+- inverse function (assuming that it exists; the inverse function theorem is in `Inverse.lean`)
+- polynomials (in `Polynomial.lean`)
 
 For most binary operations we also define `const_op` and `op_const` theorems for the cases when
 the first or second argument is a constant. This makes writing chains of `HasDerivAt`'s easier,
 and they more frequently lead to the desired result.
 
 We set up the simplifier so that it can compute the derivative of simple functions. For instance,
+
 ```lean
 example (x : ℝ) :
     deriv (fun x ↦ cos (sin x) * exp x) x = (cos (sin x) - sin (sin x) * cos x) * exp x := by
@@ -137,7 +139,7 @@ def HasStrictDerivAt (f : 𝕜 → F) (f' : F) (x : 𝕜) :=
   HasDerivAtFilter f f' (𝓝 (x, x))
 
 end
-/-- Derivative of `f` at the point `x` within the set `s`, if it exists.  Zero otherwise.
+/-- Derivative of `f` at the point `x` within the set `s`, if it exists. Zero otherwise.
 
 If the derivative exists (i.e., `∃ f', HasDerivWithinAt f f' s x`), then
 `f x' = f x + (x' - x) • derivWithin f s x + o(x' - x)` where `x'` converges to `x` inside `s`.
@@ -145,7 +147,7 @@ If the derivative exists (i.e., `∃ f', HasDerivWithinAt f f' s x`), then
 def derivWithin (f : 𝕜 → F) (s : Set 𝕜) (x : 𝕜) :=
   fderivWithin 𝕜 f s x 1
 
-/-- Derivative of `f` at the point `x`, if it exists.  Zero otherwise.
+/-- Derivative of `f` at the point `x`, if it exists. Zero otherwise.
 
 If the derivative exists (i.e., `∃ f', HasDerivAt f f' x`), then
 `f x' = f x + (x' - x) • deriv f x + o(x' - x)` where `x'` converges to `x`.

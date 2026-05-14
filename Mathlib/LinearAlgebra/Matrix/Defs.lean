@@ -95,6 +95,7 @@ theorem of_symm_apply (f : Matrix m n α) (i j) : of.symm f i j = f i j :=
 /-- `M.map f` is the matrix obtained by applying `f` to each entry of the matrix `M`.
 
 This is available in bundled forms as:
+
 * `AddMonoidHom.mapMatrix`
 * `LinearMap.mapMatrix`
 * `RingHom.mapMatrix`

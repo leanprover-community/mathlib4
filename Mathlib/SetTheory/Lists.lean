@@ -17,6 +17,7 @@ public import Batteries.Tactic.Lint.TypeClass
 In this file we define finite hereditary lists. This is useful for calculations in naive set theory.
 
 We distinguish two kinds of ZFA lists:
+
 * Atoms. Directly correspond to an element of the original type.
 * Proper ZFA lists. Can be thought of (but are not implemented) as a list of ZFA lists (not
   necessarily proper).
@@ -30,6 +31,7 @@ atoms and proper ZFA lists belong to the same type, even though atoms of `α` co
 `α` directly. But we don't want to be able to append anything to atoms.
 
 This calls for a two-step definition of ZFA lists:
+
 * First, define ZFA prelists as atoms and proper ZFA prelists. Those proper ZFA prelists are defined
   by inductive appending of (not necessarily proper) ZFA lists.
 * Second, define ZFA lists by rubbing out the distinction between atoms and proper lists.

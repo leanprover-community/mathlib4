@@ -17,6 +17,7 @@ import Mathlib.Tactic.Field
 
 /-!
 ## Main results
+
 * `treesOfNumNodesEq_card_eq_catalan`: The number of binary trees with `n` internal nodes
   is `catalan n`
 
@@ -31,7 +32,7 @@ open Finset.antidiagonal (fst_le snd_le)
 namespace Tree
 
 /-- Given two finsets, find all trees that can be formed with
-  left child in `a` and right child in `b` -/
+left child in `a` and right child in `b` -/
 abbrev pairwiseNode (a b : Finset (Tree Unit)) : Finset (Tree Unit) :=
   (a ×ˢ b).map ⟨fun x => x.1 △ x.2, fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ => fun h => by simpa using h⟩
 

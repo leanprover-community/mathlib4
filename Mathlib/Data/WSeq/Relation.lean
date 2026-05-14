@@ -67,8 +67,8 @@ theorem BisimO.imp {R S : WSeq α → WSeq α → Prop} (H : ∀ s t, R s t → 
   LiftRelO.imp_right _ H
 
 /-- Two weak sequences are `LiftRel R` related if they are either both empty,
-  or they are both nonempty and the heads are `R` related and the tails are
-  `LiftRel R` related. (This is a coinductive definition.) -/
+or they are both nonempty and the heads are `R` related and the tails are
+`LiftRel R` related. (This is a coinductive definition.) -/
 def LiftRel (R : α → β → Prop) (s : WSeq α) (t : WSeq β) : Prop :=
   ∃ C : WSeq α → WSeq β → Prop,
     C s t ∧ ∀ {s t}, C s t → Computation.LiftRel (LiftRelO R C) (destruct s) (destruct t)
@@ -158,9 +158,9 @@ theorem LiftRel.equiv (R : α → α → Prop) (H : Equivalence R) : Equivalence
   trans := @LiftRel.trans α R H.isTrans |>.trans _ _ _
 
 /-- If two sequences are equivalent, then they have the same values and
-  the same computational behavior (i.e. if one loops forever then so does
-  the other), although they may differ in the number of `think`s needed to
-  arrive at the answer. -/
+the same computational behavior (i.e. if one loops forever then so does
+the other), although they may differ in the number of `think`s needed to
+arrive at the answer. -/
 def Equiv : WSeq α → WSeq α → Prop :=
   LiftRel (· = ·)
 

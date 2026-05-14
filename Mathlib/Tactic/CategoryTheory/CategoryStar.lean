@@ -12,10 +12,12 @@ public import Mathlib.Init
 
 In the category theory library, it is common to introduce a (universe polymorphic) general category
 as follows:
+
 ```lean
 universe v u
 variable (C : Type u) [Category.{v} C]
 ```
+
 We tend to put the universe level `v` of the morphisms ahead of the level `u` for objects
 because it makes it easier to specify explicit universes when needed.
 
@@ -25,6 +27,7 @@ instances. The term elaborator `Category* C` creates a universe parameter `v`, a
 parameters, `v` becomes the last level parameter. The elaborated term is then `Category.{v} C`.
 
 Basic usage:
+
 ```lean
 variable (C : Type*) [Category* C]
 ```

@@ -27,6 +27,7 @@ Since the algebra of observables of any quantum system is an ordered \*-algebra
 Let `R` be a \*-ring.
 
 A CHSH tuple in `R` consists of
+
 * four elements `A₀ A₁ B₀ B₁ : R`, such that
 * each `Aᵢ` and `Bⱼ` is a self-adjoint involution, and
 * the `Aᵢ` commute with the `Bⱼ`.

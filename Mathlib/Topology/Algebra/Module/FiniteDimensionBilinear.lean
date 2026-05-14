@@ -34,7 +34,7 @@ variable
     [IsTopologicalAddGroup G] [ContinuousSMul 𝕜 G]
 
 /-- Building continuous bilinear maps from bilinear maps between finite dimensional topological
-  vector spaces over a complete field. -/
+vector spaces over a complete field. -/
 def LinearMap.toContinuousBilinearMap (f : E →ₗ[𝕜] F →ₗ[𝕜] G) : E →L[𝕜] F →L[𝕜] G :=
   IsLinearMap.mk' (fun x : E ↦ f x |>.toContinuousLinearMap)
       (by constructor <;> (intros; simp)) |>.toContinuousLinearMap
@@ -44,7 +44,7 @@ lemma LinearMap.toContinuousBilinearMap_apply (f : E →ₗ[𝕜] F →ₗ[𝕜]
   f.toContinuousBilinearMap x y = f x y := rfl
 
 /-- Building continuous bilinear maps from bilinear functions between finite dimensional topological
-  vector spaces over a complete field. -/
+vector spaces over a complete field. -/
 def IsBilinearMap.toContinuousBilinearMap
     {f : E → F → G} (h : IsBilinearMap 𝕜 f) : E →L[𝕜] F →L[𝕜] G :=
   h.toLinearMap.toContinuousBilinearMap

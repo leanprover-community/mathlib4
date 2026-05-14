@@ -58,16 +58,16 @@ eventually to `Set.Iic a`, then the interval `Set.Ico (u₁ n) (u₂ n)` is even
 The next table shows “output” filters `l₂` for different values of `Ixx` and `l₁`. The instances
 that need topology are defined in `Mathlib/Topology/Algebra/Ordered`.
 
-|     Input filter | `Ixx = Set.Icc`  | `Ixx = Set.Ico`  | `Ixx = Set.Ioc`  | `Ixx = Set.Ioo`  |
+| Input filter | `Ixx = Set.Icc` | `Ixx = Set.Ico` | `Ixx = Set.Ioc` | `Ixx = Set.Ioo` |
 |-----------------:|:----------------:|:----------------:|:----------------:|:----------------:|
-|   `Filter.atTop` | `Filter.atTop`   | `Filter.atTop`   | `Filter.atTop`   | `Filter.atTop`   |
-|   `Filter.atBot` | `Filter.atBot`   | `Filter.atBot`   | `Filter.atBot`   | `Filter.atBot`   |
-|         `pure a` | `pure a`         | `⊥`              | `⊥`              | `⊥`              |
-|  `𝓟 (Set.Iic a)` | `𝓟 (Set.Iic a)`  | `𝓟 (Set.Iio a)`  | `𝓟 (Set.Iic a)`  | `𝓟 (Set.Iio a)`  |
-|  `𝓟 (Set.Ici a)` | `𝓟 (Set.Ici a)`  | `𝓟 (Set.Ici a)`  | `𝓟 (Set.Ioi a)`  | `𝓟 (Set.Ioi a)`  |
-|  `𝓟 (Set.Ioi a)` | `𝓟 (Set.Ioi a)`  | `𝓟 (Set.Ioi a)`  | `𝓟 (Set.Ioi a)`  | `𝓟 (Set.Ioi a)`  |
-|  `𝓟 (Set.Iio a)` | `𝓟 (Set.Iio a)`  | `𝓟 (Set.Iio a)`  | `𝓟 (Set.Iio a)`  | `𝓟 (Set.Iio a)`  |
-|            `𝓝 a` | `𝓝 a`            | `𝓝 a`            | `𝓝 a`            | `𝓝 a`            |
+| `Filter.atTop` | `Filter.atTop` | `Filter.atTop` | `Filter.atTop` | `Filter.atTop` |
+| `Filter.atBot` | `Filter.atBot` | `Filter.atBot` | `Filter.atBot` | `Filter.atBot` |
+| `pure a` | `pure a` | `⊥` | `⊥` | `⊥` |
+| `𝓟 (Set.Iic a)` | `𝓟 (Set.Iic a)` | `𝓟 (Set.Iio a)` | `𝓟 (Set.Iic a)` | `𝓟 (Set.Iio a)` |
+| `𝓟 (Set.Ici a)` | `𝓟 (Set.Ici a)` | `𝓟 (Set.Ici a)` | `𝓟 (Set.Ioi a)` | `𝓟 (Set.Ioi a)` |
+| `𝓟 (Set.Ioi a)` | `𝓟 (Set.Ioi a)` | `𝓟 (Set.Ioi a)` | `𝓟 (Set.Ioi a)` | `𝓟 (Set.Ioi a)` |
+| `𝓟 (Set.Iio a)` | `𝓟 (Set.Iio a)` | `𝓟 (Set.Iio a)` | `𝓟 (Set.Iio a)` | `𝓟 (Set.Iio a)` |
+| `𝓝 a` | `𝓝 a` | `𝓝 a` | `𝓝 a` | `𝓝 a` |
 | `𝓝[Set.Iic a] b` | `𝓝[Set.Iic a] b` | `𝓝[Set.Iio a] b` | `𝓝[Set.Iic a] b` | `𝓝[Set.Iio a] b` |
 | `𝓝[Set.Ici a] b` | `𝓝[Set.Ici a] b` | `𝓝[Set.Ici a] b` | `𝓝[Set.Ioi a] b` | `𝓝[Set.Ioi a] b` |
 | `𝓝[Set.Ioi a] b` | `𝓝[Set.Ioi a] b` | `𝓝[Set.Ioi a] b` | `𝓝[Set.Ioi a] b` | `𝓝[Set.Ioi a] b` |
@@ -99,7 +99,7 @@ We mark `l₂` as an `outParam` so that Lean can automatically find an appropria
 class TendstoIxxClass (Ixx : α → α → Set α) (l₁ : Filter α) (l₂ : outParam <| Filter α) : Prop where
   /-- `Function.uncurry Ixx` tends to `l₂.smallSets` along `l₁ ×ˢ l₁`. In other words, for any
   `s ∈ l₂` there exists `t ∈ l₁` such that `Ixx x y ⊆ s` whenever `x ∈ t` and `y ∈ t`.
-
+  
   Use lemmas like `Filter.Tendsto.Icc` instead. -/
   tendsto_Ixx : Tendsto (fun p : α × α => Ixx p.1 p.2) (l₁ ×ˢ l₁) l₂.smallSets
 

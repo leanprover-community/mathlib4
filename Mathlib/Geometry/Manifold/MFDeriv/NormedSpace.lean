@@ -10,6 +10,7 @@ public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 
 /-! ## Equivalence of manifold differentiability with the basic definition for functions between
+
 vector spaces
 
 The API in this file is mostly copied from `Mathlib/Geometry/Manifold/ContMDiff/NormedSpace.lean`,
@@ -17,6 +18,7 @@ providing the same statements for higher smoothness. In this file, we do the sam
 differentiability.
 
 In addition to the above, this file provides
+
 * results about the differentiability of scalar multiplication (`mfderiv_smul` and friends), and
 * `extDerivFun`: the exterior derivative of a scalar function, as a section of the cotangent bundle
 

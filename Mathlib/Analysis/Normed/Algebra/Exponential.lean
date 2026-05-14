@@ -66,6 +66,7 @@ We put nearly all the statements in this file in the `NormedSpace` namespace,
 to avoid collisions with the `Real` or `Complex` namespaces.
 
 As of 2023-11-16 due to bad instances in Mathlib
+
 ```
 import Mathlib
 
@@ -74,6 +75,7 @@ open Real
 #time example (x : ℝ) : 0 < exp x      := exp_pos _ -- 250ms
 #time example (x : ℝ) : 0 < Real.exp x := exp_pos _ -- 2ms
 ```
+
 This is because `exp x` tries the `NormedSpace.exp 𝕂 : 𝔸 → 𝔸` function previously defined here,
 and generates a slow coercion search from `Real` to `Type`, to fit the first argument here.
 We will resolve this slow coercion separately,

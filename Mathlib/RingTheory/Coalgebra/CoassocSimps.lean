@@ -20,6 +20,7 @@ commutators `TensorProduct.comm` inwards (to the right) until they cancel agains
 co-multiplications.
 
 The simp set makes the following choice of normal form
+
 * It regards `TensorProduct.map`, `TensorProduct.assoc`, `TensorProduct.comm` as the primitive
   constructions and rewrites everything else such as `lTensor`, `leftComm` using them.
 * It rewrites both sides into a right associated composition of linear maps.

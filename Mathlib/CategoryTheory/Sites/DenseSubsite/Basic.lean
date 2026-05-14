@@ -89,7 +89,7 @@ theorem Presieve.in_coverByImage (G : C ⥤ D) {X : D} {Y : C} (f : G.obj Y ⟶ 
   ⟨⟨Y, 𝟙 _, f, by simp⟩⟩
 
 /-- A functor `G : (C, J) ⥤ (D, K)` is cover dense if for each object in `D`,
-  there exists a covering sieve in `D` that factors through images of `G`.
+there exists a covering sieve in `D` that factors through images of `G`.
 
 This definition can be found in https://ncatlab.org/nlab/show/dense+sub-site Definition 2.2.
 -/

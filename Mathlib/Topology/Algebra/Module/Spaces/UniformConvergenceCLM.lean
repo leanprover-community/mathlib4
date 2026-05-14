@@ -24,6 +24,7 @@ vector space topology if the continuous linear image of any element of `𝔖` is
 of `Bornology.IsVonNBounded`).
 
 The most important examples for such topologies are:
+
 - the topology of bounded convergence (also called the "strong topology" on the dual space),
   when `𝔖` is the set of `IsVonNBounded` subsets.
   This coincides with the operator norm topology in the case of `NormedSpace`s,

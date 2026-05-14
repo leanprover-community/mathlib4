@@ -20,11 +20,12 @@ who present substitution of power series as an application of evaluation.
 For an `R`-algebra `S`, `f : MvPowerSeries σ R` and `a : σ → MvPowerSeries τ S`,
 `MvPowerSeries.subst a f` is the substitution of `X s` by `a s` in `f`.
 It is only well defined under one of the two following conditions:
-  * `f` is a polynomial, in which case it is the classical evaluation;
-  * or the condition `MvPowerSeries.HasSubst a` holds, which means:
-    - For every `s`, the constant coefficient of `a s` is nilpotent;
-    - For every `d : σ →₀ ℕ`, all but finitely many of the coefficients
-      `(a s).coeff d` vanish.
+
+* `f` is a polynomial, in which case it is the classical evaluation;
+* or the condition `MvPowerSeries.HasSubst a` holds, which means:
+  - For every `s`, the constant coefficient of `a s` is nilpotent;
+  - For every `d : σ →₀ ℕ`, all but finitely many of the coefficients
+    `(a s).coeff d` vanish.
 
 In the other cases, it is defined as 0 (dummy value).
 
@@ -42,6 +43,7 @@ for commutative *semirings*.
 Evaluation of a power series at adequate elements has been defined
 in `Mathlib/RingTheory/MvPowerSeries/Evaluation.lean`.
 The goal here is to check the relevant hypotheses:
+
 * The ring of coefficients is endowed the discrete topology.
 * The main condition rewrites as having nilpotent constant coefficient
 * Multivariate power series have a linear topology

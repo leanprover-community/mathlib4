@@ -148,9 +148,9 @@ variable {α : Type*} [NonUnitalCommRing α]
 attribute [local simp] add_assoc add_comm add_left_comm mul_comm
 
 /-- Vieta's formula for a quadratic equation, relating the coefficients of the polynomial with
-  its roots. This particular version states that if we have a root `x` of a monic quadratic
-  polynomial, then there is another root `y` such that `x + y` is negative the `a_1` coefficient
-  and `x * y` is the `a_0` coefficient. -/
+its roots. This particular version states that if we have a root `x` of a monic quadratic
+polynomial, then there is another root `y` such that `x + y` is negative the `a_1` coefficient
+and `x * y` is the `a_0` coefficient. -/
 theorem vieta_formula_quadratic {b c x : α} (h : x * x - b * x + c = 0) :
     ∃ y : α, y * y - b * y + c = 0 ∧ x + y = b ∧ x * y = c := by
   have : c = x * (b - x) := (eq_neg_of_add_eq_zero_right h).trans (by simp [mul_sub, mul_comm])

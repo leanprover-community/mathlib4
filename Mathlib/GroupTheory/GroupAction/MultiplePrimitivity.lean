@@ -13,8 +13,7 @@ public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 Let `G` be a group acting on a type `α`.
 
 * `MulAction.IsMultiplyPreprimitive` :
-  The action is said to be `n`-primitive if, for every subset `s :
-  Set α` with `n` elements, the actions f `stabilizer G s` on the
+  The action is said to be `n`-primitive if, for every subset `s : Set α` with `n` elements, the actions f `stabilizer G s` on the
   complement of `s` is primitive.
 
 * `MulAction.is_zero_preprimitive` : any action is 0-primitive
@@ -78,8 +77,8 @@ theorem isPreprimitive_fixingSubgroup_insert_iff {a : α} {t : Set (ofStabilizer
 end Preprimitive
 
 /-- An additive action is `n`-multiply preprimitive if it is `n`-multiply pretransitive
-  and if, when `n ≥ 1`, for every set `s` of cardinality `n - 1`,
-  the action of `fixingAddSubgroup M s` on the complement of `s` is preprimitive. -/
+and if, when `n ≥ 1`, for every set `s` of cardinality `n - 1`,
+the action of `fixingAddSubgroup M s` on the complement of `s` is preprimitive. -/
 @[mk_iff]
 class _root_.AddAction.IsMultiplyPreprimitive
     (M α : Type*) [AddGroup M] [AddAction M α] (n : ℕ) where
@@ -95,7 +94,7 @@ pretransitive and if, when `n ≥ 1`, for every set `s` of cardinality
 `n - 1`, the action of `fixingSubgroup M s` on the complement of `s`
 is preprimitive. -/
 @[mk_iff, to_additive existing
-/-- A group action is `n`-multiply preprimitive  if it is `n`-multiply
+/-- A group action is `n`-multiply preprimitive if it is `n`-multiply
 pretransitive and if, when `n ≥ 1`, for every set `s` of cardinality
 `n - 1`, the action of `fixingSubgroup M s` on the complement of `s`
 is preprimitive. -/]

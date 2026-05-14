@@ -29,6 +29,7 @@ If every object in the hom orthogonal family has an endomorphism ring with invar
 or otherwise if each endomorphism ring is commutative),
 then decompositions of an object as a biproduct of the family have uniquely defined multiplicities.
 We state this as:
+
 ```
 theorem HomOrthogonal.equiv_of_iso (o : HomOrthogonal s) {f : α → ι} {g : β → ι}
     (i : (⨁ fun a => s (f a)) ≅ ⨁ fun b => s (g b)) : ∃ e : α ≃ β, ∀ a, g (e a) = f a

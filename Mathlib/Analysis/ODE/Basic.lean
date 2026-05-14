@@ -11,12 +11,13 @@ public import Mathlib.Analysis.Calculus.Deriv.Basic
 # Integral curves of vector fields on a normed vector space
 
 Let `E` be a normed vector space and `v : ℝ → E → E` be a time-dependent vector field on `E`.
-An integral curve  of `v` is a function `γ : ℝ → E` such that the derivative of `γ` at `t` equals
+An integral curve of `v` is a function `γ : ℝ → E` such that the derivative of `γ` at `t` equals
 `v t (γ t)`. The integral curve may only be defined for all `t` within some subset of `ℝ`.
 
 ## Main definitions
 
 Let `v : ℝ → E → E` be a time-dependent vector field on `E`, and let `γ : ℝ → E`.
+
 * `IsIntegralCurve γ v`: `γ t` is tangent to `v t (γ t)` for all `t : ℝ`. That is, `γ` is a global
   integral curve of `v`.
 * `IsIntegralCurveOn γ v s`: `γ t` is tangent to `v t (γ t)` for all `t ∈ s`, where `s : Set ℝ`.

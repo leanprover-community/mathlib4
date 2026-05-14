@@ -13,7 +13,7 @@ public import Mathlib.Tactic.ApplyFun
 /-!
 # Symmetric powers
 
-This file defines symmetric powers of a type.  The nth symmetric power
+This file defines symmetric powers of a type. The nth symmetric power
 consists of homogeneous n-tuples modulo permutations by the symmetric
 group.
 
@@ -35,9 +35,9 @@ assert_not_exists MonoidWithZero
 open List (Vector)
 open Function
 
-/-- The nth symmetric power is n-tuples up to permutation.  We define it
+/-- The nth symmetric power is n-tuples up to permutation. We define it
 as a subtype of `Multiset` since these are well developed in the
-library.  We also give a definition `Sym.sym'` in terms of vectors, and we
+library. We also give a definition `Sym.sym'` in terms of vectors, and we
 show these are equivalent in `Sym.symEquivSym'`.
 -/
 def Sym (α : Type*) (n : ℕ) :=
@@ -196,7 +196,7 @@ theorem sound {a b : List.Vector α n} (h : a.val ~ b.val) : (↑a : Sym α n) =
   Subtype.ext <| Quotient.sound h
 
 /-- `erase s a h` is the sym that subtracts 1 from the
-  multiplicity of `a` if `a` is present in the sym. -/
+multiplicity of `a` if `a` is present in the sym. -/
 def erase [DecidableEq α] (s : Sym α (n + 1)) (a : α) (h : a ∈ s) : Sym α n :=
   ⟨s.val.erase a, (Multiset.card_erase_of_mem h).trans <| s.property.symm ▸ n.pred_succ⟩
 

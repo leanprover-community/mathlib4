@@ -22,10 +22,12 @@ admits a `MulDistribMulAction G Mˣ` structure, again with the obvious definitio
 ## Implementation notes
 
 We previously had
+
 ```
 instance mulDistribMulAction' [Group G] [Monoid M] [MulDistribMulAction G M] [SMulCommClass G M M]
   [IsScalarTower G M M] : MulDistribMulAction G Mˣ
 ```
+
 as a strengthening of `Units.mulAction'`, but in fact this instance (almost) never applies!
 `MulDistribMulAction G M` means `∀ (g : G) (m₁ m₂ : M), g • (m₁ * m₂) = g • m₁ * g • m₂`, while
 `SMulCommClass G M M` means `∀ (g : G) (m₁ m₂ : M), g • (m₁ * m₂) = m₁ * g • m₂`.

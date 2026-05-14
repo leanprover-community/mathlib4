@@ -531,8 +531,8 @@ lemma banana_empty : banana u v ∅ = Graph.noEdge {u, v} β := by
 /-! ### Graphs with one vertex  -/
 
 /-- A graph with one vertex and loops at that vertex. This is an abbreviation for the special case
-  of `banana` where the two vertices are the same. Most lemmas about `bouquet` should instead be
-  proved using `banana` instead. -/
+of `banana` where the two vertices are the same. Most lemmas about `bouquet` should instead be
+proved using `banana` instead. -/
 abbrev bouquet (v : α) (edgeSet : Set β) : Graph α β :=
   banana v v edgeSet
 

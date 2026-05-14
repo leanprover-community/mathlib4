@@ -17,6 +17,7 @@ operations on them.
 ## Main definitions
 
 For any `p : Submodule A M`:
+
 * `Submodule.IsHomogeneous ℳ p`: The property that a submodule is closed under `GradedModule.proj`.
 * `HomogeneousSubmodule 𝒜 ℳ`: The structure extending submodules which satisfy
   `Submodule.IsHomogeneous`.

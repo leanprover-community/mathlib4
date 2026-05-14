@@ -19,12 +19,14 @@ the case `Tendsto f atTop l`.
 ## Main theorems
 
 This file contains the following lemmas:
+
 * `tendsto_nhdsGT_of_tendsto_atTop` for `Tendsto f (𝓝[>] c) l`
 * `tendsto_nhdsLT_of_tendsto_atTop` for `Tendsto f (𝓝[<] c) l`
 * `tendsto_nhdsNE_of_tendsto_atTop` for `Tendsto f (𝓝[≠] c) l`
 * `isBigO_of_div_tendsto_atTop` and `isBigO_of_div_tendsto_atBot` for `f =O[l] g`
 
 We also use lemmas from other files:
+
 * `tendsto_comp_neg_atTop_iff` for `Tendsto f atBot l`
 * `IsLittleO.of_tendsto_div_atBot` and `IsLittleO.of_tendsto_div_atTop` for `f =o[l] g`
 * `isEquivalent_of_tendsto_one` for `f ∼ g`

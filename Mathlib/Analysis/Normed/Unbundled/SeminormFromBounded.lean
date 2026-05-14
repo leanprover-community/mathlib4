@@ -9,13 +9,13 @@ public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
 
 /-!
 # seminormFromBounded
+
 In this file, we prove [BGR, Proposition 1.2.1/2][bosch-guntzer-remmert] : given a nonzero
 additive group seminorm on a commutative ring `R` such that for some `c : ℝ` and every `x y : R`,
 the inequality `f (x * y) ≤ c * f x * f y)` is satisfied, we create a ring seminorm on `R`.
 
 In the file comments, we will use the expression `f is multiplicatively bounded` to indicate that
 this condition holds.
-
 
 ## Main Definitions
 
@@ -26,7 +26,6 @@ this condition holds.
   nonnegative, multiplicatively bounded and subadditive, that it preserves `0` and negation, and
   that `f` has trivial kernel.
 
-
 ## Main Results
 
 * `seminormFromBounded_isNonarchimedean` : if `f : R → ℝ` is a nonnegative, multiplicatively
@@ -36,6 +35,7 @@ this condition holds.
   `seminormFromBounded' f`.
 
 ## References
+
 * [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*][bosch-guntzer-remmert]
 
 ## Tags
@@ -53,7 +53,7 @@ variable {R : Type _} [CommRing R] (f : R → ℝ) {c : ℝ}
 
 section seminormFromBounded
 
-/-- The real-valued function sending `x ∈ R` to the supremum of  `f(x*y)/f(y)`, where `y` runs over
+/-- The real-valued function sending `x ∈ R` to the supremum of `f(x*y)/f(y)`, where `y` runs over
 the elements of `R`. -/
 def seminormFromBounded' : R → ℝ := fun x ↦ iSup fun y : R ↦ f (x * y) / f y
 
@@ -69,7 +69,7 @@ theorem map_one_ne_zero (f_ne_zero : f ≠ 0) (f_nonneg : 0 ≤ f)
   exact hz <| (f_mul z).antisymm (f_nonneg z)
 
 /-- If `f : R → ℝ` is a nonnegative multiplicatively bounded function and `x : R` is a unit with
-  `f x ≠ 0`, then for every `n : ℕ`, we have `f (x ^ n) ≠ 0`. -/
+`f x ≠ 0`, then for every `n : ℕ`, we have `f (x ^ n) ≠ 0`. -/
 theorem map_pow_ne_zero (f_nonneg : 0 ≤ f) {x : R} (hx : IsUnit x) (hfx : f x ≠ 0) (n : ℕ)
     (f_mul : ∀ x y : R, f (x * y) ≤ c * f x * f y) : f (x ^ n) ≠ 0 := by
   have h1 : f 1 ≠ 0 := map_one_ne_zero (Function.ne_iff.mpr ⟨x, hfx⟩) f_nonneg f_mul
@@ -78,7 +78,7 @@ theorem map_pow_ne_zero (f_nonneg : 0 ≤ f) {x : R} (hx : IsUnit x) (hfx : f x 
   exact h1 <| this.antisymm (f_nonneg 1)
 
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded function, then given `x y : R` with
-  `f x = 0`, we have `f (x * y) = 0`. -/
+`f x = 0`, we have `f (x * y) = 0`. -/
 theorem map_mul_zero_of_map_zero (f_nonneg : 0 ≤ f)
     (f_mul : ∀ x y : R, f (x * y) ≤ c * f x * f y) {x : R} (hx : f x = 0)
     (y : R) : f (x * y) = 0 := by
@@ -105,7 +105,7 @@ theorem seminormFromBounded_aux (f_nonneg : 0 ≤ f)
     positivity
 
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded function, then for every `x : R`,
-  the image of `y ↦ f (x * y) / f y` is bounded above. -/
+the image of `y ↦ f (x * y) / f y` is bounded above. -/
 theorem seminormFromBounded_bddAbove_range (f_nonneg : 0 ≤ f)
     (f_mul : ∀ x y : R, f (x * y) ≤ c * f x * f y) (x : R) :
     BddAbove (Set.range fun y ↦ f (x * y) / f y) := by
@@ -116,7 +116,7 @@ theorem seminormFromBounded_bddAbove_range (f_nonneg : 0 ≤ f)
   · simpa [div_le_iff₀ hy0] using f_mul x y
 
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded function, then for every `x : R`,
-  `seminormFromBounded' f x` is bounded above by some multiple of `f x`. -/
+`seminormFromBounded' f x` is bounded above by some multiple of `f x`. -/
 theorem seminormFromBounded_le (f_nonneg : 0 ≤ f)
     (f_mul : ∀ x y : R, f (x * y) ≤ c * f x * f y) (x : R) :
     seminormFromBounded' f x ≤ c * f x := by
@@ -127,7 +127,7 @@ theorem seminormFromBounded_le (f_nonneg : 0 ≤ f)
     apply f_mul
 
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded function, then for every `x : R`,
-  `f x ≤ f 1 * seminormFromBounded' f x`. -/
+`f x ≤ f 1 * seminormFromBounded' f x`. -/
 theorem seminormFromBounded_ge (f_nonneg : 0 ≤ f)
     (f_mul : ∀ x y : R, f (x * y) ≤ c * f x * f y) (x : R) :
     f x ≤ f 1 * seminormFromBounded' f x := by
@@ -141,7 +141,7 @@ theorem seminormFromBounded_ge (f_nonneg : 0 ≤ f)
     exact le_ciSup (seminormFromBounded_bddAbove_range f_nonneg f_mul x) (1 : R)
 
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded function, then
-  `seminormFromBounded' f` is nonnegative. -/
+`seminormFromBounded' f` is nonnegative. -/
 theorem seminormFromBounded_nonneg (f_nonneg : 0 ≤ f)
     (f_mul : ∀ x y : R, f (x * y) ≤ c * f x * f y) :
     0 ≤ seminormFromBounded' f := fun x ↦
@@ -149,7 +149,7 @@ theorem seminormFromBounded_nonneg (f_nonneg : 0 ≤ f)
     (div_nonneg (f_nonneg _) (f_nonneg _))
 
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded function, then
-  `seminormFromBounded' f x = 0` if and only if `f x = 0`. -/
+`seminormFromBounded' f x = 0` if and only if `f x = 0`. -/
 theorem seminormFromBounded_eq_zero_iff (f_nonneg : 0 ≤ f)
     (f_mul : ∀ x y : R, f (x * y) ≤ c * f x * f y) (x : R) :
     seminormFromBounded' f x = 0 ↔ f x = 0 := by
@@ -171,7 +171,7 @@ theorem seminormFromBounded_neg (f_neg : ∀ x : R, f (-x) = f x) (x : R) :
   rw [neg_mul, f_neg]
 
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded function, then
-  `seminormFromBounded' f` is submultiplicative. -/
+`seminormFromBounded' f` is submultiplicative. -/
 theorem seminormFromBounded_mul (f_nonneg : 0 ≤ f)
     (f_mul : ∀ x y : R, f (x * y) ≤ c * f x * f y) (x y : R) :
     seminormFromBounded' f (x * y) ≤ seminormFromBounded' f x * seminormFromBounded' f y := by
@@ -201,7 +201,7 @@ theorem seminormFromBounded_mul (f_nonneg : 0 ≤ f)
         rw [div_le_div_iff_of_pos_right (lt_of_le_of_ne' (f_nonneg _) hxz), mul_comm x y, mul_assoc]
 
 /-- If `f : R → ℝ` is a nonzero, nonnegative, multiplicatively bounded function, then
-  `seminormFromBounded' f 1 = 1`. -/
+`seminormFromBounded' f 1 = 1`. -/
 theorem seminormFromBounded_one (f_ne_zero : f ≠ 0) (f_nonneg : 0 ≤ f)
     (f_mul : ∀ x y : R, f (x * y) ≤ c * f x * f y) :
     seminormFromBounded' f 1 = 1 := by
@@ -221,7 +221,7 @@ theorem seminormFromBounded_one (f_ne_zero : f ≠ 0) (f_nonneg : 0 ≤ f)
     exact le_ciSup h_bdd (1 : R)
 
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded function, then
-  `seminormFromBounded' f 1 ≤ 1`. -/
+`seminormFromBounded' f 1 ≤ 1`. -/
 theorem seminormFromBounded_one_le (f_nonneg : 0 ≤ f)
     (f_mul : ∀ x y : R, f (x * y) ≤ c * f x * f y) :
     seminormFromBounded' f 1 ≤ 1 := by
@@ -232,7 +232,7 @@ theorem seminormFromBounded_one_le (f_nonneg : 0 ≤ f)
     simp only [f_ne_zero, Pi.zero_apply, div_zero, zero_le_one]
 
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded, subadditive function, then
-  `seminormFromBounded' f` is subadditive. -/
+`seminormFromBounded' f` is subadditive. -/
 theorem seminormFromBounded_add (f_nonneg : 0 ≤ f)
     (f_mul : ∀ x y : R, f (x * y) ≤ c * f x * f y)
     (f_add : ∀ a b, f (a + b) ≤ f a + f b) (x y : R) :
@@ -259,7 +259,7 @@ def seminormFromBounded (f_zero : f 0 = 0) (f_nonneg : 0 ≤ f)
   neg'      := seminormFromBounded_neg f_neg
 
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded, nonarchimedean function, then
-  `seminormFromBounded' f` is nonarchimedean. -/
+`seminormFromBounded' f` is nonarchimedean. -/
 theorem seminormFromBounded_isNonarchimedean (f_nonneg : 0 ≤ f)
     (f_mul : ∀ x y : R, f (x * y) ≤ c * f x * f y)
     (hna : IsNonarchimedean f) : IsNonarchimedean (seminormFromBounded' f) := by
@@ -276,7 +276,7 @@ theorem seminormFromBounded_isNonarchimedean (f_nonneg : 0 ≤ f)
     exact hna _ _
 
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded function and `x : R` is
-  multiplicative for `f`, then `seminormFromBounded' f x = f x`. -/
+multiplicative for `f`, then `seminormFromBounded' f x = f x`. -/
 theorem seminormFromBounded_of_mul_apply (f_nonneg : 0 ≤ f)
     (f_mul : ∀ x y : R, f (x * y) ≤ c * f x * f y) {x : R}
     (hx : ∀ y : R, f (x * y) = f x * f y) : seminormFromBounded' f x = f x := by
@@ -299,7 +299,7 @@ theorem seminormFromBounded_of_mul_apply (f_nonneg : 0 ≤ f)
     · simp_rw [f_ne_zero, Pi.zero_apply, zero_div, zero_mul, ciSup_const]; rfl
 
 /-- If `f : R → ℝ` is a nonnegative function and `x : R` is submultiplicative for `f`, then
-  `seminormFromBounded' f x = f x`. -/
+`seminormFromBounded' f x = f x`. -/
 theorem seminormFromBounded_of_mul_le (f_nonneg : 0 ≤ f) {x : R}
     (hx : ∀ y : R, f (x * y) ≤ f x * f y) (h_one : f 1 ≤ 1) : seminormFromBounded' f x = f x := by
   simp_rw [seminormFromBounded']
@@ -328,7 +328,7 @@ theorem seminormFromBounded_of_mul_le (f_nonneg : 0 ≤ f) {x : R}
       rw [heq, mul_one, div_one]
 
 /-- If `f : R → ℝ` is a nonzero, nonnegative, multiplicatively bounded function, then
-  `seminormFromBounded' f` is nonzero. -/
+`seminormFromBounded' f` is nonzero. -/
 theorem seminormFromBounded_nonzero (f_ne_zero : f ≠ 0) (f_nonneg : 0 ≤ f)
     (f_mul : ∀ x y : R, f (x * y) ≤ c * f x * f y) :
     seminormFromBounded' f ≠ 0 := by
@@ -339,7 +339,7 @@ theorem seminormFromBounded_nonzero (f_ne_zero : f ≠ 0) (f_nonneg : 0 ≤ f)
   exact hx
 
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded function, then the kernel of
-  `seminormFromBounded' f` equals the kernel of `f`. -/
+`seminormFromBounded' f` equals the kernel of `f`. -/
 theorem seminormFromBounded_ker (f_nonneg : 0 ≤ f)
     (f_mul : ∀ x y : R, f (x * y) ≤ c * f x * f y) :
     seminormFromBounded' f ⁻¹' {0} = f ⁻¹' {0} := by
@@ -347,7 +347,7 @@ theorem seminormFromBounded_ker (f_nonneg : 0 ≤ f)
   exact seminormFromBounded_eq_zero_iff f_nonneg f_mul x
 
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded, subadditive function that preserves
-  zero and negation, then `seminormFromBounded' f` is a norm if and only if `f⁻¹' {0} = {0}`. -/
+zero and negation, then `seminormFromBounded' f` is a norm if and only if `f⁻¹' {0} = {0}`. -/
 theorem seminormFromBounded_is_norm_iff (f_zero : f 0 = 0) (f_nonneg : 0 ≤ f)
     (f_mul : ∀ x y : R, f (x * y) ≤ c * f x * f y)
     (f_add : ∀ a b, f (a + b) ≤ f a + f b) (f_neg : ∀ x : R, f (-x) = f x) :
@@ -363,8 +363,8 @@ theorem seminormFromBounded_is_norm_iff (f_zero : f 0 = 0) (f_nonneg : 0 ≤ f)
     exact hx
 
 /-- `seminormFromBounded' f` as a `RingNorm` on `R`, provided that `f` is nonnegative,
-  multiplicatively bounded and subadditive, that it preserves `0` and negation, and that `f` has
-  trivial kernel. -/
+multiplicatively bounded and subadditive, that it preserves `0` and negation, and that `f` has
+trivial kernel. -/
 def normFromBounded (f_zero : f 0 = 0) (f_nonneg : 0 ≤ f)
     (f_mul : ∀ x y : R, f (x * y) ≤ c * f x * f y)
     (f_add : ∀ a b, f (a + b) ≤ f a + f b) (f_neg : ∀ x : R, f (-x) = f x)
@@ -374,7 +374,7 @@ def normFromBounded (f_zero : f 0 = 0) (f_nonneg : 0 ≤ f)
       (seminormFromBounded_is_norm_iff f_zero f_nonneg f_mul f_add f_neg).mpr f_ker }
 
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded function and `x : R` is
-  multiplicative for `f`, then `x` is multiplicative for `seminormFromBounded' f`. -/
+multiplicative for `f`, then `x` is multiplicative for `seminormFromBounded' f`. -/
 theorem seminormFromBounded_of_mul_is_mul (f_nonneg : 0 ≤ f)
     (f_mul : ∀ x y : R, f (x * y) ≤ c * f x * f y) {x : R}
     (hx : ∀ y : R, f (x * y) = f x * f y) (y : R) :

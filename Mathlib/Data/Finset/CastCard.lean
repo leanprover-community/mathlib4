@@ -34,8 +34,8 @@ variable {α R : Type*} {s t : Finset α} {a b : α}
 variable [DecidableEq α] [AddGroupWithOne R]
 
 /-- $\#(s \setminus \{a\}) = \#s - 1$ if $a \in s$.
-  This result is casted to any additive group with 1,
-  so that we don't have to work with `ℕ`-subtraction. -/
+This result is casted to any additive group with 1,
+so that we don't have to work with `ℕ`-subtraction. -/
 -- @[simp] -- removed because LHS is not in simp normal form
 theorem cast_card_erase_of_mem (hs : a ∈ s) : (#(s.erase a) : R) = #s - 1 := by
   rw [← card_erase_add_one hs, cast_add, cast_one, eq_sub_iff_add_eq]

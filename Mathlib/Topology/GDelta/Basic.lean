@@ -24,6 +24,7 @@ In this file we define `Gδ` sets and prove their basic properties.
   countable intersection of dense open sets.
 
 * `IsNowhereDense`: a set is called *nowhere dense* iff its closure has empty interior
+
 * `IsMeagre`: a set `s` is called *meagre* iff its complement is residual
 
 ## Main results

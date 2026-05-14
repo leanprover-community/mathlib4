@@ -293,9 +293,11 @@ def traceCrossRefs (db : Database) (verbose : Bool := false) :
 `#stacks_tags` retrieves all declarations that have the `stacks` attribute.
 
 For each found declaration, it prints a line
+
 ```
 'declaration_name' corresponds to tag 'declaration_tag'.
 ```
+
 The variant `#stacks_tags!` also adds the theorem statement (for theorems)
 or declaration type (for definitions, structures, instances, etc.) after each summary line.
 -/
@@ -305,9 +307,11 @@ elab (name := stacksTags) "#stacks_tags" tk:("!")? : command =>
 /-- The `#kerodon_tags` command retrieves all declarations that have the `kerodon` attribute.
 
 For each found declaration, it prints a line
+
 ```
 'declaration_name' corresponds to tag 'declaration_tag'.
 ```
+
 The variant `#kerodon_tags!` also adds the theorem statement (for theorems)
 or declaration type (for definitions, structures, instances, etc.) after each summary line.
 -/
@@ -317,9 +321,11 @@ elab (name := kerodonTags) "#kerodon_tags" tk:("!")? : command =>
 /-- The `#wikidata_tags` command retrieves all declarations that have the `wikidata` attribute.
 
 For each found declaration, it prints a line
+
 ```
 'declaration_name' corresponds to tag 'declaration_tag'.
 ```
+
 The variant `#wikidata_tags!` also adds the theorem statement (for theorems)
 or declaration type (for definitions, structures, instances, etc.) after each summary line.
 -/

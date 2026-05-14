@@ -17,6 +17,7 @@ In this file we define bases of semisimple Lie algebras. Given an indexing type 
 Lie algebra consists of a non-degenerate matrix of integers `A` indexed by `ι × ι` and generators
 `h i`, `e i`, `f i` indexed by `ι`, each forming an `sl₂` triple, and satisfying the Chevalley-Serre
 relations:
+
 * `⁅h i, h j⁆ = 0`
 * `⁅h j, e i⁆ =  A i j • e i`
 * `⁅h j, f i⁆ = -A i j • f i`

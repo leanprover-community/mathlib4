@@ -32,7 +32,7 @@ noncomputable section
 
 variable (k G) in
 /-- If there exists `G`-action on a trivial monoid `H` then the induced representation
-  on `k[H]` is equivalent to the trivial representation. -/
+on `k[H]` is equivalent to the trivial representation. -/
 def ofMulActionSubsingletonEquivTrivial : (ofMulAction k G H).Equiv (trivial k G k) :=
   letI : Unique H := uniqueOfSubsingleton 1
   .mk (Finsupp.LinearEquiv.finsuppUnique _ _ _) fun g ↦ by
@@ -100,7 +100,7 @@ def freeLiftLEquiv (α : Type w') : ((free k G α).IntertwiningMap σ) ≃ₗ[k]
   right_inv f := by simp [← toLinearMap_apply]
 
 /-- Equiv between representations induced by linear equiv between `(α →₀ V) ⊗[k] W` and
-  `α →₀ (V ⊗[k] W)`. -/
+`α →₀ (V ⊗[k] W)`. -/
 def finsuppTensorLeft (α : Type w') [DecidableEq α] :
     ((σ.finsupp α).tprod ρ).Equiv ((σ.tprod ρ).finsupp α) :=
   .mk (TensorProduct.finsuppLeft _ _ _ _ _) fun g ↦ by
@@ -121,7 +121,7 @@ lemma finsuppTensorLeft_symm_apply_single {α : Type w'} [DecidableEq α] (i : �
   simp [finsuppTensorLeft]
 
 /-- Equiv between representations induced by linear equiv between `V ⊗[k] (α →₀ W)` and
-  `α →₀ (V ⊗[k] W)`. -/
+`α →₀ (V ⊗[k] W)`. -/
 def finsuppTensorRight (α : Type w') [DecidableEq α] :
     (σ.tprod (ρ.finsupp α)).Equiv ((σ.tprod ρ).finsupp α) :=
   .mk (TensorProduct.finsuppRight _ _ _ _ _) fun g ↦ by
@@ -142,7 +142,7 @@ lemma finsuppTensorRight_symm_apply_single {α : Type w'} [DecidableEq α] (i : 
   simp [finsuppTensorRight]
 
 /-- Equiv between representations induced by linear equiv between `(G →₀ k) ⊗[k] (α →₀ k)` and
-  `α →₀ G →₀ k`. -/
+`α →₀ G →₀ k`. -/
 def leftRegularTensorTrivialIsoFree (α : Type w') :
     ((leftRegular k G).tprod (trivial k G (α →₀ k))).Equiv (free k G α) :=
   .mk (finsuppTensorFinsupp' k G α ≪≫ₗ Finsupp.domLCongr (Equiv.prodComm G α) ≪≫ₗ

@@ -19,6 +19,7 @@ This file proves the Kruskal-Katona theorem. This is a sharp statement about how
 ## Main declarations
 
 The key results proved here are:
+
 * `Finset.kruskal_katona`: The basic Kruskal-Katona theorem. Given a set family `𝒜` consisting of
   `r`-sets, and `𝒞` an initial segment of the colex order of the same size, the shadow of `𝒞` is
   smaller than the shadow of `𝒜`. In particular, this shows that the minimum shadow size is

@@ -23,6 +23,7 @@ namespace Mathlib.Tactic.Translate
 open Lean Meta Elab Command Term UnfoldBoundary
 
 /-- There are 3 kinds of casting functions for a definition `foo := body`:
+
 1. Equality: `foo = body`
 2. Unfolding: `foo → body`
 3. Refolding: `body → foo`

@@ -25,9 +25,9 @@ consider the normalizer. This turns out to be a Lie subalgebra.
 
 ## Main definitions
 
-  * `LieSubmodule.normalizer`
-  * `LieSubalgebra.normalizer`
-  * `LieSubmodule.gc_top_lie_normalizer`
+* `LieSubmodule.normalizer`
+* `LieSubalgebra.normalizer`
+* `LieSubmodule.gc_top_lie_normalizer`
 
 ## Tags
 

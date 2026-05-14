@@ -18,11 +18,11 @@ public import Mathlib.RingTheory.Unramified.Locus
 Let `K` be a field, `A` be a `K`-algebra and `L` be a field extension of `K`.
 
 - `Algebra.FormallyUnramified.bijective_of_isAlgClosed_of_isLocalRing`:
-    If `A` is `K`-unramified and `K` is alg-closed, then `K = A`.
+  If `A` is `K`-unramified and `K` is alg-closed, then `K = A`.
 - `Algebra.FormallyUnramified.isReduced_of_field`:
-    If `A` is `K`-unramified then `A` is reduced.
+  If `A` is `K`-unramified then `A` is reduced.
 - `Algebra.FormallyUnramified.iff_isSeparable`:
-    `L` is unramified over `K` iff `L` is separable over `K`.
+  `L` is unramified over `K` iff `L` is separable over `K`.
 
 ## References
 

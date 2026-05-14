@@ -28,6 +28,7 @@ shall allow a very nice construction of a cartesian monoidal closed
 structure on `GeneratedByTopCat X` under suitable assumptions (TODO @joelriou).
 
 ## References
+
 * [Martín Escardó, Jimmie Lawson and Alex Simpson, *Comparing Cartesian closed
   categories of (core) compactly generated spaces*][escardo-lawson-simpson-2004]
 
@@ -80,6 +81,7 @@ end GeneratedByTopCat
 
 /-- Let `X i` be a family of topological spaces. This is the type of objects
 in a category ` ContinuousGeneratedByCat X` where:
+
 * objects are topological spaces;
 * morphisms are `X`-continuous maps. -/
 structure ContinuousGeneratedByCat (X : ι → Type u) [∀ i, TopologicalSpace (X i)] where

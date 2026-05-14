@@ -13,6 +13,7 @@ public import Mathlib.RingTheory.Finiteness.Small
 # Stably free modules
 
 ## Main definition
+
 * `IsStablyFree`: A module `M` over a commutative ring `R` is called stably free if there exists a
   finite free module `N` over `R` such that `M ⊕ N` is free.
 -/
@@ -24,7 +25,7 @@ universe u v w
 namespace Module
 
 /-- A module `M` over a commutative ring `R` is called stably free if there exists a
-  finite free module `N` over `R` such that `M ⊕ N` is free.
+finite free module `N` over `R` such that `M ⊕ N` is free.
 
 The underlying constructor is marked as private. The intended constructor of `IsStablyFree` is
 `IsStablyFree.of_free_prod`, and use `IsStablyFree.exist_free_prod` to extract the property from

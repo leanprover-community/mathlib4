@@ -30,6 +30,7 @@ structure morphisms such as unitors, associators and whiskering conjugate
 well under `eqToHom`s.
 
 ## TODO
+
 * Define `eqToEquiv` that puts the `eqToHom`s in an `Equivalence` between
   objects.
 -/

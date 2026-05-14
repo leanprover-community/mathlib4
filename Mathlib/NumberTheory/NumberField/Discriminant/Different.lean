@@ -14,6 +14,7 @@ public import Mathlib.RingTheory.Ideal.Norm.RelNorm
 # (Absolute) Discriminant and Different Ideal
 
 ## Main results
+
 - `NumberField.absNorm_differentIdeal`:
   The norm of `differentIdeal ℤ 𝒪` is the absolute discriminant.
 - `NumberField.natAbs_discr_eq_absNorm_differentIdeal_mul_natAbs_discr_pow`:

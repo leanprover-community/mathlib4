@@ -75,7 +75,7 @@ namespace Cardinal
 /-! ### Order on cardinals -/
 
 /-- We define the order on cardinal numbers by `#α ≤ #β` if and only if
-  there exists an embedding (injective function) from α to β. -/
+there exists an embedding (injective function) from α to β. -/
 instance : LE Cardinal.{u} :=
   ⟨fun q₁ q₂ =>
     Quotient.liftOn₂ q₁ q₂ (fun α β => Nonempty <| α ↪ β) fun _ _ _ _ ⟨e₁⟩ ⟨e₂⟩ =>

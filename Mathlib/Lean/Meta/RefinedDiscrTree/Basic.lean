@@ -11,6 +11,7 @@ public import Mathlib.Init
 # Basic Definitions for `RefinedDiscrTree`
 
 We define
+
 * `Key`, the discrimination tree key
 * `LazyEntry`, the partial, lazy computation of a sequence of `Key`s
 * `Trie`, a node of the discrimination tree, which is indexed with `Key`s
@@ -194,7 +195,7 @@ structure LazyEntry where
   If an expression creates more entries in the stack, for example because it is an application,
   then instead of pushing to the stack greedily, we only extend the stack once we need to.
   So, the field `previous` is used to extend the `stack` before looking in the `stack`.
-
+  
   For example in `10.add (20.add 30)`, after computing the key `⟨Nat.add, 2⟩`, the stack is still
   empty, and `previous` will be `10.add (20.add 30)`.
   -/
@@ -202,7 +203,7 @@ structure LazyEntry where
   /--
   The stack, used to emulate recursion. It contains the list of all expressions for which the
   keys still need to be computed, in that order.
-
+  
   For example in `10.add (20.add 30)`, after computing the keys `⟨Nat.add, 2⟩` and `10`, the stack
   will be a list of length 1 containing the expression `20.add 30`.
   -/
@@ -217,7 +218,7 @@ structure LazyEntry where
   labelledStars?   : Option (Array MVarId)
   /--
   The `Key`s that have already been computed.
-
+  
   Sometimes, more than one `Key` ends up being computed in one go. This happens when
   there are lambda binders (because it depends on the body whether the lambda key
   should be indexed or not). In that case the remaining `Key`s are stored in `results`.
@@ -250,10 +251,11 @@ abbrev TrieIndex := Nat
 Discrimination tree trie. See `RefinedDiscrTree`.
 
 A `Trie` will normally have exactly one of the following
+
 - nonempty `values`
 - nonempty `stars`, `labelledStars` and/or `children`
 - nonempty `pending`
-But defining it as a structure that can have all at the same time turns out to be easier.
+  But defining it as a structure that can have all at the same time turns out to be easier.
 -/
 structure Trie (α : Type) where
   node ::
@@ -293,12 +295,14 @@ namespace RefinedDiscrTree
 variable {α : Type}
 
 /-- Format a `RefinedDiscrTree` as a flowchart.
+
 - Non-terminal nodes are of the form `{key} =>`, followed by all of the following nodes,
   indented with 2 more spaces.
 - Terminal nodes have either "entries", containing the return values,
   or "pending entries", for nodes that have not been evaluated/expanded.
 
 For example:
+
 ```
 Discrimination tree flowchart:
 ⟨HMul.hMul, 6⟩ =>

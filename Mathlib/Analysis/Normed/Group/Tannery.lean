@@ -33,6 +33,7 @@ measure-theoretic result, e.g. `G` is not assumed to be an `ℝ`-vector space or
 and the limit is along an arbitrary filter rather than `atTop ℕ`.)
 
 See also:
+
 * `MeasureTheory.tendsto_integral_of_dominated_convergence` (for general integrals, but
   with more assumptions on `G`)
 * `continuous_tsum` (continuity of infinite sums in a parameter)

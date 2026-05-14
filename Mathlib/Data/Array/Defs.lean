@@ -25,8 +25,8 @@ universe u
 variable {α : Type u}
 
 /-- Permute the array using a sequence of indices defining a cyclic permutation.
-  If the list of indices `l = [i₁, i₂, ..., iₙ]` are all distinct then
-  `(cyclicPermute! a l)[iₖ₊₁] = a[iₖ]` and `(cyclicPermute! a l)[i₀] = a[iₙ]` -/
+If the list of indices `l = [i₁, i₂, ..., iₙ]` are all distinct then
+`(cyclicPermute! a l)[iₖ₊₁] = a[iₖ]` and `(cyclicPermute! a l)[i₀] = a[iₙ]` -/
 @[deprecated "This is now in `Mathlib.Tactic.Translate.Reorder.permute!`" (since := "2026-03-05")]
 def cyclicPermute! [Inhabited α] : Array α → List Nat → Array α
   | a, [] => a

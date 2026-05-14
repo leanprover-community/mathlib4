@@ -17,6 +17,7 @@ public import Mathlib.RingTheory.Ideal.Quotient.Operations
   Let `q : R[X]` be a monic polynomial which is prime in `K[X]`.
   Let `f : R[X]` be a polynomial of strictly positive degree
   satisfying the following properties:
+
   * the image of `f` in `K[X]` is a power of `q`.
   * the leading coefficient of `f` is not zero in `K`
   * the polynomial `f` is primitive.

@@ -41,7 +41,6 @@ a version for real-valued non-negative functions is in the `Real` namespace, and
 - `geom_mean_le_arith_mean3_weighted` : weighted version for three numbers;
 - `geom_mean_le_arith_mean4_weighted` : weighted version for four numbers.
 
-
 ### HM-GM inequality:
 
 The inequality says that the harmonic mean of a tuple of positive numbers is less than or equal

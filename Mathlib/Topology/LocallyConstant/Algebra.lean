@@ -87,7 +87,7 @@ section CharFn
 variable (Y) [MulZeroOneClass Y] {U V : Set X}
 
 /-- Characteristic functions are locally constant functions taking `x : X` to `1` if `x ∈ U`,
-  where `U` is a clopen set, and `0` otherwise. -/
+where `U` is a clopen set, and `0` otherwise. -/
 noncomputable def charFn (hU : IsClopen U) : LocallyConstant X Y :=
   indicator 1 hU
 

@@ -19,7 +19,9 @@ the basic definition.
 For connections with Laurent Series, see `Mathlib/RingTheory/LaurentSeries.lean`.
 
 ## Main definitions
+
 We provide a set of recursion and induction principles:
+
 - `RatFunc.liftOn`: define a function by mapping a fraction of polynomials `p/q` to `f p q`,
   if `f` is well-defined in the sense that `p/q = p'/q' → f p q = f p' q'`.
 - `RatFunc.liftOn'`: define a function by mapping a fraction of polynomials `p/q` to `f p q`,
@@ -43,7 +45,7 @@ the codomain is not a field or even an integral domain.
 
 ## References
 
-* [Kleiman, *Misconceptions about $K_X$*][kleiman1979]
+* [Kleiman, *Misconceptions about MDMASKTOKEN000000*][kleiman1979]
 * https://freedommathdance.blogspot.com/2012/11/misconceptions-about-kx.html
 * https://stacks.math.columbia.edu/tag/01X1
 

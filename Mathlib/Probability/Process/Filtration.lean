@@ -247,6 +247,7 @@ section IsRightContinuous
 
 open scoped Classical in
 /-- Given a filtration `𝓕`, its **right continuation** is the filtration `𝓕₊` defined as follows:
+
 - If `i` is isolated on the right, then `𝓕₊ i := 𝓕 i`;
 - Otherwise, `𝓕₊ i := ⨅ j > i, 𝓕 j`.
 
@@ -261,6 +262,7 @@ the order topology `Preorder.topology` inside the definition. Say you write a st
 `𝓕₊` which does not require a `TopologicalSpace` structure on `ι`,
 but you wish to use a statement which requires a topology (such as `rightCont_apply`).
 Then you can endow `ι` with the order topology by writing
+
 ```lean
   letI := Preorder.topology ι
   haveI : OrderTopology ι := ⟨rfl⟩

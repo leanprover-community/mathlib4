@@ -35,9 +35,10 @@ The deprecations have the effect that downstream files now have to use the fully
 even when the corresponding namespace is `open`ed.
 
 After the deprecations have been removed, the shorter names can be restored:
+
 * In Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind:
   + `Ideal.span_singleton_dvd_span_singleton_iff_dvd` → `span_singleton_dvd_span_singleton_iff_dvd`
-     in line 75 (as of 2026-04-17)
+    in line 75 (as of 2026-04-17)
   + `Ideal.normalizedFactorsEquivSpanNormalizedFactors` →
     `normalizedFactorsEquivSpanNormalizedFactors` in line 115
   + `Ideal.emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_emultiplicity` →
@@ -478,6 +479,7 @@ end IsDedekindDomain
 
 /-!
 ### Height one spectrum of a Dedekind domain
+
 If `R` is a Dedekind domain of Krull dimension 1, the maximal ideals of `R` are exactly its nonzero
 prime ideals.
 We define `HeightOneSpectrum` and provide lemmas to recover the facts that prime ideals of height
@@ -577,7 +579,7 @@ section RingEquiv
 variable {R} {S : Type*} [CommRing S]
 
 /-- A surjective ring homomorphism `f : R →+* S` induces a map from `HeightOneSpectrum S` to
-  `HeightOneSpectrum R` sending `v` to `v.asIdeal.comap f`. -/
+`HeightOneSpectrum R` sending `v` to `v.asIdeal.comap f`. -/
 @[simps]
 def comap (f : R →+* S) (hf : Function.Surjective f) (v : HeightOneSpectrum S) :
     (HeightOneSpectrum R) where
@@ -617,7 +619,7 @@ variable [IsDedekindDomain A] {I : Ideal R} {J : Ideal A}
 namespace IsDedekindDomain
 
 /-- The map from ideals of `R` dividing `I` to the ideals of `A` dividing `J` induced by
-  a homomorphism `f : R/I →+* A/J` -/
+a homomorphism `f : R/I →+* A/J` -/
 @[simps]
 def idealFactorsFunOfQuotHom {f : R ⧸ I →+* A ⧸ J} (hf : Function.Surjective f) :
     {p : Ideal R // p ∣ I} →o {p : Ideal A // p ∣ J} where
@@ -673,7 +675,7 @@ alias _root_.idealFactorsFunOfQuotHom_comp := idealFactorsFunOfQuotHom_comp
 variable [IsDedekindDomain R] (f : R ⧸ I ≃+* A ⧸ J)
 
 /-- The bijection between ideals of `R` dividing `I` and the ideals of `A` dividing `J` induced by
-  an isomorphism `f : R/I ≅ A/J`. -/
+an isomorphism `f : R/I ≅ A/J`. -/
 def idealFactorsEquivOfQuotEquiv : { p : Ideal R | p ∣ I } ≃o { p : Ideal A | p ∣ J } := by
   have f_surj : Function.Surjective (f : R ⧸ I →+* A ⧸ J) := f.surjective
   have fsym_surj : Function.Surjective (f.symm : A ⧸ J →+* R ⧸ I) := f.symm.surjective
@@ -1114,9 +1116,9 @@ alias _root_.emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_e
 variable [DecidableEq R]
 
 /-- The bijection between the set of prime factors of the ideal `⟨r⟩` and the set of prime factors
-  of `r` preserves `count` of the corresponding multisets. See
-  `multiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_multiplicity` for the version
-  stated in terms of multiplicity. -/
+of `r` preserves `count` of the corresponding multisets. See
+`multiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_multiplicity` for the version
+stated in terms of multiplicity. -/
 theorem count_span_normalizedFactors_eq {r X : R} (hr : r ≠ 0) (hX : Prime X) :
     Multiset.count (span {X} : Ideal R) (normalizedFactors (span {r})) =
         Multiset.count (normalize X) (normalizedFactors r) := by

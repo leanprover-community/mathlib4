@@ -13,6 +13,7 @@ public import Mathlib.CategoryTheory.GuitartExact.Opposite
 
 Consider a commutative square of categories given by a natural isomorphism
 `e : T ⋙ R ≅ L ⋙ B`:
+
 ```
       T
  C₀ ----> H₀

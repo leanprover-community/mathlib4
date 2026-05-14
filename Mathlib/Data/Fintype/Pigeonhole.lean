@@ -14,6 +14,7 @@ public import Mathlib.Data.Fintype.EquivFin
 ## Main declarations
 
 We provide the following versions of the pigeonholes principle.
+
 * `Fintype.exists_ne_map_eq_of_card_lt` and `isEmpty_of_card_lt`: Finitely many pigeons and
   pigeonholes. Weak formulation.
 * `Finite.exists_ne_map_eq_of_infinite`: Infinitely many pigeons in finitely many pigeonholes.
@@ -77,7 +78,7 @@ theorem Finite.exists_ne_map_eq_of_infinite {α β} [Infinite α] [Finite β] (f
 
 attribute [local instance] Fintype.ofFinite in
 /-- The strong pigeonhole principle for infinitely many pigeons in
-finitely many pigeonholes.  If there are infinitely many pigeons in
+finitely many pigeonholes. If there are infinitely many pigeons in
 finitely many pigeonholes, then there is a pigeonhole with infinitely
 many pigeons.
 

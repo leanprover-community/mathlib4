@@ -222,6 +222,7 @@ theorem unique_unit_speed_on_Icc_zero {s t : ℝ} (hs : 0 ≤ s) (ht : 0 ≤ t) 
   rfl
 
 /-- The natural parameterization of `f` on `s`, which, if `f` has locally bounded variation on `s`,
+
 * has unit speed on `s` (by `has_unit_speed_naturalParameterization`).
 * composed with `variationOnFromTo f s a`, is at distance zero from `f`
   (by `edist_naturalParameterization_eq_zero`).

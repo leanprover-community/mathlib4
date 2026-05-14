@@ -36,6 +36,7 @@ where `Q` is in degree `p`.
 We also construct the canonical epimorphism `K.πTruncGE e : K ⟶ K.truncGE e`.
 
 ## TODO
+
 * show that `K.πTruncGE e : K ⟶ K.truncGE e` induces an isomorphism
   in homology in degrees in the image of `e.f`.
 

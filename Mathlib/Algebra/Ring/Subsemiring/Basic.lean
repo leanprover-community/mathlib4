@@ -180,7 +180,7 @@ theorem rangeS_eq_top : f.rangeS = ⊤ ↔ Function.Surjective f := by
 
 /-- The range of a morphism of semirings is a fintype, if the domain is a fintype.
 Note: this instance can form a diamond with `Subtype.fintype` in the
-  presence of `Fintype S`. -/
+presence of `Fintype S`. -/
 instance fintypeRangeS [Fintype R] [DecidableEq S] (f : R →+* S) : Fintype (rangeS f) :=
   Set.fintypeRange f
 

@@ -41,7 +41,6 @@ The proof is done by induction, using two standard constructions
 
 * `MonomialOrder.div_single` is the variant of `MonomialOrder.div` for a single polynomial.
 
-
 ## Reference : [Becker-Weispfenning1993]
 
 -/

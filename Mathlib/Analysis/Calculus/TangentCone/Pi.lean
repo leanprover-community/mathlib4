@@ -13,7 +13,7 @@ import Mathlib.Topology.Algebra.Module.Basic
 
 In this file we prove that the indexed product
 of a family sets with unique differentiability property
-has the same property, see `UniqueDiffOn.pi` and  `UniqueDiffOn.univ_pi`.
+has the same property, see `UniqueDiffOn.pi` and `UniqueDiffOn.univ_pi`.
 -/
 
 public section

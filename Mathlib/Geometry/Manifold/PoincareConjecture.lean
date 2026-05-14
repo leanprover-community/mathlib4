@@ -35,6 +35,7 @@ variable (M : Type*) [TopologicalSpace M]
 open ContinuousMap
 
 /-- The generalized topological Poincaré conjecture.
+
 - For n = 2 it follows from the classification of surfaces.
 - For n ≥ 5 it was proven by Stephen Smale in 1961 assuming M admits a smooth structure;
   Newman (1966) and Connell (1967) proved it without the condition.

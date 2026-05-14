@@ -243,12 +243,13 @@ variable [MeasurableConstSMul G α] in
 0. `SMulInvariantMeasure G α μ`;
 
 1. for every `c : G` and a measurable set `s`, the measure of the preimage of `s` under scalar
-  multiplication by `c` is equal to the measure of `s`;
+   multiplication by `c` is equal to the measure of `s`;
 
 2. for every `c : G` and a measurable set `s`, the measure of the image `c • s` of `s` under
-  scalar multiplication by `c` is equal to the measure of `s`;
+   scalar multiplication by `c` is equal to the measure of `s`;
 
 3. property 1 for any set, including non-measurable ones;
+
 4. property 2 for any set, including non-measurable ones;
 
 5. for any `c : G`, scalar multiplication by `c` maps `μ` to `μ`;
@@ -284,10 +285,10 @@ theorem smulInvariantMeasure_tfae :
 - 0: `VAddInvariantMeasure G α μ`;
 
 - 1: for every `c : G` and a measurable set `s`, the measure of the preimage of `s` under
-     vector addition `(c +ᵥ ·)` is equal to the measure of `s`;
+  vector addition `(c +ᵥ ·)` is equal to the measure of `s`;
 
 - 2: for every `c : G` and a measurable set `s`, the measure of the image `c +ᵥ s` of `s` under
-     vector addition `(c +ᵥ ·)` is equal to the measure of `s`;
+  vector addition `(c +ᵥ ·)` is equal to the measure of `s`;
 
 - 3, 4: properties 2, 3 for any set, including non-measurable ones;
 

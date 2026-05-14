@@ -15,6 +15,7 @@ public import Aesop
 This file defines the empty finite set ∅ and a predicate for nonempty `Finset`s.
 
 ## Main declarations
+
 * `Finset.Nonempty`: A finset is nonempty if it has elements. This is equivalent to saying `s ≠ ∅`.
 * `Finset.empty`: Denoted by `∅`. The finset associated to any type consisting of no elements.
 
@@ -196,6 +197,7 @@ open Qq Lean Meta Finset
 /-- Attempt to prove that a finset is nonempty using the `finsetNonempty` aesop rule-set.
 
 You can add lemmas to the rule-set by tagging them with either:
+
 * `aesop safe apply (rule_sets := [finsetNonempty])` if they are always a good idea to follow or
 * `aesop unsafe apply (rule_sets := [finsetNonempty])` if they risk directing the search to a blind
   alley.

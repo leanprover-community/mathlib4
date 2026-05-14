@@ -237,9 +237,9 @@ theorem isVonNBounded_of_smul_tendsto_zero {ε : ι → 𝕜} {l : Filter ι} [l
     (H (_ ∘ x) fun n => (x n).2).eventually (eventually_mem_set.mpr hV)] using fun n => id
 
 /-- Given any sequence `ε` of scalars which tends to `𝓝[≠] 0`, we have that a set `S` is bounded
-  if and only if for any sequence `x : ℕ → S`, `ε • x` tends to 0. This actually works for any
-  indexing type `ι`, but in the special case `ι = ℕ` we get the important fact that convergent
-  sequences fully characterize bounded sets. -/
+if and only if for any sequence `x : ℕ → S`, `ε • x` tends to 0. This actually works for any
+indexing type `ι`, but in the special case `ι = ℕ` we get the important fact that convergent
+sequences fully characterize bounded sets. -/
 theorem isVonNBounded_iff_smul_tendsto_zero {ε : ι → 𝕜} {l : Filter ι} [l.NeBot]
     (hε : Tendsto ε l (𝓝[≠] 0)) {S : Set E} :
     IsVonNBounded 𝕜 S ↔ ∀ x : ι → E, (∀ n, x n ∈ S) → Tendsto (ε • x) l (𝓝 0) :=

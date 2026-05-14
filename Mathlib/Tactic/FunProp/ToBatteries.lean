@@ -71,8 +71,9 @@ For `(x₀, .., xₙ₋₁)` return `xᵢ` but as a product projection.
 We need to know the total size of the product to be considered.
 
 For example for `xyz : X × Y × Z`
-  - `mkProdProj xyz 1 3` returns `xyz.snd.fst`.
-  - `mkProdProj xyz 1 2` returns `xyz.snd`.
+
+- `mkProdProj xyz 1 3` returns `xyz.snd.fst`.
+- `mkProdProj xyz 1 2` returns `xyz.snd`.
 -/
 def mkProdProj (x : Expr) (i : Nat) (n : Nat) : MetaM Expr := do
   -- let X ← inferType x
@@ -106,6 +107,7 @@ def mkUncurryFun (n : Nat) (f : Expr) : MetaM Expr := do
 /-- Eta expand `f` in only one variable and reduce in others.
 
 Examples:
+
 ```
   f                ==> fun x => f x
   fun x y => f x y ==> fun x => f x
@@ -133,6 +135,7 @@ private def betaThroughLetAux (f : Expr) (args : List Expr) : Expr :=
 does beta-reduction through let bindings without inlining them.
 
 Example
+
 ```
 beta' (fun x => let y := x * x; fun z => x + y + z) #[a,b]
 ==>
@@ -146,6 +149,7 @@ def betaThroughLet (f : Expr) (args : Array Expr) : Expr :=
 arguments through let bindings without inlining them.
 
 Example
+
 ```
 headBeta' ((fun x => let y := x * x; fun z => x + y + z) a b)
 ==>

@@ -18,6 +18,7 @@ We collect results about effective epimorphisms in the category of schemes.
 ## Main results
 
 For a surjective and flat morphism `π : X ⟶ Y` between affine schemes, we prove the following.
+
 * `exists_comp_eq_of_flat_of_isAffine`: Any morphism `f : X ⟶ S` of schemes whose two pullbacks to
   `X ×[Y] X` agree descends to a morphism `u : Y ⟶ S` with `π ≫ u = f`.
 * `isRegularEpi_of_flat_of_surjective_of_isAffine`: The map `π : X ⟶ Y` is a regular epimorphism

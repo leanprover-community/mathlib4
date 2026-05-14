@@ -14,6 +14,7 @@ public import Mathlib.Data.Nat.Factorial.DoubleFactorial
 # Gaussian integral
 
 We prove various versions of the formula for the Gaussian integral:
+
 * `integral_gaussian`: for real `b` we have `∫ x:ℝ, exp (-b * x^2) = √(π / b)`.
 * `integral_gaussian_complex`: for complex `b` with `0 < re b` we have
   `∫ x:ℝ, exp (-b * x^2) = (π / b) ^ (1 / 2)`.

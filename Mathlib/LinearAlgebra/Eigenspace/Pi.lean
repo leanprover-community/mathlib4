@@ -18,6 +18,7 @@ for commuting endomorphisms but there are important more general situations wher
 (e.g., representations of nilpotent Lie algebras).
 
 ## Main definitions / results
+
 * `Module.End.independent_iInf_maxGenEigenspace_of_forall_mapsTo`: the simultaneous generalised
   eigenspaces of a compatible family of endomorphisms are independent.
 * `Module.End.iSup_iInf_maxGenEigenspace_eq_top_of_forall_mapsTo`: in finite dimensions, the

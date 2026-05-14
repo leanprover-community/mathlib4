@@ -166,7 +166,7 @@ open Classical in
 abbrev Φ : K[X][Y] := (Φ' E).primPart
 
 /-- We have `c * φ = Φ` as polynomials with coefficients in `Ratfunc K`. See Equation
-  (11.3.5) in Cohn's proof. -/
+(11.3.5) in Cohn's proof. -/
 lemma C_c_mul_φ (h : E ≠ ⊥) :
     Polynomial.C (c E) * (φ E).map (algebraMap E K⟮X⟯) = (Φ E).map (algebraMap ..) := by
   classical

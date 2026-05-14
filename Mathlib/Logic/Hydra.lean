@@ -42,19 +42,19 @@ open Multiset Prod
 variable {α : Type*}
 
 /-- The relation that specifies valid moves in our hydra game. `CutExpand r s' s`
-  means that `s'` is obtained by removing one head `a ∈ s` and adding back an arbitrary
-  multiset `t` of heads such that all `a' ∈ t` satisfy `r a' a`.
+means that `s'` is obtained by removing one head `a ∈ s` and adding back an arbitrary
+multiset `t` of heads such that all `a' ∈ t` satisfy `r a' a`.
 
-  This is most directly translated into `s' = s.erase a + t`, but `Multiset.erase` requires
-  `DecidableEq α`, so we use the equivalent condition `s' + {a} = s + t` instead, which
-  is also easier to verify for explicit multisets `s'`, `s` and `t`.
+This is most directly translated into `s' = s.erase a + t`, but `Multiset.erase` requires
+`DecidableEq α`, so we use the equivalent condition `s' + {a} = s + t` instead, which
+is also easier to verify for explicit multisets `s'`, `s` and `t`.
 
-  We also don't include the condition `a ∈ s` because `s' + {a} = s + t` already
-  guarantees `a ∈ s + t`, and if `r` is irreflexive then `a ∉ t`, which is the
-  case when `r` is well-founded, the case we are primarily interested in.
+We also don't include the condition `a ∈ s` because `s' + {a} = s + t` already
+guarantees `a ∈ s + t`, and if `r` is irreflexive then `a ∉ t`, which is the
+case when `r` is well-founded, the case we are primarily interested in.
 
-  The lemma `Relation.cutExpand_iff` below converts between this convenient definition
-  and the direct translation when `r` is irreflexive. -/
+The lemma `Relation.cutExpand_iff` below converts between this convenient definition
+and the direct translation when `r` is irreflexive. -/
 def CutExpand (r : α → α → Prop) (s' s : Multiset α) : Prop :=
   ∃ (t : Multiset α) (a : α), (∀ a' ∈ t, r a' a) ∧ s' + {a} = s + t
 
@@ -113,7 +113,7 @@ theorem not_cutExpand_zero [Std.Irrefl r] (s) : ¬CutExpand r s 0 := by
 lemma cutExpand_zero {x} : CutExpand r 0 {x} := ⟨0, x, nofun, add_comm 0 _⟩
 
 /-- For any relation `r` on `α`, multiset addition `Multiset α × Multiset α → Multiset α` is a
-  fibration between the game sum of `CutExpand r` with itself and `CutExpand r` itself. -/
+fibration between the game sum of `CutExpand r` with itself and `CutExpand r` itself. -/
 theorem cutExpand_fibration (r : α → α → Prop) :
     Fibration (GameAdd (CutExpand r) (CutExpand r)) (CutExpand r) fun s ↦ s.1 + s.2 := by
   rintro ⟨s₁, s₂⟩ s ⟨t, a, hr, he⟩; dsimp at he ⊢
@@ -154,7 +154,7 @@ lemma cutExpand_double_left {a a₁ a₂ b} (h₁ : r a₁ a) (h₂ : r a₂ a) 
   (cutExpand_add_right {b}).2 (cutExpand_double h₁ h₂)
 
 /-- A multiset is accessible under `CutExpand` if all its singleton subsets are,
-  assuming `r` is irreflexive. -/
+assuming `r` is irreflexive. -/
 theorem acc_of_singleton [Std.Irrefl r] {s : Multiset α} (hs : ∀ a ∈ s, Acc (CutExpand r) {a}) :
     Acc (CutExpand r) s := by
   induction s using Multiset.induction with
@@ -165,7 +165,7 @@ theorem acc_of_singleton [Std.Irrefl r] {s : Multiset α} (hs : ∀ a ∈ s, Acc
     exact (hs.1.prod_gameAdd <| ihs fun a ha ↦ hs.2 a ha).of_fibration _ (cutExpand_fibration r)
 
 /-- A singleton `{a}` is accessible under `CutExpand r` if `a` is accessible under `r`,
-  assuming `r` is irreflexive. -/
+assuming `r` is irreflexive. -/
 theorem _root_.Acc.cutExpand [Std.Irrefl r] {a : α} (hacc : Acc r a) : Acc (CutExpand r) {a} := by
   induction hacc with | _ a h ih
   refine Acc.intro _ fun s ↦ ?_

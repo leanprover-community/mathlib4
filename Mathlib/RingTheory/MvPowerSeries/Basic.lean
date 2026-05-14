@@ -48,18 +48,18 @@ We provide the natural inclusion from multivariate polynomials to multivariate f
 
 - `MvPolynomial.toMvPowerSeries`: the canonical coercion from `MvPolynomial` to `MvPowerSeries`
 
-
 ## Note
 
 This file sets up the (semi)ring structure on multivariate power series:
 additional results are in:
+
 * `Mathlib/RingTheory/MvPowerSeries/Inverse.lean` : invertibility,
   formal power series over a local ring form a local ring;
 * `Mathlib/RingTheory/MvPowerSeries/Trunc.lean`: truncation of power series.
 
 In `Mathlib/RingTheory/PowerSeries/Basic.lean`, formal power series in one variable
 will be obtained as a particular case, defined by
-  `PowerSeries R := MvPowerSeries Unit R`.
+`PowerSeries R := MvPowerSeries Unit R`.
 See that file for a specific description.
 
 ## Implementation notes
@@ -125,10 +125,10 @@ section Semiring
 variable [Semiring R]
 
 /-- The `n`th monomial as multivariate formal power series:
-  it is defined as the `R`-linear map from `R` to the semiring
-  of multivariate formal power series associating to each `a`
-  the map sending `n : σ →₀ ℕ` to the value `a`
-  and sending all other `x : σ →₀ ℕ` different from `n` to `0`. -/
+it is defined as the `R`-linear map from `R` to the semiring
+of multivariate formal power series associating to each `a`
+the map sending `n : σ →₀ ℕ` to the value `a`
+and sending all other `x : σ →₀ ℕ` different from `n` to `0`. -/
 def monomial (n : σ →₀ ℕ) : R →ₗ[R] MvPowerSeries σ R :=
   letI := Classical.decEq σ
   LinearMap.single R (fun _ ↦ R) n

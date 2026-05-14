@@ -63,7 +63,7 @@ variable {F G : Cᵒᵖ ⥤ Type (max u v)}
 The characteristic map of an inclusion of presheaves.
 Given a monomorphism of sheaves `m : F ⟶ G`, an object X of the site, map an element `x : G(X)`
 to the (closed) sieve on X where `f : Y → X` is in the sieve iff
-  `∃ a ∈ F(Y), G(f)(x) = m_Y(a)`
+`∃ a ∈ F(Y), G(f)(x) = m_Y(a)`
 -/
 @[simps app]
 def Presheaf.χ (m : F ⟶ G) : G ⟶ Functor.sieves C where
@@ -172,7 +172,7 @@ set_option backward.isDefEq.respectTransparency false in
 /--
 Given a monomorphism of sheaves `η : F ⟶ G`, an object X of the site, map an element `x : G(X)`
 to the (closed) sieve on X where `f : Y → X` is in the sieve iff
-  `∃ a ∈ F(Y), G(f)(x) = η_Y(a)`
+`∃ a ∈ F(Y), G(f)(x) = η_Y(a)`
 -/
 @[simps]
 def χ (m : F ⟶ G) [Mono m] : G ⟶ Sheaf.Ω J where

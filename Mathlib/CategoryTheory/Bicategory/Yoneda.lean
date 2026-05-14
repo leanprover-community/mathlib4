@@ -76,6 +76,7 @@ def associatorNatIsoLeftCat (a : B) {b c d : B} (g : b ⟶ c) (h : c ⟶ d) :
 set_option backward.isDefEq.respectTransparency false in
 /-- The map on objects underlying the Yoneda embedding. It sends an object `x` to
 the pseudofunctor defined by:
+
 * Objects: `a ↦ (a ⟶ x)`
 * Higher morphisms get sent to the corresponding "precomposing" operation.
 
@@ -108,6 +109,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The Yoneda pseudofunctor from `B` to `Bᵒᵖ ⥤ᵖ Cat`.
 
 It consists of the following:
+
 * On objects: sends `x : B` to the pseudofunctor `Bᵒᵖ ⥤ᵖ Cat` given by
   `a ↦ (a ⟶ x)` on objects and on 1- and 2-morphisms given by "precomposing"
 * On 1- and 2-morphisms it is given by "postcomposing" -/

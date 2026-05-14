@@ -14,9 +14,11 @@ public meta import Mathlib.Tactic.Simps.Basic
 
 This file constructs a term elaborator for "obvious" equivalences between iterated products.
 For example,
+
 ```lean
 (prod_assoc% : (α × β) × (γ × δ) ≃ α × (β × γ) × δ)
 ```
+
 gives the "obvious" equivalence between `(α × β) × (γ × δ)` and `α × (β × γ) × δ`.
 -/
 
@@ -146,6 +148,7 @@ For example, `(prod_assoc% : (α × β) × (γ × δ) ≃ α × (β × γ) × δ
 
 The elaborator can handle holes in the expected type,
 so long as they eventually get filled by unification.
+
 ```lean
 example : (α × β) × (γ × δ) ≃ α × (β × γ) × δ :=
   (prod_assoc% : _ ≃ α × β × γ × δ).trans prod_assoc%

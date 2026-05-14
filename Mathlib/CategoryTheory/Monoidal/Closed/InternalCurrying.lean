@@ -28,7 +28,7 @@ namespace MonoidalClosed
 variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
 
 /-- The currying operation taking a morphism `(z ⊗ y) ⟶ x` to a morphism `y ⟶ C(z, x)`,
-  constructed as a morphism in `C` between internal homs. -/
+constructed as a morphism in `C` between internal homs. -/
 -- TODO: Prove naturality of this morphism (requires the appropriate instances of `[Closed _]` for
 -- objects in `C`).
 def ihomCurry (x y z : C) [Closed x] [Closed y] [Closed (x ⊗ y)] :
@@ -44,7 +44,7 @@ lemma uncurry_uncurry_ihomCurry (x y z : C) [Closed x] [Closed y] [Closed (x ⊗
   simp [uncurry_ihomCurry]
 
 /-- The uncurrying operation taking a morphism `y ⟶ C(x, z)` to a morphism `(x ⊗ y) ⟶ z`,
-  constructed as a morphism in `C` between internal homs. -/
+constructed as a morphism in `C` between internal homs. -/
 -- TODO: Prove naturality of this morphism (requires the appropriate instances of `[Closed _]` for
 -- objects in `C`).
 def ihomUncurry (x y z : C) [Closed x] [Closed y] [Closed (x ⊗ y)] :

@@ -143,11 +143,13 @@ instance : LawfulMonad PMF := LawfulMonad.mk'
 
 /--
 This instance allows `do` notation for `PMF` to be used across universes, for instance as
+
 ```lean4
 example {R : Type u} [Ring R] (x : PMF ℕ) : PMF R := do
   let ⟨n⟩ ← ULiftable.up x
   pure n
 ```
+
 where `x` is in universe `0`, but the return value is in universe `u`.
 -/
 instance : ULiftable PMF.{u} PMF.{v} where
@@ -159,7 +161,7 @@ instance : ULiftable PMF.{u} PMF.{v} where
 section OfFinset
 
 /-- Given a finset `s` and a function `f : α → ℝ≥0∞` with sum `1` on `s`,
-  such that `f a = 0` for `a ∉ s`, we get a `PMF`. -/
+such that `f a = 0` for `a ∉ s`, we get a `PMF`. -/
 def ofFinset (f : α → ℝ≥0∞) (s : Finset α) (h : ∑ a ∈ s, f a = 1)
     (h' : ∀ (a) (_ : a ∉ s), f a = 0) : PMF α :=
   ⟨f, h ▸ hasSum_sum_of_ne_finset_zero h'⟩

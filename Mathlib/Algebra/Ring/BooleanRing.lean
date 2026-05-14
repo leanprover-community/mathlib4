@@ -29,6 +29,7 @@ algebras.
 ## Implementation notes
 
 We provide two ways of turning a Boolean algebra/ring into a Boolean ring/algebra:
+
 * Instances on the same type accessible in locales `BooleanAlgebraOfBooleanRing` and
   `BooleanRingOfBooleanAlgebra`.
 * Type-synonyms `AsBoolAlg` and `AsBoolRing`.
@@ -209,6 +210,7 @@ set_option linter.flexible false in -- TODO: fix non-terminal simp
 /-- The Boolean algebra structure on a Boolean ring.
 
 The data is defined so that:
+
 * `a ⊔ b` unfolds to `a + b + a * b`
 * `a ⊓ b` unfolds to `a * b`
 * `a ≤ b` unfolds to `a + b + a * b = b`

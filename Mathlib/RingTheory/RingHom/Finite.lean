@@ -82,7 +82,7 @@ theorem RingHom.localization_away_map_finite (R S R' S' : Type u) [CommRing R] [
   finite_localizationPreserves.away f r _ _ hf
 
 /-- `S` is a finite `R`-algebra if there exists a set `{ r }` that
-  spans `R` such that `Sᵣ` is a finite `Rᵣ`-algebra. -/
+spans `R` such that `Sᵣ` is a finite `Rᵣ`-algebra. -/
 theorem RingHom.finite_ofLocalizationSpan : RingHom.OfLocalizationSpan @RingHom.Finite := by
   classical
   rw [RingHom.ofLocalizationSpan_iff_finite]

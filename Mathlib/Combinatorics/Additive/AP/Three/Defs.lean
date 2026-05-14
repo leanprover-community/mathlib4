@@ -39,7 +39,7 @@ the size of the biggest 3AP-free subset of `{0, ..., n - 1}`.
 
 ## References
 
-* [Wikipedia, *Salem-Spencer set*](https://en.wikipedia.org/wiki/Salem–Spencer_set)
+* [Wikipedia, *Salem-Spencer set*](https://en.wikipedia.org/wiki/Salem%E2%80%93Spencer_set)
 
 ## Tags
 

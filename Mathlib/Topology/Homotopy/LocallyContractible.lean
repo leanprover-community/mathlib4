@@ -48,6 +48,7 @@ contractible neighborhoods to form a neighborhood basis. This is often called **
 contractible** (SLC).
 
 **Hierarchy of notions:**
+
 * "Basis of open contractible neighborhoods" (strongest)
 * "Basis of contractible neighborhoods" (this file, SLC)
 * "Null-homotopic inclusions" (classical LC, weakest)

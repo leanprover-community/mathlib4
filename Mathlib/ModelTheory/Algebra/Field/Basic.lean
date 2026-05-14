@@ -37,8 +37,7 @@ namespace Field
 open Language Ring Structure BoundedFormula
 
 /-- An indexing type to name each of the field axioms. The theory
-of fields is defined as the range of a function `FieldAxiom ->
-Language.ring.Sentence` -/
+of fields is defined as the range of a function `FieldAxiom -> Language.ring.Sentence` -/
 inductive FieldAxiom : Type
   | addAssoc : FieldAxiom
   | zeroAdd : FieldAxiom

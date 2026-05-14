@@ -29,14 +29,18 @@ If `μ, ν` are two measures with `ν` s-finite, then there exists a set `s` suc
 
 * `measure_eq_top_of_subset_compl_sigmaFiniteSetWRT`: for s-finite `ν`, for all sets `s`
   in `(sigmaFiniteSetWRT μ ν)ᶜ`, if `ν s ≠ 0` then `μ s = ∞`.
+
 * An instance showing that `μ.restrict (sigmaFiniteSetWRT μ ν)` is sigma-finite.
+
 * `restrict_compl_sigmaFiniteSetWRT`: if `μ ≪ ν` and `ν` is s-finite, then
   `μ.restrict (μ.sigmaFiniteSetWRT ν)ᶜ = ∞ • ν.restrict (μ.sigmaFiniteSetWRT ν)ᶜ`. As a consequence,
   that restriction is s-finite.
 
 * An instance showing that `μ.restrict μ.sigmaFiniteSet` is sigma-finite.
+
 * `restrict_compl_sigmaFiniteSet_eq_zero_or_top`: the measure `μ.restrict μ.sigmaFiniteSetᶜ` takes
   only two values: 0 and ∞ .
+
 * `measure_compl_sigmaFiniteSet_eq_zero_iff_sigmaFinite`: a measure `μ` is sigma-finite
   iff `μ μ.sigmaFiniteSetᶜ = 0`.
 
@@ -303,7 +307,7 @@ lemma measure_compl_sigmaFiniteSetWRT (hμν : μ ≪ ν) [SigmaFinite μ] [SFin
 section SigmaFiniteSet
 
 /-- A measurable set such that `μ.restrict μ.sigmaFiniteSet` is sigma-finite,
-  and for all measurable sets `s ⊆ μ.sigmaFiniteSetᶜ`, either `μ s = 0` or `μ s = ∞`. -/
+and for all measurable sets `s ⊆ μ.sigmaFiniteSetᶜ`, either `μ s = 0` or `μ s = ∞`. -/
 def Measure.sigmaFiniteSet (μ : Measure α) : Set α := μ.sigmaFiniteSetWRT μ
 
 @[measurability]

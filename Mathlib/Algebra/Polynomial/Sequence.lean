@@ -27,9 +27,10 @@ We define polynomial sequences – sequences of polynomials `a₀, a₁, ...` su
 ## TODO
 
 Generalize linear independence to:
-  * `IsCancelAdd` semirings
-  * just require coefficients are regular
-  * arbitrary sets of polynomials which are pairwise different degree.
+
+* `IsCancelAdd` semirings
+* just require coefficients are regular
+* arbitrary sets of polynomials which are pairwise different degree.
 -/
 
 @[expose] public section
@@ -86,7 +87,7 @@ section Ring
 variable [Ring R] (S : Sequence R)
 
 /-- The first `m` polynomials of a polynomial sequence span all polynomials of degree `< m` if their
-    leading coefficients are units. -/
+leading coefficients are units. -/
 lemma span_degreeLT {m : ℕ} (hCoeff : ∀ i < m, IsUnit (S i).leadingCoeff) :
     span R (S '' Set.Iio m) = degreeLT R m := by
   apply span_eq_of_le
@@ -157,7 +158,7 @@ lemma span_degreeLT {m : ℕ} (hCoeff : ∀ i < m, IsUnit (S i).leadingCoeff) :
     rwa [degree_eq_natDegree p_ne_zero, hp] at tail_degree_lt
 
 /-- The first `m + 1` polynomials of a polynomial sequence span all polynomials of degree `≤ m` if
-    their leading coefficients are units. -/
+their leading coefficients are units. -/
 lemma span_degreeLE {m : ℕ} (hCoeff : ∀ i ≤ m, IsUnit (S i).leadingCoeff) :
     span R (S '' Set.Iic m) = degreeLE R m := by
   rw [← Set.Iio_succ_eq_Iic, span_degreeLT _ (fun i hi => hCoeff i (Order.lt_succ_iff.mp hi))]

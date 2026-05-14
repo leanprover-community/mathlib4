@@ -574,7 +574,7 @@ theorem IsBlock.orbit_stabilizer_eq [IsPretransitive G X] (hB : IsBlock G B) {a 
     exact ⟨⟨k, hB.smul_eq_of_mem ha hx⟩, rfl⟩
 
 /-- A subgroup containing the stabilizer of `a`
-  is the stabilizer of the orbit of `a` under that subgroup -/
+is the stabilizer of the orbit of `a` under that subgroup -/
 @[to_additive
   /-- A subgroup containing the stabilizer of `a`
   is the stabilizer of the orbit of `a` under that subgroup -/]
@@ -680,7 +680,7 @@ theorem ncard_block_eq_relIndex (hB : IsBlock G B) {x : X} (hx : x ∈ B) :
   rw [Subgroup.relIndex, key, index_stabilizer, hB.orbit_stabilizer_eq hx]
 
 /-- The cardinality of the ambient space is the product of the cardinality of a block
-  by the cardinality of the set of translates of that block -/
+by the cardinality of the set of translates of that block -/
 @[to_additive
   /-- The cardinality of the ambient space is the product of the cardinality of a block
   by the cardinality of the set of translates of that block -/]

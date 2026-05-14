@@ -11,6 +11,7 @@ public import Mathlib.RingTheory.MvPowerSeries.GaussNorm
 
 /-!
 # Gauss norm for power series
+
 This file defines the Gauss norm for power series using the gaussNorm for multivariate power series.
 Given a power series `f` in `R⟦X⟧`, a function `v : R → ℝ` and a real number `c`, the Gauss norm is
 defined as the supremum of the set of all values of `v (f.coeff i) * c ^ i` for all `i : ℕ`.
@@ -20,6 +21,7 @@ In case `f` is a polynomial, `v` is a non-negative function with `v 0 = 0` and `
 `Mathlib/RingTheory/Polynomial/GaussNorm.lean`, see `Polynomial.gaussNorm_coe_powerSeries`.
 
 ## Main Definitions and Results
+
 * Using `PowerSeries.gaussNorm_eq`, `PowerSeries.gaussNorm` is the supremum of the set of all values
   of `v (f.coeff i) * c ^ i` for all `i : ℕ`, where `f` is a power series in `R⟦X⟧`, `v : R → ℝ` is
   a function and `c` is a real number.
@@ -47,7 +49,7 @@ namespace PowerSeries
 variable {R : Type*} [Semiring R] (v : R → ℝ) (c : ℝ) (f : PowerSeries R)
 
 /-- Given a power series `f` in, a function `v : R → ℝ` and a real number `c`, the Gauss norm is
-  defined as the supremum of the set of all values of `v (coeff t f) * c ^ t` for all `t : ℕ`. -/
+defined as the supremum of the set of all values of `v (coeff t f) * c ^ t` for all `t : ℕ`. -/
 noncomputable
 abbrev gaussNorm : ℝ := MvPowerSeries.gaussNorm v (fun _ => c) f
 
@@ -58,7 +60,7 @@ lemma gaussNorm_eq : gaussNorm v c f = ⨆ i : ℕ, v (f.coeff i) * c ^ i := by
     Finset.univ_unique, Finset.prod_singleton, show (Finsupp.single () (x PUnit.unit)) = x by grind]
 
 /-- We say `f` HasGaussNorm if the values `v (coeff t f) * c ^ t` is bounded above, that is
-  `gaussNormC f` is finite. -/
+`gaussNormC f` is finite. -/
 abbrev HasGaussNorm := BddAbove (Set.range (fun (t : ℕ) ↦ (v (coeff t f) * c ^ t)))
 
 lemma HasGaussNorm.HasMvGaussNorm (h : HasGaussNorm v c f) :

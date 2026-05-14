@@ -21,9 +21,9 @@ represented as `0`, just like types and proofs.
 universe u
 
 /-- `Erased α` is the same as `α`, except that the elements
-  of `Erased α` are erased in the VM in the same way as types
-  and proofs. This can be used to track data without storing it
-  literally. -/
+of `Erased α` are erased in the VM in the same way as types
+and proofs. This can be used to track data without storing it
+literally. -/
 def Erased (α : Sort u) : Sort max 1 u :=
   { s : α → Prop // ∃ a, (a = ·) = s }
 

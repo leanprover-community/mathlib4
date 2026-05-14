@@ -24,6 +24,7 @@ variable {C : Type*} [Category* C] {A : Type*} [Category* A]
 open Limits
 
 /-- A relation on a pre-`0`-hypercover is a commutative diagram
+
 ```
 obj ----> E.X i
  |         |

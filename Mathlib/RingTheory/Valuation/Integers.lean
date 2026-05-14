@@ -47,7 +47,7 @@ variable {R : Type u} {Γ₀ : Type v} [CommRing R] [LinearOrderedCommGroupWithZ
 variable (v : Valuation R Γ₀)
 variable (O : Type w) [CommRing O] [Algebra O R]
 
-/-- Given a valuation v : R → Γ₀ and a ring homomorphism O →+* R, we say that O is the integers of v
+/-- Given a valuation v : R → Γ₀ and a ring homomorphism O →+\* R, we say that O is the integers of v
 if f is injective, and its range is exactly `v.integer`. -/
 structure Integers : Prop where
   hom_inj : Function.Injective (algebraMap O R)

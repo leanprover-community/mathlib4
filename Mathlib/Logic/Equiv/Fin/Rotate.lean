@@ -12,9 +12,10 @@ public import Mathlib.Logic.Equiv.Fin.Basic
 # Cyclic permutations on `Fin n`
 
 This file defines
+
 * `finRotate`, which corresponds to the cycle `(1, ..., n)` on `Fin n`
 * `finCycle`, the permutation that adds a fixed number to each element of `Fin n`
-and proves various lemmas about them.
+  and proves various lemmas about them.
 -/
 
 @[expose] public section

@@ -13,10 +13,12 @@ public import Mathlib.RingTheory.Prime
 
 /-!
 # Ring of integers of cyclotomic fields
+
 We gather results about cyclotomic extensions of `ℚ`. In particular, we compute the ring of
 integers of a cyclotomic extension of `ℚ`.
 
 ## Main results
+
 * `IsCyclotomicExtension.Rat.isIntegralClosure_adjoin_singleton`: if `K` is a cyclotomic
   extension of `ℚ`, then `adjoin ℤ {ζ}` is the integral closure of `ℤ` in `K`.
 * `IsCyclotomicExtension.Rat.cyclotomicRing_isIntegralClosure`: the integral
@@ -247,7 +249,7 @@ theorem subOneIntegralPowerBasisOfPrimePow_gen [IsCyclotomicExtension {p ^ k} �
   simp [subOneIntegralPowerBasisOfPrimePow]
 
 /-- `ζ - 1` is prime if `p ≠ 2` and `ζ` is a primitive `p ^ (k + 1)`-th root of unity.
-  See `zeta_sub_one_prime` for a general statement. -/
+See `zeta_sub_one_prime` for a general statement. -/
 theorem zeta_sub_one_prime_of_ne_two [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
     (hζ : IsPrimitiveRoot ζ (p ^ (k + 1))) (hodd : p ≠ 2) :
     Prime (hζ.toInteger - 1) := by
@@ -265,7 +267,7 @@ theorem zeta_sub_one_prime_of_ne_two [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
   exact hζ.norm_sub_one_of_prime_ne_two (Polynomial.cyclotomic.irreducible_rat (NeZero.pos _)) hodd
 
 /-- `ζ - 1` is prime if `ζ` is a primitive `2 ^ (k + 1)`-th root of unity.
-  See `zeta_sub_one_prime` for a general statement. -/
+See `zeta_sub_one_prime` for a general statement. -/
 theorem zeta_sub_one_prime_of_two_pow [IsCyclotomicExtension {2 ^ (k + 1)} ℚ K]
     (hζ : IsPrimitiveRoot ζ (2 ^ (k + 1))) :
     Prime (hζ.toInteger - 1) := by
@@ -418,7 +420,7 @@ lemma prime_norm_toInteger_sub_one_of_prime_ne_two' [hcycl : IsCyclotomicExtensi
   exact hζ.prime_norm_toInteger_sub_one_of_prime_ne_two hodd
 
 /-- In a `p ^ (k + 1)`-th cyclotomic extension of `ℚ `, we have that `ζ` is not congruent to an
-  integer modulo `p` if `p ^ (k  + 1) ≠ 2`. -/
+integer modulo `p` if `p ^ (k  + 1) ≠ 2`. -/
 theorem not_exists_int_prime_dvd_sub_of_prime_pow_ne_two
     [hcycl : IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
     (hζ : IsPrimitiveRoot ζ (p ^ (k + 1))) (htwo : p ^ (k + 1) ≠ 2) :
@@ -456,7 +458,7 @@ theorem not_exists_int_prime_dvd_sub_of_prime_pow_ne_two
   exact (Int.prime_iff_natAbs_prime.2 (by simp [hp.1])).not_dvd_one ⟨_, h⟩
 
 /-- In a `p ^ (k + 1)`-th cyclotomic extension of `ℚ `, we have that `ζ` is not congruent to an
-  integer modulo `p` if `p ≠ 2`. -/
+integer modulo `p` if `p ≠ 2`. -/
 theorem not_exists_int_prime_dvd_sub_of_prime_ne_two
     [hcycl : IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
     (hζ : IsPrimitiveRoot ζ (p ^ (k + 1))) (hodd : p ≠ 2) :
@@ -466,7 +468,7 @@ theorem not_exists_int_prime_dvd_sub_of_prime_ne_two
     pow_one, ne_eq]
 
 /-- In a `p`-th cyclotomic extension of `ℚ `, we have that `ζ` is not congruent to an
-  integer modulo `p` if `p ≠ 2`. -/
+integer modulo `p` if `p ≠ 2`. -/
 theorem not_exists_int_prime_dvd_sub_of_prime_ne_two'
     [hcycl : IsCyclotomicExtension {p} ℚ K]
     (hζ : IsPrimitiveRoot ζ p) (hodd : p ≠ 2) :
@@ -492,7 +494,7 @@ theorem finite_quotient_span_sub_one' [hcycl : IsCyclotomicExtension {p} ℚ K]
   exact hζ.finite_quotient_span_sub_one
 
 /-- In a `p ^ (k + 1)`-th cyclotomic extension of `ℚ`, we have that
-  `ζ - 1` divides `p` in `𝓞 K`. -/
+`ζ - 1` divides `p` in `𝓞 K`. -/
 lemma toInteger_sub_one_dvd_prime [hcycl : IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
     (hζ : IsPrimitiveRoot ζ (p ^ (k + 1))) : ((hζ.toInteger - 1)) ∣ p := by
   by_cases htwo : p ^ (k + 1) = 2
@@ -601,8 +603,8 @@ variable (K p k)
 variable [CharZero K]
 
 /-- We compute the absolute discriminant of a `p ^ k`-th cyclotomic field.
-  Beware that in the cases `p ^ k = 1` and `p ^ k = 2` the formula uses `1 / 2 = 0` and `0 - 1 = 0`.
-  See also the results below. -/
+Beware that in the cases `p ^ k = 1` and `p ^ k = 2` the formula uses `1 / 2 = 0` and `0 - 1 = 0`.
+See also the results below. -/
 theorem discr_prime_pow [IsCyclotomicExtension {p ^ k} ℚ K] :
     haveI : NumberField K := IsCyclotomicExtension.numberField {p ^ k} ℚ K
     NumberField.discr K =
@@ -629,7 +631,7 @@ theorem discr_prime_pow [IsCyclotomicExtension {p ^ k} ℚ K] :
 
 open Nat in
 /-- We compute the absolute discriminant of a `p ^ (k + 1)`-th cyclotomic field.
-  Beware that in the case `p ^ k = 2` the formula uses `1 / 2 = 0`. See also the results below. -/
+Beware that in the case `p ^ k = 2` the formula uses `1 / 2 = 0`. See also the results below. -/
 theorem discr_prime_pow_succ [IsCyclotomicExtension {p ^ (k + 1)} ℚ K] :
     haveI : NumberField K := IsCyclotomicExtension.numberField {p ^ (k + 1)} ℚ K
     NumberField.discr K =

@@ -18,10 +18,10 @@ coefficients in `R` together with its universal property.
 
 ## Main definitions
 
-  * `FreeLieAlgebra`
-  * `FreeLieAlgebra.lift`
-  * `FreeLieAlgebra.of`
-  * `FreeLieAlgebra.universalEnvelopingEquivFreeAlgebra`
+* `FreeLieAlgebra`
+* `FreeLieAlgebra.lift`
+* `FreeLieAlgebra.of`
+* `FreeLieAlgebra.universalEnvelopingEquivFreeAlgebra`
 
 ## Implementation details
 

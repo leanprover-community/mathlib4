@@ -14,7 +14,7 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Square
 # The colon construction on preradicals
 
 Given preradicals `Φ` and `Ψ` on an abelian category `C`, this file defines their **colon** `Φ : Ψ`
-in the sense of Stenström.  Following Stenström, one can realize the colon object `r : s` evaluated
+in the sense of Stenström. Following Stenström, one can realize the colon object `r : s` evaluated
 at `X : C` as the pullback of `X ⟶ X / r X` along `s (X / r X) ⟶ X / r X`. We encode this
 categorically by constructing `Φ : Ψ` as a pullback in the category of endofunctors of the canonical
 projection `Φ.π : 𝟭 C ⟶ Φ.quotient` along
@@ -28,7 +28,7 @@ projection `Φ.π : 𝟭 C ⟶ Φ.quotient` along
 ## Main results
 
 * `isIso_toColon_iff` : The morphism `toColon Φ Ψ` is an isomorphism if and only if `Ψ` kills
-quotients in the sense that `Φ.quotient ⋙ Ψ.r` is the zero object.
+  quotients in the sense that `Φ.quotient ⋙ Ψ.r` is the zero object.
 
 ## References
 

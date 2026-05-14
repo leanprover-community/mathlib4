@@ -359,6 +359,7 @@ It uses disjoint cycle notation for the permutation. For reordering arguments of
 it uses the notation `a (...)` where `...` can be any reorder.
 
 For example:
+
 - `(reorder := α β, 5 6)` swaps the arguments `α` and `β` with each other and the fifth and
   the sixth argument.
 - `(reorder := 3 4 5)` will move the fifth argument before the third argument.
@@ -370,6 +371,7 @@ syntax (name := reorder) reorderPart,* : translateReorder
 
 /-- Elaborate syntax that refers to an argument of a declaration or hypothesis.
 This is either a 1-indexed number, or a name from `argNames`.
+
 - `fvars` is only used to add hover information to `stx`
 - `head` is only used for the error message. -/
 def elabArgStx (stx : TSyntax [`ident, `num]) (argNames : Array Name) (fvars : Array Expr)

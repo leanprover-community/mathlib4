@@ -20,6 +20,7 @@ We mostly follow the treatment outlined by Heath-Brown in the notes to an old gr
 minor notational difference is that we write $\nu(n)$ in place of $\frac{\omega(n)}{n}$.
 
 ## Results
+
 * `siftedSum_le_mainSum_errSum_of_UpperBoundSieve` - Every upper bound sieve gives an upper bound
   on the size of the sifted set in terms of `mainSum` and `errSum`
 
@@ -70,7 +71,7 @@ structure BoundingSieve where
   nu_lt_one_of_prime : ∀ p : ℕ, p.Prime → p ∣ prodPrimes → nu p < 1
 
 /-- The Selberg upper bound sieve in particular introduces a parameter called the `level` which
-  gives the user control over the size of the error term. -/
+gives the user control over the size of the error term. -/
 structure SelbergSieve extends BoundingSieve where
   /-- The `level` of the sieve controls how many terms we include in the inclusion-exclusion type
   sum. A higher level will yield a tighter bound for the main term, but will also increase the
@@ -159,7 +160,7 @@ def multSum (d : ℕ) : ℝ := ∑ n ∈ s.support, if d ∣ n then s.weights n 
 
 
 /-- The remainder term in the approximation A_d = ν (d) X + R_d. This is the degree to which `nu`
-  fails to approximate the proportion of the weight that is a multiple of `d`. -/
+fails to approximate the proportion of the weight that is a multiple of `d`. -/
 @[simp]
 def rem (d : ℕ) : ℝ := s.multSum d - s.nu d * s.totalMass
 
@@ -183,7 +184,7 @@ theorem siftedSum_eq_sum_support_mul_ite :
 
 omit s in
 /-- A sequence of coefficients $\mu^{+}$ is upper Moebius if $\mu * \zeta ≤ \mu^{+} * \zeta$. These
-  coefficients then yield an upper bound on the sifted sum. -/
+coefficients then yield an upper bound on the sifted sum. -/
 def IsUpperMoebius (muPlus : ℕ → ℝ) : Prop :=
   ∀ n : ℕ, (if n = 1 then 1 else 0) ≤ ∑ d ∈ n.divisors, muPlus d
 

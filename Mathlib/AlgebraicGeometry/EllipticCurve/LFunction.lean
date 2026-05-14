@@ -69,12 +69,13 @@ variable {K : Type*} [Field K] [NumberField K] (W : WeierstrassCurve K)
 
 For each prime ideal `p` of the ring of integers of `K` with norm `‖p‖` residue field `κ_p`,
 we define the local polynomial `fₚ(T)` as:
+
 * `fₚ = 1 - aₚ T + ‖p‖ T ^ 2` where `aₚ = ‖p‖ + 1 - |W(κ_p)|` if `W` has good reduction at `p`,
 * `fₚ = 1 - T` if `W` has split multiplicative reduction at `p`,
 * `fₚ = 1 + T` if `W` has nonsplit multiplicative reduction at `p`,
 * `fₚ = 1` if `W` has additive reduction at `p`.
-Then the L-function of `W` is the formal Dirichlet series defined as the product of `1 / fₚ(‖p‖⁻ˢ)`
-as `p` ranges over all prime ideals of the ring of integers of `K`.
+  Then the L-function of `W` is the formal Dirichlet series defined as the product of `1 / fₚ(‖p‖⁻ˢ)`
+  as `p` ranges over all prime ideals of the ring of integers of `K`.
 -/
 noncomputable def LFunction : ArithmeticFunction ℤ :=
   eulerProduct fun p : HeightOneSpectrum (𝓞 K) ↦

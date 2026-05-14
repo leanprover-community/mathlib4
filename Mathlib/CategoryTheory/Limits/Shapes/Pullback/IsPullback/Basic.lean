@@ -157,6 +157,7 @@ section
 /-- Paste two pullback squares "vertically" to obtain another pullback square.
 
 The objects in the statement fit into the following diagram:
+
 ```
 X₁₁ - h₁₁ -> X₁₂
 |            |
@@ -178,6 +179,7 @@ theorem paste_vert {X₁₁ X₁₂ X₂₁ X₂₂ X₃₁ X₃₂ : C} {h₁�
 /-- Paste two pullback squares "horizontally" to obtain another pullback square.
 
 The objects in the statement fit into the following diagram:
+
 ```
 X₁₁ - h₁₁ -> X₁₂ - h₁₂ -> X₁₃
 |            |            |
@@ -196,6 +198,7 @@ theorem paste_horiz {X₁₁ X₁₂ X₁₃ X₂₁ X₂₂ X₂₃ : C} {h₁�
 a pullback square on the bottom, the top square is a pullback square.
 
 The objects in the statement fit into the following diagram:
+
 ```
 X₁₁ - h₁₁ -> X₁₂
 |            |
@@ -218,6 +221,7 @@ theorem of_bot {X₁₁ X₁₂ X₂₁ X₂₂ X₃₁ X₃₂ : C} {h₁₁ : 
 a pullback square on the right, the left square is a pullback square.
 
 The objects in the statement fit into the following diagram:
+
 ```
 X₁₁ - h₁₁ -> X₁₂ - h₁₂ -> X₁₃
 |            |            |
@@ -248,6 +252,7 @@ theorem paste_horiz_iff {X₁₁ X₁₂ X₁₃ X₂₁ X₂₂ X₂₃ : C} {h
 the universal property of the right square.
 
 The objects fit in the following diagram:
+
 ```
 X₁₁ - h₁₁ -> X₁₂ - h₁₂ -> X₁₃
 |            |            |
@@ -266,6 +271,7 @@ theorem of_right' {X₁₁ X₁₂ X₁₃ X₂₁ X₂₂ X₂₃ : C} {h₁₂
 the universal property of the bottom square.
 
 The objects in the statement fit into the following diagram:
+
 ```
 X₁₁ - h₁₁ -> X₁₂
 |            |
@@ -301,6 +307,7 @@ lemma of_id_fst : IsPullback (𝟙 _) f f (𝟙 _) := IsPullback.of_horiz_isIso 
 lemma of_id_snd : IsPullback f (𝟙 _) (𝟙 _) f := IsPullback.of_vert_isIso ⟨by simp⟩
 
 /-- The following diagram is a pullback
+
 ```
 X --f--> Z
 |        |
@@ -313,6 +320,7 @@ lemma id_vert (f : X ⟶ Z) : IsPullback f (𝟙 X) (𝟙 Z) f :=
   of_vert_isIso ⟨by simp only [Category.id_comp, Category.comp_id]⟩
 
 /-- The following diagram is a pullback
+
 ```
 X --id--> X
 |         |
@@ -328,6 +336,7 @@ set_option backward.isDefEq.respectTransparency false in
 /--
 In a category, given a morphism `f : A ⟶ B` and an object `X`,
 this is the obvious pullback diagram:
+
 ```
 A ⨯ X ⟶ A
   |     |
@@ -387,6 +396,7 @@ lemma mk' {P X Y Z : C} {fst : P ⟶ X} {snd : P ⟶ Y} {f : X ⟶ Z} {g : Y ⟶
 
 /--
 The main objects in this lemma fit in the following commutative diagram:
+
 ```
 Pfg -------> X <------- Pfi
  |           |           |
@@ -398,6 +408,7 @@ Pfg -------> X <------- Pfi
        \          /
          --  R --
 ```
+
 Suppose the two squares are cartesian, then `Pfg ×[Y] R` is the pullback of
 `Pfi ⟶ Z` and `R ⟶ Z`.
 -/
@@ -537,6 +548,7 @@ end
 /-- Paste two pushout squares "vertically" to obtain another pushout square.
 
 The objects in the statement fit into the following diagram:
+
 ```
 X₁₁ - h₁₁ -> X₁₂
 |            |
@@ -558,6 +570,7 @@ theorem paste_vert {X₁₁ X₁₂ X₂₁ X₂₂ X₃₁ X₃₂ : C} {h₁�
 /-- Paste two pushout squares "horizontally" to obtain another pushout square.
 
 The objects in the statement fit into the following diagram:
+
 ```
 X₁₁ - h₁₁ -> X₁₂ - h₁₂ -> X₁₃
 |            |            |
@@ -576,6 +589,7 @@ theorem paste_horiz {X₁₁ X₁₂ X₁₃ X₂₁ X₂₂ X₂₃ : C} {h₁�
 a commuting square on the bottom, the bottom square is a pushout square.
 
 The objects in the statement fit into the following diagram:
+
 ```
 X₁₁ - h₁₁ -> X₁₂
 |            |
@@ -599,6 +613,7 @@ theorem of_top {X₁₁ X₁₂ X₂₁ X₂₂ X₃₁ X₃₂ : C} {h₁₁ : 
 a commuting square on the right, the right square is a pushout square.
 
 The objects in the statement fit into the following diagram:
+
 ```
 X₁₁ - h₁₁ -> X₁₂ - h₁₂ -> X₁₃
 |            |            |
@@ -629,6 +644,7 @@ theorem paste_horiz_iff {X₁₁ X₁₂ X₁₃ X₂₁ X₂₂ X₂₃ : C} {h
 the universal property of the top square.
 
 The objects in the statement fit into the following diagram:
+
 ```
 X₁₁ - h₁₁ -> X₁₂
 |            |
@@ -651,6 +667,7 @@ theorem of_top' {X₁₁ X₁₂ X₂₁ X₂₂ X₃₁ X₃₂ : C} {h₁₁ :
 the universal property of the left square.
 
 The objects in the statement fit into the following diagram:
+
 ```
 X₁₁ - h₁₁ -> X₁₂ - h₁₂ -> X₁₃
 |            |            |
@@ -687,6 +704,7 @@ lemma of_id_fst : IsPushout (𝟙 _) f f (𝟙 _) := IsPushout.of_horiz_isIso �
 lemma of_id_snd : IsPushout f (𝟙 _) (𝟙 _) f := IsPushout.of_vert_isIso ⟨by simp⟩
 
 /-- The following diagram is a pullback
+
 ```
 X --f--> Z
 |        |
@@ -699,6 +717,7 @@ lemma id_vert (f : X ⟶ Z) : IsPushout f (𝟙 X) (𝟙 Z) f :=
   of_vert_isIso ⟨by simp only [Category.id_comp, Category.comp_id]⟩
 
 /-- The following diagram is a pullback
+
 ```
 X --id--> X
 |         |
@@ -714,6 +733,7 @@ set_option backward.isDefEq.respectTransparency false in
 /--
 In a category, given a morphism `f : A ⟶ B` and an object `X`,
 this is the obvious pushout diagram:
+
 ```
 A ⟶ A ⨿ X
 |     |

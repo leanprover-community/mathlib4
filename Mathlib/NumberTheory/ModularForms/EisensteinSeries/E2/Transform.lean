@@ -24,7 +24,6 @@ the action of `S = [[0, -1], [1, 0]]`.
 * **`G2_T_transform`**: `G2` is invariant under `T = [[1, 1], [0, 1]]`:
   `G₂|[2] T = G₂`
 
-
 * **`G2_S_transform`**: The transformation under `S` involves a correction term:
   `G₂(z) = z⁻² G₂(-1/z) - 2πi/z`
 
@@ -60,6 +59,7 @@ The proof of `G2_S_transform` is the heart of this file. The strategy is:
    any element using the cocycle property of `D₂`.
 
 ## References
+
 * P. Bruin and S. Dahmen, Modular Forms, https://www.few.vu.nl/~sdn249/modularforms16/notes.pdf
 
 -/

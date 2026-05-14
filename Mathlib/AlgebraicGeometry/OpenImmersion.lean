@@ -735,7 +735,7 @@ lemma app_ΓIso_hom {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (U : Y.
   simp [-ΓIso_inv]
 
 /-- Given an open immersion `f : U ⟶ X`, the isomorphism between global sections
-  of `U` and the sections of `X` at the image of `f`. -/
+of `U` and the sections of `X` at the image of `f`. -/
 noncomputable
 def ΓIsoTop {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
     Γ(X, ⊤) ≅ Γ(Y, f.opensRange) :=
@@ -801,6 +801,7 @@ lemma image_zeroLocus {U : X.Opens} (s : Set Γ(X, U)) :
     exact fun H ↦ hx (Set.image_subset_range _ _ H)
 
 /-- If
+
 ```
   P --fst--> X
   |          |
@@ -810,6 +811,7 @@ lemma image_zeroLocus {U : X.Opens} (s : Set Γ(X, U)) :
   Y ---g---> Z
 
 ```
+
 is a pullback square and `g` is an open immersion, then the stalk map induced by `snd` at `p`
 is isomorphic to the stalk map of `f` at `fst p`.
 -/

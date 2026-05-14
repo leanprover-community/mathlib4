@@ -42,11 +42,13 @@ This gives the same goal of `⊢ n + n = 2 * n` without needing `using 2`.
 
 The `convert` tactic applies congruence lemmas eagerly before reducing,
 therefore it can fail in cases where `exact` succeeds:
+
 ```lean
 def p (n : ℕ) := True
 example (h : p 0) : p 1 := by exact h -- succeeds
 example (h : p 0) : p 1 := by convert h -- fails, with leftover goal `1 = 0`
 ```
+
 Limiting the depth of recursion can help with this. For example, `convert h using 1` will work
 in this case.
 
@@ -67,9 +69,11 @@ Like `congr!`, `convert` takes an optional `with` clause of `rintro` patterns,
 for example `convert e using n with x y z`.
 
 The `convert` tactic also takes a configuration option, for example
+
 ```lean
 convert (config := {transparency := .default}) h
 ```
+
 These are passed to `congr!`. See `Congr!.Config` for options.
 -/
 
@@ -267,6 +271,7 @@ pattern-matched, like `rintro` would, using the `with` keyword.
   The default value for `n` is 1.
 
 Example:
+
 ```lean
 example (a b c d e f g N : ℕ) : (a + b) + (c + d) + (e + f) + g ≤ N := by
   ac_change a + d + e + f + c + g + b ≤ _

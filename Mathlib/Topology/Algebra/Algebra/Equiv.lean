@@ -53,8 +53,8 @@ attribute [nolint docBlame] ContinuousAlgEquiv.toHomeomorph
 
 /--
 `ContinuousAlgEquivClass F R A B` states that `F` is a type of topological algebra
-  structure-preserving equivalences. You should extend this class when you
-  extend `ContinuousAlgEquiv`.
+structure-preserving equivalences. You should extend this class when you
+extend `ContinuousAlgEquiv`.
 -/
 class ContinuousAlgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring R]
     [Semiring A] [TopologicalSpace A] [Semiring B] [TopologicalSpace B]

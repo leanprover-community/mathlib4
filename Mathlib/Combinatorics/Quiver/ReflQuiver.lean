@@ -63,7 +63,7 @@ lemma mk_map {V W : Type*} [ReflQuiver V] [ReflQuiver W] {obj : V → W} {map} {
     (Prefunctor.mk obj map).map f = map f := rfl
 
 /-- Proving equality between reflexive prefunctors. This isn't an extensionality lemma,
-  because usually you don't really want to do this. -/
+because usually you don't really want to do this. -/
 theorem ext {V : Type u} [ReflQuiver.{v₁} V] {W : Type u₂} [ReflQuiver.{v₂} W]
     {F G : ReflPrefunctor V W}
     (h_obj : ∀ X, F.obj X = G.obj X)

@@ -12,6 +12,7 @@ public import Mathlib.Geometry.Manifold.ContMDiff.Basic
 
 This file contains results about smoothness of standard maps associated to products and sums
 (disjoint unions) of smooth manifolds:
+
 - if `f` and `g` are `C^n`, so is their point-wise product.
 - the component projections from a product of manifolds are smooth.
 - functions into a product (*pi type*) are `C^n` iff their components are

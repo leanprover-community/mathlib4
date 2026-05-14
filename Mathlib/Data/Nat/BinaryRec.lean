@@ -13,6 +13,7 @@ public import Mathlib.Init
 This file defines binary recursion on `Nat`.
 
 ## Main results
+
 * `Nat.binaryRec`: A recursion principle for `bit` representations of natural numbers.
 * `Nat.binaryRec'`: The same as `binaryRec`, but the induction step can assume that if `n=0`,
   the bit being appended is `true`.
@@ -64,8 +65,8 @@ theorem bit_ne_zero_iff {n : Nat} {b : Bool} : n.bit b ≠ 0 ↔ n = 0 → b = t
   simp
 
 /-- For a predicate `motive : Nat → Sort u`, if instances can be
-  constructed for natural numbers of the form `bit b n`,
-  they can be constructed for any given natural number. -/
+constructed for natural numbers of the form `bit b n`,
+they can be constructed for any given natural number. -/
 @[inline]
 def bitCasesOn {motive : Nat → Sort u} (n) (bit : ∀ b n, motive (bit b n)) : motive n :=
   -- `1 &&& n != 0` is faster than `n.testBit 0`. This may change when we have faster `testBit`.
@@ -81,9 +82,9 @@ theorem log2_eq_succ_log2_shiftRight {n : Nat} (hn : n >>> 1 ≠ 0) : n.log2 = (
     ⟨Nat.mul_le_of_le_div _ _ _ (log2_self_le hn), (div_lt_iff_lt_mul <| by decide).mp lt_log2_self⟩
 
 /-- A recursion principle for `bit` representations of natural numbers.
-  For a predicate `motive : Nat → Sort u`, if instances can be
-  constructed for natural numbers of the form `bit b n`,
-  they can be constructed for all natural numbers. -/
+For a predicate `motive : Nat → Sort u`, if instances can be
+constructed for natural numbers of the form `bit b n`,
+they can be constructed for all natural numbers. -/
 @[elab_as_elim, specialize, semireducible]
 def binaryRec {motive : Nat → Sort u} (zero : motive 0) (bit : ∀ b n, motive n → motive (bit b n))
     (n : Nat) : motive n :=
@@ -99,7 +100,7 @@ decreasing_by
   simpa only [if_neg n0, if_neg this, log2_eq_succ_log2_shiftRight this] using lt_succ_self _
 
 /-- The same as `binaryRec`, but the induction step can assume that if `n=0`,
-  the bit being appended is `true` -/
+the bit being appended is `true` -/
 @[elab_as_elim, specialize]
 def binaryRec' {motive : Nat → Sort u} (zero : motive 0)
     (bit : ∀ b n, (n = 0 → b = true) → motive n → motive (bit b n)) :

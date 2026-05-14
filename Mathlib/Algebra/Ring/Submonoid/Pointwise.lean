@@ -22,6 +22,7 @@ and when `R = A` it is definitionally equal to the multiplication on `AddSubmono
 These are all available in the `Pointwise` locale.
 
 Additionally, it provides various degrees of monoid structure:
+
 * `AddSubmonoid.one`
 * `AddSubmonoid.mul`
 * `AddSubmonoid.mulOneClass`

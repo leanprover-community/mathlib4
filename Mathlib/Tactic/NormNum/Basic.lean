@@ -17,6 +17,7 @@ public import Mathlib.Tactic.NormNum.Core
 # `norm_num` basic plugins
 
 This file adds `norm_num` plugins for
+
 * constructors and constants
 * `Nat.cast`, `Int.cast`, and `mkRat`
 * `+`, `-`, `*`, and `/`

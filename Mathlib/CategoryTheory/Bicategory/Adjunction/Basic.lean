@@ -45,6 +45,7 @@ universe w v u
 variable {B : Type u} [Bicategory.{w, v} B] {a b c : B} {f : a ⟶ b} {g : b ⟶ a}
 
 /-- The 2-morphism defined by the following pasting diagram:
+
 ```
 a －－－－－－ ▸ a
   ＼    η      ◥   ＼
@@ -57,6 +58,7 @@ abbrev leftZigzag (η : 𝟙 a ⟶ f ≫ g) (ε : g ≫ f ⟶ 𝟙 b) :=
   η ▷ f ⊗≫ f ◁ ε
 
 /-- The 2-morphism defined by the following pasting diagram:
+
 ```
         a －－－－－－ ▸ a
        ◥  ＼     η      ◥

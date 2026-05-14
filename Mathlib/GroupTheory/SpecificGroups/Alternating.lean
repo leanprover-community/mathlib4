@@ -24,6 +24,7 @@ consisting of the even permutations.
 * `alternatingGroup α` is the alternating group on `α`, defined as a `Subgroup (Perm α)`.
 
 ## Main results
+
 * `alternatingGroup.index_eq_two` shows that the index of the alternating group is two.
 
 * `two_mul_card_alternatingGroup` shows that the alternating group is half as large as
@@ -50,10 +51,11 @@ consisting of the even permutations.
 * The alternating group is a characteristic subgroup of the permutation group.
 
 ## Tags
+
 alternating group permutation simple characteristic index
 
-
 ## TODO
+
 * Show that `alternatingGroup α` is simple if and only if `Fintype.card α ≠ 4`.
 
 -/
@@ -69,7 +71,7 @@ open Equiv Equiv.Perm Subgroup Fintype
 variable (α : Type*) [Fintype α] [DecidableEq α]
 
 /-- The alternating group on a finite type, realized as a subgroup of `Equiv.Perm`.
-  For $A_n$, use `alternatingGroup (Fin n)`. -/
+For $A_n$, use `alternatingGroup (Fin n)`. -/
 def alternatingGroup : Subgroup (Perm α) :=
   sign.ker
 
@@ -274,8 +276,8 @@ theorem _root_.alternatingGroup.closure_cycleType_eq_two_two_eq_top (h5 : 5 ≤ 
   aesop
 
 /-- Part of proving $A_5$ is simple. Shows that the square of any element of $A_5$ with a 3-cycle in
-  its cycle decomposition is a 3-cycle, so the normal closure of the original element must be
-  $A_5$. -/
+its cycle decomposition is a 3-cycle, so the normal closure of the original element must be
+$A_5$. -/
 theorem isThreeCycle_sq_of_three_mem_cycleType_five {g : Perm (Fin 5)} (h : 3 ∈ cycleType g) :
     IsThreeCycle (g * g) := by
   obtain ⟨c, g', rfl, hd, _, h3⟩ := mem_cycleType_iff.1 h
@@ -319,8 +321,8 @@ instance {n : ℕ} : Nontrivial (alternatingGroup (Fin (n + 3))) :=
 
 set_option linter.flexible false in -- TODO: fix non-terminal simp
 /-- Shows that any non-identity element of $A_5$ whose cycle decomposition consists only of swaps
-  is conjugate to $(04)(13)$. This is used to show that the normal closure of such a permutation
-  in $A_5$ is $A_5$. -/
+is conjugate to $(04)(13)$. This is used to show that the normal closure of such a permutation
+in $A_5$ is $A_5$. -/
 @[deprecated "This was an auxilliary lemma for the proof of simplicity of A_5 which has now been
 superceded by `alternatingGroup.isSimpleGroup`." (since := "2026-04-28")]
 theorem isConj_swap_mul_swap_of_cycleType_two {g : Perm (Fin 5)} (ha : g ∈ alternatingGroup (Fin 5))

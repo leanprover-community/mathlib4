@@ -22,6 +22,7 @@ subspace to the entire Banach space.
   `‖f x‖ ≤ C * ‖e x‖` for all `x : E`.
 
 Moreover, we can extend a linear equivalence:
+
 * `LinearEquiv.extend`: Extend a linear equivalence between normed spaces to a continuous linear
   equivalence between Banach spaces with two dense maps `e₁` and `e₂` and the corresponding norm
   estimates.

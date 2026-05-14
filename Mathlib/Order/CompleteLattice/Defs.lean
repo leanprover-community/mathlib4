@@ -25,6 +25,7 @@ This file contains the definition of complete lattices with suprema/infima of ar
 ## Naming conventions
 
 In lemma names,
+
 * `sSup` is called `sSup`
 * `sInf` is called `sInf`
 * `⨆ i, s i` is called `iSup`
@@ -149,9 +150,10 @@ instance (priority := 100) CompleteLattice.toPartialOrder' [CompleteLattice α] 
 
 /-- Create a `CompleteLattice` from a `PartialOrder` and `InfSet`
 that returns the greatest lower bound of a set. Usually this constructor provides
-poor definitional equalities.  If other fields are known explicitly, they should be
+poor definitional equalities. If other fields are known explicitly, they should be
 provided; for example, if `inf` is known explicitly, construct the `CompleteLattice`
 instance as
+
 ```
 instance : CompleteLattice my_T where
   inf := better_inf
@@ -196,9 +198,10 @@ def completeLatticeOfCompleteSemilatticeInf (α : Type*) [CompleteSemilatticeInf
 
 /-- Create a `CompleteLattice` from a `PartialOrder` and `SupSet`
 that returns the least upper bound of a set. Usually this constructor provides
-poor definitional equalities.  If other fields are known explicitly, they should be
+poor definitional equalities. If other fields are known explicitly, they should be
 provided; for example, if `inf` is known explicitly, construct the `CompleteLattice`
 instance as
+
 ```
 instance : CompleteLattice my_T where
   inf := better_inf

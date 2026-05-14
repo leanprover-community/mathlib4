@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.Unramified.Dedekind
 
 /-!
 # Every number field has a ramified prime over `ℚ`
+
 ...except `ℚ` itself.
 
 This is a trivial corollary of `NumberField.not_dvd_discr_iff_forall_mem` and

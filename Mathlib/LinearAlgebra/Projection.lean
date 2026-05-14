@@ -15,11 +15,11 @@ public import Mathlib.Algebra.Ring.Idempotent
 # Projection to a subspace
 
 In this file we define
+
 * `Submodule.projectionOnto (p q : Submodule R E) (h : IsCompl p q)`:
   the projection of a module `E` to a submodule `p` along its complement `q`;
   it is the unique linear map `f : E → p` such that `f x = x` for `x ∈ p` and `f x = 0` for `x ∈ q`.
-* `Submodule.projection` (p q : Submodule R E) (h : IsCompl p q)`:
-  the projection `Submodule.projectionOnto` as a linear map from `E` to `E`.
+* `Submodule.projection` (p q : Submodule R E) (h : IsCompl p q)`: the projection `Submodule.projectionOnto`as a linear map from`E`to`E\`.
 * `Submodule.isComplEquivProj p`: equivalence between submodules `q`
   such that `IsCompl p q` and projections `f : E → p`, `∀ x ∈ p, f x = x`.
 
@@ -118,6 +118,7 @@ theorem prodComm_trans_prodEquivOfIsCompl (h : IsCompl p q) :
 linear map `f : E → p` such that `f x = x` for `x ∈ p` and `f x = 0` for `x ∈ q`.
 
 For the projection from `E` to `E`, see `Submodule.projection`. See also:
+
 * `Submodule.projectionOntoL` and `Submodule.projectionL` for the continuous versions.
 * `Submodule.orthogonalProjection` and `Submodule.orthogonalProjectionOnto` for the projections
   along the orthogonal subspace.
@@ -132,6 +133,7 @@ which maps into the subtype.
 This version is important as it satisfies `IsIdempotentElem`.
 
 See also:
+
 * `Submodule.projectionOntoL` and `Submodule.projectionL` for the continuous versions.
 * `Submodule.orthogonalProjection` and `Submodule.orthogonalProjectionOnto` for the projections
   along the orthogonal subspace. -/

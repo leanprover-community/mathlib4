@@ -588,8 +588,8 @@ lemma IsPowMul.map_one_le_one {R : Type*} [Monoid R] {f : R → ℝ} (hf : IsPow
   exact zero_le_one
 
 /-- A ring homomorphism `f : α →+* β` is bounded with respect to the functions `nα : α → ℝ` and
-  `nβ : β → ℝ` if there exists a positive constant `C` such that for all `x` in `α`,
-  `nβ (f x) ≤ C * nα x`. -/
+`nβ : β → ℝ` if there exists a positive constant `C` such that for all `x` in `α`,
+`nβ (f x) ≤ C * nα x`. -/
 def RingHom.IsBoundedWrt {α : Type*} [Ring α] {β : Type*} [Ring β] (nα : α → ℝ) (nβ : β → ℝ)
     (f : α →+* β) : Prop :=
   ∃ C : ℝ, 0 < C ∧ ∀ x : α, nβ (f x) ≤ C * nα x

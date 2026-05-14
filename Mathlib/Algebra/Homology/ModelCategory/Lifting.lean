@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.DegreewiseSplit
 
 Let `C` be an abelian category. Consider a commutative diagram
 in the category `CochainComplex C ℤ`.
+
 ```
    t
  A ⟶ X
@@ -20,6 +21,7 @@ i|   |p
  B ⟶ Y
    b
 ```
+
 Assume that there exists a degreewise lifting `B.X n ⟶ X.X n` for any `n : ℤ`,
 that `Q` is a cokernel of `i`, and `K` is a kernel of `p`. In this situation,
 we construct a cocycle in `Cocycle Q K 1` and show that there exists
@@ -122,6 +124,7 @@ lemma comp_coe_cocycle₁_comp :
 /--
 Consider a commutative square in the category `CochainComplex C ℤ`
 where `C` is an abelian category.
+
 ```
    t
  A ⟶ X
@@ -130,6 +133,7 @@ i|   |p
  B ⟶ Y
    b
 ```
+
 Assume that there exists a degreewise lifting `B.X n ⟶ X.X n` for any `n : ℤ`,
 that `Q` is a cokernel of `i`, and `K` is a kernel of `p`.
 If the cocycle `cocycle₁ sq hsq hQ hK : Cocycle Q K 1` is a coboundary,

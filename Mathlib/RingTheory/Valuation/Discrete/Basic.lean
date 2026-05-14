@@ -27,6 +27,7 @@ is commonly assumed in number theory. To avoid potential confusion with other de
 discrete, we use the name `IsRankOneDiscrete` to refer to discrete valuations in this setting.
 
 ## Main Definitions
+
 * `Valuation.IsRankOneDiscrete`: We define a `Γ`-valued valuation `v` to be discrete if there is
   an element `γ : Γˣ` that is `< 1` and generates the range of `v`.
 * `Valuation.IsUniformizer`: Given a `Γ`-valued valuation `v` on a ring `R`, an element `π : R` is
@@ -35,6 +36,7 @@ discrete, we use the name `IsRankOneDiscrete` to refer to discrete valuations in
   uniformizer.
 
 ## Main Results
+
 * `Valuation.IsUniformizer.of_associated`: An element associated to a uniformizer is itself a
   uniformizer.
 * `Valuation.associated_of_isUniformizer`: If two elements are uniformizers, they are associated.
@@ -55,8 +57,8 @@ discrete, we use the name `IsRankOneDiscrete` to refer to discrete valuations in
 * `IsDiscreteValuationRing.equivValuationSubring` The ring isomorphism between a DVR and the
   unit ball in its field of fractions endowed with the adic valuation of the maximal ideal.
 
-
 ## TODO
+
 * Relate discrete valuations and discrete valuation rings (contained in the project
   <https://github.com/mariainesdff/LocalClassFieldTheory>)
 -/
@@ -196,7 +198,7 @@ end IsUniformizer
 
 variable (v) in
 /-- The structure `Uniformizer` bundles together the term in the ring and a proof that it is a
-  uniformizer. -/
+uniformizer. -/
 @[ext]
 structure Uniformizer where
   /-- The integer underlying a `Uniformizer` -/
@@ -533,7 +535,7 @@ theorem map_algebraMap_eq_valuationSubring : Subring.map (algebraMap A K) ⊤ =
     exact ⟨y, mem_top _, rfl⟩
 
 /-- The ring isomorphism between a DVR `A` and the valuation subring of a field of fractions
-  of `A` endowed with the adic valuation of the maximal ideal. -/
+of `A` endowed with the adic valuation of the maximal ideal. -/
 noncomputable def equivValuationSubring :
     A ≃+* ((maximalIdeal A).valuation K).valuationSubring :=
   (topEquiv.symm.trans (equivMapOfInjective ⊤ (algebraMap A K)

@@ -421,7 +421,7 @@ theorem closure_coe_completion_v_mul_v_lt {r s : K} (hr : r ≠ 0) (hs : s ≠ 0
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The zero-preserving monoid homomorphism from the `ValueGroup₀` of the valuation on `K` to
-  that of the extension to its completion. -/
+that of the extension to its completion. -/
 noncomputable def valueGroup₀_hom_extensionValuation :
     (ValueGroup₀ hv.v) →*₀ (ValueGroup₀ hv.extensionValuation) where
   toFun x := hv.extensionValuation.restrict (restrict₀_surjective hv.v x).choose
@@ -468,7 +468,7 @@ noncomputable def valueGroup₀_hom_extensionValuation :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The zero-preserving monoid homomorphism from the `ValueGroup₀` of the valuation on `K` to
-  that of the extension to its completion. -/
+that of the extension to its completion. -/
 noncomputable def valueGroup₀_equiv_extensionValuation :
     (ValueGroup₀ hv.v) ≃* (ValueGroup₀ hv.extensionValuation) := by
   refine MulEquiv.ofBijective (valueGroup₀_hom_extensionValuation (hv := hv)) ⟨?_, ?_⟩

@@ -11,9 +11,11 @@ public import Mathlib.NumberTheory.NumberField.Discriminant.Defs
 
 /-!
 # Discriminant of cyclotomic fields
+
 We compute the discriminant of a `p ^ n`-th cyclotomic extension.
 
 ## Main results
+
 * `IsCyclotomicExtension.discr_odd_prime` : if `p` is an odd prime such that
   `IsCyclotomicExtension {p} K L` and `Irreducible (cyclotomic p K)`, then
   `discr K (hζ.powerBasis K).basis = (-1) ^ ((p - 1) / 2) * p ^ (p - 2)` for any

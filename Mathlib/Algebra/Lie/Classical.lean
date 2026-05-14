@@ -15,22 +15,23 @@ public import Mathlib.LinearAlgebra.SymplecticGroup
 # Classical Lie algebras
 
 This file is the place to find definitions and basic properties of the classical Lie algebras:
-  * Aₗ = sl(l+1)
-  * Bₗ ≃ so(l+1, l) ≃ so(2l+1)
-  * Cₗ = sp(l)
-  * Dₗ ≃ so(l, l) ≃ so(2l)
+
+* Aₗ = sl(l+1)
+* Bₗ ≃ so(l+1, l) ≃ so(2l+1)
+* Cₗ = sp(l)
+* Dₗ ≃ so(l, l) ≃ so(2l)
 
 ## Main definitions
 
-  * `LieAlgebra.SpecialLinear.sl`
-  * `LieAlgebra.Symplectic.sp`
-  * `LieAlgebra.Orthogonal.so`
-  * `LieAlgebra.Orthogonal.so'`
-  * `LieAlgebra.Orthogonal.soIndefiniteEquiv`
-  * `LieAlgebra.Orthogonal.typeD`
-  * `LieAlgebra.Orthogonal.typeB`
-  * `LieAlgebra.Orthogonal.typeDEquivSo'`
-  * `LieAlgebra.Orthogonal.typeBEquivSo'`
+* `LieAlgebra.SpecialLinear.sl`
+* `LieAlgebra.Symplectic.sp`
+* `LieAlgebra.Orthogonal.so`
+* `LieAlgebra.Orthogonal.so'`
+* `LieAlgebra.Orthogonal.soIndefiniteEquiv`
+* `LieAlgebra.Orthogonal.typeD`
+* `LieAlgebra.Orthogonal.typeB`
+* `LieAlgebra.Orthogonal.typeDEquivSo'`
+* `LieAlgebra.Orthogonal.typeBEquivSo'`
 
 ## Implementation notes
 

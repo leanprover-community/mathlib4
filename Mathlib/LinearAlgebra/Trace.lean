@@ -375,7 +375,7 @@ end
 
 end LinearMap
 
-/-- If `S` is an `R-algebra that is free of rank `1` over `R`, the map `R →+* S` is an
+/-- If `S` is an `R-algebra that is free of rank `1`over`R`, the map `R →+\* S\` is an
 isomorphism. -/
 lemma Module.Free.bijective_algebraMap_of_finrank_eq_one {R S : Type*} [CommRing R] [Ring S]
     [Algebra R S] [Nontrivial R] [Free R S] (h : finrank R S = 1) :

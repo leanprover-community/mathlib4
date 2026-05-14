@@ -15,14 +15,12 @@ public import Mathlib.RingTheory.MvPowerSeries.Order
   a multivariate power series whose constant coefficient is not a zero divisor
   is itself not a zero divisor
 
-
 - `MvPowerSeries.order_mul` : multiplicativity of `MvPowerSeries.order`
   if the semiring `R` has no zero divisors
 
 ## Instance
 
 If `R` has `NoZeroDivisors`, then so does `MvPowerSeries σ R`.
-
 
 ## TODO
 
@@ -94,7 +92,7 @@ theorem mem_nonZeroDivisorsLeft_of_constantCoeff {φ : MvPowerSeries σ R}
       false_implies]
 
 /-- A multivariate power series is not a zero divisor
-  when its constant coefficient is not a zero divisor -/
+when its constant coefficient is not a zero divisor -/
 theorem mem_nonZeroDivisors_of_constantCoeff {φ : MvPowerSeries σ R}
     (hφ : constantCoeff φ ∈ R⁰) :
     φ ∈ (MvPowerSeries σ R)⁰ :=

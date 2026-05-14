@@ -40,6 +40,7 @@ general $R$-algebras.
 * `FreeProduct` is the coproduct in the category of `R`-algebras.
 
 ## TODO
+
 - Induction principle for `FreeProduct`
 
 -/
@@ -212,7 +213,7 @@ irreducible_def of {i : I} : A i →ₐ[R] FreeProduct R A := ι R A i
 
 /-- Universal property of the free product of algebras:
 for every `R`-algebra `B`, every family of maps `maps : (i : I) → (A i →ₐ[R] B)` lifts
-to a unique arrow `π` from `FreeProduct R A` such that  `π ∘ ι i = maps i`. -/
+to a unique arrow `π` from `FreeProduct R A` such that `π ∘ ι i = maps i`. -/
 @[simps] def lift : ({i : I} → A i →ₐ[R] B) ≃ (FreeProduct R A →ₐ[R] B) where
   toFun maps :=
     RingQuot.liftAlgHom R ⟨
@@ -233,7 +234,7 @@ to a unique arrow `π` from `FreeProduct R A` such that  `π ∘ ι i = maps i`.
 
 /-- Universal property of the free product of algebras, property:
 for every `R`-algebra `B`, every family of maps `maps : (i : I) → (A i →ₐ[R] B)` lifts
-to a unique arrow `π` from `FreeProduct R A` such that  `π ∘ ι i = maps i`. -/
+to a unique arrow `π` from `FreeProduct R A` such that `π ∘ ι i = maps i`. -/
 @[simp↓] theorem lift_comp_ι : lift R A maps ∘ₐ ι R A i = maps := by
   ext a
   simp [lift_apply, ι]

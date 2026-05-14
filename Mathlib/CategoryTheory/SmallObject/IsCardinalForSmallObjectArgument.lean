@@ -53,6 +53,7 @@ the retracts of the transfinite compositions (of shape `κ.ord.ToType`) of
 pushouts of coproducts of morphisms in `I`.
 
 ## References
+
 - https://ncatlab.org/nlab/show/small+object+argument
 
 -/

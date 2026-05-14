@@ -23,11 +23,12 @@ This defines the density of a `Finset` and provides induction principles for fin
 ## Implementation notes
 
 There are many other ways to talk about the density of a finset and provide its API:
+
 1. Use the uniform measure
 2. Define finitely additive functions and generalise the `Finset.card` API to it. This could either
-  be done with
-  a. A structure `FinitelyAdditiveFun`
-  b. A typeclass `IsFinitelyAdditiveFun`
+   be done with
+   a. A structure `FinitelyAdditiveFun`
+   b. A typeclass `IsFinitelyAdditiveFun`
 
 Solution 1 would mean importing measure theory in simple files (not necessarily bad, but not
 amazing), and every single API lemma would require the user to prove that all the sets they are

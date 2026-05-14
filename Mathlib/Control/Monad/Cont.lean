@@ -140,6 +140,7 @@ instance : LawfulMonadCont (ContT r m) where
   callCC_dummy := by intros; ext; rfl
 
 /-- Note that `tryCatch` does not have correct behavior in this monad:
+
 ```
 def foo : ContT Bool (Except String) Bool := do
   let x ← try
@@ -150,6 +151,7 @@ def foo : ContT Bool (Except String) Bool := do
 #eval foo.run pure
 -- `Except.ok false`, no error
 ```
+
 Here, the `throwError` is being run inside the `try`.
 See [Zulip](https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/MonadExcept.20in.20the.20ContT.20monad/near/375341221)
 for further discussion.

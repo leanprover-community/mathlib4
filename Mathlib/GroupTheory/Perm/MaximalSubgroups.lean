@@ -22,11 +22,11 @@ public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 
 ## TODO
 
-  * Application to primitivity of the action
-    of `Equiv.Perm α` on finite combinations of `α`.
+* Application to primitivity of the action
+  of `Equiv.Perm α` on finite combinations of `α`.
 
-  * Formalize the other cases of the classification.
-    The next one should be the *imprimitive case*.
+* Formalize the other cases of the classification.
+  The next one should be the *imprimitive case*.
 
 ## Reference
 

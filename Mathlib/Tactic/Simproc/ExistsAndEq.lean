@@ -105,6 +105,7 @@ the form `a = a'` or `a' = a` for some `a'`. It branches at each `And` and walks
 existential quantifiers.
 
 Returns a tuple `(fvars, lctx, P', a')`, where:
+
 * `fvars` is a list of all variables bound by existential quantifiers along the path.
 * `lctx` is the local context containing all these free variables.
 * `P'` is `P` with all existential quantifiers along the path removed, and corresponding bound
@@ -146,6 +147,7 @@ where
 `act : body → goal` and proves `P → goal` using `Exists.elim`.
 
 Example:
+
 ```
 exs = []: act h
 exs = [b]:
@@ -178,6 +180,7 @@ def withNestedExistsElim {P body goal : Q(Prop)} (exs : List VarQ) (h : Q($P))
 and `P' = ∃ f₁ ... fₙ, newBody`, and `path` leads to `a = a'` in `∃ a, p a`.
 
 The proof follows the following structure:
+
 ```
 example {α β : Type} (f : β → α) {p : α → Prop} :
     (∃ b, p (f b) ∧ f b = f b) → (∃ a, p a ∧ ∃ b, a = f b) := by
@@ -296,6 +299,7 @@ def withExistsElimAlongPath {u : Level} {α : Q(Sort u)}
 `act : body` and proves `P` using `Exists.intro`.
 
 Example:
+
 ```
 exs = []: act
 exs = [b]:
@@ -323,6 +327,7 @@ def withNestedExistsIntro {P body : Q(Prop)} (exs : List VarQ)
 and `P' = ∃ f₁ ... fₙ, newBody`, and `path` leads to `a = a'` in `∃ a, p a`.
 
 The proof follows the following structure:
+
 ```
 example {α β : Type} (f : β → α) {p : α → Prop} :
     (∃ a, p a ∧ ∃ b, a = f b) → (∃ b, p (f b) ∧ f b = f b) := by

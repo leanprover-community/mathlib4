@@ -20,14 +20,14 @@ We define `R.leftFixedPoints` (resp. `R.rightFixedPoints`) as the set of fixed p
 ## Main Results
 
 ⋆ `Rel.gc_leftDual_rightDual`: we prove that the maps `toDual ∘ R.leftDual` and
-  `R.rightDual ∘ ofDual` form a Galois connection.
+`R.rightDual ∘ ofDual` form a Galois connection.
 ⋆ `Rel.equivFixedPoints`: we prove that the maps `R.leftDual` and `R.rightDual` induce inverse
-  bijections between the sets of fixed points.
+bijections between the sets of fixed points.
 
 ## References
 
 ⋆ Engendrement de topologies, démontrabilité et opérations sur les sous-topos, Olivia Caramello and
-  Laurent Lafforgue (in preparation)
+Laurent Lafforgue (in preparation)
 
 ## Tags
 

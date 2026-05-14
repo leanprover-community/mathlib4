@@ -31,22 +31,27 @@ open Lean Parser.Term Elab Deriving Meta
 
 The idea is that every encodable inductive type can be represented as a tree of natural numbers.
 Inspiration for this is s-expressions used in Lisp/Scheme.
+
 ```lean
 inductive S : Type where
   | nat (n : ℕ)
   | cons (a b : S)
 ```
+
 We start by constructing an equivalence `S ≃ ℕ` using the `Nat.pair` function.
 
 Here is an example of how this module constructs an encoding.
 
 Suppose we are given the following type:
+
 ```lean
 inductive T (α : Type) where
   | a (x : α) (y : Bool) (z : T α)
   | b
 ```
+
 The deriving handler constructs the following declarations:
+
 ```lean
 def encodableT_toS {α} [Encodable α] (x : T α) : S :=
   match x with
@@ -71,6 +76,7 @@ private theorem encodableT {α} [Encodable α] (x : @T α) :
 instance {α} [Encodable α] : Encodable (@T α) :=
   Encodable.ofLeftInjection encodableT_toS encodableT_fromS encodableT
 ```
+
 The idea is that each constructor gets encoded as a linked list made of `S.cons` constructors
 that is tagged with the constructor index.
 -/

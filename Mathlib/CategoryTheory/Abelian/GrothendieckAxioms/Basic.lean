@@ -45,6 +45,7 @@ individual axioms. An `AB4` category is an _abelian_ category satisfying `AB4`, 
 `AB5`.
 
 ## References
+
 * [Stacks: Grothendieck's AB conditions](https://stacks.math.columbia.edu/tag/079A)
 
 -/
@@ -449,7 +450,7 @@ instance preservesFiniteColimits_liftToFinset : PreservesFiniteColimits (liftToF
 variable (J : Type*)
 
 /--
-`HasExactLimitsOfShape (Finset (Discrete J))ᵒᵖ C` implies  `HasExactLimitsOfShape (Discrete J) C`
+`HasExactLimitsOfShape (Finset (Discrete J))ᵒᵖ C` implies `HasExactLimitsOfShape (Discrete J) C`
 -/
 lemma hasExactLimitsOfShape_discrete_of_hasExactLimitsOfShape_finset_discrete_op
     [HasLimitsOfShape (Discrete J) C] [HasLimitsOfShape (Finset (Discrete J))ᵒᵖ C]

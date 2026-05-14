@@ -11,6 +11,7 @@ public import Mathlib.CategoryTheory.Bicategory.Modification.Pseudo
 # The bicategory of pseudofunctors
 
 Given bicategories `B` and `C`, we define a bicategory structure on `Pseudofunctor B C` whose
+
 * objects are pseudofunctors,
 * 1-morphisms are strong natural transformations, and
 * 2-morphisms are modifications.

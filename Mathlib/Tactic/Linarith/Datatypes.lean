@@ -165,7 +165,7 @@ def Comp.cmp : Comp → Comp → Ordering
     | Ordering.eq => coeffs1.cmp coeffs2
 
 /--
-A `Comp` represents a contradiction if its expression has no coefficients and its strength is <,
+A `Comp` represents a contradiction if its expression has no coefficients and its strength is \<,
 that is, it represents the fact `0 < 0`.
 -/
 def Comp.isContr (c : Comp) : Bool := c.coeffs.isEmpty && c.str = Ineq.lt

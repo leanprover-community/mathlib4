@@ -25,6 +25,7 @@ public meta section
 
 /-- Runs the given `atLocal` and `atTarget` methods on each of the locations selected by the given
 `loc`.
+
 * If `loc` is a list of locations, runs at each specified hypothesis (and finally the goal if `⊢` is
   included), and fails if any of the tactic applications fail.
 * If `loc` is `*`, runs at the nondependent `Prop` hypotheses (those produced by

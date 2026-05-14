@@ -17,9 +17,7 @@ The Faa di Bruno formula gives the iterated derivative of `g ∘ f` in terms of 
 `g` and `f`. It is expressed in terms of partitions `I` of `{0, ..., n-1}`. For such a
 partition, denote by `k` its number of parts, write the parts as `I₀, ..., Iₖ₋₁` ordered so
 that `max I₀ < ... < max Iₖ₋₁`, and let `iₘ` be the number of elements of `Iₘ`. Then
-`D^n (g ∘ f) (x) (v₀, ..., vₙ₋₁) =
-  ∑_{I partition of {0, ..., n-1}}
-    D^k g (f x) (D^{i₀} f (x) (v_{I₀}), ..., D^{iₖ₋₁} f (x) (v_{Iₖ₋₁}))`
+`D^n (g ∘ f) (x) (v₀, ..., vₙ₋₁) =   ∑_{I partition of {0, ..., n-1}}     D^k g (f x) (D^{i₀} f (x) (v_{I₀}), ..., D^{iₖ₋₁} f (x) (v_{Iₖ₋₁}))`
 where by `v_{Iₘ}` we mean the vectors `vᵢ` with indices in `Iₘ`, i.e., the composition of `v`
 with the increasing embedding of `Fin iₘ` into `Fin n` with range `Iₘ`.
 

@@ -18,7 +18,6 @@ In this file, we prove basic results about the indicator of a set.
 - `Set.indicator (s : Set α) (f : α → β) (a : α)` is `f a` if `a ∈ s` and is `0` otherwise.
 - `Set.mulIndicator (s : Set α) (f : α → β) (a : α)` is `f a` if `a ∈ s` and is `1` otherwise.
 
-
 ## Implementation note
 
 In mathematics, an indicator function or a characteristic function is a function
@@ -32,6 +31,7 @@ The indicator function is implemented non-computably, to avoid having to pass ar
 arguments. This is in contrast with the design of `Pi.single` or `Set.piecewise`.
 
 ## Tags
+
 indicator, characteristic
 -/
 

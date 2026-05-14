@@ -26,6 +26,7 @@ over itself where `R` is a commutative ring.
   as an `R`-algebra, then `B` is an Azumaya algebra over `R`.
 
 ## Tags
+
 Noncommutative algebra, Azumaya algebra, Brauer Group
 
 -/
@@ -44,7 +45,7 @@ lemma AlgHom.mulLeftRight_bij [h : IsAzumaya R A] :
     Function.Bijective (AlgHom.mulLeftRight R A) := h.bij
 
 /-- The "canonical" isomorphism between `R ⊗ Rᵒᵖ` and `End R R` which is equal
-  to `AlgHom.mulLeftRight R R`. -/
+to `AlgHom.mulLeftRight R R`. -/
 abbrev tensorEquivEnd : R ⊗[R] Rᵐᵒᵖ ≃ₐ[R] Module.End R R :=
   Algebra.TensorProduct.lid R Rᵐᵒᵖ |>.trans <| .moduleEndSelf R
 
@@ -56,6 +57,7 @@ instance id : IsAzumaya R R where
 
 /--
 The following diagram commutes:
+
 ```
           e ⊗ eᵒᵖ
 A ⊗ Aᵐᵒᵖ  ------------> B ⊗ Bᵐᵒᵖ

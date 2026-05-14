@@ -15,6 +15,7 @@ In this file we define and develop basic results about relatively representable 
 
 Classically, a morphism `f : F ⟶ G` of presheaves is said to be representable if for any morphism
 `g : yoneda.obj X ⟶ G`, there exists a pullback square of the following form
+
 ```
   yoneda.obj Y --yoneda.map snd--> yoneda.obj X
       |                                |
@@ -35,6 +36,7 @@ Throughout this file, `F : C ⥤ D` is a functor between categories `C` and `D`.
 * `Functor.relativelyRepresentable`: A morphism `f : X ⟶ Y` in `D` is said to be relatively
   representable with respect to `F`, if for any `g : F.obj a ⟶ Y`, there exists a pullback square
   of the following form
+
   ```
   F.obj b --F.map snd--> F.obj a
       |                     |
@@ -51,6 +53,7 @@ Throughout this file, `F : C ⥤ D` is a functor between categories `C` and `D`.
 ## API
 
 Given `hf : relativelyRepresentable f`, with `f : X ⟶ Y` and `g : F.obj a ⟶ Y`, we provide:
+
 * `hf.pullback g` which is the object in `C` such that `F.obj (hf.pullback g)` is a
   pullback of `f` and `g`.
 * `hf.snd g` is the morphism `hf.pullback g ⟶ F.obj a`
@@ -91,6 +94,7 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 /-- A morphism `f : X ⟶ Y` in `D` is said to be relatively representable if for any
 `g : F.obj a ⟶ Y`, there exists a pullback square of the following form
+
 ```
 F.obj b --F.map snd--> F.obj a
     |                     |
@@ -116,6 +120,7 @@ variable {X Y : D} {f : X ⟶ Y} (hf : F.relativelyRepresentable f)
 /-- Let `f : X ⟶ Y` be a relatively representable morphism in `D`. Then, for any
 `g : F.obj a ⟶ Y`, `hf.pullback g` denotes the (choice of) a corresponding object in `C` such that
 there is a pullback square of the following form
+
 ```
 hf.pullback g --F.map snd--> F.obj a
     |                          |
@@ -129,6 +134,7 @@ noncomputable def pullback : C :=
 
 /-- Given a representable morphism `f : X ⟶ Y`, then for any `g : F.obj a ⟶ Y`, `hf.snd g`
 denotes the morphism in `C` giving rise to the following diagram
+
 ```
 hf.pullback g --F.map (hf.snd g)--> F.obj a
     |                                 |
@@ -143,6 +149,7 @@ noncomputable abbrev snd : hf.pullback g ⟶ a :=
 /-- Given a relatively representable morphism `f : X ⟶ Y`, then for any `g : F.obj a ⟶ Y`,
 `hf.fst g` denotes the first projection in the following diagram, given by the defining property
 of `f` being relatively representable
+
 ```
 hf.pullback g --F.map (hf.snd g)--> F.obj a
     |                                 |
@@ -185,6 +192,7 @@ lemma isPullback_of_map {X Y Z : C} {f : X ⟶ Z} (hf : F.relativelyRepresentabl
 variable {g}
 
 /-- Two morphisms `a b : c ⟶ hf.pullback g` are equal if
+
 * Their compositions (in `C`) with `hf.snd g : hf.pullback  ⟶ X` are equal.
 * The compositions of `F.map a` and `F.map b` with `hf.fst g` are equal. -/
 @[ext 100]
@@ -196,6 +204,7 @@ lemma hom_ext [Faithful F] {c : C} {a b : c ⟶ hf.pullback g}
 
 /-- In the case of a representable morphism `f' : F.obj Y ⟶ G`, whose codomain lies
 in the image of `F`, we get that two morphism `a b : Z ⟶ hf.pullback g` are equal if
+
 * Their compositions (in `C`) with `hf'.snd g : hf.pullback  ⟶ X` are equal.
 * Their compositions (in `C`) with `hf'.fst' g : hf.pullback  ⟶ Y` are equal. -/
 @[ext]
@@ -309,6 +318,7 @@ variable {X Y : D} (P : MorphismProperty C)
 
 /-- Given a morphism property `P` in a category `C`, a functor `F : C ⥤ D` and a morphism
 `f : X ⟶ Y` in `D`. Then `f` satisfies the morphism property `P.relative` with respect to `F` iff:
+
 * The morphism is representable with respect to `F`
 * For any morphism `g : F.obj a ⟶ Y`, the property `P` holds for any represented pullback of
   `f` by `g`. -/
@@ -319,6 +329,7 @@ def relative : MorphismProperty D :=
 
 /-- Given a morphism property `P` in a category `C`, a morphism `f : F ⟶ G` of presheaves in the
 category `Cᵒᵖ ⥤ Type v` satisfies the morphism property `P.presheaf` iff:
+
 * The morphism is representable.
 * For any morphism `g : F.obj a ⟶ G`, the property `P` holds for any represented pullback of
   `f` by `g`.
@@ -344,6 +355,7 @@ lemma relative.property_snd {f : X ⟶ Y} (hf : P.relative F f) {a : C} (g : F.o
 
 /-- Given a morphism property `P` which respects isomorphisms, then to show that a morphism
 `f : X ⟶ Y` satisfies `P.relative` it suffices to show that:
+
 * The morphism is representable.
 * For any morphism `g : F.obj a ⟶ G`, the property `P` holds for *some* represented pullback
   of `f` by `g`. -/
@@ -572,6 +584,7 @@ variable [PreservesLimitsOfShape (Discrete WalkingPair) F]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Assume that
+
 1. `C` has binary products,
 2. `D` has pullbacks, binary products and a terminal object, and
 3. `F : C ⥤ D` is full and preserves binary products.
@@ -598,6 +611,7 @@ lemma of_diag {X : D} (h : F.relativelyRepresentable (Limits.diag X))
     ⟨by simp [pullback.condition]⟩ pbRepr (by cat_disch) (by cat_disch)⟩⟩⟩
 
 /-- Assume that
+
 1. `C` has binary products and pullbacks,
 2. `D` has pullbacks, binary products and a terminal object, and
 3. `F : C ⥤ D` is full and preserves binary products and pullbacks.
@@ -623,6 +637,7 @@ lemma toPullbackTerminal {X : D} {a : C}
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Assume that
+
 1. `C` has binary products and pullbacks,
 2. `D` has pullbacks, binary products and a terminal object, and
 3. `F : C ⥤ D` is full and preserves binary products and pullbacks.
@@ -654,6 +669,7 @@ lemma diag_of_map_from_obj [HasPullbacks C] [PreservesLimitsOfShape WalkingCospa
     (map_preimage F topMap ▸ top).flip.isLimit'.some⟩⟩⟩
 
 /-- Assume that
+
 1. `C` has binary products and pullbacks,
 2. `D` has pullbacks, binary products and a terminal object, and
 3. `F : C ⥤ D` is full and preserves binary products and pullbacks.

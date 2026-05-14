@@ -125,6 +125,7 @@ where $\operatorname{shuffle}(m, n)$ consists of all permutations of $[1, m+n]$ 
 $\sigma(1) < \cdots < \sigma(m)$ and $\sigma(m+1) < \cdots < \sigma(m+n)$.
 
 Here, we generalize this by replacing:
+
 * the product in the sum with a tensor product
 * the filtering of $[1, m+n]$ to shuffles with an isomorphic quotient
 * the additions in the subscripts of $\sigma$ with an index of type `Sum`

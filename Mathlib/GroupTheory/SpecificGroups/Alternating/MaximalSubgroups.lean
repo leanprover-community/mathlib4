@@ -22,11 +22,11 @@ Compare with `Equiv.Perm.isCoatom_stabilizer` for the case of the permutation gr
 
 ## TODO
 
-  * Application to primitivity of the action
-    of `alternatingGroup α` on finite combinations of `α`.
+* Application to primitivity of the action
+  of `alternatingGroup α` on finite combinations of `α`.
 
-  * Formalize the other cases of the classification.
-    The next one should be the *imprimitive case*.
+* Formalize the other cases of the classification.
+  The next one should be the *imprimitive case*.
 
 ## Reference
 

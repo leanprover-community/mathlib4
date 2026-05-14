@@ -37,7 +37,7 @@ def projIccCM : C(α, Icc a b) :=
   ⟨projIcc a b Fact.out, continuous_projIcc⟩
 
 /-- The extension operation from continuous maps on an interval to continuous maps on the whole
-  type, as a `ContinuousMap`. -/
+type, as a `ContinuousMap`. -/
 def IccExtendCM : C(C(Icc a b, E), C(α, E)) where
   toFun f := f.comp projIccCM
   continuous_toFun := continuous_precomp projIccCM

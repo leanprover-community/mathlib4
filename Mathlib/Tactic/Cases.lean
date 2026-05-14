@@ -94,6 +94,7 @@ Prefer `induction` when possible, because it promotes structured proofs.
   inductive hypothesis.
 
 Example:
+
 ```
 open Nat
 
@@ -168,6 +169,7 @@ structured proofs.
   bound variables.
 
 Example:
+
 ```
 example (h : p ∨ q) : q ∨ p := by
   cases' h with hp hq

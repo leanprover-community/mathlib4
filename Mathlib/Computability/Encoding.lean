@@ -20,12 +20,12 @@ It also contains several examples:
 
 ## Examples
 
-- `finEncodingNatBool`  : a binary encoding of `ℕ` in a simple alphabet.
-- `finEncodingNatΓ'`    : a binary encoding of `ℕ` in the alphabet used for TM's.
+- `finEncodingNatBool` : a binary encoding of `ℕ` in a simple alphabet.
+- `finEncodingNatΓ'` : a binary encoding of `ℕ` in the alphabet used for TM's.
 - `unaryFinEncodingNat` : a unary encoding of `ℕ`
 - `finEncodingBoolBool` : an encoding of `Bool`.
-- `finEncodingList`     : an encoding of `List α` in the alphabet `α`.
-- `finEncodingPair`     : an encoding of `α × β` from encodings of `α` and `β`.
+- `finEncodingList` : an encoding of `List α` in the alphabet `α`.
+- `finEncodingPair` : an encoding of `α × β` from encodings of `α` and `β`.
 -/
 
 @[expose] public section

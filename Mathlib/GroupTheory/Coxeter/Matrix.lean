@@ -100,6 +100,7 @@ variable (n : ℕ)
 /-- The Coxeter matrix of type Aₙ.
 
 The corresponding Coxeter-Dynkin diagram is:
+
 ```
     o --- o --- o ⬝ ⬝ ⬝ ⬝ o --- o
 ```
@@ -117,6 +118,7 @@ protected def A : CoxeterMatrix (Fin n) where
 /-- The Coxeter matrix of type Bₙ.
 
 The corresponding Coxeter-Dynkin diagram is:
+
 ```
        4
     o --- o --- o ⬝ ⬝ ⬝ ⬝ o --- o
@@ -136,6 +138,7 @@ protected def B : CoxeterMatrix (Fin n) where
 /-- The Coxeter matrix of type Dₙ.
 
 The corresponding Coxeter-Dynkin diagram is:
+
 ```
     o
      \
@@ -158,6 +161,7 @@ protected def D : CoxeterMatrix (Fin n) where
 /-- The Coxeter matrix of type I₂(m).
 
 The corresponding Coxeter-Dynkin diagram is:
+
 ```
      m + 2
     o --- o
@@ -174,6 +178,7 @@ protected def I (m : ℕ) : CoxeterMatrix (Fin 2) where
 /-- The Coxeter matrix of type E₆.
 
 The corresponding Coxeter-Dynkin diagram is:
+
 ```
                 o
                 |
@@ -191,6 +196,7 @@ def E₆ : CoxeterMatrix (Fin 6) where
 /-- The Coxeter matrix of type E₇.
 
 The corresponding Coxeter-Dynkin diagram is:
+
 ```
                 o
                 |
@@ -209,6 +215,7 @@ def E₇ : CoxeterMatrix (Fin 7) where
 /-- The Coxeter matrix of type E₈.
 
 The corresponding Coxeter-Dynkin diagram is:
+
 ```
                 o
                 |
@@ -228,6 +235,7 @@ def E₈ : CoxeterMatrix (Fin 8) where
 /-- The Coxeter matrix of type F₄.
 
 The corresponding Coxeter-Dynkin diagram is:
+
 ```
              4
     o --- o --- o --- o
@@ -242,6 +250,7 @@ def F₄ : CoxeterMatrix (Fin 4) where
 /-- The Coxeter matrix of type G₂.
 
 The corresponding Coxeter-Dynkin diagram is:
+
 ```
        6
     o --- o
@@ -254,6 +263,7 @@ def G₂ : CoxeterMatrix (Fin 2) where
 /-- The Coxeter matrix of type H₃.
 
 The corresponding Coxeter-Dynkin diagram is:
+
 ```
        5
     o --- o --- o
@@ -267,6 +277,7 @@ def H₃ : CoxeterMatrix (Fin 3) where
 /-- The Coxeter matrix of type H₄.
 
 The corresponding Coxeter-Dynkin diagram is:
+
 ```
        5
     o --- o --- o --- o

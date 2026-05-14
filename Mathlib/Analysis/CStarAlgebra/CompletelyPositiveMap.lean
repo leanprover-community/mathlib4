@@ -39,7 +39,7 @@ as much as possible.
 open scoped CStarAlgebra
 
 /--
-A linear map `φ : A₁ →ₗ[ℂ] A₂`  is called *completely positive (CP)* if
+A linear map `φ : A₁ →ₗ[ℂ] A₂` is called *completely positive (CP)* if
 `CStarMatrix.mapₗ (Fin k) (Fin k) φ` (i.e. applying `φ` to all entries of a k × k matrix) is also
 positive for every `k ∈ ℕ`.
 
@@ -54,7 +54,7 @@ structure CompletelyPositiveMap (A₁ : Type*) (A₂ : Type*) [NonUnitalCStarAlg
       0 ≤ M.map toLinearMap
 
 /--
-A linear map `φ : A₁ →ₗ[ℂ] A₂`  is called *completely positive (CP)* if
+A linear map `φ : A₁ →ₗ[ℂ] A₂` is called *completely positive (CP)* if
 `CStarMatrix.mapₗ (Fin k) (Fin k) φ` (i.e. applying `φ` to all entries of a k × k matrix) is also
 positive for every `k ∈ ℕ`.
 
@@ -78,7 +78,7 @@ variable {F A₁ A₂ : Type*} [NonUnitalCStarAlgebra A₁]
   [StarOrderedRing A₂] [FunLike F A₁ A₂] [LinearMapClass F ℂ A₁ A₂]
 
 /-- Reinterpret an element of a type of completely positive maps as a completely positive linear
-  map. -/
+map. -/
 @[coe]
 def toCompletelyPositiveLinearMap [CompletelyPositiveMapClass F A₁ A₂] (f : F) : A₁ →CP A₂ :=
   { (f : A₁ →ₗ[ℂ] A₂) with

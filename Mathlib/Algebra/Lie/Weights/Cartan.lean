@@ -20,11 +20,11 @@ Basic definitions and properties of the above ideas are provided in this file.
 
 ## Main definitions
 
-  * `LieAlgebra.rootSpace`
-  * `LieAlgebra.corootSpace`
-  * `LieAlgebra.rootSpaceWeightSpaceProduct`
-  * `LieAlgebra.rootSpaceProduct`
-  * `LieAlgebra.zeroRootSubalgebra_eq_iff_is_cartan`
+* `LieAlgebra.rootSpace`
+* `LieAlgebra.corootSpace`
+* `LieAlgebra.rootSpaceWeightSpaceProduct`
+* `LieAlgebra.rootSpaceProduct`
+* `LieAlgebra.zeroRootSubalgebra_eq_iff_is_cartan`
 
 -/
 

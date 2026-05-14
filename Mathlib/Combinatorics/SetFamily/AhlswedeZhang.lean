@@ -43,7 +43,7 @@ inequality since for an antichain `𝒜` and every `A ∈ 𝒜` we have
 
 ## References
 
-* [R. Ahlswede, Z. Zhang, *An identity in combinatorial extremal theory*](https://doi.org/10.1016/0001-8708(90)90023-G)
+* [R. Ahlswede, Z. Zhang, *An identity in combinatorial extremal theory*](<https://doi.org/10.1016/0001-8708(90)90023-G>)
 * [D. T. Tru, *An AZ-style identity and Bollobás deficiency*](https://doi.org/10.1016/j.jcta.2007.03.005)
 -/
 

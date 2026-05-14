@@ -15,16 +15,19 @@ This file defines intervals as multisets.
 ## Main declarations
 
 In a `LocallyFiniteOrder`,
+
 * `Multiset.Icc`: Closed-closed interval as a multiset.
 * `Multiset.Ico`: Closed-open interval as a multiset.
 * `Multiset.Ioc`: Open-closed interval as a multiset.
 * `Multiset.Ioo`: Open-open interval as a multiset.
 
 In a `LocallyFiniteOrderTop`,
+
 * `Multiset.Ici`: Closed-infinite interval as a multiset.
 * `Multiset.Ioi`: Open-infinite interval as a multiset.
 
 In a `LocallyFiniteOrderBot`,
+
 * `Multiset.Iic`: Infinite-open interval as a multiset.
 * `Multiset.Iio`: Infinite-closed interval as a multiset.
 

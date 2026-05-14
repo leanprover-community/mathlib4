@@ -39,7 +39,7 @@ open TensorProduct MulOpposite
 abbrev instModuleTensorProductMop : Module (A ⊗[R] Aᵐᵒᵖ) A := TensorProduct.Algebra.module
 
 /-- The canonical map from `A ⊗[R] Aᵐᵒᵖ` to `Module.End R A` where
-  `a ⊗ b` maps to `f : x ↦ a * x * b`. -/
+`a ⊗ b` maps to `f : x ↦ a * x * b`. -/
 def AlgHom.mulLeftRight : (A ⊗[R] Aᵐᵒᵖ) →ₐ[R] Module.End R A :=
   letI : Module (A ⊗[R] Aᵐᵒᵖ) A := TensorProduct.Algebra.module
   letI : IsScalarTower R (A ⊗[R] Aᵐᵒᵖ) A := {
@@ -56,6 +56,6 @@ lemma AlgHom.mulLeftRight_apply (a : A) (b : Aᵐᵒᵖ) (x : A) :
   simp [TensorProduct.Algebra.moduleAux, ← mul_assoc]
 
 /-- An Azumaya algebra is a finitely generated, projective and faithful R-algebra where
-  `AlgHom.mulLeftRight R A : (A ⊗[R] Aᵐᵒᵖ) →ₐ[R] Module.End R A` is an isomorphism. -/
+`AlgHom.mulLeftRight R A : (A ⊗[R] Aᵐᵒᵖ) →ₐ[R] Module.End R A` is an isomorphism. -/
 class IsAzumaya : Prop extends Module.Projective R A, FaithfulSMul R A, Module.Finite R A where
     bij : Function.Bijective <| AlgHom.mulLeftRight R A

@@ -18,13 +18,16 @@ This file defines two `ℤ`-valued analogs of the logarithm of `r : R` with base
 * `Int.clog b r`: Upper logarithm, or **c**eil **log**. Least `k` such that `r ≤ ↑b^k`.
 
 Note that `Int.log` gives the position of the left-most non-zero digit:
+
 ```lean
 #eval (Int.log 10 (0.09 : ℚ), Int.log 10 (0.10 : ℚ), Int.log 10 (0.11 : ℚ))
 --    (-2,                    -1,                    -1)
 #eval (Int.log 10 (9 : ℚ),    Int.log 10 (10 : ℚ),   Int.log 10 (11 : ℚ))
 --    (0,                     1,                     1)
 ```
+
 which means it can be used for computing digit expansions
+
 ```lean
 import Data.Fin.VecNotation
 import Mathlib.Data.Rat.Floor
@@ -45,7 +48,7 @@ def digits (b : ℕ) (q : ℚ) (n : ℕ) : ℕ :=
 * For `Int.clog`:
   * `Int.zpow_pred_clog_lt_self`, `Int.self_le_zpow_clog`: the bounds formed by `Int.clog`,
     `(b : R) ^ (clog b r - 1) < r ≤ (b : R) ^ clog b r`.
-  * `Int.clog_zpow_gi`:  the Galois insertion between `Int.clog` and `zpow`.
+  * `Int.clog_zpow_gi`: the Galois insertion between `Int.clog` and `zpow`.
 * `Int.neg_log_inv_eq_clog`, `Int.neg_clog_inv_eq_log`: the link between the two definitions.
 -/
 

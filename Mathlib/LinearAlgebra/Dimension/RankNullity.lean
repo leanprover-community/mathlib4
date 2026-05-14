@@ -16,10 +16,12 @@ public import Mathlib.Logic.Equiv.Fin.Rotate
 
 In this file we provide the rank nullity theorem as a typeclass, and prove various corollaries
 of the theorem. The main definition is `HasRankNullity.{u} R`, which states that
+
 1. Every `R`-module `M : Type u` has a linear independent subset of cardinality `Module.rank R M`.
 2. `rank (M ⧸ N) + rank N = rank M` for every `R`-module `M : Type u` and every `N : Submodule R M`.
 
 The following instances are provided in mathlib:
+
 1. `DivisionRing.hasRankNullity` for division rings in
    `Mathlib/LinearAlgebra/Dimension/DivisionRing.lean`.
 2. `IsDomain.hasRankNullity` for commutative domains in
@@ -40,6 +42,7 @@ variable [Module R M] [Module R M₁] [Module R M₂] [Module R M₃] [Module R 
 
 /--
 `HasRankNullity.{u}` is a class of rings satisfying
+
 1. Every `R`-module `M : Type u` has a linear independent subset of cardinality `Module.rank R M`.
 2. `rank (M ⧸ N) + rank N = rank M` for every `R`-module `M : Type u` and every `N : Submodule R M`.
 

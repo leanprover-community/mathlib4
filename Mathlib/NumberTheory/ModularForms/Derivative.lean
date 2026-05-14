@@ -14,6 +14,7 @@ This file defines normalized derivative $D = \frac{1}{2\pi i} \frac{d}{dz}$
 and serre dervative $\partial_k := D - \frac{k}{12} E_2$ of modular forms.
 
 TODO:
+
 - Serre derivative preserves modularity, i.e. $\partial_k (M_k) \subseteq M_{k+2}$.
 - Use above, prove Ramanujan's identities. See [here](https://github.com/thefundamentaltheor3m/Sphere-Packing-Lean/blob/main/SpherePacking/ModularForms/RamanujanIdentities.lean)
   for `sorry`-free proofs.

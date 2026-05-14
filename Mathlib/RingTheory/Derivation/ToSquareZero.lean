@@ -29,7 +29,7 @@ variable {R : Type u} {A : Type v} {B : Type w} [CommSemiring R] [CommSemiring A
 variable [Algebra R A] [Algebra R B] (I : Ideal B)
 
 /-- If `f₁ f₂ : A →ₐ[R] B` are two lifts of the same `A →ₐ[R] B ⧸ I`,
-  we may define a map `f₁ - f₂ : A →ₗ[R] I`. -/
+we may define a map `f₁ - f₂ : A →ₗ[R] I`. -/
 def diffToIdealOfQuotientCompEq (f₁ f₂ : A →ₐ[R] B)
     (e : (Ideal.Quotient.mkₐ R I).comp f₁ = (Ideal.Quotient.mkₐ R I).comp f₂) : A →ₗ[R] I :=
   LinearMap.codRestrict (I.restrictScalars _) (f₁.toLinearMap - f₂.toLinearMap)

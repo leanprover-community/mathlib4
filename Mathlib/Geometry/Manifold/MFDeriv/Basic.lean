@@ -14,6 +14,7 @@ public import Mathlib.Geometry.Manifold.ContMDiff.Defs
 
 In this file, we show various properties of the manifold Fréchet derivative,
 mimicking the API for Fréchet derivatives.
+
 - basic properties of unique differentiability sets
 - various general lemmas about the manifold Fréchet derivative
 - deducing differentiability from smoothness,
@@ -169,6 +170,7 @@ theorem MDifferentiable.mdifferentiableAt (hf : MDifferentiable I I' f) :
 
 /-!
 ### Relating differentiability in a manifold and differentiability in the model space
+
 through extended charts
 -/
 

@@ -46,7 +46,7 @@ needed.
 
 ## References
 
-- https://en.wikipedia.org/wiki/Dilation_(metric_space)
+- https://en.wikipedia.org/wiki/Dilation\_(metric_space)
 - [Marcel Berger, *Geometry*][berger1987]
 -/
 
@@ -64,7 +64,7 @@ variable (α : Type*) (β : Type*) [PseudoEMetricSpace α] [PseudoEMetricSpace �
 /-- A dilation is a map that uniformly scales the edistance between any two points. -/
 structure Dilation where
   /-- The underlying function.
-
+  
   Do NOT use directly. Use the coercion instead. -/
   toFun : α → β
   edist_eq' : ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : α, edist (toFun x) (toFun y) = r * edist x y

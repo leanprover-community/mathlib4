@@ -45,12 +45,12 @@ namespace PNat
 open Nat
 
 /-- The greatest common divisor (gcd) of two positive natural numbers,
-  viewed as positive natural number. -/
+viewed as positive natural number. -/
 def gcd (n m : ℕ+) : ℕ+ :=
   ⟨Nat.gcd (n : ℕ) (m : ℕ), Nat.gcd_pos_of_pos_left (m : ℕ) n.pos⟩
 
 /-- The least common multiple (lcm) of two positive natural numbers,
-  viewed as positive natural number. -/
+viewed as positive natural number. -/
 def lcm (n m : ℕ+) : ℕ+ :=
   ⟨Nat.lcm (n : ℕ) (m : ℕ), by
     let h := mul_pos n.pos m.pos

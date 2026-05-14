@@ -14,12 +14,14 @@ Given a family of morphisms `g a : A a ⟶ B a` and a morphism `f : X₁ ⟶ X�
 we introduce a structure `AttachCells g f` which expresses that `X₂`
 is obtained from `X₁` by attaching cells of the form `g a`. It means that
 there is a pushout diagram of the form
+
 ```
 ⨿ i, A (π i) -----> X₁
   |                 |f
   v                 v
 ⨿ i, B (π i) -----> X₂
 ```
+
 In other words, the morphism `f` is a pushout of coproducts of morphisms
 of the form `g a : A a ⟶ B a`, see `nonempty_attachCells_iff`.
 

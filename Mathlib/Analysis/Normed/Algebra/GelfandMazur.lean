@@ -16,11 +16,14 @@ We provide a formalization of proofs of the following versions of the *Gelfand-M
   with multiplicative norm, then we obtain a `ℂ`-algebra equivalence with `ℂ`.
 
   This differs from `NormedRing.algEquivComplexOfComplete` in the assumptions: there,
+
   * `F` is assumed to be complete,
   * `F` is assumed to be a (nontrivial) division ring,
   * but the norm is only required to be submultiplicative.
+
 * `NormedAlgebra.Complex.nonempty_algEquiv`: A nontrivial normed `ℂ`-algebra
   with multiplicative norm is isomorphic to `ℂ` as a `ℂ`-algebra.
+
 * `NormedAlgebra.Real.nonempty_algEquiv_or`: if a field `F` is a normed `ℝ`-algebra,
   then `F` is isomorphic as an `ℝ`-algebra either to `ℝ` or to `ℂ`.
 
@@ -35,7 +38,7 @@ We provide a formalization of proofs of the following versions of the *Gelfand-M
 The proof we use here is a variant of a proof for the complex case (any normed `ℂ`-algebra
 is isomorphic to `ℂ`) that is originally due to Ostrowski
 [A. Ostrowski, *Über einige Lösungen der Funktionalgleichung φ(x)⋅φ(y)=φ(xy)*
-  (Section 7)][ostrowski1916].
+(Section 7)][ostrowski1916].
 See also the concise version provided by Peter Scholze on
 [Math Overflow](https://mathoverflow.net/questions/10535/ways-to-prove-the-fundamental-theorem-of-algebra/420803#420803).
 

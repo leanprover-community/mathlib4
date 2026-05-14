@@ -79,9 +79,10 @@ def left (k) : ∀ {n}, Fin2 n → Fin2 (k + n)
   | _, @fs _ i => fs (left k i)
 
 /-- `insertPerm a` is a permutation of `Fin2 n` with the following properties:
-  * `insertPerm a i = i+1` if `i < a`
-  * `insertPerm a a = 0`
-  * `insertPerm a i = i` if `i > a` -/
+
+* `insertPerm a i = i+1` if `i < a`
+* `insertPerm a a = 0`
+* `insertPerm a i = i` if `i > a` -/
 def insertPerm : ∀ {n}, Fin2 n → Fin2 n → Fin2 n
   | _, @fz _, @fz _ => fz
   | _, @fz _, @fs _ j => fs j
@@ -92,15 +93,15 @@ def insertPerm : ∀ {n}, Fin2 n → Fin2 n → Fin2 n
     | fs k => fs (fs k)
 
 /-- `remapLeft f k : Fin2 (m + k) → Fin2 (n + k)` applies the function
-  `f : Fin2 m → Fin2 n` to inputs less than `m`, and leaves the right part
-  on the right (that is, `remapLeft f k (m + i) = n + i`). -/
+`f : Fin2 m → Fin2 n` to inputs less than `m`, and leaves the right part
+on the right (that is, `remapLeft f k (m + i) = n + i`). -/
 def remapLeft {m n} (f : Fin2 m → Fin2 n) : ∀ k, Fin2 (m + k) → Fin2 (n + k)
   | 0, i => f i
   | _k + 1, @fz _ => fz
   | _k + 1, @fs _ i => fs (remapLeft f _ i)
 
 /-- This is a simple type class inference prover for proof obligations
-  of the form `m < n` where `m n : ℕ`. -/
+of the form `m < n` where `m n : ℕ`. -/
 class IsLT (m n : ℕ) : Prop where
   /-- The unique field of `Fin2.IsLT`, a proof that `m < n`. -/
   h : m < n

@@ -77,7 +77,7 @@ variable {A : Type*} [Ring A]
 
 /-- A filter of ideals is *uniform* if it is closed under colon by singletons. -/
 class IsUniform (F : IdealFilter A) : Prop where
-  /-- **Axiom T3.**  See [stenstrom1975]. -/
+  /-- **Axiom T3.** See [stenstrom1975]. -/
   colon_mem {I : Ideal A} (hI : I ∈ F) (a : A) : I.colon {a} ∈ F
 
 /-- We say that an element `m : M` is `F`-torsion if it is annihilated by some ideal belonging to

@@ -17,6 +17,7 @@ In a monoidal category with pushouts, the pushout-product is the Leibniz functor
 tensor product. This is the bifunctor of arrow categories that sends `f : A ⟶ B` and `g : X ⟶ Y`
 to the canonical map from the pushout of `f ◁ X` and `A ▷ g` to `B ⊗ Y`, induced by the following
 diagram:
+
 ```
   A ⊗ X --> B ⊗ X
      |          |
@@ -29,6 +30,7 @@ to the internal hom. This is the bifunctor of arrow categories that sends `f : A
 `g : X ⟶ Y` to the canonical map from `B ⟹ X` to the pullback of
 `(ihom A).map g : A ⟹ X ⟶ A ⟹ Y` and `(pre f).app Y : B ⟹ Y ⟶ A ⟹ Y`, induced by the
 following diagram:
+
 ```
   B ⟹ X --> A ⟹ X
      |          |
@@ -61,6 +63,7 @@ namespace Arrow
 /-- The Leibniz functor associated to the tensor product on a monoidal category. This is the
 bifunctor of arrow categories that sends `f : A ⟶ B` and `g : X ⟶ Y` to the canonical map from the
 pushout of `f ◁ X` and `A ▷ g` to `B ⊗ Y`, induced by the following diagram:
+
 ```
   A ⊗ X --> B ⊗ X
      |          |
@@ -79,6 +82,7 @@ notation3 f " □ " g:10 => (pushoutProduct.obj f).obj g
 bifunctor of arrow categories that sends `f : A ⟶ B` and `g : X ⟶ Y` to the canonical map from
 `B ⟹ X` to the pullback of `(ihom A).map g : A ⟹ X ⟶ A ⟹ Y` and
 `(pre f).app Y : B ⟹ Y ⟶ A ⟹ Y`, induced by the following diagram:
+
 ```
   B ⟹ X --> A ⟹ X
      |          |
@@ -105,7 +109,7 @@ variable [MonoidalCategory C] (X₁ X₂ X₃ : Arrow C) {W : C}
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Left-whiskering the pushout-product of `X₁` and `X₂` with `W : C` is isomorphic to the
-  pushout-product of `W ◁ X₁` and `X₂`. -/
+pushout-product of `W ◁ X₁` and `X₂`. -/
 @[simps!]
 noncomputable
 def whiskerLeftIso
@@ -123,7 +127,7 @@ def whiskerLeftIso
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Right-whiskering the pushout-product of `X₁` and `X₂` with `W : C` is isomorphic to the
-  pushout-product of `X₁` and `X₂ ▷ W`. -/
+pushout-product of `X₁` and `X₂ ▷ W`. -/
 @[simps!]
 noncomputable
 def whiskerRightIso

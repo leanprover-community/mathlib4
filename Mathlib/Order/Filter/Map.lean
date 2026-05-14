@@ -266,6 +266,7 @@ section comm
 
 /-!
 The variables in the following lemmas are used as in this diagram:
+
 ```
     φ
   α → β

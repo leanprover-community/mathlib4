@@ -16,11 +16,11 @@ use it to define various important operations, notably the Lie span of a subset 
 
 ## Main definitions
 
-  * `LieSubmodule`
-  * `LieSubmodule.wellFounded_of_noetherian`
-  * `LieSubmodule.lieSpan`
-  * `LieSubmodule.map`
-  * `LieSubmodule.comap`
+* `LieSubmodule`
+* `LieSubmodule.wellFounded_of_noetherian`
+* `LieSubmodule.lieSpan`
+* `LieSubmodule.map`
+* `LieSubmodule.comap`
 
 ## Tags
 

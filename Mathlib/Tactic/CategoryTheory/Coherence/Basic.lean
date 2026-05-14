@@ -16,6 +16,7 @@ public meta import Mathlib.Tactic.ToDual
 
 This file provides the function `BicategoryLike.main` for proving equalities in monoidal categories
 and bicategories. Using `main`, we will define the following tactics:
+
 - `monoidal` at `Mathlib/Tactic/CategoryTheory/Monoidal/Basic.lean`
 - `bicategory` at `Mathlib/Tactic/CategoryTheory/Bicategory/Basic.lean`
 

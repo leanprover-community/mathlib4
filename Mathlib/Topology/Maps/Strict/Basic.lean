@@ -23,12 +23,14 @@ is a homeomorphism if and only if `f` is strict. This provides a natural
 generalization of quotient maps to non-surjective maps.
 
 Many important classes of maps are automatically continuous strict maps, including:
+
 - continuous open maps (`IsOpenMap.isStrictMap`);
 - continuous closed maps (`IsClosedMap.isStrictMap`).
 
 ## Equivalent characterizations
 
 We provide several equivalent ways to characterize a strict map `f`:
+
 * `Topology.isStrictMap_iff_isHomeomorph_quotientKerEquivRange`: `f` is strict if and only if
   the canonical bijection `Quotient (Setoid.ker f) ≃ Set.range f` is a homeomorphism.
 * `Topology.isStrictMap_iff_isEmbedding_kerLift`: `f` is strict if and only if

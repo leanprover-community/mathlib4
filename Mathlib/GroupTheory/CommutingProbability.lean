@@ -13,12 +13,15 @@ public import Mathlib.Tactic.Qify
 
 /-!
 # Commuting Probability
+
 This file introduces the commuting probability of finite groups.
 
 ## Main definitions
+
 * `commProb`: The commuting probability of a finite type with a multiplication operation.
 
 ## TODO
+
 * Neumann's theorem.
 -/
 

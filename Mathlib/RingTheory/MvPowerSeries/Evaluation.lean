@@ -28,9 +28,10 @@ It `f` is (the coercion of) a polynomial, it coincides with the evaluation of th
 Otherwise, it is defined by density from polynomials;
 its values are irrelevant unless `φ` is continuous and `a` satisfies two conditions
 bundled in `MvPowerSeries.HasEval a` :
-  - for all `s : σ`, `a s` is topologically nilpotent,
-    meaning that `(a s) ^ n` tends to 0 when `n` tends to infinity
-  - when `a s` tends to zero for the filter of cofinite subsets of `σ`.
+
+- for all `s : σ`, `a s` is topologically nilpotent,
+  meaning that `(a s) ^ n` tends to 0 when `n` tends to infinity
+- when `a s` tends to zero for the filter of cofinite subsets of `σ`.
 
 Under `Continuous φ` and `HasEval a`, the following lemmas furnish the properties of evaluation:
 

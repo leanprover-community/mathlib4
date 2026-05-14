@@ -24,6 +24,7 @@ This file constructs L-functions as formal Dirichlet series.
 ## Implementation notes
 
 We take the following route from polynomials to L-functions:
+
 * Starting from a polynomial in `T`, `PowerSeries.invOfUnit` gives the reciporical power series.
 * `ofPowerSeries` gives the local Euler factor as a formal Dirichlet series on powers of `q`.
 * `eulerProduct` gives the L-function as the formal product of these local Euler factors.
@@ -33,15 +34,18 @@ For example, the Riemann zeta function `ζ(s)` corresponds to taking `1 - T` at 
 
 For context, here is a diagram of the possible routes from polynomials to L-functions:
 
-                   T=q⁻ˢ                     s ∈ ℂ
+```
+               T=q⁻ˢ                     s ∈ ℂ
+```
+
 [polynomials in T] ----> [polynomials in q⁻ˢ] ----> [analytic function in s]
-          |                           |                           |
-          | (reciprocal)              | (reciprocal)              | (reciprocal)
-          v         T=q⁻ˢ             V          s ∈ ℂ            V
+| | |
+| (reciprocal) | (reciprocal) | (reciprocal)
+v T=q⁻ˢ V s ∈ ℂ V
 [power series in T] ----> [power series in q⁻ˢ] ----> [analytic function in s] (the Euler factor)
-          |                           |                           |
-          | (product)                 | (product)                 | (product)
-          v                 T=q⁻ˢ     V               s ∈ ℂ       V
+| | |
+| (product) | (product) | (product)
+v T=q⁻ˢ V s ∈ ℂ V
 [multivariate power series] ----> [Dirichlet series] ----> [L-function in s] (the Euler product)
 -/
 

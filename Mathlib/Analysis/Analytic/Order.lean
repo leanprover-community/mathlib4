@@ -105,8 +105,7 @@ lemma AnalyticAt.analyticOrderNatAt_eq_iff (hf : AnalyticAt 𝕜 f z₀) (hf' : 
       ∃ (g : 𝕜 → E), AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧ ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ n • g z := by
   simp [← Nat.cast_inj (R := ℕ∞), Nat.cast_analyticOrderNatAt hf', hf.analyticOrderAt_eq_natCast]
 
-/-- The order of an analytic function `f` at `z₀` is finite iff `f` can locally be written as `f z =
-  (z - z₀) ^ analyticOrderNatAt f z₀ • g z`, where `g` is analytic and does not vanish at `z₀`.
+/-- The order of an analytic function `f` at `z₀` is finite iff `f` can locally be written as `f z =   (z - z₀) ^ analyticOrderNatAt f z₀ • g z`, where `g` is analytic and does not vanish at `z₀`.
 
 See `MeromorphicNFAt.order_eq_zero_iff` for an analogous statement about meromorphic functions in
 normal form.

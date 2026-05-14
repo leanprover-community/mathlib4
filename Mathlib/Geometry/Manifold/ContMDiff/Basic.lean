@@ -11,6 +11,7 @@ public import Mathlib.Geometry.Manifold.ContMDiff.Defs
 ## Basic properties of `C^n` functions between manifolds
 
 In this file, we show that standard operations on `C^n` maps between manifolds are `C^n` :
+
 * `ContMDiffOn.comp` gives the invariance of the `Cⁿ` property under composition
 * `contMDiff_id` gives the smoothness of the identity
 * `contMDiff_const` gives the smoothness of constant functions
@@ -19,6 +20,7 @@ In this file, we show that standard operations on `C^n` maps between manifolds a
   embedding `e : M → H`, then `e` is `C^n`.
 
 ## Tags
+
 chain rule, manifolds, higher derivative
 
 -/

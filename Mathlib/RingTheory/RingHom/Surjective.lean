@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.LocalProperties.Basic
 
 Let `R` be a commutative ring, `M` be a submonoid of `R`.
 
-* `surjective_localizationPreserves` :  `M⁻¹R →+* M⁻¹S` is surjective if `R →+* S` is surjective.
+* `surjective_localizationPreserves` : `M⁻¹R →+* M⁻¹S` is surjective if `R →+* S` is surjective.
 * `surjective_ofLocalizationSpan` : `R →+* S` is surjective if there exists a set `{ r }` that
   spans `R` such that `Rᵣ →+* Sᵣ` is surjective.
 * `surjective_localRingHom_of_surjective` : A surjective ring homomorphism `R →+* S` induces a
@@ -66,7 +66,7 @@ theorem surjective_localizationPreserves :
   rw [IsLocalization.map_mk']
 
 /-- `R →+* S` is surjective if there exists a set `{ r }` that spans `R` such that
-  `Rᵣ →+* Sᵣ` is surjective. -/
+`Rᵣ →+* Sᵣ` is surjective. -/
 theorem surjective_ofLocalizationSpan : OfLocalizationSpan surjective := by
   introv R e H
   rw [← Set.range_eq_univ, Set.eq_univ_iff_forall]

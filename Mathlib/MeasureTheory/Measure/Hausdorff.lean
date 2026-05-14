@@ -22,6 +22,7 @@ the Hausdorff measure `μH[d] s` of `s` is defined as `⨆ δ > 0, μ d δ s`. B
 `MeasureTheory.OuterMeasure.IsMetric.borel_le_caratheodory`, this is a Borel measure on `X`.
 
 The value of `μH[d]`, `d > 0`, on a set `s` (measurable or not) is given by
+
 ```
 μH[d] s = ⨆ (r : ℝ≥0∞) (hr : 0 < r), ⨅ (t : ℕ → Set X) (hts : s ⊆ ⋃ n, t n)
     (ht : ∀ n, ediam (t n) ≤ r), ∑' n, ediam (t n) ^ d
@@ -60,8 +61,7 @@ measures.
 * `MeasureTheory.Measure.hausdorffMeasure` a.k.a. `μH[d]`: the `d`-dimensional Hausdorff measure.
   There are many definitions of the Hausdorff measure that differ from each other by a
   multiplicative constant. We put
-  `μH[d] s = ⨆ r > 0, ⨅ (t : ℕ → Set X) (hts : s ⊆ ⋃ n, t n) (ht : ∀ n, ediam (t n) ≤ r),
-    ∑' n, ⨆ (ht : ¬Set.Subsingleton (t n)), (ediam (t n)) ^ d`,
+  `μH[d] s = ⨆ r > 0, ⨅ (t : ℕ → Set X) (hts : s ⊆ ⋃ n, t n) (ht : ∀ n, ediam (t n) ≤ r),   ∑' n, ⨆ (ht : ¬Set.Subsingleton (t n)), (ediam (t n)) ^ d`,
   see `MeasureTheory.Measure.hausdorffMeasure_apply`. In the most interesting case `0 < d` one
   can omit the `⨆ (ht : ¬Set.Subsingleton (t n))` part.
 

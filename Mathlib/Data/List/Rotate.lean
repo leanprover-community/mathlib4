@@ -358,7 +358,7 @@ section IsRotated
 variable (l l' : List α)
 
 /-- `IsRotated l₁ l₂` or `l₁ ~r l₂` asserts that `l₁` and `l₂` are cyclic permutations
-  of each other. This is defined by claiming that `∃ n, l.rotate n = l'`. -/
+of each other. This is defined by claiming that `∃ n, l.rotate n = l'`. -/
 def IsRotated : Prop :=
   ∃ n, l.rotate n = l'
 

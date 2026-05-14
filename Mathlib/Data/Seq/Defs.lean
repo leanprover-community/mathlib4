@@ -59,8 +59,8 @@ def IsSeq {α : Type u} (s : Stream' (Option α)) : Prop :=
   ∀ {n : ℕ}, s n = none → s (n + 1) = none
 
 /-- `Seq α` is the type of possibly infinite lists (referred here as sequences).
-  It is encoded as an infinite stream of options such that if `f n = none`, then
-  `f m = none` for all `m ≥ n`. -/
+It is encoded as an infinite stream of options such that if `f n = none`, then
+`f m = none` for all `m ≥ n`. -/
 def Seq (α : Type u) : Type u :=
   { f : Stream' (Option α) // f.IsSeq }
 
@@ -182,7 +182,7 @@ def tail (s : Seq α) : Seq α :=
     exact al n'⟩
 
 /-- Destructor for a sequence, resulting in either `none` (for `nil`) or
-  `some (a, s)` (for `cons a s`). -/
+`some (a, s)` (for `cons a s`). -/
 def destruct (s : Seq α) : Option (Seq1 α) :=
   (fun a' => (a', s.tail)) <$> get? s 0
 
@@ -286,7 +286,7 @@ def Corec.f (f : β → Option (α × β)) : Option β → Option α × Option �
     | some (a, b') => (some a, some b')
 
 /-- Corecursor for `Seq α` as a coinductive type. Iterates `f` to produce new elements
-  of the sequence until `none` is obtained. -/
+of the sequence until `none` is obtained. -/
 def corec (f : β → Option (α × β)) (b : β) : Seq α := by
   refine ⟨Stream'.corec' (Corec.f f) (some b), fun {n} h => ?_⟩
   rw [Stream'.corec'_eq]
@@ -596,8 +596,8 @@ instance coeStream : Coe (Stream' α) (Seq α) :=
 section MLList
 
 /-- Embed a `MLList α` as a sequence. Note that even though this
-  is non-meta, it will produce infinite sequences if used with
-  cyclic `MLList`s created by meta constructions. -/
+is non-meta, it will produce infinite sequences if used with
+cyclic `MLList`s created by meta constructions. -/
 def ofMLList : MLList Id α → Seq α :=
   corec fun l =>
     match l.uncons with
@@ -617,7 +617,7 @@ unsafe def toMLList : Seq α → MLList Id α
 end MLList
 
 /-- Translate a sequence to a list. This function will run forever if
-  run on an infinite sequence. -/
+run on an infinite sequence. -/
 unsafe def forceToList (s : Seq α) : List α :=
   (toMLList s).force
 
@@ -638,14 +638,14 @@ def toStream (s : Seq α) (h : ¬s.Terminates) : Stream' α := fun n =>
   Option.get _ <| not_terminates_iff.1 h n
 
 /-- Convert a sequence into either a list or a stream depending on whether
-  it is finite or infinite. (Without decidability of the infiniteness predicate,
-  this is not constructively possible.) -/
+it is finite or infinite. (Without decidability of the infiniteness predicate,
+this is not constructively possible.) -/
 def toListOrStream (s : Seq α) [Decidable s.Terminates] : List α ⊕ Stream' α :=
   if h : s.Terminates then Sum.inl (toList s h) else Sum.inr (toStream s h)
 
 /-- Convert a sequence into a list, embedded in a computation to allow for
-  the possibility of infinite sequences (in which case the computation
-  never returns anything). -/
+the possibility of infinite sequences (in which case the computation
+never returns anything). -/
 def toList' {α} (s : Seq α) : Computation (List α) :=
   @Computation.corec (List α) (List α × Seq α)
     (fun ⟨l, s⟩ =>
@@ -659,7 +659,7 @@ def toList' {α} (s : Seq α) : Computation (List α) :=
 -/
 
 /-- Append two sequences. If `s₁` is infinite, then `s₁ ++ s₂ = s₁`,
-  otherwise it puts `s₂` at the location of the `nil` in `s₁`. -/
+otherwise it puts `s₂` at the location of the `nil` in `s₁`. -/
 def append (s₁ s₂ : Seq α) : Seq α :=
   @corec α (Seq α × Seq α)
     (fun ⟨s₁, s₂⟩ =>
@@ -679,9 +679,9 @@ def map (f : α → β) : Seq α → Seq β
       · contradiction⟩
 
 /-- Flatten a sequence of sequences. (It is required that the
-  sequences be nonempty to ensure productivity; in the case
-  of an infinite sequence of `nil`, the first element is never
-  generated.) -/
+sequences be nonempty to ensure productivity; in the case
+of an infinite sequence of `nil`, the first element is never
+generated.) -/
 def join : Seq (Seq1 α) → Seq α :=
   corec fun S =>
     match destruct S with
@@ -699,7 +699,7 @@ def drop (s : Seq α) : ℕ → Seq α
   | n + 1 => tail (drop s n)
 
 /-- Split a sequence at `n`, producing a finite initial segment
-  and an infinite tail. -/
+and an infinite tail. -/
 def splitAt : ℕ → Seq α → List α × Seq α
   | 0, s => ([], s)
   | n + 1, s =>
@@ -757,9 +757,11 @@ def set (s : Seq α) (n : ℕ) (a : α) : Seq α :=
 /--
 `Pairwise R s` means that all the elements with earlier indices are
 `R`-related to all the elements with later indices.
+
 ```
 Pairwise R [1, 2, 3] ↔ R 1 2 ∧ R 1 3 ∧ R 2 3
 ```
+
 For example if `R = (· ≠ ·)` then it asserts `s` has no duplicates,
 and if `R = (· < ·)` then it asserts that `s` is (strictly) sorted.
 -/

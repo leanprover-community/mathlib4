@@ -22,6 +22,7 @@ and the integers modulo powers of `p`, `ℤ/p^nℤ`, implemented as `ZMod (p^n)`
 We show that `ℤ_[p]` has a ring homomorphism to `ℤ/p^nℤ` for each `n`.
 The case for `n = 1` is handled separately, since it is used in the general construction
 and we may want to use it without the `^1` getting in the way.
+
 * `PadicInt.toZMod`: ring homomorphism to `ℤ/pℤ`, implemented as `ZMod p`.
 * `PadicInt.toZModPow`: ring homomorphism to `ℤ/p^nℤ`, implemented as `ZMod (p^n)`.
 * `PadicInt.ker_toZMod` / `PadicInt.ker_toZModPow`: the kernels of these maps are the ideals
@@ -31,6 +32,7 @@ and we may want to use it without the `^1` getting in the way.
 We also establish the universal property of `ℤ_[p]` as a projective limit.
 Given a family of compatible ring homomorphisms `f_k : R → ℤ/p^nℤ`,
 there is a unique limit `R → ℤ_[p]`
+
 * `PadicInt.lift`: the limit function
 * `PadicInt.lift_spec` / `PadicInt.lift_unique`: the universal property
 

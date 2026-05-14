@@ -24,10 +24,10 @@ the definitions in Lenstra's notes (see below for a reference).
 ## Main definitions
 
 * `PreGaloisCategory` : defining properties of Galois categories not involving a fiber functor
-* `FiberFunctor`      : a fiber functor from a `PreGaloisCategory` to `FintypeCat`
-* `GaloisCategory`    : a `PreGaloisCategory` that admits a `FiberFunctor`
-* `IsConnected`       : an object of a category is connected if it is not initial
-                        and does not have non-trivial subobjects
+* `FiberFunctor` : a fiber functor from a `PreGaloisCategory` to `FintypeCat`
+* `GaloisCategory` : a `PreGaloisCategory` that admits a `FiberFunctor`
+* `IsConnected` : an object of a category is connected if it is not initial
+  and does not have non-trivial subobjects
 
 Any fiber functor `F` induces an equivalence with the category of finite, discrete `Aut F`-types.
 This is proven in `Mathlib/CategoryTheory/Galois/Equivalence.lean`.

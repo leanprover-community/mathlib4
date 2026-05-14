@@ -67,8 +67,7 @@ namespace ClosedSubmodule
 variable {H : Type*} [NormedAddCommGroup H] [ipc : InnerProductSpace ℂ H]
 
 /-- `H` as a real Hilbert space. This instance is declared inside `ClosedSubmodule` namespace. If
-one needs this structure (for example when considering standard subspaces), one should just `open
-ClosedSubmodule` and not declare another instance. -/
+one needs this structure (for example when considering standard subspaces), one should just `open ClosedSubmodule` and not declare another instance. -/
 noncomputable scoped instance : InnerProductSpace ℝ H where
   inner x y := ⟪x, y⟫.re
   norm_sq_eq_re_inner := by simp [RCLike.re_to_real, ipc.norm_sq_eq_re_inner]

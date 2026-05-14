@@ -57,7 +57,7 @@ theorem xgcdAux_rec {r s t r' s' t'} (h : 0 < r) :
   rfl
 
 /-- Use the extended GCD algorithm to generate the `a` and `b` values
-  satisfying `gcd x y = x * a + y * b`. -/
+satisfying `gcd x y = x * a + y * b`. -/
 def xgcd (x y : ℕ) : ℤ × ℤ :=
   (xgcdAux x 1 0 y 0 1).2
 

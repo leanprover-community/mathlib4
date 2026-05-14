@@ -31,7 +31,7 @@ of `i` as there are items in the `i`th box.
 
 The "stars and bars" technique arises from another way of presenting the same problem. Instead of
 putting `k` items into `n` boxes, we take a row of `k` items (the "stars") and separate them by
-inserting `n-1` dividers (the "bars").  For example, the pattern `*|||**|*|` exhibits 4 items
+inserting `n-1` dividers (the "bars"). For example, the pattern `*|||**|*|` exhibits 4 items
 distributed into 6 boxes -- note that any box, including the first and last, may be empty.
 Such arrangements of `k` stars and `n-1` bars are in 1-1 correspondence with multisets of size `k`
 over an alphabet of size `n`, and are counted by `choose (n + k - 1) k`.
@@ -46,7 +46,6 @@ multisets of size `k` over `α`. Thus the statement that these are counted by `m
 `Sym.card_sym_eq_multichoose : card (Sym α k) = multichoose (card α) k`
 while the "stars and bars" technique gives
 `Sym.card_sym_eq_choose : card (Sym α k) = choose (card α + k - 1) k`
-
 
 ## Tags
 

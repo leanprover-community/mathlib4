@@ -22,10 +22,10 @@ For `S` an `R`-algebra, consider the following commutative diagram with exact ro
 `R`-linear maps `f₁` `f₂` `i₁` `i₂` `i₃` and `S`-linear maps `g₁` `g₂`.
 
 M₁ --f₁--> M₂ --f₂--> M₃
-|          |          |
-i₁         i₂         i₃
-|          |          |
-v          v          v
+| | |
+i₁ i₂ i₃
+| | |
+v v v
 N₁ --g₁--> N₂ --g₂--> N₃
 
 * `IsBaseChange.of_left_exact` : If `S` is flat over `R`, `f₁` and `g₁` are injective,

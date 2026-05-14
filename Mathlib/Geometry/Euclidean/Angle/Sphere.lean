@@ -107,7 +107,7 @@ theorem angle_eq_pi_div_two_iff_mem_sphere_ofDiameter {p₁ p₂ p₃ : P} :
 alias thales_theorem := angle_eq_pi_div_two_iff_mem_sphere_of_isDiameter
 
 /-- Converse of Thales' theorem in 2D: if three distinct points on a circle
-    form a right angle, then the chord is a diameter. -/
+form a right angle, then the chord is a diameter. -/
 theorem isDiameter_of_angle_eq_pi_div_two {p₁ p₂ p₃ : P} {s : Sphere P}
     [Fact (finrank ℝ V = 2)]
     (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (hp₃ : p₃ ∈ s)

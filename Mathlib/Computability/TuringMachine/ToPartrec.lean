@@ -124,6 +124,7 @@ prove that only finitely many labels are accessible.) The labels are:
 
 In addition to these basic states, we define some additional subroutines that are used in the
 above:
+
 * `push'`, `peek'`, `pop'` are special versions of the builtins that use the local store to supply
   inputs and outputs.
 * `unrev`: special case `move false rev main` to move everything from `rev` back to `main`. Used as

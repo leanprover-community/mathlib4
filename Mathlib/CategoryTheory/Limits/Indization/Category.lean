@@ -28,6 +28,7 @@ reinterpret them in terms of `Ind C`.
 Adopting the theorem numbering of [Kashiwara2006], we show the following properties:
 
 Limits:
+
 * If `C` has products indexed by `α`, then `Ind C` has products indexed by `α`, and the functor
   `Ind C ⥤ Cᵒᵖ ⥤ Type v` creates such products (6.1.17),
 * if `C` has equalizers, then `Ind C` has equalizers, and the functor `Ind C ⥤ Cᵒᵖ ⥤ Type v`
@@ -37,6 +38,7 @@ Limits:
 * the functor `C ⥤ Ind C` preserves small limits (6.1.17).
 
 Colimits:
+
 * `Ind C` has filtered colimits (6.1.8), and the functor `Ind C ⥤ Cᵒᵖ ⥤ Type v` preserves filtered
   colimits,
 * if `C` has coproducts indexed by a finite type `α`, then `Ind C` has coproducts indexed by `α`
@@ -47,11 +49,13 @@ Colimits:
 * `C ⥤ Ind C` preserves finite colimits (6.1.6),
 
 Note that:
+
 * the functor `Ind C ⥤ Cᵒᵖ ⥤ Type v` does not preserve any kind of colimit in general except for
   filtered colimits and
 * the functor `C ⥤ Ind C` preserves finite colimits, but not infinite colimits in general.
 
 ## References
+
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Chapter 6
 -/
 

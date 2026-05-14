@@ -13,6 +13,7 @@ public import Mathlib.Tactic.Linarith
 # Behaviour of the total complex with respect to shifts
 
 There are two ways to shift objects in `HomologicalComplex₂ C (up ℤ) (up ℤ)`:
+
 * by shifting the first indices (and changing signs of horizontal differentials),
   which corresponds to the shift by `ℤ` on `CochainComplex (CochainComplex C ℤ) ℤ`.
 * by shifting the second indices (and changing signs of vertical differentials).

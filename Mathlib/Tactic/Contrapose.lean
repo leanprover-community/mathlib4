@@ -60,6 +60,7 @@ turns it into `⊢ ¬ P ↔ ¬ Q`.
   * `contrapose! +distrib` rewrites `¬ (p ∧ q)` into `¬ p ∨ ¬ q` instead of `p → ¬ q`.
 
 Examples:
+
 ```lean4
 variables (P Q R : Prop)
 

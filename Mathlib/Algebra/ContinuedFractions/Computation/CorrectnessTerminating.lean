@@ -55,6 +55,7 @@ open GenContFract (of)
 variable {K : Type*} [Field K] [LinearOrder K] {v : K} {n : ℕ}
 
 /-- Given two continuants `pconts` and `conts` and a value `fr`, this function returns
+
 - `conts.a / conts.b` if `fr = 0`
 - `exactConts.a / exactConts.b` where `exactConts = nextConts 1 fr⁻¹ pconts conts`
   otherwise.
@@ -92,6 +93,7 @@ The correctness might be seen more readily if one uses `convs'` to evaluate the 
 fraction. Here is an example to illustrate the idea:
 
 Let `(v : ℚ) := 3.4`. We have
+
 - `GenContFract.IntFractPair.stream v 0 = some ⟨3, 0.4⟩`, and
 - `GenContFract.IntFractPair.stream v 1 = some ⟨2, 0.5⟩`.
 

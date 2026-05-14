@@ -113,6 +113,7 @@ fact that the type(s) of `x` and `y` are *subsingletons* (a type with exactly ze
 If `subsingleton` cannot close the goal, it fails.
 
 Techniques the `subsingleton` tactic can apply:
+
 - proof irrelevance
 - heterogeneous proof irrelevance (via `proof_irrel_heq`)
 - using `Subsingleton` (via `Subsingleton.elim`)

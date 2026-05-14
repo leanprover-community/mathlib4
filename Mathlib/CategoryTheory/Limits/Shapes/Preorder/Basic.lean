@@ -12,6 +12,7 @@ public import Mathlib.CategoryTheory.Limits.Preorder
 
 In this file, we obtain the following very basic results
 about limits and colimits indexed by a preordered type `J`:
+
 * a least element in `J` implies the existence of all limits indexed by `J`
 * a greatest element in `J` implies the existence of all colimits indexed by `J`
 

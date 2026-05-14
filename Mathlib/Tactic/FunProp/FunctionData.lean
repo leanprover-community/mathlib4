@@ -189,9 +189,10 @@ def FunctionData.isMorApplication (f : FunctionData) : MetaM MorApplication := d
 /-- Decomposes `fun x ↦ f y₁ ... yₙ` into `(fun g ↦ g yₙ) ∘ (fun x y ↦ f y₁ ... yₙ₋₁ y)`
 
 Returns none if:
-  - `n=0`
-  - `yₙ` contains `x`
-  - `n=1` and `(fun x y ↦ f y)` is identity function i.e. `x=f` -/
+
+- `n=0`
+- `yₙ` contains `x`
+- `n=1` and `(fun x y ↦ f y)` is identity function i.e. `x=f` -/
 def FunctionData.peeloffArgDecomposition (fData : FunctionData) : MetaM (Option (Expr × Expr)) := do
   unless fData.args.size > 0 do return none
   withLCtx fData.lctx fData.insts do
@@ -266,6 +267,7 @@ def FunctionData.nontrivialDecomposition (fData : FunctionData) : MetaM (Option 
 /-- Decompose function `fun x ↦ f y₁ ... yₙ` over specified argument indices `#[i, j, ...]`.
 
 The result is:
+
 ```
 (fun (yᵢ',yⱼ',...) ↦ f y₁ .. yᵢ' .. yⱼ' .. yₙ) ∘ (fun x ↦ (yᵢ, yⱼ, ...))
 ```

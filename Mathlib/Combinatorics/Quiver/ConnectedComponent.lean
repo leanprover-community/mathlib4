@@ -17,6 +17,7 @@ the relation which identifies `a` with `b` if there is a path from `a` to `b` in
 (These zigzags can be seen as a proof-relevant analogue of `EqvGen`.)
 
 We define:
+
 * `Quiver.IsStronglyConnected V`: every pair of vertices is connected by a (possibly empty) path.
 * `Quiver.IsSStronglyConnected V`: every pair of vertices is connected by a path of positive length.
 * `Quiver.StronglyConnectedComponent V`: the quotient by the equivalence relation “paths in both

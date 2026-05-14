@@ -13,6 +13,7 @@ public import Mathlib.CategoryTheory.HomCongr
 # Conjugate morphisms by isomorphisms
 
 An isomorphism `α : X ≅ Y` defines
+
 - a monoid isomorphism
   `CategoryTheory.Iso.conj : End X ≃* End Y` by `α.conj f = α.inv ≫ f ≫ α.hom`;
 - a group isomorphism `CategoryTheory.Iso.conjAut : Aut X ≃* Aut Y` by
@@ -20,7 +21,7 @@ An isomorphism `α : X ≅ Y` defines
   using
   `CategoryTheory.Iso.homCongr : (X ≅ X₁) → (Y ≅ Y₁) → (X ⟶ Y) ≃ (X₁ ⟶ Y₁)`
   and `CategoryTheory.Iso.isoCongr : (f : X₁ ≅ X₂) → (g : Y₁ ≅ Y₂) → (X₁ ≅ Y₁) ≃ (X₂ ≅ Y₂)`
-  which are defined in  `CategoryTheory.HomCongr`.
+  which are defined in `CategoryTheory.HomCongr`.
 -/
 
 @[expose] public section

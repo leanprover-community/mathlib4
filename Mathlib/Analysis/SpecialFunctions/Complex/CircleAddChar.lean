@@ -14,6 +14,7 @@ public import Mathlib.Topology.Instances.AddCircle.Real
 # Additive characters valued in the unit circle
 
 This file defines additive characters, valued in the unit circle, from either
+
 * the ring `ZMod N` for any non-zero natural `N`,
 * the additive circle `ℝ / T ⬝ ℤ`, for any real `T`.
 

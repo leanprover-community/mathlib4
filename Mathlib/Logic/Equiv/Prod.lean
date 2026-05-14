@@ -16,8 +16,8 @@ focusing on product types.
 
 ## Main definitions
 
-  - `Equiv.prodCongr ea eb : α₁ × β₁ ≃ α₂ × β₂`: combine two equivalences `ea : α₁ ≃ α₂` and
-    `eb : β₁ ≃ β₂` using `Prod.map`.
+- `Equiv.prodCongr ea eb : α₁ × β₁ ≃ α₂ × β₂`: combine two equivalences `ea : α₁ ≃ α₂` and
+  `eb : β₁ ≃ β₂` using `Prod.map`.
 
 ## Tags
 
@@ -292,8 +292,8 @@ theorem sigmaEquivProd_sigmaCongrRight :
   rfl
 
 /-- A variation on `Equiv.prodCongr` where the equivalence in the second component can depend
-  on the first component. A typical example is a shear mapping, explaining the name of this
-  declaration. -/
+on the first component. A typical example is a shear mapping, explaining the name of this
+declaration. -/
 @[simps -fullyApplied]
 def prodShear (e₁ : α₁ ≃ α₂) (e₂ : α₁ → β₁ ≃ β₂) : α₁ × β₁ ≃ α₂ × β₂ where
   toFun := fun x : α₁ × β₁ => (e₁ x.1, e₂ x.1 x.2)
@@ -475,7 +475,7 @@ def piEquivPiSubtypeProd {α : Type*} (p : α → Prop) (β : α → Type*) [Dec
   left_inv f := by grind
 
 /-- A product of types can be split as the binary product of one of the types and the product
-  of all the remaining types. -/
+of all the remaining types. -/
 @[simps]
 def piSplitAt {α : Type*} [DecidableEq α] (i : α) (β : α → Type*) :
     (∀ j, β j) ≃ β i × ∀ j : { j // j ≠ i }, β j where
@@ -485,7 +485,7 @@ def piSplitAt {α : Type*} [DecidableEq α] (i : α) (β : α → Type*) :
   left_inv f := by grind
 
 /-- A product of copies of a type can be split as the binary product of one copy and the product
-  of all the remaining copies. -/
+of all the remaining copies. -/
 @[simps!]
 def funSplitAt {α : Type*} [DecidableEq α] (i : α) (β : Type*) :
     (α → β) ≃ β × ({ j // j ≠ i } → β) :=

@@ -36,40 +36,40 @@ file `Mathlib/MeasureTheory/Integral/SetToL1.lean`).
 1. Basic properties of the Bochner integral on functions of type `α → E`, where `α` is a measure
    space and `E` is a real normed space.
 
-  * `integral_zero`                  : `∫ 0 ∂μ = 0`
-  * `integral_add`                   : `∫ x, f x + g x ∂μ = ∫ x, f ∂μ + ∫ x, g x ∂μ`
-  * `integral_neg`                   : `∫ x, - f x ∂μ = - ∫ x, f x ∂μ`
-  * `integral_sub`                   : `∫ x, f x - g x ∂μ = ∫ x, f x ∂μ - ∫ x, g x ∂μ`
-  * `integral_smul`                  : `∫ x, r • f x ∂μ = r • ∫ x, f x ∂μ`
-  * `integral_congr_ae`              : `f =ᵐ[μ] g → ∫ x, f x ∂μ = ∫ x, g x ∂μ`
-  * `norm_integral_le_integral_norm` : `‖∫ x, f x ∂μ‖ ≤ ∫ x, ‖f x‖ ∂μ`
+* `integral_zero` : `∫ 0 ∂μ = 0`
+* `integral_add` : `∫ x, f x + g x ∂μ = ∫ x, f ∂μ + ∫ x, g x ∂μ`
+* `integral_neg` : `∫ x, - f x ∂μ = - ∫ x, f x ∂μ`
+* `integral_sub` : `∫ x, f x - g x ∂μ = ∫ x, f x ∂μ - ∫ x, g x ∂μ`
+* `integral_smul` : `∫ x, r • f x ∂μ = r • ∫ x, f x ∂μ`
+* `integral_congr_ae` : `f =ᵐ[μ] g → ∫ x, f x ∂μ = ∫ x, g x ∂μ`
+* `norm_integral_le_integral_norm` : `‖∫ x, f x ∂μ‖ ≤ ∫ x, ‖f x‖ ∂μ`
 
 2. Basic order properties of the Bochner integral on functions of type `α → E`, where `α` is a
    measure space and `E` is a real ordered Banach space.
 
-  * `integral_nonneg_of_ae` : `0 ≤ᵐ[μ] f → 0 ≤ ∫ x, f x ∂μ`
-  * `integral_nonpos_of_ae` : `f ≤ᵐ[μ] 0 → ∫ x, f x ∂μ ≤ 0`
-  * `integral_mono_ae`      : `f ≤ᵐ[μ] g → ∫ x, f x ∂μ ≤ ∫ x, g x ∂μ`
-  * `integral_nonneg`       : `0 ≤ f → 0 ≤ ∫ x, f x ∂μ`
-  * `integral_nonpos`       : `f ≤ 0 → ∫ x, f x ∂μ ≤ 0`
-  * `integral_mono`         : `f ≤ᵐ[μ] g → ∫ x, f x ∂μ ≤ ∫ x, g x ∂μ`
+* `integral_nonneg_of_ae` : `0 ≤ᵐ[μ] f → 0 ≤ ∫ x, f x ∂μ`
+* `integral_nonpos_of_ae` : `f ≤ᵐ[μ] 0 → ∫ x, f x ∂μ ≤ 0`
+* `integral_mono_ae` : `f ≤ᵐ[μ] g → ∫ x, f x ∂μ ≤ ∫ x, g x ∂μ`
+* `integral_nonneg` : `0 ≤ f → 0 ≤ ∫ x, f x ∂μ`
+* `integral_nonpos` : `f ≤ 0 → ∫ x, f x ∂μ ≤ 0`
+* `integral_mono` : `f ≤ᵐ[μ] g → ∫ x, f x ∂μ ≤ ∫ x, g x ∂μ`
 
 3. Propositions connecting the Bochner integral with the integral on `ℝ≥0∞`-valued functions,
    which is called `lintegral` and has the notation `∫⁻`.
 
-  * `integral_eq_lintegral_pos_part_sub_lintegral_neg_part` :
-    `∫ x, f x ∂μ = ∫⁻ x, f⁺ x ∂μ - ∫⁻ x, f⁻ x ∂μ`,
-    where `f⁺` is the positive part of `f` and `f⁻` is the negative part of `f`.
-  * `integral_eq_lintegral_of_nonneg_ae`          : `0 ≤ᵐ[μ] f → ∫ x, f x ∂μ = ∫⁻ x, f x ∂μ`
+* `integral_eq_lintegral_pos_part_sub_lintegral_neg_part` :
+  `∫ x, f x ∂μ = ∫⁻ x, f⁺ x ∂μ - ∫⁻ x, f⁻ x ∂μ`,
+  where `f⁺` is the positive part of `f` and `f⁻` is the negative part of `f`.
+* `integral_eq_lintegral_of_nonneg_ae` : `0 ≤ᵐ[μ] f → ∫ x, f x ∂μ = ∫⁻ x, f x ∂μ`
 
 4. (In the file `Mathlib/MeasureTheory/Integral/DominatedConvergence.lean`)
-  `tendsto_integral_of_dominated_convergence` : the Lebesgue dominated convergence theorem
+   `tendsto_integral_of_dominated_convergence` : the Lebesgue dominated convergence theorem
 
 5. (In `Mathlib/MeasureTheory/Integral/Bochner/Set.lean`) integration commutes with continuous
-  linear maps.
+   linear maps.
 
-  * `ContinuousLinearMap.integral_comp_comm`
-  * `LinearIsometry.integral_comp_comm`
+* `ContinuousLinearMap.integral_comp_comm`
+* `LinearIsometry.integral_comp_comm`
 
 ## Notes
 
@@ -104,12 +104,14 @@ functions :
    like `L1.integral_coe_eq_integral`.
 
 4. Since simple functions are dense in `L¹`,
+
    ```
    univ = closure {s simple}
         = closure {s simple | ∫ s = ∫⁻ s⁺ - ∫⁻ s⁻} : the property holds for all simple functions
         ⊆ closure {f | ∫ f = ∫⁻ f⁺ - ∫⁻ f⁻}
         = {f | ∫ f = ∫⁻ f⁺ - ∫⁻ f⁻} : closure of a closed set is itself
    ```
+
    Use `isClosed_property` or `DenseRange.induction_on` for this argument.
 
 ## Notation
@@ -163,8 +165,8 @@ irreducible_def integral {_ : MeasurableSpace α} (μ : Measure α) (f : α → 
   else 0
 
 /-! In the notation for integrals, an expression like `∫ x, g ‖x‖ ∂μ` will not be parsed correctly,
-  and needs parentheses. We do not set the binding power of `r` to `0`, because then
-  `∫ x, f x = 0` will be parsed incorrectly. -/
+and needs parentheses. We do not set the binding power of `r` to `0`, because then
+`∫ x, f x = 0` will be parsed incorrectly. -/
 
 @[inherit_doc MeasureTheory.integral]
 notation3 "∫ "(...)", "r:60:(scoped f => f)" ∂"μ:70 => integral μ r
@@ -481,7 +483,7 @@ theorem continuous_of_dominated {F : X → α → G} {bound : α → ℝ}
   · simp [integral, hG, continuous_const]
 
 /-- The Bochner integral of a real-valued function `f : α → ℝ` is the difference between the
-  integral of the positive part of `f` and the integral of the negative part of `f`. -/
+integral of the positive part of `f` and the integral of the negative part of `f`. -/
 theorem integral_eq_lintegral_pos_part_sub_lintegral_neg_part {f : α → ℝ} (hf : Integrable f μ) :
     ∫ a, f a ∂μ =
       ENNReal.toReal (∫⁻ a, .ofReal (f a) ∂μ) - ENNReal.toReal (∫⁻ a, .ofReal (-f a) ∂μ) := by

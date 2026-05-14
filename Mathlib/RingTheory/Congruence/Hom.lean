@@ -23,8 +23,10 @@ relations and morphisms for rings and semirings
 ## Main definitions
 
 * `RingCon.ker`: the kernel of a monoid homomorphism as a congruence relation
+
 * `RingCon.lift`, `RingCon.liftₐ`: the homomorphism / the algebra morphism
   on the quotient given that the congruence is in the kernel
+
 * `RingCon.map`, `RingCon.mapₐ`: homomorphism / algebra morphism
   from a smaller to a larger quotient
 
@@ -32,6 +34,7 @@ relations and morphisms for rings and semirings
   `RingCon.quotientKerEquivRangeₐ` :
   the first isomorphism theorem for semirings (using `RingHom.rangeS`),
   rings (using `RingHom.range`) and algebras (using `AlgHom.range`).
+
 * `RingCon.comapQuotientEquivRangeS`, `RingCon.comapQuotientEquivRange`,
   `RingCon.comapQuotientEquivRangeₐ` : the second isomorphism theorem
   for semirings (using `RingHom.rangeS`), rings (using `RingHom.range`)

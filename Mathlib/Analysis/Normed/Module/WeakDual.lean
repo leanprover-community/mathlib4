@@ -33,6 +33,7 @@ We establish the Banach-Alaoglu theorem about the compactness of closed balls in
 
 The first main result concerns the comparison of the operator norm topology on `StrongDual 𝕜 E` and
 the weak-\* topology on (its type synonym) `WeakDual 𝕜 E`:
+
 * `dual_norm_topology_le_weak_dual_topology`: The weak-\* topology on the dual of a normed space is
   coarser (not necessarily strictly) than the operator norm topology.
 * `WeakDual.isCompact_polar` (a version of the Banach-Alaoglu theorem): The polar set of a
@@ -53,13 +54,16 @@ the weak-\* topology on (its type synonym) `WeakDual 𝕜 E`:
 ## Main results
 
 ### Topology comparison
+
 * `NormedSpace.Dual.toWeakDual_continuous`: The weak-\* topology is coarser than the norm topology.
 
 ### Bornology and pointwise bounds
+
 * `WeakDual.isBounded_iff_isVonNBounded`: Equivalence of norm and weak-\* boundedness for
   Banach spaces.
 
 ### Compactness and Banach-Alaoglu
+
 * `WeakDual.isCompact_polar`: Polars of neighborhoods of the origin are weak-\* compact.
 * `WeakDual.isCompact_closedBall`: Closed balls are weak-\* compact.
 * `WeakDual.isSeqCompact_closedBall`: Sequential version for separable spaces.
@@ -86,6 +90,7 @@ the weak-\* topology on (its type synonym) `WeakDual 𝕜 E`:
   with the topology of pointwise convergence.
 
 ## TODO
+
 * Add that in finite dimensions, the weak-\* topology and the dual norm topology coincide.
 * Add that in infinite dimensions, the weak-\* topology is strictly coarser than the dual norm
   topology.
@@ -95,7 +100,8 @@ the weak-\* topology on (its type synonym) `WeakDual 𝕜 E`:
   is sequentially compact in the weak-star topology. This would follow from the metrizability above.
 
 ## References
-* https://en.wikipedia.org/wiki/Weak_topology#Weak-*_topology
+
+* https://en.wikipedia.org/wiki/Weak_topology#Weak-\*\_topology
 * https://en.wikipedia.org/wiki/Banach%E2%80%93Alaoglu_theorem
 
 ## Tags

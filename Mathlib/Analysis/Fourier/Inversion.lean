@@ -17,10 +17,7 @@ in `MeasureTheory.Integrable.fourier_inversion`. See also `Continuous.fourier_in
 giving `𝓕⁻ (𝓕 f) = f` under an additional continuity assumption for `f`.
 
 We use the following proof. A naïve computation gives
-`𝓕⁻ (𝓕 f) v
-= ∫_w exp (2 I π ⟪w, v⟫) 𝓕 f (w) dw
-= ∫_w exp (2 I π ⟪w, v⟫) ∫_x, exp (-2 I π ⟪w, x⟫) f x dx) dw
-= ∫_x (∫_ w, exp (2 I π ⟪w, v - x⟫ dw) f x dx `
+`𝓕⁻ (𝓕 f) v = ∫_w exp (2 I π ⟪w, v⟫) 𝓕 f (w) dw = ∫_w exp (2 I π ⟪w, v⟫) ∫_x, exp (-2 I π ⟪w, x⟫) f x dx) dw = ∫_x (∫_ w, exp (2 I π ⟪w, v - x⟫ dw) f x dx `
 
 However, the Fubini step does not make sense for lack of integrability, and the middle integral
 `∫_ w, exp (2 I π ⟪w, v - x⟫ dw` (which one would like to be a Dirac at `v - x`) is not defined.

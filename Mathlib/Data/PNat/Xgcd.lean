@@ -13,6 +13,7 @@ public import Mathlib.Data.PNat.Prime
 
 This file sets up a version of the Euclidean algorithm that only works with natural numbers.
 Given `0 < a, b`, it computes the unique `(w, x, y, z, d)` such that the following identities hold:
+
 * `a = (w + x) d`
 * `b = (y + z) d`
 * `w * z = x * y + 1`
@@ -41,7 +42,7 @@ open Nat
 
 namespace PNat
 
-/-- A term of `XgcdType` is a system of six naturals.  They should
+/-- A term of `XgcdType` is a system of six naturals. They should
 be thought of as representing the matrix
 `[[w, x], [y, z]] = [[wp + 1, x], [y, zp + 1]]`
 together with the vector `[a, b] = [ap + 1, bp + 1]`.
@@ -110,7 +111,7 @@ def qp : ℕ :=
 
 /-- The map `v` gives the product of the matrix
 `[[w, x], [y, z]] = [[wp + 1, x], [y, zp + 1]]`
-and the vector `[a, b] = [ap + 1, bp + 1]`.  The map
+and the vector `[a, b] = [ap + 1, bp + 1]`. The map
 `vp` gives `[sp, tp]` such that `v = [sp + 1, tp + 1]`.
 -/
 def vp : ℕ × ℕ :=
@@ -146,7 +147,7 @@ theorem isSpecial_iff : u.IsSpecial ↔ u.IsSpecial' := by
     rw [← h]; ring
 
 /-- `IsReduced` holds if the two entries in the vector are the
-same.  The reduction algorithm will produce a system with this
+same. The reduction algorithm will produce a system with this
 property, whose product vector is the same as for the original
 system. -/
 def IsReduced : Prop :=
@@ -220,7 +221,7 @@ theorem qp_eq (hr : u.r = 0) : u.q = u.qp + 1 := by
   · exact (Nat.succ_pred_eq_of_pos (Nat.pos_of_ne_zero hq)).symm
 
 /-- The following function provides the starting point for
-our algorithm.  We will apply an iterative reduction process
+our algorithm. We will apply an iterative reduction process
 to it, which will produce a system satisfying IsReduced.
 The gcd can be read off from this final system.
 -/
@@ -266,7 +267,7 @@ equivalently b does not divide a. -/
 def step : XgcdType :=
   XgcdType.mk (u.y * u.q + u.zp) u.y ((u.wp + 1) * u.q + u.x) u.wp u.bp (u.r - 1)
 
-/-- We will apply the above step recursively.  The following result
+/-- We will apply the above step recursively. The following result
 is used to ensure that the process terminates. -/
 theorem step_wf (hr : u.r ≠ 0) : SizeOf.sizeOf u.step < SizeOf.sizeOf u := by
   change u.r - 1 < u.bp
@@ -296,7 +297,7 @@ theorem step_v (hr : u.r ≠ 0) : u.step.v = u.v.swap := by
 step as long as possible, and then applies finish. Note that the
 "have" statement puts a fact in the local context, and the
 equation compiler uses this fact to help construct the full
-definition in terms of well-founded recursion.  The same fact
+definition in terms of well-founded recursion. The same fact
 needs to be introduced in all the inductive proofs of properties
 given below. -/
 def reduce (u : XgcdType) : XgcdType :=

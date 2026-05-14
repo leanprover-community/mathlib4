@@ -16,6 +16,7 @@ public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 
 An outer measure is a function `μ : Set α → ℝ≥0∞`, from the powerset of a type to the extended
 nonnegative real numbers that satisfies the following conditions:
+
 1. `μ ∅ = 0`;
 2. `μ` is monotone;
 3. `μ` is countably subadditive. This means that the outer measure of a countable union is at most

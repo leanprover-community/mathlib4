@@ -60,6 +60,7 @@ def map (f : α → β) {m} : (Fin m → α) → Fin m → β :=
   seq fun _ => f
 
 /-- This can be used to prove
+
 ```lean
 example {f : α → β} (a₁ a₂ : α) : f ∘ ![a₁, a₂] = ![f a₁, f a₂] :=
   (map_eq _ _).symm
@@ -77,6 +78,7 @@ def etaExpand {m} (v : Fin m → α) : Fin m → α :=
   map id v
 
 /-- This can be used to prove
+
 ```lean
 example (a : Fin 2 → α) : a = ![a 0, a 1] :=
   (etaExpand_eq _).symm
@@ -95,6 +97,7 @@ def Forall : ∀ {m} (_ : (Fin m → α) → Prop), Prop
   | _ + 1, P => ∀ x : α, Forall fun v => P (Matrix.vecCons x v)
 
 /-- This can be used to prove
+
 ```lean
 example (P : (Fin 2 → α) → Prop) : (∀ f, P f) ↔ ∀ a₀ a₁, P ![a₀, a₁] :=
   (forall_iff _).symm
@@ -116,6 +119,7 @@ def Exists : ∀ {m} (_ : (Fin m → α) → Prop), Prop
   | _ + 1, P => ∃ x : α, Exists fun v => P (Matrix.vecCons x v)
 
 /-- This can be used to prove
+
 ```lean
 example (P : (Fin 2 → α) → Prop) : (∃ f, P f) ↔ ∃ a₀ a₁, P ![a₀, a₁] :=
   (exists_iff _).symm
@@ -146,6 +150,7 @@ def prod [Mul α] [One α] : ∀ {m} (_ : Fin m → α), α
   | _ + 2, v => prod (fun i => v (Fin.castSucc i)) * v (Fin.last _)
 
 /-- This can be used to prove
+
 ```lean
 example [CommMonoid α] (a : Fin 3 → α) : ∏ i, a i = a 0 * a 1 * a 2 :=
   (prod_eq _).symm
@@ -153,6 +158,7 @@ example [CommMonoid α] (a : Fin 3 → α) : ∏ i, a i = a 0 * a 1 * a 2 :=
 -/
 @[to_additive (attr := simp)
 /-- This can be used to prove
+
 ```lean
 example [AddCommMonoid α] (a : Fin 3 → α) : ∑ i, a i = a 0 + a 1 + a 2 :=
   (sum_eq _).symm

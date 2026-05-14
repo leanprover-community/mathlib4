@@ -27,6 +27,7 @@ to `R` is respectively fully faithful or an equivalence. We show that
 satisfies `F.IsPrestackFor R.arrows` for all covering sieves `R`.
 
 ## TODO (@joelriou, @chrisflav)
+
 * Introduce multiple variants of `DescentData` (when `C` has pullbacks,
   when `F` also has a covariant functoriality, etc.).
 
@@ -256,6 +257,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Given families of morphisms `f : X i ⟶ S` and `f' : X' j ⟶ S'`, suitable
 commutative diagrams `w j : p' j ≫ f (α j) = f' j ≫ p`, this is the natural
 isomorphism between the descent data relative to `f'` that are obtained either:
+
 * by considering the obvious descent data relative to `f` given by an object `M : F.obj (op S)`,
   followed by the application of `pullFunctor F w : F.DescentData f ⥤ F.DescentData f'`;
 * by considering the obvious descent data relative to `f'` given by pulling

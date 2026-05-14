@@ -17,7 +17,7 @@ import Mathlib.Tactic.Attr.Register
 # The category of monoids in a monoidal category.
 
 We define monoids in a monoidal category `C` and show that the category of monoids is equivalent to
-the category of lax monoidal functors from the unit monoidal category to `C`.  We also show that if
+the category of lax monoidal functors from the unit monoidal category to `C`. We also show that if
 `C` is braided, then the category of monoids is naturally monoidal.
 We use the `to_additive` attribute in order to generate a parallel API for additive monoids.
 
@@ -556,10 +556,10 @@ instance : Category (Mon C) where
   id := id
   comp f g := comp f g
 
-/-- Construct a morphism `Mon.mk G ⟶ Mon.mk H` from a  map `f : G ⟶ H` and a `IsMonHom f`
+/-- Construct a morphism `Mon.mk G ⟶ Mon.mk H` from a map `f : G ⟶ H` and a `IsMonHom f`
 instance. -/
 @[to_additive (attr := simps!)
-/-- Construct a morphism `AddMon.mk G ⟶ AddMon.mk H` from a  map `f : G ⟶ H` and a `IsAddMonHom f`
+/-- Construct a morphism `AddMon.mk G ⟶ AddMon.mk H` from a map `f : G ⟶ H` and a `IsAddMonHom f`
 instance. -/]
 def ofHom {A B : C} [MonObj A] [MonObj B] (f : A ⟶ B) [IsMonHom f] : Mon.mk A ⟶ Mon.mk B :=
   .mk f

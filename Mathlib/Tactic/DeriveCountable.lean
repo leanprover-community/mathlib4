@@ -33,12 +33,15 @@ following a pattern similar to the tagged s-expressions used in Scheme/Lisp.
 We develop a little theory to make constructing the injectivity functions very straightforward.
 
 This is easiest to explain by example. Given a type
+
 ```lean
 inductive T (α : Type)
   | a (n : α)
   | b (n m : α) (t : T α)
 ```
+
 the deriving handler constructs the following three declarations:
+
 ```lean
 noncomputable def T.toNat (α : Type) [Countable α] : T α → ℕ
   | a n => Nat.pair 0 (Nat.pair (encode n) 0)

@@ -9,8 +9,8 @@ public import Mathlib.Dynamics.TopologicalEntropy.CoverEntropy
 
 /-!
 # Topological entropy of the image of a set under a semiconjugacy
-Consider two dynamical systems `(X, S)` and `(Y, T)` together with a semiconjugacy `φ`:
 
+Consider two dynamical systems `(X, S)` and `(Y, T)` together with a semiconjugacy `φ`:
 
 ```
 X ---S--> X
@@ -38,10 +38,12 @@ definition of the topological entropy of a subset, so as to avoid working with s
 `coverEntropy_restrict` shows that this choice is coherent with the literature.
 
 ## Implementation notes
+
 We use only the definition of the topological entropy using covers; the simplest version of
 `IsDynCoverOf.image` for nets fails.
 
 ## Main results
+
 - `coverEntropy_image_of_comap`/`coverEntropyInf_image_of_comap`: the entropy of `φ '' F` equals
   the entropy of `F` if `X` is endowed with the pullback by `φ` of the uniform structure of `Y`.
 - `coverEntropy_image_le_of_uniformContinuous`/`coverEntropyInf_image_le_of_uniformContinuous`:
@@ -50,6 +52,7 @@ We use only the definition of the topological entropy using covers; the simplest
   `coverEntropy S F`.
 
 ## Tags
+
 entropy, semiconjugacy
 -/
 
@@ -129,7 +132,7 @@ lemma coverEntropyInfEntourage_image_le (h : Semiconj φ S T) (F : Set X) (V : S
   expGrowthInf_monotone fun n ↦ ENat.toENNReal_mono (coverMincard_image_le h F V n)
 
 /-- The entropy of `φ '' F` equals the entropy of `F` if `X` is endowed with the pullback by `φ`
-  of the uniform structure of `Y`. -/
+of the uniform structure of `Y`. -/
 theorem coverEntropy_image_of_comap (u : UniformSpace Y) {S : X → X} {T : Y → Y} {φ : X → Y}
     (h : Semiconj φ S T) (F : Set X) :
     coverEntropy T (φ '' F) = @coverEntropy X (comap φ u) S F := by
@@ -150,7 +153,7 @@ theorem coverEntropy_image_of_comap (u : UniformSpace Y) {S : X → X} {T : Y �
     exact coverEntropyEntourage_le_coverEntropy T (φ '' F) W_uni
 
 /-- The entropy of `φ '' F` equals the entropy of `F` if `X` is endowed with the pullback by `φ`
-  of the uniform structure of `Y`. This version uses a `liminf`. -/
+of the uniform structure of `Y`. This version uses a `liminf`. -/
 theorem coverEntropyInf_image_of_comap (u : UniformSpace Y) {S : X → X} {T : Y → Y} {φ : X → Y}
     (h : Semiconj φ S T) (F : Set X) :
     coverEntropyInf T (φ '' F) = @coverEntropyInf X (comap φ u) S F := by
@@ -198,7 +201,7 @@ theorem coverEntropy_image_le_of_uniformContinuous [UniformSpace X] [UniformSpac
   exact coverEntropy_antitone S F (uniformContinuous_iff.1 h')
 
 /-- The entropy of `φ '' F` is at most the entropy of `F` if `φ` is uniformly continuous. This
-  version uses a `liminf`. -/
+version uses a `liminf`. -/
 theorem coverEntropyInf_image_le_of_uniformContinuous [UniformSpace X] [UniformSpace Y] {S : X → X}
     {T : Y → Y} {φ : X → Y} (h : Semiconj φ S T) (h' : UniformContinuous φ) (F : Set X) :
     coverEntropyInf T (φ '' F) ≤ coverEntropyInf S F := by

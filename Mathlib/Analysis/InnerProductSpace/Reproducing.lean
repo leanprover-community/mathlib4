@@ -24,13 +24,14 @@ positive semidefinite matrices.
 - `RKHS.posSemidef_kernel`: The kernel is positive semidefinite.
 - `RKHS.OfKernel`: RKHS constructed from a positive semidefinite matrix.
 - `RKHS.kernel_ofKernel`: The kernel of the constructed RKHS is equal to the matrix, this is
-    essentially Moore's theorem.
+  essentially Moore's theorem.
 
 ## TODO
 
 - Privatize `RKHS.H₀`
 
 ## References
+
 * [Paulsen, Vern I. and Raghupathi, Mrinal,
   *An introduction to the theory of reproducing kernel Hilbert spaces*][MR3526117]
 -/

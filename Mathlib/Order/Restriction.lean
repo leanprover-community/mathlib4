@@ -22,6 +22,7 @@ We also provide versions where the intervals are seen as finite sets, see `Preor
 and `Preorder.frestrictLe₂`.
 
 ## Main definitions
+
 * `Preorder.restrictLe a f`: Restricts the function `f` to the variables indexed by elements `≤ a`.
 -/
 

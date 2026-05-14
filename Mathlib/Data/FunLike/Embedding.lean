@@ -15,6 +15,7 @@ This typeclass is primarily for use by embeddings such as `RelEmbedding`.
 ## Basic usage of `EmbeddingLike`
 
 A typical type of embeddings should be declared as:
+
 ```
 structure MyEmbedding (A B : Type*) [MyClass A] [MyClass B] where
   (toFun : A → B)
@@ -116,6 +117,7 @@ instance : CoolerEmbeddingClass (CoolerEmbedding A B) A B where
 
 Then any declaration taking a specific type of morphisms as parameter can instead take the
 class you just defined:
+
 ```
 -- Compare with: lemma do_something (f : MyEmbedding A B) : sorry := sorry
 lemma do_something {F : Type*} [FunLike F A B] [MyEmbeddingClass F A B] (f : F) : sorry := sorry

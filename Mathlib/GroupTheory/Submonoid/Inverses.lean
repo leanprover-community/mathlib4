@@ -123,7 +123,7 @@ theorem fromLeftInv_eq_iff (a : S.leftInv) (b : M) :
 
 /-- The `MonoidHom` from `S.leftInv` to `S` sending an element to its right inverse in `S`. -/
 @[to_additive (attr := simps) /-- The `AddMonoidHom` from `S.leftNeg` to `S` sending an element to
-its right additive inverse in  `S`. -/]
+its right additive inverse in `S`. -/]
 noncomputable def fromCommLeftInv : S.leftInv →* S where
   toFun := S.fromLeftInv
   map_one' := S.fromLeftInv_one

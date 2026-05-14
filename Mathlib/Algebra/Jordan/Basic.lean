@@ -13,9 +13,11 @@ public import Mathlib.Algebra.Lie.OfAssociative
 Let `A` be a non-unital, non-associative ring. Then `A` is said to be a (commutative, linear) Jordan
 ring if the multiplication is commutative and satisfies a weak associativity law known as the
 Jordan Identity: for all `a` and `b` in `A`,
+
 ```
 (a * b) * a^2 = a * (b * a^2)
 ```
+
 i.e. the operators of multiplication by `a` and `a^2` commute.
 
 A more general concept of a (non-commutative) Jordan ring can also be defined, as a
@@ -27,6 +29,7 @@ Every associative algebra can be equipped with a symmetrized multiplication (cha
 Jordan algebras arising this way are said to be special.
 
 A real Jordan algebra `A` can be introduced by
+
 ```lean
 variable {A : Type*} [NonUnitalNonAssocCommRing A] [Module ℝ A] [SMulCommClass ℝ A A]
   [IsScalarTower ℝ A A] [IsCommJordan A]

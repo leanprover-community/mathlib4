@@ -15,6 +15,7 @@ In this file we specialize Faà di Bruno's formula to one-dimensional domain
 to deduce formulae for `iteratedDerivWithin k (g ∘ f) s x` for `k = 2` and `k = 3`.
 
 We use
+
 - `vcomp` for lemmas about the composition of `g : E → F` with `f : 𝕜 → E`;
 - `scomp` for lemmas about the composition of `g : 𝕜 → E` with `f : 𝕜 → 𝕜`;
 - `comp` for lemmas about the composition of `g : 𝕜 → 𝕜` with `f : 𝕜 → 𝕜`.

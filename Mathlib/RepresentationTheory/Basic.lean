@@ -16,13 +16,13 @@ representations.
 
 ## Main definitions
 
-  * `Representation`
-  * `Representation.directSum`
-  * `Representation.prod`
-  * `Representation.tprod`
-  * `Representation.linHom`
-  * `Representation.dual`
-  * `Representation.free`
+* `Representation`
+* `Representation.directSum`
+* `Representation.prod`
+* `Representation.tprod`
+* `Representation.linHom`
+* `Representation.dual`
+* `Representation.free`
 
 ## Implementation notes
 

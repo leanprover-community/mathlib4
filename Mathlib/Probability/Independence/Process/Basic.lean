@@ -133,7 +133,7 @@ lemma IndepFun.process_indepFun₀ {𝓧 : S → Type*} {𝓨 : Type*}
     · exact Measure.ae_ae_of_ae_comp (hX i).ae_eq_mk
   exact fun i ↦ Measure.ae_ae_of_ae_comp (hX i).ae_eq_mk.symm
 
-/-- A random variable $X$ is independent from a stochastic process $(Y_s)_{s \in S}$  if
+/-- A random variable $X$ is independent from a stochastic process $(Y_s)_{s \in S}$ if
 for all $s_1, ..., s_p \in S$ the variable $Y$ is independent from the family
 $(X_{s_1}, ..., X_{s_p})$. -/
 lemma IndepFun.indepFun_process {𝓧 : Type*} {𝓨 : S → Type*}
@@ -144,7 +144,7 @@ lemma IndepFun.indepFun_process {𝓧 : Type*} {𝓨 : S → Type*}
     IndepFun X (fun ω i ↦ Y i ω) κ P :=
   (IndepFun.process_indepFun hY hX (fun I ↦ (h I).symm)).symm
 
-/-- A random variable $X$ is independent from a stochastic process $(Y_s)_{s \in S}$  if
+/-- A random variable $X$ is independent from a stochastic process $(Y_s)_{s \in S}$ if
 for all $s_1, ..., s_p \in S$ the variable $Y$ is independent from the family
 $(X_{s_1}, ..., X_{s_p})$.
 
@@ -345,7 +345,7 @@ lemma IndepFun.process_indepFun₀ {𝓧 : S → Type*} {𝓨 : Type*}
     IndepFun (fun ω i ↦ X i ω) Y P :=
   Kernel.IndepFun.process_indepFun₀ (by simpa) (by simpa) h
 
-/-- A random variable $X$ is independent from a stochastic process $(Y_s)_{s \in S}$  if
+/-- A random variable $X$ is independent from a stochastic process $(Y_s)_{s \in S}$ if
 for all $s_1, ..., s_p \in S$ the variable $Y$ is independent from the family
 $(X_{s_1}, ..., X_{s_p})$. -/
 lemma IndepFun.indepFun_process {𝓧 : Type*} {𝓨 : S → Type*}
@@ -355,7 +355,7 @@ lemma IndepFun.indepFun_process {𝓧 : Type*} {𝓨 : S → Type*}
     IndepFun X (fun ω i ↦ Y i ω) P :=
   Kernel.IndepFun.indepFun_process hX hY h
 
-/-- A random variable $X$ is independent from a stochastic process $(Y_s)_{s \in S}$  if
+/-- A random variable $X$ is independent from a stochastic process $(Y_s)_{s \in S}$ if
 for all $s_1, ..., s_p \in S$ the variable $Y$ is independent from the family
 $(X_{s_1}, ..., X_{s_p})$.
 

@@ -45,7 +45,7 @@ section Erase
 variable [DecidableEq α] {s t u v : Finset α} {a b : α}
 
 /-- `erase s a` is the set `s - {a}`, that is, the elements of `s` which are
-  not equal to `a`. -/
+not equal to `a`. -/
 def erase (s : Finset α) (a : α) : Finset α :=
   ⟨_, s.2.erase a⟩
 

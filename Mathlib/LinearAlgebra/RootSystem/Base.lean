@@ -33,6 +33,7 @@ For infinite root systems, `RootSystem.Base` is usually not the right notion: li
 is too strong.
 
 ## Main definitions / results:
+
 * `RootSystem.Base`: a base of a root pairing.
 * `RootSystem.Base.IsPos`: the predicate that a (co)root is positive relative to a base.
 * `RootSystem.Base.induction_add`: an induction principle for predicates on (co)roots which

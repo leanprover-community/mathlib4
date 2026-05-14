@@ -26,13 +26,18 @@ coordinate. Here, `M₁ i` and `M₂` are modules over a ring `R`, and `ι` is a
 ## Main definitions
 
 * `MultilinearMap R M₁ M₂` is the space of multilinear maps from `∀ (i : ι), M₁ i` to `M₂`.
+
 * `f.map_update_smul` is the multiplicativity of the multilinear map `f` along each coordinate.
+
 * `f.map_update_add` is the additivity of the multilinear map `f` along each coordinate.
+
 * `f.map_smul_univ` expresses the multiplicativity of `f` over all coordinates at the same time,
   writing `f (fun i => c i • m i)` as `(∏ i, c i) • f m`.
+
 * `f.map_add_univ` expresses the additivity of `f` over all coordinates at the same time, writing
 
   `f (m + m')` as the sum over all subsets `s` of `ι` of `f (s.piecewise m m')`.
+
 * `f.map_sum` expresses `f (Σ_{j₁} g₁ j₁, ..., Σ_{jₙ} gₙ jₙ)` as the sum of
   `f (g₁ (r 1), ..., gₙ (r n))` where `r` ranges over all possible functions.
 

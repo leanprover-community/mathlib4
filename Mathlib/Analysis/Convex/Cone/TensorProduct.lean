@@ -30,6 +30,7 @@ The proof relies on the following result:
 * **Bipolar theorem** (`ProperCone.dual_dual_flip`): The double dual of a proper cone is itself.
 
 This requires:
+
 - Local convexity and Hausdorff separation (for Hahn-Banach)
 - A continuous perfect pairing between the module and its dual.
 

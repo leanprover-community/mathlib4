@@ -35,12 +35,14 @@ This means the positive singular values occur at `0 ≤ i < rank(T)` and not `1 
 
 Suppose `T : E →ₗ[𝕜] F` where `dim(E) = n`, `dim(F) = m`.
 In mathematical literature, the number of singular values varies, with popular choices including
+
 - `rank(T)` singular values, all of which are positive.
 - `min(n,m)` singular values, some of which might be zero.
 - `n` singular values, some of which might be zero. This is the approach taken in [axler2024].
 - Countably infinitely many singular values, with all but finitely many of them being zero.
 
 We take the last approach for the following reasons:
+
 - It avoid unnecessary dependent typing.
 - You can easily convert this definition to the other three by composing with `Fin.val`, but
   converting between any two of the other definitions is more inconvenient because it involves

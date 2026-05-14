@@ -47,7 +47,7 @@ open Finset
 open Polynomial
 
 /-- A "linear recurrence relation" over a commutative semiring is given by its
-  order `n` and `n` coefficients. -/
+order `n` and `n` coefficients. -/
 structure LinearRecurrence (R : Type*) [CommSemiring R] where
   /-- Order of the linear recurrence -/
   order : ℕ
@@ -64,12 +64,12 @@ section CommSemiring
 variable {R : Type*} [CommSemiring R] (E : LinearRecurrence R)
 
 /-- We say that a sequence `u` is solution of `LinearRecurrence order coeffs` when we have
-  `u (n + order) = ∑ i : Fin order, coeffs i * u (n + i)` for any `n`. -/
+`u (n + order) = ∑ i : Fin order, coeffs i * u (n + i)` for any `n`. -/
 def IsSolution (u : ℕ → R) :=
   ∀ n, u (n + E.order) = ∑ i, E.coeffs i * u (n + i)
 
 /-- A solution of a `LinearRecurrence` which satisfies certain initial conditions.
-  We will prove this is the only such solution. -/
+We will prove this is the only such solution. -/
 def mkSol (init : Fin E.order → R) : ℕ → R
   | n =>
     if h : n < E.order then init ⟨n, h⟩
@@ -91,7 +91,7 @@ theorem mkSol_eq_init (init : Fin E.order → R) : ∀ n : Fin E.order, E.mkSol 
   simp only [n.is_lt, dif_pos, Fin.mk_val]
 
 /-- If `u` is a solution to `E` and `init` designates its first `E.order` values,
-  then `∀ n, u n = E.mkSol init n`. -/
+then `∀ n, u n = E.mkSol init n`. -/
 theorem eq_mk_of_is_sol_of_eq_init {u : ℕ → R} {init : Fin E.order → R} (h : E.IsSolution u)
     (heq : ∀ n : Fin E.order, u n = init n) : ∀ n, u n = E.mkSol init n := by
   intro n
@@ -105,8 +105,8 @@ theorem eq_mk_of_is_sol_of_eq_init {u : ℕ → R} {init : Fin E.order → R} (h
     simp
 
 /-- If `u` is a solution to `E` and `init` designates its first `E.order` values,
-  then `u = E.mkSol init`. This proves that `E.mkSol init` is the only solution
-  of `E` whose first `E.order` values are given by `init`. -/
+then `u = E.mkSol init`. This proves that `E.mkSol init` is the only solution
+of `E` whose first `E.order` values are given by `init`. -/
 theorem eq_mk_of_is_sol_of_eq_init' {u : ℕ → R} {init : Fin E.order → R} (h : E.IsSolution u)
     (heq : ∀ n : Fin E.order, u n = init n) : u = E.mkSol init :=
   funext (E.eq_mk_of_is_sol_of_eq_init h heq)
@@ -119,12 +119,12 @@ def solSpace : Submodule R (ℕ → R) where
   smul_mem' a u hu n := by simp [hu n, mul_sum]; ac_rfl
 
 /-- Defining property of the solution space : `u` is a solution
-  iff it belongs to the solution space. -/
+iff it belongs to the solution space. -/
 theorem is_sol_iff_mem_solSpace (u : ℕ → R) : E.IsSolution u ↔ u ∈ E.solSpace :=
   Iff.rfl
 
 /-- The function that maps a solution `u` of `E` to its first
-  `E.order` terms as a `LinearEquiv`. -/
+`E.order` terms as a `LinearEquiv`. -/
 def toInit : E.solSpace ≃ₗ[R] Fin E.order → R where
   toFun u x := (u : ℕ → R) x
   map_add' u v := by
@@ -222,7 +222,7 @@ theorem charPoly_monic : charPoly E |>.Monic := by
   simp
 
 /-- The geometric sequence `q^n` is a solution of `E` iff
-  `q` is a root of `E`'s characteristic polynomial. -/
+`q` is a root of `E`'s characteristic polynomial. -/
 theorem geom_sol_iff_root_charPoly (q : R) :
     (E.IsSolution fun n ↦ q ^ n) ↔ E.charPoly.IsRoot q := by
   rw [charPoly, Polynomial.IsRoot.def, Polynomial.eval]

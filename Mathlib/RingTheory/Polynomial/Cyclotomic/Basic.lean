@@ -420,7 +420,7 @@ open ArithmeticFunction
 open scoped ArithmeticFunction.Moebius
 
 /-- `cyclotomic n R` can be expressed as a product in a fraction field of `R[X]`
-  using Möbius inversion. -/
+using Möbius inversion. -/
 theorem cyclotomic_eq_prod_X_pow_sub_one_pow_moebius {n : ℕ} (R : Type*) [CommRing R]
     [IsDomain R] : algebraMap _ (RatFunc R) (cyclotomic n R) =
       ∏ i ∈ n.divisorsAntidiagonal, algebraMap R[X] _ (X ^ i.snd - 1) ^ μ i.fst := by

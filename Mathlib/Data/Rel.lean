@@ -12,7 +12,7 @@ public import Mathlib.Order.SetNotation
 /-!
 # Relations as sets of pairs
 
-This file provides API to regard relations between `α` and `β`  as sets of pairs `Set (α × β)`.
+This file provides API to regard relations between `α` and `β` as sets of pairs `Set (α × β)`.
 
 This is in particular useful in the study of uniform spaces, which are topological spaces equipped
 with a *uniformity*, namely a filter of pairs `α × α` whose elements can be viewed as "proximity"
@@ -46,6 +46,7 @@ There is tension throughout the library between considering relations between `�
 The former approach is used almost everywhere as it is very lightweight and has arguably native
 support from core Lean features, but it cracks at the seams whenever one starts talking about
 operations on relations. For example:
+
 * composition of relations `R : α → β → Prop`, `S : β → γ → Prop` is
   `SetRelation.Comp R S := fun a c ↦ ∃ b, R a b ∧ S b c`
 * map of a relation `R : α → β → Prop` under `f : α → γ`, `g : β → δ` is
@@ -54,16 +55,20 @@ operations on relations. For example:
 The latter approach is embodied by `SetRel α β`, with dedicated notation like `○` for composition.
 
 Previously, `SetRel` suffered from the leakage of its definition as
+
 ```
 def SetRel (α β : Type*) := α → β → Prop
 ```
+
 The fact that `SetRel` wasn't an `abbrev` confuses automation.
 But simply making it an `abbrev` would
 have killed the point of having a separate less see-through type to perform relation operations on,
 so we instead redefined
+
 ```
 def SetRel (α β : Type*) := Set (α × β) → Prop
 ```
+
 This extra level of indirection guides automation correctly and prevents (some kinds of) leakage.
 
 Simultaneously, uniform spaces need a theory of relations on a type `α` as elements of

@@ -29,7 +29,7 @@ produces the third one.
 ## TODO
 
 * Prove an `IsKleinFour` group is isomorphic to the normal subgroup of `alternatingGroup (Fin 4)`
-  with the permutation cycles `V = {(), (1 2)(3 4), (1 3)(2 4), (1 4)(2 3)}`.  This is the kernel
+  with the permutation cycles `V = {(), (1 2)(3 4), (1 3)(2 4), (1 4)(2 3)}`. This is the kernel
   of the surjection of `alternatingGroup (Fin 4)` onto `alternatingGroup (Fin 3) ≃ (ZMod 3)`.
   In other words, we have the exact sequence `V → A₄ → A₃`.
 
@@ -38,6 +38,7 @@ produces the third one.
   swaps the 3-cycles (like `(1 2 3)`) with elements of shape `3²` (like `(1 2 3)(4 5 6)`).
 
 ## Tags
+
 non-cyclic abelian group
 -/
 

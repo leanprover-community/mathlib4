@@ -19,7 +19,6 @@ This file proves the Chebyshev sum inequality.
 Chebyshev's inequality states `(∑ i ∈ s, f i) * (∑ i ∈ s, g i) ≤ #s * ∑ i ∈ s, f i * g i`
 when `f g : ι → α` monovary, and the reverse inequality when `f` and `g` antivary.
 
-
 ## Main declarations
 
 * `MonovaryOn.sum_mul_sum_le_card_mul_sum`: Chebyshev's inequality.

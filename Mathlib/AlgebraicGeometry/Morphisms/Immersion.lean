@@ -18,6 +18,7 @@ is a locally closed embedding, and the induced morphisms of stalks are all surje
 if and only if it can be factored into a closed immersion followed by an open immersion.
 
 ## Main results
+
 - `isImmersion_iff_exists`:
   A morphism is a (locally-closed) immersion if and only if it can be factored into
   a closed immersion followed by a (dominant) open immersion.
@@ -38,6 +39,7 @@ namespace AlgebraicGeometry
 variable {X Y Z : Scheme.{u}} (f : X ⟶ Y)
 
 /-- A morphism of schemes `f : X ⟶ Y` is an immersion if
+
 1. the underlying map of topological spaces is an embedding
 2. the range of the map is locally closed
 3. the induced morphisms of stalks are all surjective. -/

@@ -36,6 +36,7 @@ where `pi univ s` is the product of the sets `{s i | i : ι}`.
 We then show that this induces a product of measures, called `MeasureTheory.Measure.pi`.
 For a collection of σ-finite measures `μ` and a collection of measurable sets `s` we show that
 `Measure.pi μ (pi univ s) = ∏ i, m i (s i)`. To do this, we follow the following steps:
+
 * We know that there is some ordering on `ι`, given by an element of `[Countable ι]`.
 * Using this, we have an equivalence `MeasurableEquiv.piMeasurableEquivTProd` between
   `∀ i, α i` and an iterated product of `α i`, called `List.tprod α l` for some list `l`.
@@ -71,9 +72,9 @@ namespace MeasureTheory
 variable [Fintype ι] {m : ∀ i, OuterMeasure (α i)}
 
 /-- An upper bound for the measure in a finite product space.
-  It is defined by taking the image of the set under all projections, and taking the product
-  of the measures of these images.
-  For measurable boxes it is equal to the correct measure. -/
+It is defined by taking the image of the set under all projections, and taking the product
+of the measures of these images.
+For measurable boxes it is equal to the correct measure. -/
 @[simp]
 def piPremeasure (m : ∀ i, OuterMeasure (α i)) (s : Set (∀ i, α i)) : ℝ≥0∞ :=
   ∏ i, m i (eval i '' s)
@@ -102,9 +103,9 @@ theorem piPremeasure_pi_eval {s : Set (∀ i, α i)} :
 namespace OuterMeasure
 
 /-- `OuterMeasure.pi m` is the finite product of the outer measures `{m i | i : ι}`.
-  It is defined to be the maximal outer measure `n` with the property that
-  `n (pi univ s) ≤ ∏ i, m i (s i)`, where `pi univ s` is the product of the sets
-  `{s i | i : ι}`. -/
+It is defined to be the maximal outer measure `n` with the property that
+`n (pi univ s) ≤ ∏ i, m i (s i)`, where `pi univ s` is the product of the sets
+`{s i | i : ι}`. -/
 protected def pi (m : ∀ i, OuterMeasure (α i)) : OuterMeasure (∀ i, α i) :=
   boundedBy (piPremeasure m)
 
@@ -178,8 +179,8 @@ variable [Encodable ι]
 
 open scoped Classical in
 /-- The product measure on an encodable finite type, defined by mapping `Measure.tprod` along the
-  equivalence `MeasurableEquiv.piMeasurableEquivTProd`.
-  The definition `MeasureTheory.Measure.pi` should be used instead of this one. -/
+equivalence `MeasurableEquiv.piMeasurableEquivTProd`.
+The definition `MeasureTheory.Measure.pi` should be used instead of this one. -/
 def pi' : Measure (∀ i, α i) :=
   Measure.map (TProd.elim' mem_sortedUniv) (Measure.tprod (sortedUniv ι) μ)
 
@@ -209,7 +210,7 @@ theorem pi_caratheodory :
   · rintro j - _; gcongr; apply diff_subset
 
 /-- `Measure.pi μ` is the finite product of the measures `{μ i | i : ι}`.
-  It is defined to be measure corresponding to `MeasureTheory.OuterMeasure.pi`. -/
+It is defined to be measure corresponding to `MeasureTheory.OuterMeasure.pi`. -/
 protected irreducible_def pi : Measure (∀ i, α i) :=
   toMeasure (OuterMeasure.pi fun i => (μ i).toOuterMeasure) (pi_caratheodory μ)
 
@@ -260,7 +261,7 @@ def FiniteSpanningSetsIn.pi {C : ∀ i, Set (Set (α i))}
       iUnion_univ_pi fun i => (hμ i).set, (hμ _).spanning, Set.pi_univ]
 
 /-- A measure on a finite product space equals the product measure if they are equal on rectangles
-  with as sides sets that generate the corresponding σ-algebras. -/
+with as sides sets that generate the corresponding σ-algebras. -/
 theorem pi_eq_generateFrom {C : ∀ i, Set (Set (α i))}
     (hC : ∀ i, generateFrom (C i) = by apply_assumption) (h2C : ∀ i, IsPiSystem (C i))
     (h3C : ∀ i, (μ i).FiniteSpanningSetsIn (C i)) {μν : Measure (∀ i, α i)}
@@ -277,7 +278,7 @@ theorem pi_eq_generateFrom {C : ∀ i, Set (Set (α i))}
   simp_rw [h₁ s hs, pi_pi_aux μ s fun i => h4C i _ (hs i)]
 
 /-- A measure on a finite product space equals the product measure if they are equal on
-  rectangles. -/
+rectangles. -/
 theorem pi_eq [∀ i, SigmaFinite (μ i)] {μ' : Measure (∀ i, α i)}
     (h : ∀ s : ∀ i, Set (α i), (∀ i, MeasurableSet (s i)) → μ' (pi univ s) = ∏ i, μ i (s i)) :
     Measure.pi μ = μ' :=

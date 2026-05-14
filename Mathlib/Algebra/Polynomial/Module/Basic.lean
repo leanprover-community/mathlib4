@@ -26,6 +26,7 @@ This is isomorphic (as an `R`-module) to `M[X]` when `M` is a ring.
 We require all the module instances `Module S (PolynomialModule R M)` to factor through `R` except
 `Module R[X] (PolynomialModule R M)`.
 In this constraint, we have the following instances for example :
+
 - `R` acts on `PolynomialModule R R[X]`
 - `R[X]` acts on `PolynomialModule R R[X]` as `R[Y]` acting on `R[X][Y]`
 - `R` acts on `PolynomialModule R[X] R[X]`

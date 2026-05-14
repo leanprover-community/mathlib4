@@ -27,6 +27,7 @@ and `AbsolutelyContinuousOnInterval.disjWithin` and prove its equivalence with t
 definition in `absolutelyContinuousOnInterval_iff`.
 
 We use the filter version to prove that absolutely continuous functions are closed under
+
 * addition - `AbsolutelyContinuousOnInterval.add`;
 * negation - `AbsolutelyContinuousOnInterval.neg`;
 * subtraction - `AbsolutelyContinuousOnInterval.sub`;
@@ -39,12 +40,14 @@ and that absolutely continuous implies uniformly continuous in
 `AbsolutelyContinuousOnInterval.uniformContinuousOn`.
 
 We use the `ε`-`δ` definition to prove that
+
 * Lipschitz continuous functions are absolutely continuous -
   `LipschitzOnWith.absolutelyContinuousOnInterval`;
 * absolutely continuous functions have bounded variation -
   `AbsolutelyContinuousOnInterval.boundedVariationOn`.
 
 We conclude that
+
 * absolutely continuous functions are a.e. differentiable -
   `AbsolutelyContinuousOnInterval.ae_differentiableAt`;
 * if `f` is integrable on `uIcc a b`, then for any `c` in `uIcc a b`, `fun x ↦ ∫ v in c..x, f v`
@@ -52,6 +55,7 @@ We conclude that
   `IntervalIntegrable.absolutelyContinuousOnInterval_intervalIntegral`.
 
 ## Tags
+
 absolutely continuous
 -/
 
@@ -68,6 +72,7 @@ namespace AbsolutelyContinuousOnInterval
 /-- The filter on the collection of all the finite sequences of `uIoc` intervals induced by the
 function that maps the finite sequence of the intervals to the total length of the intervals.
 Details:
+
 1. Technically the filter is on `ℕ × (ℕ → X × X)`. A finite sequence `uIoc (a i) (b i)`, `i < n`
    is represented by any `E : ℕ × (ℕ → X × X)` which satisfies `E.1 = n` and `E.2 i = (a i, b i)`
    for `i < n`. Its total length is `∑ i ∈ Finset.range n, dist (a i) (b i)`.

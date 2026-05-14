@@ -17,6 +17,7 @@ well-founded order.
 ## Proof idea
 
 We can map our order into two well-orders:
+
 * the first map respects the order but isn't necessarily injective. Namely, this is the *rank*
   function `IsWellFounded.rank : α → Ordinal`.
 * the second map is injective but doesn't necessarily respect the order. This is an arbitrary

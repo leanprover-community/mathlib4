@@ -249,6 +249,7 @@ variable (f g)
 /-- The functoriality of `pullbackObj f g` in both arguments: Given a map from the pullback cospans
 of `f' : Y' ⟶ X'` and `g' : Z' ⟶ X'` to the pullback cospan of `f : Y ⟶ X` and `g : Z ⟶ X`
 as in the diagram below
+
 ```
 Y' ⟶ Y
   ↘   ↘
@@ -256,6 +257,7 @@ Y' ⟶ Y
   ↗   ↗
 Z' ⟶ Z
 ```
+
 if the morphisms `g'` and `g` both have chosen pullbacks, then we get an induced morphism
 `pullbackMap f g f' g' comm₁ comm₂` from the chosen pullback of
 `f' : Y' ⟶ X'` along `g'` to the chosen pullback of `f : Y ⟶ X` along `g`.

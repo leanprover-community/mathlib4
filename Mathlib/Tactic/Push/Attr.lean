@@ -87,6 +87,7 @@ initialize pullExt : SimpleScopedEnvExtension PullTheorem (DiscrTree PullTheorem
 The `push` attribute is used to tag lemmas that "push" a constant into an expression.
 
 For example:
+
 ```lean
 @[push] theorem log_mul (hx : x ≠ 0) (hy : y ≠ 0) : log (x * y) = log x + log y
 @[push] theorem log_abs : log |x| = log x

@@ -34,6 +34,7 @@ of the descent. However, contrary to Laumon and Moret-Bailly in *Champs algébri
 we do not require that target categories are groupoids.
 
 ## References
+
 * [Jean Giraud, *Cohomologie non abélienne*][giraud1971]
 * [Gérard Laumon and Laurent Moret-Bailly, *Champs algébriques*][laumon-morel-bailly-2000]
 
@@ -53,7 +54,7 @@ variable {C : Type u} [Category.{v} C] {F : LocallyDiscrete Cᵒᵖ ⥤ᵖ Cat.{
 
 namespace LocallyDiscreteOpToCat
 
-/-- Given a pseudofunctor `F` from  `LocallyDiscrete Cᵒᵖ` to `Cat`, objects `M₁` and `M₂`
+/-- Given a pseudofunctor `F` from `LocallyDiscrete Cᵒᵖ` to `Cat`, objects `M₁` and `M₂`
 of `F` over `X₁` and `X₂`, morphisms `f₁ : Y ⟶ X₁` and `f₂ : Y ⟶ X₂`, this is a version
 of the pullback map `(f₁^* M₁ ⟶ f₂^* M₂) → (g^* (f₁^* M₁) ⟶ g^* (f₂^* M₂))` by a
 morphism `g : Y' ⟶ Y`, where we actually replace `g^* (f₁^* M₁)` by `gf₁^* M₁`

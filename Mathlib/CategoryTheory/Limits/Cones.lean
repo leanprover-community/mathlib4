@@ -108,6 +108,7 @@ namespace Limits
 section
 
 /-- A `c : Cone F` is:
+
 * an object `c.pt` and
 * a natural transformation `c.π : c.pt ⟶ F` from the constant `c.pt` functor to `F`.
 
@@ -124,6 +125,7 @@ structure Cone (F : J ⥤ C) where
   π : (const J).obj pt ⟶ F
 
 /-- A `c : Cocone F` is
+
 * an object `c.pt` and
 * a natural transformation `c.ι : F ⟶ c.pt` from `F` to the constant `c.pt` functor.
 

@@ -34,11 +34,13 @@ section Fork
 variable {R S : CommRingCat.{u}} (f : R ⟶ S)
 
 /-- If `f : R ⟶ S` is a faithfully flat map in `CommRingCat`, then the fork
+
 ```
         S ---inl---> pushout f f
 R --f-->
         S ---inr---> pushout f f
 ```
+
 is an equalizer diagram. -/
 noncomputable def isLimitForkPushoutSelfOfFaithfullyFlat (hf : f.hom.FaithfullyFlat) :
     IsLimit (Fork.ofι f pushout.condition) := by

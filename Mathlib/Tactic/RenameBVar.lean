@@ -41,6 +41,7 @@ example (P : ℕ → ℕ → Prop) (h : ∀ n, ∃ m, P n m) : ∀ l, ∃ m, P l
   rename_bvar m → n -- target is now ∀ (l : ℕ), ∃ (n : ℕ), P k n,
   exact h -- Lean does not care about those bound variable names
 ```
+
 Note: name clashes are resolved automatically.
 -/
 elab "rename_bvar " old:ident " → " new:ident loc?:(location)? : tactic => do

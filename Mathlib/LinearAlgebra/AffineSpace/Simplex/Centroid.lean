@@ -36,7 +36,7 @@ of the simplex.
 
 ## References
 
-* https://en.wikipedia.org/wiki/Median_(geometry)
+* https://en.wikipedia.org/wiki/Median\_(geometry)
 * https://en.wikipedia.org/wiki/Commandino%27s_theorem
 
 -/

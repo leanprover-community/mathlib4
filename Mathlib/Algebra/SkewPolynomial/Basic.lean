@@ -59,11 +59,12 @@ The definition is inspired by Chapter 3 of [Papikian2023].
 Skew Polynomials, Twisted Polynomials.
 
 ## TODO :
-  - Add algebra instance
-  - Add `ext` lemma in terms of `Coeff`.
+
+- Add algebra instance
+- Add `ext` lemma in terms of `Coeff`.
 
 Note that [ore33] proposes a more general definition of skew polynomial ring, where the
-multiplication is determined by  $Xa = \varphi (a)X + δ (a)$, where `ϕ` is as above and
+multiplication is determined by $Xa = \varphi (a)X + δ (a)$, where `ϕ` is as above and
 `δ` is a derivation.
 
 -/

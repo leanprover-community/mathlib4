@@ -24,9 +24,12 @@ For the explicit construction of free groups, see `GroupTheory/FreeGroup`.
   Equivalently, an isomorphism between `G` and `FreeGroup ι`.
 
 * `IsFreeGroup G` : a typeclass to indicate that `G` is free over some generators
+
 * `Generators G` : given a group satisfying `IsFreeGroup G`, some indexing type over
   which `G` is free.
+
 * `IsFreeGroup.of` : the canonical injection of `G`'s generators into `G`
+
 * `IsFreeGroup.lift` : the universal property of the free group
 
 ## Main results

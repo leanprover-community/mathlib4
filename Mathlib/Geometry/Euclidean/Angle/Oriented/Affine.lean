@@ -251,7 +251,7 @@ theorem two_zsmul_oangle_of_parallel {p₁ p₂ p₃ p₄ p₅ p₆ : P}
 /-- Consider two angles `∡ p₁ p₂ p₃` and `∡ p₄ p₅ p₆` defined by triples of points. Each is the
 angle between two lines; if the pair `p₁ p₂` and `p₄ p₅` of corresponding lines is parallel, and
 also the pair `p₃ p₂` and `p₆ p₅` of corresponding lines is parallel, and also (roughly) the third
-pair of lines `p₁ p₃` and `p₄ p₆` are the same line, then the two angles are equal.  This is a
+pair of lines `p₁ p₃` and `p₄ p₆` are the same line, then the two angles are equal. This is a
 stronger version of `two_zsmul_oangle_of_parallel`, which shows that the two angles are equal mod
 `π` in the absence of the condition on the third pair of lines. -/
 theorem oangle_eq_of_parallel {p₁ p₂ p₃ p₄ p₅ p₆ : P} (h₂ : p₂ ∉ line[ℝ, p₁, p₃])

@@ -34,11 +34,13 @@ and has been factored out to avoid code duplication.
 Feel free to add features as needed for other applications.
 
 This helper:
+
 * calls `addDeclarationRangesFromSyntax`, so jump-to-definition works,
 * copies the `protected` status of the existing declaration, and
 * supports copying attributes.
 
 Arguments:
+
 * `src : Name` is the existing declaration that we are modifying.
 * `prefix_ : String` will be prepended and `suffix : String` will be appended to `src`
   to form the name of the new declaration.

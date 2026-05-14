@@ -473,6 +473,7 @@ We could proceed further, with either Legendre or Luschny methods.
 
 /-!
 This is the highest factorial I can `#eval` using the naive implementation without a stack overflow:
+
 ```
 /-- info: 114716 -/
 #guard_msgs in

@@ -17,6 +17,7 @@ import Mathlib.Algebra.FiniteSupport.Basic
 
 /-!
 # Finite places of number fields
+
 This file defines finite places of a number field `K` as absolute values coming from an embedding
 into a completion of `K` associated to a non-zero prime ideal of `𝓞 K`.
 
@@ -26,6 +27,7 @@ a number field, then this characterises `R` as being isomorphic to `𝓞 K` with
 requiring `𝓞 K`. This is so that `ℤ` and `𝓞 ℚ` can be used interchangeably.
 
 ## Main Definitions and Results
+
 * `NumberField.adicAbv`: a `v`-adic absolute value on `K`.
 * `NumberField.FinitePlace`: the type of finite places of a number field `K`.
 * `NumberField.FinitePlace.embedding`: the canonical embedding of a number field `K` to the
@@ -36,10 +38,11 @@ requiring `𝓞 K`. This is so that `ℤ` and `𝓞 ℚ` can be used interchange
   unfolded.
 * `NumberField.FinitePlace.hasFiniteMulSupport`: the `v`-adic absolute value of a non-zero element
   of `K` is different from 1 for at most finitely many `v`.
-*  The valuation subrings of the field at the `v`-valuation and it's adic completion are
-   discrete valuation rings.
+* The valuation subrings of the field at the `v`-valuation and it's adic completion are
+  discrete valuation rings.
 
 ## Tags
+
 number field, places, finite places
 -/
 

@@ -24,6 +24,7 @@ public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 This file gathers various results about finite modules over a local ring `(R, 𝔪, k)`.
 
 ## Main results
+
 - `IsLocalRing.subsingleton_tensorProduct`: If `M` is finitely generated, `k ⊗ M = 0 ↔ M = 0`.
 - `Module.free_of_maximalIdeal_rTensor_injective`:
   If `M` is a finitely presented module such that `m ⊗ M → M` is injective

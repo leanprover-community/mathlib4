@@ -37,34 +37,32 @@ this instance in `Submodule.Quotient.completeSpace` so that it applies to these 
 
 ## Main definitions
 
-
 We use `M` and `N` to denote seminormed groups and `S : AddSubgroup M`.
 All the following definitions are in the `AddSubgroup` namespace. Hence we can access
 `AddSubgroup.normedMk S` as `S.normedMk`.
 
 * `seminormedAddCommGroupQuotient` : The seminormed group structure on the quotient by
-    an additive subgroup. This is an instance so there is no need to explicitly use it.
+  an additive subgroup. This is an instance so there is no need to explicitly use it.
 
 * `normedAddCommGroupQuotient` : The normed group structure on the quotient by
-    a closed additive subgroup. This is an instance so there is no need to explicitly use it.
+  a closed additive subgroup. This is an instance so there is no need to explicitly use it.
 
 * `normedMk S` : the normed group hom from `M` to `M ⧸ S`.
 
 * `lift S f hf`: implements the universal property of `M ⧸ S`. Here
-    `(f : NormedAddGroupHom M N)`, `(hf : ∀ s ∈ S, f s = 0)` and
-    `lift S f hf : NormedAddGroupHom (M ⧸ S) N`.
+  `(f : NormedAddGroupHom M N)`, `(hf : ∀ s ∈ S, f s = 0)` and
+  `lift S f hf : NormedAddGroupHom (M ⧸ S) N`.
 
 * `IsQuotient`: given `f : NormedAddGroupHom M N`, `IsQuotient f` means `N` is isomorphic
-    to a quotient of `M` by a subgroup, with projection `f`. Technically it asserts `f` is
-    surjective and the norm of `f x` is the infimum of the norms of `x + m` for `m` in `f.ker`.
+  to a quotient of `M` by a subgroup, with projection `f`. Technically it asserts `f` is
+  surjective and the norm of `f x` is the infimum of the norms of `x + m` for `m` in `f.ker`.
 
 ## Main results
 
 * `norm_normedMk` : the operator norm of the projection is `1` if the subspace is not dense.
 
 * `IsQuotient.norm_lift`: Provided `f : normed_hom M N` satisfies `IsQuotient f`, for every
-     `n : N` and positive `ε`, there exists `m` such that `f m = n ∧ ‖m‖ < ‖n‖ + ε`.
-
+  `n : N` and positive `ε`, there exists `m` such that `f m = n ∧ ‖m‖ < ‖n‖ + ε`.
 
 ## Implementation details
 

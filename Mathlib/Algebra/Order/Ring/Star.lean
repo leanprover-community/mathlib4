@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Order.Star.Basic
 A noncommutative star-ordered ring is generally not an ordered ring. Indeed, in a star-ordered
 ring, nonnegative elements are self-adjoint, but the product of self-adjoint elements is
 self-adjoint if and only if they commute. Therefore, a necessary condition for a star-ordered ring
-to be an ordered ring is that all nonnegative elements commute.  Consequently, if a star-ordered
+to be an ordered ring is that all nonnegative elements commute. Consequently, if a star-ordered
 ring is spanned by it nonnegative elements (as is the case for C⋆-algebras) and it is also an
 ordered ring, then it is commutative.
 

@@ -13,16 +13,16 @@ public import Mathlib.Analysis.Asymptotics.TVS
 Let `E` and `F` be normed spaces, `f : E → F`, and `f' : E →L[𝕜] F` a
 continuous 𝕜-linear map, where `𝕜` is a non-discrete normed field. Then
 
-  `HasFDerivWithinAt f f' s x`
+`HasFDerivWithinAt f f' s x`
 
 says that `f` has derivative `f'` at `x`, where the domain of interest
 is restricted to `s`. We also have
 
-  `HasFDerivAt f f' x := HasFDerivWithinAt f f' x univ`
+`HasFDerivAt f f' x := HasFDerivWithinAt f f' x univ`
 
 Finally,
 
-  `HasStrictFDerivAt f f' x`
+`HasStrictFDerivAt f f' x`
 
 means that `f : E → F` has derivative `f' : E →L[𝕜] F` in the sense of strict differentiability,
 i.e., `f y - f z - f'(y - z) = o(y - z)` as `y, z → x`. This notion is used in the inverse
@@ -31,10 +31,11 @@ function theorem, and is defined here only to avoid proving theorems like
 `HasStrictFDerivAt`.
 
 This file `Defs.lean` is intended to just contain the definitions and the bare minimum of
-supporting lemmas; a much wider range of elementary properties are proved in the file  `Basic.lean`.
+supporting lemmas; a much wider range of elementary properties are proved in the file `Basic.lean`.
 
 Other files in the folder `Analysis/Calculus/FDeriv/` contain the usual formulas
 (and existence assertions) for the derivative of
+
 * constants (`Const.lean`)
 * the identity
 * bounded linear maps (`Linear.lean`)

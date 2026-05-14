@@ -16,6 +16,7 @@ public import Mathlib.Order.Lex
 # Orders on a sigma type
 
 This file defines two orders on a sigma type:
+
 * The disjoint sum of orders. `a` is less `b` iff `a` and `b` are in the same summand and `a` is
   less than `b` there.
 * The lexicographical order. `a` is less than `b` if its summand is strictly less than the summand
@@ -32,6 +33,7 @@ type synonym.
 ## See also
 
 Related files are:
+
 * `Data.Finset.CoLex`: Colexicographic order on finite sets.
 * `Data.List.Lex`: Lexicographic order on lists.
 * `Data.Pi.Lex`: Lexicographic order on `Πₗ i, α i`.

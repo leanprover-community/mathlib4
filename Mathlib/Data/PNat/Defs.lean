@@ -49,7 +49,7 @@ end PNat
 namespace Nat
 
 /-- Convert a natural number to a positive natural number. The
-  positivity assumption is inferred by `dec_trivial`. -/
+positivity assumption is inferred by `dec_trivial`. -/
 def toPNat (n : ℕ) (h : 0 < n := by decide) : ℕ+ :=
   ⟨n, h⟩
 
@@ -70,7 +70,7 @@ theorem _root_.PNat.succPNat_natPred (n : ℕ+) : n.natPred.succPNat = n :=
   Subtype.ext <| succ_pred_eq_of_pos n.2
 
 /-- Convert a natural number to a `PNat`. `n+1` is mapped to itself,
-  and `0` becomes `1`. -/
+and `0` becomes `1`. -/
 def toPNat' (n : ℕ) : ℕ+ :=
   succPNat (pred n)
 
@@ -164,36 +164,36 @@ def strongInductionOn {p : ℕ+ → Sort*} (n : ℕ+) : (∀ k, (∀ m, m < k �
 termination_by n.1
 
 /-- We define `m % k` and `m / k` in the same way as for `ℕ`
-  except that when `m = n * k` we take `m % k = k` and
-  `m / k = n - 1`.  This ensures that `m % k` is always positive
-  and `m = (m % k) + k * (m / k)` in all cases.  Later we
-  define a function `div_exact` which gives the usual `m / k`
-  in the case where `k` divides `m`.
+except that when `m = n * k` we take `m % k = k` and
+`m / k = n - 1`. This ensures that `m % k` is always positive
+and `m = (m % k) + k * (m / k)` in all cases. Later we
+define a function `div_exact` which gives the usual `m / k`
+in the case where `k` divides `m`.
 -/
 def modDivAux : ℕ+ → ℕ → ℕ → ℕ+ × ℕ
   | k, 0, q => ⟨k, q.pred⟩
   | _, r + 1, q => ⟨⟨r + 1, Nat.succ_pos r⟩, q⟩
 
 /-- `mod_div m k = (m % k, m / k)`.
-  We define `m % k` and `m / k` in the same way as for `ℕ`
-  except that when `m = n * k` we take `m % k = k` and
-  `m / k = n - 1`.  This ensures that `m % k` is always positive
-  and `m = (m % k) + k * (m / k)` in all cases.  Later we
-  define a function `div_exact` which gives the usual `m / k`
-  in the case where `k` divides `m`.
+We define `m % k` and `m / k` in the same way as for `ℕ`
+except that when `m = n * k` we take `m % k = k` and
+`m / k = n - 1`. This ensures that `m % k` is always positive
+and `m = (m % k) + k * (m / k)` in all cases. Later we
+define a function `div_exact` which gives the usual `m / k`
+in the case where `k` divides `m`.
 -/
 def modDiv (m k : ℕ+) : ℕ+ × ℕ :=
   modDivAux k ((m : ℕ) % (k : ℕ)) ((m : ℕ) / (k : ℕ))
 
 /-- We define `m % k` in the same way as for `ℕ`
-  except that when `m = n * k` we take `m % k = k` This ensures that `m % k` is always positive.
+except that when `m = n * k` we take `m % k = k` This ensures that `m % k` is always positive.
 -/
 def mod (m k : ℕ+) : ℕ+ :=
   (modDiv m k).1
 
 /-- We define `m / k` in the same way as for `ℕ` except that when `m = n * k` we take
-  `m / k = n - 1`. This ensures that `m = (m % k) + k * (m / k)` in all cases. Later we
-  define a function `div_exact` which gives the usual `m / k` in the case where `k` divides `m`.
+`m / k = n - 1`. This ensures that `m = (m % k) + k * (m / k)` in all cases. Later we
+define a function `div_exact` which gives the usual `m / k` in the case where `k` divides `m`.
 -/
 def div (m k : ℕ+) : ℕ :=
   (modDiv m k).2

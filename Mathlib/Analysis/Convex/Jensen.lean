@@ -18,6 +18,7 @@ functions. The integral versions are to be found in `Analysis.Convex.Integral`.
 ## Main declarations
 
 Jensen's inequalities:
+
 * `ConvexOn.map_centerMass_le`, `ConvexOn.map_sum_le`: Convex Jensen's inequality. The image of a
   convex combination of points under a convex function is less than the convex combination of the
   images.
@@ -26,6 +27,7 @@ Jensen's inequalities:
 * `StrictConcaveOn.lt_map_sum`: Concave strict Jensen inequality.
 
 As corollaries, we get:
+
 * `StrictConvexOn.map_sum_eq_iff`: Equality case of the convex Jensen inequality.
 * `StrictConcaveOn.map_sum_eq_iff`: Equality case of the concave Jensen inequality.
 * `ConvexOn.exists_ge_of_mem_convexHull`: Maximum principle for convex functions.

@@ -43,7 +43,7 @@ respectively as "`Set`" and "ZFC set".
 universe u
 
 /-- The ZFC universe of sets consists of the type of pre-sets,
-  quotiented by extensional equivalence. -/
+quotiented by extensional equivalence. -/
 @[pp_with_univ]
 def ZFSet : Type (u + 1) :=
   Quotient PSet.setoid.{u}
@@ -63,8 +63,8 @@ theorem mk_out : ∀ x : ZFSet, mk x.out = x :=
   Quotient.out_eq
 
 /-- A set function is "definable" if it is the image of some n-ary `PSet`
-  function. This isn't exactly definability, but is useful as a sufficient
-  condition for functions that have a computable image. -/
+function. This isn't exactly definability, but is useful as a sufficient
+condition for functions that have a computable image. -/
 class Definable (n) (f : (Fin n → ZFSet.{u}) → ZFSet.{u}) where
   /-- Turns a definable function into an n-ary `PSet` function. -/
   out : (Fin n → PSet.{u}) → PSet.{u}

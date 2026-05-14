@@ -52,6 +52,7 @@ larger space of test functions.
 ## Notation
 
 In the `Distributions` scope, we introduce the following notations:
+
 - `𝓓^{n}_{K}(E, F)`: the space of `n`-times continuously differentiable functions `E → F`
   which vanish outside of `K`.
 - `𝓓_{K}(E, F)`: the space of smooth (infinitely differentiable) functions `E → F`
@@ -333,9 +334,10 @@ open scoped Classical in
 `𝓓^{n₁}_{K₁}(E, F)` inside `𝓓^{n₂}_{K₂}(E, F)`. Otherwise, this is the zero map.
 
 This is in fact continuous (see `monoCLM`). Furthermore:
+
 * it is a topological embedding when `n₁ = n₂` and `K₁ ⊆ K₂` (not in Mathlib as of March 2026).
 * it maps bounded sets to compact sets when `n₁ ≥ n₂ + 1` and `K₁ ⊆ K₂` (not in Mathlib as of
-March 2026).
+  March 2026).
 
 The parameters `n₁, n₂, K₁, K₂` are implicit as they can often be inferred from context, or
 specified by a type ascription.
@@ -789,9 +791,10 @@ theorem seminorm_monoLM_eq {i : ℕ} (h₁ : n₁ = n₂) (h₂ : K₁ ≤ K₂)
 `𝓓^{n₁}_{K₁}(E, F)` inside `𝓓^{n₂}_{K₂}(E, F)`. Otherwise, this is the zero map.
 
 Furthermore:
+
 * it is a topological embedding when `n₁ = n₂` and `K₁ ⊆ K₂` (not in Mathlib as of March 2026).
 * it maps bounded sets to compact sets when `n₁ ≥ n₂ + 1` and `K₁ ⊆ K₂` (not in Mathlib as of
-March 2026).
+  March 2026).
 
 The parameters `n₁, n₂, K₁, K₂` are implicit as they can often be inferred from context, or
 specified by a type ascription.

@@ -20,6 +20,7 @@ We define a relation on walks stating that one walk is the subwalk of another.
   subwalk of the second walk.
 
 ## Tags
+
 walks, subwalks
 -/
 

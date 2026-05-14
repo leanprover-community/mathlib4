@@ -33,6 +33,7 @@ variable {Ω : Type*} {m₀ m m' : MeasurableSpace Ω} {hm : m ≤ m₀} {X Y : 
 variable (m X μ) in
 /-- Conditional variance of a real-valued random variable. It is defined as `0` if any one of the
 following conditions is true:
+
 - `m` is not a sub-σ-algebra of `m₀`,
 - `μ` is not σ-finite with respect to `m`,
 - `X - μ[X | m]` is not square-integrable. -/
@@ -42,6 +43,7 @@ noncomputable def condVar : Ω → ℝ := μ[(X - μ[X | m]) ^ 2 | m]
 
 /-- Conditional variance of a real-valued random variable. It is defined as `0` if any one of the
 following conditions is true:
+
 - `m` is not a sub-σ-algebra of `m₀`,
 - `volume` is not σ-finite with respect to `m`,
 - `X - 𝔼[X | m]` is not square-integrable. -/

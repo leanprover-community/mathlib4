@@ -132,6 +132,7 @@ end Tactic
 
 /-!
 The below witnesses were generated using the following Mathematica script:
+
 ```mathematica
 bound[a_, Iters -> n_, Rounding -> extra_, Precision -> prec_] := Module[{r0, r, r2, diff, sign},
   On[Assert];

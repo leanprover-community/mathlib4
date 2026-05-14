@@ -563,6 +563,7 @@ variable [HasPushouts C]
 set_option backward.isDefEq.respectTransparency false in
 /--
 Given `f : T ⟶ X`, `g : T ⟶ Y`, and `i : S ⟶ T`, the diagram
+
 ```
 X ⨿ₛ Y ⟶ X ⨿ₜ Y
   ↑        ↑
@@ -570,6 +571,7 @@ X ⨿ₛ Y ⟶ X ⨿ₜ Y
   |        |
 T ⨿ₛ T  ⟶  T
 ```
+
 is a pushout square.
 -/
 theorem isPushout_map_codiagonal {S T : C} (f : T ⟶ X) (g : T ⟶ Y) (i : S ⟶ T) :

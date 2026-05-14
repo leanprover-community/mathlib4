@@ -28,6 +28,7 @@ for `n : ℕ`, and let `f` be a function from `E` to `F`.
 * `CPolynomialOn 𝕜 f s`: the function `f` is analytic at every point of `s`.
 
 In this file, we develop the basic properties of these notions, notably:
+
 * If a function is continuously polynomial, then it is analytic, see
   `HasFiniteFPowerSeriesOnBall.hasFPowerSeriesOnBall`, `HasFiniteFPowerSeriesAt.hasFPowerSeriesAt`,
   `CPolynomialAt.analyticAt` and `CPolynomialOn.analyticOnNhd`.

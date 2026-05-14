@@ -36,7 +36,7 @@ theorem map_isUnit_of_le (hS : S ≤ A⁰) (s : S) : IsUnit (algebraMap A K s) :
   apply IsLocalization.map_units K (⟨s.1, hS s.2⟩ : A⁰)
 
 /-- The canonical map from a localization of `A` at `S` to the fraction ring
-  of `A`, given that `S ≤ A⁰`. -/
+of `A`, given that `S ≤ A⁰`. -/
 noncomputable def mapToFractionRing (B : Type*) [CommRing B] [Algebra A B] [IsLocalization S B]
     (hS : S ≤ A⁰) : B →ₐ[A] K :=
   { IsLocalization.lift (map_isUnit_of_le K S hS) with commutes' := fun a => by simp }

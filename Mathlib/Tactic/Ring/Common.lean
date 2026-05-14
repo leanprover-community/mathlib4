@@ -19,6 +19,7 @@ The core normalization procedure for ring-like tactics that solve equations in c
 Based on <http://www.cs.ru.nl/~freek/courses/tt-2014/read/10.1.1.61.3041.pdf> .
 
 More precisely, expressions of the following form are supported:
+
 - constants (non-negative integers)
 - variables
 - coefficients (living in `BaseType`; for `ring` this is a rational embedded into the semiring)
@@ -39,6 +40,7 @@ together with a proof (at the base level) that the original value is equal to
 the normalised version.
 
 The outline of the file:
+
 - Define a mutual inductive family of types `ExSum`, `ExProd`, `ExBase`,
   which can represent expressions with `+`, `*`, `^` and some parametric `BaseType`.
   The mutual induction ensures that associativity and distributivity are applied,
@@ -50,6 +52,7 @@ The outline of the file:
   Any expression not of the above formats is treated as an atom (the same as a variable).
 
 There are some details we glossed over which make the plan more complicated:
+
 - The order on atoms is not initially obvious.
   We construct a list containing them in order of initial appearance in the expression,
   then use the index into the list as a key to order on.
@@ -127,6 +130,7 @@ used to represent exponents in `ExProd`s. We cannot use `ExProd btℕ sℕ` in t
 of `ExProd` because `BaseType` is a parameter and not an index. Making `BaseType` an index
 (i.e. moving it to the right of the colon) would require including it as an argument to each
 constructor, raising the universe level of `ExProd` from `Type` to `Type 1`; that is:
+
 ```
 inductive ExProd : ∀ {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
     (sα : Q(CommSemiring $α)) (e : Q($α)), Type
@@ -136,6 +140,7 @@ inductive ExProd : ∀ {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → 
     ExBase BaseType sα x → ExProd btℕ sℕ e → ExProd BaseType sα b →
       ExProd BaseType sα q($x ^ $e * $b)
 ```
+
 would fail to compile because `ExProd` lives in `Type 1`.
 
 Lean does not support monadic computation in `Type 1` in its core monad types,
@@ -155,11 +160,11 @@ Used to represent normalized natural number expressions in exponents.
 meta inductive ExBaseNat : (e : Q(ℕ)) → Type
   /--
   An atomic expression `e` with id `id`.
-
+  
   Atomic expressions are those which `ring` cannot parse any further.
   For instance, `a + (a % b)` has `a` and `(a % b)` as atoms.
   The `ring1` tactic does not normalize the subexpressions in atoms, but `ring_nf` does.
-
+  
   Atoms in fact represent equivalence classes of expressions, modulo definitional equality.
   The field `index : ℕ` should be a unique number for each class,
   while `e : Q($α)` contains a representative of this class.
@@ -214,11 +219,11 @@ meta inductive ExBase {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → T
     (sα : Q(CommSemiring $α)) : (e : Q($α)) → Type
   /--
   An atomic expression `e` with id `id`.
-
+  
   Atomic expressions are those which a `ring`-like tactic cannot parse any further.
   For instance, `a + (a % b)` has `a` and `(a % b)` as atoms.
   The `ring1` tactic does not normalize the subexpressions in atoms, but `ring_nf` does.
-
+  
   Atoms in fact represent equivalence classes of expressions, modulo definitional equality.
   The field `index : ℕ` should be a unique number for each class,
   while `e : Q($α)` contains a representative of this class.
@@ -290,7 +295,7 @@ structure RingCompare {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → T
 structure RingCompute {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
   (sα : Q(CommSemiring $α)) extends RingCompare BaseType where
   /-- Evaluate the sum of two coefficents.
-
+  
   If the result is zero returns a proof of this fact, which is used to remove zero terms. -/
   add {x y : Q($α)} : BaseType x → BaseType y →
     MetaM ((Result BaseType q($x + $y)) × (Option Q(IsNat ($x + $y) 0)))
@@ -305,7 +310,7 @@ structure RingCompute {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → T
   /-- Evaluate the negation of a coefficient. -/
   neg {x : Q($α)} (rα : Q(CommRing $α)) : BaseType x → MetaM (Result BaseType q(-$x))
   /-- Raise a coefficient to some natural power.
-
+  
   The exponent is not necessarily a natural literal. If the tactic can only raise coefficients to
   the power of a literal (e.g. `ring`), it should check for this and return `none` otherwise. -/
   pow {x : Q($α)} {b : Q(ℕ)} : BaseType x → (vb : ExProdNat q($b)) →
@@ -1234,6 +1239,7 @@ or otherwise if it is an atom or something simplifiable via `norm_num`.
 We use this in `ring_nf` to avoid rewriting atoms unnecessarily.
 
 Returns:
+
 * `none` if `eval` would process `e` as an algebraic ring expression
 * `some none` if `eval` would treat `e` as an atom.
 * `some (some r)` if `eval` would not process `e` as an algebraic ring expression,

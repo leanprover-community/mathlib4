@@ -19,7 +19,7 @@ In particular, we give results about the polynomial given by
 
 ## References
 
-  * "The trace Cayley-Hamilton theorem" by Darij Grinberg, Section 5.3
+* "The trace Cayley-Hamilton theorem" by Darij Grinberg, Section 5.3
 
 ## Tags
 

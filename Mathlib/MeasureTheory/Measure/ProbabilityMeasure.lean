@@ -23,6 +23,7 @@ case of the topology of weak convergence of finite measures.
 ## Main definitions
 
 The main definitions are
+
 * the type `MeasureTheory.ProbabilityMeasure Ω` with the topology of convergence in
   distribution (a.k.a. convergence in law, weak convergence of measures);
 * `MeasureTheory.ProbabilityMeasure.toFiniteMeasure`: Interpret a probability measure as
@@ -52,6 +53,7 @@ The main definitions are
   approximating sequences (in particular on any pseudo-metrizable spaces).
 
 TODO:
+
 * Probability measures form a convex space.
 
 ## Implementation notes

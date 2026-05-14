@@ -27,7 +27,7 @@ namespace Cardinal
 variable {α : Type u} {c d : Cardinal.{u}}
 
 /-- This function sends finite cardinals to the corresponding natural, and infinite cardinals
-  to 0. -/
+to 0. -/
 noncomputable def toNat : Cardinal →*₀ ℕ :=
   ENat.toNatHom.comp toENat
 

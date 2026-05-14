@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Algebra.Subalgebra.Tower
 
 /-! # Augmentation ideals
 
-* `Ideal.IsAugmentation` :  An ideal `I` of an `A`-algebra `S` is an augmentation ideal
+* `Ideal.IsAugmentation` : An ideal `I` of an `A`-algebra `S` is an augmentation ideal
   if its underlying submodule is a complement of `1 : Submodule A S`.
 
 * `Ideal.isAugmentation_subalgebra_iff` : If `S` is a subalgebra of an `R`-algebra `A`,

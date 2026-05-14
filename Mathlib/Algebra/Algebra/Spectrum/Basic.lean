@@ -13,6 +13,7 @@ public import Mathlib.Tactic.NoncommRing
 
 /-!
 # Spectrum of an element in an algebra
+
 This file develops the basic theory of the spectrum of an element of an algebra.
 This theory will serve as the foundation for spectral theory in Banach algebras.
 
@@ -73,8 +74,8 @@ def spectrum (a : A) : Set R :=
 variable {R}
 
 /-- Given an `a : A` where `A` is an `R`-algebra, the *resolvent* is
-    a map `R → A` which sends `r : R` to `(algebraMap R A r - a)⁻¹` when
-    `r ∈ resolvent R A` and `0` when `r ∈ spectrum R A`. -/
+a map `R → A` which sends `r : R` to `(algebraMap R A r - a)⁻¹` when
+`r ∈ resolvent R A` and `0` when `r ∈ spectrum R A`. -/
 noncomputable def resolvent (a : A) (r : R) : A := (↑ₐ r - a)⁻¹ʳ
 
 /-- The unit `1 - r⁻¹ • a` constructed from `r • 1 - a` when the latter is a unit. -/

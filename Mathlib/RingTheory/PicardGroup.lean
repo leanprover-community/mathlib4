@@ -51,13 +51,16 @@ invertible `R`-modules (in the sense that `M` is invertible if there exists anot
 ## TODO
 
 Show:
+
 - Invertible modules over a commutative ring have the same cardinality as the ring.
 
 - Establish other characterizations of invertible modules, e.g. they are modules that
   become free of rank one when localized at every prime ideal.
   See [Stacks: Finite projective modules](https://stacks.math.columbia.edu/tag/00NX).
+
 - Connect to invertible sheaves on `Spec R`. More generally, connect projective `R`-modules of
   constant finite rank to locally free sheaves on `Spec R`.
+
 - Exhibit isomorphism with sheaf cohomology `H¹(Spec R, 𝓞ˣ)`.
 -/
 

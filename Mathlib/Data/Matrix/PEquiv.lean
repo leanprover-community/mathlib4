@@ -50,7 +50,7 @@ variable {α β : Type*}
 open Matrix
 
 /-- `toMatrix` returns a matrix containing ones and zeros. `f.toMatrix i j` is `1` if
-  `f i = some j` and `0` otherwise -/
+`f i = some j` and `0` otherwise -/
 def toMatrix [DecidableEq n] [Zero α] [One α] (f : m ≃. n) : Matrix m n α :=
   of fun i j => if j ∈ f i then (1 : α) else 0
 
@@ -176,7 +176,7 @@ theorem single_mul_single_of_ne [Fintype n] [DecidableEq n] [DecidableEq k] [Dec
   rw [← toMatrix_trans, single_trans_single_of_ne hb, toMatrix_bot]
 
 /-- Restatement of `single_mul_single`, which will simplify expressions in `simp` normal form,
-  when associativity may otherwise need to be carefully applied. -/
+when associativity may otherwise need to be carefully applied. -/
 @[simp]
 theorem single_mul_single_right [Fintype n] [Fintype k] [DecidableEq n] [DecidableEq k]
     [DecidableEq m] [Semiring α] (a : m) (b : n) (c : k) (M : Matrix k l α) :

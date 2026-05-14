@@ -27,6 +27,7 @@ Unlike the related `#find_home`, this command takes into account notation and ta
 
 Parsing of `attribute`s is hard and the command makes minimal effort to support them.
 Here is an example where the command fails to notice a dependency:
+
 ```lean
 import Mathlib.Data.Sym.Sym2.Init -- the actual minimal import
 import Aesop.Frontend.Attribute   -- the import that `#min_imports in` suggests
@@ -190,6 +191,7 @@ def getDeclName (cmd : Syntax) : CommandElabM Name := do
 
 /-- `getAllDependencies cmd id` takes a `Syntax` input `cmd` and returns the `NameSet` of all the
 declaration names that are implied by
+
 * the `SyntaxNodeKinds`,
 * the attributes of `cmd` (if there are any),
 * the identifiers contained in `cmd`,
@@ -214,6 +216,7 @@ def getAllDependencies (cmd id : Syntax) :
 
 /-- `getAllImports cmd id` takes a `Syntax` input `cmd` and returns the `NameSet` of all the
 module names that are implied by
+
 * the `SyntaxNodeKinds`,
 * the attributes of `cmd` (if there are any),
 * the identifiers contained in `cmd`,
@@ -249,12 +252,14 @@ def getIrredundantImports (env : Environment) (importNames : NameSet) : NameSet 
 
 /-- `minImpsCore stx id` is the internal function to elaborate the `#min_imports in` command.
 It collects the irredundant imports to parse and elaborate `stx` and logs
+
 ```lean
 import A
 import B
 ...
 import Z
 ```
+
 The `id` input is expected to be the name of the declaration that is currently processed.
 It is used to provide the internally generated name for "nameless" `instance`s.
 -/

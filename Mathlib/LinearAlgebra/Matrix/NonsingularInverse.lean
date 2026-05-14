@@ -47,7 +47,7 @@ The rest of the results in the file are then about `A⁻¹`
 
 ## References
 
-  * https://en.wikipedia.org/wiki/Cramer's_rule#Finding_inverse_matrix
+* https://en.wikipedia.org/wiki/Cramer's_rule#Finding_inverse_matrix
 
 ## Tags
 

@@ -521,6 +521,7 @@ variable (S) in
 
 Suppose we have a diagram of algebras `R → B ← S`,
 and a `B`-module `M`, `S`-module `P`, `R`-module `Q`, then
+
 ```
 (M ⊗ˢ P)      ⎛ M ⎞ ⊗ˢ P
  ⊗ᴿ       ≅ᴮ  ⎜ ⊗ᴿ⎟
@@ -570,6 +571,7 @@ variable (S)
 
 Suppose we have towers of algebras `R → S → B` and `R → A → B`, and
 a `B`-module `M`, `S`-module `N`, `A`-module `P`, `R`-module `Q`, then
+
 ```
 (M ⊗ˢ N)      ⎛ M ⎞ ⊗ˢ ⎛ N ⎞
  ⊗ᴬ       ≅ᴮ  ⎜ ⊗ᴬ⎟    ⎜ ⊗ᴿ⎟

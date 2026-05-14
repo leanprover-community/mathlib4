@@ -13,6 +13,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
 # Basic results on unique factorization monoids
 
 ## Main results
+
 * `prime_factors_unique`: the prime factors of an element in a cancellative
   commutative monoid with zero (e.g. an integral domain) are unique up to associates
 * `UniqueFactorizationMonoid.factors_unique`: the irreducible factors of an element
@@ -122,7 +123,7 @@ theorem _root_.Associated.card_factors_eq {a b : α} (h : Associated a b) :
 end UniqueFactorizationMonoid
 
 /-- If an irreducible has a prime factorization,
-  then it is an associate of one of its prime factors. -/
+then it is an associate of one of its prime factors. -/
 theorem prime_factors_irreducible [CommMonoidWithZero α] {a : α} {f : Multiset α}
     (ha : Irreducible a) (pfa : (∀ b ∈ f, Prime b) ∧ f.prod ~ᵤ a) : ∃ p, a ~ᵤ p ∧ f = {p} := by
   haveI := Classical.decEq α

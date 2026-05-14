@@ -23,18 +23,20 @@ version where the resulting partition is equitable (aka an *equipartition*), nam
 the same size up to a difference of `1`.
 
 The proof we formalise goes as follows:
+
 1. Define an auxiliary measure of edge density, the *energy* of a partition.
 2. Start with an arbitrary equipartition of size `l`.
 3. Repeatedly break up the parts of the current equipartition in a big but controlled number of
-  parts. The key point is to break along the witnesses of non-uniformity, so that a lesser portion
-  of the pairs of parts are non-`ε`-uniform.
+   parts. The key point is to break along the witnesses of non-uniformity, so that a lesser portion
+   of the pairs of parts are non-`ε`-uniform.
 4. Check that this results in an equipartition with an energy greater than the energy of the current
-  partition, plus some constant.
+   partition, plus some constant.
 5. Since the energy is between zero and one, we can't run this process forever. Check that when the
-  process stops we have an `ε`-uniform equipartition.
+   process stops we have an `ε`-uniform equipartition.
 
 This file only contains the final result. The supporting material is spread across the
 `Combinatorics/SimpleGraph/Regularity` folder:
+
 * `Combinatorics/SimpleGraph/Regularity/Bound`: Definition of the bound on the number of parts.
   Numerical inequalities involving the lemma constants.
 * `Combinatorics/SimpleGraph/Regularity/Energy`: Definition of the energy of a simple graph along a

@@ -59,7 +59,7 @@ homomorphism into the algebra of *continuous* linear maps. This is the left regu
 of `A` acting on itself.
 
 This has more algebraic structure than `ContinuousLinearMap.mul`, but there is no longer continuity
-bundled in the first coordinate.  An alternative viewpoint is that this upgrades
+bundled in the first coordinate. An alternative viewpoint is that this upgrades
 `NonUnitalAlgHom.lmul` from a homomorphism into linear maps to a homomorphism into *continuous*
 linear maps. -/
 def _root_.NonUnitalAlgHom.Lmul : R →ₙₐ[𝕜] R →L[𝕜] R :=

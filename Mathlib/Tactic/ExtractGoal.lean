@@ -76,6 +76,7 @@ z: Int
 ```
 
 Similarly, the extracted goal may fail to type-check:
+
 ```lean
 example (a : α) : ∃ f : α → α, f a = a := by
   extract_goal
@@ -84,7 +85,9 @@ example (a : α) : ∃ f : α → α, f a = a := by
 theorem extracted_1.{u_1} {α : Sort u_1} (a : α) : ∃ f, f a = a := sorry
 -- `f` is uninterpreted: `⊢ ∃ f, sorryAx α true = a`
 ```
+
 and also
+
 ```lean
 import Mathlib.Algebra.Polynomial.Basic
 
@@ -141,6 +144,7 @@ syntax (name := extractGoal) "extract_goal" config (" using " ident)? : tactic
 Example output: `myTheorem (a b : Nat) : a + b = b + a`.
 
 The return values are:
+
 * A formatted piece of `MessageData`, like `m!"myTheorem (a b : Nat) : a + b = b + a"`.
 * The full type of the declaration, like `∀ a b, a + b = b + a`.
 * The imports needed to state this declaration, as an array of module names.

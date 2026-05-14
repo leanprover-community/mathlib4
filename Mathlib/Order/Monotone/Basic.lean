@@ -668,7 +668,7 @@ end Int
 
 -- TODO@Yael: Generalize the following four to succ orders
 /-- If `f` is a monotone function from `ℕ` to a preorder such that `x` lies between `f n` and
-  `f (n + 1)`, then `x` doesn't lie in the range of `f`. -/
+`f (n + 1)`, then `x` doesn't lie in the range of `f`. -/
 theorem Monotone.ne_of_lt_of_lt_nat {f : ℕ → α} (hf : Monotone f) (n : ℕ) {x : α} (h1 : f n < x)
     (h2 : x < f (n + 1)) (a : ℕ) : f a ≠ x := by
   rintro rfl
@@ -682,7 +682,7 @@ theorem Antitone.ne_of_lt_of_lt_nat {f : ℕ → α} (hf : Antitone f) (n : ℕ)
   exact (hf.reflect_lt h2).not_ge (Nat.le_of_lt_succ <| hf.reflect_lt h1)
 
 /-- If `f` is a monotone function from `ℤ` to a preorder and `x` lies between `f n` and
-  `f (n + 1)`, then `x` doesn't lie in the range of `f`. -/
+`f (n + 1)`, then `x` doesn't lie in the range of `f`. -/
 theorem Monotone.ne_of_lt_of_lt_int {f : ℤ → α} (hf : Monotone f) (n : ℤ) {x : α} (h1 : f n < x)
     (h2 : x < f (n + 1)) (a : ℤ) : f a ≠ x := by
   rintro rfl

@@ -18,6 +18,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
 A morphism of schemes is separated if its diagonal morphism is a closed immersion.
 
 ## Main definitions
+
 - `AlgebraicGeometry.IsSeparated`: The class of separated morphisms.
 - `AlgebraicGeometry.Scheme.IsSeparated`: The class of separated schemes.
 - `AlgebraicGeometry.IsSeparated.hasAffineProperty`:

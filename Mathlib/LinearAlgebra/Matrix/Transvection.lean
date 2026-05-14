@@ -30,6 +30,7 @@ form by operations on its rows and columns, a variant of Gauss' pivot algorithm.
 ## Main definitions and results
 
 * `transvection i j c` is the matrix equal to `1 + single i j c`.
+
 * `TransvectionStruct n R` is a structure containing the data of `i, j, c` and a proof that
   `i ≠ j`. These are often easier to manipulate than straight matrices, especially in inductive
   arguments.
@@ -40,6 +41,7 @@ form by operations on its rows and columns, a variant of Gauss' pivot algorithm.
 
 * `diagonal_transvection_induction` shows that a property which is true for diagonal matrices and
   transvections, and invariant under product, is true for all matrices.
+
 * `diagonal_transvection_induction_of_det_ne_zero` is the same statement over invertible matrices.
 
 ## Implementation details

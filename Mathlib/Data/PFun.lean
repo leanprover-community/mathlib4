@@ -37,6 +37,7 @@ This file defines partial functions. Partial functions are like functions, excep
 ### Partial functions as relations
 
 Partial functions can be considered as relations, so we specialize some `Rel` definitions to `PFun`:
+
 * `PFun.image`: Image of a set under a partial function.
 * `PFun.ran`: Range of a partial function.
 * `PFun.preimage`: Preimage of a set under a partial function.
@@ -47,6 +48,7 @@ Partial functions can be considered as relations, so we specialize some `Rel` de
 ### `PFun α` as a monad
 
 Monad operations:
+
 * `PFun.pure`: The monad `pure` function, the constant `x` function.
 * `PFun.bind`: The monad `bind` function, pointwise `Part.bind`
 * `PFun.map`: The monad `map` function, pointwise `Part.map`.
@@ -57,7 +59,7 @@ Monad operations:
 open Function
 
 /-- `PFun α β`, or `α →. β`, is the type of partial functions from
-  `α` to `β`. It is defined as `α → Part β`. -/
+`α` to `β`. It is defined as `α → Part β`. -/
 def PFun (α β : Type*) :=
   α → Part β
 
@@ -148,7 +150,7 @@ def graph (f : α →. β) : Set (α × β) :=
 def graph' (f : α →. β) : SetRel α β := {(x, y) : α × β | y ∈ f x}
 
 /-- The range of a partial function is the set of values
-  `f x` where `x` is in the domain of `f`. -/
+`f x` where `x` is in the domain of `f`. -/
 def ran (f : α →. β) : Set β :=
   { b | ∃ a, b ∈ f a }
 

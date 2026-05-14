@@ -47,8 +47,8 @@ as `map_mul`; a separate constructor `MonoidHom.mk'` will construct
 group homs (i.e. monoid homs between groups) given only a proof
 that multiplication is preserved,
 
-Implicit `{}` brackets are often used instead of type class `[]` brackets.  This is done when the
-instances can be inferred because they are implicit arguments to the type `MonoidHom`.  When they
+Implicit `{}` brackets are often used instead of type class `[]` brackets. This is done when the
+instances can be inferred because they are implicit arguments to the type `MonoidHom`. When they
 can be inferred from the type it is faster to use this method than to use type class inference.
 
 Historically this file also included definitions of unbundled homomorphism classes; they were
@@ -217,12 +217,14 @@ with `mid` priority in order to ensure that they are not tried first.
 
 We do not use `low`, to allow bundled morphisms to unfold themselves with `low` priority such that
 the generic morphism lemmas are applied first. For instance, we might have
+
 ```lean
 def fooMonoidHom : M →* N where
   toFun := foo; map_one' := sorry; map_mul' := sorry
 
 @[simp low] lemma fooMonoidHom_apply (x : M) : fooMonoidHom x = foo x := rfl
 ```
+
 As `map_mul` is tagged `simp mid`, this means that it still fires before `fooMonoidHom_apply`, which
 is the behavior we desire.
 -/

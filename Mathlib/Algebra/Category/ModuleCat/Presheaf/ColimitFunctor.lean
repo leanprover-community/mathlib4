@@ -20,9 +20,10 @@ on a type-synonym `PresheafOfModules.ModuleColimit` for `cM.pt`. This extends to
 a functor `PresheafOfModules.colimitFunctor : PresheafOfModules R ⥤ ModuleCat cR.pt`.
 
 ## TODO (@joelriou)
+
 * Define fiber functors on categories of (pre)sheaves of modules
 * Refactor `Mathlib/Algebra/Category/ModuleCat/Stalk.lean` so that it uses
-this slightly more general construction.
+  this slightly more general construction.
 
 -/
 

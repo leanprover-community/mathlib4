@@ -17,8 +17,7 @@ public import Mathlib.RingTheory.TensorProduct.Maps
 ## Main definitions
 
 * `matrixEquivTensor : Matrix n n A ≃ₐ[R] (A ⊗[R] Matrix n n R)`.
-* `Matrix.kroneckerTMulAlgEquiv :
-    Matrix m m A ⊗[R] Matrix n n B ≃ₐ[S] Matrix (m × n) (m × n) (A ⊗[R] B)`,
+* `Matrix.kroneckerTMulAlgEquiv :   Matrix m m A ⊗[R] Matrix n n B ≃ₐ[S] Matrix (m × n) (m × n) (A ⊗[R] B)`,
   where the forward map is the (tensor-ified) Kronecker product.
 -/
 

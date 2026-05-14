@@ -16,8 +16,8 @@ real numbers to -1, positive real numbers to 1, and 0 to 0.
 ## Main definitions
 
 * `Real.sign r` is $\begin{cases} -1 & \text{if } r < 0, \\
-                              ~~\, 0 & \text{if } r = 0, \\
-                              ~~\, 1 & \text{if } r > 0. \end{cases}$
+  ~~, 0 & \text{if } r = 0, \\
+  ~~, 1 & \text{if } r > 0. \end{cases}$
 
 ## Tags
 

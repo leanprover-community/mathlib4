@@ -11,6 +11,7 @@ public import Mathlib.Geometry.Manifold.MFDeriv.Basic
 
 /-!
 # `C^n` monoid
+
 A `C^n` monoid is a monoid that is also a `C^n` manifold, in which multiplication is a `C^n` map
 of the product manifold `G` × `G` into `G`.
 
@@ -309,8 +310,8 @@ end Monoid
 
 /-! ### Differentiability of finite point-wise sums and products, and powers
 
-  Finite point-wise products (resp. sums), and powers, of `C^n` functions `M → G` (at `x`/on `s`)
-  into a commutative monoid `G` are `C^n` at `x`/on `s`. -/
+Finite point-wise products (resp. sums), and powers, of `C^n` functions `M → G` (at `x`/on `s`)
+into a commutative monoid `G` are `C^n` at `x`/on `s`. -/
 section CommMonoid
 
 open Function

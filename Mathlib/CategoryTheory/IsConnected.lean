@@ -21,6 +21,7 @@ We instead are interested in categories with exactly one 'connected
 component'.
 
 We give some equivalent definitions:
+
 - A nonempty category for which every functor to a discrete category is
   constant on objects.
   See `any_functor_const_on_obj` and `Connected.of_any_functor_const_on_obj`.

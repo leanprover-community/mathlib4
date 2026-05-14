@@ -19,6 +19,7 @@ This file collects further results about equivalence and cardinality related to
 reduce imports.
 
 ## Main declarations
+
 * `Finset.finsuppAntidiagEquivSubtype`: `Finset.finsuppAntidiag s n` is equivalent to subtype of
   `s →₀ μ` whose sum is `n`.
 * `Finset.finsuppAntidiagEquiv`: `Finset.finsuppAntidiag s n` is equivalent to `Sym s n` for

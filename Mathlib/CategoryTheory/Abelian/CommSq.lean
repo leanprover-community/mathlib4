@@ -58,12 +58,14 @@ lemma exact_shortComplex (h : IsPushout t l r b) : h.shortComplex.Exact :=
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a pushout square in an abelian category
+
 ```
 X₁ ⟶ X₂
 |    |
 v    v
 X₃ ⟶ X₄
 ```
+
 the morphism `X₂ ⊞ X₃ ⟶ X₄` is an epimorphism. This lemma translates this
 as the existence of liftings up to refinements: a morphism `z : T ⟶ X₄`
 can be written as a sum of a morphism to `X₂` and a morphism to `X₃`,
@@ -80,6 +82,7 @@ lemma hom_eq_add_up_to_refinements (h : IsPushout t l r b) {T : C} (x₄ : T ⟶
 
 /--
 Given a commutative diagram in an abelian category
+
 ```
 X₁ ⟶ X₂
 |    |  \
@@ -89,6 +92,7 @@ X₃ ⟶ X₄   \
   \     \> X₅
    \_____>
 ```
+
 where the top/left square is a pushout square,
 the outer square involving `X₁`, `X₂`, `X₃` and `X₅`
 is a pullback square, and `X₂ ⟶ X₅` is mono,

@@ -72,6 +72,7 @@ lemma δ_apply' (x₃ : (forget₂ C Ab).obj (S.X₃.homology i))
 include hS in
 /--
 In the short exact sequence of complexes
+
 ```
        0            0            0
        |            |            |
@@ -88,6 +89,7 @@ In the short exact sequence of complexes
        v            v            v
        0            0            0
 ```
+
 if `x₁ ∈ X_1,j` and `x₂ ∈ X_2,i` and if `f(x₁) = d(x₂)` then `d(x₁) = 0`. -/
 theorem d_eq_zero_of_f_eq_d_apply
     (x₂ : ((forget₂ C Ab).obj (S.X₂.X i))) (x₁ : ((forget₂ C Ab).obj (S.X₁.X j)))

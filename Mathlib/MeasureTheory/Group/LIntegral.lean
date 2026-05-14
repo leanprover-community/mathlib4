@@ -34,7 +34,7 @@ variable [InvolutiveInv G] [MeasurableInv G]
 invariant under the change of variables x ↦ x⁻¹. -/
 @[to_additive
       /-- The Lebesgue integral of a function with respect to an inverse invariant measure is
-invariant under the change of variables x ↦ -x. -/]
+      invariant under the change of variables x ↦ -x. -/]
 theorem lintegral_inv_eq_self [IsInvInvariant μ] (f : G → ℝ≥0∞) :
     ∫⁻ x, f x⁻¹ ∂μ = ∫⁻ x, f x ∂μ := by
   simpa using (lintegral_map_equiv f (μ := μ) <| MeasurableEquiv.inv G).symm
@@ -83,7 +83,7 @@ section IsTopologicalGroup
 variable [TopologicalSpace G] [Group G] [IsTopologicalGroup G] [BorelSpace G] [IsMulLeftInvariant μ]
 
 /-- For nonzero regular left invariant measures, the integral of a continuous nonnegative function
-  `f` is 0 iff `f` is 0. -/
+`f` is 0 iff `f` is 0. -/
 @[to_additive
       /-- For nonzero regular left invariant measures, the integral of a continuous nonnegative
       function `f` is 0 iff `f` is 0. -/]

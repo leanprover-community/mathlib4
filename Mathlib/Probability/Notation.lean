@@ -12,6 +12,7 @@ public import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
 
 This file defines the following notations, for functions `X,Y`, measures `P, Q` defined on a
 measurable space `m0`, and another measurable space structure `m` with `hm : m ≤ m0`,
+
 - `P[X] = ∫ a, X a ∂P`
 - `𝔼[X] = ∫ a, X a`
 - `𝔼[X | m]`: conditional expectation of `X` with respect to the measure `volume` and the

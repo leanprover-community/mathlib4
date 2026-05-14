@@ -13,8 +13,8 @@ public import Mathlib.Topology.Separation.Regular
 
 This file defines three properties of functions:
 
-* `DenseRange f`       means `f` has dense image;
-* `IsDenseInducing i`  means `i` is also inducing, namely it induces the topology on its codomain;
+* `DenseRange f` means `f` has dense image;
+* `IsDenseInducing i` means `i` is also inducing, namely it induces the topology on its codomain;
 * `IsDenseEmbedding e` means `e` is further an embedding, namely it is injective and `Inducing`.
 
 The main theorem `continuous_extend` gives a criterion for a function
@@ -34,7 +34,7 @@ open Filter Set Topology
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
 /-- `i : α → β` is "dense inducing" if it has dense range and the topology on `α`
-  is the one induced by `i` from the topology on `β`. -/
+is the one induced by `i` from the topology on `β`. -/
 structure IsDenseInducing [TopologicalSpace α] [TopologicalSpace β] (i : α → β) : Prop
     extends IsInducing i where
   /-- The range of a dense inducing map is a dense set. -/
@@ -134,9 +134,8 @@ theorem _root_.Dense.comap_val_nhds_neBot {s : Set α} (hs : Dense s) (a : α) :
 
 variable [TopologicalSpace γ]
 
-/-- If `i : α → β` is a dense inducing, then any function `f : α → γ` "extends" to a function `g =
-  IsDenseInducing.extend di f : β → γ`. If `γ` is Hausdorff and `f` has a continuous extension, then
-  `g` is the unique such extension. In general, `g` might not be continuous or even extend `f`. -/
+/-- If `i : α → β` is a dense inducing, then any function `f : α → γ` "extends" to a function `g =   IsDenseInducing.extend di f : β → γ`. If `γ` is Hausdorff and `f` has a continuous extension, then
+`g` is the unique such extension. In general, `g` might not be continuous or even extend `f`. -/
 def extend (di : IsDenseInducing i) (f : α → γ) (b : β) : γ :=
   @limUnder _ _ _ ⟨f (di.dense.some b)⟩ (comap i (𝓝 b)) f
 

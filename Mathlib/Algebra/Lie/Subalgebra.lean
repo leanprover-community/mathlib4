@@ -16,13 +16,13 @@ results.
 
 ## Main definitions
 
-  * `LieSubalgebra`
-  * `LieSubalgebra.incl`
-  * `LieSubalgebra.map`
-  * `LieHom.range`
-  * `LieEquiv.ofInjective`
-  * `LieEquiv.ofEq`
-  * `LieEquiv.ofSubalgebras`
+* `LieSubalgebra`
+* `LieSubalgebra.incl`
+* `LieSubalgebra.map`
+* `LieHom.range`
+* `LieEquiv.ofInjective`
+* `LieEquiv.ofEq`
+* `LieEquiv.ofSubalgebras`
 
 ## Tags
 

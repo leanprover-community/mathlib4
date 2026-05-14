@@ -90,6 +90,7 @@ The *historical set* `PComp.history` stores the labels of expressions
 that were used in deriving the current `PComp`.
 Variables are also indexed by natural numbers. The sets `PComp.effective`, `PComp.implicit`,
 and `PComp.vars` contain variable indices.
+
 * `PComp.vars` contains the variables that appear in any inequality in the historical set.
 * `PComp.effective` contains the variables that have been effectively eliminated from `PComp`.
   A variable `n` is said to be *effectively eliminated* in `p : PComp` if the elimination of `n`
@@ -165,17 +166,18 @@ The computation assumes, but does not enforce, that `elimVar` appears in both `c
 and does not appear in the sum.
 Computing the sum of the two comparisons is easy; the complicated details lie in tracking the
 additional fields of `PComp`.
+
 * The historical set `pcomp.history` of `c1 + c2` is the union of the two historical sets.
 * `vars` is the union of `c1.vars` and `c2.vars`.
 * The effectively eliminated variables of `c1 + c2` are the union of the two effective sets,
   with `elim_var` inserted.
 * The implicitly eliminated variables of `c1 + c2` are those that appear in
   `vars` but not `c.vars` or `effective`.
-(Note that the description of the implicitly eliminated variables of `c1 + c2` in the algorithm
-described in Section 6 of https://doi.org/10.1016/B978-0-444-88771-9.50019-2 seems to be wrong:
-that says it should be `(c1.implicit.union' c2.implicit).sdiff explicit`.
-Since the implicitly eliminated sets start off empty for the assumption,
-this formula would leave them always empty.)
+  (Note that the description of the implicitly eliminated variables of `c1 + c2` in the algorithm
+  described in Section 6 of https://doi.org/10.1016/B978-0-444-88771-9.50019-2 seems to be wrong:
+  that says it should be `(c1.implicit.union' c2.implicit).sdiff explicit`.
+  Since the implicitly eliminated sets start off empty for the assumption,
+  this formula would leave them always empty.)
 -/
 def PComp.add (c1 c2 : PComp) (elimVar : ℕ) : PComp :=
   let c := c1.c.add c2.c
@@ -247,6 +249,7 @@ def elimWithSet (a : ℕ) (p : PComp) (comps : PCompSet) : PCompSet :=
 
 /--
 The state for the elimination monad.
+
 * `maxVar`: the largest variable index that has not been eliminated.
 * `comps`: a set of comparisons
 
@@ -290,6 +293,7 @@ def update (maxVar : ℕ) (comps : PCompSet) : LinarithM Unit := do
 
 /--
 `splitSetByVarSign a comps` partitions the set `comps` into three parts.
+
 * `pos` contains the elements of `comps` in which `a` has a positive coefficient.
 * `neg` contains the elements of `comps` in which `a` has a negative coefficient.
 * `notPresent` contains the elements of `comps` in which `a` has coefficient 0.

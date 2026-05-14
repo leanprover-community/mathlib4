@@ -765,6 +765,7 @@ variable [Algebra R S] [Algebra R B] [IsScalarTower R S B]
 An algebra map from the base change is equivalent to an algebra map over the base ring.
 
 In categorical terms, this is an adjunction between:
+
 1. `A ↦ S ⊗[R] A`, a functor `R-Alg ⥤ S-Alg` (the base change).
 2. `B ↦ B`, a functor `S-Alg ⥤ R-Alg` (the restriction).
 -/

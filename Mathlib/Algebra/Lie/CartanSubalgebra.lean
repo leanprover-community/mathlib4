@@ -16,9 +16,9 @@ The standard example is the set of diagonal matrices in the Lie algebra of matri
 
 ## Main definitions
 
-  * `LieSubmodule.IsUcsLimit`
-  * `LieSubalgebra.IsCartanSubalgebra`
-  * `LieSubalgebra.isCartanSubalgebra_iff_isUcsLimit`
+* `LieSubmodule.IsUcsLimit`
+* `LieSubalgebra.IsCartanSubalgebra`
+* `LieSubalgebra.isCartanSubalgebra_iff_isUcsLimit`
 
 ## Tags
 

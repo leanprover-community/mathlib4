@@ -14,6 +14,7 @@ public import Mathlib.Analysis.Normed.Group.Basic
 This file contains a few simple lemmas about `Set.indicator`, `norm` and `enorm`.
 
 ## Tags
+
 indicator, norm
 -/
 

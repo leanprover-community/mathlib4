@@ -38,6 +38,7 @@ matches `t` perfectly: validate the form of the expression (using e.g.
 An extension can call `Mathlib.Meta.Positivity.core` to recursively solve subgoals.
 
 Example:
+
 ```lean
 @[positivity ite _ _ _] def evalIte : PositivityExt where eval {u α} zα pα e := do
   let .app (.app (.app (.app f (p : Q(Prop))) (_ : Q(Decidable $p))) (a : Q($α))) (b : Q($α))
@@ -518,6 +519,7 @@ positive/nonnegative/nonzero and combining this into a final proof. This tactic 
 goal or fails.
 
 For each subexpression `e`, `positivity` will try to:
+
 * try `@[positivity]`-tagged extensions to recursively prove `e` is positive/nonnegative/nonzero
   based on its subexpressions (see the `positivity` attribute for more details), or
 * try the `norm_num` tactic to prove `e` is positive/nonnegative/nonzero, or
@@ -531,6 +533,7 @@ This tactic is extensible. See the `positivity` attribute documentation for more
   for division/reciprocal, or `0 ≤ x` for real powers.
 
 Examples:
+
 ```
 example {a : ℤ} (ha : 3 < a) : 0 ≤ a ^ 3 + a := by positivity
 

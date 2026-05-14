@@ -17,6 +17,7 @@ We show that series of functions are differentiable, or smooth, when each indivi
 function in the series is and additionally suitable uniform summable bounds are satisfied.
 
 More specifically,
+
 * `differentiable_tsum` ensures that a series of differentiable functions is differentiable.
 * `contDiff_tsum` ensures that a series of `C^n` functions is `C^n`.
 

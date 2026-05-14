@@ -67,8 +67,8 @@ ordered map, ordered set, data structure
 universe u
 
 /-- An `Ordnode α` is a finite set of values, represented as a tree.
-  The operations on this type maintain that the tree is balanced
-  and correctly stores subtree sizes at each level. -/
+The operations on this type maintain that the tree is balanced
+and correctly stores subtree sizes at each level. -/
 inductive Ordnode (α : Type u) : Type u
   | nil : Ordnode α
   | node (size : ℕ) (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α
@@ -370,6 +370,7 @@ Amem 4 {1, 2, 3} = false
 To see the difference with `Emem`, we need a preorder that is not a partial order.
 For example, suppose we compare pairs of numbers using only their first coordinate. Then:
 -- TODO: Verify below example
+
 ```
 Emem (0, 1) {(0, 0), (1, 2)} = false
 Amem (0, 1) {(0, 0), (1, 2)} = true
@@ -1282,7 +1283,7 @@ def disjoint : Ordnode α → Ordnode α → Bool
     found.isNone && disjoint l lt && disjoint r gt
 
 /-- O(m * log(|m ∪ n| + 1)), m ≤ n. The union of two sets, preferring members of
-  `t₁` over those of `t₂` when equivalent elements are encountered.
+`t₁` over those of `t₂` when equivalent elements are encountered.
 
 ```
 union {1, 2} {2, 3} = {1, 2, 3}
@@ -1353,7 +1354,7 @@ def ofList (l : List α) : Ordnode α :=
   l.foldr insert nil
 
 /-- O(n * log n). Adaptively chooses between the linear and log-linear algorithm depending
-  on whether the input list is already sorted.
+on whether the input list is already sorted.
 
 ```
 ofList' [1, 2, 3] = {1, 2, 3}

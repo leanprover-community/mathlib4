@@ -12,11 +12,13 @@ public import Mathlib.Init
 If `t` is a proof, then it runs `dsimp […]` on the type of `t` instead.
 
 For instance, instead of
+
 ```
 have foo := ...
 dsimp at foo
 rw [foo]
 ```
+
 one can do `rw [dsimp% foo]`.
 -/
 
@@ -31,11 +33,13 @@ open Lean Elab Term Meta Parser Tactic
 If `t` is a proof, then it runs `dsimp […]` on the type of `t` instead.
 
 For instance, instead of
+
 ```
 have foo := ...
 dsimp at foo
 rw [foo]
 ```
+
 one can write `rw [dsimp% foo]`.
 -/
 syntax (name := dsimpPercent) "dsimp%" optConfig (discharger)? (&" only")?

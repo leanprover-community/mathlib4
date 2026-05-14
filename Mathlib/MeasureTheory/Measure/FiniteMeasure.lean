@@ -25,6 +25,7 @@ measure is continuous.
 ## Main definitions
 
 The main definitions are
+
 * `MeasureTheory.FiniteMeasure Ω`: The type of finite measures on `Ω` with the topology of weak
   convergence of measures.
 * `MeasureTheory.FiniteMeasure.toWeakDualBCNN : FiniteMeasure Ω → (WeakDual ℝ≥0 (Ω →ᵇ ℝ≥0))`:
@@ -64,6 +65,7 @@ The implementation of `MeasureTheory.FiniteMeasure Ω` and is directly as a subt
 and the coercion to function of `MeasureTheory.Measure Ω`. Another alternative would have been to
 use a bijection with `MeasureTheory.VectorMeasure Ω ℝ≥0` as an intermediate step. Some
 considerations:
+
 * Potential advantages of using the `NNReal`-valued vector measure alternative:
   * The coercion to function would avoid need to compose with `ENNReal.toNNReal`, the
     `NNReal`-valued API could be more directly available.
@@ -649,6 +651,7 @@ theorem tendsto_lintegral_nn_of_le_const (μ : FiniteMeasure Ω) {fs : ℕ → �
 If bounded continuous non-negative functions are uniformly bounded by a constant and tend to a
 limit, then their integrals against the finite measure tend to the integral of the limit.
 This formulation assumes:
+
 * the functions tend to a limit along a countably generated filter;
 * the limit is in the almost everywhere sense;
 * boundedness holds almost everywhere;
@@ -672,6 +675,7 @@ tend pointwise to a limit, then their integrals (`MeasureTheory.FiniteMeasure.te
 against the finite measure tend to the integral of the limit.
 
 Related results:
+
 * `MeasureTheory.FiniteMeasure.tendsto_testAgainstNN_filter_of_le_const`:
   more general assumptions
 * `MeasureTheory.FiniteMeasure.tendsto_lintegral_nn_of_le_const`:

@@ -57,7 +57,7 @@ def IsTorsion :=
 
 /-- A monoid is not a torsion monoid if it has an element of infinite order. -/
 @[to_additive (attr := simp) /-- An additive monoid is not a torsion monoid if it
-  has an element of infinite order. -/]
+has an element of infinite order. -/]
 theorem not_isTorsion_iff : ¬IsTorsion G ↔ ∃ g : G, ¬IsOfFinOrder g := by
   rw [IsTorsion, not_forall]
 

@@ -175,7 +175,7 @@ theorem limitRecOn_limit {motive} (o H₁ H₂ H₃ h) :
   SuccOrder.limitRecOn_of_isSuccLimit ..
 
 /-- Bounded recursion on ordinals. Similar to `limitRecOn`, with the assumption `o < l`
-  added to all cases. The final term's domain is the ordinals below `l`. -/
+added to all cases. The final term's domain is the ordinals below `l`. -/
 @[deprecated limitRecOn (since := "2025-12-26"), elab_as_elim]
 def boundedLimitRecOn {l : Ordinal} (lLim : IsSuccLimit l) {motive : Iio l → Sort*} (o : Iio l)
     (zero : motive ⟨0, lLim.bot_lt⟩)
@@ -314,8 +314,8 @@ theorem lift_pred (o : Ordinal.{v}) : lift.{u} (pred o) = pred (lift.{u} o) := b
   · rwa [ho.ordinalPred_eq, eq_comm, pred_eq_iff_isSuccPrelimit, isSuccPrelimit_lift]
 
 /-- A normal ordinal function is a strictly increasing function which is
-  order-continuous, i.e., the image `f o` of a limit ordinal `o` is the sup of `f a` for
-  `a < o`. -/
+order-continuous, i.e., the image `f o` of a limit ordinal `o` is the sup of `f a` for
+`a < o`. -/
 @[deprecated Order.IsNormal (since := "2025-12-25")]
 protected def IsNormal (f : Ordinal → Ordinal) : Prop :=
   Order.IsNormal f

@@ -30,8 +30,8 @@ coinductive Computation (α : Type u) : Type u
 | think : Computation α → Computation α
 -/
 /-- `Computation α` is the type of unbounded computations returning `α`.
-  An element of `Computation α` is an infinite sequence of `Option α` such
-  that if `f n = some a` for some `n` then it is constantly `some a` after that. -/
+An element of `Computation α` is an infinite sequence of `Option α` such
+that if `f n = some a` for some `n` then it is constantly `some a` after that. -/
 def Computation (α : Type u) : Type u :=
   { f : Stream' (Option α) // ∀ ⦃n a⦄, f n = some a → f (n + 1) = some a }
 
@@ -49,7 +49,7 @@ instance : CoeTC α (Computation α) :=
 
 -- note [use has_coe_t]
 /-- `think c` is the computation that delays for one "tick" and then performs
-  computation `c`. -/
+computation `c`. -/
 def think (c : Computation α) : Computation α :=
   ⟨Stream'.cons none c.1, fun n a h => by
     rcases n with - | n
@@ -57,25 +57,25 @@ def think (c : Computation α) : Computation α :=
     · exact c.2 h⟩
 
 /-- `thinkN c n` is the computation that delays for `n` ticks and then performs
-  computation `c`. -/
+computation `c`. -/
 def thinkN (c : Computation α) : ℕ → Computation α
   | 0 => c
   | n + 1 => think (thinkN c n)
 
 -- check for immediate result
 /-- `head c` is the first step of computation, either `some a` if `c = pure a`
-  or `none` if `c = think c'`. -/
+or `none` if `c = think c'`. -/
 def head (c : Computation α) : Option α :=
   c.1.head
 
 -- one step of computation
 /-- `tail c` is the remainder of computation, either `c` if `c = pure a`
-  or `c'` if `c = think c'`. -/
+or `c'` if `c = think c'`. -/
 def tail (c : Computation α) : Computation α :=
   ⟨c.1.tail, fun _ _ h => c.2 h⟩
 
 /-- `empty α` is the computation that never returns, an infinite sequence of
-  `think`s. -/
+`think`s. -/
 def empty (α) : Computation α :=
   ⟨Stream'.const none, fun _ _ => id⟩
 
@@ -83,19 +83,19 @@ instance : Inhabited (Computation α) :=
   ⟨empty _⟩
 
 /-- `runFor c n` evaluates `c` for `n` steps and returns the result, or `none`
-  if it did not terminate after `n` steps. -/
+if it did not terminate after `n` steps. -/
 def runFor : Computation α → ℕ → Option α :=
   Subtype.val
 
 /-- `destruct c` is the destructor for `Computation α` as a coinductive type.
-  It returns `inl a` if `c = pure a` and `inr c'` if `c = think c'`. -/
+It returns `inl a` if `c = pure a` and `inr c'` if `c = think c'`. -/
 def destruct (c : Computation α) : α ⊕ (Computation α) :=
   match c.1 0 with
   | none => Sum.inr (tail c)
   | some a => Sum.inl a
 
 /-- `run c` is an unsound meta function that runs `c` to completion, possibly
-  resulting in an infinite loop in the VM. -/
+resulting in an infinite loop in the VM. -/
 unsafe def run : Computation α → α
   | c =>
     match destruct c with
@@ -185,8 +185,8 @@ def Corec.f (f : β → α ⊕ β) : α ⊕ β → Option α × (α ⊕ β)
       f b)
 
 /-- `corec f b` is the corecursor for `Computation α` as a coinductive type.
-  If `f b = inl a` then `corec f b = pure a`, and if `f b = inl b'` then
-  `corec f b = think (corec f b')`. -/
+If `f b = inl a` then `corec f b = pure a`, and if `f b = inl b'` then
+`corec f b = think (corec f b')`. -/
 def corec (f : β → α ⊕ β) (b : β) : Computation α := by
   refine ⟨Stream'.corec' (Corec.f f) (Sum.inr b), fun n a' h => ?_⟩
   rw [Stream'.corec'_eq]
@@ -366,12 +366,12 @@ theorem of_thinkN_terminates (s : Computation α) (n) : Terminates (thinkN s n) 
   | ⟨⟨a, h⟩⟩ => ⟨⟨a, (thinkN_mem _).1 h⟩⟩
 
 /-- `Promises s a`, or `s ~> a`, asserts that although the computation `s`
-  may not terminate, if it does, then the result is `a`. -/
+may not terminate, if it does, then the result is `a`. -/
 def Promises (s : Computation α) (a : α) : Prop :=
   ∀ ⦃a'⦄, a' ∈ s → a = a'
 
 /-- `Promises s a`, or `s ~> a`, asserts that although the computation `s`
-  may not terminate, if it does, then the result is `a`. -/
+may not terminate, if it does, then the result is `a`. -/
 scoped infixl:50 " ~> " => Promises
 
 theorem mem_promises {s : Computation α} {a : α} : a ∈ s → s ~> a := fun h _ => mem_unique h
@@ -421,7 +421,7 @@ theorem get_eq_of_promises {a} : s ~> a → get s = a :=
 end get
 
 /-- `Results s a n` completely characterizes a terminating computation:
-  it asserts that `s` terminates after exactly `n` steps, with result `a`. -/
+it asserts that `s` terminates after exactly `n` steps, with result `a`. -/
 def Results (s : Computation α) (a : α) (n : ℕ) :=
   ∃ h : a ∈ s, @length _ s (terminates_of_mem h) = n
 
@@ -762,7 +762,7 @@ theorem terminates_map_iff (f : α → β) (s : Computation α) : Terminates (ma
 
 -- Parallel computation
 /-- `c₁ <|> c₂` calculates `c₁` and `c₂` simultaneously, returning
-  the first one that gives a result. -/
+the first one that gives a result. -/
 def orElse (c₁ : Computation α) (c₂ : Unit → Computation α) : Computation α :=
   @Computation.corec α (Computation α × Computation α)
     (fun ⟨c₁, c₂⟩ =>
@@ -814,7 +814,7 @@ theorem orElse_empty (c : Computation α) : (c <|> empty α) = c := by
   | think s => simp only [BisimO, orElse_think, destruct_think]; rw [← think_empty]
 
 /-- `c₁ ~ c₂` asserts that `c₁` and `c₂` either both terminate with the same result,
-  or both loop forever. -/
+or both loop forever. -/
 def Equiv (c₁ c₂ : Computation α) : Prop :=
   ∀ a, a ∈ c₁ ↔ a ∈ c₂
 
@@ -864,9 +864,9 @@ theorem equiv_pure_of_mem {s : Computation α} {a} (h : a ∈ s) : s ~ pure a :=
   equiv_of_mem h (ret_mem _)
 
 /-- `LiftRel R ca cb` is a generalization of `Equiv` to relations other than
-  equality. It asserts that if `ca` terminates with `a`, then `cb` terminates with
-  some `b` such that `R a b`, and if `cb` terminates with `b` then `ca` terminates
-  with some `a` such that `R a b`. -/
+equality. It asserts that if `ca` terminates with `a`, then `cb` terminates with
+some `b` such that `R a b`, and if `cb` terminates with `b` then `ca` terminates
+with some `a` such that `R a b`. -/
 def LiftRel (R : α → β → Prop) (ca : Computation α) (cb : Computation β) : Prop :=
   (∀ {a}, a ∈ ca → ∃ b, b ∈ cb ∧ R a b) ∧ ∀ {b}, b ∈ cb → ∃ a, a ∈ ca ∧ R a b
 

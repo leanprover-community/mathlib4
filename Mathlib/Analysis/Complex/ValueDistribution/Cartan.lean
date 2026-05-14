@@ -28,7 +28,6 @@ At present, this file establishes circle integrability of the function
 See Section VI.2 of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677] for a detailed
 discussion.
 
-
 ## TODO
 
 - Establish Cartan's Formula in full
@@ -104,7 +103,7 @@ theorem circleAverage_log_norm_meromorphicTrailingCoeffAt_of_meromorphicOrderAt_
 
 /--
 Circle average of the function `fun a ↦ log ‖meromorphicTrailingCoeffAt (f · - a) 0‖` that appears
-in Cartan's formula, in case where  `f` has order zero at the origin.
+in Cartan's formula, in case where `f` has order zero at the origin.
 -/
 theorem circleAverage_log_norm_meromorphicTrailingCoeffAt_of_meromorphicOrderAt_eq_zero
     (h : meromorphicOrderAt f 0 = 0) :

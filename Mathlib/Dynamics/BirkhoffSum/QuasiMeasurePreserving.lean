@@ -13,7 +13,7 @@ public import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
 
 Given a map `f` and measure `μ`, under the assumption of `QuasiMeasurePreserving f μ μ` we prove:
 
-- `birkhoffSum_ae_eq_of_ae_eq`: if observables  `φ` and `ψ` are `μ`-a.e. equal then the
+- `birkhoffSum_ae_eq_of_ae_eq`: if observables `φ` and `ψ` are `μ`-a.e. equal then the
   corresponding `birkhoffSum f` are `μ`-a.e. equal.
 
 - `birkhoffAverage_ae_eq_of_ae_eq`: if observables `φ` and `ψ` are `μ`-a.e. equal then the
@@ -30,7 +30,7 @@ open Filter
 variable {α M : Type*} [MeasurableSpace α] [AddCommMonoid M]
 variable {f : α → α} {μ : Measure α} {φ ψ : α → M}
 
-/-- If observables  `φ` and `ψ` are `μ`-a.e. equal then the corresponding `birkhoffSum` are
+/-- If observables `φ` and `ψ` are `μ`-a.e. equal then the corresponding `birkhoffSum` are
 `μ`-a.e. equal. -/
 theorem birkhoffSum_ae_eq_of_ae_eq (hf : QuasiMeasurePreserving f μ μ) (hφ : φ =ᵐ[μ] ψ) n :
     birkhoffSum f φ n =ᵐ[μ] birkhoffSum f ψ n := by

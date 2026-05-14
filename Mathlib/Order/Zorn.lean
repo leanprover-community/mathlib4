@@ -17,11 +17,13 @@ This file proves several formulations of Zorn's Lemma.
 
 The primary statement of Zorn's lemma is `exists_maximal_of_chains_bounded`. Then it is specialized
 to particular relations:
+
 * `(≤)` with `zorn_le`
 * `(⊆)` with `zorn_subset`
 * `(⊇)` with `zorn_superset`
 
 Lemma names carry modifiers:
+
 * `₀`: Quantifies over a set, as opposed to over a type.
 * `_nonempty`: Doesn't ask to prove that the empty chain is bounded and lets you give an element
   that will be smaller than the maximal element found (the maximal element is no smaller than any
@@ -31,13 +33,15 @@ Lemma names carry modifiers:
 
 This file comes across as confusing to those who haven't yet used it, so here is a detailed
 walkthrough:
+
 1. Know what relation on which type/set you're looking for. See Variants above. You can discharge
-  some conditions to Zorn's lemma directly using a `_nonempty` variant.
+   some conditions to Zorn's lemma directly using a `_nonempty` variant.
 2. Write down the definition of your type/set, put a `suffices ∃ m, ∀ a, m ≺ a → a ≺ m by ...`
-  (or whatever you actually need) followed by an `apply some_version_of_zorn`.
+   (or whatever you actually need) followed by an `apply some_version_of_zorn`.
 3. Fill in the details. This is where you start talking about chains.
 
 A typical proof using Zorn could look like this
+
 ```lean
 lemma zorny_lemma : zorny_statement := by
   let s : Set α := {x | whatever x}

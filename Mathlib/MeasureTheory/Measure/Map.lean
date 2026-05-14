@@ -151,7 +151,7 @@ lemma map_apply₀ {f : α → β} (hf : AEMeasurable f μ) {s : Set β}
   rfl
 
 /-- We can evaluate the pushforward on measurable sets. For non-measurable sets, see
-  `MeasureTheory.Measure.le_map_apply` and `MeasurableEquiv.map_apply`. -/
+`MeasureTheory.Measure.le_map_apply` and `MeasurableEquiv.map_apply`. -/
 @[simp]
 theorem map_apply_of_aemeasurable (hf : AEMeasurable f μ) {s : Set β} (hs : MeasurableSet s) :
     μ.map f s = μ (f ⁻¹' s) := map_apply₀ hf hs.nullMeasurableSet
@@ -208,7 +208,7 @@ theorem map_mono {f : α → β} (h : μ ≤ ν) (hf : Measurable f) : μ.map f 
   le_iff.2 fun s hs ↦ by simp [hf.aemeasurable, hs, h _]
 
 /-- Even if `s` is not measurable, we can bound `map f μ s` from below.
-  See also `MeasurableEquiv.map_apply`. -/
+See also `MeasurableEquiv.map_apply`. -/
 theorem le_map_apply {f : α → β} (hf : AEMeasurable f μ) (s : Set β) : μ (f ⁻¹' s) ≤ μ.map f s :=
   calc
     μ (f ⁻¹' s) ≤ μ (f ⁻¹' toMeasurable (μ.map f) s) := by gcongr; apply subset_toMeasurable
@@ -298,7 +298,7 @@ open Equiv MeasureTheory MeasureTheory.Measure
 variable {_ : MeasurableSpace α} [MeasurableSpace β] {μ : Measure α} {ν : Measure β}
 
 /-- If we map a measure along a measurable equivalence, we can compute the measure on all sets
-  (not just the measurable ones). -/
+(not just the measurable ones). -/
 protected theorem map_apply (f : α ≃ᵐ β) (s : Set β) : μ.map f s = μ (f ⁻¹' s) :=
   f.measurableEmbedding.map_apply _ _
 

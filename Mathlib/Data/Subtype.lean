@@ -38,18 +38,18 @@ attribute [coe] Subtype.val
 initialize_simps_projections Subtype (val → coe)
 
 /-- A version of `x.property` or `x.2` where `p` is syntactically applied to the coercion of `x`
-  instead of `x.1`. A similar result is `Subtype.mem` in `Mathlib/Data/Set/Basic.lean`. -/
+instead of `x.1`. A similar result is `Subtype.mem` in `Mathlib/Data/Set/Basic.lean`. -/
 -- This is a leftover from Lean 3: it is identical to `Subtype.property`, and should be deprecated.
 theorem prop (x : Subtype p) : p x :=
   x.2
 
 /-- An alternative version of `Subtype.forall`. This one is useful if Lean cannot figure out `q`
-  when using `Subtype.forall` from right to left. -/
+when using `Subtype.forall` from right to left. -/
 protected theorem forall' {q : ∀ x, p x → Prop} : (∀ x h, q x h) ↔ ∀ x : { a // p a }, q x x.2 :=
   (@Subtype.forall _ _ fun x ↦ q x.1 x.2).symm
 
 /-- An alternative version of `Subtype.exists`. This one is useful if Lean cannot figure out `q`
-  when using `Subtype.exists` from right to left. -/
+when using `Subtype.exists` from right to left. -/
 protected theorem exists' {q : ∀ x, p x → Prop} : (∃ x h, q x h) ↔ ∃ x : { a // p a }, q x x.2 :=
   (@Subtype.exists _ _ fun x ↦ q x.1 x.2).symm
 

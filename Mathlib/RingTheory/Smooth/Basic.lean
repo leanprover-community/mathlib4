@@ -28,6 +28,7 @@ We show that smooth is stable under algebra isomorphisms, composition and
 localization at an element.
 
 ## Main results
+
 - `Algebra.FormallySmooth`: The class of formally smooth algebras.
 - `Algebra.formallySmooth_iff` :
   Formally smooth iff `Ω[A⁄R]` is `A`-projective and `H¹(L_{A/R}) = 0`.
@@ -37,6 +38,7 @@ localization at an element.
   any map `A →ₐ[R] B ⧸ I` lifts to `A →ₐ[R] B` for any square zero `I`.
 
 Suppose `P` is a formally smooth `R` algebra that surjects onto `A` with kernel `I`, then
+
 - `Algebra.FormallySmooth.iff_split_surjection`: `A` is formally smooth iff
   the algebra map `P ⧸ I² →ₐ[R] A` has an `R`-algebra section.
 - `Algebra.Extension.equivH1CotangentOfFormallySmooth`:

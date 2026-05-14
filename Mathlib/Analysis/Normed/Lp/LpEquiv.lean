@@ -12,7 +12,7 @@ public import Mathlib.Topology.ContinuousMap.Bounded.Normed
 /-!
 # Equivalences among $L^p$ spaces
 
-In this file we collect a variety of equivalences among various $L^p$ spaces.  In particular,
+In this file we collect a variety of equivalences among various $L^p$ spaces. In particular,
 when `α` is a `Fintype`, given `E : α → Type u` and `p : ℝ≥0∞`, if all `E i` for `i : α` are
 normed, additive commutative groups, there is a natural linear isometric
 equivalence `lpPiLpₗᵢ : lp E p ≃ₗᵢ PiLp p E`. In addition, when `α` is a discrete topological

@@ -17,16 +17,20 @@ as well as the bijection between said projectivization and the collection of all
 dimensional subspaces of the vector space.
 
 ## Notation
+
 `ℙ K V` is localized notation for `Projectivization K V`, the projectivization of a `K`-vector
 space `V`.
 
 ## Constructing terms of `ℙ K V`.
+
 We have three ways to construct terms of `ℙ K V`:
+
 - `Projectivization.mk K v hv` where `v : V` and `hv : v ≠ 0`.
 - `Projectivization.mk' K v` where `v : { w : V // w ≠ 0 }`.
 - `Projectivization.mk'' H h` where `H : Submodule K V` and `h : finrank H = 1`.
 
 ## Other definitions
+
 - For `v : ℙ K V`, `v.submodule` gives the corresponding submodule of `V`.
 - `Projectivization.equivSubmodule` is the equivalence between `ℙ K V`
   and `{ H : Submodule K V // finrank H = 1 }`.

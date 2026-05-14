@@ -49,7 +49,7 @@ assert_not_exists RelIso
 universe u v w x
 
 /-- A `PEquiv` is a partial equivalence, a representation of a bijection between a subset
-  of `α` and a subset of `β`. See also `PartialEquiv` for a version that requires `toFun` and
+of `α` and a subset of `β`. See also `PartialEquiv` for a version that requires `toFun` and
 `invFun` to be globally defined functions and has `source` and `target` sets as extra fields. -/
 structure PEquiv (α : Type u) (β : Type v) where
   /-- The underlying partial function of a `PEquiv` -/
@@ -60,7 +60,7 @@ structure PEquiv (α : Type u) (β : Type v) where
   inv : ∀ (a : α) (b : β), invFun b = some a ↔ toFun a = some b
 
 /-- A `PEquiv` is a partial equivalence, a representation of a bijection between a subset
-  of `α` and a subset of `β`. See also `PartialEquiv` for a version that requires `toFun` and
+of `α` and a subset of `β`. See also `PartialEquiv` for a version that requires `toFun` and
 `invFun` to be globally defined functions and has `source` and `target` sets as extra fields. -/
 infixr:25 " ≃. " => PEquiv
 

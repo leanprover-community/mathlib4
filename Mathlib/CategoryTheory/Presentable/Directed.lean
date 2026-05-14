@@ -30,6 +30,7 @@ which are not necessarily *subcategories* (the class of morphisms `W` does not
 have to be multiplicative.)
 
 ## References
+
 * [Alexander Grothendieck and Jean-Louis Verdier, *Exposé I : Préfaisceaux*,
   SGA 4 I 8.1.6][sga-4-tome-1]
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]

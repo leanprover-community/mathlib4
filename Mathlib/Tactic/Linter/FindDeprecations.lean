@@ -42,6 +42,7 @@ def repos : NameSet := .ofArray #[`Mathlib, `Archive, `Counterexamples]
 
 /--
 The main structure containing the information a deprecated declaration.
+
 * `module` is the name of the module containing the deprecated declaration;
 * `decl` is the name of the deprecated declaration;
 * `rgStart` is the `Position` where the deprecated declaration starts;
@@ -151,6 +152,7 @@ def deprecatedHashMap (oldDate newDate : String) :
 `rgs`.
 
 *Notes*.
+
 * The command makes the assumption that `rgs` is *sorted*.
 * The command removes all consecutive whitespace following the end of each range.
 -/
@@ -179,9 +181,11 @@ def removeDeprecations (fname : String) (rgs : Array Lean.Syntax.Range) : IO Str
 
 /--
 `parseLine line` assumes that the input string is of the form
+
 ```
 info: File/Path.lean:12:0: [362, 398, 399]
 ```
+
 and extracts `[362, 398, 399]`.
 It makes the assumption that there is a unique `: [` substring and then retrieves the numbers.
 
@@ -204,6 +208,7 @@ The `declName` is mostly for printing information, but is not used essentially b
 It returns the pair `(temp file name, file without the commands that generated the declarations)`.
 
 In the course of doing so, the function creates a temporary file from `fname`, by
+
 * adding the import `Mathlib.Tactic.Linter.CommandRanges` and
 * setting the `linter.commandRanges` option to `true`.
 

@@ -45,6 +45,7 @@ and fixing `D` would forces `k`. Whereas the later takes `D` and `L` as
 separate variables constrained by certain relations.
 
 ## Reference
+
 * <https://ysharifi.wordpress.com/2011/09/30/the-jacobson-noether-theorem/>
 -/
 
@@ -59,8 +60,8 @@ local notation3 "k" => Subring.center D
 open Polynomial LinearMap LieAlgebra
 
 /-- If `D` is a purely inseparable extension of `k` with characteristic `p`,
-  then for every element `a` of `D`, there exists a natural number `n`
-  such that `a ^ (p ^ n)` is contained in `k`. -/
+then for every element `a` of `D`, there exists a natural number `n`
+such that `a ^ (p ^ n)` is contained in `k`. -/
 lemma exists_pow_mem_center_of_inseparable (p : ℕ) [hchar : ExpChar D p] (a : D)
     (hinsep : ∀ x : D, IsSeparable k x → x ∈ k) : ∃ n, a ^ (p ^ n) ∈ k := by
   have := (@isPurelyInseparable_iff_pow_mem k D _ _ _ _ p (ExpChar.expChar_center_iff.2 hchar)).1
@@ -72,8 +73,8 @@ lemma exists_pow_mem_center_of_inseparable (p : ℕ) [hchar : ExpChar D p] (a : 
   exact ⟨n, Set.mem_of_subset_of_mem this <| Set.mem_range.2 ⟨m, hm⟩⟩
 
 /-- If `D` is a purely inseparable extension of `k` with characteristic `p`,
-  then for every element `a` of `D \ k`, there exists a natural number `n`
-  **greater than 0** such that `a ^ (p ^ n)` is contained in `k`. -/
+then for every element `a` of `D \ k`, there exists a natural number `n`
+**greater than 0** such that `a ^ (p ^ n)` is contained in `k`. -/
 lemma exists_pow_mem_center_of_inseparable' (p : ℕ) [ExpChar D p] {a : D}
     (ha : a ∉ k) (hinsep : ∀ x : D, IsSeparable k x → x ∈ k) : ∃ n, 1 ≤ n ∧ a ^ (p ^ n) ∈ k := by
   obtain ⟨n, hn⟩ := exists_pow_mem_center_of_inseparable p a hinsep
@@ -84,9 +85,9 @@ lemma exists_pow_mem_center_of_inseparable' (p : ℕ) [ExpChar D p] {a : D}
   exact ⟨n, ⟨Nat.one_le_iff_ne_zero.mpr nzero, hn⟩⟩
 
 /-- If `D` is a purely inseparable extension of `k` of characteristic `p`,
-  then for every element `a` of `D \ k`, there exists a natural number `m`
-  greater than 0 such that `(a * x - x * a) ^ n = 0` (as linear maps) for
-  every `n` greater than `(p ^ m)`. -/
+then for every element `a` of `D \ k`, there exists a natural number `m`
+greater than 0 such that `(a * x - x * a) ^ n = 0` (as linear maps) for
+every `n` greater than `(p ^ m)`. -/
 lemma exist_pow_eq_zero_of_le (p : ℕ) [hchar : ExpChar D p]
     {a : D} (ha : a ∉ k) (hinsep : ∀ x : D, IsSeparable k x → x ∈ k) :
     ∃ m, 1 ≤ m ∧ ∀ n, p ^ m ≤ n → (ad k D a)^[n] = 0 := by
@@ -104,8 +105,8 @@ lemma exist_pow_eq_zero_of_le (p : ℕ) [hchar : ExpChar D p]
 
 variable (D) in
 /-- Jacobson-Noether theorem: For a non-commutative division algebra
-  `D` that is algebraic over its center `k`, there exists an element
-  `x` of `D \ k` that is separable over `k`. -/
+`D` that is algebraic over its center `k`, there exists an element
+`x` of `D \ k` that is separable over `k`. -/
 theorem exists_separable_and_not_isCentral (H : k ≠ (⊤ : Subring D)) :
     ∃ x : D, x ∉ k ∧ IsSeparable k x := by
   obtain ⟨p, hp⟩ := ExpChar.exists D
@@ -174,9 +175,9 @@ theorem exists_separable_and_not_isCentral (H : k ≠ (⊤ : Subring D)) :
 
 open Subring Algebra in
 /-- Jacobson-Noether theorem: For a non-commutative division algebra `D`
-  that is algebraic over a field `L`, if the center of
-  `D` coincides with `L`, then there exist an element `x` of `D \ L`
-  that is separable over `L`. -/
+that is algebraic over a field `L`, if the center of
+`D` coincides with `L`, then there exist an element `x` of `D \ L`
+that is separable over `L`. -/
 theorem exists_separable_and_not_isCentral' {L D : Type*} [Field L] [DivisionRing D]
     [Algebra L D] [Algebra.IsAlgebraic L D] [Algebra.IsCentral L D]
     (hneq : (⊥ : Subalgebra L D) ≠ ⊤) :

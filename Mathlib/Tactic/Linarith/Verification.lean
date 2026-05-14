@@ -181,11 +181,11 @@ it tries to derive a contradiction from `l` and use this to produce a proof of `
 The returned certificate is a map `m` from hypothesis indices to natural number coefficients.
 If our set of hypotheses has the form `{tᵢ Rᵢ 0}`,
 then the elimination process should have guaranteed that
-1.\ `∑ (m i)*tᵢ = 0`,
+1.\\ `∑ (m i)*tᵢ = 0`,
 with at least one `i` such that `m i > 0` and `Rᵢ` is `<`.
 
 We have also that
-2.\ `∑ (m i)*tᵢ < 0`,
+2.\\ `∑ (m i)*tᵢ < 0`,
 since for each `i`, `(m i)*tᵢ ≤ 0` and at least one is strictly negative.
 So we conclude a contradiction `0 < 0`.
 

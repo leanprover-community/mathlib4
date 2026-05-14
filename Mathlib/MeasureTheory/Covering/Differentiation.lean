@@ -30,6 +30,7 @@ by `Besicovitch.vitaliFamily` (for balls) or by `Vitali.vitaliFamily` (for doubl
 
 Specific applications to Lebesgue density points and the Lebesgue differentiation theorem are also
 derived:
+
 * `VitaliFamily.ae_tendsto_measure_inter_div` states that, for almost every point `x ∈ s`,
   then `μ (s ∩ a) / μ a` tends to `1` as `a` shrinks to `x` along a Vitali family.
 * `VitaliFamily.ae_tendsto_average_norm_sub` states that, for almost every point `x`, then the

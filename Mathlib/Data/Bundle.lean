@@ -9,6 +9,7 @@ public import Mathlib.Data.Set.Basic
 
 /-!
 # Bundle
+
 Basic data structure to implement fiber bundles, vector bundles (maybe fibrations?), etc. This file
 should contain all possible results that do not involve any topology.
 
@@ -36,7 +37,8 @@ general, the constructions of fiber bundles we will make will be of this form.
   fiber bundle.
 
 ## References
-- https://en.wikipedia.org/wiki/Bundle_(mathematics)
+
+- https://en.wikipedia.org/wiki/Bundle\_(mathematics)
 -/
 
 @[expose] public section

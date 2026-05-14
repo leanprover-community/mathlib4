@@ -35,8 +35,8 @@ properties about them.
 ## Implementation notes
 
 `comp_parallelComp_comp_copy` is true only when considering Markov kernels. To see why, consider
-the counterexample with $X = Y = \{\varnothing\}$, kernels $\kappa(\cdot | \varnothing) = 2\delta_
-{\varnothing}$ and $\eta(\cdot | \varnothing) = (1/2)\delta_{\varnothing}$: although their
+the counterexample with $X = Y = \{\varnothing\}$, kernels $\kappa(\cdot | \varnothing) = 2\delta\_
+{\varnothing}$ and $\eta(\cdot | \varnothing) = (1/2)\delta\_{\varnothing}$: although their
 composition is deterministic, the equation fails.
 
 ## References

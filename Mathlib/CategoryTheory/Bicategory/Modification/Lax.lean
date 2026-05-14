@@ -24,6 +24,7 @@ Given two lax functors `F` and `G`, we define:
 
 * `LaxTrans.Modification η θ`: modifications between lax transformations `η` and `θ` between
   `F` and `G`.
+
 * `LaxTrans.homCategory F G`: the category structure on the lax transformations
   between `F` and `G`, where composition is given by vertical composition. Note that this is a
   scoped instance in the `Lax.LaxTrans` namespace, so you need to run
@@ -31,6 +32,7 @@ Given two lax functors `F` and `G`, we define:
 
 * `OplaxTrans.Modification η θ`: modifications between oplax transformations `η` and `θ`
   between `F` and `G`.
+
 * `OplaxTrans.homCategory F G`: the category structure on the oplax transformations
   between `F` and `G`, where composition is given by vertical composition. Note that this is a
   scoped instance in the `Lax.OplaxTrans` namespace, so you need to run

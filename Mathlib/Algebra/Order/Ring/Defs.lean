@@ -22,11 +22,13 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 This file develops the basics of ordered (semi)rings.
 
 Each typeclass here comprises
+
 * an algebraic class (`Semiring`, `CommSemiring`, `Ring`, `CommRing`)
 * an order class (`PartialOrder`, `LinearOrder`)
 * assumptions on how both interact ((strict) monotonicity, canonicity)
 
 For short,
+
 * "`+` respects `≤`" means "monotonicity of addition"
 * "`+` respects `<`" means "strict monotonicity of addition"
 * "`*` respects `≤`" means "monotonicity of multiplication by a nonnegative number".

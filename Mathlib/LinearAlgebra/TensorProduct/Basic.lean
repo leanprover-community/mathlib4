@@ -12,7 +12,7 @@ public import Mathlib.LinearAlgebra.TensorProduct.Defs
 
 Given any bilinear map `f : M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂`, there is a unique semilinear map
 `TensorProduct.lift f : TensorProduct R M N →ₛₗ[σ₁₂] P₂` whose composition with the canonical
-bilinear map `TensorProduct.mk` is the given bilinear map `f`.  Uniqueness is shown in the theorem
+bilinear map `TensorProduct.mk` is the given bilinear map `f`. Uniqueness is shown in the theorem
 `TensorProduct.lift.unique`.
 
 ## Tags

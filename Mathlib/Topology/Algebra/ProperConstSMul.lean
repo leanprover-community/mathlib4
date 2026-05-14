@@ -17,6 +17,7 @@ Note that this is **not** the same as a proper action (not yet in `Mathlib`)
 which requires `(c, x) ↦ (c • x, x)` to be a proper map.
 
 We also provide 4 instances:
+
 - for a continuous action on a compact Hausdorff space,
 - and for a continuous group action on a general space;
 - for the action on `X × Y`;

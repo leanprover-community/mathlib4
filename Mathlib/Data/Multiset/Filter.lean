@@ -39,7 +39,7 @@ section
 variable (p : α → Prop) [DecidablePred p]
 
 /-- `Filter p s` returns the elements in `s` (with the same multiplicities)
-  which satisfy `p`, and removes the rest. -/
+which satisfy `p`, and removes the rest. -/
 def filter (s : Multiset α) : Multiset α :=
   Quot.liftOn s (fun l => (List.filter p l : Multiset α)) fun _l₁ _l₂ h => Quot.sound <| h.filter p
 
@@ -174,9 +174,9 @@ lemma card_filter_le_iff (s : Multiset α) (P : α → Prop) [DecidablePred P] (
 
 
 /-- `filterMap f s` is a combination filter/map operation on `s`.
-  The function `f : α → Option β` is applied to each element of `s`;
-  if `f a` is `some b` then `b` is added to the result, otherwise
-  `a` is removed from the resulting multiset. -/
+The function `f : α → Option β` is applied to each element of `s`;
+if `f a` is `some b` then `b` is added to the result, otherwise
+`a` is removed from the resulting multiset. -/
 def filterMap (f : α → Option β) (s : Multiset α) : Multiset β :=
   Quot.liftOn s (fun l => (List.filterMap f l : Multiset β))
     fun _l₁ _l₂ h => Quot.sound <| h.filterMap f

@@ -39,12 +39,12 @@ variable {F α β γ δ : Type*}
 /-- The type of `⊔`-preserving functions from `α` to `β`. -/
 structure SupHom (α β : Type*) [Max α] [Max β] where
   /-- The underlying function of a `SupHom`.
-
+  
   Do not use this function directly. Instead use the coercion coming from the `FunLike`
   instance. -/
   toFun : α → β
   /-- A `SupHom` preserves suprema.
-
+  
   Do not use this directly. Use `map_sup` instead. -/
   map_sup' (a b : α) : toFun (a ⊔ b) = toFun a ⊔ toFun b
 
@@ -52,12 +52,12 @@ structure SupHom (α β : Type*) [Max α] [Max β] where
 @[to_dual existing]
 structure InfHom (α β : Type*) [Min α] [Min β] where
   /-- The underlying function of an `InfHom`.
-
+  
   Do not use this function directly. Instead use the coercion coming from the `FunLike`
   instance. -/
   toFun : α → β
   /-- An `InfHom` preserves infima.
-
+  
   Do not use this directly. Use `map_inf` instead. -/
   map_inf' (a b : α) : toFun (a ⊓ b) = toFun a ⊓ toFun b
 

@@ -50,6 +50,7 @@ context to make them more easily usable.
 
 We also restate the following specialized versions of general theorems on differentiation of
 measures:
+
 * `Besicovitch.ae_tendsto_rnDeriv` ensures that `ρ (closedBall x r) / μ (closedBall x r)` tends
   almost surely to the Radon-Nikodym derivative of `ρ` with respect to `μ` at `x`.
 * `Besicovitch.ae_tendsto_measure_inter_div` states that almost every point in an arbitrary set `s`

@@ -14,6 +14,7 @@ public import Mathlib.RingTheory.AdicCompletion.Basic
 
 In this file we set up the basic theory of Henselian (local) rings.
 A ring `R` is *Henselian* at an ideal `I` if the following conditions hold:
+
 * `I` is contained in the Jacobson radical of `R`
 * for every polynomial `f` over `R`, with a *simple* root `a₀` over the quotient ring `R/I`,
   there exists a lift `a : R` of `a₀` that is a root of `f`.

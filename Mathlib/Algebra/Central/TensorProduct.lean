@@ -26,6 +26,7 @@ algebra and `B, C` nontrivial, then both `B` and `C` are central algebras.
   central algebra over `K`.
 
 ## Tags
+
 Central Algebras, Central Simple Algebras, Noncommutative Algebra
 -/
 
@@ -72,13 +73,13 @@ lemma right_of_tensor (inj : Function.Injective (algebraMap K B)) [Module.Flat K
   left_of_tensor K C B inj
 
 /-- Let `B` and `C` be two algebras over a field `K`, if `B ⊗[K] C` is central and `C` is
-  non-trivial, then `B` is central. -/
+non-trivial, then `B` is central. -/
 lemma left_of_tensor_of_field (K B C : Type*) [Field K] [Ring B] [Ring C] [Nontrivial C]
     [Algebra K B] [Algebra K C] [IsCentral K (B ⊗[K] C)] : IsCentral K B :=
   left_of_tensor K B C <| FaithfulSMul.algebraMap_injective K C
 
 /-- Let `B` and `C` be two algebras over a field `K`, if `B ⊗[K] C` is central and `B` is
-  non-trivial, then `C` is central. -/
+non-trivial, then `C` is central. -/
 lemma right_of_tensor_of_field (K B C : Type*) [Field K] [Ring B] [Ring C] [Nontrivial B]
     [Algebra K B] [Algebra K C] [IsCentral K (B ⊗[K] C)] : IsCentral K C :=
   right_of_tensor K B C <| FaithfulSMul.algebraMap_injective K B

@@ -12,10 +12,11 @@ public import Mathlib.Data.Real.Basic
 # Predicates on monomials
 
 In this file we define `UnitMonomial`: type to represent monomials without coefficient as a list of
-its exponents.  `[e₁, e₂, ..., eₙ]` corresponds to `basis[0] ^ e₁ * ... * basis[n] ^ eₙ` where
+its exponents. `[e₁, e₂, ..., eₙ]` corresponds to `basis[0] ^ e₁ * ... * basis[n] ^ eₙ` where
 `basis` is the basis of functions.
 
 Then we define some predicates for these lists:
+
 1. `FirstNonzeroIsPos li` means that the first non-zero element of the list `li` is positive.
 2. `FirstNonzeroIsNeg li` means that the first non-zero element of the list `li` is negative.
 3. `AllZero li` means that all elements in `li` are zero.

@@ -376,6 +376,7 @@ theorem BddAbove.exists_ge [SemilatticeSup γ] {s : Set γ} (hs : BddAbove s) (x
 
 /-!
 ### Specific sets
+
 #### Unbounded intervals
 -/
 

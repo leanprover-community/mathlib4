@@ -24,7 +24,7 @@ variable {R : Type*} [Mul R]
 is injective. -/
 @[to_additive (attr := instance_reducible)
   /-- An add-left-regular element is an element `c` such that addition
-    on the left by `c` is injective. -/]
+  on the left by `c` is injective. -/]
 def IsLeftRegular (c : R) :=
   (c * ·).Injective
 
@@ -32,7 +32,7 @@ def IsLeftRegular (c : R) :=
 is injective. -/
 @[to_additive (attr := instance_reducible)
   /-- An add-right-regular element is an element `c` such that addition
-    on the right by `c` is injective. -/]
+  on the right by `c` is injective. -/]
 def IsRightRegular (c : R) :=
   (· * c).Injective
 

@@ -12,8 +12,8 @@ public import Mathlib.Topology.NhdsWithin
 
 This file develops API on the relative versions
 
-* `ContinuousOn`        of `Continuous`
-* `ContinuousWithinAt`  of `ContinuousAt`
+* `ContinuousOn` of `Continuous`
+* `ContinuousWithinAt` of `ContinuousAt`
 
 related to continuity, which are defined in previous definition files.
 Their basic properties studied in this file include the relationships between

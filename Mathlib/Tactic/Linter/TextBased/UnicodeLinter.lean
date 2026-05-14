@@ -143,6 +143,7 @@ Other unicode characters present in Mathlib but not present in any of the above 
 
 This list may be extended by more characters for which no VSCode-extension abbreviation exists.
 Some guidelines:
+
 - No invisible characters
 - No characters affecting text directionality (Mathlib uses left-to-right text).
 - No [Private Use Areas](https://en.wikipedia.org/wiki/Private_Use_Areas)
@@ -189,6 +190,7 @@ public def nonEmojis : Array Char := #[]
 /-- If `false`, the character is not allowed in Mathlib.
 
 Implemented using an allowlist consisting of:
+
 - certain ASCII characters
 - characters with abbreviations in the VSCode extension (`withVSCodeAbbrev`)
 - "the rest" (`othersInMathlib`)

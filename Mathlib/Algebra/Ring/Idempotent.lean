@@ -15,6 +15,7 @@ public import Mathlib.Algebra.Group.Torsion
 # Idempotent elements of a ring
 
 This file proves result about idempotent elements of a ring, like:
+
 * `IsIdempotentElem.one_sub_iff`: In a (non-associative) ring, `a` is an idempotent if and only if
   `1 - a` is an idempotent.
 -/

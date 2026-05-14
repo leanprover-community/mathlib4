@@ -72,6 +72,7 @@ variable {𝕜 𝕜' : Type*} {α : Type*} {E : α → Type*} {p q : ℝ≥0∞}
 
 
 /-- The property that `f : ∀ i : α, E i`
+
 * is finitely supported, if `p = 0`, or
 * admits an upper bound for `Set.range (fun i ↦ ‖f i‖)`, if `p = ∞`, or
 * has the series `∑' i, ‖f i‖ ^ p` be summable, if `0 < p < ∞`. -/

@@ -79,6 +79,7 @@ This tactic is extensible: tag a lemma with `@[nontriviality]` to use it in the 
   `nontriviality using *` adds all local hypotheses to the `simp` set.
 
 Examples:
+
 ```
 example {R : Type} [OrderedRing R] {a : R} (h : 0 < a) : 0 < a := by
   nontriviality -- There is now a `Nontrivial R` hypothesis available.

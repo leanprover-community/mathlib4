@@ -16,11 +16,13 @@ In this file we define the filter `𝓝ˢ s` or `nhdsSet s` consisting of all ne
 ## Main Properties
 
 There are a couple different notions equivalent to `s ∈ 𝓝ˢ t`:
+
 * `s ⊆ interior t` using `subset_interior_iff_mem_nhdsSet`
 * `∀ x : X, x ∈ t → s ∈ 𝓝 x` using `mem_nhdsSet_iff_forall`
 * `∃ U : Set X, IsOpen U ∧ t ⊆ U ∧ U ⊆ s` using `mem_nhdsSet_iff_exists`
 
 Furthermore, we have the following results:
+
 * `monotone_nhdsSet`: `𝓝ˢ` is monotone
 * In T₁-spaces, `𝓝ˢ` is strictly monotone and hence injective:
   `strict_mono_nhdsSet`/`injective_nhdsSet`. These results are in

@@ -19,12 +19,14 @@ public import Mathlib.RingTheory.Localization.Defs
   surjection `P →ₐ[R] R`.
 
 - `Algebra.Extension.Hom`: Given a commuting square
+
   ```
   R --→ P -→ S
   |          |
   ↓          ↓
   R' -→ P' → S
   ```
+
   A hom between `P` and `P'` is a ring homomorphism that makes the two squares commute.
 
 - `Algebra.Extension.Cotangent`:
@@ -194,12 +196,14 @@ variable [Algebra R R'] [Algebra R' R''] [Algebra R R'']
 variable [Algebra S S'] [Algebra S' S''] [Algebra S S'']
 
 /-- Given a commuting square
+
 ```
 R --→ P -→ S
 |          |
 ↓          ↓
 R' -→ P' → S
 ```
+
 A hom between `P` and `P'` is a ring homomorphism that makes the two squares commute.
 -/
 @[ext]

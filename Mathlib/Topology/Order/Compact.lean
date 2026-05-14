@@ -232,7 +232,7 @@ theorem IsCompact.exists_isMinOn [ClosedIicTopology α] {s : Set β} (hs : IsCom
   rwa [(image_id' s).symm]
 
 /-- If a continuous function lies strictly above `a` on a compact set,
-  it has a lower bound strictly above `a`. -/
+it has a lower bound strictly above `a`. -/
 theorem IsCompact.exists_forall_le' [ClosedIicTopology α] [NoMaxOrder α] {f : β → α}
     {s : Set β} (hs : IsCompact s) (hf : ContinuousOn f s) {a : α} (hf' : ∀ b ∈ s, a < f b) :
     ∃ a', a < a' ∧ ∀ b ∈ s, a' ≤ f b := by

@@ -28,13 +28,13 @@ section limit_characterization
 variable {J : Type v} [Category.{w} J] {F : J ⥤ Type u}
 
 /-- Given a section of a functor F into `Type*`,
-  construct a cone over F with `PUnit` as the cone point. -/
+construct a cone over F with `PUnit` as the cone point. -/
 def coneOfSection {s} (hs : s ∈ F.sections) : Cone F where
   pt := PUnit
   π := { app j := ↾fun _ ↦ s j, naturality _ _ f := by ext; exact (hs f).symm }
 
 /-- Given a cone over a functor F into `Type*` and an element in the cone point,
-  construct a section of F. -/
+construct a section of F. -/
 def sectionOfCone (c : Cone F) (x : c.pt) : F.sections :=
   ⟨fun j ↦ c.π.app j x, fun f ↦ congr_hom (c.π.naturality f).symm x⟩
 
@@ -56,7 +56,7 @@ theorem isLimit_iff_bijective_sectionOfCone (c : Cone F) :
     sectionOfCone]
 
 /-- The equivalence between a limiting cone of `F` in `Type u` and the "concrete" definition as the
-  sections of `F`. -/
+sections of `F`. -/
 noncomputable def isLimitEquivSections {c : Cone F} (t : IsLimit c) :
     c.pt ≃ F.sections where
   toFun := sectionOfCone c

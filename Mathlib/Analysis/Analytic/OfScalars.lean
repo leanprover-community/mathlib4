@@ -12,7 +12,9 @@ public import Mathlib.Analysis.Analytic.ConvergenceRadius
 
 This file contains API for analytic functions `∑ cᵢ • xⁱ` defined in terms of scalars
 `c₀, c₁, c₂, …`.
+
 ## Main definitions / results:
+
 * `FormalMultilinearSeries.ofScalars`: the formal power series `∑ cᵢ • xⁱ`.
 * `FormalMultilinearSeries.ofScalarsSum`: the sum of such a power series, if it exists, and zero
   otherwise.

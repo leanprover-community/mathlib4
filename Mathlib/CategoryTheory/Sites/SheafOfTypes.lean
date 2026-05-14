@@ -34,6 +34,7 @@ We also provide equivalent conditions to satisfy alternate definitions given in 
 
 * Maclane-Moerdijk [MM92]: Using `compatible_iff_sieveCompatible`, the definitions of `IsSheaf`
   are equivalent. There are also alternate definitions given:
+
   - Sheaf for a pretopology (Prop 1): `isSheaf_pretopology` combined with `pullbackCompatible_iff`.
   - Sheaf for a pretopology as equalizer (Prop 1, bis): `Equalizer.Presieve.sheaf_condition`
     combined with the previous.

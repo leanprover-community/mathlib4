@@ -90,7 +90,7 @@ theorem subset_polynomial_aeval (a : A) (p : 𝕜[X]) : (eval · p) '' σ a ⊆ 
   apply mt fun h => (hcomm.isUnit_mul_iff.mp h).1
   simpa only [aeval_X, aeval_C, map_sub] using hk
 
-/-- The *spectral mapping theorem* for polynomials.  Note: the assumption `degree p > 0`
+/-- The *spectral mapping theorem* for polynomials. Note: the assumption `degree p > 0`
 is necessary in case `σ a = ∅`, for then the left-hand side is `∅` and the right-hand side,
 assuming `[Nontrivial A]`, is `{k}` where `p = Polynomial.C k`. -/
 theorem map_polynomial_aeval_of_degree_pos [IsAlgClosed 𝕜] (a : A) (p : 𝕜[X])

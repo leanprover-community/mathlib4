@@ -197,7 +197,7 @@ namespace Finsupp
 variable {α : Type*}
 
 /-- Alternative multinomial definition based on a finsupp, using the support
-  for the big operations
+for the big operations
 -/
 def multinomial (f : α →₀ ℕ) : ℕ :=
   (f.sum fun _ => id)! / f.prod fun _ n => n !

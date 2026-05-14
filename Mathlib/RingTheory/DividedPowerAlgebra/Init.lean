@@ -74,7 +74,7 @@ variable (R M : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M]
 namespace DividedPowerAlgebra
 
 /-- The type coding the basic relations that will give rise to the divided power algebra.
-  The class of `MvPolynomial.X (n, a)` will be equal to `dpow n a`, for `a ∈ M`. -/
+The class of `MvPolynomial.X (n, a)` will be equal to `dpow n a`, for `a ∈ M`. -/
 inductive Rel : MvPolynomial (ℕ × M) R → MvPolynomial (ℕ × M) R → Prop
   | rfl_zero : Rel 0 0 -- Needed for technical reasons.
   | zero {a : M} : Rel (X (0, a)) 1
@@ -89,9 +89,9 @@ def RelI : Ideal (MvPolynomial (ℕ × M) R) := ofRel (DividedPowerAlgebra.Rel R
 end DividedPowerAlgebra
 
 /-- The divided power algebra of a module M is defined as the ring quotient of the polynomial ring
-  in the variables `ℕ × M` by the ring relation defined by `DividedPowerAlgebra.Rel`.
-  We will later show that that `DividedPowerAlgebra R M` has divided powers.
-  It satisfies a weak universal property for morphisms to rings with divided powers. -/
+in the variables `ℕ × M` by the ring relation defined by `DividedPowerAlgebra.Rel`.
+We will later show that that `DividedPowerAlgebra R M` has divided powers.
+It satisfies a weak universal property for morphisms to rings with divided powers. -/
 abbrev DividedPowerAlgebra := RingQuot (DividedPowerAlgebra.Rel R M)
 
 namespace DividedPowerAlgebra
@@ -407,10 +407,10 @@ lemma LinearMap.dp_smul {n : ℕ} {r : R} {a : M} : dp S n (f (r • a)) = r ^ n
     DividedPowerAlgebra.dp_smul, ← map_pow, algebraMap_smul]
 
 /-- The functoriality map between divided power algebras associated with a linear map of the
-  underlying modules.
-  Given an `R`-algebra `S`, an `S`-module `N` and an `R`-linear map `f : M →ₗ[R] N`,
-  this is the map `DividedPowerAlgebra R M →ₐ[R] DividedPowerAlgebra S N`
-  sending `dp R n m` to `dp S n (f m)`. -/
+underlying modules.
+Given an `R`-algebra `S`, an `S`-module `N` and an `R`-linear map `f : M →ₗ[R] N`,
+this is the map `DividedPowerAlgebra R M →ₐ[R] DividedPowerAlgebra S N`
+sending `dp R n m` to `dp S n (f m)`. -/
 def map : DividedPowerAlgebra R M →ₐ[R] DividedPowerAlgebra S N :=
   DividedPowerAlgebra.lift' (f := fun nm ↦ dp S nm.fst (f nm.snd))
     (fun _ ↦ LinearMap.dp_zero f)
@@ -473,9 +473,9 @@ lemma map_id : map R (LinearMap.id (R := R) (M := M)) = AlgHom.id R _ := by
   simp [map_apply_dp]
 
 /-- The functoriality map between divided power algebras associated with a linear equivalence of
-  the underlying modules. Given an `R`-algebra `S`, an `S`-module `N` and an `R`-linear equivalence
-  `f : M →ₗ[R] N`, this is the map `DividedPowerAlgebra R M →ₐ[R] DividedPowerAlgebra S N`
-  sending `dp R n m` to `dp S n (f m)`. -/
+the underlying modules. Given an `R`-algebra `S`, an `S`-module `N` and an `R`-linear equivalence
+`f : M →ₗ[R] N`, this is the map `DividedPowerAlgebra R M →ₐ[R] DividedPowerAlgebra S N`
+sending `dp R n m` to `dp S n (f m)`. -/
 @[simps!]
 def mapEquiv (g : M ≃ₗ[R] N) :
     DividedPowerAlgebra R M ≃ₐ[R] DividedPowerAlgebra R N :=

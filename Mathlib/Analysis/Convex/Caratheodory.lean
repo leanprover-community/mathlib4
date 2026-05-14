@@ -34,6 +34,7 @@ in `𝕜ᵈ` is the union of the convex hulls of the `(d + 1)`-tuples in `s`.
 This theorem was formalized as part of the Sphere Eversion project.
 
 ## Tags
+
 convex hull, caratheodory
 
 -/

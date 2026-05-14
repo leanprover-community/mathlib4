@@ -23,6 +23,7 @@ The linter inspects the goals before and after each tactic execution.
 If they are not identical, the linter is happy.
 If they are identical, then the linter checks if the tactic is whitelisted.
 Possible reason for whitelisting are
+
 * tactics that emit messages, such as `have?`, `extract_goal`, or `says`;
 * tactics that are in place to assert something, such as `guard`;
 * tactics that allow to work on a specific goal, such as `on_goal`;
@@ -48,6 +49,7 @@ before and after and see if there is some change.
   then always fail whenever the user explicitly chose to pass `skip` as a discharger tactic.
 
 ## TODO
+
 * The linter seems to be silenced by `set_option ... in`: maybe it should enter `in`s?
 
 ## Implementation notes

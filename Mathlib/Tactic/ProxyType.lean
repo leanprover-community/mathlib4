@@ -273,6 +273,7 @@ If `α` is an inductive type with name `I`, then as a side effect this elaborato
 The elaborator makes use of the expected type, so `(proxy_equiv% _ : _ ≃ α)` works.
 
 For example, given this inductive type
+
 ```
 inductive foo (n : Nat) (α : Type)
   | a
@@ -280,8 +281,10 @@ inductive foo (n : Nat) (α : Type)
   | c (x : Fin n) : Fin x → foo n α
   | d : Bool → α → foo n α
 ```
+
 the proxy type it generates is `Unit ⊕ Bool ⊕ (x : Fin n) × Fin x ⊕ (_ : Bool) × α` and
 in particular we have that
+
 ```
 proxy_equiv% (foo n α) : Unit ⊕ Bool ⊕ (x : Fin n) × Fin x ⊕ (_ : Bool) × α ≃ foo n α
 ```

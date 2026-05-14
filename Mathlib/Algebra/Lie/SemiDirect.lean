@@ -14,11 +14,10 @@ public import Mathlib.Algebra.Lie.Prod
 
 This file defines the semi-direct sum of Lie algebras. These are the infinitesimal counterpart of
 semidirect products of (Lie) groups. Given two Lie algebras `K` and `L` over `R` as well as a Lie
-algebra homomorphism  `ψ : L → LieDerivation  R K K`, the underlying set of the semidirect sum is
+algebra homomorphism `ψ : L → LieDerivation  R K K`, the underlying set of the semidirect sum is
 `K × L`, however the bracket is twisted by `ψ`. In this file we show that `SemiDirectSum K L ψ` is
 itself a Lie algebra and that it fits into an exact sequence `H → (SemiDirectSum K L ψ) → L`, i.e.
 forms an extension of `L`.
-
 
 ## References
 

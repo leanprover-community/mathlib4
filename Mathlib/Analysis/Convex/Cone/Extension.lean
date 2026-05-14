@@ -13,6 +13,7 @@ public import Mathlib.LinearAlgebra.LinearPMap
 # Extension theorems
 
 We prove two extension theorems:
+
 * `riesz_extension`:
   [M. Riesz extension theorem](https://en.wikipedia.org/wiki/M._Riesz_extension_theorem) says that
   if `s` is a convex cone in a real vector space `E`, `p` is a submodule of `E`

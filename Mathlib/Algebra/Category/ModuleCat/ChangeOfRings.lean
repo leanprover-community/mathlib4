@@ -40,7 +40,9 @@ public import Mathlib.LinearAlgebra.TensorProduct.Tower
   `f : R ⟶ S` then `coextendScalars f` is the right adjoint of `restrictScalars f`.
 
 ## Notation
+
 Let `R, S` be rings and `f : R →+* S`
+
 * if `M` is an `R`-module, `s : S` and `m : M`, then `s ⊗ₜ[R, f] m` is the pure tensor
   `s ⊗ m : S ⊗[R, f] M`.
 -/
@@ -79,6 +81,7 @@ def map' {M M' : ModuleCat.{v} S} (g : M ⟶ M') : obj' f M ⟶ obj' f M' :=
 end RestrictScalars
 
 /-- The restriction of scalars operation is functorial. For any `f : R →+* S` a ring homomorphism,
+
 * an `S`-module `M` can be considered as `R`-module by `r • m = f r • m`
 * an `S`-linear map is also `R`-linear
 -/

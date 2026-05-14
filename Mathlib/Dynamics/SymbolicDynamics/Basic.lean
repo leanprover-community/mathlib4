@@ -45,16 +45,16 @@ so that the theory works not only for groups but also for cancellative monoids.
 ## Main definitions
 
 * `shift g x` — left translation: in additive notation `(shift v x) u = x (v + u)` (using the
-**left** action of `G` on configurations).
+  **left** action of `G` on configurations).
 * `cylinder U x` — configurations agreeing with `x` on a finite set `U ⊆ G`.
 * `Pattern A G` — a configuration which takes
-default value outside of a finite support, together with this support.
+  default value outside of a finite support, together with this support.
 * `Pattern.occursInAt p x g` — occurrence of `p` in `x` at translate `g`.
 * `forbidden F` — configurations avoiding every pattern in `F`.
 * `Subshift A G` — closed, shift-invariant subsets of the full shift.
 * `MulSubshift.ofForbidden F` — the subshift defined by forbidding a family of patterns.
 * `subshift_of_finite_type F` — a subshift of finite type defined by a finite set of
-forbidden patterns.
+  forbidden patterns.
 * `languageOn X U` — the set of patterns of shape `U` obtained by restricting some `x ∈ X`.
 
 ## Design choice: ambient vs. inner (subshift-relative) viewpoint
@@ -223,6 +223,7 @@ end Cylinders
 
 /-- A *subshift* on an alphabet `A` is a closed, shift-invariant subset of `G → A`. Formally, it is
 composed of:
+
 * `carrier`: the underlying set of allowed configurations.
 * `isClosed`: the set is topologically closed in `A^G`.
 * `mapsTo`: the set is invariant under all left-translation shifts
@@ -242,6 +243,7 @@ variable (G : Type*) [Monoid G]
 /-- A *subshift* on an alphabet `A` over a multiplicative monoid `G` is a closed,
 shift-invariant subset of `G → A`, where the shift is given by left-multiplication.
 Formally, it is composed of:
+
 * `carrier`: the underlying set of allowed configurations.
 * `isClosed`: the set is topologically closed in `A^G`.
 * `mapsTo`: the set is invariant under all left-translation shifts
@@ -274,6 +276,7 @@ def mulFullShift (A G) [TopologicalSpace A] [Monoid G] : MulSubshift A G where
 /-- A *pattern* is a finite configuration in the full shift `A^G`.
 
 It consists of:
+
 * a full configuration `config : G → A` in the full shift;
 * a finite subset `support : Finset G` of coordinates, called the support of `p`;
 * a proof `condition` that outside `support`, `config` takes the default value of `A`.
@@ -349,6 +352,7 @@ variable {G : Type*} [Monoid G] [IsLeftCancelMul G]
 a configuration.
 
 On input `h : G`, we proceed as follows:
+
 * if `h` lies in the left-translate of the support, i.e. `h ∈ p.support.image (v * ·)`,
   choose (noncomputably) `w ∈ p.support` with `v * w = h` and return `p.config w`;
 * otherwise return `default`.
@@ -362,6 +366,7 @@ require a left-cancellation hypothesis and are proved in separate lemmas.
 a configuration.
 
 On input `h : G`, we proceed as follows:
+
 * if `h` lies in the left-translate of the support, i.e. `h ∈ p.support.image (v + ·)`,
   choose (noncomputably) `w ∈ p.support` with `v + w = h` and return `p.config w`;
 * otherwise return `default`.
@@ -403,10 +408,10 @@ This uses `[IsLeftCancelMul G]` to identify the unique preimage of `v * w`
 under left-multiplication by `v`. -/
 @[to_additive
   /-- On the translated support, `p.shift v` agrees with `p.config` at the preimage.
-
+  
   More precisely, if `w ∈ p.support`, then at the translated site `v + w`,
   the configuration `p.shift v` takes the value `p.config w`.
-
+  
   This uses `[IsLeftCancelAdd G]` to identify the unique preimage of `v + w`
   under left-translation by `v`. -/]
 lemma mulShift_apply_mul_left_of_mem
@@ -449,9 +454,9 @@ Formally: if `x` avoids every `p ∈ F` at every position, then for any `h : G`,
 the shifted configuration `mulShift h x` also avoids every `p ∈ F` at every position. -/
 @[to_additive mapsTo_shift_forbidden
   /-- Configurations that avoid a family `F` of patterns are stable under the shift.
-
-Formally: if `x` avoids every `p ∈ F` at every position, then for any `h : G`,
-the shifted configuration `shift h x` also avoids every `p ∈ F` at every position. -/]
+  
+  Formally: if `x` avoids every `p ∈ F` at every position, then for any `h : G`,
+  the shifted configuration `shift h x` also avoids every `p ∈ F` at every position. -/]
 lemma mapsTo_mulShift_mulForbidden {A G : Type*} [Inhabited A] [Monoid G]
     (F : Set (Pattern A G)) (h : G) :
     Set.MapsTo (mulShift h) (mulForbidden (A := A) (G := G) F) (mulForbidden F) := by
@@ -477,15 +482,15 @@ the configuration `x` agrees with the translated pattern `Pattern.mulShift p g`.
 (This uses `[IsLeftCancelMul G]` to identify the preimage along left-multiplication by `g`.) -/
 @[to_additive occursInAt_eq_cylinder
   /-- We call *occurrence set* for pattern `p` and position `g` the set of configurations
-in which a pattern `p` occurs at position `g`.
-
-This proves that it is exactly the cylinder corresponding to the
-pattern obtained by translating `p` by `g`.
-
-Equivalently, `p.occursInAt x g` iff on every translated site `g + w` (with `w ∈ p.support`)
-the configuration `x` agrees with the translated pattern `Pattern.shift p g`.
-
-(This uses `[IsLeftCancelMul G]` to identify the preimage along left-multiplication by `g`.) -/]
+  in which a pattern `p` occurs at position `g`.
+  
+  This proves that it is exactly the cylinder corresponding to the
+  pattern obtained by translating `p` by `g`.
+  
+  Equivalently, `p.occursInAt x g` iff on every translated site `g + w` (with `w ∈ p.support`)
+  the configuration `x` agrees with the translated pattern `Pattern.shift p g`.
+  
+  (This uses `[IsLeftCancelMul G]` to identify the preimage along left-multiplication by `g`.) -/]
 lemma mulOccursInAt_eq_cylinder
     (p : Pattern A G) (g : G) :
     { x | p.mulOccursInAt x g } = cylinder (p.support.image (g * ·)) (p.mulShift g) := by
@@ -557,6 +562,7 @@ This is a standard way to construct subshifts:
 `p ∈ F` occurs at any position.
 
 Formally:
+
 * the carrier is `forbidden F` (configurations avoiding `F`),
 * it is closed because each occurrence set is open, and
 * it is shift-invariant since avoidance is preserved by shifts. -/
@@ -567,6 +573,7 @@ This is a standard way to construct subshifts:
 `p ∈ F` occurs at any position.
 
 Formally:
+
 * the carrier is `forbidden F` (configurations avoiding `F`),
 * it is closed because each occurrence set is open, and
 * it is shift-invariant since avoidance is preserved by shifts. -/]

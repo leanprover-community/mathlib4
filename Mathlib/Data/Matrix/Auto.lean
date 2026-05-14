@@ -16,6 +16,7 @@ public import Mathlib.Util.CompileInductive
 
 In Mathlib3, this file contained "magic" lemmas which autogenerate to the correct size of matrix.
 For instance, `Matrix.of_mul_of_fin` could be used as:
+
 ```lean
 example {α} [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b₁₂ b₂₁ b₂₂ : α) :
   !![a₁₁, a₁₂;

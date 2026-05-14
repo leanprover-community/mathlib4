@@ -36,16 +36,17 @@ TODO. In the meantime, you can try decrypting the docstrings.
 The list of partitions is built by recursion. The permutations of `[]` are `[[]]`. Then, the
 permutations of `a :: l` are obtained by taking all permutations of `l` in order and adding `a` in
 all positions. Hence, to build `[0, 1, 2, 3].permutations'`, it does
+
 * `[[]]`
 * `[[3]]`
 * `[[2, 3], [3, 2]]]`
 * `[[1, 2, 3], [2, 1, 3], [2, 3, 1], [1, 3, 2], [3, 1, 2], [3, 2, 1]]`
 * `[[0, 1, 2, 3], [1, 0, 2, 3], [1, 2, 0, 3], [1, 2, 3, 0],`
-   `[0, 2, 1, 3], [2, 0, 1, 3], [2, 1, 0, 3], [2, 1, 3, 0],`
-   `[0, 2, 3, 1], [2, 0, 3, 1], [2, 3, 0, 1], [2, 3, 1, 0],`
-   `[0, 1, 3, 2], [1, 0, 3, 2], [1, 3, 0, 2], [1, 3, 2, 0],`
-   `[0, 3, 1, 2], [3, 0, 1, 2], [3, 1, 0, 2], [3, 1, 2, 0],`
-   `[0, 3, 2, 1], [3, 0, 2, 1], [3, 2, 0, 1], [3, 2, 1, 0]]`
+  `[0, 2, 1, 3], [2, 0, 1, 3], [2, 1, 0, 3], [2, 1, 3, 0],`
+  `[0, 2, 3, 1], [2, 0, 3, 1], [2, 3, 0, 1], [2, 3, 1, 0],`
+  `[0, 1, 3, 2], [1, 0, 3, 2], [1, 3, 0, 2], [1, 3, 2, 0],`
+  `[0, 3, 1, 2], [3, 0, 1, 2], [3, 1, 0, 2], [3, 1, 2, 0],`
+  `[0, 3, 2, 1], [3, 0, 2, 1], [3, 2, 0, 1], [3, 2, 1, 0]]`
 -/
 
 public section
@@ -113,6 +114,7 @@ theorem map_permutationsAux2 (t : α) (ts : List α) (ys : List α) (f : List α
 
 `(permutationsAux2 t [] [] ys id).2`, which appears on the RHS, is a list whose elements are
 produced by inserting `t` into every non-terminal position of `ys` in order. As an example:
+
 ```lean
 #eval permutationsAux2 1 [] [] [2, 3, 4] id
 -- [[1, 2, 3, 4], [2, 1, 3, 4], [2, 3, 1, 4]]

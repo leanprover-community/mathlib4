@@ -75,7 +75,7 @@ lemma Orthonormal.enorm_eq_one {v : ι → E} (h : Orthonormal 𝕜 v) (i : ι) 
 lemma Orthonormal.inner_eq_zero {v : ι → E} {i j : ι} (h : Orthonormal 𝕜 v) (hij : i ≠ j) :
     ⟪v i, v j⟫ = 0 := h.2 hij
 
-/-- `if ... then ... else` characterization of an indexed set of vectors being orthonormal.  (Inner
+/-- `if ... then ... else` characterization of an indexed set of vectors being orthonormal. (Inner
 product equals Kronecker delta.) -/
 theorem orthonormal_iff_ite [DecidableEq ι] {v : ι → E} :
     Orthonormal 𝕜 v ↔ ∀ i j, ⟪v i, v j⟫ = if i = j then (1 : 𝕜) else (0 : 𝕜) := by
@@ -100,7 +100,7 @@ theorem orthonormal_subsingleton_iff [Subsingleton ι] {v : ι → E} :
     Orthonormal 𝕜 v ↔ ∀ i, ‖v i‖ = 1 := by
   simp [orthonormal_iff_ite, ← map_pow, pow_eq_one_iff_of_nonneg]
 
-/-- `if ... then ... else` characterization of a set of vectors being orthonormal.  (Inner product
+/-- `if ... then ... else` characterization of a set of vectors being orthonormal. (Inner product
 equals Kronecker delta.) -/
 theorem orthonormal_subtype_iff_ite [DecidableEq E] {s : Set E} :
     Orthonormal 𝕜 (Subtype.val : s → E) ↔ ∀ v ∈ s, ∀ w ∈ s, ⟪v, w⟫ = if v = w then 1 else 0 := by

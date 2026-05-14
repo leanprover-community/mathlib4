@@ -15,9 +15,11 @@ We define the notion of K-projective cochain complex in an abelian category,
 and show that bounded above complexes of projective objects are K-projective.
 
 ## TODO (@joelriou)
+
 * Provide an API for computing `Ext`-groups using a projective resolution
 
 ## References
+
 * [N. Spaltenstein, *Resolutions of unbounded complexes*][spaltenstein1998]
 
 -/

@@ -35,13 +35,16 @@ instance:
 
 * `IdentDistrib.measure_mem_eq`: if `f` and `g` are identically distributed, then the probabilities
   that they belong to a given measurable set are the same.
+
 * `IdentDistrib.integral_eq`: if `f` and `g` are identically distributed, then their integrals
   are the same.
+
 * `IdentDistrib.variance_eq`: if `f` and `g` are identically distributed, then their variances
   are the same.
 
 * `IdentDistrib.aestronglyMeasurable_snd`: if `f` and `g` are identically distributed and `f`
   is almost everywhere strongly measurable, then so is `g`.
+
 * `IdentDistrib.memLp_snd`: if `f` and `g` are identically distributed and `f`
   belongs to `ℒp`, then so does `g`.
 

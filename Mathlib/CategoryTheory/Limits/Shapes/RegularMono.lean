@@ -16,18 +16,21 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 A regular monomorphism is a morphism that is the equalizer of some parallel pair.
 
 In this file, we give the following definitions.
+
 * `RegularMono f`, which is a structure carrying the data that exhibits `f` as a regular
   monomorphism. That is, it carries a fork and data specifying `f` as the equalizer of that fork.
 * `IsRegularMono f`, which is a `Prop`-valued class stating that `f` is a regular monomorphism. In
   particular, this doesn't carry any data.
 
 and constructions
+
 * `IsSplitMono f → RegularMono f` and
 * `RegularMono f → Mono f`
 
 as well as the dual definitions/constructions for regular epimorphisms.
 
 Additionally, we give the constructions
+
 * `RegularEpi f → EffectiveEpi f`, from which it can be deduced that regular epimorphisms are
   strong.
 * `regularEpiOfEffectiveEpi`: constructs a `RegularEpi f` instance from `EffectiveEpi f` and
@@ -127,6 +130,7 @@ section IsRegularMono
 
 Given a regular monomorphism `f : X ⟶ Y` (i.e. a morphism satisfying the predicate `IsRegularMono`),
 this section gives an equalizer diagram
+
 ```
      X
     f|
@@ -136,6 +140,7 @@ left| |right
     v v
      Z
 ```
+
 The names `Z`, `left`, and `right` all being in the `IsRegularMono` namespace.
 -/
 
@@ -373,6 +378,7 @@ section IsRegularEpi
 
 Given a regular epimorphism `f : X ⟶ Y` (i.e. a morphism satisfying the predicate `IsRegularEpi`),
 this section gives a coequalizer diagram
+
 ```
      W
 left| |right
@@ -382,6 +388,7 @@ left| |right
      v
      Y
 ```
+
 The names `W`, `left`, and `right` all being in the `IsRegularEpi` namespace.
 -/
 

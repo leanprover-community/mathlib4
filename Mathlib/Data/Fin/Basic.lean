@@ -168,6 +168,7 @@ theorem max_val {a : Fin n} : max (a : ℕ) n = n := by simp
 
 For example, the following definition is not accepted by the termination checker,
 unless we declare the `WellFoundedRelation` instance:
+
 ```lean
 def factorial {n : ℕ} : Fin n → ℕ
   | ⟨0, _⟩ := 1

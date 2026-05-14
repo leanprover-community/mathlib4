@@ -21,10 +21,12 @@ vector space and `ι : Type*` is an arbitrary indexing type.
 
 * `Basis ι R M` is the type of `ι`-indexed `R`-bases for a module `M`,
   represented by a linear equiv `M ≃ₗ[R] ι →₀ R`.
+
 * the basis vectors of a basis `b : Basis ι R M` are available as `b i`, where `i : ι`
 
 * `Basis.repr` is the isomorphism sending `x : M` to its coordinates `Basis.repr x : ι →₀ R`.
   The converse, turning this isomorphism into a basis, is called `Basis.ofRepr`.
+
 * If `ι` is finite, there is a variant of `repr` called `Basis.equivFun b : M ≃ₗ[R] ι → R`
   (saving you from having to work with `Finsupp`). The converse, turning this isomorphism into
   a basis, is called `Basis.ofEquivFun`.

@@ -23,10 +23,8 @@ Since polynomials do not have a division, the main theorem
 `mul_prod_pow_inverse_eq_quo_add_sum_rem_mul_pow_inverse` is stated in an `R[X]`-algebra `K`
 containing inverses `giᵢ` for each polynomial `gᵢ` occurring in the denominator.
 
-
 These results were formalised by the Xena Project, at the suggestion
 of Patrick Massot.
-
 
 ## Main results
 
@@ -58,10 +56,12 @@ They are named structurally, except the bound variable `q` is called `quo` (for 
 and the bound variable `r` is called `rem` (for remainder), since they are the quotient
 and remainder of the division `f / g`.
 For example, `div_prod_eq_quo_add_sum_rem_div` has the conclusion
+
 ```
 ∃ q r, (∀ i ∈ s, (r i).degree < (g i).degree) ∧
   ↑f / ∏ i ∈ s, ↑(g i) = ↑q + ∑ i ∈ s, ↑(r i) / ↑(g i)
 ```
+
 The name of the lemma only shows the final equality, and in order we have
 `/` (`div`), `∏` (`prod`), `=` (`eq`), `q` (`quo`),
 `+` (`add`), `∑` (`sum`), `r i` (`rem`), `/` (`div`).
@@ -74,10 +74,12 @@ In analogy with the existence lemmas, the variables `qᵢ` are called quotients
 and referred to as `quo` in the name of the lemma and the variables `rᵢ` are called remainders
 and referred to as `rem` in the name of the lemma.
 For example, `quo_add_sum_rem_div_unique` has the conclusion
+
 ```
 ↑q₁ + ∑ i ∈ s, ↑(r₁ i) / ↑(g i) = ↑q₂ + ∑ i ∈ s, ↑(r₂ i) / ↑(g i)) →
   q₁ = q₂ ∧ ∀ i ∈ s, r₁ i = r₂ i
 ```
+
 The name of the lemmas shows one side of the equality hypothesis (the other is the same),
 and in order we have
 `q` (`quo`), `+` (`add`), `∑` (`sum`), `r i` (`rem`), `/` (`div`).

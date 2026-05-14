@@ -15,6 +15,7 @@ This file defines bifunctors.
 
 A bifunctor is a function `F : Type* → Type* → Type*` along with a bimap which turns `F α β` into
 `F α' β'` given two functions `α → α'` and `β → β'`. It further
+
 * respects the identity: `bimap id id = id`
 * composes in the obvious way: `(bimap f' g') ∘ (bimap f g) = bimap (f' ∘ f) (g' ∘ g)`
 

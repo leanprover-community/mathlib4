@@ -27,6 +27,7 @@ However, modern functional analysis requires bases indexed by arbitrary sets
 is defined via nets over finite subsets (unconditional convergence).
 
 This file provides a unified structure `GeneralSchauderBasis` that captures both:
+
 * **Classical Schauder Bases:** Indexed by `ℕ`, using `SummationFilter.conditional`
   to enforce sequential convergence of partial sums.
 * **Unconditional/Extended Bases:** Indexed by an arbitrary type `β`, using
@@ -63,6 +64,7 @@ This file provides a unified structure `GeneralSchauderBasis` that captures both
 * `SchauderBasis.exists_norm_proj_le`: In a Banach space, the projections are uniformly bounded.
 * `UnconditionalSchauderBasis.exists_norm_proj_le`: For unconditional bases, projections
   onto all finite sets are uniformly bounded.
+
 ## References
 
 * [Albiac, Fernando. and Kalton, Nigel J., Topics in Banach Space Theory][Albiac_Kalton_2016].
@@ -85,6 +87,7 @@ open scoped Classical in
 A generalized Schauder basis indexed by `β` with summation along filter `L`.
 
 The key fields are:
+
 * `basis`: The basis vectors `e i` for `i : β`
 * `coord`: The coordinate functionals `f i` for `i : β` in the dual space
 * `ortho`: Biorthogonality condition `f i (e j) = if i = j then 1 else 0`
@@ -118,10 +121,11 @@ abbrev SchauderBasis (𝕜 : Type*) (X : Type*) [NontriviallyNormedField 𝕜]
 An unconditional Schauder basis indexed by `β`.
 
 In the literature, this is known as:
+
 * An **Extended Basis** [Marti, Jürg T., Introduction to the theory of bases][MartiJurg1969]:
-Defined via convergence of the net of finite partial sums.
+  Defined via convergence of the net of finite partial sums.
 * An **Unconditional Basis** [Singer, Ivan., Bases in Banach spaces][Singer_1970]: On an arbitrary
-set, convergence is necessarily unconditional.
+  set, convergence is necessarily unconditional.
 
 This structure generalizes the classical Schauder basis by replacing sequential
 convergence with summability over the directed set of finite subsets.
@@ -234,8 +238,8 @@ theorem exists_norm_proj_le [CompleteSpace X] : ∃ C : ℝ, ∀ A : Finset β, 
       (Finset.mem_powerset.2 Finset.inter_subset_right)
 
 /-- The basis constant for unconditional bases (supremum over all finite sets) as `nnnorm`.
-    It requires completeness to guarantee that the supremum is finite,
-    see lemma `bddAbove_range_nnnorm_proj` below. -/
+It requires completeness to guarantee that the supremum is finite,
+see lemma `bddAbove_range_nnnorm_proj` below. -/
 noncomputable def nnnormProjBound : ℝ≥0 := ⨆ A : Finset β, ‖b.proj A‖₊
 
 /-- The projection norms are bounded above in a complete space. -/
@@ -267,7 +271,7 @@ namespace SchauderBasis
 variable (b : SchauderBasis 𝕜 X)
 
 /-- The `n`-th projection `P_n = b.proj (Finset.range n)`, given by:
-    `P_n x = ∑ i ∈ Finset.range n, b.coord i x • b i` -/
+`P_n x = ∑ i ∈ Finset.range n, b.coord i x • b i` -/
 def proj (n : ℕ) : X →L[𝕜] X := GeneralSchauderBasis.proj b (Finset.range n)
 
 /-- The projection at `0` is the zero map. -/
@@ -323,8 +327,8 @@ theorem enorm_proj_le_enormProjBound (n : ℕ) : ‖b.proj n‖ₑ ≤ b.enormPr
   le_iSup (fun i ↦ ‖b.proj i‖ₑ) n
 
 /-- The basis constant for Schauder bases (supremum over projections) as `nnnorm`.
-    Requires completeness to guarantee the supremum is finite,
-    see lemma `bddAbove_range_nnnorm_proj` below. -/
+Requires completeness to guarantee the supremum is finite,
+see lemma `bddAbove_range_nnnorm_proj` below. -/
 noncomputable def nnnormProjBound : ℝ≥0 := ⨆ n, ‖b.proj n‖₊
 
 /-- The projection norms are bounded above in a complete space. -/
@@ -384,7 +388,7 @@ lemma succSub_ortho {P : ℕ → X →L[𝕜] X} (hcomp : ∀ n m, ∀ x : X, P 
       abel
 
 /-- Assuming that the `finrank` of the range of `P n` is `n` then the `finrank` of the range of
-    `succSub P n` is `1`. -/
+`succSub P n` is `1`. -/
 lemma finrank_range_succSub_eq_one {P : ℕ → X →L[𝕜] X}
     (hrank : ∀ n, Module.finrank 𝕜 (P n).toLinearMap.range = n)
     (hcomp : ∀ n m, ∀ x : X, P n (P m x) = P (min n m) x) (n : ℕ) :
@@ -419,6 +423,7 @@ variable (𝕜 X) in
 /-- Data for constructing a Schauder basis from a sequence of finite-rank projections.
 
 Given a sequence of continuous linear maps `P n : X →L[𝕜] X` satisfying:
+
 * `P 0 = 0` and `finrank(range(P n)) = n`,
 * `P n ∘ P m = P (min n m)` (the projections are nested and commute),
 * `P n x → x` for every `x` (pointwise convergence to the identity),

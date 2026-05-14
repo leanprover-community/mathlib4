@@ -138,7 +138,7 @@ variable (α G)
 variable (n) in
 /-- The equivariant map from embeddings of `Fin n` (aka arrangement) to combinations. -/
 @[to_additive /-- The equivariant map from embeddings of `Fin n`
-  (aka arrangements) to combinations. -/]
+(aka arrangements) to combinations. -/]
 def mulActionHom_of_embedding : (Fin n ↪ α) →[G] powersetCard α n where
   toFun := ofFinEmb n α
   map_smul' g f := by

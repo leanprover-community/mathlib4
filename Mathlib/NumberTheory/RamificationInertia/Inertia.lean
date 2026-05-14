@@ -19,6 +19,7 @@ the **inertia degree** `Ideal.inertiaDeg p P` is the degree of the field extensi
 ## Implementation notes
 
 Often the above theory is set up in the case where:
+
 * `R` is the ring of integers of a number field `K`,
 * `L` is a finite separable extension of `K`,
 * `S` is the integral closure of `R` in `L`,
@@ -170,8 +171,8 @@ variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
 variable [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
 
 /-- Let `T / S / R` be a tower of algebras, `p, P, I` be ideals in `R, S, T`, respectively,
-  and `p` and `P` are maximal. If `p = P ∩ S` and `P = I ∩ S`,
-  then `f (I | p) = f (P | p) * f (I | P)`. -/
+and `p` and `P` are maximal. If `p = P ∩ S` and `P = I ∩ S`,
+then `f (I | p) = f (P | p) * f (I | P)`. -/
 theorem inertiaDeg_algebra_tower (p : Ideal R) (P : Ideal S) (I : Ideal T) [p.IsMaximal]
     [P.IsMaximal] [P.LiesOver p] [I.LiesOver P] : inertiaDeg p I =
     inertiaDeg p P * inertiaDeg P I := by

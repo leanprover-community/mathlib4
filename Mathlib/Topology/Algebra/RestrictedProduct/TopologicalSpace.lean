@@ -29,6 +29,7 @@ compact, then `Πʳ i, [R i, A i]` is a locally compact topological ring.
 ## Topology on the restricted product
 
 The topology on the restricted product `Πʳ i, [R i, A i]_[𝓕]` is defined in the following way:
+
 1. If `𝓕` is some principal filter `𝓟 s`, recall that `Πʳ i, [R i, A i]_[𝓟 s]` is canonically
    identified with `(Π i ∈ s, A i) × (Π i ∉ s, R i)`. We endow it with the product topology,
    which is also the topology induced from the full product `Π i, R i`.
@@ -37,6 +38,7 @@ The topology on the restricted product `Πʳ i, [R i, A i]_[𝓕]` is defined in
    inclusion maps `Πʳ i, [R i, A i]_[𝓟 s] → Πʳ i, [R i, A i]_[𝓕]` where `𝓕 ≤ 𝓟 s`.
 
 In particular:
+
 * On the classical restricted product, with respect to the cofinite filter, this corresponds to
   taking the inductive limit of the `Πʳ i, [R i, A i]_[𝓟 s]` over all *cofinite* sets `s : Set ι`.
 * If `𝓕 = 𝓟 s` is a principal filter, this second step clearly does not change the topology, since
@@ -53,11 +55,14 @@ and that the topology for a general `𝓕` is indeed the expected inductive limi
 
 * `RestrictedProduct.isEmbedding_coe_of_principal`: for any set `S`, `Πʳ i, [R i, A i]_[𝓟 S]`
   is endowed with the subset topology coming from `Π i, R i`.
+
 * `RestrictedProduct.topologicalSpace_eq_iSup`: the topology on `Πʳ i, [R i, A i]_[𝓕]` is the
   inductive limit / final topology associated to the natural maps
   `Πʳ i, [R i, A i]_[𝓟 S] → Πʳ i, [R i, A i]_[𝓕]`, where `𝓕 ≤ 𝓟 S`.
+
 * `RestrictedProduct.continuous_dom`: a map from `Πʳ i, [R i, A i]_[𝓕]` is continuous
   *if and only if* its restriction to each `Πʳ i, [R i, A i]_[𝓟 s]` (with `𝓕 ≤ 𝓟 s`) is continuous.
+
   * `RestrictedProduct.continuous_dom_prod_left`: assume that each `A i` is an **open** subset of
     `R i`. Then, for any topological space `Y`, a map from `Y × Πʳ i, [R i, A i]` is continuous
     *if and only if* its restriction to each `Y × Πʳ i, [R i, A i]_[𝓟 S]` (with `S` cofinite)
@@ -65,16 +70,19 @@ and that the topology for a general `𝓕` is indeed the expected inductive limi
 
 * `RestrictedProduct.isTopologicalGroup`: if each `R i` is a topological group and each `A i` is an
   open subgroup of `R i`, then `Πʳ i, [R i, A i]` is a topological group.
+
 * `RestrictedProduct.isTopologicalRing`: if each `R i` is a topological ring and each `A i` is an
   open subring of `R i`, then `Πʳ i, [R i, A i]` is a topological ring.
+
 * `RestrictedProduct.continuousSMul`: if some topological monoid `G` acts on each `M i`, and each
   `A i` is stable for that action, then the natural action of `G` on `Πʳ i, [M i, A i]` is also
   continuous. In particular, if each `M i` is a topological `R`-module and each `A i` is an open
   sub-`R`-module of `M i`, then `Πʳ i, [M i, A i]` is a topological `R`-module.
 
-* `RestrictedProduct.weaklyLocallyCompactSpace_of_cofinite`:  if each `R i` is weakly locally
+* `RestrictedProduct.weaklyLocallyCompactSpace_of_cofinite`: if each `R i` is weakly locally
   compact, each `A i` is open, and all but finitely many `A i`s are also compact, then the
   restricted product `Πʳ i, [R i, A i]` is weakly locally compact.
+
 * `RestrictedProduct.locallyCompactSpace_of_group`: assume that each `R i` is a locally compact
   group with `A i` an open subgroup. Assume also that all but finitely many `A i`s are compact.
   Then the restricted product `Πʳ i, [R i, A i]` is a locally compact group.
@@ -109,6 +117,7 @@ section Topology
 ## Topology on the restricted product
 
 The topology on the restricted product `Πʳ i, [R i, A i]_[𝓕]` is defined in the following way:
+
 1. If `𝓕` is some principal filter `𝓟 s`, recall that `Πʳ i, [R i, A i]_[𝓟 s]` is canonically
    identified with `(Π i ∈ s, A i) × (Π i ∉ s, R i)`. We endow it with the product topology,
    which is also the topology induced from the full product `Π i, R i`.
@@ -117,6 +126,7 @@ The topology on the restricted product `Πʳ i, [R i, A i]_[𝓕]` is defined in
    inclusion maps `Πʳ i, [R i, A i]_[𝓟 s] → Πʳ i, [R i, A i]_[𝓕]` where `𝓕 ≤ 𝓟 s`.
 
 In particular:
+
 * On the classical restricted product, with respect to the cofinite filter, this corresponds to
   taking the inductive limit of the `Πʳ i, [R i, A i]_[𝓟 s]` over all *cofinite* sets `s : Set ι`.
 * If `𝓕 = 𝓟 s` is a principal filter, this second step clearly does not change the topology, since

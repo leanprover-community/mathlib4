@@ -103,7 +103,7 @@ theorem closure_def {f : E →ₗ.[R] F} (hf : f.IsClosable) : f.closure = hf.ch
 theorem closure_def' {f : E →ₗ.[R] F} (hf : ¬f.IsClosable) : f.closure = f := by simp [closure, hf]
 
 /-- The closure (as a submodule) of the graph is equal to the graph of the closure
-  (as a `LinearPMap`). -/
+(as a `LinearPMap`). -/
 theorem IsClosable.graph_closure_eq_closure_graph {f : E →ₗ.[R] F} (hf : f.IsClosable) :
     f.graph.topologicalClosure = f.closure.graph := by
   rw [closure_def hf]

@@ -155,6 +155,7 @@ variable [Monad m] [MonadLiftT (ST RealWorld) m₀] [ULiftable m₀ m]
 Execute `RandT m α` using the global `stdGenRef` as RNG.
 
 Note that:
+
 - `stdGenRef` is not necessarily properly seeded on program startup
   as of now and will therefore be deterministic.
 - `stdGenRef` is not thread local, hence two threads accessing it

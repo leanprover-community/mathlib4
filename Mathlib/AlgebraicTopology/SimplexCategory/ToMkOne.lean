@@ -10,9 +10,7 @@ public import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 /-!
 # Morphisms to `⦋1⦌`
 
-We define a bijective map `SimplexCategory.toMk₁ : Fin (n + 2) → `⦋n⦌ ⟶ ⦋1⦌`.
-This is used in the file `Mathlib.AlgebraicTopology.SimplicialSet.StdSimplexOne`
-in the study of simplices in the simplicial set `Δ[1]`.
+We define a bijective map `SimplexCategory.toMk₁ : Fin (n + 2) → `⦋n⦌ ⟶ ⦋1⦌`. This is used in the file `Mathlib.AlgebraicTopology.SimplicialSet.StdSimplexOne`in the study of simplices in the simplicial set`Δ[1]\`.
 
 -/
 
@@ -88,10 +86,10 @@ lemma σ_comp_toMk₁_of_le {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) (h : i
   change toMk₁ i (j.predAbove k) = _
   by_cases! hk : k < i
   · #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
-    (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
-    It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
-    canonicalizer; a minimization would help. The original proof was:
-    `grind [Fin.castPred, Fin.predAbove_of_le_castSucc, toMk₁_of_castSucc_lt]` -/
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
+  It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
+  canonicalizer; a minimization would help. The original proof was:
+  `grind [Fin.castPred, Fin.predAbove_of_le_castSucc, toMk₁_of_castSucc_lt]` -/
     simp; grind [Fin.castPred, Fin.predAbove_of_le_castSucc, toMk₁_of_castSucc_lt]
   · dsimp
     rw [toMk₁_of_le_castSucc, toMk₁_of_le_castSucc _ _ (by simpa)]
@@ -105,10 +103,10 @@ lemma σ_comp_toMk₁_of_lt {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) (h : j
   change toMk₁ i (j.predAbove k) = _
   by_cases! hk : i < k
   · #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
-    (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
-    It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
-    canonicalizer; a minimization would help. The original proof was:
-    `grind [Fin.predAbove_of_castSucc_lt, toMk₁_of_le_castSucc]` -/
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
+  It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
+  canonicalizer; a minimization would help. The original proof was:
+  `grind [Fin.predAbove_of_castSucc_lt, toMk₁_of_le_castSucc]` -/
     simp; grind [Fin.predAbove_of_castSucc_lt, toMk₁_of_le_castSucc]
   · dsimp
     rw [toMk₁_of_castSucc_lt i.succ k (by simpa), toMk₁_of_castSucc_lt]
@@ -155,9 +153,9 @@ lemma toMk₁_surjective {n : ℕ} : Function.Surjective (toMk₁ (n := n)) := b
     obtain ⟨j, hj⟩ : ∃ (j : Fin 2), f i = j := ⟨_, rfl⟩
     fin_cases j
     · #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
-      (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this
-      goal. It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in
-      the new canonicalizer; a minimization would help. The original proof was: `grind` -/
+    (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this
+    goal. It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in
+    the new canonicalizer; a minimization would help. The original proof was: `grind` -/
       simp_all
     · exact (hS ⟨i, by simpa [S]⟩).elim
 

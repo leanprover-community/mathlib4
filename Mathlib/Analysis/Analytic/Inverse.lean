@@ -21,11 +21,16 @@ inverse of an analytic open partial homeomorphism is analytic.
 
 * `p.leftInv i x`: the formal left inverse of the formal multilinear series `p`, with constant
   coefficient `x`, for `i : E ≃L[𝕜] F` which coincides with `p₁`.
+
 * `p.rightInv i x`: the formal right inverse of the formal multilinear series `p`, with constant
   coefficient `x`, for `i : E ≃L[𝕜] F` which coincides with `p₁`.
+
 * `p.leftInv_comp` says that `p.leftInv i x` is indeed a left inverse to `p` when `p₁ = i`.
+
 * `p.rightInv_comp` says that `p.rightInv i x` is indeed a right inverse to `p` when `p₁ = i`.
+
 * `p.leftInv_eq_rightInv`: the two inverses coincide.
+
 * `p.radius_rightInv_pos_of_radius_pos`: if a power series has a positive radius of convergence,
   then so does its inverse.
 

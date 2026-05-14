@@ -57,7 +57,6 @@ Similar predicates with `on` suffix are particular cases for `l = 𝓟 s`.
 * `is**.max`, `is**.min`, `is**.sup`, `is**.inf` : similarly for `is**.add`
   for pointwise `max`, `min`, `sup`, `inf`, respectively.
 
-
 ### Miscellaneous definitions
 
 * `is**_const` : any point is both a minimum and maximum for a constant function;

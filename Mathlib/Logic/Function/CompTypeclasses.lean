@@ -18,6 +18,7 @@ by Frédéric Dupuis and Heather Macbeth for linear maps.
 * `CompTriple.IsId φ`, which expresses that `φ = id`
 
 TODO :
+
 * align with RingHomCompTriple
 
 -/

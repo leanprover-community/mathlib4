@@ -17,11 +17,13 @@ A measure is `OuterRegular` if the measure of any measurable set `A` is the infi
 all open sets `U` containing `A`.
 
 A measure is `WeaklyRegular` if it satisfies the following properties:
+
 * it is outer regular;
 * it is inner regular for open sets with respect to closed sets: the measure of any open set `U`
   is the supremum of `μ F` over all closed sets `F` contained in `U`.
 
 A measure is `Regular` if it satisfies the following properties:
+
 * it is finite on compact sets;
 * it is outer regular;
 * it is inner regular for open sets with respect to compact closed sets: the measure of any open
@@ -36,6 +38,7 @@ measure with respect to compact sets: the measure of any measurable set `s` is t
 of `μ K` over all compact sets contained in `s`.
 
 There is a reason for this zoo of regularity classes:
+
 * A finite measure on a metric space is always weakly regular. Therefore, in probability theory,
   weakly regular measures play a prominent role.
 * In locally compact topological spaces, there are two competing notions of Radon measures: the
@@ -62,6 +65,7 @@ satisfying a predicate `q` with respect to sets satisfying a predicate `p` if fo
 `U ∈ {U | q U}` and a number `r < μ U` there exists `F ⊆ U` such that `p F` and `r < μ F`.
 
 There are two main nontrivial results in the development below:
+
 * `InnerRegularWRT.measurableSet_of_isOpen` shows that, for an outer regular measure, inner
   regularity for open sets with respect to compact sets or closed sets implies inner regularity for
   all measurable sets of finite measure (with respect to compact sets or closed sets respectively).
@@ -310,17 +314,19 @@ class OuterRegular (μ : Measure α) : Prop where
     ∀ ⦃A : Set α⦄, MeasurableSet A → ∀ r > μ A, ∃ U, U ⊇ A ∧ IsOpen U ∧ μ U < r
 
 /-- A measure `μ` is regular if
-  - it is finite on all compact sets;
-  - it is outer regular: `μ(A) = inf {μ(U) | A ⊆ U open}` for `A` measurable;
-  - it is inner regular for open sets, using compact sets:
-    `μ(U) = sup {μ(K) | K ⊆ U compact}` for `U` open. -/
+
+- it is finite on all compact sets;
+- it is outer regular: `μ(A) = inf {μ(U) | A ⊆ U open}` for `A` measurable;
+- it is inner regular for open sets, using compact sets:
+  `μ(U) = sup {μ(K) | K ⊆ U compact}` for `U` open. -/
 class Regular (μ : Measure α) : Prop extends IsFiniteMeasureOnCompacts μ, OuterRegular μ where
   innerRegular : InnerRegularWRT μ IsCompact IsOpen
 
 /-- A measure `μ` is weakly regular if
-  - it is outer regular: `μ(A) = inf {μ(U) | A ⊆ U open}` for `A` measurable;
-  - it is inner regular for open sets, using closed sets:
-    `μ(U) = sup {μ(F) | F ⊆ U closed}` for `U` open. -/
+
+- it is outer regular: `μ(A) = inf {μ(U) | A ⊆ U open}` for `A` measurable;
+- it is inner regular for open sets, using closed sets:
+  `μ(U) = sup {μ(F) | F ⊆ U closed}` for `U` open. -/
 class WeaklyRegular (μ : Measure α) : Prop extends OuterRegular μ where
   protected innerRegular : InnerRegularWRT μ IsClosed IsOpen
 

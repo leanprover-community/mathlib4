@@ -23,10 +23,10 @@ well as the expected implementations of tropical addition and tropical multiplic
 ## Main declarations
 
 * `Tropical R`: The type synonym of the tropical interpretation of `R`.
-    If `[LinearOrder R]`, then addition on `R` is via `min`.
+  If `[LinearOrder R]`, then addition on `R` is via `min`.
 * `Semiring (Tropical R)`: A `LinearOrderedAddCommMonoidWithTop R`
-    induces a `Semiring (Tropical R)`. If one solely has `[LinearOrderedAddCommMonoid R]`,
-    then the "tropicalization of `R`" would be `Tropical (WithTop R)`.
+  induces a `Semiring (Tropical R)`. If one solely has `[LinearOrderedAddCommMonoid R]`,
+  then the "tropicalization of `R`" would be `Tropical (WithTop R)`.
 
 ## Implementation notes
 
@@ -42,7 +42,7 @@ most references rely on `Semiring (Tropical R)` for building up the whole theory
 ## References followed
 
 * https://arxiv.org/pdf/math/0408099.pdf
-* https://www.mathenjeans.fr/sites/default/files/sujets/tropical_geometry_-_casagrande.pdf
+* https://www.mathenjeans.fr/sites/default/files/sujets/tropical_geometry\_-\_casagrande.pdf
 
 -/
 

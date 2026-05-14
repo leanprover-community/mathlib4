@@ -17,6 +17,7 @@ public import Mathlib.Order.SuccPred.Archimedean
 # Linear locally finite orders
 
 We prove that a `LinearOrder` which is a `LocallyFiniteOrder` also verifies
+
 * `SuccOrder`
 * `PredOrder`
 * `IsSuccArchimedean`
@@ -34,6 +35,7 @@ Furthermore, we show that there is an `OrderIso` between such an order and a sub
 ## Main results
 
 Results about linear locally finite orders:
+
 * `LinearLocallyFiniteOrder.SuccOrder`: a linear locally finite order has a successor function.
 * `LinearLocallyFiniteOrder.PredOrder`: a linear locally finite order has a predecessor
   function.
@@ -44,6 +46,7 @@ Results about linear locally finite orders:
 * `countable_of_linear_succ_pred_arch` : a succ-archimedean linear order is countable.
 
 About `toZ`:
+
 * `orderIsoRangeToZOfLinearSuccPredArch`: `toZ` defines an `OrderIso` between `ι` and its
   range.
 * `orderIsoNatOfLinearSuccPredArch`: if the order has a bot but no top, `toZ` defines an

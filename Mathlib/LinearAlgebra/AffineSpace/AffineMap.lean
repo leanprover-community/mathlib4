@@ -20,7 +20,7 @@ This file defines affine maps.
 
 ## Main definitions
 
-* `AffineMap` is the type of affine maps between two affine spaces with the same ring `k`.  Various
+* `AffineMap` is the type of affine maps between two affine spaces with the same ring `k`. Various
   basic examples of affine maps are defined, including `const`, `id`, `lineMap` and `homothety`.
 
 ## Notation
@@ -772,8 +772,8 @@ section Ext
 variable [Finite ι] [DecidableEq ι] {f g : ((i : ι) → φv i) →ᵃ[k] P2}
 
 /-- Two affine maps from a Pi-type of modules `(i : ι) → φv i` are equal if they are equal in their
-  operation on `Pi.single` and at zero. Analogous to `LinearMap.pi_ext`. See also `pi_ext_nonempty`,
-  which instead of agreement at zero requires `Nonempty ι`. -/
+operation on `Pi.single` and at zero. Analogous to `LinearMap.pi_ext`. See also `pi_ext_nonempty`,
+which instead of agreement at zero requires `Nonempty ι`. -/
 theorem pi_ext_zero (h : ∀ i x, f (Pi.single i x) = g (Pi.single i x)) (h₂ : f 0 = g 0) :
     f = g := by
   apply ext_linear
@@ -789,8 +789,8 @@ theorem pi_ext_zero (h : ∀ i x, f (Pi.single i x) = g (Pi.single i x)) (h₂ :
   · exact h₂
 
 /-- Two affine maps from a Pi-type of modules `(i : ι) → φv i` are equal if they are equal in their
-  operation on `Pi.single` and `ι` is nonempty.  Analogous to `LinearMap.pi_ext`. See also
-  `pi_ext_zero`, which instead of `Nonempty ι` requires agreement at 0. -/
+operation on `Pi.single` and `ι` is nonempty. Analogous to `LinearMap.pi_ext`. See also
+`pi_ext_zero`, which instead of `Nonempty ι` requires agreement at 0. -/
 theorem pi_ext_nonempty [Nonempty ι] (h : ∀ i x, f (Pi.single i x) = g (Pi.single i x)) :
     f = g := by
   apply pi_ext_zero h

@@ -25,10 +25,11 @@ Note that this notion is especially relevant in a non-archimedean context, for i
 
 * `OpenSubgroup.isClosed`: An open subgroup is automatically closed.
 * `Subgroup.isOpen_mono`: A subgroup containing an open subgroup is open.
-                           There are also versions for additive groups, submodules and ideals.
+  There are also versions for additive groups, submodules and ideals.
 * `OpenSubgroup.comap`: Open subgroups can be pulled back by a continuous group morphism.
 
 ## TODO
+
 * Prove that the identity component of a locally path connected group is an open subgroup.
   Up to now this file is really geared towards non-archimedean algebra, not Lie groups.
 -/
@@ -209,7 +210,7 @@ theorem toSubgroup_le : (U : Subgroup G) ≤ (V : Subgroup G) ↔ U ≤ V :=
 variable {N : Type*} [Group N] [TopologicalSpace N]
 
 /-- The preimage of an `OpenSubgroup` along a continuous `Monoid` homomorphism
-  is an `OpenSubgroup`. -/
+is an `OpenSubgroup`. -/
 @[to_additive /-- The preimage of an `OpenAddSubgroup` along a continuous `AddMonoid` homomorphism
 is an `OpenAddSubgroup`. -/]
 def comap (f : G →* N) (hf : Continuous f) (H : OpenSubgroup N) : OpenSubgroup G :=

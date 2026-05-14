@@ -17,6 +17,7 @@ in `ι`. We show that `d ≫ d = 0`. The homology of these differentials is comp
 file `Mathlib/Algebra/Homology/SpectralObject/Homology.lean`.
 
 ## References
+
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*, II.4][verdier1996]
 
 -/

@@ -24,7 +24,7 @@ lift, tactic
 public meta section
 
 /-- A class specifying that you can lift elements from `α` to `β` assuming `cond` is true.
-  Used by the tactic `lift`. -/
+Used by the tactic `lift`. -/
 class CanLift (α β : Sort*) (coe : outParam <| β → α) (cond : outParam <| α → Prop) : Prop where
   /-- An element of `α` that satisfies `cond` belongs to the range of `coe`. -/
   prf : ∀ x : α, cond x → ∃ y : β, coe y = x
@@ -105,6 +105,7 @@ The `norm_cast` tactic can be used after `lift` to normalize introduced casts.
   in the context.
 
 Examples:
+
 ```
 def P (n : ℤ) : Prop := n = 3
 

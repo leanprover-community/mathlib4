@@ -32,6 +32,7 @@ functions and relations.
 ## Notes
 
 `Set.preimage` can be generalized to relations in two ways:
+
 * `Rel.preimage` returns the image of the set under the inverse relation.
 * `Rel.core` returns the set of elements that are only related to those in the set.
 

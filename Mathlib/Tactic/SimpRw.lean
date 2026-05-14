@@ -22,7 +22,7 @@ open Lean Elab.Tactic
 open Parser.Tactic (optConfig rwRuleSeq location getConfigItems)
 
 /-- A version of `withRWRulesSeq` (in core) that doesn't attempt to find equation lemmas, and simply
-  passes the rw rules on to `x`. -/
+passes the rw rules on to `x`. -/
 def withSimpRWRulesSeq (rwRulesSeqStx : Syntax)
     (x : (symm : Bool) → (term : Syntax) → TacticM Unit) : TacticM Unit := do
   let lbrak := rwRulesSeqStx[0]

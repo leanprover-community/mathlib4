@@ -77,6 +77,7 @@ Note: in concrete cases, Lean has trouble finding the list `[P₁, ..., Pₙ]` f
 length makes it happier.
 
 Example:
+
 ```lean
 example (P₁ P₂ P₃ : ℕ → Prop) (H : ∀ n, [P₁ n, P₂ n, P₃ n].TFAE) :
     [∀ n, P₁ n, ∀ n, P₂ n, ∀ n, P₃ n].TFAE :=
@@ -96,6 +97,7 @@ Note: in concrete cases, Lean has trouble finding the list `[P₁, ..., Pₙ]` f
 length makes it happier.
 
 Example:
+
 ```lean
 example (P₁ P₂ P₃ : ℕ → Prop) (H : ∀ n, [P₁ n, P₂ n, P₃ n].TFAE) :
     [∃ n, P₁ n, ∃ n, P₂ n, ∃ n, P₃ n].TFAE :=

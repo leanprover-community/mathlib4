@@ -16,6 +16,7 @@ The `deprecated.module` linter emits a warning when a file that has been renamed
 is imported.
 
 The usage is as follows. Write
+
 ```lean
 import B
 ...
@@ -23,6 +24,7 @@ import Z
 
 deprecated_module "Optional string here with further details" (since := "yyyy-mm-dd")
 ```
+
 in module `A` with the expectation that `A` contains nothing else.
 This triggers the `deprecated.module` linter to notify every file with `import A`
 to instead import the *direct imports* of `A`, that is `B, ..., Z`.
@@ -47,6 +49,7 @@ public register_option linter.deprecated.module : Bool := {
 
 /--
 Defines the `deprecatedModuleExt` extension for adding a `HashSet` of triples of
+
 * a module `Name` that has been deprecated and
 * an array of `Name`s of modules that should be imported instead
 * an optional `String` containing further messages to be displayed with the deprecation
@@ -96,6 +99,7 @@ elab (name := deprecated_modules)
 
 /--
 A utility command to show the current entries of the `deprecatedModuleExt` in the format:
+
 ```
 Deprecated modules
 
@@ -123,6 +127,7 @@ If it is `false`, then the `deprecated.module` linter will check for deprecated 
 
 This is used to ensure that the linter performs the deprecation checks only once per file.
 There are possible concurrency issues, but they should not be particularly worrying:
+
 * the linter check should be relatively quick;
 * the only way in which the linter could change what it reports is if the imports are changed
   and a change in imports triggers a rebuild of the whole file anyway, resetting the `IO.Ref`.

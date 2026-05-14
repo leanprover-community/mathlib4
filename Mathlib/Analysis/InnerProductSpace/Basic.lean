@@ -943,6 +943,7 @@ def Inner.rclikeToReal : Inner ℝ E where inner x y := re ⟪x, y⟫
 /-- A general inner product space structure implies a real inner product structure.
 
 This is not registered as an instance since
+
 * `𝕜` does not appear in the return type `InnerProductSpace ℝ E`,
 * It is likely to create instance diamonds, as it builds upon the diamond-prone
   `NormedSpace.restrictScalars`.

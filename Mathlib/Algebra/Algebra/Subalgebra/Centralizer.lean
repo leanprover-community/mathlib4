@@ -16,6 +16,7 @@ This file contains theorems about the center and centralizer of a subalgebra.
 ## Main results
 
 Let `R` be a commutative ring and `A` and `B` two `R`-algebras.
+
 - `Subalgebra.centralizer_sup`: if `S` and `T` are subalgebras of `A`, then the centralizer of
   `S ⊔ T` is the intersection of the centralizer of `S` and the centralizer of `T`.
 - `Subalgebra.centralizer_range_includeLeft_eq_center_tensorProduct`: if `B` is free as a module,

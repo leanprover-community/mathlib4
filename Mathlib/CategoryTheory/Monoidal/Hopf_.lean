@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Monoidal.Conv
 /-!
 # The category of Hopf monoids in a braided monoidal category.
 
-
 ## TODO
 
 * Show that in a Cartesian monoidal category Hopf monoids are exactly group objects.

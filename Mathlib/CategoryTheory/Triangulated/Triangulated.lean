@@ -36,6 +36,7 @@ variable {C}
 
 /-- An octahedron is a type of datum whose existence is asserted by the
 octahedron axiom (TR 4). The input is given by the following diagram:
+
 ```
      u₁₃      v₂₃
   X₁ ────> X₃ ────> Z₂₃       Z₁₂⟦1⟧
@@ -49,10 +50,12 @@ octahedron axiom (TR 4). The input is given by the following diagram:
           Z₁₂ ───> X₁⟦1⟧
               w₁₂
 ```
+
 where `u₁₂ ≫ u₂₃ = u₁₃` and `(u₁₂,v₁₂,w₁₂), (u₁₃,v₁₃,w₁₃)` and `(u₂₃,v₂₃,w₂₃)`
 are distinguished triangles.. An `Octahedron` for this data consists of
 maps `m₁ : Z₁₂ ⟶ Z₁₃` and `m₃ : Z₁₃ ⟶ Z₂₃` such that `(m₁, m₃, w₂₃ ≫ v₁₂⟦1⟧')` is
 a distinguished triangle and the completed diagram commutes:
+
 ```
      u₁₃      v₂₃
   X₁ ────> X₃ ────> Z₂₃ ────> Z₁₂⟦1⟧
@@ -194,6 +197,7 @@ end Octahedron
 /-- An octahedron' is a type of datum whose existence follows from
 the octahedron axiom (TR 4). It is a rotated version of an octahedron.
 The input is given by the following diagram:
+
 ```
        v₁₂       u₁₃      w₂₃
   Z₁₂ ────> X₁ ─────> X₃ ─────> Z₂₃⟦1⟧
@@ -206,10 +210,12 @@ The input is given by the following diagram:
               /     V
            Z₂₃      Z₁₂⟦1⟧
 ```
+
 where `u₁₂ ≫ u₂₃ = u₁₃` and `(v₁₂,u₁₂,w₁₂), (v₁₃,u₁₃,w₁₃)` and `(v₂₃,u₂₃,w₂₃)`
 are distinguished triangles.. An `Octahedron'` for this data consists of
 maps `m₁ : Z₁₂ ⟶ Z₁₃` and `m₃ : Z₁₃ ⟶ Z₂₃` such that `(m₁, m₃, v₂₃ ≫ w₁₂)` is
 a distinguished triangle and the completed diagram commutes:
+
 ```
        v₁₂       u₁₃      w₂₃
   Z₁₂ ────> X₁ ─────> X₃ ─────> Z₂₃⟦1⟧

@@ -45,7 +45,7 @@ variable {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 namespace Measure
 
 /-- We say that `μ` is absolutely continuous with respect to `ν`, or that `μ` is dominated by `ν`,
-  if `ν(A) = 0` implies that `μ(A) = 0`. -/
+if `ν(A) = 0` implies that `μ(A) = 0`. -/
 def AbsolutelyContinuous {_m0 : MeasurableSpace α} (μ ν : Measure α) : Prop :=
   ∀ ⦃s : Set α⦄, ν s = 0 → μ s = 0
 

@@ -20,6 +20,7 @@ In order to accommodate `Set.image2`, the file includes results on union/interse
 ## Naming convention
 
 In lemma names,
+
 * `⋃ i, s i` is called `iUnion`
 * `⋂ i, s i` is called `iInter`
 * `⋃ i j, s i j` is called `iUnion₂`. This is an `iUnion` inside an `iUnion`.

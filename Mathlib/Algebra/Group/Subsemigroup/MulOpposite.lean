@@ -26,7 +26,7 @@ namespace Subsemigroup
 
 /-- Pull a subsemigroup back to an opposite subsemigroup along `MulOpposite.unop` -/
 @[to_additive (attr := simps) /-- Pull an additive subsemigroup back to an opposite subsemigroup
-  along `AddOpposite.unop` -/]
+along `AddOpposite.unop` -/]
 protected def op (x : Subsemigroup M) : Subsemigroup Mᵐᵒᵖ where
   carrier := MulOpposite.unop ⁻¹' x
   mul_mem' ha hb := x.mul_mem hb ha
@@ -36,7 +36,7 @@ theorem mem_op {x : Mᵐᵒᵖ} {S : Subsemigroup M} : x ∈ S.op ↔ x.unop ∈
 
 /-- Pull an opposite subsemigroup back to a subsemigroup along `MulOpposite.op` -/
 @[to_additive (attr := simps) /-- Pull an opposite additive subsemigroup back to a subsemigroup
-  along `AddOpposite.op` -/]
+along `AddOpposite.op` -/]
 protected def unop (x : Subsemigroup Mᵐᵒᵖ) : Subsemigroup M where
   carrier := MulOpposite.op ⁻¹' x
   mul_mem' ha hb := x.mul_mem hb ha
@@ -70,7 +70,7 @@ theorem unop_le_unop_iff {S₁ S₂ : Subsemigroup Mᵐᵒᵖ} : S₁.unop ≤ S
 
 /-- A subsemigroup `H` of `M` determines a subsemigroup `H.op` of the opposite semigroup `Mᵐᵒᵖ`. -/
 @[to_additive (attr := simps) /-- An additive subsemigroup `H` of `M` determines an additive
-  subsemigroup `H.op` of the opposite semigroup `Mᵐᵒᵖ`. -/]
+subsemigroup `H.op` of the opposite semigroup `Mᵐᵒᵖ`. -/]
 def opEquiv : Subsemigroup M ≃o Subsemigroup Mᵐᵒᵖ where
   toFun := Subsemigroup.op
   invFun := Subsemigroup.unop

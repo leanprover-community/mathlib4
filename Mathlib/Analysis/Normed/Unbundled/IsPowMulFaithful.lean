@@ -16,9 +16,11 @@ commutative ring and `f₁` and `f₂` are two power-multiplicative `R`-algebra 
 `f₁` and `f₂` are equivalent on every subring `R[y]` for `y : S`, it follows that `f₁ = f₂`.
 
 ## Main Results
+
 * `eq_of_powMul_faithful` : the proof of [BGR, Proposition 3.1.5/1][bosch-guntzer-remmert].
 
 ## References
+
 * [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*][bosch-guntzer-remmert]
 
 ## Tags
@@ -32,7 +34,7 @@ open Filter Real Algebra
 open scoped Topology
 
 /-- If `f : α →+* β` is bounded with respect to a ring seminorm `nα` on `α` and a
-  power-multiplicative function `nβ : β → ℝ`, then `∀ x : α, nβ (f x) ≤ nα x`. -/
+power-multiplicative function `nβ : β → ℝ`, then `∀ x : α, nβ (f x) ≤ nα x`. -/
 theorem contraction_of_isPowMul_of_boundedWrt {F : Type*} {α : outParam (Type*)} [Ring α]
     [FunLike F α ℝ] [RingSeminormClass F α ℝ] {β : Type*} [Ring β] (nα : F) {nβ : β → ℝ}
     (hβ : IsPowMul nβ) {f : α →+* β} (hf : f.IsBoundedWrt nα nβ) (x : α) : nβ (f x) ≤ nα x := by
@@ -55,13 +57,13 @@ theorem contraction_of_isPowMul_of_boundedWrt {F : Type*} {α : outParam (Type*)
     exact map_pow_le_pow _ _ (Nat.one_le_iff_ne_zero.mp hn)
 
 /-- Given a bounded `f : α →+* β` between seminormed rings, is the seminorm on `β` is
-  power-multiplicative, then `f` is a contraction. -/
+power-multiplicative, then `f` is a contraction. -/
 theorem contraction_of_isPowMul {α β : Type*} [SeminormedRing α] [SeminormedRing β]
     (hβ : IsPowMul (norm : β → ℝ)) {f : α →+* β} (hf : f.IsBounded) (x : α) : norm (f x) ≤ norm x :=
   contraction_of_isPowMul_of_boundedWrt (SeminormedRing.toRingSeminorm α) hβ hf x
 
 /-- Given two power-multiplicative ring seminorms `f, g` on `α`, if `f` is bounded by a positive
-  multiple of `g` and vice versa, then `f = g`. -/
+multiple of `g` and vice versa, then `f = g`. -/
 theorem eq_seminorms {F : Type*} {α : outParam (Type*)} [Ring α] [FunLike F α ℝ]
     [RingSeminormClass F α ℝ] {f g : F} (hfpm : IsPowMul f) (hgpm : IsPowMul g)
     (hfg : ∃ (r : ℝ) (_ : 0 < r), ∀ a : α, f a ≤ r * g a)
@@ -78,8 +80,8 @@ theorem eq_seminorms {F : Type*} {α : outParam (Type*)} [Ring α] [FunLike F α
 variable {R S : Type*} [NormedCommRing R] [CommRing S] [Algebra R S]
 
 /-- If `R` is a normed commutative ring and `f₁` and `f₂` are two power-multiplicative `R`-algebra
-  norms on `S`, then if `f₁` and `f₂` are equivalent on every subring `R[y]` for `y : S`, it
-  follows that `f₁ = f₂` [BGR, Proposition 3.1.5/1][bosch-guntzer-remmert]. -/
+norms on `S`, then if `f₁` and `f₂` are equivalent on every subring `R[y]` for `y : S`, it
+follows that `f₁ = f₂` [BGR, Proposition 3.1.5/1][bosch-guntzer-remmert]. -/
 theorem eq_of_powMul_faithful (f₁ : AlgebraNorm R S) (hf₁_pm : IsPowMul f₁) (f₂ : AlgebraNorm R S)
     (hf₂_pm : IsPowMul f₂)
     (h_eq : ∀ y : S, ∃ (C₁ C₂ : ℝ) (_ : 0 < C₁) (_ : 0 < C₂),

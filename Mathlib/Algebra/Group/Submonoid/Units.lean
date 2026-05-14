@@ -23,15 +23,16 @@ of `M`. `Submonoid.units` and `Subgroup.ofUnits` form a Galois coinsertion.
 We also make the equivalent additive definitions.
 
 ## Implementation details
+
 There are a number of other constructions which are multiplicatively equivalent to `S.units` but
 which have a different type.
 
-| Definition           | Type          |
+| Definition | Type |
 |----------------------|---------------|
-| `S.units`            | `Subgroup Mˣ` |
-| `Sˣ`                 | `Type u`      |
+| `S.units` | `Subgroup Mˣ` |
+| `Sˣ` | `Type u` |
 | `IsUnit.submonoid S` | `Submonoid S` |
-| `S.units.ofUnits`    | `Submonoid M` |
+| `S.units.ofUnits` | `Submonoid M` |
 
 All of these are distinct from `S.leftInv`, which is the submonoid of `M` which contains
 every member of `M` with a right inverse in `S`.

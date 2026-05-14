@@ -38,8 +38,8 @@ section List
 variable {ι : Type*} [DecidableEq ι] {α : ι → Sort*} {S : ∀ i, Setoid (α i)} {β : Sort*}
 
 /-- Given a collection of setoids indexed by a type `ι`, a list `l` of indices, and a function that
-  for each `i ∈ l` gives a term of the corresponding quotient type, then there is a corresponding
-  term in the quotient of the product of the setoids indexed by `l`. -/
+for each `i ∈ l` gives a term of the corresponding quotient type, then there is a corresponding
+term in the quotient of the product of the setoids indexed by `l`. -/
 def listChoice {l : List ι} (q : ∀ i ∈ l, Quotient (S i)) : @Quotient (∀ i ∈ l, α i) piSetoid :=
   match l with
   | [] => ⟦nofun⟧
@@ -81,7 +81,7 @@ set_option linter.unusedFintypeInType false
 variable {ι : Type*} [Fintype ι] [DecidableEq ι] {α : ι → Sort*} {S : ∀ i, Setoid (α i)} {β : Sort*}
 
 /-- Choice-free induction principle for quotients indexed by a finite type.
-  See `Quotient.induction_on_pi` for the general version assuming `Classical.choice`. -/
+See `Quotient.induction_on_pi` for the general version assuming `Classical.choice`. -/
 @[elab_as_elim]
 lemma ind_fintype_pi {C : (∀ i, Quotient (S i)) → Prop}
     (f : ∀ a : ∀ i, α i, C (⟦a ·⟧)) (q : ∀ i, Quotient (S i)) : C q := by
@@ -92,16 +92,16 @@ lemma ind_fintype_pi {C : (∀ i, Quotient (S i)) → Prop}
   exact this (fun q ↦ C (q · (Finset.mem_univ _))) (fun _ ↦ f _) (fun i _ ↦ q i)
 
 /-- Choice-free induction principle for quotients indexed by a finite type.
-  See `Quotient.induction_on_pi` for the general version assuming `Classical.choice`. -/
+See `Quotient.induction_on_pi` for the general version assuming `Classical.choice`. -/
 @[elab_as_elim]
 lemma induction_on_fintype_pi {C : (∀ i, Quotient (S i)) → Prop}
     (q : ∀ i, Quotient (S i)) (f : ∀ a : ∀ i, α i, C (⟦a ·⟧)) : C q :=
   ind_fintype_pi f q
 
 /-- Given a collection of setoids indexed by a fintype `ι` and a function that for each `i : ι`
-  gives a term of the corresponding quotient type, then there is corresponding term in the quotient
-  of the product of the setoids.
-  See `Quotient.choice` for the noncomputable general version. -/
+gives a term of the corresponding quotient type, then there is corresponding term in the quotient
+of the product of the setoids.
+See `Quotient.choice` for the noncomputable general version. -/
 def finChoice (q : ∀ i, Quotient (S i)) :
     @Quotient (∀ i, α i) piSetoid := by
   let e := Equiv.subtypeQuotientEquivQuotientSubtype (fun l : List ι ↦ ∀ i, i ∈ l)

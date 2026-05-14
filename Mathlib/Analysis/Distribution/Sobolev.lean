@@ -40,8 +40,8 @@ the definition of the Sobolev spaces.
 * `TemperedDistribution.MemSobolev.laplacian`: If `u` is a Sobolev function of order `s`, then
   `Δ u` is a Sobolev function of order `s - 2`.
 
-
 ## References
+
 * [M. Taylor, *Partial Differential Equations 1*][taylorPDE1]
 * [W. McLean, *Strongly Elliptic Systems and Boundary Integral Equations*][mclean2000]
 

@@ -14,6 +14,7 @@ public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 # Category instances for `Mul`, `Add`, `Semigroup` and `AddSemigroup`
 
 We introduce the bundled categories:
+
 * `MagmaCat`
 * `AddMagmaCat`
 * `Semigrp`

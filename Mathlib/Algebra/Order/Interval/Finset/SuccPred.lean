@@ -17,6 +17,7 @@ order.
 ## Notes
 
 Please keep in sync with:
+
 * `Mathlib/Algebra/Order/Interval/Set/SuccPred.lean`
 * `Mathlib/Order/Interval/Finset/SuccPred.lean`
 * `Mathlib/Order/Interval/Set/SuccPred.lean`

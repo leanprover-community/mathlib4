@@ -32,6 +32,7 @@ use depending on the context.
 * show that the heart of `t` is an abelian category
 
 ## References
+
 * [Beilinson, Bernstein, Deligne, Gabber, *Faisceaux pervers*][bbd-1982]
 
 -/

@@ -22,6 +22,7 @@ This file defines these two concepts as a term `Matroid.eRank M : ℕ∞`
 and a function `Matroid.eRk M : Set α → ℕ∞` respectively.
 
 The rank function `Matroid.eRk` satisfies three properties, often known as (R1), (R2), (R3):
+
 * `M.eRk X ≤ Set.encard X`,
 * `M.eRk X ≤ M.eRk Y` for all `X ⊆ Y`,
 * `M.eRk X + M.eRk Y ≥ M.eRk (X ∪ Y) + M.eRk (X ∩ Y)` for all `X, Y`.

@@ -26,8 +26,8 @@ to transport over to `Option.{v}`. `ULiftable` is an attempt at improving the si
 `Option.{u}` in a context that requires `Option.{v}`. It is often used in tandem with
 `ULift` but the two are purposefully decoupled.
 
-
 ## Main definitions
+
 * `ULiftable` class
 
 ## Tags
@@ -43,8 +43,7 @@ universe v u₀ u₁ v₀ v₁ v₂ w w₀ w₁
 
 variable {s : Type u₀} {s' : Type u₁} {r r' w w' : Type*}
 
-/-- Given a universe polymorphic type family `M.{u} : Type u₁ → Type
-u₂`, this class convert between instantiations, from
+/-- Given a universe polymorphic type family `M.{u} : Type u₁ → Type u₂`, this class convert between instantiations, from
 `M.{u} : Type u₁ → Type u₂` to `M.{v} : Type v₁ → Type v₂` and back.
 
 `f` is an outParam, because `g` can almost always be inferred from the current monad.

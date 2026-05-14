@@ -13,6 +13,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 # Horns as colimits
 
 In this file, we express horns as colimits:
+
 * horns in `Δ[2]` are pushouts of two copies of `Δ[1]`;
 * horns in `Δ[n]` are multicoequalizers of copies of the standard
   simplex of dimension `n-1` (a dedicated API is provided for inner
@@ -161,7 +162,7 @@ lemma hom_ext' {i : Fin (n + 2)} {f g : (Λ[n + 1, i] : SSet) ⟶ X}
     (stdSimplex.faceSingletonComplIso j).inv ≫= h j hj
 
 /-- Let `i : Fin (n + 2)`. This is the condition that a family of morphisms
-`Δ[n] ⟶ X` for `j ≠ i` are the "faces" of a morphism  `Λ[n + 1, i] ⟶ X`. -/
+`Δ[n] ⟶ X` for `j ≠ i` are the "faces" of a morphism `Λ[n + 1, i] ⟶ X`. -/
 protected def IsCompatible
     {i : Fin (n + 2)} (f : ∀ (j : Fin (n + 2)) (_ : j ≠ i), Δ[n] ⟶ X) : Prop :=
   match n with

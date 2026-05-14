@@ -15,7 +15,7 @@ import Mathlib.Analysis.MeanInequalitiesPow
 
 Given a (pseudo) (extended) metric space `X` and a number `0 < α ≤ 1`,
 one can consider the metric given by `d x y = (dist x y) ^ α`.
-The metric space determined by this new metric is said to be the `α`-snowflaking  (or `α`-snowflake)
+The metric space determined by this new metric is said to be the `α`-snowflaking (or `α`-snowflake)
 of `X`. In this file we define `Metric.Snowflaking X α hα₀ hα₁` to be a one-field structure wrapper
 around `X` with metric given by this formula.
 
@@ -44,6 +44,7 @@ However, if we change the metric on the first component to the one introduced in
 then these sets become balls, and we can apply Vitali theorem.
 
 ## References
+
 * [Carlos Gustavo T. de A. Moreira, _Hausdorff measures and the Morse-Sard theorem_]
   [Moreira2001]
 -/

@@ -30,7 +30,7 @@ turned into common summands on the left, and if each pair of `r : R` and `s : S`
 minuend `v : R` and an Ore subtrahend `u : S` such that `u + r = v + s`. -/
 class AddOreSet {R : Type*} [AddMonoid R] (S : AddSubmonoid R) where
   /-- Common summands on the right can be turned into common summands on the left, a weak form of
-cancellability. -/
+  cancellability. -/
   ore_right_cancel : ∀ (r₁ r₂ : R) (s : S), r₁ + s = r₂ + s → ∃ s' : S, s' + r₁ = s' + r₂
   /-- The Ore minuend of a difference. -/
   oreMin : R → S → R
@@ -51,7 +51,7 @@ into common factors on the left, and if each pair of `r : R` and `s : S` admits 
 @[to_additive AddOreLocalization.AddOreSet]
 class OreSet {R : Type*} [Monoid R] (S : Submonoid R) where
   /-- Common factors on the right can be turned into common factors on the left, a weak form of
-cancellability. -/
+  cancellability. -/
   ore_right_cancel : ∀ (r₁ r₂ : R) (s : S), r₁ * s = r₂ * s → ∃ s' : S, s' * r₁ = s' * r₂
   /-- The Ore numerator of a fraction. -/
   oreNum : R → S → R

@@ -136,12 +136,14 @@ def sectionOfFibreIncl (π : T → S × Option X) (σ : Option X → S → T)
 
 /-- Given a map `π : T → S × OnePoint X`, define a new space `S'` and a map `y : S' ⟶ S` which has
 the property that in the Cartesian diagram
+
 ```
 T' -> S' ⨯ OnePoint X
 |         |
 v         v
 T  -> S  ⨯ OnePoint X
 ```
+
 there are maps `σ x : S' ⟶ T'` for each `x : OnePoint X` such that
 `S' ⨯ OnePoint X ⟶ S' ⟶ T' ⟶ S' ⨯ OnePoint X` is the identity for
 all points `⟨s, x⟩ : S' ⨯ OnePoint X`. -/
@@ -245,12 +247,14 @@ noncomputable def cocone {X : LightCondMod R} {S T : LightProfinite} (π : T ⟶
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a surjective map of light profinite spaces `T ⟶ S ⊗ ℕ∪{∞}`,
 construct a (non-cartesian) commutative square
+
 ```
 T' -> S' ⨯ OnePoint X
 |         |
 v         v
 T  -> S  ⨯ OnePoint X
 ```
+
 where every map is epi. The map `(π ≫ Prod.snd) ⁻¹' ∞ ⟶ T' ⟶ S' ⨯ ℕ∪{∞}` is split epi and
 `cover` is epi. `S'` is constructed as the pullback of all the fibres. -/
 lemma aux {S T : LightProfinite} (π : T ⟶ S ⊗ ℕ∪{∞}) [Epi π] :

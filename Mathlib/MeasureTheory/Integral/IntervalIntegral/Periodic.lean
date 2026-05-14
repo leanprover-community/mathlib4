@@ -129,7 +129,7 @@ instance : IsUnifLocDoublingMeasure (volume : Measure (AddCircle T)) := by
   exact min_le_min (by linarith [hT.out]) (le_refl _)
 
 /-- The isomorphism `AddCircle T ≃ Ioc a (a + T)` whose inverse is the natural quotient map,
-  as an equivalence of measurable spaces. -/
+as an equivalence of measurable spaces. -/
 noncomputable def measurableEquivIoc (a : ℝ) : AddCircle T ≃ᵐ Ioc a (a + T) where
   toEquiv := equivIoc T a
   measurable_toFun := measurable_of_measurable_on_compl_singleton _
@@ -138,7 +138,7 @@ noncomputable def measurableEquivIoc (a : ℝ) : AddCircle T ≃ᵐ Ioc a (a + T
   measurable_invFun := AddCircle.measurable_mk'.comp measurable_subtype_coe
 
 /-- The isomorphism `AddCircle T ≃ Ico a (a + T)` whose inverse is the natural quotient map,
-  as an equivalence of measurable spaces. -/
+as an equivalence of measurable spaces. -/
 noncomputable def measurableEquivIco (a : ℝ) : AddCircle T ≃ᵐ Ico a (a + T) where
   toEquiv := equivIco T a
   measurable_toFun := measurable_of_measurable_on_compl_singleton _

@@ -25,15 +25,15 @@ universe u v w
 
 /-- Weak sequences.
 
-  While the `Seq` structure allows for lists which may not be finite,
-  a weak sequence also allows the computation of each element to
-  involve an indeterminate amount of computation, including possibly
-  an infinite loop. This is represented as a regular `Seq` interspersed
-  with `none` elements to indicate that computation is ongoing.
+While the `Seq` structure allows for lists which may not be finite,
+a weak sequence also allows the computation of each element to
+involve an indeterminate amount of computation, including possibly
+an infinite loop. This is represented as a regular `Seq` interspersed
+with `none` elements to indicate that computation is ongoing.
 
-  This model is appropriate for Haskell style lazy lists, and is closed
-  under most interesting computation patterns on infinite lists,
-  but conversely it is difficult to extract elements from it. -/
+This model is appropriate for Haskell style lazy lists, and is closed
+under most interesting computation patterns on infinite lists,
+but conversely it is difficult to extract elements from it. -/
 def WSeq (α) :=
   Seq (Option α)
 
@@ -81,7 +81,7 @@ def think : WSeq α → WSeq α :=
   Seq.cons none
 
 /-- Destruct a weak sequence, to (eventually possibly) produce either
-  `none` for `nil` or `some (a, s)` if an element is produced. -/
+`none` for `nil` or `some (a, s)` if an element is produced. -/
 def destruct : WSeq α → Computation (Option (α × WSeq α)) :=
   Computation.corec fun s =>
     match Seq.destruct s with
@@ -106,12 +106,12 @@ theorem notMem_nil (a : α) : a ∉ @nil α :=
   Seq.notMem_nil (some a)
 
 /-- Get the head of a weak sequence. This involves a possibly
-  infinite computation. -/
+infinite computation. -/
 def head (s : WSeq α) : Computation (Option α) :=
   Computation.map (Prod.fst <$> ·) (destruct s)
 
 /-- Encode a computation yielding a weak sequence into additional
-  `think` constructors in a weak sequence -/
+`think` constructors in a weak sequence -/
 def flatten : Computation (WSeq α) → WSeq α :=
   Seq.corec fun c =>
     match Computation.destruct c with
@@ -119,8 +119,8 @@ def flatten : Computation (WSeq α) → WSeq α :=
     | Sum.inr c' => some (none, c')
 
 /-- Get the tail of a weak sequence. This doesn't need a `Computation`
-  wrapper, unlike `head`, because `flatten` allows us to hide this
-  in the construction of the weak sequence itself. -/
+wrapper, unlike `head`, because `flatten` allows us to hide this
+in the construction of the weak sequence itself. -/
 def tail (s : WSeq α) : WSeq α :=
   flatten <| (fun o => Option.recOn o nil Prod.snd) <$> destruct s
 
@@ -144,12 +144,12 @@ def toList (s : WSeq α) : Computation (List α) :=
     ([], s)
 
 /-- Append two weak sequences. As with `Seq.append`, this may not use
-  the second sequence if the first one takes forever to compute -/
+the second sequence if the first one takes forever to compute -/
 def append : WSeq α → WSeq α → WSeq α :=
   Seq.append
 
 /-- Flatten a sequence of weak sequences. (Note that this allows
-  empty sequences, unlike `Seq.join`.) -/
+empty sequences, unlike `Seq.join`.) -/
 def join (S : WSeq (WSeq α)) : WSeq α :=
   Seq.join
     ((fun o : Option (WSeq α) =>

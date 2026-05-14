@@ -140,6 +140,7 @@ lemma IsLocallyClosed.image {s : Set X} (hs : IsLocallyClosed s)
 
 /--
 A set `s` is locally closed if one of the equivalent conditions below hold
+
 1. It is the intersection of some open set and some closed set.
 2. The coborder `(closure s \ s)ᶜ` is open.
 3. `s` is closed in some neighborhood of `x` for all `x ∈ s`.

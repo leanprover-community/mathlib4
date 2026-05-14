@@ -18,6 +18,7 @@ variables, relying on `Measure.infinitePi`.
 ## Implementation note
 
 There are several possible measurability assumptions:
+
 * The map `ω ↦ (Xᵢ(ω))ᵢ` is measurable.
 * For all `i`, the map `ω ↦ Xᵢ(ω)` is measurable.
 * The map `ω ↦ (Xᵢ(ω))ᵢ` is almost everywhere measurable.

@@ -20,11 +20,11 @@ and take a fixed point again.
 
 ## Main definitions
 
-* `Cofix.mk`     - constructor
-* `Cofix.dest`   - destructor
-* `Cofix.corec`  - corecursor: useful for formulating infinite, productive computations
-* `Cofix.bisim`  - bisimulation: proof technique to show the equality of possibly infinite values
-                    of `Cofix F α`
+* `Cofix.mk` - constructor
+* `Cofix.dest` - destructor
+* `Cofix.corec` - corecursor: useful for formulating infinite, productive computations
+* `Cofix.bisim` - bisimulation: proof technique to show the equality of possibly infinite values
+  of `Cofix F α`
 
 ## Implementation notes
 

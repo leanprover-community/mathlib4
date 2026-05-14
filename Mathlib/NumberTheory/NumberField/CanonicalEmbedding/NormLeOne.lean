@@ -22,68 +22,67 @@ Mainly, we prove that it is bounded, its frontier has volume zero and compute it
 The proof is loosely based on the strategy given in [D. Marcus, *Number Fields*][marcus1977number].
 
 1. since `NormLeOne K` is norm-stable, in the sense that
-  `normLeOne K = normAtAllPlaces⁻¹' (normAtAllPlaces '' (normLeOne K))`,
-  see `normLeOne_eq_preimage_image`, it's enough to study the subset
-  `normAtAllPlaces '' (normLeOne K)` of `realSpace K`.
+   `normLeOne K = normAtAllPlaces⁻¹' (normAtAllPlaces '' (normLeOne K))`,
+   see `normLeOne_eq_preimage_image`, it's enough to study the subset
+   `normAtAllPlaces '' (normLeOne K)` of `realSpace K`.
 
 2. A description of `normAtAllPlaces '' (normLeOne K)` is given by `normAtAllPlaces_normLeOne`, it
-  is the set of `x : realSpace K`, nonnegative at all places, whose norm is nonzero and `≤ 1` and
-  such that `logMap x` is in the `fundamentalDomain` of `basisUnitLattice K`.
-  Note that, here and elsewhere, we identify `x` with its image in `mixedSpace K` given
-  by `mixedSpaceOfRealSpace x`.
+   is the set of `x : realSpace K`, nonnegative at all places, whose norm is nonzero and `≤ 1` and
+   such that `logMap x` is in the `fundamentalDomain` of `basisUnitLattice K`.
+   Note that, here and elsewhere, we identify `x` with its image in `mixedSpace K` given
+   by `mixedSpaceOfRealSpace x`.
 
 3. In order to describe the inverse image in `realSpace K` of the `fundamentalDomain` of
-  `basisUnitLattice K`, we define the map `expMap : realSpace K → realSpace K` that is, in
-  some way, the right inverse of `logMap`, see `logMap_expMap`.
+   `basisUnitLattice K`, we define the map `expMap : realSpace K → realSpace K` that is, in
+   some way, the right inverse of `logMap`, see `logMap_expMap`.
 
 4. Denote by `ηᵢ` (with `i ≠ w₀` where `w₀` is the distinguished infinite place,
-  see the description of `logSpace` below) the fundamental system of units given by
-  `fundSystem` and let `|ηᵢ|` denote `normAtAllPlaces (mixedEmbedding ηᵢ)`, that is the vector
-  `(w (ηᵢ))_w` in `realSpace K`. Then, the image of `|ηᵢ|` by `expMap.symm` form a basis of the
-  subspace `{x : realSpace K | ∑ w, x w = 0}`. We complete by adding the vector `(mult w)_w` to
-  get a basis, called `completeBasis`, of `realSpace K`. The basis `completeBasis K` has
-  the property that, for `i ≠ w₀`, the image of `completeBasis K i` by the
-  natural restriction map `realSpace K → logSpace K` is `basisUnitLattice K`.
+   see the description of `logSpace` below) the fundamental system of units given by
+   `fundSystem` and let `|ηᵢ|` denote `normAtAllPlaces (mixedEmbedding ηᵢ)`, that is the vector
+   `(w (ηᵢ))_w` in `realSpace K`. Then, the image of `|ηᵢ|` by `expMap.symm` form a basis of the
+   subspace `{x : realSpace K | ∑ w, x w = 0}`. We complete by adding the vector `(mult w)_w` to
+   get a basis, called `completeBasis`, of `realSpace K`. The basis `completeBasis K` has
+   the property that, for `i ≠ w₀`, the image of `completeBasis K i` by the
+   natural restriction map `realSpace K → logSpace K` is `basisUnitLattice K`.
 
 5. At this point, we can construct the map `expMapBasis` that plays a crucial part in the proof.
-  It is the map that sends `x : realSpace K` to `Real.exp (x w₀) * ∏_{i ≠ w₀} |ηᵢ| ^ x i`, see
-  `expMapBasis_apply'`. Then, we prove a change of variable formula for `expMapBasis`, see
-  `setLIntegral_expMapBasis_image`.
+   It is the map that sends `x : realSpace K` to `Real.exp (x w₀) * ∏_{i ≠ w₀} |ηᵢ| ^ x i`, see
+   `expMapBasis_apply'`. Then, we prove a change of variable formula for `expMapBasis`, see
+   `setLIntegral_expMapBasis_image`.
 
 6. We define a set `paramSet` in `realSpace K` and prove that
-  `normAtAllPlaces '' (normLeOne K) = expMapBasis (paramSet K)`, see
-  `normAtAllPlaces_normLeOne_eq_image`. Using this, `setLIntegral_expMapBasis_image` and the results
-  from `mixedEmbedding.polarCoord`, we can then compute the volume of `normLeOne K`, see
-  `volume_normLeOne`.
+   `normAtAllPlaces '' (normLeOne K) = expMapBasis (paramSet K)`, see
+   `normAtAllPlaces_normLeOne_eq_image`. Using this, `setLIntegral_expMapBasis_image` and the results
+   from `mixedEmbedding.polarCoord`, we can then compute the volume of `normLeOne K`, see
+   `volume_normLeOne`.
 
 7. Finally, we need to prove that the frontier of `normLeOne K` has zero-volume (we will prove
-  in passing that `normLeOne K` is bounded.) For that we prove that
-  `volume (interior (normLeOne K)) = volume (closure (normLeOne K))`, see
-  `volume_interior_eq_volume_closure`. Since we know that the volume of `interior (normLeOne K)` is
-  finite since it is bounded by the volume of `normLeOne K`, the result follows, see
-  `volume_frontier_normLeOne`. We proceed in several steps.
+   in passing that `normLeOne K` is bounded.) For that we prove that
+   `volume (interior (normLeOne K)) = volume (closure (normLeOne K))`, see
+   `volume_interior_eq_volume_closure`. Since we know that the volume of `interior (normLeOne K)` is
+   finite since it is bounded by the volume of `normLeOne K`, the result follows, see
+   `volume_frontier_normLeOne`. We proceed in several steps.
 
-  7.1. We prove first that
-    `normAtAllPlaces⁻¹' (expMapBasis '' interior (paramSet K)) ⊆ interior (normLeOne K)`, see
-    `subset_interior_normLeOne` (Note that here again we identify `realSpace K` with its image
-    in `mixedSpace K`). The main argument is that `expMapBasis` is an open partial homeomorphism
-    and that `interior (paramSet K)` is a subset of its source, so its image by `expMapBasis`
-    is still open.
+7.1. We prove first that
+`normAtAllPlaces⁻¹' (expMapBasis '' interior (paramSet K)) ⊆ interior (normLeOne K)`, see
+`subset_interior_normLeOne` (Note that here again we identify `realSpace K` with its image
+in `mixedSpace K`). The main argument is that `expMapBasis` is an open partial homeomorphism
+and that `interior (paramSet K)` is a subset of its source, so its image by `expMapBasis`
+is still open.
 
-  7.2. The same kind of argument does not work with `closure (paramSet)` since it is not contained
-    in the source of `expMapBasis`. So we define a compact set, called `compactSet K`, such that
-    `closure (normLeOne K) ⊆ normAtAllPlaces⁻¹' (compactSet K)`, see `closure_normLeOne_subset`,
-    and it is almost equal to `expMapBasis '' closure (paramSet K)`, see `compactSet_ae`.
+7.2. The same kind of argument does not work with `closure (paramSet)` since it is not contained
+in the source of `expMapBasis`. So we define a compact set, called `compactSet K`, such that
+`closure (normLeOne K) ⊆ normAtAllPlaces⁻¹' (compactSet K)`, see `closure_normLeOne_subset`,
+and it is almost equal to `expMapBasis '' closure (paramSet K)`, see `compactSet_ae`.
 
-  7.3. We get from the above that `normLeOne K ⊆ normAtAllPlaces⁻¹' (compactSet K)`, from which
-    it follows easily that `normLeOne K` is bounded, see `isBounded_normLeOne`.
+7.3. We get from the above that `normLeOne K ⊆ normAtAllPlaces⁻¹' (compactSet K)`, from which
+it follows easily that `normLeOne K` is bounded, see `isBounded_normLeOne`.
 
-  7.4. Finally, we prove that `volume (normAtAllPlaces ⁻¹' compactSet K) =
-    volume (normAtAllPlaces ⁻¹' (expMapBasis '' interior (paramSet K)))`, which implies that
-    `volume (interior (normLeOne K)) = volume (closure (normLeOne K))` by the above and the fact
-    that `volume (interior (normLeOne K)) ≤ volume (closure (normLeOne K))`, which boils down to
-    the fact that the interior and closure of `paramSet K` are almost equal, see
-    `closure_paramSet_ae_interior`.
+7.4. Finally, we prove that `volume (normAtAllPlaces ⁻¹' compactSet K) =     volume (normAtAllPlaces ⁻¹' (expMapBasis '' interior (paramSet K)))`, which implies that
+`volume (interior (normLeOne K)) = volume (closure (normLeOne K))` by the above and the fact
+that `volume (interior (normLeOne K)) ≤ volume (closure (normLeOne K))`, which boils down to
+the fact that the interior and closure of `paramSet K` are almost equal, see
+`closure_paramSet_ae_interior`.
 
 ## Spaces and maps
 

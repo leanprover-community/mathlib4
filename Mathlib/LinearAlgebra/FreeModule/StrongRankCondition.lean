@@ -27,7 +27,6 @@ the `OrzechProperty`, that is, for any finitely generated
 `R`-module `M`, any surjective homomorphism `f : N → M` from a submodule `N` of `M` to `M`
 is injective.
 
-
 ## References
 
 * [Orzech, Morris. *Onto endomorphisms are isomorphisms*][orzech1971]

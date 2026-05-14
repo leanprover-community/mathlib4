@@ -20,7 +20,7 @@ any time function) of a function between two types that have an encoding (as in 
 ## Main theorems
 
 - `idComputableInPolyTime` : a TM + a proof it computes the identity on a type in polytime.
-- `idComputable`           : a TM + a proof it computes the identity on a type.
+- `idComputable` : a TM + a proof it computes the identity on a type.
 
 ## Implementation notes
 

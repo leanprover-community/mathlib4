@@ -26,6 +26,7 @@ in $M$ is trivial.
 The equational criterion for flatness can be stated in the following form
 (`Module.Flat.iff_forall_exists_factorization`). Let $M$ be an $R$-module. Then the following two
 conditions are equivalent:
+
 * $M$ is flat.
 * For finite free modules $R^l$, all elements $f \in R^l$, and all linear maps
   $x \colon R^l \to M$ such that $x(f) = 0$, there exist a finite free module $R^k$ and
@@ -104,6 +105,7 @@ variable (R M) in
 /-- **Equational criterion for flatness**, combined form.
 
 Let $M$ be a module over a commutative ring $R$. The following are equivalent:
+
 * $M$ is flat.
 * For all ideals $I \subseteq R$, the map $I \otimes M \to M$ is injective.
 * Every $\sum_i f_i \otimes x_i$ that vanishes in $R \otimes M$ vanishes trivially.

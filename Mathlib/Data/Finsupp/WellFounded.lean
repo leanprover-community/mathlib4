@@ -34,7 +34,7 @@ namespace Finsupp
 variable [Zero N] {r : α → α → Prop} {s : N → N → Prop}
 
 /-- Transferred from `DFinsupp.Lex.acc`. See the top of that file for an explanation for the
-  appearance of the relation `rᶜ ⊓ (≠)`. -/
+appearance of the relation `rᶜ ⊓ (≠)`. -/
 theorem Lex.acc (hbot : ∀ ⦃n⦄, ¬s n 0) (hs : WellFounded s) (x : α →₀ N)
     (h : ∀ a ∈ x.support, Acc (rᶜ ⊓ (· ≠ ·)) a) :
     Acc (Finsupp.Lex r s) x := by

@@ -482,7 +482,7 @@ variable {E : Type u₃} [Category.{v₃} E]
 variable {C D}
 
 /-- A natural transformation `Fₗ ⟶ Gₗ` induces a natural transformation
-  `mapPair Fₗ H ⟶ mapPair Gₗ H` for every `H : D ⥤ E'`. -/
+`mapPair Fₗ H ⟶ mapPair Gₗ H` for every `H : D ⥤ E'`. -/
 @[simps!]
 def mapWhiskerRight {Fₗ : C ⥤ E} {Gₗ : C ⥤ E} (α : Fₗ ⟶ Gₗ) (H : D ⥤ E') :
     mapPair Fₗ H ⟶ mapPair Gₗ H :=
@@ -502,7 +502,7 @@ lemma mapWhiskerRight_id (Fₗ : C ⥤ E) (H : D ⥤ E') :
   cat_disch
 
 /-- A natural transformation `Fᵣ ⟶ Gᵣ` induces a natural transformation
-  `mapPair H Fᵣ ⟶ mapPair H Gᵣ` for every `H : C ⥤ E`. -/
+`mapPair H Fᵣ ⟶ mapPair H Gᵣ` for every `H : C ⥤ E`. -/
 @[simps!]
 def mapWhiskerLeft (H : C ⥤ E) {Fᵣ : D ⥤ E'} {Gᵣ : D ⥤ E'} (α : Fᵣ ⟶ Gᵣ) :
     mapPair H Fᵣ ⟶ mapPair H Gᵣ :=
@@ -530,7 +530,7 @@ lemma mapWhisker_exchange (Fₗ : C ⥤ E) (Gₗ : C ⥤ E) (Fᵣ : D ⥤ E') (G
   cat_disch
 
 /-- A natural isomorphism `Fᵣ ≅ Gᵣ` induces a natural isomorphism
-  `mapPair H Fᵣ ≅ mapPair H Gᵣ` for every `H : C ⥤ E`. -/
+`mapPair H Fᵣ ≅ mapPair H Gᵣ` for every `H : C ⥤ E`. -/
 @[simps!]
 def mapIsoWhiskerLeft (H : C ⥤ E) {Fᵣ : D ⥤ E'} {Gᵣ : D ⥤ E'} (α : Fᵣ ≅ Gᵣ) :
     mapPair H Fᵣ ≅ mapPair H Gᵣ :=
@@ -539,7 +539,7 @@ def mapIsoWhiskerLeft (H : C ⥤ E) {Fᵣ : D ⥤ E'} {Gᵣ : D ⥤ E'} (α : F�
     (mapPairRight H Fᵣ ≪≫ isoWhiskerRight α (inclRight E E') ≪≫ (mapPairRight H Gᵣ).symm)
 
 /-- A natural isomorphism `Fᵣ ≅ Gᵣ` induces a natural isomorphism
-  `mapPair Fₗ H ≅ mapPair Gₗ H` for every `H : C ⥤ E`. -/
+`mapPair Fₗ H ≅ mapPair Gₗ H` for every `H : C ⥤ E`. -/
 @[simps!]
 def mapIsoWhiskerRight {Fₗ : C ⥤ E} {Gₗ : C ⥤ E} (α : Fₗ ≅ Gₗ) (H : D ⥤ E') :
     mapPair Fₗ H ≅ mapPair Gₗ H :=

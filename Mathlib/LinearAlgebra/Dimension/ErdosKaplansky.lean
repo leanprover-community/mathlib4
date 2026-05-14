@@ -99,7 +99,7 @@ theorem rank_fun_infinite {ι : Type v} [hι : Infinite ι] : Module.rank K (ι 
   exact key.2
 
 /-- The **Erdős-Kaplansky Theorem**: the dual of an infinite-dimensional vector space
-  over a division ring has dimension equal to its cardinality. -/
+over a division ring has dimension equal to its cardinality. -/
 theorem rank_dual_eq_card_dual_of_aleph0_le_rank' {V : Type*} [AddCommGroup V] [Module K V]
     (h : ℵ₀ ≤ Module.rank K V) : Module.rank Kᵐᵒᵖ (V →ₗ[K] K) = #(V →ₗ[K] K) := by
   obtain ⟨⟨ι, b⟩⟩ := Module.Free.exists_basis (R := K) (M := V)

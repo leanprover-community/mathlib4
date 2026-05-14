@@ -12,9 +12,11 @@ import Mathlib.Analysis.LocallyConvex.Separation
 
 /-!
 # Interior and boundary of a manifold
+
 Define the interior and boundary of a manifold.
 
 ## Main definitions
+
 - **IsInteriorPoint x**: `x ∈ M` is an interior point if, with `φ` being the preferred chart at `x`,
   `φ x` is an interior point of `φ.target`.
 - **IsBoundaryPoint x**: `x ∈ M` is a boundary point if `(extChartAt I x) x ∈ frontier (range I)`.
@@ -22,45 +24,59 @@ Define the interior and boundary of a manifold.
 - **boundary I M** is the **boundary** of `M`, the set of its boundary points.
 
 ## Main results
+
 - `ModelWithCorners.univ_eq_interior_union_boundary`: `M` is the union of its interior and boundary
+
 - `ModelWithCorners.interior_boundary_disjoint`: interior and boundary of `M` are disjoint
+
 - `BoundarylessManifold.isInteriorPoint`: if `M` is boundaryless, every point is an interior point
+
 - `ModelWithCorners.Boundaryless.boundary_eq_empty` and `of_boundary_eq_empty`:
   `M` is boundaryless if and only if its boundary is empty
 
 - `isInteriorPoint_iff_of_mem_atlas`: a point is an interior point iff any given chart around it
   sends it to the interior of the model; that is, the notion of interior is independent of choices
   of charts
+
 - `ModelWithCorners.isOpen_interior`, `ModelWithCorners.isClosed_boundary`: the interior is open and
   and the boundary is closed. This is currently only proven for C¹ manifolds.
 
 - `MDifferentiableAt.isInteriorPoint_of_surjective_mfderiv`: differentiable maps with surjective
   differential send interior points to interior points
+
 - `IsLocalDiffeomorphAt.isInteriorPoint_iff` etc.: local diffeomorphisms preserve both the boundary
   and interior
 
 - `ModelWithCorners.interior_open`: the interior of `u : Opens M` is the preimage of the interior
   of `M` under the inclusion
+
 - `ModelWithCorners.boundary_open`: the boundary of `u : Opens M` is the preimage of the boundary
   of `M` under the inclusion
+
 - `ModelWithCorners.BoundarylessManifold.open`: if `M` is boundaryless, so is `u : Opens M`
 
 - `ModelWithCorners.interior_prod`: the interior of `M × N` is the product of the interiors
   of `M` and `N`.
+
 - `ModelWithCorners.boundary_prod`: the boundary of `M × N` is `∂M × N ∪ (M × ∂N)`.
+
 - `ModelWithCorners.BoundarylessManifold.prod`: if `M` and `N` are boundaryless, so is `M × N`
 
 - `ModelWithCorners.interior_disjointUnion`: the interior of a disjoint union `M ⊔ M'`
   is the union of the interior of `M` and `M'`
+
 - `ModelWithCorners.boundary_disjointUnion`: the boundary of a disjoint union `M ⊔ M'`
   is the union of the boundaries of `M` and `M'`
+
 - `ModelWithCorners.boundaryless_disjointUnion`: if `M` and `M'` are boundaryless,
   so is their disjoint union `M ⊔ M'`
 
 ## Tags
+
 manifold, interior, boundary
 
 ## TODO
+
 - the interior of `M` is dense, the boundary nowhere dense
 - the interior of `M` is a boundaryless manifold
 - `boundary M` is a submanifold (possibly with boundary and corners):

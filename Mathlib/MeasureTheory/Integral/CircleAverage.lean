@@ -210,8 +210,7 @@ theorem ContinuousOn.circleAverage {f : ℂ → E} {s : Set ℝ} {c : ℂ}
   fun_prop
 
 /--
-Companion lemma to `ContinuousOn.circleAverage`: a function continuous on `Ioc r
-R` and constant on `Ioo r R` is constant.
+Companion lemma to `ContinuousOn.circleAverage`: a function continuous on `Ioc r R` and constant on `Ioo r R` is constant.
 -/
 lemma ContinuousOn.eq_of_eqOn_Ioo {f : ℝ → ℝ} {c r R : ℝ}
     (h₁f : ContinuousOn f (Ioc r R)) (hR : r < R)

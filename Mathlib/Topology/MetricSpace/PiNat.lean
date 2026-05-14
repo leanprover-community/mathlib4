@@ -48,7 +48,7 @@ One can also put distances on `Π (i : ι), E i` when the spaces `E i` are metri
 in general), and `ι` is countable.
 
 * `PiCountable.dist` is the distance on `Π i, E i` given by
-    `dist x y = ∑' i, min (1/2)^(encode i) (dist (x i) (y i))`.
+  `dist x y = ∑' i, min (1/2)^(encode i) (dist (x i) (y i))`.
 * `PiCountable.metricSpace` is the corresponding metric space structure, adjusted so that
   the uniformity is definitionally the product uniformity. Not registered as an instance.
 * `PiNatEmbed` gives an equivalence between a space and itself in a sequence of spaces

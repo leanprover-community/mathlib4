@@ -66,8 +66,8 @@ end
 variable [IsIntegrallyClosed R] [IsDomain S] [IsTorsionFree R S]
 
 /-- For integrally closed rings, the minimal polynomial divides any polynomial that has the
-  integral element as root. See also `minpoly.dvd` which relaxes the assumptions on `S`
-  in exchange for stronger assumptions on `R`. -/
+integral element as root. See also `minpoly.dvd` which relaxes the assumptions on `S`
+in exchange for stronger assumptions on `R`. -/
 theorem isIntegrallyClosed_dvd {s : S} (hs : IsIntegral R s) {p : R[X]}
     (hp : Polynomial.aeval s p = 0) : minpoly R s ∣ p := by
   let K := FractionRing R

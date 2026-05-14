@@ -15,6 +15,7 @@ Let `G` be a finite abelian group.
 
 For `M` a commutative monoid that has enough `n`th roots of unity, where `n` is the exponent of `G`,
 the main results in this file are:
+
 * `CommGroup.exists_apply_ne_one_of_hasEnoughRootsOfUnity`: Homomorphisms `G →* Mˣ` separate
   elements of `G`.
 * `CommGroup.monoidHom_mulEquiv_self_of_hasEnoughRootsOfUnity`: `G` is isomorphic to `G →* Mˣ`.
@@ -138,7 +139,7 @@ theorem card_restrictHom_ker (H : Subgroup G) :
 variable (G) in
 /--
 The `MulEquiv` between the double dual `(G →* Mˣ) →* Mˣ` of a finite commutative group `G`
-and itself  where `M` is a commutative monoid with enough `n`th roots of unity, where `n` is
+and itself where `M` is a commutative monoid with enough `n`th roots of unity, where `n` is
 the exponent of `G`.
 The image `g` of `η : (G →* Mˣ) →* Mˣ` is such that, for all `φ : G →* Mˣ`, we have `φ g = η g`,
 see `CommGroup.apply_monoidHomMonoidHomEquiv`.

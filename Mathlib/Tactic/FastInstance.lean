@@ -37,6 +37,7 @@ def error {α : Type _} (trace : Array Name) (m : MessageData) : MetaM α :=
 
 /--
 Core algorithm for normalizing instances.
+
 * Ideally, the term is replaced with a synthesized instance.
 * If not, it is reduced to a constructor
   and each instance implicit field is given the same treatment.
@@ -121,10 +122,12 @@ constructor applications that leverage existing instances. It uses the expected 
 the constructor applications and lambda binders of data fields.
 
 For instance, when used as
+
 ```lean
 instance instSemiring : Semiring X := sorry
 instance instRing : Ring X := fast_instance% Function.Injective.ring ..
 ```
+
 this will define `instRing` as a nested constructor application that refers to `instSemiring`
 rather than applications of `Function.Injective.ring` or other non-canonical constructors.
 The advantage is then that `instRing.toSemiring` unifies almost immediately with `instSemiring`,

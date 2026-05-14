@@ -17,6 +17,7 @@ import Mathlib.Analysis.Normed.MulAction
 In this file we continue building the theory of normed division rings and fields.
 
 Some useful results that relate the topology of the normed field to the discrete topology include:
+
 * `discreteTopology_or_nontriviallyNormedField`
 * `discreteTopology_of_bddAbove_range_norm`
 

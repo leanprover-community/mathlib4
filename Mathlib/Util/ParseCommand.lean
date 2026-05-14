@@ -59,6 +59,7 @@ if the parse is successful, then the output is captured in an exception.
 In either case, `#guard_msgs` can then be used to capture the resulting parsing errors.
 
 For instance, `#parse` can be used as follows
+
 ```lean
 /-- error: <input>:1:3: Stacks tags must be exactly 4 characters -/
 #guard_msgs in #parse Mathlib.Stacks.stacksTagFn => "A05"

@@ -13,6 +13,7 @@ public import Mathlib.GroupTheory.Nilpotent
 A group `G` is perfect if it equals its commutator subgroup, that is `⁅G, G⁆ = G`.
 
 Among the basic results, we show that
+
 * a nontrivial perfect group is not solvable (`IsPerfect.not_isSolvable`);
 * an abelian perfect group is trivial (`IsPerfect.subsingleton_of_isMulCommutative`).
 

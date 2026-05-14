@@ -136,7 +136,7 @@ private theorem dpow'_mem {n : ℕ} {x : ℤ_[p]} (hm : n ≠ 0) (hx : x ∈ Ide
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- The family `ℕ → Ideal.span {(p : ℤ_[p])} → ℤ_[p]` given by `dpow n x = x ^ n / n!` is a
-  divided power structure on the `ℤ_[p]`-ideal `(p)`. -/
+divided power structure on the `ℤ_[p]`-ideal `(p)`. -/
 noncomputable def dividedPowers : DividedPowers (Ideal.span {(p : ℤ_[p])}) := by
   classical
   refine ofInjective (Ideal.span {(p : ℤ_[p])}) (⊤)

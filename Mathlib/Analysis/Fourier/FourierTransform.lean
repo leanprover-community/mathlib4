@@ -22,6 +22,7 @@ We set up the Fourier transform for complex-valued functions on finite-dimension
 ## Design choices
 
 In namespace `VectorFourier`, we define the Fourier integral in the following context:
+
 * `𝕜` is a commutative ring.
 * `V` and `W` are `𝕜`-modules.
 * `e` is a unitary additive character of `𝕜`, i.e. an `AddChar 𝕜 Circle`.

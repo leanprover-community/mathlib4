@@ -148,7 +148,7 @@ lemma forget_obj : (forget (Rep.{w} k G)).obj A = A := rfl
 lemma forget_map (f : A ⟶ B) : (forget (Rep.{w} k G)).map f = (f : _ → _) := rfl
 
 /-- An equiv between the underlying representations induce isomorphism between objects in
-  `Rep k G`. -/
+`Rep k G`. -/
 def mkIso (e : ρ.Equiv σ) : of ρ ≅ of σ where
   hom := ofHom e.toIntertwiningMap
   inv := ofHom e.symm.toIntertwiningMap
@@ -206,7 +206,7 @@ lemma hom_surjective :
   hom_bijective.surjective
 
 /-- The morphisms between two objects in `Rep k G` has an equivalence to the intertwining maps
-  between their underlying representations. -/
+between their underlying representations. -/
 @[simps]
 def homEquiv : (A ⟶ B) ≃ (A.ρ.IntertwiningMap B.ρ) where
   toFun := Hom.hom
@@ -464,7 +464,7 @@ instance hasForgetToModuleCat :
   forget₂.map f := ModuleCat.ofHom f.hom.toLinearMap
 
 /-- A morphism in `Rep k G` has an underlying linear map attached to it hence induce a morphism in
-  `ModuleCat k`. -/
+`ModuleCat k`. -/
 abbrev Hom.toModuleCatHom (f : A ⟶ B) : ModuleCat.of k A.V ⟶ ModuleCat.of k B.V :=
   ModuleCat.ofHom f.hom.toLinearMap
 
@@ -525,7 +525,7 @@ instance : (forget₂ (Rep.{w} k G) (ModuleCat.{w} k)).Additive where
   map_add {X Y} f g := by ext1; simp [add_hom]
 
 /-- Forgetting `Rep` to `ModuleCat` is the same as first map to `Action`
-  then forget to `ModuleCat`. -/
+then forget to `ModuleCat`. -/
 abbrev forgetNatIsoActionForget : forget₂ (Rep.{w} k G) (ModuleCat k) ≅ (RepToAction k G) ⋙
     Action.forget (ModuleCat k) G := .refl _
 

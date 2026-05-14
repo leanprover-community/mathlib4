@@ -12,6 +12,7 @@ public import Mathlib.CategoryTheory.Limits.HasLimits
 # Limits in the category of indexed families of objects.
 
 Given a functor `F : J ⥤ Π i, C i` into a category of indexed families,
+
 1. we can assemble a collection of cones over `F ⋙ Pi.eval C i` into a cone over `F`
 2. if all those cones are limit cones, the assembled cone is a limit cone, and
 3. if we have limits for each of `F ⋙ Pi.eval C i`, we can produce a
@@ -135,6 +136,7 @@ in a category of indexed families.
 With the addition of
 `import CategoryTheory.Limits.Types.Products`
 we can use:
+
 ```
 attribute [local instance] hasLimit_of_hasLimit_comp_eval
 example : hasBinaryProducts (I → Type v₁) := ⟨by infer_instance⟩

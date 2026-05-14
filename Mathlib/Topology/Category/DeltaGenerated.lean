@@ -19,6 +19,7 @@ See https://ncatlab.org/nlab/show/Delta-generated+topological+space.
 Adapted from `Mathlib/Topology/Category/CompactlyGenerated.lean`.
 
 ## TODO
+
 * `DeltaGenerated` is Cartesian closed.
 -/
 
@@ -67,7 +68,7 @@ instance : deltaGeneratedToTop.{u}.Full := fullyFaithfulDeltaGeneratedToTop.full
 instance : deltaGeneratedToTop.{u}.Faithful := fullyFaithfulDeltaGeneratedToTop.faithful
 
 /-- The faithful (but not full) functor taking each topological space to its delta-generated
-  coreflection. -/
+coreflection. -/
 @[simps!]
 def topToDeltaGenerated : TopCat.{u} ⥤ DeltaGenerated.{u} where
   obj X := of (DeltaGeneratedSpace.of X)

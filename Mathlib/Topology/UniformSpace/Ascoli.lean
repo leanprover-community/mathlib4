@@ -285,7 +285,7 @@ lemma EquicontinuousOn.isUniformInducing_uniformOnFun_iff_pi [UniformSpace ι]
 
 /-- Let `X` be a topological space, `𝔖` a family of compact subsets of `X`, `α` a uniform space,
 and `F : ι → (X → α)` a family which is equicontinuous on each `K ∈ 𝔖`. Then, the topologies
-of uniform convergence on `𝔖` and pointwise convergence on `⋃₀ 𝔖` induce the same topology on  `ι`.
+of uniform convergence on `𝔖` and pointwise convergence on `⋃₀ 𝔖` induce the same topology on `ι`.
 
 In particular, pointwise convergence and compact convergence coincide on an equicontinuous
 subset of `X → α`.
@@ -410,6 +410,7 @@ alias ⟨EquicontinuousOn.isClosed_range_pi_of_uniformOnFun, _⟩ :=
 
 Let `X` be a topological space, `𝔖` a family of compact subsets of `X`, `α` a uniform space,
 and `F : ι → (X → α)`. Assume that:
+
 * `F`, viewed as a function `ι → (X →ᵤ[𝔖] α)`, is closed and inducing
 * `F` is equicontinuous on each `K ∈ 𝔖`
 * For all `x ∈ ⋃₀ 𝔖`, the range of `i ↦ F i x` is contained in some fixed compact subset.
@@ -444,6 +445,7 @@ theorem ArzelaAscoli.compactSpace_of_closed_inducing' [TopologicalSpace ι] {�
 
 Let `X, ι` be topological spaces, `𝔖` a covering of `X` by compact subsets, `α` a uniform space,
 and `F : ι → (X → α)`. Assume that:
+
 * `F`, viewed as a function `ι → (X →ᵤ[𝔖] α)`, is a closed embedding (in other words, `ι`
   identifies to a closed subset of `X →ᵤ[𝔖] α` through `F`)
 * `F` is equicontinuous on each `K ∈ 𝔖`
@@ -462,6 +464,7 @@ theorem ArzelaAscoli.compactSpace_of_isClosedEmbedding [TopologicalSpace ι] {�
 
 Let `X, ι` be topological spaces, `𝔖` a covering of `X` by compact subsets, `α` a T2 uniform space,
 `F : ι → (X → α)`, and `s` a subset of `ι`. Assume that:
+
 * `F`, viewed as a function `ι → (X →ᵤ[𝔖] α)`, is a closed embedding (in other words, `ι`
   identifies to a closed subset of `X →ᵤ[𝔖] α` through `F`)
 * `F '' s` is equicontinuous on each `K ∈ 𝔖`

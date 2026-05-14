@@ -25,6 +25,7 @@ This file defines the kernel of a linear map.
   (resp. linear) maps from `M` to `M₂` over the ring homomorphism `σ` (resp. over the ring `R`).
 
 ## Tags
+
 linear algebra, vector space, module
 
 -/

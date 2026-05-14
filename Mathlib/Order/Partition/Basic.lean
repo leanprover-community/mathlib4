@@ -324,7 +324,7 @@ end Set
 section Rel
 
 /-- Every partition of `s : Set α` induces a transitive, symmetric binary relation on `α`
-  whose equivalence classes are the parts of `P`. The relation is irreflexive outside `s`. -/
+whose equivalence classes are the parts of `P`. The relation is irreflexive outside `s`. -/
 def Rel (P : Partition s) (a b : α) : Prop :=
   ∃ t ∈ P, a ∈ t ∧ b ∈ t
 

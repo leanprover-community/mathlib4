@@ -36,7 +36,7 @@ section CommMonoid
 variable [CommMonoid M] [CommMonoid N] {s t : Multiset M} {a : M} {m : Multiset ι} {f g : ι → M}
 
 /-- Product of a multiset given a commutative monoid structure on `M`.
-  `prod {a, b, c} = a * b * c` -/
+`prod {a, b, c} = a * b * c` -/
 @[to_additive
       /-- Sum of a multiset given a commutative additive monoid structure on `M`.
       `sum {a, b, c} = a + b + c` -/]

@@ -371,7 +371,7 @@ def sub' : PosNum → PosNum → ZNum
   | bit1 a, bit1 b => (sub' a b).bit0
 
 /-- Converts a `ZNum` to `Option PosNum`, where it is `some` if the `ZNum` was positive and `none`
-  otherwise. -/
+otherwise. -/
 def ofZNum' : ZNum → Option PosNum
   | ZNum.pos p => some p
   | _ => none

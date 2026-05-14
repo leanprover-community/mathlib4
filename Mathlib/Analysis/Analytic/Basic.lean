@@ -43,6 +43,7 @@ See `Mathlib/Analysis/Analytic/Within.lean` for basic properties.
 * `AnalyticOn 𝕜 f s t` means `∀ x ∈ t, AnalyticWithinAt 𝕜 f s x`.
 
 We develop the basic properties of these notions, notably:
+
 * If a function admits a power series, it is continuous (see
   `HasFPowerSeriesOnBall.continuousOn` and `HasFPowerSeriesAt.continuousAt` and
   `AnalyticAt.continuousAt`).
@@ -118,7 +119,7 @@ every point of `s`. -/
 def AnalyticOnNhd (f : E → F) (s : Set E) :=
   ∀ x, x ∈ s → AnalyticAt 𝕜 f x
 
-/-- `f` is analytic within `s` if it is analytic within `s` at each point of `s`.  Note that
+/-- `f` is analytic within `s` if it is analytic within `s` at each point of `s`. Note that
 this is weaker than `AnalyticOnNhd 𝕜 f s`, as `f` is allowed to be arbitrary outside `s`. -/
 def AnalyticOn (f : E → F) (s : Set E) : Prop :=
   ∀ x ∈ s, AnalyticWithinAt 𝕜 f s x

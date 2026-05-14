@@ -18,6 +18,7 @@ This file defines pointwise algebraic operations on sets.
 ## Main declarations
 
 For sets `s` and `t` and scalar `a`:
+
 * `s * t`: Multiplication, set of all `x * y` where `x ∈ s` and `y ∈ t`.
 * `s + t`: Addition, set of all `x + y` where `x ∈ s` and `y ∈ t`.
 * `s⁻¹`: Inversion, set of all `x⁻¹` where `x ∈ s`.

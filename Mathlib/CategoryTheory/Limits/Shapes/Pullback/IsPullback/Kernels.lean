@@ -12,6 +12,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 # Horizontal maps in a pullback square have the same kernel
 
 Consider a commutative square:
+
 ```
     t
  X₁ --> X₂
@@ -20,6 +21,7 @@ l|      |r
  X₃ --> X₄
     b
 ```
+
 * If this is a pullback square, then the induced map `kernel t ⟶ kernel b`
   is an isomorphism.
 * If this is a pushout square, then the induced map `cokernel t ⟶ cokernel b`

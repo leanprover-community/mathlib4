@@ -14,6 +14,7 @@ public import Mathlib.Tactic.LinearCombination
 # Real Closed Field
 
 A field `R` is real closed if all of the following hold:
+
 1. `R` is real (that is, `-1` is not a sum of squares in `R`).
 2. for every `x` in `R`, one of `x` or `-x` is a square.
 3. every odd-degree polynomial over `R` has a root in `R`.
@@ -41,6 +42,7 @@ open Polynomial
 
 /--
 A field `R` is real closed if all of the following hold:
+
 1. `R` is real (that is, `-1` is not a sum of squares in `R`).
 2. for every `x` in `R`, one of `x` or `-x` is a square.
 3. every odd-degree polynomial over `R` has a root in `R`.

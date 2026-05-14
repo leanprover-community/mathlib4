@@ -390,6 +390,7 @@ end Height
 ### Lower bound for the height of the image under a polynomial map
 
 If
+
 * `p : ι' → MvPolynomial ι K` is a family of homogeneous polynomials of the same degree `N`,
 * `q : ι × ι' → MvPolynomial ι K` is a family of homogeneous polynomials of the same degree `M`,
 * `x : ι → K` is such that for all `k : ι`,
@@ -427,6 +428,7 @@ variable [AdmissibleAbsValues K] [Finite ι]
 open AdmissibleAbsValues
 
 /-- If
+
 * `p : ι' → MvPolynomial ι K` is a family of polynomials (which in practice will be homogeneous
   of the same degree `N`),
 * `q : ι × ι' → MvPolynomial ι K` is a family of homogeneous polynomials of the same degree `M`,
@@ -458,6 +460,7 @@ theorem mulHeight_eval_ge {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
   exact Eq.le (by ring)
 
 /-- If
+
 * `p : ι' → MvPolynomial ι K` is a family of polynomials (which in practice will be homogeneous
   of the same degree `N`),
 * `q : ι × ι' → MvPolynomial ι K` is a family of homogeneous polynomials of the same degree `M`,
@@ -480,6 +483,7 @@ theorem mulHeight_eval_ge' {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
 
 open Real in
 /-- If
+
 * `p : ι' → MvPolynomial ι K` is a family of polynomials (which in practice will be homogeneous
   of the same degree `N`),
 * `q : ι × ι' → MvPolynomial ι K` is a family of homogeneous polynomials of the same degree `M`,
@@ -502,6 +506,7 @@ theorem logHeight_eval_ge {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
   exact (log_le_log <| by positivity) <| mulHeight_eval_ge hq p h
 
 /-- If
+
 * `p : ι' → MvPolynomial ι K` is a family of polynomials (which in practice will be homogeneous
   of the same degree `N`),
 * `q : ι × ι' → MvPolynomial ι K` is a family of homogeneous polynomials of the same degree `M`,
@@ -522,7 +527,7 @@ theorem logHeight_eval_ge' {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
 end Height
 
 /-!
-### Bounds for the height of ![x*y, x+y, 1]
+### Bounds for the height of ![x\*y, x+y, 1]
 
 We show that the multiplicative height of `![a*c, a*d + b*c, b*d]` is bounded from above and from
 below by a positive constant times the product of the multiplicative heights of `![a, b]` and

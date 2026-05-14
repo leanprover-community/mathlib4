@@ -58,6 +58,7 @@ maximum recursion depth.
   used by `noncomm_ring` do not require a discharger.
 
 Example:
+
 ```lean
 example {R : Type*} [Ring R] (a b c : R) : a * (b + c + c - b) = 2 * a * c := by
   noncomm_ring

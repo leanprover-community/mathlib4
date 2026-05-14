@@ -31,26 +31,26 @@ In this file we present a proof of Hadamard's three-lines Theorem.
 ## Main definitions
 
 - `Complex.HadamardThreeLines.verticalStrip` :
-    The vertical strip defined by : `re ⁻¹' Ioo a b`
+  The vertical strip defined by : `re ⁻¹' Ioo a b`
 
 - `Complex.HadamardThreeLines.verticalClosedStrip` :
-    The vertical strip defined by : `re ⁻¹' Icc a b`
+  The vertical strip defined by : `re ⁻¹' Icc a b`
 
 - `Complex.HadamardThreeLines.sSupNormIm` :
-    The supremum function on vertical lines defined by : `sSup {|f(z)| : z.re = x}`
+  The supremum function on vertical lines defined by : `sSup {|f(z)| : z.re = x}`
 
 - `Complex.HadamardThreeLines.interpStrip` :
-    The interpolation between the `sSupNormIm` on the edges of the vertical strip `re⁻¹ [0, 1]`.
+  The interpolation between the `sSupNormIm` on the edges of the vertical strip `re⁻¹ [0, 1]`.
 
 - `Complex.HadamardThreeLines.interpStrip` :
-    The interpolation between the `sSupNormIm` on the edges of any vertical strip.
+  The interpolation between the `sSupNormIm` on the edges of any vertical strip.
 
 - `Complex.HadamardThreeLines.invInterpStrip` :
-    Inverse of the interpolation between the `sSupNormIm` on the edges of the
-    vertical strip `re⁻¹ [0, 1]`.
+  Inverse of the interpolation between the `sSupNormIm` on the edges of the
+  vertical strip `re⁻¹ [0, 1]`.
 
 - `Complex.HadamardThreeLines.F` :
-    Function defined by `f` times `invInterpStrip`. Convenient form for proofs.
+  Function defined by `f` times `invInterpStrip`. Convenient form for proofs.
 
 ## Note
 
@@ -306,8 +306,8 @@ noncomputable def interpStrip' (f : ℂ → E) (l u : ℝ) (z : ℂ) : ℂ :=
 /-- An auxiliary function to prove the general statement of Hadamard's three lines theorem. -/
 def scale (f : ℂ → E) (l u : ℝ) : ℂ → E := fun z ↦ f (l + z • (u - l))
 
-/-- The transformation on ℂ that is used for `scale` maps the closed strip ``re ⁻¹' [l, u]``
-  to the closed strip ``re ⁻¹' [0, 1]``. -/
+/-- The transformation on ℂ that is used for `scale` maps the closed strip `re ⁻¹' [l, u]`
+to the closed strip `re ⁻¹' [0, 1]`. -/
 lemma scale_id_mem_verticalClosedStrip_of_mem_verticalClosedStrip {l u : ℝ} (hul : l < u) {z : ℂ}
     (hz : z ∈ verticalClosedStrip 0 1) : l + z * (u - l) ∈ verticalClosedStrip l u := by
   simp only [verticalClosedStrip, mem_preimage, add_re, ofReal_re, mul_re, sub_re, sub_im,
@@ -323,7 +323,7 @@ lemma scale_bddAbove {f : ℂ → E} {l u : ℝ} (hul : l < u)
   exact ⟨l + z * (u - l), scale_id_mem_verticalClosedStrip_of_mem_verticalClosedStrip hul hz, rfl⟩
 
 /-- A bound to the norm of `f` on the line `z.re = l` induces a bound to the norm of
-  `scale f l u z` on the line `z.re = 0`. -/
+`scale f l u z` on the line `z.re = 0`. -/
 lemma scale_bound_left {f : ℂ → E} {l u a : ℝ} (ha : ∀ z ∈ re ⁻¹' {l}, ‖f z‖ ≤ a) :
     ∀ z ∈ re ⁻¹' {0}, ‖scale f l u z‖ ≤ a := by
   simp only [mem_preimage, mem_singleton_iff, scale, smul_eq_mul]
@@ -331,7 +331,7 @@ lemma scale_bound_left {f : ℂ → E} {l u a : ℝ} (ha : ∀ z ∈ re ⁻¹' {
   exact ha (↑l + z * (↑u - ↑l)) (by simp [hz])
 
 /-- A bound to the norm of `f` on the line `z.re = u` induces a bound to the norm of `scale f l u z`
-  on the line `z.re = 1`. -/
+on the line `z.re = 1`. -/
 lemma scale_bound_right {f : ℂ → E} {l u b : ℝ} (hb : ∀ z ∈ re ⁻¹' {u}, ‖f z‖ ≤ b) :
     ∀ z ∈ re ⁻¹' {1}, ‖scale f l u z‖ ≤ b := by
   simp only [scale, mem_preimage, mem_singleton_iff, smul_eq_mul]
@@ -339,7 +339,7 @@ lemma scale_bound_right {f : ℂ → E} {l u b : ℝ} (hb : ∀ z ∈ re ⁻¹' 
   exact hb (↑l + z * (↑u - ↑l)) (by simp [hz])
 
 /-- The supremum of the norm of `scale f l u` on the line `z.re = 0` is the same as the supremum
-  of `f` on the line `z.re = l`. -/
+of `f` on the line `z.re = l`. -/
 lemma sSupNormIm_scale_left (f : ℂ → E) {l u : ℝ} (hul : l < u) :
     sSupNormIm (scale f l u) 0 = sSupNormIm f l := by
   simp_rw [sSupNormIm, image_comp]
@@ -363,7 +363,7 @@ lemma sSupNormIm_scale_left (f : ℂ → E) {l u : ℝ} (hul : l < u) :
   rw [this]
 
 /-- The supremum of the norm of `scale f l u` on the line `z.re = 1` is the same as
-  the supremum of `f` on the line `z.re = u`. -/
+the supremum of `f` on the line `z.re = u`. -/
 lemma sSupNormIm_scale_right (f : ℂ → E) {l u : ℝ} (hul : l < u) :
     sSupNormIm (scale f l u) 1 = sSupNormIm f u := by
   simp_rw [sSupNormIm, image_comp]
@@ -517,8 +517,8 @@ lemma norm_le_interp_of_mem_verticalClosedStrip₀₁' (f : ℂ → E) {z : ℂ}
         simp only [mem_preimage, one_re, mem_singleton_iff, comp_apply,
           and_self]
 
-/-- The transformation on ℂ that is used for `scale` maps the strip ``re ⁻¹' (l, u)``
-  to the strip ``re ⁻¹' (0, 1)``. -/
+/-- The transformation on ℂ that is used for `scale` maps the strip `re ⁻¹' (l, u)`
+to the strip `re ⁻¹' (0, 1)`. -/
 lemma scale_id_mem_verticalStrip_of_mem_verticalStrip {l u : ℝ} (hul : l < u) {z : ℂ}
     (hz : z ∈ verticalStrip 0 1) : l + z * (u - l) ∈ verticalStrip l u := by
   simp only [verticalStrip, mem_preimage, mem_Ioo] at hz
@@ -531,7 +531,7 @@ lemma scale_id_mem_verticalStrip_of_mem_verticalStrip {l u : ℝ} (hul : l < u) 
   gcongr
 
 /-- If z is on the closed strip `re ⁻¹' [l, u]`, then `(z - l) / (u - l)` is on the closed strip
-  `re ⁻¹' [0, 1]`. -/
+`re ⁻¹' [0, 1]`. -/
 lemma mem_verticalClosedStrip_of_scale_id_mem_verticalClosedStrip {z : ℂ} {l u : ℝ} (hul : l < u)
     (hz : z ∈ verticalClosedStrip l u) : z / (u - l) - l / (u - l) ∈ verticalClosedStrip 0 1 := by
   simp only [verticalClosedStrip, Complex.div_re, mem_preimage, sub_re, mem_Icc,

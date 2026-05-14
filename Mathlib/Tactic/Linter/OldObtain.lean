@@ -20,6 +20,7 @@ i.e. uses of the `obtain` tactic which do not immediately provide a proof.
 ## Example
 
 There are six different kinds of `obtain` uses. In one example, they look like this.
+
 ```
 theorem foo : True := by
   -- These cases are fine.
@@ -33,12 +34,14 @@ theorem foo : True := by
   obtain h : True
   · trivial
 ```
+
 We allow the first four (since an explicit proof is provided), but lint against the last two.
 
 ## Why is this bad?
 
 This is similar to removing all uses of `Tactic.Replace` and `Tactic.Have`
 from mathlib: in summary,
+
 - this version is a Lean3-ism, which can be unlearned now
 - the syntax `obtain foo : type := proof` is slightly shorter;
   particularly so when the first tactic of the proof is `exact`

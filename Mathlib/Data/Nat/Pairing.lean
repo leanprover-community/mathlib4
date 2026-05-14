@@ -13,6 +13,7 @@ public import Mathlib.Data.Set.Lattice.Image
 # Naturals pairing function
 
 This file defines a pairing function for the naturals as follows:
+
 ```text
  0  1  4  9 16
  2  3  5 10 17

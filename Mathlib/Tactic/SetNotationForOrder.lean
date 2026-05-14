@@ -112,7 +112,7 @@ If the type is not known, elaboration of this term is postponed.
 
 We assume that `le` and `sub` are names for declarations of exactly the form
 `decl.{u} {α : Type u} [Cls.{u} α] (a b : α) : Prop`, and that likewise `leCls` and `subCls` are
-names for declarations of exactly the form  `Cls.{u} (α : Type u) : Type u`. -/
+names for declarations of exactly the form `Cls.{u} (α : Type u) : Type u`. -/
 def elabSubsetLike (x y : Term) (le leCls sub subCls : Name) (expectedType? : Option Expr) :
     TermElabM Expr := do
   let rel ← `(SubsetElabAux $x $y)

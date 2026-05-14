@@ -17,14 +17,18 @@ and `S` acting contravariantly ("on the right"). The compatibility condition is 
 `(r • m) • s = r • (m • s)` for all `r : R`, `s : S`, `m : M`.
 
 This situation can be set up in Mathlib as:
+
 ```lean
 variable (R S M : Type*) [Ring R] [Ring S]
 variable [AddCommGroup M] [Module R M] [Module Sᵐᵒᵖ M] [SMulCommClass R Sᵐᵒᵖ M]
 ```
+
 The key fact is:
+
 ```lean
 example : Module (R ⊗[ℕ] Sᵐᵒᵖ) M := TensorProduct.Algebra.module
 ```
+
 Note that the corresponding result holds for the canonically isomorphic ring `R ⊗[ℤ] Sᵐᵒᵖ` but it is
 preferable to use the `R ⊗[ℕ] Sᵐᵒᵖ` instance since it works without additive inverses.
 

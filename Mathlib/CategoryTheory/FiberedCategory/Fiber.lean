@@ -14,6 +14,7 @@ public import Mathlib.CategoryTheory.Functor.Const
 
 In this file we define, for a functor `p : 𝒳 ⥤ 𝒴`, the fiber categories `Fiber p S` for every
 `S : 𝒮` as follows
+
 - An object in `Fiber p S` is a pair `(a, ha)` where `a : 𝒳` and `ha : p.obj a = S`.
 - A morphism in `Fiber p S` is a morphism `φ : a ⟶ b` in 𝒳 such that `p.map φ = 𝟙 S`.
 

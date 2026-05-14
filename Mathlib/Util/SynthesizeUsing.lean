@@ -53,6 +53,7 @@ def synthesizeUsing' {u : Level} (type : Q(Sort u)) (tac : TacticM Unit) : MetaM
 given tactic syntax.
 
 Example:
+
 ```lean
 let (gs, e) ← synthesizeUsingTactic ty (← `(tactic| congr!))
 ```
@@ -69,6 +70,7 @@ def synthesizeUsingTactic {u : Level} (type : Q(Sort u)) (tac : Syntax) :
 given tactic syntax.
 
 Example:
+
 ```lean
 let e ← synthesizeUsingTactic' ty (← `(tactic| norm_num))
 ```
@@ -78,6 +80,7 @@ The tactic must solve for all goals, in contrast to `synthesizeUsingTactic`.
 If you need to insert expressions into a tactic proof, then you might use `synthesizeUsing'`
 directly, since the `TacticM` monad has access to the `TermElabM` monad. For example, here
 is a term elaborator that wraps the `simp at ...` tactic:
+
 ```
 def simpTerm (e : Expr) : MetaM Expr := do
   let mvar ← Meta.mkFreshTypeMVar

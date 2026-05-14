@@ -22,6 +22,7 @@ This file defines the number and density of edges of a relation/graph.
 ## Main declarations
 
 Between two finsets of vertices,
+
 * `Rel.interedges`: Finset of edges of a relation.
 * `Rel.edgeDensity`: Edge density of a relation.
 * `SimpleGraph.interedges`: Finset of edges of a graph.

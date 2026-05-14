@@ -59,6 +59,7 @@ In general we only include the left version, the right one being accessible thro
 
 There is still a significant part of the algebraic API which should be ported to the
 topological setting. Notably, we should:
+
 * show that `Submodule.prodEquivOfIsCompl` is a homeomorphism if and only if
   the two subspaces are topological complements, and bundle it as a `ContinuousLinearEquiv` when
   this is the case. (See the existing `ClosedComplemented.exists_submodule_equiv_prod`).

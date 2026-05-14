@@ -31,6 +31,7 @@ topology does not coincide with the lower topology.
   set topology to a preorder with the upper topology is continuous.
 
 We provide the upper set topology in three ways (and similarly for the lower set topology):
+
 * `Topology.upperSet`: The upper set topology as a `TopologicalSpace α`
 * `Topology.IsUpperSet`: Prop-valued mixin typeclass stating that an existing topology is the upper
   set topology.

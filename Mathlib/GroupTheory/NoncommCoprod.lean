@@ -43,8 +43,8 @@ variable {M N P : Type*} [Mul M] [Mul N] [Semigroup P]
   (f : M →ₙ* P) (g : N →ₙ* P)
 
 /-- Coproduct of two `MulHom`s with the same codomain with `Commute` assumption:
-  `f.noncommCoprod g _ (p : M × N) = f p.1 * g p.2`.
-  (For the commutative case, use `MulHom.coprod`) -/
+`f.noncommCoprod g _ (p : M × N) = f p.1 * g p.2`.
+(For the commutative case, use `MulHom.coprod`) -/
 @[to_additive (attr := simps)
     /-- Coproduct of two `AddHom`s with the same codomain with `AddCommute` assumption:
     `f.noncommCoprod g _ (p : M × N) = f p.1 + g p.2`.
@@ -75,9 +75,9 @@ variable {M N P : Type*} [MulOneClass M] [MulOneClass N] [Monoid P]
   (f : M →* P) (g : N →* P) (comm : ∀ m n, Commute (f m) (g n))
 
 /-- Coproduct of two `MonoidHom`s with the same codomain,
-  with a commutation assumption:
-  `f.noncommCoprod g _ (p : M × N) = f p.1 * g p.2`.
-  (Noncommutative case; in the commutative case, use `MonoidHom.coprod`.) -/
+with a commutation assumption:
+`f.noncommCoprod g _ (p : M × N) = f p.1 * g p.2`.
+(Noncommutative case; in the commutative case, use `MonoidHom.coprod`.) -/
 @[to_additive (attr := simps)
     /-- Coproduct of two `AddMonoidHom`s with the same codomain,
     with a commutation assumption:

@@ -16,6 +16,7 @@ We bundle the adjunctions in a structure `Quadruple L F G R` and make the two tr
 and `Triple F G R` accessible as `Quadruple.leftTriple` and `Quadruple.rightTriple`.
 
 Currently the only two results are the following:
+
 * When `F` and `R` are fully faithful, the components of the induced natural transformation `G ⟶ L`
   are epimorphisms iff the components of the natural transformation `F ⟶ R` are monomorphisms.
 * When `L` and `G` are fully faithful, the components of the induced natural transformation `L ⟶ G`

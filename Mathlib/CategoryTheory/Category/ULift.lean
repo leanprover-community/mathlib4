@@ -18,7 +18,7 @@ instance on `ULift C` where `C` is a type with a category instance.
 1. `CategoryTheory.ULift.upFunctor` is the functorial version of the usual `ULift.up`.
 2. `CategoryTheory.ULift.downFunctor` is the functorial version of the usual `ULift.down`.
 3. `CategoryTheory.ULift.equivalence` is the categorical equivalence between
-  `C` and `ULift C`.
+   `C` and `ULift C`.
 
 ## ULiftHom
 
@@ -77,7 +77,7 @@ def ULift.equivalence : C ≌ ULift.{u₂} C where
 section ULiftHom
 
 /-- `ULiftHom.{w} C` is an alias for `C`, which is endowed with a category instance
-  whose morphisms are obtained by applying `ULift.{w}` to the morphisms from `C`.
+whose morphisms are obtained by applying `ULift.{w}` to the morphisms from `C`.
 -/
 def ULiftHom.{w, u} (C : Type u) : Type u :=
   let _ := ULift.{w} C
@@ -134,14 +134,14 @@ def ULiftHom.equiv : C ≌ ULiftHom C where
 end ULiftHom
 
 /-- `AsSmall C` is a small category equivalent to `C`.
-  More specifically, if `C : Type u` is endowed with `Category.{v} C`, then
-  `AsSmall.{w} C : Type (max w v u)` is endowed with an instance of a small category.
+More specifically, if `C : Type u` is endowed with `Category.{v} C`, then
+`AsSmall.{w} C : Type (max w v u)` is endowed with an instance of a small category.
 
-  The objects and morphisms of `AsSmall C` are defined by applying `ULift` to the
-  objects and morphisms of `C`.
+The objects and morphisms of `AsSmall C` are defined by applying `ULift` to the
+objects and morphisms of `C`.
 
-  Note: We require a category instance for this definition in order to have direct
-  access to the universe level `v`.
+Note: We require a category instance for this definition in order to have direct
+access to the universe level `v`.
 -/
 @[nolint unusedArguments]
 def AsSmall.{w, v, u} (D : Type u) [Category.{v} D] := ULift.{max w v} D

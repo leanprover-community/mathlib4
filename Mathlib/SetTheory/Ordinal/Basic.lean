@@ -21,18 +21,24 @@ initial segment (or, equivalently, in any way). This total order is well founded
 ## Main definitions
 
 * `Ordinal`: the type of ordinals (in a given universe)
+
 * `Ordinal.type r`: given a well-founded order `r`, this is the corresponding ordinal
+
 * `Ordinal.typein r a`: given a well-founded order `r` on a type `α`, and `a : α`, the ordinal
   corresponding to all elements smaller than `a`.
+
 * `enum r ⟨o, h⟩`: given a well-order `r` on a type `α`, and an ordinal `o` strictly smaller than
   the ordinal corresponding to `r` (this is the assumption `h`), returns the `o`-th element of `α`.
   In other words, the elements of `α` can be enumerated using ordinals up to `type r`.
+
 * `Ordinal.card o`: the cardinality of an ordinal `o`.
+
 * `Ordinal.lift` lifts an ordinal in universe `u` to an ordinal in universe `max u v`.
   For a version registering additionally that this is an initial segment embedding, see
   `Ordinal.liftInitialSeg`.
   For a version registering that it is a principal segment embedding if `u < v`, see
   `Ordinal.liftPrincipalSeg`.
+
 * `Ordinal.omega0` or `ω` is the order type of `ℕ`. It is called this to match `Cardinal.aleph0`
   and so that the omega function can be named `Ordinal.omega`. This definition is universe
   polymorphic: `Ordinal.omega0.{u} : Ordinal.{u}` (contrast with `ℕ : Type`, which lives in
@@ -44,7 +50,9 @@ initial segment (or, equivalently, in any way). This total order is well founded
   `Mathlib/SetTheory/Ordinal/Arithmetic.lean`.
   Here, we only introduce it and prove its basic properties to deduce the fact that the order on
   ordinals is total (and well founded).
+
 * `succ o` is the successor of the ordinal `o`.
+
 * `Cardinal.ord c`: when `c` is a cardinal, `ord c` is the smallest ordinal with this cardinality.
   It is the canonical way to represent a cardinal with an ordinal.
 
@@ -620,8 +628,8 @@ theorem card_typein_min_le_mk [IsWellOrder α r] {s : Set α} (hs : sᶜ.Nonempt
 /-! ### Lifting ordinals to a higher universe -/
 
 /-- The universe lift operation for ordinals, which embeds `Ordinal.{u}` as
-  a proper initial segment of `Ordinal.{v}` for `v > u`. For the initial segment version,
-  see `liftInitialSeg`. -/
+a proper initial segment of `Ordinal.{v}` for `v > u`. For the initial segment version,
+see `liftInitialSeg`. -/
 @[pp_with_univ]
 def lift (o : Ordinal.{v}) : Ordinal.{max v u} :=
   Quotient.liftOn o (fun w => type <| ULift.down ⁻¹'o w.r) fun ⟨_, r, _⟩ ⟨_, s, _⟩ ⟨f⟩ =>
@@ -1030,7 +1038,7 @@ theorem mk_toType (o : Ordinal) : #o.ToType = o.card :=
   (Ordinal.card_type _).symm.trans <| by rw [Ordinal.type_toType]
 
 /-- The ordinal corresponding to a cardinal `c` is the least ordinal
-  whose cardinal is `c`. For the order-embedding version, see `ord.order_embedding`. -/
+whose cardinal is `c`. For the order-embedding version, see `ord.order_embedding`. -/
 @[no_expose]
 def ord (c : Cardinal) : Ordinal :=
   Quot.liftOn c (fun α : Type u => ⨅ r : { r // IsWellOrder α r }, @type α r.1 r.2) <| by
@@ -1235,7 +1243,7 @@ theorem ord_eq_omega0 {a : Cardinal} : a.ord = ω ↔ a = ℵ₀ :=
   ord_injective.eq_iff' ord_aleph0
 
 /-- The ordinal corresponding to a cardinal `c` is the least ordinal
-  whose cardinal is `c`. This is the order-embedding version. For the regular function, see `ord`.
+whose cardinal is `c`. This is the order-embedding version. For the regular function, see `ord`.
 -/
 def ord.orderEmbedding : Cardinal ↪o Ordinal :=
   RelEmbedding.orderEmbeddingOfLTEmbedding

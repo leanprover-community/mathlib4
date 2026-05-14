@@ -21,6 +21,7 @@ goal or context already involves real numbers.
 In the example below, assumption `hn` is about natural numbers, `hk` is about integers
 and involves casting a natural number to `ℤ`, and the conclusion is about real numbers.
 The proof uses `rify` to lift both assumptions to `ℝ` before calling `linarith`.
+
 ```
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Rify
@@ -63,6 +64,7 @@ variable.
   type `· ≤ ·` or `· ∣ ·` will allow `push_cast` to do more work.
 
 Examples:
+
 ```
 /--
 import Mathlib

@@ -18,8 +18,8 @@ a corresponding morphism between the unitary groups in a star monoid.
 
 ## Main definitions
 
-  * `StarMonoidHom`
-  * `StarMulEquiv`
+* `StarMonoidHom`
+* `StarMulEquiv`
 
 ## Tags
 

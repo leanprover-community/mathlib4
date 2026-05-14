@@ -241,7 +241,7 @@ theorem noncommProd_lemma (s : Finset α) (f : α → β)
 given a proof that `*` commutes on all elements `f x` for `x ∈ s`. -/
 @[to_additive
       /-- Sum of a `s : Finset α` mapped with `f : α → β` with `[AddMonoid β]`,
-given a proof that `+` commutes on all elements `f x` for `x ∈ s`. -/]
+      given a proof that `+` commutes on all elements `f x` for `x ∈ s`. -/]
 def noncommProd (s : Finset α) (f : α → β)
     (comm : (s : Set α).Pairwise (Commute on f)) : β :=
   (s.1.map f).noncommProd <| noncommProd_lemma s f comm

@@ -276,8 +276,8 @@ section Coprod
 variable [Mul M] [Mul N] [CommSemigroup P] (f : M →ₙ* P) (g : N →ₙ* P)
 
 /-- Coproduct of two `MulHom`s with the same codomain:
-  `f.coprod g (p : M × N) = f p.1 * g p.2`.
-  (Commutative codomain; for the general case, see `MulHom.noncommCoprod`) -/
+`f.coprod g (p : M × N) = f p.1 * g p.2`.
+(Commutative codomain; for the general case, see `MulHom.noncommCoprod`) -/
 @[to_additive
     /-- Coproduct of two `AddHom`s with the same codomain:
     `f.coprod g (p : M × N) = f p.1 + g p.2`.
@@ -443,8 +443,8 @@ section Coprod
 variable [CommMonoid P] (f : M →* P) (g : N →* P)
 
 /-- Coproduct of two `MonoidHom`s with the same codomain:
-  `f.coprod g (p : M × N) = f p.1 * g p.2`.
-  (Commutative case; for the general case, see `MonoidHom.noncommCoprod`.) -/
+`f.coprod g (p : M × N) = f p.1 * g p.2`.
+(Commutative case; for the general case, see `MonoidHom.noncommCoprod`.) -/
 @[to_additive
     /-- Coproduct of two `AddMonoidHom`s with the same codomain:
     `f.coprod g (p : M × N) = f p.1 + g p.2`.
@@ -530,7 +530,7 @@ variable (M N M' N')
 /-- Four-way commutativity of `Prod`. The name matches `mul_mul_mul_comm`. -/
 @[to_additive (attr := simps apply) prodProdProdComm
     /-- Four-way commutativity of `Prod`.
-The name matches `mul_mul_mul_comm` -/]
+    The name matches `mul_mul_mul_comm` -/]
 def prodProdProdComm : (M × N) × M' × N' ≃* (M × M') × N × N' :=
   { Equiv.prodProdProdComm M N M' N' with
     toFun := fun mnmn => ((mnmn.1.1, mnmn.2.1), (mnmn.1.2, mnmn.2.2))

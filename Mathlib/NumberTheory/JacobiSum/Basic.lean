@@ -22,6 +22,7 @@ commutative ring `R` with values in another commutative ring `R'`:
 ## References
 
 We essentially follow
+
 * [K. Ireland, M. Rosen, *A classical introduction to modern number theory*
   (Section 8.3)][IrelandRosen1990]
 

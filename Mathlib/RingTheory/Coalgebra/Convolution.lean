@@ -18,6 +18,7 @@ public import Mathlib.Tactic.SuppressCompilation
 
 This file constructs the ring structure on linear maps `C → A` where `C` is a coalgebra and `A` an
 algebra, where multiplication is given by `(f * g)(x) = ∑ f x₍₁₎ * g x₍₂₎` in Sweedler notation or
+
 ```
          |
          μ
@@ -27,6 +28,7 @@ f * g = f g
          δ
          |
 ```
+
 diagrammatically, where `μ` stands for multiplication and `δ` for comultiplication.
 
 ## Implementation notes

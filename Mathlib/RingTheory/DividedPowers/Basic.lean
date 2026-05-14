@@ -22,6 +22,7 @@ To avoid coercions, we rather consider `DividedPowers.dpow : ℕ → A → A`, e
 * `DividedPowers.dpow_mem` : `dpow n x ∈ I` for `n ≠ 0`
 
 For `x y : A` and `m n : ℕ` such that `x ∈ I` and `y ∈ I`, one has
+
 * `DividedPowers.dpow_zero` : `dpow 0 x = 1`
 * `DividedPowers.dpow_one` : `dpow 1 x = 1`
 * `DividedPowers.dpow_add` :
@@ -351,8 +352,8 @@ theorem dpow_linearCombination {S : Type*} [CommSemiring S] [Algebra A S] {J : I
   rw [Algebra.smul_def, hJ.dpow_mul (hx i hi), ← map_pow, ← Algebra.smul_def]
 
 /-- Given a nonempty `s : Finset ι` and a family `r : ι → R` such that `r i ∈ I` for all `i ∈ S`,
-  one has `hI.dpow n (∏ i ∈ s, r i) = n.factorial ^ (s.card - 1) • (∏ i ∈ s, hI.dpow n (r i))`
-  for all `n : ℕ`. -/
+one has `hI.dpow n (∏ i ∈ s, r i) = n.factorial ^ (s.card - 1) • (∏ i ∈ s, hI.dpow n (r i))`
+for all `n : ℕ`. -/
 theorem dpow_prod {ι : Type*} {r : ι → A} {s : Finset ι} (hs : s.Nonempty)
     (hs' : ∀ i ∈ s, r i ∈ I) {n : ℕ} :
     hI.dpow n (∏ i ∈ s, r i) = n.factorial ^ (s.card - 1) • (∏ i ∈ s, hI.dpow n (r i)) := by

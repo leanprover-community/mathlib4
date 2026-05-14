@@ -46,6 +46,7 @@ The definitions of independence in this file are a particular case of independen
 kernel and a measure, as defined in the file `Kernel.lean`.
 
 We provide four definitions of independence:
+
 * `iIndepSets`: independence of a family of sets of sets `pi : ι → Set (Set Ω)`. This is meant to
   be used with π-systems.
 * `iIndep`: independence of a family of measurable space structures `m : ι → MeasurableSpace Ω`,
@@ -562,6 +563,7 @@ section IndepSet
 /-! ### Independence of measurable sets
 
 We prove the following equivalences on `IndepSet`, for measurable sets `s, t`.
+
 * `IndepSet s t μ ↔ μ (s ∩ t) = μ s * μ t`,
 * `IndepSet s t μ ↔ IndepSets {s} {t} μ`.
 -/

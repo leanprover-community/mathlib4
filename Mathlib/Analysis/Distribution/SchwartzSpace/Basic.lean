@@ -68,17 +68,17 @@ variable [NormedAddCommGroup F] [NormedSpace ℝ F]
 
 variable (E F) in
 /-- A function is a Schwartz function if it is smooth and all derivatives decay faster than
-  any power of `‖x‖`. -/
+any power of `‖x‖`. -/
 structure SchwartzMap where
   /-- The underlying function.
-
+  
   Do NOT use directly. Use the coercion instead. -/
   toFun : E → F
   smooth' : ContDiff ℝ ∞ toFun
   decay' : ∀ k n : ℕ, ∃ C : ℝ, ∀ x, ‖x‖ ^ k * ‖iteratedFDeriv ℝ n toFun x‖ ≤ C
 
 /-- A function is a Schwartz function if it is smooth and all derivatives decay faster than
-  any power of `‖x‖`. -/
+any power of `‖x‖`. -/
 scoped[SchwartzMap] notation "𝓢(" E ", " F ")" => SchwartzMap E F
 
 namespace SchwartzMap

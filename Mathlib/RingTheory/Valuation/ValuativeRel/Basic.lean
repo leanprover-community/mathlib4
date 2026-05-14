@@ -37,7 +37,6 @@ saying that `R` is endowed with an equivalence class of valuations.
   `[ValuativeExtension A B]` ensures that the algebra map `A → B` is compatible with the valuations
   on `A` and `B`. For example, this can be used to talk about extensions of valued fields.
 
-
 ## Remark
 
 The last two axioms in `ValuativeRel`, namely `vle_mul_cancel` and `not_vle_one_zero`, are
@@ -57,6 +56,7 @@ The `ValuativeRel` class should eventually replace the existing `Valued` typecla
 Once such a refactor happens, `ValuativeRel` could be renamed to `Valued`.
 
 ## TODO
+
 Split this file. For instance, the universal properties of `ValueGroupWithZero` and definition of
 `IsRankLeOne` could be separated out.
 -/
@@ -341,7 +341,7 @@ variable (R) in
 def ValueGroupWithZero := Quotient (valueSetoid R)
 
 /-- Construct an element of the value group-with-zero from an element `r : R` and
-  `y : posSubmonoid R`. This should be thought of as `v r / v y`. -/
+`y : posSubmonoid R`. This should be thought of as `v r / v y`. -/
 protected
 def ValueGroupWithZero.mk (x : R) (y : posSubmonoid R) : ValueGroupWithZero R :=
   Quotient.mk _ (x, y)
@@ -376,7 +376,7 @@ theorem ValueGroupWithZero.lift_mk {α : Sort*} (f : R → posSubmonoid R → α
     (x : R) (y : posSubmonoid R) : ValueGroupWithZero.lift f hf (.mk x y) = f x y := rfl
 
 /-- Lifts a function `R → posSubmonoid R → R → posSubmonoid R → α` to
-  the value group-with-zero of `R`. -/
+the value group-with-zero of `R`. -/
 protected
 def ValueGroupWithZero.lift₂ {α : Sort*} (f : R → posSubmonoid R → R → posSubmonoid R → α)
     (hf : ∀ (x y z w : R) (t s u v : posSubmonoid R),
@@ -981,8 +981,8 @@ class IsRankLeOne where
 
 variable (R) in
 /-- We say that a valuative relation on a ring is *nontrivial* if the
-  value group-with-zero is nontrivial, meaning that it has an element
-  which is different from 0 and 1. -/
+value group-with-zero is nontrivial, meaning that it has an element
+which is different from 0 and 1. -/
 class IsNontrivial where
   condition : ∃ γ : ValueGroupWithZero R, γ ≠ 0 ∧ γ ≠ 1
 
@@ -1135,6 +1135,7 @@ lemma embed_mk [v.Compatible] (x : R) (s : posSubmonoid R) :
 
 /--
 The triangle in the following diagram is commutative:
+
 ```
       restrict₀ v                embedding
     R –––––––––––> ValueGroup₀ v –––––––––> Γ
@@ -1144,6 +1145,7 @@ The triangle in the following diagram is commutative:
     ∨             /
 ValueGroupWithZero R
 ```
+
 where the first row is the map `v` factored through its image group (with zero) in `Γ`.
 -/
 @[simp]
@@ -1155,6 +1157,7 @@ lemma embed_valuation_eq_restrict₀ [v.Compatible] (x : R) :
 /--
 When `v` is `valuation R`, in the following commutative diagram where the first row is the map `v`
 factored through its image group (with zero),
+
 ```
                                  embedding
     R –––––––––––> ValueGroup₀ v –––––-–––> ValueGroupWithZero R
@@ -1164,6 +1167,7 @@ factored through its image group (with zero),
     ∨             /
 ValueGroupWithZero R
 ```
+
 the map from `ValueGroupWithZero R` to itself is identity.
 -/
 @[simp]
@@ -1194,6 +1198,7 @@ lemma embed_strictMono [v.Compatible] : StrictMono (embed v) := by
 /--
 When we have `h : w.IsEquiv v`, the image group (with zero) of `v` is
 isomorphic to that of `w` via `h.orderMonoidIso`. Then the following diagram is commutative:
+
 ```
               ValueGroup₀ w
                 ∧      |
@@ -1309,7 +1314,7 @@ lemma vlt_iff_vlt {a b : A} : algebraMap A B a <ᵥ algebraMap A B b ↔ a <ᵥ 
 
 variable (A B) in
 /-- The morphism of `posSubmonoid`s associated to an algebra map.
-  This is used in constructing `ValuativeExtension.mapValueGroupWithZero`. -/
+This is used in constructing `ValuativeExtension.mapValueGroupWithZero`. -/
 @[simps]
 def mapPosSubmonoid : posSubmonoid A →* posSubmonoid B where
   toFun := fun ⟨a,ha⟩ => ⟨algebraMap _ _ a,

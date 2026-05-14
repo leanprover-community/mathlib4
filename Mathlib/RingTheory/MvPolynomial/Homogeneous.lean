@@ -52,14 +52,14 @@ def IsHomogeneous [CommSemiring R] (φ : MvPolynomial σ R) (n : ℕ) :=
 variable [CommSemiring R]
 
 /-- The `degrees` of a polynomial `p` is a special case of the `weightedTotalDegree` of `p` where
-  the weights are singletons containing each variable. -/
+the weights are singletons containing each variable. -/
 @[simp]
 theorem weightedTotalDegree_singleton [DecidableEq σ] (p : MvPolynomial σ R) :
     weightedTotalDegree (fun i => {i}) p = degrees p := by
   rw [degrees_def]; rfl
 
 /-- The `totalDegree` of a polynomial `p` is a special case of the `weightedTotalDegree` of `p`
-  where all of the weights are `1`. -/
+where all of the weights are `1`. -/
 theorem weightedTotalDegree_one (φ : MvPolynomial σ R) :
     weightedTotalDegree (1 : σ → ℕ) φ = φ.totalDegree := by
   simp only [totalDegree, weightedTotalDegree, weight, LinearMap.toAddMonoidHom_coe,
@@ -67,7 +67,7 @@ theorem weightedTotalDegree_one (φ : MvPolynomial σ R) :
     id, smul_eq_mul, mul_one]
 
 /-- The `degreeOf` a variable `i` for a polynomial `p` is a special case of the
-  `weightedTotalDegree` of `p` where `i` has the only nonzero weight and that weight is `1`. -/
+`weightedTotalDegree` of `p` where `i` has the only nonzero weight and that weight is `1`. -/
 @[simp]
 theorem weightedTotalDegree_piSingle [DecidableEq σ] (i : σ) (p : MvPolynomial σ R) :
     weightedTotalDegree (Pi.single i 1) p = degreeOf i p := by

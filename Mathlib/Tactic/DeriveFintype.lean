@@ -17,6 +17,7 @@ This file defines a derive handler to automatically generate `Fintype` instances
 for structures and inductive types.
 
 The following is a prototypical example of what this can handle:
+
 ```
 inductive MyOption (α : Type*)
   | none

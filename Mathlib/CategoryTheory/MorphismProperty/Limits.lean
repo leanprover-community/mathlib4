@@ -16,6 +16,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 # Relation of morphism properties with limits
 
 The following predicates are introduces for morphism properties `P`:
+
 * `IsStableUnderBaseChange`: `P` is stable under base change if in all pullback
   squares, the left map satisfies `P` if the right map satisfies it.
 * `IsStableUnderCobaseChange`: `P` is stable under cobase change if in all pushout

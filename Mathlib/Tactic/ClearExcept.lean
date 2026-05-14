@@ -39,9 +39,11 @@ def clearExcept (preserve : Array FVarId) (goal : MVarId) : MetaM MVarId := do
 
 /-- Clears all hypotheses it can, except those provided after a minus sign, class instances, and
 hidden auxiliary declarations (for example recursive hypotheses). Example:
+
 ```
   clear * - h₁ h₂
 ```
+
 The intent is that `clear * -` only clears user-visible local declarations; hidden auxiliary
 declarations should be handled by more specific mechanisms when needed. -/
 syntax (name := clearExceptTactic) "clear " "*" " -" (ppSpace colGt ident)* : tactic

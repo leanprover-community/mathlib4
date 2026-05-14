@@ -15,8 +15,8 @@ We show that if `A` and `B` are ind-objects and `f` and `g` are natural transfor
 `A` and `B`, then there is a small filtered category `I` such that `A`, `B`, `f` and `g` are
 commonly presented by diagrams and natural transformations in `I ⥤ C`.
 
-
 ## References
+
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Proposition 6.1.15 (though
   our proof is more direct).
 -/

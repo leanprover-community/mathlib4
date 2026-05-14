@@ -13,6 +13,7 @@ public import Mathlib.Analysis.Convex.Deriv
 # The functions `x ↦ x * log x` and `x ↦ - x * log x`
 
 The purpose of this file is to record basic analytic properties of
+
 - `x ↦ x * log x`, called `mul_log` in theorem statements
 - `x ↦ - x * log x`, named `negMulLog`, which is notably used in the theory of Shannon entropy.
 

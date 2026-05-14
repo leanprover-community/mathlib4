@@ -17,9 +17,10 @@ public import Mathlib.Topology.Instances.EReal.Lemmas
 Let `X` and `Y` be convex subsets of topological vector spaces `E` and `F`,
 `X` being moreover compact,
 and let `f : X × Y → ℝ` be a function such that
+
 - for all `x ∈ X`, `f(x, ⬝)` is upper semicontinuous and quasiconcave
 - for all `y ∈ Y`, `f(⬝, y)` is lower semicontinuous and quasiconvex
-Then `⊓ x, ⊔ y, f (x, y) = ⊔ y, ⊓ x f (x, y)`.
+  Then `⊓ x, ⊔ y, f (x, y) = ⊔ y, ⊓ x f (x, y)`.
 
 The classical case of the theorem assumes that `f` is continuous,
 `f(x, ⬝)` is concave, `f(⬝, y)` is convex.
@@ -31,17 +32,18 @@ We follow the proof of [Komiya (1988)][Komiya-1988].
 
 ## Remark on implementation
 
-  * The essential part of the proof holds for a function
+* The essential part of the proof holds for a function
   `f : X → Y → β`, where `β` is a complete dense linear order.
-  * We have written part of it for just a dense linear order,
 
-  * On the other hand, if the theorem holds for such `β`,
+* We have written part of it for just a dense linear order,
+
+* On the other hand, if the theorem holds for such `β`,
   it must hold for any linear order, for the reason that
   any linear order embeds into a complete dense linear order.
   Although one can construct such an embedding using the Dedekind-Mac Neille completion,
   this result does not seem to be known to Mathlib.
 
-  * When `β` is `ℝ`, one can use `Real.toEReal` and one gets a proof for `ℝ`.
+* When `β` is `ℝ`, one can use `Real.toEReal` and one gets a proof for `ℝ`.
 
 ## TODO
 
@@ -97,7 +99,7 @@ theorem disjoint_sublevelLeft {a : E} {b : β} {y y' : Y}
   grw [ha x hx]
   simpa using ⟨hx1, hx2⟩
 
-/-- From lower semicontinuity of `f(·, y)` and compactness  of `X`,
+/-- From lower semicontinuity of `f(·, y)` and compactness of `X`,
 deduce that `sublevelLeft` sets are nonempty -/
 theorem nonempty_sublevelLeft [TopologicalSpace E]
     (ne_X : X.Nonempty) (kX : IsCompact X)

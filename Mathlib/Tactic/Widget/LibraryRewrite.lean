@@ -26,6 +26,7 @@ so that it can be pasted into the editor when selected by the user.
 The `RefinedDiscrTree` lookup groups the results by match pattern and gives a score to each pattern.
 This is used to display the results in sections. The sections are ordered by this score.
 Within each section, the lemmas are sorted by
+
 - rewrites with fewer extra goals come first
 - left-to-right rewrites come first
 - shorter lemma names come first
@@ -40,6 +41,7 @@ When a rewrite lemma introduces new goals, these are shown after a `⊢`.
 ## TODO
 
 Ways to improve `rw??`:
+
 - Improve the logic around `nth_rw` and occurrences,
   and about when to pass explicit arguments to the rewrite lemma.
   For example, we could only pass explicit arguments if that avoids using `nth_rw`.
@@ -52,6 +54,7 @@ Ways to improve `rw??`:
   For example, when clicking on `(f + g) x`, there should still be an `add_comm` suggestion.
 
 Ways to extend `rw??`:
+
 - Support generalized rewriting (`grw`)
 - Integrate rewrite search with the `calc?` widget so that a `calc` block can be created using
   just point & click.

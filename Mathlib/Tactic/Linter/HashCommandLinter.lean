@@ -15,6 +15,7 @@ public import Lean.Parser.Command
 # `#`-command linter
 
 The `#`-command linter produces a warning when a command starting with `#` is used *and*
+
 * either the command emits no message;
 * or `warningAsError` is set to `true`.
 

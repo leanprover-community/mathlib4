@@ -56,6 +56,7 @@ theorem isPrime_of_maximal_not {I : Ideal R} (hI : Maximal (¬P ·) I) : I.IsPri
     exact hI.prop (hP.oka h₁ h₂)
 
 /-- If a ring `R` verify:
+
 1. All prime ideals of `R` satisfy an Oka predicate `P`.
 2. One ideal not satisfying `P` implies that there is an ideal maximal for not satisfying `P`.
 

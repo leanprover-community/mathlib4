@@ -53,7 +53,6 @@ for the inverse of `e`).
 
 ## Main definitions
 
-
 * `IndepMatroid α` is a matroid structure on `α` described in terms of its independent sets
   in full generality, using infinite versions of the axioms.
 
@@ -106,16 +105,20 @@ which is then converted into a matroid via `IndepMatroid.matroid`.
 
 To define a `Matroid α` from a known independence predicate
 `MyIndep : Set α → Prop` and ground set `E : Set α`, one can either write
+
 ```
 def myMatroid (…) : Matroid α :=
   IndepMatroid.matroid <| IndepMatroid.ofFoo E MyIndep _ _ … _
 ```
+
 or, slightly more indirectly,
+
 ```
 private def myIndepMatroid (…) : IndepMatroid α := IndepMatroid.ofFoo E MyIndep _ _ … _
 
 def myMatroid (…) : Matroid α := (myIndepMatroid …).matroid
 ```
+
 In both cases, `IndepMatroid.ofFoo` is either `IndepMatroid.mk`,
 or one of the several other available constructors for `IndepMatroid`,
 and the `_` represent the proofs that this constructor requires.
@@ -291,7 +294,7 @@ instance ofFinitaryCardAugment_finitary (E : Set α) (Indep : Set α → Prop)
   ⟨by simpa⟩
 
 /-- If there is an absolute upper bound on the size of a set satisfying `P`, then the
-  maximal subset property always holds. -/
+maximal subset property always holds. -/
 theorem _root_.Matroid.existsMaximalSubsetProperty_of_bdd {P : Set α → Prop}
     (hP : ∃ (n : ℕ), ∀ Y, P Y → Y.encard ≤ n) (X : Set α) : ExistsMaximalSubsetProperty P X := by
   obtain ⟨n, hP⟩ := hP
@@ -311,7 +314,7 @@ theorem _root_.Matroid.existsMaximalSubsetProperty_of_bdd {P : Set α → Prop}
   exact hY' ⟨hPK, hIY.trans hYK, hKX⟩ (ncard_le_ncard hYK hKfin)
 
 /-- If there is an absolute upper bound on the size of an independent set, then the maximality axiom
-  isn't needed to define a matroid by independent sets. -/
+isn't needed to define a matroid by independent sets. -/
 @[simps E] protected def ofBdd (E : Set α) (Indep : Set α → Prop)
     (indep_empty : Indep ∅)
     (indep_subset : ∀ ⦃I J⦄, Indep J → I ⊆ J → Indep I)
@@ -341,8 +344,8 @@ instance (E : Set α) (Indep : Set α → Prop) indep_empty indep_subset indep_a
   exact finite_of_encard_le_coe <| hn B (by simpa using hB.indep)
 
 /-- If there is an absolute upper bound on the size of an independent set, then matroids
-  can be defined using an 'augmentation' axiom similar to the standard definition of
-  finite matroids for independent sets. -/
+can be defined using an 'augmentation' axiom similar to the standard definition of
+finite matroids for independent sets. -/
 protected def ofBddAugment (E : Set α) (Indep : Set α → Prop)
     (indep_empty : Indep ∅)
     (indep_subset : ∀ ⦃I J⦄, Indep J → I ⊆ J → Indep I)
@@ -384,7 +387,7 @@ instance ofBddAugment_rankFinite (E : Set α) Indep indep_empty indep_subset ind
   infer_instance
 
 /-- If `E` is finite, then any collection of subsets of `E` satisfying
-  the usual independence axioms determines a matroid -/
+the usual independence axioms determines a matroid -/
 protected def ofFinite {E : Set α} (hE : E.Finite) (Indep : Set α → Prop)
     (indep_empty : Indep ∅)
     (indep_subset : ∀ ⦃I J⦄, Indep J → I ⊆ J → Indep I)
@@ -416,7 +419,7 @@ instance ofFinite_finite {E : Set α} hE Indep indep_empty indep_subset indep_au
   ⟨hE⟩
 
 /-- An independence predicate on `Finset α` that obeys the finite matroid axioms determines a
-  finitary matroid on `α`. -/
+finitary matroid on `α`. -/
 protected def ofFinset [DecidableEq α] (E : Set α) (Indep : Finset α → Prop)
     (indep_empty : Indep ∅)
     (indep_subset : ∀ ⦃I J⦄, Indep J → I ⊆ J → Indep I)
@@ -448,7 +451,7 @@ protected def ofFinset [DecidableEq α] (E : Set α) (Indep : Finset α → Prop
   exact ⟨fun h ↦ h _ Subset.rfl, fun h J hJI ↦ indep_subset h hJI⟩
 
 /-- This can't be `@[simp]`, because it would cause the more useful
-  `Matroid.ofIndepFinset_apply` not to be in simp normal form. -/
+`Matroid.ofIndepFinset_apply` not to be in simp normal form. -/
 theorem ofFinset_indep' [DecidableEq α] (E : Set α) Indep indep_empty indep_subset indep_aug
     subset_ground {I : Set α} : (IndepMatroid.ofFinset
       E Indep indep_empty indep_subset indep_aug subset_ground).Indep I ↔
@@ -462,9 +465,9 @@ section IsBase
 namespace Matroid
 
 /-- Construct an `Matroid` from an independence predicate that agrees with that of some matroid `M`.
-  This is computable even if `M` is only known existentially, or when `M` exists for different
-  reasons in different cases. This can also be used to change the independence predicate to a
-  more useful definitional form. -/
+This is computable even if `M` is only known existentially, or when `M` exists for different
+reasons in different cases. This can also be used to change the independence predicate to a
+more useful definitional form. -/
 @[simps! E] protected def ofExistsMatroid (E : Set α) (Indep : Set α → Prop)
     (hM : ∃ (M : Matroid α), E = M.E ∧ ∀ I, M.Indep I ↔ Indep I) : Matroid α :=
   IndepMatroid.matroid <|
@@ -518,7 +521,7 @@ instance ofExistsFiniteIsBase_rankFinite (E : Set α) IsBase exists_finite_base
   exact Matroid.IsBase.rankFinite_of_finite (by simpa) hfin
 
 /-- If `E` is finite, then any nonempty collection of its subsets
-  with the exchange property is the collection of bases of a matroid on `E`. -/
+with the exchange property is the collection of bases of a matroid on `E`. -/
 protected def ofIsBaseOfFinite {E : Set α} (hE : E.Finite) (IsBase : Set α → Prop)
     (exists_isBase : ∃ B, IsBase B) (isBase_exchange : ExchangeProperty IsBase)
     (subset_ground : ∀ B, IsBase B → B ⊆ E) : Matroid α :=

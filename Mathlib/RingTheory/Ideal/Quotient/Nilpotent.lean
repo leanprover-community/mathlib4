@@ -22,7 +22,7 @@ theorem Ideal.isRadical_iff_quotient_reduced {R : Type*} [CommRing R] (I : Ideal
 variable {S : Type*} [CommRing S] (I : Ideal S)
 
 /-- Let `P` be a property on ideals. If `P` holds for square-zero ideals, and if
-  `P I → P (J ⧸ I) → P J`, then `P` holds for all nilpotent ideals. -/
+`P I → P (J ⧸ I) → P J`, then `P` holds for all nilpotent ideals. -/
 theorem Ideal.IsNilpotent.induction_on (hI : IsNilpotent I)
     {P : ∀ ⦃S : Type _⦄ [CommRing S], Ideal S → Prop}
     (h₁ : ∀ ⦃S : Type _⦄ [CommRing S], ∀ I : Ideal S, I ^ 2 = ⊥ → P I)

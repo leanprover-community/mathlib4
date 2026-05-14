@@ -63,7 +63,7 @@ lemma StrictMono.isOrderedCancelMonoid [IsOrderedCancelMonoid α] [CommMonoid β
 See also `OrderIso.mulLeft` when working in an ordered group. -/
 @[to_additive (attr := simps!)
       /-- The order embedding sending `b` to `a + b`, for some fixed `a`.
-       See also `OrderIso.addLeft` when working in an additive ordered group. -/]
+      See also `OrderIso.addLeft` when working in an additive ordered group. -/]
 def OrderEmbedding.mulLeft {α : Type*} [Mul α] [LinearOrder α]
     [MulLeftStrictMono α] (m : α) : α ↪o α :=
   OrderEmbedding.ofStrictMono (fun n => m * n) mul_right_strictMono
@@ -72,7 +72,7 @@ def OrderEmbedding.mulLeft {α : Type*} [Mul α] [LinearOrder α]
 See also `OrderIso.mulRight` when working in an ordered group. -/
 @[to_additive (attr := simps!)
       /-- The order embedding sending `b` to `b + a`, for some fixed `a`.
-       See also `OrderIso.addRight` when working in an additive ordered group. -/]
+      See also `OrderIso.addRight` when working in an additive ordered group. -/]
 def OrderEmbedding.mulRight {α : Type*} [Mul α] [LinearOrder α]
     [MulRightStrictMono α] (m : α) : α ↪o α :=
   OrderEmbedding.ofStrictMono (fun n => n * m) mul_left_strictMono

@@ -26,6 +26,7 @@ public import Mathlib.RingTheory.Valuation.LocalSubring
   it is qcqs and of finite type and satisfies the valuative criterion.
 
 ## Future projects
+
 Show that it suffices to check discrete valuation rings when the base is Noetherian.
 
 -/
@@ -40,12 +41,14 @@ universe u
 
 /--
 A valuative commutative square over a morphism `f : X ⟶ Y` is a square
+
 ```
 Spec K ⟶ Y
   |       |
   ↓       ↓
 Spec R ⟶ X
 ```
+
 where `R` is a valuation ring, and `K` is its ring of fractions.
 
 We are interested in finding lifts `Spec R ⟶ Y` of this diagram.

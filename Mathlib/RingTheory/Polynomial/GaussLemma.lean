@@ -145,7 +145,7 @@ section IsIntegrallyClosed
 open IsIntegrallyClosed
 
 /-- **Gauss's Lemma** for integrally closed domains states that a monic polynomial is irreducible
-  iff it is irreducible in the fraction field. -/
+iff it is irreducible in the fraction field. -/
 theorem Monic.irreducible_iff_irreducible_map_fraction_map [IsIntegrallyClosed R] {p : R[X]}
     (h : p.Monic) : Irreducible p ↔ Irreducible (p.map <| algebraMap R K) := by
   /- The ← direction follows from `IsPrimitive.irreducible_of_irreducible_map_of_injective`.
@@ -260,7 +260,7 @@ lemma IsPrimitive.map_mul_mem_lifts_iff {f : R[X]} (hf : IsPrimitive f) {g : K[X
   rw [mul_comm, hf.mul_map_mem_lifts_iff]
 
 /-- **Gauss's Lemma** for GCD domains states that a primitive polynomial is irreducible iff it is
-  irreducible in the fraction field. -/
+irreducible in the fraction field. -/
 theorem IsPrimitive.irreducible_iff_irreducible_map_fraction_map {p : R[X]} (hp : p.IsPrimitive) :
     Irreducible p ↔ Irreducible (p.map (algebraMap R K)) := by
   refine
@@ -337,7 +337,7 @@ end NormalizedGCDMonoid
 end FractionMap
 
 /-- **Gauss's Lemma** for `ℤ` states that a primitive integer polynomial is irreducible iff it is
-  irreducible over `ℚ`. -/
+irreducible over `ℚ`. -/
 theorem IsPrimitive.Int.irreducible_iff_irreducible_map_cast {p : ℤ[X]} (hp : p.IsPrimitive) :
     Irreducible p ↔ Irreducible (p.map (Int.castRingHom ℚ)) :=
   hp.irreducible_iff_irreducible_map_fraction_map

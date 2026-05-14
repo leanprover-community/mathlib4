@@ -48,6 +48,7 @@ we introduce a sheaf condition `S.SheafCondition P` and show
 that it is indeed satisfied by sheaves.
 
 ## References
+
 * https://stacks.math.columbia.edu/tag/08GL
 
 -/

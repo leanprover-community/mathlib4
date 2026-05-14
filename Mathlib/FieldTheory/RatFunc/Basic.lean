@@ -14,24 +14,30 @@ public import Mathlib.RingTheory.Algebraic.Integral
 # The field structure of rational functions
 
 ## Main definitions
+
 Working with rational functions as polynomials:
+
 - `RatFunc.instField` provides a field structure
 
 You can use `IsFractionRing` API to treat `RatFunc` as the field of fractions of polynomials:
+
 * `algebraMap K[X] K⟮X⟯` maps polynomials to rational functions
 * `IsFractionRing.algEquiv` maps other fields of fractions of `K[X]` to `K⟮X⟯`.
 
 In particular:
+
 * `FractionRing.algEquiv K[X] K⟮X⟯` maps the generic field of
   fraction construction to `K⟮X⟯`. Combine this with `AlgEquiv.restrictScalars` to change
   the `FractionRing K[X] ≃ₐ[K[X]] K⟮X⟯` to `FractionRing K[X] ≃ₐ[K] K⟮X⟯`.
 
 Working with rational functions as fractions:
+
 - `RatFunc.num` and `RatFunc.denom` give the numerator and denominator.
   These values are chosen to be coprime and such that `RatFunc.denom` is monic.
 
 Lifting homomorphisms of polynomials to other types, by mapping and dividing, as long
 as the homomorphism retains the non-zero-divisor property:
+
 - `RatFunc.liftMonoidWithZeroHom` lifts a `K[X] →*₀ G₀` to
   a `K⟮X⟯ →*₀ G₀`, where `[CommRing K] [CommGroupWithZero G₀]`
 - `RatFunc.liftRingHom` lifts a `K[X] →+* L` to a `K⟮X⟯ →+* L`,
@@ -43,6 +49,7 @@ This is satisfied by injective homs.
 
 We also have lifting homomorphisms of polynomials to other polynomials,
 with the same condition on retaining the non-zero-divisor property across the map:
+
 - `RatFunc.map` lifts `K[X] →* R[X]` when `[CommRing K] [CommRing R]`
 - `RatFunc.mapRingHom` lifts `K[X] →+* R[X]` when `[CommRing K] [CommRing R]`
 - `RatFunc.mapAlgHom` lifts `K[X] →ₐ[S] R[X]` when

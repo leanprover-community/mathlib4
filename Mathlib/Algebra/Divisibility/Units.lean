@@ -57,7 +57,7 @@ theorem dvd_mul_left : a ∣ u * b ↔ a ∣ b := by
   apply dvd_mul_right
 
 /-- In a commutative monoid, an element `a` divides an element `b` iff all
-  left associates of `a` divide `b`. -/
+left associates of `a` divide `b`. -/
 theorem mul_left_dvd : ↑u * a ∣ b ↔ a ∣ b := by
   rw [mul_comm]
   apply mul_right_dvd
@@ -106,7 +106,7 @@ theorem dvd_mul_left (hu : IsUnit u) : a ∣ u * b ↔ a ∣ b := by
   apply Units.dvd_mul_left
 
 /-- In a commutative monoid, an element `a` divides an element `b` iff all
-  left associates of `a` divide `b`. -/
+left associates of `a` divide `b`. -/
 @[simp]
 theorem mul_left_dvd (hu : IsUnit u) : u * a ∣ b ↔ a ∣ b := by
   rcases hu with ⟨u, rfl⟩

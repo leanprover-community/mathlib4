@@ -14,12 +14,14 @@ public import Mathlib.Topology.Sets.Compacts
 
 In this file we work with *contents*. A content `λ` is a function from a certain class of subsets
 (such as the compact subsets) to `ℝ≥0` that is
+
 * additive: If `K₁` and `K₂` are disjoint sets in the domain of `λ`,
   then `λ(K₁ ∪ K₂) = λ(K₁) + λ(K₂)`;
 * subadditive: If `K₁` and `K₂` are in the domain of `λ`, then `λ(K₁ ∪ K₂) ≤ λ(K₁) + λ(K₂)`;
 * monotone: If `K₁ ⊆ K₂` are in the domain of `λ`, then `λ(K₁) ≤ λ(K₂)`.
 
 We show that:
+
 * Given a content `λ` on compact sets, let us define a function `λ*` on open sets, by letting
   `λ* U` be the supremum of `λ K` for `K` included in `U`. This is a countably subadditive map that
   vanishes at `∅`. In Halmos (1950) this is called the *inner content* `λ*` of `λ`, and formalized
@@ -37,9 +39,10 @@ other choices can be made, and it is not a priori clear what the best interface 
 ## Main definitions
 
 For `μ : Content G`, we define
+
 * `μ.innerContent` : the inner content associated to `μ`.
 * `μ.outerMeasure` : the outer measure associated to `μ`.
-* `μ.measure`      : the Borel measure associated to `μ`.
+* `μ.measure` : the Borel measure associated to `μ`.
 
 These definitions are given for spaces which are R₁.
 The resulting measure `μ.measure` is always outer regular by design.
@@ -117,8 +120,8 @@ theorem lt_top (K : Compacts G) : μ K < ∞ :=
 theorem empty : μ ⊥ = 0 := by simpa [toNNReal_eq_zero_iff] using μ.sup_disjoint' ⊥ ⊥
 
 /-- Constructing the inner content of a content. From a content defined on the compact sets, we
-  obtain a function defined on all open sets, by taking the supremum of the content of all compact
-  subsets. -/
+obtain a function defined on all open sets, by taking the supremum of the content of all compact
+subsets. -/
 def innerContent (U : Opens G) : ℝ≥0∞ :=
   ⨆ (K : Compacts G) (_ : (K : Set G) ⊆ U), μ K
 
@@ -184,8 +187,8 @@ theorem innerContent_iSup_nat [R1Space G] (U : ℕ → Opens G) :
   rfl
 
 /-- The inner content of a union of sets is at most the sum of the individual inner contents.
-  This is the "unbundled" version of `innerContent_iSup_nat`.
-  It is required for the API of `inducedOuterMeasure`. -/
+This is the "unbundled" version of `innerContent_iSup_nat`.
+It is required for the API of `inducedOuterMeasure`. -/
 theorem innerContent_iUnion_nat [R1Space G] ⦃U : ℕ → Set G⦄
     (hU : ∀ i : ℕ, IsOpen (U i)) :
     μ.innerContent ⟨⋃ i : ℕ, U i, isOpen_iUnion hU⟩ ≤ ∑' i : ℕ, μ.innerContent ⟨U i, hU i⟩ := by
@@ -386,7 +389,7 @@ end OuterMeasure
 section RegularContents
 
 /-- A content `μ` is called regular if for every compact set `K`,
-  `μ(K) = inf {μ(K') : K ⊂ int K' ⊂ K'}`. See Paul Halmos (1950), Measure Theory, §54. -/
+`μ(K) = inf {μ(K') : K ⊂ int K' ⊂ K'}`. See Paul Halmos (1950), Measure Theory, §54. -/
 def ContentRegular :=
   ∀ ⦃K : TopologicalSpace.Compacts G⦄,
     μ K = ⨅ (K' : TopologicalSpace.Compacts G) (_ : (K : Set G) ⊆ interior (K' : Set G)), μ K'
@@ -406,7 +409,7 @@ theorem contentRegular_exists_compact (H : ContentRegular μ) (K : TopologicalSp
 variable [MeasurableSpace G] [R1Space G] [BorelSpace G]
 
 /-- If `μ` is a regular content, then the measure induced by `μ` will agree with `μ`
-  on compact sets. -/
+on compact sets. -/
 theorem measure_eq_content_of_regular (H : MeasureTheory.Content.ContentRegular μ)
     (K : TopologicalSpace.Compacts G) : μ.measure ↑K = μ K := by
   refine le_antisymm ?_ ?_

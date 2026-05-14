@@ -29,6 +29,7 @@ expectation of a real function, but we take a different approach (see the file
   the Radon-Nikodym theorem for signed measures
 
 The file also contains properties of `rnDeriv` that use the Radon-Nikodym theorem, notably
+
 * `MeasureTheory.Measure.rnDeriv_withDensity_left`: the Radon-Nikodym derivative of
   `μ.withDensity f` with respect to `ν` is `f * μ.rnDeriv ν`.
 * `MeasureTheory.Measure.rnDeriv_withDensity_right`: the Radon-Nikodym derivative of

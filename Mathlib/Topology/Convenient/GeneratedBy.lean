@@ -19,6 +19,7 @@ all continuous maps `X i → Y`. When the bijection
 we say that `Y` is `X`-generated (typeclass `IsGeneratedBy X Y`).
 
 ## TODO (@joelriou)
+
 * Redefine compactly generated spaces and delta generated spaces using
   these definitions
 * Define the category of `X`-generated spaces and show that it is coreflective in `TopCat`
@@ -26,6 +27,7 @@ we say that `Y` is `X`-generated (typeclass `IsGeneratedBy X Y`).
   spaces is a closed cartesian monoidal category.
 
 ## References
+
 * [Rainer M. Vogt, *Convenient categories of topological spaces
   for homotopy theory*][vogt-1971]
 * [Martín Escardó, Jimmie Lawson and Alex Simpson, *Comparing Cartesian closed

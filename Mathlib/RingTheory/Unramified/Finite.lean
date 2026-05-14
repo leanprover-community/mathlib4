@@ -45,6 +45,7 @@ namespace Algebra.FormallyUnramified
 /--
 Proposition I.2.3 + I.2.6 of [iversen]
 A finite-type `R`-algebra `S` is (formally) unramified iff there exists a `t : S ⊗[R] S` satisfying
+
 1. `t` annihilates every `1 ⊗ s - s ⊗ 1`.
 2. the image of `t` is `1` under the map `S ⊗[R] S → S`.
 -/
@@ -129,6 +130,7 @@ variable [FormallyUnramified R S] [EssFiniteType R S]
 variable (R S) in
 /--
 A finite-type `R`-algebra `S` is (formally) unramified iff there exists a `t : S ⊗[R] S` satisfying
+
 1. `t` annihilates every `1 ⊗ s - s ⊗ 1`.
 2. the image of `t` is `1` under the map `S ⊗[R] S → S`.
 

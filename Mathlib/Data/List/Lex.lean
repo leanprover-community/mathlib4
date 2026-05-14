@@ -13,6 +13,7 @@ public import Mathlib.Order.RelClasses
 # Lexicographic ordering of lists.
 
 The lexicographic order on `List α` is defined by `L < M` iff
+
 * `[] < (a :: L)` for any `a` and `L`,
 * `(a :: L) < (b :: M)` where `a < b`, or
 * `(a :: L) < (a :: M)` where `L < M`.
@@ -20,6 +21,7 @@ The lexicographic order on `List α` is defined by `L < M` iff
 ## See also
 
 Related files are:
+
 * `Mathlib/Combinatorics/Colex.lean`: Colexicographic order on finite sets.
 * `Mathlib/Data/PSigma/Order.lean`: Lexicographic order on `Σ' i, α i`.
 * `Mathlib/Order/PiLex.lean`: Lexicographic order on `Πₗ i, α i`.

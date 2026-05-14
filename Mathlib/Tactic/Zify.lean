@@ -17,6 +17,7 @@ import Mathlib.Tactic.Attr.Register
 
 The `zify` tactic is used to shift propositions from `Nat` to `Int`.
 This is often useful since `Int` has well-behaved subtraction.
+
 ```
 example (a b c x y z : Nat) (h : ¬ x*y*z < 0) : c < a + 3*b := by
   zify
@@ -55,6 +56,7 @@ propositions about `Int` (the supertype), without changing the type of any varia
   type `· ≤ ·` will allow `push_cast` to do more work.
 
 Examples:
+
 ```
 example (a b c x y z : Nat) (h : ¬ x*y*z < 0) : c < a + 3*b := by
   zify

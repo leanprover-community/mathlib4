@@ -50,7 +50,7 @@ initialize
 /-- See `Config.castMode`. -/
 inductive CastMode where
   /-- Only insert casts on proofs.
-
+  
   In this mode, it is *not* permitted to cast subterms of proofs that are not themselves proofs. -/
   -- TODO: should we relax this restriction and switch `castMode` when visiting a proof?
   | proofs
@@ -86,7 +86,7 @@ structure Config where
   /-- The cast mode specifies when `rewrite!` is permitted to insert casts
   in order to correct subterms that become type-incorrect
   as a result of rewriting.
-
+  
   For example, given `P : Nat → Prop`, `f : (n : Nat) → P n → Nat` and `h : P n₀`,
   rewriting `f n₀ h` by `eq : n₀ = n₁` produces `f n₁ h`,
   where `h` does not typecheck at `P n₁`.
@@ -110,7 +110,7 @@ structure Context where
   Together with each binder, we store its type abstracted over `x` and `h`,
   and with all occurrences of previous entries in `Δ`
   casted along the abstracting equation.
-
+  
   E.g., if the local context is `a : T, b : U`,
   we store `(a, Ma)` where `Ma := fun (x' : α) (h' : x = x') => T[x'/x, h'/h]`
   and `(b, fun (x' : α) (h' : x = x') => U[x'/x, h'/h, (Eq.rec (motive := Ma) a h)/a])`
@@ -144,12 +144,13 @@ The `Nat` state tracks which occurrence of the pattern we are about to see, 1-in
 (so the initial value is `1`).
 
 The cache stores results of `visit` together with
+
 - the `Nat` state before the cached call; and
 - the difference in the state resulting from the call.
-We store these because even if the cache hits,
-we must update the state as if the call had been made.
-Storing the difference suffices because the state increases monotonically.
-See also `canUseCache`. -/
+  We store these because even if the cache hits,
+  we must update the state as if the call had been made.
+  Storing the difference suffices because the state increases monotonically.
+  See also `canUseCache`. -/
 abbrev M := ReaderT Context <| MonadCacheT ExprStructEq (Expr × Nat × Nat) <|
   StateRefT Nat MetaM
 
@@ -243,6 +244,7 @@ def castFwd (e te p x h : Expr) (Δ : Array (FVarId × Expr)) (δ : Std.HashSet 
 mutual
 
 /-- Given `e`, return `e'` where `e'` has had
+
 - the occurrences of `p` in `ctx.cfg.occs` replaced by `x`; and
 - subterms cast as appropriate in order to make `e'` type-correct.
 

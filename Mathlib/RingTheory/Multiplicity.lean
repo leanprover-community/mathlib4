@@ -41,7 +41,7 @@ abbrev FiniteMultiplicity [Monoid α] (a b : α) : Prop :=
 
 open scoped Classical in
 /-- `emultiplicity a b` returns the largest natural number `n` such that
-  `a ^ n ∣ b`, as an `ℕ∞`. If `∀ n, a ^ n ∣ b` then it returns `⊤`. -/
+`a ^ n ∣ b`, as an `ℕ∞`. If `∀ n, a ^ n ∣ b` then it returns `⊤`. -/
 noncomputable def emultiplicity [Monoid α] (a b : α) : ℕ∞ :=
   if h : FiniteMultiplicity a b then Nat.find h else ⊤
 

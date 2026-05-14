@@ -28,6 +28,7 @@ preadditive categories).
   iff `C` is.
 
 ## References
+
 * [Stacks: Karoubian categories] https://stacks.math.columbia.edu/tag/09SF
 
 -/

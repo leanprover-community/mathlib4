@@ -12,6 +12,7 @@ public import Mathlib.Algebra.GroupWithZero.Action.Prod
 # Morphisms of non-unital algebras
 
 This file defines morphisms between two types, each of which carries:
+
 * an addition,
 * an additive zero,
 * a multiplication,
@@ -36,8 +37,8 @@ TODO: add `NonUnitalAlgEquiv` when needed.
 
 ## Main definitions
 
-  * `NonUnitalAlgHom`
-  * `AlgHom.toNonUnitalAlgHom`
+* `NonUnitalAlgHom`
+* `AlgHom.toNonUnitalAlgHom`
 
 ## Tags
 
@@ -80,7 +81,7 @@ class NonUnitalAlgSemiHomClass (F : Type*) {R S : outParam Type*} [Monoid R] [Mo
 /-- `NonUnitalAlgHomClass F R A B` asserts `F` is a type of bundled algebra homomorphisms
 from `A` to `B` which are `R`-linear.
 
-  This is an abbreviation to `NonUnitalAlgSemiHomClass F (MonoidHom.id R) A B` -/
+This is an abbreviation to `NonUnitalAlgSemiHomClass F (MonoidHom.id R) A B` -/
 abbrev NonUnitalAlgHomClass (F : Type*) (R A B : outParam Type*)
     [Monoid R] [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
     [DistribMulAction R A] [DistribMulAction R B] [FunLike F A B] :=

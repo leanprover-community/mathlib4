@@ -16,6 +16,7 @@ Utility functions for working with trace messages.
 
 `withTraceNode` (in `Lean.Util.Trace`) stores a `TraceResult` in `TraceData.result?`
 and prepends emoji to the rendered header:
+
 - `✅️` (`checkEmoji`) for success
 - `❌️` (`crossEmoji`) for failure
 - `💥️` (`bombEmoji`) for exceptions

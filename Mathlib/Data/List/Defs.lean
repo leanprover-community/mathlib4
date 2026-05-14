@@ -34,7 +34,7 @@ instance [DecidableEq α] : SDiff (List α) :=
   ⟨List.diff⟩
 
 /-- "Inhabited" `get` function: returns `default` instead of `none` in the case
-  that the index is out of bounds. -/
+that the index is out of bounds. -/
 def getI [Inhabited α] (l : List α) (n : Nat) : α :=
   getD l n default
 
@@ -54,7 +54,7 @@ def getLastI [Inhabited α] : List α → α
   | _ :: _ :: l => getLastI l
 
 /-- "Inhabited" `take` function: Take `n` elements from a list `l`. If `l` has less than `n`
-  elements, append `n - length l` elements `default`. -/
+elements, append `n - length l` elements `default`. -/
 def takeI [Inhabited α] (n : Nat) (l : List α) : List α :=
   takeD n l default
 
@@ -226,7 +226,7 @@ def permutations' : List α → List (List α)
 end Permutations
 
 /-- `extractp p l` returns a pair of an element `a` of `l` satisfying the predicate
-  `p`, and `l`, with `a` removed. If there is no such element `a` it returns `(none, l)`. -/
+`p`, and `l`, with `a` removed. If there is no such element `a` it returns `(none, l)`. -/
 def extractp (p : α → Prop) [DecidablePred p] : List α → Option α × List α
   | [] => (none, [])
   | a :: l =>

@@ -34,7 +34,6 @@ uniformly continuous, and that locally Lipschitz functions are continuous.
 * `LocallyLipschitzOn f s`: states that `f` is locally Lipschitz on `s`.
 * `LocallyLipschitz.continuous`: a locally Lipschitz function is continuous.
 
-
 ## Implementation notes
 
 The parameter `K` has type `ℝ≥0`. This way we avoid conjunction in the definition and have

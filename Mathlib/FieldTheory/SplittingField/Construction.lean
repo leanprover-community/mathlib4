@@ -24,6 +24,7 @@ In this file we prove the existence and uniqueness of splitting fields.
   to `SplittingField f` and thus, being a splitting field is unique up to isomorphism.
 
 ## Implementation details
+
 We construct a `SplittingFieldAux` without worrying about whether the instances satisfy nice
 definitional equalities. Then the actual `SplittingField` is defined to be a quotient of a
 `MvPolynomial` ring by the kernel of the obvious map into `SplittingFieldAux`. Because the

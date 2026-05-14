@@ -11,6 +11,7 @@ public import Mathlib.CategoryTheory.Action.Monoidal
 /-!
 
 ## Main Purpose
+
 This file is the preliminary for the `linearize` functor from `Action (Type w) G` to `Rep k G`,
 constructing the functor from the `Representation` would reduce the amount of DefEq abuses that we
 currently are doing in the `Rep` file.
@@ -36,7 +37,7 @@ open CategoryTheory
 
 variable (k G X) in
 /-- Every Set `X` that has a `G`-action on it can be made into a `G`-rep by using `X →₀ k` as
-  the base module and `G`-action on it is induced by the `G`-action on `X`. -/
+the base module and `G`-action on it is induced by the `G`-action on `X`. -/
 @[simps]
 def linearize : Representation k G (X.V →₀ k) where
   toFun g := Finsupp.lmapDomain k k (X.ρ g)
@@ -48,7 +49,7 @@ lemma linearize_single (g : G) (x : X.V) :
   simp
 
 /-- Every morphism between `G`-sets could be made into an intertwining map between
-  `Representation`s by the linear map induced on the indexing sets. -/
+`Representation`s by the linear map induced on the indexing sets. -/
 def linearizeMap (f : X ⟶ Y) : IntertwiningMap (A := k) (linearize k G X) (linearize k G Y) where
   __ := Finsupp.lmapDomain k k f.hom
   isIntertwining' g := by ext x y; simp [(congr($(f.comm g) x) : f.hom (X.ρ g x) = Y.ρ g (f.hom x))]
@@ -242,7 +243,7 @@ lemma linearizeTrivial_def (X : Type w) (g : G) :
 
 variable (k G) in
 /-- This a type-changing equivalence (which requires a non-trivial proof that
-  `LinearEquiv.refl _ _` is `G`-equivariant) to avoid abusing defeq. -/
+`LinearEquiv.refl _ _` is `G`-equivariant) to avoid abusing defeq. -/
 def linearizeTrivialIso (X : Type w) : (linearize k G (Action.trivial _ X)).Equiv
     (trivial k G (X →₀ k)) :=
   .mk (LinearEquiv.refl _ _) fun g ↦ by

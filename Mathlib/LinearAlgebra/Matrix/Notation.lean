@@ -83,6 +83,7 @@ open Lean Meta Elab Term Macro TSyntax PrettyPrinter.Delaborator SubExpr
 /-- Notation for m×n matrices, aka `Matrix (Fin m) (Fin n) α`.
 
 For instance:
+
 * `!![a, b, c; d, e, f]` is the matrix with two rows and three columns, of type
   `Matrix (Fin 2) (Fin 3) α`
 * `!![a, b, c]` is a row vector of type `Matrix (Fin 1) (Fin 3) α` (see also `Matrix.row`).

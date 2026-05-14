@@ -20,12 +20,12 @@ They are placed here in a separate file (rather than incorporated as a continuat
 `Algebra.Order.Archimedean`) because they rely on some imports from `GroupTheory` -- bundled
 subgroups in particular.
 
-The main result is `AddSubgroup.cyclic_of_min`:  a subgroup of a decidable archimedean abelian
+The main result is `AddSubgroup.cyclic_of_min`: a subgroup of a decidable archimedean abelian
 group is cyclic, if its set of positive elements has a minimal element.
 
 This result is used in this file to deduce `Int.subgroup_cyclic`, proving that every subgroup of `ℤ`
-is cyclic.  (There are several other methods one could use to prove this fact, including more purely
-algebraic methods, but none seem to exist in mathlib as of writing.  The closest is
+is cyclic. (There are several other methods one could use to prove this fact, including more purely
+algebraic methods, but none seem to exist in mathlib as of writing. The closest is
 `Subgroup.is_cyclic`, but that has not been transferred to `AddSubgroup`.)
 
 The file also supports multiplicative groups via `MulArchimedean`.

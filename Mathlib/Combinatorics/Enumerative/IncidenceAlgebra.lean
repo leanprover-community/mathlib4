@@ -49,6 +49,7 @@ left and right inverses agree if they exist.
 ## TODOs
 
 Here are some additions to this file that could be made in the future:
+
 - Generalize the construction of `mu` to invert any element of the incidence algebra `f` which has
   `f x x` a unit for all `x`.
 - Give formulas for higher powers of zeta.
@@ -78,7 +79,7 @@ variable {F 𝕜 𝕝 𝕞 α β : Type*}
 /-- The `𝕜`-incidence algebra over `α`. -/
 structure IncidenceAlgebra (𝕜 α : Type*) [Zero 𝕜] [LE α] where
   /-- The underlying function of an element of the incidence algebra.
-
+  
   Do not use this function directly. Instead use the coercion coming from the `FunLike`
   instance. -/
   toFun : α → α → 𝕜

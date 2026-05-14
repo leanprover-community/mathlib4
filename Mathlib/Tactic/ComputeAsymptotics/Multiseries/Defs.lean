@@ -612,6 +612,7 @@ section Approximates
 open Tactic.ComputeAsymptotics
 
 /-- Coinductive predicate stating that `ms` approximates its attached function on `basis`.
+
 * If `basis = []`, i.e. `ms` is just a real number, `Approximates` holds unconditionally.
 * If `basis = basis_hd :: basis_tl` and `ms = nil`, then `f =ᶠ[atTop] 0`.
 * If `basis = basis_hd :: basis_tl` and `ms = cons exp coef tl`, then

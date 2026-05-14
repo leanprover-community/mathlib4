@@ -46,6 +46,7 @@ This is a stronger version of `DistribSMul.toLinearMap`, and could also have bee
 called `Algebra.toModuleEnd`.
 
 The typeclasses correspond to the situation where the types act on each other as
+
 ```
 R ----→ B
 | ⟍     |
@@ -53,16 +54,19 @@ R ----→ B
 ↓     ↘ ↓
 A ----→ M
 ```
+
 where the diagram commutes, the action by `R` commutes with everything, and the action by `A` and
 `B` on `M` commute.
 
 Typically this is most useful with `B = R` as `Algebra.lsmul R R A : A →ₐ[R] Module.End R M`.
 However this can be used to get the fact that left-multiplication by `A` is right `A`-linear, and
 vice versa, as
+
 ```lean
 example : A →ₐ[R] Module.End Aᵐᵒᵖ A := Algebra.lsmul R Aᵐᵒᵖ A
 example : Aᵐᵒᵖ →ₐ[R] Module.End A A := Algebra.lsmul R A A
 ```
+
 respectively; though `LinearMap.mulLeft` and `LinearMap.mulRight` can also be used here.
 -/
 def lsmul : A →ₐ[R] Module.End B M where

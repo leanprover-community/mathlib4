@@ -25,7 +25,7 @@ variable {m n a : ℕ}
 ### `sqrt`
 
 See [Wikipedia, *Methods of computing square roots*]
-(https://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Binary_numeral_system_(base_2)).
+(https://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Binary_numeral_system\_(base_2)).
 -/
 
 private lemma iter_fp_bound (n k : ℕ) :

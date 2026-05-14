@@ -246,7 +246,9 @@ alias EMetric.measure_closedBall_pos := Metric.measure_closedEBall_pos
 
 section MeasureZero
 /-! ## Meagre sets and measure zero
+
 In general, neither of meagre and measure zero implies the other.
+
 - The set of Liouville numbers is a Lebesgue measure zero subset of ℝ, but is not meagre.
   (In fact, its complement is meagre. See `Real.disjoint_residual_ae`.)
 

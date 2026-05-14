@@ -14,6 +14,7 @@ public import Mathlib.RingTheory.Unramified.Locus
 # Unramified algebras over local rings
 
 ## Main results
+
 - `Algebra.FormallyUnramified.iff_map_maximalIdeal_eq`:
   Let `R` be a local ring, `A` be a local `R`-algebra essentially of finite type.
   Then `A/R` is unramified if and only if `κA/κR` is separable, and `m_R S = m_S`.
@@ -23,6 +24,7 @@ public import Mathlib.RingTheory.Unramified.Locus
 
 Let `S` be an `R` algebra, `p` be a prime of `R`, and suppose `q` is the unique prime of `S`
 lying over `R`, then
+
 - `Localization.localRingHom_injective_of_primesOver_eq_singleton`:
   If `R ⊆ S` is integral, then `R_p → S_q` is injective.
 - `Localization.localRingHom_surjective_of_primesOver_eq_singleton`:

@@ -33,7 +33,7 @@ open scoped ComplexConjugate
 namespace Complex
 
 /-- **Fundamental theorem of algebra**: every nonconstant complex polynomial
-  has a root. -/
+has a root. -/
 theorem exists_root {f : ℂ[X]} (hf : 0 < degree f) : ∃ z : ℂ, IsRoot f z := by
   by_contra! hf'
   /- Since `f` has no roots, `f⁻¹` is differentiable. And since `f` is a polynomial, it tends to

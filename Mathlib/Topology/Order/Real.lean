@@ -13,6 +13,7 @@ public import Mathlib.Topology.Order.T5
 
 This file contains results related to the order topology on (extended) (non-negative) real numbers.
 We
+
 - prove that `ℝ` and `ℝ≥0` are equipped with the order topology and bornology,
 - endow `EReal` with the order topology (and prove some very basic lemmas),
 - define the topology `ℝ≥0∞` (which is the order topology, *not* the `EMetricSpace` topology)

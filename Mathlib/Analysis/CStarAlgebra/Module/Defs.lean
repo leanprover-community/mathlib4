@@ -46,7 +46,7 @@ Although the `Norm` is passed as a parameter, it almost never coincides with the
 underlying type, unless that it is a purpose built type, as with the *standard Hilbert C⋆-module*.
 However, with generic types already equipped with a norm, the norm as a Hilbert C⋆-module almost
 never coincides with the norm on the underlying type. The two notable exceptions to this are when
-we view `A` as a C⋆-module over itself, or when `A := ℂ`.  For this reason we will later use the
+we view `A` as a C⋆-module over itself, or when `A := ℂ`. For this reason we will later use the
 type synonym `WithCStarModule`.
 
 As an example of just how different the norm can be, consider `CStarModule`s `E` and `F` over `A`.

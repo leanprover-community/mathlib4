@@ -236,7 +236,7 @@ example : single (1 : Fin 2) 1 ≺[degLex] single 0 1 := by
   rw [degLex_lt_iff, single_lt_iff]
   exact Nat.one_pos
 
-/-- for the deg-lexicographic ordering, X 0 * X 1 < X 0  ^ 2 -/
+/-- for the deg-lexicographic ordering, X 0 * X 1 < X 0 ^ 2 -/
 example : (single 0 1 + single 1 1) ≺[degLex] single (0 : Fin 2) 2 := by
   rw [degLex_lt_iff, lt_iff, ofDegLex_toDegLex]
   simp only [Fin.isValue, map_add, degree_single, Nat.reduceAdd, ofDegLex_toDegLex,

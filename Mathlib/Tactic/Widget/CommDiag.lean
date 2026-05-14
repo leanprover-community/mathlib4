@@ -73,6 +73,7 @@ def mkCommDiag (sub : String) (embeds : ExprEmbeds) : MetaM Html := do
 
 /--
 Triangle with `homs = [f,g,h]` and `objs = [A,B,C]`
+
 ```
 A f B
   h g
@@ -113,6 +114,7 @@ def commutativeTrianglePresenter : ExprPresenter where
 
 /--
 Square with `homs = [f,g,h,i]` and `objs = [A,B,C,D]`
+
 ```
 A f B
 i   g

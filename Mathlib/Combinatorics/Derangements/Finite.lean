@@ -18,13 +18,13 @@ This file contains lemmas that describe the cardinality of `derangements α` whe
 ## Main definitions
 
 * `card_derangements_invariant`: A lemma stating that the number of derangements on a type `α`
-    depends only on the cardinality of `α`.
+  depends only on the cardinality of `α`.
 * `numDerangements n`: The number of derangements on an n-element set, defined in a computation-
-    friendly way.
+  friendly way.
 * `card_derangements_eq_numDerangements`: Proof that `numDerangements` really does compute the
-    number of derangements.
+  number of derangements.
 * `numDerangements_sum`: A lemma giving an expression for `numDerangements n` in terms of
-    factorials.
+  factorials.
 -/
 
 @[expose] public section

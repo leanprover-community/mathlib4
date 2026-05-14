@@ -13,6 +13,7 @@ public import Mathlib.Init
 
 This file defines the basic datatypes for bicategory like structures. We will use these datatypes
 to write tactics that can be applied to both monoidal categories and bicategories:
+
 - `Obj`: objects type
 - `Atom₁`: atomic 1-morphisms type
 - `Mor₁`: 1-morphisms type
@@ -26,6 +27,7 @@ A term of these datatypes wraps the corresponding `Expr` term, which can be extr
 e.g. `η.e` for `η : Mor₂`.
 
 The operations of these datatypes are defined in a monad `m` with the corresponding typeclasses:
+
 - `MonadMor₁`: operations on `Mor₁`
 - `MonadMor₂Iso`: operations on `Mor₂Iso`
 - `MonadMor₂`: operations on `Mor₂`
@@ -294,6 +296,7 @@ structure Atom where
 
 /-- `Mor₂` expressions defined below will have the `isoLift? : Option IsoLift` field.
 For `η : Mor₂` such that `η.isoLift? = some isoLift`, we have the following data:
+
 - `isoLift.e`: an expression for a 2-isomorphism `η'`, given as a `Mor₂Iso` term,
 - `isoLift.eq`: a lean expression for the proof that `η'.hom = η`.
 -/

@@ -12,6 +12,7 @@ public import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 
 This provides some results and constructions for adjunctions between functors on
 preadditive categories:
+
 * If one of the adjoint functors is additive, so is the other.
 * If one of the adjoint functors is additive, the equivalence `Adjunction.homEquiv` lifts to
   an additive equivalence `Adjunction.homAddEquiv`.

@@ -26,6 +26,7 @@ that the composition of this embedding with the measurable embedding from a stan
 ## Main definitions and results
 
 ### Sigmoid as a function from `ℝ` to `ℝ`
+
 * `Real.sigmoid` : the sigmoid function from `ℝ` to `ℝ`.
 * `Real.sigmoid_strictMono` : the sigmoid function is strictly monotone.
 * `Real.continuous_sigmoid` : the sigmoid function is continuous.
@@ -35,6 +36,7 @@ that the composition of this embedding with the measurable embedding from a stan
 * `Real.analyticAt_sigmoid` : the sigmoid function is analytic at every point.
 
 ### Sigmoid as a function from `ℝ` to `I`
+
 * `unitInterval.sigmoid` : the sigmoid function from `ℝ` to `I`.
 * `unitInterval.sigmoid_strictMono` : the sigmoid function is strictly monotone.
 * `unitInterval.continuous_sigmoid` : the sigmoid function is continuous.
@@ -42,6 +44,7 @@ that the composition of this embedding with the measurable embedding from a stan
 * `unitInterval.tendsto_sigmoid_atBot` : the sigmoid function tends to `0` at `-∞`.
 
 ### Sigmoid as an `OrderEmbedding` from `ℝ` to `I`
+
 * `OrderEmbedding.sigmoid` : the sigmoid function as an `OrderEmbedding` from `ℝ` to `I`.
 * `Topology.isEmbedding_sigmoid` : the sigmoid function from `ℝ` to `I` is a topological
   embedding.
@@ -52,6 +55,7 @@ that the composition of this embedding with the measurable embedding from a stan
   space `α` to `ℝ` is a measurable embedding from `α` to `I`.
 
 ## Tags
+
 sigmoid, embedding, measurable embedding, topological embedding
 -/
 

@@ -23,7 +23,7 @@ This file deals with prime numbers: natural numbers `p ≥ 2` whose only divisor
 - `Nat.minFac n`: the minimal prime factor of a natural number `n ≠ 1`
 - `Nat.prime_iff`: `Nat.Prime` coincides with the general definition of `Prime`
 - `Nat.irreducible_iff_nat_prime`: a non-unit natural number is
-                                  only divisible by `1` iff it is prime
+  only divisible by `1` iff it is prime
 
 -/
 
@@ -36,8 +36,8 @@ namespace Nat
 variable {n : ℕ}
 
 /-- `Nat.Prime p` means that `p` is a prime number, that is, a natural number
-  at least 2 whose only divisors are `p` and `1`.
-  The theorem `Nat.prime_def` witnesses this description of a prime number. -/
+at least 2 whose only divisors are `p` and `1`.
+The theorem `Nat.prime_def` witnesses this description of a prime number. -/
 @[pp_nodot]
 def Prime (p : ℕ) :=
   Irreducible p

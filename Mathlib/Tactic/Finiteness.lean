@@ -19,6 +19,7 @@ set.
 ## Syntax
 
 Standard `aesop` syntax applies. Namely one can write
+
 * `finiteness (add unfold [def1, def2])` to make `finiteness` unfold `def1`, `def2`
 * Note that `finiteness` disables `simp`, so `finiteness (add simp [lemma1, lemma2])` does not do
   anything more than a bare `finiteness`.
@@ -56,16 +57,21 @@ This tactic is based on `aesop`. It calls `assumption`, `intros`, `positivity`, 
 lemma or rule added to the `finiteness` ruleset, except that all `simp` rules are disabled.
 
 This tactic is extensible. By adding more rules, `finiteness` can prove more goals. For example:
+
 * `@[aesop (rule_sets := [finiteness]) safe 50] lemma ...`
+
 * `add_aesop_rules safe tactic (rule_sets := [finiteness]) (by ...)`
-(Note that a `simp` rule cannot be added this way, since all `simp` rules are disabled.)
+  (Note that a `simp` rule cannot be added this way, since all `simp` rules are disabled.)
 
 * `finiteness (clause)` customizes the `aesop` call using the given clause. See `aesop`
   documentation for detailed explanation. Note that `finiteness` disables `simp`, so
   `finiteness (add simp [lemma1, lemma2])` does not do anything more than a bare `finiteness`.
+
 * `finiteness [t₁, ..., tₙ]` adds the terms `t₁`, ..., `tₙ` as local hypotheses before applying
   the search rules.
+
 * `finiteness?` additionally shows the proof that `finiteness` found.
+
 * `finiteness_nonterminal` is a version of `finiteness` that does not report a warning if it fails
   to close the goal.
 -/

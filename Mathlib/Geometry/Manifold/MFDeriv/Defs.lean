@@ -44,6 +44,7 @@ Let `f` be a map between manifolds. The following definitions follow the `fderiv
   tangent bundle of `M'`.
 
 Various related results are proven in separate files: see
+
 - `Basic.lean` for basic properties of the `mfderiv`, mimicking the API of the Fréchet derivative,
 - `FDeriv.lean` for the equivalence of the manifold notions with the usual Fréchet derivative
   for functions between vector spaces,
@@ -96,6 +97,7 @@ copy of the vector space, instead of more usual definitions such as the space of
 the space of equivalence classes of smooth curves in the manifold.
 
 ## Tags
+
 derivative, manifold
 -/
 

@@ -269,6 +269,7 @@ open Elab.Tactic
 
 /-- Close the goal of the form `η.hom = θ.hom`, where `η` and `θ` are 2-isomorphisms made up only of
 associators, unitors, and identities.
+
 ```lean
 example {B : Type} [Bicategory B] {a : B} :
   (λ_ (𝟙 a)).hom = (ρ_ (𝟙 a)).hom := by

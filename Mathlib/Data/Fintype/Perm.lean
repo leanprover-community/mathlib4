@@ -15,6 +15,7 @@ public import Mathlib.Data.Nat.Factorial.Basic
 # `Fintype` instances for `Equiv` and `Perm`
 
 Main declarations:
+
 * `permsOfFinset s`: The finset of permutations of the finset `s`.
 
 -/

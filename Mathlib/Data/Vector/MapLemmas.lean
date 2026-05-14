@@ -172,6 +172,7 @@ end Fold
 
 /-!
 ## Bisimulations
+
 We can prove two applications of `mapAccumr` equal by providing a bisimulation relation that relates
 the initial states.
 

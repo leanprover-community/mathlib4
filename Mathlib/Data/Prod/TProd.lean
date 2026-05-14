@@ -72,7 +72,7 @@ theorem snd_mk (i : ι) (l : List ι) (f : ∀ i, α i) :
 variable [DecidableEq ι]
 
 /-- Given an element of the iterated product `l.Prod α`, take a projection into direction `i`.
-  If `i` appears multiple times in `l`, this chooses the first component in direction `i`. -/
+If `i` appears multiple times in `l`, this chooses the first component in direction `i`. -/
 protected def elim : ∀ {l : List ι} (_ : TProd α l) {i : ι} (_ : i ∈ l), α i
   | i :: is, v, j, hj =>
     if hji : j = i then by
@@ -113,7 +113,7 @@ theorem ext :
     rw [← elim_of_mem hl, hvw, elim_of_mem hl]
 
 /-- A version of `TProd.elim` when `l` contains all elements. In this case we get a function into
-  `Π i, α i`. -/
+`Π i, α i`. -/
 @[simp]
 protected def elim' (h : ∀ i, i ∈ l) (v : TProd α l) (i : ι) : α i :=
   v.elim (h i)

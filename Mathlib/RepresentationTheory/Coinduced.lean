@@ -86,7 +86,7 @@ def coind : Representation k H (coindV φ ρ) where
 
 variable {σ ρ} in
 /-- Given a monoid homomorphism `φ : G →* H` and an intertwining map `f : σ ⟶ ρ`, there is a
-  natural intertwining map `coind φ σ ⟶ coind φ ρ` given by postcomposition by `f`. -/
+natural intertwining map `coind φ σ ⟶ coind φ ρ` given by postcomposition by `f`. -/
 def coindMap (f : σ.IntertwiningMap ρ) : (coind φ σ).IntertwiningMap (coind φ ρ) where
   __ : _ →ₗ[k] _ := (f.toLinearMap.compLeft H).restrict fun x h ↦ by
     simp only [mem_coindV, LinearMap.compLeft_apply, Function.comp_apply,
@@ -114,7 +114,7 @@ variable {k : Type u} {G : Type v} {H : Type w} [CommRing k] [Monoid G] [Monoid 
 section Coind
 
 /--
-If `φ : G →* H` and  `A : Rep k G` then `coind φ A` is the coinduction of `A` along `φ`,
+If `φ : G →* H` and `A : Rep k G` then `coind φ A` is the coinduction of `A` along `φ`,
 defined by letting `H` act on the `G`-equivariant functions `H → A` by `(h • f) h₁ := f (h₁ * h)`.
 -/
 noncomputable abbrev coind : Rep k H := Rep.of (Representation.coind φ A.ρ)
@@ -242,8 +242,8 @@ end CoindIso
 noncomputable section Adjunction
 
 /-- The morphism induced by the adjunction between `res φ` and `coind φ` sending a morphism
-  `f : res φ B ⟶ A` to the morphism `B ⟶ coind φ A` given by the underlying linear map sending
-  `b : B.V` to the function sending `h : H` to `f ((B.ρ h) b)`. -/
+`f : res φ B ⟶ A` to the morphism `B ⟶ coind φ A` given by the underlying linear map sending
+`b : B.V` to the function sending `h : H` to `f ((B.ρ h) b)`. -/
 def resCoindToHom (B : Rep k H) (A : Rep k G) (f : res φ B ⟶ A) : B ⟶ (coind φ A) :=
   Rep.ofHom ⟨(LinearMap.pi fun h => f.hom.toLinearMap ∘ₗ
     Rep.ρ B h).codRestrict _ fun _ _ _ => by simpa using hom_comm_apply f _ _, fun g ↦ by
@@ -260,7 +260,7 @@ lemma resCoindToHom_hom_apply_coe (B : Rep k H) (A : Rep k G) (f : res φ B ⟶ 
 -- private and should never be used.
 
 /--
-info: _.1 (@DFunLike.coe _ _.1 _ _ (@ConcreteCategory.hom (Rep _ _ _ _) _ _ _ _ _ _ _ (@resCoindToHom _ _ _ _ _ _ _ _ _ _)) _)
+info: \_.1 (@DFunLike.coe _ \_.1 _ _ (@ConcreteCategory.hom (Rep _ _ _ \_) _ _ _ _ _ _ _ (@resCoindToHom _ _ _ _ _ _ _ _ _ \_)) \_)
 -/
 #guard_msgs in
 #discr_tree_simp_key resCoindToHom_hom_apply_coe

@@ -17,6 +17,7 @@ An injective resolution `I : InjectiveResolution Z` of an object `Z : C` consist
 an `ℕ`-indexed cochain complex `I.cocomplex` of injective objects,
 along with a quasi-isomorphism `I.ι` from the cochain complex consisting just of `Z`
 in degree zero to `I.cocomplex`.
+
 ```
 Z ----> 0 ----> ... ----> 0 ----> ...
 |       |                 |

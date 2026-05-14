@@ -15,6 +15,7 @@ public import Mathlib.RingTheory.IntegralClosure.IsIntegral.AlmostIntegral
 # Results about coefficients of polynomials being integral
 
 ## Main results
+
 - `Polynomial.isIntegral_coeff_of_dvd`: If a monic polynomial `p` divides another monic polynomial
   with integral coefficients, then the coefficients of `p` are themselves integral.
 - `Polynomial.isIntegral_iff_isIntegral_coeff`:

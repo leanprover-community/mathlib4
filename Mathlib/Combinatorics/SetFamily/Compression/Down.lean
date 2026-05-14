@@ -150,6 +150,7 @@ lemma image_insert_memberSubfamily (𝒜 : Finset (Finset α)) (a : α) :
 
 /-- Induction principle for finset families. To prove a statement for every finset family,
 it suffices to prove it for
+
 * the empty finset family.
 * the finset family which only contains the empty finset.
 * `ℬ ∪ {s ∪ {a} | s ∈ 𝒞}` assuming the property for `ℬ` and `𝒞`, where `a` is an element of the
@@ -182,6 +183,7 @@ lemma memberFamily_induction_on {p : Finset (Finset α) → Prop}
 
 /-- Induction principle for finset families. To prove a statement for every finset family,
 it suffices to prove it for
+
 * the empty finset family.
 * the finset family which only contains the empty finset.
 * `{s ∪ {a} | s ∈ 𝒜}` assuming the property for `𝒜` a family of finsets not containing `a`.

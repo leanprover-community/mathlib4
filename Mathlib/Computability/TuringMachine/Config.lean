@@ -195,7 +195,9 @@ theorem pred_eval (v) : pred.eval v = pure [v.headI.pred] := by
 
 It is implemented as:
 
-    rfind f v = pred (fix (fun (n::v) => f (n::v) :: n+1 :: v) (0 :: v))
+```
+rfind f v = pred (fix (fun (n::v) => f (n::v) :: n+1 :: v) (0 :: v))
+```
 
 The idea is that the initial state is `0 :: v`, and the `fix` keeps `n :: v` as its internal state;
 it calls `f (n :: v)` as the exit test and `n+1 :: v` as the next state. At the end we get
@@ -213,10 +215,12 @@ functions. `prec f g` evaluates as:
 
 It is implemented as:
 
-    G (a :: b :: IH :: v) = (b :: a+1 :: b-1 :: g (a :: IH :: v) :: v)
-    F (0 :: f_v :: v) = (f_v :: v)
-    F (n+1 :: f_v :: v) = (fix G (0 :: n :: f_v :: v)).tail.tail
-    prec f g (a :: v) = [(F (a :: f v :: v)).head]
+```
+G (a :: b :: IH :: v) = (b :: a+1 :: b-1 :: g (a :: IH :: v) :: v)
+F (0 :: f_v :: v) = (f_v :: v)
+F (n+1 :: f_v :: v) = (fix G (0 :: n :: f_v :: v)).tail.tail
+prec f g (a :: v) = [(F (a :: f v :: v)).head]
+```
 
 Because `fix` always evaluates its body at least once, we must special case the `0` case to avoid
 calling `g` more times than necessary (which could be bad if `g` diverges). If the input is

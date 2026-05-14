@@ -19,11 +19,13 @@ which may be useful due to their definitional properties.
 
 * `HasExplicitFiniteCoproducts`: A typeclass describing the property that forming all finite
   disjoint unions is stable under the property `P`.
+
   - Given this property, we deduce that `CompHausLike P` has finite coproducts and the inclusion
     functors to other `CompHausLike P'` and to `TopCat` preserve them.
 
 * `HasExplicitPullbacks`: A typeclass describing the property that forming all "explicit pullbacks"
   is stable under the property `P`. Here, explicit pullbacks are defined as a subset of the product.
+
   - Given this property, we deduce that `CompHausLike P` has pullbacks and the inclusion
     functors to other `CompHausLike P'` and to `TopCat` preserve them.
   - We also define a variant `HasExplicitPullbacksOfInclusions` which is says that explicit

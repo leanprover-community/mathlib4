@@ -22,6 +22,7 @@ So, the procedure is to check that an expression is well typed, analogous to `Me
 and at each type mismatch, we try to insert a cast.
 
 There are two kinds of casts:
+
 - Equality casts. This is for propositions and terms,
   where it is possible to prove that one is equal to the other. For example `Monotone`.
 - Explicit casting functions, both for unfolding and refolding. This is for types, where we
@@ -46,6 +47,7 @@ public structure UnfoldBoundaries where
 
 /--
 Set up the monadic context:
+
 - Set the transparency to `.all`, just like is done in `Meta.check`.
 - Use `withCanUnfoldPred` to not allow unfolding the constants for which we want to insert casts.
 - Set up the `SimpM` context so that `Simp.simp` will unfold constants from `b.unfolds`.

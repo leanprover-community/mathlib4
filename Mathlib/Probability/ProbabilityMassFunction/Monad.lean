@@ -37,7 +37,7 @@ section Pure
 
 open scoped Classical in
 /-- The pure `PMF` is the `PMF` where all the mass lies in one point.
-  The value of `pure a` is `1` at `a` and `0` elsewhere. -/
+The value of `pure a` is `1` at `a` and `0` elsewhere. -/
 def pure (a : α) : PMF α :=
   ⟨fun a' => if a' = a then 1 else 0, hasSum_ite_eq _ _⟩
 
@@ -167,7 +167,7 @@ theorem toOuterMeasure_bind_apply :
       tsum_congr fun a => by simp only [toOuterMeasure_apply, Set.indicator_apply]
 
 /-- The measure of a set under `p.bind f` is the sum over `a : α`
-  of the probability of `a` under `p` times the measure of the set under `f a`. -/
+of the probability of `a` under `p` times the measure of the set under `f a`. -/
 @[simp]
 theorem toMeasure_bind_apply [MeasurableSpace β] (hs : MeasurableSet s) :
     (p.bind f).toMeasure s = ∑' a, p a * (f a).toMeasure s :=
@@ -187,7 +187,7 @@ instance : Monad PMF where
 section BindOnSupport
 
 /-- Generalized version of `bind` allowing `f` to only be defined on the support of `p`.
-  `p.bind f` is equivalent to `p.bindOnSupport (fun a _ ↦ f a)`, see `bindOnSupport_eq_bind`. -/
+`p.bind f` is equivalent to `p.bindOnSupport (fun a _ ↦ f a)`, see `bindOnSupport_eq_bind`. -/
 def bindOnSupport (p : PMF α) (f : ∀ a ∈ p.support, PMF β) : PMF β :=
   ⟨fun b => ∑' a, p a * if h : p a = 0 then 0 else f a h b, ENNReal.summable.hasSum_iff.2 (by
     refine ENNReal.tsum_comm.trans (_root_.trans (tsum_congr fun a => ?_) p.tsum_coe)
@@ -293,8 +293,8 @@ theorem toOuterMeasure_bindOnSupport_apply :
       tsum_congr fun a => by split_ifs with ha <;> simp only [ite_self, tsum_zero]
 
 /-- The measure of a set under `p.bindOnSupport f` is the sum over `a : α`
-  of the probability of `a` under `p` times the measure of the set under `f a _`.
-  The additional if statement is needed since `f` is only a partial function. -/
+of the probability of `a` under `p` times the measure of the set under `f a _`.
+The additional if statement is needed since `f` is only a partial function. -/
 @[simp]
 theorem toMeasure_bindOnSupport_apply [MeasurableSpace β] (hs : MeasurableSet s) :
     (p.bindOnSupport f).toMeasure s =

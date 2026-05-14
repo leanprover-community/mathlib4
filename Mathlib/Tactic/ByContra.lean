@@ -35,6 +35,7 @@ If the name `h` is not explicitly provided, then `this` will be used as name.
 This tactic uses classical reasoning.
 It is a variant on the tactic `by_contra`.
 Examples:
+
 ```lean
 example : 1 < 2 := by
   by_contra! h

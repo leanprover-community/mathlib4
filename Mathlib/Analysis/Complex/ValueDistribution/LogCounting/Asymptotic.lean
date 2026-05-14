@@ -11,7 +11,7 @@ public import Mathlib.Analysis.Complex.ValueDistribution.LogCounting.Basic
 # Asymptotic Behavior of the Logarithmic Counting Function
 
 If `f` is meromorphic over a field `𝕜`, we show that the logarithmic counting function for the
-poles of `f` is asymptotically bounded if and only if `f` has only removable singularities.  See
+poles of `f` is asymptotically bounded if and only if `f` has only removable singularities. See
 Page 170f of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677] for a detailed
 discussion.
 

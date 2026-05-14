@@ -114,7 +114,7 @@ theorem prod_X_sub_C_coeff (s : Multiset R) {k : ℕ} (h : k ≤ Multiset.card s
   · rwa [card_map]
 
 /-- Vieta's formula for the coefficients and the roots of a polynomial over an integral domain
-  with as many roots as its degree. -/
+with as many roots as its degree. -/
 theorem _root_.Polynomial.coeff_eq_esymm_roots_of_card [IsDomain R] {p : R[X]}
     (hroots : Multiset.card p.roots = p.natDegree) {k : ℕ} (h : k ≤ p.natDegree) :
     p.coeff k = p.leadingCoeff * (-1) ^ (p.natDegree - k) * p.roots.esymm (p.natDegree - k) := by

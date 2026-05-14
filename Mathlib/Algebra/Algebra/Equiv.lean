@@ -42,7 +42,7 @@ attribute [nolint docBlame] AlgEquiv.toMulEquiv
 notation:50 A " ≃ₐ[" R "] " A' => AlgEquiv R A A'
 
 /-- `AlgEquivClass F R A B` states that `F` is a type of algebra structure preserving
-  equivalences. You should extend this class when you extend `AlgEquiv`. -/
+equivalences. You should extend this class when you extend `AlgEquiv`. -/
 class AlgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring R] [Semiring A]
     [Semiring B] [Algebra R A] [Algebra R B] [EquivLike F A B] : Prop
     extends RingEquivClass F A B where

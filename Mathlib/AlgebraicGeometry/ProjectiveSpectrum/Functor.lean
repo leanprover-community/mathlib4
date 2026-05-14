@@ -176,6 +176,7 @@ theorem ι_comp_map (s : A) : (basicOpen ℬ (f s)).ι ≫ map f hf =
 set_option backward.isDefEq.respectTransparency false in
 /--
 The following square commutes:
+
 ```
 Proj ℬ         ⟶ Proj 𝒜₁
     ^                   ^

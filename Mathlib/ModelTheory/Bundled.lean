@@ -141,7 +141,7 @@ def reduct {L' : Language} (φ : L →ᴸ L') (M : (φ.onTheory T).ModelType) : 
   is_model := (@LHom.onTheory_model L L' M (φ.reduct M) _ φ _ T).1 M.is_model
 
 /-- When `φ` is injective, `defaultExpansion` expands a model of `T` to a model of `φ.onTheory T`
-  arbitrarily. -/
+arbitrarily. -/
 @[simps]
 noncomputable def defaultExpansion {L' : Language} {φ : L →ᴸ L'} (h : φ.Injective)
     [∀ (n) (f : L'.Functions n), Decidable (f ∈ Set.range fun f : L.Functions n => φ.onFunction f)]

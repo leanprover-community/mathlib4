@@ -99,23 +99,23 @@ in order to determine the correct `variable`s to have in context. These are:
 
 1. Does this work for arbitrary scalar (semi)rings? Only `ℂ`, or is `ℝ` sufficient?
 
-  For arbitrary scalar rings, use `R` with a predicate `p : A → Prop`, and assume that `A` is an
-  `R`-algebra. For `ℂ` use `IsStarNormal` and assume `A` is a `ℂ`-algebra. For `ℝ` use
-  `IsSelfAdjoint` and assume `A` is an `ℝ`-algebra. Reminder, if you need the functional calculus
-  over `ℝ≥0`, simply use the `ℝ` setup with the three extra classes.
+For arbitrary scalar rings, use `R` with a predicate `p : A → Prop`, and assume that `A` is an
+`R`-algebra. For `ℂ` use `IsStarNormal` and assume `A` is a `ℂ`-algebra. For `ℝ` use
+`IsSelfAdjoint` and assume `A` is an `ℝ`-algebra. Reminder, if you need the functional calculus
+over `ℝ≥0`, simply use the `ℝ` setup with the three extra classes.
 
 2. Does this work in non-unital algebras?
 
-  This determines whether you should use the unital or `NonUnital` variation, and whether your
-  algebra should be unital or non-unital.
+This determines whether you should use the unital or `NonUnital` variation, and whether your
+algebra should be unital or non-unital.
 
 3. Does this require norm properties of the algebra?
 
-  This determines whether you should use the standard version or the `Isometric` variation.
-  If you are not using the `Isometric` variation, you should generally only assume that `A` is a
-  `TopologicalSpace` (or potentially a topological algebra). If you are using the `Isometric`
-  variation, you should assume that `A` is a `NormedAlgebra` (in the unital case) or a `NormedSpace`
-  (in the non-unital case).
+This determines whether you should use the standard version or the `Isometric` variation.
+If you are not using the `Isometric` variation, you should generally only assume that `A` is a
+`TopologicalSpace` (or potentially a topological algebra). If you are using the `Isometric`
+variation, you should assume that `A` is a `NormedAlgebra` (in the unital case) or a `NormedSpace`
+(in the non-unital case).
 
 Of course, sometimes one needs to have different sections which make different assumptions, even
 for the same functions considered. For instance, although theory of positive and negative parts

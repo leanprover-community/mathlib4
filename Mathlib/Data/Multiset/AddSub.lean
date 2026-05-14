@@ -45,8 +45,8 @@ section add
 variable {s t u : Multiset α}
 
 /-- The sum of two multisets is the lift of the list append operation.
-  This adds the multiplicities of each element,
-  i.e. `count a (s + t) = count a s + count a t`. -/
+This adds the multiplicities of each element,
+i.e. `count a (s + t) = count a s + count a t`. -/
 protected def add (s₁ s₂ : Multiset α) : Multiset α :=
   (Quotient.liftOn₂ s₁ s₂ fun l₁ l₂ => ((l₁ ++ l₂ : List α) : Multiset α)) fun _ _ _ _ p₁ p₂ =>
     Quot.sound <| p₁.append p₂

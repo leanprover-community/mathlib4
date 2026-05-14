@@ -19,6 +19,7 @@ This file defines chords and chordless walks in a simple graph.
 * `SimpleGraph.Walk.IsChordless`: a walk with no chords
 
 ## Tags
+
 walks, chords
 -/
 

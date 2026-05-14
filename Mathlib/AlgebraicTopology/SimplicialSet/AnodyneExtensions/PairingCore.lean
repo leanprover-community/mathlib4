@@ -42,7 +42,7 @@ structure PairingCore where
   /-- the family of type (I) simplices -/
   simplex (s : ι) : X _⦋dim s + 1⦌
   /-- the corresponding type (II) simplex is the `1`-codimensional
-    face given by this index -/
+  face given by this index -/
   index (s : ι) : Fin (dim s + 2)
   nonDegenerate₁ (s : ι) : simplex s ∈ X.nonDegenerate _
   nonDegenerate₂ (s : ι) : X.δ (index s) (simplex s) ∈ X.nonDegenerate _

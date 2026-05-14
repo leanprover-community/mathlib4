@@ -184,47 +184,54 @@ in some way in column 3, and its dependencies are recorded in column 2.
 
 These are the main constructor types:
 
-  - Lambda expressions (`Expr.lam`). The expression `fun (h : p) => s` is displayed as
-    ```lean
-     0│    │ h   │ ┌ p
-     1│**  │ **  │ │ q
-     2│1,2 │ ∀I  │ ∀ (h : p), q
-    ```
-    with `**` a wildcard, and there can be intervening steps between 0 and 1.
-    Nested lambda expressions can be merged, and `∀I` can depend on a whole list of arguments.
+- Lambda expressions (`Expr.lam`). The expression `fun (h : p) => s` is displayed as
 
-  - Applications (`Expr.app`). The expression `f a b c` is displayed as
-     ```lean
-     0│**      │ f  │ A → B → C → D
-     1│**      │ a  │ A
-     2│**      │ b  │ B
-     3│**      │ c  │ C
-     1│0,1,2,3 │ ∀E │ D
-     ```
-     There can be intervening steps between each of these.
-     As a special case, if `f` is a constant it can be omitted and the display instead looks like
-     ```lean
-     0│**    │ a │ A
-     1│**    │ b │ B
-     2│**    │ c │ C
-     3│1,2,3 │ f │ D
-     ```
+  ```lean
+   0│    │ h   │ ┌ p
+   1│**  │ **  │ │ q
+   2│1,2 │ ∀I  │ ∀ (h : p), q
+  ```
 
-  - Let expressions (`Expr.letE`) do not display in any special way, but they do
-    ensure that in `let x := v; b` that `v` is processed first and then `b`, rather
-    than first doing zeta reduction. This keeps lambda merging and application merging
-    from making proofs with `let` confusing to interpret.
+  with `**` a wildcard, and there can be intervening steps between 0 and 1.
+  Nested lambda expressions can be merged, and `∀I` can depend on a whole list of arguments.
 
-  - Everything else (constants, fvars, etc.) display `x : X` as
-    ```lean
-    0│  │ x │ X
-    ```
+- Applications (`Expr.app`). The expression `f a b c` is displayed as
+
+  ```lean
+  0│**      │ f  │ A → B → C → D
+  1│**      │ a  │ A
+  2│**      │ b  │ B
+  3│**      │ c  │ C
+  1│0,1,2,3 │ ∀E │ D
+  ```
+
+  There can be intervening steps between each of these.
+  As a special case, if `f` is a constant it can be omitted and the display instead looks like
+
+  ```lean
+  0│**    │ a │ A
+  1│**    │ b │ B
+  2│**    │ c │ C
+  3│1,2,3 │ f │ D
+  ```
+
+- Let expressions (`Expr.letE`) do not display in any special way, but they do
+  ensure that in `let x := v; b` that `v` is processed first and then `b`, rather
+  than first doing zeta reduction. This keeps lambda merging and application merging
+  from making proofs with `let` confusing to interpret.
+
+- Everything else (constants, fvars, etc.) display `x : X` as
+
+  ```lean
+  0│  │ x │ X
+  ```
 
 ## In more detail
 
 The output of `#explode` is a Fitch-style proof in a four-column diagram modeled after Metamath
 proof displays like [this](http://us.metamath.org/mpeuni/ru.html). The headers of the columns are
 "Step", "Hyp", "Ref", "Type" (or "Expression" in the case of Metamath):
+
 * **Step**: An increasing sequence of numbers for each row in the proof, used in the Hyp fields.
 * **Hyp**: The direct children of the current step. These are step numbers for the subexpressions
   for this step's expression. For theorem applications, it's the theorem arguments, and for

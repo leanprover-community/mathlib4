@@ -12,6 +12,7 @@ public import Mathlib.AlgebraicGeometry.Over
 # Restriction of Schemes and Morphisms
 
 ## Main definition
+
 - `AlgebraicGeometry.Scheme.restrict`: The restriction of a scheme along an open embedding.
   The map `X.restrict f ⟶ X` is `AlgebraicGeometry.Scheme.ofRestrict`.
   `U : X.Opens` has a coercion to `Scheme` and `U.ι` is a shorthand

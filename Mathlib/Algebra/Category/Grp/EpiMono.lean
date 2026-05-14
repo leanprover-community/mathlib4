@@ -13,6 +13,7 @@ public import Mathlib.GroupTheory.QuotientGroup.Defs
 
 /-!
 # Monomorphisms and epimorphisms in `Group`
+
 In this file, we prove monomorphisms in the category of groups are injective homomorphisms and
 epimorphisms are surjective homomorphisms.
 -/
@@ -207,6 +208,7 @@ local notation "h" => h f
 
 /-!
 The strategy is the following: assuming `epi f`
+
 * prove that `f.hom.range = {x | h x = g x}`;
 * thus `f ≫ h = f ≫ g` so that `h = g`;
 * but if `f` is not surjective, then some `x ∉ f.hom.range`, then `h x ≠ g x` at the coset

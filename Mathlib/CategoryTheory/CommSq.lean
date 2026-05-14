@@ -33,6 +33,7 @@ namespace CategoryTheory
 variable {C : Type*} [Category* C]
 
 /-- The proposition that a square
+
 ```
   W ---f---> X
   |          |
@@ -42,6 +43,7 @@ variable {C : Type*} [Category* C]
   Y ---i---> Z
 
 ```
+
 is a commuting square.
 -/
 @[to_dual self (reorder := W Z, X Y, f i, g h)]
@@ -97,6 +99,7 @@ theorem horiz_inv {f : W ≅ X} {i : Y ≅ Z} (p : CommSq f.hom g h i.hom) :
   flip (vert_inv (flip p))
 
 /-- The horizontal composition of two commutative squares as below is a commutative square.
+
 ```
   W ---f---> X ---f'--> X'
   |          |          |
@@ -114,6 +117,7 @@ lemma horiz_comp {W X X' Y Z Z' : C} {f : W ⟶ X} {f' : X ⟶ X'} {g : W ⟶ Y}
   ⟨by rw [← Category.assoc, Category.assoc, ← hsq₁.w, hsq₂.w, Category.assoc]⟩
 
 /-- The vertical composition of two commutative squares as below is a commutative square.
+
 ```
   W ---f---> X
   |          |
@@ -172,6 +176,7 @@ namespace CommSq
 variable {A B X Y : C} {f : A ⟶ X} {i : A ⟶ B} {p : X ⟶ Y} {g : B ⟶ Y}
 
 /-- Now we consider a square:
+
 ```
   A ---f---> X
   |          |

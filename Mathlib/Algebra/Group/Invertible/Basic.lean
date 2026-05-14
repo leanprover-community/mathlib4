@@ -148,7 +148,7 @@ theorem map_invOf {R : Type*} {S : Type*} {F : Type*} [MulOneClass R] [Monoid S]
   obtain rfl : ifr = Invertible.map f r := Subsingleton.elim _ _; rfl
 
 /-- If a function `f : R → S` has a left-inverse that is a monoid hom,
-  then `r : R` is invertible if `f r` is.
+then `r : R` is invertible if `f r` is.
 
 The inverse is computed as `g (⅟(f r))` -/
 @[simps! -isSimp, implicit_reducible]

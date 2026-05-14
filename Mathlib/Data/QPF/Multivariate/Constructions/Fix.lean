@@ -18,13 +18,13 @@ and take a fixed point again.
 
 ## Main definitions
 
-* `Fix.mk`     - constructor
-* `Fix.dest`    - destructor
-* `Fix.rec`    - recursor: basis for defining functions by structural recursion on `Fix F α`
-* `Fix.drec`   - dependent recursor: generalization of `Fix.rec` where
-                  the result type of the function is allowed to depend on the `Fix F α` value
+* `Fix.mk` - constructor
+* `Fix.dest` - destructor
+* `Fix.rec` - recursor: basis for defining functions by structural recursion on `Fix F α`
+* `Fix.drec` - dependent recursor: generalization of `Fix.rec` where
+  the result type of the function is allowed to depend on the `Fix F α` value
 * `Fix.rec_eq` - defining equation for `recursor`
-* `Fix.ind`    - induction principle for `Fix F α`
+* `Fix.ind` - induction principle for `Fix F α`
 
 ## Implementation notes
 

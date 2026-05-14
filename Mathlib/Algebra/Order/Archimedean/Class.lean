@@ -42,6 +42,7 @@ elements.
 
 The following theorems state that an ordered commutative group is (mul-)archimedean if and only if
 all non-identity elements belong to the same (`Mul`-)`ArchimedeanClass`:
+
 * `ArchimedeanClass.archimedean_of_mk_eq_mk` / `MulArchimedeanClass.mulArchimedean_of_mk_eq_mk`
 * `ArchimedeanClass.mk_eq_mk_of_archimedean` / `MulArchimedeanClass.mk_eq_mk_of_mulArchimedean`
 

@@ -14,6 +14,7 @@ public import Mathlib.CategoryTheory.Shift.CommShiftTwo
 
 In this file, given cochain complexes `K₁ : CochainComplex C₁ ℤ`, `K₂ : CochainComplex C₂ ℤ` and
 a functor `F : C₁ ⥤ C₂ ⥤ D`, we define an isomorphism of cochain complexes in `D`:
+
 - `CochainComplex.mapBifunctorShift₁Iso K₁ K₂ F x` of type
   `mapBifunctor (K₁⟦x⟧) K₂ F ≅ (mapBifunctor K₁ K₂ F)⟦x⟧` for `x : ℤ`.
 - `CochainComplex.mapBifunctorShift₂Iso K₁ K₂ F y` of type

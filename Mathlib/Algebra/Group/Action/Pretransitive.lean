@@ -49,13 +49,13 @@ property. We do not provide typeclasses `*Action.IsTransitive`; users should ass
 -/
 
 /-- `M` acts pretransitively on `α` if for any `x y` there is `g` such that `g +ᵥ x = y`.
-  A transitive action should furthermore have `α` nonempty. -/
+A transitive action should furthermore have `α` nonempty. -/
 class AddAction.IsPretransitive (M α : Type*) [VAdd M α] : Prop where
   /-- There is `g` such that `g +ᵥ x = y`. -/
   exists_vadd_eq : ∀ x y : α, ∃ g : M, g +ᵥ x = y
 
 /-- `M` acts pretransitively on `α` if for any `x y` there is `g` such that `g • x = y`.
-  A transitive action should furthermore have `α` nonempty. -/
+A transitive action should furthermore have `α` nonempty. -/
 @[to_additive (attr := mk_iff)]
 class MulAction.IsPretransitive (M α : Type*) [SMul M α] : Prop where
   /-- There is `g` such that `g • x = y`. -/

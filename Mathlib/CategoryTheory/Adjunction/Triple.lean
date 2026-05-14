@@ -20,6 +20,7 @@ where `G` is fully faithful or `F` and `H` are.
 
 All results are about an adjoint triple `F ⊣ G ⊣ H` where `adj₁ : F ⊣ G` and `adj₂ : G ⊣ H`. We
 bundle the adjunctions in a structure `Triple F G H`.
+
 * `fullyFaithfulEquiv`: `F` is fully faithful iff `H` is.
 * `rightToLeft`: the canonical natural transformation `H ⟶ F` that exists whenever `G` is fully
   faithful. This is defined as the preimage of `adj₂.counit ≫ adj₁.unit` under whiskering with `G`,

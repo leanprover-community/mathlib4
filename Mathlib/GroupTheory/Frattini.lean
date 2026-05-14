@@ -12,6 +12,7 @@ public import Mathlib.Order.Radical
 # The Frattini subgroup
 
 We give the definition of the Frattini subgroup of a group, and three elementary results:
+
 * The Frattini subgroup is characteristic.
 * If every subgroup of a group is contained in a maximal subgroup, then
   the Frattini subgroup consists of the non-generating elements of the group.

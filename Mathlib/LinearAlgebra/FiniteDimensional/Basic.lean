@@ -21,6 +21,7 @@ of linear maps on such spaces.
 ## Main definitions
 
 Preservation of finite-dimensionality and formulas for the dimension are given for
+
 - submodules (`FiniteDimensional.finiteDimensional_submodule`)
 - quotients (for the dimension of a quotient, see `Submodule.finrank_quotient_add_finrank` in
   `Mathlib/LinearAlgebra/Dimension/RankNullity.lean`)

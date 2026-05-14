@@ -48,10 +48,10 @@ The `mul/add` distinction refers to the index monoid `M`: multiplicative sums ov
 
 ## Notation
 
-| Notation     | Operation                                       |
+| Notation | Operation |
 |--------------|-------------------------------------------------|
-| `f ⋆[L] g`   | `∑' ab : mulFiber x, L (f ab.1.1) (g ab.1.2)`   |
-| `f ⋆₊[L] g`  | `∑' ab : addFiber x, L (f ab.1.1) (g ab.1.2)`   |
+| `f ⋆[L] g` | `∑' ab : mulFiber x, L (f ab.1.1) (g ab.1.2)` |
+| `f ⋆₊[L] g` | `∑' ab : addFiber x, L (f ab.1.1) (g ab.1.2)` |
 
 Precedence design: `f:68` and `g:67` gives right associativity (`f ⋆ g ⋆ h` parses as
 `f ⋆ (g ⋆ h)`), matching function composition `∘` and `MeasureTheory.convolution`.

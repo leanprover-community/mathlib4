@@ -16,15 +16,18 @@ public import Mathlib.Tactic.FastInstance
 
 /-!
 # Additive properties of Hahn series
+
 If `Γ` is ordered and `R` has zero, then `R⟦Γ⟧` consists of formal series over `Γ` with coefficients
 in `R`, whose supports are partially well-ordered. With further structure on `R` and `Γ`, we can add
-further structure on `R⟦Γ⟧`.  When `R` has an addition operation, `R⟦Γ⟧` also has addition by adding
+further structure on `R⟦Γ⟧`. When `R` has an addition operation, `R⟦Γ⟧` also has addition by adding
 coefficients.
 
 ## Main Definitions
+
 * If `R` is a (commutative) additive monoid or group, then so is `R⟦Γ⟧`.
 
 ## References
+
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
 -/
 

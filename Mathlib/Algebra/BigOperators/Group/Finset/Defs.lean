@@ -91,10 +91,12 @@ The latter have precedence levels `70` and `65` respectively,
 and we therefore choose the level `67`.
 
 In practice, this means that parentheses should be placed as follows:
+
 ```lean
 ∑ k ∈ K, (a k + b k) = ∑ k ∈ K, a k + ∑ k ∈ K, b k →
   ∏ k ∈ K, a k * b k = (∏ k ∈ K, a k) * (∏ k ∈ K, b k)
 ```
+
 (Example taken from page 490 of Knuth's *Concrete Mathematics*.)
 -/
 
@@ -224,6 +226,7 @@ open PrettyPrinter.Delaborator SubExpr
 open scoped Batteries.ExtendedBinder
 
 /-- The possibilities we distinguish to delaborate the finset indexing a big operator:
+
 * `finset s` corresponds to `∑ x ∈ s, f x`
 * `univ` corresponds to `∑ x, f x`
 * `filter s p` corresponds to `∑ x ∈ s with p x, f x`

@@ -35,6 +35,7 @@ when wanting to apply this condition, it is recommended to instead use the lemma
 equalities.
 
 ## References
+
 * [A. Grothendieck, M. Raynaud, *SGA 1*](https://arxiv.org/abs/math/0206203)
 
 -/
@@ -146,6 +147,7 @@ lemma isStronglyCartesian_of_exists_isCartesian (p : 𝒳 ⥤ 𝒮) (h : ∀ (a 
 
 /-- Alternate constructor for `IsFibered`, a functor `p : 𝒳 ⥤ 𝒴` is fibered if any diagram of the
 form
+
 ```
           a
           -
@@ -153,6 +155,7 @@ form
           v
 R --f--> p(a)
 ```
+
 admits a strongly Cartesian lift `b ⟶ a` of `f`. -/
 lemma of_exists_isStronglyCartesian {p : 𝒳 ⥤ 𝒮}
     (h : ∀ (a : 𝒳) (R : 𝒮) (f : R ⟶ p.obj a),
@@ -168,6 +171,7 @@ lemma of_exists_isStronglyCartesian {p : 𝒳 ⥤ 𝒮}
     inferInstance
 
 /-- Given a diagram
+
 ```
                   a
                   -
@@ -175,6 +179,7 @@ lemma of_exists_isStronglyCartesian {p : 𝒳 ⥤ 𝒮}
                   v
 T --g--> R --f--> S
 ```
+
 we have an isomorphism `T ×_S a ≅ T ×_R (R ×_S a)` -/
 noncomputable def pullbackPullbackIso {p : 𝒳 ⥤ 𝒮} [IsFibered p]
     {R S T : 𝒮} {a : 𝒳} (ha : p.obj a = S) (f : R ⟶ S) (g : T ⟶ R) :

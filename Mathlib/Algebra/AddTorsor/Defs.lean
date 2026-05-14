@@ -14,7 +14,7 @@ This file defines torsors of additive group actions.
 
 ## Notation
 
-The group elements are referred to as acting on points.  This file
+The group elements are referred to as acting on points. This file
 defines the notation `+ᵥ` for adding a group element to a point and
 `-ᵥ` for subtracting two points to produce a group element.
 

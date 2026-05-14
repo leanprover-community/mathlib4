@@ -17,6 +17,7 @@ In this file we define typeclasses `UniformContinuousConstVAdd` and
 continuous `(•) c` can be extended to a multiplicative action on `UniformSpace.Completion X`.
 
 In later files once the additive group structure is set up, we provide
+
 * `UniformSpace.Completion.DistribMulAction`
 * `UniformSpace.Completion.MulActionWithZero`
 * `UniformSpace.Completion.Module`

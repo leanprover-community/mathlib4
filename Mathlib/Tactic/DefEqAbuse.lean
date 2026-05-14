@@ -29,11 +29,13 @@ application that triggered them.
 ## Usage
 
 ### Tactic mode
+
 ```
 #defeq_abuse in rw [Set.disjoint_singleton_right]
 ```
 
 will report something like:
+
 ```
 Tactic fails with `backward.isDefEq.respectTransparency true` but succeeds with `false`.
 The following isDefEq checks are the root causes of the failure:
@@ -41,6 +43,7 @@ The following isDefEq checks are the root causes of the failure:
 ```
 
 ### Command mode
+
 ```
 #defeq_abuse in
 instance {V : Type} [AddCommGroup V] [Module ℝ V] {l : Submodule ℝ V} :
@@ -77,6 +80,7 @@ tree.
 
 Automatically recurses through structural wrappers, invoking `onTrace` only for
 `.trace` nodes. The `onTrace` callback receives the arguments of `.trace`:
+
 - the `TraceData` (class name, timing, etc.)
 - the trace node's header message
 - the trace node's child messages
@@ -227,7 +231,7 @@ partial def findTransitionFailures (permSuccesses : Std.HashSet String)
 /-- Within a synthesis trace, find failing `apply @Instance to Goal` nodes
 and their `isDefEq` transition failures.
 Once https://github.com/leanprover/lean4/pull/12699 is available, the `headerStr.contains "apply"`
-check can be replaced with ``td.cls == `Meta.synthInstance.apply``. -/
+check can be replaced with `` td.cls == `Meta.synthInstance.apply ``. -/
 partial def findSynthAppFailures (permSuccesses permFailures : Std.HashSet String)
     (msg : MessageData) : BaseIO (Array (MessageData × Array MessageData)) :=
   msg.visitTraceNodesM fun td header children => do
@@ -258,7 +262,7 @@ partial def findSynthFailures (permSuccesses permFailures : Std.HashSet String)
 
 /-- Collect instance names from successful `apply @Instance to Goal` trace nodes.
 Once https://github.com/leanprover/lean4/pull/12699 is available, the `headerStr.contains "apply"`
-check can be replaced with ``td.cls == `Meta.synthInstance.apply``. -/
+check can be replaced with `` td.cls == `Meta.synthInstance.apply ``. -/
 partial def findSynthSuccessApps (msg : MessageData) : BaseIO (Std.HashSet String) :=
   msg.visitTraceNodesM fun td header children => do
     if td.cls == `Meta.synthInstance then
@@ -373,8 +377,8 @@ def reportDefEqAbuse {m : Type → Type} [Monad m] [MonadLog m] [AddMessageConte
 
 /--
 > **WARNING:** `#defeq_abuse` is an experimental tool intended to assist with breaking
-changes to transparency handling. Its syntax may change at any time, and it may not behave as
-expected. Please report unexpected behavior [on Zulip](https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/backward.2EisDefEq.2ErespectTransparency/with/575685551).
+> changes to transparency handling. Its syntax may change at any time, and it may not behave as
+> expected. Please report unexpected behavior [on Zulip](https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/backward.2EisDefEq.2ErespectTransparency/with/575685551).
 
 `#defeq_abuse in tac` runs `tac` with `backward.isDefEq.respectTransparency` both `true` and
 `false`. If the tactic succeeds with `false` but fails with `true`, it identifies the specific
@@ -441,8 +445,8 @@ elab (name := defeqAbuse) "#defeq_abuse " "in " tac:tactic : tactic => withMainC
 
 /--
 > **WARNING:** `#defeq_abuse` is an experimental tool intended to assist with breaking
-changes to transparency handling. Its syntax may change at any time, and it may not behave as
-expected. Please report unexpected behavior [on Zulip](https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/backward.2EisDefEq.2ErespectTransparency/with/575685551).
+> changes to transparency handling. Its syntax may change at any time, and it may not behave as
+> expected. Please report unexpected behavior [on Zulip](https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/backward.2EisDefEq.2ErespectTransparency/with/575685551).
 
 `#defeq_abuse in cmd` runs `cmd` with `backward.isDefEq.respectTransparency` both `true` and
 `false`. If the command succeeds with `false` but fails with `true`, it identifies the specific

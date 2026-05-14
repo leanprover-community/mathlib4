@@ -24,6 +24,7 @@ subgroup of `G` into itself (e.g., `f = fun g ↦ g ^ n` when `G` is commutative
 
 If there is a finite subset `s : Set G` and there exists a "height" function `h : G → ℝ`
 and constants `a, b, c : ℝ` such that
+
 * `s` surjects onto the quotient `G ⧸ f(G)`,
 * for all `g ∈ s` and `x : G`, `h x ≤ a * h (g * x) + c`,
 * for all `x : G`, `h (f x) ≥ b * h x - c`,
@@ -46,7 +47,7 @@ This last version is one of the main ingredients of the standard proof of the
 ### Implementation note
 
 Replacing `ℝ` by an ordered field (`{R : Type*} [LinearOrder R] [Field R] [IsOrderedRing R]`)
-works, but makes the type check quite slow (and `to_additive` needs some  help...).
+works, but makes the type check quite slow (and `to_additive` needs some help...).
 As the application(s) work with `ℝ`-valued height functions, we think that generalizing
 is not really worth the trouble.
 -/
@@ -91,6 +92,7 @@ theorem Group.fg_of_descent {G : Type*} [Group G] {f : G →* G} (hf : ∀ U : S
 open Subgroup QuotientGroup in
 /--
 If `G` is a commutative group and `n : ℕ`, `h : G → ℝ` satisfy
+
 * `G / G ^ n` is finite,
 * for all `g x : G`, `h x ≤ a * h (g * x) + c g`,
 * for all `x : G`, `h (x ^ n) ≥ b * h x - c₀`,
@@ -99,6 +101,7 @@ If `G` is a commutative group and `n : ℕ`, `h : G → ℝ` satisfy
 where `0 ≤ a < b` and `c₀` are real numbers, `c : G → ℝ`, then `G` is finitely generated.
 -/
 @[to_additive /-- If `G` is a commutative additive group and `n : ℕ`, `h : G → ℝ` satisfy
+
 * `G / n • G` is finite,
 * for all `g x : G`, `h x ≤ a * h (g + x) + c g`,
 * for all `x : G`, `h (n • x) ≥ b * h x - c₀`,
@@ -128,6 +131,7 @@ theorem CommGroup.fg_of_descent {G : Type*} [CommGroup G] {n : ℕ} {h : G → �
 
 /--
 If `G` is a commutative group and `n : ℕ`, `h : G → ℝ` satisfy
+
 * `G / G ^ 2` is finite,
 * `0 ≤ h x` for all `x : G`,
 * there is `C : ℝ` such that for all `x y : G`, `|h (x * y) + h(x / y) - 2 * (h x + h y)| ≤ C`,
@@ -136,6 +140,7 @@ If `G` is a commutative group and `n : ℕ`, `h : G → ℝ` satisfy
 then `G` is finitely generated.
 -/
 @[to_additive /-- If `G` is a commutative additive group and `n : ℕ`, `h : G → ℝ` satisfy
+
 * `G / 2 • G` is finite,
 * `0 ≤ h x` for all `x : G`,
 * there is `C : ℝ` such that for all `x y : G`, `|h (x + y) + h(x - y) - 2 * (h x + h y)| ≤ C`,

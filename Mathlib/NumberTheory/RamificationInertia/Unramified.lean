@@ -17,6 +17,7 @@ public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 We connect `Ideal.ramificationIdx` to the commutative algebra notion predicate of `IsUnramifiedAt`.
 
 ## Main result
+
 - `Algebra.isUnramifiedAt_iff_of_isDedekindDomain`:
   Let `R` be a domain of characteristic 0, finite rank over `ℤ`, `S ⊇ R` be a Dedekind domain
   that is a finite `R`-algebra. Let `p` be a prime of `S`, then `p` is unramified iff `e(p) = 1`.

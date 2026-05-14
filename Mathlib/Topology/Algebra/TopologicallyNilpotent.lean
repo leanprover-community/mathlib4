@@ -55,7 +55,7 @@ variable {R S : Type*} [TopologicalSpace R] [MonoidWithZero R]
   [MonoidWithZero S] [TopologicalSpace S]
 
 /-- The image of a topologically nilpotent element under a continuous morphism
-  is topologically nilpotent -/
+is topologically nilpotent -/
 theorem map {F : Type*} [FunLike F R S] [MonoidWithZeroHomClass F R S]
     {φ : F} (hφ : Continuous φ) {a : R} (ha : IsTopologicallyNilpotent a) :
     IsTopologicallyNilpotent (φ a) := by
@@ -87,7 +87,7 @@ section Ring
 variable {R : Type*} [TopologicalSpace R] [Ring R]
 
 /-- If `a` and `b` commute and `a` is topologically nilpotent,
-  then `a * b` is topologically nilpotent. -/
+then `a * b` is topologically nilpotent. -/
 theorem mul_right_of_commute [IsLinearTopology Rᵐᵒᵖ R]
     {a b : R} (ha : IsTopologicallyNilpotent a) (hab : Commute a b) :
     IsTopologicallyNilpotent (a * b) := by
@@ -95,7 +95,7 @@ theorem mul_right_of_commute [IsLinearTopology Rᵐᵒᵖ R]
   exact IsLinearTopology.tendsto_mul_zero_of_left _ _ ha
 
 /-- If `a` and `b` commute and `b` is topologically nilpotent,
-  then `a * b` is topologically nilpotent. -/
+then `a * b` is topologically nilpotent. -/
 theorem mul_left_of_commute [IsLinearTopology R R] {a b : R}
     (hb : IsTopologicallyNilpotent b) (hab : Commute a b) :
     IsTopologicallyNilpotent (a * b) := by
@@ -103,7 +103,7 @@ theorem mul_left_of_commute [IsLinearTopology R R] {a b : R}
   exact IsLinearTopology.tendsto_mul_zero_of_right _ _ hb
 
 /-- If `a` and `b` are topologically nilpotent and commute,
-  then `a + b` is topologically nilpotent. -/
+then `a + b` is topologically nilpotent. -/
 theorem add_of_commute [IsLinearTopology R R] {a b : R}
     (ha : IsTopologicallyNilpotent a) (hb : IsTopologicallyNilpotent b) (h : Commute a b) :
     IsTopologicallyNilpotent (a + b) := by

@@ -237,7 +237,7 @@ theorem pos_iff_ne_zero {o : OrderType} : 0 < o ↔ o ≠ 0 where
     exact ⟨⟨Function.Embedding.ofIsEmpty, nofun⟩, fun ⟨f⟩ ↦ IsEmpty.elim inferInstance f.toFun⟩
 
 /-- The universe lift operation on order types. You can specify the universes explicitly with
-  `lift.{u, v} : OrderType.{v} → OrderType.{max v u}` -/
+`lift.{u, v} : OrderType.{v} → OrderType.{max v u}` -/
 @[pp_with_univ]
 def lift (o : OrderType.{v}) : OrderType.{max v u} :=
   o.liftOn (fun α _ ↦ type (ULift α)) fun _α _ _β _ e ↦

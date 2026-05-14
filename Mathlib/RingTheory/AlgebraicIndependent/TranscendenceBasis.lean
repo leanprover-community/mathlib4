@@ -28,6 +28,7 @@ This file defines the transcendence basis as a maximal algebraically independent
 * [Stacks: Transcendence](https://stacks.math.columbia.edu/tag/030D)
 
 ## Tags
+
 transcendence basis, transcendence degree, transcendence
 
 -/

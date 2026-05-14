@@ -72,9 +72,9 @@ variable {μ : ∀ i, Measure (X i)} [DecidableEq δ]
 variable {s t : Finset δ} {f : (∀ i, X i) → ℝ≥0∞} {x : ∀ i, X i}
 
 /-- Integrate `f(x₁,…,xₙ)` over all variables `xᵢ` where `i ∈ s`. Return a function in the
-  remaining variables (it will be constant in the `xᵢ` for `i ∈ s`).
-  This is the marginal distribution of all variables not in `s` when the considered measure
-  is the product measure. -/
+remaining variables (it will be constant in the `xᵢ` for `i ∈ s`).
+This is the marginal distribution of all variables not in `s` when the considered measure
+is the product measure. -/
 def lmarginal (μ : ∀ i, Measure (X i)) (s : Finset δ) (f : (∀ i, X i) → ℝ≥0∞)
     (x : ∀ i, X i) : ℝ≥0∞ :=
   ∫⁻ y : ∀ i : s, X i, f (updateFinset x s y) ∂Measure.pi fun i : s => μ i

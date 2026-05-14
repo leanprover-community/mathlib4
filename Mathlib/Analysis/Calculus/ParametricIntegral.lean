@@ -22,7 +22,6 @@ to guarantee that `f` is continuous using the dominated convergence theorem. In 
 we want to express the derivative of `f` as the integral of the derivative of `F` with respect
 to `x`.
 
-
 ## Main results
 
 As explained above, all results express the derivative of a parametric integral as the integral of
@@ -31,6 +30,7 @@ derivative, especially Fréchet derivatives vs elementary derivative of function
 variable.
 
 * `hasFDerivAt_integral_of_dominated_loc_of_lip`: this version assumes that
+
   - `F x` is ae-measurable for x near `x₀`,
   - `F x₀` is integrable,
   - `fun x ↦ F x a` has derivative `F' a : H →L[ℝ] E` at `x₀` which is ae-measurable,
@@ -52,6 +52,7 @@ assume `H = ℝ` or `H = ℂ` and use the high-school derivative `deriv` instead
 We also provide versions of these theorems for set integrals.
 
 ## Tags
+
 integral, derivative
 -/
 

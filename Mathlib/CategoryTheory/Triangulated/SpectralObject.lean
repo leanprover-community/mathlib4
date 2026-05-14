@@ -16,6 +16,7 @@ In this file, we introduce the category `SpectralObject C ι` of spectral
 objects in a pretriangulated category `C` indexed by the category `ι`.
 
 ## TODO (@joelriou)
+
 * construct the spectral object indexed by `WithTop (WithBot ℤ)` consisting
   of all truncations of an object of a triangulated category equipped with a t-structure
 * define a similar notion of spectral objects in abelian categories, show that
@@ -24,6 +25,7 @@ objects in a pretriangulated category `C` indexed by the category `ι`.
 * construct the spectral sequence attached to a spectral object in an abelian category
 
 ## References
+
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*, II.4][verdier1996]
 
 -/

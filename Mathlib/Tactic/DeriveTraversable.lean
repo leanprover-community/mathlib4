@@ -82,11 +82,13 @@ def mapConstructor (c n : Name) (f α β : Expr) (args₀ : List Expr)
   mkAppOptM c ((args₀ ++ args').map some).toArray >>= m.assign
 
 /-- Makes a `match` expression corresponding to the application of `casesOn` like:
+
 ```lean
 match (motive := motive) indices₁, indices₂, .., (val : type.{univs} params₁ params₂ ..) with
 | _, _, .., ctor₁ fields₁₁ fields₁₂ .. => rhss ctor₁ [fields₁₁, fields₁₂, ..]
 | _, _, .., ctor₂ fields₂₁ fields₂₂ .. => rhss ctor₂ [fields₂₁, fields₂₂, ..]
 ```
+
 This is convenient to make a definition with equation lemmas. -/
 def mkCasesOnMatch (type : Name) (levels : List Level) (params : List Expr) (motive : Expr)
     (indices : List Expr) (val : Expr)
@@ -332,7 +334,7 @@ partial def nestedTraverse (f v t : Expr) : TermElabM Expr := do
 
 /--
 For a sum type `inductive Foo (α : Type) | foo1 : List α → ℕ → Foo α | ...`
-``traverseField `Foo f `α `(x : List α)`` synthesizes
+`` traverseField `Foo f `α `(x : List α) `` synthesizes
 `traverse f x` as part of traversing `foo1`. -/
 def traverseField (n : Name) (cl f v e : Expr) : TermElabM (Bool × Expr) := do
   let t ← whnf (← inferType e)
@@ -351,7 +353,7 @@ def traverseField (n : Name) (cl f v e : Expr) : TermElabM (Bool × Expr) := do
 
 /--
 For a sum type `inductive Foo (α : Type) | foo1 : List α → ℕ → Foo α | ...`
-``traverseConstructor `foo1 `Foo applInst f `α `β [`(x : List α), `(y : ℕ)]``
+`` traverseConstructor `foo1 `Foo applInst f `α `β [`(x : List α), `(y : ℕ)] ``
 synthesizes `foo1 <$> traverse f x <*> pure y`. -/
 def traverseConstructor (c n : Name) (applInst f α β : Expr) (args₀ : List Expr)
     (args₁ : List (Bool × Expr)) (m : MVarId) : TermElabM Unit := do
@@ -368,8 +370,7 @@ def traverseConstructor (c n : Name) (applInst f α β : Expr) (args₀ : List E
       (fun e garg => mkFunUnit garg >>= fun e' => mkAppM ``Seq.seq #[e, e']) constr'
   m.assign r
 where
-  /-- `mkFunCtor ctor [(true, (arg₁ : m type₁)), (false, (arg₂ : type₂)), (true, (arg₃ : m type₃)),
-  (false, (arg₄ : type₄))]` makes `fun (x₁ : type₁) (x₃ : type₃) => ctor x₁ arg₂ x₃ arg₄`. -/
+  /-- `mkFunCtor ctor [(true, (arg₁ : m type₁)), (false, (arg₂ : type₂)), (true, (arg₃ : m type₃)), (false, (arg₄ : type₄))]` makes `fun (x₁ : type₁) (x₃ : type₃) => ctor x₁ arg₂ x₃ arg₄`. -/
   mkFunCtor (c : Name) (args : List (Bool × Expr)) (fvars : Array Expr := #[])
       (aargs : Array Expr := #[]) : TermElabM Expr := do
     match args with
@@ -453,6 +454,7 @@ def simpFunctorGoal (m : MVarId) (s : Simp.Context) (simprocs : Simp.SimprocsArr
     fvarIdsToSimp stats
 /--
 Run the following tactic:
+
 ```lean
 intro _ .. x
 dsimp only [Traversable.traverse, Functor.map]

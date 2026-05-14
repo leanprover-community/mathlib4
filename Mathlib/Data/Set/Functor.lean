@@ -137,6 +137,7 @@ theorem image_coe_eq_restrict_image {δ : Type*} {f : α → δ} : f '' γ = β.
 end with_instance
 
 /-! ### Coercion applying functoriality for `Subtype.val`
+
 The `Monad` instance gives a coercion using the internal function `Lean.Internal.coeM`.
 In practice this is only used for applying the `Set` functor to `Subtype.val`,
 as was defined in `Data.Set.Notation`. -/

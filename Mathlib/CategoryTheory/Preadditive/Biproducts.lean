@@ -723,10 +723,12 @@ theorem Biprod.ofComponents_comp {X₁ X₂ Y₁ Y₂ Z₁ Z₂ : C} (f₁₁ : 
       biprod.inr_fst_assoc, biprod.inr_snd_assoc, comp_zero, zero_comp, Category.assoc]
 
 /-- The unipotent upper triangular matrix
+
 ```
 (1 r)
 (0 1)
 ```
+
 as an isomorphism.
 -/
 @[simps]
@@ -735,10 +737,12 @@ def Biprod.unipotentUpper {X₁ X₂ : C} (r : X₁ ⟶ X₂) : X₁ ⊞ X₂ �
   inv := Biprod.ofComponents (𝟙 _) (-r) 0 (𝟙 _)
 
 /-- The unipotent lower triangular matrix
+
 ```
 (1 0)
 (r 1)
 ```
+
 as an isomorphism.
 -/
 @[simps]

@@ -21,6 +21,7 @@ public import Mathlib.Tactic.Positivity
 We define rank one valuations.
 
 ## Main Definitions
+
 * `RankOne` : A valuation has rank one if it is nontrivial and its image (defined as
   `MonoidWithZeroHom.valueGroup₀ v`) is contained in `ℝ≥0`. Note that this class includes the data
   of an inclusion morphism `MonoidWithZeroHom.valueGroup₀ v → ℝ≥0`.
@@ -52,7 +53,7 @@ class RankLeOne (v : Valuation R Γ₀) where
   strictMono' : StrictMono hom'
 
 /-- A valuation has rank one if it is nontrivial and its image is contained in `ℝ≥0`.
-  Note that this class includes the data of an inclusion morphism `Γ₀ → ℝ≥0`. -/
+Note that this class includes the data of an inclusion morphism `Γ₀ → ℝ≥0`. -/
 class RankOne (v : Valuation R Γ₀) extends RankLeOne v, Valuation.IsNontrivial v
 
 open WithZero
@@ -105,7 +106,7 @@ lemma strictMono : StrictMono (hom v) := hv.strictMono'
 lemma nontrivial : ∃ r : R, v r ≠ 0 ∧ v r ≠ 1 := IsNontrivial.exists_val_nontrivial
 
 /-- If `v` is a rank one valuation and `x : Γ₀` has image `0` under `RankOne.hom v`, then
-  `x = 0`. -/
+`x = 0`. -/
 theorem zero_of_hom_zero {x : ValueGroup₀ v} (hx : hom v x = 0) : x = 0 := by
   refine (eq_of_le_of_not_lt (zero_le' (a := x)) fun h_lt ↦ ?_).symm
   have hs := strictMono v h_lt
@@ -113,7 +114,7 @@ theorem zero_of_hom_zero {x : ValueGroup₀ v} (hx : hom v x = 0) : x = 0 := by
   exact hs.false
 
 /-- If `v` is a rank one valuation, then `x : Γ₀` has image `0` under `RankOne.hom v` if and
-  only if `x = 0`. -/
+only if `x = 0`. -/
 theorem hom_eq_zero_iff {x : ValueGroup₀ v} : hom v x = 0 ↔ x = 0 :=
   ⟨fun h ↦ zero_of_hom_zero v h, fun h ↦ by rw [h, map_zero]⟩
 

@@ -45,6 +45,7 @@ algorithm.
 * `field [t₁, ..., tₙ]` provides terms `t₁`, ..., `tₙ` to the discharger for nonzeroness proofs.
 
 Examples:
+
 ```
 example {x y : ℚ} (hx : x + y ≠ 0) : x / (x + y) + y / (x + y) = 1 := by field
 example {a b : ℝ} (ha : a ≠ 0) : a / (a * b) - 1 / b = 0 := by field

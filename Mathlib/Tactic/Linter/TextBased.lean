@@ -26,6 +26,7 @@ This file defines various mathlib linters which are based on reading the source 
 In practice, all such linters check for code style issues.
 
 Currently, this file contains linters checking
+
 - if the string "adaptation note" is used instead of the command `#adaptation_note`,
 - for lines with windows line endings,
 - for lines containing trailing whitespace,
@@ -63,6 +64,7 @@ inductive StyleError where
   /-- A unicode character was used that isn't allowed -/
   | unwantedUnicode (c : Char)
   /-- Unicode variant selectors are used in a bad way.
+  
   * `s` is the string containing the unicode character and any unicode variant selector following it
   * `selector` is the desired selector or `none`
   -/
@@ -204,7 +206,7 @@ This should be the inverse of `fun ctx ↦ outputMessage ctx .exceptionsFile`
 Used for, e.g., parsing the "exceptions" file.
 
 Need to ensure (see unit tests in `MathlibTest/LintStyle.lean`) that
-  `∀ (ec : ErrorContext), (parse?_errorContext <| outputMessage ec .exceptionsFile) = some ec`
+`∀ (ec : ErrorContext), (parse?_errorContext <| outputMessage ec .exceptionsFile) = some ec`
 -/
 def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
   let parts := line.splitToList (· == ' ')

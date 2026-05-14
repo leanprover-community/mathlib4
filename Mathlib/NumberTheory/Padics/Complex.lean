@@ -19,6 +19,7 @@ an algebraic closure of `ℚ_[p]`. We endow `ℂ_[p]` with both a normed field a
 structure, induced by the unique extension of the `p`-adic norm to `ℂ_[p]`.
 
 ## Main Definitions
+
 * `PadicAlgCl p` : the algebraic closure of `ℚ_[p]`.
 * `PadicComplex p` : the type of `p`-adic complex numbers, denoted by `ℂ_[p]`.
 * `PadicComplexInt p` : the ring of integers of `ℂ_[p]`.
@@ -245,7 +246,7 @@ instance isAlgClosed : IsAlgClosed ℂ_[p] :=
 end PadicComplex
 
 /-- We define `𝓞_ℂ_[p]` as the valuation subring of `ℂ_[p]`, consisting of those elements with
-  valuation `≤ 1`. -/
+valuation `≤ 1`. -/
 def PadicComplexInt : ValuationSubring ℂ_[p] := (PadicComplex.valued p).v.valuationSubring
 
 /-- We define `𝓞_ℂ_[p]` as the subring of elements of `ℂ_[p]` with valuation `≤ 1`. -/

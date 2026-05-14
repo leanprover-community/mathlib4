@@ -14,6 +14,7 @@ public import Mathlib.Algebra.ContinuedFractions.Translations
 
 Given a generalized continued fraction `g`, for all `n ≥ 1`, we prove that the continuants (`conts`)
 function indeed satisfies the following recurrences:
+
 - `Aₙ = bₙ * Aₙ₋₁ + aₙ * Aₙ₋₂`, and
 - `Bₙ = bₙ * Bₙ₋₁ + aₙ * Bₙ₋₂`.
 -/

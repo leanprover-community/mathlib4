@@ -44,7 +44,9 @@ F.obj j     | p
    v    g   v
   c.pt ---> Y
 ```
+
 This is constructed by transfinite induction on `j`:
+
 * When `j = ⊥`, this is `f`;
 * In order to pass from `j` to `Order.succ j`, we use the assumption that
   `F.obj j ⟶ F.obj (Order.succ j)` has the left lifting property with respect to `p`;
@@ -111,6 +113,7 @@ lemma w : f ≫ p = c.ι.app ⊥ ≫ g := by
 
 /--
 Given `sq' : SqStruct c p f g j`, this is the commutative square
+
 ```
                sq'.f'
 F.obj j --------------------> X

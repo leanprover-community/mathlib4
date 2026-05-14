@@ -13,6 +13,7 @@ public import Mathlib.RingTheory.Regular.RegularSequence
 # `RingTheory.Sequence.IsWeaklyRegular` is stable under flat base change
 
 ## Main results
+
 * `RingTheory.Sequence.IsWeaklyRegular.of_flat_of_isBaseChange`: Let `R` be a commutative ring,
   `M` be an `R`-module, `S` be a flat `R`-algebra, `N` be the base change of `M` to `S`.
   If `[r₁, …, rₙ]` is a weakly regular `M`-sequence, then its image in `N` is a weakly regular
@@ -29,8 +30,8 @@ variable {R S M N : Type*} [CommRing R] [CommRing S] [Algebra R S]
   [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N] [Module S N] [IsScalarTower R S N]
 
 /-- Let `R` be a commutative ring, `M` be an `R`-module, `S` be a flat `R`-algebra, `N` be the base
-  change of `M` to `S`. If `[r₁, …, rₙ]` is a weakly regular `M`-sequence, then its image in `N` is
-  a weakly regular `N`-sequence. -/
+change of `M` to `S`. If `[r₁, …, rₙ]` is a weakly regular `M`-sequence, then its image in `N` is
+a weakly regular `N`-sequence. -/
 theorem IsWeaklyRegular.of_flat_of_isBaseChange [Flat R S] {f : M →ₗ[R] N} (hf : IsBaseChange S f)
     {rs : List R} (reg : IsWeaklyRegular M rs) : IsWeaklyRegular N (rs.map (algebraMap R S)) := by
   induction rs generalizing M N with
@@ -81,8 +82,8 @@ theorem IsWeaklyRegular.isRegular_of_isLocalization_of_mem
 variable {S} [FaithfullyFlat R S]
 
 /-- Let `R` be a commutative ring, `M` be an `R`-module, `S` be a faithfully flat `R`-algebra,
-  `N` be the base change of `M` to `S`. If `[r₁, …, rₙ]` is a regular `M`-sequence, then its image
-  in `N` is a regular `N`-sequence. -/
+`N` be the base change of `M` to `S`. If `[r₁, …, rₙ]` is a regular `M`-sequence, then its image
+in `N` is a regular `N`-sequence. -/
 theorem IsRegular.of_faithfullyFlat_of_isBaseChange {f : M →ₗ[R] N} (hf : IsBaseChange S f)
     {rs : List R} (reg : IsRegular M rs) : IsRegular N (rs.map (algebraMap R S)) := by
   refine ⟨reg.1.of_flat_of_isBaseChange hf, ?_⟩

@@ -21,11 +21,13 @@ Similarly, every nonzero fractional ideal `I` of a Dedekind domain `R` can be fa
 prove some of its properties. If `I = 0`, we define `val_v(I) = 0`.
 
 ## Main definitions
+
 - `FractionalIdeal.count` : If `I` is a nonzero fractional ideal, `a ∈ R`, and `J` is an ideal of
   `R` such that `I = a⁻¹J`, then we define `val_v(I)` as `(val_v(J) - val_v(a))`. If `I = 0`, we
   set `val_v(I) = 0`.
 
 ## Main results
+
 - `Ideal.finite_factors` : Only finitely many maximal ideals of `R` divide a given nonzero ideal.
 - `Ideal.finprod_heightOneSpectrum_factorization` : The ideal `I` equals the finprod
   `∏_v v^(val_v(I))`, where `val_v(I)` denotes the multiplicity of `v` in the factorization of `I`
@@ -45,10 +47,12 @@ prove some of its properties. If `I = 0`, we define `val_v(I) = 0`.
   in an extension is the product of the primes over `p` to the power the ramification index.
 
 ## Implementation notes
+
 Since we are only interested in the factorization of nonzero fractional ideals, we define
 `val_v(0) = 0` so that every `val_v` is in `ℤ` and we can avoid having to use `WithTop ℤ`.
 
 ## Tags
+
 dedekind domain, fractional ideal, ideal, factorization
 -/
 
@@ -68,7 +72,7 @@ variable [IsDedekindDomain R] (v : HeightOneSpectrum R)
 
 open scoped Classical in
 /-- Given a maximal ideal `v` and an ideal `I` of `R`, `maxPowDividing` returns the maximal
-  power of `v` dividing `I`. -/
+power of `v` dividing `I`. -/
 def IsDedekindDomain.HeightOneSpectrum.maxPowDividing (I : Ideal R) : Ideal R :=
   v.asIdeal ^ (Associates.mk v.asIdeal).count (Associates.mk I).factors
 
@@ -94,7 +98,7 @@ theorem Ideal.finite_factors {I : Ideal R} (hI : I ≠ 0) :
 
 open scoped Classical in
 /-- For every nonzero ideal `I` of `v`, there are finitely many maximal ideals `v` such that the
-  multiplicity of `v` in the factorization of `I`, denoted `val_v(I)`, is nonzero. -/
+multiplicity of `v` in the factorization of `I`, denoted `val_v(I)`, is nonzero. -/
 theorem Associates.finite_factors {I : Ideal R} (hI : I ≠ 0) :
     ∀ᶠ v : HeightOneSpectrum R in Filter.cofinite,
       ((Associates.mk v.asIdeal).count (Associates.mk I).factors : ℤ) = 0 := by
@@ -110,7 +114,7 @@ namespace Ideal
 
 open scoped Classical in
 /-- For every nonzero ideal `I` of `v`, there are finitely many maximal ideals `v` such that
-  `v^(val_v(I))` is not the unit ideal. -/
+`v^(val_v(I))` is not the unit ideal. -/
 @[fun_prop]
 theorem hasFiniteMulSupport {I : Ideal R} (hI : I ≠ 0) :
     HasFiniteMulSupport fun v : HeightOneSpectrum R ↦ v.maxPowDividing I :=

@@ -47,12 +47,14 @@ namespace Profinite
 
 /-- This is the key statement for the inductive proof of injectivity of light profinite spaces.
 Given a commutative square
+
 ```
 X >-f->  Y
 |g       |g'
 v        v
 S -f'->> T
 ```
+
 where `Y` is profinite, `S` is finite, `f` is injective and `f'` is surjective,
 there exists a diagonal map `k : Y → S` making the diagram commute.
 -/

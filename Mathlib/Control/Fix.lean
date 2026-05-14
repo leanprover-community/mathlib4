@@ -60,8 +60,8 @@ def fixAux {p : ℕ → Prop} (i : Nat.Upto p) (g : ∀ j : Nat.Upto p, i < j �
 If `f` is a continuous function (according to complete partial orders),
 it satisfies the equations:
 
-  1. `fix f = f (fix f)`          (is a fixed point)
-  2. `∀ X, f X ≤ X → fix f ≤ X`   (least fixed point)
+1. `fix f = f (fix f)` (is a fixed point)
+2. `∀ X, f X ≤ X → fix f ≤ X` (least fixed point)
 -/
 protected def fix (x : α) : Part (β x) :=
   (Part.assert (∃ i, (Fix.approx f i x).Dom)) fun h =>

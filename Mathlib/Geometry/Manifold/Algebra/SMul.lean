@@ -18,6 +18,7 @@ We also provide `ContMDiffSMul` instances for scalar multiplication in normed sp
 the action of the monoid `E →L[𝕜] E` of continuous linear maps on any normed space `E`.
 
 See also:
+
 * `ContMDiffMul I n G` for continuous differentiability of multiplication `G × G → G` in a single
   type `G`,
 * `ContinuousSMul G M` for continuity of an action `G × M → M`.

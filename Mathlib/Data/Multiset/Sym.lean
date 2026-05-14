@@ -20,10 +20,12 @@ unordered n-tuples from a given multiset. These are multiset versions of `Nat.mu
 ## TODO
 
 * Once `List.Perm.sym` is defined, define
+
   ```lean
   protected def sym (n : Nat) (m : Multiset α) : Multiset (Sym α n) :=
     m.liftOn (fun xs => xs.sym n) (List.perm.sym n)
   ```
+
   and then use this to remove the `DecidableEq` assumption from `Finset.sym`.
 
 * `theorem injective_sym2 : Function.Injective (Multiset.sym2 : Multiset α → _)`

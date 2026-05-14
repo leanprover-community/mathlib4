@@ -65,7 +65,7 @@ private theorem sum_exp {n : ℕ} {k : ℤ} (hn : n ≠ 0) (hk : ¬ (2 * n : ℤ
       Complex.exp_int_mul, Complex.exp_pi_mul_I]
 
 /-- Weighted sum of `P (x)` where `x` goes over `cos ((2 * i + 1) / (2 * n) * π)` for
-  `0 ≤ i < n`. -/
+`0 ≤ i < n`. -/
 noncomputable def sumZeroes (n : ℕ) (P : ℝ[X]) : ℝ :=
     (π / n) * ∑ i ∈ range n, P.eval (cos ((2 * i + 1) / (2 * n) * π))
 
@@ -105,8 +105,8 @@ theorem sumZeroes_T_of_not_dvd {n : ℕ} {k : ℤ} (hk : ¬ (2 * n : ℤ) ∣ k)
     show (z ^ 2 - 1 ≠ 0) ∧ (1 - z ^ 2 ≠ 0) by grind [exp_sub_one_ne_zero]]
 
 /-- The integral of a polynomial of degree `< 2 * n` with respect to the weight function
-  `√(1 - x ^ 2)⁻¹` supported on `[-1, 1]` is equal to `π` times the average of its values
-  on the points `cos ((2 * i + 1) / (2 * n) * π)` for `0 ≤ i < n`. -/
+`√(1 - x ^ 2)⁻¹` supported on `[-1, 1]` is equal to `π` times the average of its values
+on the points `cos ((2 * i + 1) / (2 * n) * π)` for `0 ≤ i < n`. -/
 theorem integral_eq_sumZeroes {n : ℕ} {P : ℝ[X]} (hn : n ≠ 0) (hP : P.degree < 2 * n) :
     ∫ x, P.eval x ∂measureT = sumZeroes n P := by
   have hmem : P ∈ degreeLT ℝ (2 * n) := by rwa [mem_degreeLT]

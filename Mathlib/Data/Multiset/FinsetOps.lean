@@ -32,8 +32,8 @@ variable {α : Type*} [DecidableEq α] {s : Multiset α}
 
 
 /-- `ndinsert a s` is the lift of the list `insert` operation. This operation
-  does not respect multiplicities, unlike `cons`, but it is suitable as
-  an insert operation on `Finset`. -/
+does not respect multiplicities, unlike `cons`, but it is suitable as
+an insert operation on `Finset`. -/
 def ndinsert (a : α) (s : Multiset α) : Multiset α :=
   Quot.liftOn s (fun l => (l.insert a : Multiset α)) fun _ _ p => Quot.sound (p.insert a)
 
@@ -119,9 +119,9 @@ theorem disjoint_ndinsert_right {a : α} {s t : Multiset α} :
 
 
 /-- `ndunion s t` is the lift of the list `union` operation. This operation
-  does not respect multiplicities, unlike `s ∪ t`, but it is suitable as
-  a union operation on `Finset`. (`s ∪ t` would also work as a union operation
-  on finset, but this is more efficient.) -/
+does not respect multiplicities, unlike `s ∪ t`, but it is suitable as
+a union operation on `Finset`. (`s ∪ t` would also work as a union operation
+on finset, but this is more efficient.) -/
 def ndunion (s t : Multiset α) : Multiset α :=
   (Quotient.liftOn₂ s t fun l₁ l₂ => (l₁.union l₂ : Multiset α)) fun _ _ _ _ p₁ p₂ =>
     Quot.sound <| p₁.union p₂
@@ -189,9 +189,9 @@ theorem Subset.ndunion_eq_right {s t : Multiset α} (h : s ⊆ t) : s.ndunion t 
 
 
 /-- `ndinter s t` is the lift of the list `∩` operation. This operation
-  does not respect multiplicities, unlike `s ∩ t`, but it is suitable as
-  an intersection operation on `Finset`. (`s ∩ t` would also work as an intersection operation
-  on finset, but this is more efficient.) -/
+does not respect multiplicities, unlike `s ∩ t`, but it is suitable as
+an intersection operation on `Finset`. (`s ∩ t` would also work as an intersection operation
+on finset, but this is more efficient.) -/
 def ndinter (s t : Multiset α) : Multiset α :=
   filter (· ∈ t) s
 

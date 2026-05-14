@@ -134,10 +134,10 @@ lemma addContent_union' (hs : s ∈ C) (ht : t ∈ C) (hst : s ∪ t ∈ C) (h_d
   · simp [Fin.univ_castSuccEmb, add_comm]
   · fin_cases i <;> simpa
   · #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
-    (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed all four
-    cases. It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in
-    the new canonicalizer; a minimization would help. The original proof was:
-    `fin_cases i <;> fin_cases j <;> grind` -/
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed all four
+  cases. It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in
+  the new canonicalizer; a minimization would help. The original proof was:
+  `fin_cases i <;> fin_cases j <;> grind` -/
     fin_cases i <;> fin_cases j
     · grind
     · assumption
@@ -303,7 +303,7 @@ lemma AddContent.supClosure_apply_of_mem (hC : IsSetSemiring C)
 variable [PartialOrder G] [CanonicallyOrderedAdd G]
 
 /-- For an `m : addContent C` on a `SetSemiring C`, if `I` is a `Finset` of pairwise disjoint
-  sets in `C` and `⋃₀ I ⊆ t` for `t ∈ C`, then `∑ s ∈ I, m s ≤ m t`. -/
+sets in `C` and `⋃₀ I ⊆ t` for `t ∈ C`, then `∑ s ∈ I, m s ≤ m t`. -/
 lemma sum_addContent_le_of_subset (hC : IsSetSemiring C)
     (h_ss : ↑I ⊆ C) (h_dis : PairwiseDisjoint (I : Set (Set α)) id)
     (ht : t ∈ C) (hJt : ∀ s ∈ I, s ⊆ t) :

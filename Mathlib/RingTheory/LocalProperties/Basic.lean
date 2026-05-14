@@ -61,13 +61,13 @@ section CommRing
 variable (P : ∀ (R : Type u) [CommRing R], Prop)
 
 /-- A property `P` of comm rings is said to be preserved by localization
-  if `P` holds for `M⁻¹R` whenever `P` holds for `R`. -/
+if `P` holds for `M⁻¹R` whenever `P` holds for `R`. -/
 def LocalizationPreserves : Prop :=
   ∀ {R : Type u} [hR : CommRing R] (M : Submonoid R) (S : Type u) [hS : CommRing S] [Algebra R S]
     [IsLocalization M S], @P R hR → @P S hS
 
 /-- A property `P` of comm rings satisfies `OfLocalizationMaximal`
-  if `P` holds for `R` whenever `P` holds for `Rₘ` for all maximal ideal `m`. -/
+if `P` holds for `R` whenever `P` holds for `Rₘ` for all maximal ideal `m`. -/
 def OfLocalizationMaximal : Prop :=
   ∀ (R : Type u) [CommRing R],
     (∀ (J : Ideal R) (_ : J.IsMaximal), P (Localization.AtPrime J)) → P R

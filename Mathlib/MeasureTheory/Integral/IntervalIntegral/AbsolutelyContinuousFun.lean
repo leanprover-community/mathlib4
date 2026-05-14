@@ -14,6 +14,7 @@ public import Mathlib.MeasureTheory.Integral.IntervalIntegral.LebesgueDifferenti
 # Fundamental theorem of calculus and integration by parts for absolutely continuous functions
 
 This file proves that:
+
 * `AbsolutelyContinuousOnInterval.integral_deriv_eq_sub`: If `f` is absolutely continuous on
   `uIcc a b`, then *Fundamental Theorem of Calculus* holds for `f'` on `a..b`, i.e.
   `∫ (x : ℝ) in a..b, deriv f x = f b - f a`.
@@ -23,6 +24,7 @@ This file proves that:
   `∫ x in a..b, f x * deriv g x = f b * g b - f a * g a - ∫ x in a..b, deriv f x * g x`.
 
 ## Tags
+
 absolutely continuous, fundamental theorem of calculus, integration by parts
 -/
 

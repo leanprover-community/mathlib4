@@ -135,10 +135,10 @@ instance.-/]
 def homMk {A B : Grp C} (f : A.X ⟶ B.X) [IsMonHom f] : A ⟶ B :=
   homMk' (.mk f)
 
-/-- Construct a morphism `Grp.mk G ⟶ Grp.mk H` from a  map `f : G ⟶ H` and a `IsMonHom f`
+/-- Construct a morphism `Grp.mk G ⟶ Grp.mk H` from a map `f : G ⟶ H` and a `IsMonHom f`
 instance. -/
 @[to_additive (attr := simps!)
-/-- Construct a morphism `AddGrp.mk G ⟶ AddGrp.mk H` from a  map `f : G ⟶ H` and a `IsAddMonHom f`
+/-- Construct a morphism `AddGrp.mk G ⟶ AddGrp.mk H` from a map `f : G ⟶ H` and a `IsAddMonHom f`
 instance. -/]
 def ofHom {A B : C} [GrpObj A] [GrpObj B] (f : A ⟶ B) [IsMonHom f] : Grp.mk A ⟶ Grp.mk B :=
   Grp.homMk f

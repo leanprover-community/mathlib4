@@ -61,6 +61,7 @@ Finally, we prove the equality in the case in which both absolute continuity and
 In that case, `klDiv μ ν = ∫ x, llr μ ν x ∂μ + ν.real univ - μ.real univ` and similarly for
 the other terms. It is easy to see that it suffices to prove the equality of the integrals parts.
 Finally, the computation for the integral of the log-likelihood ratio is as follows:
+
 ```
 ∫ p, llr (μ ⊗ₘ κ) (ν ⊗ₘ η) p ∂(μ ⊗ₘ κ)
 _ = ∫ p, ((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) p).toReal * log ((∂μ ⊗ₘ κ/∂ν ⊗ₘ η) p).toReal ∂(ν ⊗ₘ η)

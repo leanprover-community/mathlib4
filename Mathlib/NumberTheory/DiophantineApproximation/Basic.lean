@@ -28,6 +28,7 @@ then $x/y$ must be a convergent of the continued fraction expansion of $\xi$.
 ## Main statements
 
 The main results are three variants of Dirichlet's approximation theorem:
+
 * `Real.exists_int_int_abs_mul_sub_le`, which states that for all real `ξ` and natural `0 < n`,
   there are integers `j` and `k` with `0 < k ≤ n` and `|k*ξ - j| ≤ 1/(n+1)`,
 * `Real.exists_nat_abs_mul_sub_round_le`, which replaces `j` by `round(k*ξ)` and uses
@@ -36,10 +37,12 @@ The main results are three variants of Dirichlet's approximation theorem:
   satisfying `|ξ - q| ≤ 1/((n+1)*q.den)` and `q.den ≤ n`,
 
 and
+
 * `Real.infinite_rat_abs_sub_lt_one_div_den_sq_of_irrational`, which states that
   for irrational `ξ`, the set `{q : ℚ | |ξ - q| < 1/q.den^2}` is infinite.
 
 We also show a converse,
+
 * `Rat.finite_rat_abs_sub_lt_one_div_den_sq`, which states that the set above is finite
   when `ξ` is a rational number.
 

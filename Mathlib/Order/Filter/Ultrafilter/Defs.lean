@@ -295,8 +295,8 @@ theorem exists_le (f : Filter α) [h : NeBot f] : ∃ u : Ultrafilter α, ↑u �
 alias _root_.Filter.exists_ultrafilter_le := exists_le
 
 /-- Construct an ultrafilter extending a given filter.
-  The ultrafilter lemma is the assertion that such a filter exists;
-  we use the axiom of choice to pick one. -/
+The ultrafilter lemma is the assertion that such a filter exists;
+we use the axiom of choice to pick one. -/
 noncomputable def of (f : Filter α) [NeBot f] : Ultrafilter α :=
   Classical.choose (exists_le f)
 

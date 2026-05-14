@@ -40,6 +40,7 @@ def indexOf (lt : α → α → Prop) [DecidableRel lt] (x : α) : Tree α → O
 
 /-- Retrieves an element uniquely determined by a `PosNum` from the tree,
 taking the following path to get to the element:
+
 - `bit0` - go to left child
 - `bit1` - go to right child
 - `PosNum.one` - retrieve from here -/

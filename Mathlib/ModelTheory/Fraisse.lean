@@ -96,18 +96,18 @@ variable {L}
 variable (K : Set (Bundled.{w} L.Structure))
 
 /-- A class `K` has the hereditary property when all finitely-generated structures that embed into
-  structures in `K` are also in `K`. -/
+structures in `K` are also in `K`. -/
 def Hereditary : Prop :=
   ∀ M : Bundled.{w} L.Structure, M ∈ K → L.age M ⊆ K
 
 /-- A class `K` has the joint embedding property when for every `M`, `N` in `K`, there is another
-  structure in `K` into which both `M` and `N` embed. -/
+structure in `K` into which both `M` and `N` embed. -/
 def JointEmbedding : Prop :=
   DirectedOn (fun M N : Bundled.{w} L.Structure => Nonempty (M ↪[L] N)) K
 
 /-- A class `K` has the amalgamation property when for any pair of embeddings of a structure `M` in
-  `K` into other structures in `K`, those two structures can be embedded into a fourth structure in
-  `K` such that the resulting square of embeddings commutes. -/
+`K` into other structures in `K`, those two structures can be embedded into a fourth structure in
+`K` such that the resulting square of embeddings commutes. -/
 def Amalgamation : Prop :=
   ∀ (M N P : Bundled.{w} L.Structure) (MN : M ↪[L] N) (MP : M ↪[L] P),
     M ∈ K → N ∈ K → P ∈ K → ∃ (Q : Bundled.{w} L.Structure) (NQ : N ↪[L] Q) (PQ : P ↪[L] Q),

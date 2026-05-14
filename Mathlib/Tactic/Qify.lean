@@ -16,6 +16,7 @@ public meta import Mathlib.Tactic.ToAdditive
 
 The `qify` tactic is used to shift propositions from `ℕ` or `ℤ` to `ℚ`.
 This is often useful since `ℚ` has well-behaved division.
+
 ```
 example (a b c x y z : ℕ) (h : ¬ x*y*z < 0) : c < a + 3*b := by
   qify
@@ -55,6 +56,7 @@ propositions concerning `q` will still be over `ℚ`. `qify` changes proposition
   type `· ≤ ·` or `· ∣ ·` will allow `push_cast` to do more work.
 
 Examples:
+
 ```
 example (a b c x y z : ℕ) (h : ¬ x*y*z < 0) : c < a + 3*b := by
   qify

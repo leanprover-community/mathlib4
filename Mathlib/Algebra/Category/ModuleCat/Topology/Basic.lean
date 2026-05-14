@@ -17,6 +17,7 @@ We define `TopModuleCat R`, the category of topological modules, and show that
 it has all limits and colimits.
 
 We also provide various adjunctions:
+
 - `TopModuleCat.withModuleTopologyAdj`:
   equipping the module topology is left adjoint to the forgetful functor into `ModuleCat R`.
 - `TopModuleCat.indiscreteAdj`:
@@ -25,6 +26,7 @@ We also provide various adjunctions:
   the free-forgetful adjunction between `TopModuleCat R` and `TopCat`.
 
 ## Future projects
+
 Show that the forgetful functor to `TopCat` preserves filtered colimits.
 -/
 

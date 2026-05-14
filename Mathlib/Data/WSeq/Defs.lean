@@ -36,7 +36,7 @@ def length (s : WSeq α) : Computation ℕ :=
     (0, s)
 
 /-- A weak sequence is finite if `toList s` terminates. Equivalently,
-  it is a finite number of `think` and `cons` applied to `nil`. -/
+it is a finite number of `think` and `cons` applied to `nil`. -/
 class IsFinite (s : WSeq α) : Prop where
   out : (toList s).Terminates
 
@@ -121,7 +121,7 @@ def indexesOf [DecidableEq α] (a : α) : WSeq α → WSeq ℕ :=
   findIndexes (Eq a)
 
 /-- `union s1 s2` is a weak sequence which interleaves `s1` and `s2` in
-  some order (nondeterministically). -/
+some order (nondeterministically). -/
 def union (s1 s2 : WSeq α) : WSeq α :=
   @Seq.corec (Option α) (WSeq α × WSeq α)
     (fun ⟨s1, s2⟩ =>
@@ -157,7 +157,7 @@ def take (s : WSeq α) (n : ℕ) : WSeq α :=
     (n, s)
 
 /-- Split the sequence at position `n` into a finite initial segment
-  and the weak sequence tail -/
+and the weak sequence tail -/
 def splitAt (s : WSeq α) (n : ℕ) : Computation (List α × WSeq α) :=
   @Computation.corec (List α × WSeq α) (ℕ × List α × WSeq α)
     (fun ⟨n, l, s⟩ =>
@@ -189,8 +189,8 @@ def all (s : WSeq α) (p : α → Bool) : Computation Bool :=
     s
 
 /-- Apply a function to the elements of the sequence to produce a sequence
-  of partial results. (There is no `scanr` because this would require
-  working from the end of the sequence, which may not exist.) -/
+of partial results. (There is no `scanr` because this would require
+working from the end of the sequence, which may not exist.) -/
 def scanl (f : α → β → α) (a : α) (s : WSeq β) : WSeq α :=
   cons a <|
     @Seq.corec (Option α) (α × WSeq β)
@@ -217,7 +217,7 @@ def inits (s : WSeq α) : WSeq (List α) :=
       (Batteries.DList.empty, s)
 
 /-- Like take, but does not wait for a result. Calculates `n` steps of
-  computation and returns the sequence computed so far -/
+computation and returns the sequence computed so far -/
 def collect (s : WSeq α) (n : ℕ) : List α :=
   (Seq.take n s).filterMap id
 

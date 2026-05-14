@@ -16,7 +16,7 @@ In a real normed space `E` we define `posTangentConeAt (s : Set E) (x : E)`.
 This would be the same as `tangentConeAt ℝ≥0 s x` if we had a theory of normed semifields.
 This set is used in the proof of Fermat's Theorem (see below), and can be used to formalize
 [Lagrange multipliers](https://en.wikipedia.org/wiki/Lagrange_multiplier) and/or
-[Karush–Kuhn–Tucker conditions](https://en.wikipedia.org/wiki/Karush–Kuhn–Tucker_conditions).
+[Karush–Kuhn–Tucker conditions](https://en.wikipedia.org/wiki/Karush%E2%80%93Kuhn%E2%80%93Tucker_conditions).
 
 ## Main statements
 
@@ -32,7 +32,7 @@ and `fderiv`/`deriv` instead of `HasFDerivAt`/`HasDerivAt`.
   `y` and `-y` belong to the positive tangent cone, then `f' y = 0`.
 
 * `IsLocalMax.hasFDerivAt_eq_zero` :
-  [Fermat's Theorem](https://en.wikipedia.org/wiki/Fermat's_theorem_(stationary_points)),
+  [Fermat's Theorem](<https://en.wikipedia.org/wiki/Fermat's_theorem_(stationary_points)>),
   the derivative of a differentiable function at a local extremum point equals zero.
 
 ## Implementation notes
@@ -47,7 +47,7 @@ due to the fact that `fderiv` and `deriv` are defined to be zero for non-differe
 
 ## References
 
-* [Fermat's Theorem](https://en.wikipedia.org/wiki/Fermat's_theorem_(stationary_points));
+* [Fermat's Theorem](<https://en.wikipedia.org/wiki/Fermat's_theorem_(stationary_points)>);
 * [Tangent cone](https://en.wikipedia.org/wiki/Tangent_cone);
 
 ## Tags

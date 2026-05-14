@@ -27,16 +27,16 @@ Basic definitions and properties of the above ideas are provided in this file.
 
 ## Main definitions
 
-  * `LieModule.genWeightSpaceOf`
-  * `LieModule.genWeightSpace`
-  * `LieModule.Weight`
-  * `LieModule.posFittingCompOf`
-  * `LieModule.posFittingComp`
-  * `LieModule.iSup_ucs_eq_genWeightSpace_zero`
-  * `LieModule.iInf_lowerCentralSeries_eq_posFittingComp`
-  * `LieModule.isCompl_genWeightSpace_zero_posFittingComp`
-  * `LieModule.iSupIndep_genWeightSpace`
-  * `LieModule.iSup_genWeightSpace_eq_top`
+* `LieModule.genWeightSpaceOf`
+* `LieModule.genWeightSpace`
+* `LieModule.Weight`
+* `LieModule.posFittingCompOf`
+* `LieModule.posFittingComp`
+* `LieModule.iSup_ucs_eq_genWeightSpace_zero`
+* `LieModule.iInf_lowerCentralSeries_eq_posFittingComp`
+* `LieModule.isCompl_genWeightSpace_zero_posFittingComp`
+* `LieModule.iSupIndep_genWeightSpace`
+* `LieModule.iSup_genWeightSpace_eq_top`
 
 ## References
 

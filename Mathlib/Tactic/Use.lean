@@ -141,6 +141,7 @@ def runUse (eager : Bool) (discharger : TacticM Unit) (args : List Term) : Tacti
 /-- `use_discharger` is used by `use` to discharge side goals.
 
 This is an extensible tactic using `macro_rules`. By default it can:
+
 * rewrite a goal `∃ _ : p, q` into `p ∧ q` if `p` is in Prop;
 * solve the goal `p ∧ q` by creating subgoals `p` and `q`;
 * apply `rfl`;

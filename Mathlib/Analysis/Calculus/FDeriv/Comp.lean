@@ -160,7 +160,7 @@ theorem fderivWithin_comp_of_eq' {g : F → G} {t : Set F} {y : F}
   subst hy; exact fderivWithin_comp _ hg hf h hxs
 
 /-- A version of `fderivWithin_comp` that is useful to rewrite the composition of two derivatives
-  into a single derivative. This version always applies, but creates a new side-goal `f x = y`. -/
+into a single derivative. This version always applies, but creates a new side-goal `f x = y`. -/
 theorem fderivWithin_fderivWithin {g : F → G} {f : E → F} {x : E} {y : F} {s : Set E} {t : Set F}
     (hg : DifferentiableWithinAt 𝕜 g t y) (hf : DifferentiableWithinAt 𝕜 f s x) (h : MapsTo f s t)
     (hxs : UniqueDiffWithinAt 𝕜 s x) (hy : f x = y) (v : E) :
@@ -169,7 +169,7 @@ theorem fderivWithin_fderivWithin {g : F → G} {f : E → F} {x : E} {y : F} {s
   rw [fderivWithin_comp x hg hf h hxs, coe_comp', Function.comp_apply]
 
 /-- Ternary version of `fderivWithin_comp`, with equality assumptions of basepoints added, in
-  order to apply more easily as a rewrite from right-to-left. -/
+order to apply more easily as a rewrite from right-to-left. -/
 theorem fderivWithin_comp₃ {g' : G → G'} {g : F → G} {t : Set F} {u : Set G} {y : F} {y' : G}
     (hg' : DifferentiableWithinAt 𝕜 g' u y') (hg : DifferentiableWithinAt 𝕜 g t y)
     (hf : DifferentiableWithinAt 𝕜 f s x) (h2g : MapsTo g t u) (h2f : MapsTo f s t) (h3g : g y = y')

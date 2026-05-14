@@ -19,18 +19,19 @@ modules, morphisms and equivalences, as well as various lemmas to make these def
 
 ## Main definitions
 
-  * `LieRing`
-  * `LieAlgebra`
-  * `LieRingModule`
-  * `LieModule`
-  * `LieHom`
-  * `LieEquiv`
-  * `LieModuleHom`
-  * `LieModuleEquiv`
+* `LieRing`
+* `LieAlgebra`
+* `LieRingModule`
+* `LieModule`
+* `LieHom`
+* `LieEquiv`
+* `LieModuleHom`
+* `LieModuleEquiv`
 
 ## Notation
 
 Working over a fixed commutative ring `R`, we introduce the notations:
+
 * `L →ₗ⁅R⁆ L'` for a morphism of Lie algebras,
 * `L ≃ₗ⁅R⁆ L'` for an equivalence of Lie algebras,
 * `M →ₗ⁅R,L⁆ N` for a morphism of Lie algebra modules `M`, `N` over a Lie algebra `L`,
@@ -42,6 +43,7 @@ Lie algebras are defined as modules with a compatible Lie ring structure and thu
 are partially unbundled.
 
 ## References
+
 * [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 1--3*](bourbaki1975)
 
 ## Tags
@@ -72,7 +74,7 @@ class LieRing (L : Type v) extends AddCommGroup L, Bracket L L where
 identity. Forgetting the scalar multiplication, every Lie algebra is a Lie ring. -/
 @[ext] class LieAlgebra (R : Type u) (L : Type v) [CommRing R] [LieRing L] extends Module R L where
   /-- A Lie algebra bracket is compatible with scalar multiplication in its second argument.
-
+  
   The compatibility in the first argument is not a class property, but follows since every
   Lie algebra has a natural Lie module action on itself, see `LieModule`. -/
   protected lie_smul : ∀ (t : R) (x y : L), ⁅x, t • y⁆ = t • ⁅x, y⁆

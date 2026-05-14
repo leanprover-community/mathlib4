@@ -19,6 +19,7 @@ Given any term `B` of type `BilinForm`, due to a coercion, can use
 the notation `B x y` to refer to the function field, i.e. `B x y = B.bilin x y`.
 
 In this file we use the following type variables:
+
 - `M`, `M'`, ... are modules over the commutative semiring `R`,
 - `M₁`, `M₁'`, ... are modules over the commutative ring `R₁`,
 - `V`, ... is a vector space over the field `K`.
@@ -105,7 +106,7 @@ theorem isOrtho_smul_right {x y : M₄} {a : R₄} (ha : a ≠ 0) :
   exact fun a ↦ (ha a).elim
 
 /-- A set of orthogonal vectors `v` with respect to some bilinear form `B` is linearly independent
-  if for all `i`, `B (v i) (v i) ≠ 0`. -/
+if for all `i`, `B (v i) (v i) ≠ 0`. -/
 theorem linearIndependent_of_iIsOrtho {n : Type w} {B : BilinForm K V} {v : n → V}
     (hv₁ : B.iIsOrtho v) (hv₂ : ∀ i, ¬B.IsOrtho (v i) (v i)) : LinearIndependent K v := by
   classical
@@ -128,7 +129,7 @@ elements `x` which are orthogonal to all elements of `N`; i.e., for all `y` in `
 
 Note that for general (neither symmetric nor antisymmetric) bilinear forms this definition has a
 chirality; in addition to this "right" orthogonal complement one could define a "left" orthogonal
-complement for which, for all `y` in `N`, `B x y = 0`.  This variant definition is not currently
+complement for which, for all `y` in `N`, `B x y = 0`. This variant definition is not currently
 provided in mathlib. -/
 def orthogonal (B : BilinForm R M) (N : Submodule R M) : Submodule R M where
   carrier := { m | ∀ n ∈ N, IsOrtho B n m }
@@ -175,7 +176,7 @@ theorem span_singleton_sup_orthogonal_eq_top {B : BilinForm K V} {x : V} (hx : �
   LinearMap.span_singleton_sup_orthogonal_eq_top hx
 
 /-- Given a bilinear form `B` and some `x` such that `B x x ≠ 0`, the span of the singleton of `x`
-  is complement to its orthogonal complement. -/
+is complement to its orthogonal complement. -/
 theorem isCompl_span_singleton_orthogonal {B : BilinForm K V} {x : V} (hx : ¬B.IsOrtho x x) :
     IsCompl (K ∙ x) (B.orthogonal <| K ∙ x) :=
   LinearMap.isCompl_span_singleton_orthogonal hx

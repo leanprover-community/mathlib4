@@ -14,6 +14,7 @@ The `@[to_dual]` attribute is used to translate declarations to their dual equiv
 See the docstrings of `to_dual` and `to_additive` for more information.
 
 Known limitations:
+
 - When combining `to_additive` and `to_dual`, we need to make sure that all translations are added.
   For example `attribute [to_dual (attr := to_additive) le_mul] mul_le` should generate
   `le_mul`, `le_add` and `add_le`, and in particular should realize that `le_add` and `add_le`
@@ -77,6 +78,7 @@ Use the `to_dual existing` syntax to use an existing dual declaration,
 instead of automatically generating it.
 
 Use the `(attr := ...)` syntax to apply attributes to both the original and the dual version:
+
 ```
 @[to_dual (attr := simp)] lemma min_self (a : α) : min a a = a := sorry
 ```
@@ -91,6 +93,7 @@ declaration, overriding the automatic translation of names. For example, `(renam
 will translate `lemma min_foo (x y z : α) ...` to `lemma max_foo (a z y : α) ...`.
 
 Some definitions are dual to something other than the dual of their value. Some examples:
+
 - `Ico a b := { x | a ≤ x ∧ x < b }` is dual to `Ioc b a := { x | b < x ∧ x ≤ a }`.
 - `Monotone f := ∀ ⦃a b⦄, a ≤ b → f a ≤ f b` is dual to itself.
 - `DecidableLE α := ∀ a b : α, Decidable (a ≤ b)` is dual to itself.

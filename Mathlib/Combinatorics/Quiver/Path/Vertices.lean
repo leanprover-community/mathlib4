@@ -134,7 +134,7 @@ lemma vertices_toPath_tail {i j : V} (e : i ⟶ j) :
   simp
 
 /-- If a composition is `nil`, the left component must be `nil`
-    (proved via lengths, avoiding dependent pattern-matching). -/
+(proved via lengths, avoiding dependent pattern-matching). -/
 lemma nil_of_comp_eq_nil_left {a b : V} {p : Path a b} {q : Path b a}
     (h : p.comp q = Path.nil) : p.length = 0 := by
   have hlen : (p.comp q).length = 0 := by
@@ -174,7 +174,7 @@ variable {a b : V} (p : Path a b)
 open List
 
 /-- Given a path `p : Path a b` and an index `n ≤ p.length`,
-    we can split `p = p₁.comp p₂` with `p₁.length = n`. -/
+we can split `p = p₁.comp p₂` with `p₁.length = n`. -/
 theorem exists_eq_comp_of_le_length {n : ℕ} (hn : n ≤ p.length) :
     ∃ (v : V) (p₁ : Path a v) (p₂ : Path v b),
       p = p₁.comp p₂ ∧ p₁.length = n := by
@@ -190,7 +190,7 @@ theorem exists_eq_comp_of_le_length {n : ℕ} (hn : n ≤ p.length) :
     · exact ⟨c, p'.cons e, Path.nil, by simp, by simp⟩
 
 /-- `split_at_vertex` decomposes a path `p` at the vertex sitting in
-    position `i` of its `vertices` -/
+position `i` of its `vertices` -/
 theorem exists_eq_comp_and_length_eq_of_lt_length (n : ℕ) (hn : n < p.vertices.length) :
     ∃ (v : V) (p₁ : Path a v) (p₂ : Path v b),
       p = p₁.comp p₂ ∧ p₁.length = n ∧ v = p.vertices[n] := by

@@ -16,7 +16,7 @@ public import Mathlib.Logic.Equiv.Defs
 Features:
 
 * `MvFunctor n` : the type class of multivariate functors
-* `f <$$> x`    : notation for map
+* `f <$$> x` : notation for map
 
 -/
 

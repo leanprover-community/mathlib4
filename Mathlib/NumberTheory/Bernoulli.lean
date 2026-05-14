@@ -57,10 +57,8 @@ The proof of von Staudt-Clausen's theorem follows Rado's JLMS 1934 paper
 
 ## Main theorems
 
-* `sum_bernoulli : ∑ k ∈ range n, (n.choose k : ℚ) * bernoulli k =
-  if n = 1 then 1 else 0`
-* `Bernoulli.vonStaudt_clausen : bernoulli (2 * k) + ∑ p ∈ range (2 * k + 2)
-  with p.Prime ∧ (p - 1) ∣ 2 * k, (1 : ℚ) / p ∈ Set.range Int.cast`
+* `sum_bernoulli : ∑ k ∈ range n, (n.choose k : ℚ) * bernoulli k = if n = 1 then 1 else 0`
+* `Bernoulli.vonStaudt_clausen : bernoulli (2 * k) + ∑ p ∈ range (2 * k + 2) with p.Prime ∧ (p - 1) ∣ 2 * k, (1 : ℚ) / p ∈ Set.range Int.cast`
 
 ## References
 

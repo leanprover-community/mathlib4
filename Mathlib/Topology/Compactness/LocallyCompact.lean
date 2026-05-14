@@ -95,7 +95,7 @@ section Pi
 variable {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, LocallyCompactSpace (X i)]
 
 /-- In general it suffices that all but finitely many of the spaces are compact,
-  but that's not straightforward to state and use. -/
+but that's not straightforward to state and use. -/
 instance Pi.locallyCompactSpace_of_finite [Finite ι] : LocallyCompactSpace (∀ i, X i) :=
   ⟨fun t n hn => by
     rw [nhds_pi, Filter.mem_pi] at hn
@@ -144,7 +144,7 @@ instance (priority := 100) [LocallyCompactSpace X] : WeaklyLocallyCompactSpace X
     let ⟨K, hx, _, hKc⟩ := local_compact_nhds (x := x) univ_mem; ⟨K, hKc, hx⟩
 
 /-- A reformulation of the definition of locally compact space: In a locally compact space,
-  every open set containing `x` has a compact subset containing `x` in its interior. -/
+every open set containing `x` has a compact subset containing `x` in its interior. -/
 theorem exists_compact_subset [LocallyCompactSpace X] {x : X} {U : Set X} (hU : IsOpen U)
     (hx : x ∈ U) : ∃ K : Set X, IsCompact K ∧ x ∈ interior K ∧ K ⊆ U := by
   rcases LocallyCompactSpace.local_compact_nhds x U (hU.mem_nhds hx) with ⟨K, h1K, h2K, h3K⟩
@@ -165,10 +165,10 @@ lemma exists_mem_nhdsSet_isCompact_mapsTo [LocallyCompactPair X Y] {f : X → Y}
     hVU x (hsK x hx)⟩
 
 /-- In a locally compact space, for every containment `K ⊆ U` of a compact set `K` in an open
-  set `U`, there is a compact neighborhood `L` such that `K ⊆ L ⊆ U`: equivalently, there is a
-  compact `L` such that `K ⊆ interior L` and `L ⊆ U`.
-  See also `exists_compact_closed_between`, in which one guarantees additionally that `L` is closed
-  if the space is regular. -/
+set `U`, there is a compact neighborhood `L` such that `K ⊆ L ⊆ U`: equivalently, there is a
+compact `L` such that `K ⊆ interior L` and `L ⊆ U`.
+See also `exists_compact_closed_between`, in which one guarantees additionally that `L` is closed
+if the space is regular. -/
 theorem exists_compact_between [LocallyCompactSpace X] {K U : Set X} (hK : IsCompact K)
     (hU : IsOpen U) (h_KU : K ⊆ U) : ∃ L, IsCompact L ∧ K ⊆ interior L ∧ L ⊆ U :=
   let ⟨L, hKL, hL, hLU⟩ := exists_mem_nhdsSet_isCompact_mapsTo continuous_id hK hU h_KU

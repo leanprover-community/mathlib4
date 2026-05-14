@@ -260,6 +260,7 @@ instance {α ι κ : Type*} [Nonempty ι] [Inhabited κ] :
       has_color := fun _ ↦ rfl}⟩
 
 /-- The type of collections of lines such that
+
 - each line is only one color except possibly at its endpoint
 - the lines all have the same endpoint
 - the colors of the lines are distinct.

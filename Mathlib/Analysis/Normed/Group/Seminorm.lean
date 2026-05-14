@@ -93,8 +93,8 @@ structure NonarchAddGroupSeminorm (G : Type*) [AddGroup G] extends ZeroHom G ℝ
   protected neg' : ∀ r, toFun (-r) = toFun r
 
 /-! NOTE: We do not define `NonarchAddGroupSeminorm` as an extension of `AddGroupSeminorm`
-  to avoid having a superfluous `add_le'` field in the resulting structure. The same applies to
-  `NonarchAddGroupNorm` below. -/
+to avoid having a superfluous `add_le'` field in the resulting structure. The same applies to
+`NonarchAddGroupNorm` below. -/
 
 
 /-- A norm on an additive group `G` is a function `f : G → ℝ` that preserves zero, is subadditive

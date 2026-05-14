@@ -26,6 +26,7 @@ Basic API for `orthogonalProjection` and `starProjection` is developed.
 ## References
 
 The orthogonal projection construction is adapted from
+
 * [Clément & Martin, *The Lax-Milgram Theorem. A detailed proof to be formalized in Coq*]
 * [Clément & Martin, *A Coq formal proof of the Lax–Milgram theorem*]
 
@@ -105,7 +106,7 @@ and should not be used once that is defined. -/
 theorem orthogonalProjectionFn_mem (v : E) : K.orthogonalProjectionFn v ∈ K :=
   (HasOrthogonalProjection.exists_orthogonal (K := K) v).choose_spec.left
 
-/-- The characterization of the unbundled orthogonal projection.  This
+/-- The characterization of the unbundled orthogonal projection. This
 lemma is only intended for use in setting up the bundled version
 and should not be used once that is defined. -/
 theorem orthogonalProjectionFn_inner_eq_zero (v : E) :

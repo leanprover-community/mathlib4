@@ -292,7 +292,7 @@ lemma _root_.ContMDiffCovariantDerivativeOn.finite_affine_combination [IsManifol
       (fun i hi ↦ (hf i hi).smul_section <| (hcov i hi).contMDiff hσ)
 
 /-- Adding a one-form taking values in the endomorphisms of the vector bundle to a covariant
-  derivative gives a covariant derivative. -/
+derivative gives a covariant derivative. -/
 lemma add_one_form (hcov : IsCovariantDerivativeOn F cov s)
     (A : Π x : M, V x →L[𝕜] TangentSpace I x →L[𝕜] V x) :
     IsCovariantDerivativeOn F (fun σ x ↦ cov σ x + A x (σ x)) s where
@@ -471,7 +471,7 @@ lemma ContMDiffCovariantDerivative.finite_affine_combination [IsManifold I 1 M] 
 -- exist (using a partition of unity argument)
 
 /-- Adding a one-form taking values in the endomorphisms of the vector bundle to a covariant
-  derivative gives a covariant derivative. -/
+derivative gives a covariant derivative. -/
 def addOneForm (cov : CovariantDerivative I F V)
     (A : Π (x : M), V x →L[𝕜] TangentSpace I x →L[𝕜] V x) : CovariantDerivative I F V where
   toFun := fun σ x ↦ cov σ x + A x (σ x)

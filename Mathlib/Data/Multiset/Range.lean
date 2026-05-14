@@ -19,7 +19,7 @@ namespace Multiset
 
 -- range
 /-- `range n` is the multiset lifted from the list `range n`,
-  that is, the set `{0, 1, ..., n-1}`. -/
+that is, the set `{0, 1, ..., n-1}`. -/
 def range (n : ℕ) : Multiset ℕ :=
   List.range n
 

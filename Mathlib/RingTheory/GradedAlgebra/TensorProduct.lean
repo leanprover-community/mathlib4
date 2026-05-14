@@ -113,6 +113,7 @@ open TensorProduct
 /-- A map from the base change of a graded algebra is the same as a map to the scalar restriction.
 
 In category-theoretical terms, this is an adjunction between:
+
 1. `𝒜 ↦ (𝒜 · |>.baseChange S)`, a functor from Graded `R`-Algebra to Graded `S`-Algebra; and:
 2. `ℬ ↦ (ℬ · |>.restrictScalars R)`, a functor from Graded `S`-Algebra to Graded `R`-Algebra.
 -/
@@ -141,7 +142,7 @@ variable {𝒜 ℬ}
 
 variable (S 𝒜)
 
-/-- Graded version of  `Algebra.TensorProduct.includeRight`, i.e. the inclusion from a graded
+/-- Graded version of `Algebra.TensorProduct.includeRight`, i.e. the inclusion from a graded
 `R`-algebra `𝒜` to its base change to `S` and then restricted back to `R`. (The restriction does
 not change the actual sets).
 

@@ -34,6 +34,7 @@ The canonical linear map `M → ExteriorAlgebra R M` is denoted `ExteriorAlgebra
 
 The main theorems proved ensure that `ExteriorAlgebra R M` satisfies the universal property
 of the exterior algebra.
+
 1. `ι_comp_lift` is the fact that the composition of `ι R` with `lift R f cond` agrees with `f`.
 2. `lift_unique` ensures the uniqueness of `lift R f cond` with respect to 1.
 

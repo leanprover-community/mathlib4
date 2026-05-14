@@ -380,8 +380,8 @@ theorem eq_of_prime_pow_eq' (hp₁ : Prime p₁) (hp₂ : Prime p₂) (hk₁ : 0
 end UniqueUnits₀
 
 /-- The quotient of a monoid by the `Associated` relation. Two elements `x` and `y`
-  are associated iff there is a unit `u` such that `x * u = y`. There is a natural
-  monoid structure on `Associates M`. -/
+are associated iff there is a unit `u` such that `x * u = y`. There is a natural
+monoid structure on `Associates M`. -/
 abbrev Associates (M : Type*) [Monoid M] : Type _ :=
   Quotient (Associated.setoid M)
 

@@ -245,6 +245,7 @@ theorem cmp_veblenWith :
     simp [h.cmp_eq_lt, h.cmp_eq_gt, (veblenWith_right_strictMono hf _).cmp_map_eq]
 
 /-- `veblenWith f o₁ a < veblenWith f o₂ b` iff one of the following holds:
+
 * `o₁ = o₂` and `a < b`
 * `o₁ < o₂` and `a < veblenWith f o₂ b`
 * `o₁ > o₂` and `veblenWith f o₁ a < b` -/
@@ -255,6 +256,7 @@ theorem veblenWith_lt_veblenWith_iff :
   aesop (add simp lt_asymm)
 
 /-- `veblenWith f o₁ a ≤ veblenWith f o₂ b` iff one of the following holds:
+
 * `o₁ = o₂` and `a ≤ b`
 * `o₁ < o₂` and `a ≤ veblenWith f o₂ b`
 * `o₁ > o₂` and `veblenWith f o₁ a ≤ b` -/
@@ -265,6 +267,7 @@ theorem veblenWith_le_veblenWith_iff :
   aesop (add simp [not_lt_of_ge, lt_asymm])
 
 /-- `veblenWith f o₁ a = veblenWith f o₂ b` iff one of the following holds:
+
 * `o₁ = o₂` and `a = b`
 * `o₁ < o₂` and `a = veblenWith f o₂ b`
 * `o₁ > o₂` and `veblenWith f o₁ a = b` -/
@@ -398,6 +401,7 @@ theorem cmp_veblen : cmp (veblen o₁ a) (veblen o₂ b) =
   cmp_veblenWith (isNormal_opow one_lt_omega0)
 
 /-- `veblen o₁ a < veblen o₂ b` iff one of the following holds:
+
 * `o₁ = o₂` and `a < b`
 * `o₁ < o₂` and `a < veblen o₂ b`
 * `o₁ > o₂` and `veblen o₁ a < b` -/
@@ -407,6 +411,7 @@ theorem veblen_lt_veblen_iff :
   veblenWith_lt_veblenWith_iff (isNormal_opow one_lt_omega0)
 
 /-- `veblen o₁ a ≤ veblen o₂ b` iff one of the following holds:
+
 * `o₁ = o₂` and `a ≤ b`
 * `o₁ < o₂` and `a ≤ veblen o₂ b`
 * `o₁ > o₂` and `veblen o₁ a ≤ b` -/
@@ -416,6 +421,7 @@ theorem veblen_le_veblen_iff :
   veblenWith_le_veblenWith_iff (isNormal_opow one_lt_omega0)
 
 /-- `veblen o₁ a ≤ veblen o₂ b` iff one of the following holds:
+
 * `o₁ = o₂` and `a = b`
 * `o₁ < o₂` and `a = veblen o₂ b`
 * `o₁ > o₂` and `veblen o₁ a = b` -/

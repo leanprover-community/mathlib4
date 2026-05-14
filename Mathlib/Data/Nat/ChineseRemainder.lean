@@ -61,7 +61,7 @@ variable (a s : ι → ℕ)
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The natural number less than `(l.map s).prod` congruent to
-`a i` mod `s i` for all  `i ∈ l`. -/
+`a i` mod `s i` for all `i ∈ l`. -/
 def chineseRemainderOfList : (l : List ι) → l.Pairwise (Coprime on s) →
     { k // ∀ i ∈ l, k ≡ a i [MOD s i] }
   | [],     _  => ⟨0, by simp⟩
@@ -128,7 +128,7 @@ theorem chineseRemainderOfList_perm {l l' : List ι} (hl : l.Perm l')
             (by simpa [List.Perm.mem_iff hl.symm] using hs))
 
 /-- The natural number less than `(m.map s).prod` congruent to
-`a i` mod `s i` for all  `i ∈ m`. -/
+`a i` mod `s i` for all `i ∈ m`. -/
 def chineseRemainderOfMultiset {m : Multiset ι} :
     m.Nodup → (∀ i ∈ m, s i ≠ 0) → Set.Pairwise {x | x ∈ m} (Coprime on s) →
     { k // ∀ i ∈ m, k ≡ a i [MOD s i] } :=
@@ -161,7 +161,7 @@ theorem chineseRemainderOfMultiset_lt_prod {m : Multiset ι}
     (List.Nodup.pairwise_of_forall_ne nod pp) (by simpa using hs)
 
 /-- The natural number less than `∏ i ∈ t, s i` congruent to
-`a i` mod `s i` for all  `i ∈ t`. -/
+`a i` mod `s i` for all `i ∈ t`. -/
 def chineseRemainderOfFinset (t : Finset ι)
     (hs : ∀ i ∈ t, s i ≠ 0) (pp : Set.Pairwise t (Coprime on s)) :
     { k // ∀ i ∈ t, k ≡ a i [MOD s i] } := by

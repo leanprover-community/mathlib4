@@ -17,6 +17,7 @@ More concretely, `CompactConvergenceCLM` is an abbreviation for
 `UniformConvergenceCLM σ F {(S : Set E) | IsCompact S}`. We denote it by `E →SL_c[σ] F`.
 
 Here is a list of type aliases for `E →L[𝕜] F` endowed with various topologies :
+
 * `ContinuousLinearMap`: topology of bounded convergence
 * `UniformConvergenceCLM`: topology of `𝔖`-convergence, for a general `𝔖 : Set (Set E)`
 * `CompactConvergenceCLM`: topology of compact convergence

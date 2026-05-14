@@ -19,16 +19,18 @@ property: for any collection of sets `s ∈ l` with cardinality strictly less th
 their intersection belongs to `l` as well.
 
 ## Main results
+
 * `Filter.cardinalInterFilter_aleph0` establishes that every filter `l` is a
-    `CardinalInterFilter l ℵ₀`
+  `CardinalInterFilter l ℵ₀`
 * `CardinalInterFilter.toCountableInterFilter` establishes that every `CardinalInterFilter l c` with
-    `c > ℵ₀` is a `CountableInterFilter`.
+  `c > ℵ₀` is a `CountableInterFilter`.
 * `CountableInterFilter.toCardinalInterFilter` establishes that every `CountableInterFilter l` is a
-    `CardinalInterFilter l ℵ₁`.
+  `CardinalInterFilter l ℵ₁`.
 * `CardinalInterFilter.of_cardinalInterFilter_of_lt` establishes that we have
   `CardinalInterFilter l c` → `CardinalInterFilter l a` for all `a < c`.
 
 ## Tags
+
 filter, cardinal
 -/
 

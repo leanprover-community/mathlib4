@@ -28,6 +28,7 @@ which assert the existence of a right or left Kan extension, and chosen Kan exte
 are obtained as `leftKanExtension L F` and `rightKanExtension L F`.
 
 ## References
+
 * https://ncatlab.org/nlab/show/Kan+extension
 
 -/

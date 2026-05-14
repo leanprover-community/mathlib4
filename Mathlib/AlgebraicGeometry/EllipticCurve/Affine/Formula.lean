@@ -12,17 +12,20 @@ public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
 
 Let `W` be a Weierstrass curve over a field `F` with coefficients `aᵢ`. The nonsingular affine
 points on `W` can be given negation and addition operations defined by a secant-and-tangent process.
+
 * Given a nonsingular affine point `P`, its *negation* `-P` is defined to be the unique third
   nonsingular point of intersection between `W` and the vertical line through `P`.
   Explicitly, if `P` is `(x, y)`, then `-P` is `(x, -y - a₁x - a₃)`.
+
 * Given two nonsingular affine points `P` and `Q`, their *addition* `P + Q` is defined to be the
   negation of the unique third nonsingular point of intersection between `W` and the line `L`
   through `P` and `Q`. Explicitly, let `P` be `(x₁, y₁)` and let `Q` be `(x₂, y₂)`.
-    * If `x₁ = x₂` and `y₁ = -y₂ - a₁x₂ - a₃`, then `L` is vertical.
-    * If `x₁ = x₂` and `y₁ ≠ -y₂ - a₁x₂ - a₃`, then `L` is the tangent of `W` at `P = Q`, and has
-      slope `ℓ := (3x₁² + 2a₂x₁ + a₄ - a₁y₁) / (2y₁ + a₁x₁ + a₃)`.
-    * Otherwise `x₁ ≠ x₂`, then `L` is the secant of `W` through `P` and `Q`, and has slope
-      `ℓ := (y₁ - y₂) / (x₁ - x₂)`.
+
+  * If `x₁ = x₂` and `y₁ = -y₂ - a₁x₂ - a₃`, then `L` is vertical.
+  * If `x₁ = x₂` and `y₁ ≠ -y₂ - a₁x₂ - a₃`, then `L` is the tangent of `W` at `P = Q`, and has
+    slope `ℓ := (3x₁² + 2a₂x₁ + a₄ - a₁y₁) / (2y₁ + a₁x₁ + a₃)`.
+  * Otherwise `x₁ ≠ x₂`, then `L` is the secant of `W` through `P` and `Q`, and has slope
+    `ℓ := (y₁ - y₂) / (x₁ - x₂)`.
 
   In the last two cases, the `X`-coordinate of `P + Q` is then the unique third solution of the
   equation obtained by substituting the line `Y = ℓ(X - x₁) + y₁` into the Weierstrass equation,

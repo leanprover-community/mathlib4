@@ -40,7 +40,7 @@ intervals.)
 
 The `sup_inf_sdiff` and `inf_inf_sdiff` axioms for the relative complement operator in
 `GeneralizedBooleanAlgebra` are taken from
-[Wikipedia](https://en.wikipedia.org/wiki/Boolean_algebra_(structure)#Generalizations).
+[Wikipedia](<https://en.wikipedia.org/wiki/Boolean_algebra_(structure)#Generalizations>).
 
 [Stone's paper introducing generalized Boolean algebras][Stone1935] does not define a relative
 complement operator `a \ b` for all `a`, `b`. Instead, the postulates there amount to an assumption

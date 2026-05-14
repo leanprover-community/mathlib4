@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
 # Unique factorization and ascending chain condition on ideals
 
 ## Main results
+
 * `Ideal.setOf_isPrincipal_wellFoundedOn_gt`, `WfDvdMonoid.of_setOf_isPrincipal_wellFoundedOn_gt`
   in a domain, well-foundedness of the strict version of ∣ is equivalent to the ascending
   chain condition on principal ideals.

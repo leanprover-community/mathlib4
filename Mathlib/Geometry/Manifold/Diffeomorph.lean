@@ -10,6 +10,7 @@ public import Mathlib.Geometry.Manifold.MFDeriv.UniqueDifferential
 
 /-!
 # Diffeomorphisms
+
 This file implements diffeomorphisms.
 
 ## Definitions
@@ -27,6 +28,7 @@ This file implements diffeomorphisms.
   model `I` and `M` with model `I.transContinuousLinearEquiv e`.
 
 This file also provides diffeomorphisms related to products and disjoint unions.
+
 * `Diffeomorph.prodCongr`: the product of two diffeomorphisms
 * `Diffeomorph.prodComm`: `M × N` is diffeomorphic to `N × M`
 * `Diffeomorph.prodAssoc`: `(M × N) × N'` is diffeomorphic to `M × (N × N')`
@@ -37,10 +39,10 @@ This file also provides diffeomorphisms related to products and disjoint unions.
 
 ## Notation
 
-* `M ≃ₘ^n⟮I, I'⟯ M'`  := `Diffeomorph I J M N n`
-* `M ≃ₘ⟮I, I'⟯ M'`    := `Diffeomorph I J M N ∞`
-* `E ≃ₘ^n[𝕜] E'`     := `E ≃ₘ^n⟮𝓘(𝕜, E), 𝓘(𝕜, E')⟯ E'`
-* `E ≃ₘ[𝕜] E'`       := `E ≃ₘ⟮𝓘(𝕜, E), 𝓘(𝕜, E')⟯ E'`
+* `M ≃ₘ^n⟮I, I'⟯ M'` := `Diffeomorph I J M N n`
+* `M ≃ₘ⟮I, I'⟯ M'` := `Diffeomorph I J M N ∞`
+* `E ≃ₘ^n[𝕜] E'` := `E ≃ₘ^n⟮𝓘(𝕜, E), 𝓘(𝕜, E')⟯ E'`
+* `E ≃ₘ[𝕜] E'` := `E ≃ₘ⟮𝓘(𝕜, E), 𝓘(𝕜, E')⟯ E'`
 
 ## Implementation notes
 

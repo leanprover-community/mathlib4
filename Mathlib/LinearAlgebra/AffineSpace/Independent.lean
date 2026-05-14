@@ -19,7 +19,7 @@ This file defines affinely independent families of points.
 ## Main definitions
 
 * `AffineIndependent` defines affinely independent families of points
-  as those where no nontrivial weighted subtraction is `0`.  This is
+  as those where no nontrivial weighted subtraction is `0`. This is
   proved equivalent to two other formulations: linear independence of
   the results of subtracting a base point in the family from the other
   points in the family, or any equal affine combinations having the

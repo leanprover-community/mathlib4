@@ -44,17 +44,18 @@ the colors.
 
 ## TODO
 
-  * Gather material from:
-    * https://github.com/leanprover-community/mathlib/blob/simple_graph_matching/src/combinatorics/simple_graph/coloring.lean
-    * https://github.com/kmill/lean-graphcoloring/blob/master/src/graph.lean
+* Gather material from:
 
-  * Trees
+  * https://github.com/leanprover-community/mathlib/blob/simple_graph_matching/src/combinatorics/simple_graph/coloring.lean
+  * https://github.com/kmill/lean-graphcoloring/blob/master/src/graph.lean
 
-  * Planar graphs
+* Trees
 
-  * Chromatic polynomials
+* Planar graphs
 
-  * develop API for partial colorings, likely as colorings of subgraphs (`H.coe.Coloring α`)
+* Chromatic polynomials
+
+* develop API for partial colorings, likely as colorings of subgraphs (`H.coe.Coloring α`)
 -/
 
 @[expose] public section

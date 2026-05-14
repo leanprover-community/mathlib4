@@ -118,8 +118,8 @@ theorem eventually_nhdsWithin' {x : X} (p : X → Prop) {s : Set X}
   rw [hy]
 
 /-- This lemma is useful in the manifold library in the case that `e` is a chart. It states that
-  locally around `e x` the set `e.symm ⁻¹' s` is the same as the set intersected with the target
-  of `e` and some other neighborhood of `f x` (which will be the source of a chart on `Z`). -/
+locally around `e x` the set `e.symm ⁻¹' s` is the same as the set intersected with the target
+of `e` and some other neighborhood of `f x` (which will be the source of a chart on `Z`). -/
 theorem preimage_eventuallyEq_target_inter_preimage_inter {e : OpenPartialHomeomorph X Y}
     {s : Set X} {t : Set Z} {x : X} {f : X → Z} (hf : ContinuousWithinAt f s x) (hxe : x ∈ e.source)
     (ht : t ∈ 𝓝 (f x)) :

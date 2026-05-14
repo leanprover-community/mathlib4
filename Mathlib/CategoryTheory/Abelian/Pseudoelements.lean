@@ -44,6 +44,7 @@ We prove that every morphism maps the zero pseudoelement to the zero pseudoeleme
 and that a zero morphism maps every pseudoelement to the zero pseudoelement (`zero_apply`).
 
 Here are the metatheorems we provide:
+
 * A morphism `f` is zero if and only if it is the zero function on pseudoelements.
 * A morphism `f` is an epimorphism if and only if it is surjective on pseudoelements.
 * A morphism `f` is a monomorphism if and only if it is injective on pseudoelements

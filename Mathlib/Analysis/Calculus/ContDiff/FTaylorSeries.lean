@@ -31,16 +31,17 @@ Let `f : E → F` be a map between normed vector spaces over a nontrivially norm
 
 * `HasFTaylorSeriesUpTo n f p`: expresses that the formal multilinear series `p` is a sequence
   of iterated derivatives of `f`, up to the `n`-th term (where `n` is a natural number or `∞`).
+
 * `HasFTaylorSeriesUpToOn n f p s`: same thing, but inside a set `s`. The notion of derivative
   is now taken inside `s`. In particular, derivatives don't have to be unique.
 
 * `iteratedFDerivWithin 𝕜 n f s x` is an `n`-th derivative of `f` over the field `𝕜` on the
   set `s` at the point `x`. It is a continuous multilinear map from `E^n` to `F`, defined as a
   derivative within `s` of `iteratedFDerivWithin 𝕜 (n-1) f s` if one exists, and `0` otherwise.
+
 * `iteratedFDeriv 𝕜 n f x` is the `n`-th derivative of `f` over the field `𝕜` at the point `x`.
   It is a continuous multilinear map from `E^n` to `F`, defined as a derivative of
   `iteratedFDeriv 𝕜 (n-1) f` if one exists, and `0` otherwise.
-
 
 ### Side of the composition, and universe issues
 

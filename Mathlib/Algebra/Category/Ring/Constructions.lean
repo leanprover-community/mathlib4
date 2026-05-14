@@ -16,6 +16,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 # Constructions of (co)limits in `CommRingCat`
 
 In this file we provide the explicit (co)cones for various (co)limits in `CommRingCat`, including
+
 * tensor product is the pushout
 * tensor product over `ℤ` is the binary coproduct
 * `ℤ` is the initial object

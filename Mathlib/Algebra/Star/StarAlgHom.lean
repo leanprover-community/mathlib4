@@ -34,8 +34,8 @@ of unital C⋆-algebras (with `StarAlgHom`s) and of C⋆-algebras (with `NonUnit
 
 ## Main definitions
 
-  * `NonUnitalStarAlgHom`
-  * `StarAlgHom`
+* `NonUnitalStarAlgHom`
+* `StarAlgHom`
 
 ## Tags
 

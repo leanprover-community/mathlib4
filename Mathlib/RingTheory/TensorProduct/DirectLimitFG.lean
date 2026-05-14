@@ -104,7 +104,7 @@ theorem DirectedSystem.rTensor {ι : Type*} [Preorder ι] {F : ι → Type*}
     simp [D.map_map]
 
 /-- When `P` ranges over finitely generated submodules of `M`,
-  the modules of the form `P ⊗[R] N` form a directed system. -/
+the modules of the form `P ⊗[R] N` form a directed system. -/
 theorem Submodule.FG.rTensor.directedSystem :
     DirectedSystem (ι := {P : Submodule R M // P.FG}) (fun P ↦ P.val ⊗[R] N)
     (fun ⦃_ _⦄ h ↦ rTensor N (Submodule.inclusion h)) :=
@@ -157,7 +157,7 @@ theorem DirectedSystem.lTensor {ι : Type*} [Preorder ι] {F : ι → Type*}
     simp [D.map_map]
 
 /-- When `Q` ranges over finitely generated submodules of `N`,
-  the modules of the form `M ⊗[R] Q` form a directed system. -/
+the modules of the form `M ⊗[R] Q` form a directed system. -/
 theorem Submodule.FG.lTensor.directedSystem :
     DirectedSystem (ι := {Q : Submodule R N // Q.FG}) (fun Q ↦ M ⊗[R] Q.val)
       (fun _ _ hPQ ↦ lTensor M (Submodule.inclusion hPQ)) :=

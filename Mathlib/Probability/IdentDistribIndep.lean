@@ -35,7 +35,7 @@ variable {Ω Ω' ι E F : Type*} {mΩ : MeasurableSpace Ω} {mΩ' : MeasurableSp
 
 /-- If `X` and `Y` are independent random variables on `Ω`, `Z` and `W` are independent random
 variables on `Ω'`, such that `X` and `Z` are identically distributed and `Y` and `W` are identically
-distributed, then the pairs `(X, Y)`  and `(Z, W)` are identically distributed. -/
+distributed, then the pairs `(X, Y)` and `(Z, W)` are identically distributed. -/
 lemma IdentDistrib.prodMk [IsFiniteMeasure μ]
     {X : Ω → E} {Y : Ω → F} {Z : Ω' → E} {W : Ω' → F}
     (hXZ : IdentDistrib X Z μ ν) (hYW : IdentDistrib Y W μ ν)

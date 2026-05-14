@@ -20,7 +20,9 @@ path products commute with path composition, and that projection is the inverse
 of products.
 
 ## Definitions
+
 ### General homotopies
+
 - `ContinuousMap.Homotopy.pi homotopies`: Let f and g be a family of functions
   indexed on I, such that for each i ∈ I, fᵢ and gᵢ are maps from A to Xᵢ.
   Let `homotopies` be a family of homotopies from fᵢ to gᵢ for each i.
@@ -40,6 +42,7 @@ of products.
   all homotopies are done relative to some set S ⊆ A.
 
 ### Path products
+
 - `Path.Homotopic.pi` The product of a family of path classes, where a path class is an equivalence
   class of paths up to path homotopy.
 
@@ -80,7 +83,7 @@ variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {A : Type*}
   {f₀ f₁ : C(A, α)} {g₀ g₁ : C(A, β)} {S : Set A}
 
 /-- The product of homotopies `F` and `G`,
-  where `F` takes `f₀` to `f₁` and `G` takes `g₀` to `g₁` -/
+where `F` takes `f₀` to `f₁` and `G` takes `g₀` to `g₁` -/
 @[simps]
 def Homotopy.prod (F : Homotopy f₀ f₁) (G : Homotopy g₀ g₁) :
     Homotopy (ContinuousMap.prodMk f₀ g₀) (ContinuousMap.prodMk f₁ g₁) where
@@ -89,7 +92,7 @@ def Homotopy.prod (F : Homotopy f₀ f₁) (G : Homotopy g₀ g₁) :
   map_one_left x := by simp only [prod_eval, Homotopy.apply_one]
 
 /-- The relative product of homotopies `F` and `G`,
-  where `F` takes `f₀` to `f₁` and `G` takes `g₀` to `g₁` -/
+where `F` takes `f₀` to `f₁` and `G` takes `g₀` to `g₁` -/
 @[simps!]
 def HomotopyRel.prod (F : HomotopyRel f₀ f₁ S) (G : HomotopyRel g₀ g₁ S) :
     HomotopyRel (prodMk f₀ g₀) (prodMk f₁ g₁) S where
@@ -123,7 +126,7 @@ theorem pi_lift (γ : ∀ i, Path (as i) (bs i)) :
   simp_rw [← Quotient.mk'_eq_mk, Quotient.mk', pi, Quotient.choice_eq, Quotient.map_mk]
 
 /-- Composition and products commute.
-  This is `Path.trans_pi_eq_pi_trans` descended to path homotopy classes. -/
+This is `Path.trans_pi_eq_pi_trans` descended to path homotopy classes. -/
 theorem comp_pi_eq_pi_comp (γ₀ : ∀ i, Path.Homotopic.Quotient (as i) (bs i))
     (γ₁ : ∀ i, Path.Homotopic.Quotient (bs i) (cs i)) : pi γ₀ ⬝ pi γ₁ = pi fun i ↦ γ₀ i ⬝ γ₁ i := by
   induction γ₁ using Quotient.induction_on_pi with | _ a =>

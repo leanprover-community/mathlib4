@@ -11,6 +11,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.CompStructTruncated
 # Edges and "triangles" in simplicial sets
 
 Given a simplicial set `X`, we introduce two types:
+
 * Given `0`-simplices `x₀` and `x₁`, we define `Edge x₀ x₁`
   which is the type of `1`-simplices with faces `x₁` and `x₀` respectively;
 * Given `0`-simplices `x₀`, `x₁`, `x₂`, edges `e₀₁ : Edge x₀ x₁`, `e₁₂ : Edge x₁ x₂`,

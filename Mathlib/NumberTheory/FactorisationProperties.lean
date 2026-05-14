@@ -37,10 +37,12 @@ relations with prime and perfect numbers.
 * `Nat.Prime.deficient_pow`: Any natural number power of a prime is deficient.
 
 ## Implementation Notes
+
 * Zero is not included in any of the definitions and these definitions only apply to natural
   numbers greater than zero.
 
 ## References
+
 * [R. W. Prielipp, *PERFECT NUMBERS, ABUNDANT NUMBERS, AND DEFICIENT NUMBERS*][Prielipp1970]
 
 ## Tags
@@ -65,7 +67,7 @@ def Deficient (n : ℕ) : Prop := ∑ i ∈ properDivisors n, i < n
 deriving Decidable
 
 /-- A positive natural number `n` is _pseudoperfect_ if there exists a subset of the proper
-  divisors of `n` such that the sum of that subset is equal to `n`. -/
+divisors of `n` such that the sum of that subset is equal to `n`. -/
 def Pseudoperfect (n : ℕ) : Prop :=
   0 < n ∧ ∃ s ⊆ properDivisors n, ∑ i ∈ s, i = n
 deriving Decidable

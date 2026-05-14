@@ -13,6 +13,7 @@ public import Mathlib.CategoryTheory.GuitartExact.HorizontalComposition
 
 Assume that we have a diagram of localizer morphisms, in the
 sense that we have an isomorphism `T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor`.
+
 ```
       T
  W₁  ---> W₂
@@ -22,6 +23,7 @@ L|        |R
  W₁' ---> W₂'
       B
 ```
+
 In this file, we obtain the lemma
 `LocalizerMorphism.isRightDerivabilityStructure_of_isLocalizedEquivalence` which shows
 that if both `L` and `R` are localized equivalences (with `R.functor` essentially surjective),
