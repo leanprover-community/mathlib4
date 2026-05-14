@@ -647,10 +647,8 @@ theorem Filter.EventuallyEq.deriv_eq (hL : f₁ =ᶠ[𝓝 x] f) : deriv f₁ x =
 
 lemma Filter.EventuallyEq.derivWithin' (h : f₁ =ᶠ[𝓝[s] x] f) (ht : t ⊆ s) :
     derivWithin f₁ t =ᶠ[𝓝[s] x] derivWithin f t :=
-  (eventually_eventually_nhdsWithin.2 h).mp <|
-    eventually_mem_nhdsWithin.mono fun _y hys hs ↦
-      EventuallyEq.derivWithin_eq (hs.filter_mono <| nhdsWithin_mono _ ht)
-        (hs.self_of_nhdsWithin hys)
+  unfold derivWithin
+  exact h.fderivWithin' ht |>.fun_comp (fun a ↦ a 1)
 
 protected lemma Filter.EventuallyEq.derivWithin (h : f₁ =ᶠ[𝓝[s] x] f) :
     derivWithin f₁ s =ᶠ[𝓝[s] x] derivWithin f s := h.derivWithin' Subset.rfl

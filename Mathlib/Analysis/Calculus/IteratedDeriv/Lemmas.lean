@@ -51,10 +51,8 @@ theorem Filter.EventuallyEq.iteratedDerivWithin_eq (hfg : f =ᶠ[𝓝[s] x] g) (
 theorem Filter.EventuallyEq.iteratedDerivWithin' {s t : Set 𝕜}
     (h : f =ᶠ[𝓝[s] x] g) (ht : t ⊆ s) (n : ℕ) :
     iteratedDerivWithin n f t =ᶠ[𝓝[s] x] iteratedDerivWithin n g t := by
-  induction n with
-  | zero => exact h.mono fun y hy ↦ by simpa
-  | succ n ihn =>
-    exact (ihn.derivWithin' ht).mono fun y hy ↦ by simpa [iteratedDerivWithin_succ]
+  unfold iteratedDerivWithin
+  exact h.iteratedFDerivWithin' ht n |>.fun_comp (fun a ↦ a fun _ ↦ 1)
 
 /-- If two functions agree in a neighborhood within `s`, then so do their iterated derivatives. -/
 protected lemma Filter.EventuallyEq.iteratedDerivWithin {s : Set 𝕜} (h : f =ᶠ[𝓝[s] x] g) (n : ℕ) :
