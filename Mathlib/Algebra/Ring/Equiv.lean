@@ -13,6 +13,8 @@ public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Logic.Equiv.Set
 public import Mathlib.Util.Delaborators
 
+import Mathlib.Tactic.DSimpPercent
+
 /-!
 # (Semi)ring equivs
 
@@ -264,15 +266,11 @@ theorem mk_coe' (e : R ≃+* S) (f h₁ h₂ h₃ h₄) :
     (⟨⟨f, ⇑e, h₁, h₂⟩, h₃, h₄⟩ : S ≃+* R) = e.symm :=
   symm_bijective.injective <| ext fun _ => rfl
 
-/-- Auxiliary definition to avoid looping in `dsimp` with `RingEquiv.symm_mk`. -/
-protected def symm_mk.aux (f : R → S) (g h₁ h₂ h₃ h₄) := (mk ⟨f, g, h₁, h₂⟩ h₃ h₄).symm
-
 @[simp]
-theorem symm_mk (f : R → S) (g h₁ h₂ h₃ h₄) :
-    (mk ⟨f, g, h₁, h₂⟩ h₃ h₄).symm =
-      { symm_mk.aux f g h₁ h₂ h₃ h₄ with
-        toFun := g
-        invFun := f } :=
+theorem symm_mk (e : R ≃ S) (h₁ h₂) : dsimp%
+    (mk e h₁ h₂).symm =
+      { (mk e h₁ h₂).symm with
+        toEquiv := e.symm } :=
   rfl
 
 @[simp]
