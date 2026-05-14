@@ -470,6 +470,31 @@ so `u.ker` is complemented.
 
 -/
 
+end FredholmOperators
+open Submodule
+
+variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [AddCommGroup E]
+   [TopologicalSpace E] [Module 𝕜 E] [ContinuousSMul 𝕜 E] [IsTopologicalAddGroup E] [T2Space E]
+
+/-- This has a PR now. -/
+lemma Submodule.ClosedComplmented_of_finiteDimensional_closedComplemented (A B : Submodule 𝕜 E)
+    (hA : FiniteDimensional 𝕜 A) (hA1 : A.ClosedComplemented)
+    (hB : B ≤ A) : B.ClosedComplemented := by
+  obtain ⟨p, hp⟩ := hA1
+  obtain ⟨q, hq⟩ := B.exists_isCompl
+  refine ⟨((projectionOnto B q hq).domRestrict A).toContinuousLinearMap ∘SL p, fun x ↦ ?_⟩
+  simp [hp ⟨x, hB x.2⟩]
+
+variable [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F] [Module 𝕜 F]
+variable [ContinuousConstSMul 𝕜 F] [T1Space F]
+
+open QuotFiniteSubmodules in
+lemma stuff {u : E →L[𝕜] F} (hu : IsFredholmStruct u) (hr : IsFredholm_quot u) :
+    u.ker.ClosedComplemented := by
+  obtain ⟨E, F, h1, h2, h3, h4, h5⟩ := aaron hr
+  obtain ⟨S, hS⟩ := E.exists_isCompl
+  simpa [h5.invOn_invFunOn.symm] using hu.closedComplemented_ker
+
 /- ## Simpler criterion for `IsFredholmStruct` between RCLike Banach spaces
 
 Notes :
@@ -504,26 +529,3 @@ closed embedding, then `u` is a closed embedding.
 
 This is TS III, § 5, p 71, lemme 1
 -/
-
-end FredholmOperators
-open Submodule
-
-variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [AddCommGroup E]
-   [TopologicalSpace E] [Module 𝕜 E] [ContinuousSMul 𝕜 E] [IsTopologicalAddGroup E] [T2Space E]
-
-lemma thingy (A B : Submodule 𝕜 E) (hA : FiniteDimensional 𝕜 A) (hA1 : A.ClosedComplemented)
-    (hB : B ≤ A) : B.ClosedComplemented := by
-  obtain ⟨p, hp⟩ := hA1
-  obtain ⟨q, hq⟩ := B.exists_isCompl
-  let f :=  ((projectionOnto B q hq).domRestrict A).toContinuousLinearMap
-  use f.comp p
-  intro x
-  let x' : A := ⟨x, hB x.2⟩
-  calc
-    f.comp p x = f (p x) := rfl
-    _          = f (p x') := rfl
-    _          = f x' := by rw [hp]
-    _          = projectionOnto B q hq x := rfl
-    _          = x := projectionOnto_apply_left _ x
-
---PR this
