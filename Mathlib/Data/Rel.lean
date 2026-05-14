@@ -25,7 +25,7 @@ relations.
 * `SetRel.dom`: Domain of a relation. `a ∈ R.dom` iff there exists `b` such that `a ~[R] b`.
 * `SetRel.cod`: Codomain of a relation. `b ∈ R.cod` iff there exists `a` such that `a ~[R] b`.
 * `SetRel.id`: The identity relation `SetRel α α`.
-* `SetRel.comp`: SetRelation composition. Note that the arguments order follows the category theory
+* `SetRel.comp`: Composition of relations. Note that the arguments order follows the category theory
   convention, namely `(R ○ S) a c ↔ ∃ b, a ~[R] b ∧ b ~[S] c`.
 * `SetRel.image`: Image of a set under a relation. `b ∈ image R s` iff there exists `a ∈ s`
   such that `a ~[R] b`.
@@ -47,9 +47,9 @@ The former approach is used almost everywhere as it is very lightweight and has 
 support from core Lean features, but it cracks at the seams whenever one starts talking about
 operations on relations. For example:
 * composition of relations `R : α → β → Prop`, `S : β → γ → Prop` is
-  `SetRelation.Comp R S := fun a c ↦ ∃ b, R a b ∧ S b c`
+  `SetRel.comp R S := fun a c ↦ ∃ b, R a b ∧ S b c`
 * map of a relation `R : α → β → Prop` under `f : α → γ`, `g : β → δ` is
-  `SetRelation.map R f g := fun c d ↦ ∃ a b, r a b ∧ f a = c ∧ g b = d`.
+  `SetRel.map R f g := fun c d ↦ ∃ a b, r a b ∧ f a = c ∧ g b = d`.
 
 The latter approach is embodied by `SetRel α β`, with dedicated notation like `○` for composition.
 
