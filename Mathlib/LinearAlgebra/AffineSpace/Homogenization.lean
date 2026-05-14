@@ -40,7 +40,7 @@ the vector space associated to `P`. However, this isomorphism is not canonical u
 * [X. Gràcia, R. Martín, *Vector Hulls of Affine Spaces and Affine Bundles*][Gracia2008]
 -/
 
-public section
+public noncomputable section
 
 /-- Given an affine space `P` over `k`, `Homogenization k P` is a vector space containing `P` as a
 hyperplane that does not pass through the origin.
@@ -75,29 +75,29 @@ variable
 /- The `[IsScalarTower R k V]` assumption implies that this instance does not depend on the
 arbitrary choice made in the definition of `Homogenization`. -/
 @[nolint unusedArguments]
-noncomputable instance instSMul [IsScalarTower R k V] : SMul R (Homogenization k P) :=
+instance instSMul [IsScalarTower R k V] : SMul R (Homogenization k P) :=
   inferInstanceAs (SMul R (V × k))
 
-noncomputable instance : AddCommGroup (Homogenization k P) where
+instance : AddCommGroup (Homogenization k P) where
   __ : AddCommGroup (Homogenization k P) := inferInstanceAs (AddCommGroup (V × k))
   nsmul := instSMul.smul
   zsmul := instSMul.smul
 
-noncomputable instance : Module R (Homogenization k P) :=
+instance : Module R (Homogenization k P) :=
   inferInstanceAs (Module R (V × k))
 
-noncomputable instance : IsScalarTower R S (Homogenization k P) :=
+instance : IsScalarTower R S (Homogenization k P) :=
   inferInstanceAs (IsScalarTower R S (V × k))
 
 end SMul
 
 /-- The embedding of the affine space into the homogenization. -/
-noncomputable def ofPoint : P →ᵃ[k] Homogenization k P :=
+def ofPoint : P →ᵃ[k] Homogenization k P :=
   .prod (AffineEquiv.vaddConst k (Classical.arbitrary P)).symm (.const k P (1 : k))
 
 /-- The embedding of the vector space into the homogenization. -/
 @[expose]
-noncomputable def ofVector : V →ₗ[k] Homogenization k P :=
+def ofVector : V →ₗ[k] Homogenization k P :=
   ofPoint.linear
 
 @[simp]
@@ -123,16 +123,16 @@ theorem ofPoint_injective : Function.Injective (ofPoint (k := k) (P := P)) :=
 
 See also `induction_of_point` and `ofVector_ofPoint_cases`. -/
 @[induction_eliminator, cases_eliminator]
-theorem induction_on {C : Homogenization k P → Prop} (x : Homogenization k P)
-    (h : ∀ (v : V) (c : k) (p : P), C (ofVector v + c • ofPoint p)) : C x := by
+theorem induction_on {motive : Homogenization k P → Prop} (x : Homogenization k P)
+    (h : ∀ (v : V) (c : k) (p : P), motive (ofVector v + c • ofPoint p)) : motive x := by
   specialize h x.1 x.2 (Classical.arbitrary P)
-  change C (x.1 + x.2 • (Classical.arbitrary P -ᵥ Classical.arbitrary P), 0 + x.2 * 1) at h
+  change motive (x.1 + x.2 • (Classical.arbitrary P -ᵥ Classical.arbitrary P), 0 + x.2 * 1) at h
   simpa using h
 
 /-- Every element of the homogenization can be written in the form `ofVector v + c • ofPoint p`,
 where `p` can be chosen arbitrarily. -/
-theorem induction_of_point {C : Homogenization k P → Prop} (p : P) (x : Homogenization k P)
-    (h : ∀ (v : V) (c : k), C (ofVector v + c • ofPoint p)) : C x := by
+theorem induction_of_point {motive : Homogenization k P → Prop} (p : P) (x : Homogenization k P)
+    (h : ∀ (v : V) (c : k), motive (ofVector v + c • ofPoint p)) : motive x := by
   cases x with | _ v c q =>
   convert h (v - c • (p -ᵥ q)) c using 1
   simp only [map_sub, map_smul, ofVector_vsub]
@@ -141,9 +141,9 @@ theorem induction_of_point {C : Homogenization k P → Prop} (p : P) (x : Homoge
 /-- Over a division ring `k`, every element of `Homogenization k P` is either a nonzero multiple of
 a point of `P`, or an element of the vector space associated to `P`. -/
 theorem ofVector_ofPoint_cases {k V P : Type*} [DivisionRing k] [AddCommGroup V] [Module k V]
-    [AddTorsor V P] (x : Homogenization k P) {C : Homogenization k P → Prop}
-    (smul_ofPoint : ∀ (c : k) p, c ≠ 0 → C (c • ofPoint p)) (ofVector : ∀ v, C (ofVector v)) :
-    C x := by
+    [AddTorsor V P] (x : Homogenization k P) {motive : Homogenization k P → Prop}
+    (smul_ofPoint : ∀ (c : k) p, c ≠ 0 → motive (c • ofPoint p))
+    (ofVector : ∀ v, motive (ofVector v)) : motive x := by
   cases x with | _ v c p =>
   rcases eq_or_ne c 0 with rfl | hc
   · simpa using ofVector v
@@ -167,7 +167,7 @@ theorem hom_ext_iff {f g : Homogenization k P1 →ₗ[k] W} :
   ⟨by rintro rfl _; rfl, hom_ext⟩
 
 /-- The linear map that is constantly `1` when restricted to `P`. -/
-noncomputable def weight : Homogenization k P →ₗ[k] k :=
+def weight : Homogenization k P →ₗ[k] k :=
   .snd ..
 
 @[simp]
@@ -190,7 +190,7 @@ theorem weight_eq_one_iff {x : Homogenization k P} : weight x = 1 ↔ ∃ p, x =
   mpr := by rintro ⟨_, rfl⟩; rw [weight_ofPoint]
 
 /-- Auxiliary definition used for defining `Homogenization.lift`. -/
-noncomputable def lift.aux (f : P →ᵃ[k] W) : Homogenization k P →ₗ[k] W :=
+def lift.aux (f : P →ᵃ[k] W) : Homogenization k P →ₗ[k] W :=
   f.linear.coprod <| LinearMap.id.smulRight (f (Classical.arbitrary P))
 
 @[simp]
@@ -203,7 +203,7 @@ private theorem lift.aux_ofPoint {f : P →ᵃ[k] W} {p : P} : aux f (ofPoint p)
 
 See also `Homogenization.liftₗ` for a version that is linear over some ring. -/
 @[expose]
-noncomputable def lift : (P →ᵃ[k] W) ≃+ (Homogenization k P →ₗ[k] W) where
+def lift : (P →ᵃ[k] W) ≃+ (Homogenization k P →ₗ[k] W) where
   toFun := lift.aux
   invFun f := f.toAffineMap.comp ofPoint
   left_inv f := by ext; simp
@@ -251,7 +251,7 @@ theorem lift_smul {f : P →ᵃ[k] W} {c : R} : lift (c • f) = c • lift f :=
 variable (R) in
 /-- Linear version of `Homogenization.lift`. -/
 @[expose]
-noncomputable def liftₗ : (P →ᵃ[k] W) ≃ₗ[R] (Homogenization k P →ₗ[k] W) :=
+def liftₗ : (P →ᵃ[k] W) ≃ₗ[R] (Homogenization k P →ₗ[k] W) :=
   lift.toLinearEquiv fun _ _ => lift_smul
 
 @[simp]
@@ -272,7 +272,7 @@ end SMul
 /-- An affine map between two affine spaces extends to a linear map between their homogenizations.
 -/
 @[expose]
-noncomputable def map (f : P1 →ᵃ[k] P2) : Homogenization k P1 →ₗ[k] Homogenization k P2 :=
+def map (f : P1 →ᵃ[k] P2) : Homogenization k P1 →ₗ[k] Homogenization k P2 :=
   lift (ofPoint.comp f)
 
 @[simp]
@@ -332,7 +332,7 @@ theorem map_surjective {f : P1 →ᵃ[k] P2} : Function.Surjective (map f) ↔ F
 /-- An affine isomorphism between two affine spaces extends to a linear isomorphism between their
 homogenizations. -/
 @[expose]
-noncomputable def congr (f : P1 ≃ᵃ[k] P2) : Homogenization k P1 ≃ₗ[k] Homogenization k P2 :=
+def congr (f : P1 ≃ᵃ[k] P2) : Homogenization k P1 ≃ₗ[k] Homogenization k P2 :=
   .ofLinear (map f) (map f.symm) (hom_ext <| by simp) (hom_ext <| by simp)
 
 @[simp]
@@ -357,7 +357,7 @@ theorem congr_trans (f : P1 ≃ᵃ[k] P2) (g : P2 ≃ᵃ[k] P3) :
 
 /-- The homogenization of a vector space `V` over `k` is canonically isomorphic to `V × k` -/
 @[expose, simps! -isSimp]
-noncomputable def toProd : Homogenization k V ≃ₗ[k] V × k where
+def toProd : Homogenization k V ≃ₗ[k] V × k where
   __ := (lift (.id ..)).prod weight
   invFun x := ofVector x.1 + x.2 • ofPoint 0
   left_inv x := by
