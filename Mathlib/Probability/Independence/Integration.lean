@@ -34,7 +34,7 @@ public section
 
 open Set MeasureTheory
 
-open scoped ENNReal MeasureTheory
+open scoped NNReal ENNReal MeasureTheory
 
 variable {Ω 𝕜 : Type*} [RCLike 𝕜] {mΩ : MeasurableSpace Ω} {μ : Measure Ω} {f g : Ω → ℝ≥0∞}
     {X Y : Ω → 𝕜}
@@ -149,22 +149,20 @@ theorem lintegral_prod_eq_prod_lintegral_of_indepFun {ι : Type*}
 /-- A continuous bilinear map applied to two independent and integrable random variables
 is integrable. -/
 theorem IndepFun.integrable_bilin {α β γ : Type*} [MeasurableSpace α] [MeasurableSpace β]
-    [NormedAddCommGroup α] [NormedSpace ℝ α] [OpensMeasurableSpace α]
-    [NormedAddCommGroup β] [NormedSpace ℝ β] [OpensMeasurableSpace β]
-    [NormedAddCommGroup γ] [NormedSpace ℝ γ]
+    [TopologicalSpace α] [ContinuousENorm α] [OpensMeasurableSpace α]
+    [TopologicalSpace β] [ContinuousENorm β] [OpensMeasurableSpace β]
+    [TopologicalSpace γ] [ContinuousENorm γ]
     {X : Ω → α} {Y : Ω → β} (hXY : X ⟂ᵢ[μ] Y) (hX : Integrable X μ) (hY : Integrable Y μ)
-    (B : α →L[ℝ] β →L[ℝ] γ) :
+    {B : α → β → γ} (cB : Continuous B.uncurry) (C : ℝ≥0) (hB : ∀ x y, ‖B x y‖ₑ ≤ C * ‖x‖ₑ * ‖y‖ₑ) :
     Integrable (fun ω ↦ B (X ω) (Y ω)) μ := by
-  refine ⟨Continuous.comp_aestronglyMeasurable₂ (g := fun x y ↦ B x y) (by fun_prop) hX.1 hY.1, ?_⟩
+  refine ⟨cB.comp_aestronglyMeasurable₂ hX.1 hY.1, ?_⟩
   unfold HasFiniteIntegral
   calc
-  _ ≤ ‖B‖ₑ * ∫⁻ ω, ‖X ω‖ₑ * ‖Y ω‖ₑ ∂μ := by
+  _ ≤ C * ∫⁻ ω, ‖X ω‖ₑ * ‖Y ω‖ₑ ∂μ := by
     rw [← lintegral_const_mul'' _ (by fun_prop)]
     gcongr with ω
-    rw [← ENNReal.toReal_le_toReal]
-    · simp [← mul_assoc, B.le_opNorm₂]
-    all_goals finiteness
-  _ = ‖B‖ₑ * ((∫⁻ ω, ‖X ω‖ₑ ∂μ) * (∫⁻ ω, ‖Y ω‖ₑ ∂μ)) := by
+    simp [← mul_assoc, hB]
+  _ = C * ((∫⁻ ω, ‖X ω‖ₑ ∂μ) * (∫⁻ ω, ‖Y ω‖ₑ ∂μ)) := by
     rw [lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'' hX.1.enorm hY.1.enorm
         (hXY.comp measurable_enorm measurable_enorm)]
   _ < ∞ := ENNReal.mul_lt_top (by finiteness) (ENNReal.mul_lt_top hX.2 hY.2)
@@ -211,36 +209,28 @@ theorem IndepFun.integral_bilin {α β γ : Type*} [MeasurableSpace α] [Measura
 
 /-- The scalar product of two independent and integrable random variables is integrable. -/
 theorem IndepFun.integrable_smul {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
-    {X : Ω → α} {Y : Ω → β} [SeminormedAddGroup α] [SeminormedAddGroup β]
-    [SMulZeroClass α β] [IsBoundedSMul α β] [BorelSpace β] [BorelSpace α]
-    (hXY : X ⟂ᵢ[μ] Y) (hX : Integrable X μ)
-    (hY : Integrable Y μ) : Integrable (fun ω ↦ (X ω) • (Y ω)) μ := by
-  let nX : Ω → ℝ≥0∞ := fun a => ‖X a‖ₑ
-  let nY : Ω → ℝ≥0∞ := fun a => ‖Y a‖ₑ
-  have hXY' : nX ⟂ᵢ[μ] nY := hXY.comp measurable_enorm measurable_enorm
-  have hnX : AEMeasurable nX μ := hX.1.aemeasurable.enorm
-  have hnY : AEMeasurable nY μ := hY.1.aemeasurable.enorm
-  have hmul : ∫⁻ a, nX a * nY a ∂μ = (∫⁻ a, nX a ∂μ) * ∫⁻ a, nY a ∂μ :=
-    lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun' hnX hnY hXY'
-  refine ⟨hX.1.smul hY.1, ?_⟩
-  simp only [nX, nY] at hmul
-  rw [hasFiniteIntegral_iff_enorm]
-  refine lt_of_le_of_lt (lintegral_mono fun _ ↦ enorm_smul_le) ?_
-  rw [hmul]
-  exact ENNReal.mul_lt_top hX.2 hY.2
+    [TopologicalSpace α] [ContinuousENorm α] [OpensMeasurableSpace α]
+    [TopologicalSpace β] [ContinuousENorm β] [OpensMeasurableSpace β]
+    [SMul α β] [ContinuousSMul α β] [ENormSMulClass α β]
+    {X : Ω → α} {Y : Ω → β} (hXY : X ⟂ᵢ[μ] Y) (hX : Integrable X μ) (hY : Integrable Y μ) :
+    Integrable (fun ω ↦ (X ω) • (Y ω)) μ :=
+  hXY.integrable_bilin hX hY (by fun_prop) 1 (by simp [enorm_smul])
 
 /-- The product of two independent and integrable random variables is integrable. -/
-theorem IndepFun.integrable_mul {β : Type*} [MeasurableSpace β] {X Y : Ω → β}
-    [NormedDivisionRing β] [BorelSpace β] (hXY : X ⟂ᵢ[μ] Y) (hX : Integrable X μ)
-    (hY : Integrable Y μ) : Integrable (X * Y) μ := hXY.integrable_smul hX hY
+theorem IndepFun.integrable_mul {β : Type*} [MeasurableSpace β]
+    [TopologicalSpace β] [ContinuousENorm β] [Mul β] [ContinuousMul β] [OpensMeasurableSpace β]
+    [ENormSMulClass β β]
+    {X Y : Ω → β} (hXY : X ⟂ᵢ[μ] Y) (hX : Integrable X μ) (hY : Integrable Y μ) :
+    Integrable (X * Y) μ := hXY.integrable_smul hX hY
 
 /-- If the scalar product of two independent random variables is integrable and
 the second one is not almost everywhere zero, then the first one is integrable. -/
 theorem IndepFun.integrable_left_of_integrable_smul {α β : Type*}
-    [MeasurableSpace α] [MeasurableSpace β] {X : Ω → α} {Y : Ω → β}
-    [SeminormedAddGroup α] [NormedAddGroup β] [SMul α β] [ENormSMulClass α β]
-    [BorelSpace β] [BorelSpace α]
-    (hXY : X ⟂ᵢ[μ] Y) (h'XY : Integrable (fun ω ↦ (X ω) • Y ω) μ)
+    [MeasurableSpace α] [MeasurableSpace β]
+    [TopologicalSpace α] [ContinuousENorm α] [OpensMeasurableSpace α]
+    [NormedAddGroup β] [OpensMeasurableSpace β]
+    [SMul α β] [ContinuousSMul α β] [ENormSMulClass α β]
+    {X : Ω → α} {Y : Ω → β} (hXY : X ⟂ᵢ[μ] Y) (h'XY : Integrable (fun ω ↦ (X ω) • Y ω) μ)
     (hX : AEStronglyMeasurable X μ) (hY : AEStronglyMeasurable Y μ) (h'Y : ¬Y =ᵐ[μ] 0) :
     Integrable X μ := by
   refine ⟨hX, ?_⟩
@@ -259,10 +249,11 @@ theorem IndepFun.integrable_left_of_integrable_smul {α β : Type*}
 /-- If the scalar product of two independent random variables is integrable and the
 first one is not almost everywhere zero, then the second one is integrable. -/
 theorem IndepFun.integrable_right_of_integrable_smul {α β : Type*}
-    [MeasurableSpace α] [MeasurableSpace β] {X : Ω → α} {Y : Ω → β}
-    [NormedAddGroup α] [SeminormedAddGroup β] [SMul α β] [ENormSMulClass α β]
-    [BorelSpace β] [BorelSpace α]
-    (hXY : X ⟂ᵢ[μ] Y) (h'XY : Integrable (fun ω ↦ X ω • Y ω) μ)
+    [MeasurableSpace α] [MeasurableSpace β]
+    [NormedAddGroup α] [OpensMeasurableSpace α]
+    [TopologicalSpace β] [ContinuousENorm β] [OpensMeasurableSpace β]
+    [SMul α β] [ContinuousSMul α β] [ENormSMulClass α β]
+    {X : Ω → α} {Y : Ω → β} (hXY : X ⟂ᵢ[μ] Y) (h'XY : Integrable (fun ω ↦ X ω • Y ω) μ)
     (hX : AEStronglyMeasurable X μ) (hY : AEStronglyMeasurable Y μ) (h'X : ¬X =ᵐ[μ] 0) :
     Integrable Y μ := by
   refine ⟨hY, ?_⟩
