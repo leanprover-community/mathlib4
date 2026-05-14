@@ -463,8 +463,8 @@ alias extDerivFun_fun_smul := fun_extDerivFun_smul
 lemma extDerivFun_mul {f g : M → 𝕜} {x : M} (hf : MDiffAt f x) (hg : MDiffAt g x) :
     extDerivFun% (f * g) x = f x • extDerivFun% g x + (g x) • (extDerivFun% f x) := by
   ext v
-  simp [extDerivFun, -Pi.smul_apply', -Pi.smul_apply]
-  sorry
+  simp [extDerivFun, -Pi.smul_apply', -Pi.smul_apply, ← smul_eq_mul, mfderiv_smul hf hg]
+  simp [mul_comm _ (g x)]
 
 alias extDerivFun_fun_mul := fun_extDerivFun_mul
 
