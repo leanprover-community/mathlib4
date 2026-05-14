@@ -658,12 +658,21 @@ end ApplyAction
 
 theorem isClosed_ker [T1Space M₂] (f : M₁ →SL[σ₁₂] M₂) :
     IsClosed (f.ker : Set M₁) :=
-  continuous_iff_isClosed.1 (map_continuous f) _ isClosed_singleton
+  isClosed_singleton.preimage (map_continuous f)
+
+instance isClosed_eqLocus [T2Space M₂] (f g : M₁ →SL[σ₁₂] M₂) :
+    IsClosed (LinearMap.eqLocus f g : Set M₁) :=
+  isClosed_eq (map_continuous f) (map_continuous g)
 
 theorem isComplete_ker {M' : Type*} [UniformSpace M'] [CompleteSpace M'] [AddCommMonoid M']
     [Module R₁ M'] [T1Space M₂] (f : M' →SL[σ₁₂] M₂) :
     IsComplete (f.ker : Set M') :=
   (isClosed_ker f).isComplete
+
+theorem isComplete_eqLocus {M' : Type*} [UniformSpace M'] [CompleteSpace M'] [AddCommMonoid M']
+    [Module R₁ M'] [T2Space M₂] (f g : M' →SL[σ₁₂] M₂) :
+    IsComplete (LinearMap.eqLocus f g : Set M') :=
+  (isClosed_eqLocus f g).isComplete
 
 instance completeSpace_ker {M' : Type*} [UniformSpace M'] [CompleteSpace M']
     [AddCommMonoid M'] [Module R₁ M'] [T1Space M₂]
@@ -673,7 +682,7 @@ instance completeSpace_ker {M' : Type*} [UniformSpace M'] [CompleteSpace M']
 instance completeSpace_eqLocus {M' : Type*} [UniformSpace M'] [CompleteSpace M']
     [AddCommMonoid M'] [Module R₁ M'] [T2Space M₂]
     (f g : M' →SL[σ₁₂] M₂) : CompleteSpace (LinearMap.eqLocus f g) :=
-  IsClosed.completeSpace_coe (hs := isClosed_eq (map_continuous f) (map_continuous g))
+  (isComplete_eqLocus f g).completeSpace_coe
 
 section
 
