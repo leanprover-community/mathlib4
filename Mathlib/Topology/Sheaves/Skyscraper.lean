@@ -412,7 +412,7 @@ noncomputable def skyscraperSheafForgetAdjunction [HasColimits C] :
   skyscraperPresheafStalkAdjunction p₀
 
 variable {A p₀} in
-/-
+/--
 On an open set not containing `p₀`, the value of skyscraper sheaf supported at `p₀` is a terminal
 object.
 -/
