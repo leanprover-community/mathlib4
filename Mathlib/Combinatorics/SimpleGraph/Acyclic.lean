@@ -232,7 +232,7 @@ theorem IsAcyclic.eq_snd_of_adj_start (h : G.IsAcyclic) {u v w : V} {p : G.Walk 
     (hadj : G.Adj u w) (hsupp : w ∈ p.support) : w = p.snd := by
   classical
   have := isAcyclic_iff_path_unique.mp h ⟨_, hp.takeUntil hsupp⟩ <| .singleton hadj
-  simpa [Subtype.mk.injEq .. |>.mp this] using p.getVert_length_takeUntil hsupp |>.symm
+  grind [p.getVert_length_takeUntil hsupp, Path.singleton_coe, length]
 
 theorem IsAcyclic.eq_penultimate_of_adj_end (h : G.IsAcyclic) {u v w : V} {p : G.Walk u v}
     (hp : p.IsPath) (hadj : G.Adj v w) (hsupp : w ∈ p.support) : w = p.penultimate := by
