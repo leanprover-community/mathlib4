@@ -725,11 +725,13 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {f : ℂ → E} 
 
 section Tendsto_Zero
 
-/-- If $f(z) \to 0$ as $\Im(z) \to \infty$, then
-  $\lim_{m \to \infty} \int_{x_1}^{x_2} f(x + mI) dx = 0$. -/
-lemma tendsto_integral_atTop_nhds_zero_of_tendsto_im_atTop_nhds_zero
-    (htendsto : Tendsto f (comap im atTop) (𝓝 0)) :
-    Tendsto (fun (m : ℝ) ↦ ∫ (x : ℝ) in x₁..x₂, f (x + m * I)) atTop (𝓝 0) := by
+/-- If a family of functions `g m` tends to zero uniformly along the product filter
+  `atTop ×ˢ comap im atTop` (i.e., as `m → ∞` and the imaginary part of the input → ∞ jointly),
+  then $\lim_{m \to \infty} \int_{x_1}^{x_2} g(m, x + m I) \, dx = 0$. This generalises
+  `tendsto_integral_atTop_nhds_zero_of_tendsto_im_atTop_nhds_zero`. -/
+lemma tendsto_integral_atTop_nhds_zero_of_tendsto_unif_im_atTop_nhds_zero
+    {g : ℝ → ℂ → E} (htendsto : TendstoUniformlyOnFilter g 0 atTop (comap im atTop)) :
+    Tendsto (fun (m : ℝ) ↦ ∫ (x : ℝ) in x₁..x₂, g m (x + m * I)) atTop (𝓝 0) := by
   wlog hne : x₁ ≠ x₂
   · rw [ne_eq, Decidable.not_not] at hne
     simp only [hne, integral_same, tendsto_const_nhds_iff]
@@ -738,18 +740,32 @@ lemma tendsto_integral_atTop_nhds_zero_of_tendsto_im_atTop_nhds_zero
   have hε' : 0 < (1 / 2) * (ε / |x₂ - x₁|) := by
     simp only [one_div, inv_pos, Nat.ofNat_pos, mul_pos_iff_of_pos_left]
     exact div_pos hε (abs_sub_pos.mpr hne.symm)
-  obtain ⟨M, hM⟩ := eventually_atTop.mp <| eventually_comap.mp <|
-    NormedAddCommGroup.tendsto_nhds_zero.mp htendsto _ hε'
-  refine ⟨M, fun y hy => ?_⟩
-  calc ‖∫ (x : ℝ) in x₁..x₂, f (↑x + ↑y * I)‖
-  _ ≤ ((1 / 2) * (ε / |x₂ - x₁|)) * |x₂ - x₁| :=
-      intervalIntegral.norm_integral_le_of_norm_le_const fun x _ =>
-        (hM y hy (x + y * I) (im_of_real_add_real_mul_I x y)).le
+  obtain ⟨pa, hpa, pb, hpb, hp⟩ :=
+    eventually_prod_iff.mp <| Metric.tendstoUniformlyOnFilter_iff.mp htendsto _ hε'
+  obtain ⟨M₁, hM₁⟩ := eventually_atTop.mp hpa
+  obtain ⟨K, hK⟩ := eventually_atTop.mp (eventually_comap.mp hpb)
+  refine ⟨max M₁ K, fun m hm => ?_⟩
+  calc ‖∫ (x : ℝ) in x₁..x₂, g m (↑x + ↑m * I)‖
+  _ ≤ ((1 / 2) * (ε / |x₂ - x₁|)) * |x₂ - x₁| := by
+      refine intervalIntegral.norm_integral_le_of_norm_le_const fun x _ => ?_
+      have hbd := hp (hM₁ m (le_of_max_le_left hm))
+        (hK m (le_of_max_le_right hm) (x + m * I) (im_of_real_add_real_mul_I x m))
+      simp only [Pi.zero_apply, dist_zero_left] at hbd
+      exact hbd.le
   _ = (1 / 2) * ε := by
       rw [mul_assoc]
       have : 0 ≠ |x₂ - x₁| := ne_of_lt (abs_sub_pos.mpr hne.symm)
       field_simp [this]
   _ < ε := by linarith
+
+/-- If $f(z) \to 0$ as $\Im(z) \to \infty$, then
+  $\lim_{m \to \infty} \int_{x_1}^{x_2} f(x + mI) dx = 0$. -/
+lemma tendsto_integral_atTop_nhds_zero_of_tendsto_im_atTop_nhds_zero
+    (htendsto : Tendsto f (comap im atTop) (𝓝 0)) :
+    Tendsto (fun (m : ℝ) ↦ ∫ (x : ℝ) in x₁..x₂, f (x + m * I)) atTop (𝓝 0) :=
+  tendsto_integral_atTop_nhds_zero_of_tendsto_unif_im_atTop_nhds_zero (g := fun _ => f) <|
+    tendstoUniformlyOnFilter_iff_tendsto.mpr <|
+      tendsto_left_nhds_uniformity.comp (htendsto.comp tendsto_snd)
 
 end Tendsto_Zero
 
