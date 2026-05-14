@@ -290,6 +290,10 @@ def internalHom [MonoidalClosed C] : Cᵒᵖ ⥤ C ⥤ C where
   obj X := ihom X.unop
   map f := pre f.unop
 
+instance [MonoidalClosed C] (X : Cᵒᵖ) : (internalHom.obj X).IsRightAdjoint := by
+  dsimp
+  infer_instance
+
 set_option backward.isDefEq.respectTransparency false in
 /-- The parametrized adjunction between `curriedTensor C : C ⥤ C ⥤ C`
 and `internalHom : Cᵒᵖ ⥤ C ⥤ C` -/
