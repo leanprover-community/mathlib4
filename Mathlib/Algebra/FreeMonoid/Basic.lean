@@ -14,7 +14,7 @@ public import Aesop
 public import Mathlib.Tactic.Attr.Core
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Data.List.Basic
+public import Mathlib.Data.List.Basic
 import Mathlib.Tactic.Common
 import Mathlib.Util.CompileInductive
 

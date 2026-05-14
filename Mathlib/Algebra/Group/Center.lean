@@ -19,6 +19,7 @@ import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Util.CompileInductive
+import Mathlib.Tactic.FBinop
 
 /-!
 # Centers of magmas and semigroups

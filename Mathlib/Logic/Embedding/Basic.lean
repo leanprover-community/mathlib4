@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Data.Option.Basic
 public import Mathlib.Logic.Equiv.Basic
-import Mathlib.Data.Prod.Basic
-import Mathlib.Data.Prod.PProd
-import Mathlib.Data.Sum.Basic
+public import Mathlib.Data.Prod.Basic
+public import Mathlib.Data.Prod.PProd
+public import Mathlib.Data.Sum.Basic
 import Mathlib.Logic.IsEmpty.Basic
 import Mathlib.Tactic.Coe
 import Mathlib.Tactic.SplitIfs

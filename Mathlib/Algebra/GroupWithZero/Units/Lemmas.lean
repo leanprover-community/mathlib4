@@ -10,7 +10,7 @@ public import Mathlib.Algebra.GroupWithZero.Hom
 public import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Algebra.Group.Units.Basic
-import Mathlib.Algebra.GroupWithZero.Commute
+public import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Tactic.Attr.Core
 import Mathlib.Tactic.Push
 import Mathlib.Util.CompileInductive

@@ -12,8 +12,8 @@ public import Mathlib.Algebra.Group.Units.Defs
 public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 public import Mathlib.Tactic.Attr.Core
-import Mathlib.Algebra.Order.Monoid.WithTop
-import Mathlib.Algebra.Regular.Basic
+public import Mathlib.Algebra.Order.Monoid.WithTop
+public import Mathlib.Algebra.Regular.Basic
 import Mathlib.Order.Monotone.Basic
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Finiteness.Attr

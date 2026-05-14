@@ -240,7 +240,7 @@ lemma isDomain_iff_cancelMulZero_and_nontrivial [Semiring α] :
 lemma isCancelMulZero_iff_isDomain_or_subsingleton [Semiring α] :
     IsCancelMulZero α ↔ IsDomain α ∨ Subsingleton α := by
   refine ⟨fun t ↦ ?_, fun h ↦ h.elim (fun _ ↦ inferInstance) (fun _ ↦ inferInstance)⟩
-  rw [or_iff_not_imp_right, not_subsingleton_iff_nontrivial]
+  rw [Classical.or_iff_not_imp_right, not_subsingleton_iff_nontrivial]
   exact fun _ ↦ {}
 
 lemma isDomain_iff_noZeroDivisors_and_nontrivial [Ring α] :

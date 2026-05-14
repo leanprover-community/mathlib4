@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Logic.Equiv.Defs
 import Mathlib.Tactic.MkIffOfInductiveProp
-import Mathlib.Tactic.PPWithUniv
+public import Mathlib.Tactic.PPWithUniv
 import Mathlib.Util.CompileInductive
 
 /-!

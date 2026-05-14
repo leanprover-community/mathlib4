@@ -12,6 +12,7 @@ public import Mathlib.Util.Qq
 public import Mathlib.Util.AtLocation
 import Mathlib.Tactic.Conv
 import Mathlib.Util.CompileInductive
+import Mathlib.Logic.Basic
 
 /-!
 ## `norm_num` core functionality

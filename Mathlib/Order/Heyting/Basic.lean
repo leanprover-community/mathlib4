@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Order.PropInstances
 public import Mathlib.Order.GaloisConnection.Defs
-import Mathlib.Order.BoundedOrder.Lattice
+public import Mathlib.Order.BoundedOrder.Lattice
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.SimpRw

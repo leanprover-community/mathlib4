@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Algebra.GroupWithZero.Equiv
-import Mathlib.Data.Option.Basic
+public import Mathlib.Data.Option.Basic
 import Mathlib.Tactic.Attr.Core
 import Mathlib.Tactic.Common
 import Mathlib.Util.CompileInductive

@@ -9,7 +9,7 @@ public import Mathlib.Order.BoundedOrder.Basic
 public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.GroupWithZero.Divisibility
 public import Mathlib.Algebra.Prime.Defs
-import Mathlib.Algebra.Group.Units.Basic
+public import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.Prime.Lemmas
 import Mathlib.Tactic.Attr.Core
