@@ -3,7 +3,7 @@ Copyright (c) 2017 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Kyle Miller, Damiano Testa
 -/
-module
+module -- shake: keep-all
 
 public meta import Lean.Elab.Term
 public meta import Lean.Elab.Tactic.ElabTerm
@@ -185,7 +185,7 @@ def goalSignature (name : Name) (g : MVarId) : TermElabM (MessageData × Expr ×
     for t in ts do
       let new := match env.getModuleIdxFor? t with
         | some t => (hm.get? t).get!
-        | none   => .anonymous -- instead of `getMainModule`, we omit the current module
+        | none   => .anonymous -- instead of `getMainModule`, we omit the current module -- shake: keep-all
       if !fins.contains new then fins := fins.insert new
     let tot := Mathlib.Command.MinImports.getIrredundantImports (← getEnv) (fins.erase .anonymous)
     let fileNames := tot.toArray.qsort Name.lt

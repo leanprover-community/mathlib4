@@ -3,7 +3,7 @@ Copyright (c) 2019 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Patrick Massot
 -/
-module
+module -- shake: keep-all
 
 public meta import Lean.Elab.Tactic.Location
 public meta import Mathlib.Lean.Expr.Basic

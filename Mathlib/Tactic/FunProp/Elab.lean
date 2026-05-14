@@ -3,7 +3,7 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Tactic.FunProp.Core
 
@@ -28,7 +28,7 @@ by decomposing `f` into a composition of elementary functions, and proving `P` o
 by matching against a set of `@[fun_prop]` lemmas.
 
 If `fun_prop` fails to solve a goal with the error "No theorems found", you can solve this issue
-by importing or adding new theorems tagged with the `@[fun_prop]` attribute. See the module
+by importing or adding new theorems tagged with the `@[fun_prop]` attribute. See the module -- shake: keep-all
 documentation for `Mathlib/Tactic/FunProp.lean` for a detailed explanation.
 
 * `fun_prop (disch := tac)` uses `tac` to solve potential side goals. Setting this option is

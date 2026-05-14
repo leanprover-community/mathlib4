@@ -3,7 +3,7 @@ Copyright (c) 2025 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Arend Mellendijk, Michael Rothgang
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Algebra.BigOperators.Group.List.Basic
 public import Mathlib.Algebra.Field.Defs  -- shake: keep (Qq dependency)

@@ -3,7 +3,7 @@ Copyright (c) 2024 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
@@ -642,19 +642,19 @@ Examples:
 ```
 example [AddCommMonoid M] [CommSemiring R] [Module R M] (a b : R) (x : M) :
     a • x + b • x = (b + a) • x := by
-  module
+  module -- shake: keep-all
 
 example [AddCommMonoid M] [Field K] [CharZero K] [Module K M] (x : M) :
     (2:K)⁻¹ • x + (3:K)⁻¹ • x + (6:K)⁻¹ • x = x := by
-  module
+  module -- shake: keep-all
 
 example [AddCommGroup M] [CommRing R] [Module R M] (a : R) (v w : M) :
     (1 + a ^ 2) • (v + w) - a • (a • v - w) = v + (1 + a + a ^ 2) • w := by
-  module
+  module -- shake: keep-all
 
 example [AddCommGroup M] [CommRing R] [Module R M] (a b μ ν : R) (x y : M) :
     (μ - ν) • a • x = (a • μ • x + b • ν • y) - ν • (a • x + b • y) := by
-  module
+  module -- shake: keep-all
 ```
 -/
 elab "module" : tactic => Tactic.liftMetaFinishingTactic fun g ↦ do

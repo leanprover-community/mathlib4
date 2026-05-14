@@ -3,7 +3,7 @@ Copyright (c) 2024 Geoffrey Irving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Geoffrey Irving
 -/
-module
+module -- shake: keep-all
 
 public import Aesop
 public meta import Mathlib.Tactic.Bound.Attribute

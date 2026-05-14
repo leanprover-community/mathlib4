@@ -3,7 +3,7 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-module
+module -- shake: keep-all
 
 public meta import Lean.Elab.DefView
 public meta import Lean.Util.CollectAxioms
@@ -236,7 +236,7 @@ def getAllImports (cmd id : Syntax) (dbg? : Bool := false) :
   for t in ts do
     let new := match env.getModuleIdxFor? t with
       | some t => (hm.get? t).get!
-      | none   => .anonymous -- instead of `getMainModule`, we omit the current module
+      | none   => .anonymous -- instead of `getMainModule`, we omit the current module -- shake: keep-all
     if !fins.contains new then fins := fins.insert new
   return fins.erase .anonymous
 

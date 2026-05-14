@@ -1,4 +1,4 @@
-module
+module -- shake: keep-all
 
 public import Mathlib.Data.Rat.Cast.Order
 public import Mathlib.Tactic.NormNum.Abs

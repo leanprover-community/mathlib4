@@ -3,7 +3,7 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Eric Wieser
 -/
-module
+module -- shake: keep-all
 
 import all Mathlib.Tactic.NormNum.Prime  -- for accessing `evalMinFac.core`
 public meta import Mathlib.Algebra.BigOperators.Group.List.Defs
