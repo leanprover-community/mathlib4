@@ -167,8 +167,9 @@ variable (f)
 structure IsFredholm_struc : Prop where
   isStrict : IsStrictMap f
   isClosed_range : IsClosed (f.range : Set F)
-  kerFG : f.toLinearMap.ker.FG
+  kerFG : f.ker.FG
   cokerFG : f.range.CoFG
+  closedComplemented_ker : f.ker.ClosedComplemented
 
 /-FAE: I don't like this definition that seems to fix `g` (making it a structure would be even more
   disgusting). -/
@@ -402,6 +403,8 @@ theorem Topology.IsClosedEmbedding.isFredholm_struc {f : E →L[𝕜] F} [Comple
   · rw [LinearMap.ker_eq_bot.2 hf.injective]
     exact Submodule.fg_bot
   · simp [hc]
+  · rw [LinearMap.ker_eq_bot.2 hf.injective]
+    exact closedComplemented_bot
 
 omit [IsTopologicalAddGroup E] in
 theorem Submodule.isFredholm_struc [CompleteSpace 𝕜] [ContinuousSMul 𝕜 E] {p : Submodule 𝕜 E}
@@ -412,7 +415,7 @@ theorem Submodule.isFredholm_struc [CompleteSpace 𝕜] [ContinuousSMul 𝕜 E] 
 
 omit [IsTopologicalAddGroup E] [IsTopologicalAddGroup F] in
 theorem Topology.IsQuotientMap.isFredholm_struc {f : E →L[𝕜] F} (hq : IsQuotientMap f)
-    (hfg : f.ker.FG) :
+    (hfg : f.ker.FG) (hcompl : f.ker.ClosedComplemented) :
     IsFredholm_struc f := by
   constructor
   · exact hq.isStrictMap
@@ -421,11 +424,13 @@ theorem Topology.IsQuotientMap.isFredholm_struc {f : E →L[𝕜] F} (hq : IsQuo
   · exact hfg
   · rw [LinearMap.range_eq_top.2 hq.surjective]
     exact Submodule.CoFG.top
+  · exact hcompl
 
 omit [IsTopologicalAddGroup E] in
-theorem Submodule.mkQL_isFredholm_struc {p : Submodule 𝕜 E} (hc : p.FG) :
+theorem Submodule.mkQL_isFredholm_struc {p : Submodule 𝕜 E} (hc : p.FG)
+    (hcompl : p.ClosedComplemented) :
     IsFredholm_struc p.mkQL :=
-  p.isQuotientMap_mkQL.isFredholm_struc (by simpa)
+  p.isQuotientMap_mkQL.isFredholm_struc (by simpa) (by simpa)
 
 /- ## Composition of Fredholm (with the inverse definition) (Patrick)
 
