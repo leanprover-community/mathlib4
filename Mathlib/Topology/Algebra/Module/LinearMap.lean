@@ -458,6 +458,10 @@ infixr:80 " ∘L " =>
   @ContinuousLinearMap.comp _ _ _ _ _ _ (RingHom.id _) (RingHom.id _) (RingHom.id _) _ _ _ _ _ _ _ _
     _ _ _ _ RingHomCompTriple.ids
 
+@[inherit_doc comp]
+infixr:90 " ∘SL " =>
+  ContinuousLinearMap.comp
+
 @[simp, norm_cast]
 theorem coe_comp (h : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) :
     (h.comp f : M₁ →ₛₗ[σ₁₃] M₃) = (h : M₂ →ₛₗ[σ₂₃] M₃).comp (f : M₁ →ₛₗ[σ₁₂] M₂) :=
