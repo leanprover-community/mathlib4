@@ -743,7 +743,7 @@ alias Submodule.ClosedComplemented.of_quotient_finiteDimensional :=
 lemma Submodule.ClosedComplemented.of_finiteDimensional_of_le
     {A B : Submodule 𝕜 E} [FiniteDimensional 𝕜 A] (hA : A.ClosedComplemented) [T2Space A]
     (hB : B ≤ A) : B.ClosedComplemented := by
-  obtain ⟨p, hp⟩ := hA1
+  obtain ⟨p, hp⟩ := hA
   obtain ⟨C, hBC⟩ := B.exists_isCompl
   refine ⟨((projectionOnto B C hBC).domRestrict A).toContinuousLinearMap ∘SL p, fun x ↦ ?_⟩
   simp [hp ⟨x, hB x.2⟩]
