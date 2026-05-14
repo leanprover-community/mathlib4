@@ -488,7 +488,6 @@ theorem eLpNorm_indicator_sub_indicator (s t : Set α) (f : α → E) :
 theorem eLpNorm'_norm {f : α → F} : eLpNorm' (fun a => ‖f a‖) q μ = eLpNorm' f q μ := by
   simp [eLpNorm'_eq_lintegral_enorm]
 
-
 @[simp]
 theorem eLpNorm'_enorm {f : α → ε} : eLpNorm' (fun a => ‖f a‖ₑ) q μ = eLpNorm' f q μ := by
   simp [eLpNorm'_eq_lintegral_enorm]
@@ -500,7 +499,6 @@ theorem eLpNorm_norm (f : α → F) : eLpNorm (fun x => ‖f x‖) p μ = eLpNor
 @[simp]
 theorem eLpNorm_enorm (f : α → ε) : eLpNorm (fun x ↦ ‖f x‖ₑ) p μ = eLpNorm f p μ :=
   eLpNorm_congr_enorm_ae <| Eventually.of_forall fun _ => enorm_enorm _
-
 
 theorem eLpNorm'_enorm_rpow (f : α → ε) (p q : ℝ) (hq_pos : 0 < q) :
     eLpNorm' (‖f ·‖ₑ ^ q) p μ = eLpNorm' f (p * q) μ ^ q := by
