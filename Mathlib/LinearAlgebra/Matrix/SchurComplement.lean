@@ -227,7 +227,6 @@ section Block
 /-! #### General 2×2 block matrices -/
 
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A block matrix is invertible if the bottom right corner and the corresponding Schur complement
 is. -/
 @[implicit_reducible]

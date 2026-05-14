@@ -28,11 +28,11 @@ positive semidefinite matrices.
 
 ## TODO
 
-- Privatize `RKHS.OfKernel`
+- Privatize `RKHS.H₀`
 
 ## References
 * [Paulsen, Vern I. and Raghupathi, Mrinal,
-  *An introduction to the theory of reproducing kernel {H}ilbert spaces*][MR3526117]
+  *An introduction to the theory of reproducing kernel Hilbert spaces*][MR3526117]
 -/
 
 public noncomputable section
@@ -97,19 +97,14 @@ lemma eval_eq (x : X) : eval H x = .proj x ∘L coeCLM 𝕜 := coe_inj.mp rfl
 lemma eval_apply (x : X) (f : H) : eval H x f = f x := by
   simp
 
-variable [CompleteSpace H] [CompleteSpace V]
+variable (H) [CompleteSpace H] [CompleteSpace V]
 
---TODO: make private
-variable (H) in
 /-- The kernel functions of a reproducing kernel Hilbert space are the adjoint of the point
-evaluation.
--/
+evaluation. -/
 def kerFun (x : X) : V →L[𝕜] H := (eval H x).adjoint
 
-variable (H) in
 lemma kerFun_eq_adjoint_eval (x : X) : kerFun H x = (eval H x).adjoint := coe_inj.mp rfl
 
-variable (H) in
 /-- The kernel of a reproducing kernel Hilbert space is a matrix of entries given by the
 kernel functions. -/
 def kernel : Matrix X X (V →L[𝕜] V) := .of fun x y ↦ (kerFun H x).adjoint ∘L kerFun H y
@@ -120,23 +115,35 @@ lemma kerFun_apply (y : X) (v : V) (x : X) : kerFun H y v x = kernel H x y v := 
 lemma kernel_apply (x y : X) : kernel H x y = (kerFun H x).adjoint ∘L kerFun H y := by
   simp [kerFun, kernel]
 
-/-- The "reproducing" property of the kernel functions, left version.
--/
+variable {H} in
+/-- The "reproducing" property of the kernel functions, left version. -/
 @[simp]
 lemma kerFun_inner (x : X) (v : V) (f : H) : ⟪kerFun H x v, f⟫_𝕜 = ⟪v, f x⟫_𝕜 := by
   simp [kerFun, ← adjoint_inner_right]
 
-/-- The "reproducing" property of the kernel functions, right version.
--/
+variable {H} in
+/-- The "reproducing" property of the kernel functions, right version. -/
 @[simp]
 lemma inner_kerFun (x : X) (v : V) (f : H) : ⟪f, kerFun H x v⟫_𝕜 = ⟪f x, v⟫_𝕜 := by
   simp [kerFun, ← adjoint_inner_left]
 
-/-- The "reproducing" property of the kernel.
--/
+/-- The "reproducing" property of the kernel. -/
 lemma kernel_inner (x y : X) (v w : V) :
     ⟪kernel H x y v, w⟫_𝕜 = ⟪kerFun H y v, kerFun H x w⟫_𝕜 := by
   simp [← adjoint_inner_left, kernel]
+
+lemma norm_kernel_eq_norm_kerFun_sq (x) : ‖kernel H x x‖ = ‖kerFun H x‖ ^ 2 := by
+  rw [sq, ← ContinuousLinearMap.norm_adjoint_comp_self, kernel_apply]
+
+lemma norm_kerFun_eq_sqrt_norm_kernel (x) : ‖kerFun H x‖ = √‖kernel H x x‖ := by
+  rw [norm_kernel_eq_norm_kerFun_sq, Real.sqrt_sq (norm_nonneg _)]
+
+lemma norm_kernel_le (x y) : ‖kernel H x y‖ ≤ √‖kernel H x x‖ * √‖kernel H y y‖ := by
+  grw [kernel_apply, opNorm_comp_le]
+  simp [norm_kerFun_eq_sqrt_norm_kernel]
+
+lemma norm_kernel_sq_le (x y) : ‖kernel H x y‖ ^ 2 ≤ ‖kernel H x x‖ * ‖kernel H y y‖ := by
+  grw [norm_kernel_le]; simp [mul_pow]
 
 /-- The span of the kernel functions is dense. -/
 theorem kerFun_dense : topologicalClosure (span 𝕜 {kerFun H x v | (x) (v)}) = ⊤ := by
@@ -146,7 +153,6 @@ theorem kerFun_dense : topologicalClosure (span 𝕜 {kerFun H x v | (x) (v)}) =
   refine inner_right_of_mem_orthogonal (subset_closure ?_) fin
   simp [mem_span_of_mem]
 
-variable (H) in
 lemma isHermitian_kernel : (kernel H).IsHermitian := by
   ext
   refine ext_inner_right 𝕜 fun w ↦ ?_
@@ -154,9 +160,7 @@ lemma isHermitian_kernel : (kernel H).IsHermitian := by
     ← inner_conj_symm _ (kernel H _ _ _), kernel_inner, inner_conj_symm]
 
 open scoped ComplexOrder in
-variable (H) in
-/-- The kernel is a positive semidefinite matrix.
--/
+/-- The kernel is a positive semidefinite matrix. -/
 theorem posSemidef_kernel : (kernel H).PosSemidef := by
   refine ⟨isHermitian_kernel H, fun s ↦ (ContinuousLinearMap.isPositive_iff' _).2 ⟨?_, fun v ↦ ?_⟩⟩
   · rw [IsSelfAdjoint, sub_zero, star_finsuppSum, Finsupp.sum_comm]
@@ -167,16 +171,16 @@ theorem posSemidef_kernel : (kernel H).PosSemidef := by
 
 section Lipschitz
 
-variable (𝕜 H X V) in
+variable (𝕜 X V) in
 /-- Type copy of domain `X` meant for being equipped with the kernel metric, abbreviated `KMD`. -/
 @[nolint unusedArguments]
 def KernelMetricDomain [RKHS 𝕜 H X V] : Type _ := X
 
-variable (𝕜 V H) in
+variable (𝕜 V) in
 /-- `toKMD` is the identity function to the `KernelMetricDomain 𝕜 X V H` of a `X`. -/
 def toKMD : X ≃ KernelMetricDomain 𝕜 X V H := Equiv.refl _
 
-variable (𝕜 V H) in
+variable (𝕜 V) in
 /-- `ofKMD` is the identity function from the `KernelMetricDomain 𝕜 X V H` to `X`. -/
 def ofKMD : KernelMetricDomain 𝕜 X V H ≃ X := Equiv.refl _
 
@@ -195,7 +199,7 @@ theorem toKMD_ofKMD (x : KernelMetricDomain 𝕜 X V H) :
     toKMD 𝕜 V H (ofKMD 𝕜 V H x) = x := by
   rfl
 
-variable (𝕜 H X V) in
+variable (𝕜 X V) in
 instance instKMDPseudoEMetricSpace [RKHS 𝕜 H X V] :
     PseudoEMetricSpace (KernelMetricDomain 𝕜 X V H) :=
   PseudoEMetricSpace.induced ((kerFun H) ∘ ofKMD 𝕜 V H) inferInstance
@@ -205,6 +209,7 @@ lemma edist_KMD (x y : KernelMetricDomain 𝕜 X V H) :
     edist x y = edist (kerFun H (ofKMD 𝕜 V H x)) (kerFun H (ofKMD 𝕜 V H y)) :=
   rfl
 
+variable {H} in
 theorem lipschitzWith_ennnorm' (f : H) (x y : X) :
     edist (f x) (f y) ≤ ‖f‖₊ * edist (kerFun H x) (kerFun H y) := by
   by_cases h : f = 0
@@ -215,6 +220,7 @@ theorem lipschitzWith_ennnorm' (f : H) (x y : X) :
   simp_rw [kerFun_eq_adjoint_eval, ← LinearIsometryEquiv.map_sub, enorm_le_iff_norm_le,
     LinearIsometryEquiv.norm_map, le_refl]
 
+variable {H} in
 theorem lipschitzWith_ennnorm (f : H) :
     LipschitzWith ‖f‖₊ (f ∘ (ofKMD 𝕜 V H)) :=
   fun x y => by simpa [edist_KMD] using lipschitzWith_ennnorm' f (ofKMD 𝕜 V H x) (ofKMD 𝕜 V H y)
@@ -225,7 +231,7 @@ end Lipschitz
 ## Construction of RKHS from kernel
 -/
 
-variable {K : Matrix X X (V →L[𝕜] V)}
+variable {H} {K : Matrix X X (V →L[𝕜] V)}
 
 private lemma isSelfAdjoint_finsuppSum (h : K.IsHermitian) (f : X →₀ V →L[𝕜] V) :
     IsSelfAdjoint (f.sum fun i xi ↦ f.sum fun j xj ↦ star xi * K i j * xj) := by
@@ -257,7 +263,7 @@ theorem posSemidef_tfae : List.TFAE [K.PosSemidef, K.IsHermitian ∧ ∀ (f : X 
   tfae_have 1 → 2 := fun h ff ↦ by
     rw [Finsupp.sum_comm]
     convert h (ff.sum fun xv z ↦ .single xv.1
-      ((z/‖v‖ ^ 2) • (innerSL 𝕜 v).smulRight xv.2)) v
+      ((z / ‖v‖ ^ 2) • (innerSL 𝕜 v).smulRight xv.2)) v
     simp [Finsupp.sum_sum_index, inner_add_right, inner_add_left, ← smul_assoc, hv]
     simp [inner_smul_left, inner_smul_right, ← mul_assoc, mul_comm]
   tfae_have 2 → 3 := fun h vv ↦ by
@@ -301,7 +307,8 @@ private lemma inner_H₀_def (f g : H₀ K) :
 
 variable (K) in
 /-- The reproducing kernel Hilbert space generated by a positive semidefinite matrix.
-TODO: Privatize. -/
+TODO: Make nonexposed def once deriving is fixed. See
+https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/backward.2EisDefEq.2ErespectTransparency/near/578850754 -/
 abbrev OfKernel := UniformSpace.Completion (H₀ K)
 --deriving SeminormedAddCommGroup, InnerProductSpace 𝕜, CompleteSpace
 

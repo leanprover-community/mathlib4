@@ -93,6 +93,7 @@ initialize_simps_projections VectorMeasure (measureOf' → apply)
 theorem empty (v : VectorMeasure α M) : v ∅ = 0 :=
   v.empty'
 
+@[simp]
 theorem not_measurable (v : VectorMeasure α M) {i : Set α} (hi : ¬MeasurableSet i) : v i = 0 :=
   v.not_measurable' hi
 
@@ -514,6 +515,10 @@ def ennrealToMeasure {_ : MeasurableSpace α} (v : VectorMeasure α ℝ≥0∞) 
 theorem ennrealToMeasure_apply {m : MeasurableSpace α} {v : VectorMeasure α ℝ≥0∞} {s : Set α}
     (hs : MeasurableSet s) : ennrealToMeasure v s = v s := by
   rw [ennrealToMeasure, ofMeasurable_apply _ hs]
+
+@[simp]
+theorem ennrealToMeasure_zero : ennrealToMeasure (0 : VectorMeasure α ℝ≥0∞) = 0 := by
+  simp [ennrealToMeasure]
 
 @[simp]
 theorem _root_.MeasureTheory.Measure.toENNRealVectorMeasure_ennrealToMeasure
