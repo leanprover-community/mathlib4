@@ -400,7 +400,8 @@ end smul
 
 variable (I) in
 /-- The exterior derivative of a scalar function on `M`, as a section of the cotangent bundle. -/
-noncomputable abbrev extDerivFun (g : M → F) :
+@[expose]
+noncomputable def extDerivFun (g : M → F) :
     Π x : M, TangentSpace I x →L[𝕜] F :=
   fun x ↦ (NormedSpace.fromTangentSpace <| g x).toContinuousLinearMap ∘L (mfderiv% g x)
 

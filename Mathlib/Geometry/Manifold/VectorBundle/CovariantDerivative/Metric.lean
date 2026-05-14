@@ -258,7 +258,7 @@ variable {I} [ContMDiffVectorBundle 1 F V I] in
 theorem compatibilityTensor_apply_eq_extend [FiniteDimensional ℝ F] (X₀ : TangentSpace I x)
     (σ₀ τ₀ : V x) :
     cov.compatibilityTensor x σ₀ τ₀ X₀ =
-      fromTangentSpace _ (mfderiv% ⟪(FiberBundle.extend F σ₀), (FiberBundle.extend F τ₀)⟫ x X₀)
+      extDerivFun% ⟪(FiberBundle.extend F σ₀), (FiberBundle.extend F τ₀)⟫ x X₀
         - inner ℝ (cov (FiberBundle.extend F σ₀) x X₀) τ₀
         - inner ℝ σ₀ (cov (FiberBundle.extend F τ₀) x X₀) := by
   simp [compatibilityTensor, TensorialAt.mkHom₂_apply_eq_extend, compatibilityTensorAux_apply]
@@ -274,7 +274,7 @@ variable {I} [IsManifold I 1 M] [ContMDiffVectorBundle 1 F V I]
 lemma isCompatible_iff [FiniteDimensional ℝ F] :
     cov.IsCompatible ↔ ∀ {x : M} {X : Π x, TangentSpace I x} {σ τ : (x : M) → V x},
       MDiffAt (T% X) x → MDiffAt (T% σ) x → MDiffAt (T% τ) x →
-      fromTangentSpace _ (mfderiv% ⟪σ, τ⟫ x (X x)) = ⟪∇ X σ, τ⟫ x + ⟪σ, ∇ X τ⟫ x := by
+      extDerivFun% ⟪σ, τ⟫ x (X x) = ⟪∇ X σ, τ⟫ x + ⟪σ, ∇ X τ⟫ x := by
   refine ⟨fun hcov x X σ τ hX hσ hτ ↦ ?_, fun h ↦ ?_⟩
   · have H := congr($hcov x (σ x) (τ x) (X x))
     simp [compatibilityTensor_apply _ _ hσ hτ] at H
