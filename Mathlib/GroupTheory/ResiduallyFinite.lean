@@ -59,6 +59,11 @@ theorem residuallyFinite_iff_exists_finiteIndexNormalSubgroup :
   simp_rw [residuallyFinite_iff_forall_finiteIndexNormalSubgroup, ← not_forall, not_imp_not]
 
 @[to_additive]
+theorem exists_finiteIndexNormalSubgroup_notMem [ResiduallyFinite G] (g : G) (hg : g ≠ 1):
+    ∃ H : FiniteIndexNormalSubgroup G, g ∉ H :=
+  residuallyFinite_iff_exists_finiteIndexNormalSubgroup.mp ‹_› g hg
+
+@[to_additive]
 theorem residuallyFinite_iff_forall_finiteIndex :
     ResiduallyFinite G ↔ ∀ g : G, (∀ (H : Subgroup G) [H.FiniteIndex], g ∈ H) → g = 1 := by
   rw [residuallyFinite_iff_forall_finiteIndexNormalSubgroup]
@@ -74,17 +79,17 @@ theorem residuallyFinite_iff_exists_finiteIndex :
 /-- If `G` is residually finite, for every pair of distinct elements `g`, `h` there exists a finite
 index normal subgroup `H` such that `g` and `h` differ in the quotient `G ⧸ H`. -/
 @[to_additive]
-theorem exists_finiteIndexNormalSubgroup_of_residuallyFinite (hr : ResiduallyFinite G) (g h : G)
+theorem exists_finiteIndexNormalSubgroup_of_residuallyFinite [ResiduallyFinite G] (g h : G)
     (hgh : g ≠ h) : ∃ H : FiniteIndexNormalSubgroup G, (g : G ⧸ H.toSubgroup) ≠ ↑h := by
-  obtain ⟨H, hH⟩ := residuallyFinite_iff_exists_finiteIndexNormalSubgroup.mp hr (g⁻¹ * h)
+  obtain ⟨H, hH⟩ := exists_finiteIndexNormalSubgroup_notMem (g⁻¹ * h)
     (fun h ↦ hgh <| eq_of_inv_mul_eq_one h)
   exact ⟨H, by simpa [QuotientGroup.eq]⟩
 
 /-- `G` is residually finite if for every element `g` not equal to `1` there exists a group
 homomorphism `f` to a finite group `H` such that `f g ≠ 1`. -/
 @[to_additive]
-theorem residuallyFinite_of_forall_exists_finite_monoidHom
-    (h : ∀ g : G, g ≠ 1 → ∃ (H : Type) (_ : Group H) (_ : Finite H) (f : G →* H), f g ≠ 1) :
+theorem residuallyFinite_of_forall_exists_finite_monoidHom.{u}
+    (h : ∀ g : G, g ≠ 1 → ∃ (H : Type u) (_ : Group H) (_ : Finite H) (f : G →* H), f g ≠ 1) :
     ResiduallyFinite G := by
   rw [residuallyFinite_iff_exists_finiteIndex]
   intro g hg
