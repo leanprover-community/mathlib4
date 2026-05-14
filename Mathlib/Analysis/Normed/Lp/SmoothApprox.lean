@@ -36,8 +36,9 @@ variable [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] [B
 
 /-- For every continuous compactly supported function `f` there exists a smooth compactly supported
 function `g` such that `f - g` is arbitrary small in the `Lp`-norm for `p < ∞`. -/
-theorem exist_eLpNorm_sub_le_of_continuous {p : ℝ≥0∞} (hp' : p ≠ 0) (hp : p ≠ ⊤) {ε : ℝ}
-    (hε : 0 < ε) {f : E → F} (h₁ : HasCompactSupport f) (h₂ : Continuous f) :
+theorem exist_eLpNorm_sub_le_of_continuous (μ : Measure E := by volume_tac)
+    [IsFiniteMeasureOnCompacts μ] {p : ℝ≥0∞} (hp' : p ≠ 0) {ε : ℝ} (hε : 0 < ε) {f : E → F}
+    (h₁ : HasCompactSupport f) (h₂ : Continuous f) :
     ∃ (g : E → F), HasCompactSupport g ∧ ContDiff ℝ ∞ g ∧
     eLpNorm (f - g) p μ ≤ ENNReal.ofReal ε := by
   rcases eq_or_ne p ∞ with rfl | hp
@@ -88,7 +89,7 @@ theorem exist_eLpNorm_sub_le {p : ℝ≥0∞} (hp : p ≠ ⊤) (hp₂ : 1 ≤ p)
   obtain ⟨g, hg₁, hg₂, hg₃, hg₄⟩ := hf.exists_hasCompactSupport_eLpNorm_sub_le
     (ne_zero_of_ge_one hp₂) hp hε₂'.ne'
   obtain ⟨g', hg'₁, hg'₂, hg'₃⟩ := hg₁.exist_eLpNorm_sub_le_of_continuous μ (ne_zero_of_ge_one hp₂)
-    hp hε₂ hg₃
+    hε₂ hg₃
   refine ⟨g', hg'₁, hg'₂, ?_⟩
   have : f - g' = (f - g) - (g' - g) := by simp
   grw [this, eLpNorm_sub_le (hf.aestronglyMeasurable.sub hg₄.aestronglyMeasurable)
