@@ -28,7 +28,7 @@ This file develops a theorem-oriented interface for row reduction.
 
 namespace Matrix
 
-variable {R : Type*} {m n : Type*}
+variable {R m n : Type*}
 
 section RowScale
 
