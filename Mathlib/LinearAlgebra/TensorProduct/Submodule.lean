@@ -354,7 +354,7 @@ lemma sup_right : TensorProduct p (q ⊔ q') = TensorProduct p q ⊔ TensorProdu
       · exact ⟨m ⊗ₜ[R] ⟨n'', hn''⟩, rfl⟩
     | add x y hx hy => simp only [map_add, add_mem hx hy]
   · simp only [sup_le_iff]
-    refine ⟨range_mapIncl_mono le_rfl le_sup_left, range_mapIncl_mono le_rfl le_sup_right⟩
+    exact ⟨range_mapIncl_mono le_rfl le_sup_left, range_mapIncl_mono le_rfl le_sup_right⟩
 
 end TensorProduct
 

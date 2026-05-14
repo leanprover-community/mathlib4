@@ -46,8 +46,7 @@ theorem isCompl_lTensor (hM : IsCompl M₁ M₂) :
     M₁.subtype.comp (projectionOnto _ _ hM)
       + M₂.subtype.comp (projectionOnto _ _ hM.symm) = LinearMap.id := by
     ext x
-    simp only [add_apply, LinearMap.coe_comp, coe_subtype, Function.comp_apply, id_coe, id_eq]
-    erw [projection_add_projection_eq_self]
+    simp [projection_add_projection_eq_self]
   apply IsCompl.mk
   · rw [disjoint_def]
     intro x h h'

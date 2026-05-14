@@ -187,8 +187,7 @@ theorem TensorProduct.map_surjective : Function.Surjective (TensorProduct.map g 
 
 theorem TensorProduct.map_range_eq :
     (TensorProduct.map f g).range = (TensorProduct.map f.range.subtype g.range.subtype).range := by
-  nth_rewrite 1 [← subtype_comp_rangeRestrict f]
-  nth_rewrite 1 [← subtype_comp_rangeRestrict g]
+  conv_lhs => rw [← subtype_comp_rangeRestrict f, ← subtype_comp_rangeRestrict g]
   rw [TensorProduct.map_comp]
   apply range_comp_of_range_eq_top
   rw [range_eq_top]
