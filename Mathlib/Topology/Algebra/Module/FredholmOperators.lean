@@ -108,10 +108,12 @@ lemma rel_comp {u v : V →ₗ[K] V₂} {u' v' : V₂ →ₗ[K] V₃} (h : u ≈
   rw [eqv_iff] at *
   exact h.comp_sub_comp h'
 
+@[gcongr]
 lemma rel_comp_right {u : V →ₗ[K] V₂} {u' v' : V₂ →ₗ[K] V₃} (h' : u' ≈ v') :
     u' ∘ₗ u ≈ v' ∘ₗ u :=
   rel_comp (Quotient.exact rfl) h'
 
+@[gcongr]
 lemma rel_comp_left {u v : V →ₗ[K] V₂} {u' : V₂ →ₗ[K] V₃} (h : u ≈ v) :
     u' ∘ₗ u ≈ u' ∘ₗ v :=
   rel_comp h (Quotient.exact rfl)
@@ -157,6 +159,25 @@ lemma LinearMap.equiv_of_quasiInverse' {u u' : V₃ →ₗ[K] V₂} {v : V₂ �
     u ≈ u' := by
   symm at h h'
   exact equiv_of_quasiInverse h h'
+
+variable {V₄ : Type*} [AddCommGroup V₄] [Module K V₄]
+lemma LinearMap.QuasiInverse_comp {u : V₂ →ₗ[K] V₃} {v : V₃ →ₗ[K] V₂} {u'  : V₃ →ₗ[K] V₄}
+    {v' : V₄ →ₗ[K] V₃}
+    (h : u.QuasiInverse v) (h' : u'.QuasiInverse v') :
+    (u' ∘ₗ u).QuasiInverse (v ∘ₗ v') := by
+  rcases h with ⟨h₁, h₂⟩
+  rcases h' with ⟨h'₁, h'₂⟩
+  constructor
+  · calc
+      (u' ∘ₗ u) ∘ₗ (v ∘ₗ v') = u' ∘ₗ (u ∘ₗ v) ∘ₗ v' := comp_assoc ..
+      _ ≈  u' ∘ₗ .id ∘ₗ v' := by gcongr ; exact h₁
+      _ =  u' ∘ₗ v' := by simp
+      _ ≈  .id := h'₁
+  · calc
+      (v ∘ₗ v') ∘ₗ (u' ∘ₗ u) = v ∘ₗ (v' ∘ₗ u') ∘ₗ u := comp_assoc ..
+      _ ≈  v ∘ₗ .id ∘ₗ u := by gcongr ; exact h'₂
+      _ =  v ∘ₗ u := by simp
+      _ ≈  .id := h₂
 end
 end
 
@@ -180,28 +201,47 @@ namespace QuotFiniteSubmodules
 variable [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F]
 
 variable (𝕜 E F) in
-def FiniteRank : Submodule 𝕜 (E →L[𝕜] F) where
-  carrier := {u | u.toLinearMap.HasFiniteRank}
-  add_mem' hu hv := by simp_all
-  zero_mem' := by simp
-  smul_mem' c hu := by simp_all
+def FiniteRank : Submodule 𝕜 (E →L[𝕜] F) :=
+  Submodule.comap (coeLM 𝕜) (LinearMap.FiniteRank 𝕜 E F)
 
-scoped instance : Setoid (E →L[𝕜] F) := (FiniteRank 𝕜 E F).quotientRel
+scoped instance : Setoid (E →L[𝕜] F) :=
+  Setoid.comap ContinuousLinearMap.toLinearMap QuotFiniteRank.instSetoidLinearMapId
 
-lemma eqv_iff {u v : E →L[𝕜] F} : u ≈ v ↔ (u - v).toLinearMap.HasFiniteRank := by
-  erw [← @Quotient.eq_iff_equiv, Submodule.Quotient.eq]
-  rfl
+omit [IsTopologicalAddGroup
+  E] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F] in
+open scoped QuotFiniteRank in
+lemma eqv_iff {u v : E →L[𝕜] F} : (u ≈ v) ↔ u.toLinearMap ≈ v.toLinearMap :=
+  Iff.rfl
 
-variable {G : Type*} [AddCommGroup G] [TopologicalSpace G] [IsTopologicalAddGroup G]  [Module 𝕜 G]
-  [ContinuousConstSMul 𝕜 G] [ContinuousAdd G]
+variable {G : Type*} [AddCommGroup G] [TopologicalSpace G] [IsTopologicalAddGroup G]
+  [Module 𝕜 G] [ContinuousConstSMul 𝕜 G] [ContinuousAdd G]
 
+omit [IsTopologicalAddGroup E] [IsTopologicalAddGroup F]
+    [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F] [IsTopologicalAddGroup G]
+    [ContinuousConstSMul 𝕜 G] [ContinuousAdd G] in
 lemma rel_comp {u v : E →L[𝕜] F} {u' v' : F →L[𝕜] G} (h : u ≈ v) (h' : u' ≈ v') :
     u' ∘L u ≈ v' ∘L v := by
   rw [eqv_iff] at *
-  exact h.comp_sub_comp h'
+  push_cast
+  exact QuotFiniteRank.rel_comp h h'
 
 def IsFredholm_quot : Prop := ∃ g : F →L[𝕜] E,
   (f ∘L g ≈ .id 𝕜 F) ∧ (g ∘L f ≈ .id 𝕜 E)
+
+omit [IsTopologicalAddGroup
+  E] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F] in
+lemma IsFredholm_quot.iff_toLinearMap :
+    IsFredholm_quot f ↔ ∃ g : F →L[𝕜] E, LinearMap.QuasiInverse f g.toLinearMap := by
+  rfl
+
+lemma IsFredholm_quot.comp {f : E →L[𝕜] F} {f' : F →L[𝕜] G} (hf : IsFredholm_quot f)
+    (hf' : IsFredholm_quot f') : IsFredholm_quot (f' ∘L f) := by
+  rw [IsFredholm_quot.iff_toLinearMap] at *
+  rcases hf with ⟨g, hg⟩
+  rcases hf' with ⟨g', hg'⟩
+  use g ∘L g'
+  push_cast
+  exact LinearMap.QuasiInverse_comp hg hg'
 
 end QuotFiniteSubmodules
 
