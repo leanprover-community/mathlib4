@@ -55,13 +55,12 @@ theorem FG.cofg_of_isCompl {S T : Submodule R M} (hST : IsCompl S T) (hS : S.FG)
   exact Module.Finite.equiv (quotientEquivOfIsCompl T S hST.symm).symm
 
 /-- A submodule that contains a CoFG submodule is CoFG. -/
-theorem CoFG.of_le {S T : Submodule R M} (hT : S ≤ T) (hS : S.CoFG) : T.CoFG :=
-  by
+theorem CoFG.of_le {S T : Submodule R M} (hT : S ≤ T) (hS : S.CoFG) : T.CoFG := by
   rw [← sup_eq_right.mpr hT]
   exact Module.Finite.equiv (quotientQuotientEquivQuotientSup S T)
 
 @[deprecated (since := "2026-05-13")]
-alias Submodule.CoFG.cofg_of_le := CoFG.of_le
+alias CoFG.cofg_of_le := CoFG.of_le
 
 section LinearMap
 
