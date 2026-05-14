@@ -157,14 +157,14 @@ theorem decompose_of_mem {x : M} {i : ι} (hx : x ∈ ℳ i) :
   decompose_coe _ ⟨x, hx⟩
 
 theorem decompose_of_mem_same {x : M} {i : ι} (hx : x ∈ ℳ i) :
-    (decompose ℳ x i) = (⟨x, hx⟩ : ℳ i) := by
+    decompose ℳ x i = (⟨x, hx⟩ : ℳ i) := by
   rw [decompose_of_mem _ hx, DirectSum.of_eq_same]
 
 theorem coe_decompose_of_mem_same {x : M} {i : ι} (hx : x ∈ ℳ i) : (decompose ℳ x i : M) = x := by
   simp [decompose_of_mem_same _ hx]
 
 theorem decompose_of_mem_ne {x : M} {i j : ι} (hx : x ∈ ℳ i) (hij : i ≠ j) :
-    (decompose ℳ x j) = 0 := by
+    decompose ℳ x j = 0 := by
   rw [decompose_of_mem _ hx, DirectSum.of_eq_of_ne _ _ _ hij.symm]
 
 theorem coe_decompose_of_mem_ne {x : M} {i j : ι} (hx : x ∈ ℳ i) (hij : i ≠ j) :
@@ -177,19 +177,14 @@ theorem degree_eq_of_mem_mem {x : M} {i j : ι} (hxi : x ∈ ℳ i) (hxj : x ∈
 
 theorem mem_iff_exists_decompose_eq_of_same {m : M} {i : ι} :
     m ∈ ℳ i ↔ ∃ x, decompose ℳ m = DirectSum.of (fun i ↦ ℳ i) i x := by
-  constructor
-  · intro hm
-    use decompose ℳ m i
-    rw [← Equiv.eq_symm_apply, decompose_symm_of, coe_decompose_of_mem_same ℳ hm]
-  · rintro ⟨⟨x, xmem⟩, hx⟩
-    simp only [← Equiv.eq_symm_apply, decompose_symm_of] at hx
-    rwa [hx]
+  simp_rw [Equiv.apply_eq_iff_eq_symm_apply, decompose_symm_of]
+  simp
 
 theorem mem_iff_forall_ne_decompose_eq_zero {m : M} {i : ι} :
     m ∈ ℳ i ↔ ∀ j ≠ i, decompose ℳ m j = 0 := by
   constructor
   · intro hm j hj
-    simpa using DirectSum.decompose_of_mem_ne ℳ hm (Ne.symm hj)
+    exact DirectSum.decompose_of_mem_ne ℳ hm hj.symm
   · intro hm
     rw [mem_iff_exists_decompose_eq_of_same]
     use decompose ℳ m i
@@ -203,9 +198,9 @@ lemma Rel.IsPureHomogeneous.isHomogeneous (r : M → M → Prop)
     Rel.IsHomogeneous ℳ r := by
   intro a b h i
   obtain ⟨j, ha, hb⟩ := hr h
-  by_cases hij : j = i
-  · simp [← hij, decompose_of_mem_same, ha, hb, h]
-  · simp [decompose_of_mem_ne _ ha hij, decompose_of_mem_ne _ hb hij, hr0]
+  obtain rfl | hji := eq_or_ne j i
+  · simp [decompose_of_mem_same, ha, hb, h]
+  · simp [decompose_of_mem_ne _ ha hji, decompose_of_mem_ne _ hb hji, hr0]
 
 open Relation in
 theorem Rel.IsHomogeneous.eqvGenIsHomogeneous (r : M → M → Prop) (hr : Rel.IsHomogeneous ℳ r) :
