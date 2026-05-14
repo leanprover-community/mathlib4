@@ -118,7 +118,7 @@ noncomputable def restrictSource (f : X.PartialIso Y) (U : Opens X) (hU : Dense 
   dense_source := hU
   target := f.target.ι ''ᵁ f.iso.hom ''ᵁ f.source.ι ⁻¹ᵁ U
   dense_target :=
-    have := PartialMap.Opens.isDominant_ι f.dense_target
+    have := Opens.isDominant_ι f.dense_target
     f.target.ι.denseRange.dense_image f.target.ι.continuous <|
       f.iso.hom.denseRange.dense_image f.iso.hom.continuous <|
         hU.preimage f.source.ι.isOpenEmbedding.isOpenMap
