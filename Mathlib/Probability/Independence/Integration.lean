@@ -146,13 +146,15 @@ theorem lintegral_prod_eq_prod_lintegral_of_indepFun {ι : Type*}
     · exact s.aemeasurable_prod (fun i _ ↦ (x_mea i).aemeasurable)
     · exact (iIndepFun.indepFun_finsetProd_of_notMem hX x_mea hj).symm
 
-/-- The scalar product of two independent and integrable random variables is integrable. -/
+/-- A continuous bilinear map applied to two independent and integrable random variables
+is integrable. -/
 theorem IndepFun.integrable_bilin {α β γ : Type*} [MeasurableSpace α] [MeasurableSpace β]
-    {X : Ω → α} {Y : Ω → β} [NormedAddCommGroup α] [NormedSpace ℝ α]
-    [NormedAddCommGroup β] [NormedSpace ℝ β] [NormedAddCommGroup γ] [NormedSpace ℝ γ]
-    [OpensMeasurableSpace β] [OpensMeasurableSpace α]
-    (hXY : X ⟂ᵢ[μ] Y) (hX : Integrable X μ)
-    (hY : Integrable Y μ) (B : α →L[ℝ] β →L[ℝ] γ) : Integrable (fun ω ↦ B (X ω) (Y ω)) μ := by
+    [NormedAddCommGroup α] [NormedSpace ℝ α] [OpensMeasurableSpace α]
+    [NormedAddCommGroup β] [NormedSpace ℝ β] [OpensMeasurableSpace β]
+    [NormedAddCommGroup γ] [NormedSpace ℝ γ]
+    {X : Ω → α} {Y : Ω → β} (hXY : X ⟂ᵢ[μ] Y) (hX : Integrable X μ) (hY : Integrable Y μ)
+    (B : α →L[ℝ] β →L[ℝ] γ) :
+    Integrable (fun ω ↦ B (X ω) (Y ω)) μ := by
   refine ⟨Continuous.comp_aestronglyMeasurable₂ (g := fun x y ↦ B x y) (by fun_prop) hX.1 hY.1, ?_⟩
   unfold HasFiniteIntegral
   calc
@@ -167,13 +169,12 @@ theorem IndepFun.integrable_bilin {α β γ : Type*} [MeasurableSpace α] [Measu
         (hXY.comp measurable_enorm measurable_enorm)]
   _ < ∞ := ENNReal.mul_lt_top (by finiteness) (ENNReal.mul_lt_top hX.2 hY.2)
 
-/-- The scalar product of two independent and integrable random variables is integrable. -/
 theorem IndepFun.integral_bilin_comp_comp {𝓧 𝓨 α β γ : Type*}
-    [MeasurableSpace 𝓧] [MeasurableSpace 𝓨] {X : Ω → 𝓧} {Y : Ω → 𝓨}
+    [MeasurableSpace 𝓧] [MeasurableSpace 𝓨]
     [NormedAddCommGroup α] [NormedSpace ℝ α] [CompleteSpace α]
     [NormedAddCommGroup β] [NormedSpace ℝ β] [CompleteSpace β]
     [NormedAddCommGroup γ] [NormedSpace ℝ γ] [CompleteSpace γ]
-    {f : 𝓧 → α} {g : 𝓨 → β} (hXY : X ⟂ᵢ[μ] Y)
+    {X : Ω → 𝓧} {Y : Ω → 𝓨} {f : 𝓧 → α} {g : 𝓨 → β} (hXY : X ⟂ᵢ[μ] Y)
     (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ)
     (hf : Integrable f (μ.map X)) (hg : Integrable g (μ.map Y)) (B : α →L[ℝ] β →L[ℝ] γ) :
     ∫ ω, B (f (X ω)) (g (Y ω)) ∂μ = B (∫ ω, f (X ω) ∂μ) (∫ ω, g (Y ω) ∂μ) := by
