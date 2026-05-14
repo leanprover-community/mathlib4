@@ -121,8 +121,7 @@ noncomputable def riemannianMetricVectorSpace :
     rw [contMDiffAt_section]
     convert contMDiffAt_const (c := innerSL ℝ)
     ext v w
-    simp [hom_trivializationAt_apply, ContinuousLinearMap.inCoordinates,
-      Trivialization.linearMapAt_apply, TangentSpace]
+    simp [hom_trivializationAt_apply, ContinuousLinearMap.inCoordinates, TangentSpace]
 
 noncomputable instance : RiemannianBundle (fun (x : F) ↦ TangentSpace 𝓘(ℝ, F) x) :=
   ⟨(riemannianMetricVectorSpace F).toRiemannianMetric⟩

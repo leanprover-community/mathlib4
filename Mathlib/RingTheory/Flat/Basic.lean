@@ -398,6 +398,27 @@ theorem includeRight_injective [Module.Flat R B] (ha : Function.Injective (algeb
 
 end Algebra.TensorProduct
 
+variable (A) [Module.Flat R A] {M : Type*} [AddCommMonoid M] [Module R M] (p : Submodule R M)
+
+namespace Submodule
+
+theorem toBaseChange_injective : Function.Injective (p.toBaseChange A) :=
+  (p.subtype.baseChange A).injective_rangeRestrict_iff.mpr
+    (Module.Flat.lTensor_preserves_injective_linearMap p.subtype (injective_subtype p))
+
+/-- `Submodule.toBaseChange` as a `LinearEquiv`. -/
+@[simps! apply]
+noncomputable def toBaseChange.toLinearEquiv : A ⊗[R] ↥p ≃ₗ[A] baseChange A p :=
+  .ofBijective (p.toBaseChange A) ⟨p.toBaseChange_injective A, p.toBaseChange_surjective A⟩
+
+@[simp]
+theorem toBaseChange.toLinearEquiv_symm_apply (a : A) (m : p) :
+    (toBaseChange.toLinearEquiv A p).symm
+      ⟨a ⊗ₜ[R] m, tmul_mem_baseChange_of_mem a m.2⟩ = a ⊗ₜ[R] m :=
+  (toBaseChange.toLinearEquiv A p).symm_apply_apply (a ⊗ₜ[R] m)
+
+end Submodule
+
 end Injective
 
 section Nontrivial

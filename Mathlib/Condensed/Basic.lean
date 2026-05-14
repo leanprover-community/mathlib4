@@ -42,11 +42,8 @@ universe u v w
 `Condensed.{u} C` is the category of condensed objects in a category `C`, which are
 defined as sheaves on `CompHaus.{u}` with respect to the coherent Grothendieck topology.
 -/
-def Condensed (C : Type w) [Category.{v} C] :=
+abbrev Condensed (C : Type w) [Category.{v} C] :=
   Sheaf (coherentTopology CompHaus.{u}) C
-
-instance {C : Type w} [Category.{v} C] : Category (Condensed.{u} C) :=
-  show Category (Sheaf _ _) from inferInstance
 
 /--
 Condensed sets (types) with the appropriate universe levels, i.e. `Type (u + 1)`-valued
@@ -58,10 +55,10 @@ namespace Condensed
 
 variable {C : Type w} [Category.{v} C]
 
-@[simp]
+@[deprecated ObjectProperty.FullSubcategory.id_hom (since := "2026-04-08")]
 lemma id_hom (X : Condensed.{u} C) : (𝟙 X : X ⟶ X).hom = 𝟙 _ := rfl
 
-@[simp]
+@[deprecated ObjectProperty.FullSubcategory.comp_hom (since := "2026-04-08")]
 lemma comp_hom {X Y Z : Condensed.{u} C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g).hom = f.hom ≫ g.hom :=
   rfl
 
@@ -71,7 +68,6 @@ lemma comp_hom {X Y Z : Condensed.{u} C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g)
 @[ext]
 lemma hom_ext {X Y : Condensed.{u} C} (f g : X ⟶ Y) (h : ∀ S, f.hom.app S = g.hom.app S) :
     f = g := by
-  apply Sheaf.hom_ext
   ext
   exact h _
 

@@ -284,8 +284,9 @@ lemma eval₂ (hφ : φ.IsHomogeneous m) (f : R →+* MvPolynomial τ S) (g : σ
   · rintro k -
     apply (hg k).pow
 
-lemma map (hφ : φ.IsHomogeneous n) (f : R →+* S) : (map f φ).IsHomogeneous n := by
-  simpa only [one_mul] using hφ.eval₂ _ _ (fun r ↦ isHomogeneous_C _ (f r)) (isHomogeneous_X _)
+protected lemma map (hφ : φ.IsHomogeneous n) (f : R →+* S) : (map f φ).IsHomogeneous n := by
+  rw [map_eq_eval₂Hom_C_comp]
+  simpa [one_mul] using hφ.eval₂ _ _ (fun r ↦ isHomogeneous_C _ (f r)) (isHomogeneous_X _)
 
 lemma of_map {f : R →+* S} (hf : Function.Injective f)
     (h : (MvPolynomial.map f φ).IsHomogeneous n) : φ.IsHomogeneous n :=

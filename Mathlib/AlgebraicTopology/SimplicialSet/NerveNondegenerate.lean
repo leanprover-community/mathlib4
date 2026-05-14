@@ -42,7 +42,7 @@ lemma mem_range_nerve_σ_iff (s : (nerve X) _⦋n + 1⦌) (i : Fin (n + 1)) :
       rw [Fin.predAbove_of_castSucc_lt _ _ h₁, Fin.pred_succ,
         Fin.succAbove_of_le_castSucc _ _ (Fin.le_castSucc_iff.2 h₁)]
     · simp only [not_lt] at h₁
-      grind [SimplexCategory.len_mk, → Fin.succAbove_of_castSucc_lt,
+      grind [→ Fin.succAbove_of_castSucc_lt,
         → Fin.predAbove_of_le_castSucc, Fin.castSucc_castPred, Fin.castPred_castSucc,
         Fin.succAbove_castSucc_self, → LE.le.lt_or_eq]
 
@@ -64,7 +64,7 @@ lemma mem_nerve_nonDegenerate_iff_strictMono (s : (nerve X) _⦋n⦌) :
     apply exists_congr
     intro i
     have := s.monotone i.castSucc_le_succ
-    grind [SimplexCategory.len_mk, lt_self_iff_false, LE.le.lt_or_eq]
+    grind [lt_self_iff_false, LE.le.lt_or_eq]
 
 lemma mem_nerve_nonDegenerate_iff_injective (s : (nerve X) _⦋n⦌) :
     s ∈ (nerve X).nonDegenerate n ↔ Function.Injective s.obj := by

@@ -18,16 +18,14 @@ This file defines the transcendence basis as a maximal algebraically independent
 ## Main results
 
 * `exists_isTranscendenceBasis`: a ring extension has a transcendence basis
+* `IsTranscendenceBasis.lift_cardinalMk_eq_trdeg`: any transcendence basis of a domain has
+  cardinality equal to transcendental degree.
 * `IsTranscendenceBasis.lift_cardinalMk_eq`: any two transcendence bases of a domain have the
   same cardinality.
 
 ## References
 
 * [Stacks: Transcendence](https://stacks.math.columbia.edu/tag/030D)
-
-## TODO
-Define the transcendence degree and show it is independent of the choice of a
-transcendence basis.
 
 ## Tags
 transcendence basis, transcendence degree, transcendence
@@ -416,6 +414,7 @@ namespace IsTranscendenceBasis
 
 variable [Nontrivial R] [NoZeroDivisors A]
 
+/-- Any transcendence basis of a domain has cardinality equal to transcendental degree. -/
 theorem lift_cardinalMk_eq_trdeg (hx : IsTranscendenceBasis R x) :
     lift.{w} #ι = lift.{u} (trdeg R A) := by
   have := (faithfulSMul_iff_algebraMap_injective R A).mpr hx.1.algebraMap_injective

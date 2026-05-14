@@ -90,13 +90,13 @@ instance : CoeSort (CompHausLike P) (Type u) :=
   ⟨fun X => X.toTop⟩
 
 instance category : Category (CompHausLike P) :=
-  inferInstanceAs (Category (InducedCategory _ toTop))
+  inferInstanceAs <| Category (InducedCategory _ toTop)
 
 instance concreteCategory : ConcreteCategory (CompHausLike P) (C(·, ·)) :=
-  InducedCategory.concreteCategory toTop
+  inferInstanceAs <| ConcreteCategory (InducedCategory _ toTop) _
 
 instance hasForget₂ : HasForget₂ (CompHausLike P) TopCat :=
-  InducedCategory.hasForget₂ _
+  inferInstanceAs <| HasForget₂ (InducedCategory _ toTop) _
 
 variable (X : Type u) [TopologicalSpace X] [CompactSpace X] [T2Space X]
 

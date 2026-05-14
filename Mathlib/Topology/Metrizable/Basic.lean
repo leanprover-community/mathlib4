@@ -107,6 +107,11 @@ instance PseudoMetrizableSpace.regularSpace [PseudoMetrizableSpace X] : RegularS
   let := pseudoMetrizableSpaceUniformity X
   inferInstance
 
+instance (priority := 100) IndiscreteTopology.pseudoMetrizableSpace [IndiscreteTopology X] :
+    PseudoMetrizableSpace X where
+  exists_countably_generated :=
+    ⟨⊤, (IndiscreteTopology.eq_top X).symm, isCountablyGenerated_top⟩
+
 /-- A topological space is metrizable if there exists a metric space structure compatible with the
 topology. To minimize imports, we implement this class in terms of the existence of a
 countably generated uniformity inducing the topology, which is mathematically

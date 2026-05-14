@@ -47,9 +47,9 @@ noncomputable def mkFinCons {n : ℕ} {N : Submodule R M} (y : M) (b : Basis (Fi
   have span_b : Submodule.span R (Set.range (N.subtype ∘ b)) = N := by
     rw [Set.range_comp, Submodule.span_image, b.span_eq, Submodule.map_subtype_top]
   Basis.mk (v := Fin.cons y (N.subtype ∘ b))
-    ((b.linearIndependent.map' N.subtype (Submodule.ker_subtype _)).fin_cons' _ _
+    ((b.linearIndependent.map' N.subtype (Submodule.ker_subtype _)).finCons' _ _
       (by
-        rintro c ⟨x, hx⟩ hc
+        intro c x hx hc
         rw [span_b] at hx
         exact hli c x hx hc))
     fun x _ => by

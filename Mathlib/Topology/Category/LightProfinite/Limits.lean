@@ -40,6 +40,20 @@ instance : HasExplicitFiniteCoproducts.{w, u}
 abbrev isTerminalPUnit : IsTerminal (LightProfinite.of PUnit.{u + 1}) :=
   CompHausLike.isTerminalPUnit
 
+instance {X Y Z : LightProfinite} (f : X ⟶ Z) (g : Y ⟶ Z) [h : Epi g] :
+    Epi (CompHausLike.pullback.fst f g) := by
+  rw [LightProfinite.epi_iff_surjective] at h ⊢
+  intro x
+  obtain ⟨y, hy⟩ := h (f x)
+  exact ⟨⟨⟨x, y⟩, hy.symm⟩, rfl⟩
+
+instance {X Y Z : LightProfinite} (f : X ⟶ Z) (g : Y ⟶ Z) [h : Epi f] :
+    Epi (CompHausLike.pullback.snd f g) := by
+  rw [LightProfinite.epi_iff_surjective] at h ⊢
+  intro y
+  obtain ⟨x, hx⟩ := h (g y)
+  exact ⟨⟨⟨x, y⟩, hx⟩, rfl⟩
+
 example : FinitaryExtensive LightProfinite.{u} := inferInstance
 
 noncomputable example : PreservesFiniteCoproducts lightProfiniteToCompHaus.{u} := inferInstance

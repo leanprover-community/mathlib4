@@ -153,6 +153,10 @@ instance pi_countable {ι : Type*} [Countable ι] {α : ι → Type*} [∀ n, Me
   letI := fun n => upgradeStandardBorel (α n)
   inferInstance
 
+instance [StandardBorelSpace α] : MeasurableEq α := by
+  letI := upgradeStandardBorel α
+  infer_instance
+
 end instances
 
 end StandardBorelSpace

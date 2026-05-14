@@ -551,7 +551,7 @@ attribute [local instance] finrank_real_complex_fact'
 /-- The unit circle in `ℂ` is a charted space modelled on `EuclideanSpace ℝ (Fin 1)`.  This
 follows by definition from the corresponding result for `Metric.Sphere`. -/
 instance : ChartedSpace (EuclideanSpace ℝ (Fin 1)) Circle :=
-  EuclideanSpace.instChartedSpaceSphere
+  inferInstanceAs <| ChartedSpace _ (sphere _ _)
 
 instance : IsManifold (𝓡 1) ω Circle :=
   EuclideanSpace.instIsManifoldSphere (E := ℂ)

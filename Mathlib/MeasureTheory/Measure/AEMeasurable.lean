@@ -438,6 +438,16 @@ lemma map_sum {ι : Type*} {m : ι → Measure α} {f : α → β} (hf : AEMeasu
   have M i : AEMeasurable f (m i) := hf.mono_measure (le_sum m i)
   simp_rw [map_apply_of_aemeasurable (M _) hs]
 
+lemma map_finset_sum {ι β : Type*} {mβ : MeasurableSpace β} {m : ι → Measure α}
+    {f : α → β} {s : Finset ι} (hf : AEMeasurable f (∑ i ∈ s, m i)) :
+    map f (∑ i ∈ s, m i) = ∑ i ∈ s, (m i).map f := by
+  rw [← sum_coe_finset, ← sum_coe_finset, Measure.map_sum]
+  rwa [sum_coe_finset]
+
+lemma map_finset_sum' {ι β : Type*} [Fintype ι] {mβ : MeasurableSpace β} {m : ι → Measure α}
+    {f : α → β} (hf : AEMeasurable f (∑ i, m i)) :
+    map f (∑ i, m i) = ∑ i, (m i).map f := map_finset_sum hf
+
 instance (μ : Measure α) (f : α → β) [SFinite μ] : SFinite (μ.map f) := by
   by_cases H : AEMeasurable f μ
   · rw [← sum_sfiniteSeq μ] at H ⊢

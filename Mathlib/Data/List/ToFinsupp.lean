@@ -67,6 +67,10 @@ theorem toFinsupp_support :
     l.toFinsupp.support = {i ∈ Finset.range l.length | getD l i 0 ≠ 0} :=
   rfl
 
+lemma toFinsupp_support_subset :
+    l.toFinsupp.support ⊆ Finset.range l.length := by
+  simp [List.toFinsupp_support]
+
 theorem toFinsupp_apply_lt (hn : n < l.length) : l.toFinsupp n = l[n] :=
   getD_eq_getElem _ _ hn
 

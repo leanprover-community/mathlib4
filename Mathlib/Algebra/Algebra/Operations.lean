@@ -570,10 +570,8 @@ theorem mul_smul_mul_eq_smul_mul_smul (x y : R) : (x * y) • (M * N) = (x • M
 
 /-- Sub-R-modules of an R-algebra form an idempotent semiring. -/
 instance idemSemiring : IdemSemiring (Submodule R A) where
-  __ := instNonUnitalSemiring
   one_mul := Submodule.one_mul
   mul_one := Submodule.mul_one
-  bot_le _ := bot_le
 
 instance : IsOrderedRing (Submodule R A) where
 

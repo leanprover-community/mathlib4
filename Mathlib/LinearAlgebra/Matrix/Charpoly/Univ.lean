@@ -61,7 +61,7 @@ lemma univ_map_eval₂Hom (M : n × n → S) :
 
 lemma univ_map_map :
     (univ R n).map (MvPolynomial.map f) = univ S n := by
-  rw [MvPolynomial.map, univ_map_eval₂Hom]; rfl
+  rw [MvPolynomial.map_eq_eval₂Hom_C_comp, univ_map_eval₂Hom]; rfl
 
 @[simp]
 lemma univ_coeff_eval₂Hom (M : n × n → S) (i : ℕ) :

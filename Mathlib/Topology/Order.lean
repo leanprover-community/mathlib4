@@ -1026,7 +1026,7 @@ theorem generateFrom_iInter (f : ι → TopologicalSpace α) :
 theorem generateFrom_iInter_of_generateFrom_eq_self (f : ι → Set (Set α))
     (hf : ∀ i, { s | IsOpen[generateFrom (f i)] s } = f i) :
     generateFrom (⋂ i, f i) = ⨆ i, generateFrom (f i) :=
-  (gciGenerateFrom α).u_iSup_of_lu_eq_self f hf
+  (gciGenerateFrom α).u_iSup_of_l_u_eq_self f hf
 
 variable {t : ι → TopologicalSpace α}
 

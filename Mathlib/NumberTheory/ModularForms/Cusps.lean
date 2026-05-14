@@ -47,7 +47,7 @@ variable {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
   {𝒢 : Subgroup (GL (Fin 2) K)} [𝒢.HasDetPlusMinusOne]
 
 lemma isParabolic_iff_of_upperTriangular {g} (hg : g ∈ 𝒢) (hg10 : g 1 0 = 0) :
-    g.IsParabolic ↔ (∃ x ≠ 0, g = upperRightHom x) ∨ (∃ x ≠ 0, g = -upperRightHom x) :=
+    g.IsParabolic ↔ (∃ x ≠ 0, g = upperRightHom x) ∨ (∃ x ≠ (0 : K), g = -upperRightHom x) :=
   isParabolic_iff_of_upperTriangular_of_det (HasDetPlusMinusOne.det_eq hg) hg10
 
 end Subgroup.HasDetPlusMinusOne

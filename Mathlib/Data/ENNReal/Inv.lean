@@ -940,6 +940,17 @@ theorem ofReal_inv_of_pos {x : ℝ} (hx : 0 < x) : ENNReal.ofReal x⁻¹ = (ENNR
   rw [ENNReal.ofReal, ENNReal.ofReal, ← @coe_inv (Real.toNNReal x) (by simp [hx]), coe_inj,
     ← Real.toNNReal_inv]
 
+theorem ofReal_inv_le {x : ℝ} : ENNReal.ofReal x⁻¹ ≤ (ENNReal.ofReal x)⁻¹ := by
+  obtain hx | hx := lt_or_ge 0 x
+  · simp [ofReal_inv_of_pos hx]
+  · simp [ofReal_of_nonpos hx]
+
+theorem ofReal_div_le {x y : ℝ} (hy : 0 ≤ y) :
+    ENNReal.ofReal (x / y) ≤ ENNReal.ofReal x / ENNReal.ofReal y := by
+  simp_rw [div_eq_mul_inv, ofReal_mul' (inv_nonneg.2 hy)]
+  gcongr
+  exact ofReal_inv_le
+
 theorem ofReal_div_of_pos {x y : ℝ} (hy : 0 < y) :
     ENNReal.ofReal (x / y) = ENNReal.ofReal x / ENNReal.ofReal y := by
   rw [div_eq_mul_inv, div_eq_mul_inv, ofReal_mul' (inv_nonneg.2 hy.le), ofReal_inv_of_pos hy]

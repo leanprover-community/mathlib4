@@ -44,7 +44,6 @@ theorem PInfty_comp_map_mono_eq_zero (X : SimplicialObject C) {n : ℕ} {Δ' : S
   obtain ⟨k, hk⟩ := Nat.exists_eq_add_of_lt (len_lt_of_mono i fun h => by
         rw [← h] at h₁
         exact h₁ rfl)
-  simp only [len_mk] at hk
   rcases k with _ | k
   · change n = m + 1 at hk
     subst hk
@@ -97,7 +96,6 @@ theorem Γ₀_obj_termwise_mapMono_comp_PInfty (X : SimplicialObject C) {Δ Δ' 
   · have h' : n' = n + 1 := hi.left
     subst h'
     simp only [Γ₀.Obj.Termwise.mapMono_δ₀' _ i hi]
-    dsimp
     rw [← PInfty.comm _ n, AlternatingFaceMapComplex.obj_d_eq]
     simp only [Preadditive.comp_sum]
     rw [Finset.sum_eq_single (0 : Fin (n + 2))]

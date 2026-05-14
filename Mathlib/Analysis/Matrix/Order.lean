@@ -11,6 +11,7 @@ public import Mathlib.Analysis.Matrix.HermitianFunctionalCalculus
 public import Mathlib.Analysis.Matrix.PosDef
 public import Mathlib.Analysis.RCLike.Sqrt
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Abs
+public import Mathlib.LinearAlgebra.Matrix.Vec
 
 /-!
 # The partial order on matrices
@@ -234,6 +235,49 @@ theorem PosDef.kronecker {x : Matrix n n 𝕜} {y : Matrix m m 𝕜}
     hx.isUnit.kronecker hy.isUnit
 
 end kronecker
+
+section hadamard
+
+variable {ι : Type*}
+
+/-- [**Schur product theorem**][schur1911] (positive semidefinite version): the Hadamard (entrywise)
+product of positive semidefinite matrices is positive semidefinite. -/
+theorem PosSemidef.hadamard {A B : Matrix ι ι 𝕜}
+    (hA : A.PosSemidef) (hB : B.PosSemidef) : (A ⊙ B).PosSemidef := by
+  classical
+  refine ⟨hA.isHermitian.hadamard hB.isHermitian, fun x ↦ ?_⟩
+  have hAB : ((A ⊙ B).submatrix (↑) (↑) : Matrix x.support _ _).PosSemidef := by
+    have hAs := hA.submatrix ((↑) : x.support → ι)
+    have hBs := hB.submatrix ((↑) : x.support → ι)
+    rw [submatrix_hadamard, posSemidef_iff_dotProduct_mulVec]
+    refine ⟨hAs.isHermitian.hadamard hBs.isHermitian, fun y ↦ ?_⟩
+    rw [star_dotProduct_hadamard_mulVec_eq_kronecker]
+    exact (hAs.kronecker hBs).dotProduct_mulVec_nonneg _
+  simpa [Finsupp.sum, ← Finset.sum_attach x.support, ← Finset.subtype_mem_eq_attach,
+    ← Finsupp.subtypeDomain_apply, ← Finsupp.support_subtypeDomain] using hAB.2 _
+
+/-- **Schur product theorem**: the Hadamard (entrywise) product of positive definite
+matrices is positive definite. -/
+theorem PosDef.hadamard {A B : Matrix ι ι 𝕜}
+    (hA : A.PosDef) (hB : B.PosDef) : (A ⊙ B).PosDef := by
+  classical
+  refine ⟨hA.isHermitian.hadamard hB.isHermitian, fun x hx ↦ ?_⟩
+  have hAB : ((A ⊙ B).submatrix (↑) (↑) : Matrix x.support _ _).PosDef := by
+    have hAs : (A.submatrix (↑) (↑) : Matrix x.support _ _).PosDef :=
+      hA.submatrix Subtype.coe_injective
+    have hBs : (B.submatrix (↑) (↑) : Matrix x.support _ _).PosDef :=
+      hB.submatrix Subtype.coe_injective
+    rw [submatrix_hadamard, posDef_iff_dotProduct_mulVec]
+    refine ⟨hAs.isHermitian.hadamard hBs.isHermitian, fun y hy ↦ ?_⟩
+    rw [star_dotProduct_hadamard_mulVec_eq_kronecker]
+    exact (hAs.kronecker hBs).dotProduct_mulVec_pos <| by simpa
+  simp_rw [RCLike.star_def, hadamard_apply, Finsupp.sum,
+    ← Finset.sum_attach x.support, ← Finset.subtype_mem_eq_attach,
+    ← Finsupp.subtypeDomain_apply, ← Finsupp.support_subtypeDomain]
+  refine hAB.2 ?_
+  simpa [← Finsupp.support_nonempty_iff] using Finsupp.support_nonempty_iff.mpr hx
+
+end hadamard
 
 /--
 A matrix is positive definite if and only if it has the form `Bᴴ * B` for some invertible `B`.

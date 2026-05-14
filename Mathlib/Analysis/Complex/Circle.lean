@@ -44,9 +44,7 @@ is the kernel of the homomorphism `Complex.normSq` from `ℂ` to `ℝ`.
 
 noncomputable section
 
-open Complex Function Metric
-
-open ComplexConjugate
+open Complex Function Metric ComplexConjugate
 
 /-- The unit circle in `ℂ`. -/
 def Circle : Type := Submonoid.unitSphere ℂ
@@ -58,6 +56,8 @@ variable {x y : Circle}
 instance instCoeOut : CoeOut Circle ℂ := subtypeCoe
 
 instance instCommGroup : CommGroup Circle := inferInstanceAs <| CommGroup (sphere _ _)
+instance : HasDistribNeg Circle := inferInstanceAs <| HasDistribNeg (sphere _ _)
+instance : ContinuousNeg Circle := inferInstanceAs <| ContinuousNeg (sphere _ _)
 instance instMetricSpace : MetricSpace Circle := inferInstanceAs <| MetricSpace (sphere _ _)
 
 @[ext] lemma ext : (x : ℂ) = y → x = y := Subtype.ext
@@ -82,6 +82,10 @@ lemma coe_inv_eq_conj (z : Circle) : ↑z⁻¹ = conj (z : ℂ) := by
 @[simp, norm_cast] lemma coe_div (z w : Circle) : ↑(z / w) = (z : ℂ) / w := rfl
 @[simp, norm_cast] lemma coe_pow (z : Circle) (n : ℕ) : ↑(z ^ n) = (z : ℂ) ^ n := rfl
 @[simp, norm_cast] lemma coe_zpow (z : Circle) (n : ℤ) : ↑(z ^ n) = (z : ℂ) ^ n := rfl
+@[simp, norm_cast] lemma coe_neg (x : Circle) : ↑(-x) = -(x : ℂ) := rfl
+
+lemma neg_ne_self (x : Circle) : -x ≠ x :=
+  fun h ↦ coe_ne_zero x <| neg_eq_self.mp <| coe_neg x ▸ congrArg Subtype.val h
 
 /-- The coercion `Circle → ℂ` as a monoid homomorphism. -/
 @[simps]
