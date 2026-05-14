@@ -32,7 +32,7 @@ open Nat Polynomial
 
 namespace Choose
 
-variable {n k a b p : ℕ} [hp : Fact p.Prime]
+variable {n k a b p : ℕ} [Fact p.Prime]
 
 /-- For primes `p`, `choose n k` is congruent to `choose (n % p) (k % p) * choose (n / p) (k / p)`
 modulo `p`. Also see `choose_modEq_choose_mod_mul_choose_div_nat` for the version with `MOD`. -/
@@ -137,6 +137,7 @@ theorem choose_pow_mul_pow_mul_modEq_choose_nat :
 Also see `eq_pow_multiplicity_of_choose_modEq_zero_nat` for the version with `MOD`. -/
 theorem eq_pow_multiplicity_of_choose_modEq_zero (hn : 0 < n)
     (h : ∀ i ∈ Icc 1 (n - 1), n.choose i ≡ 0 [ZMOD p]) : n = p ^ multiplicity p n := by
+  rename_i hp
   by_contra! hn₀
   obtain ⟨m, hm⟩ := pow_multiplicity_dvd p n
   specialize h _ (mem_Icc.mpr ⟨NeZero.one_le, le_sub_one_of_lt <| lt_of_le_of_ne (le_of_dvd hn
@@ -162,7 +163,7 @@ theorem eq_pow_multiplicity_of_choose_modEq_zero_nat (hn : 0 < n)
 /-- For a prime power `n`, the minimal prime factor divides the greatest common divisor of
 `choose n 1, ⋯, choose n (n - 1)`. -/
 theorem minFac_dvd_gcd_choose_of_isPrimePow (h : IsPrimePow n) :
-    n.minFac ∣ (Icc 1 (n - 1)).gcd (fun i ↦ n.choose i) := by
+    n.minFac ∣ (Icc 1 (n - 1)).gcd n.choose := by
   obtain ⟨k, _, _, hn₁⟩ := (isPrimePow_nat_iff_bounded_log_minFac _).mp h
   exact dvd_gcd_iff.mpr fun i hi => by
     nth_rw 2 [hn₁]
@@ -171,12 +172,12 @@ theorem minFac_dvd_gcd_choose_of_isPrimePow (h : IsPrimePow n) :
 /-- For a prime power `n`, the greatest common divisor of `choose n 1, ⋯, choose n (n - 1)`
 is actually the minimal prime factor of `n`. -/
 theorem gcd_choose_eq_minFac_of_isPrimePow (h : IsPrimePow n) :
-    (Icc 1 (n - 1)).gcd (fun i ↦ n.choose i) = n.minFac := by
-  have ne_zero : (Icc 1 (n - 1)).gcd (fun i ↦ n.choose i) ≠ 0 :=
-    Finset.gcd_ne_zero_iff.mpr ⟨1, by simp; grind [IsPrimePow.two_le h]⟩
+    (Icc 1 (n - 1)).gcd n.choose = n.minFac := by
+  have ne_zero : (Icc 1 (n - 1)).gcd n.choose ≠ 0 :=
+    gcd_ne_zero_iff.mpr ⟨1, by simp; grind [IsPrimePow.two_le h]⟩
   obtain ⟨k, _, k_pos, hn₁⟩ := (isPrimePow_nat_iff_bounded_log_minFac _).mp h
   have isPrime := minFac_prime_iff.mpr (IsPrimePow.ne_one h)
-  have : ¬ n.minFac ^ 2 ∣ (Icc 1 (n - 1)).gcd (fun i ↦ n.choose i) := by
+  have : ¬ n.minFac ^ 2 ∣ (Icc 1 (n - 1)).gcd n.choose := by
     refine mt Finset.dvd_gcd_iff.mp ?_
     simp only [mem_Icc, not_forall]
     have : n.minFac ^ (k - 1) ≤ n.minFac ^ k := Nat.pow_le_pow_right (minFac_pos n) (sub_le k 1)
@@ -190,17 +191,18 @@ theorem gcd_choose_eq_minFac_of_isPrimePow (h : IsPrimePow n) :
         (Nat.Prime.ne_zero isPrime)), multiplicity_pow_self_of_prime (prime_iff.mp isPrime)]
       norm_cast
       grind
-  have h₁ : ((Icc 1 (n - 1)).gcd fun i ↦ n.choose i).primeFactors = {n.minFac} := by
+  have h₁ : ((Icc 1 (n - 1)).gcd n.choose).primeFactors = {n.minFac} := by
     refine eq_singleton_iff_unique_mem.mpr ⟨isPrime.mem_primeFactors
       (minFac_dvd_gcd_choose_of_isPrimePow h) ne_zero, ?_⟩
     intro p hp
     simp only [mem_primeFactors, ne_eq] at hp
     obtain ⟨hp₁, hp₂, hp₃⟩ := hp
+    haveI : Fact (Nat.Prime p) := ⟨hp₁⟩
     simp_rw [Finset.dvd_gcd_iff, ← modEq_zero_iff_dvd] at hp₂
-    have := eq_pow_multiplicity_of_choose_modEq_zero_nat (hp := ⟨hp₁⟩) h.pos hp₂
+    have := eq_pow_multiplicity_of_choose_modEq_zero_nat h.pos hp₂
     have dvd_pow : n.minFac ∣  p ^ multiplicity p n := this ▸ minFac_dvd _
     exact (Nat.prime_dvd_prime_iff_eq isPrime hp₁).mp (isPrime.dvd_of_dvd_pow dvd_pow)|>.symm
-  have : multiplicity n.minFac ((Icc 1 (n - 1)).gcd fun i ↦ n.choose i) = 1 := by
+  have : multiplicity n.minFac ((Icc 1 (n - 1)).gcd n.choose) = 1 := by
     refine multiplicity_eq_of_dvd_of_not_dvd ?_ this
     simpa using minFac_dvd_gcd_choose_of_isPrimePow h
   rw [Nat.prod_pow_primeFactors_factorization ne_zero, h₁]
@@ -209,11 +211,12 @@ theorem gcd_choose_eq_minFac_of_isPrimePow (h : IsPrimePow n) :
 /-- For a natural number `n` greater than `1`, assume that `n` is not a prime power, then
 the greatest common divisor of  `choose n 1, ⋯, choose n (n - 1)` is `1`. -/
 theorem gcd_choose_eq_one_of_not_isPrimePow (hn : 1 < n) (hpn : ¬ IsPrimePow n) :
-    (Icc 1 (n - 1)).gcd (fun i ↦ n.choose i) = 1 := by
+    (Icc 1 (n - 1)).gcd n.choose = 1 := by
   contrapose! hpn
   obtain ⟨q, hq, h⟩ := Nat.exists_prime_and_dvd hpn
   simp_rw [Finset.dvd_gcd_iff, ← modEq_zero_iff_dvd] at h
-  have := eq_pow_multiplicity_of_choose_modEq_zero_nat (zero_lt_of_lt hn) h (hp := ⟨hq⟩)
+  haveI : Fact (Nat.Prime q) := ⟨hq⟩
+  have := eq_pow_multiplicity_of_choose_modEq_zero_nat (zero_lt_of_lt hn) h
   refine (isPrimePow_nat_iff n).mpr ⟨q, _, hq, Dvd.multiplicity_pos ?_, this.symm⟩
   specialize h 1 (by grind)
   rw [choose_one_right, modEq_zero_iff_dvd] at h
