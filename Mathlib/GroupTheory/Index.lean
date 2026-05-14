@@ -726,8 +726,7 @@ instance (priority := 100) finiteIndex_of_finite [Finite G] : FiniteIndex H :=
   finiteIndex_of_finite_quotient
 
 @[to_additive]
-instance (H : Subgroup G) (H' : Subgroup G') [FiniteIndex H] [FiniteIndex H'] :
-    FiniteIndex (H.prod H') := by
+instance [FiniteIndex H] [FiniteIndex K] : FiniteIndex (H.prod K) := by
   simp_all [finiteIndex_iff]
 
 variable (H) in
