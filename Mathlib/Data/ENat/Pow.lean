@@ -24,7 +24,7 @@ The quantity `x ^ y` for `x`, `y : ℕ∞` is defined as a `Pow` instance. It is
 lemmas' names.
 -/
 
-@[expose] public section
+public section
 
 namespace ENat
 

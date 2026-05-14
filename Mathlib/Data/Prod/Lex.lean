@@ -35,7 +35,7 @@ Related files are:
 * `Data.Sigma.Order`: Lexicographic order on `Σ i, α i`.
 -/
 
-@[expose] public section
+public section
 
 
 variable {α β : Type*}

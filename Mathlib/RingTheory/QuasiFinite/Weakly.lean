@@ -33,7 +33,7 @@ different fiber.
 
 -/
 
-@[expose] public section
+public section
 
 variable {R S T : Type*} [CommRing R] [CommRing S] [Algebra R S]
   [CommRing T] [Algebra R T]

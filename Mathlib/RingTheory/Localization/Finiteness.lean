@@ -27,7 +27,7 @@ In this file we establish behaviour of `Module.Finite` under localizations.
 
 -/
 
-@[expose] public section
+public section
 
 universe u v w t
 
