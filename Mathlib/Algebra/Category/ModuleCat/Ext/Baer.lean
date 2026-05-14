@@ -112,11 +112,12 @@ lemma hasInjectiveDimensionLT_of_quotients [Small.{v} R] (M : ModuleCat.{v} R) (
   match n with
   | 0 =>
     apply Limits.IsZero.hasInjectiveDimensionLT_zero
-    rw [ModuleCat.isZero_iff_subsingleton]
-    refine ((Ext.homEquiv₀.trans ModuleCat.homEquiv).trans ?_).subsingleton_congr.mp (h ⊥)
-    exact ((((Shrink.linearEquiv _ _).trans
-      (Submodule.quotEquivOfEqBot _ rfl)).congrLeft M R).trans
-        (LinearMap.ringLmapEquivSelf R R M)).toEquiv
+    let e : (Ext (of R (Shrink.{v, u} (R ⧸ (⊥ : Ideal R)))) M 0) ≃ M :=
+      (Ext.homEquiv₀.trans ModuleCat.homEquiv).trans ((((Shrink.linearEquiv _ _).trans
+        (Submodule.quotEquivOfEqBot _ rfl)).congrLeft M R).trans
+          (LinearMap.ringLmapEquivSelf R R M)).toEquiv
+    rw [ModuleCat.isZero_iff_subsingleton, ← e.subsingleton_congr]
+    exact h ⊥
   | n + 1 => exact hasInjectiveDimensionLE_of_quotients M n  h
 
 end ModuleCat
