@@ -316,15 +316,6 @@ protected lemma Filter.EventuallyEq.iteratedDeriv
     iteratedDeriv n f₁ =ᶠ[𝓝 x] iteratedDeriv n f₂ := by
   simp_all [← nhdsWithin_univ, ← iteratedDerivWithin_univ, EventuallyEq.iteratedDerivWithin]
 
-/-- If two functions agree in a neighborhood, then so do their Taylor series. -/
-protected theorem Filter.EventuallyEq.taylorSeries
-    {𝕜 : Type*} [NontriviallyNormedField 𝕜] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-    {f₁ f₂ : 𝕜 → F} {x : 𝕜} (h : f₁ =ᶠ[𝓝 x] f₂) :
-    ftaylorSeries 𝕜 f₁ =ᶠ[𝓝 x] ftaylorSeries 𝕜 f₂ := by
-  filter_upwards [eventually_eventuallyEq_nhds.2 h] with e₁ he₁
-  ext n : 1
-  exact (he₁.iteratedFDeriv 𝕜 n).eq_of_nhds
-
 lemma iteratedDeriv_add (hf : ContDiffAt 𝕜 n f x) (hg : ContDiffAt 𝕜 n g x) :
     iteratedDeriv n (f + g) x = iteratedDeriv n f x + iteratedDeriv n g x := by
   simpa only [iteratedDerivWithin_univ] using
