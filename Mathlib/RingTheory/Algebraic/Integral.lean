@@ -209,7 +209,7 @@ lemma exists_smul_eq {x : K} (hx : IsAlgebraic R x) :
 
 /-- If `x : K` is algebraic over `ℤ`, then a nonzero `ℕ`-multiple of it is contained in the
 integral closure of `ℤ` in `K`. -/
-lemma exists_nsmul_eq {x : K} [IsIntegralClosure S ℤ K] (hx : IsAlgebraic ℤ x) :
+lemma exists_nsmul_eq [IsIntegralClosure S ℤ K] {x : K} (hx : IsAlgebraic ℤ x) :
     ∃ (m : ℕ) (s : S), m ≠ 0 ∧ m • x = algebraMap S K s := by
   obtain ⟨a, s, ha, h⟩ := hx.exists_smul_eq S
   obtain ⟨n, rfl | rfl⟩ := a.eq_nat_or_neg
