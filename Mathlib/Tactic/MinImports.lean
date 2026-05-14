@@ -236,7 +236,7 @@ def getAllImports (cmd id : Syntax) (dbg? : Bool := false) :
   for t in ts do
     let new := match env.getModuleIdxFor? t with
       | some t => (hm.get? t).get!
-      | none   => .anonymous -- instead of `getMainModule`, we omit the current module -- shake: keep-all
+      | none   => .anonymous -- instead of `getMainModule`, we omit the current module
     if !fins.contains new then fins := fins.insert new
   return fins.erase .anonymous
 

@@ -185,7 +185,7 @@ def goalSignature (name : Name) (g : MVarId) : TermElabM (MessageData × Expr ×
     for t in ts do
       let new := match env.getModuleIdxFor? t with
         | some t => (hm.get? t).get!
-        | none   => .anonymous -- instead of `getMainModule`, we omit the current module -- shake: keep-all
+        | none   => .anonymous -- instead of `getMainModule`, we omit the current module
       if !fins.contains new then fins := fins.insert new
     let tot := Mathlib.Command.MinImports.getIrredundantImports (← getEnv) (fins.erase .anonymous)
     let fileNames := tot.toArray.qsort Name.lt
