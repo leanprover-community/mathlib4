@@ -409,13 +409,12 @@ open scoped Bundle Manifold ContDiff
 
 open Lean Meta Elab Tactic
 
-/-- `mfderiv% f x` elaborates to `mfderiv I J f x`,
+/-- `extDerivFun% f x` elaborates to `extDerivFun I J f x`,
 trying to determine `I` and `J` from the local context. -/
 scoped elab:max "extDerivFun%" ppSpace t:term:arg : term => do
   let e ← ensureIsFunction <| ← Term.elabTerm t none
   let (srcI, _tgtI) ← findModels e none
   mkAppM ``extDerivFun #[srcI, e]
-
 
 open Bundle PrettyPrinter Delaborator SubExpr
 
@@ -433,7 +432,7 @@ lemma extDerivFun_add {g g' : M → F} {x : M} (hg : MDiffAt g x) (hg' : MDiffAt
     extDerivFun% (g + g') x = extDerivFun% g x + extDerivFun% g' x := by
   simp [extDerivFun, mfderiv_add hg hg']
   rfl
-
+-- TODO: specify as name for to_fun instead, after #34279
 alias extDerivFun_fun_add := fun_extDerivFun_add
 
 @[simp, to_fun]
@@ -441,7 +440,7 @@ lemma extDerivFun_sub {g g' : M → F} {x : M} (hg : MDiffAt g x) (hg' : MDiffAt
     extDerivFun% (g - g') x = extDerivFun% g x - extDerivFun% g' x := by
   simp [extDerivFun, mfderiv_sub hg hg']
   rfl
-
+-- TODO: specify as name for to_fun instead, after #34279
 alias extDerivFun_fun_sub := fun_extDerivFun_sub
 
 @[simp, to_fun]
@@ -452,18 +451,17 @@ lemma extDerivFun_neg {g : M → F} {x : M} :
 
 @[simp, to_fun]
 lemma extDerivFun_smul {g : M → F} {x : M} (hg : MDiffAt g x) {a : M → 𝕜} (ha : MDiffAt a x) :
-    extDerivFun% (a • g) x = a x • extDerivFun% g x +
-                              (extDerivFun% a x).smulRight (g x) := by
+    extDerivFun% (a • g) x =
+      a x • extDerivFun% g x + (extDerivFun% a x).smulRight (g x) := by
   ext v
   simp [extDerivFun, -Pi.smul_apply', -Pi.smul_apply, fromTangentSpace_mfderiv_smul_apply ha hg]
   rfl
-
+-- TODO: specify as name for to_fun instead, after #34279
 alias extDerivFun_fun_smul := fun_extDerivFun_smul
 
 @[simp, to_fun]
 lemma extDerivFun_mul {f g : M → 𝕜} {x : M} (hf : MDiffAt f x) (hg : MDiffAt g x) :
-    extDerivFun% (f * g) x = f x • extDerivFun% g x +
-                              (g x) • (extDerivFun% f x) := by
+    extDerivFun% (f * g) x = f x • extDerivFun% g x + (g x) • (extDerivFun% f x) := by
   ext v
   simp [extDerivFun, -Pi.smul_apply', -Pi.smul_apply]
   sorry
@@ -472,8 +470,7 @@ alias extDerivFun_fun_mul := fun_extDerivFun_mul
 
 @[simp]
 lemma extDerivFun_zero {x : M} : extDerivFun% (0 : M → F) x = 0 := by
-  have : extDerivFun% (0 : M → F) x + extDerivFun% (0 : M → F) x =
-      extDerivFun% (0 : M → F) x := by
+  have : extDerivFun% (0 : M → F) x + extDerivFun% (0 : M → F) x = extDerivFun% (0 : M → F) x := by
     rw [← extDerivFun_add (by exact mdifferentiable_const ..) (by exact mdifferentiable_const ..)]
     simp
   simpa using this

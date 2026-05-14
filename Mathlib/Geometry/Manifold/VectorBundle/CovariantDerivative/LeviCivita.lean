@@ -814,8 +814,7 @@ lemma leviCivitaConnection_isCompatible [FiniteDimensional ℝ E] :
   have : inner ℝ (((LeviCivitaConnection I M) Z x) (X x)) (Y x) = leviCivitaRhs I X Z Y x := by
     rw [leviCivitaConnection_apply I hX hZ hY]
   rw [leviCivitaConnection_apply I hX hZ hY, leviCivitaConnection_isCompatible_aux]
-  sorry
-
+  sorry -- TODO: this will disappear after Heather's change
 
 lemma leviCivitaConnection_torsion_eq_zero [FiniteDimensional ℝ E] :
     (LeviCivitaConnection I M).torsion = 0 := by
