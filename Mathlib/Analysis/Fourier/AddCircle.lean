@@ -392,12 +392,6 @@ theorem fourierCoeff_liftIoc_eq {a : ℝ} (f : ℝ → ℂ) (n : ℤ) :
     rw [liftIoc_coe_apply]
     rwa [uIoc_of_le (lt_add_of_pos_right a hT.out).le] at hx
 
--- set_option trace.profiler true in
--- set_option Elab.async false in
--- #count_heartbeats in
---  befor: 1040     0.055128s
---  after: 703      0.041353s
---  reduc: 337(32%) 0.013775s(24%)
 theorem fourierCoeff_liftIco_eq {a : ℝ} (f : ℝ → ℂ) (n : ℤ) :
     fourierCoeff (AddCircle.liftIco T a f) n =
     fourierCoeffOn (lt_add_of_pos_right a hT.out) f n := by

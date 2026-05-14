@@ -242,12 +242,6 @@ theorem AbsolutelyContinuousOnInterval.integral_deriv_eq_sub {f : ℝ → ℝ} {
   have := hC b (by simp)
   grind
 
--- set_option trace.profiler true in
--- set_option Elab.async false in
--- #count_heartbeats in
--- befor: 1475 heartbeats, 0.092142s
--- after:  845 heartbeats, 0.041665s
--- reduc:  630(42%)      , 0.050477s(54%)
 /-- The integral of the derivative of a product of two absolutely continuous functions. -/
 theorem AbsolutelyContinuousOnInterval.integral_deriv_mul_eq_sub
     {f g : ℝ → ℝ} {a b : ℝ}

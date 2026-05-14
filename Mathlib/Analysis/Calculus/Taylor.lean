@@ -440,10 +440,6 @@ theorem exists_taylor_mean_remainder_bound {f : ℝ → E} {a b : ℝ} {n : ℕ}
   refine taylor_mean_remainder_bound hab hf hx fun y => ?_
   exact (hf.continuousOn_iteratedDerivWithin rfl.le <| uniqueDiffOn_Icc h).norm.le_sSup_image_Icc
 
--- set_option trace.profiler true in
--- before : Used 26585 heartbeats,      2.095996s
--- after  : Used 18827 heartbeats,      1.575002s
--- reduce :       7758 heartbeats(29%), 0.520994s(24%)
 /-- **Taylor's theorem** with the Integral form of the remainder. This is an auxiliary theorem
 which is used to prove the two useful versions `taylor_integral_remainder_of_absolutelyContinuous`
 and `taylor_integral_remainder`.

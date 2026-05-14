@@ -30,12 +30,6 @@ open MeasureTheory Set Filter Function IsUnifLocDoublingMeasure
 
 open scoped Topology
 
--- set_option trace.profiler true in
--- set_option Elab.async false in
--- #count_heartbeats in
--- befor: 7684 heartbeats,      0.603387s
--- after: 5235 heartbeats,      0.445507s
--- reduc: 2449 heartbeats(31%), 0.157880s(26%)
 /-- The (global) interval version of the *Lebesgue Differentiation Theorem*: if `f : ℝ → ℝ` is
 locally integrable, then for almost every `x`, for any `c : ℝ`, the derivative of
 `∫ (t : ℝ) in c..x, f t` at `x` is equal to `f x`. -/
