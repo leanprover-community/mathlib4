@@ -83,6 +83,8 @@ This is `Congr!.Config` with different, less aggressive, defaults.
 structure Convert.Config extends Congr!.Config where
   postTransparency := .reducible
 
+/-- Elaborator for `Convert.Config` (which is equivalent to `Congr!.Config`
+but with different, less aggressive, defaults). -/
 declare_config_elab Convert.elabConfig Convert.Config
 
 /--
