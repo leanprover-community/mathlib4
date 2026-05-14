@@ -6,8 +6,10 @@ Authors: Sebastian Monnet, Aaron Liu
 module
 
 public import Mathlib.FieldTheory.Galois.Basic
-public import Mathlib.Topology.Algebra.FilterBasis
 public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+-- this `import` is only used in the deprecated material at the bottom of the file
+-- it should be removed when the deprecated material is removed
+public import Mathlib.Topology.Algebra.FilterBasis
 
 import Mathlib.Topology.Algebra.OpenSubgroup
 import Mathlib.Topology.Connected.Separation
@@ -360,6 +362,13 @@ end IntermediateField
 
 section deprecated
 set_option linter.deprecated false
+
+/-!
+The definitions and theorems in this section were formerly implementation details
+used in the definition of the Krull topology. Since the Krull topology is now defined in
+terms of the uniform group structure on `Gal(L/K)`, they are now unused,
+and have been deprecated without replacement.
+-/
 
 /-- Given a field extension `L/K`, `finiteExts K L` is the set of
 intermediate field extensions `L/E/K` such that `E/K` is finite. -/
