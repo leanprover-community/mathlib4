@@ -65,6 +65,10 @@ example : NeedOther := by
 example : FromFirst := by
   apply_rulesets [test_rules]
 
+-- Ruleprocs can recursively call `applyRuleSets`.
+example : DelegatedFromFirst := by
+  apply_rulesets [test_rules]
+
 -- Ruleproc declaration binders are synthesized and exposed as local `Expr` aliases in the body.
 example : (3 : Nat) = 3 := by
   apply_rulesets [test_rules]

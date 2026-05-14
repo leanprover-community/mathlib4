@@ -72,12 +72,14 @@ structure Context where
   config : Config := {}
   rulesets : Array Name := #[]
   explicitRules : Array ExplicitRule := #[]
+  erased : Std.HashSet Name := {}
   /-- Side-condition discharger for proposition arguments. -/
   disch : ArgOrigin → Expr → MetaM (Option Expr) := fun _ _ => pure none
 
 /-- Search state. -/
 structure State where
   numSteps : Nat := 0
+  depth : Nat := 0
   messages : List String := []
 
 /-- Monad used by `apply_rulesets`. -/
@@ -103,6 +105,7 @@ deriving Inhabited, BEq
 structure ProcRule where
   header : RuleHeader
   pattern : Expr
+  levelParams : Array Name := #[]
 deriving Inhabited, BEq
 
 /-- A rule entry. -/
@@ -177,6 +180,7 @@ def addTheoremRule (ruleSetName declName : Name) (kind : AttributeKind)
 structure RuleProcDecl where
   declName : Name
   pattern : Expr
+  levelParams : Array Name := #[]
   keys : List (Key × LazyEntry)
 deriving Inhabited
 
@@ -187,11 +191,36 @@ initialize ruleProcDeclExt : SimpleScopedEnvExtension RuleProcDecl (Std.HashMap 
     addEntry := fun s e => s.insert e.declName e
   }
 
+private partial def collectLevelParamsLevel (u : Level) (params : Std.HashSet Name) :
+    Std.HashSet Name :=
+  match u with
+  | .zero | .mvar _ => params
+  | .succ u => collectLevelParamsLevel u params
+  | .max u v | .imax u v => collectLevelParamsLevel v (collectLevelParamsLevel u params)
+  | .param n => params.insert n
+
+private partial def collectLevelParamsExpr (e : Expr) (params : Std.HashSet Name := {}) :
+    Std.HashSet Name :=
+  match e with
+  | .bvar _ | .fvar _ | .mvar _ | .sort _ | .lit _ => params
+  | .const _ us => us.foldl (fun params u => collectLevelParamsLevel u params) params
+  | .app f a => collectLevelParamsExpr a (collectLevelParamsExpr f params)
+  | .lam _ d b _ | .forallE _ d b _ =>
+      collectLevelParamsExpr b (collectLevelParamsExpr d params)
+  | .letE _ t v b _ =>
+      collectLevelParamsExpr b (collectLevelParamsExpr v (collectLevelParamsExpr t params))
+  | .mdata _ e | .proj _ _ e => collectLevelParamsExpr e params
+
+private def collectLevelParams (e : Expr) : Array Name :=
+  collectLevelParamsExpr e |>.toArray
+
 /-- Register the pattern for a ruleproc declaration. -/
-def registerRuleProcPattern (declName : Name) (pattern : Expr) : MetaM Unit := do
+def registerRuleProcPattern (declName : Name) (pattern : Expr)
+    (levelParams : Array Name := #[]) : MetaM Unit := do
+  let levelParams := levelParams ++ (collectLevelParams pattern).filter (!levelParams.contains ·)
   let (_, _, conclusion) ← forallMetaTelescope pattern
   let keys ← keysForPattern conclusion
-  modifyEnv fun env => ruleProcDeclExt.addEntry env { declName, pattern, keys }
+  modifyEnv fun env => ruleProcDeclExt.addEntry env { declName, pattern, levelParams, keys }
 
 /-- Return registered pattern information for a ruleproc declaration. -/
 def getRuleProcDecl? (declName : Name) : CoreM (Option RuleProcDecl) := do
@@ -207,7 +236,8 @@ def addProcRule (ruleSetName declName : Name) (kind : AttributeKind)
     throwError "invalid ruleproc: `{.ofConstName declName}` has type{indentExpr info.type}\
       \nexpected `RuleProc`"
   let header := { name := declName, priority := prio }
-  let entry : RuleEntry := .proc { header, pattern := decl.pattern }
+  let entry : RuleEntry :=
+    .proc { header, pattern := decl.pattern, levelParams := decl.levelParams }
   ruleSetsExt.add { ruleSetName, entry, keys := decl.keys } kind
   trace[Meta.Tactic.apply_rulesets.attr] "added ruleproc {declName} to {ruleSetName}"
 
@@ -222,74 +252,90 @@ unsafe def getRuleProcFromDeclImpl (declName : Name) : MetaM RuleProc := do
 @[implemented_by getRuleProcFromDeclImpl]
 opaque getRuleProcFromDecl (declName : Name) : MetaM RuleProc
 
-/-- Declaration command used internally by `ruleproc_decl`. -/
+/-- Declaration command used internally to register a ruleproc pattern. -/
 elab "ruleproc_pattern% " pat:term " => " proc:ident : command => do
   Command.liftTermElabM do
     let procName ← realizeGlobalConstNoOverload proc
-    let pattern ← Term.elabType pat
+    let pattern ← Term.withAutoBoundImplicit <| Term.elabType pat
     Term.synthesizeSyntheticMVars
-    let pattern ← Term.levelMVarToParam (← instantiateMVars pattern)
-    registerRuleProcPattern procName pattern
+    let pattern ← abstractMVars (← instantiateMVars pattern)
+    let levelParams := pattern.paramNames
+    let pattern ← lambdaTelescope pattern.expr fun xs pattern => mkForallFVars xs pattern
+    registerRuleProcPattern procName pattern levelParams
 
-private def binderNames (binders : Array Syntax) : Array Name := Id.run do
-  let mut names := #[]
-  let mut instIdx := 0
-  for binder in binders do
-    match binder.getKind with
-    | `Lean.Parser.Term.explicitBinder | `Lean.Parser.Term.implicitBinder =>
-      for arg in binder[1].getArgs do
-        if arg.isIdent then
-          let name := arg.getId
-          unless name == `_ do
-            names := names.push name
-    | `Lean.Parser.Term.instBinder =>
-      let explicitNames := binder[1].getArgs.filter Syntax.isIdent |>.map Syntax.getId
-      if explicitNames.isEmpty then
-        names := names.push (.mkSimple s!"_inst{instIdx}")
-        instIdx := instIdx + 1
-      else
-        for name in explicitNames do
-          names := names.push name
-    | _ => pure ()
-  return names
-
-private def mkRuleProcBody (xs : Ident) (names : Array Name) (body : Term) : MacroM Term := do
+private def mkRuleProcBody (xs : Ident) (names : Array (Nat × Name)) (body : Term) :
+    MacroM Term := do
   let mut result := body
   for i in [0:names.size] do
     let i := names.size - 1 - i
-    let id := mkIdent names[i]!
-    let idx := quote i
+    let (argIdx, name) := names[i]!
+    let id := mkIdentFrom body name
+    let idx := quote argIdx
     result ← `(let $id:ident : Lean.Expr := $xs[$idx]!; $result)
   return result
 
+private def removeUnusedForallBinders (e : Expr) : MetaM Expr := do
+  forallTelescope e fun xs body => do
+    let mut result := body
+    for _h : i in [:xs.size] do
+      let i := xs.size - 1 - i
+      let x := xs[i]!
+      if result.containsFVar x.fvarId! then
+        let decl ← x.fvarId!.getDecl
+        result := Expr.forallE decl.userName decl.type (result.abstract #[x]) decl.binderInfo
+    return result
+
+private def closeRuleProcPattern (pat : Term) :
+    TermElabM (Expr × Array Name × Array (Nat × Name)) := do
+  let pattern ← Term.withAutoBoundImplicit <| Term.elabType pat
+  Term.synthesizeSyntheticMVars
+  let pattern ← abstractMVars (← instantiateMVars pattern)
+  let levelParams := pattern.paramNames
+  let pattern ← lambdaTelescope pattern.expr fun xs pattern => mkForallFVars xs pattern
+  let pattern ← removeUnusedForallBinders pattern
+  let names ← forallTelescope pattern fun xs _ => do
+    let mut names := #[]
+    for h : i in [:xs.size] do
+      let name ← xs[i].fvarId!.getUserName
+      unless name.isAnonymous do
+        names := names.push (i, name)
+    return names
+  return (pattern, levelParams, names)
+
+private def attrInstancesOfAttributes (attrs : TSyntax ``Parser.Term.attributes) :
+    Array (TSyntax ``Parser.Term.attrInstance) :=
+  attrs.raw[1].getArgs.filterMap fun stx =>
+    if stx.isOfKind ``Parser.Term.attrInstance then
+      some ⟨stx⟩
+    else
+      none
+
 /-- Syntax for a ruleproc declaration. -/
-syntax (docComment)? "ruleproc_decl " ident (ppSpace bracketedBinder)* " : " term " := "
+syntax (name := ruleprocCmd) (docComment)? (Parser.Term.attributes)? "ruleproc " ident
+  (ppSpace bracketedBinder)* " : " term " := "
   term : command
 
-macro_rules
-  | `($[$doc?:docComment]? ruleproc_decl $n:ident $bs* : $pat:term := $body:term) => do
-    let xs := mkIdent `xs
-    let body ← mkRuleProcBody xs (binderNames bs) body
-    `($[$doc?:docComment]? meta def $n : Mathlib.Tactic.ApplyRuleSets.RuleProc :=
-        fun $xs:ident => $body
-      ruleproc_pattern% (∀ $bs*, $pat) => $n)
-
-/-- Syntax for a ruleproc declaration immediately attached to rulesets. -/
-syntax (docComment)? attrKind "ruleproc " "[" ident,* "]" ident
-  (ppSpace bracketedBinder)* " : " term " := " term : command
-
-macro_rules
-  | `($[$doc?:docComment]? $kind:attrKind ruleproc [$attrs,*] $n:ident $bs* :
-      $pat:term := $body:term) => do
-    let attrs := attrs.getElems
-    let mut cmds : Array Syntax :=
-      #[← `($[$doc?:docComment]? ruleproc_decl $n $bs* : $pat := $body)]
-    for attr in attrs do
-      let attrName := attr.getId
-      let attrParser := mkIdentFrom attr (`Parser.Attr ++ attrName)
-      let attrStx : TSyntax `attr := ⟨mkNode attrParser.getId #[mkAtom attrName.toString]⟩
-      cmds := cmds.push (← `(attribute [$kind $attrStx:attr] $n))
-    return mkNullNode cmds
+@[command_elab ruleprocCmd]
+def elabRuleProc : Command.CommandElab := fun stx => do
+  let `(command| $[$doc?:docComment]? $[$attrs?:attributes]? ruleproc $n:ident $bs* :
+      $pat:term := $body:term) := stx
+    | throwUnsupportedSyntax
+  let scope ← Command.getScope
+  let varDecls : TSyntaxArray ``Lean.Parser.Term.bracketedBinder :=
+    scope.varDecls.map (fun stx => ⟨stx⟩)
+  let allBinders := varDecls ++ bs
+  let pat ← `(∀ $allBinders*, $pat)
+  let (pattern, levelParams, names) ← Command.liftTermElabM <| closeRuleProcPattern pat
+  let xs := mkIdent `__ruleprocArgs
+  let body ← liftMacroM <| mkRuleProcBody xs names body
+  Command.elabCommand <| ← `($[$doc?:docComment]? meta def $n :
+    Mathlib.Tactic.ApplyRuleSets.RuleProc := fun $xs:ident => $body)
+  Command.liftTermElabM do
+    let procName ← realizeGlobalConstNoOverload n
+    registerRuleProcPattern procName pattern levelParams
+  if let some attrs := attrs? then
+    let attrInsts := attrInstancesOfAttributes attrs
+    Command.elabCommand <| ← `(command| attribute [$attrInsts,*] $n)
 
 /-- Register the theorem and proc attributes for a ruleset. -/
 def registerRuleSetAttr (ruleSetName : Name) (descr : String) : IO Unit := do
@@ -321,6 +367,18 @@ def checkStep : ApplyRuleSetsM Unit := do
   if n ≥ maxSteps then
     throwError "apply_rulesets failed, maximum number of steps ({maxSteps}) exceeded"
   modify fun s => { s with numSteps := s.numSteps + 1 }
+
+/-- Increase the logical search depth without introducing a new metavariable depth. -/
+def withIncreasedSearchDepth {α} (x : ApplyRuleSetsM α) : ApplyRuleSetsM α := do
+  let depth := (← get).depth
+  modify fun s => { s with depth := depth + 1 }
+  try
+    let a ← x
+    modify fun s => { s with depth := depth }
+    return a
+  catch e =>
+    modify fun s => { s with depth := depth }
+    throw e
 
 /-- Roll back metavariable assignments if `x` returns `none` or throws. -/
 def observingWithRollback? {α} (x : ApplyRuleSetsM (Option α)) : ApplyRuleSetsM (Option α) := do
@@ -393,44 +451,80 @@ def sortEntries (entries : Array RuleEntry) : Array RuleEntry :=
     else
       ah.order < bh.order
 
+def matchRuleProcConclusion (pattern goal : Expr) : MetaM Bool := do
+  let pattern ← instantiateMVars pattern
+  let goal ← instantiateMVars goal
+  let patternFn := pattern.getAppFn
+  let goalFn := goal.getAppFn
+  if patternFn.constName? == goalFn.constName? && pattern.getAppNumArgs == goal.getAppNumArgs then
+    for patternArg in pattern.getAppArgs, goalArg in goal.getAppArgs do
+      let patternArg ← instantiateMVars patternArg
+      if patternArg.isMVar then
+        try
+          patternArg.mvarId!.assign goalArg
+        catch _ =>
+          unless ← withTransparency .none <| isDefEq patternArg goalArg do
+            return false
+      else
+        unless ← withTransparency .none <| isDefEq patternArg goalArg do
+          return false
+    return true
+  else
+    withTransparency .none <| isDefEq pattern goal
+
+def ProcRule.instantiatePattern (rule : ProcRule) : MetaM Expr := do
+  let us ← rule.levelParams.mapM fun _ => mkFreshLevelMVar
+  return rule.pattern.instantiateLevelParamsArray rule.levelParams us
+
 mutual
 
-partial def prove? (origin : ArgOrigin) (goalType : Expr) (entries : Array RuleEntry)
-    (erased : Std.HashSet Name) (depth : Nat) : ApplyRuleSetsM (Option Expr) := do
+partial def applyRuleSets (origin : ArgOrigin) (goalType : Expr) :
+    ApplyRuleSetsM (Option Expr) := do
+  let goalType ← instantiateMVars goalType
+  withTraceNode `Meta.Tactic.apply_rulesets
+    (fun _ => return s!"{← ppExpr goalType}") do
   checkStep
+  let depth := (← get).depth
   let maxDepth := (← read).config.maxDepth
   if depth > maxDepth then
+    trace[Meta.Tactic.apply_rulesets] "maximum recursion depth ({maxDepth}) exceeded"
     return none
   let cfg := (← read).config
   if cfg.autoParam then
     if let some proof ← observingWithRollback? <| runAutoParam? goalType then
+      trace[Meta.Tactic.apply_rulesets] "solved by autoParam tactic"
       return some proof
   if cfg.assumption then
     if let some proof ← observingWithRollback? <| assumption? goalType then
+      trace[Meta.Tactic.apply_rulesets] "solved by local assumption"
       return some proof
   if cfg.intro then
     let some proof ← observingWithRollback? <| forallTelescopeReducing goalType fun xs body => do
       if xs.isEmpty then
         return none
-      let some proof ← prove? origin body entries erased (depth + 1) | return none
+      trace[Meta.Tactic.apply_rulesets] "introducing {xs.size} binder(s)"
+      let some proof ← withIncreasedSearchDepth <| applyRuleSets origin body | return none
       return some (← mkLambdaFVars xs proof)
       | pure ()
     return some proof
   let entries := sortEntries (← queryRuleSets goalType (← read).rulesets)
+  trace[Meta.Tactic.apply_rulesets]
+    "candidate rules: {entries.map fun entry => entry.header.name}"
   for rule in (← read).explicitRules do
     if let some proof ←
-        observingWithRollback? <| tryExplicit? origin goalType entries erased depth rule then
+        observingWithRollback? <| tryExplicit? origin goalType rule then
       return some proof
   for entry in entries do
-    unless erased.contains entry.header.name do
+    unless (← read).erased.contains entry.header.name do
       if let some proof ←
-          observingWithRollback? <| tryEntry? origin goalType entries erased depth entry then
+          observingWithRollback? <| tryEntry? origin goalType entry then
         return some proof
+  trace[Meta.Tactic.apply_rulesets] "no rule matched"
   return none
 
-/-- Synthesize arguments created by theorem application. -/
-partial def synthesizeArgs (ruleName : Name) (args : Array Expr) (entries : Array RuleEntry)
-    (erased : Std.HashSet Name) (depth : Nat) : ApplyRuleSetsM Bool := do
+/-- Synthesize arguments created by theorem or ruleproc application. -/
+partial def synthesizeArgs (ruleName : Name) (args : Array Expr)
+    (allowPostponed := false) : ApplyRuleSetsM Bool := do
   let mut postponed := #[]
   for h : i in [:args.size] do
     let arg := args[i]
@@ -440,62 +534,93 @@ partial def synthesizeArgs (ruleName : Name) (args : Array Expr) (entries : Arra
         if let .some inst ← trySynthInstance type then
           if (← isDefEq arg inst) then
             continue
+          else
+            trace[Meta.Tactic.apply_rulesets]
+              "{ruleName}, failed to assign instance{indentExpr type}\
+              \nsynthesized value{indentExpr inst}\nis not definitionally equal to{indentExpr arg}"
+        else
+          trace[Meta.Tactic.apply_rulesets]
+            "{ruleName}, failed to synthesize instance{indentExpr type}"
       if (← isProp type) then
         let argName := (← getMCtx).getDecl arg.mvarId! |>.userName
         let origin := { ruleName, argIndex := some i, argName := some argName }
-        if let some proof ← prove? origin type entries erased (depth + 1) then
+        if let some proof ← withIncreasedSearchDepth <| applyRuleSets origin type then
           if (← isDefEq arg proof) then
             continue
+          else
+            trace[Meta.Tactic.apply_rulesets]
+              "{ruleName}, failed to assign proof{indentExpr type}"
         let ctx ← read
         if let some proof ← ctx.disch origin type then
           if (← isDefEq arg proof) then
             continue
+          else
+            trace[Meta.Tactic.apply_rulesets]
+              "{ruleName}, failed to assign discharger proof{indentExpr type}"
+        trace[Meta.Tactic.apply_rulesets]
+          "{ruleName}, failed to discharge hypothesis{indentExpr type}"
         return false
       else
         postponed := postponed.push arg
   for arg in postponed do
     if (← instantiateMVars arg).isMVar then
+      if allowPostponed then
+        continue
+      trace[Meta.Tactic.apply_rulesets]
+        "{ruleName}, failed to infer `({← ppExpr arg} : {← ppExpr (← inferType arg)})`"
       return false
   return true
 
 /-- Try an explicit theorem or term provided in the tactic call. -/
-partial def tryExplicit? (_origin : ArgOrigin) (goalType : Expr) (entries : Array RuleEntry)
-    (erased : Std.HashSet Name) (depth : Nat) (r : ExplicitRule) :
+partial def tryExplicit? (_origin : ArgOrigin) (goalType : Expr) (r : ExplicitRule) :
     ApplyRuleSetsM (Option Expr) := do
   let name := r.name
-  if erased.contains name then
+  withTraceNode `Meta.Tactic.apply_rulesets
+    (fun _ => return s!"applying explicit rule: {name}") do
+  if (← read).erased.contains name then
+    trace[Meta.Tactic.apply_rulesets] "rule is erased"
     return none
   let type ← inferType r.expr
   let (args, _, conclusion) ← forallMetaTelescope type
   let ok ← withTransparency (← read).config.transparency <| isDefEq conclusion goalType
-  unless ok do return none
-  unless ← synthesizeArgs name args entries erased depth do return none
+  unless ok do
+    trace[Meta.Tactic.apply_rulesets]
+      "failed to unify explicit rule conclusion{indentExpr conclusion}\nwith{indentExpr goalType}"
+    return none
+  unless ← synthesizeArgs name args do return none
   return some (← instantiateMVars (mkAppN r.expr args))
 
 /-- Try a theorem rule. -/
-partial def tryTheorem? (_origin : ArgOrigin) (goalType : Expr) (entries : Array RuleEntry)
-    (erased : Std.HashSet Name) (depth : Nat) (rule : TheoremRule) :
+partial def tryTheorem? (_origin : ArgOrigin) (goalType : Expr) (rule : TheoremRule) :
     ApplyRuleSetsM (Option Expr) := do
+  withTraceNode `Meta.Tactic.apply_rulesets
+    (fun _ => return s!"applying theorem: {rule.header.name}") do
   let val ← mkConstWithFreshMVarLevels rule.header.name
   let type ← inferType val
   let (args, _, conclusion) ← forallMetaTelescope type
   let ok ← withTransparency (← read).config.transparency <| isDefEq conclusion goalType
   unless ok do
+    trace[Meta.Tactic.apply_rulesets]
+      "failed to unify {rule.header.name} conclusion{indentExpr conclusion}\
+      \nwith{indentExpr goalType}"
     return none
-  unless ← synthesizeArgs rule.header.name args entries erased depth do
+  unless ← synthesizeArgs rule.header.name args do
     return none
   return some (← instantiateMVars (mkAppN val args))
 
 /-- Try a ruleproc. -/
-partial def tryProc? (origin : ArgOrigin) (goalType : Expr) (entries : Array RuleEntry)
-    (erased : Std.HashSet Name) (depth : Nat) (rule : ProcRule) :
+partial def tryProc? (origin : ArgOrigin) (goalType : Expr) (rule : ProcRule) :
     ApplyRuleSetsM (Option Expr) := do
-  let (args, _, conclusion) ← forallMetaTelescope rule.pattern
-  let ok ← withTransparency (← read).config.transparency <| isDefEq conclusion goalType
+  withTraceNode `Meta.Tactic.apply_rulesets
+    (fun _ => return s!"applying ruleproc: {rule.header.name}") do
+  let pattern ← rule.instantiatePattern
+  let (args, _, conclusion) ← forallMetaTelescope pattern
+  let ok ← matchRuleProcConclusion conclusion goalType
   unless ok do
-    trace[Meta.Tactic.apply_rulesets] "ruleproc {rule.header.name} did not match {goalType}"
+    trace[Meta.Tactic.apply_rulesets]
+      "failed to unify ruleproc pattern{indentExpr conclusion}\nwith{indentExpr goalType}"
     return none
-  unless ← synthesizeArgs rule.header.name args entries erased depth do
+  unless ← synthesizeArgs rule.header.name args (allowPostponed := true) do
     trace[Meta.Tactic.apply_rulesets]
       "failed to synthesize ruleproc arguments for {rule.header.name}"
     return none
@@ -507,17 +632,21 @@ partial def tryProc? (origin : ArgOrigin) (goalType : Expr) (entries : Array Rul
   let ok ← withTransparency (← read).config.transparency <| isDefEq proofType goalType
   unless ok do
     trace[Meta.Tactic.apply_rulesets]
-      "ruleproc {rule.header.name} returned proof of wrong type {proofType} for {goalType}"
+      "ruleproc {rule.header.name} returned proof of wrong type{indentExpr proofType}\
+      \nfor{indentExpr goalType}"
     return none
   return some proof
 
 /-- Try any rule entry. -/
-partial def tryEntry? (origin : ArgOrigin) (goalType : Expr) (entries : Array RuleEntry)
-    (erased : Std.HashSet Name) (depth : Nat) : RuleEntry → ApplyRuleSetsM (Option Expr)
-  | .theorem rule => tryTheorem? origin goalType entries erased depth rule
-  | .proc rule => tryProc? origin goalType entries erased depth rule
+partial def tryEntry? (origin : ArgOrigin) (goalType : Expr) :
+    RuleEntry → ApplyRuleSetsM (Option Expr)
+  | .theorem rule => tryTheorem? origin goalType rule
+  | .proc rule => tryProc? origin goalType rule
 
 end
+
+/-- Backward-search using the active rule sets. Alias for `applyRuleSets`. -/
+abbrev appluRuleSets := applyRuleSets
 
 open Parser.Tactic in
 syntax applyRuleSetErase := "-" term:max
@@ -586,12 +715,11 @@ def evalApplyRuleSets : Tactic := fun stx => do
       let e ← Term.elabTerm explicitTerms[i].raw none
       explicitRules := explicitRules.push ({ order := i, expr := e } : ExplicitRule)
     Term.synthesizeSyntheticMVarsNoPostponing
-    let allEntries := #[]
     let ctx : Context :=
-      { config := cfg, rulesets := rulesets, explicitRules := explicitRules, disch := disch }
+      { config := cfg, rulesets := rulesets, explicitRules := explicitRules, erased := erased,
+        disch := disch }
     let s : State := {}
-    let (proof?, _) ←
-      (prove? { ruleName := Name.anonymous } goalType allEntries erased 0).run ctx |>.run s
+    let (proof?, _) ← (applyRuleSets { ruleName := Name.anonymous } goalType).run ctx |>.run s
     match proof? with
     | some proof => goal.assign proof; replaceMainGoal []
     | none => throwError "apply_rulesets failed"

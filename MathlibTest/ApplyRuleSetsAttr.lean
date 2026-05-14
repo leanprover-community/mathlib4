@@ -1,6 +1,7 @@
 module
 
 public import MathlibTest.ApplyRuleSetsRegister
+import Mathlib
 
 open Mathlib.Tactic.ApplyRuleSets
 
@@ -8,10 +9,9 @@ public section
 
 attribute [test_rules] And.intro
 
-ruleproc_decl exactTrue : True := fun _ _ => do
+@[test_rules]
+ruleproc exactTrue : True := fun _ _ => do
   return some (Lean.mkConst ``True.intro)
-
-attribute [test_rules] exactTrue
 
 inductive NeedFirst : Prop where
   | intro
@@ -22,43 +22,97 @@ inductive NeedOther : Prop where
 inductive FromFirst : Prop where
   | intro (first : NeedFirst)
 
+inductive DelegatedFromFirst : Prop where
+  | intro (first : NeedFirst)
+
 theorem fromFirstRule (first : NeedFirst) : FromFirst :=
   FromFirst.intro first
 
 attribute [test_rules] fromFirstRule
 
-ruleproc_decl solveNeedFirst : NeedFirst := fun origin _ => do
+@[test_rules]
+ruleproc solveNeedFirst : NeedFirst := fun origin _ => do
   if origin.argName == some `first then
     return some (Lean.mkConst ``NeedFirst.intro)
   else
     return none
 
-attribute [test_rules] solveNeedFirst
-
-ruleproc_decl solveNeedOther : NeedOther := fun _ _ => do
+@[test_rules]
+ruleproc solveNeedOther : NeedOther := fun _ _ => do
   return some (Lean.mkConst ``NeedOther.intro)
 
-attribute [test_rules] solveNeedOther
+@[test_rules]
+ruleproc solveDelegatedFromFirst : DelegatedFromFirst := fun _ _ => do
+  let some first ← applyRuleSets
+      { ruleName := `solveDelegatedFromFirst, argName := some `first } (Lean.mkConst ``NeedFirst)
+    | return none
+  return some (Lean.mkApp (Lean.mkConst ``DelegatedFromFirst.intro) first)
 
-ruleproc_decl lowNat : Nat := fun _ _ => do
+@[test_rules 100]
+ruleproc lowNat : Nat := fun _ _ => do
   return some (Lean.mkNatLit 1)
 
-ruleproc_decl highNat : Nat := fun _ _ => do
+@[test_rules 200]
+ruleproc highNat : Nat := fun _ _ => do
   return some (Lean.mkNatLit 2)
 
-attribute [test_rules 100] lowNat
-attribute [test_rules 200] highNat
-
-ruleproc_decl wrongPatternProc : NeedOther := fun _ _ => do
+@[test_rules]
+ruleproc wrongPatternProc : NeedOther := fun _ _ => do
   return some (Lean.mkConst ``True.intro)
-
-attribute [test_rules] wrongPatternProc
 
 def autoParamSource (h : True := by trivial) : True := h
 
 theorem autoParamRule (h : autoParam True autoParamSource._auto_1) : True := h
 
-ruleproc_decl reflByProc {A : Type} (a : A) : a = a := fun _ _ => do
+@[test_rules]
+ruleproc reflByProc {A : Type} (a : A) : a = a := fun _ _ => do
   return some (← Lean.Meta.mkAppM ``Eq.refl #[a])
 
-attribute [test_rules] reflByProc
+
+
+-- open Lean Meta Elab Term Command
+-- elab "simproc_elab%" e:term : term => do
+
+
+--   let simprocName := `_root_.my_simproc
+--   let simprocId := mkIdent  simprocName
+--   let stx ← `(command| simproc_decl $simprocId (_) := $e)
+--   liftCommandElabM (elabCommand stx)
+--   -- logInfo m!"defining new simproc {simprocName}"
+--   -- logInfo m!"new simproc {Expr.const `my_simproc []} : {← inferType (Expr.const `my_simproc [])}"
+--   let env ← getEnv
+--   let s? := env.find? simprocName
+--   logInfo m!"found new simproc: {s?.isSome}"
+--   elabTerm simprocId none
+
+
+-- meta def rewriteNat (n : Nat) : Simp.Simproc := fun e => do
+--   if (← inferType e) != .const ``Nat [] then
+--     return .continue
+
+--   let nExpr := mkNatLit n
+--   let prf ← mkSorry (← mkEq e nExpr) true
+
+--   return .done { expr := nExpr, proof? := prf }
+
+-- set_option Elab.async false
+
+
+-- theorem fake_theorem : 1 + 2 = sorry := by
+--   let a := simproc_elab% (rewriteNat 42)
+--   conv_lhs => simp [my_simproc]
+--   sorry
+
+-- #check my_simproc
+
+-- run_meta
+--   logInfo m!"is simproc: {← Lean.Meta.Simp.isSimproc ``my_simproc}"
+
+-- #exit
+-- #check my_simproc
+
+
+
+-- #check Lean.Meta.Simp.isSimproc
+
+-- #conv (simp [simproc_elab% (rewriteNat 42)]) => 1 + 2
