@@ -7,11 +7,6 @@ module
 
 public import Mathlib.Data.PNat.Basic
 public import Mathlib.Algebra.Notation.Prod
-import Mathlib.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # Typeclasses for power-associative structures

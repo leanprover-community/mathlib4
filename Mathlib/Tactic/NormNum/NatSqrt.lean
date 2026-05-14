@@ -7,16 +7,6 @@ module
 
 public meta import Batteries.Data.Nat.Basic
 public import Mathlib.Tactic.NormNum
-public import Batteries.Data.Nat.Basic
-import Mathlib.Data.Nat.Sqrt
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Util.CompileInductive
 
 /-! # `norm_num` extension for `Nat.sqrt`
 

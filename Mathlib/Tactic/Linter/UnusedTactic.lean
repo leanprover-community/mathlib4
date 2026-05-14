@@ -8,10 +8,9 @@ module
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
-import Batteries.Tactic.Unreachable
-meta import Lean.Linter.Basic
-import Lean.Parser.Syntax
-import Mathlib.Tactic.Linter.UnusedTacticExtension
+public import Batteries.Tactic.Unreachable
+public import Lean.Parser.Syntax
+public import Mathlib.Tactic.Linter.UnusedTacticExtension
 
 /-!
 # The unused tactic linter

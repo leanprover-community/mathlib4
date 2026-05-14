@@ -7,13 +7,6 @@ module
 
 public import Mathlib.Topology.Hom.ContinuousEvalConst
 public import Mathlib.Topology.ContinuousMap.Defs
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.Order.Filter.Tendsto
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Continuous
 
 /-!
 # Bundled maps with evaluation continuous in both variables

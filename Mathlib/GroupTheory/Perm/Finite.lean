@@ -5,18 +5,10 @@ Authors: Chris Hughes
 -/
 module
 
+public import Mathlib.Data.Finite.Sum
 public import Mathlib.GroupTheory.OrderOfElement
 public import Mathlib.GroupTheory.Perm.Support
-import Mathlib.Data.Finite.Sum
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Disjoint
-import Mathlib.Data.Set.Lattice
-import Mathlib.Init
-import Mathlib.Logic.Equiv.Fintype
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Logic.Equiv.Fintype
 
 /-!
 # Permutations on `Fintype`s

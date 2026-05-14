@@ -11,13 +11,6 @@ public import Mathlib.CategoryTheory.Category.Cat
 public import Mathlib.Algebra.Category.MonCat.Basic
 public import Mathlib.Combinatorics.Quiver.SingleObj
 public import Mathlib.Algebra.Group.Units.Equiv
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.CrossRefAttribute
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Single-object category

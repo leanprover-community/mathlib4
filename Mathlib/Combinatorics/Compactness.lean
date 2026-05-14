@@ -7,15 +7,8 @@ module
 
 import Mathlib.Topology.Compactness.Compact
 public import Mathlib.Data.Finite.Defs
+public import Mathlib.Data.Finset.Attr
 public import Mathlib.Data.Finset.Defs
-public import Mathlib.Data.Set.Inclusion
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Lattice
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Continuous
 
 /-!
 # Combinatorial compactness and the Rado selection lemma

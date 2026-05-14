@@ -6,10 +6,9 @@ Authors: Jovan Gerbscheid
 module
 
 public meta import Batteries.Lean.NameMapAttribute
+public meta import Lean.Elab.App
 public meta import Mathlib.Lean.PrettyPrinter.Delaborator
-public meta import Lean.Elab.Term
-meta import Lean.Elab.App
-import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # Set notation for order operations

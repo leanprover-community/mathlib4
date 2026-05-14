@@ -8,8 +8,6 @@ module
 public meta import Lean.Meta.Basic
 public meta import Mathlib.Tactic.Explode.Datatypes
 public import Mathlib.Tactic.Explode.Datatypes
-public import Lean.Meta.Basic
-import Mathlib.Init
 
 /-!
 # Explode command: pretty

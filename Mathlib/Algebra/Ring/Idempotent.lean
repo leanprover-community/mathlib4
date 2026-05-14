@@ -8,12 +8,8 @@ module
 public import Mathlib.Algebra.GroupWithZero.Idempotent
 public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Order.Notation
-import Mathlib.Algebra.Group.Torsion
-import Mathlib.Init
-import Mathlib.Tactic.Conv
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.SimpRw
-import Mathlib.Util.CompileInductive
+public import Mathlib.Tactic.Convert
+public import Mathlib.Algebra.Group.Torsion
 
 /-!
 # Idempotent elements of a ring

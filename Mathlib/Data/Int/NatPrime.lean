@@ -5,14 +5,9 @@ Authors: Kevin Lacker, Bryan Gin-ge Chen
 -/
 module
 
+public import Mathlib.Data.Nat.Prime.Basic
 public import Mathlib.Algebra.Group.Int.Defs
-public import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.Data.Int.Basic
-import Mathlib.Data.Nat.Prime.Basic
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Data.Int.Basic
 
 /-!
 # Lemmas about `Nat.Prime` using `Int`s

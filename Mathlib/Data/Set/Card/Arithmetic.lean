@@ -7,19 +7,9 @@ module
 
 public import Mathlib.Algebra.BigOperators.Finprod
 public import Mathlib.Data.Set.Card
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Finset.Basic
-import Mathlib.Data.Set.Finite.Lattice
-import Mathlib.Data.Set.Lattice
-import Mathlib.Init
-import Mathlib.SetTheory.Cardinal.Arithmetic
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.SetTheory.Cardinal.Arithmetic
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Data.Set.Finite.Lattice
 
 /-!
 # Results using cardinal arithmetic

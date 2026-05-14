@@ -5,15 +5,7 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Set.BooleanAlgebra
-public import Mathlib.Order.Filter.Defs
-import Mathlib.Data.Set.Lattice
-import Mathlib.Init
-import Mathlib.Order.Filter.Map
-import Mathlib.Tactic.Choose
-import Mathlib.Tactic.Contrapose
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Order.Filter.Map
 
 /-!
 # Kernel of a filter

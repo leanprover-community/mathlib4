@@ -6,34 +6,9 @@ Authors: Alexander Bentkamp, Yury Kudryashov, Yaël Dillies, Joël Riou
 module
 
 public import Mathlib.Analysis.Convex.Combination
+public import Mathlib.Analysis.Convex.PathConnected
+public import Mathlib.Topology.Algebra.Monoid.FunOnFinite
 public import Mathlib.Topology.UnitInterval
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
-public import Mathlib.Algebra.Order.Group.Unbundled.Basic
-public import Mathlib.LinearAlgebra.Finsupp.Pi
-public import Mathlib.Topology.Connected.PathConnected
-public import Mathlib.Topology.MetricSpace.Bounded
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.Order.Algebra
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Analysis.Convex.PathConnected
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Init
-import Mathlib.Order.Interval.Set.Pi
-import Mathlib.Tactic.Attr.Register
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Algebra.Monoid.FunOnFinite
 
 /-!
 # The standard simplex

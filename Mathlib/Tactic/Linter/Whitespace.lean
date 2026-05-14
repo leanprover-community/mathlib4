@@ -6,8 +6,6 @@ Authors: Damiano Testa
 module
 
 public import Mathlib.Tactic.Linter.Header  -- shake: keep
-meta import Lean.Linter.Basic
-import Lean.Parser.Command
 
 /-!
 # The `whitespace` linter

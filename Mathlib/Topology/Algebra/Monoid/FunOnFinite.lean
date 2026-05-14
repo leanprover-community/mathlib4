@@ -7,12 +7,6 @@ module
 
 public import Mathlib.Topology.Algebra.Monoid
 public import Mathlib.LinearAlgebra.Finsupp.Pi
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Continuity of the functoriality of `X → M` when `X` is finite

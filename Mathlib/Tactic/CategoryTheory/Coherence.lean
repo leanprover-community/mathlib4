@@ -8,15 +8,9 @@ module
 public meta import Mathlib.Lean.Meta
 public import Mathlib.CategoryTheory.Monoidal.Free.Basic
 public meta import Mathlib.CategoryTheory.Monoidal.Free.Basic
+public import Mathlib.Lean.Meta
 public import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Init
-import Mathlib.Lean.Meta
-import Mathlib.Tactic.CategoryTheory.CategoryStar
-import Mathlib.Tactic.CategoryTheory.MonoidalComp
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Tactic.CategoryTheory.MonoidalComp
 
 /-!
 # A `coherence` tactic for monoidal categories

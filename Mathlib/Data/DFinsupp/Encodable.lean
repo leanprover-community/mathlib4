@@ -7,11 +7,6 @@ module
 
 public import Mathlib.Data.DFinsupp.Defs
 public import Mathlib.Logic.Encodable.Pi
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 /-!
 # `Encodable` and `Countable` instances for `Π₀ i, α i`
 

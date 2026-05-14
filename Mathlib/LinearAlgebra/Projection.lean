@@ -8,15 +8,8 @@ module
 public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.LinearAlgebra.Prod
 public import Mathlib.Algebra.Module.Submodule.Invariant
-import Mathlib.Algebra.Group.Commute.Units
-import Mathlib.Algebra.Ring.Idempotent
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
+public import Mathlib.Algebra.Ring.Idempotent
 
 /-!
 # Projection to a subspace

@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Algebra.Order.Monoid.Unbundled.TypeTags
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Init
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-! # Bundled ordered monoid structures on `Multiplicative α` and `Additive α`. -/
 

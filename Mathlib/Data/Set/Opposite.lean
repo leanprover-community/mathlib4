@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Data.Opposite
 public import Mathlib.Data.Set.Operations
-import Mathlib.Init
-import Mathlib.Util.CompileInductive
 
 /-!
 # The opposite of a set

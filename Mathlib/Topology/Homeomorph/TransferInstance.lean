@@ -6,11 +6,6 @@ Authors: Michael Rothgang
 module
 
 public import Mathlib.Topology.Homeomorph.Defs
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Transfer topological structure across `Equiv`s

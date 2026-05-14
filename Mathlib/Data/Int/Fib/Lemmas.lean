@@ -6,13 +6,6 @@ Authors: Monica Omar
 module
 
 public import Mathlib.Data.Int.Fib.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Ring.RingNF
-import Mathlib.Tactic.SetLike
 
 /-!
 # Cassini and Catalan identities for the Fibonacci numbers

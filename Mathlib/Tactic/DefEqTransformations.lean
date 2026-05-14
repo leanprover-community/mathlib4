@@ -5,9 +5,8 @@ Authors: Kyle Miller
 -/
 module
 
+public import Mathlib.Init
 public meta import Lean.Elab.Tactic.Conv.Basic
-public meta import Lean.Elab.Tactic.Location
-import Mathlib.Init
 
 /-! # Tactics that transform types into definitionally equal types
 

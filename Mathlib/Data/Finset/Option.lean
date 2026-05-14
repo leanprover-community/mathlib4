@@ -7,11 +7,6 @@ module
 
 public import Mathlib.Data.Finset.Card
 public import Mathlib.Data.Finset.Union
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Finite sets in `Option α`

@@ -7,10 +7,6 @@ module
 
 public import Mathlib.Algebra.Ring.Action.Group
 public import Mathlib.Algebra.Ring.Aut
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # Ring automorphisms

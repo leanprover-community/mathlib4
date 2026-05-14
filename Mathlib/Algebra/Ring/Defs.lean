@@ -7,10 +7,8 @@ module
 
 public import Mathlib.Algebra.GroupWithZero.Defs
 public import Mathlib.Data.Int.Cast.Defs
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.Spread
-import Mathlib.Init
-import Mathlib.Logic.Basic
-import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Semirings and rings

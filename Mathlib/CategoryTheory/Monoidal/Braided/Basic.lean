@@ -8,19 +8,8 @@ module
 public import Mathlib.CategoryTheory.Monoidal.Discrete
 public import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
 public import Mathlib.CategoryTheory.Monoidal.Opposite
-public import Mathlib.Tactic.CategoryTheory.MonoidalComp
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.CommSq
-import Mathlib.Init
-import Mathlib.Tactic.CategoryTheory.CancelIso
-import Mathlib.Tactic.CategoryTheory.CategoryStar
-import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
-import Mathlib.Tactic.CategoryTheory.Reassoc
-import Mathlib.Tactic.CategoryTheory.Slice
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.CrossRefAttribute
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
+public import Mathlib.CategoryTheory.CommSq
 
 /-!
 # Braided and symmetric monoidal categories

@@ -5,33 +5,10 @@ Authors: Yong-Gyu Choi
 -/
 module
 
+public import Mathlib.Algebra.Category.Ring.EqualizerPushout
 public import Mathlib.AlgebraicGeometry.Morphisms.Flat
-import Mathlib.Algebra.Category.Ring.EqualizerPushout
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.AlgebraicGeometry.Morphisms.Affine
-import Mathlib.AlgebraicGeometry.PullbackCarrier
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.EffectiveEpi.Comp
-import Mathlib.CategoryTheory.EffectiveEpi.Preserves
-import Mathlib.CategoryTheory.Limits.Preserves.Creates.Finite
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.CategoryTheory.Reassoc
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.CrossRefAttribute
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Category.TopCat.EffectiveEpi
-import Mathlib.Topology.Sheaves.Init
+public import Mathlib.Topology.Category.TopCat.EffectiveEpi
+public import Mathlib.CategoryTheory.EffectiveEpi.Preserves
 
 /-!
 # Effective epimorphisms in the category of schemes

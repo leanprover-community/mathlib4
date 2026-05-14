@@ -6,11 +6,6 @@ Authors: Yan Yablonovskiy
 module
 
 public import Mathlib.Order.Hom.Basic
-import Mathlib.Init
-import Mathlib.Logic.IsEmpty.Basic
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.PPWithUniv
-import Mathlib.Util.CompileInductive
 
 /-!
 # Order types

@@ -6,9 +6,7 @@ Authors: Yaël Dillies, Patrick Luo
 module
 
 public import Mathlib.Algebra.Group.Basic
-import Mathlib.Init
-import Mathlib.Logic.Basic
-import Mathlib.Tactic.Translate.ToAdditive
+public import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
 # Torsion-free monoids and groups

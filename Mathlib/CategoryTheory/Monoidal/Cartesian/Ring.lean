@@ -7,12 +7,6 @@ module
 
 public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.CategoryTheory.Monoidal.Ring
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Yoneda embedding of `RingCatObj C`

@@ -5,15 +5,8 @@ Authors: Johannes Hölzl, Jens Wagemaker, Anne Baanen
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.List.Defs
-public import Mathlib.Algebra.Prime.Defs
-import Mathlib.Algebra.BigOperators.Group.List.Basic
-import Mathlib.Algebra.BigOperators.Group.List.Lemmas
-import Mathlib.Algebra.GroupWithZero.Associated
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Algebra.BigOperators.Group.List.Lemmas
+public import Mathlib.Algebra.GroupWithZero.Associated
 
 /-!
 # Products of lists of prime elements.

@@ -6,12 +6,8 @@ Authors: Antoine Chambert-Loir, Anatole Dedecker
 module
 
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Batteries.Tactic.Trans
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Util.CompileInductive
+public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.SetLike
 
 /-!
 # Saddle points of a map

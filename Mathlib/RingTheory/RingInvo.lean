@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Algebra.Ring.Equiv
 public import Mathlib.Algebra.Ring.Opposite
-import Mathlib.Init
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # Ring involutions

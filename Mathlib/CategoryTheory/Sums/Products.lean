@@ -7,11 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Sums.Associator
 public import Mathlib.CategoryTheory.Products.Associator
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Init
-import Mathlib.Tactic.CategoryTheory.CategoryStar
-import Mathlib.Tactic.Common
-import Mathlib.Util.CompileInductive
 
 /-!
 # Functors out of sums of categories.

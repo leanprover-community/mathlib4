@@ -5,17 +5,9 @@ Authors: Jujian Zhang
 -/
 module
 
+public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Basic
-public import Mathlib.CategoryTheory.Filtered.Basic
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.Tactic.CategoryTheory.Elementwise
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Tactic.SetLike
+public import Mathlib.Tactic.CategoryTheory.Elementwise
 
 /-!
 # Colimits in ModuleCat

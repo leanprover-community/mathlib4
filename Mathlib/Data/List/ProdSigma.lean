@@ -6,11 +6,8 @@ Authors: Leonardo de Moura, Mario Carneiro
 module
 
 public import Mathlib.Data.List.Defs
-public import Aesop
-import Mathlib.Init
-import Mathlib.Tactic.Attr.Core
-import Mathlib.Tactic.Common
-import Mathlib.Util.CompileInductive
+public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Common
 
 /-!
 # Lists in product and sigma types

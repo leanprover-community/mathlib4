@@ -7,14 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Group.InjSurj
+public import Mathlib.Algebra.Group.Torsion
 public import Mathlib.Algebra.Opposites
-public import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Group.Torsion
-import Mathlib.Init
-import Mathlib.Tactic.Conv
-import Mathlib.Tactic.SimpRw
-import Mathlib.Tactic.Translate.ToAdditive
-import Mathlib.Util.CompileInductive
+public import Mathlib.Tactic.Conv
 
 /-!
 # Group structures on the multiplicative and additive opposites

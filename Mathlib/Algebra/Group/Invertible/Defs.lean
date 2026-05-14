@@ -6,8 +6,6 @@ Authors: Anne Baanen
 module
 
 public import Mathlib.Algebra.Group.Defs
-import Batteries.Logic
-import Mathlib.Init
 
 /-!
 # Invertible elements

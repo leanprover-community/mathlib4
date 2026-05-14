@@ -7,15 +7,7 @@ module
 
 public import Mathlib.Algebra.Notation.Pi.Basic
 public import Mathlib.Algebra.Notation.Prod
-public import Mathlib.Data.Set.Subsingleton
-public import Mathlib.Order.BooleanAlgebra.Set
-import Mathlib.Data.Set.Image
-import Mathlib.Init
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SimpRw
-import Mathlib.Tactic.SplitIfs
-import Mathlib.Tactic.Translate.ToAdditive
-import Mathlib.Util.CompileInductive
+public import Mathlib.Data.Set.Image
 
 /-!
 # Support of a function

@@ -6,9 +6,6 @@ Authors: David Wärn, Kim Morrison
 module
 
 public import Mathlib.Combinatorics.Quiver.Basic
-import Mathlib.Init
-import Mathlib.Tactic.Translate.ToDual
-import Mathlib.Util.CompileInductive
 
 /-!
 # Morphisms of quivers

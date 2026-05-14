@@ -9,8 +9,6 @@ public import Mathlib.Algebra.Group.TypeTags.Hom
 public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Notation.Prod
 public import Mathlib.Tactic.Spread
-import Mathlib.Init
-import Mathlib.Util.CompileInductive
 
 /-!
 # Additive and multiplicative equivalences associated to `Multiplicative` and `Additive`.

@@ -5,13 +5,7 @@ Authors: Johan Commelin
 -/
 module
 
-public import Aesop
-public import Mathlib.Data.Nat.Notation
-public import Mathlib.Tactic.Attr.Core
-import Mathlib.Data.List.Nodup
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Util.CompileInductive
+public import Mathlib.Data.List.Nodup
 
 /-!
 # Antidiagonals in ℕ × ℕ as lists

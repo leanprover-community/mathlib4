@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Logic.Function.ULift
 public import Mathlib.Order.Basic
-import Mathlib.Init
-import Mathlib.Tactic.Translate.ToDual
 
 /-! # Ordered structures on `ULift.{v} α`
 

@@ -6,13 +6,7 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.Seq.Basic
-import Mathlib.Data.Stream.Init
-import Mathlib.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Util.CompileInductive
+public import Mathlib.Util.CompileInductive
 
 /-!
 # Partially defined possibly infinite lists

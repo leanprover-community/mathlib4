@@ -5,8 +5,7 @@ Authors: Gabriel Ebner
 -/
 module
 
-public meta import Lean.Elab.Term
-import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # Additional coercion notation

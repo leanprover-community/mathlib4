@@ -6,11 +6,6 @@ Authors: Yuma Mizuno
 module
 
 public import Mathlib.CategoryTheory.NatIso
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Init
-import Mathlib.Tactic.CategoryTheory.Reassoc
-import Mathlib.Tactic.Common
-import Mathlib.Util.CompileInductive
 
 /-!
 # Bicategories

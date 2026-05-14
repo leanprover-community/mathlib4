@@ -8,7 +8,6 @@ module
 public import Mathlib.Util.Notation3
 public meta import Mathlib.Lean.Expr.ExtraRecognizers
 public import Mathlib.Data.Set.Operations
-import Mathlib.Init
 
 /-!
 # Set Notation

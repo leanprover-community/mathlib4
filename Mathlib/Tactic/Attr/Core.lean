@@ -7,7 +7,6 @@ module
 
 import Mathlib.Tactic.Attr.Register
 public import Std.Data.DTreeMap.Internal.Operations
-import Mathlib.Init
 
 /-!
 # Simp tags for core lemmas

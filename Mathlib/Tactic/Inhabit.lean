@@ -6,7 +6,7 @@ Authors: Joshua Clune
 module
 
 public meta import Lean.Elab.Tactic.ElabTerm
-import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 Defines the `inhabit α` tactic, which tries to construct an `Inhabited α` instance,

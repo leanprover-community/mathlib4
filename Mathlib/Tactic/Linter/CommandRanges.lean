@@ -5,8 +5,7 @@ Authors: Damiano Testa
 -/
 module
 
-public meta import Lean.Elab.Command
-import Mathlib.Init
+public import Mathlib.Init -- `import Lean.Elab.Command` is enough
 
 /-!
 # The "commandRanges" linter

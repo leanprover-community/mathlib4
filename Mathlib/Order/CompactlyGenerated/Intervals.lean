@@ -7,12 +7,6 @@ module
 
 public import Mathlib.Order.CompleteLatticeIntervals
 public import Mathlib.Order.CompactlyGenerated.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Lattice
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Results about compactness properties for intervals in complete lattices

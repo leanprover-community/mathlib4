@@ -8,18 +8,6 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.EdgeConnectivity
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Combinatorics.SimpleGraph.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.List.Count
-import Mathlib.Data.List.Nodup
-import Mathlib.Data.Nat.Cast.Order.Basic
-import Mathlib.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Hamiltonian Graphs

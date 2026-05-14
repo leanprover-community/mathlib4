@@ -11,7 +11,6 @@ public import Batteries.Data.List.Basic
 public import Mathlib.Control.Basic
 
 import Mathlib.Tactic.Attr.Register
-import Mathlib.Init
 
 /-!
 # Traversable type class

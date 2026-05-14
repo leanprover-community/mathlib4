@@ -6,17 +6,8 @@ Authors: Yaël Dillies, Bhavik Mehta
 module
 
 public import Mathlib.Data.NNRat.Defs
-public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-public import Mathlib.Algebra.Order.Ring.Defs
-public import Mathlib.Algebra.Order.Sub.Defs
-import Mathlib.Algebra.Order.Nonneg.Ring
-import Mathlib.Algebra.Order.Ring.Rat
-import Mathlib.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Util.CompileInductive
+public import Mathlib.Algebra.Order.Ring.Rat
+public import Mathlib.Algebra.Order.Nonneg.Ring
 
 /-!
 # Bundled ordered algebra structures on `ℚ≥0`

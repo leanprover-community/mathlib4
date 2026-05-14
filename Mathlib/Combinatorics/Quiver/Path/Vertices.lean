@@ -5,17 +5,11 @@ Authors: Matteo Cipollina
 -/
 module
 
+public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Combinatorics.Quiver.Path
-public import Aesop
-public import Mathlib.Tactic.ToAdditive
-import Mathlib.Algebra.NeZero
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Data.List.Basic
-import Mathlib.Data.Set.Insert
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Data.Set.Insert
+public import Mathlib.Data.List.Basic
+public import Mathlib.Algebra.NeZero
 
 /-!
 # Path Vertices

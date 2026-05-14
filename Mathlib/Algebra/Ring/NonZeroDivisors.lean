@@ -6,18 +6,9 @@ Authors: Yakov Pechersky
 module
 
 public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-public import Mathlib.Algebra.Ring.Defs
-import Mathlib.Algebra.Group.Torsion
-import Mathlib.Algebra.Group.Units.Basic
-import Mathlib.Algebra.Regular.Basic
-import Mathlib.Algebra.Regular.Opposite
-import Mathlib.Algebra.Ring.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.Translate.ToAdditive
+public import Mathlib.Algebra.Regular.Basic
+public import Mathlib.Algebra.Regular.Opposite
+public import Mathlib.Algebra.Ring.Basic
 
 /-!
 # Non-zero divisors in a ring

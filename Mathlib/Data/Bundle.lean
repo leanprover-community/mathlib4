@@ -5,14 +5,7 @@ Authors: Nicolò Cavalleri
 -/
 module
 
-public import Mathlib.Data.Set.Operations
-public import Mathlib.Logic.Equiv.Defs
-import Mathlib.Data.Set.Basic
-import Mathlib.Init
-import Mathlib.Tactic.Attr.Register
-import Mathlib.Tactic.Coe
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Data.Set.Basic
 
 /-!
 # Bundle

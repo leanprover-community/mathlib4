@@ -6,15 +6,7 @@ Authors: David Wärn
 module
 
 public import Mathlib.Order.Ideal
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Finset.Max
-import Mathlib.Init
-import Mathlib.Logic.Nontrivial.Basic
-import Mathlib.Order.Compare
-import Mathlib.Order.Interval.Set.OrdConnected
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Data.Finset.Max
 
 /-!
 # The back and forth method and countable dense linear orders

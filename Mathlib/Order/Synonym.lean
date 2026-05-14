@@ -6,9 +6,8 @@ Authors: Johan Commelin, Damiano Testa, Yaël Dillies
 module
 
 public import Mathlib.Logic.Equiv.Defs -- shake: keep-all
-import Mathlib.Init
-import Mathlib.Tactic.Linter.DeprecatedModule
-import Mathlib.Util.CompileInductive
+public import Mathlib.Order.Basic
+public import Mathlib.Tactic.Linter.DeprecatedModule
 
 /-!
 # Type synonyms

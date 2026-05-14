@@ -6,8 +6,5 @@ Authors: Robert Y. Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 module -- shake: keep-all
 
 public import Mathlib.Algebra.Ring.Int.Parity
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Util.CompileInductive
 
 deprecated_module (since := "2026-04-17")

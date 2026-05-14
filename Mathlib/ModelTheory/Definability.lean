@@ -8,16 +8,7 @@ module
 public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Data.Rel
 public import Mathlib.ModelTheory.Semantics
-public import Mathlib.Data.Finset.Lattice.Fold
-import Batteries.Tactic.Congr
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Fintype.Option
-import Mathlib.Data.Set.Lattice
-import Mathlib.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Tactic.FunProp
 
 /-!
 # Definable Sets

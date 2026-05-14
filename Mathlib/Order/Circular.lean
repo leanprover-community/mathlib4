@@ -6,13 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Order.Lattice
-import Batteries.Tactic.Init
-import Mathlib.Init
-import Mathlib.Tactic.ByContra
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Order
-import Mathlib.Tactic.SimpRw
-import Mathlib.Util.CompileInductive
+public import Mathlib.Tactic.Order
 
 /-!
 # Circular order hierarchy

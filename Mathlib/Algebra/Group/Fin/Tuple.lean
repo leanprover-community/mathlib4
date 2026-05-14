@@ -8,11 +8,6 @@ module
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Notation.Pi.Basic
 public import Mathlib.Data.Fin.VecNotation
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Translate.ToAdditive
-import Mathlib.Util.CompileInductive
 
 /-!
 # Algebraic properties of tuples

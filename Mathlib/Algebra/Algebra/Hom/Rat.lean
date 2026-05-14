@@ -6,14 +6,7 @@ Authors: Kenny Lau, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Algebra.Hom
-public import Mathlib.Algebra.Ring.Rat
-import Mathlib.Algebra.Algebra.Rat
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Algebra.Algebra.Rat
 
 /-!
 # Homomorphisms of `ℚ`-algebras

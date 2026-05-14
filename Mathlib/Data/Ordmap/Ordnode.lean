@@ -8,9 +8,6 @@ module
 public import Mathlib.Order.Compare
 public import Mathlib.Data.Nat.PSub
 public import Batteries.Data.List.Basic
-public import Mathlib.Data.Nat.Basic
-public import Mathlib.Util.CompileInductive
-import Mathlib.Init
 
 /-!
 # Ordered sets

@@ -7,10 +7,9 @@ module
 
 public import Mathlib.Lean.Name
 public import Mathlib.Tactic.Widget.SelectPanelUtils
+public import ProofWidgets.Component.OfRpcMethod
 public import ProofWidgets.Component.Basic
-meta import Lean.PrettyPrinter.Delaborator.Builtins
-import Mathlib.Init
-import ProofWidgets.Component.OfRpcMethod
+public meta import Lean.PrettyPrinter.Delaborator.Builtins
 
 /-! # Conv widget
 

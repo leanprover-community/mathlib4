@@ -8,17 +8,8 @@ module
 
 public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Group.Subsemigroup.Defs
-public import Aesop
-import Mathlib.Algebra.Group.InjSurj
-import Mathlib.Data.Set.Insert
-import Mathlib.Init
-import Mathlib.Tactic.Coe
-import Mathlib.Tactic.CongrExclamation
-import Mathlib.Tactic.FastInstance
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.Translate.ToAdditive
-import Mathlib.Util.CompileInductive
+public import Mathlib.Tactic.FastInstance
+public import Mathlib.Data.Set.Insert
 
 /-!
 # Submonoids: definition

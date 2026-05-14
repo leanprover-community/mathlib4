@@ -5,8 +5,7 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public meta import Lean.Elab.Tactic.ElabTerm
-import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # `elabTermWithoutNewMVars`

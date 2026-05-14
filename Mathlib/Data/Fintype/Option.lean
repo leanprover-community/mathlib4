@@ -7,11 +7,6 @@ module
 
 public import Mathlib.Data.Fintype.EquivFin
 public import Mathlib.Data.Finset.Option
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # fintype instances for option

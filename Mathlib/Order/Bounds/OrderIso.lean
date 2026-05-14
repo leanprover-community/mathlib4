@@ -5,13 +5,8 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.Bounds.Defs
-public import Mathlib.Order.Hom.Basic
-import Mathlib.Init
-import Mathlib.Order.Bounds.Image
-import Mathlib.Order.Hom.Set
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Order.Bounds.Image
+public import Mathlib.Order.Hom.Set
 
 /-!
 # Order isomorphisms and bounds.

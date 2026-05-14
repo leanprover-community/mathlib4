@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel, Mario Carneiro
 module
 
 public import Mathlib.Tactic.Nontriviality.Core
-import Mathlib.Init
 
 /-! # The `nontriviality` tactic. -/
 

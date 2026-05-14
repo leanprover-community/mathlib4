@@ -7,26 +7,8 @@ module
 
 public import Mathlib.Algebra.Group.Units.Basic
 public import Mathlib.RingTheory.MvPowerSeries.Basic
-public import Mathlib.RingTheory.LocalRing.Defs
-import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Algebra.Ring.NonZeroDivisors
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Init
-import Mathlib.RingTheory.LocalRing.Basic
-import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Abs
-import Mathlib.Tactic.NormNum.DivMod
-import Mathlib.Tactic.NormNum.Eq
-import Mathlib.Tactic.NormNum.Ineq
-import Mathlib.Tactic.NormNum.OfScientific
-import Mathlib.Tactic.NormNum.Pow
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
+public import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
+public import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Formal (multivariate) power series - Inverses

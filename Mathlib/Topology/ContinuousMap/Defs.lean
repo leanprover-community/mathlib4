@@ -6,13 +6,9 @@ Authors: Nicolò Cavalleri, Yury Kudryashov
 module
 
 public import Mathlib.Data.FunLike.Basic
+public import Mathlib.Tactic.Continuity
 public import Mathlib.Tactic.Lift
 public import Mathlib.Topology.Defs.Basic
-import Mathlib.Init
-import Mathlib.Tactic.Continuity
-import Mathlib.Tactic.FunProp.Attr
-import Mathlib.Tactic.FunProp.Elab
-import Mathlib.Util.CompileInductive
 
 /-!
 # Continuous bundled maps

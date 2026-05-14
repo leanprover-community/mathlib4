@@ -12,14 +12,8 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
 public import Mathlib.CategoryTheory.Limits.Types.Limits
 public import Mathlib.CategoryTheory.Limits.Types.Products
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.Finite.Prod
-import Mathlib.Data.Finite.Sigma
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Data.Finite.Prod
+public import Mathlib.Data.Finite.Sigma
 
 /-!
 # (Co)limits in the category of finite types

@@ -8,14 +8,6 @@ module
 public import Mathlib.Computability.Primrec.List
 public import Mathlib.Data.Nat.PSub
 public import Mathlib.Data.PFun
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # The partial recursive functions

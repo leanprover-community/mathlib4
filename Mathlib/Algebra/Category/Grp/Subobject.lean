@@ -5,18 +5,8 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.Algebra.Category.Grp.Basic
-public import Mathlib.CategoryTheory.Subobject.WellPowered
-import Mathlib.Algebra.Category.Grp.ZModuleEquivalence
-import Mathlib.Algebra.Category.ModuleCat.Subobject
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Tactic.SetLike
+public import Mathlib.Algebra.Category.Grp.ZModuleEquivalence
+public import Mathlib.Algebra.Category.ModuleCat.Subobject
 
 /-!
 # The category of abelian groups is well-powered

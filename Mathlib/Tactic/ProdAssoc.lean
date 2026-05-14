@@ -6,12 +6,8 @@ Authors: Adam Topaz
 module
 
 public meta import Mathlib.Lean.Expr.Basic
+public import Mathlib.Logic.Equiv.Defs
 public meta import Mathlib.Tactic.Simps.Basic
-public import Lean.Meta.Basic
-public import Mathlib.Tactic.ToDual
-import Mathlib.Init
-import Mathlib.Logic.Equiv.Defs
-import Mathlib.Util.CompileInductive
 
 /-!
 # Associativity of products

@@ -8,11 +8,10 @@ module
 public meta import Mathlib.Tactic.Widget.SelectPanelUtils
 public meta import Mathlib.Lean.GoalsLocation
 public meta import Mathlib.Lean.Meta.KAbstractPositions
+public import Mathlib.Tactic.NthRewrite
 public import Mathlib.Tactic.Widget.SelectPanelUtils
 public import ProofWidgets.Component.Basic
-import Mathlib.Init
-import Mathlib.Tactic.NthRewrite
-import ProofWidgets.Component.OfRpcMethod
+public import ProofWidgets.Component.OfRpcMethod
 
 /-!
 

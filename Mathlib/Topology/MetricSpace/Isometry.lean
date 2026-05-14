@@ -5,26 +5,10 @@ Authors: Sébastien Gouëzel
 -/
 module
 
+public import Mathlib.Data.Fintype.Lattice
 public import Mathlib.Data.Fintype.Sum
 public import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Topology.MetricSpace.Antilipschitz
-public import Mathlib.Topology.MetricSpace.Bounded
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Fintype.Lattice
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Init
-import Mathlib.Tactic.Attr.Register
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.ContinuousOn
-import Mathlib.Topology.UniformSpace.UniformEmbedding
 
 /-!
 # Isometries

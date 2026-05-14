@@ -5,10 +5,7 @@ Authors: Kyle Miller
 -/
 module
 
-public import Lean.Expr
-public import Mathlib.Tactic.ToDual
-import Mathlib.Data.Set.CoeSort
-import Mathlib.Init
+public import Mathlib.Data.Set.CoeSort
 
 /-!
 # Additional Expr recognizers needing theory imports

@@ -5,38 +5,13 @@ Authors: Anatole Dedecker, Alexey Soloyev, Junyan Xu, Kamila Szewczyk
 -/
 module
 
+public import Mathlib.Algebra.EuclideanDomain.Basic
 public import Mathlib.Algebra.LinearRecurrence
 public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Data.Int.Fib.Basic
 public import Mathlib.NumberTheory.Real.Irrational
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
-import Mathlib.Algebra.Group.Torsion
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Group.Unbundled.Basic
-import Mathlib.Algebra.Order.Module.Field
-import Mathlib.Algebra.Order.Monoid.NatCast
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.EReal.Operations
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.Rat.Cast.Lemmas
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.FinCases
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Linarith.Frontend
-import Mathlib.Tactic.NormNum.NatFib
-import Mathlib.Tactic.NormNum.Prime
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Ring.RingNF
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.MetricSpace.Bounded
+public import Mathlib.Tactic.NormNum.NatFib
+public import Mathlib.Tactic.NormNum.Prime
 
 /-!
 # The golden ratio and its conjugate

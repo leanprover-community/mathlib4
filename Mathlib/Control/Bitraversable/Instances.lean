@@ -6,11 +6,7 @@ Authors: Simon Hudon
 module
 
 public import Mathlib.Control.Bitraversable.Lemmas
-public import Mathlib.Tactic.ToAdditive
-import Mathlib.Control.Applicative
-import Mathlib.Control.Traversable.Lemmas
-import Mathlib.Init
-import Mathlib.Tactic.Common
+public import Mathlib.Control.Traversable.Lemmas
 
 /-!
 # Bitraversable instances

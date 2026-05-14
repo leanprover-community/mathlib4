@@ -5,19 +5,10 @@ Authors: Bhavik Mehta, Jakob von Raumer
 -/
 module
 
+public import Mathlib.Data.List.Chain
 public import Mathlib.CategoryTheory.PUnit
 public import Mathlib.CategoryTheory.Groupoid
 public import Mathlib.CategoryTheory.Category.ULift
-import Batteries.Tactic.Init
-import Batteries.Tactic.Trans
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.List.Chain
-import Mathlib.Init
-import Mathlib.Tactic.Attr.Core
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.CrossRefAttribute
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # Connected category

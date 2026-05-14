@@ -6,8 +6,6 @@ Authors: Jannis Limperg
 module
 
 public import Mathlib.Data.List.Defs
-import Mathlib.Init
-import Mathlib.Util.CompileInductive
 
 /-!
 # Lemmas about `List.*Idx` functions.

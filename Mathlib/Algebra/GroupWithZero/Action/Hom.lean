@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.Algebra.Group.Hom.Instances
-import Mathlib.Init
-import Mathlib.Util.CompileInductive
 
 /-! # Zero-related `•` instances on group-like morphisms -/
 

@@ -7,13 +7,6 @@ module
 
 public import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Int.Cast.Lemmas
-import Batteries.Tactic.Trans
-import Mathlib.Algebra.Order.Group.Unbundled.Basic
-import Mathlib.Algebra.Order.Group.Unbundled.Int
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 

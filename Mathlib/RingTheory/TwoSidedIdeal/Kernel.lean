@@ -7,12 +7,6 @@ module
 
 public import Mathlib.RingTheory.TwoSidedIdeal.Basic
 public import Mathlib.RingTheory.TwoSidedIdeal.Lattice
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Util.CompileInductive
 
 /-!
 # Kernel of a ring homomorphism as a two-sided ideal

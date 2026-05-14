@@ -7,13 +7,6 @@ module
 
 public import Mathlib.Algebra.Star.Basic
 public import Mathlib.Algebra.FreeAlgebra
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Tactic.SetLike
 
 /-!
 # A \*-algebra structure on the free algebra.

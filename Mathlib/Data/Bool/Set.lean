@@ -5,11 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Set.Operations
-import Mathlib.Data.Set.Insert
-import Mathlib.Init
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Data.Set.Insert
 
 /-!
 # Booleans and set operations

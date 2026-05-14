@@ -7,14 +7,7 @@ module
 
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 public import Mathlib.Order.LatticeIntervals
-import Mathlib.Init
-import Mathlib.Logic.IsEmpty.Basic
-import Mathlib.Order.Bounds.Image
-import Mathlib.Order.Interval.Set.OrdConnected
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Util.CompileInductive
+public import Mathlib.Order.Interval.Set.OrdConnected
 
 /-! # Subtypes of conditionally complete linear orders
 

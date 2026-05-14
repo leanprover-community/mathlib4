@@ -5,14 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Data.Vector.Defs
-public import Mathlib.Logic.Small.Defs
-import Mathlib.Data.Vector.Basic
-import Mathlib.Init
-import Mathlib.Logic.Small.Basic
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Logic.Small.Basic
+public import Mathlib.Data.Vector.Basic
 
 /-!
 # Instances for `Small (List α)` and `Small (Vector α)`.

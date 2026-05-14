@@ -9,14 +9,7 @@ public import Mathlib.Data.Set.Notation
 public import Mathlib.Order.SetNotation
 public import Mathlib.Logic.Embedding.Basic
 public import Mathlib.Logic.Pairwise
-public import Mathlib.Order.BooleanAlgebra.Set
-import Mathlib.Data.Set.Disjoint
-import Mathlib.Data.Set.Image
-import Mathlib.Data.Sum.Basic
-import Mathlib.Init
-import Mathlib.Tactic.Coe
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Data.Set.Image
 
 /-!
 # Interactions between embeddings and sets.

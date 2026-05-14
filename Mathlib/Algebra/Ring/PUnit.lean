@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Group.PUnit
 public import Mathlib.Algebra.Ring.Defs
-import Mathlib.Init
 
 /-!
 # `PUnit` is a commutative ring

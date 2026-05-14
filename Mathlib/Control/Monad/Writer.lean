@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Logic.Equiv.Defs
-import Mathlib.Init
-import Mathlib.Util.CompileInductive
 
 /-!
 # Writer monads

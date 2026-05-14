@@ -5,16 +5,8 @@ Authors: Markus Himmel, Timothy Carlin-Burns
 -/
 module
 
-public import Aesop
-public import Mathlib.Logic.Small.Defs
-public import Mathlib.Order.SetNotation
-import Mathlib.Data.Set.Lattice
-import Mathlib.Data.Set.NAry
-import Mathlib.Init
-import Mathlib.Logic.Equiv.Set
-import Mathlib.Logic.Small.Basic
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.Logic.Small.Basic
 
 /-!
 # Results about `Small` on coerced sets

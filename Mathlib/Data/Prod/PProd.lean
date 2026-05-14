@@ -5,8 +5,8 @@ Authors: Eric Wieser
 -/
 module
 
-import Batteries.Logic
-import Mathlib.Init
+public import Batteries.Logic
+public import Mathlib.Init
 
 /-!
 # Extra facts about `PProd`

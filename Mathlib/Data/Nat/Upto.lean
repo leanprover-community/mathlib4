@@ -5,15 +5,8 @@ Authors: Simon Hudon
 -/
 module
 
-public import Aesop
-public import Mathlib.Data.Nat.Notation
-public import Mathlib.Data.Subtype
-public import Mathlib.Tactic.ToAdditive
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Algebra.Order.Sub.Basic
-import Mathlib.Init
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Order.Sub.Basic
 
 /-!
 # `Nat.Upto`

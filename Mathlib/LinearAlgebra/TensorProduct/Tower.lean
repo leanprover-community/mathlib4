@@ -7,13 +7,6 @@ module
 
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.LinearAlgebra.TensorProduct.Associator
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.LinearAlgebra.Span.Basic
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Tactic.SetLike
 
 /-!
 # The `A`-module structure on `M ⊗[R] N`

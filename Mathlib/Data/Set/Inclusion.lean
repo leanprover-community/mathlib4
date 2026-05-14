@@ -6,9 +6,6 @@ Authors: Jeremy Avigad, Leonardo de Moura
 module
 
 public import Mathlib.Data.Set.Basic
-import Mathlib.Init
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-! # Lemmas about `inclusion`, the injection of subtypes induced by `⊆` -/
 

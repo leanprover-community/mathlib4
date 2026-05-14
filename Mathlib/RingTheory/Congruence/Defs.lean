@@ -8,12 +8,7 @@ module
 public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Algebra.Ring.InjSurj
 public import Mathlib.GroupTheory.Congruence.Defs
-import Mathlib.Init
-import Mathlib.Tactic.Coe
-import Mathlib.Tactic.CongrExclamation
-import Mathlib.Tactic.FastInstance
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Congruence relations on rings

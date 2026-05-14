@@ -6,15 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Order.Filter.Bases.Basic
-import Mathlib.Data.Set.NAry
-import Mathlib.Data.Set.Prod
-import Mathlib.Init
-import Mathlib.Order.Filter.Map
-import Mathlib.Order.Filter.Prod
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.GCongr.Core
-import Mathlib.Tactic.SimpRw
-import Mathlib.Util.CompileInductive
+public import Mathlib.Order.Filter.Prod
 
 /-!
 # N-ary maps of filter

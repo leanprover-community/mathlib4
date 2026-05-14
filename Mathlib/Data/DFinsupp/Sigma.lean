@@ -7,11 +7,6 @@ module
 
 public import Mathlib.Data.DFinsupp.Module
 public import Mathlib.Data.Fintype.Quotient
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # `DFinsupp` on `Sigma` types

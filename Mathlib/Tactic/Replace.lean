@@ -6,7 +6,6 @@ Authors: Arthur Paulino, Mario Carneiro
 module
 
 public import Mathlib.Tactic.Have
-import Mathlib.Init
 
 /-!
 # Extending `replace`

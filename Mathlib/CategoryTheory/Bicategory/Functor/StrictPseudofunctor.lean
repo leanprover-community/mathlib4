@@ -6,12 +6,6 @@ Authors: Calle Sönne
 module
 
 public import Mathlib.CategoryTheory.Bicategory.Functor.StrictlyUnitary
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.CrossRefAttribute
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # Strict pseudofunctors

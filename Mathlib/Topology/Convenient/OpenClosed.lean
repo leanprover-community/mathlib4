@@ -6,13 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Topology.Convenient.GeneratedBy
+public import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Topology.Sets.Closeds
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Open or closed subsets that are also `X`-generated spaces

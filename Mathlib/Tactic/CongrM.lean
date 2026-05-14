@@ -6,8 +6,7 @@ Authors: Moritz Doll, Gabriel Ebner, Damiano Testa, Kyle Miller
 module
 
 public meta import Lean.Meta.Tactic.Rfl
-import Mathlib.Init
-import Mathlib.Tactic.TermCongr
+public import Mathlib.Tactic.TermCongr
 
 /-!
 # The `congrm` tactic

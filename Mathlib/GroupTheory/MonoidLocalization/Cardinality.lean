@@ -6,15 +6,7 @@ Authors: Jz Pan
 module
 
 public import Mathlib.GroupTheory.MonoidLocalization.Basic
-public import Mathlib.SetTheory.Cardinal.Order
-import Mathlib.Data.Finset.Attr
-import Mathlib.GroupTheory.OreLocalization.Cardinality
-import Mathlib.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.Translate.ToAdditive
+public import Mathlib.GroupTheory.OreLocalization.Cardinality
 
 /-!
 

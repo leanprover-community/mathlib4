@@ -5,29 +5,9 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.FieldTheory.Minpoly.Basic
 public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 public import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Group.Submonoid.BigOperators
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.FieldTheory.Minpoly.Basic
-import Mathlib.GroupTheory.MonoidLocalization.Away
-import Mathlib.Init
-import Mathlib.RingTheory.Finiteness.Basic
-import Mathlib.RingTheory.Noetherian.Basic
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.CrossRefAttribute
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
 
 /-! # Almost integral elements -/
 

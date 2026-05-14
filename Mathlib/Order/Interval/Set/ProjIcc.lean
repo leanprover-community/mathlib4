@@ -5,16 +5,8 @@ Authors: Yury Kudryashov, Patrick Massot
 -/
 module
 
-public import Mathlib.Data.Set.Restrict
-public import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Data.Set.Image
-import Mathlib.Init
-import Mathlib.Order.Interval.Set.OrdConnected
-import Mathlib.Order.MinMax
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Util.CompileInductive
+public import Mathlib.Data.Set.Function
+public import Mathlib.Order.Interval.Set.OrdConnected
 
 /-!
 # Projection of a line onto a closed interval

@@ -8,9 +8,6 @@ module
 
 public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Init
-import Mathlib.Tactic.Translate.ToAdditive
-import Mathlib.Util.CompileInductive
 
 /-!
 # Multiplicative homomorphisms respect semiconjugation and commutation.

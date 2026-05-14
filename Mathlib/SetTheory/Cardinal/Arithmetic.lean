@@ -7,26 +7,6 @@ module
 
 public import Mathlib.SetTheory.Cardinal.Aleph
 public import Mathlib.Algebra.Group.End
-import Batteries.Tactic.Trans
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Algebra.Order.Ring.Canonical
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Data.Nat.Cast.Order.Basic
-import Mathlib.Data.Prod.Lex
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Init
-import Mathlib.Logic.Equiv.List
-import Mathlib.Logic.Small.Set
-import Mathlib.Logic.UnivLE
-import Mathlib.Order.ConditionallyCompleteLattice.Indexed
-import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
-import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Order.MinMax
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Cardinal arithmetic

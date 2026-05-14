@@ -5,15 +5,8 @@ Authors: Reid Barton
 -/
 module
 
-public import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Functor.EpiMono
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Category.TopCat.Adjunctions
+public import Mathlib.Topology.Category.TopCat.Adjunctions
+public import Mathlib.CategoryTheory.Functor.EpiMono
 
 /-!
 # Epi- and monomorphisms in `Top`

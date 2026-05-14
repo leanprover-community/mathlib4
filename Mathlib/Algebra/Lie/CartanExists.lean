@@ -6,37 +6,7 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.Lie.CartanSubalgebra
-public import Mathlib.Algebra.Lie.EngelSubalgebra
-public import Mathlib.LinearAlgebra.Charpoly.Basic
-import Mathlib.Algebra.Lie.Rank
-import Mathlib.Algebra.Order.AbsoluteValue.Basic
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Polynomial.Degree.SmallDegree
-import Mathlib.Algebra.Polynomial.Eval.Coeff
-import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Nat.Totient
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.Init
-import Mathlib.LinearAlgebra.Dimension.Localization
-import Mathlib.LinearAlgebra.Eigenspace.Zero
-import Mathlib.LinearAlgebra.FiniteDimensional.Basic
-import Mathlib.RingTheory.LocalRing.Basic
-import Mathlib.RingTheory.Noetherian.Basic
-import Mathlib.RingTheory.Polynomial.Basic
-import Mathlib.RingTheory.SimpleModule.Basic
-import Mathlib.Tactic.ApplyFun
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.SetLike
+public import Mathlib.Algebra.Lie.Rank
 
 /-!
 # Existence of Cartan subalgebras

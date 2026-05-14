@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Data.Rat.Init
-import Mathlib.Init
-import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Division (semi)rings and (semi)fields

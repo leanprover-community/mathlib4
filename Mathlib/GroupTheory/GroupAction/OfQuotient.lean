@@ -8,12 +8,6 @@ module
 public import Mathlib.Algebra.Group.Action.End
 public import Mathlib.GroupTheory.GroupAction.SubMulAction
 public import Mathlib.GroupTheory.QuotientGroup.Defs
-public import Mathlib.Algebra.Group.Subgroup.Actions
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Util.CompileInductive
 
 /-!
 # MulAction and MulDistribMulAction of quotient group on fixed points

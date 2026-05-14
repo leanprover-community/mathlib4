@@ -6,9 +6,7 @@ Authors: Damiano Testa
 module
 
 public meta import Lean.Elab.Command
-public meta import Lean.DocString
-public import Lean.Environment
-import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # Cross-reference attributes

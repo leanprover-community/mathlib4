@@ -5,7 +5,7 @@ Authors: Mario Carneiro, Praneeth Kolichala, Yuyang Zhao
 -/
 module
 
-import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # Binary recursion on `Nat`

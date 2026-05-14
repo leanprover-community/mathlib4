@@ -7,11 +7,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Group.Semiconj.Defs
-public import Aesop
-public import Mathlib.Algebra.Group.Units.Defs
-import Mathlib.Algebra.Group.Units.Basic
-import Mathlib.Init
-import Mathlib.Tactic.Translate.ToAdditive
+public import Mathlib.Algebra.Group.Units.Basic
 
 /-!
 # Semiconjugate elements of a semigroup

@@ -6,15 +6,9 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Data.Countable.Defs
+public import Mathlib.Data.Fin.Tuple.Basic
 public import Mathlib.Data.ENat.Defs
-public import Mathlib.Logic.Embedding.Basic
-public import Mathlib.Order.WithBot
-import Mathlib.Data.Fin.Tuple.Basic
-import Mathlib.Init
-import Mathlib.Logic.Equiv.Nat
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Logic.Equiv.Nat
 
 /-!
 # Countable types

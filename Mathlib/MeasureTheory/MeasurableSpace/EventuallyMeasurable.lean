@@ -7,13 +7,6 @@ module
 
 public import Mathlib.MeasureTheory.MeasurableSpace.Defs
 public import Mathlib.Order.Filter.CountableInter
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.Order.Filter.Basic
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Measurability.Init
-import Mathlib.Tactic.SetLike
 
 /-!
 # Measurability modulo a filter

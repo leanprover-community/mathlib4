@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.ComplexShape
-import Mathlib.Init
 
 /-!
 # Complex shapes for pages of spectral sequences

@@ -6,7 +6,7 @@ Authors: Arthur Paulino, Floris van Doorn
 module
 
 public import Mathlib.Init -- shake: keep-all
-import Mathlib.Tactic.Linter.DeprecatedModule
+public import Mathlib.Tactic.Linter.DeprecatedModule
 
 /-!
 # Definitions on Arrays

@@ -7,7 +7,7 @@ module
 
 public meta import Lean.Elab.Tactic.ElabTerm
 public meta import Mathlib.Lean.Meta.Basic
-import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # Apply at

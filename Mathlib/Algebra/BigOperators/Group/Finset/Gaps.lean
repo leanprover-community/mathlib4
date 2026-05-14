@@ -6,14 +6,7 @@ Authors: Yizheng Zhu
 module
 
 public import Mathlib.Order.Interval.Finset.Gaps
-public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.Translate.ToAdditive
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 /-!
 # Sum of gaps
 

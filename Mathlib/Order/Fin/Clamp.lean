@@ -5,13 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Batteries.Data.Fin.Lemmas
 public import Mathlib.Order.Fin.Basic
-import Batteries.Data.Fin.Lemmas
-import Mathlib.Init
-import Mathlib.Order.MinMax
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Order.MinMax
 
 /-!
 # Lemmas about `Fin.clamp`

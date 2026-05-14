@@ -11,20 +11,6 @@ public import Mathlib.Algebra.Ring.Subring.Defs
 public import Mathlib.Algebra.Ring.Subsemiring.Basic
 public import Mathlib.RingTheory.NonUnitalSubring.Basic
 public import Mathlib.Data.Set.Finite.Basic
-public import Mathlib.Data.Int.Cast.Lemmas
-import Mathlib.Algebra.Group.Submonoid.BigOperators
-import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.Algebra.Group.Subsemigroup.Membership
-import Mathlib.Algebra.Ring.Centralizer
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Lattice
-import Mathlib.Data.Set.Lattice.Image
-import Mathlib.Data.Set.Prod
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Monotonicity.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Subrings

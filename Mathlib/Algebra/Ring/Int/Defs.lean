@@ -8,9 +8,8 @@ module
 public import Mathlib.Algebra.CharZero.Defs
 public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Algebra.Group.Int.Defs
-import Mathlib.Data.Int.Basic
-import Mathlib.Data.Int.Cast.Basic
-import Mathlib.Init
+public import Mathlib.Data.Int.Basic
+public import Mathlib.Data.Int.Cast.Basic
 
 /-!
 # The integers are a ring

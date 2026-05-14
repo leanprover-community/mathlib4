@@ -5,14 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Localization.Predicate
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Localization.Equivalence
-import Mathlib.Init
-import Mathlib.Tactic.CategoryTheory.CategoryStar
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.CategoryTheory.Localization.Equivalence
 
 /-!
 

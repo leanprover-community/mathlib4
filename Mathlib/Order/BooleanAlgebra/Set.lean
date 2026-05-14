@@ -5,17 +5,10 @@ Authors: Jeremy Avigad, Leonardo de Moura
 -/
 module
 
+public import Mathlib.Data.Set.Insert
 public import Mathlib.Order.BooleanAlgebra.Basic
-public import Mathlib.Data.Set.Basic
-import Mathlib.Data.Set.Disjoint
-import Mathlib.Data.Set.Insert
-import Mathlib.Init
-import Mathlib.Tactic.FastInstance
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.GCongr.Core
-import Mathlib.Tactic.SimpRw
-import Mathlib.Tactic.Tauto
-import Mathlib.Util.CompileInductive
+public import Mathlib.Tactic.Tauto
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Boolean algebra of sets

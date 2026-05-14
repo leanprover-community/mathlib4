@@ -6,10 +6,7 @@ Authors: Raghuram Sundararajan
 module
 
 public import Mathlib.Algebra.Ring.Defs
-import Batteries.Logic
-import Mathlib.Algebra.Group.Ext
-import Mathlib.Init
-import Mathlib.Util.CompileInductive
+public import Mathlib.Algebra.Group.Ext
 
 /-!
 # Extensionality lemmas for rings and similar structures

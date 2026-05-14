@@ -6,22 +6,8 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.LinearAlgebra.Alternating.Curry
-public import Mathlib.Order.Interval.Finset.Fin
-import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.Ring.Commute
-import Mathlib.Data.Fin.Parity
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.GroupTheory.Perm.Fin
-import Mathlib.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
+public import Mathlib.GroupTheory.Perm.Fin
+public import Mathlib.Data.Fin.Parity
 
 /-!
 # Uncurrying alternating maps

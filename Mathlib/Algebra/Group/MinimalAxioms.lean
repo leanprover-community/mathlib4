@@ -6,8 +6,6 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.Algebra.Group.Defs
-import Mathlib.Init
-import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Minimal Axioms for a Group
