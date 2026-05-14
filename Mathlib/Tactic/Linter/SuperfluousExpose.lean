@@ -50,6 +50,14 @@ linter exits silently — the suggestion to remove `@[expose]` wouldn't apply.
 Only `public section`s are checked because `@[expose]` only affects
 downstream visibility, which is exclusive to `public section`.
 
+The more elegant approach — inspecting `(← getScope).attrs` directly for the
+`expose` token — is unavailable here: every `@[expose] public section` is
+already closed by the time `eoi` fires, so the root scope's `attrs` is
+empty. Tracking scope state across commands via an environment extension
+would in principle bridge the gap, but linter `modifyEnv` calls don't
+persist across `Linter.run` invocations, so we fall back to a small block-
+comment-aware text scan.
+
 The linter is conservative: every known limitation produces a false negative
 (the linter stays silent on a file where the warning would have applied),
 never a false positive. The known cases are:
