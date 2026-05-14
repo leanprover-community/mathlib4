@@ -5,8 +5,10 @@ Authors: Damiano Testa
 -/
 module
 
+public meta import Lean.Elab.Command
+public meta import Lean.Linter
 public meta import Std.Time.Format
-public import Mathlib.Init
+public meta import Init
 public import Std.Time.Date
 
 /-!
@@ -33,6 +35,25 @@ meta section
 open Lean Elab Command Linter
 
 namespace Mathlib.Linter
+
+/-- `getImportIds s` takes as input `s : Syntax`.
+It returns the array of all `import` identifiers in `s`. -/
+-- We cannot use `importsOf` instead, as
+-- - that function is defined in the `ImportGraph` project; we would like to minimise imports
+--   to Mathlib.Init (where this linter is imported)
+-- - that function does not return the Syntax corresponding to each import,
+--   which we use to log more precise warnings.
+partial def getImportIds (s : Syntax) : Array Syntax :=
+  let rest : Array Syntax := (s.getArgs.map getImportIds).flatten
+  -- Check if this is an import node by kind, rather than pattern matching all optional modifiers.
+  -- This is more robust if the import syntax changes.
+  if s.isOfKind `Lean.Parser.Module.import then
+    -- The module name is the last identifier in the import node arguments
+    match s.getArgs.filter (·.isIdent) |>.back? with
+    | some n => rest.push n
+    | none => rest
+  else
+    rest
 
 /--
 The `deprecated.module` linter emits a warning when a file that has been renamed or split

@@ -8,6 +8,7 @@ module
 public meta import Lean.Elab.Command
 public meta import Lean.Elab.ParseImportsFast
 public meta import Init
+public meta import Mathlib.Tactic.Linter.DeprecatedModule
 public import Lean.Parser.Module
 public import Mathlib.Tactic.Linter.DeprecatedModule
 public import Mathlib.Tactic.Linter.DirectoryDependency
@@ -89,8 +90,7 @@ It returns the array of all `import` identifiers in `s`. -/
 --   to Mathlib.Init (where this linter is imported)
 -- - that function does not return the Syntax corresponding to each import,
 --   which we use to log more precise warnings.
--- This function is public as the `DeprecatedModule` linter also uses it.
-public partial def getImportIds (s : Syntax) : Array Syntax :=
+partial def getImportIds (s : Syntax) : Array Syntax :=
   let rest : Array Syntax := (s.getArgs.map getImportIds).flatten
   -- Check if this is an import node by kind, rather than pattern matching all optional modifiers.
   -- This is more robust if the import syntax changes.
@@ -424,7 +424,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   -- exempt import-only modules
   if afterImports.isOfKind ``Lean.Parser.Command.eoi then return
   -- exempt deprecated modules
-  if afterImports.isOfKind ``Mathlib.DeprecatedModule.deprecated_modules then return
+  if afterImports.isOfKind ``Mathlib.Linter.deprecated_modules then return
   let copyright := match upToStx.getHeadInfo with
     | .original lead .. => lead.toString
     | _ => ""
