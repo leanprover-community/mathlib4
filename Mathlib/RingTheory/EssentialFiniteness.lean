@@ -7,7 +7,7 @@ module
 
 public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.Localization.Defs
-public import Mathlib.RingTheory.TensorProduct.Basic
+public import Mathlib.RingTheory.TensorProduct.Quotient
 
 /-!
 # Essentially of finite type algebras
@@ -231,7 +231,7 @@ lemma EssFiniteType.of_surjective (f : S →ₐ[R] T) (hf : Function.Surjective 
 variable {R S T} in
 lemma EssFiniteType.iff_of_algEquiv (f : S ≃ₐ[R] T) :
     EssFiniteType R S ↔ EssFiniteType R T where
-  mp  _ := .of_surjective f.toAlgHom f.surjective
+  mp _ := .of_surjective f.toAlgHom f.surjective
   mpr _ := .of_surjective f.symm.toAlgHom f.symm.surjective
 
 variable {R S} in
@@ -245,6 +245,11 @@ lemma EssFiniteType.algHom_ext [EssFiniteType R S]
   · exact adjoin_mem_finset R S
   · rintro ⟨x, hx⟩ hx'; exact H x hx'
 
+instance EssFiniteType.quotient_map [EssFiniteType R S] (p : Ideal R) :
+    EssFiniteType (R ⧸ p) (S ⧸ p.map (algebraMap R S)) :=
+  .of_surjective (Algebra.TensorProduct.quotIdealMapEquivQuotTensor S p).symm.toAlgHom
+    (Algebra.TensorProduct.quotIdealMapEquivQuotTensor S p).symm.surjective
+
 end Algebra
 
 namespace RingHom
@@ -257,6 +262,10 @@ and a ring hom of finite type. See `Algebra.EssFiniteType`. -/
 def EssFiniteType (f : R →+* S) : Prop :=
   letI := f.toAlgebra
   Algebra.EssFiniteType R S
+
+lemma essFiniteType_algebraMap {R S : Type*} [CommRing R] [CommRing S]
+    [Algebra R S] : (algebraMap R S).EssFiniteType ↔ Algebra.EssFiniteType R S := by
+  rw [RingHom.EssFiniteType, toAlgebra_algebraMap]
 
 /-- A choice of "essential generators" for a ring hom essentially of finite type.
 See `Algebra.EssFiniteType.ext`. -/

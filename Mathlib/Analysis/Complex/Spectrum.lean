@@ -19,10 +19,7 @@ variable {A : Type*} [Ring A]
 
 lemma real_iff [Algebra ℂ A] {a : A} :
     SpectrumRestricts a Complex.reCLM ↔ ∀ x ∈ spectrum ℂ a, x = x.re := by
-  refine ⟨fun h x hx ↦ ?_, fun h ↦ ?_⟩
-  · obtain ⟨x, -, rfl⟩ := h.algebraMap_image.symm ▸ hx
-    simp
-  · exact .of_subset_range_algebraMap Complex.ofReal_re fun x hx ↦ ⟨x.re, (h x hx).symm⟩
+  simp [spectrumRestricts_iff, Set.LeftInvOn, Function.LeftInverse, eq_comm]
 
 end SpectrumRestricts
 

@@ -170,11 +170,6 @@ theorem toLex_monotone : Monotone (@toLex (α →₀ N)) :=
 theorem toColex_monotone : Monotone (@toColex (α →₀ N)) :=
   toLex_monotone (α := αᵒᵈ)
 
-@[deprecated Lex.lt_iff (since := "2025-10-12")]
-theorem lt_of_forall_lt_of_lt (a b : Lex (α →₀ N)) (i : α) :
-    (∀ j < i, ofLex a j = ofLex b j) → ofLex a i < ofLex b i → a < b :=
-  fun h1 h2 ↦ ⟨i, h1, h2⟩
-
 end NHasZero
 
 section Covariants
@@ -231,15 +226,23 @@ section OrderedAddMonoid
 
 variable [LinearOrder α]
 
-instance Lex.orderBot [AddCommMonoid N] [PartialOrder N] [CanonicallyOrderedAdd N] :
+instance Lex.orderBot [AddCommMonoid N] [PartialOrder N] [IsBotZeroClass N] :
     OrderBot (Lex (α →₀ N)) where
   bot := 0
   bot_le _ := Finsupp.toLex_monotone bot_le
 
-instance Colex.orderBot [AddCommMonoid N] [PartialOrder N] [CanonicallyOrderedAdd N] :
+instance Lex.isBotZeroClass [AddCommMonoid N] [PartialOrder N] [IsBotZeroClass N] :
+    IsBotZeroClass (Lex (α →₀ N)) where
+  isBot_zero := isBot_bot
+
+instance Colex.orderBot [AddCommMonoid N] [PartialOrder N] [IsBotZeroClass N] :
     OrderBot (Colex (α →₀ N)) where
   bot := 0
   bot_le _ := Finsupp.toColex_monotone bot_le
+
+instance Colex.isBotZeroClass [AddCommMonoid N] [PartialOrder N] [IsBotZeroClass N] :
+    IsBotZeroClass (Colex (α →₀ N)) where
+  isBot_zero := isBot_bot
 
 instance Lex.isOrderedCancelAddMonoid
     [AddCommMonoid N] [PartialOrder N] [IsOrderedCancelAddMonoid N] :

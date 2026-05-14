@@ -67,7 +67,7 @@ theorem hasseDeriv_apply :
 theorem hasseDeriv_coeff (n : ℕ) :
     (hasseDeriv k f).coeff n = (n + k).choose k * f.coeff (n + k) := by
   rw [hasseDeriv_apply, coeff_sum, sum_def, Finset.sum_eq_single (n + k), coeff_monomial]
-  · simp only [if_true, add_tsub_cancel_right]
+  · simp
   · #adaptation_note
     /-- Prior to nightly-2025-08-14, this was working as
     `grind [coeff_monomial, Nat.choose_eq_zero_of_lt, Nat.cast_zero, zero_mul]` -/
@@ -80,8 +80,7 @@ theorem hasseDeriv_coeff (n : ℕ) :
     simp only [notMem_support_iff.mp h, monomial_zero_right, mul_zero, coeff_zero]
 
 theorem hasseDeriv_zero' : hasseDeriv 0 f = f := by
-  simp only [hasseDeriv_apply, tsub_zero, Nat.choose_zero_right, Nat.cast_one, one_mul,
-    sum_monomial_eq]
+  simp only [hasseDeriv_apply, Nat.sub_zero, choose_zero_right, cast_one, one_mul, sum_monomial_eq]
 
 @[simp]
 theorem hasseDeriv_zero : @hasseDeriv R _ 0 = LinearMap.id :=
@@ -210,11 +209,11 @@ theorem hasseDeriv_mul (f g : R[X]) :
   change
     (compHom (D k)).comp Φ f g =
       ∑ ij ∈ antidiagonal k, ((compHom.comp ((compHom Φ) (D ij.1))).flip (D ij.2) f) g
-  simp only [← finset_sum_apply]
+  simp only [← finsetSum_apply]
   congr 2
   clear f g
   ext m r n s : 4
-  simp only [Φ, D, finset_sum_apply, coe_mulLeft, coe_comp, flip_apply, Function.comp_apply,
+  simp only [Φ, D, finsetSum_apply, coe_mulLeft, coe_comp, flip_apply, Function.comp_apply,
              hasseDeriv_monomial, LinearMap.toAddMonoidHom_coe, compHom_apply_apply,
              coe_mul, monomial_mul_monomial]
   have aux :

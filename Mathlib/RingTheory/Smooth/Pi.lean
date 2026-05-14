@@ -19,7 +19,7 @@ public import Mathlib.RingTheory.Smooth.Basic
 
 -/
 
-@[expose] public section
+public section
 
 namespace Algebra.FormallySmooth
 
@@ -41,7 +41,7 @@ theorem of_pi [FormallySmooth R (Π i, A i)] (i) :
       simp [pow_two, sub_mul, mul_sub, ← Pi.single_mul]
     · intro x y
       change Ideal.Quotient.mk _ _ = Ideal.Quotient.mk _ _ * Ideal.Quotient.mk _ _
-      simp only [AlgHom.toRingHom_eq_coe, LinearMap.coe_single, Pi.single_mul, map_mul]
+      simp +instances only [AlgHom.toRingHom_eq_coe, LinearMap.coe_single, Pi.single_mul, map_mul]
   · ext x
     change (Pi.single i x) i = x
     simp
@@ -90,7 +90,7 @@ theorem pi_iff [Finite I] :
     use iso.symm.toAlgHom.comp (Pi.algHom _ _ fun i ↦ (a i).comp (Pi.evalAlgHom R A i))
     ext x; rw [← AlgHom.toLinearMap_apply, ← AlgHom.toLinearMap_apply]; congr 1
     ext i x
-    simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.comp_toLinearMap, AlgEquiv.toAlgHom_toLinearMap,
+    simp only [AlgHom.comp_toLinearMap, AlgEquiv.toAlgHom_toLinearMap,
       LinearMap.coe_comp, LinearMap.coe_single, Function.comp_apply, AlgHom.toLinearMap_apply,
       AlgEquiv.toLinearMap_apply, Ideal.Quotient.mkₐ_eq_mk]
     obtain ⟨y, hy⟩ := Ideal.Quotient.mk_surjective (a i x)

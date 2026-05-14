@@ -23,6 +23,8 @@ group of `x`.
 
 open CategoryTheory
 
+universe u
+
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 variable {x₀ x₁ : X}
 
@@ -327,20 +329,20 @@ scoped notation "πₓ" => FundamentalGroupoid.fundamentalGroupoidFunctor.obj
 /-- The functor between fundamental groupoids induced by a continuous map. -/
 scoped notation "πₘ" => FundamentalGroupoid.fundamentalGroupoidFunctor.map
 
-theorem map_eq {X Y : TopCat} {x₀ x₁ : X} (f : C(X, Y)) (p : Path.Homotopic.Quotient x₀ x₁) :
+theorem map_eq {X Y : TopCat.{u}} {x₀ x₁ : X} (f : C(X, Y)) (p : Path.Homotopic.Quotient x₀ x₁) :
     (πₘ (TopCat.ofHom f)).map p = p.map f := rfl
 
 /-- Help the typechecker by converting a point in a groupoid back to a point in
 the underlying topological space. -/
-abbrev toTop {X : TopCat} (x : πₓ X) : X := x.as
+abbrev toTop {X : TopCat.{u}} (x : πₓ X) : X := x.as
 
 /-- Help the typechecker by converting a point in a topological space to a
 point in the fundamental groupoid of that space. -/
-abbrev fromTop {X : TopCat} (x : X) : πₓ X := ⟨x⟩
+abbrev fromTop {X : TopCat.{u}} (x : X) : πₓ X := ⟨x⟩
 
 /-- Help the typechecker by converting an arrow in the fundamental groupoid of
 a topological space back to a path in that space (i.e., `Path.Homotopic.Quotient`). -/
-abbrev toPath {X : TopCat} {x₀ x₁ : πₓ X} (p : x₀ ⟶ x₁) :
+abbrev toPath {X : TopCat.{u}} {x₀ x₁ : πₓ X} (p : x₀ ⟶ x₁) :
     Path.Homotopic.Quotient x₀.as x₁.as :=
   p
 

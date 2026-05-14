@@ -95,6 +95,7 @@ lemma epi_f [IsFiltered J] : Epi (f y) := by
     (fun j ↦ by simpa using hf y j)
     (fun _ ↦ by simpa using hy.symm)).epi_f rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The kernel of `g y` gives a family of subobjects of `X` indexed by `Under j₀`, and
 we consider it as a functor `Under j₀ ⥤ MonoOver X`. -/
 @[simps]
@@ -111,6 +112,7 @@ variable {κ : Cardinal.{w}} [hκ : Fact κ.IsRegular] [IsCardinalFiltered J κ]
 
 include hXκ hc
 
+set_option backward.isDefEq.respectTransparency false in
 open injectivity₀ in
 lemma injectivity₀ {j₀ : J} (y : X ⟶ Y.obj j₀) (hy : y ≫ c.ι.app j₀ = 0) :
     ∃ (j : J) (φ : j₀ ⟶ j), y ≫ Y.map φ = 0 := by
@@ -151,6 +153,7 @@ we deduce that `z` factors as `X ⟶ Y.obj j ⟶ c.pt` for some `j`
 (see the lemma `surjectivity`).
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor `J ⥤ MonoOver X` which sends `j : J` to the inverse image by `z : X ⟶ c.pt`
 of the subobject `Y.obj j` of `c.pt`; it is defined here as the object in `MonoOver X`
 corresponding to the monomorphism
@@ -160,6 +163,7 @@ noncomputable def F [Mono c.ι] : J ⥤ MonoOver X where
   obj j := MonoOver.mk ((pullback.snd c.ι ((Functor.const _).map z)).app j)
   map {j j'} f := MonoOver.homMk ((pullback c.ι ((Functor.const _).map z)).map f)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical map `colimit (pullback c.ι ((Functor.const J).map z)) ⟶ X`,
 which is an isomorphism when `J` is filtered, see `isIso_f`. -/
 noncomputable def f : colimit (pullback c.ι ((Functor.const J).map z)) ⟶ X :=
@@ -173,6 +177,7 @@ lemma hf (j : J) :
 
 include hc
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isIso_f [IsFiltered J] : IsIso (f z) := by
   refine ((MorphismProperty.isomorphisms C).arrow_mk_iso_iff ?_).1
     (MorphismProperty.of_isPullback
@@ -185,7 +190,7 @@ lemma isIso_f [IsFiltered J] : IsIso (f z) := by
       constCocone_ι, NatTrans.id_app, Category.comp_id]
     apply hf
   · refine ((MorphismProperty.isomorphisms C).arrow_mk_iso_iff ?_).2
-      (inferInstanceAs (IsIso (𝟙 c.pt)))
+      ((inferInstance : IsIso (𝟙 c.pt)))
     exact Arrow.isoMk (IsColimit.coconePointUniqueUpToIso (colimit.isColimit Y) hc)
       (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _)
         (isColimitConstCocone J c.pt))
@@ -196,6 +201,7 @@ lemma epi_f [IsFiltered J] : Epi (f z) := by
 
 end surjectivity
 
+set_option backward.isDefEq.respectTransparency false in
 include hc in
 open surjectivity in
 lemma surjectivity [∀ (j j' : J) (φ : j ⟶ j'), Mono (Y.map φ)]

@@ -50,6 +50,7 @@ variable (A K L B : Type*) [CommRing A] [CommRing B] [Field K] [Field L]
   [IsIntegrallyClosed A] [IsIntegralClosure B A L]
 
 /-- In the AKLB setup, the Galois group of `L/K` acts on `B`. -/
+@[implicit_reducible]
 noncomputable def IsIntegralClosure.MulSemiringAction [Algebra.IsAlgebraic K L] :
     MulSemiringAction Gal(L/K) B :=
   MulSemiringAction.compHom B (galRestrict A K L B).toMonoidHom
@@ -226,7 +227,7 @@ variable (K L : Type*) [Field K] [Field L]
   [Algebra.IsInvariant A B G]
 
 /-- A technical lemma for `fixed_of_fixed1`. -/
-private theorem fixed_of_fixed1_aux1 [DecidableEq (Ideal B)] :
+private theorem fixed_of_fixed1_aux1 :
     ∃ a b : B, (∀ g : G, g • a = a) ∧ a ∉ Q ∧
     ∀ g : G, algebraMap B (B ⧸ Q) (g • b) = algebraMap B (B ⧸ Q) (if g • Q = Q then a else 0) := by
   obtain ⟨_⟩ := nonempty_fintype G
@@ -248,7 +249,7 @@ private theorem fixed_of_fixed1_aux1 [DecidableEq (Ideal B)] :
   let r := ∑ i ∈ Finset.range (k + 1), Polynomial.monomial i (f.coeff (i + j))
   have hr : r.map (algebraMap B (B ⧸ Q)) = q := by
     ext n
-    rw [Polynomial.coeff_map, Polynomial.finset_sum_coeff]
+    rw [Polynomial.coeff_map, Polynomial.finsetSum_coeff]
     simp only [Polynomial.coeff_monomial, Finset.sum_ite_eq', Finset.mem_range_succ_iff]
     split_ifs with hn
     · rw [← Polynomial.coeff_map, hq, Polynomial.coeff_X_pow_mul]
@@ -282,7 +283,7 @@ private theorem fixed_of_fixed1_aux1 [DecidableEq (Ideal B)] :
       exact hr' h⁻¹ hh
 
 /-- A technical lemma for `fixed_of_fixed1`. -/
-private theorem fixed_of_fixed1_aux2 [DecidableEq (Ideal B)] (b₀ : B)
+private theorem fixed_of_fixed1_aux2 (b₀ : B)
     (hx : ∀ g : G, g • Q = Q → algebraMap B (B ⧸ Q) (g • b₀) = algebraMap B (B ⧸ Q) b₀) :
     ∃ a b : B, (∀ g : G, g • a = a) ∧ a ∉ Q ∧
     (∀ g : G, algebraMap B (B ⧸ Q) (g • b) =
@@ -349,6 +350,13 @@ variable [IsFractionRing (A ⧸ P) K] [IsFractionRing (B ⧸ Q) L]
 noncomputable def IsFractionRing.stabilizerHom : MulAction.stabilizer G Q →* Gal(L/K) :=
   MonoidHom.comp (IsFractionRing.fieldEquivOfAlgEquivHom K L) (Ideal.Quotient.stabilizerHom Q P G)
 
+omit [Finite G] [Q.IsPrime] [Algebra.IsInvariant A B G] in
+@[simp]
+theorem IsFractionRing.stabilizerHom_apply_apply_mk (σ : MulAction.stabilizer G Q) (x : B) :
+    IsFractionRing.stabilizerHom G P Q K L σ (algebraMap _ L (Ideal.Quotient.mk Q x)) =
+      algebraMap _ L (Ideal.Quotient.mk Q (σ.val • x)) := by
+  simp [IsFractionRing.stabilizerHom, MulAction.subgroup_smul_def]
+
 /-- This theorem will be made redundant by `IsFractionRing.stabilizerHom_surjective`. -/
 private theorem fixed_of_fixed2 (f : Gal(L/K)) (x : L)
     (hx : ∀ g : MulAction.stabilizer G Q, IsFractionRing.stabilizerHom G P Q K L g x = x) :
@@ -356,7 +364,7 @@ private theorem fixed_of_fixed2 (f : Gal(L/K)) (x : L)
   obtain ⟨_⟩ := nonempty_fintype G
   have : P.IsPrime := Ideal.over_def Q P ▸ Ideal.IsPrime.under A Q
   have : Algebra.IsIntegral A B := Algebra.IsInvariant.isIntegral A B G
-  obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective (A := B ⧸ Q) x
+  obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective (B ⧸ Q) x
   obtain ⟨b, a, ha, h⟩ := (Algebra.IsAlgebraic.isAlgebraic (R := A ⧸ P) y).exists_smul_eq_mul x hy
   replace ha : algebraMap (A ⧸ P) L a ≠ 0 := by
     rwa [Ne, algebraMap_apply (A ⧸ P) K L, algebraMap_eq_zero_iff, algebraMap_eq_zero_iff]
@@ -391,6 +399,19 @@ theorem Ideal.Quotient.stabilizerHom_surjective :
   rw [IsFractionRing.stabilizerHom, MonoidHom.coe_comp] at key
   exact key.of_comp_left (IsFractionRing.fieldEquivOfAlgEquivHom_injective (A ⧸ P) (B ⧸ Q)
     (FractionRing (A ⧸ P)) (FractionRing (B ⧸ Q)))
+
+/--
+The isomorphism between `stabilizer G Q ⧸ inertia G Q` and the Galois group of the residue fields
+extension `B ⧸ Q` over `A ⧸ P`.
+-/
+noncomputable def Ideal.Quotient.stabilizerQuotientInertiaEquiv :
+    MulAction.stabilizer G Q ⧸ (Q.inertia G).subgroupOf (MulAction.stabilizer G Q) ≃*
+      Gal((B ⧸ Q)/(A ⧸ P)) :=
+  QuotientGroup.liftEquiv (N := (Q.inertia G).subgroupOf (MulAction.stabilizer G Q))
+    (stabilizerHom_surjective G P Q) (ker_stabilizerHom Q P G).symm
+
+theorem Ideal.Quotient.stabilizerQuotientInertiaEquiv_mk (g : MulAction.stabilizer G Q) :
+    stabilizerQuotientInertiaEquiv G P Q g = stabilizerHom Q P G g := rfl
 
 end surjectivity
 
@@ -508,3 +529,34 @@ lemma Ideal.Quotient.finite_of_isInvariant [P.IsMaximal] [Q.IsMaximal]
   exact IsGalois.finiteDimensional_of_finite _ _
 
 end normal
+
+namespace IsFractionRing
+
+/-- If `G` acts on `B/A` with `A` as the fixed subring, then `G` also acts on `L/K` with `K` as
+the fixed subfield, where `K` and `L` are the fraction fields of `A` and `B` respectively. -/
+theorem isInvariant (G A B K L : Type*) [Group G] [CommRing A] [CommRing B] [MulSemiringAction G B]
+    [Algebra A B] [Field K] [Field L] [Algebra K L] [Algebra A K] [Algebra B L] [Algebra A L]
+    [IsFractionRing A K] [IsFractionRing B L] [IsScalarTower A K L] [IsScalarTower A B L]
+    [MulSemiringAction G L] [SMulDistribClass G B L] [Finite G] [hAB : Algebra.IsInvariant A B G]
+    [SMulCommClass G A B] :
+    Algebra.IsInvariant K L G := by
+  refine ⟨fun x h ↦ ?_⟩
+  have hc (a : A) : (algebraMap K L) (algebraMap A K a) = (algebraMap B L) (algebraMap A B a) := by
+    simp_rw [← IsScalarTower.algebraMap_apply]
+  have := hAB.isIntegral A B G
+  have : Nontrivial A := (IsFractionRing.nontrivial_iff_nontrivial A K).mpr inferInstance
+  have : Nontrivial B := (IsFractionRing.nontrivial_iff_nontrivial B L).mpr inferInstance
+  obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective B x
+  have hy' : algebraMap B L y ≠ 0 := by simpa using nonZeroDivisors.ne_zero hy
+  obtain ⟨b, a, ha, hb⟩ := (Algebra.IsAlgebraic.isAlgebraic (R := A) y).exists_smul_eq_mul x hy
+  rw [mul_comm, Algebra.smul_def, mul_comm] at hb
+  replace ha : (algebraMap B L) (algebraMap A B a) ≠ 0 := by simpa [← hc]
+  have hxy : algebraMap B L x / algebraMap B L y =
+    algebraMap B L b / algebraMap B L (algebraMap A B a) := by
+    rw [div_eq_div_iff hy' ha, ← map_mul, hb, map_mul]
+  obtain ⟨b, rfl⟩ := hAB.isInvariant b
+    (by simpa [ha, hxy, smul_div₀', ← algebraMap.coe_smul'] using h)
+  use algebraMap A K b / algebraMap A K a
+  rw [hxy, map_div₀, hc, hc]
+
+end IsFractionRing

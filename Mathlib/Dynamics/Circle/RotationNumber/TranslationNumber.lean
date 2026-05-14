@@ -147,7 +147,7 @@ variable (f g : CircleDeg1Lift)
 
 protected theorem monotone : Monotone f := f.monotone'
 
-@[mono] theorem mono {x y} (h : x ≤ y) : f x ≤ f y := f.monotone h
+@[gcongr, mono] theorem mono {x y} (h : x ≤ y) : f x ≤ f y := f.monotone h
 
 theorem strictMono_iff_injective : StrictMono f ↔ Injective f :=
   f.monotone.strictMono_iff_injective
@@ -802,7 +802,7 @@ theorem exists_eq_add_translationNumber (hf : Continuous f) : ∃ x, f x = x + �
   obtain ⟨b, hb⟩ : ∃ x, x + τ f ≤ f x := by
     by_contra! H
     exact lt_irrefl _ (f.translationNumber_lt_of_forall_lt_add hf H)
-  exact intermediate_value_univ₂ hf (continuous_id.add continuous_const) ha hb
+  exact intermediate_value_univ₂ hf (by fun_prop) ha hb
 
 theorem translationNumber_eq_int_iff (hf : Continuous f) {m : ℤ} :
     τ f = m ↔ ∃ x : ℝ, f x = x + m := by
@@ -857,7 +857,7 @@ theorem semiconj_of_group_action_of_forall_translationNumber_eq {G : Type*} [Gro
     csSup_div_semiconj F₂ F₁ fun x => ?_⟩ <;> simp only [hF₁, hF₂, ← map_inv]
   · exact ciSup_mono (this y) fun g => mono _ (mono _ hxy)
   · simp only [map_add_one]
-    exact (Monotone.map_ciSup_of_continuousAt (continuousAt_id.add continuousAt_const)
+    exact (Monotone.map_ciSup_of_continuousAt (by fun_prop)
       (monotone_id.add_const (1 : ℝ)) (this x)).symm
   · exact this x
 

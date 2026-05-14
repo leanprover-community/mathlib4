@@ -11,9 +11,13 @@ import Mathlib.Topology.Constructions
 
 import Mathlib.Tactic.FunProp
 
+/-! # Literate documentation for `fun_prop`
+
+This file serves as a user's guide for `fun_prop` written in automatically checked Lean.
+For adding more test cases that are not part of documentation, please use `MathlibTest/fun_prop2.lean`.
+-/
 
 open Mathlib
-
 
 /-!
 The first step in using `fun_prop` is to mark desired function property with `fun_prop` attribute.

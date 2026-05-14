@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.Algebra.Module.Torsion.Basic
-public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.Flat.EquationalCriterion
 public import Mathlib.RingTheory.Ideal.Quotient.ChineseRemainder
@@ -16,6 +15,8 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 public import Mathlib.RingTheory.Nakayama
 public import Mathlib.RingTheory.Support
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 /-!
 # Finite modules over local rings
@@ -159,6 +160,7 @@ namespace Module
 
 variable [IsLocalRing R]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `M` is of finite presentation over a local ring `(R, 𝔪, k)` such that
 `𝔪 ⊗ M → M` is injective, then every family of elements that is a `k`-basis of
 `k ⊗ M` is an `R`-basis of `M`. -/

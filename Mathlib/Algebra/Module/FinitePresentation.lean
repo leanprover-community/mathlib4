@@ -44,8 +44,9 @@ Also the instances finite + free => f.p. => finite are also provided
 Suppose `S` is an `R`-algebra, `M` is an `S`-module. Then
 1. If `S` is f.p., then `M` is `R`-f.p. implies `M` is `S`-f.p.
 2. If `S` is both f.p. (as an algebra) and finite (as a module),
-  then `M` is `S`-fp implies that `M` is `R`-f.p.
+   then `M` is `S`-fp implies that `M` is `R`-f.p.
 3. If `S` is f.p. as a module, then `S` is f.p. as an algebra.
+
 In particular,
 4. `S` is f.p. as an `R`-module iff it is f.p. as an algebra and is finite as a module.
 
@@ -174,7 +175,7 @@ lemma Module.finitePresentation_of_surjective [h : Module.FinitePresentation R M
   apply Module.finitePresentation_of_free_of_surjective (l ∘ₗ linearCombination R Subtype.val)
     (hl.comp H)
   choose σ hσ using (show _ from H)
-  have : Finsupp.linearCombination R Subtype.val '' (σ '' t) = t := by
+  have : Finsupp.linearCombination R Subtype.val '' σ '' t = t := by
     simp only [Set.image_image, hσ, Set.image_id']
   rw [LinearMap.ker_comp, ← ht, ← this, ← Submodule.map_span, Submodule.comap_map_eq,
     ← Finset.coe_image]
@@ -402,11 +403,7 @@ lemma Module.FinitePresentation.exists_lift_of_isLocalizedModule
   obtain ⟨x, rfl⟩ := hπ x
   rw [← LinearMap.comp_apply, ← LinearMap.comp_apply, mul_smul, LinearMap.smul_comp, ← hi,
     ← LinearMap.comp_smul, LinearMap.comp_assoc, LinearMap.comp_assoc]
-  congr 2
-  convert Submodule.liftQ_mkQ _ _ this using 2
-  ext x
-  apply (LinearMap.quotKerEquivOfSurjective _ hπ).injective
-  simp [LinearMap.quotKerEquivOfSurjective]
+  simp
 
 lemma Module.Finite.exists_smul_of_comp_eq_of_isLocalizedModule
     [hM : Module.Finite R M] (g₁ g₂ : M →ₗ[R] N) (h : f.comp g₁ = f.comp g₂) :
@@ -478,7 +475,7 @@ lemma exists_bijective_map_powers [Module.Finite R M] [Module.FinitePresentation
     ext x
     have : s₁.1 • l (l' x) = s₁.1 • s₀.1 • x := congr($hs₁ x)
     simp [lₛ, lₛ', LocalizedModule.smul'_mk, this]
-  let eₛ : LocalizedModule (.powers t) M ≃ₗ[Rₛ] LocalizedModule (.powers t) N :=
+  let eₛ : LocalizedModule.Away t M ≃ₗ[Rₛ] LocalizedModule.Away t N :=
     { __ := lₛ,
       invFun := ((hu₀.unit⁻¹).1 • lₛ'),
       left_inv := fun x ↦ congr($H_left x),
@@ -496,7 +493,7 @@ lemma Module.FinitePresentation.exists_notMem_bijective [Module.Finite R M]
     (hf : Function.Bijective (IsLocalizedModule.map p.primeCompl fM fN f)) :
     ∃ (g : R), g ∉ p ∧ Function.Bijective (LocalizedModule.map (Submonoid.powers g) f) := by
   obtain ⟨g, hg, h⟩ := exists_bijective_map_powers p.primeCompl fM fN f hf
-  exact ⟨g, hg, h g (by rfl)⟩
+  exact ⟨g, hg, h g dvd_rfl⟩
 
 open IsLocalizedModule in
 /--
@@ -508,8 +505,8 @@ lemma Module.FinitePresentation.exists_lift_equiv_of_isLocalizedModule
     [Module.FinitePresentation R M] [Module.FinitePresentation R N]
     (l : M' ≃ₗ[R] N') :
     ∃ (r : R) (hr : r ∈ S)
-      (l' : LocalizedModule (.powers r) M ≃ₗ[Localization (.powers r)]
-        LocalizedModule (.powers r) N),
+      (l' : LocalizedModule.Away r M ≃ₗ[Localization (.powers r)]
+        LocalizedModule.Away r N),
       (LocalizedModule.lift (.powers r) g fun s ↦ map_units g ⟨s.1, SetLike.le_def.mp
         (Submonoid.powers_le.mpr hr) s.2⟩) ∘ₗ l'.toLinearMap =
         l ∘ₗ (LocalizedModule.lift (.powers r) f fun s ↦ map_units f ⟨s.1, SetLike.le_def.mp
@@ -579,6 +576,33 @@ instance Module.FinitePresentation.isLocalizedModule_mapExtendScalars
 instance [Module.FinitePresentation R M] :
     IsLocalizedModule S (LocalizedModule.map S (M := M) (N := N)) :=
   Module.FinitePresentation.isLocalizedModule_mapExtendScalars _ _ _ _
+
+/-- If `M` is a finite `R`-module, and the localization `Mₛ` at some submonoid `S` of `R`
+is finitely presented, then `Mₛ = M[1/r]` for some `r ∈ S`. -/
+lemma IsLocalizedModule.exists_isLocalizedModule_powers_of_finitePresentation
+    [Module.Finite R M] [Module.FinitePresentation R M'] :
+    ∃ r ∈ S, IsLocalizedModule.Away r f := by
+  have : IsLocalizedModule S (.id (R := R) (M := M')) :=
+    ⟨IsLocalizedModule.map_units f, fun y ↦ ⟨⟨y, 1⟩, by simp⟩, by simpa using ⟨1, S.one_mem⟩⟩
+  obtain ⟨r, hrp, H⟩ := exists_bijective_map_powers S
+      f (.id (R := R) (M := M')) f <| by
+    convert show Function.Bijective LinearMap.id from Function.bijective_id
+    apply IsLocalizedModule.ext S f
+    · exact IsLocalizedModule.map_units f
+    · simp [IsLocalizedModule.map_comp]
+  have hrp' : .powers r ≤ S := by simpa [Submonoid.powers_le]
+  refine ⟨r, hrp, ⟨fun x ↦ IsLocalizedModule.map_units f ⟨x, hrp' x.2⟩, ?_, ?_⟩⟩
+  · intro y
+    obtain ⟨x, hx⟩ := (H _ dvd_rfl).2 (LocalizedModule.mkLinearMap _ _ y)
+    obtain ⟨⟨x, ⟨_, n, rfl⟩⟩, rfl⟩ := IsLocalizedModule.mk'_surjective
+      (.powers r) (LocalizedModule.mkLinearMap _ _) x
+    obtain ⟨m, hm⟩ : ∃ m, r ^ (m + n) • y = f (r ^ m • x) := by
+      simpa [LocalizedModule.map, IsLocalizedModule.mk_eq_mk', -IsLocalizedModule.mk'_one,
+        pow_add, mul_smul, IsLocalizedModule.mk'_eq_mk'_iff, Submonoid.mem_powers_iff,
+        Submonoid.smul_def] using hx
+    exact ⟨⟨_, ⟨_, _, rfl⟩⟩, hm⟩
+  · exact fun {x₁ x₂} hx ↦ IsLocalizedModule.exists_of_eq (f := LocalizedModule.mkLinearMap
+      (.powers r) _) ((H _ dvd_rfl).1 (by simp [hx]))
 
 /--
 Let `M` be a finitely presented `R`-module, `N` an `R`-module, `S : Submonoid R`.

@@ -5,16 +5,16 @@ Authors: Filippo A. E. Nuccio, Andrew Yang
 -/
 module
 
+public import Mathlib.RingTheory.Artinian.Ring
+public import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
-public import Mathlib.RingTheory.Ideal.Quotient.Noetherian
-public import Mathlib.RingTheory.Artinian.Module
 public import Mathlib.Topology.NoetherianSpace
 
 /-!
 This file proves additional properties of the prime spectrum a ring is Noetherian.
 -/
 
-@[expose] public section
+public section
 
 
 universe u v
@@ -30,11 +30,6 @@ variable (R : Type u) [CommSemiring R] [IsNoetherianRing R]
 instance : NoetherianSpace (PrimeSpectrum R) :=
   ((noetherianSpace_TFAE <| PrimeSpectrum R).out 0 1).mpr (closedsEmbedding R).dual.wellFoundedLT
 
-lemma _root_.minimalPrimes.finite_of_isNoetherianRing : (minimalPrimes R).Finite :=
-  minimalPrimes.equivIrreducibleComponents R
-    |>.set_finite_iff
-    |>.mpr NoetherianSpace.finite_irreducibleComponents
-
 lemma finite_setOf_isMin :
     {x : PrimeSpectrum R | IsMin x}.Finite := by
   have : Function.Injective (asIdeal (R := R)) := @PrimeSpectrum.ext _ _
@@ -42,17 +37,15 @@ lemma finite_setOf_isMin :
   simp_rw [isMin_iff]
   exact (minimalPrimes.finite_of_isNoetherianRing R).subset (Set.image_preimage_subset _ _)
 
-lemma _root_.Ideal.finite_minimalPrimes_of_isNoetherianRing (I : Ideal R) :
-    I.minimalPrimes.Finite :=
-  Ideal.minimalPrimes.equivIrreducibleComponents I
-    |>.set_finite_iff
-    |>.mpr NoetherianSpace.finite_irreducibleComponents
-
 end IsNoetherianRing
 
-section IsArtinianRing
+end PrimeSpectrum
 
-variable (R : Type u) [CommRing R] [IsArtinianRing R]
+namespace IsArtinianRing
+
+open PrimeSpectrum
+
+variable (R : Type*) [CommRing R] [IsArtinianRing R]
 
 instance : Ring.KrullDimLE 0 R := .mk₀ fun _ _ ↦ inferInstance
 
@@ -60,7 +53,7 @@ instance : DiscreteTopology (PrimeSpectrum R) :=
   discreteTopology_iff_finite_and_krullDimLE_zero.mpr ⟨inferInstance, inferInstance⟩
 
 variable {R} in
-lemma _root_.IsArtinianRing.exists_not_mem_forall_mem_of_ne (p : Ideal R) [p.IsPrime] :
+lemma exists_not_mem_forall_mem_of_ne (p : Ideal R) [p.IsPrime] :
     ∃ r ∉ p, IsIdempotentElem r ∧ ∀ q : Ideal R, q.IsPrime → q ≠ p → r ∈ q := by
   classical
   obtain ⟨r, hr⟩ := PrimeSpectrum.toPiLocalization_bijective.2 (Pi.single ⟨p, inferInstance⟩ 1)
@@ -80,6 +73,14 @@ lemma _root_.IsArtinianRing.exists_not_mem_forall_mem_of_ne (p : Ideal R) [p.IsP
     rw [← IsLocalization.AtPrime.to_map_mem_maximal_iff (Localization.AtPrime q) q, this]
     simp
 
-end IsArtinianRing
+variable (F : Type*) [Field F] [Algebra F R] [Module.Finite F R]
 
-end PrimeSpectrum
+theorem finrank_eq_sum_primeSpectrum [Fintype (PrimeSpectrum R)] :
+    Module.finrank F R = ∑ p : PrimeSpectrum R, Module.finrank F (Localization.AtPrime p.asIdeal) :=
+  have (p : Ideal R) [p.IsPrime] : Module.Finite F (Localization.AtPrime p) :=
+    Module.Finite.of_surjective (Algebra.algHom F R (Localization.AtPrime p)).toLinearMap
+      (localization_surjective p.primeCompl (Localization.AtPrime p))
+  ((toPiLocalizationEquiv R).restrictScalars F).toLinearEquiv.finrank_eq.trans
+    (Module.finrank_pi_fintype F)
+
+end IsArtinianRing

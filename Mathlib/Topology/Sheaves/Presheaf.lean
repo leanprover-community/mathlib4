@@ -9,7 +9,6 @@ public import Mathlib.Topology.Category.TopCat.Opens
 public import Mathlib.CategoryTheory.Adjunction.Unique
 public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 public import Mathlib.Topology.Sheaves.Init
-public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Presheaves on a topological space
@@ -21,6 +20,7 @@ We define
 * Given `{X Y : TopCat.{w}}` and `f : X ⟶ Y`, we define
   `TopCat.Presheaf.pushforward C f : X.Presheaf C ⥤ Y.Presheaf C`,
   with notation `f _* ℱ` for `ℱ : X.Presheaf C`.
+
 and for `ℱ : X.Presheaf C` provide the natural isomorphisms
 * `TopCat.Presheaf.Pushforward.id : (𝟙 X) _* ℱ ≅ ℱ`
 * `TopCat.Presheaf.Pushforward.comp : (f ≫ g) _* ℱ ≅ g _* (f _* ℱ)`
@@ -28,7 +28,7 @@ and for `ℱ : X.Presheaf C` provide the natural isomorphisms
 
 We also define the functors `pullback C f : Y.Presheaf C ⥤ X.Presheaf c`,
 and provide their adjunction at
-`TopCat.Presheaf.pushforwardPullbackAdjunction`.
+`TopCat.Presheaf.pullbackPushforwardAdjunction`.
 -/
 
 @[expose] public section
@@ -52,12 +52,12 @@ variable {C}
 
 namespace Presheaf
 
-@[simp] theorem comp_app {X : TopCat} {U : (Opens X)ᵒᵖ} {P Q R : Presheaf C X}
+@[simp] theorem comp_app {X : TopCat.{w}} {U : (Opens X)ᵒᵖ} {P Q R : Presheaf C X}
     (f : P ⟶ Q) (g : Q ⟶ R) :
     (f ≫ g).app U = f.app U ≫ g.app U := rfl
 
 @[ext]
-lemma ext {X : TopCat} {P Q : Presheaf C X} {f g : P ⟶ Q}
+lemma ext {X : TopCat.{w}} {P Q : Presheaf C X} {f g : P ⟶ Q}
     (w : ∀ U : Opens X, f.app (op U) = g.app (op U)) :
     f = g := by
   apply NatTrans.ext
@@ -99,7 +99,7 @@ example {X} [CompleteLattice X] (v : Nat → X) (w x y z : X) (e : v 0 = v 1) (_
     (h₀ : v 1 ≤ x) (_ : x ≤ z ⊓ w) (h₂ : x ≤ y ⊓ z) : v 0 ≤ y := by
   restrict_tac
 
-variable {X : TopCat} {C : Type u} [Category.{v} C] {FC : C → C → Type*} {CC : C → Type*}
+variable {X : TopCat.{w}} {C : Type u} [Category.{v} C] {FC : C → C → Type*} {CC : C → Type*}
 variable [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory C FC]
 
 /-- The restriction of a section along an inclusion of open sets.
@@ -142,6 +142,11 @@ theorem map_restrict
     e.app _ (x |_ U) = e.app _ x |_ U := by
   delta restrictOpen restrict
   rw [← ConcreteCategory.comp_apply, NatTrans.naturality, ConcreteCategory.comp_apply]
+
+@[simp]
+lemma restrict_self {F : X.Presheaf C} {U : Opens X} (x : ToType (F.obj (op U))) :
+    x |_ U = x := by
+  simp [restrictOpen, restrict]
 
 open CategoryTheory.Limits
 
@@ -223,7 +228,7 @@ section Iso
 
 /-- A homeomorphism of spaces gives an equivalence of categories of presheaves. -/
 @[simps!]
-def presheafEquivOfIso {X Y : TopCat} (H : X ≅ Y) : X.Presheaf C ≌ Y.Presheaf C :=
+def presheafEquivOfIso {X Y : TopCat.{w}} (H : X ≅ Y) : X.Presheaf C ≌ Y.Presheaf C :=
   Equivalence.congrLeft (Opens.mapMapIso H).symm.op
 
 variable {C}
@@ -231,12 +236,12 @@ variable {C}
 /-- If `H : X ≅ Y` is a homeomorphism,
 then given an `H _* ℱ ⟶ 𝒢`, we may obtain an `ℱ ⟶ H ⁻¹ _* 𝒢`.
 -/
-def toPushforwardOfIso {X Y : TopCat} (H : X ≅ Y) {ℱ : X.Presheaf C} {𝒢 : Y.Presheaf C}
+def toPushforwardOfIso {X Y : TopCat.{w}} (H : X ≅ Y) {ℱ : X.Presheaf C} {𝒢 : Y.Presheaf C}
     (α : H.hom _* ℱ ⟶ 𝒢) : ℱ ⟶ H.inv _* 𝒢 :=
   (presheafEquivOfIso _ H).toAdjunction.homEquiv ℱ 𝒢 α
 
 @[simp]
-theorem toPushforwardOfIso_app {X Y : TopCat} (H₁ : X ≅ Y) {ℱ : X.Presheaf C} {𝒢 : Y.Presheaf C}
+theorem toPushforwardOfIso_app {X Y : TopCat.{w}} (H₁ : X ≅ Y) {ℱ : X.Presheaf C} {𝒢 : Y.Presheaf C}
     (H₂ : H₁.hom _* ℱ ⟶ 𝒢) (U : (Opens X)ᵒᵖ) :
     (toPushforwardOfIso H₁ H₂).app U =
       ℱ.map (eqToHom (by simp [Opens.map, Set.preimage_preimage])) ≫
@@ -246,12 +251,12 @@ theorem toPushforwardOfIso_app {X Y : TopCat} (H₁ : X ≅ Y) {ℱ : X.Presheaf
 /-- If `H : X ≅ Y` is a homeomorphism,
 then given an `H _* ℱ ⟶ 𝒢`, we may obtain an `ℱ ⟶ H ⁻¹ _* 𝒢`.
 -/
-def pushforwardToOfIso {X Y : TopCat} (H₁ : X ≅ Y) {ℱ : Y.Presheaf C} {𝒢 : X.Presheaf C}
+def pushforwardToOfIso {X Y : TopCat.{w}} (H₁ : X ≅ Y) {ℱ : Y.Presheaf C} {𝒢 : X.Presheaf C}
     (H₂ : ℱ ⟶ H₁.hom _* 𝒢) : H₁.inv _* ℱ ⟶ 𝒢 :=
   ((presheafEquivOfIso _ H₁.symm).toAdjunction.homEquiv ℱ 𝒢).symm H₂
 
 @[simp]
-theorem pushforwardToOfIso_app {X Y : TopCat} (H₁ : X ≅ Y) {ℱ : Y.Presheaf C} {𝒢 : X.Presheaf C}
+theorem pushforwardToOfIso_app {X Y : TopCat.{w}} (H₁ : X ≅ Y) {ℱ : Y.Presheaf C} {𝒢 : X.Presheaf C}
     (H₂ : ℱ ⟶ H₁.hom _* 𝒢) (U : (Opens X)ᵒᵖ) :
     (pushforwardToOfIso H₁ H₂).app U =
       H₂.app (op ((Opens.map H₁.inv).obj (unop U))) ≫
@@ -270,27 +275,30 @@ def pullback {X Y : TopCat.{v}} (f : X ⟶ Y) : Y.Presheaf C ⥤ X.Presheaf C :=
   (Opens.map f).op.lan
 
 /-- The pullback and pushforward along a continuous map are adjoint to each other. -/
-def pushforwardPullbackAdjunction {X Y : TopCat.{v}} (f : X ⟶ Y) :
+def pullbackPushforwardAdjunction {X Y : TopCat.{v}} (f : X ⟶ Y) :
     pullback C f ⊣ pushforward C f :=
   Functor.lanAdjunction _ _
+
+@[deprecated (since := "2026-03-03")]
+alias pushforwardPullbackAdjunction := pullbackPushforwardAdjunction
 
 /-- Pulling back along a homeomorphism is the same as pushing forward along its inverse. -/
 def pullbackHomIsoPushforwardInv {X Y : TopCat.{v}} (H : X ≅ Y) :
     pullback C H.hom ≅ pushforward C H.inv :=
-  Adjunction.leftAdjointUniq (pushforwardPullbackAdjunction C H.hom)
+  Adjunction.leftAdjointUniq (pullbackPushforwardAdjunction C H.hom)
     (presheafEquivOfIso C H.symm).toAdjunction
 
 /-- Pulling back along the inverse of a homeomorphism is the same as pushing forward along it. -/
 def pullbackInvIsoPushforwardHom {X Y : TopCat.{v}} (H : X ≅ Y) :
     pullback C H.inv ≅ pushforward C H.hom :=
-  Adjunction.leftAdjointUniq (pushforwardPullbackAdjunction C H.inv)
+  Adjunction.leftAdjointUniq (pullbackPushforwardAdjunction C H.inv)
     (presheafEquivOfIso C H).toAdjunction
 
 variable {C}
 
 /-- If `f '' U` is open, then `f⁻¹ℱ U ≅ ℱ (f '' U)`. -/
 def pullbackObjObjOfImageOpen {X Y : TopCat.{v}} (f : X ⟶ Y) (ℱ : Y.Presheaf C) (U : Opens X)
-    (H : IsOpen (f '' SetLike.coe U)) : ((pullback C f).obj ℱ).obj (op U) ≅ ℱ.obj (op ⟨_, H⟩) := by
+    (H : IsOpen (f '' U)) : ((pullback C f).obj ℱ).obj (op U) ≅ ℱ.obj (op ⟨_, H⟩) := by
   let x : CostructuredArrow (Opens.map f).op (op U) := CostructuredArrow.mk
     (@homOfLE _ _ _ ((Opens.map f).obj ⟨_, H⟩) (Set.image_preimage.le_u_l _)).op
   have hx : IsTerminal x :=
@@ -305,8 +313,95 @@ def pullbackObjObjOfImageOpen {X Y : TopCat.{v}} (f : X ⟶ Y) (ℱ : Y.Presheaf
     ((Opens.map f).op.isPointwiseLeftKanExtensionLeftKanExtensionUnit ℱ (op U))
     (colimitOfDiagramTerminal hx _)
 
+set_option backward.isDefEq.respectTransparency false in
+/-- If `U ⊆ V` and `f '' U`, `f '' V` are open, then the isomorphisms `f⁻¹ℱ U ≅ ℱ (f '' U)`,
+`f⁻¹ℱ V ≅ ℱ (f '' V)` given by `pullbackObjObjOfImageOpen` are compatible with the restriction
+maps. -/
+theorem pullbackObjObjOfImageOpen_hom_naturality {X Y : TopCat.{v}} (f : X ⟶ Y) (ℱ : Y.Presheaf C)
+    {U V : Opens X} (HU : IsOpen (f '' U)) (HV : IsOpen (f '' V)) (le : U ≤ V) :
+    ((pullback C f).obj ℱ).map (homOfLE le).op ≫ (pullbackObjObjOfImageOpen f ℱ U HU).hom =
+    (pullbackObjObjOfImageOpen f ℱ V HV).hom ≫ ℱ.map (IsOpenMap.functorMap HU HV le).op := by
+  dsimp [pullbackObjObjOfImageOpen]
+  refine ((Opens.map f).op.isPointwiseLeftKanExtensionLeftKanExtensionUnit ℱ (op V)).hom_ext
+    (fun j ↦ ?_)
+  have eq : ((LeftExtension.mk ((Opens.map f).op.leftKanExtension ℱ)
+      ((Opens.map f).op.leftKanExtensionUnit ℱ)).coconeAt
+      (op V)).ι.app j ≫ ((pullback C f).obj ℱ).map (homOfLE le).op =
+      ((LeftExtension.mk ((Opens.map f).op.leftKanExtension ℱ)
+      ((Opens.map f).op.leftKanExtensionUnit ℱ)).coconeAt
+      (op U)).ι.app ((CostructuredArrow.map (homOfLE le).op).obj j) := by cat_disch
+  rw [Limits.IsColimit.comp_coconePointUniqueUpToIso_hom_assoc, reassoc_of% eq,
+    Limits.IsColimit.comp_coconePointUniqueUpToIso_hom,
+    Limits.coconeOfDiagramTerminal_ι_app, Limits.coconeOfDiagramTerminal_ι_app]
+  dsimp
+  rw [← Functor.map_comp]
+  cat_disch
+
 end
 
-end Presheaf
+end TopCat.Presheaf
 
-end TopCat
+namespace IsOpenMap
+
+noncomputable section
+
+variable {C} [Limits.HasColimits C]
+
+open TopCat.Presheaf
+
+/--
+If `f : X ⟶ Y` is an open map and `ℱ` is a presheaf on `Y`, then the pullback of `ℱ` by `f` is
+isomorphic to the composition of `ℱ` and of the functor `(Open X)ᵒᵖ ⥤ (Open Y)ᵒᵖ` induced by `f`.
+-/
+@[simps!]
+def pullbackObjIso {X Y : TopCat.{v}} {f : X ⟶ Y} (hf : IsOpenMap f) (ℱ : Y.Presheaf C) :
+    (pullback C f).obj ℱ ≅ hf.functor.op ⋙ ℱ :=
+  NatIso.ofComponents
+    (fun U ↦ pullbackObjObjOfImageOpen f ℱ U.1 (hf (unop U).1 (unop U).2))
+    (fun {U V} i ↦ (pullbackObjObjOfImageOpen_hom_naturality f ℱ (hf (unop V).1 (unop V).2)
+      (hf (unop U).1 (unop U).2) (leOfHom i.unop)))
+
+set_option backward.isDefEq.respectTransparency false in
+/--
+If `f : X ⟶ Y` is an open map, this expresses the naturality of the isomorphism
+`IsOpenMap.pullbackObjIso` between the pullback by `f` of a presheaf and the composition
+of that presheaf and of the functor `(Open X)ᵒᵖ ⥤ (Open Y)ᵒᵖ` induced by `f`.
+-/
+lemma pullbackObjIso_hom_naturality {X Y : TopCat.{v}} {f : X ⟶ Y} (hf : IsOpenMap f)
+   {ℱ 𝒢 : Y.Presheaf C} (u : ℱ ⟶ 𝒢) :
+   (pullback C f).map u ≫ (hf.pullbackObjIso 𝒢).hom =
+   (hf.pullbackObjIso ℱ).hom ≫ Functor.whiskerLeft hf.functor.op u := by
+  ext U
+  dsimp [pullbackObjIso, pullbackObjObjOfImageOpen]
+  refine ((Opens.map f).op.isPointwiseLeftKanExtensionLeftKanExtensionUnit ℱ (op U)).hom_ext
+    (fun j ↦ ?_)
+  have eq : ((LeftExtension.mk ((Opens.map f).op.leftKanExtension ℱ)
+      ((Opens.map f).op.leftKanExtensionUnit ℱ)).coconeAt (op U)).ι.app j
+      ≫ ((pullback C f).map u).app (op U) = NatTrans.app (Functor.whiskerLeft _ u) j ≫
+      ((LeftExtension.mk ((Opens.map f).op.leftKanExtension 𝒢)
+      ((Opens.map f).op.leftKanExtensionUnit 𝒢)).coconeAt (op U)).ι.app j := by
+    dsimp [pullback]
+    simp only [Category.assoc, NatTrans.naturality]
+    have := NatTrans.congr_app ((Opens.map f).op.lanUnit.naturality u) j.left
+    dsimp [lanUnit] at this
+    rw [reassoc_of% this]
+    rfl
+  rw [Limits.IsColimit.comp_coconePointUniqueUpToIso_hom_assoc, reassoc_of% eq,
+    Limits.IsColimit.comp_coconePointUniqueUpToIso_hom]
+  dsimp
+  rw [← u.naturality]
+  rfl
+
+/--
+If `f : X ⟶ Y`, this is the isomorphism between the pullback functor by `f` and the
+"naive" pullback given by composing presheaves with the functor `(Open X)ᵒᵖ ⥤ (Open Y)ᵒᵖ`
+induced by `f`.
+-/
+@[simps!]
+def pullbackIso {X Y : TopCat.{v}} {f : X ⟶ Y} (hf : IsOpenMap f) :
+    pullback C f ≅ (Functor.whiskeringLeft _ _ _).obj hf.functor.op :=
+  NatIso.ofComponents hf.pullbackObjIso hf.pullbackObjIso_hom_naturality
+
+end
+
+end IsOpenMap

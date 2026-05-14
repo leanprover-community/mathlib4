@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Deriv
 public import Mathlib.Analysis.Calculus.LogDeriv
+public import Mathlib.Analysis.Meromorphic.Basic
 public import Mathlib.Analysis.SpecialFunctions.Complex.Log
 public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 
@@ -15,7 +16,7 @@ public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsConformalMap Conformal
 
@@ -125,5 +126,15 @@ lemma Complex.deriv_log_comp_eq_logDeriv {f : ℂ → ℂ} {x : ℂ} (h₁ : Dif
   have A := (HasDerivAt.clog h₁.hasDerivAt h₂).deriv
   rw [← h₁.hasDerivAt.deriv] at A
   simp only [logDeriv, Pi.div_apply, ← A, Function.comp_def]
+
+protected theorem MeromorphicOn.logDeriv {𝕜 𝕜' : Type*} [NontriviallyNormedField 𝕜]
+    [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] [CompleteSpace 𝕜']
+    {f : 𝕜 → 𝕜'} {s : Set 𝕜} (h : MeromorphicOn f s) : MeromorphicOn (logDeriv f) s :=
+  h.deriv.div h
+
+protected theorem Meromorphic.logDeriv {𝕜 𝕜' : Type*} [NontriviallyNormedField 𝕜]
+    [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] [CompleteSpace 𝕜']
+    {f : 𝕜 → 𝕜'} (h : Meromorphic f) : Meromorphic (logDeriv f) :=
+  h.deriv.div h
 
 end LogDeriv
