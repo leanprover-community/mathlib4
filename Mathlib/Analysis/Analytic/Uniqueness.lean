@@ -46,7 +46,7 @@ open ContinuousMultilinearMap
 theorem Asymptotics.IsBigO.continuousMultilinearMap_apply_eq_zero {n : ℕ} {p : E [×n]→L[𝕜] F}
     (h : (fun y ↦ p fun _ ↦ y) =O[𝓝 0] fun y ↦ ‖y‖ ^ (n + 1)) (y : E) : (p fun _ ↦ y) = 0 := by
   by_contra! hy
-  have := calc
+  have : (fun c : 𝕜 ↦ c ^ n) =o[𝓝 0] (fun c : 𝕜 ↦ c ^ n) := calc
     (fun c : 𝕜 ↦ c ^ n) =O[𝓝 0] fun c ↦ c ^ n • p fun i ↦ y := by
       refine .of_norm_norm ?_
       simp only [norm_smul, mul_comm (‖_ ^ _‖)]
