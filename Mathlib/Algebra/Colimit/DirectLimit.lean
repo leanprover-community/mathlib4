@@ -939,7 +939,7 @@ variable [Nonempty ι]
 
 variable (G f) in
 /-- The canonical map from a component to the direct limit. -/
-noncomputable def of (i) : G i →⋆ₙₐ[R] DirectLimit G f where
+def of (i) : G i →⋆ₙₐ[R] DirectLimit G f where
   toFun x := ⟦⟨i, x⟩⟧
   __ := (NonUnitalAlgebra.of G f i)
   map_star' _ := (star_def ..).symm
@@ -953,7 +953,7 @@ variable (G f) in
 (non-unital) star R-algebra that respect the directed system structure
 (i.e. make some diagram commute) give rise to a unique map out of the direct limit.
 -/
-noncomputable def lift (g : ∀ i, (G i) →⋆ₙₐ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
+def lift (g : ∀ i, (G i) →⋆ₙₐ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
     DirectLimit G f →⋆ₙₐ[R] P where
   toFun := _root_.DirectLimit.lift _ (g · ·) fun i j h x ↦ (Hg i j h x).symm
   __ := DirectLimit.NonUnitalAlgebra.lift G f P (g := fun i => (g i).toNonUnitalAlgHom) Hg
@@ -988,7 +988,7 @@ variable [Nonempty ι]
 
 variable (G f) in
 /-- The canonical map from a component to the direct limit. -/
-noncomputable def of (i) : G i →⋆ₐ[R] DirectLimit G f where
+def of (i) : G i →⋆ₐ[R] DirectLimit G f where
   toFun x := ⟦⟨i, x⟩⟧
   __ := (Algebra.of G f i)
   map_star' _ := (star_def ..).symm
@@ -1002,7 +1002,7 @@ variable (G f) in
 that respect the directed system structure (i.e. make some diagram commute) give rise
 to a unique map out of the direct limit.
 -/
-noncomputable def lift (g : ∀ i, (G i) →⋆ₐ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
+def lift (g : ∀ i, (G i) →⋆ₐ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
     DirectLimit G f →⋆ₐ[R] P where
   toFun := _root_.DirectLimit.lift _ (g · ·) fun i j h x ↦ (Hg i j h x).symm
   __ := DirectLimit.Algebra.lift G f P (g := fun i => (g i).toAlgHom) Hg
