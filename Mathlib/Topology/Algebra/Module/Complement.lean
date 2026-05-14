@@ -399,7 +399,7 @@ variable [IsTopologicalAddGroup M]
 
 /-- Two submodules `p` and `q` are topological complements if and only if the algebraic equivalence
 `p.prodEquivOfIsCompl q h` is continuous in the inverse direction. -/
-theorem IsCompl.isTopCompl_iff_continuous_prodEquiv_symm (h : IsCompl p q) :
+theorem IsCompl.isTopCompl_iff_continuous_symm_prodEquivOfIsCompl (h : IsCompl p q) :
     IsTopCompl p q ↔ Continuous (p.prodEquivOfIsCompl q h).symm :=
   ⟨fun hTop ↦ ((p.projectionOntoL q hTop).prod (q.projectionOntoL p hTop.symm)).continuous.congr
     fun x ↦ (prodEquivOfIsCompl_symm_apply h x).symm,
@@ -412,30 +412,24 @@ theorem continuous_prodEquivOfIsCompl (h : IsCompl p q) : Continuous (p.prodEqui
 
 /-- Two submodules `p` and `q` are topological complements if and only if the algebraic equivalence
 `p.prodEquivOfIsCompl q h` is a homeomorphism. -/
-theorem IsCompl.isTopCompl_iff_isHomeomorph_prodEquiv (h : IsCompl p q) :
+theorem IsCompl.isTopCompl_iff_isHomeomorph_prodEquivOfIsCompl (h : IsCompl p q) :
     IsTopCompl p q ↔ IsHomeomorph (p.prodEquivOfIsCompl q h) := by
-  rw [(p.prodEquivOfIsCompl q h).isHomeomorph_iff, isTopCompl_iff_continuous_prodEquiv_symm,
-    and_iff_right]
+  rw [(p.prodEquivOfIsCompl q h).isHomeomorph_iff,
+    isTopCompl_iff_continuous_symm_prodEquivOfIsCompl, and_iff_right]
   exact continuous_prodEquivOfIsCompl h
 
 variable (p q) in
 /-- If two submodules `p` and `q` are topological complements, then the algebraic equivalence
-`p.prodEquivOfIsCompl q h.isCompl` is a homeomorphism, bundled as a continuous linear equivalence.
--/
+`p.prodEquivOfIsCompl q h.isCompl` is a homeomorphism, bundled as a continuous linear
+equivalence. -/
 noncomputable def prodEquivOfIsTopCompl (h : IsTopCompl p q) : (p × q) ≃L[R] M :=
   { p.prodEquivOfIsCompl q h.isCompl with
     continuous_toFun := continuous_prodEquivOfIsCompl h.isCompl
-    continuous_invFun := h.isCompl.isTopCompl_iff_continuous_prodEquiv_symm.mp h }
+    continuous_invFun := h.isCompl.isTopCompl_iff_continuous_symm_prodEquivOfIsCompl.mp h }
 
 @[simp]
-theorem coe_prodEquivOfIsTopCompl (h : IsTopCompl p q) :
-    (prodEquivOfIsTopCompl p q h : (p × q) →ₗ[R] M) = p.prodEquivOfIsCompl q h.isCompl :=
-  rfl
-
-@[simp]
-theorem coe_prodEquivOfIsTopCompl_symm (h : IsTopCompl p q) :
-    ((prodEquivOfIsTopCompl p q h).symm : M →ₗ[R] p × q) =
-      (p.prodEquivOfIsCompl q h.isCompl).symm :=
+theorem toLinearEquiv_prodEquivOfIsTopCompl (h : IsTopCompl p q) :
+    (prodEquivOfIsTopCompl p q h : (p × q) ≃ₗ[R] M) = p.prodEquivOfIsCompl q h.isCompl :=
   rfl
 
 @[simp]
@@ -451,7 +445,7 @@ theorem prodEquivOfIsTopCompl_symm_apply (h : IsTopCompl p q) (x : M) :
 
 /-- Two submodules `p` and `q` are topological complements if and only if the algebraic equivalence
 `p.quotientEquivOfIsCompl q h` is continuous. -/
-theorem IsCompl.isTopCompl_iff_continuous_quotientEquiv (h : IsCompl p q) :
+theorem IsCompl.isTopCompl_iff_continuous_quotientEquivOfIsCompl (h : IsCompl p q) :
     IsTopCompl p q ↔ Continuous (p.quotientEquivOfIsCompl q h) := by
   have hproj : ⇑(p.quotientEquivOfIsCompl q h) ∘ ⇑p.mkQ = ⇑(q.projectionOnto p h.symm) := by
     funext; simp
@@ -464,18 +458,12 @@ variable (p q) in
 equivalence. -/
 noncomputable def quotientEquivOfIsTopCompl (h : IsTopCompl p q) : (M ⧸ p) ≃L[R] q :=
   { p.quotientEquivOfIsCompl q h.isCompl with
-    continuous_toFun := h.isCompl.isTopCompl_iff_continuous_quotientEquiv.mp h
+    continuous_toFun := h.isCompl.isTopCompl_iff_continuous_quotientEquivOfIsCompl.mp h
     continuous_invFun := (p.mkQL.comp q.subtypeL).continuous }
 
 @[simp]
-theorem coe_quotientEquivOfIsTopCompl (h : IsTopCompl p q) :
-    (quotientEquivOfIsTopCompl p q h : (M ⧸ p) →ₗ[R] q) = p.quotientEquivOfIsCompl q h.isCompl :=
-  rfl
-
-@[simp]
-theorem coe_quotientEquivOfIsTopCompl_symm (h : IsTopCompl p q) :
-    ((quotientEquivOfIsTopCompl p q h).symm : q →ₗ[R] M ⧸ p) =
-      (p.quotientEquivOfIsCompl q h.isCompl).symm :=
+theorem toLinearEquiv_quotientEquivOfIsTopCompl (h : IsTopCompl p q) :
+    (quotientEquivOfIsTopCompl p q h : (M ⧸ p) ≃ₗ[R] q) = p.quotientEquivOfIsCompl q h.isCompl :=
   rfl
 
 theorem quotientEquivOfIsTopCompl_apply (h : IsTopCompl p q) (x : M ⧸ p) :
@@ -489,8 +477,7 @@ theorem quotientEquivOfIsTopCompl_symm_apply (h : IsTopCompl p q) (y : q) :
 
 @[simp]
 theorem quotientEquivOfIsTopCompl_apply_mk (h : IsTopCompl p q) (x : M) :
-    quotientEquivOfIsTopCompl p q h (Submodule.Quotient.mk x) =
-      q.projectionOnto p h.isCompl.symm x :=
+    quotientEquivOfIsTopCompl p q h (Quotient.mk x) = q.projectionOnto p h.isCompl.symm x :=
   quotientEquivOfIsCompl_apply_mk h.isCompl x
 
 end ContinuousLinearEquiv
@@ -505,12 +492,14 @@ variable {R : Type*} [Ring R] {E F : Type*}
   {p q : Submodule R E}
 
 /-- Given continuous linear maps `φ : p →L[R] F` and `ψ : q →L[R] F` from topological complement
-submodules of `E`, the induced continuous linear map `E →L[R] F`. -/
+submodules of `E`, the induced continuous linear map `E →L[R] F`.
+
+This is the continuous version of `LinearMap.ofIsCompl`. -/
 noncomputable def ofIsTopCompl (h : IsTopCompl p q) (φ : p →L[R] F) (ψ : q →L[R] F) : E →L[R] F :=
   φ ∘L p.projectionOntoL q h + ψ ∘L q.projectionOntoL p h.symm
 
 @[simp]
-theorem coe_ofIsTopCompl (h : IsTopCompl p q) (φ : p →L[R] F) (ψ : q →L[R] F) :
+theorem toLinearMap_ofIsTopCompl (h : IsTopCompl p q) (φ : p →L[R] F) (ψ : q →L[R] F) :
     (ofIsTopCompl h φ ψ : E →ₗ[R] F) = LinearMap.ofIsCompl h.isCompl φ ψ := by
   rw [LinearMap.ofIsCompl_eq_add]
   rfl
