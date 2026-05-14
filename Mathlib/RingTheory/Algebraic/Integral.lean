@@ -203,7 +203,7 @@ omit [Algebra R S] in
 in the integral closure of `R` in `K`. -/
 lemma exists_smul_eq {x : K} (hx : IsAlgebraic R x) :
     ∃ (r : R) (s : S), r ≠ 0 ∧ r • x = algebraMap S K s := by
-  obtain ⟨r, hr, h⟩ := IsAlgebraic.iff_exists_smul_integral.mp hx
+  obtain ⟨r, hr, h⟩ := iff_exists_smul_integral.mp hx
   obtain ⟨s, hs⟩ := IsIntegralClosure.isIntegral_iff (A := S) |>.mp h
   exact ⟨r, s, hr, hs.symm⟩
 
