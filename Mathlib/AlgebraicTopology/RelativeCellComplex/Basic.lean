@@ -118,8 +118,9 @@ def transfiniteCompositionOfShape' (c : RelativeCellComplex.{w} basicCell f)
     let a := c.attachCells j hj
     exact ⟨_, _, _, _, _,
       colimitsOfShape_le_coproducts _ a.ι _
-      (colimitsOfShape.mk' _ _ _ _ a.isColimit₁ a.isColimit₂
-        (Discrete.natTrans (fun _ ↦ basicCell _ _)) (fun ⟨k⟩ ↦ hc { j := _, hj := hj, k := k }) _
+        (colimitsOfShape.mk' _ _ _ _ a.isColimit₁ a.isColimit₂
+        (Discrete.natTrans (fun _ ↦ basicCell _ _))
+        (fun ⟨k⟩ ↦ hc { j := j, hj := hj, k := k }) _
         (fun _ ↦ a.hm _)),
       a.isPushout⟩
 
