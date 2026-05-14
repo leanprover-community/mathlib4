@@ -214,9 +214,7 @@ lemma Ideal.one_le_height_span_singleton_of_mem_nonZeroDivisors
 lemma Ideal.height_bot [Nontrivial R] : (⊥ : Ideal R).height = 0 := by
   obtain ⟨p, hp⟩ := Ideal.nonempty_minimalPrimes (R := R) (I := ⊥) top_ne_bot.symm
   simp only [Ideal.height, ENat.iInf_eq_zero]
-  refine ⟨p, hp, ?_⟩
-  have := Ideal.IsPrime.of_mem_minimalPrimes' hp
-  rw [primeHeight_eq_zero_iff.mpr hp]
+  exact ⟨p, hp, haveI := hp.isPrime; primeHeight_eq_zero_iff.mpr hp⟩
 
 /-- In a trivial commutative ring, the height of any ideal is `∞`. -/
 @[simp, nontriviality]
@@ -325,9 +323,9 @@ lemma ringKrullDim_le_iff_isMaximal_height_le {R : Type*} [CommRing R] (n : With
   norm_cast
   exact Ideal.height_mono hle
 
-theorem IsLocalization.primeHeight_comap (S : Submonoid R) {A : Type*} [CommRing A] [Algebra R A]
+theorem IsLocalization.primeHeight_under (S : Submonoid R) {A : Type*} [CommRing A] [Algebra R A]
     [IsLocalization S A] (J : Ideal A) [J.IsPrime] :
-    (J.comap (algebraMap R A)).primeHeight = J.primeHeight := by
+    (J.under R).primeHeight = J.primeHeight := by
   rw [eq_comm, Ideal.primeHeight, Ideal.primeHeight, ← WithBot.coe_inj,
     Order.height_eq_krullDim_Iic, Order.height_eq_krullDim_Iic]
   let e := IsLocalization.orderIsoOfPrime S A
@@ -342,19 +340,25 @@ theorem IsLocalization.primeHeight_comap (S : Submonoid R) {A : Type*} [CommRing
         congrArg (fun I ↦ I.1) (e.right_inv ⟨_, I.1.2, H _ I.2⟩)
       map_rel_iff' {I₁ I₂} := @RelIso.map_rel_iff _ _ _ _ e ⟨_, I₁.1.2⟩ ⟨_, I₂.1.2⟩ }
 
-theorem IsLocalization.height_comap (S : Submonoid R) {A : Type*} [CommRing A] [Algebra R A]
-    [IsLocalization S A] (J : Ideal A) : (J.comap (algebraMap R A)).height = J.height := by
+@[deprecated (since := "2026-04-09")] alias IsLocalization.primeHeight_comap :=
+  IsLocalization.primeHeight_under
+
+theorem IsLocalization.height_under (S : Submonoid R) {A : Type*} [CommRing A] [Algebra R A]
+    [IsLocalization S A] (J : Ideal A) : (J.under R).height = J.height := by
   rw [Ideal.height, Ideal.height]
-  simp_rw [← IsLocalization.primeHeight_comap S, IsLocalization.minimalPrimes_comap S A,
+  simp_rw [← IsLocalization.primeHeight_under S, IsLocalization.minimalPrimes_comap S A,
     ← Ideal.height_eq_primeHeight, iInf_image]
+
+@[deprecated (since := "2026-04-09")] alias IsLocalization.height_comap :=
+  IsLocalization.height_under
 
 theorem IsLocalization.AtPrime.ringKrullDim_eq_height (I : Ideal R) [I.IsPrime] (A : Type*)
     [CommRing A] [Algebra R A] [IsLocalization.AtPrime A I] :
     ringKrullDim A = I.height := by
   have := IsLocalization.AtPrime.isLocalRing A I
   rw [← IsLocalRing.maximalIdeal_primeHeight_eq_ringKrullDim,
-      ← IsLocalization.primeHeight_comap I.primeCompl,
-      ← IsLocalization.AtPrime.comap_maximalIdeal A I,
+      ← IsLocalization.primeHeight_under I.primeCompl,
+      ← IsLocalization.AtPrime.under_maximalIdeal A I,
       Ideal.height_eq_primeHeight]
 
 lemma IsLocalization.height_map_of_disjoint {S : Type*} [CommRing S] [Algebra R S] (M : Submonoid R)
@@ -363,7 +367,7 @@ lemma IsLocalization.height_map_of_disjoint {S : Type*} [CommRing S] [Algebra R 
   let P := p.map (algebraMap R S)
   have : P.IsPrime := isPrime_of_isPrime_disjoint M S p ‹_› h
   have := isLocalization_isLocalization_atPrime_isLocalization (M := M) (Localization.AtPrime P) P
-  simp_rw [P, comap_map_of_isPrime_disjoint M S _ h] at this
+  simp_rw [P, under_map_of_isPrime_disjoint M S _ h] at this
   have := ringKrullDim_eq_of_ringEquiv (IsLocalization.algEquiv p.primeCompl
     (Localization.AtPrime P) (Localization.AtPrime p)).toRingEquiv
   rw [AtPrime.ringKrullDim_eq_height P, AtPrime.ringKrullDim_eq_height p] at this
@@ -422,8 +426,7 @@ lemma exists_spanRank_le_and_le_height_of_le_height [IsNoetherianRing R] (I : Id
           · rwa [← e]
         refine ⟨mem_minimalPrimes_of_primeHeight_eq_height (le_sup_left.trans hp.le) this.symm, ?_⟩
         rwa [p.height_eq_primeHeight, eq_comm]
-      · apply hp.le
-        exact Ideal.mem_sup_right <| mem_span_singleton_self x
+      · exact hp.le <| Ideal.mem_sup_right <| mem_span_singleton_self x
 
 /-- In a nontrivial commutative ring `R`, the supremum of heights of all ideals is equal to the
 Krull dimension of `R`. -/
