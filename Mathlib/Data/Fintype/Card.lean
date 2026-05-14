@@ -265,12 +265,10 @@ than `α`, there exists a unique element of `β` not in the image of `f`. -/
 theorem existsUnique_notMem_image_of_injective_of_card_eq_add_one [DecidableEq β]
     (f : α → β) (hf : f.Injective) (h : card β = card α + 1) : ∃! x, x ∉ univ.image f := by
   have hcard : #(univ \ univ.image f) = 1 := by grind [card_image_compl_of_injective]
-  obtain ⟨x, hx⟩ := Finset.card_eq_one.mp hcard
-  have := mem_singleton_self x
-  refine ⟨x, ?_, ?_⟩
-  · exact (Finset.mem_sdiff.mp (hx ▸ Finset.mem_singleton_self x)).2
-  · intro y hy
-    exact Finset.mem_singleton.mp (hx ▸ Finset.mem_sdiff.mpr ⟨Finset.mem_univ _, hy⟩)
+  have h2 := Finset.card_eq_one_iff_exists_unique.mp hcard
+  obtain ⟨x, _⟩ := h2
+  refine ⟨x, ?_, fun _ _ ↦ ?_⟩
+  all_goals simp_all [← mem_singleton]
 
 theorem card_lt_of_injective_not_surjective (f : α → β) (h : Function.Injective f)
     (h' : ¬Function.Surjective f) : card α < card β :=
