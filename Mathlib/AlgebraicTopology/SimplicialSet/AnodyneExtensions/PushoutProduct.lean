@@ -7,7 +7,6 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Basic
 public import Mathlib.CategoryTheory.LiftingProperties.ParametrizedAdjunction
-public import Mathlib.CategoryTheory.LiftingProperties.PushoutProduct
 
 /-!
 # ...
