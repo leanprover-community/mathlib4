@@ -1,6 +1,11 @@
-import Mathlib
-import Mathlib.RingTheory.GradedAlgebra.Map.auxiliary
-import Mathlib.RingTheory.GradedAlgebra.Map.AddSubmonoidSSup
+module
+
+public import Mathlib.RingTheory.GradedAlgebra.Basic
+public import Mathlib.RingTheory.GradedAlgebra.Map.auxiliary
+public import Mathlib.RingTheory.GradedAlgebra.Map.AddSubmonoidSSup
+
+@[expose] public section
+
 open DirectSum
 
 section DirectSum.sigmaFiberAddEquiv
@@ -73,11 +78,12 @@ variable {σ : Type*} [SetLike σ M] [AddSubmonoidClass σ M]
                      [CompleteLattice σ] [AddSubmonoidSSup σ M]
 variable (ℳ : ι → σ)
 
-private def codomain_equal :
+-- TODO: Some of the following should be private
+def codomain_equal :
    ↥(⨆ i, AddSubmonoid.ofClass (ℳ i)) ≃+ ↥(⨆ i, ℳ i : σ)  :=
    (AddEquiv.addSubmonoidCongr (SetLike.iSup_toAddSubmonoid ℳ).symm)
 
-private def toIsup_ : (⨁ i, ℳ i) →+ ↥(⨆ i, AddSubmonoid.ofClass (ℳ i)) :=
+def toIsup_ : (⨁ i, ℳ i) →+ ↥(⨆ i, AddSubmonoid.ofClass (ℳ i)) :=
   DirectSum.toAddMonoid
   (fun i ↦ AddSubmonoid.inclusion (le_iSup (fun i ↦ AddSubmonoid.ofClass (ℳ i)) i))
 
@@ -95,7 +101,7 @@ lemma SetLike.toIsup_of
   Function.comp_apply, toAddMonoid_of]
   rfl
 
-lemma SetLike.toIsup_surjective : Function.Surjective (toIsup ℳ) := by
+private lemma SetLike.toIsup_surjective : Function.Surjective (toIsup ℳ) := by
   unfold SetLike.toIsup
   apply (codomain_equal ℳ).surjective.comp
   intro ⟨y, hy'⟩
@@ -139,7 +145,9 @@ abbrev decomp' : M →+ (⨁ j, (Decomposition.map f ℳ) j) :=
     ↦ SetLike.toIsup (ℳ := (fun (i : { i : ι₁ // f i = j}) ↦ (ℳ ↑i))))).comp
     ((sigma f ℳ).comp (decomp ℳ))
 
-instance DirectSum.Decomposition.map.decomposition :
+
+@[implicit_reducible]
+def DirectSum.Decomposition.map.decomposition :
   (DirectSum.Decomposition (Decomposition.map f ℳ) )
   :=
   DirectSum.Decomposition.ofAddHom
@@ -148,25 +156,21 @@ instance DirectSum.Decomposition.map.decomposition :
     (by
     -- 2 reduction steps:
       rw [← AddMonoidHom.cancel_right (decomposeAddEquiv ℳ).symm.surjective]
-      apply addHom_ext'
+      refine addHom_ext' (fun j ↦ ?_)
     -- now simplify everything:
-      unfold decomp' Decomposition.map
-      intro i
+      unfold Decomposition.map
       ext m
       simp only [AddEquiv.toAddMonoidHom_eq_coe, AddMonoidHom.coe_comp, AddMonoidHom.coe_coe,
         Function.comp_apply, coeAddMonoidHom_of, decomposeAddEquiv_apply, decompose_coe,
         sigmaFiberAddEquiv_of, map_of, SetLike.toIsup_of, AddMonoidHom.id_comp]
       ) (by
     -- 3 reduction steps:
-      apply addHom_ext'
-      intro j
+      refine addHom_ext' (fun j ↦ ?_)
       unfold Decomposition.map -- needed in v4.29r8, but not in v4.28.0
       rw [← AddMonoidHom.cancel_right
         (SetLike.toIsup_surjective (fun (i : { i : ι₁ // f i = j}) ↦ ((ℳ ↑i)))) ]
-      apply addHom_ext'
+      refine addHom_ext' (fun ⟨i, hi⟩ ↦ ?_)
     -- now simplify everything:
-      unfold decomp' --SetLike.toIsup SetLike.inclusion
-      intro ⟨i, hi⟩
       subst hi
       ext m : 1
       simp only [AddEquiv.toAddMonoidHom_eq_coe, AddMonoidHom.coe_comp, AddMonoidHom.coe_coe,
@@ -214,7 +218,8 @@ lemma induced_grad_mul_le (i j : ι₂) :
   exact (le_iSup (fun i : { i_ : ι₁ // f i_ = i + j}
     ↦ (AddSubmonoid.ofClass (𝒜 i))) ⟨↑i' + ↑j', hsum⟩) h
 
-instance DirectSum.Decomposition.map.gradedMonoid
+@[implicit_reducible]
+def DirectSum.Decomposition.map.gradedMonoid
   : SetLike.GradedMonoid (Decomposition.map f 𝒜) where
   one_mem := by
     unfold Decomposition.map
@@ -225,7 +230,8 @@ instance DirectSum.Decomposition.map.gradedMonoid
 
 variable [DecidableEq ι₂]
 
-instance DirectSum.Decomposition.map.gradedRing
+@[implicit_reducible]
+def DirectSum.Decomposition.map.gradedRing
   : GradedRing (Decomposition.map f 𝒜) where
   toGradedMonoid := DirectSum.Decomposition.map.gradedMonoid f 𝒜
   toDecomposition := DirectSum.Decomposition.map.decomposition f 𝒜

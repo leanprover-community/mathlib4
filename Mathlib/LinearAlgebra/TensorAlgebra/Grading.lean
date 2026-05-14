@@ -37,11 +37,17 @@ theorem GradedAlgebra.ι_apply (m : M) :
         ⟨TensorAlgebra.ι R m, by simpa only [pow_one] using LinearMap.mem_range_self _ m⟩ :=
   rfl
 
+/-- The canonical ℕ-grading on the tensor algebra given by the powers of the submodule
+    `(TensorAlgebra.ι R).range`. -/
+@[reducible]
+def 𝒯 : ℕ → Submodule R (TensorAlgebra R M) :=
+    (LinearMap.range (ι R : M →ₗ[R] TensorAlgebra R M) ^ ·)
+
 variable {R M}
 
-/-- The tensor algebra is graded by the powers of the submodule `(TensorAlgebra.ι R).range`. -/
+/-- TensorAlgebra.𝒯 is a grading. -/
 instance gradedAlgebra :
-    GradedAlgebra ((LinearMap.range (ι R : M →ₗ[R] TensorAlgebra R M) ^ ·) : ℕ → Submodule R _) :=
+    GradedAlgebra (𝒯 R M) :=
   fast_instance% GradedAlgebra.ofAlgHom _ (lift R <| GradedAlgebra.ι R M)
     (by
       ext m

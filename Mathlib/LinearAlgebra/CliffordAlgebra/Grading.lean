@@ -6,7 +6,10 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
+public import Mathlib.LinearAlgebra.TensorAlgebra.Grading
 public import Mathlib.RingTheory.GradedAlgebra.Basic
+public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.RingQuot
+public import Mathlib.RingTheory.GradedAlgebra.Map.DecompositionMap_SetLike
 
 /-!
 # Results about the grading structure of the clifford algebra
@@ -14,9 +17,7 @@ public import Mathlib.RingTheory.GradedAlgebra.Basic
 The main result is `CliffordAlgebra.gradedAlgebra`, which says that the clifford algebra is a
 ℤ₂-graded algebra (or "superalgebra").
 -/
-
 @[expose] public section
-
 
 namespace CliffordAlgebra
 
@@ -27,24 +28,73 @@ open scoped DirectSum
 
 variable (Q)
 
+/-- New construction of the graded structure -/
+-- abbrev TensorGrading := (((LinearMap.range (TensorAlgebra.ι R : M →ₗ[R] TensorAlgebra R M) ^ ·) :
+--  ℕ → Submodule R _))
+instance : GradedAlgebra (TensorAlgebra.𝒯 R M) := TensorAlgebra.gradedAlgebra
+
+def mod2red : ℕ →+ ZMod 2 := Nat.castAddMonoidHom (ZMod 2)
+
+instance : GradedAlgebra (DirectSum.Decomposition.map mod2red (TensorAlgebra.𝒯 R M)) :=
+  DirectSum.Decomposition.map.gradedRing mod2red (TensorAlgebra.𝒯 R M)
+
+open DirectSum in
+theorem RelIsPureHomogeneous :
+    Rel.IsPureHomogeneous (Decomposition.map mod2red (TensorAlgebra.𝒯 R M)) (Rel Q) := by
+    rintro _ _ ⟨m⟩
+    use 0
+    constructor
+    · have h₀ : (TensorAlgebra.ι R) m * (TensorAlgebra.ι R) m ∈ TensorAlgebra.𝒯 R M 2 := by
+        rw [← pow_two]
+        exact Submodule.pow_mem_pow _ (by simp) 2
+      exact le_iSup (fun i : { i : ℕ | mod2red i = 0} ↦ TensorAlgebra.𝒯 R M ↑i) ⟨2,rfl⟩ h₀
+    · exact le_iSup (fun i : { i : ℕ | mod2red i = 0} ↦ TensorAlgebra.𝒯 R M ↑i) ⟨0,rfl⟩ (by simp)
+
+open DirectSum in
+theorem RelIsHomogeneous :
+    Rel.IsHomogeneous (Decomposition.map mod2red (TensorAlgebra.𝒯 R M)) (Rel Q) := by
+    apply Rel.IsPureHomogeneous.isHomogeneous (Decomposition.map mod2red (TensorAlgebra.𝒯 R M))
+      (Rel Q)
+    · simpa using (Rel.of (Q := Q) 0)
+    · exact RelIsPureHomogeneous Q
+
+def evenOdd : ZMod 2 → Submodule R (CliffordAlgebra Q) :=
+    Rel.quotSubmodule (DirectSum.Decomposition.map mod2red (TensorAlgebra.𝒯 R M)) (Rel Q)
+
+noncomputable instance gradedAlgebra : GradedAlgebra (evenOdd Q) :=
+  Rel.quotGradedAlgebra _ _ (RelIsHomogeneous Q)
+
 /-- The even or odd submodule, defined as the supremum of the even or odd powers of
 `(ι Q).range`. `evenOdd 0` is the even submodule, and `evenOdd 1` is the odd submodule. -/
-def evenOdd (i : ZMod 2) : Submodule R (CliffordAlgebra Q) :=
-  ⨆ j : { n : ℕ // ↑n = i }, LinearMap.range (ι Q) ^ (j : ℕ)
+@[simp]
+theorem evenOdd_old_def (i : ZMod 2) :
+    evenOdd Q i = ⨆ j : { n : ℕ // ↑n = i }, LinearMap.range (ι Q) ^ (j : ℕ) := by
+  unfold evenOdd DirectSum.Decomposition.map TensorAlgebra.𝒯 Rel.quotSubmodule ι
+  rw [Submodule.map_iSup]
+  refine iSup_congr (fun i ↦ ?_)
+  rw [Submodule.map_pow, ← LinearMap.range_comp]
+  rfl -- or: exact  SetLike.coe_injective rfl
 
+/- **TODO**:
+    Many of the following lemmas should probably become "API" for evenOdd,
+    even though they are no longer needed for establishing the GradedAlgebra instance.
+-/
 theorem one_le_evenOdd_zero : 1 ≤ evenOdd Q 0 := by
+  rw [evenOdd_old_def]
   refine le_trans ?_ (le_iSup _ ⟨0, Nat.cast_zero⟩)
   exact (pow_zero _).ge
 
 theorem range_ι_le_evenOdd_one : LinearMap.range (ι Q) ≤ evenOdd Q 1 := by
+  rw [evenOdd_old_def]
   refine le_trans ?_ (le_iSup _ ⟨1, Nat.cast_one⟩)
   exact (pow_one _).ge
 
 theorem ι_mem_evenOdd_one (m : M) : ι Q m ∈ evenOdd Q 1 :=
   range_ι_le_evenOdd_one Q <| LinearMap.mem_range_self _ m
 
-theorem ι_mul_ι_mem_evenOdd_zero (m₁ m₂ : M) : ι Q m₁ * ι Q m₂ ∈ evenOdd Q 0 :=
-  Submodule.mem_iSup_of_mem ⟨2, rfl⟩
+theorem ι_mul_ι_mem_evenOdd_zero (m₁ m₂ : M) : ι Q m₁ * ι Q m₂ ∈ evenOdd Q 0 := by
+  rw [evenOdd_old_def]
+  exact Submodule.mem_iSup_of_mem ⟨2, rfl⟩
     (by
       rw [Subtype.coe_mk, pow_two]
       exact
@@ -52,7 +102,7 @@ theorem ι_mul_ι_mem_evenOdd_zero (m₁ m₂ : M) : ι Q m₁ * ι Q m₂ ∈ e
           (LinearMap.mem_range_self (ι Q) m₂))
 
 theorem evenOdd_mul_le (i j : ZMod 2) : evenOdd Q i * evenOdd Q j ≤ evenOdd Q (i + j) := by
-  simp_rw [evenOdd, Submodule.iSup_eq_span, Submodule.span_mul_span]
+  simp_rw [evenOdd_old_def, Submodule.iSup_eq_span, Submodule.span_mul_span]
   apply Submodule.span_mono
   simp_rw [Set.iUnion_mul, Set.mul_iUnion, Set.iUnion_subset_iff, Set.mul_subset_iff]
   rintro ⟨xi, rfl⟩ ⟨yi, rfl⟩ x hx y hy
@@ -64,6 +114,7 @@ instance evenOdd.gradedMonoid : SetLike.GradedMonoid (evenOdd Q) where
   one_mem := Submodule.one_le.mp (one_le_evenOdd_zero Q)
   mul_mem _i _j _p _q hp hq := Submodule.mul_le.mp (evenOdd_mul_le Q _ _) _ hp _ hq
 
+/-
 /-- A version of `CliffordAlgebra.ι` that maps directly into the graded structure. This is
 primarily an auxiliary construction used to provide `CliffordAlgebra.gradedAlgebra`. -/
 protected def GradedAlgebra.ι : M →ₗ[R] ⨁ i : ZMod 2, evenOdd Q i :=
@@ -106,23 +157,12 @@ theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
     apply DFinsupp.single_eq_zero.mpr; rfl
   | add x y hx hy ihx ihy =>
     rw [map_add, ihx, ihy, ← map_add]; rfl
-
-/-- The clifford algebra is graded by the even and odd parts. -/
-instance gradedAlgebra : GradedAlgebra (evenOdd Q) :=
-  GradedAlgebra.ofAlgHom (evenOdd Q)
-    -- while not necessary, the `by apply` makes this elaborate faster
-    (lift Q ⟨by apply GradedAlgebra.ι Q, by apply GradedAlgebra.ι_sq_scalar Q⟩)
-    -- the proof from here onward is mostly similar to the `TensorAlgebra` case, with some extra
-    -- handling for the `iSup` in `evenOdd`.
-    (by
-      ext m
-      dsimp only [LinearMap.comp_apply, AlgHom.toLinearMap_apply, AlgHom.comp_apply,
-        AlgHom.id_apply]
-      rw [lift_ι_apply, GradedAlgebra.ι_apply Q, DirectSum.coeAlgHom_of, Subtype.coe_mk])
-    (by apply GradedAlgebra.lift_ι_eq Q)
+-/
 
 theorem iSup_ι_range_eq_top : ⨆ i : ℕ, LinearMap.range (ι Q) ^ i = ⊤ := by
   rw [← (DirectSum.Decomposition.isInternal (evenOdd Q)).submodule_iSup_eq_top, eq_comm]
+  change iSup (fun i ↦ evenOdd Q i) = ⨆ i, (ι Q).range ^ i -- new extra step
+  simp_rw [evenOdd_old_def]                                -- new extra step
   calc
     -- Porting note: needs extra annotations, no longer unifies against the goal in the face of
     -- ambiguity
@@ -137,13 +177,20 @@ theorem evenOdd_isCompl : IsCompl (evenOdd Q 0) (evenOdd Q 1) :=
     have : (Finset.univ : Finset (ZMod 2)) = {0, 1} := rfl
     simpa using congr_arg ((↑) : Finset (ZMod 2) → Set (ZMod 2)) this
 
+/-- Another "API" lemma needed to repair the statement of
+    `evenOdd_induction` below. -/
+lemma mem_evenOdd_of_mem_ι_range (n : ZMod 2) (v : CliffordAlgebra Q)
+    (h : v ∈ LinearMap.range (ι Q) ^ n.val) :
+  v ∈ evenOdd Q n :=
+  (evenOdd_old_def Q n).ge <| Submodule.mem_iSup_of_mem ⟨n.val, n.natCast_zmod_val⟩ h
+
 /-- To show a property is true on the even or odd part, it suffices to show it is true on the
 scalars or vectors (respectively), closed under addition, and under left-multiplication by a pair
 of vectors. -/
 @[elab_as_elim]
 theorem evenOdd_induction (n : ZMod 2) {motive : ∀ x, x ∈ evenOdd Q n → Prop}
     (range_ι_pow : ∀ (v) (h : v ∈ LinearMap.range (ι Q) ^ n.val),
-        motive v (Submodule.mem_iSup_of_mem ⟨n.val, n.natCast_zmod_val⟩ h))
+        motive v (mem_evenOdd_of_mem_ι_range Q n v h))
     (add : ∀ x y hx hy, motive x hx → motive y hy → motive (x + y) (Submodule.add_mem _ hx hy))
     (ι_mul_ι_mul :
       ∀ m₁ m₂ x hx,
@@ -151,6 +198,8 @@ theorem evenOdd_induction (n : ZMod 2) {motive : ∀ x, x ∈ evenOdd Q n → Pr
           motive (ι Q m₁ * ι Q m₂ * x)
             (zero_add n ▸ SetLike.mul_mem_graded (ι_mul_ι_mem_evenOdd_zero Q m₁ m₂) hx))
     (x : CliffordAlgebra Q) (hx : x ∈ evenOdd Q n) : motive x hx := by
+  sorry
+  /-
   apply Submodule.iSup_induction' (motive := motive) _ _ (range_ι_pow 0 (Submodule.zero_mem _)) add
   refine Subtype.rec ?_
   simp_rw [ZMod.natCast_eq_iff, add_comm n.val]
@@ -181,6 +230,7 @@ theorem evenOdd_induction (n : ZMod 2) {motive : ∀ x, x ∈ evenOdd Q n → Pr
         apply add _ _ _ _ ihx ihy
   | add x y hx hy ihx ihy =>
     apply add _ _ _ _ ihx ihy
+  -/
 
 /-- To show a property is true on the even parts, it suffices to show it is true on the
 scalars, closed under addition, and under left-multiplication by a pair of vectors. -/

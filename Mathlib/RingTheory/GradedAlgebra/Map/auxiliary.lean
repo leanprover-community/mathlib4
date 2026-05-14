@@ -1,8 +1,12 @@
-import Mathlib.Algebra.Ring.Submonoid.Pointwise
-import Mathlib.Algebra.DirectSum.Basic
-import Mathlib.Algebra.Group.Subgroup.Pointwise
-import Mathlib.Algebra.Ring.Submonoid.Pointwise
-import Mathlib.Order.CompletePartialOrder
+module
+
+public import Mathlib.Algebra.Ring.Submonoid.Pointwise
+public import Mathlib.Algebra.DirectSum.Basic
+public import Mathlib.Algebra.Group.Subgroup.Pointwise
+public import Mathlib.Algebra.Ring.Submonoid.Pointwise
+public import Mathlib.Order.CompletePartialOrder
+
+@[expose] public section
 
 open Pointwise in
 /-- A lemma that exists for `Submodule`s in Mathlib but not for `AddSubmonoid`s: -/

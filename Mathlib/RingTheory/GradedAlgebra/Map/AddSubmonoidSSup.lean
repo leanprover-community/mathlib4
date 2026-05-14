@@ -1,6 +1,9 @@
-import Mathlib.Algebra.Module.Submodule.Lattice
-import Mathlib.RingTheory.GradedAlgebra.Map.auxiliary
+module
 
+public import Mathlib.Algebra.Module.Submodule.Lattice
+public import Mathlib.RingTheory.GradedAlgebra.Map.auxiliary
+
+@[expose] public section
 /-
 This file defines a type class assumption `AddSubmonoidSSup σ M`, which asserts that the `sSup` in
 some `SetLike` structure `σ` of `AddSubmonoid`s of some `AddCommMonoid` `M` is just the `sSup` of
