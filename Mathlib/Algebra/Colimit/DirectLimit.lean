@@ -1025,5 +1025,4 @@ theorem hom_ext {g₁ g₂ : DirectLimit G f →⋆ₐ[R] P}
 
 end StarAlgebra
 
-
 end DirectLimit
