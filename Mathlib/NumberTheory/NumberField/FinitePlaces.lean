@@ -3,8 +3,8 @@ Copyright (c) 2024 Fabrizio Barroero. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fabrizio Barroero
 -/
-module
+module -- shake: keep-all
 
-public import Mathlib.NumberTheory.NumberField.Completion.FinitePlace -- shake: keep-all
+public import Mathlib.NumberTheory.NumberField.Completion.FinitePlace
 
 deprecated_module (since := "2026-03-09")

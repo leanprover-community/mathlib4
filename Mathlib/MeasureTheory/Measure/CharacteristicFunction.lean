@@ -1,7 +1,7 @@
-module
+module -- shake: keep-all
 
 
-public import Mathlib.Analysis.Fourier.BoundedContinuousFunctionChar -- shake: keep-all
+public import Mathlib.Analysis.Fourier.BoundedContinuousFunctionChar
 public import Mathlib.Analysis.Fourier.FourierTransform
 public import Mathlib.Analysis.InnerProductSpace.Dual
 public import Mathlib.Analysis.InnerProductSpace.ProdL2
