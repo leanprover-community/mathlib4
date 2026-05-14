@@ -63,12 +63,12 @@ lemma IsSeparated.subset (hst : s ⊆ t) (hs : IsSeparated ε t) : IsSeparated �
 
 lemma isSeparated_insert :
     IsSeparated ε (insert x s) ↔ IsSeparated ε s ∧ ∀ y ∈ s, x ≠ y → ε < edist x y :=
-  have : @Std.Symm X (ε < edist · ·) := by simp [symm_def, edist_comm]
+  have : Std.Symm (α := X) (ε < edist · ·) := by simp [symm_def, edist_comm]
   pairwise_insert_of_symm
 
 lemma isSeparated_insert_of_notMem (hx : x ∉ s) :
     IsSeparated ε (insert x s) ↔ IsSeparated ε s ∧ ∀ y ∈ s, ε < edist x y :=
-  have : @Std.Symm X (ε < edist · ·) := by simp [symm_def, edist_comm]
+  have : Std.Symm (α := X) (ε < edist · ·) := by simp [symm_def, edist_comm]
   pairwise_insert_of_symm_of_notMem hx
 
 protected lemma IsSeparated.insert (hs : IsSeparated ε s) (h : ∀ y ∈ s, x ≠ y → ε < edist x y) :

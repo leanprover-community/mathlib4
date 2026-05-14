@@ -113,7 +113,7 @@ instance eq_isEquiv (α : Sort*) : IsEquiv α (· = ·) where
   trans := @Eq.trans _
   refl := Eq.refl
 
-instance (α : Sort*) : @Std.Symm α Ne where
+instance (α : Sort*) : Std.Symm (α := α) Ne where
   symm _ _ := Ne.symm
 
 /-- `Iff` is an equivalence relation. -/
