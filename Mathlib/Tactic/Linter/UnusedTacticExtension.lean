@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 
-module
+module -- shake: keep-all
 
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
