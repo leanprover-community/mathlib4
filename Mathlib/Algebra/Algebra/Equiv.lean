@@ -329,8 +329,8 @@ theorem mk_coe' (e : A ≃ₛₐ[φ] B) (f h₁ h₂ h₃ h₄ h₅) :
 
 @[simp]
 theorem symm_mk (e : A ≃ B) (h₁ h₂ h₃) : dsimp%
-    (mk e h₁ h₂ h₃ : A ≃ₐ[φ] B).symm =
-      { (mk e h₁ h₂ h₃ : A ≃ₐ[φ] B).symm with
+    (mk e h₁ h₂ h₃ : A ≃ₛₐ[φ] B).symm =
+      { (mk e h₁ h₂ h₃ : A ≃ₛₐ[φ] B).symm with
         toEquiv := e.symm } :=
   rfl
 
