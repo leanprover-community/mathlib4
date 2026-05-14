@@ -144,7 +144,7 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict (u : 
     (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E))
     [codim_A : FiniteDimensional 𝕜 (E ⧸ A)] :
     (IsStrictMap u ∧ IsClosed (range u)) ↔
-      (IsStrictMap (restrict A u) ∧ IsClosed (u '' A)) := by
+      (IsStrictMap (Set.restrict A u) ∧ IsClosed (u '' A)) := by
   set N : Submodule 𝕜 E := A ⊓ u.ker
   set π : E →L[𝕜] E ⧸ N := N.mkQL
   set v : E ⧸ N →L[𝕜] F := N.liftQL u inf_le_right
@@ -163,11 +163,11 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict (u : 
     let φ : (N.mkQL ⁻¹' B) ≃ₜ A := .setCongr congr(SetLike.coe $comap_B)
     exact N.isOpenQuotientMap_mkQL.restrictPreimage B |>.comp
       φ.symm.isOpenQuotientMap
-  have v_comp_π'_eq_u : restrict B v ∘ π' = restrict A u := rfl
+  have v_comp_π'_eq_u : Set.restrict B v ∘ π' = Set.restrict A u := rfl
   have v_ker : Disjoint v.ker B := by
     simp [disjoint_iff, v, B, toLinearMap_liftQL, ker_liftQ,
       map_inf_eq_map_inf_comap, comap_map_mkQ, N, inf_comm]
-  have v_restr_inj : Injective (restrict B v) :=
+  have v_restr_inj : Injective (Set.restrict B v) :=
     injOn_iff_injective.mp <| LinearMap.injOn_of_disjoint_ker subset_rfl v_ker.symm
   have range_eq : range v = range u := range_quot_lift _
   have image_eq : v '' B = u '' A := by simp [B, ← v_comp_π_eq_u, π, ← image_comp]
