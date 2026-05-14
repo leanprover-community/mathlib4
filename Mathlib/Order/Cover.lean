@@ -448,10 +448,6 @@ theorem Set.Ioi_eq_singleton_iff : Ioi a = {b} ↔ IsTop b ∧ a ⋖ b where
   mpr := fun ⟨hb, hab⟩ ↦ by
     cases b, hb using IsTop.rec; rwa [← Ioc_top, Ioc_eq_singleton_right_iff]
 
-@[to_dual]
-lemma Set.Ioi_eq_singleton_top_iff [OrderTop α] : Ioi a = {⊤} ↔ a ⋖ ⊤ := by
-  simp [Ioi_eq_singleton_iff]
-
 @[to_dual unique_right]
 theorem CovBy.unique_left (ha : a ⋖ c) (hb : b ⋖ c) : a = b :=
   (hb.le_of_lt ha.lt).antisymm <| ha.le_of_lt hb.lt
