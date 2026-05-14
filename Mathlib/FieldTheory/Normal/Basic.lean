@@ -5,10 +5,34 @@ Authors: Kenny Lau, Thomas Browning, Patrick Lutz
 -/
 module
 
-public import Mathlib.FieldTheory.Extension
-public import Mathlib.FieldTheory.Minpoly.Finite
 public import Mathlib.FieldTheory.SplittingField.Construction
 public import Mathlib.GroupTheory.Solvable
+public import Mathlib.FieldTheory.Normal.Defs
+public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Polynomial.Eval.Coeff
+import Mathlib.Algebra.Polynomial.Eval.Degree
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.FieldTheory.Extension
+import Mathlib.FieldTheory.Finiteness
+import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
+import Mathlib.FieldTheory.IntermediateField.Algebraic
+import Mathlib.FieldTheory.Minpoly.Finite
+import Mathlib.LinearAlgebra.Dual.Lemmas
+import Mathlib.RingTheory.Adjoin.Field
+import Mathlib.RingTheory.Noetherian.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
 
 /-!
 # Normal field extensions

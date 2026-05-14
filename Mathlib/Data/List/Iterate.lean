@@ -5,8 +5,15 @@ Authors: Miyahara Kō
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Data.List.Defs
+public import Aesop
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.ToAdditive
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # iterate

@@ -7,6 +7,8 @@ module -- shake: keep-all
 
 public import Mathlib.Algebra.Group.Action.Defs  -- shake: keep (metaprogram output dependency)
 public import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-! # The `noncomm_ring` tactic
 

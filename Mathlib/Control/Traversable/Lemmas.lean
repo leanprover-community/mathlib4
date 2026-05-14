@@ -5,10 +5,11 @@ Authors: Simon Hudon
 -/
 module
 
-public import Mathlib.Control.Applicative
 public import Mathlib.Control.Traversable.Basic
 
 import Mathlib.Tactic.Attr.Register
+public import Mathlib.Tactic.ToAdditive
+import Mathlib.Control.Applicative
 
 /-!
 # Traversing collections

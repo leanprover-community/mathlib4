@@ -6,6 +6,9 @@ Authors: Jeremy Avigad, Leonardo de Moura
 module
 
 public import Mathlib.Data.Set.Basic
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Util.CompileInductive
 
 /-!
 # Theorems about the `Disjoint` relation on `Set`.

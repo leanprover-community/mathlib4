@@ -6,6 +6,10 @@ Authors: Kim Morrison
 module -- shake: keep-all
 
 public import Mathlib.CategoryTheory.Category.Basic  -- shake: keep (tactic output dependency)
+public import Mathlib.Tactic.Core
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # The `slice` tactic

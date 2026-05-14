@@ -5,8 +5,12 @@ Authors: Matteo Cipollina
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Combinatorics.Quiver.Path
+public import Aesop
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Path Decomposition and Boundary Crossing

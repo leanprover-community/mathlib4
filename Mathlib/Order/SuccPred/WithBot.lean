@@ -6,6 +6,10 @@ Authors: Yaël Dillies, Andrew Yang
 module
 
 public import Mathlib.Order.SuccPred.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Successor function on `WithBot`

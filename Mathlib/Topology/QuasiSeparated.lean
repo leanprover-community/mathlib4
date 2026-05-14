@@ -5,8 +5,13 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Topology.Compactness.Bases
 public import Mathlib.Topology.NoetherianSpace
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Compactness.Bases
 
 /-!
 # Quasi-separated spaces

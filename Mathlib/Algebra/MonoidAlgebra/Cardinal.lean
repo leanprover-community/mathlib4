@@ -6,7 +6,13 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.MonoidAlgebra.Defs
-public import Mathlib.SetTheory.Cardinal.Finsupp
+public import Mathlib.SetTheory.Cardinal.Order
+import Mathlib.Data.Finset.Attr
+import Mathlib.SetTheory.Cardinal.Finsupp
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Cardinality of monoid algebras

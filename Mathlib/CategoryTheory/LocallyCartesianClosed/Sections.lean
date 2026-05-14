@@ -8,6 +8,11 @@ module
 public import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullbacksAlong
 public import Mathlib.CategoryTheory.LocallyCartesianClosed.Over
 public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # The section functor as a right adjoint to the toOver functor

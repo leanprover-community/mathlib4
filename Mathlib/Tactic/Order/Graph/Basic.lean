@@ -7,6 +7,8 @@ module -- shake: keep-all
 
 public import Mathlib.Tactic.Order.CollectFacts
 public meta import Mathlib.Util.AtomM
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Graphs for the `order` tactic

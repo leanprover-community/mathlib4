@@ -8,6 +8,13 @@ module
 public import Mathlib.Topology.Algebra.Constructions
 public import Mathlib.Topology.ContinuousMap.Defs
 public import Mathlib.Algebra.Star.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Order.Filter.Tendsto
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Continuous
+import Mathlib.Topology.ContinuousOn
 
 /-!
 # Continuity of `star`

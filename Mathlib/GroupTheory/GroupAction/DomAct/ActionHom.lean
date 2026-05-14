@@ -7,6 +7,8 @@ module
 
 public import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 public import Mathlib.GroupTheory.GroupAction.Hom
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 /-!
 # Action of `Mᵈᵐᵃ` on `α →[N] β` and `A →+[N] B`
 

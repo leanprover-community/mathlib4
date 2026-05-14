@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Algebra.Order.Monoid.Units
+import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # The units of an ordered commutative monoid form an ordered commutative group

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Algebra.Group.Opposite
+import Mathlib.Util.CompileInductive
 
 /-!
 # Scalar actions on and by `Mᵐᵒᵖ`

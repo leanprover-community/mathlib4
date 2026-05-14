@@ -7,6 +7,11 @@ module -- shake: keep-all
 
 public import Mathlib.Data.Int.Cast.Lemmas
 public import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Algebra.Group.Invertible.Basic
+import Mathlib.Algebra.Ring.Commute
+import Mathlib.Data.Int.Init
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 ## `norm_num` plugin for `^`.

@@ -6,6 +6,11 @@ Authors: Yaël Dillies, David Loeffler
 module
 
 public import Mathlib.Algebra.Group.Subgroup.Ker
+import Mathlib.Data.Set.Prod
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Vertical line test for group homs

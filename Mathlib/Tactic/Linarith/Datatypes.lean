@@ -8,6 +8,10 @@ module -- shake: keep-all
 public import Mathlib.Tactic.Linarith.Lemmas
 public import Mathlib.Tactic.NormNum.Basic
 public import Mathlib.Util.SynthesizeUsing
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Datatypes for `linarith`

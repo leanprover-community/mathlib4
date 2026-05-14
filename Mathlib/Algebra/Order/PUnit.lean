@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Algebra.Group.PUnit
 public import Mathlib.Algebra.Order.AddGroupWithTop
+public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Subsingleton
+import Mathlib.Util.CompileInductive
 /-!
 # Instances on PUnit
 

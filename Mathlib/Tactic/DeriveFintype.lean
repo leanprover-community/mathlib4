@@ -9,6 +9,10 @@ public import Mathlib.Data.Fintype.OfMap  -- shake: keep (metaprogram output dep
 public import Mathlib.Tactic.ProxyType
 public meta import Mathlib.Tactic.ToAdditive
 public meta import Mathlib.Tactic.ToDual
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # The `Fintype` derive handler

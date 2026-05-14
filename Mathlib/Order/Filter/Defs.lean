@@ -5,10 +5,15 @@ Authors: Johannes Hölzl, Jeremy Avigad
 -/
 module
 
-public import Mathlib.Data.Set.Insert
 public import Mathlib.Order.SetNotation
-public import Mathlib.Order.BooleanAlgebra.Set
 public import Mathlib.Order.Bounds.Defs
+public import Aesop
+public import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Insert
+import Mathlib.Order.BooleanAlgebra.Set
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Util.CompileInductive
 
 /-!
 # Definitions about filters

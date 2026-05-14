@@ -6,6 +6,19 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Topology.Algebra.Module.LinearMap
+public import Mathlib.Algebra.Ring.InjSurj
+public import Mathlib.Topology.UniformSpace.Separation
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.FastInstance
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Maps.OpenQuotient
 
 /-!
 # Algebraic operations on `SeparationQuotient`

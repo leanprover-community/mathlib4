@@ -6,6 +6,11 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Yoneda embedding of `CommMon C`

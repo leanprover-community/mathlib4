@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Algebra.Star.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Morphisms of star rings

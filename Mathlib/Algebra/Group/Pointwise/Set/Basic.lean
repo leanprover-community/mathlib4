@@ -5,10 +5,26 @@ Authors: Johan Commelin, Floris van Doorn, Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Group.Equiv.Basic
-public import Mathlib.Algebra.Group.Prod
-public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-public import Mathlib.Data.Set.NAry
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Algebra.Group.Units.Defs
+public import Mathlib.Algebra.Notation.Prod
+public import Mathlib.Algebra.Opposites
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
+public import Mathlib.Data.Set.Subsingleton
+public import Mathlib.Order.BooleanAlgebra.Set
+import Mathlib.Algebra.Group.Equiv.Basic
+import Mathlib.Algebra.Group.Prod
+import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.NAry
+import Mathlib.Tactic.Contrapose
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.SimpRw
+import Mathlib.Util.CompileInductive
 
 /-!
 # Pointwise operations of sets

@@ -11,7 +11,15 @@ public import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
 public import Mathlib.CategoryTheory.Monoidal.Comon_
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.RingTheory.Coalgebra.TensorProduct
-public import Mathlib.Tactic.SuppressCompilation
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # The category equivalence between `R`-coalgebras and comonoid objects in `R-Mod`

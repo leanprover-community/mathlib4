@@ -10,6 +10,11 @@ public import Mathlib.Order.Filter.Basic
 public meta import Mathlib.Tactic.ToAdditive
 public meta import Mathlib.Tactic.ToDual
 public import Mathlib.Tactic.Basic
+public import Mathlib.Tactic.Core
+import Mathlib.Tactic.CongrExclamation
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Tauto
+import Mathlib.Util.CompileInductive
 
 /-!
 # The `peel` tactic

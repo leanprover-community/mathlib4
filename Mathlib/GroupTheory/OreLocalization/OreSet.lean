@@ -6,6 +6,9 @@ Authors: Jakob von Raumer, Kevin Klinge
 module
 
 public import Mathlib.Algebra.Group.Submonoid.Defs
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 

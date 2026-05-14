@@ -5,10 +5,23 @@ Authors: Jiedong Jiang
 -/
 module
 
-public import Mathlib.FieldTheory.Extension
-public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 public import Mathlib.FieldTheory.Minpoly.Basic
 public import Mathlib.FieldTheory.Normal.Defs
+public import Mathlib.FieldTheory.Separable
+import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.FieldTheory.Extension
+import Mathlib.FieldTheory.Minpoly.Field
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
 
 /-!
 # Conjugate roots

@@ -6,8 +6,28 @@ Authors: Christian Merten
 module
 
 public import Mathlib.RingTheory.RingHom.Etale
-public import Mathlib.RingTheory.Finiteness.Descent
-public import Mathlib.RingTheory.Extension.Cotangent.BaseChange
+public import Mathlib.RingTheory.RingHom.FaithfullyFlat
+import Mathlib.Algebra.Order.AbsoluteValue.Basic
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Combinatorics.Matroid.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.RingTheory.Extension.Cotangent.BaseChange
+import Mathlib.RingTheory.FiniteStability
+import Mathlib.RingTheory.Finiteness.Descent
+import Mathlib.RingTheory.Flat.EquationalCriterion
+import Mathlib.RingTheory.Kaehler.TensorProduct
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
 
 /-!
 # Etale descends along faithfully flat ring maps

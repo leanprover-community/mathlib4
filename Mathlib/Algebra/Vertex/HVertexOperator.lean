@@ -6,6 +6,12 @@ Authors: Scott Carnahan
 module
 
 public import Mathlib.RingTheory.HahnSeries.Multiplication
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Vertex operators

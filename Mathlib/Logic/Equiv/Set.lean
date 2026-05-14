@@ -7,6 +7,14 @@ module
 
 public import Mathlib.Data.Set.Function
 public import Mathlib.Logic.Equiv.Defs
+public import Batteries.Tactic.Init
+public import Mathlib.Data.Set.Image
+public import Mathlib.Data.Set.Restrict
+public import Mathlib.Logic.IsEmpty.Basic
+import Mathlib.Data.Prod.Basic
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Equivalences and sets

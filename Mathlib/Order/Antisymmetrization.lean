@@ -7,7 +7,13 @@ module
 
 public import Mathlib.Logic.Relation
 public import Mathlib.Order.Hom.Basic
-public import Mathlib.Tactic.Tauto
+import Mathlib.Tactic.Convert
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.Tauto
+import Mathlib.Util.CompileInductive
 
 /-!
 # Turning a preorder into a partial order

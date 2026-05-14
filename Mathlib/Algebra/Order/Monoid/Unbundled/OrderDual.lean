@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Group.Synonym
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
+import Mathlib.Util.CompileInductive
 
 /-! # Unbundled ordered monoid structures on the order dual. -/
 

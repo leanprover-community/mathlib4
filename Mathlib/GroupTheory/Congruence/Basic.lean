@@ -8,6 +8,10 @@ module
 public import Mathlib.Algebra.Group.Submonoid.Operations
 public import Mathlib.Data.Setoid.Basic
 public import Mathlib.GroupTheory.Congruence.Hom
+import Mathlib.Tactic.Coe
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Congruence relations

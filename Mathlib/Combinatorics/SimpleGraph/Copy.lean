@@ -5,8 +5,16 @@ Authors: Yaël Dillies, Mitchell Horner
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Combinatorics.SimpleGraph.Subgraph
+public import Mathlib.Tactic.SimpRw
+import Batteries.Tactic.Congr
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Combinatorics.SimpleGraph.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Containment of graphs

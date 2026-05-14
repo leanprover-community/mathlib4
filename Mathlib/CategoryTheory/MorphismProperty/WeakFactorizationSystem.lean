@@ -5,7 +5,14 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.MorphismProperty.RetractArgument
+public import Mathlib.CategoryTheory.MorphismProperty.Factorization
+public import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.MorphismProperty.RetractArgument
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Weak factorization systems

@@ -10,8 +10,24 @@ public import Mathlib.RingTheory.Ideal.Cotangent
 public import Mathlib.RingTheory.IsTensorProduct
 public import Mathlib.RingTheory.EssentialFiniteness
 public import Mathlib.Algebra.Exact
-public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-public import Mathlib.Tactic.SuppressCompilation
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Group.Submonoid.BigOperators
+import Mathlib.Algebra.Module.BigOperators
+import Mathlib.Algebra.Order.AbsoluteValue.Basic
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+import Mathlib.Order.BoundedOrder.Lattice
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # The module of Kähler differentials

@@ -6,6 +6,11 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Topology.OpenPartialHomeomorph.IsImage
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 /-!
 # Partial homeomorphisms: composition
 

@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Data.Sym.Sym2
 public import Mathlib.Logic.Relation
+import Mathlib.Data.Finset.Attr
+import Mathlib.Order.WellFounded
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Game addition relation

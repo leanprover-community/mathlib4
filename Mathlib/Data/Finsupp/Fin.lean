@@ -6,6 +6,11 @@ Authors: Ivan Sadofschi Costa
 module
 
 public import Mathlib.Data.Finsupp.Single
+public import Mathlib.Data.Fin.Tuple.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # `cons` and `tail` for maps `Fin n →₀ M`

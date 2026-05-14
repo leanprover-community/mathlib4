@@ -7,9 +7,18 @@ module
 
 public import Mathlib.Algebra.Group.PUnit
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-public import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 public import Mathlib.CategoryTheory.Monoidal.Discrete
 public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
+import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
+import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.CategoryTheory.Slice
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 
 /-!

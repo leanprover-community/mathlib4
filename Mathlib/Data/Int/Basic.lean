@@ -6,11 +6,15 @@ Authors: Jeremy Avigad
 module
 
 public import Mathlib.Data.Int.Init
-public import Mathlib.Data.Nat.Basic
-public import Mathlib.Logic.Function.Basic
-public import Mathlib.Tactic.Conv
-public import Mathlib.Tactic.Convert
 public import Mathlib.Tactic.OfNat
+public import Mathlib.Logic.Nontrivial.Defs
+public import Mathlib.Tactic.ToDual
+import Mathlib.Data.Nat.Basic
+import Mathlib.Logic.Function.Basic
+import Mathlib.Tactic.Conv
+import Mathlib.Tactic.Convert
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.SplitIfs
 
 /-!
 # Basic operations on the integers

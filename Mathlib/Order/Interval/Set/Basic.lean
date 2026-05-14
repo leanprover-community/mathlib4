@@ -7,8 +7,15 @@ module
 
 public import Mathlib.Algebra.Order.IsBotOne
 public import Mathlib.Data.Set.Subsingleton
-public import Mathlib.Order.BooleanAlgebra.Set
 public import Mathlib.Order.Interval.Set.Defs
+import Batteries.Tactic.Init
+import Mathlib.Data.Prod.Basic
+import Mathlib.Data.Set.Insert
+import Mathlib.Order.BooleanAlgebra.Set
+import Mathlib.Tactic.Contrapose
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Util.CompileInductive
 
 /-!
 # Intervals

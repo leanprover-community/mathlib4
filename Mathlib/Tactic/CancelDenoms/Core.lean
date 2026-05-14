@@ -13,6 +13,12 @@ public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Data.Tree.Basic
 public import Mathlib.Tactic.NormNum.Core
 public import Mathlib.Util.SynthesizeUsing
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+import Mathlib.Algebra.Ring.Basic
+meta import Mathlib.Lean.Meta
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # A tactic for canceling numeric denominators

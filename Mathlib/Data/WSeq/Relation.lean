@@ -7,6 +7,13 @@ module
 
 public import Mathlib.Data.WSeq.Basic
 public import Mathlib.Logic.Relation
+public meta import Mathlib.Tactic.ToAdditive
+public meta import Mathlib.Tactic.ToDual
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Relations between and equivalence of weak sequences

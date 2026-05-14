@@ -6,9 +6,18 @@ Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Floris van 
 module
 
 public import Mathlib.Order.Antisymmetrization
-public import Mathlib.Order.Hom.WithTopBot
-public import Mathlib.Order.Interval.Set.OrdConnected
-public import Mathlib.Order.Interval.Set.WithBotTop
+public import Mathlib.Order.Interval.Set.Defs
+public import Mathlib.Order.WellFounded
+public import Mathlib.Order.WithBot
+import Mathlib.Order.Hom.WithTopBot
+import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Order.Interval.Set.LinearOrder
+import Mathlib.Order.Interval.Set.OrdConnected
+import Mathlib.Order.Interval.Set.WithBotTop
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # The covering relation

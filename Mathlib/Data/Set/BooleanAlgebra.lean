@@ -6,6 +6,8 @@ Authors: Jeremy Avigad, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.Order.CompleteBooleanAlgebra
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Sets are a complete atomic Boolean algebra.

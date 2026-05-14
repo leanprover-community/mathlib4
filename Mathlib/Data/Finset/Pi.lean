@@ -9,6 +9,11 @@ public import Mathlib.Data.Finset.Card
 public import Mathlib.Data.Finset.Union
 public import Mathlib.Data.Multiset.Pi
 public import Mathlib.Logic.Function.DependsOn
+public import Mathlib.Data.Finset.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # The Cartesian product of finsets

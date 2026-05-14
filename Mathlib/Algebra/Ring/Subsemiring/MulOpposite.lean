@@ -8,6 +8,11 @@ module
 public import Mathlib.Algebra.Group.Submonoid.MulOpposite
 public import Mathlib.Algebra.Ring.Subsemiring.Basic
 public import Mathlib.Algebra.Ring.Opposite
+import Batteries.Tactic.Congr
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 

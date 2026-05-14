@@ -7,6 +7,8 @@ module -- shake: keep-all
 
 public meta import Mathlib.Tactic.Order.Graph.Basic
 public import Mathlib.Tactic.Order.Graph.Basic
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Tarjan's Algorithm

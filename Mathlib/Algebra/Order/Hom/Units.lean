@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.Group.Units.Equiv
 public import Mathlib.Algebra.Order.Hom.Monoid
 public import Mathlib.Algebra.Order.Monoid.Units
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-! # Isomorphism of ordered monoids descends to units
 -/

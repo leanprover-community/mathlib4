@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.Group.Action.Basic
 public import Mathlib.Algebra.Group.Action.Pi
 public import Mathlib.Algebra.Group.Opposite
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Group actions on embeddings

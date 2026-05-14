@@ -8,7 +8,25 @@ module
 public import Mathlib.Data.Rel
 public import Mathlib.Order.Filter.SmallSets
 public import Mathlib.Topology.UniformSpace.Defs
-public import Mathlib.Topology.ContinuousOn
+public import Mathlib.Algebra.Opposites
+public import Mathlib.Topology.Constructions
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Data.Set.Prod
+import Mathlib.Order.Filter.Lift
+import Mathlib.Order.Filter.Map
+import Mathlib.Order.Filter.Prod
+import Mathlib.Order.Filter.Tendsto
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Closure
+import Mathlib.Topology.ClusterPt
+import Mathlib.Topology.Continuous
+import Mathlib.Topology.ContinuousOn
+import Mathlib.Topology.Neighborhoods
+import Mathlib.Topology.NhdsSet
 
 /-!
 # Basic results on uniform spaces

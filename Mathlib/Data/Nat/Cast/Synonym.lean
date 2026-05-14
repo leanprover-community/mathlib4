@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Nat.Cast.Defs
 public import Mathlib.Order.Lex
+import Mathlib.Util.CompileInductive
 
 /-!
 # Cast of natural numbers (additional theorems)

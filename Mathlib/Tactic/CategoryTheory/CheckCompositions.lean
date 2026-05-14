@@ -8,6 +8,9 @@ module -- shake: keep-all
 public import Aesop
 public import Mathlib.CategoryTheory.Category.Basic
 public meta import Mathlib.Tactic.ToDual
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 The `check_compositions` tactic,

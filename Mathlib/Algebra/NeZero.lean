@@ -5,8 +5,8 @@ Authors: Eric Rodriguez
 -/
 module
 
-public import Mathlib.Logic.Basic
 public import Mathlib.Order.Defs.PartialOrder
+import Mathlib.Logic.Basic
 
 /-!
 # `NeZero` typeclass

@@ -8,6 +8,11 @@ module
 public import Mathlib.Algebra.Group.Commutator
 public import Mathlib.GroupTheory.Subgroup.Centralizer
 public import Mathlib.GroupTheory.QuotientGroup.Defs
+import Mathlib.Order.BoundedOrder.Lattice
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Commutators of Subgroups

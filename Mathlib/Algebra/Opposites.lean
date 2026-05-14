@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Logic.Equiv.Defs
 public import Batteries.Tactic.Lint.Simp
+import Mathlib.Tactic.SimpRw
+import Mathlib.Util.CompileInductive
 
 /-!
 # Multiplicative opposite and algebraic operations on it

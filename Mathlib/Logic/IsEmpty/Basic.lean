@@ -8,6 +8,8 @@ module
 public import Mathlib.Logic.Function.Basic
 public import Mathlib.Logic.IsEmpty.Defs
 public import Mathlib.Logic.Relator
+import Mathlib.Logic.Basic
+import Mathlib.Tactic.Push.Attr
 
 /-!
 In this file we prove some basic properties about the typeclass `IsEmpty`.

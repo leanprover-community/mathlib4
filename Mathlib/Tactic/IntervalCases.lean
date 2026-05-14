@@ -8,6 +8,12 @@ module -- shake: keep-all
 public meta import Mathlib.Control.Basic
 public import Mathlib.Data.Finset.Attr
 public import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Case bash on variables in finite intervals

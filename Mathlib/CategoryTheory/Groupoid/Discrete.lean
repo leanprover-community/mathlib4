@@ -7,6 +7,11 @@ module
 
 public import Mathlib.CategoryTheory.Groupoid
 public import Mathlib.CategoryTheory.Discrete.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 /-!
 
 # Discrete categories are groupoids

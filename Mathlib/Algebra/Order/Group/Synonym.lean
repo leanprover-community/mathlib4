@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Order.OrderDual
 public import Mathlib.Order.Lex
+import Mathlib.Util.CompileInductive
 
 /-!
 # Group structure on the order type synonyms

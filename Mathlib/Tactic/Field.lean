@@ -7,6 +7,10 @@ module -- shake: keep-all
 
 public import Mathlib.Tactic.FieldSimp
 public import Mathlib.Tactic.Ring.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 
 /-! # A tactic for proving algebraic goals in a field

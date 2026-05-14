@@ -5,9 +5,13 @@ Authors: Simon Hudon
 -/
 module
 
-public import Mathlib.Data.Stream.Init
 public import Mathlib.Control.Fix
 public import Mathlib.Order.OmegaCompletePartialOrder
+import Mathlib.Data.Stream.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Lawful fixed point operators

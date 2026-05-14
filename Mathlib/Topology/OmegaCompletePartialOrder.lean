@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Order.BourbakiWitt
 public import Mathlib.Topology.Order.ScottTopology
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Scott Topological Spaces

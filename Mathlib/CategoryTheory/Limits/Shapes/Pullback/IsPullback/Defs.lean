@@ -5,7 +5,16 @@ Authors: Kim Morrison, Joël Riou, Calle Sönne
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Pullbacks
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Pullbacks
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 
 /-!

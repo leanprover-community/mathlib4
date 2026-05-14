@@ -8,6 +8,10 @@ module -- shake: keep-all
 public meta import Mathlib.Util.Qq
 public meta import Mathlib.Tactic.Linarith.Datatypes
 public import Mathlib.Tactic.Linarith.Parsing
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Deriving a proof of false

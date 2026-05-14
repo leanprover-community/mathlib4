@@ -6,6 +6,8 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Algebra.Regular.SMul
+import Mathlib.Tactic.Push
+import Mathlib.Util.CompileInductive
 
 /-!
 # Results about `IsRegular` and pi types

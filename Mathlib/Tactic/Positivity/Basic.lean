@@ -15,6 +15,10 @@ public import Mathlib.Algebra.Order.Hom.Basic
 public import Mathlib.Data.NNRat.Defs
 public import Mathlib.Tactic.Positivity.Core
 public meta import Mathlib.Tactic.ToAdditive
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 ## `positivity` core extensions

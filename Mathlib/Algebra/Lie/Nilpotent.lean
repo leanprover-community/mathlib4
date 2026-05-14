@@ -8,10 +8,24 @@ module
 public import Mathlib.Algebra.Lie.Solvable
 public import Mathlib.Algebra.Lie.Quotient
 public import Mathlib.Algebra.Lie.Normalizer
-public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
-public import Mathlib.RingTheory.Artinian.Module
-public import Mathlib.RingTheory.Nilpotent.Lemmas
+import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Order.Filter.AtTopBot.Basic
+import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.Nontriviality.Core
+import Mathlib.Tactic.Peel
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Nilpotent Lie algebras

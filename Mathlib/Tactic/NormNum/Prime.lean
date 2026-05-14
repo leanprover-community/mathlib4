@@ -8,6 +8,11 @@ module -- shake: keep-all
 public import Mathlib.Data.Nat.Prime.Basic
 public meta import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Data.Nat.Sqrt
+import Mathlib.Order.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # `norm_num` extensions on natural numbers

@@ -6,6 +6,7 @@ Authors: Gabriel Ebner, Mario Carneiro
 module -- shake: keep-all
 
 public import Mathlib.Util.WithWeakNamespace
+import Mathlib.Init
 
 /-! # `scoped[NS]` syntax
 

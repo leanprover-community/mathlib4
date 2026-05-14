@@ -10,6 +10,10 @@ public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Tactic.Algebra.Lemmas
 public import Mathlib.Tactic.Ring.RingNF
 public meta import Mathlib.Tactic.Ring.RingNF
+public meta import Mathlib.Lean.Meta
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
 
 
 /-!

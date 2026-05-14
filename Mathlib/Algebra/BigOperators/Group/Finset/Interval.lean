@@ -5,9 +5,17 @@ Authors: Chris Birkbeck
 -/
 module
 
-public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.Group.EvenFunction
 public import Mathlib.Data.Int.Interval
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.CharP.Defs
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.Lattice.Lemmas
+import Mathlib.Order.Interval.Finset.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Sums/products over integer intervals

@@ -9,6 +9,8 @@ public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Group.Pi.Basic
 public import Mathlib.Algebra.Group.Units.Defs
 public import Mathlib.Util.Delaborators
+import Mathlib.Tactic.SimpRw
+import Mathlib.Util.CompileInductive
 
 /-! # Units in pi types -/
 

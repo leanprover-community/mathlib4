@@ -11,6 +11,7 @@ public import Mathlib.Data.List.TFAE  -- shake: keep (dependency of Qq output)
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Tactic.ExtendDoc
 public import Mathlib.Util.AtomM
+import Qq.Typ
 
 /-!
 # The Following Are Equivalent (TFAE)

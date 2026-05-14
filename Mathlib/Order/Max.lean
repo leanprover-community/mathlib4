@@ -6,6 +6,9 @@ Authors: Jeremy Avigad, Yury Kudryashov, Yaël Dillies
 module
 
 public import Mathlib.Order.OrderDual
+import Mathlib.Tactic.MkIffOfInductiveProp
+import Mathlib.Tactic.SimpRw
+import Mathlib.Util.CompileInductive
 
 /-!
 # Minimal/maximal and bottom/top elements

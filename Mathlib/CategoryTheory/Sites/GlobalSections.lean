@@ -6,6 +6,13 @@ Authors: Ben Eltschig
 module
 
 public import Mathlib.CategoryTheory.Sites.ConstantSheaf
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Continuity.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Global sections of sheaves

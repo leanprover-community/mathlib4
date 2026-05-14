@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.Hom.Basic
 public import Mathlib.Algebra.Group.Units.Defs
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SimpRw
+import Mathlib.Util.CompileInductive
 
 /-!
 # Units in ordered monoids

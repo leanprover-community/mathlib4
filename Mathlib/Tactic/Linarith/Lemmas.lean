@@ -10,6 +10,13 @@ public meta import Mathlib.Data.Ineq
 public import Mathlib.Data.Ineq
 public import Mathlib.Data.Nat.Cast.Order.Ring
 public meta import Mathlib.Tactic.ToAdditive
+import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Algebra.Order.Ring.Unbundled.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Lemmas for `linarith`.

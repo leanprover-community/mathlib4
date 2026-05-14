@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Order.SuccPred.Limit
 public import Mathlib.Order.UpperLower.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Definition of direct systems, inverse systems, and cardinalities in specific inverse systems

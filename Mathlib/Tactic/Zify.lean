@@ -9,6 +9,8 @@ public import Mathlib.Data.Int.Cast.Basic
 public import Mathlib.Order.Basic
 public meta import Mathlib.Tactic.ToAdditive
 public meta import Mathlib.Tactic.ToDual
+import Mathlib.Data.Nat.Basic
+import Mathlib.Tactic.Attr.Register
 
 
 /-!

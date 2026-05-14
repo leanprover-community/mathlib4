@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Algebra.Ring.Int.Defs
 public import Mathlib.Algebra.Ring.Units
-public import Mathlib.Algebra.Group.Int.Units
+import Mathlib.Algebra.Group.Int.Units
+import Mathlib.Util.CompileInductive
 
 /-!
 # Basic lemmas for `ℤˣ`.

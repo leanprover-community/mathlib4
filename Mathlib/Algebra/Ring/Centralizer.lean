@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.Group.Center
 public import Mathlib.Algebra.Ring.Defs
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Centralizers of rings

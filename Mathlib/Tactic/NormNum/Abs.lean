@@ -7,6 +7,12 @@ module -- shake: keep-all
 
 public import Mathlib.Data.Nat.Cast.Order.Ring
 public import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+import Mathlib.Data.Nat.Cast.Order.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 
 /-!

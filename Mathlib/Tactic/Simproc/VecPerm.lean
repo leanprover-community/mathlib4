@@ -7,6 +7,10 @@ module -- shake: keep-all
 
 public import Mathlib.Data.Fin.Tuple.Reflection
 public import Mathlib.Util.Qq
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 
 /-! # The vecPerm simproc

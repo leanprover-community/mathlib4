@@ -6,6 +6,9 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Order.Hom.Basic
+import Mathlib.Order.BoundedOrder.Lattice
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Bounded order homomorphisms

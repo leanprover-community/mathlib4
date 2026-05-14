@@ -7,7 +7,23 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.Data.Set.PowersetCard
-public import Mathlib.GroupTheory.SpecificGroups.Alternating.MaximalSubgroups
+public import Mathlib.Algebra.Group.Action.Pointwise.Finset
+public import Mathlib.GroupTheory.GroupAction.MultipleTransitivity
+import Mathlib.Algebra.Order.AbsoluteValue.Basic
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Order.Sub.Unbundled.Basic
+import Mathlib.Data.ENat.Lattice
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Totient
+import Mathlib.GroupTheory.GroupAction.Transitive
+import Mathlib.GroupTheory.Perm.MaximalSubgroups
+import Mathlib.GroupTheory.SpecificGroups.Alternating.MaximalSubgroups
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-! # Combinations
 

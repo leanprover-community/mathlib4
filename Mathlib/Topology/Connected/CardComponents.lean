@@ -5,9 +5,25 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.Data.Set.Card.Arithmetic
-public import Mathlib.Topology.LocalAtTarget
-public import Mathlib.Topology.Separation.Connected
+public import Mathlib.Data.Set.Card
+public import Mathlib.Topology.Connected.Clopen
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Data.Finite.Sigma
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Card.Arithmetic
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Clopen
+import Mathlib.Topology.LocalAtTarget
+import Mathlib.Topology.Separation.Connected
 
 /-!
 # Cardinality of connected components under open and closed maps

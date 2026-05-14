@@ -10,6 +10,14 @@ public import Mathlib.Algebra.Order.Invertible
 public import Mathlib.Algebra.Order.Ring.Cast
 public import Mathlib.Tactic.HaveI
 public import Mathlib.Tactic.NormNum.Core
+public import Mathlib.Tactic.GCongr
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+import Mathlib.Data.Nat.Cast.Order.Basic
+import Mathlib.Data.Nat.Cast.Order.Ring
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 ## `positivity` core functionality

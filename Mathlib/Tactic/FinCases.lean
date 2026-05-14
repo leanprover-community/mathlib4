@@ -9,6 +9,10 @@ public meta import Mathlib.Lean.Expr.Basic
 public import Mathlib.Data.Finset.Attr
 public import Mathlib.Data.Fintype.Defs
 public meta import Mathlib.Tactic.ToDual
+public import Mathlib.Tactic.Core
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # The `fin_cases` tactic.

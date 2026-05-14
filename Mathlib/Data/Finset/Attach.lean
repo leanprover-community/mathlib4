@@ -6,7 +6,10 @@ Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 module
 
 public import Mathlib.Data.Finset.Defs
-public import Mathlib.Data.Multiset.MapFold
+import Mathlib.Data.Multiset.MapFold
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Attaching a proof of membership to a finite set

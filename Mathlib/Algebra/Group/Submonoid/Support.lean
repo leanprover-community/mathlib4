@@ -9,6 +9,10 @@ public import Mathlib.Algebra.Group.Subgroup.Lattice
 
 import Mathlib.Tactic.ApplyFun
 public import Mathlib.Algebra.Group.Submonoid.Pointwise
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Supports of submonoids

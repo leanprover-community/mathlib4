@@ -10,6 +10,11 @@ public import Mathlib.CategoryTheory.Iso
 public import Mathlib.CategoryTheory.Opposites
 public import Mathlib.CategoryTheory.Types.Basic
 public import Mathlib.Data.Rel
+public import Mathlib.Tactic.TermCongr
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Basics on the category of relations

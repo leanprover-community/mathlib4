@@ -5,8 +5,14 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 public import Mathlib.Order.SuccPred.Limit
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+import Mathlib.Order.Cover
+import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 

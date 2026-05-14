@@ -7,6 +7,12 @@ module
 
 public import Mathlib.Algebra.Group.Subsemigroup.Basic
 public import Mathlib.Algebra.Opposites
+import Batteries.Tactic.Congr
+import Mathlib.Data.Set.Image
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.SimpRw
+import Mathlib.Util.CompileInductive
 
 /-!
 # Subsemigroup of opposite semigroups

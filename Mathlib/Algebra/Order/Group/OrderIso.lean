@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Units.Equiv
 public import Mathlib.Algebra.Order.Group.Unbundled.Basic
 public import Mathlib.Order.Hom.Basic
+public import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Inverse and multiplication as order isomorphisms in ordered groups

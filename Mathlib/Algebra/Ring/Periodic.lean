@@ -6,6 +6,12 @@ Authors: Benjamin Davidson
 module
 
 public import Mathlib.Algebra.Ring.NegOnePow
+import Mathlib.Algebra.Ring.Int.Parity
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Periodicity

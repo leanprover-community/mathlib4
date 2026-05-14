@@ -9,6 +9,8 @@ public import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Group.Torsion
 import Mathlib.Tactic.TermCongr
 import Mathlib.Tactic.Use
+import Mathlib.Tactic.SimpRw
+import Mathlib.Util.CompileInductive
 
 /-!
 # Equality modulo an element

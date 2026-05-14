@@ -6,6 +6,10 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Order.Disjoint
+import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SimpRw
+import Mathlib.Util.CompileInductive
 
 /-!
 

@@ -9,6 +9,9 @@ public meta import Mathlib.Lean.Expr.Rat
 public import Mathlib.Tactic.Hint
 public import Mathlib.Tactic.NormNum.Result
 public import Mathlib.Util.Qq
+public import Mathlib.Util.AtLocation
+import Mathlib.Tactic.Conv
+import Mathlib.Util.CompileInductive
 
 /-!
 ## `norm_num` core functionality

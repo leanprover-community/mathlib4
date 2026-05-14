@@ -5,8 +5,13 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Group.Submonoid.DistribMulAction
 public import Mathlib.GroupTheory.Subgroup.Center
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
+import Mathlib.Algebra.Group.Submonoid.DistribMulAction
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Actions by `Subgroup`s

@@ -5,8 +5,12 @@ Authors: Lua Viana Reis
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.OrderIso
 public import Mathlib.Order.PartialSups
+import Mathlib.Algebra.Order.Group.OrderIso
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Results about `partialSups` of functions taking values in a `Group`

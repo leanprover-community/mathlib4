@@ -6,8 +6,21 @@ Authors: Artie Khovanov
 module
 
 public import Mathlib.FieldTheory.Minpoly.Basic
-public import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
-public import Mathlib.RingTheory.FiniteType
+public import Mathlib.Algebra.Module.SpanRank
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Polynomial.Degree.Operations
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
+import Mathlib.RingTheory.FiniteType
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Nontriviality.Core
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Minimal polynomials on a finite algebra

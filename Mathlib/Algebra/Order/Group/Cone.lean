@@ -6,8 +6,12 @@ Authors: Mario Carneiro, Kim Morrison, Artie Khovanov
 module
 
 public import Mathlib.Algebra.Group.Subgroup.Defs
-public import Mathlib.Algebra.Order.Group.Unbundled.Basic
 public import Mathlib.Algebra.Order.Monoid.Submonoid
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Construct ordered groups from groups with a specified positive cone.

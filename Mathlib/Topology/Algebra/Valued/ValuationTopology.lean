@@ -5,12 +5,32 @@ Authors: Patrick Massot
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Units
 public import Mathlib.Topology.Algebra.Nonarchimedean.Bases
-public import Mathlib.Topology.Algebra.UniformFilterBasis
 public import Mathlib.RingTheory.Valuation.ValuationSubring
 
 public import Mathlib.Algebra.Order.GroupWithZero.Range
+public import Mathlib.Algebra.Order.Archimedean.Defs
+public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+public import Mathlib.Topology.UniformSpace.Cauchy
+import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Algebra.Order.Group.Units
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Algebra.UniformFilterBasis
+import Mathlib.Topology.Clopen
+import Mathlib.Topology.Neighborhoods
 
 /-!
 # The topology on a valued ring

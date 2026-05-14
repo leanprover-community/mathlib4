@@ -14,6 +14,8 @@ public import Mathlib.Tactic.Order.Graph.Tarjan
 public import Mathlib.Tactic.Order.Preprocessing
 public import Mathlib.Tactic.Order.ToInt
 public import Mathlib.Util.ElabWithoutMVars
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # `order` tactic

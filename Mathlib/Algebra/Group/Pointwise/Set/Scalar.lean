@@ -7,8 +7,15 @@ module
 
 public import Mathlib.Algebra.Opposites
 public import Mathlib.Algebra.Notation.Pi.Defs
-public import Mathlib.Data.Set.NAry
-public import Mathlib.Tactic.Monotonicity.Attr
+public import Aesop
+public import Mathlib.Data.Set.Operations
+import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.NAry
+import Mathlib.Data.Set.Prod
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Pointwise scalar operations of sets

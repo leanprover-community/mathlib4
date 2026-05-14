@@ -6,7 +6,16 @@ Authors: Sébastian Gouëzel
 module
 
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
-public import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
+import Mathlib.Data.Set.Lattice
+import Mathlib.Logic.IsEmpty.Basic
+import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
+import Mathlib.Tactic.Contrapose
+import Mathlib.Tactic.Convert
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.SplitIfs
+import Mathlib.Util.CompileInductive
 
 /-!
 # Indexed sup / inf in conditionally complete lattices

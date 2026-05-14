@@ -9,6 +9,11 @@ public import Mathlib.Algebra.Group.Embedding
 public import Mathlib.Algebra.MonoidAlgebra.Module
 public import Mathlib.LinearAlgebra.Finsupp.Supported
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Lemmas about the support of a finitely supported function

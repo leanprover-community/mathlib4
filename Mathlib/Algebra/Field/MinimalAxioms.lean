@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Ring.MinimalAxioms
+public import Aesop
 
 /-!
 # Minimal Axioms for a Field

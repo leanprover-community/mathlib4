@@ -7,6 +7,9 @@ module
 
 public import Aesop
 public import Mathlib.Order.Heyting.Basic
+import Mathlib.Order.RelClasses
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # (Generalized) Boolean algebras

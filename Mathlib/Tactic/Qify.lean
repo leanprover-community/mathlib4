@@ -10,6 +10,11 @@ public import Mathlib.Algebra.Order.Ring.Unbundled.Rat
 public import Mathlib.Algebra.Ring.Rat
 public import Mathlib.Data.Int.Cast.Lemmas
 public meta import Mathlib.Tactic.ToAdditive
+import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # `qify` tactic

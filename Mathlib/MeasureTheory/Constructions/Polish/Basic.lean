@@ -5,9 +5,57 @@ Authors: Sébastien Gouëzel, Felix Weilacher
 -/
 module
 
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
-public import Mathlib.Topology.MetricSpace.Perfect
-public import Mathlib.Topology.Separation.CountableSeparatingOn
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+public import Mathlib.Tactic.Choose
+public import Mathlib.Topology.Algebra.Group.Quotient
+public import Mathlib.Topology.MetricSpace.Polish
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Data.Countable.Basic
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.EReal.Inv
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Int.Basic
+import Mathlib.Data.Nat.Lattice
+import Mathlib.Data.Rat.Floor
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Data.Set.Monotone
+import Mathlib.Data.Set.Prod
+import Mathlib.Logic.Equiv.List
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
+import Mathlib.MeasureTheory.Measure.AEMeasurable
+import Mathlib.Order.Filter.AtTopBot.Basic
+import Mathlib.Order.Filter.Map
+import Mathlib.Order.Filter.Tendsto
+import Mathlib.Order.Interval.Set.OrdConnected
+import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Linarith.Frontend
+import Mathlib.Tactic.Measurability
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Algebra.InfiniteSum.Basic
+import Mathlib.Topology.Algebra.InfiniteSum.Order
+import Mathlib.Topology.Algebra.Ring.Real
+import Mathlib.Topology.GDelta.MetrizableSpace
+import Mathlib.Topology.MetricSpace.Cauchy
+import Mathlib.Topology.MetricSpace.Perfect
+import Mathlib.Topology.MetricSpace.PiNat
+import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
+import Mathlib.Topology.Metrizable.Uniformity
+import Mathlib.Topology.Neighborhoods
+import Mathlib.Topology.Order.IsLUB
+import Mathlib.Topology.Order.Monotone
+import Mathlib.Topology.Order.T5
+import Mathlib.Topology.Separation.CountableSeparatingOn
 
 /-!
 # The Borel sigma-algebra on Polish spaces

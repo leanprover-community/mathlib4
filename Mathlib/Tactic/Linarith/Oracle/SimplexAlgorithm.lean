@@ -8,6 +8,12 @@ module -- shake: keep-all
 public meta import Mathlib.Tactic.Linarith.Datatypes
 public import Mathlib.Tactic.Linarith.Datatypes
 public import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.PositiveVector
+public import Batteries.Data.List.Basic
+public meta import Batteries.Data.List.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # The oracle based on Simplex Algorithm

@@ -8,6 +8,11 @@ module -- shake: keep-all
 public meta import Mathlib.Algebra.GroupWithZero.Nat
 public meta import Mathlib.Algebra.Ring.Int.Defs
 public import Mathlib.Tactic.Linarith.Datatypes
+public meta import Aesop
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Parsing input expressions into linear form

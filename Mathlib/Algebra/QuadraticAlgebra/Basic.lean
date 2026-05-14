@@ -9,6 +9,23 @@ public import Mathlib.Algebra.QuadraticAlgebra.Defs
 public import Mathlib.Algebra.Star.Unitary
 
 import Mathlib.Tactic.FieldSimp
+public import Mathlib.Algebra.Ring.Action.Rat
+public meta import Mathlib.Tactic.Basic
+public meta import Mathlib.Tactic.ToAdditive
+import Mathlib.Algebra.Field.IsField
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.RingTheory.SimpleRing.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Module
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Quadratic algebras: involution and norm.

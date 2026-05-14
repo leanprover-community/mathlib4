@@ -5,8 +5,18 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 public import Mathlib.Algebra.Field.Subfield.Defs
+public import Mathlib.Data.Matrix.Mul
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Matrices and base change

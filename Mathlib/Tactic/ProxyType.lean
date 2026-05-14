@@ -7,6 +7,8 @@ module -- shake: keep-all
 
 public import Mathlib.Logic.Equiv.Defs
 public meta import Mathlib.Tactic.Simps.Basic
+public import Mathlib.Tactic.Core
+import Mathlib.Util.CompileInductive
 
 /-!
 # Generating "proxy types"

@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Data.Finset.Update
 public import Mathlib.Order.Interval.Finset.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Restriction of a function indexed by a preorder

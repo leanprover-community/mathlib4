@@ -9,7 +9,9 @@ public import Mathlib.Algebra.Group.Action.Pi
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.Algebra.GroupWithZero.Defs
 public import Mathlib.Algebra.GroupWithZero.Pi
-public import Mathlib.Tactic.Common
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Pi instances for multiplicative actions with zero

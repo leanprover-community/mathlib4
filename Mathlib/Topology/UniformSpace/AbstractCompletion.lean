@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Topology.UniformSpace.UniformEmbedding
 public import Mathlib.Topology.UniformSpace.Equiv
+public import Mathlib.Topology.Continuous
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Abstract theory of Hausdorff completions of uniform spaces

@@ -5,10 +5,54 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.NumberTheory.NumberField.Discriminant.Basic
-public import Mathlib.NumberTheory.NumberField.Discriminant.Different
-public import Mathlib.NumberTheory.RamificationInertia.Galois
-public import Mathlib.RingTheory.Unramified.Dedekind
+public import Mathlib.FieldTheory.Galois.Basic
+public import Mathlib.NumberTheory.NumberField.Basic
+public import Mathlib.RingTheory.Unramified.Locus
+import Mathlib.Algebra.CharP.Algebra
+import Mathlib.Algebra.Divisibility.Hom
+import Mathlib.Algebra.Order.Algebra
+import Mathlib.Algebra.Order.BigOperators.Expect
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Field.Power
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Group.Int
+import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Combinatorics.Matroid.Init
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.EReal.Inv
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Factorial.DoubleFactorial
+import Mathlib.Data.Rat.Floor
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.LinearAlgebra.Dimension.Finite
+import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
+import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+import Mathlib.MeasureTheory.Covering.Besicovitch
+import Mathlib.MeasureTheory.Measure.Real
+import Mathlib.NumberTheory.NumberField.Discriminant.Basic
+import Mathlib.NumberTheory.NumberField.Discriminant.Different
+import Mathlib.NumberTheory.RamificationInertia.Galois
+import Mathlib.NumberTheory.RamificationInertia.Unramified
+import Mathlib.RingTheory.DedekindDomain.IntegralClosure
+import Mathlib.RingTheory.Ideal.GoingUp
+import Mathlib.RingTheory.Int.Basic
+import Mathlib.RingTheory.Invariant.Basic
+import Mathlib.RingTheory.Localization.Finiteness
+import Mathlib.RingTheory.Localization.Integral
+import Mathlib.RingTheory.Unramified.Dedekind
+import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Measurability.Init
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
 
 /-!
 # Every number field has a ramified prime over `ℚ`

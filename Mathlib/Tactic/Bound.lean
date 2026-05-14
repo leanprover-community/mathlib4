@@ -10,6 +10,15 @@ public meta import Mathlib.Tactic.Bound.Attribute
 public meta import Mathlib.Tactic.NormNum.Core
 public import Mathlib.Tactic.Bound.Attribute
 public import Mathlib.Tactic.Linarith.Frontend
+public import Mathlib.Algebra.Order.Group.Defs
+public import Mathlib.Algebra.Order.Group.Unbundled.Basic
+public import Mathlib.Algebra.Order.Monoid.NatCast
+public import Mathlib.Algebra.Order.Ring.Unbundled.Basic
+public import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Order.MinMax
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 ## The `bound` tactic

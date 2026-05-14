@@ -7,6 +7,8 @@ module -- shake: keep-all
 
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Tactic.CongrExclamation
+public meta import Lean.Elab.Tactic.Location
+import Mathlib.Init
 
 /-!
 # The `convert` tactic.

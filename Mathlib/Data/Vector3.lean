@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Data.Fin.Fin2
 public import Mathlib.Util.Notation3
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Alternate definition of `Vector` in terms of `Fin2`

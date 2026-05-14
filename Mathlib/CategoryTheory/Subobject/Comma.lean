@@ -10,6 +10,13 @@ public import Mathlib.CategoryTheory.Comma.LocallySmall
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 public import Mathlib.CategoryTheory.Limits.Comma
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+import Mathlib.Data.Finset.Attr
+import Mathlib.Logic.Small.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Subobjects in the category of structured arrows

@@ -7,6 +7,12 @@ module -- shake: keep-all
 
 public import Mathlib.CategoryTheory.Functor.Basic
 public import Mathlib.Util.AddRelatedDecl
+public import Batteries.Tactic.Exact
+public meta import Mathlib.Lean.Meta.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # The `reassoc` attribute

@@ -9,6 +9,10 @@ public meta import Mathlib.Tactic.Ring.Basic
 public meta import Mathlib.Data.PNat.Basic
 public import Mathlib.Data.PNat.Basic
 public import Mathlib.Tactic.Ring.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Additional instances for `ring` over `PNat`

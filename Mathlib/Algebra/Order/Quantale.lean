@@ -5,9 +5,14 @@ Authors: Pieter Cuijpers
 -/
 module
 
-public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-public import Mathlib.Order.CompleteLattice.Basic
-public import Mathlib.Tactic.Variable
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
+public import Mathlib.Order.CompleteLattice.Defs
+import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+import Mathlib.Order.CompleteLattice.Basic
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.GRewrite.Elab
+import Mathlib.Tactic.Variable
+import Mathlib.Util.CompileInductive
 
 /-!
 # Theory of quantales

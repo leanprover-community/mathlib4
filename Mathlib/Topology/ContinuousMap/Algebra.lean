@@ -7,11 +7,26 @@ module
 
 public import Mathlib.Algebra.Algebra.Pi
 public import Mathlib.Algebra.Algebra.Subalgebra.Basic
-public import Mathlib.Tactic.FieldSimp
-public import Mathlib.Topology.Algebra.InfiniteSum.Basic
 public import Mathlib.Topology.Algebra.Module.LinearMap
 public import Mathlib.Topology.Algebra.Ring.Basic
-public import Mathlib.Topology.UniformSpace.CompactConvergence
+public import Mathlib.Data.Int.Cast.Pi
+public import Mathlib.Topology.Algebra.InfiniteSum.Defs
+public import Mathlib.Topology.CompactOpen
+import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Order.Filter.Tendsto
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.FastInstance
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Algebra.InfiniteSum.Basic
+import Mathlib.Topology.Compactness.LocallyCompact
+import Mathlib.Topology.UniformSpace.CompactConvergence
 
 /-!
 # Algebraic structures over continuous functions

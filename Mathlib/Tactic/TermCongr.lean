@@ -6,6 +6,10 @@ Authors: Kyle Miller
 module -- shake: keep-all
 
 public import Mathlib.Lean.Meta.CongrTheorems
+public import Batteries.Tactic.Lint
+public meta import Mathlib.Lean.Expr.Basic
+import Lean.Meta.CongrTheorems
+import Mathlib.Init
 
 /-! # `congr(...)` congruence quotations
 

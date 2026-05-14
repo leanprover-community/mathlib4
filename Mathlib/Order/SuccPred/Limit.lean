@@ -6,7 +6,12 @@ Authors: Violeta Hernández Palacios
 module
 
 public import Mathlib.Order.SuccPred.Archimedean
-public import Mathlib.Order.BoundedOrder.Lattice
+public import Mathlib.Algebra.Order.IsBotOne
+import Mathlib.Order.Cover
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Successor and predecessor limits

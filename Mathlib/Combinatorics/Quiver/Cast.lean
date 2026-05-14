@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Combinatorics.Quiver.Basic
 public import Mathlib.Combinatorics.Quiver.Path
+import Mathlib.Util.CompileInductive
 
 /-!
 

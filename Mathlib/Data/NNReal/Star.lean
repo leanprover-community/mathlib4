@@ -7,6 +7,15 @@ module
 
 public import Mathlib.Data.NNReal.Defs
 public import Mathlib.Data.Real.Star
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Data.Rat.Floor
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # The non-negative real numbers are a \*-ring, with the trivial \*-structure

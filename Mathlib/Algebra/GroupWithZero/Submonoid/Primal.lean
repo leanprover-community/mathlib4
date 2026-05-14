@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Algebra.Group.Submonoid.Defs
 public import Mathlib.Algebra.GroupWithZero.Divisibility
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Submonoid of primal elements

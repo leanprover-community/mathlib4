@@ -6,6 +6,10 @@ Authors: Alex J. Best, Yaël Dillies
 module
 
 public import Mathlib.GroupTheory.MonoidLocalization.Maps
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Grothendieck group

@@ -6,6 +6,8 @@ Authors: Markus Himmel
 module -- shake: keep-all
 
 public import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # `norm_num` handling for expressions of the form `a ^ b % m`.

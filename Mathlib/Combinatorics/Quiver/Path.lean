@@ -6,8 +6,11 @@ Authors: David Wärn, Kim Morrison, Matteo Cipollina
 module
 
 public import Mathlib.Combinatorics.Quiver.Prefunctor
-public import Mathlib.Logic.Lemmas
 public import Batteries.Data.List.Basic
+public import Mathlib.Data.Nat.Notation
+import Mathlib.Logic.Lemmas
+import Mathlib.Util.CompileInductive
+import Std.Tactic.BVDecide.Normalize.Prop
 
 /-!
 # Paths in quivers

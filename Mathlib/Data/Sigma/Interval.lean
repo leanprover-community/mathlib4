@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Data.Sigma.Order
 public import Mathlib.Order.Interval.Finset.Defs
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Finite intervals in a sigma type

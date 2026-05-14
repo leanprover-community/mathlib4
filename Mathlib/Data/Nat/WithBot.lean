@@ -5,9 +5,13 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Data.Nat.Cast.WithTop
-public import Mathlib.Order.Nat
-public import Mathlib.Algebra.Ring.Nat
+public import Mathlib.Algebra.GroupWithZero.Nat
+public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+import Mathlib.Algebra.Ring.Nat
+import Mathlib.Data.Nat.Cast.WithTop
+import Mathlib.Order.Nat
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # `WithBot ℕ`

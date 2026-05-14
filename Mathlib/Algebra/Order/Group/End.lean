@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Order.RelIso.Basic
+import Mathlib.Util.CompileInductive
 
 /-!
 # Relation isomorphisms form a group

@@ -10,6 +10,11 @@ public import Batteries.Tactic.GeneralizeProofs
 public import Mathlib.Tactic.Order.CollectFacts
 public meta import Mathlib.Util.AtomM
 public import Mathlib.Util.Qq
+import Mathlib.Order.RelClasses
+import Mathlib.Tactic.Contrapose
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Use
+import Mathlib.Util.CompileInductive
 
 /-!
 # Translating linear orders to ℤ

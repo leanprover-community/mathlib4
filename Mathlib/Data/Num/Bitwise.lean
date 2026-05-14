@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Num.Basic
 public import Mathlib.Data.Vector.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Bitwise operations using binary representation of integers

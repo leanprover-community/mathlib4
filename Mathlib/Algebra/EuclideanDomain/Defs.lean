@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Order.RelClasses
+import Mathlib.Util.CompileInductive
 
 /-!
 # Euclidean domains

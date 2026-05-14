@@ -7,6 +7,8 @@ module -- shake: keep-all
 
 public import Mathlib.Algebra.Ring.Int.Parity  -- shake: keep (Qq dependency)
 public import Mathlib.Tactic.NormNum.Core
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # `norm_num` extensions for `Even` and `Odd`

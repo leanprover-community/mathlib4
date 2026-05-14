@@ -7,9 +7,12 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne 
 module
 
 public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
-public import Mathlib.Data.Set.Function
 public import Mathlib.GroupTheory.GroupAction.Hom
-public import Mathlib.Algebra.Group.Units.Hom
+import Mathlib.Algebra.Group.Units.Hom
+import Mathlib.Data.Set.Function
+import Mathlib.Data.Set.Image
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Pointwise actions of equivariant maps

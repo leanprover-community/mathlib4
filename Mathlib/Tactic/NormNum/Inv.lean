@@ -7,6 +7,11 @@ module -- shake: keep-all
 
 public import Mathlib.Data.Rat.Cast.CharZero
 public import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Algebra.Ring.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # `norm_num` plugins for `Rat.cast` and `⁻¹`.

@@ -5,8 +5,15 @@ Authors: Monica Omar
 -/
 module
 
-public import Mathlib.Algebra.Central.Basic
 public import Mathlib.LinearAlgebra.FreeModule.Basic
+public import Mathlib.Algebra.Central.Defs
+import Mathlib.Algebra.Central.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # `Module.End R M` is a central algebra

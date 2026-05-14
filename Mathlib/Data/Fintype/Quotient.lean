@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Data.List.Pi
 public import Mathlib.Data.Fintype.Defs
+public import Mathlib.Tactic.Basic
+public import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Quotients of families indexed by a finite type

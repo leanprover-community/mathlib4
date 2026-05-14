@@ -7,6 +7,11 @@ module
 
 public import Mathlib.RingTheory.TwoSidedIdeal.Lattice
 public import Mathlib.Order.Atoms
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-! # Simple rings
 

@@ -6,8 +6,9 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Logic.Equiv.Defs
-public import Mathlib.Tactic.MkIffOfInductiveProp
-public import Mathlib.Tactic.PPWithUniv
+import Mathlib.Tactic.MkIffOfInductiveProp
+import Mathlib.Tactic.PPWithUniv
+import Mathlib.Util.CompileInductive
 
 /-!
 # Small types

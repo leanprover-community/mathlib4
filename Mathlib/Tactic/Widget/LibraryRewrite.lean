@@ -9,6 +9,7 @@ public meta import Mathlib.Lean.Meta.RefinedDiscrTree
 public import Mathlib.Lean.Meta.RefinedDiscrTree
 public import Mathlib.Tactic.Widget.InteractiveUnfold
 public import ProofWidgets.Component.FilterDetails
+public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Encode
 
 /-!
 # Point & click library rewriting

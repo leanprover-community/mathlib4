@@ -7,6 +7,7 @@ module -- shake: keep-all
 
 public meta import Lean.Meta.Tactic.Rfl
 public import Mathlib.Tactic.TermCongr
+import Mathlib.Init
 
 /-!
 # The `congrm` tactic

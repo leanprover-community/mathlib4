@@ -5,8 +5,26 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Category.CommAlgCat.FiniteType
 public import Mathlib.CategoryTheory.ObjectProperty.Small
+public import Mathlib.Algebra.Category.Ring.Basic
+public import Mathlib.GroupTheory.MonoidLocalization.Away
+public import Mathlib.RingTheory.FiniteType
+public import Mathlib.RingTheory.OreLocalization.Ring
+import Mathlib.Algebra.Category.CommAlgCat.FiniteType
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finite.Card
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.RingTheory.Finiteness.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 
 /-! # Smallness results on the category of `CommRing` -/

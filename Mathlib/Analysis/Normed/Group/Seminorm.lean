@@ -6,7 +6,20 @@ Authors: María Inés de Frutos-Fernández, Yaël Dillies
 module
 
 public import Mathlib.Data.NNReal.Defs
-public import Mathlib.Order.ConditionallyCompleteLattice.Group
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Ring.Unbundled.Basic
+import Mathlib.Data.Rat.Floor
+import Mathlib.Order.Bounds.Image
+import Mathlib.Order.ConditionallyCompleteLattice.Group
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+import Mathlib.Order.MinMax
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Group seminorms

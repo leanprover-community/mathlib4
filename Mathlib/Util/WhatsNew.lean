@@ -5,7 +5,8 @@ Authors: Gabriel Ebner
 -/
 module
 
-public import Mathlib.Init
+public meta import Lean.Elab.Command
+import Mathlib.Init
 
 /-!
 Defines a command wrapper that prints the changes the command makes to the

@@ -6,8 +6,27 @@ Authors: Patrick Massot, Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Convex.Basic
-public import Mathlib.LinearAlgebra.Projection
 public import Mathlib.Topology.Connected.PathConnected
+public import Mathlib.Topology.Algebra.Ring.Real
+import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+import Mathlib.Algebra.Order.Algebra
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Group.Pointwise.Interval
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Data.Set.Prod
+import Mathlib.LinearAlgebra.Projection
+import Mathlib.Order.Interval.Set.OrdConnected
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.MetricSpace.Bounded
 
 /-!
 # Segment between 2 points as a bundled path

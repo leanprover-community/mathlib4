@@ -11,6 +11,14 @@ public import Mathlib.RingTheory.Coalgebra.Equiv
 
 import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.RingTheory.Coalgebra.CoassocSimps
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.SetLike
 
 /-!
 # Tensor products of coalgebras

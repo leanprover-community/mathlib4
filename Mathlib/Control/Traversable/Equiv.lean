@@ -5,9 +5,13 @@ Authors: Simon Hudon
 -/
 module
 
-public import Mathlib.Control.Traversable.Lemmas
 public import Mathlib.Logic.Equiv.Defs
-public import Batteries.Tactic.SeqFocus
+public import Mathlib.Control.Traversable.Basic
+import Batteries.Tactic.SeqFocus
+import Mathlib.Control.Applicative
+import Mathlib.Control.Traversable.Lemmas
+import Mathlib.Tactic.Attr.Register
+import Mathlib.Util.CompileInductive
 
 
 /-!

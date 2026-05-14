@@ -7,7 +7,9 @@ module
 
 public import Mathlib.Data.Part
 public import Mathlib.Order.Hom.Basic
-public import Mathlib.Tactic.Common
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Monotonicity of monadic operations on `Part`

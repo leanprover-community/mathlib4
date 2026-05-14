@@ -5,8 +5,28 @@ Authors: Riccardo Brasca, Emilie Uthaiwat
 -/
 module
 
-public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
-public import Mathlib.RingTheory.UniqueFactorizationDomain.Ideal
+public import Mathlib.RingTheory.Ideal.Prime
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
+import Mathlib.Algebra.Algebra.Operations
+import Mathlib.Algebra.BigOperators.Associated
+import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
+import Mathlib.Algebra.BigOperators.Ring.Multiset
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Order.Zorn
+import Mathlib.RingTheory.Ideal.Maximal
+import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
+import Mathlib.RingTheory.UniqueFactorizationDomain.Ideal
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 

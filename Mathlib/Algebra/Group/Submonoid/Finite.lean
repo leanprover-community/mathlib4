@@ -6,7 +6,14 @@ Authors: Monica Omar
 module
 
 public import Mathlib.Algebra.Group.Submonoid.Operations
-public import Mathlib.Data.Fintype.Basic
+public import Mathlib.Data.Finite.Defs
+public import Mathlib.Data.Finset.Defs
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Set.Prod
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Submonoids

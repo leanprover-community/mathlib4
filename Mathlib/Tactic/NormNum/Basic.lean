@@ -12,6 +12,9 @@ public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.Data.Nat.Cast.Commute
 public import Mathlib.Tactic.HaveI
 public import Mathlib.Tactic.NormNum.Core
+import Mathlib.Algebra.Group.Invertible.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # `norm_num` basic plugins

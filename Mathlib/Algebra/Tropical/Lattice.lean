@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Algebra.Tropical.Basic
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Logic.Equiv.Set
+import Mathlib.Order.GaloisConnection.Basic
+import Mathlib.Tactic.Contrapose
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 

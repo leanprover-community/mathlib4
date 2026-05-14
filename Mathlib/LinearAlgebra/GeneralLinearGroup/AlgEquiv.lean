@@ -11,6 +11,15 @@ public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 
 import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.Algebra.Module.Projective
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Nontriviality
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Algebra isomorphisms between endomorphisms of projective modules are inner

@@ -6,7 +6,12 @@ Authors: Michael Stoll
 module
 
 public import Mathlib.Algebra.Notation.Support
-public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Data.Finite.Defs
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Make `fun_prop` work for finite (multiplicative) support

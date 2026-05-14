@@ -7,6 +7,12 @@ module
 
 public import Mathlib.Algebra.Order.Sub.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Tactic.Convert
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.GRewrite.Elab
+import Mathlib.Tactic.SimpRw
+import Mathlib.Util.CompileInductive
 
 /-!
 # Lemmas about subtraction in an unbundled canonically ordered monoids

@@ -5,9 +5,15 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Pointwise.Interval
 public import Mathlib.Order.Interval.Finset.Defs
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Group.Pointwise.Interval
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-! # Pointwise operations on intervals
 

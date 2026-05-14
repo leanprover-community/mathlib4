@@ -7,6 +7,10 @@ module
 
 public import Mathlib.GroupTheory.GroupAction.Hom
 public import Mathlib.Algebra.Ring.Subring.Defs
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-! # Subrings invariant under an action
 

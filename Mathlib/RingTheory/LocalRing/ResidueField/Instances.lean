@@ -7,9 +7,24 @@ module
 
 public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 public import Mathlib.FieldTheory.Separable
-public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 
 import Mathlib.RingTheory.Finiteness.Quotient
+public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.RingTheory.Algebraic.Integral
+import Mathlib.RingTheory.Finiteness.Basic
+import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.FastInstance
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
 
 /-! # Instances on residue fields -/
 

@@ -5,9 +5,24 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.Algebra.Category.Ring.Under.Limits
 public import Mathlib.CategoryTheory.Limits.MorphismProperty
 public import Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
+public import Mathlib.RingTheory.RingHomProperties
+import Mathlib.Algebra.Category.Ring.Under.Limits
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.CategoryTheory.Adjunction.Limits
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Limits.Over
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
 
 /-!
 # Properties of `P.Under ⊤ R` for `R : CommRingCat`

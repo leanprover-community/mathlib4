@@ -9,6 +9,10 @@ public import Mathlib.Data.Fin.Rev
 public import Mathlib.Data.Nat.Find
 public import Mathlib.Order.Fin.Basic
 public import Batteries.Data.Fin.Lemmas
+public import Mathlib.Tactic.Convert
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Operation on tuples

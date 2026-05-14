@@ -9,6 +9,11 @@ public import Mathlib.Algebra.Order.Invertible
 public import Mathlib.Algebra.Order.Ring.Cast
 public import Mathlib.Tactic.NormNum.Eq
 public meta import Mathlib.Tactic.NormNum.Result
+import Mathlib.Data.Nat.Cast.Order.Ring
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # `norm_num` extensions for inequalities.

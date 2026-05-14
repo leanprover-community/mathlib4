@@ -6,6 +6,9 @@ Authors: Chris Hughes, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Group.Action.TypeTags
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Tactic.MkIffOfInductiveProp
+import Mathlib.Util.CompileInductive
 
 /-!
 # Pretransitive group actions

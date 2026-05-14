@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Data.Countable.Defs
+import Mathlib.Util.CompileInductive
 
 /-!
 # Monoid action by iterates of a map

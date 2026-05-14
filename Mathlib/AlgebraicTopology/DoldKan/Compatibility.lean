@@ -6,6 +6,10 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Equivalence
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-! # Tools for compatibilities between Dold-Kan equivalences
 

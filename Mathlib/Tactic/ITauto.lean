@@ -11,6 +11,7 @@ public meta import Qq
 public import Batteries.Tactic.Exact
 public import Batteries.Tactic.Init
 public import Mathlib.Util.AtomM
+import Mathlib.Init
 
 /-!
 

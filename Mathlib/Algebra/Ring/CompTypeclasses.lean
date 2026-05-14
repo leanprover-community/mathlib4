@@ -6,6 +6,8 @@ Authors: Frédéric Dupuis, Heather Macbeth
 module
 
 public import Mathlib.Algebra.Ring.Equiv
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Propositional typeclasses on several ring homs

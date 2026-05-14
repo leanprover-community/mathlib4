@@ -6,9 +6,9 @@ Authors: Elazar Gershuni
 module
 
 public import Mathlib.Data.Subtype
-public import Mathlib.Tactic.Finiteness.Attr
-public import Mathlib.Tactic.Push
-public import Mathlib.Util.CompileInductive
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Push
+import Mathlib.Util.CompileInductive
 
 /-!
 # Uniquely Decodable Codes

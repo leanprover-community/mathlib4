@@ -6,7 +6,14 @@ Authors: Sam van Gool
 module
 
 public import Mathlib.Order.PrimeIdeal
-public import Mathlib.Order.Zorn
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Data.Set.Lattice
+import Mathlib.Order.Minimal
+import Mathlib.Order.Zorn
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Separating prime filters and ideals

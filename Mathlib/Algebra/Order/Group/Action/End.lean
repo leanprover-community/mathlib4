@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.Group.Action.Faithful
 public import Mathlib.Algebra.Order.Group.End
 public import Mathlib.Order.RelIso.Basic
+import Mathlib.Tactic.Coe
+import Mathlib.Util.CompileInductive
 
 /-!
 # Tautological action by relation automorphisms

@@ -9,6 +9,10 @@ public import Mathlib.Tactic.Ring.Basic
 public import Mathlib.Tactic.TryThis
 public import Mathlib.Util.AtomM.Recurse
 public meta import Mathlib.Util.AtomM.Recurse
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # `ring_nf` tactic

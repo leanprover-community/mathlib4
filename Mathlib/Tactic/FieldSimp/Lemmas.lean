@@ -10,6 +10,10 @@ public import Mathlib.Algebra.Field.Defs  -- shake: keep (Qq dependency)
 public import Mathlib.Algebra.Ring.Int.Parity -- shake: keep (Qq dependency)
 public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 public import Mathlib.Util.Qq
+import Mathlib.Algebra.Ring.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-! # Lemmas for the `field_simp` tactic
 

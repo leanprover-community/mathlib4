@@ -6,11 +6,33 @@ Authors: Filippo A. E. Nuccio, Huanyu Zheng, Sihan Wu, Wanyi He, Weichen Jiao, Y
 module
 
 public import Mathlib.Algebra.Central.Defs
-public import Mathlib.Algebra.CharP.LinearMaps
-public import Mathlib.Algebra.CharP.Subring
-public import Mathlib.Algebra.GroupWithZero.Conj
 public import Mathlib.Algebra.Lie.OfAssociative
-public import Mathlib.FieldTheory.PurelyInseparable.Basic
+public import Mathlib.FieldTheory.Separable
+import Mathlib.Algebra.CharP.LinearMaps
+import Mathlib.Algebra.CharP.Subring
+import Mathlib.Algebra.GroupWithZero.Conj
+import Mathlib.Algebra.Order.AbsoluteValue.Basic
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Group.Int
+import Mathlib.Combinatorics.Matroid.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Int.Basic
+import Mathlib.Data.Rat.Floor
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.FieldTheory.PurelyInseparable.Basic
+import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Linarith.Frontend
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
 
 /-!
 # The Jacobson-Noether theorem

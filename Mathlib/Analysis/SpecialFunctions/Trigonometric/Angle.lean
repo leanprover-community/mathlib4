@@ -6,10 +6,34 @@ Authors: Calle Sönne
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-public import Mathlib.Analysis.Normed.Group.AddCircle
-public import Mathlib.Algebra.CharZero.Quotient
 public import Mathlib.Topology.Instances.Sign
 import Mathlib.Algebra.Order.Ring.Interval
+public import Mathlib.Analysis.Normed.Group.Quotient
+public import Mathlib.Topology.Instances.AddCircle.Defs
+import Mathlib.Algebra.CharZero.Quotient
+import Mathlib.Algebra.Order.BigOperators.Expect
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Field.Power
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Analysis.Normed.Group.AddCircle
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.EReal.Inv
+import Mathlib.Data.Rat.Floor
+import Mathlib.Data.Sign.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.FastInstance
+import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Linarith.Frontend
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.SetLike
 
 /-!
 # The type of angles

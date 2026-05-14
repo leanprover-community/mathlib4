@@ -10,6 +10,7 @@ public meta import Lean.Elab.Deriving.Basic
 public meta import Lean.Elab.PreDefinition.Main
 public import Mathlib.Control.Traversable.Lemmas
 public meta import Mathlib.Tactic.ToAdditive
+public meta import Std.Do
 
 /-!
 # Deriving handler for `Traversable` instances

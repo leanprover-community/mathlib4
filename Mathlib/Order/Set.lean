@@ -5,8 +5,11 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Set.Image
 public import Mathlib.Order.TypeTags
+public import Mathlib.Data.Set.Operations
+import Mathlib.Data.Set.Image
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-! # `Set.range` on `WithBot` and `WithTop` -/
 

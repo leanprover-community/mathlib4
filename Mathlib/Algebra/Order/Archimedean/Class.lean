@@ -5,7 +5,6 @@ Authors: Weiyi Wang
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Algebra.Group.Subgroup.Lattice
 public import Mathlib.Algebra.Order.Hom.Monoid
 public import Mathlib.Data.Finset.Max
@@ -14,7 +13,23 @@ public import Mathlib.Order.Hom.WithTopBot
 public import Mathlib.Order.UpperLower.CompleteLattice
 public import Mathlib.Order.UpperLower.Principal
 public import Mathlib.Algebra.Order.Archimedean.Defs
-public import Mathlib.Data.Rat.Floor
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.Order.Group.Unbundled.Abs
+public import Mathlib.Tactic.SplitIfs
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Group.Abs
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Data.Set.Monotone
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.FastInstance
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Archimedean classes of a linearly ordered group

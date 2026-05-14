@@ -7,7 +7,9 @@ module
 
 public import Mathlib.Algebra.Ring.Basic
 public import Mathlib.Algebra.Ring.Opposite
-public import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # Associator in a ring

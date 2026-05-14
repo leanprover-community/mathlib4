@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Data.Ordering.Basic
 public import Mathlib.Order.OrderDual
+import Batteries.Tactic.Init
+import Mathlib.Util.CompileInductive
 
 /-!
 # Comparison

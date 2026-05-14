@@ -7,8 +7,41 @@ module
 
 public import Mathlib.GroupTheory.Torsion
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
-public import Mathlib.RingTheory.LocalRing.RingHom.Basic
-public import Mathlib.RingTheory.RootsOfUnity.Complex
+public import Mathlib.NumberTheory.NumberField.Norm
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Group.Int.Units
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+import Mathlib.Algebra.Order.Algebra
+import Mathlib.Algebra.Order.BigOperators.Expect
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Field.Power
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Group.Int
+import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Analysis.Normed.Ring.Finite
+import Mathlib.Combinatorics.Matroid.Init
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.EReal.Inv
+import Mathlib.Data.Int.Basic
+import Mathlib.Data.Nat.GCD.Basic
+import Mathlib.Data.Rat.Floor
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.MeasureTheory.Integral.Bochner.Basic
+import Mathlib.MeasureTheory.Measure.Real
+import Mathlib.RingTheory.IntegralDomain
+import Mathlib.RingTheory.LocalRing.RingHom.Basic
+import Mathlib.RingTheory.RootsOfUnity.Complex
+import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.IntervalCases
+import Mathlib.Tactic.Measurability.Init
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
 
 /-!
 # Units of a number field

@@ -10,6 +10,13 @@ public import Mathlib.Tactic.NormNum.Pow
 
 public meta import Aesop
 public meta import Mathlib.Tactic.ToAdditive
+public import Mathlib.Util.AtomM
+public meta import Mathlib.Util.AtomM
+public import Plausible
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # `ring`-like tactics

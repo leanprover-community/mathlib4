@@ -5,9 +5,39 @@ Authors: Riccardo Brasca, Sihan Su, Wan Lin, Xiaoyang Su
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.Monad
-public import Mathlib.Data.List.Indexes
-public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
+public import Mathlib.Algebra.MvPolynomial.Degrees
+public import Mathlib.RingTheory.FiniteType
+public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
+import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
+import Mathlib.Algebra.EuclideanDomain.Field
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+import Mathlib.Algebra.MvPolynomial.Equiv
+import Mathlib.Algebra.MvPolynomial.Monad
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Monoid.NatCast
+import Mathlib.Algebra.Polynomial.BigOperators
+import Mathlib.Algebra.Polynomial.Degree.Domain
+import Mathlib.Algebra.Polynomial.Monic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.List.Indexes
+import Mathlib.Data.List.OfFn
+import Mathlib.Data.Nat.Digits.Lemmas
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.RingTheory.Ideal.Quotient.Basic
+import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
+import Mathlib.Tactic.Algebraize
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
 /-!
 # Noether normalization lemma
 This file contains a proof by Nagata of the Noether normalization lemma.

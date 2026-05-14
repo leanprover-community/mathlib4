@@ -12,6 +12,12 @@ public import Mathlib.Tactic.FieldSimp.Lemmas
 public import Mathlib.Util.AtomM.Recurse
 public import Mathlib.Util.SynthesizeUsing
 public import Mathlib.Data.Ineq
+public meta import Mathlib.Util.AtomM
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # `field_simp` tactic

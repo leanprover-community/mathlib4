@@ -6,6 +6,10 @@ Authors: Heather Macbeth
 module -- shake: keep-all
 
 public import Mathlib.Tactic.Positivity.Core
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Finiteness tactic

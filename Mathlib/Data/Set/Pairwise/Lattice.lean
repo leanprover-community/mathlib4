@@ -7,6 +7,12 @@ module
 
 public import Mathlib.Data.Set.Lattice
 public import Mathlib.Data.Set.Pairwise.Basic
+public import Mathlib.Logic.Equiv.Set
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Tactic.Convert
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SimpRw
+import Mathlib.Util.CompileInductive
 
 /-!
 # Relations holding pairwise

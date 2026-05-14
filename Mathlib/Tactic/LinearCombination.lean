@@ -8,6 +8,10 @@ module -- shake: keep-all
 public import Mathlib.Tactic.LinearCombination.Lemmas
 public import Mathlib.Tactic.Positivity.Core
 public import Mathlib.Tactic.Ring.Compare
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # `linear_combination` Tactic

@@ -9,6 +9,13 @@ public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 public import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
 public import Mathlib.CategoryTheory.Functor.Category
 public import Mathlib.CategoryTheory.Limits.Shapes.End
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Functor categories are enriched

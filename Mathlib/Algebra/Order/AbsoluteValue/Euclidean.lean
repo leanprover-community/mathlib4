@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Algebra.Order.AbsoluteValue.Basic
 public import Mathlib.Algebra.EuclideanDomain.Int
+import Mathlib.Algebra.Order.Group.Unbundled.Int
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Euclidean absolute values

@@ -5,9 +5,31 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.Analysis.Complex.UpperHalfPlane.ProperAction
 public import Mathlib.NumberTheory.ModularForms.ArithmeticSubgroups
-public import Mathlib.Topology.Algebra.Group.DiscontinuousSubgroup
+public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
+import Mathlib.Algebra.Order.Algebra
+import Mathlib.Algebra.Order.BigOperators.Expect
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Field.Power
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Analysis.Complex.UpperHalfPlane.ProperAction
+import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.EReal.Inv
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Algebra.Group.DiscontinuousSubgroup
 
 /-!
 # Arithmetic subgroups act properly discontinuously

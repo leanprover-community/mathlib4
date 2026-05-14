@@ -9,6 +9,10 @@ public import Mathlib.Algebra.Group.Commutator  -- shake: keep (tactic dependenc
 public import Mathlib.Algebra.Order.Sub.Basic  -- shake: keep (tactic dependency)
 public import Mathlib.Tactic.FailIfNoProgress
 public import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # `group` tactic

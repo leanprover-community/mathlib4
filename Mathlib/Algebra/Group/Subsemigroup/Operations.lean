@@ -9,6 +9,13 @@ module
 public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Algebra.Group.Subsemigroup.Basic
 public import Mathlib.Algebra.Group.TypeTags.Basic
+public import Mathlib.Logic.Equiv.Set
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Data.Set.Prod
+import Mathlib.Order.GaloisConnection.Basic
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Operations on `Subsemigroup`s

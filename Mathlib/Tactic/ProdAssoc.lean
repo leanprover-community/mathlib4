@@ -8,6 +8,7 @@ module -- shake: keep-all
 public meta import Mathlib.Lean.Expr.Basic
 public import Mathlib.Logic.Equiv.Defs
 public meta import Mathlib.Tactic.Simps.Basic
+import Mathlib.Util.CompileInductive
 
 /-!
 # Associativity of products

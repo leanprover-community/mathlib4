@@ -8,7 +8,18 @@ module
 public import Mathlib.Combinatorics.Matroid.Map
 public import Mathlib.Combinatorics.Matroid.Rank.ENat
 public import Mathlib.Combinatorics.Matroid.Rank.Finite
-public import Mathlib.SetTheory.Cardinal.Arithmetic
+import Mathlib.Combinatorics.Matroid.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Logic.Small.Basic
+import Mathlib.Logic.Small.Set
+import Mathlib.Logic.UnivLE
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
+import Mathlib.SetTheory.Cardinal.Arithmetic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Cardinal-valued rank

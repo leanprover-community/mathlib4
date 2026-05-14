@@ -8,6 +8,10 @@ module -- shake: keep-all
 import all Lean.Meta.Tactic.Simp.Rewrite
 public import Mathlib.Tactic.Positivity.Core
 public import Mathlib.Util.DischargerAsTactic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Discharger for `field_simp` tactic

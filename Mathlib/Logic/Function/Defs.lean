@@ -5,7 +5,6 @@ Authors: Leonardo de Moura, Jeremy Avigad, Haitao Zhang
 -/
 module
 
-public import Mathlib.Init
 
 import Mathlib.Tactic.Attr.Register
 

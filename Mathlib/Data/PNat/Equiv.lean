@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.PNat.Defs
 public import Mathlib.Logic.Equiv.Defs
+import Mathlib.Util.CompileInductive
 
 /-!
 # The equivalence between `ℕ+` and `ℕ`

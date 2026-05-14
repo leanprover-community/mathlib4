@@ -12,6 +12,13 @@ public meta import Mathlib.Util.AtomM
 public import Mathlib.Tactic.CancelDenoms.Core
 public import Mathlib.Tactic.Linarith.Datatypes
 public import Mathlib.Tactic.Zify
+public meta import Mathlib.Lean.Meta
+public import Mathlib.Util.AtomM
+import Mathlib.Algebra.Order.Ring.Unbundled.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Linarith preprocessing

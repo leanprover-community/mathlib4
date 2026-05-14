@@ -8,6 +8,10 @@ module
 public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.Data.Rat.Cast.CharZero
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Further basic results about `Algebra`'s over `ℚ`.

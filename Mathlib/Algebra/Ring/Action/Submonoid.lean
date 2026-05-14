@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.GroupTheory.GroupAction.Defs
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # The subgroup of fixed points of an action

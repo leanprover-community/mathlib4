@@ -7,6 +7,9 @@ module -- shake: keep-all
 
 public import Mathlib.Data.Set.SymmDiff  -- shake: keep (Qq dependency)
 public meta import Mathlib.Tactic.ToDual
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Tauto
+import Mathlib.Util.CompileInductive
 
 /-!
 # The `tauto_set` tactic
