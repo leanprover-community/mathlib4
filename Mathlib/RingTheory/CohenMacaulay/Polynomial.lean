@@ -57,8 +57,8 @@ lemma Polynomial.localization_at_comap_maximal_isCM_isCM [IsNoetherianRing R]
     intro r hr
     rw [IsScalarTower.algebraMap_eq R R[X], RingHom.comp_apply]
     apply Ideal.mem_comap.mp
-    rw [IsLocalization.AtPrime.comap_maximalIdeal (Localization.AtPrime p) p, ← Ideal.mem_comap,
-      Polynomial.algebraMap_eq, max]
+    rw [← Ideal.under_def, IsLocalization.AtPrime.under_maximalIdeal (Localization.AtPrime p) p,
+      ← Ideal.mem_comap, Polynomial.algebraMap_eq, max]
     exact mem r hr
   have : Module.Flat R (Localization.AtPrime p) := Module.Flat.trans R R[X] _
   rw [IsLocalization.AtPrime.ringKrullDim_eq_height p, WithBot.coe_le_coe]
@@ -110,7 +110,7 @@ lemma Polynomial.localization_at_comap_maximal_isCM_isCM [IsNoetherianRing R]
         ← RingHom.comp_apply, ← IsScalarTower.algebraMap_eq] at hr
       rcases hr with isrs|isf
       · exact mem' _ (List.mem_map.mpr isrs)
-      · simpa only [isf, ← mem_comap, IsLocalization.AtPrime.comap_maximalIdeal _ p]
+      · simpa only [isf, ← mem_comap, IsLocalization.AtPrime.under_maximalIdeal _ p]
     have reg : IsRegular (Localization.AtPrime p)
       (((rs.map (algebraMap R R[X])) ++ [f]).map (algebraMap R[X] (Localization.AtPrime p))) := by
       refine ⟨IsWeaklyRegular.of_flat reg', ?_⟩
@@ -141,17 +141,17 @@ theorem Polynomial.isCM_of_isCM [IsNoetherianRing R] [IsCohenMacaulayRing R] :
   have : IsLocalization.AtPrime (Localization.AtPrime pS) p := by
     convert IsLocalization.isLocalization_isLocalization_atPrime_isLocalization pc
       (Localization.AtPrime pS) pS
-    exact (IsLocalization.comap_map_of_isPrime_disjoint pc _ ‹_› disj).symm
+    exact (IsLocalization.under_map_of_isPrime_disjoint pc _ ‹_› disj).symm
   have := (isCohenMacaulayRing_def R).mp ‹_› q (comap_isPrime C p)
   have : comap C pS = maximalIdeal (Localization.AtPrime q) := by
-    rw [← IsLocalization.map_comap q.primeCompl _ (comap C pS),
-      ← IsLocalization.map_comap q.primeCompl _ (maximalIdeal (Localization.AtPrime q))]
+    rw [← IsLocalization.map_under q.primeCompl _ (comap C pS),
+      ← IsLocalization.map_under q.primeCompl _ (maximalIdeal (Localization.AtPrime q))]
     simp only [comap_comap, S, pS]
     rw [← Polynomial.algebraMap_eq (R := Localization.AtPrime q),
       ← IsScalarTower.algebraMap_eq R (Localization.AtPrime q) (Localization.AtPrime q)[X],
       IsScalarTower.algebraMap_eq R R[X] (Localization.AtPrime q)[X], ← comap_comap,
-      IsLocalization.comap_map_of_isPrime_disjoint pc _ ‹_› disj,
-      IsLocalization.AtPrime.comap_maximalIdeal (Localization.AtPrime q) q]
+      ← Ideal.under_def R[X], IsLocalization.under_map_of_isPrime_disjoint pc _ ‹_› disj,
+      IsLocalization.AtPrime.under_maximalIdeal (Localization.AtPrime q) q]
     rfl
   have := localization_at_comap_maximal_isCM_isCM (Localization.AtPrime q) pS this
   exact isCohenMacaulayLocalRing_of_ringEquiv (IsLocalization.algEquiv p.primeCompl
