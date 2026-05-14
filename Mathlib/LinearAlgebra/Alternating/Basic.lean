@@ -834,14 +834,8 @@ def alternatization : MultilinearMap R (fun _ : ι => M) N' →+ M [⋀^ι]→�
       toFun := ⇑(∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ)
       map_eq_zero_of_eq' := private fun v i j hvij hij =>
         alternization_map_eq_zero_of_eq_aux m v i j hij hvij }
-  map_add' a b := by
-    ext
-    simp only [mk_coe, AlternatingMap.coe_mk, sum_apply, smul_apply, domDomCongr_apply, add_apply,
-      smul_add, Finset.sum_add_distrib, AlternatingMap.add_apply]
-  map_zero' := by
-    ext
-    simp only [mk_coe, AlternatingMap.coe_mk, sum_apply, smul_apply, domDomCongr_apply,
-      zero_apply, smul_zero, Finset.sum_const_zero, AlternatingMap.zero_apply]
+  map_add' a b := by ext; simp [Finset.sum_add_distrib]
+  map_zero' := by ext; simp
 
 theorem alternatization_def (m : MultilinearMap R (fun _ : ι => M) N') :
     ⇑(alternatization m) = (∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ :) :=
