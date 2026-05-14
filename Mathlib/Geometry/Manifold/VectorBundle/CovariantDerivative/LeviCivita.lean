@@ -110,7 +110,7 @@ to an element of the tangent space of `ℝ`. A summand `⟨Y, [X, Z]⟩`, howeve
 real number: Lean complains that these have different types.
 Fortunately, `ℝ` is defeq to its own tangent space; casting `rhs_aux` to the real numbers
 allows the addition to type-check. -/
-noncomputable abbrev rhs_aux : M → ℝ := fun x ↦ extDerivFun ⟪Y, Z⟫ x (X x)
+noncomputable abbrev rhs_aux : M → ℝ := fun x ↦ extDerivFun% ⟪Y, Z⟫ x (X x)
 
 section rhs_aux
 
@@ -148,7 +148,7 @@ variable (X) in
 lemma rhs_aux_addZ_apply (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) (hZ' : MDiffAt (T% Z') x) :
   rhs_aux I X Y (Z + Z') x = rhs_aux I X Y Z x + rhs_aux I X Y Z' x := by
   unfold rhs_aux
-  rw [product_add_right, mfderiv_add (hY.inner_bundle' hZ) (hY.inner_bundle' hZ')]; simp; rfl
+  rw [product_add_right, extDerivFun_add (hY.inner_bundle' hZ) (hY.inner_bundle' hZ')]; simp
 
 variable (X) in
 lemma rhs_aux_addZ (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) (hZ' : MDiff (T% Z')) :
@@ -160,7 +160,6 @@ omit [IsManifold I 2 M] in
 variable (X Y Z) in
 lemma rhs_aux_smulX_apply (f : M → ℝ) (x) : rhs_aux I (f • X) Y Z x = f x * rhs_aux I X Y Z x := by
   simp [rhs_aux]
-  rfl
 
 omit [IsManifold I 2 M] in
 variable (X Y Z) in
@@ -173,7 +172,7 @@ lemma rhs_aux_smulY_apply {f : M → ℝ}
     (hf : MDiffAt f x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     letI A (x) := fromTangentSpace _ ((mfderiv% f x) (X x))
     rhs_aux I X (f • Y) Z x = f x * rhs_aux I X Y Z x + A x * ⟪Y, Z⟫ x := by
-  rw [rhs_aux, product_smul_left, mfderiv_smul hf (hY.inner_bundle' hZ)]
+  rw [rhs_aux, product_smul_left, extDerivFun_smul (hY.inner_bundle' hZ) hf]
   rfl
 
 variable (X) in
