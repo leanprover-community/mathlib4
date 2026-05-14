@@ -107,7 +107,7 @@ lemma isCohenMacaulayRing_of_unmixed
   have : ∀ a ∈ rs, (algebraMap R (Localization.AtPrime p)) a ∈
     IsLocalRing.maximalIdeal (Localization.AtPrime p) := by
     intro a ha
-    simpa [← Ideal.mem_comap, Localization.AtPrime.comap_maximalIdeal] using mem a ha
+    simpa [← Ideal.mem_comap, Localization.AtPrime.under_maximalIdeal] using mem a ha
   refine ⟨⟨IsWeaklyRegular.of_flat reg, ?_⟩, this⟩
   rw [Ideal.smul_eq_mul, Ideal.mul_top, ne_comm]
   apply ne_top_of_le_ne_top (b := maximalIdeal (Localization.AtPrime p)) Ideal.IsPrime.ne_top'
@@ -122,7 +122,7 @@ lemma IsLocalization.height_le_height_map (S : Submonoid R) {A : Type*} [CommRin
   simp only [Set.mem_setOf_eq, le_iInf_iff]
   intro p hp
   have := hp.isPrime
-  rw [← IsLocalization.height_comap S p]
+  rw [← IsLocalization.height_under S p]
   exact Ideal.height_mono (Ideal.le_comap_of_map_le hp.1.2)
 
 theorem isCohenMacaulayRing_iff_unmixed : IsCohenMacaulayRing R ↔
@@ -136,11 +136,12 @@ theorem isCohenMacaulayRing_iff_unmixed : IsCohenMacaulayRing R ↔
     apply le_of_eq_of_le _ (IsAssociatedPrime.annihilator_le hp)
     rw [Submodule.annihilator_top, Ideal.annihilator_quotient]
   have ht_eq : (maximalIdeal (Localization.AtPrime p)).height = p.height := by
-    rw [← IsLocalization.height_comap p.primeCompl, Localization.AtPrime.comap_maximalIdeal]
+    rw [← IsLocalization.height_under p.primeCompl, ← Ideal.under_def,
+      Localization.AtPrime.under_maximalIdeal]
   have mem : ∀ r ∈ List.map (algebraMap R (Localization.AtPrime p)) l,
     r ∈ maximalIdeal (Localization.AtPrime p) := by
     simp only [List.mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
-      ← Ideal.mem_comap, Localization.AtPrime.comap_maximalIdeal]
+      ← Ideal.mem_comap, Localization.AtPrime.under_maximalIdeal]
     intro a ha
     exact le (Ideal.subset_span ha)
   have ht_eq_len : (Ideal.ofList (l.map (algebraMap R (Localization.AtPrime p)))).height =
