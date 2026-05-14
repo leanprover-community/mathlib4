@@ -74,7 +74,7 @@ theorem basis_repr_tmul (a : A) (m : M) :
 
 theorem basis_repr_symm_apply (a : A) (i : ι) :
     (basis A b).repr.symm (Finsupp.single i a) = a ⊗ₜ b.repr.symm (Finsupp.single i 1) := by
-  simp [basis, LinearEquiv.coe_symm_mk', Equiv.uniqueProd_symm_apply, basisAux]
+  simp [basis, Equiv.uniqueProd_symm_apply, basisAux]
 
 @[simp]
 theorem basis_apply (i : ι) : basis A b i = 1 ⊗ₜ b i := basis_repr_symm_apply b 1 i

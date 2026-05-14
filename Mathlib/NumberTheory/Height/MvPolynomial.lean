@@ -32,14 +32,14 @@ private lemma Height.iSup_fun_eq_max (f : Fin 2 → ℝ) : iSup f = max (f 0) (f
 
 namespace IsNonarchimedean
 
-variable {R α : Type*} [CommRing R]
+variable {R α β F : Type*} [CommRing R] [AddCommMonoid β] [FunLike F β ℝ] [NonnegHomClass F β ℝ]
+    [ZeroHomClass F β ℝ] {v : F} {l : α → β}
 
 -- NOTE: The following cannot be moved to Mathlib.Algebra.Order.Ring.IsNonarchimedean,
 --       because it needs the target to be the reals (to have the default value zero
 --       for empty iSups), which are not known there.
 /-- The ultrametric triangle inequality for finite sums. -/
-lemma apply_sum_le {α β F : Type*} [AddCommMonoid β] [FunLike F β ℝ] [NonnegHomClass F β ℝ]
-    [ZeroHomClass F β ℝ] {v : F} (hv : IsNonarchimedean v) {l : α → β} {s : Finset α} :
+lemma apply_sum_le (hv : IsNonarchimedean v) {s : Finset α} :
     v (∑ i ∈ s, l i) ≤ ⨆ i : s, v (l i) := by
   classical
   induction s using Finset.induction with
@@ -52,6 +52,12 @@ lemma apply_sum_le {α β F : Type*} [AddCommMonoid β] [FunLike F β ℝ] [Nonn
     · rcases isEmpty_or_nonempty s with hs | hs
       · simpa using Real.iSup_nonneg_of_nonnegHomClass v _
       exact ciSup_le fun i ↦ Finite.le_ciSup_of_le (⟨i.val, Finset.mem_insert_of_mem i.prop⟩) le_rfl
+
+/-- The ultrametric triangle inequality for finite sums. -/
+lemma apply_sum_univ_le [Fintype α] (hv : IsNonarchimedean v) :
+    v (∑ i, l i) ≤ ⨆ i, v (l i) := by
+  grw [hv.apply_sum_le, ← cbiSup_eq_of_forall (by grind)]
+  simp
 
 end IsNonarchimedean
 
@@ -142,12 +148,10 @@ theorem mulHeight_linearMap_apply_le [Nonempty ι] (A : ι' × ι → K) (x : ι
     rw [mul_comm (iSup _), ← mul_assoc]
     exact v.iSup_abv_linearMap_apply_le A x
   · -- nonarchimedean part: reduce to "local" statement `linearMap_apply_bound_of_isNonarchimedean`
-    rw [← finprod_mul_distrib (by fun_prop (disch := assumption))
-      (by fun_prop (disch := assumption))]
-    refine finprod_le_finprod (by fun_prop (disch := assumption))
-      (fun v ↦ Real.iSup_nonneg_of_nonnegHomClass v.val _) ?_ fun v ↦ ?_
-    · fun_prop (disch := assumption)
-    · exact (isNonarchimedean _ v.prop).iSup_abv_linearMap_apply_le A x
+    rw [← finprod_mul_distrib (by fun_prop) (by fun_prop)]
+    refine finprod_le_finprod (by fun_prop)
+      (fun v ↦ Real.iSup_nonneg_of_nonnegHomClass v.val _) (by fun_prop) fun v ↦ ?_
+    exact (isNonarchimedean _ v.prop).iSup_abv_linearMap_apply_le A x
 
 open Real in
 /-- Let `A : ι' × ι → K`, which we can interpret as a linear map from `ι → K` to `ι' → K`.
@@ -275,7 +279,7 @@ private lemma mulHeight_constantCoeff_le_mulHeightBound {p : ι' → MvPolynomia
     exact prod_map_le_prod_map₀ _ _ (fun v _ ↦ Real.iSup_nonneg_of_nonnegHomClass ..)
       fun v _ ↦ Finite.ciSup_mono (H v)
   · have := (Function.ne_iff.mp h).nonempty
-    refine finprod_le_finprod (by fun_prop (disch := assumption))
+    refine finprod_le_finprod (by fun_prop)
       (fun v ↦ Real.iSup_nonneg_of_nonnegHomClass ..) (by fun_prop) ?_
     refine fun v ↦ Finite.ciSup_mono fun j ↦ ?_
     rw [show constantCoeff (p j) = coeff 0 (p j) from rfl]
@@ -333,14 +337,13 @@ theorem mulHeight_eval_le {N : ℕ} {p : ι' → MvPolynomial ι K} (hp : ∀ i,
     have := (Function.ne_iff.mp h₀).nonempty
     have F := hasFiniteMulSupport_iSup_nonarchAbsVal hx
     rw [finprod_pow F, ← finprod_mul_distrib (by fun_prop) (by fun_prop)]
-    refine finprod_le_finprod (by fun_prop (disch := assumption))
+    refine finprod_le_finprod (by fun_prop)
       (fun _ ↦ Real.iSup_nonneg_of_nonnegHomClass ..) (by fun_prop) fun v ↦ Real.iSup_le
       (fun j ↦ ?_) ?_
     · grw [(isNonarchimedean _ v.prop).eval_mvPolynomial_le (hp j) x]
       gcongr
       · exact HH₁ v.val
-      · grw [le_max_left (iSup ..) 1]
-        exact HH₂ (fun j ↦ max (⨆ s : (p j).support, v.val (coeff s.val (p j))) 1) j
+      · grw [← HH₂, ← le_max_left]
     · exact mul_nonneg (iSup_nonneg fun _ ↦ by positivity) <| by simp only [HH₁]
 
 /-- Let `K` be a field with an admissible family of absolute values (giving rise
@@ -536,7 +539,7 @@ namespace Height
 variable [AdmissibleAbsValues K]
 
 lemma mulHeight_mul_mulHeight {a b c d : K} (hab : ![a, b] ≠ 0) (hcd : ![c, d] ≠ 0) :
-    mulHeight ![a, b]* mulHeight ![c, d] = mulHeight ![a * c, a * d, b * c, b * d] := by
+    mulHeight ![a, b] * mulHeight ![c, d] = mulHeight ![a * c, a * d, b * c, b * d] := by
   simp only [← mulHeight_fun_mul_eq hab hcd]
   convert mulHeight_comp_equiv finProdFinEquiv _ with i
   fin_cases i <;> simp [finProdFinEquiv]
@@ -583,7 +586,7 @@ lemma mulHeight_sym2_ge :
   simp only [pow_one] at hC
   refine ⟨C, hC₀, fun hab hcd ↦ ?_⟩
   rw [mul_assoc, mulHeight_mul_mulHeight hab hcd]
-  convert hC p fun j ↦ ?H  with i
+  convert hC p fun j ↦ ?H with i
   case H => fin_cases j <;> simp [p, q, Fin.sum_univ_three] <;> ring
   fin_cases i <;> simp [p]
 
