@@ -249,12 +249,12 @@ lemma Path.findFstEq_eq_find?_le (p : Path N) (r : Fin (N + 2)) : p.findFstEq r 
 
 lemma Path.firstMonster_isSome {p : Path N} {m : MonsterData N} :
     (p.firstMonster m).isSome = true ↔ ∃ x, x ∈ p.cells ∧ x ∈ m.monsterCells := by
-  convert List.find?_isSome
+  convert! List.find?_isSome
   simp
 
 lemma Path.firstMonster_eq_none {p : Path N} {m : MonsterData N} :
     (p.firstMonster m) = none ↔ ∀ x, x ∈ p.cells → x ∉ m.monsterCells := by
-  convert List.find?_eq_none
+  convert! List.find?_eq_none
   simp
 
 lemma Path.one_lt_length_cells (p : Path N) : 1 < p.cells.length := by
@@ -339,7 +339,7 @@ lemma Path.firstMonster_eq_of_findFstEq_mem {p : Path N} {m : MonsterData N}
       List.isChain_iff_getElem.1 p.valid_move_seq 0 (by lia)
     simp_rw [Adjacent, Nat.dist] at adj
     have hc0 : (p.cells[0].1 : ℕ) = 0 := by
-      convert Fin.ext_iff.1 p.head_first_row
+      convert! Fin.ext_iff.1 p.head_first_row
       exact List.getElem_zero _
     have hc1 : (p.cells[1].1 : ℕ) ≠ 0 := Fin.val_ne_iff.2 h0
     have h1 : (p.cells[1].1 : ℕ) = 1 := by lia
@@ -452,7 +452,7 @@ def Path.reflect (p : Path N) : Path N where
 lemma Path.firstMonster_reflect (p : Path N) (m : MonsterData N) :
     p.reflect.firstMonster m.reflect = (p.firstMonster m).map Cell.reflect := by
   simp_rw [firstMonster, reflect, List.find?_map]
-  convert rfl
+  convert! rfl
   simp only [Function.comp_apply, decide_eq_decide, MonsterData.monsterCells]
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rcases h with ⟨i, hi⟩
@@ -509,7 +509,7 @@ lemma Strategy.play_two (s : Strategy N) (m : MonsterData N) {k : ℕ} (hk : 2 <
   · have h : (1 : Fin 2) = Fin.last 1 := rfl
     simp only [Fin.snoc_zero, Nat.reduceAdd, Fin.mk_one, Fin.isValue, Matrix.cons_val]
     simp only [h, Fin.snoc_last]
-    convert rfl
+    convert! rfl
     simp_rw [Fin.fin_one_eq_zero, Matrix.cons_val]
 
 lemma Strategy.WinsIn.mono (s : Strategy N) (m : MonsterData N) {k₁ k₂ : ℕ} (h : s.WinsIn m k₁)
@@ -555,7 +555,7 @@ lemma row1_mem_monsterCells_monsterData12 (hN : 2 ≤ N) (c₁ c₂ : Fin (N + 1
 
 lemma row2_mem_monsterCells_monsterData12 (hN : 2 ≤ N) {c₁ c₂ : Fin (N + 1)} (h : c₁ ≠ c₂) :
     (⟨2, by lia⟩, c₂) ∈ (monsterData12 hN c₁ c₂).monsterCells := by
-  convert Set.mem_range_self (row2 hN)
+  convert! Set.mem_range_self (row2 hN)
   exact (monsterData12_apply_row2 hN h).symm
 
 lemma Strategy.not_forcesWinIn_two (s : Strategy N) (hN : 2 ≤ N) : ¬ s.ForcesWinIn 2 := by

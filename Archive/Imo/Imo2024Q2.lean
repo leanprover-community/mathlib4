@@ -37,7 +37,7 @@ lemma dvd_pow_iff_of_dvd_sub {a b d n : ℕ} {z : ℤ} (ha : a.Coprime d)
   congr
   suffices (((ZMod.unitOfCoprime _ ha) ^ z : (ZMod d)ˣ) : ZMod d) =
       (((ZMod.unitOfCoprime _ ha) ^ (n : ℤ) : (ZMod d)ˣ) : ZMod d) by
-    convert this
+    convert! this
   rw [sub_eq_iff_eq_add] at hk
   rw [hk, zpow_add, zpow_mul]
   norm_cast

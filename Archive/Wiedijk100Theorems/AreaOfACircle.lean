@@ -98,7 +98,7 @@ theorem area_disc : volume (disc r) = NNReal.pi * r ^ 2 := by
   obtain heq | hlt := hle.eq_or_lt; · simp [← heq]
   have hderiv : ∀ x ∈ Ioo (-r : ℝ) r, HasDerivAt F (2 * f x) x := by
     rintro x ⟨hx1, hx2⟩
-    convert
+    convert!
       ((hasDerivAt_const x ((r : ℝ) ^ 2)).mul
           ((hasDerivAt_arcsin _ _).comp x
             ((hasDerivAt_const x (r : ℝ)⁻¹).mul (hasDerivAt_id' x)))).add

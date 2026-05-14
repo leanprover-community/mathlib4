@@ -88,6 +88,6 @@ theorem imo1982_q3b : ∃ x : ℕ → ℝ, Antitone x ∧ x 0 = 1 ∧ (∀ k, 0 
     simp_rw [← pow_mul, pow_succ, ← div_eq_mul_inv, div_div_eq_mul_div, mul_comm, mul_div_assoc,
       ← mul_sum, div_eq_mul_inv, this, ← two_add_two_eq_four, ← mul_two,
       mul_lt_mul_iff_of_pos_left two_pos]
-    convert NNReal.coe_lt_coe.2 <| geom_sum_lt (inv_ne_zero two_ne_zero) two_inv_lt_one n
+    convert! NNReal.coe_lt_coe.2 <| geom_sum_lt (inv_ne_zero two_ne_zero) two_inv_lt_one n
     · simp
     · norm_num

@@ -197,7 +197,7 @@ theorem shiftUp_bottom_subset_bottoms (hc : (cs i).xm ≠ 1) :
   rw [onFun, comp_apply, comp_apply, toSet_disjoint, exists_fin_succ] at this
   rcases this with (h0 | ⟨j, hj⟩)
   · rw [hp0]; symm; apply eq_of_Ico_disjoint h0 (by simp [hw]) _
-    convert hi' 0; rw [hp0]; rfl
+    convert! hi' 0; rw [hp0]; rfl
   · exfalso; apply not_disjoint_iff.mpr ⟨tail p j, hps j, hi' j.succ⟩ hj
 
 end Correct
@@ -237,7 +237,7 @@ theorem valley_unitCube [Nontrivial ι] (h : Correct cs) : Valley cs unitCube :=
       · rw [h0]; exact h.zero_le_b
       · exact (hi 0).1
     intro j; exact hi _
-  · intro i _ _; rw [toSet_subset]; intro j; convert h.side_subset using 1; simp [side_tail]
+  · intro i _ _; rw [toSet_subset]; intro j; convert! h.side_subset using 1; simp [side_tail]
   · intro i _; exact h.w_ne_one i
 
 /-- the cubes which lie in the valley `c` -/
@@ -422,13 +422,13 @@ theorem mi_not_onBoundary (j : Fin n) : ¬OnBoundary (mi_mem_bcubes : mi h v ∈
   intro j₂
   by_cases hj₂ : j₂ = j
   · cases hj₂; refine ⟨x, ?_, ?_⟩
-    · convert hi'.2 j using 1; simp [i, p]
-    apply h3x h2i'' i_i''.symm; convert hi''.2 j using 1; simp [i, p', hj'.symm]
+    · convert! hi'.2 j using 1; simp [i, p]
+    apply h3x h2i'' i_i''.symm; convert! hi''.2 j using 1; simp [i, p', hj'.symm]
   by_cases h2j₂ : j₂ = j'
-  · cases h2j₂; refine ⟨x', hx'.1, ?_⟩; convert hi''.2 j' using 1; simp [p']
+  · cases h2j₂; refine ⟨x', hx'.1, ?_⟩; convert! hi''.2 j' using 1; simp [p']
   refine ⟨(cs i).b j₂.succ, ?_, ?_⟩
-  · convert hi'.2 j₂ using 1; simp [p, hj₂]
-  · convert hi''.2 j₂ using 1; simp [p', h2j₂]
+  · convert! hi'.2 j₂ using 1; simp [p, hj₂]
+  · convert! hi''.2 j₂ using 1; simp [p', h2j₂]
 
 variable {h v}
 
@@ -466,7 +466,7 @@ theorem valley_mi : Valley cs (cs (mi h v)).shiftUp := by
       · intro j'; by_cases h : j' = j
         · simp only [if_pos h]; exact h ▸ h3w
         · simp only [if_neg h]; exact hp2 j'
-      · simp only [toSet, not_forall, mem_setOf_eq]; use j; rw [if_pos rfl]; convert h2w
+      · simp only [toSet, not_forall, mem_setOf_eq]; use j; rw [if_pos rfl]; convert! h2w
       · intro j'; by_cases h : j' = j
         · simp only [if_pos h, side_tail]; exact h ▸ hw
         · simp only [if_neg h]; apply hi.2; apply h2p2
@@ -480,7 +480,7 @@ theorem valley_mi : Valley cs (cs (mi h v)).shiftUp := by
       · exact hi''.2
       · rw [tail_cons]; exact h3p3
     have h3i'' : (cs i).w < (cs i'').w := by
-      apply mi_strict_minimal _ h2i''; rintro rfl; apply h2p3; convert hi''.2
+      apply mi_strict_minimal _ h2i''; rintro rfl; apply h2p3; convert! hi''.2
     let p' := @cons n (fun _ => ℝ) (cs i).xm p3
     have hp' : p' ∈ (cs i').toSet := by simpa [i, p', toSet, forall_iff_succ, hi'.symm] using h1p3
     have h2p' : p' ∈ (cs i'').toSet := by

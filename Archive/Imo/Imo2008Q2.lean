@@ -51,7 +51,7 @@ theorem imo2008_q2a (x y z : ℝ) (h : x * y * z = 1) (hx : x ≠ 1) (hy : y ≠
   have hmn_ne_zero : m + n ≠ 0 := by contrapose hz; field_simp; linarith
   have hc_sub_sub : c - (c - m - n) = m + n := by abel
   rw [ge_iff_le, ← sub_nonneg]
-  convert sq_nonneg ((c * (m ^ 2 + n ^ 2 + m * n) - m * (m + n) ^ 2) / (m * n * (m + n)))
+  convert! sq_nonneg ((c * (m ^ 2 + n ^ 2 + m * n) - m * (m + n) ^ 2) / (m * n * (m + n)))
   simp [field, hc_sub_sub]; ring
 
 def rationalSolutions :=
