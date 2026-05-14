@@ -54,6 +54,7 @@ class CompactIccSpace (α : Type*) [TopologicalSpace α] [Preorder α] : Prop wh
   isCompact_Icc : ∀ {a b : α}, IsCompact (Icc a b)
 
 export CompactIccSpace (isCompact_Icc)
+attribute [compactness .] isCompact_Icc
 
 variable {α : Type*}
 
@@ -91,6 +92,7 @@ instance {α β : Type*} [Preorder α] [TopologicalSpace α] [CompactIccSpace α
   ⟨fun {a b} => (Icc_prod_eq a b).symm ▸ isCompact_Icc.prod isCompact_Icc⟩
 
 /-- An unordered closed interval is compact. -/
+@[compactness .]
 theorem isCompact_uIcc {α : Type*} [LinearOrder α] [TopologicalSpace α] [CompactIccSpace α]
     {a b : α} : IsCompact (uIcc a b) :=
   isCompact_Icc
