@@ -314,6 +314,7 @@ lemma index_comp {G : Type*} [AddCommGroup G] [Module k G] (g : F →ₗ[k] G)
   have h₁ : Exact f₁ f₂ := fun ⟨x, hx⟩ ↦ by simp [f₁, f₂, restrict_apply, Submodule.inclusion_apply]
   have h₂ : Exact f₂ f₃ := fun ⟨x, hx⟩ ↦ by aesop (add simp restrict_apply)
   have h₃ : Exact f₃ f₄ := fun x ↦ by
+    -- TODO use `Submodule.ker_mapQ` rather than `mapQ_eq_zero_iff` (which we should drop)
     simp only [coe_comp, coe_subtype, Set.mem_range, Function.comp_apply, mkQ_apply, Subtype.exists,
       mem_ker, exists_prop, f₄, f₃, mapQ_eq_zero_iff, mkQ_apply, mem_range]
     -- This should be tidier
@@ -324,7 +325,14 @@ lemma index_comp {G : Type*} [AddCommGroup G] [Module k G] (g : F →ₗ[k] G)
     · rintro ⟨y, hy, rfl⟩
       exact ⟨y, rfl, 0, by simp [hy]⟩
   have h₄ : Exact f₄ f₅ := fun x ↦ by
-    sorry
+    simp only [factor, ← mem_ker, ker_mapQ, comap_id, mem_map, mem_range, mkQ_apply,
+      exists_exists_eq_and, Set.mem_range, f₅, f₄]
+    constructor
+    · rintro ⟨y, rfl⟩
+      use Quotient.mk _ y
+      rfl
+    · rintro ⟨y, rfl⟩
+      sorry
   have h₅ : Surjective f₅ := factor_surjective _
 
   -- TODO What API should we write for `Function.Exact` to make the goal trivial from here?
