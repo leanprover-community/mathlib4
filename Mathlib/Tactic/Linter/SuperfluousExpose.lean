@@ -101,13 +101,20 @@ private def returnTypeHeadIs (info : ConstantInfo) (name : Name) : Bool :=
 
 /-- True iff the def is plausibly a `notation`/`infix`/`syntax`/`macro`-
 generated parser entry. Requires both a conventional leaf-name prefix
-(`term_…` / `binder_…` / `stx_…` / `tactic_…`) AND a return type that is one
-of Lean's parser- or macro-descriptor types. The conjunction avoids false
-positives on user defs that happen to share the prefix. -/
+(`term…` / `binder…` / `stx…` / `tactic…`) AND a return type that is one of
+Lean's parser- or macro-descriptor types. The conjunction avoids false
+positives on user defs that happen to share the prefix.
+
+The prefix check is permissive (`term` rather than `term_`) because the leaf
+name's shape depends on the notation's syntax: an infix `notation:65 a " ⋄ " b`
+generates `«term_⋄_»` (with leading underscore for the leading arg), whereas
+a function-like `notation "F(" a ")"` generates `«termF(_)»` (no underscore
+separator). The return-type gate is doing the real classification work; the
+prefix is just a cheap filter. -/
 private def looksLikeNotationDecl (info : ConstantInfo) (name : Name) : Bool :=
   let nameMatches := match name with
-    | .str _ s => s.startsWith "term_" || s.startsWith "binder_" ||
-                  s.startsWith "stx_" || s.startsWith "tactic_"
+    | .str _ s => s.startsWith "term" || s.startsWith "binder" ||
+                  s.startsWith "stx" || s.startsWith "tactic"
     | _ => false
   let typeMatches :=
     returnTypeHeadIs info ``Lean.ParserDescr ||
