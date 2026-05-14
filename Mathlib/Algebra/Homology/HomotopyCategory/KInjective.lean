@@ -180,9 +180,8 @@ lemma IsKInjective.eq_δ_of_cocycle {K L : CochainComplex C ℤ} {n : ℤ}
   apply (Cochain.rightShiftAddEquiv _ _ _ n 0 (by simp)).injective
   dsimp
   rw [← hφ, hf, δ_units_smul, Cochain.rightShift_units_smul,
-    Cochain.δ_rightUnshift _ _ _ _ 0 (by simp),
-    Cochain.rightShift_units_smul, Cochain.rightShift_rightUnshift,
-    smul_smul, Int.units_mul_self, one_smul]
+    Cochain.δ_rightUnshift _ _ _ _ 0 (by simp)]
+  simp [smul_smul]
 
 lemma IsKInjective.eq_δ_of_cocycle' {K L : CochainComplex C ℤ} {n : ℤ}
     (z : Cocycle K L n) [L.IsKInjective] (hL : L.Acyclic) (m : ℤ) (hm : m + 1 = n) :
