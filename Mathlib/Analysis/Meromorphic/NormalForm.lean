@@ -44,6 +44,7 @@ variable (f x) in
 /-- A function is 'meromorphic in normal form' at `x` if it vanishes around `x`
 or if it can locally be written as `fun z ↦ (z - x) ^ n • g` where `g` is
 analytic and does not vanish at `x`. -/
+@[fun_prop]
 def MeromorphicNFAt :=
   f =ᶠ[𝓝 x] 0 ∨
     ∃ (n : ℤ) (g : 𝕜 → E), AnalyticAt 𝕜 g x ∧ g x ≠ 0 ∧ f =ᶠ[𝓝 x] (· - x) ^ n • g
@@ -371,6 +372,7 @@ theorem MeromorphicNFOn.div {f : 𝕜 → 𝕜} {g : 𝕜 → 𝕜} {x : 𝕜} (
 The composition of a meromorphic function in normal form and an analytic
 function is meromorphic in normal form.
 -/
+@[fun_prop]
 theorem MeromorphicNFAt.comp_analyticAt (hf : MeromorphicNFAt f (g x)) (hg : AnalyticAt 𝕜 g x) :
     MeromorphicNFAt (f ∘ g) x := by
   rcases hf with hf | ⟨n, q, hq_an, hq_ne, hf⟩
