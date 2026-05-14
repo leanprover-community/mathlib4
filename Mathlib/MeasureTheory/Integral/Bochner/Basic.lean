@@ -325,17 +325,12 @@ theorem continuous_integral : Continuous fun f : α →₁[μ] G => ∫ a, f a �
 
 theorem norm_integral_le_lintegral_norm (f : α → G) :
     ‖∫ a, f a ∂μ‖ ≤ ENNReal.toReal (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) := by
-  by_cases hG : CompleteSpace G
-  · by_cases hf : Integrable f μ
-    · rw [integral_eq f hf, ← Integrable.norm_toL1_eq_lintegral_norm f hf]
-      exact L1.norm_integral_le _
-    · rw [integral_undef hf, norm_zero]; exact toReal_nonneg
-  · simp [integral, hG]
+  simp only [integral_eq_setToFun]
+  exact (enorm_setToFun_le_toReal _ (by simp)).trans (by simp)
 
 theorem enorm_integral_le_lintegral_enorm (f : α → G) : ‖∫ a, f a ∂μ‖ₑ ≤ ∫⁻ a, ‖f a‖ₑ ∂μ := by
-  simp_rw [← ofReal_norm_eq_enorm]
-  apply ENNReal.ofReal_le_of_le_toReal
-  exact norm_integral_le_lintegral_norm f
+  simp only [integral_eq_setToFun]
+  exact (enorm_setToFun_le _ (by simp)).trans (by simp)
 
 theorem dist_integral_le_lintegral_edist
     {f g : α → G} (hf : Integrable f μ) (hg : Integrable g μ) :

@@ -1087,6 +1087,20 @@ theorem enorm_setToFun_le (hT : DominatedFinMeasAdditive μ T C) (hC : 0 ≤ C) 
   apply le_of_eq
   rw [Integrable.norm_toL1_eq_lintegral_enorm]
 
+theorem norm_setToFun_le_toReal (hT : DominatedFinMeasAdditive μ T C) (hC : 0 ≤ C) :
+    ‖setToFun μ T hT f‖ ≤ NNReal.mk C hC * ENNReal.toReal (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) := by
+  by_cases hF : CompleteSpace F; swap
+  · simp only [setToFun, hF, ↓reduceDIte, norm_zero, NNReal.coe_mk, ofReal_norm]
+    positivity
+  by_cases hf : Integrable f μ; swap
+  · simp only [setToFun_undef _ hf, norm_zero, NNReal.coe_mk, ofReal_norm]
+    positivity
+  apply (norm_setToFun_le hT hf hC).trans
+  gcongr
+  · simp
+  rw [Integrable.norm_toL1_eq_lintegral_enorm]
+  simp
+
 /-- Lebesgue dominated convergence theorem provides sufficient conditions under which almost
   everywhere convergence of a sequence of functions implies the convergence of their image by
   `setToFun`.
