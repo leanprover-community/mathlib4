@@ -114,7 +114,7 @@ lemma epiWithInjectiveKernel.hasLiftingProperty
     {X Y : C} {p : X ⟶ Y} (hp : epiWithInjectiveKernel p)
     {A B : C} (i : A ⟶ B) [Mono i] :
     HasLiftingProperty i p := by
-  suffices (MorphismProperty.monomorphisms C).rlp p from this _ (.infer_property _)
+  suffices (MorphismProperty.monomorphisms C).rlp p from this _ inferInstance
   rw [epiWithInjectiveKernel_iff] at hp
   obtain ⟨I, _, s, hs, ⟨σ⟩⟩ := hp
   have hI : (MorphismProperty.monomorphisms C).rlp (0 : I ⟶ 0) :=
