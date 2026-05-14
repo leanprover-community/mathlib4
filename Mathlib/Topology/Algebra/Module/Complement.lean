@@ -496,16 +496,12 @@ submodules of `E`, the induced continuous linear map `E →L[R] F`.
 
 This is the continuous version of `LinearMap.ofIsCompl`. -/
 noncomputable def ofIsTopCompl (h : IsTopCompl p q) (φ : p →L[R] F) (ψ : q →L[R] F) : E →L[R] F :=
-  φ ∘L p.projectionOntoL q h + ψ ∘L q.projectionOntoL p h.symm
+  φ.coprod ψ ∘L ↑(prodEquivOfIsTopCompl p q h).symm
 
-theorem ofIsTopCompl_eq_coprod (h : IsTopCompl p q) (φ : p →L[R] F) (ψ : q →L[R] F) :
-    ofIsTopCompl h φ ψ = φ.coprod ψ ∘L (prodEquivOfIsTopCompl p q h).symm := by
-  ext x; simp [ofIsTopCompl]
 
 @[simp]
 theorem toLinearMap_ofIsTopCompl (h : IsTopCompl p q) (φ : p →L[R] F) (ψ : q →L[R] F) :
     (ofIsTopCompl h φ ψ : E →ₗ[R] F) = LinearMap.ofIsCompl h.isCompl φ ψ := by
-  rw [LinearMap.ofIsCompl_eq_add]
   rfl
 
 @[simp]
