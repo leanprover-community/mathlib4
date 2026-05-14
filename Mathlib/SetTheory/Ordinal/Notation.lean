@@ -908,9 +908,9 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
   The next block was previously
   ```
   · rcases m with - | m
-    · by_cases h : o₂ = 0 <;> simp [opow_def, opowAux2, e₁, h, r₁]
-      have := mt repr_inj.1 h
-      rw [zero_opow this]
+    · by_cases h : o₂ = 0
+      · simp [opow_def, opowAux2, e₁, h, r₁]
+      · simpa [opow_def, opowAux2, e₁, h, r₁, eqComm] using mt repr_inj.1 h
     · rcases e₂ : split' o₂ with ⟨b', k⟩
       obtain ⟨_, r₂⟩ := nf_repr_split' e₂
       by_cases h : m = 0
