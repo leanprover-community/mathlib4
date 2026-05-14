@@ -734,7 +734,7 @@ lemma tendsto_integral_atTop_nhds_zero_of_tendsto_unif_im_atTop_nhds_zero
   wlog hne : x₁ ≠ x₂
   · rw [ne_eq, Decidable.not_not] at hne
     simp only [hne, integral_same, tendsto_const_nhds_iff]
-  simp only [NormedAddCommGroup.tendsto_nhds_zero, eventually_atTop, ge_iff_le]
+  simp only [NormedAddGroup.tendsto_nhds_zero, eventually_atTop, ge_iff_le]
   intro ε hε
   have hε' : 0 < (1 / 2) * (ε / |x₂ - x₁|) := by
     simp only [one_div, inv_pos, Nat.ofNat_pos, mul_pos_iff_of_pos_left]
