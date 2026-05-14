@@ -18,26 +18,13 @@ import Mathlib.Topology.UniformSpace.Separation
 /-!
 # Krull topology
 
-We define the Krull topology on `Gal(L/K)` for an arbitrary field extension `L/K`. In order to do
-this, we first define a `GroupFilterBasis` on `Gal(L/K)`, whose sets are `E.fixingSubgroup` for
-all intermediate fields `E` with `E/K` finite dimensional.
+We define the Krull topology on `Gal(L/K)` for an arbitrary field extension `L/K`, whose basic
+open neighborhoods of `1` are given by `E.fixingSubgroup`, where `E` ranges over intermediate
+field between `L` and `K` such that `E/K` is finite dimensional.
 
 ## Main Definitions
 
-- `finiteExts K L`. Given a field extension `L/K`, this is the set of intermediate fields that are
-  finite-dimensional over `K`.
-
-- `fixedByFinite K L`. Given a field extension `L/K`, `fixedByFinite K L` is the set of
-  subsets `Gal(L/E)` of `Gal(L/K)`, where `E/K` is finite
-
-- `galBasis K L`. Given a field extension `L/K`, this is the filter basis on `Gal(L/K)` whose
-  sets are `Gal(L/E)` for intermediate fields `E` with `E/K` finite.
-
-- `galGroupBasis K L`. This is the same as `galBasis K L`, but with the added structure
-  that it is a group filter basis on `Gal(L/K)`, rather than just a filter basis.
-
-- `krullTopology K L`. Given a field extension `L/K`, this is the topology on `Gal(L/K)`, induced
-  by the group filter basis `galGroupBasis K L`.
+- `krullTopology K L`. Given a field extension `L/K`, this is the topology on `Gal(L/K)`.
 
 ## Main Results
 
@@ -63,7 +50,10 @@ all intermediate fields `E` with `E/K` finite dimensional.
 
 ## Implementation Notes
 
-- `krullTopology K L` is defined as an instance for type class inference.
+We first define a `UniformGroup` structure on `Gal(L/K)`,
+and use this to construct the Krull topology.
+This lets us use the uniform structure to easily prove compactness of the Krull topology,
+by showing it is complete and totally bounded.
 -/
 
 public section
