@@ -33,15 +33,18 @@ namespace HasCompactSupport
 
 variable [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] [BorelSpace E]
   [NormedSpace ℝ F]
-  (μ : Measure E := by volume_tac) [IsFiniteMeasureOnCompacts μ]
 
-set_option backward.privateInPublic true in
 /-- For every continuous compactly supported function `f` there exists a smooth compactly supported
 function `g` such that `f - g` is arbitrary small in the `Lp`-norm for `p < ∞`. -/
 theorem exist_eLpNorm_sub_le_of_continuous {p : ℝ≥0∞} (hp' : p ≠ 0) (hp : p ≠ ⊤) {ε : ℝ}
     (hε : 0 < ε) {f : E → F} (h₁ : HasCompactSupport f) (h₂ : Continuous f) :
     ∃ (g : E → F), HasCompactSupport g ∧ ContDiff ℝ ∞ g ∧
     eLpNorm (f - g) p μ ≤ ENNReal.ofReal ε := by
+  rcases eq_or_ne p ∞ with rfl | hp
+  · obtain ⟨g, hg₁, hg₂, hg₃⟩ := h₂.exists_contDiff_approx ⊤ (ε := fun _ ↦ ε) (by fun_prop)
+      (by intro; positivity)
+    refine ⟨g, h₁.mono hg₃, hg₁, eLpNormEssSup_le_of_ae_bound (.of_forall fun x ↦ ?_)⟩
+    simpa [← dist_eq_norm_sub'] using (hg₂ x).le
   by_cases hf : f =ᵐ[μ] 0
   -- We will need that the support is non-empty, so we treat the trivial case `f = 0` first.
   · use 0
