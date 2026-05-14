@@ -9,7 +9,7 @@ public import Mathlib.Logic.Pairwise
 public import Batteries.Data.List.Basic
 public import Mathlib.Order.Defs.Unbundled
 import Batteries.Data.List.Lemmas
-import Batteries.Data.List.Pairwise
+public import Batteries.Data.List.Pairwise
 import Batteries.Tactic.Init
 import Mathlib.Logic.Relation
 import Mathlib.Tactic.MkIffOfInductiveProp

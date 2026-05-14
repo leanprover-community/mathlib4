@@ -6,8 +6,8 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Logic.Nontrivial.Defs
-import Batteries.Logic
-import Mathlib.Logic.Nonempty
+public import Batteries.Logic
+public import Mathlib.Logic.Nonempty
 import Mathlib.Tactic.Simps.Basic
 
 /-!

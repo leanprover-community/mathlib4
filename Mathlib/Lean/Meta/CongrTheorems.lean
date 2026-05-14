@@ -13,7 +13,9 @@ public meta import Lean.Meta.CongrTheorems
 public meta import Lean.Meta.FunInfo
 public meta import Lean.Meta.Tactic.Util
 import Lean.Meta.CongrTheorems
-meta import Lean.Meta.Tactic.Refl
+public meta import Lean.Meta.Tactic.Refl
+public meta import Lean.Meta.Tactic.Cases
+public meta import Lean.Meta.Tactic.Cleanup
 import Mathlib.Init
 
 /-!

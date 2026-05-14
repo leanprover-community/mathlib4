@@ -5,11 +5,12 @@ Authors: Johan Commelin
 -/
 module
 
+public import Batteries.Logic
 public import Mathlib.Logic.IsEmpty.Defs
 public import Mathlib.Logic.ExistsUnique
 public import Mathlib.Logic.Function.Defs
 public import Mathlib.Tactic.ToDual
-import Mathlib.Logic.Function.Basic
+public import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.Push.Attr
 
