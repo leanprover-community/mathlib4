@@ -214,6 +214,23 @@ protected theorem LocallyIntegrableOn.sub
 protected theorem LocallyIntegrableOn.neg {f : X → E} (hf : LocallyIntegrableOn f s μ) :
     LocallyIntegrableOn (-f) s μ := fun x hx ↦ (hf x hx).neg
 
+@[simp] theorem locallyIntegrableOn_neg_iff {f : X → E} :
+    LocallyIntegrableOn (-f) s μ ↔ LocallyIntegrableOn f s μ := by
+  unfold LocallyIntegrableOn
+  simp_rw [MeasureTheory.integrableAtFilter_neg_iff]
+
+-- TODO: generalise this to ENormed spaces, once there are suitable typeclasses
+protected theorem LocallyIntegrableOn.smul {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
+    {f : X → E} (hf : LocallyIntegrableOn f s μ) (c : 𝕜) :
+  LocallyIntegrableOn (c • f) s μ := fun x hx ↦ (hf x hx).smul c
+
+-- TODO: generalise this to ENormed spaces, once there are suitable typeclasses
+@[simp] theorem locallyIntegrableOn_smul_iff {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
+    {f : X → E} (c : 𝕜) :
+    LocallyIntegrableOn (c • f) s μ ↔ c = 0 ∨ LocallyIntegrableOn f s μ := by
+  unfold LocallyIntegrableOn
+  grind [integrableAtFilter_smul_iff]
+
 end LocallyIntegrableOn
 
 /-- A function `f : X → ε` is *locally integrable* if it is integrable on a neighborhood of every
@@ -393,9 +410,19 @@ protected theorem LocallyIntegrable.sub {f g : X → E}
 protected theorem LocallyIntegrable.neg {f : X → E} (hf : LocallyIntegrable f μ) :
     LocallyIntegrable (-f) μ := fun x ↦ (hf x).neg
 
+@[simp] theorem locallyIntegrable_neg_iff {f : X → E} :
+    LocallyIntegrable (-f) μ ↔ LocallyIntegrable f μ := by
+  simp [← locallyIntegrableOn_univ]
+
 protected theorem LocallyIntegrable.smul {f : X → E} {𝕜 : Type*} [NormedAddCommGroup 𝕜]
     [SMulZeroClass 𝕜 E] [IsBoundedSMul 𝕜 E] (hf : LocallyIntegrable f μ) (c : 𝕜) :
     LocallyIntegrable (c • f) μ := fun x ↦ (hf x).smul c
+
+-- TODO: generalise this to ENormed spaces, once there are suitable typeclasses
+@[simp] theorem locallyIntegrable_smul_iff {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
+    {f : X → E} (c : 𝕜) :
+    LocallyIntegrable (c • f) μ ↔ c = 0 ∨ LocallyIntegrable f μ := by
+  simp [← locallyIntegrableOn_univ]
 
 variable {ε''' : Type*} [TopologicalSpace ε'''] [ESeminormedAddCommMonoid ε''']
   [ContinuousAdd ε'''] in
@@ -562,31 +589,38 @@ theorem ContinuousOn.integrableOn_compact'
     IntegrableOn f K μ :=
   hf.integrableOn_of_subset_isCompact hK h'K Subset.rfl hK.measure_ne_top
 
+@[fun_prop]
 theorem ContinuousOn.integrableOn_compact [T2Space X]
     (hK : IsCompact K) (hf : ContinuousOn f K) : IntegrableOn f K μ :=
   hf.integrableOn_compact' hK hK.measurableSet
 
+@[fun_prop]
 theorem ContinuousOn.integrableOn_Icc [Preorder X] [CompactIccSpace X] [T2Space X]
     (hf : ContinuousOn f (Icc a b)) : IntegrableOn f (Icc a b) μ :=
   hf.integrableOn_compact isCompact_Icc
 
+@[fun_prop]
 theorem Continuous.integrableOn_Icc [Preorder X] [CompactIccSpace X] [T2Space X]
     (hf : Continuous f) : IntegrableOn f (Icc a b) μ :=
   hf.continuousOn.integrableOn_Icc
 
+@[fun_prop]
 theorem Continuous.integrableOn_Ioc [Preorder X] [CompactIccSpace X] [T2Space X]
     (hf : Continuous f) : IntegrableOn f (Ioc a b) μ :=
   hf.integrableOn_Icc.mono_set Ioc_subset_Icc_self
 
+@[fun_prop]
 theorem ContinuousOn.integrableOn_uIcc [LinearOrder X] [CompactIccSpace X] [T2Space X]
     (hf : ContinuousOn f [[a, b]]) : IntegrableOn f [[a, b]] μ :=
   hf.integrableOn_Icc
 
+@[fun_prop]
 theorem Continuous.integrableOn_uIcc [LinearOrder X] [CompactIccSpace X] [T2Space X]
     (hf : Continuous f) : IntegrableOn f [[a, b]] μ :=
   hf.integrableOn_Icc
 
 open scoped Interval in
+@[fun_prop]
 theorem Continuous.integrableOn_uIoc [LinearOrder X] [CompactIccSpace X] [T2Space X]
     (hf : Continuous f) : IntegrableOn f (Ι a b) μ :=
   hf.integrableOn_Ioc
