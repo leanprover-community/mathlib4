@@ -76,16 +76,18 @@ instance [Finite G] : ResiduallyFinite G :=
   residuallyFinite_iff_forall_finiteIndex.mpr fun _ hg ↦ hg ⊥
 
 @[to_additive]
-instance [ResiduallyFinite G] {H : Subgroup G} : ResiduallyFinite H :=
-  residuallyFinite_iff_forall_finiteIndex.mpr fun x h ↦ OneMemClass.coe_eq_one.mp <|
-    residuallyFinite_iff_forall_finiteIndex.mp ‹_› x.1 (fun _ _ ↦ Subgroup.mem_subgroupOf.mp (h _))
+instance [ResiduallyFinite G] {H : Subgroup G} : ResiduallyFinite H := by
+  rw [residuallyFinite_iff_forall_finiteIndexNormalSubgroup]
+  intro g hg
+  ext
+  exact eq_one_iff_forall_finiteIndexNormalSubroup g.1 fun K ↦ hg (K.comap H.subtype)
 
 @[to_additive]
 instance [ResiduallyFinite G] [ResiduallyFinite G'] : ResiduallyFinite (G × G') := by
-  refine residuallyFinite_iff_forall_finiteIndex.mpr fun g h ↦ Prod.ext_iff.mpr ⟨?_, ?_⟩
-  · exact residuallyFinite_iff_forall_finiteIndex.mp ‹_› g.1
-      (fun K _ ↦ Subgroup.mem_prod.mp (h (Subgroup.prod K ⊤)) |>.1)
-  · exact residuallyFinite_iff_forall_finiteIndex.mp ‹_› g.2
-      (fun K _ ↦ Subgroup.mem_prod.mp (h (Subgroup.prod ⊤ K)) |>.2)
+  rw [residuallyFinite_iff_forall_finiteIndexNormalSubgroup]
+  intro g hg
+  ext
+  · exact eq_one_iff_forall_finiteIndexNormalSubroup g.1 fun K ↦ hg (K.comap (MonoidHom.fst G G'))
+  · exact eq_one_iff_forall_finiteIndexNormalSubroup g.2 fun K ↦ hg (K.comap (MonoidHom.snd G G'))
 
 end Group
