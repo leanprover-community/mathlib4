@@ -15,9 +15,11 @@ public import Lean.ProjFns
 public import Lean.Meta.Match.MatcherInfo
 public import Lean.Meta.Match.MatchPatternAttr
 public import Batteries.Tactic.Lint.Basic
--- Import this linter explicitly to ensure that
--- this file has a valid copyright header and module docstring.
-public import Mathlib.Tactic.Linter.Header  -- shake: keep
+-- Import `Mathlib.Init` (rather than the header linter directly) to ensure
+-- this file has a valid copyright header and module docstring. The
+-- import-linter requires modules not in `Mathlib.Init`'s closure to go
+-- through `Mathlib.Init`.
+public import Mathlib.Init  -- shake: keep
 
 /-!
 # Superfluous-expose linter
