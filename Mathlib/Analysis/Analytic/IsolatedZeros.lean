@@ -182,21 +182,23 @@ lemma unique_eventuallyEq_pow_smul_nonzero {m n : ℕ}
 /-- If `f` is analytic at `z₀`, then exactly one of the following two possibilities occurs: either
 `f` vanishes identically near `z₀`, or locally around `z₀` it has the form `z ↦ (z - z₀) ^ n • g z`
 for some `n` and some `g` which is analytic and non-vanishing at `z₀`. -/
-theorem exists_eq_pow_smul_nonzero_iff (hf : AnalyticAt 𝕜 f z₀) :
+theorem exists_eventuallyEq_pow_smul_nonzero_iff (hf : AnalyticAt 𝕜 f z₀) :
     (∃ (n : ℕ), ∃ (g : 𝕜 → E), AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧
-    ∀ z, f z = (z - z₀) ^ n • g z) ↔ (¬∀ᶠ z in 𝓝 z₀, f z = 0) := by
+    ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ n • g z) ↔ (¬∀ᶠ z in 𝓝 z₀, f z = 0) := by
   constructor
   · rintro ⟨n, g, hg_an, hg_ne, hg_eq⟩
     contrapose hg_ne
     apply EventuallyEq.eq_of_nhds
     rw [EventuallyEq, ← AnalyticAt.frequently_eq_iff_eventually_eq hg_an analyticAt_const]
-    refine (eventually_nhdsWithin_iff.mpr <| hg_ne.mono ?_).frequently
-    simp +contextual [hg_eq, sub_eq_zero, or_imp]
+    refine (eventually_nhdsWithin_iff.mpr ?_).frequently
+    filter_upwards [hg_eq, hg_ne] with z hf_eq hf0 hz
+    rwa [hf0, eq_comm, smul_eq_zero_iff_right] at hf_eq
+    exact pow_ne_zero _ (sub_ne_zero.mpr hz)
   · intro hf_ne
     rcases hf with ⟨p, hp⟩
     exact ⟨p.order, _, ⟨_, hp.has_fpower_series_iterate_dslope_fslope p.order⟩,
       hp.iterate_dslope_fslope_ne_zero (hf_ne.imp hp.locally_zero_iff.mpr),
-      hp.eq_pow_order_mul_iterate_dslope⟩
+      .of_forall hp.eq_pow_order_mul_iterate_dslope⟩
 
 end AnalyticAt
 
