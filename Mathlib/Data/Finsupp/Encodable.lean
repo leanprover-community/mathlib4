@@ -7,11 +7,6 @@ module
 
 public import Mathlib.Data.Finsupp.ToDFinsupp
 public import Mathlib.Data.DFinsupp.Encodable
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 /-!
 # `Encodable` and `Countable` instances for `α →₀ β`
 

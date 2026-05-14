@@ -5,18 +5,9 @@ Authors: María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.Algebra.Notation.Pi.Defs
-public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
-public import Mathlib.Order.Bounds.Defs
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
-import Mathlib.Data.Set.Image
-import Mathlib.Init
-import Mathlib.Order.Bounds.Basic
-import Mathlib.Order.Bounds.Image
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Use
-import Mathlib.Util.CompileInductive
+public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+public import Mathlib.Order.Bounds.Basic
+public import Mathlib.Order.Bounds.Image
 
 /-!
 # Lemmas about `BddAbove`

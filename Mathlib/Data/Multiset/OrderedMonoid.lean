@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Algebra.Order.Group.Multiset
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
 
 /-!
 # Multisets as ordered monoids

@@ -6,11 +6,6 @@ Authors: Daniel Carranza
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Tactic.CategoryTheory.Reassoc
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # The currying-uncurrying isomorphism between internal homs of a closed monoidal category

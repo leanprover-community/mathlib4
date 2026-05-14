@@ -7,10 +7,6 @@ module
 
 public import Mathlib.Data.Finset.Sort
 public import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Sorting a finite type

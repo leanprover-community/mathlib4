@@ -5,26 +5,9 @@ Authors: Anatole Dedecker
 -/
 module
 
+public import Mathlib.Topology.Algebra.Group.Pointwise
 public import Mathlib.Topology.Algebra.RestrictedProduct.Basic
 public import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Data.Set.Prod
-import Mathlib.Order.Filter.Finite
-import Mathlib.Order.Filter.Map
-import Mathlib.Order.Filter.Prod
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.Translate.ToAdditive
-import Mathlib.Topology.Algebra.Group.Pointwise
-import Mathlib.Topology.Compactness.LocallyCompact
-import Mathlib.Topology.Neighborhoods
 
 /-!
 # Restricted products of topological spaces, topological groups and rings

@@ -7,11 +7,6 @@ module
 
 public import Mathlib.Data.Finset.Sort
 public import Mathlib.Data.Prod.Lex
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Disjoint
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Gaps of disjoint closed intervals

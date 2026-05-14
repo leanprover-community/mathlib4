@@ -7,34 +7,12 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Fréd
 module
 
 public import Mathlib.Algebra.Module.Opposite
+public import Mathlib.Topology.Algebra.Group.Quotient
 public import Mathlib.Topology.Algebra.Ring.Basic
+public import Mathlib.Topology.UniformSpace.UniformEmbedding
+public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.LinearAlgebra.Quotient.Defs
-public import Mathlib.Topology.Separation.Regular
-public import Mathlib.Topology.UniformSpace.Cauchy
-import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
-import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.Group.Submonoid.BigOperators
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Data.Set.Prod
-import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-import Mathlib.Order.Filter.Map
-import Mathlib.Order.Filter.Tendsto
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Algebra.Group.Quotient
-import Mathlib.Topology.Closure
-import Mathlib.Topology.Maps.OpenQuotient
-import Mathlib.Topology.Neighborhoods
-import Mathlib.Topology.NhdsWithin
-import Mathlib.Topology.UniformSpace.UniformEmbedding
 
 /-!
 # Theory of topological modules

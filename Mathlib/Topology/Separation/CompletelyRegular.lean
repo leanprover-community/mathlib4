@@ -5,39 +5,13 @@ Authors: Matias Heikkilä
 -/
 module
 
+public import Mathlib.Topology.UrysohnsLemma
 public import Mathlib.Topology.UnitInterval
 public import Mathlib.Topology.Compactification.StoneCech
+public import Mathlib.Topology.Order.Lattice
+public import Mathlib.Analysis.Real.Cardinality
 
 import Mathlib.Topology.Algebra.Indicator
-public import Mathlib.SetTheory.Cardinal.Continuum
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Module.Field
-import Mathlib.Analysis.Real.Cardinality
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.EReal.Inv
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Data.Set.Disjoint
-import Mathlib.Order.Filter.Map
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.TautoSet
-import Mathlib.Topology.Algebra.InfiniteSum.Order
-import Mathlib.Topology.Clopen
-import Mathlib.Topology.Closure
-import Mathlib.Topology.Compactness.LocallyCompact
-import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
-import Mathlib.Topology.Metrizable.Uniformity
-import Mathlib.Topology.Neighborhoods
-import Mathlib.Topology.Order.Lattice
-import Mathlib.Topology.Order.T5
-import Mathlib.Topology.UrysohnsLemma
 
 /-!
 # Completely regular topological spaces.

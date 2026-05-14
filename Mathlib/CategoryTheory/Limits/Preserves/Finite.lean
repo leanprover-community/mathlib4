@@ -7,12 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.FinCategory.AsType
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Preservation of finite (co)limits.

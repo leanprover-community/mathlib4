@@ -7,13 +7,6 @@ module
 
 public import Mathlib.Combinatorics.Matroid.Constructions
 public import Mathlib.Data.Set.Notation
-import Mathlib.Combinatorics.Matroid.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Order.Minimal
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Maps between matroids

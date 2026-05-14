@@ -5,12 +5,7 @@ Authors: Kyle Miller
 -/
 module
 
-public import Batteries.Tactic.Lint
-public import Lean.Meta.Basic
-public meta import Mathlib.Lean.Expr.Basic
-import Lean.Meta.CongrTheorems
-import Mathlib.Init
-import Mathlib.Lean.Meta.CongrTheorems
+public import Mathlib.Lean.Meta.CongrTheorems
 
 /-! # `congr(...)` congruence quotations
 

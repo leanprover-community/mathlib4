@@ -5,15 +5,7 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.Data.Set.BooleanAlgebra
-public import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Disjoint
-import Mathlib.Data.Set.Finite.Lattice
-import Mathlib.Data.Set.Lattice
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Data.Set.Finite.Lattice
 
 /-!
 # Partitions based on membership of a sequence of sets

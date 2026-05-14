@@ -6,36 +6,7 @@ Authors: Yongle Hu, Jiedong Jiang
 module
 
 public import Mathlib.FieldTheory.Galois.IsGaloisGroup
-public import Mathlib.NumberTheory.RamificationInertia.Inertia
-public import Mathlib.NumberTheory.RamificationInertia.Ramification
-public import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Combinatorics.Matroid.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Nat.Totient
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
-import Mathlib.NumberTheory.RamificationInertia.Basic
-import Mathlib.RingTheory.DedekindDomain.Dvr
-import Mathlib.RingTheory.DedekindDomain.IntegralClosure
-import Mathlib.RingTheory.Ideal.GoingUp
-import Mathlib.RingTheory.Invariant.Basic
-import Mathlib.RingTheory.Localization.Integral
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.Ring.RingNF
-import Mathlib.Tactic.SetLike
+public import Mathlib.NumberTheory.RamificationInertia.Basic
 
 /-!
 # Ramification theory in Galois extensions of Dedekind domains

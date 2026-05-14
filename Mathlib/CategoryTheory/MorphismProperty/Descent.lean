@@ -6,13 +6,7 @@ Authors: Christian Merten
 module
 
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.CategoryTheory.CategoryStar
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
 
 /-!
 # Descent of morphism properties

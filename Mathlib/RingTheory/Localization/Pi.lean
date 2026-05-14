@@ -6,28 +6,13 @@ Authors: Madison Crim
 module
 
 public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.Algebra.BigOperators.Pi
+public import Mathlib.Algebra.Divisibility.Prod
+public import Mathlib.Algebra.Group.Submonoid.BigOperators
 public import Mathlib.Algebra.Group.Subgroup.Basic
-public import Mathlib.RingTheory.KrullDimension.Basic
-public import Mathlib.RingTheory.LocalRing.Defs
-public import Mathlib.RingTheory.Localization.Defs
-import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
-import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.Divisibility.Prod
-import Mathlib.Algebra.Group.Pi.Units
-import Mathlib.Algebra.Group.Submonoid.BigOperators
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.RingTheory.KrullDimension.Zero
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.SetLike
+public import Mathlib.RingTheory.Localization.Basic
+public import Mathlib.Algebra.Group.Pi.Units
+public import Mathlib.RingTheory.KrullDimension.Zero
 
 /-!
 # Localizing a product of commutative rings

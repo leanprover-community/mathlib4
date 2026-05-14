@@ -9,10 +9,6 @@ public import Mathlib.Algebra.Ring.InjSurj
 public import Mathlib.Data.Finsupp.SMulWithZero
 public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Algebra.Ring.Pi
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # The pointwise product on `Finsupp`.

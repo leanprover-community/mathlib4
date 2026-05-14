@@ -15,19 +15,6 @@ import Mathlib.Data.ZMod.QuotientGroup
 import Mathlib.LinearAlgebra.Dimension.Constructions
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 public import Mathlib.LinearAlgebra.Dimension.Free
-import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.Algebra.Group.Torsion
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Int.Basic
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.RingTheory.Noetherian.Basic
-import Mathlib.RingTheory.PrincipalIdealDomain
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
 
 /-!
 # Lemmas about index and multiplication-by-n

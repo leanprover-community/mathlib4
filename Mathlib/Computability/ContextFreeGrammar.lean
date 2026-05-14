@@ -6,11 +6,6 @@ Authors: Martin Dvorak
 module
 
 public import Mathlib.Computability.Language
-import Batteries.Tactic.Trans
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Context-Free Grammars

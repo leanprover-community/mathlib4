@@ -5,16 +5,8 @@ Authors: Johannes Hölzl, Floris van Doorn, Gabriel Ebner, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Finite.Defs
-public import Mathlib.Order.ConditionallyCompleteLattice.Basic
-public import Mathlib.Order.Nat
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Finite.Lattice
-import Mathlib.Order.ConditionallyCompleteLattice.Finset
-import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Order.ConditionallyCompleteLattice.Finset
+public import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Conditionally complete linear order structure on `ℕ`

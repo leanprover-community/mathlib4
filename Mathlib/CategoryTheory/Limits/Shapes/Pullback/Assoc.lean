@@ -6,12 +6,6 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
-import Batteries.Tactic.Trans
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Tactic.CategoryTheory.Reassoc
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # Associativity of pullbacks

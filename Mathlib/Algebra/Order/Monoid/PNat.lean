@@ -8,12 +8,6 @@ module
 public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 public import Mathlib.Algebra.Order.Hom.Monoid
 public import Mathlib.Data.PNat.Basic
-import Mathlib.Algebra.Ring.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Equivalence between `ℕ+` and `nonZeroDivisors ℕ`

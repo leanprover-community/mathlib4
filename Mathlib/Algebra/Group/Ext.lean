@@ -5,11 +5,7 @@ Authors: Bryan Gin-ge Chen, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Group.Defs
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Init
-import Mathlib.Tactic.Translate.ToAdditive
-import Mathlib.Util.CompileInductive
+public import Mathlib.Algebra.Group.Hom.Defs
 
 /-!
 # Extensionality lemmas for monoid and group structures

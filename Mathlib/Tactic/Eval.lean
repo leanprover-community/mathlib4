@@ -5,9 +5,8 @@ Authors: Eric Wieser
 -/
 module
 
-public meta import Qq.Typ
-import Mathlib.Init
-import Qq.Macro
+public import Mathlib.Init
+public import Qq.Macro
 
 /-!
 # The `eval%` term elaborator

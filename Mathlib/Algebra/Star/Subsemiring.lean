@@ -7,11 +7,6 @@ module
 
 public import Mathlib.Algebra.Star.NonUnitalSubsemiring
 public import Mathlib.Algebra.Ring.Subsemiring.Basic
-public import Mathlib.Algebra.Star.Center
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Star subrings

@@ -6,10 +6,6 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.Multiset.ZeroCons
-public import Mathlib.Data.List.Defs
-public import Mathlib.Tactic.Attr.Core
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
 
 /-!
 # Basic results on multisets

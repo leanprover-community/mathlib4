@@ -7,12 +7,6 @@ module
 
 public import Mathlib.Topology.Continuous
 public import Mathlib.Topology.ContinuousMap.Defs
-public meta import Mathlib.Tactic.ToDual
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Util.CompileInductive
 
 /-!
 # Continuous order homomorphisms

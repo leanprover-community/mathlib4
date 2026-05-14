@@ -7,10 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 public import Mathlib.CategoryTheory.Grothendieck
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # Structured Arrow Categories as strict functor to Cat

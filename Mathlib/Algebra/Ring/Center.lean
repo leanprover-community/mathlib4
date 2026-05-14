@@ -6,12 +6,7 @@ Authors: Eric Wieser, Jireh Loreaux
 module
 
 public import Mathlib.Algebra.Group.Center
-public import Mathlib.Algebra.Ring.Defs
-import Mathlib.Data.Int.Cast.Lemmas
-import Mathlib.Data.Nat.Cast.Commute
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Data.Int.Cast.Lemmas
 
 /-!
 # Centers of rings

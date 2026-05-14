@@ -6,12 +6,7 @@ Authors: Andrew Yang, Dagur Asgeirsson
 module
 
 public import Mathlib.Topology.Bases
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Lattice
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Compactness.Compact
+public import Mathlib.Topology.Compactness.Compact
 
 /-!
 # Topological bases in compact sets and compact spaces

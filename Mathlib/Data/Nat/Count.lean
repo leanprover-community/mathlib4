@@ -6,13 +6,7 @@ Authors: Yaël Dillies, Vladimir Goryachev, Kyle Miller, Kim Morrison, Eric Rodr
 module
 
 public import Mathlib.Data.Set.Finite.Basic
-public import Mathlib.Tactic.ToAdditive
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Monotonicity.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Algebra.Group.Nat.Defs
 
 /-!
 # Counting on ℕ

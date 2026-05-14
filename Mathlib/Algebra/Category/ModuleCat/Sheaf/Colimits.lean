@@ -5,18 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Sheaf
-import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafification
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Continuity.Init
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Eq
-import Mathlib.Tactic.NormNum.Ineq
-import Mathlib.Tactic.NormNum.Pow
-import Mathlib.Tactic.SetLike
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafification
 
 /-!
 # Colimits in categories of sheaves of modules

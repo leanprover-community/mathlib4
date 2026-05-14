@@ -9,11 +9,6 @@ public import Mathlib.CategoryTheory.Category.Preorder
 public import Mathlib.CategoryTheory.Opposites
 public import Mathlib.Order.Fin.Basic
 public import Mathlib.Util.Superscript
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Tactic.CategoryTheory.Reassoc
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-! # The simplex category
 

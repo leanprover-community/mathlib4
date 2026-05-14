@@ -5,26 +5,9 @@ Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
 module
 
+public import Mathlib.SetTheory.Cardinal.Arithmetic
 public import Mathlib.SetTheory.Cardinal.Cofinality.Basic
 public import Mathlib.SetTheory.Ordinal.FixedPoint
-public import Mathlib.SetTheory.Cardinal.Aleph
-public import Mathlib.SetTheory.Ordinal.Family
-import Mathlib.Algebra.Order.Group.Defs
-import Mathlib.Algebra.Order.Group.Int
-import Mathlib.Algebra.Order.Monoid.NatCast
-import Mathlib.Data.Countable.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Lattice
-import Mathlib.Logic.Small.Basic
-import Mathlib.Logic.Small.Set
-import Mathlib.Logic.UnivLE
-import Mathlib.Order.Cofinal
-import Mathlib.Order.ConditionallyCompleteLattice.Indexed
-import Mathlib.SetTheory.Cardinal.Arithmetic
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Cofinality of an ordinal

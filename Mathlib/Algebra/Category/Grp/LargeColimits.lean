@@ -6,20 +6,8 @@ Authors: Sophie Morel
 module
 
 public import Mathlib.Algebra.Category.Grp.Colimits
+public import Mathlib.Algebra.Module.CharacterModule
 public import Mathlib.Algebra.Group.Equiv.Basic
-import Mathlib.Algebra.Module.CharacterModule
-import Mathlib.Algebra.Order.AbsoluteValue.Basic
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
 
 /-!
 # Existence of "big" colimits in the category of additive commutative groups

@@ -7,12 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.Action.Basic
 public import Mathlib.CategoryTheory.Monoidal.Opposite
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Tactic.CategoryTheory.CancelIso
-import Mathlib.Tactic.CategoryTheory.CategoryStar
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 

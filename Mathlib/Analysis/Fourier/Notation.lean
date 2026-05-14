@@ -8,16 +8,6 @@ module
 public import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Topology.Algebra.Module.Equiv
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
 
 /-! # Type classes for the Fourier transform
 

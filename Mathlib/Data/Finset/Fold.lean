@@ -5,15 +5,10 @@ Authors: Mario Carneiro
 -/
 module
 
+public import Mathlib.Data.Finset.Basic
 public import Mathlib.Data.Finset.Image
 public import Mathlib.Data.Multiset.Fold
-public import Mathlib.Order.MinMax
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Finset.Basic
-import Mathlib.Data.Finset.Lattice.Lemmas
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Data.Finset.Lattice.Lemmas
 
 /-!
 # The fold operation for a commutative associative operation over a finset.

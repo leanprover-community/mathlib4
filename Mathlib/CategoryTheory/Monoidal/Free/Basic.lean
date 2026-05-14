@@ -6,10 +6,6 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Functor
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # The free monoidal category over a type

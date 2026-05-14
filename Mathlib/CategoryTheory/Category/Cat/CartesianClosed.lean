@@ -8,11 +8,6 @@ module
 public import Mathlib.CategoryTheory.Functor.Currying
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Cat
 public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Cartesian closed structure on `Cat`

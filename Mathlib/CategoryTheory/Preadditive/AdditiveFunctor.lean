@@ -7,18 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.Limits.ExactFunctor
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.Preadditive.Biproducts
 public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Biproducts
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Preadditive.Biproducts
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.CategoryTheory.CategoryStar
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.CrossRefAttribute
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Tactic.SetLike
 
 /-!
 # Additive Functors

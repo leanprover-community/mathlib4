@@ -6,12 +6,6 @@ Authors: Tanner Duve, Elan Roth
 module
 
 public import Mathlib.Computability.Partrec
-public import Mathlib.Algebra.GroupWithZero.Nat
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Oracle computability

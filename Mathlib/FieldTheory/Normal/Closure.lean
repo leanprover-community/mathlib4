@@ -6,29 +6,9 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.RingTheory.SimpleRing.Basic
+public import Mathlib.FieldTheory.Normal.Basic
 public import Mathlib.Order.Closure
-public import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
-public import Mathlib.FieldTheory.Normal.Defs
-public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-import Mathlib.Algebra.NoZeroSMulDivisors.Basic
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.FieldTheory.Extension
-import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
-import Mathlib.FieldTheory.Normal.Basic
-import Mathlib.LinearAlgebra.FiniteDimensional.Basic
-import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.CrossRefAttribute
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.SetLike
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 /-!
 # Normal closures
 

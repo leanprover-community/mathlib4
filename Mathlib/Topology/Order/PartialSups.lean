@@ -7,11 +7,6 @@ module
 
 public import Mathlib.Topology.Order.Lattice
 public import Mathlib.Order.PartialSups
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Continuous
 
 /-!
 # Continuity of `partialSups`

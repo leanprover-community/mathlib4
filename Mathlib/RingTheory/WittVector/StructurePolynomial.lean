@@ -5,29 +5,9 @@ Authors: Johan Commelin, Robert Y. Lewis
 -/
 module
 
+public import Mathlib.FieldTheory.Finite.Polynomial
+public import Mathlib.NumberTheory.Basic
 public import Mathlib.RingTheory.WittVector.WittPolynomial
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.Order.AbsoluteValue.Basic
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Ring.Rat
-import Mathlib.Algebra.Order.Sub.Basic
-import Mathlib.Algebra.Order.Sub.Unbundled.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Nat.Totient
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Lemmas
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.FieldTheory.Finite.Polynomial
-import Mathlib.NumberTheory.Basic
-import Mathlib.Tactic.ApplyFun
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.SetLike
 
 /-!
 # Witt structure polynomials

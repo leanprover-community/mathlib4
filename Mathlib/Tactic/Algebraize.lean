@@ -5,17 +5,9 @@ Authors: Johan Commelin, Nick Kuhn, Arend Mellendijk, Christian Merten, Calle SÃ
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Tower
 public meta import Mathlib.Tactic.Attr.Core
 public meta import Mathlib.Tactic.ToAdditive
-public import Batteries.Tactic.Exact
-public meta import Lean
-public import Mathlib.Tactic.Attr.Core
-public meta import Mathlib.Tactic.ToDual
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 

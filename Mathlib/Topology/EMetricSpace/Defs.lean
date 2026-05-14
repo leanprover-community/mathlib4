@@ -5,32 +5,9 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébas
 -/
 module
 
+public import Mathlib.Data.ENNReal.Inv
 public import Mathlib.Topology.UniformSpace.Basic
 public import Mathlib.Topology.UniformSpace.OfFun
-public import Mathlib.Data.ENNReal.Basic
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Sub.Basic
-import Mathlib.Algebra.Order.Sub.Unbundled.Basic
-import Mathlib.Data.ENNReal.Inv
-import Mathlib.Data.ENNReal.Operations
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Data.Set.Disjoint
-import Mathlib.Order.Filter.AtTopBot.Basic
-import Mathlib.Order.Filter.Map
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.Translate.ToAdditive
-import Mathlib.Topology.ClusterPt
-import Mathlib.Topology.Continuous
-import Mathlib.Topology.Neighborhoods
-import Mathlib.Topology.NhdsWithin
 
 /-!
 # Extended metric spaces

@@ -10,16 +10,8 @@ public import Mathlib.ModelTheory.Types
 public import Mathlib.Topology.Bases
 public import Mathlib.Topology.Connected.TotallyDisconnected
 public import Mathlib.Topology.Compactness.Compact
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Lattice
-import Mathlib.Order.Filter.Finite
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Baire.LocallyCompactRegular
-import Mathlib.Topology.Compactness.LocallyCompact
-import Mathlib.Topology.Connected.Separation
+public import Mathlib.Topology.Connected.Separation
+public import Mathlib.Topology.Baire.LocallyCompactRegular
 
 /-!
 # Topology on the space of complete types

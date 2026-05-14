@@ -5,17 +5,8 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Aesop
-public import Mathlib.Data.Set.Operations
-public import Mathlib.Logic.Equiv.Defs
-public import Mathlib.Tactic.Attr.Core
-public import Mathlib.Tactic.Basic
-import Mathlib.Data.List.Nodup
-import Mathlib.Data.Set.Image
-import Mathlib.Data.Set.Prod
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Data.List.Nodup
+public import Mathlib.Data.Set.Prod
 
 /-!
 # Finite products of types

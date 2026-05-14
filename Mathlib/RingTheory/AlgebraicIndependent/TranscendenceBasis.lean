@@ -7,34 +7,8 @@ module
 
 public import Mathlib.Combinatorics.Matroid.IndepAxioms
 public import Mathlib.Combinatorics.Matroid.Rank.Cardinal
-public import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
-public import Mathlib.RingTheory.Algebraic.Integral
-public import Mathlib.RingTheory.AlgebraicIndependent.Basic
-public import Mathlib.RingTheory.FiniteType
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Combinatorics.Matroid.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
-import Mathlib.Logic.Small.Basic
-import Mathlib.Logic.Small.Set
-import Mathlib.Logic.UnivLE
-import Mathlib.Order.ConditionallyCompleteLattice.Indexed
-import Mathlib.Order.Minimal
-import Mathlib.RingTheory.Adjoin.Basic
-import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
-import Mathlib.RingTheory.LocalRing.Basic
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.CrossRefAttribute
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Nontriviality.Core
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.SetLike
+public import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
+public import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
 
 /-!
 # Transcendence basis

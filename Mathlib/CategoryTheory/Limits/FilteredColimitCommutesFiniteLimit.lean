@@ -6,23 +6,13 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Limits.ColimitLimit
+public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+public import Mathlib.CategoryTheory.Limits.Types.Filtered
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
+public import Mathlib.CategoryTheory.Products.Bifunctor
 public import Mathlib.Data.Countable.Small
-public import Mathlib.CategoryTheory.Filtered.Basic
-public import Mathlib.CategoryTheory.Limits.Types.Colimits
-public import Mathlib.CategoryTheory.Limits.Types.Limits
-import Batteries.Tactic.Trans
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
-import Mathlib.CategoryTheory.Limits.Types.Filtered
-import Mathlib.CategoryTheory.Products.Bifunctor
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.CategoryTheory.Reassoc
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Filtered colimits commute with finite limits.

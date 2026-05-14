@@ -6,11 +6,6 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Tactic.CategoryTheory.Slice
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # Transport a monoidal structure along an equivalence.

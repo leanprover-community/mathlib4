@@ -5,8 +5,8 @@ Authors: Kyle Miller, Thomas R. Murrills
 -/
 module
 
-public meta import Lean.Elab.SyntheticMVars
-import Mathlib.Init
+public import Mathlib.Init
+public import Lean.Elab.Term
 
 /-!
 # Additions to `Lean.Elab.Term`

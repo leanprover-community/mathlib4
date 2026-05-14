@@ -7,11 +7,6 @@ module
 
 public import Mathlib.Algebra.GCDMonoid.Basic
 public import Mathlib.Algebra.Ring.PUnit
-public import Mathlib.Tactic.Basic
-import Mathlib.Algebra.Group.Units.Basic
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # `PUnit` is a GCD monoid

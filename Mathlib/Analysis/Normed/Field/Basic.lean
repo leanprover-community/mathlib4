@@ -6,28 +6,8 @@ Authors: Patrick Massot, Johannes Hölzl
 module
 
 public import Mathlib.Algebra.Field.Subfield.Defs
+public import Mathlib.Algebra.Order.Group.Pointwise.Interval
 public import Mathlib.Analysis.Normed.Ring.Basic
-public import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Group.Pointwise.Interval
-import Mathlib.Algebra.Order.Module.Field
-import Mathlib.Algebra.Order.Monoid.NatCast
-import Mathlib.Data.ENNReal.Inv
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.RingTheory.SimpleRing.Basic
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.FastInstance
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.ClusterPt
 
 /-!
 # Normed division rings and fields

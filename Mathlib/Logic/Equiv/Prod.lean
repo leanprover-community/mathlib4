@@ -6,10 +6,7 @@ Authors: Leonardo de Moura, Mario Carneiro
 module
 
 public import Mathlib.Logic.Equiv.Defs
-public import Mathlib.Tactic.Push
-import Mathlib.Init
-import Mathlib.Tactic.Contrapose
-import Mathlib.Util.CompileInductive
+public import Mathlib.Tactic.Contrapose
 
 /-!
 # Equivalence between product types

@@ -6,22 +6,7 @@ Authors: Kevin Buzzard
 module
 
 public import Mathlib.Data.EReal.Basic
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Group.Defs
-import Mathlib.Algebra.Order.Group.Unbundled.Basic
-import Mathlib.Algebra.Order.Ring.Unbundled.Basic
-import Mathlib.Algebra.Order.Sub.Basic
-import Mathlib.Data.ENNReal.Operations
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Util.CompileInductive
+public import Batteries.Util.ProofWanted
 
 /-!
 # Addition, negation, subtraction and multiplication on extended real numbers

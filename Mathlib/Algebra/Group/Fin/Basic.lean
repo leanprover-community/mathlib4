@@ -5,17 +5,10 @@ Authors: Yakov Pechersky
 -/
 module
 
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.NeZero
 public import Mathlib.Data.Nat.Cast.Defs
-public import Aesop
-public import Mathlib.Tactic.Spread
-public import Mathlib.Tactic.ToDual
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.NeZero
-import Mathlib.Data.Fin.Rev
-import Mathlib.Tactic.Attr.Register
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Data.Fin.Rev
 
 /-!
 # Fin is a group

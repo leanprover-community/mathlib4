@@ -7,11 +7,6 @@ module
 
 public import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.Data.PNat.Basic
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # Primality and GCD on pnat

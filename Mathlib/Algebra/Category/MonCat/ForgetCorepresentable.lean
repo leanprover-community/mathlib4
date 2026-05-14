@@ -9,10 +9,6 @@ public import Mathlib.Algebra.Category.MonCat.Basic
 public import Mathlib.Algebra.Group.Equiv.Basic
 public import Mathlib.Algebra.Group.Nat.Hom
 public import Mathlib.CategoryTheory.Yoneda
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # The forgetful functor is corepresentable

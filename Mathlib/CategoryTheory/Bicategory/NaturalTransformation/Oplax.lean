@@ -6,13 +6,7 @@ Authors: Yuma Mizuno, Calle Sönne
 module
 
 public import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Tactic.CategoryTheory.Bicategory.Basic
-import Mathlib.Tactic.CategoryTheory.Reassoc
-import Mathlib.Tactic.CategoryTheory.ToApp
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Tactic.CategoryTheory.Bicategory.Basic
 
 /-!
 # Transformations between oplax functors

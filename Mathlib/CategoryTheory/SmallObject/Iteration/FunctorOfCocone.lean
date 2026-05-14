@@ -6,14 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.CategoryTheory.CategoryStar
-import Mathlib.Tactic.CategoryTheory.Reassoc
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Util.CompileInductive
 
 /-!
 # The functor from `Set.Iic j` deduced from a cocone

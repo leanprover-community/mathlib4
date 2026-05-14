@@ -9,12 +9,6 @@ public import Mathlib.Order.BoundedOrder.Basic
 public import Mathlib.Order.OmegaCompletePartialOrder
 public import Mathlib.Order.ConditionallyCompletePartialOrder.Defs
 public import Mathlib.Order.CompleteLattice.Defs
-import Mathlib.Data.Set.Image
-import Mathlib.Order.Bounds.Basic
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Util.CompileInductive
 
 /-!
 # Complete Partial Orders

@@ -5,33 +5,8 @@ Authors: Thomas Browning, Junyan Xu
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Subalgebra.Directed
-public import Mathlib.Algebra.Polynomial.Splits
-public import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
-public import Mathlib.FieldTheory.Minpoly.Basic
-public import Mathlib.RingTheory.AlgebraTower
-public import Mathlib.RingTheory.Algebraic.Defs
-public import Mathlib.Tactic.TermCongr
-import Mathlib.Algebra.NoZeroSMulDivisors.Basic
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Fintype.Order
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
-import Mathlib.FieldTheory.IntermediateField.Algebraic
-import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
-import Mathlib.Order.Minimal
-import Mathlib.Order.Zorn
-import Mathlib.RingTheory.Adjoin.Field
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.SetLike
+public import Mathlib.Data.Fintype.Order
+public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 
 /-!
 # Extension of field embeddings

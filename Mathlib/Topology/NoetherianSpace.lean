@@ -5,15 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Topology.Sets.Closeds
-import Mathlib.Data.Finset.Attr
-import Mathlib.Order.Filter.Ultrafilter.Basic
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.CrossRefAttribute
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.TFAE
-import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Noetherian space

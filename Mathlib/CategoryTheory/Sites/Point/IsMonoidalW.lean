@@ -6,15 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Sites.Point.Conservative
-public import Mathlib.CategoryTheory.Localization.Monoidal.Basic
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Sites.Point.Monoidal
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Continuity.Init
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Tactic.SetLike
+public import Mathlib.CategoryTheory.Sites.Point.Monoidal
 
 /-!
 # Monoidal structure on sheaves using enough points

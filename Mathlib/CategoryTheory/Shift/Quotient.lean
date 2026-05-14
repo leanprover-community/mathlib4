@@ -8,10 +8,6 @@ module
 public import Mathlib.CategoryTheory.Shift.CommShift
 public import Mathlib.CategoryTheory.Shift.Induced
 public import Mathlib.CategoryTheory.Quotient
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # The shift on a quotient category

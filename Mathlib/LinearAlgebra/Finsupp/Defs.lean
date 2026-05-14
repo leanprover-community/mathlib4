@@ -9,12 +9,6 @@ public import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.Algebra.Module.LinearMap.End
 public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Data.Finsupp.SMul
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Finsupp.Ext
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Properties of the module `α →₀ M`

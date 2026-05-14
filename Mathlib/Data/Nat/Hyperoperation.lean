@@ -5,13 +5,8 @@ Authors: Mark Andrew Gerads, Junyan Xu, Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Group.Nat.Even
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Inv
-import Mathlib.Tactic.NormNum.Pow
-import Mathlib.Util.CompileInductive
+public import Mathlib.Tactic.NormNum.Inv
+public import Mathlib.Tactic.NormNum.Pow
 
 /-!
 # Hyperoperation sequence

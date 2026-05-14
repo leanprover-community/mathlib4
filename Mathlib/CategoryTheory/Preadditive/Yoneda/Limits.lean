@@ -6,18 +6,8 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
-import Mathlib.Algebra.Category.ModuleCat.Abelian
-import Mathlib.Algebra.Category.ModuleCat.Limits
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Limits.Yoneda
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Eq
-import Mathlib.Tactic.NormNum.Ineq
-import Mathlib.Tactic.NormNum.Pow
-import Mathlib.Tactic.SetLike
+public import Mathlib.Algebra.Category.ModuleCat.Abelian
+public import Mathlib.CategoryTheory.Limits.Yoneda
 
 /-!
 # The Yoneda embedding for preadditive categories preserves limits

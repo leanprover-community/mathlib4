@@ -10,13 +10,6 @@ public import Mathlib.Algebra.RingQuot
 public import Mathlib.Algebra.TrivSqZeroExt.Basic
 public import Mathlib.Algebra.Algebra.Operations
 public import Mathlib.LinearAlgebra.Multilinear.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Inv
-import Mathlib.Tactic.NormNum.Pow
-import Mathlib.Tactic.SetLike
 
 /-!
 # Tensor Algebras

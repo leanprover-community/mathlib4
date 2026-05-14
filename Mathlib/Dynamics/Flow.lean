@@ -10,13 +10,6 @@ public import Mathlib.Topology.Algebra.Monoid
 public import Mathlib.Topology.Algebra.Group.Defs
 public import Mathlib.Algebra.Order.Monoid.Submonoid
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Continuous
-import Mathlib.Topology.ContinuousOn
 
 /-!
 # Flows and invariant sets

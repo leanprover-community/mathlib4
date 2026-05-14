@@ -6,12 +6,6 @@ Authors: Christian Merten
 module
 
 public import Mathlib.Algebra.Exact
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # The five lemma in terms of modules

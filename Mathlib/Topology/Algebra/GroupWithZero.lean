@@ -5,19 +5,10 @@ Authors: Yury Kudryashov
 -/
 module
 
+public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.Algebra.GroupWithZero.Units.Equiv
 public import Mathlib.Topology.Algebra.Monoid
 public import Mathlib.Topology.Homeomorph.Lemmas
-public import Mathlib.Algebra.Group.End
-import Mathlib.Data.Finset.Attr
-import Mathlib.Order.Filter.Prod
-import Mathlib.Order.Filter.Tendsto
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Continuous
-import Mathlib.Topology.ContinuousOn
 
 /-!
 # Topological group with zero

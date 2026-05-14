@@ -5,16 +5,7 @@ Authors: Mario Carneiro, Kenny Lau, Kim Morrison
 -/
 module
 
-public import Aesop
-public import Batteries.Data.List.Basic
-public import Mathlib.Data.Nat.Notation
-public import Mathlib.Tactic.Attr.Core
-public import Mathlib.Tactic.Basic
-public import Mathlib.Tactic.ToDual
-import Mathlib.Data.List.Basic
-import Mathlib.Data.List.Chain
-import Mathlib.Tactic.Common
-import Mathlib.Util.CompileInductive
+public import Mathlib.Data.List.Chain
 
 /-!
 # Ranges of naturals as lists

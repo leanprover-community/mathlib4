@@ -7,11 +7,6 @@ module
 
 public import Mathlib.Algebra.Group.AddChar
 public import Mathlib.MeasureTheory.MeasurableSpace.Defs
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Measurability.Init
-import Mathlib.Tactic.SetLike
 
 /-!
 # Measurable space instance for additive characters

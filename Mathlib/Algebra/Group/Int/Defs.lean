@@ -6,7 +6,6 @@ Authors: Jeremy Avigad
 module
 
 public import Mathlib.Algebra.Group.Defs
-import Mathlib.Init
 
 /-!
 # The integers form a group

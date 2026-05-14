@@ -6,10 +6,7 @@ Authors: Simon Hudon
 module
 
 public import Mathlib.Control.Functor
-public import Aesop
-public import Mathlib.Logic.Function.Defs
-public import Mathlib.Tactic.Attr.Register
-import Mathlib.Tactic.Common
+public import Mathlib.Tactic.Common
 
 /-!
 # Functors with two arguments

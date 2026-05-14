@@ -9,19 +9,6 @@ public import Mathlib.Data.Matrix.Basis
 public import Mathlib.Data.Matrix.Composition
 public import Mathlib.RingTheory.MatrixAlgebra
 public import Mathlib.RingTheory.PolynomialAlgebra
-import Batteries.Tactic.Congr
-import Mathlib.Algebra.Polynomial.Eval.Coeff
-import Mathlib.Algebra.Polynomial.Monomial
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
 
 /-!
 # Algebra isomorphism between matrices of polynomials and polynomials of matrices

@@ -7,11 +7,6 @@ module
 
 public import Mathlib.Data.Finset.Card
 public import Mathlib.Data.Fin.Embedding
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Monotonicity.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Finsets in `Fin n`

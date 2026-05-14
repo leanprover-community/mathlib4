@@ -8,7 +8,6 @@ module -- shake: keep-all
 public import Mathlib.Logic.Equiv.Defs
 public import Mathlib.Order.Basic
 public import Mathlib.Tactic.Linter.DeprecatedModule
-import Mathlib.Util.CompileInductive
 
 /-!
 # Type synonyms

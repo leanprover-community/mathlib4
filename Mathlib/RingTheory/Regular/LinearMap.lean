@@ -5,34 +5,13 @@ Authors: Nailin Guan, Yi Song
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.Maps
-public import Mathlib.RingTheory.Noetherian.Defs
-import Mathlib.Algebra.Module.FinitePresentation
-import Mathlib.Algebra.Module.Torsion.Basic
-import Mathlib.Algebra.Order.AbsoluteValue.Basic
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.LinearAlgebra.Dual.Lemmas
-import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
-import Mathlib.RingTheory.Ideal.AssociatedPrime.Localization
-import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
-import Mathlib.RingTheory.Localization.Finiteness
-import Mathlib.RingTheory.Localization.Submodule
-import Mathlib.RingTheory.Nakayama
-import Mathlib.RingTheory.Regular.IsSMulRegular
-import Mathlib.RingTheory.Support
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
+public import Mathlib.Algebra.Module.FinitePresentation
+public import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
+public import Mathlib.RingTheory.Ideal.AssociatedPrime.Localization
+public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
+public import Mathlib.RingTheory.Regular.IsSMulRegular
+public import Mathlib.RingTheory.Support
 
 /-!
 

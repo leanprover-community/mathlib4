@@ -7,13 +7,6 @@ module
 
 public import Mathlib.Topology.UniformSpace.Defs
 public import Mathlib.Topology.Bases
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Lattice
-import Mathlib.Order.Filter.Prod
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Neighborhoods
 
 /-!
 # Ultrametric (nonarchimedean) uniform spaces

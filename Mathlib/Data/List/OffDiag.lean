@@ -10,10 +10,6 @@ import Mathlib.Data.List.Enum
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.Perm.Basic
 public import Mathlib.Data.Nat.Notation
-import Mathlib.Data.List.Basic
-import Mathlib.Data.List.InsertIdx
-import Mathlib.Tactic.Common
-import Mathlib.Util.CompileInductive
 
 /-!
 # Definition and basic properties of `List.offDiag`

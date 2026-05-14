@@ -8,21 +8,6 @@ module
 public import Mathlib.Algebra.Module.Opposite
 public import Mathlib.Topology.UniformSpace.Completion
 public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
-public import Mathlib.Algebra.Field.Defs
-public import Mathlib.Topology.Algebra.ConstMulAction
-import Mathlib.Algebra.Group.Action.Prod
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.Translate.ToAdditive
-import Mathlib.Topology.Algebra.Monoid
 
 /-!
 # Multiplicative action on the completion of a uniform space

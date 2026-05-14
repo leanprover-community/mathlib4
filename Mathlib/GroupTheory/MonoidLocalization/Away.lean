@@ -7,11 +7,6 @@ module
 
 public import Mathlib.Algebra.Group.Submonoid.Membership
 public import Mathlib.GroupTheory.MonoidLocalization.Maps
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Localizing commutative monoids away from an element

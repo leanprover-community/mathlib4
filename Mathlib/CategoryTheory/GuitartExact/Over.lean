@@ -6,14 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.GuitartExact.Basic
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
-import Mathlib.CategoryTheory.Limits.Types.Limits
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 
 /-!
 # Guitart exact squares involving `Over` categories

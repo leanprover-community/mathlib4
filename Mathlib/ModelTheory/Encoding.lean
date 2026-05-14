@@ -6,22 +6,9 @@ Authors: Aaron Anderson
 module
 
 public import Mathlib.Computability.Encoding
+public import Mathlib.Logic.Small.List
 public import Mathlib.ModelTheory.Syntax
-public import Mathlib.Logic.Equiv.List
-public import Mathlib.Logic.Small.Defs
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Finset.Attr
-import Mathlib.Logic.Small.Basic
-import Mathlib.Logic.Small.List
-import Mathlib.Logic.Small.Set
-import Mathlib.Logic.UnivLE
-import Mathlib.Order.ConditionallyCompleteLattice.Indexed
-import Mathlib.SetTheory.Cardinal.Arithmetic
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-!
 # Encodings and Cardinality of First-Order Syntax

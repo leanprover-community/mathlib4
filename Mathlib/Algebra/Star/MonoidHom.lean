@@ -6,11 +6,6 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Algebra.Star.Basic
-import Batteries.Tactic.Trans
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Util.CompileInductive
 /-!
 # Morphisms of star monoids
 

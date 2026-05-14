@@ -6,13 +6,6 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Algebra.Group.Subsemigroup.Basic
-import Mathlib.Init
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.SimpRw
-import Mathlib.Tactic.Tauto
-import Mathlib.Tactic.Translate.ToAdditive
-import Mathlib.Util.CompileInductive
 
 /-!
 # Subsemigroups: membership criteria

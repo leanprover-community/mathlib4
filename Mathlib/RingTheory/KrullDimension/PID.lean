@@ -6,20 +6,8 @@ Authors: Jingting Wang
 module
 
 public import Mathlib.RingTheory.Ideal.Height
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.RingTheory.KrullDimension.Zero
-import Mathlib.RingTheory.PrincipalIdealDomain
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.SetLike
+public import Mathlib.RingTheory.KrullDimension.Zero
+public import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # The Krull dimension of a principal ideal domain

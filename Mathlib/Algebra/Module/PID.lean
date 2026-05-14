@@ -5,36 +5,11 @@ Authors: Pierre-Alexandre Bazin
 -/
 module
 
+public import Mathlib.Algebra.Module.DedekindDomain
+public import Mathlib.LinearAlgebra.FreeModule.PID
+public import Mathlib.Algebra.Module.Projective
+public import Mathlib.Algebra.Category.ModuleCat.Biproducts
 public import Mathlib.RingTheory.SimpleModule.Basic
-public import Mathlib.Algebra.DirectSum.Module
-public import Mathlib.Algebra.Module.Torsion.Basic
-public import Mathlib.CategoryTheory.Category.Basic
-public import Mathlib.RingTheory.DedekindDomain.Ideal.Basic
-import Mathlib.Algebra.Category.ModuleCat.Biproducts
-import Mathlib.Algebra.Module.DedekindDomain
-import Mathlib.Algebra.Module.Projective
-import Mathlib.Algebra.Order.AbsoluteValue.Basic
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.LinearAlgebra.FreeModule.PID
-import Mathlib.Order.BoundedOrder.Lattice
-import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
-import Mathlib.RingTheory.Finiteness.Basic
-import Mathlib.RingTheory.Ideal.Quotient.Basic
-import Mathlib.RingTheory.Noetherian.Basic
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.SetLike
 
 /-!
 # Structure of finitely generated modules over a PID

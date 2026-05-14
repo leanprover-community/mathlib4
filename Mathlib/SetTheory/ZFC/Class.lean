@@ -6,13 +6,6 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.SetTheory.ZFC.Ordinal
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.BooleanAlgebra
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # ZFC classes

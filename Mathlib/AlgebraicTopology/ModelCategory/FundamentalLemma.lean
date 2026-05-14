@@ -5,14 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.ModelCategory.RightHomotopy
-import Mathlib.AlgebraicTopology.ModelCategory.BifibrantObjectHomotopy
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.CategoryTheory.CategoryStar
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.AlgebraicTopology.ModelCategory.BifibrantObjectHomotopy
 
 /-!
 # The fundamental lemma of homotopical algebra

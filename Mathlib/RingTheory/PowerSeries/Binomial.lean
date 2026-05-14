@@ -7,22 +7,7 @@ module
 
 public import Mathlib.RingTheory.Binomial
 public import Mathlib.RingTheory.PowerSeries.WellKnown
-import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Tactic.Abel
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Abs
-import Mathlib.Tactic.NormNum.DivMod
-import Mathlib.Tactic.NormNum.Eq
-import Mathlib.Tactic.NormNum.Ineq
-import Mathlib.Tactic.NormNum.OfScientific
-import Mathlib.Tactic.NormNum.Pow
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.SuppressCompilation
+public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Binomial Power Series

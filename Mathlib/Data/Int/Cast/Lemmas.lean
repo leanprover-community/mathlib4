@@ -8,14 +8,6 @@ module
 public import Mathlib.Algebra.Group.TypeTags.Hom
 public import Mathlib.Algebra.Ring.Int.Defs
 public import Mathlib.Algebra.Ring.Parity
-public import Mathlib.Data.Int.Cast.Basic
-public import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Algebra.Divisibility.Hom
-import Mathlib.Algebra.Group.Nat.Hom
-import Mathlib.Algebra.Ring.Commute
-import Mathlib.Data.Nat.Cast.Commute
-import Mathlib.Tactic.Common
-import Mathlib.Util.CompileInductive
 
 /-!
 # Cast of integers (additional theorems)

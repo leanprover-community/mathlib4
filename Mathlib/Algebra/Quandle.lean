@@ -7,15 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.End
 public import Mathlib.Data.ZMod.Defs
-public meta import Mathlib.Tactic.Basic
-public meta import Mathlib.Tactic.ToAdditive
-import Batteries.Tactic.Trans
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Ring.RingNF
-import Mathlib.Tactic.SetLike
+public import Mathlib.Tactic.Ring
 
 /-!
 # Racks and Quandles

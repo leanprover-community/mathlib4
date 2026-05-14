@@ -8,12 +8,6 @@ module
 public import Mathlib.Algebra.Category.Grp.Basic
 public import Mathlib.CategoryTheory.Yoneda
 public import Mathlib.Algebra.Category.Grp.Preadditive
-import Mathlib.Algebra.Module.NatInt
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # The forget functor is corepresentable

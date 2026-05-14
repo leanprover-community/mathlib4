@@ -9,13 +9,6 @@ public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Data.Int.Cast.Defs
 public import Mathlib.CategoryTheory.Shift.Basic
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Tactic.CategoryTheory.Reassoc
-import Mathlib.Tactic.CategoryTheory.Slice
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # Differential objects in a category.

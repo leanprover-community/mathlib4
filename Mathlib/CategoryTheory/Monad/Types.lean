@@ -10,11 +10,6 @@ public import Mathlib.CategoryTheory.Monad.Basic
 public import Mathlib.CategoryTheory.Monad.Kleisli
 public import Mathlib.CategoryTheory.Types.Basic
 public import Mathlib.Control.Basic
-public import Mathlib.Tactic.Attr.Register
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 

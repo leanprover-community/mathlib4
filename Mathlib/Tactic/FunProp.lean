@@ -20,7 +20,6 @@ public import Mathlib.Tactic.FunProp.Mor
 public import Mathlib.Tactic.FunProp.Theorems
 public import Mathlib.Tactic.FunProp.ToBatteries
 public import Mathlib.Tactic.FunProp.Types
-import Mathlib.Init
 
 /-!
 # Tactic `fun_prop` for proving function properties like `Continuous f`, `Differentiable ℝ f`, ...

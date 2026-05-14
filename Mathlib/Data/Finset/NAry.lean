@@ -5,18 +5,9 @@ Authors: Yaël Dillies
 -/
 module
 
+public import Mathlib.Data.Finset.Lattice.Prod
 public import Mathlib.Data.Finite.Prod
-public import Mathlib.Data.Finset.Lattice.Fold
-public import Mathlib.Data.Fintype.Pi
-import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Finset.Lattice.Prod
-import Mathlib.Data.Set.Lattice
-import Mathlib.Data.Set.Lattice.Image
-import Mathlib.Data.Set.NAry
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # N-ary images of finsets

@@ -5,33 +5,10 @@ Authors: Dagur Asgeirsson
 -/
 module
 
+public import Mathlib.CategoryTheory.Limits.Preserves.Opposites
+public import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
 public import Mathlib.Condensed.Basic
 public import Mathlib.Topology.Category.TopCat.Yoneda
-public import Mathlib.CategoryTheory.Sites.Coherent.Comparison
-public import Mathlib.CategoryTheory.Sites.Coherent.RegularSheaves
-public import Mathlib.Topology.Category.CompHaus.Limits
-public import Mathlib.Topology.Category.CompHausLike.EffectiveEpi
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Module.Field
-import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Limits.Preserves.Opposites
-import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.EReal.Inv
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Algebra.InfiniteSum.Order
-import Mathlib.Topology.Category.CompHaus.EffectiveEpi
-import Mathlib.Topology.MetricSpace.Bounded
 
 /-!
 

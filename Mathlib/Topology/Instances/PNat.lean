@@ -6,20 +6,6 @@ Authors: Miyahara Kō
 module
 
 public import Mathlib.Topology.Instances.Nat
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Logic.Denumerable
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.MetricSpace.Bounded
-import Mathlib.Topology.UniformSpace.UniformEmbedding
 
 /-!
 # Topology on the positive natural numbers

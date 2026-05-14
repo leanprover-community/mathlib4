@@ -6,10 +6,8 @@ Authors: Edward van de Meent
 module
 
 public import Mathlib.Data.Tree.Basic
+public import Mathlib.Control.Applicative
 public import Mathlib.Control.Traversable.Basic
-import Mathlib.Control.Applicative
-import Mathlib.Init
-import Mathlib.Util.CompileInductive
 
 /-!
 # Traversable Binary Tree

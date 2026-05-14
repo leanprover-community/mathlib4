@@ -6,16 +6,8 @@ Authors: Attila Gáspár
 module
 
 public import Mathlib.Algebra.AddTorsor.Basic
+public import Mathlib.Topology.Algebra.Monoid
 public import Mathlib.Topology.Algebra.Group.Defs
-public import Mathlib.Topology.Algebra.MulAction
-import Mathlib.Data.Finset.Attr
-import Mathlib.Order.Filter.Tendsto
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Algebra.Monoid
-import Mathlib.Topology.Continuous
 
 /-!
 # Topological torsors of additive groups

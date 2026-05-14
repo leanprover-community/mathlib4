@@ -7,12 +7,6 @@ module
 
 public import Mathlib.SetTheory.Cardinal.HasCardinalLT
 public import Mathlib.CategoryTheory.ObjectProperty.Basic
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Properties of objects that are bounded by a cardinal

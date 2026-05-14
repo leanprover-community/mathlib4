@@ -5,21 +5,10 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Algebra.CharP.Defs
-public import Mathlib.Data.Fintype.Card
-import Mathlib.Algebra.CharP.Basic
-import Mathlib.Algebra.CharP.Lemmas
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.GroupTheory.Perm.Cycle.Type
-import Mathlib.RingTheory.Coprime.Lemmas
-import Mathlib.Tactic.ApplyFun
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
+public import Mathlib.Algebra.CharP.Basic
+public import Mathlib.Algebra.CharP.Lemmas
+public import Mathlib.GroupTheory.Perm.Cycle.Type
+public import Mathlib.RingTheory.Coprime.Lemmas
 
 /-!
 # Characteristic and cardinality

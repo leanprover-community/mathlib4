@@ -6,13 +6,6 @@ Authors: Vasilii Nesterov
 module
 
 public import Mathlib.Data.Real.Basic
-public import Mathlib.Tactic.Basic
-import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 

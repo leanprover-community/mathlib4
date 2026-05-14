@@ -13,13 +13,6 @@ public import Mathlib.Order.UpperLower.Principal
 
 import Mathlib.Data.Set.Finite.Basic
 import Mathlib.Order.ZornAtoms
-public import Mathlib.Order.Preorder.Chain
-import Batteries.Tactic.Trans
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Lattice
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Order ideals, cofinal sets, and the Rasiowa–Sikorski lemma

@@ -5,29 +5,9 @@ Authors: Yuma Mizuno, Ralf Stephan
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Rat
+public import Mathlib.Data.Nat.Cast.Field
 public import Mathlib.RingTheory.PowerSeries.Derivative
-public import Mathlib.Algebra.Ring.Rat
-import Mathlib.Algebra.Algebra.Rat
-import Mathlib.Algebra.BigOperators.NatAntidiagonal
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Nat.Cast.Field
-import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.Data.Nat.Factorial.DoubleFactorial
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.RingTheory.PowerSeries.Inverse
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Ring.RingNF
-import Mathlib.Tactic.SetLike
 
 /-!
 # Exponential Power Series

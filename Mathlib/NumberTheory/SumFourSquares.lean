@@ -5,38 +5,7 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Algebra.Group.Int.Defs
-public import Mathlib.Algebra.Ring.Defs
-public import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.Order.AbsoluteValue.Basic
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Group.Defs
-import Mathlib.Algebra.Order.Group.Int
-import Mathlib.Algebra.Order.Monoid.NatCast
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Algebra.Order.Ring.Unbundled.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Int.Basic
-import Mathlib.Data.Nat.Cast.Order.Ring
-import Mathlib.Data.Nat.Factorization.Induction
-import Mathlib.Data.Nat.Prime.Basic
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.Data.ZMod.ValMinAbs
-import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.Tactic.ApplyFun
-import Mathlib.Tactic.Attr.Register
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Linarith.Frontend
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.Ring.RingNF
-import Mathlib.Tactic.SetLike
+public import Mathlib.FieldTheory.Finite.Basic
 
 /-!
 # Lagrange's four square theorem

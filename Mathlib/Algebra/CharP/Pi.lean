@@ -7,10 +7,6 @@ module
 
 public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.Ring.Pi
-import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # Characteristic of semirings of functions

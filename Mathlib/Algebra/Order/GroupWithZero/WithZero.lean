@@ -6,10 +6,7 @@ Authors: Kevin Buzzard
 module
 
 public import Mathlib.Algebra.Order.GroupWithZero.Canonical
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 /-!
 
 # Covariant instances on `WithZero`

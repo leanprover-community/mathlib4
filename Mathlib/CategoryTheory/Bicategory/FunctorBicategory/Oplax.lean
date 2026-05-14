@@ -6,11 +6,6 @@ Authors: Yuma Mizuno
 module
 
 public import Mathlib.CategoryTheory.Bicategory.Modification.Oplax
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Tactic.CategoryTheory.Bicategory.Basic
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # Bicategories of oplax functors

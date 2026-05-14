@@ -6,25 +6,7 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 module
 
 public import Mathlib.Data.ENNReal.Holder
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Group.Unbundled.Basic
-import Mathlib.Algebra.Order.Monoid.NatCast
-import Mathlib.Algebra.Order.Sub.Basic
-import Mathlib.Algebra.Order.Sub.Unbundled.Basic
-import Mathlib.Data.ENNReal.Inv
-import Mathlib.Data.ENNReal.Operations
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Field
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.LinearCombination
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Util.CompileInductive
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 # Real conjugate exponents

@@ -7,10 +7,6 @@ module
 
 public import Mathlib.Topology.Order.OrderClosed
 public import Mathlib.Topology.Order.LocalExtr
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Local maxima from monotonicity and antitonicity

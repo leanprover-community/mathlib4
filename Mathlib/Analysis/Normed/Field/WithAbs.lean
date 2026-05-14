@@ -6,40 +6,12 @@ Authors: Salvatore Mercuri
 module
 
 public import Mathlib.Analysis.Normed.Field.Lemmas
+public import Mathlib.Analysis.Normed.Field.TransferInstance
 public import Mathlib.Analysis.Normed.Ring.WithAbs
+public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.FieldTheory.Separable
 public import Mathlib.Topology.Algebra.UniformField
 public import Mathlib.Topology.MetricSpace.Completion
-public import Mathlib.Algebra.Field.TransferInstance
-public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-public import Mathlib.Topology.Metrizable.Uniformity
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Module.Field
-import Mathlib.Analysis.Normed.Field.TransferInstance
-import Mathlib.Analysis.Normed.Group.Continuity
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.RingTheory.Finiteness.Basic
-import Mathlib.RingTheory.LocalRing.Basic
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.FastInstance
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Algebra.InfiniteSum.Order
-import Mathlib.Topology.Compactness.LocallyCompact
-import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 
 /-!
 # WithAbs for fields

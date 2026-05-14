@@ -7,11 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.PathCategory.Basic
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Tactic.CategoryTheory.CategoryStar
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # Properties of morphisms in a path category.

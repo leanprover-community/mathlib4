@@ -7,10 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 public import Mathlib.Order.Fin.Basic
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # Limits and colimits indexed by `Fin`

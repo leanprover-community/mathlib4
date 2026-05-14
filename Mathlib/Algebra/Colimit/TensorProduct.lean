@@ -5,19 +5,8 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.LinearAlgebra.TensorProduct.Map
-public import Mathlib.RingTheory.Finiteness.Defs
-import Mathlib.Algebra.Colimit.Finiteness
-import Mathlib.Data.Finset.Attr
-import Mathlib.LinearAlgebra.TensorProduct.DirectLimit
-import Mathlib.Tactic.ApplyFun
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Eq
-import Mathlib.Tactic.NormNum.Ineq
-import Mathlib.Tactic.NormNum.Pow
-import Mathlib.Tactic.SetLike
+public import Mathlib.Algebra.Colimit.Finiteness
+public import Mathlib.LinearAlgebra.TensorProduct.DirectLimit
 
 /-!
 # Tensor product with direct limit of finitely generated submodules

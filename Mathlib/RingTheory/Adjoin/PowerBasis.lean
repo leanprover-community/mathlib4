@@ -5,32 +5,9 @@ Authors: Anne Baanen
 -/
 module
 
+public import Mathlib.RingTheory.Adjoin.Basic
 public import Mathlib.RingTheory.PowerBasis
 public import Mathlib.LinearAlgebra.Matrix.Basis
-public import Mathlib.RingTheory.Adjoin.Polynomial.Basic
-public import Mathlib.Tactic.Use
-import Mathlib.Algebra.Algebra.Subalgebra.Tower
-import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Polynomial.Monic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.GroupTheory.GroupAction.Ring
-import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
-import Mathlib.RingTheory.LocalRing.Basic
-import Mathlib.RingTheory.Noetherian.Basic
-import Mathlib.RingTheory.Polynomial.Tower
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Nontriviality.Core
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.SetLike
 
 /-!
 # Power basis for `R[x]`

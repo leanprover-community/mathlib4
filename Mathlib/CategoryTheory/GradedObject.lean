@@ -6,14 +6,8 @@ Authors: Kim Morrison, Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Shift.Basic
+public import Mathlib.Data.Set.Subsingleton
 public import Mathlib.Algebra.Group.Int.Defs
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.Set.Insert
-import Mathlib.Tactic.CategoryTheory.CategoryStar
-import Mathlib.Tactic.CategoryTheory.Reassoc
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # The category of graded objects

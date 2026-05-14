@@ -7,11 +7,6 @@ module
 
 public import Mathlib.Order.Hom.Bounded
 public import Mathlib.Topology.Order.Hom.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Util.CompileInductive
 
 /-!
 # Esakia morphisms

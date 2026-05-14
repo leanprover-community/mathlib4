@@ -5,14 +5,8 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.Data.Finite.Defs
-public import Mathlib.Data.Finset.Empty
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Finset.Max
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Dense orders and finsets

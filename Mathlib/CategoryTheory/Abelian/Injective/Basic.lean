@@ -5,26 +5,11 @@ Authors: Jakob von Raumer
 -/
 module
 
+public import Mathlib.CategoryTheory.Abelian.Exact
 public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
-public import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
-public import Mathlib.CategoryTheory.Abelian.Basic
-public import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
-import Mathlib.Algebra.Category.ModuleCat.Abelian
-import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
-import Mathlib.CategoryTheory.Abelian.Exact
-import Mathlib.CategoryTheory.Abelian.Opposite
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Limits.Opposites
-import Mathlib.CategoryTheory.Preadditive.Yoneda.Injective
-import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Eq
-import Mathlib.Tactic.NormNum.Ineq
-import Mathlib.Tactic.NormNum.Pow
-import Mathlib.Tactic.SetLike
+public import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
+public import Mathlib.CategoryTheory.Preadditive.Yoneda.Injective
+public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 
 /-!
 # Injective objects in abelian categories

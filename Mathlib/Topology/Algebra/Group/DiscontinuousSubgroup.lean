@@ -7,18 +7,8 @@ Authors: David Loeffler
 module
 
 public import Mathlib.GroupTheory.Commensurable
+public import Mathlib.GroupTheory.Complement
 public import Mathlib.Topology.Algebra.ConstMulAction
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Finite.Lattice
-import Mathlib.Data.Set.Functor
-import Mathlib.Data.Set.Lattice
-import Mathlib.GroupTheory.Complement
-import Mathlib.GroupTheory.Coset.Card
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Properly discontinuous actions of subgroups

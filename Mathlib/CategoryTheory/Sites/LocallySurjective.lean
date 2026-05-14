@@ -9,13 +9,6 @@ public import Mathlib.CategoryTheory.Sites.Subsheaf
 public import Mathlib.CategoryTheory.Sites.CompatibleSheafification
 public import Mathlib.CategoryTheory.Sites.LocallyInjective
 public import Mathlib.CategoryTheory.ShrinkYoneda
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Sites.LeftExact
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.CategoryTheory.CategoryStar
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 /-!
 
 # Locally surjective morphisms

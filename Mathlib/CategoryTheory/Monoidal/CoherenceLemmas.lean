@@ -5,13 +5,7 @@ Authors: Michael Jendrusch, Kim Morrison, Bhavik Mehta, Jakob von Raumer
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Category
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Tactic.CategoryTheory.CategoryStar
-import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
-import Mathlib.Tactic.CategoryTheory.Reassoc
-import Mathlib.Tactic.Common
-import Mathlib.Util.CompileInductive
+public import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
 
 /-!
 # Lemmas which are consequences of monoidal coherence

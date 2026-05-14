@@ -6,12 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Data.Finset.Card
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Finset.Basic
-import Mathlib.Data.Finset.Lattice.Fold
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Data.Finset.Lattice.Fold
 
 /-!
 # Down-compressions

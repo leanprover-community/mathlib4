@@ -6,18 +6,7 @@ Authors: Damiano Testa
 module
 
 public import Mathlib.Algebra.Group.UniqueProds.Basic
-public import Mathlib.Algebra.MonoidAlgebra.Defs
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
-import Mathlib.Algebra.GroupWithZero.InjSurj
-import Mathlib.Algebra.MonoidAlgebra.Opposite
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Finset.Lattice.Lemmas
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.Translate.ToAdditive
+public import Mathlib.Algebra.MonoidAlgebra.Opposite
 
 /-!
 # Variations on non-zero divisors in `AddMonoidAlgebra`s

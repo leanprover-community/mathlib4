@@ -5,14 +5,9 @@ Authors: Kim Morrison
 -/
 module
 
+public import Mathlib.Tactic.CategoryTheory.IsoReassoc
 public import Mathlib.CategoryTheory.Functor.Category
 public import Mathlib.CategoryTheory.Functor.FullyFaithful
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Tactic.CategoryTheory.CategoryStar
-import Mathlib.Tactic.CategoryTheory.IsoReassoc
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Translate.ToDual
-import Mathlib.Util.CompileInductive
 
 /-!
 # Whiskering

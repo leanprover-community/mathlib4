@@ -6,11 +6,9 @@ Authors: Simon Hudon, Patrick Massot, Eric Wieser
 module
 
 public import Mathlib.Algebra.Notation.Defs
+public import Mathlib.Tactic.Push.Attr
 public import Mathlib.Logic.Function.Defs
-import Batteries.Tactic.Alias
-import Mathlib.Init
-import Mathlib.Tactic.Push.Attr
-import Mathlib.Tactic.Translate.ToAdditive
+public import Batteries.Tactic.Alias
 
 /-!
 # Notation for algebraic operators on pi types

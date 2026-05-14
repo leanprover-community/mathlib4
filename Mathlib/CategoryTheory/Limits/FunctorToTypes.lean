@@ -6,11 +6,7 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Limits.Types.Colimits
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.CategoryTheory.Limits.Types.Colimits
 
 /-!
 # Concrete description of (co)limits in functor categories

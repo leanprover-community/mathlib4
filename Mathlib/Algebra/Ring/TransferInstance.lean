@@ -7,13 +7,8 @@ module
 
 public import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.Algebra.Ring.Equiv
+public import Mathlib.Algebra.Ring.Hom.InjSurj
 public import Mathlib.Algebra.Ring.InjSurj
-import Mathlib.Algebra.Ring.Hom.InjSurj
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Int.Cast.Basic
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Transfer algebraic structures across `Equiv`s

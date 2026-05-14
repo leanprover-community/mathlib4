@@ -6,13 +6,6 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.MvPolynomial.Rename
-import Batteries.Tactic.Trans
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Tactic.SetLike
 
 /-!
 # `comap` operation on `MvPolynomial`

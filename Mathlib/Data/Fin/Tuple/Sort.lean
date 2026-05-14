@@ -8,12 +8,8 @@ module
 public import Mathlib.Algebra.Group.End
 public import Mathlib.Data.Finset.Sort
 public import Mathlib.Data.Prod.Lex
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Fintype.Fin
-import Mathlib.Data.List.OfFn
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Order.Interval.Finset.Fin
+public import Mathlib.Data.Fintype.Fin
 
 /-!
 

@@ -7,12 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Filtered.Basic
 public import Mathlib.CategoryTheory.WithTerminal.Basic
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.CategoryTheory.CategoryStar
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Further lemmas on `WithTerminal`

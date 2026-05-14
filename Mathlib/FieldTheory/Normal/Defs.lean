@@ -8,27 +8,7 @@ module
 public import Mathlib.Algebra.Polynomial.Splits
 public import Mathlib.FieldTheory.Galois.Notation
 public import Mathlib.FieldTheory.IntermediateField.Basic
-public import Mathlib.FieldTheory.Minpoly.Basic
-public import Mathlib.RingTheory.Algebraic.Defs
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Algebra.NoZeroSMulDivisors.Basic
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Polynomial.Eval.Coeff
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.FieldTheory.Minpoly.Field
-import Mathlib.RingTheory.Algebraic.Integral
-import Mathlib.RingTheory.Polynomial.Tower
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.CrossRefAttribute
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.SetLike
+public import Mathlib.FieldTheory.Minpoly.Field
 
 /-!
 # Normal field extensions

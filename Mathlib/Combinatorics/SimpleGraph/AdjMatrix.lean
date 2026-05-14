@@ -12,16 +12,6 @@ public import Mathlib.LinearAlgebra.Matrix.Hadamard
 
 import Mathlib.Algebra.GroupWithZero.Idempotent
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Combinatorics.SimpleGraph.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Adjacency Matrices

@@ -5,39 +5,8 @@ Authors: Zhouhang Zhou, Frédéric Dupuis, Heather Macbeth
 -/
 module
 
-public import Mathlib.Analysis.Convex.Basic
-public import Mathlib.Analysis.InnerProductSpace.Defs
-import Mathlib.Algebra.Module.Rat
-import Mathlib.Algebra.Order.Algebra
-import Mathlib.Algebra.Order.BigOperators.Expect
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Module.Field
-import Mathlib.Algebra.Ring.CharZero
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Nat.Cast.Order.Field
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Order.Filter.AtTopBot.Basic
-import Mathlib.Order.Filter.Tendsto
-import Mathlib.Tactic.Abel
-import Mathlib.Tactic.Bound
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Ring.RingNF
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Algebra.Ring.Real
-import Mathlib.Topology.Instances.RealVectorSpace
-import Mathlib.Topology.MetricSpace.Cauchy
-import Mathlib.Topology.Metrizable.Uniformity
-import Mathlib.Topology.Neighborhoods
+public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
 # Existence of minimizers (Hilbert projection theorem)

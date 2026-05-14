@@ -5,20 +5,9 @@ Authors: David Ledvinka
 -/
 module
 
+public meta import Mathlib.Tactic.Linarith
 public import Mathlib.Data.NNReal.Basic -- shake: keep (tactic dependency)
 public import Mathlib.Tactic.Rify
-public import Mathlib.Tactic.Linarith
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Module.Field
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
 
 /-!
 # NNReal linarith preprocessing

@@ -7,10 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Bicategory.Adjunction.Basic
 public import Mathlib.CategoryTheory.HomCongr
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Tactic.CategoryTheory.Bicategory.Basic
-import Mathlib.Tactic.Common
-import Mathlib.Util.CompileInductive
 
 /-!
 # Mates in bicategories

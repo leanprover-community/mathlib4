@@ -7,11 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.Internal.Types.Grp
 public import Mathlib.CategoryTheory.Monoidal.CommGrp_
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # `CommGrp (Type u) ≌ CommGrpCat.{u}`

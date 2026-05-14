@@ -6,36 +6,9 @@ Authors: Anatole Dedecker, Yury Kudryashov
 module
 
 public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.UniformConvergence
+public import Mathlib.Topology.Algebra.SeparationQuotient.Section
 public import Mathlib.Topology.Hom.ContinuousEvalConst
-public import Mathlib.Analysis.LocallyConvex.Bounded
-public import Mathlib.LinearAlgebra.DFinsupp
-public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
-import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Algebra.Order.Algebra
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Module.Field
-import Mathlib.Analysis.LocallyConvex.Basic
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.EReal.Operations
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Data.Set.NAry
-import Mathlib.Order.Filter.Map
-import Mathlib.Order.Filter.Tendsto
-import Mathlib.RingTheory.SimpleRing.Basic
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
-import Mathlib.Topology.Algebra.Module.UniformConvergence
-import Mathlib.Topology.Algebra.SeparationQuotient.Section
-import Mathlib.Topology.NhdsWithin
 
 /-!
 # Topologies of uniform convergence on the space of continuous linear maps

@@ -5,21 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Data.List.TFAE
-public import Mathlib.Data.Set.Notation
-public import Mathlib.Topology.Defs.Filter
-public import Mathlib.Topology.Defs.Induced
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Lattice
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.TFAE
-import Mathlib.Topology.Closure
-import Mathlib.Topology.Constructions
-import Mathlib.Topology.Continuous
-import Mathlib.Topology.Maps.Basic
-import Mathlib.Topology.Neighborhoods
+public import Mathlib.Topology.Constructions
+public import Mathlib.Tactic.TFAE
 
 /-!
 # Locally closed sets

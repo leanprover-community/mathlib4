@@ -6,13 +6,7 @@ Authors: Paul Lezeau, Edison Xie
 module
 
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-import Mathlib.CategoryTheory.Abelian.Exact
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Tactic.SetLike
+public import Mathlib.CategoryTheory.Abelian.Exact
 
 /-! # Short Exact Sequences in Abelian Categories
 

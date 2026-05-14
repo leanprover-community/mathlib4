@@ -5,27 +5,10 @@ Authors: Richard M. Hill, Ralf Stephan
 -/
 module
 
+public import Mathlib.Algebra.Polynomial.Derivation
 public import Mathlib.RingTheory.Derivation.Basic
+public import Mathlib.RingTheory.PowerSeries.Inverse
 public import Mathlib.RingTheory.PowerSeries.Substitution
-public import Mathlib.RingTheory.MvPowerSeries.Inverse
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Sub.Basic
-import Mathlib.Algebra.Polynomial.Derivation
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Nat.Factorial.DoubleFactorial
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Order.Filter.AtTopBot.Basic
-import Mathlib.RingTheory.PowerSeries.Inverse
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
 
 /-!
 # Definitions

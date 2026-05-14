@@ -6,13 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Monad.Limits
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.CategoryTheory.Monad.Limits
 
 /-!
 # Presentable objects and adjunctions

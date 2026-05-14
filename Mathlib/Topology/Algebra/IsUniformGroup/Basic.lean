@@ -6,44 +6,13 @@ Authors: Patrick Massot, Johannes Hölzl
 module
 
 public import Mathlib.Topology.UniformSpace.UniformConvergence
+public import Mathlib.Topology.UniformSpace.CompleteSeparated
+public import Mathlib.Topology.UniformSpace.Compact
+public import Mathlib.Topology.UniformSpace.HeineCantor
+public import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 public import Mathlib.Topology.Algebra.Group.Quotient
-public import Mathlib.Topology.Algebra.Group.Basic
-public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
-public import Mathlib.Topology.DenseEmbedding
-public import Mathlib.Topology.UniformSpace.Equiv
-public import Mathlib.Topology.UniformSpace.LocallyUniformConvergence
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Algebra.Order.Monoid.NatCast
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Nat.Lattice
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Data.Set.Lattice
-import Mathlib.Order.Filter.AtTopBot.Basic
-import Mathlib.Order.Filter.AtTopBot.Tendsto
-import Mathlib.Order.Filter.Lift
-import Mathlib.Order.Filter.Map
-import Mathlib.Order.Filter.Prod
-import Mathlib.Order.Filter.Tendsto
-import Mathlib.Tactic.Abel
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.Translate.ToAdditive
-import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
-import Mathlib.Topology.ClusterPt
-import Mathlib.Topology.Continuous
-import Mathlib.Topology.DiscreteSubset
-import Mathlib.Topology.Neighborhoods
-import Mathlib.Topology.UniformSpace.CompleteSeparated
-import Mathlib.Topology.UniformSpace.HeineCantor
-import Mathlib.Topology.UniformSpace.Separation
+public import Mathlib.Topology.DiscreteSubset
+public import Mathlib.Tactic.Abel
 
 /-!
 # Uniform structure on topological groups

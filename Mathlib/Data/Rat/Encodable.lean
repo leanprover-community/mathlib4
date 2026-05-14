@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Logic.Encodable.Basic
 public import Mathlib.Data.Rat.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-! # The rationals are `Encodable`.
 

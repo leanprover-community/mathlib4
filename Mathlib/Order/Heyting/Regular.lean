@@ -6,10 +6,6 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Order.GaloisConnection.Basic
-import Mathlib.Init
-import Mathlib.Tactic.Coe
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # Heyting regular elements

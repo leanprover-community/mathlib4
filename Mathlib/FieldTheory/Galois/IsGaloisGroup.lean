@@ -5,39 +5,9 @@ Authors: Thomas Browning
 -/
 module
 
+public import Mathlib.FieldTheory.Galois.Infinite
 public import Mathlib.NumberTheory.NumberField.Basic
-public import Mathlib.Algebra.Algebra.Subalgebra.Operations
-public import Mathlib.FieldTheory.Galois.Basic
-public import Mathlib.RingTheory.Invariant.Defs
-import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Ring.Hom.InjSurj
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Combinatorics.Matroid.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Nat.Totient
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.FieldTheory.Galois.Infinite
-import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
-import Mathlib.GroupTheory.GroupAction.FixedPoints
-import Mathlib.LinearAlgebra.Dimension.Finite
-import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
-import Mathlib.LinearAlgebra.FreeModule.PID
-import Mathlib.RingTheory.Invariant.Basic
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Group
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.SetLike
+public import Mathlib.RingTheory.Invariant.Basic
 
 /-!
 # Predicate for Galois Groups

@@ -5,38 +5,14 @@ Authors: Nailin Guan
 -/
 module
 
+public import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
 public import Mathlib.Algebra.Category.ModuleCat.Localization
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
+public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+public import Mathlib.Algebra.Module.LocalizedModule.Exact
 public import Mathlib.CategoryTheory.Abelian.Injective.Dimension
 public import Mathlib.CategoryTheory.Preadditive.Injective.Preserves
-public import Mathlib.Algebra.Category.ModuleCat.Abelian
-public import Mathlib.RingTheory.Noetherian.Defs
-public import Mathlib.RingTheory.Spectrum.Maximal.Defs
-public import Mathlib.RingTheory.Spectrum.Prime.Defs
-import Mathlib.Algebra.Category.Grp.Colimits
-import Mathlib.Algebra.Category.ModuleCat.Colimits
-import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
-import Mathlib.Algebra.Category.ModuleCat.Injective
-import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-import Mathlib.Algebra.Module.LocalizedModule.Exact
-import Mathlib.Algebra.Order.AbsoluteValue.Basic
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.CategoryTheory.Abelian.Exact
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Nat.Totient
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Logic.Small.Basic
-import Mathlib.RingTheory.LocalProperties.Injective
-import Mathlib.RingTheory.LocalProperties.Submodule
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Continuity.Init
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
+public import Mathlib.RingTheory.LocalProperties.Injective
 
 /-!
 

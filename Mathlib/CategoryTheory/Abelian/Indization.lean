@@ -6,15 +6,8 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Preadditive.Indization
-public import Mathlib.CategoryTheory.Abelian.Basic
-import Mathlib.CategoryTheory.Abelian.FunctorCategory
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.AbelianImages
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Tactic.SetLike
+public import Mathlib.CategoryTheory.Abelian.FunctorCategory
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.AbelianImages
 
 /-!
 # The category of ind-objects is abelian

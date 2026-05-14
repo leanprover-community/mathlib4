@@ -7,12 +7,7 @@ module
 
 public import Mathlib.Algebra.Notation.Support
 public import Mathlib.Algebra.FiniteSupport.Defs
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.Translate.ToAdditive
+public import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Finiteness of support

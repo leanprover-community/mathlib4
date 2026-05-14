@@ -7,47 +7,8 @@ module
 
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Derivative
+public import Mathlib.Data.Nat.Choose.Cast
 public import Mathlib.NumberTheory.Bernoulli
-public import Mathlib.Analysis.Normed.Field.Lemmas
-import Batteries.Tactic.Trans
-import Mathlib.Algebra.BigOperators.Field
-import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
-import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.BigOperators.NatAntidiagonal
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Group.Unbundled.Basic
-import Mathlib.Algebra.Order.Module.Field
-import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Algebra.Order.Sub.Basic
-import Mathlib.Algebra.Order.Sub.Unbundled.Basic
-import Mathlib.Algebra.Polynomial.Eval.Coeff
-import Mathlib.Algebra.Polynomial.Eval.Degree
-import Mathlib.Algebra.Polynomial.Eval.SMul
-import Mathlib.Algebra.Ring.Commute
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.EReal.Operations
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Nat.Choose.Cast
-import Mathlib.Data.Nat.Factorial.DoubleFactorial
-import Mathlib.Data.Nat.Totient
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.RingTheory.Polynomial.Basic
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.Ring.RingNF
-import Mathlib.Tactic.SetLike
 
 /-!
 # Bernoulli polynomials

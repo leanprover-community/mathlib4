@@ -7,11 +7,6 @@ module
 
 public import Mathlib.Data.Set.Basic
 public import Mathlib.Data.Sym.Sym2
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Disjoint
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Multigraphs

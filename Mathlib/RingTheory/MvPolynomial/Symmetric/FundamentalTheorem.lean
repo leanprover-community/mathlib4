@@ -6,22 +6,10 @@ Authors: Junyan Xu
 module
 
 public import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
-public import Mathlib.Algebra.MonoidAlgebra.Degree
-public import Mathlib.Data.Finsupp.Lex
-import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
-import Mathlib.Algebra.Group.Submonoid.BigOperators
-import Mathlib.Algebra.MvPolynomial.Variables
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Finsupp.Notation
-import Mathlib.Data.Finsupp.WellFounded
-import Mathlib.RingTheory.MvPolynomial.Tower
-import Mathlib.Tactic.ApplyFun
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Nontriviality.Core
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Tactic.SetLike
+public import Mathlib.RingTheory.MvPolynomial.Tower
+public import Mathlib.Data.Finsupp.Notation
+public import Mathlib.Data.Finsupp.WellFounded
+public import Mathlib.Algebra.MvPolynomial.Variables
 
 /-!
 # The Fundamental Theorem of Symmetric Polynomials

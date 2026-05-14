@@ -6,33 +6,9 @@ Authors: Gaëtan Serré
 
 module
 
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
 public import Mathlib.MeasureTheory.Measure.Typeclasses.ZeroOne
-public import Mathlib.Probability.Kernel.Composition.Comp
-public import Mathlib.Probability.Kernel.Composition.ParallelComp
-import Batteries.Tactic.Congr
-import Mathlib.Algebra.GroupWithZero.Indicator
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Module.Field
-import Mathlib.Algebra.Order.Sub.Basic
-import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.Data.ENNReal.Operations
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.EReal.Inv
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
-import Mathlib.Probability.Kernel.Composition.CompMap
-import Mathlib.Probability.Kernel.Composition.Prod
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Measurability.Init
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Algebra.InfiniteSum.Order
+public import Mathlib.Probability.Kernel.Composition.Prod
 
 /-!
 # Class `IsDeterministic` of deterministic kernels

@@ -5,22 +5,10 @@ Authors: Mario Carneiro
 -/
 module
 
-public meta import Aesop
-public import Mathlib.Algebra.Order.Ring.Defs
-public import Mathlib.Tactic.NormNum.Core
-public meta import Mathlib.Tactic.ToAdditive
-import Mathlib.Algebra.Order.Invertible
-import Mathlib.Algebra.Order.Ring.Cast
-import Mathlib.Data.Int.Cast.Lemmas
-import Mathlib.Data.Nat.Cast.Commute
-import Mathlib.Data.Nat.Cast.Order.Ring
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.HaveI
-import Mathlib.Tactic.NormNum.Eq
-meta import Mathlib.Tactic.NormNum.Result
-import Mathlib.Util.CompileInductive
+public import Mathlib.Algebra.Order.Invertible
+public import Mathlib.Algebra.Order.Ring.Cast
+public import Mathlib.Tactic.NormNum.Eq
+public meta import Mathlib.Tactic.NormNum.Result
 
 /-!
 # `norm_num` extensions for inequalities.

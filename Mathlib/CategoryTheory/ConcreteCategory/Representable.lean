@@ -7,11 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Yoneda
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Tactic.CategoryTheory.CategoryStar
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 

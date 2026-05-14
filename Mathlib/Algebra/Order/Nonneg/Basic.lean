@@ -9,16 +9,8 @@ public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 public import Mathlib.Algebra.Order.ZeroLEOne
 public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Algebra.Ring.InjSurj
 public import Mathlib.Data.Nat.Cast.Order.Basic
-public import Mathlib.Algebra.GroupWithZero.InjSurj
-public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-import Mathlib.Algebra.Ring.InjSurj
-import Mathlib.Tactic.Attr.Core
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.FastInstance
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # The type of nonnegative elements

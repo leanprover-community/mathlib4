@@ -8,14 +8,7 @@ module
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 public import Mathlib.CategoryTheory.Sites.Canonical
 public import Mathlib.CategoryTheory.Sites.Coherent.Basic
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Limits.Yoneda
-import Mathlib.CategoryTheory.Sites.Preserves
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.CategoryTheory.CategoryStar
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.CategoryTheory.Sites.Preserves
 /-!
 
 # Sheaves for the extensive topology

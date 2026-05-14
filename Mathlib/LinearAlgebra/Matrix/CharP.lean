@@ -7,10 +7,6 @@ module
 
 public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Data.Matrix.Diagonal
-import Mathlib.Tactic.Attr.Core
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # Matrices in prime characteristic

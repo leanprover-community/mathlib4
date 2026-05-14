@@ -7,12 +7,6 @@ module
 
 public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Order.SupIndep
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Disjoint
-import Mathlib.Data.Set.Lattice
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Partitions

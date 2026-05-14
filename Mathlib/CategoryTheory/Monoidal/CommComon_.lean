@@ -7,12 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.Comon_
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
-import Mathlib.Tactic.CategoryTheory.CategoryStar
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 
 /-!
 # The category of commutative comonoids in a braided monoidal category.

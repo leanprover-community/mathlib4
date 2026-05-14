@@ -5,13 +5,7 @@ Authors: Heather Macbeth
 -/
 module
 
-public import Aesop
-public meta import Mathlib.Tactic.ToDual
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Core
-import Mathlib.Util.CompileInductive
+public import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Finiteness tactic

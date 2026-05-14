@@ -6,14 +6,6 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Topology.Bornology.Constructions
-public import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Order.Bounds.Image
-import Mathlib.Order.Filter.AtTopBot.Basic
-import Mathlib.Order.Interval.Set.LinearOrder
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Bornology of order-bounded sets

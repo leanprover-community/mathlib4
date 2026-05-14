@@ -5,10 +5,9 @@ Authors: Alex J. Best
 -/
 module
 
+public import Mathlib.Init
 public import Batteries.Tactic.Exact
-public meta import Lean.Meta.Tactic.Simp
-import Lean.Meta.Tactic.Simp.Types
-import Mathlib.Init
+public import Lean.Meta.Tactic.Simp
 
 /-!
 ## Dischargers for `simp` to tactics

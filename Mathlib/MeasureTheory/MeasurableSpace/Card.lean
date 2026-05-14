@@ -6,18 +6,9 @@ Authors: Sébastien Gouëzel, Violeta Hernández Palacios
 module
 
 public import Mathlib.MeasureTheory.MeasurableSpace.Defs
+public import Mathlib.SetTheory.Cardinal.Regular
 public import Mathlib.SetTheory.Cardinal.Continuum
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Lattice
-import Mathlib.Logic.UnivLE
-import Mathlib.SetTheory.Cardinal.Arithmetic
-import Mathlib.SetTheory.Cardinal.Ordinal
-import Mathlib.SetTheory.Cardinal.Regular
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Measurability.Init
-import Mathlib.Tactic.SetLike
+public import Mathlib.SetTheory.Cardinal.Ordinal
 
 /-!
 # Cardinal of sigma-algebras

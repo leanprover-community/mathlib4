@@ -5,28 +5,10 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.MetricSpace.Defs
-public import Mathlib.Topology.MetricSpace.ProperSpace
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Data.Set.Lattice
-import Mathlib.Order.BourbakiWitt
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Compactness.LocallyCompact
-import Mathlib.Topology.EMetricSpace.Paracompact
-import Mathlib.Topology.MetricSpace.Basic
-import Mathlib.Topology.MetricSpace.Bounded
-import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
-import Mathlib.Topology.Metrizable.Basic
-import Mathlib.Topology.ShrinkingLemma
+public import Mathlib.Topology.EMetricSpace.Paracompact
+public import Mathlib.Topology.MetricSpace.Basic
+public import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
+public import Mathlib.Topology.ShrinkingLemma
 
 /-!
 # Shrinking lemma in a proper metric space

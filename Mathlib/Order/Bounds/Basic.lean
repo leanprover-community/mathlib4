@@ -8,20 +8,8 @@ module
 public import Mathlib.Order.Antisymmetrization
 public import Mathlib.Order.Bounds.Defs
 public import Mathlib.Order.Directed
-public import Mathlib.Data.Set.Subsingleton
-public import Mathlib.Order.Heyting.Basic
-public import Mathlib.Order.Interval.Set.Defs
-public import Mathlib.Tactic.ToAdditive
-import Mathlib.Data.Set.Insert
-import Mathlib.Init
-import Mathlib.Order.BoundedOrder.Monotone
-import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.GCongr.Core
-import Mathlib.Tactic.SimpRw
-import Mathlib.Tactic.Tauto
-import Mathlib.Tactic.Translate.ToDual
-import Mathlib.Util.CompileInductive
+public import Mathlib.Order.BoundedOrder.Monotone
+public import Mathlib.Order.Interval.Set.Basic
 
 /-!
 # Upper / lower bounds

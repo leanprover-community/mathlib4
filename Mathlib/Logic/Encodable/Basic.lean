@@ -11,14 +11,7 @@ public import Mathlib.Data.Nat.Find
 public import Mathlib.Data.PNat.Equiv
 public import Mathlib.Logic.Equiv.Nat
 public import Mathlib.Order.Directed
-public import Mathlib.Logic.Embedding.Basic
-public import Mathlib.Tactic.Basic
-import Batteries.Tactic.Init
-import Mathlib.Order.Monotone.Basic
-import Mathlib.Order.RelIso.Basic
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Order.RelIso.Basic
 
 /-!
 # Encodable types

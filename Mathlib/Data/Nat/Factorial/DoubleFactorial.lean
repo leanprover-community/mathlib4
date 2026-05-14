@@ -6,19 +6,9 @@ Authors: Jake Levinson
 module
 
 public import Mathlib.Data.Nat.Factorial.Basic
+public import Mathlib.Tactic.Ring
 public import Mathlib.Tactic.Positivity.Core
-public meta import Aesop
-public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
-public meta import Mathlib.Tactic.Basic
-public meta import Mathlib.Tactic.ToAdditive
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Ring.RingNF
-import Mathlib.Tactic.SetLike
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Double factorials

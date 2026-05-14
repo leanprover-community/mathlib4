@@ -13,13 +13,6 @@ public import Mathlib.RingTheory.Congruence.Basic
 public import Mathlib.Algebra.Ring.Subsemiring.Basic
 public import Mathlib.Algebra.Ring.Subring.Basic
 public import Mathlib.Algebra.RingQuot
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Inv
-import Mathlib.Tactic.NormNum.Pow
-import Mathlib.Tactic.SetLike
 
 /-!
 # Congruence relations and ring homomorphisms

@@ -8,10 +8,6 @@ module
 public import Mathlib.Topology.Algebra.RestrictedProduct.Basic
 public import Mathlib.Algebra.Group.Submonoid.Units
 public import Mathlib.Algebra.Group.Pi.Units
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Units of restricted products

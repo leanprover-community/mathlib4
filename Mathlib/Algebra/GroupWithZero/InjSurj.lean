@@ -6,10 +6,7 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.Group.InjSurj
-public import Mathlib.Algebra.GroupWithZero.Defs
-import Mathlib.Algebra.GroupWithZero.NeZero
-import Mathlib.Init
-import Mathlib.Logic.Function.Basic
+public import Mathlib.Algebra.GroupWithZero.NeZero
 
 /-!
 # Lifting groups with zero along injective/surjective maps

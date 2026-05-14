@@ -5,18 +5,7 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.GroupTheory.Perm.Cycle.Type
-import Mathlib.Algebra.BigOperators.Group.List.Lemmas
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.List.Nodup
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.GroupTheory.Perm.Cycle.Concrete
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
+public import Mathlib.GroupTheory.Perm.Cycle.Concrete
 
 /-! # Possible cycle types of permutations
 

@@ -5,18 +5,11 @@ Authors: David Wärn
 -/
 module
 
-public import Mathlib.Algebra.Group.Defs
-public import Mathlib.Data.Fintype.Defs
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Data.Finite.Prod
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Fintype.Option
-import Mathlib.Data.Fintype.Prod
-import Mathlib.Data.Fintype.Shrink
-import Mathlib.Data.Fintype.Sum
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Data.Fintype.Option
+public import Mathlib.Data.Fintype.Shrink
+public import Mathlib.Data.Fintype.Sum
+public import Mathlib.Data.Finite.Prod
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # The Hales-Jewett theorem

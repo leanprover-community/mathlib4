@@ -6,21 +6,8 @@ Authors: Christian Merten
 module
 
 public import Mathlib.RingTheory.RingHom.FaithfullyFlat
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.RingTheory.RingHom.Injective
-import Mathlib.RingTheory.RingHom.Surjective
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.SetLike
+public import Mathlib.RingTheory.RingHom.Injective
+public import Mathlib.RingTheory.RingHom.Surjective
 
 /-!
 # Properties satisfying faithfully flat descent for rings

@@ -7,11 +7,6 @@ module
 
 public import Mathlib.Topology.Category.TopCat.Basic
 public import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Adjunctions regarding the category of topological spaces

@@ -7,12 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Functor.Const
 public import Mathlib.CategoryTheory.Opposites
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.Prod.Basic
-import Mathlib.Tactic.CategoryTheory.Reassoc
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.CrossRefAttribute
-import Mathlib.Util.CompileInductive
+public import Mathlib.Data.Prod.Basic
 
 /-!
 # Cartesian products of categories

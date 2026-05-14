@@ -7,19 +7,6 @@ module
 
 public import Mathlib.Topology.Order.Lattice
 public import Mathlib.Topology.Sets.Compacts
-public import Mathlib.Topology.Separation.Regular
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Disjoint
-import Mathlib.Data.Set.Lattice.Image
-import Mathlib.Data.Set.Prod
-import Mathlib.Order.CompleteLattice.Finset
-import Mathlib.Order.Filter.Finite
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Compactness.LocallyCompact
-import Mathlib.Topology.Neighborhoods
-import Mathlib.Topology.NhdsSet
 
 /-!
 # Vietoris topology

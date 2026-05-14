@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Control.ULiftable
 public import Mathlib.Order.Fin.Basic
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # Rand Monad and Random Class

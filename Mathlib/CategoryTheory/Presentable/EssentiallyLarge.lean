@@ -6,13 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Presentable.CardinalFilteredPresentation
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Logic.Small.Basic
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Accessible categories are essentially large

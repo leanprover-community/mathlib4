@@ -5,45 +5,12 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Defs
-public import Mathlib.Order.UpperLower.Closure
-public import Mathlib.Topology.MetricSpace.Thickening
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Field.Pi
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Module.Field
-import Mathlib.Algebra.Order.Pi
-import Mathlib.Algebra.Order.UpperLower
-import Mathlib.Analysis.Normed.Field.Basic
-import Mathlib.Analysis.Normed.Group.Pointwise
-import Mathlib.Analysis.Normed.Group.Uniform
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.EReal.Inv
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Order.Filter.AtTopBot.Basic
-import Mathlib.Order.Filter.AtTopBot.Tendsto
-import Mathlib.Order.Filter.Tendsto
-import Mathlib.Tactic.Bound
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Ring.RingNF
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.Translate.ToAdditive
-import Mathlib.Topology.Algebra.InfiniteSum.Order
-import Mathlib.Topology.Algebra.Order.UpperLower
-import Mathlib.Topology.Algebra.Ring.Real
-import Mathlib.Topology.Bornology.Real
-import Mathlib.Topology.Closure
-import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
-import Mathlib.Topology.MetricSpace.Sequences
-import Mathlib.Topology.Metrizable.Uniformity
-import Mathlib.Topology.Order.LiminfLimsup
-import Mathlib.Topology.Sequences
+public import Mathlib.Algebra.Order.Field.Pi
+public import Mathlib.Algebra.Order.Pi
+public import Mathlib.Analysis.Normed.Field.Basic
+public import Mathlib.Analysis.Normed.Group.Pointwise
+public import Mathlib.Topology.Algebra.Order.UpperLower
+public import Mathlib.Topology.MetricSpace.Sequences
 
 /-!
 # Upper/lower/order-connected sets in normed groups

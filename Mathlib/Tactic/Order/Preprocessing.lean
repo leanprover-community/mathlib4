@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Tactic.Order.CollectFacts
 public meta import Mathlib.Util.AtomM
-import Mathlib.Init
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # Facts preprocessing for the `order` tactic

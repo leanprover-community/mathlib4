@@ -5,19 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.HomologicalComplex
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Biproducts
-import Mathlib.Algebra.Homology.Additive
-import Mathlib.Algebra.Homology.HomologicalComplexLimits
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Preadditive.Biproducts
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.CategoryTheory.CategoryStar
-import Mathlib.Tactic.CategoryTheory.Reassoc
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Tactic.SetLike
+public import Mathlib.Algebra.Homology.HomologicalComplexLimits
+public import Mathlib.Algebra.Homology.Additive
 
 /-! # Binary biproducts of homological complexes
 

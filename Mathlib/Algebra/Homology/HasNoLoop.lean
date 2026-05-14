@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Homology.ComplexShape
 public import Mathlib.Algebra.Group.Int.Defs
 public import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Init
 
 /-!
 # Complex shapes with no loop

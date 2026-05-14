@@ -7,10 +7,6 @@ module
 
 public import Mathlib.Data.Countable.Small
 public import Mathlib.Data.Fintype.EquivFin
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Fintype instance for `Shrink`

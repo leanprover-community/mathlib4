@@ -5,39 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Convex.Basic
-public import Mathlib.Topology.MetricSpace.Defs
-public import Mathlib.Topology.Order.Real
-public import Mathlib.Topology.UniformSpace.Real
-import Mathlib.Algebra.Order.Algebra
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Module.Field
-import Mathlib.Algebra.Order.Sub.Basic
-import Mathlib.Algebra.Order.Sub.Unbundled.Basic
-import Mathlib.Analysis.Convex.PartitionOfUnity
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.EReal.Inv
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Order.Filter.Prod
-import Mathlib.Order.Filter.Tendsto
-import Mathlib.Order.Interval.Set.OrdConnected
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Algebra.InfiniteSum.Order
-import Mathlib.Topology.EMetricSpace.Paracompact
-import Mathlib.Topology.Instances.ENNReal.Lemmas
-import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
-import Mathlib.Topology.Metrizable.Uniformity
-import Mathlib.Topology.Neighborhoods
-import Mathlib.Topology.Order.DenselyOrdered
-import Mathlib.Topology.Order.LeftRight
+public import Mathlib.Topology.EMetricSpace.Paracompact
+public import Mathlib.Topology.Instances.ENNReal.Lemmas
+public import Mathlib.Analysis.Convex.PartitionOfUnity
 
 /-!
 # Lemmas about (e)metric spaces that need partition of unity

@@ -5,17 +5,11 @@ Authors: Mario Carneiro
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Group.List.Defs
 public import Mathlib.Algebra.Group.End
+public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Data.Fintype.EquivFin
 public import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Algebra.BigOperators.Group.List.Defs
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.List.Nodup
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # `Fintype` instances for `Equiv` and `Perm`

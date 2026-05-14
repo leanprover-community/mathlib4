@@ -5,12 +5,7 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Opposites
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.EpiMono
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.CategoryTheory.EpiMono
 
 /-!
 # Balanced categories

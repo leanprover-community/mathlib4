@@ -8,12 +8,6 @@ module
 public import Mathlib.Order.DirSupClosed
 public import Mathlib.Order.ScottContinuity
 public import Mathlib.Topology.Order.UpperLowerSetTopology
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Closure
-import Mathlib.Topology.Continuous
 
 /-!
 # Scott topology

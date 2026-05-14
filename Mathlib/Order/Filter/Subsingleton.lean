@@ -6,15 +6,8 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Order.Filter.CountablyGenerated
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Prod
-import Mathlib.Order.Filter.Map
-import Mathlib.Order.Filter.Prod
-import Mathlib.Order.Filter.Ultrafilter.Defs
-import Mathlib.Tactic.Attr.Register
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Order.Filter.Prod
+public import Mathlib.Order.Filter.Ultrafilter.Defs
 /-!
 # Subsingleton filters
 

@@ -7,26 +7,8 @@ module
 
 public import Mathlib.GroupTheory.GroupAction.Quotient
 public import Mathlib.GroupTheory.QuotientGroup.Defs
-public import Mathlib.Topology.Algebra.MulAction
-public import Mathlib.Topology.Separation.Regular
-import Mathlib.Algebra.Group.Subgroup.Actions
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.Translate.ToAdditive
-import Mathlib.Topology.Algebra.Group.Pointwise
-import Mathlib.Topology.Algebra.Monoid
-import Mathlib.Topology.Compactness.LocallyCompact
-import Mathlib.Topology.Continuous
-import Mathlib.Topology.Maps.Basic
-import Mathlib.Topology.Maps.OpenQuotient
+public import Mathlib.Topology.Algebra.Group.Pointwise
+public import Mathlib.Topology.Maps.OpenQuotient
 
 /-!
 # Topology on the quotient group

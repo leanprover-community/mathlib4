@@ -8,11 +8,7 @@ module
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 public import Mathlib.Algebra.Module.Torsion.Free
-import Mathlib.Algebra.Ring.Action.Pointwise.Set
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Algebra.Ring.Action.Pointwise.Set
 
 /-!
 # Pointwise actions on sets in a ring

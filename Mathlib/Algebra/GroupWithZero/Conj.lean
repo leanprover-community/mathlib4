@@ -6,12 +6,7 @@ Authors: Aaron Anderson
 module
 
 public import Mathlib.Algebra.Group.Conj
-public import Mathlib.Algebra.GroupWithZero.Basic
-import Mathlib.Algebra.Group.Semiconj.Units
-import Mathlib.Algebra.GroupWithZero.Units.Basic
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
 
 /-!
 # Conjugacy in a group with zero

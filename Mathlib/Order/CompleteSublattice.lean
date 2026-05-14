@@ -5,14 +5,9 @@ Authors: Oliver Nash
 -/
 module
 
+public import Mathlib.Data.Set.Functor
 public import Mathlib.Order.Sublattice
 public import Mathlib.Order.Hom.CompleteLattice
-public import Mathlib.Order.Hom.Set
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Functor
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Complete Sublattices

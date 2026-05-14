@@ -5,21 +5,10 @@ Authors: Yury Kudryashov
 -/
 module
 
+public import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Basic
 public import Mathlib.Topology.Algebra.ConstMulAction
 public import Mathlib.Topology.MetricSpace.Isometry
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.Translate.ToAdditive
-import Mathlib.Topology.MetricSpace.Lipschitz
+public import Mathlib.Topology.MetricSpace.Lipschitz
 
 /-!
 # Group actions by isometries

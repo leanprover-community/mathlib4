@@ -5,10 +5,8 @@ Authors: Kim Morrison, Kyle Miller
 -/
 module
 
+public import Mathlib.Data.Nat.Notation
 public import Mathlib.Tactic.CongrExclamation
-public meta import Lean.Elab.Tactic.Location
-import Mathlib.Data.Nat.Notation
-import Mathlib.Init
 
 /-!
 # The `convert` tactic.

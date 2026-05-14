@@ -5,13 +5,8 @@ Authors: Christian Merten
 -/
 module
 
+public import Mathlib.Data.Finite.Sigma
 public import Mathlib.Topology.Spectral.Prespectral
-import Mathlib.Data.Finite.Sigma
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Lattice.Image
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Compact open covered sets

@@ -5,17 +5,12 @@ Authors: Kim Morrison
 -/
 module
 
+public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Order.SuccPred.Basic
 import Mathlib.Data.Finset.Max
 
 import Mathlib.Data.Fintype.Order
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Lattice
-import Mathlib.Order.ConditionallyCompleteLattice.Indexed
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # The monotone sequence of partial supremums of a sequence

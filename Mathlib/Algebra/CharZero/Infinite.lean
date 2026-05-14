@@ -6,12 +6,7 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.CharZero.Defs
-public import Mathlib.Data.Finite.Defs
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Fintype.EquivFin
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Data.Fintype.EquivFin
 
 /-! # A characteristic-zero semiring is infinite -/
 

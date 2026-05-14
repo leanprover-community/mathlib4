@@ -11,15 +11,6 @@ public import Mathlib.Data.Set.Card
 
 import Mathlib.Data.Finite.Card
 import Mathlib.Tactic.ENatToNat
-import Mathlib.Algebra.Order.Sub.Basic
-import Mathlib.Algebra.Order.Sub.Unbundled.Basic
-import Mathlib.Combinatorics.SimpleGraph.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Nontriviality
-import Mathlib.Tactic.SetLike
 
 /-!
 # Vertex cover

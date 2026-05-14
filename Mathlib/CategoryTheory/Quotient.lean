@@ -8,13 +8,6 @@ module
 public import Mathlib.CategoryTheory.NatIso
 public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.CategoryTheory.Groupoid
-import Batteries.Tactic.Init
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Tactic.CategoryTheory.CategoryStar
-import Mathlib.Tactic.CategoryTheory.Reassoc
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # Quotient category

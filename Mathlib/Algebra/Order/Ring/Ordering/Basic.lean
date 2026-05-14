@@ -5,20 +5,12 @@ Authors: Florent Schaffhauser, Artie Khovanov
 -/
 module
 
+public import Mathlib.Algebra.Field.IsField
 public import Mathlib.Algebra.Order.Ring.Ordering.Defs
 public import Mathlib.Algebra.Ring.SumsOfSquares
-import Mathlib.Algebra.Field.IsField
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.ApplyFun
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.LinearCombination
-import Mathlib.Tactic.Monotonicity.Attr
-import Mathlib.Tactic.NormNum.Eq
-import Mathlib.Tactic.Ring.RingNF
-import Mathlib.Tactic.SetLike
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Tactic.LinearCombination
+public import Mathlib.Tactic.Ring
 
 /-!
 # Ring orderings

@@ -6,9 +6,6 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.CategoryTheory.Iso
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Tactic.Common
-import Mathlib.Util.CompileInductive
 
 /-!
 # Conjugate morphisms by isomorphisms

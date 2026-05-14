@@ -8,12 +8,7 @@ module
 public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Algebra.Group.Subsemigroup.Basic
 public import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
-public import Mathlib.Algebra.Star.Basic
-import Mathlib.Algebra.Star.Center
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Algebra.Star.Center
 
 /-!
 # Non-unital Star Subsemirings

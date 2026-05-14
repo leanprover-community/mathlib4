@@ -8,12 +8,6 @@ module
 public import Mathlib.Algebra.Category.MonCat.Basic
 public import Mathlib.Algebra.GroupWithZero.WithZero
 public import Mathlib.CategoryTheory.Category.Bipointed
-public import Mathlib.Algebra.GroupWithZero.Equiv
-public import Mathlib.Tactic.Attr.Core
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # The category of groups with zero

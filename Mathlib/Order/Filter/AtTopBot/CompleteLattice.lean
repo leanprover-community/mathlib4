@@ -5,16 +5,9 @@ Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
 module
 
+public import Mathlib.Order.Filter.AtTopBot.Tendsto
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
-public import Mathlib.Order.Filter.AtTopBot.Defs
-import Batteries.Tactic.Init
-import Mathlib.Init
-import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
-import Mathlib.Order.Filter.AtTopBot.Tendsto
-import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Tactic.Attr.Register
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
 
 /-!
 # `Filter.atTop` and `Filter.atBot` in (conditionally) complete lattices

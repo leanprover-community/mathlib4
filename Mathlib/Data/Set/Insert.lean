@@ -6,13 +6,8 @@ Authors: Jeremy Avigad, Leonardo de Moura
 module
 
 public import Aesop
-public import Mathlib.Data.Set.Basic
-import Mathlib.Data.Set.Disjoint
-import Mathlib.Init
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.GCongr.Core
-import Mathlib.Tactic.Simproc.ExistsAndEq
-import Mathlib.Util.CompileInductive
+public import Mathlib.Data.Set.Disjoint
+public import Mathlib.Tactic.Simproc.ExistsAndEq
 
 /-!
 # Lemmas about insertion, singleton, and pairs

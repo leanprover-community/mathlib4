@@ -7,11 +7,6 @@ module
 
 public import Mathlib.LinearAlgebra.Quotient.Defs
 public import Mathlib.MeasureTheory.MeasurableSpace.Constructions
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Measurability.Init
-import Mathlib.Tactic.SetLike
 
 /-!
 # Measurability on the quotient of a module by a submodule

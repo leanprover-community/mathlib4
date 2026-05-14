@@ -6,10 +6,7 @@ Authors: Fox Thomson
 module
 
 public import Mathlib.Computability.Language
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Regular Expressions

@@ -5,32 +5,12 @@ Authors: Chris Hughes
 -/
 module
 
+public import Mathlib.Algebra.Algebra.ZMod
+public import Mathlib.Algebra.Field.ZMod
+public import Mathlib.Algebra.MvPolynomial.Cardinal
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
-public import Mathlib.Algebra.MvPolynomial.Rename
-public import Mathlib.RingTheory.AlgebraicIndependent.Defs
-import Mathlib.Algebra.Algebra.ZMod
-import Mathlib.Algebra.Field.ZMod
-import Mathlib.Algebra.MvPolynomial.Cardinal
-import Mathlib.Algebra.Order.AbsoluteValue.Basic
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Combinatorics.Matroid.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Int.Basic
-import Mathlib.Data.Nat.Totient
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.RingTheory.Algebraic.Cardinality
-import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
-import Mathlib.RingTheory.LocalRing.Basic
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.SetLike
+public import Mathlib.RingTheory.Algebraic.Cardinality
+public import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
 
 /-!
 # Classification of Algebraically closed fields

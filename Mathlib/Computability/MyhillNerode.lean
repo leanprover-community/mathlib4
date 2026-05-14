@@ -6,21 +6,7 @@ Authors: Chris Wong
 module
 
 public import Mathlib.Computability.DFA
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.List.Induction
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Abs
-import Mathlib.Tactic.NormNum.DivMod
-import Mathlib.Tactic.NormNum.Eq
-import Mathlib.Tactic.NormNum.Ineq
-import Mathlib.Tactic.NormNum.OfScientific
-import Mathlib.Tactic.NormNum.Pow
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
+public import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Myhill–Nerode theorem

@@ -7,11 +7,6 @@ module
 
 public import Mathlib.Topology.LocallyConstant.Basic
 public import Mathlib.Logic.Function.FiberPartition
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Finite.Range
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 /-!
 
 This file provides some API surrounding `Function.Fiber` (see

@@ -6,7 +6,6 @@ Authors: Floris van Doorn, Jon Eugster
 module
 
 public import Mathlib.Lean.Meta
-import Mathlib.Init
 /-!
 # Additions to `Lean.Elab.Tactic.Basic`
 -/

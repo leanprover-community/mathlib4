@@ -6,11 +6,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 module
 
 public import Mathlib.Data.Finset.Defs
-import Batteries.Tactic.Trans
-import Mathlib.Data.Multiset.MapFold
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Data.Multiset.MapFold
 
 /-!
 # Attaching a proof of membership to a finite set

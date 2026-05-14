@@ -9,16 +9,7 @@ public import Mathlib.Algebra.Module.Submodule.Map
 public import Mathlib.Algebra.Polynomial.Eval.Defs
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.Algebra.Module.Submodule.RestrictScalars
-import Batteries.Tactic.Trans
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Monotonicity.Attr
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Tactic.SetLike
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 
 /-!
 # modular equivalence for submodule

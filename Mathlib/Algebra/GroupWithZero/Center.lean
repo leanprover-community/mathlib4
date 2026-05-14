@@ -6,14 +6,7 @@ Authors: Eric Wieser, Jireh Loreaux
 module
 
 public import Mathlib.Algebra.Group.Center
-public import Mathlib.Algebra.GroupWithZero.Basic
-import Mathlib.Algebra.GroupWithZero.Units.Basic
-import Mathlib.Init
-import Mathlib.Tactic.Attr.Core
-import Mathlib.Tactic.Coe
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SimpRw
-import Mathlib.Util.CompileInductive
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
 
 /-!
 # Center of a group with zero

@@ -7,10 +7,6 @@ module
 
 public import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.Data.Nat.Nth
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # The Nth primes

@@ -7,10 +7,6 @@ module
 
 public import Mathlib.Algebra.Algebra.TransferInstance
 public import Mathlib.Algebra.Ring.Shrink
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Transfer module and algebra structures from `α` to `Shrink α`

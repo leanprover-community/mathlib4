@@ -7,11 +7,6 @@ module
 
 public import Mathlib.Data.Matrix.Mul
 public import Mathlib.Algebra.Ring.Opposite
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Actions by matrices on vectors through `*ᵥ` and `ᵥ*`, cast as `Module`s

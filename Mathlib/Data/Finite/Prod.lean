@@ -6,19 +6,11 @@ Authors: Kyle Miller
 module
 
 public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Data.Fintype.Prod
+public import Mathlib.Data.Fintype.Pi
 public import Mathlib.Algebra.Order.Group.Multiset
-public import Mathlib.Algebra.Group.Equiv.Defs
-public import Mathlib.Data.Finset.Prod
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Fintype.Pi
-import Mathlib.Data.Fintype.Prod
-import Mathlib.Data.Set.NAry
-import Mathlib.Data.Set.Prod
-import Mathlib.Data.ULift
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.Translate.ToAdditive
+public import Mathlib.Data.ULift
+public import Mathlib.Data.Set.NAry
 
 /-!
 # Finiteness of products

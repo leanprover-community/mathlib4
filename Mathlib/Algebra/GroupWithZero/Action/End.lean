@@ -7,11 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Action.Hom
 public import Mathlib.Algebra.Group.Equiv.Defs
-public import Mathlib.Algebra.Group.Action.Faithful
-public import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Algebra.GroupWithZero.Action.Units
-import Mathlib.Init
-import Mathlib.Util.CompileInductive
+public import Mathlib.Algebra.GroupWithZero.Action.Units
 
 /-!
 # Group actions and (endo)morphisms

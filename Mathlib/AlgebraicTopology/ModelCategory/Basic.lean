@@ -11,13 +11,7 @@ public import Mathlib.CategoryTheory.MorphismProperty.Composition
 public import Mathlib.CategoryTheory.MorphismProperty.Factorization
 public import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
 public import Mathlib.CategoryTheory.MorphismProperty.WeakFactorizationSystem
-public import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
-import Mathlib.AlgebraicTopology.ModelCategory.Instances
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.AlgebraicTopology.ModelCategory.Instances
 
 /-!
 # Model categories

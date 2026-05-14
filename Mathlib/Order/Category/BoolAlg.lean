@@ -7,10 +7,6 @@ module
 
 public import Mathlib.Order.Category.HeytAlg
 public import Mathlib.Order.Hom.CompleteLattice
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # The category of Boolean algebras

@@ -5,19 +5,9 @@ Authors: Yan Yablonovskiy
 -/
 module
 
+public import Mathlib.Data.Real.Basic
 public import Mathlib.Order.Types.Defs
 public import Mathlib.SetTheory.Cardinal.Order
-public import Mathlib.Data.Prod.Lex
-public import Mathlib.Order.Fin.Basic
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Real.Basic
-import Mathlib.Order.BourbakiWitt
-import Mathlib.Order.Hom.Lex
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 

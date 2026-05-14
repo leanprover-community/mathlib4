@@ -6,9 +6,6 @@ Authors: Eric Rodriguez, Joel Riou, Yury Kudryashov
 module
 
 public import Mathlib.Data.Fin.SuccPred
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 /-!
 # Reverse on `Fin n`
 

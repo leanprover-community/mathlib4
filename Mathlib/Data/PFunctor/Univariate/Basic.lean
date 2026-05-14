@@ -6,10 +6,6 @@ Authors: Jeremy Avigad
 module
 
 public import Mathlib.Data.W.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Polynomial Functors

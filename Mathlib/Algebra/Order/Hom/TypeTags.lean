@@ -8,9 +8,6 @@ module
 public import Mathlib.Algebra.Group.Equiv.TypeTags
 public import Mathlib.Algebra.Order.Hom.Monoid
 public import Mathlib.Algebra.Order.Monoid.Unbundled.TypeTags
-import Mathlib.Init
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 

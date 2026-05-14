@@ -8,23 +8,6 @@ module
 public import Mathlib.Data.List.Cycle
 public import Mathlib.GroupTheory.Perm.Cycle.Type
 public import Mathlib.GroupTheory.Perm.List
-public import Mathlib.Algebra.Order.Monoid.NatCast
-public meta import Mathlib.Tactic.Basic
-public meta import Mathlib.Tactic.ToAdditive
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Algebra.Order.Sub.Unbundled.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.List.Dedup
-import Mathlib.Data.List.Iterate
-import Mathlib.Data.List.Nodup
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Tactic.Attr.Register
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
 
 /-!
 

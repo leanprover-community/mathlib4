@@ -6,8 +6,7 @@ Authors: Jovan Gerbscheid
 module
 
 public import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
-import Lean.Meta.CompletionName
-import Mathlib.Init
+public import Lean.Meta.CompletionName
 
 /-!
 # Constructing a RefinedDiscrTree

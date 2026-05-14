@@ -12,15 +12,7 @@ public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Data.Nat.Lattice
 public import Mathlib.Data.Setoid.Partition
 public import Mathlib.Order.Antichain
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Combinatorics.SimpleGraph.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Nat.Cast.Order.Basic
-import Mathlib.Data.Nat.Cast.Order.Ring
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Data.Nat.Cast.Order.Ring
 
 /-!
 # Graph Coloring

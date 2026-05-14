@@ -5,17 +5,7 @@ Authors: Markus Himmel
 -/
 module
 
-public meta import Batteries.Lean.Expr
-public import Mathlib.Data.Nat.Notation
-public import Mathlib.Tactic.Attr.Core
-public import Mathlib.Tactic.ToAdditive
-public import Mathlib.Tactic.ToDual
-public import Qq
-import Mathlib.Algebra.NeZero
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Tactic.NormNum.Pow
-import Mathlib.Util.CompileInductive
+public import Mathlib.Tactic.NormNum.Pow
 
 /-!
 # `norm_num` handling for expressions of the form `a ^ b % m`.

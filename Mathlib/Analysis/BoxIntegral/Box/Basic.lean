@@ -5,44 +5,13 @@ Authors: Yury Kudryashov
 -/
 module
 
+public import Mathlib.Data.NNReal.Basic
+public import Mathlib.Order.Fin.Tuple
+public import Mathlib.Order.Interval.Set.Monotone
+public import Mathlib.Topology.MetricSpace.Basic
 public import Mathlib.Topology.MetricSpace.Bounded
-import Batteries.Tactic.Congr
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Group.Unbundled.Basic
-import Mathlib.Algebra.Order.Module.Field
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.NNReal.Basic
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Data.Set.Disjoint
-import Mathlib.Data.Set.Finite.Lattice
-import Mathlib.Data.Set.Lattice
-import Mathlib.Data.Set.Prod
-import Mathlib.Order.Fin.Tuple
-import Mathlib.Order.Interval.Set.LinearOrder
-import Mathlib.Order.Interval.Set.Monotone
-import Mathlib.Order.Interval.Set.Pi
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Monotonicity.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.TFAE
-import Mathlib.Topology.Closure
-import Mathlib.Topology.ContinuousOn
-import Mathlib.Topology.MetricSpace.Basic
-import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
-import Mathlib.Topology.MetricSpace.Pseudo.Real
-import Mathlib.Topology.Metrizable.Basic
-import Mathlib.Topology.NhdsWithin
-import Mathlib.Topology.Order.DenselyOrdered
-import Mathlib.Topology.Order.IsLUB
-import Mathlib.Topology.Order.MonotoneConvergence
+public import Mathlib.Topology.MetricSpace.Pseudo.Real
+public import Mathlib.Topology.Order.MonotoneConvergence
 /-!
 # Rectangular boxes in `ℝⁿ`
 

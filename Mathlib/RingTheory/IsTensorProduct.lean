@@ -6,15 +6,6 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.TensorProduct.Maps
-import Mathlib.Algebra.Algebra.RestrictScalars
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.ULift
-import Mathlib.Tactic.ApplyFun
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Tactic.SetLike
 
 /-!
 # The characteristic predicate of tensor product

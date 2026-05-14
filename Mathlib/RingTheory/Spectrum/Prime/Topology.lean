@@ -6,46 +6,16 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.Order.Ring.Idempotent
+public import Mathlib.Order.Heyting.Hom
+public import Mathlib.RingTheory.Finiteness.Ideal
+public import Mathlib.RingTheory.Ideal.GoingUp
+public import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
 public import Mathlib.RingTheory.KrullDimension.Basic
+public import Mathlib.RingTheory.Localization.Algebra
 public import Mathlib.RingTheory.Spectrum.Maximal.Localization
 public import Mathlib.Topology.Constructible
 public import Mathlib.Topology.KrullDimension
 public import Mathlib.Topology.Spectral.Basic
-public import Mathlib.Order.Minimal
-public import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
-public import Mathlib.RingTheory.Localization.Away.Basic
-public import Mathlib.Topology.Homeomorph.Lemmas
-import Batteries.Tactic.Trans
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Polynomial.Degree.SmallDegree
-import Mathlib.Algebra.Polynomial.Eval.Coeff
-import Mathlib.Algebra.Polynomial.Eval.Degree
-import Mathlib.Algebra.Polynomial.Reverse
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Set.Disjoint
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.Order.Heyting.Hom
-import Mathlib.RingTheory.Finiteness.Ideal
-import Mathlib.RingTheory.Finiteness.Subalgebra
-import Mathlib.RingTheory.Ideal.GoingUp
-import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
-import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
-import Mathlib.RingTheory.Localization.Algebra
-import Mathlib.RingTheory.Noetherian.Basic
-import Mathlib.RingTheory.Polynomial.Basic
-import Mathlib.Tactic.Algebraize
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.CrossRefAttribute
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Nontriviality.Core
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Compactness.Bases
 
 /-!
 # The Zariski topology on the prime spectrum of a commutative (semi)ring

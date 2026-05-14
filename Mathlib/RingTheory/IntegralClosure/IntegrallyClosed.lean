@@ -5,30 +5,9 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
-public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Defs
-public import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.Algebra.Algebra.Subalgebra.Tower
-import Mathlib.Algebra.EuclideanDomain.Basic
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Polynomial.Monic
-import Mathlib.Algebra.Ring.Hom.InjSurj
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.RingTheory.Finiteness.Basic
-import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
-import Mathlib.RingTheory.Localization.Integral
-import Mathlib.RingTheory.Localization.LocalizationLocalization
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.SetLike
+public import Mathlib.RingTheory.Localization.Integral
+public import Mathlib.RingTheory.Localization.LocalizationLocalization
+public import Mathlib.Algebra.Ring.Hom.InjSurj
 
 /-!
 # Integrally closed rings

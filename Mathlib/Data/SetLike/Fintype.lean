@@ -7,11 +7,6 @@ module
 
 public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Data.Fintype.Powerset
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Fintype.EquivFin
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Set-like fintype

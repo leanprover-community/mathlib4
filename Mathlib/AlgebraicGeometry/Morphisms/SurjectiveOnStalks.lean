@@ -6,28 +6,9 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
-import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.RingTheory.RingHom.Surjective
-import Mathlib.RingTheory.Spectrum.Prime.TensorProduct
-import Mathlib.Tactic.Algebraize
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.LocalAtTarget
-import Mathlib.Topology.Sheaves.Init
+public import Mathlib.RingTheory.RingHom.Surjective
+public import Mathlib.RingTheory.Spectrum.Prime.TensorProduct
+public import Mathlib.Topology.LocalAtTarget
 
 /-!
 # Morphisms surjective on stalks

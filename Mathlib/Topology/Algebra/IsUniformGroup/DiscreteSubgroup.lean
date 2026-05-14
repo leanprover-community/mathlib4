@@ -7,22 +7,8 @@ module
 
 public import Mathlib.GroupTheory.Commensurable
 public import Mathlib.Topology.Algebra.ContinuousMonoidHom
-public import Mathlib.Topology.Separation.Hausdorff
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Order.Filter.Map
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.Translate.ToAdditive
-import Mathlib.Topology.Algebra.Group.ClosedSubgroup
-import Mathlib.Topology.Algebra.IsUniformGroup.Basic
-import Mathlib.Topology.Neighborhoods
+public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
+public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 
 /-!
 # Discrete subgroups of topological groups

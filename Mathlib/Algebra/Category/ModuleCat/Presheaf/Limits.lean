@@ -8,18 +8,7 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf
 public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 public import Mathlib.CategoryTheory.Limits.Preserves.Limits
-public import Mathlib.Algebra.Category.ModuleCat.Limits
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.CategoryTheory.Reassoc
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Eq
-import Mathlib.Tactic.NormNum.Ineq
-import Mathlib.Tactic.NormNum.Pow
-import Mathlib.Tactic.SetLike
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 
 /-! # Limits in categories of presheaves of modules
 

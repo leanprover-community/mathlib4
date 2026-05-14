@@ -7,10 +7,6 @@ module
 
 public import Mathlib.Order.Restriction
 public import Mathlib.Topology.Constructions
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Continuity of the restriction function for functions indexed by a preorder

@@ -7,13 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.TensorProduct.Defs
 public import Mathlib.Algebra.Module.Equiv.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Int.Init
-import Mathlib.Tactic.Abel
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Tactic.SetLike
+public import Mathlib.Tactic.Abel
 
 /-!
 # Universal property of the tensor product

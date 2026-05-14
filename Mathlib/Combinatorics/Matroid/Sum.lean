@@ -7,15 +7,6 @@ module
 
 public import Mathlib.Combinatorics.Matroid.Map
 public import Mathlib.Logic.Embedding.Set
-public import Mathlib.Data.Set.Sigma
-import Mathlib.Combinatorics.Matroid.Init
-import Mathlib.Data.Bool.Set
-import Mathlib.Data.Finset.Attr
-import Mathlib.Order.Minimal
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Sums of matroids

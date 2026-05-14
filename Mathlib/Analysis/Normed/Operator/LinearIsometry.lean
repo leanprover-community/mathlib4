@@ -8,26 +8,10 @@ module
 public import Mathlib.Algebra.Star.Basic  -- shake: keep (used in `notation` only)
 public import Mathlib.Analysis.Normed.Group.Constructions
 public import Mathlib.Analysis.Normed.Group.Submodule
+public import Mathlib.Analysis.Normed.Group.Uniform
 public import Mathlib.LinearAlgebra.Basis.Defs
 public import Mathlib.LinearAlgebra.DFinsupp
 public import Mathlib.Topology.Algebra.Module.Equiv
-public import Mathlib.Analysis.Normed.Group.Continuity
-public import Mathlib.Topology.MetricSpace.Isometry
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Module.Field
-import Mathlib.Analysis.Normed.Group.Uniform
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.EReal.Operations
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
 
 /-!
 # (Semi-)linear isometries

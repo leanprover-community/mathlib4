@@ -7,9 +7,7 @@ module
 
 public import Mathlib.Data.Set.Defs
 public import Mathlib.Order.Defs.PartialOrder
-import Mathlib.Init
-import Mathlib.Tactic.Push.Attr
-import Mathlib.Tactic.Translate.ToDual
+public import Mathlib.Tactic.Push.Attr
 
 /-!
 # Intervals

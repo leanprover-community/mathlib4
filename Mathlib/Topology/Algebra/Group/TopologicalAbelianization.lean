@@ -6,18 +6,8 @@ Authors: María Inés de Frutos-Fernández
 module
 
 public import Mathlib.GroupTheory.Commutator.Basic
+public import Mathlib.Tactic.Group
 public import Mathlib.Topology.Algebra.Group.Basic
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Group
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
 
 /-!
 # The topological abelianization of a group.

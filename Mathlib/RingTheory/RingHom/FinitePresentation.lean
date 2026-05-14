@@ -5,26 +5,11 @@ Authors: Christian Merten
 -/
 module
 
+public import Mathlib.RingTheory.Localization.Finiteness
+public import Mathlib.RingTheory.Localization.Away.AdjoinRoot
+public import Mathlib.RingTheory.Finiteness.FinitePresentationLocal
+public import Mathlib.RingTheory.FiniteStability
 public import Mathlib.RingTheory.LocalProperties.Basic
-public import Mathlib.RingTheory.FinitePresentation
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.RingTheory.FiniteStability
-import Mathlib.RingTheory.Finiteness.Basic
-import Mathlib.RingTheory.Finiteness.FinitePresentationLocal
-import Mathlib.RingTheory.Localization.Away.AdjoinRoot
-import Mathlib.Tactic.Algebraize
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.SetLike
 
 /-!
 

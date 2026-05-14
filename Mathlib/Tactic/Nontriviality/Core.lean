@@ -9,9 +9,8 @@ public meta import Qq.MetaM
 public import Mathlib.Logic.Nontrivial.Basic -- shake: keep (tactic dependency)
 public import Mathlib.Tactic.Attr.Register -- shake: keep (tactic dependency)
 public meta import Mathlib.Tactic.ToDual
-import Mathlib.Init
-import Qq.Macro
-import Qq.Typ
+public import Qq.Macro
+public import Qq.Typ
 
 /-! # The `nontriviality` tactic. -/
 

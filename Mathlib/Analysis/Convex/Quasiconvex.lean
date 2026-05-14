@@ -6,22 +6,7 @@ Authors: Yaël Dillies, Antoine Chambert-Loir, Anatole Dedecker
 module
 
 public import Mathlib.Analysis.Convex.Function
-public import Mathlib.Topology.Algebra.MulAction
-public import Mathlib.Topology.MetricSpace.Pseudo.Defs
-import Mathlib.Algebra.Order.Algebra
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Analysis.Convex.PathConnected
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.MetricSpace.Bounded
+public import Mathlib.Analysis.Convex.PathConnected
 
 /-!
 # Quasiconvex and quasiconcave functions

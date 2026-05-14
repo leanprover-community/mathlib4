@@ -5,15 +5,9 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
+public import Mathlib.Order.GameAdd
 public import Mathlib.SetTheory.ZFC.Cardinal
 public import Mathlib.SetTheory.ZFC.Rank
-import Mathlib.Data.Finset.Attr
-import Mathlib.Order.GameAdd
-import Mathlib.SetTheory.Cardinal.Basic
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Von Neumann ordinals

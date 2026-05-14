@@ -5,35 +5,9 @@ Authors: David Loeffler
 -/
 module
 
+public import Mathlib.Analysis.Normed.Group.Uniform
 public import Mathlib.Topology.Algebra.Group.Matrix
-public import Mathlib.GroupTheory.Commensurable
-public import Mathlib.Topology.MetricSpace.Pseudo.Defs
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Module.Field
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Analysis.Normed.Group.Uniform
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Int.Interval
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Algebra.IsUniformGroup.DiscreteSubgroup
-import Mathlib.Topology.Algebra.Ring.Real
-import Mathlib.Topology.Instances.Discrete
-import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
-import Mathlib.Topology.Metrizable.Uniformity
-import Mathlib.Topology.Order.T5
+public import Mathlib.Topology.Algebra.IsUniformGroup.DiscreteSubgroup
 
 /-!
 # Arithmetic subgroups of `GL(2, ℝ)`

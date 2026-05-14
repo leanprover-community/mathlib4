@@ -7,13 +7,7 @@ module
 
 public import Mathlib.Data.Finset.Pi
 public import Mathlib.Data.Fintype.Basic
-public import Mathlib.Data.Fin.Tuple.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Data.Set.Prod
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Fintype instances for pi types

@@ -5,14 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.CategoryTheory.Adjunction.Comma
 public import Mathlib.CategoryTheory.Comma.Over.Basic
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
-import Mathlib.CategoryTheory.Adjunction.Comma
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Limits.Shapes.Equivalence
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.CategoryTheory.Limits.Shapes.Equivalence
 
 /-!
 # Limits and the category of (co)cones

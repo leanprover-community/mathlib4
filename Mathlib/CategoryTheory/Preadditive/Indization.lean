@@ -9,14 +9,6 @@ public import Mathlib.CategoryTheory.Limits.Indization.Category
 public import Mathlib.CategoryTheory.Preadditive.Transfer
 public import Mathlib.CategoryTheory.Preadditive.Opposite
 public import Mathlib.Algebra.Category.Grp.LeftExactFunctor
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
-import Mathlib.CategoryTheory.Preadditive.Biproducts
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Tactic.SetLike
 
 /-!
 # The category of ind-objects is preadditive

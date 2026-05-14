@@ -6,9 +6,6 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
-import Mathlib.Init
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # Lemma about the coercion `ℕ → WithBot ℕ`.

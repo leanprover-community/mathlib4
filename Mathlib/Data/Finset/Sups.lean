@@ -8,10 +8,6 @@ module
 public import Mathlib.Data.Finset.NAry
 public import Mathlib.Data.Finset.Slice
 public import Mathlib.Data.Set.Sups
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Set family operations

@@ -9,14 +9,7 @@ public import Mathlib.Data.DFinsupp.Interval
 public import Mathlib.Data.DFinsupp.Multiset
 public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Data.Nat.Lattice
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Finset.Lattice.Lemmas
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Algebra.Order.Group.Nat
 
 /-!
 # Finite intervals of multisets

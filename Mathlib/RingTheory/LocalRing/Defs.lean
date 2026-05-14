@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Group.Units.Defs
 public import Mathlib.Algebra.Ring.Defs
-import Mathlib.Init
 
 /-!
 

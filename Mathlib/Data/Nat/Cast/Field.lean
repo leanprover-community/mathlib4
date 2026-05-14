@@ -6,12 +6,10 @@ Authors: Mario Carneiro, Yaël Dillies, Patrick Stevens
 module
 
 public import Mathlib.Algebra.CharZero.Defs
+public import Mathlib.Data.Nat.Cast.Basic
+public import Mathlib.Tactic.Common
 public import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.GroupWithZero.Units.Basic
-import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Tactic.Attr.Core
-import Mathlib.Tactic.Common
-import Mathlib.Util.CompileInductive
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
 
 /-!
 # Cast of naturals into fields

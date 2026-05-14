@@ -6,14 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 module
 
 public import Mathlib.LinearAlgebra.Quotient.Basic
-public import Mathlib.SetTheory.Cardinal.Finite
-import Mathlib.Data.Finset.Attr
-import Mathlib.LinearAlgebra.Quotient.Card
-import Mathlib.Order.BoundedOrder.Lattice
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.LinearAlgebra.Quotient.Card
 
 /-!
 # Isomorphism theorems for modules.

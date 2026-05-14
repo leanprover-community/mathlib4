@@ -5,44 +5,9 @@ Authors: Jakob Stiefel
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Basic
-public import Mathlib.MeasureTheory.Integral.Bochner.Basic
-public import Mathlib.Topology.ContinuousMap.Bounded.Star
-public import Mathlib.Topology.MetricSpace.Polish
-import Mathlib.Algebra.Order.Algebra
-import Mathlib.Algebra.Order.BigOperators.Expect
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Field.Power
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Module.Field
-import Mathlib.Analysis.RCLike.BoundedContinuous
-import Mathlib.Analysis.SpecialFunctions.Bernstein
-import Mathlib.Analysis.SpecialFunctions.MulExpNegMulSqIntegral
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.EReal.Inv
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.MeasureTheory.Covering.Besicovitch
-import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
-import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
-import Mathlib.MeasureTheory.Measure.Real
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Measurability.Init
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Algebra.Order.Group
-import Mathlib.Topology.ContinuousMap.StoneWeierstrass
-import Mathlib.Topology.NhdsWithin
-import Mathlib.Topology.Order.DenselyOrdered
+public import Mathlib.Analysis.RCLike.BoundedContinuous
+public import Mathlib.Analysis.SpecialFunctions.MulExpNegMulSqIntegral
+public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
 
 /-!
 # Extensionality of finite measures

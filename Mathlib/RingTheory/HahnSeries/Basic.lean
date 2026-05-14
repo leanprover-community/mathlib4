@@ -9,10 +9,6 @@ public import Mathlib.Algebra.Notation.Support
 public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 public import Mathlib.Data.Finsupp.Defs
 public import Mathlib.Order.WellFoundedSet
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Hahn Series

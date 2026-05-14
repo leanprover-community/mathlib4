@@ -9,10 +9,7 @@ public import Mathlib.Logic.Basic  -- shake: keep (dependency of tactic output)
 public meta import Mathlib.Lean.Meta
 public import Mathlib.Tactic.CasesM
 public import Mathlib.Tactic.Core
-public import Mathlib.Tactic.TacticAnalysis.Declarations
-public meta import Qq.MetaM
-import Mathlib.Init
-import Qq.Match
+public import Qq
 
 /-!
 The `tauto` tactic.

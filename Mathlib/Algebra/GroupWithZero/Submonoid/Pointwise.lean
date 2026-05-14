@@ -6,12 +6,7 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Algebra.Group.Submonoid.Pointwise
-public import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
 
 /-!
 # Submonoids in a group with zero

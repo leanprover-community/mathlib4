@@ -11,8 +11,6 @@ public import Batteries.Data.String.Basic
 public import Mathlib.Data.Nat.Notation
 public meta import Mathlib.Tactic.Linter.TextBased.UnicodeLinter
 public import Mathlib.Tactic.Linter.TextBased.UnicodeLinter
-public meta import Lean.Linter.Basic
-import Mathlib.Init
 
 -- Don't warn about the lake import: the above file has almost no imports, and this PR has been
 -- benchmarked.

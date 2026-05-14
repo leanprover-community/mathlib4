@@ -6,12 +6,9 @@ Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 module
 
 public import Mathlib.Order.Filter.AtTopBot.Defs
-import Mathlib.Init
-import Mathlib.Order.Filter.Map
-import Mathlib.Order.Filter.Tendsto
-import Mathlib.Order.Interval.Set.OrderIso
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Order.Filter.Map
+public import Mathlib.Order.Filter.Tendsto
+public import Mathlib.Order.Interval.Set.OrderIso
 
 /-!
 # Map and comap of `Filter.atTop` and `Filter.atBot`

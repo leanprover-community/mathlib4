@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Algebra.GroupWithZero.WithZero
 public import Mathlib.Algebra.Ring.Defs
-import Mathlib.Tactic.Attr.Core
-import Mathlib.Tactic.Common
-import Mathlib.Util.CompileInductive
 
 /-!
 # Adjoining a zero to a semiring

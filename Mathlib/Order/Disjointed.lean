@@ -6,16 +6,10 @@ Authors: Johannes Hölzl, Yaël Dillies, David Loeffler
 module
 
 public import Mathlib.Order.PartialSups
-import Batteries.Tactic.Congr
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Finset.Lattice.Union
-import Mathlib.Data.Set.Lattice
-import Mathlib.Order.Interval.Finset.Fin
-import Mathlib.Order.Interval.Finset.SuccPred
-import Mathlib.Order.SuccPred.LinearLocallyFinite
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Order.Interval.Finset.Fin
+public import Mathlib.Order.SuccPred.LinearLocallyFinite
+public import Mathlib.Order.Interval.Finset.SuccPred
+public import Mathlib.Data.Finset.Lattice.Union
 
 /-!
 # Making a sequence disjoint

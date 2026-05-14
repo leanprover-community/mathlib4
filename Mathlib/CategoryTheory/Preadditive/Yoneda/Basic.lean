@@ -9,12 +9,6 @@ public import Mathlib.CategoryTheory.Preadditive.Opposite
 public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.Algebra.Category.Grp.Preadditive
 public import Mathlib.Algebra.Category.Grp.Yoneda
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Tactic.SetLike
 
 /-!
 # The Yoneda embedding for preadditive categories

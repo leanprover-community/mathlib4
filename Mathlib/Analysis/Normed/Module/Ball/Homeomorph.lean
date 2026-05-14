@@ -7,30 +7,9 @@ module
 
 public import Mathlib.Topology.OpenPartialHomeomorph.Composition
 public import Mathlib.Analysis.Normed.Group.AddTorsor
+public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 public import Mathlib.Data.Real.Sqrt
-public import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Module.Field
-import Mathlib.Algebra.Order.Monoid.NatCast
-import Mathlib.Algebra.Order.Ring.Unbundled.Basic
-import Mathlib.Analysis.Normed.Group.Continuity
-import Mathlib.Analysis.Normed.Module.Ball.Pointwise
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.EReal.Inv
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Linarith.Frontend
-import Mathlib.Tactic.Module
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Algebra.Ring.Real
+public import Mathlib.Tactic.Module
 
 /-!
 # (Local) homeomorphism between a normed space and a ball

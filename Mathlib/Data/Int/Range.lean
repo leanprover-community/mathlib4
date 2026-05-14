@@ -5,15 +5,8 @@ Authors: Mario Carneiro, Kenny Lau
 -/
 module
 
-public import Aesop
-public import Mathlib.Data.Int.Notation
-public import Mathlib.Data.Nat.Notation
-public import Mathlib.Tactic.ToDual
-import Mathlib.Algebra.Group.Int.Defs
-import Mathlib.Algebra.Order.Group.Unbundled.Basic
-import Mathlib.Init
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Algebra.Group.Int.Defs
+public import Mathlib.Algebra.Order.Group.Unbundled.Basic
 
 /-!
 # Intervals in ℤ

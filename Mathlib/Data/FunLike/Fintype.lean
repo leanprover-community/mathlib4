@@ -7,12 +7,7 @@ module
 
 public import Mathlib.Data.Fintype.Basic
 public import Mathlib.Data.FunLike.Basic
-public import Mathlib.Data.Fintype.Pi
-import Mathlib.Data.Finite.Prod
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Data.Finite.Prod
 
 /-!
 # Finiteness of `DFunLike` types

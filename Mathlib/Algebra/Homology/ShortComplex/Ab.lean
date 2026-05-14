@@ -9,17 +9,7 @@ public import Mathlib.Algebra.Category.Grp.Abelian
 public import Mathlib.Algebra.Category.Grp.Kernels
 public import Mathlib.Algebra.Exact
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-import Mathlib.Algebra.Category.Grp.EpiMono
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.GroupTheory.QuotientGroup.Finite
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Eq
-import Mathlib.Tactic.NormNum.Ineq
-import Mathlib.Tactic.NormNum.Pow
-import Mathlib.Tactic.SetLike
+public import Mathlib.GroupTheory.QuotientGroup.Finite
 
 /-!
 # Homology and exactness of short complexes of abelian groups

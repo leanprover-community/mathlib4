@@ -9,12 +9,6 @@ public import Mathlib.Control.Functor.Multivariate
 public import Mathlib.Data.PFunctor.Multivariate.Basic
 public import Mathlib.Data.PFunctor.Multivariate.M
 public import Mathlib.Data.QPF.Multivariate.Basic
-public meta import Mathlib.Tactic.Basic
-import Batteries.Tactic.Congr
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # The final co-algebra of a multivariate qpf is again a qpf.

@@ -7,12 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Functor.Flat
 public import Mathlib.CategoryTheory.Sites.Continuous
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.CrossRefAttribute
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Tactic.ApplyFun
 /-!
 # Cover-preserving functors between sites.
 

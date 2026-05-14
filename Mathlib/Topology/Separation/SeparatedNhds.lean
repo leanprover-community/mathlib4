@@ -5,19 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Order.ConditionallyCompleteLattice.Basic
-public import Mathlib.Order.Filter.Basic
-public import Mathlib.Topology.Defs.Filter
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Disjoint
-import Mathlib.Data.Set.Lattice
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Basic
-import Mathlib.Topology.Closure
-import Mathlib.Topology.Continuous
-import Mathlib.Topology.NhdsSet
+public import Mathlib.Topology.Continuous
+public import Mathlib.Topology.NhdsSet
 
 /-!
 # Separated neighbourhoods

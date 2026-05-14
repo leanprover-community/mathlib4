@@ -5,16 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
 module
 
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Data.Set.Finite.Range
+public import Mathlib.Data.Set.Lattice
 public import Mathlib.Topology.Defs.Filter
-public import Mathlib.Data.Finite.Defs
-public import Mathlib.Data.Finset.Defs
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Data.Set.Finite.Range
-import Mathlib.Data.Set.Lattice
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Openness and closedness of a set

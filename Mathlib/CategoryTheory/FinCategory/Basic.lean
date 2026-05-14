@@ -9,11 +9,6 @@ public import Mathlib.Data.Fintype.EquivFin
 public import Mathlib.CategoryTheory.Discrete.Basic
 public import Mathlib.CategoryTheory.Opposites
 public import Mathlib.CategoryTheory.Category.ULift
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Finite categories

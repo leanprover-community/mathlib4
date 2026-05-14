@@ -7,20 +7,6 @@ module
 
 public import Mathlib.Topology.ContinuousMap.Algebra
 public import Mathlib.Topology.Algebra.Module.LocallyConvex
-import Mathlib.Algebra.Order.Algebra
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.EReal.Operations
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.MetricSpace.Bounded
 
 /-!
 # The space of continuous maps is a locally convex space

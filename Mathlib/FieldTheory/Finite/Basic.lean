@@ -5,57 +5,17 @@ Authors: Chris Hughes, Joey van Langen, Casper Putz
 -/
 module
 
+public import Mathlib.Algebra.CharP.Algebra
+public import Mathlib.Algebra.CharP.Reduced
 public import Mathlib.Algebra.Field.ZMod
+public import Mathlib.Data.Nat.Prime.Int
+public import Mathlib.Data.ZMod.ValMinAbs
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+public import Mathlib.FieldTheory.Finiteness
 public import Mathlib.FieldTheory.Galois.Notation
 public import Mathlib.FieldTheory.Perfect
 public import Mathlib.FieldTheory.Separable
-public import Mathlib.Algebra.Order.Ring.Nat
-public import Mathlib.Data.Fintype.Units
-public import Mathlib.Data.Nat.Totient
-public import Mathlib.RingTheory.Algebraic.Integral
-public import Mathlib.RingTheory.LocalRing.Basic
-public import Mathlib.RingTheory.Noetherian.Basic
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.BigOperators.Ring.Multiset
-import Mathlib.Algebra.CharP.Algebra
-import Mathlib.Algebra.CharP.Frobenius
-import Mathlib.Algebra.CharP.Reduced
-import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.Algebra.Group.Torsion
-import Mathlib.Algebra.NoZeroSMulDivisors.Basic
-import Mathlib.Algebra.Order.AbsoluteValue.Basic
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Algebra.Order.Sub.Basic
-import Mathlib.Algebra.Order.Sub.Unbundled.Basic
-import Mathlib.Algebra.Polynomial.Degree.Domain
-import Mathlib.Algebra.Polynomial.Eval.Coeff
-import Mathlib.Data.Finite.Card
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.Data.Nat.Prime.Basic
-import Mathlib.Data.Nat.Prime.Int
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.ZMod.ValMinAbs
-import Mathlib.FieldTheory.Finiteness
-import Mathlib.GroupTheory.Perm.Cycle.Type
-import Mathlib.GroupTheory.SpecificGroups.Cyclic.Basic
-import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.RingTheory.Coprime.Lemmas
-import Mathlib.RingTheory.IntegralDomain
-import Mathlib.Tactic.ApplyFun
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.CrossRefAttribute
-import Mathlib.Tactic.FinCases
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Nontriviality.Core
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.SetLike
+public import Mathlib.RingTheory.IntegralDomain
 
 /-!
 # Finite fields

@@ -7,11 +7,6 @@ module
 
 public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
 public import Mathlib.Order.Restriction
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Measurability
-import Mathlib.Tactic.SetLike
 
 /-! # Auxiliary maps for Ionescu-Tulcea theorem
 

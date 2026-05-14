@@ -7,11 +7,6 @@ module
 
 public import Mathlib.Control.Functor.Multivariate
 public import Mathlib.Data.PFunctor.Univariate.Basic
-import Batteries.Tactic.Congr
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Multivariate polynomial functors.

@@ -7,10 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Whiskering
 public import Mathlib.CategoryTheory.Opposites
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Tactic.CategoryTheory.Slice
-import Mathlib.Tactic.Common
-import Mathlib.Util.CompileInductive
+public import Mathlib.Tactic.CategoryTheory.Slice
 
 /-!
 # 2-squares of functors

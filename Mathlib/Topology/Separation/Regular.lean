@@ -8,27 +8,7 @@ module
 public import Mathlib.Topology.Compactness.Lindelof
 public import Mathlib.Topology.Separation.Hausdorff
 public import Mathlib.Topology.Connected.Clopen
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Disjoint
-import Mathlib.Data.Set.Lattice
-import Mathlib.Order.Filter.Bases.Finite
-import Mathlib.Order.Filter.Ker
-import Mathlib.Order.Filter.Lift
-import Mathlib.Order.Filter.Map
-import Mathlib.Order.Filter.Tendsto
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.CrossRefAttribute
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.TFAE
-import Mathlib.Topology.Clopen
-import Mathlib.Topology.Closure
-import Mathlib.Topology.ClusterPt
-import Mathlib.Topology.Compactness.LocallyCompact
-import Mathlib.Topology.Continuous
-import Mathlib.Topology.Maps.Basic
-import Mathlib.Topology.Neighborhoods
-import Mathlib.Topology.NhdsSet
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Regular, normal, T₃, T₄ and T₅ spaces

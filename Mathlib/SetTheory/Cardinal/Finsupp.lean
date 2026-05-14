@@ -5,16 +5,9 @@ Authors: Violeta Hernández Palacios, Junyan Xu
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Nat
-public import Mathlib.Data.Finsupp.Defs
-public import Mathlib.SetTheory.Cardinal.Order
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Finsupp.Multiset
-import Mathlib.SetTheory.Cardinal.Arithmetic
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.SetTheory.Cardinal.Arithmetic
+public import Mathlib.Data.Finsupp.Basic
+public import Mathlib.Data.Finsupp.Multiset
 
 /-! # Results on the cardinality of finitely supported functions and multisets. -/
 

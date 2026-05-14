@@ -7,15 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Presentation
 public import Mathlib.CategoryTheory.Presentable.Finite
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Logic.Small.Basic
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.CategoryTheory.CategoryStar
-import Mathlib.Tactic.CategoryTheory.Reassoc
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Presentation of a colimit of objects equipped with a presentation

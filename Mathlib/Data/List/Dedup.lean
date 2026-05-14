@@ -5,14 +5,9 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Aesop
-public import Mathlib.Data.List.Defs
-import Batteries.Data.List.Pairwise
-import Mathlib.Data.List.Basic
-import Mathlib.Data.List.Lattice
-import Mathlib.Data.List.Nodup
-import Mathlib.Tactic.Common
-import Mathlib.Util.CompileInductive
+public import Mathlib.Data.List.Nodup
+public import Mathlib.Data.List.Lattice
+public import Batteries.Data.List.Pairwise
 
 /-!
 # Erasure of duplicates in a list

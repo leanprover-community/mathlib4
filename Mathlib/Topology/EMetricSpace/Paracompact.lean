@@ -7,28 +7,8 @@ module
 
 public import Mathlib.Tactic.GCongr
 public import Mathlib.Topology.Compactness.Paracompact
-public import Mathlib.Topology.EMetricSpace.Defs
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Algebra.Order.Monoid.NatCast
-import Mathlib.Data.ENNReal.Inv
-import Mathlib.Data.ENNReal.Operations
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Data.Set.Finite.Lattice
-import Mathlib.Data.Set.Lattice
-import Mathlib.Order.BourbakiWitt
-import Mathlib.SetTheory.Cardinal.Order
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.EMetricSpace.Basic
-import Mathlib.Topology.Neighborhoods
+public import Mathlib.Topology.EMetricSpace.Basic
+public import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # (Extended) metric spaces are paracompact

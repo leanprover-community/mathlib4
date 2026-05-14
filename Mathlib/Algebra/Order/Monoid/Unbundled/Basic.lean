@@ -9,17 +9,10 @@ module
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 public import Mathlib.Algebra.Order.IsBotOne
 public import Mathlib.Data.Ordering.Basic
-import Batteries.Tactic.Init
-import Mathlib.Init
-import Mathlib.Order.MinMax
-import Mathlib.Order.Monotone.Basic
-import Mathlib.Tactic.Contrapose
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.GRewrite.Elab
-import Mathlib.Tactic.SimpRw
-import Mathlib.Tactic.Translate.ToAdditive
-import Mathlib.Tactic.Use
-import Mathlib.Util.CompileInductive
+public import Mathlib.Order.MinMax
+public import Mathlib.Tactic.Contrapose
+public import Mathlib.Tactic.Use
+public import Mathlib.Tactic.GRewrite
 
 /-!
 # Ordered monoids

@@ -6,14 +6,7 @@ Authors: Chris Hughes, Junyan Xu
 module
 
 public import Mathlib.Algebra.Polynomial.Basic
-public import Mathlib.SetTheory.Cardinal.Order
-import Mathlib.Data.Finset.Attr
-import Mathlib.SetTheory.Cardinal.Basic
-import Mathlib.SetTheory.Cardinal.Finsupp
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.SetTheory.Cardinal.Finsupp
 
 /-!
 # Cardinality of Polynomial Ring

@@ -7,35 +7,9 @@ module
 
 public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.RingTheory.FiniteLength
-public import Mathlib.RingTheory.Jacobson.Semiprimary
-public import Mathlib.RingTheory.KrullDimension.Basic
-public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Defs
-import Mathlib.Algebra.Order.AbsoluteValue.Basic
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.RingTheory.Artinian.Module
-import Mathlib.RingTheory.Finiteness.Basic
-import Mathlib.RingTheory.Finiteness.Finsupp
-import Mathlib.RingTheory.Finiteness.Ideal
-import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
-import Mathlib.RingTheory.KrullDimension.Zero
-import Mathlib.RingTheory.Noetherian.Basic
-import Mathlib.RingTheory.Noetherian.Nilpotent
-import Mathlib.RingTheory.Spectrum.Prime.Noetherian
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.CrossRefAttribute
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.TFAE
+public import Mathlib.RingTheory.Noetherian.Nilpotent
+public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
+public import Mathlib.RingTheory.KrullDimension.Zero
 
 /-!
 ## The Hopkins–Levitzki theorem

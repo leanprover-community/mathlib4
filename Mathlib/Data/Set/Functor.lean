@@ -8,20 +8,8 @@ module
 public import Batteries.Control.AlternativeMonad
 public import Mathlib.Control.Basic
 public import Mathlib.Data.Set.Defs
+public import Mathlib.Data.Set.Lattice.Image
 public import Mathlib.Data.Set.Notation
-public import Mathlib.Data.Set.Restrict
-public import Mathlib.Order.SetNotation
-public import Mathlib.Tactic.ToAdditive
-import Mathlib.Data.Set.Image
-import Mathlib.Data.Set.Lattice
-import Mathlib.Data.Set.Lattice.Image
-import Mathlib.Data.Set.NAry
-import Mathlib.Init
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.FastInstance
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Simproc.ExistsAndEq
-import Mathlib.Util.CompileInductive
 
 /-!
 # Functoriality of `Set`

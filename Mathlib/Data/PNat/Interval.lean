@@ -7,10 +7,6 @@ module
 
 public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Data.PNat.Defs
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Finite intervals of positive naturals

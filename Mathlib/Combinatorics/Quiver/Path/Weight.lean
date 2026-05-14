@@ -7,12 +7,6 @@ module
 
 public import Mathlib.Combinatorics.Quiver.Path
 public import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
-import Mathlib.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Translate.ToAdditive
-import Mathlib.Util.CompileInductive
 
 
 /-!

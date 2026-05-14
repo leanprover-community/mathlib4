@@ -6,17 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Module.Presentation.Basic
+public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 public import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.LinearAlgebra.Finsupp.VectorSpace
-import Mathlib.Logic.UnivLE
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Eq
-import Mathlib.Tactic.NormNum.Ineq
-import Mathlib.Tactic.NormNum.Pow
-import Mathlib.Tactic.SetLike
+public import Mathlib.Logic.UnivLE
 
 /-!
 # Presentation of free modules

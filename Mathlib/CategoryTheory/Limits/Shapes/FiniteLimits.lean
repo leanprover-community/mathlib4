@@ -5,19 +5,12 @@ Authors: Kim Morrison
 -/
 module
 
+public import Mathlib.CategoryTheory.FinCategory.AsType
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback  -- shake: keep (`example`)
-public import Mathlib.CategoryTheory.FinCategory.Basic
-public import Mathlib.Data.Finset.Option
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.FinCategory.AsType
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Fintype.Option
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Data.Fintype.Option
 
 /-!
 # Categories with finite limits.

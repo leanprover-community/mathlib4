@@ -5,24 +5,10 @@ Authors: Eric Wieser
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Sym
 public import Mathlib.Data.Finsupp.Pointwise
 public import Mathlib.Data.Sym.Sym2.Finsupp
 public import Mathlib.LinearAlgebra.QuadraticForm.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
-import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
-import Mathlib.Algebra.BigOperators.Sym
-import Mathlib.Algebra.Order.AbsoluteValue.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Nat.Totient
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
 
 /-!
 # Constructing a bilinear map from a quadratic map, given a basis

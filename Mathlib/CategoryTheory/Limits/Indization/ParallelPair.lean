@@ -5,14 +5,8 @@ Authors: Markus Himmel
 -/
 module
 
+public import Mathlib.CategoryTheory.Comma.Final
 public import Mathlib.CategoryTheory.Limits.Indization.IndObject
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Comma.Final
-import Mathlib.CategoryTheory.Filtered.Final
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Parallel pairs of natural transformations between ind-objects

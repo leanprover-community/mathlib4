@@ -10,13 +10,6 @@ public import Mathlib.Tactic.NormNum.Pow
 public import Mathlib.Tactic.Ring.Common
 meta import Mathlib.Tactic.Ring.Common
 public meta import Mathlib.Tactic.Ring.Common
-public meta import Mathlib.Algebra.Order.Ring.Unbundled.Rat
-import Mathlib.Algebra.GroupWithZero.Invertible
-import Mathlib.Data.Int.Cast.Lemmas
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # `ring` tactic

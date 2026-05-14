@@ -7,10 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Bicategory.End
 public import Mathlib.CategoryTheory.Monoidal.Functor
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # Promoting a monoidal category to a single object bicategory.

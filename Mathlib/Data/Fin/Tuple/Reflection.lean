@@ -6,16 +6,7 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Data.Fin.VecNotation
-public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
-public import Mathlib.Data.Fintype.Basic
-public meta import Qq
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.Translate.ToAdditive
+public import Mathlib.Algebra.BigOperators.Fin
 
 /-!
 # Lemmas for tuples `Fin m → α`

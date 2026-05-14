@@ -8,15 +8,6 @@ module
 public import Mathlib.Algebra.Lie.Free
 public import Mathlib.Algebra.Lie.Quotient
 public import Mathlib.Data.Matrix.Cartan
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
 
 /-!
 # Serre construction of Lie algebras from Cartan matrices

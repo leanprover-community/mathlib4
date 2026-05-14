@@ -5,13 +5,8 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.List.Defs
-public import Mathlib.Data.Multiset.MapFold
-public import Mathlib.Order.Disjoint
-import Mathlib.Data.List.Dedup
-import Mathlib.Data.Multiset.UnionInter
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
+public import Mathlib.Data.List.Dedup
+public import Mathlib.Data.Multiset.UnionInter
 
 /-!
 # Erasing duplicates in a multiset.

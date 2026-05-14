@@ -5,18 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
+public import Mathlib.Order.Interval.Set.OrderEmbedding
 public import Mathlib.Order.Antichain
 public import Mathlib.Order.SetNotation
-public import Mathlib.Order.Interval.Set.UnorderedInterval
-public import Mathlib.Tactic.ToAdditive
-import Mathlib.Order.Hom.Set
-import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Order.Interval.Set.OrderEmbedding
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.Translate.ToDual
-import Mathlib.Util.CompileInductive
 
 /-!
 # Order-connected sets

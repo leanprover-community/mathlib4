@@ -5,18 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Topology.Category.TopCat.Limits.Basic
 public import Mathlib.Topology.Homeomorph.Lemmas
-public import Mathlib.CategoryTheory.Limits.Preserves.Basic
-public import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Limits.Preserves.Ulift
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Category.TopCat.Adjunctions
-import Mathlib.Topology.Category.TopCat.Limits.Basic
+public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 
 /-!
 # Lifting topological spaces to a higher universe

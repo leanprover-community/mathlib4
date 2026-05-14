@@ -7,10 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Functor.Const
 public import Mathlib.CategoryTheory.Discrete.Basic
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.ULift
-import Mathlib.Tactic.Common
-import Mathlib.Util.CompileInductive
+public import Mathlib.Data.ULift
 
 /-!
 # The category `Discrete PUnit`

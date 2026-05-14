@@ -5,16 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Topology.Defs.Filter
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Piecewise
-import Mathlib.Order.Filter.Tendsto
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Closure
-import Mathlib.Topology.ContinuousOn
-import Mathlib.Topology.NhdsWithin
+public import Mathlib.Topology.ContinuousOn
 
 /-!
 ### Continuity of piecewise defined functions

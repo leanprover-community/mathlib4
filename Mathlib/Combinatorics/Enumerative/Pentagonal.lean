@@ -5,19 +5,7 @@ Authors: Weiyi Wang
 -/
 module
 
-public import Aesop
-public import Mathlib.Order.Interval.Set.Defs
-public import Mathlib.Order.Lattice
-public import Mathlib.Tactic.ToAdditive
-import Mathlib.Algebra.Group.Int.Even
-import Mathlib.Algebra.Ring.Basic
-import Mathlib.Data.Int.SuccPred
-import Mathlib.Order.Interval.Set.OrdConnected
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Util.CompileInductive
+public import Mathlib.Data.Int.SuccPred
 
 /-!
 # Pentagonal numbers

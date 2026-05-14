@@ -9,15 +9,6 @@ public import Mathlib.Order.Ideal
 public import Mathlib.Topology.Sets.Compacts
 public import Mathlib.Topology.Sets.OpenCover
 public import Mathlib.Topology.Spectral.Hom
-public import Mathlib.Topology.Connected.TotallyDisconnected
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Lattice.Image
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.CrossRefAttribute
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Neighborhoods
-import Mathlib.Topology.NhdsWithin
 
 /-!
 

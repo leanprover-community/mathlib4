@@ -6,19 +6,8 @@ Authors: Mario Carneiro, Kyle Miller, Eric Wieser
 module
 
 public meta import Mathlib.Data.Int.GCD
+public import Mathlib.Algebra.Ring.Divisibility.Basic
 public import Mathlib.Tactic.NormNum
-import Mathlib.Algebra.GroupWithZero.Invertible
-import Mathlib.Algebra.Ring.Divisibility.Basic
-import Mathlib.Data.Int.GCD
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Lemmas
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.HaveI
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Util.CompileInductive
 
 /-! # `norm_num` extensions for GCD-adjacent functions
 

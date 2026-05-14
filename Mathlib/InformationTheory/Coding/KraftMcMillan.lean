@@ -6,44 +6,12 @@ Authors: Elazar Gershuni
 module
 
 public import Mathlib.Data.List.Basic
+public import Mathlib.Data.Finset.Basic
 public import Mathlib.Data.Real.Basic
 public import Mathlib.Data.Fintype.Card
 public import Mathlib.InformationTheory.Coding.UniquelyDecodable
 import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Field.Power
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Group.Int
-import Mathlib.Algebra.Order.Module.Field
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.EReal.Inv
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.List.OfFn
-import Mathlib.Data.Nat.SuccPred
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Logic.Equiv.PartialEquiv
-import Mathlib.Order.Filter.AtTopBot.Basic
-import Mathlib.Order.Filter.Tendsto
-import Mathlib.Tactic.Attr.Register
-import Mathlib.Tactic.Bound
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Algebra.InfiniteSum.Order
-import Mathlib.Topology.Algebra.Ring.Real
-import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 
 /-!
 # Kraft-McMillan Inequality

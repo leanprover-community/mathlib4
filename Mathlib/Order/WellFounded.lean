@@ -5,18 +5,8 @@ Authors: Jeremy Avigad, Mario Carneiro
 -/
 module
 
+public import Mathlib.Data.Set.Function
 public import Mathlib.Order.Bounds.Defs
-public import Mathlib.Data.Set.Image
-import Batteries.Tactic.Init
-import Mathlib.Data.Set.Function
-import Mathlib.Init
-import Mathlib.Logic.IsEmpty.Basic
-import Mathlib.Order.Monotone.Basic
-import Mathlib.Tactic.ByContra
-import Mathlib.Tactic.Contrapose
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Translate.ToDual
-import Mathlib.Util.CompileInductive
 
 /-!
 # Well-founded relations

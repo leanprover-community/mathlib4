@@ -5,26 +5,11 @@ Authors: Alexander Bentkamp
 -/
 module
 
+public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.Algebra.Module.Torsion.Field
 public import Mathlib.FieldTheory.Minpoly.Basic
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
-public import Mathlib.Data.Matrix.Basic
-import Mathlib.Algebra.NoZeroSMulDivisors.Basic
-import Mathlib.Algebra.Polynomial.Degree.SmallDegree
-import Mathlib.Algebra.Polynomial.Eval.SMul
-import Mathlib.Algebra.Polynomial.Monic
-import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
+public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 
 /-!
 # Eigenvalues are the roots of the minimal polynomial.

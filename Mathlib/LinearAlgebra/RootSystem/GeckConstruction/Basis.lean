@@ -8,21 +8,7 @@ module
 public import Mathlib.Algebra.Lie.Basis
 public import Mathlib.Algebra.Lie.CartanCriterion
 public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Semisimple
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Relations
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.SetLike
+public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Relations
 
 /-!
 # The basis obtained from Geck's construction of Lie algebras from root systems

@@ -5,15 +5,8 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Indization.IndObject
-public import Mathlib.CategoryTheory.Limits.Types.Limits
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesProduct
-import Mathlib.CategoryTheory.Limits.Indization.FilteredColimits
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesProduct
+public import Mathlib.CategoryTheory.Limits.Indization.FilteredColimits
 
 /-!
 # Ind-objects are closed under products

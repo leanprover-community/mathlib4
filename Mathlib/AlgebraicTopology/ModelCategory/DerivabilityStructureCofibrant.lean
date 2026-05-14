@@ -6,14 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.ModelCategory.CofibrantObjectHomotopy
-public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
-import Mathlib.AlgebraicTopology.ModelCategory.Instances
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Constructor
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Constructor
 
 /-!
 # The left derivability structure attached to a model category

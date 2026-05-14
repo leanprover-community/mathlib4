@@ -5,29 +5,15 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Yaël Dillies
 -/
 module
 
+public import Mathlib.Algebra.Group.Units.Basic
+public import Mathlib.Algebra.GroupWithZero.NeZero
+public import Mathlib.Algebra.Order.Group.Unbundled.Basic
+public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+public import Mathlib.Algebra.Order.Monoid.NatCast
+public import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 public import Mathlib.Algebra.Ring.Defs
-public import Mathlib.Algebra.Group.Basic
-public import Mathlib.Algebra.Group.Units.Defs
-public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
-public import Mathlib.Algebra.Order.ZeroLEOne
-import Batteries.Tactic.Init
-import Batteries.Tactic.Trans
-import Mathlib.Algebra.Order.Group.Unbundled.Basic
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
-import Mathlib.Algebra.Order.Monoid.NatCast
-import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
-import Mathlib.Init
-import Mathlib.Order.MinMax
-import Mathlib.Order.Monotone.Basic
-import Mathlib.Tactic.Attr.Core
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.GRewrite.Elab
-import Mathlib.Tactic.SimpRw
-import Mathlib.Tactic.Tauto
-import Mathlib.Util.CompileInductive
+public import Mathlib.Tactic.Tauto
 
 /-!
 # Basic facts for ordered rings and semirings

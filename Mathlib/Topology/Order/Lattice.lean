@@ -7,13 +7,6 @@ module
 
 public import Mathlib.Topology.Constructions
 public import Mathlib.Topology.Order.OrderClosed
-import Mathlib.Data.Finset.Attr
-import Mathlib.Order.Filter.Tendsto
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Continuous
-import Mathlib.Topology.Neighborhoods
 
 /-!
 # Topological lattices

@@ -7,11 +7,6 @@ module
 
 public import Mathlib.Algebra.Category.Grp.Basic
 public import Mathlib.CategoryTheory.Preadditive.Basic
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # The category of additive commutative groups is preadditive.

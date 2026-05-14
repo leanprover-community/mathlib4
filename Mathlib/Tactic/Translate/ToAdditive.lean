@@ -7,7 +7,6 @@ Jovan Gerbscheid
 module
 
 public import Mathlib.Tactic.Translate.Core
-import Mathlib.Init
 
 /-!
 # The `@[to_additive]` attribute.

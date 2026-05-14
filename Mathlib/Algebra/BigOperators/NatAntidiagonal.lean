@@ -6,13 +6,7 @@ Authors: Aaron Anderson
 module
 
 public import Mathlib.Data.Finset.NatAntidiagonal
-public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.Translate.ToAdditive
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Big operators for `NatAntidiagonal`

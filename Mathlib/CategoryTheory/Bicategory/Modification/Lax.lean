@@ -6,11 +6,6 @@ Authors: Yuma Mizuno
 module
 
 public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Lax
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Tactic.CategoryTheory.Reassoc
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # Modifications between transformations of lax functors

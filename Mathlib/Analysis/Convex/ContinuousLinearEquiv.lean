@@ -7,17 +7,6 @@ module
 
 public import Mathlib.Analysis.Convex.Strict
 public import Mathlib.Topology.Algebra.Module.Equiv
-import Mathlib.Algebra.Order.Algebra
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
 
 /-!
 # (Pre)images of strict convex sets under continuous linear equivalences

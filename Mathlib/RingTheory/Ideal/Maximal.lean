@@ -7,16 +7,6 @@ module
 
 public import Mathlib.RingTheory.Ideal.Prime
 public import Mathlib.RingTheory.Ideal.Span
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Disjoint
-import Mathlib.Order.Minimal
-import Mathlib.Order.Zorn
-import Mathlib.RingTheory.Ideal.Lattice
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Ring.RingNF
-import Mathlib.Tactic.SetLike
 
 /-!
 

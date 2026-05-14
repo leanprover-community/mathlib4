@@ -6,8 +6,7 @@ Authors: Jovan Gerbscheid
 module
 
 import all Init.Core  -- TODO: for accessing proofs
-import Mathlib.Init
-import Mathlib.Tactic.Translate.ToDual
+public import Mathlib.Tactic.Translate.ToDual
 
 
 /-!

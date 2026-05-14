@@ -11,13 +11,7 @@ public import Mathlib.Tactic.FieldSimp.Discharger
 public import Mathlib.Tactic.FieldSimp.Lemmas
 public import Mathlib.Util.AtomM.Recurse
 public import Mathlib.Util.SynthesizeUsing
-public meta import Mathlib.Util.AtomM
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Data.Ineq
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Data.Ineq
 
 /-!
 # `field_simp` tactic

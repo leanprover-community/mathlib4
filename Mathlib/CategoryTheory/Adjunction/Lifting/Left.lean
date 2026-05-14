@@ -6,13 +6,7 @@ Authors: Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Monad.Adjunction
-public import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Monad.Coequalizer
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.CategoryTheory.Monad.Coequalizer
 
 /-!
 # Adjoint lifting

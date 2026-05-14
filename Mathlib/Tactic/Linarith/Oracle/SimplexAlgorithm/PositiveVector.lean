@@ -8,8 +8,6 @@ module
 public meta import Lean.Meta.Basic
 public import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Gauss
 public import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.SimplexAlgorithm
-public import Lean.Meta.Basic
-import Mathlib.Init
 
 /-!
 # `linarith` certificate search as an LP problem

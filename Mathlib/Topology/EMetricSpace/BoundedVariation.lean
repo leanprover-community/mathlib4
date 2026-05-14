@@ -5,53 +5,13 @@ Authors: Sébastien Gouëzel
 -/
 module
 
+public import Mathlib.Order.Interval.Set.ProjIcc
+public import Mathlib.Tactic.Finiteness
 public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
+public import Mathlib.Topology.Instances.ENNReal.Lemmas
 public import Mathlib.Topology.Order.LeftRightLim
 public import Mathlib.Topology.Semicontinuity.Defs
-public import Mathlib.Topology.EMetricSpace.Lipschitz
-public import Mathlib.Topology.MetricSpace.Basic
-public import Mathlib.Topology.Order.Real
-import Batteries.Tactic.Congr
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Module.Field
-import Mathlib.Data.ENNReal.BigOperators
-import Mathlib.Data.ENNReal.Operations
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Int.ConditionallyCompleteOrder
-import Mathlib.Data.Nat.SuccPred
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Data.Set.Monotone
-import Mathlib.Order.BourbakiWitt
-import Mathlib.Order.Filter.AtTopBot.Basic
-import Mathlib.Order.Filter.Map
-import Mathlib.Order.Filter.Tendsto
-import Mathlib.Order.Interval.Set.LinearOrder
-import Mathlib.Order.Interval.Set.ProjIcc
-import Mathlib.Tactic.Abel
-import Mathlib.Tactic.Bound
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Order
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Algebra.InfiniteSum.Order
-import Mathlib.Topology.Algebra.Ring.Real
-import Mathlib.Topology.ClusterPt
-import Mathlib.Topology.Instances.ENNReal.Lemmas
-import Mathlib.Topology.Neighborhoods
-import Mathlib.Topology.NhdsWithin
-import Mathlib.Topology.Order.LeftRight
+public import Mathlib.Tactic.Bound
 
 /-!
 # Functions of bounded variation

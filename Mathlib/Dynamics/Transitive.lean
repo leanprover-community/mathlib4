@@ -6,15 +6,6 @@ Authors: Daniel Figueroa
 module
 
 public import Mathlib.Dynamics.Minimal
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Lattice
-import Mathlib.Data.Set.Lattice.Image
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.Translate.ToAdditive
-import Mathlib.Topology.Closure
-import Mathlib.Topology.Continuous
 
 /-!
 # Topologically transitive monoid actions

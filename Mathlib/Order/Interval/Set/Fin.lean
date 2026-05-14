@@ -7,11 +7,6 @@ module
 
 public import Mathlib.Order.Fin.Basic
 public import Mathlib.Order.Interval.Set.UnorderedInterval
-import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Order.MinMax
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # (Pre)images of set intervals under `Fin` operations

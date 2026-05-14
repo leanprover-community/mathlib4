@@ -6,15 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.CatCommSq
-public import Mathlib.CategoryTheory.Localization.Predicate
-import Mathlib.CategoryTheory.Adjunction.FullyFaithful
-import Mathlib.CategoryTheory.Adjunction.Opposites
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Localization.Opposite
-import Mathlib.Tactic.CategoryTheory.CategoryStar
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.CategoryTheory.Localization.Opposite
+public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+public import Mathlib.CategoryTheory.Adjunction.Opposites
 
 /-!
 # Localization of adjunctions

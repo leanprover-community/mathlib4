@@ -7,10 +7,6 @@ module
 
 public import Mathlib.Combinatorics.Quiver.Path
 public import Mathlib.Combinatorics.Quiver.Push
-import Batteries.Tactic.Init
-import Mathlib.Init
-import Mathlib.Util.CompileInductive
-import Std.Tactic.BVDecide.Normalize.Prop
 
 /-!
 ## Symmetric quivers and arrow reversal

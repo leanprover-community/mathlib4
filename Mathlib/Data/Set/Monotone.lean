@@ -5,14 +5,7 @@ Authors: Jeremy Avigad, Andrew Zipperer, Haitao Zhang, Minchao Wu, Yury Kudryash
 -/
 module
 
-public import Mathlib.Data.Set.Restrict
-import Mathlib.Data.Set.Function
-import Mathlib.Data.Set.Insert
-import Mathlib.Init
-import Mathlib.Order.Monotone.Basic
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Tauto
-import Mathlib.Util.CompileInductive
+public import Mathlib.Data.Set.Function
 
 /-!
 # Monotone functions over sets

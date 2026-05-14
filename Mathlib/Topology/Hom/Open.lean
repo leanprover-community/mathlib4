@@ -6,11 +6,6 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Topology.ContinuousMap.Basic
-public import Mathlib.Topology.Maps.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Continuous open maps

@@ -13,9 +13,6 @@ public import Mathlib.Data.Countable.Defs
 public import Mathlib.Data.Nat.Pairing
 public meta import Mathlib.Tactic.ToAdditive
 public meta import Mathlib.Tactic.ToDual
-import Mathlib.Init
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # `Countable` deriving handler

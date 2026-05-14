@@ -6,13 +6,6 @@ Authors: Minchao Wu, Mario Carneiro
 module
 
 public import Mathlib.Computability.RE
-public meta import Mathlib.Tactic.Basic
-import Batteries.Tactic.Trans
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Strong reducibility and degrees.

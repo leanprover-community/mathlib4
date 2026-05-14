@@ -7,14 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsClosure
 public import Mathlib.CategoryTheory.SmallRepresentatives
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Comma.CardinalArrow
-import Mathlib.Data.Finset.Attr
-import Mathlib.Logic.Small.Basic
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.CategoryTheory.Comma.CardinalArrow
 
 /-!
 # Closure of a property of objects under colimits of bounded cardinality

@@ -6,12 +6,6 @@ Authors: Eric Rodriguez
 module
 
 public import Mathlib.Logic.Embedding.Set
-import Mathlib.Data.Set.Disjoint
-import Mathlib.Data.Set.Image
-import Mathlib.Init
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SimpRw
-import Mathlib.Util.CompileInductive
 
 /-!
 # Equivalences on embeddings

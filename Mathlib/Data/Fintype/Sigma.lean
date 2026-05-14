@@ -7,11 +7,6 @@ module
 
 public import Mathlib.Data.Finset.Sigma
 public import Mathlib.Data.Fintype.OfMap
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Lattice
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # fintype instances for sigma types

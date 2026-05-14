@@ -8,37 +8,9 @@ module
 public import Mathlib.Topology.Order.Bornology
 public import Mathlib.Topology.Order.Compact
 public import Mathlib.Topology.MetricSpace.ProperSpace
+public import Mathlib.Topology.MetricSpace.Cauchy
 public import Mathlib.Topology.MetricSpace.Defs
 public import Mathlib.Topology.EMetricSpace.Diam
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Monoid.NatCast
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.ENNReal.Operations
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Nat.Lattice
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Data.Set.Lattice
-import Mathlib.Order.Filter.AtTopBot.Basic
-import Mathlib.Order.Filter.Prod
-import Mathlib.Order.Filter.Tendsto
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Nontriviality.Core
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.Translate.ToAdditive
-import Mathlib.Topology.Closure
-import Mathlib.Topology.Continuous
-import Mathlib.Topology.ContinuousOn
-import Mathlib.Topology.MetricSpace.Cauchy
-import Mathlib.Topology.MetricSpace.Pseudo.Basic
-import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
-import Mathlib.Topology.Neighborhoods
-import Mathlib.Topology.NhdsSet
 
 /-!
 ## Boundedness in (pseudo)-metric spaces

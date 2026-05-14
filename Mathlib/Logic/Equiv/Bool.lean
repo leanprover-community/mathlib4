@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Logic.Equiv.Basic
 public import Mathlib.Logic.Function.Basic
-import Mathlib.Init
-import Mathlib.Util.CompileInductive
 
 /-!
 # Equivalences involving `Bool`

@@ -6,11 +6,7 @@ Authors: Violeta Hernández Palacios
 module
 
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
-public import Mathlib.Logic.Small.Defs
-import Mathlib.Init
-import Mathlib.Logic.Small.Set
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Logic.Small.Set
 
 /-!
 # Small instances for pointwise operations

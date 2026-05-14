@@ -8,8 +8,6 @@ module
 public import Mathlib.Logic.Relation
 public import Mathlib.Logic.Unique
 public import Mathlib.Util.Notation3
-import Batteries.Logic
-import Mathlib.Init
 
 /-!
 # Quotient types

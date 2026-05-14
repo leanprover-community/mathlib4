@@ -12,12 +12,7 @@ public import Mathlib.Data.Fintype.Defs
 public import Mathlib.Data.Fintype.OfMap
 public import Mathlib.Data.Fintype.Sets
 public import Mathlib.Data.List.FinRange
-public import Mathlib.Data.Fin.Embedding
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.List.OfFn
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Data.List.OfFn
 
 /-!
 # Instances for finite types

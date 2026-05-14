@@ -6,17 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Sites.Descent.IsStack
-import Mathlib.CategoryTheory.Bicategory.Functor.Cat
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Functor.EpiMono
-import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
-import Mathlib.CategoryTheory.Limits.Shapes.Connected
-import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.CategoryTheory.Reassoc
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
+public import Mathlib.CategoryTheory.Limits.Shapes.Connected
 
 /-!
 # Characterization of (pre)stacks for a precoverage

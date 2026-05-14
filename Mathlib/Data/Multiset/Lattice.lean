@@ -7,10 +7,6 @@ module
 
 public import Mathlib.Data.Multiset.FinsetOps
 public import Mathlib.Data.Multiset.Fold
-import Mathlib.Order.BoundedOrder.Lattice
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Translate.ToDual
 
 /-!
 # Lattice operations on multisets

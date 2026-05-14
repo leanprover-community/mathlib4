@@ -8,11 +8,6 @@ module
 public import Mathlib.Algebra.Category.MonCat.Basic
 public import Mathlib.CategoryTheory.ShrinkYoneda
 public import Mathlib.Algebra.Group.Shrink
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Shrinking a functor to `MonCat`

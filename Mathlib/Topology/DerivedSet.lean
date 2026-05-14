@@ -6,18 +6,7 @@ Authors: Daniel Weber
 module
 
 public import Mathlib.Topology.Perfect
-import Batteries.Tactic.Trans
-import Mathlib.Data.Finset.Attr
-import Mathlib.Order.Filter.Map
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Peel
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Closure
-import Mathlib.Topology.ClusterPt
-import Mathlib.Topology.Continuous
-import Mathlib.Topology.ContinuousOn
-import Mathlib.Topology.NhdsWithin
+public import Mathlib.Tactic.Peel
 
 /-!
 # Derived set

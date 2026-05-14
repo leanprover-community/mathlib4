@@ -6,28 +6,9 @@ Authors: Judith Ludwig, Christian Merten
 module
 
 public import Mathlib.Algebra.DirectSum.Basic
+public import Mathlib.LinearAlgebra.SModEq.Pointwise
 public import Mathlib.RingTheory.AdicCompletion.Basic
 public import Mathlib.RingTheory.AdicCompletion.Algebra
-public import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.Order.AbsoluteValue.Basic
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Group.Action
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.LinearAlgebra.SModEq.Pointwise
-import Mathlib.Tactic.ApplyFun
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Functoriality of adic completions

@@ -7,12 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Subobject.Basic
 public import Mathlib.SetTheory.Cardinal.HasCardinalLT
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Cardinality of Subobject

@@ -8,12 +8,6 @@ module
 public import Mathlib.Topology.UniformSpace.DiscreteUniformity
 public import Mathlib.Topology.UniformSpace.Pi
 public import Mathlib.Topology.UniformSpace.Ultra.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Lattice
-import Mathlib.Order.Filter.Bases.Finite
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Products of ultrametric (nonarchimedean) uniform spaces

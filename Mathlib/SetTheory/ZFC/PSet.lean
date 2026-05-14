@@ -5,16 +5,7 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Aesop
-public import Mathlib.Order.RelClasses
-public import Mathlib.Order.SetNotation
-public import Mathlib.Tactic.ToAdditive
-import Batteries.Tactic.Trans
-import Mathlib.Data.Set.Lattice
-import Mathlib.Init
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.PPWithUniv
-import Mathlib.Util.CompileInductive
+public import Mathlib.Data.Set.Lattice
 
 /-!
 # Pre-sets

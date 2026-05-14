@@ -6,10 +6,6 @@ Authors: Jujian Zhang
 module
 
 public import Mathlib.Algebra.Category.Grp.Basic
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # Equivalence between `Group` and `AddGroup`

@@ -8,14 +8,8 @@ module
 public import Mathlib.Data.DFinsupp.Lex
 public import Mathlib.Order.Antisymmetrization
 public import Mathlib.Order.GameAdd
-public import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Finset.Basic
-import Mathlib.SetTheory.Cardinal.Order
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.SetTheory.Cardinal.Order
+public import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Well-foundedness of the lexicographic and product orders on `DFinsupp` and `Pi`

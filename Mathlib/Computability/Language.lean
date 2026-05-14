@@ -7,18 +7,10 @@ module
 
 public import Mathlib.Algebra.Order.Kleene
 public import Mathlib.Algebra.Ring.Hom.Defs
+public import Mathlib.Data.Set.Lattice
 public import Mathlib.Tactic.DeriveFintype
 public import Mathlib.Data.Fintype.Sum
-public import Mathlib.Algebra.Order.Sub.Defs
-public import Mathlib.Data.Set.NAry
-public import Mathlib.Order.CompleteBooleanAlgebra
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Lattice
-import Mathlib.Data.Set.Lattice.Image
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # Languages

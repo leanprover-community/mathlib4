@@ -7,14 +7,7 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Maps
 public import Mathlib.Data.Finset.Max
-public import Mathlib.Data.Finset.Sym
-import Mathlib.Combinatorics.SimpleGraph.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Sym.Card
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Monotonicity.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Data.Sym.Card
 
 /-!
 # Definitions for finite and locally finite graphs

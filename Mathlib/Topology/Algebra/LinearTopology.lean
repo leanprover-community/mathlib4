@@ -5,22 +5,9 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Anatole Dedec
 -/
 module
 
+public import Mathlib.RingTheory.TwoSidedIdeal.Operations
 public import Mathlib.Topology.Algebra.Ring.Basic
-public import Mathlib.RingTheory.Ideal.Defs
-public import Mathlib.RingTheory.TwoSidedIdeal.Basic
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.RingTheory.TwoSidedIdeal.Operations
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Algebra.OpenSubgroup
-import Mathlib.Topology.Neighborhoods
+public import Mathlib.Topology.Algebra.OpenSubgroup
 
 /-! # Linear topologies on modules and rings
 

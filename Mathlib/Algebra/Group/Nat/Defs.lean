@@ -6,7 +6,6 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 module
 
 public import Mathlib.Algebra.Group.Defs
-import Mathlib.Init
 
 /-!
 # The natural numbers form a monoid

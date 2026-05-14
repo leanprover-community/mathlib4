@@ -5,14 +5,8 @@ Authors: Kim Morrison, Floris van Doorn
 -/
 module
 
+public import Mathlib.CategoryTheory.Limits.Opposites
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Limits.Opposites
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.CategoryTheory.Reassoc
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Products and coproducts in `C` and `Cᵒᵖ`

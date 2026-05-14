@@ -6,12 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.MorphismProperty.Retract
-import Mathlib.Tactic.CategoryTheory.CategoryStar
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.CategoryTheory.MorphismProperty.Retract
 
 /-!
 # Quasi-isomorphisms of short complexes are stable under retracts

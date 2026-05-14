@@ -8,16 +8,8 @@ module
 public import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 public import Mathlib.Algebra.Homology.ShortComplex.Abelian
-import Mathlib.CategoryTheory.Abelian.Exact
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Preadditive.LeftExact
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.CategoryTheory.CategoryStar
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.TFAE
+public import Mathlib.CategoryTheory.Preadditive.LeftExact
+public import Mathlib.CategoryTheory.Abelian.Exact
 
 /-!
 # Exact functors

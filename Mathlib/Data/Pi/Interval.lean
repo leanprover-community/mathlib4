@@ -5,15 +5,8 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
-public import Mathlib.Data.Fintype.Pi
-public import Mathlib.Order.Interval.Finset.Defs
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Order.Interval.Finset.Basic
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Order.Interval.Finset.Basic
+public import Mathlib.Data.Fintype.BigOperators
 
 /-!
 # Intervals in a pi type

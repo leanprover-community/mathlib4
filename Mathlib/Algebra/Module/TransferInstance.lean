@@ -9,10 +9,6 @@ public import Mathlib.Algebra.GroupWithZero.Action.TransferInstance
 public import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Transfer algebraic structures across `Equiv`s

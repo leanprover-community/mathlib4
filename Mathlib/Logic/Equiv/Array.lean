@@ -6,10 +6,6 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Logic.Equiv.List
-import Mathlib.Data.Finset.Attr
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Equivalences involving `Array`

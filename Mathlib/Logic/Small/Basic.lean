@@ -6,11 +6,7 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Logic.Small.Defs
-public import Aesop
-import Mathlib.Init
-import Mathlib.Logic.Equiv.Set
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Logic.Equiv.Set
 
 /-!
 # Instances and theorems for `Small`.

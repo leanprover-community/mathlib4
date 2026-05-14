@@ -8,10 +8,6 @@ module
 public import Mathlib.Order.Antisymmetrization
 public import Mathlib.Order.Category.Preord
 public import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # Category of partial orders

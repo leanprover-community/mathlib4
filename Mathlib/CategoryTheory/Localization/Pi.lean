@@ -5,16 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Localization.Predicate
-public import Mathlib.Data.Finite.Defs
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Localization.Equivalence
-import Mathlib.CategoryTheory.Localization.Prod
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Fintype.Option
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.CategoryTheory.Localization.Prod
+public import Mathlib.CategoryTheory.Localization.Equivalence
+public import Mathlib.Data.Fintype.Option
 
 /-!
 # Localization of product categories

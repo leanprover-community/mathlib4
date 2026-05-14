@@ -5,17 +5,11 @@ Authors: Simon Hudon
 -/
 module
 
+public import Mathlib.Control.Applicative
 public import Mathlib.Control.Traversable.Basic
+public import Mathlib.Data.List.Forall2
 public import Mathlib.Data.Set.Functor
-public import Mathlib.Tactic.Basic
-import Mathlib.Control.Applicative
-import Mathlib.Data.List.Basic
-import Mathlib.Data.List.Forall2
-import Mathlib.Data.Set.Insert
-import Mathlib.Tactic.Attr.Register
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Data.List.Basic
 
 /-!
 # LawfulTraversable instances
