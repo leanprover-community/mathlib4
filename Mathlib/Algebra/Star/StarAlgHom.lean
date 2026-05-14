@@ -488,13 +488,13 @@ def snd : A × B →⋆ₙₐ[R] B :=
 
 variable {R A B C}
 
-/-- The `Pi.prod` of two morphisms is a morphism. -/
+/-- The `Function.prod` of two morphisms is a morphism. -/
 @[simps!]
 def prod (f : A →⋆ₙₐ[R] B) (g : A →⋆ₙₐ[R] C) : A →⋆ₙₐ[R] B × C :=
   { f.toNonUnitalAlgHom.prod g.toNonUnitalAlgHom with
-    map_star' := fun x => by simp [map_star, Prod.star_def] }
+    map_star' := fun x => by simp [map_star, Prod.ext_iff] }
 
-theorem coe_prod (f : A →⋆ₙₐ[R] B) (g : A →⋆ₙₐ[R] C) : ⇑(f.prod g) = Pi.prod f g :=
+theorem coe_prod (f : A →⋆ₙₐ[R] B) (g : A →⋆ₙₐ[R] C) : ⇑(f.prod g) = Function.prod f g :=
   rfl
 
 @[simp]
@@ -507,7 +507,7 @@ theorem snd_prod (f : A →⋆ₙₐ[R] B) (g : A →⋆ₙₐ[R] C) : (snd R B 
 
 @[simp]
 theorem prod_fst_snd : prod (fst R A B) (snd R A B) = 1 :=
-  DFunLike.coe_injective Pi.prod_fst_snd
+  DFunLike.coe_injective Function.prod_fst_snd
 
 /-- Taking the product of two maps with the same domain is equivalent to taking the product of
 their codomains. -/
@@ -593,12 +593,12 @@ def snd : A × B →⋆ₐ[R] B :=
 
 variable {R A B C}
 
-/-- The `Pi.prod` of two morphisms is a morphism. -/
+/-- The `Function.prod` of two morphisms is a morphism. -/
 @[simps!]
 def prod (f : A →⋆ₐ[R] B) (g : A →⋆ₐ[R] C) : A →⋆ₐ[R] B × C :=
   { f.toAlgHom.prod g.toAlgHom with map_star' := fun x => by simp [Prod.star_def, map_star] }
 
-theorem coe_prod (f : A →⋆ₐ[R] B) (g : A →⋆ₐ[R] C) : ⇑(f.prod g) = Pi.prod f g :=
+theorem coe_prod (f : A →⋆ₐ[R] B) (g : A →⋆ₐ[R] C) : ⇑(f.prod g) = Function.prod f g :=
   rfl
 
 @[simp]
@@ -611,7 +611,7 @@ theorem snd_prod (f : A →⋆ₐ[R] B) (g : A →⋆ₐ[R] C) : (snd R B C).com
 
 @[simp]
 theorem prod_fst_snd : prod (fst R A B) (snd R A B) = 1 :=
-  DFunLike.coe_injective Pi.prod_fst_snd
+  DFunLike.coe_injective Function.prod_fst_snd
 
 /-- Taking the product of two maps with the same domain is equivalent to taking the product of
 their codomains. -/
@@ -767,16 +767,11 @@ theorem coe_mk (e h) : ⇑(⟨e, h⟩ : A ≃⋆ₐ[R] B) = e := rfl
 theorem mk_coe (e : A ≃⋆ₐ[R] B) (e' h₁ h₂ h₃ h₄ h₅ h₆) :
     (⟨⟨⟨⟨e, e', h₁, h₂⟩, h₃, h₄⟩, h₅⟩, h₆⟩ : A ≃⋆ₐ[R] B) = e := ext fun _ => rfl
 
-/-- Auxiliary definition to avoid looping in `dsimp` with `StarAlgEquiv.symm_mk`. -/
-protected def symm_mk.aux (f f') (h₁ h₂ h₃ h₄ h₅ h₆) :=
-  (⟨⟨⟨⟨f, f', h₁, h₂⟩, h₃, h₄⟩, h₅⟩, h₆⟩ : A ≃⋆ₐ[R] B).symm
-
 @[simp]
-theorem symm_mk (f f') (h₁ h₂ h₃ h₄ h₅ h₆) :
-    (⟨⟨⟨⟨f, f', h₁, h₂⟩, h₃, h₄⟩, h₅⟩, h₆⟩ : A ≃⋆ₐ[R] B).symm =
-      { symm_mk.aux f f' h₁ h₂ h₃ h₄ h₅ h₆ with
-        toFun := f'
-        invFun := f } :=
+theorem symm_mk (e : A ≃⋆+* B) (h₁) : dsimp%
+    (⟨e, h₁⟩ : A ≃⋆ₐ[R] B).symm =
+      { (⟨e, h₁⟩ : A ≃⋆ₐ[R] B).symm with
+        toStarRingEquiv := e.symm } :=
   rfl
 
 @[simp]
