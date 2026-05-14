@@ -528,7 +528,7 @@ theorem add_comp [ContinuousAdd M₃] (g₁ g₂ : M₂ →SL[σ₂₃] M₃) (f
 
 theorem comp_finsetSum {ι : Type*} {s : Finset ι}
     [ContinuousAdd M₂] [ContinuousAdd M₃] (g : M₂ →SL[σ₂₃] M₃)
-    (f : ι → M₁ →SL[σ₁₂] M₂) : g ∘SL (∑ i ∈ s, f i) = ∑ i ∈ s, g.comp (f i) := by
+    (f : ι → M₁ →SL[σ₁₂] M₂) : g ∘SL (∑ i ∈ s, f i) = ∑ i ∈ s, g ∘SL (f i) := by
   ext
   simp
 
@@ -536,7 +536,7 @@ theorem comp_finsetSum {ι : Type*} {s : Finset ι}
 
 theorem finsetSum_comp {ι : Type*} {s : Finset ι}
     [ContinuousAdd M₃] (g : ι → M₂ →SL[σ₂₃] M₃)
-    (f : M₁ →SL[σ₁₂] M₂) : (∑ i ∈ s, g i) ∘SL f = ∑ i ∈ s, (g i).comp f := by
+    (f : M₁ →SL[σ₁₂] M₂) : (∑ i ∈ s, g i) ∘SL f = ∑ i ∈ s, (g i) ∘SL f := by
   ext
   simp only [coe_comp', coe_sum', Function.comp_apply, Finset.sum_apply]
 
@@ -704,7 +704,7 @@ variable [Module R₁ M₂] [TopologicalSpace R₁] [ContinuousSMul R₁ M₂]
 
 theorem smulRight_comp_smulRight {M₃ : Type*} [AddCommMonoid M₃] [Module R₁ M₃]
     [TopologicalSpace M₃] [ContinuousSMul R₁ M₃] (f : M₃ →L[R₁] R₁) (g : M₁ →L[R₁] R₁) {x : M₂}
-    {y : M₃} : (smulRight f x).comp (smulRight g y) = smulRight g (f y • x) := by
+    {y : M₃} : (smulRight f x) ∘L (smulRight g y) = smulRight g (f y • x) := by
   ext
   simp
 
@@ -1267,7 +1267,7 @@ variable {R₁ R₂ R₃ : Type*} [Semiring R₁] [Semiring R₂] [Semiring R₃
 `p → M₂`. -/
 @[simps!]
 def domRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₁ M₁) : p →SL[σ₁₂] M₂ :=
-  f.comp p.subtypeL
+  f ∘SL p.subtypeL
 
 @[simp]
 theorem toLinearMap_domRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₁ M₁) :
@@ -1332,12 +1332,12 @@ theorem restrict_apply {f : M₁ →SL[σ₁₂] M₂} {p : Submodule R₁ M₁}
 open Set in
 lemma restrict_comp {p : Submodule R₁ M₁} {p₂ : Submodule R₂ M₂} {p₃ : Submodule R₃ M₃}
     {f : M₁ →SL[σ₁₂] M₂} {g : M₂ →SL[σ₂₃] M₃}
-    (hf : MapsTo f p p₂) (hg : MapsTo g p₂ p₃) (hfg : MapsTo (g.comp f) p p₃ := hg.comp hf) :
-    (g.comp f).restrict hfg = (g.restrict hg).comp (f.restrict hf) :=
+    (hf : MapsTo f p p₂) (hg : MapsTo g p₂ p₃) (hfg : MapsTo (g ∘SL f) p p₃ := hg.comp hf) :
+    (g ∘SL f).restrict hfg = (g.restrict hg) ∘SL (f.restrict hf) :=
   rfl
 
 theorem subtypeL_comp_restrict {f : M₁ →SL[σ₁₂] M₂} {p : Submodule R₁ M₁} {q : Submodule R₂ M₂}
-    (hf : ∀ x ∈ p, f x ∈ q) : q.subtypeL.comp (f.restrict hf) = f.domRestrict p :=
+    (hf : ∀ x ∈ p, f x ∈ q) : q.subtypeL ∘SL (f.restrict hf) = f.domRestrict p :=
   rfl
 
 theorem restrict_eq_codRestrict_domRestrict {f : M₁ →SL[σ₁₂] M₂} {p : Submodule R₁ M₁}
@@ -1365,7 +1365,7 @@ variable {R₁ R₂ R₃ : Type*} [Ring R₁] [Ring R₂]
 `LinearMap.range f₂`. -/
 def projKerOfRightInverse [IsTopologicalAddGroup M₁] (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ : M₂ →SL[σ₂₁] M₁)
     (h : Function.RightInverse f₂ f₁) : M₁ →L[R₁] LinearMap.ker (f₁ : M₁ →ₛₗ[σ₁₂] M₂) :=
-  (.id R₁ M₁ - f₂.comp f₁).codRestrict (LinearMap.ker f₁.toLinearMap) fun x => by simp [h (f₁ x)]
+  (.id R₁ M₁ - f₂ ∘SL f₁).codRestrict (LinearMap.ker f₁.toLinearMap) fun x => by simp [h (f₁ x)]
 
 @[simp]
 theorem coe_projKerOfRightInverse_apply [IsTopologicalAddGroup M₁] (f₁ : M₁ →SL[σ₁₂] M₂)
