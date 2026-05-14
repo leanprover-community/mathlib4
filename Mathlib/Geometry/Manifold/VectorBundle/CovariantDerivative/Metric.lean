@@ -207,33 +207,27 @@ theorem compatibilityTensorAux_tensorial₁ (τ : Π x, V x) (hτ : MDiffAt (T% 
     TensorialAt I F (compatibilityTensorAux I cov · τ x) x where
   smul hf hσ := by
     ext X₀
-    rw [compatibilityTensorAux_apply, product_smul_left,
-      extDerivFun_smul (hσ.inner_bundle hτ) hf]
-      -- FIXME arguments to `extDerivFun_smul` in wrong order?
-    simp [cov.isCovariantDerivativeOn.leibniz hσ hf, inner_add_left,
-      inner_smul_left]
+    -- FIXME arguments to `extDerivFun_smul` in wrong order?
+    simp [product_smul_left, extDerivFun_mul hf (hσ.inner_bundle hτ),
+      cov.isCovariantDerivativeOn.leibniz hσ hf, inner_add_left, inner_smul_left]
     ring
   add hσ hσ' := by
     ext X₀
-    rw [compatibilityTensorAux_apply, product_add_left,
-      extDerivFun_add (hσ.inner_bundle hτ) (hσ'.inner_bundle hτ)]
-    simp [cov.isCovariantDerivativeOn.add hσ hσ', inner_add_left]
+    simp [product_add_left, extDerivFun_add (hσ.inner_bundle hτ) (hσ'.inner_bundle hτ),
+      cov.isCovariantDerivativeOn.add hσ hσ', inner_add_left]
     abel
 
 theorem compatibilityTensorAux_tensorial₂ (σ : Π x, V x) (hσ : MDiffAt (T% σ) x) :
     TensorialAt I F (compatibilityTensorAux I cov σ · x) x where
   smul hf hτ := by
     ext X₀
-    rw [compatibilityTensorAux_apply, product_smul_right,
-      extDerivFun_smul (hσ.inner_bundle hτ) hf]
-    simp [cov.isCovariantDerivativeOn.leibniz hτ hf, inner_add_right,
-      inner_smul_right]
+    simp [product_smul_right, extDerivFun_mul hf (hσ.inner_bundle hτ),
+      cov.isCovariantDerivativeOn.leibniz hτ hf, inner_add_right, inner_smul_right]
     ring
   add hτ hτ' := by
     ext X₀
-    rw [compatibilityTensorAux_apply, product_add_right,
-      extDerivFun_add (hσ.inner_bundle hτ) (hσ.inner_bundle hτ')]
-    simp [cov.isCovariantDerivativeOn.add hτ hτ', inner_add_right]
+    simp [product_add_right, extDerivFun_add (hσ.inner_bundle hτ) (hσ.inner_bundle hτ'),
+      cov.isCovariantDerivativeOn.add hτ hτ', inner_add_right]
     abel
 
 variable {I} [ContMDiffVectorBundle 1 F V I] in
@@ -261,7 +255,7 @@ theorem compatibilityTensor_apply_eq_extend [FiniteDimensional ℝ F] (X₀ : Ta
       extDerivFun% ⟪(FiberBundle.extend F σ₀), (FiberBundle.extend F τ₀)⟫ x X₀
         - inner ℝ (cov (FiberBundle.extend F σ₀) x X₀) τ₀
         - inner ℝ σ₀ (cov (FiberBundle.extend F τ₀) x X₀) := by
-  simp [compatibilityTensor, TensorialAt.mkHom₂_apply_eq_extend, compatibilityTensorAux_apply]
+  simp [compatibilityTensor, TensorialAt.mkHom₂_apply_eq_extend]
 
 variable {I} [ContMDiffVectorBundle 1 F V I] in
 /-- Predicate saying that a connection `∇` on a Riemannian bundle `(V, g)` is compatible with the
@@ -280,11 +274,9 @@ lemma isCompatible_iff [FiniteDimensional ℝ F] :
     simp [compatibilityTensor_apply _ _ hσ hτ] at H
     linear_combination H
   ext x σ₀ τ₀ X₀
-  rw [compatibilityTensor_apply_eq_extend]
-  have h' := h (FiberBundle.mdifferentiableAt_extend I E X₀)
+  specialize h (FiberBundle.mdifferentiableAt_extend I E X₀)
     (FiberBundle.mdifferentiableAt_extend I F σ₀) (FiberBundle.mdifferentiableAt_extend I F τ₀)
-  simp [product] at h' ⊢
-  linear_combination (norm := skip) h'
-  ring_nf
+  simp [compatibilityTensor_apply_eq_extend, product] at h ⊢
+  linear_combination h
 
 end CovariantDerivative
