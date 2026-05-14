@@ -199,8 +199,8 @@ variable [IsDomain R] {K : Type*} [CommRing K] [Algebra S K] [Algebra R K] [IsIn
 variable (S)
 
 omit [Algebra R S] in
-/-- If `x : K` is algebraic over some ring `Z`, then a nonzero `Z`-multiple of it is contained
-in the integral closure of `Z` in `K`. -/
+/-- If `x : K` is algebraic over some ring `R`, then a nonzero `R`-multiple of it is contained
+in the integral closure of `R` in `K`. -/
 lemma exists_smul_eq {x : K} (hx : IsAlgebraic R x) :
     ∃ (r : R) (s : S), r ≠ 0 ∧ r • x = algebraMap S K s := by
   obtain ⟨r, hr, h⟩ := IsAlgebraic.iff_exists_smul_integral.mp hx
