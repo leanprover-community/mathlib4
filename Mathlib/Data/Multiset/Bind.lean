@@ -237,11 +237,12 @@ theorem count_bind [DecidableEq α] {m : Multiset β} {f : β → Multiset α} {
 
 theorem le_bind {α β : Type*} {f : α → Multiset β} (S : Multiset α) {x : α} (hx : x ∈ S) :
     f x ≤ S.bind f := by
-  classical
-  refine le_iff_count.2 fun a ↦ ?_
-  obtain ⟨m', hm'⟩ := exists_cons_of_mem <| mem_map_of_mem (fun b ↦ count a (f b)) hx
-  rw [count_bind, hm', sum_cons]
-  exact Nat.le_add_right _ _
+  revert hx
+  refine Multiset.induction_on S (by simp) (fun y a s hx ↦ ?_)
+  simp only [cons_bind]
+  rcases mem_cons.1 hx with rfl | hx
+  · exact le_add_right _ _
+  · exact le_trans (s hx) (le_add_left _ _)
 
 @[simp]
 theorem attach_bind_coe (s : Multiset α) (f : α → Multiset β) :
@@ -253,13 +254,34 @@ variable {f s t}
 open scoped Function in -- required for scoped `on` notation
 @[simp] lemma nodup_bind :
     Nodup (bind s f) ↔ (∀ a ∈ s, Nodup (f a)) ∧ s.Pairwise (Disjoint on f) := by
-  have : ∀ a, ∃ l : List β, f a = l := fun a => Quot.induction_on (f a) fun l => ⟨l, rfl⟩
-  choose f' h' using this
-  have : f = fun a ↦ ofList (f' a) := funext h'
-  have hd : Symmetric fun a b ↦ List.Disjoint (f' a) (f' b) := fun a b h ↦ h.symm
-  exact Quot.induction_on s <| by
-    unfold Function.onFun
-    simp [this, List.nodup_flatMap, pairwise_coe_iff_pairwise hd]
+  refine Multiset.induction_on s (by simp) (fun a s ih ↦ ⟨fun hs ↦ ⟨fun b hb ↦ ?_, ?_⟩, fun
+    ⟨h₁, l, hl, hpl⟩ ↦ ?_⟩)
+  · simp only [cons_bind, nodup_add] at hs
+    rcases mem_cons.mp hb with rfl | hb
+    · exact hs.1
+    · exact (ih.mp hs.2.1).1 b hb
+  · simp only [cons_bind, nodup_add] at hs
+    obtain ⟨l, rfl, hpl⟩ := (ih.mp hs.2.1).2
+    exact ⟨a :: l, by simp, List.Pairwise.cons
+      (fun b hb => hs.2.2.mono_right (le_bind _ (Multiset.mem_coe.mpr hb))) hpl⟩
+  · simp only [cons_bind, nodup_add]
+    refine ⟨h₁ a (mem_cons_self a s), ?_, ?_⟩
+    · refine ih.mpr ⟨fun b hb ↦ h₁ b (mem_cons.mpr (.inr hb)), ?_⟩
+      induction s using Quotient.inductionOn with
+      | h l_s =>
+        have hperm : l.Perm (a :: l_s) := by simpa using Quotient.exact hl.symm
+        exact (pairwise_coe_iff_pairwise (fun _ _ d ↦ d.symm)).mpr
+          (List.pairwise_cons.mp (hperm.pairwise_iff (fun d ↦ d.symm) |>.mp hpl)).2
+    · rw [disjoint_left]
+      intro x hxa hxb
+      obtain ⟨b, hbs, hxfb⟩ := mem_bind.mp hxb
+      induction s using Quotient.inductionOn with
+      | h l_s =>
+        have hperm : l.Perm (a :: l_s) := by simpa using Quotient.exact hl.symm
+        have hpl' : (a :: l_s).Pairwise (Function.onFun Disjoint f) :=
+          (hperm.pairwise_iff fun d ↦ d.symm).mp hpl
+        exact absurd hxfb (disjoint_left.mp
+          ((List.pairwise_cons.mp hpl').1 b (Multiset.mem_coe.mp hbs)) hxa)
 
 @[simp]
 lemma dedup_bind_dedup [DecidableEq α] [DecidableEq β] (s : Multiset α) (f : α → Multiset β) :
@@ -405,10 +427,15 @@ variable {s t}
   | ⟨a, b⟩ => by simp [Multiset.sigma, and_left_comm]
 
 protected theorem Nodup.sigma {σ : α → Type*} {t : ∀ a, Multiset (σ a)} :
-    Nodup s → (∀ a, Nodup (t a)) → Nodup (s.sigma t) :=
-  Quot.induction_on s fun l₁ => by
-    choose f hf using fun a => Quotient.exists_rep (t a)
-    simpa [← funext hf] using List.Nodup.sigma
+    Nodup s → (∀ a, Nodup (t a)) → Nodup (s.sigma t) := by
+  refine Multiset.induction_on s (fun _ _ ↦ by simp) (fun a s ih hs ht ↦ ?_)
+  simp only [cons_sigma]
+  refine nodup_add.2 ⟨Nodup.map (fun _ _ h ↦ by simpa using h) (ht _), ih (nodup_cons.1 hs).2 ht,
+    disjoint_iff_ne.2 (fun ⟨x₁, x₂⟩ hx ⟨y₁, y₂⟩ hy h ↦ ?_)⟩
+  obtain ⟨A, hA, H⟩ := mem_map.1 hx
+  refine (nodup_cons.1 hs).1 ?_
+  convert (mem_sigma.1 hy).1
+  exact congr_arg Sigma.fst (H.trans h)
 
 end Sigma
 

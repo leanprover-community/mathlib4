@@ -126,12 +126,29 @@ protected lemma Nontrivial.erase_nonempty (hs : s.Nontrivial) : (s.erase a).None
   exact ⟨_, hb, _, ha, hba⟩
 
 @[simp]
-theorem erase_singleton (a : α) : ({a} : Finset α).erase a = ∅ := by grind
+theorem erase_singleton (a : α) : ({a} : Finset α).erase a = ∅ := by
+  ext x; simp
 
 @[simp]
-theorem erase_insert_eq_erase (s : Finset α) (a : α) : (insert a s).erase a = s.erase a := by grind
+theorem erase_insert_eq_erase (s : Finset α) (a : α) : (insert a s).erase a = s.erase a := by
+  ext x
+  simp only [mem_erase, mem_insert]
+  constructor
+  · rintro ⟨hne, rfl | hx⟩
+    · exact absurd rfl hne
+    · exact ⟨hne, hx⟩
+  · rintro ⟨hne, hx⟩
+    exact ⟨hne, Or.inr hx⟩
 
-theorem erase_insert {a : α} {s : Finset α} (h : a ∉ s) : (insert a s).erase a = s := by grind
+theorem erase_insert {a : α} {s : Finset α} (h : a ∉ s) : (insert a s).erase a = s := by
+  ext x
+  simp only [mem_erase, mem_insert]
+  constructor
+  · rintro ⟨hne, rfl | hx⟩
+    · exact absurd rfl hne
+    · exact hx
+  · intro hx
+    exact ⟨fun heq => h (heq ▸ hx), Or.inr hx⟩
 
 theorem erase_insert_of_ne {a b : α} {s : Finset α} (h : a ≠ b) :
     (insert a s).erase b = insert a (s.erase b) := by grind
@@ -139,7 +156,17 @@ theorem erase_insert_of_ne {a b : α} {s : Finset α} (h : a ≠ b) :
 theorem erase_cons_of_ne {a b : α} {s : Finset α} (ha : a ∉ s) (hb : a ≠ b) :
     (s.cons a ha).erase b = (s.erase b).cons a fun h => ha <| erase_subset _ _ h := by grind
 
-@[simp] theorem insert_erase (h : a ∈ s) : insert a (s.erase a) = s := by grind
+@[simp] theorem insert_erase (h : a ∈ s) : insert a (s.erase a) = s := by
+  ext x
+  simp only [mem_insert, mem_erase]
+  constructor
+  · rintro (rfl | ⟨_, hx⟩)
+    · exact h
+    · exact hx
+  · intro hx
+    by_cases ha : x = a
+    · exact Or.inl ha
+    · exact Or.inr ⟨ha, hx⟩
 
 lemma erase_eq_iff_eq_insert (hs : a ∈ s) (ht : a ∉ t) : s.erase a = t ↔ s = insert a t := by
   aesop
@@ -160,7 +187,16 @@ theorem erase_ssubset_insert (s : Finset α) (a : α) : s.erase a ⊂ insert a s
 
 theorem erase_cons {s : Finset α} {a : α} (h : a ∉ s) : (s.cons a h).erase a = s := by grind
 
-theorem subset_insert_iff {a : α} {s t : Finset α} : s ⊆ insert a t ↔ s.erase a ⊆ t := by grind
+theorem subset_insert_iff {a : α} {s t : Finset α} : s ⊆ insert a t ↔ s.erase a ⊆ t := by
+  constructor
+  · intro h x hx
+    have hne : x ≠ a := (mem_erase.mp hx).1
+    have hs : x ∈ s := (mem_erase.mp hx).2
+    exact (mem_insert.mp (h hs)).resolve_left hne
+  · intro h x hx
+    by_cases ha : x = a
+    · exact ha ▸ mem_insert_self a t
+    · exact mem_insert_of_mem (h (mem_erase.mpr ⟨ha, hx⟩))
 
 theorem erase_insert_subset (a : α) (s : Finset α) : (insert a s).erase a ⊆ s :=
   subset_insert_iff.1 Subset.rfl
@@ -355,7 +391,8 @@ theorem filter_union_right (s : Finset α) :
     s.filter p ∪ s.filter q = s.filter fun x => p x ∨ q x := by grind
 
 theorem filter_mem_eq_inter {s t : Finset α} [∀ i, Decidable (i ∈ t)] :
-    (s.filter fun i => i ∈ t) = s ∩ t := by grind
+    (s.filter fun i => i ∈ t) = s ∩ t := by
+  ext; simp
 
 theorem filter_notMem_eq_sdiff {s t : Finset α} [∀ i, Decidable (i ∉ t)] :
     (s.filter fun i => i ∉ t) = s \ t := by grind

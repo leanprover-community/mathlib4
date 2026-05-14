@@ -35,10 +35,63 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder ℕ where
   finsetIco a b := ⟨List.range' a (b - a), List.nodup_range'⟩
   finsetIoc a b := ⟨List.range' (a + 1) (b - a), List.nodup_range'⟩
   finsetIoo a b := ⟨List.range' (a + 1) (b - a - 1), List.nodup_range'⟩
-  finset_mem_Icc a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; lia
-  finset_mem_Ico a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; lia
-  finset_mem_Ioc a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; lia
-  finset_mem_Ioo a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; lia
+  finset_mem_Icc a b x := by
+    rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]
+    constructor
+    · rintro ⟨h1, h2⟩
+      refine ⟨h1, ?_⟩
+      rcases le_or_gt a (b + 1) with hab | hab
+      · rw [Nat.add_sub_cancel' hab] at h2; exact Nat.lt_succ_iff.mp h2
+      · rw [Nat.sub_eq_zero_of_le (Nat.le_of_lt hab), Nat.add_zero] at h2
+        exact absurd h2 (Nat.not_lt.mpr h1)
+    · rintro ⟨h1, h2⟩
+      refine ⟨h1, ?_⟩
+      rw [Nat.add_sub_cancel' (Nat.le_succ_of_le (h1.trans h2))]
+      exact Nat.lt_succ_of_le h2
+  finset_mem_Ico a b x := by
+    rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]
+    constructor
+    · rintro ⟨h1, h2⟩
+      refine ⟨h1, ?_⟩
+      rcases le_or_gt a b with hab | hab
+      · rwa [Nat.add_sub_cancel' hab] at h2
+      · rw [Nat.sub_eq_zero_of_le (Nat.le_of_lt hab), Nat.add_zero] at h2
+        exact absurd h2 (Nat.not_lt.mpr h1)
+    · rintro ⟨h1, h2⟩
+      refine ⟨h1, ?_⟩
+      rw [Nat.add_sub_cancel' (h1.trans (Nat.le_of_lt h2))]
+      exact h2
+  finset_mem_Ioc a b x := by
+    rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]
+    constructor
+    · rintro ⟨h1, h2⟩
+      refine ⟨Nat.lt_of_succ_le h1, ?_⟩
+      rcases le_or_gt a b with hab | hab
+      · rw [Nat.add_right_comm, Nat.add_sub_cancel' hab] at h2
+        exact Nat.lt_succ_iff.mp h2
+      · rw [Nat.sub_eq_zero_of_le (Nat.le_of_lt hab), Nat.add_zero] at h2
+        exact absurd h2 (Nat.not_lt.mpr h1)
+    · rintro ⟨h1, h2⟩
+      have hab : a ≤ b := Nat.le_of_lt (Nat.lt_of_lt_of_le h1 h2)
+      refine ⟨Nat.succ_le_of_lt h1, ?_⟩
+      rw [Nat.add_right_comm, Nat.add_sub_cancel' hab]
+      exact Nat.lt_succ_of_le h2
+  finset_mem_Ioo a b x := by
+    rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]
+    constructor
+    · rintro ⟨h1, h2⟩
+      refine ⟨Nat.lt_of_succ_le h1, ?_⟩
+      rcases le_or_gt (a + 1) b with hab | hab
+      · rw [Nat.sub_sub, Nat.add_sub_cancel' hab] at h2; exact h2
+      · have : b - a - 1 = 0 := by
+          rw [Nat.sub_eq_zero_of_le (Nat.lt_succ_iff.mp hab)]
+        rw [this, Nat.add_zero] at h2
+        exact absurd h2 (Nat.not_lt.mpr h1)
+    · rintro ⟨h1, h2⟩
+      have hab : a + 1 ≤ b := Nat.le_of_lt (Nat.lt_of_le_of_lt (Nat.succ_le_of_lt h1) h2)
+      refine ⟨Nat.succ_le_of_lt h1, ?_⟩
+      rw [Nat.sub_sub, Nat.add_sub_cancel' hab]
+      exact h2
 
 instance : Unique (Iic 0) := by
   rw [← Nat.bot_eq_zero]

@@ -313,10 +313,14 @@ theorem mem_Ioc : x ∈ Ioc a b ↔ a < x ∧ x ≤ b :=
 theorem mem_Ioo : x ∈ Ioo a b ↔ a < x ∧ x < b :=
   LocallyFiniteOrder.finset_mem_Ioo a b x
 
-@[to_dual existing mem_Icc] theorem mem_Icc' : x ∈ Icc a b ↔ x ≤ b ∧ a ≤ x := by grind
-@[to_dual existing mem_Ioc] theorem mem_Ico' : x ∈ Ico a b ↔ x < b ∧ a ≤ x := by grind
-@[to_dual existing mem_Ico] theorem mem_Ioc' : x ∈ Ioc a b ↔ x ≤ b ∧ a < x := by grind
-@[to_dual existing mem_Ioo] theorem mem_Ioo' : x ∈ Ioo a b ↔ x < b ∧ a < x := by grind
+@[to_dual existing mem_Icc] theorem mem_Icc' : x ∈ Icc a b ↔ x ≤ b ∧ a ≤ x :=
+  mem_Icc.trans and_comm
+@[to_dual existing mem_Ioc] theorem mem_Ico' : x ∈ Ico a b ↔ x < b ∧ a ≤ x :=
+  mem_Ico.trans and_comm
+@[to_dual existing mem_Ico] theorem mem_Ioc' : x ∈ Ioc a b ↔ x ≤ b ∧ a < x :=
+  mem_Ioc.trans and_comm
+@[to_dual existing mem_Ioo] theorem mem_Ioo' : x ∈ Ioo a b ↔ x < b ∧ a < x :=
+  mem_Ioo.trans and_comm
 
 @[simp, norm_cast, to_dual self]
 theorem coe_Icc (a b : α) : (Icc a b : Set α) = Set.Icc a b :=

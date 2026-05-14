@@ -83,8 +83,20 @@ theorem image_surjOn_powerset {β : Type*} [DecidableEq β] {f : α → β} :
   fun t ht => ⟨{ x ∈ s | f x ∈ t}, by grind⟩
 
 theorem powerset_image {β : Type*} [DecidableEq β] {f : α → β} :
-    (s.image f).powerset = s.powerset.image (·.image f) :=
-  ext fun a => ⟨fun _ => mem_image.mpr ⟨{ x ∈ s | f x ∈ a}, by grind⟩, by grind⟩
+    (s.image f).powerset = s.powerset.image (·.image f) := by
+  refine ext (fun S ↦ ⟨fun h ↦ mem_image.2 ⟨{ x ∈ s | f x ∈ S}, ?_⟩, fun hS ↦ ?_⟩)
+  · simp only [mem_powerset, filter_subset, true_and]
+    simp only [mem_powerset] at h
+    refine ext fun b ↦ ⟨fun hb ↦ ?_, fun hb ↦ ?_⟩
+    · simp only [mem_image, mem_filter] at hb
+      obtain ⟨a, ⟨-, H⟩, rfl⟩ := hb
+      exact H
+    · obtain ⟨a, has, rfl⟩ := mem_image.1 (h hb)
+      simp only [mem_image, mem_filter]
+      exact ⟨a, ⟨⟨has, hb⟩, rfl⟩⟩
+  · simp only [mem_image, mem_powerset] at hS
+    obtain ⟨T, hT, rfl⟩ := hS
+    simpa using image_subset_image hT
 
 /-- **Number of Subsets of a Set** -/
 @[simp]
@@ -100,7 +112,14 @@ theorem powerset_insert [DecidableEq α] (s : Finset α) (a : α) :
     powerset (insert a s) = s.powerset ∪ s.powerset.image (insert a) := by
   ext t
   simp only [mem_powerset, mem_image, mem_union, subset_insert_iff]
-  grind
+  constructor
+  · intro h
+    by_cases ha : a ∈ t
+    · exact Or.inr ⟨t.erase a, h, insert_erase ha⟩
+    · exact Or.inl ((erase_eq_of_notMem ha) ▸ h)
+  · rintro (hs | ⟨u, hu, rfl⟩)
+    · exact (erase_subset _ _).trans hs
+    · rw [erase_insert_eq_erase]; exact (erase_subset _ _).trans hu
 
 lemma pairwiseDisjoint_pair_insert [DecidableEq α] {a : α} (ha : a ∉ s) :
     (s.powerset : Set (Finset α)).PairwiseDisjoint fun t ↦ ({t, insert a t} : Set (Finset α)) := by

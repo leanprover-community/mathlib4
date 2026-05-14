@@ -116,7 +116,7 @@ lemma hfunext {α α' : Sort u} {β : α → Sort v} {β' : α' → Sort v} {f :
   have : ∀ a, f a ≍ f' a := fun a ↦ h a a (HEq.refl a)
   have : β = β' := by funext a; exact type_eq_of_heq (this a)
   subst this
-  grind
+  exact heq_of_eq <| funext fun a ↦ eq_of_heq (this a)
 
 theorem ne_iff {β : α → Sort*} {f₁ f₂ : ∀ a, β a} : f₁ ≠ f₂ ↔ ∃ a, f₁ a ≠ f₂ a :=
   funext_iff.not.trans not_forall
@@ -682,8 +682,11 @@ lemma ne_update_self_iff : f ≠ update f a b ↔ f a ≠ b := eq_update_self_if
 lemma update_ne_self_iff : update f a b ≠ f ↔ b ≠ f a := update_eq_self_iff.not
 
 @[simp]
-theorem update_eq_self (a : α) (f : ∀ a, β a) : update f a (f a) = f :=
-  update_eq_iff.2 ⟨rfl, fun _ _ ↦ rfl⟩
+lemma update_eq_self (a : α) (f : ∀ a, β a) : update f a (f a) = f := by
+  ext x
+  by_cases hx : x = a
+  · rw [hx, update_self]
+  · rw [update_of_ne hx]
 
 theorem update_comp_eq_of_forall_ne' {α'} (g : ∀ a, β a) {f : α' → α} {i : α} (a : β i)
     (h : ∀ x, f x ≠ i) : (fun j ↦ (update g i a) (f j)) = fun j ↦ g (f j) :=
@@ -758,7 +761,13 @@ theorem comp_update {α' : Sort*} {β : Sort*} (f : α' → β) (g : α → α')
 
 theorem update_comm {α} [DecidableEq α] {β : α → Sort*} {a b : α} (h : a ≠ b) (v : β a) (w : β b)
     (f : ∀ a, β a) : update (update f a v) b w = update (update f b w) a v := by
-  grind
+  ext x
+  by_cases h1 : x = a
+  · simp_all [update]
+  · by_cases h2 : x = b
+    · rw [h2]
+      simp_all
+    · simp_all
 
 @[simp]
 theorem update_idem {α} [DecidableEq α] {β : α → Sort*} {a : α} (v w : β a) (f : ∀ a, β a) :

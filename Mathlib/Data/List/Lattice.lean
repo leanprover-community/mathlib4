@@ -181,7 +181,9 @@ theorem bagInter_nil (l : List α) : l.bagInter [] = [] := by cases l <;> rfl
 @[simp]
 theorem cons_bagInter_of_mem (l₁ : List α) (h : a ∈ l₂) :
     (a :: l₁).bagInter l₂ = a :: l₁.bagInter (l₂.erase a) := by
-  cases l₂ with grind [List.bagInter]
+  cases l₂ with
+  | nil => simp at h
+  | cons b l => simp [List.bagInter, h]
 
 @[deprecated (since := "2026-05-13")]
 alias cons_bagInter_of_pos := cons_bagInter_of_mem
@@ -189,7 +191,9 @@ alias cons_bagInter_of_pos := cons_bagInter_of_mem
 @[simp]
 theorem cons_bagInter_of_not_mem (l₁ : List α) (h : a ∉ l₂) :
     (a :: l₁).bagInter l₂ = l₁.bagInter l₂ := by
-  cases l₂ with grind [List.bagInter]
+  cases l₂ with
+  | nil => simp
+  | cons b l => simp [List.bagInter, h]
 
 @[deprecated (since := "2026-05-13")]
 alias cons_bagInter_of_neg := cons_bagInter_of_not_mem
@@ -216,8 +220,12 @@ theorem count_bagInter {a : α} {l₁ l₂ : List α} :
     count a (l₁.bagInter l₂) = min (count a l₁) (count a l₂) := by
   fun_induction List.bagInter with grind
 
-theorem bagInter_sublist_left {l₁ l₂ : List α} : l₁.bagInter l₂ <+ l₁ := by
-  fun_induction List.bagInter with grind
+theorem bagInter_sublist_left : ∀ {l₁ l₂ : List α}, l₁.bagInter l₂ <+ l₁
+  | [], _l₂ => by simp
+  | a :: l₁, l₂ => by
+      by_cases h : a ∈ l₂
+      · rw [cons_bagInter_of_pos _ h]; exact bagInter_sublist_left.cons_cons _
+      · rw [cons_bagInter_of_neg _ h]; exact bagInter_sublist_left.cons _
 
 theorem singleton_bagInter (a : α) : [a].bagInter l₁ = if a ∈ l₁ then [a] else [] := by
   grind

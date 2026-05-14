@@ -720,7 +720,9 @@ automatically fills in most arguments.
 
 See `Equiv.sum_comp` for a version without `h`. -/]
 lemma prod_equiv (e : ι ≃ κ) (f : ι → M) (g : κ → M) (h : ∀ x, f x = g (e x)) :
-    ∏ x, f x = ∏ x, g x := prod_bijective _ e.bijective _ _ h
+    ∏ x, f x = ∏ x, g x :=
+  prod_bij (fun a _ ↦ e a) (fun _ _ ↦ mem_univ _) (fun _ _ _ _ heq ↦ e.injective heq)
+    (fun b _ ↦ ⟨e.symm b, mem_univ _, e.apply_symm_apply b⟩) (fun a _ ↦ h a)
 
 @[to_additive]
 lemma _root_.Function.Bijective.prod_comp {e : ι → κ} (he : e.Bijective) (g : κ → M) :

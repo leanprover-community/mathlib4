@@ -52,8 +52,9 @@ theorem univ_nonempty_iff : (univ : Finset α).Nonempty ↔ Nonempty α := by
 theorem univ_nonempty [Nonempty α] : (univ : Finset α).Nonempty :=
   univ_nonempty_iff.2 ‹_›
 
-theorem univ_eq_empty_iff : (univ : Finset α) = ∅ ↔ IsEmpty α := by
-  contrapose!; exact univ_nonempty_iff
+theorem univ_eq_empty_iff : (univ : Finset α) = ∅ ↔ IsEmpty α :=
+  ⟨fun h ↦ ⟨fun a ↦ notMem_empty a (by simp [← h])⟩, fun h ↦ ext fun a ↦
+    ⟨fun ha ↦ (h.false a).elim, fun ha ↦ by simp⟩⟩
 
 theorem univ_nontrivial_iff :
     (Finset.univ : Finset α).Nontrivial ↔ Nontrivial α := by
@@ -170,8 +171,9 @@ theorem compl_inter (s t : Finset α) : (s ∩ t)ᶜ = sᶜ ∪ tᶜ :=
 
 @[simp]
 theorem compl_erase : (s.erase a)ᶜ = insert a sᶜ := by
-  ext
-  simp only [or_iff_not_imp_left, mem_insert, not_and, mem_compl, mem_erase]
+  ext x
+  by_cases hxa : x = a <;>
+  simp_all
 
 @[simp]
 theorem compl_insert : (insert a s)ᶜ = sᶜ.erase a := by

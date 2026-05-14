@@ -131,12 +131,13 @@ instance (priority := 100) GeneralizedBooleanAlgebra.toGeneralizedCoheytingAlgeb
     ⟨fun h =>
       le_of_inf_le_sup_le
         (le_of_eq
-          (by grind [sdiff_le', inf_of_le_right, inf_eq_right, inf_sdiff_self_right, bot_sup_eq,
-            inf_sup_right]))
+          (by rw [inf_eq_right.mpr (le_sup_right.trans_eq (sup_inf_sdiff y x)),
+                  inf_eq_right.mpr (h.trans le_sup_right)]))
         (calc
-          y ⊔ y \ x ≤ y \ x ⊔ x ⊔ z := by
-            grind [sup_of_le_left, sdiff_le', le_sup_left, sdiff_sup_self']
-          _ = x ⊔ z ⊔ y \ x := by ac_rfl),
+          y ⊔ y \ x = y := sup_eq_left.mpr (le_sup_right.trans_eq (sup_inf_sdiff y x))
+          _ = y ⊓ x ⊔ y \ x := (sup_inf_sdiff y x).symm
+          _ ≤ x ⊔ y \ x := sup_le_sup_right inf_le_right _
+          _ ≤ x ⊔ z ⊔ y \ x := sup_le_sup_right le_sup_left _),
       fun h => le_of_inf_le_sup_le (inf_sdiff_self_left.trans_le bot_le) (calc
         y \ x ⊔ x = y ⊔ x := sdiff_sup_self'
         _ ≤ x ⊔ z ⊔ x := sup_le_sup_right h x
