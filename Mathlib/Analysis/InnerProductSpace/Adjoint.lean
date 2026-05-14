@@ -171,8 +171,8 @@ theorem _root_.LinearMap.IsSymmetric.clm_adjoint_eq {A : E →L[𝕜] E} (hA : A
     A† = A := by
   rwa [eq_comm, eq_adjoint_iff A A]
 
-theorem adjoint_id : (ContinuousLinearMap.id 𝕜 E)† = ContinuousLinearMap.id 𝕜 E := by
-  simp
+lemma adjoint_id : (.id 𝕜 E)† = .id 𝕜 E := by simp
+lemma adjoint_one : (1 : E →L[𝕜] E)† = 1 := by simp
 
 theorem _root_.Submodule.adjoint_subtypeL (U : Submodule 𝕜 E) [CompleteSpace U] :
     U.subtypeL† = U.orthogonalProjection := by
@@ -255,6 +255,8 @@ theorem star_eq_adjoint (A : E →L[𝕜] E) : star A = A† :=
 /-- A continuous linear operator is self-adjoint iff it is equal to its adjoint. -/
 theorem isSelfAdjoint_iff' {A : E →L[𝕜] E} : IsSelfAdjoint A ↔ A† = A :=
   Iff.rfl
+
+@[simp] lemma id_mem_unitary : .id 𝕜 E ∈ unitary (E →L[𝕜] E) := one_mem _
 
 theorem norm_adjoint_comp_self (A : E →L[𝕜] F) :
     ‖A† ∘L A‖ = ‖A‖ * ‖A‖ := by
@@ -584,8 +586,8 @@ theorem IsSymmetric.adjoint_eq {A : E →ₗ[𝕜] E} (hA : A.IsSymmetric) :
     A.adjoint = A := by
   rwa [eq_comm, eq_adjoint_iff A A]
 
-theorem adjoint_id : (LinearMap.id (R := 𝕜) (M := E)).adjoint = LinearMap.id := by
-  simp
+lemma adjoint_id : (.id : E →ₗ[𝕜] E).adjoint = .id := by simp
+lemma adjoint_one : (1 : E →ₗ[𝕜] E).adjoint = 1 := by simp
 
 /-- 7.6(b) from [axler2024].
 See `ContinuousLinearMap.orthogonal_ker` for the infinite-dimensional version. -/
@@ -691,6 +693,8 @@ theorem isSelfAdjoint_iff' {A : E →ₗ[𝕜] E} : IsSelfAdjoint A ↔ A.adjoin
 theorem isSymmetric_iff_isSelfAdjoint (A : E →ₗ[𝕜] E) : IsSymmetric A ↔ IsSelfAdjoint A := by
   rw [isSelfAdjoint_iff', IsSymmetric, ← LinearMap.eq_adjoint_iff]
   exact eq_comm
+
+@[simp] lemma id_mem_unitary : .id ∈ unitary (E →ₗ[𝕜] E) := one_mem _
 
 theorem isAdjointPair_inner (A : E →ₗ[𝕜] F) :
     IsAdjointPair (innerₛₗ 𝕜 (E := E)).flip
@@ -962,8 +966,6 @@ lemma coe_symm_linearIsometryEquiv_apply (e : H ≃ₗᵢ[𝕜] H) :
 theorem conjStarAlgEquiv_unitaryLinearIsometryEquiv (u : unitary (H →L[𝕜] H)) :
     (linearIsometryEquiv u).conjStarAlgEquiv = conjStarAlgAut 𝕜 _ u := rfl
 
-#adaptation_note /-- The maxHeartbeats bump is required after leanprover/lean4#12564. -/
-set_option maxHeartbeats 400000 in -- see adaptation note
 theorem conjStarAlgAut_symm_unitaryLinearIsometryEquiv (u : H ≃ₗᵢ[𝕜] H) :
     conjStarAlgAut 𝕜 (H →L[𝕜] H) (linearIsometryEquiv.symm u) = u.conjStarAlgEquiv := by
   simp [← conjStarAlgEquiv_unitaryLinearIsometryEquiv]
