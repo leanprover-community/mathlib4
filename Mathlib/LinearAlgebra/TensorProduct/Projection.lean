@@ -8,7 +8,12 @@ module
 public import Mathlib.LinearAlgebra.Projection
 public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 
-/-! # Tensor product of projections -/
+/-! # Tensor product of projections
+
+This file shows the permanence of `IsCompl` under `baseChange`,
+`lTensor` or `rTensor`.
+
+-/
 
 @[expose] public section
 
