@@ -6,7 +6,9 @@ Authors: Joël Riou, Jack McKoen
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Basic
+public import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
 public import Mathlib.CategoryTheory.LiftingProperties.ParametrizedAdjunction
+public import Mathlib.CategoryTheory.Monoidal.Closed.Braided
 
 /-!
 # ...
@@ -127,7 +129,10 @@ end Functor.PushoutObjObj
 namespace Functor.PullbackObjObj
 
 variable (G : C₁ᵒᵖ ⥤ C₃ ⥤ C₂) {X₁ Y₁ : C₁} (f₁ : X₁ ⟶ Y₁) {X₃ Y₃ : C₃} (f₃ : X₃ ⟶ Y₃)
-  (h : IsInitial X₁)
+
+section
+
+variable (h : IsInitial X₁)
   [PreservesLimitsOfShape (Discrete PEmpty.{1}) (G.flip.obj X₃)]
   [PreservesLimitsOfShape (Discrete PEmpty.{1}) (G.flip.obj Y₃)]
 
@@ -146,6 +151,32 @@ noncomputable def ofIsInitial : G.PullbackObjObj f₁ f₃ where
 @[simp]
 lemma ofIsInitial_π : (ofIsInitial G f₁ f₃ h).π = (G.obj (op Y₁)).map f₃ := by
   simpa using (ofIsInitial G f₁ f₃ h).π_snd
+
+end
+
+section
+
+variable (h : IsTerminal Y₃)
+  [PreservesLimitsOfShape (Discrete PEmpty.{1}) (G.obj (op X₁))]
+  [PreservesLimitsOfShape (Discrete PEmpty.{1}) (G.obj (op Y₁))]
+
+@[simps]
+noncomputable def ofIsTerminal : G.PullbackObjObj f₁ f₃ where
+  pt := (G.obj (op X₁)).obj X₃
+  fst := 𝟙 _
+  snd := (IsTerminal.isTerminalObj (G.obj _) _ h).from _
+  isPullback := by
+    let hX₁ := IsTerminal.isTerminalObj (G.obj (op X₁)) _ h
+    let hY₁ := IsTerminal.isTerminalObj (G.obj (op Y₁)) _ h
+    apply +allowSynthFailures IsPullback.of_horiz_isIso
+    · exact isIso_of_isTerminal hY₁ hX₁ _
+    · exact ⟨hX₁.hom_ext _ _⟩
+
+@[simp]
+lemma ofIsTerminal_π : (ofIsTerminal G f₁ f₃ h).π = (G.map f₁.op).app X₃ := by
+  simpa using (ofIsTerminal G f₁ f₃ h).π_fst
+
+end
 
 end Functor.PullbackObjObj
 
@@ -281,8 +312,6 @@ lemma anodyneExtensions.whiskerLeft
   simpa using anodyneExtensions_pushoutObjObjι
     (.ofIsInitialLeft (curriedTensor _) (initial.to Z) f initialIsInitial) hf
 
-instance (T : SSet.{u}) : (tensorRight T).IsLeftAdjoint := sorry
-
 instance (T : SSet.{u}) :
     PreservesLimitsOfShape (Discrete PEmpty.{1}) (MonoidalClosed.internalHom.flip.obj T) := by
   sorry
@@ -291,5 +320,27 @@ instance {E B X : SSet.{u}} (p : E ⟶ B) [Fibration p] :
     Fibration ((ihom X).map p) := by
   simpa using fibration_pullbackObjObjπ (Functor.PullbackObjObj.ofIsInitial
     MonoidalClosed.internalHom (initial.to X) p initialIsInitial)
+
+instance (T : SSet.{u}) :
+    PreservesLimitsOfShape (Discrete PEmpty.{1}) (MonoidalClosed.internalHom.obj (op T)) := sorry
+
+instance {A B : SSet.{u}} (i : A ⟶ B) [Mono i] (X : SSet.{u}) [IsFibrant X] :
+    Fibration ((MonoidalClosed.pre i).app X) := by
+  simpa using fibration_pullbackObjObjπ (Functor.PullbackObjObj.ofIsTerminal
+    MonoidalClosed.internalHom i (terminal.from X) terminalIsTerminal)
+
+instance : (fibrations SSet).IsMultiplicative := sorry
+
+instance {X Y : SSet.{u}} (p : X ⟶ Y) [IsIso p] : Fibration p := sorry
+
+instance (A : SSet.{u}) : IsFibrant ((ihom A).obj (⊤_ _)) := by
+  have : IsIso (terminal.from ((ihom A).obj (⊤_ _))) :=
+    isIso_of_isTerminal (IsTerminal.isTerminalObj _ _ terminalIsTerminal)
+      terminalIsTerminal _
+  rw [isFibrant_iff]
+  infer_instance
+
+instance {A X : SSet.{u}} [IsFibrant X] : IsFibrant ((ihom A).obj X) :=
+  isFibrant_of_fibration ((ihom A).map (terminal.from X))
 
 end SSet
