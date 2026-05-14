@@ -5,14 +5,12 @@ Authors: ...
 -/
 module
 
-public import Mathlib.LinearAlgebra.Dimension.LinearMap
-public import Mathlib.RingTheory.Finiteness.Cofinite
-public import Mathlib.Topology.Maps.Strict.Basic
-public import Mathlib.Topology.Algebra.Module.LinearMap
-public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
-public import Mathlib.Topology.Algebra.Module.LinearMap
-public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
+public import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.RingTheory.Finiteness.Cofinite
+public import Mathlib.Topology.Algebra.Module.Complement
+public import Mathlib.Topology.Algebra.Module.FiniteDimension
+public import Mathlib.Topology.Maps.Strict.Basic
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E F : Type*} [AddCommGroup E] [AddCommGroup F] [TopologicalSpace E] [TopologicalSpace F]
@@ -401,7 +399,61 @@ with Φ an isomorphism.
 E₂ = u.ker
 F₁ = u.range
 The others are arbitrary complements
+
 -/
+
+variable (𝕜 E) in
+structure preFredholmDecomposition where
+  X₁ : Submodule 𝕜 E
+  X₂ : Submodule 𝕜 E
+  compl : IsTopCompl X₁ X₂
+  fin_dim : FiniteDimensional 𝕜 X₂
+
+
+open Submodule.ClosedComplemented in
+def FredholmDecomposition [CompleteSpace 𝕜] [ContinuousSMul 𝕜 F]
+      (huF : IsFredholm_struc u) (huk : u.ker.ClosedComplemented) :
+    preFredholmDecomposition 𝕜 E × preFredholmDecomposition 𝕜 F := by
+  constructor
+  · exact ⟨(exists_isTopCompl huk).choose, u.ker, (exists_isTopCompl huk).choose_spec.symm,
+      huF.3⟩
+  · have one := of_finiteDimensional_quotient huF.isClosed_range (hq := huF.cokerFG)
+    refine ⟨u.range, one.complement, one.isTopCompl_complement, ?_⟩
+    set f := u.range.mkQ with hf
+    set g := f.domRestrict one.complement with hg_def
+    have hg : Function.Injective g := by
+      rw [← g.ker_eq_bot]
+      ext x
+      refine ⟨fun hx ↦ ?_ , fun hx ↦ ?_⟩
+      · rw [hg_def] at hx
+        simp only [hf, LinearMap.mem_ker, LinearMap.domRestrict_apply, mkQ_apply,
+          Quotient.mk_eq_zero] at hx
+        rcases x with ⟨x, hx'⟩
+        simp only at hx
+        have := one.isTopCompl_complement.isCompl.disjoint
+        rw [Submodule.disjoint_def] at this
+        simp only [mem_bot, mk_eq_zero]
+        apply this _ hx hx'
+      simp_all
+    exact huF.cokerFG.of_injective g hg
+
+
+theorem FredholmDecomposition_restrict [CompleteSpace 𝕜] [ContinuousSMul 𝕜 F]
+    (huF : IsFredholm_struc u) (huk : u.ker.ClosedComplemented) :
+    (FredholmDecomposition huF huk).1.X₂ = u.ker := by
+  unfold FredholmDecomposition
+  rfl
+
+
+theorem FredholmDecomposition_mapsTo [CompleteSpace 𝕜] [ContinuousSMul 𝕜 F]
+    (huF : IsFredholm_struc u) (huk : u.ker.ClosedComplemented) :
+    ∀ x ∈ (FredholmDecomposition huF huk).1.X₂, u x ∈ (FredholmDecomposition huF huk).2.X₂ := sorry
+
+
+-- **Waiting for *Anatole* to create the `ContinuousLinearMap.restrict` so that the code below type-check
+-- theorem FredholmDecomposition_embedding (hu : IsFredholm_struc u)
+--     (h_kerCompl : u.ker.ClosedComplemented) :
+--     IsInvertible (u.restrict (FredholmDecomposition_mapsTo hu h_kerCompl)) := sorry
 
 /- ## FredholmQuot ==> complemented kernel
 
@@ -416,3 +468,5 @@ so `u.ker` is complemented.
 -/
 
 end FredholmOperators
+
+#min_imports
