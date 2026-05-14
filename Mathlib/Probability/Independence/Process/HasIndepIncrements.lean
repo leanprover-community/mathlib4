@@ -5,6 +5,6 @@ Authors: Etienne Marion, Joris van Winden
 -/
 module
 
-public import Mathlib.Probability.Independence.Process.HasIndepIncrements.Basic
+public import Mathlib.Probability.Independence.Process.HasIndepIncrements.Basic -- shake: keep-all
 
 deprecated_module (since := "2026-03-30")

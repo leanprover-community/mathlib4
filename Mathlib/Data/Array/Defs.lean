@@ -5,7 +5,7 @@ Authors: Arthur Paulino, Floris van Doorn
 -/
 module
 
-public import Mathlib.Init
+public import Mathlib.Init -- shake: keep-all
 public import Mathlib.Tactic.Linter.DeprecatedModule
 
 /-!

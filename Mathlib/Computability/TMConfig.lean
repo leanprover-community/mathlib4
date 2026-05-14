@@ -5,11 +5,7 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Finset.Attr
-public import Mathlib.Tactic.Bound.Init
-public import Mathlib.Tactic.Common
-public import Mathlib.Tactic.Finiteness.Attr
-public import Mathlib.Tactic.SetLike
-public import Mathlib.Util.CompileInductive
+
+public import Mathlib.Computability.TuringMachine.Config -- shake: keep-all
 
 deprecated_module (since := "2026-02-21")

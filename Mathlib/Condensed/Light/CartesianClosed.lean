@@ -5,10 +5,9 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Basic
-public import Mathlib.CategoryTheory.Category.Init
-public import Mathlib.Data.EReal.Inv
-public import Mathlib.Topology.Algebra.InfiniteSum.Order
-public import Mathlib.Topology.MetricSpace.Bounded
+public import Mathlib.CategoryTheory.Monoidal.Closed.Types -- shake: keep-all
+public import Mathlib.CategoryTheory.Sites.CartesianClosed
+public import Mathlib.Condensed.Basic
+public import Mathlib.CategoryTheory.Sites.LeftExact
 
 deprecated_module (since := "2026-04-08")

@@ -5,6 +5,6 @@ Authors: Alex J. Best
 -/
 module
 
-public import Mathlib.Data.Real.Sqrt
+public import Mathlib.Data.Real.Sqrt -- shake: keep-all
 
 deprecated_module (since := "2026-03-05")

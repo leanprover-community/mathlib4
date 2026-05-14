@@ -5,6 +5,7 @@ Authors: Floris van Doorn
 -/
 module
 
+public import Mathlib.Logic.IsEmpty.Basic -- shake: keep-all
 public import Mathlib.Tactic.Linter.DeprecatedModule
 
 deprecated_module "import Mathlib.Logic.IsEmpty.Basic instead" (since := "2026-02-11")

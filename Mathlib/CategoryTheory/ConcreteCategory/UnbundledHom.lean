@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.CategoryTheory.Category.Init
+public import Mathlib.CategoryTheory.Category.Init -- shake: keep-all
 public import Mathlib.Tactic.Common
 public import Mathlib.Util.CompileInductive
 

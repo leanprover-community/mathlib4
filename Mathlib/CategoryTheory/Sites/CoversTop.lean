@@ -5,6 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.CoversTop.Basic
+public import Mathlib.CategoryTheory.Sites.CoversTop.Basic -- shake: keep-all
 
 deprecated_module (since := "2026-05-01")

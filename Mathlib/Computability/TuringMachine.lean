@@ -5,6 +5,6 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Computability.TuringMachine.StackTuringMachine
+public import Mathlib.Computability.TuringMachine.StackTuringMachine -- shake: keep-all
 
 deprecated_module (since := "2026-02-21")
