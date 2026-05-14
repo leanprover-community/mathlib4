@@ -175,6 +175,7 @@ instance [A.IsTriangulated] :
     (triangulatedLocalizerMorphism A B).functor.IsTriangulated :=
   inferInstanceAs A.ι.IsTriangulated
 
+set_option backward.defeqAttrib.useBackward true in
 lemma trW_inverseImage_ι_iff [A.IsTriangulated] {X Y : A.FullSubcategory} (f : X ⟶ Y) :
     (B.inverseImage A.ι).trW f ↔ (A ⊓ B).trW f.hom := by
   simp only [trW_iff]
@@ -190,6 +191,7 @@ lemma trW_inverseImage_ι_iff [A.IsTriangulated] {X Y : A.FullSubcategory} (f : 
     · cat_disch
     · simp [dsimp% (A.ι.commShiftIso (1 : ℤ)).inv_hom_id_app X]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma inverseImage_opEquivalence_inverse_trW_inverseImage_ι_op [A.IsTriangulated]
     [B.IsTriangulated] [B.IsClosedUnderIsomorphisms] :
     (B.op.inverseImage A.op.ι).trW.inverseImage A.opEquivalence.inverse =
@@ -205,6 +207,7 @@ variable [A.IsVerdierRightLocalizing B]
   (L₁ : A.FullSubcategory ⥤ D₁) (L₂ : C ⥤ D₂)
   [L₁.IsLocalization (B.inverseImage A.ι).trW] [L₂.IsLocalization B.trW]
 
+set_option backward.defeqAttrib.useBackward true in
 instance : ((A.triangulatedLocalizerMorphism B).localizedFunctor L₁ L₂).Full := by
   let F := (A.triangulatedLocalizerMorphism B).localizedFunctor L₁ L₂
   have : L₁.EssSurj := Localization.essSurj L₁ (B.inverseImage A.ι).trW
@@ -237,6 +240,7 @@ instance [Preadditive D₁] [Preadditive D₂] [L₁.Additive] [L₂.Additive] :
     (A.triangulatedLocalizerMorphism B).functor L₁ L₂ F
   exact Functor.additive_of_iso e
 
+set_option backward.defeqAttrib.useBackward true in
 instance : ((A.triangulatedLocalizerMorphism B).localizedFunctor L₁ L₂).Faithful := by
   letI := Localization.preadditive L₁ (B.inverseImage A.ι).trW
   letI := Localization.preadditive L₂ B.trW
