@@ -20,8 +20,7 @@ universe u v₁ u₁
 
 open CategoryTheory Limits
 
-variable {C : Type u₁} [Category.{v₁} C] {J : GrothendieckTopology C}
-  {R : Sheaf J RingCat.{u}}
+variable {C : Type u₁} [Category.{v₁} C] {J : GrothendieckTopology C} {R : Sheaf J RingCat.{u}}
 
 noncomputable section
 
@@ -71,7 +70,7 @@ def quasiCoherentData {M : SheafOfModules.{u} R} (q : M.LocalGeneratorsData) [q.
     generators := q.generators i
     relations := {
       I := ULift Empty
-      s (j) := Empty.rec (fun _ => (kernel (q.generators i).π).sections) j.down
+      s (j) := Empty.rec _ j.down
       epi := IsZero.epi (IsZero.of_iso (isZero_zero _) (Limits.kernel.ofMono _)) _
     }
   }
