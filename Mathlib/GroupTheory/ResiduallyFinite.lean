@@ -71,21 +71,25 @@ theorem residuallyFinite_iff_exists_finiteIndex :
   simp_rw [residuallyFinite_iff_forall_finiteIndex, ← Classical.not_imp, ← not_forall,
     not_imp_not]
 
-/-- `G` is residually finite iff for every pair of distinct elements `g` and `h` there exists a
-group homomorphism `f` to a finite group `H` such that `f g ≠ f h`. -/
+/-- If `G` is residually finite, for every pair of distinct elements `g`, `h` there exists a finite
+index normal subgroup `H` such that `g` and `h` differ in the quotient `G ⧸ H`. -/
 @[to_additive]
-theorem residuallyFinite_iff_forall_exists_finite_monoidHom.{u} {G : Type u} [Group G] :
-    ResiduallyFinite G ↔
-      ∀ g h : G, g ≠ h → ∃ (H : Type u) (_ : Group H) (_ : Finite H) (f : G →* H), f g ≠ f h := by
-  refine ⟨fun h' g h hgh ↦ ?_, fun h ↦ ?_⟩
-  · obtain ⟨H, _⟩ := residuallyFinite_iff_exists_finiteIndexNormalSubgroup.mp h' (g⁻¹ * h)
-      (fun h ↦ hgh <| eq_of_inv_mul_eq_one h)
-    refine ⟨_, QuotientGroup.Quotient.group _,
-      Subgroup.finiteIndex_iff_finite_quotient.mp H.isFiniteIndex', QuotientGroup.mk' _, ?_⟩
-    simpa [QuotientGroup.eq, FiniteIndexNormalSubgroup.mem_toSubgroup_iff]
-  · refine residuallyFinite_iff_exists_finiteIndex.mpr fun g hg ↦ ?_
-    obtain ⟨_, _, _, f, hf⟩ := h g 1 hg
-    exact ⟨f.ker, Subgroup.finiteIndex_ker f, by simpa using hf⟩
+theorem exists_finiteIndexNormalSubgroup_of_residuallyFinite (hr : ResiduallyFinite G) (g h : G)
+    (hgh : g ≠ h) : ∃ H : FiniteIndexNormalSubgroup G, (g : G ⧸ H.toSubgroup) ≠ ↑h := by
+  obtain ⟨H, hH⟩ := residuallyFinite_iff_exists_finiteIndexNormalSubgroup.mp hr (g⁻¹ * h)
+    (fun h ↦ hgh <| eq_of_inv_mul_eq_one h)
+  exact ⟨H, by simpa [QuotientGroup.eq]⟩
+
+/-- `G` is residually finite if for every element `g` not equal to `1` there exists a group
+homomorphism `f` to a finite group `H` such that `f g ≠ 1`. -/
+@[to_additive]
+theorem residuallyFinite_of_forall_exists_finite_monoidHom
+    (h : ∀ g : G, g ≠ 1 → ∃ (H : Type) (_ : Group H) (_ : Finite H) (f : G →* H), f g ≠ 1) :
+    ResiduallyFinite G := by
+  rw [residuallyFinite_iff_exists_finiteIndex]
+  intro g hg
+  obtain ⟨_, _, _, f, hf⟩ := h g hg
+  exact ⟨f.ker, Subgroup.finiteIndex_ker f, by simpa using hf⟩
 
 @[to_additive]
 instance [Finite G] : ResiduallyFinite G :=
