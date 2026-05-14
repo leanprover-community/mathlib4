@@ -318,7 +318,7 @@ theorem MeromorphicOn.circleAverage_log_norm {c : ℂ} {R : ℝ} {f : ℂ → �
     calc circleAverage (log ‖f ·‖) c R
     _ = circleAverage ((∑ᶠ u, (divisor f CB u * log ‖· - u‖)) + (log ‖g ·‖)) c R := by
       have h₄g := extract_zeros_poles_log h₂g h₃g
-      rw [circleAverage_congr_codiscreteWithin (codiscreteWithin.mono sphere_subset_closedBall h₄g)
+      rw [circleAverage_congr_codiscreteWithin (codiscreteWithin_mono sphere_subset_closedBall h₄g)
         hR]
     _ = circleAverage (∑ᶠ u, (divisor f CB u * log ‖· - u‖)) c R + circleAverage (log ‖g ·‖) c R :=
       circleAverage_add (circleIntegrable_log_norm_factorizedRational (divisor f CB))
@@ -367,7 +367,7 @@ theorem MeromorphicOn.circleAverage_log_norm {c : ℂ} {R : ℝ} {f : ℂ → �
     rw [circleAverage_congr_codiscreteWithin (f₂ := 0) _ hR]
     · simp only [circleAverage, mul_inv_rev, Pi.zero_apply, intervalIntegral.integral_zero,
         smul_eq_mul, mul_zero]
-    apply Filter.codiscreteWithin.mono (U := CB) sphere_subset_closedBall
+    apply Filter.codiscreteWithin_mono (U := CB) sphere_subset_closedBall
     filter_upwards [this] with z hz
     simp_all
 
