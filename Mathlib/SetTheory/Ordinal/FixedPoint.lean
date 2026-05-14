@@ -34,18 +34,16 @@ universe u v
 open Function Order
 
 namespace Ordinal
-section derivSet
+variable {a b o : Ordinal.{u}}
 
+section derivSet
 variable (s : Set (Ordinal.{u} → Ordinal.{u}))
 
 open Classical in
-/-- `derivSet s` is the function which enumerates the common fixed points of all functions in `s`,
-assuming said set is a club set. This assumption is satisfied when `s` is a small set of normal
-functions.
+/-- For `s` a small set of normal functions, `derivSet s` is the normal function which enumerates
+the common fixed points of all functions in `s`.
 
-If this condition is not met, `derivSet s` returns the identity function, as a convenient junk
-value which guarantees `derivSet s` is always normal.
--/
+We choose junk values such that `derivSet s` is normal regardless of the set `s`. -/
 def derivSet : Ordinal.{u} → Ordinal.{u} :=
   if h : IsClub (⋂ f ∈ s, f.fixedPoints) then Subtype.val ∘ Order.enum _ h.isCofinal else id
 
@@ -58,12 +56,10 @@ theorem isNormal_derivSet : IsNormal (derivSet s) := by
 @[simp]
 theorem derivSet_empty : derivSet ∅ = id := by
   ext x
-  rw [derivSet, dif_pos, comp_apply]
-  · convert congrArg Subtype.val <| Order.enum_univ x
-    simp
-  · simp
+  have H : ⋂ f ∈ (∅ : Set (Ordinal → _)), fixedPoints f = .univ := by simp
+  rw! [derivSet, dif_pos, comp_apply, H, enum_univ] <;> simp
 
-variable {s} [Small.{u} s] (hs : ∀ f ∈ s, IsNormal f) {a b o : Ordinal}
+variable {s} [Small.{u} s] (hs : ∀ f ∈ s, IsNormal f)
 include hs
 
 theorem isClub_biInter_fixedPoints : IsClub (⋂ f ∈ s, f.fixedPoints) := by
@@ -85,11 +81,11 @@ theorem isFixedPt_derivSet {f} (hf : f ∈ s) : IsFixedPt f (derivSet s a) := by
   rw [Set.mem_iInter₂] at H
   exact H f hf
 
-theorem derivSet_le_of_forall_lt
-    (ho : o ∈ ⋂ f ∈ s, f.fixedPoints) (H : ∀ b < a, derivSet s b < o) :
+theorem derivSet_le_of_forall_lt (ho : ∀ f ∈ s, f.IsFixedPt o) (H : ∀ b < a, derivSet s b < o) :
     derivSet s a ≤ o := by
   simp_rw [derivSet_eq_enum hs] at ⊢ H
-  exact enum_le_of_forall_lt ho H
+  apply enum_le_of_forall_lt _ H
+  simpa
 
 variable (s) in
 /-- The smallest common fixed point of a small set of normal functions `s`, which is greater or
@@ -108,14 +104,11 @@ theorem isFixedPt_nfpSet {f} (hf : f ∈ s) : IsFixedPt f (nfpSet s a) := by
   rw [nfpSet, (hs f hf).map_iSup bddAbove_of_small]
   exact ciSup_le fun l ↦ le_ciSup bddAbove_of_small (⟨f, hf⟩ :: l)
 
-theorem apply_le_nfpSet_iff {f} (hf : f ∈ s) : f a ≤ nfpSet s b ↔ a ≤ nfpSet s b := by
-  conv_lhs => rw [← isFixedPt_nfpSet hs hf, (hs f hf).strictMono.le_iff_le]
-
-theorem nfpSet_le_iff (hf : ∀ f ∈ s, f.IsFixedPt b) : nfpSet s a ≤ b ↔ a ≤ b := by
+theorem nfpSet_le_iff (hb : ∀ f ∈ s, f.IsFixedPt b) : nfpSet s a ≤ b ↔ a ≤ b := by
   refine ⟨le_nfpSet.trans, fun h ↦ ciSup_le fun l ↦ ?_⟩
   induction l with
   | nil => exact h
-  | cons c l => rwa [List.foldr_cons, ← hf _ c.2, (hs _ c.2).strictMono.le_iff_le]
+  | cons c l => rwa [List.foldr_cons, ← hb _ c.2, (hs _ c.2).strictMono.le_iff_le]
 
 theorem nfpSet_le_derivSet_iff : nfpSet s a ≤ derivSet s b ↔ a ≤ derivSet s b :=
   nfpSet_le_iff hs fun _ ↦ isFixedPt_derivSet hs
@@ -130,25 +123,98 @@ theorem nfpSet_mono : Monotone (nfpSet s) := by
   exact h.trans le_nfpSet
 
 theorem derivSet_zero : derivSet s 0 = nfpSet s 0 := by
-  apply le_antisymm
-  · apply derivSet_le_of_forall_lt hs
-    · simpa using fun _ ↦ isFixedPt_nfpSet hs
-    · simp
+  apply (derivSet_le_of_forall_lt hs ..).antisymm
   · simp [nfpSet_le_derivSet_iff hs]
+  · simpa using fun _ ↦ isFixedPt_nfpSet hs
+  · simp
 
 theorem derivSet_add_one : derivSet s (a + 1) = nfpSet s (derivSet s a + 1) := by
-  apply le_antisymm
-  · apply derivSet_le_of_forall_lt hs
-    · simpa using fun _ ↦ isFixedPt_nfpSet hs
-    · intro b h
-      rw [lt_add_one_iff] at h
-      apply ((isNormal_derivSet s).monotone h).trans_lt
-      rw [← add_one_le_iff]
-      exact le_nfpSet
+  apply (derivSet_le_of_forall_lt hs ..).antisymm
   · simpa [nfpSet_le_derivSet_iff hs] using (isNormal_derivSet s).strictMono (lt_add_one a)
+  · simpa using fun _ ↦ isFixedPt_nfpSet hs
+  · intro b h
+    rw [lt_add_one_iff] at h
+    apply ((isNormal_derivSet s).monotone h).trans_lt
+    rw [← add_one_le_iff]
+    exact le_nfpSet
 
 end derivSet
-#exit
+
+section deriv
+
+variable (f : Ordinal.{u} → Ordinal.{u})
+
+open Classical in
+/-- For a normal function `f`, `deriv f` is the normal function which enumerates the fixed points of
+`f`. Note that this is **unrelated** to the `deriv` from analysis.
+
+We choose junk values such that `deriv f` is normal regardless of the function `f`. -/
+def deriv : Ordinal.{u} → Ordinal.{u} :=
+  derivSet {f}
+
+@[simp] theorem derivSet_singleton : derivSet {f} = deriv f := (rfl)
+
+theorem isNormal_deriv : IsNormal (deriv f) := isNormal_derivSet _
+
+@[simp]
+theorem deriv_id : deriv id = id := by
+  ext x
+  have H : ⋂ f ∈ ({id} : Set (Ordinal → _)), fixedPoints f = .univ := by simp
+  rw! [deriv, derivSet_eq_enum, comp_apply, H, enum_univ] <;> simp [IsNormal.id]
+
+variable {f} (hf : IsNormal f)
+include hf
+
+theorem deriv_eq_enum :
+    deriv f = Subtype.val ∘ Order.enum _ (hf.isClub_fixedPoints (by simp)).isCofinal := by
+  apply (derivSet_eq_enum _).trans
+  · congr! <;> simp
+  · simpa
+
+theorem range_deriv : .range (deriv f) = f.fixedPoints := by
+  apply (range_derivSet _).trans <;> simp [hf]
+
+theorem isFixedPt_deriv : IsFixedPt f (deriv f a) := by
+  apply isFixedPt_derivSet <;> simp [hf]
+
+theorem deriv_le_of_forall_lt (ho : f.IsFixedPt o) (H : ∀ b < a, deriv f b < o) :
+    deriv f a ≤ o := by
+  apply derivSet_le_of_forall_lt <;> simpa
+
+variable (f) in
+/-- The smallest fixed point of a normal function `f`, which is greater or equal to `a`.
+
+See `Ordinal.isFixedPt_nfp` and `Ordinal.nfp_le_iff`. -/
+def nfp (a : Ordinal) : Ordinal :=
+  nfpSet {f} a
+
+omit hf in
+theorem le_nfp : a ≤ nfp f a :=
+  le_nfpSet
+
+theorem isFixedPt_nfp : IsFixedPt f (nfp f a) := by
+  apply isFixedPt_nfpSet <;> simp [hf]
+
+theorem nfp_le_iff (hb : f.IsFixedPt b) : nfp f a ≤ b ↔ a ≤ b := by
+  apply nfpSet_le_iff <;> simpa
+
+theorem nfp_le_derivSet_iff : nfp f a ≤ deriv f b ↔ a ≤ deriv f b :=
+  nfp_le_iff hf <| isFixedPt_deriv hf
+
+theorem nfp_of_isFixedPt (ha : f.IsFixedPt a) : nfp f a = a := by
+  apply nfpSet_of_isFixedPt <;> simpa
+
+theorem nfp_mono : Monotone (nfp f) :=
+  nfpSet_mono (by simpa)
+
+theorem deriv_zero : deriv f 0 = nfp f 0 :=
+  derivSet_zero (by simpa)
+
+theorem deriv_add_one : deriv f (a + 1) = nfp f (deriv f a + 1) :=
+  derivSet_add_one (by simpa)
+
+end deriv
+end Ordinal
 
 namespace Ordinal
 
