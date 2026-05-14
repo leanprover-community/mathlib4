@@ -134,12 +134,13 @@ instance [K.Nonsingular] : K.nonDegenerateElements.ι.Initial := by
   exact ⟨CostructuredArrow.homMk ⟨.op τa, by simp [U]⟩ (by ext; simp [U])⟩
 
 set_option backward.isDefEq.respectTransparency false in
+@[simps]
 noncomputable
 def nonDegenerateElementsEquiv [K.Nonsingular] :
-    K.nonDegenerateElements.FullSubcategory ≌ K.Nᵒᵖ where
-  functor.obj x := ⟨⟨x.obj.snd⟩, x.property⟩
-  functor.map {x y} f := .op <| homOfLE <| by
-    rw [N.le_iff_exists_mono]
+    K.nonDegenerateElements.FullSubcategory ≌ K.Nᵒᵈ where
+  functor.obj x := OrderDual.toDual ⟨⟨x.obj.snd⟩, x.property⟩
+  functor.map {x y} f := homOfLE <| by
+    rw [OrderDual.toDual_le_toDual, N.le_iff_exists_mono]
     dsimp
     refine ⟨f.hom.1.unop, ?_, f.hom.2⟩
     have : Mono (yonedaEquiv.symm y.obj.snd) := Nonsingular.mono_of_mem_nonDegenerate _ y.property
@@ -153,14 +154,73 @@ def nonDegenerateElementsEquiv [K.Nonsingular] :
     have : Mono (uliftYoneda.map f.hom.1.unop) :=
       mono_of_mono_fac heq.symm
     exact Functor.mono_of_mono_map uliftYoneda this
-  inverse.obj x := ⟨⟨_, x.unop.simplex⟩, x.unop.2⟩
-  inverse.map {x y} f := ⟨.op <| N.Hom.hom f.unop, by simp⟩
+  inverse.obj x := ⟨⟨_, (OrderDual.ofDual x).simplex⟩, (OrderDual.ofDual x).2⟩
+  inverse.map {x y} f := ⟨.op <| N.Hom.hom _, by simp⟩
   unitIso :=
     NatIso.ofComponents
       (fun x ↦ ObjectProperty.isoMk _
         (CategoryOfElements.isoMk _ _ (.op <| Iso.refl _) (by simp)))
         (by dsimp; cat_disch)
   counitIso := Iso.refl _
+
+@[simp]
+lemma yonedaEquiv_symm_objEquiv_symm {n m : ℕ} (x : ⦋m⦌ ⟶ ⦋n⦌) :
+    yonedaEquiv.symm (stdSimplex.objEquiv.symm x) = uliftYoneda.map x :=
+  rfl
+
+-- def asdfasdfasdf (n m : ℕ) :
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma map_objEquiv_objEquiv_symm_id (n m : ℕ) (x : Δ[n] _⦋m⦌) (i) :
+    dsimp% Δ[n].map (stdSimplex.objEquiv x).op (stdSimplex.objEquiv.symm (𝟙 ⦋n⦌)) i = x i := by
+  rfl
+
+lemma mono_stdSimplex_objEquiv_of_mem_nonDegenerate {n m : ℕ} {x : Δ[n] _⦋m⦌}
+    (hx : x ∈ Δ[n].nonDegenerate _) :
+    Mono (stdSimplex.objEquiv x) := by
+  obtain ⟨x, rfl⟩ := stdSimplex.objEquiv.symm.surjective x
+  simpa using (SSet.stdSimplex.objEquiv_symm_mem_nonDegenerate_iff_mono x).mp hx
+
+set_option backward.isDefEq.respectTransparency false in
+instance (n : ℕ) : (Δ[n] : SSet.{u}).Nonsingular where
+  mono_of_mem_nonDegenerate {m} x hx := by
+    obtain ⟨x, rfl⟩ := stdSimplex.objEquiv.symm.surjective x
+    have : SSet.yonedaEquiv.symm (stdSimplex.objEquiv.symm x) = uliftYoneda.map x := by
+      rfl
+    rw [this]
+    rw [uliftYoneda.{u}.mono_map_iff_mono]
+    exact (SSet.stdSimplex.objEquiv_symm_mem_nonDegenerate_iff_mono x).mp hx
+
+set_option backward.isDefEq.respectTransparency false in
+instance (n : ℕ) : OrderTop (Δ[n] : SSet.{u}).N where
+  top := ⟨.mk (stdSimplex.objEquiv.symm (𝟙 _)), stdSimplex.objEquiv_symm_id_mem_nonDegenerate n⟩
+  le_top a := by
+    rw [N.le_iff_exists_mono]
+    exact ⟨stdSimplex.objEquiv a.simplex, mono_stdSimplex_objEquiv_of_mem_nonDegenerate a.2,
+      stdSimplex.ext _ a.simplex (by simp)⟩
+
+@[simp]
+lemma dimp_N_stdSimplex_top (n : ℕ) : (⊤ : (Δ[n] : SSet.{u}).N).dim = n :=
+  rfl
+
+@[simp]
+lemma simplex_N_stdSimplex_top (n : ℕ) :
+    (⊤ : (Δ[n] : SSet.{u}).N).simplex = stdSimplex.objEquiv.symm (𝟙 _) :=
+  rfl
+
+lemma Nonsingular.of_mono {K L : SSet.{u}} (f : K ⟶ L) [Mono f] [L.Nonsingular] :
+    K.Nonsingular where
+  mono_of_mem_nonDegenerate {n} x hx := by
+    have : (f.app (Opposite.op ⦋n⦌)) x ∈ L.nonDegenerate _ := by
+      rwa [nonDegenerate_iff_of_mono]
+    have : Mono (yonedaEquiv.symm ((f.app (Opposite.op ⦋n⦌)) x)) :=
+      mono_of_mem_nonDegenerate ((ConcreteCategory.hom (f.app (Opposite.op ⦋n⦌))) x) this
+    have : yonedaEquiv.symm x ≫ f = yonedaEquiv.symm (f.app _ x) := by simp
+    exact mono_of_mono_fac this
+
+instance [K.Nonsingular] (y : K.Subcomplex) : (y : SSet.{w}).Nonsingular :=
+  Nonsingular.of_mono y.ι
 
 end SSet
 
@@ -199,7 +259,7 @@ abbrev HasBracket : Prop := HasLimit (X.bracketDiag K)
 noncomputable abbrev bracket [X.HasBracket K] : C :=
   limit (X.bracketDiag K)
 
-instance [K.Nonsingular] [HasLimitsOfShape K.Nᵒᵖ C] : X.HasBracket K :=
+instance [K.Nonsingular] [HasLimitsOfShape K.Nᵒᵈ C] : X.HasBracket K :=
   Functor.Initial.hasLimit_of_comp
     (K.nonDegenerateElementsEquiv.inverse ⋙ K.nonDegenerateElements.ι)
 
@@ -215,20 +275,81 @@ def bracketIsoOfNonsingular [K.Nonsingular] [X.HasBracket K] :
 -- TODO: add `π` lemma for `limitIso`
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
-lemma bracketIsoOfNonsingular_π [K.Nonsingular] [X.HasBracket K] (x : K.Nᵒᵖ) :
+lemma bracketIsoOfNonsingular_hom_π [K.Nonsingular] [X.HasBracket K] (x : K.Nᵒᵈ) :
     (X.bracketIsoOfNonsingular K).hom ≫ limit.π _ x =
       limit.π _ _ := by
   simp [bracketIsoOfNonsingular, CategoryTheory.Functor.Initial.limitIso_inv]
 
---def asdfasdfas (n : ℕ) : Δ[n].K ≌ _ :=
---  sorry
+-- TODO: add `π` lemma for `limitIso`
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp)]
+lemma bracketIsoOfNonsingular_inv_π [K.Nonsingular] [X.HasBracket K] (x : K.Nᵒᵈ) :
+    dsimp% (X.bracketIsoOfNonsingular K).inv ≫ limit.π _ _ =
+      limit.π _ x := by
+  simp [← cancel_epi (X.bracketIsoOfNonsingular K).hom]
 
-instance (n : ℕ) : Δ[n].Nonsingular where
-  mono_of_mem_nonDegenerate {m} x hx := sorry
+open SSet
 
-variable [HasFiniteLimits C]
+noncomputable def bracketStdSimplexIso (n : ℕ) : X.bracket Δ[n] ≅ X _⦋n⦌ :=
+  X.bracketIsoOfNonsingular _ ≪≫
+    IsLimit.conePointUniqueUpToIso (limit.isLimit _) (limitOfDiagramInitial isInitialBot _)
 
-def fooobaz (n : ℕ) : X.bracket Δ[n] ≅ X _⦋n⦌ :=
-  sorry
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp)]
+lemma bracketStdSimplexIso_inv_π (n : ℕ) :
+    (X.bracketStdSimplexIso n).inv ≫ limit.π _ ⟨_, stdSimplex.objEquiv.symm (𝟙 _)⟩ = 𝟙 _ := by
+  have : (X.bracketIsoOfNonsingular Δ[n]).inv ≫
+      limit.π (X.bracketDiag (Δ[n] : SSet.{_}))
+        ⟨Opposite.op ⦋n⦌, stdSimplex.objEquiv.symm (𝟙 ⦋n⦌)⟩ = limit.π _ ⊥ :=
+    X.bracketIsoOfNonsingular_inv_π Δ[n] ⊥
+  dsimp
+  simp only [bracketStdSimplexIso, Iso.trans_inv, Category.assoc]
+  rw [this]
+  simp
 
-end CategoryTheory.SimplicialObject
+example (n : ℕ) : (∂Δ[n] : SSet.{u}).Nonsingular :=
+  inferInstance
+
+variable {K L M : SSet.{u}}
+
+@[simps!]
+def _root_.CategoryTheory.CategoryOfElements.mapπiso
+    {C : Type*} [Category* C] {F G : C ⥤ Type u} (f : F ⟶ G) :
+    CategoryOfElements.map f ⋙ CategoryOfElements.π G ≅ CategoryOfElements.π F :=
+  NatIso.ofComponents fun _ ↦ Iso.refl _
+
+noncomputable
+def bracketMap [X.HasBracket K] [X.HasBracket L] (f : K ⟶ L) :
+    X.bracket L ⟶ X.bracket K :=
+  haveI : HasLimit (CategoryOfElements.map f ⋙ CategoryOfElements.π L ⋙ X) :=
+    hasLimit_of_iso (Functor.isoWhiskerRight (CategoryOfElements.mapπiso f) _).symm
+  limit.pre (CategoryOfElements.π L ⋙ X) (CategoryOfElements.map f) ≫
+    (HasLimit.isoOfNatIso <| (Functor.associator _ _ _).symm ≪≫
+      Functor.isoWhiskerRight (CategoryOfElements.mapπiso _) _).hom
+
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp)]
+lemma bracketMap_π [X.HasBracket K] [X.HasBracket L] (f : K ⟶ L) (x : K.Elements) :
+    X.bracketMap f ≫ limit.π _ x = limit.π _ ((CategoryOfElements.map f).obj x) := by
+  simp [bracketMap]
+
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp)]
+lemma bracketMap_comp [X.HasBracket K] [X.HasBracket L] [X.HasBracket M]
+      (f : K ⟶ L) (g : L ⟶ M) :
+    X.bracketMap (f ≫ g) = X.bracketMap g ≫ X.bracketMap f := by
+  ext
+  simp [CategoryOfElements.map]
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma bracketMap_id [X.HasBracket K] : X.bracketMap (𝟙 K) = 𝟙 _ := by
+  ext ⟨j⟩
+  simp [CategoryOfElements.map]
+
+end SimplicialObject
+
+structure MorphismProperty.IsHypercover [HasFiniteLimits C] (P : MorphismProperty C) : Prop where
+  prop_bracketMap (n : ℕ) : P (X.bracketMap <| (∂Δ[n] : (Δ[n] : SSet.{0}).Subcomplex).ι)
+
+end CategoryTheory
