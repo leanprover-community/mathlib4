@@ -740,6 +740,22 @@ theorem Submodule.ClosedComplemented.of_finiteDimensional_quotient {p : Submodul
 alias Submodule.ClosedComplemented.of_quotient_finiteDimensional :=
   Submodule.ClosedComplemented.of_finiteDimensional_quotient
 
+lemma Submodule.ClosedComplemented.of_closedComplement_finiteDimensional
+    (A B : Submodule 𝕜 E) (hA : FiniteDimensional 𝕜 A) (hA1 : A.ClosedComplemented) [T2Space A]
+    (hB : B ≤ A) : B.ClosedComplemented := by
+  obtain ⟨p, hp⟩ := hA1
+  obtain ⟨q, hq⟩ := B.exists_isCompl
+  let f :=  ((projectionOnto B q hq).domRestrict A).toContinuousLinearMap
+  use f.comp p
+  intro x
+  let x' : A := ⟨x, hB x.2⟩
+  calc
+    f.comp p x = f (p x) := rfl
+    _          = f (p x') := rfl
+    _          = f x' := by rw [hp]
+    _          = projectionOnto B q hq x := rfl
+    _          = x := projectionOnto_apply_left _ x
+
 omit [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F] in
 theorem ContinuousLinearMap.ker_closedComplemented_of_finiteDimensional_range [T2Space F]
     (f : E →L[𝕜] F) [FiniteDimensional 𝕜 f.range] : f.ker.ClosedComplemented := by
