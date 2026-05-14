@@ -161,7 +161,7 @@ lemma eLpNorm_top_piecewise (f g : α → ε) [DecidablePred (· ∈ s)] (hs : M
 protected lemma MemLp.piecewise {f : α → ε} [DecidablePred (· ∈ s)] {g} (hs : MeasurableSet s)
     (hf : MemLp f p (μ.restrict s)) (hg : MemLp g p (μ.restrict sᶜ)) :
     MemLp (s.piecewise f g) p μ := by
-  rcases eq_or_ne p 0 with rfl|hp_zero
+  rcases eq_or_ne p 0 with rfl | hp_zero
   · simp only [MemLp, eLpNorm, ↓reduceIte] at *
     refine ⟨AEStronglyMeasurable.piecewise hs hf.1 hg.1, ?_⟩
     · calc
@@ -238,7 +238,7 @@ theorem support_congr_of_ae_eq {α β : Type*} [MeasurableSpace α] [Zero β] {�
 theorem MemLp.exists_eLpNorm_indicator_compl_lt {β : Type*} [NormedAddCommGroup β] (hp_top : p ≠ ∞)
     {f : α → β} (hf : MemLp f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ s : Set α, MeasurableSet s ∧ μ s < ∞ ∧ eLpNorm (sᶜ.indicator f) p μ < ε := by
-  rcases eq_or_ne p 0 with rfl|hp₀
+  rcases eq_or_ne p 0 with rfl | hp₀
   · simp only [ne_eq, ENNReal.zero_ne_top, not_false_eq_true,
       memLp_zero_iff_aestronglyMeasurable_and_volume_support_lt_top, eLpNorm_exponent_zero] at *
     refine ⟨Function.support hf.1.mk, ?_, ?_, ?_⟩

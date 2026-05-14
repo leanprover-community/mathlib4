@@ -389,7 +389,7 @@ theorem eLpNorm_mono_nnnorm_ae {f : α → F} {g : α → G} (h : ∀ᵐ x ∂μ
 
 theorem eLpNorm_mono_ae {f : α → F} {g : α → G} (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ ‖g x‖) :
     eLpNorm f p μ ≤ eLpNorm g p μ := by
-  rcases eq_or_ne p 0 with rfl|hp
+  rcases eq_or_ne p 0 with rfl | hp
   · rw [eLpNorm_exponent_zero, eLpNorm_exponent_zero]
     apply measure_support_mono
     simp_rw [enorm_eq_nnnorm, ENNReal.coe_le_coe, ← norm_toNNReal]
@@ -566,14 +566,14 @@ variable {ε ε' : Type*}
 
 theorem MemLp.of_le_enorm {f : α → ε} {g : α → ε'} (hg : MemLp g p μ)
     (hf : AEStronglyMeasurable f μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖g x‖ₑ) : MemLp f p μ := by
-  rcases eq_or_ne p 0 with rfl|_
+  rcases eq_or_ne p 0 with rfl | _
   · simp only [MemLp, eLpNorm, ↓reduceIte] at hg ⊢
     exact ⟨hf, lt_of_le_of_lt (measure_support_mono hfg) hg.2⟩
   exact ⟨hf, (eLpNorm_mono_enorm_ae hfg).trans_lt hg.2⟩
 
 theorem MemLp.of_le {f : α → E} {g : α → F} (hg : MemLp g p μ) (hf : AEStronglyMeasurable f μ)
     (hfg : ∀ᵐ x ∂μ, ‖f x‖ ≤ ‖g x‖) : MemLp f p μ := by
-  rcases eq_or_ne p 0 with rfl|_
+  rcases eq_or_ne p 0 with rfl | _
   · simp only [MemLp, eLpNorm, ↓reduceIte] at hg ⊢
     refine ⟨hf, lt_of_le_of_lt (measure_support_mono ?_) hg.2⟩
     simp_rw [enorm_eq_nnnorm, ENNReal.coe_le_coe, ← norm_toNNReal]

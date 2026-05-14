@@ -403,7 +403,7 @@ variable [IsBoundedSMul 𝕜 E] [IsBoundedSMul 𝕜' E]
 
 theorem const_smul_mem_Lp (c : 𝕜) (f : Lp E p μ) : c • (f : α →ₘ[μ] E) ∈ Lp E p μ := by
   rw [mem_Lp_iff_eLpNorm_lt_top, eLpNorm_congr_ae (AEEqFun.coeFn_smul _ _)]
-  rcases eq_or_ne p 0 with rfl|hp
+  rcases eq_or_ne p 0 with rfl | hp
   · simp only [eLpNorm_exponent_zero, Pi.smul_apply]
     apply lt_of_le_of_lt (b := μ (Function.support fun x ↦ ‖(↑↑f : α → E) x‖ₑ)) ?_ ?_
     · apply measure_mono

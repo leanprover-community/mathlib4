@@ -45,7 +45,7 @@ theorem eLpNorm_const_smul_le (hp : p ≠ 0) : eLpNorm (c • f) p μ ≤ ‖c�
     (Eventually.of_forall fun _ => by simp [nnnorm_smul_le]) hp
 
 theorem MemLp.const_smul (hf : MemLp f p μ) (c : 𝕜) : MemLp (c • f) p μ := by
-  rcases eq_or_ne p 0 with rfl|hp
+  rcases eq_or_ne p 0 with rfl | hp
   · simp only [memLp_zero_iff_aestronglyMeasurable_and_volume_support_lt_top,
     Pi.smul_apply] at hf ⊢
     refine ⟨AEStronglyMeasurable.const_smul hf.1 c, ?_⟩
@@ -86,7 +86,7 @@ theorem eLpNorm_const_smul_le' (hp : p ≠ 0) : eLpNorm (c • f) p μ ≤ ‖c�
 
 theorem MemLp.const_smul' [ContinuousConstSMul 𝕜 ε] (hf : MemLp f p μ) (c : 𝕜) :
     MemLp (c • f) p μ := by
-  rcases eq_or_ne p 0 with rfl|hp
+  rcases eq_or_ne p 0 with rfl | hp
   · simp only [memLp_zero_iff_aestronglyMeasurable_and_volume_support_lt_top,
     Pi.smul_apply] at hf ⊢
     refine ⟨AEStronglyMeasurable.const_smul hf.1 c, ?_⟩

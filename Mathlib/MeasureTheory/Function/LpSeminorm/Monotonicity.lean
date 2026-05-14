@@ -173,7 +173,7 @@ theorem eLpNorm_le_mul_eLpNorm_of_ae_le_mul'' {f : α → ε} {c : ℝ≥0∞} {
 
 theorem MemLp.of_nnnorm_le_mul {f : α → E} {g : α → F} {c : ℝ≥0} (hg : MemLp g p μ)
     (hf : AEStronglyMeasurable f μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) : MemLp f p μ := by
-  rcases eq_or_ne p 0 with rfl|hp
+  rcases eq_or_ne p 0 with rfl | hp
   · simp only [memLp_zero_iff_aestronglyMeasurable_and_volume_support_lt_top] at hg ⊢
     refine ⟨hf, ?_⟩
     calc
@@ -191,7 +191,7 @@ theorem MemLp.of_nnnorm_le_mul {f : α → E} {g : α → F} {c : ℝ≥0} (hg :
 theorem MemLp.of_enorm_le_mul
     {f : α → ε} {g : α → ε'} {c : ℝ≥0} (hg : MemLp g p μ)
     (hf : AEStronglyMeasurable f μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) : MemLp f p μ := by
-  rcases eq_or_ne p 0 with rfl|hp
+  rcases eq_or_ne p 0 with rfl | hp
   · simp only [memLp_zero_iff_aestronglyMeasurable_and_volume_support_lt_top] at hg ⊢
     refine ⟨hf, ?_⟩
     calc
@@ -205,7 +205,7 @@ theorem MemLp.of_enorm_le_mul
 
 theorem MemLp.of_le_mul {f : α → E} {g : α → F} {c : ℝ} (hg : MemLp g p μ)
     (hf : AEStronglyMeasurable f μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖ ≤ c * ‖g x‖) : MemLp f p μ := by
-  rcases eq_or_ne p 0 with rfl|hp
+  rcases eq_or_ne p 0 with rfl | hp
   · simp only [memLp_zero_iff_aestronglyMeasurable_and_volume_support_lt_top] at hg ⊢
     refine ⟨hf, ?_⟩
     calc

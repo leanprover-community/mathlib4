@@ -311,7 +311,7 @@ theorem eLpNorm_smul_le_mul_eLpNorm {p q r : ℝ≥0∞} {f : α → E} (hp : p 
 theorem MemLp.smul {p q r : ℝ≥0∞} {f : α → E} {φ : α → 𝕜}
     (hf : MemLp f q μ) (hφ : MemLp φ p μ) [hpqr : HolderTriple p q r] : MemLp (φ • f) r μ := by
   have hpqr' := hpqr.inv_add_inv_eq_inv
-  rcases eq_or_ne p 0 with rfl|hp
+  rcases eq_or_ne p 0 with rfl | hp
   · have hr : r = 0 := by
       simp only [ENNReal.inv_zero, top_add] at hpqr'
       exact inv_eq_top.mp hpqr'.symm
@@ -325,7 +325,7 @@ theorem MemLp.smul {p q r : ℝ≥0∞} {f : α → E} {φ : α → 𝕜}
     intro _ hx
     contrapose! hx
     rw [hx, zero_smul]
-  rcases eq_or_ne q 0 with rfl|hq
+  rcases eq_or_ne q 0 with rfl | hq
   · have hr : r = 0 := by
       simp only [ENNReal.inv_zero, add_top] at hpqr'
       exact inv_eq_top.mp hpqr'.symm
