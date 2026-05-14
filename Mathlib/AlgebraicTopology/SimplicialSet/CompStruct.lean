@@ -134,10 +134,7 @@ lemma exists_of_simplex (s : X _⦋1⦌) :
 /-- Transports an edge between `x₀` and `x₁` to an edge between `y₀` and `y₁`, given `x₀ = y₀`
 and `x₁ = y₁`. -/
 @[simps]
-def ofEq {y₀ y₁ : X _⦋0⦌}
-    (e : Edge x₀ x₁)
-    (h₀ : x₀ = y₀)
-    (h₁ : x₁ = y₁) :
+def ofEq {y₀ y₁ : X _⦋0⦌} (e : Edge x₀ x₁) (h₀ : x₀ = y₀) (h₁ : x₁ = y₁) :
     Edge y₀ y₁ where
   edge    := e.edge
   src_eq  := e.src_eq.trans h₀
