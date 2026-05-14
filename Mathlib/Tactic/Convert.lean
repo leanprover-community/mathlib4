@@ -183,6 +183,7 @@ example (p q : Nat → Prop) (h : ∀ ε > 0, p ε) :
 syntax (name := convert) "convert" "!"? Lean.Parser.Tactic.optConfig " ←"? ppSpace term
   (" using " num)? (" with" (ppSpace colGt rintroPat)*)? : tactic
 
+@[tactic_alt convert]
 syntax (name := convert!) "convert!" Lean.Parser.Tactic.optConfig " ←"? ppSpace term
   (" using " num)? (" with" (ppSpace colGt rintroPat)*)? : tactic
 
@@ -273,6 +274,7 @@ pattern-matched, like `rintro` would, using the `with` keyword.
 syntax (name := convertTo) "convert_to" ("!")? Parser.Tactic.optConfig " ←"? ppSpace term
   (" using " num)? (" with" (ppSpace colGt rintroPat)*)? (Parser.Tactic.location)? : tactic
 
+@[tactic_alt convertTo]
 syntax (name := convert_to!) "convert_to!" Lean.Parser.Tactic.optConfig " ←"? ppSpace term
   (" using " num)? (" with" (ppSpace colGt rintroPat)*)? (Parser.Tactic.location)? : tactic
 
@@ -332,6 +334,7 @@ example (a b c d e f g N : ℕ) : (a + b) + (c + d) + (e + f) + g ≤ N := by
 ```
 -/
 syntax (name := acChange) "ac_change " term (" using " num)? : tactic
+@[tactic_alt acChange]
 syntax (name := acChange!) "ac_change! " term (" using " num)? : tactic
 
 macro_rules
