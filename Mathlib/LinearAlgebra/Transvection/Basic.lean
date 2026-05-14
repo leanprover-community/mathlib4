@@ -424,12 +424,6 @@ theorem mem_dilatransvections_iff_rank_quotient {e : V ≃ₗ[K] V} :
 
 variable (e f : V ≃ₗ[K] V)
 
-/-
-theorem mem_stabilizer_submodule {W : Submodule K V} {u : V ≃ₗ[K] V} :
-    u ∈ stabilizer (V ≃ₗ[K] V) W ↔ map u.toLinearMap W = W := by
-  rfl
--/
-
 /-- Characterization of transvections within dilatransvections. -/
 theorem mem_transvections_iff_mem_dilatransvections_and_fixedReduce_eq_one
     [Module.Finite K V] (e : V ≃ₗ[K] V) :
