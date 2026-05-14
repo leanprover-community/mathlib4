@@ -16,7 +16,7 @@ A sheaf of modules is locally free if it is locally isomorphic to a free module.
 
 @[expose] public section
 
-universe w u v₁ v₂ u₁ u₂
+universe u v₁ u₁
 
 open CategoryTheory Limits
 
@@ -37,14 +37,16 @@ variable [HasWeakSheafify J AddCommGrpCat.{u}] [J.WEqualsLocallyBijective AddCom
 
 namespace LocalGeneratorsData
 
+/-- Local generator data `q` is locally free data if all of the natural morphisms
+`free (q.generators i).I ⟶ M.over (q.X i)` are isomorphisms -/
 class IsLocallyFreeData {M : SheafOfModules.{u} R} (q : M.LocalGeneratorsData) : Prop where
-  iso (i : q.I) : IsIso (q.generators i).π
+  iso : ∀ i, IsIso (q.generators i).π
 
-instance {M : SheafOfModules.{u} R} (q : M.LocalGeneratorsData) [h : q.IsLocallyFreeData]
-    (i : q.I) : IsIso (q.generators i).π := h.iso i
+attribute [instance] IsLocallyFreeData.iso
 
 end LocalGeneratorsData
 
+/-- A sheaf of modules is locally free if there exists locally free data for it. -/
 class IsLocallyFree (M : SheafOfModules.{u} R) : Prop where
   nonempty_locallyFreeData : ∃ q : M.LocalGeneratorsData, q.IsLocallyFreeData
 
@@ -58,6 +60,7 @@ variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat
 
 namespace LocalGeneratorsData
 
+/-- Given locally free data, this is the quasiCoherentData where there are no relations. -/
 @[simps]
 def quasiCoherentData {M : SheafOfModules.{u} R} (q : M.LocalGeneratorsData) [q.IsLocallyFreeData] :
     M.QuasicoherentData where
