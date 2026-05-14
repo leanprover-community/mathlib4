@@ -606,10 +606,6 @@ closed embedding, then `u` is a closed embedding.
 This is TS III, § 5, p 71, lemme 1
 -/
 
-end FredholmOperators
-
-
-
 /-
 ## Index locally constant
 -/
