@@ -207,7 +207,6 @@ theorem compatibilityTensorAux_tensorial₁ (τ : Π x, V x) (hτ : MDiffAt (T% 
     TensorialAt I F (compatibilityTensorAux I cov · τ x) x where
   smul hf hσ := by
     ext X₀
-    -- FIXME arguments to `extDerivFun_smul` in wrong order?
     simp [product_smul_left, extDerivFun_mul hf (hσ.inner_bundle hτ),
       cov.isCovariantDerivativeOn.leibniz hσ hf, inner_add_left, inner_smul_left]
     ring

@@ -454,12 +454,13 @@ lemma extDerivFun_neg {g : M → F} {x : M} :
   rfl
 
 @[simp, to_fun]
-lemma extDerivFun_smul {g : M → F} {x : M} (hg : MDiffAt g x) {a : M → 𝕜} (ha : MDiffAt a x) :
+lemma extDerivFun_smul {x : M} {a : M → 𝕜} (ha : MDiffAt a x) {g : M → F} (hg : MDiffAt g x) :
     extDerivFun% (a • g) x =
       a x • extDerivFun% g x + (extDerivFun% a x).smulRight (g x) := by
   ext v
   simp [extDerivFun, -Pi.smul_apply', -Pi.smul_apply, fromTangentSpace_mfderiv_smul_apply ha hg]
   rfl
+
 -- TODO: specify as name for to_fun instead, after #34279
 alias extDerivFun_fun_smul := fun_extDerivFun_smul
 

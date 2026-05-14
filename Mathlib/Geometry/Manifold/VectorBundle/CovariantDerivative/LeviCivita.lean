@@ -172,7 +172,7 @@ lemma rhs_aux_smulY_apply {f : M → ℝ}
     (hf : MDiffAt f x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     letI A (x) := ((extDerivFun% f x) (X x))
     rhs_aux I X (f • Y) Z x = f x * rhs_aux I X Y Z x + A x * ⟪Y, Z⟫ x := by
-  rw [rhs_aux, product_smul_left, extDerivFun_smul (hY.inner_bundle' hZ) hf]
+  rw [rhs_aux, product_smul_left, extDerivFun_smul hf (hY.inner_bundle' hZ)]
   rfl
 
 variable (X) in
