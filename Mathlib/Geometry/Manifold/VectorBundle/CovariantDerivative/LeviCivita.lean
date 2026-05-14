@@ -110,7 +110,7 @@ to an element of the tangent space of `ℝ`. A summand `⟨Y, [X, Z]⟩`, howeve
 real number: Lean complains that these have different types.
 Fortunately, `ℝ` is defeq to its own tangent space; casting `rhs_aux` to the real numbers
 allows the addition to type-check. -/
-noncomputable abbrev rhs_aux : M → ℝ := fun x ↦ (mfderiv% ⟪Y, Z⟫ x (X x))
+noncomputable abbrev rhs_aux : M → ℝ := fun x ↦ extDerivFun ⟪Y, Z⟫ x (X x)
 
 section rhs_aux
 
@@ -118,9 +118,8 @@ variable (Y Z) in
 omit [IsManifold I 2 M] in
 lemma rhs_aux_swap : rhs_aux I X Y Z = rhs_aux I X Z Y := by
   ext x
-  simp only [rhs_aux]
-  congr 2
-  exact product_swap Z Y
+  unfold rhs_aux
+  congr 2 <;> rw [product_swap Z Y]
 
 omit [IsManifold I 2 M] in
 variable (X X' Y Z) in
@@ -135,8 +134,8 @@ variable (X) in
 lemma rhs_aux_addY_apply (hY : MDiffAt (T% Y) x) (hY' : MDiffAt (T% Y') x) (hZ : MDiffAt (T% Z) x) :
     rhs_aux I X (Y + Y') Z x = rhs_aux I X Y Z x + rhs_aux I X Y' Z x := by
   simp only [rhs_aux]
-  rw [product_add_left, mfderiv_add (hY.inner_bundle' hZ) (hY'.inner_bundle' hZ)]
-  simp; congr
+  rw [product_add_left, extDerivFun_add (hY.inner_bundle' hZ) (hY'.inner_bundle' hZ)]
+  simp
 
 variable (X) in
 lemma rhs_aux_addY (hY : MDiff (T% Y)) (hY' : MDiff (T% Y')) (hZ : MDiff (T% Z)) :
@@ -149,7 +148,7 @@ variable (X) in
 lemma rhs_aux_addZ_apply (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) (hZ' : MDiffAt (T% Z') x) :
   rhs_aux I X Y (Z + Z') x = rhs_aux I X Y Z x + rhs_aux I X Y Z' x := by
   unfold rhs_aux
-  rw [product_add_right, mfderiv_add (hY.inner_bundle' hZ) (hY.inner_bundle' hZ')]; simp; congr
+  rw [product_add_right, mfderiv_add (hY.inner_bundle' hZ) (hY.inner_bundle' hZ')]; simp; rfl
 
 variable (X) in
 lemma rhs_aux_addZ (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) (hZ' : MDiff (T% Z')) :
@@ -161,6 +160,7 @@ omit [IsManifold I 2 M] in
 variable (X Y Z) in
 lemma rhs_aux_smulX_apply (f : M → ℝ) (x) : rhs_aux I (f • X) Y Z x = f x * rhs_aux I X Y Z x := by
   simp [rhs_aux]
+  rfl
 
 omit [IsManifold I 2 M] in
 variable (X Y Z) in
@@ -796,7 +796,6 @@ lemma leviCivitaConnection_isCompatible_aux
   · simp
     abel
   · rw [← two_mul, ← mul_assoc, one_div, inv_mul_cancel₀ (by simp), one_mul]
-    rfl
 
 -- Why is everything so slow?
 lemma leviCivitaConnection_isCompatible [FiniteDimensional ℝ E] :
