@@ -122,41 +122,12 @@ theorem longSequence_exact : (longSequence hS n₀ n₁ h).Exact :=
 /-- The induced homomorphism of long exact equences obtained by applying `H.map` everywhere. -/
 noncomputable abbrev longSequenceHom (h : n₀ + 1 = n₁ := by lia) :
     longSequence h₁ n₀ n₁ h ⟶ longSequence h₂ n₀ n₁ h := by
-  refine ComposableArrows.homMk₅
-    (ofHom (map f.τ₁ n₀))
-    (ofHom (map f.τ₂ n₀))
-    (ofHom (map f.τ₃ n₀))
-    (ofHom (map f.τ₁ n₁))
-    (ofHom (map f.τ₂ n₁))
-    (ofHom (map f.τ₃ n₁)) ?_ ?_ ?_ ?_ ?_
+  refine ComposableArrows.homMk₅ (ofHom (map f.τ₁ n₀)) (ofHom (map f.τ₂ n₀)) (ofHom (map f.τ₃ n₀))
+    (ofHom (map f.τ₁ n₁)) (ofHom (map f.τ₂ n₁)) (ofHom (map f.τ₃ n₁)) ?_ ?_ ?_ ?_ ?_
   any_goals
     dsimp
     ext
     simp [← H.map_comp_apply, f.4, f.5, ← δ_naturality n₀ n₁ h h₁ h₂ f]
-
-@[simp]
-lemma longSequenceHom_app₀ :
-    (longSequenceHom n₀ n₁ h₁ h₂ f h).app 0 = ofHom (map f.τ₁ n₀) := rfl
-
-@[simp]
-lemma longSequenceHom_app₁ :
-    (longSequenceHom n₀ n₁ h₁ h₂ f h).app 1 = ofHom (map f.τ₂ n₀) := rfl
-
-@[simp]
-lemma longSequenceHom_app₂ :
-    (longSequenceHom n₀ n₁ h₁ h₂ f h).app 2 = ofHom (map f.τ₃ n₀) := rfl
-
-@[simp]
-lemma longSequenceHom_app₃ :
-    (longSequenceHom n₀ n₁ h₁ h₂ f h).app 3 = ofHom (map f.τ₁ n₁) := rfl
-
-@[simp]
-lemma longSequenceHom_app₄ :
-    (longSequenceHom n₀ n₁ h₁ h₂ f h).app 4 = ofHom (map f.τ₂ n₁) := rfl
-
-@[simp]
-lemma longSequenceHom_app₅ :
-    (longSequenceHom n₀ n₁ h₁ h₂ f h).app 5 = ofHom (map f.τ₃ n₁) := rfl
 
 set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] H.map_comp_apply in
