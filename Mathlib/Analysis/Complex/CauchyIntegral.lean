@@ -728,25 +728,23 @@ section Tendsto_Zero
 /-- If $f(z) \to 0$ as $\Im(z) \to \infty$, then
   $\lim_{m \to \infty} \int_{x_1}^{x_2} f(x + mI) dx = 0$. -/
 lemma tendsto_integral_atTop_nhds_zero_of_tendsto_im_atTop_nhds_zero
-    (htendsto : ∀ ε > 0, ∃ M : ℝ, ∀ z : ℂ, M ≤ z.im → ‖f z‖ < ε) :
+    (htendsto : Tendsto f (comap im atTop) (𝓝 0)) :
     Tendsto (fun (m : ℝ) ↦ ∫ (x : ℝ) in x₁..x₂, f (x + m * I)) atTop (𝓝 0) := by
   wlog hne : x₁ ≠ x₂
   · rw [ne_eq, Decidable.not_not] at hne
     simp only [hne, integral_same, tendsto_const_nhds_iff]
   simp only [NormedAddCommGroup.tendsto_nhds_zero, eventually_atTop, ge_iff_le]
   intro ε hε
-  obtain ⟨M, hM⟩ := htendsto ((1 / 2) * (ε / |x₂ - x₁|)) <| by
-    simp only [one_div, gt_iff_lt, inv_pos, Nat.ofNat_pos, mul_pos_iff_of_pos_left]
-    exact (div_pos hε (abs_sub_pos.mpr hne.symm))
-  use M
-  intro y hy
+  have hε' : 0 < (1 / 2) * (ε / |x₂ - x₁|) := by
+    simp only [one_div, inv_pos, Nat.ofNat_pos, mul_pos_iff_of_pos_left]
+    exact div_pos hε (abs_sub_pos.mpr hne.symm)
+  obtain ⟨M, hM⟩ := eventually_atTop.mp <| eventually_comap.mp <|
+    NormedAddCommGroup.tendsto_nhds_zero.mp htendsto _ hε'
+  refine ⟨M, fun y hy => ?_⟩
   calc ‖∫ (x : ℝ) in x₁..x₂, f (↑x + ↑y * I)‖
   _ ≤ ((1 / 2) * (ε / |x₂ - x₁|)) * |x₂ - x₁| :=
-      intervalIntegral.norm_integral_le_of_norm_le_const <| by
-      intro x hx
-      specialize hM (x + y * I)
-      rw [im_of_real_add_real_mul_I x y] at hM
-      exact le_of_lt (hM hy)
+      intervalIntegral.norm_integral_le_of_norm_le_const fun x _ =>
+        (hM y hy (x + y * I) (im_of_real_add_real_mul_I x y)).le
   _ = (1 / 2) * ε := by
       rw [mul_assoc]
       have : 0 ≠ |x₂ - x₁| := ne_of_lt (abs_sub_pos.mpr hne.symm)
@@ -823,7 +821,7 @@ theorem tendsto_integral_boundary_unbounded_rect_one_side_atTop_nhds_sum_other_t
     (hcont : ContinuousOn f ([[x₁, x₂]] ×ℂ (Ici y))) (s : Set ℂ) (hs : s.Countable)
     (hdiff : ∀ x ∈ ((Ioo (min x₁ x₂) (max x₁ x₂)) ×ℂ (Ioi y)) \ s, DifferentiableAt ℂ f x)
     {C₂ : E} (hC₂ : Tendsto (fun m ↦ I • ∫ (t : ℝ) in y..m, f (x₂ + t * I)) atTop (𝓝 C₂))
-    (htendsto : ∀ ε > 0, ∃ M : ℝ, ∀ z : ℂ, M ≤ z.im → ‖f z‖ < ε) :
+    (htendsto : Tendsto f (comap im atTop) (𝓝 0)) :
     Tendsto (fun m ↦ I • ∫ (t : ℝ) in y..m, f (x₁ + t * I)) atTop <|
       𝓝 ((∫ (t : ℝ) in x₁..x₂, f (t + y * I)) + C₂) := by
   have heventually : (fun (m : ℝ) ↦
@@ -847,7 +845,7 @@ theorem integral_boundary_unbounded_rect_eq_zero_of_differentiable_on_off_counta
     (hdiff : ∀ x ∈ ((Ioo (min x₁ x₂) (max x₁ x₂)) ×ℂ (Ioi y)) \ s, DifferentiableAt ℂ f x)
     {C₁ : E} (hC₁ : Tendsto (fun m ↦ I • ∫ (t : ℝ) in y..m, f (x₁ + t * I)) atTop (𝓝 C₁))
     {C₂ : E} (hC₂ : Tendsto (fun m ↦ I • ∫ (t : ℝ) in y..m, f (x₂ + t * I)) atTop (𝓝 C₂))
-    (htendsto : ∀ ε > 0, ∃ M : ℝ, ∀ z : ℂ, M ≤ z.im → ‖f z‖ < ε) :
+    (htendsto : Tendsto f (comap im atTop) (𝓝 0)) :
     (∫ (t : ℝ) in x₁..x₂, f (t + y * I)) + C₂ - C₁ = 0 := by
   rw [sub_eq_zero]
   symm
@@ -870,7 +868,7 @@ theorem integral_boundary_unbounded_rect_eq_zero_of_differentiable_on_off_counta
     (hdiff : ∀ x ∈ ((Ioo (min x₁ x₂) (max x₁ x₂)) ×ℂ (Ioi y)) \ s, DifferentiableAt ℂ f x)
     {C₁ : E} (hC₁ : Tendsto (fun m ↦ ∫ (t : ℝ) in y..m, f (x₁ + t * I)) atTop (𝓝 C₁))
     {C₂ : E} (hC₂ : Tendsto (fun m ↦ ∫ (t : ℝ) in y..m, f (x₂ + t * I)) atTop (𝓝 C₂))
-    (htendsto : ∀ ε > 0, ∃ M : ℝ, ∀ z : ℂ, M ≤ z.im → ‖f z‖ < ε) :
+    (htendsto : Tendsto f (comap im atTop) (𝓝 0)) :
     (∫ (t : ℝ) in x₁..x₂, f (t + y * I)) + (I • C₂) - (I • C₁) = 0 :=
   integral_boundary_unbounded_rect_eq_zero_of_differentiable_on_off_countable y hcont s hs hdiff
     (hC₁.const_smul I) (hC₂.const_smul I) htendsto
@@ -895,7 +893,7 @@ theorem integral_boundary_unbounded_rect_eq_zero_of_differentiable_on_off_counta
     (hdiff : ∀ x ∈ ((Ioo (min x₁ x₂) (max x₁ x₂)) ×ℂ (Ioi y)) \ s, DifferentiableAt ℂ f x)
     (hint₁ : IntegrableOn (fun (t : ℝ) ↦ f (x₁ + t * I)) (Ioi y) volume)
     (hint₂ : IntegrableOn (fun (t : ℝ) ↦ f (x₂ + t * I)) (Ioi y) volume)
-    (htendsto : ∀ ε > 0, ∃ M : ℝ, ∀ z : ℂ, M ≤ z.im → ‖f z‖ < ε) :
+    (htendsto : Tendsto f (comap im atTop) (𝓝 0)) :
     (∫ (x : ℝ) in x₁..x₂, f (x + y * I)) + (I • ∫ (t : ℝ) in Ioi y, f (x₂ + t * I))
       - (I • ∫ (t : ℝ) in Ioi y, f (x₁ + t * I)) = 0 := by
   refine integral_boundary_unbounded_rect_eq_zero_of_differentiable_on_off_countable' y hcont s hs
