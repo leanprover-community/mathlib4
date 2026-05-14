@@ -19,6 +19,7 @@ Using `compute_degree` when the goal is of one of the seven forms
 *  `natDegree f = d`,
 *  `degree f = d`,
 *  `coeff f d = r`, if `d` is the degree of `f`,
+
 tries to solve the goal.
 It may leave side-goals, in case it is not entirely successful.
 
@@ -53,6 +54,7 @@ Assume that `f : R[X]` is a polynomial with coefficients in a semiring `R` and
 If the goal has the form `natDegree f < d`, then we convert it to two separate goals:
 * `natDegree f ≤ ?_`, on which we apply the following steps;
 * `?_ < d`;
+
 where `?_` is a metavariable that `compute_degree` computes in its process.
 We proceed similarly for `degree f < d`.
 
@@ -412,7 +414,7 @@ def splitApply (mvs static : List MVarId) : MetaM ((List MVarId) × (List MVarId
 
 /-- `miscomputedDegree? deg false_goals` takes as input
 *  an `Expr`ession `deg`, representing the degree of a polynomial
-   (i.e. an `Expr`ession of inferred type either `ℕ` or `WithBot ℕ`);
+  (i.e. an `Expr`ession of inferred type either `ℕ` or `WithBot ℕ`);
 *  a list of `MVarId`s `false_goals`.
 
 Although inconsequential for this function, the list of goals `false_goals` reduces to `False`

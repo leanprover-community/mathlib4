@@ -826,7 +826,9 @@ theorem not_dvd_differentIdeal_of_isCoprime_of_isSeparable
     simpa [LinearMap.ext_iff] using Algebra.trace_ne_zero (A ⧸ p) (B ⧸ P)
   obtain ⟨y, hy⟩ := Ideal.Quotient.mk_surjective (e.symm (x, 0))
   refine not_dvd_differentIdeal_of_intTrace_not_mem A P Q hP y ?_ ?_
-  · simpa [e, Ideal.Quotient.eq_zero_iff_mem] using congr((e $hy).2)
+  · have := congr((e $hy).2)
+    simp at this
+    simpa [e, Ideal.Quotient.eq_zero_iff_mem] using this
   · rw [← Ideal.Quotient.eq_zero_iff_mem, ← Algebra.trace_quotient_eq_of_isDedekindDomain,
       hy, Algebra.trace_eq_of_algEquiv, Algebra.trace_prod_apply]
     simpa

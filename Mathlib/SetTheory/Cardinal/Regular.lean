@@ -5,8 +5,11 @@ Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios, Nir Paz
 -/
 module
 
-public import Mathlib.SetTheory.Cardinal.Cofinality
+public import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
 public import Mathlib.SetTheory.Ordinal.FixedPoint
+
+import Mathlib.SetTheory.Cardinal.Ordinal
+import Mathlib.SetTheory.Ordinal.FundamentalSequence
 
 /-!
 # Regular cardinals
@@ -20,10 +23,6 @@ This file defines regular, singular, and inaccessible cardinals.
   its cofinality is smaller than itself.
 * `Cardinal.IsInaccessible c` means that `c` is strongly inaccessible:
   `ℵ₀ < c ∧ IsRegular c ∧ IsStrongLimit c`.
-
-## TODO
-
-* Prove more theorems on inaccessible cardinals.
 -/
 
 @[expose] public section
@@ -77,27 +76,17 @@ theorem isRegular_aleph0 : IsRegular ℵ₀ :=
 lemma fact_isRegular_aleph0 : Fact (IsRegular ℵ₀) where
   out := isRegular_aleph0
 
-theorem isRegular_succ {c : Cardinal.{u}} (h : ℵ₀ ≤ c) : IsRegular (succ c) :=
-  ⟨h.trans (le_succ c),
-    succ_le_of_lt
-      (by
-        have αe := Cardinal.mk_out (succ c)
-        set α := (succ c).out
-        rcases exists_ord_eq α with ⟨r, wo, re⟩
-        have := isSuccLimit_ord (h.trans (le_succ _))
-        rw [← αe, re] at this ⊢
-        rcases cof_eq' r this with ⟨S, H, Se⟩
-        rw [← Se]
-        apply lt_imp_lt_of_le_imp_le fun h => mul_le_mul_left h c
-        rw [mul_eq_self h, ← succ_le_iff, ← αe, ← sum_const']
-        refine le_trans ?_ (sum_le_sum (fun (x : S) => card (typein r (x : α))) _ fun i => ?_)
-        · simp only [card_typein, ← mk_sigma]
-          exact
-            ⟨Embedding.ofSurjective (fun x => x.2.1) fun a =>
-                let ⟨b, h, ab⟩ := H a
-                ⟨⟨⟨_, h⟩, _, ab⟩, rfl⟩⟩
-        · rw [← lt_succ_iff, ← lt_ord, ← αe, re]
-          apply typein_lt_type)⟩
+theorem isRegular_succ {c : Cardinal} (hc : ℵ₀ ≤ c) : IsRegular (succ c) := by
+  have hc₀ := hc.trans (le_succ c)
+  use hc₀
+  by_contra! hc'
+  obtain ⟨f, hf⟩ := exists_isFundamentalSeq (o := (succ c).ord) rfl
+  apply hf.iSup_add_one_eq.not_lt
+  rw [← card_le_iff]
+  refine card_iSup_Iio_le ?_ fun i ↦ ?_
+  · simpa using hc'
+  · rw [card_le_iff]
+    exact (isSuccLimit_ord hc₀).add_one_lt (f i).2
 
 theorem isRegular_aleph_one : IsRegular ℵ₁ := by
   rw [← succ_aleph0]
@@ -394,7 +383,7 @@ structure IsInaccessible (c : Cardinal) : Prop where
   /-- An inaccessible cardinal is equal to its own cofinality, see `IsInaccessible.isRegular`. -/
   le_cof_ord : c ≤ c.ord.cof
   /-- An inaccessible cardinal is a strong limit, see `IsInaccessible.isStrongLimit`. -/
-  two_power_lt ⦃x⦄ : x < c → 2 ^ x < c
+  protected isStrongPrelimit : IsStrongPrelimit c
 
 theorem IsInaccessible.nat_lt (h : IsInaccessible c) (n : ℕ) : n < c :=
   natCast_lt_aleph0.trans h.1
@@ -408,18 +397,71 @@ theorem IsInaccessible.ne_zero (h : IsInaccessible c) : c ≠ 0 :=
 theorem IsInaccessible.isRegular (h : IsInaccessible c) : IsRegular c :=
   ⟨h.aleph0_lt.le, h.le_cof_ord⟩
 
-theorem IsInaccessible.isStrongLimit (h : IsInaccessible c) : IsStrongLimit c :=
-  ⟨h.ne_zero, h.two_power_lt⟩
+theorem IsInaccessible.isStrongLimit {c : Cardinal} (h : IsInaccessible c) : IsStrongLimit c :=
+  ⟨h.ne_zero, h.isStrongPrelimit⟩
+
+theorem IsInaccessible.isSuccLimit {c : Cardinal} (h : IsInaccessible c) : IsSuccLimit c :=
+  h.isStrongLimit.isSuccLimit
 
 theorem isInaccessible_def : IsInaccessible c ↔ ℵ₀ < c ∧ IsRegular c ∧ IsStrongLimit c where
   mp h := ⟨h.aleph0_lt, h.isRegular, h.isStrongLimit⟩
-  mpr := fun ⟨h₁, h₂, h₃⟩ ↦ ⟨h₁, h₂.2, h₃.two_power_lt⟩
+  mpr := fun ⟨h₁, h₂, h₃⟩ ↦ ⟨h₁, h₂.2, h₃.isStrongPrelimit⟩
 
--- Lean's foundations prove the existence of ℵ₀ many inaccessible cardinals
+/-- Lean's foundations prove the existence of `v` inaccessibles in universe `v`. -/
 theorem IsInaccessible.univ : IsInaccessible univ.{u, v} :=
-  ⟨aleph0_lt_univ, by simp, IsStrongLimit.univ.two_power_lt⟩
+  ⟨aleph0_lt_univ, by simp, IsStrongLimit.univ.isStrongPrelimit⟩
 
--- TODO: prove that `IsInaccessible o.card` implies `IsInaccessible (ℵ_ o)` and
--- `IsInaccessible (ℶ_ o)`
+theorem IsInaccessible.preBeth_ord (hc : IsInaccessible c) : preBeth c.ord = c := by
+  apply (preBeth_strictMono.comp ord_strictMono).le_apply.antisymm'
+  apply (isNormal_preBeth.le_iff_forall_le (isSuccLimit_ord hc.aleph0_lt.le)).2
+  refine fun a ha ↦ le_of_lt ?_
+  induction a using WellFoundedLT.induction with | ind a IH
+  rw [preBeth]
+  apply lift_iSup_lt_of_lt_cof_ord _ _
+  · rwa [mk_Iio_ordinal, lift_lift, hc.isRegular.lift.cof_ord, lift_lt, ← lt_ord]
+  · rintro ⟨b, hb⟩
+    exact hc.isStrongPrelimit <| IH _ hb (hb.trans ha)
+
+theorem IsInaccessible.beth_ord (hc : IsInaccessible c) : ℶ_ c.ord = c := by
+  rw [← preBeth_of_omega0_sq_le (le_of_lt _), hc.preBeth_ord]
+  rw [lt_ord, pow_two, card_mul, card_omega0, aleph0_mul_aleph0]
+  exact hc.aleph0_lt
+
+theorem IsInaccessible.preAleph_ord (hc : IsInaccessible c) : preAleph c.ord = c :=
+  ((preAleph_le_preBeth _).trans hc.preBeth_ord.le).antisymm
+    (preAleph.strictMono.comp ord_strictMono).le_apply
+
+theorem IsInaccessible.aleph_ord (hc : IsInaccessible c) : ℵ_ c.ord = c :=
+  ((aleph_le_beth _).trans hc.beth_ord.le).antisymm (aleph.strictMono.comp ord_strictMono).le_apply
+
+theorem IsInaccessible.preOmega_ord (hc : IsInaccessible c) : preOmega c.ord = c.ord := by
+  rw [← ord_preAleph, hc.preAleph_ord]
+
+theorem IsInaccessible.omega_ord (hc : IsInaccessible c) : ω_ c.ord = c.ord := by
+  rw [← ord_aleph, hc.aleph_ord]
+
+@[simp]
+theorem preBeth_univ : preBeth Ordinal.univ.{u, v} = univ.{u, v} := by
+  simpa using IsInaccessible.univ.preBeth_ord
+
+@[simp]
+theorem beth_univ : ℶ_ Ordinal.univ.{u, v} = univ.{u, v} := by
+  simpa using IsInaccessible.univ.beth_ord
+
+@[simp]
+theorem preAleph_univ : preAleph Ordinal.univ.{u, v} = univ.{u, v} := by
+  simpa using IsInaccessible.univ.preAleph_ord
+
+@[simp]
+theorem aleph_univ : ℵ_ Ordinal.univ.{u, v} = univ.{u, v} := by
+  simpa using IsInaccessible.univ.aleph_ord
+
+@[simp]
+theorem _root_.Ordinal.preOmega_univ : preOmega Ordinal.univ.{u, v} = Ordinal.univ.{u, v} := by
+  simpa using IsInaccessible.univ.preOmega_ord
+
+@[simp]
+theorem _root_.Ordinal.omega_univ : ω_ Ordinal.univ.{u, v} = Ordinal.univ.{u, v} := by
+  simpa using IsInaccessible.univ.omega_ord
 
 end Cardinal
