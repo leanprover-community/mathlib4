@@ -190,16 +190,14 @@ variable {F}
 
 /-- The function defining the compatibility tensor for `∇` w.r.t. `g`:
 prefer using `compatibilityTensor` instead -/
-noncomputable def compatibilityTensorAux (σ τ : Π x : M, V x) :
-    Π (x : M), TangentSpace I x →L[ℝ] ℝ := fun x ↦
-  (NormedSpace.fromTangentSpace _).toContinuousLinearMap ∘L mfderiv% ⟪σ, τ⟫ x
-  - ((innerSL ℝ (τ x)) ∘L (cov σ x)) - ((innerSL ℝ (σ x)) ∘L (cov τ x))
+noncomputable def compatibilityTensorAux (σ τ : Π x : M, V x) (x : M) :
+    TangentSpace I x →L[ℝ] ℝ :=
+  extDerivFun% ⟪σ, τ⟫ x - innerSL ℝ (τ x) ∘L cov σ x - innerSL ℝ (σ x) ∘L cov τ x
 
-lemma compatibilityTensorAux_apply (σ τ : Π x : M, V x)
-    {x : M} (X₀ : TangentSpace I x) :
+@[simp]
+lemma compatibilityTensorAux_apply (σ τ : Π x : M, V x) {x : M} (X₀ : TangentSpace I x) :
     compatibilityTensorAux I cov σ τ x X₀ =
-      NormedSpace.fromTangentSpace _ (mfderiv% ⟪σ, τ⟫ x X₀)
-      - inner ℝ (cov σ x X₀) (τ x) - inner ℝ (σ x) (cov τ x X₀) := by
+      extDerivFun% ⟪σ, τ⟫ x X₀ - inner ℝ (cov σ x X₀) (τ x) - inner ℝ (σ x) (cov τ x X₀) := by
   rw [real_inner_comm]
   rfl
 
@@ -210,15 +208,16 @@ theorem compatibilityTensorAux_tensorial₁ (τ : Π x, V x) (hτ : MDiffAt (T% 
   smul hf hσ := by
     ext X₀
     rw [compatibilityTensorAux_apply, product_smul_left,
-      fromTangentSpace_mfderiv_smul_apply hf (hσ.inner_bundle hτ)]
-    simp [compatibilityTensorAux_apply, cov.isCovariantDerivativeOn.leibniz hσ hf, inner_add_left,
+      extDerivFun_smul (hσ.inner_bundle hτ) hf]
+      -- FIXME arguments to `extDerivFun_smul` in wrong order?
+    simp [cov.isCovariantDerivativeOn.leibniz hσ hf, inner_add_left,
       inner_smul_left]
     ring
   add hσ hσ' := by
     ext X₀
     rw [compatibilityTensorAux_apply, product_add_left,
-      fromTangentSpace_mfderiv_add_apply (hσ.inner_bundle hτ) (hσ'.inner_bundle hτ)]
-    simp [compatibilityTensorAux_apply, cov.isCovariantDerivativeOn.add hσ hσ', inner_add_left]
+      extDerivFun_add (hσ.inner_bundle hτ) (hσ'.inner_bundle hτ)]
+    simp [cov.isCovariantDerivativeOn.add hσ hσ', inner_add_left]
     abel
 
 theorem compatibilityTensorAux_tensorial₂ (σ : Π x, V x) (hσ : MDiffAt (T% σ) x) :
@@ -226,15 +225,15 @@ theorem compatibilityTensorAux_tensorial₂ (σ : Π x, V x) (hσ : MDiffAt (T% 
   smul hf hτ := by
     ext X₀
     rw [compatibilityTensorAux_apply, product_smul_right,
-      fromTangentSpace_mfderiv_smul_apply hf (hσ.inner_bundle hτ)]
-    simp [compatibilityTensorAux_apply, cov.isCovariantDerivativeOn.leibniz hτ hf, inner_add_right,
+      extDerivFun_smul (hσ.inner_bundle hτ) hf]
+    simp [cov.isCovariantDerivativeOn.leibniz hτ hf, inner_add_right,
       inner_smul_right]
     ring
   add hτ hτ' := by
     ext X₀
     rw [compatibilityTensorAux_apply, product_add_right,
-      fromTangentSpace_mfderiv_add_apply (hσ.inner_bundle hτ) (hσ.inner_bundle hτ')]
-    simp [compatibilityTensorAux_apply, cov.isCovariantDerivativeOn.add hτ hτ', inner_add_right]
+      extDerivFun_add (hσ.inner_bundle hτ) (hσ.inner_bundle hτ')]
+    simp [cov.isCovariantDerivativeOn.add hτ hτ', inner_add_right]
     abel
 
 variable {I} [ContMDiffVectorBundle 1 F V I] in
@@ -251,7 +250,7 @@ variable {I} [ContMDiffVectorBundle 1 F V I] in
 theorem compatibilityTensor_apply [FiniteDimensional ℝ F] (x : M)
     (hσ : MDiffAt (T% σ) x) (hτ : MDiffAt (T% τ) x) :
     cov.compatibilityTensor x (σ x) (τ x) (X x) =
-    fromTangentSpace _ (mfderiv% ⟪σ, τ⟫ x (X x)) - ⟪∇ X σ, τ⟫ x - ⟪σ, ∇ X τ⟫ x := by
+    extDerivFun% ⟪σ, τ⟫ x (X x) - ⟪∇ X σ, τ⟫ x - ⟪σ, ∇ X τ⟫ x := by
   unfold compatibilityTensor
   rw [TensorialAt.mkHom₂_apply _ _ hσ hτ, compatibilityTensorAux_apply]
 
