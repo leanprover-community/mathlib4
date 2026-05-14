@@ -985,7 +985,6 @@ theorem card_eq_sum_card_image [DecidableEq M] (f : ι → M) (s : Finset ι) :
   card_eq_sum_card_fiberwise fun _ => mem_image_of_mem _
 
 end Nat
-
 end Finset
 
 namespace Fintype
