@@ -473,6 +473,7 @@ so `u.ker` is complemented.
 /- ## Simpler criterion for `IsFredholmStruct` between RCLike Banach spaces
 
 Notes :
+* this is not needed for "index locally constant"
 * everything below works for Fréchet spaces (where Fréchet => loc convex),
   but we don't have the prerequisites for it.
 * here we really need to know that finite dimensional spaces are complemented.
