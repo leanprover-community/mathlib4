@@ -55,7 +55,7 @@ Note that:
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Chapter 6
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 

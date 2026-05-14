@@ -18,7 +18,7 @@ has a separating family, and a separator when suitable coproducts exist.
 
 -/
 
-@[expose] public section
+public section
 
 universe t w v u
 

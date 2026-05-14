@@ -28,7 +28,7 @@ Related files are:
   and `Pi`.
 -/
 
-@[expose] public section
+public section
 
 /-! ### shortlex ordering -/
 

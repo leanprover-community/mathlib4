@@ -13,7 +13,7 @@ public import Mathlib.GroupTheory.MonoidLocalization.Maps
 This file defines the submonoid of pairs whose quotient lies in a submonoid of the localization.
 -/
 
-@[expose] public section
+public section
 
 variable {M G H : Type*} [CommMonoid M] [CommGroup G] [CommGroup H]
   {f : (⊤ : Submonoid M).LocalizationMap G} {g : (⊤ : Submonoid M).LocalizationMap H}

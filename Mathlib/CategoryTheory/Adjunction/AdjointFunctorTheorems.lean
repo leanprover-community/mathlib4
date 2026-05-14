@@ -39,7 +39,7 @@ Finally, we prove the following corollaries of the special adjoint functor theor
 
 -/
 
-@[expose] public section
+public section
 
 
 universe w v v₁ u u₁ u'

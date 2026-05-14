@@ -21,7 +21,7 @@ In this file we translate ring theoretic properties of a property of ring homomo
   `P.Under ⊤ R` has finite limits.
 -/
 
-@[expose] public section
+public section
 
 universe u
 

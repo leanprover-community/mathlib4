@@ -56,7 +56,7 @@ However the difference is illusory since the construction stays inside the Lie s
 lie algebra, semi-simple, cartan matrix, serre relations
 -/
 
-@[expose] public section
+public section
 
 universe u v w
 

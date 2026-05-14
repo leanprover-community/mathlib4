@@ -42,7 +42,7 @@ case, it would be a particular case of Čech cohomology (TODO).
 
 -/
 
-@[expose] public section
+public section
 
 universe w' w v u
 
@@ -55,6 +55,7 @@ namespace PresheafOfGroups
 variable (G : Cᵒᵖ ⥤ GrpCat.{w}) {I : Type w'} (U : I → C)
 
 /-- A zero cochain consists of a family of sections. -/
+@[expose]
 def ZeroCochain := ∀ (i : I), G.obj (Opposite.op (U i))
 
 instance : Group (ZeroCochain G U) := Pi.group

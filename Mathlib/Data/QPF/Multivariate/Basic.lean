@@ -71,7 +71,7 @@ matched because they preserve the properties of QPF. The latter example,
 each proves that some operations on functors preserves the QPF structure
 -/
 
-@[expose] public section
+public section
 
 set_option linter.style.longLine false in
 /-!

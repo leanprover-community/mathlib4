@@ -31,7 +31,7 @@ and defining a new `GradedMonoid.GBracket` class to provide the data piecewise.
 
 -/
 
-@[expose] public section
+public section
 
 open DirectSum
 
