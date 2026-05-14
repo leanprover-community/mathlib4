@@ -32,8 +32,16 @@ structure FunPropDecl where
   /-- argument index of a function this function property talks about.
   For example, this would be 4 for `@Continuous α β _ _ f` -/
   funArgId : Nat
-  /-- funciton properties like Integrability should apply transition theorems eagerly -/
-  eagerTransition : Bool := false
+  /-- By default, for performance reasons, `fun_prop` applies transition theorems like
+  `Differentiable ℝ f → Continuous f` only on functions that can not be further decomposed
+  (i.e. written at `f ∘ g` for nontrivial `f` and `g`). This option allows to apply transition
+  theorems at any stage of the proof search.
+
+  This option is important for some function properties like `Integrable` as it does not have
+  general composition theorem stating `Integrable f → Integrable g → Integrable (f ∘ g)` and
+  very often integrability can be inferred from continuity. Therefore we might want to apply,
+  `IsCompact s → ContinuousOn f s → IntegrableOn f s` very early on. -/
+  alwaysTryTransition : Bool := false
   deriving Inhabited, BEq
 
 /-- Discrimination tree for function properties. -/
@@ -57,7 +65,7 @@ initialize funPropDeclsExt : FunPropDeclsExt ←
   }
 
 /-- Register new function property. -/
-def addFunPropDecl (declName : Name) (eagerTransition := false) : MetaM Unit := do
+def addFunPropDecl (declName : Name) (alwaysTryTransition := false) : MetaM Unit := do
 
   let info ← getConstInfo declName
 
@@ -82,7 +90,7 @@ def addFunPropDecl (declName : Name) (eagerTransition := false) : MetaM Unit := 
     funPropName := declName
     path := path
     funArgId := funArgId
-    eagerTransition
+    alwaysTryTransition
   }
 
   modifyEnv fun env => funPropDeclsExt.addEntry env decl

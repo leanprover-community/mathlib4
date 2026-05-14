@@ -559,7 +559,7 @@ def fvarAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     if let some r ← applyMorRules funPropDecl e fData funProp then
       return r
 
-  if dec?.isNone || funPropDecl.eagerTransition then
+  if dec?.isNone || funPropDecl.alwaysTryTransition then
     if let some r ← applyTransitionRules e funProp then
       return r
 
@@ -612,7 +612,7 @@ def constAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     if let some r ← applyCompRule funPropDecl e f g funProp then
       return r
 
-  if dec?.isNone || funPropDecl.eagerTransition then
+  if dec?.isNone || funPropDecl.alwaysTryTransition then
     trace[Meta.Tactic.fun_prop]
       s!"failed applying `{funPropDecl.funPropName}` theorems for `{funName}`
          now trying to prove `{funPropDecl.funPropName}` from another function property"

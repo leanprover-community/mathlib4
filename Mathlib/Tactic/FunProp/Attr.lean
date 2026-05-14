@@ -22,7 +22,7 @@ namespace Meta.FunProp
 private def funPropHelpString : String :=
 "`fun_prop` tactic to prove function properties like `Continuous`, `Differentiable`, `IsLinearMap`"
 
-syntax (name:=fun_prop) "fun_prop" (&"eager_transition")? : attr
+syntax (name := fun_prop) "fun_prop" (&"always_try_transition")? : attr
 
 
 /-- Initialization of `funProp` attribute -/
@@ -35,7 +35,7 @@ initialize
        discard <| MetaM.run do
        let eagerTransition :=
          match stx with
-         | `(attr| fun_prop eager_transition) => true | _ => false
+         | `(attr| fun_prop always_try_transition) => true | _ => false
        let info ← getConstInfo declName
        forallTelescope info.type fun _ b => do
          if b.isProp then
