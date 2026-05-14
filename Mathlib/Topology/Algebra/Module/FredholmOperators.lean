@@ -5,14 +5,51 @@ Authors: ...
 -/
 module
 
-public import Mathlib.Analysis.Normed.Field.Basic
-public import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.Analysis.Normed.Group.Quotient
+public import Mathlib.Analysis.Normed.Module.HahnBanach
+public import Mathlib.Analysis.Normed.Operator.Banach
+public import Mathlib.Analysis.Normed.Operator.Perturbation.StrictByFinite
 public import Mathlib.RingTheory.Finiteness.Cofinite
 public import Mathlib.Topology.Algebra.Module.Complement
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Maps.Strict.Basic
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+section FindHome
+
+open Function Module in
+lemma Module.sum_neg_one_pow_finrank_eq_zero_of_exact {n : ℕ} {k : Type*} (V : Fin (n + 2) → Type*)
+    [Field k] [∀ i, AddCommGroup (V i)] [∀ i, Module k (V i)] [∀ i, FiniteDimensional k (V i)]
+    (f : (i : Fin (n + 1)) → V i.castSucc →ₗ[k] V i.succ)
+    (inj : Injective (f 0))
+    (exact : ∀ i : Fin n, Exact (f i.castSucc) (f i.succ))
+    (surj : Surjective (f (Fin.last _))) :
+    ∑ i, (-1) ^ i.val • (finrank k (V i) : ℤ) = 0 := by
+  sorry
+
+-- Can we have a simproc write this using `Module.sum_neg_one_pow_finrank_eq_zero_of_exact`
+-- Note the key point that the universes of the `Vᵢ` are allowed be different here.
+open Function Module in
+lemma Module.sum_neg_one_pow_finrank_eq_zero_of_exact_six {k V₀ V₁ V₂ V₃ V₄ V₅ : Type*} [Field k]
+    [AddCommGroup V₀] [Module k V₀] [FiniteDimensional k V₀]
+    [AddCommGroup V₁] [Module k V₁] [FiniteDimensional k V₁]
+    [AddCommGroup V₂] [Module k V₂] [FiniteDimensional k V₂]
+    [AddCommGroup V₃] [Module k V₃] [FiniteDimensional k V₃]
+    [AddCommGroup V₄] [Module k V₄] [FiniteDimensional k V₄]
+    [AddCommGroup V₅] [Module k V₅] [FiniteDimensional k V₅]
+    (f₀ : V₀ →ₗ[k] V₁) (f₁ : V₁ →ₗ[k] V₂) (f₂ : V₂ →ₗ[k] V₃) (f₃ : V₃ →ₗ[k] V₄) (f₄ : V₄ →ₗ[k] V₅)
+    (inj : Injective f₀)
+    (exact₁ : Exact f₀ f₁)
+    (exact₂ : Exact f₁ f₂)
+    (exact₃ : Exact f₂ f₃)
+    (exact₄ : Exact f₃ f₄)
+    (surj : Surjective f₄) :
+    (finrank k V₀ : ℤ) - finrank k V₁ + finrank k V₂ -
+    finrank k V₃ + finrank k V₄ - finrank k V₅ = 0 := by
+  sorry
+
+end FindHome
+
+variable {𝕜 : Type*} [NormedField 𝕜]
 variable {E F : Type*} [AddCommGroup E] [AddCommGroup F] [TopologicalSpace E] [TopologicalSpace F]
   [IsTopologicalAddGroup E] [IsTopologicalAddGroup F]
 variable [Module 𝕜 E] [Module 𝕜 F]
@@ -40,56 +77,56 @@ section
 variable {K : Type*} {V : Type*} {V₂ : Type*} [Field K] [AddCommMonoid V]
     [Module K V] [AddCommGroup V₂] [Module K V₂]
 
-def LinearMap.hasFiniteRank (f : V →ₗ[K] V₂) := FiniteDimensional K f.range
+def LinearMap.HasFiniteRank (f : V →ₗ[K] V₂) := FiniteDimensional K f.range
 
-@[simp] def LinearMap.hasFiniteRank.smul {f : V →ₗ[K] V₂}
-    (hf : f.hasFiniteRank) (c : K) : (c • f).hasFiniteRank := by
-  unfold LinearMap.hasFiniteRank at *
+@[simp] def LinearMap.HasFiniteRank.smul {f : V →ₗ[K] V₂}
+    (hf : f.HasFiniteRank) (c : K) : (c • f).HasFiniteRank := by
+  unfold LinearMap.HasFiniteRank at *
   rw [← Submodule.fg_iff_finiteDimensional] at *
   exact hf.of_le <| LinearMap.range_smul_le _ c
 
-@[simp] def LinearMap.hasFiniteRank.zero : (0 : V →ₗ[K] V₂).hasFiniteRank := by
-  unfold LinearMap.hasFiniteRank
+@[simp] def LinearMap.HasFiniteRank.zero : (0 : V →ₗ[K] V₂).HasFiniteRank := by
+  unfold LinearMap.HasFiniteRank
   simp
 
-@[simp] def LinearMap.hasFiniteRank.neg {f : V →ₗ[K] V₂}
-    (hf : f.hasFiniteRank) : (-f).hasFiniteRank := by
+@[simp] def LinearMap.HasFiniteRank.neg {f : V →ₗ[K] V₂}
+    (hf : f.HasFiniteRank) : (-f).HasFiniteRank := by
   rw [show -f = (-1 : K) • f by module]
   apply hf.smul
 
-@[simp] lemma LinearMap.hasFiniteRank.add {f g : V →ₗ[K] V₂}
-    (hf : f.hasFiniteRank) (hg : g.hasFiniteRank) : (f + g).hasFiniteRank := by
-  unfold LinearMap.hasFiniteRank at *
+@[simp] lemma LinearMap.HasFiniteRank.add {f g : V →ₗ[K] V₂}
+    (hf : f.HasFiniteRank) (hg : g.HasFiniteRank) : (f + g).HasFiniteRank := by
+  unfold LinearMap.HasFiniteRank at *
   exact Submodule.finiteDimensional_of_le <| LinearMap.range_add_le f g
 
-@[simp] def LinearMap.hasFiniteRank.sub {f g : V →ₗ[K] V₂}
-    (hf : f.hasFiniteRank) (hg : g.hasFiniteRank) : (f - g).hasFiniteRank := by
+@[simp] def LinearMap.HasFiniteRank.sub {f g : V →ₗ[K] V₂}
+    (hf : f.HasFiniteRank) (hg : g.HasFiniteRank) : (f - g).HasFiniteRank := by
   rw [sub_eq_add_neg]
   exact hf.add hg.neg
 
 variable {V₃ : Type*} [AddCommGroup V₃] [Module K V₃]
 
-lemma LinearMap.hasFiniteRank.comp_right {u : V →ₗ[K] V₂} (h : u.hasFiniteRank)
-    (v : V₂ →ₗ[K] V₃) : (v ∘ₗ u).hasFiniteRank := by
-  unfold LinearMap.hasFiniteRank at *
+lemma LinearMap.HasFiniteRank.comp_right {u : V →ₗ[K] V₂} (h : u.HasFiniteRank)
+    (v : V₂ →ₗ[K] V₃) : (v ∘ₗ u).HasFiniteRank := by
+  unfold LinearMap.HasFiniteRank at *
   rw [← Submodule.fg_iff_finiteDimensional, LinearMap.range_comp] at *
   exact Submodule.FG.map v h
 
-lemma LinearMap.hasFiniteRank.comp_left {v : V₂ →ₗ[K] V₃} (h : v.hasFiniteRank)
-    (u : V →ₗ[K] V₂) : (v ∘ₗ u).hasFiniteRank := by
-  unfold LinearMap.hasFiniteRank at *
+lemma LinearMap.HasFiniteRank.comp_left {v : V₂ →ₗ[K] V₃} (h : v.HasFiniteRank)
+    (u : V →ₗ[K] V₂) : (v ∘ₗ u).HasFiniteRank := by
+  unfold LinearMap.HasFiniteRank at *
   rw [← Submodule.fg_iff_finiteDimensional] at *
   exact h.of_le <| u.range_comp_le_range v
 
-lemma LinearMap.hasFiniteRank.comp_sub_comp {u v : V →ₗ[K] V₂} {u' v' : V₂ →ₗ[K] V₃}
-    (h : (u - v).hasFiniteRank) (h' : (u' - v').hasFiniteRank) :
-    (u' ∘ₗ u - v' ∘ₗ v).hasFiniteRank := by
+lemma LinearMap.HasFiniteRank.comp_sub_comp {u v : V →ₗ[K] V₂} {u' v' : V₂ →ₗ[K] V₃}
+    (h : (u - v).HasFiniteRank) (h' : (u' - v').HasFiniteRank) :
+    (u' ∘ₗ u - v' ∘ₗ v).HasFiniteRank := by
   rw [show u' ∘ₗ u - v' ∘ₗ v = (u' - v') ∘ₗ u + v' ∘ₗ (u - v) by ext; simp]
   exact (h'.comp_left u).add <| h.comp_right v'
 
 variable (K V V₂) in
 def LinearMap.FiniteRank : Submodule K (V →ₗ[K] V₂) where
-  carrier := {u | u.hasFiniteRank}
+  carrier := {u | u.HasFiniteRank}
   add_mem' hu hv := by simp_all
   zero_mem' := by simp
   smul_mem' c hu := by simp_all
@@ -97,7 +134,7 @@ def LinearMap.FiniteRank : Submodule K (V →ₗ[K] V₂) where
 namespace QuotFiniteRank
 scoped instance : Setoid (V →ₗ[K] V₂) := (LinearMap.FiniteRank K V V₂).quotientRel
 
-lemma eqv_iff {u v : V →ₗ[K] V₂} : u ≈ v ↔ (u - v).hasFiniteRank := by
+lemma eqv_iff {u v : V →ₗ[K] V₂} : u ≈ v ↔ (u - v).HasFiniteRank := by
   erw [← @Quotient.eq_iff_equiv, Submodule.Quotient.eq]
   rfl
 
@@ -106,10 +143,12 @@ lemma rel_comp {u v : V →ₗ[K] V₂} {u' v' : V₂ →ₗ[K] V₃} (h : u ≈
   rw [eqv_iff] at *
   exact h.comp_sub_comp h'
 
+@[gcongr]
 lemma rel_comp_right {u : V →ₗ[K] V₂} {u' v' : V₂ →ₗ[K] V₃} (h' : u' ≈ v') :
     u' ∘ₗ u ≈ v' ∘ₗ u :=
   rel_comp (Quotient.exact rfl) h'
 
+@[gcongr]
 lemma rel_comp_left {u v : V →ₗ[K] V₂} {u' : V₂ →ₗ[K] V₃} (h : u ≈ v) :
     u' ∘ₗ u ≈ u' ∘ₗ v :=
   rel_comp h (Quotient.exact rfl)
@@ -155,6 +194,25 @@ lemma LinearMap.equiv_of_quasiInverse' {u u' : V₃ →ₗ[K] V₂} {v : V₂ �
     u ≈ u' := by
   symm at h h'
   exact equiv_of_quasiInverse h h'
+
+variable {V₄ : Type*} [AddCommGroup V₄] [Module K V₄]
+lemma LinearMap.QuasiInverse_comp {u : V₂ →ₗ[K] V₃} {v : V₃ →ₗ[K] V₂} {u' : V₃ →ₗ[K] V₄}
+    {v' : V₄ →ₗ[K] V₃}
+    (h : u.QuasiInverse v) (h' : u'.QuasiInverse v') :
+    (u' ∘ₗ u).QuasiInverse (v ∘ₗ v') := by
+  rcases h with ⟨h₁, h₂⟩
+  rcases h' with ⟨h'₁, h'₂⟩
+  constructor
+  · calc
+      (u' ∘ₗ u) ∘ₗ (v ∘ₗ v') = u' ∘ₗ (u ∘ₗ v) ∘ₗ v' := comp_assoc ..
+      _ ≈  u' ∘ₗ .id ∘ₗ v' := by gcongr ; exact h₁
+      _ =  u' ∘ₗ v' := by simp
+      _ ≈  .id := h'₁
+  · calc
+      (v ∘ₗ v') ∘ₗ (u' ∘ₗ u) = v ∘ₗ (v' ∘ₗ u') ∘ₗ u := comp_assoc ..
+      _ ≈  v ∘ₗ .id ∘ₗ u := by gcongr ; exact h'₂
+      _ =  v ∘ₗ u := by simp
+      _ ≈  .id := h₂
 end
 end
 
@@ -162,57 +220,77 @@ open Topology ContinuousLinearMap Submodule Set
 
 variable (f)
 
-structure IsFredholm_struc : Prop where
+structure IsFredholmStruct : Prop where
   isStrict : IsStrictMap f
   isClosed_range : IsClosed (f.range : Set F)
-  kerFG : FiniteDimensional 𝕜 f.toLinearMap.ker
-  cokerFG : FiniteDimensional 𝕜 (F ⧸ f.range)
+  kerFG : f.ker.FG
+  cokerFG : f.range.CoFG
+  closedComplemented_ker : f.ker.ClosedComplemented
 
-/-FAE: I don't like this definition that seems to fix `g` (making it a structure would be even more
-  disgusting). -/
-def IsFredholm_exists : Prop := ∃ g : F →L[𝕜] E,
-  FiniteDimensional 𝕜 (f ∘L g - .id 𝕜 F).range  ∧ FiniteDimensional 𝕜 (g ∘L f - .id 𝕜 E).range
-
-namespace QuotFiniteSubmodules
 variable [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F]
 
+variable {G : Type*} [AddCommGroup G] [TopologicalSpace G] [IsTopologicalAddGroup G]
+  [Module 𝕜 G] [ContinuousConstSMul 𝕜 G] [ContinuousAdd G]
+
+namespace QuotFiniteSubmodules
+
 variable (𝕜 E F) in
-def FiniteRank : Submodule 𝕜 (E →L[𝕜] F) where
-  carrier := {u | u.toLinearMap.hasFiniteRank}
-  add_mem' hu hv := by simp_all
-  zero_mem' := by simp
-  smul_mem' c hu := by simp_all
+def FiniteRank : Submodule 𝕜 (E →L[𝕜] F) :=
+  Submodule.comap (coeLM 𝕜) (LinearMap.FiniteRank 𝕜 E F)
 
-scoped instance : Setoid (E →L[𝕜] F) := (FiniteRank 𝕜 E F).quotientRel
+scoped instance : Setoid (E →L[𝕜] F) :=
+  Setoid.comap ContinuousLinearMap.toLinearMap QuotFiniteRank.instSetoidLinearMapId
 
-lemma eqv_iff {u v : E →L[𝕜] F} : u ≈ v ↔ (u - v).toLinearMap.hasFiniteRank := by
-  erw [← @Quotient.eq_iff_equiv, Submodule.Quotient.eq]
-  rfl
+omit [IsTopologicalAddGroup
+  E] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F] in
+open scoped QuotFiniteRank in
+lemma eqv_iff {u v : E →L[𝕜] F} : (u ≈ v) ↔ u.toLinearMap ≈ v.toLinearMap :=
+  Iff.rfl
 
-variable {G : Type*} [AddCommGroup G] [TopologicalSpace G] [IsTopologicalAddGroup G]  [Module 𝕜 G]
-  [ContinuousConstSMul 𝕜 G] [ContinuousAdd G]
-
+omit [IsTopologicalAddGroup E] [IsTopologicalAddGroup F]
+    [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F] [IsTopologicalAddGroup G]
+    [ContinuousConstSMul 𝕜 G] [ContinuousAdd G] in
 lemma rel_comp {u v : E →L[𝕜] F} {u' v' : F →L[𝕜] G} (h : u ≈ v) (h' : u' ≈ v') :
     u' ∘L u ≈ v' ∘L v := by
   rw [eqv_iff] at *
-  exact h.comp_sub_comp h'
-
-def IsFredholm_quot : Prop := ∃ g : F →L[𝕜] E,
-  (f ∘L g ≈ .id 𝕜 F) ∧ (g ∘L f ≈ .id 𝕜 E)
+  push_cast
+  exact QuotFiniteRank.rel_comp h h'
 
 end QuotFiniteSubmodules
 
-theorem AnatoleDream_1 (hf : IsFredholm_struc f) : IsFredholm_exists f:= sorry
+open scoped QuotFiniteSubmodules
 
-def AnatoleDream_1_symm (hf : IsFredholm_exists f) : IsFredholm_struc f := sorry
+/-FAE: I don't like this definition that seems to fix `g` (making it a structure would be even more
+  disgusting). -/
+def IsFredholmQuot : Prop := ∃ g : F →L[𝕜] E,
+  (f ∘L g ≈ .id 𝕜 F) ∧ (g ∘L f ≈ .id 𝕜 E)
+
+omit [IsTopologicalAddGroup E] [IsTopologicalAddGroup F]
+  [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F] in
+lemma IsFredholmQuot.iff_toLinearMap :
+    IsFredholmQuot f ↔ ∃ g : F →L[𝕜] E, LinearMap.QuasiInverse f.toLinearMap g.toLinearMap := by
+  rfl
+
+lemma IsFredholmQuot.comp {f : E →L[𝕜] F} {f' : F →L[𝕜] G} (hf : IsFredholmQuot f)
+    (hf' : IsFredholmQuot f') : IsFredholmQuot (f' ∘L f) := by
+  rw [IsFredholmQuot.iff_toLinearMap] at *
+  rcases hf with ⟨g, hg⟩
+  rcases hf' with ⟨g', hg'⟩
+  use g ∘L g'
+  push_cast
+  exact LinearMap.QuasiInverse_comp hg hg'
+
+theorem AnatoleDream_1 (hf : IsFredholmStruct f) : IsFredholmQuot f:= sorry
+
+def AnatoleDream_1_symm (hf : IsFredholmQuot f) : IsFredholmStruct f := sorry
 
 open QuotFiniteSubmodules in
 theorem AnatoleDream_2 [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F] [ContinuousAdd E]
-    [ContinuousAdd F] (hf : IsFredholm_struc f) : IsFredholm_quot f := sorry
+    [ContinuousAdd F] (hf : IsFredholmStruct f) : IsFredholmQuot f := sorry
 
 open QuotFiniteSubmodules in
 def AnatoleDream_2_symm [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F] [ContinuousAdd E]
-    [ContinuousAdd F] (hf : IsFredholm_quot f) : (IsFredholm_struc f) := sorry
+    [ContinuousAdd F] (hf : IsFredholmQuot f) : (IsFredholmStruct f) := sorry
 
 /- ## API -/
 
@@ -237,6 +315,15 @@ def index : ℤ := finrank k f.ker - finrank k (F ⧸ f.range)
   rw [index, ker_zero, range_zero]
   simpa using (Submodule.quotEquivOfEqBot _ rfl).finrank_eq
 
+lemma index_injective {f : E →ₗ[k] F} (hf : Function.Injective f) :
+    f.index = - finrank k (F ⧸ f.range) := by
+  simpa [LinearMap.index] using LinearMap.ker_eq_bot.2 hf ▸ finrank_bot _ _
+
+lemma index_surjective {f : E →ₗ[k] F} (hf : Function.Surjective f) :
+    f.index = finrank k f.ker := by
+  rw [LinearMap.index, LinearMap.range_eq_top.mpr hf]
+  simp [finrank_eq_zero_of_subsingleton]
+
 lemma index_smul (t : k) (ht : t ≠ 0) :
     (t • f).index = f.index := by
   rw [index, index, ker_smul _ _ ht, range_smul _ _ ht]
@@ -247,30 +334,45 @@ lemma index_smul (t : k) (ht : t ≠ 0) :
 
 open Function in
 lemma index_comp {G : Type*} [AddCommGroup G] [Module k G] (g : F →ₗ[k] G)
-    /- TODO required assumptions. -/ :
+    [FiniteDimensional k f.ker] [FiniteDimensional k g.ker]
+    [FiniteDimensional k (F ⧸ f.range)] [FiniteDimensional k (G ⧸ g.range)] :
     (g ∘ₗ f).index = g.index + f.index := by
   -- 0 → f.ker → (g ∘ₗ f).ker → g.ker → f.coker → (g ∘ₗ f).coker → g.coker → 0
+  have : FiniteDimensional k (g ∘ₗ f).ker := by sorry
+  have : FiniteDimensional k (G ⧸ (g ∘ₗ f).range) := by sorry
 
-  let f₁ : f.ker →ₗ[k] (g ∘ₗ f).ker := Submodule.inclusion <| ker_le_ker_comp f g
-  let f₂ : (g ∘ₗ f).ker →ₗ[k] g.ker := f.restrict <| by simp
-  let f₃ : g.ker →ₗ[k] F ⧸ f.range := f.range.mkQ ∘ₗ g.ker.subtype
-  let f₄ : (F ⧸ f.range) →ₗ[k] G ⧸ (g ∘ₗ f).range :=
+  let f₀ : f.ker →ₗ[k] (g ∘ₗ f).ker := Submodule.inclusion <| ker_le_ker_comp f g
+  let f₁ : (g ∘ₗ f).ker →ₗ[k] g.ker := f.restrict <| by simp
+  let f₂ : g.ker →ₗ[k] F ⧸ f.range := f.range.mkQ ∘ₗ g.ker.subtype
+  let f₃ : (F ⧸ f.range) →ₗ[k] G ⧸ (g ∘ₗ f).range :=
     f.range.mapQ (g ∘ₗ f).range g <| by rw [← map_le_iff_le_comap, range_comp]
-  let f₅ : (G ⧸ (g ∘ₗ f).range) →ₗ[k] G ⧸ g.range := factor <| range_comp_le_range f g
+  let f₄ : (G ⧸ (g ∘ₗ f).range) →ₗ[k] G ⧸ g.range := factor <| range_comp_le_range f g
 
-  have h₀ : Injective f₁ := Submodule.inclusion_injective _
-  have h₁ : Exact f₁ f₂ := fun ⟨x, hx⟩ ↦ by simp [f₁, f₂, restrict_apply, Submodule.inclusion_apply]
-  have h₂ : Exact f₂ f₃ := fun ⟨x, hx⟩ ↦ by aesop (add simp restrict_apply)
-  have h₃ : Exact f₃ f₄ := fun x ↦ by
-    sorry
-  have h₄ : Exact f₄ f₅ := fun x ↦ by
-    sorry
-  have h₅ : Surjective f₅ := factor_surjective _
-
-  -- TODO What API should we write for `Function.Exact` to make the goal trivial from here?
-  -- Should it be a `simproc` for finite exact sequences of any length saying the Euler
-  -- characteristic is zero?
-  sorry
+  have h₀ : Injective f₀ := Submodule.inclusion_injective _
+  have h₁ : Exact f₀ f₁ := fun ⟨x, hx⟩ ↦ by simp [f₀, f₁, restrict_apply, Submodule.inclusion_apply]
+  have h₂ : Exact f₁ f₂ := fun ⟨x, hx⟩ ↦ by aesop (add simp restrict_apply)
+  have h₃ : Exact f₂ f₃ := fun x ↦ by
+    -- TODO use `Submodule.ker_mapQ` rather than `mapQ_eq_zero_iff` (which we should drop)
+    simp only [coe_comp, coe_subtype, Set.mem_range, Function.comp_apply, mkQ_apply, Subtype.exists,
+      mem_ker, exists_prop, f₂, f₃, mapQ_eq_zero_iff, mkQ_apply, mem_range]
+    -- This should be tidier
+    constructor
+    · rintro ⟨z, rfl, y, hzy⟩
+      use z - f y
+      simp [hzy]
+    · rintro ⟨y, hy, rfl⟩
+      exact ⟨y, rfl, 0, by simp [hy]⟩
+  have h₄ : Exact f₃ f₄ := fun x ↦ by
+    simp only [factor, ← mem_ker, ker_mapQ, comap_id, mem_map, mem_range, mkQ_apply,
+      exists_exists_eq_and, Set.mem_range, f₃, f₄]
+    constructor
+    · rintro ⟨y, rfl⟩
+      use Quotient.mk _ y
+      rfl
+    · rintro ⟨y, rfl⟩
+      sorry
+  have h₅ : Surjective f₄ := factor_surjective _
+  grind [index, sum_neg_one_pow_finrank_eq_zero_of_exact_six f₀ f₁ f₂ f₃ f₄ h₀ h₁ h₂ h₃ h₄ h₅]
 
 lemma index_eq_of_finiteDimensional [FiniteDimensional k E] [FiniteDimensional k F] :
     f.index = finrank k E - finrank k F := by
@@ -306,14 +408,14 @@ lemma KernelFG_of_isFredholmₗ (hu : IsFredholm_existsₗ u) : u.ker.FG := by
 
 /- ## Cokernel -/
 
-lemma CokernelFG_of_isFredholm' (hu : IsFredholm_existsₗ u) : Module.Finite R (N ⧸ u.range) := by
+lemma CokernelFG_of_isFredholm' (hu : IsFredholm_existsₗ u) : (u.range).CoFG := by
   obtain ⟨v, hv, -⟩ := hu
   have : (u ∘ₗ v - (1 : N →ₗ[R] N)).ker ≤ Submodule.comap (1 : N →ₗ[R] N) u.range :=
     fun x hx ↦ by
       use v x
       rwa [LinearMap.mem_ker, LinearMap.sub_apply, LinearMap.coe_comp, Function.comp_apply,
         Module.End.one_apply, sub_eq_zero] at hx
-  exact CoFG.of_cofg_le this <| range_fg_iff_ker_cofg.mp hv
+  exact CoFG.of_le this <| range_fg_iff_ker_cofg.mp hv
 
 /- ## GoodRelation -/
 
@@ -323,45 +425,46 @@ lemma CokernelFG_of_isFredholm' (hu : IsFredholm_existsₗ u) : Module.Finite R 
 
 open QuotFiniteSubmodules
 
+section
+
 variable {u : E →L[𝕜] F} {v : F →L[𝕜] E}
 
 variable [ContinuousConstSMul 𝕜 E]
 
 omit [IsTopologicalAddGroup F] in
+theorem ContinuousLinearMap.coFG_eqLocus (hgf : v ∘L u ≈ .id 𝕜 E) :
+    (LinearMap.eqLocus (.id 𝕜 E) (v ∘L u)).CoFG := by
+  change (LinearMap.eqLocus (LinearMap.id) (v ∘L u).toLinearMap).CoFG
+  rw [LinearMap.eqLocus_eq_ker_sub, ← range_fg_iff_ker_cofg, Submodule.fg_iff_finiteDimensional]
+  simpa [eqv_iff, QuotFiniteRank.eqv_iff] using Setoid.symm hgf
+
+omit [IsTopologicalAddGroup F] in
 theorem ContinuousLinearMap.id_sub_comp_ker_coFG (hgf : v ∘L u ≈ .id 𝕜 E) :
     (.id 𝕜 E - v ∘L u).ker.CoFG := by
   rw [← range_fg_iff_ker_cofg, Submodule.fg_iff_finiteDimensional]
-  exact eqv_iff.1 (Setoid.symm hgf)
+  simpa [eqv_iff, QuotFiniteRank.eqv_iff] using Setoid.symm hgf
 
 variable [T1Space E] [T1Space F] [ContinuousConstSMul 𝕜 F]
 
-#check InvOn
-
-/-- Need rename and more convenient statement. -/
-theorem aaron' (huv : u ∘L v ≈ .id 𝕜 F) (hvu : v ∘L u ≈ .id 𝕜 E) :
-    ∃ (E₁ : Submodule 𝕜 E) (F₁ : Submodule 𝕜 F), IsClosed E₁.carrier ∧ E₁.CoFG ∧
-      IsClosed F₁.carrier ∧ F₁.CoFG ∧ InvOn v u (E₁ : Set E) (F₁ : Set F) ∧
-        MapsTo u E₁ F₁ ∧ MapsTo v F₁ E₁ := by
-  refine ⟨(.id 𝕜 E - v ∘L u).ker, (.id 𝕜 F - u ∘L v).ker, (.id 𝕜 E - v ∘L u).isClosed_ker,
-    ContinuousLinearMap.id_sub_comp_ker_coFG hvu, (.id 𝕜 F - u ∘L v).isClosed_ker,
-    ContinuousLinearMap.id_sub_comp_ker_coFG huv,
-    ⟨fun _ hx => (sub_eq_zero.mp hx).symm, fun _ hx => (sub_eq_zero.mp hx).symm⟩, ?_, ?_⟩
-  <;> intro x hx
-  <;> simp_all [← map_sub]
-
 /-- Need rename. -/
-theorem aaron (hr : IsFredholm_quot u) :
+theorem aaron (hr : IsFredholmQuot u) :
     ∃ (E₁ : Submodule 𝕜 E) (F₁ : Submodule 𝕜 F), IsClosed E₁.carrier ∧ E₁.CoFG ∧
-      IsClosed F₁.carrier ∧ F₁.CoFG ∧ BijOn u E₁ F₁ := by
+      IsClosed F₁.carrier ∧ F₁.CoFG ∧ ∃ h : MapsTo u E₁ F₁,
+        (u.restrict h).IsInvertible := by
   obtain ⟨v, huv, hvu⟩ := hr
-  refine ⟨(.id 𝕜 E - v ∘L u).ker, (.id 𝕜 F - u ∘L v).ker, (.id 𝕜 E - v ∘L u).isClosed_ker,
-    ContinuousLinearMap.id_sub_comp_ker_coFG hvu, (.id 𝕜 F - u ∘L v).isClosed_ker,
-    ContinuousLinearMap.id_sub_comp_ker_coFG huv,
-    InvOn.bijOn ⟨fun _ hx => (sub_eq_zero.mp hx).symm, fun _ hx => (sub_eq_zero.mp hx).symm⟩ ?_ ?_⟩
-  <;> intro x hx
-  <;> simp_all [← map_sub]
+  set E₁ := LinearMap.eqLocus (.id 𝕜 E) (v ∘L u)
+  set F₁ := LinearMap.eqLocus (.id 𝕜 F) (u ∘L v)
+  have u_mapsto : MapsTo u E₁ F₁ := fun x hx ↦ congr(u $hx)
+  have v_mapsto : MapsTo v F₁ E₁ := fun x hx ↦ congr(v $hx)
+  refine ⟨E₁, F₁, isClosed_eqLocus _ _, ContinuousLinearMap.coFG_eqLocus hvu, isClosed_eqLocus _ _,
+    ContinuousLinearMap.coFG_eqLocus huv, u_mapsto, ?_⟩
+  refine .of_inverse (g := v.restrict v_mapsto) ?_ ?_
+  · ext ⟨x, hx : x = u (v x)⟩; simp [← hx]
+  · ext ⟨x, hx : x = v (u x)⟩; simp [← hx]
 
-/- ## Injections from closed finite codimension subspaces are Fredholm
+end
+
+/- ## Inclusions from closed finite codimension subspaces are Fredholm (Aaron)
 
 Easy for every definition.
 The index is the codimension of the range.
@@ -369,7 +472,46 @@ The index is the codimension of the range.
 (The same is true for quotient by finite dimensional complemented subspaces)
 -/
 
-/- ## Composition of Fredholm (with the inverse definition)
+omit [IsTopologicalAddGroup E] [IsTopologicalAddGroup F] in
+theorem Topology.IsClosedEmbedding.isFredholmStruct {f : E →L[𝕜] F} [CompleteSpace 𝕜]
+    [ContinuousSMul 𝕜 E] [ContinuousSMul 𝕜 F] (hf : IsClosedEmbedding f) (hc : f.range.CoFG) :
+    IsFredholmStruct f := by
+  constructor
+  · exact hf.isStrictMap
+  · simpa using hf.isClosed_range
+  · rw [LinearMap.ker_eq_bot.2 hf.injective]
+    exact Submodule.fg_bot
+  · simp [hc]
+  · rw [LinearMap.ker_eq_bot.2 hf.injective]
+    exact closedComplemented_bot
+
+omit [IsTopologicalAddGroup E] in
+theorem Submodule.isFredholmStruct [CompleteSpace 𝕜] [ContinuousSMul 𝕜 E] {p : Submodule 𝕜 E}
+    (hp : IsClosed p.carrier) (hc : p.CoFG) :
+    IsFredholmStruct p.subtypeL := by
+  refine (IsClosedEmbedding.subtypeVal hp).isFredholmStruct ?_
+  simpa using hc
+
+omit [IsTopologicalAddGroup E] [IsTopologicalAddGroup F] in
+theorem Topology.IsQuotientMap.isFredholmStruct {f : E →L[𝕜] F} (hq : IsQuotientMap f)
+    (hfg : f.ker.FG) (hcompl : f.ker.ClosedComplemented) :
+    IsFredholmStruct f := by
+  constructor
+  · exact hq.isStrictMap
+  · rw [LinearMap.range_eq_top.2 hq.surjective]
+    exact isClosed_univ
+  · exact hfg
+  · rw [LinearMap.range_eq_top.2 hq.surjective]
+    exact Submodule.CoFG.top
+  · exact hcompl
+
+variable [ContinuousSMul 𝕜 E]
+theorem Submodule.mkQL_isFredholm_struc {p : Submodule 𝕜 E} (hc : p.FG)
+    (hcompl : p.ClosedComplemented) :
+    IsFredholmStruct p.mkQL :=
+  p.isQuotientMap_mkQL.isFredholmStruct (by simpa) (by simpa)
+
+/- ## Composition of Fredholm (with the inverse definition) (Patrick)
 
 Consider the three CLMs `u`, `v` and `v ∘L u`. If two of them are Fredholm,
 the third one is.
@@ -380,13 +522,7 @@ I'm not sure what the set of statements should look like, but I imagine the foll
 3. If `v` is Fredholm, then `u` Fredholm ↔ `v ∘ u` Fredholm
 -/
 
-/- ## ContinuousLinearEquiv is open in ContinuousLinearMap for Banach spaces
-
-For `E = F` this follows from `Units.isOpen`. Then for the general case either
-`E ≃L F` is empty or you reduce to the `E = F` case.
--/
-
-/- ## Fredholm_struct ==> good decomposition
+/- ## Fredholm_struct ==> good decomposition (Filippo)
 
 If `u` satisfies `Fredholm_struct`, then there are decompositions `E = E₁ ⊕ E₂`,
 `F = F₁ ⊕ F₂` such that `E₂` and `F₂` are FG and, in this decomposition, u is of the form
@@ -455,18 +591,147 @@ theorem FredholmDecomposition_mapsTo [CompleteSpace 𝕜] [ContinuousSMul 𝕜 F
 --     (h_kerCompl : u.ker.ClosedComplemented) :
 --     IsInvertible (u.restrict (FredholmDecomposition_mapsTo hu h_kerCompl)) := sorry
 
-/- ## FredholmQuot ==> complemented kernel
+/- ## FredholmQuot ==> complemented kernel (Jon)
 
 Lemma : if `A` is finite dimensional is complemented and if `B ≤ A` then `B` is complemented.
 
 Proof: project onto `A`, then the projection from `A` to `B` is continuous because findim.
 
-If `u` is Fredholm, by `aaron`, we have a finite codim subspace `E₁` on which `u` is injective.
+Assume we have a finite codim subspace `E₁` on which `u` is injective.
 Pick `S` a complement of `E₁` containing `u.ker`. Then `S` is complemented and finite dimensional,
 so `u.ker` is complemented.
 
 -/
 
 end FredholmOperators
+open Submodule
 
-#min_imports
+variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [AddCommGroup E]
+   [TopologicalSpace E] [Module 𝕜 E] [ContinuousSMul 𝕜 E] [IsTopologicalAddGroup E] [T2Space E]
+
+/-- This has a PR now. -/
+lemma Submodule.ClosedComplmented_of_finiteDimensional_closedComplemented (A B : Submodule 𝕜 E)
+    (hA : FiniteDimensional 𝕜 A) (hA1 : A.ClosedComplemented)
+    (hB : B ≤ A) : B.ClosedComplemented := by
+  obtain ⟨p, hp⟩ := hA1
+  obtain ⟨q, hq⟩ := B.exists_isCompl
+  refine ⟨((projectionOnto B q hq).domRestrict A).toContinuousLinearMap ∘SL p, fun x ↦ ?_⟩
+  simp [hp ⟨x, hB x.2⟩]
+
+variable [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F] [Module 𝕜 F]
+variable [ContinuousConstSMul 𝕜 F] [T1Space F]
+
+open QuotFiniteSubmodules in
+lemma IsFredholmStruct.ker_closedComplemented {u : E →L[𝕜] F} (hu : IsFredholmStruct u) :
+    u.ker.ClosedComplemented := by simpa only using hu.closedComplemented_ker
+
+open Set in
+lemma fooo {u : E →L[𝕜] F} (E₁ : Submodule 𝕜 E) (F₁ : Submodule 𝕜 F)
+    (E₁_closed : IsClosed (E₁ : Set E)) (F₁_closed : IsClosed (E₁ : Set E))
+    (E₁_coFG : E₁.CoFG) (F₁_coFG : F₁.CoFG) (h_mapsto : MapsTo u E₁ F₁)
+    (h_inv : (u.restrict h_mapsto).IsInvertible) :
+    u.ker.ClosedComplemented := by
+  sorry
+
+open Set in
+lemma bar {u : E →L[𝕜] F} (E₁ : Submodule 𝕜 E) (F₁ : Submodule 𝕜 F)
+    (E₁_closed : IsClosed (E₁ : Set E)) (F₁_closed : IsClosed (E₁ : Set E))
+    (E₁_coFG : E₁.CoFG) (F₁_coFG : F₁.CoFG) (h_mapsto : MapsTo u E₁ F₁)
+    (h_inv : (u.restrict h_mapsto).IsInvertible) :
+    IsFredholmStruct u := by
+  -- uses foo + `ContinousLinearMap.isStrictMap_isClosed_range_iff_restrict`
+  sorry
+
+/- ## Simpler criterion for `IsFredholmStruct` between RCLike Banach spaces
+
+Notes :
+* this is not needed for "index locally constant"
+* everything below works for Fréchet spaces (where Fréchet => loc convex),
+  but we don't have the prerequisites for it.
+* here we really need to know that finite dimensional spaces are complemented.
+  I propose to restrict to `RCLike` for now.
+
+Lemma : Assume that `E` and `F` are Banach space, and that `u : E →L[𝕜] F`
+has coFG range. Then `u` is strict and has closed range.
+
+Proof : pick `G` an algebraic complement of `u.range`. It's finite dimensional,
+hence closed and complemented, and `F ⧸ G` is Banach. Denote by `π : F → F ⧸ G` the quotient map.
+`π ∘L u` is a surjective CLM between Banach spaces, so it's open,
+hence a strict map with closed range. The result now follows from
+`ContinuousLinearMap.isStrictMap_isClosed_range_iff_quotient`
+(a consequence of the technical proposition)
+
+Prop : In this setting, `IsFredholmStruct` ↔ finite dimensional kernel and cokernel
+
+-/
+
+lemma Submodule.Quotient.mk_image_IsCompl {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+    {p q : Submodule R M} (hc : IsCompl q p) :
+    (Submodule.mkQ (p := p)) '' q = Set.univ := by
+  rw [← Submodule.map_coe]
+  exact congr_arg (fun s => s.carrier) ((Submodule.map_mkQ_eq_top p q).2 hc.symm.sup_eq_top)
+
+theorem ContinuousLinearMap.isStrictMap_isClosed_range_of_coFG_range
+    {𝕜 E F : Type*} [NormedField 𝕜] [IsRCLikeNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    [CompleteSpace E] [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
+    (u : E →L[𝕜] F) (hu : u.range.CoFG) :
+    Topology.IsStrictMap u ∧ IsClosed (u.range : Set F) := by
+  let := IsRCLikeNormedField.rclike 𝕜
+  obtain ⟨G, hG⟩ := u.range.exists_isCompl
+  have hf : FiniteDimensional 𝕜 G := G.fg_iff_finiteDimensional.1 (hu.fg_of_isCompl hG)
+  have hr : Set.range (G.mkQL ∘L u) = Set.univ := by
+    simpa [Set.range_comp] using Submodule.Quotient.mk_image_IsCompl hG
+  have ho : IsOpenMap (G.mkQL ∘L u) := by
+    have : IsClosed (G : Set F) := G.closed_of_finiteDimensional
+    exact ContinuousLinearMap.isOpenMap _ <| Set.range_eq_univ.1 hr
+  exact (u.isStrictMap_isClosed_range_iff_quotient G
+    (Submodule.ClosedComplemented.of_finiteDimensional G)).2
+    ⟨Topology.IsOpenMap.isStrictMap ho (by fun_prop), hr ▸ isClosed_univ⟩
+
+theorem IsFredholmStruct_iff {𝕜 E F : Type*} [NormedField 𝕜] [IsRCLikeNormedField 𝕜]
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] [NormedAddCommGroup F]
+    [NormedSpace 𝕜 F] [CompleteSpace F] (u : E →L[𝕜] F) :
+    IsFredholmStruct (u : E →L[𝕜] F) ↔ u.ker.FG ∧ u.range.CoFG where
+  mp h := ⟨h.kerFG, h.cokerFG⟩
+  mpr h := by
+    constructor
+    · exact u.isStrictMap_isClosed_range_of_coFG_range h.2 |>.1
+    · exact u.isStrictMap_isClosed_range_of_coFG_range h.2 |>.2
+    · exact h.1
+    · exact h.2
+    · let := IsRCLikeNormedField.rclike 𝕜
+      have hf : FiniteDimensional 𝕜 u.ker := u.ker.fg_iff_finiteDimensional.1 h.1
+      exact Submodule.ClosedComplemented.of_finiteDimensional _
+
+/- ## A topological lemma
+
+**Note** : this will be useful a bit later (to prove that Fredholm operators are
+stable under compact perturbation) so this is not a priority.
+
+Lemma : let `E`, `F` be (Hausdorff) TVSs, `u : E →L[𝕜] F`,
+and `A` a neighborhood of `0` in `E`. If `restrict A u` is a
+closed embedding, then `u` is a closed embedding.
+
+This is TS III, § 5, p 71, lemme 1
+-/
+
+/-
+## Index locally constant
+-/
+
+section NormPerturbation
+
+open Topology
+
+variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
+  [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] [CompleteSpace E]
+  [CompleteSpace F]
+
+-- We can add that `φ` is analytic on a neighborhood of `u₀`.
+theorem key_fact {u₀ : E →L[𝕜] F} {v₀ : F →L[𝕜] E} (h : u₀.QuasiInverse v₀) :
+    ∃ φ : (E →L[𝕜] F) → (F →L[𝕜] E), φ u₀ = v₀ ∧
+      ∀ᶠ u in 𝓝 u₀, u.QuasiInverse (φ u) ∧
+      ∀ᶠ u in 𝓝 u₀, u.index 𝕜 = u₀.index 𝕜 := by
+  sorry
+
+end NormPerturbation
