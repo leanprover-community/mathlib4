@@ -407,16 +407,16 @@ def IsExtensionPair : Prop := ∀ (f : L.FGEquiv M N) (m : M), ∃ g, m ∈ g.1.
 
 variable {M N L}
 
-/-- A pair `(M, N)` of `L`-structures has the elementary extension-pair property for a given
-type family `E` of partial equivalences if every `E`-equivalence from `M` to `N` can be extended,
-after passing to an elementary extension of `N`, to include any prescribed element of `M`. The
-elementary extension-pair properties for full, finitely generated, and `< κ`-generated partial
-equivalences are obtained from this by specializing `E`. -/
+/-- A pair `(M, N)` of nonempty `L`-structures has the elementary extension-pair property for a
+given type family `E` of partial equivalences if every `E`-equivalence from `M` to `N` can be
+extended, after passing to an elementary extension of `N`, to include any prescribed element of
+`M`. The elementary extension-pair properties for full, finitely generated, and `< κ`-generated
+partial equivalences are obtained from this by specializing `E`. -/
 def IsElementaryExtensionPairFor
     (E : (M N : Type (max u v)) → [L.Structure M] → [L.Structure N] → Type (max u v))
     (toPartialEquiv :
       ∀ {M N : Type (max u v)} [L.Structure M] [L.Structure N], E M N → M ≃ₚ[L] N)
-    (M N : Type (max u v)) [L.Structure M] [L.Structure N] : Prop :=
+    (M N : Type (max u v)) [L.Structure M] [L.Structure N] [Nonempty M] [Nonempty N] : Prop :=
   ∀ (f : E M N) (a : M),
     ∃ (N' : Type (max u v)) (_ : L.Structure N')
       (e : N ↪ₑ[L] N') (g : E M N'),
