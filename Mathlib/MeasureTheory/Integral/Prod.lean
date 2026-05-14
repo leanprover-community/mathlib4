@@ -552,6 +552,20 @@ theorem setIntegral_prod (f : α × β → E) {s : Set α} {t : Set β}
   simp only [← Measure.prod_restrict s t, IntegrableOn] at hf ⊢
   exact integral_prod f hf
 
+theorem integral_prod_bilin {E F G 𝕜 : Type*} [RCLike 𝕜]
+    [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [CompleteSpace E]
+    [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [CompleteSpace F]
+    [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜 G] [CompleteSpace G]
+    (B : E →L[𝕜] F →L[𝕜] G) {f : α → E} {g : β → F}
+    (hf : Integrable f μ) (hg : Integrable g ν) :
+    ∫ z, B (f z.1) (g z.2) ∂μ.prod ν = B (∫ x, f x ∂μ) (∫ y, g y ∂ν) := by
+  have : Integrable (fun z ↦ B (f z.1) (g z.2)) (μ.prod ν) :=
+    hf.op_fst_snd (by fun_prop) ⟨‖B‖, B.le_opNorm₂⟩ hg
+  simp_rw [integral_prod _ this, ContinuousLinearMap.integral_comp_comm _ hg]
+  change ∫ x, B.flip (∫ y, g y ∂ν) (f x) ∂μ = _
+  rw [ContinuousLinearMap.integral_comp_comm _ hf]
+  simp
+
 theorem integral_prod_smul {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] (f : α → 𝕜) (g : β → E) :
     ∫ z, f z.1 • g z.2 ∂μ.prod ν = (∫ x, f x ∂μ) • ∫ y, g y ∂ν := by
   by_cases hE : CompleteSpace E; swap; · simp [integral, hE]
