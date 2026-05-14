@@ -906,38 +906,6 @@ theorem toSpanSingleton_pow [TopologicalSpace R] [IsTopologicalRing R] (c : R) (
 
 @[deprecated (since := "2025-12-18")] alias smulRight_one_pow := toSpanSingleton_pow
 
-section
-
-variable {σ₂₁ : R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁]
-
-/-- Given a right inverse `f₂ : M₂ →L[R] M` to `f₁ : M →L[R] M₂`,
-`projKerOfRightInverse f₁ f₂ h` is the projection `M →L[R] LinearMap.ker f₁` along
-`LinearMap.range f₂`. -/
-def projKerOfRightInverse [IsTopologicalAddGroup M] (f₁ : M →SL[σ₁₂] M₂) (f₂ : M₂ →SL[σ₂₁] M)
-    (h : Function.RightInverse f₂ f₁) : M →L[R] LinearMap.ker (f₁ : M →ₛₗ[σ₁₂] M₂) :=
-  (.id R M - f₂.comp f₁).codRestrict (LinearMap.ker f₁.toLinearMap) fun x => by simp [h (f₁ x)]
-
-@[simp]
-theorem coe_projKerOfRightInverse_apply [IsTopologicalAddGroup M] (f₁ : M →SL[σ₁₂] M₂)
-    (f₂ : M₂ →SL[σ₂₁] M) (h : Function.RightInverse f₂ f₁) (x : M) :
-    (f₁.projKerOfRightInverse f₂ h x : M) = x - f₂ (f₁ x) :=
-  rfl
-
-@[simp]
-theorem projKerOfRightInverse_apply_idem [IsTopologicalAddGroup M] (f₁ : M →SL[σ₁₂] M₂)
-    (f₂ : M₂ →SL[σ₂₁] M) (h : Function.RightInverse f₂ f₁) (x : f₁.ker) :
-    f₁.projKerOfRightInverse f₂ h x = x := by
-  ext1
-  simp
-
-@[simp]
-theorem projKerOfRightInverse_comp_inv [IsTopologicalAddGroup M] (f₁ : M →SL[σ₁₂] M₂)
-    (f₂ : M₂ →SL[σ₂₁] M) (h : Function.RightInverse f₂ f₁) (y : M₂) :
-    f₁.projKerOfRightInverse f₂ h (f₂ y) = 0 :=
-  Subtype.ext_iff.2 <| by simp [h y]
-
-end
-
 end Ring
 
 section DivisionRing
@@ -1280,9 +1248,31 @@ end Ring
 
 end Submodule
 
+namespace ContinuousLinearMap
+
 section Restrict
 
-namespace ContinuousLinearMap
+variable {R₁ R₂ R₃ : Type*} [Semiring R₁] [Semiring R₂] [Semiring R₃]
+  {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R₁ →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
+  {M₁ M₂ M₃ : Type*}
+  [TopologicalSpace M₁] [AddCommMonoid M₁] [Module R₁ M₁]
+  [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R₂ M₂]
+  [TopologicalSpace M₃] [AddCommMonoid M₃] [Module R₃ M₃]
+
+/-- The restriction of a linear map `f : M → M₂` to a submodule `p ⊆ M` gives a linear map
+`p → M₂`. -/
+@[simps!]
+def domRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₁ M₁) : p →SL[σ₁₂] M₂ :=
+  f.comp p.subtypeL
+
+@[simp]
+theorem toLinearMap_domRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₁ M₁) :
+    (f.domRestrict p).toLinearMap = f.toLinearMap.domRestrict p :=
+  rfl
+
+lemma coe_domRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₁ M₁) :
+    ⇑(f.domRestrict p) = Set.restrict p f :=
+  rfl
 
 /-- Restrict codomain of a continuous linear map. -/
 def codRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₂ M₂) (h : ∀ x, f x ∈ p) :
@@ -1317,10 +1307,8 @@ theorem coe_rangeRestrict [RingHomSurjective σ₁₂] (f : M₁ →SL[σ₁₂]
 
 /-- Restrict codomain of a continuous linear map. -/
 def restrict (f : M₁ →SL[σ₁₂] M₂) {p : Submodule R₁ M₁} {q : Submodule R₂ M₂}
-    (h : ∀ x ∈ p, f x ∈ q) :
-    p →SL[σ₁₂] q where
-  toLinearMap := f.toLinearMap.restrict h
-  cont := f.continuous.restrict h
+    (h : ∀ x ∈ p, f x ∈ q) : p →SL[σ₁₂] q :=
+  (f.domRestrict p).codRestrict q <| SetLike.forall.2 h
 
 @[simp, norm_cast]
 theorem toLinearMap_restrict {f : M₁ →SL[σ₁₂] M₂} {p : Submodule R₁ M₁} {q : Submodule R₂ M₂}
@@ -1344,11 +1332,57 @@ lemma restrict_comp {p : Submodule R₁ M₁} {p₂ : Submodule R₂ M₂} {p₃
     (g.comp f).restrict hfg = (g.restrict hg).comp (f.restrict hf) :=
   rfl
 
-end ContinuousLinearMap
+theorem subtypeL_comp_restrict {f : M₁ →SL[σ₁₂] M₂} {p : Submodule R₁ M₁} {q : Submodule R₂ M₂}
+    (hf : ∀ x ∈ p, f x ∈ q) : q.subtypeL.comp (f.restrict hf) = f.domRestrict p :=
+  rfl
+
+theorem restrict_eq_codRestrict_domRestrict {f : M₁ →SL[σ₁₂] M₂} {p : Submodule R₁ M₁}
+    {q : Submodule R₂ M₂} (hf : ∀ x ∈ p, f x ∈ q) :
+    f.restrict hf = (f.domRestrict p).codRestrict q fun x => hf x.1 x.2 :=
+  rfl
+
+theorem restrict_eq_domRestrict_codRestrict {f : M₁ →SL[σ₁₂] M₂} {p : Submodule R₁ M₁}
+    {q : Submodule R₂ M₂} (hf : ∀ x, f x ∈ q) :
+    (f.restrict fun x _ => hf x) = (f.codRestrict q hf).domRestrict p :=
+  rfl
 
 end Restrict
 
-namespace ContinuousLinearMap
+section
+
+variable {R₁ R₂ R₃ : Type*} [Ring R₁] [Ring R₂]
+  {σ₁₂ : R₁ →+* R₂} {σ₂₁ : R₂ →+* R₁} [RingHomInvPair σ₁₂ σ₂₁]
+  {M₁ M₂ : Type*}
+  [TopologicalSpace M₁] [AddCommGroup M₁] [Module R₁ M₁]
+  [TopologicalSpace M₂] [AddCommGroup M₂] [Module R₂ M₂]
+
+/-- Given a right inverse `f₂ : M₂ →L[R] M₁` to `f₁ : M₁ →L[R] M₂`,
+`projKerOfRightInverse f₁ f₂ h` is the projection `M₁ →L[R] LinearMap.ker f₁` along
+`LinearMap.range f₂`. -/
+def projKerOfRightInverse [IsTopologicalAddGroup M₁] (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ : M₂ →SL[σ₂₁] M₁)
+    (h : Function.RightInverse f₂ f₁) : M₁ →L[R₁] LinearMap.ker (f₁ : M₁ →ₛₗ[σ₁₂] M₂) :=
+  (.id R₁ M₁ - f₂.comp f₁).codRestrict (LinearMap.ker f₁.toLinearMap) fun x => by simp [h (f₁ x)]
+
+@[simp]
+theorem coe_projKerOfRightInverse_apply [IsTopologicalAddGroup M₁] (f₁ : M₁ →SL[σ₁₂] M₂)
+    (f₂ : M₂ →SL[σ₂₁] M₁) (h : Function.RightInverse f₂ f₁) (x : M₁) :
+    (f₁.projKerOfRightInverse f₂ h x : M₁) = x - f₂ (f₁ x) :=
+  rfl
+
+@[simp]
+theorem projKerOfRightInverse_apply_idem [IsTopologicalAddGroup M₁] (f₁ : M₁ →SL[σ₁₂] M₂)
+    (f₂ : M₂ →SL[σ₂₁] M₁) (h : Function.RightInverse f₂ f₁) (x : f₁.ker) :
+    f₁.projKerOfRightInverse f₂ h x = x := by
+  ext1
+  simp
+
+@[simp]
+theorem projKerOfRightInverse_comp_inv [IsTopologicalAddGroup M₁] (f₁ : M₁ →SL[σ₁₂] M₂)
+    (f₂ : M₂ →SL[σ₂₁] M₁) (h : Function.RightInverse f₂ f₁) (y : M₂) :
+    f₁.projKerOfRightInverse f₂ h (f₂ y) = 0 :=
+  Subtype.ext_iff.2 <| by simp [h y]
+
+end
 
 @[grind =]
 theorem isIdempotentElem_toLinearMap_iff {R M : Type*} [Semiring R] [TopologicalSpace M]
