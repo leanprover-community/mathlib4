@@ -153,8 +153,7 @@ theorem IndepFun.integrable_bilin {α β γ : Type*} [MeasurableSpace α] [Measu
     [OpensMeasurableSpace β] [OpensMeasurableSpace α]
     (hXY : X ⟂ᵢ[μ] Y) (hX : Integrable X μ)
     (hY : Integrable Y μ) (B : α →L[ℝ] β →L[ℝ] γ) : Integrable (fun ω ↦ B (X ω) (Y ω)) μ := by
-  refine ⟨Continuous.comp_aestronglyMeasurable₂ (g := fun x y ↦ B x y) ?_ hX.1 hY.1, ?_⟩
-  · fun_prop
+  refine ⟨Continuous.comp_aestronglyMeasurable₂ (g := fun x y ↦ B x y) (by fun_prop) hX.1 hY.1, ?_⟩
   unfold HasFiniteIntegral
   calc
   _ ≤ ‖B‖ₑ * ∫⁻ ω, ‖X ω‖ₑ * ‖Y ω‖ₑ ∂μ := by
@@ -170,56 +169,44 @@ theorem IndepFun.integrable_bilin {α β γ : Type*} [MeasurableSpace α] [Measu
 
 /-- The scalar product of two independent and integrable random variables is integrable. -/
 theorem IndepFun.integral_bilin_comp_comp {𝓧 𝓨 α β γ : Type*}
-    [MeasurableSpace 𝓧] [MeasurableSpace 𝓨]
-    {X : Ω → 𝓧} {Y : Ω → 𝓨} [NormedAddCommGroup α] [NormedSpace ℝ α] [CompleteSpace α]
+    [MeasurableSpace 𝓧] [MeasurableSpace 𝓨] {X : Ω → 𝓧} {Y : Ω → 𝓨}
+    [NormedAddCommGroup α] [NormedSpace ℝ α] [CompleteSpace α]
     [NormedAddCommGroup β] [NormedSpace ℝ β] [CompleteSpace β]
     [NormedAddCommGroup γ] [NormedSpace ℝ γ] [CompleteSpace γ]
-    {f : 𝓧 → α} (hf : AEStronglyMeasurable f (μ.map X)) {g : 𝓨 → β}
-    (hg : AEStronglyMeasurable g (μ.map Y))
-    (hXY : X ⟂ᵢ[μ] Y) (hX1 : Integrable f (μ.map X))
+    {f : 𝓧 → α} {g : 𝓨 → β} (hXY : X ⟂ᵢ[μ] Y)
     (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ)
-    (hY1 : Integrable g (μ.map Y)) (B : α →L[ℝ] β →L[ℝ] γ) :
+    (hf : Integrable f (μ.map X)) (hg : Integrable g (μ.map Y)) (B : α →L[ℝ] β →L[ℝ] γ) :
     ∫ ω, B (f (X ω)) (g (Y ω)) ∂μ = B (∫ ω, f (X ω) ∂μ) (∫ ω, g (Y ω) ∂μ) := by
   by_cases h : ∀ᵐ ω ∂μ, f (X ω) = 0
   · have h1 : ∀ᵐ ω ∂μ, B (f (X ω)) (g (Y ω)) = 0 := by
       filter_upwards [h] with ω hω
       simp [hω]
-    rw [integral_congr_ae h1, integral_congr_ae h]
-    simp
+    simp [integral_congr_ae h1, integral_congr_ae h]
   borelize α
   borelize β
   have : IsProbabilityMeasure μ :=
-      (hX1.comp_aemeasurable hX).isProbabilityMeasure_of_indepFun (f ∘ X) (g ∘ Y) h
-      (hXY.comp₀ hX hY hf.aemeasurable hg.aemeasurable)
-  change ∫ ω, (fun z ↦ B (f z.1) (g z.2)) (X ω, Y ω) ∂μ = _
+    (hf.comp_aemeasurable hX).isProbabilityMeasure_of_indepFun (f ∘ X) (g ∘ Y) h
+      (hXY.comp₀ hX hY hf.1.aemeasurable hg.1.aemeasurable)
   rw [← integral_map (f := fun z ↦ B (f z.1) (g z.2)) (φ := fun ω ↦ (X ω, Y ω)),
     (indepFun_iff_map_prod_eq_prod_map_map hX hY).1 hXY,
-    integral_prod_bilin, integral_map hX hf, integral_map hY hg]
-  exact hX1
-  exact hY1
-  fun_prop
+    integral_prod_bilin _ hf hg, integral_map hX hf.1, integral_map hY hg.1]
+  · fun_prop
   rw [(indepFun_iff_map_prod_eq_prod_map_map hX hY).1 hXY]
-  exact Continuous.comp_aestronglyMeasurable₂ (g := fun x y ↦ B x y) (by fun_prop) hf.comp_fst hg.comp_snd
+  exact Continuous.comp_aestronglyMeasurable₂ (g := fun x y ↦ B x y) (by fun_prop)
+    hf.1.comp_fst hg.1.comp_snd
 
 /-- The scalar product of two independent and integrable random variables is integrable. -/
 theorem IndepFun.integral_bilin {α β γ : Type*} [MeasurableSpace α] [MeasurableSpace β]
-    {X : Ω → α} {Y : Ω → β} [NormedAddCommGroup α] [NormedSpace ℝ α]
-    [NormedAddCommGroup β] [NormedSpace ℝ β] [NormedAddCommGroup γ] [NormedSpace ℝ γ]
+    [NormedAddCommGroup α] [NormedSpace ℝ α] [SecondCountableTopology α] [CompleteSpace α]
+    [NormedAddCommGroup β] [NormedSpace ℝ β] [SecondCountableTopology β] [CompleteSpace β]
+    [NormedAddCommGroup γ] [NormedSpace ℝ γ] [CompleteSpace γ]
     [BorelSpace β] [BorelSpace α]
-    (hXY : X ⟂ᵢ[μ] Y) (hX : Integrable X μ)
-    (hY : Integrable Y μ) (B : α →L[ℝ] β →L[ℝ] γ) :
-    ∫ ω, B (X ω) (Y ω) ∂μ = B μ[X] μ[Y] := by
-  by_cases h : X =ᵐ[μ] 0
-  · have h1 : ∀ᵐ ω ∂μ, B (X ω) (Y ω) = 0 := by
-      filter_upwards [h] with ω hω
-      simp [hω]
-    rw [integral_congr_ae h1, integral_congr_ae h]
-    simp
-  have : IsProbabilityMeasure μ := hX.isProbabilityMeasure_of_indepFun X Y h hXY
-  change ∫ ω, (fun z ↦ B z.1 z.2) (X ω, Y ω) ∂μ = _
-  rw [← integral_map (f := fun z ↦ B z.1 z.2) (φ := fun ω ↦ (X ω, Y ω)),
-    (indepFun_iff_map_prod_eq_prod_map_map hX.aemeasurable hY.aemeasurable).1 hXY,
-    integral_prod_bilin]
+    {X : Ω → α} {Y : Ω → β} (hXY : X ⟂ᵢ[μ] Y) (hX : Integrable X μ) (hY : Integrable Y μ)
+    (B : α →L[ℝ] β →L[ℝ] γ) :
+    ∫ ω, B (X ω) (Y ω) ∂μ = B μ[X] μ[Y] :=
+  hXY.integral_bilin_comp_comp hX.aemeasurable hY.aemeasurable
+    ((integrable_map_measure aestronglyMeasurable_id hX.aemeasurable).2 hX)
+    ((integrable_map_measure aestronglyMeasurable_id hY.aemeasurable).2 hY) B
 
 /-- The scalar product of two independent and integrable random variables is integrable. -/
 theorem IndepFun.integrable_smul {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
