@@ -76,103 +76,10 @@ differentiable at `x`.
 
 variable {σ σ' σ'' τ τ' τ'' : Π x : M, V x}
 
+local notation "⟪" σ ", " τ "⟫" => fun x ↦ inner ℝ (σ x) (τ x)
+
 -- set_option trace.profiler true
 -- set_option profiler.threshold 500
-
-/-- The scalar product of two sections. -/
-noncomputable abbrev product (σ τ : Π x : M, V x) : M → ℝ :=
-  fun x ↦ inner ℝ (σ x) (τ x)
-
--- `product` is C^k if σ and τ are: this is shown in `Riemannian.lean`
-
-local notation "⟪" σ ", " τ "⟫" => product σ τ
-
--- Basic API for the product of two sections.
-section product
-
-omit [TopologicalSpace M]
-
-lemma product_apply (x) : ⟪σ, τ⟫ x = inner ℝ (σ x) (τ x) := rfl
-
-variable (σ σ' τ)
-
-lemma product_swap : ⟪τ, σ⟫ = ⟪σ, τ⟫ := by
-  ext x
-  apply real_inner_comm
-
-@[simp]
-lemma product_zero_left : ⟪0, σ⟫ = 0 := by
-  ext x
-  simp only [product, Pi.zero_apply, inner_zero_left]
-
-@[simp]
-lemma product_zero_right : ⟪σ, 0⟫ = 0 := by rw [product_swap, product_zero_left]
-
-lemma product_add_left : ⟪σ + σ', τ⟫ = ⟪σ, τ⟫ + ⟪σ', τ⟫ := by
-  ext x
-  simp [product, InnerProductSpace.add_left]
-
-@[simp]
-lemma product_add_left_apply (x) : ⟪σ + σ', τ⟫ x = ⟪σ, τ⟫ x + ⟪σ', τ⟫ x := by
-  simp [product, InnerProductSpace.add_left]
-
-lemma product_add_right : ⟪σ, τ + τ'⟫ = ⟪σ, τ⟫ + ⟪σ, τ'⟫ := by
-  rw [product_swap, product_swap τ, product_swap τ', product_add_left]
-
-@[simp]
-lemma product_add_right_apply (x) : ⟪σ, τ + τ'⟫ x = ⟪σ, τ⟫ x + ⟪σ, τ'⟫ x := by
-  rw [product_swap, product_swap τ, product_swap τ', product_add_left_apply]
-
-@[simp] lemma product_neg_left : ⟪-σ, τ⟫ = -⟪σ, τ⟫ := by ext x; simp [product]
-
-@[simp] lemma product_neg_right : ⟪σ, -τ⟫ = -⟪σ, τ⟫ := by ext x; simp [product]
-
-lemma product_sub_left : ⟪σ - σ', τ⟫ = ⟪σ, τ⟫ - ⟪σ', τ⟫ := by
-  ext x
-  simp [product, inner_sub_left]
-
-lemma product_sub_right : ⟪σ, τ - τ'⟫ = ⟪σ, τ⟫ - ⟪σ, τ'⟫ := by
-  ext x
-  simp [product, inner_sub_right]
-
-lemma product_smul_left (f : M → ℝ) : product (f • σ) τ = f • product σ τ := by
-  ext x
-  simp [product, real_inner_smul_left]
-
-@[simp]
-lemma product_smul_const_left (a : ℝ) : product (a • σ) τ = a • product σ τ := by
-  ext x
-  simp [product, real_inner_smul_left]
-
-lemma product_smul_right (f : M → ℝ) : product σ (f • τ) = f • product σ τ := by
-  ext x
-  simp [product, real_inner_smul_right]
-
-@[simp]
-lemma product_smul_const_right (a : ℝ) : product σ (a • τ) = a • product σ τ := by
-  ext x
-  simp [product, real_inner_smul_right]
-
-end product
-
--- These lemmas are necessary as my Lie bracket identities (assuming minimal differentiability)
--- only hold point-wise. They abstract the expanding and unexpanding of `product`.
-omit [TopologicalSpace M] in
-lemma product_congr_left {x} (h : σ x = σ' x) : product σ τ x = product σ' τ x := by
-  rw [product_apply, h, ← product_apply]
-
-omit [TopologicalSpace M] in
-lemma product_congr_left₂ {x} (h : σ x = σ' x + σ'' x) :
-    product σ τ x = product σ' τ x + product σ'' τ x := by
-  rw [product_apply, h, inner_add_left, ← product_apply]
-omit [TopologicalSpace M] in
-lemma product_congr_right {x} (h : τ x = τ' x) : product σ τ x = product σ τ' x := by
-  rw [product_apply, h, ← product_apply]
-
-omit [TopologicalSpace M] in
-lemma product_congr_right₂ {x} (h : τ x = τ' x + τ'' x) :
-    product σ τ x = product σ τ' x + product σ τ'' x := by
-  rw [product_apply, h, inner_add_right, ← product_apply]
 
 namespace CovariantDerivative
 
@@ -207,12 +114,12 @@ theorem compatibilityTensorAux_tensorial₁ (τ : Π x, V x) (hτ : MDiffAt (T% 
     TensorialAt I F (compatibilityTensorAux I cov · τ x) x where
   smul hf hσ := by
     ext X₀
-    simp [product_smul_left, extDerivFun_mul hf (hσ.inner_bundle hτ),
+    simp [extDerivFun_fun_mul hf (hσ.inner_bundle hτ),
       cov.isCovariantDerivativeOn.leibniz hσ hf, inner_add_left, inner_smul_left]
     ring
   add hσ hσ' := by
     ext X₀
-    simp [product_add_left, extDerivFun_add (hσ.inner_bundle hτ) (hσ'.inner_bundle hτ),
+    simp [extDerivFun_fun_add (hσ.inner_bundle hτ) (hσ'.inner_bundle hτ),
       cov.isCovariantDerivativeOn.add hσ hσ', inner_add_left]
     abel
 
@@ -220,12 +127,12 @@ theorem compatibilityTensorAux_tensorial₂ (σ : Π x, V x) (hσ : MDiffAt (T% 
     TensorialAt I F (compatibilityTensorAux I cov σ · x) x where
   smul hf hτ := by
     ext X₀
-    simp [product_smul_right, extDerivFun_mul hf (hσ.inner_bundle hτ),
+    simp [extDerivFun_fun_mul hf (hσ.inner_bundle hτ),
       cov.isCovariantDerivativeOn.leibniz hτ hf, inner_add_right, inner_smul_right]
     ring
   add hτ hτ' := by
     ext X₀
-    simp [product_add_right, extDerivFun_add (hσ.inner_bundle hτ) (hσ.inner_bundle hτ'),
+    simp [extDerivFun_fun_add (hσ.inner_bundle hτ) (hσ.inner_bundle hτ'),
       cov.isCovariantDerivativeOn.add hτ hτ', inner_add_right]
     abel
 
@@ -275,7 +182,7 @@ lemma isCompatible_iff [FiniteDimensional ℝ F] :
   ext x σ₀ τ₀ X₀
   specialize h (FiberBundle.mdifferentiableAt_extend I E X₀)
     (FiberBundle.mdifferentiableAt_extend I F σ₀) (FiberBundle.mdifferentiableAt_extend I F τ₀)
-  simp [compatibilityTensor_apply_eq_extend, product] at h ⊢
+  simp [compatibilityTensor_apply_eq_extend] at h ⊢
   linear_combination h
 
 end CovariantDerivative
