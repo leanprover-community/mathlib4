@@ -190,6 +190,7 @@ open modelCategoryQuillen
 
 namespace prodStdSimplex
 
+-- this will be done in #39298
 noncomputable def pairing {m : ℕ} (k : Fin (m + 2)) (n : ℕ) :
     (Subcomplex.unionProd.{u} Λ[m + 1, k] ∂Δ[n]).Pairing :=
   sorry
@@ -280,11 +281,6 @@ lemma anodyneExtensions.whiskerLeft
     anodyneExtensions (Z ◁ f) := by
   simpa using anodyneExtensions_pushoutObjObjι
     (.ofIsInitialLeft (curriedTensor _) (initial.to Z) f initialIsInitial) hf
-
--- to be moved
-instance (T : SSet.{u}) :
-    PreservesLimitsOfShape (Discrete PEmpty.{1}) (MonoidalClosed.internalHom.flip.obj T) :=
-  MonoidalClosed.internalHomAdjunction₂ (C := SSet.{u}).preservesLimitsOfShape_flip_obj _ _
 
 instance {E B X : SSet.{u}} (p : E ⟶ B) [Fibration p] :
     Fibration ((ihom X).map p) := by
