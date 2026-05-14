@@ -21,7 +21,7 @@ If `s` is a cofinal subset of a regular cardinal order `α`, there exists a uniq
 `α ≃o s`, which we call `Order.enum`. When `α = Ordinal`, this is referred to as the enumerator
 function of the set. Note that if `α = ℕ`, then this definition matches `Nat.nth`.
 
-## Todo
+## TODO
 
 - Deprecate `Ordinal.enumOrd` in favor of `Order.enum`.
 - Prove that `Order.enum` on the naturals coincides with `Nat.nth`.
@@ -42,7 +42,7 @@ If `α` is infinite, this implies that `α` is order isomorphic to `Iio c.ord` f
 cardinal `c`. In the informal literature, one often says that `α` is a regular cardinal, by abuse
 of notation. -/
 class IsRegularCardinalOrder (α : Type*) [LinearOrder α] [WellFoundedLT α] where
-  type_le_ord_cof : typeLT α ≤ (cof α).ord
+  type_lt_le_ord_cof : typeLT α ≤ (cof α).ord
 
 instance : IsRegularCardinalOrder ℕ := ⟨by simp⟩
 
@@ -83,7 +83,7 @@ theorem _root_.Cardinal.ord_cardinalMk : ord #α = typeLT α := by
 theorem cof_ordinal : cof Ordinal.{u} = Cardinal.univ.{u, u + 1} := by
   simp
 
-theorem ordinalType_eq_of_isCofinal {s : Set α} (hs : IsCofinal s) : typeLT s = typeLT α := by
+theorem type_eq_of_isCofinal {s : Set α} (hs : IsCofinal s) : typeLT s = typeLT α := by
   apply (RelEmbedding.ofMonotone Subtype.val (by simp)).ordinal_type_le.antisymm
   rw [← ord_cardinalMk, ord_le, card_type, ← cof_eq_cardinalMk]
   exact cof_le hs
