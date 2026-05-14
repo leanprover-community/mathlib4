@@ -489,7 +489,7 @@ variable [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F] [Module
 variable [ContinuousConstSMul 𝕜 F] [T1Space F]
 
 open QuotFiniteSubmodules in
-lemma stuff {u : E →L[𝕜] F} (hu : IsFredholmStruct u) (hr : IsFredholm_quot u) :
+lemma name_needed {u : E →L[𝕜] F} (hu : IsFredholmStruct u) (hr : IsFredholm_quot u) :
     u.ker.ClosedComplemented := by
   obtain ⟨E, F, h1, h2, h3, h4, h5⟩ := aaron hr
   obtain ⟨S, hS⟩ := E.exists_isCompl
