@@ -91,8 +91,7 @@ elab (name := deprecated_modules)
     throwError "Invalid date: the expected format is \"{← Std.Time.PlainDate.now}\""
   addModuleDeprecation <| msg?.map (·.getString)
   -- Disable the linter, so that it does not complain in the file with the deprecation.
-  elabCommand <| mkNullNode #[← `(set_option linter.style.header false),
-                              ← `(set_option linter.deprecated.module false)]
+  elabCommand <| mkNullNode #[← `(set_option linter.deprecated.module false)]
 
 /--
 A utility command to show the current entries of the `deprecatedModuleExt` in the format:
@@ -137,7 +136,7 @@ def deprecated.moduleLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   -- Exempt Mathlib.lean since it's auto-generated and imports all modules
   -- for backwards compatibility
-  if (← getFileName).endsWith "Mathlib.lean" then
+  if (← getMainModule).toString == "Mathlib" then
     return
   let laterCommand ← IsLaterCommand.get
   -- If `laterCommand` is `true`, then the linter already did what it was supposed to do.
