@@ -233,7 +233,7 @@ def IsFredholmQuot : Prop := ∃ g : F →L[𝕜] E,
 omit [IsTopologicalAddGroup E] [IsTopologicalAddGroup F]
   [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F] in
 lemma IsFredholmQuot.iff_toLinearMap :
-    IsFredholmQuot f ↔ ∃ g : F →L[𝕜] E, LinearMap.QuasiInverse f g.toLinearMap := by
+    IsFredholmQuot f ↔ ∃ g : F →L[𝕜] E, LinearMap.QuasiInverse f.toLinearMap g.toLinearMap := by
   rfl
 
 lemma IsFredholmQuot.comp {f : E →L[𝕜] F} {f' : F →L[𝕜] G} (hf : IsFredholmQuot f)
@@ -543,6 +543,8 @@ This is TS III, § 5, p 71, lemme 1
 -/
 
 end FredholmOperators
+
+section Jon
 open Submodule
 
 variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [AddCommGroup E]
@@ -564,3 +566,26 @@ lemma thingy (A B : Submodule 𝕜 E) (hA : FiniteDimensional 𝕜 A) (hA1 : A.C
     _          = x := projectionOnto_apply_left _ x
 
 --PR this
+
+end Jon
+
+/-
+## Index locally constant
+-/
+
+section NormPerturbation
+
+open Topology
+
+variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
+  [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] [CompleteSpace E]
+  [CompleteSpace F]
+
+-- We can add that `φ` is analytic on a neighborhood of `u₀`.
+theorem key_fact {u₀ : E →L[𝕜] F} {v₀ : F →L[𝕜] E} (h : u₀.QuasiInverse v₀) :
+    ∃ φ : (E →L[𝕜] F) → (F →L[𝕜] E), φ u₀ = v₀ ∧
+      ∀ᶠ u in 𝓝 u₀, u.QuasiInverse (φ u) ∧
+      ∀ᶠ u in 𝓝 u₀, u.index 𝕜 = u₀.index 𝕜 := by
+  sorry
+
+end NormPerturbation
