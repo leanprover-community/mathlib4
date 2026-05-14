@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.MorphismProperty.Limits
 # Equivalence relations
 
 We define internal equivalence relations (sometimes called congruences) in any category `C`, as a
-structure on pairs of parallel morphisms `p₁, p₂ : R ⟶ X`.
+structure on pairs of parallel morphisms `p₁, p₂ : R ⟶ X` .
 We also define effective and universally effective equivalence relations.
 
 We prove that equivalence relations on types provide internal equivalence relation structures in the
@@ -282,7 +282,7 @@ epimorphism. -/
 structure UniversallyEffectiveEquivalenceRelation {R A : C} (p₁ p₂ : R ⟶ A)
     extends EffectiveEquivalenceRelation p₁ p₂ where
   universally_effectiveEpi_π : MorphismProperty.universally (fun _ _ f => EffectiveEpi f)
-    toEffectiveEquivalenceRelation.π
+    (toEffectiveEquivalenceRelation.π)
 
 /-- The typeclass associated with the structure `UniversallyEffectiveEquivalenceRelation`. -/
 class IsUniversallyEffectiveEquivalenceRelation {R A : C} (p₁ p₂ : R ⟶ A) : Prop where
@@ -293,7 +293,7 @@ variable (C) in
 /-- A category `C` is a universally exact category if all equivalence relations in `C` are
 universally effective equivalence relations. -/
 class IsUniversallyEffectiveEquivalenceRelationCategory where
-  isUniversallyEffectiveEquivalenceRelation {R A : C} (p₁ p₂ : R ⟶ A) [IsEquivalenceRelation p₁ p₂] :
+  isUniversallyEffectiveEquivalenceRelation (p₁ p₂ : R ⟶ A) [IsEquivalenceRelation p₁ p₂] :
     IsUniversallyEffectiveEquivalenceRelation p₁ p₂
 
 end Effective
