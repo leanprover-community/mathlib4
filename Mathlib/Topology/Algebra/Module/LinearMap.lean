@@ -1284,9 +1284,13 @@ def codRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₂ M₂) (h : �
   cont := f.continuous.subtype_mk _
   toLinearMap := (f : M₁ →ₛₗ[σ₁₂] M₂).codRestrict p h
 
-@[norm_cast]
+@[simp, norm_cast]
+theorem toLinearMap_codRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₂ M₂) (h : ∀ x, f x ∈ p) :
+    (f.codRestrict p h).toLinearMap = f.toLinearMap.codRestrict p h :=
+  rfl
+
 theorem coe_codRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₂ M₂) (h : ∀ x, f x ∈ p) :
-    (f.codRestrict p h : M₁ →ₛₗ[σ₁₂] p) = (f : M₁ →ₛₗ[σ₁₂] M₂).codRestrict p h :=
+    (f.codRestrict p h : M₁ → p) = Set.codRestrict (f : M₁ → M₂) p h :=
   rfl
 
 @[simp]
