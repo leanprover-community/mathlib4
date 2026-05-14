@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Hom.Basic
 public import Mathlib.Algebra.GroupWithZero.Defs
-import Mathlib.Algebra.GroupWithZero.Basic
+public import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.GroupWithZero.NeZero
 import Mathlib.Algebra.NeZero
 import Mathlib.Logic.Basic

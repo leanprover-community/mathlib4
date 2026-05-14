@@ -8,7 +8,7 @@ module
 public import Mathlib.Data.FunLike.Embedding
 public import Mathlib.Logic.Function.Defs
 import Batteries.Tactic.Init
-import Mathlib.Logic.Function.Basic
+public import Mathlib.Logic.Function.Basic
 import Mathlib.Util.CompileInductive
 
 /-!

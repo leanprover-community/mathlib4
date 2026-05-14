@@ -11,6 +11,7 @@ public import Mathlib.Logic.Nontrivial.Defs
 public import Mathlib.Tactic.Lift
 public import Mathlib.Tactic.Spread
 public import Mathlib.Tactic.ToDual
+public import Batteries.Logic
 import Mathlib.Data.Option.Basic
 import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Tactic.Common

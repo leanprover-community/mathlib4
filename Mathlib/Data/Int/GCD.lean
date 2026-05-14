@@ -18,7 +18,7 @@ import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Algebra.GroupWithZero.Semiconj
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Data.Int.Init
-import Mathlib.Order.Basic
+public import Mathlib.Order.Basic
 import Mathlib.Tactic.Attr.Core
 import Mathlib.Tactic.Common
 
