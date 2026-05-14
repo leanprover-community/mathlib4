@@ -41,7 +41,7 @@ lemma eLpNorm_indicator_eq_eLpNorm_restrict {ε : Type*} [TopologicalSpace ε]
   by_cases hp_zero : p = 0
   · simp only [hp_zero, eLpNorm_exponent_zero]
     rw [MeasureTheory.Measure.restrict_apply' hs]
-    congr 1; ext
+    congr 1 with x
     simp [enorm_indicator_eq_indicator_enorm, and_comm]
   by_cases hp_top : p = ∞
   · simp_rw [hp_top, eLpNorm_exponent_top, eLpNormEssSup_eq_essSup_enorm,
@@ -163,8 +163,7 @@ protected lemma MemLp.piecewise {f : α → ε} [DecidablePred (· ∈ s)] {g} (
     MemLp (s.piecewise f g) p μ := by
   rcases eq_or_ne p 0 with rfl|hp_zero
   · simp only [MemLp, eLpNorm, ↓reduceIte] at *
-    refine ⟨?_, ?_⟩
-    · exact AEStronglyMeasurable.piecewise hs hf.1 hg.1
+    refine ⟨AEStronglyMeasurable.piecewise hs hf.1 hg.1, ?_⟩
     · calc
         _ ≤ μ ((Function.support (fun x ↦ ‖f x‖ₑ) ∩ s) ∪
               (Function.support (fun x ↦ ‖g x‖ₑ) ∩ sᶜ)) := by
@@ -249,12 +248,10 @@ theorem MemLp.exists_eLpNorm_indicator_compl_lt {β : Type*} [NormedAddCommGroup
       exact measure_congr <| support_congr_of_ae_eq hf.1.ae_eq_mk.symm
     · apply lt_of_eq_of_lt ?_ <| Ne.pos hε
       refine (Measure.measure_support_eq_zero_iff μ).mpr ?_
-      apply Filter.mem_of_superset hf.1.ae_eq_mk
-      intro
-      simp only [Set.mem_setOf_eq, Pi.zero_apply, enorm_eq_zero, Set.indicator_apply_eq_zero,
+      filter_upwards [hf.1.ae_eq_mk] with x
+      simp only [Pi.zero_apply, enorm_eq_zero, Set.indicator_apply_eq_zero,
         Set.mem_compl_iff, Function.mem_support, ne_eq, not_not]
-      intro hx fx
-      rw [hx, fx]
+      grind
   obtain ⟨s, hsm, hs, hε⟩ :
       ∃ s, MeasurableSet s ∧ μ s < ∞ ∧ ∫⁻ a in sᶜ, (‖f a‖ₑ) ^ p.toReal ∂μ < ε ^ p.toReal := by
     apply exists_setLIntegral_compl_lt
