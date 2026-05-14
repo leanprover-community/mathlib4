@@ -478,13 +478,11 @@ theorem Prime.prod_divisors {α : Type*} [CommMonoid α] {p : ℕ} {f : ℕ → 
   rw [← cons_self_properDivisors h.ne_zero, prod_cons, h.prod_properDivisors]
 
 theorem properDivisors_eq_singleton_one_iff_prime : n.properDivisors = {1} ↔ n.Prime := by
-  refine ⟨?_, Prime.properDivisors⟩
-  intro h
+  refine ⟨fun h ↦ ?_, Prime.properDivisors⟩
   rw [Nat.prime_def_lt]
   refine ⟨Nat.succ_le_iff.mpr <| one_mem_properDivisors_iff_one_lt.mp (by simp [h]), ?_⟩
   intro m hm hdvd
-  have hm' : m ∈ n.properDivisors := mem_properDivisors.2 ⟨hdvd, hm⟩
-  simpa [h] using hm'
+  simpa [h] using mem_properDivisors.2 ⟨hdvd, hm⟩
 
 theorem sum_properDivisors_eq_one_iff_prime : ∑ x ∈ n.properDivisors, x = 1 ↔ n.Prime := by
   rcases n with - | n
