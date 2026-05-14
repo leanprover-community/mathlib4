@@ -105,6 +105,24 @@ def transfiniteCompositionOfShape
   toTransfiniteCompositionOfShape := c.toTransfiniteCompositionOfShape
   map_mem j hj := (c.attachCells j hj).pushouts_coproducts
 
+open MorphismProperty in
+/-- If `f` is a relative cell complex, then `f` is a transfinite composition
+of pushouts of coproducts of morphisms in `I : MorphismProperty C` if
+for any `s : c.Cells`, the morphism `basicCell s.j s.i` belongs to `I`. -/
+@[simps toTransfiniteCompositionOfShape]
+def transfiniteCompositionOfShape' (c : RelativeCellComplex.{w} basicCell f)
+    {I : MorphismProperty C} (hc : ∀ (s : c.Cells), I (basicCell s.j s.i)) :
+    (coproducts.{w} I).pushouts.TransfiniteCompositionOfShape J f where
+  toTransfiniteCompositionOfShape := c.toTransfiniteCompositionOfShape
+  map_mem j hj := by
+    let a := c.attachCells j hj
+    exact ⟨_, _, _, _, _,
+      colimitsOfShape_le_coproducts _ a.ι _
+      (colimitsOfShape.mk' _ _ _ _ a.isColimit₁ a.isColimit₂
+        (Discrete.natTrans (fun _ ↦ basicCell _ _)) (fun ⟨k⟩ ↦ hc { j := _, hj := hj, k := k }) _
+        (fun _ ↦ a.hm _)),
+      a.isPushout⟩
+
 end RelativeCellComplex
 
 end HomotopicalAlgebra

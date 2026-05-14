@@ -6,12 +6,13 @@ Authors: Joël Riou, Jack McKoen
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Basic
+public import Mathlib.AlgebraicTopology.SimplicialSet.PushoutProduct
 public import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
 public import Mathlib.CategoryTheory.LiftingProperties.ParametrizedAdjunction
 public import Mathlib.CategoryTheory.Monoidal.Closed.Braided
 
 /-!
-# ...
+# Anodyne extensions and pushout-products, fibrations and pullbacks
 
 -/
 
@@ -184,37 +185,7 @@ end CategoryTheory
 
 namespace SSet
 
-namespace Subcomplex
-
-section
-
-variable {X Y : SSet.{u}} (A : X.Subcomplex) (B : Y.Subcomplex)
-
-@[simps]
-def pushoutObjObj : (curriedTensor _).PushoutObjObj A.ι B.ι where
-  pt := A.unionProd B
-  inl := (A.unionProd B).lift (_ ◁ B.ι) (sorry)
-  inr := (A.unionProd B).lift (A.ι ▷ _) (sorry)
-  isPushout := by
-    sorry
-
-@[simp]
-lemma pushoutObjObj_ι : (pushoutObjObj A B).ι = (A.unionProd B).ι := by
-  apply (pushoutObjObj A B).hom_ext
-  · rw [(A.pushoutObjObj B).inl_ι]
-    simp
-  · rw [(A.pushoutObjObj B).inr_ι]
-    simp
-
-end
-
-end Subcomplex
-
 open modelCategoryQuillen
-
-lemma rlp_monomorphisms :
-    (MorphismProperty.monomorphisms SSet.{u}).rlp = I.rlp := by
-  sorry
 
 namespace prodStdSimplex
 
@@ -261,8 +232,8 @@ lemma fibration_pullbackObjObjπ [Mono i] [Fibration p]
   suffices (MorphismProperty.monomorphisms _).rlp sq₁₃'.π from this _ inferInstance
   rw [rlp_monomorphisms]
   rintro _ _ _ ⟨n⟩
-  rw [← internalHomAdjunction₂.hasLiftingProperty_iff (Subcomplex.pushoutObjObj _ _),
-    Subcomplex.pushoutObjObj_ι]
+  rw [← internalHomAdjunction₂.hasLiftingProperty_iff (Subcomplex.unionProd.pushoutObjObj _ _),
+    Subcomplex.unionProd.pushoutObjObj_ι]
   exact prodStdSimplex.anodyneExtensions_unionProd_ι _ _ _ hp
 
 lemma anodyneExtensions_pushoutObjObjι
@@ -289,22 +260,19 @@ lemma anodyneExtensions_unionProd_ι
     {X Y : SSet.{u}} (A : X.Subcomplex) (B : Y.Subcomplex)
     (hB : anodyneExtensions B.ι) :
     anodyneExtensions (A.unionProd B).ι := by
-  simpa using anodyneExtensions_pushoutObjObjι (Subcomplex.pushoutObjObj A B) hB
+  simpa using anodyneExtensions_pushoutObjObjι (Subcomplex.unionProd.pushoutObjObj A B) hB
 
 lemma anodyneExtensions_unionProd_ι'
     {X Y : SSet.{u}} (A : X.Subcomplex) (B : Y.Subcomplex)
     (hA : anodyneExtensions A.ι) :
     anodyneExtensions (A.unionProd B).ι := by
-  simpa using anodyneExtensions_pushoutObjObjι' (Subcomplex.pushoutObjObj A B) hA
+  simpa using anodyneExtensions_pushoutObjObjι' (Subcomplex.unionProd.pushoutObjObj A B) hA
 
 lemma anodyneExtensions.whiskerRight
     {X Y : SSet.{u}} {f : X ⟶ Y} (hf : anodyneExtensions f) (Z : SSet.{u}) :
     anodyneExtensions (f ▷ Z) := by
   simpa using anodyneExtensions_pushoutObjObjι'
     (.ofIsInitialRight (curriedTensor _) f (initial.to Z) initialIsInitial) hf
-
-instance (T : SSet.{u}) : (tensorLeft T).IsLeftAdjoint := inferInstance
-instance (T : SSet.{u}) : (tensorRight T).IsLeftAdjoint := sorry
 
 lemma anodyneExtensions.whiskerLeft
     {X Y : SSet.{u}} {f : X ⟶ Y} (hf : anodyneExtensions f) (Z : SSet.{u}) :
@@ -328,10 +296,6 @@ instance {A B : SSet.{u}} (i : A ⟶ B) [Mono i] (X : SSet.{u}) [IsFibrant X] :
     Fibration ((MonoidalClosed.pre i).app X) := by
   simpa using fibration_pullbackObjObjπ (Functor.PullbackObjObj.ofIsTerminal
     MonoidalClosed.internalHom i (terminal.from X) terminalIsTerminal)
-
-instance : (fibrations SSet).IsMultiplicative := sorry
-
-instance {X Y : SSet.{u}} (p : X ⟶ Y) [IsIso p] : Fibration p := sorry
 
 instance (A : SSet.{u}) : IsFibrant ((ihom A).obj (⊤_ _)) := by
   have : IsIso (terminal.from ((ihom A).obj (⊤_ _))) :=

@@ -38,6 +38,23 @@ def ιIso : Arrow.mk (S.unionProd T).ι ≅ S.ι □ T.ι :=
     (by apply (unionProd.isPushout S T).hom_ext <;>
       simp [Functor.PushoutObjObj.ofHasPushout, Functor.PushoutObjObj.ι])
 
+/-- Given subcomplexes `S` and `T` of simplicial sets, this if a `Functor.PushoutObjObj`
+structure for the chosen binary products on `SSet`, with point `S.unionProd T`. -/
+@[simps]
+noncomputable def pushoutObjObj : (curriedTensor _).PushoutObjObj S.ι T.ι where
+  pt := S.unionProd T
+  inl := unionProd.ι₁ S T
+  inr := unionProd.ι₂ S T
+  isPushout := unionProd.isPushout S T
+
+@[simp]
+lemma pushoutObjObj_ι : (pushoutObjObj S T).ι = (S.unionProd T).ι := by
+  apply (pushoutObjObj S T).hom_ext
+  · rw [(pushoutObjObj S T).inl_ι]
+    simp
+  · rw [(pushoutObjObj S T).inr_ι]
+    simp
+
 end unionProd
 
 end Subcomplex
