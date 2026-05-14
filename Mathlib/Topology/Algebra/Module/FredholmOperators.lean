@@ -5,14 +5,11 @@ Authors: ...
 -/
 module
 
-public import Mathlib.LinearAlgebra.Dimension.LinearMap
+public import Mathlib.Analysis.Normed.Group.Quotient
+public import Mathlib.Analysis.Normed.Module.HahnBanach
+public import Mathlib.Analysis.Normed.Operator.Banach
+public import Mathlib.Analysis.Normed.Operator.Perturbation.StrictByFinite
 public import Mathlib.RingTheory.Finiteness.Cofinite
-public import Mathlib.Topology.Maps.Strict.Basic
-public import Mathlib.Topology.Algebra.Module.LinearMap
-public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
-public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
-public import Mathlib.Topology.Algebra.Module.Complement
-public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 section FindHome
 
@@ -49,7 +46,7 @@ lemma Module.sum_neg_one_pow_finrank_eq_zero_of_exact_six {k V₀ V₁ V₂ V₃
 
 end FindHome
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NormedField 𝕜]
 variable {E F : Type*} [AddCommGroup E] [AddCommGroup F] [TopologicalSpace E] [TopologicalSpace F]
   [IsTopologicalAddGroup E] [IsTopologicalAddGroup F]
 variable [Module 𝕜 E] [Module 𝕜 F]
@@ -610,6 +607,44 @@ hence a strict map with closed range. The result now follows from
 Prop : In this setting, `IsFredholmStruct` ↔ finite dimensional kernel and cokernel
 
 -/
+
+lemma Submodule.Quotient.mk_image_IsCompl {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+    {p q : Submodule R M} (hc : IsCompl q p) :
+    (Submodule.mkQ (p := p)) '' q = univ := by
+  rw [← Submodule.map_coe]
+  exact congr_arg (fun s => s.carrier) ((Submodule.map_mkQ_eq_top p q).2 hc.symm.sup_eq_top)
+
+theorem ContinuousLinearMap.isStrictMap_isClosed_range_of_coFG_range
+    {𝕜 E F : Type*} [NormedField 𝕜] [IsRCLikeNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    [CompleteSpace E] [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
+    (u : E →L[𝕜] F) (hu : u.range.CoFG) :
+    IsStrictMap u ∧ IsClosed (u.range : Set F) := by
+  let := IsRCLikeNormedField.rclike 𝕜
+  obtain ⟨G, hG⟩ := u.range.exists_isCompl
+  have hf : FiniteDimensional 𝕜 G := G.fg_iff_finiteDimensional.1 (hu.fg_of_isCompl hG)
+  have hr : range (G.mkQL ∘L u) = univ := by
+    simpa [range_comp] using Submodule.Quotient.mk_image_IsCompl hG
+  have ho : IsOpenMap (G.mkQL ∘L u) := by
+    have : IsClosed (G : Set F) := G.closed_of_finiteDimensional
+    exact ContinuousLinearMap.isOpenMap _ <| Set.range_eq_univ.1 hr
+  exact (u.isStrictMap_isClosed_range_iff_quotient G
+    (Submodule.ClosedComplemented.of_finiteDimensional G)).2 ⟨ho.isStrictMap (by fun_prop),
+    hr ▸ isClosed_univ⟩
+
+theorem IsFredholmStruct_iff {𝕜 E F : Type*} [NormedField 𝕜] [IsRCLikeNormedField 𝕜]
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] [NormedAddCommGroup F]
+    [NormedSpace 𝕜 F] [CompleteSpace F] (u : E →L[𝕜] F) :
+    IsFredholmStruct (u : E →L[𝕜] F) ↔ u.ker.FG ∧ u.range.CoFG where
+  mp h := ⟨h.kerFG, h.cokerFG⟩
+  mpr h := by
+    constructor
+    · exact u.isStrictMap_isClosed_range_of_coFG_range h.2 |>.1
+    · exact u.isStrictMap_isClosed_range_of_coFG_range h.2 |>.2
+    · exact h.1
+    · exact h.2
+    · let := IsRCLikeNormedField.rclike 𝕜
+      have hf : FiniteDimensional 𝕜 u.ker := u.ker.fg_iff_finiteDimensional.1 h.1
+      exact Submodule.ClosedComplemented.of_finiteDimensional _
 
 /- ## A topological lemma
 
