@@ -550,12 +550,10 @@ lemma primeFactors_filter_dvd_of_dvd {m n : ℕ} (hn : n ≠ 0) (hmn : m ∣ n) 
 theorem image_div_divisors_eq_divisors (n : ℕ) :
     image (fun x : ℕ => n / x) n.divisors = n.divisors := by
   calc
-    image (fun x : ℕ => n / x) n.divisors =
-        (n.divisors.map ⟨fun d => (n / d, d), fun _ _ => congr_arg Prod.snd⟩).image Prod.fst := by
+    _ = (n.divisors.map ⟨fun d ↦ (n / d, d), fun _ _ ↦ congr_arg Prod.snd⟩).image Prod.fst := by
       rw [map_eq_image, image_image]
       rfl
-    _ = n.divisorsAntidiagonal.image Prod.fst := by rw [map_div_left_divisors]
-    _ = n.divisors := image_fst_divisorsAntidiagonal
+    _ = _ := by rw [map_div_left_divisors, image_fst_divisorsAntidiagonal]
 
 @[to_additive (attr := simp) sum_div_divisors]
 theorem prod_div_divisors {α : Type*} [CommMonoid α] (n : ℕ) (f : ℕ → α) :

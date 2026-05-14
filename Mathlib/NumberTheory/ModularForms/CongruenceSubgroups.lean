@@ -69,7 +69,7 @@ theorem Gamma_zero_bot : Gamma 0 = ⊥ := rfl
 
 lemma ModularGroup_T_pow_mem_Gamma (N M : ℤ) (hNM : N ∣ M) :
     (ModularGroup.T ^ M) ∈ Gamma (Int.natAbs N) := by
-  simp [Gamma_mem, ModularGroup.coe_T_zpow, hNM, ZMod.intCast_zmod_eq_zero_iff_dvd, abs_dvd]
+  simp [ModularGroup.coe_T_zpow, hNM, ZMod.intCast_zmod_eq_zero_iff_dvd]
 
 instance instFiniteIndexGamma [NeZero N] : (Gamma N).FiniteIndex := Subgroup.finiteIndex_ker _
 
@@ -80,15 +80,12 @@ def Gamma0 : Subgroup SL(2, ℤ) where
   one_mem' := by simp
   mul_mem' := by
     intro a b ha hb
-    change (a 1 0 : ZMod N) = 0 at ha
-    change (b 1 0 : ZMod N) = 0 at hb
-    change (((a : Matrix (Fin 2) (Fin 2) ℤ) * b) 1 0 : ZMod N) = 0
-    rw [(Matrix.two_mul_expl a.1 b.1).2.2.1]
-    simp [ha, hb]
+    have h := (Matrix.two_mul_expl a.1 b.1).2.2.1
+    simp only [coe_mul, Set.mem_setOf_eq] at *
+    simp [h, ha, hb]
   inv_mem' := by
     intro a ha
-    rw [SL2_inv_expl a]
-    simpa using ha
+    simpa [SL2_inv_expl a] using ha
 
 @[simp]
 theorem Gamma0_mem {N} {A : SL(2, ℤ)} : A ∈ Gamma0 N ↔ (A 1 0 : ZMod N) = 0 :=
