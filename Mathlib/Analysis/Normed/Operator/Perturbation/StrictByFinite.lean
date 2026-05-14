@@ -55,13 +55,22 @@ theorem step1_foward (A : Submodule 𝕜 E) (K : Submodule 𝕜 E) (A_closed : I
     [codim_A : FiniteDimensional 𝕜 (E ⧸ A)] (K_disj_A : Disjoint K A) :
     IsClosedEmbedding (restrict A K.mkQ) := by
   constructor
-  · rcases K_disj_A.exists_isCompl with ⟨S, K_le_S, S_compl_A⟩
+  · -- We show that `restrict A K.mkQ` is an embedding by exhibiting a continuous left inverse.
+    -- Fix `S` an algebraic complement of `A` containing `K`.
+    rcases K_disj_A.exists_isCompl with ⟨S, K_le_S, S_compl_A⟩
+    -- Because `A` is closed with finite codimension, `S` is in fact a topological complement
+    -- of `A`.
     replace S_compl_A : IsTopCompl S A :=
       S_compl_A.symm.isTopCompl_of_finiteDimensional_quotient A_closed |>.symm
+    -- Thus the projection onto `A` along `S` is continuous, and it vanishes on `K`.
+    -- Hence it defines a map `E ⧸ K →L[𝕜] A`, which is our left inverse.
     let s : E ⧸ K →L[𝕜] A := K.liftQL (A.projectionOntoL S S_compl_A.symm) (by simpa)
     have leftInv : LeftInverse s (restrict A K.mkQ) := fun x ↦ by simp [s]
     refine .of_leftInverse leftInv s.continuous (by fun_prop)
-  · rw [← K.isQuotientMap_mkQ.isClosed_preimage, range_restrict, ← Submodule.map_coe,
+  · -- The subspace `K.mkQ ⁻¹' K.mkQ '' A` contains the closed and finite codimension subspace `A`,
+    -- hence it is closed. By definition of the quotient topology, this shows that
+    -- `restrict A K.mkQ` has closed range.
+    rw [← K.isQuotientMap_mkQ.isClosed_preimage, range_restrict, ← Submodule.map_coe,
       ← Submodule.comap_coe K.mkQ]
     exact isClosed_mono_of_finiteDimensional_quotient A_closed (le_comap_map _ A)
 
@@ -104,17 +113,24 @@ a closed embedding.
 theorem step2_forward (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E))
     [codim_A : FiniteDimensional 𝕜 (E ⧸ A)] (h_ker : Disjoint u.ker A) (h_strict : IsStrictMap u)
     (h_closed : IsClosed (range u)) : IsClosedEmbedding (restrict A u) := by
+  -- Denote by `π : E → E ⧸ u.ker` the quotient map. Since `u.ker` is disjoint from `A`, we know
+  -- from step 1 that `restrict A π` is a closed embedding.
+  let π : E →L[𝕜] E ⧸ u.ker := u.ker.mkQL
+  have π_restr_clemb : IsClosedEmbedding (restrict A π) :=
+    step1_foward A u.ker A_closed h_ker
+  -- But we can factor `restrict A u` as `u' ∘ restrict A π`, where `u' : E ⧸ u.ker → F`
+  -- is the injection induced by `u`. Thus, it remains to show that `u'` is also a closed embedding.
   let u' : E ⧸ u.ker →L[𝕜] F := u.ker.liftQL u le_rfl
+  have eq : restrict A u = u' ∘ restrict A π := by ext x; simp [π, u']
   have u'_clemb : IsClosedEmbedding u' := by
+  -- But strictness of `u` means precisely that `u'` is an embedding,
+  -- and we assumed that `u` (hence `u'`) has closed range.
+  -- Hence, we are done.
     constructor
     · have : Injective u' := by simp [u', ← LinearMap.ker_eq_bot, ker_liftQ_eq_bot]
       simpa [isEmbedding_iff_isStrictMap_injective, this, and_true,
         u.ker.isQuotientMap_mkQL.isStrictMap_iff]
     · simpa [u', ← LinearMap.coe_range, Submodule.range_liftQ]
-  let π : E →L[𝕜] E ⧸ u.ker := u.ker.mkQL
-  have π_restr_clemb : IsClosedEmbedding (restrict A π) :=
-    step1_foward A u.ker A_closed h_ker
-  have eq : restrict A u = u' ∘ restrict A π := by ext x; simp [π, u']
   exact eq ▸ u'_clemb.comp π_restr_clemb
 
 theorem step2_backward (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E))
