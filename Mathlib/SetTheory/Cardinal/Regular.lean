@@ -420,7 +420,7 @@ theorem IsInaccessible.preBeth_ord (hc : IsInaccessible c) : preBeth c.ord = c :
   apply lift_iSup_lt_of_lt_cof_ord _ _
   · rwa [mk_Iio_ordinal, lift_lift, hc.isRegular.lift.cof_ord, lift_lt, ← lt_ord]
   · rintro ⟨b, hb⟩
-    exact hc.isStrongLimit.two_power_lt <| IH _ hb (hb.trans ha)
+    exact hc.isStrongLimit <| IH _ hb (hb.trans ha)
 
 theorem IsInaccessible.beth_ord (hc : IsInaccessible c) : ℶ_ c.ord = c := by
   rw [← preBeth_of_omega0_sq_le (le_of_lt _), hc.preBeth_ord]
