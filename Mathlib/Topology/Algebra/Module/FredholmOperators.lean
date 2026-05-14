@@ -239,6 +239,15 @@ def index : ℤ := finrank k f.ker - finrank k (F ⧸ f.range)
   rw [index, ker_zero, range_zero]
   simpa using (Submodule.quotEquivOfEqBot _ rfl).finrank_eq
 
+lemma index_injective {f : E →ₗ[k] F} (hf : Function.Injective f) :
+    f.index = - finrank k (F ⧸ f.range) := by
+  simpa [LinearMap.index] using LinearMap.ker_eq_bot.2 hf ▸ finrank_bot _ _
+
+lemma index_surjective {f : E →ₗ[k] F} (hf : Function.Surjective f) :
+    f.index = finrank k f.ker := by
+  rw [LinearMap.index, LinearMap.range_eq_top.mpr hf]
+  simp [finrank_eq_zero_of_subsingleton]
+
 lemma index_smul (t : k) (ht : t ≠ 0) :
     (t • f).index = f.index := by
   rw [index, index, ker_smul _ _ ht, range_smul _ _ ht]
@@ -384,8 +393,8 @@ The index is the codimension of the range.
 -/
 
 omit [IsTopologicalAddGroup E] [IsTopologicalAddGroup F] in
-theorem IsClosedEmbedding.isFredholm_struc {f : E →L[𝕜] F} [CompleteSpace 𝕜] [ContinuousSMul 𝕜 E]
-    [ContinuousSMul 𝕜 F] (hf : IsClosedEmbedding f) (hc : f.range.CoFG) :
+theorem Topology.IsClosedEmbedding.isFredholm_struc {f : E →L[𝕜] F} [CompleteSpace 𝕜]
+    [ContinuousSMul 𝕜 E] [ContinuousSMul 𝕜 F] (hf : IsClosedEmbedding f) (hc : f.range.CoFG) :
     IsFredholm_struc f := by
   constructor
   · exact hf.isStrictMap
@@ -398,8 +407,25 @@ omit [IsTopologicalAddGroup E] in
 theorem Submodule.isFredholm_struc [CompleteSpace 𝕜] [ContinuousSMul 𝕜 E] {p : Submodule 𝕜 E}
     (hp : IsClosed p.carrier) (hc : p.CoFG) :
     IsFredholm_struc p.subtypeL := by
-  refine IsClosedEmbedding.isFredholm_struc (IsClosedEmbedding.subtypeVal hp) ?_
+  refine (IsClosedEmbedding.subtypeVal hp).isFredholm_struc ?_
   simpa using hc
+
+omit [IsTopologicalAddGroup E] [IsTopologicalAddGroup F] in
+theorem Topology.IsQuotientMap.isFredholm_struc {f : E →L[𝕜] F} (hq : IsQuotientMap f)
+    (hfg : f.ker.FG) :
+    IsFredholm_struc f := by
+  constructor
+  · exact hq.isStrictMap
+  · rw [LinearMap.range_eq_top.2 hq.surjective]
+    exact isClosed_univ
+  · exact hfg
+  · rw [LinearMap.range_eq_top.2 hq.surjective]
+    exact Submodule.CoFG.top
+
+omit [IsTopologicalAddGroup E] in
+theorem Submodule.mkQL_isFredholm_struc {p : Submodule 𝕜 E} (hc : p.FG) :
+    IsFredholm_struc p.mkQL :=
+  p.isQuotientMap_mkQL.isFredholm_struc (by simpa)
 
 /- ## Composition of Fredholm (with the inverse definition) (Patrick)
 
