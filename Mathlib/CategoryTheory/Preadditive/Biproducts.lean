@@ -298,9 +298,8 @@ def biproduct.reindex {β γ : Type} [Finite β] (ε : β ≃ γ)
     cases nonempty_fintype β
     ext g g'
     by_cases h : g' = g <;>
-      simp [Preadditive.sum_comp, biproduct.lift_desc,
-        biproduct.ι_π, comp_dite, Equiv.apply_eq_iff_eq_symm_apply,
-        h]
+      simp [Preadditive.sum_comp, biproduct.lift_desc, biproduct.ι_π, comp_dite,
+        Equiv.apply_eq_iff_eq_symm_apply, h]
 
 set_option backward.defeqAttrib.useBackward true in
 /-- In a preadditive category, we can construct a binary biproduct for `X Y : C` from
