@@ -464,26 +464,26 @@ infixr:90 " ∘SL " =>
 
 @[simp, norm_cast]
 theorem coe_comp (h : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) :
-    (h.comp f : M₁ →ₛₗ[σ₁₃] M₃) = (h : M₂ →ₛₗ[σ₂₃] M₃).comp (f : M₁ →ₛₗ[σ₁₂] M₂) :=
+    (h ∘SL f : M₁ →ₛₗ[σ₁₃] M₃) = (h : M₂ →ₛₗ[σ₂₃] M₃) ∘ₛₗ (f : M₁ →ₛₗ[σ₁₂] M₂) :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_comp' (h : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) : ⇑(h.comp f) = h ∘ f :=
+theorem coe_comp' (h : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) : ⇑(h ∘SL f) = h ∘ f :=
   rfl
 
 @[simp, norm_cast]
 theorem toContinuousAddMonoidHom_comp (h : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) :
-    (↑(h.comp f) : ContinuousAddMonoidHom M₁ M₃) = (h : ContinuousAddMonoidHom M₂ M₃).comp f := rfl
+    (↑(h ∘SL f) : ContinuousAddMonoidHom M₁ M₃) = (h : ContinuousAddMonoidHom M₂ M₃).comp f := rfl
 
-theorem comp_apply (g : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) (x : M₁) : (g.comp f) x = g (f x) :=
+theorem comp_apply (g : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) (x : M₁) : (g ∘SL f) x = g (f x) :=
   rfl
 
 @[simp]
-theorem comp_id (f : M₁ →SL[σ₁₂] M₂) : f.comp (.id R₁ M₁) = f :=
+theorem comp_id (f : M₁ →SL[σ₁₂] M₂) : f ∘SL .id R₁ M₁ = f :=
   ext fun _x => rfl
 
 @[simp]
-theorem id_comp (f : M₁ →SL[σ₁₂] M₂) : (ContinuousLinearMap.id R₂ M₂).comp f = f :=
+theorem id_comp (f : M₁ →SL[σ₁₂] M₂) : .id R₂ M₂ ∘SL f = f :=
   ext fun _x => rfl
 
 section
@@ -494,41 +494,41 @@ variable {R E F : Type*} [Semiring R]
 
 /-- `g ∘ f = id` as `ContinuousLinearMap`s implies `g ∘ f = id` as functions. -/
 lemma leftInverse_of_comp {f : E →L[R] F} {g : F →L[R] E}
-    (hinv : g.comp f = ContinuousLinearMap.id R E) : Function.LeftInverse g f := by
+    (hinv : g ∘L f = .id R E) : Function.LeftInverse g f := by
   simpa [← Function.rightInverse_iff_comp] using congr(⇑$hinv)
 
 /-- `f ∘ g = id` as `ContinuousLinearMap`s implies `f ∘ g = id` as functions. -/
 lemma rightInverse_of_comp {f : E →L[R] F} {g : F →L[R] E}
-    (hinv : f.comp g = ContinuousLinearMap.id R F) : Function.RightInverse g f :=
+    (hinv : f ∘L g = .id R F) : Function.RightInverse g f :=
   leftInverse_of_comp hinv
 
 end
 
 @[simp]
-theorem comp_zero (g : M₂ →SL[σ₂₃] M₃) : g.comp (0 : M₁ →SL[σ₁₂] M₂) = 0 := by
+theorem comp_zero (g : M₂ →SL[σ₂₃] M₃) : g ∘SL (0 : M₁ →SL[σ₁₂] M₂) = 0 := by
   ext
   simp
 
 @[simp]
-theorem zero_comp (f : M₁ →SL[σ₁₂] M₂) : (0 : M₂ →SL[σ₂₃] M₃).comp f = 0 := by
+theorem zero_comp (f : M₁ →SL[σ₁₂] M₂) : (0 : M₂ →SL[σ₂₃] M₃) ∘SL f = 0 := by
   ext
   simp
 
 @[simp]
 theorem comp_add [ContinuousAdd M₂] [ContinuousAdd M₃] (g : M₂ →SL[σ₂₃] M₃)
-    (f₁ f₂ : M₁ →SL[σ₁₂] M₂) : g.comp (f₁ + f₂) = g.comp f₁ + g.comp f₂ := by
+    (f₁ f₂ : M₁ →SL[σ₁₂] M₂) : g ∘SL (f₁ + f₂) = g ∘SL f₁ + g ∘SL f₂ := by
   ext
   simp
 
 @[simp]
 theorem add_comp [ContinuousAdd M₃] (g₁ g₂ : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) :
-    (g₁ + g₂).comp f = g₁.comp f + g₂.comp f := by
+    (g₁ + g₂) ∘SL f = g₁ ∘SL f + g₂ ∘SL f := by
   ext
   simp
 
 theorem comp_finsetSum {ι : Type*} {s : Finset ι}
     [ContinuousAdd M₂] [ContinuousAdd M₃] (g : M₂ →SL[σ₂₃] M₃)
-    (f : ι → M₁ →SL[σ₁₂] M₂) : g.comp (∑ i ∈ s, f i) = ∑ i ∈ s, g.comp (f i) := by
+    (f : ι → M₁ →SL[σ₁₂] M₂) : g ∘SL (∑ i ∈ s, f i) = ∑ i ∈ s, g.comp (f i) := by
   ext
   simp
 
@@ -536,7 +536,7 @@ theorem comp_finsetSum {ι : Type*} {s : Finset ι}
 
 theorem finsetSum_comp {ι : Type*} {s : Finset ι}
     [ContinuousAdd M₃] (g : ι → M₂ →SL[σ₂₃] M₃)
-    (f : M₁ →SL[σ₁₂] M₂) : (∑ i ∈ s, g i).comp f = ∑ i ∈ s, (g i).comp f := by
+    (f : M₁ →SL[σ₁₂] M₂) : (∑ i ∈ s, g i) ∘SL f = ∑ i ∈ s, (g i).comp f := by
   ext
   simp only [coe_comp', coe_sum', Function.comp_apply, Finset.sum_apply]
 
@@ -545,18 +545,18 @@ theorem finsetSum_comp {ι : Type*} {s : Finset ι}
 theorem comp_assoc {R₄ : Type*} [Semiring R₄] [Module R₄ M₄] {σ₁₄ : R₁ →+* R₄} {σ₂₄ : R₂ →+* R₄}
     {σ₃₄ : R₃ →+* R₄} [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄] [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄]
     [RingHomCompTriple σ₁₂ σ₂₄ σ₁₄] (h : M₃ →SL[σ₃₄] M₄) (g : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) :
-    (h.comp g).comp f = h.comp (g.comp f) :=
+    (h ∘SL g) ∘SL f = h ∘SL (g ∘SL f) :=
   rfl
 
 theorem cancel_left {g : M₂ →SL[σ₂₃] M₃} {f₁ f₂ : M₁ →SL[σ₁₂] M₂} (hg : Function.Injective g)
-    (h : g.comp f₁ = g.comp f₂) : f₁ = f₂ := by
+    (h : g ∘SL f₁ = g ∘SL f₂) : f₁ = f₂ := by
   ext x
   exact hg congr($h x)
 
 instance instMul : Mul (M₁ →L[R₁] M₁) :=
   ⟨comp⟩
 
-theorem mul_def (f g : M₁ →L[R₁] M₁) : f * g = f.comp g :=
+theorem mul_def (f g : M₁ →L[R₁] M₁) : f * g = f ∘L g :=
   rfl
 
 @[simp, norm_cast]
@@ -815,7 +815,7 @@ theorem toSpanSingleton_comp (f : M₁ →L[R₁] R₁) (g : M₂) :
 @[deprecated (since := "2025-12-18")] alias smulRight_one_eq_iff := toSpanSingleton_inj
 
 theorem toSpanSingleton_comp_toSpanSingleton [ContinuousMul R₁] {x : M₂} {c : R₁} :
-    (toSpanSingleton R₁ x).comp (toSpanSingleton R₁ c) =
+    (toSpanSingleton R₁ x) ∘L (toSpanSingleton R₁ c) =
       toSpanSingleton R₁ (c • x) := smulRight_comp_smulRight 1 1
 
 end ToSpanSingleton
@@ -898,26 +898,26 @@ end
 @[simp]
 theorem comp_neg [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [IsTopologicalAddGroup M₂]
     [IsTopologicalAddGroup M₃] (g : M₂ →SL[σ₂₃] M₃) (f : M →SL[σ₁₂] M₂) :
-    g.comp (-f) = -g.comp f := by
+    g ∘SL (-f) = -g ∘SL f := by
   ext x
   simp
 
 @[simp]
 theorem neg_comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [IsTopologicalAddGroup M₃] (g : M₂ →SL[σ₂₃] M₃)
-    (f : M →SL[σ₁₂] M₂) : (-g).comp f = -g.comp f := by
+    (f : M →SL[σ₁₂] M₂) : (-g) ∘SL f = -g ∘SL f := by
   ext
   simp
 
 @[simp]
 theorem comp_sub [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [IsTopologicalAddGroup M₂]
     [IsTopologicalAddGroup M₃] (g : M₂ →SL[σ₂₃] M₃) (f₁ f₂ : M →SL[σ₁₂] M₂) :
-    g.comp (f₁ - f₂) = g.comp f₁ - g.comp f₂ := by
+    g ∘SL (f₁ - f₂) = g ∘SL f₁ - g ∘SL f₂ := by
   ext
   simp
 
 @[simp]
 theorem sub_comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [IsTopologicalAddGroup M₃] (g₁ g₂ : M₂ →SL[σ₂₃] M₃)
-    (f : M →SL[σ₁₂] M₂) : (g₁ - g₂).comp f = g₁.comp f - g₂.comp f := by
+    (f : M →SL[σ₁₂] M₂) : (g₁ - g₂) ∘SL f = g₁ ∘SL f - g₂ ∘SL f := by
   ext
   simp
 
@@ -950,7 +950,7 @@ variable {σ₂₁ : R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁]
 `LinearMap.range f₂`. -/
 def projKerOfRightInverse [IsTopologicalAddGroup M] (f₁ : M →SL[σ₁₂] M₂) (f₂ : M₂ →SL[σ₂₁] M)
     (h : Function.RightInverse f₂ f₁) : M →L[R] LinearMap.ker (f₁ : M →ₛₗ[σ₁₂] M₂) :=
-  (.id R M - f₂.comp f₁).codRestrict (LinearMap.ker f₁.toLinearMap) fun x => by simp [h (f₁ x)]
+  (.id R M - f₂ ∘SL f₁).codRestrict (LinearMap.ker f₁.toLinearMap) fun x => by simp [h (f₁ x)]
 
 @[simp]
 theorem coe_projKerOfRightInverse_apply [IsTopologicalAddGroup M] (f₁ : M →SL[σ₁₂] M₂)
@@ -1004,7 +1004,7 @@ variable {R R₂ R₃ S S₃ : Type*} [Semiring R] [Semiring R₂] [Semiring R�
 
 @[simp]
 theorem smul_comp (c : S₃) (h : M₂ →SL[σ₂₃] M₃) (f : M →SL[σ₁₂] M₂) :
-    (c • h).comp f = c • h.comp f :=
+    (c • h) ∘SL f = c • h ∘SL f :=
   rfl
 
 variable [DistribMulAction S₃ M₂] [ContinuousConstSMul S₃ M₂] [SMulCommClass R₂ S₃ M₂]
@@ -1012,14 +1012,14 @@ variable [DistribMulAction S N₂] [ContinuousConstSMul S N₂] [SMulCommClass R
 
 @[simp]
 theorem comp_smul [LinearMap.CompatibleSMul N₂ N₃ S R] (hₗ : N₂ →L[R] N₃) (c : S)
-    (fₗ : M →L[R] N₂) : hₗ.comp (c • fₗ) = c • hₗ.comp fₗ := by
+    (fₗ : M →L[R] N₂) : hₗ ∘L (c • fₗ) = c • hₗ ∘L fₗ := by
   ext x
   exact hₗ.map_smul_of_tower c (fₗ x)
 
 @[simp]
 theorem comp_smulₛₗ [SMulCommClass R₂ R₂ M₂] [SMulCommClass R₃ R₃ M₃] [ContinuousConstSMul R₂ M₂]
     [ContinuousConstSMul R₃ M₃] (h : M₂ →SL[σ₂₃] M₃) (c : R₂) (f : M →SL[σ₁₂] M₂) :
-    h.comp (c • f) = σ₂₃ c • h.comp f := by
+    h ∘SL (c • f) = σ₂₃ c • h ∘SL f := by
   ext x
   simp only [coe_smul', coe_comp', Function.comp_apply, Pi.smul_apply, map_smulₛₗ]
 
@@ -1083,7 +1083,7 @@ variable {R U V : Type*} (W : Type*) [CommSemiring R]
 /-- Composition of continuous linear maps, as a linear map. Compare `LinearMap.lcomp`. -/
 @[simps]
 def lcomp (f : U →L[R] V) : (V →L[R] W) →ₗ[R] (U →L[R] W) where
-  toFun l := l.comp f
+  toFun l := l ∘L f
   map_add' _ _ := by simp
   map_smul' _ _ := by simp
 
