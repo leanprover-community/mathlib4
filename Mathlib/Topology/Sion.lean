@@ -45,8 +45,6 @@ We follow the proof of [Komiya (1988)][Komiya-1988].
 
 ## TODO
 
-- Spell out the particular case of von Neumann theorem.
-
 - Use the Dedekind MacNeille completion of a linear order to simplify
   the statement of `DMCompletion.exists_isSaddlePointOn`.
 
