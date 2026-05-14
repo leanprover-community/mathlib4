@@ -470,6 +470,28 @@ so `u.ker` is complemented.
 
 -/
 
+/- ## Simpler criterion for `IsFredholmStruct` between RCLike Banach spaces
+
+Notes :
+* everything below works for Fréchet spaces (where Fréchet => loc convex),
+  but we don't have the prerequisites for it.
+* here we really need to know that finite dimensional spaces are complemented.
+  I propose to restrict to `RCLike` for now.
+
+Lemma : Assume that `E` and `F` are Banach space, and that `u : E →L[𝕜] F`
+has coFG range. Then `u` is strict and has closed range.
+
+Proof : pick `G` an algebraic complement of `u.range`. It's finite dimensional,
+hence closed and complemented, and `F ⧸ G` is Banach. Denote by `π : F → F ⧸ G` the quotient map.
+`π ∘L u` is a surjective CLM between Banach spaces, so it's open,
+hence a strict map with closed range. The result now follows from
+`ContinuousLinearMap.isStrictMap_isClosed_range_iff_quotient`
+(a consequence of the technical proposition)
+
+Prop : In this setting, `IsFredholmStruct` ↔ finite dimensional kernel and cokernel
+
+-/
+
 /- ## A topological lemma
 
 **Note** : this will be useful a bit later (to prove that Fredholm operators are
