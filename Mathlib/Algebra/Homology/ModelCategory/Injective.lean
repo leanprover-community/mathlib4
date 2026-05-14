@@ -93,7 +93,7 @@ open HomComplex in
 in an abelian category. We assume that the left morphism `i` is a monomorphism,
 and `p` an epimorphism with a degreewise injective kernel. Then, there exists
 a lifting for `sq` if `i` or `p` is a quasi-isomorphism. -/
-lemma lifting {A B X Y : CochainComplex.Plus C} (i : A ⟶ B) (p : X ⟶ Y)
+private lemma lifting {A B X Y : CochainComplex.Plus C} (i : A ⟶ B) (p : X ⟶ Y)
     [Mono i] [Fibration p] (hip : WeakEquivalence i ∨ WeakEquivalence p) :
     HasLiftingProperty i p where
   sq_hasLift {t b} sq := by
@@ -192,7 +192,7 @@ instance : (cofibrations (Plus C)).HasFactorization (trivialFibrations (Plus C))
     obtain ⟨d, _, _⟩ : ∃ (d : ℤ), K.IsStrictlyGE (d + 1) ∧ L.IsStrictlyGE d :=
       ⟨min (n - 1) m, K.isStrictlyGE_of_ge _ n (by grind),
         L.isStrictlyGE_of_ge _ m (by simp)⟩
-    obtain ⟨K', _, i, p, _, hp, _, fac⟩ := CochainComplex.cm5b f d
+    obtain ⟨K', _, i, p, _, hp, _, fac⟩ := cm5b f d
     exact ⟨{
       Z := ⟨K', d, inferInstance⟩
       i := ObjectProperty.homMk i
