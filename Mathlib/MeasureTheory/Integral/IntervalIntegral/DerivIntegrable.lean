@@ -33,6 +33,12 @@ open MeasureTheory Set Filter
 
 open scoped Topology
 
+-- set_option trace.profiler true in
+-- set_option Elab.async false in
+-- #count_heartbeats in
+-- befor: 31019 heartbeats,      2.475399s
+-- after:  8388 heartbeats,      0.631902s
+-- reduc: 22631 heartbeats(72%), 1.843497s(74%)
 /-- If `f` is monotone on `[a, b]`, then `f'` is the limit of `G n` a.e. on `[a, b]`, where each
 `G n` is `AEStronglyMeasurable` and the liminf of the lower Lebesgue integral of `‖G n ·‖ₑ` is at
 most `f b - f a`. -/
@@ -50,19 +56,19 @@ lemma MonotoneOn.exists_tendsto_deriv_liminf_lintegral_enorm_le
   from the right. The function `fun n x ↦ G (n : ℝ)⁻¹ x` is a witness to the conclusion of the
   lemma. -/
   let g (x : ℝ) : ℝ := f (max a (min x b))
-  have hg : Monotone g := monotoneOn_univ.mp <| hf.comp (by grind [MonotoneOn]) (by grind [MapsTo])
-  have hfg : EqOn f g (Ioo a b) := by grind [EqOn]
+  have hg : Monotone g := monotoneOn_univ.mp <| hf.comp
+    (monotoneOn_const.max <| monotoneOn_id.min monotoneOn_const) (by simpa)
+  have hfg : EqOn f g (Ioo a b) := fun x ⟨hxa, hxb⟩ => congrArg f <|
+    min_eq_left hxb.le |>.symm ▸ (max_eq_right hxa.le).symm
   replace hfg := hfg.deriv isOpen_Ioo
-  have h₁ : ∀ᵐ x, x ≠ a := by simp [ae_iff, measure_singleton]
-  have h₂ : ∀ᵐ x, x ≠ b := by simp [ae_iff, measure_singleton]
   let G (c x : ℝ) := slope g x (x + c)
   have G_integrable (n : ℕ) : Integrable (G (↑n)⁻¹) (volume.restrict (Icc a b)) := by
     have := hg.monotoneOn (Icc a (b + (n : ℝ)⁻¹)) |>.intervalIntegrable_slope hab (by simp)
     exact intervalIntegrable_iff_integrableOn_Icc_of_le hab |>.mp this
   refine ⟨fun n x ↦ G (n : ℝ)⁻¹ x, ?_, fun n ↦ G_integrable n |>.aestronglyMeasurable, ?_⟩
-  · rw [MeasureTheory.ae_restrict_iff' (by measurability)]
-    filter_upwards [hg.ae_differentiableAt, h₁, h₂] with x hx₁ hx₂ hx₃ hx₄
-    rw [hfg (by grind [Icc_diff_both])]
+  · rw [← restrict_Ioo_eq_restrict_Icc, MeasureTheory.ae_restrict_iff' measurableSet_Ioo]
+    filter_upwards [hg.ae_differentiableAt] with x hx₁ hx₂
+    rw [hfg hx₂]
     exact hx₁.hasDerivAt.tendsto_slope.comp <|
       tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
       (by convert tendsto_const_nhds.add (tendsto_inv_atTop_nhds_zero_nat (𝕜 := ℝ)); simp)
@@ -96,6 +102,12 @@ theorem MonotoneOn.intervalIntegrable_deriv {f : ℝ → ℝ} {a b : ℝ}
   have integrable_f_deriv := integrable_of_tendsto hGf hG hG'₀
   exact (intervalIntegrable_iff_integrableOn_Icc_of_le hab).mpr integrable_f_deriv
 
+-- set_option trace.profiler true in
+-- set_option Elab.async false in
+-- #count_heartbeats in
+-- befor: 22680 heartbeats,      1.713467s
+-- after:  5983 heartbeats,      0.537475s
+-- reduc: 16697 heartbeats(73%), 1.175992s(68%)
 /-- If `f` is monotone on `a..b`, then `f'` is interval integrable on `a..b` and the integral of
 `f'` on `a..b` is in between `0` and `f b - f a`. -/
 theorem MonotoneOn.intervalIntegral_deriv_mem_uIcc {f : ℝ → ℝ} {a b : ℝ}
@@ -110,8 +122,6 @@ theorem MonotoneOn.intervalIntegral_deriv_mem_uIcc {f : ℝ → ℝ} {a b : ℝ}
     rwa [uIcc_of_le (by linarith)] at h
   rw [uIcc_of_le hab] at hf
   obtain ⟨G, hGf, hG, hG'⟩ := hf.exists_tendsto_deriv_liminf_lintegral_enorm_le hab
-  have h₁ : ∀ᵐ x, x ≠ a := by simp [ae_iff, measure_singleton]
-  have h₂ : ∀ᵐ x, x ≠ b := by simp [ae_iff, measure_singleton]
   have hG'₀ : liminf (fun (n : ℕ) ↦ ∫⁻ (x : ℝ) in Icc a b, ‖G n x‖ₑ) atTop ≠ ⊤ :=
     lt_of_le_of_lt hG' ENNReal.ofReal_lt_top |>.ne_top
   have integrable_f_deriv := integrable_of_tendsto hGf hG hG'₀
@@ -120,13 +130,13 @@ theorem MonotoneOn.intervalIntegral_deriv_mem_uIcc {f : ℝ → ℝ} {a b : ℝ}
   have : f a ≤ f b := hf (by simp [hab]) (by simp [hab]) hab
   rw [uIcc_of_le (by linarith), mem_Icc]
   have f_deriv_nonneg {x : ℝ} (hx : x ∈ Ioo a b) : 0 ≤ deriv f x := by
-    rw [← derivWithin_of_mem_nhds (Icc_mem_nhds (a := a) (b := b) (by grind) (by grind))]
+    rw [← derivWithin_of_mem_nhds (Icc_mem_nhds hx.left hx.right)]
     exact hf.derivWithin_nonneg
   constructor
   · apply intervalIntegral.integral_nonneg_of_ae_restrict hab
-    rw [Filter.EventuallyLE, MeasureTheory.ae_restrict_iff' (by simp)]
-    filter_upwards [h₁, h₂] with x _ _ _
-    exact f_deriv_nonneg (by grind [Icc_diff_both])
+    rw [Filter.EventuallyLE, ← restrict_Ioo_eq_restrict_Icc,
+      MeasureTheory.ae_restrict_iff' measurableSet_Ioo]
+    exact Filter.Eventually.of_forall @f_deriv_nonneg
   · have ebound := lintegral_enorm_le_liminf_of_tendsto
       ((MeasureTheory.ae_restrict_iff' (by measurability) |>.mpr hGf))
       (fun n ↦ (hG n).aemeasurable.enorm)
@@ -137,10 +147,9 @@ theorem MonotoneOn.intervalIntegral_deriv_mem_uIcc {f : ℝ → ℝ} {a b : ℝ}
         integral_Icc_eq_integral_Ioc,
         ← intervalIntegral.integral_of_le hab] at ebound
     convert ebound using 1
-    refine intervalIntegral.integral_congr_ae ?_
-    rw [uIoc_of_le hab]
-    filter_upwards [h₂] with x _ _
-    exact abs_eq_self.mpr (f_deriv_nonneg (by grind)) |>.symm
+    refine intervalIntegral.integral_congr_uIoo ?_
+    rw [uIoo_of_le hab]
+    intro x hx; exact Eq.symm <| abs_eq_self.mpr <| f_deriv_nonneg hx
 
 /-- If `f` has bounded variation on `uIcc a b`, then `f'` is interval integrable on `a..b`. -/
 theorem BoundedVariationOn.intervalIntegrable_deriv {f : ℝ → ℝ} {a b : ℝ}

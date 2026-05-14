@@ -392,14 +392,18 @@ theorem fourierCoeff_liftIoc_eq {a : ℝ} (f : ℝ → ℂ) (n : ℤ) :
     rw [liftIoc_coe_apply]
     rwa [uIoc_of_le (lt_add_of_pos_right a hT.out).le] at hx
 
+-- set_option trace.profiler true in
+-- set_option Elab.async false in
+-- #count_heartbeats in
+--  befor: 1040     0.055128s
+--  after: 703      0.041353s
+--  reduc: 337(32%) 0.013775s(24%)
 theorem fourierCoeff_liftIco_eq {a : ℝ} (f : ℝ → ℂ) (n : ℤ) :
     fourierCoeff (AddCircle.liftIco T a f) n =
     fourierCoeffOn (lt_add_of_pos_right a hT.out) f n := by
   rw [fourierCoeffOn_eq_integral, fourierCoeff_eq_intervalIntegral _ _ a, add_sub_cancel_left a T]
   congr 1
-  simp_rw [intervalIntegral.integral_of_le (lt_add_of_pos_right a hT.out).le]
-  iterate 2 rw [integral_Ioc_eq_integral_Ioo]
-  refine setIntegral_congr_fun measurableSet_Ioo fun x hx => ?_
+  refine intervalIntegral.integral_congr_Ioo_of_le (le_add_of_nonneg_right hT.out.le) fun x hx => ?_
   rw [liftIco_coe_apply (Ioo_subset_Ico_self hx)]
 
 end fourierCoeff

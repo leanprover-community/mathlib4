@@ -242,6 +242,12 @@ theorem AbsolutelyContinuousOnInterval.integral_deriv_eq_sub {f : ℝ → ℝ} {
   have := hC b (by simp)
   grind
 
+-- set_option trace.profiler true in
+-- set_option Elab.async false in
+-- #count_heartbeats in
+-- befor: 1475 heartbeats, 0.092142s
+-- after:  845 heartbeats, 0.041665s
+-- reduc:  630(42%)      , 0.050477s(54%)
 /-- The integral of the derivative of a product of two absolutely continuous functions. -/
 theorem AbsolutelyContinuousOnInterval.integral_deriv_mul_eq_sub
     {f g : ℝ → ℝ} {a b : ℝ}
@@ -250,7 +256,7 @@ theorem AbsolutelyContinuousOnInterval.integral_deriv_mul_eq_sub
   rw [← (hf.fun_mul hg).integral_deriv_eq_sub]
   apply intervalIntegral.integral_congr_ae
   filter_upwards [hf.ae_differentiableAt, hg.ae_differentiableAt] with x hx₁ hx₂ hx₃
-  have hx₄ : x ∈ uIcc a b := by grind [uIcc, uIoc]
+  have hx₄ : x ∈ uIcc a b := uIoc_subset_uIcc hx₃
   have hx₅ := (hx₁ hx₄).hasDerivAt.mul (hx₂ hx₄).hasDerivAt
   exact hx₅.deriv.symm
 

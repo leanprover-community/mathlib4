@@ -30,6 +30,12 @@ open MeasureTheory Set Filter Function IsUnifLocDoublingMeasure
 
 open scoped Topology
 
+-- set_option trace.profiler true in
+-- set_option Elab.async false in
+-- #count_heartbeats in
+-- befor: 7684 heartbeats,      0.603387s
+-- after: 5235 heartbeats,      0.445507s
+-- reduc: 2449 heartbeats(31%), 0.157880s(26%)
 /-- The (global) interval version of the *Lebesgue Differentiation Theorem*: if `f : ℝ → ℝ` is
 locally integrable, then for almost every `x`, for any `c : ℝ`, the derivative of
 `∫ (t : ℝ) in c..x, f t` at `x` is equal to `f x`. -/
@@ -39,7 +45,7 @@ theorem LocallyIntegrable.ae_hasDerivAt_integral {f : ℝ → ℝ} (hf : Locally
     intervalIntegrable_iff.mpr <|
       (hf.integrableOn_isCompact isCompact_uIcc).mono_set uIoc_subset_uIcc
   have LDT := (vitaliFamily volume 1).ae_tendsto_average hf
-  have {a b : ℝ} : ∫ (t : ℝ) in Ioc a b, f t = ∫ (t : ℝ) in Icc a b, f t :=
+  have h {a b : ℝ} : ∫ (t : ℝ) in Ioc a b, f t = ∫ (t : ℝ) in Icc a b, f t :=
     integral_Icc_eq_integral_Ioc (x := a) (y := b) (X := ℝ) |>.symm
   filter_upwards [LDT] with x hx
   intro c
@@ -47,15 +53,16 @@ theorem LocallyIntegrable.ae_hasDerivAt_integral {f : ℝ → ℝ} (hf : Locally
   constructor
   · refine Filter.tendsto_congr' ?_ |>.mpr (hx.comp x.tendsto_Icc_vitaliFamily_left)
     filter_upwards [self_mem_nhdsWithin] with y hy
-    replace hy : y ≤ x := by grind
-    simp [slope, average, intervalIntegral.integral_interval_sub_left, hg,
-        intervalIntegral.integral_of_ge, hy, this]
-    grind
+    replace hy : y ≤ x := hy.le
+    suffices -((y - x)⁻¹ * ∫ (t : ℝ) in Icc y x, f t) = (x - y)⁻¹ * ∫ (t : ℝ) in Icc y x, f t by
+      simpa [slope, average, intervalIntegral.integral_interval_sub_left, hg,
+        intervalIntegral.integral_of_ge, hy, h]
+    rw [← neg_mul, neg_inv, neg_sub]
   · refine Filter.tendsto_congr' ?_ |>.mpr (hx.comp x.tendsto_Icc_vitaliFamily_right)
     filter_upwards [self_mem_nhdsWithin] with y hy
-    replace hy : x ≤ y := by grind
+    replace hy : x ≤ y := hy.le
     simp [slope, average, intervalIntegral.integral_interval_sub_left, hg,
-        intervalIntegral.integral_of_le, hy, this]
+        intervalIntegral.integral_of_le, hy, h]
 
 /-- The (local) interval version of the *Lebesgue Differentiation Theorem*: if `f : ℝ → ℝ` is
 interval integrable on `a..b`, then for almost every `x ∈ uIcc a b`, for any `c ∈ uIcc a b`, the

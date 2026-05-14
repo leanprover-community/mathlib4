@@ -440,6 +440,10 @@ theorem exists_taylor_mean_remainder_bound {f : ℝ → E} {a b : ℝ} {n : ℕ}
   refine taylor_mean_remainder_bound hab hf hx fun y => ?_
   exact (hf.continuousOn_iteratedDerivWithin rfl.le <| uniqueDiffOn_Icc h).norm.le_sSup_image_Icc
 
+-- set_option trace.profiler true in
+-- before : Used 26585 heartbeats,      2.095996s
+-- after  : Used 18827 heartbeats,      1.575002s
+-- reduce :       7758 heartbeats(29%), 0.520994s(24%)
 /-- **Taylor's theorem** with the Integral form of the remainder. This is an auxiliary theorem
 which is used to prove the two useful versions `taylor_integral_remainder_of_absolutelyContinuous`
 and `taylor_integral_remainder`.
@@ -470,9 +474,9 @@ theorem taylor_integral_remainder_aux [NormedAddCommGroup F] [NormedSpace ℝ F]
       iteratedDerivWithin_zero, one_smul, deriv_const', div_one, zero_smul,
       intervalIntegral.integral_zero, sub_zero] at hf
     rw [← hf]
-    apply intervalIntegral.integral_congr_ae
-    filter_upwards [MeasureTheory.volume.ae_ne x₀, MeasureTheory.volume.ae_ne x] with _ _ _ _
-    grind [derivWithin_of_mem_nhds, Icc_mem_nhds, uIcc]
+    refine intervalIntegral.integral_congr_uIoo fun _ ⟨h1, h2⟩ => ?_
+    rw [← derivWithin_of_mem_nhds <| Icc_mem_nhds h1 h2]
+    rfl
   | succ n ih =>
     have : UniqueDiffOn ℝ [[x₀, x]] := uniqueDiffOn_Icc (by grind)
     specialize ih (by grind)
@@ -492,12 +496,12 @@ theorem taylor_integral_remainder_aux [NormedAddCommGroup F] [NormedSpace ℝ F]
         congr
         field_simp
         grind
-    · apply intervalIntegral.integral_congr_ae
-      filter_upwards [MeasureTheory.volume.ae_ne x₀, MeasureTheory.volume.ae_ne x] with _ _ _ _
+    · refine intervalIntegral.integral_congr_uIoo fun _ ⟨h1, h2⟩ => ?_
       rw [iteratedDerivWithin_succ]
       congr
-      · rw [Nat.factorial]; grind
-      · grind [derivWithin_of_mem_nhds, Icc_mem_nhds, uIcc]
+      · rw [Nat.factorial, Nat.cast_mul, Nat.succ_eq_add_one, Nat.cast_add, Nat.cast_one]
+      · rw [← derivWithin_of_mem_nhds <| Icc_mem_nhds h1 h2]
+        rfl
 
 /-- **Taylor's theorem** with the Integral form of the remainder.
 

@@ -97,9 +97,8 @@ theorem intervalIntegrable_congr_ae {g : ℝ → ε} (h : f =ᵐ[μ.restrict (Ι
 theorem intervalIntegrable_congr_uIoo [NoAtoms μ] {g : ℝ → ε} (h : EqOn f g (uIoo a b)) :
     IntervalIntegrable f μ a b ↔ IntervalIntegrable g μ a b := by
   apply intervalIntegrable_congr_ae
-  filter_upwards [μ.restrict (Ι a b) |>.ae_ne <| a ⊔ b,
-    ae_restrict_mem measurableSet_uIoc] with x _ hx
-  exact h ⟨hx.left, lt_of_le_of_ne hx.right ‹_›⟩
+  rw [uIoc, ← restrict_Ioo_eq_restrict_Ioc]
+  apply ae_restrict_of_forall_mem measurableSet_Ioo h
 
 theorem IntervalIntegrable.congr_ae {g : ℝ → ε} (hf : IntervalIntegrable f μ a b)
     (h : f =ᵐ[μ.restrict (Ι a b)] g) :
