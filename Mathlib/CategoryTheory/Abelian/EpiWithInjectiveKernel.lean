@@ -117,9 +117,8 @@ lemma epiWithInjectiveKernel.hasLiftingProperty
   suffices (MorphismProperty.monomorphisms C).rlp p from this _ (.infer_property _)
   rw [epiWithInjectiveKernel_iff] at hp
   obtain ⟨I, _, s, hs, ⟨σ⟩⟩ := hp
-  have hI : (MorphismProperty.monomorphisms C).rlp (0 : I ⟶ 0) := by
-    intro A B i (hi : Mono i)
-    exact Injective.hasLiftingProperty_of_isZero _ _ (isZero_zero C)
+  have hI : (MorphismProperty.monomorphisms C).rlp (0 : I ⟶ 0) :=
+    fun _ _ _ _ ↦ Injective.hasLiftingProperty_of_isZero _ _ (isZero_zero C)
   refine MorphismProperty.of_isPullback (f' := σ.r) (f := 0) ⟨by simp, ⟨?_⟩⟩ hI
   refine PullbackCone.IsLimit.mk _ (fun t ↦ t.fst ≫ s + t.snd ≫ σ.s)
     (fun t ↦ by simp [dsimp% σ.f_r]) (fun t ↦ by simp [hs, dsimp% σ.s_g]) (fun t m hm₁ hm₂ ↦ ?_)
