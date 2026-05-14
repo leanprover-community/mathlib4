@@ -274,6 +274,7 @@ pattern-matched, like `rintro` would, using the `with` keyword.
 syntax (name := convertTo) "convert_to" ("!")? Parser.Tactic.optConfig " ←"? ppSpace term
   (" using " num)? (" with" (ppSpace colGt rintroPat)*)? (Parser.Tactic.location)? : tactic
 
+@[tactic_alt convertTo]
 syntax (name := convert_to!) "convert_to!" Lean.Parser.Tactic.optConfig " ←"? ppSpace term
   (" using " num)? (" with" (ppSpace colGt rintroPat)*)? (Parser.Tactic.location)? : tactic
 
