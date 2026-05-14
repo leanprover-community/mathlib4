@@ -29,7 +29,7 @@ def Equiv.Perm.decomposeFin {n : ℕ} : Perm (Fin n.succ) ≃ Fin n.succ × Perm
 @[simp]
 theorem Equiv.Perm.decomposeFin_symm_of_refl {n : ℕ} (p : Fin (n + 1)) :
     Equiv.Perm.decomposeFin.symm (p, Equiv.refl _) = swap 0 p := by
-  simp [Equiv.Perm.decomposeFin, Equiv.permCongr_def]
+  simp [Equiv.Perm.decomposeFin, Equiv.permCongr_def, pull_end]
 
 @[simp]
 theorem Equiv.Perm.decomposeFin_symm_of_one {n : ℕ} (p : Fin (n + 1)) :
@@ -448,6 +448,11 @@ theorem cycleIcc_zero_eq_cycleRange (i : Fin n) [NeZero n] : cycleIcc 0 i = cycl
   · simp [-cycleIcc_def_le, cycleIcc_of_ge_of_lt (zero_le x) ch, cycleRange_of_lt ch]
   · simp [-cycleIcc_def_le, ch]
   · simp [-cycleIcc_def_le, cycleIcc_of_gt ch, cycleRange_of_gt ch]
+
+theorem cycleIcc_comp_succAbove {n : ℕ} (i j : Fin (n + 1)) (hij : i ≤ j) :
+    (cycleIcc i j) ∘ j.succAbove = i.succAbove := by
+  grind [cycleIcc_of_lt, succAbove_of_castSucc_lt, cycleIcc_of_ge_of_lt,
+    succAbove_of_le_castSucc, coeSucc_eq_succ, cycleIcc_of_gt]
 
 theorem cycleIcc.trans [NeZero n] (hij : i ≤ j) (hjk : j ≤ k) :
     (cycleIcc i j) ∘ (cycleIcc j k) = (cycleIcc i k) := by
