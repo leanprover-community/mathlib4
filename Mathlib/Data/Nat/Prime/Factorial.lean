@@ -28,6 +28,21 @@ theorem Prime.dvd_factorial : ∀ {n p : ℕ} (_ : Prime p), p ∣ n ! ↔ p ≤
       ⟨fun h => h.elim (le_of_dvd (succ_pos _)) le_succ_of_le, fun h =>
         (_root_.lt_or_eq_of_le h).elim (Or.inr ∘ le_of_lt_succ) fun h => Or.inl <| by rw [h]⟩
 
+lemma Prime.dvd_ascFactorial_iff {p k n : ℕ} (hp : p.Prime) :
+    p ∣ k.ascFactorial n ↔ ∃ i < n, p ∣ k + i := by
+  induction n with
+  | zero => simp [Nat.ascFactorial_zero, hp.ne_one]
+  | succ n ih =>
+    rw [Nat.ascFactorial_succ, hp.dvd_mul, ih]
+    constructor
+    · rintro (h | ⟨i, hi, h⟩)
+      · exact ⟨n, lt_succ_self n, h⟩
+      · exact ⟨i, lt_succ_of_lt hi, h⟩
+    · rintro ⟨i, hi, h⟩
+      rcases lt_or_eq_of_le (Nat.le_of_lt_succ hi) with hi | rfl
+      · exact Or.inr ⟨i, hi, h⟩
+      · exact Or.inl h
+
 theorem coprime_factorial_iff {m n : ℕ} (hm : m ≠ 1) :
     m.Coprime n ! ↔ n < m.minFac := by
   rw [← not_le, iff_not_comm, Nat.Prime.not_coprime_iff_dvd]
