@@ -7,6 +7,13 @@ module
 
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 public import Mathlib.CategoryTheory.Triangulated.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Rotate

@@ -5,7 +5,16 @@ Authors: Mario Carneiro, Kenny Lau
 -/
 module
 
-public import Mathlib.Data.List.Forall2
+public import Aesop
+public import Batteries.Data.List.Lemmas
+public import Mathlib.Data.List.Defs
+public import Mathlib.Logic.Function.Basic
+public import Mathlib.Logic.Relator
+import Mathlib.Data.List.Basic
+import Mathlib.Data.List.Forall2
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
+import Mathlib.Tactic.FBinop
 
 /-!
 # Lists with no duplicates

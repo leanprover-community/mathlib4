@@ -5,9 +5,33 @@ Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Continuity
-public import Mathlib.Topology.MetricSpace.Bounded
 public import Mathlib.Order.Filter.Pointwise
+public import Mathlib.Analysis.Normed.Group.Defs
+public import Mathlib.Topology.Algebra.Support
+public import Mathlib.Topology.MetricSpace.ProperSpace
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Algebra.Order.Monoid.NatCast
+import Mathlib.Analysis.Normed.Group.Continuity
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.EReal.Operations
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Order.Filter.AtTopBot.Basic
+import Mathlib.Order.Filter.AtTopBot.Tendsto
+import Mathlib.Order.Filter.Map
+import Mathlib.Order.Filter.Tendsto
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.MetricSpace.Bounded
+import Mathlib.Topology.MetricSpace.Cauchy
+import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
+import Mathlib.Topology.Metrizable.Uniformity
 
 /-!
 # Boundedness in normed groups

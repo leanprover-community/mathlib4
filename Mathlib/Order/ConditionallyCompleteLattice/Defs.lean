@@ -8,6 +8,8 @@ module
 public import Mathlib.Order.Bounds.Basic
 public import Mathlib.Order.SetNotation
 public import Mathlib.Order.WellFounded
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Definitions of conditionally complete lattices

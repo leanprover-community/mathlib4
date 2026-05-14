@@ -5,10 +5,14 @@ Authors: Jeremy Tan
 -/
 module
 
-public import Mathlib.Data.Set.Image
 public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Order.Interval.Set.Defs
 public import Mathlib.Order.SetNotation
+public import Aesop
+import Mathlib.Data.Set.Image
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Properties of relative upper/lower sets

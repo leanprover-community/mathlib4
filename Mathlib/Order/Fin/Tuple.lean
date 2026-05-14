@@ -10,6 +10,9 @@ public import Mathlib.Logic.Equiv.Fin.Basic
 public import Mathlib.Order.Fin.Basic
 public import Mathlib.Order.PiLex
 public import Mathlib.Order.Interval.Set.Defs
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Order properties on tuples

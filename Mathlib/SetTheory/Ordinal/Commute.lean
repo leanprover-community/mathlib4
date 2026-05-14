@@ -6,6 +6,11 @@ Authors: Snir Broshi
 module
 
 public import Mathlib.SetTheory.Ordinal.Arithmetic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Ordinal arithmetic commutativity

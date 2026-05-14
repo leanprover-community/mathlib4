@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Combinatorics.Quiver.Cast
 public import Mathlib.Combinatorics.Quiver.Symmetric
+import Mathlib.Util.CompileInductive
 
 /-!
 # Single-object quiver

@@ -3,11 +3,17 @@ Copyright (c) 2024 Vasily Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasily Nesterov
 -/
-module
+module -- shake: keep-all
 
 public meta import Mathlib.Tactic.Linarith.Datatypes
 public import Mathlib.Tactic.Linarith.Datatypes
 public import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.PositiveVector
+public import Batteries.Data.List.Basic
+public meta import Batteries.Data.List.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # The oracle based on Simplex Algorithm

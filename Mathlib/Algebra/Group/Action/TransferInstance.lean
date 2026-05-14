@@ -9,7 +9,10 @@ public import Mathlib.Algebra.Group.Action.Faithful
 public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.Algebra.Group.InjSurj
-public import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Transfer algebraic structures across `Equiv`s

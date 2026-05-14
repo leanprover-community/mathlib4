@@ -6,6 +6,20 @@ Authors: Anne Baanen
 module
 
 public import Mathlib.LinearAlgebra.Determinant
+import Mathlib.Algebra.Algebra.Subalgebra.Tower
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Order.AbsoluteValue.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Totient
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Norm for (finite) ring extensions

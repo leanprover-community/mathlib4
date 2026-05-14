@@ -8,6 +8,11 @@ module
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 public import Mathlib.CategoryTheory.EssentiallySmall
 public import Mathlib.CategoryTheory.ObjectProperty.Small
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Logic.Small.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Small sets in the category of structured arrows

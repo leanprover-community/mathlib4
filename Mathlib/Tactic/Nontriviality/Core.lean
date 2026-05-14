@@ -3,12 +3,14 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Mario Carneiro
 -/
-module
+module -- shake: keep-all
 
 public meta import Qq.MetaM
 public import Mathlib.Logic.Nontrivial.Basic -- shake: keep (tactic dependency)
 public import Mathlib.Tactic.Attr.Register -- shake: keep (tactic dependency)
 public meta import Mathlib.Tactic.ToDual
+public import Qq.Macro
+public import Qq.Typ
 
 /-! # The `nontriviality` tactic. -/
 

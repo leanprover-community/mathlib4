@@ -11,6 +11,15 @@ public import Mathlib.Data.Multiset.Lattice
 public import Mathlib.Data.Set.BooleanAlgebra
 public import Mathlib.Order.Hom.BoundedLattice
 public import Mathlib.Order.Nat
+public import Mathlib.Order.WithBot
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.Basic
+import Mathlib.Order.BoundedOrder.Lattice
+import Mathlib.Order.Hom.Set
+import Mathlib.Order.WellFounded
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Lattice operations on finsets

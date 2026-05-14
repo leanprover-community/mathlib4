@@ -5,14 +5,20 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Logic.Nontrivial.Basic
 public import Mathlib.Order.TypeTags
 public import Mathlib.Data.Option.NAry
-public import Mathlib.Tactic.Contrapose
 public import Mathlib.Tactic.Lift
-public import Mathlib.Data.Option.Basic
 public import Mathlib.Order.Lattice
 public import Mathlib.Order.BoundedOrder.Basic
+public import Aesop
+public import Mathlib.Order.RelClasses
+import Mathlib.Data.Option.Basic
+import Mathlib.Logic.Nontrivial.Basic
+import Mathlib.Tactic.Coe
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.MkIffOfInductiveProp
+import Mathlib.Tactic.SimpRw
+import Mathlib.Util.CompileInductive
 
 /-!
 # `WithBot`, `WithTop`

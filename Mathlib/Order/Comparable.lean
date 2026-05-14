@@ -6,6 +6,10 @@ Authors: Violeta Hernández Palacios
 module
 
 public import Mathlib.Order.Antisymmetrization
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.Tauto
+import Mathlib.Util.CompileInductive
 
 /-!
 # Comparability and incomparability relations

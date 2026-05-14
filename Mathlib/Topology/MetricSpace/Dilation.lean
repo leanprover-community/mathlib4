@@ -7,8 +7,24 @@ module
 
 public import Mathlib.Topology.MetricSpace.Antilipschitz
 public import Mathlib.Topology.MetricSpace.Isometry
-public import Mathlib.Topology.MetricSpace.Lipschitz
 public import Mathlib.Data.FunLike.Basic
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Data.ENNReal.Inv
+import Mathlib.Data.ENNReal.Operations
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Order.Filter.Tendsto
+import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.ContinuousOn
+import Mathlib.Topology.MetricSpace.Lipschitz
+import Mathlib.Topology.UniformSpace.UniformEmbedding
 
 /-!
 # Dilations

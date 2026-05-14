@@ -9,6 +9,11 @@ public import Mathlib.Algebra.Order.Antidiag.Finsupp
 public import Mathlib.Data.Finsupp.Basic
 public import Mathlib.Data.Finsupp.Multiset
 import Mathlib.Data.Sym.Card
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 

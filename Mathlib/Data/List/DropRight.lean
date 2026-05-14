@@ -5,9 +5,14 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.Data.List.Induction
-public import Mathlib.Data.List.TakeWhile
-public import Mathlib.Data.List.Basic
+public import Aesop
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Tactic.ToDual
+import Mathlib.Data.List.Induction
+import Mathlib.Data.List.TakeWhile
+import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 

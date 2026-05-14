@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 public import Mathlib.Data.Set.SMulAntidiagonal
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Antidiagonal for scalar multiplication as a `Finset`.

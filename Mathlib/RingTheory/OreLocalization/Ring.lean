@@ -8,6 +8,11 @@ module
 public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.RingTheory.OreLocalization.NonZeroDivisors
+import Mathlib.Algebra.Group.Units.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 

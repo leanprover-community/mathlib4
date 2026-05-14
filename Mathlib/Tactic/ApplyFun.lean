@@ -3,11 +3,14 @@ Copyright (c) 2019 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Keeley Hoek, Patrick Massot, Kim Morrison
 -/
-module
+module -- shake: keep-all
 
 public meta import Mathlib.Lean.Expr.Basic
 public import Mathlib.Order.Hom.Basic
 public meta import Mathlib.Tactic.ToDual
+public import Mathlib.Tactic.CongrExclamation
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # The `apply_fun` tactic.

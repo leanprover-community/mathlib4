@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Data.Set.Lattice
 public import Mathlib.Order.Directed
+public import Mathlib.Data.Set.Inclusion
+import Mathlib.Data.Set.Image
+import Mathlib.Tactic.Coe
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Union lift

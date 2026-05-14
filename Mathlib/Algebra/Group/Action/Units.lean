@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Group.Action.Faithful
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Units.Defs
+import Mathlib.Util.CompileInductive
 
 /-! # Group actions on and by `Mˣ`
 

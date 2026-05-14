@@ -15,7 +15,10 @@ public import Mathlib.Data.Multiset.Basic
 public import Mathlib.Logic.Equiv.Set
 public import Mathlib.Order.Directed
 public import Mathlib.Order.Interval.Set.Defs
-public import Mathlib.Data.Set.SymmDiff
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Basic lemmas on finite sets

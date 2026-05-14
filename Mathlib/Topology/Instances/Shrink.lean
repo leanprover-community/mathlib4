@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Logic.Small.Defs
 public import Mathlib.Topology.Homeomorph.TransferInstance
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Topological space structure on `Shrink X`

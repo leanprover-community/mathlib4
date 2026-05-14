@@ -5,9 +5,20 @@ Authors: Mario Carneiro, Kevin Kappelmann
 -/
 module
 
-public import Mathlib.Algebra.Order.Field.Basic
-public import Mathlib.Algebra.Order.Floor.Semiring
-public import Mathlib.Tactic.Linarith
+public import Mathlib.Algebra.Order.Floor.Defs
+public import Mathlib.Tactic.NormNum
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Semiring
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Algebra.Order.Monoid.NatCast
+import Mathlib.Algebra.Ring.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Linarith.Frontend
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Lemmas on `Nat.floor` and `Nat.ceil` for semifields

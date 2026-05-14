@@ -7,6 +7,12 @@ module
 
 public import Mathlib.Algebra.Algebra.Operations
 public import Mathlib.LinearAlgebra.SModEq.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Pointwise lemmas for modular equivalence

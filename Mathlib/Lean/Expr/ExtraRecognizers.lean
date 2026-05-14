@@ -5,7 +5,8 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Data.Set.CoeSort
+public import Mathlib.Tactic.ToDual
+import Mathlib.Data.Set.CoeSort
 
 /-!
 # Additional Expr recognizers needing theory imports

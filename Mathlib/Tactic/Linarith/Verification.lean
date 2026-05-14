@@ -3,11 +3,15 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-module
+module -- shake: keep-all
 
 public meta import Mathlib.Util.Qq
 public meta import Mathlib.Tactic.Linarith.Datatypes
 public import Mathlib.Tactic.Linarith.Parsing
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Deriving a proof of false

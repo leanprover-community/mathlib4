@@ -6,6 +6,9 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.Multiset.Dedup
+public import Mathlib.Data.Multiset.UnionInter
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
 
 /-!
 # The fold operation for a commutative associative operation over a multiset.

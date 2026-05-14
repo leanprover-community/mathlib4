@@ -5,10 +5,32 @@ Authors: Andrew Yang, Qi Ge, Christian Merten
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Morphisms.Immersion
 public import Mathlib.AlgebraicGeometry.Morphisms.Proper
-public import Mathlib.RingTheory.RingHom.Injective
-public import Mathlib.RingTheory.Valuation.LocalSubring
+public import Mathlib.RingTheory.Valuation.ValuationRing
+import Mathlib.Algebra.Category.Ring.Instances
+import Mathlib.Algebra.EuclideanDomain.Field
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.AlgebraicGeometry.Morphisms.Immersion
+import Mathlib.AlgebraicGeometry.Morphisms.IsIso
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.RingTheory.RingHom.Injective
+import Mathlib.RingTheory.Valuation.LocalSubring
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Sheaves.Init
 
 /-!
 # Valuative criterion

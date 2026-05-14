@@ -5,8 +5,10 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Int.Cast.Basic
 public import Mathlib.Data.Nat.Cast.Prod
+public import Mathlib.Data.Int.Cast.Defs
+import Mathlib.Data.Int.Cast.Basic
+import Mathlib.Util.CompileInductive
 
 /-!
 # The product of two `AddGroupWithOne`s.

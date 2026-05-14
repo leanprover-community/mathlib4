@@ -7,6 +7,11 @@ module
 
 public import Mathlib.CategoryTheory.CopyDiscardCategory.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Markov Categories

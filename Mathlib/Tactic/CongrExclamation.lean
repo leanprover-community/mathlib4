@@ -3,15 +3,15 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-module
+module -- shake: keep-all
 
 public meta import Lean.Elab.Tactic.Config
 public meta import Lean.Elab.Tactic.RCases
 public meta import Lean.Meta.Tactic.Assumption
 public meta import Lean.Meta.Tactic.Rfl
-public meta import Mathlib.Lean.Meta.CongrTheorems
-public meta import Mathlib.Logic.Basic
 public import Mathlib.Lean.Meta.CongrTheorems
+public import Mathlib.Logic.Basic
+import Mathlib.Init
 
 /-!
 # The `congr!` tactic

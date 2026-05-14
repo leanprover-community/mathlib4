@@ -5,7 +5,15 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.Order.Zorn
+public import Mathlib.Order.Hom.Basic
+import Mathlib.Order.CompleteLattice.Basic
+import Mathlib.Order.Minimal
+import Mathlib.Order.Zorn
+import Mathlib.Tactic.ByContra
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.SimpRw
+import Mathlib.Util.CompileInductive
 
 /-!
 # Extend a partial order to a linear order

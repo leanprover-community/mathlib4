@@ -6,8 +6,32 @@ Authors: Christian Merten, Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Integral
-public import Mathlib.Algebra.Category.Ring.Epi
-public import Mathlib.RingTheory.Finiteness.Prod
+import Mathlib.Algebra.Category.Ring.Epi
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.AlgebraicGeometry.Morphisms.AffineAnd
+import Mathlib.AlgebraicGeometry.Morphisms.IsIso
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+import Mathlib.CategoryTheory.Monad.Adjunction
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.RingTheory.Finiteness.Prod
+import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
+import Mathlib.RingTheory.RingHom.Finite
+import Mathlib.RingTheory.Spectrum.Prime.Jacobson
+import Mathlib.Tactic.Algebraize
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Sheaves.Init
 
 /-!
 

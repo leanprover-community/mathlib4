@@ -3,13 +3,18 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-module
+module -- shake: keep-all
 
 public import Batteries.Data.List.Pairwise
 public import Batteries.Tactic.GeneralizeProofs
 public import Mathlib.Tactic.Order.CollectFacts
 public meta import Mathlib.Util.AtomM
 public import Mathlib.Util.Qq
+import Mathlib.Order.RelClasses
+import Mathlib.Tactic.Contrapose
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Use
+import Mathlib.Util.CompileInductive
 
 /-!
 # Translating linear orders to ℤ

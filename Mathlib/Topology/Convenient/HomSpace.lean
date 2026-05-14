@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Topology.CompactOpen
 public import Mathlib.Topology.Convenient.ContinuousMapGeneratedBy
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Continuous
 
 /-!
 # The topological space of `X`-continuous maps

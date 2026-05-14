@@ -8,6 +8,10 @@ module
 public import Mathlib.Topology.Order
 public import Mathlib.Topology.Sets.Opens
 public import Mathlib.Topology.ContinuousMap.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Any T0 space embeds in a product of copies of the Sierpinski space.

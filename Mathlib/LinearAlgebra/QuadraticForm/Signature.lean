@@ -7,6 +7,29 @@ Authors: David Loeffler
 module
 
 public import Mathlib.LinearAlgebra.QuadraticForm.Radical
+public import Mathlib.Algebra.Module.Submodule.Basic
+public import Mathlib.LinearAlgebra.InvariantBasisNumber
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.EuclideanDomain.Field
+import Mathlib.Algebra.Order.AbsoluteValue.Basic
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Order.Ring.Unbundled.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Totient
+import Mathlib.Data.Set.Disjoint
+import Mathlib.LinearAlgebra.Dimension.Finite
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+import Mathlib.RingTheory.PrincipalIdealDomain
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Nontriviality.Core
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Signature of a quadratic form

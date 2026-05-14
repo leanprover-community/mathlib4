@@ -7,6 +7,11 @@ module
 
 public import Mathlib.CategoryTheory.Subobject.Basic
 public import Mathlib.CategoryTheory.EssentiallySmall
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Well-powered categories

@@ -7,6 +7,11 @@ module
 
 public import Mathlib.CategoryTheory.Localization.Prod
 public import Mathlib.CategoryTheory.Functor.Currying
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Lifting of bifunctors

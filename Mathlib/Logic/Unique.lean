@@ -5,9 +5,14 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Logic.Function.Basic
+public import Batteries.Logic
 public import Mathlib.Logic.IsEmpty.Defs
-public import Mathlib.Tactic.Inhabit
+public import Mathlib.Logic.ExistsUnique
+public import Mathlib.Logic.Function.Defs
+public import Mathlib.Tactic.ToDual
+public import Mathlib.Logic.Function.Basic
+import Mathlib.Tactic.Inhabit
+import Mathlib.Tactic.Push.Attr
 
 /-!
 # Types with a unique term

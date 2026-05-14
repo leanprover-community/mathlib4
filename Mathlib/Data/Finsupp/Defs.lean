@@ -6,6 +6,13 @@ Authors: Johannes Hölzl, Kim Morrison
 module
 
 public import Mathlib.Algebra.FiniteSupport.Defs
+public import Mathlib.Data.Finset.Basic
+public import Mathlib.Data.Set.Finite.Basic
+public meta import Mathlib.Tactic.ToDual
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Type of functions with finite support

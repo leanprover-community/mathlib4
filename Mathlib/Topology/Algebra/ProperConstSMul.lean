@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Topology.Algebra.ConstMulAction
 public import Mathlib.Topology.Maps.Proper.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 /-!
 # Actions by proper maps
 

@@ -6,6 +6,12 @@ Authors: Dagur Asgeirsson, Adam Topaz, Adrian Marti
 module
 
 public import Mathlib.CategoryTheory.Yoneda
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 

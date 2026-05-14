@@ -5,8 +5,13 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Order.Interval.Finset.Basic
 public import Mathlib.Order.Interval.Multiset
+public import Mathlib.Algebra.Order.Monoid.Defs
+import Mathlib.Algebra.Order.Interval.Finset.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Algebraic properties of multiset intervals

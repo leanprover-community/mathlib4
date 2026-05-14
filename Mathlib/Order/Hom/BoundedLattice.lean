@@ -8,6 +8,8 @@ module
 public import Mathlib.Order.Hom.Bounded
 public import Mathlib.Order.Hom.Lattice
 public import Mathlib.Order.SymmDiff
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Bounded lattice homomorphisms

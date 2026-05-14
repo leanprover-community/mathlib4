@@ -3,11 +3,15 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, David Renshaw
 -/
-module
+module -- shake: keep-all
 
 import all Lean.Meta.Tactic.Simp.Rewrite
 public import Mathlib.Tactic.Positivity.Core
 public import Mathlib.Util.DischargerAsTactic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Discharger for `field_simp` tactic

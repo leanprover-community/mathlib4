@@ -3,7 +3,7 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-module
+module -- shake: keep-all
 
 public meta import Lean.Elab.Tactic.Simp
 public meta import Lean.Elab.App
@@ -11,6 +11,8 @@ public meta import Mathlib.Lean.Expr.Basic
 public import Mathlib.Util.AddRelatedDecl
 public import Mathlib.Tactic.Simps.NotationClass
 public import Mathlib.Tactic.Translate.Attributes
+public import Batteries.Util.LibraryNote
+public import Lean.Elab.Tactic.Simp
 
 /-!
 # Simps attribute

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Order.Group.Synonym
+import Mathlib.Util.CompileInductive
 
 /-!
 # Add/Mul equivalence for order type synonyms

@@ -3,10 +3,14 @@ Copyright (c) 2026 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Tactic.Push
 public import Mathlib.CategoryTheory.Iso
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # Simproc for canceling morphisms with their inverses

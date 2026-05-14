@@ -5,12 +5,16 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Category.ULift
 public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.CategoryTheory.Skeletal
 public import Mathlib.CategoryTheory.Comma.Arrow
 public import Mathlib.Logic.UnivLE
-public import Mathlib.Logic.Small.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Category.ULift
+import Mathlib.Logic.Small.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Essentially small categories.

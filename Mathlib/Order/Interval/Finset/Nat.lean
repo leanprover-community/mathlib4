@@ -7,6 +7,13 @@ module
 
 public import Mathlib.Algebra.Group.Embedding
 public import Mathlib.Order.Interval.Multiset
+public import Mathlib.Order.Interval.Finset.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Order.Bounds.Basic
+import Mathlib.Order.Preorder.Finite
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Finite intervals of naturals

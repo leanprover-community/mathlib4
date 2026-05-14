@@ -3,11 +3,22 @@ Copyright (c) 2026 David Ledvinka. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Ledvinka
 -/
-module
+module -- shake: keep-all
 
 public meta import Mathlib.Tactic.Linarith
-public meta import Mathlib.Tactic.Rify
 public import Mathlib.Data.NNReal.Basic -- shake: keep (tactic dependency)
+public import Mathlib.Tactic.Rify
+public import Mathlib.Tactic.Linarith
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # NNReal linarith preprocessing

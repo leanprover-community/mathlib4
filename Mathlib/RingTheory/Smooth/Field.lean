@@ -5,8 +5,30 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Etale.Field
-public import Mathlib.FieldTheory.SeparablyGenerated
+public import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
+public import Mathlib.FieldTheory.Perfect
+public import Mathlib.RingTheory.AlgebraicIndependent.Defs
+public import Mathlib.RingTheory.Smooth.Basic
+import Mathlib.Algebra.Order.AbsoluteValue.Basic
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Combinatorics.Matroid.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
+import Mathlib.FieldTheory.SeparablyGenerated
+import Mathlib.RingTheory.Etale.Field
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Continuity.Init
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
 
 /-!
 

@@ -3,10 +3,12 @@ Copyright (c) 2023 Sebastian Zimmer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Zimmer, Mario Carneiro, Heather Macbeth, Jovan Gerbscheid
 -/
-module
+module -- shake: keep-all
 
 public meta import Lean.Elab.Tactic.Rewrite
 public import Mathlib.Tactic.GRewrite.Core
+public import Lean.Elab.Tactic.Config
+meta import Mathlib.Tactic.GRewrite.Core
 
 /-!
 

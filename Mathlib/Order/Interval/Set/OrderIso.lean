@@ -5,8 +5,13 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy
 -/
 module
 
-public import Mathlib.Order.Interval.Set.Basic
-public import Mathlib.Order.Hom.Set
+public import Mathlib.Order.Hom.Basic
+public import Mathlib.Order.Interval.Set.Defs
+public import Mathlib.Tactic.ToAdditive
+import Mathlib.Order.Hom.Set
+import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Lemmas about images of intervals under order isomorphisms.

@@ -3,13 +3,16 @@ Copyright (c) 2024 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-module
+module -- shake: keep-all
 
 public meta import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
 public import Mathlib.CategoryTheory.Category.Basic
 public import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
 public import Mathlib.Tactic.CategoryTheory.Coherence.PureCoherence
 public meta import Mathlib.Tactic.ToDual
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # The Core function for `monoidal` and `bicategory` tactics

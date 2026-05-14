@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Algebra.Group.TypeTags.Hom
 public import Mathlib.Tactic.Spread
+import Mathlib.Tactic.SimpRw
+import Mathlib.Util.CompileInductive
 
 /-!
 # Extensionality of monoid homs from `ℕ`

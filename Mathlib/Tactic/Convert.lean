@@ -3,10 +3,12 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Kyle Miller
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Tactic.CongrExclamation
+public meta import Lean.Elab.Tactic.Location
+import Mathlib.Init
 
 /-!
 # The `convert` tactic.

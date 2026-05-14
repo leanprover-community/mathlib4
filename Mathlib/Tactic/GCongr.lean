@@ -3,7 +3,7 @@ Copyright (c) 2023 Mario Carneiro, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Tactic.GCongr.CoreAttrs
 public import Mathlib.Tactic.Hint

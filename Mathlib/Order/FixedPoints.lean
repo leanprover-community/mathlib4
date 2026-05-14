@@ -5,9 +5,12 @@ Authors: Johannes Hölzl, Kenny Lau, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Dynamics.FixedPoints.Basic
 public import Mathlib.Order.Hom.Order
 public import Mathlib.Order.BourbakiWitt
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Fixed point construction on complete lattices

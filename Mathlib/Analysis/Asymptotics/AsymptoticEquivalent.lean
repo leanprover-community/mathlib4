@@ -8,6 +8,29 @@ module
 public import Mathlib.Analysis.Asymptotics.Defs
 public import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Analysis.Asymptotics.Theta
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Analysis.Asymptotics.Lemmas
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.EReal.Operations
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Order.Filter.AtTopBot.Group
+import Mathlib.Order.Filter.Tendsto
+import Mathlib.RingTheory.SimpleRing.Basic
+import Mathlib.Tactic.Bound
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Field
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Algebra.InfiniteSum.Order
+import Mathlib.Topology.Algebra.Order.Field
+import Mathlib.Topology.Metrizable.Uniformity
+import Mathlib.Topology.Neighborhoods
 
 /-!
 # Asymptotic equivalence

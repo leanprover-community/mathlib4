@@ -6,6 +6,13 @@ Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 module
 
 public import Mathlib.ModelTheory.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.FastInstance
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Language Maps

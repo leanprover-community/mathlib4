@@ -5,12 +5,34 @@ Authors: Mario Carneiro, Kevin Kappelmann
 -/
 module
 
-public import Mathlib.Algebra.Order.Field.Basic
-public import Mathlib.Algebra.Order.Floor.Semiring
-public import Mathlib.Tactic.Abel
-public import Mathlib.Tactic.Field
-public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.Positivity.Core
+public meta import Aesop
+public import Mathlib.Algebra.Order.Floor.Defs
+public import Mathlib.Data.Int.Init
+public import Mathlib.Order.Interval.Set.Defs
+public import Mathlib.Order.SetNotation
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Semiring
+import Mathlib.Algebra.Order.Group.Abs
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Group.OrderIso
+import Mathlib.Algebra.Order.Monoid.NatCast
+import Mathlib.Algebra.Order.Ring.Unbundled.Basic
+import Mathlib.Algebra.Ring.Basic
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Bound.Attribute
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Field
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Linarith.Frontend
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Lemmas on `Int.floor`, `Int.ceil` and `Int.fract`

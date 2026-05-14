@@ -3,7 +3,7 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-module
+module -- shake: keep-all
 
 public meta import Mathlib.Data.Tree.Basic
 public meta import Mathlib.Logic.Basic
@@ -13,6 +13,12 @@ public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Data.Tree.Basic
 public import Mathlib.Tactic.NormNum.Core
 public import Mathlib.Util.SynthesizeUsing
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+import Mathlib.Algebra.Ring.Basic
+meta import Mathlib.Lean.Meta
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # A tactic for canceling numeric denominators

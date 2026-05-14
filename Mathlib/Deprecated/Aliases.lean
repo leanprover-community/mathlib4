@@ -5,7 +5,7 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Init
+import Mathlib.Init
 
 /-!
 Deprecated aliases can be dumped here if they are no longer used in Mathlib,

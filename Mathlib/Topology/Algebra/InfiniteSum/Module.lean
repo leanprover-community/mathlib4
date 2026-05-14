@@ -5,8 +5,19 @@ Authors: Heather Macbeth, Yury Kudryashov, Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.InfiniteSum.Defs
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Algebra.InfiniteSum.Basic
+import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 
 /-! # Infinite sums in topological vector spaces -/
 

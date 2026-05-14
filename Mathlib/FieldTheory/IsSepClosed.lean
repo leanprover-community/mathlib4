@@ -6,6 +6,24 @@ Authors: Jz Pan
 module
 
 public import Mathlib.FieldTheory.Galois.Basic
+import Mathlib.Algebra.Order.AbsoluteValue.Basic
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Polynomial.Degree.Lemmas
+import Mathlib.Algebra.Polynomial.Degree.SmallDegree
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Totient
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.FieldTheory.Extension
+import Mathlib.RingTheory.Polynomial.Nilpotent
+import Mathlib.RingTheory.Polynomial.UniqueFactorization
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
 
 /-!
 # Separably Closed Field

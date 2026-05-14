@@ -6,6 +6,25 @@ Authors: Michael Rothgang
 module
 
 public import Mathlib.Geometry.Manifold.IsManifold.Basic
+import Mathlib.Algebra.Order.Algebra
+import Mathlib.Algebra.Order.BigOperators.Expect
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Field.Power
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.EReal.Inv
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Neighborhoods
 
 /-! # Local properties of smooth functions which depend on both the source and target
 

@@ -6,6 +6,7 @@ Authors: Leonardo de Moura
 module
 
 public import Mathlib.Data.Nat.Notation
+import Mathlib.Init
 
 /-!
 # Definition of `Stream'` and functions on streams

@@ -3,11 +3,15 @@ Copyright (c) 2022 Abby J. Goldberg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Abby J. Goldberg, Mario Carneiro, Heather Macbeth
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Tactic.LinearCombination.Lemmas
 public import Mathlib.Tactic.Positivity.Core
 public import Mathlib.Tactic.Ring.Compare
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # `linear_combination` Tactic

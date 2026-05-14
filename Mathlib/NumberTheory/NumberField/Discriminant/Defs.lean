@@ -10,7 +10,25 @@ public import Init.Data.Fin.Fold
 public import Init.Data.List.Nat.Pairwise
 public import Init.Data.List.Nat.Range
 public import Mathlib.NumberTheory.NumberField.Basic
-public import Mathlib.RingTheory.Localization.NormTrace
+public import Mathlib.RingTheory.Discriminant
+import Mathlib.Algebra.EuclideanDomain.Int
+import Mathlib.Algebra.Group.Int.Units
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Combinatorics.Matroid.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Int.Basic
+import Mathlib.Data.Nat.Totient
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.RingTheory.Localization.NormTrace
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
 
 /-!
 # Number field discriminant

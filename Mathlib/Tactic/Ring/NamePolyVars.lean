@@ -3,9 +3,15 @@ Copyright (c) 2025 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Algebra.MvPolynomial.Basic  -- shake: keep (tactic dependency)
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 The command `name_poly_vars` names variables in

@@ -7,8 +7,12 @@ module
 
 public import Mathlib.CategoryTheory.Category.Basic
 public import Mathlib.Combinatorics.Quiver.Prefunctor
-public import Mathlib.Tactic.CategoryTheory.CategoryStar
 public meta import Mathlib.Tactic.ToDual
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Util.CompileInductive
 
 /-!
 # Functors

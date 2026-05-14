@@ -6,10 +6,29 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.AffineScheme
-public import Mathlib.AlgebraicGeometry.Limits
-public import Mathlib.RingTheory.KrullDimension.Zero
-public import Mathlib.RingTheory.LocalProperties.Reduced
 public import Mathlib.RingTheory.Ideal.Height
+import Mathlib.Algebra.Field.Equiv
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.AlgebraicGeometry.Limits
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.Order.BoundedOrder.Lattice
+import Mathlib.RingTheory.KrullDimension.Zero
+import Mathlib.RingTheory.LocalProperties.Reduced
+import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Sheaves.Init
 
 /-!
 # Basic properties of schemes

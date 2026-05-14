@@ -6,10 +6,14 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.Data.Option.Basic
+public import Mathlib.Logic.Equiv.Basic
 public import Mathlib.Data.Prod.Basic
 public import Mathlib.Data.Prod.PProd
 public import Mathlib.Data.Sum.Basic
-public import Mathlib.Logic.Equiv.Basic
+import Mathlib.Logic.IsEmpty.Basic
+import Mathlib.Tactic.Coe
+import Mathlib.Tactic.SplitIfs
+import Mathlib.Util.CompileInductive
 
 /-!
 # Injective functions

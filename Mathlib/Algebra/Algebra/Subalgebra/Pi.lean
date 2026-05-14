@@ -8,6 +8,13 @@ module
 public import Mathlib.Algebra.Algebra.Pi
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import Mathlib.LinearAlgebra.Pi
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Prod
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Products of subalgebras

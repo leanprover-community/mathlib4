@@ -6,10 +6,33 @@ Authors: María Inés de Frutos-Fernández
 module
 
 public import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
-public import Mathlib.Analysis.Normed.Unbundled.SeminormFromBounded
 public import Mathlib.Analysis.Normed.Unbundled.SmoothingSeminorm
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Algebra.EuclideanDomain.Field
+import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+import Mathlib.Algebra.Order.Algebra
+import Mathlib.Algebra.Order.BigOperators.Expect
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Field.Power
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Algebra.Order.Ring.IsNonarchimedean
+import Mathlib.Analysis.Normed.Unbundled.SeminormFromBounded
+import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.EReal.Inv
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.LinearAlgebra.Finsupp.VectorSpace
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 
 /-!

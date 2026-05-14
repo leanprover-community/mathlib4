@@ -8,6 +8,17 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
 public import Mathlib.CategoryTheory.Functor.CurryingThree
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Cat
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # The homotopy category functor is monoidal

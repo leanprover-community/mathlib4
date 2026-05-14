@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Logic.Embedding.Basic
 public import Mathlib.Order.RelClasses
+public import Mathlib.Data.Prod.Basic
+public import Mathlib.Data.Sum.Basic
+import Mathlib.Util.CompileInductive
 
 /-!
 # Relation homomorphisms, embeddings, isomorphisms

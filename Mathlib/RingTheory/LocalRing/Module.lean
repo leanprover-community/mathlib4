@@ -6,17 +6,51 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Module.FinitePresentation
-public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.RingTheory.FiniteType
-public import Mathlib.RingTheory.Flat.EquationalCriterion
-public import Mathlib.RingTheory.Ideal.Quotient.ChineseRemainder
-public import Mathlib.RingTheory.LocalProperties.Exactness
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
-public import Mathlib.RingTheory.Nakayama
 public import Mathlib.RingTheory.Support
-public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.LinearAlgebra.Dimension.Finrank
+public import Mathlib.RingTheory.Flat.Basic
+public import Mathlib.Tactic.Continuity
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Algebra.Group.Submonoid.BigOperators
+import Mathlib.Algebra.Module.BigOperators
+import Mathlib.Algebra.Module.Torsion.Basic
+import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+import Mathlib.Algebra.Order.AbsoluteValue.Basic
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.LinearAlgebra.Dimension.Finite
+import Mathlib.LinearAlgebra.DirectSum.Finsupp
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+import Mathlib.LinearAlgebra.Finsupp.VectorSpace
+import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+import Mathlib.Logic.Equiv.PartialEquiv
+import Mathlib.RingTheory.Finiteness.Basic
+import Mathlib.RingTheory.Finiteness.Cardinality
+import Mathlib.RingTheory.Finiteness.Finsupp
+import Mathlib.RingTheory.Flat.EquationalCriterion
+import Mathlib.RingTheory.Ideal.Quotient.ChineseRemainder
+import Mathlib.RingTheory.LocalProperties.Exactness
+import Mathlib.RingTheory.Localization.BaseChange
+import Mathlib.RingTheory.Nakayama
+import Mathlib.RingTheory.TensorProduct.Finite
+import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Finite modules over local rings

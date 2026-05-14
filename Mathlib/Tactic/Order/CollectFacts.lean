@@ -3,13 +3,15 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-module
+module -- shake: keep-all
 
-public meta import Qq
 public import Mathlib.Order.BoundedOrder.Basic  -- shake: keep (Qq dependency)
 public import Mathlib.Order.Lattice  -- shake: keep (Qq dependency)
 public meta import Mathlib.Tactic.ToDual
 public import Mathlib.Util.AtomM
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
+import Qq.Typ
 
 /-!
 # Facts collection for the `order` Tactic

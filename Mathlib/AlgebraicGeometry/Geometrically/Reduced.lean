@@ -5,9 +5,30 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Artinian
 public import Mathlib.AlgebraicGeometry.Geometrically.Basic
-public import Mathlib.AlgebraicGeometry.Morphisms.SchemeTheoreticallyDominant
+public import Mathlib.AlgebraicGeometry.Morphisms.Flat
+public import Mathlib.AlgebraicGeometry.Noetherian
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.AlgebraicGeometry.Artinian
+import Mathlib.AlgebraicGeometry.Morphisms.SchemeTheoreticallyDominant
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finite.Sigma
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Totient
+import Mathlib.Data.Rat.Floor
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+import Mathlib.RingTheory.FiniteLength
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Sheaves.Init
 
 /-!
 # Geometrically Reduced Schemes

@@ -3,10 +3,16 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Robin Carlier
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.CategoryTheory.Functor.Basic
 public import Mathlib.Util.AddRelatedDecl
+public import Batteries.Tactic.Exact
+public meta import Mathlib.Lean.Meta.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # The `reassoc` attribute

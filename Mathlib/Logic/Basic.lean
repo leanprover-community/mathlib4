@@ -9,7 +9,8 @@ public import Mathlib.Lean.Meta.Simp
 public import Batteries.Logic
 public import Batteries.Util.LibraryNote
 
-public import Mathlib.Tactic.Attr.Register
+public import Batteries.Tactic.Lint
+import Mathlib.Tactic.Attr.Register
 
 /-!
 # Basic logic properties

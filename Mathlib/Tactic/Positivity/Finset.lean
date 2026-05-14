@@ -3,11 +3,18 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset  -- shake: keep (Qq dependency)
 public import Mathlib.Data.Finset.Density  -- shake: keep (Qq dependency)
 public import Mathlib.Tactic.NormNum.Basic
+public import Mathlib.Tactic.Positivity.Core
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Positivity extensions for finsets

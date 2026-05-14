@@ -10,12 +10,13 @@ public import Mathlib.Data.Set.CoeSort
 public import Mathlib.Data.SProd
 public import Mathlib.Data.Subtype
 public import Mathlib.Order.Notation
-public import Mathlib.Tactic.Push.Attr
 
-import Mathlib.Tactic.Attr.Register
 import Aesop.BuiltinRules
 import Aesop.Frontend.Tactic
 import Aesop.Main
+import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Push.Attr
+import Mathlib.Tactic.FBinop
 
 /-!
 # Basic definitions about sets

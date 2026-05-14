@@ -10,6 +10,13 @@ public import Mathlib.GroupTheory.Finiteness
 
 import Mathlib.Algebra.AffineMonoid.Embedding
 import Mathlib.Algebra.FreeAbelianGroup.UniqueSums
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Affine monoids have unique sums

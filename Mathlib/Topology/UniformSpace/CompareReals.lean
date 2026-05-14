@@ -8,6 +8,21 @@ module
 public import Mathlib.Topology.Instances.Rat
 public import Mathlib.Topology.UniformSpace.AbsoluteValue
 public import Mathlib.Topology.UniformSpace.Completion
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.EReal.Operations
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.FastInstance
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.MetricSpace.Bounded
+import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
+import Mathlib.Topology.Order.T5
 
 /-!
 # Comparison of Cauchy reals and Bourbaki reals

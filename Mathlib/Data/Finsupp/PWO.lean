@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Order.Preorder.Finsupp
 public import Mathlib.Order.WellFoundedSet
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Partial well ordering on finsupps

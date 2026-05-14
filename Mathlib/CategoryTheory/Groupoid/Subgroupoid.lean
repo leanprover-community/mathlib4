@@ -9,7 +9,12 @@ public import Mathlib.Algebra.Group.Subgroup.Defs
 public import Mathlib.CategoryTheory.Groupoid.VertexGroup
 public import Mathlib.CategoryTheory.Groupoid.Basic
 public import Mathlib.CategoryTheory.Groupoid
-public import Mathlib.Data.Set.Lattice
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Set.Lattice
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Subgroupoid

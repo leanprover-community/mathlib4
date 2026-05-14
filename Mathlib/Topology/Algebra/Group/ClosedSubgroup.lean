@@ -7,7 +7,19 @@ module
 
 public import Mathlib.Algebra.Group.Subgroup.Basic
 public import Mathlib.GroupTheory.Index
-public import Mathlib.Topology.Algebra.Group.Quotient
+public import Mathlib.Topology.Algebra.Monoid
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Topology.Algebra.Group.Quotient
+import Mathlib.Topology.Continuous
 
 /-!
 # Closed subgroups of a topological group

@@ -8,7 +8,21 @@ module
 public import Mathlib.Algebra.Category.AlgCat.Basic
 public import Mathlib.Algebra.Central.Defs
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-public import Mathlib.LinearAlgebra.Matrix.Reindex
+public import Mathlib.Data.Matrix.Basic
+public import Mathlib.RingTheory.SimpleRing.Defs
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.LinearAlgebra.Matrix.Reindex
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Definition of Brauer group of a field K

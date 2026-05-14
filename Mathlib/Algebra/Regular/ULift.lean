@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.ULift
 public import Mathlib.Algebra.Regular.SMul
+import Mathlib.Util.CompileInductive
 
 /-!
 # Results about `IsRegular` and `ULift`

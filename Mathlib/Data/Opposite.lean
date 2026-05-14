@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Logic.Equiv.Defs
 public import Mathlib.Logic.Small.Defs
+import Mathlib.Util.CompileInductive
 
 /-!
 # Opposites

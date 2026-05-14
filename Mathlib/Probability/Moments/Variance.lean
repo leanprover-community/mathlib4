@@ -9,6 +9,36 @@ public import Mathlib.Probability.Moments.Covariance
 public import Mathlib.Probability.Notation
 import Mathlib.MeasureTheory.Function.LpSeminorm.Prod
 import Mathlib.Probability.Independence.Integrable
+import Batteries.Tactic.Congr
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.Algebra.Order.Algebra
+import Mathlib.Algebra.Order.BigOperators.Expect
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Field.Power
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Data.ENNReal.Inv
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.EReal.Inv
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Data.Sym.Sym2
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
+import Mathlib.MeasureTheory.Function.LpOrder
+import Mathlib.MeasureTheory.Function.LpSeminorm.ChebyshevMarkov
+import Mathlib.MeasureTheory.Integral.Lebesgue.Add
+import Mathlib.MeasureTheory.Integral.Lebesgue.Map
+import Mathlib.MeasureTheory.Measure.Real
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Measurability
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.SetLike
 
 /-!
 # Variance of random variables

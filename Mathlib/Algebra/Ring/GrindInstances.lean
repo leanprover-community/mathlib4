@@ -6,6 +6,7 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Data.Int.Cast.Basic
 
 /-!

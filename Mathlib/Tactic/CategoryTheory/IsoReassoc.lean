@@ -3,9 +3,14 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.CategoryTheory.Iso
+public import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # Extension of `reassoc` to isomorphisms.

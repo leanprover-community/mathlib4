@@ -3,13 +3,12 @@ Copyright (c) 2025 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang, Damiano Testa
 -/
-module
+module -- shake: keep-all
 
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 public meta import Std.Data.Iterators.Combinators.Zip
 public import Lean.Parser.Command
 meta import Std.Data.Iterators.Producers.Range
-import Std.Data.Iterators
 
 /-!
 # The "DocString" style linter

@@ -3,7 +3,7 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, David Renshaw, Heather Macbeth, Arend Mellendijk, Michael Rothgang
 -/
-module
+module -- shake: keep-all
 
 public meta import Mathlib.Data.Ineq
 public import Mathlib.Tactic.FieldSimp.Attr
@@ -12,6 +12,12 @@ public import Mathlib.Tactic.FieldSimp.Lemmas
 public import Mathlib.Util.AtomM.Recurse
 public import Mathlib.Util.SynthesizeUsing
 public import Mathlib.Data.Ineq
+public meta import Mathlib.Util.AtomM
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # `field_simp` tactic

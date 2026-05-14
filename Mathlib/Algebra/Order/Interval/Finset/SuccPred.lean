@@ -6,7 +6,12 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Order.SuccPred
-public import Mathlib.Order.Interval.Finset.SuccPred
+public import Mathlib.Order.Interval.Finset.Defs
+import Mathlib.Data.Finset.Attr
+import Mathlib.Order.Interval.Finset.SuccPred
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Finset intervals in an additive successor-predecessor order

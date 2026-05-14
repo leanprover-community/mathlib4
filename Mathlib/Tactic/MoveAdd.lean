@@ -3,7 +3,7 @@ Copyright (c) 2023 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Damiano Testa
 -/
-module
+module -- shake: keep-all
 
 public meta import Mathlib.Lean.Meta
 public import Mathlib.Algebra.Group.Basic

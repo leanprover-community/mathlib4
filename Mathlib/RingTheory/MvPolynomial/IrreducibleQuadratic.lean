@@ -5,9 +5,27 @@ Authors: Antoine Chambert-Loir, Johan Commelin, Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.Division
-public import Mathlib.Algebra.MvPolynomial.NoZeroDivisors
 import Mathlib.Algebra.MvPolynomial.Nilpotent
+public import Mathlib.Algebra.MvPolynomial.Variables
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Group.Irreducible.Lemmas
+import Mathlib.Algebra.MvPolynomial.CommRing
+import Mathlib.Algebra.MvPolynomial.NoZeroDivisors
+import Mathlib.Algebra.Polynomial.RingDivision
+import Mathlib.Algebra.Prime.Lemmas
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.Lattice.Lemmas
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.GroupTheory.GroupAction.Ring
+import Mathlib.RingTheory.MvPolynomial.Homogeneous
+import Mathlib.RingTheory.Polynomial.Nilpotent
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Irreducibility of linear and quadratic polynomials

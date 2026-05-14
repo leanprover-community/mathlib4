@@ -3,11 +3,15 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth
 -/
-module
+module -- shake: keep-all
 
 public meta import Mathlib.Data.Int.ModEq
 public import Mathlib.Data.Int.ModEq
 public import Mathlib.Tactic.HaveI
+public meta import Mathlib.Tactic.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-! # `mod_cases` tactic
 

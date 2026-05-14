@@ -5,8 +5,13 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Set.Image
 public import Mathlib.Data.List.Defs
+public import Aesop
+public import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Image
+import Mathlib.Tactic.Coe
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Lemmas about `List`s and `Set.range`

@@ -3,10 +3,17 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kyle Miller
 -/
-module
+module -- shake: keep-all
 
 public meta import Batteries.Data.Nat.Basic
 public import Mathlib.Tactic.NormNum
+import Mathlib.Data.Nat.Sqrt
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-! # `norm_num` extension for `Nat.sqrt`
 

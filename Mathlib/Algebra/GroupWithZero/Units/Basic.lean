@@ -5,14 +5,19 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.Group.Units.Basic
 public import Mathlib.Algebra.GroupWithZero.Basic
 public import Mathlib.Data.Nat.Basic  -- shake: keep (non-recorded `nontrivial` dependency?)
-public import Mathlib.Lean.Meta.CongrTheorems
-public import Mathlib.Tactic.Contrapose
 public import Mathlib.Tactic.Spread
-public import Mathlib.Tactic.Convert
-public import Mathlib.Tactic.Nontriviality
+public import Mathlib.Algebra.Group.Units.Defs
+public import Mathlib.Algebra.GroupWithZero.NeZero
+public import Mathlib.Algebra.NeZero
+public meta import Mathlib.Tactic.ToDual
+import Mathlib.Algebra.Group.Units.Basic
+import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.Contrapose
+import Mathlib.Tactic.Convert
+import Mathlib.Tactic.Nontriviality.Core
+import Mathlib.Tactic.SimpRw
 
 /-!
 # Lemmas about units in a `MonoidWithZero` or a `GroupWithZero`.

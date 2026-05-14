@@ -3,13 +3,13 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, David Renshaw
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Logic.Basic  -- shake: keep (dependency of tactic output)
-public meta import Qq
 public meta import Mathlib.Lean.Meta
 public import Mathlib.Tactic.CasesM
 public import Mathlib.Tactic.Core
+public import Qq
 
 /-!
 The `tauto` tactic.

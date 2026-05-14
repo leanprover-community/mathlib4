@@ -3,7 +3,7 @@ Copyright (c) 2024 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-module
+module -- shake: keep-all
 
 public meta import ProofWidgets.Component.PenroseDiagram
 public meta import ProofWidgets.Component.Panel.Basic
@@ -15,6 +15,10 @@ public import ProofWidgets.Component.HtmlDisplay
 public import ProofWidgets.Component.Panel.Basic
 public import ProofWidgets.Component.PenroseDiagram
 public import ProofWidgets.Presentation.Expr
+public import Mathlib.Data.List.Defs
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # String Diagram Widget

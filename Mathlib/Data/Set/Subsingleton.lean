@@ -5,8 +5,13 @@ Authors: Jeremy Avigad, Leonardo de Moura
 -/
 module
 
-public import Mathlib.Data.Set.Insert
-public import Mathlib.Tactic.ByContra
+public import Aesop
+public import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Insert
+import Mathlib.Tactic.ByContra
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SimpRw
+import Mathlib.Util.CompileInductive
 
 /-!
 # Subsingleton

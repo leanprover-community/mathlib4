@@ -3,9 +3,13 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Lean.Meta.CongrTheorems
+public import Batteries.Tactic.Lint
+public meta import Mathlib.Lean.Expr.Basic
+import Lean.Meta.CongrTheorems
+import Mathlib.Init
 
 /-! # `congr(...)` congruence quotations
 

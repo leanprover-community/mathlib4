@@ -6,6 +6,22 @@ Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 module
 
 public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Topology.Continuous
+public import Mathlib.Topology.MetricSpace.Basic
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Algebra.Order.Monoid.NatCast
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Order.Filter.AtTopBot.Group
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Norms on `ℝ` and `ℝ≥0`

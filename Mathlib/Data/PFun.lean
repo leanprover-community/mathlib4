@@ -8,6 +8,9 @@ module
 public import Batteries.Tactic.GeneralizeProofs
 public import Mathlib.Data.Part
 public import Mathlib.Data.Rel
+public import Mathlib.Tactic.Convert
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Partial functions

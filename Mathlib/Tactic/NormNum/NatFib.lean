@@ -3,11 +3,17 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Mario Carneiro
 -/
-module
+module -- shake: keep-all
 
 public meta import Mathlib.Data.Nat.Fib.Basic
 public import Mathlib.Data.Nat.Fib.Basic
 public import Mathlib.Tactic.NormNum
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-! # `norm_num` extension for `Nat.fib`
 

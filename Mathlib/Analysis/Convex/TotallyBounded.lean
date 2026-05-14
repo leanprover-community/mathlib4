@@ -7,8 +7,25 @@ module
 
 public import Mathlib.Topology.UniformSpace.Cauchy
 public import Mathlib.Analysis.Convex.Hull
-public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 public import Mathlib.Topology.Algebra.Module.LocallyConvex
+public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+import Mathlib.Algebra.Group.Pointwise.Set.Lattice
+import Mathlib.Algebra.Order.Algebra
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Analysis.Convex.Topology
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Algebra.IsUniformGroup.Basic
+import Mathlib.Topology.Algebra.Ring.Real
+import Mathlib.Topology.MetricSpace.Bounded
+import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 
 /-!
 # Totally Bounded sets and Convex Hulls

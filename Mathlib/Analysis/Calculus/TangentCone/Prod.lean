@@ -9,6 +9,21 @@ public import Mathlib.Analysis.Calculus.TangentCone.Defs
 public import Mathlib.LinearAlgebra.Prod
 public import Mathlib.Topology.Algebra.Monoid
 import Mathlib.Analysis.Calculus.TangentCone.Basic
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Closure
+import Mathlib.Topology.Neighborhoods
 
 /-!
 # Product of sets with unique differentiability property

@@ -7,6 +7,16 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 public import Mathlib.CategoryTheory.Limits.Types.Limits
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Image
+import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.CategoryTheory.Elementwise
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Pullbacks in the category of types

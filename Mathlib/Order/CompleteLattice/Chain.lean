@@ -5,8 +5,12 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Data.Set.Lattice
 public import Mathlib.Order.Preorder.Chain
+public import Mathlib.Order.SetNotation
+import Mathlib.Data.Set.Lattice
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Hausdorff's maximality principle

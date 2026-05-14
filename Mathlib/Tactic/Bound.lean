@@ -3,13 +3,22 @@ Copyright (c) 2024 Geoffrey Irving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Geoffrey Irving
 -/
-module
+module -- shake: keep-all
 
 public import Aesop
 public meta import Mathlib.Tactic.Bound.Attribute
 public meta import Mathlib.Tactic.NormNum.Core
 public import Mathlib.Tactic.Bound.Attribute
 public import Mathlib.Tactic.Linarith.Frontend
+public import Mathlib.Algebra.Order.Group.Defs
+public import Mathlib.Algebra.Order.Group.Unbundled.Basic
+public import Mathlib.Algebra.Order.Monoid.NatCast
+public import Mathlib.Algebra.Order.Ring.Unbundled.Basic
+public import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Order.MinMax
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 ## The `bound` tactic

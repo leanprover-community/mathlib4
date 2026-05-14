@@ -8,6 +8,18 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialObject.ChainHomotopy
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.Basic
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homotopy
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Homotopy invariance of simplicial homology

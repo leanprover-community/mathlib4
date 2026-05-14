@@ -3,9 +3,12 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Yuma Mizuno, Oleksandr Manzyuk
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.CategoryTheory.Monoidal.Category
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # Monoidal composition `⊗≫` (composition up to associators)

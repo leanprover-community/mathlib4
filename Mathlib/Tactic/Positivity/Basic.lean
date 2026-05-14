@@ -3,7 +3,7 @@ Copyright (c) 2022 Mario Carneiro, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 -/
-module
+module -- shake: keep-all
 
 public meta import Qq
 public import Mathlib.Algebra.Order.Group.PosPart  -- shake: keep (Qq dependency)
@@ -11,10 +11,14 @@ public import Mathlib.Data.Nat.Factorial.Basic  -- shake: keep (Qq dependency)
 public import Mathlib.Data.Int.CharZero  -- shake: keep (Qq dependency)
 public import Mathlib.Data.PNat.Defs  -- shake: keep (Qq dependency)
 public import Mathlib.Algebra.Order.Ring.Basic  -- shake: keep (Qq dependency)
-public meta import Mathlib.Algebra.Notation.Defs
 public import Mathlib.Algebra.Order.Hom.Basic
 public import Mathlib.Data.NNRat.Defs
 public import Mathlib.Tactic.Positivity.Core
+public meta import Mathlib.Tactic.ToAdditive
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 ## `positivity` core extensions

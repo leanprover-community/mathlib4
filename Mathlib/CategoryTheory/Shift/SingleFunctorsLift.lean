@@ -7,6 +7,13 @@ module
 
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 public import Mathlib.CategoryTheory.Shift.SingleFunctors
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Lift of a "single functor" to a full subcategory

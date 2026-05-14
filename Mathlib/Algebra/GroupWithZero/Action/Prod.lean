@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Action.Prod
 public import Mathlib.Algebra.GroupWithZero.Action.End
+import Mathlib.Util.CompileInductive
 
 /-!
 # Prod instances for multiplicative actions with zero

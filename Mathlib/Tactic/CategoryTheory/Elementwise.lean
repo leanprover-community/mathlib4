@@ -3,11 +3,14 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Kyle Miller
 -/
-module
+module -- shake: keep-all
 
-public meta import Mathlib.Util.AddRelatedDecl
 public import Mathlib.CategoryTheory.ConcreteCategory.Basic
 public meta import Mathlib.Tactic.ToAdditive
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # Tools to reformulate category-theoretic lemmas in concrete categories

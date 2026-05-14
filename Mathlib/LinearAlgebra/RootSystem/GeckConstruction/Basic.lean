@@ -8,9 +8,26 @@ module
 public import Mathlib.Algebra.Lie.Matrix
 public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.Algebra.Lie.Weights.Basic
-public import Mathlib.LinearAlgebra.Eigenspace.Matrix
-public import Mathlib.LinearAlgebra.LinearIndependent.BaseChange
 public import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+import Mathlib.Algebra.Order.AbsoluteValue.Basic
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Rat.Floor
+import Mathlib.LinearAlgebra.Eigenspace.Matrix
+import Mathlib.LinearAlgebra.LinearIndependent.BaseChange
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NoncommRing
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
 
 /-!
 # Geck's construction of a Lie algebra associated to a root system

@@ -6,14 +6,35 @@ Authors: Kenny Lau
 module
 
 public import Mathlib.Algebra.Polynomial.GroupRingAction
-public import Mathlib.Algebra.Ring.Action.Field
 public import Mathlib.Algebra.Ring.Action.Invariant
-public import Mathlib.FieldTheory.Finiteness
 public import Mathlib.FieldTheory.Normal.Defs
 public import Mathlib.FieldTheory.Separable
-public import Mathlib.LinearAlgebra.Dual.Lemmas
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 public import Mathlib.RingTheory.Polynomial.Subring
+public import Mathlib.FieldTheory.Minpoly.Field
+public import Mathlib.RingTheory.Algebraic.Integral
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Polynomial.Monic
+import Mathlib.Algebra.Ring.Action.Field
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.FieldTheory.Finiteness
+import Mathlib.GroupTheory.QuotientGroup.Basic
+import Mathlib.LinearAlgebra.Dual.Lemmas
+import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+import Mathlib.RingTheory.Coprime.Lemmas
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
 
 /-!
 # Fixed field under a group action.

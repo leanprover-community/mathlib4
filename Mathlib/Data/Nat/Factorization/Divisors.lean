@@ -8,6 +8,12 @@ module
 public import Mathlib.Data.Finsupp.Interval
 public import Mathlib.Data.Nat.Factorization.Defs
 public import Mathlib.NumberTheory.Divisors
+public import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Results about divisors and factorizations

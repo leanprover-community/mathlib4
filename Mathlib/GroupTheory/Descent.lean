@@ -13,6 +13,16 @@ public import Mathlib.Order.Northcott
 import Mathlib.Data.Set.Finite.Lemmas
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Algebra.Order.Ring.Unbundled.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Finite.Range
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Descent Theorem

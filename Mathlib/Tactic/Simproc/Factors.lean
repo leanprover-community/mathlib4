@@ -3,12 +3,17 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Eric Wieser
 -/
-module
+module -- shake: keep-all
 
 import all Mathlib.Tactic.NormNum.Prime  -- for accessing `evalMinFac.core`
 public meta import Mathlib.Algebra.BigOperators.Group.List.Defs
 public import Mathlib.Data.Nat.Factors
 public import Mathlib.Tactic.NormNum.Prime
+public meta import Qq
+import Mathlib.Data.List.Chain
+meta import Mathlib.Data.Nat.Basic
+meta import Mathlib.Order.Basic
+meta import Mathlib.Tactic.Attr.Core
 
 /-!
 # `simproc` for `Nat.primeFactorsList`

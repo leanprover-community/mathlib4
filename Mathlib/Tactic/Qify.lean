@@ -3,13 +3,18 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Algebra.Order.Ring.Cast
 public import Mathlib.Algebra.Order.Ring.Unbundled.Rat
 public import Mathlib.Algebra.Ring.Rat
 public import Mathlib.Data.Int.Cast.Lemmas
 public meta import Mathlib.Tactic.ToAdditive
+import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # `qify` tactic

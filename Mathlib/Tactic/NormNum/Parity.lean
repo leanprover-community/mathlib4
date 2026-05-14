@@ -3,10 +3,12 @@ Copyright (c) 2025 Concordance Inc. dba Harmonic. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Algebra.Ring.Int.Parity  -- shake: keep (Qq dependency)
 public import Mathlib.Tactic.NormNum.Core
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # `norm_num` extensions for `Even` and `Odd`

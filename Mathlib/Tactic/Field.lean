@@ -3,10 +3,14 @@ Copyright (c) 2025 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Tactic.FieldSimp
 public import Mathlib.Tactic.Ring.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 
 /-! # A tactic for proving algebraic goals in a field

@@ -5,9 +5,30 @@ Authors: Yury Kudryashov, Yaël Dillies
 -/
 module
 
-public import Mathlib.Analysis.Complex.ReImTopology
-public import Mathlib.Analysis.Convex.Combination
-public import Mathlib.Analysis.Convex.PathConnected
+public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.Analysis.Convex.Hull
+public import Mathlib.Topology.Connected.PathConnected
+import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+import Mathlib.Algebra.Order.Algebra
+import Mathlib.Algebra.Order.BigOperators.Expect
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Analysis.Complex.ReImTopology
+import Mathlib.Analysis.Convex.Combination
+import Mathlib.Analysis.Convex.PathConnected
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Data.Set.Prod
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Theorems about convexity on the complex plane

@@ -6,8 +6,12 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Group.End
-public import Mathlib.Data.Set.Function
 public import Mathlib.Dynamics.FixedPoints.Defs
+import Mathlib.Data.Set.Function
+import Mathlib.Data.Set.Image
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Fixed points of a self-map

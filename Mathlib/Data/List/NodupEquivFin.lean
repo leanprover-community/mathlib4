@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Data.List.Duplicate
 public import Mathlib.Data.List.Sort
+import Mathlib.Data.List.Nodup
+import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Equivalence between `Fin (length l)` and elements of a list

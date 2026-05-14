@@ -6,9 +6,33 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
-public import Mathlib.RingTheory.Artinian.Ring
-public import Mathlib.RingTheory.Unramified.Finite
 public import Mathlib.RingTheory.Unramified.Locus
+import Mathlib.Algebra.CharP.Algebra
+import Mathlib.Algebra.Order.AbsoluteValue.Basic
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Combinatorics.Matroid.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.LinearAlgebra.Dimension.Finite
+import Mathlib.LinearAlgebra.Dual.Lemmas
+import Mathlib.LinearAlgebra.TensorProduct.Basis
+import Mathlib.RingTheory.Artinian.Module
+import Mathlib.RingTheory.Artinian.Ring
+import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
+import Mathlib.RingTheory.LocalProperties.Basic
+import Mathlib.RingTheory.Polynomial.Tower
+import Mathlib.RingTheory.Unramified.Finite
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
 
 /-!
 # Unramified algebras over fields

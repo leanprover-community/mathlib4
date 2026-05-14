@@ -8,6 +8,20 @@ module
 public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 public import Mathlib.Topology.Order.Basic
 public import Mathlib.Topology.UniformSpace.UniformConvergence
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Order.Filter.Map
+import Mathlib.Order.Filter.Prod
+import Mathlib.Order.Filter.Tendsto
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Neighborhoods
 
 /-!
 # TendstoUniformlyOn on ordered spaces

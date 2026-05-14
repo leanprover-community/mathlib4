@@ -6,7 +6,7 @@ Authors: Simon Hudon, Patrick Massot, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Notation.Defs
-public import Mathlib.Data.Prod.Basic
+import Mathlib.Data.Prod.Basic
 
 /-!
 # Arithmetic operators on (pairwise) product types

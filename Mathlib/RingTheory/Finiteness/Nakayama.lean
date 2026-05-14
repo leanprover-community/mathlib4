@@ -6,7 +6,20 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.RingTheory.Finiteness.Defs
-public import Mathlib.RingTheory.Ideal.Operations
+public import Mathlib.Algebra.Algebra.Operations
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.RingTheory.Ideal.Operations
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Nakayama's lemma

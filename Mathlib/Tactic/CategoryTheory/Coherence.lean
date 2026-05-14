@@ -3,7 +3,7 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Yuma Mizuno, Oleksandr Manzyuk
 -/
-module
+module -- shake: keep-all
 
 public meta import Mathlib.Lean.Meta
 public import Mathlib.CategoryTheory.Monoidal.Free.Basic
@@ -11,6 +11,11 @@ public meta import Mathlib.CategoryTheory.Monoidal.Free.Basic
 public import Mathlib.Lean.Meta
 public import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
 public import Mathlib.Tactic.CategoryTheory.MonoidalComp
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # A `coherence` tactic for monoidal categories

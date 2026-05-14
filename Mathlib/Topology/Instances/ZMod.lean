@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Topology.Order
 public import Mathlib.Data.ZMod.Defs
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Topology on `ZMod N`

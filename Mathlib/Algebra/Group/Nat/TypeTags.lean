@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Algebra.Group.TypeTags.Basic
+import Mathlib.Util.CompileInductive
 
 /-!
 # Lemmas about `Multiplicative ℕ`

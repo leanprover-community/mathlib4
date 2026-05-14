@@ -10,6 +10,10 @@ public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Algebra.Group.Subgroup.Ker
 public import Mathlib.Algebra.Group.Subgroup.Lattice
 public import Mathlib.Order.Disjoint
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Canonical homomorphism from a pair of monoids

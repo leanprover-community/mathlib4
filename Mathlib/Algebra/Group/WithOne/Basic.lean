@@ -5,9 +5,11 @@ Authors: Mario Carneiro, Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Group.WithOne.Defs
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # More operations on `WithOne` and `WithZero`

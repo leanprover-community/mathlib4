@@ -5,11 +5,28 @@ Authors: Kevin Kappelmann
 -/
 module
 
-public import Mathlib.Algebra.ContinuedFractions.Computation.Approximations
-public import Mathlib.Algebra.ContinuedFractions.ConvergentsEquiv
-public import Mathlib.Algebra.Order.Archimedean.Basic
-public import Mathlib.Tactic.GCongr
-public import Mathlib.Topology.Order.LeftRightNhds
+public import Mathlib.Algebra.ContinuedFractions.Computation.Basic
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
+public import Mathlib.Algebra.Order.Archimedean.Defs
+public import Mathlib.Topology.Order.Basic
+import Mathlib.Algebra.ContinuedFractions.Computation.Approximations
+import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
+import Mathlib.Algebra.ContinuedFractions.Computation.Translations
+import Mathlib.Algebra.ContinuedFractions.ConvergentsEquiv
+import Mathlib.Algebra.ContinuedFractions.TerminatedStable
+import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Order.Filter.AtTopBot.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Order.LeftRightNhds
 
 /-!
 # Corollaries From Approximation Lemmas (`Algebra.ContinuedFractions.Computation.Approximations`)

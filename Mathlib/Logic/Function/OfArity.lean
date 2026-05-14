@@ -6,6 +6,9 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Logic.Function.FromTypes
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-! # Function types of a given arity
 

@@ -5,8 +5,22 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Topology.MetricSpace.Bounded
 public import Mathlib.Topology.Order.Bornology
+public import Mathlib.Topology.MetricSpace.Pseudo.Constructions
+public import Mathlib.Topology.Order.Basic
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Order.Interval.Set.OrdConnected
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.MetricSpace.Bounded
+import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 
 /-!
 # The reals are equipped with their order bornology

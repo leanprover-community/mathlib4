@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Algebra.Ring.Action.Basic
 public import Mathlib.Algebra.Ring.PUnit
+import Mathlib.Tactic.Subsingleton
+import Mathlib.Util.CompileInductive
 
 /-!
 # Instances on PUnit

@@ -3,10 +3,18 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Thomas Murrills
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Data.Rat.Cast.Lemmas
 public import Mathlib.Tactic.NormNum.Basic
+public meta import Mathlib.Tactic.ToAdditive
+import Mathlib.Data.Rat.Cast.Defs
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 ## `norm_num` plugin for scientific notation.

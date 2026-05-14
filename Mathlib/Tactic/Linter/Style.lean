@@ -3,7 +3,7 @@ Copyright (c) 2024 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
-module
+module -- shake: keep-all
 
 public meta import Lean.Elab.Command
 public meta import Lean.Server.InfoUtils
@@ -12,6 +12,7 @@ public meta import Lean.Server.InfoUtils
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Lean.Parser.Command
 public import Mathlib.Tactic.DeclarationNames
+public import Lean.Parser.Module
 
 /-!
 ## Style linters

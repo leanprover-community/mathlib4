@@ -5,8 +5,13 @@ Authors: Yury Kudryashov, Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Order.Bounds.Basic
-public import Mathlib.Order.Interval.Set.LinearOrder
+public import Mathlib.Order.Bounds.Defs
+public import Mathlib.Order.Interval.Set.Defs
+public import Mathlib.Order.Lattice
+import Mathlib.Order.Bounds.Basic
+import Mathlib.Order.Interval.Set.LinearOrder
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Monotonicity on intervals

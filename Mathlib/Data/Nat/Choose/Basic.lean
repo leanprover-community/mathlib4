@@ -8,6 +8,8 @@ module
 
 public import Mathlib.Data.Nat.Factorial.Basic
 public import Mathlib.Order.Monotone.Defs
+public import Mathlib.Data.Nat.Basic
+import Mathlib.Tactic.Common
 
 /-!
 # Binomial coefficients

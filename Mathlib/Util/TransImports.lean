@@ -5,7 +5,8 @@ Authors: Damiano Testa
 -/
 module
 
-public import Mathlib.Init
+public meta import Lean.Elab.Command
+import Mathlib.Init
 
 /-! # The `#trans_imports` command
 

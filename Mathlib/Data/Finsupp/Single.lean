@@ -5,8 +5,13 @@ Authors: Johannes Hölzl, Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Group.Indicator
 public import Mathlib.Data.Finsupp.Defs
+public import Mathlib.Algebra.Notation.Indicator
+import Mathlib.Algebra.Group.Indicator
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Finitely supported functions on exactly one point

@@ -7,8 +7,15 @@ module
 
 public import Mathlib.Order.Disjoint
 public import Mathlib.Order.RelIso.Basic
-public import Mathlib.Tactic.Monotonicity.Attr
+public import Mathlib.Order.Monotone.Basic
+import Mathlib.Order.Compare
+import Mathlib.Tactic.Coe
+import Mathlib.Tactic.Convert
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.Monotonicity.Attr
 public import Mathlib.Tactic.PPWithUniv
+import Mathlib.Util.CompileInductive
 
 /-!
 # Order homomorphisms

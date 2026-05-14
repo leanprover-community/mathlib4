@@ -3,10 +3,13 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
-module
+module -- shake: keep-all
 
 public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
 public import Mathlib.Tactic.FunProp.FunctionData
+public import Lean.Meta.Tactic.Simp
+public import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
+public meta import Mathlib.Tactic.FunProp.FunctionData
 
 /-!
 ## `funProp`

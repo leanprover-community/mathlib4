@@ -3,11 +3,14 @@ Copyright (c) 2025 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-module
+module -- shake: keep-all
 
 public import Aesop
 public import Mathlib.CategoryTheory.Category.Basic
 public meta import Mathlib.Tactic.ToDual
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 The `check_compositions` tactic,

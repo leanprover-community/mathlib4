@@ -3,10 +3,11 @@ Copyright (c) 2023 Moritz Doll, Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Gabriel Ebner, Damiano Testa, Kyle Miller
 -/
-module
+module -- shake: keep-all
 
 public meta import Lean.Meta.Tactic.Rfl
 public import Mathlib.Tactic.TermCongr
+import Mathlib.Init
 
 /-!
 # The `congrm` tactic

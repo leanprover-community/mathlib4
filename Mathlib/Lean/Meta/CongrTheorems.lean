@@ -5,9 +5,18 @@ Authors: Kyle Miller
 -/
 module
 
-public import Lean.Meta.Tactic.Cleanup
-public meta import Lean.Meta.Tactic.Refl
 public import Mathlib.Logic.IsEmpty.Defs
+public meta import Mathlib.Logic.IsEmpty.Defs
+public meta import Lean.Meta.AppBuilder
+public import Lean.Meta.AppBuilder
+public meta import Lean.Meta.CongrTheorems
+public meta import Lean.Meta.FunInfo
+public meta import Lean.Meta.Tactic.Util
+import Lean.Meta.CongrTheorems
+public meta import Lean.Meta.Tactic.Refl
+public meta import Lean.Meta.Tactic.Cases
+public meta import Lean.Meta.Tactic.Cleanup
+import Mathlib.Init
 
 /-!
 # Additions to `Lean.Meta.CongrTheorems`

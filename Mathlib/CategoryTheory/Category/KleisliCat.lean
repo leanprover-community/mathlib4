@@ -6,6 +6,9 @@ Authors: Simon Hudon
 module
 
 public import Mathlib.CategoryTheory.Category.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # The Kleisli construction on the Type category

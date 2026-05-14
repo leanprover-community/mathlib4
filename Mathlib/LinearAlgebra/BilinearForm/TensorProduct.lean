@@ -8,7 +8,20 @@ module
 public import Mathlib.LinearAlgebra.BilinearForm.Hom
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
-public import Mathlib.RingTheory.TensorProduct.Finite
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.LinearAlgebra.TensorProduct.Basis
+import Mathlib.RingTheory.TensorProduct.Finite
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # The bilinear form on a tensor product

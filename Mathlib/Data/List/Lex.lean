@@ -5,9 +5,12 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.List.Basic
-public import Mathlib.Data.Nat.Basic
 public import Mathlib.Order.RelClasses
+public import Aesop
+import Mathlib.Data.List.Basic
+import Mathlib.Data.Nat.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # Lexicographic ordering of lists.

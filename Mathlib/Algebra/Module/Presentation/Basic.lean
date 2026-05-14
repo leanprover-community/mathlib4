@@ -9,6 +9,11 @@ public import Mathlib.Algebra.Exact
 public import Mathlib.Algebra.Module.ULift
 public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Presentations of modules

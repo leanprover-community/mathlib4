@@ -7,9 +7,33 @@ module
 
 public import Mathlib.Analysis.CStarAlgebra.Module.Defs
 public import Mathlib.Analysis.CStarAlgebra.Module.Synonym
-public import Mathlib.Analysis.InnerProductSpace.Basic
-public import Mathlib.Topology.MetricSpace.Bilipschitz
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Algebra
+import Mathlib.Algebra.Order.BigOperators.Expect
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Field.Power
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Algebra.Star.BigOperators
+import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Analysis.SpecialFunctions.Bernstein
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.EReal.Inv
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Data.Sym.Sym2
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.FastInstance
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.MetricSpace.Bilipschitz
 
 /-! # Constructions of Hilbert C⋆-modules
 

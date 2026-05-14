@@ -7,6 +7,12 @@ module
 
 public import Mathlib.CategoryTheory.Sites.Hypercover.One
 public import Mathlib.CategoryTheory.Limits.Types.Multiequalizer
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 

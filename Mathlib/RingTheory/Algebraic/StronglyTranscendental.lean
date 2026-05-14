@@ -5,8 +5,27 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.KrullDimension.Zero
-public import Mathlib.RingTheory.LocalProperties.Reduced
+public import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
+public import Mathlib.RingTheory.Localization.Integral
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Polynomial.Eval.Coeff
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.RingTheory.KrullDimension.Zero
+import Mathlib.RingTheory.LocalProperties.Reduced
+import Mathlib.RingTheory.Polynomial.Tower
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
 
 /-!
 # Strongly transcendental elements

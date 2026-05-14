@@ -6,7 +6,15 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Order.Filter.Extr
-public import Mathlib.Topology.ContinuousOn
+public import Mathlib.Topology.Defs.Filter
+import Mathlib.Data.Finset.Attr
+import Mathlib.Order.Filter.Map
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.ContinuousOn
+import Mathlib.Topology.Neighborhoods
+import Mathlib.Topology.NhdsWithin
 
 /-!
 # Local extrema of functions on topological spaces

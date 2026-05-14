@@ -8,6 +8,9 @@ module
 public import Mathlib.Combinatorics.Quiver.Path
 public import Mathlib.Combinatorics.Quiver.Subquiver
 public import Mathlib.Order.WellFounded
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SimpRw
+import Mathlib.Util.CompileInductive
 
 /-!
 # Arborescences

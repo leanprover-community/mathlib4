@@ -6,10 +6,16 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
-public import Mathlib.Algebra.Order.BigOperators.Group.List
 public import Mathlib.Algebra.Order.Group.Unbundled.Abs
-public import Mathlib.Data.List.MinMax
 public import Mathlib.Data.Multiset.Fold
+public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+public import Mathlib.Order.MinMax
+import Mathlib.Algebra.Order.BigOperators.Group.List
+import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
+import Mathlib.Data.List.MinMax
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
 
 /-!
 # Big operators on a multiset in ordered groups

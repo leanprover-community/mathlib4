@@ -5,9 +5,25 @@ Authors: Stuart Presnell
 -/
 module
 
-public import Mathlib.Algebra.Order.Interval.Finset.SuccPred
 public import Mathlib.Data.Nat.Factorization.Defs
 public import Mathlib.Order.Interval.Finset.Nat
+public import Mathlib.Data.Finsupp.Order
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Group.Nat.Units
+import Mathlib.Algebra.Group.Units.Basic
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+import Mathlib.Algebra.Order.Interval.Finset.SuccPred
+import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Algebra.Order.Sub.Unbundled.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.GCD.Basic
+import Mathlib.Data.Nat.Prime.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Basic lemmas on prime factorizations

@@ -6,6 +6,8 @@ Authors: Rémi Bottinelli
 module
 
 public import Mathlib.Combinatorics.Quiver.Prefunctor
+import Batteries.Tactic.Init
+import Mathlib.Util.CompileInductive
 
 /-!
 

@@ -11,6 +11,11 @@ public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 public import Mathlib.Algebra.Order.ZeroLEOne
 public import Mathlib.Order.WithBot
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.SimpRw
+import Mathlib.Util.CompileInductive
 
 /-! # Adjoining top/bottom elements to ordered monoids.
 -/

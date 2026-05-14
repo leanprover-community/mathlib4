@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Data.Nat.Cast.Defs
+import Mathlib.Util.CompileInductive
 
 /-!
 # The product of two `AddMonoidWithOne`s.

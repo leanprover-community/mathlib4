@@ -5,10 +5,28 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.CharP.Basic
-public import Mathlib.Algebra.CharP.Reduced
-public import Mathlib.FieldTheory.KummerPolynomial
 public import Mathlib.FieldTheory.Separable
+import Mathlib.Algebra.CharP.Frobenius
+import Mathlib.Algebra.CharP.Reduced
+import Mathlib.Algebra.Group.Irreducible.Lemmas
+import Mathlib.Algebra.Order.AbsoluteValue.Basic
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Group.Finset
+import Mathlib.Algebra.Polynomial.Eval.Coeff
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Totient
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.FieldTheory.KummerPolynomial
+import Mathlib.RingTheory.Algebraic.Integral
+import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
 
 /-!
 

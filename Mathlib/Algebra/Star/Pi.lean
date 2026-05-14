@@ -8,6 +8,10 @@ module
 public import Mathlib.Algebra.Star.Basic
 public import Mathlib.Algebra.Notation.Pi.Defs
 public import Mathlib.Algebra.Ring.Pi
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Basic Results about Star on Pi Types

@@ -6,9 +6,16 @@ Authors: Mario Carneiro, Johan Commelin
 module
 
 public import Mathlib.Algebra.Group.Defs
-public import Mathlib.Data.Option.Basic
-public import Mathlib.Logic.Nontrivial.Basic
-public import Mathlib.Tactic.Common
+public import Aesop
+public import Mathlib.Logic.Nontrivial.Defs
+public import Mathlib.Tactic.Lift
+public import Mathlib.Tactic.Spread
+public import Mathlib.Tactic.ToDual
+public import Batteries.Logic
+import Mathlib.Data.Option.Basic
+import Mathlib.Logic.Nontrivial.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # Adjoining a zero/one to semigroups and related algebraic structures

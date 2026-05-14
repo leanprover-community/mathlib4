@@ -3,11 +3,16 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-module
+module -- shake: keep-all
 
 public meta import Mathlib.Algebra.GroupWithZero.Nat
 public meta import Mathlib.Algebra.Ring.Int.Defs
 public import Mathlib.Tactic.Linarith.Datatypes
+public meta import Aesop
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Parsing input expressions into linear form

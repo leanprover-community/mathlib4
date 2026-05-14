@@ -3,11 +3,17 @@ Copyright (c) 2025 Arend Mellendijk. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arend Mellendijk
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Algebra.Algebra.Defs
-public import Mathlib.Algebra.Algebra.Basic
-public import Mathlib.Tactic.Ring.RingNF
+public import Mathlib.Data.Finset.Attr
+public import Mathlib.Tactic.Ring.Basic
+public import Mathlib.Tactic.SetLike
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-! # Lemmas for the `algebra` tactic.
 -/

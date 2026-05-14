@@ -3,9 +3,25 @@ Copyright (c) 2023 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Algebra.Polynomial.Degree.Lemmas
+public meta import Mathlib.Lean.Meta
+public meta import Mathlib.Tactic.ToAdditive
+import Mathlib.Algebra.Polynomial.Coeff
+import Mathlib.Algebra.Polynomial.Degree.Operations
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Lean.Expr.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 

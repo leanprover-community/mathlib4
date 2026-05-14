@@ -7,7 +7,18 @@ module
 
 public import Mathlib.Topology.MetricSpace.Congruence
 public import Mathlib.Topology.MetricSpace.Dilation
-public import Mathlib.Tactic.FinCases
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Data.ENNReal.Inv
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.Rat.Floor
+import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Similarities

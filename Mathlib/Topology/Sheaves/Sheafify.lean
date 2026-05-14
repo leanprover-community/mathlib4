@@ -7,7 +7,15 @@ module
 
 public import Mathlib.Topology.Sheaves.LocalPredicate
 public import Mathlib.Topology.Sheaves.Stalks
-public import Mathlib.Topology.Sheaves.Skyscraper
+public import Mathlib.CategoryTheory.Sites.Sheafification
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Sheaves.Init
+import Mathlib.Topology.Sheaves.Skyscraper
 
 /-!
 # Sheafification of `Type`-valued presheaves

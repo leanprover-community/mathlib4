@@ -3,15 +3,19 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.GroupWithZero.Invertible
 public import Mathlib.Algebra.Ring.Nat
 public import Mathlib.Data.Int.Cast.Basic
-public import Qq.MetaM
 
 public meta import Mathlib.Data.Sigma.Basic -- for the `Inhabited (Sigma β)` instance
+public import Mathlib.Tactic.Attr.Core
+public import Qq.Macro
+public meta import Qq.MetaM
+public import Qq.Typ
+import Mathlib.Util.CompileInductive
 
 /-!
 ## The `Result` type for `norm_num`

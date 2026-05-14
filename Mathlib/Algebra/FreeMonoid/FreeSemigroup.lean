@@ -8,10 +8,12 @@ module
 public import Mathlib.Algebra.FreeMonoid.Basic
 public import Mathlib.Algebra.Free
 public import Mathlib.Algebra.Group.WithOne.Basic
-public import Mathlib.Algebra.Group.Units.Basic
 public import Mathlib.Data.Set.Operations
 
 import Mathlib.Data.Set.Insert
+import Mathlib.Algebra.Group.Units.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
 
 /-!
 # Relation between the free semigroup and the free monoid

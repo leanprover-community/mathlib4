@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Algebra.Order.Group.Synonym
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Data.Prod.Lex
+import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-! # Products of ordered monoids -/
 

@@ -3,13 +3,21 @@ Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Algebra.Order.Group.Defs
 public import Mathlib.Algebra.Order.Group.Unbundled.Abs
 public import Mathlib.Algebra.Order.Ring.Unbundled.Basic
 public import Mathlib.Algebra.Order.Sub.Unbundled.Basic
 public import Mathlib.Data.Set.Lattice
+public import Mathlib.Data.Set.Image
+public import Mathlib.Data.Set.NAry
+public import Mathlib.Data.Set.Prod
+public import Mathlib.Order.Bounds.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Util.CompileInductive
 
 /-! # Lemmas for the `mono` tactic
 

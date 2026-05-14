@@ -5,12 +5,28 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.LinearAlgebra.TensorProduct.Quotient
-public import Mathlib.RingTheory.Flat.Tensor
-public import Mathlib.RingTheory.Ideal.IdempotentFG
-public import Mathlib.RingTheory.Idempotents
 public import Mathlib.RingTheory.Spectrum.Prime.Basic
-public import Mathlib.RingTheory.LocalProperties.Basic
+public import Mathlib.RingTheory.Flat.Basic
+public import Mathlib.RingTheory.Localization.AtPrime.Basic
+import Mathlib.Algebra.Order.AbsoluteValue.Basic
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Ring.Idempotent
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.LinearAlgebra.TensorProduct.Quotient
+import Mathlib.RingTheory.Flat.Tensor
+import Mathlib.RingTheory.Ideal.IdempotentFG
+import Mathlib.RingTheory.Idempotents
+import Mathlib.RingTheory.LocalProperties.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Pure ideals

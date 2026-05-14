@@ -3,11 +3,15 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Nick Kuhn, Arend Mellendijk, Christian Merten, Calle Sönne, Adam Topaz
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Algebra.Algebra.Tower
 public meta import Mathlib.Tactic.Attr.Core
 public meta import Mathlib.Tactic.ToAdditive
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 

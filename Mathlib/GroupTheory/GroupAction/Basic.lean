@@ -10,10 +10,17 @@ public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 public import Mathlib.Algebra.Group.Action.Prod
 public import Mathlib.Algebra.Group.Subgroup.Map
 public import Mathlib.Algebra.Module.Torsion.Free
-public import Mathlib.Data.Finite.Sigma
-public import Mathlib.Data.Set.Finite.Range
 public import Mathlib.Data.Setoid.Basic
 public import Mathlib.GroupTheory.GroupAction.Defs
+public import Mathlib.Algebra.Group.Action.Units
+public import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Finite.Sigma
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Fintype.EquivFin
+import Mathlib.Data.Set.Finite.Range
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Basic properties of group actions

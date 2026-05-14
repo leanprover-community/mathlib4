@@ -3,11 +3,14 @@ Copyright (c) 2024 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-module
+module -- shake: keep-all
 
 public meta import Mathlib.Tactic.CategoryTheory.Monoidal.Datatypes
 public import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
 public import Mathlib.Tactic.CategoryTheory.Monoidal.Datatypes
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # Normalization of morphisms in monoidal categories

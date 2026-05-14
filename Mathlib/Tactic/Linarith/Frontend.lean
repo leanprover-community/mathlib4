@@ -3,7 +3,7 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-module
+module -- shake: keep-all
 
 public meta import Mathlib.Control.Basic
 public import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm
@@ -11,6 +11,10 @@ public import Mathlib.Tactic.Linarith.Preprocessing
 public import Mathlib.Tactic.Linarith.Verification
 public import Mathlib.Tactic.Ring.Basic
 public import Mathlib.Util.ElabWithoutMVars
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # `linarith`: solving linear arithmetic goals

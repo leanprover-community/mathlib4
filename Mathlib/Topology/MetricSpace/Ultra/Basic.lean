@@ -5,8 +5,20 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
-public import Mathlib.Topology.Clopen
+public import Mathlib.Topology.MetricSpace.Pseudo.Constructions
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Clopen
+import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 
 /-!
 ## Ultrametric spaces

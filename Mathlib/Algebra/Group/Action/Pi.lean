@@ -7,7 +7,10 @@ module
 
 public import Mathlib.Algebra.Group.Action.Faithful
 public import Mathlib.Algebra.Group.Pi.Basic
-public import Mathlib.Data.Set.Piecewise
+import Mathlib.Data.Set.Piecewise
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SplitIfs
+import Mathlib.Util.CompileInductive
 
 /-!
 # Pi instances for multiplicative actions

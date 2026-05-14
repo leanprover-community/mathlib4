@@ -6,7 +6,10 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Order.BoundedOrder.Basic
-public import Mathlib.Order.Monotone.Basic
+public import Mathlib.Order.Monotone.Defs
+import Mathlib.Order.Monotone.Basic
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Monotone functions on bounded orders

@@ -5,9 +5,13 @@ Authors: Yury Kudryashov, Abhimanyu Pallavi Sudhir
 -/
 module
 
-public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Order.Filter.Germ.Basic
+import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+import Mathlib.Order.Filter.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Ordered monoid instances on the space of germs of a function at a filter

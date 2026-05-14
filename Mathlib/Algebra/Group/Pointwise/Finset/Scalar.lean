@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Data.Finset.NAry
 public import Mathlib.Algebra.Group.Pointwise.Set.Finite
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Pointwise operations of finsets

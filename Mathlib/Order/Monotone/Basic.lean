@@ -8,12 +8,17 @@ module
 public import Mathlib.Data.Nat.Basic
 public import Mathlib.Data.Int.Order.Basic
 public import Mathlib.Logic.Function.Iterate
-public import Mathlib.Order.Compare
 public import Mathlib.Order.Max
 public import Mathlib.Order.Monotone.Defs
 public import Mathlib.Order.RelClasses
-public import Mathlib.Tactic.Choose
-public import Mathlib.Tactic.Contrapose
+import Mathlib.Order.Compare
+import Mathlib.Tactic.ByCases
+import Mathlib.Tactic.Choose
+import Mathlib.Tactic.Contrapose
+import Mathlib.Tactic.Inhabit
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.Use
+import Mathlib.Util.CompileInductive
 
 /-!
 # Monotonicity

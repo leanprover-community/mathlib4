@@ -6,8 +6,28 @@ Authors: Kalle Kytölä
 module
 
 public import Mathlib.Analysis.Normed.Group.Basic
-public import Mathlib.Topology.MetricSpace.ProperSpace.Real
-public import Mathlib.Analysis.Normed.Ring.Lemmas
+public import Mathlib.Analysis.Normed.Ring.Basic
+public import Mathlib.Topology.MetricSpace.Algebra
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Analysis.Normed.Group.Bounded
+import Mathlib.Analysis.Normed.Ring.Lemmas
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Data.Set.NAry
+import Mathlib.Order.Filter.Map
+import Mathlib.Order.Filter.Tendsto
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Algebra.Ring.Real
+import Mathlib.Topology.MetricSpace.Lipschitz
+import Mathlib.Topology.MetricSpace.ProperSpace.Real
 
 /-!
 # Bounded operations

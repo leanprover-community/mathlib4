@@ -5,7 +5,25 @@ Authors: James Sundstrom, Xavier Roblot
 -/
 module
 
-public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+public import Mathlib.RingTheory.DedekindDomain.Basic
+public import Mathlib.RingTheory.FractionalIdeal.Basic
+public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+import Mathlib.Algebra.Module.Submodule.Basic
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.RingTheory.Algebraic.Integral
+import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
 
 /-!
 # Extension of fractional ideals

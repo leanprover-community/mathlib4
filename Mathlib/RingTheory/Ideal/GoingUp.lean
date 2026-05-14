@@ -6,8 +6,28 @@ Authors: Anne Baanen, Yongle Hu
 module
 
 public import Mathlib.RingTheory.Ideal.Over
-public import Mathlib.RingTheory.Localization.AtPrime.Basic
-public import Mathlib.RingTheory.Localization.Integral
+public import Mathlib.RingTheory.Algebraic.Defs
+public import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Polynomial.Eval.Coeff
+import Mathlib.Algebra.Polynomial.Eval.Degree
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.RingTheory.Algebraic.Integral
+import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
+import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+import Mathlib.RingTheory.Localization.AtPrime.Basic
+import Mathlib.RingTheory.Localization.Integral
+import Mathlib.RingTheory.Polynomial.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
 
 /-!
 # Ideals over/under ideals in integral extensions

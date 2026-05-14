@@ -3,13 +3,20 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Aurélien Saue, Anne Baanen
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Tactic.NormNum.Inv
 public import Mathlib.Tactic.NormNum.Pow
-public meta import Mathlib.Tactic.NormNum.Result
 
-meta import Mathlib.Algebra.Order.Ring.Unbundled.Rat
+public meta import Aesop
+public meta import Mathlib.Tactic.ToAdditive
+public import Mathlib.Util.AtomM
+public meta import Mathlib.Util.AtomM
+public import Plausible
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # `ring`-like tactics

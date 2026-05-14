@@ -6,7 +6,11 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Topology.Order.OrderClosed
-public import Mathlib.Topology.LocallyClosed
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.LocallyClosed
 
 /-!
 # Intervals are locally closed

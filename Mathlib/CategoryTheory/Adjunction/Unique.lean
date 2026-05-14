@@ -6,6 +6,12 @@ Authors: Bhavik Mehta, Thomas Read, Andrew Yang, Dagur Asgeirsson, Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Adjunction.Mates
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 /-!
 
 # Uniqueness of adjoints

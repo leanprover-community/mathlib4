@@ -6,7 +6,27 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.MeasureTheory.Measure.AbsolutelyContinuous
-public import Mathlib.MeasureTheory.OuterMeasure.BorelCantelli
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.EReal.Inv
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.MeasureTheory.OuterMeasure.BorelCantelli
+import Mathlib.Order.Filter.Map
+import Mathlib.Order.Filter.Tendsto
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Measurability
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Algebra.InfiniteSum.Order
+import Mathlib.Topology.MetricSpace.Bounded
 
 /-!
 # Quasi-Measure-Preserving Functions

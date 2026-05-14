@@ -3,11 +3,19 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kyle Miller, Eric Wieser
 -/
-module
+module -- shake: keep-all
 
 public meta import Mathlib.Data.Int.GCD
 public import Mathlib.Algebra.Ring.Divisibility.Basic
 public import Mathlib.Tactic.NormNum
+import Mathlib.Data.Int.GCD
+import Mathlib.Data.Rat.Lemmas
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-! # `norm_num` extensions for GCD-adjacent functions
 

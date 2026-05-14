@@ -8,6 +8,11 @@ module
 public import Mathlib.CategoryTheory.Category.Cat
 public import Mathlib.CategoryTheory.Limits.Types.Limits
 public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+public import Batteries.Tactic.Init
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # The category of small categories has all small limits.

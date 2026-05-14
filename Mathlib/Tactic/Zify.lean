@@ -3,14 +3,15 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Data.Int.Cast.Basic
 public import Mathlib.Order.Basic
 public meta import Mathlib.Tactic.ToAdditive
 public meta import Mathlib.Tactic.ToDual
-
+import Mathlib.Data.Nat.Basic
 import Mathlib.Tactic.Attr.Register
+
 
 /-!
 # `zify` tactic

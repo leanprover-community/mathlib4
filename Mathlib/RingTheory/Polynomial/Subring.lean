@@ -10,6 +10,15 @@ public import Mathlib.Algebra.Polynomial.Eval.Defs
 public import Mathlib.Algebra.Ring.Subring.Defs
 
 import Mathlib.Algebra.Polynomial.Eval.Coeff
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Polynomials over subrings

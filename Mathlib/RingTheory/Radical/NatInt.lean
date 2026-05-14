@@ -7,11 +7,30 @@ module
 
 public import Mathlib.Algebra.EuclideanDomain.Int
 public import Mathlib.Algebra.GCDMonoid.Nat
-public import Mathlib.Data.Nat.Prime.Int
 public import Mathlib.Data.Nat.PrimeFin
 public import Mathlib.RingTheory.PrincipalIdealDomain
 public import Mathlib.RingTheory.Radical.Basic
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
+public meta import Aesop
+public import Mathlib.Algebra.Ring.CharZero
+public import Mathlib.Tactic.Positivity.Core
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Int.Basic
+import Mathlib.Data.Nat.Prime.Int
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # The radical in `ℕ` and `ℤ`

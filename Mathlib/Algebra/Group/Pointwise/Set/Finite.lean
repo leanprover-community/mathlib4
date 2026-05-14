@@ -8,6 +8,10 @@ module
 public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 public import Mathlib.Data.Finite.Prod
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-! # Finiteness lemmas for pointwise operations on sets -/
 

@@ -6,6 +6,11 @@ Authors: Amelia Livingston
 module
 
 public import Mathlib.GroupTheory.MonoidLocalization.Basic
+import Mathlib.Algebra.Group.Units.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Mapping properties of monoid localizations

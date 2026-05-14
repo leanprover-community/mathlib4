@@ -7,8 +7,12 @@ module
 
 public import Mathlib.Order.CompleteLattice.Defs
 public import Mathlib.Order.ConditionallyCompletePartialOrder.Defs
+public import Mathlib.Order.Interval.Set.Defs
+import Mathlib.Order.Bounds.Basic
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Util.CompileInductive
 
-import Mathlib.Data.Set.Lattice
 
 /-! # Basic results on conditionally complete partial orders
 

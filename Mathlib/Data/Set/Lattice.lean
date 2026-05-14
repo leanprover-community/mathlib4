@@ -7,6 +7,14 @@ module
 
 public import Mathlib.Logic.Pairwise
 public import Mathlib.Data.Set.BooleanAlgebra
+public import Mathlib.Order.GaloisConnection.Basic
+import Batteries.Tactic.Init
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Data.Set.Image
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.SimpRw
+import Mathlib.Util.CompileInductive
 
 /-!
 # The set lattice

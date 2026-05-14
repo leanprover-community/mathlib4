@@ -3,10 +3,12 @@ Copyright (c) 2020 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux, Kim Morrison, Oliver Nash
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Algebra.Group.Action.Defs  -- shake: keep (metaprogram output dependency)
 public import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-! # The `noncomm_ring` tactic
 

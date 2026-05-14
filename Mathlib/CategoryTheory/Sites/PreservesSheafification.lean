@@ -9,6 +9,15 @@ public import Mathlib.CategoryTheory.Sites.Localization
 public import Mathlib.CategoryTheory.Sites.CompatibleSheafification
 public import Mathlib.CategoryTheory.Sites.Whiskering
 public import Mathlib.CategoryTheory.Sites.Sheafification
+import Mathlib.CategoryTheory.Adjunction.Limits
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-! # Functors which preserve sheafification
 

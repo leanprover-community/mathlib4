@@ -5,11 +5,19 @@ Authors: Henry Swanson
 -/
 module
 
-public import Mathlib.Dynamics.FixedPoints.Basic
 public import Mathlib.GroupTheory.Perm.Option
 public import Mathlib.Logic.Equiv.Defs
 public import Mathlib.Logic.Equiv.Option
-public import Mathlib.Tactic.ApplyFun
+public import Mathlib.Dynamics.FixedPoints.Defs
+public import Mathlib.Tactic.SimpRw
+public import Mathlib.Tactic.Widget.Calc
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.SetLike
 
 /-!
 # Derangements on types

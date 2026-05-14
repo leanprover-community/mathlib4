@@ -6,6 +6,13 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Order.Sublattice
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Order.BoundedOrder.Lattice
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Boolean subalgebras

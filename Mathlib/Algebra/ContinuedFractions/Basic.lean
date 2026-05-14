@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Seq.Defs
 public import Mathlib.Algebra.Field.Defs
+import Mathlib.Tactic.Common
 
 /-!
 # Basic Definitions/Theorems for Continued Fractions

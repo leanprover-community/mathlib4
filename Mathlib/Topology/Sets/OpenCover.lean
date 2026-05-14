@@ -6,6 +6,13 @@ Authors: David Loeffler
 module
 
 public import Mathlib.Topology.Sets.Opens
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Neighborhoods
 
 /-!
 # Open covers

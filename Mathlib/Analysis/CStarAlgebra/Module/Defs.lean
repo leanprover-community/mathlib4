@@ -9,9 +9,29 @@ public import Mathlib.Analysis.InnerProductSpace.Defs
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 public import Mathlib.Analysis.CStarAlgebra.Classes
 public import Mathlib.Analysis.Normed.Operator.Bilinear
-public import Mathlib.Analysis.SpecialFunctions.Bernstein
-public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
-public import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Algebra.Order.Algebra
+import Mathlib.Algebra.Order.BigOperators.Expect
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Field.Power
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
+import Mathlib.Analysis.SpecialFunctions.Bernstein
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.EReal.Inv
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Data.Real.StarOrdered
+import Mathlib.Data.Sym.Sym2
+import Mathlib.Order.ConditionallyCompletePartialOrder.Basic
+import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.SetLike
 
 /-!
 # Hilbert C⋆-modules

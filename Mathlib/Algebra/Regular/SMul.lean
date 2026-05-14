@@ -7,8 +7,10 @@ module
 
 public import Mathlib.Algebra.Group.Units.Defs
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
-public import Mathlib.Tactic.Convert
-public import Mathlib.Tactic.Push
+import Mathlib.Tactic.Convert
+import Mathlib.Tactic.Push
+import Mathlib.Tactic.SimpRw
+import Mathlib.Util.CompileInductive
 
 /-!
 # Action of regular elements on a module

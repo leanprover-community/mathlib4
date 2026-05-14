@@ -3,12 +3,16 @@ Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Massot
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Algebra.Group.Commutator  -- shake: keep (tactic dependency)
 public import Mathlib.Algebra.Order.Sub.Basic  -- shake: keep (tactic dependency)
 public import Mathlib.Tactic.FailIfNoProgress
 public import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # `group` tactic

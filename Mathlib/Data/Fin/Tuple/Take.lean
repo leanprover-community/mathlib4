@@ -6,6 +6,9 @@ Authors: Quang Dao
 module
 
 public import Mathlib.Data.Fin.Tuple.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Take operations on tuples

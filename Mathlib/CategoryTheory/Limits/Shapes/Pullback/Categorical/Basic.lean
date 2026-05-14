@@ -7,6 +7,11 @@ module
 
 public import Mathlib.CategoryTheory.CatCommSq
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Categorical.CatCospanTransform
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Util.CompileInductive
 
 /-! # Categorical pullbacks
 

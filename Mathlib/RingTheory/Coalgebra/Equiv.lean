@@ -6,6 +6,14 @@ Authors: Amelia Livingston
 module
 
 public import Mathlib.RingTheory.Coalgebra.Hom
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.SetLike
 
 /-!
 # Isomorphisms of `R`-coalgebras

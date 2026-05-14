@@ -5,7 +5,14 @@ Authors: Yaël Dillies, Strahinja Gvozdić, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Algebra.Group.Action.Pointwise.Finset
+public import Mathlib.Algebra.Group.Action.Opposite
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
+import Mathlib.Algebra.Group.Action.Pointwise.Finset
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Convolution

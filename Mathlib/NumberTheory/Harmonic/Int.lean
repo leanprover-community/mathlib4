@@ -7,7 +7,22 @@ module
 
 public import Mathlib.NumberTheory.Harmonic.Defs
 public import Mathlib.NumberTheory.Padics.PadicNumbers
-public import Mathlib.Tactic.Positivity
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Group.MinMax
+import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Algebra.Order.Monoid.NatCast
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.EReal.Operations
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
 
 /-!
 

@@ -3,11 +3,15 @@ Copyright (c) 2022 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-module
+module -- shake: keep-all
 
 public meta import Mathlib.CategoryTheory.Bicategory.Free
 public import Mathlib.CategoryTheory.Bicategory.Free
 public import Mathlib.Tactic.CategoryTheory.BicategoricalComp
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # A `coherence` tactic for bicategories

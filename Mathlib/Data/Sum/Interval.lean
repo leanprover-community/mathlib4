@@ -8,6 +8,10 @@ module
 public import Mathlib.Data.Finset.Sum
 public import Mathlib.Data.Sum.Order
 public import Mathlib.Order.Interval.Finset.Defs
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Finite intervals in a disjoint union

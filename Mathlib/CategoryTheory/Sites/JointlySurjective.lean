@@ -6,7 +6,17 @@ Authors: Christian Merten
 module
 
 public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
-public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
+public import Mathlib.CategoryTheory.Limits.Types.Limits
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
+import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
+import Mathlib.CategoryTheory.Limits.Types.Pullbacks
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # The jointly surjective precoverage

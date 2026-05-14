@@ -3,13 +3,14 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-module
+module -- shake: keep-all
 
 public meta import Lean.Elab.Match
 public meta import Lean.Elab.Deriving.Basic
 public meta import Lean.Elab.PreDefinition.Main
 public import Mathlib.Control.Traversable.Lemmas
 public meta import Mathlib.Tactic.ToAdditive
+public meta import Std.Do
 
 /-!
 # Deriving handler for `Traversable` instances

@@ -6,6 +6,8 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Data.Multiset.Bind
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
 
 /-!
 # The Cartesian product of multisets

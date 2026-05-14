@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.Ring.Parity
 public import Mathlib.Data.Nat.BinaryRec
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-! # A recursion principle based on even and odd numbers. -/
 

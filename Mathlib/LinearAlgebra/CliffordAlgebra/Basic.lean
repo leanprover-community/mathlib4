@@ -9,6 +9,17 @@ public import Mathlib.Algebra.RingQuot
 public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 public import Mathlib.LinearAlgebra.QuadraticForm.Isometry
 public import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
+import Mathlib.Algebra.Order.AbsoluteValue.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Totient
+import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Clifford Algebras

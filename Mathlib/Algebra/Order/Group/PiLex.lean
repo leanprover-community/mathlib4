@@ -9,6 +9,10 @@ public import Mathlib.Algebra.Group.Pi.Basic
 public import Mathlib.Algebra.Order.Group.Synonym
 public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Order.PiLex
+import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Lexicographic product of algebraic order structures

@@ -7,6 +7,12 @@ module
 
 public import Mathlib.CategoryTheory.Comma.Arrow
 public import Mathlib.SetTheory.Cardinal.HasCardinalLT
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Representatives of small categories

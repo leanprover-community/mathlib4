@@ -15,6 +15,17 @@ import Mathlib.GroupTheory.MonoidLocalization.Finite
 import Mathlib.LinearAlgebra.Dimension.Free
 import Mathlib.LinearAlgebra.FreeModule.PID
 public import Mathlib.LinearAlgebra.Dimension.Free
+import Mathlib.Algebra.FreeAbelianGroup.Finsupp
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Int.Basic
+import Mathlib.RingTheory.PrincipalIdealDomain
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Affine monoids embed into `ℤⁿ`

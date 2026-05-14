@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Data.Prod.Lex
 public import Mathlib.Order.Hom.Basic
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Order homomorphism for `Prod.Lex`

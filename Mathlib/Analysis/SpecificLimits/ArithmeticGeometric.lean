@@ -5,7 +5,37 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Order.Archimedean.Defs
+public import Mathlib.Topology.Order.Basic
+import Batteries.Tactic.Congr
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Analysis.SpecificLimits.Basic
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Order.Filter.AtTopBot.Field
+import Mathlib.Order.Filter.AtTopBot.Group
+import Mathlib.RingTheory.SimpleRing.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Field
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Linarith.Frontend
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Algebra.InfiniteSum.Order
+import Mathlib.Topology.Algebra.Order.Field
+import Mathlib.Topology.MetricSpace.Bounded
+import Mathlib.Topology.Neighborhoods
 
 /-!
 # Arithmetic-geometric sequences

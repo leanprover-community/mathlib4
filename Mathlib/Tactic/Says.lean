@@ -3,15 +3,14 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Init
 public meta import Lean.Meta.Tactic.TryThis
-public meta import Qq.Match
 public meta import Mathlib.Lean.Elab.InfoTree
 public import Batteries.Linter.UnreachableTactic
 public import Mathlib.Tactic.Basic
-public meta import Mathlib.Util.ParseCommand
+public meta import Qq.MatchImpl
 
 /-!
 # The `says` tactic combinator.

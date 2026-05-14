@@ -5,9 +5,12 @@ Authors: Damiano Testa
 -/
 module
 
-public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Order.Basic
 public import Mathlib.Order.Monotone.Defs
+public import Aesop
+public import Mathlib.Algebra.Group.Defs
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Tactic.SimpRw
 
 /-!
 

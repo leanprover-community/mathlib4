@@ -6,7 +6,7 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.Int.Cast.Defs
-public import Mathlib.Logic.Basic
+import Mathlib.Logic.Basic
 
 /-!
 

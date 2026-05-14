@@ -3,13 +3,20 @@ Copyright (c) 2022 Abby J. Goldberg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Abby J. Goldberg, Mario Carneiro, Heather Macbeth
 -/
-module
+module -- shake: keep-all
 
 public meta import Mathlib.Data.Ineq
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Order.Module.Defs
 public import Mathlib.Data.Ineq
 public meta import Mathlib.Tactic.ToAdditive
+import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Lemmas for the `linear_combination` tactic

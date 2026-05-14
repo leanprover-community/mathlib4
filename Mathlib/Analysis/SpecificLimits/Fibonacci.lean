@@ -5,8 +5,27 @@ Authors: Snir Broshi
 -/
 module
 
-public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.NumberTheory.Real.GoldenRatio
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Field.Power
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Analysis.SpecificLimits.Normed
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.EReal.Inv
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Tactic.Bound
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Field
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.NatFib
+import Mathlib.Tactic.NormNum.Prime
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Algebra.Ring.Real
 
 /-!
 # The ratio of consecutive Fibonacci numbers

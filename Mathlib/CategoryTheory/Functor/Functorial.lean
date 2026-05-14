@@ -6,6 +6,9 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Functor.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # Unbundled functors, as a typeclass decorating the object-level function.

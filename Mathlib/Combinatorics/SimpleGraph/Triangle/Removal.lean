@@ -5,11 +5,35 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
-public import Mathlib.Combinatorics.SimpleGraph.Regularity.Lemma
 public import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
-public import Mathlib.Combinatorics.SimpleGraph.Triangle.Counting
-public import Mathlib.Data.Finset.CastCard
+public import Mathlib.Combinatorics.SimpleGraph.Regularity.Bound
+public import Mathlib.Combinatorics.SimpleGraph.Regularity.Uniform
+import Mathlib.Algebra.Order.BigOperators.Expect
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Field.Power
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Floor.Semiring
+import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Combinatorics.SimpleGraph.DegreeSum
+import Mathlib.Combinatorics.SimpleGraph.Init
+import Mathlib.Combinatorics.SimpleGraph.Regularity.Lemma
+import Mathlib.Combinatorics.SimpleGraph.Triangle.Counting
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.EReal.Inv
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.CastCard
+import Mathlib.Data.Int.Basic
+import Mathlib.Data.Rat.Floor
+import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.SetLike
 
 /-!
 # Triangle removal lemma

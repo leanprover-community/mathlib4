@@ -3,9 +3,12 @@ Copyright (c) 2022 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.CategoryTheory.Bicategory.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # Bicategorical composition `⊗≫` (composition up to associators)

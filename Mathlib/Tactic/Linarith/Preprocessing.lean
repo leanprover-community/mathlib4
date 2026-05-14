@@ -3,7 +3,7 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-module
+module -- shake: keep-all
 
 public meta import Mathlib.Control.Basic
 public meta import Mathlib.Lean.Meta.Tactic.Rewrite
@@ -12,6 +12,13 @@ public meta import Mathlib.Util.AtomM
 public import Mathlib.Tactic.CancelDenoms.Core
 public import Mathlib.Tactic.Linarith.Datatypes
 public import Mathlib.Tactic.Zify
+public meta import Mathlib.Lean.Meta
+public import Mathlib.Util.AtomM
+import Mathlib.Algebra.Order.Ring.Unbundled.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Linarith preprocessing

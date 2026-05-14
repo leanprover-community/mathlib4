@@ -3,9 +3,13 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.CategoryTheory.Category.Basic  -- shake: keep (tactic output dependency)
+public import Mathlib.Tactic.Core
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # The `slice` tactic

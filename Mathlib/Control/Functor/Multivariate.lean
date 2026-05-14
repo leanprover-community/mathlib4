@@ -8,6 +8,10 @@ module
 public import Mathlib.Data.Fin.Fin2
 public import Mathlib.Data.TypeVec
 public import Mathlib.Logic.Equiv.Defs
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 

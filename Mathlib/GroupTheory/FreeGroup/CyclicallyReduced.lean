@@ -8,7 +8,13 @@ module
 public import Mathlib.Data.List.Induction
 public import Mathlib.GroupTheory.FreeGroup.Basic
 public import Mathlib.GroupTheory.FreeGroup.Reduce
-public import Mathlib.Tactic.Group
+import Mathlib.Data.List.Basic
+import Mathlib.Data.List.Chain
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Group
+import Mathlib.Tactic.SetLike
 
 /-!
 This file defines some extra lemmas for free groups, in particular about cyclically reduced words.

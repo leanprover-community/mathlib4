@@ -8,7 +8,16 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Free
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackContinuous
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-public import Mathlib.CategoryTheory.Limits.Final.Type
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Limits.Final.Type
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.SetLike
 
 /-!
 # Pullbacks of free sheaves of modules

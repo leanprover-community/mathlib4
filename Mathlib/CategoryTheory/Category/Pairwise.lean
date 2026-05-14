@@ -12,6 +12,12 @@ public import Mathlib.Order.CompleteLattice.Basic
 public import Mathlib.Tactic.DeriveFintype
 public import Mathlib.Data.Fintype.Sigma
 public import Mathlib.Data.Fintype.Sum
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.Lattice.Lemmas
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # The category of "pairwise intersections".

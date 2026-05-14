@@ -6,7 +6,9 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Order.BoundedOrder.Basic
-public import Mathlib.Order.Monotone.Basic
+public import Mathlib.Order.Monotone.Defs
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Galois connections, insertions and coinsertions

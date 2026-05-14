@@ -3,7 +3,7 @@ Copyright (c) 2023 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-module
+module -- shake: keep-all
 
 -- This module imports all of `Batteries.Tactic.Lint`, not just `Batteries.Tactic.Lint.Basic`.
 -- It is responsible for making `#lint` available through `Mathlib.Init`.

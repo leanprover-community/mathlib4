@@ -7,8 +7,31 @@ module
 
 public import Mathlib.CategoryTheory.FintypeCat
 public import Mathlib.Topology.Category.CompHaus.Basic
-public import Mathlib.Topology.LocallyConstant.Basic
-public import Mathlib.Topology.Separation.Profinite
+public import Mathlib.Topology.Metrizable.Basic
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Functor.EpiMono
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.EReal.Inv
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Data.ULift
+import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Algebra.InfiniteSum.Order
+import Mathlib.Topology.LocallyConstant.Basic
+import Mathlib.Topology.MetricSpace.Bounded
+import Mathlib.Topology.Neighborhoods
+import Mathlib.Topology.Separation.Profinite
 
 /-!
 # The category of Profinite Types

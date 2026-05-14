@@ -11,7 +11,15 @@ public import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.RingTheory.Coalgebra.Hom
 public import Mathlib.RingTheory.Coalgebra.TensorProduct
 public import Mathlib.RingTheory.TensorProduct.Basic
-public import Mathlib.Tactic.SuppressCompilation
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Convolution product on linear maps from a coalgebra to an algebra

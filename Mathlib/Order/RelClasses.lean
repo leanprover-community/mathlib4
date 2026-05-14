@@ -5,9 +5,12 @@ Authors: Jeremy Avigad, Mario Carneiro, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Logic.IsEmpty.Basic
 public import Mathlib.Order.OrderDual
-public import Mathlib.Tactic.MkIffOfInductiveProp
+public import Mathlib.Data.Nat.Notation
+import Mathlib.Logic.IsEmpty.Basic
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.MkIffOfInductiveProp
+import Mathlib.Util.CompileInductive
 
 /-!
 # Unbundled relation classes

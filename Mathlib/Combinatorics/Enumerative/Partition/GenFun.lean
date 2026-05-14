@@ -7,6 +7,21 @@ module
 
 public import Mathlib.Combinatorics.Enumerative.Partition.Basic
 public import Mathlib.RingTheory.PowerSeries.PiTopology
+import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
+import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Order.Filter.AtTopBot.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Nontriviality.Core
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Algebra.InfiniteSum.Basic
+import Mathlib.Topology.Neighborhoods
 
 /-!
 # Generating functions for partitions

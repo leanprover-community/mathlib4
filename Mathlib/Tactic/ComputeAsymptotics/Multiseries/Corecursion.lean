@@ -3,13 +3,33 @@ Copyright (c) 2026 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Topology.MetricSpace.PiNat
 public import Mathlib.Topology.MetricSpace.UniformConvergence
 public import Mathlib.Topology.MetricSpace.Contracting
 public import Mathlib.Data.Seq.Defs
 public import Mathlib.Tactic.ENatToNat
+import Mathlib.Algebra.Order.Algebra
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.EReal.Inv
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.Data.Real.Sqrt
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.Bound
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.ClusterPt
+import Mathlib.Topology.MetricSpace.Lipschitz
 
 /-!
 # Non-primitive corecursion for sequences

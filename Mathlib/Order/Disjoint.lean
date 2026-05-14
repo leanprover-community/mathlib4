@@ -5,7 +5,14 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Order.BoundedOrder.Lattice
+public import Mathlib.Order.BoundedOrder.Basic
+public import Mathlib.Order.Lattice
+import Mathlib.Order.BoundedOrder.Lattice
+import Mathlib.Tactic.Coe
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.SimpRw
+import Mathlib.Util.CompileInductive
 
 /-!
 # Disjointness and complements

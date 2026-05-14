@@ -8,6 +8,12 @@ module
 public import Mathlib.Algebra.Group.Subsemigroup.MulOpposite
 public import Mathlib.Algebra.Group.Submonoid.Basic
 public import Mathlib.Algebra.Group.Opposite
+import Batteries.Tactic.Congr
+import Mathlib.Data.Set.Image
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.SimpRw
+import Mathlib.Util.CompileInductive
 
 /-!
 # Submonoid of opposite monoids

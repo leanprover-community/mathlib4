@@ -5,8 +5,12 @@ Authors: Peter Nelson, Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-public import Mathlib.Order.MinMax
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
+public import Mathlib.Order.Lattice
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Unbundled and weaker forms of canonically ordered monoids

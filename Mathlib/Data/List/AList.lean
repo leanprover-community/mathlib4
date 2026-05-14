@@ -6,6 +6,10 @@ Authors: Sean Leather, Mario Carneiro
 module
 
 public import Mathlib.Data.List.Sigma
+public import Mathlib.Tactic.Simps.Basic
+import Batteries.Tactic.SeqFocus
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # Association Lists

@@ -7,6 +7,17 @@ module
 
 public import Mathlib.Order.Closure
 public import Mathlib.Order.Hom.CompleteLattice
+public import Mathlib.Order.GaloisConnection.Basic
+import Batteries.Tactic.Init
+import Mathlib.Data.Set.Image
+import Mathlib.Order.Bounds.Basic
+import Mathlib.Tactic.Coe
+import Mathlib.Tactic.CongrExclamation
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.SimpRw
+import Mathlib.Util.CompileInductive
 
 /-!
 # Nucleus

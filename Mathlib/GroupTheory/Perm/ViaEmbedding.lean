@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.End
 public import Mathlib.Logic.Embedding.Basic
 public import Mathlib.Logic.Equiv.Set
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # `Equiv.Perm.viaEmbedding`, a noncomputable analogue of `Equiv.Perm.viaFintypeEmbedding`.

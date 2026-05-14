@@ -6,10 +6,23 @@ Authors: Andrew Yang, Christian Merten
 module
 
 public import Mathlib.Algebra.Category.Ring.Colimits
-public import Mathlib.Algebra.Category.Ring.Constructions
-public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.Topology.Algebra.Ring.Basic
-public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+public import Mathlib.Algebra.MvPolynomial.Eval
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+import Mathlib.Algebra.Category.Ring.Constructions
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Floor
+import Mathlib.RingTheory.Ideal.Maps
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Topology on `Hom(R, S)`

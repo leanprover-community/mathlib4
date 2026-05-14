@@ -5,7 +5,14 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Topology.UniformSpace.UniformEmbedding
+public import Mathlib.Topology.DenseEmbedding
+public import Mathlib.Topology.UniformSpace.Cauchy
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.ClusterPt
+import Mathlib.Topology.UniformSpace.UniformEmbedding
 
 /-!
 # Theory of complete separated uniform spaces.

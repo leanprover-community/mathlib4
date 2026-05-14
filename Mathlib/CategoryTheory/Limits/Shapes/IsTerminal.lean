@@ -9,6 +9,11 @@ public import Mathlib.CategoryTheory.PEmpty
 public import Mathlib.CategoryTheory.Limits.IsLimit
 public import Mathlib.CategoryTheory.EpiMono
 public import Mathlib.CategoryTheory.Category.Preorder
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Initial and terminal objects in a category.

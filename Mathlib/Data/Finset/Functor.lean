@@ -6,9 +6,14 @@ Authors: Yaël Dillies, Kim Morrison
 module
 
 public import Batteries.Control.AlternativeMonad
-public import Mathlib.Data.Finset.Lattice.Union
 public import Mathlib.Data.Finset.NAry
 public import Mathlib.Data.Multiset.Functor
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.Lattice.Lemmas
+import Mathlib.Data.Finset.Lattice.Union
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Functoriality of `Finset`

@@ -6,6 +6,19 @@ Authors: Kevin Buzzard, David Kurniadi Angdinata
 module
 
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Weierstrass
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
 
 /-!
 # Models of elliptic curves with prescribed j-invariant

@@ -12,6 +12,16 @@ public import Mathlib.Algebra.Ring.Rat
 public import Mathlib.Data.Set.Operations
 public import Mathlib.Order.Bounds.Defs
 public import Mathlib.Order.GaloisConnection.Defs
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Data.Int.Cast.Basic
+import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Order.MinMax
+import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Nonnegative rationals

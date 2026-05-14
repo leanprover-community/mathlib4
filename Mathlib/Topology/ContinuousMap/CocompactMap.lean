@@ -6,6 +6,13 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Topology.ContinuousMap.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Order.Filter.Map
+import Mathlib.Order.Filter.Tendsto
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Continuous
 
 /-!
 # Cocompact continuous maps

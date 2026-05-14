@@ -3,13 +3,20 @@ Copyright (c) 2024 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 public import Mathlib.Tactic.Ring
 public import Mathlib.Util.AtomM
 public meta import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Algebra.BigOperators.Group.List.Basic
+import Mathlib.Algebra.Order.Monoid.NatCast
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-! # A tactic for normalization over modules
 

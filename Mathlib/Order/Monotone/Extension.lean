@@ -5,8 +5,17 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Set.Monotone
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Batteries.Tactic.Init
+import Mathlib.Data.Set.BooleanAlgebra
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Data.Set.Monotone
+import Mathlib.Order.Bounds.Image
+import Mathlib.Order.ConditionallyCompletePartialOrder.Basic
+import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Util.CompileInductive
 
 /-!
 # Extension of a monotone function from a set to the whole space

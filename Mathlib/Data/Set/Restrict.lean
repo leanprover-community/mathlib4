@@ -5,7 +5,14 @@ Authors: Jeremy Avigad, Andrew Zipperer, Haitao Zhang, Minchao Wu, Yury Kudryash
 -/
 module
 
-public import Mathlib.Data.Set.Image
+public import Aesop
+public import Mathlib.Data.Set.Basic
+import Batteries.Tactic.Init
+import Mathlib.Data.Set.Image
+import Mathlib.Tactic.Coe
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SplitIfs
+import Mathlib.Util.CompileInductive
 
 /-!
 # Restrict the domain of a function to a set

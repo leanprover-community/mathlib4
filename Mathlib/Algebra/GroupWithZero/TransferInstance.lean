@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.Algebra.GroupWithZero.InjSurj
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Transfer algebraic structures across `Equiv`s

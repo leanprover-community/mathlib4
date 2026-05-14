@@ -10,9 +10,10 @@ public import Mathlib.Data.Quot
 public import Mathlib.Data.Subtype
 public import Mathlib.Logic.Unique
 public import Mathlib.Tactic.Simps.Basic
-public import Mathlib.Tactic.Substs
-
 import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Substs
+import Mathlib.Util.CompileInductive
+
 
 /-!
 # Equivalence between types

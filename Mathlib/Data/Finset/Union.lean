@@ -8,6 +8,11 @@ module
 public import Mathlib.Data.Finset.Fold
 public import Mathlib.Data.Multiset.Bind
 public import Mathlib.Order.SetNotation
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Unions of finite sets

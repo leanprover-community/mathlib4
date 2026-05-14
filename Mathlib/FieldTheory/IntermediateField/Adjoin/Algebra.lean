@@ -5,11 +5,33 @@ Authors: Thomas Browning, Patrick Lutz
 -/
 module
 
-public import Mathlib.FieldTheory.Finiteness
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
-public import Mathlib.FieldTheory.IntermediateField.Algebraic
-public import Mathlib.RingTheory.Adjoin.Singleton
 public import Mathlib.RingTheory.EssentialFiniteness
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+public import Mathlib.RingTheory.Adjoin.Polynomial.Basic
+public import Mathlib.RingTheory.Algebraic.Defs
+public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
+public import Mathlib.RingTheory.Localization.FractionRing
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.FieldTheory.Finiteness
+import Mathlib.FieldTheory.IntermediateField.Algebraic
+import Mathlib.RingTheory.Adjoin.Basic
+import Mathlib.RingTheory.Adjoin.Singleton
+import Mathlib.RingTheory.Algebraic.Integral
+import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
+import Mathlib.RingTheory.LocalRing.Basic
+import Mathlib.RingTheory.SimpleRing.Basic
+import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
 
 /-!
 # Adjoining Elements to Fields

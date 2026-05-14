@@ -3,7 +3,7 @@ Copyright (c) 2025 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Algebra.Order.Interval.Finset.SuccPred
 public import Mathlib.Data.Int.Interval
@@ -11,6 +11,16 @@ public import Mathlib.Data.Int.SuccPred
 public import Mathlib.Order.Interval.Finset.Nat
 public meta import Mathlib.Tactic.ToAdditive
 public import Mathlib.Util.Qq
+public meta import Qq
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Ring.Int
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Int.Basic
+import Mathlib.Data.Nat.SuccPred
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Simproc for intervals of natural numbers

@@ -6,7 +6,12 @@ Authors: Peter Nelson, Jun Kwon
 module
 
 public import Mathlib.Combinatorics.Graph.Basic
-public import Mathlib.Tactic.TFAE
+public import Mathlib.Data.List.TFAE
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.TFAE
 
 /-!
 # Subgraphs of multigraphs
