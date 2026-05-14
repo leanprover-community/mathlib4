@@ -333,7 +333,7 @@ lemma CokernelFG_of_isFredholm' (hu : IsFredholm_existsₗ u) : (u.range).CoFG :
       use v x
       rwa [LinearMap.mem_ker, LinearMap.sub_apply, LinearMap.coe_comp, Function.comp_apply,
         Module.End.one_apply, sub_eq_zero] at hx
-  exact CoFG.of_cofg_le this <| range_fg_iff_ker_cofg.mp hv
+  exact CoFG.of_le this <| range_fg_iff_ker_cofg.mp hv
 
 /- ## GoodRelation -/
 
@@ -350,6 +350,13 @@ variable {u : E →L[𝕜] F} {v : F →L[𝕜] E}
 variable [ContinuousConstSMul 𝕜 E]
 
 omit [IsTopologicalAddGroup F] in
+theorem ContinuousLinearMap.coFG_eqLocus (hgf : v ∘L u ≈ .id 𝕜 E) :
+    (LinearMap.eqLocus (.id 𝕜 E) (v ∘L u)).CoFG := by
+  change (LinearMap.eqLocus (LinearMap.id) (v ∘L u).toLinearMap).CoFG
+  rw [LinearMap.eqLocus_eq_ker_sub, ← range_fg_iff_ker_cofg, Submodule.fg_iff_finiteDimensional]
+  exact eqv_iff.1 (Setoid.symm hgf)
+
+omit [IsTopologicalAddGroup F] in
 theorem ContinuousLinearMap.id_sub_comp_ker_coFG (hgf : v ∘L u ≈ .id 𝕜 E) :
     (.id 𝕜 E - v ∘L u).ker.CoFG := by
   rw [← range_fg_iff_ker_cofg, Submodule.fg_iff_finiteDimensional]
@@ -357,31 +364,21 @@ theorem ContinuousLinearMap.id_sub_comp_ker_coFG (hgf : v ∘L u ≈ .id 𝕜 E)
 
 variable [T1Space E] [T1Space F] [ContinuousConstSMul 𝕜 F]
 
-#check InvOn
-
-/-- Need rename and more convenient statement. -/
-theorem aaron' (huv : u ∘L v ≈ .id 𝕜 F) (hvu : v ∘L u ≈ .id 𝕜 E) :
-    ∃ (E₁ : Submodule 𝕜 E) (F₁ : Submodule 𝕜 F), IsClosed E₁.carrier ∧ E₁.CoFG ∧
-      IsClosed F₁.carrier ∧ F₁.CoFG ∧ InvOn v u (E₁ : Set E) (F₁ : Set F) ∧
-        MapsTo u E₁ F₁ ∧ MapsTo v F₁ E₁ := by
-  refine ⟨(.id 𝕜 E - v ∘L u).ker, (.id 𝕜 F - u ∘L v).ker, (.id 𝕜 E - v ∘L u).isClosed_ker,
-    ContinuousLinearMap.id_sub_comp_ker_coFG hvu, (.id 𝕜 F - u ∘L v).isClosed_ker,
-    ContinuousLinearMap.id_sub_comp_ker_coFG huv,
-    ⟨fun _ hx => (sub_eq_zero.mp hx).symm, fun _ hx => (sub_eq_zero.mp hx).symm⟩, ?_, ?_⟩
-  <;> intro x hx
-  <;> simp_all [← map_sub]
-
 /-- Need rename. -/
 theorem aaron (hr : IsFredholm_quot u) :
     ∃ (E₁ : Submodule 𝕜 E) (F₁ : Submodule 𝕜 F), IsClosed E₁.carrier ∧ E₁.CoFG ∧
-      IsClosed F₁.carrier ∧ F₁.CoFG ∧ BijOn u E₁ F₁ := by
+      IsClosed F₁.carrier ∧ F₁.CoFG ∧ ∃ h : MapsTo u E₁ F₁,
+        (u.restrict h).IsInvertible := by
   obtain ⟨v, huv, hvu⟩ := hr
-  refine ⟨(.id 𝕜 E - v ∘L u).ker, (.id 𝕜 F - u ∘L v).ker, (.id 𝕜 E - v ∘L u).isClosed_ker,
-    ContinuousLinearMap.id_sub_comp_ker_coFG hvu, (.id 𝕜 F - u ∘L v).isClosed_ker,
-    ContinuousLinearMap.id_sub_comp_ker_coFG huv,
-    InvOn.bijOn ⟨fun _ hx => (sub_eq_zero.mp hx).symm, fun _ hx => (sub_eq_zero.mp hx).symm⟩ ?_ ?_⟩
-  <;> intro x hx
-  <;> simp_all [← map_sub]
+  set E₁ := LinearMap.eqLocus (.id 𝕜 E) (v ∘L u)
+  set F₁ := LinearMap.eqLocus (.id 𝕜 F) (u ∘L v)
+  have u_mapsto : MapsTo u E₁ F₁ := fun x hx ↦ congr(u $hx)
+  have v_mapsto : MapsTo v F₁ E₁ := fun x hx ↦ congr(v $hx)
+  refine ⟨E₁, F₁, isClosed_eqLocus _ _, ContinuousLinearMap.coFG_eqLocus hvu, isClosed_eqLocus _ _,
+    ContinuousLinearMap.coFG_eqLocus huv, u_mapsto, ?_⟩
+  refine .of_inverse (g := v.restrict v_mapsto) ?_ ?_
+  · ext ⟨x, hx : x = u (v x)⟩; simp [← hx]
+  · ext ⟨x, hx : x = v (u x)⟩; simp [← hx]
 
 end
 
