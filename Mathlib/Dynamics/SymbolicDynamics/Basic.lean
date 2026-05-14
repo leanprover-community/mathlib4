@@ -343,7 +343,7 @@ end Forbidden
 section OccursInAt
 
 variable {A : Type*} [Inhabited A]
-variable {G : Type*} [Monoid G] [IsLeftCancelMul G]
+variable {G : Type*} [Monoid G]
 
 /-- The **shift of a finite pattern** `p` by `v`, as a bundled `Pattern`.
 
@@ -392,7 +392,6 @@ noncomputable def fromConfig (x : G → A) (U : Finset G) : Pattern A G := by
           condition := fun g hg => if_neg hg }
 
 open scoped Classical in
-omit [IsLeftCancelMul G] in
 @[to_additive (attr := simp)]
 lemma mulShift_support (p : Pattern A G) (v : G) :
     (p.mulShift v).support = p.support.image (v * ·) := rfl
@@ -408,7 +407,7 @@ under left-multiplication by `v`. -/
 @[to_additive
   /-- On the translated support, `(p.shift v).config` agrees with `p.config`
   at the preimage. -/]
-lemma mulShift_config_apply_mul_left_of_mem
+lemma mulShift_config_apply_mul_left_of_mem [IsLeftCancelMul G]
     (p : Pattern A G) (v w : G) (hw : w ∈ p.support) :
     (p.mulShift v).config (v * w) = p.config w := by
   classical
@@ -485,7 +484,7 @@ Equivalently, `p.occursInAt x g` iff on every translated site `g + w` (with `w �
 the configuration `x` agrees with the translated pattern `Pattern.shift p g`.
 
 (This uses `[IsLeftCancelMul G]` to identify the preimage along left-multiplication by `g`.) -/]
-lemma mulOccursInAt_eq_cylinder
+lemma mulOccursInAt_eq_cylinder [IsLeftCancelMul G]
     (p : Pattern A G) (g : G) :
     { x | p.mulOccursInAt x g } = cylinder (p.mulShift g).support (p.mulShift g).config := by
   ext x; constructor
