@@ -5,19 +5,9 @@ Authors: Lu-Ming Zhang
 -/
 module
 
+public import Mathlib.Algebra.Group.Fin.Basic
 public import Mathlib.LinearAlgebra.Matrix.Symmetric
-import Batteries.Tactic.Congr
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.Group.Fin.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.Tactic.Abel
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Tactic.SetLike
+public import Mathlib.Tactic.Abel
 
 /-!
 # Circulant matrices

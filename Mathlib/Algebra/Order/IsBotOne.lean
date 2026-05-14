@@ -6,13 +6,7 @@ Authors: Violeta Hernández Palacios
 module
 
 public import Mathlib.Algebra.Order.ZeroLEOne
-public import Mathlib.Order.BoundedOrder.Basic
-public import Mathlib.Order.Lattice
-import Mathlib.Init
-import Mathlib.Order.BoundedOrder.Lattice
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Translate.ToAdditive
-import Mathlib.Util.CompileInductive
+public import Mathlib.Order.BoundedOrder.Lattice
 
 /-!
 # Typeclasses expressing `IsBot 1` and `IsBot 0`

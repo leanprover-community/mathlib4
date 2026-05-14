@@ -5,8 +5,7 @@ Authors: Heather Macbeth
 -/
 module
 
-public meta import Lean.Meta.Tactic.Simp
-import Mathlib.Init
+public import Mathlib.Init
 
 /-! # Attribute grouping the `field_simp` simprocs -/
 

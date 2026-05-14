@@ -5,22 +5,14 @@ Authors: Aaron Anderson
 -/
 module
 
+public import Mathlib.Data.Set.Lattice
 public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Order.ModularLattice
 public import Mathlib.Order.SuccPred.Basic
 public import Mathlib.Order.WellFounded
-public import Mathlib.Data.Set.BooleanAlgebra
-import Mathlib.Init
-import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
-import Mathlib.Order.Cover
-import Mathlib.Order.GaloisConnection.Basic
-import Mathlib.Order.Interval.Set.OrdConnected
-import Mathlib.Tactic.Attr.Core
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Nontriviality.Core
-import Mathlib.Tactic.SetLike
-import Mathlib.Util.CompileInductive
+public import Mathlib.Tactic.Nontriviality
+public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
 
 /-!
 # Atoms, Coatoms, and Simple Lattices

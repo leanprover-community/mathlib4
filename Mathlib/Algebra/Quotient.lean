@@ -5,8 +5,7 @@ Authors: Anne Baanen
 -/
 module
 
-import Mathlib.Init
-import Mathlib.Tactic.Common
+public import Mathlib.Tactic.Common
 
 /-!
 # Algebraic quotients

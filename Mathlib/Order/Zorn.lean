@@ -5,17 +5,8 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Order.Bounds.Defs
-public import Mathlib.Order.Interval.Set.Defs
-public import Mathlib.Order.Preorder.Chain
-import Mathlib.Data.Set.Insert
-import Mathlib.Data.Set.Lattice
-import Mathlib.Init
-import Mathlib.Order.CompleteLattice.Chain
-import Mathlib.Order.Minimal
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Util.CompileInductive
+public import Mathlib.Order.CompleteLattice.Chain
+public import Mathlib.Order.Minimal
 
 /-!
 # Zorn's lemmas

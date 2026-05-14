@@ -7,9 +7,6 @@ module
 
 public meta import Mathlib.Tactic.Order.Graph.Basic
 public import Mathlib.Tactic.Order.Graph.Basic
-import Mathlib.Init
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # Tarjan's Algorithm

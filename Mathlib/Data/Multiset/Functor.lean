@@ -6,14 +6,8 @@ Authors: Mario Carneiro, Johannes Hölzl, Simon Hudon, Kenny Lau
 module
 
 public import Mathlib.Data.Multiset.Bind
+public import Mathlib.Control.Traversable.Lemmas
 public import Mathlib.Control.Traversable.Instances
-public import Mathlib.Control.Applicative
-public import Mathlib.Tactic.Attr.Register
-import Mathlib.Control.Traversable.Lemmas
-import Mathlib.Data.List.Basic
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
 
 /-!
 # Functoriality of `Multiset`.

@@ -5,9 +5,7 @@ Authors: Kyle Miller
 -/
 module
 
-public import Lean.ToLevel
-import Mathlib.Init
-import Mathlib.Tactic.PPWithUniv
+public import Mathlib.Tactic.PPWithUniv
 
 /-! # `ToLevel` class
 

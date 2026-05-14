@@ -7,21 +7,6 @@ module
 
 public import Mathlib.Topology.EMetricSpace.Basic
 public import Mathlib.Topology.UniformSpace.Pi
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Data.Set.Lattice
-import Mathlib.Init
-import Mathlib.Order.Filter.Finite
-import Mathlib.Order.Filter.Map
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
 
 /-!
 # Indexed product of extended metric spaces

@@ -7,13 +7,10 @@ module
 
 public import Mathlib.Logic.Function.Defs
 public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Tactic.Inhabit
+public import Batteries.Tactic.Trans
 
 public meta import Lean.PrettyPrinter.Delaborator.Builtins
-import Batteries.Tactic.Trans
-import Mathlib.Init
-import Mathlib.Logic.Basic
-import Mathlib.Tactic.Attr.Register
-import Mathlib.Tactic.Inhabit
 
 /-!
 # Extra facts about `Prod`

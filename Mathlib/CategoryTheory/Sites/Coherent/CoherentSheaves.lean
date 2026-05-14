@@ -7,14 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Sites.Canonical
 public import Mathlib.CategoryTheory.Sites.Coherent.Basic
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.Tactic.CategoryTheory.CategoryStar
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
 /-!
 
 # Sheaves for the coherent topology

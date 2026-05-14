@@ -7,11 +7,6 @@ module
 
 public import Mathlib.Algebra.Order.Floor.Defs
 public import Mathlib.Algebra.Order.Nonneg.Basic
-import Mathlib.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # Nonnegative elements are archimedean

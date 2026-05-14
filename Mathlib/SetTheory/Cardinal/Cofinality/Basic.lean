@@ -5,21 +5,8 @@ Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Data.Countable.Defs
-public import Mathlib.SetTheory.Cardinal.Order
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Lattice
-import Mathlib.Init
-import Mathlib.Order.Cofinal
-import Mathlib.Order.ConditionallyCompleteLattice.Indexed
-import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
-import Mathlib.Order.Nat
-import Mathlib.Order.Preorder.Finite
-import Mathlib.SetTheory.Cardinal.Basic
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Order.Cofinal
+public import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Cofinality of an order

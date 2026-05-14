@@ -5,8 +5,7 @@ Authors: Gabriel Ebner
 -/
 module
 
-public meta import Lean.Elab.Command
-import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # Defines the `sudo set_option` command.

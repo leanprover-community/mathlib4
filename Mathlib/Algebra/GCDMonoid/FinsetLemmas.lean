@@ -7,22 +7,9 @@ module
 
 public import Mathlib.Algebra.GCDMonoid.Finset
 public import Mathlib.Algebra.GCDMonoid.Nat
-public import Mathlib.Data.Nat.Factorization.Defs
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
-import Mathlib.Algebra.Group.Nat.Units
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Nat.Factorization.Basic
-import Mathlib.Data.Nat.GCD.Basic
-import Mathlib.Data.Rat.Lemmas
-import Mathlib.Init
-import Mathlib.RingTheory.Coprime.Lemmas
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Inv
-import Mathlib.Tactic.NormNum.Pow
-import Mathlib.Tactic.SetLike
+public import Mathlib.Data.Nat.GCD.Basic
+public import Mathlib.RingTheory.Coprime.Lemmas
+public import Mathlib.Data.Nat.Factorization.Basic
 
 /-!
 # `Finset.lcm` lemmas

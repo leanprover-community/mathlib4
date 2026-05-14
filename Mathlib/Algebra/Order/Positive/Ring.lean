@@ -6,14 +6,8 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Order.Ring.Defs
-public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
-import Mathlib.Algebra.Ring.InjSurj
-import Mathlib.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.FastInstance
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Algebra.Ring.InjSurj
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Algebraic structures on the set of positive numbers

@@ -6,12 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Algebra.Ring.Basic
 
 /-!
 # Ring objects in cartesian monoidal categories

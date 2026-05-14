@@ -7,16 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
-import Mathlib.Algebra.Category.Grp.EpiMono
-import Mathlib.Algebra.Category.ModuleCat.EpiMono
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Tactic.SetLike
+public import Mathlib.Algebra.Category.Grp.EpiMono
+public import Mathlib.Algebra.Category.ModuleCat.EpiMono
 
 /-!
 An object is projective iff the preadditive coyoneda functor on it preserves epimorphisms.

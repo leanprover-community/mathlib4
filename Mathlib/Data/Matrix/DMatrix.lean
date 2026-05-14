@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Init
-import Mathlib.Util.CompileInductive
 
 /-!
 # Dependent-typed matrices

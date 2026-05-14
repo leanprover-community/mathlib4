@@ -5,15 +5,11 @@ Authors: Joseph Myers
 -/
 module
 
+public import Batteries.Data.List.Lemmas
+public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.Finiteness.Attr
 public import Mathlib.Tactic.ToDual
-public import Aesop
-public import Batteries.Data.List.Basic
-public import Mathlib.Data.Nat.Notation
-import Batteries.Data.List.Lemmas
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Util.CompileInductive
 
 /-!
 # Lemmas about `IsChain` and `ofFn`

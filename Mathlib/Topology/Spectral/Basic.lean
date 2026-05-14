@@ -7,12 +7,6 @@ module
 
 public import Mathlib.Topology.Sober
 public import Mathlib.Topology.Spectral.Prespectral
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.CrossRefAttribute
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Spectral spaces

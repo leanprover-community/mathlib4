@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Gabriel Ebner
 module
 
 public import Mathlib.Data.Nat.Cast.Defs
-import Mathlib.Init
 
 /-!
 # Cast of integers

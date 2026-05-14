@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Algebra.Group.Defs
 public import Batteries.Data.List.Lemmas
-import Mathlib.Init
-import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Sums and products from lists

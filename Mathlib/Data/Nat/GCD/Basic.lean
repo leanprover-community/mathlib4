@@ -5,17 +5,9 @@ Authors: Jeremy Avigad, Leonardo de Moura
 -/
 module
 
-public import Mathlib.Algebra.Divisibility.Units
-public import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Algebra.Group.Nat.Units
-import Mathlib.Algebra.GroupWithZero.Basic
-import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.GroupWithZero.Nat
-import Mathlib.Algebra.NeZero
-import Mathlib.Data.Nat.Basic
-import Mathlib.Init
-import Mathlib.Tactic.Attr.Core
-import Mathlib.Tactic.Common
+public import Mathlib.Algebra.Group.Nat.Units
+public import Mathlib.Algebra.GroupWithZero.Divisibility
+public import Mathlib.Algebra.GroupWithZero.Nat
 
 /-!
 # Properties of `Nat.gcd`, `Nat.lcm`, and `Nat.Coprime`

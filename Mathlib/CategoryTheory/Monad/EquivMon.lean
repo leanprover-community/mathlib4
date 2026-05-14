@@ -8,11 +8,6 @@ module
 public import Mathlib.CategoryTheory.Monad.Basic
 public import Mathlib.CategoryTheory.Monoidal.End
 public import Mathlib.CategoryTheory.Monoidal.Mon
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 

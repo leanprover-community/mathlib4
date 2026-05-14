@@ -5,18 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.CharZero.Defs
-public import Mathlib.Algebra.Field.Basic
-public import Mathlib.Algebra.Order.Ring.Unbundled.Rat
-import Mathlib.Data.Rat.Cast.CharZero
-import Mathlib.Data.Rat.Cast.Lemmas
-import Mathlib.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Util.CompileInductive
+public import Mathlib.Data.Rat.Cast.CharZero
+public import Mathlib.Data.Rat.Cast.Lemmas
 
 /-!
 The `OfScientific` instance for any characteristic zero field

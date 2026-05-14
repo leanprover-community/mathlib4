@@ -6,33 +6,9 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.AlgClosed.Basic
+public import Mathlib.AlgebraicGeometry.Morphisms.LocalFlatDescent
 public import Mathlib.AlgebraicGeometry.Geometrically.Reduced
 public import Mathlib.CategoryTheory.Monoidal.Grp
-public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.AlgebraicGeometry.Morphisms.LocalFlatDescent
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Combinatorics.Matroid.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
-import Mathlib.Init
-import Mathlib.LinearAlgebra.Dual.Lemmas
-import Mathlib.RingTheory.HopkinsLevitzki
-import Mathlib.RingTheory.KrullDimension.Zero
-import Mathlib.RingTheory.Spectrum.Prime.Noetherian
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Sheaves.Init
 
 /-!
 # Smoothness of group schemes

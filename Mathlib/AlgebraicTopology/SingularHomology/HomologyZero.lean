@@ -8,21 +8,6 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.HomologyZero
 public import Mathlib.AlgebraicTopology.SingularHomology.Basic
 public import Mathlib.Topology.Homotopy.TopCat.ZerothHomotopy
-import Mathlib.Algebra.Order.Algebra
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.CategoryTheory.Reassoc
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
 
 /-!
 # Singular homology in degree 0

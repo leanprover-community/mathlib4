@@ -8,25 +8,6 @@ module
 public import Mathlib.RingTheory.AdjoinRoot
 public import Mathlib.Algebra.MvPolynomial.PDeriv
 public import Mathlib.RingTheory.Derivation.MapCoeffs
-public import Mathlib.RingTheory.PolynomialAlgebra
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Polynomial.Eval.Coeff
-import Mathlib.Algebra.Polynomial.Eval.SMul
-import Mathlib.Algebra.Polynomial.Monomial
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.FinCases
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.SetLike
 
 /-!
 # Bivariate polynomials

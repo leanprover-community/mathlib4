@@ -7,11 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Groupoid
 public import Mathlib.Combinatorics.Quiver.Basic
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 This file defines a few basic properties of groupoids.

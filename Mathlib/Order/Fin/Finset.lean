@@ -5,15 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Order.Fin.Tuple
 public import Mathlib.Order.Hom.Set
 public import Mathlib.Data.Finset.Insert
-public import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.Order.Fin.Tuple
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # Order isomorphisms from Fin to finsets

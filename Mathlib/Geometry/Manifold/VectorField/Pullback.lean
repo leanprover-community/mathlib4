@@ -6,46 +6,10 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Calculus.VectorField
-public import Mathlib.Geometry.Manifold.Algebra.Monoid
-public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
-import Mathlib.Algebra.Order.Algebra
-import Mathlib.Algebra.Order.BigOperators.Expect
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Field.Power
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Module.Field
-import Mathlib.Analysis.Calculus.ContDiff.Operations
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.ENat.Lattice
-import Mathlib.Data.EReal.Inv
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Nat.Totient
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.Geometry.Manifold.ContMDiff.Atlas
-import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
-import Mathlib.Geometry.Manifold.MFDeriv.Atlas
-import Mathlib.Geometry.Manifold.MFDeriv.Basic
-import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
-import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
-import Mathlib.Geometry.Manifold.MFDeriv.UniqueDifferential
-import Mathlib.Geometry.Manifold.Notation
-import Mathlib.Geometry.Manifold.VectorBundle.Hom
-import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
-import Mathlib.Init
-import Mathlib.Tactic.Attr.Register
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Neighborhoods
-import Mathlib.Topology.NhdsWithin
+public import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
+public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
+public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
+public import Mathlib.Geometry.Manifold.Notation
 
 /-!
 # Vector fields in manifolds

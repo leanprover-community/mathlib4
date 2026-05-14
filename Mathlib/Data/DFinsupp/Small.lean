@@ -5,17 +5,9 @@ Authors: Sophie Morel, Antoine Chambert-Loir
 -/
 module
 
+public import Mathlib.Data.Finsupp.ToDFinsupp
 public import Mathlib.Data.DFinsupp.Defs
-public import Mathlib.Data.Finsupp.Defs
-public import Mathlib.Logic.Small.Defs
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Finsupp.ToDFinsupp
-import Mathlib.Init
-import Mathlib.Logic.Small.Basic
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Logic.Small.Basic
 
 /-!
 # Smallness of the `DFinsupp` type

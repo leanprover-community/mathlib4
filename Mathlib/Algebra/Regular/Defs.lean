@@ -6,8 +6,6 @@ Authors: Damiano Testa
 module
 
 public import Mathlib.Tactic.ToAdditive
-import Mathlib.Init
-import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Regular elements

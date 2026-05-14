@@ -7,24 +7,6 @@ module
 
 public import Mathlib.Analysis.BoxIntegral.Box.SubboxInduction
 public import Mathlib.Analysis.BoxIntegral.Partition.Tagged
-public import Mathlib.Data.Fintype.Powerset
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Module.Field
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.EReal.Inv
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Algebra.InfiniteSum.Order
-import Mathlib.Topology.NhdsWithin
 
 /-!
 # Induction on subboxes

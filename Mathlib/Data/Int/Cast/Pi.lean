@@ -6,8 +6,7 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.Int.Notation
-import Mathlib.Init
-import Mathlib.Tactic.Push.Attr
+public import Mathlib.Tactic.Push.Attr
 
 /-!
 # Cast of integers to function types

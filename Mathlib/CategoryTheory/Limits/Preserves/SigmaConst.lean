@@ -8,14 +8,7 @@ module
 public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Limits.Types.Colimits
-import Mathlib.Init
-import Mathlib.Logic.IsEmpty.Basic
-import Mathlib.Tactic.CategoryTheory.Reassoc
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.CategoryTheory.Limits.Types.Colimits
 
 /-!
 # `sigmaConst.obj` preserves colimits

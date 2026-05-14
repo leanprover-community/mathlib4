@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Order.TypeTags
-import Mathlib.Init
 
 /-! # Definition and notation for extended natural numbers -/
 

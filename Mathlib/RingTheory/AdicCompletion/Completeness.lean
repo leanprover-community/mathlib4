@@ -6,30 +6,12 @@ Authors: Bingyu Xia
 module
 
 public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.RingTheory.AdicCompletion.Exactness
+public import Mathlib.RingTheory.Finiteness.Ideal
 public import Mathlib.RingTheory.MvPowerSeries.Equiv
 public import Mathlib.RingTheory.PowerSeries.Basic
 
 import Mathlib.RingTheory.AdicCompletion.Topology
-public import Mathlib.RingTheory.AdicCompletion.Functoriality
-import Mathlib.Algebra.DirectSum.Finsupp
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Init
-import Mathlib.LinearAlgebra.Finsupp.Span
-import Mathlib.RingTheory.AdicCompletion.Exactness
-import Mathlib.RingTheory.Finiteness.Ideal
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.CrossRefAttribute
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.SetLike
 
 /-!
 # Completeness of the Adic Completion for Finitely Generated Ideals

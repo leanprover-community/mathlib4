@@ -5,42 +5,16 @@ Authors: Pierre-Alexandre Bazin
 -/
 module
 
+public import Mathlib.Algebra.DirectSum.Module
 public import Mathlib.Algebra.Module.ZMod
+public import Mathlib.Algebra.Regular.Opposite
 public import Mathlib.GroupTheory.Torsion
 public import Mathlib.LinearAlgebra.Isomorphisms
+public import Mathlib.RingTheory.Coprime.Ideal
 public import Mathlib.RingTheory.Finiteness.Defs
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.RingTheory.SimpleModule.Basic
-public import Mathlib.Algebra.DirectSum.Basic
-public import Mathlib.Data.Set.Lattice
-public import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Algebra.Group.Submonoid.BigOperators
-import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Algebra.Order.AbsoluteValue.Basic
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Algebra.Ring.NonZeroDivisors
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Int.Basic
-import Mathlib.Data.List.MinMax
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.Init
-import Mathlib.RingTheory.Coprime.Ideal
-import Mathlib.RingTheory.Finiteness.Basic
-import Mathlib.RingTheory.Ideal.Lattice
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.FastInstance
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
 
 /-!
 # Torsion submodules

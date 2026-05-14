@@ -5,17 +5,9 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Aesop
-public import Mathlib.Data.Nat.Notation
-public import Mathlib.Data.Set.Defs
-public import Mathlib.Tactic.Basic
-public import Mathlib.Tactic.ToAdditive
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Data.Set.Insert
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Tactic.Common
+public import Mathlib.Data.Set.Insert
 
 /-!
 # Set enumeration

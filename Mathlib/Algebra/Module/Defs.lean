@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.Algebra.Ring.Defs
-import Mathlib.Init
-import Mathlib.Util.CompileInductive
 
 /-!
 # Modules over a ring

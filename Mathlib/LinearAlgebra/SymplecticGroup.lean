@@ -6,18 +6,6 @@ Authors: Matej Penciak, Moritz Doll, Fabien Clery
 module
 
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.Init
-import Mathlib.Tactic.ApplyFun
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
 
 /-!
 # The Symplectic Group

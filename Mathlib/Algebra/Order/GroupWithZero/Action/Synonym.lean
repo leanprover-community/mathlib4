@@ -8,9 +8,7 @@ module
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.Algebra.Order.Group.Action.Synonym
 public import Mathlib.Algebra.Order.GroupWithZero.Synonym
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Util.CompileInductive
+public import Mathlib.Tactic.Common
 
 /-!
 # Actions by and on order synonyms

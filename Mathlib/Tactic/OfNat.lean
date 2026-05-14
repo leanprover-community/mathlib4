@@ -5,7 +5,7 @@ Authors: Eric Wieser
 -/
 module
 
-import Mathlib.Init
+public import Mathlib.Init
 
 /-! # The `ofNat()` macro -/
 

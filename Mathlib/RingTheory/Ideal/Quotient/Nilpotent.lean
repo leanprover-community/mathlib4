@@ -5,26 +5,8 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.Maps
-public import Mathlib.RingTheory.Ideal.Quotient.Defs
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Init
-import Mathlib.RingTheory.Ideal.Quotient.Basic
-import Mathlib.RingTheory.Ideal.Quotient.Operations
-import Mathlib.RingTheory.Nilpotent.Lemmas
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Abs
-import Mathlib.Tactic.NormNum.DivMod
-import Mathlib.Tactic.NormNum.Eq
-import Mathlib.Tactic.NormNum.Ineq
-import Mathlib.Tactic.NormNum.OfScientific
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Ring.RingNF
-import Mathlib.Tactic.SetLike
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.Nilpotent.Lemmas
 
 /-!
 # Nilpotent elements in quotient rings

@@ -7,13 +7,6 @@ module
 
 public import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.GroupTheory.Congruence.Basic
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.FastInstance
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.Translate.ToAdditive
-import Mathlib.Util.CompileInductive
 
 /-!
 # Congruence relations respecting scalar multiplication

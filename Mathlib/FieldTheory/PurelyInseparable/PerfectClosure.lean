@@ -6,33 +6,9 @@ Authors: Jz Pan
 module
 
 public import Mathlib.Algebra.CharP.Lemmas
+public import Mathlib.Algebra.CharP.IntermediateField
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
-public import Mathlib.Algebra.CharP.Algebra
-import Mathlib.Algebra.CharP.Frobenius
-import Mathlib.Algebra.CharP.IntermediateField
-import Mathlib.Algebra.Order.AbsoluteValue.Basic
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Polynomial.Monic
-import Mathlib.Combinatorics.Matroid.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Nat.Totient
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
-import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
-import Mathlib.Init
-import Mathlib.LinearAlgebra.Dimension.OrzechProperty
-import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
-import Mathlib.Tactic.ApplyFun
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.CrossRefAttribute
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.SetLike
+public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 
 /-!
 

@@ -6,38 +6,12 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.Extension.Presentation.Submersive
+public import Mathlib.RingTheory.FiniteStability
+public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
+public import Mathlib.RingTheory.Polynomial.IsIntegral
 public import Mathlib.RingTheory.Polynomial.Resultant.Basic
+public import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
 public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
-public import Mathlib.RingTheory.Etale.Basic
-public import Mathlib.Tactic.Nontriviality
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.Order.AbsoluteValue.Basic
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Sub.Basic
-import Mathlib.Algebra.Order.Sub.Unbundled.Basic
-import Mathlib.Algebra.Polynomial.Eval.Coeff
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.Init
-import Mathlib.RingTheory.FiniteStability
-import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
-import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
-import Mathlib.RingTheory.MvPolynomial.Basic
-import Mathlib.RingTheory.Polynomial.IsIntegral
-import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
-import Mathlib.RingTheory.TensorProduct.Finite
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.CrossRefAttribute
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.SetLike
 
 
 /-!

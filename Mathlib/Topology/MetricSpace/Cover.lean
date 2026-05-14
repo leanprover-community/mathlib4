@@ -8,24 +8,6 @@ module
 public import Mathlib.Data.Rel.Cover
 public import Mathlib.Topology.MetricSpace.MetricSeparated
 public import Mathlib.Topology.MetricSpace.Thickening
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Module.Field
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.EReal.Inv
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Algebra.InfiniteSum.Order
-import Mathlib.Topology.Closure
-import Mathlib.Topology.Metrizable.Uniformity
 
 /-!
 # Covers in a metric space

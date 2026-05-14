@@ -8,15 +8,7 @@ module
 public import Mathlib.CategoryTheory.Equivalence
 public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.Order.Hom.Basic
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.ULift
-import Mathlib.Init
-import Mathlib.Tactic.CategoryTheory.Reassoc
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.CrossRefAttribute
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Monotonicity.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Data.ULift
 
 /-!
 

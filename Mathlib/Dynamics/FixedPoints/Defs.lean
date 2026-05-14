@@ -6,7 +6,6 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Data.Set.Operations
-import Mathlib.Init
 
 /-!
 # Fixed points of a self-map

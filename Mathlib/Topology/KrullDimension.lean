@@ -7,15 +7,9 @@ module
 
 public import Mathlib.Order.KrullDimension
 public import Mathlib.Topology.Irreducible
+public import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Topology.Sets.Closeds
 public import Mathlib.Topology.Sober
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # The Krull dimension of a topological space

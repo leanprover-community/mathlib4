@@ -6,11 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Order.BooleanAlgebra.Basic
-import Mathlib.Init
-import Mathlib.Order.BoundedOrder.Lattice
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Tactic.Common
 
 /-!
 # Co-Heyting boundary

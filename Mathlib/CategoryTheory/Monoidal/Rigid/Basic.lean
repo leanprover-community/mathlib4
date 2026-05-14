@@ -5,16 +5,9 @@ Authors: Jakob von Raumer
 -/
 module
 
+public import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
 public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
-public import Mathlib.Tactic.CategoryTheory.MonoidalComp
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Init
-import Mathlib.Tactic.ApplyFun
-import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
-import Mathlib.Tactic.CategoryTheory.Reassoc
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Rigid (autonomous) monoidal categories

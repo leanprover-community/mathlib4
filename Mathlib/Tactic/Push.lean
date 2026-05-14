@@ -8,10 +8,9 @@ module
 
 public meta import Lean.Elab.Tactic.Conv.Simp
 public import Mathlib.Logic.Basic
+public import Mathlib.Tactic.Conv
 public import Mathlib.Tactic.Push.Attr
 public import Mathlib.Util.AtLocation
-import Mathlib.Init
-import Mathlib.Tactic.Conv
 
 /-!
 # The `push` and `pull` tactics

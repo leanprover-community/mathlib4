@@ -5,25 +5,8 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Order.UpperLower.Closure
-public import Mathlib.Topology.Algebra.ConstMulAction
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Group.Unbundled.Basic
-import Mathlib.Algebra.Order.UpperLower
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Init
-import Mathlib.Order.Interval.Set.OrdConnected
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.Translate.ToAdditive
-import Mathlib.Topology.Algebra.Group.Pointwise
-import Mathlib.Topology.Closure
+public import Mathlib.Algebra.Order.UpperLower
+public import Mathlib.Topology.Algebra.Group.Pointwise
 
 /-!
 # Topological facts about upper/lower/order-connected sets

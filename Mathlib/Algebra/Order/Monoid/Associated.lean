@@ -7,11 +7,6 @@ module
 
 public import Mathlib.Algebra.GroupWithZero.Associated
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # Order on associates

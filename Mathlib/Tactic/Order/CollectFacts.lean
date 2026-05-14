@@ -9,10 +9,6 @@ public import Mathlib.Order.BoundedOrder.Basic  -- shake: keep (Qq dependency)
 public import Mathlib.Order.Lattice  -- shake: keep (Qq dependency)
 public meta import Mathlib.Tactic.ToDual
 public import Mathlib.Util.AtomM
-import Mathlib.Init
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
-import Qq.Typ
 
 /-!
 # Facts collection for the `order` Tactic

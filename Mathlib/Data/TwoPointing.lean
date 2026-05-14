@@ -6,10 +6,9 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Logic.Nontrivial.Defs
-import Batteries.Logic
-import Mathlib.Init
-import Mathlib.Logic.Nonempty
-import Mathlib.Tactic.Simps.Basic
+public import Mathlib.Logic.Nonempty
+public import Mathlib.Tactic.Simps.Basic
+public import Batteries.Logic
 
 /-!
 # Two-pointings

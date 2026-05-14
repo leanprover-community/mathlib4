@@ -7,20 +7,7 @@ module
 
 public import Mathlib.GroupTheory.GroupAction.MultipleTransitivity
 public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
-import Mathlib.Algebra.Order.AbsoluteValue.Basic
-import Mathlib.Algebra.Regular.Basic
-import Mathlib.Data.ENat.Lattice
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Nat.Totient
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.Translate.ToAdditive
+public import Mathlib.Data.ENat.Lattice
 
 /-! # Multiply preprimitive actions
 

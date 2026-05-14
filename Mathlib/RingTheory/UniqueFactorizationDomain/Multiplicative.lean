@@ -5,17 +5,7 @@ Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
-public import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
-import Mathlib.Algebra.BigOperators.Associated
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 
 /-!
 # Multiplicative maps on unique factorization domains

@@ -6,8 +6,7 @@ Authors: Damiano Testa
 
 module
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
-public import Std.Data.HashSet.Basic
-import Lean.Parser.Command
+public import Lean.Parser.Command
 
 /-!
 # The "emptyLine" linter

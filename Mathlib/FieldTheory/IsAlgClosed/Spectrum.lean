@@ -7,28 +7,6 @@ module
 
 public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
-import Mathlib.Algebra.BigOperators.Group.List.Basic
-import Mathlib.Algebra.BigOperators.Group.List.Lemmas
-import Mathlib.Algebra.Order.AbsoluteValue.Basic
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Nat.Cast.Order.Ring
-import Mathlib.Data.Nat.Totient
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.FieldTheory.Finiteness
-import Mathlib.Init
-import Mathlib.RingTheory.LocalRing.Basic
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Nontriviality.Core
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.SetLike
 
 /-!
 # Spectrum mapping theorem

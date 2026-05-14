@@ -9,11 +9,6 @@ public import Mathlib.CategoryTheory.Groupoid
 public import Mathlib.CategoryTheory.Types.Basic
 public import Mathlib.CategoryTheory.Whiskering
 public import Mathlib.Control.EquivFunctor
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # The core of a category

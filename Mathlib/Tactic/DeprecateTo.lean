@@ -6,10 +6,8 @@ Authors: Damiano Testa
 module
 
 public meta import Std.Time.Format
-public meta import Lean.Meta.Tactic.TryThis
-public meta import Mathlib.Lean.Expr.Basic
-import Batteries.Tactic.Alias
-import Mathlib.Init
+public import Batteries.Tactic.Alias
+public import Mathlib.Init
 
 /-!
 # `deprecate to` -- a deprecation tool

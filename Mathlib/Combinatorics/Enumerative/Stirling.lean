@@ -7,15 +7,8 @@ module
 
 public import Mathlib.Data.Nat.Factorial.Basic
 public import Mathlib.Data.Nat.Choose.Basic
-public import Mathlib.Tactic.Attr.Core
-public import Mathlib.Tactic.ToAdditive
-import Mathlib.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Inv
-import Mathlib.Tactic.NormNum.Pow
-import Mathlib.Util.CompileInductive
+public import Mathlib.Tactic.NormNum.Inv
+public import Mathlib.Tactic.NormNum.Pow
 
 /-!
 # Stirling Numbers

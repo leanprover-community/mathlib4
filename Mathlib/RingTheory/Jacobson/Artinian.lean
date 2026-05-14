@@ -5,30 +5,8 @@ Authors: Junyan Xu, Andrew Yang
 -/
 module
 
+public import Mathlib.RingTheory.HopkinsLevitzki
 public import Mathlib.RingTheory.Jacobson.Ring
-public import Mathlib.RingTheory.KrullDimension.Basic
-public import Mathlib.RingTheory.SimpleModule.Basic
-import Mathlib.Algebra.Order.AbsoluteValue.Basic
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.Init
-import Mathlib.RingTheory.Artinian.Module
-import Mathlib.RingTheory.Finiteness.Basic
-import Mathlib.RingTheory.HopkinsLevitzki
-import Mathlib.RingTheory.KrullDimension.Zero
-import Mathlib.RingTheory.Spectrum.Prime.Noetherian
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.SetLike
 
 /-!
 # Artinian rings over Jacobson rings

@@ -6,19 +6,9 @@ Authors: Arend Mellendijk
 module
 
 public import Mathlib.Algebra.Algebra.Defs
-public import Mathlib.Algebra.GroupWithZero.Units.Basic
-public import Mathlib.Tactic.NormNum.Result
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Int.Cast.Basic
-import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Ring.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Util.CompileInductive
+public import Mathlib.Data.Finset.Attr
+public import Mathlib.Tactic.Ring.Basic
+public import Mathlib.Tactic.SetLike
 
 /-! # Lemmas for the `algebra` tactic.
 -/

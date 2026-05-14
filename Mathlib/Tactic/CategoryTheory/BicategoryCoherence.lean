@@ -7,12 +7,7 @@ module
 
 public meta import Mathlib.CategoryTheory.Bicategory.Free
 public import Mathlib.CategoryTheory.Bicategory.Free
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Init
-import Mathlib.Tactic.CategoryTheory.BicategoricalComp
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Tactic.CategoryTheory.BicategoricalComp
 
 /-!
 # A `coherence` tactic for bicategories

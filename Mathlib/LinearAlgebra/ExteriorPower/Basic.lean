@@ -7,22 +7,6 @@ module
 
 public import Mathlib.Algebra.Module.Presentation.Basic
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.OfAlternating
-public import Mathlib.Algebra.Order.Ring.Nat
-public import Mathlib.Tactic.FinCases
-import Mathlib.Algebra.Group.Pointwise.Set.ListOfFn
-import Mathlib.Algebra.Order.AbsoluteValue.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Int.Order.Units
-import Mathlib.Data.Nat.Totient
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
 
 /-!
 # Exterior powers

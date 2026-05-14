@@ -7,12 +7,9 @@ Authors: Patrick Massot, Kevin Buzzard, Kim Morrison, Johan Commelin, Chris Hugh
 module
 
 public import Mathlib.Algebra.Group.Hom.Basic
-import Mathlib.Algebra.Group.InjSurj
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Init
-import Mathlib.Tactic.FastInstance
-import Mathlib.Tactic.Translate.ToAdditive
-import Mathlib.Util.CompileInductive
+public import Mathlib.Algebra.Group.InjSurj
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Instances on spaces of monoid and group morphisms

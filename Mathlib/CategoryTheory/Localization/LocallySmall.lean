@@ -7,12 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Localization.HasLocalization
 public import Mathlib.CategoryTheory.EssentiallySmall
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Init
-import Mathlib.Logic.Small.Basic
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # Locally small localizations

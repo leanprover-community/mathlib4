@@ -12,9 +12,7 @@ public import Mathlib.Util.AddRelatedDecl
 public import Mathlib.Tactic.Simps.NotationClass
 public import Mathlib.Tactic.Translate.Attributes
 public import Batteries.Util.LibraryNote
-public import Lean.Elab.Attributes
-import Lean.Elab.Tactic.Simp
-import Mathlib.Init
+public import Lean.Elab.Tactic.Simp
 
 /-!
 # Simps attribute

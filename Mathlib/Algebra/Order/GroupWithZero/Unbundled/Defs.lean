@@ -6,10 +6,8 @@ Authors: Damiano Testa, Yuyang Zhao
 module
 
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
-import Mathlib.Init
-import Mathlib.Tactic.GCongr.Core
-import Mathlib.Tactic.MkIffOfInductiveProp
-import Mathlib.Util.Notation3
+public import Mathlib.Tactic.MkIffOfInductiveProp
+public import Mathlib.Util.Notation3
 
 /-!
 # (Strict) monotonicity of multiplication by nonnegative (positive) elements

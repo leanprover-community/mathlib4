@@ -7,13 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Localization.Bousfield
 public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.SmallObject.WellOrderInductionData
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.CategoryTheory.SmallObject.WellOrderInductionData
 
 /-!
 # ObjectProperty.isLocal is stable under transfinite compositions

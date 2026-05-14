@@ -5,8 +5,7 @@ Authors: Kim Morrison
 -/
 module
 
-public import Lean.CoreM
-import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # Additional functions using `CoreM` state.

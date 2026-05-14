@@ -7,22 +7,6 @@ module
 
 public import Mathlib.RingTheory.AdicCompletion.Basic
 public import Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Nat.Lattice
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Init
-import Mathlib.Order.Filter.AtTopBot.Basic
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.UniformSpace.UniformEmbedding
 
 /-!
 

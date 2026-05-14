@@ -5,7 +5,8 @@ Authors: Kim Morrison, Johannes Hölzl, Reid Barton, Sean Leather
 -/
 module
 
-import Mathlib.Init
+public import Mathlib.Init
+public import Batteries.Tactic.Lint.Misc
 
 /-!
 # Bundled types

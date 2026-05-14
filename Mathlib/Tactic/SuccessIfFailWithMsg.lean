@@ -7,9 +7,8 @@ module
 
 public meta import Lean.Elab.Eval
 public meta import Lean.Elab.Tactic.BuiltinTactic
+public import Mathlib.Init
 public meta import Lean.Meta.Tactic.TryThis
-public import Lean.Meta.Hint
-import Mathlib.Init
 
 /-!
 # Success If Fail With Message

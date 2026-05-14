@@ -5,12 +5,7 @@ Authors: Christopher Hoskin
 -/
 module
 
-public import Mathlib.Order.CompleteBooleanAlgebra
-public import Mathlib.Order.ScottContinuity
-import Mathlib.Init
-import Mathlib.Order.ScottContinuity.Prod
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Order.ScottContinuity.Prod
 
 /-!
 

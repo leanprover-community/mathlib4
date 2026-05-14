@@ -5,13 +5,7 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Aesop
-public import Mathlib.Data.Set.Basic
-import Mathlib.Data.Set.Insert
-import Mathlib.Init
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Data.Set.Insert
 /-!
 
 This file defines the type `f.Fiber` of fibers of a function `f : Y → Z`, and provides some API

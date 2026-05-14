@@ -6,17 +6,9 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-public import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Batteries.Tactic.Init
-import Mathlib.Algebra.GroupWithZero.Action.Basic
-import Mathlib.Algebra.GroupWithZero.Action.Units
-import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Basic
-import Mathlib.Data.Set.Image
-import Mathlib.Data.Set.NAry
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Algebra.GroupWithZero.Action.Basic
+public import Mathlib.Algebra.GroupWithZero.Action.Units
+public import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Basic
 
 /-!
 # Pointwise operations of sets in a group with zero

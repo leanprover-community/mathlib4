@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Logic.Function.Conjugate
 public import Mathlib.Data.Nat.Notation
-public import Mathlib.Logic.Function.Basic
-import Mathlib.Init
 
 /-!
 # Iterations of a function

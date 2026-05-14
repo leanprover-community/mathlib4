@@ -7,13 +7,6 @@ module
 
 public import Mathlib.GroupTheory.GroupAction.ConjAct
 public import Mathlib.GroupTheory.SemidirectProduct
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Group Extensions

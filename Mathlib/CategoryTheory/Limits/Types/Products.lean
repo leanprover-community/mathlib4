@@ -8,13 +8,7 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Types.Limits
-public import Mathlib.Logic.Small.Basic
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Init
-import Mathlib.Tactic.CategoryTheory.Elementwise
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Tactic.CategoryTheory.Elementwise
 
 /-!
 # Products in `Type`

@@ -13,17 +13,6 @@ public import Mathlib.Order.Hom.Basic
 public import Mathlib.Order.Interval.Set.Defs
 public import Mathlib.Order.SetNotation
 public import Mathlib.Tactic.ToAdditive
-import Mathlib.Init
-import Mathlib.Order.Hom.Set
-import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Order.WellFounded
-import Mathlib.Tactic.ByContra
-import Mathlib.Tactic.Contrapose
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.GCongr.Core
-import Mathlib.Tactic.SimpRw
-import Mathlib.Tactic.Use
-import Mathlib.Util.CompileInductive
 
 /-!
 # Cofinal sets

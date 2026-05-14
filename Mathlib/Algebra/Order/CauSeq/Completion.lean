@@ -7,14 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.CauSeq.Basic
 public import Mathlib.Algebra.Ring.Action.Rat
-public import Mathlib.GroupTheory.GroupAction.Ring
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.FastInstance
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Cauchy completion

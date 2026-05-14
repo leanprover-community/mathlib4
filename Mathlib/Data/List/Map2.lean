@@ -6,10 +6,7 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 module
 
 public import Mathlib.Data.List.Defs
-public import Aesop
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Util.CompileInductive
+public import Mathlib.Tactic.Common
 
 /-!
 # Map₂ Lemmas

@@ -8,18 +8,9 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
 public import Mathlib.Combinatorics.SimpleGraph.Copy
 public import Mathlib.Combinatorics.SimpleGraph.Prod
-import Mathlib.Combinatorics.SimpleGraph.Init
-import Mathlib.Data.Fin.SuccPredOrder
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.List.Nodup
-import Mathlib.Init
-import Mathlib.Order.Cover
-import Mathlib.Order.SuccPred.Relation
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.FinCases
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Data.Fin.SuccPredOrder
+public import Mathlib.Order.SuccPred.Relation
+public import Mathlib.Tactic.FinCases
 
 /-!
 # The Hasse diagram as a graph

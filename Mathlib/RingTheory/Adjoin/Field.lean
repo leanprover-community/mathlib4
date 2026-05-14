@@ -6,27 +6,8 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.Algebra.Polynomial.Splits
+public import Mathlib.RingTheory.Adjoin.Basic
 public import Mathlib.RingTheory.AdjoinRoot
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Polynomial.Eval.Coeff
-import Mathlib.Algebra.Polynomial.Eval.Degree
-import Mathlib.Algebra.Polynomial.Monic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.FieldTheory.Minpoly.Field
-import Mathlib.Init
-import Mathlib.LinearAlgebra.FiniteDimensional.Basic
-import Mathlib.RingTheory.Adjoin.Basic
-import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.SetLike
 
 /-!
 # Adjoining elements to a field

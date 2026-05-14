@@ -5,14 +5,7 @@ Authors: Christopher Hoskin, Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Group.Basic
-public import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
-public import Mathlib.Order.Lattice
-import Mathlib.Algebra.Order.Group.OrderIso
-import Mathlib.Init
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Translate.ToAdditive
-import Mathlib.Util.CompileInductive
+public import Mathlib.Algebra.Order.Group.OrderIso
 
 /-!
 # Lattice ordered groups

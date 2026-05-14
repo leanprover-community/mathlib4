@@ -5,22 +5,10 @@ Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 -/
 module
 
+public import Mathlib.Data.Set.Prod
 public import Mathlib.Logic.Equiv.Fin.Basic
 public import Mathlib.ModelTheory.LanguageMap
-public import Mathlib.Data.Finset.Union
-public import Mathlib.Data.Fintype.EquivFin
-public import Mathlib.Data.Set.BooleanAlgebra
-public import Mathlib.Order.BourbakiWitt
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Lattice
-import Mathlib.Data.Set.Lattice.Image
-import Mathlib.Data.Set.Prod
-import Mathlib.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Algebra.Order.Group.Nat
 
 /-!
 # Basics on First-Order Syntax

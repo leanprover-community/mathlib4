@@ -5,17 +5,9 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 module
 
+public import Mathlib.Algebra.Order.Group.Defs
 public import Mathlib.Algebra.Order.Group.Unbundled.Abs
-public import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.Algebra.Order.Group.Defs
-import Mathlib.Algebra.Order.Group.OrderIso
-import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-import Mathlib.Init
-import Mathlib.Order.MinMax
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.GRewrite.Elab
-import Mathlib.Tactic.Translate.ToAdditive
-import Mathlib.Util.CompileInductive
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 
 /-!
 # Absolute values in ordered groups

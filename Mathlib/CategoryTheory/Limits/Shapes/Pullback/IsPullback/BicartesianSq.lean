@@ -5,16 +5,9 @@ Authors: Kim Morrison, Joël Riou, Calle Sönne
 -/
 module
 
+public import Mathlib.CategoryTheory.Limits.Constructions.ZeroObjects
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Limits.Constructions.ZeroObjects
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
 /-!
 # Bi-Cartesian squares

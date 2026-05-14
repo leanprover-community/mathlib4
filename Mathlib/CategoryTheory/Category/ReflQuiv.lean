@@ -8,12 +8,6 @@ module
 public import Mathlib.Combinatorics.Quiver.ReflQuiver
 public import Mathlib.CategoryTheory.Category.Cat
 public import Mathlib.CategoryTheory.Category.Quiv
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Init
-import Mathlib.Tactic.CategoryTheory.CategoryStar
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # The category of refl quivers

@@ -7,9 +7,6 @@ module
 
 public meta import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Datatypes
 public import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Datatypes
-public meta import Lean.CoreM
-public import Lean.CoreM
-import Mathlib.Init
 
 /-!
 # Gaussian Elimination algorithm

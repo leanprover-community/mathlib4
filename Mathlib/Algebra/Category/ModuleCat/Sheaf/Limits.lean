@@ -5,20 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Limits
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf
-import Mathlib.Algebra.Category.ModuleCat.Presheaf.Limits
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Sites.Limits
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Continuity.Init
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Eq
-import Mathlib.Tactic.NormNum.Ineq
-import Mathlib.Tactic.NormNum.Pow
-import Mathlib.Tactic.SetLike
+public import Mathlib.CategoryTheory.Sites.Limits
 
 /-! # Limits in categories of sheaves of modules
 

@@ -7,30 +7,6 @@ module
 
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
-import Batteries.Tactic.Congr
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.Order.AbsoluteValue.Basic
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Nat.Totient
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.Init
-import Mathlib.Tactic.Abel
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.CategoryTheory.Elementwise
-import Mathlib.Tactic.CategoryTheory.Reassoc
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.FinCases
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.SetLike
 
 /-!
 # Functoriality of group cohomology

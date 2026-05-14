@@ -5,34 +5,8 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 -/
 module
 
-public import Mathlib.Analysis.Normed.Operator.Basic
-import Mathlib.Algebra.Order.Algebra
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Module.Field
-import Mathlib.Analysis.Normed.Group.Bounded
-import Mathlib.Analysis.Normed.Operator.Bilinear
-import Mathlib.Analysis.Normed.Operator.NNNorm
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.EReal.Inv
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Data.Real.Sqrt
-import Mathlib.Init
-import Mathlib.Order.Filter.AtTopBot.Basic
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.SuppressCompilation
-import Mathlib.Topology.Closure
-import Mathlib.Topology.MetricSpace.Cauchy
-import Mathlib.Topology.MetricSpace.Lipschitz
-import Mathlib.Topology.Metrizable.Uniformity
-import Mathlib.Topology.Neighborhoods
+public import Mathlib.Analysis.Normed.Operator.Bilinear
+public import Mathlib.Analysis.Normed.Operator.NNNorm
 
 /-!
 # Operators on complete normed spaces

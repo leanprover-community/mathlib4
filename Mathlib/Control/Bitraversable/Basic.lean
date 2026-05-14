@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Control.Bifunctor
 public import Mathlib.Control.Traversable.Basic
-import Mathlib.Init
-import Mathlib.Tactic.Common
 
 /-!
 # Bitraversable type class

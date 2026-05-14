@@ -7,11 +7,8 @@ module
 
 public import Mathlib.Algebra.Group.ULift
 public import Mathlib.Algebra.Ring.Equiv
-import Mathlib.Data.Int.Cast.Basic
-import Mathlib.Init
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.PPWithUniv
-import Mathlib.Util.CompileInductive
+public import Mathlib.Data.Int.Cast.Basic
+public import Mathlib.Tactic.PPWithUniv
 
 /-!
 # `ULift` instances for ring

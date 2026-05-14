@@ -7,15 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Abelian.Basic
 public import Mathlib.CategoryTheory.Preadditive.Opposite
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Limits.Opposites
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.Tactic.CategoryTheory.CategoryStar
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Tactic.SetLike
+public import Mathlib.CategoryTheory.Limits.Opposites
 
 /-!
 # The opposite of an abelian category is abelian.

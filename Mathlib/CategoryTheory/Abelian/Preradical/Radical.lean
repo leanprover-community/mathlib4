@@ -7,14 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Abelian.Preradical.Basic
 public import Mathlib.CategoryTheory.Abelian.Preradical.Colon
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.Tactic.CategoryTheory.CategoryStar
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Tactic.SetLike
+public import Mathlib.CategoryTheory.Abelian.FunctorCategory
 
 /-!
 # Radicals

@@ -6,26 +6,9 @@ Authors: Wenrong Zou
 module
 
 public import Mathlib.RingTheory.MvPowerSeries.Substitution
+public import Mathlib.Algebra.CharP.Frobenius
 public import Mathlib.Algebra.MvPolynomial.Expand
-public import Mathlib.Algebra.CharP.Lemmas
-import Mathlib.Algebra.CharP.Frobenius
-import Mathlib.Algebra.Group.Torsion
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Ring.Canonical
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.GroupTheory.GroupAction.Ring
-import Mathlib.Init
-import Mathlib.Order.Filter.AtTopBot.Basic
-import Mathlib.RingTheory.MvPolynomial.Expand
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
+public import Mathlib.RingTheory.MvPolynomial.Expand
 
 /-!
 ## Expand multivariate power series

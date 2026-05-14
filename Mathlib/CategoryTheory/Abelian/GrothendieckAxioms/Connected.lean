@@ -7,15 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
 public import Mathlib.CategoryTheory.Limits.Connected
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Pullbacks
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Tactic.SetLike
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Pullbacks
 
 /-!
 # Pulling back connected colimits

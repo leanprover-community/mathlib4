@@ -8,13 +8,6 @@ module
 public import Mathlib.Algebra.Star.Basic
 public import Mathlib.Algebra.Star.Pointwise
 public import Mathlib.Algebra.Group.Center
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Image
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Util.CompileInductive
 
 /-! # `Set.center`, `Set.centralizer` and the `star` operation -/
 

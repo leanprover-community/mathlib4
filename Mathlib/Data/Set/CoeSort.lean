@@ -7,7 +7,6 @@ Minchao Wu, Yury Kudryashov, Floris van Doorn
 module
 
 public import Mathlib.Data.Set.Defs
-import Mathlib.Init
 
 /-!
 # Coercing sets to types.

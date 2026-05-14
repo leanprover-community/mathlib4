@@ -5,9 +5,7 @@ Authors: Tomáš Skřivan
 -/
 module
 
-public meta import Lean.Elab.SyntheticMVars
-public import Lean.Meta.DiscrTree.Types
-import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 ## `funProp` environment extension that stores all registered function properties

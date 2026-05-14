@@ -7,27 +7,7 @@ module
 
 public import Mathlib.Algebra.Module.SpanRank
 public import Mathlib.RingTheory.Ideal.Cotangent
-public import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.Algebra.Order.AbsoluteValue.Basic
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.Init
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.RingTheory.Finiteness.Basic
-import Mathlib.RingTheory.LocalRing.Module
-import Mathlib.RingTheory.TensorProduct.Finite
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
+public import Mathlib.RingTheory.LocalRing.Module
 
 /-!
 # Span rank under operations

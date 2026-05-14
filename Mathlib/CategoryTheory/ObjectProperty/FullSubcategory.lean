@@ -7,12 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.InducedCategory
 public import Mathlib.CategoryTheory.ObjectProperty.Basic
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Init
-import Mathlib.Tactic.CategoryTheory.Reassoc
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.CrossRefAttribute
-import Mathlib.Util.CompileInductive
 
 /-!
 # The full subcategory associated to a property of objects

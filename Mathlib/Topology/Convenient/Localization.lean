@@ -5,15 +5,8 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.Localization.CalculusOfFractions.OfAdjunction
 public import Mathlib.Topology.Convenient.Category
-public import Mathlib.CategoryTheory.Localization.Predicate
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Localization.CalculusOfFractions.OfAdjunction
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-!
 # The category of `X`-generated spaces, as a localization

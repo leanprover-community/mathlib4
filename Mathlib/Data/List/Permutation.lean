@@ -6,21 +6,14 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 module
 
 public import Mathlib.Data.Nat.Factorial.Basic
-public import Mathlib.Data.List.Defs
-public import Mathlib.Logic.Function.Defs
-public import Mathlib.Tactic.Attr.Core
-import Mathlib.Data.List.Basic
-import Mathlib.Data.List.Count
-import Mathlib.Data.List.Duplicate
-import Mathlib.Data.List.Induction
-import Mathlib.Data.List.InsertIdx
-import Mathlib.Data.List.Nodup
-import Mathlib.Data.List.Perm.Basic
-import Mathlib.Init
-import Mathlib.Order.Lattice
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Data.List.Count
+public import Mathlib.Data.List.Duplicate
+public import Mathlib.Data.List.InsertIdx
+public import Mathlib.Data.List.Induction
+public import Batteries.Data.List.Perm
+public import Mathlib.Data.List.Perm.Basic
+public import Mathlib.Order.Lattice
+public import Mathlib.Tactic.Finiteness.Attr
 
 /-!
 # Permutations of a list

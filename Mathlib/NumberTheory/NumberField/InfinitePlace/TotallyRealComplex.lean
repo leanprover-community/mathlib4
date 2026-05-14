@@ -5,36 +5,8 @@ Authors: Kevin Buzzard, Xavier Roblot
 -/
 module
 
-public import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Algebra.Order.Algebra
-import Mathlib.Algebra.Order.BigOperators.Expect
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Field.Power
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Module.Field
-import Mathlib.Combinatorics.Matroid.Init
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.EReal.Inv
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.FieldTheory.PrimeField
-import Mathlib.Init
-import Mathlib.MeasureTheory.Integral.Bochner.Basic
-import Mathlib.MeasureTheory.Measure.Real
-import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Measurability.Init
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.SetLike
+public import Mathlib.FieldTheory.PrimeField
+public import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
 
 /-!
 # Totally real and totally complex number fields

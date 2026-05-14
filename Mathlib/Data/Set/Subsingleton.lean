@@ -5,16 +5,8 @@ Authors: Jeremy Avigad, Leonardo de Moura
 -/
 module
 
-public import Aesop
-public import Mathlib.Data.Set.Basic
-import Batteries.Tactic.Init
-import Mathlib.Data.Set.Insert
-import Mathlib.Init
-import Mathlib.Tactic.ByContra
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SimpRw
-import Mathlib.Tactic.Translate.ToDual
-import Mathlib.Util.CompileInductive
+public import Mathlib.Data.Set.Insert
+public import Mathlib.Tactic.ByContra
 
 /-!
 # Subsingleton

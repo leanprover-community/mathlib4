@@ -8,25 +8,7 @@ module
 public import Mathlib.Topology.Algebra.Group.Quotient
 public import Mathlib.Topology.Algebra.MulAction
 public import Mathlib.Topology.Algebra.Group.Defs
-public import Mathlib.Topology.Maps.Proper.Basic
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Data.Set.Prod
-import Mathlib.Init
-import Mathlib.Order.Filter.Prod
-import Mathlib.Order.Filter.Tendsto
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.Translate.ToAdditive
-import Mathlib.Topology.Homeomorph.Lemmas
-import Mathlib.Topology.LocalAtTarget
-import Mathlib.Topology.Maps.OpenQuotient
+public import Mathlib.Topology.LocalAtTarget
 
 /-!
 # Proper group action

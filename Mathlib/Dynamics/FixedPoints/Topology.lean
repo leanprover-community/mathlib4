@@ -7,15 +7,6 @@ module
 
 public import Mathlib.Topology.Separation.Hausdorff
 public import Mathlib.Dynamics.FixedPoints.Defs
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Nat.Lattice
-import Mathlib.Init
-import Mathlib.Order.Filter.AtTopBot.Basic
-import Mathlib.Order.Filter.Tendsto
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Continuous
 
 /-!
 # Topological properties of fixed points

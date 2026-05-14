@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 module
 
-import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # Extra definitions on `Option`

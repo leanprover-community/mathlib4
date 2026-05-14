@@ -7,13 +7,6 @@ module
 
 public import Mathlib.Data.Fintype.EquivFin
 public import Mathlib.Data.Fintype.Inv
-public import Mathlib.Tactic.Convert
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Disjoint
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
 
 /-! # Equivalence between fintypes
 

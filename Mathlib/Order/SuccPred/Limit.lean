@@ -6,15 +6,7 @@ Authors: Violeta Hernández Palacios
 module
 
 public import Mathlib.Order.SuccPred.Archimedean
-public import Mathlib.Algebra.Order.IsBotOne
-import Batteries.Tactic.Init
-import Mathlib.Init
-import Mathlib.Order.Cover
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.Translate.ToDual
-import Mathlib.Util.CompileInductive
+public import Mathlib.Order.BoundedOrder.Lattice
 
 /-!
 # Successor and predecessor limits

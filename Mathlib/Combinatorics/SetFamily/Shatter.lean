@@ -8,14 +8,7 @@ module
 public import Mathlib.Combinatorics.SetFamily.Compression.Down
 public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.Order.Interval.Finset.Nat
-public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Finset.Lattice.Lemmas
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Shattering families

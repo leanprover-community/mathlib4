@@ -6,15 +6,7 @@ Authors: Johannes Hölzl, Jeremy Avigad
 module
 
 public import Mathlib.Order.Filter.Basic
-public import Mathlib.Tactic.Attr.Core
-import Batteries.Tactic.Init
-import Mathlib.Data.Set.Insert
-import Mathlib.Init
-import Mathlib.Order.Filter.Map
-import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SplitIfs
-import Mathlib.Util.CompileInductive
+public import Mathlib.Order.Filter.Map
 
 /-!
 # Convergence in terms of filters

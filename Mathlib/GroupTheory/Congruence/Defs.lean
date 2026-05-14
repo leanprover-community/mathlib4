@@ -8,16 +8,7 @@ module
 public import Mathlib.Algebra.Group.InjSurj
 public import Mathlib.Algebra.Group.Units.Defs
 public import Mathlib.Data.Setoid.Basic
-import Batteries.Tactic.Congr
-import Mathlib.Init
-import Mathlib.Tactic.Coe
-import Mathlib.Tactic.CongrExclamation
-import Mathlib.Tactic.FastInstance
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SimpRw
-import Mathlib.Tactic.Tauto
-import Mathlib.Tactic.Translate.ToAdditive
-import Mathlib.Util.CompileInductive
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Congruence relations

@@ -6,15 +6,10 @@ Authors: Jakob von Raumer, Kevin Klinge, Andrew Yang
 module
 
 public import Mathlib.GroupTheory.OreLocalization.OreSet
+public import Mathlib.Tactic.Common
 public import Mathlib.Algebra.Group.Submonoid.MulAction
 public import Mathlib.Algebra.Group.Units.Defs
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.Translate.ToAdditive
-import Mathlib.Util.CompileInductive
+public import Mathlib.Algebra.Group.Basic
 
 /-!
 

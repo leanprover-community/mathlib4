@@ -8,10 +8,6 @@ module
 public import Mathlib.Algebra.Group.Action.Basic
 public import Mathlib.Algebra.Group.Action.Hom
 public import Mathlib.Algebra.Group.End
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # Interaction between actions and endomorphisms/automorphisms

@@ -5,17 +5,8 @@ Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
 module
 
-public import Mathlib.Order.Filter.AtTopBot.Defs
-import Mathlib.Init
-import Mathlib.Order.Bounds.Basic
-import Mathlib.Order.Filter.AtTopBot.Disjoint
-import Mathlib.Order.Filter.Map
-import Mathlib.Order.Filter.Tendsto
-import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Order.WellFounded
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Translate.ToDual
-import Mathlib.Util.CompileInductive
+public import Mathlib.Order.Filter.AtTopBot.Disjoint
+public import Mathlib.Order.Filter.Tendsto
 
 /-!
 # Limits of `Filter.atTop` and `Filter.atBot`

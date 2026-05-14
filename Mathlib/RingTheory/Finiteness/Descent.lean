@@ -6,31 +6,11 @@ Authors: Christian Merten
 module
 
 public import Mathlib.RingTheory.FinitePresentation
+public import Mathlib.RingTheory.FiniteStability
+public import Mathlib.RingTheory.RingHom.FinitePresentation
 public import Mathlib.RingTheory.RingHom.FaithfullyFlat
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.Finite.Sigma
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.Init
-import Mathlib.LinearAlgebra.TensorProduct.Finiteness
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-import Mathlib.RingTheory.FiniteStability
-import Mathlib.RingTheory.Finiteness.Basic
-import Mathlib.RingTheory.RingHom.Finite
-import Mathlib.RingTheory.RingHom.FinitePresentation
-import Mathlib.RingTheory.RingHom.FiniteType
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.SetLike
+public import Mathlib.RingTheory.RingHom.Finite
+public import Mathlib.RingTheory.RingHom.FiniteType
 
 /-!
 # Descent of finiteness conditions under faithfully flat maps

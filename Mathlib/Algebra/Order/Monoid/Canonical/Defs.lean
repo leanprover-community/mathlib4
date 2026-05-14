@@ -5,18 +5,10 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl, Yuya
 -/
 module
 
+public import Mathlib.Algebra.Group.Units.Basic
 public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 public import Mathlib.Order.BoundedOrder.Basic
-public import Mathlib.Algebra.Group.Units.Defs
-public import Mathlib.Algebra.Order.IsBotOne
-import Mathlib.Algebra.Group.Units.Basic
-import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-import Mathlib.Init
-import Mathlib.Tactic.Attr.Core
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Translate.ToAdditive
-import Mathlib.Util.CompileInductive
 
 /-!
 # Canonically ordered monoids

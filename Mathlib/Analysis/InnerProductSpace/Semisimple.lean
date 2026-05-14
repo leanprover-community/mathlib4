@@ -5,34 +5,8 @@ Authors: Oliver Nash
 -/
 module
 
+public import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
 public import Mathlib.LinearAlgebra.Semisimple
-public import Mathlib.Analysis.InnerProductSpace.Symmetric
-import Mathlib.Algebra.Order.Algebra
-import Mathlib.Algebra.Order.BigOperators.Expect
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Field.Power
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Module.Field
-import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.EReal.Inv
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Nat.Totient
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.Init
-import Mathlib.LinearAlgebra.FiniteDimensional.Basic
-import Mathlib.Order.BoundedOrder.Lattice
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.SetLike
 
 /-!
 # Semisimple operators on inner product spaces

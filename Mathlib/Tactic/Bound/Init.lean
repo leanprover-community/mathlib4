@@ -5,9 +5,8 @@ Authors: Geoffrey Irving
 -/
 module
 
-public meta import Aesop.Frontend.Extension
-import Aesop.Frontend.Command
-import Mathlib.Init
+public import Mathlib.Init
+public import Aesop.Frontend.Command
 
 /-!
 # Bound Rule Set

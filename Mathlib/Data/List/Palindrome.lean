@@ -5,12 +5,7 @@ Authors: Chris Wong
 -/
 module
 
-public import Aesop
-import Mathlib.Data.List.Induction
-import Mathlib.Init
-import Mathlib.Tactic.Attr.Core
-import Mathlib.Tactic.Common
-import Mathlib.Util.CompileInductive
+public import Mathlib.Data.List.Induction
 
 /-!
 # Palindromes

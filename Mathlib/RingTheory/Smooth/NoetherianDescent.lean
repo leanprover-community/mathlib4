@@ -5,31 +5,9 @@ Authors: Judith Ludwig, Christian Merten
 -/
 module
 
-public import Mathlib.RingTheory.Etale.Basic
-public import Mathlib.RingTheory.Smooth.StandardSmooth
-import Mathlib.Algebra.Order.AbsoluteValue.Basic
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Data.Set.Finite.Lattice
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.Init
-import Mathlib.Logic.Equiv.PartialEquiv
-import Mathlib.RingTheory.Extension.Presentation.Core
-import Mathlib.RingTheory.MvPolynomial.Homogeneous
-import Mathlib.RingTheory.Smooth.StandardSmoothOfFree
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.CrossRefAttribute
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.SetLike
+public import Mathlib.RingTheory.Extension.Presentation.Core
+public import Mathlib.RingTheory.MvPolynomial.Homogeneous
+public import Mathlib.RingTheory.Smooth.StandardSmoothOfFree
 
 /-!
 # Smooth algebras have Noetherian models

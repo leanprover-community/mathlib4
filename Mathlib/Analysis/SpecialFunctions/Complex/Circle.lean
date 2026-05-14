@@ -6,36 +6,9 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Complex.Circle
+public import Mathlib.Analysis.SpecialFunctions.Complex.Log
+public import Mathlib.Topology.Covering.AddCircle
 public import Mathlib.Analysis.Convex.PathConnected
-public import Mathlib.Analysis.SpecialFunctions.Complex.Arg
-public import Mathlib.Topology.Covering.Quotient
-import Mathlib.Algebra.Field.Periodic
-import Mathlib.Algebra.Order.Algebra
-import Mathlib.Algebra.Order.BigOperators.Expect
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Field.Power
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Module.Field
-import Mathlib.Analysis.SpecialFunctions.Complex.Log
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.EReal.Inv
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Data.Set.Disjoint
-import Mathlib.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Ring.RingNF
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Covering.AddCircle
-import Mathlib.Topology.Instances.ZMultiples
-import Mathlib.Topology.Metrizable.Uniformity
 
 /-!
 # Maps on the unit circle

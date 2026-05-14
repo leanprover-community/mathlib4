@@ -5,9 +5,8 @@ Authors: Vasily Nesterov
 -/
 module
 
+public import Mathlib.Init
 public meta import Std.Data.HashMap.Basic
-public import Std.Data.HashMap.Basic
-import Mathlib.Init
 
 /-!
 # Datatypes for the Simplex Algorithm implementation

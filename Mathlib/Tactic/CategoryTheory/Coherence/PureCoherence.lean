@@ -8,8 +8,6 @@ module
 public meta import Lean.Meta.Tactic.Apply
 public meta import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
 public import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
-public import Lean.Meta.Tactic.Apply
-import Mathlib.Init
 
 /-!
 # Coherence tactic

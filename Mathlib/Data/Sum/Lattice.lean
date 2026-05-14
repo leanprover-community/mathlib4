@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Data.Sum.Order
 public import Mathlib.Order.Hom.Lattice
-import Mathlib.Init
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
 
 /-!
 # Lexicographic sum of lattices

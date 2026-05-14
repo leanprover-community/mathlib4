@@ -7,8 +7,7 @@ module
 
 public import Mathlib.Logic.Function.Defs
 public import Mathlib.Order.Defs.Unbundled
-import Batteries.Logic
-import Mathlib.Init
+public import Batteries.Logic
 
 /-!
 # Lexicographic order on a sigma type

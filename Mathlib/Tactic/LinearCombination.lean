@@ -8,13 +8,6 @@ module
 public import Mathlib.Tactic.LinearCombination.Lemmas
 public import Mathlib.Tactic.Positivity.Core
 public import Mathlib.Tactic.Ring.Compare
-public import Mathlib.Data.Ineq
-import Mathlib.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Eq
-import Mathlib.Util.CompileInductive
 
 /-!
 # `linear_combination` Tactic

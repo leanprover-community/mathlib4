@@ -5,20 +5,7 @@ Authors: Jeremy Avigad
 -/
 module
 
-public import Mathlib.Algebra.Group.Int.Defs
-public import Mathlib.Algebra.Order.Group.Unbundled.Abs
-public import Mathlib.Data.Int.Sqrt
-import Mathlib.Algebra.Order.Group.Unbundled.Int
-import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Algebra.Order.Ring.Int
-import Mathlib.Data.Nat.Cast.Order.Basic
-import Mathlib.Data.Nat.Sqrt
-import Mathlib.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.CompileInductive
+public import Mathlib.Algebra.Order.Ring.Abs
 
 /-!
 # Further lemmas about the integers

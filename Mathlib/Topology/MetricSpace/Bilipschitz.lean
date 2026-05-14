@@ -6,20 +6,7 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Topology.MetricSpace.Antilipschitz
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Init
-import Mathlib.Order.Filter.Tendsto
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.MetricSpace.Lipschitz
+public import Mathlib.Topology.MetricSpace.Lipschitz
 
 /-! # Bilipschitz equivalence
 

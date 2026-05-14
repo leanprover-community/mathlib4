@@ -6,16 +6,7 @@ Authors: David Ledvinka
 module
 
 public import Mathlib.Data.Set.Countable
-public import Mathlib.Data.Set.Image
-public import Mathlib.Data.Set.Lattice
-public import Mathlib.Data.Set.Lattice.Image
-import Mathlib.Data.Finite.Prod
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Prod
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Data.Finite.Prod
 
 /-!
 # Finite Exhaustions

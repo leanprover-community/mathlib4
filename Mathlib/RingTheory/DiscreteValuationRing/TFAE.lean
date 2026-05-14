@@ -7,35 +7,9 @@ module
 
 public import Mathlib.RingTheory.DedekindDomain.Basic
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
+public import Mathlib.RingTheory.Finiteness.Ideal
 public import Mathlib.RingTheory.Ideal.Cotangent
-public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
-import Mathlib.Algebra.EuclideanDomain.Basic
-import Mathlib.Algebra.EuclideanDomain.Field
-import Mathlib.Algebra.Module.LocalizedModule.Basic
-import Mathlib.Algebra.Order.AbsoluteValue.Basic
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.GroupTheory.GroupAction.Ring
-import Mathlib.Init
-import Mathlib.RingTheory.Bezout
-import Mathlib.RingTheory.Finiteness.Basic
-import Mathlib.RingTheory.Finiteness.Ideal
-import Mathlib.RingTheory.KrullDimension.Zero
-import Mathlib.RingTheory.Noetherian.UniqueFactorizationDomain
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Order
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.TFAE
+public import Mathlib.RingTheory.KrullDimension.Zero
 
 /-!
 

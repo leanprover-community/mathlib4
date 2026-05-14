@@ -5,23 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Subobject
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
-public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
-public import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
-import Mathlib.CategoryTheory.Abelian.FunctorCategory
-import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Colim
-import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Subobject
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Filtered.Connected
-import Mathlib.CategoryTheory.Filtered.Final
-import Mathlib.CategoryTheory.Limits.Types.Filtered
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Tactic.SetLike
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 # Morphisms to a colimit in a Grothendieck abelian category

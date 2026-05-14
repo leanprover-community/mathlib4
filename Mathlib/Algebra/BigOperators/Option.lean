@@ -6,14 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Data.Finset.Option
-public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Tactic.Translate.ToAdditive
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Lemmas about products and sums over finite sets in `Option α`

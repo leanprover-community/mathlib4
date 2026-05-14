@@ -5,13 +5,7 @@ Authors: Yakov Pechersky, Chris Hughes
 -/
 module
 
-public import Aesop
-public import Mathlib.Tactic.ToDual
-import Mathlib.Data.List.Basic
-import Mathlib.Data.List.Nodup
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Util.CompileInductive
+public import Mathlib.Data.List.Nodup
 
 /-!
 # List duplicates

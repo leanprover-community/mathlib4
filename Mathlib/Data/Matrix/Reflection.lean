@@ -6,16 +6,7 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Data.Fin.Tuple.Reflection
-public import Mathlib.Data.Matrix.Mul
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.LinearAlgebra.Matrix.Notation
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.LinearAlgebra.Matrix.Notation
 
 /-!
 # Lemmas for concrete matrices `Matrix (Fin m) (Fin n) α`

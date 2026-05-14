@@ -6,16 +6,7 @@ Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 module
 
 public import Mathlib.RingTheory.UniqueFactorizationDomain.FactorSet
-public import Mathlib.Algebra.GCDMonoid.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Inv
-import Mathlib.Tactic.NormNum.Pow
-import Mathlib.Tactic.SetLike
+public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 
 /-!
 # Building GCD out of unique factorization

@@ -5,29 +5,9 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 public import Mathlib.RingTheory.Ideal.GoingDown
-public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Polynomial.Degree.Units
-import Mathlib.Algebra.Polynomial.Eval.Coeff
-import Mathlib.Algebra.Polynomial.Monic
-import Mathlib.Algebra.Ring.Hom.InjSurj
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
-import Mathlib.Init
-import Mathlib.RingTheory.IntegralClosure.Algebra.Ideal
-import Mathlib.RingTheory.Polynomial.Tower
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.CrossRefAttribute
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.SetLike
+public import Mathlib.RingTheory.IntegralClosure.Algebra.Ideal
 
 /-!
 

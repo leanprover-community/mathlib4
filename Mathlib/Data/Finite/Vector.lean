@@ -5,15 +5,7 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Data.Finite.Defs
-public import Mathlib.Data.Sym.Basic
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Fintype.EquivFin
-import Mathlib.Data.Fintype.Vector
-import Mathlib.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.SetLike
+public import Mathlib.Data.Fintype.Vector
 
 /-!
 # Finiteness of vector types

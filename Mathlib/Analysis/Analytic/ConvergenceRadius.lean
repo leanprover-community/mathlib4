@@ -6,40 +6,7 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Calculus.FormalMultilinearSeries
-public import Mathlib.Analysis.Asymptotics.Defs
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.Group.Fin.Tuple
-import Mathlib.Algebra.Order.Algebra
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Field.Power
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Module.Field
-import Mathlib.Algebra.Order.Sub.Unbundled.Basic
-import Mathlib.Analysis.Asymptotics.Lemmas
-import Mathlib.Analysis.Normed.Group.InfiniteSum
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Analysis.SpecificLimits.Normed
-import Mathlib.Data.ENNReal.Inv
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Data.Real.Sqrt
-import Mathlib.Init
-import Mathlib.Order.Filter.AtTopBot.Basic
-import Mathlib.Tactic.Bound
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
-import Mathlib.Topology.Algebra.InfiniteSum.Basic
-import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
-import Mathlib.Topology.Algebra.InfiniteSum.NatInt
-import Mathlib.Topology.Algebra.InfiniteSum.Ring
-import Mathlib.Topology.Bornology.Real
+public import Mathlib.Analysis.SpecificLimits.Normed
 
 /-!
 # Radius of convergence of a power series

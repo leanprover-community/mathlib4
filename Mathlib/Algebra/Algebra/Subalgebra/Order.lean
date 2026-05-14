@@ -6,15 +6,7 @@ Authors: Damiano Testa
 module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Basic
-public import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Ring.Subsemiring.Order
-import Mathlib.Data.Finset.Attr
-import Mathlib.Init
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Tactic.SetLike
+public import Mathlib.Algebra.Ring.Subsemiring.Order
 
 /-!
 # Order instances on subalgebras

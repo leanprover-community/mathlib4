@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Data.FunLike.Equiv
 public import Mathlib.Logic.Pairwise
-import Mathlib.Init
-import Mathlib.Util.CompileInductive
 
 /-!
 # Interaction of equivalences with `Pairwise`

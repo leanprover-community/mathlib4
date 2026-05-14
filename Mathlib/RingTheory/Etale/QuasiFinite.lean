@@ -5,41 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Etale.Basic
-public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
-public import Mathlib.RingTheory.QuasiFinite.Basic
-import Mathlib.Algebra.Algebra.Subalgebra.Tower
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Polynomial.Eval.Coeff
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Combinatorics.Matroid.Init
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.NNReal.Defs
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Rat.Floor
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.Init
-import Mathlib.RingTheory.Artinian.Module
-import Mathlib.RingTheory.Coprime.Lemmas
-import Mathlib.RingTheory.FiniteStability
-import Mathlib.RingTheory.Finiteness.Basic
-import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
-import Mathlib.RingTheory.Localization.Away.AdjoinRoot
-import Mathlib.RingTheory.Polynomial.Tower
-import Mathlib.RingTheory.Polynomial.UniversalFactorizationRing
-import Mathlib.RingTheory.ZariskisMainTheorem
-import Mathlib.Tactic.Algebraize
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.CrossRefAttribute
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.SetLike
+public import Mathlib.RingTheory.Polynomial.UniversalFactorizationRing
+public import Mathlib.RingTheory.ZariskisMainTheorem
 
 /-!
 # Etale local structure of finite maps

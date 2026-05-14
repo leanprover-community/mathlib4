@@ -6,24 +6,8 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.MvPolynomial.Equiv
+public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
 public import Mathlib.RingTheory.MvPolynomial.Homogeneous
-public import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
-public import Mathlib.LinearAlgebra.Matrix.MvPolynomial
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.Polynomial.Eval.Coeff
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Int.Basic
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.Init
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
-import Mathlib.Tactic.Bound.Init
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.SetLike
 
 /-!
 # The universal characteristic polynomial
