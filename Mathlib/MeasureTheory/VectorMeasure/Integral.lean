@@ -78,13 +78,6 @@ vector measure. -/
 noncomputable def VectorMeasure.transpose (μ : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) :
     VectorMeasure X (E →L[ℝ] G) := μ.mapRange B.flip.toAddMonoidHom B.flip.continuous
 
-lemma restrict_transpose (μ : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) (s : Set X) :
-    (μ.transpose B).restrict s = (μ.restrict s).transpose B := by
-  by_cases hs : MeasurableSet s
-  · ext t ht : 1
-    simp [VectorMeasure.restrict_apply, hs, ht, transpose]
-  · simp [restrict_not_measurable _ hs, transpose]
-
 /-- Given a set `s`, return the continuous linear map `fun x : E ↦ B x (μ s)` (actually defined
 using `transpose` through `mapRange`), where the `B` is a `G`-valued bilinear form on `E × F` and
 `μ` is an `F`-valued vector measure. The extension of that set function through `setToFun` gives the
@@ -124,6 +117,22 @@ theorem norm_cbmApplyMeasure_le (μ : VectorMeasure X F) (B : E →L[ℝ] F →L
 end cbmApplyMeasure
 
 namespace VectorMeasure
+
+
+lemma restrict_transpose (μ : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) (s : Set X) :
+    (μ.transpose B).restrict s = (μ.restrict s).transpose B := by
+  by_cases hs : MeasurableSet s
+  · ext t ht : 1
+    simp [VectorMeasure.restrict_apply, hs, ht, transpose]
+  · simp [restrict_not_measurable _ hs, transpose]
+
+lemma variation_transpose_le (μ : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) :
+    (μ.transpose B).variation ≤ ‖B‖₊ • μ.variation := by
+  apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
+  simp [transpose]
+  apply opENorm_le_bound
+
+#exit
 
 /-- `f : X → E` is said to be integrable with respect to `μ` and `B` if it is integrable with
 respect to `(μ.transpose B).variation`. -/
