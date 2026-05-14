@@ -170,8 +170,7 @@ variable [EnoughInjectives C]
 
 instance : (trivialCofibrations (Plus C)).HasFactorization (fibrations (Plus C)) where
   nonempty_mapFactorizationData := by
-    rintro ⟨K, n, hn⟩ ⟨L, m, hm⟩ f
-    obtain ⟨(f : K ⟶ L), rfl⟩ := ObjectProperty.homMk_surjective f
+    intro ⟨K, n, hn⟩ ⟨L, m, hm⟩ ⟨f⟩
     obtain ⟨d, _, _⟩ : ∃ (d : ℤ), K.IsStrictlyGE (d + 1) ∧ L.IsStrictlyGE d :=
       ⟨min (n - 1) m, K.isStrictlyGE_of_ge _ n (by grind),
         L.isStrictlyGE_of_ge _ m (by simp)⟩
@@ -187,8 +186,7 @@ instance : (trivialCofibrations (Plus C)).HasFactorization (fibrations (Plus C))
 
 instance : (cofibrations (Plus C)).HasFactorization (trivialFibrations (Plus C)) where
   nonempty_mapFactorizationData := by
-    rintro ⟨K, n, hn⟩ ⟨L, m, hm⟩ f
-    obtain ⟨(f : K ⟶ L), rfl⟩ := ObjectProperty.homMk_surjective f
+    intro ⟨K, n, hn⟩ ⟨L, m, hm⟩ ⟨f⟩
     obtain ⟨d, _, _⟩ : ∃ (d : ℤ), K.IsStrictlyGE (d + 1) ∧ L.IsStrictlyGE d :=
       ⟨min (n - 1) m, K.isStrictlyGE_of_ge _ n (by grind),
         L.isStrictlyGE_of_ge _ m (by simp)⟩
