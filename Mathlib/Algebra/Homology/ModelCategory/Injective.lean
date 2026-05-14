@@ -104,15 +104,14 @@ lemma lifting {A B X Y : CochainComplex.Plus C} (i : A ⟶ B) (p : X ⟶ Y)
     obtain ⟨B, hB⟩ := B
     obtain ⟨X, hX⟩ := X
     obtain ⟨Y, hY⟩ := Y
-    have := (mono_iff i).1 inferInstance
+    have hi := (mono_iff i).1 inferInstance
     have hp : degreewiseEpiWithInjectiveKernel p.hom :=
       (fibration_iff p).1 inferInstance
     obtain ⟨i, rfl⟩ := ObjectProperty.homMk_surjective i
     obtain ⟨p, rfl⟩ := ObjectProperty.homMk_surjective p
     obtain ⟨t, rfl⟩ := ObjectProperty.homMk_surjective t
     obtain ⟨b, rfl⟩ := ObjectProperty.homMk_surjective b
-    dsimp at i p t b hp
-    have : Mono i := by assumption
+    dsimp at i p t b hp hi
     have hip : QuasiIso i ∨ QuasiIso p := by
       simpa only [weakEquivalence_iff] using hip
     replace sq : CommSq t i p b := sq.map (ObjectProperty.ι _)
