@@ -26,24 +26,36 @@ criteria for establishing it.
 
 - `FirstOrder.Language.Theory.isQFEquivalent_iff_realize_iff_of_embeddings` characterizes
   quantifier-free definability by invariance under embeddings from a common substructure. This
-  corresponds to Marker, Theorem 3.1.4.
+  corresponds to [Theorem 3.1.4][marker2002].
 - `FirstOrder.Language.Theory.hasQuantifierElimination_of_ex_isQFEquivalent_of_isQF` shows that it
   suffices to eliminate one existential quantifier from quantifier-free formulas. This corresponds
-  to Marker, Theorem 3.1.5.
+  to [Theorem 3.1.5][marker2002].
 - `FirstOrder.Language.Theory.hasQuantifierElimination_of_exists_realize_of_embeddings` is a
-  witness-transfer criterion for quantifier elimination. This corresponds to Marker,
-  Theorem 3.1.6.
+  witness-transfer criterion for quantifier elimination. This corresponds to
+  [Theorem 3.1.6][marker2002].
 - `FirstOrder.Language.Theory.hasQuantifierElimination_of_isElementaryExtensionPair` and
   `FirstOrder.Language.Theory.hasQuantifierElimination_of_isElementaryExtensionPairFG` prove
-  quantifier elimination from the extension property appearing in van den Dries--Henson,
-  Theorem 7.11, and from a finitely generated variant. The theorem
+  quantifier elimination from the extension property appearing in
+  [Theorem 7.11][vandendries_henson_2016] and from a finitely generated variant. The theorem
   `hasQuantifierElimination_of_isElementaryExtensionPairCardinalLTGenerated`
   gives the corresponding `< κ`-generated version.
 
+## References
+
+- [D. Marker, *Model Theory: An Introduction*][marker2002]
+- [L. van den Dries and C. W. Henson, *Lecture Notes for Mathematics 571 Fall 2016 Model
+  Theory*][vandendries_henson_2016]
+
 ## TODO
 
-- Add bibliography entries for Marker's *Model Theory: An Introduction* and the van den
-  Dries--Henson lecture notes cited above.
+- Drop the `[Finite α]` constraint from `HasQuantifierElimination` (and from the upstream
+  hypotheses that propagate it). The all-`α` version is mathematically equivalent — formulas
+  have finitary syntax, so QE for finite `α` implies QE for any `α` — but bridging the two
+  requires a `BoundedFormula.freeVarsFinset` (or similar) infrastructure together with a
+  realize-invariance-under-restriction lemma, neither of which is in mathlib yet. The single
+  load-bearing use of `[Finite α]` is `Set.finite_range (f ∘ a)` in
+  `hasQuantifierElimination_of_isElementaryExtensionPairCardinalLTGenerated`; everything else
+  just propagates the constraint.
 -/
 
 @[expose] public section
@@ -165,7 +177,7 @@ private theorem exists_substructure_embedding_of_agree_qf
 /-- A formula is equivalent over `T` to a quantifier-free formula iff its truth is invariant under
 pairs of embeddings from a common structure into nonempty models of `T`.
 
-This corresponds to Marker, Theorem 3.1.4. -/
+This corresponds to [Theorem 3.1.4][marker2002]. -/
 theorem isQFEquivalent_iff_realize_iff_of_embeddings
     {T : L.Theory} {α : Type u'} (φ : L.Formula α) :
     T.IsQFEquivalent φ ↔
@@ -358,7 +370,7 @@ private theorem exists_qf_equiv_ex_of_isQF
 /-- To prove quantifier elimination, it suffices to eliminate one existential quantifier from
 every quantifier-free formula with one bound variable.
 
-This corresponds to Marker, Theorem 3.1.5. -/
+This corresponds to [Theorem 3.1.5][marker2002]. -/
 theorem hasQuantifierElimination_of_ex_isQFEquivalent_of_isQF
     {T : L.Theory} :
     (∀ {α : Type} [Finite α] (θ : L.BoundedFormula α 1), θ.IsQF → T.IsQFEquivalent θ.ex) →
@@ -382,7 +394,7 @@ theorem hasQuantifierElimination_of_ex_isQFEquivalent_of_isQF
 quantifier-free formulas over tuples from a common embedded structure can be transferred between
 nonempty models of `T`, then `T` has quantifier elimination.
 
-This corresponds to Marker, Theorem 3.1.6. -/
+This corresponds to [Theorem 3.1.6][marker2002]. -/
 theorem hasQuantifierElimination_of_exists_realize_of_embeddings {T : L.Theory} :
     (∀ {α : Type} [Finite α] (φ : L.Formula (α ⊕ Fin 1)) (_ : φ.IsQF)
       {M N A : Type (max u v)} [L.Structure M] [L.Structure N] [L.Structure A]
@@ -432,7 +444,7 @@ private theorem isQF_realize_partialEquiv
 property holds for an infinite `κ`, then `T` has quantifier elimination.
 
 The hypothesis is a `< κ`-generated variant of the extension property appearing as condition (2)
-in van den Dries--Henson, Theorem 7.11. -/
+in [Theorem 7.11][vandendries_henson_2016]. -/
 theorem hasQuantifierElimination_of_isElementaryExtensionPairCardinalLTGenerated
     {T : L.Theory} {κ : Cardinal} (hκ : Cardinal.aleph0 ≤ κ)
     (h : ∀ ⦃M N : Type (max u v)⦄ [L.Structure M] [L.Structure N]
@@ -505,7 +517,7 @@ theorem hasQuantifierElimination_of_isElementaryExtensionPairCardinalLTGenerated
 property, then `T` has quantifier elimination.
 
 The hypothesis is a finitely generated variant of the extension property appearing as condition
-(2) in van den Dries--Henson, Theorem 7.11. -/
+(2) in [Theorem 7.11][vandendries_henson_2016]. -/
 theorem hasQuantifierElimination_of_isElementaryExtensionPairFG
     {T : L.Theory}
     (h : ∀ ⦃M N : Type (max u v)⦄ [L.Structure M] [L.Structure N]
@@ -518,8 +530,8 @@ theorem hasQuantifierElimination_of_isElementaryExtensionPairFG
 /-- If every pair of nonempty models of `T` has the elementary extension-pair property, then `T`
 has quantifier elimination.
 
-The hypothesis is condition (2) in van den Dries--Henson, Theorem 7.11; this theorem proves the
-implication from that extension property to condition (1). -/
+The hypothesis is condition (2) in [Theorem 7.11][vandendries_henson_2016]; this theorem proves
+the implication from that extension property to condition (1). -/
 theorem hasQuantifierElimination_of_isElementaryExtensionPair
     {T : L.Theory}
     (h : ∀ ⦃M N : Type (max u v)⦄ [L.Structure M] [L.Structure N]
