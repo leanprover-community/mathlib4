@@ -170,14 +170,14 @@ lemma rhs_aux_smulX (f : M → ℝ) : rhs_aux I (f • X) Y Z = f * rhs_aux I X 
 variable (X) in
 lemma rhs_aux_smulY_apply {f : M → ℝ}
     (hf : MDiffAt f x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
-    letI A (x) := fromTangentSpace _ ((mfderiv% f x) (X x))
+    letI A (x) := ((extDerivFun% f x) (X x))
     rhs_aux I X (f • Y) Z x = f x * rhs_aux I X Y Z x + A x * ⟪Y, Z⟫ x := by
   rw [rhs_aux, product_smul_left, extDerivFun_smul (hY.inner_bundle' hZ) hf]
   rfl
 
 variable (X) in
 lemma rhs_aux_smulY {f : M → ℝ} (hf : MDiff f) (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) :
-    letI A (x) := fromTangentSpace _ ((mfderiv% f x) (X x))
+    letI A (x) := ((extDerivFun% f x) (X x))
     rhs_aux I X (f • Y) Z = f * rhs_aux I X Y Z + A * ⟪Y, Z⟫ := by
   ext x
   simp [rhs_aux_smulY_apply I X (hf x) (hY x) (hZ x)]
@@ -188,7 +188,7 @@ lemma rhs_aux_smulY_const_apply {a : ℝ} (hY : MDiffAt (T% Y) x) (hZ : MDiffAt 
   let f : M → ℝ := fun _ ↦ a
   have h1 : rhs_aux I X (a • Y) Z x = rhs_aux I X (f • Y) Z x := by simp only [f]; congr
   rw [h1, rhs_aux_smulY_apply I X mdifferentiableAt_const hY hZ]
-  simp [mfderiv_const]
+  simp [extDerivFun_const]
 
 variable (X) in
 lemma rhs_aux_smulY_const {a : ℝ} (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) :
@@ -199,14 +199,14 @@ lemma rhs_aux_smulY_const {a : ℝ} (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) :
 variable (X) in
 lemma rhs_aux_smulZ_apply {f : M → ℝ}
     (hf : MDiffAt f x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
-    letI A (x) := fromTangentSpace _ ((mfderiv% f x) (X x))
+    letI A (x) := ((extDerivFun% f x) (X x))
     rhs_aux I X Y (f • Z) x = f x * rhs_aux I X Y Z x + A x * ⟪Y, Z⟫ x := by
   rw [rhs_aux_swap, rhs_aux_smulY_apply, rhs_aux_swap, product_swap]
   exacts [hf, hZ, hY]
 
 variable (X) in
 lemma rhs_aux_smulZ {f : M → ℝ} (hf : MDiff f) (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) :
-    letI A (x) := fromTangentSpace _ ((mfderiv% f x) (X x))
+    letI A (x) := ((extDerivFun% f x) (X x))
     rhs_aux I X Y (f • Z) = f * rhs_aux I X Y Z + A * ⟪Y, Z⟫ := by
   rw [rhs_aux_swap, rhs_aux_smulY, rhs_aux_swap, product_swap]
   exacts [hf, hZ, hY]
@@ -217,7 +217,7 @@ lemma rhs_aux_smulZ_const_apply {a : ℝ} (hY : MDiffAt (T% Y) x) (hZ : MDiffAt 
   let f : M → ℝ := fun _ ↦ a
   have h1 : rhs_aux I X Y (a • Z) x = rhs_aux I X Y (f • Z) x := by simp only [f]; congr
   rw [h1, rhs_aux_smulZ_apply I X mdifferentiableAt_const hY hZ]
-  simp [mfderiv_const]
+  simp [extDerivFun_const]
 
 variable (X) in
 lemma rhs_aux_smulZ_const {a : ℝ} (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) :
@@ -300,13 +300,13 @@ lemma leviCivitaRhs'_smulX_apply [CompleteSpace E] {f : M → ℝ}
   -- Combining this line with the previous one fails.
   simp only [← product_apply, neg_smul, inner_neg_right]
   have h1 :
-      inner ℝ (Y x) ((fromTangentSpace _ (mfderiv% f x (Z x))) • X x) =
-        fromTangentSpace (f x) (mfderiv% f x (Z x)) * ⟪X, Y⟫ x := by
+      inner ℝ (Y x) (((extDerivFun% f x (Z x))) • X x) =
+        (extDerivFun% f x (Z x)) * ⟪X, Y⟫ x := by
     simp only [product]
     rw [← real_inner_smul_left, real_inner_smul_right, real_inner_smul_left, real_inner_comm]
   have h2 :
-      inner ℝ (Z x) (fromTangentSpace (f x) ((mfderiv% f x (Y x))) • X x) =
-        (fromTangentSpace (f x) (mfderiv% f x (Y x))) * ⟪Z, X⟫ x := by
+      inner ℝ (Z x) (((extDerivFun% f x (Y x))) • X x) =
+        ((extDerivFun% f x (Y x))) * ⟪Z, X⟫ x := by
     simp only [product]
     rw [← real_inner_smul_left, real_inner_smul_right, real_inner_smul_left]
   rw [h1, h2]
@@ -414,30 +414,28 @@ lemma leviCivitaRhs'_smulY_apply [CompleteSpace E] {f : M → ℝ}
     (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     leviCivitaRhs' I X (f • Y) Z x =
       f x • leviCivitaRhs' I X Y Z x +
-        ((fromTangentSpace _).toFun <| mfderiv% f x (X x)) • 2 * ⟪Y, Z⟫ x := by
+        (extDerivFun% f x (X x)) • 2 * ⟪Y, Z⟫ x := by
   simp only [leviCivitaRhs']
   simp_rw [rhs_aux_smulX I Y Z X f]
   simp only [product_smul_left, Pi.add_apply, Pi.sub_apply, smul_eq_mul, Pi.mul_apply]
   rw [rhs_aux_smulY_apply I X hf hY hZ, rhs_aux_smulZ_apply I Z hf hX hY]
   -- TODO: is there a better abstraction for this kind of "Lie bracket conv mode"?
   have h1 : ⟪Z, mlieBracket I (f • Y) X⟫ x =
-      - (fromTangentSpace _).toFun (((mfderiv% f x) (X x))) • ⟪Z, Y⟫ x
+      - (((extDerivFun% f x) (X x))) • ⟪Z, Y⟫ x
       + f x • ⟪Z, mlieBracket I Y X⟫ x := by
     simp_rw [product_apply, mlieBracket_smul_left (W := X) hf hY, inner_add_right]
     congr
-    · simp only [neg_smul, inner_neg_right, fromTangentSpace, AddHom.toFun_eq_coe, AddHom.coe_mk,
+    · simp only [neg_smul, inner_neg_right,
         smul_eq_mul, neg_mul, neg_inj]
       rw [real_inner_smul_right]
-      rfl
     · rw [inner_smul_right_eq_smul]
   have h2 : ⟪X, mlieBracket I Z (f • Y)⟫ x =
-      (fromTangentSpace _).toFun (((mfderiv% f x) (Z x))) • ⟪X, Y⟫ x
+      (((extDerivFun% f x) (Z x))) • ⟪X, Y⟫ x
         + f x • ⟪X, mlieBracket I Z Y⟫ x := by
     simp_rw [product_apply, mlieBracket_smul_right (V := Z) hf hY, inner_add_right]
     congr
-    · simp only [fromTangentSpace, AddHom.toFun_eq_coe, AddHom.coe_mk, smul_eq_mul]
+    · simp only [smul_eq_mul]
       rw [real_inner_smul_right]
-      rfl
     · rw [inner_smul_right_eq_smul]
   rw [h1, h2, product_swap Y Z]
   set A := rhs_aux I X Y Z x
@@ -448,13 +446,12 @@ lemma leviCivitaRhs'_smulY_apply [CompleteSpace E] {f : M → ℝ}
   set F := ⟪X, mlieBracket I Z Y⟫ x
   set G1 := ⟪Y, Z⟫ x
   set G2 := ⟪X, Y⟫ x
-  set dfx := (mfderiv I 𝓘(ℝ, ℝ) f x)
-  set H := (fromTangentSpace (f x)) (dfx (X x)) with H_eq
-  set K := (fromTangentSpace (f x)) (dfx (Z x)) with K_eq
-  change f x * A + (fromTangentSpace _).toFun (dfx (X x)) * G1 + f x * B
-    - (f x * C + (fromTangentSpace _).toFun (dfx (Z x)) * G2)
+  set dfx := (extDerivFun I f x)
+  set H := (dfx (X x)) with H_eq
+  set K := (dfx (Z x)) with K_eq
+  change f x * A + (dfx (X x)) * G1 + f x * B
+    - (f x * C + (dfx (Z x)) * G2)
     - f x * D - (-H * G1 + f x * E) + (K * G2 + f x * F) = _
-  dsimp
   rw [← H_eq, ← K_eq]
   ring
 
@@ -462,7 +459,7 @@ lemma leviCivitaRhs_smulY_apply [CompleteSpace E] {f : M → ℝ}
     (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     leviCivitaRhs I X (f • Y) Z x =
       f x • leviCivitaRhs I X Y Z x
-        + ((fromTangentSpace _).toFun <| mfderiv% f x (X x)) • ⟪Y, Z⟫ x := by
+        + (extDerivFun% f x (X x)) • ⟪Y, Z⟫ x := by
   simp only [leviCivitaRhs, Pi.smul_apply, leviCivitaRhs'_smulY_apply I hf hX hY hZ]
   rw [smul_add, smul_comm]
   congr 1
@@ -508,11 +505,11 @@ lemma leviCivitaRhs'_smulZ_apply [CompleteSpace E] {f : M → ℝ}
   -- Apply the product rule for the lie bracket.
   -- Let's encapsulate the going into the product and back out again.
   have h1 : ⟪Y, mlieBracket I X (f • Z)⟫ x =
-      f x • ⟪Y, mlieBracket I X Z⟫ x + ⟪Y, fromTangentSpace _ (mfderiv% f x (X x)) • Z⟫ x := by
+      f x • ⟪Y, mlieBracket I X Z⟫ x + ⟪Y, (extDerivFun% f x (X x)) • Z⟫ x := by
     rw [product_apply, VectorField.mlieBracket_smul_right hf hZ, inner_add_right, add_comm,
       inner_smul_right]
     congr
-  have h2 : letI dfY := fromTangentSpace _ ((mfderiv% f x) (Y x));
+  have h2 : letI dfY := ((extDerivFun% f x) (Y x));
       ⟪X, mlieBracket I (f • Z) Y⟫ x = - dfY • ⟪X, Z⟫ x + f x • ⟪X, mlieBracket I Z Y⟫ x := by
     rw [product_apply, VectorField.mlieBracket_smul_left hf hZ, inner_add_right, inner_smul_right,
       inner_smul_right]
@@ -814,7 +811,6 @@ lemma leviCivitaConnection_isCompatible [FiniteDimensional ℝ E] :
   have : inner ℝ (((LeviCivitaConnection I M) Z x) (X x)) (Y x) = leviCivitaRhs I X Z Y x := by
     rw [leviCivitaConnection_apply I hX hZ hY]
   rw [leviCivitaConnection_apply I hX hZ hY, leviCivitaConnection_isCompatible_aux]
-  sorry -- TODO: this will disappear after Heather's change
 
 lemma leviCivitaConnection_torsion_eq_zero [FiniteDimensional ℝ E] :
     (LeviCivitaConnection I M).torsion = 0 := by

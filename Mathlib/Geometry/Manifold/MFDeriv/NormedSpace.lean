@@ -428,6 +428,9 @@ open Bundle PrettyPrinter Delaborator SubExpr
 
 end Manifold
 
+lemma extDerivFun_const (c : F) {x : M} : extDerivFun% (fun _ : M ↦ c) x = 0 := by
+  simp [extDerivFun, mfderiv_const]
+
 @[simp, to_fun]
 lemma extDerivFun_add {g g' : M → F} {x : M} (hg : MDiffAt g x) (hg' : MDiffAt g' x) :
     extDerivFun% (g + g') x = extDerivFun% g x + extDerivFun% g' x := by
