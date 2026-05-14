@@ -1,29 +1,25 @@
 /-
-Copyright (c) 2025 Anthony Wang. All rights reserved.
+Copyright (c) 2026 Anthony Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anthony Wang
 -/
-import Mathlib.MeasureTheory.Function.Jacobian
-import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Complex.Arg
 
 /-!
 # Spherical coordinates
 
 We define spherical coordinates similarly to polar coordinates, as an open partial homeomorphism
 in `ℝ^3` between `ℝ^3 - (-∞, 0]` and `(0, +∞) × (-π, π) × (0, π)`. Its inverse is given by
-`(r, θ, φ) ↦ (r sin φ cos θ, r sin φ sin θ, r cos φ)`. TODO
-
-It satisfies the following change of variables formula (see `integral_comp_sphericalCoord_symm`):
-`∫ p in sphericalCoord.target, p.1 • f (sphericalCoord.symm p) = ∫ p, f p`
-
+`(r, θ, φ) ↦ (r sin φ cos θ, r sin φ sin θ, r cos φ)`.
 -/
+
+@[expose] public section
 
 noncomputable section Real
 
-open Real Set MeasureTheory
-
-open scoped ENNReal Real Topology
+open Real Set
 
 /-- The spherical coordinates are an open partial homeomorphism in `ℝ^3`, mapping
 `(r sin φ cos θ, r sin φ sin θ, r cos φ)` to `(r, θ, φ)`. It is a homeomorphism between

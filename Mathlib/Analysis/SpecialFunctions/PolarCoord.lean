@@ -176,8 +176,8 @@ namespace Complex
 
 open scoped Real ENNReal
 
-/-- The polar coordinates open partial homeomorphism in `ℂ`, mapping `r (cos θ + I * sin θ)` to
-`(r, θ)`. It is a homeomorphism between `ℂ - ℝ≤0` and `(0, +∞) × (-π, π)`. -/
+/-- The polar coordinates are an open partial homeomorphism in `ℂ`, mapping `r (cos θ + I * sin θ)`
+to `(r, θ)`. It is a homeomorphism between `ℂ - ℝ≤0` and `(0, +∞) × (-π, π)`. -/
 protected noncomputable def polarCoord : OpenPartialHomeomorph ℂ (ℝ × ℝ) :=
   equivRealProdCLM.toHomeomorph.transOpenPartialHomeomorph polarCoord
 
