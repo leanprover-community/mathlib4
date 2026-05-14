@@ -36,12 +36,22 @@ section
 
 variable {R S : Type*} [CommSemiring R] [CommSemiring S] (I J : Ideal R)
 
-/-- The predicate for describing an ideal is minimal prime over certain ideal `I`. -/
+/-- `IsMinimalPrime I p` says that `p` is a minimal prime over `I`. -/
 protected def Ideal.IsMinimalPrime (p : Ideal R) : Prop := Minimal (fun q ↦ q.IsPrime ∧ I ≤ q) p
 
+variable {I} in
 lemma Ideal.IsMinimalPrime.isPrime {p : Ideal R} (h : I.IsMinimalPrime p) : p.IsPrime := h.1.1
 
+variable {I} in
 lemma Ideal.IsMinimalPrime.le {p : Ideal R} (h : I.IsMinimalPrime p) : I ≤ p := h.1.2
+
+/-- `IsMinimalPrime p` says that `p` is a minimal prime of the ring. -/
+abbrev IsMinimalPrime (p : Ideal R) : Prop := (⊥ : Ideal R).IsMinimalPrime p
+
+lemma IsMinimalPrime.isPrime {p : Ideal R} (h : IsMinimalPrime p) : p.IsPrime := h.1.1
+
+lemma IsMinimalPrime.iff_minimal (p : Ideal R) : IsMinimalPrime p ↔ Minimal Ideal.IsPrime p := by
+  simp [Ideal.IsMinimalPrime]
 
 /-- `I.minimalPrimes` is the set of ideals that are minimal primes over `I`. -/
 protected abbrev Ideal.minimalPrimes : Set (Ideal R) :=
@@ -51,7 +61,7 @@ variable (R) in
 /-- `minimalPrimes R` is the set of minimal primes of `R`.
 This is defined as `Ideal.minimalPrimes ⊥`. -/
 abbrev minimalPrimes : Set (Ideal R) :=
-  Ideal.minimalPrimes ⊥
+  {p | IsMinimalPrime p}
 
 lemma minimalPrimes_eq_minimals : minimalPrimes R = {x | Minimal Ideal.IsPrime x} :=
   congr_arg Minimal (by simp)
@@ -60,10 +70,6 @@ variable {I J}
 
 @[deprecated "Use `Ideal.IsMinimalPrime.isPrime` instead." (since := "2026-05-08")]
 theorem Ideal.minimalPrimes_isPrime {p : Ideal R} (h : p ∈ minimalPrimes R) : p.IsPrime :=
-  h.1.1
-
-/-- Variant of `Ideal.IsMinimalPrime.isPrime` for the set of all minimal primes of `R`. -/
-theorem Ideal.IsPrime.of_mem_minimalPrimes {p : Ideal R} (h : p ∈ minimalPrimes R) : p.IsPrime :=
   h.1.1
 
 theorem Ideal.exists_minimalPrimes_le [J.IsPrime] (e : I ≤ J) : ∃ p ∈ I.minimalPrimes, p ≤ J := by
@@ -174,8 +180,7 @@ lemma Ideal.mem_minimalPrimes_sup {R : Type*} [CommRing R] {p I J : Ideal R} [p.
     p ∈ (I ⊔ J).minimalPrimes := by
   refine ⟨⟨‹_›, ?_⟩, fun q ⟨_, hq⟩ hqp ↦ ?_⟩
   · rw [sup_le_iff]
-    refine ⟨hle, ?_⟩
-    simpa [hle] using Ideal.comap_mono (f := Ideal.Quotient.mk I) h.le
+    refine ⟨hle, by simpa [hle] using Ideal.comap_mono (f := Ideal.Quotient.mk I) h.le⟩
   · rw [sup_le_iff] at hq
     have h2 : p.map (Quotient.mk I) ≤ q.map (Quotient.mk I) :=
       h.2 ⟨isPrime_map_quotientMk_of_isPrime hq.1, map_mono hq.2⟩ (map_mono hqp)
