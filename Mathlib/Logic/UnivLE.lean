@@ -9,6 +9,7 @@ public import Mathlib.Logic.Small.Defs
 import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Tactic.PPWithUniv
 import Mathlib.Util.CompileInductive
+import Mathlib.Logic.Basic
 
 /-!
 # UnivLE

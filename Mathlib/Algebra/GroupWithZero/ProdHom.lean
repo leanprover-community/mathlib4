@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Algebra.GroupWithZero.WithZero
-import Mathlib.Algebra.GroupWithZero.Equiv
+public import Mathlib.Algebra.GroupWithZero.Equiv
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Tactic.Common
 import Mathlib.Util.CompileInductive

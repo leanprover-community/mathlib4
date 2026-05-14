@@ -14,7 +14,7 @@ import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.Monotonicity.Attr
-import Mathlib.Tactic.PPWithUniv
+public import Mathlib.Tactic.PPWithUniv
 import Mathlib.Util.CompileInductive
 
 /-!

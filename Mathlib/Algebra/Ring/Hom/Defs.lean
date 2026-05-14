@@ -11,6 +11,7 @@ import Mathlib.Algebra.GroupWithZero.NeZero
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Util.CompileInductive
+import Mathlib.Logic.Basic
 
 /-!
 # Homomorphisms of semirings and rings

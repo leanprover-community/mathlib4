@@ -16,6 +16,7 @@ import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Use
 import Mathlib.Util.CompileInductive
+import Mathlib.Tactic.FBinop
 
 /-!
 # Directed indexed families and sets

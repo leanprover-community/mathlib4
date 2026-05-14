@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Notation.Pi.Basic
 public import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.GroupWithZero.NeZero
 import Mathlib.Algebra.NeZero
-import Mathlib.Logic.Basic
+public import Mathlib.Logic.Basic
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Util.CompileInductive
 
