@@ -86,13 +86,13 @@ def UniformConvergenceCLM [TopologicalSpace F] (_ : Set (Set E)) := E →SL[σ] 
 -- `notation:25 E " →SLᵤ[" σ ", " 𝔖 "] " F => UniformConvergenceCLM σ (E := E) F 𝔖`
 -- (probably because of `(E := E)` ?)
 
-@[inherit_doc]
+@[inherit_doc UniformConvergenceCLM]
 scoped[UniformConvergenceCLM]
-notation:25 E' " →SLᵤ[" σ ", " 𝔖 "] " F => UniformConvergenceCLM σ (E := E') F 𝔖
+notation3:25 E' " →SLᵤ[" σ ", " 𝔖 "] " F => UniformConvergenceCLM σ (E := E') F 𝔖
 
-@[inherit_doc]
+@[inherit_doc UniformConvergenceCLM]
 scoped[UniformConvergenceCLM]
-notation:25 E' " →Lᵤ[" R ", " 𝔖 "] " F => UniformConvergenceCLM (RingHom.id R) (E := E') F 𝔖
+notation3:25 E' " →Lᵤ[" R ", " 𝔖 "] " F => UniformConvergenceCLM (RingHom.id R) (E := E') F 𝔖
 
 namespace UniformConvergenceCLM
 
