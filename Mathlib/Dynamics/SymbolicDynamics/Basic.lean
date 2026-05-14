@@ -669,6 +669,29 @@ section LanguageMulShift
 variable {A : Type*} [TopologicalSpace A] [Inhabited A]
 variable {G : Type*} [Group G]
 
+namespace Pattern
+
+open scoped Classical in
+omit [TopologicalSpace A] in
+/-- Naturality of `Pattern.fromConfig` with respect to the shift action.
+
+Restricting `x` to a finite shape `U` and then shifting the resulting pattern by `g` agrees
+with restricting the shifted configuration `mulShift g⁻¹ x` to the translated shape
+`U.image (g * ·)`. -/
+lemma fromConfig_mulShift (x : G → A) (U : Finset G) (g : G) :
+    (Pattern.fromConfig x U).mulShift g
+      = Pattern.fromConfig (mulShift g⁻¹ x) (U.image (g * ·)) := by
+  refine Pattern.ext rfl ?_
+  intro h hh
+  change h ∈ U.image (g * ·) at hh
+  obtain ⟨u, hu, rfl⟩ := Finset.mem_image.mp hh
+  rw [Pattern.mulShift_config_apply_mul_left_of_mem _ g u hu,
+      Pattern.fromConfig_config_of_mem _ hu,
+      Pattern.fromConfig_config_of_mem _ (Finset.mem_image_of_mem (g * ·) hu),
+      mulShift_apply, inv_mul_cancel_left]
+
+end Pattern
+
 open scoped Classical in
 /-- **Shift-invariance of the language of a subshift.**
 
@@ -683,29 +706,16 @@ theorem MulSubshift.languageOn_image_mulShift
       = Y.languageOn (U.image (g * ·)) := by
   ext q
   refine ⟨?_, ?_⟩
-  · -- Forward: pattern-shift of `Y.languageOn U` lands in `Y.languageOn (g•U)`.
-    rintro ⟨p, ⟨x, hx, rfl⟩, rfl⟩
-    -- Witness: `y := mulShift g⁻¹ x ∈ Y` (group shift-invariance).
-    refine ⟨mulShift g⁻¹ x, Y.mapsTo g⁻¹ hx, ?_⟩
-    refine Pattern.ext rfl ?_
-    intro h hh
-    change h ∈ U.image (g * ·) at hh
-    obtain ⟨u, hu, rfl⟩ := Finset.mem_image.mp hh
-    rw [Pattern.fromConfig_config_of_mem _ (Finset.mem_image_of_mem (g * ·) hu),
-        mulShift_apply, inv_mul_cancel_left,
-        Pattern.mulShift_config_apply_mul_left_of_mem _ g u hu,
-        Pattern.fromConfig_config_of_mem _ hu]
-  · -- Backward: every element of `Y.languageOn (g•U)` is a shift of one in `Y.languageOn U`.
-    rintro ⟨y, hy, rfl⟩
+  · rintro ⟨_, ⟨x, hx, rfl⟩, rfl⟩
+    exact ⟨mulShift g⁻¹ x, Y.mapsTo g⁻¹ hx,
+           (Pattern.fromConfig_mulShift x U g).symm⟩
+  · rintro ⟨y, hy, rfl⟩
     refine ⟨Pattern.fromConfig (mulShift g y) U,
             ⟨mulShift g y, Y.mapsTo g hy, rfl⟩, ?_⟩
-    refine Pattern.ext rfl ?_
-    intro h hh
-    change h ∈ U.image (g * ·) at hh
-    obtain ⟨u, hu, rfl⟩ := Finset.mem_image.mp hh
-    rw [Pattern.mulShift_config_apply_mul_left_of_mem _ g u hu,
-        Pattern.fromConfig_config_of_mem _ hu, mulShift_apply,
-        Pattern.fromConfig_config_of_mem _ (Finset.mem_image_of_mem (g * ·) hu)]
+    change (Pattern.fromConfig (mulShift g y) U).mulShift g
+         = Pattern.fromConfig y (U.image (g * ·))
+    rw [Pattern.fromConfig_mulShift, ← mulShift_mul,
+        mul_inv_cancel, mulShift_one]
 
 end LanguageMulShift
 
