@@ -10,6 +10,14 @@ public import Mathlib.Order.CompleteLattice.Defs
 public import Mathlib.Order.UpperLower.Basic
 
 import Mathlib.Data.Set.Lattice
+public import Mathlib.Order.Directed
+import Batteries.Tactic.Init
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Data.Set.Image
+import Mathlib.Order.Bounds.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Sets closed under directed suprema

@@ -8,6 +8,10 @@ module
 public import Mathlib.Algebra.Group.Finsupp
 public import Mathlib.Algebra.Group.Submonoid.Basic
 public import Mathlib.Algebra.Group.TypeTags.Hom
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Extensionality for maps on `Finsupp`

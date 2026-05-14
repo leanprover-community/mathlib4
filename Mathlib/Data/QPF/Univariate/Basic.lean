@@ -6,6 +6,12 @@ Authors: Jeremy Avigad
 module
 
 public import Mathlib.Data.PFunctor.Univariate.M
+import Batteries.Tactic.Congr
+import Batteries.Tactic.Trans
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 

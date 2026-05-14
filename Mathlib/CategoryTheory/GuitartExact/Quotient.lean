@@ -6,7 +6,14 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.ModelCategory.RightHomotopy
-public import Mathlib.CategoryTheory.GuitartExact.Opposite
+public import Mathlib.CategoryTheory.GuitartExact.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.GuitartExact.Opposite
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Guitart exact squares and quotient categories

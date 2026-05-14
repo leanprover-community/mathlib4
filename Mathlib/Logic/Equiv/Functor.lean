@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Control.Bifunctor
 public import Mathlib.Logic.Equiv.Defs
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # Functor and bifunctors can be applied to `Equiv`s.

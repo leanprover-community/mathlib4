@@ -10,9 +10,32 @@ import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 import Mathlib.Analysis.Convex.Mul
 public import Mathlib.Algebra.Algebra.StrictPositivity
 public import Mathlib.Analysis.CStarAlgebra.Classes
-public import Mathlib.Analysis.SpecialFunctions.Bernstein
-public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
-public import Mathlib.Tactic.NormNum.GCD
+public import Mathlib.Analysis.Convex.Function
+import Mathlib.Algebra.Order.Algebra
+import Mathlib.Algebra.Order.BigOperators.Expect
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Field.Power
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Group.Pointwise.Interval
+import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Analysis.Normed.Group.AddTorsor
+import Mathlib.Analysis.SpecialFunctions.Bernstein
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.EReal.Inv
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Rat.Floor
+import Mathlib.Data.Real.StarOrdered
+import Mathlib.Data.Sym.Sym2
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.ContinuousMap.ContinuousSqrt
 
 /-!
 # Order properties of `Ring.inverse` in C⋆-algebras

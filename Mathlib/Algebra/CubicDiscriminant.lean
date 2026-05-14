@@ -6,7 +6,22 @@ Authors: David Kurniadi Angdinata
 module
 
 public import Mathlib.Algebra.Polynomial.Splits
-public import Mathlib.Tactic.IntervalCases
+public import Mathlib.Algebra.Polynomial.Degree.SmallDegree
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.IntervalCases
+import Mathlib.Tactic.Nontriviality.Core
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.SetLike
 
 /-!
 # Cubics and discriminants

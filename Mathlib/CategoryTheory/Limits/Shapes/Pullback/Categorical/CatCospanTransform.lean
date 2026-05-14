@@ -6,6 +6,10 @@ Authors: Robin Carlier
 module
 
 public import Mathlib.CategoryTheory.CatCommSq
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-! # Morphisms of categorical cospans.
 

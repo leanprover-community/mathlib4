@@ -9,6 +9,11 @@ public import Mathlib.Algebra.Group.Action.End
 public import Mathlib.Algebra.Group.Commutator
 public import Mathlib.GroupTheory.Subgroup.Center
 public import Mathlib.GroupTheory.Submonoid.Centralizer
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 # Centralizers of subgroups

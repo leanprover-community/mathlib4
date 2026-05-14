@@ -5,8 +5,14 @@ Authors: Yaël Dillies, Sara Rousta
 -/
 module
 
-public import Mathlib.Order.Interval.Set.OrderIso
 public import Mathlib.Order.UpperLower.CompleteLattice
+import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Order.Interval.Set.OrderIso
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToDual
+import Mathlib.Util.CompileInductive
 
 /-!
 # Principal upper/lower sets

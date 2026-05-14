@@ -12,6 +12,12 @@ public import Mathlib.RingTheory.Congruence.Opposite
 public import Mathlib.RingTheory.Ideal.Defs
 public import Mathlib.RingTheory.TwoSidedIdeal.Lattice
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+import Batteries.Tactic.Trans
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Operations on two-sided ideals

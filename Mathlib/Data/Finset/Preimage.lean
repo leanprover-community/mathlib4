@@ -8,6 +8,10 @@ module
 public import Mathlib.Data.Finset.Pi
 public import Mathlib.Data.Finset.Sigma
 public import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Preimage of a `Finset` under an injective map.

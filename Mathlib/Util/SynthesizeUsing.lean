@@ -5,10 +5,10 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.Elab.Tactic.Basic
 public import Qq
-public import Qq.Typ
+import Mathlib.Init
+import Qq.Typ
 
 /-!
 # `SynthesizeUsing`

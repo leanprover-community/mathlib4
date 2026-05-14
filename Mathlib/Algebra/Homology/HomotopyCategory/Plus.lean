@@ -6,10 +6,29 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.CochainComplexPlus
-public import Mathlib.Algebra.Homology.HomotopyCategory.Acyclic
 public import Mathlib.Algebra.Homology.Precylinder
-public import Mathlib.CategoryTheory.Localization.OfQuotient
 public import Mathlib.CategoryTheory.Shift.SingleFunctorsLift
+public import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
+public import Mathlib.Algebra.Homology.Localization
+public import Mathlib.CategoryTheory.Triangulated.Subcategory
+import Mathlib.Algebra.Homology.HomotopyCategory.Acyclic
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Localization.OfQuotient
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # The triangulated subcategory of bounded below cochain complexes up to homotopy

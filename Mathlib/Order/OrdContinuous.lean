@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 public import Mathlib.Order.RelIso.Basic
+import Mathlib.Init
+import Mathlib.Order.GaloisConnection.Basic
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Translate.ToDual
+import Mathlib.Util.CompileInductive
 
 /-!
 # Order continuity

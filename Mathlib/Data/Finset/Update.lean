@@ -8,6 +8,11 @@ module
 public import Mathlib.Data.Finset.Pi
 public import Mathlib.Data.Fintype.Defs
 public import Mathlib.Logic.Function.DependsOn
+import Batteries.Tactic.Congr
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Update a function on a set of values

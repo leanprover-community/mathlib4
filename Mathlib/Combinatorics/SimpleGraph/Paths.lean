@@ -8,7 +8,14 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Decomp
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Maps
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Subwalks
-public import Mathlib.Order.Preorder.Finite
+import Batteries.Tactic.Trans
+import Mathlib.Combinatorics.SimpleGraph.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.List.Nodup
+import Mathlib.Order.Preorder.Finite
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 

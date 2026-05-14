@@ -8,6 +8,17 @@ module
 public import Mathlib.Topology.LocallyConstant.Algebra
 public import Mathlib.Topology.ContinuousMap.Basic
 public import Mathlib.Topology.ContinuousMap.Algebra
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Rat.Floor
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # The algebra morphism from locally constant functions to continuous functions.

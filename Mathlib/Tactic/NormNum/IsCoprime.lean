@@ -5,8 +5,16 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.RingTheory.Coprime.Lemmas
 public import Mathlib.Tactic.NormNum.GCD
+public import Mathlib.RingTheory.Coprime.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.RingTheory.Coprime.Lemmas
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-! # `norm_num` extension for `IsCoprime`
 

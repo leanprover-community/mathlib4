@@ -7,7 +7,10 @@ Neil Strickland, Aaron Anderson
 module
 
 public import Mathlib.Algebra.Divisibility.Basic
-public import Mathlib.Algebra.Group.Units.Basic
+public import Mathlib.Algebra.Group.Units.Defs
+import Mathlib.Algebra.Group.Units.Basic
+import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.Common
 
 /-!
 # Divisibility and units

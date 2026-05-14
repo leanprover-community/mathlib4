@@ -5,11 +5,27 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Topology.Order.Compact
-public import Mathlib.Topology.MetricSpace.Bounded
-public import Mathlib.Topology.Order.IntermediateValue
 public import Mathlib.Topology.Order.LocalExtr
-public import Mathlib.Topology.Maps.Proper.CompactlyGenerated
+public import Mathlib.Topology.Maps.Proper.Basic
+public import Mathlib.Topology.MetricSpace.ProperSpace
+public import Mathlib.Topology.Order.Basic
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Rat.Floor
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Compactness.LocallyCompact
+import Mathlib.Topology.Continuous
+import Mathlib.Topology.ContinuousOn
+import Mathlib.Topology.Maps.Proper.CompactlyGenerated
+import Mathlib.Topology.MetricSpace.Bounded
+import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 
 /-!
 # Proper spaces

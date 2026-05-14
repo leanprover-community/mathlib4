@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.Group.ULift
 public import Mathlib.Algebra.GroupWithZero.InjSurj
+import Mathlib.Init
+import Mathlib.Util.CompileInductive
 
 /-!
 # `ULift` instances for groups and monoids with zero

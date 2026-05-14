@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Order.Ideal
 public import Mathlib.Order.PFilter
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Prime ideals

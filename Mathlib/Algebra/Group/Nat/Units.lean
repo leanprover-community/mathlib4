@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Algebra.Group.Units.Defs
 public import Mathlib.Logic.Unique
+import Mathlib.Init
 
 /-!
 # The unit of the natural numbers

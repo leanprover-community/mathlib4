@@ -5,7 +5,8 @@ Authors: Gabriel Ebner
 -/
 module
 
-public import Mathlib.Init
+public import Lean.Parser.Term
+import Mathlib.Init
 /-!
 # Variants of `haveI`/`letI` for use in do-notation.
 

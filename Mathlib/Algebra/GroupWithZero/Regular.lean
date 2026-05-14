@@ -6,7 +6,9 @@ Authors: Damiano Testa
 module
 
 public import Mathlib.Algebra.GroupWithZero.Defs
-public import Mathlib.Tactic.Push
+import Mathlib.Init
+import Mathlib.Tactic.Conv
+import Mathlib.Tactic.Push
 
 /-!
 # Results about `IsRegular` and `0`

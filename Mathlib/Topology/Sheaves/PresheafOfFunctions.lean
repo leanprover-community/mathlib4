@@ -6,6 +6,12 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Topology.Sheaves.Presheaf
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Sheaves.Init
 /-!
 # Presheaves of functions
 

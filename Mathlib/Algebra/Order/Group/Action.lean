@@ -8,6 +8,10 @@ module
 public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Util.CompileInductive
 
 /-!
 # Results about `CovariantClass G α HSMul.hSMul LE.le`

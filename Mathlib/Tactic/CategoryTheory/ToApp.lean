@@ -7,6 +7,11 @@ module
 
 public import Mathlib.CategoryTheory.Category.Cat
 public meta import Mathlib.Tactic.ToAdditive
+public meta import Mathlib.Lean.Meta.Simp
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # The `to_app` attribute

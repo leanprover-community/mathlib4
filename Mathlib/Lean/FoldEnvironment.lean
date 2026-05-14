@@ -6,7 +6,7 @@ Authors: Jovan Gerbscheid
 module
 
 public import Lean.Meta.Basic
-public import Mathlib.Init
+import Mathlib.Init
 
 /-!
 # Folding through the environment efficiently

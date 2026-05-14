@@ -9,9 +9,16 @@ public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Algebra.Star.StarRingHom
 public import Mathlib.Algebra.Algebra.NonUnitalHom
 public import Mathlib.Algebra.Algebra.Pi
-public import Mathlib.Data.Rat.Cast.Defs
 public import Mathlib.Order.DirectedInverseSystem
-public import Mathlib.Tactic.SuppressCompilation
+public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Defs
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.SuppressCompilation
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Direct limit of algebraic structures

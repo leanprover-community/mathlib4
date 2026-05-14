@@ -5,8 +5,13 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Set.Image
-public import Mathlib.Data.Set.BooleanAlgebra
+public import Mathlib.Data.Sigma.Basic
+public import Mathlib.Order.CompleteLattice.Defs
+import Mathlib.Data.Set.BooleanAlgebra
+import Mathlib.Data.Set.Image
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Sets in sigma types

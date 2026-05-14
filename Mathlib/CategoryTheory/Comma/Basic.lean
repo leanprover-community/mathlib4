@@ -9,6 +9,11 @@ public import Mathlib.CategoryTheory.Iso
 public import Mathlib.CategoryTheory.Functor.Category
 public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.CategoryTheory.Products.Unitor
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Translate.ToDual
+import Mathlib.Util.CompileInductive
 
 /-!
 # Comma categories

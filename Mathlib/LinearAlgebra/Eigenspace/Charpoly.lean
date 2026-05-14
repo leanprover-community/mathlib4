@@ -5,11 +5,27 @@ Authors: Lawrence Wu
 -/
 module
 
-public import Mathlib.LinearAlgebra.Charpoly.BaseChange
-public import Mathlib.LinearAlgebra.Charpoly.ToMatrix
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
 public import Mathlib.LinearAlgebra.Trace
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Eigs
+public import Mathlib.Algebra.Polynomial.Splits
+public import Mathlib.LinearAlgebra.Charpoly.Basic
+import Mathlib.Algebra.Order.AbsoluteValue.Basic
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Polynomial.Eval.Coeff
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Totient
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Sym.Sym2
+import Mathlib.LinearAlgebra.Charpoly.BaseChange
+import Mathlib.LinearAlgebra.Charpoly.ToMatrix
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.SetLike
 
 /-!
 # Eigenvalues are the roots of the characteristic polynomial.

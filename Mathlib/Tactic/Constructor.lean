@@ -5,9 +5,9 @@ Authors: Kim Morrison, Newell Jensen
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.Elab.SyntheticMVars
 public meta import Lean.Meta.Tactic.Constructor
+import Mathlib.Init
 
 /-!
 # The `fconstructor` and `econstructor` tactics

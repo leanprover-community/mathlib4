@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
+import Mathlib.Init
+import Mathlib.Util.CompileInductive
 
 /-!
 # Actions by nonnegative rational numbers

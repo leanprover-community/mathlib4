@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Algebra.Group.Submonoid.MulAction
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Distributive actions by submonoids

@@ -5,9 +5,30 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Dynamics.Newton
 public import Mathlib.LinearAlgebra.Semisimple
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+import Mathlib.Algebra.Order.AbsoluteValue.Basic
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Totient
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Rat.Floor
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.Dynamics.Newton
+import Mathlib.FieldTheory.Minpoly.Field
+import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+import Mathlib.RingTheory.Adjoin.Polynomial.Basic
+import Mathlib.RingTheory.Coprime.Lemmas
+import Mathlib.RingTheory.Nilpotent.Basic
+import Mathlib.RingTheory.Polynomial.UniqueFactorization
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
 
 /-!
 # Jordan-Chevalley-Dunford decomposition

@@ -11,6 +11,10 @@ public import Mathlib.Algebra.GroupWithZero.Action.Hom
 public import Mathlib.Algebra.Module.End
 public import Mathlib.Algebra.Ring.Opposite
 public import Mathlib.GroupTheory.GroupAction.DomAct.Basic
+import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Bundled Hom instances for module and multiplicative actions

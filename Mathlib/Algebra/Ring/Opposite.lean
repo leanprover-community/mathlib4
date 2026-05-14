@@ -8,7 +8,11 @@ module
 public import Mathlib.Algebra.Group.Equiv.Opposite
 public import Mathlib.Algebra.GroupWithZero.Opposite
 public import Mathlib.Algebra.Ring.Hom.Defs
-public import Mathlib.Data.Int.Cast.Basic
+import Mathlib.Algebra.Ring.Basic
+import Mathlib.Data.Int.Cast.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 # Ring structures on the multiplicative opposite

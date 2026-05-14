@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.Algebra.GroupWithZero.Pi
 public import Mathlib.Algebra.Ring.CompTypeclasses
 public import Mathlib.Algebra.Ring.Hom.Defs
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Pi instances for ring

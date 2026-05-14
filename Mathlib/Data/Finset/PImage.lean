@@ -8,6 +8,11 @@ module
 public import Mathlib.Data.Finset.Option
 public import Mathlib.Data.PFun
 public import Mathlib.Data.Part
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Image of a `Finset α` under a partially defined function

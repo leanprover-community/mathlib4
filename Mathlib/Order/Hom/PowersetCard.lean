@@ -9,6 +9,12 @@ public import Mathlib.Data.Set.PowersetCard
 public import Mathlib.Data.Finset.Sort
 public import Mathlib.Logic.Equiv.Fin.Basic
 public import Mathlib.Algebra.Group.End
+public import Mathlib.Data.Finset.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Finite sets of an ordered type

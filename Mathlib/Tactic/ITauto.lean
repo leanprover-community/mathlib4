@@ -9,8 +9,9 @@ public import Mathlib.Logic.Basic  -- shake: keep (Qq output dependency)
 public meta import Mathlib.Util.AtomM
 public meta import Qq
 public import Batteries.Tactic.Exact
-public import Batteries.Tactic.Init
 public import Mathlib.Util.AtomM
+import Batteries.Tactic.Init
+import Mathlib.Init
 
 /-!
 

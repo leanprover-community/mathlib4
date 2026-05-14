@@ -7,6 +7,14 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Ends.Defs
 public import Mathlib.CategoryTheory.CofilteredSystem
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Combinatorics.SimpleGraph.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Continuity.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Properties of the ends of graphs

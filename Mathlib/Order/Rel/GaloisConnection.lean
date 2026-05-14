@@ -6,6 +6,9 @@ Authors: Anthony Bordg
 module
 
 public import Mathlib.Data.Rel
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # The Galois Connection Induced by a Relation

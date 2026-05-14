@@ -8,6 +8,14 @@ module
 public import Mathlib.Geometry.RingedSpace.PresheafedSpace
 public import Mathlib.CategoryTheory.Limits.Final
 public import Mathlib.Topology.Sheaves.Stalks
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.CategoryTheory.Elementwise
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Sheaves.Init
 
 /-!
 # Stalks for presheafed spaces

@@ -8,6 +8,13 @@ module
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset  -- shake: keep (Qq dependency)
 public import Mathlib.Data.Finset.Density  -- shake: keep (Qq dependency)
 public import Mathlib.Tactic.NormNum.Basic
+public import Mathlib.Tactic.Positivity.Core
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Positivity extensions for finsets

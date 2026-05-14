@@ -5,10 +5,21 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Algebra.Group.Action.Units
-public import Mathlib.Algebra.Group.Invertible.Basic
 public import Mathlib.Algebra.Group.Pi.Basic
 public import Mathlib.Logic.Embedding.Basic
+public import Mathlib.Algebra.Group.Action.Faithful
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Algebra.Group.Invertible.Defs
+public import Mathlib.Algebra.Group.Units.Defs
+import Mathlib.Algebra.Group.Action.Units
+import Mathlib.Algebra.Group.Invertible.Basic
+import Mathlib.Algebra.Group.Units.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.Convert
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 # More lemmas about group actions

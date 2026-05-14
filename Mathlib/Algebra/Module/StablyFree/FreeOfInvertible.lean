@@ -6,12 +6,30 @@ Authors: Yongle Hu
 module
 
 public import Mathlib.Algebra.Module.StablyFree.Basic
-public import Mathlib.LinearAlgebra.Alternating.Uncurry.Fin
-public import Mathlib.LinearAlgebra.Determinant
-public import Mathlib.LinearAlgebra.ExteriorPower.Basis
-public import Mathlib.RingTheory.Finiteness.Prod
 public import Mathlib.RingTheory.PicardGroup
-public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
+import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Order.AbsoluteValue.Basic
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Totient
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Rat.Floor
+import Mathlib.LinearAlgebra.Alternating.Uncurry.Fin
+import Mathlib.LinearAlgebra.Determinant
+import Mathlib.LinearAlgebra.ExteriorPower.Basis
+import Mathlib.RingTheory.Finiteness.Prod
+import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
 
 /-!
 This file proves that a finite stably free module `M` is free if it is invertible.

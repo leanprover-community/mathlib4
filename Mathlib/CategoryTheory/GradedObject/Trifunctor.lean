@@ -7,6 +7,14 @@ module
 
 public import Mathlib.CategoryTheory.GradedObject.Bifunctor
 public import Mathlib.CategoryTheory.Functor.Trifunctor
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Set.Insert
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 /-!
 # The action of trifunctors on graded objects
 

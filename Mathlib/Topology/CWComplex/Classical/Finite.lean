@@ -6,6 +6,30 @@ Authors: Floris van Doorn, Hannah Scholz
 module
 
 public import Mathlib.Topology.CWComplex.Classical.Basic
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Group.Int
+import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Analysis.Normed.Ring.Lemmas
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.EReal.Operations
+import Mathlib.Data.Finite.Sigma
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Int.Basic
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Rat.Floor
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Order.Filter.AtTopBot.Basic
+import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Linarith.Frontend
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Ring.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Finiteness notions on CW complexes

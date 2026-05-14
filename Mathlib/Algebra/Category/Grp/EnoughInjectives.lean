@@ -5,10 +5,24 @@ Authors: Jujian Zhang, Junyan Xu
 -/
 module
 
-public import Mathlib.Algebra.Module.CharacterModule
-public import Mathlib.Algebra.Category.Grp.EquivalenceGroupAddGroup
-public import Mathlib.Algebra.Category.Grp.EpiMono
-public import Mathlib.Algebra.Category.Grp.Injective
+public import Mathlib.Algebra.Category.Grp.Basic
+public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
+import Mathlib.Algebra.Category.Grp.EpiMono
+import Mathlib.Algebra.Category.Grp.EquivalenceGroupAddGroup
+import Mathlib.Algebra.Category.Grp.Injective
+import Mathlib.Algebra.Module.CharacterModule
+import Mathlib.Algebra.Order.AbsoluteValue.Basic
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Rat.Floor
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 

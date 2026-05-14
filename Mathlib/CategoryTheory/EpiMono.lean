@@ -7,6 +7,12 @@ module
 
 public import Mathlib.CategoryTheory.Opposites
 public import Mathlib.CategoryTheory.Groupoid
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Translate.ToDual
+import Mathlib.Util.CompileInductive
 
 /-!
 # Facts about epimorphisms and monomorphisms.

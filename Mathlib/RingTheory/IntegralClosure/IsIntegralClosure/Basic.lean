@@ -6,15 +6,42 @@ Authors: Kenny Lau
 module
 
 public import Mathlib.Algebra.Polynomial.Roots
-public import Mathlib.Algebra.Ring.Int.Field
 public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Defs
-public import Mathlib.RingTheory.Polynomial.IntegralNormalization
-public import Mathlib.RingTheory.Polynomial.ScaleRoots
-public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 import Mathlib.RingTheory.Polynomial.Subring
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+public import Mathlib.RingTheory.AlgebraTower
+public import Mathlib.RingTheory.PolynomialAlgebra
+import Mathlib.Algebra.Algebra.Subalgebra.Tower
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Field.Equiv
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Monoid.NatCast
+import Mathlib.Algebra.Polynomial.Eval.Coeff
+import Mathlib.Algebra.Polynomial.Eval.Degree
+import Mathlib.Algebra.Polynomial.Inductions
+import Mathlib.Algebra.Polynomial.Monic
+import Mathlib.Algebra.Polynomial.Reverse
+import Mathlib.Algebra.Ring.Int.Field
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.LinearAlgebra.FiniteDimensional.Basic
+import Mathlib.RingTheory.Finiteness.Basic
+import Mathlib.RingTheory.Ideal.Quotient.Basic
+import Mathlib.RingTheory.Polynomial.IntegralNormalization
+import Mathlib.RingTheory.TensorProduct.MvPolynomial
+import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
 
 /-!
 # # Integral closure as a characteristic predicate

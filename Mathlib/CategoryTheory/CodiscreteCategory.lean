@@ -7,9 +7,12 @@ module
 
 public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.CategoryTheory.Pi.Basic
-public import Mathlib.Data.ULift
 public import Mathlib.CategoryTheory.Category.Cat
 public import Mathlib.CategoryTheory.Adjunction.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Codiscrete categories

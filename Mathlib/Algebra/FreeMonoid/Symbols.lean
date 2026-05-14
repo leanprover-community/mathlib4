@@ -6,7 +6,14 @@ Authors: Hannah Fechtner
 module
 
 public import Mathlib.Algebra.FreeMonoid.Basic
-public import Mathlib.Data.Finset.Lattice.Lemmas
+public import Mathlib.Data.Finset.Insert
+public import Mathlib.Data.Finset.Lattice.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.Lattice.Lemmas
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # The finite set of symbols in a FreeMonoid element

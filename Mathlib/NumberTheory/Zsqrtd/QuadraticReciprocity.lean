@@ -6,7 +6,24 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.NumberTheory.Zsqrtd.GaussianInt
-public import Mathlib.NumberTheory.LegendreSymbol.Basic
+import Mathlib.Algebra.EuclideanDomain.Basic
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Prime.Basic
+import Mathlib.Data.Nat.Totient
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.NumberTheory.LegendreSymbol.Basic
+import Mathlib.RingTheory.PrincipalIdealDomain
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
 
 /-!
 # Facts about the Gaussian integers relying on quadratic reciprocity.

@@ -8,6 +8,12 @@ module
 public import Mathlib.Data.Matrix.Basic
 public import Mathlib.Data.Matrix.Diagonal
 public import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Matrix subalgebras

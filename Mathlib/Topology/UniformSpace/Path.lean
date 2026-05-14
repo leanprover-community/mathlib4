@@ -7,9 +7,24 @@ module
 
 public import Mathlib.Topology.Path
 public import Mathlib.Topology.UniformSpace.CompactConvergence
-public import Mathlib.Topology.UniformSpace.HeineCantor
-public import Mathlib.Topology.MetricSpace.Lipschitz
-public import Mathlib.Topology.ContinuousMap.Interval
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.EReal.Operations
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Rat.Floor
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Compactness.LocallyCompact
+import Mathlib.Topology.ContinuousMap.Interval
+import Mathlib.Topology.MetricSpace.Lipschitz
+import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
+import Mathlib.Topology.UniformSpace.HeineCantor
+import Mathlib.Topology.UniformSpace.UniformEmbedding
 
 /-!
 # Paths in uniform spaces

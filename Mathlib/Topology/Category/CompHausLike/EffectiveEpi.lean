@@ -5,8 +5,14 @@ Authors: Adam Topaz, Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Coherent.Comparison
 public import Mathlib.Topology.Category.CompHausLike.Limits
+public import Mathlib.CategoryTheory.Sites.Coherent.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Sites.Coherent.Comparison
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 /-!
 
 # Effective epimorphisms in `CompHausLike`

@@ -6,8 +6,23 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.Jacobson.Ring
-public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
 public import Mathlib.Topology.JacobsonSpace
+public import Mathlib.RingTheory.Spectrum.Prime.Topology
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.RingTheory.Spectrum.Prime.Noetherian
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.TFAE
 
 /-!
 # The prime spectrum of a Jacobson ring

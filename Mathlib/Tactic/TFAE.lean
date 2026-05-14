@@ -9,8 +9,11 @@ public meta import Qq
 public meta import Mathlib.Util.AtomM
 public import Mathlib.Data.List.TFAE  -- shake: keep (dependency of Qq output)
 public import Mathlib.Data.Nat.Notation
-public import Mathlib.Tactic.ExtendDoc
 public import Mathlib.Util.AtomM
+public import Batteries.Tactic.Lint
+import Mathlib.Init
+import Mathlib.Tactic.ExtendDoc
+import Qq.Typ
 
 /-!
 # The Following Are Equivalent (TFAE)

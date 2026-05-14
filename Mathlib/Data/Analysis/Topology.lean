@@ -8,6 +8,11 @@ module
 public import Mathlib.Data.Analysis.Filter
 public import Mathlib.Topology.Bases
 public import Mathlib.Topology.LocallyFinite
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Neighborhoods
 
 /-!
 # Computational realization of topological spaces (experimental)

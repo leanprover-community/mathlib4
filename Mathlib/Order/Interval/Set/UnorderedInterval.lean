@@ -5,12 +5,21 @@ Authors: Zhouhang Zhou
 -/
 module
 
-public import Mathlib.Data.Set.Order
-public import Mathlib.Order.Bounds.Basic
-public import Mathlib.Order.Interval.Set.Image
-public import Mathlib.Order.Interval.Set.LinearOrder
-public import Mathlib.Tactic.Common
-public import Mathlib.Order.MinMax
+public import Aesop
+public import Mathlib.Order.Bounds.Defs
+public import Mathlib.Order.Interval.Set.Defs
+public import Mathlib.Order.Lattice
+import Batteries.Tactic.Init
+import Mathlib.Data.Set.Function
+import Mathlib.Data.Set.Order
+import Mathlib.Order.Bounds.Basic
+import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Order.Interval.Set.Image
+import Mathlib.Order.Interval.Set.LinearOrder
+import Mathlib.Order.MinMax
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Intervals without endpoints ordering

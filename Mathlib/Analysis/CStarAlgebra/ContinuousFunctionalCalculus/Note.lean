@@ -5,8 +5,8 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Init
 public import Batteries.Util.LibraryNote
+import Mathlib.Init
 
 /-!
 # Documentation concerning the continuous functional calculus

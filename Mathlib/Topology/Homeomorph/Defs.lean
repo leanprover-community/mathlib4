@@ -6,7 +6,15 @@ Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Re
 module
 
 public import Mathlib.Topology.ContinuousMap.Defs
-public import Mathlib.Topology.Maps.Basic
+public meta import Mathlib.Tactic.ToDual
+public import Mathlib.Topology.Order
+import Batteries.Tactic.Trans
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Continuous
+import Mathlib.Topology.Maps.Basic
 
 /-!
 # Homeomorphisms

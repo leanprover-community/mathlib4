@@ -5,11 +5,11 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public import Mathlib.Init
 public meta import Qq
 public import Qq
-public import Qq.MatchImpl
 public import Qq.Typ
+import Mathlib.Init
+import Qq.MatchImpl
 
 /-!
 # Simproc for `∃ a', ... ∧ a' = a ∧ ...`

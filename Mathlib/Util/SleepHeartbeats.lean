@@ -5,8 +5,8 @@ Authors: Alex J. Best
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.Elab.Tactic.Basic
+import Mathlib.Init
 
 /-!
 # Defines `sleep_heartbeats` tactic.

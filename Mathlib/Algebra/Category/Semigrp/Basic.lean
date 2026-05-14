@@ -9,6 +9,11 @@ public import Mathlib.Algebra.PEmptyInstances
 public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 # Category instances for `Mul`, `Add`, `Semigroup` and `AddSemigroup`

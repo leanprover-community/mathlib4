@@ -6,6 +6,8 @@ Authors: Julian Kuelshammer
 module
 
 public import Mathlib.Algebra.Group.Defs
+import Mathlib.Init
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Instances on pempty

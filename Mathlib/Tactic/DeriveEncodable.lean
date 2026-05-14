@@ -11,6 +11,9 @@ public meta import Lean.Elab.Deriving.Util  -- shake: keep (???)
 import Mathlib.Logic.Encodable.Basic
 import Mathlib.Data.Nat.Pairing
 import Aesop.BuiltinRules
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # `Encodable` deriving handler

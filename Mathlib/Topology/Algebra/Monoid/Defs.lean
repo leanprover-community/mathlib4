@@ -7,6 +7,13 @@ module
 
 public import Mathlib.Topology.Constructions.SumProd
 public import Mathlib.Algebra.Group.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Order.Filter.Tendsto
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Topology.Continuous
 
 /-!
 # Topological monoids - definitions

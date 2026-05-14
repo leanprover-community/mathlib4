@@ -5,10 +5,13 @@ Authors: Damiano Testa
 -/
 module
 
-public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Group.Units.Defs
 public import Mathlib.Algebra.Regular.Defs
+public import Aesop
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Regular elements

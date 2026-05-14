@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.Group.Action.Units
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.Algebra.GroupWithZero.Units.Basic
+import Mathlib.Init
+import Mathlib.Util.CompileInductive
 
 /-!
 # Multiplicative actions with zero on and by `Mˣ`

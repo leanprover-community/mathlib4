@@ -5,7 +5,14 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Localization.Opposite
+public import Mathlib.CategoryTheory.Localization.Predicate
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Localization.Opposite
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Calculus of fractions

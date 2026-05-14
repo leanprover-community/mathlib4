@@ -8,7 +8,15 @@ module
 public import Mathlib.GroupTheory.GroupExtension.Defs
 public import Mathlib.GroupTheory.SemidirectProduct
 public import Mathlib.GroupTheory.QuotientGroup.Basic
-public import Mathlib.Tactic.Group
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Group
+import Mathlib.Tactic.NormNum.Inv
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Basic lemmas about group extensions

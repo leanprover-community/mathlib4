@@ -5,10 +5,33 @@ Authors: Mitchell Lee
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Finite
-public import Mathlib.Topology.Algebra.InfiniteSum.GroupCompletion
-public import Mathlib.Topology.Algebra.InfiniteSum.Ring
-public import Mathlib.Topology.Algebra.Nonarchimedean.Completion
+public import Mathlib.Topology.Algebra.InfiniteSum.Defs
+public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+public import Mathlib.Topology.Algebra.Nonarchimedean.Basic
+public import Mathlib.Topology.UniformSpace.Cauchy
+import Mathlib.Algebra.Group.Subgroup.Finite
+import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Lattice
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Rat.Floor
+import Mathlib.Order.Filter.AtTopBot.Basic
+import Mathlib.Order.Filter.AtTopBot.Prod
+import Mathlib.Order.Filter.Tendsto
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Topology.Algebra.Group.Pointwise
+import Mathlib.Topology.Algebra.InfiniteSum.Group
+import Mathlib.Topology.Algebra.InfiniteSum.GroupCompletion
+import Mathlib.Topology.Algebra.InfiniteSum.Ring
+import Mathlib.Topology.Algebra.Nonarchimedean.Completion
 
 /-!
 # Infinite sums and products in nonarchimedean abelian groups

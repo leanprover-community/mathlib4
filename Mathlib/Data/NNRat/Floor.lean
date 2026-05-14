@@ -5,10 +5,23 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Order.Floor.Semiring
-public import Mathlib.Data.NNRat.Order
 public import Mathlib.Data.Rat.Floor
 public meta import Mathlib.Data.Rat.Floor
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Field.Rat
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Floor.Semiring
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Algebra.Order.Nonneg.Field
+import Mathlib.Data.NNRat.Order
+import Mathlib.Data.Nat.Cast.Order.Ring
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Floor Function for Non-negative Rational Numbers

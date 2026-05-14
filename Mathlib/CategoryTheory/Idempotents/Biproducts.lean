@@ -6,6 +6,14 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Idempotents.Karoubi
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Preadditive.Biproducts
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 

@@ -15,6 +15,10 @@ public import Mathlib.Algebra.Module.LinearMap.Basic
 public import Mathlib.Algebra.Module.LinearMap.End
 public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Algebra.Module.Prod
+public import Mathlib.Tactic.Convert
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Further results on (semi)linear equivalences.

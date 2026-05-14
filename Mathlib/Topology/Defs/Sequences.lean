@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Order.Filter.AtTopBot.Defs
 public import Mathlib.Topology.Defs.Filter
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.MkIffOfInductiveProp
+import Mathlib.Util.CompileInductive
 
 /-!
 # Sequences in topological spaces

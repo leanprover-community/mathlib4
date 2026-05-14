@@ -5,10 +5,30 @@ Authors: Johannes Hölzl, Jeremy Avigad
 -/
 module
 
-public import Mathlib.Algebra.Group.Pi.Basic
-public import Mathlib.Data.Set.Lattice
 public import Mathlib.Order.Filter.Defs
-public import Mathlib.Tactic.ToFun
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Algebra.Notation.Pi.Defs
+public import Mathlib.Data.Set.BooleanAlgebra
+public import Mathlib.Data.Set.Subsingleton
+public import Mathlib.Order.Interval.Set.Defs
+import Batteries.Tactic.Init
+import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.Lattice
+import Mathlib.Init
+import Mathlib.Logic.IsEmpty.Basic
+import Mathlib.Order.BoundedOrder.Lattice
+import Mathlib.Order.Bounds.Basic
+import Mathlib.Tactic.Choose
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.ToFun
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Tactic.Use
+import Mathlib.Util.CompileInductive
 
 /-!
 # Theory of filters on sets

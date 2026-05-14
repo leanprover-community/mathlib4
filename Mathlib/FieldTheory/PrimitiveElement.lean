@@ -5,11 +5,49 @@ Authors: Thomas Browning, Patrick Lutz
 -/
 module
 
-public import Mathlib.Data.Fintype.Pigeonhole
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
-public import Mathlib.FieldTheory.SplittingField.Construction
-public import Mathlib.RingTheory.IntegralDomain
-public import Mathlib.RingTheory.Polynomial.UniqueFactorization
+public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
+import Batteries.Tactic.Trans
+import Mathlib.Algebra.EuclideanDomain.Basic
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+import Mathlib.Algebra.Order.AbsoluteValue.Basic
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Group.Int
+import Mathlib.Algebra.Polynomial.Eval.Coeff
+import Mathlib.Algebra.Polynomial.Eval.Degree
+import Mathlib.Algebra.Polynomial.Monic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Fintype.Pigeonhole
+import Mathlib.Data.Fintype.Units
+import Mathlib.Data.Int.Basic
+import Mathlib.Data.Nat.Totient
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.FieldTheory.Extension
+import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
+import Mathlib.FieldTheory.IntermediateField.Algebraic
+import Mathlib.FieldTheory.SplittingField.Construction
+import Mathlib.GroupTheory.SpecificGroups.Cyclic.Basic
+import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+import Mathlib.RingTheory.Adjoin.Field
+import Mathlib.RingTheory.Finiteness.Cardinality
+import Mathlib.RingTheory.IntegralDomain
+import Mathlib.RingTheory.Polynomial.UniqueFactorization
+import Mathlib.Tactic.Abel
+import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Linarith.Frontend
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.SetLike
 
 /-!
 # Primitive Element Theorem

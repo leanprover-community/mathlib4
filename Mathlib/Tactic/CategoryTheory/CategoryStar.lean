@@ -5,7 +5,8 @@ Authors: Adam Topaz, Thomas R. Murrills
 -/
 module
 
-public import Mathlib.Init
+public import Mathlib.Tactic.TypeStar
+import Mathlib.Init
 
 /-!
 # Support for `Category* C`.

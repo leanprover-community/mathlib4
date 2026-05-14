@@ -6,6 +6,11 @@ Authors: Robin Carlier
 module
 
 public import Mathlib.CategoryTheory.Iso
+public import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # Extension of `reassoc` to isomorphisms.

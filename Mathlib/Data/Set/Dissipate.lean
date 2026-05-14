@@ -6,7 +6,16 @@ Authors: Peter Pfaffelhuber
 
 module
 
-public import Mathlib.Data.Nat.Lattice
+public import Mathlib.Data.Set.BooleanAlgebra
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Lattice
+import Mathlib.Data.Set.Lattice
+import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Dissipate

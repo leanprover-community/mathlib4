@@ -6,6 +6,10 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Data.Finsupp.Single
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Building finitely supported functions off finsets

@@ -7,6 +7,11 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne 
 module
 
 public import Mathlib.Algebra.Module.LinearMap.Defs
+import Batteries.Tactic.Trans
+import Mathlib.Logic.Equiv.Set
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # (Semi)linear equivalences

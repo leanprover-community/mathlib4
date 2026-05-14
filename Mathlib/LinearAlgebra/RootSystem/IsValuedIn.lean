@@ -5,14 +5,36 @@ Authors: Scott Carnahan, Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.Algebra.Module.Submodule.Invariant
-public import Mathlib.LinearAlgebra.PerfectPairing.Restrict
 public import Mathlib.LinearAlgebra.RootSystem.Defs
 
-import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.LinearAlgebra.Span.TensorProduct
 import Mathlib.RingTheory.Flat.TorsionFree
+public import Mathlib.Algebra.Ring.Rat
+import Mathlib.Algebra.Algebra.Rat
+import Mathlib.Algebra.EuclideanDomain.Int
+import Mathlib.Algebra.Module.Rat
+import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+import Mathlib.Algebra.Order.AbsoluteValue.Basic
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Combinatorics.Matroid.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Rat.Floor
+import Mathlib.Data.Sym.Sym2
+import Mathlib.LinearAlgebra.PerfectPairing.Restrict
+import Mathlib.Logic.Equiv.PartialEquiv
+import Mathlib.RingTheory.Finiteness.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Continuity
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.SetLike
 
 /-!
 # Root pairings taking values in a subring

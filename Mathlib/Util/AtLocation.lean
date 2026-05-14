@@ -5,10 +5,10 @@ Authors: Mario Carneiro, Heather Macbeth
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.Elab.Tactic.Location
 public meta import Lean.Meta.Tactic.Simp.Main
-public import Lean.Elab.Tactic.Location
+import Lean.Elab.Tactic.Location
+import Mathlib.Init
 
 /-!
 # Rewriting at specified locations

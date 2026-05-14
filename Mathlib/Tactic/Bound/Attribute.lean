@@ -5,9 +5,12 @@ Authors: Geoffrey Irving
 -/
 module
 
-public import Aesop
-public import Mathlib.Tactic.Bound.Init
 public import Qq
+public meta import Aesop.Frontend.Extension
+public meta import Aesop.Frontend.RuleExpr
+import Aesop.Frontend.Attribute
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
 
 /-!
 # The `bound` attribute

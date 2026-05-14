@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Algebra.Group.Conj
 public import Mathlib.Data.Fintype.Units
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Conjugacy of elements of finite groups

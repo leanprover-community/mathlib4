@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Notation.Support
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 # Support of a function

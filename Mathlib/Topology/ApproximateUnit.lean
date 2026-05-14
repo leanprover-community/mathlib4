@@ -6,6 +6,14 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Topology.Algebra.Monoid
+import Mathlib.Data.Finset.Attr
+import Mathlib.Order.Filter.Map
+import Mathlib.Order.Filter.Tendsto
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Neighborhoods
 
 /-! # Approximate units
 

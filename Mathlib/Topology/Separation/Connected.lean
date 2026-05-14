@@ -7,6 +7,12 @@ module
 
 public import Mathlib.Topology.Separation.Basic
 public import Mathlib.Topology.Connected.TotallyDisconnected
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Clopen
+import Mathlib.Topology.Neighborhoods
 
 /-!
 # Interaction of separation properties with connectedness properties

@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Data.PFunctor.Multivariate.Basic
 public import Mathlib.Data.QPF.Multivariate.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Dependent product and sum of QPFs are QPFs

@@ -7,6 +7,13 @@ module
 
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 public import Mathlib.Algebra.Order.Sub.Defs
+public import Mathlib.Algebra.Group.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Contrapose
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 # Ordered groups

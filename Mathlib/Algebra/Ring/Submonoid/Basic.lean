@@ -8,6 +8,10 @@ module
 
 public import Mathlib.Algebra.Group.Submonoid.Basic
 public import Mathlib.Algebra.Ring.Defs
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-! # Lemmas about additive closures of `Subsemigroup`. -/
 

@@ -6,6 +6,9 @@ Authors: Brendan Murphy
 module
 
 public import Mathlib.Data.Fin.VecNotation
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-! # Function types of a given heterogeneous arity
 

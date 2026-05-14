@@ -6,8 +6,17 @@ Authors: Kim Morrison, Mario Carneiro
 module
 
 public meta import Mathlib.Control.Basic
-public import Mathlib.Data.Finset.Attr
 public import Mathlib.Tactic.NormNum
+public import Mathlib.Tactic.Core
+public meta import Mathlib.Tactic.Simps.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Case bash on variables in finite intervals

@@ -6,10 +6,48 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.Etale.StandardEtale
-public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
-public import Mathlib.RingTheory.RingHom.StandardSmooth
-public import Mathlib.RingTheory.Unramified.LocalRing
-public import Mathlib.RingTheory.ZariskisMainTheorem
+public import Mathlib.RingTheory.Etale.Locus
+public import Mathlib.RingTheory.LocalRing.ResidueField.Polynomial
+public import Mathlib.RingTheory.QuasiFinite.Basic
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Polynomial.Monomial
+import Mathlib.Algebra.Ring.Divisibility.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Combinatorics.Matroid.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Rat.Floor
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.FieldTheory.PrimitiveElement
+import Mathlib.LinearAlgebra.Dual.Lemmas
+import Mathlib.LinearAlgebra.FreeModule.PID
+import Mathlib.Logic.Equiv.PartialEquiv
+import Mathlib.RingTheory.Artinian.Module
+import Mathlib.RingTheory.FiniteLength
+import Mathlib.RingTheory.Finiteness.Basic
+import Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra
+import Mathlib.RingTheory.LocalRing.ResidueField.Instances
+import Mathlib.RingTheory.Localization.Away.AdjoinRoot
+import Mathlib.RingTheory.RingHom.StandardSmooth
+import Mathlib.RingTheory.Smooth.StandardSmoothOfFree
+import Mathlib.RingTheory.Spectrum.Prime.Noetherian
+import Mathlib.RingTheory.Unramified.Field
+import Mathlib.RingTheory.Unramified.Finite
+import Mathlib.RingTheory.Unramified.LocalRing
+import Mathlib.RingTheory.ZariskisMainTheorem
+import Mathlib.Tactic.Algebraize
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
 
 /-!
 

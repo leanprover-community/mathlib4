@@ -6,6 +6,9 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 module
 
 public import Mathlib.Data.Nat.Bits
+import Batteries.Logic
+import Mathlib.Init
+import Mathlib.Util.CompileInductive
 
 /-! Lemmas about `size`. -/
 

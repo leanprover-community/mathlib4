@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Algebra.Group.Center
 public import Mathlib.Algebra.Group.Subsemigroup.Defs
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 # Centers of semigroups, as subsemigroups.

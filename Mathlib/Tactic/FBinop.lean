@@ -5,9 +5,10 @@ Authors: Kyle Miller
 -/
 module
 
-public meta import Lean.Elab.App
-public meta import Lean.Elab.BuiltinNotation
 public import Mathlib.Tactic.ToExpr
+public meta import Lean.Elab.Term
+meta import Lean.Elab.App
+import Mathlib.Init
 
 /-! # Elaborator for functorial binary operators
 

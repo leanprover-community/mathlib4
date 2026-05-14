@@ -7,9 +7,16 @@ module
 
 public import Mathlib.Algebra.Algebra.Basic
 public import Mathlib.Algebra.Algebra.Defs
-public import Mathlib.Tactic.Algebra.Lemmas
 public import Mathlib.Tactic.Ring.RingNF
 public meta import Mathlib.Tactic.Ring.RingNF
+public meta import Mathlib.Lean.Meta
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Defs
+import Mathlib.Tactic.Algebra.Lemmas
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 
 /-!

@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Algebra.Notation.Prod
 public import Mathlib.Algebra.Regular.SMul
+import Mathlib.Data.Prod.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 # Results about `IsRegular` and `Prod`

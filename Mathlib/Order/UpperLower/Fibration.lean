@@ -6,6 +6,10 @@ Authors: Yaël Dillies, Sara Rousta
 module
 
 public import Mathlib.Order.UpperLower.Basic
+import Mathlib.Order.BooleanAlgebra.Set
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Upper/lower sets and fibrations

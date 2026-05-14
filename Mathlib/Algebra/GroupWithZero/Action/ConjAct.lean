@@ -5,8 +5,13 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Basic
 public import Mathlib.GroupTheory.GroupAction.ConjAct
+public import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Algebra.GroupWithZero.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Conjugation action of a group with zero on itself

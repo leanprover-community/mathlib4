@@ -6,8 +6,9 @@ Authors: Jovan Gerbscheid
 module
 
 public import Mathlib.Util.AddRelatedDecl
-public import Mathlib.Tactic.Push
 public import Mathlib.Tactic.Translate.Attributes
+import Mathlib.Init
+import Mathlib.Tactic.Push
 
 /-!
 # The `to_fun` attribute

@@ -8,6 +8,13 @@ module
 public meta import Mathlib.Data.Nat.Fib.Basic
 public import Mathlib.Data.Nat.Fib.Basic
 public import Mathlib.Tactic.NormNum
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-! # `norm_num` extension for `Nat.fib`
 

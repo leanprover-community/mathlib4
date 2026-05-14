@@ -9,6 +9,10 @@ public import Mathlib.Data.Int.Cast.Prod
 public import Mathlib.Algebra.GroupWithZero.Prod
 public import Mathlib.Algebra.Ring.CompTypeclasses
 public import Mathlib.Algebra.Ring.Equiv
+import Mathlib.Algebra.Ring.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Semiring, ring etc. structures on `R × S`

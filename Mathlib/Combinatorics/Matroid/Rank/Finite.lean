@@ -6,6 +6,13 @@ Authors: Peter Nelson
 module
 
 public import Mathlib.Combinatorics.Matroid.Closure
+import Mathlib.Combinatorics.Matroid.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Finite.Lattice
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Finite-rank sets

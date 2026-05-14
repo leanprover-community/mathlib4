@@ -5,10 +5,12 @@ Authors: Leonardo de Moura
 -/
 module
 
-public import Mathlib.Init
 public import Batteries.Util.ExtendedBinder
 
 public import Mathlib.Tactic.ToDual
+public meta import Lean.Elab.Term
+import Mathlib.Init
+import Mathlib.Tactic.Translate.ToDual
 
 /-!
 # Sets

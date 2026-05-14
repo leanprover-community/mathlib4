@@ -8,6 +8,7 @@ module -- shake: keep-all
 public meta import ImportGraph.Imports.ImportGraph
 public meta import ImportGraph.Graph.TransitiveClosure
 public import Mathlib.Tactic.MinImports
+import Lean.Parser.Command
 
 /-! # The `minImports` linter
 

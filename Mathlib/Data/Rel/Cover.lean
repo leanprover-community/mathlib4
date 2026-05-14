@@ -6,6 +6,12 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Data.Rel.Separated
+import Batteries.Tactic.Init
+import Mathlib.Data.Set.Insert
+import Mathlib.Init
+import Mathlib.Tactic.ByContra
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Covers in a uniform space

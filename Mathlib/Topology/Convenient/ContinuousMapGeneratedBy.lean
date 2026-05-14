@@ -6,6 +6,12 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Topology.Convenient.GeneratedBy
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Continuous
+import Mathlib.Topology.ContinuousMap.Basic
 
 /-!
 # `X`-continuous maps

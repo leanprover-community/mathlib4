@@ -8,7 +8,14 @@ module
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
 public import Mathlib.CategoryTheory.IsConnected
 public import Mathlib.CategoryTheory.Limits.Final
-public import Mathlib.CategoryTheory.HomCongr
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.HomCongr
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.List.Chain
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Colimits of connected index categories

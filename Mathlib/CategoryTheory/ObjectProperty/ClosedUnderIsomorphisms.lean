@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Iso
 public import Mathlib.CategoryTheory.ObjectProperty.Basic
 public import Mathlib.Order.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-! # Properties of objects which are closed under isomorphisms
 

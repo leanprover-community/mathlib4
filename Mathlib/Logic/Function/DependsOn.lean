@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Set.Restrict
 public import Mathlib.Util.Delaborators
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Functions depending only on some variables

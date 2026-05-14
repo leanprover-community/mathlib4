@@ -7,7 +7,9 @@ Mario Carneiro
 module
 
 public import Mathlib.Data.List.Defs
-public import Mathlib.Logic.Basic
+import Mathlib.Init
+import Mathlib.Logic.Basic
+import Mathlib.Util.CompileInductive
 
 /-! # getD and getI
 

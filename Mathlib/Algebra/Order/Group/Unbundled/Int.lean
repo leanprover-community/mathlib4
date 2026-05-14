@@ -7,7 +7,14 @@ module
 
 public import Mathlib.Algebra.Order.Group.Unbundled.Abs
 public import Mathlib.Algebra.Group.Int.Defs
-public import Mathlib.Data.Int.Basic
+import Batteries.Tactic.Init
+import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+import Mathlib.Data.Int.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 # Facts about `ℤ` as an (unbundled) ordered group

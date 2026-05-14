@@ -5,8 +5,9 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Data.List.Pairwise
 public import Mathlib.Data.Multiset.Defs
+import Mathlib.Data.List.Pairwise
+import Mathlib.Tactic.Common
 
 /-!
 # Pairwise relations on a multiset

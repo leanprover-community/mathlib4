@@ -5,11 +5,16 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Nat
-public import Mathlib.Algebra.Order.Monoid.NatCast
-public import Mathlib.Data.List.Chain
 public import Mathlib.Algebra.Group.Nat.Even
-public import Mathlib.Algebra.Ring.Nat
+public import Batteries.Data.List.Basic
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Monoid.NatCast
+import Mathlib.Algebra.Ring.Nat
+import Mathlib.Data.List.Chain
+import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # List of Booleans

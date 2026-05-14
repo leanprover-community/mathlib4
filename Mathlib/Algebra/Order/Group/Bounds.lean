@@ -5,9 +5,14 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.Bounds.Basic
 public import Mathlib.Algebra.Order.Monoid.Defs
-public import Mathlib.Algebra.Order.Group.Unbundled.Basic
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Order.Bounds.Defs
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Init
+import Mathlib.Order.Bounds.Basic
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Least upper bound and the greatest lower bound in linear ordered additive commutative groups

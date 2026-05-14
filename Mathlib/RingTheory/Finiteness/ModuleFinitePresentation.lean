@@ -6,7 +6,27 @@ Authors: Christian Merten
 module
 
 public import Mathlib.Algebra.Module.FinitePresentation
-public import Mathlib.RingTheory.AdjoinRoot
+public import Mathlib.RingTheory.FinitePresentation
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Polynomial.Monic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.LinearAlgebra.Finsupp.VectorSpace
+import Mathlib.RingTheory.AdjoinRoot
+import Mathlib.RingTheory.Finiteness.Basic
+import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
+import Mathlib.RingTheory.Polynomial.Tower
+import Mathlib.Tactic.Algebraize
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
 
 /-!
 # Finitely presented algebras and finitely presented modules
