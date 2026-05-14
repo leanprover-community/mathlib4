@@ -119,7 +119,7 @@ omit [IsManifold I 2 M] in
 lemma rhs_aux_swap : rhs_aux I X Y Z = rhs_aux I X Z Y := by
   ext x
   unfold rhs_aux
-  congr 2 <;> rw [product_swap Z Y]
+  rw [product_swap Z Y]
 
 omit [IsManifold I 2 M] in
 variable (X X' Y Z) in
@@ -782,7 +782,7 @@ omit [IsManifold I 2 M] in
 lemma leviCivitaConnection_isCompatible_aux
     {x : M} {X Y Z : (x : M) → TangentSpace I x} :
     leviCivitaRhs I X Y Z x + leviCivitaRhs I X Z Y x =
-    fromTangentSpace _ ((mfderiv% fun x ↦ inner ℝ (Y x) (Z x)) x (X x)) := by
+    extDerivFun% (fun x ↦ inner ℝ (Y x) (Z x)) x (X x) := by
   simp only [leviCivitaRhs, Pi.smul_apply, ← smul_add,  leviCivitaRhs']
   -- Normalise the expressions by swapping arguments for rhs_aux and mlieBracket,
   -- until the swappable arguments are in order X < Y < Z.
@@ -814,6 +814,8 @@ lemma leviCivitaConnection_isCompatible [FiniteDimensional ℝ E] :
   have : inner ℝ (((LeviCivitaConnection I M) Z x) (X x)) (Y x) = leviCivitaRhs I X Z Y x := by
     rw [leviCivitaConnection_apply I hX hZ hY]
   rw [leviCivitaConnection_apply I hX hZ hY, leviCivitaConnection_isCompatible_aux]
+  sorry
+
 
 lemma leviCivitaConnection_torsion_eq_zero [FiniteDimensional ℝ E] :
     (LeviCivitaConnection I M).torsion = 0 := by

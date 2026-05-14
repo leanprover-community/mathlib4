@@ -21,16 +21,6 @@ TODO: add a more complete doc-string
 open Bundle Filter Module Topology Set
 open scoped Bundle Manifold ContDiff
 
-lemma Bundle.Trivialization.continuousLinearMapAt_apply_of_mem (R : Type*) {B : Type*} {F : Type*}
-    {E : B → Type*} [NontriviallyNormedField R] [(x : B) → AddCommMonoid (E x)]
-    [(x : B) → Module R (E x)]
-    [NormedAddCommGroup F] [NormedSpace R F]
-    [TopologicalSpace B] [TopologicalSpace (TotalSpace F E)]
-    [(x : B) → TopologicalSpace (E x)] [FiberBundle F E] (e : Trivialization F TotalSpace.proj)
-    [Trivialization.IsLinear R e] {b : B} (hb : b ∈ e.baseSet) (y : E b) :
-    (continuousLinearMapAt R e b) y = (e ⟨b, y⟩).2 := by
-  simp [coe_linearMapAt_of_mem e hb]
-
 attribute [simp] Bundle.Trivialization.coe_linearMapAt_of_mem
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
