@@ -120,7 +120,7 @@ theorem Algebra.isAlgebraic_of_not_injective (h : ¬ Function.Injective (algebra
 theorem Algebra.injective_of_transcendental [h : Algebra.Transcendental R A] :
     Function.Injective (algebraMap R A) := by
   rw [transcendental_iff_not_isAlgebraic] at h
-  contrapose! h
+  contrapose h
   exact isAlgebraic_of_not_injective h
 
 end

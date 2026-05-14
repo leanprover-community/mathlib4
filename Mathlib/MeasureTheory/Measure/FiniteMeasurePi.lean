@@ -121,7 +121,7 @@ theorem continuous_pi [∀ i, TopologicalSpace (α i)] [∀ i, SecondCountableTo
       _ ⊆ u := by rwa [← ball_pi _ εpos]
   · rintro - ⟨s, rfl, smeas, hs⟩
     simp only [pi_pi]
-    apply tendsto_finset_prod _ (fun i hi ↦ ?_)
+    apply tendsto_finsetProd _ (fun i hi ↦ ?_)
     exact tendsto_measure_of_null_frontier_of_tendsto (Tendsto.apply_nhds (fun ⦃U⦄ a ↦ a) i) (hs i)
 
 end ProbabilityMeasure

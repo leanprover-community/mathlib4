@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Ring.Subsemiring.Basic
 /-!
 # Star subrings
 
-A *-subring is a subring of a *-ring which is closed under *.
+A \*-subring is a subring of a \*-ring which is closed under `*`.
 -/
 
 @[expose] public section
