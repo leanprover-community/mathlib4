@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Normed.Module.HahnBanach
 public import Mathlib.Analysis.Normed.Operator.Banach
 public import Mathlib.Analysis.Normed.Operator.Perturbation.StrictByFinite
 public import Mathlib.RingTheory.Finiteness.Cofinite
+public import Mathlib.Topology.Maps.Strict.Basic
 
 section FindHome
 
@@ -610,7 +611,7 @@ Prop : In this setting, `IsFredholmStruct` ↔ finite dimensional kernel and cok
 
 lemma Submodule.Quotient.mk_image_IsCompl {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
     {p q : Submodule R M} (hc : IsCompl q p) :
-    (Submodule.mkQ (p := p)) '' q = univ := by
+    (Submodule.mkQ (p := p)) '' q = Set.univ := by
   rw [← Submodule.map_coe]
   exact congr_arg (fun s => s.carrier) ((Submodule.map_mkQ_eq_top p q).2 hc.symm.sup_eq_top)
 
@@ -618,18 +619,18 @@ theorem ContinuousLinearMap.isStrictMap_isClosed_range_of_coFG_range
     {𝕜 E F : Type*} [NormedField 𝕜] [IsRCLikeNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     [CompleteSpace E] [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
     (u : E →L[𝕜] F) (hu : u.range.CoFG) :
-    IsStrictMap u ∧ IsClosed (u.range : Set F) := by
+    Topology.IsStrictMap u ∧ IsClosed (u.range : Set F) := by
   let := IsRCLikeNormedField.rclike 𝕜
   obtain ⟨G, hG⟩ := u.range.exists_isCompl
   have hf : FiniteDimensional 𝕜 G := G.fg_iff_finiteDimensional.1 (hu.fg_of_isCompl hG)
-  have hr : range (G.mkQL ∘L u) = univ := by
-    simpa [range_comp] using Submodule.Quotient.mk_image_IsCompl hG
+  have hr : Set.range (G.mkQL ∘L u) = Set.univ := by
+    simpa [Set.range_comp] using Submodule.Quotient.mk_image_IsCompl hG
   have ho : IsOpenMap (G.mkQL ∘L u) := by
     have : IsClosed (G : Set F) := G.closed_of_finiteDimensional
     exact ContinuousLinearMap.isOpenMap _ <| Set.range_eq_univ.1 hr
   exact (u.isStrictMap_isClosed_range_iff_quotient G
-    (Submodule.ClosedComplemented.of_finiteDimensional G)).2 ⟨ho.isStrictMap (by fun_prop),
-    hr ▸ isClosed_univ⟩
+    (Submodule.ClosedComplemented.of_finiteDimensional G)).2
+    ⟨Topology.IsOpenMap.isStrictMap ho (by fun_prop), hr ▸ isClosed_univ⟩
 
 theorem IsFredholmStruct_iff {𝕜 E F : Type*} [NormedField 𝕜] [IsRCLikeNormedField 𝕜]
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] [NormedAddCommGroup F]
