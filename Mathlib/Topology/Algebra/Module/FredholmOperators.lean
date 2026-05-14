@@ -568,7 +568,7 @@ variable [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F] [Module
 variable [ContinuousConstSMul 𝕜 F] [T1Space F]
 
 open QuotFiniteSubmodules in
-lemma name_needed {u : E →L[𝕜] F} (hu : IsFredholmStruct u) (hr : IsFredholmQuot u) :
+lemma IsFredholmStruct.ker_closedComplemented {u : E →L[𝕜] F} (hu : IsFredholmStruct u) :
     u.ker.ClosedComplemented := by simpa only using hu.closedComplemented_ker
 
 /- ## Simpler criterion for `IsFredholmStruct` between RCLike Banach spaces
