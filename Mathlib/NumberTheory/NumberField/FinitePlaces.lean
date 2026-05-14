@@ -5,9 +5,6 @@ Authors: Fabrizio Barroero
 -/
 module
 
-public import Mathlib.CategoryTheory.Category.Init
-public import Mathlib.Combinatorics.Matroid.Init
-public import Mathlib.MeasureTheory.Integral.Bochner.Basic
-public import Mathlib.Tactic.Positivity
+public import Mathlib.NumberTheory.NumberField.Completion.FinitePlace -- shake: keep-all
 
 deprecated_module (since := "2026-03-09")
