@@ -472,7 +472,8 @@ theorem LatinRectangle.exists_isSubrect_of_card_eq_card_add_one {k n : Type*} [F
         have h := h.symm
         contradiction
       · rename_i if_h₁ if_h₂
-        have h := Fintype.existsUnique_notMem_image_of_injective_of_card_succ ι h₂
+        have h := Fintype.existsUnique_notMem_image_of_injective_of_card_eq_add_one
+          ι.toFun ι.inj' h₂
         simp only [Finset.mem_image] at h
         intro _
         exact ExistsUnique.unique (y₁ := a1) (y₂ := a2) h
