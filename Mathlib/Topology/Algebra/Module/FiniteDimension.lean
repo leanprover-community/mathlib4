@@ -740,7 +740,7 @@ theorem Submodule.ClosedComplemented.of_finiteDimensional_quotient {p : Submodul
 alias Submodule.ClosedComplemented.of_quotient_finiteDimensional :=
   Submodule.ClosedComplemented.of_finiteDimensional_quotient
 
-lemma Submodule.ClosedComplemented.of_closedComplement_finiteDimensional
+lemma Submodule.ClosedComplemented.of_finiteDimensional_of_le
     (A B : Submodule 𝕜 E) [FiniteDimensional 𝕜 A] (hA1 : A.ClosedComplemented) [T2Space A]
     (hB : B ≤ A) : B.ClosedComplemented := by
   obtain ⟨p, hp⟩ := hA1
