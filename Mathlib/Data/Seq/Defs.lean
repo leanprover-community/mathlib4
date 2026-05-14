@@ -10,6 +10,9 @@ public import Mathlib.Data.Seq.Computation
 public import Mathlib.Data.ENat.Defs
 public import Batteries.Data.MLList.Basic
 public import Mathlib.Data.Subtype
+import Mathlib.Data.Stream.Init
+import Mathlib.Init
+import Mathlib.Tactic.Common
 
 /-!
 # Possibly infinite lists

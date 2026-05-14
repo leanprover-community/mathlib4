@@ -7,7 +7,8 @@ module
 
 public meta import Lean.Meta.Tactic.Rewrite
 public import Mathlib.Tactic.GCongr.Core
-public import Lean.Meta.Tactic.Rewrite
+import Lean.Meta.Tactic.Rewrite
+import Mathlib.Init
 
 /-!
 

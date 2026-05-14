@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Order.Hom.CompleteLattice
 public import Mathlib.Order.UpperLower.Principal
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # `UpperSet.Ici` etc. as `Sup`/`sSup`/`Inf`/`sInf`-homomorphisms

@@ -5,9 +5,21 @@ Authors: Johannes Hölzl, Jeremy Avigad
 -/
 module
 
-public import Mathlib.Data.Set.Finite.Lattice
-public import Mathlib.Order.CompleteLattice.Finset
 public import Mathlib.Order.Filter.Basic
+public import Mathlib.Data.Finite.Defs
+public import Mathlib.Data.Finset.Defs
+public import Mathlib.Data.Set.Pairwise.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.Basic
+import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Data.Set.Finite.Lattice
+import Mathlib.Data.Set.Finite.Range
+import Mathlib.Data.Set.Lattice
+import Mathlib.Init
+import Mathlib.Order.CompleteLattice.Finset
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Results relating filters to finiteness

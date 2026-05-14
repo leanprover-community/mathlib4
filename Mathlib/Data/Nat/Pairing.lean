@@ -6,8 +6,16 @@ Authors: Leonardo de Moura, Mario Carneiro
 module
 
 public import Mathlib.Algebra.Notation.Prod
-public import Mathlib.Data.Nat.Sqrt
-public import Mathlib.Data.Set.Lattice.Image
+public import Batteries.Data.Nat.Basic
+public import Mathlib.Order.CompleteLattice.Defs
+import Mathlib.Data.Nat.Sqrt
+import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Init
+import Mathlib.Logic.IsEmpty.Basic
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SplitIfs
+import Mathlib.Util.CompileInductive
 
 /-!
 # Naturals pairing function

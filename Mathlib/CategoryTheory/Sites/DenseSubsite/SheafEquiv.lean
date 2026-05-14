@@ -6,6 +6,14 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Continuity.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # The equivalence of categories of sheaves of a dense subsite

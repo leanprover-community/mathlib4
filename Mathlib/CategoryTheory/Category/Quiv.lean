@@ -8,6 +8,11 @@ module
 public import Mathlib.CategoryTheory.Adjunction.Basic
 public import Mathlib.CategoryTheory.Category.Cat
 public import Mathlib.CategoryTheory.PathCategory.MorphismProperty
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # The category of quivers

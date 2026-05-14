@@ -7,6 +7,11 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 public import Mathlib.CategoryTheory.Functor.Currying
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # External product of diagrams in a monoidal category

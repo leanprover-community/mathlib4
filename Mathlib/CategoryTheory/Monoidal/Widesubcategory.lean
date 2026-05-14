@@ -10,6 +10,12 @@ public import Mathlib.CategoryTheory.Localization.Monoidal.Basic
 public import Mathlib.CategoryTheory.Widesubcategory
 public import Mathlib.CategoryTheory.Monoidal.Mon
 public import Mathlib.CategoryTheory.Monoidal.Transport
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Monoidal structures on wide subcategories

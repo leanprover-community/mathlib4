@@ -5,7 +5,24 @@ Authors: Kevin Buzzard
 -/
 module
 
-public import Mathlib.Data.ENNReal.Operations
+public import Mathlib.Data.ENNReal.Basic
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Monoid.WithTop
+import Mathlib.Data.ENNReal.Operations
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Rat.Floor
+import Mathlib.Data.Set.BooleanAlgebra
+import Mathlib.Init
+import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Order.Interval.Set.WithBotTop
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # The extended real numbers

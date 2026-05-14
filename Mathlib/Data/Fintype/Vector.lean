@@ -7,6 +7,12 @@ module
 
 public import Mathlib.Data.Fintype.Pi
 public import Mathlib.Data.Sym.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.FastInstance
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # `Vector α n` and `Sym α n` are fintypes when `α` is.

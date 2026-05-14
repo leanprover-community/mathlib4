@@ -5,10 +5,18 @@ Authors: Joseph Myers
 -/
 module
 
-public import Mathlib.Algebra.Group.Action.Pointwise.Set.Finite
 public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-public import Mathlib.Algebra.Group.Subgroup.Ker
 public import Mathlib.GroupTheory.Coset.Defs
+public import Mathlib.Algebra.Group.Subgroup.Map
+public import Mathlib.Data.Finite.Defs
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Finite
+import Mathlib.Algebra.Group.Subgroup.Ker
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Tiles for tilings

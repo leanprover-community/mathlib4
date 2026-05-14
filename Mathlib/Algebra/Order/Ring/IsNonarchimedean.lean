@@ -5,9 +5,27 @@ Authors: María Inés de Frutos-Fernández, Fabrizio Barroero
 -/
 module
 
-public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.Algebra.Order.Hom.Basic
-public import Mathlib.Data.Nat.Choose.Sum
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.Order.Ring.Basic
+public import Mathlib.Data.Finset.Powerset
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Module.NatInt
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Nonarchimedean functions

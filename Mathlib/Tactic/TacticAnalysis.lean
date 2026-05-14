@@ -11,6 +11,7 @@ public meta import Mathlib.Lean.Elab.Tactic.Meta
 public meta import Lean.Compiler.IR.CompilerM
 public import Lean.Elab.Command
 public import Mathlib.Lean.ContextInfo
+public meta import Lean.Linter.Basic
 
 /-! # Tactic analysis framework
 

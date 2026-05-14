@@ -6,8 +6,17 @@ Authors: Matteo Cipollina
 module
 
 public import Mathlib.Combinatorics.Quiver.ConnectedComponent
-public import Mathlib.Combinatorics.Quiver.Path.Vertices
 public import Mathlib.Data.Matrix.Mul
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+import Mathlib.Combinatorics.Quiver.Path.Vertices
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Irreducibility and primitivity of nonnegative matrices

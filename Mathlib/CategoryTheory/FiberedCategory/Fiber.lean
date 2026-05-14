@@ -7,6 +7,10 @@ module
 
 public import Mathlib.CategoryTheory.FiberedCategory.HomLift
 public import Mathlib.CategoryTheory.Functor.Const
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 

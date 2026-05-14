@@ -7,6 +7,14 @@ module
 
 public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.LinearAlgebra.Span.Defs
+import Mathlib.Algebra.Module.Equiv.Opposite
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Order.GaloisConnection.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Dual vector spaces

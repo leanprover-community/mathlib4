@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.GroupWithZero.ULift
 public import Mathlib.Algebra.Ring.ULift
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Field instances for `ULift`

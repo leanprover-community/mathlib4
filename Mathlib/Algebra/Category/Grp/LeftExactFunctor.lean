@@ -8,8 +8,17 @@ module
 public import Mathlib.Algebra.Category.Grp.CartesianMonoidal
 public import Mathlib.Algebra.Category.Grp.EquivalenceGroupAddGroup
 public import Mathlib.CategoryTheory.Monoidal.Internal.Types.CommGrp_
-public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 public import Mathlib.CategoryTheory.Preadditive.CommGrp_
+public import Mathlib.Algebra.Category.Grp.Limits
+import Mathlib.Algebra.Category.Grp.Zero
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # The forgetful functor `(C ⥤ₗ AddCommGroup) ⥤ (C ⥤ₗ Type v)` is an equivalence

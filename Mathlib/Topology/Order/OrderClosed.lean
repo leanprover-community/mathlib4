@@ -5,8 +5,29 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.Order.LeftRight
 public import Mathlib.Topology.Separation.Hausdorff
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Init
+import Mathlib.Order.BoundedOrder.Lattice
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+import Mathlib.Order.Cover
+import Mathlib.Order.Filter.Tendsto
+import Mathlib.Order.Interval.Set.Disjoint
+import Mathlib.Order.Interval.Set.LinearOrder
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToDual
+import Mathlib.Topology.Closure
+import Mathlib.Topology.ClusterPt
+import Mathlib.Topology.Continuous
+import Mathlib.Topology.ContinuousOn
+import Mathlib.Topology.Neighborhoods
+import Mathlib.Topology.NhdsWithin
+import Mathlib.Topology.Order.LeftRight
+import Mathlib.Topology.Piecewise
 
 /-!
 # Order-closed topologies

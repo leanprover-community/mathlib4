@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Data.FinEnum
 public import Mathlib.Logic.Equiv.Fin.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # FinEnum instance for Option

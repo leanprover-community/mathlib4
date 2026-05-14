@@ -7,8 +7,16 @@ module
 
 public meta import Batteries.Lean.HashMap
 public meta import Mathlib.Tactic.Linarith.Datatypes
-public import Batteries.Lean.HashMap
 public import Mathlib.Tactic.Linarith.Datatypes
+public import Mathlib.Tactic.Basic
+public meta import Mathlib.Tactic.Basic
+import Batteries.Lean.HashMap
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Util.CompileInductive
 
 /-!
 # The Fourier-Motzkin elimination procedure

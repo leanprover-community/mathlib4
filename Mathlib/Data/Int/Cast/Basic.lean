@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Data.Int.Cast.Defs
 public import Mathlib.Algebra.Group.Basic
-public import Mathlib.Data.Nat.Basic
+import Mathlib.Data.Nat.Basic
+import Mathlib.Init
 
 /-!
 # Cast of integers (additional theorems)

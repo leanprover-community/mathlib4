@@ -5,9 +5,22 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-public import Mathlib.Algebra.Group.Indicator
-public import Mathlib.Order.CompleteLattice.Finset
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Notation.Indicator
+public import Mathlib.Data.Set.BooleanAlgebra
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Group.Indicator
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.Basic
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Data.Set.Lattice
+import Mathlib.Init
+import Mathlib.Order.CompleteLattice.Finset
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Interaction of big operators with indicator functions

@@ -5,9 +5,19 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Set.Monotone
-public import Mathlib.Order.Interval.Set.Disjoint
 public import Mathlib.Order.SuccPred.Archimedean
+public import Mathlib.Data.Set.BooleanAlgebra
+import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Monotone
+import Mathlib.Data.Set.Order
+import Mathlib.Init
+import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Order.Interval.Set.Disjoint
+import Mathlib.Order.Interval.Set.OrdConnected
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Monotonicity on intervals

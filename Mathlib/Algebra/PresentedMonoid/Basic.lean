@@ -6,8 +6,15 @@ Authors: Hannah Fechtner
 module
 
 public import Mathlib.Algebra.FreeMonoid.Basic
-public import Mathlib.Algebra.Group.Submonoid.Operations
 public import Mathlib.GroupTheory.Congruence.Hom
+public import Mathlib.Algebra.Group.Submonoid.Basic
+import Mathlib.Algebra.Group.Submonoid.Operations
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 # Defining a monoid given by generators and relations

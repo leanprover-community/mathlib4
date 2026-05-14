@@ -7,6 +7,12 @@ module
 
 public import Mathlib.CategoryTheory.FintypeCat
 public import Mathlib.Order.Category.PartOrd
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # The category of finite partial orders

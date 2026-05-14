@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Order.SuccPred.Archimedean
 public import Mathlib.Algebra.Order.Monoid.Unbundled.TypeTags
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Successor and predecessor on type tags

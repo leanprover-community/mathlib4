@@ -9,6 +9,7 @@ public meta import Lean.Meta.Tactic.Cases
 import all Lean.MetavarContext
 public import Mathlib.Tactic.Core
 public import Mathlib.Tactic.Push
+import Mathlib.Init
 
 /-!
 

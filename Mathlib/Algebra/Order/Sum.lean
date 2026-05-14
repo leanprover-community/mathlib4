@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.Notation.Pi.Defs
 public import Mathlib.Order.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Interaction between `Sum.elim`, `≤`, and `0` or `1`

@@ -5,8 +5,16 @@ Authors: Mitchell Horner
 -/
 module
 
-public import Mathlib.Algebra.Order.Floor.Semiring
 public import Mathlib.Combinatorics.SimpleGraph.Copy
+public import Mathlib.Algebra.Order.Floor.Defs
+import Mathlib.Algebra.Order.Floor.Semiring
+import Mathlib.Combinatorics.SimpleGraph.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Extremal graph theory

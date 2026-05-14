@@ -7,7 +7,15 @@ module
 
 public import Mathlib.CategoryTheory.EffectiveEpi.Enough
 public import Mathlib.CategoryTheory.EffectiveEpi.Preserves
-public import Mathlib.CategoryTheory.Sites.Coherent.CoherentTopology
+public import Mathlib.CategoryTheory.Sites.Coherent.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Sites.Coherent.CoherentTopology
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 /-!
 
 # Reflecting the property of being precoherent

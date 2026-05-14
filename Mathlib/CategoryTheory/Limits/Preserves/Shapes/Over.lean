@@ -6,8 +6,15 @@ Authors: Yaël Dillies, Moisés Herradón Cueto
 module
 
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
-public import Mathlib.CategoryTheory.WithTerminal.FinCategory
-public import Mathlib.CategoryTheory.WithTerminal.Cone
+public import Mathlib.CategoryTheory.WithTerminal.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.WithTerminal.Cone
+import Mathlib.CategoryTheory.WithTerminal.FinCategory
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # If a functor preserves limits, so does the induced functor in the `Over` or `Under` category

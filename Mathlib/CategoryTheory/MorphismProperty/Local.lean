@@ -6,8 +6,14 @@ Authors: Christian Merten, Andrew Yang
 module
 
 public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Locality conditions on morphism properties

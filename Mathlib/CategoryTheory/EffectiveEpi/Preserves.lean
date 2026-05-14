@@ -5,9 +5,19 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.EffectiveEpi.Comp
 public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+public import Mathlib.CategoryTheory.Functor.EpiMono
+public import Mathlib.Data.Finite.Defs
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.EffectiveEpi.Comp
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Fintype.EquivFin
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 /-!
 
 # Functors preserving effective epimorphisms

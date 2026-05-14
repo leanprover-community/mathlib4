@@ -5,11 +5,30 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.Algebra.Category.Grp.Abelian
-public import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
-public import Mathlib.CategoryTheory.Abelian.Projective.Basic
-public import Mathlib.CategoryTheory.Generator.Preadditive
-public import Mathlib.CategoryTheory.Limits.Preserves.Opposites
+public import Mathlib.CategoryTheory.Abelian.Basic
+public import Mathlib.CategoryTheory.Generator.Basic
+public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
+public import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
+import Mathlib.Algebra.Category.Grp.Abelian
+import Mathlib.Algebra.Category.Grp.EpiMono
+import Mathlib.Algebra.Module.Equiv.Opposite
+import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
+import Mathlib.CategoryTheory.Abelian.Projective.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+import Mathlib.CategoryTheory.Generator.Preadditive
+import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+import Mathlib.CategoryTheory.Limits.Preserves.Opposites
+import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.SetLike
 
 /-!
 # Fullness of restrictions of `preadditiveCoyonedaObj`

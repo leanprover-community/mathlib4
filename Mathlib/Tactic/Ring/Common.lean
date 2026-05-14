@@ -5,11 +5,23 @@ Authors: Mario Carneiro, Aurélien Saue, Anne Baanen
 -/
 module
 
-public import Mathlib.Tactic.NormNum.Inv
-public import Mathlib.Tactic.NormNum.Pow
 
 public meta import Aesop
 public meta import Mathlib.Tactic.ToAdditive
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
+public import Mathlib.Tactic.Basic
+public import Mathlib.Tactic.NormNum.Result
+public meta import Mathlib.Util.AtomM
+public import Mathlib.Util.AtomM
+public import Plausible
+import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Inv
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Util.CompileInductive
 
 /-!
 # `ring`-like tactics

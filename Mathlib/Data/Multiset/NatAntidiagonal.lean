@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.List.NatAntidiagonal
 public import Mathlib.Data.Multiset.MapFold
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
 
 /-!
 # Antidiagonals in ℕ × ℕ as multisets

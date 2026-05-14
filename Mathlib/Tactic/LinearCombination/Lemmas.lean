@@ -8,8 +8,16 @@ module
 public meta import Mathlib.Data.Ineq
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Order.Module.Defs
-public import Mathlib.Data.Ineq
 public meta import Mathlib.Tactic.ToAdditive
+import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+import Mathlib.Data.Ineq
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Lemmas for the `linear_combination` tactic

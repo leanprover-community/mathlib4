@@ -5,8 +5,19 @@ Authors: Neil Strickland
 -/
 module
 
-public import Mathlib.Algebra.Field.Basic
-public import Mathlib.Algebra.Ring.GeomSum
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.GroupWithZero.Basic
+public import Mathlib.Order.Interval.Finset.Nat
+import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Algebra.Field.Basic
+import Mathlib.Algebra.Ring.Basic
+import Mathlib.Algebra.Ring.GeomSum
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Partial sums of geometric series in a field

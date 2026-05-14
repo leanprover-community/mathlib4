@@ -6,6 +6,10 @@ Authors: Devon Tuma
 module
 
 public import Mathlib.Data.Vector.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Theorems about membership of elements in vectors

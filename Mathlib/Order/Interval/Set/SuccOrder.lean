@@ -5,8 +5,14 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Order.LatticeIntervals
 public import Mathlib.Order.SuccPred.Basic
+public import Mathlib.Order.Interval.Set.OrdConnected
+import Mathlib.Init
+import Mathlib.Order.LatticeIntervals
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Successors in intervals

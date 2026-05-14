@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Topology.Separation.Hausdorff
 public import Mathlib.Topology.Connected.TotallyDisconnected
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 /-!
 
 # Separation and (dis)connectedness properties of topological spaces.

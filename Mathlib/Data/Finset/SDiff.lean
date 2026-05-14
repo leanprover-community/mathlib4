@@ -7,6 +7,15 @@ module
 
 public import Mathlib.Data.Finset.Insert
 public import Mathlib.Data.Finset.Lattice.Basic
+public import Mathlib.Order.BooleanAlgebra.Defs
+import Batteries.Tactic.Trans
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Order.BooleanAlgebra.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Difference of finite sets

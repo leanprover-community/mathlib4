@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Algebra.Group.WithOne.Defs
 public import Mathlib.Data.Option.NAry
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 # Adjoining a zero/one to semigroups and mapping

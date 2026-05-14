@@ -8,6 +8,11 @@ module
 public import Mathlib.CategoryTheory.Category.Cat
 public import Mathlib.CategoryTheory.Groupoid
 public import Mathlib.CategoryTheory.Types.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Objects of a category up to an isomorphism

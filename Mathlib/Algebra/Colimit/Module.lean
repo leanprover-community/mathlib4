@@ -8,8 +8,17 @@ module
 public import Mathlib.Algebra.Colimit.DirectLimit
 public import Mathlib.Algebra.DirectSum.Module
 public import Mathlib.Algebra.Module.Congruence.Defs
-public import Mathlib.Data.Finset.Order
-public import Mathlib.Tactic.SuppressCompilation
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Direct limit of modules and abelian groups

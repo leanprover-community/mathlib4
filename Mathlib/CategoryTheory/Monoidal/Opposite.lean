@@ -6,8 +6,14 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Functor
-public import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
-public import Mathlib.Tactic.CategoryTheory.CancelIso
+public meta import Mathlib.Tactic.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.CancelIso
+import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Monoidal opposites

@@ -5,9 +5,18 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Associated
 public import Mathlib.Algebra.Ring.Parity
 public import Mathlib.Data.Nat.Prime.Defs
+import Batteries.Tactic.Init
+import Mathlib.Algebra.Group.Irreducible.Lemmas
+import Mathlib.Algebra.Group.Nat.Units
+import Mathlib.Algebra.GroupWithZero.Associated
+import Mathlib.Algebra.NeZero
+import Mathlib.Data.Nat.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Prime numbers

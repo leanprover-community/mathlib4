@@ -5,17 +5,30 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
-public import Mathlib.Algebra.Order.Pi
-public import Mathlib.Algebra.Order.Ring.Nat
 public import Mathlib.Data.Finset.Sups
-public import Mathlib.Order.Birkhoff
-public import Mathlib.Order.Booleanisation
-public import Mathlib.Order.Sublattice
-public import Mathlib.Tactic.Positivity.Basic
-public import Mathlib.Tactic.Ring
-public import Mathlib.Tactic.GCongr
+public import Mathlib.Algebra.Order.Ring.Defs
+import Batteries.Tactic.Congr
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Pi
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Order.Ring.Unbundled.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.Lattice.Lemmas
+import Mathlib.Data.Fintype.Powerset
+import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Init
+import Mathlib.Order.Birkhoff
+import Mathlib.Order.Booleanisation
+import Mathlib.Order.Sublattice
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.SetLike
 
 /-!
 # The four functions theorem and corollaries

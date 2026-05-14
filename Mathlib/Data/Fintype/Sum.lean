@@ -6,8 +6,15 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.Finset.Sum
-public import Mathlib.Data.Fintype.EquivFin
-public import Mathlib.Logic.Embedding.Set
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.Tactic.ToAdditive
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Fintype.EquivFin
+import Mathlib.Init
+import Mathlib.Logic.Embedding.Set
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 ## Instances

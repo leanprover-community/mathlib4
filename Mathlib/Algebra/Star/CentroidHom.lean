@@ -9,6 +9,11 @@ public import Mathlib.Algebra.Ring.CentroidHom
 public import Mathlib.Algebra.Star.StarRingHom
 public import Mathlib.Algebra.Star.Subsemiring
 public import Mathlib.Algebra.Star.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Centroid homomorphisms on Star Rings

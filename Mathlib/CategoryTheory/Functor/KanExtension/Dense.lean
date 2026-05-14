@@ -8,6 +8,13 @@ module
 public import Mathlib.CategoryTheory.Functor.KanExtension.DenseAt
 public import Mathlib.CategoryTheory.Limits.Presheaf
 public import Mathlib.CategoryTheory.Generator.StrongGenerator
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Dense functors

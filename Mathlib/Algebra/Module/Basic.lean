@@ -7,10 +7,21 @@ module
 
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Group.Action.Pi
-public import Mathlib.Algebra.GroupWithZero.Action.Units
 public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.Algebra.Notation.Indicator
-public import Mathlib.Algebra.Ring.Invertible
+public import Mathlib.Algebra.Group.Action.Units
+public import Mathlib.Algebra.Group.Invertible.Defs
+public import Mathlib.Algebra.Ring.Units
+import Batteries.Tactic.Init
+import Mathlib.Algebra.GroupWithZero.Action.Units
+import Mathlib.Algebra.Ring.Basic
+import Mathlib.Algebra.Ring.Invertible
+import Mathlib.Data.Int.Cast.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Further basic results about modules.

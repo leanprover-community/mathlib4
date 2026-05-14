@@ -6,12 +6,14 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Logic.Relator
-public import Mathlib.Tactic.Use
-public import Mathlib.Tactic.MkIffOfInductiveProp
-public import Mathlib.Tactic.SimpRw
 public import Mathlib.Order.Defs.Unbundled
-public import Batteries.Logic
-public import Batteries.Tactic.Trans
+public import Mathlib.Logic.Function.Defs
+import Batteries.Logic
+import Batteries.Tactic.Trans
+import Mathlib.Init
+import Mathlib.Tactic.MkIffOfInductiveProp
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.Use
 
 /-!
 # Relation closures

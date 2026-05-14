@@ -5,14 +5,28 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.Nat
 public import Mathlib.Algebra.Ring.Int.Defs
-public import Mathlib.Data.Nat.Bitwise
-public import Mathlib.Data.Nat.Cast.Order.Basic
 public import Mathlib.Data.Nat.PSub
-public import Mathlib.Data.Nat.Size
 public import Mathlib.Data.Num.Bitwise
 import all Init.Data.Nat.Bitwise.Basic  -- for unfolding `bitwise`
+public import Mathlib.Algebra.Divisibility.Basic
+public import Mathlib.Algebra.GroupWithZero.Nat
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Data.Nat.Bits
+public meta import Mathlib.Tactic.ToDual
+import Batteries.Tactic.Trans
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Data.Int.Cast.Basic
+import Mathlib.Data.Nat.Bitwise
+import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Data.Nat.Cast.Order.Basic
+import Mathlib.Data.Nat.Size
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Properties of the binary representation of integers

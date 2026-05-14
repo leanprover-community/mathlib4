@@ -6,6 +6,16 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.SpectralObject.Page
+import Mathlib.CategoryTheory.Abelian.Refinements
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Differentials of a spectral object

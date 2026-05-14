@@ -5,8 +5,15 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Preserves.Opposites
 public import Mathlib.CategoryTheory.Limits.Preserves.Creates.Finite
+public import Mathlib.CategoryTheory.Limits.Opposites
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Limits.Preserves.Opposites
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Limit creation properties of `Functor.op` and related constructions

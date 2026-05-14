@@ -5,9 +5,15 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
 public import Mathlib.CategoryTheory.Shift.CommShift
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Properties of objects on categories equipped with shift

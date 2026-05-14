@@ -6,6 +6,14 @@ Authors: Johan Commelin, Filippo A. E. Nuccio, Andrew Yang
 module
 
 public import Mathlib.RingTheory.Ideal.Prime
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Inv
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.SetLike
 
 /-!
 # Prime spectrum of a commutative (semi)ring as a type

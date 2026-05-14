@@ -6,13 +6,17 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.Data.Set.Defs
-public import Mathlib.Logic.Basic
 public import Mathlib.Logic.Function.Defs
 public import Mathlib.Logic.ExistsUnique
 public import Mathlib.Logic.Nonempty
 public import Mathlib.Logic.Nontrivial.Defs
-public import Batteries.Tactic.Init
 public import Mathlib.Order.Defs.Unbundled
+public import Batteries.Logic
+public import Batteries.Tactic.Lint
+import Batteries.Tactic.Init
+import Mathlib.Init
+import Mathlib.Logic.Basic
+import Mathlib.Tactic.Attr.Register
 
 
 /-!

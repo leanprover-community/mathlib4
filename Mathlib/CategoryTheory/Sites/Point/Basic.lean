@@ -5,11 +5,30 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Types
-public import Mathlib.CategoryTheory.Filtered.FinallySmall
-public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Filtered
 public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 public import Mathlib.CategoryTheory.Sites.LocallyBijective
+public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
+public import Mathlib.CategoryTheory.Limits.FinallySmall
+public import Mathlib.CategoryTheory.Limits.Presheaf
+public import Mathlib.CategoryTheory.Limits.Sifted
+import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Types
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Filtered.Final
+import Mathlib.CategoryTheory.Filtered.FinallySmall
+import Mathlib.CategoryTheory.Limits.ConcreteCategory.Filtered
+import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
+import Mathlib.CategoryTheory.Limits.Types.Filtered
+import Mathlib.CategoryTheory.Sites.Limits
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.Elementwise
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Continuity.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Points of a site

@@ -5,7 +5,17 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Subalgebra.Tower
+public import Mathlib.Algebra.Algebra.Operations
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
+public import Mathlib.RingTheory.Ideal.Defs
+import Mathlib.Algebra.Algebra.Subalgebra.Tower
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-! # Augmentation ideals
 

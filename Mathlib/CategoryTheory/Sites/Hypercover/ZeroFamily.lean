@@ -6,6 +6,13 @@ Authors: Christian Merten
 module
 
 public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Defining precoverages via pre-`0`-hypercovers

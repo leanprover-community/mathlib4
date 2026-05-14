@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+import Mathlib.Data.Set.NAry
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SimpRw
+import Mathlib.Util.CompileInductive
 
 /-!
 # Pointwise operations of sets in a ring

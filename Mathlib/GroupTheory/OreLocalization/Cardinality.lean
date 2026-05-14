@@ -5,9 +5,18 @@ Authors: Jz Pan
 -/
 module
 
-public import Mathlib.Data.Fintype.Pigeonhole
 public import Mathlib.GroupTheory.OreLocalization.Basic
-public import Mathlib.SetTheory.Cardinal.Arithmetic
+public import Mathlib.SetTheory.Cardinal.Order
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Fintype.Pigeonhole
+import Mathlib.Init
+import Mathlib.Order.MinMax
+import Mathlib.SetTheory.Cardinal.Arithmetic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 

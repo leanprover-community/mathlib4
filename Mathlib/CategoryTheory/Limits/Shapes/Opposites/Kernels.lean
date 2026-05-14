@@ -6,6 +6,11 @@ Authors: Kim Morrison, Floris van Doorn
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Kernels and cokernels in `C` and `Cᵒᵖ`

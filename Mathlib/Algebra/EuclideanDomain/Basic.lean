@@ -6,9 +6,18 @@ Authors: Louis Carlin, Mario Carneiro
 module
 
 public import Mathlib.Algebra.EuclideanDomain.Defs
-public import Mathlib.Algebra.Ring.Divisibility.Basic
-public import Mathlib.Algebra.GroupWithZero.Divisibility
-public import Mathlib.Algebra.Ring.Basic
+public import Mathlib.Algebra.Divisibility.Basic
+import Batteries.Tactic.Init
+import Mathlib.Algebra.GroupWithZero.Basic
+import Mathlib.Algebra.GroupWithZero.Divisibility
+import Mathlib.Algebra.GroupWithZero.NeZero
+import Mathlib.Algebra.NeZero
+import Mathlib.Algebra.Ring.Basic
+import Mathlib.Algebra.Ring.Divisibility.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # Lemmas about Euclidean domains

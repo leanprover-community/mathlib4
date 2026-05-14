@@ -7,6 +7,15 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Basic
 public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
+import Mathlib.Combinatorics.SimpleGraph.Init
+import Mathlib.Data.Countable.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Measurability.Init
+import Mathlib.Tactic.SetLike
 
 /-!
 # Sigma-algebra on simple graphs

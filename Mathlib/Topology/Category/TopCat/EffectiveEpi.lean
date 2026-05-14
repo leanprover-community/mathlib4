@@ -5,8 +5,17 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
-public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
+public import Mathlib.CategoryTheory.EffectiveEpi.Basic
+public import Mathlib.Topology.Category.TopCat.Basic
+public import Mathlib.Topology.Continuous
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 /-!
 
 # Effective epimorphisms in `TopCat`

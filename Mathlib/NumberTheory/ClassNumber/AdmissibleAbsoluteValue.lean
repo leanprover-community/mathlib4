@@ -6,8 +6,19 @@ Authors: Anne Baanen
 module
 
 public import Mathlib.Data.Real.Basic
-public import Mathlib.Combinatorics.Pigeonhole
 public import Mathlib.Algebra.Order.AbsoluteValue.Euclidean
+public import Mathlib.Data.Fintype.Card
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Combinatorics.Pigeonhole
+import Mathlib.Data.Fin.Tuple.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Fintype.EquivFin
+import Mathlib.Data.List.Nodup
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Admissible absolute values

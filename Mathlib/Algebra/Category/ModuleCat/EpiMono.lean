@@ -5,9 +5,20 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Basic
-public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+public import Mathlib.Algebra.Module.Submodule.Range
+public import Mathlib.CategoryTheory.Functor.EpiMono
+public import Mathlib.LinearAlgebra.Quotient.Defs
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.LinearAlgebra.Quotient.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Monomorphisms in `Module R`

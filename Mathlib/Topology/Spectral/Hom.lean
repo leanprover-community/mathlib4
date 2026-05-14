@@ -7,7 +7,13 @@ module
 
 public import Mathlib.Topology.ContinuousMap.Basic
 public import Mathlib.Topology.Maps.Proper.Basic
-public import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Continuous
 
 /-!
 # Spectral maps

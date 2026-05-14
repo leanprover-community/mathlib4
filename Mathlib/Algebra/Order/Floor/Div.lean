@@ -6,11 +6,19 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.GroupWithZero.Action.Pi
-public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Algebra.Order.Module.Defs
-public import Mathlib.Algebra.Order.Sub.Basic
 public import Mathlib.Data.Finsupp.SMulWithZero
 public import Mathlib.Order.Preorder.Finsupp
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Algebra.Order.Sub.Unbundled.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Order.GaloisConnection.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Flooring, ceiling division

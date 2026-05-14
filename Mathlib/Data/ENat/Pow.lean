@@ -5,8 +5,19 @@ Authors: Damien Thomine
 -/
 module
 
-public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 public import Mathlib.Data.ENat.Basic
+import Batteries.Tactic.Init
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+import Mathlib.Algebra.Order.Ring.Canonical
+import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Data.Nat.Cast.Order.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Powers of extended natural numbers

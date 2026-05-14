@@ -6,13 +6,29 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Data.Fintype.Card
-public import Mathlib.Algebra.Order.BigOperators.Group.Multiset
-public import Mathlib.Algebra.Order.Group.Nat
-public import Mathlib.Data.Multiset.OrderedMonoid
-public import Mathlib.Tactic.Bound.Attribute
-public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
 public import Mathlib.Data.Multiset.Powerset
-public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.Order.Group.Unbundled.Abs
+public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+public import Mathlib.Data.Finset.Lattice.Fold
+public import Mathlib.Data.Finset.Union
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
+import Mathlib.Algebra.Order.BigOperators.Group.Multiset
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
+import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.Basic
+import Mathlib.Data.Multiset.OrderedMonoid
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Attribute
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Big operators on a finset in ordered groups

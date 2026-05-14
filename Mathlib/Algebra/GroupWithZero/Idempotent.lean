@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.Group.Idempotent
 public import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Init
+import Mathlib.Util.CompileInductive
 
 /-!
 # Idempotent elements of a group with zero

@@ -5,8 +5,19 @@ Authors: Paul Lezeau
 -/
 module
 
-public import Mathlib.Data.Nat.Factorization.Basic
-public import Mathlib.Data.Nat.GCD.BigOperators
+public import Mathlib.Data.Nat.Factorization.Defs
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Group.Nat.Units
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Factorization.Basic
+import Mathlib.Data.Nat.GCD.BigOperators
+import Mathlib.Data.Nat.Prime.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Lemmas about `factorizationLCMLeft`

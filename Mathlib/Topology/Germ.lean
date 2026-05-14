@@ -10,6 +10,15 @@ public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Algebra.Order.Hom.Ring
 public import Mathlib.Order.Filter.Germ.Basic
 public import Mathlib.Topology.LocallyConstant.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Topology.Neighborhoods
+import Mathlib.Topology.NhdsSet
 
 /-! # Germs of functions between topological spaces
 

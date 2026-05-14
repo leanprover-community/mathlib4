@@ -5,9 +5,21 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Fintype.Option
-public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.Connected.TotallyDisconnected
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Fintype.Option
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Data.Set.Pairwise.Lattice
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Clopen
+import Mathlib.Topology.Closure
+import Mathlib.Topology.Compactness.LocallyCompact
+import Mathlib.Topology.Continuous
+import Mathlib.Topology.Neighborhoods
+import Mathlib.Topology.Separation.Regular
 
 /-!
 # Separation properties: profinite spaces

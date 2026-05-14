@@ -6,6 +6,12 @@ Authors: Dagur Asgeirsson, Jon Eugster, Emily Riehl
 module
 
 public import Mathlib.CategoryTheory.Enriched.Limits.HasConicalLimits
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Existence of conical products

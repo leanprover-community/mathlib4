@@ -7,7 +7,19 @@ module
 
 public import Mathlib.Algebra.GradedMonoid
 public import Mathlib.Algebra.DirectSum.Basic
-public import Mathlib.Algebra.Ring.Associator
+public import Mathlib.Algebra.Ring.InjSurj
+public import Mathlib.Data.Finset.Prod
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
+import Mathlib.Algebra.Ring.Associator
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Int.Cast.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Additively-graded multiplicative structures on `⨁ i, A i`

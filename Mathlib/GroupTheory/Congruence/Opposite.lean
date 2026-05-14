@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Algebra.Opposites
 public import Mathlib.GroupTheory.Congruence.Defs
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 # Congruences on the opposite of a group

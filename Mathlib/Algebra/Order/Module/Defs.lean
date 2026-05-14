@@ -6,12 +6,24 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Module.Torsion.Free
-public import Mathlib.Algebra.Order.Group.Basic
-public import Mathlib.Algebra.Order.GroupWithZero.Action.Synonym
-public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Order.Hom.Basic
 public import Mathlib.Algebra.GroupWithZero.Action.Units
+public import Mathlib.Algebra.Order.Group.Synonym
+import Batteries.Tactic.Init
+import Mathlib.Algebra.Order.Group.Basic
+import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Algebra.Order.GroupWithZero.Action.Synonym
+import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
+import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+import Mathlib.Init
+import Mathlib.Order.MinMax
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Monotonicity of scalar multiplication by positive elements

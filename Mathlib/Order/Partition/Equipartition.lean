@@ -5,11 +5,19 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.Nat
 public import Mathlib.Data.Set.Equitable
 public import Mathlib.Logic.Equiv.Fin.Basic
 public import Mathlib.Order.Partition.Finpartition
-public import Mathlib.Tactic.ApplyFun
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Finite equipartitions

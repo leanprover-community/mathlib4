@@ -5,10 +5,19 @@ Authors: Kim Morrison, Johannes Hölzl, Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Category.Ring.Colimits
 public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.CategoryTheory.Comma.Over.Basic
-public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+public import Mathlib.Algebra.Category.Ring.Basic
+import Mathlib.Algebra.Category.Ring.Colimits
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Adjunctions in `CommRingCat`

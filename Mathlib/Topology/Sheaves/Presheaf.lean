@@ -8,7 +8,15 @@ module
 public import Mathlib.Topology.Category.TopCat.Opens
 public import Mathlib.CategoryTheory.Adjunction.Unique
 public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
-public import Mathlib.Topology.Sheaves.Init
+public import Mathlib.Data.Set.Lattice.Image
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Sheaves.Init
 
 /-!
 # Presheaves on a topological space

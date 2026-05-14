@@ -6,8 +6,14 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne 
 -/
 module
 
-public import Mathlib.Algebra.Module.Rat
 public import Mathlib.Algebra.Module.LinearMap.Defs
+public import Mathlib.Algebra.Ring.Rat
+import Mathlib.Algebra.Module.Rat
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Reinterpret an additive homomorphism as a `ℚ`-linear map.

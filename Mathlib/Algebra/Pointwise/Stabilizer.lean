@@ -8,6 +8,14 @@ module
 public import Mathlib.Algebra.Group.Action.Pointwise.Finset
 public import Mathlib.GroupTheory.QuotientGroup.Defs
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Algebra.Group.Action.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Stabilizer of a set under a pointwise action

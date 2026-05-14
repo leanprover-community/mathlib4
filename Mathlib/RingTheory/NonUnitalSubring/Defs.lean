@@ -7,7 +7,14 @@ module
 
 public import Mathlib.Algebra.Group.Subgroup.Defs
 public import Mathlib.RingTheory.NonUnitalSubsemiring.Defs
-public import Mathlib.Tactic.FastInstance
+import Mathlib.Algebra.Ring.InjSurj
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.FastInstance
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # `NonUnitalSubring`s

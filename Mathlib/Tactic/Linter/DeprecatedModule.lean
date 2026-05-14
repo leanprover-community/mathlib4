@@ -6,8 +6,9 @@ Authors: Damiano Testa
 module
 
 public meta import Std.Time.Format
-public import Mathlib.Init
-public import Std.Time.Date
+public meta import Lean.Elab.Command
+import Mathlib.Init
+import Std.Time.Date.PlainDate
 
 /-!
 # The `deprecated.module` linter

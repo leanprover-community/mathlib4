@@ -6,7 +6,13 @@ Authors: Damiano Testa
 module
 
 public import Mathlib.Algebra.Module.Submodule.Defs
-public import Mathlib.Algebra.Order.Monoid.Basic
+public import Mathlib.Algebra.Order.Monoid.Defs
+import Mathlib.Algebra.Order.Monoid.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Ordered instances on submodules

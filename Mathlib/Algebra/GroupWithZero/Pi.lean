@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.GroupWithZero.Defs
 public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Init
+import Mathlib.Util.CompileInductive
 
 /-!
 # Pi instances for groups with zero

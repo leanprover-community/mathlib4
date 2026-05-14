@@ -6,8 +6,18 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Generator.Presheaf
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
-public import Mathlib.CategoryTheory.Presentable.StrongGenerator
+public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+import Mathlib.CategoryTheory.Limits.Preserves.Ulift
+import Mathlib.CategoryTheory.Presentable.StrongGenerator
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Logic.Small.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Categories of presheaves are locally presentable

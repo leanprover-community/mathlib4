@@ -6,6 +6,12 @@ Authors: Kenny Lau
 module
 
 public import Mathlib.CategoryTheory.Sites.Canonical
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Grothendieck Topology and Sheaves on the Category of Types

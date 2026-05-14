@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Set.Operations
 public import Mathlib.Order.Lattice
+import Mathlib.Init
+import Mathlib.Order.Monotone.Basic
+import Mathlib.Util.CompileInductive
 
 /-!
 # Monovariance of functions

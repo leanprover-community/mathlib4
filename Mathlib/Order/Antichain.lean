@@ -5,8 +5,17 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Order.Bounds.Basic
 public import Mathlib.Order.Preorder.Chain
+public import Mathlib.Order.BooleanAlgebra.Basic
+public import Mathlib.Order.Bounds.Defs
+import Mathlib.Data.Set.Pairwise.Basic
+import Mathlib.Init
+import Mathlib.Order.Bounds.Basic
+import Mathlib.Order.Hom.Set
+import Mathlib.Tactic.ByContra
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Antichains

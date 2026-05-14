@@ -5,8 +5,21 @@ Authors: Moritz Firsching
 -/
 module
 
-public import Mathlib.Data.Nat.Factorial.BigOperators
-public import Mathlib.Data.ZMod.Basic
+public import Mathlib.Data.Nat.Factorial.Basic
+public import Mathlib.Data.ZMod.Defs
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Factorial.BigOperators
+import Mathlib.Data.ZMod.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Inv
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.SetLike
 
 /-!
 # Facts about factorials in ZMod

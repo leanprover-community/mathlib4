@@ -6,6 +6,10 @@ Authors: Joël Riou, Kevin Buzzard
 module
 
 public import Mathlib.Order.WithBot
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Translate.ToDual
+import Mathlib.Util.CompileInductive
 
 /-!
 # Adding both `⊥` and `⊤` to a type

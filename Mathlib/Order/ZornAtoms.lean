@@ -5,8 +5,15 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.Zorn
 public import Mathlib.Order.Atoms
+public import Mathlib.Order.Preorder.Chain
+import Mathlib.Init
+import Mathlib.Order.Minimal
+import Mathlib.Order.Zorn
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Zorn lemma for (co)atoms

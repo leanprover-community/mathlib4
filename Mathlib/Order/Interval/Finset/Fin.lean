@@ -7,7 +7,12 @@ module
 
 public import Mathlib.Data.Finset.Fin
 public import Mathlib.Order.Interval.Finset.Nat
-public import Mathlib.Order.Interval.Set.Fin
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Order.Interval.Set.Fin
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Finite intervals in `Fin n`

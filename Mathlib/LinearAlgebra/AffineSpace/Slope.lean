@@ -6,10 +6,19 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
-public import Mathlib.Tactic.Field
-public import Mathlib.Tactic.FieldSimp
-public import Mathlib.Tactic.Module
-public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+import Mathlib.Algebra.Field.Basic
+import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Field
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Module
+import Mathlib.Tactic.SetLike
 
 /-!
 # Slope of a function

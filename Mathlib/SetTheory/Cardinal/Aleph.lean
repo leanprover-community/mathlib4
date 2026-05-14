@@ -12,6 +12,22 @@ public import Mathlib.SetTheory.Ordinal.Enum
 public import Mathlib.SetTheory.Ordinal.Univ
 
 import Mathlib.SetTheory.Ordinal.Principal
+public import Mathlib.SetTheory.Ordinal.Arithmetic
+import Mathlib.Algebra.Order.Monoid.NatCast
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Data.Nat.Cast.Order.Basic
+import Mathlib.Init
+import Mathlib.Logic.Small.Set
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
+import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Order.MinMax
+import Mathlib.SetTheory.Ordinal.Family
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Omega, aleph, and beth functions

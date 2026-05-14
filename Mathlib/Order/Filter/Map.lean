@@ -6,8 +6,24 @@ Authors: Johannes Hölzl, Jeremy Avigad
 module
 
 public import Mathlib.Control.Basic
-public import Mathlib.Data.Set.Lattice.Image
 public import Mathlib.Order.Filter.Basic
+import Batteries.Tactic.Trans
+import Mathlib.Data.Set.Function
+import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Data.Set.Restrict
+import Mathlib.Init
+import Mathlib.Logic.IsEmpty.Basic
+import Mathlib.Order.BoundedOrder.Lattice
+import Mathlib.Order.GaloisConnection.Basic
+import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Tactic.Coe
+import Mathlib.Tactic.Contrapose
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.GRewrite.Elab
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.SimpRw
+import Mathlib.Util.CompileInductive
 
 /-!
 # Theorems about map and comap on filters.

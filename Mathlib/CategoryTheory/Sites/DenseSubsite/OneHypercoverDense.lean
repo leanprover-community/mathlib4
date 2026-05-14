@@ -6,6 +6,15 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Continuity.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Equivalence of categories of sheaves with a dense subsite that is 1-hypercover dense

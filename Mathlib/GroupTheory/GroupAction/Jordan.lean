@@ -5,9 +5,25 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Algebra.Group.Pointwise.Set.Card
 public import Mathlib.Data.Set.Card
 public import Mathlib.GroupTheory.GroupAction.MultiplePrimitivity
+import Mathlib.Algebra.Group.Pointwise.Set.Card
+import Mathlib.Algebra.Order.AbsoluteValue.Basic
+import Mathlib.Algebra.Order.Monoid.NatCast
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Data.ENat.Lattice
+import Mathlib.Data.Finite.Perm
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Totient
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.GroupTheory.GroupAction.Transitive
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-! # Theorems of Jordan
 

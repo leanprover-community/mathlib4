@@ -6,7 +6,13 @@ Authors: Kenny Lau, Anne Baanen
 module
 
 public import Mathlib.Algebra.Algebra.Equiv
-public import Mathlib.LinearAlgebra.Span.Basic
+public import Mathlib.LinearAlgebra.Span.Defs
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.LinearAlgebra.Span.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 
 /-!

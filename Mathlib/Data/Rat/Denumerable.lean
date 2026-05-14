@@ -5,10 +5,15 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Algebra.Ring.Rat
 public import Mathlib.Data.Rat.Encodable
-public import Mathlib.Algebra.CharZero.Infinite
 public import Mathlib.Logic.Denumerable
+import Mathlib.Algebra.CharZero.Infinite
+import Mathlib.Algebra.Ring.Rat
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Denumerability of ℚ

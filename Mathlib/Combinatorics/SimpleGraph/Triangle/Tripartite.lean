@@ -6,6 +6,19 @@ Authors: Yaël Dillies, Bhavik Mehta
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
+public import Mathlib.Data.Fintype.Sum
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Combinatorics.SimpleGraph.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.Preimage
+import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
 
 /-!
 # Construct a tripartite graph from its triangles

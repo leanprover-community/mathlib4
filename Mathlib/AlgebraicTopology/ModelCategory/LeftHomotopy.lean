@@ -7,6 +7,14 @@ module
 
 public import Mathlib.AlgebraicTopology.ModelCategory.Cylinder
 public import Mathlib.CategoryTheory.Localization.Quotient
+import Mathlib.AlgebraicTopology.ModelCategory.Instances
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Left homotopies in model categories

@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Data.DFinsupp.Defs
 public import Mathlib.Data.Finsupp.Notation
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Notation for `DFinsupp`

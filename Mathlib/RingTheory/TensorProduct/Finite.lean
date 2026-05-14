@@ -5,11 +5,28 @@ Authors: Kim Morrison, Johan Commelin
 -/
 module
 
-public import Mathlib.LinearAlgebra.Isomorphisms
-public import Mathlib.RingTheory.Finiteness.Basic
-public import Mathlib.RingTheory.Finiteness.Bilinear
-public import Mathlib.RingTheory.Ideal.Quotient.Basic
 public import Mathlib.RingTheory.TensorProduct.Maps
+public import Mathlib.RingTheory.Finiteness.Defs
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Lattice
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Init
+import Mathlib.LinearAlgebra.Isomorphisms
+import Mathlib.RingTheory.Finiteness.Basic
+import Mathlib.RingTheory.Finiteness.Bilinear
+import Mathlib.RingTheory.Ideal.Quotient.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Finiteness of the tensor product of (sub)modules

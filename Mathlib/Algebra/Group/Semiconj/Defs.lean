@@ -8,6 +8,9 @@ module
 
 public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Order.Defs.Unbundled
+import Batteries.Tactic.Alias
+import Mathlib.Init
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Semiconjugate elements of a semigroup

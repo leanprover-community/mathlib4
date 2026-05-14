@@ -5,9 +5,18 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Center.Preadditive
 public import Mathlib.CategoryTheory.Localization.Predicate
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+public import Mathlib.Algebra.Ring.Hom.Defs
+public import Mathlib.CategoryTheory.Center.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Center.Preadditive
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Localization of the center of a category

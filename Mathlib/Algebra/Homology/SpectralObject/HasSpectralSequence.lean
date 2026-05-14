@@ -7,8 +7,18 @@ module
 
 public import Mathlib.Algebra.Homology.SpectralObject.Basic
 public import Mathlib.Algebra.Homology.SpectralSequence.ComplexShape
-public import Mathlib.Order.Fin.Clamp
 public import Mathlib.Order.WithBotTop
+public import Mathlib.Algebra.Group.Prod
+import Batteries.Data.Fin.Lemmas
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Order.Fin.Clamp
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Shapes of spectral sequences obtained from a spectral object

@@ -5,7 +5,16 @@ Authors: Mario Carneiro, Rudy Peterson
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
+public import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
+public import Mathlib.Algebra.Order.Group.Multiset
+public import Mathlib.Data.Multiset.Fold
+import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
+import Mathlib.Data.List.Lattice
+import Mathlib.Data.List.Nodup
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Bind operation for multisets

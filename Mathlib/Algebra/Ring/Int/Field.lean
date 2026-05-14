@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.Field.IsField
 public import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Init
+import Mathlib.Tactic.Common
 
 /-! # `ℤ` is not a field -/
 

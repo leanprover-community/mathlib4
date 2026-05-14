@@ -6,6 +6,10 @@ Authors: Alex Keizer
 module
 
 public import Mathlib.Data.Vector.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
   This file establishes a `snoc : Vector α n → α → Vector α (n+1)` operation, that appends a single

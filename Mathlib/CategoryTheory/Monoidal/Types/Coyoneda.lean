@@ -6,7 +6,13 @@ Authors: Michael Jendrusch, Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Types.Basic
-public import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # `(𝟙_ C ⟶ -)` is a lax monoidal functor to `Type`

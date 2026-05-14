@@ -7,6 +7,13 @@ module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic  -- shake: keep (Qq dependency)
 public import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.HaveI
+import Mathlib.Tactic.SetLike
 
 /-!
 # `norm_num` plugin for big operators

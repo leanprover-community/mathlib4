@@ -8,7 +8,16 @@ module
 public import Mathlib.Combinatorics.Matroid.Rank.Finite
 public import Mathlib.Combinatorics.Matroid.Loop
 public import Mathlib.Data.ENat.Lattice
-public import Mathlib.Tactic.TautoSet
+import Mathlib.Combinatorics.Matroid.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Init
+import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.TautoSet
 
 /-!
 # `ℕ∞`-valued rank

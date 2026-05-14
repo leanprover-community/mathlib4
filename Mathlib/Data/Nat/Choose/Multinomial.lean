@@ -8,9 +8,34 @@ module
 public import Mathlib.Algebra.Order.Antidiag.Pi
 public import Mathlib.Data.Finsupp.Multiset
 public import Mathlib.Data.List.ToFinsupp
-public import Mathlib.Data.Nat.Choose.Sum
-public import Mathlib.Data.Nat.Factorial.BigOperators
-public import Mathlib.Data.Nat.Factorial.DoubleFactorial
+public import Mathlib.Data.Finset.NoncommProd
+import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
+import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
+import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
+import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Fintype.Sigma
+import Mathlib.Data.Nat.Cast.Commute
+import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.Data.Nat.Factorial.BigOperators
+import Mathlib.Data.Nat.Factorial.DoubleFactorial
+import Mathlib.Data.Nat.SuccPred
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.SetLike
 /-!
 # Multinomial
 

@@ -7,6 +7,15 @@ module
 
 public import Mathlib.RingTheory.Finiteness.Defs
 public import Mathlib.Algebra.Module.Submodule.Bilinear
+import Mathlib.Data.Finite.Prod
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Inv
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.SetLike
 
 /-!
 # Finitely generated submodules and bilinear maps

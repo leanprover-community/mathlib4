@@ -5,8 +5,19 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.Filter.Curry
 public import Mathlib.Data.Set.Countable
+public import Mathlib.Order.Filter.Defs
+import Batteries.Tactic.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Init
+import Mathlib.Order.Filter.Curry
+import Mathlib.Order.Filter.Map
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Filters with countable intersection property

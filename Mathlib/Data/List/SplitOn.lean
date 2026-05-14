@@ -6,5 +6,6 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 module -- shake: keep-all
 
 public import Mathlib.Tactic.Linter.DeprecatedModule
+import Mathlib.Init
 
 deprecated_module "Upstreamed to core" (since := "2026-02-26")

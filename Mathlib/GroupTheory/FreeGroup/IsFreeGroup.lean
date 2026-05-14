@@ -6,6 +6,11 @@ Authors: David Wärn, Eric Wieser, Joachim Breitner
 module
 
 public import Mathlib.GroupTheory.FreeGroup.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Free groups structures on arbitrary types

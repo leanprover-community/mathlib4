@@ -7,7 +7,14 @@ module
 
 public import Mathlib.CategoryTheory.Generator.Basic
 public import Mathlib.CategoryTheory.Limits.Indization.Category
-public import Mathlib.CategoryTheory.Preadditive.Indization
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Preadditive.Indization
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Separating set in the category of ind-objects

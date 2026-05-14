@@ -7,6 +7,12 @@ module
 
 public import Mathlib.Algebra.Category.Grp.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 # The category of (commutative) (additive) groups has a zero object.

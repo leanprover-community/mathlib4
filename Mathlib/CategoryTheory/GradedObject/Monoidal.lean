@@ -6,7 +6,17 @@ Authors: Joël Riou, Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.GradedObject.Unitor
-public import Mathlib.Data.Fintype.Prod
+public import Mathlib.Data.Finite.Defs
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Fintype.EquivFin
+import Mathlib.Data.Fintype.Prod
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # The monoidal category structures on graded objects

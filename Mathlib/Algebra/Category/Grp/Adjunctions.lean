@@ -5,10 +5,19 @@ Authors: Kim Morrison, Johannes Hölzl
 -/
 module
 
-public import Mathlib.Algebra.Category.Grp.Preadditive
 public import Mathlib.GroupTheory.FreeAbelianGroup
-public import Mathlib.CategoryTheory.Adjunction.Limits
-public import Mathlib.CategoryTheory.Limits.Types.Coproducts
+public import Mathlib.Algebra.Category.Grp.Basic
+public import Mathlib.CategoryTheory.Functor.EpiMono
+import Mathlib.Algebra.Category.Grp.Preadditive
+import Mathlib.CategoryTheory.Adjunction.Limits
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
+import Mathlib.CategoryTheory.Limits.Types.Coproducts
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Adjunctions regarding the category of (abelian) groups

@@ -5,11 +5,15 @@ Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu
 -/
 module
 
-public import Mathlib.Data.Int.Cast.Basic
 public import Mathlib.Data.Int.Cast.Pi
 public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.LinearAlgebra.Matrix.Defs
 public import Mathlib.Logic.Embedding.Basic
+import Mathlib.Data.Int.Cast.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Diagonal matrices

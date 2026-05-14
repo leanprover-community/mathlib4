@@ -6,7 +6,16 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.Finset.Option
-public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Order.CompleteLattice.Defs
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Insert
+import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToDual
 
 /-!
 # Lattice operations on finsets

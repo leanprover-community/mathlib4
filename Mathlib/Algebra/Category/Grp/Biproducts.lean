@@ -7,9 +7,17 @@ module
 
 public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.Algebra.Category.Grp.Preadditive
-public import Mathlib.CategoryTheory.Preadditive.Biproducts
-public import Mathlib.Algebra.Category.Grp.Limits
-public import Mathlib.Tactic.CategoryTheory.Elementwise
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
+import Mathlib.Algebra.Category.Grp.Limits
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Preadditive.Biproducts
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.Elementwise
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # The category of abelian groups has finite biproducts

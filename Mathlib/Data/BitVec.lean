@@ -8,7 +8,12 @@ module
 public import Mathlib.Algebra.Ring.InjSurj
 public import Mathlib.Algebra.Ring.Equiv
 public import Mathlib.Data.ZMod.Defs
-public import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Basic Theorems About Bitvectors

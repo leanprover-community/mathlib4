@@ -6,7 +6,9 @@ Authors: Mario Carneiro, Heather Macbeth
 module
 
 public import Mathlib.Tactic.GCongr.CoreAttrs
-public import Mathlib.Tactic.Hint
+public import Mathlib.Tactic.GCongr.Core
+import Mathlib.Init
+import Mathlib.Tactic.Hint
 
 /-! # Setup for the `gcongr` tactic
 

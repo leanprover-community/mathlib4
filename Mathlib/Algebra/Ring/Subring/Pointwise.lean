@@ -8,6 +8,12 @@ module
 public import Mathlib.Algebra.GroupWithZero.Subgroup
 public import Mathlib.Algebra.Ring.Subring.Basic
 public import Mathlib.Algebra.Ring.Subsemiring.Pointwise
+import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-! # Pointwise instances on `Subring`s
 

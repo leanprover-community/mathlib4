@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Data.Fintype.Defs
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Finite types with addition/multiplications

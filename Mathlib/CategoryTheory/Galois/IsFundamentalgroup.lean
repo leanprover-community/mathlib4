@@ -8,7 +8,26 @@ module
 public import Mathlib.CategoryTheory.Galois.Basic
 public import Mathlib.CategoryTheory.Galois.Topology
 public import Mathlib.CategoryTheory.Galois.Prorepresentability
-public import Mathlib.Topology.Algebra.OpenSubgroup
+public import Mathlib.Topology.Homeomorph.Lemmas
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+import Mathlib.CategoryTheory.Galois.Decomposition
+import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+import Mathlib.CategoryTheory.Limits.FintypeCat
+import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Rat.Floor
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Algebra.OpenSubgroup
+import Mathlib.Topology.Neighborhoods
 
 /-!
 

@@ -6,7 +6,11 @@ Authors: Daniel Weber
 module
 
 public import Mathlib.Algebra.Group.Nat.Defs
-public import Mathlib.Order.MinMax
+public import Mathlib.Tactic.ToDual
+import Mathlib.Init
+import Mathlib.Order.MinMax
+import Mathlib.Tactic.Conv
+import Mathlib.Util.CompileInductive
 
 /-!
 # Splitting a list to chunks of specified lengths

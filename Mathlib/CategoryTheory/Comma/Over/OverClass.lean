@@ -5,8 +5,13 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Tactic.CategoryTheory.Reassoc
 public import Mathlib.CategoryTheory.Comma.Over.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Typeclasses for `S`-objects and `S`-morphisms

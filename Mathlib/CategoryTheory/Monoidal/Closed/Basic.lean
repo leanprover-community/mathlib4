@@ -6,10 +6,20 @@ Authors: Kim Morrison, Bhavik Mehta, Daniel Carranza, Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Functor
-public import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
-public import Mathlib.CategoryTheory.Adjunction.Limits
 public import Mathlib.CategoryTheory.Adjunction.Mates
 public import Mathlib.CategoryTheory.Adjunction.Parametrized
+public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+public meta import Mathlib.Tactic.Basic
+import Mathlib.CategoryTheory.Adjunction.Limits
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
+import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Closed monoidal categories

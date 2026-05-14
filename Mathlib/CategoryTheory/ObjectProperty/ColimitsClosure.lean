@@ -7,6 +7,15 @@ module
 
 public import Mathlib.CategoryTheory.ObjectProperty.LimitsClosure
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Closure of a property of objects under colimits of certain shapes

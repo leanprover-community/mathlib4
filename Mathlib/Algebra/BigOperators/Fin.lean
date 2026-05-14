@@ -5,11 +5,30 @@ Authors: Yury Kudryashov, Anne Baanen
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Algebra.Group.Action.Pi
-public import Mathlib.Data.Fintype.BigOperators
-public import Mathlib.Data.Fintype.Fin
 public import Mathlib.Logic.Equiv.Fin.Basic
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.Group.Nat.Even
+public import Mathlib.Algebra.GroupWithZero.Nat
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Data.Fintype.Pi
+public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Order.Interval.Finset.Fin
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
+import Mathlib.Algebra.BigOperators.Group.List.Basic
+import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
+import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Algebra.Ring.Parity
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Fintype.Fin
+import Mathlib.Data.List.OfFn
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Big operators and `Fin`

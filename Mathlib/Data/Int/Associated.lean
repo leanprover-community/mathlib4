@@ -6,7 +6,13 @@ Authors: Anne Baanen
 module
 
 public import Mathlib.Algebra.GroupWithZero.Associated
-public import Mathlib.Algebra.Ring.Int.Units
+public import Mathlib.Algebra.Group.Int.Defs
+import Mathlib.Algebra.Ring.Int.Units
+import Mathlib.Init
+import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 /-!
 # Associated elements and the integers
 

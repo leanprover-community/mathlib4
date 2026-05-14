@@ -6,7 +6,16 @@ Authors: Ben Eltschig
 module
 
 public import Mathlib.CategoryTheory.Adjunction.Triple
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+public import Mathlib.Tactic.Attr.Core
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Adjoint quadruples

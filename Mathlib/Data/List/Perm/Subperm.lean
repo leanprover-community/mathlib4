@@ -6,9 +6,15 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 module
 
 public import Batteries.Data.List.Perm
-public import Mathlib.Data.List.Basic
-public import Batteries.Tactic.Trans
-public import Mathlib.Data.List.Perm.Basic
+public import Aesop
+public import Mathlib.Tactic.ToDual
+import Batteries.Tactic.Init
+import Batteries.Tactic.Trans
+import Mathlib.Data.List.Basic
+import Mathlib.Data.List.Perm.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # List Sub-permutations

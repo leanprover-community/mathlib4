@@ -8,6 +8,14 @@ module
 public import Mathlib.Data.Finset.Fold
 public import Mathlib.Algebra.GCDMonoid.Multiset
 public import Mathlib.Algebra.GCDMonoid.Nat
+import Batteries.Tactic.Trans
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.Basic
+import Mathlib.Data.Finset.Lattice.Lemmas
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # GCD and LCM operations on finsets

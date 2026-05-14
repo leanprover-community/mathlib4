@@ -10,9 +10,16 @@ public import Mathlib.Algebra.FreeMonoid.Basic
 public import Mathlib.CategoryTheory.Category.KleisliCat
 public import Mathlib.CategoryTheory.Endomorphism
 public import Mathlib.CategoryTheory.Types.Basic
-public import Mathlib.Control.Traversable.Instances
-public import Mathlib.Control.Traversable.Lemmas
-public import Mathlib.Tactic.AdaptationNote
+public import Mathlib.Control.Applicative
+public import Mathlib.Control.Traversable.Basic
+import Mathlib.Algebra.Group.Nat.Defs
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Control.Traversable.Instances
+import Mathlib.Control.Traversable.Lemmas
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 

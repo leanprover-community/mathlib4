@@ -5,7 +5,15 @@ Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
 module
 
-public import Mathlib.Topology.Maps.Proper.Basic
+public import Mathlib.Topology.Constructions
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Continuous
+import Mathlib.Topology.Homeomorph.Lemmas
+import Mathlib.Topology.Maps.Proper.Basic
 
 /-! # Restriction of a closed compact set in a product space to a set of coordinates
 

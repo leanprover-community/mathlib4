@@ -6,9 +6,14 @@ Authors: Michael Stoll
 module
 
 public import Mathlib.Data.Fin.Tuple.Sort
-public import Mathlib.Order.WellFounded
-public import Mathlib.Order.PiLex
-public import Mathlib.Data.Finite.Prod
+import Mathlib.Data.Finite.Prod
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Order.PiLex
+import Mathlib.Order.WellFounded
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # "Bubble sort" induction

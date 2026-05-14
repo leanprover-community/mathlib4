@@ -121,6 +121,7 @@ public import Mathlib.Util.CountHeartbeats
 public import Mathlib.Util.PrintSorries
 public import Mathlib.Util.TransImports
 public import Mathlib.Util.WhatsNew
+import Mathlib.Init
 
 /-!
 # Common tactics, linters, and utilities

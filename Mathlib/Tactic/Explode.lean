@@ -10,6 +10,7 @@ public meta import Lean.PrettyPrinter
 public meta import Mathlib.Tactic.Explode.Datatypes
 public import Mathlib.Tactic.Explode.Datatypes
 public import Mathlib.Tactic.Explode.Pretty
+import Mathlib.Init
 
 /-!
 # Explode command

@@ -6,6 +6,11 @@ Authors: Sahan Wijetunga
 module
 
 public import Mathlib.LinearAlgebra.BilinearMap
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Isometric linear maps

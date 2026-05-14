@@ -5,12 +5,25 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Unbundled.Int
 public import Mathlib.Algebra.Group.ModEq
 public import Mathlib.Data.Int.GCD
-public import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.Algebra.CharZero.Defs
+public import Mathlib.Algebra.Group.Int.Defs
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Algebra.Order.Group.Unbundled.Abs
+import Batteries.Tactic.Trans
+import Mathlib.Algebra.Group.Nat.Units
+import Mathlib.Algebra.GroupWithZero.Divisibility
+import Mathlib.Algebra.NeZero
+import Mathlib.Algebra.Order.Group.Unbundled.Int
+import Mathlib.Data.Int.Init
+import Mathlib.Data.Nat.GCD.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Congruences modulo a natural number

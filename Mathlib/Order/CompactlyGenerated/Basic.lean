@@ -6,15 +6,27 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Order.Atoms
-public import Mathlib.Order.OrderIsoNat
-public import Mathlib.Order.RelIso.Set
 public import Mathlib.Order.SupClosed
 public import Mathlib.Order.SupIndep
-public import Mathlib.Order.Zorn
-public import Mathlib.Data.Finset.Order
-public import Mathlib.Order.Interval.Set.OrderIso
-public import Mathlib.Data.Finite.Set
-public import Mathlib.Tactic.TFAE
+public import Mathlib.Data.List.TFAE
+import Mathlib.Data.Finite.Set
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.Order
+import Mathlib.Data.Finset.Preimage
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Data.Set.Finite.Lattice
+import Mathlib.Data.Set.Finite.Range
+import Mathlib.Data.Set.Lattice
+import Mathlib.Init
+import Mathlib.Order.Interval.Set.OrderIso
+import Mathlib.Order.Minimal
+import Mathlib.Order.OrderIsoNat
+import Mathlib.Order.RelIso.Set
+import Mathlib.Order.Zorn
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.TFAE
 
 /-!
 # Compactness properties for complete lattices

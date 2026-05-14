@@ -6,6 +6,11 @@ Authors: Damiano Testa, Junyan Xu
 module
 
 public import Mathlib.Data.DFinsupp.Defs
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Locus of unequal values of finitely supported dependent functions

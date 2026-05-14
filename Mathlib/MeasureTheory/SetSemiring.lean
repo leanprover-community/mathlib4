@@ -5,12 +5,24 @@ Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
 module
 
-public import Mathlib.Data.Nat.Lattice
 public import Mathlib.Data.Set.Accumulate
-public import Mathlib.Data.Set.Pairwise.Lattice
 public import Mathlib.MeasureTheory.PiSystem
 public import Mathlib.Order.Partition.Finpartition
 public import Mathlib.Order.SupClosed
+public import Mathlib.Order.Disjointed
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.Lattice.Lemmas
+import Mathlib.Data.Nat.Lattice
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Data.Set.Pairwise.Lattice
+import Mathlib.Init
+import Mathlib.Order.BoundedOrder.Lattice
+import Mathlib.Order.Interval.Set.LinearOrder
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Measurability.Init
+import Mathlib.Tactic.SetLike
 
 /-! # Semirings and rings of sets
 

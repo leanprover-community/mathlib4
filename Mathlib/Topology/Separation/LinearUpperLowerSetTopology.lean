@@ -7,6 +7,14 @@ module
 
 public import Mathlib.Topology.Order.UpperLowerSetTopology
 public import Mathlib.Topology.Separation.Regular
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Closure
+import Mathlib.Topology.NhdsSet
 
 /-!
 # Linear upper or lower sets topologies are completely normal

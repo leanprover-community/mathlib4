@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Data.Bracket
+import Mathlib.Init
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # The bracket on a group given by commutator.

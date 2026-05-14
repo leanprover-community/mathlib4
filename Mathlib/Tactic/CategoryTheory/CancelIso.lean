@@ -7,6 +7,12 @@ module
 
 public import Mathlib.Tactic.Push
 public import Mathlib.CategoryTheory.Iso
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Translate.ToDual
+import Mathlib.Util.CompileInductive
 
 /-!
 # Simproc for canceling morphisms with their inverses

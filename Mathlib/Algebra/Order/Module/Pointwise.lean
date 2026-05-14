@@ -6,9 +6,17 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
-public import Mathlib.Algebra.Order.Module.Field
-public import Mathlib.Order.Bounds.OrderIso
-public import Mathlib.Order.GaloisConnection.Basic
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Order.Module.Defs
+public import Mathlib.Order.Bounds.Defs
+import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Init
+import Mathlib.Order.Bounds.OrderIso
+import Mathlib.Order.GaloisConnection.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Bounds on scalar multiplication of set

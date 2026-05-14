@@ -5,7 +5,14 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Set.Lattice
+public import Mathlib.Data.Set.Insert
+public import Mathlib.Order.SetNotation
+public import Mathlib.Tactic.ToAdditive
+import Mathlib.Data.Set.Lattice
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SimpRw
+import Mathlib.Util.CompileInductive
 
 /-! # Semiquotients
 

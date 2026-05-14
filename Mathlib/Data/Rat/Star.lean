@@ -5,11 +5,21 @@ Authors: Jireh Loreaux, Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Commute
 public import Mathlib.Algebra.Order.Monoid.Submonoid
-public import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.Algebra.Order.Star.Basic
-public import Mathlib.Data.NNRat.Order
+public import Mathlib.Algebra.Star.Rat
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Algebra.Order.Ring.Rat
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.NNRat.Order
+import Mathlib.Data.Rat.Cast.Defs
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Star ordered ring structures on `ℚ` and `ℚ≥0`

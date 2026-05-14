@@ -5,10 +5,21 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.Nat
 public import Mathlib.Data.Nat.Dist
 public import Mathlib.Data.Ordmap.Ordnode
-public import Mathlib.Tactic.Abel
+public import Mathlib.Order.TypeTags
+public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Basic
+import Mathlib.Algebra.Group.Units.Basic
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Init
+import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
 
 /-!
 # Invariants for the verification of `Ordnode`

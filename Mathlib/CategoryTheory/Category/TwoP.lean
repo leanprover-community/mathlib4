@@ -7,6 +7,11 @@ module
 
 public import Mathlib.CategoryTheory.Category.Bipointed
 public import Mathlib.Data.TwoPointing
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # The category of two-pointed types

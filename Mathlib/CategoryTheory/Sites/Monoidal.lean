@@ -5,10 +5,19 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorCategory.Basic
 public import Mathlib.CategoryTheory.Localization.Monoidal.Braided
-public import Mathlib.CategoryTheory.Sites.Equivalence
 public import Mathlib.CategoryTheory.Sites.SheafHom
+public import Mathlib.CategoryTheory.Enriched.FunctorCategory
+public import Mathlib.CategoryTheory.Monoidal.Closed.Enrichment
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Monoidal.Closed.FunctorCategory.Basic
+import Mathlib.CategoryTheory.Sites.Equivalence
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Continuity.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Monoidal category structure on categories of sheaves

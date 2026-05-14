@@ -7,6 +7,12 @@ module
 
 public import Mathlib.LinearAlgebra.Prod
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Tensor products of products

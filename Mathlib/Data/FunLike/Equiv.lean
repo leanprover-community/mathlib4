@@ -6,6 +6,11 @@ Authors: Anne Baanen
 module
 
 public import Mathlib.Data.FunLike.Embedding
+public import Mathlib.Logic.Function.Defs
+import Batteries.Tactic.Init
+import Mathlib.Init
+import Mathlib.Logic.Function.Basic
+import Mathlib.Util.CompileInductive
 
 /-!
 # Typeclass for a type `F` with an injective map to `A ≃ B`

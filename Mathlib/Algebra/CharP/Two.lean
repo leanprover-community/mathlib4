@@ -7,7 +7,21 @@ module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Algebra.CharP.Defs
-public import Mathlib.Algebra.Ring.Parity
+public import Mathlib.Algebra.Group.Int.Even
+public import Mathlib.Algebra.Group.Nat.Even
+import Mathlib.Algebra.BigOperators.Group.List.Basic
+import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
+import Mathlib.Algebra.GroupWithZero.Basic
+import Mathlib.Algebra.NeZero
+import Mathlib.Algebra.Ring.Parity
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Int.Cast.Basic
+import Mathlib.Data.Set.Insert
+import Mathlib.Init
+import Mathlib.Logic.IsEmpty.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Lemmas about rings of characteristic two

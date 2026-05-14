@@ -6,6 +6,13 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.Group.Subgroup.Ker
+import Mathlib.Algebra.Group.Torsion
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 # Saturated subgroups

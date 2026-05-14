@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.GroupTheory.Congruence.Defs
+import Mathlib.Init
+import Mathlib.Tactic.Coe
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 # Congruence relations and homomorphisms

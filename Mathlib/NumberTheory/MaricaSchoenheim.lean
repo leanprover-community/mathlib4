@@ -5,8 +5,24 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Combinatorics.SetFamily.FourFunctions
-public import Mathlib.Data.Nat.Squarefree
+public import Mathlib.Algebra.Squarefree.Basic
+import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Combinatorics.SetFamily.FourFunctions
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Squarefree
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # The Marica-Schönheim special case of Graham's conjecture

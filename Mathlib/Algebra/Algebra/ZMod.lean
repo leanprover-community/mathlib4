@@ -7,6 +7,13 @@ module
 
 public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Data.ZMod.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Cast.Commute
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # The `ZMod n`-algebra structure on rings whose characteristic divides `n`

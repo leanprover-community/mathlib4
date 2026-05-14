@@ -5,8 +5,23 @@ Authors: Moritz Firsching
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Intervals
-public import Mathlib.Tactic.Ring
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Data.Nat.Factorial.Basic
+public import Mathlib.Order.Interval.Finset.Nat
+public meta import Mathlib.Tactic.Basic
+public meta import Mathlib.Tactic.ToAdditive
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Interval.Finset.SuccPred
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.SuccPred
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.SetLike
 
 /-!
 # Superfactorial

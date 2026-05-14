@@ -7,6 +7,15 @@ module
 
 public import Mathlib.Algebra.Homology.CommSq
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Square
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Preadditive.Biproducts
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Relation between pullback/pushout squares and kernel/cokernel sequences

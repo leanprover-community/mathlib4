@@ -7,7 +7,31 @@ module
 
 public import Mathlib.FieldTheory.SeparableDegree
 public import Mathlib.FieldTheory.IsSepClosed
-public import Mathlib.RingTheory.AlgebraicIndependent.AlgebraicClosure
+public import Mathlib.RingTheory.AlgebraicIndependent.Defs
+public import Mathlib.RingTheory.EssentialFiniteness
+import Mathlib.Algebra.Order.AbsoluteValue.Basic
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Combinatorics.Matroid.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Totient
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
+import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
+import Mathlib.Init
+import Mathlib.LinearAlgebra.Dimension.Finite
+import Mathlib.RingTheory.AlgebraicIndependent.AlgebraicClosure
+import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
+import Mathlib.RingTheory.Polynomial.Tower
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
 
 /-!
 

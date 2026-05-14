@@ -9,6 +9,11 @@ public import Mathlib.Algebra.Group.Action.End
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.Algebra.Group.Action.Prod
 public import Mathlib.Algebra.GroupWithZero.Prod
+import Mathlib.Algebra.Group.Action.Units
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Definitions of group actions

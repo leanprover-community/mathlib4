@@ -8,7 +8,20 @@ module
 public import Mathlib.Algebra.Module.LocalizedModule.IsLocalization
 public import Mathlib.LinearAlgebra.Basis.Basic
 public import Mathlib.RingTheory.Localization.FractionRing
-public import Mathlib.RingTheory.Localization.Integer
+public import Mathlib.Algebra.Algebra.NonUnitalHom
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.LinearAlgebra.Span.Basic
+import Mathlib.RingTheory.Localization.Integer
+import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Inv
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.SetLike
 
 /-!
 # Modules / vector spaces over localizations / fraction fields

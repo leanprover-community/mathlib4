@@ -7,6 +7,15 @@ module
 
 public import Mathlib.CategoryTheory.Enriched.Basic
 public import Mathlib.CategoryTheory.Monoidal.Types.Coyoneda
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.CategoryTheory.Slice
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Enriched ordinary categories

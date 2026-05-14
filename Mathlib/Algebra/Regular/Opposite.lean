@@ -6,6 +6,9 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Algebra.Opposites
+import Mathlib.Init
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 # Results about `IsRegular` and `MulOpposite`

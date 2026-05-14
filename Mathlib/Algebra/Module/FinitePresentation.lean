@@ -5,13 +5,43 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-public import Mathlib.LinearAlgebra.Isomorphisms
-public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-public import Mathlib.RingTheory.Finiteness.Projective
-public import Mathlib.RingTheory.Localization.BaseChange
-public import Mathlib.RingTheory.Noetherian.Basic
-public import Mathlib.RingTheory.TensorProduct.Finite
+public import Mathlib.Algebra.Exact
+public import Mathlib.Algebra.Module.Projective
+public import Mathlib.LinearAlgebra.DFinsupp
+public import Mathlib.RingTheory.Ideal.Prime
+public import Mathlib.RingTheory.IsTensorProduct
+public import Mathlib.RingTheory.Localization.Module
+public import Mathlib.RingTheory.Noetherian.Defs
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Divisibility.Hom
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Init
+import Mathlib.LinearAlgebra.Finsupp.VectorSpace
+import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+import Mathlib.LinearAlgebra.StdBasis
+import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+import Mathlib.Logic.Small.Basic
+import Mathlib.Logic.UnivLE
+import Mathlib.Order.BoundedOrder.Lattice
+import Mathlib.RingTheory.Finiteness.Basic
+import Mathlib.RingTheory.Finiteness.Cardinality
+import Mathlib.RingTheory.Finiteness.Finsupp
+import Mathlib.RingTheory.Finiteness.Projective
+import Mathlib.RingTheory.Localization.BaseChange
+import Mathlib.RingTheory.Noetherian.Basic
+import Mathlib.RingTheory.TensorProduct.Finite
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.SetLike
 
 /-!
 

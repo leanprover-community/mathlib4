@@ -5,8 +5,24 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.SuccPred.Relation
 public import Mathlib.Topology.Order.OrderClosed
+public import Mathlib.Order.SuccPred.Archimedean
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Prod
+import Mathlib.Init
+import Mathlib.Order.Interval.Set.OrdConnected
+import Mathlib.Order.SuccPred.Relation
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Closure
+import Mathlib.Topology.Continuous
+import Mathlib.Topology.ContinuousOn
+import Mathlib.Topology.Maps.Basic
+import Mathlib.Topology.Neighborhoods
 
 /-!
 # Connected subsets of topological spaces

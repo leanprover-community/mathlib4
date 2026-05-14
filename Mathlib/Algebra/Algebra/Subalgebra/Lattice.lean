@@ -7,6 +7,17 @@ module
 
 public import Mathlib.Algebra.Algebra.Operations
 public import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Batteries.Tactic.Congr
+import Mathlib.Algebra.Ring.Commute
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Init
+import Mathlib.RingTheory.SimpleRing.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Complete lattice structure of subalgebras

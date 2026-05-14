@@ -5,10 +5,20 @@ Authors: David Wärn
 -/
 module
 
-public import Mathlib.Data.Stream.Init
-public import Mathlib.Topology.Algebra.Semigroup
 public import Mathlib.Topology.Compactification.StoneCech
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Data.Stream.Defs
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.Max
+import Mathlib.Data.Stream.Init
+import Mathlib.Init
+import Mathlib.Order.Filter.Ultrafilter.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Topology.Algebra.Semigroup
 
 /-!
 # Hindman's theorem on finite sums

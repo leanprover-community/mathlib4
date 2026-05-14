@@ -6,8 +6,15 @@ Authors: Floris van Doorn
 
 module
 
-public import Mathlib.Data.Nat.Lattice
 public import Mathlib.Order.PartialSups
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Lattice
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Data.Set.Lattice
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Accumulate

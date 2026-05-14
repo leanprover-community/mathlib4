@@ -6,7 +6,18 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 module
 
 public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-public import Mathlib.RingTheory.Ideal.Lattice
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Module.Submodule.Lattice
+public import Mathlib.RingTheory.Ideal.Defs
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.RingTheory.Ideal.Lattice
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Inv
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.SetLike
 
 /-!
 

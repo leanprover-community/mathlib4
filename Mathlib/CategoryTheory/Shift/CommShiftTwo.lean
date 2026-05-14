@@ -5,10 +5,22 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Center.NegOnePow
-public import Mathlib.CategoryTheory.Linear.LinearFunctor
 public import Mathlib.CategoryTheory.Shift.Twist
 public import Mathlib.CategoryTheory.Shift.Pullback
+public import Mathlib.Algebra.Group.Prod
+public import Mathlib.Algebra.Ring.Units
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Center.NegOnePow
+import Mathlib.CategoryTheory.Linear.LinearFunctor
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Commutation with shifts of functors in two variables

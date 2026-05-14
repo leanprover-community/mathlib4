@@ -7,6 +7,13 @@ module
 
 public import Mathlib.CategoryTheory.Subobject.Limits
 public import Mathlib.CategoryTheory.Abelian.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Equivalence between subobjects and quotients in an abelian category

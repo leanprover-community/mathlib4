@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Algebra.Algebra.Equiv
 public import Lean.PrettyPrinter.Delaborator.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Notation for Galois group

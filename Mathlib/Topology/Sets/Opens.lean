@@ -6,10 +6,22 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 module
 
 public import Mathlib.Order.Hom.CompleteLattice
-public import Mathlib.Topology.Compactness.Bases
 public import Mathlib.Topology.ContinuousMap.Basic
 public import Mathlib.Order.CompactlyGenerated.Basic
-public import Mathlib.Order.Copy
+public import Mathlib.Topology.Closure
+public import Mathlib.Topology.Continuous
+public import Mathlib.Topology.Maps.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Fintype.Powerset
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Init
+import Mathlib.Order.Copy
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.FastInstance
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Compactness.Bases
+import Mathlib.Topology.Neighborhoods
 
 /-!
 # Open sets

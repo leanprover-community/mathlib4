@@ -7,6 +7,26 @@ module
 
 public import Mathlib.Topology.Defs.Sequences
 public import Mathlib.Topology.Metrizable.Basic
+public import Mathlib.Topology.UniformSpace.Cauchy
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Lattice
+import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Prod
+import Mathlib.Init
+import Mathlib.Order.Filter.AtTopBot.Basic
+import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
+import Mathlib.Order.Filter.AtTopBot.Tendsto
+import Mathlib.Order.Filter.Finite
+import Mathlib.Order.Filter.Map
+import Mathlib.Order.Filter.Prod
+import Mathlib.Order.Filter.Tendsto
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Closure
+import Mathlib.Topology.Continuous
+import Mathlib.Topology.Maps.Basic
+import Mathlib.Topology.Neighborhoods
 
 /-!
 # Sequences in topological spaces

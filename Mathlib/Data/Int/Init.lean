@@ -5,10 +5,11 @@ Authors: Jeremy Avigad
 -/
 module
 
-public import Batteries.Logic
 public import Mathlib.Data.Int.Notation
 public import Mathlib.Data.Nat.Notation
-public import Mathlib.Tactic.DepRewrite
+import Batteries.Logic
+import Mathlib.Init
+import Mathlib.Tactic.DepRewrite
 
 /-!
 # Basic operations on the integers

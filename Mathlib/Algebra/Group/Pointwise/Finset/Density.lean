@@ -6,9 +6,18 @@ Authors: Floris van Doorn, Yaël Dillies
 module
 
 public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
-public import Mathlib.Algebra.Group.Action.Pointwise.Finset
 public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Data.Finset.Density
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.Algebra.Group.Action.Pointwise.Finset
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Theorems about the density of pointwise operations on finsets.

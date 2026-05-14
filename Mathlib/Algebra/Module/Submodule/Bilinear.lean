@@ -5,8 +5,17 @@ Authors: Kenny Lau, Eric Wieser
 -/
 module
 
-public import Mathlib.LinearAlgebra.Span.Basic
 public import Mathlib.LinearAlgebra.BilinearMap
+public import Mathlib.LinearAlgebra.Span.Defs
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Data.Set.NAry
+import Mathlib.Init
+import Mathlib.LinearAlgebra.Span.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Images of pairs of submodules under bilinear maps

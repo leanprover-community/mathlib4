@@ -6,8 +6,15 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.Algebra.Field.Rat
-public import Mathlib.Algebra.Order.Nonneg.Field
-public import Mathlib.Algebra.Order.Ring.Rat
+public import Mathlib.Algebra.Order.GroupWithZero.Canonical
+import Mathlib.Algebra.Order.Nonneg.Field
+import Mathlib.Algebra.Order.Ring.Rat
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # The rational numbers form a linear ordered field

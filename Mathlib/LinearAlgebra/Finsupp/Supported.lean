@@ -8,6 +8,15 @@ module
 public import Mathlib.Algebra.Module.Submodule.Range
 public import Mathlib.LinearAlgebra.Finsupp.LSum
 public import Mathlib.LinearAlgebra.Span.Defs
+import Mathlib.Algebra.Group.Submonoid.BigOperators
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Data.Set.Lattice
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # `Finsupp`s supported on a given submodule

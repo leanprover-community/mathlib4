@@ -5,10 +5,18 @@ Authors: Johannes Hölzl, Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.Group.Submonoid.BigOperators
-public import Mathlib.Algebra.Group.Submonoid.Membership
 public import Mathlib.Data.DFinsupp.BigOperators
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+public import Mathlib.Algebra.Group.Submonoid.Operations
+import Mathlib.Algebra.Group.Submonoid.BigOperators
+import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # `DFinsupp` and submonoids

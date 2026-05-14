@@ -5,9 +5,17 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Final
 public import Mathlib.CategoryTheory.Limits.VanKampen
-public import Mathlib.CategoryTheory.Sites.Hypercover.SheafOfTypes
+public import Mathlib.CategoryTheory.Sites.Hypercover.One
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Limits.Final
+import Mathlib.CategoryTheory.Sites.Hypercover.SheafOfTypes
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # The sheaf condition and universal coproducts

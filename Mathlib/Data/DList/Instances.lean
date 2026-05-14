@@ -7,7 +7,11 @@ module
 
 public import Batteries.Data.DList.Lemmas
 public import Mathlib.Control.Traversable.Equiv
-public import Mathlib.Control.Traversable.Instances
+import Mathlib.Control.Traversable.Instances
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Traversable instance for DLists

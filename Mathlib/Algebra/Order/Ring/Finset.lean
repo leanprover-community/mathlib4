@@ -5,9 +5,17 @@ Authors: Eric Wieser, Yaël Dillies, Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.Canonical
 public import Mathlib.Data.Finset.Lattice.Fold
-public import Mathlib.Data.Nat.Cast.Order.Ring
+public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+public import Mathlib.Algebra.Order.Ring.Defs
+import Mathlib.Algebra.Order.Ring.Canonical
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Cast.Order.Ring
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # `Finset.sup` and ring operations

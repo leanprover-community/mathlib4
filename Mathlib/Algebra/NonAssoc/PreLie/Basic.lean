@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Algebra.Module.Opposite
 public import Mathlib.Algebra.Ring.Associator
+public import Mathlib.Tactic.Attr.Core
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Util.CompileInductive
 /-!
 # Pre-Lie rings and algebras
 

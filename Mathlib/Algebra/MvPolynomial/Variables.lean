@@ -7,6 +7,16 @@ module
 
 public import Mathlib.Data.Finsupp.Lex
 public import Mathlib.Algebra.MvPolynomial.Degrees
+public import Mathlib.Algebra.MonoidAlgebra.Degree
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Variables of polynomials

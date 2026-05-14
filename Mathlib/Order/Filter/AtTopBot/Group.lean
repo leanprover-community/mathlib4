@@ -5,10 +5,25 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.MinMax
-public import Mathlib.Order.Filter.AtTopBot.Basic
-public import Mathlib.Order.Filter.AtTopBot.Map
-public import Mathlib.Order.Filter.AtTopBot.Monoid
+public import Mathlib.Algebra.Order.Group.Unbundled.Abs
+public import Mathlib.Algebra.Order.Monoid.Defs
+public import Mathlib.Order.Filter.AtTopBot.Defs
+import Mathlib.Algebra.Order.Group.Abs
+import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Group.MinMax
+import Mathlib.Algebra.Order.Group.OrderIso
+import Mathlib.Algebra.Order.Monoid.OrderDual
+import Mathlib.Init
+import Mathlib.Order.Filter.AtTopBot.Basic
+import Mathlib.Order.Filter.AtTopBot.Map
+import Mathlib.Order.Filter.AtTopBot.Monoid
+import Mathlib.Order.Filter.AtTopBot.Tendsto
+import Mathlib.Order.Filter.Map
+import Mathlib.Order.Filter.Tendsto
+import Mathlib.Order.MinMax
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 # Convergence to ±infinity in ordered commutative groups

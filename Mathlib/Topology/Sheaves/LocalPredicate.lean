@@ -5,9 +5,18 @@ Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
 module
 
-public import Mathlib.Topology.Sheaves.SheafOfFunctions
 public import Mathlib.Topology.Sheaves.Stalks
-public import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
+public import Mathlib.CategoryTheory.Limits.Types.Colimits
+public import Mathlib.Topology.Sheaves.PresheafOfFunctions
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Sheaves.Init
+import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
+import Mathlib.Topology.Sheaves.SheafOfFunctions
 
 /-!
 # Functions satisfying a local predicate form a sheaf.

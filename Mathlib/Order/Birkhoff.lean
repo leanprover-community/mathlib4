@@ -6,9 +6,16 @@ Authors: Yaël Dillies, Filippo A. E. Nuccio, Sam van Gool
 module
 
 public import Mathlib.Data.Fintype.Order
-public import Mathlib.Order.Interval.Finset.Basic
 public import Mathlib.Order.Irreducible
-public import Mathlib.Order.UpperLower.Closure
+public import Mathlib.Order.UpperLower.Principal
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Order.Interval.Finset.Basic
+import Mathlib.Order.Preorder.Finite
+import Mathlib.Order.UpperLower.Closure
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Birkhoff representation

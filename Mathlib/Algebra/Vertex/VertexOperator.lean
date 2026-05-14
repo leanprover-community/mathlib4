@@ -6,7 +6,14 @@ Authors: Scott Carnahan
 module
 
 public import Mathlib.Algebra.Vertex.HVertexOperator
-public import Mathlib.Data.Int.Interval
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Int.Interval
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Vertex operators

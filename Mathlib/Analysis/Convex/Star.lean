@@ -5,12 +5,28 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
-public import Mathlib.Algebra.Module.LinearMap.Prod
-public import Mathlib.Algebra.Order.Module.Synonym
 public import Mathlib.Analysis.Convex.Segment
-public import Mathlib.Tactic.GCongr
-public import Mathlib.Tactic.Module
+import Mathlib.Algebra.Field.Basic
+import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
+import Mathlib.Algebra.Module.LinearMap.Prod
+import Mathlib.Algebra.Order.Algebra
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Algebra.Order.Module.Synonym
+import Mathlib.Algebra.Order.Monoid.OrderDual
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Lattice
+import Mathlib.Init
+import Mathlib.Order.Interval.Set.OrdConnected
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Module
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Star-convex sets

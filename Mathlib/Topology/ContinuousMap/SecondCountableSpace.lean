@@ -6,6 +6,18 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Topology.CompactOpen
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Data.Set.NAry
+import Mathlib.Init
+import Mathlib.Order.Filter.Finite
+import Mathlib.Order.Filter.Map
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Compactness.LocallyCompact
+import Mathlib.Topology.Continuous
+import Mathlib.Topology.Neighborhoods
 
 /-!
 # Second countable topology on `C(X, Y)`

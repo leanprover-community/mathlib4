@@ -12,6 +12,13 @@ public import Mathlib.Data.Finset.Option
 public import Mathlib.Data.Fintype.Defs
 public import Mathlib.Data.PFun
 public import Mathlib.Data.Vector.Basic
+import Batteries.Tactic.Congr
+import Batteries.Tactic.Trans
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Turing machines

@@ -6,6 +6,10 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Invariant Extensions of Rings

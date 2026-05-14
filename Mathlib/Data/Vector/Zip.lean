@@ -5,7 +5,16 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Data.Vector.Basic
+public import Mathlib.Algebra.BigOperators.Group.List.Defs
+public import Mathlib.Data.Subtype
+public import Mathlib.Data.Vector.Defs
+import Mathlib.Algebra.BigOperators.Group.List.Basic
+import Mathlib.Data.Vector.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 # The `zipWith` operation on vectors.

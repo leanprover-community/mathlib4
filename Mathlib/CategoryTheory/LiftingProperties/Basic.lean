@@ -7,6 +7,14 @@ module
 
 public import Mathlib.CategoryTheory.CommSq
 public import Mathlib.CategoryTheory.Retract
+import Batteries.Tactic.Init
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Translate.ToDual
+import Mathlib.Util.CompileInductive
 
 /-!
 # Lifting properties

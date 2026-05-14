@@ -5,11 +5,21 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Comma
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Basic
 public import Mathlib.Order.SuccPred.Limit
-public import Mathlib.Order.Interval.Set.InitialSeg
+public import Mathlib.CategoryTheory.Limits.HasLimits
+public import Mathlib.Order.InitialSeg
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Limits.Comma
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Order.Interval.Set.InitialSeg
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # An assumption for constructions by transfinite induction

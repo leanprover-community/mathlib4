@@ -5,9 +5,17 @@ Authors: Kim Morrison, Yaël Dillies
 -/
 module
 
-public import Mathlib.Order.Cover
 public import Mathlib.Order.Interval.Finset.Defs
-public import Mathlib.Order.Preorder.Finite
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.Lattice.Lemmas
+import Mathlib.Init
+import Mathlib.Order.Bounds.Basic
+import Mathlib.Order.Cover
+import Mathlib.Order.Interval.Set.LinearOrder
+import Mathlib.Order.Preorder.Finite
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Intervals as finsets

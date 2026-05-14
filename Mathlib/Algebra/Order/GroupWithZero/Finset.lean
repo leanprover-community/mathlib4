@@ -6,8 +6,14 @@ Authors: Eric Wieser, Yaël Dillies, Andrew Yang
 module
 
 public import Mathlib.Algebra.Order.GroupWithZero.Canonical
-public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
 public import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # `Finset.sup` in a group with zero

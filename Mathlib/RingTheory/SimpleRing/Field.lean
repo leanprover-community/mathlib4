@@ -5,9 +5,17 @@ Authors: Jujian Zhang
 -/
 module
 
-public import Mathlib.RingTheory.SimpleRing.Basic
 public import Mathlib.Algebra.Ring.Subring.Basic
-public import Mathlib.Algebra.Field.Equiv
+public import Mathlib.Algebra.Field.IsField
+public import Mathlib.RingTheory.SimpleRing.Defs
+import Mathlib.Algebra.Field.Equiv
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.RingTheory.SimpleRing.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Simple ring and fields

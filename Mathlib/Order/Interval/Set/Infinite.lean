@@ -5,8 +5,16 @@ Authors: Reid Barton
 -/
 module
 
-public import Mathlib.Data.Set.Finite.Basic
-public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.Data.Finite.Defs
+public import Mathlib.Order.Interval.Set.Defs
+public import Mathlib.Order.Max
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Init
+import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Infinitude of intervals

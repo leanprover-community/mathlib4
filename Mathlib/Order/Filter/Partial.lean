@@ -5,8 +5,14 @@ Authors: Jeremy Avigad
 -/
 module
 
-public import Mathlib.Order.Filter.Tendsto
 public import Mathlib.Data.PFun
+public import Mathlib.Order.Filter.Defs
+import Mathlib.Init
+import Mathlib.Order.Filter.Map
+import Mathlib.Order.Filter.Tendsto
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SimpRw
+import Mathlib.Util.CompileInductive
 
 /-!
 # `Tendsto` for relations and partial functions

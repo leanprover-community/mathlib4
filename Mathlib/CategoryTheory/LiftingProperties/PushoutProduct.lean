@@ -5,8 +5,15 @@ Authors: Jack McKoen
 -/
 module
 
-public import Mathlib.CategoryTheory.LiftingProperties.ParametrizedAdjunction
 public import Mathlib.CategoryTheory.Monoidal.PushoutProduct
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.LiftingProperties.Adjunction
+import Mathlib.CategoryTheory.LiftingProperties.ParametrizedAdjunction
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Lifting properties and pushout-products / pullback-homs

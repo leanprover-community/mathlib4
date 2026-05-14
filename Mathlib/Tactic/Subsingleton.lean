@@ -6,7 +6,9 @@ Authors: Kyle Miller
 module
 
 public meta import Lean.Meta.Tactic.Refl
-public import Mathlib.Logic.Basic
+public meta import Lean.Meta.Tactic.TryThis
+import Mathlib.Init
+import Mathlib.Logic.Basic
 
 /-!
 # `subsingleton` tactic

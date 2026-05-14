@@ -7,6 +7,7 @@ module
 
 public meta import Lean.Elab.Tactic.SolveByElim
 public import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Init
 
 /-! # Monotonicity tactic
 

@@ -7,9 +7,16 @@ module
 
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Submonoid.Defs
-public import Mathlib.Data.Set.Inclusion
-public import Mathlib.Tactic.Common
-public import Mathlib.Tactic.FastInstance
+import Mathlib.Algebra.Group.InjSurj
+import Mathlib.Data.Set.Inclusion
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.FastInstance
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 # Subgroups

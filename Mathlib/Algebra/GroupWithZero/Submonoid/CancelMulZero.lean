@@ -5,8 +5,13 @@ Authors: Dexin Zhang
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.InjSurj
 public import Mathlib.Algebra.Group.Submonoid.Defs
+public import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Algebra.GroupWithZero.InjSurj
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Submagmas with zero inherit cancellations

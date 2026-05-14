@@ -8,6 +8,10 @@ module
 public import Mathlib.Algebra.Module.Equiv.Basic
 public import Mathlib.Algebra.Order.Group.Equiv
 public import Mathlib.Algebra.Order.Module.Synonym
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Linear equivalence for order type synonyms

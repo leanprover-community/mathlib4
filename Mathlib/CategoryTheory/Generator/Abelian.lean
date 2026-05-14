@@ -5,11 +5,21 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Abelian.Subobject
-public import Mathlib.CategoryTheory.Limits.EssentiallySmall
 public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
-public import Mathlib.CategoryTheory.Generator.Preadditive
-public import Mathlib.CategoryTheory.Abelian.Opposite
+public import Mathlib.CategoryTheory.Abelian.Basic
+public import Mathlib.CategoryTheory.Generator.Basic
+import Mathlib.CategoryTheory.Abelian.Opposite
+import Mathlib.CategoryTheory.Abelian.Subobject
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Generator.Preadditive
+import Mathlib.CategoryTheory.Limits.EssentiallySmall
+import Mathlib.CategoryTheory.Limits.Opposites
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # A complete abelian category with enough injectives and a separator has an injective coseparator

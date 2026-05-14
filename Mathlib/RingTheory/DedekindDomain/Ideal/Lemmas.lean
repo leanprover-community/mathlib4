@@ -7,10 +7,39 @@ module
 
 public import Mathlib.Algebra.Polynomial.FieldDivision
 public import Mathlib.Algebra.Squarefree.Basic
-public import Mathlib.RingTheory.ChainOfDivisors
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Basic
-public import Mathlib.RingTheory.Spectrum.Maximal.Localization
-public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
+public import Mathlib.Algebra.EuclideanDomain.Field
+public import Mathlib.RingTheory.Localization.AsSubring
+public import Mathlib.RingTheory.Polynomial.UniqueFactorization
+public import Mathlib.RingTheory.Spectrum.Maximal.Defs
+public import Mathlib.RingTheory.UniqueFactorizationDomain.FactorSet
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
+import Mathlib.Algebra.Order.Monoid.NatCast
+import Mathlib.Algebra.Prime.Lemmas
+import Mathlib.Algebra.Ring.Hom.InjSurj
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.Init
+import Mathlib.Order.BoundedOrder.Lattice
+import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
+import Mathlib.RingTheory.ChainOfDivisors
+import Mathlib.RingTheory.Ideal.GoingUp
+import Mathlib.RingTheory.Spectrum.Maximal.Localization
+import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
+import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.SetLike
 
 /-!
 # Dedekind domains and ideals

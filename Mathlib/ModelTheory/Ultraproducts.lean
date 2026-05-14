@@ -6,9 +6,15 @@ Authors: Aaron Anderson
 module
 
 public import Mathlib.ModelTheory.Quotients
-public import Mathlib.Order.Filter.Finite
 public import Mathlib.Order.Filter.Germ.Basic
 public import Mathlib.Order.Filter.Ultrafilter.Defs
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Order.Filter.Finite
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Ultraproducts and Łoś's Theorem

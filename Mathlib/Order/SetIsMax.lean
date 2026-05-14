@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Order.Max
 public import Mathlib.Data.Set.CoeSort
+import Mathlib.Init
+import Mathlib.Util.CompileInductive
 
 /-!
 # Maximal elements of subsets

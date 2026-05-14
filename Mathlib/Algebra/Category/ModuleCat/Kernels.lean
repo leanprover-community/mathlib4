@@ -5,10 +5,20 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.EpiMono
-public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 public import Mathlib.Algebra.Exact
 public import Mathlib.LinearAlgebra.Isomorphisms
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+import Mathlib.Algebra.Category.ModuleCat.EpiMono
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.CategoryTheory.Elementwise
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # The concrete (co)kernels in the category of modules are (co)kernels in the categorical sense.

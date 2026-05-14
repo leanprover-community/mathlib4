@@ -7,6 +7,12 @@ module
 
 public import Mathlib.SetTheory.Cardinal.ToNat
 public import Mathlib.LinearAlgebra.Dimension.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Finite dimension of vector spaces

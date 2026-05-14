@@ -5,11 +5,30 @@ Authors: Andrew Yang, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.UpperLower.Closure
-public import Mathlib.Order.UpperLower.Fibration
-public import Mathlib.Tactic.TFAE
-public import Mathlib.Topology.ContinuousOn
-public import Mathlib.Topology.Maps.OpenQuotient
+public import Mathlib.Data.List.TFAE
+public import Mathlib.Topology.Constructions
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Piecewise
+import Mathlib.Init
+import Mathlib.Order.Filter.Ker
+import Mathlib.Order.Filter.Map
+import Mathlib.Order.Filter.Prod
+import Mathlib.Order.Filter.Tendsto
+import Mathlib.Order.UpperLower.Closure
+import Mathlib.Order.UpperLower.Fibration
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.TFAE
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Topology.Closure
+import Mathlib.Topology.ClusterPt
+import Mathlib.Topology.Continuous
+import Mathlib.Topology.ContinuousOn
+import Mathlib.Topology.Maps.Basic
+import Mathlib.Topology.Maps.OpenQuotient
+import Mathlib.Topology.Neighborhoods
 
 /-!
 # Inseparable points in a topological space

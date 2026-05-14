@@ -8,9 +8,22 @@ module
 public import Mathlib.Algebra.Group.Subgroup.Finite
 public import Mathlib.GroupTheory.Coset.Card
 public import Mathlib.GroupTheory.GroupAction.Quotient
-public import Mathlib.GroupTheory.Perm.Basic
 public import Mathlib.LinearAlgebra.Alternating.Basic
 public import Mathlib.LinearAlgebra.Multilinear.TensorProduct
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
+import Mathlib.Algebra.Module.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.GroupTheory.Perm.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.SetLike
 
 /-!
 # Exterior product of alternating maps
