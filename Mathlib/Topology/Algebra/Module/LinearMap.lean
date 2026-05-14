@@ -449,7 +449,7 @@ end Add
 
 variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 
-/-- Composition of bounded linear maps. -/
+/-- Composition of continuous linear maps. -/
 def comp (g : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) : M₁ →SL[σ₁₃] M₃ :=
   ⟨(g : M₂ →ₛₗ[σ₂₃] M₃).comp (f : M₁ →ₛₗ[σ₁₂] M₂), g.2.comp f.2⟩
 
