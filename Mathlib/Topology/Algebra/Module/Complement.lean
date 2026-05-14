@@ -13,7 +13,7 @@ public import Mathlib.Topology.Algebra.Module.Equiv
 
 Let `M` be a topological `R`-module. Two submodules `p, q` of `M` are said to be
 *topological complements* (`Submodule.IsTopCompl`) if they are algebraic complements and the
-algebraic isomorphism `M ≃ p × q` is an homeomorphism.
+algebraic isomorphism `M ≃ p × q` is a homeomorphism.
 
 Not all submodules of `M` admit such a topological complements (even if they admit algebraic
 complements). In the literature, such a submodule is called *topologically complemented*
@@ -59,10 +59,10 @@ In general we only include the left version, the right one being accessible thro
 
 There is still a significant part of the algebraic API which should be ported to the
 topological setting. Notably, we should:
-* show that `Submodule.prodEquivOfIsCompl` is an homeomorphism if and only if
+* show that `Submodule.prodEquivOfIsCompl` is a homeomorphism if and only if
   the two subspaces are topological complements, and bundle it as a `ContinuousLinearEquiv` when
   this is the case. (See the existing `ClosedComplemented.exists_submodule_equiv_prod`).
-* show that `Submodule.quotientEquivOfIsCompl` is an homeomorphism if and only if
+* show that `Submodule.quotientEquivOfIsCompl` is a homeomorphism if and only if
   the two subspaces are topological complements, and bundle it as a `ContinuousLinearEquiv` when
   this is the case.
 * define `ContinuousLinearMap.ofIsTopCompl`, analogous to `LinearMap.ofIsCompl`.
@@ -86,7 +86,7 @@ the projection on `p` along `q` is continuous. -/
 @[pp_nodot]
 structure IsTopCompl (p q : Submodule R M) : Prop where
   isCompl : IsCompl p q
-  continuous_projection : Continuous isCompl.projection
+  continuous_projection : Continuous (p.projection q isCompl)
 
 /-- A submodule `p` is called *complemented* if there exists a continuous projection `M →ₗ[R] p`. -/
 def ClosedComplemented (p : Submodule R M) : Prop :=
@@ -97,29 +97,35 @@ variable {p q : Submodule R M}
 section IsTopCompl
 
 theorem IsCompl.isTopCompl_iff (h : IsCompl p q) :
-    IsTopCompl p q ↔ Continuous h.projection :=
+    IsTopCompl p q ↔ Continuous (p.projection q h) :=
   ⟨IsTopCompl.continuous_projection, fun h' ↦ ⟨h, h'⟩⟩
 
-theorem IsCompl.isTopCompl_iff_linearProjOfIsCompl (h : IsCompl p q) :
-    IsTopCompl p q ↔ Continuous (p.linearProjOfIsCompl q h) := by
+theorem IsCompl.isTopCompl_iff_projectionOnto (h : IsCompl p q) :
+    IsTopCompl p q ↔ Continuous (p.projectionOnto q h) := by
   rw [h.isTopCompl_iff, IsInducing.subtypeVal.continuous_iff]
   rfl
 
-theorem IsTopCompl.continuous_linearProjOfIsCompl (h : IsTopCompl p q) :
-    Continuous (p.linearProjOfIsCompl q h.isCompl) :=
-  h.isCompl.isTopCompl_iff_linearProjOfIsCompl.mp h
+@[deprecated (since := "2026-05-05")] alias IsCompl.isTopCompl_iff_linearProjOfIsCompl :=
+  IsCompl.isTopCompl_iff_projectionOnto
+
+theorem IsTopCompl.continuous_projectionOnto (h : IsTopCompl p q) :
+    Continuous (p.projectionOnto q h.isCompl) :=
+  h.isCompl.isTopCompl_iff_projectionOnto.mp h
+
+@[deprecated (since := "2026-05-05")] alias IsTopCompl.continuous_linearProjOfIsCompl :=
+  IsTopCompl.continuous_projectionOnto
 
 protected theorem IsTopCompl.symm [ContinuousSub M] (h : IsTopCompl p q) : IsTopCompl q p where
   isCompl := h.isCompl.symm
   continuous_projection := by
-    rw [h.isCompl.projection_eq_id_sub_projection]
+    rw [projection_eq_id_sub_projection h.isCompl]
     exact continuous_id.sub h.continuous_projection
 
 open LinearMap in
 theorem _root_.ContinuousLinearMap.IsIdempotentElem.isTopCompl {f : M →L[R] M}
     (hf : IsIdempotentElem f) : IsTopCompl f.range f.ker where
   isCompl := hf.toLinearMap.isCompl
-  continuous_projection := hf.toLinearMap.eq_isCompl_projection ▸ f.continuous
+  continuous_projection := hf.toLinearMap.eq_projection ▸ f.continuous
 
 theorem isTopCompl_bot_top :
     IsTopCompl (⊥ : Submodule R M) ⊤ := by
@@ -155,28 +161,28 @@ along `q`. This is the continuous version of `Submodule.linearProjOfIsCompl`.
 
 See also `Submodule.IsTopCompl.projection` for the same projection as an element of `M →L[R] M`. -/
 noncomputable def projectionOntoL (h : IsTopCompl p q) : M →L[R] p :=
-  ⟨p.linearProjOfIsCompl q h.isCompl, h.continuous_linearProjOfIsCompl⟩
+  ⟨p.projectionOnto q h.isCompl, h.continuous_projectionOnto⟩
 
 @[simp]
 theorem toLinearMap_projectionOntoL (h : IsTopCompl p q) :
-    p.projectionOntoL q h = p.linearProjOfIsCompl q h.isCompl :=
+    p.projectionOntoL q h = p.projectionOnto q h.isCompl :=
   rfl
 
 @[simp]
 theorem projectionOntoL_apply_left (h : IsTopCompl p q) (x : p) :
     p.projectionOntoL q h x = x :=
-  linearProjOfIsCompl_apply_left h.isCompl x
+  projectionOnto_apply_left h.isCompl x
 
-theorem range_projectionOntoL (h : IsTopCompl p q) : (p.projectionOntoL q h).range = ⊤ :=
-  linearProjOfIsCompl_range h.isCompl
+theorem range_projectionOntoL (h : IsTopCompl p q) : (p.projectionOntoL q h).range = ⊤ := by
+  simp
 
 theorem projectionOntoL_surjective (h : IsTopCompl p q) : Surjective (p.projectionOntoL q h) :=
-  linearProjOfIsCompl_surjective h.isCompl
+  projectionOnto_surjective h.isCompl
 
 @[simp]
 theorem projectionOntoL_apply_eq_zero_iff (h : IsTopCompl p q) {x : M} :
     p.projectionOntoL q h x = 0 ↔ x ∈ q :=
-  linearProjOfIsCompl_apply_eq_zero_iff h.isCompl
+  projectionOnto_apply_eq_zero_iff h.isCompl
 
 alias ⟨_, projectionOntoL_apply_eq_zero_of_mem_right⟩ :=
   projectionOntoL_apply_eq_zero_iff
@@ -187,8 +193,8 @@ theorem projectionOntoL_apply_right (h : IsTopCompl p q) (x : q) :
   projectionOntoL_apply_eq_zero_of_mem_right h x.2
 
 theorem ker_projectionOntoL (h : IsTopCompl p q) :
-    (p.projectionOntoL q h).ker = q :=
-  linearProjOfIsCompl_ker h.isCompl
+    (p.projectionOntoL q h).ker = q := by
+  simp
 
 theorem isQuotientMap_projectionOntoL (h : IsTopCompl p q) :
     IsQuotientMap (p.projectionOntoL q h) :=
@@ -210,7 +216,7 @@ noncomputable def projectionL (h : IsTopCompl p q) : M →L[R] M :=
 
 @[simp]
 theorem toLinearMap_projectionL (h : IsTopCompl p q) :
-    p.projectionL q h = h.isCompl.projection :=
+    p.projectionL q h = p.projection q h.isCompl :=
   rfl
 
 theorem projectionL_apply (h : IsTopCompl p q) (x : M) :
@@ -230,16 +236,16 @@ theorem projectionL_apply_mem (h : IsTopCompl p q) (x : M) :
 @[simp]
 theorem projectionL_apply_left (h : IsTopCompl p q) (x : p) :
     p.projectionL q h x = x :=
-  h.isCompl.projection_apply_left x
+  projection_apply_left h.isCompl x
 
 theorem range_projectionL (h : IsTopCompl p q) :
-    (p.projectionL q h).range = p :=
-  h.isCompl.projection_range
+    (p.projectionL q h).range = p := by
+  simp
 
 @[simp]
 theorem projectionL_apply_eq_zero_iff (h : IsTopCompl p q) {x : M} :
     p.projectionL q h x = 0 ↔ x ∈ q :=
-  h.isCompl.projection_apply_eq_zero_iff
+  projection_apply_eq_zero_iff h.isCompl
 
 alias ⟨_, projectionL_apply_eq_zero_of_mem_right⟩ :=
   projectionL_apply_eq_zero_iff
@@ -250,8 +256,8 @@ theorem projectionL_apply_right (h : IsTopCompl p q) (x : q) :
   projectionL_apply_eq_zero_of_mem_right h x.2
 
 theorem ker_projectionL (h : IsTopCompl p q) :
-    (p.projectionL q h).ker = q :=
-  h.isCompl.projection_ker
+    (p.projectionL q h).ker = q := by
+  simp
 
 @[simp]
 theorem isIdempotentElem_projectionL (h : IsTopCompl p q) :
@@ -261,7 +267,7 @@ theorem isIdempotentElem_projectionL (h : IsTopCompl p q) :
 theorem projectionL_add_projectionL_eq_self [ContinuousSub M]
     (h : IsTopCompl p q) (x : M) :
     p.projectionL q h x + q.projectionL p h.symm x = x :=
-  h.isCompl.projection_add_projection_eq_self x
+  projection_add_projection_eq_self h.isCompl x
 
 theorem projectionL_add_projectionL_eq_id [IsTopologicalAddGroup M] (h : IsTopCompl p q) :
     p.projectionL q h + q.projectionL p h.symm = .id R M :=
@@ -278,11 +284,11 @@ lemma projectionL_eq_id_sub_projectionL [IsTopologicalAddGroup M] (h : IsTopComp
 /-- The projection to `p` along `q` of `x` equals `x` if and only if `x ∈ p`. -/
 @[simp] lemma projectionL_eq_self_iff [ContinuousSub M] (h : IsTopCompl p q) (x : M) :
     p.projectionL q h x = x ↔ x ∈ p :=
-  h.isCompl.projection_eq_self_iff x
+  projection_eq_self_iff h.isCompl x
 
 theorem _root_.ContinuousLinearMap.IsIdempotentElem.eq_projectionL
     {f : M →L[R] M} (hf : IsIdempotentElem f) : f = f.range.projectionL f.ker hf.isTopCompl :=
-  coe_inj.mp <| LinearMap.IsIdempotentElem.eq_isCompl_projection hf.toLinearMap
+  coe_inj.mp <| LinearMap.IsIdempotentElem.eq_projection hf.toLinearMap
 
 theorem _root_.ContinuousLinearMap.isIdempotentElem_iff_eq_projectionL_range_ker
     {f : M →L[R] M} : IsIdempotentElem f ↔
