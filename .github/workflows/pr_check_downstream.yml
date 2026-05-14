@@ -25,6 +25,11 @@ name: PR check downstream
 #                          instead of cherry-picking onto the downstream's
 #                          last-known-good mathlib commit).
 #
+# Grammar errors are surfaced as a comment on the PR by the
+# `check-downstream-validate` action.  Runtime errors (unknown
+# downstream name, build failures, etc.) come from the dispatched
+# downstream-reports workflow, keeping the two repos decoupled.
+#
 # See `docs/internal/pr-validation-workflow.md` in downstream-reports for
 # the full design.
 
@@ -38,7 +43,7 @@ on:
         type: string
       downstreams:
         required: true
-        # Comma-separated `<name>[@<rev>] [--merge-branch]` entries.
+        # Comma-separated `<name-or-slug>[@<rev>] [--merge-branch]` entries.
         type: string
 
 permissions:
@@ -80,44 +85,28 @@ jobs:
         env:
           BODY: ${{ github.event.comment.body }}
         run: |
-          # First line only; strip the directive; the remainder is the
-          # comma-separated `<name>[@<rev>] [--merge-branch]` list. Anything
-          # after the first line is contextual prose and is ignored.
+          # First line only; strip the `!downstream-check` prefix; the rest
+          # is the comma-separated entry list.  Empty / malformed grammar is
+          # not checked here — the validate action handles that path and
+          # posts a user-facing comment on failure.
           line="$(printf '%s' "$BODY" | head -n1 | tr -d '\r')"
           rest="${line#!downstream-check}"
           rest="$(echo "$rest" | sed -E 's/^[[:space:]]+//;s/[[:space:]]+$//')"
-          if [ -z "$rest" ]; then
-            echo "::error::usage: !downstream-check <name>[@<rev>] [--merge-branch][, <name>...]"
-            exit 1
-          fi
-          # Use a delimiter to safely round-trip values that contain spaces.
           {
             echo "downstreams<<__EOF__"
             echo "$rest"
             echo "__EOF__"
           } >> "$GITHUB_OUTPUT"
 
-      - name: Checkout local actions
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          ref: ${{ github.workflow_sha }}
-          fetch-depth: 1
-          sparse-checkout: .github/actions
-          path: workflow-actions
-
-      - name: Get mathlib-ci
-        uses: ./workflow-actions/.github/actions/get-mathlib-ci
-
       - name: Validate downstream entries
         id: validate
-        env:
-          GH_TOKEN:    ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER:   ${{ github.event.issue.number || inputs.pr_number }}
-          DS:          ${{ steps.parse.outputs.downstreams || inputs.downstreams }}
-        run: |
-          "$CI_SCRIPTS_DIR/pr_check_downstream/validate_names.sh" \
-            --names "$DS" \
-            --output "$GITHUB_OUTPUT"
+        uses: leanprover-community/mathlib-ci/.github/actions/check-downstream-validate@marcelo/2026/05/DownstreamPrValidation
+        with:
+          names: ${{ steps.parse.outputs.downstreams || inputs.downstreams }}
+          pr-number: ${{ github.event.issue.number || inputs.pr_number }}
+          repo: ${{ github.repository }}
+          commenter: ${{ github.event.comment.user.login || github.actor }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Mint App token (for downstream-reports)
         id: app_token
@@ -151,10 +140,11 @@ jobs:
             -f triggered_by="$TRIGGERED_BY"
 
       - name: Post ack comment
-        env:
-          GITHUB_TOKEN:    ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER:       ${{ github.event.issue.number || inputs.pr_number }}
-          DOWNSTREAMS:     ${{ steps.validate.outputs.resolved_names }}
-          MERGE_SHA:       ${{ steps.validate.outputs.merge_sha }}
-        run: |
-          "$CI_SCRIPTS_DIR/pr_check_downstream/post_ack_comment.sh"
+        uses: leanprover-community/mathlib-ci/.github/actions/check-downstream-ack@marcelo/2026/05/DownstreamPrValidation
+        with:
+          repo: ${{ github.repository }}
+          pr-number: ${{ github.event.issue.number || inputs.pr_number }}
+          downstreams: ${{ steps.validate.outputs.resolved_names }}
+          merge-sha: ${{ steps.validate.outputs.merge_sha }}
+          run-url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
