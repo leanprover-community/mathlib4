@@ -6,7 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
-public import Mathlib.CategoryTheory.Limits.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 public import Mathlib.Data.Fintype.Sigma
 
 /-!
@@ -45,9 +46,9 @@ open Simplicial
 
 universe u
 
-variable {C : Type*} [Category* C]
+variable {C D : Type*} [Category* C] [Category* D]
 
-namespace SimplicialObject
+namespace CategoryTheory.SimplicialObject
 
 namespace Splitting
 
@@ -118,6 +119,7 @@ element `Splitting.IndexSet.Id Δ`. -/
 def EqId : Prop :=
   A = id _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eqId_iff_eq : A.EqId ↔ A.1 = Δ := by
   constructor
   · intro h
@@ -194,7 +196,7 @@ def summand (A : IndexSet Δ) : C :=
   N A.1.unop.len
 
 /-- The cofan for `summand N Δ` induced by morphisms `N n ⟶ X _⦋n⦌` for all `n : ℕ`. -/
-def cofan' (Δ : SimplexCategoryᵒᵖ) : Cofan (summand N Δ) :=
+abbrev cofan' (Δ : SimplexCategoryᵒᵖ) : Cofan (summand N Δ) :=
   Cofan.mk (X.obj Δ) (fun A => φ A.1.unop.len ≫ X.map A.e.op)
 
 end Splitting
@@ -211,6 +213,8 @@ structure Splitting (X : SimplicialObject C) where
   /-- For each `Δ`, `X.obj Δ` identifies to the coproduct of the objects `N A.1.unop.len`
   for all `A : IndexSet Δ`. -/
   isColimit' : ∀ Δ : SimplexCategoryᵒᵖ, IsColimit (Splitting.cofan' N X ι Δ)
+
+initialize_simps_projections Splitting (-isColimit')
 
 namespace Splitting
 
@@ -237,6 +241,7 @@ simplicial object to any simplicial object is determined by its restrictions
 def φ (f : X ⟶ Y) (n : ℕ) : s.N n ⟶ Y _⦋n⦌ :=
   s.ι n ≫ f.app (op ⦋n⦌)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem cofan_inj_comp_app (f : X ⟶ Y) {Δ : SimplexCategoryᵒᵖ} (A : IndexSet Δ) :
     (s.cofan Δ).inj A ≫ f.app Δ = s.φ f A.1.unop.len ≫ Y.map A.e.op := by
@@ -247,6 +252,7 @@ theorem hom_ext' {Z : C} {Δ : SimplexCategoryᵒᵖ} (f g : X.obj Δ ⟶ Z)
     (h : ∀ A : IndexSet Δ, (s.cofan Δ).inj A ≫ f = (s.cofan Δ).inj A ≫ g) : f = g :=
   Cofan.IsColimit.hom_ext (s.isColimit Δ) _ _ h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hom_ext (f g : X ⟶ Y) (h : ∀ n : ℕ, s.φ f n = s.φ g n) : f = g := by
   ext ⟨Δ⟩
   apply s.hom_ext'
@@ -271,7 +277,7 @@ theorem ι_desc {Z : C} (Δ : SimplexCategoryᵒᵖ) (F : ∀ A : IndexSet Δ, s
 def ofIso (e : X ≅ Y) : Splitting Y where
   N := s.N
   ι n := s.ι n ≫ e.hom.app (op ⦋n⦌)
-  isColimit' Δ := IsColimit.ofIsoColimit (s.isColimit Δ ) (Cofan.ext (e.app Δ)
+  isColimit' Δ := IsColimit.ofIsoColimit (s.isColimit Δ) (Cofan.ext (e.app Δ)
     (fun A => by simp [cofan, cofan']))
 
 @[reassoc]
@@ -280,6 +286,17 @@ theorem cofan_inj_epi_naturality {Δ₁ Δ₂ : SimplexCategoryᵒᵖ} (A : Inde
   dsimp [cofan]
   rw [assoc, ← X.map_comp]
   rfl
+
+/-- The image of a splitting of simplicial object by a functor which preserves
+finite coproducts -/
+@[simps]
+def map (F : C ⥤ D) [PreservesFiniteCoproducts F] :
+    Splitting (X ⋙ F) where
+  N n := F.obj (s.N n)
+  ι n := F.map (s.ι n)
+  isColimit' n :=
+    IsColimit.ofIsoColimit (isColimitCofanMkObjOfIsColimit F _ _ (s.isColimit n))
+      (Cofan.ext (Iso.refl _))
 
 end Splitting
 
@@ -375,6 +392,7 @@ theorem comp_f {S₁ S₂ S₃ : Split C} (Φ₁₂ : S₁ ⟶ S₂) (Φ₂₃ :
     (Φ₁₂ ≫ Φ₂₃).f n = Φ₁₂.f n ≫ Φ₂₃.f n :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 -- This is not a `@[simp]` lemma as it can later be proved by `simp`.
 @[reassoc]
 theorem cofan_inj_naturality_symm {S₁ S₂ : Split C} (Φ : S₁ ⟶ S₂) {Δ : SimplexCategoryᵒᵖ}
@@ -409,4 +427,4 @@ def natTransCofanInj {Δ : SimplexCategoryᵒᵖ} (A : Splitting.IndexSet Δ) :
 
 end Split
 
-end SimplicialObject
+end CategoryTheory.SimplicialObject

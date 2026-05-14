@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.Finiteness.Small
 public import Mathlib.RingTheory.IsTensorProduct
 public import Mathlib.RingTheory.TensorProduct.Finite
 public import Mathlib.RingTheory.Adjoin.FGBaseChange
+public import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
 # Flat modules
@@ -70,7 +71,7 @@ open TensorProduct
 
 namespace Module
 
-open Function (Surjective)
+open Function (Injective Surjective)
 
 open LinearMap Submodule DirectSum
 
@@ -176,7 +177,7 @@ lemma of_retract [f : Flat R M] (i : N →ₗ[R] M) (r : M →ₗ[R] N) (h : r.c
   refine (f Q).comp (Function.RightInverse.injective (g := lTensor Q r) fun x ↦ ?_)
   simp [← comp_apply, ← lTensor_comp, h]
 
-/-- A `R`-module linearly equivalent to a flat `R`-module is flat. -/
+/-- An `R`-module linearly equivalent to a flat `R`-module is flat. -/
 lemma of_linearEquiv [Flat R M] (e : N ≃ₗ[R] M) : Flat R N :=
   of_retract e.toLinearMap e.symm (by simp)
 
@@ -205,7 +206,7 @@ variable {ι : Type v} {M : ι → Type w} [Π i, AddCommMonoid (M i)] [Π i, Mo
 
 theorem directSum_iff : Flat R (⨁ i, M i) ↔ ∀ i, Flat R (M i) := by
   classical
-  simp_rw [iff_rTensor_injectiveₛ, ← EquivLike.comp_injective _ (directSumRight R _ _),
+  simp_rw [iff_rTensor_injectiveₛ, ← EquivLike.comp_injective _ (directSumRight R R _ _),
     ← LinearEquiv.coe_coe, ← coe_comp, directSumRight_comp_rTensor, coe_comp, LinearEquiv.coe_coe,
     EquivLike.injective_comp, lmap_injective]
   constructor <;> (intro h; intros; apply h)
@@ -241,11 +242,34 @@ instance {S} [CommSemiring S] [Algebra R S] [Module S M] [IsScalarTower R S M]
 
 example [Flat R M] [Flat R N] : Flat R (M ⊗[R] N) := inferInstance
 
-theorem linearIndependent_one_tmul {S} [Semiring S] [Algebra R S] [Flat R S] {ι} {v : ι → M}
+section Algebra
+
+variable {S : Type*} [Semiring S] [Algebra R S]
+
+theorem linearIndependent_one_tmul [Flat R S] {ι} {v : ι → M}
     (hv : LinearIndependent R v) : LinearIndependent S ((1 : S) ⊗ₜ[R] v ·) := by
   classical rw [LinearIndependent, ← LinearMap.coe_restrictScalars R,
     Finsupp.linearCombination_one_tmul]
   simpa using lTensor_preserves_injective_linearMap _ hv
+
+variable (R S M)
+
+/-- See also `Module.FaithfullyFlat.tensorProduct_mk_injective`. -/
+lemma tensorProduct_mk_injective [FaithfulSMul R S] [Flat R M] :
+    Injective (TensorProduct.mk R S M 1) := by
+  have : TensorProduct.mk R S M 1 =
+      (Algebra.linearMap R S).rTensor M ∘ (TensorProduct.lid R M).symm := by ext; simp
+  rw [this]
+  refine Injective.comp ?_ (LinearEquiv.injective _)
+  exact Flat.rTensor_preserves_injective_linearMap _ <| FaithfulSMul.algebraMap_injective R S
+
+lemma _root_.LinearMap.baseChangeHom_injective [FaithfulSMul R S] [Flat R N] :
+    Injective (LinearMap.baseChangeHom R S M N) := by
+  intro f g h
+  ext m
+  simpa using Flat.tensorProduct_mk_injective R N S <| LinearMap.congr_fun h (1 ⊗ₜ[R] m)
+
+end Algebra
 
 end Flat
 
@@ -308,7 +332,7 @@ lemma lTensor_exact [Flat R M] ⦃N N' N'' : Type*⦄
   suffices exact1 : Function.Exact (f.lTensor M) (π.lTensor M) by
     rw [show g = ι.comp π from rfl, lTensor_comp]
     exact exact1.comp_injective _ (lTensor_preserves_injective_linearMap ι <| by
-      simpa [ι, - Subtype.val_injective] using Subtype.val_injective) (map_zero _)
+      simpa [ι, -Subtype.val_injective] using Subtype.val_injective) (map_zero _)
   exact _root_.lTensor_exact _ (fun x ↦ by simp [π]) Quotient.mk''_surjective
 
 variable (M) in
@@ -325,7 +349,7 @@ lemma rTensor_exact [Flat R M] ⦃N N' N'' : Type*⦄
   suffices exact1 : Function.Exact (f.rTensor M) (π.rTensor M) by
     rw [show g = ι.comp π from rfl, rTensor_comp]
     exact exact1.comp_injective _ (rTensor_preserves_injective_linearMap ι <| by
-      simpa [ι, - Subtype.val_injective] using Subtype.val_injective) (map_zero _)
+      simpa [ι, -Subtype.val_injective] using Subtype.val_injective) (map_zero _)
   exact _root_.rTensor_exact M (fun x ↦ by simp [π]) Quotient.mk''_surjective
 
 /-- `M` is flat if and only if `M ⊗ -` is an exact functor. See
@@ -339,7 +363,7 @@ theorem iff_lTensor_exact' [Small.{v'} R] : Flat R M ↔
       fun x (hx : _ = 0) ↦ ?_⟩
   simpa [Eq.comm] using @H PUnit N' N'' _ _ _ _ _ _ 0 L (fun x ↦ by
     simp_rw [Set.mem_range, LinearMap.zero_apply, exists_const]
-    exact (L.map_eq_zero_iff hL).trans eq_comm) x |>.mp  hx
+    exact (L.map_eq_zero_iff hL).trans eq_comm) x |>.mp hx
 
 /-- `M` is flat if and only if `M ⊗ -` is an exact functor.
   See `Module.Flat.iff_lTensor_exact'` to generalize the universe of
@@ -396,6 +420,27 @@ theorem includeRight_injective [Module.Flat R B] (ha : Function.Injective (algeb
   ext; simp
 
 end Algebra.TensorProduct
+
+variable (A) [Module.Flat R A] {M : Type*} [AddCommMonoid M] [Module R M] (p : Submodule R M)
+
+namespace Submodule
+
+theorem toBaseChange_injective : Function.Injective (p.toBaseChange A) :=
+  (p.subtype.baseChange A).injective_rangeRestrict_iff.mpr
+    (Module.Flat.lTensor_preserves_injective_linearMap p.subtype (injective_subtype p))
+
+/-- `Submodule.toBaseChange` as a `LinearEquiv`. -/
+@[simps! apply]
+noncomputable def toBaseChange.toLinearEquiv : A ⊗[R] ↥p ≃ₗ[A] baseChange A p :=
+  .ofBijective (p.toBaseChange A) ⟨p.toBaseChange_injective A, p.toBaseChange_surjective A⟩
+
+@[simp]
+theorem toBaseChange.toLinearEquiv_symm_apply (a : A) (m : p) :
+    (toBaseChange.toLinearEquiv A p).symm
+      ⟨a ⊗ₜ[R] m, tmul_mem_baseChange_of_mem a m.2⟩ = a ⊗ₜ[R] m :=
+  (toBaseChange.toLinearEquiv A p).symm_apply_apply (a ⊗ₜ[R] m)
+
+end Submodule
 
 end Injective
 
@@ -470,7 +515,7 @@ The flatness condition could be removed over domains.
 See `LinearIndepOn.tmul_of_isDomain`. -/
 nonrec lemma LinearIndepOn.tmul_of_flat_left [Module.Flat R M] (hv : LinearIndepOn R v s)
     (hw : LinearIndepOn R w t) : LinearIndepOn R (fun i : ι × κ ↦ v i.1 ⊗ₜ[R] w i.2) (s ×ˢ t) :=
-  ((hv.tmul_of_flat_left hw).comp _ (Equiv.Set.prod _ _).injective:)
+  ((hv.tmul_of_flat_left hw).comp _ (Equiv.Set.prod _ _).injective :)
 
 /-- Tensor product of linearly independent families is linearly
 independent under some flatness conditions.
@@ -490,7 +535,7 @@ The flatness condition could be removed over domains.
 See `LinearIndepOn.tmul_of_isDomain`. -/
 nonrec lemma LinearIndepOn.tmul_of_flat_right [Module.Flat R N] (hv : LinearIndepOn R v s)
     (hw : LinearIndepOn R w t) : LinearIndepOn R (fun i : ι × κ ↦ v i.1 ⊗ₜ[R] w i.2) (s ×ˢ t) :=
-  ((hv.tmul_of_flat_right hw).comp _ (Equiv.Set.prod _ _).injective:)
+  ((hv.tmul_of_flat_right hw).comp _ (Equiv.Set.prod _ _).injective :)
 
 variable (p : Submodule R M) (q : Submodule R N)
 
@@ -599,7 +644,7 @@ theorem IsReduced.tensorProduct_of_flat_of_forall_fg {R C A : Type*}
   obtain ⟨x, hx⟩ := exists_isNilpotent_of_not_isReduced h_contra
   obtain ⟨D, hD⟩ := exists_fg_and_mem_baseChange x
   have h_inj : Function.Injective
-      (Algebra.TensorProduct.map (AlgHom.id C C ) D.val) :=
+      (Algebra.TensorProduct.map (AlgHom.id C C) D.val) :=
     Module.Flat.lTensor_preserves_injective_linearMap _ Subtype.val_injective
   obtain ⟨z, rfl⟩ := hD.2
   have h_notReduced : ¬IsReduced (C ⊗[R] D) := by

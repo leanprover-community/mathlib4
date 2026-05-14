@@ -115,7 +115,7 @@ section ProjectiveFamilyContent
 cylinders, by setting `projectiveFamilyContent s = P I S` for `s = cylinder I S`, where `I` is
 a finite set of indices and `S` is a measurable set in `Π i : I, α i`. -/
 noncomputable def projectiveFamilyContent (hP : IsProjectiveMeasureFamily P) :
-    AddContent (measurableCylinders α) :=
+    AddContent ℝ≥0∞ (measurableCylinders α) :=
   isSetRing_measurableCylinders.addContent_of_union (projectiveFamilyFun P)
     (projectiveFamilyFun_empty hP) (projectiveFamilyFun_union hP)
 
@@ -150,7 +150,7 @@ lemma projectiveFamilyContent_ne_top [∀ J, IsFiniteMeasure (P J)]
     (hP : IsProjectiveMeasureFamily P) :
     projectiveFamilyContent hP s ≠ ∞ := by
   rw [projectiveFamilyContent_eq hP, projectiveFamilyFun]
-  split_ifs with hs <;> finiteness
+  finiteness
 
 lemma projectiveFamilyContent_diff (hP : IsProjectiveMeasureFamily P)
     (hs : s ∈ measurableCylinders α) (ht : t ∈ measurableCylinders α) :

@@ -8,7 +8,7 @@ module
 public import Mathlib.CategoryTheory.Shift.Basic
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
-/-! Sequences of functors from a category equipped with a shift
+/-! # Sequences of functors from a category equipped with a shift
 
 Let `F : C ⥤ A` be a functor from a category `C` that is equipped with a
 shift by an additive monoid `M`. In this file, we define a typeclass
@@ -57,9 +57,10 @@ class ShiftSequence where
         isoWhiskerLeft _ (shiftIso n a a' ha') ≪≫ shiftIso m a' a'' ha''
 
 /-- The tautological shift sequence on a functor. -/
+@[implicit_reducible]
 noncomputable def ShiftSequence.tautological : ShiftSequence F M where
   sequence n := shiftFunctor C n ⋙ F
-  isoZero := isoWhiskerRight (shiftFunctorZero C M) F ≪≫ F.rightUnitor
+  isoZero := isoWhiskerRight (shiftFunctorZero C M) F ≪≫ F.leftUnitor
   shiftIso n a a' ha' := (Functor.associator _ _ _).symm ≪≫
     isoWhiskerRight (shiftFunctorAdd' C n a a' ha').symm _
   shiftIso_zero a := by
@@ -72,7 +73,7 @@ noncomputable def ShiftSequence.tautological : ShiftSequence F M where
     congr
     simpa only [← cancel_epi ((shiftFunctor C a).map ((shiftFunctorAdd C m n).hom.app X)),
       shiftFunctorAdd'_eq_shiftFunctorAdd, ← Functor.map_comp_assoc, Iso.hom_inv_id_app,
-      Functor.map_id, id_comp] using shiftFunctorAdd'_assoc_inv_app m n a (m+n) a' a'' rfl ha'
+      Functor.map_id, id_comp] using shiftFunctorAdd'_assoc_inv_app m n a (m + n) a' a'' rfl ha'
         (by rw [← ha'', ← ha', add_assoc]) X
 
 section
@@ -94,6 +95,7 @@ lemma shiftIso_hom_naturality {X Y : C} (n a a' : M) (ha' : n + a = a') (f : X �
       (shiftIso F n a a' ha').hom.app X ≫ (shift F a').map f :=
   (F.shiftIso n a a' ha').hom.naturality f
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma shiftIso_inv_naturality {X Y : C} (n a a' : M) (ha' : n + a = a') (f : X ⟶ Y) :
     (shift F a').map f ≫ (shiftIso F n a a' ha').inv.app Y =
@@ -183,6 +185,7 @@ lemma shiftIso_add'_inv_app (n m mn : M) (hnm : m + n = mn) (a a' a'' : M)
         (shift F a).map ((shiftFunctorAdd' C m n mn hnm).inv.app X) := by
   simp [F.shiftIso_add' n m mn hnm a a' a'' ha' ha'']
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma shiftIso_hom_app_comp (n m mn : M) (hnm : m + n = mn)
     (a a' a'' : M) (ha' : n + a = a') (ha'' : m + a' = a'') (X : C) :
@@ -209,10 +212,11 @@ lemma shiftMap_comp' {X Y Z : C} {n : M} (f : X ⟶ Y) (g : Y ⟶ Z⟦n⟧) (a a
     F.shiftMap (f ≫ g) a a' ha' = (F.shift a).map f ≫ F.shiftMap g a a' ha' := by
   simp [shiftMap]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 When `f : X ⟶ Y⟦m⟧`, `m + n = mn`, `n + a = a'` and `ha'' : m + a' = a''`, this lemma
 relates the two morphisms `F.shiftMap f a' a'' ha''` and `(F.shift a).map (f⟦n⟧')`. Indeed,
-via canonical isomorphisms, they both identity to morphisms
+via canonical isomorphisms, they both identify to morphisms
 `(F.shift a').obj X ⟶ (F.shift a'').obj Y`.
 -/
 lemma shiftIso_hom_app_comp_shiftMap {X Y : C} {m : M} (f : X ⟶ Y⟦m⟧) (n mn : M) (hnm : m + n = mn)
@@ -224,6 +228,7 @@ lemma shiftIso_hom_app_comp_shiftMap {X Y : C} {m : M} (f : X ⟶ Y⟦m⟧) (n m
     ← Functor.map_comp_assoc, Iso.inv_hom_id_app, Functor.map_id,
     id_comp, comp_obj, shiftIso_hom_naturality_assoc, shiftMap]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `f : X ⟶ Y⟦m⟧`, `n + m = 0` and `ha' : m + a = a'`, this lemma relates the two
 morphisms `F.shiftMap f a a' ha'` and `(F.shift a').map (f⟦n⟧')`. Indeed,

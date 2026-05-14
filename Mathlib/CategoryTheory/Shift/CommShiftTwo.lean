@@ -22,13 +22,13 @@ differ by the sign `(-1) ^ (p + q)`.
 This is implemented using a structure `Functor.CommShift₂` which does not depend
 on the preadditive structure on `D`: instead of signs, elements in `(CatCenter D)ˣ`
 are used. These elements are part of a `CommShift₂Setup` structure which extends
-a `TwistShiftData` structure (see the file `CategoryTheory.Shift.Twist`).
+a `TwistShiftData` structure (see the file `Mathlib.CategoryTheory.Shift.Twist`).
 
 ## TODO (@joelriou)
 * Show that `G : C₁ ⥤ C₂ ⥤ D` satisfies `Functor.CommShift₂Int` iff the uncurried
-functor `C₁ × C₂ ⥤ D` commutes with the shift by `ℤ × ℤ`, where `C₁ × C₂` is
-equipped with the obvious product shift, and `D` is equipped with
-the twisted shift.
+  functor `C₁ × C₂ ⥤ D` commutes with the shift by `ℤ × ℤ`, where `C₁ × C₂` is
+  equipped with the obvious product shift, and `D` is equipped with
+  the twisted shift.
 
 -/
 
@@ -108,8 +108,11 @@ abbrev CommShift₂Int [HasShift C₁ ℤ] [HasShift C₂ ℤ] [HasShift D ℤ] 
 
 namespace CommShift₂
 
+attribute [instance_reducible] commShiftObj commShiftFlipObj
 attribute [instance] commShiftObj commShiftFlipObj commShift_map commShift_flip_map
 
+set_option backward.inferInstanceAs.wrap.data false in
+set_option backward.isDefEq.respectTransparency false in
 instance precomp₁ {M : Type*} [AddCommMonoid M] [HasShift C₁ M] [HasShift C₁' M]
     [HasShift C₂ M] [HasShift D M] (F : C₁' ⥤ C₁) [F.CommShift M]
     (G : C₁ ⥤ C₂ ⥤ D) (h : CommShift₂Setup D M) [G.CommShift₂ h] :
@@ -126,6 +129,7 @@ instance precomp₁ {M : Type*} [AddCommMonoid M] [HasShift C₁ M] [HasShift C�
     rw [NatTrans.shift_app (G.map ((F.commShiftIso m).hom.app X₁')) n X₂]
     simp [this]
 
+set_option backward.inferInstanceAs.wrap false in
 instance precomp₂ {M : Type*} [AddCommMonoid M] [HasShift C₁ M] [HasShift C₂' M]
     [HasShift C₂ M] [HasShift D M] (F : C₂' ⥤ C₂) [F.CommShift M]
     (G : C₁ ⥤ C₂ ⥤ D) (h : CommShift₂Setup D M) [G.CommShift₂ h] :

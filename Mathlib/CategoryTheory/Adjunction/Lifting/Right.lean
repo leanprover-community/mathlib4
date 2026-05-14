@@ -76,6 +76,7 @@ namespace LiftRightAdjoint
 variable {U : A ⥤ B} {F : B ⥤ A} (L : C ⥤ B) (U' : A ⥤ C)
 variable (adj₁ : F ⊣ U) (adj₂ : L ⋙ F ⊣ U')
 
+set_option backward.isDefEq.respectTransparency false in
 /-- To show that `η_X` is an equalizer for `(UFη_X, η_UFX)`, it suffices to assume it's always an
 equalizer of something (i.e. a regular mono).
 -/
@@ -103,9 +104,10 @@ To construct the right adjoint, we use the equalizer of `U' F η_X` with the com
 where the first morphism is `ι_U'FX`, the second is `U' F η_LU'FX` and the third is `U' F U δ_FX`.
 We will show that this equalizer exists and that it forms the object map for a right adjoint to `L`.
 -/
-def otherMap (X : B) : U'.obj (F.obj X) ⟶  U'.obj (F.obj (U.obj (F.obj X))) :=
+def otherMap (X : B) : U'.obj (F.obj X) ⟶ U'.obj (F.obj (U.obj (F.obj X))) :=
   adj₂.unit.app _ ≫ U'.map (F.map (adj₁.unit.app _ ≫ (U.map (adj₂.counit.app _))))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `(U'Fη_X, otherMap X)` is a coreflexive pair: in particular if `C` has coreflexive equalizers
 then this pair has an equalizer.
 -/
@@ -123,6 +125,7 @@ variable [HasCoreflexiveEqualizers C]
 noncomputable def constructRightAdjointObj (Y : B) : C :=
   equalizer (U'.map (F.map (adj₁.unit.app Y))) (otherMap _ _ adj₁ adj₂ Y)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The homset equivalence which helps show that `L` is a left adjoint. -/
 @[simps!]
 noncomputable def constructRightAdjointEquiv (h : ∀ X : B, RegularMono (adj₁.unit.app X)) (Y : C)
@@ -149,6 +152,7 @@ noncomputable def constructRightAdjointEquiv (h : ∀ X : B, RegularMono (adj₁
       simp
     _ ≃ (L.obj Y ⟶ X) := (Fork.IsLimit.homIso (unitEqualises adj₁ h X) _).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Construct the right adjoint to `L`, with object map `constructRightAdjointObj`. -/
 noncomputable def constructRightAdjoint (h : ∀ X : B, RegularMono (adj₁.unit.app X)) : B ⥤ C := by
   refine Adjunction.rightAdjointOfEquiv
@@ -211,7 +215,7 @@ variable [Category.{v₄} D]
     A → B
   U ↓   ↓ V
     C → D
-      R
+      L
 ```
 
 where `U` has a right adjoint, `A` has coreflexive equalizers and `V` has a right adjoint such that
@@ -234,7 +238,7 @@ lemma isLeftAdjoint_square_lift (Q : A ⥤ B) (V : B ⥤ D) (U : A ⥤ C) (L : C
     A → B
   U ↓   ↓ V
     C → D
-      R
+      L
 ```
 
 where `U` has a right adjoint, `A` has reflexive equalizers and `V` is comonadic.

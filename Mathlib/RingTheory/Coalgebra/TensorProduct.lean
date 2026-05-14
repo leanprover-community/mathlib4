@@ -8,6 +8,10 @@ module
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.RingTheory.Coalgebra.Equiv
 
+meta import Mathlib.RingTheory.Coalgebra.CoassocSimps
+
+import Mathlib.Algebra.Algebra.Bilinear
+
 /-!
 # Tensor products of coalgebras
 
@@ -86,6 +90,7 @@ scoped macro "hopf_tensor_induction " var:elimTarget "with " var₁:ident var₂
           tmul_add, add_tmul, add_mul, mul_add, h₁, h₂]
       | tmul $var₁ $var₂ => ?_))
 
+set_option backward.privateInPublic true in
 private lemma coassoc :
     TensorProduct.assoc S (A ⊗[R] B) (A ⊗[R] B) (A ⊗[R] B) ∘ₗ
       (comul (R := S) (A := (A ⊗[R] B))).rTensor (A ⊗[R] B) ∘ₗ
@@ -100,8 +105,8 @@ private lemma coassoc :
         (AlgebraTensorModule.tensorTensorTensorComm _ _ _ _ _ _ _ _)
   let F' : A ⊗[S] (A ⊗[S] A) ⊗[R] (B ⊗[R] (B ⊗[R] B)) →ₗ[S]
       A ⊗[R] B ⊗[S] (A ⊗[R] B ⊗[S] (A ⊗[R] B)) :=
-    TensorProduct.mapOfCompatibleSMul _ _ _ _ ∘ₗ
-        TensorProduct.map .id (TensorProduct.mapOfCompatibleSMul _ _ _ _) ∘ₗ F.toLinearMap
+    TensorProduct.mapOfCompatibleSMul .. ∘ₗ
+        TensorProduct.map .id (TensorProduct.mapOfCompatibleSMul ..) ∘ₗ F.toLinearMap
   convert congr(F ($(Coalgebra.coassoc_apply x) ⊗ₜ[R] $(Coalgebra.coassoc_apply y))) using 1
   · dsimp
     hopf_tensor_induction comul (R := S) x with x₁ x₂
@@ -118,6 +123,8 @@ private lemma coassoc :
     hopf_tensor_induction comul (R := R) y₂ with y₂₁ y₂₂
     rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 noncomputable
 instance instCoalgebra : Coalgebra S (A ⊗[R] B) where
   coassoc := coassoc (R := R)
@@ -292,3 +299,28 @@ noncomputable abbrev rTensor (f : N →ₗc[R] P) : N ⊗[R] M →ₗc[R] P ⊗[
   Coalgebra.TensorProduct.map f (CoalgHom.id R M)
 
 end CoalgHom
+
+namespace Coalgebra
+variable {R C : Type*} [CommSemiring R] [AddCommMonoid C] [Module R C] [Coalgebra R C]
+  [IsCocomm R C]
+
+local notation3 "ε" => counit (R := R) (A := C)
+local notation3 "μ" => LinearMap.mul' R R
+local notation3 "δ" => comul (R := R)
+local infix:90 " ◁ " => LinearMap.lTensor
+local notation3:90 f:90 " ▷ " X:90 => LinearMap.rTensor X f
+local infix:70 " ⊗ₘ " => _root_.TensorProduct.map
+
+variable (R C) in
+/-- Comultiplication as a coalgebra hom. -/
+noncomputable def comulCoalgHom : C →ₗc[R] C ⊗[R] C where
+  __ := δ
+  counit_comp := by
+    simp only [counit_def, AlgebraTensorModule.rid_eq_rid, ← lid_eq_rid]
+    calc
+        (μ ∘ₗ (ε ⊗ₘ ε)) ∘ₗ δ
+    _ = (μ ∘ₗ ε ▷ R) ∘ₗ (C ◁ ε ∘ₗ δ) := by simp [coassoc_simps]
+    _ = ε := by ext; simp
+  map_comp_comul := by simp [comul_def, coassoc_simps]
+
+end Coalgebra

@@ -101,15 +101,15 @@ end ProdPrimeFactors
 section Id
 
 /-- The identity on `ℕ` as an `ArithmeticFunction`. -/
-def id : ArithmeticFunction ℕ :=
-  ⟨_root_.id, rfl⟩
+protected def id : ArithmeticFunction ℕ :=
+  ⟨id, rfl⟩
 
 @[simp]
-theorem id_apply {x : ℕ} : id x = x :=
+theorem id_apply {x : ℕ} : ArithmeticFunction.id x = x :=
   rfl
 
 @[arith_mult]
-theorem isMultiplicative_id : IsMultiplicative ArithmeticFunction.id :=
+theorem isMultiplicative_id : IsMultiplicative .id :=
   ⟨rfl, fun _ => rfl⟩
 
 end Id
@@ -118,7 +118,7 @@ section Pow
 
 /-- `pow k n = n ^ k`, except `pow 0 0 = 0`. -/
 def pow (k : ℕ) : ArithmeticFunction ℕ :=
-  id.ppow k
+  ArithmeticFunction.id.ppow k
 
 @[simp]
 theorem pow_apply {k n : ℕ} : pow k n = if k = 0 ∧ n = 0 then 0 else n ^ k := by
@@ -128,7 +128,7 @@ theorem pow_zero_eq_zeta : pow 0 = ζ := by
   ext n
   simp
 
-theorem pow_one_eq_id : pow 1 = id := by
+theorem pow_one_eq_id : pow 1 = .id := by
   ext n
   simp
 
@@ -209,6 +209,12 @@ theorem sigma_eq_prod_primeFactors_sum_range_factorization_pow_mul {k n : ℕ} (
   exact prod_congr n.support_factorization fun _ h ↦
     sigma_apply_prime_pow <| prime_of_mem_primeFactors h
 
+/-- A crude upper bound: `σ_k(n) ≤ n ^ (k + 1)`. -/
+theorem sigma_le_pow_succ (k n : ℕ) : σ k n ≤ n ^ (k + 1) := by
+  simp only [sigma_apply, pow_succ']
+  refine (Finset.sum_le_sum fun d hd ↦ Nat.pow_le_pow_left (Nat.divisor_le hd) k).trans ?_
+  simpa [Finset.sum_const] using Nat.mul_le_mul_right (n ^ k) (Nat.card_divisors_le_self n)
+
 end Sigma
 
 open scoped sigma
@@ -226,6 +232,7 @@ theorem _root_.Nat.divisors_card_eq_one_iff (n : ℕ) : #n.divisors = 1 ↔ n = 
   · refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
     exact (card_le_one.mp h.le 1 (one_mem_divisors.mpr hn) n (n.mem_divisors_self hn)).symm
 
+set_option backward.privateInPublic true in
 /-- `sigma_eq_one_iff` is to be preferred. -/
 private theorem sigma_zero_eq_one_iff (n : ℕ) : σ 0 n = 1 ↔ n = 1 := by
   simp [sigma_zero_apply]

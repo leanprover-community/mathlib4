@@ -62,7 +62,7 @@ variable (K : Type*) [Field K] [Algebra K L]
 
 section SubfieldValued
 
-variable (hP : ∀ i j, P.pairing i j ∈ (algebraMap K L).range)
+variable [P.IsValuedIn K]
 
 /-- Restriction of scalars for a root pairing taking values in a subfield.
 
@@ -72,10 +72,7 @@ def restrictScalars' :
   toLinearMap := .restrictScalarsRange₂ (R := L)
     (span K (range P.root)).subtype (span K (range P.coroot)).subtype (Algebra.linearMap K L)
     (FaithfulSMul.algebraMap_injective K L) P.toLinearMap fun x y ↦
-      LinearMap.BilinMap.apply_apply_mem_of_mem_span
-      (LinearMap.range (Algebra.linearMap K L)) (range P.root) (range P.coroot)
-      (LinearMap.restrictScalarsₗ K L _ _ _ ∘ₗ P.toLinearMap.restrictScalars K)
-      (by rintro - ⟨i, rfl⟩ - ⟨j, rfl⟩; exact hP i j) _ _ x.property y.property
+      P.toLinearMap_apply_apply_mem_range_algebraMap K x x.property y y.property
   isPerfPair_toLinearMap := .restrictScalars_of_field P.toLinearMap _ _
     (injective_subtype _) (injective_subtype _) (by simpa using IsBalanced.isPerfectCompl) _
   root := ⟨fun i ↦ ⟨_, subset_span (mem_range_self i)⟩, fun i j h ↦ by simpa using h⟩
@@ -90,7 +87,7 @@ def restrictScalars' :
   reflectionPerm_coroot i j := by
     ext; simpa [algebra_compatible_smul L] using P.reflectionPerm_coroot i j
 
-instance : (P.restrictScalars' K hP).IsRootSystem where
+instance : (P.restrictScalars' K).IsRootSystem where
   span_root_eq_top := by
     rw [← span_setOf_mem_eq_top]
     congr
@@ -104,19 +101,19 @@ instance : (P.restrictScalars' K hP).IsRootSystem where
 
 @[simp] lemma restrictScalars_toLinearMap_apply_apply
     (x : span K (range P.root)) (y : span K (range P.coroot)) :
-    algebraMap K L ((P.restrictScalars' K hP).toLinearMap x y) = P.toLinearMap x y := by
+    algebraMap K L ((P.restrictScalars' K).toLinearMap x y) = P.toLinearMap x y := by
   simp [restrictScalars']
 
 @[simp] lemma restrictScalars_coe_root (i : ι) :
-    (P.restrictScalars' K hP).root i = P.root i :=
+    (P.restrictScalars' K).root i = P.root i :=
   rfl
 
 @[simp] lemma restrictScalars_coe_coroot (i : ι) :
-    (P.restrictScalars' K hP).coroot i = P.coroot i :=
+    (P.restrictScalars' K).coroot i = P.coroot i :=
   rfl
 
 @[simp] lemma restrictScalars_pairing (i j : ι) :
-    algebraMap K L ((P.restrictScalars' K hP).pairing i j) = P.pairing i j := by
+    algebraMap K L ((P.restrictScalars' K).pairing i j) = P.pairing i j := by
   simp only [pairing, restrictScalars_toLinearMap_apply_apply, restrictScalars_coe_root,
     restrictScalars_coe_coroot]
 
@@ -125,7 +122,8 @@ end SubfieldValued
 /-- Restriction of scalars for a crystallographic root pairing. -/
 abbrev restrictScalars [P.IsCrystallographic] :
     RootPairing ι K (span K (range P.root)) (span K (range P.coroot)) :=
-  P.restrictScalars' K (IsValuedIn.trans P K ℤ).exists_value
+  have := IsValuedIn.trans P K ℤ
+  P.restrictScalars' K
 
 /-- Restriction of scalars to `ℚ` for a crystallographic root pairing in characteristic zero. -/
 abbrev restrictScalarsRat [CharZero L] [P.IsCrystallographic] :=

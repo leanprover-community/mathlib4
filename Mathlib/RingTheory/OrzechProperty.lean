@@ -27,7 +27,7 @@ It's proved in the above papers that
 
 - a left-Noetherian ring (not necessarily commutative) satisfies the `OrzechProperty`,
   which in particular includes the division ring case
-  (see `Mathlib/RingTheory/Noetherian.lean`);
+  (see `Mathlib/RingTheory/Noetherian/Orzech.lean`);
 - a commutative ring satisfies the `OrzechProperty`
   (see `Mathlib/RingTheory/FiniteType.lean`).
 
@@ -44,7 +44,7 @@ free module, rank, Orzech property, (strong) rank condition, invariant basis num
 
 -/
 
-@[expose] public section
+public section
 
 universe u v w
 
@@ -66,6 +66,12 @@ class OrzechProperty : Prop where
 
 namespace OrzechProperty
 
+instance [Finite R] : OrzechProperty R where
+  injective_of_surjective_of_submodule' {M} _ _ _ {N} _f hf :=
+    have : Finite M := Module.finite_of_finite R
+    have ⟨_g, hg⟩ := N.subtype_injective.hasLeftInverse
+    .of_comp (hg.surjective.comp hf).bijective_of_finite.1
+
 variable {R}
 
 variable [OrzechProperty R] {M : Type v} [AddCommMonoid M] [Module R M] [Module.Finite R M]
@@ -84,6 +90,12 @@ theorem injective_of_surjective_of_injective
   let f' := j.symm.toLinearMap ∘ₗ f ∘ₗ (LinearEquiv.ofInjective i' hi).symm.toLinearMap
   replace hf : Surjective f' := by simpa [f'] using hf
   simpa [f'] using injective_of_surjective_of_submodule' f' hf
+
+theorem bijective_of_surjective_of_injective
+    {N : Type w} [AddCommMonoid N] [Module R N]
+    (i f : N →ₗ[R] M) (hi : Function.Injective i)
+    (hf : Function.Surjective f) : Function.Bijective f :=
+  ⟨OrzechProperty.injective_of_surjective_of_injective _ _ hi hf, hf⟩
 
 theorem injective_of_surjective_of_submodule
     {N : Submodule R M} (f : N →ₗ[R] M) (hf : Surjective f) : Injective f :=

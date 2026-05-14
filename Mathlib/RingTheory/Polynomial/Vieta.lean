@@ -24,7 +24,7 @@ we derive `Polynomial.coeff_eq_esymm_roots_of_card`, the relationship between th
 the roots of `p` for a polynomial `p` that splits (i.e. having as many roots as its degree).
 -/
 
-@[expose] public section
+public section
 
 open Finset Polynomial
 
@@ -56,7 +56,7 @@ through a multiset `s` : the `k`th coefficient is the symmetric function `esymm 
 theorem prod_X_add_C_coeff (s : Multiset R) {k : ℕ} (h : k ≤ Multiset.card s) :
     (s.map fun r => X + C r).prod.coeff k = s.esymm (Multiset.card s - k) := by
   convert Polynomial.ext_iff.mp (prod_X_add_C_eq_sum_esymm s) k using 1
-  simp_rw [finset_sum_coeff, coeff_C_mul_X_pow]
+  simp_rw [finsetSum_coeff, coeff_C_mul_X_pow]
   rw [Finset.sum_eq_single_of_mem (Multiset.card s - k) _] <;> grind
 
 theorem prod_X_add_C_coeff' {σ} (s : Multiset σ) (r : σ → R) {k : ℕ} (h : k ≤ Multiset.card s) :

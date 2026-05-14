@@ -63,7 +63,7 @@ section Real
 /-- An operator `T` on an inner product space is symmetric if and only if it is
 `LinearMap.IsSelfAdjoint` with respect to the sesquilinear form given by the inner product. -/
 theorem isSymmetric_iff_sesqForm (T : E →ₗ[𝕜] E) :
-    T.IsSymmetric ↔ LinearMap.IsSelfAdjoint (R := 𝕜) (M := E) sesqFormOfInner T :=
+    T.IsSymmetric ↔ LinearMap.IsSelfAdjoint (R := 𝕜) (M := E) (LinearMap.flip (innerₛₗ 𝕜)) T :=
   ⟨fun h x y => (h y x).symm, fun h x y => (h y x).symm⟩
 
 end Real
@@ -80,14 +80,18 @@ theorem IsSymmetric.apply_clm {T : E →L[𝕜] E} (hT : IsSymmetric (T : E →�
 protected theorem IsSymmetric.zero : (0 : E →ₗ[𝕜] E).IsSymmetric := fun x y =>
   (inner_zero_right x : ⟪x, 0⟫ = 0).symm ▸ (inner_zero_left y : ⟪0, y⟫ = 0)
 
-@[simp]
-protected theorem IsSymmetric.id : (LinearMap.id : E →ₗ[𝕜] E).IsSymmetric := fun _ _ => rfl
+@[simp] protected lemma IsSymmetric.id : (.id : E →ₗ[𝕜] E).IsSymmetric := fun _ _ ↦ rfl
+@[simp] protected lemma IsSymmetric.one : (1 : E →ₗ[𝕜] E).IsSymmetric := fun _ _ ↦ rfl
 
 @[aesop safe apply]
 theorem IsSymmetric.add {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.IsSymmetric) :
     (T + S).IsSymmetric := by
   intro x y
   rw [add_apply, inner_add_left, hT x y, hS x y, ← inner_add_right, add_apply]
+
+theorem isSymmetric_sum {ι : Type*} {T : ι → (E →ₗ[𝕜] E)} (s : Finset ι)
+    (hT : ∀ i ∈ s, (T i).IsSymmetric) : (∑ i ∈ s, T i).IsSymmetric := fun _ _ ↦ by
+  simpa [sum_inner, inner_sum] using Finset.sum_congr rfl fun _ hi ↦ hT _ hi _ _
 
 @[aesop safe apply]
 theorem IsSymmetric.sub {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.IsSymmetric) :
@@ -134,7 +138,7 @@ theorem IsSymmetric.restrict_invariant {T : E →ₗ[𝕜] E} (hT : IsSymmetric 
 
 theorem IsSymmetric.restrictScalars {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) :
     letI := InnerProductSpace.rclikeToReal 𝕜 E
-    letI : IsScalarTower ℝ 𝕜 E := RestrictScalars.isScalarTower _ _ _
+    haveI := IsScalarTower.restrictScalars ℝ 𝕜 E
     (T.restrictScalars ℝ).IsSymmetric :=
   fun x y => by simp [hT x y, real_inner_eq_re_inner, LinearMap.coe_restrictScalars ℝ]
 
@@ -197,7 +201,7 @@ theorem IsSymmetric.inner_map_polarization {T : E →ₗ[𝕜] E} (hT : T.IsSymm
       (⟪T (x + y), x + y⟫ - ⟪T (x - y), x - y⟫ - I * ⟪T (x + (I : 𝕜) • y), x + (I : 𝕜) • y⟫ +
           I * ⟪T (x - (I : 𝕜) • y), x - (I : 𝕜) • y⟫) /
         4 := by
-  rcases@I_mul_I_ax 𝕜 _ with (h | h)
+  rcases @I_mul_I_ax 𝕜 _ with (h | h)
   · simp_rw [h, zero_mul, sub_zero, add_zero, map_add, map_sub, inner_add_left,
       inner_add_right, inner_sub_left, inner_sub_right, hT x, ← inner_conj_symm x (T y)]
     suffices (re ⟪T y, x⟫ : 𝕜) = ⟪T y, x⟫ by
@@ -219,6 +223,21 @@ theorem isSymmetric_linearIsometryEquiv_conj_iff {F : Type*} [SeminormedAddCommG
   · simp [LinearIsometryEquiv.inner_map_eq_flip, h _ (f.symm y)]
 
 end LinearMap
+
+@[simp] theorem InnerProductSpace.isSymmetric_rankOne_self (x : E) :
+    (rankOne 𝕜 x x).IsSymmetric := fun _ _ ↦ by simp [inner_smul_left, inner_smul_right, mul_comm]
+
+open ContinuousLinearMap in
+theorem InnerProductSpace.isSymmetricProjection_rankOne_self {x : E} (hx : ‖x‖ = 1) :
+    (rankOne 𝕜 x x).IsSymmetricProjection where
+  isSymmetric := isSymmetric_rankOne_self x
+  isIdempotentElem := isIdempotentElem_rankOne_self hx |>.toLinearMap
+
+theorem LinearMap.IsSymmetric.toLinearMap_symm {T : E ≃ₗ[𝕜] E} (hT : T.IsSymmetric) :
+    T.symm.IsSymmetric := fun x y ↦ by simpa using hT (T.symm x) (T.symm y) |>.symm
+
+@[simp] theorem LinearEquiv.isSymmetric_symm_iff {T : E ≃ₗ[𝕜] E} :
+    T.symm.IsSymmetric ↔ T.IsSymmetric := ⟨.toLinearMap_symm, .toLinearMap_symm⟩
 
 end Seminormed
 
@@ -268,35 +287,46 @@ theorem ker_le_ker_of_range {S T : E →ₗ[𝕜] E} (hS : S.IsSymmetric) (hT : 
 open Submodule in
 /-- A linear projection onto `U` along its complement `V` is symmetric if
 and only if `U` and `V` are pairwise orthogonal. -/
-theorem _root_.Submodule.IsCompl.projection_isSymmetric_iff
+theorem _root_.Submodule.isSymmetric_projection_iff
     {U V : Submodule 𝕜 E} (hUV : IsCompl U V) :
-    hUV.projection.IsSymmetric ↔ U ⟂ V := by
-  rw [IsCompl.projection]
+    (U.projection V hUV).IsSymmetric ↔ U ⟂ V := by
+  rw [projection]
   refine ⟨fun h u hu v hv => ?_, fun h x y => ?_⟩
   · rw [← Subtype.coe_mk u hu, ← Subtype.coe_mk v hv,
-      ← Submodule.linearProjOfIsCompl_apply_left hUV ⟨u, hu⟩, ← U.subtype_apply, ← comp_apply,
-      ← h, comp_apply, Submodule.linearProjOfIsCompl_apply_right hUV ⟨v, hv⟩,
+      ← Submodule.projectionOnto_apply_left hUV ⟨u, hu⟩, ← U.subtype_apply, ← comp_apply,
+      ← h, comp_apply, Submodule.projectionOnto_apply_right hUV ⟨v, hv⟩,
       map_zero, inner_zero_left]
-  · nth_rw 2 [← hUV.projection_add_projection_eq_self x]
-    nth_rw 1 [← hUV.projection_add_projection_eq_self y]
+  · nth_rw 2 [← projection_add_projection_eq_self hUV x]
+    nth_rw 1 [← projection_add_projection_eq_self hUV y]
     rw [isOrtho_iff_inner_eq] at h
     simp [inner_add_right, inner_add_left, h, inner_eq_zero_symm]
 
-open Submodule in
-theorem _root_.Submodule.IsCompl.projection_isSymmetricProjection_iff
-    {U V : Submodule 𝕜 E} (hUV : IsCompl U V) :
-    hUV.projection.IsSymmetricProjection ↔ U ⟂ V := by
-  simp [isSymmetricProjection_iff, hUV.projection_isSymmetric_iff, hUV.projection_isIdempotentElem]
+@[deprecated (since := "2026-05-05")] alias _root_.Submodule.IsCompl.projection_isSymmetric_iff :=
+  _root_.Submodule.isSymmetric_projection_iff
 
-alias ⟨_, _root_.Submodule.IsCompl.projection_isSymmetricProjection_of_isOrtho⟩ :=
-  _root_.Submodule.IsCompl.projection_isSymmetricProjection_iff
+open Submodule in
+theorem _root_.Submodule.isSymmetricProjection_projection_iff
+    {U V : Submodule 𝕜 E} (hUV : IsCompl U V) :
+    (U.projection V hUV).IsSymmetricProjection ↔ U ⟂ V := by
+  simp [isSymmetricProjection_iff, isSymmetric_projection_iff, isIdempotentElem_projection]
+
+@[deprecated (since := "2026-05-05")] alias
+  _root_.Submodule.IsCompl.projection_isSymmetricProjection_iff :=
+  _root_.Submodule.isSymmetricProjection_projection_iff
+
+alias ⟨_, _root_.Submodule.isSymmetricProjection_projection_of_isOrtho⟩ :=
+  _root_.Submodule.isSymmetricProjection_projection_iff
+
+@[deprecated (since := "2026-05-05")] alias
+  _root_.Submodule.IsCompl.projection_isSymmetricProjection_of_isOrtho :=
+  _root_.Submodule.isSymmetricProjection_projection_of_isOrtho
 
 open Submodule LinearMap in
 /-- An idempotent operator is symmetric if and only if its range is
 pairwise orthogonal to its kernel. -/
 theorem IsIdempotentElem.isSymmetric_iff_isOrtho_range_ker {T : E →ₗ[𝕜] E}
     (hT : IsIdempotentElem T) : T.IsSymmetric ↔ (LinearMap.range T) ⟂ (LinearMap.ker T) := by
-  rw [← IsCompl.projection_isSymmetric_iff hT.isProj_range.isCompl, ← hT.eq_isCompl_projection]
+  rw [← isSymmetric_projection_iff hT.isProj_range.isCompl, ← hT.eq_projection]
 
 theorem IsSymmetric.orthogonal_range {T : E →ₗ[𝕜] E} (hT : LinearMap.IsSymmetric T) :
     (LinearMap.range T)ᗮ = LinearMap.ker T := by
@@ -333,13 +363,18 @@ theorem IsSymmetricProjection.sub_of_range_le_range {p q : E →ₗ[𝕜] E}
     fun y => ?_) hqp, hq.isSymmetric.sub hp.isSymmetric⟩
   simp_rw [Module.End.mul_apply, ← hp.isSymmetric _, ← hq.isSymmetric _, ← comp_apply, hqp]
 
+theorem IsSymmetric.isSymmetric_smul_iff {f : E →ₗ[𝕜] E} (hf : f.IsSymmetric) (hf' : f ≠ 0)
+    {α : 𝕜} : (α • f).IsSymmetric ↔ IsSelfAdjoint α := by
+  refine ⟨fun h ↦ ?_, hf.smul⟩
+  simp only [ne_eq, LinearMap.ext_iff, zero_apply, ext_iff_inner_left 𝕜 (E := E),
+    inner_zero_right] at hf'
+  simpa [IsSymmetric, inner_smul_left, inner_smul_right, hf _ _, forall_or_left,
+    (forall_comm.eq ▸ hf')] using h
+
 end LinearMap
 
-open ContinuousLinearMap in
-/-- An idempotent operator `T` is symmetric iff `(range T)ᗮ = ker T`. -/
-theorem ContinuousLinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range
-    {T : E →L[𝕜] E} (h : IsIdempotentElem T) :
-    T.IsSymmetric ↔ (LinearMap.range T)ᗮ = LinearMap.ker T :=
-  LinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range h.toLinearMap
+@[deprecated (since := "2025-12-28")] alias
+  ContinuousLinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range :=
+  LinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range
 
 end Normed

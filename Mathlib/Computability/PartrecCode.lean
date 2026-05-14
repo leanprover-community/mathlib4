@@ -28,11 +28,11 @@ of some code.
 
 ## Main Results
 
-* `Nat.Partrec.Code.rec_prim`: Recursion on `Nat.Partrec.Code` is primitive recursive.
-* `Nat.Partrec.Code.rec_computable`: Recursion on `Nat.Partrec.Code` is computable.
+* `Nat.Partrec.Code.primrec_recOn`: Recursion on `Nat.Partrec.Code` is primitive recursive.
+* `Nat.Partrec.Code.computable_recOn`: Recursion on `Nat.Partrec.Code` is computable.
 * `Nat.Partrec.Code.smn`: The $S_n^m$ theorem.
 * `Nat.Partrec.Code.exists_code`: Partial recursiveness is equivalent to being the eval of a code.
-* `Nat.Partrec.Code.evaln_prim`: `evaln` is primitive recursive.
+* `Nat.Partrec.Code.primrec_evaln`: `evaln` is primitive recursive.
 * `Nat.Partrec.Code.fixed_point`: Roger's fixed point theorem.
 * `Nat.Partrec.Code.fixed_point₂`: Kleene's second recursion theorem.
 
@@ -147,6 +147,7 @@ def ofNatCode : ℕ → Code
     | true, false => prec (ofNatCode m.unpair.1) (ofNatCode m.unpair.2)
     | true, true => rfind' (ofNatCode m)
 
+set_option backward.privateInPublic true in
 /-- Proof that `Nat.Partrec.Code.ofNatCode` is the inverse of `Nat.Partrec.Code.encodeCode` -/
 private theorem encode_ofNatCode : ∀ n, encodeCode (ofNatCode n) = n
   | 0 => by simp [ofNatCode, encodeCode]
@@ -170,6 +171,8 @@ private theorem encode_ofNatCode : ∀ n, encodeCode (ofNatCode n) = n
     cases n.bodd <;> cases n.div2.bodd <;>
       simp [m, encodeCode, IH, IH1, IH2, Nat.bit_val]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance instDenumerable : Denumerable Code :=
   mk'
     ⟨encodeCode, ofNatCode, fun c => by
@@ -220,8 +223,6 @@ theorem primrec₂_pair : Primrec₂ pair :=
               (encode_iff.2 <| (Primrec.ofNat Code).comp snd))
         (Primrec₂.const 4)
 
-@[deprecated (since := "2025-05-12")] alias pair_prim := primrec₂_pair
-
 theorem primrec₂_comp : Primrec₂ comp :=
   Primrec₂.ofNat_iff.2 <|
     Primrec₂.encode_iff.1 <|
@@ -231,8 +232,6 @@ theorem primrec₂_comp : Primrec₂ comp :=
             Primrec₂.natPair.comp (encode_iff.2 <| (Primrec.ofNat Code).comp fst)
               (encode_iff.2 <| (Primrec.ofNat Code).comp snd))
         (Primrec₂.const 4)
-
-@[deprecated (since := "2025-05-12")] alias comp_prim := primrec₂_comp
 
 theorem primrec₂_prec : Primrec₂ prec :=
   Primrec₂.ofNat_iff.2 <|
@@ -244,8 +243,6 @@ theorem primrec₂_prec : Primrec₂ prec :=
               (encode_iff.2 <| (Primrec.ofNat Code).comp snd))
         (Primrec₂.const 4)
 
-@[deprecated (since := "2025-05-12")] alias prec_prim := primrec₂_prec
-
 theorem primrec_rfind' : Primrec rfind' :=
   ofNat_iff.2 <|
     encode_iff.1 <|
@@ -253,8 +250,6 @@ theorem primrec_rfind' : Primrec rfind' :=
         (nat_double_succ.comp <| nat_double_succ.comp <|
           encode_iff.2 <| Primrec.ofNat Code)
         (const 4)
-
-@[deprecated (since := "2025-05-12")] alias rfind_prim := primrec_rfind'
 
 set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 theorem primrec_recOn' {α σ}
@@ -338,8 +333,6 @@ theorem primrec_recOn' {α σ}
   simp [ofNatCode]
   cases n.bodd <;> cases n.div2.bodd <;> rfl
 
-@[deprecated (since := "2025-05-12")] alias rec_prim' := primrec_recOn'
-
 /-- Recursion on `Nat.Partrec.Code` is primitive recursive. -/
 theorem primrec_recOn {α σ}
     [Primcodable α] [Primcodable σ] {c : α → Code} (hc : Primrec c) {z : α → σ}
@@ -359,8 +352,6 @@ theorem primrec_recOn {α σ}
     (co := fun a b => co a b.1 b.2.1 b.2.2.1 b.2.2.2) (.mk hco)
     (pc := fun a b => pc a b.1 b.2.1 b.2.2.1 b.2.2.2) (.mk hpc)
     (rf := fun a b => rf a b.1 b.2) (.mk hrf)
-
-@[deprecated (since := "2025-05-12")] alias rec_prim := primrec_recOn
 
 end Nat.Partrec.Code
 end
@@ -454,8 +445,6 @@ theorem computable_recOn {α σ} [Primcodable α] [Primcodable σ] {c : α → C
   simp [ofNatCode]
   cases n.bodd <;> cases n.div2.bodd <;> rfl
 
-@[deprecated (since := "2025-05-12")] alias rec_computable := computable_recOn
-
 end
 
 /-- The interpretation of a `Nat.Partrec.Code` as a partial function.
@@ -468,9 +457,9 @@ end
 * `Nat.Partrec.Code.prec`: Primitive recursion. Given an argument of the form `Nat.pair a n`:
   * If `n = 0`, returns `eval cf a`.
   * If `n = succ k`, returns `eval cg (pair a (pair k (eval (prec cf cg) (pair a k))))`
-* `Nat.Partrec.Code.rfind'`: Minimization. For `f` an argument of the form `Nat.pair a m`,
-  `rfind' f m` returns the least `a` such that `f a m = 0`, if one exists and `f b m` terminates
-  for `b < a`
+* `Nat.Partrec.Code.rfind'`: Minimization starting at a provided value. Given an argument of the
+  form `Nat.pair a m`, returns the least `n ≥ m` such that `eval cf (pair a n) = 0`, if such an `n`
+  exists and if `eval cf (pair a k)` terminates for all `m ≤ k ≤ n`.
 -/
 def eval : Code → ℕ →. ℕ
   | zero => pure 0
@@ -522,13 +511,9 @@ theorem primrec_const : Primrec Code.const :=
     fun n => by simp; induction n <;>
       simp [*, Code.const, Function.iterate_succ', -Function.iterate_succ]
 
-@[deprecated (since := "2025-05-12")] alias const_prim := primrec_const
-
 theorem primrec₂_curry : Primrec₂ curry :=
   primrec₂_comp.comp Primrec.fst <| primrec₂_pair.comp (primrec_const.comp Primrec.snd)
     (_root_.Primrec.const Code.id)
-
-@[deprecated (since := "2025-05-12")] alias curry_prim := primrec₂_curry
 
 theorem curry_inj {c₁ c₂ n₁ n₂} (h : curry c₁ n₁ = curry c₂ n₂) : c₁ = c₂ ∧ n₁ = n₂ :=
   ⟨by injection h, by
@@ -996,8 +981,6 @@ theorem primrec_evaln : Primrec fun a : (ℕ × Code) × ℕ => evaln a.1.1 a.1.
       (Primrec.encode_iff.2 Primrec.fst)) Primrec.snd) Primrec.snd.to₂).of_eq
     fun ⟨⟨k, c⟩, n⟩ => by simp [evaln_map, Option.bind_map]
 
-@[deprecated (since := "2025-05-12")] alias evaln_prim := primrec_evaln
-
 end
 
 section
@@ -1045,13 +1028,13 @@ theorem fixed_point₂ {f : Code → ℕ →. ℕ} (hf : Partrec₂ f) : ∃ c :
 end
 
 /-- There are only countably many partial recursive partial functions `ℕ →. ℕ`. -/
-instance : Countable {f : ℕ →. ℕ // _root_.Partrec f} := by
+instance : Countable {f : ℕ →. ℕ // Partrec f} := by
   apply Function.Surjective.countable (f := fun c => ⟨eval c, eval_part.comp (.const c) .id⟩)
   intro ⟨f, hf⟩; simpa using exists_code.1 hf
 
 /-- There are only countably many computable functions `ℕ → ℕ`. -/
 instance : Countable {f : ℕ → ℕ // Computable f} :=
-  @Function.Injective.countable {f : ℕ → ℕ // Computable f} {f : ℕ →. ℕ // _root_.Partrec f} _
+  @Function.Injective.countable {f : ℕ → ℕ // Computable f} {f : ℕ →. ℕ // Partrec f} _
     (fun f => ⟨f.val, f.2⟩)
     (fun _ _ h => Subtype.val_inj.1 (PFun.lift_injective (by simpa using h)))
 

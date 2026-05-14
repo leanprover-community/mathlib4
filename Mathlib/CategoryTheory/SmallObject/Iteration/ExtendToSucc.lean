@@ -37,6 +37,7 @@ namespace extendToSucc
 
 variable (X)
 
+set_option backward.privateInPublic true in
 /-- `extendToSucc`, on objects: it coincides with `F.obj` for `i ≤ j`, and
 it sends `Order.succ j` to the given object `X`. -/
 def obj (i : Set.Iic (Order.succ j)) : C :=
@@ -114,7 +115,7 @@ lemma map_comp (i₁ i₂ i₃ : J) (h₁₂ : i₁ ≤ i₂) (h₂₃ : i₂ �
       rw [map_eq hj F τ i₁ i₂ _ h₂]
       dsimp [map]
       rw [dif_neg h₁, dif_pos (h₁₂.trans h₂), dif_neg h₁, dif_pos h₂, assoc, assoc,
-        Iso.inv_hom_id_assoc,comp_id, ← Functor.map_comp_assoc, homOfLE_comp]
+        Iso.inv_hom_id_assoc, comp_id, ← Functor.map_comp_assoc, homOfLE_comp]
     · rw [map_id, comp_id]
 
 end extendToSucc
@@ -177,12 +178,14 @@ lemma extendToSucc_map_le_succ :
           (extendToSuccObjSuccIso hj F τ).inv :=
   extendToSucc.map_self_succ _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma arrowMap_extendToSucc (i₁ i₂ : J) (hi : i₁ ≤ i₂) (hi₂ : i₂ ≤ j) :
     arrowMap (extendToSucc hj F τ) i₁ i₂ hi (hi₂.trans (Order.le_succ j)) =
       arrowMap F i₁ i₂ hi hi₂ := by
   simp [arrowMap, extendToSucc_map hj F τ i₁ i₂ hi hi₂,
     extendToSuccObjIso, extendToSucc.objIso]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma arrowSucc_extendToSucc :
     arrowSucc (extendToSucc hj F τ) j (Order.lt_succ_of_not_isMax hj) =
       Arrow.mk τ := by

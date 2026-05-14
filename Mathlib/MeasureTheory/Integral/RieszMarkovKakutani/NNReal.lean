@@ -15,7 +15,7 @@ T2 space `X` for `ℝ≥0`-linear functionals `Λ`.
 
 ## Implementation notes
 
-The proof depends on the version of the theorem for `ℝ`-linear functional Λ because in a standard
+The proof depends on the version of the theorem for `ℝ`-linear functional `Λ` because in a standard
 proof one has to prove the inequalities by `le_antisymm`, yet for `C_c(X, ℝ≥0)` there is no `Neg`.
 Here we prove the result by writing `ℝ≥0`-linear `Λ` in terms of `ℝ`-linear `toRealLinear Λ` and by
 reducing the statement to the `ℝ`-version of the theorem.
@@ -26,7 +26,7 @@ reducing the statement to the `ℝ`-version of the theorem.
 
 -/
 
-@[expose] public section
+public section
 
 open scoped NNReal
 

@@ -16,7 +16,7 @@ and `n` is not divisible by the characteristic. In particular, when `F` has char
 this hold for all `n ≠ 0`.
 -/
 
-@[expose] public section
+public section
 
 variable (F : Type*) [Field F] (n k : ℕ) [NeZero (n : F)]
 
@@ -40,9 +40,6 @@ instance hasEnoughRootsOfUnity_pow : HasEnoughRootsOfUnity F (n ^ k) :=
   inferInstance
 
 end IsSepClosed
-
-@[deprecated (since := "2025-06-22")]
-alias IsAlgClosed.hasEnoughRootsOfUnity := IsSepClosed.hasEnoughRootsOfUnity
 
 namespace AlgebraicClosure
 

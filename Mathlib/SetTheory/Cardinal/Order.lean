@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
 module
 
-public import Mathlib.Algebra.Order.GroupWithZero.Canonical
 public import Mathlib.Algebra.Order.Ring.Canonical
 public import Mathlib.Data.Fintype.Option
 public import Mathlib.Order.InitialSeg
@@ -120,7 +119,7 @@ theorem mk_subtype_le {α : Type u} (p : α → Prop) : #(Subtype p) ≤ #α :=
   ⟨Embedding.subtype p⟩
 
 theorem mk_set_le (s : Set α) : #s ≤ #α :=
-  mk_subtype_le s
+  mk_subtype_le (· ∈ s)
 
 theorem out_embedding {c c' : Cardinal} : c ≤ c' ↔ Nonempty (c.out ↪ c'.out) := by
   conv_lhs => rw [← Cardinal.mk_out c, ← Cardinal.mk_out c', le_def]
@@ -208,11 +207,14 @@ theorem lift_eq_zero {a : Cardinal.{v}} : lift.{u} a = 0 ↔ a = 0 :=
 theorem mk_fintype (α : Type u) [h : Fintype α] : #α = Fintype.card α :=
   mk_congr (Fintype.equivOfCardEq (by simp))
 
+set_option backward.privateInPublic true in
 private theorem cast_succ (n : ℕ) : ((n + 1 : ℕ) : Cardinal.{u}) = n + 1 := by
   change #(ULift.{u} _) = #(ULift.{u} _) + 1
   rw [← mk_option]
   simp
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance commSemiring : CommSemiring Cardinal.{u} where
   zero_add a := inductionOn a fun α => mk_congr <| Equiv.emptySum _ α
   add_zero a := inductionOn a fun α => mk_congr <| Equiv.sumEmpty α _
@@ -258,7 +260,8 @@ theorem lift_mul (a b : Cardinal.{u}) : lift.{v} (a * b) = lift.{v} a * lift.{v}
 theorem lift_two : lift.{u, v} 2 = 2 := by simp [← one_add_one_eq_two]
 
 @[simp]
-theorem mk_set {α : Type u} : #(Set α) = 2 ^ #α := by simp [← one_add_one_eq_two, Set]
+theorem mk_set {α : Type u} : #(Set α) = 2 ^ #α := by
+  simp [← mk_congr (Equiv.ofBijective _ Set.setOf_bijective), ← one_add_one_eq_two]
 
 /-- A variant of `Cardinal.mk_set` expressed in terms of a `Set` instead of a `Type`. -/
 @[simp]
@@ -270,9 +273,9 @@ theorem lift_two_power (a : Cardinal) : lift.{v} (2 ^ a) = 2 ^ lift.{v} a := by
 
 /-! ### Order properties -/
 
-protected theorem zero_le : ∀ a : Cardinal, 0 ≤ a := by
-  rintro ⟨α⟩
-  exact ⟨Embedding.ofIsEmpty⟩
+instance orderBot : OrderBot Cardinal.{u} where
+  bot := 0
+  bot_le := by rintro ⟨α⟩; exact ⟨Embedding.ofIsEmpty⟩
 
 private theorem add_le_add' : ∀ {a b c d : Cardinal}, a ≤ b → c ≤ d → a + c ≤ b + d := by
   rintro ⟨α⟩ ⟨β⟩ ⟨γ⟩ ⟨δ⟩ ⟨e₁⟩ ⟨e₂⟩; exact ⟨e₁.sumMap e₂⟩
@@ -291,27 +294,19 @@ instance canonicallyOrderedAdd : CanonicallyOrderedAdd Cardinal.{u} where
         exact (Equiv.sumCongr (Equiv.ofInjective f hf) (Equiv.refl _)).trans <|
           Equiv.Set.sumCompl (range f)
       ⟨#(↥(range f)ᶜ), mk_congr this.symm⟩
-  le_self_add a b := (add_zero a).ge.trans <| by grw [Cardinal.zero_le b]
-  le_add_self a _ := (zero_add a).ge.trans <| by grw [Cardinal.zero_le]
+  le_self_add a b := (add_zero a).ge.trans <| add_right_mono bot_le
+  le_add_self a b := (zero_add a).ge.trans <| add_left_mono bot_le
+
+@[deprecated zero_le (since := "2026-04-17")]
+protected theorem zero_le (a : Cardinal) : 0 ≤ a := zero_le
 
 instance isOrderedRing : IsOrderedRing Cardinal.{u} :=
   CanonicallyOrderedAdd.toIsOrderedRing
-
-instance orderBot : OrderBot Cardinal.{u} where
-  bot := 0
-  bot_le := zero_le
 
 instance noZeroDivisors : NoZeroDivisors Cardinal.{u} where
   eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} =>
     inductionOn₂ a b fun α β => by
       simpa only [mul_def, mk_eq_zero_iff, isEmpty_prod] using id
-
-instance : LinearOrderedCommMonoidWithZero Cardinal.{u} :=
-  { Cardinal.commSemiring,
-    Cardinal.linearOrder with
-    bot_le _ := bot_le
-    mul_le_mul_left _ _ := mul_le_mul_left
-    zero_le_one := zero_le _ }
 
 -- Computable instance to prevent a non-computable one being found via the one above
 instance : CommMonoidWithZero Cardinal.{u} :=
@@ -334,7 +329,7 @@ theorem power_le_power_left : ∀ {a b c : Cardinal}, a ≠ 0 → b ≤ c → a 
 
 theorem self_le_power (a : Cardinal) {b : Cardinal} (hb : 1 ≤ b) : a ≤ a ^ b := by
   rcases eq_or_ne a 0 with (rfl | ha)
-  · exact zero_le _
+  · exact zero_le
   · convert power_le_power_left ha hb
     exact (power_one a).symm
 
@@ -388,38 +383,38 @@ theorem sInf_empty : sInf (∅ : Set Cardinal.{u}) = 0 :=
   dif_neg Set.not_nonempty_empty
 
 /-- Note that the successor of `c` is not the same as `c + 1` except in the case of finite `c`. -/
-instance : SuccOrder Cardinal := ConditionallyCompleteLinearOrder.toSuccOrder
+@[no_expose] instance : SuccOrder Cardinal := .ofLinearWellFoundedLT _
 
+@[deprecated Order.succ_eq_csInf (since := "2026-03-21")]
 theorem succ_def (c : Cardinal) : succ c = sInf { c' | c < c' } :=
-  dif_neg <| not_isMax c
+  Order.succ_eq_csInf c
 
-theorem succ_pos : ∀ c : Cardinal, 0 < succ c :=
-  bot_lt_succ
+theorem succ_pos : ∀ c : Cardinal, 0 < succ c := by simp
 
+@[simp]
 theorem succ_ne_zero (c : Cardinal) : succ c ≠ 0 :=
   (succ_pos _).ne'
 
-theorem add_one_le_succ (c : Cardinal.{u}) : c + 1 ≤ succ c := by
-  have : Set.Nonempty { c' | c < c' } := exists_gt c
-  simp_rw [succ_def, le_csInf_iff'' this, mem_setOf]
-  intro b hlt
-  rcases b, c with ⟨⟨β⟩, ⟨γ⟩⟩
-  obtain ⟨f⟩ := le_of_lt hlt
-  have : ¬Surjective f := fun hn => (not_le_of_gt hlt) (mk_le_of_surjective hn)
-  simp only [Surjective, not_forall] at this
-  rcases this with ⟨b, hb⟩
-  calc
-    #γ + 1 = #(Option γ) := mk_option.symm
-    _ ≤ #β := (f.optionElim b hb).cardinal_le
+theorem add_one_le_of_lt {a b : Cardinal} (h : a < b) : a + 1 ≤ b := by
+  induction a, b using Cardinal.inductionOn₂ with | mk α β
+  obtain ⟨f⟩ := h.le
+  have hf : ¬Surjective f := fun hn ↦ h.not_ge (mk_le_of_surjective hn)
+  rw [Surjective, not_forall] at hf
+  obtain ⟨b, hb⟩ := hf
+  rw [← mk_option]
+  exact (f.optionElim b hb).cardinal_le
+
+@[deprecated add_one_le_of_lt (since := "2026-03-21")]
+theorem add_one_le_succ (c : Cardinal) : c + 1 ≤ succ c :=
+  add_one_le_of_lt (lt_succ c)
 
 @[simp]
-theorem lift_succ (a) : lift.{v, u} (succ a) = succ (lift.{v, u} a) :=
-  le_antisymm
-    (le_of_not_gt fun h => by
-      rcases lt_lift_iff.1 h with ⟨b, h, e⟩
-      rw [lt_succ_iff, ← lift_le, e] at h
-      exact h.not_gt (lt_succ _))
-    (succ_le_of_lt <| lift_lt.2 <| lt_succ a)
+theorem lift_succ (a) : lift.{v, u} (succ a) = succ (lift.{v, u} a) := by
+  apply (succ_le_of_lt <| lift_lt.2 <| lt_succ a).antisymm'
+  by_contra! h
+  rcases lt_lift_iff.1 h with ⟨b, h, hb⟩
+  rw [lt_succ_iff, ← lift_le, hb] at h
+  exact h.not_gt (lt_succ _)
 
 /-! ### Limit cardinals -/
 
@@ -430,25 +425,47 @@ theorem isSuccPrelimit_zero : IsSuccPrelimit (0 : Cardinal) :=
   isSuccPrelimit_bot
 
 protected theorem isSuccLimit_iff {c : Cardinal} : IsSuccLimit c ↔ c ≠ 0 ∧ IsSuccPrelimit c :=
-  isSuccLimit_iff
+  isSuccLimit_iff_of_orderBot
 
 @[simp]
 protected theorem not_isSuccLimit_zero : ¬ IsSuccLimit (0 : Cardinal) :=
   not_isSuccLimit_bot
 
+/-- A cardinal is a strong pre-limit if it's closed under powersets.
+
+See `IsStrongLimit` for a version excluding `0`. -/
+def IsStrongPrelimit (c : Cardinal) : Prop :=
+  ∀ ⦃x⦄, x < c → 2 ^ x < c
+
 /-- A cardinal is a strong limit if it is not zero and it is closed under powersets.
-Note that `ℵ₀` is a strong limit by this definition. -/
+Note that `ℵ₀` is a strong limit by this definition.
+
+See `IsStrongPrelimit` for a version including `0`. -/
+@[mk_iff]
 structure IsStrongLimit (c : Cardinal) : Prop where
   ne_zero : c ≠ 0
-  two_power_lt ⦃x⦄ : x < c → 2 ^ x < c
+  protected isStrongPrelimit : IsStrongPrelimit c
 
-protected theorem IsStrongLimit.isSuccLimit {c} (H : IsStrongLimit c) : IsSuccLimit c := by
+@[deprecated (since := "2026-03-31")]
+alias IsStrongLimit.two_power_lt := IsStrongLimit.isStrongPrelimit
+
+protected theorem IsStrongPrelimit.isSuccPrelimit {c} (hc : IsStrongPrelimit c) :
+    IsSuccPrelimit c :=
+  isSuccPrelimit_of_succ_lt fun x hx ↦ (succ_le_of_lt <| cantor x).trans_lt (hc hx)
+
+protected theorem IsStrongLimit.isSuccLimit {c} (hc : IsStrongLimit c) : IsSuccLimit c := by
   rw [Cardinal.isSuccLimit_iff]
-  exact ⟨H.ne_zero, isSuccPrelimit_of_succ_lt fun x h ↦
-    (succ_le_of_lt <| cantor x).trans_lt (H.two_power_lt h)⟩
+  exact ⟨hc.ne_zero, hc.isStrongPrelimit.isSuccPrelimit⟩
 
 protected theorem IsStrongLimit.isSuccPrelimit {c} (H : IsStrongLimit c) : IsSuccPrelimit c :=
   H.isSuccLimit.isSuccPrelimit
+
+theorem not_isStrongPrelimit_iff {c} : ¬ IsStrongPrelimit c ↔ ∃ x < c, c ≤ 2 ^ x := by
+  simp [IsStrongPrelimit]
+
+@[simp]
+theorem IsStrongPrelimit.zero : IsStrongPrelimit 0 := by
+  simp [IsStrongPrelimit]
 
 @[simp]
 theorem not_isStrongLimit_zero : ¬ IsStrongLimit (0 : Cardinal) :=
@@ -529,35 +546,39 @@ instance IsWellOrder.subtype_nonempty : Nonempty { r // IsWellOrder α r } :=
   ⟨⟨WellOrderingRel, inferInstance⟩⟩
 
 variable (α) in
+/-- The **well-ordering theorem** (or **Zermelo's theorem**):
+every type has a linear order which satisfies `WellFoundedGT` -/
+lemma exists_wellFoundedGT : ∃ (_ : LinearOrder α), WellFoundedGT α := by
+  classical
+  exact ⟨linearOrderOfSTO (Function.swap WellOrderingRel),
+    by simpa [isWellFounded_iff] using WellOrderingRel.isWellOrder.wf⟩
+
+variable (α) in
 /-- The **well-ordering theorem** (or **Zermelo's theorem**): every type has a well-order -/
-theorem exists_wellOrder : ∃ (_ : LinearOrder α), WellFoundedLT α := by
+@[to_dual existing]
+theorem exists_wellFoundedLT : ∃ (_ : LinearOrder α), WellFoundedLT α := by
   classical
   exact ⟨linearOrderOfSTO WellOrderingRel, WellOrderingRel.isWellOrder.toIsWellFounded⟩
 
+@[deprecated (since := "2026-04-12")] alias exists_wellOrder := exists_wellFoundedLT
+
 namespace Cardinal
 
-/-! ### Bounds on suprema -/
-
+@[deprecated exists_eq_ciSup_of_not_isSuccPrelimit' (since := "2026-04-13")]
 lemma exists_eq_of_iSup_eq_of_not_isSuccPrelimit
     {ι : Type u} (f : ι → Cardinal.{v}) (ω : Cardinal.{v})
     (hω : ¬ IsSuccPrelimit ω)
     (h : ⨆ i : ι, f i = ω) : ∃ i, f i = ω := by
   subst h
-  suffices BddAbove (range f) from (isLUB_csSup' this).mem_of_not_isSuccPrelimit hω
-  contrapose! hω with hf
-  rw [iSup, csSup_of_not_bddAbove hf, csSup_empty]
-  exact isSuccPrelimit_bot
+  exact exists_eq_ciSup_of_not_isSuccPrelimit' hω
 
+@[deprecated exists_eq_ciSup_of_not_isSuccLimit (since := "2026-04-13")]
 lemma exists_eq_of_iSup_eq_of_not_isSuccLimit
     {ι : Type u} [hι : Nonempty ι] (f : ι → Cardinal.{v}) (hf : BddAbove (range f))
     {c : Cardinal.{v}} (hc : ¬ IsSuccLimit c)
     (h : ⨆ i, f i = c) : ∃ i, f i = c := by
-  rw [Cardinal.isSuccLimit_iff] at hc
-  refine (not_and_or.mp hc).elim (fun e ↦ ⟨hι.some, ?_⟩)
-    (Cardinal.exists_eq_of_iSup_eq_of_not_isSuccPrelimit.{u, v} f c · h)
-  cases not_not.mp e
-  rw [← le_zero_iff] at h ⊢
-  exact (le_ciSup hf _).trans h
+  subst h
+  exact exists_eq_ciSup_of_not_isSuccLimit hf hc
 
 /-! ### Indexed cardinal `prod` -/
 
@@ -611,7 +632,7 @@ theorem aleph0_eq_lift {c : Cardinal.{u}} : ℵ₀ = lift.{v} c ↔ ℵ₀ = c :
 
 @[simp]
 theorem lift_eq_aleph0 {c : Cardinal.{u}} : lift.{v} c = ℵ₀ ↔ c = ℵ₀ := by
-  simpa using lift_inj (b := ℵ₀)
+  simp [eqComm]
 
 /-! ### Properties about the cast from `ℕ` -/
 
@@ -642,12 +663,12 @@ theorem nat_eq_lift_iff {n : ℕ} {a : Cardinal.{u}} :
 @[simp]
 theorem zero_eq_lift_iff {a : Cardinal.{u}} :
     (0 : Cardinal) = lift.{v} a ↔ 0 = a := by
-  simpa using nat_eq_lift_iff (n := 0)
+  simp [eqComm]
 
 @[simp]
 theorem one_eq_lift_iff {a : Cardinal.{u}} :
     (1 : Cardinal) = lift.{v} a ↔ 1 = a := by
-  simpa using nat_eq_lift_iff (n := 1)
+  simp [eqComm]
 
 @[simp]
 theorem ofNat_eq_lift_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :

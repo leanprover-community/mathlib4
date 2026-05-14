@@ -14,18 +14,17 @@ public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 # Free modules and localization
 
 ## Main result
+
 - `Module.FinitePresentation.exists_free_localizedModule_powers`:
   If `M` is a finitely presented `R`-module
   such that `Mₛ` is free over `Rₛ` for some `S : Submonoid R`,
   then `Mᵣ` is already free over `Rᵣ` for some `r ∈ S`.
 
-## Future projects
-- Show that a finitely presented flat module has locally constant dimension.
-- Show that the flat locus of a finitely presented module is open.
-
+In the file `Mathlib.RingTheory.Spectrum.Prime.FreeLocus`, we deduce that the free
+locus of a finitely presented module is open and its rank is locally constant.
 -/
 
-@[expose] public section
+public section
 
 variable {R M N N'} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 variable (S : Submonoid R) [AddCommGroup N'] [Module R N']
@@ -44,7 +43,7 @@ lemma Module.FinitePresentation.exists_basis_localizedModule_powers
     [IsLocalization S Rₛ] [Module.FinitePresentation R M]
     {I} [Finite I] (b : Basis I Rₛ M') :
     ∃ (r : R) (hr : r ∈ S)
-      (b' : Basis I (Localization (.powers r)) (LocalizedModule (.powers r) M)),
+      (b' : Basis I (Localization (.powers r)) (LocalizedModule.Away r M)),
       ∀ i, (LocalizedModule.lift (.powers r) f fun s ↦ IsLocalizedModule.map_units f
         ⟨s.1, SetLike.le_def.mp (Submonoid.powers_le.mpr hr) s.2⟩) (b' i) = b i := by
   have : Module.FinitePresentation R (I →₀ R) := Module.finitePresentation_of_projective _ _
@@ -80,8 +79,8 @@ lemma Module.FinitePresentation.exists_free_localizedModule_powers
     (Rₛ) [CommRing Rₛ] [Algebra R Rₛ] [Module Rₛ M'] [IsScalarTower R Rₛ M'] [Nontrivial Rₛ]
     [IsLocalization S Rₛ] [Module.FinitePresentation R M] [Module.Free Rₛ M'] :
     ∃ r, r ∈ S ∧
-      Module.Free (Localization (.powers r)) (LocalizedModule (.powers r) M) ∧
-      Module.finrank (Localization (.powers r)) (LocalizedModule (.powers r) M) =
+      Module.Free (Localization (.powers r)) (LocalizedModule.Away r M) ∧
+      Module.finrank (Localization (.powers r)) (LocalizedModule.Away r M) =
         Module.finrank Rₛ M' := by
   let I := Module.Free.ChooseBasisIndex Rₛ M'
   let b : Basis I Rₛ M' := Module.Free.chooseBasis Rₛ M'

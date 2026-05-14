@@ -16,7 +16,7 @@ This file establishes basic facts about the interval integrability of special fu
 powers and the logarithm.
 -/
 
-@[expose] public section
+public section
 
 open Interval MeasureTheory Real Set
 
@@ -222,6 +222,7 @@ hypothesis on the interval, but assuming the measure is the volume.
 theorem intervalIntegrable_log (h : (0 : ℝ) ∉ [[a, b]]) : IntervalIntegrable log μ a b :=
   IntervalIntegrable.log continuousOn_id fun _ hx => ne_of_mem_of_not_mem hx h
 
+set_option linter.flexible false in -- TODO: fix non-terminal simp
 /--
 The real logarithm is interval integrable (with respect to the volume measure) on every interval.
 See `intervalIntegrable_log` for a version applying to any locally finite measure, but with an
@@ -243,7 +244,7 @@ theorem intervalIntegrable_log' : IntervalIntegrable log volume a b := by
       norm_num at *
       simpa using (hasDerivAt_id s).sub (hasDerivAt_mul_log hs.ne.symm)
     · intro s ⟨hs₁, hs₂⟩
-      norm_num at *
+      simp at *
       exact (log_nonpos_iff hs₁.le).mpr hs₂.le
   · -- Show integrability on [1…t] by continuity
     apply ContinuousOn.intervalIntegrable
@@ -253,9 +254,8 @@ theorem intervalIntegrable_log' : IntervalIntegrable log volume a b := by
 
 theorem intervalIntegrable_one_div_one_add_sq :
     IntervalIntegrable (fun x : ℝ => 1 / (↑1 + x ^ 2)) μ a b := by
-  refine (continuous_const.div ?_ fun x => ?_).intervalIntegrable a b
-  · fun_prop
-  · nlinarith
+  apply Continuous.intervalIntegrable
+  fun_prop (discharger := intro; nlinarith)
 
 @[simp]
 theorem intervalIntegrable_inv_one_add_sq :

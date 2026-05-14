@@ -127,16 +127,7 @@ theorem Separable.map {p : R[X]} (h : p.Separable) {f : R →+* S} : (p.map f).S
 
 theorem _root_.Associated.separable {f g : R[X]}
     (ha : Associated f g) (h : f.Separable) : g.Separable := by
-  obtain ⟨⟨u, v, h1, h2⟩, ha⟩ := ha
-  obtain ⟨a, b, h⟩ := h
-  refine ⟨a * v + b * derivative v, b * v, ?_⟩
-  replace h := congr($h * $(h1))
-  have h3 := congr(derivative $(h1))
-  simp only [← ha, derivative_mul, derivative_one] at h3 ⊢
-  calc
-    _ = (a * f + b * derivative f) * (u * v)
-      + (b * f) * (derivative u * v + u * derivative v) := by ring1
-    _ = 1 := by rw [h, h3]; ring1
+  grind [Separable.of_dvd, Associated.dvd']
 
 theorem _root_.Associated.separable_iff {f g : R[X]}
     (ha : Associated f g) : f.Separable ↔ g.Separable := ⟨ha.separable, ha.symm.separable⟩
@@ -435,16 +426,22 @@ theorem separable_X_pow_sub_C' (p n : ℕ) (a : F) [CharP F p] (hn : ¬p ∣ n) 
     Separable (X ^ n - C a) :=
   separable_X_pow_sub_C a (by rwa [← CharP.cast_eq_zero_iff F p n] at hn) ha
 
+/-- In a field `F`, for any `t ∈ F` and `n > 0`, the polynomial `X ^ n - t` is separable
+iff `↑n ≠ 0`. The assumption `n > 0` is needed, since for `n = 0` the polynomial `X ^ n - t`
+is separable iff `t ≠ 1`. -/
+theorem X_pow_sub_C_separable_iff {n : ℕ} {x : F} (hn : 0 < n) (hx : x ≠ 0) :
+    (X ^ n - C x : F[X]).Separable ↔ (n : F) ≠ 0 := by
+  refine ⟨fun h hn' ↦ ?_, fun h => separable_X_pow_sub_C x h hx⟩
+  exact not_isUnit_of_natDegree_pos (X ^ n - C x) (by simp [hn]) <| by
+    simpa [separable_def, derivative_X_pow, hn', isCoprime_zero_right] using h
+
 -- this can possibly be strengthened to making `separable_X_pow_sub_C_unit` a
 -- bi-implication, but it is nontrivial!
 /-- In a field `F`, `X ^ n - 1` is separable iff `↑n ≠ 0`. -/
 theorem X_pow_sub_one_separable_iff {n : ℕ} : (X ^ n - 1 : F[X]).Separable ↔ (n : F) ≠ 0 := by
-  refine ⟨?_, fun h => separable_X_pow_sub_C_unit 1 (IsUnit.mk0 _ h)⟩
-  rw [separable_def', derivative_sub, derivative_X_pow, derivative_one, sub_zero]
-  -- Suppose `(n : F) = 0`, then the derivative is `0`, so `X ^ n - 1` is a unit, contradiction.
-  rintro (h : IsCoprime _ _) hn'
-  rw [hn', C_0, zero_mul, isCoprime_zero_right] at h
-  exact not_isUnit_X_pow_sub_one F n h
+  rcases (Nat.eq_zero_or_pos n) with (hz | hpos)
+  · simp_all [not_separable_zero]
+  · exact X_pow_sub_C_separable_iff hpos one_ne_zero
 
 section Splits
 
@@ -657,7 +654,7 @@ variable [Ring K] [Algebra F K]
 variable {F} in
 theorem isSeparable_algebraMap (x : F) : IsSeparable F (algebraMap F K x) :=
   Polynomial.Separable.of_dvd (Polynomial.separable_X_sub_C (x := x))
-    (minpoly.dvd F (algebraMap F K x) (by simp only [map_sub, aeval_X, aeval_C, sub_self]))
+    (minpoly.dvd F (algebraMap F K x) (by simp))
 
 instance Algebra.isSeparable_self : Algebra.IsSeparable F F :=
   ⟨isSeparable_algebraMap⟩

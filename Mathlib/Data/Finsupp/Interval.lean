@@ -67,6 +67,9 @@ def rangeIcc (f g : ι →₀ α) : ι →₀ Finset α where
     rw [mem_union, ← not_iff_not, not_or, notMem_support_iff, notMem_support_iff, not_ne_iff]
     exact Icc_eq_singleton_iff.symm
 
+@[deprecated (since := "2025-12-15")]
+alias rangeIcc_toFun := rangeIcc_apply
+
 lemma coe_rangeIcc (f g : ι →₀ α) : rangeIcc f g i = Icc (f i) (g i) := rfl
 
 @[simp]
@@ -92,7 +95,7 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder (ι →₀ α) :=
 
 theorem Icc_eq : Icc f g = (f.support ∪ g.support).finsupp (f.rangeIcc g) := rfl
 
-theorem card_Icc : #(Icc f g) = ∏ i ∈ f.support ∪ g.support, #(Icc (f i) (g i)):= by
+theorem card_Icc : #(Icc f g) = ∏ i ∈ f.support ∪ g.support, #(Icc (f i) (g i)) := by
   simp_rw [Icc_eq, card_finsupp, coe_rangeIcc]
 
 theorem card_Ico : #(Ico f g) = ∏ i ∈ f.support ∪ g.support, #(Icc (f i) (g i)) - 1 := by
@@ -116,19 +119,18 @@ theorem card_uIcc :
 
 end Lattice
 
-section CanonicallyOrdered
+section IsBotZeroClass
 
-variable [AddCommMonoid α] [PartialOrder α] [CanonicallyOrderedAdd α]
+variable [AddCommMonoid α] [PartialOrder α] [IsBotZeroClass α]
   [OrderBot α] [LocallyFiniteOrder α]
 variable [DecidableEq ι] [DecidableEq α] (f : ι →₀ α)
 
 theorem card_Iic : #(Iic f) = ∏ i ∈ f.support, #(Iic (f i)) := by
-  classical simp_rw [Iic_eq_Icc, card_Icc, Finsupp.bot_eq_zero, support_zero, empty_union,
-      zero_apply, bot_eq_zero]
+  classical simp [Iic_eq_Icc, card_Icc, bot_eq_zero]
 
 theorem card_Iio : #(Iio f) = ∏ i ∈ f.support, #(Iic (f i)) - 1 := by
   rw [card_Iio_eq_card_Iic_sub_one, card_Iic]
 
-end CanonicallyOrdered
+end IsBotZeroClass
 
 end Finsupp
