@@ -146,7 +146,7 @@ theorem circleAverage_congr_codiscreteWithin
   congr 1
   apply intervalIntegral.integral_congr_ae_restrict
   apply ae_restrict_le_codiscreteWithin measurableSet_uIoc
-  apply codiscreteWithin.mono (by tauto) (circleMap_preimage_codiscrete hR hf)
+  apply codiscreteWithin_mono (by tauto) (circleMap_preimage_codiscrete hR hf)
 
 /-- If two functions agree on the circle, then their circle averages agree. -/
 theorem circleAverage_congr_sphere {f₁ f₂ : ℂ → E} (hf : Set.EqOn f₁ f₂ (sphere c |R|)) :

@@ -346,7 +346,7 @@ Preimages of codiscrete sets: if `f` is analytic on a neighbourhood of `U` and n
 then the preimage of any subset codiscrete within `f '' U` is codiscrete within `U`.
 
 See `AnalyticOnNhd.preimage_zero_mem_codiscreteWithin` for the special case that `s` is the
-complement of zero. Applications might want to use the theorem `Filter.codiscreteWithin.mono`.
+complement of zero. Applications might want to use the theorem `Filter.codiscreteWithin_mono`.
 -/
 theorem AnalyticOnNhd.preimage_mem_codiscreteWithin {U : Set 𝕜} {s : Set E} {f : 𝕜 → E}
     (hfU : AnalyticOnNhd 𝕜 f U) (h₂f : ∀ x ∈ U, ¬EventuallyConst f (𝓝 x))
@@ -366,7 +366,7 @@ theorem AnalyticOnNhd.preimage_mem_codiscreteWithin {U : Set 𝕜} {s : Set E} {
 not locally constant, then the push-forward of the filter of sets codiscrete within `U` is less
 than or equal to the filter of sets codiscrete within `f '' U`.
 
-Applications might want to use the theorem `Filter.codiscreteWithin.mono`.
+Applications might want to use the theorem `Filter.codiscreteWithin_mono`.
 -/
 theorem AnalyticOnNhd.map_codiscreteWithin {U : Set 𝕜} {f : 𝕜 → E}
     (hfU : AnalyticOnNhd 𝕜 f U) (h₂f : ∀ x ∈ U, ¬EventuallyConst f (𝓝 x)) :
