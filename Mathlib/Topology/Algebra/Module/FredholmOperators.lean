@@ -42,56 +42,56 @@ section
 variable {K : Type*} {V : Type*} {V₂ : Type*} [Field K] [AddCommMonoid V]
     [Module K V] [AddCommGroup V₂] [Module K V₂]
 
-def LinearMap.hasFiniteRank (f : V →ₗ[K] V₂) := FiniteDimensional K f.range
+def LinearMap.HasFiniteRank (f : V →ₗ[K] V₂) := FiniteDimensional K f.range
 
-@[simp] def LinearMap.hasFiniteRank.smul {f : V →ₗ[K] V₂}
-    (hf : f.hasFiniteRank) (c : K) : (c • f).hasFiniteRank := by
-  unfold LinearMap.hasFiniteRank at *
+@[simp] def LinearMap.HasFiniteRank.smul {f : V →ₗ[K] V₂}
+    (hf : f.HasFiniteRank) (c : K) : (c • f).HasFiniteRank := by
+  unfold LinearMap.HasFiniteRank at *
   rw [← Submodule.fg_iff_finiteDimensional] at *
   exact hf.of_le <| LinearMap.range_smul_le _ c
 
-@[simp] def LinearMap.hasFiniteRank.zero : (0 : V →ₗ[K] V₂).hasFiniteRank := by
-  unfold LinearMap.hasFiniteRank
+@[simp] def LinearMap.HasFiniteRank.zero : (0 : V →ₗ[K] V₂).HasFiniteRank := by
+  unfold LinearMap.HasFiniteRank
   simp
 
-@[simp] def LinearMap.hasFiniteRank.neg {f : V →ₗ[K] V₂}
-    (hf : f.hasFiniteRank) : (-f).hasFiniteRank := by
+@[simp] def LinearMap.HasFiniteRank.neg {f : V →ₗ[K] V₂}
+    (hf : f.HasFiniteRank) : (-f).HasFiniteRank := by
   rw [show -f = (-1 : K) • f by module]
   apply hf.smul
 
-@[simp] lemma LinearMap.hasFiniteRank.add {f g : V →ₗ[K] V₂}
-    (hf : f.hasFiniteRank) (hg : g.hasFiniteRank) : (f + g).hasFiniteRank := by
-  unfold LinearMap.hasFiniteRank at *
+@[simp] lemma LinearMap.HasFiniteRank.add {f g : V →ₗ[K] V₂}
+    (hf : f.HasFiniteRank) (hg : g.HasFiniteRank) : (f + g).HasFiniteRank := by
+  unfold LinearMap.HasFiniteRank at *
   exact Submodule.finiteDimensional_of_le <| LinearMap.range_add_le f g
 
-@[simp] def LinearMap.hasFiniteRank.sub {f g : V →ₗ[K] V₂}
-    (hf : f.hasFiniteRank) (hg : g.hasFiniteRank) : (f - g).hasFiniteRank := by
+@[simp] def LinearMap.HasFiniteRank.sub {f g : V →ₗ[K] V₂}
+    (hf : f.HasFiniteRank) (hg : g.HasFiniteRank) : (f - g).HasFiniteRank := by
   rw [sub_eq_add_neg]
   exact hf.add hg.neg
 
 variable {V₃ : Type*} [AddCommGroup V₃] [Module K V₃]
 
-lemma LinearMap.hasFiniteRank.comp_right {u : V →ₗ[K] V₂} (h : u.hasFiniteRank)
-    (v : V₂ →ₗ[K] V₃) : (v ∘ₗ u).hasFiniteRank := by
-  unfold LinearMap.hasFiniteRank at *
+lemma LinearMap.HasFiniteRank.comp_right {u : V →ₗ[K] V₂} (h : u.HasFiniteRank)
+    (v : V₂ →ₗ[K] V₃) : (v ∘ₗ u).HasFiniteRank := by
+  unfold LinearMap.HasFiniteRank at *
   rw [← Submodule.fg_iff_finiteDimensional, LinearMap.range_comp] at *
   exact Submodule.FG.map v h
 
-lemma LinearMap.hasFiniteRank.comp_left {v : V₂ →ₗ[K] V₃} (h : v.hasFiniteRank)
-    (u : V →ₗ[K] V₂) : (v ∘ₗ u).hasFiniteRank := by
-  unfold LinearMap.hasFiniteRank at *
+lemma LinearMap.HasFiniteRank.comp_left {v : V₂ →ₗ[K] V₃} (h : v.HasFiniteRank)
+    (u : V →ₗ[K] V₂) : (v ∘ₗ u).HasFiniteRank := by
+  unfold LinearMap.HasFiniteRank at *
   rw [← Submodule.fg_iff_finiteDimensional] at *
   exact h.of_le <| u.range_comp_le_range v
 
-lemma LinearMap.hasFiniteRank.comp_sub_comp {u v : V →ₗ[K] V₂} {u' v' : V₂ →ₗ[K] V₃}
-    (h : (u - v).hasFiniteRank) (h' : (u' - v').hasFiniteRank) :
-    (u' ∘ₗ u - v' ∘ₗ v).hasFiniteRank := by
+lemma LinearMap.HasFiniteRank.comp_sub_comp {u v : V →ₗ[K] V₂} {u' v' : V₂ →ₗ[K] V₃}
+    (h : (u - v).HasFiniteRank) (h' : (u' - v').HasFiniteRank) :
+    (u' ∘ₗ u - v' ∘ₗ v).HasFiniteRank := by
   rw [show u' ∘ₗ u - v' ∘ₗ v = (u' - v') ∘ₗ u + v' ∘ₗ (u - v) by ext; simp]
   exact (h'.comp_left u).add <| h.comp_right v'
 
 variable (K V V₂) in
 def LinearMap.FiniteRank : Submodule K (V →ₗ[K] V₂) where
-  carrier := {u | u.hasFiniteRank}
+  carrier := {u | u.HasFiniteRank}
   add_mem' hu hv := by simp_all
   zero_mem' := by simp
   smul_mem' c hu := by simp_all
@@ -99,7 +99,7 @@ def LinearMap.FiniteRank : Submodule K (V →ₗ[K] V₂) where
 namespace QuotFiniteRank
 scoped instance : Setoid (V →ₗ[K] V₂) := (LinearMap.FiniteRank K V V₂).quotientRel
 
-lemma eqv_iff {u v : V →ₗ[K] V₂} : u ≈ v ↔ (u - v).hasFiniteRank := by
+lemma eqv_iff {u v : V →ₗ[K] V₂} : u ≈ v ↔ (u - v).HasFiniteRank := by
   erw [← @Quotient.eq_iff_equiv, Submodule.Quotient.eq]
   rfl
 
@@ -180,14 +180,14 @@ variable [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F]
 
 variable (𝕜 E F) in
 def FiniteRank : Submodule 𝕜 (E →L[𝕜] F) where
-  carrier := {u | u.toLinearMap.hasFiniteRank}
+  carrier := {u | u.toLinearMap.HasFiniteRank}
   add_mem' hu hv := by simp_all
   zero_mem' := by simp
   smul_mem' c hu := by simp_all
 
 scoped instance : Setoid (E →L[𝕜] F) := (FiniteRank 𝕜 E F).quotientRel
 
-lemma eqv_iff {u v : E →L[𝕜] F} : u ≈ v ↔ (u - v).toLinearMap.hasFiniteRank := by
+lemma eqv_iff {u v : E →L[𝕜] F} : u ≈ v ↔ (u - v).toLinearMap.HasFiniteRank := by
   erw [← @Quotient.eq_iff_equiv, Submodule.Quotient.eq]
   rfl
 
