@@ -397,7 +397,7 @@ section ContinuousLinearEquiv
 
 variable [IsTopologicalAddGroup M]
 
-/-- Two submodules `p` and `q` are topological complements if and only if the algebraic equivalence
+/-- Two submodules `p` and `q` are topological complements if and only if the linear equivalence
 `p.prodEquivOfIsCompl q h` is continuous in the inverse direction. -/
 theorem IsCompl.isTopCompl_iff_continuous_symm_prodEquivOfIsCompl (h : IsCompl p q) :
     IsTopCompl p q ↔ Continuous (p.prodEquivOfIsCompl q h).symm :=
@@ -410,7 +410,7 @@ complementary submodules is always continuous as a map `p × q → M`. -/
 theorem continuous_prodEquivOfIsCompl (h : IsCompl p q) : Continuous (p.prodEquivOfIsCompl q h) :=
   (continuous_subtype_val.comp continuous_fst).add (continuous_subtype_val.comp continuous_snd)
 
-/-- Two submodules `p` and `q` are topological complements if and only if the algebraic equivalence
+/-- Two submodules `p` and `q` are topological complements if and only if the linear equivalence
 `p.prodEquivOfIsCompl q h` is a homeomorphism. -/
 theorem IsCompl.isTopCompl_iff_isHomeomorph_prodEquivOfIsCompl (h : IsCompl p q) :
     IsTopCompl p q ↔ IsHomeomorph (p.prodEquivOfIsCompl q h) := by
@@ -419,7 +419,7 @@ theorem IsCompl.isTopCompl_iff_isHomeomorph_prodEquivOfIsCompl (h : IsCompl p q)
   exact continuous_prodEquivOfIsCompl h
 
 variable (p q) in
-/-- If two submodules `p` and `q` are topological complements, then the algebraic equivalence
+/-- If two submodules `p` and `q` are topological complements, then the linear equivalence
 `p.prodEquivOfIsCompl q h.isCompl` is a homeomorphism, bundled as a continuous linear
 equivalence. -/
 noncomputable def prodEquivOfIsTopCompl (h : IsTopCompl p q) : (p × q) ≃L[R] M :=
@@ -443,7 +443,7 @@ theorem prodEquivOfIsTopCompl_symm_apply (h : IsTopCompl p q) (x : M) :
       ((p.projectionOntoL q h x, q.projectionOntoL p h.symm x) : p × q) :=
   prodEquivOfIsCompl_symm_apply h.isCompl x
 
-/-- Two submodules `p` and `q` are topological complements if and only if the algebraic equivalence
+/-- Two submodules `p` and `q` are topological complements if and only if the linear equivalence
 `p.quotientEquivOfIsCompl q h` is continuous. -/
 theorem IsCompl.isTopCompl_iff_continuous_quotientEquivOfIsCompl (h : IsCompl p q) :
     IsTopCompl p q ↔ Continuous (p.quotientEquivOfIsCompl q h) := by
@@ -453,7 +453,7 @@ theorem IsCompl.isTopCompl_iff_continuous_quotientEquivOfIsCompl (h : IsCompl p 
   exact ⟨IsTopCompl.symm, IsTopCompl.symm⟩
 
 variable (p q) in
-/-- If two submodules `p` and `q` are topological complements, then the algebraic equivalence
+/-- If two submodules `p` and `q` are topological complements, then the linear equivalence
 `p.quotientEquivOfIsCompl q h.isCompl` is a homeomorphism, bundled as a continuous linear
 equivalence. -/
 noncomputable def quotientEquivOfIsTopCompl (h : IsTopCompl p q) : (M ⧸ p) ≃L[R] q :=
@@ -498,6 +498,9 @@ This is the continuous version of `LinearMap.ofIsCompl`. -/
 noncomputable def ofIsTopCompl (h : IsTopCompl p q) (φ : p →L[R] F) (ψ : q →L[R] F) : E →L[R] F :=
   φ.coprod ψ ∘L ↑(prodEquivOfIsTopCompl p q h).symm
 
+theorem ofIsTopCompl_eq_add (h : IsTopCompl p q) (φ : p →L[R] F) (ψ : q →L[R] F) :
+    ofIsTopCompl h φ ψ = φ ∘L p.projectionOntoL q h + ψ ∘L q.projectionOntoL p h.symm := by
+  ext; simp [ofIsTopCompl]
 
 @[simp]
 theorem toLinearMap_ofIsTopCompl (h : IsTopCompl p q) (φ : p →L[R] F) (ψ : q →L[R] F) :
