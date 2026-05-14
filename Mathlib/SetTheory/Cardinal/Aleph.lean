@@ -11,6 +11,8 @@ public import Mathlib.SetTheory.Cardinal.ENat
 public import Mathlib.SetTheory.Ordinal.Enum
 public import Mathlib.SetTheory.Ordinal.Univ
 
+import Mathlib.SetTheory.Ordinal.Principal
+
 /-!
 # Omega, aleph, and beth functions
 
@@ -271,6 +273,12 @@ theorem range_omega : range omega = {x | ω ≤ x ∧ IsInitial x} := by
 theorem mem_range_omega_iff {x : Ordinal} : x ∈ range omega ↔ ω ≤ x ∧ IsInitial x := by
   rw [range_omega, mem_setOf]
 
+theorem preOmega_of_omega0_sq_le {o : Ordinal} (ho : ω ^ 2 ≤ o) : preOmega o = ω_ o := by
+  rw [← opow_natCast] at ho
+  rw [omega_eq_preOmega, add_of_omega0_opow_le _ ho]
+  apply left_lt_opow one_lt_omega0
+  simp
+
 end Ordinal
 
 /-! ### Aleph cardinals -/
@@ -519,6 +527,9 @@ theorem aleph1_le_mk (α : Type*) [Uncountable α] : ℵ₁ ≤ #α := by
 theorem countable_iff_lt_aleph_one {α : Type*} (s : Set α) : s.Countable ↔ #s < ℵ₁ := by
   rw [lt_aleph_one_iff, le_aleph0_iff_set_countable]
 
+theorem preAleph_of_omega0_sq_le {o : Ordinal} (ho : ω ^ 2 ≤ o) : preAleph o = ℵ_ o := by
+  simpa [← ord_inj] using preOmega_of_omega0_sq_le ho
+
 end Cardinal
 
 /-! ### Beth cardinals -/
@@ -732,6 +743,12 @@ theorem isStrongLimit_beth {o : Ordinal} : IsStrongLimit (ℶ_ o) ↔ IsSuccPrel
 theorem lift_beth (o : Ordinal) : lift.{v} (ℶ_ o) = ℶ_ (Ordinal.lift.{v} o) := by
   rw [beth_eq_preBeth, beth_eq_preBeth, lift_preBeth, Ordinal.lift_add, lift_omega0]
 
+theorem preBeth_of_omega0_sq_le {o : Ordinal} (ho : ω ^ 2 ≤ o) : preBeth o = ℶ_ o := by
+  rw [← opow_natCast] at ho
+  rw [beth, add_of_omega0_opow_le _ ho]
+  apply left_lt_opow one_lt_omega0
+  simp
+
 /-! ### Simp lemmas with `lift` -/
 
 section lift
@@ -769,7 +786,7 @@ theorem aleph_one_eq_lift : ℵ₁ = lift.{v} c ↔ ℵ₁ = c := by
 
 @[simp]
 theorem lift_eq_aleph_one : lift.{v} c = ℵ₁ ↔ c = ℵ₁ := by
-  simpa using lift_inj (b := ℵ₁)
+  simp [eqComm]
 
 @[deprecated (since := "2025-12-22")] alias lift_eq_aleph1 := lift_eq_aleph_one
 
@@ -795,7 +812,7 @@ theorem aleph_natCast_eq_lift : ℵ_ n = lift.{v} c ↔ ℵ_ n = c := by
 
 @[simp]
 theorem lift_eq_aleph_natCast : lift.{v} c = ℵ_ n ↔ c = ℵ_ n := by
-  simpa using lift_inj (b := ℵ_ n)
+  simp [eqComm]
 
 @[simp]
 theorem aleph_ofNat_le_lift [n.AtLeastTwo] : ℵ_ ofNat(n) ≤ lift.{v} c ↔ ℵ_ ofNat(n) ≤ c :=
@@ -843,7 +860,7 @@ theorem beth_natCast_eq_lift : ℶ_ n = lift.{v} c ↔ ℶ_ n = c := by
 
 @[simp]
 theorem lift_eq_beth_natCast : lift.{v} c = ℶ_ n ↔ c = ℶ_ n := by
-  simpa using lift_inj (b := ℶ_ n)
+  simp [eqComm]
 
 @[simp]
 theorem beth_ofNat_le_lift [n.AtLeastTwo] : ℶ_ ofNat(n) ≤ lift.{v} c ↔ ℶ_ ofNat(n) ≤ c :=
@@ -898,7 +915,7 @@ theorem omega_one_eq_lift : ω₁ = lift.{v} o ↔ ω₁ = o := by
 
 @[simp]
 theorem lift_eq_omega_one : lift.{v} o = ω₁ ↔ o = ω₁ := by
-  simpa using lift_inj (b := ω₁)
+  simp [eqComm]
 
 @[simp]
 theorem omega_natCast_le_lift : ω_ n ≤ lift.{v} o ↔ ω_ n ≤ o := by
@@ -922,7 +939,7 @@ theorem omega_natCast_eq_lift : ω_ n = lift.{v} o ↔ ω_ n = o := by
 
 @[simp]
 theorem lift_eq_omega_natCast : lift.{v} o = ω_ n ↔ o = ω_ n := by
-  simpa using lift_inj (b := ω_ n)
+  simp [eqComm]
 
 @[simp]
 theorem omega_ofNat_le_lift [n.AtLeastTwo] : ω_ ofNat(n) ≤ lift.{v} o ↔ ω_ ofNat(n) ≤ o :=
