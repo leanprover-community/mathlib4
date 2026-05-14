@@ -217,9 +217,9 @@ theorem mul_prod_eraseIdx {i} (hlen : i < l.length) (hcomm : ∀ a' ∈ l.take i
     insertIdx_eraseIdx_getElem hlen]
 
 @[to_additive (attr := simp)]
-theorem prod_filter_ne_one [DecidablePred (· = (1 : M))] (l : List M) :
-    (l.filter fun x ↦ !decide (x = 1)).prod = l.prod := by
-  induction l <;> grind
+theorem prod_filter_ne_one [BEq M] [LawfulBEq M] (l : List M) :
+    (l.filter (· != 1)).prod = l.prod := by
+  classical induction l <;> grind
 
 end Monoid
 
