@@ -48,7 +48,7 @@ instance : IsRegularCardinalOrder ℕ := ⟨by simp⟩
 
 instance (priority := low) [LinearOrder α] [WellFoundedLT α] [Subsingleton α] :
     IsRegularCardinalOrder α where
-  type_le_ord_cof := by
+  type_lt_le_ord_cof := by
     cases isEmpty_or_nonempty α
     · simpa
     · cases nonempty_unique α
@@ -56,7 +56,7 @@ instance (priority := low) [LinearOrder α] [WellFoundedLT α] [Subsingleton α]
       simp
 
 instance : IsRegularCardinalOrder Ordinal where
-  type_le_ord_cof := by
+  type_lt_le_ord_cof := by
     rw [type_lt_ordinal, ← ord_univ, ord_le_ord, le_cof_iff]
     intro s hs
     contrapose! hs
@@ -68,7 +68,7 @@ namespace Order
 variable [LinearOrder α] [WellFoundedLT α] [IsRegularCardinalOrder α]
 
 theorem ord_cof_eq_type_lt : (cof α).ord = typeLT α := by
-  apply IsRegularCardinalOrder.type_le_ord_cof.antisymm'
+  apply IsRegularCardinalOrder.type_lt_le_ord_cof.antisymm'
   rw [ord_le, card_type]
   exact cof_le_cardinalMk α
 
@@ -91,7 +91,7 @@ theorem type_eq_of_isCofinal {s : Set α} (hs : IsCofinal s) : typeLT s = typeLT
 /-- Enumerate the elements of a cofinal subset of `α` by `α` itself. This is a generalization of
 `Nat.nth`. -/
 noncomputable def enum (s : Set α) (hs : IsCofinal s) : α ≃o s :=
-  .ofRelIsoLT (type_eq.1 (ordinalType_eq_of_isCofinal hs).symm).some
+  .ofRelIsoLT (type_eq.1 (type_eq_of_isCofinal hs).symm).some
 
 theorem enum_le_of_forall_lt {a o : α} {s : Set α} {hs : IsCofinal s} (ho : o ∈ s)
     (H : ∀ b < a, enum s hs b < o) : enum s hs a ≤ o := by
