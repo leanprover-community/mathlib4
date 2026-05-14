@@ -40,7 +40,6 @@ variable
 
 section one_dimensional
 
-
 open scoped Topology
 
 section
@@ -48,6 +47,19 @@ section
 theorem Filter.EventuallyEq.iteratedDerivWithin_eq (hfg : f =ᶠ[𝓝[s] x] g) (hfg' : f x = g x) :
     iteratedDerivWithin n f s x = iteratedDerivWithin n g s x :=
   congr($(hfg.iteratedFDerivWithin_eq hfg' n) _)
+
+theorem Filter.EventuallyEq.iteratedDerivWithin' {s t : Set 𝕜}
+    (h : f =ᶠ[𝓝[s] x] g) (ht : t ⊆ s) (n : ℕ) :
+    iteratedDerivWithin n f t =ᶠ[𝓝[s] x] iteratedDerivWithin n g t := by
+  induction n with
+  | zero => exact h.mono fun y hy ↦ by simpa
+  | succ n ihn =>
+    exact (ihn.derivWithin' ht).mono fun y hy ↦ by simpa [iteratedDerivWithin_succ]
+
+/-- If two functions agree in a neighborhood within `s`, then so do their iterated derivatives. -/
+protected lemma Filter.EventuallyEq.iteratedDerivWithin {s : Set 𝕜} (h : f =ᶠ[𝓝[s] x] g) (n : ℕ) :
+    iteratedDerivWithin n f s =ᶠ[𝓝[s] x] iteratedDerivWithin n g s :=
+  h.iteratedDerivWithin' Set.Subset.rfl n
 
 theorem Filter.EventuallyEq.iteratedDerivWithin_eq_of_nhds_insert
     {𝕜 F : Type*} [NontriviallyNormedField 𝕜]
@@ -298,6 +310,22 @@ theorem iteratedDerivWithin_pow (m : ℕ) (k : ℕ) :
         show k < i → i - k = (i - (k + 1) + 1) by lia]; ring
 
 end
+
+/-- If two functions agree in a neighborhood, then so do their iterated derivatives. -/
+protected lemma Filter.EventuallyEq.iteratedDeriv
+    {𝕜 : Type*} [NontriviallyNormedField 𝕜] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+    {f₁ f₂ : 𝕜 → F} {x : 𝕜} (h : f₁ =ᶠ[𝓝 x] f₂) (n : ℕ) :
+    iteratedDeriv n f₁ =ᶠ[𝓝 x] iteratedDeriv n f₂ := by
+  simp_all [← nhdsWithin_univ, ← iteratedDerivWithin_univ, EventuallyEq.iteratedDerivWithin]
+
+/-- If two functions agree in a neighborhood, then so do their Taylor series. -/
+protected theorem Filter.EventuallyEq.taylorSeries
+    {𝕜 : Type*} [NontriviallyNormedField 𝕜] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+    {f₁ f₂ : 𝕜 → F} {x : 𝕜} (h : f₁ =ᶠ[𝓝 x] f₂) :
+    ftaylorSeries 𝕜 f₁ =ᶠ[𝓝 x] ftaylorSeries 𝕜 f₂ := by
+  filter_upwards [eventually_eventuallyEq_nhds.2 h] with e₁ he₁
+  ext n : 1
+  exact (he₁.iteratedFDeriv 𝕜 n).eq_of_nhds
 
 lemma iteratedDeriv_add (hf : ContDiffAt 𝕜 n f x) (hg : ContDiffAt 𝕜 n g x) :
     iteratedDeriv n (f + g) x = iteratedDeriv n f x + iteratedDeriv n g x := by
