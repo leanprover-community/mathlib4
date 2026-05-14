@@ -97,6 +97,37 @@ theorem isCompact_uIcc {α : Type*} [LinearOrder α] [TopologicalSpace α] [Comp
     {a b : α} : IsCompact (uIcc a b) :=
   isCompact_Icc
 
+section DenseLinear
+
+variable [TopologicalSpace α] [LinearOrder α] [OrderTopology α] [DenselyOrdered α]
+  [CompactIccSpace α]
+
+@[compactness .]
+lemma isCompact_closure_Ioc {a b : α} : IsCompact (closure (Ioc a b)) := by
+  obtain rfl|h := eq_or_ne a b
+  · simp
+  · simp [h, isCompact_Icc]
+
+@[compactness .]
+lemma isCompact_closure_Ico {a b : α} : IsCompact (closure (Ico a b)) := by
+  obtain rfl|h := eq_or_ne a b
+  · simp
+  · simp [h, isCompact_Icc]
+
+@[compactness .]
+lemma isCompact_closure_Ioo {a b : α} : IsCompact (closure (Ioo a b)) := by
+  obtain rfl|h := eq_or_ne a b
+  · simp
+  · simp [h, isCompact_Icc]
+
+@[compactness .]
+lemma isCompact_closure_uIoc {a b : α} : IsCompact (closure (uIoc a b)) := by
+  obtain rfl|h := eq_or_ne a b
+  · simp
+  · simp [h, isCompact_uIcc]
+
+end DenseLinear
+
 -- See note [lower instance priority]
 /-- A complete linear order is a compact space.
 

@@ -549,6 +549,20 @@ instance (priority := 90) OrderClosedTopology.to_t2Space : T2Space α :=
 
 end PartialOrder
 
+section Lattice
+
+variable [TopologicalSpace α] [Lattice α] [OrderClosedTopology α]
+
+@[closedness .]
+theorem isClosed_uIcc {a b : α} : IsClosed (uIcc a b) :=
+  isClosed_Icc
+
+@[simp, closedness =]
+lemma closure_uIcc {a b : α} : closure (uIcc a b) = uIcc a b :=
+  isClosed_uIcc.closure_eq
+
+end Lattice
+
 section LinearOrder
 
 variable [TopologicalSpace α] [LinearOrder α] [OrderClosedTopology α]
