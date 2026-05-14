@@ -141,35 +141,33 @@ private def benefitsFromExposure (env : Environment) (name : Name)
       !Lean.isStructure env name
   | _ => false
 
-/-- True iff the given source line starts (after leading whitespace) with an
-`@[expose] public (meta)? section` header. Only `public section`s are
-matched: `@[expose]` only affects downstream visibility, which is exclusive
-to `public section`. -/
-private def lineOpensExposeSection (line : String) : Bool :=
-  let trimmed := line.trimAsciiStart
-  if !trimmed.startsWith "@[expose]" then false else
-    let rest := (trimmed.drop "@[expose]".length).trimAsciiStart
-    rest.startsWith "public section" || rest.startsWith "public meta section"
-
-/-- Returns the nesting depth of Lean block comments at the end of `chars`,
-given a starting depth. Tracks balanced `/-` / `-/` pairs and treats `--` at
-depth 0 as starting a line comment. -/
-private def commentDepthAfter : List Char → Nat → Nat
-  | [], d => d
-  | '-' :: '-' :: _, 0 => 0
-  | '/' :: '-' :: rest, d => commentDepthAfter rest (d + 1)
-  | '-' :: '/' :: rest, d => commentDepthAfter rest d.pred
-  | _ :: rest, d => commentDepthAfter rest d
-
-/-- True iff `src` contains an `@[expose] public (meta)? section` header at
-a line start (after leading whitespace) and outside any block comment. -/
+/-- True iff `src` contains an `@[expose] public (meta)? section` header at a
+line start (after leading whitespace) and outside any block comment. Only
+`public section`s are matched: `@[expose]` only affects downstream
+visibility, which is exclusive to `public section`. -/
 private def fileHasExposeSection (src : String) : Bool :=
-  let rec go : List String → Nat → Bool
+  go (src.splitOn "\n") 0
+where
+  /-- True iff `line` opens a `public section` after stripping leading whitespace. -/
+  lineOpensExposeSection (line : String) : Bool :=
+    let trimmed := line.trimAsciiStart
+    if !trimmed.startsWith "@[expose]" then false else
+      let rest := (trimmed.drop "@[expose]".length).trimAsciiStart
+      rest.startsWith "public section" || rest.startsWith "public meta section"
+  /-- Block-comment depth after consuming `chars`, given a starting depth.
+  Tracks balanced `/-` / `-/` pairs; treats `--` at depth 0 as starting a
+  line comment that consumes the rest of the line. -/
+  commentDepthAfter : List Char → Nat → Nat
+    | [], d => d
+    | '-' :: '-' :: _, 0 => 0
+    | '/' :: '-' :: rest, d => commentDepthAfter rest (d + 1)
+    | '-' :: '/' :: rest, d => commentDepthAfter rest d.pred
+    | _ :: rest, d => commentDepthAfter rest d
+  go : List String → Nat → Bool
     | [], _ => false
     | line :: rest, depth =>
         (depth == 0 && lineOpensExposeSection line) ||
         go rest (commentDepthAfter line.toList depth)
-  go (src.splitOn "\n") 0
 
 /--
 The `superfluousExpose` linter detects modules with `@[expose] public section`
