@@ -368,8 +368,8 @@ theorem MeromorphicNFOn.div {f : 𝕜 → 𝕜} {g : 𝕜 → 𝕜} {x : 𝕜} (
   · grind [meromorphicNFAt_mul_iff_right, hg.inv]
 
 /--
-If `f` is meromorphic in normal form and `g` is analytic, then `f ∘ g` is meromorphic in normal
-form.
+The composition of a meromorphic function in normal form and an analytic
+function is meromorphic in normal form.
 -/
 theorem MeromorphicNFAt.comp_analyticAt (hf : MeromorphicNFAt f (g x)) (hg : AnalyticAt 𝕜 g x) :
     MeromorphicNFAt (f ∘ g) x := by
