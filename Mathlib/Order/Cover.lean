@@ -395,8 +395,7 @@ theorem Set.Ico_eq_singleton_iff : Ico a b = {c} ↔ a = c ∧ a ⋖ b where
   mp h := by
     simp_rw [Set.ext_iff, mem_Ico, mem_singleton_iff] at h
     have ⟨hac, hcb⟩ := (h c).mpr rfl
-    have ha := (h a).mp ⟨le_refl a, hac.trans_lt hcb⟩
-    rw [ha] at h ⊢
+    obtain rfl := (h a).mp ⟨le_refl a, hac.trans_lt hcb⟩
     exact ⟨rfl, ⟨hcb, fun d hcd hdb ↦ hcd.ne ((h d).mp ⟨hcd.le, hdb⟩).symm⟩⟩
   mpr := fun ⟨rfl, hcov⟩ ↦ hcov.Ico_eq
 
