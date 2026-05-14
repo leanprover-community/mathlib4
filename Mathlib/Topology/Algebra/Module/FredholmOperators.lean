@@ -543,7 +543,7 @@ Lemma : if `A` is finite dimensional is complemented and if `B ≤ A` then `B` i
 
 Proof: project onto `A`, then the projection from `A` to `B` is continuous because findim.
 
-If `u` is Fredholm, by `aaron`, we have a finite codim subspace `E₁` on which `u` is injective.
+Assume we have a finite codim subspace `E₁` on which `u` is injective.
 Pick `S` a complement of `E₁` containing `u.ker`. Then `S` is complemented and finite dimensional,
 so `u.ker` is complemented.
 
@@ -570,6 +570,23 @@ variable [ContinuousConstSMul 𝕜 F] [T1Space F]
 open QuotFiniteSubmodules in
 lemma IsFredholmStruct.ker_closedComplemented {u : E →L[𝕜] F} (hu : IsFredholmStruct u) :
     u.ker.ClosedComplemented := by simpa only using hu.closedComplemented_ker
+
+open Set in
+lemma fooo {u : E →L[𝕜] F} (E₁ : Submodule 𝕜 E) (F₁ : Submodule 𝕜 F)
+    (E₁_closed : IsClosed (E₁ : Set E)) (F₁_closed : IsClosed (E₁ : Set E))
+    (E₁_coFG : E₁.CoFG) (F₁_coFG : F₁.CoFG) (h_mapsto : MapsTo u E₁ F₁)
+    (h_inv : (u.restrict h_mapsto).IsInvertible) :
+    u.ker.ClosedComplemented := by
+  sorry
+
+open Set in
+lemma bar {u : E →L[𝕜] F} (E₁ : Submodule 𝕜 E) (F₁ : Submodule 𝕜 F)
+    (E₁_closed : IsClosed (E₁ : Set E)) (F₁_closed : IsClosed (E₁ : Set E))
+    (E₁_coFG : E₁.CoFG) (F₁_coFG : F₁.CoFG) (h_mapsto : MapsTo u E₁ F₁)
+    (h_inv : (u.restrict h_mapsto).IsInvertible) :
+    IsFredholmStruct u := by
+  -- uses foo + `ContinousLinearMap.isStrictMap_isClosed_range_iff_restrict`
+  sorry
 
 /- ## Simpler criterion for `IsFredholmStruct` between RCLike Banach spaces
 
