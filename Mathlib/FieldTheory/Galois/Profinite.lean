@@ -328,9 +328,6 @@ noncomputable def continuousMulEquivToLimit [IsGalois k K] :
   continuous_toFun := algEquivToLimit_continuous
   continuous_invFun := mulEquivToLimit_symm_continuous
 
-instance [IsGalois k K] : CompactSpace Gal(K/k) :=
-  (continuousMulEquivToLimit k K).symm.compactSpace
-
 /-- `Gal(K/k)` as a profinite group as there is
 a `ContinuousMulEquiv` to a `ProfiniteGrp` given above -/
 noncomputable def profiniteGalGrp [IsGalois k K] : ProfiniteGrp :=

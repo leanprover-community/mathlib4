@@ -21,8 +21,6 @@ closed subgroups of the Galois group.
 
 In `K/k`, for any intermediate field `L` :
 
-* `fixingSubgroup_isClosed` : the subgroup fixing `L` (`Gal(K/L)`) is closed.
-
 * `fixedField_fixingSubgroup` : the field fixed by the
   subgroup fixing `L` is equal to `L` itself.
 
@@ -60,26 +58,10 @@ open scoped Pointwise
 open FiniteGaloisIntermediateField AlgEquiv
 --Note: The `adjoin`s below are `FiniteGaloisIntermediateField.adjoin`
 
+@[deprecated IntermediateField.isClosed_fixingSubgroup (since := "2026-05-14")]
 lemma fixingSubgroup_isClosed (L : IntermediateField k K) [IsGalois k K] :
-    IsClosed (L.fixingSubgroup : Set Gal(K/k)) where
-  isOpen_compl := isOpen_iff_mem_nhds.mpr fun σ h => by
-    apply mem_nhds_iff.mpr
-    rcases Set.not_subset.mp ((mem_fixingSubgroup_iff Gal(K/k)).not.mp h) with ⟨y, yL, ne⟩
-    use σ • ((adjoin k {y}).1.fixingSubgroup : Set Gal(K/k))
-    constructor
-    · intro f hf
-      rcases (Set.mem_smul_set.mp hf) with ⟨g, hg, eq⟩
-      simp only [Set.mem_compl_iff, SetLike.mem_coe, ← eq]
-      apply (mem_fixingSubgroup_iff Gal(K/k)).not.mpr
-      push Not
-      use y
-      simp only [yL, smul_eq_mul, AlgEquiv.smul_def, AlgEquiv.mul_apply, ne_eq, true_and]
-      have : g y = y := (mem_fixingSubgroup_iff Gal(K/k)).mp hg y <|
-        adjoin_simple_le_iff.mp le_rfl
-      simpa only [this, ne_eq, AlgEquiv.smul_def] using ne
-    · simp only [(IntermediateField.isOpen_fixingSubgroup (adjoin k {y}).1).smul σ, true_and]
-      use 1
-      simp only [SetLike.mem_coe, smul_eq_mul, mul_one, and_true, Subgroup.one_mem]
+    IsClosed (L.fixingSubgroup : Set Gal(K/k)) :=
+  IntermediateField.isClosed_fixingSubgroup L
 
 lemma fixedField_fixingSubgroup (L : IntermediateField k K) [IsGalois k K] :
     IntermediateField.fixedField L.fixingSubgroup = L := by
@@ -190,7 +172,7 @@ lemma fixingSubgroup_fixedField (H : ClosedSubgroup Gal(K/k)) [IsGalois k K] :
 /-- The Galois correspondence from intermediate fields to closed subgroups. -/
 def IntermediateFieldEquivClosedSubgroup [IsGalois k K] :
     IntermediateField k K ≃o (ClosedSubgroup Gal(K/k))ᵒᵈ where
-  toFun L := ⟨L.fixingSubgroup, fixingSubgroup_isClosed L⟩
+  toFun L := ⟨L.fixingSubgroup, L.isClosed_fixingSubgroup⟩
   invFun H := IntermediateField.fixedField H.1
   left_inv L := fixedField_fixingSubgroup L
   right_inv H := by
@@ -203,7 +185,7 @@ def IntermediateFieldEquivClosedSubgroup [IsGalois k K] :
 /-- The Galois correspondence as a `GaloisInsertion` -/
 def GaloisInsertionIntermediateFieldClosedSubgroup [IsGalois k K] :
     GaloisInsertion (OrderDual.toDual ∘ fun (E : IntermediateField k K) ↦
-      (⟨E.fixingSubgroup, fixingSubgroup_isClosed E⟩ : ClosedSubgroup Gal(K/k)))
+      (⟨E.fixingSubgroup, E.isClosed_fixingSubgroup⟩ : ClosedSubgroup Gal(K/k)))
       ((fun (H : ClosedSubgroup Gal(K/k)) ↦ IntermediateField.fixedField H) ∘
         OrderDual.toDual) :=
   OrderIso.toGaloisInsertion IntermediateFieldEquivClosedSubgroup
