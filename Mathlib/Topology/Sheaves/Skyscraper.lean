@@ -412,6 +412,10 @@ noncomputable def skyscraperSheafForgetAdjunction [HasColimits C] :
   skyscraperPresheafStalkAdjunction p₀
 
 variable {A p₀} in
+/-
+On an open set not containing `p₀`, the value of skyscraper sheaf supported at `p₀` is a terminal
+object.
+-/
 noncomputable
 def skyscraper_terminal_of_not_mem {U : (Opens X)ᵒᵖ} (h : p₀ ∉ unop U) :
     IsTerminal ((skyscraperSheaf p₀ A).obj.obj U) := by
