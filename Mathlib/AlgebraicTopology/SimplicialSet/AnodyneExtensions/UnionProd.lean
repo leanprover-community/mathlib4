@@ -199,55 +199,6 @@ end
 
 end IsIndex
 
-/-- Let `x` be a nondegenerate simplex of `Δ[m + 1] ⊗ Δ[n]` which
-does not belong to `Λ[m + 1, k.castSucc].unionProd ∂Δ[n]`. This is
-the property that `x` is a type (II) simplex for the pairing
-`prodStdSimplex.pairingCore` that is constructed below. -/
-def IsType₂ : Prop :=
-  ∀ (d : ℕ) (hd : x.dim = d) (l : Fin (d + 1)), ¬ IsIndex x hd l
-
-namespace IsType₂
-
-variable (hx : IsType₂ x) {d : ℕ} (hd : x.dim = d)
-
-noncomputable def φ (i : Fin (d + 1 + 1)) : Fin (m + 1 + 1) × Fin (n + 1) :=
-  if i = (min x hd).castSucc
-  then ⟨k.castSucc, (x.cast hd).simplex.2 (min x hd)⟩
-  else objEquiv (x.cast hd).simplex ((min x hd).predAbove i)
-
-lemma φ_castSucc :
-    φ x hd (min x hd).castSucc = ⟨k.castSucc, (x.cast hd).simplex.2 (min x hd)⟩ := by
-  simp [φ]
-
-lemma φ_succAbove (i : Fin (d + 1)) :
-    φ x hd ((min x hd).castSucc.succAbove i) =
-      objEquiv (x.cast hd).simplex i := by
-  simp [φ]
-
-lemma φ_succ_snd : (φ x hd (min x hd).succ).2 = (φ x hd (min x hd).castSucc).2 := by
-  have := φ_succAbove x hd (min x hd)
-  rw [Fin.succAbove_castSucc_self] at this
-  rw [this, φ_castSucc]
-  rfl
-
-lemma φ_succ_fst : (φ x hd (min x hd).succ).1 = k.succ := by
-  have := φ_succAbove x hd (min x hd)
-  rw [Fin.succAbove_castSucc_self] at this
-  rw [this]
-  exact simplex_fst_min x hd
-
-end IsType₂
-
-namespace IsIndex
-
-variable {hd : x.dim = d + 1} {l : Fin (d + 1)} (hl : IsIndex x hd l.succ)
-
-include hl
-
-lemma isType₂_δ : IsType₂ hl.δ := sorry
-
-end IsIndex
-
 variable (k n) in
 structure Type₁ where
   x : ((horn.{u} (m + 1) k.castSucc).unionProd (boundary n)).N
@@ -272,6 +223,109 @@ lemma ext_iff {s t : Type₁.{u} k n} :
 
 end Type₁
 
+/-- Let `x` be a nondegenerate simplex of `Δ[m + 1] ⊗ Δ[n]` which
+does not belong to `Λ[m + 1, k.castSucc].unionProd ∂Δ[n]`. This is
+the property that `x` is a type (II) simplex for the pairing
+`prodStdSimplex.pairingCore` that is constructed below. -/
+def IsType₂ : Prop :=
+  ∀ (d : ℕ) (hd : x.dim = d) (l : Fin (d + 1)), ¬ IsIndex x hd l
+
+namespace IsType₂
+
+variable (hx : IsType₂ x) {d : ℕ} (hd : x.dim = d)
+
+noncomputable def φ (i : Fin (d + 1 + 1)) : Fin (m + 1 + 1) × Fin (n + 1) :=
+  if i = (min x hd).castSucc
+  then ⟨k.castSucc, (x.cast hd).simplex.2 (min x hd)⟩
+  else objEquiv (x.cast hd).simplex ((min x hd).predAbove i)
+
+@[simp]
+lemma φ_castSucc :
+    φ x hd (min x hd).castSucc = ⟨k.castSucc, (x.cast hd).simplex.2 (min x hd)⟩ := by
+  simp [φ]
+
+@[simp]
+lemma φ_succAbove (i : Fin (d + 1)) :
+    φ x hd ((min x hd).castSucc.succAbove i) =
+      objEquiv (x.cast hd).simplex i := by
+  simp [φ]
+
+@[simp]
+lemma φ_succ_snd : (φ x hd (min x hd).succ).2 = (φ x hd (min x hd).castSucc).2 := by
+  have := φ_succAbove x hd (min x hd)
+  rw [Fin.succAbove_castSucc_self] at this
+  rw [this, φ_castSucc]
+  rfl
+
+@[simp]
+lemma φ_succ_fst : (φ x hd (min x hd).succ).1 = k.succ := by
+  have := φ_succAbove x hd (min x hd)
+  rw [Fin.succAbove_castSucc_self] at this
+  rw [this]
+  exact simplex_fst_min x hd
+
+variable {x}
+
+include hx in
+lemma strictMono_φ : StrictMono (φ x hd) := by
+  have := hx
+  sorry
+
+noncomputable abbrev simplex : (Δ[m + 1] ⊗ Δ[n]) _⦋d + 1⦌ :=
+  (objEquiv.{u}.symm ⟨φ x hd, (hx.strictMono_φ hd).monotone⟩)
+
+@[simp]
+lemma simplex_fst_apply (i : Fin (d + 2)) :
+    (hx.simplex hd).1 i = (φ x hd i).1 := rfl
+
+@[simp]
+lemma simplex_snd_apply (i : Fin (d + 2)) :
+    (hx.simplex hd).2 i = (φ x hd i).2 := rfl
+
+lemma simplex_mem_nonDegenerate :
+    hx.simplex hd ∈ (Δ[m + 1] ⊗ Δ[n]).nonDegenerate (d + 1) := by
+  rw [nonDegenerate_iff_strictMono_objEquiv, Equiv.apply_symm_apply]
+  exact hx.strictMono_φ hd
+
+lemma δ_simplex :
+    (Δ[m + 1] ⊗ Δ[n]).δ (min x hd).castSucc (hx.simplex hd) = (x.cast hd).simplex := by
+  apply objEquiv.injective
+  ext i : 2
+  dsimp only [simplex]
+  rw [objEquiv_δ_apply, Equiv.apply_symm_apply, OrderHom.coe_mk, φ_succAbove]
+  dsimp
+  rfl
+
+lemma notMem_simplex :
+    hx.simplex hd ∉ (Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] ∂Δ[n]).obj _ := by
+  refine fun h ↦ (x.cast hd).notMem ?_
+  rw [← hx.δ_simplex hd]
+  exact (Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] ∂Δ[n]).map
+    (SimplexCategory.δ (min x hd).castSucc).op h
+
+set_option backward.isDefEq.respectTransparency false in
+@[simps]
+noncomputable def type₁ : Type₁ k n where
+  x :=
+    Subcomplex.N.mk (hx.simplex hd) (hx.simplex_mem_nonDegenerate hd)
+      (hx.notMem_simplex hd)
+  d := d
+  hd := rfl
+  index := min x hd
+  isIndex := by simp [isIndex_succ]
+
+end IsType₂
+
+namespace IsIndex
+
+variable {hd : x.dim = d + 1} {l : Fin (d + 1)} (hl : IsIndex x hd l.succ)
+
+include hl
+
+lemma isType₂_δ : IsType₂ hl.δ := sorry
+
+end IsIndex
+
 end pairingCore
 
 open pairingCore
@@ -289,14 +343,35 @@ noncomputable def pairingCore {m : ℕ} (k : Fin (m + 1)) (n : ℕ) :
   injective_type₁' {s t} h := by
     rw [Type₁.ext_iff, Subcomplex.N.ext_iff, N.ext_iff]
     rwa [← s.x.toS.cast_eq_self s.hd, ← t.x.toS.cast_eq_self t.hd]
-  injective_type₂' := sorry
+  injective_type₂' {s t} h := by
+    sorry
   type₁_ne_type₂' s t hst := by
     replace hst : s.x = t.isIndex.δ := by
       rwa [Subcomplex.N.ext_iff, N.ext_iff, ← s.x.cast_eq_self s.hd]
     have := t.isIndex.isType₂_δ
     rw [← hst] at this
     exact this _ _ _ s.isIndex
-  surjective' := sorry
+  surjective' x := by
+    by_cases hx : IsType₂ x
+    · generalize hd : x.dim = d
+      refine ⟨hx.type₁ hd, Or.inr ?_⟩
+      rw [S.ext_iff']
+      exact ⟨hd, (hx.δ_simplex hd).symm⟩
+    · simp only [IsType₂, not_forall, not_not] at hx
+      obtain ⟨d, hd, i, hx⟩ := hx
+      obtain _ | d := d
+      · fin_cases i
+        simp at hx
+      · obtain ⟨i, rfl⟩ := Fin.eq_succ_of_ne_zero (i := i) (by rintro rfl; simp at hx)
+        refine ⟨{
+          x := x
+          d := d
+          hd := hd
+          index := i
+          isIndex := hx }, Or.inl ?_⟩
+        dsimp
+        rw [S.ext_iff']
+        exact ⟨hd, rfl⟩
 
 instance {m : ℕ} (k : Fin (m + 1)) (n : ℕ) :
     (pairingCore k n).IsProper := sorry
