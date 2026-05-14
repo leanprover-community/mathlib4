@@ -411,6 +411,14 @@ noncomputable def skyscraperSheafForgetAdjunction [HasColimits C] :
     Presheaf.stalkFunctor C p₀ ⊣ skyscraperSheafFunctor p₀ ⋙ Sheaf.forget C X :=
   skyscraperPresheafStalkAdjunction p₀
 
+variable {A p₀} in
+noncomputable
+def skyscraper_terminal_of_not_mem {U : (Opens X)ᵒᵖ} (h : p₀ ∉ unop U) :
+    IsTerminal ((skyscraperSheaf p₀ A).obj.obj U) := by
+  dsimp
+  rw [if_neg h]
+  exact terminalIsTerminal
+
 end
 
 end
