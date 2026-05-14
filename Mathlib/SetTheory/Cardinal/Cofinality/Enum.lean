@@ -77,7 +77,7 @@ theorem cof_eq_cardinalMk : cof α = #α := by
   rw [← card_type LT.lt, ← ord_cof_eq_type_lt, card_ord]
 
 @[simp]
-theorem _root_.Cardinal.ord_cardinalMk : ord (#α) = typeLT α := by
+theorem _root_.Cardinal.ord_cardinalMk : ord #α = typeLT α := by
   rw [← ord_cof_eq_type_lt, cof_eq_cardinalMk]
 
 theorem cof_ordinal : cof Ordinal.{u} = Cardinal.univ.{u, u + 1} := by
