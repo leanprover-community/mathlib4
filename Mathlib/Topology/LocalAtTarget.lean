@@ -14,12 +14,12 @@ public import Mathlib.Topology.Maps.Proper.Basic
 # Properties of maps that are local at the target or at the source.
 
 We show that the following properties of continuous maps are local at the target :
-- `IsInducing`
+- `Topology.IsInducing`
 - `IsOpenMap`
 - `IsClosedMap`
-- `IsEmbedding`
-- `IsOpenEmbedding`
-- `IsClosedEmbedding`
+- `Topology.IsEmbedding`
+- `Topology.IsOpenEmbedding`
+- `Topology.IsClosedEmbedding`
 - `GeneralizingMap`
 
 We show that the following properties of continuous maps are local at the source:
