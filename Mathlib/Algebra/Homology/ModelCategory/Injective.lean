@@ -104,7 +104,7 @@ private lemma lifting {A B X Y : CochainComplex.Plus C} (i : A ⟶ B) (p : X ⟶
     obtain ⟨B, hB⟩ := B
     obtain ⟨X, hX⟩ := X
     obtain ⟨Y, hY⟩ := Y
-    have hi := (mono_iff i).1 inferInstance
+    have hi : Mono i.hom := inferInstance
     have hp : degreewiseEpiWithInjectiveKernel p.hom :=
       (fibration_iff p).1 inferInstance
     obtain ⟨i, rfl⟩ := ObjectProperty.homMk_surjective i
