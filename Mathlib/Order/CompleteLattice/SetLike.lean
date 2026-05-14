@@ -6,6 +6,12 @@ Authors: Sven Manthe
 module
 
 public import Mathlib.Order.CompleteSublattice
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Lattice
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # `SetLike` instance for elements of `CompleteSublattice (Set X)`

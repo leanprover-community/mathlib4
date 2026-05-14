@@ -7,7 +7,12 @@ module
 
 public meta import Mathlib.Data.Int.ModEq
 public import Mathlib.Data.Int.ModEq
-public import Mathlib.Tactic.HaveI
+public meta import Mathlib.Tactic.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.HaveI
+import Mathlib.Util.CompileInductive
 
 /-! # `mod_cases` tactic
 

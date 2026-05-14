@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Nat.Notation
 public import Batteries.Classes.RatCast
+import Mathlib.Init
 
 /-!
 # Basic definitions around the rational numbers

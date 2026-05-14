@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Tactic.FunProp.Decl
 public import Mathlib.Tactic.Measurability.Init
+import Aesop.Frontend.Attribute
+import Aesop.Frontend.Tactic
+import Mathlib.Init
 
 /-!
 # Measurability

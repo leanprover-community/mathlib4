@@ -6,7 +6,12 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Data.Finset.Lattice.Fold
-public import Mathlib.Data.Set.Pairwise.List
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Pairwise.List
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Relations holding pairwise on finite sets

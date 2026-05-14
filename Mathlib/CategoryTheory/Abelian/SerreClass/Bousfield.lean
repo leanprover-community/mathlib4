@@ -7,6 +7,15 @@ module
 
 public import Mathlib.CategoryTheory.Abelian.SerreClass.MorphismProperty
 public import Mathlib.CategoryTheory.Localization.Bousfield
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Localization.Adjunction
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Bousfield localizations with respect to Serre classes

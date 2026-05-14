@@ -6,6 +6,12 @@ Authors: Peter Nelson, Jun Kwon
 module
 
 public import Mathlib.Combinatorics.Graph.Subgraph
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Intersection and union of graphs

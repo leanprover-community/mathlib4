@@ -5,8 +5,15 @@ Authors: Paul Lezeau
 -/
 module
 
-public import Mathlib.Data.Fin.Tuple.Reflection
 public import Mathlib.Util.Qq
+public import Mathlib.Data.Fin.VecNotation
+public meta import Mathlib.Tactic.ToDual
+import Mathlib.Data.Fin.Tuple.Reflection
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 
 /-! # The vecPerm simproc

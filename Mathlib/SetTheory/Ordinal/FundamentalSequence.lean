@@ -6,6 +6,15 @@ Authors: Violeta Hernández Palacios, Mario Carneiro
 module
 
 public import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
+public import Mathlib.Algebra.Order.Monoid.NatCast
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Order.Cofinal
+import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Fundamental sequences

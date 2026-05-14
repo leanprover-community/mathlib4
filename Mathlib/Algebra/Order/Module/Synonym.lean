@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Algebra.Order.GroupWithZero.Action.Synonym
 public import Mathlib.Algebra.Order.Ring.Synonym
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # Action instances for `OrderDual`

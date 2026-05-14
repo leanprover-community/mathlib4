@@ -5,13 +5,26 @@ Authors: Jeremy Avigad, Emirhan Duysak, Adem Alp Gök, Junyan Xu
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Int
-public import Mathlib.Algebra.Order.Group.Unbundled.Int
 public import Mathlib.Algebra.Order.Ring.Defs
-public import Mathlib.Algebra.Ring.Int.Parity
-public import Mathlib.Data.Int.GCD
-public import Mathlib.Data.Nat.Cast.Order.Basic
 public import Mathlib.Order.BooleanAlgebra.Set
+public import Mathlib.Algebra.Order.Group.Unbundled.Abs
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Algebra.Ring.Parity
+import Batteries.Tactic.Init
+import Mathlib.Algebra.Order.Group.Int
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Algebra.Order.Group.Unbundled.Int
+import Mathlib.Algebra.Ring.Int.Parity
+import Mathlib.Data.Int.Basic
+import Mathlib.Data.Int.Cast.Basic
+import Mathlib.Data.Int.GCD
+import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Data.Nat.Cast.Order.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # The integers form a linear ordered ring

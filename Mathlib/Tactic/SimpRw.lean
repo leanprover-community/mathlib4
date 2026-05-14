@@ -5,7 +5,8 @@ Authors: Anne Baanen, Mario Carneiro, Alex J. Best
 -/
 module
 
-public import Mathlib.Init
+public meta import Lean.Elab.Tactic.Basic
+import Mathlib.Init
 
 /-!
 # The `simp_rw` tactic

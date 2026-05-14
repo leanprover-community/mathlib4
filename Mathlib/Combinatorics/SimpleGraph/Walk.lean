@@ -7,5 +7,10 @@ module -- shake: keep-all
 
 public import Mathlib.Combinatorics.SimpleGraph.Init
 public import Mathlib.Data.Sym.Sym2
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 deprecated_module (since := "2025-11-12")

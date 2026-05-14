@@ -9,6 +9,9 @@ public import Mathlib.Data.Prod.Lex
 public import Mathlib.Data.Sum.Order
 public import Mathlib.Order.Hom.Set
 public import Mathlib.Order.RelIso.Set
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Lexicographic order and order isomorphisms

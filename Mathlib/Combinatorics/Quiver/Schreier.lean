@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Combinatorics.Quiver.Covering
 public import Mathlib.Combinatorics.Quiver.SingleObj
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # Schreier Graphs

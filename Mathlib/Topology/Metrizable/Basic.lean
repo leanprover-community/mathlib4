@@ -5,7 +5,20 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.UniformSpace.Pi
+public import Mathlib.Topology.Separation.Regular
+public import Mathlib.Topology.UniformSpace.Defs
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Lattice
+import Mathlib.Init
+import Mathlib.Order.Filter.Map
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Closure
+import Mathlib.Topology.Maps.Basic
+import Mathlib.Topology.Neighborhoods
+import Mathlib.Topology.UniformSpace.Pi
+import Mathlib.Topology.UniformSpace.Separation
 
 /-!
 # Metrizable Spaces

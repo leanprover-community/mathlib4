@@ -7,6 +7,12 @@ module
 
 public import Mathlib.CategoryTheory.ConcreteCategory.Basic
 public meta import Mathlib.Tactic.ToAdditive
+public meta import Mathlib.Lean.Meta.Simp
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # Tools to reformulate category-theoretic lemmas in concrete categories

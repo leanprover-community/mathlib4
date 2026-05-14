@@ -5,8 +5,17 @@ Authors: Mitchell Rowett, Kim Morrison
 -/
 module
 
-public import Mathlib.GroupTheory.Coset.Basic
 public import Mathlib.SetTheory.Cardinal.Finite
+public import Mathlib.Algebra.Group.Subgroup.Map
+public import Mathlib.GroupTheory.Coset.Defs
+import Mathlib.Data.Finset.Attr
+import Mathlib.GroupTheory.Coset.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Lagrange's theorem: the order of a subgroup divides the order of the group.

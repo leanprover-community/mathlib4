@@ -7,8 +7,15 @@ module
 
 public import Mathlib.CategoryTheory.Functor.Hom
 public import Mathlib.CategoryTheory.Products.Basic
-public import Mathlib.Data.ULift
 public import Mathlib.Logic.Function.ULift
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.ULift
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # The Yoneda embedding

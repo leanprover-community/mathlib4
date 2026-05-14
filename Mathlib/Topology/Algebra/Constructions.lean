@@ -6,7 +6,17 @@ Authors: Nicolò Cavalleri
 module
 
 public import Mathlib.Topology.Separation.Hausdorff
-public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.Algebra.Group.Prod
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Order.Filter.Map
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Topology.Compactness.LocallyCompact
+import Mathlib.Topology.Continuous
+import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Topological space structure on the opposite monoid and on the units group

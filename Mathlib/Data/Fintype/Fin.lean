@@ -6,7 +6,14 @@ Authors: Anne Baanen
 module
 
 public import Mathlib.Order.Interval.Finset.Fin
-public import Mathlib.Data.Vector.Basic
+public import Mathlib.Data.Vector.Defs
+import Batteries.Data.Fin.Lemmas
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Vector.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # The structure of `Fintype (Fin n)`

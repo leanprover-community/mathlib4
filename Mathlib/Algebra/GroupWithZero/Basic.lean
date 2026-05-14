@@ -6,10 +6,17 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.Group.Basic
-public import Mathlib.Algebra.GroupWithZero.NeZero
 public import Mathlib.Logic.Unique
-public import Mathlib.Tactic.Conv
-public import Batteries.Tactic.SeqFocus
+public import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Algebra.GroupWithZero.NeZero
+import Mathlib.Algebra.NeZero
+import Mathlib.Data.Int.Init
+import Mathlib.Init
+import Mathlib.Logic.Basic
+import Mathlib.Tactic.Conv
+import Mathlib.Tactic.MkIffOfInductiveProp
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.SplitIfs
 
 /-!
 # Groups with an adjoined zero element

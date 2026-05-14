@@ -10,8 +10,17 @@ public import Mathlib.ModelTheory.Types
 public import Mathlib.Topology.Bases
 public import Mathlib.Topology.Connected.TotallyDisconnected
 public import Mathlib.Topology.Compactness.Compact
-public import Mathlib.Topology.Connected.Separation
-public import Mathlib.Topology.Baire.LocallyCompactRegular
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Lattice
+import Mathlib.Init
+import Mathlib.Order.Filter.Finite
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Baire.LocallyCompactRegular
+import Mathlib.Topology.Compactness.LocallyCompact
+import Mathlib.Topology.Connected.Separation
 
 /-!
 # Topology on the space of complete types

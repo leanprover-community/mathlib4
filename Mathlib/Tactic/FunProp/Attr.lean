@@ -7,6 +7,7 @@ module
 
 public meta import Mathlib.Tactic.FunProp.Decl
 public import Mathlib.Tactic.FunProp.Theorems
+import Mathlib.Init
 
 /-!
 ## `funProp` attribute

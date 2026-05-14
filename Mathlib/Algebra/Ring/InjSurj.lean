@@ -8,7 +8,10 @@ module
 public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Algebra.Opposites
 public import Mathlib.Algebra.GroupWithZero.InjSurj
-public import Mathlib.Data.Int.Cast.Basic
+public import Mathlib.Algebra.Group.Basic
+import Mathlib.Data.Int.Cast.Basic
+import Mathlib.Init
+import Mathlib.Util.CompileInductive
 
 /-!
 # Pulling back rings along injective maps, and pushing them forward along surjective maps

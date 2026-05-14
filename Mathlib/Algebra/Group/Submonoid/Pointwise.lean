@@ -5,10 +5,22 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-public import Mathlib.Algebra.Group.Submonoid.Membership
-public import Mathlib.Algebra.Order.BigOperators.Group.List
 public import Mathlib.Order.WellFoundedSet
+public import Mathlib.Algebra.Group.Action.Basic
+public import Mathlib.Algebra.Group.Equiv.Basic
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
+public import Mathlib.Algebra.Group.Submonoid.Operations
+public import Mathlib.Algebra.Order.Monoid.Defs
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.Order.BigOperators.Group.List
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Pointwise instances on `Submonoid`s and `AddSubmonoid`s

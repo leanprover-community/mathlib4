@@ -7,6 +7,10 @@ module
 
 public import Mathlib.CategoryTheory.Join.Basic
 public import Mathlib.CategoryTheory.Opposites
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # Opposites of joins of categories

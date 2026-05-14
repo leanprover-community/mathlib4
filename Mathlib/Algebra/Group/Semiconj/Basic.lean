@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Semiconj.Defs
 public import Mathlib.Algebra.Group.Basic
+import Mathlib.Init
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Lemmas about semiconjugate elements of a group

@@ -5,7 +5,27 @@ Authors: Jeremy Avigad
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.Abs
+public import Mathlib.Algebra.Group.Int.Defs
+public import Mathlib.Algebra.Group.Units.Defs
+public import Mathlib.Algebra.Order.Group.Unbundled.Abs
+import Mathlib.Algebra.Group.Int.Units
+import Mathlib.Algebra.GroupWithZero.Basic
+import Mathlib.Algebra.NeZero
+import Mathlib.Algebra.Order.Group.Abs
+import Mathlib.Algebra.Order.Group.Int
+import Mathlib.Algebra.Order.Group.Unbundled.Int
+import Mathlib.Algebra.Order.Monoid.NatCast
+import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Algebra.Order.Ring.Int
+import Mathlib.Algebra.Ring.Basic
+import Mathlib.Algebra.Ring.Commute
+import Mathlib.Data.Int.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Lemmas about units in `ℤ`, which interact with the order structure.

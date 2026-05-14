@@ -6,9 +6,20 @@ Authors: Johannes Hölzl, Kim Morrison
 module
 
 public import Mathlib.Algebra.Group.Equiv.Defs
-public import Mathlib.Algebra.Group.Pi.Lemmas
-public import Mathlib.Data.Finset.Max
 public import Mathlib.Data.Finsupp.Single
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Commute.Defs
+public import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Algebra.Group.InjSurj
+import Mathlib.Algebra.Group.Pi.Lemmas
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.Lattice.Lemmas
+import Mathlib.Data.Finset.Max
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.FastInstance
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Additive monoid structure on `ι →₀ M`

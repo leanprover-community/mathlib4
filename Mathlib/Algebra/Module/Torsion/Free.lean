@@ -5,11 +5,18 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Regular
 public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.Algebra.Module.Opposite
-public import Mathlib.Algebra.Regular.Opposite
 public import Mathlib.Algebra.Regular.SMul
+import Mathlib.Algebra.Group.Torsion
+import Mathlib.Algebra.GroupWithZero.Regular
+import Mathlib.Algebra.Regular.Opposite
+import Mathlib.Data.Int.Basic
+import Mathlib.Data.Nat.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # Torsion-free modules

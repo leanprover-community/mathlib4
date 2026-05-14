@@ -6,8 +6,16 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.Order.Lex
-public import Mathlib.Order.WellFounded
-public import Mathlib.Tactic.Common
+public import Mathlib.Logic.Equiv.Basic
+public import Mathlib.Order.BoundedOrder.Basic
+public import Mathlib.Order.Lattice
+public import Mathlib.Order.RelClasses
+import Batteries.Tactic.Init
+import Mathlib.Init
+import Mathlib.Order.WellFounded
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Lexicographic order on Pi types

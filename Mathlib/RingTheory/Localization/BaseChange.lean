@@ -5,10 +5,26 @@ Authors: Andrew Yang, Jujian Zhang
 -/
 module
 
-public import Mathlib.LinearAlgebra.DirectSum.Finsupp
 public import Mathlib.RingTheory.IsTensorProduct
 public import Mathlib.RingTheory.Localization.Away.Basic
-public import Mathlib.RingTheory.Localization.Module
+public import Mathlib.Algebra.Module.LocalizedModule.IsLocalization
+public import Mathlib.LinearAlgebra.DFinsupp
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Init
+import Mathlib.LinearAlgebra.DirectSum.Finsupp
+import Mathlib.RingTheory.Localization.Module
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Localized Module

@@ -6,9 +6,19 @@ Authors: Kim Morrison, Joël Riou
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Basic
-public import Mathlib.Algebra.Category.Grp.Colimits
-public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 public import Mathlib.LinearAlgebra.DFinsupp
+import Mathlib.Algebra.Category.Grp.Colimits
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.SetLike
 
 /-!
 # The category of R-modules has all colimits.

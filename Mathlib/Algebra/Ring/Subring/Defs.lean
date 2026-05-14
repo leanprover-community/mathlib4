@@ -7,6 +7,15 @@ module
 
 public import Mathlib.Algebra.Ring.Subsemiring.Defs
 public import Mathlib.RingTheory.NonUnitalSubring.Defs
+import Mathlib.Algebra.Ring.Basic
+import Mathlib.Algebra.Ring.InjSurj
+import Mathlib.Data.Int.Cast.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.FastInstance
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Subrings

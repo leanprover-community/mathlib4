@@ -7,8 +7,18 @@ module
 
 public import Mathlib.Algebra.Group.PUnit
 public import Mathlib.Algebra.Group.Subgroup.Ker
-public import Mathlib.Algebra.Group.Submonoid.Membership
-public import Mathlib.GroupTheory.Congruence.Basic
+public import Mathlib.Algebra.FreeMonoid.Basic
+public import Mathlib.GroupTheory.Congruence.Hom
+public import Mathlib.Tactic.Basic
+public meta import Mathlib.Tactic.ToDual
+import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Data.Finset.Attr
+import Mathlib.GroupTheory.Congruence.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Coproduct (free product) of two monoids or groups

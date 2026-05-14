@@ -5,7 +5,9 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Init
+public import Batteries.Tactic.Lint
+public import Lean.Data.Json
+import Mathlib.Init
 
 /-!
 # Json serialization typeclass for `PUnit` & `Fin n` & `Subtype p`

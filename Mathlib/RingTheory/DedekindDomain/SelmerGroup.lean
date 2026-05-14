@@ -8,7 +8,28 @@ module
 public import Mathlib.Algebra.Group.Equiv.TypeTags
 public import Mathlib.Data.ZMod.QuotientGroup
 public import Mathlib.RingTheory.DedekindDomain.AdicValuation
-public import Mathlib.Algebra.Group.Int.TypeTags
+import Mathlib.Algebra.Group.Int.TypeTags
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Combinatorics.Matroid.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Rat.Floor
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.GroupTheory.SpecificGroups.Cyclic
+import Mathlib.Init
+import Mathlib.RingTheory.DedekindDomain.Dvr
+import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
 
 /-!
 # Selmer groups of fraction fields of Dedekind domains

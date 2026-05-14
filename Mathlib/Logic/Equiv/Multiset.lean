@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Data.Multiset.Sort
 public import Mathlib.Logic.Equiv.List
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # `Encodable` and `Denumerable` instances for `Multiset`

@@ -5,9 +5,16 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.Algebra.Group.Pi.Units
-public import Mathlib.Data.Fintype.Basic
 public import Mathlib.GroupTheory.MonoidLocalization.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Group.Pi.Units
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Fintype.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Lemmas about localizations of commutative monoids

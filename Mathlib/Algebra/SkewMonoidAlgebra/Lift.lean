@@ -6,8 +6,17 @@ Authors: María Inés de Frutos Fernández, Xavier Généreux
 module
 
 public import Mathlib.Algebra.SkewMonoidAlgebra.Basic
-public import Mathlib.Algebra.Module.BigOperators
 public import Mathlib.Algebra.Algebra.Equiv
+public import Mathlib.Tactic.SimpRw
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Module.BigOperators
+import Mathlib.Algebra.Module.Submodule.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Lemmas about different kinds of "lifts" to `SkewMonoidAlgebra`.

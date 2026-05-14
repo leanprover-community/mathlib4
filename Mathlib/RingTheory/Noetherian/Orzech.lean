@@ -5,10 +5,26 @@ Authors: Mario Carneiro, Kevin Buzzard
 -/
 module
 
-public import Mathlib.Algebra.Module.Submodule.IterateMapComap
-public import Mathlib.Order.PartialSups
-public import Mathlib.RingTheory.Noetherian.Basic
 public import Mathlib.RingTheory.OrzechProperty
+public import Mathlib.Algebra.Module.Equiv.Basic
+public import Mathlib.RingTheory.Noetherian.Defs
+import Mathlib.Algebra.Module.Submodule.IterateMapComap
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Init
+import Mathlib.LinearAlgebra.Prod
+import Mathlib.RingTheory.Noetherian.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Noetherian rings have the Orzech property

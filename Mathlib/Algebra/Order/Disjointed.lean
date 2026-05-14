@@ -6,8 +6,13 @@ Authors: David Loeffler
 module
 
 public import Mathlib.Algebra.Order.SuccPred.PartialSups
-public import Mathlib.Data.Nat.SuccPred
 public import Mathlib.Order.Disjointed
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.SuccPred
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # `Disjointed` for functions on a `SuccAddOrder`

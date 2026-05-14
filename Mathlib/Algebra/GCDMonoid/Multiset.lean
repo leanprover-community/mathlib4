@@ -6,9 +6,13 @@ Authors: Aaron Anderson
 module
 
 public import Mathlib.Algebra.GCDMonoid.Basic
-public import Mathlib.Algebra.Order.Group.Multiset
 public import Mathlib.Data.Multiset.FinsetOps
 public import Mathlib.Data.Multiset.Fold
+import Batteries.Tactic.Congr
+import Mathlib.Algebra.Order.Group.Multiset
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
 
 /-!
 # GCD and LCM operations on multisets

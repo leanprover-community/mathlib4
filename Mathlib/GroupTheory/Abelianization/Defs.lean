@@ -6,6 +6,11 @@ Authors: Kenny Lau, Michael Howes, Antoine Chambert-Loir
 module
 
 public import Mathlib.GroupTheory.Commutator.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # The abelianization of a group

@@ -9,9 +9,16 @@ public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Ring.Parity
 public import Mathlib.Algebra.GroupWithZero.Invertible
-public import Mathlib.Algebra.Ring.Int.Defs
 public import Mathlib.Data.Int.GCD
-public import Mathlib.Data.Nat.Cast.Commute
+public import Mathlib.Tactic.Push
+import Mathlib.Algebra.Group.Invertible.Basic
+import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Algebra.Ring.Units
+import Mathlib.Data.Int.Cast.Basic
+import Mathlib.Data.Nat.Cast.Commute
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # Invertibility of elements given a characteristic

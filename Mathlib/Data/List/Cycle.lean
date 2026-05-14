@@ -7,7 +7,18 @@ module
 
 public import Mathlib.Data.Fintype.List
 public import Mathlib.Data.Fintype.OfMap
-public import Mathlib.Data.Fin.Basic
+public import Mathlib.Data.List.Infix
+public import Mathlib.Data.List.Rotate
+import Mathlib.Data.Fin.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.List.Chain
+import Mathlib.Data.List.Induction
+import Mathlib.Data.List.Nodup
+import Mathlib.Data.List.Range
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Cycles of a list

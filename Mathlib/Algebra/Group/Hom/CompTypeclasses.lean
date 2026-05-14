@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Logic.Function.CompTypeclasses
 public import Mathlib.Algebra.Group.Hom.Defs
+import Mathlib.Init
+import Mathlib.Util.CompileInductive
 
 /-!
 # Propositional typeclasses on several monoid homs

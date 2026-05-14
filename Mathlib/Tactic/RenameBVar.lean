@@ -8,6 +8,7 @@ module
 public meta import Lean.Elab.Tactic.Location
 public meta import Mathlib.Lean.Expr.Basic
 public import Mathlib.Util.Tactic
+import Mathlib.Init
 
 /-!
 # The `rename_bvar` tactic

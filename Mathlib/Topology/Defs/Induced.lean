@@ -5,8 +5,17 @@ Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
 module
 
-public import Mathlib.Data.Set.Lattice.Image
-public import Mathlib.Topology.Basic
+public import Mathlib.Data.Set.Basic
+public import Mathlib.Tactic.ToAdditive
+public import Mathlib.Topology.Defs.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Basic
 /-!
 # Induced and coinduced topologies
 

@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Algebra.Ring.Action.Basic
 public import Mathlib.GroupTheory.GroupAction.ConjAct
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Conjugation action of a ring on itself

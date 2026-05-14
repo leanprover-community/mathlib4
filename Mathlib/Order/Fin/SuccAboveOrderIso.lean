@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Order.Fin.Basic
 public import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # The order isomorphism `Fin (n + 1) ≃o {i}ᶜ`

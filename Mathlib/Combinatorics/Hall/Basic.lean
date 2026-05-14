@@ -5,9 +5,22 @@ Authors: Alena Gusakov, Bhavik Mehta, Kyle Miller
 -/
 module
 
-public import Mathlib.Combinatorics.Hall.Finite
-public import Mathlib.CategoryTheory.CofilteredSystem
 public import Mathlib.Data.Rel
+public import Mathlib.CategoryTheory.Category.Preorder
+public import Mathlib.CategoryTheory.Types.Basic
+public import Mathlib.Data.Finset.Union
+public import Mathlib.Data.Fintype.Card
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.CofilteredSystem
+import Mathlib.Combinatorics.Hall.Finite
+import Mathlib.Data.Finite.Prod
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Continuity.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Hall's Marriage Theorem

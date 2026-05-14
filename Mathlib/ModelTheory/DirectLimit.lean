@@ -5,11 +5,19 @@ Authors: Aaron Anderson, Gabin Kolly
 -/
 module
 
-public import Mathlib.Data.Finite.Sum
-public import Mathlib.Data.Fintype.Order
 public import Mathlib.ModelTheory.FinitelyGenerated
 public import Mathlib.ModelTheory.Quotients
 public import Mathlib.Order.DirectedInverseSystem
+public import Mathlib.Tactic.Use
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Data.Finite.Sum
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Fintype.Order
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Direct Limits of First-Order Structures

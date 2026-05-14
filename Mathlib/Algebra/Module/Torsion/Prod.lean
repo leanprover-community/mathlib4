@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Module.Prod
 public import Mathlib.Algebra.Module.Torsion.Free
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # Product of torsion-free modules

@@ -9,7 +9,10 @@ public meta import Lean.Elab.PreDefinition.Basic
 public meta import Lean.Elab.Tactic.ElabTerm
 public meta import Lean.Elab.Tactic.RCases
 public meta import Batteries.Lean.Expr
-public import Mathlib.Init
+public import Lean.Exception
+public import Lean.Modifiers
+public meta import Mathlib.Lean.Expr.Basic
+import Mathlib.Init
 
 /-!
 # Generally useful tactics.

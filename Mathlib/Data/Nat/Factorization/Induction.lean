@@ -6,6 +6,18 @@ Authors: Stuart Presnell
 module
 
 public import Mathlib.Data.Nat.Factorization.Defs
+public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+public import Mathlib.Data.Nat.GCD.Basic
+public import Mathlib.Tactic.Contrapose
+public import Mathlib.Tactic.Convert
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Induction principles involving factorizations

@@ -10,6 +10,14 @@ public import Mathlib.GroupTheory.GroupAction.Embedding
 public import Mathlib.GroupTheory.GroupAction.SubMulAction
 public import Mathlib.SetTheory.Cardinal.Finite
 public import Mathlib.Data.Fin.Tuple.Embedding
+public import Mathlib.Algebra.Group.Subgroup.Actions
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-! # The SubMulAction of the stabilizer of a point on the complement of that point
 

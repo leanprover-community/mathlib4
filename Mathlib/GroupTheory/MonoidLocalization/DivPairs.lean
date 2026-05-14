@@ -6,6 +6,12 @@ Authors: Yaël Dillies, Michał Mrugała
 module
 
 public import Mathlib.GroupTheory.MonoidLocalization.Maps
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Submonoid of pairs with quotient in a submonoid

@@ -9,6 +9,11 @@ public import Mathlib.Tactic.Linter.DeprecatedModule
 public import Mathlib.Order.RelClasses
 public import Mathlib.Order.Interval.Set.Basic
 public import Mathlib.Order.Bounds.Defs
+import Mathlib.Init
+import Mathlib.Tactic.Convert
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SimpRw
+import Mathlib.Util.CompileInductive
 
 /-!
 # Bounded and unbounded sets

@@ -5,9 +5,9 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Init
 public import Lean.Meta.Tactic.Util
 public import Lean.SubExpr
+import Mathlib.Init
 
 /-! This file defines some functions for dealing with `SubExpr.GoalsLocation`. -/
 

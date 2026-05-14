@@ -5,8 +5,14 @@ Authors: Paul Lezeau, Lawrence Wu, Jeremy Tan
 -/
 module
 
-public import Mathlib.Algebra.Group.Fin.Basic
 public import Mathlib.Logic.Equiv.Fin.Basic
+public import Mathlib.Tactic.ToAdditive
+import Mathlib.Algebra.Group.Fin.Basic
+import Mathlib.Algebra.NeZero
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Cyclic permutations on `Fin n`

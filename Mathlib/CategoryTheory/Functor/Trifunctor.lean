@@ -6,6 +6,11 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Functor.Category
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 /-!
 # Trifunctors obtained by composition of bifunctors
 

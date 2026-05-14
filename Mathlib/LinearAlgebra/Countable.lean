@@ -5,10 +5,18 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Data.Finsupp.Encodable
-public import Mathlib.Data.Set.Countable
-public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 public import Mathlib.RingTheory.Finiteness.Defs
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finsupp.Encodable
+import Mathlib.Data.Set.Countable
+import Mathlib.Init
+import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Inv
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.SetLike
 
 /-!
 # Countable modules

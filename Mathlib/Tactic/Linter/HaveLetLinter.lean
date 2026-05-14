@@ -5,9 +5,9 @@ Authors: Damiano Testa
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.Elab.Command
-public meta import Lean.Server.InfoUtils
+import Mathlib.Init
+import Mathlib.Tactic.DeclarationNames
 
 /-!
 # The `have` vs `let` linter

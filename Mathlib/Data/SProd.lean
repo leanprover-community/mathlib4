@@ -5,7 +5,8 @@ Authors: Miyahara Kō
 -/
 module
 
-public import Mathlib.Tactic.FBinop
+import Mathlib.Init
+import Mathlib.Tactic.FBinop
 
 /-!
 # Set Product Notation

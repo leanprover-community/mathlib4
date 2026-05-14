@@ -6,6 +6,12 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Comma.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # The category of arrows

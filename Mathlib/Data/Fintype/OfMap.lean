@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Data.Fintype.Defs
 public import Mathlib.Data.Finset.Image
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Constructors for `Fintype`

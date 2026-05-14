@@ -5,8 +5,17 @@ Authors: Justus Springer
 -/
 module
 
-public import Mathlib.Topology.Sheaves.Forget
 public import Mathlib.Topology.Sheaves.SheafCondition.PairwiseIntersections
+import Batteries.Tactic.Trans
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Sheaves.Forget
+import Mathlib.Topology.Sheaves.Init
 
 /-!
 # The sheaf condition in terms of unique gluings

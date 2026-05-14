@@ -5,8 +5,16 @@ Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.Filter.Map
-public import Mathlib.Order.ZornAtoms
+public import Mathlib.Order.Atoms
+public import Mathlib.Order.Filter.Basic
+public import Mathlib.Tactic.Attr.Core
+import Mathlib.Init
+import Mathlib.Order.Filter.Map
+import Mathlib.Order.ZornAtoms
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Ultrafilters

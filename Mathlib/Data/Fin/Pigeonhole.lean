@@ -6,6 +6,11 @@ Authors: Martin Dvorak
 module
 
 public import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Pigeonhole-like results for Fin

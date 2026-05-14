@@ -6,8 +6,17 @@ Authors: Eric Rodriguez
 module
 
 public import Mathlib.RingTheory.Localization.FractionRing
-public import Mathlib.GroupTheory.MonoidLocalization.Cardinality
-public import Mathlib.RingTheory.OreLocalization.Cardinality
+public import Mathlib.SetTheory.Cardinal.Order
+import Mathlib.Data.Finset.Attr
+import Mathlib.GroupTheory.MonoidLocalization.Cardinality
+import Mathlib.Init
+import Mathlib.RingTheory.OreLocalization.Cardinality
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Inv
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.SetLike
 
 /-!
 # Cardinality of localizations

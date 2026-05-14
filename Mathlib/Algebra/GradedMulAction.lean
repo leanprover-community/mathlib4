@@ -6,6 +6,11 @@ Authors: Jujian Zhang, Eric Wieser
 module
 
 public import Mathlib.Algebra.GradedMonoid
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Additively-graded multiplicative action structures

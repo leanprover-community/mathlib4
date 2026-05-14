@@ -5,11 +5,20 @@ Authors: Zhouhang Zhou, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Group.Indicator
-public import Mathlib.Order.CompleteLattice.Finset
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 public import Mathlib.Order.Filter.AtTopBot.Defs
-public import Mathlib.Order.Filter.Tendsto
+public import Mathlib.Algebra.Notation.Indicator
+public import Mathlib.Data.Finset.Defs
+import Mathlib.Algebra.Group.Indicator
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Lattice
+import Mathlib.Init
+import Mathlib.Order.CompleteLattice.Finset
+import Mathlib.Order.Filter.Tendsto
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Indicator function and filters

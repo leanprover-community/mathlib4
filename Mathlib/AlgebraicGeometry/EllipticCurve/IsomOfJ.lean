@@ -5,8 +5,28 @@ Authors: Jz Pan
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.EllipticCurve.NormalForms
 public import Mathlib.FieldTheory.IsSepClosed
+public import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
+import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.GroupWithZero.Invertible
+import Mathlib.Algebra.Order.AbsoluteValue.Basic
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.AlgebraicGeometry.EllipticCurve.NormalForms
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Totient
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
 
 /-!
 

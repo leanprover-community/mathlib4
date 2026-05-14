@@ -5,8 +5,14 @@ Authors: Yaël Dillies, Paul Lezeau
 -/
 module
 
-public import Mathlib.Algebra.FreeAbelianGroup.Finsupp
 public import Mathlib.Algebra.Group.UniqueProds.Basic
+public import Mathlib.GroupTheory.FreeAbelianGroup
+import Mathlib.Algebra.FreeAbelianGroup.Finsupp
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Free abelian groups have unique sums

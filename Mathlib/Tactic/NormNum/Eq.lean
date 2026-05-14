@@ -6,6 +6,14 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Tactic.NormNum.Inv
+import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Data.Nat.Cast.Commute
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.HaveI
+import Mathlib.Util.CompileInductive
 
 /-!
 # `norm_num` extension for equalities

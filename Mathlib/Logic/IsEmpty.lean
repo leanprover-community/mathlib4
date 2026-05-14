@@ -7,5 +7,6 @@ module -- shake: keep-all
 
 public import Mathlib.Logic.IsEmpty.Basic
 public import Mathlib.Tactic.Linter.DeprecatedModule
+import Mathlib.Init
 
 deprecated_module "import Mathlib.Logic.IsEmpty.Basic instead" (since := "2026-02-11")

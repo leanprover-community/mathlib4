@@ -7,6 +7,12 @@ module
 
 public import Mathlib.Algebra.Algebra.Hom
 public import Mathlib.LinearAlgebra.TensorProduct.Map
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Associators and unitors for tensor products of modules over a commutative ring.

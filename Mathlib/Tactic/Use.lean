@@ -7,7 +7,7 @@ module
 
 public meta import Lean.Meta.Tactic.Util
 public meta import Lean.Elab.Tactic.Basic
-public import Mathlib.Init
+import Mathlib.Init
 
 /-!
 # The `use` tactic

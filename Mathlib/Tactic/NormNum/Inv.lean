@@ -5,8 +5,17 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Rat.Cast.CharZero
 public import Mathlib.Tactic.NormNum.Basic
+public import Mathlib.Algebra.Field.Rat
+import Mathlib.Algebra.GroupWithZero.Invertible
+import Mathlib.Algebra.Ring.Basic
+import Mathlib.Data.Rat.Cast.CharZero
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.HaveI
+import Mathlib.Util.CompileInductive
 
 /-!
 # `norm_num` plugins for `Rat.cast` and `⁻¹`.

@@ -5,9 +5,18 @@ Authors: Yaël Dillies, Sara Rousta
 -/
 module
 
-public import Mathlib.Data.Set.Lattice.Image
 public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Order.UpperLower.Basic
+public import Mathlib.Data.Set.BooleanAlgebra
+import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Init
+import Mathlib.Order.Hom.Set
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToDual
+import Mathlib.Util.CompileInductive
 
 /-!
 # The complete lattice structure on `UpperSet`/`LowerSet`

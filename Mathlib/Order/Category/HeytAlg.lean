@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Order.Category.BddDistLat
 public import Mathlib.Order.Heyting.Hom
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # The category of Heyting algebras

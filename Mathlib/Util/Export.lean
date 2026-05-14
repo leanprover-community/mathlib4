@@ -5,9 +5,10 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.CoreM
 public meta import Lean.Util.FoldConsts
+public import Lean.Expr
+import Mathlib.Init
 
 /-!
 A rudimentary export format, adapted from

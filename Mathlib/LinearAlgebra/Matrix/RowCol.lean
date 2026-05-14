@@ -6,6 +6,14 @@ Authors: Anne Baanen, Eric Wieser
 module
 
 public import Mathlib.LinearAlgebra.Matrix.ConjTranspose
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Row and column matrices

@@ -7,6 +7,13 @@ module
 
 public import Mathlib.CategoryTheory.Grothendieck
 public import Mathlib.CategoryTheory.Limits.HasLimits
+import Batteries.Tactic.Init
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # (Co)limits on the (strict) Grothendieck Construction

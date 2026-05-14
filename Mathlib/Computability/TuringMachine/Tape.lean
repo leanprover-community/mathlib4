@@ -6,11 +6,19 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Logic.Function.Iterate
-public import Mathlib.Tactic.ApplyFun
-public import Mathlib.Data.List.GetD
-public import Mathlib.Algebra.Group.Int.Defs
-public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Data.List.Basic
+public import Batteries.Tactic.SeqFocus
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Data.Quot
+import Batteries.Tactic.Trans
+import Mathlib.Algebra.Group.Int.Defs
+import Mathlib.Algebra.Group.Nat.Defs
+import Mathlib.Data.List.GetD
+import Mathlib.Init
+import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Turing machine tapes

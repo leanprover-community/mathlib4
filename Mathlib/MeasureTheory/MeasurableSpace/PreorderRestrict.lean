@@ -7,6 +7,12 @@ module
 
 public import Mathlib.MeasureTheory.MeasurableSpace.Constructions
 public import Mathlib.Order.Restriction
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Measurability.Init
+import Mathlib.Tactic.SetLike
 
 /-!
 # Measurability of the restriction function for functions indexed by a preorder

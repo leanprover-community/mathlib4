@@ -7,6 +7,12 @@ module
 
 public import Mathlib.Data.Finite.Defs
 public import Mathlib.Algebra.Category.Grp.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 

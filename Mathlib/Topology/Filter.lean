@@ -5,9 +5,22 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.Filter.Lift
-public import Mathlib.Order.Interval.Set.Monotone
 public import Mathlib.Topology.Separation.Basic
+import Mathlib.Data.Countable.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Lattice
+import Mathlib.Init
+import Mathlib.Order.Filter.Lift
+import Mathlib.Order.Filter.Map
+import Mathlib.Order.Filter.Tendsto
+import Mathlib.Order.Interval.Set.Monotone
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Closure
+import Mathlib.Topology.Continuous
+import Mathlib.Topology.Maps.Basic
+import Mathlib.Topology.Neighborhoods
 
 /-!
 # Topology on the set of filters on a type

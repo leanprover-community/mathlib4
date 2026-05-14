@@ -6,5 +6,6 @@ Authors: Antoine Chambert-Loir, María-Inés de Frutos—Fernández
 module -- shake: keep-all
 
 public import Mathlib.Tactic.Common
+import Mathlib.Init
 
 deprecated_module (since := "2025-12-15")

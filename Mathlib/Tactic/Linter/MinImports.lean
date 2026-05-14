@@ -5,9 +5,11 @@ Authors: Damiano Testa
 -/
 module
 
-public meta import ImportGraph.Imports.ImportGraph
-public meta import ImportGraph.Graph.TransitiveClosure
-public import Mathlib.Tactic.MinImports
+public meta import Lean.Elab.Command
+meta import ImportGraph.Graph.TransitiveClosure
+meta import ImportGraph.Imports.ImportGraph
+import Lean.Parser.Command
+import Mathlib.Tactic.MinImports
 
 /-! # The `minImports` linter
 

@@ -8,8 +8,13 @@ module
 public import Mathlib.Topology.Defs.Basic
 public import Mathlib.Data.Setoid.Basic
 public import Mathlib.Order.Filter.Defs
-public import Mathlib.Tactic.IrreducibleDef
 public import Mathlib.Tactic.ToAdditive
+public import Mathlib.Tactic.Continuity
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.FunProp.Attr
+import Mathlib.Tactic.IrreducibleDef
+import Mathlib.Util.CompileInductive
 
 /-!
 # Definitions about filters in topological spaces

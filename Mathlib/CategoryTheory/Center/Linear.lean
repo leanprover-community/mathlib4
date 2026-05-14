@@ -7,7 +7,14 @@ module
 
 public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 public import Mathlib.CategoryTheory.Linear.Basic
-public import Mathlib.CategoryTheory.Center.Preadditive
+public import Mathlib.CategoryTheory.Center.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Center.Preadditive
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Center of a linear category

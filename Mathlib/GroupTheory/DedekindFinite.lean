@@ -5,8 +5,15 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.Algebra.Regular.Basic
-public import Mathlib.Data.Fintype.Card
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Data.Finite.Defs
+import Mathlib.Algebra.Regular.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Fintype.Card
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Finite monoids are Dedekind-finite

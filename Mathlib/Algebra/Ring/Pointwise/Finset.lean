@@ -8,6 +8,11 @@ module
 public import Mathlib.Algebra.Ring.Pointwise.Set
 public import Mathlib.Algebra.Ring.InjSurj
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Pointwise operations of sets in a ring

@@ -6,6 +6,12 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.EssentiallySmall
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # The Yoneda functor for locally small categories

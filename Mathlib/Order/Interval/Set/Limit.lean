@@ -5,8 +5,15 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Order.SetIsMax
 public import Mathlib.Order.SuccPred.Limit
+import Batteries.Tactic.Init
+import Mathlib.Init
+import Mathlib.Order.Cover
+import Mathlib.Order.SetIsMax
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Limit elements in Set.Ici

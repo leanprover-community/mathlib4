@@ -7,7 +7,13 @@ module
 
 public import Aesop
 public import Mathlib.Logic.Function.Iterate
-public import Mathlib.Order.Monotone.Basic
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Order.Monotone.Defs
+import Batteries.Tactic.Init
+import Mathlib.Init
+import Mathlib.Order.Monotone.Basic
+import Mathlib.Tactic.Translate.ToDual
+import Mathlib.Util.CompileInductive
 
 /-!
 # Inequalities on iterates

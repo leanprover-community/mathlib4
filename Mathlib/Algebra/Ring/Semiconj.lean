@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Semiconj.Defs
 public import Mathlib.Algebra.Ring.Defs
+import Mathlib.Init
 
 /-!
 # Semirings and rings

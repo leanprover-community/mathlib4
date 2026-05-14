@@ -9,6 +9,13 @@ public import Mathlib.CategoryTheory.Action.Basic
 public import Mathlib.Topology.Algebra.MulAction
 public import Mathlib.Topology.Category.TopCat.Basic
 public import Mathlib.Topology.Algebra.ContinuousMonoidHom
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 

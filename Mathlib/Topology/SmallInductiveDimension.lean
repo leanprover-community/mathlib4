@@ -7,7 +7,14 @@ module
 
 public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Topology.Bases
-public import Mathlib.Topology.Clopen
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Clopen
+import Mathlib.Topology.Closure
 
 /-!
 # Small inductive dimension

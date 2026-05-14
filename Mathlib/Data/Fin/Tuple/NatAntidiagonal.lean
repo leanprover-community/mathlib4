@@ -5,10 +5,21 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Fin
-public import Mathlib.Algebra.Group.Fin.Tuple
 public import Mathlib.Data.Finset.NatAntidiagonal
-public import Mathlib.Order.Fin.Tuple
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.GroupWithZero.Nat
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Order.PiLex
+import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Group.Fin.Tuple
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.List.Nodup
+import Mathlib.Init
+import Mathlib.Order.Fin.Tuple
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Collections of tuples of naturals with the same sum

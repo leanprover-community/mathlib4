@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Data.Nat.Bits
 public import Mathlib.Data.Nat.Pairing
+public import Mathlib.Logic.Equiv.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Equivalences involving `ℕ`

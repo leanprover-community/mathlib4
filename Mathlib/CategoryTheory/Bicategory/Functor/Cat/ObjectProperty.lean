@@ -6,6 +6,11 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Pseudo
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Properties of objects in target categories of a pseudofunctor to `Cat`

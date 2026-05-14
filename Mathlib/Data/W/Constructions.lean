@@ -6,6 +6,11 @@ Authors: Joseph Hua
 module
 
 public import Mathlib.Data.W.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Examples of W-types

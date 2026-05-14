@@ -8,7 +8,12 @@ module
 public import Mathlib.Order.Max
 public import Mathlib.Order.ULift
 public import Mathlib.Tactic.ByCases
-public import Mathlib.Tactic.Finiteness.Attr
+public import Batteries.Tactic.PermuteGoals
+import Aesop.Frontend.Attribute
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Translate.ToDual
+import Mathlib.Util.CompileInductive
 
 /-!
 # ⊤ and ⊥, bounded lattices and variants

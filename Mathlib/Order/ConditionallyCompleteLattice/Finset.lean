@@ -6,8 +6,18 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Data.Finset.Max
-public import Mathlib.Data.Set.Finite.Lattice
-public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+public import Mathlib.Data.Finset.BooleanAlgebra
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Data.Set.Finite.Lattice
+import Mathlib.Data.Set.Finite.Range
+import Mathlib.Init
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Conditionally complete lattices and finite sets.

@@ -5,8 +5,17 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Control.Traversable.Instances
 public import Mathlib.Order.Filter.Map
+public import Mathlib.Control.Traversable.Basic
+public import Mathlib.Data.Set.Functor
+import Mathlib.Control.Traversable.Instances
+import Mathlib.Data.List.Forall2
+import Mathlib.Data.Set.Insert
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 /-!
 # Properties of `Traversable.traverse` on `List`s and `Filter`s
 

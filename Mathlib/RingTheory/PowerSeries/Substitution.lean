@@ -5,11 +5,37 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos Fernández
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.Coeff
 public import Mathlib.RingTheory.MvPowerSeries.Substitution
 public import Mathlib.RingTheory.PowerSeries.Evaluation
 public import Mathlib.Data.Finsupp.Weight
-public import Mathlib.Tactic.Ring.NamePowerVars
+public import Mathlib.Algebra.Group.Invertible.Basic
+import Batteries.Tactic.Trans
+import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+import Mathlib.Algebra.MvPolynomial.Coeff
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Ring.Canonical
+import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Algebra.Ring.GeomSum
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Cast.Order.Ring
+import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.Data.Nat.Factorial.DoubleFactorial
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Rat.Floor
+import Mathlib.Data.ZMod.Defs
+import Mathlib.Init
+import Mathlib.LinearAlgebra.Finsupp.Pi
+import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
+import Mathlib.RingTheory.Nilpotent.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Ring.NamePowerVars
+import Mathlib.Tactic.SetLike
 
 /-! # Substitutions in power series
 

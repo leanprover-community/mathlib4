@@ -8,6 +8,10 @@ module
 public meta import Mathlib.Lean.Expr.Basic
 public import Mathlib.Order.Hom.Basic
 public meta import Mathlib.Tactic.ToDual
+public import Mathlib.Tactic.CongrExclamation
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # The `apply_fun` tactic.

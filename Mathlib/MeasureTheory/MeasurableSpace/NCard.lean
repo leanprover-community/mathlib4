@@ -7,6 +7,13 @@ module
 
 public import Mathlib.Data.Set.Card
 public import Mathlib.MeasureTheory.MeasurableSpace.Constructions
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Measurability.Init
+import Mathlib.Tactic.SetLike
 
 /-!
 # Measurability of `Set.encard` and `Set.ncard`

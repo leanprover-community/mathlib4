@@ -8,6 +8,12 @@ module
 public import Mathlib.Algebra.Algebra.Equiv
 public import Mathlib.Algebra.Module.Opposite
 public import Mathlib.Algebra.Ring.Opposite
+public import Mathlib.Algebra.Module.Equiv.Opposite
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Algebra structures on the multiplicative opposite

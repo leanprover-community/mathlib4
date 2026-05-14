@@ -8,6 +8,11 @@ module
 public import Mathlib.Order.Circular
 public import Mathlib.Order.Fin.Basic
 public import Mathlib.Data.ZMod.Defs
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # The circular order on `ZMod n`

@@ -5,7 +5,8 @@ Authors: Miyahara Kō
 -/
 module
 
-public import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Init
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 ## `@[to_additive]` attributes for basic types

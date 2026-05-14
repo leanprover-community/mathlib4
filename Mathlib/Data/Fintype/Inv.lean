@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Data.Finset.Basic
 public import Mathlib.Data.Fintype.Defs
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Computable inverses for injective/surjective functions on finite types

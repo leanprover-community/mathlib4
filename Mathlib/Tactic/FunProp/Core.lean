@@ -11,7 +11,9 @@ public meta import Mathlib.Tactic.FunProp.Types
 public meta import Mathlib.Lean.Expr.Basic
 public import Batteries.Tactic.Exact
 public import Mathlib.Tactic.FunProp.Theorems
-public import Qq
+public meta import Qq.Typ
+import Mathlib.Init
+import Qq.Macro
 
 /-!
 # Tactic `fun_prop` for proving function properties like `Continuous f`, `Differentiable ℝ f`, ...

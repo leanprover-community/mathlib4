@@ -7,7 +7,12 @@ module
 
 public import Mathlib.Algebra.Order.SuccPred
 public import Mathlib.Order.PartialSups
-public import Mathlib.Order.SuccPred.LinearLocallyFinite
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Order.SuccPred.LinearLocallyFinite
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # `PartialSups` in a `SuccAddOrder`

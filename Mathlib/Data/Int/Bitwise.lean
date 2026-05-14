@@ -5,12 +5,20 @@ Authors: Jeremy Avigad
 -/
 module
 
-public import Mathlib.Algebra.Ring.Int.Defs
-public import Mathlib.Data.Nat.Bitwise
-public import Mathlib.Data.Nat.Size
 public import Batteries.Data.Int
 import all Init.Data.Nat.Bitwise.Basic  -- for unfolding `Nat.bitwise`
 import all Init.Data.Int.Bitwise.Basic  -- for unfolding `Int.bitwise`
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Data.Nat.Bits
+public import Mathlib.Logic.Function.Defs
+import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Data.Bool.Basic
+import Mathlib.Data.Nat.Basic
+import Mathlib.Data.Nat.Bitwise
+import Mathlib.Data.Nat.Size
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # Bitwise operations on integers

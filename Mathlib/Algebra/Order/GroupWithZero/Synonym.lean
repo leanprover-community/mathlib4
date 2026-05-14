@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.GroupWithZero.Defs
 public import Mathlib.Algebra.Order.Group.Synonym
+import Mathlib.Init
+import Mathlib.Util.CompileInductive
 
 /-!
 # Group with zero structure on the order type synonyms

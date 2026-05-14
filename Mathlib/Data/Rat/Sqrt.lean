@@ -5,10 +5,18 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.Algebra.Order.Ring.Unbundled.Rat
-public import Mathlib.Data.Rat.Lemmas
 public import Mathlib.Data.Int.Sqrt
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Algebra.Ring.Rat
+import Mathlib.Data.Int.Cast.Basic
+import Mathlib.Data.Nat.Sqrt
+import Mathlib.Data.Rat.Lemmas
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Square root on rational numbers

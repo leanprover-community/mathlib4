@@ -7,10 +7,32 @@ module
 
 public import Mathlib.Algebra.CharP.Basic
 public import Mathlib.Algebra.Ring.Prod
-public import Mathlib.Data.Fintype.Units
 public import Mathlib.GroupTheory.GroupAction.SubMulAction
 public import Mathlib.GroupTheory.OrderOfElement
-public import Mathlib.Tactic.FinCases
+public import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Algebra.Group.Int.Units
+import Mathlib.Algebra.Module.NatInt
+import Mathlib.Algebra.Order.Monoid.NatCast
+import Mathlib.Algebra.Order.Ring.Int
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Algebra.Order.Sub.Unbundled.Basic
+import Mathlib.Algebra.Ring.Int.Parity
+import Mathlib.Algebra.Ring.Int.Units
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Fintype.Units
+import Mathlib.Data.Int.Basic
+import Mathlib.Data.Nat.Cast.Order.Basic
+import Mathlib.Data.Nat.GCD.Basic
+import Mathlib.Init
+import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.FastInstance
+import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Integers mod `n`

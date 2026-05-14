@@ -7,8 +7,17 @@ Amelia Livingston, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Group.Submonoid.Pointwise
-public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Data.Nat.Cast.Basic
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
+public import Mathlib.Algebra.Ring.Basic
+import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.Module.Defs
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Elementwise monoid structure of additive submonoids
