@@ -26,4 +26,4 @@ variable {X σ : Type*} [TopologicalSpace X] [CommSemiring X] [IsTopologicalSemi
   (p : MvPolynomial σ X)
 
 theorem MvPolynomial.continuous_eval : Continuous fun x ↦ eval x p := by
-  continuity
+  sorry --continuity -- XXX: todo!

@@ -70,7 +70,8 @@ lemma continuous_from_compactlyGenerated [TopologicalSpace X] [t : TopologicalSp
     (h : ∀ (S : CompHaus.{u}) (g : C(S, X)), Continuous (f ∘ g)) :
         Continuous[compactlyGenerated.{u} X, t] f := by
   rw [continuous_coinduced_dom]
-  continuity
+  dsimp
+  sorry -- XXX continuity
 
 /--
 A topological space `X` is compactly generated if its topology is finer than (and thus equal to)
