@@ -504,12 +504,12 @@ theorem ofIsTopCompl_eq_add (h : IsTopCompl p q) (φ : p →L[R] F) (ψ : q →L
 
 @[simp]
 theorem toLinearMap_ofIsTopCompl (h : IsTopCompl p q) (φ : p →L[R] F) (ψ : q →L[R] F) :
-    (ofIsTopCompl h φ ψ : E →ₗ[R] F) = LinearMap.ofIsCompl h.isCompl φ ψ := by
+    (ofIsTopCompl h φ ψ : E →ₗ[R] F) = LinearMap.ofIsCompl h.isCompl φ ψ :=
   rfl
 
 @[simp]
 theorem ofIsTopCompl_apply (h : IsTopCompl p q) (φ : p →L[R] F) (ψ : q →L[R] F) (x : E) :
-    ofIsTopCompl h φ ψ (x : E) = LinearMap.ofIsCompl h.isCompl φ ψ x := by
+    ofIsTopCompl h φ ψ (x : E) = LinearMap.ofIsCompl h.isCompl φ ψ x :=
   rfl
 
 theorem ofIsTopCompl_apply_left (h : IsTopCompl p q) (φ : p →L[R] F) (ψ : q →L[R] F) (x : p) :
@@ -520,18 +520,16 @@ theorem ofIsTopCompl_apply_right (h : IsTopCompl p q) (φ : p →L[R] F) (ψ : q
 
 theorem ofIsTopCompl_eq (h : IsTopCompl p q) {φ : p →L[R] F} {ψ : q →L[R] F} {χ : E →L[R] F}
     (hφ : ∀ u : p, φ u = χ u) (hψ : ∀ u : q, ψ u = χ u) : ofIsTopCompl h φ ψ = χ := by
-  ext x
-  obtain ⟨_, _, rfl, _⟩ := existsUnique_add_of_isCompl h.isCompl x
-  simp [hφ, hψ]
+  ext; simp [LinearMap.ofIsCompl_eq h.isCompl hφ, hψ]
 
 @[simp]
 theorem ofIsTopCompl_zero (h : IsTopCompl p q) : (ofIsTopCompl h 0 0 : E →L[R] F) = 0 := by
-  ext; simp [ofIsTopCompl]
+  ext; simp
 
 @[simp]
 theorem ofIsTopCompl_add (h : IsTopCompl p q) (φ₁ φ₂ : p →L[R] F) (ψ₁ ψ₂ : q →L[R] F) :
     ofIsTopCompl h (φ₁ + φ₂) (ψ₁ + ψ₂) = ofIsTopCompl h φ₁ ψ₁ + ofIsTopCompl h φ₂ ψ₂ := by
-  ext; simp [ofIsTopCompl, add_add_add_comm]
+  ext; simp
 
 theorem range_ofIsTopCompl (h : IsTopCompl p q) (φ : p →L[R] F) (ψ : q →L[R] F) :
     LinearMap.range (ofIsTopCompl h φ ψ : E →ₗ[R] F) = φ.range ⊔ ψ.range := by simp
