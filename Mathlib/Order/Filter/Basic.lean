@@ -947,10 +947,6 @@ theorem EventuallyEq.filter_mono {l l' : Filter α} {f g : α → β} (h₁ : f 
     f =ᶠ[l'] g :=
   h₂ h₁
 
-lemma EventuallyEq.comp_comap {F : Filter β} {f g : β → γ} (h : α → β)
-    (hfg : f =ᶠ[F] g) : f.comp h =ᶠ[comap h F] g.comp h :=
-  hfg.comap _
-
 @[refl, simp]
 theorem EventuallyEq.refl (l : Filter α) (f : α → β) : f =ᶠ[l] f :=
   Eventually.of_forall fun _ => rfl
