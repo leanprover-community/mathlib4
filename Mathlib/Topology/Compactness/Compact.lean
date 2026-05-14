@@ -470,7 +470,6 @@ theorem Set.Finite.isCompact_biUnion {s : Set ι} {f : ι → Set X} (hs : s.Fin
     rcases (hf i his).ultrafilter_le_nhds _ (le_principal_iff.2 hi) with ⟨x, hxi, hlx⟩
     exact ⟨x, mem_iUnion₂.2 ⟨i, his, hxi⟩, hlx⟩
 
-@[compactness .]
 theorem Finset.isCompact_biUnion (s : Finset ι) {f : ι → Set X} (hf : ∀ i ∈ s, IsCompact (f i)) :
     IsCompact (⋃ i ∈ s, f i) :=
   s.finite_toSet.isCompact_biUnion hf

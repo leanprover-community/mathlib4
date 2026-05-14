@@ -126,7 +126,6 @@ theorem TopologicalSpace.ext_iff_isClosed {X} {t₁ t₂ : TopologicalSpace X} :
 
 alias ⟨_, TopologicalSpace.ext_isClosed⟩ := TopologicalSpace.ext_iff_isClosed
 
-@[closedness .]
 theorem isClosed_const {p : Prop} : IsClosed { _x : X | p } := ⟨isOpen_const (p := ¬p)⟩
 
 @[simp, closedness ., grind .]
@@ -155,7 +154,6 @@ theorem isClosed_sInter {s : Set (Set X)} : (∀ t ∈ s, IsClosed t) → IsClos
 theorem isClosed_iInter {f : ι → Set X} (h : ∀ i, IsClosed (f i)) : IsClosed (⋂ i, f i) :=
   isClosed_sInter <| forall_mem_range.2 h
 
-@[closedness .]
 theorem isClosed_biInter {s : Set α} {f : α → Set X} (h : ∀ i ∈ s, IsClosed (f i)) :
     IsClosed (⋂ i ∈ s, f i) :=
   isClosed_iInter fun i => isClosed_iInter <| h i
@@ -179,14 +177,12 @@ theorem IsClosed.inter (h₁ : IsClosed s₁) (h₂ : IsClosed s₂) : IsClosed 
 theorem IsClosed.sdiff (h₁ : IsClosed s) (h₂ : IsOpen t) : IsClosed (s \ t) :=
   IsClosed.inter h₁ (isClosed_compl_iff.mpr h₂)
 
-@[closedness .]
 theorem Set.Finite.isClosed_biUnion {s : Set α} {f : α → Set X} (hs : s.Finite)
     (h : ∀ i ∈ s, IsClosed (f i)) :
     IsClosed (⋃ i ∈ s, f i) := by
   simp only [← isOpen_compl_iff, compl_iUnion] at *
   exact hs.isOpen_biInter h
 
-@[closedness .]
 lemma isClosed_biUnion_finset {s : Finset α} {f : α → Set X} (h : ∀ i ∈ s, IsClosed (f i)) :
     IsClosed (⋃ i ∈ s, f i) :=
   s.finite_toSet.isClosed_biUnion h
