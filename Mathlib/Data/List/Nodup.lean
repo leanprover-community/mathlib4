@@ -14,6 +14,7 @@ import Mathlib.Data.List.Basic
 import Mathlib.Data.List.Forall2
 import Mathlib.Tactic.Common
 import Mathlib.Util.CompileInductive
+import Mathlib.Tactic.FBinop
 
 /-!
 # Lists with no duplicates

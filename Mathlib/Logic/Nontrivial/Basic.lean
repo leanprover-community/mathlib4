@@ -12,7 +12,7 @@ import Batteries.Tactic.Init
 import Mathlib.Data.Prod.Basic
 import Mathlib.Tactic.Attr.Register
 import Mathlib.Tactic.Inhabit
-
+import Mathlib.Logic.Basic
 
 /-!
 # Nontrivial types

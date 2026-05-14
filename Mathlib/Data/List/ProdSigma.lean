@@ -10,6 +10,7 @@ public import Aesop
 import Mathlib.Tactic.Attr.Core
 import Mathlib.Tactic.Common
 import Mathlib.Util.CompileInductive
+import Mathlib.Tactic.FBinop
 
 /-!
 # Lists in product and sigma types

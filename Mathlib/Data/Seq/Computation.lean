@@ -12,7 +12,7 @@ public import Aesop
 public import Mathlib.Data.Stream.Defs
 public import Mathlib.Logic.Function.Defs
 public import Mathlib.Order.Defs.Unbundled
-import Mathlib.Data.Stream.Init
+public import Mathlib.Data.Stream.Init
 import Mathlib.Tactic.Common
 
 /-!

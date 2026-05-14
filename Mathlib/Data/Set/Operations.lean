@@ -16,6 +16,7 @@ import Aesop.Frontend.Tactic
 import Aesop.Main
 import Mathlib.Tactic.Attr.Register
 import Mathlib.Tactic.Push.Attr
+import Mathlib.Tactic.FBinop
 
 /-!
 # Basic definitions about sets

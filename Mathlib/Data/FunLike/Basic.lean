@@ -8,7 +8,7 @@ module
 public import Mathlib.Logic.IsEmpty.Defs
 import Mathlib.Logic.Basic
 import Mathlib.Logic.Unique
-import Mathlib.Tactic.Simps.NotationClass
+public import Mathlib.Tactic.Simps.NotationClass
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Util.CompileInductive
 
