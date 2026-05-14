@@ -16,6 +16,7 @@ import Mathlib.Data.Set.Prod
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Util.CompileInductive
+import Mathlib.Tactic.FBinop
 
 /-!
 # Finite products of types

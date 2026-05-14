@@ -10,9 +10,9 @@ public import Mathlib.Algebra.Order.Group.Unbundled.Int
 public import Mathlib.Algebra.GroupWithZero.Nat
 public import Mathlib.Algebra.Ring.Int.Defs
 public import Mathlib.Algebra.Ring.Units
-import Mathlib.Algebra.Group.Nat.Units
+public import Mathlib.Algebra.Group.Nat.Units
 import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-import Mathlib.Algebra.Ring.Int.Units
+public import Mathlib.Algebra.Ring.Int.Units
 import Mathlib.Data.Int.Basic
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr

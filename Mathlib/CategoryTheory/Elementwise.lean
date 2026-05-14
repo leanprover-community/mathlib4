@@ -7,7 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Tactic.CategoryTheory.Elementwise
+public import Mathlib.Tactic.CategoryTheory.Elementwise
 import Mathlib.Tactic.Common
 import Mathlib.Util.CompileInductive
 

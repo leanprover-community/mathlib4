@@ -12,7 +12,7 @@ public import Mathlib.Order.Hom.Basic
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-import Mathlib.Order.BoundedOrder.Lattice
+public import Mathlib.Order.BoundedOrder.Lattice
 import Mathlib.Order.MinMax
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SplitIfs

@@ -12,7 +12,7 @@ public import Mathlib.Data.Set.Subsingleton
 public import Mathlib.Order.Heyting.Basic
 public import Mathlib.Order.Interval.Set.Defs
 public import Mathlib.Tactic.ToAdditive
-import Mathlib.Data.Set.Insert
+public import Mathlib.Data.Set.Insert
 import Mathlib.Order.BoundedOrder.Monotone
 import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Tactic.Finiteness.Attr
@@ -20,6 +20,7 @@ import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Tauto
 import Mathlib.Util.CompileInductive
+import Mathlib.Tactic.FBinop
 
 /-!
 # Upper / lower bounds

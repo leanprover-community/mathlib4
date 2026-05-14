@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Group.Hom.Basic
 public import Mathlib.Order.Hom.Basic
 public import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.Algebra.Order.Group.Unbundled.Basic
+public import Mathlib.Algebra.Order.Group.Unbundled.Basic
 import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Finiteness.Attr

@@ -10,7 +10,7 @@ public import Mathlib.Order.Bounds.Defs
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Int.Defs
 public import Mathlib.Data.Subtype
-import Mathlib.Algebra.Order.Group.OrderIso
+public import Mathlib.Algebra.Order.Group.OrderIso
 import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Data.Int.Basic
 import Mathlib.Tactic.Finiteness.Attr

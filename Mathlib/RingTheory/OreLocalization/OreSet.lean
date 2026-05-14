@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Group.Submonoid.Defs
 public import Mathlib.GroupTheory.OreLocalization.OreSet
 public import Mathlib.Algebra.Ring.Defs
-import Mathlib.Algebra.Ring.Regular
+public import Mathlib.Algebra.Ring.Regular
 import Mathlib.Tactic.Choose
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SetLike

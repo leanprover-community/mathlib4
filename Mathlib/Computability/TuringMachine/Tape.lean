@@ -10,13 +10,15 @@ public import Mathlib.Data.List.Basic
 public import Batteries.Tactic.SeqFocus
 public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Data.Quot
+public import Mathlib.Order.Defs.LinearOrder
 import Mathlib.Algebra.Group.Int.Defs
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Data.List.GetD
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Data.List.GetD
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Util.CompileInductive
+public import Mathlib.Data.Nat.Basic
 
 /-!
 # Turing machine tapes

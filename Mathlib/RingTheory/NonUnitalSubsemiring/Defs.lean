@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Algebra.Group.Submonoid.Defs
-import Mathlib.Algebra.Ring.InjSurj
+public import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.Data.Set.Insert
 import Mathlib.Tactic.Coe
 import Mathlib.Tactic.CongrExclamation
