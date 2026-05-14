@@ -745,16 +745,8 @@ lemma Submodule.ClosedComplemented.of_closedComplement_finiteDimensional
     (hB : B ≤ A) : B.ClosedComplemented := by
   obtain ⟨p, hp⟩ := hA1
   obtain ⟨q, hq⟩ := B.exists_isCompl
-  let f :=  ((projectionOnto B q hq).domRestrict A).toContinuousLinearMap
-  use f.comp p
-  intro x
-  let x' : A := ⟨x, hB x.2⟩
-  calc
-    f.comp p x = f (p x) := rfl
-    _          = f (p x') := rfl
-    _          = f x' := by rw [hp]
-    _          = projectionOnto B q hq x := rfl
-    _          = x := projectionOnto_apply_left _ x
+  refine ⟨((projectionOnto B q hq).domRestrict A).toContinuousLinearMap ∘SL p, fun x ↦ ?_⟩
+  simp [hp ⟨x, hB x.2⟩]
 
 omit [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F] in
 theorem ContinuousLinearMap.ker_closedComplemented_of_finiteDimensional_range [T2Space F]
