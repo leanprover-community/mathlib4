@@ -161,7 +161,7 @@ lemma LinearMap.equiv_of_quasiInverse' {u u' : V₃ →ₗ[K] V₂} {v : V₂ �
   exact equiv_of_quasiInverse h h'
 
 variable {V₄ : Type*} [AddCommGroup V₄] [Module K V₄]
-lemma LinearMap.QuasiInverse_comp {u : V₂ →ₗ[K] V₃} {v : V₃ →ₗ[K] V₂} {u'  : V₃ →ₗ[K] V₄}
+lemma LinearMap.QuasiInverse_comp {u : V₂ →ₗ[K] V₃} {v : V₃ →ₗ[K] V₂} {u' : V₃ →ₗ[K] V₄}
     {v' : V₄ →ₗ[K] V₃}
     (h : u.QuasiInverse v) (h' : u'.QuasiInverse v') :
     (u' ∘ₗ u).QuasiInverse (v ∘ₗ v') := by
@@ -192,13 +192,12 @@ structure IsFredholmStruct : Prop where
   cokerFG : f.range.CoFG
   closedComplemented_ker : f.ker.ClosedComplemented
 
-/-FAE: I don't like this definition that seems to fix `g` (making it a structure would be even more
-  disgusting). -/
-def IsFredholm_exists : Prop := ∃ g : F →L[𝕜] E,
-  FiniteDimensional 𝕜 (f ∘L g - .id 𝕜 F).range  ∧ FiniteDimensional 𝕜 (g ∘L f - .id 𝕜 E).range
+variable [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F]
+
+variable {G : Type*} [AddCommGroup G] [TopologicalSpace G] [IsTopologicalAddGroup G]
+  [Module 𝕜 G] [ContinuousConstSMul 𝕜 G] [ContinuousAdd G]
 
 namespace QuotFiniteSubmodules
-variable [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F]
 
 variable (𝕜 E F) in
 def FiniteRank : Submodule 𝕜 (E →L[𝕜] F) :=
@@ -213,9 +212,6 @@ open scoped QuotFiniteRank in
 lemma eqv_iff {u v : E →L[𝕜] F} : (u ≈ v) ↔ u.toLinearMap ≈ v.toLinearMap :=
   Iff.rfl
 
-variable {G : Type*} [AddCommGroup G] [TopologicalSpace G] [IsTopologicalAddGroup G]
-  [Module 𝕜 G] [ContinuousConstSMul 𝕜 G] [ContinuousAdd G]
-
 omit [IsTopologicalAddGroup E] [IsTopologicalAddGroup F]
     [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F] [IsTopologicalAddGroup G]
     [ContinuousConstSMul 𝕜 G] [ContinuousAdd G] in
@@ -225,37 +221,41 @@ lemma rel_comp {u v : E →L[𝕜] F} {u' v' : F →L[𝕜] G} (h : u ≈ v) (h'
   push_cast
   exact QuotFiniteRank.rel_comp h h'
 
-def IsFredholm_quot : Prop := ∃ g : F →L[𝕜] E,
+end QuotFiniteSubmodules
+
+open scoped QuotFiniteSubmodules
+
+/-FAE: I don't like this definition that seems to fix `g` (making it a structure would be even more
+  disgusting). -/
+def IsFredholmQuot : Prop := ∃ g : F →L[𝕜] E,
   (f ∘L g ≈ .id 𝕜 F) ∧ (g ∘L f ≈ .id 𝕜 E)
 
-omit [IsTopologicalAddGroup
-  E] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F] in
-lemma IsFredholm_quot.iff_toLinearMap :
-    IsFredholm_quot f ↔ ∃ g : F →L[𝕜] E, LinearMap.QuasiInverse f g.toLinearMap := by
+omit [IsTopologicalAddGroup E] [IsTopologicalAddGroup F]
+  [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F] in
+lemma IsFredholmQuot.iff_toLinearMap :
+    IsFredholmQuot f ↔ ∃ g : F →L[𝕜] E, LinearMap.QuasiInverse f g.toLinearMap := by
   rfl
 
-lemma IsFredholm_quot.comp {f : E →L[𝕜] F} {f' : F →L[𝕜] G} (hf : IsFredholm_quot f)
-    (hf' : IsFredholm_quot f') : IsFredholm_quot (f' ∘L f) := by
-  rw [IsFredholm_quot.iff_toLinearMap] at *
+lemma IsFredholmQuot.comp {f : E →L[𝕜] F} {f' : F →L[𝕜] G} (hf : IsFredholmQuot f)
+    (hf' : IsFredholmQuot f') : IsFredholmQuot (f' ∘L f) := by
+  rw [IsFredholmQuot.iff_toLinearMap] at *
   rcases hf with ⟨g, hg⟩
   rcases hf' with ⟨g', hg'⟩
   use g ∘L g'
   push_cast
   exact LinearMap.QuasiInverse_comp hg hg'
 
-end QuotFiniteSubmodules
+theorem AnatoleDream_1 (hf : IsFredholmStruct f) : IsFredholmQuot f:= sorry
 
-theorem AnatoleDream_1 (hf : IsFredholmStruct f) : IsFredholm_exists f:= sorry
-
-def AnatoleDream_1_symm (hf : IsFredholm_exists f) : IsFredholmStruct f := sorry
+def AnatoleDream_1_symm (hf : IsFredholmQuot f) : IsFredholmStruct f := sorry
 
 open QuotFiniteSubmodules in
 theorem AnatoleDream_2 [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F] [ContinuousAdd E]
-    [ContinuousAdd F] (hf : IsFredholmStruct f) : IsFredholm_quot f := sorry
+    [ContinuousAdd F] (hf : IsFredholmStruct f) : IsFredholmQuot f := sorry
 
 open QuotFiniteSubmodules in
 def AnatoleDream_2_symm [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F] [ContinuousAdd E]
-    [ContinuousAdd F] (hf : IsFredholm_quot f) : (IsFredholmStruct f) := sorry
+    [ContinuousAdd F] (hf : IsFredholmQuot f) : (IsFredholmStruct f) := sorry
 
 /- ## API -/
 
@@ -394,18 +394,18 @@ theorem ContinuousLinearMap.coFG_eqLocus (hgf : v ∘L u ≈ .id 𝕜 E) :
     (LinearMap.eqLocus (.id 𝕜 E) (v ∘L u)).CoFG := by
   change (LinearMap.eqLocus (LinearMap.id) (v ∘L u).toLinearMap).CoFG
   rw [LinearMap.eqLocus_eq_ker_sub, ← range_fg_iff_ker_cofg, Submodule.fg_iff_finiteDimensional]
-  exact eqv_iff.1 (Setoid.symm hgf)
+  simpa [eqv_iff, QuotFiniteRank.eqv_iff] using Setoid.symm hgf
 
 omit [IsTopologicalAddGroup F] in
 theorem ContinuousLinearMap.id_sub_comp_ker_coFG (hgf : v ∘L u ≈ .id 𝕜 E) :
     (.id 𝕜 E - v ∘L u).ker.CoFG := by
   rw [← range_fg_iff_ker_cofg, Submodule.fg_iff_finiteDimensional]
-  exact eqv_iff.1 (Setoid.symm hgf)
+  simpa [eqv_iff, QuotFiniteRank.eqv_iff] using Setoid.symm hgf
 
 variable [T1Space E] [T1Space F] [ContinuousConstSMul 𝕜 F]
 
 /-- Need rename. -/
-theorem aaron (hr : IsFredholm_quot u) :
+theorem aaron (hr : IsFredholmQuot u) :
     ∃ (E₁ : Submodule 𝕜 E) (F₁ : Submodule 𝕜 F), IsClosed E₁.carrier ∧ E₁.CoFG ∧
       IsClosed F₁.carrier ∧ F₁.CoFG ∧ ∃ h : MapsTo u E₁ F₁,
         (u.restrict h).IsInvertible := by
@@ -463,7 +463,7 @@ theorem Topology.IsQuotientMap.isFredholmStruct {f : E →L[𝕜] F} (hq : IsQuo
     exact Submodule.CoFG.top
   · exact hcompl
 
-omit [IsTopologicalAddGroup E] in
+variable [ContinuousSMul 𝕜 E]
 theorem Submodule.mkQL_isFredholm_struc {p : Submodule 𝕜 E} (hc : p.FG)
     (hcompl : p.ClosedComplemented) :
     IsFredholmStruct p.mkQL :=
