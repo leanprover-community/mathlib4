@@ -61,7 +61,7 @@ unconditionally convergent.
 
 public section
 
-open Set MeasureTheory VectorMeasure ContinuousLinearMap
+open Set MeasureTheory VectorMeasure ContinuousLinearMap Filter Topology
 
 variable {X E F G : Type*} {mX : MeasurableSpace X}
   [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -172,7 +172,7 @@ variable {μ : VectorMeasure X F} {B : E →L[ℝ] F →L[ℝ] G} {f g : X → E
 @[simp] lemma integrable_zero : (0 : VectorMeasure X F).Integrable f B := by
   simp [VectorMeasure.Integrable, transpose]
 
-lemma Integrable.restrict (hf : μ.Integrable f B) (s : Set X) :
+lemma Integrable.restrict (hf : μ.Integrable f B) {s : Set X} :
     (μ.restrict s).Integrable f B := by
   by_cases hs : MeasurableSet s
   · simp only [VectorMeasure.Integrable, ← restrict_transpose, variation_restrict _ hs]
@@ -248,116 +248,109 @@ theorem integral_congr_ae (h : f =ᵐ[(μ.transpose B).variation] g) :
   setToFun_congr_ae _ h
 
 theorem norm_integral_le_lintegral_norm (f : X → E) :
-    ‖∫ᵛ a, f a ∂[B; μ]‖ ≤ ENNReal.toReal (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂[B; μ]) := by
-  by_cases hG : CompleteSpace G
-  · by_cases hf : Integrable f μ
-    · rw [integral_eq f hf, ← Integrable.norm_toL1_eq_lintegral_norm f hf]
-      exact L1.norm_integral_le _
-    · rw [integral_undef hf, norm_zero]; exact toReal_nonneg
-  · simp [integral, hG]
+    ‖∫ᵛ a, f a ∂[B; μ]‖ ≤ ENNReal.toReal (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂(μ.transpose B).variation) :=
+  (norm_setToFun_le_toReal _ (by simp)).trans (by simp)
 
-theorem enorm_integral_le_lintegral_enorm (f : X → E) : ‖∫ᵛ a, f a ∂[B; μ]‖ₑ ≤ ∫⁻ a, ‖f a‖ₑ ∂[B; μ] := by
-  simp_rw [← ofReal_norm_eq_enorm]
-  apply ENNReal.ofReal_le_of_le_toReal
-  exact norm_integral_le_lintegral_norm f
-
-theorem enorm_integral_le (f : X → E) :
-    ‖∫ᵛ x, f x ∂[B; μ]‖ₑ ≤ ∫⁻ x, ‖f x‖ₑ ∂ (μ.transpose B).variation :=
+theorem enorm_integral_le_lintegral_enorm (f : X → E) :
+    ‖∫ᵛ a, f a ∂[B; μ]‖ₑ ≤ ∫⁻ a, ‖f a‖ₑ ∂(μ.transpose B).variation :=
   (enorm_setToFun_le _ (by simp)).trans (by simp)
 
-
-#exit
-
-theorem dist_integral_le_lintegral_edist
-    {f g : X → G} (hf : Integrable f μ) (hg : Integrable g μ) :
-    dist (∫ᵛ a, f a ∂[B; μ]) (∫ᵛ a, g a ∂[B; μ]) ≤ (∫⁻ a, edist (f a) (g a) ∂[B; μ]).toReal := by
+theorem dist_integral_le_lintegral_edist (hf : μ.Integrable f B) (hg : μ.Integrable g B) :
+    dist (∫ᵛ a, f a ∂[B; μ]) (∫ᵛ a, g a ∂[B; μ]) ≤
+      (∫⁻ a, edist (f a) (g a) ∂(μ.transpose B).variation).toReal := by
   grw [dist_eq_norm, ← integral_sub hf hg, norm_integral_le_lintegral_norm]
   simp [edist_eq_enorm_sub]
 
-theorem edist_integral_le_lintegral_edist
-    {f g : X → G} (hf : Integrable f μ) (hg : Integrable g μ) :
-    edist (∫ᵛ a, f a ∂[B; μ]) (∫ᵛ a, g a ∂[B; μ]) ≤ ∫⁻ a, edist (f a) (g a) ∂[B; μ] := by
+theorem edist_integral_le_lintegral_edist (hf : μ.Integrable f B) (hg : μ.Integrable g B) :
+    edist (∫ᵛ a, f a ∂[B; μ]) (∫ᵛ a, g a ∂[B; μ]) ≤
+      ∫⁻ a, edist (f a) (g a) ∂(μ.transpose B).variation := by
   rw [edist_dist]
   exact ENNReal.ofReal_le_of_le_toReal (dist_integral_le_lintegral_edist hf hg)
 
-theorem integral_eq_zero_of_ae {f : X → E} (hf : f =ᵐ[μ] 0) : ∫ᵛ a, f a ∂[B; μ] = 0 := by
+theorem integral_eq_zero_of_ae {f : X → E} (hf : f =ᵐ[(μ.transpose B).variation] 0) :
+    ∫ᵛ a, f a ∂[B; μ] = 0 := by
   simp [integral_congr_ae hf, integral_zero]
 
 theorem frequently_ae_ne_zero_of_integral_ne_zero {f : X → E}
-    (h : ∫ᵛ a, f a ∂[B; μ] ≠ 0) : ∃ᶠ a in ae μ, f a ≠ 0 :=
+    (h : ∫ᵛ a, f a ∂[B; μ] ≠ 0) : ∃ᶠ a in ae (μ.transpose B).variation, f a ≠ 0 :=
   fun h' ↦ h (integral_eq_zero_of_ae (h'.mono fun _ ↦ not_not.mp))
 
 theorem exists_ne_zero_of_integral_ne_zero {f : X → E}
     (h : ∫ᵛ a, f a ∂[B; μ] ≠ 0) : ∃ a, f a ≠ 0 :=
   (frequently_ae_ne_zero_of_integral_ne_zero h).exists
 
-/-- If `f` has finite integral, then `∫ᵛ x in s, f x ∂[B; μ]` is absolutely continuous in `s`: it tends
-to zero as `μ s` tends to zero. -/
-theorem HasFiniteIntegral.tendsto_setIntegral_nhds_zero {ι} {f : X → E}
-    (hf : HasFiniteIntegral f μ) {l : Filter ι} {s : ι → Set X} (hs : Tendsto (μ ∘ s) l (𝓝 0)) :
+/-- If `f` is integrable, then `∫ᵛ x in s, f x ∂[B; μ]` is absolutely continuous in `s`:
+it tends to zero as `(μ.transpose B).variation s` tends to zero. -/
+theorem Integrable.tendsto_setIntegral_nhds_zero {ι} {f : X → E}
+    (hf : μ.Integrable f B) {l : Filter ι} {s : ι → Set X}
+    (hs : Tendsto ((μ.transpose B).variation ∘ s) l (𝓝 0)) :
     Tendsto (fun i => ∫ᵛ x in s i, f x ∂[B; μ]) l (𝓝 0) := by
   rw [tendsto_zero_iff_norm_tendsto_zero]
   simp_rw [← coe_nnnorm, ← NNReal.coe_zero, NNReal.tendsto_coe, ← ENNReal.tendsto_coe,
     ENNReal.coe_zero]
-  exact tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
-    (tendsto_setLIntegral_zero (ne_of_lt hf) hs) (fun i => zero_le)
-    fun i => enorm_integral_le_lintegral_enorm _
-
-/-- If `f` is integrable, then `∫ᵛ x in s, f x ∂[B; μ]` is absolutely continuous in `s`: it tends
-to zero as `μ s` tends to zero. -/
-theorem Integrable.tendsto_setIntegral_nhds_zero {ι} {f : X → E} (hf : Integrable f μ)
-    {l : Filter ι} {s : ι → Set X} (hs : Tendsto (μ ∘ s) l (𝓝 0)) :
-    Tendsto (fun i => ∫ᵛ x in s i, f x ∂[B; μ]) l (𝓝 0) :=
-  hf.2.tendsto_setIntegral_nhds_zero hs
+  apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
+    (tendsto_setLIntegral_zero (ne_of_lt hf.2) hs) (fun i => zero_le)
+  intro i
+  apply (enorm_integral_le_lintegral_enorm _).trans
+  apply lintegral_mono' _ le_rfl
+  rw [← restrict_transpose]
+  apply variation_restrict_le
 
 /-- If `F i → f` in `L1`, then `∫ᵛ x, F i x ∂[B; μ] → ∫ᵛ x, f x ∂[B; μ]`. -/
-theorem tendsto_integral_of_L1 {ι} (f : X → E) (hfi : Integrable f μ) {F : ι → X → G} {l : Filter ι}
-    (hFi : ∀ᶠ i in l, Integrable (F i) μ)
-    (hF : Tendsto (fun i => ∫⁻ x, ‖F i x - f x‖ₑ ∂[B; μ]) l (𝓝 0)) :
-    Tendsto (fun i => ∫ᵛ x, F i x ∂[B; μ]) l (𝓝 <| ∫ᵛ x, f x ∂[B; μ]) := by
-  simp only [integral_eq_setToFun]
-  exact tendsto_setToFun_of_L1 (dominatedFinMeasAdditive_weightedSMul μ) f hfi hFi hF
+theorem tendsto_integral_of_L1 {ι} (f : X → E) (hfi : μ.Integrable f B) {F : ι → X → E}
+    {l : Filter ι} (hFi : ∀ᶠ i in l, μ.Integrable (F i) B)
+    (hF : Tendsto (fun i => ∫⁻ x, ‖F i x - f x‖ₑ ∂(μ.transpose B).variation) l (𝓝 0)) :
+    Tendsto (fun i => ∫ᵛ x, F i x ∂[B; μ]) l (𝓝 <| ∫ᵛ x, f x ∂[B; μ]) :=
+  tendsto_setToFun_of_L1 _ f hfi hFi hF
 
 /-- If `F i → f` in `L1`, then `∫ᵛ x, F i x ∂[B; μ] → ∫ᵛ x, f x ∂[B; μ]`. -/
-lemma tendsto_integral_of_L1' {ι} (f : X → E) (hfi : Integrable f μ) {F : ι → X → G} {l : Filter ι}
-    (hFi : ∀ᶠ i in l, Integrable (F i) μ) (hF : Tendsto (fun i ↦ eLpNorm (F i - f) 1 μ) l (𝓝 0)) :
+lemma tendsto_integral_of_L1' {ι} (f : X → E) (hfi : μ.Integrable f B) {F : ι → X → E}
+    {l : Filter ι} (hFi : ∀ᶠ i in l, μ.Integrable (F i) B)
+    (hF : Tendsto (fun i ↦ eLpNorm (F i - f) 1 (μ.transpose B).variation) l (𝓝 0)) :
     Tendsto (fun i ↦ ∫ᵛ x, F i x ∂[B; μ]) l (𝓝 (∫ᵛ x, f x ∂[B; μ])) := by
   refine tendsto_integral_of_L1 f hfi hFi ?_
   simp_rw [eLpNorm_one_eq_lintegral_enorm, Pi.sub_apply] at hF
   exact hF
 
 /-- If `F i → f` in `L1`, then `∫ᵛ x in s, F i x ∂[B; μ] → ∫ᵛ x in s, f x ∂[B; μ]`. -/
-lemma tendsto_setIntegral_of_L1 {ι} (f : X → E) (hfi : Integrable f μ) {F : ι → X → G}
-    {l : Filter ι}
-    (hFi : ∀ᶠ i in l, Integrable (F i) μ) (hF : Tendsto (fun i ↦ ∫⁻ x, ‖F i x - f x‖ₑ ∂[B; μ]) l (𝓝 0))
+lemma tendsto_setIntegral_of_L1 {ι} (f : X → E) (hfi : μ.Integrable f B) {F : ι → X → E}
+    {l : Filter ι} (hFi : ∀ᶠ i in l, μ.Integrable (F i) B)
+    (hF : Tendsto (fun i ↦ ∫⁻ x, ‖F i x - f x‖ₑ ∂(μ.transpose B).variation) l (𝓝 0))
     (s : Set X) :
     Tendsto (fun i ↦ ∫ᵛ x in s, F i x ∂[B; μ]) l (𝓝 (∫ᵛ x in s, f x ∂[B; μ])) := by
   refine tendsto_integral_of_L1 f hfi.restrict ?_ ?_
   · filter_upwards [hFi] with i hi using hi.restrict
   · simp_rw [← eLpNorm_one_eq_lintegral_enorm] at hF ⊢
-    exact tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds hF (fun _ ↦ zero_le)
-      (fun _ ↦ eLpNorm_mono_measure _ Measure.restrict_le_self)
+    apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds hF (fun _ ↦ zero_le)
+      (fun i ↦ ?_)
+    apply eLpNorm_mono_measure
+    grw [← restrict_transpose, variation_restrict_le]
+    apply Measure.restrict_le_self
 
 /-- If `F i → f` in `L1`, then `∫ᵛ x in s, F i x ∂[B; μ] → ∫ᵛ x in s, f x ∂[B; μ]`. -/
-lemma tendsto_setIntegral_of_L1' {ι} (f : X → E) (hfi : Integrable f μ) {F : ι → X → G}
-    {l : Filter ι}
-    (hFi : ∀ᶠ i in l, Integrable (F i) μ) (hF : Tendsto (fun i ↦ eLpNorm (F i - f) 1 μ) l (𝓝 0))
+lemma tendsto_setIntegral_of_L1' {ι} (f : X → E) (hfi : μ.Integrable f B) {F : ι → X → E}
+    {l : Filter ι} (hFi : ∀ᶠ i in l, μ.Integrable (F i) B)
+    (hF : Tendsto (fun i ↦ eLpNorm (F i - f) 1 (μ.transpose B).variation) l (𝓝 0))
     (s : Set X) :
     Tendsto (fun i ↦ ∫ᵛ x in s, F i x ∂[B; μ]) l (𝓝 (∫ᵛ x in s, f x ∂[B; μ])) := by
   refine tendsto_setIntegral_of_L1 f hfi hFi ?_ s
   simp_rw [eLpNorm_one_eq_lintegral_enorm, Pi.sub_apply] at hF
   exact hF
 
-variable {X : Type*} [TopologicalSpace X] [FirstCountableTopology X]
 
-theorem continuousWithinAt_of_dominated {F : X → X → G} {x₀ : X} {bound : X → ℝ} {s : Set X}
+variable {Y : Type*} [TopologicalSpace Y] [FirstCountableTopology Y]
+
+theorem continuousWithinAt_of_dominated {F : Y → Y → E} {x₀ : Y} {bound : Y → ℝ} {s : Set Y}
     (hF_meas : ∀ᶠ x in 𝓝[s] x₀, AEStronglyMeasurable (F x) μ)
-    (h_bound : ∀ᶠ x in 𝓝[s] x₀, ∀ᵐ a ∂[B; μ], ‖F x a‖ ≤ bound a) (bound_integrable : Integrable bound μ)
-    (h_cont : ∀ᵐ a ∂[B; μ], ContinuousWithinAt (fun x => F x a) s x₀) :
+    (h_bound : ∀ᶠ x in 𝓝[s] x₀, ∀ᵐ a ∂(μ.transpose B).variation, ‖F x a‖ ≤ bound a)
+    (bound_integrable : Integrable bound (μ.transpose B).variation)
+    (h_cont : ∀ᵐ a ∂(μ.transpose B).variation, ContinuousWithinAt (fun x => F x a) s x₀) :
     ContinuousWithinAt (fun x => ∫ᵛ a, F x a ∂[B; μ]) s x₀ := by
   simp only [integral_eq_setToFun]
   exact continuousWithinAt_setToFun_of_dominated (dominatedFinMeasAdditive_weightedSMul μ)
     hF_meas h_bound bound_integrable h_cont
+
+#exit
 
 theorem continuousAt_of_dominated {F : X → X → G} {x₀ : X} {bound : X → ℝ}
     (hF_meas : ∀ᶠ x in 𝓝 x₀, AEStronglyMeasurable (F x) μ)

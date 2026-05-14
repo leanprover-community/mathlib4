@@ -154,6 +154,12 @@ lemma variation_restrict (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSe
       gcongr
       exact Set.inter_subset_left
 
+lemma variation_restrict_le (μ : VectorMeasure X V) (s : Set X) :
+    (μ.restrict s).variation ≤ μ.variation.restrict s := by
+  by_cases hs : MeasurableSet s
+  · simp [variation_restrict μ hs]
+  · simp only [restrict_not_measurable _ hs, variation_zero, Measure.zero_le]
+
 end Basic
 
 section NormedAddCommGroup

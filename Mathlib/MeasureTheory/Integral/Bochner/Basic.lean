@@ -326,7 +326,7 @@ theorem continuous_integral : Continuous fun f : α →₁[μ] G => ∫ a, f a �
 theorem norm_integral_le_lintegral_norm (f : α → G) :
     ‖∫ a, f a ∂μ‖ ≤ ENNReal.toReal (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) := by
   simp only [integral_eq_setToFun]
-  exact (enorm_setToFun_le_toReal _ (by simp)).trans (by simp)
+  exact (norm_setToFun_le_toReal _ (by simp)).trans (by simp)
 
 theorem enorm_integral_le_lintegral_enorm (f : α → G) : ‖∫ a, f a ∂μ‖ₑ ≤ ∫⁻ a, ‖f a‖ₑ ∂μ := by
   simp only [integral_eq_setToFun]
