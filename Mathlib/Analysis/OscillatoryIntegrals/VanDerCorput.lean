@@ -54,9 +54,10 @@ namespace VanDerCorput
 abbrev c (k : ℕ) : ℝ := 5 * 2 ^ (k - 1) - 2
 
 theorem c_pos (k : ℕ) : 0 < c k := by
-  induction' k with k ih
-  · norm_num
-  · norm_num
+  induction k with
+  | zero => norm_num
+  | succ k hk =>
+    norm_num
     have h : (2 ^ k : ℝ) ≥ 1 := by exact_mod_cast Nat.one_le_pow k 2 (by norm_num)
     have := mul_le_mul_of_nonneg_left h (by norm_num : 0 ≤ (5 : ℝ))
     exact lt_of_lt_of_le (by norm_num : (2 : ℝ) < 5 * 1) this
@@ -105,7 +106,7 @@ private theorem exists_le_abs_of_le_derivWithin
       have hda : DifferentiableAt ℝ φ x :=
         ((hφ.differentiableOn (by norm_num)) x hx').differentiableAt
           (Filter.mem_of_superset (isOpen_interior.mem_nhds hx) interior_subset)
-      show 0 ≤ deriv (φ - id) x
+      change 0 ≤ deriv (φ - id) x
       rw [deriv_sub hda differentiableAt_id, deriv_id', ← hda.derivWithin (hud x hx')]
       linarith only [h x hx']
     intro x hx y hy hxy; linarith only [hg hx hy hxy]
@@ -140,7 +141,7 @@ private theorem exists_le_abs_of_le_derivWithin
 section SpecialCase
 
 /-- **Van der Corput's lemma**. Special case of `norm_integral_exp_mul_I_le_of_order_one`
-  where the amplitude function is constant and scalar.  -/
+  where the amplitude function is constant and scalar. -/
 theorem norm_integral_exp_mul_I_le_of_order_one'
     (hφ : ContDiffOn ℝ 2 φ [[a, b]]) (h : ∀ x ∈ [[a, b]], 1 ≤ |derivWithin φ [[a, b]] x|)
     (hφ'_mono : MonotoneOn (derivWithin φ [[a, b]]) [[a, b]])
@@ -275,7 +276,7 @@ theorem norm_integral_exp_mul_I_le_of_order_one'
     _ = _ := by ring
 
 /-- **Van der Corput's lemma**. Special case of `norm_integral_exp_mul_I_le_of_order_ge_two`
-  where the amplitude function is constant and scalar.  -/
+  where the amplitude function is constant and scalar. -/
 theorem norm_integral_exp_mul_I_le_of_order_ge_two' {k : ℕ} (hk : 2 ≤ k)
     (hφc : ContDiffOn ℝ k φ [[a, b]])
     (hφ : ∀ x ∈ [[a, b]], 1 ≤ |iteratedDerivWithin k φ [[a, b]] x|)
@@ -287,8 +288,9 @@ theorem norm_integral_exp_mul_I_le_of_order_ge_two' {k : ℕ} (hk : 2 ≤ k)
     · convert this (by rwa [uIcc_comm]) (by rwa [uIcc_comm]) hba using 1
       rw [integral_symm, norm_neg]
   revert hk hL
-  induction' k with k ih generalizing a b L φ
-  · intro hk; contradiction
+  induction k generalizing a b L φ with
+  | zero => intro hk; contradiction
+  | succ k ih =>
   intro hk hL
   have hφc' := hφc.continuousOn_iteratedDerivWithin (m := k + 1) (by rfl)
     (uniqueDiffOn_Icc <| min_lt_max.mpr hab.ne)
@@ -461,7 +463,7 @@ theorem norm_integral_exp_mul_I_le_of_order_ge_two' {k : ℕ} (hk : 2 ≤ k)
         gcongr
         · exact haux hac₁ fun hne ↦ hest_sub hac₁ (hac₁_est hne)
         · apply le_trans (norm_integral_le_of_norm_le_const fun x _ ↦ by
-            show ‖f x‖ ≤ 1; unfold f; norm_cast; exact le_of_eq <| norm_exp_ofReal_mul_I _)
+            norm_cast; exact le_of_eq <| norm_exp_ofReal_mul_I _)
           simpa using hδ
         · exact haux hc₂b fun hne ↦ hest_sub hc₂b (hc₂b_est hne)
       _ = _ := by
