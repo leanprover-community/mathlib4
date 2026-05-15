@@ -686,21 +686,24 @@ mutual
       let e := e.setArg funPropDecl.funArgId (← fData.toExpr) -- update e with reduced f
 
       if fData.isIdentityFun then
-        applyIdRule funPropDecl e funProp
-      else if fData.isConstantFun then
-        applyConstRule funPropDecl e funProp
-      else
-        match fData.fn with
-        | .fvar id =>
-          if id == fData.mainVar.fvarId! then
-            bvarAppCase funPropDecl e fData funProp
-          else
-            fvarAppCase funPropDecl e fData funProp
-        | .const .. | .proj .. => do
-          constAppCase funPropDecl e fData funProp
-        | _ =>
-          trace[Debug.Meta.Tactic.fun_prop] "unknown case, ctor: {f.ctorName}\n{e}"
-          return none
+        if let some r ← applyIdRule funPropDecl e funProp then
+          return r
+
+      if fData.isConstantFun then
+        if let some r ← applyConstRule funPropDecl e funProp then
+          return r
+
+      match fData.fn with
+      | .fvar id =>
+        if id == fData.mainVar.fvarId! then
+          bvarAppCase funPropDecl e fData funProp
+        else
+          fvarAppCase funPropDecl e fData funProp
+      | .const .. | .proj .. => do
+        constAppCase funPropDecl e fData funProp
+      | _ =>
+        trace[Debug.Meta.Tactic.fun_prop] "unknown case, ctor: {f.ctorName}\n{e}"
+        return none
 
 end
 

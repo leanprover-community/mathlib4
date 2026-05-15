@@ -732,3 +732,11 @@ example {f : α → FooHom α} (hf : Con f) : Con fun x ↦ f x (f x x x) x := b
   fun_prop
 
 end BundledMorphismWithFunctionValues
+
+
+-- this use to fail when we did not apply other rules when constant lambda rule did not work
+example {β} [Zero β] (f : β → γ) (hf : Lin f) :
+  Lin (fun x : α => f 0) := by fun_prop
+
+example {β} [Zero β] [Add β] :
+  Lin (fun x : α => 0 + 0) := by fun_prop
