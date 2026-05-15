@@ -11,7 +11,9 @@ public import Mathlib.Analysis.Normed.Operator.Banach
 public import Mathlib.Analysis.Normed.Operator.Perturbation.StrictByFinite
 public import Mathlib.RingTheory.Finiteness.Cofinite
 public import Mathlib.Topology.Algebra.Module.Complement
+public import Mathlib.Topology.Algebra.Module.Equiv
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
+public import Mathlib.Topology.Algebra.Module.LinearMap
 public import Mathlib.Topology.Maps.Strict.Basic
 
 section FindHome
@@ -530,12 +532,12 @@ end FredholmOperators
 public noncomputable section Filippo
 
 variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [AddCommGroup E]
-   [TopologicalSpace E] [Module 𝕜 E] [IsTopologicalAddGroup E]-- [T2Space E] [ContinuousSMul 𝕜 E]
+   [TopologicalSpace E] [Module 𝕜 E] -- [T2Space E] [ContinuousSMul 𝕜 E]
 variable [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F]
     [Module 𝕜 F] [ContinuousSMul 𝕜 F]
 variable {u : E →L[𝕜] F}
 
-open Submodule
+open Submodule Function
 
 variable (𝕜 E) in
 structure preFredholmDecomposition where
@@ -544,51 +546,92 @@ structure preFredholmDecomposition where
   compl : IsTopCompl X₁ X₂
   fin_dim : FiniteDimensional 𝕜 X₂
 
--- variable (𝕜 E) in
 open Submodule.ClosedComplemented in
-def FredholmDecomposition (huF : IsFredholmStruct u) (huk : u.ker.ClosedComplemented) :
-    preFredholmDecomposition 𝕜 E × preFredholmDecomposition 𝕜 F := by
-  constructor
-  · exact ⟨(exists_isTopCompl huk).choose, u.ker, (exists_isTopCompl huk).choose_spec.symm,
-      huF.3⟩
-  · have one := of_finiteDimensional_quotient huF.isClosed_range (hq := huF.cokerFG)
-    refine ⟨u.range, one.complement, one.isTopCompl_complement, ?_⟩
-    set f := u.range.mkQ with hf
-    set g := f.domRestrict one.complement with hg_def
-    have hg : Function.Injective g := by
-      rw [← g.ker_eq_bot]
-      ext x
-      refine ⟨fun hx ↦ ?_ , fun hx ↦ ?_⟩
-      · rw [hg_def] at hx
-        simp only [hf, LinearMap.mem_ker, LinearMap.domRestrict_apply, mkQ_apply,
-          Quotient.mk_eq_zero] at hx
-        rcases x with ⟨x, hx'⟩
-        simp only at hx
-        have := one.isTopCompl_complement.isCompl.disjoint
-        rw [Submodule.disjoint_def] at this
-        simp only [mem_bot, mk_eq_zero]
-        apply this _ hx hx'
-      simp_all
-    exact huF.cokerFG.of_injective g hg
+private lemma injectiveOn_complement (huF : IsFredholmStruct u) :
+    letI compl := (of_finiteDimensional_quotient huF.isClosed_range (hq := huF.cokerFG)).complement
+    Injective (u.range.mkQ.domRestrict compl) := by
+  let compl := (of_finiteDimensional_quotient huF.isClosed_range (hq := huF.cokerFG)).complement
+  set f := u.range.mkQ with hf
+  set g := (f.domRestrict compl) with hg_def
+  rw [← g.ker_eq_bot]
+  ext ⟨x, hx'⟩
+  refine ⟨fun hx ↦ ?_ , fun hx ↦ by simp_all⟩
+  rw [hg_def] at hx
+  simp only [hf, LinearMap.mem_ker, LinearMap.domRestrict_apply, mkQ_apply,
+    Quotient.mk_eq_zero] at hx
+  have := (of_finiteDimensional_quotient huF.isClosed_range
+    (hq := huF.cokerFG)).isTopCompl_complement.isCompl.disjoint
+  rw [Submodule.disjoint_def] at this
+  simpa only [mem_bot, mk_eq_zero] using this _ hx hx'
+
+variable [IsTopologicalAddGroup E]
+
+open Submodule.ClosedComplemented in
+def FredholmDecomposition (huF : IsFredholmStruct u) :
+    preFredholmDecomposition 𝕜 E × preFredholmDecomposition 𝕜 F :=
+  ⟨⟨(exists_isTopCompl huF.5).choose, u.ker, (exists_isTopCompl huF.5).choose_spec.symm,
+      huF.3⟩,
+    ⟨u.range, (of_finiteDimensional_quotient huF.isClosed_range
+      (hq := huF.cokerFG)).complement, (of_finiteDimensional_quotient huF.isClosed_range
+      (hq := huF.cokerFG)).isTopCompl_complement,
+      huF.cokerFG.of_injective _ (injectiveOn_complement huF)⟩⟩
+
+variable (huF : IsFredholmStruct u)
+
+@[simp]
+theorem FredholmDecomposition_dom₂ : (FredholmDecomposition huF).1.X₂ = u.ker := by rfl
+
+-- FAE : Perhaps we want the version with `restrict` rather than `domRestrict`
+theorem FredholmDecomposition_InjectiveOn₁ :
+    Injective (u.domRestrict (FredholmDecomposition huF).1.X₁).toLinearMap := by
+  rw [← LinearMap.ker_eq_bot, ContinuousLinearMap.toLinearMap_domRestrict,
+    LinearMap.ker_domRestrict, ← Submodule.disjoint_iff_comap_eq_bot]
+  exact (FredholmDecomposition huF).1.3.isCompl.disjoint
 
 
-theorem FredholmDecomposition_restrict (huF : IsFredholmStruct u)
-    (huk : u.ker.ClosedComplemented) : (FredholmDecomposition huF huk).1.X₂ = u.ker := by rfl
+@[simp]
+theorem FredholmDecomposition_codom₁ : (FredholmDecomposition huF).2.X₁ = u.range := by rfl
+
+theorem FredholmDecomposition_mapsTo₁ (x : _) (_ : x ∈ (FredholmDecomposition huF).1.X₁) :
+    u x ∈ (FredholmDecomposition huF).2.X₁ := by simp
+
+theorem FredholmDecomposition_InjectiveOn₁' :
+    Injective (u.restrict (FredholmDecomposition_mapsTo₁ huF)).toLinearMap := by
+  rw [ContinuousLinearMap.restrict_eq_domRestrict_codRestrict (by simp)]
+  simp only [ContinuousLinearMap.toLinearMap_domRestrict, LinearMap.injective_domRestrict_iff,
+    ContinuousLinearMap.ker_codRestrict, ← disjoint_iff]
+  exact (FredholmDecomposition huF).1.3.isCompl.disjoint
 
 
-theorem FredholmDecomposition_mapsTo (huF : IsFredholmStruct u) (huk : u.ker.ClosedComplemented) :
-    ∀ x ∈ (FredholmDecomposition huF huk).1.X₂, u x ∈ (FredholmDecomposition huF huk).2.X₂ := by
+theorem FredholmDecomposition_mapsTo₂ (huF : IsFredholmStruct u) :
+    ∀ x ∈ (FredholmDecomposition huF).1.X₂, u x ∈ (FredholmDecomposition huF).2.X₂ := by
   intro x hx
   simp only [FredholmDecomposition, LinearMap.mem_ker, ContinuousLinearMap.coe_coe] at hx
   exact hx ▸ Submodule.zero_mem ..
 
+-- FAE: Perhaps we want (also?) the version with `restrict` instead of `domRestrict`
+theorem FredholmDecomposition_ZeroOn₂ (huF : IsFredholmStruct u) :
+    (u.domRestrict (FredholmDecomposition huF).1.X₂) = 0 := by sorry
 
+theorem FredholmDecomposition_SurjectiveOn₁ :
+    Surjective (u.restrict (FredholmDecomposition_mapsTo₁ huF)).toLinearMap := by
+  intro ⟨x, hx⟩
+  simp only [FredholmDecomposition_codom₁, LinearMap.mem_range, ContinuousLinearMap.coe_coe] at hx
+  obtain ⟨y, hy⟩ := hx
+  have h_compl := ((FredholmDecomposition huF).1.3).isCompl
+  have y_dec := Submodule.projection_add_projection_eq_self h_compl y
+  simp_rw [FredholmDecomposition_dom₂ huF] at y_dec
+  sorry
 
+def FredholmDecomposition_ContinuousLinearEquiv₁ :
+  (FredholmDecomposition huF).1.X₁ ≃L[𝕜] (FredholmDecomposition huF).2.X₁ := by
+  let f := (FredholmDecomposition_InjectiveOn₁' huF).hasLeftInverse.choose_spec
+  -- apply ContinuousLinearEquiv.equivOfInverse
+  sorry
 
--- **Waiting for *Anatole* to create the `ContinuousLinearMap.restrict` so that the code below type-check
--- theorem FredholmDecomposition_embedding (hu : IsFredholm_struc u)
---     (h_kerCompl : u.ker.ClosedComplemented) :
---     IsInvertible (u.restrict (FredholmDecomposition_mapsTo hu h_kerCompl)) := sorry
+theorem FredholmDecomposition_isInvertibleOn₁ :
+    (u.restrict (FredholmDecomposition_mapsTo₁ huF)).IsInvertible := by
+  sorry
 
 /- ## FredholmQuot ==> complemented kernel (Jon)
 
