@@ -59,7 +59,7 @@ class IsConvexDist : Prop where
   dist_iConvexComb_fst_snd_le (f : StdSimplex ℝ (X × X)) :
     dist (f.iConvexComb Prod.fst) (f.iConvexComb Prod.snd) ≤ f.iConvexComb fun x ↦ dist x.1 x.2
 
-@[deprecated (since := "2026-05-04")] alias IsConvexMetricSpace := IsConvexDist
+@[deprecated (since := "2026-05-15")] alias IsConvexMetricSpace := IsConvexDist
 
 variable [IsConvexDist X]
 
@@ -69,7 +69,7 @@ lemma dist_iConvexComb_le {ι : Type*} (f : StdSimplex ℝ ι) (x y : ι → X) 
   simpa [iConvexComb_map, Function.comp_def]
     using IsConvexDist.dist_iConvexComb_fst_snd_le (f.map fun i ↦ (x i, y i))
 
-@[deprecated (since := "2026-05-04")] alias dist_convexCombination_right_le := dist_iConvexComb_le
+@[deprecated (since := "2026-05-15")] alias dist_convexCombination_right_le := dist_iConvexComb_le
 
 lemma dist_iConvexComb_left_le (f : StdSimplex ℝ I) (g : I → X) (x : X) :
     dist (f.iConvexComb g) x ≤ f.iConvexComb fun i ↦ dist (g i) x := by
@@ -191,6 +191,8 @@ lemma continuous_convexCombPair :
     simp [← coe_nnreal_ennreal_nndist, ← ENNReal.coe_mul, NNReal.toReal_le,
       dist_convexCombPair_convexCombPair, Subtype.dist_eq, dist_eq_norm]
 
+@[deprecated (since := "2026-05-15")] alias continuous_convexComboPair := continuous_convexCombPair
+
 lemma continuous_convexCombPair_of_isBounded
     {T : Type*} [TopologicalSpace T] (f : T → ℝ) (hf : Continuous f)
     (hf0 : ∀ t, 0 ≤ f t) (hf1 : ∀ t, f t ≤ 1) (x y : T → X)
@@ -249,6 +251,9 @@ lemma continuous_convexCombPair' [BoundedSpace X]
     Continuous fun i ↦ convexCombPair (f i) (1 - f i) (hf0 _) (by simpa using hf1 _)
       (add_sub_cancel ..) (x i) (y i) :=
   continuous_convexCombPair_of_isBounded f hf hf0 hf1 x y hx hy (.all _) (.all _)
+
+@[deprecated (since := "2026-05-15")]
+alias continuous_convexComboPair' := continuous_convexCombPair'
 
 /-- A convex subset of a vector space is a convex space. -/
 -- TODO: this should generalize to arbitrary convex space once `Convex` is redefined.

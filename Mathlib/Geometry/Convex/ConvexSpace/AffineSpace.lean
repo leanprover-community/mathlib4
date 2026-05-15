@@ -108,7 +108,7 @@ theorem sConvexComb_eq_affineCombination (s : StdSimplex R P) :
     s.sConvexComb = s.weights.support.affineCombination R id s.weights := by
   rfl
 
-@[deprecated (since := "2026-05-04")]
+@[deprecated (since := "2026-05-15")]
 alias convexCombination_eq_affineCombination := sConvexComb_eq_affineCombination
 
 theorem iConvexComb_eq_affineCombination (s : StdSimplex R I) (f : I → P) :
