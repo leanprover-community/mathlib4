@@ -19,7 +19,6 @@ lemma Foo.Bar.baz' (f g : ℝ → ℝ) : f * g = g * f := mul_comm f g
 #guard_msgs in #check Baz.Bars.baz
 
 -- Specifying more components than the original lemma is fine.
--- TODO: does to_additive have an analogous test? if not, add it!
 @[to_fun Bar.Bars.Bazzz.baz]
 lemma Foo.Bar.baz'' (f g : ℝ → ℝ) : f * g = g * f := mul_comm f g
 /-- info: Bar.Bars.Bazzz.baz (f g : ℝ → ℝ) : (fun i => f i * g i) = fun i => g i * f i -/
