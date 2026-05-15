@@ -366,7 +366,7 @@ lemma ContinuousLinearMap.norm_single_le_one [∀ i, SeminormedAddCommGroup (E i
   (LinearIsometry.single 𝕜 E i).norm_toContinuousLinearMap_le
 
 lemma ContinuousLinearMap.norm_single [∀ i, SeminormedAddCommGroup (E i)]
-    [∀ i, NontrivialTopology (E i)] [∀ i, NormedSpace 𝕜 (E i)] (i : ι) :
+    [∀ i, NormedSpace 𝕜 (E i)] (i : ι) [NontrivialTopology (E i)] :
     ‖ContinuousLinearMap.single 𝕜 E i‖ = 1 :=
   (LinearIsometry.single 𝕜 E i).norm_toContinuousLinearMap
 
