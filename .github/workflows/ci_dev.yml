@@ -200,13 +200,19 @@ jobs:
           sed -n '49,62p' lakefile.lean
           echo "::endgroup::"
 
-      - name: No-op build to populate Lake's cache from .lake/build/
+      # Incremental build: with the legacy cache having hydrated .lake/build/
+      # and the lakefile patched, Lake's pipeline runs to pack/cache any
+      # modules whose .ltar+mapping aren't yet in Lake's cache. Module
+      # source compilation is skipped where per-module traces match (which
+      # they do for the 3 knobs we set), so the "work" here is bounded to
+      # cache population, not lean recompilation.
+      - name: Incremental build (populate Lake's cache)
         run: |
           cd pr-branch
-          lake build $STAGE_TARGETS $STAGE_DEP_TARGETS 2>&1 | tee .lake/dryrun-build.log
+          lake build $STAGE_TARGETS $STAGE_DEP_TARGETS 2>&1 | tee .lake/lake-build.log
           echo "::group::build summary"
-          echo "Built (compiled fresh):   $(grep -cE '^✔.*Built '    .lake/dryrun-build.log || true)"
-          echo "Replayed (from cache):    $(grep -cE '^✔.*Replayed ' .lake/dryrun-build.log || true)"
+          echo "Built (pipeline ran):    $(grep -cE '^✔.*Built '    .lake/lake-build.log || true)"
+          echo "Replayed (from cache):   $(grep -cE '^✔.*Replayed ' .lake/lake-build.log || true)"
           echo "::endgroup::"
 
       - name: Emit mappings for stage targets + deps
@@ -399,7 +405,7 @@ jobs:
         run: |
           cd pr-branch
           lake build $STAGE_TARGETS 2>&1 | tee .lake/consume-build.log
-          echo "Built (compiled fresh):  $(grep -cE '^✔.*Built '    .lake/consume-build.log || true)"
+          echo "Built (pipeline ran):    $(grep -cE '^✔.*Built '    .lake/consume-build.log || true)"
           echo "Replayed (from cache):   $(grep -cE '^✔.*Replayed ' .lake/consume-build.log || true)"
 
       - name: Verify with --rehash
