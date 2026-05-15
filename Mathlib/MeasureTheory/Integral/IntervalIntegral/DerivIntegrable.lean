@@ -137,7 +137,8 @@ theorem MonotoneOn.intervalIntegral_deriv_mem_uIcc {f : ℝ → ℝ} {a b : ℝ}
     convert ebound using 1
     refine intervalIntegral.integral_congr_uIoo ?_
     rw [uIoo_of_le hab]
-    intro x hx; exact Eq.symm <| abs_eq_self.mpr <| f_deriv_nonneg hx
+    intro x hx
+    exact Eq.symm <| abs_eq_self.mpr <| f_deriv_nonneg hx
 
 /-- If `f` has bounded variation on `uIcc a b`, then `f'` is interval integrable on `a..b`. -/
 theorem BoundedVariationOn.intervalIntegrable_deriv {f : ℝ → ℝ} {a b : ℝ}
