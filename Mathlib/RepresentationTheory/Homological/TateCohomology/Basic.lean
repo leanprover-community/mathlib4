@@ -58,15 +58,7 @@ lemma tateNorm_hom_apply (M : Rep R G) (x : (Fin 0 → G) →₀ ↑M.V) (y : Fi
 lemma Rep.tateNorm_eq (M : Rep R G) :
     M.tateNorm = ModuleCat.ofHom (Finsupp.lsum R fun _ ↦ LinearMap.pi fun _ ↦ M.ρ.norm) := by
   ext
-  simp only [tateNorm, chainsIso₀, LinearEquiv.toModuleIso_hom, cochainsIso₀,
-    LinearEquiv.toModuleIso_inv, ModuleCat.hom_comp, ConcreteCategory.hom_ofHom, LinearMap.coe_comp,
-    LinearEquiv.coe_coe, LinearEquiv.funUnique_symm_apply,
-    Representation.IntertwiningMap.coe_toLinearMap, Function.comp_apply, Finsupp.lsingle_apply,
-    Finsupp.LinearEquiv.finsuppUnique_apply, norm_apply, AddEquiv.funUnique_symm_apply,
-    Finsupp.lsum_comp_lsingle, LinearMap.pi_apply]
-  congr
-  simp only [Finsupp.single_apply, ite_eq_left_iff]
-  exact fun h ↦ False.elim <| h <| Unique.eq_default _
+  simp_all [tateNorm, chainsIso₀, cochainsIso₀, Unique.eq_default]
 
 @[reassoc (attr := simp), elementwise]
 lemma Rep.norm_comp_d_eq_zero (M : Rep R G) : M.norm.toModuleCatHom ≫ d₀₁ M = 0 := by
