@@ -467,30 +467,21 @@ theorem leviCivitaConnection_apply [FiniteDimensional ℝ E] {x : M}
     inner ℝ (LeviCivitaConnection I M Y x (X x)) (Z x) = leviCivitaRhs I X Y Z x :=
   lcAux_apply _ hX hY hZ
 
--- Side computation for `leviCivitaConnection_isCompatible`.
-omit [IsManifold I 2 M] in
-lemma leviCivitaConnection_isCompatible_aux
-    {x : M} {X Y Z : (x : M) → TangentSpace I x} :
-    leviCivitaRhs I X Y Z x + leviCivitaRhs I X Z Y x =
-    extDerivFun% (fun x ↦ inner ℝ (Y x) (Z x)) x (X x) := by
+-- Why is everything so slow?
+lemma leviCivitaConnection_isCompatible [FiniteDimensional ℝ E] :
+    (LeviCivitaConnection I M).IsCompatible := by
+  rw [isCompatible_iff]
+  intro x X Y Z hX hY hZ
   -- Normalise the expressions by swapping arguments for rhs_aux and mlieBracket,
   -- until the swappable arguments are in order X < Y < Z.
-  simp [leviCivitaRhs,
+  simp (disch := assumption) [leviCivitaConnection_apply, leviCivitaRhs,
+    real_inner_comm _ (Y x),
     rhs_aux_swap I Z Y, rhs_aux_swap I Z X, rhs_aux_swap I Y X,
     mlieBracket_swap (V := Z) (W := Y),
     mlieBracket_swap (V := Y) (W := X),
     mlieBracket_swap (V := Z) (W := X)]
   -- Observe that the right hand side is rhx_aux X Y Z; then we just need to simplify and rearrange.
   ring
-
--- Why is everything so slow?
-lemma leviCivitaConnection_isCompatible [FiniteDimensional ℝ E] :
-    (LeviCivitaConnection I M).IsCompatible := by
-  rw [isCompatible_iff]
-  intro x X Y Z hX hY hZ
-  dsimp
-  rw [leviCivitaConnection_apply I hX hY hZ, real_inner_comm,
-    leviCivitaConnection_apply I hX hZ hY, leviCivitaConnection_isCompatible_aux]
 
 lemma leviCivitaConnection_torsion_eq_zero [FiniteDimensional ℝ E] :
     (LeviCivitaConnection I M).torsion = 0 := by
