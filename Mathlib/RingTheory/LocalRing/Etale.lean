@@ -75,9 +75,11 @@ lemma adjoin_residue_eq_top_iff_adjoin_eq_top [Algebra.FormallyUnramified R S] (
     refine Submodule.mem_sup.mpr ⟨aeval β q, ?_, s - aeval β q, ?_, by ring⟩
     · rw [adjoin_singleton_eq_range_aeval]; exact ⟨q, rfl⟩
     · rw [Algebra.FormallyUnramified.map_maximalIdeal, Submodule.restrictScalars_mem,
-        ← Ideal.Quotient.eq]
-      erw [map_aeval_eq_aeval_map (ψ := residue S) (φ := residue R) rfl]
-      exact hp.symm
+        ← Ideal.Quotient.eq,
+        map_aeval_eq_aeval_map (ψ := Ideal.Quotient.mk (maximalIdeal S))
+          (φ := Ideal.Quotient.mk (maximalIdeal R)) rfl]
+      repeat rw [← residue_apply, ← residue_eq_quotient]
+      erw [hp]
   · intro hβ_gen
     rw [Algebra.adjoin_singleton_eq_range_aeval, AlgHom.range_eq_top] at *
     intro x

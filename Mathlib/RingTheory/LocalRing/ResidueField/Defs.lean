@@ -36,4 +36,9 @@ noncomputable instance ResidueField.field : Field (ResidueField R) :=
 def residue : R →+* ResidueField R :=
   Ideal.Quotient.mk _
 
+lemma residue_apply (a : R) : residue R a = Ideal.Quotient.mk _ a := by
+  rfl
+
+lemma residue_eq_quotient : residue R = Ideal.Quotient.mk _ := by rfl
+
 end IsLocalRing
