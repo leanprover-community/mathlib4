@@ -3,14 +3,18 @@ Copyright (c) 2026 Tomas Skrivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan
 -/
+module
 
-import Lean
+public meta import Lean
 
 /-!
 # Tactic `run_auto_param` is designed to solve goals in the form `autoParam P tac` by executing
 tactic `tac` on the goal `P`. It is mainly meant to be used as a discharger for other tactics like
 `simp` or `fun_prop`.
 -/
+
+public meta section
+
 open Lean Meta Elab Tactic
 
 namespace Mathlib.Meta
