@@ -714,7 +714,8 @@ lemma bar [ContinuousSMul 𝕜 F] {u : E →L[𝕜] F} (E₁ : Submodule 𝕜 E)
   · refine F₁_coFG.of_le fun x hx => ⟨(u.restrict h_mapsto).inverse ⟨x, hx⟩, ?_⟩
     rw [ContinuousLinearMap.coe_coe, ← ContinuousLinearMap.coe_restrict_apply
       h_mapsto ((u.restrict h_mapsto).inverse ⟨x, hx⟩), h_inv.self_apply_inverse]
-  · exact fooo E₁ F₁ E₁_closed F₁_closed E₁_coFG F₁_coFG h_mapsto h_inv
+  · exact ContinuousLinearMap.ker_closedComplemented_of_isInvertible_restrict
+      E₁ F₁ E₁_closed E₁_coFG h_mapsto h_inv
 
 /- ## Glue together the equivalence (Anatole) -/
 
