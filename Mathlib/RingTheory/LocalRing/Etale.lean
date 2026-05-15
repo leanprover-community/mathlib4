@@ -75,15 +75,14 @@ lemma adjoin_residue_eq_top_iff_adjoin_eq_top [Algebra.FormallyUnramified R S] (
     refine Submodule.mem_sup.mpr ⟨aeval β q, ?_, s - aeval β q, ?_, by ring⟩
     · rw [adjoin_singleton_eq_range_aeval]; exact ⟨q, rfl⟩
     · rw [Algebra.FormallyUnramified.map_maximalIdeal, Submodule.restrictScalars_mem,
-        ← Ideal.Quotient.eq,
-        map_aeval_eq_aeval_map (ψ := Ideal.Quotient.mk (maximalIdeal S))
-          (φ := Ideal.Quotient.mk (maximalIdeal R)) rfl]
-      repeat rw [← residue_apply, ← residue_eq_quotient]
-      erw [hp]
+        ← Ideal.Quotient.eq]
+      -- def eq abuse since IsLocalRing.residue needs to be an abbrev
+      rw [← map_aeval_eq_aeval_map (ψ := residue S) (φ := residue R) rfl] at hp
+      exact hp.symm
   · intro hβ_gen
     rw [Algebra.adjoin_singleton_eq_range_aeval, AlgHom.range_eq_top] at *
     intro x
-    obtain ⟨s, rfl⟩ := IsLocalRing.residue_surjective (R := S) x
+    obtain ⟨s, rfl⟩ := residue_surjective (R := S) x
     obtain ⟨p, rfl⟩ := hβ_gen s
     exact ⟨p.map (residue R), by
       rw [← map_aeval_eq_aeval_map (ψ := residue S) (φ := residue R) rfl p β]⟩
@@ -110,7 +109,7 @@ lemma finrank_eq_finrank_residueField [Algebra.Etale R S] :
       Algebra.FormallyUnramified.map_maximalIdeal (R := R) (S := S)).toAddEquiv
     ?_
   · rw [← finrank_quotient_map (R := R) (S := S)]
-    exact e.finrank_eq
+    exact e.finrank_eq -- again IsLocalRing.residue should be abbrev
   · intro r x
     obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective r
     obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
