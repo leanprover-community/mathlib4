@@ -591,10 +591,6 @@ theorem surjective_to_subsingleton [na : Nonempty α] [Subsingleton β] (f : α 
     Surjective f :=
   fun _ ↦ let ⟨a⟩ := na; ⟨a, Subsingleton.elim _ _⟩
 
-theorem bijective_of_subsingleton' [Nonempty α] [Subsingleton α] [Subsingleton β] (f : α → β) :
-    Function.Bijective f :=
-  ⟨f.injective_of_subsingleton, f.surjective_to_subsingleton⟩
-
 theorem Surjective.piMap {ι : Sort*} {α β : ι → Sort*} {f : ∀ i, α i → β i}
     (hf : ∀ i, Surjective (f i)) : Surjective (Pi.map f) := fun g ↦
   ⟨fun i ↦ surjInv (hf i) (g i), funext fun _ ↦ rightInverse_surjInv _ _⟩

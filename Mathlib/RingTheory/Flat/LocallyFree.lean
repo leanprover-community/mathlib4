@@ -5,7 +5,6 @@ Authors: Yongle Hu
 -/
 module
 
-public import Mathlib.RingTheory.Flat.Localization
 public import Mathlib.RingTheory.PicardGroup
 public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 
