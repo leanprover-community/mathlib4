@@ -44,18 +44,22 @@ public section parsers
 /-! The "inlinable" parsers in this section exist to enable syntax quotations, which help with
 constructing and processing these later. -/
 
-/-- An unambiguous rendering of the result of `open ns renaming from → to, ...` and
-`open ns (id₁ id₂ ...)`, which both do not record `ns`, but only the mapping from unresolved
-identifier to fully resolved name(s). -/
-syntax reifiedExplicitOpenStx := ident " → " ident
+/-- `(from → @fullyResolvedName)` in reified `open` syntax unambiguously represents the result of
+ordinary Lean syntax of the form `open ns renaming from → to, ...` and `open ns (id₁ id₂ ...)`.
+Internally, both of these produce the same kind of effect: they record mapping(s) from an
+unresolved identifier to a fully resolved name. (`ns` is not directly recorded in this mapping.) -/
+syntax reifiedExplicitOpenStx := ident " → " &"@" noWs ident
 syntax reifiedSimpleOpenIdent := &"@" noWs ident
 syntax reifiedSimpleOpenHidingStx := &"@" noWs ident " hiding " ident*
 syntax reifiedOpenDecl := ppSpace colGt
   (reifiedSimpleOpenIdent <|> ("(" reifiedSimpleOpenHidingStx <|> reifiedExplicitOpenStx ")"))
 /-- Renders the result of `open` by prefixing identifiers with `@` to indicate that this syntax
-only renders fully-resolved namespaces. Surrounded by `()` when `hiding` is present. Uses `→` to
-render the mappings produced by `open ns renaming from → to, ...` and
-`open ns (id₁ id₂ ...)`. -/
+only renders fully-resolved namespaces and identifiers. (Surrounded by `()` when `hiding` is
+present.)
+
+Uses `(... → @...)` to render the mappings produced by ordinary Lean syntax such as
+`open ns renaming from → to, ...` and `open ns (id₁ id₂ ...)`, which internally both produce the
+same sort of mapping(s) from an unresolved identifier to a fully-resolved name. -/
 syntax reifiedOpenStx := withPosition(
   atomic("open" notFollowedBy("scoped")) ppIndent(reifiedOpenDecl*))
 
@@ -153,33 +157,30 @@ end header
 
 section openDecls
 
-/-- Lean may duplicate open declarations occasionally due to leanprover/lean4#13353. This function
-deduplicates exactly-duplicated `OpenDecl`s by removing the later occurrences. -/
-@[inline] private def deduplicateOpenDecls (openDecls : List OpenDecl) : List OpenDecl :=
-  /- Note that the innermost openDecls come first and affect name resolution first due to
-  `eraseDups` affecting resolved ids by first occurrence (corresponding to later occurrences in
-  openDecls) -/
-  -- TODO: find something more efficient, which means basically just about anything else.
-  openDecls.reverse.eraseDups.reverse
-
 /-- Convert `OpenDecl`s into reified `open @id₁ @id₂ ...` syntax. -/
 def reifyOpenDecls {m} [Monad m] [MonadQuotation m] (openDecls : List OpenDecl) (dedup := true) :
     m (Option (TSyntax ``reifiedOpenStx)) := do
-  let openDecls := if dedup then deduplicateOpenDecls openDecls else openDecls
+  if openDecls.isEmpty then return none
+  /- The outermost elements of `openDecls` are the most recent, and should come last in an `open` -/
+  let revOpenDecls := openDecls.reverse
+  /- Lean may duplicate open declarations occasionally due to leanprover/lean4#13353. This function
+  deduplicates exactly-duplicated `OpenDecl`s by removing the later occurrences.
+
+  The innermost elements of `openDecls` actually affect name resolution first, so we want to keep
+  the first instances of duplicate elements in `revOpenDecls`, not in `openDecls`. -/
+  -- TODO: consider a better approach than `eraseDups` if possible
+  let revOpenDecls := if dedup then revOpenDecls.eraseDups else revOpenDecls
   -- Note that the last element of `openDecls` becomes the first element of `reifiedOpens`,
   -- since the outermost `OpenDecl` is the most recent.
-  let mut reifiedOpens := []
-  for openDecl in openDecls do
+  let reifiedOpens ← revOpenDecls.toArray.mapM fun openDecl => do
     let reified ← match openDecl with
       | .explicit id declName =>
-        `(reifiedOpenDecl| ($(mkIdent id) → $(mkIdent declName)))
+        `(reifiedOpenDecl| ($(mkIdent id) → @$(mkIdent declName)))
       | .simple ns except =>
         if except.isEmpty then `(reifiedOpenDecl| @$(mkIdent ns)) else
           let except := except.toArray.map mkIdent
           `(reifiedOpenDecl| (@$(mkIdent ns) hiding $except*))
-    reifiedOpens := reified :: reifiedOpens
-  if reifiedOpens.isEmpty then return none else
-    `(reifiedOpenStx| open $reifiedOpens.toArray*)
+  `(reifiedOpenStx| open $reifiedOpens*)
 
 /-- Activates scopes associated with an `OpenDecl` as `open` would when creating that `OpenDecl`. -/
 def _root_.Lean.OpenDecl.activate {m : Type → Type}
