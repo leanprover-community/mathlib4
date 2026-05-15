@@ -126,6 +126,11 @@ def symmHomeomorph : I ≃ₜ I where
 
 theorem strictAnti_symm : StrictAnti σ := fun _ _ h ↦ sub_lt_sub_left (α := ℝ) h _
 
+/-- The midpoint of the unit interval. -/
+def half : I := ⟨1 / 2, by constructor <;> linarith⟩
+
+@[simp]
+theorem coe_half : (half : ℝ) = 1 / 2 := rfl
 
 @[simp]
 theorem symm_inj {i j : I} : σ i = σ j ↔ i = j := symm_bijective.injective.eq_iff
@@ -381,6 +386,12 @@ when we reassociate a convex combination.
 -/
 abbrev convexCombo_assoc_coeff₂ (s t : unitInterval) : unitInterval := s * t
 
+private theorem one_sub_mul_coe_ne_zero {s t : unitInterval}
+    (ht : (t : ℝ) ≠ 1) : (1 - s * t : ℝ) ≠ 0 := by
+  intro h
+  have : 1 ≤ (t : ℝ) := by nlinarith [s.2.2, t.2.1]
+  grind
+
 theorem convexCombo_assoc {a b : ℝ} (x y z : Icc a b) (s t : unitInterval) :
     convexCombo x (convexCombo y z t) s =
       convexCombo (convexCombo x y (convexCombo_assoc_coeff₁ s t)) z
@@ -390,16 +401,12 @@ theorem convexCombo_assoc {a b : ℝ} (x y z : Icc a b) (s t : unitInterval) :
   · simp only [hs]
     by_cases ht : (t : ℝ) = 1
     · simp [ht]
-    · have : (1 - t : ℝ) ≠ 0 := by grind
+    · have h1t : (1 - t : ℝ) ≠ 0 := by grind
       field_simp
-      simp
+      ring
   · by_cases ht : (t : ℝ) = 1
     · simp [ht]
-    · have : (1 - s * t : ℝ) ≠ 0 := by
-        intro h
-        have : 1 ≤ (t : ℝ) := by nlinarith [s.2.2, t.2.1]
-        grind
-      field_simp
+    · field_simp [one_sub_mul_coe_ne_zero ht]
       ring_nf
 
 /--
@@ -424,7 +431,6 @@ theorem convexCombo_assoc' {a b : ℝ} (x y z : Icc a b) (s t : unitInterval) :
     ← convexCombo_symm z y]
   rw [convexCombo_assoc_coeff₁', convexCombo_assoc_coeff₂', unitInterval.symm_symm]
 
-set_option backward.privateInPublic true in
 private theorem eq_convexCombo.zero_le {a b : ℝ} {x y z : Icc a b} (hxy : x ≤ y) (hyz : y ≤ z) :
     0 ≤ ((y - x) / (z - x) : ℝ) := by
   by_cases h : (z - x : ℝ) = 0
@@ -433,7 +439,6 @@ private theorem eq_convexCombo.zero_le {a b : ℝ} {x y z : Icc a b} (hxy : x �
     replace hyz : (y : ℝ) ≤ (z : ℝ) := hyz
     apply div_nonneg <;> grind
 
-set_option backward.privateInPublic true in
 private theorem eq_convexCombo.le_one {a b : ℝ} {x y z : Icc a b} (hxy : x ≤ y) (hyz : y ≤ z) :
     ((y - x) / (z - x) : ℝ) ≤ 1 := by
   by_cases h : (z - x : ℝ) = 0
@@ -442,15 +447,14 @@ private theorem eq_convexCombo.le_one {a b : ℝ} {x y z : Icc a b} (hxy : x ≤
     replace hyz : (y : ℝ) ≤ (z : ℝ) := hyz
     apply div_le_one_of_le₀ <;> grind
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /--
 A point between two points in a closed interval
 can be expressed as a convex combination of them.
 -/
 theorem eq_convexCombo {a b : ℝ} {x y z : Icc a b} (hxy : x ≤ y) (hyz : y ≤ z) :
     y = convexCombo x z ⟨((y - x) / (z - x)),
-          eq_convexCombo.zero_le hxy hyz, eq_convexCombo.le_one hxy hyz⟩ := by
+          by exact eq_convexCombo.zero_le hxy hyz,
+          by exact eq_convexCombo.le_one hxy hyz⟩ := by
   ext
   simp only [coe_convexCombo]
   by_cases h : (z - x : ℝ) = 0
@@ -475,7 +479,8 @@ lemma exists_monotone_Icc_subset_open_cover_Icc {ι} {a b : ℝ} (h : a ≤ b) {
   refine ⟨addNSMul h (δ/2), addNSMul_zero h,
     monotone_addNSMul h hδ.le, addNSMul_eq_right h hδ, fun n ↦ ?_⟩
   obtain ⟨i, hsub⟩ := ball_subset (addNSMul h (δ / 2) n) trivial
-  exact ⟨i, fun t ht ↦ hsub ((abs_sub_addNSMul_le h hδ.le n ht).trans_lt <| half_lt_self δ_pos)⟩
+  refine ⟨i, fun t ht ↦ hsub <| Metric.mem_ball.mpr ?_⟩
+  exact (abs_sub_addNSMul_le h hδ.le n ht).trans_lt <| half_lt_self δ_pos
 
 /-- Any open cover of the unit interval can be refined to a finite partition into subintervals. -/
 lemma exists_monotone_Icc_subset_open_cover_unitInterval {ι} {c : ι → Set I}
@@ -491,12 +496,39 @@ lemma exists_monotone_Icc_subset_open_cover_unitInterval_prod_self {ι} {c : ι 
   obtain ⟨δ, δ_pos, ball_subset⟩ := lebesgue_number_lemma_of_metric isCompact_univ hc₁ hc₂
   have hδ := half_pos δ_pos
   simp_rw [Subtype.ext_iff]
-  have h : (0 : ℝ) ≤ 1 := zero_le_one
-  refine ⟨addNSMul h (δ/2), addNSMul_zero h,
-    monotone_addNSMul h hδ.le, addNSMul_eq_right h hδ, fun n m ↦ ?_⟩
-  obtain ⟨i, hsub⟩ := ball_subset (addNSMul h (δ / 2) n, addNSMul h (δ / 2) m) trivial
-  exact ⟨i, fun t ht ↦ hsub (Metric.mem_ball.mpr <| (max_le (abs_sub_addNSMul_le h hδ.le n ht.1) <|
-    abs_sub_addNSMul_le h hδ.le m ht.2).trans_lt <| half_lt_self δ_pos)⟩
+  refine ⟨addNSMul zero_le_one (δ/2), addNSMul_zero zero_le_one,
+    monotone_addNSMul zero_le_one hδ.le,
+    addNSMul_eq_right zero_le_one hδ, fun n m ↦ ?_⟩
+  obtain ⟨i, hsub⟩ := ball_subset
+    (addNSMul zero_le_one (δ / 2) n, addNSMul zero_le_one (δ / 2) m) trivial
+  refine ⟨i, fun t ht ↦ hsub <| Metric.mem_ball.mpr ?_⟩
+  refine (max_le (abs_sub_addNSMul_le zero_le_one hδ.le n ht.1)
+    (abs_sub_addNSMul_le zero_le_one hδ.le m ht.2)).trans_lt <| half_lt_self δ_pos
+
+/-- Finite-`Fin` partition variant: Any open cover of `[a, b]` can be refined to a monotone
+partition indexed by `Fin (n + 1)`. -/
+lemma exists_monotone_partition_Icc {ι} {a b : ℝ} (h : a ≤ b) {c : ι → Set (Icc a b)}
+    (hc₁ : ∀ i, IsOpen (c i)) (hc₂ : univ ⊆ ⋃ i, c i) :
+    ∃ (n : ℕ) (t : Fin (n + 1) → Icc a b),
+      Monotone t ∧ t 0 = a ∧ t (Fin.last n) = b ∧
+      ∀ i : Fin n, ∃ j : ι, Icc (t i.castSucc) (t i.succ) ⊆ c j := by
+  obtain ⟨t, ht0, ht_mono, ⟨N, hN⟩, ht_cover⟩ :=
+    exists_monotone_Icc_subset_open_cover_Icc h hc₁ hc₂
+  refine ⟨N, fun k ↦ t (k : ℕ), fun _ _ hij ↦ ht_mono hij, ?_, ?_, fun i ↦ ?_⟩
+  · simpa using ht0
+  · simpa using hN N le_rfl
+  · obtain ⟨j, hj⟩ := ht_cover i
+    exact ⟨j, by simpa [Fin.val_succ, Fin.val_castSucc] using hj⟩
+
+/-- Finite-`Fin` partition variant for the unit interval. -/
+lemma exists_monotone_partition_unitInterval {ι} {c : ι → Set I}
+    (hc₁ : ∀ i, IsOpen (c i)) (hc₂ : univ ⊆ ⋃ i, c i) :
+    ∃ (n : ℕ) (t : Fin (n + 1) → I),
+      Monotone t ∧ t 0 = 0 ∧ t (Fin.last n) = 1 ∧
+      ∀ i : Fin n, ∃ j : ι, Icc (t i.castSucc) (t i.succ) ⊆ c j := by
+  obtain ⟨N, t, ht_mono, ht0, htN, ht_cover⟩ :=
+    exists_monotone_partition_Icc zero_le_one hc₁ hc₂
+  exact ⟨N, t, ht_mono, Subtype.ext ht0, Subtype.ext htN, ht_cover⟩
 
 end partition
 

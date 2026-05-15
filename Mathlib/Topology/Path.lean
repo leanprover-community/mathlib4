@@ -369,11 +369,30 @@ theorem map_id (γ : Path x y) : γ.map continuous_id = γ := by
   rfl
 
 @[simp]
+theorem map_refl {f : X → Y} (hf : Continuous f) (x : X) :
+    (Path.refl x).map hf = Path.refl (f x) := rfl
+
+@[simp]
 theorem map_map (γ : Path x y) {Z : Type*} [TopologicalSpace Z]
     {f : X → Y} (hf : Continuous f) {g : Y → Z} (hg : Continuous g) :
     (γ.map hf).map hg = γ.map (hg.comp hf) := by
   ext
   rfl
+
+/-- Restrict a path to a subspace when its range is contained in that subspace. -/
+def codRestrict {s : Set X} {x y : s} (γ : Path x.val y.val) (hmem : ∀ t, γ t ∈ s) :
+    Path x y where
+  toFun := s.codRestrict γ hmem
+  continuous_toFun := γ.continuous.codRestrict hmem
+  source' := Subtype.ext γ.source
+  target' := Subtype.ext γ.target
+
+@[simp]
+theorem codRestrict_coe {s : Set X} {x y : s} (γ : Path x.val y.val) (hmem : ∀ t, γ t ∈ s) (t : I) :
+    (γ.codRestrict hmem t : X) = γ t := rfl
+
+theorem map_codRestrict {s : Set X} {x y : s} (γ : Path x.val y.val) (hmem : ∀ t, γ t ∈ s) :
+    (γ.codRestrict hmem).map continuous_subtype_val = γ := rfl
 
 /-- Casting a path from `x` to `y` to a path from `x'` to `y'` when `x' = x` and `y' = y` -/
 def cast (γ : Path x y) {x' y'} (hx : x' = x) (hy : y' = y) : Path x' y' where
@@ -383,6 +402,17 @@ def cast (γ : Path x y) {x' y'} (hx : x' = x) (hy : y' = y) : Path x' y' where
   target' := by simp [hy]
 
 @[simp] theorem cast_rfl_rfl (γ : Path x y) : γ.cast rfl rfl = γ := rfl
+
+@[simp] theorem cast_cast {x y x' y' x'' y'' : X}
+    (γ : Path x y) (hx : x' = x) (hy : y' = y) (hx' : x'' = x') (hy' : y'' = y') :
+    (γ.cast hx hy).cast hx' hy' = γ.cast (hx'.trans hx) (hy'.trans hy) := by
+  subst_vars
+  rfl
+
+@[simp] theorem cast_refl {x y : X} (h : y = x) :
+    (Path.refl x).cast h h = Path.refl y := by
+  subst_vars
+  rfl
 
 @[simp]
 theorem cast_symm {a₁ a₂ b₁ b₂ : X} (γ : Path a₂ b₂) (ha : a₁ = a₂) (hb : b₁ = b₂) :
@@ -654,5 +684,46 @@ theorem refl_reparam {f : I → I} (hfcont : Continuous f) (hf₀ : f 0 = 0) (hf
     (refl x).reparam f hfcont hf₀ hf₁ = refl x := by
   ext
   simp
+
+/-! ### Partitioning paths using Lebesgue numbers -/
+
+/-- Generic Lebesgue partition lemma for paths: Given an open cover of a path's range,
+there exists a finite partition of [0,1] such that each segment lies entirely in one set
+from the cover. -/
+theorem exists_partition_in_cover
+    {ι : Type*} (U : ι → Set X) (hU_open : ∀ i, IsOpen (U i))
+    {x y : X} (γ : Path x y) (hU_cover : ∀ s : unitInterval, ∃ i, γ s ∈ U i) :
+    ∃ (n : ℕ) (t : Fin (n + 1) → unitInterval),
+      Monotone t ∧ t 0 = 0 ∧ t (Fin.last n) = 1 ∧
+      (∀ i : Fin n, ∃ j : ι,
+        ∀ s : unitInterval, (t i.castSucc : ℝ) ≤ s ∧ s ≤ (t i.succ : ℝ) → γ s ∈ U j) := by
+  -- Pull back the cover along `γ`; the result is an open cover of `unitInterval`.
+  obtain ⟨n, t, ht_mono, ht0, htn, ht_cover⟩ :=
+    exists_monotone_partition_unitInterval
+      (fun i ↦ (hU_open i).preimage γ.continuous)
+      (fun s _ ↦ by
+        obtain ⟨i, hi⟩ := hU_cover s
+        exact Set.mem_iUnion.2 ⟨i, hi⟩)
+  refine ⟨n, t, ht_mono, ht0, htn, fun i ↦ ?_⟩
+  obtain ⟨j, hj⟩ := ht_cover i
+  exact ⟨j, fun s hs ↦ hj ⟨hs.1, hs.2⟩⟩
+
+/-- Generic Lebesgue partition lemma for paths, neighborhood version: If every point on a path
+has a neighborhood with property P, then there exists a partition such that each segment lies
+in an open set with property P. This follows immediately from the cover version. -/
+theorem exists_partition_with_property {x y : X} (γ : Path x y) (P : Set X → Prop)
+    (h : ∀ z ∈ Set.range γ, ∃ U : Set X, IsOpen U ∧ z ∈ U ∧ P U) :
+    ∃ (n : ℕ) (t : Fin (n + 1) → unitInterval),
+      Monotone t ∧ t 0 = 0 ∧ t (Fin.last n) = 1 ∧
+      (∀ i : Fin n, ∃ U : Set X, IsOpen U ∧ P U ∧
+        ∀ s : unitInterval, (t i.castSucc : ℝ) ≤ s ∧ s ≤ (t i.succ : ℝ) → γ s ∈ U) := by
+  choose U hU_open hU_mem hU_P using h
+  obtain ⟨n, t, h_mono, h_start, h_end, h_segments⟩ :=
+    exists_partition_in_cover (fun z : Set.range γ ↦ U z.val z.property)
+      (fun z ↦ hU_open z.val z.property) γ fun s ↦
+        ⟨⟨γ s, ⟨s, rfl⟩⟩, hU_mem (γ s) ⟨s, rfl⟩⟩
+  refine ⟨n, t, h_mono, h_start, h_end, fun i ↦ ?_⟩
+  obtain ⟨⟨z, hz⟩, h_seg⟩ := h_segments i
+  exact ⟨U z hz, hU_open z hz, hU_P z hz, h_seg⟩
 
 end Path

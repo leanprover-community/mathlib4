@@ -101,7 +101,7 @@ theorem transReflReparamAux_one : transReflReparamAux 1 = 1 := by
 
 theorem trans_refl_reparam (p : Path x₀ x₁) :
     p.trans (Path.refl x₁) =
-      p.reparam (fun t => ⟨transReflReparamAux t, transReflReparamAux_mem_I t⟩) (by fun_prop)
+      p.reparam (fun t ↦ ⟨transReflReparamAux t, transReflReparamAux_mem_I t⟩) (by fun_prop)
         (Subtype.ext transReflReparamAux_zero) (Subtype.ext transReflReparamAux_one) := by
   ext
   unfold transReflReparamAux
@@ -110,7 +110,7 @@ theorem trans_refl_reparam (p : Path x₀ x₁) :
 
 /-- For any path `p` from `x₀` to `x₁`, we have a homotopy from `p.trans (Path.refl x₁)` to `p`. -/
 def transRefl (p : Path x₀ x₁) : Homotopy (p.trans (Path.refl x₁)) p :=
-  ((Homotopy.reparam p (fun t => ⟨transReflReparamAux t, transReflReparamAux_mem_I t⟩)
+  ((Homotopy.reparam p (fun t ↦ ⟨transReflReparamAux t, transReflReparamAux_mem_I t⟩)
           (by fun_prop) (Subtype.ext transReflReparamAux_zero)
           (Subtype.ext transReflReparamAux_one)).cast
       rfl (trans_refl_reparam p).symm).symm
@@ -146,7 +146,7 @@ theorem transAssocReparamAux_one : transAssocReparamAux 1 = 1 := by
 theorem trans_assoc_reparam {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : Path x₁ x₂) (r : Path x₂ x₃) :
     (p.trans q).trans r =
       (p.trans (q.trans r)).reparam
-        (fun t => ⟨transAssocReparamAux t, transAssocReparamAux_mem_I t⟩) (by fun_prop)
+        (fun t ↦ ⟨transAssocReparamAux t, transAssocReparamAux_mem_I t⟩) (by fun_prop)
         (Subtype.ext transAssocReparamAux_zero) (Subtype.ext transAssocReparamAux_one) := by
   ext x
   simp only [transAssocReparamAux, Path.trans_apply, Function.comp_apply, Path.coe_reparam]
@@ -160,7 +160,7 @@ theorem trans_assoc_reparam {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : 
 def transAssoc {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : Path x₁ x₂) (r : Path x₂ x₃) :
     Homotopy ((p.trans q).trans r) (p.trans (q.trans r)) :=
   ((Homotopy.reparam (p.trans (q.trans r))
-          (fun t => ⟨transAssocReparamAux t, transAssocReparamAux_mem_I t⟩) (by fun_prop)
+          (fun t ↦ ⟨transAssocReparamAux t, transAssocReparamAux_mem_I t⟩) (by fun_prop)
           (Subtype.ext transAssocReparamAux_zero) (Subtype.ext transAssocReparamAux_one)).cast
       rfl (trans_assoc_reparam p q r).symm).symm
 
@@ -178,6 +178,28 @@ theorem trans_refl (p : Path x₀ x₁) :
     (p.trans (Path.refl x₁)).Homotopic p :=
   ⟨Homotopy.transRefl p⟩
 
+theorem refl_cast_trans {x₀ x₀' x₁ x₂ : X} (p : Path x₁ x₂) (hx : x₀' = x₀) (hy : x₁ = x₀) :
+    (((Path.refl x₀).cast hx hy).trans p).Homotopic (p.cast (hx.trans hy.symm) rfl) := by
+  subst hx
+  subst hy
+  simpa using refl_trans _
+
+theorem trans_refl_cast {x₀ x₁ x₁' x₂ : X} (p : Path x₀ x₁) (hx : x₁ = x₂) (hy : x₁' = x₂) :
+    (p.trans ((Path.refl x₂).cast hx hy)).Homotopic (p.cast rfl (hy.trans hx.symm)) := by
+  subst hx
+  subst hy
+  simpa using trans_refl _
+
+/-- Composing on the left with a null-homotopic loop does not change the homotopy class. -/
+theorem trans_left_of_nullhomotopic {γ₀ : Path x₀ x₀} {γ₁ : Path x₀ x₁}
+    (hγ₀ : γ₀.Homotopic (Path.refl x₀)) : (γ₀.trans γ₁).Homotopic γ₁ :=
+  (hcomp hγ₀ (.refl γ₁)).trans (refl_trans γ₁)
+
+/-- Composing on the right with a null-homotopic loop does not change the homotopy class. -/
+theorem trans_right_of_nullhomotopic {γ₀ : Path x₀ x₁} {γ₁ : Path x₁ x₁}
+    (hγ₁ : γ₁.Homotopic (Path.refl x₁)) : (γ₀.trans γ₁).Homotopic γ₀ :=
+  (hcomp (.refl γ₀) hγ₁).trans (trans_refl γ₀)
+
 theorem trans_symm (p : Path x₀ x₁) :
     (p.trans p.symm).Homotopic (Path.refl x₀) :=
   ⟨(Homotopy.reflTransSymm p).symm⟩
@@ -189,6 +211,31 @@ theorem symm_trans (p : Path x₀ x₁) :
 theorem trans_assoc {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : Path x₁ x₂) (r : Path x₂ x₃) :
     ((p.trans q).trans r).Homotopic (p.trans (q.trans r)) :=
   ⟨Homotopy.transAssoc p q r⟩
+
+/-- If `γ.trans γ'.symm` is nullhomotopic, then `γ` and `γ'` are homotopic.
+This is the path-homotopy analogue of `a * b⁻¹ = 1 → a = b`. -/
+theorem of_trans_symm {γ γ' : Path x₀ x₁}
+    (h : (γ.trans γ'.symm).Homotopic (Path.refl x₀)) : γ.Homotopic γ' :=
+  (trans_refl γ).symm |>.trans <|
+  (hcomp (.refl γ) (symm_trans γ').symm) |>.trans <|
+  (trans_assoc γ γ'.symm γ').symm |>.trans <|
+  (hcomp h (.refl γ')) |>.trans <|
+  refl_trans γ'
+
+/-- All pairs of paths between the same endpoints with ranges in `U` are homotopic iff all loops
+in `U` are nullhomotopic. This is useful for characterizing semilocally simply connected spaces. -/
+theorem paths_homotopic_iff_loops_nullhomotopic {X : Type*} [TopologicalSpace X] (U : Set X) :
+    (∀ {u v : X} (γ γ' : Path u v), Set.range γ ⊆ U → Set.range γ' ⊆ U → γ.Homotopic γ') ↔
+    (∀ {u : X} (γ : Path u u), Set.range γ ⊆ U → γ.Homotopic (Path.refl u)) := by
+  refine ⟨fun hpaths u γ hγ ↦ ?_, fun hloops u v γ γ' hγ hγ' ↦ ?_⟩
+  · have hrefl : Set.range (Path.refl u) ⊆ U := by
+      simp only [Path.refl_range, Set.singleton_subset_iff]
+      exact hγ ⟨0, γ.source⟩
+    exact hpaths γ (Path.refl u) hγ hrefl
+  · have hloop : Set.range (γ.trans γ'.symm) ⊆ U := by
+      simp only [Path.trans_range, Path.symm_range, Set.union_subset_iff]
+      exact ⟨hγ, hγ'⟩
+    exact of_trans_symm (hloops (γ.trans γ'.symm) hloop)
 
 namespace Quotient
 
@@ -203,6 +250,22 @@ theorem trans_refl (γ : Homotopic.Quotient x₀ x₁) :
     trans γ (refl x₁) = γ := by
   induction γ using Quotient.ind with | mk γ =>
   simpa [← mk_trans, ← mk_refl, eq] using Homotopic.trans_refl γ
+
+@[simp]
+theorem refl_cast_trans {x₀ x₀' x₁ x₂ : X} (p : Homotopic.Quotient x₁ x₂)
+    (hx : x₀' = x₀) (hy : x₁ = x₀) :
+    trans ((refl x₀).cast hx hy) p = p.cast (hx.trans hy.symm) rfl := by
+  induction p using Quotient.ind with | mk p =>
+  simp only [← mk_trans, ← mk_refl, ← mk_cast, eq]
+  exact Homotopic.refl_cast_trans p hx hy
+
+@[simp]
+theorem trans_refl_cast {x₀ x₁ x₁' x₂ : X} (p : Homotopic.Quotient x₀ x₁)
+    (hx : x₁ = x₂) (hy : x₁' = x₂) :
+    trans p ((refl x₂).cast hx hy) = p.cast rfl (hy.trans hx.symm) := by
+  induction p using Quotient.ind with | mk p =>
+  simp only [← mk_trans, ← mk_refl, ← mk_cast, eq]
+  exact Homotopic.trans_refl_cast p hx hy
 
 @[simp, grind =]
 theorem trans_symm (γ : Homotopic.Quotient x₀ x₁) :
@@ -226,6 +289,15 @@ theorem trans_assoc {x₀ x₁ x₂ x₃ : X}
   induction γ₁ using Quotient.ind with | mk γ₁ =>
   induction γ₂ using Quotient.ind with | mk γ₂ =>
   simpa [← mk_trans, eq] using Homotopic.trans_assoc γ₀ γ₁ γ₂
+
+/-- If `trans γ (symm γ') = refl`, then `γ = γ'`.
+This is the quotient analogue of `a * b⁻¹ = 1 → a = b`. -/
+theorem of_trans_symm {γ γ' : Homotopic.Quotient x₀ x₁}
+    (h : trans γ (symm γ') = refl x₀) : γ = γ' := by
+  induction γ using Quotient.ind with | mk γ =>
+  induction γ' using Quotient.ind with | mk γ' =>
+  simp only [← mk_trans, ← mk_symm, ← mk_refl] at h
+  exact Quotient.sound (Homotopic.of_trans_symm (Quotient.exact h))
 
 end Quotient
 
