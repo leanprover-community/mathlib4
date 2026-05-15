@@ -834,8 +834,8 @@ lemma _root_.ENNReal.ne_zero_of_ge_one {p : ℝ≥0∞} (hp : 1 ≤ p) : p ≠ 0
   rw [hp]
   exact zero_lt_one' ℝ≥0∞
 
-lemma _root_.support_congr_of_ae_eq {α β : Type*} [MeasurableSpace α] [Zero β] {μ : Measure α}
-    {f g : α → β} (h : f =ᵐ[μ] g) :
+lemma _root_.support_congr_of_ae_eq {α β : Type*} [MeasurableSpace α] [Zero β]
+    {μ : Measure α} {f g : α → β} (h : f =ᵐ[μ] g) :
     Function.support f =ᵐ[μ] Function.support g := by
   filter_upwards [h] with x fg
   simp only [Function.support, ne_eq, eq_iff_iff]
