@@ -82,10 +82,7 @@ theorem closure_eq_zmultiples (a b : ℤ) :
       exact Int.mem_zmultiples_iff.mpr (Int.gcd_dvd_left a b)
     · rw [h1]
       exact Int.mem_zmultiples_iff.mpr (Int.gcd_dvd_right a b)
-  · apply AddSubgroup.zmultiples_le.mpr
-    apply AddSubgroup.mem_closure_pair.mpr
-    have key1 : a.gcd b = a * a.gcdA b + b * a.gcdB b := Int.gcd_eq_gcd_ab a b
-    rw [key1]
+  · rw [AddSubgroup.zmultiples_le, AddSubgroup.mem_closure_pair, Int.gcd_eq_gcd_ab]
     use a.gcdA b,  a.gcdB b
     simp [mul_comm]
 
