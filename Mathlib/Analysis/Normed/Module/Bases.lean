@@ -63,6 +63,7 @@ This file provides a unified structure `GeneralSchauderBasis` that captures both
 * `SchauderBasis.exists_norm_proj_le`: In a Banach space, the projections are uniformly bounded.
 * `UnconditionalSchauderBasis.exists_norm_proj_le`: For unconditional bases, projections
   onto all finite sets are uniformly bounded.
+
 ## References
 
 * [Albiac, Fernando. and Kalton, Nigel J., Topics in Banach Space Theory][Albiac_Kalton_2016].

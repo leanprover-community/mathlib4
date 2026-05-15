@@ -20,6 +20,7 @@ path products commute with path composition, and that projection is the inverse
 of products.
 
 ## Definitions
+
 ### General homotopies
 - `ContinuousMap.Homotopy.pi homotopies`: Let f and g be a family of functions
   indexed on I, such that for each i ∈ I, fᵢ and gᵢ are maps from A to Xᵢ.
