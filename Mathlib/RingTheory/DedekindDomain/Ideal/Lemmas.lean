@@ -510,6 +510,13 @@ theorem prime : Prime v.asIdeal := Ideal.prime_of_isPrime v.ne_bot v.isPrime
 instance : Coe (HeightOneSpectrum R) (Ideal R) where
   coe P := P.asIdeal
 
+omit [IsDedekindDomain R] in
+variable (R) in
+lemma asIdeal_injective : (fun v : HeightOneSpectrum R ↦ v.asIdeal).Injective :=
+  fun ⦃_ _⦄ h ↦ HeightOneSpectrum.ext h
+
+alias asIdeal_inj := HeightOneSpectrum.ext
+
 /--
 The (nonzero) prime elements of the monoid with zero `Ideal R` correspond
 to an element of type `HeightOneSpectrum R`.
