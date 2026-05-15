@@ -15,6 +15,7 @@ public import Mathlib.Analysis.SpecialFunctions.Log.Base
 
 /-!
 # Number field discriminant
+
 This file defines the discriminant of a number field.
 
 ## Main result

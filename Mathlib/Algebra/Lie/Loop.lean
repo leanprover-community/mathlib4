@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Polynomial.Laurent
 
 /-!
 # Loop Lie algebras and their central extensions
+
 Given a Lie algebra `L`, the loop algebra is the Lie algebra of maps from a circle into `L`. This
 can mean many different things, e.g., continuous maps, smooth maps, polynomial maps. In this file,
 we consider the simplest case of polynomial maps, meaning we take a base change with the ring of

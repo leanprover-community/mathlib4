@@ -17,6 +17,7 @@ public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Primitive roots in cyclotomic fields
+
 If `IsCyclotomicExtension {n} A B`, we define an element `zeta n A B : B` that is a primitive
 `n`th-root of unity in `B` and we study its properties. We also prove related theorems under the
 more general assumption of just being a primitive root, for reasons described in the implementation

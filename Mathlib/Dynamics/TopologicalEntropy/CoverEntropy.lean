@@ -12,6 +12,7 @@ public import Mathlib.Dynamics.TopologicalEntropy.DynamicalEntourage
 
 /-!
 # Topological entropy via covers
+
 We implement Bowen-Dinaburg's definitions of the topological entropy, via covers.
 
 All is stated in the vocabulary of uniform spaces. For compact spaces, the uniform structure

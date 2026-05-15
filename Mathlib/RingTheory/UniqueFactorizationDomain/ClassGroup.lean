@@ -9,6 +9,7 @@ public import Mathlib.RingTheory.ClassGroup
 
 /-!
 # The class group of a Unique Factorization Domain is trivial
+
 This file proves that the ideal class group of a Normalized GCD Domain is trivial.
 The main application is to Unique Factorization Domains,
 which are known to be Normalized GCD Domains.

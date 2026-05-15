@@ -15,6 +15,7 @@ public import Mathlib.RingTheory.HahnSeries.Addition
 
 /-!
 # Multiplicative properties of Hahn series
+
 If `Γ` is ordered and `R` has zero, then `R⟦Γ⟧` consists of formal series over `Γ` with
 coefficients in `R`, whose supports are partially well-ordered. This module introduces
 multiplication and scalar multiplication on Hahn series. If `Γ` is an ordered cancellative

@@ -12,6 +12,7 @@ public import Mathlib.AlgebraicTopology.FundamentalGroupoid.PUnit
 
 /-!
 # Simply connected spaces
+
 This file defines simply connected spaces.
 A topological space is simply connected if its fundamental groupoid is equivalent to `Unit`.
 

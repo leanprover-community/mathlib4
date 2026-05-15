@@ -15,6 +15,7 @@ public import Mathlib.Order.Lex
 
 /-!
 # Lexicographic order on a sigma type
+
 This file defines the lexicographic order on `Σₗ' i, α i`. `a` is less than `b` if its summand is
 strictly less than the summand of `b` or they are in the same summand and `a` is less than `b`
 there.
