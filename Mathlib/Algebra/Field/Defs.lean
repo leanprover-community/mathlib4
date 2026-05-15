@@ -179,8 +179,8 @@ If the field has positive characteristic `p`, our division by zero convention fo
 @[stacks 09FD "first part"]
 class Field (K : Type u) extends CommRing K, DivisionRing K, Ring K
 
-/-- Every field is a ring. -/
-add_decl_doc Field.toRing
+attribute [implicit_reducible] Field.toRing
+attribute [instance] Field.toRing
 
 -- see Note [lower instance priority]
 instance (priority := 100) Field.toSemifield [Field K] : Semifield K := { ‹Field K› with }
