@@ -357,6 +357,7 @@ lemma mdifferentiableWithinAt_add_section
     · exact fun x hx ↦ (e.linear 𝕜 hx).1 ..
   · exact (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).1 ..
 
+@[to_fun]
 lemma mdifferentiableAt_add_section
     (hs : MDiffAt (T% s) x₀) (ht : MDiffAt (T% t) x₀) :
     MDiffAt (T% (s + t)) x₀ := by
@@ -425,6 +426,7 @@ lemma MDifferentiableWithinAt.smul_section
     · exact fun x hx ↦ (e.linear 𝕜 hx).2 ..
   · apply (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).2
 
+@[to_fun]
 lemma MDifferentiableAt.smul_section
     (hf : MDiffAt f x₀) (hs : MDiffAt (T% s) x₀) : MDiffAt (T% (f • s)) x₀ := by
   rw [← mdifferentiableWithinAt_univ] at hs ⊢
