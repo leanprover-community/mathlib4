@@ -17,6 +17,7 @@ import Mathlib.Data.List.ProdSigma
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.FBinop
 
 /-!
 Type class for finitely enumerable types. The property is stronger

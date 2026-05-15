@@ -13,6 +13,7 @@ import Mathlib.Tactic.Choose
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Util.CompileInductive
+import Mathlib.Tactic.FBinop
 
 /-!
 # Kernel of a filter

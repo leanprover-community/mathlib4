@@ -10,8 +10,8 @@ public import Mathlib.Algebra.Group.Subgroup.Ker
 public import Mathlib.Algebra.Group.Int.Defs
 public import Mathlib.Algebra.BigOperators.Group.List.Defs
 import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Data.Int.Init
-import Mathlib.Data.List.Basic
+public import Mathlib.Data.Int.Init
+public import Mathlib.Data.List.Basic
 import Mathlib.Data.List.Chain
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr

@@ -10,8 +10,8 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Order.CompleteBooleanAlgebra
 import Mathlib.Algebra.Order.Ring.Canonical
-import Mathlib.Data.Set.BooleanAlgebra
-import Mathlib.Data.Set.Image
+public import Mathlib.Data.Set.BooleanAlgebra
+public import Mathlib.Data.Set.Image
 import Mathlib.Data.Set.NAry
 import Mathlib.Tactic.Bound.Init
 import Mathlib.Tactic.Common

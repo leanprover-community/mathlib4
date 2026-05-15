@@ -10,7 +10,7 @@ public import Mathlib.CategoryTheory.Sigma.Basic
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 import Mathlib.CategoryTheory.Category.Init
 import Mathlib.Data.List.Chain
-import Mathlib.Logic.Lemmas
+public import Mathlib.Logic.Lemmas
 import Mathlib.Tactic.Attr.Core
 import Mathlib.Tactic.CategoryTheory.CategoryStar
 import Mathlib.Tactic.Common

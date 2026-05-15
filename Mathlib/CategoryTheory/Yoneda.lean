@@ -15,6 +15,7 @@ import Mathlib.Tactic.Common
 import Mathlib.Tactic.CrossRefAttribute
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Util.CompileInductive
+public import Mathlib.Tactic.TermCongr
 
 /-!
 # The Yoneda embedding

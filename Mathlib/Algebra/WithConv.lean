@@ -10,12 +10,14 @@ public import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.Algebra.Group.TransferInstance
 import Mathlib.Algebra.BigOperators.Group.List.Basic
 import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
-import Mathlib.Algebra.Module.TransferInstance
+public import Mathlib.Algebra.Module.TransferInstance
 import Mathlib.Data.Finset.Attr
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.FastInstance
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SetLike
+public import Mathlib.Algebra.Group.Action.TransferInstance
+public import Mathlib.Algebra.GroupWithZero.Action.TransferInstance
 
 /-! # Type synonym for linear map convolutive ring and intrinsic star
 

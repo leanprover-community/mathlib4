@@ -19,6 +19,7 @@ import Mathlib.Tactic.Attr.Register
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.FBinop
 
 /-!
 # The symmetric square

@@ -10,7 +10,7 @@ public import Mathlib.Data.Finsupp.Single
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Algebra.Group.InjSurj
+public import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Data.Finset.Attr
 import Mathlib.Data.Finset.Lattice.Lemmas

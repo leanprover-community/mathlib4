@@ -13,7 +13,7 @@ import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SimpRw
 import Mathlib.Util.CompileInductive
-
+import Mathlib.Tactic.FBinop
 /-!
 # Relations holding pairwise
 

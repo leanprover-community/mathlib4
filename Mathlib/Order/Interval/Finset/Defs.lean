@@ -17,6 +17,7 @@ import Mathlib.Order.Bounds.Basic
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.FBinop
 
 /-!
 # Locally finite orders

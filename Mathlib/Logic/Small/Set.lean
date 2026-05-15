@@ -14,6 +14,7 @@ import Mathlib.Logic.Equiv.Set
 import Mathlib.Logic.Small.Basic
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Util.CompileInductive
+import Mathlib.Tactic.FBinop
 
 /-!
 # Results about `Small` on coerced sets

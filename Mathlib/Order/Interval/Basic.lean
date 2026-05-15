@@ -14,7 +14,7 @@ import Mathlib.Data.Set.Lattice
 import Mathlib.Data.Set.Lattice.Image
 import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Order.BoundedOrder.Lattice
-import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Tactic.Coe
 import Mathlib.Tactic.FastInstance
 import Mathlib.Tactic.Finiteness.Attr

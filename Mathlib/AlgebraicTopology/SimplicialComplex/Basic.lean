@@ -10,8 +10,8 @@ public import Mathlib.Order.BourbakiWitt
 public import Mathlib.Data.Set.BooleanAlgebra
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Lattice
-import Mathlib.Order.UpperLower.Relative
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.Order.UpperLower.Relative
 import Mathlib.Tactic.Bound.Init
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr

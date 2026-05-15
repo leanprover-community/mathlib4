@@ -15,6 +15,7 @@ import Mathlib.Logic.IsEmpty.Basic
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Util.CompileInductive
+import Mathlib.Tactic.FBinop
 
 /-!
 # Naturals pairing function

@@ -14,6 +14,7 @@ import Mathlib.Tactic.ContinuousFunctionalCalculus
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SetLike
 import Mathlib.Util.CompileInductive
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 
 /-!
 # Commutative star-ordered rings are ordered rings

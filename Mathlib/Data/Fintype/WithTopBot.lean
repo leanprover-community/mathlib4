@@ -8,7 +8,7 @@ module
 public import Mathlib.Order.TypeTags
 public import Mathlib.Data.Finset.Option
 import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Fintype.Option
+public import Mathlib.Data.Fintype.Option
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SetLike

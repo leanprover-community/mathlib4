@@ -10,7 +10,7 @@ public import Mathlib.Control.Traversable.Instances
 public import Mathlib.Control.Applicative
 public import Mathlib.Tactic.Attr.Register
 import Mathlib.Control.Traversable.Lemmas
-import Mathlib.Data.List.Basic
+public import Mathlib.Data.List.Basic
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 

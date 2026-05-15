@@ -11,7 +11,7 @@ public import Mathlib.Order.SetNotation
 public import Mathlib.Tactic.ToAdditive
 import Mathlib.Data.Set.Lattice
 import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.PPWithUniv
+public import Mathlib.Tactic.PPWithUniv
 import Mathlib.Util.CompileInductive
 
 /-!

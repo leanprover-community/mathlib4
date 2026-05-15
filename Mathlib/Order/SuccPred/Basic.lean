@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.Cover
-import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Order.Interval.Set.OrdConnected
+public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.Order.Interval.Set.OrdConnected
 import Mathlib.Order.Iterate
 import Mathlib.Order.MinMax
 import Mathlib.Tactic.Common

@@ -8,7 +8,7 @@ module
 public import Mathlib.Order.CompleteLatticeIntervals
 public import Mathlib.Order.LatticeIntervals
 import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Order.Interval.Set.OrdConnected
+public import Mathlib.Order.Interval.Set.OrdConnected
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SetLike

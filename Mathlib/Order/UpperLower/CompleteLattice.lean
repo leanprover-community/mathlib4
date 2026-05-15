@@ -10,7 +10,7 @@ public import Mathlib.Order.UpperLower.Basic
 public import Mathlib.Data.Set.BooleanAlgebra
 import Mathlib.Data.Set.Lattice
 import Mathlib.Data.Set.Lattice.Image
-import Mathlib.Order.Hom.Set
+public import Mathlib.Order.Hom.Set
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SetLike

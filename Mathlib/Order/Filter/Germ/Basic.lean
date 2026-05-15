@@ -15,10 +15,11 @@ public import Mathlib.Order.Filter.Defs
 public import Mathlib.Tactic.Attr.Core
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Data.Int.Cast.Basic
-import Mathlib.Order.Filter.Tendsto
+public import Mathlib.Order.Filter.Tendsto
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Util.CompileInductive
+public import Mathlib.Order.Filter.Basic
 
 /-!
 # Germ of a function at a filter

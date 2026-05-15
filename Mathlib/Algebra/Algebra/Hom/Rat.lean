@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Algebra.Hom
 public import Mathlib.Algebra.Ring.Rat
-import Mathlib.Algebra.Algebra.Rat
+public import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Data.Finset.Attr
 import Mathlib.Tactic.Bound.Init
 import Mathlib.Tactic.Common

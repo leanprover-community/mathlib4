@@ -10,9 +10,9 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Data.Finset.Card
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.Module.Pi
+public import Mathlib.Algebra.Module.Pi
 import Mathlib.Data.Finset.Attr
-import Mathlib.Data.List.Forall2
+public import Mathlib.Data.List.Forall2
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SetLike

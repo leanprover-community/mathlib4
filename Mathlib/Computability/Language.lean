@@ -14,7 +14,7 @@ public import Mathlib.Data.Set.NAry
 public import Mathlib.Order.CompleteBooleanAlgebra
 import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Lattice
+public import Mathlib.Data.Set.Lattice
 import Mathlib.Data.Set.Lattice.Image
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr

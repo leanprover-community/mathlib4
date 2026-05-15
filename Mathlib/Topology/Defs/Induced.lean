@@ -15,6 +15,8 @@ import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SetLike
 import Mathlib.Topology.Basic
+public import Mathlib.Data.Set.Image
+
 /-!
 # Induced and coinduced topologies
 
