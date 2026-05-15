@@ -46,12 +46,15 @@ variable (e : 𝕜 →L[𝕜] F)
 protected theorem ContinuousLinearMap.hasDerivAtFilter : HasDerivAtFilter e (e 1) L :=
   e.hasFDerivAtFilter.hasDerivAtFilter
 
+@[fun_prop]
 protected theorem ContinuousLinearMap.hasStrictDerivAt : HasStrictDerivAt e (e 1) x :=
   e.hasDerivAtFilter
 
+@[fun_prop]
 protected theorem ContinuousLinearMap.hasDerivAt : HasDerivAt e (e 1) x :=
   e.hasDerivAtFilter
 
+@[fun_prop]
 protected theorem ContinuousLinearMap.hasDerivWithinAt : HasDerivWithinAt e (e 1) s x :=
   e.hasDerivAtFilter
 
@@ -74,12 +77,15 @@ variable (e : 𝕜 →ₗ[𝕜] F)
 protected theorem LinearMap.hasDerivAtFilter : HasDerivAtFilter e (e 1) L :=
   e.toContinuousLinearMap₁.hasDerivAtFilter
 
+@[fun_prop]
 protected theorem LinearMap.hasStrictDerivAt : HasStrictDerivAt e (e 1) x :=
   e.hasDerivAtFilter
 
+@[fun_prop]
 protected theorem LinearMap.hasDerivAt : HasDerivAt e (e 1) x :=
   e.hasDerivAtFilter
 
+@[fun_prop]
 protected theorem LinearMap.hasDerivWithinAt : HasDerivWithinAt e (e 1) s x :=
   e.hasDerivAtFilter
 

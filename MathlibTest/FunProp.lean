@@ -1,4 +1,6 @@
 import Mathlib.Analysis.Calculus.ContDiff.Basic
+import Mathlib.Analysis.Calculus.Deriv.Prod
+import Mathlib.Analysis.Calculus.Deriv.Comp
 import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 import Mathlib.MeasureTheory.MeasurableSpace.Basic
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis
@@ -120,3 +122,122 @@ example {α : Type*} [MeasurableSpace α] {p q : α → Prop} (hp : Measurable p
 example {α ι : Type*} [MeasurableSpace α] [Countable ι] {p : ι → α → Prop}
     (hp : ∀ i, Measurable (p i)) : Measurable fun x => ∀ i, p i x := by
   fun_prop
+
+
+
+section HasFDerivAtTests
+variable
+  (x₀ : ℝ) (y : ℝ)
+  (f : ℝ → ℝ) {f' : ℝ → _} (hf : ∀ x, HasFDerivAt (𝕜:=ℝ) f (f' x) x)
+  (g : ℝ → ℝ) {g' : ℝ → _} (hg : ∀ x, HasFDerivAt (𝕜:=ℝ) g (g' x) x)
+
+example : HasFDerivAt (𝕜:=ℝ) (fun x : ℝ => x) (ContinuousLinearMap.id ℝ ℝ) x₀ := by
+  apply HasFDerivAt.congr_fderiv
+  · fun_prop
+  · rfl
+
+example : HasFDerivAt (𝕜:=ℝ) (fun _ : ℝ => y) 0 x₀ := by
+  fun_prop
+
+example : HasFDerivAt (𝕜:=ℝ) (fun x : ℝ => f (g x)) ((f' (g x₀)).comp (g' x₀)) x₀ := by
+  fun_prop
+
+example : HasFDerivAt (𝕜:=ℝ) (fun x : ℝ => f (f (f (f x))))
+    ((f' (f (f (f x₀)))).comp ((f' (f (f x₀))).comp ((f' (f x₀)).comp (f' x₀)))) x₀ := by
+  fun_prop
+
+example {t x : ℝ} (n : ℕ) :
+    HasDerivAt (fun t ↦ x ^ n * Real.exp (t * x)) (x ^ (n + 1) * Real.exp (t * x)) t := by
+  apply HasDerivAt.congr_deriv
+  · apply HasFDerivAt.hasDerivAt
+    fun_prop
+  · simp; ring
+
+example : HasFDerivAt (𝕜:=ℝ) (fun x : ℝ => Real.exp (f x)) (Real.exp (f x₀) • f' x₀) x₀ := by
+  fun_prop
+
+variable {t x : ℝ} (n : ℕ)
+
+example : HasFDerivAt (fun t ↦ x ^ n * Real.exp (t * x))
+    (x ^ n • Real.exp (t * x) • MulOpposite.op x • ContinuousLinearMap.id ℝ ℝ) t := by
+  fun_prop
+
+example (t₀) : fderiv ℝ (fun t ↦ x ^ n * Real.exp (t * x)) t₀ 1
+               =
+               x ^ (n + 1) * Real.exp (x * t₀) := by
+  simp [deriv_simproc]
+  ring_nf
+
+end HasFDerivAtTests
+
+
+--- HasDerivAt tests
+section HasDerivAtTests
+
+-- there are no `HasFDerivAt` theorems for division, it is translated to HasDerivAt
+example (x₀) (h : x₀ ≠ 0) : fderiv ℝ (fun x : ℝ => 1 / x) x₀ 1 = -1 / x₀^2 := by
+  simp (disch := positivity) only [deriv_simproc]
+  simp
+
+example (x₀) (h : x₀ > 0) :
+    fderiv ℝ (fun x : ℝ => 1 / (x*x + x)) x₀ 1
+    =
+    x₀ * (-1 / (x₀ * x₀ + x₀) ^ 2) + x₀ * (-1 / (x₀ * x₀ + x₀) ^ 2) + -1 / (x₀ * x₀ + x₀) ^ 2 := by
+  simp (disch := positivity) only [deriv_simproc]
+  simp
+
+example (x : ℝ) :
+    deriv (fun t : ℝ ↦ x ^ n * Real.exp (t * x))
+    =
+    fun t => x ^ (n + 1) * Real.exp (x * t) := by
+  simp only [deriv_simproc]
+  simp; ring_nf
+
+-- HasDerivAt from HasFDerivAt
+example (f : ℝ → ℝ) (f' : ℝ) (hf : HasDerivAt (𝕜:=ℝ) f f' x₀) :
+    HasFDerivAt (𝕜:=ℝ) f (ContinuousLinearMap.toSpanSingleton ℝ f') x₀ := by
+  apply HasFDerivAt.congr_fderiv
+  · fun_prop
+  · rfl
+
+example (f : ℝ → ℝ) (f' : ℝ) (hf : HasDerivAt (𝕜:=ℝ) f f' x₀) :
+    fderiv ℝ (fun x => f x) x₀ 1 = f' := by
+  simp only [deriv_simproc]
+  simp
+
+-- HasDerivAt from HasFDerivAt
+example (g : ℝ → ℝ) (g' : ℝ →L[ℝ] ℝ) (hf : HasFDerivAt g g' x₀): HasDerivAt (𝕜:=ℝ) g (g' 1) x₀ := by
+  apply HasDerivAt.congr_deriv
+  · fun_prop
+  · rfl
+
+example (f : ℝ → ℝ) (f' : ℝ →L[ℝ] ℝ) (hf : HasFDerivAt (𝕜:=ℝ) f f' x₀) :
+    deriv f x₀ = f' 1 := by
+  simp only [deriv_simproc]
+
+example (hx₀ : x₀ > 0) : HasFDerivAt (𝕜:=ℝ) (fun x : ℝ => 1 / x)
+    (ContinuousLinearMap.toSpanSingleton ℝ ((0 * x₀ - 1 * 1) / x₀ ^ 2)) x₀ := by
+  apply HasDerivAt.hasFDerivAt
+  fun_prop (disch := positivity)
+
+example (hx₀ : x₀ > 0) :
+        deriv (fun x : ℝ => (x*x) / (x + 3 * x + x*x)) x₀
+        =
+        x₀ ^ 2 * (x₀ ^ 2 * 16 + x₀ ^ 3 * 8 + x₀ ^ 4)⁻¹ * 4 := by
+  simp (disch := positivity) only [deriv_simproc]
+  ring
+
+example (hx₀ : x₀ > 0) : deriv (fun x : ℝ => 1 / x) x₀ = - 1 / x₀^2 := by
+  simp (disch:= grind) only [deriv_simproc]
+  simp
+
+example (hx₀ : x₀ ∈ Set.Ioo 0 1) :
+    deriv T x₀ =
+      (x₀ + (x₀ - 1) + 1) / (1 + (1 - x₀) + x₀ * (1 - x₀)) ^ 2 + (-x₀ + (x₀ - 1 + -1)) / (1 + (1 - x₀) + x₀) ^ 2 +
+        (1 + x₀ * (1 - x₀) - x₀ * (1 - x₀ + -x₀)) / (1 + x₀ * (1 - x₀)) ^ 2 +
+      ((1 - x₀ + -x₀) * (1 + x₀ + x₀ * (1 - x₀)) - x₀ * (1 - x₀) * (1 + (1 - x₀ + -x₀))) / (1 + x₀ + x₀ * (1 - x₀)) ^ 2 := by
+  unfold T S
+  have ⟨_,_⟩ := hx₀
+  simp (disch := nlinarith) [deriv_simproc]
+
+end HasDerivAtTests

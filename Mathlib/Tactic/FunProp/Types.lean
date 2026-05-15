@@ -7,6 +7,8 @@ module
 
 public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
 public import Mathlib.Tactic.FunProp.FunctionData
+public import Mathlib.Tactic.FunProp.Decl
+public import Qq
 
 /-!
 ## `funProp`
@@ -95,7 +97,7 @@ structure Context where
   constToUnfold : TreeSet Name Name.quickCmp :=
     .ofArray defaultNamesToUnfold _
   /-- Custom discharger to satisfy theorem hypotheses. -/
-  disch : Expr → MetaM (Option Expr) := fun _ => pure none
+  disch : Expr → SimpM (Option Expr) := fun _ => pure none
   /-- current transition depth -/
   transitionDepth := 0
 
@@ -117,13 +119,106 @@ structure GeneralTheorems where
   theorems : RefinedDiscrTree GeneralTheorem := {}
   deriving Inhabited
 
+/-- Goal of `fun_prop` like `Continuous (fun x => exp x + x)`
+
+The need for this structure is because the goal can have metavariables/output parameters.
+
+Without output parameters:
+  `numOutParams` = 0
+  `goal` is just something like `Continuous (fun x => exp x + x)`
+
+With output parameters:
+  `numOutParams` = 1
+  `goal` each output parameter is abstracted into a binder like
+    `fun f' => HasFDerivAt ℝ (fun x => expr x + x) f' x₀` -/
+structure Goal where
+  /-- Number of output parameters -/
+  numOutParams : Nat
+  /-- Goal expression with potential binders for ever output parameters. -/
+  expr : Expr
+  /-- Function property declaration -/
+  decl : FunPropDecl
+  /-- Main function in the fun_prop goal -/
+  mainFun : Expr
+deriving BEq, Hashable
+
+/-- Return goal expression with fresh metavariables for every output parameters
+and all the new mvars. -/
+def Goal.mkFreshExprWithOutputs (goal : Goal) : MetaM (Array Expr × Expr) := do
+  let (xs, _, b) ← lambdaMetaTelescope goal.expr
+  for x in xs, (_,name) in goal.decl.outArgIds do
+    x.mvarId!.setUserName name
+  return (xs, b)
+
+
+/-- Return goal expression with fresh metavariables for every output parameters. -/
+def Goal.mkFreshExpr (goal : Goal) : MetaM Expr := do
+  return (← goal.mkFreshExprWithOutputs).2
+
+/-- Update main function in fun_prop goal -/
+def Goal.updateMainFun (goal : Goal) (f : Expr) : MetaM Goal := do
+  let expr ← lambdaTelescope goal.expr fun xs e =>
+    mkLambdaFVars xs (e.setArg goal.decl.funArgId f)
+  return { goal with
+    expr
+    mainFun := f }
+
+/-- Pretty print goal as MessageData. -/
+def Goal.pp (goal : Goal) : MetaM MessageData := do
+  let (outputs, e) ← goal.mkFreshExprWithOutputs
+  if outputs.size == 0 then
+    return e
+  else
+    return m!"{outputs.toList}, {e}"
+
+/-- Pretty print goal as String. -/
+def Goal.pp' (goal : Goal) : MetaM String := do
+  let (outputs, e) ← goal.mkFreshExprWithOutputs
+  if outputs.size == 0 then
+    return s!"{← ppExpr e}"
+  else
+    return s!"{← outputs.toList.mapM ppExpr}, {← ppExpr e}"
+
+/-- Abstracts specified arguments from `e = f x₁ ... xₙ`.
+
+Example: `abstractAppArgs q(f a b c) [(1, `x)]` returns `fun x => f a x c`. -/
+def abstractAppArgs (e : Expr) (ids : List (Nat × Name)) : MetaM Expr := do
+  let (fn, args) := e.withApp fun fn args => (fn, args)
+  go fn args ids 0 #[]
+where
+  go (fn : Expr) (args : Array Expr) (ids : List (Nat×Name)) (i : Nat) (vars : Array Expr) :=
+    match ids with
+    | (j, jname) :: ids => do
+      let argj := args[j]!
+      withLocalDeclD jname (← inferType argj) fun var => do
+      go ((mkAppN fn args[i:j]).app var) args ids (j+1) (vars.push var)
+    | _ =>
+      mkLambdaFVars vars (fn.beta args[i:])
+
+/-- Turns expression into fun_prop `Goal` if possible. -/
+def getFunPropGoal? (e : Expr) : MetaM (Option Goal) := do
+  let e ← instantiateMVars e
+  let some (decl, f) ← getFunProp? e | return none
+  let e ← abstractAppArgs e decl.outArgIds
+
+  return some {
+    numOutParams := decl.outArgIds.length
+    expr := e
+    decl
+    mainFun := f
+  }
+
+/-- Result of `funProp`, it is a proof of function property `P f`. -/
+structure Result where
+  /-- Proof term of the result. -/
+  proof : Expr
+
 /-- `fun_prop` state -/
 structure State where
-  /-- Simp's cache is used as the `fun_prop` tactic is designed to be used inside of simp and
-  utilize its cache. It holds successful goals. -/
-  cache : Simp.Cache := {}
+  /-- Cache storing succesfull goals. -/
+  cache : Std.HashMap Goal Result := {}
   /-- Cache storing failed goals such that they are not tried again. -/
-  failureCache : ExprSet := {}
+  failureCache : Std.HashSet Goal := {}
   /-- Count the number of steps and stop when maxSteps is reached. -/
   numSteps := 0
   /-- Log progress and failures messages that should be displayed to the user at the end. -/
@@ -138,13 +233,7 @@ def Context.increaseTransitionDepth (ctx : Context) : Context :=
   {ctx with transitionDepth := ctx.transitionDepth + 1}
 
 /-- Monad to run `fun_prop` tactic in. -/
-abbrev FunPropM := ReaderT FunProp.Context <| StateT FunProp.State MetaM
-
-set_option linter.style.docString.empty false in
-/-- Result of `funProp`, it is a proof of function property `P f` -/
-structure Result where
-  /-- -/
-  proof : Expr
+abbrev FunPropM := ReaderT FunProp.Context <| StateT FunProp.State SimpM
 
 /-- Default names to unfold -/
 def defaultUnfoldPred : Name → Bool :=
@@ -192,6 +281,49 @@ def logError (msg : String) : FunPropM Unit := do
           s.msgLog
         else
           msg::s.msgLog}
+
+
+/-- Forward declaration of main `funProp` function -/
+initialize funPropCoreImplRef : IO.Ref (Goal → FunPropM (Option Result)) ←
+  .mkRef fun _ => return none
+
+/-- Solve fun_prop goal like `Continuous f` or `Differentiable ℝ fun x : ℝ => exp x + x` -/
+def funPropCore (goal : Goal) : FunPropM (Option Result) := do
+  let impl ← funPropCoreImplRef.get
+  impl goal
+
+/-- Main `funProp` function. Returns proof of `e`. -/
+partial def funProp (e : Expr) : FunPropM (Option Result) := do
+
+  let e ← instantiateMVars e
+
+  match e with
+  | .letE .. =>
+    letTelescope e fun xs b => do
+      let some r ← funProp b
+        | return none
+      -- cacheResult e {proof := ← mkLambdaFVars (generalizeNondepLet := false) xs r.proof }
+      return some { proof := ← mkLambdaFVars (generalizeNondepLet := false) xs r.proof }
+  | .forallE .. =>
+    forallTelescope e fun xs b => do
+      let some r ← funProp b
+        | return none
+      -- cacheResult e {proof := ← mkLambdaFVars xs r.proof }
+      return some { proof := ← mkLambdaFVars xs r.proof }
+  | .mdata _ e' => funProp e'
+  | _ =>
+    let some goal ← getFunPropGoal? e | return none
+
+    if let some r ← funPropCore goal then
+      -- assign mvars in `e` from the result throuh defeq check
+      let t ← inferType r.proof
+      if (← isDefEq e t) then
+        return r
+      else
+        logError s!"Failed to assign result {← ppExpr t} to {← ppExpr e}!"
+        return none
+    else
+      return none
 
 end Meta.FunProp
 

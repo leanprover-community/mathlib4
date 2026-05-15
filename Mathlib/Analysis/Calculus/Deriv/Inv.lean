@@ -38,6 +38,7 @@ section Inverse
 
 /-! ### Derivative of `x ↦ x⁻¹` -/
 
+@[fun_prop]
 theorem hasStrictDerivAt_inv (hx : x ≠ 0) : HasStrictDerivAt Inv.inv (-(x ^ 2)⁻¹) x := by
   suffices
     (fun p : 𝕜 × 𝕜 => (p.1 - p.2) * ((x * x)⁻¹ - (p.1 * p.2)⁻¹)) =o[𝓝 (x, x)] fun p =>
@@ -52,9 +53,11 @@ theorem hasStrictDerivAt_inv (hx : x ≠ 0) : HasStrictDerivAt Inv.inv (-(x ^ 2)
   rw [← sub_self (x * x)⁻¹]
   exact tendsto_const_nhds.sub ((continuous_mul.tendsto (x, x)).inv₀ <| mul_ne_zero hx hx)
 
+@[fun_prop]
 theorem hasDerivAt_inv (x_ne_zero : x ≠ 0) : HasDerivAt (fun y => y⁻¹) (-(x ^ 2)⁻¹) x :=
   (hasStrictDerivAt_inv x_ne_zero).hasDerivAt
 
+@[fun_prop]
 theorem hasDerivWithinAt_inv (x_ne_zero : x ≠ 0) (s : Set 𝕜) :
     HasDerivWithinAt (fun x => x⁻¹) (-(x ^ 2)⁻¹) s x :=
   (hasDerivAt_inv x_ne_zero).hasDerivWithinAt
@@ -100,13 +103,13 @@ theorem fderivWithin_inv (x_ne_zero : x ≠ 0) (hxs : UniqueDiffWithinAt 𝕜 s 
 
 variable {c : 𝕜 → 𝕜} {c' : 𝕜}
 
-@[to_fun]
+@[to_fun (attr := fun_prop)]
 theorem HasDerivWithinAt.inv (hc : HasDerivWithinAt c c' s x) (hx : c x ≠ 0) :
     HasDerivWithinAt (c⁻¹) (-c' / c x ^ 2) s x := by
   convert (hasDerivAt_inv hx).comp_hasDerivWithinAt x hc using 1
   ring
 
-@[to_fun]
+@[to_fun (attr := fun_prop)]
 theorem HasDerivAt.inv (hc : HasDerivAt c c' x) (hx : c x ≠ 0) :
     HasDerivAt (c⁻¹) (-c' / c x ^ 2) x := by
   rw [← hasDerivWithinAt_univ] at *
@@ -140,6 +143,7 @@ section Division
 
 variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] {c d : 𝕜 → 𝕜'} {c' d' : 𝕜'}
 
+@[fun_prop]
 theorem HasDerivWithinAt.fun_div (hc : HasDerivWithinAt c c' s x) (hd : HasDerivWithinAt d d' s x)
     (hx : d x ≠ 0) :
     HasDerivWithinAt (fun y => c y / d y) ((c' * d x - c x * d') / d x ^ 2) s x := by
@@ -148,11 +152,13 @@ theorem HasDerivWithinAt.fun_div (hc : HasDerivWithinAt c c' s x) (hd : HasDeriv
   · simp [field]
     ring
 
+@[fun_prop]
 theorem HasDerivWithinAt.div (hc : HasDerivWithinAt c c' s x) (hd : HasDerivWithinAt d d' s x)
     (hx : d x ≠ 0) :
     HasDerivWithinAt (c / d) ((c' * d x - c x * d') / d x ^ 2) s x :=
   hc.fun_div hd hx
 
+@[fun_prop]
 theorem HasStrictDerivAt.fun_div (hc : HasStrictDerivAt c c' x) (hd : HasStrictDerivAt d d' x)
     (hx : d x ≠ 0) : HasStrictDerivAt (fun y => c y / d y) ((c' * d x - c x * d') / d x ^ 2) x := by
   convert hc.fun_mul ((hasStrictDerivAt_inv hx).comp x hd) using 1
@@ -160,15 +166,18 @@ theorem HasStrictDerivAt.fun_div (hc : HasStrictDerivAt c c' x) (hd : HasStrictD
   · simp [field]
     ring
 
+@[fun_prop]
 theorem HasStrictDerivAt.div (hc : HasStrictDerivAt c c' x) (hd : HasStrictDerivAt d d' x)
     (hx : d x ≠ 0) : HasStrictDerivAt (c / d) ((c' * d x - c x * d') / d x ^ 2) x :=
   hc.fun_div hd hx
 
+@[fun_prop]
 theorem HasDerivAt.fun_div (hc : HasDerivAt c c' x) (hd : HasDerivAt d d' x) (hx : d x ≠ 0) :
     HasDerivAt (fun y => c y / d y) ((c' * d x - c x * d') / d x ^ 2) x := by
   rw [← hasDerivWithinAt_univ] at *
   exact hc.div hd hx
 
+@[fun_prop]
 theorem HasDerivAt.div (hc : HasDerivAt c c' x) (hd : HasDerivAt d d' x) (hx : d x ≠ 0) :
     HasDerivAt (c / d) ((c' * d x - c x * d') / d x ^ 2) x :=
   hc.fun_div hd hx

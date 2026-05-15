@@ -150,6 +150,7 @@ def coshOpenPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
   continuousOn_toFun := by fun_prop
   continuousOn_invFun := continuousOn_arcosh.mono Ioi_subset_Ici_self
 
+@[fun_prop]
 theorem hasStrictDerivAt_arcosh {x : ℝ} (hx : x ∈ Ioi 1) :
     HasStrictDerivAt arcosh (√(x ^ 2 - 1))⁻¹ x := by
   rw [← sinh_arcosh (le_of_lt hx)]
@@ -157,6 +158,7 @@ theorem hasStrictDerivAt_arcosh {x : ℝ} (hx : x ∈ Ioi 1) :
   rw [ne_eq, sinh_eq_zero]
   exact ne_of_gt (arcosh_pos hx)
 
+@[fun_prop]
 theorem hasDerivAt_arcosh {x : ℝ} (hx : x ∈ Ioi 1) : HasDerivAt arcosh (√(x ^ 2 - 1))⁻¹ x :=
   (hasStrictDerivAt_arcosh hx).hasDerivAt
 

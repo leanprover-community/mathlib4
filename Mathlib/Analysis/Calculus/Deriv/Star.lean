@@ -38,14 +38,17 @@ protected theorem HasDerivAtFilter.star (h : HasDerivAtFilter f f' L) :
     HasDerivAtFilter (fun x => star (f x)) (star f') L := by
   simpa using h.hasFDerivAtFilter.star.hasDerivAtFilter
 
+@[fun_prop]
 protected theorem HasDerivWithinAt.star (h : HasDerivWithinAt f f' s x) :
     HasDerivWithinAt (fun x => star (f x)) (star f') s x :=
   HasDerivAtFilter.star h
 
+@[fun_prop]
 protected theorem HasDerivAt.star (h : HasDerivAt f f' x) :
     HasDerivAt (fun x => star (f x)) (star f') x :=
   HasDerivAtFilter.star h
 
+@[fun_prop]
 protected nonrec theorem HasStrictDerivAt.star (h : HasStrictDerivAt f f' x) :
     HasStrictDerivAt (fun x => star (f x)) (star f') x :=
   HasDerivAtFilter.star h

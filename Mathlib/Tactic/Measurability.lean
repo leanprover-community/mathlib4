@@ -5,7 +5,7 @@ Authors: Miyahara Kō
 -/
 module
 
-public import Mathlib.Tactic.FunProp.Decl
+public import Mathlib.Tactic.FunProp.Attr
 public import Mathlib.Tactic.Measurability.Init
 
 /-!

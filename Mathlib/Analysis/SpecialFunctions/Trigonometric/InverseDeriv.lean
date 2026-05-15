@@ -46,10 +46,12 @@ theorem deriv_arcsin_aux {x : ℝ} (h₁ : x ≠ -1) (h₂ : x ≠ 1) :
     exact ⟨(hasStrictDerivAt_const x _).congr_of_eventuallyEq this.symm,
       contDiffAt_const.congr_of_eventuallyEq this⟩
 
+@[fun_prop]
 theorem hasStrictDerivAt_arcsin {x : ℝ} (h₁ : x ≠ -1) (h₂ : x ≠ 1) :
     HasStrictDerivAt arcsin (1 / √(1 - x ^ 2)) x :=
   (deriv_arcsin_aux h₁ h₂).1
 
+@[fun_prop]
 theorem hasDerivAt_arcsin {x : ℝ} (h₁ : x ≠ -1) (h₂ : x ≠ 1) :
     HasDerivAt arcsin (1 / √(1 - x ^ 2)) x :=
   (hasStrictDerivAt_arcsin h₁ h₂).hasDerivAt
@@ -58,6 +60,7 @@ theorem contDiffAt_arcsin {x : ℝ} (h₁ : x ≠ -1) (h₂ : x ≠ 1) {n : ℕ�
     ContDiffAt ℝ n arcsin x :=
   (deriv_arcsin_aux h₁ h₂).2.of_le le_top
 
+@[fun_prop]
 theorem hasDerivWithinAt_arcsin_Ici {x : ℝ} (h : x ≠ -1) :
     HasDerivWithinAt arcsin (1 / √(1 - x ^ 2)) (Ici x) x := by
   rcases eq_or_ne x 1 with (rfl | h')
@@ -65,6 +68,7 @@ theorem hasDerivWithinAt_arcsin_Ici {x : ℝ} (h : x ≠ -1) :
       simp +contextual [arcsin_of_one_le]
   · exact (hasDerivAt_arcsin h h').hasDerivWithinAt
 
+@[fun_prop]
 theorem hasDerivWithinAt_arcsin_Iic {x : ℝ} (h : x ≠ 1) :
     HasDerivWithinAt arcsin (1 / √(1 - x ^ 2)) (Iic x) x := by
   rcases em (x = -1) with (rfl | h')
@@ -119,10 +123,12 @@ end Arcsin
 
 section Arccos
 
+@[fun_prop]
 theorem hasStrictDerivAt_arccos {x : ℝ} (h₁ : x ≠ -1) (h₂ : x ≠ 1) :
     HasStrictDerivAt arccos (-(1 / √(1 - x ^ 2))) x :=
   (hasStrictDerivAt_arcsin h₁ h₂).const_sub (π / 2)
 
+@[fun_prop]
 theorem hasDerivAt_arccos {x : ℝ} (h₁ : x ≠ -1) (h₂ : x ≠ 1) :
     HasDerivAt arccos (-(1 / √(1 - x ^ 2))) x :=
   (hasDerivAt_arcsin h₁ h₂).const_sub (π / 2)
@@ -131,10 +137,12 @@ theorem contDiffAt_arccos {x : ℝ} (h₁ : x ≠ -1) (h₂ : x ≠ 1) {n : ℕ�
     ContDiffAt ℝ n arccos x :=
   contDiffAt_const.sub (contDiffAt_arcsin h₁ h₂)
 
+@[fun_prop]
 theorem hasDerivWithinAt_arccos_Ici {x : ℝ} (h : x ≠ -1) :
     HasDerivWithinAt arccos (-(1 / √(1 - x ^ 2))) (Ici x) x :=
   (hasDerivWithinAt_arcsin_Ici h).const_sub _
 
+@[fun_prop]
 theorem hasDerivWithinAt_arccos_Iic {x : ℝ} (h : x ≠ 1) :
     HasDerivWithinAt arccos (-(1 / √(1 - x ^ 2))) (Iic x) x :=
   (hasDerivWithinAt_arcsin_Iic h).const_sub _

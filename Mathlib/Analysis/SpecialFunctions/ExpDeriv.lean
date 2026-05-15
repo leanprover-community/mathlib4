@@ -85,6 +85,7 @@ namespace Complex
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 ℂ]
 
 /-- The complex exponential is everywhere differentiable, with the derivative `exp x`. -/
+@[fun_prop]
 theorem hasDerivAt_exp (x : ℂ) : HasDerivAt exp (exp x) x := by
   rw [hasDerivAt_iff_isLittleO_nhds_zero]
   have : (1 : ℕ) < 2 := by simp
@@ -114,6 +115,7 @@ theorem iter_deriv_exp : ∀ n : ℕ, deriv^[n] exp = exp
 theorem contDiff_exp {n : WithTop ℕ∞} : ContDiff 𝕜 n exp :=
   analyticOnNhd_cexp.restrictScalars.contDiff
 
+@[fun_prop]
 theorem hasStrictDerivAt_exp (x : ℂ) : HasStrictDerivAt exp (exp x) x :=
   contDiff_exp.contDiffAt.hasStrictDerivAt' (hasDerivAt_exp x) one_ne_zero
 
@@ -127,14 +129,17 @@ section
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 ℂ] {f : 𝕜 → ℂ} {f' : ℂ} {x : 𝕜}
   {s : Set 𝕜}
 
+@[fun_prop]
 theorem HasStrictDerivAt.cexp (hf : HasStrictDerivAt f f' x) :
     HasStrictDerivAt (fun x => Complex.exp (f x)) (Complex.exp (f x) * f') x :=
   (Complex.hasStrictDerivAt_exp (f x)).comp x hf
 
+@[fun_prop]
 theorem HasDerivAt.cexp (hf : HasDerivAt f f' x) :
     HasDerivAt (fun x => Complex.exp (f x)) (Complex.exp (f x) * f') x :=
   (Complex.hasDerivAt_exp (f x)).comp x hf
 
+@[fun_prop]
 theorem HasDerivWithinAt.cexp (hf : HasDerivWithinAt f f' s x) :
     HasDerivWithinAt (fun x => Complex.exp (f x)) (Complex.exp (f x) * f') s x :=
   (Complex.hasDerivAt_exp (f x)).comp_hasDerivWithinAt x hf
@@ -155,14 +160,17 @@ section
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 ℂ] {E : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] {f : E → ℂ} {f' : E →L[𝕜] ℂ} {x : E} {s : Set E}
 
+@[fun_prop]
 theorem HasStrictFDerivAt.cexp (hf : HasStrictFDerivAt f f' x) :
     HasStrictFDerivAt (fun x => Complex.exp (f x)) (Complex.exp (f x) • f') x :=
   (Complex.hasStrictDerivAt_exp (f x)).comp_hasStrictFDerivAt x hf
 
+@[fun_prop]
 theorem HasFDerivWithinAt.cexp (hf : HasFDerivWithinAt f f' s x) :
     HasFDerivWithinAt (fun x => Complex.exp (f x)) (Complex.exp (f x) • f') s x :=
   (Complex.hasDerivAt_exp (f x)).comp_hasFDerivWithinAt x hf
 
+@[fun_prop]
 theorem HasFDerivAt.cexp (hf : HasFDerivAt f f' x) :
     HasFDerivAt (fun x => Complex.exp (f x)) (Complex.exp (f x) • f') x :=
   hasFDerivWithinAt_univ.1 <| hf.hasFDerivWithinAt.cexp
@@ -261,9 +269,11 @@ end
 
 namespace Real
 
+@[fun_prop]
 theorem hasStrictDerivAt_exp (x : ℝ) : HasStrictDerivAt exp (exp x) x :=
   (Complex.hasStrictDerivAt_exp x).real_of_complex
 
+@[fun_prop]
 theorem hasDerivAt_exp (x : ℝ) : HasDerivAt exp (exp x) x :=
   (Complex.hasDerivAt_exp x).real_of_complex
 
@@ -297,14 +307,17 @@ function, for standalone use and use with `simp`. -/
 
 variable {f : ℝ → ℝ} {f' x : ℝ} {s : Set ℝ}
 
+@[fun_prop]
 theorem HasStrictDerivAt.exp (hf : HasStrictDerivAt f f' x) :
     HasStrictDerivAt (fun x => Real.exp (f x)) (Real.exp (f x) * f') x :=
   (Real.hasStrictDerivAt_exp (f x)).comp x hf
 
+@[fun_prop]
 theorem HasDerivAt.exp (hf : HasDerivAt f f' x) :
     HasDerivAt (fun x => Real.exp (f x)) (Real.exp (f x) * f') x :=
   (Real.hasDerivAt_exp (f x)).comp x hf
 
+@[fun_prop]
 theorem HasDerivWithinAt.exp (hf : HasDerivWithinAt f f' s x) :
     HasDerivWithinAt (fun x => Real.exp (f x)) (Real.exp (f x) * f') s x :=
   (Real.hasDerivAt_exp (f x)).comp_hasDerivWithinAt x hf
@@ -346,14 +359,17 @@ theorem ContDiffWithinAt.exp {n} (hf : ContDiffWithinAt ℝ n f s x) :
     ContDiffWithinAt ℝ n (fun x => Real.exp (f x)) s x :=
   Real.contDiff_exp.contDiffAt.comp_contDiffWithinAt x hf
 
+@[fun_prop]
 theorem HasFDerivWithinAt.exp (hf : HasFDerivWithinAt f f' s x) :
     HasFDerivWithinAt (fun x => Real.exp (f x)) (Real.exp (f x) • f') s x :=
   (Real.hasDerivAt_exp (f x)).comp_hasFDerivWithinAt x hf
 
+@[fun_prop]
 theorem HasFDerivAt.exp (hf : HasFDerivAt f f' x) :
     HasFDerivAt (fun x => Real.exp (f x)) (Real.exp (f x) • f') x :=
   (Real.hasDerivAt_exp (f x)).comp_hasFDerivAt x hf
 
+@[fun_prop]
 theorem HasStrictFDerivAt.exp (hf : HasStrictFDerivAt f f' x) :
     HasStrictFDerivAt (fun x => Real.exp (f x)) (Real.exp (f x) • f') x :=
   (Real.hasStrictDerivAt_exp (f x)).comp_hasStrictFDerivAt x hf
