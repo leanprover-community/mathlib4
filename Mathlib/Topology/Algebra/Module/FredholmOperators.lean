@@ -340,37 +340,21 @@ lemma index_comp {G : Type*} [AddCommGroup G] [Module k G] (g : F →ₗ[k] G)
   -- 0 → f.ker → (g ∘ₗ f).ker → g.ker → f.coker → (g ∘ₗ f).coker → g.coker → 0
   have : FiniteDimensional k (g ∘ₗ f).ker := by sorry
   have : FiniteDimensional k (G ⧸ (g ∘ₗ f).range) := by sorry
-
   let f₀ : f.ker →ₗ[k] (g ∘ₗ f).ker := Submodule.inclusion <| ker_le_ker_comp f g
   let f₁ : (g ∘ₗ f).ker →ₗ[k] g.ker := f.restrict <| by simp
   let f₂ : g.ker →ₗ[k] F ⧸ f.range := f.range.mkQ ∘ₗ g.ker.subtype
   let f₃ : (F ⧸ f.range) →ₗ[k] G ⧸ (g ∘ₗ f).range :=
     f.range.mapQ (g ∘ₗ f).range g <| by rw [← map_le_iff_le_comap, range_comp]
   let f₄ : (G ⧸ (g ∘ₗ f).range) →ₗ[k] G ⧸ g.range := factor <| range_comp_le_range f g
-
   have h₀ : Injective f₀ := Submodule.inclusion_injective _
   have h₁ : Exact f₀ f₁ := fun ⟨x, hx⟩ ↦ by simp [f₀, f₁, restrict_apply, Submodule.inclusion_apply]
   have h₂ : Exact f₁ f₂ := fun ⟨x, hx⟩ ↦ by aesop (add simp restrict_apply)
-  have h₃ : Exact f₂ f₃ := fun x ↦ by
-    -- TODO use `Submodule.ker_mapQ` rather than `mapQ_eq_zero_iff` (which we should drop)
-    simp only [coe_comp, coe_subtype, Set.mem_range, Function.comp_apply, mkQ_apply, Subtype.exists,
-      mem_ker, exists_prop, f₂, f₃, mapQ_eq_zero_iff, mkQ_apply, mem_range]
-    -- This should be tidier
-    constructor
-    · rintro ⟨z, rfl, y, hzy⟩
-      use z - f y
-      simp [hzy]
-    · rintro ⟨y, hy, rfl⟩
-      exact ⟨y, rfl, 0, by simp [hy]⟩
-  have h₄ : Exact f₃ f₄ := fun x ↦ by
-    simp only [factor, ← mem_ker, ker_mapQ, comap_id, mem_map, mem_range, mkQ_apply,
-      exists_exists_eq_and, Set.mem_range, f₃, f₄]
-    constructor
-    · rintro ⟨y, rfl⟩
-      use Quotient.mk _ y
-      rfl
-    · rintro ⟨y, rfl⟩
-      sorry
+  have h₃ : Exact f₂ f₃ := by
+    rw [LinearMap.exact_iff]
+    simp [f₂, f₃, range_comp, ker_mapQ, comap_map_eq]
+  have h₄ : Exact f₃ f₄ := by
+    rw [LinearMap.exact_iff]
+    simp [f₃, f₄, factor, ker_mapQ, range_mapQ]
   have h₅ : Surjective f₄ := factor_surjective _
   grind [index, sum_neg_one_pow_finrank_eq_zero_of_exact_six f₀ f₁ f₂ f₃ f₄ h₀ h₁ h₂ h₃ h₄ h₅]
 

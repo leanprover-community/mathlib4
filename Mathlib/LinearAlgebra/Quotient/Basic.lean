@@ -197,17 +197,6 @@ theorem mapQ_zero (h : p ≤ q.comap (0 : M →ₛₗ[τ₁₂] M₂) := (by sim
   ext
   simp
 
-theorem mapQ_eq_zero_iff (f : M →ₛₗ[τ₁₂] M₂) (h) (x : M ⧸ p) :
-    p.mapQ q f h x = 0 ↔ ∃ y : M, p.mkQ y = x ∧ f y ∈ q := by
-  -- Awful, awful proof: something is wrong here (likely just missing API).
-  refine ⟨fun h' ↦ ⟨(p.mkQ_surjective x).choose, (p.mkQ_surjective x).choose_spec, ?_⟩, ?_⟩
-  · generalize_proofs aux
-    suffices p.mapQ q f h x = q.mkQ (f aux.choose) by simpa [this] using h'
-    conv_lhs => rw [(p.mkQ_surjective x).choose_spec.symm]
-    simp
-  · rintro ⟨y, rfl, hy⟩
-    simpa
-
 /-- Given submodules `p ⊆ M`, `p₂ ⊆ M₂`, `p₃ ⊆ M₃` and maps `f : M → M₂`, `g : M₂ → M₃` inducing
 `mapQ f : M ⧸ p → M₂ ⧸ p₂` and `mapQ g : M₂ ⧸ p₂ → M₃ ⧸ p₃` then
 `mapQ (g ∘ f) = (mapQ g) ∘ (mapQ f)`. -/
@@ -252,6 +241,10 @@ lemma ker_mapQ (f : M →ₛₗ[τ₁₂] M₂) (h) : ker (p.mapQ q f h) = (coma
 
 theorem range_liftQ [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) (h) :
     range (p.liftQ f h) = range f := by simpa only [range_eq_map] using map_liftQ _ _ _ _
+
+theorem range_mapQ [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) (h) :
+    (p.mapQ q f h).range = f.range.map q.mkQ := by
+  rw [mapQ, range_liftQ, range_comp]
 
 theorem ker_liftQ_eq_bot (f : M →ₛₗ[τ₁₂] M₂) (h) (h' : ker f ≤ p) : ker (p.liftQ f h) = ⊥ := by
   rw [ker_liftQ, le_antisymm h h', mkQ_map_self]
