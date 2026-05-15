@@ -59,7 +59,7 @@ theorem residuallyFinite_iff_exists_finiteIndexNormalSubgroup :
   simp_rw [residuallyFinite_iff_forall_finiteIndexNormalSubgroup, ← not_forall, not_imp_not]
 
 @[to_additive]
-theorem exists_finiteIndexNormalSubgroup_notMem [ResiduallyFinite G] (g : G) (hg : g ≠ 1):
+theorem exists_finiteIndexNormalSubgroup_notMem [ResiduallyFinite G] (g : G) (hg : g ≠ 1) :
     ∃ H : FiniteIndexNormalSubgroup G, g ∉ H :=
   residuallyFinite_iff_exists_finiteIndexNormalSubgroup.mp ‹_› g hg
 
