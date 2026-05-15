@@ -82,7 +82,7 @@ index normal subgroup `H` such that `g` and `h` differ in the quotient `G ⧸ H`
 theorem exists_finiteIndexNormalSubgroup_of_residuallyFinite [ResiduallyFinite G] (g h : G)
     (hgh : g ≠ h) : ∃ H : FiniteIndexNormalSubgroup G, (g : G ⧸ H.toSubgroup) ≠ ↑h := by
   obtain ⟨H, hH⟩ := exists_finiteIndexNormalSubgroup_notMem (g⁻¹ * h)
-    (fun h ↦ hgh <| eq_of_inv_mul_eq_one h)
+    fun h ↦ hgh <| eq_of_inv_mul_eq_one h
   exact ⟨H, by simpa [QuotientGroup.eq]⟩
 
 /-- `G` is residually finite if for every element `g` not equal to `1` there exists a group
