@@ -76,6 +76,7 @@ section Semiring
 
 variable [Semiring R] [CharP R 2]
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 theorem add_self_eq_zero (x : R) : x + x = 0 := by rw [← two_mul x, two_eq_zero, zero_mul]
 
@@ -96,6 +97,7 @@ section Ring
 
 variable [Ring R] [CharP R 2]
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 theorem neg_eq (x : R) : -x = x := by
   rw [neg_eq_iff_add_eq_zero, add_self_eq_zero]
@@ -103,6 +105,7 @@ theorem neg_eq (x : R) : -x = x := by
 theorem neg_eq' : Neg.neg = (id : R → R) :=
   funext neg_eq
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 theorem sub_eq_add (x y : R) : x - y = x + y := by rw [sub_eq_add_neg, neg_eq]
 
