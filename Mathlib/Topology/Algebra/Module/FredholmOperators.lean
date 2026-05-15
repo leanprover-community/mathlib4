@@ -48,6 +48,7 @@ lemma Module.sum_neg_one_pow_finrank_eq_zero_of_exact_six {k V₀ V₁ V₂ V₃
   sorry
 
 end FindHome
+public noncomputable section FredholmOperators
 
 variable {𝕜 : Type*} [NormedField 𝕜]
 variable {E F : Type*} [AddCommGroup E] [AddCommGroup F] [TopologicalSpace E] [TopologicalSpace F]
@@ -55,7 +56,6 @@ variable {E F : Type*} [AddCommGroup E] [AddCommGroup F] [TopologicalSpace E] [T
 variable [Module 𝕜 E] [Module 𝕜 F]
 variable {f : E →L[𝕜] F}
 
-public noncomputable section FredholmOperators
 
 -- TODO: MOVE
 @[simp]
@@ -223,8 +223,8 @@ variable (f)
 structure IsFredholmStruct : Prop where
   isStrict : IsStrictMap f
   isClosed_range : IsClosed (f.range : Set F)
-  kerFG : f.ker.FG
-  cokerFG : f.range.CoFG
+  kerFG : FiniteDimensional 𝕜 f.ker
+  cokerFG : FiniteDimensional 𝕜 (F ⧸ f.range)
   closedComplemented_ker : f.ker.ClosedComplemented
 
 variable [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F]
@@ -464,7 +464,7 @@ theorem Topology.IsClosedEmbedding.isFredholmStruct {f : E →L[𝕜] F} [Comple
   · exact hf.isStrictMap
   · simpa using hf.isClosed_range
   · rw [LinearMap.ker_eq_bot.2 hf.injective]
-    exact Submodule.fg_bot
+    exact Module.Finite.bot 𝕜 E
   · simp [hc]
   · rw [LinearMap.ker_eq_bot.2 hf.injective]
     exact closedComplemented_bot
@@ -478,7 +478,7 @@ theorem Submodule.isFredholmStruct [CompleteSpace 𝕜] [ContinuousSMul 𝕜 E] 
 
 omit [IsTopologicalAddGroup E] [IsTopologicalAddGroup F] in
 theorem Topology.IsQuotientMap.isFredholmStruct {f : E →L[𝕜] F} (hq : IsQuotientMap f)
-    (hfg : f.ker.FG) (hcompl : f.ker.ClosedComplemented) :
+    (hfg : FiniteDimensional 𝕜 f.ker) (hcompl : f.ker.ClosedComplemented) :
     IsFredholmStruct f := by
   constructor
   · exact hq.isStrictMap
@@ -489,11 +489,15 @@ theorem Topology.IsQuotientMap.isFredholmStruct {f : E →L[𝕜] F} (hq : IsQuo
     exact Submodule.CoFG.top
   · exact hcompl
 
+--ToDO :move
+@[simp]
+theorem Submodule.ker_mkQL {p : Submodule 𝕜 E} : p.mkQL.ker = p := by ext; simp
+
 variable [ContinuousSMul 𝕜 E]
-theorem Submodule.mkQL_isFredholm_struc {p : Submodule 𝕜 E} (hc : p.FG)
+theorem Submodule.mkQL_isFredholmStruct {p : Submodule 𝕜 E} (hc : FiniteDimensional 𝕜 p)
     (hcompl : p.ClosedComplemented) :
     IsFredholmStruct p.mkQL :=
-  p.isQuotientMap_mkQL.isFredholmStruct (by simpa) (by simpa)
+  p.isQuotientMap_mkQL.isFredholmStruct (by rwa [p.ker_mkQL]) (by simpa)
 
 /- ## Composition of Fredholm (with the inverse definition) (Patrick)
 
@@ -521,6 +525,17 @@ F₁ = u.range
 The others are arbitrary complements
 
 -/
+end FredholmOperators
+
+public noncomputable section Filippo
+
+variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [AddCommGroup E]
+   [TopologicalSpace E] [Module 𝕜 E] [IsTopologicalAddGroup E]-- [T2Space E] [ContinuousSMul 𝕜 E]
+variable [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F]
+    [Module 𝕜 F] [ContinuousSMul 𝕜 F]
+variable {u : E →L[𝕜] F}
+
+open Submodule
 
 variable (𝕜 E) in
 structure preFredholmDecomposition where
@@ -529,10 +544,9 @@ structure preFredholmDecomposition where
   compl : IsTopCompl X₁ X₂
   fin_dim : FiniteDimensional 𝕜 X₂
 
-
+-- variable (𝕜 E) in
 open Submodule.ClosedComplemented in
-def FredholmDecomposition [CompleteSpace 𝕜] [ContinuousSMul 𝕜 F]
-      (huF : IsFredholm_struc u) (huk : u.ker.ClosedComplemented) :
+def FredholmDecomposition (huF : IsFredholmStruct u) (huk : u.ker.ClosedComplemented) :
     preFredholmDecomposition 𝕜 E × preFredholmDecomposition 𝕜 F := by
   constructor
   · exact ⟨(exists_isTopCompl huk).choose, u.ker, (exists_isTopCompl huk).choose_spec.symm,
@@ -558,16 +572,17 @@ def FredholmDecomposition [CompleteSpace 𝕜] [ContinuousSMul 𝕜 F]
     exact huF.cokerFG.of_injective g hg
 
 
-theorem FredholmDecomposition_restrict [CompleteSpace 𝕜] [ContinuousSMul 𝕜 F]
-    (huF : IsFredholm_struc u) (huk : u.ker.ClosedComplemented) :
-    (FredholmDecomposition huF huk).1.X₂ = u.ker := by
-  unfold FredholmDecomposition
-  rfl
+theorem FredholmDecomposition_restrict (huF : IsFredholmStruct u)
+    (huk : u.ker.ClosedComplemented) : (FredholmDecomposition huF huk).1.X₂ = u.ker := by rfl
 
 
-theorem FredholmDecomposition_mapsTo [CompleteSpace 𝕜] [ContinuousSMul 𝕜 F]
-    (huF : IsFredholm_struc u) (huk : u.ker.ClosedComplemented) :
-    ∀ x ∈ (FredholmDecomposition huF huk).1.X₂, u x ∈ (FredholmDecomposition huF huk).2.X₂ := sorry
+theorem FredholmDecomposition_mapsTo (huF : IsFredholmStruct u) (huk : u.ker.ClosedComplemented) :
+    ∀ x ∈ (FredholmDecomposition huF huk).1.X₂, u x ∈ (FredholmDecomposition huF huk).2.X₂ := by
+  intro x hx
+  simp only [FredholmDecomposition, LinearMap.mem_ker, ContinuousLinearMap.coe_coe] at hx
+  exact hx ▸ Submodule.zero_mem ..
+
+
 
 
 -- **Waiting for *Anatole* to create the `ContinuousLinearMap.restrict` so that the code below type-check
@@ -587,7 +602,8 @@ so `u.ker` is complemented.
 
 -/
 
-end FredholmOperators
+end Filippo
+
 open Submodule
 
 variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [AddCommGroup E]
@@ -675,7 +691,8 @@ theorem ContinuousLinearMap.isStrictMap_isClosed_range_of_coFG_range
 theorem IsFredholmStruct_iff {𝕜 E F : Type*} [NormedField 𝕜] [IsRCLikeNormedField 𝕜]
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] [NormedAddCommGroup F]
     [NormedSpace 𝕜 F] [CompleteSpace F] (u : E →L[𝕜] F) :
-    IsFredholmStruct (u : E →L[𝕜] F) ↔ u.ker.FG ∧ u.range.CoFG where
+    IsFredholmStruct (u : E →L[𝕜] F) ↔
+      FiniteDimensional 𝕜 u.ker ∧ FiniteDimensional 𝕜 (F ⧸ u.range) where
   mp h := ⟨h.kerFG, h.cokerFG⟩
   mpr h := by
     constructor
@@ -684,7 +701,7 @@ theorem IsFredholmStruct_iff {𝕜 E F : Type*} [NormedField 𝕜] [IsRCLikeNorm
     · exact h.1
     · exact h.2
     · let := IsRCLikeNormedField.rclike 𝕜
-      have hf : FiniteDimensional 𝕜 u.ker := u.ker.fg_iff_finiteDimensional.1 h.1
+      have := h.1
       exact Submodule.ClosedComplemented.of_finiteDimensional _
 
 /- ## A topological lemma
