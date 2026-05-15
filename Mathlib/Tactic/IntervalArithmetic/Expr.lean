@@ -17,6 +17,32 @@ arithmetic tactics.
 
 public meta section
 
+section Lemmas
+
+variable {α : Type*} [Preorder α]
+
+lemma le_of_mem_Ici {x a : α} (hx : x ∈ Set.Ici a) : a ≤ x := Set.mem_Ici.mp hx
+
+lemma lt_of_mem_Ioi {x a : α} (hx : x ∈ Set.Ioi a) : a < x := Set.mem_Ioi.mp hx
+
+lemma le_of_mem_Iic {x b : α} (hx : x ∈ Set.Iic b) : x ≤ b := Set.mem_Iic.mp hx
+
+lemma lt_of_mem_Iio {x b : α} (hx : x ∈ Set.Iio b) : x < b := Set.mem_Iio.mp hx
+
+lemma fst_le_of_mem_Ico {x a b : α} (hx : x ∈ Set.Ico a b) : a ≤ x := Set.mem_Ico.mp hx |>.1
+lemma lt_snd_of_mem_Ico {x a b : α} (hx : x ∈ Set.Ico a b) : x < b := Set.mem_Ico.mp hx |>.2
+
+lemma fst_lt_of_mem_Ioc {x a b : α} (hx : x ∈ Set.Ioc a b) : a < x := Set.mem_Ioc.mp hx |>.1
+lemma le_snd_of_mem_Ioc {x a b : α} (hx : x ∈ Set.Ioc a b) : x ≤ b := Set.mem_Ioc.mp hx |>.2
+
+lemma fst_le_of_mem_Icc {x a b : α} (hx : x ∈ Set.Icc a b) : a ≤ x := Set.mem_Icc.mp hx |>.1
+lemma le_snd_of_mem_Icc {x a b : α} (hx : x ∈ Set.Icc a b) : x ≤ b := Set.mem_Icc.mp hx |>.2
+
+lemma fst_lt_of_mem_Ioo {x a b : α} (hx : x ∈ Set.Ioo a b) : a < x := Set.mem_Ioo.mp hx |>.1
+lemma lt_snd_of_mem_Ioo {x a b : α} (hx : x ∈ Set.Ioo a b) : x < b := Set.mem_Ioo.mp hx |>.2
+
+end Lemmas
+
 open Lean Meta Mathlib IntervalArithmetic
 
 namespace Lean.Expr
@@ -47,36 +73,8 @@ def intervalHyp? (e : Expr) : Option (FVarId × FVarId × Expr) := do
 def mkMemInterval (r x φ : Expr) : MetaM Expr := do
   return ← mkAppM ``Membership.mem #[(← mkAppM ``IntervalArithmetic.Interval.toSet #[φ, x]), r]
 
-end Lean.Expr
-
-namespace IntervalArithmetic
-
-section
-
-variable {α : Type*} [Preorder α]
-
-lemma le_of_mem_Ici {x a : α} (hx : x ∈ Set.Ici a) : a ≤ x := Set.mem_Ici.mp hx
-
-lemma lt_of_mem_Ioi {x a : α} (hx : x ∈ Set.Ioi a) : a < x := Set.mem_Ioi.mp hx
-
-lemma le_of_mem_Iic {x b : α} (hx : x ∈ Set.Iic b) : x ≤ b := Set.mem_Iic.mp hx
-
-lemma lt_of_mem_Iio {x b : α} (hx : x ∈ Set.Iio b) : x < b := Set.mem_Iio.mp hx
-
-lemma fst_le_of_mem_Ico {x a b : α} (hx : x ∈ Set.Ico a b) : a ≤ x := Set.mem_Ico.mp hx |>.1
-lemma lt_snd_of_mem_Ico {x a b : α} (hx : x ∈ Set.Ico a b) : x < b := Set.mem_Ico.mp hx |>.2
-
-lemma fst_lt_of_mem_Ioc {x a b : α} (hx : x ∈ Set.Ioc a b) : a < x := Set.mem_Ioc.mp hx |>.1
-lemma le_snd_of_mem_Ioc {x a b : α} (hx : x ∈ Set.Ioc a b) : x ≤ b := Set.mem_Ioc.mp hx |>.2
-
-lemma fst_le_of_mem_Icc {x a b : α} (hx : x ∈ Set.Icc a b) : a ≤ x := Set.mem_Icc.mp hx |>.1
-lemma le_snd_of_mem_Icc {x a b : α} (hx : x ∈ Set.Icc a b) : x ≤ b := Set.mem_Icc.mp hx |>.2
-
-lemma fst_lt_of_mem_Ioo {x a b : α} (hx : x ∈ Set.Ioo a b) : a < x := Set.mem_Ioo.mp hx |>.1
-lemma lt_snd_of_mem_Ioo {x a b : α} (hx : x ∈ Set.Ioo a b) : x < b := Set.mem_Ioo.mp hx |>.2
-
-end
-
+/- Inductive type representing the different types of intervals of the form `Ixx`
+(as expressions). -/
 inductive IntervalClass
   | Ici : Expr → IntervalClass
   | Ioi : Expr → IntervalClass
@@ -102,7 +100,7 @@ def _root_.Lean.Expr.setInterval? (e : Expr) : Option IntervalClass :=
 
 /-- If `e` is an `Expr` of the form `r ∈ Set.Ixy a? b?`, return the `r` and the corresponding
 `IntervalClass`. -/
-def _root_.Lean.Expr.memSetInterval? (e : Expr) :
+def memSetInterval? (e : Expr) :
     Option (Expr × IntervalClass) := do
   let (r, s) ← e.memSet?
   let Ixx ← s.setInterval?
@@ -110,7 +108,7 @@ def _root_.Lean.Expr.memSetInterval? (e : Expr) :
 
 /-- If `e` is a proof of `r ∈ Set.Icc a b`, outputs proofs of `a ≤ r` and `r ≤ b`. Similar
 for each `Set.Ixx`. -/
-def _root_.Lean.Expr.memSetIntervalToIneqs? (e : Expr) : MetaM (Option Expr × Option Expr) := do
+def memSetIntervalToIneqs? (e : Expr) : MetaM (Option Expr × Option Expr) := do
   let t ← inferType e
   let some (r, Ixx) := t.memSetInterval? | return (none, none)
   unless r.isFVar do
@@ -146,7 +144,7 @@ def _root_.Lean.Expr.memSetIntervalToIneqs? (e : Expr) : MetaM (Option Expr × O
       return (some h₁, some h₂)
 
 /- `Option` version of `ineq?` -/
-def _root_.Lean.Expr.ineq?? (e : Expr) : Option (Mathlib.Ineq × Expr × Expr × Expr) := do
+def ineq?? (e : Expr) : Option (Mathlib.Ineq × Expr × Expr × Expr) := do
   match e.eq? with
   | some p => return (Ineq.eq, p)
   | none =>
@@ -157,4 +155,4 @@ def _root_.Lean.Expr.ineq?? (e : Expr) : Option (Mathlib.Ineq × Expr × Expr ×
   | some p => return (Ineq.lt, p)
   | none => none
 
-end IntervalArithmetic
+end Lean.Expr

@@ -5,6 +5,7 @@ Authors: David Ledvinka
 -/
 module
 
+public meta import Mathlib.Lean.Meta.Basic
 public import Mathlib.Tactic.IntervalArithmetic.Expr
 
 /-!
@@ -16,6 +17,7 @@ and interval arithmetic operations.
 -/
 
 public meta section
+
 namespace IntervalArithmetic
 
 open Lean Expr Meta Elab Command Std
@@ -36,12 +38,12 @@ structure IntervalArithmeticDecl where
   strictMonoName : Name
   deriving Inhabited
 
-/-- Structure storing all `IntervalArithmeticDecl` indexed by their names. -/
+/-- Structure storing all `IntervalArithmeticDecl`s indexed by their names. -/
 structure IntervalArithmeticDecls where
   decls : NameMap IntervalArithmeticDecl := {}
   deriving Inhabited
 
-/-- Environment extension for storing `IntervalArithmeticDecls` -/
+/-- Environment extension for storing `IntervalArithmeticDecl`s. -/
 abbrev IntervalArithmeticDeclsExt :=
   SimpleScopedEnvExtension IntervalArithmeticDecl IntervalArithmeticDecls
 
@@ -53,7 +55,7 @@ initialize intervalArithmeticDeclsExt : IntervalArithmeticDeclsExt ←
       {d with decls := d.decls.insert e.name e}
   }
 
-/-- Get a `IntervalArithmeticDecl` from the environment. -/
+/-- Get an `IntervalArithmeticDecl` from the environment. -/
 def getIntervalArithmeticDecl? (declName : Name) : MetaM (Option IntervalArithmeticDecl) := do
   let s := intervalArithmeticDeclsExt.getState (← getEnv)
   return s.decls.find? declName
@@ -84,9 +86,9 @@ def addIntervalArithmeticDecl (declName strictMonoName : Name) (kind : Attribute
     let dβLinear ← synthInstance (← mkAppM ``LinearOrder #[β])
     let dβPartial ← mkAppOptM ``LinearOrder.toPartialOrder #[β, dβLinear]
     let dβ' ← mkAppOptM ``PartialOrder.toPreorder #[β, dβPartial]
-    unless ← withNewMCtxDepth <| isDefEq dα dα' do
+    unless ← pureIsDefEq dα dα' do
       throwError m!"{dα} does not match inferred {dα'}"
-    unless ← withNewMCtxDepth <| isDefEq dβ dβ' do
+    unless ← pureIsDefEq dβ dβ' do
       throwError m!"{dβ} does not match inferred {dβ'}"
     let decl : IntervalArithmeticDecl := {
       name := declName
@@ -117,6 +119,7 @@ end IntervalArithmeticDecl
 
 section IntervalOps
 
+/- The data of an Interval Operation. -/
 structure IntervalOp where
   /-- Name of the interval operation declaration. -/
   opName : Name
@@ -156,12 +159,12 @@ initialize intervalOpsExt : IntervalOpsExt ←
         | some arr => some (arr.push o.opName),
         ops := os.ops.insert (o.declName, o.opName) o}}
 
-/- Returns the Array of `opName`s matching the given `declName` and `refName`. -/
-def getIntervalOpNames? (declName : Name) (refName : Name) : MetaM (Option (Array Name)) := do
+/-- Returns the Array of `opName`s matching the given `declName` and `refName`. -/
+def getIntervalOpNames? (declName : Name) (headName : Name) : MetaM (Option (Array Name)) := do
   let s := intervalOpsExt.getState (← getEnv)
-  return s.map.get? (declName, refName)
+  return s.map.get? (declName, headName)
 
-/- Returns the `IntervalOp` with name `opName`. -/
+/-- Returns the `IntervalOp` with name `opName`. -/
 def getIntervalOp? (declName opName : Name) : MetaM (Option IntervalOp) := do
   let s := intervalOpsExt.getState (← getEnv)
   return s.ops.get? (declName, opName)
@@ -181,7 +184,7 @@ def addIntervalOp (declName opName incName : Name) (kind : AttributeKind := .glo
   forallTelescope (← getConstInfo incName).type fun hs conc => do
     -- check that the conclusion is of the form `_ ∈ _.toSet _`
     let some ⟨r₀, x₀, φ'⟩ := conc.memIntervaltoSet?
-      | throwError m!"The conclusion of `{incName}` is not of the form `_ ∈ _.toSet _."
+      | throwError m!"The conclusion of `{incName}` is not of the form `_ ∈ _.toSet _.`"
     -- check that the embedding in the conclusion matches the embedding in the declaration
     if !(← withNewMCtxDepth <| isDefEq φ φ') then
       throwError m!"{φ'} is not definitionally equal to `{decl.embeddingName}`."
@@ -195,7 +198,7 @@ def addIntervalOp (declName opName incName : Name) (kind : AttributeKind := .glo
     for i in [:hs.size] do
       let h := hs[i]!
       if let some (r, x, φ') := intervalHyp? (← inferType h) then
-        if (← withNewMCtxDepth <| isDefEq φ φ') then
+        if (← pureIsDefEq φ φ') then
           if x₀Ids.contains r then
             throwError m!"{mkFVar r} appears as a variable in an interval hypothesis but also \
               in the interval formula: {indentExpr x₀}"
@@ -229,11 +232,11 @@ def addIntervalOp (declName opName incName : Name) (kind : AttributeKind := .glo
             throwError m!"{mkFVar hId} appears in the target expression: {indentExpr r₀}"
           if x₀Ids.contains hId then
             throwError m!"{mkFVar hId} appears in the interval formula: {indentExpr x₀}"
-        else if (← hId.getDecl).userName == `approx_param then
+        else if (← hId.getDecl).userName == `approxParam then
           if r₀Ids.contains hId then
-            throwError m!"`approx_param` appears in the target expression: {indentExpr r₀}"
+            throwError m!"`approxParam` appears in the target expression: {indentExpr r₀}"
           unless x₀Ids.contains hId do
-            throwError m!"`approx_param` does not appear in the interval formula: {indentExpr x₀}"
+            throwError m!"`approxParam` does not appear in the interval formula: {indentExpr x₀}"
           unless approxParam?.isNone do
             throwError "The theorem contains more than one `approx_param`"
           let approx_param_type ← inferType h
@@ -254,7 +257,7 @@ def addIntervalOp (declName opName incName : Name) (kind : AttributeKind := .glo
     }
     intervalOpsExt.add op kind
 
-syntax (name := interval_op) "interval_op " ident ident : attr
+syntax (name := interval_op) "interval_op" ident ident : attr
 
 initialize
   registerBuiltinAttribute {

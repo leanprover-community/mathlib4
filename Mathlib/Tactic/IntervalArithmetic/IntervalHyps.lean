@@ -1,9 +1,19 @@
+/-
+Copyright (c) 2026 David Ledvinka. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: David Ledvinka
+-/
 module
 
 public meta import Mathlib.Tactic.IntervalArithmetic.Certificate
 public meta import Lean.AddDecl
 
-set_option linter.style.header false
+/-!
+# Interval Hypothesis Helpers for Interval Arithmetic Tactics
+
+This file defines functions that preprocess hypothesis for the interval arithmetic tactics.
+
+-/
 
 @[expose] public meta section
 
@@ -17,7 +27,7 @@ def _root_.Lean.Expr.ineqToIntervalHyp? (α : Type) (e : Expr) :
   let ⟨ineq, _, r, s⟩ ← try Expr.ineq? (← whnfR (← inferType e)) catch _ => return none
   if r.isFVar then
     let certGen ← s.toIntervalArithmeticCertificateGenerator α
-    if certGen.fvars.isEmpty then
+    if certGen.fvarIds.isEmpty then
       let cert ← certGen.toCertificate
       match ineq with
       | .eq =>
@@ -42,7 +52,7 @@ def _root_.Lean.Expr.ineqToIntervalHyp? (α : Type) (e : Expr) :
       return none
   else if s.isFVar then
     let certGen ← r.toIntervalArithmeticCertificateGenerator α
-    if certGen.fvars.isEmpty then
+    if certGen.fvarIds.isEmpty then
       let cert ← certGen.toCertificate
       match ineq with
       | .eq =>
@@ -67,22 +77,18 @@ def _root_.Lean.Expr.ineqToIntervalHyp? (α : Type) (e : Expr) :
   else
     return none
 
-def mkIntervalHyps (α : Type) : IntervalM α Unit := do
+def mkIntervalHyps (α : Type) (rs : FVarIdSet) : IntervalM α Unit := do
   let ctx ← read
   let lctx ← getLCtx
-  let mut rs : Array FVarId := #[]
   let mut hs : FVarIdMap (Array (Expr × Expr)) := {}
   for ldecl in lctx do
     let t ← instantiateMVars ldecl.type
-    if ← isDefEq t ctx.targetTypeExpr then
-      let rId := ldecl.fvarId
-      rs := rs.push rId
-    else if let some ⟨r, x, φ⟩ := memIntervaltoSet? t then
+    if let some ⟨r, x, φ⟩ := memIntervaltoSet? t then
       if let some rId := r.fvarId? then
-        if ! x.hasFVar && (← withNewMCtxDepth <| isDefEq ctx.embeddingExpr φ) then
-        hs := hs.alter rId fun
-          | some xs => xs.push (x, ldecl.toExpr)
-          | none => #[(x, ldecl.toExpr)]
+        if rs.contains rId && !x.hasFVar && (← pureIsDefEq ctx.embeddingExpr φ) then
+          hs := hs.alter rId fun
+            | some xs => xs.push (x, ldecl.toExpr)
+            | none => #[(x, ldecl.toExpr)]
     else
       let mut trys := #[]
       let (h₁?, h₂?) ← ldecl.toExpr.memSetIntervalToIneqs?
@@ -94,9 +100,10 @@ def mkIntervalHyps (α : Type) : IntervalM α Unit := do
         trys := trys.push ldecl.toExpr
       for e in trys do
         if let some ⟨rId, x, hrx⟩ ← e.ineqToIntervalHyp? α then
-        hs := hs.alter rId fun
-          | some xs => xs.push (x, hrx)
-          | none => #[(x, hrx)]
+          if rs.contains rId then
+            hs := hs.alter rId fun
+              | some xs => xs.push (x, hrx)
+              | none => #[(x, hrx)]
   for rId in rs do
     let mut x ← mkAppM ``Interval.univ #[ctx.intervalTypeExpr]
     let mut h ← mkAppM ``Interval.mem_toSet_univ #[ctx.embeddingExpr, mkFVar rId]

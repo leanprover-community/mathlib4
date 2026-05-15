@@ -188,29 +188,59 @@ def UpperBound.open (ub : UpperBound α) : UpperBound α :=
   | ⊤ => ⊤
   | (⟨_, a⟩ : FiniteUpperBound α) => (⟨false, a⟩ : FiniteUpperBound α)
 
+@[simp]
+lemma LowerBound.bot_Bounds [Preorder β] (φ : α → β) (b : β) :  LowerBound.Bounds φ ⊥ b := by
+  simp [LowerBound.Bounds]
+
+@[simp]
+lemma UpperBound.top_Bounds [Preorder β] (φ : α → β) (b : β) :  UpperBound.Bounds φ ⊤ b := by
+  simp [UpperBound.Bounds]
+
 lemma LowerBound.bounds_of_le [Preorder β] {φ : α → β} {r s : β}
   {lb : LowerBound α} (hrs : r ≤ s) (hr : lb.Bounds φ r) : lb.Bounds φ s := by
   match lb with
-  | ⊥ => simp [Bounds]
+  | ⊥ => simp
   | (⟨c, a⟩ : FiniteLowerBound α) => cases c <;> simp [Bounds] at hr ⊢ <;> grind
 
 lemma UpperBound.bounds_of_le [Preorder β] {φ : α → β} {r s : β}
   {ub : UpperBound α} (hrs : r ≤ s) (hs : ub.Bounds φ s) : ub.Bounds φ r := by
   match ub with
-  | ⊤ => simp [Bounds]
+  | ⊤ => simp
   | (⟨c, a⟩ : FiniteUpperBound α) => cases c <;> simp [Bounds] at hs ⊢ <;> grind
 
 lemma LowerBound.open_bounds_of_lt [Preorder β] {φ : α → β} {r s : β}
   {lb : LowerBound α} (hrs : r < s) (hr : lb.Bounds φ r) : lb.open.Bounds φ s := by
   match lb with
-  | ⊥ => simp [Bounds, LowerBound.open]
+  | ⊥ => simp [LowerBound.open]
   | (⟨c, a⟩ : FiniteLowerBound α) => cases c <;> simp [Bounds, LowerBound.open] at hr ⊢ <;> grind
 
 lemma UpperBound.open_bounds_of_lt [Preorder β] {φ : α → β} {r s : β}
   {ub : UpperBound α} (hrs : r < s) (hs : ub.Bounds φ s) : ub.open.Bounds φ r := by
   match ub with
-  | ⊤ => simp [Bounds, UpperBound.open]
+  | ⊤ => simp [UpperBound.open]
   | (⟨c, a⟩ : FiniteUpperBound α) => cases c <;> simp [Bounds, UpperBound.open] at hs ⊢ <;> grind
+
+lemma LowerBound.bounds_of_bounds [PartialOrder α] [Preorder β] {φ : α → β} (hf : StrictMono φ)
+    {lb₁ lb₂ : LowerBound α} (h_le : lb₁ ≤ lb₂) {b : β} (hb : lb₂.Bounds φ b) :
+    lb₁.Bounds φ b := by
+  match lb₁, lb₂ with
+  | ⊥, _ => simp [Bounds]
+  | _, ⊥ => simp [Bounds, WithBot.le_bot_iff.mp h_le]
+  | (⟨c₁, a₁⟩ : FiniteLowerBound α), (⟨c₂, a₂⟩ : FiniteLowerBound α) =>
+    cases c₁ <;> cases c₂ <;> simp only [Bounds, Bool.false_eq_true, ↓reduceIte] at hb ⊢
+    case false.true => have : φ a₁ < φ a₂ := hf (by simpa using h_le); grind
+    all_goals (have : φ a₁ ≤ φ a₂ := hf.monotone (by simpa using h_le); grind)
+
+lemma UpperBound.bounds_of_bounds [PartialOrder α] [Preorder β] {φ : α → β} (hf : StrictMono φ)
+    {ub₁ ub₂ : UpperBound α} (h_le : ub₁ ≤ ub₂) {b : β} (hb : ub₁.Bounds φ b) :
+    ub₂.Bounds φ b := by
+  match ub₁, ub₂ with
+  | _, ⊤ => simp [Bounds]
+  | ⊤, _ => simp [Bounds, WithTop.top_le_iff.mp h_le]
+  | (⟨c₁, a₁⟩ : FiniteUpperBound α), (⟨c₂, a₂⟩ : FiniteUpperBound α) =>
+    cases c₁ <;> cases c₂ <;> simp only [Bounds, Bool.false_eq_true, ↓reduceIte] at hb ⊢
+    case true.false => have : φ a₁ < φ a₂ := hf (by simpa using h_le); grind
+    all_goals (have : φ a₁ ≤ φ a₂ := hf.monotone (by simpa using h_le); grind)
 
 end Bound
 
@@ -226,6 +256,9 @@ structure Interval (α : Type*) where
 
 /-- Interval representing `Set.univ` -/
 def Interval.univ (α : Type*) : Interval α := ⟨⊥, ⊤⟩
+
+/-- Interval representing a singleton. -/
+def Interval.singleton {α : Type*} (a : α) : Interval α := ⟨some ⟨true, a⟩, some ⟨true, a⟩⟩
 
 /-- Maps an interval -/
 def Interval.toSet [Preorder β] (φ : α → β) (x : Interval α) : Set β :=
@@ -347,7 +380,7 @@ lemma Interval.lt_of_lt [PartialOrder α] [Preorder β] {φ : α → β} (hφ : 
 
 /- (Decidable/Computable) definition of a "strict" `eq` relation on Intervals. If `x.strict_eq y`
 this means that `x` and `y` both contain exactly one equal element. -/
-def Interval.strict_eq [DecidableEq α] (x y : Interval α) : Prop :=
+def Interval.strictEq [DecidableEq α] (x y : Interval α) : Prop :=
   match x, y with
   | ⟨⊥, _⟩, _ => False
   | ⟨some _ , ⊤⟩, _ => False
@@ -356,7 +389,7 @@ def Interval.strict_eq [DecidableEq α] (x y : Interval α) : Prop :=
   | ⟨some ⟨c₁, a₁⟩, some ⟨c₂, a₂⟩⟩, ⟨some ⟨c₃, a₃⟩, some ⟨c₄, a₄⟩⟩ =>
       if c₁ && c₂ && c₃ && c₄ && a₁ = a₂ && a₂ = a₃ && a₃ = a₄ then True else False
 
-instance [DecidableEq α] (x y : Interval α) : Decidable (x.strict_eq y) :=
+instance [DecidableEq α] (x y : Interval α) : Decidable (x.strictEq y) :=
   match x, y with
   | ⟨⊥, _⟩, _ => isFalse id
   | ⟨some _, ⊤⟩, _ => isFalse id
@@ -366,15 +399,15 @@ instance [DecidableEq α] (x y : Interval α) : Decidable (x.strict_eq y) :=
       inferInstanceAs (Decidable (
         if c₁ && c₂ && c₃ && c₄ && a₁ = a₂ && a₂ = a₃ && a₃ = a₄ then True else False))
 
-lemma Interval.eq_of_strict_eq [LinearOrder α] [PartialOrder β] {φ : α → β} {r s : β}
-    {x y : Interval α} (hrx : r ∈ x.toSet φ) (hsy : s ∈ y.toSet φ) (hxy : x.strict_eq y) :
+lemma Interval.eq_of_strictEq [LinearOrder α] [PartialOrder β] {φ : α → β} {r s : β}
+    {x y : Interval α} (hrx : r ∈ x.toSet φ) (hsy : s ∈ y.toSet φ) (hxy : x.strictEq y) :
     r = s := by
   match x, y with
   | ⟨⊥, _⟩, _ | ⟨some _, ⊤⟩, _ | ⟨some _, some _⟩, ⟨⊥, _⟩ | ⟨some _, some _⟩, ⟨some _, ⊤⟩ =>
-    simp [strict_eq] at hxy
+    simp [strictEq] at hxy
   | ⟨some ⟨x_lc, _⟩, some ⟨x_uc, _⟩⟩, ⟨some ⟨y_lc, _⟩, some ⟨y_uc, _⟩⟩ =>
       cases hx_lc : x_lc <;> cases hx_uc : x_uc <;> cases hy_lc : y_lc <;> cases hy_uc : y_uc
-      all_goals simp [strict_eq, toSet, LowerBound.Bounds, UpperBound.Bounds,
+      all_goals simp [strictEq, toSet, LowerBound.Bounds, UpperBound.Bounds,
         hx_lc, hx_uc, hy_lc, hy_uc] at hrx hsy hxy
       all_goals grind
 

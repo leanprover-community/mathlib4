@@ -1,17 +1,25 @@
+/-
+Copyright (c) 2026 David Ledvinka. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: David Ledvinka
+-/
 module
 
 public meta import Mathlib.Tactic.IntervalArithmetic.Dyadic
-public import Mathlib.Tactic.IntervalArithmetic.Dyadic
-public import Mathlib.Tactic.IntervalArithmetic.Core
-public import Mathlib.Data.Rat.Cast.CharZero
-public import Mathlib.Data.Rat.Cast.Order
-public import Mathlib.Data.Real.Sqrt
-public import Mathlib.Data.Nat.Factorial.Basic
-public import Mathlib.Analysis.Complex.Exponential
-public import Mathlib.Analysis.SpecialFunctions.Pow.Real
-public import Mathlib.Tactic.IntervalArithmetic.Interval
 
-set_option linter.style.header false
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+public import Mathlib.Tactic.IntervalArithmetic.Core
+public import Mathlib.Tactic.IntervalArithmetic.Dyadic
+public import Mathlib.Tactic.IntervalArithmetic.Interval
+public import Mathlib.Analysis.SpecialFunctions.Log.Basic
+
+/-!
+## `dyadic_interval` tactic
+
+This file impliments the `dyadic_interval` tactics for solving real inequalities and interval
+containment goals using interval arithmetic (with dyadic approximations).
+
+-/
 
 @[expose] public section
 
@@ -25,13 +33,6 @@ meta section Elab
 instance : Repr Dyadic where
   reprPrec d := reprPrec d.toRat
 open Lean Expr Meta Elab Command Tactic
-
-
-instance instToExprDyadic : ToExpr Dyadic where
-  toTypeExpr := mkConst ``Dyadic
-  toExpr
-    | .zero => mkConst ``Dyadic.zero
-    | .ofOdd n k _ => mkAppN (mkConst ``Dyadic.ofIntWithPrec) #[ToExpr.toExpr n, ToExpr.toExpr k]
 
 syntax (name := dyadic_interval) "dyadic_interval" ("[" interval_setting,*"]")? : tactic
 
@@ -81,18 +82,18 @@ theorem int_const_inclusion (z : ℤ) : ↑z ∈ (int_const z).toSet dyadic_to_r
   simp [Interval.mem_toSet, LowerBound.Bounds, UpperBound.Bounds, int_const, Dyadic.toRat_intCast,
     dyadic_to_real]
 
-def rat_const (approx_param : ℕ) (q : ℚ) : Interval Dyadic :=
-  ⟨some ⟨true, q.toDyadic approx_param⟩, some ⟨true, -(-q).toDyadic approx_param⟩⟩
+def rat_const (approxParam : ℕ) (q : ℚ) : Interval Dyadic :=
+  ⟨some ⟨true, q.toDyadic approxParam⟩, some ⟨true, -(-q).toDyadic approxParam⟩⟩
 
 @[interval_op DyadicReal RatCast]
-def rat_const_inclusion (approx_param : ℕ) (q : ℚ) :
-    ↑q ∈ (rat_const approx_param q).toSet dyadic_to_real := by
+theorem rat_const_inclusion (approxParam : ℕ) (q : ℚ) :
+    ↑q ∈ (rat_const approxParam q).toSet dyadic_to_real := by
   sorry
 
 @[interval_op DyadicReal OfScientific]
-def rat_of_scientific_inclusion (approx_param : ℕ) (m : ℕ) (s : Bool) (e : ℕ) :
+def rat_of_scientific_inclusion (approxParam : ℕ) (m : ℕ) (s : Bool) (e : ℕ) :
     ↑(OfScientific.ofScientific (α := ℝ) m s e)
-      ∈ (rat_const approx_param (Rat.ofScientific m s e)).toSet dyadic_to_real := by
+      ∈ (rat_const approxParam (Rat.ofScientific m s e)).toSet dyadic_to_real := by
   sorry
 
 /- Exact Operations -/
@@ -409,7 +410,7 @@ namespace Dyadic
 
 For negative `q` we return `(0, true)`, matching `Real.sqrt`'s behavior on negative inputs.
 -/
-def sqrtFloorAndExact (approx_param : ℕ) (q : Dyadic) : Int × Bool :=
+def sqrtFloorAndExact (approxParam : ℕ) (q : Dyadic) : Int × Bool :=
   match q with
   | zero => (0, true)
   | .ofOdd n k _ =>
@@ -417,7 +418,7 @@ def sqrtFloorAndExact (approx_param : ℕ) (q : Dyadic) : Int × Bool :=
         (0, true)
       else
         let N : Nat := n.natAbs
-        let shift : Int := 2 * (approx_param : Int) - k
+        let shift : Int := 2 * (approxParam : Int) - k
         match shift with
         | Int.ofNat s =>
             let scaled : Nat := N <<< s
@@ -431,24 +432,24 @@ def sqrtFloorAndExact (approx_param : ℕ) (q : Dyadic) : Int × Bool :=
             ((m : Int), if (m * m) * denom = N then true else false)
 
 /-- Dyadic lower approximation to `sqrt q`. -/
-def sqrtDown (approx_param : ℕ) (q : Dyadic) : Dyadic :=
-  let r := sqrtFloorAndExact approx_param q
-  Dyadic.ofIntWithPrec r.1 approx_param
+def sqrtDown (approxParam : ℕ) (q : Dyadic) : Dyadic :=
+  let r := sqrtFloorAndExact approxParam q
+  Dyadic.ofIntWithPrec r.1 approxParam
 
 /-- Dyadic upper approximation to `sqrt q`. -/
-def sqrtUp (approx_param : ℕ) (q : Dyadic) : Dyadic :=
-  let r := sqrtFloorAndExact approx_param q
+def sqrtUp (approxParam : ℕ) (q : Dyadic) : Dyadic :=
+  let r := sqrtFloorAndExact approxParam q
   let m := r.1
   let exact := r.2
-  Dyadic.ofIntWithPrec (if exact then m else m + 1) approx_param
+  Dyadic.ofIntWithPrec (if exact then m else m + 1) approxParam
 
 /-- Whether `sqrt q` is exactly representable at precision `approxParam`. -/
-def sqrtExact (approx_param : ℕ) (q : Dyadic) : Bool :=
-  (sqrtFloorAndExact approx_param q).2
+def sqrtExact (approxParam : ℕ) (q : Dyadic) : Bool :=
+  (sqrtFloorAndExact approxParam q).2
 
 end Dyadic
 
-def Interval.dyadic_sqrt (approx_param : ℕ) (x : Interval Dyadic) : Interval Dyadic where
+def Interval.dyadic_sqrt (approxParam : ℕ) (x : Interval Dyadic) : Interval Dyadic where
   lb :=
     match x.lb with
     | ⊥ => some ⟨true, 0⟩
@@ -456,8 +457,8 @@ def Interval.dyadic_sqrt (approx_param : ℕ) (x : Interval Dyadic) : Interval D
         if a < 0 then
           some ⟨true, 0⟩
         else
-          let r := Dyadic.sqrtFloorAndExact approx_param a
-          some ⟨c && r.2, Dyadic.ofIntWithPrec r.1 approx_param⟩
+          let r := Dyadic.sqrtFloorAndExact approxParam a
+          some ⟨c && r.2, Dyadic.ofIntWithPrec r.1 approxParam⟩
   ub :=
     match x.ub with
     | ⊤ => ⊤
@@ -465,14 +466,14 @@ def Interval.dyadic_sqrt (approx_param : ℕ) (x : Interval Dyadic) : Interval D
         if a ≤ 0 then
           some ⟨true, 0⟩
         else
-          let r := Dyadic.sqrtFloorAndExact approx_param a
+          let r := Dyadic.sqrtFloorAndExact approxParam a
           let m := if r.2 then r.1 else r.1 + 1
-          some ⟨c && r.2, Dyadic.ofIntWithPrec m approx_param⟩
+          some ⟨c && r.2, Dyadic.ofIntWithPrec m approxParam⟩
 
 @[interval_op DyadicReal Sqrt]
-theorem Interval.dyadic_sqrt_inclusion {r : ℝ} {x : Interval Dyadic} (approx_param : ℕ)
+theorem Interval.dyadic_sqrt_inclusion {r : ℝ} {x : Interval Dyadic} (approxParam : ℕ)
     (hrx : r ∈ x.toSet dyadic_to_real) :
-    √ r ∈ (x.dyadic_sqrt approx_param).toSet dyadic_to_real := by
+    √ r ∈ (x.dyadic_sqrt approxParam).toSet dyadic_to_real := by
   sorry
 
 end Sqrt
@@ -489,6 +490,19 @@ def bitLenAux : ℕ → ℕ → ℕ
 
 def _root_.Nat.bitLen (n : ℕ) : ℕ :=
   bitLenAux n n
+
+/--
+Choose the number of Taylor terms from the dyadic precision.
+
+This is a cheap Stirling-style heuristic for the reduced range `0 ≤ x ≤ 1/2`.
+It is not needed for soundness: any number of Taylor terms gives a valid
+enclosure, just possibly a wider one.
+-/
+def expTaylorTerms (prec : ℕ) : ℕ :=
+  let L := prec.bitLen
+  let LL := L.bitLen
+  let denom := max 1 (L - LL + 1)
+  max 8 (prec / denom + 80)
 
 def _root_.Dyadic.divPowTwo (x : Dyadic) (k : ℕ) : Dyadic :=
   match x with
@@ -513,7 +527,10 @@ def expTaylorLowerAux (prec : ℕ) (x : Dyadic) :
   | 0, _k, _term, sum => sum
   | n + 1, k, term, sum =>
       let next := Dyadic.divDown prec (term * x) ((k + 1 : ℕ) : Dyadic)
-      expTaylorLowerAux prec x n (k + 1) next (sum + next)
+      if next = 0 then
+        sum
+      else
+        expTaylorLowerAux prec x n (k + 1) next (sum + next)
 
 def expTaylorLower (prec terms : ℕ) (x : Dyadic) : Dyadic :=
   expTaylorLowerAux prec x terms 0 1 1
@@ -559,23 +576,22 @@ def expUp (prec terms : ℕ) (x : Dyadic) : Dyadic :=
   else
     expNonnegUp prec terms x
 
-
-def Interval.dyadic_exp (approx_param : ℕ) (x : Interval Dyadic) : Interval Dyadic where
+def Interval.dyadic_exp (approxParam : ℕ) (x : Interval Dyadic) : Interval Dyadic where
   lb :=
     match x.lb with
     | ⊥ => some ⟨false, 0⟩
     | some ⟨c, a⟩ =>
-        some ⟨c, expDown approx_param approx_param a⟩
+        some ⟨c, expDown approxParam (expTaylorTerms approxParam) a⟩
   ub :=
     match x.ub with
     | ⊤ => ⊤
     | some ⟨c, a⟩ =>
-        some ⟨c, expUp approx_param approx_param a⟩
+        some ⟨c, expUp approxParam (expTaylorTerms approxParam) a⟩
 
 @[interval_op DyadicReal Exp]
-theorem Interval.dyadic_exp_inclusion {r : ℝ} {x : Interval Dyadic} (approx_param : ℕ)
+theorem Interval.dyadic_exp_inclusion {r : ℝ} {x : Interval Dyadic} (approxParam : ℕ)
     (hrx : r ∈ x.toSet dyadic_to_real) :
-    Real.exp r ∈ (x.dyadic_exp approx_param).toSet dyadic_to_real := by
+    Real.exp r ∈ (x.dyadic_exp approxParam).toSet dyadic_to_real := by
   sorry
 
 end Exp
@@ -665,10 +681,190 @@ def Interval.dyadicPi (approxParam : ℕ) : Interval Dyadic :=
     ub := some ⟨false, ub⟩ }
 
 @[interval_op DyadicReal Pi]
-theorem Interval.mem_dyadicPi (approx_param : ℕ) :
-    Real.pi ∈ (Interval.dyadicPi approx_param).toSet dyadic_to_real := by
+theorem Interval.mem_dyadicPi (approxParam : ℕ) :
+    Real.pi ∈ (Interval.dyadicPi approxParam).toSet dyadic_to_real := by
   sorry
 
 end Pi
 
-end IntervalArithmetic
+/- ## Transcendental Functions -/
+
+/- ## Transcendental Functions -/
+
+section Log
+
+/--
+Number of `atanh`-series terms used for `log`.
+
+For `1 ≤ x ≤ 2`, we use
+
+  `log x = 2 * (z + z^3 / 3 + z^5 / 5 + ...)`
+
+where
+
+  `z = (x - 1) / (x + 1)`.
+
+Since `0 ≤ z ≤ 1 / 3`, this converges fairly quickly.
+-/
+def logTaylorTerms (approxParam : ℕ) : ℕ :=
+  approxParam / 3 + 8
+
+def logSeriesLowerAux (approxParam : ℕ) (z2 : Dyadic) :
+    ℕ → ℕ → Dyadic → Dyadic → Dyadic
+  | 0, _i, _zpow, acc => acc
+  | n + 1, i, zpow, acc =>
+      let denom : Dyadic := (2 * i + 1 : ℕ)
+      let term := Dyadic.divDown approxParam zpow denom
+      logSeriesLowerAux approxParam z2 n (i + 1) (zpow * z2) (acc + term)
+
+def logSeriesUpperAux (approxParam : ℕ) (z2 : Dyadic) :
+    ℕ → ℕ → Dyadic → Dyadic → Dyadic
+  | 0, _i, _zpow, acc => acc
+  | n + 1, i, zpow, acc =>
+      let denom : Dyadic := (2 * i + 1 : ℕ)
+      let term := Dyadic.divUp approxParam zpow denom
+      logSeriesUpperAux approxParam z2 n (i + 1) (zpow * z2) (acc + term)
+
+def logSeriesLower (approxParam terms : ℕ) (z : Dyadic) : Dyadic :=
+  logSeriesLowerAux approxParam (z * z) terms 0 z 0
+
+def logSeriesUpper (approxParam terms : ℕ) (z : Dyadic) : Dyadic :=
+  logSeriesUpperAux approxParam (z * z) terms 0 z 0
+
+/--
+Bounds for `log x` when `1 ≤ x ≤ 2`.
+
+Uses
+
+  `log x = 2 * atanh ((x - 1) / (x + 1))`
+
+i.e.
+
+  `log x = 2 * Σ z^(2i+1)/(2i+1)`.
+-/
+def logUnitBounds (approxParam terms : ℕ) (x : Dyadic) : Dyadic × Dyadic :=
+  let zLower := Dyadic.divDown approxParam (x - 1) (x + 1)
+  let zUpper := Dyadic.divUp approxParam (x - 1) (x + 1)
+
+  let lower := (2 : Dyadic) * logSeriesLower approxParam terms zLower
+  let upperSeries := (2 : Dyadic) * logSeriesUpper approxParam terms zUpper
+
+  /-
+  Crude positive tail bound.
+
+  For normalized inputs `1 ≤ x ≤ 2`, we have `0 ≤ z ≤ 1/3`.
+  The omitted tail of
+
+    2 * Σ z^(2i+1)/(2i+1)
+
+  is bounded by something crude like
+
+    3 * z^(2*terms+1).
+
+  This is deliberately simple and kernel-friendly.
+  -/
+  let tail := (3 : Dyadic) * (zUpper ^ (2 * terms + 1))
+  (lower, upperSeries + tail)
+
+/--
+Normalize a positive dyadic as
+
+  `x = m * 2^e`
+
+with approximately
+
+  `1 ≤ m < 2`.
+
+If
+
+  `x = n * 2^(-k)`
+
+and `L = n.natAbs.bitLen`, then
+
+  `m = n * 2^(-(L - 1))`,
+  `e = (L - 1) - k`.
+
+This reuses the `_root_.Nat.bitLen` you already defined in the `Exp` section.
+-/
+def logNormalizePos (x : Dyadic) : Dyadic × Int :=
+  match x with
+  | .zero => (1, 0)
+  | .ofOdd n k _ =>
+      let L := n.natAbs.bitLen
+      let p : Int := (L - 1 : ℕ)
+      (Dyadic.ofIntWithPrec n p, p - k)
+
+def intAsDyadic (z : Int) : Dyadic :=
+  Dyadic.ofIntWithPrec z 0
+
+def mulIntLogBounds (e : Int) (lo hi : Dyadic) : Dyadic × Dyadic :=
+  let eD := intAsDyadic e
+  if e < 0 then
+    (eD * hi, eD * lo)
+  else
+    (eD * lo, eD * hi)
+
+/--
+Core logarithm approximation for positive dyadics.
+
+Range reduction:
+
+  `x = m * 2^e`, with `1 ≤ m < 2`.
+
+Then
+
+  `log x = log m + e * log 2`.
+-/
+def logBoundsCore
+    (approxParam terms : ℕ) (logTwoBounds : Dyadic × Dyadic) (x : Dyadic) :
+    Dyadic × Dyadic :=
+  let (m, e) := logNormalizePos x
+  let (mLower, mUpper) := logUnitBounds approxParam terms m
+  let (twoLower, twoUpper) := logTwoBounds
+  let (eLower, eUpper) := mulIntLogBounds e twoLower twoUpper
+  (mLower + eLower, mUpper + eUpper)
+
+/--
+Bounds for `log x` for positive dyadic `x`.
+
+This recomputes bounds for `log 2`, so interval operations should usually use
+`logBoundsCore` and share `logTwoBounds`.
+-/
+def logBounds (approxParam : ℕ) (x : Dyadic) : Dyadic × Dyadic :=
+  let terms := logTaylorTerms approxParam
+  let logTwoBounds := logUnitBounds approxParam terms (2 : Dyadic)
+  logBoundsCore approxParam terms logTwoBounds x
+
+/--
+Interval extension of real logarithm.
+
+If the interval is not bounded away from zero on the left, this conservatively
+returns the full interval.
+-/
+def Interval.dyadic_log (approxParam : ℕ) (x : Interval Dyadic) : Interval Dyadic :=
+  let terms := logTaylorTerms approxParam
+  let logTwoBounds := logUnitBounds approxParam terms (2 : Dyadic)
+  match x.lb, x.ub with
+  | some ⟨_, a⟩, some ⟨_, b⟩ =>
+      if 0 < a then
+        let lo := (logBoundsCore approxParam terms logTwoBounds a).1
+        let hi := (logBoundsCore approxParam terms logTwoBounds b).2
+        ⟨some ⟨true, lo⟩, some ⟨true, hi⟩⟩
+      else
+        ⟨⊥, ⊤⟩
+  | some ⟨_, a⟩, ⊤ =>
+      if 0 < a then
+        let lo := (logBoundsCore approxParam terms logTwoBounds a).1
+        ⟨some ⟨true, lo⟩, ⊤⟩
+      else
+        ⟨⊥, ⊤⟩
+  | _, _ => ⟨⊥, ⊤⟩
+
+@[interval_op DyadicReal Real.log]
+theorem Interval.dyadic_log_inclusion {r : ℝ} {x : Interval Dyadic}
+    (approxParam : ℕ) (hrx : r ∈ x.toSet dyadic_to_real) :
+    Real.log r ∈ (x.dyadic_log approxParam).toSet dyadic_to_real := by
+  sorry
+
+end Log
+#min_imports
