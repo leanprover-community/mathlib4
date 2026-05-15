@@ -179,6 +179,15 @@ If the field has positive characteristic `p`, our division by zero convention fo
 @[stacks 09FD "first part"]
 class Field (K : Type u) extends CommRing K, DivisionRing K, Ring K
 
+/-- `Ring K` is listed as a direct parent of `Field K` (in addition to `CommRing K`
+and `DivisionRing K`, which both already imply it) so that `Field.toRing` is an
+auto-generated one-step fused projection. Without this redundancy, code that
+needs `Ring K` from a `Field K` has to go via `Field.toCommRing.toRing` or
+`Field.toDivisionRing.toRing` — a composition of two parent rebuilds — which is
+measurably more expensive in `isDefEq` checks that compare `Ring`-valued data
+obtained through the two paths. -/
+add_decl_doc Field.toRing
+
 -- see Note [lower instance priority]
 instance (priority := 100) Field.toSemifield [Field K] : Semifield K := { ‹Field K› with }
 
