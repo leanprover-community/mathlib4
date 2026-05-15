@@ -13,14 +13,8 @@ name: ci dev (lake cache shadow)
 #     LAKE_CACHE_ARTIFACT_ENDPOINT    — e.g. https://<bucket>/<prefix>/artifacts
 #     LAKE_CACHE_REVISION_ENDPOINT    — e.g. https://<bucket>/<prefix>/revisions
 #
-# Isolation from mathlib's legacy `lake exe cache` storage:
-#
-#   1. The endpoints above MUST point at a dedicated bucket (separate
-#      from the legacy Azure bucket at lakecache.blob.core.windows.net).
-#   2. Within that bucket every PUT and GET in this workflow is
-#      namespaced under the SHADOW_SCOPE env var below.
-#   3. The workflow never invokes `lake exe cache put`, so the legacy
-#      uploader is never reached either.
+# This bucket should be dedicated to the Lake cache and distinct from
+# mathlib's legacy `lake exe cache` storage on Azure.
 
 on:
   workflow_dispatch:
