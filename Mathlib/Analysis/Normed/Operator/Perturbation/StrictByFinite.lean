@@ -108,21 +108,34 @@ theorem step1_backward [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
     (h_ker : Disjoint u.ker A) (h_range : u.range = ⊤)
     (h_clemb : IsClosedEmbedding (restrict A u)) :
     IsQuotientMap u := by
+  -- Fix `S` an algebraic complement of `A` containing `u.ker`. It has finite dimension.
   rcases h_ker.exists_isCompl with ⟨S, ker_le_S, S_compl_A⟩
+  have : FiniteDimensional 𝕜 S :=
+    quotientEquivOfIsCompl A S S_compl_A.symm |>.finiteDimensional
+  -- Because `A` is closed with finite codimension, `S` is in fact a topological complement of `A`.
   replace S_compl_A : IsTopCompl S A :=
       S_compl_A.symm.isTopCompl_of_finiteDimensional_quotient A_closed |>.symm
-  have : FiniteDimensional 𝕜 S :=
-    quotientEquivOfIsCompl A S S_compl_A.isCompl.symm |>.finiteDimensional
+  -- By assumption, `map u A` is closed.
   have uA_closed : IsClosed (map u.toLinearMap A : Set F) := by
     simpa [← range_restrict] using h_clemb.isClosed_range
+  -- Because `u` is assumed surjective and `S ⊔ A = ⊤`, we have `map u S ⊔ map u A = ⊤`.
+  -- Furthermore, because the kernel of `u` is fully contained in `S`, we can show that
+  -- `map u S ⊓ map u A = ⊥`, so that `map u S` and `map u A` are in fact algebraic complements
+  -- of each other.
   have uS_compl_uA : IsCompl (map u.toLinearMap S) (map u.toLinearMap A) := by
     constructor
     · rw [disjoint_iff, inf_comm, map_inf_eq_map_inf_comap, comap_map_eq, sup_eq_left.mpr ker_le_S,
         S_compl_A.isCompl.symm.inf_eq_bot, Submodule.map_bot]
     · rw [codisjoint_iff, ← Submodule.map_sup, S_compl_A.isCompl.sup_eq_top, Submodule.map_top,
         h_range]
+  -- Since `map u S` has finite dimension, `map u A` has finite codimension. But we also know that
+  -- `map u A` is closed so, once again, `map u S` and `map u A` are in fact *topological*
+  -- complements of each other.
   replace uS_compl_uA : IsTopCompl (map u.toLinearMap S) (map u.toLinearMap A) :=
       uS_compl_uA.symm.isTopCompl_of_isClosed_of_finiteDimensional uA_closed |>.symm
+  -- Thus, we have decomposed both the comain and the codomain into topopological complements.
+  -- Using the corresponding isomorphisms `(S × A) ≃L[𝕜] E` and `(map u S × map u A) ≃L[𝕜] F`,
+  -- we have to show that the map `u₁.prodMap u₂ : S × A → map u S × map u A` is a quotient map.
   set Φ : (S × A) ≃L[𝕜] E := prodEquivOfIsTopCompl S A S_compl_A
   set Ψ : (map u.toLinearMap S × map u.toLinearMap A) ≃L[𝕜] F :=
     prodEquivOfIsTopCompl _ _ uS_compl_uA
@@ -135,10 +148,15 @@ theorem step1_backward [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
     simp [Φ, Ψ, u₁, u₂, ← map_add, projectionL_add_projectionL_eq_self]
   suffices IsQuotientMap (Prod.map u₁ u₂) from eq ▸
     (Ψ.toHomeomorph.isQuotientMap.comp this |>.comp Φ.symm.toHomeomorph.isQuotientMap)
+  -- Since linear quotient maps are automatically open, and since the product of two open quotient
+  -- maps is a quotient map, this reduces to showing that both `u₁` and `u₂` are quotient maps.
   refine IsOpenQuotientMap.prodMap ?_ ?_ |>.isQuotientMap <;>
   apply AddMonoidHom.isOpenQuotientMap_of_isQuotientMap ?_
+  -- `u₁` is a quotient map because it is a surjective linear map between finite dimensional spaces.
   · refine ContinuousLinearMap.isQuotientMap_of_finiteDimensional u₁
       (u₁.range_eq_top_of_surjective u₁_surj)
+  -- `u₂` is strict because `(map u A).subtype ∘ u₂ = u.restrict A` is an embedding (hence strict)
+  -- by assumptions. Since `u₂` is surjective, it is a quotient map, and we are done.
   · simp_rw [isQuotientMap_iff_isStrictMap_surjective, u₂_surj, and_true,
       (map u.toLinearMap A).isEmbedding_subtype.isStrictMap_iff]
     exact h_clemb.isStrictMap
