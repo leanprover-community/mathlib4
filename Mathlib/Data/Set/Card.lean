@@ -945,18 +945,22 @@ theorem ncard_coe {α : Type*} (s : Set α) :
 lemma ncard_powerset_ncard (hs : s.Finite) (n : ℕ) :
     {t : Set α | t.ncard = n ∧ t ⊆ s}.ncard = s.ncard.choose n := by
   have : {t : Set α | t.ncard = n ∧ t ⊆ s}.Finite := hs.finite_subsets.subset (by grind)
+  lift s to Finset α using hs
+  suffices h : {t | t.ncard = n ∧ t ⊆ (s : Set α)}.ncard = (Finset.powersetCard n s).card by
+    rw [h, ncard_coe_finset s, s.card_powersetCard]
   rw [Set.ncard_eq_toFinset_card _ this]
-  convert Finset.card_powersetCard n hs.toFinset
-  swap; · exact s.ncard_eq_toFinset_card hs
   convert Finset.card_image_of_injOn Finset.coe_injective.injOn
   ext t
-  simp only [Set.Finite.mem_toFinset, Set.mem_setOf_eq, Finset.mem_image, Finset.mem_powersetCard,
-    Set.Finite.subset_toFinset]
-  refine ⟨fun ⟨h1, h2⟩ ↦ ⟨(hs.subset h2).toFinset, ⟨by simpa, ?_⟩, by simp⟩,
-    fun ⟨u, ⟨h1, h2⟩, h3⟩ ↦ ?_⟩
-  · rw [← t.ncard_eq_toFinset_card _, h1]
-  · rw [← h3, Set.ncard_coe_finset, h2]
-    exact ⟨rfl, h1⟩
+  simp only [Finite.mem_toFinset, mem_setOf_eq, Finset.mem_image, Finset.mem_powersetCard]
+  constructor
+  · intro ⟨t_ncard, t_subset⟩
+    lift t to Finset α using s.finite_toSet.subset t_subset
+    rw [Set.ncard_coe_finset] at t_ncard
+    rw [Finset.coe_subset] at t_subset
+    use t
+  · rintro ⟨t₁, ⟨t₁_subset, t₁_card⟩, rfl⟩
+    rw [Set.ncard_coe_finset, t₁_card, Finset.coe_subset]
+    exact ⟨rfl, t₁_subset⟩
 
 section Lattice
 
