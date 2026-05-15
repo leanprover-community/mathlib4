@@ -195,10 +195,6 @@ private lemma variation_smul_le {𝕜 : Type*} [NormedField 𝕜] [NormedSpace �
   grw [enorm_measure_le_variation]
   exact le_rfl
 
-open scoped NNReal
-lemma foo (u v : Measure X) (c : ℝ≥0) (h : u ≤ v) : c • u ≤ c • v := by
-  apply smul_mono_right
-
 lemma variation_smul {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 V] {c : 𝕜} :
     (c • μ).variation = ‖c‖₊ • μ.variation := by
   apply le_antisymm variation_smul_le ?_
@@ -207,14 +203,10 @@ lemma variation_smul {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 V] {c :
   calc ‖c‖₊ • μ.variation
   _ = ‖c‖₊ • (c⁻¹ • (c • μ)).variation := by simp [smul_smul, inv_mul_cancel₀ hc]
   _ ≤ ‖c‖₊ • ‖c⁻¹‖₊ • (c • μ).variation := by
-    apply Measure.smul_mono
-
-
-  --rw [show μ = c⁻¹ • (c • μ) by simp [smul_smul, inv_mul_cancel₀ hc]]
-  --calc
-
-#exit
-
+    gcongr
+    exact variation_smul_le
+  _ = (c • μ).variation := by
+    simp [smul_smul, mul_inv_cancel₀ (nnnorm_ne_zero_iff.mpr hc)]
 
 end NormedAddCommGroup
 
