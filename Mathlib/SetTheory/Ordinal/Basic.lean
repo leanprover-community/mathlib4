@@ -612,7 +612,7 @@ theorem card_zero : card 0 = 0 := mk_eq_zero _
 theorem card_one : card 1 = 1 := mk_eq_one _
 
 @[simp]
-theorem mk_toType (o : Ordinal) : #o.ToType = o.card :=
+theorem _root_.Cardinal.mk_toType (o : Ordinal) : #o.ToType = o.card :=
   (Ordinal.card_type _).symm.trans <| by rw [Ordinal.type_toType]
 
 variable (r) in
