@@ -1191,10 +1191,5 @@ theorem iteratedFDeriv_comp_apply_eq_sum_orderedFinpartition_of_mem (hx : x ∈ 
     (v : Fin i → E) : iteratedFDeriv 𝕜 i (g ∘ f) x v =
       ∑ c : OrderedFinpartition i, iteratedFDeriv 𝕜 c.length g (f x)
         (fun j ↦ iteratedFDeriv 𝕜 (c.partSize j) f x (v ∘ c.emb j)) := by
-  have tay_g : HasFTaylorSeriesUpToOn n g (ftaylorSeriesWithin 𝕜 g .univ) (f '' (.univ ∩ u)) := by
-    simpa [ftaylorSeriesWithin_univ, univ_inter] using hg
-  have tay_f : HasFTaylorSeriesUpToOn n f (ftaylorSeriesWithin 𝕜 f .univ) (.univ ∩ u) := by
-    simpa [ftaylorSeriesWithin_univ, univ_inter] using hf
-  simpa [ftaylorSeriesWithin_univ, iteratedFDerivWithin_univ] using
-    iteratedFDerivWithin_comp_apply_eq_sum_orderedFinpartition_of_mem hu hi ⟨mem_univ x, hx⟩
-    tay_g tay_f uniqueDiffOn_univ v
+  simp [iteratedFDeriv_comp_eq_sum_orderedFinpartition_of_mem hu hi hx hg hf,
+    OrderedFinpartition.applyOrderedFinpartition_apply]
