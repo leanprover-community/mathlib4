@@ -3,10 +3,12 @@ Copyright (c) 2025 Robin Langer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Langer
 -/
-import Mathlib.RingTheory.HopfAlgebra.Basic
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Eval.SMul
-import Mathlib.RingTheory.TensorProduct.Maps
+module
+
+public import Mathlib.RingTheory.HopfAlgebra.Basic
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Eval.SMul
+public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 # The Hopf algebra structure on polynomials (additive group scheme 𝔾ₐ)
