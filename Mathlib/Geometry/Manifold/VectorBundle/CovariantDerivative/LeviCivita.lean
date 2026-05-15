@@ -147,9 +147,14 @@ section rhs_aux
 
 variable (Y Z) in
 omit [IsManifold I 2 M] in
+lemma rhs_aux_swap_apply (x : M) : rhs_aux I X Y Z x = rhs_aux I X Z Y x := by
+  simp [rhs_aux, real_inner_comm]
+
+variable (Y Z) in
+omit [IsManifold I 2 M] in
 lemma rhs_aux_swap : rhs_aux I X Y Z = rhs_aux I X Z Y := by
   ext x
-  simp [rhs_aux, real_inner_comm]
+  apply rhs_aux_swap_apply
 
 omit [IsManifold I 2 M] in
 variable (X X' Y Z) in
@@ -189,9 +194,10 @@ lemma rhs_aux_smulZ_apply {f : M → ℝ}
     (hf : MDiffAt f x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     letI A (x) := ((mvfderiv% f x) (X x))
     rhs_aux I X Y (f • Z) x = f x * rhs_aux I X Y Z x + A x * ⟪Y, Z⟫ x := by
-  rw [rhs_aux_swap _ Y, rhs_aux_smulY_apply, rhs_aux_swap]
-  · simp_rw [real_inner_comm]
-  exacts [hf, hZ, hY]
+  -- TODO: why doesn't this work?
+  -- simp_rw [rhs_aux_swap _ Y (f • Z)]
+  simp (disch := assumption) [rhs_aux_swap_apply _ Y (f • Z), rhs_aux_smulY_apply,
+    rhs_aux_swap_apply _ Z Y, real_inner_comm]
 
 end rhs_aux
 
