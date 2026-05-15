@@ -331,6 +331,11 @@ lemma index_smul (t : k) (ht : t ≠ 0) :
     (-f).index = f.index := by
   rw [index, index, ker_neg, range_neg]
 
+-- TODO Move to `Mathlib/LinearAlgebra/FiniteDimensional/Lemmas.lean` I guess
+instance (p : Submodule k E) [FiniteDimensional k (E ⧸ p)] [FiniteDimensional k (F ⧸ f.range)] :
+    FiniteDimensional k (F ⧸ map f p) := by
+  sorry
+
 open Function in
 lemma index_comp {G : Type*} [AddCommGroup G] [Module k G] (g : F →ₗ[k] G)
     [FiniteDimensional k f.ker] [FiniteDimensional k g.ker]
@@ -338,7 +343,7 @@ lemma index_comp {G : Type*} [AddCommGroup G] [Module k G] (g : F →ₗ[k] G)
     (g ∘ₗ f).index = g.index + f.index := by
   -- 0 → f.ker → (g ∘ₗ f).ker → g.ker → f.coker → (g ∘ₗ f).coker → g.coker → 0
   have : FiniteDimensional k (g ∘ₗ f).ker := by rw [ker_comp]; infer_instance
-  have : FiniteDimensional k (G ⧸ (g ∘ₗ f).range) := by sorry
+  have : FiniteDimensional k (G ⧸ (g ∘ₗ f).range) := by rw [range_comp]; infer_instance
   let f₀ : f.ker →ₗ[k] (g ∘ₗ f).ker := Submodule.inclusion <| ker_le_ker_comp f g
   let f₁ : (g ∘ₗ f).ker →ₗ[k] g.ker := f.restrict <| by simp
   let f₂ : g.ker →ₗ[k] F ⧸ f.range := f.range.mkQ ∘ₗ g.ker.subtype
