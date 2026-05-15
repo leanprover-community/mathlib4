@@ -126,7 +126,7 @@ The function `⟨Y, Z⟩` maps `M` into `ℝ`, hence its differential at a point
 to an element of the tangent space of `ℝ` --- as a summand `⟨Y, [X, Z]⟩` yields an honest
 real number, we apply the identification of the real numbers' tangent space with itself.
 -/
-noncomputable abbrev rhs_aux : M → ℝ := fun x ↦ extDerivFun% ⟪Y, Z⟫ x (X x)
+noncomputable abbrev rhs_aux : M → ℝ := fun x ↦ mvfderiv% ⟪Y, Z⟫ x (X x)
 
 section rhs_aux
 
@@ -149,13 +149,13 @@ variable (X) in
 @[simp]
 lemma rhs_aux_addY_apply (hY : MDiffAt (T% Y) x) (hY' : MDiffAt (T% Y') x) (hZ : MDiffAt (T% Z) x) :
     rhs_aux I X (Y + Y') Z x = rhs_aux I X Y Z x + rhs_aux I X Y' Z x := by
-  simp [rhs_aux, inner_add_left, extDerivFun_fun_add (hY.inner_bundle' hZ) (hY'.inner_bundle' hZ)]
+  simp [rhs_aux, inner_add_left, mvfderiv_fun_add (hY.inner_bundle' hZ) (hY'.inner_bundle' hZ)]
 
 variable (X) in
 @[simp]
 lemma rhs_aux_addZ_apply (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) (hZ' : MDiffAt (T% Z') x) :
     rhs_aux I X Y (Z + Z') x = rhs_aux I X Y Z x + rhs_aux I X Y Z' x := by
-  simp [rhs_aux, inner_add_right, extDerivFun_fun_add (hY.inner_bundle' hZ) (hY.inner_bundle' hZ')]
+  simp [rhs_aux, inner_add_right, mvfderiv_fun_add (hY.inner_bundle' hZ) (hY.inner_bundle' hZ')]
 
 omit [IsManifold I 2 M] in
 variable (X Y Z) in
@@ -165,15 +165,15 @@ lemma rhs_aux_smulX_apply (f : M → ℝ) (x) : rhs_aux I (f • X) Y Z x = f x 
 variable (X) in
 lemma rhs_aux_smulY_apply {f : M → ℝ}
     (hf : MDiffAt f x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
-    letI A (x) := ((extDerivFun% f x) (X x))
+    letI A (x) := ((mvfderiv% f x) (X x))
     rhs_aux I X (f • Y) Z x = f x * rhs_aux I X Y Z x + A x * ⟪Y, Z⟫ x := by
-  simp [rhs_aux, inner_smul_left, extDerivFun_fun_mul hf (hY.inner_bundle' hZ)]
+  simp [rhs_aux, inner_smul_left, mvfderiv_fun_mul hf (hY.inner_bundle' hZ)]
   ring
 
 variable (X) in
 lemma rhs_aux_smulZ_apply {f : M → ℝ}
     (hf : MDiffAt f x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
-    letI A (x) := ((extDerivFun% f x) (X x))
+    letI A (x) := ((mvfderiv% f x) (X x))
     rhs_aux I X Y (f • Z) x = f x * rhs_aux I X Y Z x + A x * ⟪Y, Z⟫ x := by
   rw [rhs_aux_swap, rhs_aux_smulY_apply, rhs_aux_swap]
   · simp_rw [real_inner_comm]
@@ -232,7 +232,7 @@ public lemma leviCivitaRhs_addY_apply [CompleteSpace E]
 public lemma leviCivitaRhs_smulY_apply [CompleteSpace E] {f : M → ℝ}
     (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     leviCivitaRhs I X (f • Y) Z x =
-      f x * leviCivitaRhs I X Y Z x + extDerivFun% f x (X x) * ⟪Y, Z⟫ x := by
+      f x * leviCivitaRhs I X Y Z x + mvfderiv% f x (X x) * ⟪Y, Z⟫ x := by
   simp (disch := assumption) [leviCivitaRhs,
     mlieBracket_smul_left, mlieBracket_smul_right,
     rhs_aux_smulX_apply, rhs_aux_smulY_apply, rhs_aux_smulZ_apply,

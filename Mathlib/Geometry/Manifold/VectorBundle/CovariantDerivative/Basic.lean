@@ -96,7 +96,7 @@ structure IsCovariantDerivativeOn
     cov (σ + σ') x = cov σ x + cov σ' x
   leibniz {σ : Π x : M, V x} {g : M → 𝕜} {x}
     (hσ : MDiffAt (T% σ) x) (hg : MDiffAt g x) (hx : x ∈ s := by trivial) :
-    cov (g • σ) x = g x • cov σ x + (extDerivFun% g x).smulRight (σ x)
+    cov (g • σ) x = g x • cov σ x + (mvfderiv% g x).smulRight (σ x)
 
 /--
 A covariant derivative ∇ is called of class `C^k` iff, whenever `X` is a `C^k` section and `σ` a
@@ -173,10 +173,10 @@ lemma congr_of_eqOn
   -- Then, it's a chain of (dependent) equalities.
   calc cov σ x
     _ = cov ((ψ : M → 𝕜) • σ) x := by
-      simp [hcov.leibniz hσ hψ'.mdifferentiableAt, hψx, extDerivFun, hψ'.mfderiv]
+      simp [hcov.leibniz hσ hψ'.mdifferentiableAt, hψx, mvfderiv, hψ'.mfderiv]
     _ = cov ((ψ : M → 𝕜) • σ') x := by rw [funext H]
     _ = cov σ' x := by
-      simp [hcov.leibniz hσ' hψ'.mdifferentiableAt, hψx, extDerivFun, hψ'.mfderiv]
+      simp [hcov.leibniz hσ' hψ'.mdifferentiableAt, hψx, mvfderiv, hψ'.mfderiv]
 
 open Filter Set in
 /-- Given a covariant derivative `cov` on a neighborhood `s` of a point `x`, if sections `σ` and
@@ -236,7 +236,7 @@ theorem smul_const (hcov : IsCovariantDerivativeOn F cov s)
     {σ : Π x : M, V x} {x} (a : 𝕜)
     (hσ : MDiffAt (T% σ) x) (hx : x ∈ s := by trivial) :
     cov (a • σ) x = a • cov σ x := by
-  simpa [extDerivFun] using hcov.leibniz (g := fun _ ↦ a) hσ mdifferentiableAt_const
+  simpa [mvfderiv] using hcov.leibniz (g := fun _ ↦ a) hσ mdifferentiableAt_const
 
 end computational_properties
 
@@ -295,15 +295,15 @@ lemma finite_affine_combination {ι : Type*} {s : Finset ι}
     rw [← smul_add, (h i).add hσ hσ' hx]
   leibniz {σ g x} hσ hg hx := by
     calc ∑ i ∈ s, f i x • cov i (g • σ) x
-      _ = ∑ i ∈ s, (g x • f i x • cov i σ x + f i x • (extDerivFun% g x).smulRight (σ x)) := by
+      _ = ∑ i ∈ s, (g x • f i x • cov i σ x + f i x • (mvfderiv% g x).smulRight (σ x)) := by
           congr! 1 with i hi
           rw [(h i).leibniz hσ hg]
-          simp [extDerivFun]
+          simp [mvfderiv]
           module
       _ = g x • ∑ i ∈ s, f i x • cov i σ x +
-        (∑ i ∈ s, f i) x • (extDerivFun% g x).smulRight (σ x) := by
+        (∑ i ∈ s, f i) x • (mvfderiv% g x).smulRight (σ x) := by
           rw [Finset.sum_add_distrib, Finset.smul_sum, Finset.sum_apply, Finset.sum_smul]
-      _ = g x • ∑ i ∈ s, f i x • cov i σ x + (extDerivFun% g x).smulRight (σ x) := by rw [hf]; simp
+      _ = g x • ∑ i ∈ s, f i x • cov i σ x + (mvfderiv% g x).smulRight (σ x) := by rw [hf]; simp
 
 /-- An affine combination of finitely many `C^k` connections on `u` is a `C^k` connection on `u`. -/
 lemma _root_.ContMDiffCovariantDerivativeOn.finite_affine_combination [IsManifold I 1 M]

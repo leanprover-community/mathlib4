@@ -18,7 +18,7 @@ differentiability.
 
 In addition to the above, this file provides
 * results about the differentiability of scalar multiplication (`mfderiv_smul` and friends), and
-* `extDerivFun`: the exterior derivative of a scalar function, as a section of the cotangent bundle
+* `mvfderiv`: the exterior derivative of a scalar function, as a section of the cotangent bundle
 
 -/
 
@@ -401,7 +401,7 @@ end smul
 variable (I) in
 /-- The exterior derivative of a scalar function on `M`, as a section of the cotangent bundle. -/
 @[expose]
-noncomputable def extDerivFun (g : M → F) :
+noncomputable def mvfderiv (g : M → F) :
     Π x : M, TangentSpace I x →L[𝕜] F :=
   fun x ↦ (NormedSpace.fromTangentSpace <| g x).toContinuousLinearMap ∘L (mfderiv% g x)
 
@@ -410,72 +410,72 @@ open scoped Bundle Manifold ContDiff
 
 open Lean Meta Elab Tactic
 
-/-- `extDerivFun% f x` elaborates to `extDerivFun I J f x`,
+/-- `mvfderiv% f x` elaborates to `mvfderiv I J f x`,
 trying to determine `I` and `J` from the local context. -/
-scoped elab:max "extDerivFun%" ppSpace t:term:arg : term => do
+scoped elab:max "mvfderiv%" ppSpace t:term:arg : term => do
   let e ← ensureIsFunction <| ← Term.elabTerm t none
   let (srcI, _tgtI) ← findModels e none
-  mkAppM ``extDerivFun #[srcI, e]
+  mkAppM ``mvfderiv #[srcI, e]
 
 open Bundle PrettyPrinter Delaborator SubExpr
 
-/-- Delaborator for `extDerivFun`. -/
-@[app_delab extDerivFun] meta def delab_extDerivFun : Delab := do
+/-- Delaborator for `mvfderiv`. -/
+@[app_delab mvfderiv] meta def delab_mvfderiv : Delab := do
   whenPPOption getPPNotation do
   withOverApp 15 do
   let fs ← withAppArg delab
-  `(extDerivFun% $fs) >>= annotateGoToSyntaxDef
+  `(mvfderiv% $fs) >>= annotateGoToSyntaxDef
 
 end Manifold
 
-lemma extDerivFun_const (c : F) {x : M} : extDerivFun% (fun _ : M ↦ c) x = 0 := by
-  simp [extDerivFun, mfderiv_const]
+lemma mvfderiv_const (c : F) {x : M} : mvfderiv% (fun _ : M ↦ c) x = 0 := by
+  simp [mvfderiv, mfderiv_const]
 
 @[simp, to_fun]
-lemma extDerivFun_add {g g' : M → F} {x : M} (hg : MDiffAt g x) (hg' : MDiffAt g' x) :
-    extDerivFun% (g + g') x = extDerivFun% g x + extDerivFun% g' x := by
-  simp [extDerivFun, mfderiv_add hg hg']
+lemma mvfderiv_add {g g' : M → F} {x : M} (hg : MDiffAt g x) (hg' : MDiffAt g' x) :
+    mvfderiv% (g + g') x = mvfderiv% g x + mvfderiv% g' x := by
+  simp [mvfderiv, mfderiv_add hg hg']
   rfl
 -- TODO: specify as name for to_fun instead, after #34279
-alias extDerivFun_fun_add := fun_extDerivFun_add
+alias mvfderiv_fun_add := fun_mvfderiv_add
 
 @[simp, to_fun]
-lemma extDerivFun_sub {g g' : M → F} {x : M} (hg : MDiffAt g x) (hg' : MDiffAt g' x) :
-    extDerivFun% (g - g') x = extDerivFun% g x - extDerivFun% g' x := by
-  simp [extDerivFun, mfderiv_sub hg hg']
+lemma mvfderiv_sub {g g' : M → F} {x : M} (hg : MDiffAt g x) (hg' : MDiffAt g' x) :
+    mvfderiv% (g - g') x = mvfderiv% g x - mvfderiv% g' x := by
+  simp [mvfderiv, mfderiv_sub hg hg']
   rfl
 -- TODO: specify as name for to_fun instead, after #34279
-alias extDerivFun_fun_sub := fun_extDerivFun_sub
+alias mvfderiv_fun_sub := fun_mvfderiv_sub
 
 @[simp, to_fun]
-lemma extDerivFun_neg {g : M → F} {x : M} :
-    extDerivFun% (-g) x = -extDerivFun% g x := by
-  simp [extDerivFun, mfderiv_neg]
+lemma mvfderiv_neg {g : M → F} {x : M} :
+    mvfderiv% (-g) x = -mvfderiv% g x := by
+  simp [mvfderiv, mfderiv_neg]
   rfl
 
 @[simp, to_fun]
-lemma extDerivFun_smul {x : M} {a : M → 𝕜} (ha : MDiffAt a x) {g : M → F} (hg : MDiffAt g x) :
-    extDerivFun% (a • g) x =
-      a x • extDerivFun% g x + (extDerivFun% a x).smulRight (g x) := by
+lemma mvfderiv_smul {x : M} {a : M → 𝕜} (ha : MDiffAt a x) {g : M → F} (hg : MDiffAt g x) :
+    mvfderiv% (a • g) x =
+      a x • mvfderiv% g x + (mvfderiv% a x).smulRight (g x) := by
   ext v
-  simp [extDerivFun, -Pi.smul_apply', -Pi.smul_apply, fromTangentSpace_mfderiv_smul_apply ha hg]
+  simp [mvfderiv, -Pi.smul_apply', -Pi.smul_apply, fromTangentSpace_mfderiv_smul_apply ha hg]
   rfl
 
 -- TODO: specify as name for to_fun instead, after #34279
-alias extDerivFun_fun_smul := fun_extDerivFun_smul
+alias mvfderiv_fun_smul := fun_mvfderiv_smul
 
 @[simp, to_fun]
-lemma extDerivFun_mul {f g : M → 𝕜} {x : M} (hf : MDiffAt f x) (hg : MDiffAt g x) :
-    extDerivFun% (f * g) x = f x • extDerivFun% g x + (g x) • (extDerivFun% f x) := by
+lemma mvfderiv_mul {f g : M → 𝕜} {x : M} (hf : MDiffAt f x) (hg : MDiffAt g x) :
+    mvfderiv% (f * g) x = f x • mvfderiv% g x + (g x) • (mvfderiv% f x) := by
   ext v
-  simp [extDerivFun, -Pi.smul_apply', -Pi.smul_apply, ← smul_eq_mul, mfderiv_smul hf hg]
+  simp [mvfderiv, -Pi.smul_apply', -Pi.smul_apply, ← smul_eq_mul, mfderiv_smul hf hg]
   simp [mul_comm _ (g x)]
 
-alias extDerivFun_fun_mul := fun_extDerivFun_mul
+alias mvfderiv_fun_mul := fun_mvfderiv_mul
 
 @[simp]
-lemma extDerivFun_zero {x : M} : extDerivFun% (0 : M → F) x = 0 := by
-  have : extDerivFun% (0 : M → F) x + extDerivFun% (0 : M → F) x = extDerivFun% (0 : M → F) x := by
-    rw [← extDerivFun_add (by exact mdifferentiable_const ..) (by exact mdifferentiable_const ..)]
+lemma mvfderiv_zero {x : M} : mvfderiv% (0 : M → F) x = 0 := by
+  have : mvfderiv% (0 : M → F) x + mvfderiv% (0 : M → F) x = mvfderiv% (0 : M → F) x := by
+    rw [← mvfderiv_add (by exact mdifferentiable_const ..) (by exact mdifferentiable_const ..)]
     simp
   simpa using this
