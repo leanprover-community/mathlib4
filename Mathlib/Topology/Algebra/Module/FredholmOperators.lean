@@ -739,7 +739,25 @@ theorem isFredholmTFAE (u : E →L[𝕜] F) : List.TFAE
   tfae_have 2 → 4 := by
     sorry -- Filippo
   tfae_have 4 → 1 := by
-    sorry -- should be easy
+    rintro ⟨E₁, E₂, F₁, F₂, E₂_FG, F₂_FG, E_compl, F_compl, u', h⟩
+    refine ⟨(E₁.subtypeL ∘L u'.symm.toContinuousLinearMap).ofIsTopCompl F_compl 0, ?_, ?_⟩
+    <;> simp only [QuotFiniteSubmodules.eqv_iff, ContinuousLinearMap.coe_comp,
+      ContinuousLinearMap.toLinearMap_ofIsTopCompl, toLinearMap_subtypeL,
+      ContinuousLinearMap.coe_zero, ContinuousLinearMap.coe_id, QuotFiniteRank.eqv_iff,
+      LinearMap.HasFiniteRank, ← Submodule.fg_iff_finiteDimensional]
+    · have : (u ∘ₗ LinearMap.ofIsCompl F_compl.isCompl
+        (E₁.subtype ∘ₗ u'.symm) 0 - LinearMap.id).range = F₂ := by
+        have : u ∘ₗ LinearMap.ofIsCompl F_compl.isCompl
+          (E₁.subtype ∘ₗ u'.symm) 0 = F₁.projection F₂ F_compl.isCompl := by
+          ext; simp [LinearMap.ofIsCompl, h]
+        simp [this, F₂.projection_eq_id_sub_projection F_compl.isCompl.symm]
+      rwa [this]
+    · have : (LinearMap.ofIsCompl F_compl.isCompl (E₁.subtype ∘ₗ u'.symm) 0 ∘ₗ u -
+        LinearMap.id).range = E₂ := by
+        have : LinearMap.ofIsCompl F_compl.isCompl
+          (E₁.subtype ∘ₗ u'.symm) 0 ∘ₗ u = E₁.projection E₂ E_compl.isCompl := by ext; simp [h]
+        simp [this, E₂.projection_eq_id_sub_projection E_compl.isCompl.symm]
+      rwa [this]
   tfae_finish
 
 /- ## Simpler criterion for `IsFredholmStruct` between RCLike Banach spaces
