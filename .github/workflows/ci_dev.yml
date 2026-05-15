@@ -66,14 +66,6 @@ jobs:
         shell: bash
         run: echo "::notice::ci-dev lake cache shadow on ${{ github.ref_name }} run ${{ github.run_id }}"
 
-      - name: cleanup
-        shell: bash
-        run: |
-          if ! find . -mindepth 1 -exec rm -rf -- {} +; then
-            sleep 5
-            find . -mindepth 1 -exec rm -rf -- {} +
-          fi
-
       - name: Setup jq
         uses: dcarbone/install-jq-action@b7ef57d46ece78760b4019dbc4080a1ba2a40b45 # v3.2.0
 
@@ -320,14 +312,6 @@ jobs:
       run:
         shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LAKE_CACHE_DIR --env LAKE_CACHE_ARTIFACT_ENDPOINT --env LAKE_CACHE_REVISION_ENDPOINT --env STAGE_TARGETS --env STAGE_DEP_TARGETS --env SHADOW_SCOPE -- bash -euxo pipefail {0}
     steps:
-      - name: cleanup
-        shell: bash
-        run: |
-          if ! find . -mindepth 1 -exec rm -rf -- {} +; then
-            sleep 5
-            find . -mindepth 1 -exec rm -rf -- {} +
-          fi
-
       - name: Setup jq
         uses: dcarbone/install-jq-action@b7ef57d46ece78760b4019dbc4080a1ba2a40b45 # v3.2.0
 
