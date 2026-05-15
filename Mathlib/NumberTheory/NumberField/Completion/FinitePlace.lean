@@ -400,7 +400,7 @@ lemma hasFiniteMulSupport_fun_pow_multiplicity {M : Type*} [CommMonoid M] {I : I
       (f v.maximalIdeal.asIdeal) ^ multiplicity v.maximalIdeal.asIdeal I).HasFiniteMulSupport := by
   simp only [← count_normalizedFactors_eq_multiplicity hI]
   exact Multiset.hasFiniteMulSupport_fun_pow_count (UniqueFactorizationMonoid.normalizedFactors I) f
-    |>.fun_comp_of_injective <| (asIdeal_injective _).comp maximalIdeal_injective
+    |>.fun_comp_of_injective <| asIdeal_injective.comp maximalIdeal_injective
 
 protected
 lemma add_le (v : FinitePlace K) (x y : K) :
