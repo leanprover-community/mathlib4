@@ -733,10 +733,7 @@ example {f : α → FooHom α} (hf : Con f) : Con fun x ↦ f x (f x x x) x := b
 
 end BundledMorphismWithFunctionValues
 
-
-
-namespace EagerTransition
-
+namespace AlwaysTryTransition
 
 @[fun_prop] opaque Triv {α β} (f : α → β) : Prop
 @[fun_prop always_try_transition] opaque Eager {α β} (f : α → β) : Prop
@@ -756,5 +753,4 @@ example (f : β → γ) (g : α → β) : NonEager (fun x => f (g x)) := by
   fail_if_success fun_prop (config:={maxTransitionDepth:=10})
   apply silentSorry
 
-
-end EagerTransition
+end AlwaysTryTransition
