@@ -484,10 +484,6 @@ def sheafComposePushforwardComp :
     · cat_disch
   · cat_disch
 
-abbrev oT {X : Scheme} : (IsInitial (op (⊤ : Opens X))) := initialOpOfTerminal isTerminalTop
-
-abbrev gT {R : CommRingCat} := Opens.grothendieckTopology (Spec R)
-
 /-- `Scheme.Modules.pushforward` and `modulesSpecToSheaf` commute -/
 def pushforwardCompModulesSpecToSheafIso :
     Scheme.Modules.pushforward (Spec.map φ) ⋙ modulesSpecToSheaf ≅
@@ -495,7 +491,7 @@ def pushforwardCompModulesSpecToSheafIso :
     sheafCompose _ (ModuleCat.restrictScalars φ.hom) := by
   refine (Functor.associator _ _ _).symm ≪≫ ?_
   refine Functor.isoWhiskerRight (SheafOfModules.pushforwardCompForgetToSheafModuleCat
-    (Spec.map φ).toRingCatSheafHom (op ⊤) _ oT) _ ≪≫ ?_
+    (Spec.map φ).toRingCatSheafHom (op ⊤) _ (initialOpOfTerminal isTerminalTop)) _ ≪≫ ?_
   refine Functor.associator _ _ _ ≪≫ ?_
   refine (Functor.isoWhiskerLeft _ (Functor.associator _ _ _)) ≪≫ ?_
   exact (Functor.isoWhiskerLeft _ (sheafComposePushforwardComp φ))
