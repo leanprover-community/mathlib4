@@ -161,6 +161,7 @@ public def IsCompatible [FiniteDimensional ℝ F] : Prop := compatibilityTensor 
 
 variable {I} [IsManifold I 1 M] [ContMDiffVectorBundle 1 F V I]
 
+-- set_option instan
 public lemma isCompatible_iff [FiniteDimensional ℝ F] :
     cov.IsCompatible ↔ ∀ {x : M} {X : Π x, TangentSpace I x} {σ τ : (x : M) → V x},
       MDiffAt (T% X) x → MDiffAt (T% σ) x → MDiffAt (T% τ) x →
@@ -169,10 +170,17 @@ public lemma isCompatible_iff [FiniteDimensional ℝ F] :
   · have H := congr($hcov x (σ x) (τ x) (X x))
     simp [compatibilityTensor_apply _ _ hσ hτ] at H
     linear_combination H
-  ext x σ₀ τ₀ X₀
-  specialize h (FiberBundle.mdifferentiableAt_extend I E X₀)
-    (FiberBundle.mdifferentiableAt_extend I F σ₀) (FiberBundle.mdifferentiableAt_extend I F τ₀)
-  simp [compatibilityTensor_apply_eq_extend] at h ⊢
-  linear_combination h
+  · ext1 x
+    apply VectorBundle.injective_eval_sec I F
+    ext1 σ
+    ext1 hσ
+    apply VectorBundle.injective_eval_sec I F
+    ext1 τ
+    ext1 hτ
+    apply VectorBundle.injective_eval_sec I E (TangentSpace I)
+    ext1 X
+    ext1 hX
+    simp (disch := assumption) [compatibilityTensor_apply]
+    linear_combination h hX hσ hτ
 
 end CovariantDerivative
