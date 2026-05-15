@@ -109,8 +109,8 @@ lemma finrank_eq_finrank_residueField [Algebra.Etale R S] :
   have e := AddEquiv.toLinearEquiv (R := R ⧸ maximalIdeal R) (Ideal.quotEquivOfEq <|
       Algebra.FormallyUnramified.map_maximalIdeal (R := R) (S := S)).toAddEquiv
     ?_
-  · erw [← e.finrank_eq]
-    rw [finrank_quotient_map (R := R) (S := S)]
+  · rw [← finrank_quotient_map (R := R) (S := S)]
+    exact e.finrank_eq
   · intro r x
     obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective r
     obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
