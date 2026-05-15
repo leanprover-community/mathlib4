@@ -24,7 +24,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Separated
   Given `S`-schemes `X` and `Y` such that `Y` is locally of finite type and `X` is integral,
   `S`-morphisms `Spec K(X) ⟶ Y` correspond bijectively to `S`-rational maps from `X` to `Y`.
 * `AlgebraicGeometry.Scheme.RationalMap.toPartialMap`:
-  If `X` is integral and `Y` is separated, then any `f : X ⤏ Y` can be realized as a partial
+  If `X` is reduced and `Y` is separated, then any `f : X ⤏ Y` can be realized as a partial
   map on `f.domain`, the domain of definition of `f`.
 -/
 
@@ -259,14 +259,6 @@ lemma equiv_of_fromSpecStalkOfMem_eq [IrreducibleSpace X]
       ← g.fromSpecStalkOfMem_restrict hdense inf_le_right ⟨hxf, hxg⟩] at H
     simpa only [fromSpecStalkOfMem, restrict_domain, Opens.fromSpecStalkOfMem, Spec.map_inv,
       restrict_hom, Category.assoc, IsIso.eq_inv_comp, IsIso.hom_inv_id_assoc] using H
-
-lemma Opens.isDominant_ι {U : X.Opens} (hU : Dense (X := X) U) : IsDominant U.ι :=
-  ⟨by simpa [DenseRange] using hU⟩
-
-lemma Opens.isDominant_homOfLE {U V : X.Opens} (hU : Dense (X := X) U) (hU' : U ≤ V) :
-    IsDominant (X.homOfLE hU') :=
-  have : IsDominant (X.homOfLE hU' ≫ Opens.ι _) := by simpa using Opens.isDominant_ι hU
-  IsDominant.of_comp_of_isOpenImmersion (g := Opens.ι _) _
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Two partial maps from reduced schemes to separated schemes are equivalent if and only if
