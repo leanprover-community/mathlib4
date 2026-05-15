@@ -380,6 +380,23 @@ lemma Scheme.Hom.isoImage_inv_ι
     (f.isoImage U).inv ≫ U.ι ≫ f = (f ''ᵁ U).ι :=
   IsOpenImmersion.isoOfRangeEq_inv_fac _ _ _
 
+@[reassoc]
+lemma Scheme.Hom.isoImage_hom_homOfLE
+    {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (U V : Opens X) (e : U ≤ V) :
+    (f.isoImage U).hom ≫ Y.homOfLE (f.image_mono e) = X.homOfLE e ≫ (f.isoImage V).hom := by
+  simp [← cancel_mono (f ''ᵁ V).ι]
+
+@[reassoc]
+lemma Scheme.Hom.isoImage_inv_homOfLE
+    {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (U V : Opens X) (e : U ≤ V) :
+    (f.isoImage U).inv ≫ X.homOfLE e = Y.homOfLE (f.image_mono e) ≫ (f.isoImage V).inv := by
+  simp [← cancel_mono (f.isoImage V).hom, ← f.isoImage_hom_homOfLE]
+
+@[reassoc (attr := simp)]
+lemma Scheme.Opens.ι_isoImage_inv_ι {X : Scheme.{u}} (U : Opens X) (V : Opens U) :
+    (U.ι.isoImage V).inv ≫ V.ι = X.homOfLE (U.ι_image_le V) := by
+  simp [← cancel_mono U.ι]
+
 /-- If `f : X ⟶ Y` is an open immersion, then `X` is isomorphic to its image in `Y`. -/
 def Scheme.Hom.isoOpensRange {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
     X ≅ f.opensRange :=
@@ -577,6 +594,16 @@ theorem morphismRestrict_comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (
     pullbackRestrictIsoRestrict_inv_fst_assoc]
   rfl
 
+@[reassoc]
+theorem morphismRestrict_homOfLE {X Y : Scheme.{u}} (f : X ⟶ Y) (U V : Y.Opens) (e : U ≤ V) :
+    (f ∣_ U) ≫ Y.homOfLE e = X.homOfLE (f.preimage_mono e) ≫ (f ∣_ V) := by
+  simp [← cancel_mono V.ι]
+
+lemma morphismRestrict_eq_isoImage_hom_homOfLE {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f]
+    (U : Y.Opens) :
+    f ∣_ U = (f.isoImage (f ⁻¹ᵁ U)).hom ≫ Y.homOfLE (f.image_preimage_le U) := by
+  simp [← cancel_mono U.ι]
+
 instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso f] (U : Y.Opens) : IsIso (f ∣_ U) := by
   delta morphismRestrict; infer_instance
 
@@ -622,6 +649,20 @@ theorem morphismRestrict_appLE {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (V
   rw [Scheme.Hom.appLE, morphismRestrict_app', Scheme.Opens.toScheme_presheaf_map,
     Scheme.Hom.appLE_map]
 
+@[reassoc]
+theorem morphismRestrict_homOfLE_ι_isoImage_hom
+    {X : Scheme.{u}} {U V : X.Opens} (e : U ≤ V) (W : Opens V) :
+    X.homOfLE e ∣_ W ≫ (V.ι.isoImage W).hom =
+      (U.ι.isoImage (X.homOfLE e ⁻¹ᵁ W)).hom ≫ X.homOfLE (X.ι_image_homOfLE_le_ι_image e W) := by
+  simp [← cancel_mono (V.ι ''ᵁ W).ι]
+
+@[reassoc]
+theorem ι_isoImage_inv_morphismRestrict_homOfLE {X : Scheme.{u}} {U V : X.Opens}
+    (e : U ≤ V) (W : Opens V) :
+    (U.ι.isoImage (X.homOfLE e ⁻¹ᵁ W)).inv ≫ X.homOfLE e ∣_ W =
+      X.homOfLE (X.ι_image_homOfLE_le_ι_image e W) ≫ (V.ι.isoImage W).inv := by
+  simp [← cancel_mono (V.ι.isoImage W).hom, morphismRestrict_homOfLE_ι_isoImage_hom]
+
 set_option backward.isDefEq.respectTransparency false in
 /-- Restricting a morphism onto the image of an open immersion is isomorphic to the base change
 along the immersion. -/
@@ -658,6 +699,20 @@ def morphismRestrictRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (V :
       Scheme.Hom.isoImage_hom_ι_assoc,
       Scheme.Hom.isoImage_hom_ι,
       morphismRestrict_ι_assoc, morphismRestrict_ι]
+
+@[reassoc]
+lemma morphismRestrict_ι_image_ι_isoImage_inv
+    {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (V : U.toScheme.Opens) :
+    f ∣_ U.ι ''ᵁ V ≫ (U.ι.isoImage V).inv = (X.homOfLE (image_morphismRestrict_preimage f U V).ge ≫
+      ((f ⁻¹ᵁ U).ι.isoImage ((f ∣_ U) ⁻¹ᵁ V)).inv) ≫ f ∣_ U ∣_ V :=
+  (morphismRestrictRestrict f U V).inv.w'
+
+@[reassoc]
+lemma morphismRestrictRestrict_ι_isoImage_hom
+    {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (V : U.toScheme.Opens) :
+    f ∣_ U ∣_ V ≫ (U.ι.isoImage V).hom = (((f ⁻¹ᵁ U).ι.isoImage ((f ∣_ U) ⁻¹ᵁ V)).hom ≫
+      X.homOfLE (image_morphismRestrict_preimage f U V).le) ≫ f ∣_ U.ι ''ᵁ V :=
+  (morphismRestrictRestrict f U V).hom.w'
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Restricting a morphism twice onto a basic open set is isomorphic to one restriction. -/
