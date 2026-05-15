@@ -399,7 +399,11 @@ end smul
 /-! ### Exterior derivative of a scalar function -/
 
 variable (I) in
-/-- The exterior derivative of a scalar function on `M`, as a section of the cotangent bundle. -/
+/-- The exterior derivative of a vector-valued function on `M`,
+as a section of the cotangent bundle.
+
+Future: this could be generalised to functions into additive torsors over abelian Lie groups
+-/
 @[expose]
 noncomputable def mvfderiv (g : M → F) :
     Π x : M, TangentSpace I x →L[𝕜] F :=
