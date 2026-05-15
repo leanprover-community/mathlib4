@@ -47,21 +47,7 @@ end
 namespace monoidalOfHasFiniteProducts
 
 variable [HasTerminal C] [HasBinaryProducts C]
-
-attribute [local instance] monoidalOfHasFiniteProducts
-
-open scoped MonoidalCategory
-
-end monoidalOfHasFiniteProducts
-
 section
-
-attribute [local instance] monoidalOfHasFiniteProducts
-
-open MonoidalCategory
-
-end
-
 section
 
 #adaptation_note /-- prior to nightly-2026-02-05

@@ -435,6 +435,4 @@ theorem IsStarProjection.two_mul_sub_one_mem_unitary {R : Type*} [Ring R] [StarR
 
 namespace unitary
 
-/-! ### Deprecated results -/
-
 end unitary
