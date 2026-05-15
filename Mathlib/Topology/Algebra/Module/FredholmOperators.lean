@@ -572,14 +572,17 @@ def FredholmDecomposition (huF : IsFredholmStruct u) (huk : u.ker.ClosedCompleme
     exact huF.cokerFG.of_injective g hg
 
 
-theorem FredholmDecomposition_restrict  (huF : IsFredholmStruct u)
-    (huk : u.ker.ClosedComplemented) : (FredholmDecomposition huF huk).1.X₂ = u.ker := by
-  unfold FredholmDecomposition
-  rfl
+theorem FredholmDecomposition_restrict (huF : IsFredholmStruct u)
+    (huk : u.ker.ClosedComplemented) : (FredholmDecomposition huF huk).1.X₂ = u.ker := by rfl
 
 
 theorem FredholmDecomposition_mapsTo (huF : IsFredholmStruct u) (huk : u.ker.ClosedComplemented) :
-    ∀ x ∈ (FredholmDecomposition huF huk).1.X₂, u x ∈ (FredholmDecomposition huF huk).2.X₂ := sorry
+    ∀ x ∈ (FredholmDecomposition huF huk).1.X₂, u x ∈ (FredholmDecomposition huF huk).2.X₂ := by
+  intro x hx
+  simp only [FredholmDecomposition, LinearMap.mem_ker, ContinuousLinearMap.coe_coe] at hx
+  exact hx ▸ Submodule.zero_mem ..
+
+
 
 
 -- **Waiting for *Anatole* to create the `ContinuousLinearMap.restrict` so that the code below type-check
