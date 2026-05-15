@@ -74,11 +74,9 @@ theorem closure_eq_zmultiples (a b : ℤ) : closure {a, b} = zmultiples (a.gcd b
   apply le_antisymm
   · rw [closure_le]
     intro x hx
-    rcases hx with h1 | h1
-    · rw [h1]
-      exact Int.mem_zmultiples_iff.mpr (Int.gcd_dvd_left a b)
-    · rw [h1]
-      exact Int.mem_zmultiples_iff.mpr (Int.gcd_dvd_right a b)
+    rcases hx with rfl | rfl
+    · exact mem_zmultiples_iff.mpr <| gcd_dvd_left x b
+    · exact mem_zmultiples_iff.mpr <| gcd_dvd_right a x
   · rw [AddSubgroup.zmultiples_le, AddSubgroup.mem_closure_pair, Int.gcd_eq_gcd_ab]
     simp [mul_comm]
 
