@@ -31,14 +31,16 @@ connection.
 * `CovariantDerivative.IsLeviCivitaConnection.uniqueness`: a Levi-Civita connection on `(M, g)` is
   uniquely determined on differentiable vector fields.
 
-* `CovariantDerivative.LeviCivitaConnection`: a choice of Levi-Civita connection on the tangent
+* `CovariantDerivative.leviCivitaConnection`: a choice of Levi-Civita connection on the tangent
   bundle `TM` of a Riemannian manifold `(M, g)`: this is unique up to the value on
   non-differentiable vector fields.
   If you know the Levi-Civita connection already, you can use `IsLeviCivitaConnection` instead.
+
 * `CovariantDerivative.leviCivitaConnection_isLeviCivitaConnection`:
-  `LeviCivitaConnection` is a Levi-Civita connection (i.e., compatible and torsion-free)
+  `leviCivitaConnection` is a Levi-Civita connection (i.e., compatible and torsion-free)
 
 ## Implementation notes
+
 * construction of LC using a tensoriality argument, and the musical isomorphism
   (avoids the use of local frames and trivialisations)
 
@@ -55,7 +57,8 @@ variable {n : WithTop ℕ∞}
   {M : Type*} [EMetricSpace M] [ChartedSpace H M] [IsManifold I 2 M]
 
 -- move this
-lemma injective_eval_vectorField (V : Type*) [NormedAddCommGroup V] [NormedSpace ℝ V] (x : M) :
+lemma injective_eval_vectorField (V : Type*) [AddCommGroup V] [Module ℝ V] [TopologicalSpace V]
+    (x : M) :
     Function.Injective
       (fun A : TangentSpace I x →L[ℝ] V ↦
         fun (Z : Π x, TangentSpace I x) (_ : MDiffAt (T% Z) x) ↦ A (Z x)) :=
@@ -123,12 +126,6 @@ attribute [fun_prop] MDifferentiable MDifferentiableAt
   MDifferentiable.add MDifferentiableAt.add
   MDifferentiable.inner_bundle' MDifferentiableAt.inner_bundle'
   fun_mdifferentiableAt_add_section MDifferentiableAt.fun_smul_section
-
-variable {f g : M → ℝ} {x : M}
-
-example (hf : MDiffAt f x) (hg : MDiffAt g x) : MDiffAt (f + g) x := by
-  fun_prop
-
 
 end funpropsetup
 
@@ -333,7 +330,7 @@ variable (M) in
 /-- A choice of Levi-Civita connection on the tangent bundle `TM` of a Riemannian manifold `(M, g)`:
 this is unique up to the value on non-differentiable vector fields.
 If you know the Levi-Civita connection already, you can use `IsLeviCivitaConnection` instead. -/
-public noncomputable def LeviCivitaConnection [FiniteDimensional ℝ E] :
+public noncomputable def leviCivitaConnection [FiniteDimensional ℝ E] :
     CovariantDerivative I E (TangentSpace I : M → Type _) where
   toFun := lcAux I
   isCovariantDerivativeOnUniv := isCovariantDerivativeOn_lcAux I
@@ -342,19 +339,19 @@ public theorem leviCivitaConnection_apply [FiniteDimensional ℝ E] {x : M}
     {X : Π x : M, TangentSpace I x} (hX : MDiffAt (T% X) x)
     {Y : Π x : M, TangentSpace I x} (hY : MDiffAt (T% Y) x)
     {Z : Π x : M, TangentSpace I x} (hZ : MDiffAt (T% Z) x) :
-    inner ℝ (LeviCivitaConnection I M Y x (X x)) (Z x) = leviCivitaRhs I X Y Z x :=
+    inner ℝ (leviCivitaConnection I M Y x (X x)) (Z x) = leviCivitaRhs I X Y Z x :=
   lcAux_apply _ hX hY hZ
 
 public theorem leviCivitaConnection_apply_right [FiniteDimensional ℝ E] {x : M}
     {X : Π x : M, TangentSpace I x} (hX : MDiffAt (T% X) x)
     {Y : Π x : M, TangentSpace I x} (hY : MDiffAt (T% Y) x)
     {Z : Π x : M, TangentSpace I x} (hZ : MDiffAt (T% Z) x) :
-    inner ℝ (X x) (LeviCivitaConnection I M Y x (Z x)) = leviCivitaRhs I Z Y X x := by
+    inner ℝ (X x) (leviCivitaConnection I M Y x (Z x)) = leviCivitaRhs I Z Y X x := by
   rw [real_inner_comm]
   exact lcAux_apply _ hZ hY hX
 
 public lemma leviCivitaConnection_isCompatible [FiniteDimensional ℝ E] :
-    (LeviCivitaConnection I M).IsCompatible := by
+    (leviCivitaConnection I M).IsCompatible := by
   rw [isCompatible_iff]
   intro x X Y Z hX hY hZ
   -- Normalise the expressions by swapping arguments for rhs_aux and mlieBracket,
@@ -367,7 +364,7 @@ public lemma leviCivitaConnection_isCompatible [FiniteDimensional ℝ E] :
   ring
 
 public lemma leviCivitaConnection_torsion_eq_zero [FiniteDimensional ℝ E] :
-    (LeviCivitaConnection I M).torsion = 0 := by
+    (leviCivitaConnection I M).torsion = 0 := by
   rw [CovariantDerivative.torsion_eq_zero_iff]
   intro X Y x hX hY
   apply injective_inner_vectorField; ext Z hZ
@@ -377,9 +374,9 @@ public lemma leviCivitaConnection_torsion_eq_zero [FiniteDimensional ℝ E] :
     real_inner_comm, inner_sub_left]
   ring
 
-/-- `LeviCivitaConnection` is a Levi-Civita connection (i.e., compatible and torsion-free) -/
+/-- `leviCivitaConnection` is a Levi-Civita connection (i.e., compatible and torsion-free) -/
 public lemma leviCivitaConnection_isLeviCivitaConnection [FiniteDimensional ℝ E] :
-    (LeviCivitaConnection I M).IsLeviCivitaConnection :=
+    (leviCivitaConnection I M).IsLeviCivitaConnection :=
   ⟨leviCivitaConnection_isCompatible I, leviCivitaConnection_torsion_eq_zero I⟩
 
 end CovariantDerivative
