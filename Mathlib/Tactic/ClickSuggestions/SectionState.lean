@@ -8,6 +8,12 @@ module
 public import Mathlib.Tactic.ClickSuggestions.Util
 public import ProofWidgets.Component.FilterDetails
 
+/-!
+# Infrastructure for searching and displaying sets of lemmas
+
+This is used for `apply`, `apply at`, `rw` and `grw` suggestions.
+-/
+
 public meta section
 
 namespace Mathlib.Tactic.ClickSuggestions
