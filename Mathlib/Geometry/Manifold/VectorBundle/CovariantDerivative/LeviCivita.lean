@@ -299,42 +299,21 @@ public theorem IsLeviCivitaConnection.uniqueness [FiniteDimensional ℝ E]
   · rw [← hcov.eq_leviCivitaRhs I hX hY hZ]
   · rw [← hcov'.eq_leviCivitaRhs I hX hY hZ]
 
-open scoped Classical in
-/-- Auxiliary definition for the definition of the Levi-Civita connection:
-this is a version of the bare function `leviCivitaRhs` at `x`,
-taking the junk value `0` when its arguments are not both differentiable at `x`.
-See `lcAux₀` for a tensorial version. -/
-noncomputable def lcAux₀' (Y : Π x : M, TangentSpace I x) (x : M)
-    (X Z : Π x : M, TangentSpace I x) :=
-  if MDiffAt (T% X) x then if MDiffAt (T% Z) x then
-    leviCivitaRhs I X Y Z
-  else 0 else 0
-
 theorem leviCivitaRhs_tensorial₁ [FiniteDimensional ℝ E]
-    {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) (Z : Π x, TangentSpace I x) :
-    TensorialAt I E (lcAux₀' I Y x · Z x) x where
-  smul hf hX := by
-    simp only [lcAux₀', if_pos hX, if_pos (by exact hf.smul_section hX)]
-    split_ifs with hZ
+    {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) {Z : Π x, TangentSpace I x}
+    (hZ : MDiffAt (T% Z) x) :
+    TensorialAt I E (leviCivitaRhs I · Y Z x) x where
+  smul {f X} hf hX := by
     · exact leviCivitaRhs_smulX_apply hf hX hY hZ
-    · simp
   add hX₁ hX₂ := by
-    simp only [lcAux₀', if_pos hX₁, if_pos hX₂, if_pos (mdifferentiableAt_add_section hX₁ hX₂)]
-    split_ifs with hZ
     · exact leviCivitaRhs_addX_apply I hX₁ hX₂ hY hZ
-    · simp
 
 theorem leviCivitaRhs_tensorial₂ [FiniteDimensional ℝ E]
-    {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) (X : Π x, TangentSpace I x)
+    {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) {X : Π x, TangentSpace I x}
     (hX : MDiffAt (T% X) x) :
-    TensorialAt I E (lcAux₀' I Y x X · x) x where
-  smul hf hZ := by
-    simp only [lcAux₀', if_pos hX, if_pos hZ, if_pos (by exact hf.smul_section hZ)]
-    exact leviCivitaRhs_smulZ_apply I hf hX hY hZ
-  add hZ₁ hZ₂ := by
-    simp only [lcAux₀', if_pos hX, if_pos hZ₁, if_pos hZ₂,
-      if_pos (mdifferentiableAt_add_section hZ₁ hZ₂)]
-    exact leviCivitaRhs_addZ_apply I hX hY hZ₁ hZ₂
+    TensorialAt I E (leviCivitaRhs I X Y · x) x where
+  smul hf hZ := leviCivitaRhs_smulZ_apply I hf hX hY hZ
+  add hZ₁ hZ₂ := leviCivitaRhs_addZ_apply I hX hY hZ₁ hZ₂
 
 open scoped Classical in
 /-- Auxiliary definition for the definition of the Levi-Civita connection:
@@ -343,8 +322,8 @@ noncomputable def lcAux₀ [FiniteDimensional ℝ E]
     {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) :
     TangentSpace I x →L[ℝ] TangentSpace I x →L[ℝ] ℝ :=
   TensorialAt.mkHom₂ _ (x := x)
-    (fun Z _ ↦ leviCivitaRhs_tensorial₁ _ _ hY Z)
-    (fun X hX ↦ leviCivitaRhs_tensorial₂ _ _ hY X hX)
+    (fun _Z hZ ↦ leviCivitaRhs_tensorial₁ _ _ hY hZ)
+    (fun _X hX ↦ leviCivitaRhs_tensorial₂ _ _ hY hX)
 
 theorem lcAux₀_apply [FiniteDimensional ℝ E] {x : M}
     {X : Π x : M, TangentSpace I x} (hX : MDiffAt (T% X) x)
@@ -352,7 +331,7 @@ theorem lcAux₀_apply [FiniteDimensional ℝ E] {x : M}
     {Z : Π x : M, TangentSpace I x} (hZ : MDiffAt (T% Z) x) :
     lcAux₀ I x hY (X x) (Z x) = leviCivitaRhs I X Y Z x := by
   unfold lcAux₀
-  rw [TensorialAt.mkHom₂_apply _ _ hX hZ, lcAux₀', if_pos hX, if_pos hZ]
+  rw [TensorialAt.mkHom₂_apply _ _ hX hZ]
 
 /-- Almost the underlying function underlying our construction of the Levi-Civita connection:
 this is the desired `(1,1)`-tensor, but without considerations to the junk value when
@@ -399,7 +378,7 @@ lemma isCovariantDerivativeOn_lcAux [FiniteDimensional ℝ E] :
     ext Z hZ
     unfold lcAux
     rw [dif_pos hY, dif_pos hY', dif_pos (mdifferentiableAt_add_section hY hY')]
-    simp (disch := assumption) [TensorialAt.mkHom₂_apply, lcAux₁, lcAux₀, lcAux₀', if_pos,
+    simp (disch := assumption) [TensorialAt.mkHom₂_apply, lcAux₁, lcAux₀,
       leviCivitaRhs_addY_apply, inner_add_left]
   leibniz {Y f x} hY hf _ := by
     apply injective_eval_vectorField
@@ -408,8 +387,8 @@ lemma isCovariantDerivativeOn_lcAux [FiniteDimensional ℝ E] :
     ext Z hZ
     unfold lcAux
     rw [dif_pos hY, dif_pos]
-    · simp (disch := assumption) [lcAux₁, lcAux₀, lcAux₀', TensorialAt.mkHom₂_apply, inner_add_left,
-        inner_smul_left, if_pos, leviCivitaRhs_smulY_apply]
+    · simp (disch := assumption) [lcAux₁, lcAux₀, TensorialAt.mkHom₂_apply, inner_add_left,
+        inner_smul_left, leviCivitaRhs_smulY_apply]
     exact hf.smul_section hY
 
 end
