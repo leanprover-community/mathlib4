@@ -174,14 +174,7 @@ lemma map_tateComplexFunctor_shortExact {S : ShortComplex (Rep R G)} (hS : S.Sho
       <| map_chainsFunctor_eval_shortExact hS _
 
 instance : (tateComplexFunctor R G).Additive where
-  map_add {X Y f1 f2} := by
-    simp only [tateComplexFunctor_obj, tateComplexFunctor_map]
-    ext i x : 3
-    simp only [tateComplex, CochainComplex.ConnectData.cochainComplex_X,
-      CochainComplex.ConnectData.map_f]
-    cases i with
-    | ofNat _ => simp; rfl
-    | negSucc _ => simp only [CochainComplex.ConnectData.X_negSucc]; ext1; rfl
+  map_add {_ _ _ _} := by ext (i | i) <;> { dsimp [tateComplex]; ext; rfl }
 
 /-
 The next two statements say that `tateComplexFunctor` is an exact functor.
