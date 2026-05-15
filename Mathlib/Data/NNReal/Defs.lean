@@ -1010,8 +1010,7 @@ meta def evalRealToNNReal : PositivityExt where eval {u α} _zα pα? e := do
   | 0, ~q(ℝ≥0), ~q(Real.toNNReal $a) =>
     assertInstancesCommute
     match (← core q(inferInstance) (some q(inferInstance)) a) with
-    | .positive pa =>
-      pure (.positive q(toNNReal_pos.mpr $pa))
+    | .positive pa => pure (.positive q(toNNReal_pos.mpr $pa))
     | _ => failure
   | _, _, _ => throwError "not Real.toNNReal"
 

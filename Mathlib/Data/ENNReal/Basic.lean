@@ -755,8 +755,7 @@ meta def evalENNRealOfNNReal : PositivityExt where eval {u α} _zα pα? e := do
     assertInstancesCommute
     let ra ← core q(inferInstance) (some q(inferInstance)) a
     match ra with
-    | .positive pa =>
-      pure <| .positive q(ENNReal.coe_pos.mpr $pa)
+    | .positive pa => pure <| .positive q(ENNReal.coe_pos.mpr $pa)
     | _ => pure .none
   | _, _, _ => throwError "not ENNReal.ofNNReal"
 

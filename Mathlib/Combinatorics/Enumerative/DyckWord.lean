@@ -565,10 +565,8 @@ meta def evalDyckWordFirstReturn : PositivityExt where eval {u α} _zα pα? e :
     assertInstancesCommute
     let ra ← core q(inferInstance) (some q(inferInstance)) a
     match ra with
-    | .positive pa =>
-      pure (.positive q(DyckWord.firstReturn_pos ($pa).ne'))
-    | .nonzero pa =>
-      pure (.positive q(DyckWord.firstReturn_pos $pa))
+    | .positive pa => pure (.positive q(DyckWord.firstReturn_pos ($pa).ne'))
+    | .nonzero pa => pure (.positive q(DyckWord.firstReturn_pos $pa))
     | _ => pure .none
   | _, _, _ => throwError "not DyckWord.firstReturn"
 
