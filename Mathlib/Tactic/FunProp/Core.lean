@@ -71,7 +71,15 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr)
       else
         -- try user provided discharger
         let ctx : Context ← read
-        if (← isProp type) then
+        -- To use fun_prop in the manifold library (with `MDifferentiable`, `ContMDiff` and friends),
+        -- we need provide specialize a specialized discharger for `ModelWithCorners`:
+        -- lemmas like `ContMDiff.comp` require inferring the model with corners on the
+        -- intermediate space.
+        -- In the future, we might want to allow the discharger to execute on other Type-valued hypothesis.
+        -- In this case, we could create an environment extension to register such types.
+        -- However, right now we could not think of any other use cases --- therefore, we hard-code
+        -- `ModelWithCorners`.
+        if ((← isProp type) || type.isAppOfArity' `ModelWithCorners 7) then
           if let some proof ← ctx.disch type then
             if (← isDefEq x proof) then
               continue
