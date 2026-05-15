@@ -40,11 +40,13 @@ to add the same attribute to both declarations.
 syntax (name := to_fun) "to_fun" optAttrArg (ppSpace ident)? : attr
 
 def toFunImpl (src : Name) (stx : Syntax) (kind : AttributeKind) : AttrM Name := do
-  let `(attr| to_fun%$tk $optAttr) := stx | throwUnsupportedSyntax
+  let `(attr| to_fun%$tk $optAttr $[$id]?) := stx | throwUnsupportedSyntax
   if (kind != AttributeKind.global) then
     throwError "`to_fun` can only be used as a global attribute"
-  let tgt := (src.appendBefore "fun_")
-  MetaM.run' <| addRelatedDecl src tgt tk optAttr
+  let name := match id with
+    | some name => name.getId
+    | none => src.appendBefore "fun_"
+  MetaM.run' <| addRelatedDecl src name tk optAttr
     (docstringPrefix? := s!"Eta-expanded form of `{src}`") (hoverInfo := true)
     fun value levels => do
     let type ← inferType value
@@ -56,7 +58,7 @@ def toFunImpl (src : Name) (stx : Syntax) (kind : AttributeKind) : AttrM Name :=
       | none => mkExpectedTypeHint value r.expr
       | some proof => mkAppOptM ``cast #[type, r.expr, proof, value]
     return (value, levels)
-  return tgt
+  return name
 
 initialize
   registerGeneratingAttr `to_fun ((#[·]) <$> toFunImpl · · ·)
