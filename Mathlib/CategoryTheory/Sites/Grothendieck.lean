@@ -22,6 +22,7 @@ import Mathlib.Tactic.FastInstance
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SetLike
 import Mathlib.Util.CompileInductive
+public import Mathlib.Order.Copy
 
 /-!
 # Grothendieck topologies

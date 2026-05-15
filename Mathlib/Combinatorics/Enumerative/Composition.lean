@@ -15,8 +15,8 @@ import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.BigOperators.Group.List.Basic
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.BigOperators.Group.List
-import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Order.BigOperators.Group.List
+public import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.Sub.Unbundled.Basic
 import Mathlib.Data.Finset.Attr
 import Mathlib.Data.List.OfFn
@@ -25,6 +25,7 @@ import Mathlib.Tactic.Bound.Init
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SetLike
+public import Mathlib.Algebra.CharZero.Defs
 
 /-!
 # Compositions

@@ -9,8 +9,8 @@ public import Mathlib.Order.Filter.Bases.Basic
 public import Mathlib.Data.Finite.Defs
 public import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Data.Set.Lattice
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Data.Set.Lattice
 import Mathlib.Order.CompleteLattice.Finset
 import Mathlib.Order.Filter.Finite
 import Mathlib.Tactic.Common

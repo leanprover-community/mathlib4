@@ -14,6 +14,7 @@ import Mathlib.Tactic.CategoryTheory.CategoryStar
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SetLike
+public import Mathlib.CategoryTheory.Adjunction.Limits
 
 /-!
 # Transport a model category via an equivalence

@@ -945,7 +945,7 @@ theorem Arrows.pullbackCompatible_iff (x : (i : I) → P.obj (op (X i))) :
   · apply t
     exact pullback.condition
   · rw [← pullback.lift_fst _ _ comm, op_comp, Functor.map_comp, comp_apply, t i j,
-      ← comp_apply, ← Functor.map_comp, ← op_comp, pullback.lift_snd]
+      ← comp_apply, ← Functor.map_comp, ← op_comp, pullback.lift_snd (f := π i)]
 
 theorem isSheafFor_arrows_iff_pullbacks : (ofArrows X π).IsSheafFor P ↔
     (∀ (x : (i : I) → P.obj (op (X i))), Arrows.PullbackCompatible P π x →

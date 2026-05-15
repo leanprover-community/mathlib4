@@ -22,6 +22,7 @@ import Mathlib.Order.Interval.Set.LinearOrder
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SetLike
+public import Mathlib.Tactic.FBinop
 
 /-!
 # Sets without arithmetic progressions of length three and Roth numbers

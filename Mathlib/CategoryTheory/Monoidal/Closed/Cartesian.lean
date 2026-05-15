@@ -7,7 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
-import Mathlib.CategoryTheory.Adjunction.Limits
+public import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Category.Init
 import Mathlib.Data.Finset.Attr
 import Mathlib.Tactic.Common

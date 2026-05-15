@@ -11,7 +11,7 @@ public import Mathlib.Data.Fintype.Prod
 import Mathlib.Combinatorics.SimpleGraph.Init
 import Mathlib.Data.Finset.Attr
 import Mathlib.Data.Set.Disjoint
-import Mathlib.Data.Set.Lattice
+public import Mathlib.Data.Set.Lattice
 import Mathlib.Data.Set.Lattice.Image
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.Common

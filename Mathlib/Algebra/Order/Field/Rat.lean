@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Field.Rat
 public import Mathlib.Algebra.Order.GroupWithZero.Canonical
-import Mathlib.Algebra.Order.Nonneg.Field
-import Mathlib.Algebra.Order.Ring.Rat
+public import Mathlib.Algebra.Order.Nonneg.Field
+public import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.Tactic.Bound.Init
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr

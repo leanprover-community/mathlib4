@@ -16,6 +16,7 @@ import Mathlib.Tactic.CategoryTheory.Reassoc
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SetLike
+public import Mathlib.Data.Set.Image
 
 /-!
 # The image of a subfunctor

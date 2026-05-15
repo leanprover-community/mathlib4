@@ -14,7 +14,7 @@ public import Mathlib.Data.Fintype.Card
 import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Data.Finset.Attr
 import Mathlib.Data.Fintype.Option
-import Mathlib.Data.ULift
+public import Mathlib.Data.ULift
 import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 import Mathlib.Order.Nat
 import Mathlib.SetTheory.Cardinal.SchroederBernstein

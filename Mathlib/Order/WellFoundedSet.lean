@@ -21,6 +21,7 @@ import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SetLike
 import Mathlib.Tactic.TFAE
+public import Mathlib.Tactic.FBinop
 
 /-!
 # Well-founded sets

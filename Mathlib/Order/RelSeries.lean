@@ -14,8 +14,8 @@ public import Mathlib.Data.List.Chain
 public import Mathlib.Tactic.NthRewrite
 import Mathlib.Algebra.Group.Int.Defs
 import Mathlib.Algebra.GroupWithZero.Nat
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Algebra.Order.Monoid.NatCast
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Order.Monoid.NatCast
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.Finset.Attr
 import Mathlib.Data.Fintype.Pigeonhole

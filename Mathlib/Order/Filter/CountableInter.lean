@@ -9,7 +9,7 @@ public import Mathlib.Data.Set.Countable
 public import Mathlib.Order.Filter.Defs
 import Mathlib.Data.Finset.Attr
 import Mathlib.Data.Set.Image
-import Mathlib.Data.Set.Lattice
+public import Mathlib.Data.Set.Lattice
 import Mathlib.Data.Set.Lattice.Image
 import Mathlib.Order.Filter.Curry
 import Mathlib.Order.Filter.Map

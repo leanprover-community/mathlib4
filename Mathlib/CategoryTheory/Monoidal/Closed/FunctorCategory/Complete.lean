@@ -18,6 +18,8 @@ import Mathlib.Data.Finset.Attr
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SetLike
+public import Mathlib.CategoryTheory.Adjunction.Lifting.Right
+
 /-!
 
 # Functors into a complete monoidal closed category form a monoidal closed category.
@@ -78,7 +80,7 @@ set_option backward.privateInPublic.warn false in
 /-- Auxiliary definition for `functorCategoryMonoidalClosed` -/
 @[implicit_reducible]
 def functorCategoryClosed (F : I ⥤ C) : Closed F :=
-  have := (ihom.adjunction (incl I ⋙ F)).isLeftAdjoint
+  have : IsLeftAdjoint (tensorLeft (incl I ⋙ F)) := instIsLeftAdjointDiscreteTensorLeftCompIncl ..
   have := isLeftAdjoint_square_lift_comonadic (tensorLeft F) ((whiskeringLeft _ _ C).obj (incl I))
     ((whiskeringLeft _ _ C).obj (incl I)) (tensorLeft (incl I ⋙ F)) (Iso.refl _)
   { rightAdj := (tensorLeft F).rightAdjoint

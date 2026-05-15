@@ -8,7 +8,7 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.Images
 public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 import Mathlib.Data.Finset.Attr
 import Mathlib.Tactic.Attr.Core
 import Mathlib.Tactic.CategoryTheory.Reassoc

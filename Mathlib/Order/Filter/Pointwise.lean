@@ -16,7 +16,7 @@ import Mathlib.Algebra.Order.Group.OrderIso
 import Mathlib.Data.Finset.Attr
 import Mathlib.Data.Set.NAry
 import Mathlib.Order.Filter.AtTopBot.Map
-import Mathlib.Order.Filter.Map
+public import Mathlib.Order.Filter.Map
 import Mathlib.Order.Filter.Prod
 import Mathlib.Order.Filter.Tendsto
 import Mathlib.Order.Filter.Ultrafilter.Defs
@@ -24,6 +24,8 @@ import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SetLike
 import Mathlib.Util.CompileInductive
+public import Mathlib.Tactic.FBinop
+public import Mathlib.Data.Set.Image
 
 /-!
 # Pointwise operations on filters

@@ -18,6 +18,8 @@ import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.SetLike
+public import Mathlib.Tactic.FBinop
+public import Mathlib.Data.Int.Cast.Basic
 
 /-!
 # Additively-graded multiplicative structures on `⨁ i, A i`

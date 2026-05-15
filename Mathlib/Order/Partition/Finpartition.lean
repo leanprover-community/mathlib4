@@ -15,11 +15,12 @@ import Mathlib.Data.Finset.Attr
 import Mathlib.Data.Finset.Lattice.Lemmas
 import Mathlib.Data.Finset.Lattice.Prod
 import Mathlib.Data.Finset.Lattice.Union
-import Mathlib.Data.Finset.Pairwise
-import Mathlib.Data.Setoid.Basic
+public import Mathlib.Data.Finset.Pairwise
+public import Mathlib.Data.Setoid.Basic
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SetLike
+public import Mathlib.Tactic.FBinop
 
 /-!
 # Finite partitions

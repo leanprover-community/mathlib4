@@ -17,6 +17,7 @@ import Mathlib.Data.Set.NAry
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SetLike
+public import Mathlib.Tactic.FBinop
 
 /-!
 # N-ary images of finsets

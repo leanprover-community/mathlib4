@@ -11,7 +11,7 @@ public import Mathlib.Data.Finsupp.SMulWithZero
 public import Mathlib.Data.Finsupp.Basic
 public import Mathlib.Order.Preorder.Finsupp
 import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Finsupp.Order
+public import Mathlib.Data.Finsupp.Order
 import Mathlib.Data.Finsupp.SMul
 import Mathlib.Tactic.Bound
 import Mathlib.Tactic.Common

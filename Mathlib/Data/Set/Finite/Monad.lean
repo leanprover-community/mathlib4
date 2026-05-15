@@ -10,7 +10,7 @@ public import Mathlib.Data.Set.Functor
 public import Mathlib.Data.Set.Finite.Basic
 import Mathlib.Data.Finite.Prod
 import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Data.Set.Lattice.Image
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SetLike

@@ -14,10 +14,10 @@ public import Mathlib.Algebra.Ring.Basic
 public import Mathlib.Algebra.Ring.Nat
 import Mathlib.Algebra.Group.Nat.Units
 import Mathlib.Algebra.Group.Units.Basic
-import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.Monoid.NatCast
 import Mathlib.Algebra.Order.Monoid.WithTop
-import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Algebra.Order.Sub.Basic
 import Mathlib.Algebra.Order.Sub.Unbundled.Basic
 import Mathlib.Data.Nat.Cast.Basic

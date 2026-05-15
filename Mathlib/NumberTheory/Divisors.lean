@@ -36,6 +36,7 @@ import Mathlib.Tactic.Bound.Init
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SetLike
+public import Mathlib.Tactic.FBinop
 
 /-!
 # Divisor Finsets

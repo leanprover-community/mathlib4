@@ -13,7 +13,7 @@ public import Mathlib.Tactic.Basic
 public import Mathlib.Topology.Basic
 import Mathlib.Data.Finset.Attr
 import Mathlib.Data.Fintype.EquivFin
-import Mathlib.Data.Set.Lattice
+public import Mathlib.Data.Set.Lattice
 import Mathlib.Data.Set.Lattice.Image
 import Mathlib.Order.Filter.Map
 import Mathlib.Order.Filter.Tendsto

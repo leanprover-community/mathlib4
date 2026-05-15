@@ -10,7 +10,7 @@ public import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
 public import Mathlib.Tactic.CategoryTheory.Coherence
 public import Mathlib.CategoryTheory.Localization.Bifunctor
 import Mathlib.CategoryTheory.Category.Init
-import Mathlib.CategoryTheory.Localization.Trifunctor
+public import Mathlib.CategoryTheory.Localization.Trifunctor
 import Mathlib.Tactic.CategoryTheory.CategoryStar
 import Mathlib.Tactic.CategoryTheory.Reassoc
 import Mathlib.Tactic.Common
