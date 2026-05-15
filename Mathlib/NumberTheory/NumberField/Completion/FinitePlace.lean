@@ -366,10 +366,6 @@ lemma maximalIdeal_injective : (fun w : FinitePlace K ↦ maximalIdeal w).Inject
 lemma maximalIdeal_inj (w₁ w₂ : FinitePlace K) : maximalIdeal w₁ = maximalIdeal w₂ ↔ w₁ = w₂ :=
   equivHeightOneSpectrum.injective.eq_iff
 
-lemma asIdeal_maximalIdeal_injective :
-    (fun v : FinitePlace K ↦ v.maximalIdeal.asIdeal).Injective :=
-  fun ⦃_ _⦄ h ↦ (FinitePlace.maximalIdeal_inj ..).mp <| HeightOneSpectrum.ext h
-
 @[fun_prop]
 theorem hasFiniteMulSupport_int {x : 𝓞 K} (h_x_nezero : x ≠ 0) :
     (fun w : FinitePlace K ↦ w x).HasFiniteMulSupport := by
@@ -404,7 +400,7 @@ lemma hasFiniteMulSupport_fun_pow_multiplicity {M : Type*} [CommMonoid M] {I : I
       (f v.maximalIdeal.asIdeal) ^ multiplicity v.maximalIdeal.asIdeal I).HasFiniteMulSupport := by
   simp only [← count_normalizedFactors_eq_multiplicity hI]
   exact Multiset.hasFiniteMulSupport_fun_pow_count (UniqueFactorizationMonoid.normalizedFactors I) f
-    |>.fun_comp_of_injective asIdeal_maximalIdeal_injective
+    |>.fun_comp_of_injective <| (asIdeal_injective _).comp maximalIdeal_injective
 
 protected
 lemma add_le (v : FinitePlace K) (x y : K) :
