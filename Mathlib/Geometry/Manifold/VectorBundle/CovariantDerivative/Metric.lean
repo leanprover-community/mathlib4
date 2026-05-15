@@ -159,28 +159,29 @@ ambient metric, i.e. for all differentiable vector fields `X` on `M` and section
 `V`, we have `X ⟨σ, τ⟩ = ⟨∇_X σ, τ⟩ + ⟨σ, ∇_X τ⟩`. -/
 public def IsCompatible [FiniteDimensional ℝ F] : Prop := compatibilityTensor cov = 0
 
-variable {I} [IsManifold I 1 M] [ContMDiffVectorBundle 1 F V I]
+variable {I} [ContMDiffVectorBundle 1 F V I]
 
--- set_option instan
+variable {cov} in
+public lemma IsCompatible.mvfderiv_inner_eq [FiniteDimensional ℝ F] (hcov : cov.IsCompatible)
+    {x : M} (X : Π x, TangentSpace I x) {σ τ : (x : M) → V x}
+    (hσ : MDiffAt (T% σ) x) (hτ : MDiffAt (T% τ) x) :
+    mvfderiv% ⟪σ, τ⟫ x (X x) = ⟪∇ X σ, τ⟫ x + ⟪σ, ∇ X τ⟫ x := by
+  have H := congr($hcov x (σ x) (τ x) (X x))
+  simp [compatibilityTensor_apply _ _ hσ hτ] at H
+  linear_combination H
+
+variable [IsManifold I 1 M]
+
 public lemma isCompatible_iff [FiniteDimensional ℝ F] :
     cov.IsCompatible ↔ ∀ {x : M} {X : Π x, TangentSpace I x} {σ τ : (x : M) → V x},
       MDiffAt (T% X) x → MDiffAt (T% σ) x → MDiffAt (T% τ) x →
       mvfderiv% ⟪σ, τ⟫ x (X x) = ⟪∇ X σ, τ⟫ x + ⟪σ, ∇ X τ⟫ x := by
-  refine ⟨fun hcov x X σ τ hX hσ hτ ↦ ?_, fun h ↦ ?_⟩
-  · have H := congr($hcov x (σ x) (τ x) (X x))
-    simp [compatibilityTensor_apply _ _ hσ hτ] at H
-    linear_combination H
-  · ext1 x
-    apply VectorBundle.injective_eval_sec I F
-    ext1 σ
-    ext1 hσ
-    apply VectorBundle.injective_eval_sec I F
-    ext1 τ
-    ext1 hτ
-    apply VectorBundle.injective_eval_sec I E (TangentSpace I)
-    ext1 X
-    ext1 hX
-    simp (disch := assumption) [compatibilityTensor_apply]
-    linear_combination h hX hσ hτ
+  refine ⟨fun hcov x X σ τ hX ↦ hcov.mvfderiv_inner_eq X, fun h ↦ ?_⟩
+  ext1 x
+  apply VectorBundle.injective_eval_sec I F; ext1 σ; ext1 hσ
+  apply VectorBundle.injective_eval_sec I F; ext1 τ; ext1 hτ
+  apply VectorBundle.injective_eval_sec I E (TangentSpace I); ext X hX
+  simp (disch := assumption) [compatibilityTensor_apply]
+  linear_combination h hX hσ hτ
 
 end CovariantDerivative

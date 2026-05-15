@@ -218,18 +218,17 @@ public lemma IsLeviCivitaConnection.eq_leviCivitaRhs [FiniteDimensional ℝ E]
     (h : cov.IsLeviCivitaConnection)
     (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     ⟪∇ Y, X, Z⟫ x = leviCivitaRhs I X Y Z x := by
-  have aux {X Y Z : (x : M) → TangentSpace I x}
-      (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
-      mvfderiv% ⟪Y, Z⟫ x (X x)
-      = ⟪∇ Y, X, Z⟫ x + ⟪Y, ∇ X, Z⟫ x + ⟪Y, VectorField.mlieBracket I X Z⟫ x := by
-    trans ⟪∇ Y, X, Z⟫ x + ⟪Y, ∇ Z, X⟫ x
-    · exact cov.isCompatible_iff.mp h.1 hX hY hZ
-    · simp [← cov.torsion_eq_zero_iff.mp h.2 hX hZ, inner_sub_right]
-  have eq1 := aux hX hY hZ
-  have eq2 := aux hY hZ hX
-  have eq3 := aux hZ hX hY
-  simp [leviCivitaRhs, real_inner_comm] at *
-  linear_combination - (eq1 + eq2 - eq3) / 2
+  -- use the compatibility in three ways
+  have eq1a := h.1.mvfderiv_inner_eq X hY hZ
+  have eq2a := h.1.mvfderiv_inner_eq Y hZ hX
+  have eq3a := h.1.mvfderiv_inner_eq Z hX hY
+  -- use the torsion-freeness in three ways
+  have eq1b := congr(inner ℝ (Y x) ($(h.2) x (X x) (Z x)))
+  have eq2b := congr(inner ℝ (Z x) ($(h.2) x (Y x) (X x)))
+  have eq3b := congr(inner ℝ (X x) ($(h.2) x (Z x) (Y x)))
+  -- combine
+  simp (disch := fun_prop) [leviCivitaRhs, real_inner_comm, inner_sub_right, torsion_apply] at *
+  linear_combination - (eq1a + eq1b + eq2a + eq2b - eq3a - eq3b) / 2
 
 section
 
