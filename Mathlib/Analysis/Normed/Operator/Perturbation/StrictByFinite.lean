@@ -103,8 +103,9 @@ theorem step1_foward (A : Submodule 𝕜 E) (K : Submodule 𝕜 E) (A_closed : I
 
 Note the hypothesis `h_ker` is implied `h_clemb`, but since this is a private theorem
 we just write the most convenient statement to prove and use. -/
-theorem step1_backward [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E))
-    [codim_A : FiniteDimensional 𝕜 (E ⧸ A)] (h_ker : Disjoint u.ker A) (h_range : u.range = ⊤)
+theorem step1_backward [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
+    (A_closed : IsClosed (A : Set E)) [codim_A : FiniteDimensional 𝕜 (E ⧸ A)]
+    (h_ker : Disjoint u.ker A) (h_range : u.range = ⊤)
     (h_clemb : IsClosedEmbedding (restrict A u)) :
     IsQuotientMap u := by
   rcases h_ker.exists_isCompl with ⟨S, ker_le_S, S_compl_A⟩
