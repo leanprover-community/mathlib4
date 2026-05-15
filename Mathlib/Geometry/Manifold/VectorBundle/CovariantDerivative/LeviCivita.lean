@@ -498,25 +498,17 @@ lemma leviCivitaConnection_torsion_eq_zero [FiniteDimensional ℝ E] :
   rw [CovariantDerivative.torsion_eq_zero_iff]
   intro X Y x hX hY
   apply congr_of_forall_product_apply
-  intro Z
-  trans (inner ℝ (((LeviCivitaConnection I M) Y x) (X x)) Z) -
-    (inner ℝ (((LeviCivitaConnection I M) X x) (Y x)) Z)
-  · apply inner_sub_left
-  have hZ' : extend E Z x = Z := extend_apply_self E Z
-  rw [← hZ']
+  intro Z₀
+  rw [inner_sub_left]
+  rw [← extend_apply_self E Z₀]
   rw [leviCivitaConnection_apply I hY hX (mdifferentiableAt_extend ..)]
   rw [leviCivitaConnection_apply I hX hY (mdifferentiableAt_extend ..)]
-  simp only [leviCivitaRhs]
-  simp only [mlieBracket_swap (V := Y) (W := X)]
-  simp only [Pi.neg_apply, inner_neg_right]
-  set C := inner ℝ Z (VectorField.mlieBracket I X Y x)
-  set Z' := extend E Z
-  simp only [mlieBracket_swap (V := Z') (W := X),
-    mlieBracket_swap (V := Z') (W := Y),
-    Pi.neg_apply, inner_neg_right]
-  rw [rhs_aux_swap (Y := Z'), rhs_aux_swap (Y := Z'), rhs_aux_swap (X := Z')]
-  rw [real_inner_comm (Z' x) (VectorField.mlieBracket I X Y x)]
-  simp
+  set Z := extend E Z₀
+  simp [leviCivitaRhs,
+    mlieBracket_swap (V := Y) (W := X), mlieBracket_swap (V := Z) (W := X),
+    mlieBracket_swap (V := Z) (W := Y),
+    rhs_aux_swap (Y := Z), rhs_aux_swap (X := Z),
+    real_inner_comm]
   ring
 
 /-- `LeviCivitaConnection` is a Levi-Civita connection (i.e., compatible and torsion-free) -/
