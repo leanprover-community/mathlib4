@@ -182,6 +182,11 @@ lemma mul'_comp_comm : mul' R A ∘ₗ TensorProduct.comm R A A = mul' R A := by
 lemma mul'_comm (x : A ⊗[R] A) : mul' R A (TensorProduct.comm R A A x) = mul' R A x :=
   congr($mul'_comp_comm _)
 
+lemma restrictScalars_mul {A : Type*} [CommSemiring A] [Module R A] [IsScalarTower R A A] (a : A) :
+    LinearMap.restrictScalars R (LinearMap.mul A A a) = LinearMap.mul R A a := by
+  ext x
+  simp
+
 end CommSemiring
 end LinearMap
 
