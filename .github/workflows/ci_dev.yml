@@ -75,17 +75,6 @@ jobs:
           ref: ${{ github.sha }}
           path: tools-branch
 
-      - name: Checkout local actions
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          ref: ${{ github.workflow_sha }}
-          fetch-depth: 1
-          sparse-checkout: .github/actions
-          path: workflow-actions
-
-      - name: Get mathlib-ci
-        uses: ./workflow-actions/.github/actions/get-mathlib-ci
-
       - name: Checkout mathlib (pr-branch)
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
@@ -102,13 +91,6 @@ jobs:
           TC="$(cat lean-toolchain)"
           echo "sha=$SHA" >> "$GITHUB_OUTPUT"
           echo "toolchain=$TC" >> "$GITHUB_OUTPUT"
-
-      - name: Prepare DownstreamTest directory
-        shell: bash
-        run: |
-          cd pr-branch
-          mkdir -p DownstreamTest/.lake/
-          cp lean-toolchain DownstreamTest/
 
       - name: Create empty directories (landrun prerequisites)
         shell: bash
