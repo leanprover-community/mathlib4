@@ -139,23 +139,22 @@ end header
 
 section openDecls
 
-/-- Lean may duplicate open declarations occasionally due to leanprover/lean4#13353. This function
-deduplicates exactly-duplicated `OpenDecl`s by removing the later occurrences. -/
-@[inline] private def deduplicateOpenDecls (openDecls : List OpenDecl) : List OpenDecl :=
-  /- Note that the innermost openDecls come first and affect name resolution first due to
-  `eraseDups` affecting resolved ids by first occurrence (corresponding to later occurrences in
-  openDecls) -/
-  -- TODO: find something more efficient, which means basically just about anything else.
-  openDecls.reverse.eraseDups.reverse
-
 /-- Convert `OpenDecl`s into reified `open @id₁ @id₂ ...` syntax. -/
 def reifyOpenDecls {m} [Monad m] [MonadQuotation m] (openDecls : List OpenDecl) (dedup := true) :
     m (Option (TSyntax ``reifiedOpenStx)) := do
-  let openDecls := if dedup then deduplicateOpenDecls openDecls else openDecls
+  if openDecls.isEmpty then return none
+  /- The outermost elements of `openDecls` are the most recent, and should come last in an `open` -/
+  let revOpenDecls := openDecls.reverse
+  /- Lean may duplicate open declarations occasionally due to leanprover/lean4#13353. This function
+  deduplicates exactly-duplicated `OpenDecl`s by removing the later occurrences.
+
+  The innermost elements of `openDecls` actually affect name resolution first, so we want to keep
+  the first instances of duplicate elements in `revOpenDecls`, not in `openDecls`. -/
+  -- TODO: consider a better approach than `eraseDups` if possible
+  let revOpenDecls := if dedup then revOpenDecls.eraseDups else revOpenDecls
   -- Note that the last element of `openDecls` becomes the first element of `reifiedOpens`,
   -- since the outermost `OpenDecl` is the most recent.
-  let mut reifiedOpens := []
-  for openDecl in openDecls do
+  let reifiedOpens ← revOpenDecls.toArray.mapM fun openDecl => do
     let reified ← match openDecl with
       | .explicit id declName =>
         `(reifiedOpenDecl| ($(mkIdent id) → @$(mkIdent declName)))
@@ -163,9 +162,7 @@ def reifyOpenDecls {m} [Monad m] [MonadQuotation m] (openDecls : List OpenDecl) 
         if except.isEmpty then `(reifiedOpenDecl| @$(mkIdent ns)) else
           let except := except.toArray.map mkIdent
           `(reifiedOpenDecl| (@$(mkIdent ns) hiding $except*))
-    reifiedOpens := reified :: reifiedOpens
-  if reifiedOpens.isEmpty then return none else
-    `(reifiedOpenStx| open $reifiedOpens.toArray*)
+  `(reifiedOpenStx| open $reifiedOpens*)
 
 section openScoped
 
