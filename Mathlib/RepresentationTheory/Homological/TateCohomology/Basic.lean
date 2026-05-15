@@ -161,7 +161,7 @@ def tateComplex.eval_neg (n : ℕ) : tateComplexFunctor R G ⋙ HomologicalCompl
 instance : (tateComplexFunctor R G).PreservesZeroMorphisms where
   map_zero X Y := by
     ext
-    simp_rw [tateComplexFunctor]
+    dsimp [tateComplexFunctor]
     aesop_cat
 
 lemma map_tateComplexFunctor_shortExact {S : ShortComplex (Rep R G)} (hS : S.ShortExact) :
