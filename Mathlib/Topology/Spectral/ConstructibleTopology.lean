@@ -5,9 +5,9 @@ Authors: Johan Commelin, Jiedong Jiang, Christian Merten
 -/
 module
 
-public import Mathlib.Topology.Spectral.Basic
-public import Mathlib.Topology.JacobsonSpace
-public import Mathlib.Data.Set.Card
+public import Mathlib.Tactic.Bound.Init
+public import Mathlib.Topology.Sober
+public import Mathlib.Topology.Spectral.Prespectral
 
 /-!
 # Constructible topology

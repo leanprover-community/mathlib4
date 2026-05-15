@@ -5,9 +5,8 @@ Authors: Johan Commelin, Damiano Testa, Yaël Dillies
 -/
 module
 
-public import Mathlib.Logic.Equiv.Defs
-public import Mathlib.Order.Basic
 public import Mathlib.Tactic.Linter.DeprecatedModule
+public import Mathlib.Util.CompileInductive
 
 /-!
 # Type synonyms

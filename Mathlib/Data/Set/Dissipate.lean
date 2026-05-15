@@ -6,7 +6,7 @@ Authors: Peter Pfaffelhuber
 
 module
 
-public import Mathlib.Data.Set.Accumulate
+public import Mathlib.Data.Nat.Lattice
 
 /-!
 # Dissipate

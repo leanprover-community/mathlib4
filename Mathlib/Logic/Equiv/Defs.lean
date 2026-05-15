@@ -12,7 +12,6 @@ public import Mathlib.Logic.Unique
 public import Mathlib.Tactic.Simps.Basic
 public import Mathlib.Tactic.Substs
 
-import Mathlib.Tactic.Attr.Register
 
 /-!
 # Equivalence between types

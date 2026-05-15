@@ -9,6 +9,7 @@ public import Mathlib.Algebra.BigOperators.Finprod
 public import Mathlib.Data.Set.Card
 public import Mathlib.SetTheory.Cardinal.Arithmetic
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Data.Set.Finite.Lattice
 
 /-!
 # Results using cardinal arithmetic

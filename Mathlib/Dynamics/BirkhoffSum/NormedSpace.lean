@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Dynamics.BirkhoffSum.Average
+public import Mathlib.Order.Filter.AtTopBot.Archimedean
 
 /-!
 # Birkhoff average in a normed space

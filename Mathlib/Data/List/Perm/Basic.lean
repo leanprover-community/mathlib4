@@ -9,6 +9,7 @@ public import Batteries.Data.List.Perm
 public import Mathlib.Logic.Relation
 public import Mathlib.Data.List.Forall2
 public import Mathlib.Data.List.InsertIdx
+public import Mathlib.Logic.OpClass
 
 /-!
 # List Permutations

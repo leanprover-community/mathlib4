@@ -5,7 +5,6 @@ Authors: Anatole Dedecker, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.Algebra.Algebra.Equiv
 public import Mathlib.Topology.Algebra.Module.Equiv
 public import Mathlib.Topology.Algebra.Module.UniformConvergence
 public import Mathlib.Topology.Algebra.SeparationQuotient.Section

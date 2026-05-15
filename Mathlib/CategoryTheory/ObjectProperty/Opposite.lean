@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
 public import Mathlib.CategoryTheory.Opposites
+public import Mathlib.Order.CompleteLattice.Basic
 
 /-!
 # The opposite of a property of objects

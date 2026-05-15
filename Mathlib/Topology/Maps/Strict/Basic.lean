@@ -9,6 +9,7 @@ public import Mathlib.Topology.Maps.Basic
 public import Mathlib.Topology.Homeomorph.Quotient
 public import Mathlib.Topology.Constructions
 public import Mathlib.Data.Setoid.Basic
+public import Mathlib.Topology.Homeomorph.Lemmas
 /-!
 # Bourbaki Strict Maps
 
