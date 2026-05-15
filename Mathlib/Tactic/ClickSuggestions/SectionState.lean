@@ -92,7 +92,7 @@ def renderErrors (errors : Array Html) : Html :=
 inductive SectionKind where
   | hyp | currFile | imported
 
--- TODO: add a `⏳` with hover to show which lemmas are still busy.
+-- TODO?: add a `⏳️` with hover info that shows which lemmas are still being computed?
 def renderSection {α} (tactic : String) (kind : SectionKind) (s : SectionState α) : Html :=
   Id.run do
   let { results, errors } := s

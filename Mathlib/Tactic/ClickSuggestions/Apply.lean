@@ -100,7 +100,7 @@ def ApplyLemma.try (lem : ApplyLemma) :
     if bi.isExplicit then
       explicitGoals := explicitGoals.push
         <div> <strong className="goal-vdash">⊢ </strong> {← exprToHtml mvarId} </div>
-  let htmls := if explicitGoals.isEmpty then #[.text "Goal accomplished! 🎉"] else explicitGoals
+  let htmls := if explicitGoals.isEmpty then #[.text "Goal accomplished! 🎉️"] else explicitGoals
   let filtered ←
     if !makesNewMVars then
       some <$> mkSuggestion tactic (.element "div" #[] htmls) newGoals.isEmpty

@@ -98,15 +98,15 @@ public def generateSuggestions (loc : SubExpr.GoalsLocation)
 
   librarySearchSuggestions rootExpr subExpr rwKind parentDecl? token'
 
-/-- If the set of computations is non-empty, display a `⏳` symbol with hover information that
+/-- If the set of computations is non-empty, display a `⏳️` symbol with hover information that
 shows all of the ongoing computations. -/
 private def rerenderStatus (computations : Std.HashMap String Nat) : Html :=
   if computations.isEmpty then
     .text ""
   else
-    -- TODO: use a fancier throbber instead of `⏳`?
+    -- TODO: use a fancier throbber instead of `⏳️`?
     let title := String.intercalate ", " computations.keys;
-    <span title={title}> {.text "⏳"} </span>
+    <span title={title}> {.text "⏳️"} </span>
 
 @[server_rpc_method]
 public def rpc (props : PanelWidgetProps) : RequestM (RequestTask Html) :=

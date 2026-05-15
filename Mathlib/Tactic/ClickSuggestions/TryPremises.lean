@@ -148,7 +148,7 @@ public def librarySearchSuggestions (rootExpr subExpr : Expr)
   }
 
   Core.checkInterrupted
-  token.update <div> loading local hypotheses ⏳ </div>
+  token.update <div> loading local hypotheses ⏳️ </div>
   let pres ← computeLCtxDiscrTrees choice fvarId?
   Core.checkInterrupted
   for cand in ← getCandidates rootExpr subExpr gpos rwKind pres do
@@ -157,7 +157,7 @@ public def librarySearchSuggestions (rootExpr subExpr : Expr)
   Core.checkInterrupted
   token.update <div>
     {.element "div" #[] sections}
-    <div> loading theorem in the current file ⏳ </div>
+    <div> loading theorem in the current file ⏳️ </div>
     </div>
   let pres ← computeModuleDiscrTrees choice parentDecl?
   Core.checkInterrupted
@@ -167,14 +167,14 @@ public def librarySearchSuggestions (rootExpr subExpr : Expr)
   Core.checkInterrupted
   token.update <div>
     {.element "div" #[] sections}
-    <div> initializing discrimination trees ⏳ </div>
+    <div> initializing discrimination trees ⏳️ </div>
     </div>
   computeImportDiscrTrees choice
   Core.checkInterrupted
   let reportProgress (tac : String) :=
     token.update <div>
       {.element "div" #[] sections}
-      <div> {.text s!"loading imported `{tac}` theorems ⏳"} </div>
+      <div> {.text s!"loading imported `{tac}` theorems ⏳️"} </div>
       </div>
   for cand in ← getImportCandidates rootExpr subExpr gpos rwKind reportProgress do
     sections := sections.push (← runSuggestions .imported cand)
