@@ -152,20 +152,4 @@ def symmetricOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] :
 
 end
 
-namespace monoidalOfHasFiniteProducts
-
-variable {C}
-variable {D : Type*} [Category* D] (F : C ⥤ D)
-  [HasTerminal C] [HasBinaryProducts C]
-  [HasTerminal D] [HasBinaryProducts D]
-
-set_option linter.deprecated false in
-attribute [local simp] associator_hom_fst
-open Functor.OplaxMonoidal
-
-variable [PreservesLimit (Functor.empty.{0} C) F]
-  [PreservesLimitsOfShape (Discrete WalkingPair) F]
-
-end monoidalOfHasFiniteProducts
-
 end CategoryTheory

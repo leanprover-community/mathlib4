@@ -432,7 +432,3 @@ theorem IsStarProjection.two_mul_sub_one_mem_unitary {R : Type*} [Ring R] [StarR
     hp.isSelfAdjoint.star_eq, star_one, mul_sub, mul_add,
     sub_mul, add_mul, hp.isIdempotentElem.eq, one_mul, add_sub_cancel_right,
     mul_one, sub_sub_cancel, and_self]
-
-namespace unitary
-
-end unitary
