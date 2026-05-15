@@ -51,7 +51,7 @@ variable {R : Type*} [NonUnitalNonAssocRing R] (I : TwoSidedIdeal R)
 
 instance [Nontrivial R] : Nontrivial (TwoSidedIdeal R) := by
   obtain ⟨I, J, h⟩ : Nontrivial (RingCon R) := inferInstance
-  exact ⟨⟨I⟩, ⟨J⟩, by contrapose! h; aesop⟩
+  exact ⟨⟨I⟩, ⟨J⟩, by contrapose h; aesop⟩
 
 instance setLike : SetLike (TwoSidedIdeal R) R where
   coe t := {r | t.ringCon r 0}
@@ -65,6 +65,8 @@ instance setLike : SetLike (TwoSidedIdeal R) R where
     · have H' : a - b ∈ {x | t₂ x 0} := sub_self b ▸ t₂.sub H (t₂.refl b)
       rw [← h] at H'
       convert t₁.add H' (t₁.refl b) using 1 <;> abel
+
+instance : PartialOrder (TwoSidedIdeal R) := .ofSetLike (TwoSidedIdeal R) R
 
 lemma mem_iff (x : R) : x ∈ I ↔ I.ringCon x 0 := Iff.rfl
 

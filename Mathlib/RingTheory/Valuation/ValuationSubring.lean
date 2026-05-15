@@ -11,6 +11,8 @@ public import Mathlib.Algebra.Algebra.Subalgebra.Tower
 public import Mathlib.Algebra.Ring.Subring.Pointwise
 public import Mathlib.Algebra.Ring.Action.Field
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+public import Mathlib.RingTheory.KrullDimension.Basic
+public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!
 
@@ -52,6 +54,8 @@ instance : SetLike (ValuationSubring K) K where
     replace h := SetLike.coe_injective' h
     congr
 
+instance : PartialOrder (ValuationSubring K) := .ofSetLike (ValuationSubring K) K
+
 theorem mem_carrier (x : K) : x ∈ A.carrier ↔ x ∈ A := Iff.refl _
 
 @[simp]
@@ -92,6 +96,7 @@ instance : Top (ValuationSubring K) :=
 @[simp]
 theorem toSubring_top : (⊤ : ValuationSubring K).toSubring = ⊤ := rfl
 
+@[simp]
 theorem mem_top (x : K) : x ∈ (⊤ : ValuationSubring K) :=
   trivial
 
@@ -175,6 +180,7 @@ theorem mem_of_valuation_le_one (x : K) (h : A.valuation x ≤ 1) : x ∈ A :=
   let ⟨a, ha⟩ := (ValuationRing.mem_integer_iff A K x).1 h
   ha ▸ a.2
 
+@[simp]
 theorem valuation_le_one_iff (x : K) : A.valuation x ≤ 1 ↔ x ∈ A :=
   ⟨mem_of_valuation_le_one _ _, fun ha => A.valuation_le_one ⟨x, ha⟩⟩
 
@@ -186,6 +192,7 @@ theorem valuation_le_iff (x y : K) : A.valuation x ≤ A.valuation y ↔ ∃ a :
 
 theorem valuation_surjective : Function.Surjective A.valuation := Quot.mk_surjective
 
+@[simp]
 theorem valuation_unit (a : Aˣ) : A.valuation a = 1 := by
   rw [← A.valuation.map_one, valuation_eq_iff]; use a; simp
 
@@ -200,6 +207,9 @@ theorem valuation_eq_one_iff (a : A) : IsUnit a ↔ A.valuation a = 1 where
     refine .of_mul_eq_one ⟨a⁻¹, ha'⟩ ?_
     ext
     simp [field]
+
+theorem eq_top_iff : A = ⊤ ↔ ¬ A.valuation.IsNontrivial := by
+  simp [Valuation.IsNontrivial_iff_exists_one_lt, SetLike.ext_iff]
 
 theorem valuation_lt_one_or_eq_one (a : A) : A.valuation a < 1 ∨ A.valuation a = 1 :=
   lt_or_eq_of_le (A.valuation_le_one a)
@@ -259,7 +269,7 @@ def mapOfLE (R S : ValuationSubring K) (h : R ≤ S) : R.ValueGroup →*₀ S.Va
   map_one' := rfl
   map_mul' := by rintro ⟨⟩ ⟨⟩; rfl
 
-@[mono]
+@[gcongr, mono]
 theorem monotone_mapOfLE (R S : ValuationSubring K) (h : R ≤ S) : Monotone (R.mapOfLE S h) := by
   rintro ⟨⟩ ⟨⟩ ⟨a, ha⟩; exact ⟨R.inclusion S h a, ha⟩
 
@@ -275,6 +285,13 @@ theorem mapOfLE_valuation_apply (R S : ValuationSubring K) (h : R ≤ S) (x : K)
 def idealOfLE (R S : ValuationSubring K) (h : R ≤ S) : Ideal R :=
   (IsLocalRing.maximalIdeal S).comap (R.inclusion S h)
 
+theorem idealOfLE_self : A.idealOfLE A (refl _) = IsLocalRing.maximalIdeal A := rfl
+
+@[simp]
+theorem idealOfLE_top : A.idealOfLE ⊤ (le_top _) = ⊥ := by
+  rw [ValuationSubring.idealOfLE, IsLocalRing.maximalIdeal_eq_bot, Ideal.comap_bot_of_injective]
+  exact Subring.inclusion_injective _
+
 instance prime_idealOfLE (R S : ValuationSubring K) (h : R ≤ S) : (idealOfLE R S h).IsPrime :=
   (IsLocalRing.maximalIdeal S).comap_isPrime _
 
@@ -287,7 +304,7 @@ def ofPrime (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] : ValuationSubrin
 
 instance ofPrimeAlgebra (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
     Algebra A (A.ofPrime P) :=
-  Subalgebra.algebra (Localization.subalgebra.ofField K _ P.primeCompl_le_nonZeroDivisors)
+  inferInstanceAs <| Algebra A (Localization.subalgebra.ofField K _ P.primeCompl_le_nonZeroDivisors)
 
 instance ofPrime_scalar_tower (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
     letI : SMul A (A.ofPrime P) := SMulZeroClass.toSMul
@@ -296,10 +313,9 @@ instance ofPrime_scalar_tower (A : ValuationSubring K) (P : Ideal A) [P.IsPrime]
     (Localization.subalgebra.ofField K _ P.primeCompl_le_nonZeroDivisors)
 
 instance ofPrime_localization (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
-    IsLocalization.AtPrime (A.ofPrime P) P := by
-  apply
-    Localization.subalgebra.isLocalization_ofField K P.primeCompl
-      P.primeCompl_le_nonZeroDivisors
+    IsLocalization.AtPrime (A.ofPrime P) P :=
+  Localization.subalgebra.isLocalization_ofField K P.primeCompl
+    P.primeCompl_le_nonZeroDivisors
 
 theorem le_ofPrime (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] : A ≤ ofPrime A P :=
   fun a ha => Subalgebra.mem_toSubring.mpr <| Subalgebra.algebraMap_mem _ (⟨a, ha⟩ : A)
@@ -336,6 +352,12 @@ theorem ofPrime_idealOfLE (R S : ValuationSubring K) (h : R ≤ S) :
       ext
       simp [field]
     · simp
+
+@[simp]
+theorem ofPrime_bot : A.ofPrime ⊥ = ⊤ := by simp [← idealOfLE_top]
+
+@[simp]
+theorem ofPrime_top : A.ofPrime (IsLocalRing.maximalIdeal A) = A := by simp [← idealOfLE_self]
 
 theorem ofPrime_le_of_le (P Q : Ideal A) [P.IsPrime] [Q.IsPrime] (h : P ≤ Q) :
     ofPrime A Q ≤ ofPrime A P := fun _x ⟨a, s, hs, he⟩ => ⟨a, s, fun c => hs (h c), he⟩
@@ -380,6 +402,28 @@ instance linearOrderOverring : LinearOrder {S // A ≤ S} where
   max_def a b := congr_fun₂ sup_eq_maxDefault a b
   toDecidableLE := _
 
+section
+
+variable [Ring.KrullDimLE 1 A] {B : ValuationSubring K}
+
+variable {A} in
+theorem eq_self_or_eq_top_of_le (hle : A ≤ B) : A = B ∨ B = ⊤ := by
+  obtain h | h := IsLocalRing.Ring.KrullDimLE.eq_bot_or_eq_top (A.primeSpectrumEquiv.symm ⟨B, hle⟩)
+  all_goals
+    replace h := congr(primeSpectrumEquiv A $h)
+    simp_all
+
+theorem eq_of_le_of_ne_top (hle : A ≤ B) (hTop : B ≠ ⊤) : A = B := by
+  obtain h | h := eq_self_or_eq_top_of_le hle <;> simp_all
+
+theorem eq_of_le_of_ne_self (hle : A ≤ B) (hne : A ≠ B) : B = ⊤ := by
+  obtain h | h := eq_self_or_eq_top_of_le hle <;> simp_all
+
+theorem eq_of_lt (hlt : A < B) : B = ⊤ := by
+  obtain h | h := eq_self_or_eq_top_of_le hlt.le <;> simp_all
+
+end
+
 end Order
 
 end ValuationSubring
@@ -416,8 +460,17 @@ theorem isEquiv_valuation_valuationSubring : v.IsEquiv v.valuationSubring.valuat
   intro x
   rw [ValuationSubring.valuation_le_one_iff, mem_valuationSubring_iff]
 
+@[simp]
+theorem isNontrivial_valuation_valuationSubring_iff :
+    v.valuationSubring.valuation.IsNontrivial ↔ v.IsNontrivial :=
+  (isEquiv_valuation_valuationSubring v).isNontrivial_iff.symm
+
 lemma valuationSubring.integers : v.Integers v.valuationSubring :=
   Valuation.integer.integers _
+
+@[simp]
+theorem valuationSubring_eq_top_iff : v.valuationSubring = ⊤ ↔ ¬ v.IsNontrivial := by
+  simp [ValuationSubring.eq_top_iff]
 
 end Valuation
 
@@ -672,6 +725,7 @@ theorem coe_unitGroupToResidueFieldUnits_apply (x : A.unitGroup) :
       Ideal.Quotient.mk _ (A.unitGroupMulEquiv x : A) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ker_unitGroupToResidueFieldUnits :
     A.unitGroupToResidueFieldUnits.ker = A.principalUnitGroup.comap A.unitGroup.subtype := by
   ext
@@ -689,9 +743,10 @@ theorem surjective_unitGroupToResidueFieldUnits :
 the units of the residue field of `A`. -/
 def unitsModPrincipalUnitsEquivResidueFieldUnits :
     A.unitGroup ⧸ A.principalUnitGroup.comap A.unitGroup.subtype ≃* (IsLocalRing.ResidueField A)ˣ :=
-  (QuotientGroup.quotientMulEquivOfEq A.ker_unitGroupToResidueFieldUnits.symm).trans
-    (QuotientGroup.quotientKerEquivOfSurjective _ A.surjective_unitGroupToResidueFieldUnits)
+  QuotientGroup.liftEquiv _ A.surjective_unitGroupToResidueFieldUnits
+    A.ker_unitGroupToResidueFieldUnits.symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem unitsModPrincipalUnitsEquivResidueFieldUnits_comp_quotientGroup_mk :
     (A.unitsModPrincipalUnitsEquivResidueFieldUnits : _ ⧸ Subgroup.comap _ _ →* _).comp
         (QuotientGroup.mk' (A.principalUnitGroup.subgroupOf A.unitGroup)) =
@@ -725,6 +780,7 @@ variable {G : Type*} [Group G] [MulSemiringAction G K]
 /-- The action on a valuation subring corresponding to applying the action to every element.
 
 This is available as an instance in the `Pointwise` locale. -/
+@[instance_reducible]
 def pointwiseHasSMul : SMul G (ValuationSubring K) where
   smul g S := -- TODO: if we add `ValuationSubring.map` at a later date, we should use it here
     { g • S.toSubring with
@@ -748,6 +804,7 @@ theorem pointwise_smul_toSubring (g : G) (S : ValuationSubring K) :
 This is available as an instance in the `Pointwise` locale.
 
 This is a stronger version of `ValuationSubring.pointwiseSMul`. -/
+@[instance_reducible]
 def pointwiseMulAction : MulAction G (ValuationSubring K) :=
   toSubring_injective.mulAction toSubring pointwise_smul_toSubring
 

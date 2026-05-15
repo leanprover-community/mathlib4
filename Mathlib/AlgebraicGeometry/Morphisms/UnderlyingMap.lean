@@ -9,8 +9,7 @@ public import Mathlib.Topology.LocalAtTarget
 public import Mathlib.AlgebraicGeometry.Morphisms.Constructors
 
 /-!
-
-## Properties on the underlying functions of morphisms of schemes.
+# Properties on the underlying functions of morphisms of schemes
 
 This file includes various results on properties of morphisms of schemes that come from properties
 of the underlying map of topological spaces, including
@@ -63,6 +62,7 @@ class Surjective : Prop where
 lemma surjective_eq_topologically :
     @Surjective = topologically Function.Surjective := by ext; exact surjective_iff _
 
+@[grind .]
 lemma Scheme.Hom.surjective (f : X ⟶ Y) [Surjective f] : Function.Surjective f :=
   Surjective.surj
 
@@ -73,10 +73,14 @@ instance [Surjective f] [Surjective g] : Surjective (f ≫ g) := ⟨g.surjective
 lemma Surjective.of_comp [Surjective (f ≫ g)] : Surjective g where
   surj := Function.Surjective.of_comp (g := f) (f ≫ g).surjective
 
+instance (priority := low) [Nonempty X] [Subsingleton Y] (f : X ⟶ Y) :
+    Surjective f := ⟨Function.surjective_to_subsingleton _⟩
+
 lemma Surjective.comp_iff [Surjective f] : Surjective (f ≫ g) ↔ Surjective g :=
   ⟨fun _ ↦ of_comp f g, fun _ ↦ inferInstance⟩
 
-instance : MorphismProperty.IsStableUnderComposition @Surjective.{u} where
+instance : MorphismProperty.IsMultiplicative @Surjective.{u} where
+  id_mem _ := inferInstance
   comp_mem _ _ hf hg := ⟨hg.1.comp hf.1⟩
 
 instance : MorphismProperty.RespectsIso @Surjective :=
@@ -129,6 +133,11 @@ def Scheme.Hom.cover {P : MorphismProperty Scheme.{u}} {X S : Scheme.{u}} (f : X
   .singleton f <| by
     rw [singleton_mem_precoverage_iff]
     exact ⟨f.surjective, hf⟩
+
+@[simp]
+lemma Scheme.Hom.presieve₀_cover {P : MorphismProperty Scheme.{u}} {X S : Scheme.{u}} (f : X ⟶ S)
+    (hf : P f) [Surjective f] : (f.cover hf).presieve₀ = Presieve.singleton f := by
+  simp [cover]
 
 instance {P : MorphismProperty Scheme.{u}} {X S : Scheme.{u}} (f : X ⟶ S) (hf : P f)
     [Surjective f] : Unique (Scheme.Hom.cover f hf).I₀ :=
@@ -251,6 +260,14 @@ lemma IsDominant.of_comp_of_isOpenImmersion
   simp only [Scheme.Hom.comp_base, TopCat.coe_comp, Set.range_comp] at H
   convert H.preimage g.isOpenEmbedding.isOpenMap using 1
   rw [Set.preimage_image_eq _ g.isOpenEmbedding.injective]
+
+lemma Opens.isDominant_ι {U : X.Opens} (hU : Dense (X := X) U) : IsDominant U.ι :=
+  ⟨by simpa [DenseRange] using hU⟩
+
+lemma Opens.isDominant_homOfLE {U V : X.Opens} (hU : Dense (X := X) U) (hU' : U ≤ V) :
+    IsDominant (X.homOfLE hU') :=
+  have : IsDominant (X.homOfLE hU' ≫ V.ι) := by simpa using Opens.isDominant_ι hU
+  IsDominant.of_comp_of_isOpenImmersion (g := V.ι) _
 
 end IsDominant
 

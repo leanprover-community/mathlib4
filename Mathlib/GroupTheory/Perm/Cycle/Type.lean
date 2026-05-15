@@ -129,8 +129,6 @@ theorem Disjoint.cycleType_mul {σ τ : Perm α} (h : Disjoint σ τ) :
     Multiset.map_add, Finset.union_val, Multiset.add_eq_union_iff_disjoint.mpr _]
   exact Finset.disjoint_val.2 h.disjoint_cycleFactorsFinset
 
-@[deprecated (since := "2025-08-26")] alias Disjoint.cycleType := Disjoint.cycleType_mul
-
 @[simp]
 theorem cycleType_inv (σ : Perm α) : σ⁻¹.cycleType = σ.cycleType :=
   cycle_induction_on (P := fun τ : Perm α => τ⁻¹.cycleType = τ.cycleType) σ rfl
@@ -310,7 +308,8 @@ theorem cycleType_extendDomain {β : Type*} [Fintype β] [DecidableEq β] {p : �
   | induction_disjoint σ τ hd _ hσ hτ =>
     rw [hd.cycleType_mul, ← extendDomain_mul, (hd.extendDomain f).cycleType_mul, hσ, hτ]
 
-theorem cycleType_ofSubtype {p : α → Prop} [DecidablePred p] {g : Perm (Subtype p)} :
+theorem cycleType_ofSubtype {p : α → Prop} [DecidablePred p] [Fintype (Subtype p)]
+    {g : Perm (Subtype p)} :
     cycleType (ofSubtype g) = cycleType g :=
   cycleType_extendDomain (Equiv.refl (Subtype p))
 
@@ -490,6 +489,7 @@ theorem rotate_length : rotate v n = v :=
 
 end VectorsProdEqOne
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: Make the `Finite` version of this theorem the default
 /-- For every prime `p` dividing the order of a finite group `G` there exists an element of order
 `p` in `G`. This is known as Cauchy's theorem. -/
@@ -628,6 +628,10 @@ variable [DecidableEq α] {σ : Perm α}
 theorem cycleType (h : IsThreeCycle σ) : σ.cycleType = {3} :=
   h
 
+theorem ne_one (h : IsThreeCycle σ) : σ ≠ 1 := by
+  rintro rfl
+  simpa using h.cycleType
+
 theorem card_support (h : IsThreeCycle σ) : #σ.support = 3 := by
   rw [← sum_cycleType, h.cycleType, Multiset.sum_singleton]
 
@@ -685,6 +689,69 @@ theorem isThreeCycle_swap_mul_swap_same {a b c : α} (ab : a ≠ b) (ac : a ≠ 
   · simp only [mem_support, coe_mul]
     grind
 
+theorem IsThreeCycle.support_eq_iff_mem_support
+    {g : Perm α} {a : α} (hg3 : g.IsThreeCycle) :
+    g.support = {a, g a, g (g a)} ↔ a ∈ g.support := by
+  constructor
+  · intro hg; simp [hg]
+  · intro ha
+    symm
+    apply Finset.eq_of_subset_of_card_le
+    · apply Finset.insert_subset ha
+      apply Finset.insert_subset
+      · rwa [Perm.apply_mem_support]
+      simpa only [Finset.singleton_subset_iff, Perm.apply_mem_support]
+    · rw [hg3.card_support]
+      simp only [mem_support, ne_eq] at ha
+      rw [Finset.card_insert_eq_ite, if_neg]
+      · rw [Finset.card_insert_eq_ite, if_neg]
+        · simp
+        · simpa using Ne.symm ha
+      · simp only [Finset.mem_insert, Finset.mem_singleton]
+        contrapose ha
+        rcases ha with ha | ha
+        · exact ha.symm
+        · suffices (g ^ 3) a = a by simpa [pow_succ, ← ha] using this
+          simp [← hg3.orderOf]
+
+theorem IsThreeCycle.nodup_iff_mem_support {g : Perm α} {a : α} (hg3 : g.IsThreeCycle) :
+    [a, g a, g (g a)].Nodup ↔ a ∈ g.support := by
+  constructor
+  · intro ha
+    rw [mem_support]
+    grind
+  rw [← support_eq_iff_mem_support hg3]
+  intro ha
+  suffices g.support.card = 3 by grind
+  exact hg3.card_support
+
+theorem IsThreeCycle.eq_swap_mul_swap_iff_mem_support
+    {g : Perm α} {a : α} (hg3 : g.IsThreeCycle) :
+    g = (swap a (g a)) * (swap (g a) (g (g a))) ↔ a ∈ g.support := by
+  constructor
+  · intro hg
+    rw [mem_support]
+    intro hx
+    apply hg3.isCycle.ne_one
+    simpa [hx] using hg
+  intro ha
+  have ha' := hg3.support_eq_iff_mem_support.mpr ha
+  have ha'' := hg3.nodup_iff_mem_support.mpr ha
+  ext x
+  simp only [coe_mul, Function.comp_apply]
+  by_cases h : x ∈ g.support
+  · simp only [ha', Finset.mem_insert, Finset.mem_singleton] at h
+    rcases h with rfl | (rfl | rfl)
+    · rw [swap_apply_of_ne_of_ne (x := x) (by grind) (by grind)]
+      simp
+    · rw [swap_apply_left, swap_apply_of_ne_of_ne (by grind) (by grind)]
+    · simp only [swap_apply_right]
+      suffices (g ^ 3) a = a by simpa
+      simp [← hg3.orderOf]
+  · rw [swap_apply_of_ne_of_ne (x := x) (by grind) (by grind)]
+    rw [swap_apply_of_ne_of_ne (x := x) (by grind) (by grind)]
+    simpa [notMem_support] using h
+
 open Subgroup
 
 theorem swap_mul_swap_same_mem_closure_three_cycles {a b c : α} (ab : a ≠ b) (ac : a ≠ c) :
@@ -707,6 +774,20 @@ theorem IsSwap.mul_mem_closure_three_cycles {σ τ : Perm α} (hσ : IsSwap σ) 
   exact
     mul_mem (swap_mul_swap_same_mem_closure_three_cycles ab ac)
       (swap_mul_swap_same_mem_closure_three_cycles (Ne.symm ac) cd)
+
+end
+
+section
+
+variable [DecidableEq α]
+
+theorem cycleType_swap_mul_swap_of_nodup {x y z t : α} (h : [x, y, z, t].Nodup) :
+    (swap x y * swap z t).cycleType = {2, 2} := by
+  rw [(disjoint_swap_swap h).cycleType_mul]
+  rw [isSwap_iff_cycleType.mp ?_, isSwap_iff_cycleType.mp ?_]
+  · simp
+  · rw [swap_isSwap_iff]; grind
+  · rw [swap_isSwap_iff]; grind
 
 end
 

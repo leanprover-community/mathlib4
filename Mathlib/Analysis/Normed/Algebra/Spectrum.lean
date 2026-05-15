@@ -12,9 +12,8 @@ public import Mathlib.Analysis.Normed.Algebra.UnitizationL1
 public import Mathlib.Analysis.Normed.Ring.Units
 public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
-public import Mathlib.Topology.Algebra.Module.CharacterSpace
+public import Mathlib.Topology.Algebra.Module.Spaces.CharacterSpace
 public import Mathlib.Topology.Semicontinuity.Hemicontinuity
-import Mathlib.Topology.MetricSpace.Sequences
 
 /-!
 # The spectrum of elements in a complete normed algebra
@@ -110,7 +109,7 @@ end Algebra
 variable [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
 
 theorem isOpen_resolventSet (a : A) : IsOpen (ρ a) :=
-  Units.isOpen.preimage ((continuous_algebraMap 𝕜 A).sub continuous_const)
+  Units.isOpen.preimage (by fun_prop)
 
 @[simp]
 protected theorem isClosed (a : A) : IsClosed (σ a) :=
@@ -332,7 +331,7 @@ theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [HasSummableGeomSeries A] (a 
         le_radius_of_bound_nnreal _ (max 1 ‖(1 : A)‖₊) fun n => ?_
       rw [← norm_toNNReal, norm_mkPiRing, norm_toNNReal]
       rcases n with - | n
-      · simp only [le_refl, mul_one, or_true, le_max_iff, pow_zero]
+      · simp
       · grw [nnnorm_pow_le' a n.succ_pos, ← le_max_left]
         by_cases h : ‖a‖₊ = 0
         · simp [h, pow_succ']
@@ -344,7 +343,7 @@ theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [HasSummableGeomSeries A] (a 
         by_cases h : ‖a‖₊ = 0
         · simp only [nnnorm_eq_zero.mp h, norm_zero, zero_lt_one, smul_zero]
         · have nnnorm_lt : ‖y‖₊ < ‖a‖₊⁻¹ := by
-            simpa only [← coe_inv h, mem_ball_zero_iff, Metric.emetric_ball_nnreal] using hy
+            simpa only [← coe_inv h, mem_ball_zero_iff, Metric.eball_coe] using hy
           rwa [← coe_nnnorm, ← Real.lt_toNNReal_iff_coe_lt, Real.toNNReal_one, nnnorm_smul,
             ← NNReal.lt_inv_iff_mul_lt h]
       simpa [← smul_pow, (summable_geometric_of_norm_lt_one norm_lt).hasSum_iff] using
@@ -461,7 +460,7 @@ variable [NontriviallyNormedField 𝕜] [NormedRing A] [CompleteSpace A]
 variable [NormedAlgebra 𝕜 A]
 
 /-- The equivalence between characters and algebra homomorphisms into the base field. -/
-def equivAlgHom : characterSpace 𝕜 A ≃ (A →ₐ[𝕜] 𝕜) where
+noncomputable def equivAlgHom : characterSpace 𝕜 A ≃ (A →ₐ[𝕜] 𝕜) where
   toFun := toAlgHom
   invFun f :=
     { val := f.toContinuousLinearMap
@@ -725,7 +724,7 @@ lemma upperHemicontinuous_spectrum [NormedField 𝕜] [ProperSpace 𝕜]
 /-- The map `a ↦ spectrum ℝ≥0 a` is upper hemicontinuous. -/
 theorem upperHemicontinuous_spectrum_nnreal [NormedRing A] [NormedAlgebra ℝ A] [CompleteSpace A] :
     UpperHemicontinuous (spectrum ℝ≥0 : A → Set ℝ≥0) := by
-  obtain ⟨⟨h₁, -⟩, h₂⟩ : IsClosedEmbedding ((↑) : ℝ≥0 → ℝ) := isometry_subtype_coe.isClosedEmbedding
+  obtain ⟨⟨h₁, -⟩, h₂⟩ : IsClosedEmbedding ((↑) : ℝ≥0 → ℝ) := NNReal.isClosedEmbedding_coe
   exact upperHemicontinuous_spectrum ℝ A |>.isInducing_comp h₁ h₂
 
 open WithLp in
@@ -745,7 +744,7 @@ theorem upperHemicontinuous_quasispectrum [NontriviallyNormedField 𝕜] [Proper
 theorem upperHemicontinuous_quasispectrum_nnreal [NonUnitalNormedRing A]
     [NormedSpace ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A] [CompleteSpace A] :
     UpperHemicontinuous (quasispectrum ℝ≥0 : A → Set ℝ≥0) := by
-  obtain ⟨⟨h₁, -⟩, h₂⟩ : IsClosedEmbedding ((↑) : ℝ≥0 → ℝ) := isometry_subtype_coe.isClosedEmbedding
+  obtain ⟨⟨h₁, -⟩, h₂⟩ := NNReal.isClosedEmbedding_coe
   simpa [← NNReal.algebraMap_eq_coe] using
     upperHemicontinuous_quasispectrum ℝ A |>.isInducing_comp h₁ h₂
 

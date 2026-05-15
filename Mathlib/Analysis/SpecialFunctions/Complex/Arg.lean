@@ -11,7 +11,7 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
 /-!
 # The argument of a complex number.
 
-We define `arg : ℂ → ℝ`, returning a real number in the range (-π, π],
+We define `arg : ℂ → ℝ`, returning a real number in the range $(-π, π]$,
 such that for `x ≠ 0`, `sin (arg x) = x.im / x.abs` and `cos (arg x) = x.re / x.abs`,
 while `arg 0` defaults to `0`
 -/
@@ -24,7 +24,7 @@ open scoped ComplexConjugate Real Topology
 namespace Complex
 variable {a x z : ℂ}
 
-/-- `arg` returns values in the range (-π, π], such that for `x ≠ 0`,
+/-- `arg` returns values in the range $(-π, π]$, such that for `x ≠ 0`,
   `sin (arg x) = x.im / x.abs` and `cos (arg x) = x.re / x.abs`,
   `arg 0` defaults to `0` -/
 noncomputable def arg (x : ℂ) : ℝ :=
@@ -124,7 +124,7 @@ lemma arg_exp_mul_I (θ : ℝ) :
   simp [arg_exp]
 
 @[simp]
-theorem arg_zero : arg 0 = 0 := by simp [arg, le_refl]
+theorem arg_zero : arg 0 = 0 := by simp [arg]
 
 theorem ext_norm_arg {x y : ℂ} (h₁ : ‖x‖ = ‖y‖) (h₂ : x.arg = y.arg) : x = y := by
   rw [← norm_mul_exp_arg_mul_I x, ← norm_mul_exp_arg_mul_I y, h₁, h₂]
@@ -156,6 +156,12 @@ theorem arg_le_pi (x : ℂ) : arg x ≤ π :=
 
 theorem neg_pi_lt_arg (x : ℂ) : -π < arg x :=
   (arg_mem_Ioc x).1
+
+theorem arg_lt_arg_add_two_pi (x y : ℂ) : x.arg < y.arg + 2 * π := by
+  grind [arg_le_pi x, neg_pi_lt_arg y]
+
+theorem abs_arg_sub_arg_lt (x y : ℂ) : |x.arg - y.arg| < 2 * π := by
+  grind [arg_lt_arg_add_two_pi x y, arg_lt_arg_add_two_pi y x]
 
 theorem abs_arg_le_pi (z : ℂ) : |arg z| ≤ π :=
   abs_le.2 ⟨(neg_pi_lt_arg z).le, arg_le_pi z⟩
@@ -198,13 +204,13 @@ theorem arg_eq_arg_iff {x y : ℂ} (hx : x ≠ 0) (hy : y ≠ 0) :
   obtain rfl | hx := eq_or_ne x 0 <;> simp [*]
 
 @[simp]
-theorem arg_neg_one : arg (-1) = π := by simp [arg, le_refl, not_le.2 (zero_lt_one' ℝ)]
+theorem arg_neg_one : arg (-1) = π := by simp [arg]
 
 @[simp]
-theorem arg_I : arg I = π / 2 := by simp [arg, le_refl]
+theorem arg_I : arg I = π / 2 := by simp [arg]
 
 @[simp]
-theorem arg_neg_I : arg (-I) = -(π / 2) := by simp [arg, le_refl]
+theorem arg_neg_I : arg (-I) = -(π / 2) := by simp [arg]
 
 @[simp]
 theorem tan_arg (x : ℂ) : Real.tan (arg x) = x.im / x.re := by
@@ -641,7 +647,7 @@ theorem continuousAt_arg_coe_angle (h : x ≠ 0) : ContinuousAt ((↑) ∘ arg :
       exact ⟨by simp, fun z hz => arg_neg_coe_angle hz⟩
     rw [ha]
     replace hs := mem_slitPlane_iff.mpr.mt hs
-    push_neg at hs
+    push Not at hs
     refine
       (Real.Angle.continuous_coe.continuousAt.comp (continuousAt_arg (Or.inl ?_))).add
         continuousAt_const

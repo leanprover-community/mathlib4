@@ -195,16 +195,16 @@ end IsTopologicalGroup
 
 section IsUniformGroup
 
-variable [CommGroup α] [UniformSpace α]
+variable [UniformSpace α]
 
 /-- The **Cauchy criterion** for infinite products, also known as the **Cauchy convergence test** -/
 @[to_additive /-- The **Cauchy criterion** for infinite sums, also known as the
 **Cauchy convergence test** -/]
-theorem multipliable_iff_cauchySeq_finset [CompleteSpace α] {f : β → α} :
+theorem multipliable_iff_cauchySeq_finset [CommMonoid α] [CompleteSpace α] {f : β → α} :
     Multipliable f ↔ CauchySeq fun s : Finset β ↦ ∏ b ∈ s, f b := by
   classical exact cauchy_map_iff_exists_tendsto.symm
 
-variable [IsUniformGroup α] {f g : β → α}
+variable [CommGroup α] [IsUniformGroup α] {f g : β → α}
 
 @[to_additive]
 theorem cauchySeq_finset_iff_prod_vanishing :
@@ -297,18 +297,19 @@ theorem Multipliable.comp_injective {i : γ → β} (hf : Multipliable f) (hi : 
     (hf.mulIndicator (Set.range i))
 
 @[to_additive]
-theorem Multipliable.subtype (hf : Multipliable f) (s : Set β) : Multipliable (f ∘ (↑) : s → α) :=
+theorem Multipliable.subtype (hf : Multipliable f) (p : β → Prop) :
+    Multipliable (f ∘ (↑) : Subtype p → α) :=
   hf.comp_injective Subtype.coe_injective
 
 @[to_additive]
 theorem multipliable_subtype_and_compl {s : Set β} :
     ((Multipliable fun x : s ↦ f x) ∧ Multipliable fun x : ↑sᶜ ↦ f x) ↔ Multipliable f :=
-  ⟨and_imp.2 Multipliable.mul_compl, fun h ↦ ⟨h.subtype s, h.subtype sᶜ⟩⟩
+  ⟨and_imp.2 Multipliable.mul_compl, fun h ↦ ⟨h.subtype (· ∈ s), h.subtype (· ∈ sᶜ)⟩⟩
 
 @[to_additive]
 protected theorem Multipliable.tprod_subtype_mul_tprod_subtype_compl [T2Space α] {f : β → α}
     (hf : Multipliable f) (s : Set β) : (∏' x : s, f x) * ∏' x : ↑sᶜ, f x = ∏' x, f x :=
-  ((hf.subtype s).hasProd.mul_compl (hf.subtype { x | x ∉ s }).hasProd).unique hf.hasProd
+  ((hf.subtype _).hasProd.mul_compl (hf.subtype _).hasProd).unique hf.hasProd
 
 @[to_additive]
 protected theorem Multipliable.prod_mul_tprod_subtype_compl [T2Space α] {f : β → α}
@@ -352,8 +353,8 @@ theorem tendsto_tprod_compl_atTop_one (f : α → G) :
   by_cases H : Multipliable f
   · intro e he
     obtain ⟨s, hs⟩ := H.tprod_vanishing he
-    rw [Filter.mem_map, mem_atTop_sets]
-    exact ⟨s, fun t hts ↦ hs _ <| Set.disjoint_left.mpr fun a ha has ↦ ha (hts has)⟩
+    simp only [Filter.mem_map, mem_atTop_sets, Set.mem_preimage]
+    exact ⟨s, fun t hts ↦ hs tᶜ <| Set.disjoint_left.mpr fun a ha has ↦ ha (hts has)⟩
   · refine tendsto_const_nhds.congr fun _ ↦ (tprod_eq_one_of_not_multipliable ?_).symm
     rwa [Finset.multipliable_compl_iff]
 
@@ -369,11 +370,19 @@ theorem Multipliable.tendsto_cofinite_one (hf : Multipliable f) : Tendsto f cofi
   · simpa using hs {x} (disjoint_singleton_left.2 hx)
 
 @[to_additive]
-theorem Multipliable.finite_mulSupport_of_discreteTopology
+theorem Multipliable.hasFiniteMulSupport_of_discreteTopology
     {α : Type*} [CommGroup α] [TopologicalSpace α] [DiscreteTopology α]
-    {β : Type*} (f : β → α) (h : Multipliable f) : Set.Finite f.mulSupport :=
+    {β : Type*} (f : β → α) (h : Multipliable f) : HasFiniteMulSupport f :=
   haveI : IsTopologicalGroup α := ⟨⟩
   h.tendsto_cofinite_one (discreteTopology_iff_singleton_mem_nhds.mp ‹_› 1)
+
+@[deprecated (since := "2026-03-03")] alias
+  Multipliable.finite_mulSupport_of_discreteTopology :=
+    Multipliable.hasFiniteMulSupport_of_discreteTopology
+
+@[deprecated (since := "2026-03-03")] alias
+  Summable.finite_support_of_discreteTopology :=
+    Summable.hasFiniteSupport_of_discreteTopology
 
 @[to_additive]
 theorem Multipliable.countable_mulSupport [FirstCountableTopology G] [T1Space G]
@@ -407,7 +416,8 @@ theorem tprod_const [T2Space G] (a : G) : ∏' _ : β, a = a ^ (Nat.card β) := 
 end IsTopologicalGroup
 
 section CommGroupWithZero
-variable {K : Type*} [CommGroupWithZero K] [TopologicalSpace K] [ContinuousMul K] {f g : α → K}
+variable {K : Type*} [CommGroupWithZero K] [TopologicalSpace K] [SeparatelyContinuousMul K]
+  {f g : α → K}
 /-!
 ## Groups with a zero
 

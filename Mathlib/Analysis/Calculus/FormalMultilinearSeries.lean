@@ -50,7 +50,18 @@ def FormalMultilinearSeries (𝕜 : Type*) (E : Type*) (F : Type*) [Semiring �
     [AddCommMonoid F] [Module 𝕜 F] [TopologicalSpace F] [ContinuousAdd F]
     [ContinuousConstSMul 𝕜 F] :=
   ∀ n : ℕ, E [×n]→L[𝕜] F
-deriving AddCommMonoid, Inhabited
+deriving Inhabited
+
+section AddCommMonoid
+
+/-- Copy `Pi.addCommMonoid`, ensuring the pointwise operations hold by defeq. -/
+instance : AddCommMonoid (FormalMultilinearSeries 𝕜 E F) where
+  __ := Pi.addCommMonoid
+  zero _ := 0
+  add x y n := x n + y n
+  nsmul k x n := k • x n
+
+end AddCommMonoid
 
 section Module
 

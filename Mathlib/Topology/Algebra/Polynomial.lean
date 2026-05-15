@@ -51,7 +51,7 @@ variable {R S : Type*} [Semiring R] [TopologicalSpace R] [IsTopologicalSemiring 
 protected theorem continuous_eval₂ [Semiring S] (p : S[X]) (f : S →+* R) :
     Continuous fun x => p.eval₂ f x := by
   simp only [eval₂_eq_sum]
-  exact continuous_finset_sum _ fun c _ => continuous_const.mul (continuous_pow _)
+  exact continuous_finsetSum _ fun c _ => continuous_const.mul (continuous_pow _)
 
 @[continuity, fun_prop]
 protected theorem continuous : Continuous fun x => p.eval x :=
@@ -148,6 +148,10 @@ theorem isClosedMap_eval [ProperSpace R] (p : R[X]) : IsClosedMap p.eval := by
   obtain h | h := le_or_gt p.degree 0
   · rw [degree_le_zero_iff.mp h]; simpa using isClosedMap_const
   · exact (p.isProperMap_eval h).isClosedMap
+
+variable (R) in
+theorem _root_.isClosedMap_pow [ProperSpace R] (n : ℕ) : IsClosedMap fun x : R ↦ x ^ n := by
+  simpa [eval_X_pow] using (X ^ n).isClosedMap_eval
 
 section Roots
 

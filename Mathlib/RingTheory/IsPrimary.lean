@@ -36,9 +36,11 @@ to define the nilpotency of `r : R`.
 
 @[expose] public section
 
-open Pointwise
+open scoped Pointwise
 
 namespace Submodule
+
+open Ideal
 
 section CommSemiring
 
@@ -55,7 +57,7 @@ variable {S T : Submodule R M}
 lemma IsPrimary.ne_top (h : S.IsPrimary) : S ≠ ⊤ := h.left
 
 lemma IsPrimary.mem_or_mem (h : S.IsPrimary) {r : R} {m : M} (hrm : r • m ∈ S) :
-    m ∈ S ∨ r ∈ (S.colon ⊤).radical :=
+    m ∈ S ∨ r ∈ (S.colon Set.univ).radical :=
   h.right hrm
 
 protected lemma IsPrimary.inf (hS : S.IsPrimary) (hT : T.IsPrimary)
@@ -86,6 +88,25 @@ lemma isPrimary_finsetInf {ι : Type*} {s : Finset ι} {f : ι → Submodule R M
     refine IsPrimary.inf (hs (by simp)) (IH hy (fun x hx ↦ hs (by simp [hx])) H) ?_
     rw [colon_finsetInf, Ideal.radical_finset_inf hy H,
       hs' (mem_insert_self _ _), hs' (mem_insert_of_mem hy)]
+
+theorem IsPrimary.isPrime_radical_colon (hI : S.IsPrimary) : (S.colon .univ).radical.IsPrime := by
+  refine isPrime_iff.mpr <| hI.imp (by simp) fun h x y ⟨n, hn⟩ ↦ ?_
+  simp_rw [← mem_colon_iff_le, ← mem_radical_iff] at h
+  refine or_iff_not_imp_left.mpr fun hx ↦ ⟨n, ?_⟩
+  simp only [mul_pow, mem_colon, Set.mem_univ, true_imp_iff, mul_smul] at hn ⊢
+  exact fun p ↦ (h (hn p)).resolve_right (mt mem_radical_of_pow_mem hx)
+
+theorem IsPrimary.radical_colon_singleton_of_notMem (hI : S.IsPrimary) {m : M} (hm : m ∉ S) :
+    (S.colon {m}).radical = (S.colon Set.univ).radical :=
+  le_antisymm (radical_le_radical_iff.mpr fun _ hy ↦
+    (hI.2 (Submodule.mem_colon_singleton.mp hy)).resolve_left hm)
+    (radical_mono (Submodule.colon_mono le_rfl (Set.subset_univ {m})))
+
+theorem IsPrimary.radical_colon_singleton_eq_ite (hS : S.IsPrimary) (m : M) [Decidable (m ∈ S)] :
+    radical (S.colon {m}) = if m ∈ S then ⊤ else radical (S.colon Set.univ) := by
+  split_ifs with hm
+  · rwa [radical_eq_top, colon_eq_top_iff_subset, Set.singleton_subset_iff]
+  · exact hS.radical_colon_singleton_of_notMem hm
 
 end CommSemiring
 
