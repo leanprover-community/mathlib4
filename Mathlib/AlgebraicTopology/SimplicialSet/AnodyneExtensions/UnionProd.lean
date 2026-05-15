@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.PairingCore
+public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.RankNat
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Op
 public import Mathlib.AlgebraicTopology.SimplicialSet.Boundary
 public import Mathlib.AlgebraicTopology.SimplicialSet.Horn
@@ -488,8 +488,21 @@ lemma type₁_pairingCore {m : ℕ} (k : Fin (m + 1)) {n : ℕ}
     (pairingCore k n).type₁ s = s.x :=
   Subcomplex.N.cast_eq_self _ s.hd
 
+noncomputable def weakRankFunction {m : ℕ} (k : Fin (m + 1)) (n : ℕ) :
+    (pairingCore.{u} k n).WeakRankFunction ℕ where
+  rank s := (finset s.x rfl).card
+  lt := by
+    intro s t ⟨h₁, h₂⟩ h₃
+    dsimp at s t h₃
+    generalize hd : s.d = d
+    have hds : s.x.dim = d + 1 := by simpa [s.hd]
+    have hdt : t.x.dim = d + 1 := by simpa [t.hd, ← h₃]
+    suffices (finset s.x hds).card < (finset t.x hdt).card by convert this
+    sorry
+
 instance {m : ℕ} (k : Fin (m + 1)) (n : ℕ) :
-    (pairingCore.{u} k n).IsRegular := sorry
+    (pairingCore.{u} k n).IsRegular :=
+  (weakRankFunction.{u} k n).isRegular
 
 set_option backward.isDefEq.respectTransparency false in
 instance {m : ℕ} (k : Fin m) (n : ℕ) :
