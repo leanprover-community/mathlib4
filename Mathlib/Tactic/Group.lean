@@ -59,7 +59,7 @@ macro_rules
       Int.natCast_add, Int.natCast_mul,
       Int.mul_neg, Int.neg_mul, neg_neg,
       one_zpow, zpow_zero, zpow_one, mul_zpow_neg_one,
-      ← mul_assoc,
+      ↓← mul_assoc,
       ← zpow_add, ← zpow_add_one, ← zpow_one_add, zpow_trick, zpow_trick_one, zpow_trick_one',
       tsub_self, sub_self, add_neg_cancel, neg_add_cancel]
   $[at $location]?)
@@ -70,6 +70,29 @@ syntax (name := aux_group₂) "aux_group₂" (location)? : tactic
 macro_rules
 | `(tactic| aux_group₂ $[at $location]?) =>
   `(tactic| ring_nf -failIfUnchanged $[at $location]?)
+
+/-- Auxiliary tactic for the `group` tactic. Applies cancellation theorem on the *right* -/
+syntax (name := aux_group₃) "aux_group₃" (location)? : tactic
+
+macro_rules
+| `(tactic| aux_group₃ $[at $location]?) =>
+  `(tactic| simp -decide -failIfUnchanged only [mul_left_inj] $[at $location]?)
+
+/-- Auxiliary tactic for the `group` tactic. Applies cancellation theorem on the *left* -/
+syntax (name := aux_group₄) "aux_group₄" (location)? : tactic
+
+macro_rules
+| `(tactic| aux_group₄ $[at $location]?) =>
+  `(tactic| simp -decide -failIfUnchanged only [↓mul_assoc, mul_right_inj] $[at $location]?)
+
+/-- Auxiliary tactic for the `group` tactic. Applies post-processing converting (·)^(-1) to (·)⁻¹
+and associates the expression to the left -/
+syntax (name := aux_group₅) "aux_group₅" (location)? : tactic
+
+macro_rules
+| `(tactic| aux_group₅ $[at $location]?) =>
+  `(tactic| simp -decide -failIfUnchanged only [zpow_neg _ 1, zpow_one, ↓← mul_assoc]
+  $[at $location]?)
 
 /-- `group` normalizes expressions in multiplicative groups that occur in the goal. `group` does not
 assume commutativity, instead using only the group axioms without any information about which group
@@ -92,7 +115,19 @@ syntax (name := group) "group" (location)? : tactic
 
 macro_rules
 | `(tactic| group $[$loc]?) =>
-  `(tactic| repeat (fail_if_no_progress (aux_group₁ $[$loc]? <;> aux_group₂ $[$loc]?)))
+  `(tactic|
+    -- Call the simplifier and simplify exponents
+    repeat
+      (fail_if_no_progress
+      (aux_group₁ $[$loc]? <;> aux_group₂ $[$loc]?));
+    -- Once the expression has been simplified, apply left/right cancellation
+    <;> repeat
+      (fail_if_no_progress
+      (aux_group₃ $[$loc]? <;> aux_group₄ $[$loc]?)
+      );
+    -- Apply post-processing converting terms of the form (·)^(-1) to terms of the form (·)⁻¹
+    <;> aux_group₅ $[$loc]?
+)
 
 end Mathlib.Tactic.Group
 
