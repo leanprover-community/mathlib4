@@ -344,6 +344,7 @@ theorem dom_partialEquivLimit : (partialEquivLimit S).dom = iSup (fun x ↦ (S x
 @[simp]
 theorem cod_partialEquivLimit : (partialEquivLimit S).cod = iSup (fun x ↦ (S x).cod) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma partialEquivLimit_comp_inclusion {i : ι} :
     (partialEquivLimit S).toEquiv.toEmbedding.comp (Substructure.inclusion (le_iSup _ i)) =
@@ -352,6 +353,7 @@ lemma partialEquivLimit_comp_inclusion {i : ι} :
   rw [Equiv_isup_symm_inclusion]
   congr
 
+set_option backward.isDefEq.respectTransparency false in
 theorem le_partialEquivLimit (i : ι) : S i ≤ partialEquivLimit S :=
   ⟨le_iSup (f := fun i ↦ (S i).dom) _, by
     #adaptation_note /-- https://github.com/leanprover/lean4/pull/5020
@@ -398,8 +400,7 @@ instance inhabited_self_FGEquiv : Inhabited (L.FGEquiv M M) :=
   ⟨⟨⟨⊥, ⊥, Equiv.refl L (⊥ : L.Substructure M)⟩, fg_bot⟩⟩
 
 instance inhabited_FGEquiv_of_IsEmpty_Constants_and_Relations
-    [IsEmpty L.Constants] [IsEmpty (L.Relations 0)] [L.Structure N] :
-    Inhabited (L.FGEquiv M N) :=
+    [IsEmpty L.Constants] [IsEmpty (L.Relations 0)] : Inhabited (L.FGEquiv M N) :=
   ⟨⟨⟨⊥, ⊥, {
       toFun := isEmptyElim
       invFun := isEmptyElim

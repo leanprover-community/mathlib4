@@ -5,10 +5,11 @@ Authors: Christopher Hoskin
 -/
 module
 
-public import Mathlib.Order.Bounds.Basic
 public import Mathlib.Tactic.FunProp.Attr
 public import Mathlib.Tactic.ToFun
 import Mathlib.Order.Bounds.Image
+public import Mathlib.Order.Bounds.Defs
+public import Mathlib.Order.Directed
 
 /-!
 # Scott continuity
@@ -66,7 +67,7 @@ lemma ScottContinuousOn.mono (hD : D₁ ⊆ D₂) (hf : ScottContinuousOn D₂ f
 protected theorem ScottContinuousOn.monotone (D : Set (Set α)) (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
     (h : ScottContinuousOn D f) : Monotone f := by
   refine fun a b hab =>
-    (h (hD a b hab) (insert_nonempty _ _) (directedOn_pair le_refl hab) ?_).1
+    (h (hD a b hab) (insert_nonempty _ _) (directedOn_pair hab) ?_).1
       (mem_image_of_mem _ <| mem_insert _ _)
   rw [IsLUB, upperBounds_insert, upperBounds_singleton,
     inter_eq_self_of_subset_right (Ici_subset_Ici.2 hab)]
@@ -100,7 +101,7 @@ theorem ScottContinuousOn.image_comp {g : β → γ}
     (hg : ScottContinuousOn ((f '' ·) '' D) g)
     (hf : ScottContinuousOn D f) :
     ScottContinuousOn D (g ∘ f) :=
-  ScottContinuousOn.comp hD (Set.mapsTo_image  (f '' ·) D) hg hf
+  ScottContinuousOn.comp hD (Set.mapsTo_image (f '' ·) D) hg hf
 
 @[fun_prop]
 lemma ScottContinuousOn.prodMk {g : α → γ} (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)

@@ -102,12 +102,12 @@ instance instInfCoe : Min L where
 
 /-- A sublattice of a lattice inherits a lattice structure. -/
 instance instLatticeCoe (L : Sublattice α) : Lattice L :=
-  Subtype.coe_injective.lattice _ (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+  Subtype.coe_injective.lattice _ .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 /-- A sublattice of a distributive lattice inherits a distributive lattice structure. -/
 instance instDistribLatticeCoe {α : Type*} [DistribLattice α] (L : Sublattice α) :
     DistribLattice L :=
-  Subtype.coe_injective.distribLattice _ (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+  Subtype.coe_injective.distribLattice _ .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 /-- The natural lattice hom from a sublattice to the original lattice. -/
 def subtype (L : Sublattice α) : LatticeHom L α where
@@ -396,4 +396,16 @@ lemma pi_univ_eq_bot {L : ∀ i, Sublattice (π i)} {i : κ} (hL : L i = ⊥) : 
   pi_univ_eq_bot_iff.2 ⟨i, hL⟩
 
 end Pi
+
+namespace LatticeHom
+
+/--
+The range of `LatticeHom` is a sublattice.
+-/
+def range (f : LatticeHom α β) := (Sublattice.map f ⊤).copy (Set.range f) image_univ.symm
+
+lemma range_coe : (LatticeHom.range f : Set β) = Set.range f := rfl
+
+end LatticeHom
+
 end Sublattice

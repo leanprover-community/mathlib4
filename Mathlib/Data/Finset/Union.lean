@@ -262,7 +262,7 @@ lemma erase_biUnion (f : α → Finset β) (s : Finset α) (b : β) :
 @[simp]
 lemma biUnion_nonempty : (s.biUnion t).Nonempty ↔ ∃ x ∈ s, (t x).Nonempty := by
   simp only [Finset.Nonempty, mem_biUnion]
-  rw [exists_swap]
+  rw [exists_comm]
   simp [exists_and_left]
 
 lemma Nonempty.biUnion (hs : s.Nonempty) (ht : ∀ x ∈ s, (t x).Nonempty) :
@@ -272,7 +272,7 @@ lemma disjoint_biUnion_left (s : Finset α) (f : α → Finset β) (t : Finset �
     Disjoint (s.biUnion f) t ↔ ∀ i ∈ s, Disjoint (f i) t := by
   classical
   refine s.induction ?_ ?_
-  · simp only [forall_mem_empty_iff, biUnion_empty, disjoint_empty_left]
+  · simp
   · intro i s his ih
     simp only [disjoint_union_left, biUnion_insert, forall_mem_insert, ih]
 

@@ -87,6 +87,125 @@ lemma essSup_ennreal_smul_measure {c : ℝ≥0∞} (hc : c ≠ 0) (f : α → β
     essSup f (c • μ) = essSup f μ := by
   simp_rw [essSup, Measure.ae_ennreal_smul_measure_eq hc]
 
+theorem essSup_mono_ae {f g : α → β} (hfg : f ≤ᵐ[μ] g)
+    (hf : IsCoboundedUnder (· ≤ ·) (ae μ) f := by isBoundedDefault)
+    (hg : IsBoundedUnder (· ≤ ·) (ae μ) g := by isBoundedDefault) :
+    essSup f μ ≤ essSup g μ :=
+  limsup_le_limsup hfg hf hg
+
+theorem essInf_mono_ae {f g : α → β} (hfg : f ≤ᵐ[μ] g)
+    (hf : IsBoundedUnder (· ≥ ·) (ae μ) f := by isBoundedDefault)
+    (hg : IsCoboundedUnder (· ≥ ·) (ae μ) g := by isBoundedDefault) :
+    essInf f μ ≤ essInf g μ :=
+  liminf_le_liminf hfg hf hg
+
+theorem essSup_le_of_ae_le {f : α → β} (c : β) (hf : f ≤ᵐ[μ] fun _ => c)
+    (hfbdd : IsCoboundedUnder (· ≤ ·) (ae μ) f := by isBoundedDefault) :
+    essSup f μ ≤ c :=
+  limsup_le_of_le hfbdd hf
+
+theorem le_essInf_of_ae_le {f : α → β} (c : β) (hf : (fun _ => c) ≤ᵐ[μ] f)
+    (hfbdd : IsCoboundedUnder (· ≥ ·) (ae μ) f := by isBoundedDefault) :
+    c ≤ essInf f μ :=
+  le_liminf_of_le hfbdd hf
+
+theorem OrderIso.essSup_apply {_ : MeasurableSpace α} {γ} [ConditionallyCompleteLattice γ]
+    (f : α → β) (μ : Measure α) (g : β ≃o γ)
+    (hf : IsBoundedUnder (· ≤ ·) (ae μ) f := by isBoundedDefault)
+    (hf_co : IsCoboundedUnder (· ≤ ·) (ae μ) f := by isBoundedDefault)
+    (hgf : IsBoundedUnder (· ≤ ·) (ae μ) (fun x => g (f x)) := by isBoundedDefault)
+    (hgf_co : IsCoboundedUnder (· ≤ ·) (ae μ) (fun x => g (f x)) := by
+      isBoundedDefault) :
+    g (essSup f μ) = essSup (fun x => g (f x)) μ :=
+  OrderIso.limsup_apply g hf hf_co hgf hgf_co
+
+theorem OrderIso.essInf_apply {_ : MeasurableSpace α} {γ} [ConditionallyCompleteLattice γ]
+    (f : α → β) (μ : Measure α) (g : β ≃o γ)
+    (hf : IsBoundedUnder (· ≥ ·) (ae μ) f := by isBoundedDefault)
+    (hf_co : IsCoboundedUnder (· ≥ ·) (ae μ) f := by isBoundedDefault)
+    (hgf : IsBoundedUnder (· ≥ ·) (ae μ) (fun x => g (f x)) := by isBoundedDefault)
+    (hgf_co : IsCoboundedUnder (· ≥ ·) (ae μ) (fun x => g (f x)) := by
+      isBoundedDefault) :
+    g (essInf f μ) = essInf (fun x => g (f x)) μ :=
+  OrderIso.liminf_apply g hf hf_co hgf hgf_co
+
+theorem essSup_mono_measure {f : α → β} (hμν : ν ≪ μ)
+    (hνf : IsCoboundedUnder (· ≤ ·) (ae ν) f := by isBoundedDefault)
+    (hμf : IsBoundedUnder (· ≤ ·) (ae μ) f := by isBoundedDefault) :
+    essSup f ν ≤ essSup f μ :=
+  limsup_le_limsup_of_le (Measure.ae_le_iff_absolutelyContinuous.mpr hμν) hνf hμf
+
+theorem essSup_mono_measure' {f : α → β} (hμν : ν ≤ μ)
+    (hνf : IsCoboundedUnder (· ≤ ·) (ae ν) f := by isBoundedDefault)
+    (hμf : IsBoundedUnder (· ≤ ·) (ae μ) f := by isBoundedDefault) :
+    essSup f ν ≤ essSup f μ :=
+  essSup_mono_measure (Measure.absolutelyContinuous_of_le hμν) hνf hμf
+
+theorem essInf_antitone_measure {f : α → β} (hμν : μ ≪ ν)
+    (hνf : IsBoundedUnder (· ≥ ·) (ae ν) f := by isBoundedDefault)
+    (hμf : IsCoboundedUnder (· ≥ ·) (ae μ) f := by isBoundedDefault) :
+    essInf f ν ≤ essInf f μ :=
+  liminf_le_liminf_of_le (Measure.ae_le_iff_absolutelyContinuous.mpr hμν) hνf hμf
+
+section TopologicalSpace
+
+variable {γ : Type*} {mγ : MeasurableSpace γ} {f : α → γ} {g : γ → β}
+
+theorem essSup_comp_le_essSup_map_measure (hf : AEMeasurable f μ)
+    (hgf : IsCoboundedUnder (· ≤ ·) (ae μ) (g ∘ f) := by isBoundedDefault)
+    (hg : IsBoundedUnder (· ≤ ·) (ae (Measure.map f μ)) g := by isBoundedDefault) :
+    essSup (g ∘ f) μ ≤ essSup g (Measure.map f μ) := by
+  refine limsSup_le_limsSup_of_le ?_ hgf hg
+  rw [← map_map]
+  exact map_mono (Measure.tendsto_ae_map hf)
+
+theorem MeasurableEmbedding.essSup_map_measure (hf : MeasurableEmbedding f)
+    (hg_co : IsCoboundedUnder (· ≤ ·) (ae (Measure.map f μ)) g := by isBoundedDefault)
+    (hgf : IsBoundedUnder (· ≤ ·) (ae μ) (g ∘ f) := by isBoundedDefault)
+    (hgf_co : IsCoboundedUnder (· ≤ ·) (ae μ) (g ∘ f) := by isBoundedDefault)
+    (hg : IsBoundedUnder (· ≤ ·) (ae (Measure.map f μ)) g := by isBoundedDefault) :
+    essSup g (Measure.map f μ) = essSup (g ∘ f) μ := by
+  refine le_antisymm ?_ (essSup_comp_le_essSup_map_measure hf.measurable.aemeasurable hgf_co hg)
+  refine limsSup_le_limsSup hg_co hgf (fun c h_le => ?_)
+  rw [eventually_map] at h_le ⊢
+  exact hf.ae_map_iff.mpr h_le
+
+variable [MeasurableSpace β] [TopologicalSpace β] [SecondCountableTopology β]
+  [OrderClosedTopology β] [OpensMeasurableSpace β]
+
+theorem essSup_map_measure_of_measurable (hg : Measurable g) (hf : AEMeasurable f μ)
+    (hg_co : IsCoboundedUnder (· ≤ ·) (ae (Measure.map f μ)) g := by isBoundedDefault)
+    (hgf : IsBoundedUnder (· ≤ ·) (ae μ) (g ∘ f) := by isBoundedDefault)
+    (hgf_co : IsCoboundedUnder (· ≤ ·) (ae μ) (g ∘ f) := by isBoundedDefault)
+    (hg_bdd : IsBoundedUnder (· ≤ ·) (ae (Measure.map f μ)) g := by isBoundedDefault) :
+    essSup g (Measure.map f μ) = essSup (g ∘ f) μ := by
+  refine le_antisymm ?_ (essSup_comp_le_essSup_map_measure hf hgf_co hg_bdd)
+  refine limsSup_le_limsSup hg_co hgf (fun c h_le => ?_)
+  rw [eventually_map] at h_le ⊢
+  rw [ae_map_iff hf (measurableSet_le hg measurable_const)]
+  exact h_le
+
+theorem essSup_map_measure (hg : AEMeasurable g (Measure.map f μ)) (hf : AEMeasurable f μ)
+    (hg_co : IsCoboundedUnder (· ≤ ·) (ae (Measure.map f μ)) g := by isBoundedDefault)
+    (hgf : IsBoundedUnder (· ≤ ·) (ae μ) (g ∘ f) := by isBoundedDefault)
+    (hgf_co : IsCoboundedUnder (· ≤ ·) (ae μ) (g ∘ f) := by isBoundedDefault)
+    (hg_bdd : IsBoundedUnder (· ≤ ·) (ae (Measure.map f μ)) g := by isBoundedDefault) :
+    essSup g (Measure.map f μ) = essSup (g ∘ f) μ := by
+  have hg_mk_co : IsCoboundedUnder (· ≤ ·) (ae (Measure.map f μ)) (hg.mk g) := by
+    simpa [IsCoboundedUnder, ← map_congr hg.ae_eq_mk]
+  have hg_mk_bdd : IsBoundedUnder (· ≤ ·) (ae (Measure.map f μ)) (hg.mk g) := by
+    simpa [IsBoundedUnder, ← map_congr hg.ae_eq_mk]
+  have h_eq := ae_eq_comp hf hg.ae_eq_mk
+  have hg_mk_f : IsBoundedUnder (· ≤ ·) (ae μ) ((hg.mk g) ∘ f) := by
+    simpa [IsBoundedUnder, ← map_congr h_eq]
+  have hg_mk_f_co : IsCoboundedUnder (· ≤ ·) (ae μ) ((hg.mk g) ∘ f) := by
+    simpa [IsCoboundedUnder, ← map_congr h_eq]
+  rw [essSup_congr_ae hg.ae_eq_mk,
+    essSup_map_measure_of_measurable hg.measurable_mk hf hg_mk_co hg_mk_f hg_mk_f_co hg_mk_bdd]
+  exact essSup_congr_ae h_eq.symm
+
+end TopologicalSpace
+
 variable [Nonempty α]
 
 lemma essSup_eq_ciSup (hμ : ∀ a, μ {a} ≠ 0) (hf : BddAbove (Set.range f)) :
@@ -175,45 +294,11 @@ theorem essSup_measure_zero {m : MeasurableSpace α} {f : α → β} : essSup f 
 theorem essInf_measure_zero {_ : MeasurableSpace α} {f : α → β} : essInf f (0 : Measure α) = ⊤ :=
   @essSup_measure_zero α βᵒᵈ _ _ _
 
-theorem essSup_mono_ae {f g : α → β} (hfg : f ≤ᵐ[μ] g) : essSup f μ ≤ essSup g μ :=
-  limsup_le_limsup hfg
-
-theorem essInf_mono_ae {f g : α → β} (hfg : f ≤ᵐ[μ] g) : essInf f μ ≤ essInf g μ :=
-  liminf_le_liminf hfg
-
-theorem essSup_le_of_ae_le {f : α → β} (c : β) (hf : f ≤ᵐ[μ] fun _ => c) : essSup f μ ≤ c :=
-  limsup_le_of_le (by isBoundedDefault) hf
-
-theorem le_essInf_of_ae_le {f : α → β} (c : β) (hf : (fun _ => c) ≤ᵐ[μ] f) : c ≤ essInf f μ :=
-  @essSup_le_of_ae_le α βᵒᵈ _ _ _ _ c hf
-
 theorem essSup_const_bot : essSup (fun _ : α => (⊥ : β)) μ = (⊥ : β) :=
   limsup_const_bot
 
 theorem essInf_const_top : essInf (fun _ : α => (⊤ : β)) μ = (⊤ : β) :=
   liminf_const_top
-
-theorem OrderIso.essSup_apply {m : MeasurableSpace α} {γ} [CompleteLattice γ] (f : α → β)
-    (μ : Measure α) (g : β ≃o γ) : g (essSup f μ) = essSup (fun x => g (f x)) μ := by
-  refine OrderIso.limsup_apply g ?_ ?_ ?_ ?_
-  all_goals isBoundedDefault
-
-theorem OrderIso.essInf_apply {_ : MeasurableSpace α} {γ} [CompleteLattice γ] (f : α → β)
-    (μ : Measure α) (g : β ≃o γ) : g (essInf f μ) = essInf (fun x => g (f x)) μ :=
-  @OrderIso.essSup_apply α βᵒᵈ _ _ γᵒᵈ _ _ _ g.dual
-
-theorem essSup_mono_measure {f : α → β} (hμν : ν ≪ μ) : essSup f ν ≤ essSup f μ := by
-  refine limsup_le_limsup_of_le (Measure.ae_le_iff_absolutelyContinuous.mpr hμν) ?_ ?_
-  all_goals isBoundedDefault
-
-theorem essSup_mono_measure' {α : Type*} {β : Type*} {_ : MeasurableSpace α}
-    {μ ν : MeasureTheory.Measure α} [CompleteLattice β] {f : α → β} (hμν : ν ≤ μ) :
-    essSup f ν ≤ essSup f μ :=
-  essSup_mono_measure (Measure.absolutelyContinuous_of_le hμν)
-
-theorem essInf_antitone_measure {f : α → β} (hμν : μ ≪ ν) : essInf f ν ≤ essInf f μ := by
-  refine liminf_le_liminf_of_le (Measure.ae_le_iff_absolutelyContinuous.mpr hμν) ?_ ?_
-  all_goals isBoundedDefault
 
 lemma essSup_eq_iSup (hμ : ∀ a, μ {a} ≠ 0) (f : α → β) : essSup f μ = ⨆ i, f i := by
   rw [essSup, ae_eq_top.2 hμ, limsup_top_eq_iSup]
@@ -226,44 +311,6 @@ lemma essInf_eq_iInf (hμ : ∀ a, μ {a} ≠ 0) (f : α → β) : essInf f μ =
 
 @[simp] lemma essInf_count [MeasurableSingletonClass α] (f : α → β) : essInf f .count = ⨅ i, f i :=
   essInf_eq_iInf (by simp) _
-
-section TopologicalSpace
-
-variable {γ : Type*} {mγ : MeasurableSpace γ} {f : α → γ} {g : γ → β}
-
-theorem essSup_comp_le_essSup_map_measure (hf : AEMeasurable f μ) :
-    essSup (g ∘ f) μ ≤ essSup g (Measure.map f μ) := by
-  refine limsSup_le_limsSup_of_le ?_
-  rw [← Filter.map_map]
-  exact Filter.map_mono (Measure.tendsto_ae_map hf)
-
-theorem MeasurableEmbedding.essSup_map_measure (hf : MeasurableEmbedding f) :
-    essSup g (Measure.map f μ) = essSup (g ∘ f) μ := by
-  refine le_antisymm ?_ (essSup_comp_le_essSup_map_measure hf.measurable.aemeasurable)
-  refine limsSup_le_limsSup (by isBoundedDefault) (by isBoundedDefault) (fun c h_le => ?_)
-  rw [eventually_map] at h_le ⊢
-  exact hf.ae_map_iff.mpr h_le
-
-variable [MeasurableSpace β] [TopologicalSpace β] [SecondCountableTopology β]
-  [OrderClosedTopology β] [OpensMeasurableSpace β]
-
-theorem essSup_map_measure_of_measurable (hg : Measurable g) (hf : AEMeasurable f μ) :
-    essSup g (Measure.map f μ) = essSup (g ∘ f) μ := by
-  refine le_antisymm ?_ (essSup_comp_le_essSup_map_measure hf)
-  refine limsSup_le_limsSup (by isBoundedDefault) (by isBoundedDefault) (fun c h_le => ?_)
-  rw [eventually_map] at h_le ⊢
-  rw [ae_map_iff hf (measurableSet_le hg measurable_const)]
-  exact h_le
-
-theorem essSup_map_measure (hg : AEMeasurable g (Measure.map f μ)) (hf : AEMeasurable f μ) :
-    essSup g (Measure.map f μ) = essSup (g ∘ f) μ := by
-  rw [essSup_congr_ae hg.ae_eq_mk, essSup_map_measure_of_measurable hg.measurable_mk hf]
-  refine essSup_congr_ae ?_
-  have h_eq := ae_of_ae_map hf hg.ae_eq_mk
-  rw [← EventuallyEq] at h_eq
-  exact h_eq.symm
-
-end TopologicalSpace
 
 end CompleteLattice
 
@@ -279,7 +326,7 @@ theorem essSup_indicator_eq_essSup_restrict {s : Set α} {f : α → ℝ≥0∞}
     essSup (s.indicator f) μ = essSup f (μ.restrict s) := by
   classical
   simp only [← piecewise_eq_indicator, essSup_piecewise hs, max_eq_left_iff]
-  exact limsup_const_bot.trans_le (zero_le _)
+  exact limsup_const_bot.trans_le zero_le
 
 theorem ae_le_essSup (f : α → ℝ≥0∞) : ∀ᵐ y ∂μ, f y ≤ essSup f μ :=
   eventually_le_limsup f
@@ -308,6 +355,17 @@ theorem coe_essSup {f : α → ℝ≥0} (hf : IsBoundedUnder (· ≤ ·) (ae μ)
   (ENNReal.coe_sInf <| hf).trans <|
     eq_of_forall_le_iff fun r => by
       simp [essSup, limsup, limsSup, eventually_map, ENNReal.forall_ennreal]; rfl
+
+lemma ofReal_essSup {f : α → ℝ} (h₁ : IsCoboundedUnder (· ≤ ·) (ae μ) f)
+    (h₂ : IsBoundedUnder (· ≤ ·) (ae μ) f) :
+    ENNReal.ofReal (essSup f μ) = essSup (fun a ↦ .ofReal (f a)) μ := ENNReal.ofReal_limsup
+
+lemma toReal_essSup {f : α → ℝ≥0∞} (h₁ : ∀ᵐ a ∂μ, f a ≠ ⊤)
+    (h₂ : IsBoundedUnder (· ≤ ·) (ae μ) fun i ↦ (f i).toReal) :
+    (essSup f μ).toReal = essSup (fun a ↦ (f a).toReal) μ := by
+  obtain rfl | hμ := eq_zero_or_neZero μ
+  · simp [essSup, limsup, limsSup]
+  · exact ENNReal.toReal_limsup h₁
 
 lemma essSup_restrict_eq_of_support_subset {s : Set α} {f : α → ℝ≥0∞} (hsf : f.support ⊆ s) :
     essSup f (μ.restrict s) = essSup f μ := by

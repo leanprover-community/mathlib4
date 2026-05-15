@@ -25,7 +25,7 @@ public import Mathlib.RingTheory.IntegralClosure.IsIntegral.AlmostIntegral
 
 -/
 
-@[expose] public section
+public section
 
 variable {R S ι : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
@@ -215,7 +215,7 @@ theorem MvPolynomial.isIntegral_iff_isIntegral_coeff.{w} {σ : Type w} {f : MvPo
         convert H.map ((rename Subtype.val).comp
           (killCompl (f := ((↑) : f.vars → σ)) Subtype.val_injective)).toRingHom
         · exact RingHom.ext (by simp [MvPolynomial.killCompl_map])
-        · nth_rw 1 11 [← hg]; simp)) n (.of_fintype _)
+        · nth_rw 1 12 [← hg]; simp)) n (.of_fintype _)
     · rw [← hg, coeff_rename_eq_zero _ _ _ (by grind)]
       exact isIntegral_zero
   revert f n

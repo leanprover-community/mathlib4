@@ -124,8 +124,8 @@ theorem applyComposition_single (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
   convert Composition.single_embedding hn ⟨i, hi2⟩ using 1
   obtain ⟨j_val, j_property⟩ := j
   have : j_val = 0 := le_bot_iff.1 (Nat.lt_succ_iff.1 j_property)
-  congr!
-  simp
+  rw! [this]
+  rfl
 
 @[simp]
 theorem removeZero_applyComposition (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
@@ -795,13 +795,13 @@ theorem HasFPowerSeriesWithinAt.comp {g : F → G} {f : E → F} {q : FormalMult
         _ ≤ ‖compAlongComposition q p c‖ * (r : ℝ) ^ n := by
           rw [Finset.prod_const, Finset.card_fin]
           gcongr
-          rw [Metric.mem_eball, edist_zero_eq_enorm] at hy
+          rw [Metric.mem_eball, edist_zero_right] at hy
           have := le_trans (le_of_lt hy) (min_le_right _ _)
           rwa [enorm_le_coe, ← NNReal.coe_le_coe, coe_nnnorm] at this
     tendsto_nhds_of_cauchySeq_of_subseq cau compPartialSumTarget_tendsto_atTop C
   -- Fifth step: the sum over `n` of `q.comp p n` can be expressed as a particular resummation of
   -- the sum over all compositions, by grouping together the compositions of the same
-  -- integer `n`. The convergence of the whole sum therefore implies the converence of the sum
+  -- integer `n`. The convergence of the whole sum therefore implies the convergence of the sum
   -- of `q.comp p n`
   have E : HasSum (fun n => (q.comp p) n fun _j => y) (g (f (x + y))) := by
     apply D.sigma
@@ -1219,7 +1219,7 @@ def sigmaEquivSigmaPi (n : ℕ) :
       exact (Fin.heq_fun_iff A (α := List ℕ)).2 fun i => rfl
     · have B : Composition.length (Composition.gather a b) = List.length b.blocks :=
         Composition.length_gather _ _
-      conv_rhs => rw [← ofFn_getElem b.blocks]
+      conv_rhs => rw [← ofFn_getElem (xs := b.blocks)]
       congr 1
       refine (Fin.heq_fun_iff B).2 fun i => ?_
       rw [sigmaCompositionAux, Composition.length, List.getElem_map_rev List.length,
@@ -1290,6 +1290,7 @@ theorem comp_assoc (r : FormalMultilinearSeries 𝕜 G H) (q : FormalMultilinear
   -- `sizeUpTo_sizeUpTo_add`.
   refine congr_arg v (Fin.ext ?_)
   dsimp [Composition.embedding]
-  rw [sizeUpTo_sizeUpTo_add _ _ hi1 hj1, add_assoc]
+  rw [← add_assoc, ← sizeUpTo_sizeUpTo_add _ _ hi1 hj1]
+  rfl
 
 end FormalMultilinearSeries

@@ -295,6 +295,14 @@ protected theorem inv [Inv β] [ContinuousInv β] (hf : AEStronglyMeasurable[m] 
 @[to_additive (attr := fun_prop)]
 protected theorem div [Group β] [IsTopologicalGroup β] (hf : AEStronglyMeasurable[m] f μ)
     (hg : AEStronglyMeasurable[m] g μ) : AEStronglyMeasurable[m] (f / g) μ :=
+  ⟨hf.mk f / hg.mk g, hf.stronglyMeasurable_mk.div' hg.stronglyMeasurable_mk,
+    hf.ae_eq_mk.div hg.ae_eq_mk⟩
+
+@[fun_prop]
+theorem div₀ [GroupWithZero β] [ContinuousMul β] [ContinuousInv₀ β] [PseudoMetrizableSpace β]
+    [MeasurableSpace β] [BorelSpace β] [MeasurableSingletonClass β]
+    (hf : AEStronglyMeasurable[m] f μ) (hg : AEStronglyMeasurable[m] g μ) :
+    AEStronglyMeasurable[m] (f / g) μ :=
   ⟨hf.mk f / hg.mk g, hf.stronglyMeasurable_mk.div hg.stronglyMeasurable_mk,
     hf.ae_eq_mk.div hg.ae_eq_mk⟩
 
@@ -371,7 +379,8 @@ section Monoid
 
 variable {M : Type*} [Monoid M] [TopologicalSpace M] [ContinuousMul M]
 
-@[to_additive (attr := fun_prop, measurability)]
+-- TODO: `fun_prop` cannot use lemmas with a condition quantifying over the function
+@[to_additive (attr := fun_prop)]
 theorem _root_.List.aestronglyMeasurable_prod (l : List (α → M))
     (hl : ∀ f ∈ l, AEStronglyMeasurable f μ) : AEStronglyMeasurable l.prod μ := by
   induction l with
@@ -381,7 +390,7 @@ theorem _root_.List.aestronglyMeasurable_prod (l : List (α → M))
     rw [List.prod_cons]
     exact hl.1.mul (ihl hl.2)
 
-@[to_additive (attr := fun_prop, measurability)]
+@[to_additive (attr := fun_prop)]
 theorem _root_.List.aestronglyMeasurable_fun_prod
     (l : List (α → M)) (hl : ∀ f ∈ l, AEStronglyMeasurable f μ) :
     AEStronglyMeasurable (fun x => (l.map fun f : α → M => f x).prod) μ := by
@@ -393,26 +402,26 @@ section CommMonoid
 
 variable {M : Type*} [CommMonoid M] [TopologicalSpace M] [ContinuousMul M]
 
-@[to_additive (attr := fun_prop, measurability)]
+@[to_additive (attr := fun_prop)]
 theorem _root_.Multiset.aestronglyMeasurable_prod (l : Multiset (α → M))
     (hl : ∀ f ∈ l, AEStronglyMeasurable f μ) : AEStronglyMeasurable l.prod μ := by
   rcases l with ⟨l⟩
   simpa using l.aestronglyMeasurable_prod (by simpa using hl)
 
-@[to_additive (attr := fun_prop, measurability)]
+@[to_additive (attr := fun_prop)]
 theorem _root_.Multiset.aestronglyMeasurable_fun_prod (s : Multiset (α → M))
     (hs : ∀ f ∈ s, AEStronglyMeasurable f μ) :
     AEStronglyMeasurable (fun x => (s.map fun f : α → M => f x).prod) μ := by
   simpa only [← Pi.multiset_prod_apply] using s.aestronglyMeasurable_prod hs
 
-@[to_additive (attr := fun_prop, measurability)]
+@[to_additive (attr := fun_prop)]
 theorem _root_.Finset.aestronglyMeasurable_prod {ι : Type*} {f : ι → α → M} (s : Finset ι)
     (hf : ∀ i ∈ s, AEStronglyMeasurable (f i) μ) : AEStronglyMeasurable (∏ i ∈ s, f i) μ :=
   Multiset.aestronglyMeasurable_prod _ fun _g hg =>
     let ⟨_i, hi, hg⟩ := Multiset.mem_map.1 hg
     hg ▸ hf _ hi
 
-@[to_additive (attr := fun_prop, measurability)]
+@[to_additive (attr := fun_prop)]
 theorem _root_.Finset.aestronglyMeasurable_fun_prod {ι : Type*} {f : ι → α → M} (s : Finset ι)
     (hf : ∀ i ∈ s, AEStronglyMeasurable (f i) μ) :
     AEStronglyMeasurable (fun a => ∏ i ∈ s, f i a) μ := by
@@ -730,13 +739,13 @@ theorem _root_.aestronglyMeasurable_add_measure_iff [PseudoMetrizableSpace β] {
   rw [← sum_cond, aestronglyMeasurable_sum_measure_iff, Bool.forall_bool, and_comm]
   rfl
 
-@[fun_prop, measurability]
+@[fun_prop]
 theorem add_measure [PseudoMetrizableSpace β] {ν : Measure α} {f : α → β}
     (hμ : AEStronglyMeasurable f μ) (hν : AEStronglyMeasurable f ν) :
     AEStronglyMeasurable f (μ + ν) :=
   aestronglyMeasurable_add_measure_iff.2 ⟨hμ, hν⟩
 
-@[fun_prop, measurability]
+@[fun_prop]
 protected theorem iUnion [PseudoMetrizableSpace β] {s : ι → Set α}
     (h : ∀ i, AEStronglyMeasurable f (μ.restrict (s i))) :
     AEStronglyMeasurable f (μ.restrict (⋃ i, s i)) :=
@@ -762,7 +771,7 @@ theorem aestronglyMeasurable_uIoc_iff [LinearOrder α] [PseudoMetrizableSpace β
         AEStronglyMeasurable f (μ.restrict <| Ioc b a) := by
   rw [uIoc_eq_union, aestronglyMeasurable_union_iff]
 
-@[fun_prop, measurability]
+@[fun_prop]
 theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
     (h : AEStronglyMeasurable f μ) (c : R) : AEStronglyMeasurable f (c • μ) :=
   ⟨h.mk f, h.stronglyMeasurable_mk, ae_smul_measure h.ae_eq_mk c⟩

@@ -44,7 +44,7 @@ measurable function, arithmetic operator
   in the conclusion of `MeasurableSMul`.)
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory
 open scoped Pointwise
@@ -517,26 +517,13 @@ variable {M X α β : Type*} [MeasurableSpace X] [SMul M X]
 section MeasurableConstSMul
 variable [MeasurableConstSMul M X]
 
--- TODO: can't use `to_additive` and `to_fun` simultaneously?
-@[to_additive (attr := fun_prop)]
+@[to_additive (attr := to_fun (attr := fun_prop))]
 lemma Measurable.const_smul (hg : Measurable g) (c : M) : Measurable (c • g) :=
   (measurable_const_smul c).comp hg
 
-/-- Compositional version of `Measurable.const_smul` for use by `fun_prop`. -/
-@[to_additive (attr := fun_prop)
-/-- Compositional version of `Measurable.const_vadd` for use by `fun_prop`. -/]
-lemma Measurable.fun_const_smul {g : α → β → X} {h : α → β} (hg : Measurable ↿g) (hh : Measurable h)
-    (c : M) : Measurable fun a ↦ (c • g a) (h a) :=
-  (hg.comp <| measurable_id.prodMk hh).const_smul _
-
-@[to_additive (attr := fun_prop)]
-lemma AEMeasurable.fun_const_smul (hg : AEMeasurable g μ) (c : M) : AEMeasurable (c • g ·) μ :=
+@[to_additive (attr := to_fun (attr := fun_prop))]
+lemma AEMeasurable.const_smul (hg : AEMeasurable g μ) (c : M) : AEMeasurable (c • g) μ :=
   (measurable_const_smul c).comp_aemeasurable hg
-
--- TODO: can't use `to_additive` and `to_fun` simultaneously?
-@[to_additive (attr := fun_prop)]
-lemma AEMeasurable.const_smul (hf : AEMeasurable g μ) (c : M) : AEMeasurable (c • g) μ :=
-  hf.fun_const_smul c
 
 @[to_additive]
 instance Pi.instMeasurableConstSMul {ι : Type*} {α : ι → Type*} [∀ i, SMul M (α i)]
@@ -782,7 +769,8 @@ section Monoid
 variable {M α : Type*} [Monoid M] [MeasurableSpace M] [MeasurableMul₂ M] {m : MeasurableSpace α}
   {μ : Measure α}
 
-@[to_additive (attr := measurability, fun_prop)]
+-- TODO: `fun_prop` cannot use lemmas with a condition quantifying over the function
+@[to_additive (attr := fun_prop)]
 theorem List.measurable_prod (l : List (α → M)) (hl : ∀ f ∈ l, Measurable f) :
     Measurable l.prod := by
   induction l with
@@ -792,7 +780,7 @@ theorem List.measurable_prod (l : List (α → M)) (hl : ∀ f ∈ l, Measurable
     rw [List.prod_cons]
     exact hl.1.mul (ihl hl.2)
 
-@[to_additive (attr := measurability, fun_prop)]
+@[to_additive (attr := fun_prop)]
 theorem List.aemeasurable_prod (l : List (α → M)) (hl : ∀ f ∈ l, AEMeasurable f μ) :
     AEMeasurable l.prod μ := by
   induction l with
@@ -802,12 +790,12 @@ theorem List.aemeasurable_prod (l : List (α → M)) (hl : ∀ f ∈ l, AEMeasur
     rw [List.prod_cons]
     exact hl.1.mul (ihl hl.2)
 
-@[to_additive (attr := measurability, fun_prop)]
+@[to_additive (attr := fun_prop)]
 theorem List.measurable_fun_prod (l : List (α → M)) (hl : ∀ f ∈ l, Measurable f) :
     Measurable fun x => (l.map fun f : α → M => f x).prod := by
   simpa only [← Pi.list_prod_apply] using l.measurable_prod hl
 
-@[to_additive (attr := measurability, fun_prop)]
+@[to_additive (attr := fun_prop)]
 theorem List.aemeasurable_fun_prod (l : List (α → M)) (hl : ∀ f ∈ l, AEMeasurable f μ) :
     AEMeasurable (fun x => (l.map fun f : α → M => f x).prod) μ := by
   simpa only [← Pi.list_prod_apply] using l.aemeasurable_prod hl
@@ -819,56 +807,56 @@ section CommMonoid
 variable {M ι α β : Type*} [CommMonoid M] [MeasurableSpace M] [MeasurableMul₂ M]
   {m : MeasurableSpace α} {mβ : MeasurableSpace β} {μ : Measure α} {f : ι → α → M}
 
-@[to_additive (attr := measurability, fun_prop)]
+@[to_additive (attr := fun_prop)]
 theorem Multiset.measurable_prod (l : Multiset (α → M)) (hl : ∀ f ∈ l, Measurable f) :
     Measurable l.prod := by
   rcases l with ⟨l⟩
   simpa using l.measurable_prod (by simpa using hl)
 
-@[to_additive (attr := measurability, fun_prop)]
+@[to_additive (attr := fun_prop)]
 theorem Multiset.aemeasurable_prod (l : Multiset (α → M)) (hl : ∀ f ∈ l, AEMeasurable f μ) :
     AEMeasurable l.prod μ := by
   rcases l with ⟨l⟩
   simpa using l.aemeasurable_prod (by simpa using hl)
 
-@[to_additive (attr := measurability, fun_prop)]
+@[to_additive (attr := fun_prop)]
 theorem Multiset.measurable_fun_prod (s : Multiset (α → M)) (hs : ∀ f ∈ s, Measurable f) :
     Measurable fun x => (s.map fun f : α → M => f x).prod := by
   simpa only [← Pi.multiset_prod_apply] using s.measurable_prod hs
 
-@[to_additive (attr := measurability, fun_prop)]
+@[to_additive (attr := fun_prop)]
 theorem Multiset.aemeasurable_fun_prod (s : Multiset (α → M)) (hs : ∀ f ∈ s, AEMeasurable f μ) :
     AEMeasurable (fun x => (s.map fun f : α → M => f x).prod) μ := by
   simpa only [← Pi.multiset_prod_apply] using s.aemeasurable_prod hs
 
-@[to_additive (attr := measurability, fun_prop)]
+@[to_additive (attr := fun_prop)]
 theorem Finset.measurable_fun_prod (s : Finset ι) (hf : ∀ i ∈ s, Measurable (f i)) :
     Measurable fun a ↦ ∏ i ∈ s, f i a := by
   simp_rw [← Finset.prod_apply]
   exact Finset.prod_induction _ _ (fun _ _ => Measurable.mul) (@measurable_one M _ _ _ _) hf
 
-@[to_additive (attr := measurability, fun_prop)]
+@[to_additive (attr := fun_prop)]
 theorem Finset.measurable_prod (s : Finset ι) (hf : ∀ i ∈ s, Measurable (f i)) :
     Measurable fun a ↦ ∏ i ∈ s, f i a := by
   simp_rw [← Finset.prod_apply]
   exact Finset.prod_induction _ _ (fun _ _ => Measurable.mul) (@measurable_one M _ _ _ _) hf
 
 /-- Compositional version of `Finset.measurable_prod` for use by `fun_prop`. -/
-@[to_additive (attr := measurability, fun_prop)
+@[to_additive (attr := fun_prop)
 /-- Compositional version of `Finset.measurable_sum` for use by `fun_prop`. -/]
 lemma Finset.measurable_prod_apply {f : ι → α → β → M} {g : α → β} {s : Finset ι}
     (hf : ∀ i ∈ s, Measurable ↿(f i)) (hg : Measurable g) :
     Measurable fun a ↦ (∏ i ∈ s, f i a) (g a) := by
-  simp only [prod_apply]; fun_prop (discharger := assumption)
+  simp only [prod_apply]; fun_prop
 
-@[to_additive (attr := measurability, fun_prop)]
+@[to_additive (attr := fun_prop)]
 theorem Finset.aemeasurable_prod (s : Finset ι) (hf : ∀ i ∈ s, AEMeasurable (f i) μ) :
     AEMeasurable (∏ i ∈ s, f i) μ :=
   Multiset.aemeasurable_prod _ fun _g hg =>
     let ⟨_i, hi, hg⟩ := Multiset.mem_map.1 hg
     hg ▸ hf _ hi
 
-@[to_additive (attr := measurability, fun_prop)]
+@[to_additive (attr := fun_prop)]
 theorem Finset.aemeasurable_fun_prod (s : Finset ι) (hf : ∀ i ∈ s, AEMeasurable (f i) μ) :
     AEMeasurable (fun a => ∏ i ∈ s, f i a) μ := by
   simpa only [← Finset.prod_apply] using s.aemeasurable_prod hf

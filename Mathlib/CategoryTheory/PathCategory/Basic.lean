@@ -5,9 +5,7 @@ Authors: Kim Morrison, Robin Carlier
 -/
 module
 
-public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.CategoryTheory.Quotient
-public import Mathlib.Combinatorics.Quiver.Path
 
 /-!
 # The category paths on a quiver.
@@ -21,7 +19,6 @@ We check that the quotient of the path category of a category by the canonical r
 -/
 
 @[expose] public section
-
 
 universe v₁ v₂ u₁ u₂
 
@@ -67,6 +64,7 @@ lemma induction_fixed_source {a : Paths V} (P : ∀ {b : Paths V}, (a ⟶ b) →
   | nil => exact id
   | cons _ w h => exact comp _ w h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- To prove a property on morphisms of a path category with given target `b`, it suffices to prove
 it for the identity and prove that the property is preserved under composition on the left
 with length 1 paths. -/
@@ -106,6 +104,7 @@ lemma induction' (P : ∀ {a b : Paths V}, (a ⟶ b) → Prop)
 
 attribute [local ext (iff := false)] Functor.ext
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any prefunctor from `V` lifts to a functor from `paths V` -/
 def lift {C} [Category* C] (φ : V ⥤q C) : Paths V ⥤ C where
   obj := φ.obj
@@ -147,6 +146,7 @@ theorem lift_spec {C} [Category* C] (φ : V ⥤q C) : of V ⋙q (lift φ).toPref
     dsimp [lift, Quiver.Hom.toPath]
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lift_unique {C} [Category* C] (φ : V ⥤q C) (Φ : Paths V ⥤ C)
     (hΦ : of V ⋙q Φ.toPrefunctor = φ) : Φ = lift φ := by
   subst_vars
