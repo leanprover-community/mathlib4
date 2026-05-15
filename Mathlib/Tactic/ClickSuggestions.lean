@@ -33,17 +33,20 @@ When a rewrite lemma introduces new goals, these are shown after a `⊢`.
 
 ## TODO
 
+- Improve user extensibility:
+  - Modifying which tactics are suggested.
+  - Modifying which lemmas are suggested.
 - Improve the logic around `nth_rw` and occurrences.
 - It may be possible to have integrated support for creating sequences of `calc` blocks,
   using the suggested rewrites.
-
+- Detect whether we are in `conv` mode, by detecting the relevant mdata.
+  Though the suggestions seem to work mostly fine in conv mode already.
 -/
 meta section
 
 namespace Mathlib.Tactic.ClickSuggestions
-open Lean Meta Server Widget ProofWidgets Jsx
 
-open RefreshComponent
+open Lean Meta Server Widget ProofWidgets Jsx
 
 def viewKAbstractSubExpr' {m α}
     [Monad m] [MonadLiftT MetaM m] [MonadControlT MetaM m] [MonadError m]
