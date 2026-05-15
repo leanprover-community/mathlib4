@@ -5,11 +5,8 @@ Authors: Damiano Testa
 -/
 module
 
-public meta import Lean.Elab.Command
 public meta import Lean.Linter
 public meta import Std.Time.Format
-public meta import Init
-public import Std.Time.Date
 
 /-!
 # The `deprecated.module` linter

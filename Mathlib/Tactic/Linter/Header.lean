@@ -5,11 +5,6 @@ Authors: Michael Rothgang, Damiano Testa
 -/
 module
 
-public meta import Lean.Elab.Command
-public meta import Lean.Elab.ParseImportsFast
-public meta import Init
-public meta import Mathlib.Tactic.Linter.DeprecatedModule
-public import Lean.Parser.Module
 public import Mathlib.Tactic.Linter.DeprecatedModule
 public import Mathlib.Tactic.Linter.DirectoryDependency
 
