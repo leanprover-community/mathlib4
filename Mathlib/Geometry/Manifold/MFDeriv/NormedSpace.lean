@@ -399,6 +399,17 @@ end smul
 /-! ### Exterior derivative of a scalar function -/
 
 variable (I) in
+/-- The exterior derivative of a vector-valued function on `M` within a set,
+as a section of the cotangent bundle.
+
+Future: this could be generalised to functions into additive torsors over abelian Lie groups
+-/
+@[expose]
+noncomputable def mvfderivWithin (g : M → F) (s : Set M) :
+    Π x : M, TangentSpace I x →L[𝕜] F :=
+  fun x ↦ (NormedSpace.fromTangentSpace <| g x).toContinuousLinearMap ∘L (mfderiv[s] g x)
+
+variable (I) in
 /-- The exterior derivative of a vector-valued function on `M`,
 as a section of the cotangent bundle.
 
@@ -414,6 +425,14 @@ open scoped Bundle Manifold ContDiff
 
 open Lean Meta Elab Tactic
 
+/-- `mvfderiv[s] f x` elaborates to `mvfderivWithin I J f s x`,
+trying to determine `I` and `J` from the local context. -/
+scoped elab:max "mvfderiv[" s:term "]" ppSpace t:term:arg : term => do
+  let es ← Term.elabTerm s none
+  let e ← ensureIsFunction <| ← Term.elabTerm t none
+  let (srcI, _tgtI) ← findModels e none
+  mkAppM ``mvfderivWithin #[srcI, e, es]
+
 /-- `mvfderiv% f x` elaborates to `mvfderiv I J f x`,
 trying to determine `I` and `J` from the local context. -/
 scoped elab:max "mvfderiv%" ppSpace t:term:arg : term => do
@@ -423,14 +442,120 @@ scoped elab:max "mvfderiv%" ppSpace t:term:arg : term => do
 
 open Bundle PrettyPrinter Delaborator SubExpr
 
+/-- Delaborator for `mvfderivWithin`. -/
+-- There is no need to special-case any arguments which could use the T% s elaborator:
+-- the argument to `mvfderivWithin` is a vector-valued function, which a map to a total space
+-- can never be.
+@[app_delab mvfderivWithin] meta def delab_mvfderivWithin : Delab := do
+  whenPPOption getPPNotation do
+  withOverApp 16 do
+  let ss ← withAppArg delab
+  let fs ← withNaryArg 14 <| delab
+  `(mvfderiv[$ss] $fs) >>= annotateGoToSyntaxDef
+
 /-- Delaborator for `mvfderiv`. -/
+-- There is no need to special-case any arguments which could use the T% s elaborator:
+-- the argument to `mvfderivWithin` is a vector-valued function, which a map to a total space
+-- can never be.
 @[app_delab mvfderiv] meta def delab_mvfderiv : Delab := do
   whenPPOption getPPNotation do
   withOverApp 15 do
   let fs ← withAppArg delab
   `(mvfderiv% $fs) >>= annotateGoToSyntaxDef
 
+section tests
+
+variable {f : M → 𝕜}
+
+/-- info: mvfderiv[s] f : (x : M) → TangentSpace I x →L[𝕜] 𝕜 -/
+#guard_msgs in
+#check mvfderivWithin I f s
+/-- info: mvfderiv[s] f x : TangentSpace I x →L[𝕜] 𝕜 -/
+#guard_msgs in
+#check mvfderivWithin I f s x
+/-- info: mvfderiv[s] f : (x : M) → TangentSpace I x →L[𝕜] 𝕜 -/
+#guard_msgs in
+#check mvfderiv[s] f
+/-- info: mvfderiv[s] f x : TangentSpace I x →L[𝕜] 𝕜 -/
+#guard_msgs in
+#check mvfderiv[s] f x
+
+/-- info: mvfderiv% f : (x : M) → TangentSpace I x →L[𝕜] 𝕜 -/
+#guard_msgs in
+#check mvfderiv I f
+/-- info: mvfderiv% f : (x : M) → TangentSpace I x →L[𝕜] 𝕜 -/
+#guard_msgs in
+#check mvfderiv% f
+
+/-- info: mvfderiv% f x : TangentSpace I x →L[𝕜] 𝕜 -/
+#guard_msgs in
+#check mvfderiv I f x
+
+/-- info: mvfderiv% f x : TangentSpace I x →L[𝕜] 𝕜 -/
+#guard_msgs in
+#check mvfderiv% f x
+
+end tests
+
 end Manifold
+
+lemma mvfderivWithin_const (c : F) {x : M} : mvfderiv[s] (fun _ : M ↦ c) x = 0 := by
+  simp [mvfderivWithin, mfderivWithin_const]
+
+@[simp, to_fun]
+lemma mvfderivWithin_add {g g' : M → F} {x : M} (hg : MDiffAt[s] g x) (hg' : MDiffAt[s] g' x) :
+    mvfderiv[s] (g + g') x = mvfderiv[s] g x + mvfderiv[s] g' x := by
+  sorry -- TODO!
+  --simp [mvfderivWithin, mfderivWithin_add hg hg']
+  --rfl
+-- TODO: specify as name for to_fun instead, after #34279
+alias mvfderivWithin_fun_add := fun_mvfderivWithin_add
+
+@[simp, to_fun]
+lemma mvfderivWithin_sub {g g' : M → F} {x : M} (hg : MDiffAt[s] g x) (hg' : MDiffAt[s] g' x) :
+    mvfderiv[s] (g - g') x = mvfderiv[s] g x - mvfderiv[s] g' x := by
+  sorry -- TODO!
+  -- simp [mvfderivWithin, mfderivWithin_sub hg hg']
+  -- rfl
+-- TODO: specify as name for to_fun instead, after #34279
+alias mvfderivWithin_fun_sub := fun_mvfderivWithin_sub
+
+@[simp, to_fun]
+lemma mvfderivWithin_neg {g : M → F} {x : M} :
+    mvfderiv[s] (-g) x = -mvfderiv[s] g x := by
+  sorry -- TODO!
+  -- simp [mvfderivWithin, mfderivWithin_neg]
+  -- rfl
+
+@[simp, to_fun]
+lemma mvfderivWithin_smul {x : M} {a : M → 𝕜} (ha : MDiffAt[s] a x) {g : M → F} (hg : MDiffAt[s] g x) :
+    mvfderiv[s] (a • g) x =
+      a x • mvfderiv[s] g x + (mvfderiv[s] a x).smulRight (g x) := by
+  ext v
+  sorry -- TODO!
+  -- simp [mvfderivWithin, -Pi.smul_apply', -Pi.smul_apply, fromTangentSpace_mfderivWithin_smul_apply ha hg]
+  -- rfl
+
+-- TODO: specify as name for to_fun instead, after #34279
+alias mvfderivWithin_fun_smul := fun_mvfderivWithin_smul
+
+@[simp, to_fun]
+lemma mvfderivWithin_mul {f g : M → 𝕜} {x : M} (hf : MDiffAt f x) (hg : MDiffAt g x) :
+    mvfderiv% (f * g) x = f x • mvfderiv% g x + (g x) • (mvfderiv% f x) := by
+  ext v
+  simp [mvfderiv, -Pi.smul_apply', -Pi.smul_apply, ← smul_eq_mul, mfderiv_smul hf hg]
+  simp [mul_comm _ (g x)]
+
+alias mvfderivWithin_fun_mul := fun_mvfderivWithin_mul
+
+@[simp]
+lemma mvfderivWithin_zero {s : Set M} {x : M} : mvfderiv[s] (0 : M → F) x = 0 := by
+  have : mvfderiv[s] (0 : M → F) x + mvfderiv[s] (0 : M → F) x = mvfderiv[s] (0 : M → F) x := by
+    sorry -- rw [← mvfderivWithin_add (by exact mdifferentiable_const ..) (by exact mdifferentiable_const ..)]
+    --simp
+  simpa using this
+
+------------------
 
 lemma mvfderiv_const (c : F) {x : M} : mvfderiv% (fun _ : M ↦ c) x = 0 := by
   simp [mvfderiv, mfderiv_const]
