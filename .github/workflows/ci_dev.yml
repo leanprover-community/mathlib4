@@ -4,13 +4,7 @@ name: ci dev (lake cache shadow)
 # original ci_dev.yml (which delegates to build_template.yml) is
 # preserved on master and other branches.
 #
-# This file mirrors .github/workflows/lake_cache_shadow.yml (the
-# eventual master-side scheduled workflow) so we can exercise the
-# shadow end-to-end via `gh workflow run ci_dev.yml --ref ci-dev/...`
-# before merging the canonical workflow to master.
-#
-# Tracks leanprover-community/mathlib4-nightly-testing#203, which is the
-# eventual home of this functionality on the real CI path.
+# This file mirrors .github/workflows/lake_cache_shadow.yml.
 #
 # Required repository configuration (Settings → Secrets and variables → Actions):
 #   Secrets:
@@ -18,11 +12,6 @@ name: ci dev (lake cache shadow)
 #   Variables:
 #     LAKE_CACHE_SHADOW_ARTIFACT_ENDPOINT    — e.g. https://<bucket>/<prefix>/artifacts
 #     LAKE_CACHE_SHADOW_REVISION_ENDPOINT    — e.g. https://<bucket>/<prefix>/revisions
-#
-# Security model: the secret is referenced ONLY in the `upload` job, which
-# runs on `ubuntu-latest` (no untrusted Lean code). The `build_and_stage`
-# job that compiles Lean modules from master never gets the secret in its
-# environment, even via accident, because it lives in a different job.
 
 on:
   workflow_dispatch:
@@ -47,7 +36,7 @@ env:
 
 jobs:
   build_and_stage:
-    name: Build + stage (NO secrets in env)
+    name: Build + stage
     if: ${{ github.repository == 'leanprover-community/mathlib4' && github.ref_type == 'branch' && startsWith(github.ref_name, 'ci-dev/') }}
     runs-on: pr
     timeout-minutes: 90
@@ -222,16 +211,22 @@ jobs:
           echo "mappings entries: $(wc -l < .lake/outputs.jsonl)"
           head -3 .lake/outputs.jsonl
 
+      # Pre-create the staging dir outside landrun so the stage step can
+      # write to it. Same pattern as build_template.yml uses for the legacy
+      # cache-staging dir.
+      - name: Create staging directory
+        shell: bash
+        run: mkdir -p lake-cache-staging
+
       - name: Stage cache for upload
+        # Override default landrun shell to add the staging dir as writable.
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw lake-cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LAKE_CACHE_DIR --env LAKE_NO_CACHE -- bash -euxo pipefail {0}
         run: |
           cd pr-branch
           lake cache stage .lake/outputs.jsonl ../lake-cache-staging
           du -sh ../lake-cache-staging | awk '{print "staging total:", $1}'
           echo "ltar count: $(find ../lake-cache-staging -name '*.ltar' | wc -l)"
 
-      # Hand the staging dir off to the upload job via a workflow artifact.
-      # Keeps the cache key (in the upload job) isolated from any Lean code
-      # that ran in this job.
       - name: Upload staging artifact for the next job
         if: ${{ vars.LAKE_CACHE_SHADOW_ARTIFACT_ENDPOINT != '' }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -252,7 +247,7 @@ jobs:
           echo "::notice::and secret LAKE_CACHE_SHADOW_KEY, then re-run."
 
   upload:
-    name: Upload to shadow bucket (has secret)
+    name: Upload to shadow bucket
     needs: build_and_stage
     if: ${{ github.repository == 'leanprover-community/mathlib4' && vars.LAKE_CACHE_SHADOW_ARTIFACT_ENDPOINT != '' && needs.build_and_stage.outputs.sha != '' }}
     runs-on: ubuntu-latest
