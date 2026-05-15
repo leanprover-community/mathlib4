@@ -279,8 +279,10 @@ instance distribMulAction {S} [Monoid S] [DistribMulAction S R] : DistribMulActi
     ⟨⟨toFinsupp, toFinsupp_zero (R := R)⟩, toFinsupp_add⟩ toFinsupp_injective toFinsupp_smul
 
 instance faithfulSMul {S} [SMulZeroClass S R] [FaithfulSMul S R] : FaithfulSMul S R[X] where
-  eq_of_smul_eq_smul {_s₁ _s₂} h :=
-    eq_of_smul_eq_smul fun a : ℕ →₀ R => congr_arg toFinsupp (h ⟨a⟩)
+  eq_of_smul_eq_smul {_s₁ _s₂} h := by
+    apply eq_of_smul_eq_smul (α := ℕ →₀ R)
+    intro a
+    exact congr_arg toFinsupp (h ⟨a⟩)
 
 instance module {S} [Semiring S] [Module S R] : Module S R[X] :=
   fast_instance% Function.Injective.module _ ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩
@@ -677,6 +679,7 @@ theorem C_mul_X_eq_monomial : C a * X = monomial 1 a := by rw [← C_mul_X_pow_e
 theorem toFinsupp_C_mul_X (a : R) : (C a * X).toFinsupp = .single 1 a := by
   rw [C_mul_X_eq_monomial, toFinsupp_monomial]
 
+@[grind inj]
 theorem C_injective : Injective (C : R → R[X]) :=
   monomial_injective 0
 
@@ -745,7 +748,7 @@ theorem eq_zero_of_eq_zero (h : (0 : R) = (1 : R)) (p : R[X]) : p = 0 := by
 section Fewnomials
 
 theorem support_monomial (n) {a : R} (H : a ≠ 0) : (monomial n a).support = singleton n := by
-  rw [← ofFinsupp_single, support]; exact Finsupp.support_single_ne_zero _ H
+  rw [← ofFinsupp_single, support]; exact Finsupp.support_single _ H
 
 theorem support_monomial' (n) (a : R) : (monomial n a).support ⊆ singleton n := by
   rw [← ofFinsupp_single, support]

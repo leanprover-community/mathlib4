@@ -37,10 +37,10 @@ theorem one_add_natPred (n : ℕ+) : 1 + n.natPred = n := by
 theorem natPred_add_one (n : ℕ+) : n.natPred + 1 = n :=
   (add_comm _ _).trans n.one_add_natPred
 
-@[mono]
+@[gcongr, mono]
 theorem natPred_strictMono : StrictMono natPred := fun m _ h => Nat.pred_lt_pred m.2.ne' h
 
-@[mono]
+@[gcongr, mono]
 theorem natPred_monotone : Monotone natPred :=
   natPred_strictMono.monotone
 
@@ -73,10 +73,10 @@ end PNat
 
 namespace Nat
 
-@[mono]
+@[gcongr, mono]
 theorem succPNat_strictMono : StrictMono succPNat := fun _ _ => Nat.succ_lt_succ
 
-@[mono]
+@[gcongr, mono]
 theorem succPNat_mono : Monotone succPNat :=
   succPNat_strictMono.monotone
 
@@ -257,11 +257,9 @@ theorem add_sub_of_lt {a b : ℕ+} : a < b → a + (b - a) = b :=
       rw [add_coe, sub_coe, if_pos h]
       exact add_tsub_cancel_of_le h.le
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sub_add_of_lt {a b : ℕ+} (h : b < a) : a - b + b = a := by
   rw [add_comm, add_sub_of_lt h]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem add_sub {a b : ℕ+} : a + b - b = a :=
   add_right_cancel (sub_add_of_lt (lt_add_left _ _))
@@ -316,7 +314,6 @@ theorem mod_le (m k : ℕ+) : mod m k ≤ m ∧ mod m k ≤ k := by
       exact ⟨h₂, le_refl (k : ℕ)⟩
   · exact ⟨Nat.mod_le (m : ℕ) (k : ℕ), (Nat.mod_lt (m : ℕ) k.pos).le⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem dvd_iff {k m : ℕ+} : k ∣ m ↔ (k : ℕ) ∣ (m : ℕ) := by
   constructor <;> intro h
   · rcases h with ⟨_, rfl⟩

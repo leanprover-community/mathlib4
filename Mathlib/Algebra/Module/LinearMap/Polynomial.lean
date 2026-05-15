@@ -97,8 +97,7 @@ lemma toMvPolynomial_isHomogeneous (M : Matrix m n R) (i : m) :
   apply MvPolynomial.IsHomogeneous.sum
   rintro j -
   apply MvPolynomial.isHomogeneous_monomial _ _
-  simp [Finsupp.degree, Finsupp.support_single_ne_zero _ one_ne_zero, Finset.sum_singleton,
-    Finsupp.single_eq_same]
+  simp
 
 lemma toMvPolynomial_totalDegree_le (M : Matrix m n R) (i : m) :
     (M.toMvPolynomial i).totalDegree ≤ 1 := by
@@ -240,7 +239,6 @@ noncomputable
 def polyCharpolyAux : Polynomial (MvPolynomial ι R) :=
   (charpoly.univ R ιM).map <| MvPolynomial.bind₁ (φ.toMvPolynomial b bₘ.end)
 
-set_option backward.isDefEq.respectTransparency false in
 open Algebra.TensorProduct MvPolynomial in
 lemma polyCharpolyAux_baseChange (A : Type*) [CommRing A] [Algebra R A] :
     polyCharpolyAux (tensorProduct _ _ _ _ ∘ₗ φ.baseChange A) (basis A b) (basis A bₘ) =
@@ -323,16 +321,16 @@ lemma polyCharpolyAux_map_aeval
   congr
   exact DFunLike.ext _ _ fun f ↦ (MvPolynomial.eval_map (algebraMap R A) x f).symm
 
-set_option backward.isDefEq.respectTransparency false in
 open Algebra.TensorProduct MvPolynomial in
 /-- `LinearMap.polyCharpolyAux` is independent of the choice of basis of the target module.
 
 Proof strategy:
 1. Rewrite `polyCharpolyAux` as the (honest, ordinary) characteristic polynomial
-   of the basechange of `φ` to the multivariate polynomial ring `MvPolynomial ι R`.
+   of the base change of `φ` to the multivariate polynomial ring `MvPolynomial ι R`.
 2. Use that the characteristic polynomial of a linear map is independent of the choice of basis.
    This independence result is used transitively via
-   `LinearMap.polyCharpolyAux_map_aeval` and `LinearMap.polyCharpolyAux_map_eq_charpoly`. -/
+   `LinearMap.polyCharpolyAux_map_aeval` and `LinearMap.polyCharpolyAux_map_eq_charpoly`.
+-/
 lemma polyCharpolyAux_basisIndep {ιM' : Type*} [Fintype ιM'] [DecidableEq ιM']
     (bₘ' : Basis ιM' R M) :
     polyCharpolyAux φ b bₘ = polyCharpolyAux φ b bₘ' := by
