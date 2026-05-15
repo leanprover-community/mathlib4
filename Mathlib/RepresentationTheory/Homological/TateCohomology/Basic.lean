@@ -70,7 +70,7 @@ lemma Rep.tateNorm_comp_d (M : Rep R G) : tateNorm M ≫ (inhomogeneousCochains 
 @[simp]
 lemma Rep.comp_eq_zero (M : Rep R G) : d₁₀ M ≫ M.norm.toModuleCatHom = 0 := by
   ext
-  simp [d₁₀_single M, Rep.norm, ← LinearMap.comp_apply]
+  simp [d₁₀_single M]
 
 lemma Rep.d_comp_tateNorm (M : Rep R G) : (inhomogeneousChains M).d 1 0 ≫ M.tateNorm = 0 := by
   simp only [tateNorm, ← Category.assoc, Preadditive.IsIso.comp_right_eq_zero]
