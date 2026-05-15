@@ -170,8 +170,8 @@ jobs:
               raise SystemExit("lakefile.lean shape changed; update the shadow patch in lake_cache_shadow.yml")
           p.write_text(src.replace(marker, inject, 1))
           PY
-          echo "::group::patched lakefile snippet"
-          sed -n '49,62p' lakefile.lean
+          echo "::group::patched package block"
+          awk '/^package mathlib where/,/^$/' lakefile.lean
           echo "::endgroup::"
 
       # Incremental build: with the legacy cache having hydrated .lake/build/
