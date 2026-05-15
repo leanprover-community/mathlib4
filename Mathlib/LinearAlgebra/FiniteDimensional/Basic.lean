@@ -351,6 +351,20 @@ theorem _root_.Module.End.injective_of_surjective {f : Module.End R M} (hf : Sur
   have ⟨_, eq⟩ := projective_lifting_property _ .id hf
   injective_of_comp_eq_id _ _ (mul_eq_one_symm eq)
 
+theorem _root_.Module.bijective_of_surjective_of_finite_of_free_of_finrank_eq
+    [Module.Finite R M] [Module.Free R M] [Module.Free R N]
+    (h : finrank R M = finrank R N) {f : M →ₗ[R] N} (hf : Function.Surjective f) :
+    Function.Bijective f := by
+  rcases subsingleton_or_nontrivial R with _ | _
+  · have : Subsingleton M := Module.subsingleton R M
+    have : Subsingleton N := Module.subsingleton R N
+    exact Function.bijective_of_subsingleton' f
+  · have : Module.Finite R N := Module.Finite.of_surjective f hf
+    let +nondep e : M ≃ₗ[R] N := LinearEquiv.ofFinrankEq M N h
+    have hinj : Function.Injective (e.symm.toLinearMap ∘ₗ f) :=
+      Module.End.injective_of_surjective R M (e.symm.surjective.comp hf)
+    exact ⟨fun x y hxy ↦ hinj (by simp [hxy]), hf⟩
+
 /-- In a finite-rank free module over a stably finite semiring, linear maps are inverse to
 each other on one side if and only if they are inverse to each other on the other side. -/
 theorem comp_eq_id_comm {f g : M →ₗ[R] M} : f ∘ₗ g = id ↔ g ∘ₗ f = id :=
