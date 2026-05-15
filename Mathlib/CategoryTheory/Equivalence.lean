@@ -641,7 +641,8 @@ noncomputable def inv (F : C ⥤ D) [F.IsEquivalence] : D ⥤ C where
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Interpret a functor that is an equivalence as an equivalence. -/
-@[simps functor, stacks 02C3]
+@[simps functor, simps -isSimp inverse, simps! -isSimp unitIso_hom_app unitIso_inv_app
+  counitIso_hom_app counitIso_inv_app, stacks 02C3]
 noncomputable def asEquivalence (F : C ⥤ D) [F.IsEquivalence] : C ≌ D where
   functor := F
   inverse := F.inv
@@ -662,10 +663,10 @@ instance isEquivalence_trans (F : C ⥤ D) (G : D ⥤ E) [IsEquivalence F] [IsEq
     IsEquivalence (F ⋙ G) where
 
 instance (F : C ⥤ D) [IsEquivalence F] : IsEquivalence ((whiskeringLeft C D E).obj F) :=
-  (inferInstance : IsEquivalence (Equivalence.congrLeft F.asEquivalence).inverse)
+  inferInstanceAs <| IsEquivalence (Equivalence.congrLeft F.asEquivalence).inverse
 
 instance (F : C ⥤ D) [IsEquivalence F] : IsEquivalence ((whiskeringRight E C D).obj F) :=
-  (inferInstance : IsEquivalence (Equivalence.congrRight F.asEquivalence).functor)
+  inferInstanceAs <| IsEquivalence (Equivalence.congrRight F.asEquivalence).functor
 
 end Functor
 

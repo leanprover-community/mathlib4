@@ -6,7 +6,7 @@ Authors: Jingting Wang, Wanyi He, Nailin Guan
 module
 
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-public import Mathlib.RingTheory.QuotSMulTop
+public import Mathlib.Algebra.Module.Submodule.Pointwise
 
 /-!
 # Categorical constructions for `IsSMulRegular`
@@ -18,33 +18,29 @@ universe u v w
 
 variable {R : Type u} [CommRing R] (M : ModuleCat.{v} R)
 
-open CategoryTheory Ideal Pointwise
+open CategoryTheory Abelian Pointwise
 
-lemma LinearMap.exact_smul_id_smul_top_mkQ (M : Type v) [AddCommGroup M] [Module R M] (r : R) :
-    Function.Exact (r • LinearMap.id : M →ₗ[R] M) (r • (⊤ : Submodule R M)).mkQ := by
+lemma LinearMap.exact_lsmul_mkQ_smul_top (M : Type v) [AddCommGroup M] [Module R M] (r : R) :
+    Function.Exact (LinearMap.lsmul _ M r) (r • (⊤ : Submodule R M)).mkQ := by
   intro x
-  simp [Submodule.mem_smul_pointwise_iff_exists,
-    Submodule.mem_smul_pointwise_iff_exists]
+  simp [Submodule.mem_smul_pointwise_iff_exists, Submodule.mem_smul_pointwise_iff_exists]
+
+@[deprecated (since := "2026-04-13")]
+alias LinearMap.exact_smul_id_smul_top_mkQ := LinearMap.exact_lsmul_mkQ_smul_top
 
 namespace ModuleCat
 
 /-- The short (exact) complex `M → M → M⧸xM` obtain from the scalar multiple of `x : R` on `M`. -/
-@[simps]
-def smulShortComplex (r : R) :
-    ShortComplex (ModuleCat R) where
-  X₁ := M
-  X₂ := M
-  X₃ := ModuleCat.of R (QuotSMulTop r M)
-  f := ModuleCat.ofHom (r • LinearMap.id)
-  g := ModuleCat.ofHom (r • (⊤ : Submodule R M)).mkQ
-  zero := by
-    ext x
-    exact (LinearMap.exact_smul_id_smul_top_mkQ M r).apply_apply_eq_zero x
+@[simps!]
+def smulShortComplex (r : R) : ShortComplex (ModuleCat R) :=
+  ModuleCat.shortComplexOfCompEqZero (LinearMap.lsmul _ M r) (r • (⊤ : Submodule R M)).mkQ
+    (LinearMap.exact_lsmul_mkQ_smul_top M r).linearMap_comp_eq_zero
 
-set_option backward.isDefEq.respectTransparency false in
-lemma smulShortComplex_exact (r : R) : (smulShortComplex M r).Exact := by
-  simp [smulShortComplex, ShortComplex.ShortExact.moduleCat_exact_iff_function_exact,
-    LinearMap.exact_smul_id_smul_top_mkQ, -LinearMap.coe_smul]
+@[simp]
+lemma smulShortComplex_f_eq_smul_id (r : R) : (M.smulShortComplex r).f = r • 𝟙 M := rfl
+
+lemma smulShortComplex_exact (r : R) : (smulShortComplex M r).Exact :=
+  ModuleCat.shortComplex_exact _ (LinearMap.exact_lsmul_mkQ_smul_top M r)
 
 instance smulShortComplex_g_epi (r : R) : Epi (smulShortComplex M r).g := by
   simpa [smulShortComplex, ModuleCat.epi_iff_surjective] using Submodule.mkQ_surjective _

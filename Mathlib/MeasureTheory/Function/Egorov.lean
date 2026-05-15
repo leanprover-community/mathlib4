@@ -61,7 +61,7 @@ theorem measure_inter_notConvergentSeq_eq_zero [SemilatticeSup ι] [Nonempty ι]
   rw [← nonpos_iff_eq_zero, ← hfg]
   refine measure_mono fun x => ?_
   simp only [Set.mem_inter_iff, Set.mem_iInter, mem_notConvergentSeq_iff]
-  push_neg
+  push Not
   rintro ⟨hmem, hx⟩
   refine ⟨hmem, (n : ℝ≥0∞)⁻¹, by simp, fun N => ?_⟩
   obtain ⟨n, hn₁, hn₂⟩ := hx N
@@ -168,14 +168,10 @@ theorem tendstoUniformlyOn_diff_iUnionNotConvergentSeq (hε : 0 < ε)
   obtain ⟨N, hN⟩ := ENNReal.exists_inv_nat_lt hδ.ne'
   rw [eventually_atTop]
   refine ⟨Egorov.notConvergentSeqLTIndex (half_pos hε) hf hsm hs hfg N, fun n hn x hx => ?_⟩
-  simp only [Set.mem_diff, Egorov.iUnionNotConvergentSeq, not_exists, Set.mem_iUnion,
-    Set.mem_inter_iff, not_and, exists_and_left] at hx
-  obtain ⟨hxs, hx⟩ := hx
-  specialize hx hxs N
-  rw [Egorov.mem_notConvergentSeq_iff] at hx
-  push_neg at hx
-  rw [edist_comm]
-  exact lt_of_le_of_lt (hx n hn) hN
+  refine lt_of_le_of_lt ?_ hN
+  have : edist (f n x) (g x) ≤ (N : ℝ≥0∞)⁻¹ :=
+    not_lt.mp fun h ↦ hx.2 <| Set.mem_iUnion.2 ⟨N, hx.1, mem_notConvergentSeq_iff.2 ⟨n, hn, h⟩⟩
+  simpa [edist_comm]
 
 end Egorov
 

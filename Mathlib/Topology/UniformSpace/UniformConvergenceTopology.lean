@@ -27,7 +27,7 @@ Usual examples of the second construction include:
 - the topology of compact convergence, when `𝔖` is the set of compacts of `α`
 - the strong topology on the dual of a topological vector space (TVS) `E`, when `𝔖` is the set of
   Von Neumann bounded subsets of `E`
-- the weak-* topology on the dual of a TVS `E`, when `𝔖` is the set of singletons of `E`.
+- the weak-\* topology on the dual of a TVS `E`, when `𝔖` is the set of singletons of `E`.
 
 This file contains a lot of technical facts, so it is heavily commented, proofs included!
 
@@ -1022,7 +1022,7 @@ protected lemma continuous_rng_iff {X : Type*} [TopologicalSpace X] {f : X → (
       Continuous (UniformFun.ofFun ∘ s.restrict ∘ UniformOnFun.toFun 𝔖 ∘ f) := by
   simp only [continuous_iff_continuousAt, ContinuousAt,
     UniformOnFun.tendsto_iff_tendstoUniformlyOn, UniformFun.tendsto_iff_tendstoUniformly,
-    tendstoUniformlyOn_iff_tendstoUniformly_comp_coe, @forall_swap X,
+    tendstoUniformlyOn_iff_tendstoUniformly_comp_coe, @forall_comm X,
     Function.comp_def, restrict_eq, UniformFun.toFun_ofFun]
 
 instance [CompleteSpace β] : CompleteSpace (α →ᵤ[𝔖] β) := by

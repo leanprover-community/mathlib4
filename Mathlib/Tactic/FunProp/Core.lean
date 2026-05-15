@@ -128,7 +128,8 @@ def tryTheoremWithHint? (goal : Goal) (thmOrigin : Origin)
     FunPropM (Option Result) := do
   let go : FunPropM (Option Result) := do
     let thmProof ← thmOrigin.getValue
-    let type ← inferType thmProof
+    -- for `fvar`s we need to instantiate the metavariables of its type.
+    let type ← instantiateMVars <| ← inferType thmProof
     let (xs, _, type) ← forallMetaTelescope type
 
     for (i,x) in hint do
@@ -319,6 +320,16 @@ def applyMorRules (goal : Goal) (fData : FunctionData) :
   trace[Debug.Meta.Tactic.fun_prop]
     "applying morphism theorems to {← goal.pp}"
 
+  let candidates ← getMorphismTheorems (← goal.mkFreshExpr)
+
+  trace[Meta.Tactic.fun_prop]
+    "candidate morphism theorems: {← candidates.mapM fun c => ppOrigin (.decl c.thmName)}"
+
+  for c in candidates do
+    if let some r ← tryTheorem? goal (.decl c.thmName) then
+      return r
+
+  -- if all failed try to add/remove arguments
   match ← fData.isMorApplication with
   | .none => throwError
     "fun_prop bug: invalid use of mor rules on {← goal.pp}"
@@ -328,16 +339,6 @@ def applyMorRules (goal : Goal) (fData : FunctionData) :
     let some (f, g) ← fData.peeloffArgDecomposition | return none
     applyCompRule goal f g
   | .exact =>
-
-    let candidates ← getMorphismTheorems (← goal.mkFreshExpr)
-
-    trace[Meta.Tactic.fun_prop]
-      "candidate morphism theorems: {← candidates.mapM fun c => ppOrigin (.decl c.thmName)}"
-
-    for c in candidates do
-      if let some r ← tryTheorem? goal (.decl c.thmName) then
-        return r
-
     trace[Debug.Meta.Tactic.fun_prop] "no theorem matched"
     return none
 
@@ -364,7 +365,8 @@ For example
   - `funPropDecl` is `FunPropDecl` for `Continuous`
   - `e = q(Continuous fun x ↦ foo (bar x) y)`
   - `fData` contains info on `fun x ↦ foo (bar x) y`
-  This tries to prove `Continuous fun x ↦ foo (bar x) y` from `Continuous fun x ↦ foo (bar x)`
+
+This tries to prove `Continuous fun x ↦ foo (bar x) y` from `Continuous fun x ↦ foo (bar x)`
 -/
 def removeArgRule (goal : Goal) (fData : FunctionData) :
     FunPropM (Option Result) := do
