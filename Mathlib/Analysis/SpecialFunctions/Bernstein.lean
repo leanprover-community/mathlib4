@@ -197,7 +197,7 @@ theorem bernsteinApproximation_uniform [LocallyConvexSpace ℝ E] (f : C(I, E)) 
   /- Choose a constant `C` such that `‖f x - f y‖_U ≤ C` for all `x`, `y`.
   For a normed space, this would be twice the norm of `f`. -/
   obtain ⟨C, hC⟩ : ∃ C, ∀ x y, gauge U (f x - f y) ≤ C := by
-    have : Continuous fun (x, y) ↦ gauge U (f x - f y) := by fun_prop (disch := assumption)
+    have : Continuous fun (x, y) ↦ gauge U (f x - f y) := by fun_prop
     simpa only [BddAbove, Set.Nonempty, mem_upperBounds, Set.forall_mem_range, Prod.forall]
       using isCompact_range this |>.bddAbove
   have hC₀ : 0 ≤ C := le_trans (gauge_nonneg _) (hC 0 0)

@@ -21,8 +21,6 @@ We show that the following properties of continuous maps are local at the target
 - `Topology.IsOpenEmbedding`
 - `Topology.IsClosedEmbedding`
 - `GeneralizingMap`
-- `IsProperMap`
-- `IsOpenQuotientMap`
 
 We show that the following properties of continuous maps are local at the source:
 - `IsOpenMap`
