@@ -121,7 +121,7 @@ end TopCat.Presheaf
 
 namespace TopCat.Opens
 
-variable {X : TopCat} {ι : Type*}
+variable {X : TopCat.{w}} {ι : Type*}
 
 theorem coverDense_iff_isBasis [Category* ι] (B : ι ⥤ Opens X) :
     B.IsCoverDense (Opens.grothendieckTopology X) ↔ Opens.IsBasis (Set.range B.obj) := by
@@ -176,7 +176,6 @@ theorem TopCat.Presheaf.isSheaf_of_isOpenEmbedding (h : IsOpenEmbedding f) (hF :
 
 variable (f)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : RepresentablyFlat (Opens.map f) := by
   constructor
   intro U

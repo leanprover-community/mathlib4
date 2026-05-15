@@ -37,10 +37,10 @@ theorem one_add_natPred (n : ℕ+) : 1 + n.natPred = n := by
 theorem natPred_add_one (n : ℕ+) : n.natPred + 1 = n :=
   (add_comm _ _).trans n.one_add_natPred
 
-@[mono]
+@[gcongr, mono]
 theorem natPred_strictMono : StrictMono natPred := fun m _ h => Nat.pred_lt_pred m.2.ne' h
 
-@[mono]
+@[gcongr, mono]
 theorem natPred_monotone : Monotone natPred :=
   natPred_strictMono.monotone
 
@@ -73,10 +73,10 @@ end PNat
 
 namespace Nat
 
-@[mono]
+@[gcongr, mono]
 theorem succPNat_strictMono : StrictMono succPNat := fun _ _ => Nat.succ_lt_succ
 
-@[mono]
+@[gcongr, mono]
 theorem succPNat_mono : Monotone succPNat :=
   succPNat_strictMono.monotone
 

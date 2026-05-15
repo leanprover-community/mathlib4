@@ -41,7 +41,7 @@ theorem integral_log_sin_zero_pi_div_two : ∫ x in 0..(π / 2), log (sin x) = -
   calc ∫ x in 0..(π / 2), log (sin x)
     _ = ∫ x in 0..(π / 2), (log (sin (2 * x)) - log 2 - log (cos x)) := by
       apply intervalIntegral.integral_congr_codiscreteWithin
-      apply Filter.codiscreteWithin.mono (by tauto : Ι 0 (π / 2) ⊆ Set.univ)
+      apply Filter.codiscreteWithin_mono (by tauto : Ι 0 (π / 2) ⊆ Set.univ)
       have t₀ : sin ⁻¹' {0}ᶜ ∈ Filter.codiscrete ℝ := by
         apply analyticOnNhd_sin.preimage_zero_mem_codiscrete (x := π / 2)
         simp

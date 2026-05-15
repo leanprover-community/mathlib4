@@ -160,7 +160,7 @@ notation "Ω[" S "⁄" R "]" => KaehlerDifferential R S
 instance KaehlerDifferential.module' {R' : Type*} [CommRing R'] [Algebra R' S]
     [SMulCommClass R R' S] :
     Module R' Ω[S⁄R] :=
-  Submodule.Quotient.module' _
+  inferInstanceAs <| Module R' (_ ⧸ _)
 
 instance KaehlerDifferential.isScalarTower_of_tower {R₁ R₂ : Type*} [CommRing R₁] [CommRing R₂]
     [Algebra R₁ S] [Algebra R₂ S] [SMul R₁ R₂]
@@ -815,7 +815,7 @@ theorem KaehlerDifferential.range_kerCotangentToTensor
     simp only [LinearMap.mem_range]
     simp only [map_sum, Finsupp.linearCombination_single]
     have : ∑ i ∈ x.support with algebraMap A B i = c, x i ∈ RingHom.ker (algebraMap A B) := by
-      simpa [Finsupp.mapDomain, Finsupp.sum, Finsupp.finset_sum_apply, RingHom.mem_ker,
+      simpa [Finsupp.mapDomain, Finsupp.sum, Finsupp.finsetSum_apply, RingHom.mem_ker,
         Finsupp.single_apply, ← Finset.sum_filter] using DFunLike.congr_fun hx c
     obtain ⟨a, ha⟩ := h c
     use ∑ i ∈ {i ∈ x.support | algebraMap A B i = c}.attach, x i • Ideal.toCotangent _ ⟨i - a, ?_⟩
