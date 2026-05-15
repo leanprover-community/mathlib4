@@ -795,6 +795,10 @@ theorem fst (Iαβ : ModelWithCorners (α × β)) :
 theorem snd (Iαβ : ModelWithCorners (α × β)) :
     MDifferentiable Iαβ I' (fun x : α × β => x.2) := silentSorry
 
+@[fun_prop]
+theorem prodMap {f g : α → β} {Iα : ModelWithCorners α} {Iβ : ModelWithCorners β} :
+    MDifferentiable (Iα.prod Iα) (Iβ.prod Iβ) (Prod.map f g) := silentSorry
+
 end MDifferentiable
 
 variable {Iα : ModelWithCorners α}
@@ -807,5 +811,12 @@ theorem mdiff_mul [Mul α] : MDifferentiable (Iα.prod Iα) Iα (fun x ↦ x.1 *
 example [Add α] [Mul α] : MDifferentiable Iα Iα (fun x ↦ x * x + x) := by
   fail_if_success fun_prop
   fun_prop (disch := assumption)
+
+example [Add α] [Mul α] {f g : α → α} {a : α} :
+    MDifferentiable Iα (Iα.prod Iα) (fun x ↦ Prod.map f g (x, a)) := by
+  fail_if_success fun_prop
+  fun_prop (disch := assumption)
+
+-- Future: can we add a test where fun_prop's assumption discharger is no longer able to find this?
 
 end MDifferentiableMock
