@@ -635,12 +635,38 @@ lemma fooo {u : E →L[𝕜] F} (E₁ : Submodule 𝕜 E) (F₁ : Submodule 𝕜
 
 open Set in
 lemma bar {u : E →L[𝕜] F} (E₁ : Submodule 𝕜 E) (F₁ : Submodule 𝕜 F)
-    (E₁_closed : IsClosed (E₁ : Set E)) (F₁_closed : IsClosed (E₁ : Set E))
+    (E₁_closed : IsClosed (E₁ : Set E)) (F₁_closed : IsClosed (F₁ : Set F))
     (E₁_coFG : E₁.CoFG) (F₁_coFG : F₁.CoFG) (h_mapsto : MapsTo u E₁ F₁)
     (h_inv : (u.restrict h_mapsto).IsInvertible) :
     IsFredholmStruct u := by
   -- uses foo + `ContinousLinearMap.isStrictMap_isClosed_range_iff_restrict`
   sorry
+
+/- ## Glue together the equivalence (Anatole) -/
+
+open Set
+
+theorem isFredholmTFAE (u : E →L[𝕜] F) : List.TFAE
+    [
+      IsFredholmQuot u,
+      IsFredholmStruct u,
+      ∃ (E₁ : Submodule 𝕜 E) (F₁ : Submodule 𝕜 F), IsClosed E₁.carrier ∧ E₁.CoFG ∧
+        IsClosed F₁.carrier ∧ F₁.CoFG ∧ ∃ h : MapsTo u E₁ F₁,
+          (u.restrict h).IsInvertible,
+      -- TODO: Filippo, quel est l'énoncé ci-dessous ?
+      ∃ (E₁ E₂ : Submodule 𝕜 E) (F₁ F₂ : Submodule 𝕜 F), E₂.FG ∧ F₂.FG ∧
+        ∃ E_compl : IsTopCompl E₁ E₂, ∃ F_compl : IsTopCompl F₁ F₂,
+        ∃ u' : E₁ ≃L[𝕜] F₁, u = F₁.subtypeL ∘L u' ∘L E₁.projectionOntoL E₂ E_compl
+    ] := by
+  tfae_have 1 → 3 := aaron
+  tfae_have 3 → 2 := by
+    rintro ⟨E₁, F₁, E₁_closed, E₁_coFG, F₁_closed, F₁_coFG, u_mapsto, u_invertible⟩
+    exact bar E₁ F₁ E₁_closed F₁_closed E₁_coFG F₁_coFG u_mapsto u_invertible
+  tfae_have 2 → 4 := by
+    sorry -- Filippo
+  tfae_have 4 → 1 := by
+    sorry -- should be easy
+  tfae_finish
 
 /- ## Simpler criterion for `IsFredholmStruct` between RCLike Banach spaces
 
