@@ -9,6 +9,8 @@ public import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
 public import Mathlib.Algebra.BigOperators.Group.List.Lemmas
 public import Mathlib.GroupTheory.Congruence.Defs
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Data.DFinsupp.BigOperators
+public import Mathlib.Algebra.BigOperators.Finsupp.Basic
 
 /-!
 # Interactions between `∑, ∏` and `(Add)Con`
@@ -45,10 +47,47 @@ protected theorem finsetProd {ι M : Type*} [CommMonoid M] (c : Con M) (s : Fins
     c (s.prod f) (s.prod g) :=
   c.multiset_prod h
 
+@[to_additive]
+protected theorem finsuppProd {ι : Type*} {β : Type*} {M : Type*}
+    [CommMonoid M] [Zero β]
+    (c : Con M) (h : ι → β → M) (h' : ι → β → M)
+    {f g : ι →₀ β} (hf : ∀ i, h i 0 = 1) (hf' : ∀ i, h' i 0 = 1)
+    (H : ∀ i, c (h i (f i)) (h' i (g i))) :
+    c (f.prod h) (g.prod h') := by
+  classical
+  rw [Finsupp.prod_of_support_subset f
+      (Finset.subset_union_left (s₁ := f.support) (s₂ := g.support)) _ (fun i _ ↦ hf i),
+    Finsupp.prod_of_support_subset g
+      (Finset.subset_union_right (s₁ := f.support) (s₂ := g.support)) _ (fun i _ ↦ hf' i)]
+  exact c.finsetProd (f.support ∪ g.support) fun i _ ↦ H i
+
+@[to_additive]
+protected theorem dfinsuppProd {ι : Type*} {β : ι → Type*} {M : Type*}
+    [DecidableEq ι] [CommMonoid M] [∀ i, Zero (β i)] [∀ i (y : β i), Decidable (y ≠ 0)]
+    (c : Con M) (h : (i : ι) → β i → M) (h' : (i : ι) → β i → M)
+    {f g : Π₀ i, β i} (hf : ∀ i, h i 0 = 1) (hf' : ∀ i, h' i 0 = 1)
+    (H : ∀ i, c (h i (f i)) (h' i (g i))) :
+    c (f.prod h) (g.prod h') := by
+  rw [DFinsupp.prod_of_support_subset (fun i _ ↦ hf i)
+      (Finset.subset_union_left (s₁ := f.support) (s₂ := g.support)),
+    DFinsupp.prod_of_support_subset (fun i _ ↦ hf' i)
+      (Finset.subset_union_right (s₁ := f.support) (s₂ := g.support))]
+  exact c.finsetProd (f.support ∪ g.support) fun i _ ↦ H i
+
+protected theorem _root_.AddCon.dfinsuppSumAddHom {ι : Type*} {β : ι → Type*} {M : Type*}
+    [DecidableEq ι] [AddCommMonoid M] [∀ i, AddCommMonoid (β i)]
+    (c : AddCon M) (h : (i : ι) → β i →+ M) (h' : (i : ι) → β i →+ M) {f g : Π₀ i, β i}
+    (H : ∀ i, c (h i (f i)) (h' i (g i))) :
+    c (f.sumAddHom h) (g.sumAddHom h') := by
+  classical
+  simp_rw [DFinsupp.sumAddHom_apply]
+  exact c.dfinsuppSum _ _ (map_zero <| h ·) (map_zero <| h' ·) H
+
 @[deprecated (since := "2026-04-08")]
 protected alias _root_.AddCon.finset_sum := AddCon.finsetSum
 
 @[to_additive existing, deprecated (since := "2026-04-08")]
 protected alias finset_prod := Con.finsetProd
+
 
 end Con
