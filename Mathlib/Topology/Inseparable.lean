@@ -483,7 +483,7 @@ theorem subtype_inseparable_iff {p : X → Prop} (x y : Subtype p) : (x ~ᵢ y) 
 
 @[simp] theorem inseparable_prod {x₁ x₂ : X} {y₁ y₂ : Y} :
     ((x₁, y₁) ~ᵢ (x₂, y₂)) ↔ (x₁ ~ᵢ x₂) ∧ (y₁ ~ᵢ y₂) := by
-  simp only [Inseparable, nhds_prod_eq, prod_inj]
+  simp only [Inseparable, nhds_prod_eq, Filter.prod_inj]
 
 theorem Inseparable.prod {x₁ x₂ : X} {y₁ y₂ : Y} (hx : x₁ ~ᵢ x₂) (hy : y₁ ~ᵢ y₂) :
     (x₁, y₁) ~ᵢ (x₂, y₂) :=
@@ -725,9 +725,12 @@ theorem continuousOn_lift {hf : ∀ x y, (x ~ᵢ y) → f x = f y} {s : Set (Sep
   simp only [ContinuousOn, surjective_mk.forall, continuousWithinAt_lift, mem_preimage]
 
 @[simp]
-theorem continuous_lift {hf : ∀ x y, (x ~ᵢ y) → f x = f y} :
+theorem continuous_lift_iff {hf : ∀ x y, (x ~ᵢ y) → f x = f y} :
     Continuous (lift f hf) ↔ Continuous f := by
   simp only [← continuousOn_univ, continuousOn_lift, preimage_univ]
+
+alias ⟨_, continuous_lift⟩ := continuous_lift_iff
+attribute [fun_prop] continuous_lift
 
 /-- Lift a map `f : X → Y → α` such that `Inseparable a b → Inseparable c d → f a c = f b d` to a
 map `SeparationQuotient X → SeparationQuotient Y → α`. -/
