@@ -241,6 +241,17 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict (u : 
   simp [step2 v B B_closed v_ker, isClosedEmbedding_iff, range_restrict v,
     isEmbedding_iff_isStrictMap_injective, v_restr_inj]
 
+-- TODO: state in terms of "equality modulo finite rank" relation
+/-- If `u, v : E →L[𝕜] F` agree on a closed subspace `A` of `E` with finite codimension,
+then `u` is strict with closed range if and only if `v` is strict with closed range. -/
+public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_of_eqOn [T1Space F]
+    (u v : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E))
+    [codim_A : FiniteDimensional 𝕜 (E ⧸ A)] (h_eqOn : EqOn u v A) :
+    (IsStrictMap u ∧ IsClosed (range u)) ↔ (IsStrictMap v ∧ IsClosed (range v)) := by
+  simp_rw [u.isStrictMap_isClosed_range_iff_restrict A,
+    v.isStrictMap_isClosed_range_iff_restrict A,
+    ← range_restrict, restrict_eq_restrict_iff.mpr h_eqOn]
+
 end FiniteCodimSubspace
 
 /-!
@@ -250,6 +261,7 @@ end FiniteCodimSubspace
 section FiniteRank
 
 -- TODO: state in terms of "equality modulo finite rank" relation
+-- TODO: unify with statement above
 /-- If `u, v : E →L[𝕜] F` differ by a finite rank continuous linear map, then `u` is strict with
 closed range if and only if `v` is strict with closed range.
 
@@ -258,12 +270,10 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_of_finiteDimen
     (u v : E →L[𝕜] F) (h_finite_rank : FiniteDimensional 𝕜 (u - v).range) :
     (IsStrictMap u ∧ IsClosed (range u)) ↔ (IsStrictMap v ∧ IsClosed (range v)) := by
   let A := (u - v).ker
-  have hA : IsClosed (A : Set E) := (u - v).isClosed_ker
+  have A_closed : IsClosed (A : Set E) := (u - v).isClosed_ker
   have : FiniteDimensional 𝕜 (E ⧸ A) := (u - v).toLinearMap.quotKerEquivRange.symm.finiteDimensional
   have eqOn_A : EqOn u v A := fun _ ↦ by simp [A, sub_eq_zero]
-  simp_rw [u.isStrictMap_isClosed_range_iff_restrict A hA,
-    v.isStrictMap_isClosed_range_iff_restrict A hA,
-    ← range_restrict, restrict_eq_restrict_iff.mpr eqOn_A]
+  exact ContinuousLinearMap.isStrictMap_isClosed_range_iff_of_eqOn u v A A_closed eqOn_A
 
 end FiniteRank
 
@@ -286,14 +296,19 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_quotient [T1Sp
   have i_clemb : IsClosedEmbedding i := S.isClosedEmbedding_subtypeL A_compl_S.symm.isClosed
   let p : F →L[𝕜] F := S.projectionL A A_compl_S.symm
   have eq : i ∘ Φ ∘ A.mkQ = p := rfl
-  simp_rw [Φ.toHomeomorph.isEmbedding.isStrictMap_iff, ← Φ.toHomeomorph.isClosed_image,
-    i_clemb.isStrictMap_iff, i_clemb.isClosed_iff_image_isClosed, ← range_comp, Φ.coe_toHomeomorph]
-  -- simp_rw [Φ.toHomeomorph.isEmbedding.isStrictMap_iff, ← Φ.toHomeomorph.isClosed_image,
-  --   ← range_comp, ← Function.comp_assoc, Φ.coe_toHomeomorph, eq,
-  --   S.isEmbedding_subtypeL.isStrictMap_iff,
-  --   S.isClosedEmbedding_subtypeL A_compl_S.symm.isClosed |>.isClosed_iff_image_isClosed,
-  --   ← range_comp, ← ContinuousLinearMap.coe_comp']
-  -- simp
-  sorry
+  have : FiniteDimensional 𝕜 (u - p ∘L u).range := by
+    suffices (u - p ∘L u).range ≤ A from finiteDimensional_of_le this
+    rintro - ⟨x, rfl⟩
+    exact sub_projection_mem _ (u x)
+  calc  IsStrictMap u ∧ IsClosed (range u)
+    _ ↔ (IsStrictMap (p ∘ u) ∧ IsClosed (range (p ∘ u))) :=
+          ContinuousLinearMap.isStrictMap_isClosed_range_iff_of_finiteDimensional _ _ this
+    _ ↔ (IsStrictMap (i ∘ Φ ∘ A.mkQ ∘ u) ∧ IsClosed (range (i ∘ Φ ∘ A.mkQ ∘ u))) := by
+          simp_rw [← eq, Function.comp_assoc]
+    _ ↔ (IsStrictMap (Φ ∘ A.mkQ ∘ u) ∧ IsClosed (range (Φ ∘ A.mkQ ∘ u))) := by
+          rw [i_clemb.isStrictMap_iff, i_clemb.isClosed_iff_image_isClosed, ← range_comp]
+    _ ↔ (IsStrictMap (A.mkQ ∘ u) ∧ IsClosed (range (A.mkQ ∘ u))) := by
+          rw [Φ.toHomeomorph.isEmbedding.isStrictMap_iff, ← Φ.toHomeomorph.isClosed_image,
+              ← range_comp, Φ.coe_toHomeomorph]
 
 end FiniteDimQuotient
