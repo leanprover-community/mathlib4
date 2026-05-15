@@ -297,7 +297,7 @@ namespace LinearMap
 
 open Module
 
-variable (k : Type*) [Field k] [Module k E] [Module k F] (f : E →ₗ[k] F)
+variable {k : Type*} [Field k] [Module k E] [Module k F] (f : E →ₗ[k] F)
 
 /-- The index of a linear map.
 
@@ -337,7 +337,7 @@ lemma index_comp {G : Type*} [AddCommGroup G] [Module k G] (g : F →ₗ[k] G)
     [FiniteDimensional k (F ⧸ f.range)] [FiniteDimensional k (G ⧸ g.range)] :
     (g ∘ₗ f).index = g.index + f.index := by
   -- 0 → f.ker → (g ∘ₗ f).ker → g.ker → f.coker → (g ∘ₗ f).coker → g.coker → 0
-  have : FiniteDimensional k (g ∘ₗ f).ker := by sorry
+  have : FiniteDimensional k (g ∘ₗ f).ker := by rw [ker_comp]; infer_instance
   have : FiniteDimensional k (G ⧸ (g ∘ₗ f).range) := by sorry
   let f₀ : f.ker →ₗ[k] (g ∘ₗ f).ker := Submodule.inclusion <| ker_le_ker_comp f g
   let f₁ : (g ∘ₗ f).ker →ₗ[k] g.ker := f.restrict <| by simp
@@ -348,12 +348,8 @@ lemma index_comp {G : Type*} [AddCommGroup G] [Module k G] (g : F →ₗ[k] G)
   have h₀ : Injective f₀ := Submodule.inclusion_injective _
   have h₁ : Exact f₀ f₁ := fun ⟨x, hx⟩ ↦ by simp [f₀, f₁, restrict_apply, Submodule.inclusion_apply]
   have h₂ : Exact f₁ f₂ := fun ⟨x, hx⟩ ↦ by aesop (add simp restrict_apply)
-  have h₃ : Exact f₂ f₃ := by
-    rw [LinearMap.exact_iff]
-    simp [f₂, f₃, range_comp, ker_mapQ, comap_map_eq]
-  have h₄ : Exact f₃ f₄ := by
-    rw [LinearMap.exact_iff]
-    simp [f₃, f₄, factor, ker_mapQ, range_mapQ]
+  have h₃ : Exact f₂ f₃ := by rw [exact_iff]; simp [f₂, f₃, range_comp, ker_mapQ, comap_map_eq]
+  have h₄ : Exact f₃ f₄ := by rw [exact_iff]; simp [f₃, f₄, factor, ker_mapQ, range_mapQ]
   have h₅ : Surjective f₄ := factor_surjective _
   grind [index, sum_neg_one_pow_finrank_eq_zero_of_exact_six f₀ f₁ f₂ f₃ f₄ h₀ h₁ h₂ h₃ h₄ h₅]
 
