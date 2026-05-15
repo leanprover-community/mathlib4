@@ -273,7 +273,8 @@ theorem norm_integral_exp_mul_I_le_of_order_ge_two' {k : ℕ} (hk : 2 ≤ k)
     ‖∫ x in a..b, exp (L * φ x * I)‖ ≤ c k * |L| ^ (-(1 : ℝ) / k) := by
   wlog! hab : a < b generalizing a b
   · rcases hab.eq_or_lt with rfl | hba
-    · rw [integral_same, norm_zero]; have := c_pos k; positivity
+    · rw [integral_same, norm_zero]
+      have := c_pos k; positivity
     · convert this (by rwa [uIcc_comm]) (by rwa [uIcc_comm]) hba using 1
       rw [integral_symm, norm_neg]
   revert hk hL
