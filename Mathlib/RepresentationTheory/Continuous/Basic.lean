@@ -35,10 +35,10 @@ continuous representation, algebra
 
 @[expose] public section
 
-variable (R G V W : Type*) [Monoid G]
-  [Ring R] [AddCommGroup V] [TopologicalSpace V]
+variable (R G V W U : Type*) [Monoid G] [Ring R] [AddCommGroup V] [TopologicalSpace V]
   [IsTopologicalAddGroup V] [Module R V] [AddCommGroup W] [TopologicalSpace W]
-  [IsTopologicalAddGroup W] [Module R W]
+  [IsTopologicalAddGroup W] [Module R W] [AddCommGroup U] [Module R U] [TopologicalSpace U]
+  [IsTopologicalAddGroup U]
 
 /-- A continuous representation of a group `G` on a `R`-module `V` which is a topological addgroup
   is a homomorphism `G →* V →L[R] V`. -/
@@ -49,13 +49,13 @@ abbrev ContRepresentation.toRepresentation (π : ContRepresentation R G V) :
     Representation R G V :=
   .comp ContinuousLinearMap.toLinearMapRingHom.toMonoidHom π
 
-variable {R G V W}
-#exit
+variable {R G V W U}
+
 /-- A continuous intertwining map between two continuous representations is an intertwining map
   which is also continuous. -/
 structure ContIntertwiningMap (π₁ : ContRepresentation R G V) (π₂ : ContRepresentation R G W)
-    extends Representation.IntertwiningMap π₁.toRepresentation π₂.toRepresentation where
-  cont : Continuous toFun
+    extends V →L[R] W where
+  isIntertwining' (g : G) : toContinuousLinearMap ∘L π₁ g = π₂ g ∘L toContinuousLinearMap
 
 /-- notation for continuous intertwining maps -/
 scoped[ContRepresentation] notation:30 π₁ " →ⁱL " π₂ =>
@@ -65,14 +65,27 @@ namespace ContIntertwiningMap
 
 open ContRepresentation
 
+variable {π₁ : ContRepresentation R G V} {π₂ : ContRepresentation R G W}
+
+/-- Any continuous intertwining map is an intertwining map. -/
+abbrev toIntertwiningMap (f : π₁ →ⁱL π₂) :
+    Representation.IntertwiningMap π₁.toRepresentation π₂.toRepresentation where
+  __ := f.toContinuousLinearMap.toLinearMap
+  isIntertwining' g := congr(ContinuousLinearMap.toLinearMap $(f.2 g))
+
+/-- The identity continuous intertwining map. -/
+def id : π₁ →ⁱL π₁ where
+  __ := ContinuousLinearMap.id R V
+  isIntertwining' g := by simp
+
 @[ext]
 lemma ext {π₁ : ContRepresentation R G V} {π₂ : ContRepresentation R G W}
-    {f g : π₁ →ⁱL π₂} (h : f.toIntertwiningMap = g.toIntertwiningMap) : f = g := by
+    {f g : π₁ →ⁱL π₂} (h : f.toContinuousLinearMap = g.toContinuousLinearMap) : f = g := by
   cases f; cases g; congr
 
 lemma toIntertwiningMap_injective {π₁ : ContRepresentation R G V}
     {π₂ : ContRepresentation R G W} :
-    Function.Injective fun f : π₁ →ⁱL π₂ ↦ f.toIntertwiningMap :=
+    Function.Injective fun f : π₁ →ⁱL π₂ ↦ f.toContinuousLinearMap :=
   fun _ _ ↦ ext
 
 lemma toFun_injective {π₁ : ContRepresentation R G V} {π₂ : ContRepresentation R G W} :
@@ -92,19 +105,22 @@ instance {π₁ : ContRepresentation R G V} {π₂ : ContRepresentation R G W} :
     ContinuousLinearMapClass (π₁ →ⁱL π₂) R V W where
   map_add f := f.map_add
   map_smulₛₗ f := f.map_smul
-  map_continuous := cont
+  map_continuous f := f.cont
 
-/-- Coerce a continuous intertwining map to a continuous map. -/
-abbrev toContinuousMap {π₁ : ContRepresentation R G V} {π₂ : ContRepresentation R G W}
-    (f : π₁ →ⁱL π₂) : C(V, W) := f
+open ContinuousLinearMap in
+/-- The composition of two continuous intertwining maps is a continuous intertwining map. -/
+def comp {π₁ : ContRepresentation R G V} {π₂ : ContRepresentation R G W}
+    {π₃ : ContRepresentation R G U} (f : π₂ →ⁱL π₃) (g : π₁ →ⁱL π₂) : π₁ →ⁱL π₃ where
+  __ := f.toContinuousLinearMap.comp g.toContinuousLinearMap
+  isIntertwining' h := by rw [comp_assoc, g.2, ← comp_assoc, f.2, comp_assoc]
 
 end ContIntertwiningMap
 
 namespace ContRepresentation
 
-
+/-- The equivalence between continuous representations. -/
 structure Equiv (π₁ : ContRepresentation R G V) (π₂ : ContRepresentation R G W) extends
-    ContIntertwiningMap π₁ π₂, V ≃L[R] W where mk'' ::
+    V ≃L[R] W, ContIntertwiningMap π₁ π₂  where mk'' ::
 
 attribute [coe] Equiv.toContIntertwiningMap
 
@@ -116,46 +132,54 @@ add_decl_doc Equiv.toContIntertwiningMap
 
 namespace Equiv
 
-variable {ρ : ContRepresentation R G V} {σ : ContRepresentation R G W} (φ : Equiv ρ σ)
+variable {ρ : ContRepresentation R G V} {σ : ContRepresentation R G W}
+  {τ : ContRepresentation R G U} (φ : Equiv ρ σ)
+
+lemma isIntertwining (g : G) :
+    φ.toContinuousLinearEquiv.toContinuousLinearMap ∘L (ρ g) =
+      (σ g) ∘L φ.toContinuousLinearEquiv.toContinuousLinearMap :=
+  φ.isIntertwining' g
 
 /-- An `Equiv` between representations could be built from a `LinearEquiv` and an assumption
   proving the `G`-equivariance. -/
 def mk (e : V ≃L[R] W) (he : ∀ g, e ∘L (ρ g) = (σ g) ∘L e) : ρ.Equiv σ where
   __ := e
   cont := e.continuous
-  isIntertwining' g := congr(ContinuousLinearMap.toLinearMap $(he g))
+  isIntertwining' := he
 
 lemma toContinuousLinearEquiv_mk' {e : V ≃L[R] W} (he : ∀ g, e ∘L (ρ g) = (σ g) ∘L e) :
-    (mk e he).toLinearEquiv = e := rfl
+    (mk e he).toContinuousLinearEquiv = e := rfl
 
-lemma toIntertwiningMap_mk' (e : V ≃L[R] W) (he : ∀ g, e ∘L (ρ g) = (σ g) ∘L e) :
-    (mk e he).toContIntertwiningMap = ⟨⟨e.toContinuousLinearMap, he⟩, _⟩ := rfl
+lemma toContIntertwiningMap_mk' (e : V ≃L[R] W) (he : ∀ g, e ∘L (ρ g) = (σ g) ∘L e) :
+    (mk e he).toContIntertwiningMap = ⟨e.toContinuousLinearMap, he⟩ := rfl
 
 @[simp]
-lemma toLinearMap_mk' (e : V ≃ₗ[R] W) (he : ∀ g, e ∘L (ρ g) = (σ g) ∘L e) :
-    (mk e he).toLinearMap = e.toLinearMap := rfl
+lemma toContinuousLinearMap_mk' (e : V ≃L[R] W) (he : ∀ g, e ∘L (ρ g) = (σ g) ∘L e) :
+    (mk e he).toContinuousLinearMap = e.toContinuousLinearMap := rfl
 
-lemma toLinearEquiv_injective : Function.Injective (toLinearEquiv : (σ.Equiv ρ) → _) :=
-  fun φ ψ h ↦ by cases φ; cases ψ; simpa [IntertwiningMap.ext_iff] using h
+lemma toContinuousLinearEquiv_injective :
+    Function.Injective (toContinuousLinearEquiv : (σ.Equiv ρ) → _) :=
+  fun φ ψ h ↦ by cases φ; cases ψ; simpa [ContIntertwiningMap.ext_iff] using h
 
-lemma toLinearEquiv_inj (φ ψ : σ.Equiv ρ) : φ.toLinearEquiv = ψ.toLinearEquiv ↔ φ = ψ :=
-  toLinearEquiv_injective.eq_iff
+lemma toContinuousLinearEquiv_inj (φ ψ : σ.Equiv ρ) :
+    φ.toContinuousLinearEquiv = ψ.toContinuousLinearEquiv ↔ φ = ψ :=
+  toContinuousLinearEquiv_injective.eq_iff
 
 instance : EquivLike (Equiv ρ σ) V W where
-  coe φ := φ.toLinearEquiv
+  coe φ := φ.toContinuousLinearEquiv
   inv φ := φ.invFun
   left_inv e := e.left_inv
   right_inv e := e.right_inv
-  coe_injective' φ ψ h1 h2 := by
-    cases φ; cases ψ
-    simp_all [IntertwiningMap.ext_iff]
+  coe_injective' φ ψ h1 h2 := by cases φ; cases ψ; simp_all
 
-instance : LinearEquivClass (σ.Equiv ρ) R W V where
+instance : ContinuousLinearEquivClass (σ.Equiv ρ) R W V where
   map_add f := f.map_add
   map_smulₛₗ f := f.map_smul
+  map_continuous f := f.cont
+  inv_continuous f := f.continuous_invFun
 
 @[simp]
-lemma mk_apply {e : V ≃ₗ[R] W} (he : ∀ g, e ∘ₗ (ρ g) = (σ g) ∘ₗ e) (v : V) :
+lemma mk_apply {e : V ≃L[R] W} (he : ∀ g, e ∘L (ρ g) = (σ g) ∘L e) (v : V) :
     (mk e he) v = e v := rfl
 
 @[ext]
@@ -164,69 +188,66 @@ lemma ext {φ ψ : Equiv ρ σ} (h : (φ : V → W) = ψ) : φ = ψ := by
   simpa using h
 
 variable (ρ) in
-/-- Any representation is equivalent to itself. -/
-def refl : Equiv ρ ρ where
-  __ := LinearEquiv.refl _ _
-  isIntertwining' g := by simp
+/-- Any continuous representation is equivalent to itself. -/
+def refl : Equiv ρ ρ := mk (ContinuousLinearEquiv.refl R V) (by simp)
 
-@[simp] lemma toIntertwiningMap_refl : (refl ρ).toIntertwiningMap = .id ρ := rfl
+@[simp] lemma toContIntertwiningMap_refl : (refl ρ).toContIntertwiningMap = .id := rfl
 
-@[simp] lemma toLinearMap_refl : (refl ρ).toLinearMap = LinearMap.id := rfl
+@[simp] lemma toContinuousLinearMap_refl :
+    (refl ρ).toContinuousLinearMap = ContinuousLinearMap.id R V := rfl
 
 @[simp] lemma refl_apply (v : V) : refl ρ v = v := rfl
 
-@[simp] lemma coe_toIntertwiningMap : ⇑φ.toIntertwiningMap = φ := rfl
+@[simp] lemma coe_toContIntertwiningMap : ⇑φ.toContIntertwiningMap = φ := rfl
 
-@[simp] lemma coe_toLinearMap : ⇑φ.toLinearMap = φ := rfl
+lemma coe_toContinuousLinearMap : ⇑φ.toContinuousLinearMap = φ := rfl
 
 lemma coe_invFun : φ.invFun = φ.symm := rfl
 
-theorem toLinearEquiv_toLinearMap :
-  φ.toLinearEquiv.toLinearMap = φ.toIntertwiningMap.toLinearMap := rfl
+theorem toContinuousLinearEquiv_toContinuousLinearMap :
+    φ.toContinuousLinearEquiv.toContinuousLinearMap =
+      φ.toContIntertwiningMap.toContinuousLinearMap := rfl
 
-theorem toLinearEquiv_apply (v : V) : φ.toLinearEquiv v = φ.toIntertwiningMap v := rfl
+theorem toContinuousLinearEquiv_apply (v : V) :
+    φ.toContinuousLinearEquiv v = φ.toContIntertwiningMap v := rfl
 
-open LinearMap in
-/-- The equiv between representations are symmetric. -/
+open ContinuousLinearMap in
+/-- The equiv between continuous representations are symmetric. -/
 @[symm]
-def symm (φ : Equiv ρ σ) : Equiv σ ρ where
-  __ := φ.toLinearEquiv.symm
-  isIntertwining' g := by
-    rw [← cancel_left φ.toLinearEquiv.injective, ← comp_assoc, ← comp_assoc, φ.1.2 g, φ.comp_symm,
-      comp_assoc, φ.comp_symm, id_comp, comp_id]
+def symm : Equiv σ ρ := mk φ.toContinuousLinearEquiv.symm <| fun g ↦ by
+  rw [← cancel_left' (g := φ.toContinuousLinearEquiv.toContinuousLinearMap)
+    φ.toContinuousLinearEquiv.injective, ← comp_assoc, ← comp_assoc]
+  simp [φ.isIntertwining g, comp_assoc]
 
-open LinearMap in
-lemma _root_.LinearEquiv.isIntertwining_symm_isIntertwining {e : V ≃ₗ[R] W}
-    (he : ∀ g, e ∘ₗ (ρ g) = (σ g) ∘ₗ e) (g : G) :
-    e.symm ∘ₗ (σ g) = (ρ g) ∘ₗ e.symm := by
-  apply e.comp_toLinearMap_eq_iff _ _ |>.1
-  rw [← comp_assoc, ← comp_assoc, he g, e.comp_symm, id_comp, comp_assoc, e.comp_symm, comp_id]
+open ContinuousLinearMap
+
+lemma _root_.ContinuousLinearEquiv.isIntertwining_symm_isIntertwining {e : V ≃L[R] W}
+    (he : ∀ g, e ∘L (ρ g) = (σ g) ∘L e) (g : G) :
+    e.symm ∘L (σ g) = (ρ g) ∘L e.symm :=
+  (mk e he).symm.isIntertwining g
 
 @[simp]
-lemma mk_symm {e : V ≃ₗ[R] W} (he : ∀ g, e ∘ₗ (ρ g) = (σ g) ∘ₗ e) :
+lemma mk_symm {e : V ≃L[R] W} (he : ∀ g, e ∘L (ρ g) = (σ g) ∘L e) :
     (mk e he).symm = mk e.symm (e.isIntertwining_symm_isIntertwining he) := rfl
 
 lemma toLinearMap_symm (φ : Equiv ρ σ) : (symm φ).toLinearMap = φ.toLinearEquiv.symm := rfl
 
 lemma coe_symm (φ : Equiv ρ σ) : ⇑φ.toLinearEquiv.symm = φ.symm := rfl
 
-variable {τ}
-
-open LinearMap in
-/-- Composition of two `Equiv`. -/
+/-- Composition of two `Equiv`s. -/
 @[trans]
-def trans (φ : Equiv ρ σ) (ψ : Equiv σ τ) : Equiv ρ τ where
-  __ := φ.toLinearEquiv.trans ψ.toLinearEquiv
-  isIntertwining' g := by
-    rw [LinearEquiv.coe_trans, comp_assoc, φ.1.2, ← comp_assoc, ψ.1.2, comp_assoc]
+def trans (φ : Equiv ρ σ) (ψ : Equiv σ τ) : Equiv ρ τ := mk
+  (φ.toContinuousLinearEquiv.trans ψ.toContinuousLinearEquiv) <| fun g ↦ by
+  rw [← ContinuousLinearEquiv.comp_coe, comp_assoc,
+    φ.isIntertwining, ← comp_assoc, ψ.isIntertwining, comp_assoc]
 
 @[simp]
-lemma toIntertwiningMap_trans (φ : Equiv ρ σ) (ψ : Equiv σ τ) :
-    (φ.trans ψ).toIntertwiningMap = ψ.toIntertwiningMap.comp φ.toIntertwiningMap := rfl
+lemma toContIntertwiningMap_trans (φ : Equiv ρ σ) (ψ : Equiv σ τ) :
+    (φ.trans ψ).toContIntertwiningMap = ψ.toContIntertwiningMap.comp φ.toContIntertwiningMap := rfl
 
 @[simp]
-lemma toLinearMap_trans (φ : Equiv ρ σ) (ψ : Equiv σ τ) :
-    (trans φ ψ).toLinearMap = ψ.toLinearMap ∘ₗ φ.toLinearMap := rfl
+lemma toContinuousLinearMap_trans (φ : Equiv ρ σ) (ψ : Equiv σ τ) :
+    (trans φ ψ).toContinuousLinearMap = ψ.toContinuousLinearMap.comp φ.toContinuousLinearMap := rfl
 
 @[simp]
 lemma trans_apply (φ : Equiv ρ σ) (ψ : Equiv σ τ) (v : V) :
@@ -255,21 +276,18 @@ lemma trivial_apply (g : G) (v : V) : trivial R G V g v = v := rfl
 
 /-- The restriction of a continuous representation along a monoid homomorphism. -/
 @[simps!]
-def restrict {H : Typenst_11 : IsTopologicalGroup H]
-        (π : ContRepresentation R G V) (h : H) (x : ↥(coindV φ π)),
-        *} [Monoid H] (π : ContRepresentation R G V) (φ : H →* G) :
+def restrict {H : Type*} [Monoid H] (π : ContRepresentation R G V) (φ : H →* G) :
     ContRepresentation R H V := .comp π φ
 
 -- TODO : define `IsTopologicalMonoid` and then replace `Homeomorph.mulLeft g⁻¹` with the
 -- `ContinuousMap.mulRight g` to make `coind₁` work for monoids.
-variable {G : Type*} [Group G] [TopologicalSpace G] [TopologicalSpace R]
-  [ContinuousSMul R V] [ContinuousSMul R W]
+variable {G H : Type*} [Group G] [TopologicalSpace G] [TopologicalSpace R]
+  [ContinuousSMul R V] [ContinuousSMul R W] [Group H] [TopologicalSpace H]
+  (φ : G →ₜ* H) (π : ContRepresentation R G V)
 
-variable {H : Type*} [Group H] [TopologicalSpace H]
-variable (φ : G →ₜ* H) (π : ContRepresentation R G V)
-
+/-- The underlying module of the coinduced continuous representation. -/
 @[simps]
-def coindV : Submodule R C(H,V) where
+def coindV : Submodule R C(H, V) where
   carrier   := {f | ∀ g h, f (φ g * h) = π g (f h)}
   add_mem'  := by simp +contextual
   zero_mem' := by simp
@@ -283,6 +301,8 @@ instance : ContinuousSMul R (π.coindV φ) where
 
 variable [IsTopologicalRing R] [IsTopologicalGroup G] [IsTopologicalGroup H]
 
+/-- The coinduced continuous representation where the action of `H` is defined by
+  `h ↦ f ↦ f ∘ (· * h)`. -/
 @[simps]
 def coind (π : ContRepresentation R G V) : ContRepresentation R H (π.coindV φ) where
   toFun h := {
@@ -318,11 +338,11 @@ def coind₁ (π : ContRepresentation R G V) :
 @[simps]
 def coind₁_map (π₁ : ContRepresentation R G V) (π₂ : ContRepresentation R G W) (f : π₁ →ⁱL π₂) :
     coind₁ π₁ →ⁱL coind₁ π₂ where
-  toFun := .comp f
+  toFun := (f : ContinuousMap _ _).comp
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
   isIntertwining' g := by ext; simp [f.isIntertwining]
-  cont := continuous_postcomp f.toContinuousMap
+  cont := continuous_postcomp _
 
 /-- The naturality of the transformation from `𝟭 ⟶ coind₁`. -/
 @[simps]
@@ -333,6 +353,19 @@ def coind₁_ι (π : ContRepresentation R G V) : π →ⁱL coind₁ π where
   isIntertwining' := by aesop
   cont := continuous_const'
 
--- abbrev coind₁Equivcoind
+/-- This should be somewhere else, awaiting zulip
+https://leanprover.zulipchat.com/#narrow/channel/217875-Is-there-code-for-X.3F/topic/topEquiv.20for.20topological.20modules/with/595367186. -/
+abbrev _root_.Submodule.topContEquiv {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+    [TopologicalSpace M] : (⊤ : Submodule R M) ≃L[R] M where
+  __ := Submodule.topEquiv
+  continuous_toFun := continuous_subtype_val
+  continuous_invFun := continuous_id.subtype_mk _
+
+/-- The equivalence between `coind₁` and `coind` of the trivial representation of trivial
+  subgroup of `G`. -/
+def coind₁Equivcoind : (coind₁ (.trivial R (⊥ : Subgroup G) V)).Equiv
+  (coind 1 (.trivial R G V)) := .mk (Submodule.topContEquiv.symm.trans <|
+    ContinuousLinearEquiv.ofEq _ _ (by simp [SetLike.ext_iff])) <| fun g ↦ by
+    simp [Subsingleton.elim g 1, ContinuousLinearMap.one_def]
 
 end ContRepresentation
