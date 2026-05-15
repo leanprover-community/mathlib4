@@ -316,7 +316,7 @@ open VectorField NormedSpace
 variable {I} in
 lemma leviCivitaRhs'_smulX_apply [CompleteSpace E] {f : M → ℝ}
     (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
-    leviCivitaRhs' I (f • X) Y Z x = f x • leviCivitaRhs' I X Y Z x := by
+    leviCivitaRhs' I (f • X) Y Z x = f x * leviCivitaRhs' I X Y Z x := by
   unfold leviCivitaRhs'
   simp only [Pi.add_apply, Pi.sub_apply]
   rw [rhs_aux_smulX_apply, rhs_aux_smulY_apply, rhs_aux_smulZ_apply] <;> try assumption
@@ -344,13 +344,12 @@ lemma leviCivitaRhs'_smulX_apply [CompleteSpace E] {f : M → ℝ}
     rw [product_apply, real_inner_smul_right]
   rw [real_inner_smul_right (Y x), h3, h4]
   -- Push all applications of `x` inwards, then it's indeed obvious.
-  simp
   ring
 
 variable {I} in
 lemma leviCivitaRhs_smulX_apply [CompleteSpace E] {f : M → ℝ}
     (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
-    leviCivitaRhs I (f • X) Y Z x = f x • leviCivitaRhs I X Y Z x := by
+    leviCivitaRhs I (f • X) Y Z x = f x * leviCivitaRhs I X Y Z x := by
   simp [leviCivitaRhs, leviCivitaRhs'_smulX_apply hf hX hY hZ]
   ring
 
