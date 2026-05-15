@@ -38,7 +38,7 @@ structure ContinuousLinearMap {R : Type*} {S : Type*} [Semiring R] [Semiring S] 
     (M : Type*) [TopologicalSpace M] [AddCommMonoid M] (M₂ : Type*) [TopologicalSpace M₂]
     [AddCommMonoid M₂] [Module R M] [Module S M₂] extends M →ₛₗ[σ] M₂ where
   cont : Continuous toFun := by
-    first | fun_prop | eta_expand; dsimp -failIfUnchanged; fun_prop
+    first | fun_prop | eta_expand; dsimp; fun_prop | skip
 
 attribute [inherit_doc ContinuousLinearMap] ContinuousLinearMap.cont
 
