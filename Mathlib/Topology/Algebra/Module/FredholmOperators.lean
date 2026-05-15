@@ -594,7 +594,7 @@ variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] 
    [TopologicalSpace E] [Module 𝕜 E] [ContinuousSMul 𝕜 E] [IsTopologicalAddGroup E] [T2Space E]
 
 /-- This has a PR now. -/
-lemma Submodule.ClosedComplmented_of_finiteDimensional_closedComplemented (A B : Submodule 𝕜 E)
+lemma Submodule.ClosedComplemented_of_finiteDimensional_closedComplemented (A B : Submodule 𝕜 E)
     (hA : FiniteDimensional 𝕜 A) (hA1 : A.ClosedComplemented)
     (hB : B ≤ A) : B.ClosedComplemented := by
   obtain ⟨p, hp⟩ := hA1
@@ -603,19 +603,33 @@ lemma Submodule.ClosedComplmented_of_finiteDimensional_closedComplemented (A B :
   simp [hp ⟨x, hB x.2⟩]
 
 variable [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F] [Module 𝕜 F]
-variable [ContinuousConstSMul 𝕜 F] [T1Space F]
+variable [ContinuousSMul 𝕜 F] [T1Space F]
 
-open QuotFiniteSubmodules in
-lemma IsFredholmStruct.ker_closedComplemented {u : E →L[𝕜] F} (hu : IsFredholmStruct u) :
-    u.ker.ClosedComplemented := by simpa only using hu.closedComplemented_ker
+-- Irrelevant, but : I should update this in Mathlib, where it only is stated for self maps.
+open Function LinearMap in
+theorem LinearMap.injective_restrict_iff_disjoint' {R M N : Type*}
+   [Ring R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
+    {p : Submodule R M} {q : Submodule R N} {f : M →ₗ[R] N} (hf : ∀ x ∈ p, f x ∈ q) :
+    Injective (f.restrict hf) ↔ Disjoint p (ker f) := by
+  rw [← ker_eq_bot, ker_restrict hf, ← ker_domRestrict, ker_eq_bot, injective_domRestrict_iff,
+    disjoint_iff]
 
 open Set in
-lemma fooo {u : E →L[𝕜] F} (E₁ : Submodule 𝕜 E) (F₁ : Submodule 𝕜 F)
-    (E₁_closed : IsClosed (E₁ : Set E)) (F₁_closed : IsClosed (E₁ : Set E))
-    (E₁_coFG : E₁.CoFG) (F₁_coFG : F₁.CoFG) (h_mapsto : MapsTo u E₁ F₁)
-    (h_inv : (u.restrict h_mapsto).IsInvertible) :
-    u.ker.ClosedComplemented := by
-  sorry
+lemma ContinuousLinearMap.ker_closedComplemented_of_isInvertible_restrict
+    {u : E →L[𝕜] F} (E₁ : Submodule 𝕜 E) (F₁ : Submodule 𝕜 F)
+    (E₁_closed : IsClosed (E₁ : Set E)) (E₁_coFG : E₁.CoFG) (h_mapsto : MapsTo u E₁ F₁)
+    (h_inv : (u.restrict h_mapsto).IsInvertible) : u.ker.ClosedComplemented := by
+  obtain ⟨C, hC1, hC2⟩ := Disjoint.exists_isCompl <|
+    (LinearMap.injective_restrict_iff_disjoint' h_mapsto).mp
+      <| ContinuousLinearMap.IsInvertible.injective h_inv
+  have hJ:= CoFG.of_le hC1 E₁_coFG
+  have hI := Module.Finite.iff_fg.mpr <| Submodule.CoFG.fg_of_isCompl hC2 (CoFG.of_le hC1 E₁_coFG)
+  apply Submodule.ClosedComplemented_of_finiteDimensional_closedComplemented u.ker
+  · exact finiteDimensional_of_le fun ⦃x⦄ a ↦ a
+  · exact IsTopCompl.closedComplemented <| IsTopCompl.symm
+         <| Submodule.IsCompl.isTopCompl_of_finiteDimensional_quotient hC2
+           (isClosed_mono_of_finiteDimensional_quotient E₁_closed hC1)
+  · exact toAddSubmonoid_le.mp fun ⦃x⦄ a ↦ a
 
 open Set in
 lemma bar {u : E →L[𝕜] F} (E₁ : Submodule 𝕜 E) (F₁ : Submodule 𝕜 F)
