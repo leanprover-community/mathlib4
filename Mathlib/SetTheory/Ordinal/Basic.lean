@@ -1125,15 +1125,15 @@ theorem ord_injective : Injective ord :=
   ord_strictMono.injective
 
 @[simp]
-theorem ord_le_ord {a b : Cardinal} : ord a ≤ ord b ↔ a ≤ b :=
+theorem ord_le_ord {c₁ c₂} : ord c₁ ≤ ord c₂ ↔ c₁ ≤ c₂ :=
   gciOrdCard.l_le_l_iff
 
 @[simp]
-theorem ord_lt_ord {a b : Cardinal} : ord a < ord b ↔ a < b :=
+theorem ord_lt_ord {c₁ c₂} : ord c₁ < ord c₂ ↔ c₁ < c₂ :=
   ord_strictMono.lt_iff_lt
 
 @[simp]
-theorem ord_inj {a b : Cardinal} : ord a = ord b ↔ a = b :=
+theorem ord_inj {c₁ c₂} : ord c₁ = ord c₂ ↔ c₁ = c₂ :=
   ord_injective.eq_iff
 
 @[simp]
