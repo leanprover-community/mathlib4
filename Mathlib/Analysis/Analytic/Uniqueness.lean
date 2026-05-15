@@ -44,48 +44,23 @@ section Uniqueness
 open ContinuousMultilinearMap
 
 theorem Asymptotics.IsBigO.continuousMultilinearMap_apply_eq_zero {n : ℕ} {p : E [×n]→L[𝕜] F}
-    (h : (fun y => p fun _ => y) =O[𝓝 0] fun y => ‖y‖ ^ (n + 1)) (y : E) : (p fun _ => y) = 0 := by
-  obtain ⟨c, c_pos, hc⟩ := h.exists_pos
-  obtain ⟨t, ht, t_open, z_mem⟩ := eventually_nhds_iff.mp (isBigOWith_iff.mp hc)
-  obtain ⟨δ, δ_pos, δε⟩ := (Metric.isOpen_iff.mp t_open) 0 z_mem
-  clear h hc z_mem
-  rcases n with - | n
-  · exact norm_eq_zero.mp (by
-      simpa only [fin0_apply_norm, norm_eq_zero, norm_zero, zero_add, pow_one,
-        mul_zero, norm_le_zero_iff] using ht 0 (δε (Metric.mem_ball_self δ_pos)))
-  · refine Or.elim (Classical.em (y = 0))
-      (fun hy => by simpa only [hy] using p.map_zero) fun hy => ?_
-    replace hy := norm_pos_iff.mpr hy
-    refine norm_eq_zero.mp (le_antisymm (le_of_forall_pos_le_add fun ε ε_pos => ?_) (norm_nonneg _))
-    have h₀ := _root_.mul_pos c_pos (pow_pos hy (n.succ + 1))
-    obtain ⟨k, k_pos, k_norm⟩ := NormedField.exists_norm_lt 𝕜
-      (lt_min (mul_pos δ_pos (inv_pos.mpr hy)) (mul_pos ε_pos (inv_pos.mpr h₀)))
-    have h₁ : ‖k • y‖ < δ := by
-      rw [norm_smul]
-      exact inv_mul_cancel_right₀ hy.ne.symm δ ▸
-        mul_lt_mul_of_pos_right (lt_of_lt_of_le k_norm (min_le_left _ _)) hy
-    have h₂ :=
-      calc
-        ‖p fun _ => k • y‖ ≤ c * ‖k • y‖ ^ (n.succ + 1) := by
-          simpa only [norm_pow, _root_.norm_norm] using ht (k • y) (δε (mem_ball_zero_iff.mpr h₁))
-        _ = ‖k‖ ^ n.succ * (‖k‖ * (c * ‖y‖ ^ (n.succ + 1))) := by
-          simp only [norm_smul, mul_pow]
-          ring
-    have h₃ : ‖k‖ * (c * ‖y‖ ^ (n.succ + 1)) < ε :=
-      inv_mul_cancel_right₀ h₀.ne.symm ε ▸
-        mul_lt_mul_of_pos_right (lt_of_lt_of_le k_norm (min_le_right _ _)) h₀
-    calc
-      ‖p fun _ => y‖ = ‖k⁻¹ ^ n.succ‖ * ‖p fun _ => k • y‖ := by
-        simpa only [inv_smul_smul₀ (norm_pos_iff.mp k_pos), norm_smul, Finset.prod_const,
-          Finset.card_fin] using
-          congr_arg norm (p.map_smul_univ (fun _ : Fin n.succ => k⁻¹) fun _ : Fin n.succ => k • y)
-      _ ≤ ‖k⁻¹ ^ n.succ‖ * (‖k‖ ^ n.succ * (‖k‖ * (c * ‖y‖ ^ (n.succ + 1)))) := by gcongr
-      _ = ‖(k⁻¹ * k) ^ n.succ‖ * (‖k‖ * (c * ‖y‖ ^ (n.succ + 1))) := by
-        rw [← mul_assoc]
-        simp [norm_mul, mul_pow]
-      _ ≤ 0 + ε := by
-        rw [inv_mul_cancel₀ (norm_pos_iff.mp k_pos)]
-        simpa using h₃.le
+    (h : (fun y ↦ p fun _ ↦ y) =O[𝓝 0] fun y ↦ ‖y‖ ^ (n + 1)) (y : E) : (p fun _ ↦ y) = 0 := by
+  by_contra! hy
+  have : (fun c : 𝕜 ↦ c ^ n) =o[𝓝 0] (fun c : 𝕜 ↦ c ^ n) := calc
+    (fun c : 𝕜 ↦ c ^ n) =O[𝓝 0] fun c ↦ c ^ n • p fun i ↦ y := by
+      refine .of_norm_norm ?_
+      simp only [norm_smul, mul_comm (‖_ ^ _‖)]
+      exact .const_mul_right (by simpa) (isBigO_refl ..)
+    _ = fun c ↦ p fun _ ↦ c • y := by simp [p.map_smul_univ]
+    _ =O[𝓝 0] fun c ↦ ‖c • y‖ ^ (n + 1) :=
+      h.comp_tendsto <| Continuous.tendsto' (by fun_prop) _ _ (zero_smul _ _)
+    _ =O[𝓝 0] fun c ↦ c ^ (n + 1) := by
+      refine .of_norm_right ?_
+      simp only [norm_smul, mul_pow, mul_comm _ ‖y‖, norm_pow]
+      exact .const_mul_left (isBigO_refl ..) _
+    _ =o[𝓝 0] (· ^ n) := isLittleO_pow_pow (by simp)
+  refine isLittleO_irrefl (.mono ?_ fun _ ↦ pow_ne_zero n) this
+  exact Filter.frequently_iff_neBot.2 <| inferInstanceAs (𝓝[≠] (0 : 𝕜)).NeBot
 
 /-- If a formal multilinear series `p` represents the zero function at `x : E`, then the
 terms `p n (fun i ↦ y)` appearing in the sum are zero for any `n : ℕ`, `y : E`. -/
