@@ -224,16 +224,6 @@ end Indicator
 
 section UnifTight
 
-theorem support_congr_of_ae_eq {α β : Type*} [MeasurableSpace α] [Zero β] {μ : Measure α}
-    {f g : α → β} (h : f =ᶠ[ae μ] g) :
-    Function.support f =ᶠ[ae μ] Function.support g := by
-  apply Filter.mem_of_superset h
-  intro x
-  simp only [Set.mem_setOf_eq, Function.support, ne_eq, eq_iff_iff]
-  intro fg
-  change f x ≠ 0 ↔ g x ≠ 0
-  rw [fg]
-
 /-- A single function that is `MemLp f p μ` is tight with respect to `μ`. -/
 theorem MemLp.exists_eLpNorm_indicator_compl_lt {β : Type*} [NormedAddCommGroup β] (hp_top : p ≠ ∞)
     {f : α → β} (hf : MemLp f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
