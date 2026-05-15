@@ -306,7 +306,7 @@ public theorem IsLeviCivitaConnection.uniqueness [FiniteDimensional ℝ E]
   · rw [← hcov.eq_leviCivitaRhs I hX hY (mdifferentiableAt_extend I E Z₀)]
   · rw [← hcov'.eq_leviCivitaRhs I hX hY (mdifferentiableAt_extend I E Z₀)]
 
-open Classical in
+open scoped Classical in
 /-- Auxiliary definition for the definition of the Levi-Civita connection:
 this is a version of the bare function `leviCivitaRhs` at `x`,
 taking the junk value `0` when its arguments are not both differentiable at `x`.
@@ -321,36 +321,29 @@ theorem leviCivitaRhs_tensorial₁ [FiniteDimensional ℝ E]
     {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) (Z : Π x, TangentSpace I x) :
     TensorialAt I E (lcAux₀' I Y x · Z x) x where
   smul hf hX := by
-    dsimp [lcAux₀']
-    rw [if_pos hX, if_pos]
-    · split_ifs with hZ
-      · exact leviCivitaRhs_smulX_apply hf hX hY hZ
-      · simp
-    · exact hf.smul_section hX
+    simp only [lcAux₀', if_pos hX, if_pos (by exact hf.smul_section hX)]
+    split_ifs with hZ
+    · exact leviCivitaRhs_smulX_apply hf hX hY hZ
+    · simp
   add hX₁ hX₂ := by
-    dsimp [lcAux₀']
-    rw [if_pos hX₁, if_pos hX₂, if_pos]
-    · split_ifs with hZ
-      · exact leviCivitaRhs_addX_apply I hX₁ hX₂ hY hZ
-      · simp
-    · exact mdifferentiableAt_add_section hX₁ hX₂
+    simp only [lcAux₀', if_pos hX₁, if_pos hX₂, if_pos (mdifferentiableAt_add_section hX₁ hX₂)]
+    split_ifs with hZ
+    · exact leviCivitaRhs_addX_apply I hX₁ hX₂ hY hZ
+    · simp
 
 theorem leviCivitaRhs_tensorial₂ [FiniteDimensional ℝ E]
     {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) (X : Π x, TangentSpace I x)
     (hX : MDiffAt (T% X) x) :
     TensorialAt I E (lcAux₀' I Y x X · x) x where
   smul hf hZ := by
-    dsimp [lcAux₀']
-    rw [if_pos hX, if_pos hZ, if_pos, if_pos hX]
-    · exact leviCivitaRhs_smulZ_apply I hf hX hY hZ
-    · exact hf.smul_section hZ
+    simp only [lcAux₀', if_pos hX, if_pos hZ, if_pos (by exact hf.smul_section hZ)]
+    exact leviCivitaRhs_smulZ_apply I hf hX hY hZ
   add hZ₁ hZ₂ := by
-    dsimp [lcAux₀']
-    rw [if_pos hZ₁, if_pos hZ₂, if_pos hX, if_pos, if_pos hX, if_pos hX]
-    · exact leviCivitaRhs_addZ_apply I hX hY hZ₁ hZ₂
-    · exact mdifferentiableAt_add_section hZ₁ hZ₂
+    simp only [lcAux₀', if_pos hX, if_pos hZ₁, if_pos hZ₂,
+      if_pos (mdifferentiableAt_add_section hZ₁ hZ₂)]
+    exact leviCivitaRhs_addZ_apply I hX hY hZ₁ hZ₂
 
-open Classical in
+open scoped Classical in
 /-- Auxiliary definition for the definition of the Levi-Civita connection:
 this the right hand side `leviCivitaRhs`, as a `(2,0)`-tensor ?! -/
 noncomputable def lcAux₀ [FiniteDimensional ℝ E]
@@ -389,7 +382,7 @@ theorem lcAux₁_apply [FiniteDimensional ℝ E] {x : M}
     inner ℝ (lcAux₁ I x hY (X x)) (Z x) = leviCivitaRhs I X Y Z x := by
   simpa [lcAux₁] using lcAux₀_apply I hX hY hZ
 
-open Classical in
+open scoped Classical in
 /-- The function underlying our construction of the Levi-Civita connection on `(M,g)` -/
 noncomputable def lcAux [FiniteDimensional ℝ E]
     (Y : Π x : M, TangentSpace I x) (x : M) :
@@ -401,9 +394,7 @@ theorem lcAux_apply [FiniteDimensional ℝ E] {x : M}
     {Y : Π x : M, TangentSpace I x} (hY : MDiffAt (T% Y) x)
     {Z : Π x : M, TangentSpace I x} (hZ : MDiffAt (T% Z) x) :
     inner ℝ (lcAux I Y x (X x)) (Z x) = leviCivitaRhs I X Y Z x := by
-  unfold lcAux
-  rw [dif_pos hY]
-  simpa [lcAux] using lcAux₁_apply I hX hY hZ
+  simpa [lcAux, dif_pos hY] using lcAux₁_apply I hX hY hZ
 
 set_option backward.isDefEq.respectTransparency false in
 lemma isCovariantDerivativeOn_lcAux [FiniteDimensional ℝ E] :
@@ -418,15 +409,9 @@ lemma isCovariantDerivativeOn_lcAux [FiniteDimensional ℝ E] :
     simp only [lcAux₀]
     ext X₀ Y₀
     simp only [TensorialAt.mkHom₂_apply_eq_extend, ContinuousLinearMap.add_apply, lcAux₀']
-    rw [if_pos, if_pos, if_pos, if_pos, if_pos, if_pos]
-    · exact leviCivitaRhs_addY_apply _ (FiberBundle.mdifferentiableAt_extend ..)
-        hY hY' (FiberBundle.mdifferentiableAt_extend ..)
-    · exact FiberBundle.mdifferentiableAt_extend ..
-    · exact FiberBundle.mdifferentiableAt_extend ..
-    · exact FiberBundle.mdifferentiableAt_extend ..
-    · exact FiberBundle.mdifferentiableAt_extend ..
-    · exact FiberBundle.mdifferentiableAt_extend ..
-    · exact FiberBundle.mdifferentiableAt_extend ..
+    simp (discharger := exact FiberBundle.mdifferentiableAt_extend ..) only [if_pos]
+    exact leviCivitaRhs_addY_apply _ (FiberBundle.mdifferentiableAt_extend ..)
+      hY hY' (FiberBundle.mdifferentiableAt_extend ..)
   leibniz {Y f x} hY hf _ := by
     dsimp [lcAux]
     rw [dif_pos hY, dif_pos]
@@ -446,14 +431,10 @@ lemma isCovariantDerivativeOn_lcAux [FiniteDimensional ℝ E] :
       ext Z₀
       simp only [lcAux₀, lcAux₀', TensorialAt.mkHom₂_apply_eq_extend,
         ContinuousLinearMap.add_apply, ContinuousLinearMap.coe_smul', Pi.smul_apply, smul_eq_mul]
-      rw [if_pos, if_pos, if_pos, if_pos]
-      · convert leviCivitaRhs_smulY_apply I hf (FiberBundle.mdifferentiableAt_extend I E X₀) hY
-          (FiberBundle.mdifferentiableAt_extend I E Z₀)
-        simp [Φ]
-      · exact FiberBundle.mdifferentiableAt_extend ..
-      · exact FiberBundle.mdifferentiableAt_extend ..
-      · exact FiberBundle.mdifferentiableAt_extend ..
-      · exact FiberBundle.mdifferentiableAt_extend ..
+      simp (discharger := exact FiberBundle.mdifferentiableAt_extend ..) only [if_pos]
+      convert leviCivitaRhs_smulY_apply I hf (FiberBundle.mdifferentiableAt_extend I E X₀) hY
+        (FiberBundle.mdifferentiableAt_extend I E Z₀)
+      simp [Φ]
     exact MDifferentiableAt.smul_section hf hY
 
 end
