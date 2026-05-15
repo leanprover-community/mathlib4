@@ -156,8 +156,8 @@ variable {n k : ℕ} (h : k + 3 ≤ n) {R₁ R₂ : ComposableArrows C n}
 include hR₁ hR₂ in
 /-- Variant of the first 4-lemma for complexes of any size -/
 theorem mono_of_epi_of_mono_of_mono'' (k₀ k₁ k₂ k₃ : ℕ)
-    (hk₀ : k₀ = k := by lia) (hk₁ : k₁ = k + 1 := by lia)
-    (hk₂ : k₂ = k + 2 := by lia) (hk₃ : k₃ = k + 3 := by lia)
+    (hk₀ : k₀ = k) (hk₁ : k₁ = k + 1)
+    (hk₂ : k₂ = k + 2) (hk₃ : k₃ = k + 3)
     (h₀ : Epi (app' φ k₀)) (h₁ : Mono (app' φ k₁))
     (h₃ : Mono (app' φ k₃)) : Mono (app' φ k₂) := by
   subst_vars
@@ -169,8 +169,8 @@ theorem mono_of_epi_of_mono_of_mono'' (k₀ k₁ k₂ k₃ : ℕ)
 include hR₁ hR₂ in
 /-- Variant of the second 4-lemma for complexes of any size -/
 theorem epi_of_epi_of_epi_of_mono'' (k₀ k₁ k₂ k₃ : ℕ)
-    (hk₀ : k₀ = k := by lia) (hk₁ : k₁ = k + 1 := by lia)
-    (hk₂ : k₂ = k + 2 := by lia) (hk₃ : k₃ = k + 3 := by lia)
+    (hk₀ : k₀ = k) (hk₁ : k₁ = k + 1)
+    (hk₂ : k₂ = k + 2) (hk₃ : k₃ = k + 3)
     (h₀ : Epi (app' φ k₀)) (h₂ : Epi (app' φ k₂))
     (h₃ : Mono (app' φ k₃)) : Epi (app' φ k₁) := by
   subst_vars
@@ -189,9 +189,9 @@ variable {n k : ℕ} (h : k + 4 ≤ n) {R₁ R₂ : ComposableArrows C n}
 include hR₁ hR₂ in
 /-- Variant of the 5-lemma for complexes of any size -/
 theorem isIso_of_epi_of_isIso_of_isIso_of_mono' (k₀ k₁ k₂ k₃ k₄ : ℕ)
-    (hk₀ : k₀ = k := by lia) (hk₁ : k₁ = k + 1 := by lia)
-    (hk₂ : k₂ = k + 2 := by lia) (hk₃ : k₃ = k + 3 := by lia)
-    (hk₄ : k₄ = k + 4 := by lia) (h₀ : Epi (app' φ k₀))
+    (hk₀ : k₀ = k) (hk₁ : k₁ = k + 1)
+    (hk₂ : k₂ = k + 2) (hk₃ : k₃ = k + 3)
+    (hk₄ : k₄ = k + 4) (h₀ : Epi (app' φ k₀))
     (h₁ : IsIso (app' φ k₁)) (h₃ : IsIso (app' φ k₃))
     (h₄ : Mono (app' φ k₄)) :
     IsIso (app' φ k₂) := by
