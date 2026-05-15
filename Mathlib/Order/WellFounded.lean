@@ -256,7 +256,11 @@ variable [LT β] [WellFoundedLT β]
 whose image under `f` is minimal in the sense of `Function.not_lt_argmin`.
 
 See also `Set.Finite.exists_minimalFor` and related lemmas for the case when `α` is finite. -/
-@[to_dual argmax]
+@[to_dual argmax
+/-- Given a function `f : α → β` where `β` carries a well-founded `>`, this is an element of `α`
+whose image under `f` is maximal in the sense of `Function.not_argmax_lt`.
+
+See also `Set.Finite.exists_maximalFor` and related lemmas for the case when `α` is finite. -/]
 noncomputable def argmin [Nonempty α] : α :=
   WellFounded.min (InvImage.wf f wellFounded_lt) Set.univ Set.univ_nonempty
 
@@ -271,7 +275,13 @@ of `α`, this is an element of `s` whose image under `f` is minimal in the sense
 See also `Set.Finite.exists_minimalFor` and related lemmas for the case when `α` or `s` is finite.
 
 TODO Consider removing this definition in favour of `exists_minimalFor_of_wellFoundedLT`. -/
-@[to_dual argmaxOn]
+@[to_dual argmaxOn
+/-- Given a function `f : α → β` where `β` carries a well-founded `>`, and a non-empty subset `s`
+of `α`, this is an element of `s` whose image under `f` is maximal in the sense of
+`Function.not_argmaxOn_lt`.
+
+See also `Set.Finite.exists_minimalFor` and related lemmas for the case when `α` or `s` is finite.
+-/]
 noncomputable def argminOn (s : Set α) (hs : s.Nonempty) : α :=
   WellFounded.min (InvImage.wf f wellFounded_lt) s hs
 
