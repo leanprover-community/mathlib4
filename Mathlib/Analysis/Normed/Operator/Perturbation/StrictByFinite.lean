@@ -103,7 +103,7 @@ theorem step1_foward (A : Submodule 𝕜 E) (K : Submodule 𝕜 E) (A_closed : I
 
 Note the hypothesis `h_ker` is implied `h_clemb`, but since this is a private theorem
 we just write the most convenient statement to prove and use. -/
-theorem step1_backward (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E))
+theorem step1_backward [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E))
     [codim_A : FiniteDimensional 𝕜 (E ⧸ A)] (h_ker : Disjoint u.ker A) (h_range : u.range = ⊤)
     (h_clemb : IsClosedEmbedding (restrict A u)) :
     IsQuotientMap u := by
@@ -125,12 +125,22 @@ theorem step1_backward (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : I
   set Φ : (S × A) ≃L[𝕜] E := prodEquivOfIsTopCompl S A S_compl_A
   set Ψ : (map u.toLinearMap S × map u.toLinearMap A) ≃L[𝕜] F :=
     prodEquivOfIsTopCompl _ _ uS_compl_uA
-  set u₁ : A →L[𝕜] map u.toLinearMap A := u.restrict (fun _ ↦ mem_map_of_mem)
-  --have eq : u = Ψ ∘ ((u.restrict))
-  -- suffices IsQuotientMap (Ψ.symm ∘ u ∘ Φ) by
-  --   simpa [Function.comp_assoc] using Ψ.toHomeomorph.isQuotientMap.comp
-  --     (this.comp Φ.symm.toHomeomorph.isQuotientMap)
-  sorry
+  set u₁ : S →L[𝕜] map u.toLinearMap S := u.restrict (fun _ ↦ mem_map_of_mem)
+  set u₂ : A →L[𝕜] map u.toLinearMap A := u.restrict (fun _ ↦ mem_map_of_mem)
+  have u₁_surj : Surjective u₁ := surjective_mapsTo_image_restrict _ _
+  have u₂_surj : Surjective u₂ := surjective_mapsTo_image_restrict _ _
+  have eq : u = Ψ ∘ (u₁.prodMap u₂) ∘ Φ.symm := by
+    ext x
+    simp [Φ, Ψ, u₁, u₂, ← map_add, projectionL_add_projectionL_eq_self]
+  suffices IsQuotientMap (Prod.map u₁ u₂) from eq ▸
+    (Ψ.toHomeomorph.isQuotientMap.comp this |>.comp Φ.symm.toHomeomorph.isQuotientMap)
+  refine IsOpenQuotientMap.prodMap ?_ ?_ |>.isQuotientMap <;>
+  apply AddMonoidHom.isOpenQuotientMap_of_isQuotientMap ?_
+  · refine ContinuousLinearMap.isQuotientMap_of_finiteDimensional u₁
+      (u₁.range_eq_top_of_surjective u₁_surj)
+  · simp_rw [isQuotientMap_iff_isStrictMap_surjective, u₂_surj, and_true,
+      (map u.toLinearMap A).isEmbedding_subtype.isStrictMap_iff]
+    exact h_clemb.isStrictMap
 
 /-!
 ### Step 2
@@ -143,9 +153,10 @@ a closed embedding.
 -/
 
 omit [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F] in
-theorem step2_forward (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E))
-    [codim_A : FiniteDimensional 𝕜 (E ⧸ A)] (h_ker : Disjoint u.ker A) (h_strict : IsStrictMap u)
-    (h_closed : IsClosed (range u)) : IsClosedEmbedding (restrict A u) := by
+theorem step2_forward [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
+    (A_closed : IsClosed (A : Set E)) [codim_A : FiniteDimensional 𝕜 (E ⧸ A)]
+    (h_ker : Disjoint u.ker A) (h_strict : IsStrictMap u) (h_closed : IsClosed (range u)) :
+    IsClosedEmbedding (restrict A u) := by
   -- Denote by `π : E → E ⧸ u.ker` the quotient map. Since `u.ker` is disjoint from `A`, we know
   -- from step 1 that `restrict A π` is a closed embedding.
   let π : E →L[𝕜] E ⧸ u.ker := u.ker.mkQL
@@ -168,9 +179,9 @@ theorem step2_forward (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : Is
       u.ker.isQuotientMap_mkQL.isStrictMap_iff]
   · simpa [u', ← LinearMap.coe_range, Submodule.range_liftQ]
 
-theorem step2_backward (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E))
-    [codim_A : FiniteDimensional 𝕜 (E ⧸ A)] (h_ker : Disjoint u.ker A)
-    (h_clemb : IsClosedEmbedding (restrict A u)) :
+theorem step2_backward [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
+    (A_closed : IsClosed (A : Set E)) [codim_A : FiniteDimensional 𝕜 (E ⧸ A)]
+    (h_ker : Disjoint u.ker A) (h_clemb : IsClosedEmbedding (restrict A u)) :
     IsStrictMap u ∧ IsClosed (range u) := by
   -- Fix `S` an algebraic complement of `A` containing `u.ker`. Note that `S` has finite
   -- dimension.
@@ -197,7 +208,7 @@ theorem step2_backward (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : I
   rw [← range_u_closed.isClosedEmbedding_subtypeVal.of_comp_iff]
   exact h_clemb
 
-theorem step2 (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E))
+theorem step2 [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E))
     [codim_A : FiniteDimensional 𝕜 (E ⧸ A)] (h_ker : Disjoint u.ker A) :
     (IsStrictMap u ∧ IsClosed (range u)) ↔ IsClosedEmbedding (restrict A u) :=
   ⟨fun H ↦ step2_forward u A A_closed h_ker H.1 H.2, step2_backward u A A_closed h_ker⟩
@@ -213,11 +224,11 @@ We have that `u` is strict with closed range if and only if `u.domRestrict A` is
 closed range.
 
 This is [N. Bourbaki, *Théories Spectrales*, Chapitre III, § 3, n° 1, Prop. 1][bourbaki2023]. -/
-public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict (u : E →L[𝕜] F)
-    (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E))
+public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict [T2Space F]
+    (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E))
     [codim_A : FiniteDimensional 𝕜 (E ⧸ A)] :
     (IsStrictMap u ∧ IsClosed (range u)) ↔
-      (IsStrictMap (restrict A u) ∧ IsClosed (u '' A)) := by
+      (IsStrictMap (Set.restrict A u) ∧ IsClosed (u '' A)) := by
   set N : Submodule 𝕜 E := A ⊓ u.ker
   set π : E →L[𝕜] E ⧸ N := N.mkQL
   set v : E ⧸ N →L[𝕜] F := N.liftQL u inf_le_right
@@ -236,11 +247,11 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict (u : 
     let φ : (N.mkQL ⁻¹' B) ≃ₜ A := .setCongr congr(SetLike.coe $comap_B)
     exact N.isOpenQuotientMap_mkQL.restrictPreimage B |>.comp
       φ.symm.isOpenQuotientMap
-  have v_comp_π'_eq_u : restrict B v ∘ π' = restrict A u := rfl
+  have v_comp_π'_eq_u : Set.restrict B v ∘ π' = Set.restrict A u := rfl
   have v_ker : Disjoint v.ker B := by
     simp [disjoint_iff, v, B, toLinearMap_liftQL, ker_liftQ,
       map_inf_eq_map_inf_comap, comap_map_mkQ, N, inf_comm]
-  have v_restr_inj : Injective (restrict B v) :=
+  have v_restr_inj : Injective (Set.restrict B v) :=
     injOn_iff_injective.mp <| LinearMap.injOn_of_disjoint_ker subset_rfl v_ker.symm
   have range_eq : range v = range u := range_quot_lift _
   have image_eq : v '' B = u '' A := by simp [B, ← v_comp_π_eq_u, π, ← image_comp]
