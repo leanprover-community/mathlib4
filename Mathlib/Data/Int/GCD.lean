@@ -134,14 +134,9 @@ theorem exists_mul_mod_eq_gcd {k n : ℕ} (hk : gcd n k < k) : ∃ m < k, n * m 
   rw [Int.natCast_mod, Int.natCast_mul, Int.toNat_of_nonneg (Int.emod_nonneg _ hk'),
     Int.toNat_of_nonneg (Int.emod_nonneg _ hk'), Int.mul_emod, Int.emod_emod, ← Int.mul_emod]
 
-@[deprecated (since := "2025-11-01")] alias exists_mul_emod_eq_gcd := exists_mul_mod_eq_gcd
-
 theorem exists_mul_mod_eq_one_of_coprime {k n : ℕ} (hkn : Coprime n k) (hk : 1 < k) :
     ∃ m < k, n * m % k = 1 := by
   simpa [hkn, hk] using exists_mul_mod_eq_gcd (k := k) (n := n)
-
-@[deprecated (since := "2025-11-01")] alias exists_mul_emod_eq_one_of_coprime :=
-  exists_mul_mod_eq_one_of_coprime
 
 theorem exists_mul_mod_eq_of_coprime {k n : ℕ} (r : ℕ) (hkn : Coprime n k) (hk : k ≠ 0) :
     ∃ m < k, n * m % k = r % k := by

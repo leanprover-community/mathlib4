@@ -326,8 +326,6 @@ theorem mem_cardinalGenerate_iff {s : Set α} {hreg : c.IsRegular} :
   exact mem_of_superset ((cardinal_sInter_mem Sct).mpr
     (fun s H => CardinalGenerateSets.basic (Sg H))) hS
 
-@[deprecated (since := "2025-11-14")] alias mem_cardinaleGenerate_iff := mem_cardinalGenerate_iff
-
 theorem le_cardinalGenerate_iff_of_cardinalInterFilter {f : Filter α} [CardinalInterFilter f c]
     (hc : 2 < c) : f ≤ cardinalGenerate g hc ↔ g ⊆ f.sets := by
   constructor <;> intro h

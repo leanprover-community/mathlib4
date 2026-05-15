@@ -537,14 +537,6 @@ theorem mem_diagSet_iff_isDiag (z : Sym2 α) : z ∈ diagSet ↔ z.IsDiag := .rf
 @[simp] lemma range_diag : .range (diag : α → Sym2 α) = diagSet := by
   ext ⟨a, b⟩; simp [diag, eq_comm]
 
-@[deprecated (since := "2025-11-05")] alias ⟨_, IsDiag.mem_range_diag⟩ := mem_diagSet_iff_isDiag
-
-@[deprecated range_diag (since := "2025-11-05")]
-theorem isDiag_iff_mem_range_diag (z : Sym2 α) : IsDiag z ↔ z ∈ Set.range (@diag α) := by simp
-
-@[deprecated mem_diagSet (since := "2025-11-05")]
-theorem mem_diagSet_iff_eq {a b : α} : s(a, b) ∈ diagSet ↔ a = b := by simp
-
 theorem diagSet_eq_setOf_isDiag : diagSet = {z : Sym2 α | z.IsDiag} := rfl
 
 set_option linter.deprecated false in

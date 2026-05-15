@@ -70,9 +70,6 @@ lemma Unitary.two_mul_one_sub_le_norm_sub_one_sq {u : A} (hu : u ∈ unitary A)
   convert norm_apply_le_norm_cfc (fun z ↦ z - 1) u hz
   simpa using congr(Real.sqrt $(norm_sub_one_sq_eq_of_norm_eq_one this)).symm
 
-@[deprecated (since := "2025-10-29")] alias unitary.two_mul_one_sub_le_norm_sub_one_sq :=
-  Unitary.two_mul_one_sub_le_norm_sub_one_sq
-
 lemma Unitary.norm_sub_one_sq_eq {u : A} (hu : u ∈ unitary A) {x : ℝ}
     (hz : IsLeast (re '' (spectrum ℂ u)) x) :
     ‖u - 1‖ ^ 2 = 2 * (1 - x) := by
@@ -88,8 +85,6 @@ lemma Unitary.norm_sub_one_sq_eq {u : A} (hu : u ∈ unitary A) {x : ℝ}
     have := pow_left_monotoneOn (n := 2) |>.mono (s₂ := ((‖· - 1‖) '' spectrum ℂ u)) (by simp)
     simpa [Set.image_image] using this.map_isGreatest (IsGreatest.norm_cfc (fun z : ℂ ↦ z - 1) u)
   exact h₃.unique (h_eqOn.image_eq ▸ h₂)
-
-@[deprecated (since := "2025-10-29")] alias unitary.norm_sub_one_sq_eq := Unitary.norm_sub_one_sq_eq
 
 lemma Unitary.norm_sub_one_lt_two_iff {u : A} (hu : u ∈ unitary A) :
     ‖u - 1‖ < 2 ↔ -1 ∉ spectrum ℂ u := by
@@ -110,16 +105,10 @@ lemma Unitary.norm_sub_one_lt_two_iff {u : A} (hu : u ∈ unitary A) :
     rw [← hz_norm, ← RCLike.re_eq_complex_re, RCLike.re_le_neg_norm_iff_eq_neg_norm, hz_norm] at key
     exact key ▸ hz
 
-@[deprecated (since := "2025-10-29")] alias unitary.norm_sub_one_lt_two_iff :=
-  Unitary.norm_sub_one_lt_two_iff
-
 lemma Unitary.spectrum_subset_slitPlane_iff_norm_lt_two {u : A} (hu : u ∈ unitary A) :
     spectrum ℂ u ⊆ slitPlane ↔ ‖u - 1‖ < 2 := by
   simp [subset_slitPlane_iff_of_subset_sphere (spectrum.subset_circle_of_unitary hu),
     norm_sub_one_lt_two_iff hu]
-
-@[deprecated (since := "2025-10-29")] alias unitary.spectrum_subset_slitPlane_iff_norm_lt_two :=
-  Unitary.spectrum_subset_slitPlane_iff_norm_lt_two
 
 @[aesop safe apply (rule_sets := [CStarAlgebra])]
 lemma IsSelfAdjoint.cfc_arg (u : A) : IsSelfAdjoint (cfc (ofReal ∘ arg : ℂ → ℂ) u) := by
@@ -132,8 +121,6 @@ element. -/
 @[simps]
 noncomputable def Unitary.argSelfAdjoint (u : unitary A) : selfAdjoint A :=
   ⟨cfc (arg · : ℂ → ℂ) (u : A), .cfc_arg (u : A)⟩
-
-@[deprecated (since := "2025-10-29")] alias unitary.argSelfAdjoint := Unitary.argSelfAdjoint
 
 lemma selfAdjoint.norm_sq_expUnitary_sub_one {x : selfAdjoint A} (hx : ‖x‖ ≤ π) :
     ‖(expUnitary x - 1 : A)‖ ^ 2 = 2 * (1 - Real.cos ‖x‖) := by
@@ -197,24 +184,15 @@ lemma Unitary.norm_argSelfAdjoint_le_pi (u : unitary A) :
     ‖argSelfAdjoint u‖ ≤ π :=
   norm_cfc_le (by positivity) fun y hy ↦ by simpa using abs_arg_le_pi y
 
-@[deprecated (since := "2025-10-29")] alias unitary.norm_argSelfAdjoint_le_pi :=
-  Unitary.norm_argSelfAdjoint_le_pi
-
 lemma Unitary.two_mul_one_sub_cos_norm_argSelfAdjoint {u : unitary A} (hu : ‖(u - 1 : A)‖ < 2) :
     2 * (1 - Real.cos ‖argSelfAdjoint u‖) = ‖(u - 1 : A)‖ ^ 2 := by
   conv_rhs => rw [← expUnitary_argSelfAdjoint hu]
   exact Eq.symm <| norm_sq_expUnitary_sub_one <| norm_argSelfAdjoint_le_pi u
 
-@[deprecated (since := "2025-10-29")] alias unitary.two_mul_one_sub_cos_norm_argSelfAdjoint :=
-  Unitary.two_mul_one_sub_cos_norm_argSelfAdjoint
-
 lemma Unitary.norm_argSelfAdjoint {u : unitary A} (hu : ‖(u - 1 : A)‖ < 2) :
     ‖argSelfAdjoint u‖ = Real.arccos (1 - ‖(u - 1 : A)‖ ^ 2 / 2) := by
   refine Real.arccos_eq_of_eq_cos (by positivity) (norm_argSelfAdjoint_le_pi u) ?_ |>.symm
   linarith [two_mul_one_sub_cos_norm_argSelfAdjoint hu]
-
-@[deprecated (since := "2025-10-29")] alias unitary.norm_argSelfAdjoint :=
-  Unitary.norm_argSelfAdjoint
 
 set_option backward.isDefEq.respectTransparency false in
 lemma Unitary.norm_expUnitary_smul_argSelfAdjoint_sub_one_le (u : unitary A)
@@ -231,10 +209,6 @@ lemma Unitary.norm_expUnitary_smul_argSelfAdjoint_sub_one_le (u : unitary A)
   · gcongr
     exact Real.cos_le_cos_of_nonneg_of_le_pi (by positivity) (norm_argSelfAdjoint_le_pi u) key
   · exact (two_mul_one_sub_cos_norm_argSelfAdjoint hu).le
-
-@[deprecated (since := "2025-10-29")] alias
-  unitary.norm_expUnitary_smul_argSelfAdjoint_sub_one_le :=
-  Unitary.norm_expUnitary_smul_argSelfAdjoint_sub_one_le
 
 @[fun_prop]
 lemma Unitary.continuousOn_argSelfAdjoint :
@@ -263,9 +237,6 @@ lemma Unitary.continuousOn_argSelfAdjoint :
     apply subset_slitPlane_iff_of_subset_sphere Set.inter_subset_left |>.mpr
     norm_num at hε2 ⊢
     exact hε2
-
-@[deprecated (since := "2025-10-29")] alias unitary.continuousOn_argSelfAdjoint :=
-  Unitary.continuousOn_argSelfAdjoint
 
 set_option backward.isDefEq.respectTransparency false in
 /-- the maps `unitary.argSelfAdjoint` and `selfAdjoint.expUnitary` form a partial
@@ -300,22 +271,14 @@ noncomputable def Unitary.openPartialHomeomorph :
   continuousOn_toFun := by fun_prop
   continuousOn_invFun := by fun_prop
 
-@[deprecated (since := "2025-10-29")] alias unitary.openPartialHomeomorph :=
-  Unitary.openPartialHomeomorph
-
 lemma Unitary.norm_sub_eq (u v : unitary A) :
     ‖(u - v : A)‖ = ‖((u * star v : unitary A) - 1 : A)‖ := calc
   ‖(u - v : A)‖ = ‖(u * star v - 1 : A) * v‖ := by simp [sub_mul, mul_assoc]
   _ = ‖((u * star v : unitary A) - 1 : A)‖ := by simp
 
-@[deprecated (since := "2025-10-29")] alias unitary.norm_sub_eq := Unitary.norm_sub_eq
-
 lemma Unitary.expUnitary_eq_mul_inv (u v : unitary A) (huv : ‖(u - v : A)‖ < 2) :
     expUnitary (argSelfAdjoint (u * star v)) = u * star v :=
   expUnitary_argSelfAdjoint <| norm_sub_eq u v ▸ huv
-
-@[deprecated (since := "2025-10-29")] alias unitary.expUnitary_eq_mul_inv :=
-  Unitary.expUnitary_eq_mul_inv
 
 /-- For a selfadjoint element `x` in a C⋆-algebra, this is the path from `1` to `expUnitary x`
 given by `t ↦ expUnitary (t • x)`. -/
@@ -342,15 +305,11 @@ noncomputable def Unitary.path (u v : unitary A) (huv : ‖(v - u : A)‖ < 2) :
   source' := by ext; simp
   target' := by simp [expUnitary_eq_mul_inv v u huv, mul_assoc]
 
-@[deprecated (since := "2025-10-29")] alias unitary.path := Unitary.path
-
 /-- Two unitary elements `u` and `v` in a unital C⋆-algebra are joined by a path if the
 distance between them is less than `2`. -/
 lemma Unitary.joined (u v : unitary A) (huv : ‖(v - u : A)‖ < 2) :
     Joined u v :=
   ⟨path u v huv⟩
-
-@[deprecated (since := "2025-10-29")] alias unitary.joined := Unitary.joined
 
 /-- Any ball of radius `δ < 2` in the unitary group of a unital C⋆-algebra is path connected. -/
 lemma Unitary.isPathConnected_ball (u : unitary A) (δ : ℝ) (hδ₀ : 0 < δ) (hδ₂ : δ < 2) :
@@ -365,9 +324,6 @@ lemma Unitary.isPathConnected_ball (u : unitary A) (δ : ℝ) (hδ₀ : 0 < δ) 
   refine ⟨path 1 u (hu.trans hδ₂), fun t ↦ ?_⟩
   simpa [Subtype.dist_eq, dist_eq_norm] using
     norm_expUnitary_smul_argSelfAdjoint_sub_one_le u t.2 (hu.trans hδ₂) |>.trans_lt hu
-
-@[deprecated (since := "2025-10-29")] alias unitary.isPathConnected_ball :=
-  Unitary.isPathConnected_ball
 
 /-- The unitary group in a C⋆-algebra is locally path connected. -/
 instance Unitary.instLocPathConnectedSpace : LocPathConnectedSpace (unitary A) :=
@@ -394,5 +350,3 @@ lemma Unitary.mem_pathComponentOne_iff {u : unitary A} :
     | nil => simp
     | cons x xs ih => simpa using (joined_one_expUnitary x).mul ih
 
-@[deprecated (since := "2025-10-29")] alias unitary.mem_pathComponentOne_iff :=
-  Unitary.mem_pathComponentOne_iff

@@ -118,26 +118,6 @@ section PiLp
 
 variable (ι : Type*)
 
-/-- `WithLp.equiv` as a `MeasurableEquiv`. -/
-@[deprecated MeasurableEquiv.toLp (since := "2025-11-02")]
-protected def EuclideanSpace.measurableEquiv : EuclideanSpace ℝ ι ≃ᵐ (ι → ℝ) :=
-  (MeasurableEquiv.toLp 2 (ι → ℝ)).symm
-
-set_option linter.deprecated false in
-@[deprecated MeasurableEquiv.coe_toLp (since := "2025-11-02")]
-theorem EuclideanSpace.measurableEquiv_toEquiv :
-    (EuclideanSpace.measurableEquiv ι).toEquiv = WithLp.equiv 2 (ι → ℝ) := rfl
-
-set_option linter.deprecated false in
-@[deprecated MeasurableEquiv.coe_toLp (since := "2025-11-02")]
-theorem EuclideanSpace.coe_measurableEquiv :
-    ⇑(EuclideanSpace.measurableEquiv ι) = ofLp := rfl
-
-set_option linter.deprecated false in
-@[deprecated MeasurableEquiv.coe_toLp_symm (since := "2025-11-02")]
-theorem EuclideanSpace.coe_measurableEquiv_symm :
-    ⇑(EuclideanSpace.measurableEquiv ι).symm = toLp 2 := rfl
-
 variable [Fintype ι]
 
 /-- The measure equivalence between `EuclideanSpace ℝ ι` and `ι → ℝ` is volume preserving. -/

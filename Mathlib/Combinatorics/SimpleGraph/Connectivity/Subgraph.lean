@@ -104,12 +104,6 @@ lemma connected_sup {H K : G.Subgraph}
   · exact Reachable.map (Subgraph.inclusion (le_sup_left : H ≤ H ⊔ K)) (hH ⟨u, hu⟩ ⟨v, hv⟩)
   · exact Reachable.map (Subgraph.inclusion (le_sup_right : K ≤ H ⊔ K)) (hK ⟨u, hu'⟩ ⟨v, hv⟩)
 
-@[deprecated Subgraph.connected_sup (since := "2025-11-05")]
-protected lemma Connected.sup {H K : G.Subgraph}
-    (hH : H.Connected) (hK : K.Connected) (hn : (H ⊓ K).verts.Nonempty) :
-    (H ⊔ K).Connected :=
-  Subgraph.connected_sup hH.preconnected hK.preconnected hn
-
 lemma Preconnected.degree_zero_iff {H : G.Subgraph} (h : H.Preconnected) (v : H.verts)
     [Fintype (H.neighborSet v)] : H.degree v = 0 ↔ H.verts.Subsingleton := by
   refine ⟨fun hv ↦ Set.not_nontrivial_iff.mp fun hn ↦ ?_, (degree_eq_zero_of_subsingleton H _ ·)⟩
@@ -548,13 +542,6 @@ lemma connected_induce_top_sup {H K : G.Subgraph} (Hconn : H.Preconnected) (Kcon
   · exact ⟨u, by simp [uH]⟩
   · exact ⟨v, by simp [vK]⟩
 
-@[deprecated connected_induce_top_sup (since := "2025-11-05")]
-lemma Connected.adj_union {H K : G.Subgraph}
-    (Hconn : H.Connected) (Kconn : K.Connected) {u v : V} (uH : u ∈ H.verts) (vK : v ∈ K.verts)
-    (huv : G.Adj u v) :
-    ((⊤ : G.Subgraph).induce {u, v} ⊔ H ⊔ K).Connected :=
-  connected_induce_top_sup Hconn.preconnected Kconn.preconnected uH vK huv
-
 set_option backward.isDefEq.respectTransparency false in
 lemma preconnected_iff_forall_exists_walk_subgraph (H : G.Subgraph) :
     H.Preconnected ↔ ∀ {u v}, u ∈ H.verts → v ∈ H.verts → ∃ p : G.Walk u v, p.toSubgraph ≤ H := by
@@ -627,13 +614,6 @@ lemma connected_induce_union {v w : V} {s t : Set V}
   · simp only [Subgraph.verts_sup, Subgraph.induce_verts]
     rw [Set.union_assoc]
     simp [Set.insert_subset_iff, Set.singleton_subset_iff, hv, hw]
-
-@[deprecated connected_induce_union (since := "2025-11-05")]
-lemma induce_connected_adj_union {v w : V} {s t : Set V}
-    (sconn : (G.induce s).Connected) (tconn : (G.induce t).Connected)
-    (hv : v ∈ s) (hw : w ∈ t) (ha : G.Adj v w) :
-    (G.induce (s ∪ t)).Connected :=
-  connected_induce_union sconn.preconnected tconn.preconnected hv hw ha
 
 lemma induce_connected_of_patches {s : Set V} (u : V) (hu : u ∈ s)
     (patches : ∀ {v}, v ∈ s → ∃ s' ⊆ s, ∃ (hu' : u ∈ s') (hv' : v ∈ s'),

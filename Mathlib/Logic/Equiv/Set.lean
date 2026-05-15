@@ -52,21 +52,10 @@ lemma image_symm_eq_preimage (e : α ≃ β) (s : Set β) : e.symm '' s = e ⁻�
 lemma image_eq_preimage_symm (e : α ≃ β) (s : Set α) : e '' s = e.symm ⁻¹' s :=
   e.symm.image_symm_eq_preimage _
 
-@[deprecated (since := "2025-11-05")]
-protected alias image_eq_preimage := image_eq_preimage_symm
-
 @[simp 1001]
 theorem _root_.Set.mem_image_equiv {α β} {S : Set α} {f : α ≃ β} {x : β} :
     x ∈ f '' S ↔ f.symm x ∈ S :=
   Set.ext_iff.mp (image_eq_preimage_symm ..) x
-
-@[deprecated image_eq_preimage_symm (since := "2025-10-31")]
-theorem _root_.Set.image_equiv_eq_preimage_symm {α β} (S : Set α) (f : α ≃ β) :
-    f '' S = f.symm ⁻¹' S := image_eq_preimage_symm ..
-
-@[deprecated Equiv.image_symm_eq_preimage (since := "2025-10-31")]
-theorem _root_.Set.preimage_equiv_eq_image_symm {α β} (S : Set α) (f : β ≃ α) :
-    f ⁻¹' S = f.symm '' S := (f.image_symm_eq_preimage S).symm
 
 -- Increased priority so this fires before `image_subset_iff`
 @[simp high]

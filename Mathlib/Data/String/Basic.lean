@@ -132,14 +132,6 @@ instance decidableLE : DecidableLE String := by
 theorem le_iff_toList_le {s₁ s₂ : String} : s₁ ≤ s₂ ↔ s₁.toList ≤ s₂.toList :=
   (not_congr lt_iff_toList_lt).trans not_lt
 
-@[deprecated ofList_nil (since := "2025-10-31")]
-theorem asString_nil : ofList [] = "" :=
-  ofList_nil
-
-@[deprecated ofList_toList (since := "2025-10-31")]
-theorem asString_toList (s : String) : ofList s.toList = s :=
-  ofList_toList
-
 set_option linter.deprecated false in
 @[deprecated "Use the new String API" (since := "2026-04-01")]
 theorem toList_nonempty :
@@ -183,13 +175,5 @@ end String
 open String
 
 namespace List
-
-@[deprecated String.toList_ofList (since := "2025-10-31")]
-theorem toList_asString (l : List Char) : (ofList l).toList = l :=
-  String.toList_ofList
-
-@[deprecated String.ofList_eq (since := "2025-10-31")]
-theorem asString_eq {l : List Char} {s : String} : ofList l = s ↔ l = s.toList :=
-  ofList_eq
 
 end List

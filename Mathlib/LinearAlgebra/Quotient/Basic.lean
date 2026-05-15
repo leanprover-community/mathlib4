@@ -80,16 +80,7 @@ variable {p}
 
 instance [Subsingleton M] : Subsingleton (M ⧸ p) := by simpa using Subsingleton.elim ..
 
-@[deprecated Quotient.nontrivial_iff (since := "2025-11-02")]
-theorem nontrivial_of_lt_top (h : p < ⊤) : Nontrivial (M ⧸ p) := Quotient.nontrivial_iff.mpr h.ne
-
-@[deprecated Quotient.nontrivial_iff (since := "2025-11-02")]
-theorem nontrivial_of_ne_top (h : p ≠ ⊤) : Nontrivial (M ⧸ p) := Quotient.nontrivial_iff.mpr h
-
 end Quotient
-
-@[deprecated (since := "2025-11-02")]
-alias subsingleton_quotient_iff_eq_top := Quotient.subsingleton_iff
 
 instance QuotientBot.infinite [Infinite M] : Infinite (M ⧸ (⊥ : Submodule R M)) :=
   Infinite.of_injective Submodule.Quotient.mk fun _x _y h =>

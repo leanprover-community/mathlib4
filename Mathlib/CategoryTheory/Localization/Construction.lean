@@ -225,8 +225,6 @@ theorem morphismProperty_eq_top (P : MorphismProperty W.Localization)
       · apply hP₁
       · apply hP₂
 
-@[deprecated (since := "2025-10-21")] alias morphismProperty_is_top := morphismProperty_eq_top
-
 /-- A `MorphismProperty` in `W.Localization` is satisfied by all
 morphisms in the localized category if it contains the image of the
 morphisms in the original category, if is stable under composition
@@ -235,8 +233,6 @@ theorem morphismProperty_eq_top' (P : MorphismProperty W.Localization)
     [P.IsStableUnderComposition] (hP₁ : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), P (W.Q.map f))
     (hP₂ : ∀ ⦃X Y : W.Localization⦄ (e : X ≅ Y) (_ : P e.hom), P e.inv) : P = ⊤ :=
   morphismProperty_eq_top P hP₁ (fun _ _ w _ => hP₂ _ (hP₁ w))
-
-@[deprecated (since := "2025-10-21")] alias morphismProperty_is_top' := morphismProperty_eq_top'
 
 namespace NatTransExtension
 

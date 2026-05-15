@@ -367,8 +367,6 @@ noncomputable def coeEquiv : ZFSet.{u} ≃ {s : Set ZFSet.{u} // Small.{u, u+1} 
     fun s ↦ Subtype.coe_injective <| coe_equiv_aux s.2
   right_inv s := private Subtype.coe_injective <| coe_equiv_aux s.2
 
-@[deprecated (since := "2025-11-05")] alias toSet_equiv := coeEquiv
-
 /-- The **Burali-Forti paradox**: ordinals form a proper class. -/
 theorem isOrdinal_notMem_univ : IsOrdinal ∉ Class.univ.{u} := by
   rintro ⟨x, hx, -⟩

@@ -511,26 +511,10 @@ the big-integer operands to each are much smaller. -/
 def factorialBinarySplitting (n : ℕ) : ℕ :=
   ascFactorialBinary 1 n
 
-/-- This function was used in the definition of `factorialBinarysplitting`
-before it was migrated to `ascFactorialBinary`. -/
-@[deprecated ascFactorialBinary (since := "2025-10-21"), nolint unusedArguments]
-def factorialBinarySplitting.prodRange (lo hi : ℕ) (_ : lo < hi := by grind) : ℕ :=
-  ascFactorialBinary lo (hi - lo)
-
-set_option linter.deprecated false in
-@[deprecated factorial_mul_ascFactorial (since := "2025-10-21")]
-theorem factorialBinarySplitting.factorial_mul_prodRange (lo hi : Nat) (h : lo < hi) :
-    lo ! * prodRange (lo + 1) (hi + 1) = hi ! := by
-  rw [prodRange, ← ascFactorial_eq_ascFactorialBinary, factorial_mul_ascFactorial]
-  grind
-
 @[csimp]
 theorem factorial_eq_factorialBinarySplitting : @factorial = @factorialBinarySplitting := by
   ext n
   simp [factorialBinarySplitting, ← ascFactorial_eq_ascFactorialBinary]
-
-@[deprecated (since := "2025-10-21")]
-alias factorialBinarySplitting_eq_factorial := factorial_eq_factorialBinarySplitting
 
 /-- `descFactorial` implemented using binary splitting. -/
 def descFactorialBinary (n k : ℕ) : ℕ :=

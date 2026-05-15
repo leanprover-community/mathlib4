@@ -372,9 +372,6 @@ lemma norm_sub_one_sq_eq_of_norm_eq_one {z : ℂ} (hz : ‖z‖ = 1) :
   simp [Complex.sq_norm, normSq_apply, this]
   ring
 
-@[deprecated (since := "2025-11-15")] alias norm_sub_one_sq_eq_of_norm_one :=
-  norm_sub_one_sq_eq_of_norm_eq_one
-
 lemma norm_sub_one_sq_eqOn_sphere :
     (Metric.sphere (0 : ℂ) 1).EqOn (‖· - 1‖ ^ 2) (fun z ↦ 2 * (1 - z.re)) :=
   fun z hz ↦ norm_sub_one_sq_eq_of_norm_eq_one (by simpa using hz)

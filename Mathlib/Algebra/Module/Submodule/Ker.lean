@@ -179,11 +179,6 @@ theorem disjoint_ker_iff_injOn {p : Submodule R M} :
     Disjoint p (LinearMap.ker f) ↔ Set.InjOn f p := by
   rw [disjoint_ker, Set.injOn_iff_map_eq_zero]
 
-@[deprecated disjoint_ker_iff_injOn (since := "2025-11-07")]
-theorem disjoint_ker' {p : Submodule R M} :
-    Disjoint p (ker f) ↔ ∀ x ∈ p, ∀ y ∈ p, f x = f y → x = y := by
-  simp [disjoint_ker_iff_injOn, Set.InjOn]
-
 theorem injOn_of_disjoint_ker {p : Submodule R M} {s : Set M} (h : s ⊆ p)
     (hd : Disjoint p (ker f)) : Set.InjOn f s :=
   disjoint_ker_iff_injOn.mp hd |>.mono h

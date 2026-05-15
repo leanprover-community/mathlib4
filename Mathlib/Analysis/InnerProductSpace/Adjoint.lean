@@ -974,14 +974,6 @@ end Unitary
 
 namespace unitary
 
-@[deprecated (since := "2025-10-29")] alias norm_map := Unitary.norm_map
-@[deprecated (since := "2025-10-29")] alias inner_map_map := Unitary.inner_map_map
-@[deprecated (since := "2025-10-29")] alias linearIsometryEquiv := Unitary.linearIsometryEquiv
-@[deprecated (since := "2025-10-29")] alias linearIsometryEquiv_coe_apply :=
-  Unitary.linearIsometryEquiv_coe_apply
-@[deprecated (since := "2025-10-29")] alias linearIsometryEquiv_coe_symm_apply :=
-  Unitary.linearIsometryEquiv_coe_symm_apply
-
 end unitary
 
 end Unitary

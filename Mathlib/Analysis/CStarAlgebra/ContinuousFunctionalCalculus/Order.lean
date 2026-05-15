@@ -472,15 +472,9 @@ lemma star_left_conjugate_le_norm_smul {a b : A} (hb : IsSelfAdjoint b := by cfc
       star_left_conjugate_le_conjugate hb.le_algebraMap_norm_self _
     _ = ‖b‖ • (star a * a) := by simp [Algebra.algebraMap_eq_smul_one]
 
-@[deprecated (since := "2025-10-20")] alias conjugate_le_norm_smul :=
-  star_left_conjugate_le_norm_smul
-
 lemma star_right_conjugate_le_norm_smul {a b : A} (hb : IsSelfAdjoint b := by cfc_tac) :
     a * b * star a ≤ ‖b‖ • (a * star a) := by
   simpa using star_left_conjugate_le_norm_smul (a := star a)
-
-@[deprecated (since := "2025-10-20")] alias conjugate_le_norm_smul' :=
-  star_right_conjugate_le_norm_smul
 
 /-- The set of nonnegative elements in a C⋆-algebra is closed. -/
 lemma isClosed_nonneg : IsClosed {a : A | 0 ≤ a} := by

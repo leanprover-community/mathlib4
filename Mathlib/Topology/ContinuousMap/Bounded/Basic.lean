@@ -551,8 +551,6 @@ def coeFnMonoidHom [Monoid R] [BoundedMul R] [ContinuousMul R] : (α →ᵇ R) �
   map_one' := coe_one
   map_mul' := coe_mul
 
-@[deprecated (since := "2025-10-30")] alias coeFnAddHom := coeFnAddMonoidHom
-
 variable (α R) in
 /-- The multiplicative map forgetting that a bounded continuous function is bounded. -/
 @[to_additive (attr := simps) /-- The additive map forgetting that a bounded continuous
@@ -564,8 +562,6 @@ def toContinuousMapMonoidHom [Monoid R] [BoundedMul R] [ContinuousMul R] : (α �
     intros
     ext
     simp
-
-@[deprecated (since := "2025-10-30")] alias toContinuousMapAddHom := toContinuousMapAddMonoidHom
 
 @[to_additive (attr := simp)]
 lemma coe_prod {ι : Type*} (s : Finset ι) [CommMonoid R] [BoundedMul R] [ContinuousMul R]
