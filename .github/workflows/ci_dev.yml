@@ -359,13 +359,13 @@ jobs:
       - name: lake build
         run: |
           cd pr-branch
-          # shellcheck disable=SC2086  # STAGE_TARGETS is intentionally word-split
-          lake build $STAGE_TARGETS 2>&1 | tee .lake/consume-build.log
+          read -ra TARGETS <<< "$STAGE_TARGETS"
+          lake build "${TARGETS[@]}" 2>&1 | tee .lake/consume-build.log
           echo "Built (pipeline ran):    $(grep -cE '^✔.*Built '    .lake/consume-build.log || true)"
           echo "Replayed (from cache):   $(grep -cE '^✔.*Replayed ' .lake/consume-build.log || true)"
 
       - name: Verify with --rehash
         run: |
           cd pr-branch
-          # shellcheck disable=SC2086  # STAGE_TARGETS is intentionally word-split
-          lake build --no-build --rehash -v $STAGE_TARGETS
+          read -ra TARGETS <<< "$STAGE_TARGETS"
+          lake build --no-build --rehash -v "${TARGETS[@]}"
