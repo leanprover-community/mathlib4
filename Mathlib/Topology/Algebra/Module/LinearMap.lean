@@ -368,6 +368,7 @@ theorem coe_id' : ⇑(ContinuousLinearMap.id R₁ M₁) = id :=
 theorem coe_one : ((1 : M₁ →L[R₁] M₁) : M₁ →ₗ[R₁] M₁) = 1 :=
   rfl
 
+@[simp] lemma mk_id : mk (.id : M₁ →ₗ[R₁] M₁) continuous_id = 1 := rfl
 @[simp] lemma mk_one : mk (1 : M₁ →ₗ[R₁] M₁) continuous_id = 1 := rfl
 
 @[simp, norm_cast]
