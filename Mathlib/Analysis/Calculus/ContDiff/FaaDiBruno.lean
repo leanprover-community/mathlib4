@@ -1118,14 +1118,14 @@ theorem HasFTaylorSeriesUpToOn.comp
         exact_mod_cast OrderedFinpartition.partSize_le c i
       exact hf.cont _ (this.trans hm)
 
-variable {u : Set E} (hu : IsOpen u)
+variable {u : Set E} (hu : IsOpen u) {i : ℕ} (hi : i ≤ n)
 
-include hu
+include hu hi
 
 theorem ftaylorSeriesWithin_comp_eqOn
     (hg : HasFTaylorSeriesUpToOn n g (ftaylorSeriesWithin 𝕜 g t) (f '' (s ∩ u)))
     (hf : HasFTaylorSeriesUpToOn n f (ftaylorSeriesWithin 𝕜 f s) (s ∩ u))
-    (hs : UniqueDiffOn 𝕜 s) {i : ℕ} (hi : i ≤ n) :
+    (hs : UniqueDiffOn 𝕜 s) :
     EqOn (fun y ↦ ftaylorSeriesWithin 𝕜 (g ∘ f) s y i)
       (fun y ↦ (ftaylorSeriesWithin 𝕜 g t (f y)).taylorComp
       (ftaylorSeriesWithin 𝕜 f s y) i) (s ∩ u) := by
@@ -1138,7 +1138,7 @@ theorem ftaylorSeriesWithin_comp_eqOn
 
 theorem ftaylorSeries_comp_eqOn
     (hg : HasFTaylorSeriesUpToOn n g (ftaylorSeries 𝕜 g) (f '' u))
-    (hf : HasFTaylorSeriesUpToOn n f (ftaylorSeries 𝕜 f) u) {i : ℕ} (hi : i ≤ n) :
+    (hf : HasFTaylorSeriesUpToOn n f (ftaylorSeries 𝕜 f) u) :
     EqOn (fun y ↦ ftaylorSeries 𝕜 (g ∘ f) y i)
       (fun y ↦ (ftaylorSeries 𝕜 g (f y)).taylorComp (ftaylorSeries 𝕜 f y) i) u := by
   have tay_g : HasFTaylorSeriesUpToOn n g (ftaylorSeriesWithin 𝕜 g .univ) (f '' (.univ ∩ u)) := by
@@ -1146,35 +1146,34 @@ theorem ftaylorSeries_comp_eqOn
   have tay_f : HasFTaylorSeriesUpToOn n f (ftaylorSeriesWithin 𝕜 f .univ) (.univ ∩ u) := by
     simpa [ftaylorSeriesWithin_univ, univ_inter] using hf
   simpa [ftaylorSeriesWithin_univ, iteratedFDerivWithin_univ] using
-    (ftaylorSeriesWithin_comp_eqOn (t := (univ : Set F)) hu tay_g tay_f uniqueDiffOn_univ hi)
+    (ftaylorSeriesWithin_comp_eqOn (t := (univ : Set F)) hu hi tay_g tay_f uniqueDiffOn_univ)
 
-theorem iteratedFDerivWithin_comp_eq_sum_orderedFinpartition_of_mem
-    {x : E} (hx : x ∈ s ∩ u)
+variable {x : E}
+
+theorem iteratedFDerivWithin_comp_eq_sum_orderedFinpartition_of_mem (hx : x ∈ s ∩ u)
     (hg : HasFTaylorSeriesUpToOn n g (ftaylorSeriesWithin 𝕜 g t) (f '' (s ∩ u)))
     (hf : HasFTaylorSeriesUpToOn n f (ftaylorSeriesWithin 𝕜 f s) (s ∩ u))
-    (hs : UniqueDiffOn 𝕜 s) {i : ℕ} (hi : i ≤ n) : iteratedFDerivWithin 𝕜 i (g ∘ f) s x =
+    (hs : UniqueDiffOn 𝕜 s) : iteratedFDerivWithin 𝕜 i (g ∘ f) s x =
     ∑ c : OrderedFinpartition i, c.compAlongOrderedFinpartition
       (iteratedFDerivWithin 𝕜 c.length g t (f x))
       (fun j ↦ iteratedFDerivWithin 𝕜 (c.partSize j) f s x) := by
   change ftaylorSeriesWithin 𝕜 (g ∘ f) s x i = _
-  simp_rw [ftaylorSeriesWithin_comp_eqOn hu hg hf hs hi hx, FormalMultilinearSeries.taylorComp,
+  simp_rw [ftaylorSeriesWithin_comp_eqOn hu hi hg hf hs hx, FormalMultilinearSeries.taylorComp,
     FormalMultilinearSeries.compAlongOrderedFinpartition, ftaylorSeriesWithin]
 
-theorem iteratedFDerivWithin_comp_apply_eq_sum_orderedFinpartition_of_mem
-    {x : E} (hx : x ∈ s ∩ u)
+theorem iteratedFDerivWithin_comp_apply_eq_sum_orderedFinpartition_of_mem (hx : x ∈ s ∩ u)
     (hg : HasFTaylorSeriesUpToOn n g (ftaylorSeriesWithin 𝕜 g t) (f '' (s ∩ u)))
     (hf : HasFTaylorSeriesUpToOn n f (ftaylorSeriesWithin 𝕜 f s) (s ∩ u))
-    (hs : UniqueDiffOn 𝕜 s) {i : ℕ} (hi : i ≤ n) (v : Fin i → E) :
+    (hs : UniqueDiffOn 𝕜 s) (v : Fin i → E) :
     iteratedFDerivWithin 𝕜 i (g ∘ f) s x v
       = ∑ c : OrderedFinpartition i, iteratedFDerivWithin 𝕜 c.length g t (f x)
         (fun j ↦ iteratedFDerivWithin 𝕜 (c.partSize j) f s x (v ∘ c.emb j)) := by
-  simp [iteratedFDerivWithin_comp_eq_sum_orderedFinpartition_of_mem hu hx hg hf hs hi,
+  simp [iteratedFDerivWithin_comp_eq_sum_orderedFinpartition_of_mem hu hi hx hg hf hs,
     OrderedFinpartition.applyOrderedFinpartition_apply]
 
-theorem iteratedFDeriv_comp_eq_sum_orderedFinpartition_of_mem
-    {x : E} {i : ℕ} (hx : x ∈ u)
+theorem iteratedFDeriv_comp_eq_sum_orderedFinpartition_of_mem (hx : x ∈ u)
     (hg : HasFTaylorSeriesUpToOn n g (ftaylorSeries 𝕜 g) (f '' u))
-    (hf : HasFTaylorSeriesUpToOn n f (ftaylorSeries 𝕜 f) u) (hi : i ≤ n) :
+    (hf : HasFTaylorSeriesUpToOn n f (ftaylorSeries 𝕜 f) u) :
     iteratedFDeriv 𝕜 i (g ∘ f) x = ∑ c : OrderedFinpartition i,
       c.compAlongOrderedFinpartition (iteratedFDeriv 𝕜 c.length g (f x))
       (fun j ↦ iteratedFDeriv 𝕜 (c.partSize j) f x) := by
@@ -1183,13 +1182,12 @@ theorem iteratedFDeriv_comp_eq_sum_orderedFinpartition_of_mem
   have tay_f : HasFTaylorSeriesUpToOn n f (ftaylorSeriesWithin 𝕜 f .univ) (.univ ∩ u) := by
     simpa [ftaylorSeriesWithin_univ, univ_inter] using hf
   simpa [ftaylorSeriesWithin_univ, iteratedFDerivWithin_univ] using
-    (iteratedFDerivWithin_comp_eq_sum_orderedFinpartition_of_mem hu
-    ⟨mem_univ x, hx⟩ tay_g tay_f uniqueDiffOn_univ hi)
+    (iteratedFDerivWithin_comp_eq_sum_orderedFinpartition_of_mem hu hi
+    ⟨mem_univ x, hx⟩ tay_g tay_f uniqueDiffOn_univ)
 
-theorem iteratedFDeriv_comp_apply_eq_sum_orderedFinpartition_of_mem
-    {x : E} {i : ℕ} (hx : x ∈ u)
+theorem iteratedFDeriv_comp_apply_eq_sum_orderedFinpartition_of_mem (hx : x ∈ u)
     (hg : HasFTaylorSeriesUpToOn n g (ftaylorSeries 𝕜 g) (f '' u))
-    (hf : HasFTaylorSeriesUpToOn n f (ftaylorSeries 𝕜 f) u) (hi : i ≤ n)
+    (hf : HasFTaylorSeriesUpToOn n f (ftaylorSeries 𝕜 f) u)
     (v : Fin i → E) : iteratedFDeriv 𝕜 i (g ∘ f) x v =
       ∑ c : OrderedFinpartition i, iteratedFDeriv 𝕜 c.length g (f x)
         (fun j ↦ iteratedFDeriv 𝕜 (c.partSize j) f x (v ∘ c.emb j)) := by
@@ -1198,5 +1196,5 @@ theorem iteratedFDeriv_comp_apply_eq_sum_orderedFinpartition_of_mem
   have tay_f : HasFTaylorSeriesUpToOn n f (ftaylorSeriesWithin 𝕜 f .univ) (.univ ∩ u) := by
     simpa [ftaylorSeriesWithin_univ, univ_inter] using hf
   simpa [ftaylorSeriesWithin_univ, iteratedFDerivWithin_univ] using
-    iteratedFDerivWithin_comp_apply_eq_sum_orderedFinpartition_of_mem hu ⟨mem_univ x, hx⟩
-    tay_g tay_f uniqueDiffOn_univ hi v
+    iteratedFDerivWithin_comp_apply_eq_sum_orderedFinpartition_of_mem hu hi ⟨mem_univ x, hx⟩
+    tay_g tay_f uniqueDiffOn_univ v
