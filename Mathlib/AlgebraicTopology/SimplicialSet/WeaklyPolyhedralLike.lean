@@ -81,7 +81,7 @@ instance (n : SimplexCategory) : (stdSimplex.{u}.obj n).IsWeaklyPolyhedralLike :
   IsWeaklyPolyhedralLike.of_iso (stdSimplex.isoNerve _).symm
 
 instance (n m : SimplexCategory) :
-    (stdSimplex.{u}.obj n ⊗ stdSimplex.{u}.obj m).IsWeaklyPolyhedralLike :=
+    (stdSimplex.{u}.obj n ⊗ stdSimplex.obj m).IsWeaklyPolyhedralLike :=
   IsWeaklyPolyhedralLike.of_iso (prodStdSimplex.isoNerve _ _).symm
 
 end SSet
