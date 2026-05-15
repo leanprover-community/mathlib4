@@ -834,10 +834,8 @@ theorem adj_and_reachable_delete_edges_iff_exists_cycle {v w : V} :
 theorem isBridge_iff_forall_cycle_notMem {e : Sym2 V} (he : e ∈ G.edgeSet) :
     G.IsBridge e ↔ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → e ∉ p.edges := by
   obtain ⟨v, w⟩ := e
-  rw [isBridge_iff]
-  contrapose!
-  rw [← adj_and_reachable_delete_edges_iff_exists_cycle]
-  simp_all
+  contrapose
+  simp_all [isBridge_iff, ← adj_and_reachable_delete_edges_iff_exists_cycle]
 
 @[deprecated (since := "2026-04-02")]
 alias isBridge_iff_adj_and_forall_cycle_notMem := isBridge_iff_forall_cycle_notMem
@@ -879,7 +877,7 @@ lemma isBridge_sup_edge {u v : V} : (G ⊔ edge u v).IsBridge s(u, v) ↔ G.IsBr
 
 @[deprecated "Inline the proof" (since := "2026-04-02")]
 theorem IsBridge.sup_edge_of_not_reachable {u v : V} (h : ¬G.Reachable u v) :
-    (G ⊔ edge u v).IsBridge s(u, v) := by simpa using .of_not_reachable h
+    (G ⊔ edge u v).IsBridge s(u, v) := isBridge_sup_edge.mpr (of_not_reachable h)
 
 @[deprecated (since := "2026-03-18")]
 alias IsBridge.sup_fromEdgeSet_of_not_reachable := IsBridge.sup_edge_of_not_reachable
