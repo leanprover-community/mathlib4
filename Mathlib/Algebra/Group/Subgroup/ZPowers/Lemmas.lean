@@ -70,8 +70,7 @@ lemma range_nsmulAddMonoidHom (n : ℕ) : (nsmulAddMonoidHom n).range = zmultipl
   simp [mem_zmultiples_iff, dvd_def]
   grind
 
-theorem closure_eq_zmultiples (a b : ℤ) :
-    AddSubgroup.closure {a, b} = AddSubgroup.zmultiples (a.gcd b : ℤ) := by
+theorem closure_eq_zmultiples (a b : ℤ) : closure {a, b} = zmultiples (a.gcd b : ℤ) := by
   apply le_antisymm
   · apply (AddSubgroup.closure_le (AddSubgroup.zmultiples (a.gcd b : ℤ))).mpr
     intro x hx
