@@ -50,9 +50,6 @@ open scoped Manifold ContDiff
 
 @[expose] public section -- TODO: think if we want to expose all definitions!
 
--- TODO: revisit and fix this once the dust has settled
-set_option backward.isDefEq.respectTransparency false
-
 -- Let `(M, g)` be a `C^k` real manifold modeled on `(E, H)`, endowed with a Riemannian metric `g`.
 variable {n : WithTop ℕ∞}
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -106,10 +103,9 @@ variable (X Y Z) in
 
 This definition contains mild defeq abuse, which is invisible on paper:
 The function `⟨Y, Z⟩` maps `M` into `ℝ`, hence its differential at a point `x` maps `T_p M`
-to an element of the tangent space of `ℝ`. A summand `⟨Y, [X, Z]⟩`, however, yields an honest
-real number: Lean complains that these have different types.
-Fortunately, `ℝ` is defeq to its own tangent space; casting `rhs_aux` to the real numbers
-allows the addition to type-check. -/
+to an element of the tangent space of `ℝ` --- as a summand `⟨Y, [X, Z]⟩` yields an honest
+real number, we apply the identification of the real numbers' tangent space with itself.
+-/
 noncomputable abbrev rhs_aux : M → ℝ := fun x ↦ extDerivFun% ⟪Y, Z⟫ x (X x)
 
 section rhs_aux
@@ -304,7 +300,7 @@ lemma aux (h : cov.IsLeviCivitaConnection) {x : M}
 
 variable {cov} in
 /-- Auxiliary lemma towards the uniquness of the Levi-Civita connection: expressing the term
-⟨∇ X Y, Z⟩ for all differentiable vector fields X, Y and Z, without reference to ∇. -/
+`⟨∇ X Y, Z⟩` for all differentiable vector fields `X`, `Y` and `Z`, without reference to `∇`. -/
 lemma IsLeviCivitaConnection.eq_leviCivitaRhs [FiniteDimensional ℝ E]
     (h : cov.IsLeviCivitaConnection)
     {x : M} (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
@@ -427,6 +423,7 @@ noncomputable def lcAux₁ [FiniteDimensional ℝ E]
   (InnerProductSpace.toDual ℝ _).symm.toContinuousLinearEquiv.toContinuousLinearMap ∘L
     (lcAux₀ I x hY)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lcAux₁_apply [FiniteDimensional ℝ E] {x : M}
     {X : Π x : M, TangentSpace I x} (hX : MDiffAt (T% X) x)
     {Y : Π x : M, TangentSpace I x} (hY : MDiffAt (T% Y) x)
@@ -449,6 +446,7 @@ theorem lcAux_apply [FiniteDimensional ℝ E] {x : M}
   rw [dif_pos hY]
   simpa [lcAux] using lcAux₁_apply I hX hY hZ
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isCovariantDerivativeOn_lcAux [FiniteDimensional ℝ E] :
     IsCovariantDerivativeOn E (lcAux I (M := M)) where
   add {Y Y'} x hY hY' _ := by
@@ -539,18 +537,9 @@ lemma leviCivitaConnection_isCompatible [FiniteDimensional ℝ E] :
     (LeviCivitaConnection I M).IsCompatible := by
   rw [isCompatible_iff]
   intro x X Y Z hX hY hZ
-  symm
   dsimp
-  rw [leviCivitaConnection_apply I hX hY hZ]
-  have : inner ℝ (Y x) (((LeviCivitaConnection I M) Z x) (X x)) =
-      inner ℝ (((LeviCivitaConnection I M) Z x) (X x)) (Y x) := by
-    rw [real_inner_comm]
-  -- TODO: why does the following line not work, but `rw [this]` does?
-  --rw [real_inner_comm]
-  rw [this]
-  have : inner ℝ (((LeviCivitaConnection I M) Z x) (X x)) (Y x) = leviCivitaRhs I X Z Y x := by
-    rw [leviCivitaConnection_apply I hX hZ hY]
-  rw [leviCivitaConnection_apply I hX hZ hY, leviCivitaConnection_isCompatible_aux]
+  rw [leviCivitaConnection_apply I hX hY hZ, real_inner_comm,
+    leviCivitaConnection_apply I hX hZ hY, leviCivitaConnection_isCompatible_aux]
 
 lemma leviCivitaConnection_torsion_eq_zero [FiniteDimensional ℝ E] :
     (LeviCivitaConnection I M).torsion = 0 := by
@@ -568,14 +557,14 @@ lemma leviCivitaConnection_torsion_eq_zero [FiniteDimensional ℝ E] :
   rw [leviCivitaConnection_apply I hX hY (mdifferentiableAt_extend ..)]
   simp only [leviCivitaRhs_apply]
   -- XXX: should there be leviCivitaRhs'_apply?
-  simp only [leviCivitaRhs', Pi.add_apply, Pi.sub_apply]
-  simp only [mlieBracket_swap (V := Y) (W := X)]
-  simp only [Pi.neg_apply, inner_neg_right, sub_neg_eq_add]
+  simp only [leviCivitaRhs', Pi.add_apply, Pi.sub_apply,
+    mlieBracket_swap (V := Y) (W := X),
+    Pi.neg_apply, inner_neg_right, sub_neg_eq_add]
   set C := inner ℝ Z (VectorField.mlieBracket I X Y x)
   set Z' := extend E Z
-  simp only [mlieBracket_swap (V := Z') (W := X)]
-  simp only [mlieBracket_swap (V := Z') (W := Y)]
-  simp only [Pi.neg_apply, inner_neg_right]
+  simp only [mlieBracket_swap (V := Z') (W := X),
+    mlieBracket_swap (V := Z') (W := Y),
+    Pi.neg_apply, inner_neg_right]
   rw [rhs_aux_swap (Y := Z'), rhs_aux_swap (Y := Z'), rhs_aux_swap (X := Z')]
   rw [real_inner_comm (Z' x) (VectorField.mlieBracket I X Y x)]
   -- set A := inner ℝ (Z' x) (VectorField.mlieBracket I X Y x)
