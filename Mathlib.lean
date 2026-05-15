@@ -7289,6 +7289,7 @@ public import Mathlib.Tactic.Ring.NamePolyVars
 public import Mathlib.Tactic.Ring.NamePowerVars
 public import Mathlib.Tactic.Ring.PNat
 public import Mathlib.Tactic.Ring.RingNF
+public import Mathlib.Tactic.RunAutoParam
 public import Mathlib.Tactic.Sat.FromLRAT
 public import Mathlib.Tactic.Says
 public import Mathlib.Tactic.ScopedNS
