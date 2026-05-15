@@ -729,7 +729,7 @@ theorem compLp_zero (hg : LipschitzWith c g) (g0 : g 0 = 0) : hg.compLp g0 (0 : 
   filter_upwards [Lp.coeFn_zero E p μ] with _ ha
   simp only [ha, g0, Function.comp_apply, Pi.zero_apply]
 
-theorem norm_compLp_sub_le (hg : LipschitzWith c g) (g0 : g 0 = 0) (f f' : Lp E p μ) (hp : p ≠ 0) :
+theorem norm_compLp_sub_le (hp : p ≠ 0) (hg : LipschitzWith c g) (g0 : g 0 = 0) (f f' : Lp E p μ) :
     ‖hg.compLp g0 f - hg.compLp g0 f'‖ ≤ c * ‖f - f'‖ := by
   apply Lp.norm_le_mul_norm_of_ae_le_mul (hp := hp)
   filter_upwards [hg.coeFn_compLp g0 f, hg.coeFn_compLp g0 f',
@@ -737,10 +737,10 @@ theorem norm_compLp_sub_le (hg : LipschitzWith c g) (g0 : g 0 = 0) (f f' : Lp E 
   simp only [ha1, ha2, ha3, ha4, ← dist_eq_norm, Pi.sub_apply, Function.comp_apply]
   exact hg.dist_le_mul (f a) (f' a)
 
-theorem norm_compLp_le (hg : LipschitzWith c g) (g0 : g 0 = 0) (f : Lp E p μ) (hp : p ≠ 0) :
+theorem norm_compLp_le (hp : p ≠ 0) (hg : LipschitzWith c g) (g0 : g 0 = 0) (f : Lp E p μ) :
     ‖hg.compLp g0 f‖ ≤ c * ‖f‖ := by
   -- squeezed for performance reasons
-  simpa only [compLp_zero, sub_zero] using hg.norm_compLp_sub_le g0 f 0 hp
+  simpa only [compLp_zero, sub_zero] using hg.norm_compLp_sub_le hp g0 f 0
 
 theorem lipschitzWith_compLp [h : Fact (1 ≤ p)] (hg : LipschitzWith c g) (g0 : g 0 = 0) :
     LipschitzWith c (hg.compLp g0 : Lp E p μ → Lp F p μ) :=
@@ -809,8 +809,8 @@ theorem smul_compLp {𝕜''} [NormedRing 𝕜''] [Module 𝕜'' F] [IsBoundedSMu
   rfl
 
 --TODO: Does this hold for `p=0`?
-theorem norm_compLp_le (L : E →SL[σ] F) (f : Lp E p μ) (hp : p ≠ 0) : ‖L.compLp f‖ ≤ ‖L‖ * ‖f‖ :=
-  LipschitzWith.norm_compLp_le _ _ _ hp
+theorem norm_compLp_le (hp : p ≠ 0) (L : E →SL[σ] F) (f : Lp E p μ) : ‖L.compLp f‖ ≤ ‖L‖ * ‖f‖ :=
+  LipschitzWith.norm_compLp_le hp _ _ _
 
 variable (μ p)
 

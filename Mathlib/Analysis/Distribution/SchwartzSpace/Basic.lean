@@ -1276,7 +1276,7 @@ theorem eLpNorm_le_seminorm {p : ℝ≥0∞} (hp : p ≠ 0) (μ : Measure E := b
     refine congrArg (eLpNorm · p μ) (funext fun x ↦ ?_)
     simp [(h_one_add x).ne']
   _ ≤ eLpNorm (fun x ↦ (1 + ‖x‖) ^ (-k : ℝ)) p μ * eLpNorm (fun x ↦ (1 + ‖x‖) ^ k • f x) ⊤ μ := by
-    refine eLpNorm_smul_le_eLpNorm_mul_eLpNorm_top _ ?_ hp
+    apply eLpNorm_smul_le_eLpNorm_mul_eLpNorm_top hp
     refine Continuous.aestronglyMeasurable ?_
     exact .rpow_const (by fun_prop) fun x ↦ .inl (h_one_add x).ne'
   _ ≤ eLpNorm (fun x ↦ (1 + ‖x‖) ^ (-k : ℝ)) p μ *

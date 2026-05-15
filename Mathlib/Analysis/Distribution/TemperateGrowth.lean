@@ -504,8 +504,8 @@ lemma _root_.integral_pow_mul_le_of_le_of_pow_mul_le
 
 /-- For any `HasTemperateGrowth` measure and `p`, there exists an integer power `k` such that
 `(1 + ‖x‖) ^ (-k)` is in `L^p`. -/
-theorem HasTemperateGrowth.exists_eLpNorm_lt_top (p : ℝ≥0∞)
-    {μ : Measure E} (hμ : μ.HasTemperateGrowth) (hp : p ≠ 0) :
+theorem HasTemperateGrowth.exists_eLpNorm_lt_top (p : ℝ≥0∞) (hp : p ≠ 0)
+    {μ : Measure E} (hμ : μ.HasTemperateGrowth) :
     ∃ k : ℕ, eLpNorm (fun x ↦ (1 + ‖x‖) ^ (-k : ℝ)) p μ < ⊤ := by
   cases p with
   | top => exact ⟨0, eLpNormEssSup_lt_top_of_ae_bound (C := 1) (by simp)⟩

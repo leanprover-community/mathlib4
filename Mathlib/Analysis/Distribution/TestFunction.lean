@@ -663,7 +663,7 @@ protected theorem integrable_bilin (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {�
     exact fun x hx hfx ↦ hx (by simp [hfx])
   replace hφ := hφ.integrableOn_compact_subset f.tsupport_subset f.hasCompactSupport
   rw [IntegrableOn, ← memLp_one_iff_integrable] at hφ ⊢
-  exact B.memLp_of_bilin 1 f.memLp_top hφ ENNReal.top_ne_zero one_ne_zero
+  exact B.memLp_of_bilin 1 ENNReal.top_ne_zero one_ne_zero f.memLp_top hφ
 
 /-- A test function on `Ω` is `μ`-integrable for any measure `μ` on `E` satisfying
 `LocallyIntegrableOn 1 Ω μ`. Note that this is a weaker assumption than both

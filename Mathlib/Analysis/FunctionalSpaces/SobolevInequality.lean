@@ -469,8 +469,8 @@ Note: The codomain of `u` needs to be a Hilbert space.
 -/
 theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
     (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u)
-    {p p' : ℝ≥0} (hp : 1 ≤ p) (hn : 0 < finrank ℝ E)
-    (hp' : (p' : ℝ)⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹) (hp'0 : p' ≠ 0) :
+    {p p' : ℝ≥0} (hp'0 : p' ≠ 0) (hp : 1 ≤ p) (hn : 0 < finrank ℝ E)
+    (hp' : (p' : ℝ)⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹) :
     eLpNorm u p' μ ≤ eLpNormLESNormFDerivOfEqInnerConst μ p * eLpNorm (fderiv ℝ u) p μ := by
   /- Here we derive the GNS-inequality for `p ≥ 1` from the version with `p = 1`.
   For `p > 1` we apply the previous version to the function `|u|^γ` for a suitably chosen `γ`.
@@ -611,7 +611,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq [FiniteDimensional ℝ F]
   let v := e ∘ u
   have hv : ContDiff ℝ 1 v := e.contDiff.comp hu
   have h2v : HasCompactSupport v := h2u.comp_left e.map_zero
-  have := eLpNorm_le_eLpNorm_fderiv_of_eq_inner μ hv h2v hp hn hp' hp'0
+  have := eLpNorm_le_eLpNorm_fderiv_of_eq_inner μ hv h2v hp'0 hp hn hp'
   have h4v : ∀ x, ‖fderiv ℝ v x‖ ≤ C₂ * ‖fderiv ℝ u x‖ := fun x ↦ calc
     ‖fderiv ℝ v x‖
       = ‖(fderiv ℝ e (u x)).comp (fderiv ℝ u x)‖ := by

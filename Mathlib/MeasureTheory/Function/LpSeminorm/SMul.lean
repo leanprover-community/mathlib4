@@ -127,7 +127,7 @@ theorem eLpNormEssSup_const_smul (c : 𝕜) (f : α → F) :
   simp_rw [eLpNormEssSup_eq_essSup_enorm, Pi.smul_apply, enorm_smul,
     ENNReal.essSup_const_mul]
 
-theorem eLpNorm_const_smul (c : 𝕜) (f : α → F) {p : ℝ≥0∞} (μ : Measure α) (hp : p ≠ 0) :
+theorem eLpNorm_const_smul (c : 𝕜) (f : α → F) {p : ℝ≥0∞} (hp : p ≠ 0) (μ : Measure α) :
     eLpNorm (c • f) p μ = ‖c‖ₑ * eLpNorm f p μ := by
   obtain rfl | hc := eq_or_ne c 0
   · simp
@@ -135,9 +135,9 @@ theorem eLpNorm_const_smul (c : 𝕜) (f : α → F) {p : ℝ≥0∞} (μ : Meas
   simpa [enorm_inv, hc, ENNReal.div_eq_inv_mul]
     using eLpNorm_const_smul_le (c := c⁻¹) (f := c • f) hp
 
-lemma eLpNorm_nsmul [NormedSpace ℝ F] (n : ℕ) (f : α → F) (hp : p ≠ 0) :
+lemma eLpNorm_nsmul [NormedSpace ℝ F] (hp : p ≠ 0) (n : ℕ) (f : α → F) :
     eLpNorm (n • f) p μ = n * eLpNorm f p μ := by
-  simpa [Nat.cast_smul_eq_nsmul] using eLpNorm_const_smul (n : ℝ) f μ hp
+  simpa [Nat.cast_smul_eq_nsmul] using eLpNorm_const_smul (n : ℝ) f hp μ
 
 end NormedSpace
 

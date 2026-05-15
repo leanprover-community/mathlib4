@@ -130,8 +130,8 @@ variable {𝕜 : Type*} [NormedField 𝕜]
     lpNorm (1 : α → 𝕜) p μ = μ.real .univ ^ (p.toReal⁻¹ : ℝ) := by
   simp [Pi.one_def, lpNorm_const' hp₀ hp, Measure.real, ENNReal.toReal_rpow]
 
-lemma lpNorm_const_smul [Module 𝕜 E] [NormSMulClass 𝕜 E] (c : 𝕜) (f : α → E) (μ : Measure α)
-    (hp : p ≠ 0) : lpNorm (c • f) p μ = ‖c‖₊ * lpNorm f p μ := by
+lemma lpNorm_const_smul [Module 𝕜 E] [NormSMulClass 𝕜 E] (hp : p ≠ 0) (c : 𝕜) (f : α → E)
+    (μ : Measure α) : lpNorm (c • f) p μ = ‖c‖₊ * lpNorm f p μ := by
   by_cases hf : AEStronglyMeasurable f μ
   · simp [lpNorm, eLpNorm_const_smul (hp := hp), hf, hf.const_smul]
   obtain rfl | hc := eq_or_ne c 0
@@ -140,32 +140,32 @@ lemma lpNorm_const_smul [Module 𝕜 E] [NormSMulClass 𝕜 E] (c : 𝕜) (f : �
     simpa [hc] using h.const_smul c⁻¹]
   simp
 
-lemma lpNorm_nsmul [NormedSpace ℝ E] (n : ℕ) (f : α → E) (μ : Measure α) (hp : p ≠ 0) :
+lemma lpNorm_nsmul [NormedSpace ℝ E] (hp : p ≠ 0) (n : ℕ) (f : α → E) (μ : Measure α) :
     lpNorm (n • f) p μ = n • lpNorm f p μ := by
-  simpa [Nat.cast_smul_eq_nsmul] using lpNorm_const_smul (n : ℝ) f μ (p := p) hp
+  simpa [Nat.cast_smul_eq_nsmul] using lpNorm_const_smul hp (n : ℝ) f μ
 
 variable [NormedSpace ℝ 𝕜]
 
-lemma lpNorm_natCast_mul (n : ℕ) (f : α → 𝕜) {p : ℝ≥0∞} (μ : Measure α) (hp : p ≠ 0) :
+lemma lpNorm_natCast_mul (n : ℕ) (f : α → 𝕜) {p : ℝ≥0∞} (hp : p ≠ 0) (μ : Measure α) :
     lpNorm ((n : α → 𝕜) * f) p μ = n * lpNorm f p μ := by
-  simpa only [nsmul_eq_mul] using lpNorm_nsmul n f μ hp
+  simpa only [nsmul_eq_mul] using lpNorm_nsmul hp n f μ
 
-lemma lpNorm_fun_natCast_mul (n : ℕ) (f : α → 𝕜) {p : ℝ≥0∞} (μ : Measure α) (hp : p ≠ 0) :
-    lpNorm (n * f ·) p μ = n * lpNorm f p μ := lpNorm_natCast_mul _ _ _ hp
+lemma lpNorm_fun_natCast_mul (n : ℕ) (f : α → 𝕜) {p : ℝ≥0∞} (hp : p ≠ 0) (μ : Measure α) :
+    lpNorm (n * f ·) p μ = n * lpNorm f p μ := lpNorm_natCast_mul _ _ hp _
 
-lemma lpNorm_mul_natCast (f : α → 𝕜) (n : ℕ) {p : ℝ≥0∞} (μ : Measure α) (hp : p ≠ 0) :
+lemma lpNorm_mul_natCast (f : α → 𝕜) (n : ℕ) {p : ℝ≥0∞} (hp : p ≠ 0) (μ : Measure α) :
     lpNorm (f * (n : α → 𝕜)) p μ = lpNorm f p μ * n := by
-  simpa only [mul_comm] using lpNorm_natCast_mul n f μ hp
+  simpa only [mul_comm] using lpNorm_natCast_mul n f hp μ
 
-lemma lpNorm_fun_mul_natCast (f : α → 𝕜) (n : ℕ) {p : ℝ≥0∞} (μ : Measure α) (hp : p ≠ 0) :
-    lpNorm (f · * n) p μ = lpNorm f p μ * n := lpNorm_mul_natCast _ _ _ hp
+lemma lpNorm_fun_mul_natCast (f : α → 𝕜) (n : ℕ) {p : ℝ≥0∞} (hp : p ≠ 0) (μ : Measure α) :
+    lpNorm (f · * n) p μ = lpNorm f p μ * n := lpNorm_mul_natCast _ _ hp _
 
 lemma lpNorm_div_natCast [CharZero 𝕜] {n : ℕ} (hn : n ≠ 0) (f : α → 𝕜) {p : ℝ≥0∞}
-    (μ : Measure α) (hp : p ≠ 0) : lpNorm (f / (n : α → 𝕜)) p μ = lpNorm f p μ / n := by
+    (hp : p ≠ 0) (μ : Measure α) : lpNorm (f / (n : α → 𝕜)) p μ = lpNorm f p μ / n := by
   rw [eq_div_iff (by positivity), ← lpNorm_mul_natCast (hp := hp)]; simp [Pi.mul_def, hn]
 
 lemma lpNorm_fun_div_natCast [CharZero 𝕜] {n : ℕ} (hn : n ≠ 0) (f : α → 𝕜) {p : ℝ≥0∞} (hp : p ≠ 0)
-    (μ : Measure α) : lpNorm (f · / n) p μ = lpNorm f p μ / n := lpNorm_div_natCast hn _ _ hp
+    (μ : Measure α) : lpNorm (f · / n) p μ = lpNorm f p μ / n := lpNorm_div_natCast hn _ hp _
 
 end NormedField
 

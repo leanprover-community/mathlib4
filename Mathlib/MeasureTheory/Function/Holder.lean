@@ -44,16 +44,16 @@ variable {α 𝕜 E F G : Type*} {m : MeasurableSpace α} {μ : Measure α}
 namespace ContinuousLinearMap
 
 variable (r) in
-theorem memLp_of_bilin {f : α → E} {g : α → F} (hf : MemLp f p μ) (hg : MemLp g q μ) (hp : p ≠ 0)
-    (hq : q ≠ 0) : MemLp (fun x ↦ B (f x) (g x)) r μ :=
+theorem memLp_of_bilin {f : α → E} {g : α → F} (hp : p ≠ 0) (hq : q ≠ 0) (hf : MemLp f p μ)
+    (hg : MemLp g q μ) : MemLp (fun x ↦ B (f x) (g x)) r μ :=
   MeasureTheory.MemLp.of_bilin hp hq (B · ·) ‖B‖₊ hf hg
     (B.aestronglyMeasurable_comp₂ hf.1 hg.1) (.of_forall fun _ ↦ B.le_opNorm₂ _ _)
 
 theorem integrable_of_bilin_of_bdd_left {f : α → E} {g : α → F} (C : ℝ)
     (hf1 : AEStronglyMeasurable f μ) (hf2 : ∀ᵐ a ∂μ, ‖f a‖ ≤ C) (hg : Integrable g μ) :
     Integrable (fun x ↦ B (f x) (g x)) μ :=
-  memLp_one_iff_integrable.1 <| B.memLp_of_bilin 1 (memLp_top_of_bound hf1 C hf2)
-    (memLp_one_iff_integrable.2 hg) top_ne_zero one_ne_zero
+  memLp_one_iff_integrable.1 <| B.memLp_of_bilin 1 top_ne_zero one_ne_zero
+    (memLp_top_of_bound hf1 C hf2) (memLp_one_iff_integrable.2 hg)
 
 theorem integrable_of_bilin_of_bdd_right {f : α → E} {g : α → F} (C : ℝ)
     (hf : Integrable f μ) (hg1 : AEStronglyMeasurable g μ) (hg2 : ∀ᵐ a ∂μ, ‖g a‖ ≤ C) :
@@ -64,7 +64,7 @@ variable (r) in
 /-- The map between `MeasureTheory.Lp` spaces satisfying `ENNReal.HolderTriple`
 induced by a continuous bilinear map on the underlying spaces. -/
 def holder (f : Lp E p μ) (g : Lp F q μ) (hp : p ≠ 0) (hq : q ≠ 0) : Lp G r μ :=
-  (B.memLp_of_bilin r (Lp.memLp f) (Lp.memLp g) hp hq).toLp
+  (B.memLp_of_bilin r hp hq (Lp.memLp f) (Lp.memLp g)).toLp
 
 lemma coeFn_holder (f : Lp E p μ) (g : Lp F q μ) (hp : p ≠ 0) (hq : q ≠ 0) :
     B.holder r f g hp hq =ᵐ[μ] fun x ↦ B (f x) (g x) := by

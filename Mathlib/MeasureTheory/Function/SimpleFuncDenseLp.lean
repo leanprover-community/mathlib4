@@ -288,8 +288,8 @@ theorem measure_preimage_lt_top_of_memLp (hp_pos : p ≠ 0) (hp_ne_top : p ≠ �
       simpa [hp_pos_real] using hf_eLpNorm
     | inr hf_eLpNorm => simp [hf_eLpNorm]
 
-theorem memLp_of_finite_measure_preimage {p : ℝ≥0∞} {f : α →ₛ E}
-    (hf : ∀ y, y ≠ 0 → μ (f ⁻¹' {y}) < ∞) (hp : p ≠ 0) : MemLp f p μ := by
+theorem memLp_of_finite_measure_preimage {p : ℝ≥0∞} (hp : p ≠ 0) {f : α →ₛ E}
+    (hf : ∀ y, y ≠ 0 → μ (f ⁻¹' {y}) < ∞) : MemLp f p μ := by
   by_cases hp_top : p = ∞
   · rw [hp_top]; exact memLp_top f μ
   refine ⟨f.aestronglyMeasurable, ?_⟩
@@ -303,7 +303,7 @@ theorem memLp_of_finite_measure_preimage {p : ℝ≥0∞} {f : α →ₛ E}
 theorem memLp_iff {f : α →ₛ E} (hp_pos : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     MemLp f p μ ↔ ∀ y, y ≠ 0 → μ (f ⁻¹' {y}) < ∞ :=
   ⟨fun h => measure_preimage_lt_top_of_memLp hp_pos hp_ne_top f h, fun h =>
-    memLp_of_finite_measure_preimage h hp_pos⟩
+    memLp_of_finite_measure_preimage hp_pos h⟩
 
 theorem integrable_iff {f : α →ₛ E} : Integrable f μ ↔ ∀ y, y ≠ 0 → μ (f ⁻¹' {y}) < ∞ :=
   memLp_one_iff_integrable.symm.trans <| memLp_iff one_ne_zero ENNReal.coe_ne_top

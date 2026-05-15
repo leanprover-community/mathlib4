@@ -233,8 +233,8 @@ theorem Submartingale.ae_tendsto_limitProcess [IsFiniteMeasure μ] (hf : Submart
 /-- The limiting process of an Lᵖ-bounded submartingale is Lᵖ. -/
 theorem Submartingale.memLp_limitProcess {p : ℝ≥0∞} (hf : Submartingale f ℱ μ)
     (hbdd : ∀ n, eLpNorm (f n) p μ ≤ R) (hp : p ≠ 0) : MemLp (ℱ.limitProcess f μ) p μ :=
-  memLp_limitProcess_of_eLpNorm_bdd
-    (fun n => ((hf.stronglyMeasurable n).mono (ℱ.le n)).aestronglyMeasurable) hbdd hp
+  memLp_limitProcess_of_eLpNorm_bdd hp
+    (fun n => ((hf.stronglyMeasurable n).mono (ℱ.le n)).aestronglyMeasurable) hbdd
 
 end AeConvergence
 
@@ -316,7 +316,7 @@ theorem Submartingale.tendsto_eLpNorm_one_limitProcess (hf : Submartingale f ℱ
   have hmeas : ∀ n, AEStronglyMeasurable (f n) μ := fun n =>
     ((hf.stronglyMeasurable n).mono (ℱ.le _)).aestronglyMeasurable
   exact tendsto_Lp_finite_of_tendstoInMeasure le_rfl ENNReal.one_ne_top hmeas
-    (memLp_limitProcess_of_eLpNorm_bdd hmeas hR one_ne_zero) hunif.2.1
+    (memLp_limitProcess_of_eLpNorm_bdd one_ne_zero hmeas hR) hunif.2.1
     (tendstoInMeasure_of_tendsto_ae hmeas <| hf.ae_tendsto_limitProcess hR)
 
 theorem Submartingale.ae_tendsto_limitProcess_of_uniformIntegrable (hf : Submartingale f ℱ μ)
@@ -349,7 +349,7 @@ theorem Martingale.ae_eq_condExp_limitProcess (hf : Martingale f ℱ μ)
     (hbdd : UniformIntegrable f 1 μ) (n : ℕ) : f n =ᵐ[μ] μ[ℱ.limitProcess f μ | ℱ n] :=
   let ⟨_, hR⟩ := hbdd.2.2
   hf.eq_condExp_of_tendsto_eLpNorm
-    ((memLp_limitProcess_of_eLpNorm_bdd hbdd.1 hR one_ne_zero).integrable le_rfl)
+    ((memLp_limitProcess_of_eLpNorm_bdd one_ne_zero hbdd.1 hR).integrable le_rfl)
     (hf.submartingale.tendsto_eLpNorm_one_limitProcess hbdd) n
 
 /-- Part c of the **L¹ martingale convergence theorem**: Given an integrable function `g` which
@@ -366,7 +366,7 @@ theorem Integrable.tendsto_ae_condExp (hg : Integrable g μ)
     hg.uniformIntegrable_condExp_filtration
   obtain ⟨R, hR⟩ := hunif.2.2
   have hlimint : Integrable (ℱ.limitProcess (fun n => μ[g | ℱ n]) μ) μ :=
-    (memLp_limitProcess_of_eLpNorm_bdd hunif.1 hR one_ne_zero).integrable le_rfl
+    (memLp_limitProcess_of_eLpNorm_bdd one_ne_zero hunif.1 hR).integrable le_rfl
   suffices g =ᵐ[μ] ℱ.limitProcess (fun n x => (μ[g | ℱ n]) x) μ by
     filter_upwards [this, (martingale_condExp g ℱ μ).submartingale.ae_tendsto_limitProcess hR] with
       x heq ht

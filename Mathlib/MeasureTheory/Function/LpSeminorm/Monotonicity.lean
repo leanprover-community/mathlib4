@@ -164,7 +164,7 @@ variable {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε] in
 
 This version allows `c = ∞`, but requires `g` to be a.e. strongly measurable. -/
 theorem eLpNorm_le_mul_eLpNorm_of_ae_le_mul'' {f : α → ε} {c : ℝ≥0∞} {g : α → ε'} {p : ℝ≥0∞}
-    (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) (hp : p ≠ 0) :
+    (hp : p ≠ 0) (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) :
     eLpNorm f p μ ≤ c * eLpNorm g p μ := by
   simp only [eLpNorm, hp, ↓reduceIte, mul_ite]
   by_cases hp' : p = ⊤

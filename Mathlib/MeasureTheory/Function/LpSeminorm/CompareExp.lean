@@ -163,9 +163,9 @@ variable {α E F G : Type*} {m : MeasurableSpace α}
 
 open NNReal
 
-theorem eLpNorm_le_eLpNorm_top_mul_eLpNorm {p : ℝ≥0∞} (f : α → E) {g : α → F}
+theorem eLpNorm_le_eLpNorm_top_mul_eLpNorm {p : ℝ≥0∞} (hp : p ≠ 0) (f : α → E) {g : α → F}
     (hg : AEStronglyMeasurable g μ) (b : E → F → G) (c : ℝ≥0)
-    (h : ∀ᵐ x ∂μ, ‖b (f x) (g x)‖₊ ≤ c * ‖f x‖₊ * ‖g x‖₊) (hp : p ≠ 0) :
+    (h : ∀ᵐ x ∂μ, ‖b (f x) (g x)‖₊ ≤ c * ‖f x‖₊ * ‖g x‖₊) :
     eLpNorm (fun x => b (f x) (g x)) p μ ≤ c * eLpNorm f ∞ μ * eLpNorm g p μ := by
   calc
     eLpNorm (fun x => b (f x) (g x)) p μ ≤ eLpNorm (fun x => (c : ℝ) • ‖f x‖ * ‖g x‖) p μ :=
@@ -238,7 +238,7 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm {p q r : ℝ≥0∞} (hp : p �
   obtain (rfl | rfl | hp) := ENNReal.trichotomy p
   · contradiction
   · have : r = q := by simpa using hpqr
-    exact this ▸ eLpNorm_le_eLpNorm_top_mul_eLpNorm f hg b c h hr
+    exact this ▸ eLpNorm_le_eLpNorm_top_mul_eLpNorm hr f hg b c h
   obtain (rfl | rfl | hq) := ENNReal.trichotomy q
   · contradiction
   · have : r = p := by simpa using hpqr
@@ -283,13 +283,14 @@ variable {𝕜 α E F : Type*} {m : MeasurableSpace α} {μ : Measure α} [Norme
   [NormedAddCommGroup E] [MulActionWithZero 𝕜 E] [IsBoundedSMul 𝕜 E]
   [NormedAddCommGroup F] [MulActionWithZero 𝕜 F] [IsBoundedSMul 𝕜 F] {f : α → E}
 
-theorem eLpNorm_smul_le_eLpNorm_top_mul_eLpNorm {p : ℝ≥0∞} (hf : AEStronglyMeasurable f μ)
-    (φ : α → 𝕜) (hp : p ≠ 0) : eLpNorm (φ • f) p μ ≤ eLpNorm φ ∞ μ * eLpNorm f p μ := by
+theorem eLpNorm_smul_le_eLpNorm_top_mul_eLpNorm {p : ℝ≥0∞} (hp : p ≠ 0)
+    (hf : AEStronglyMeasurable f μ) (φ : α → 𝕜) :
+    eLpNorm (φ • f) p μ ≤ eLpNorm φ ∞ μ * eLpNorm f p μ := by
   simpa using (eLpNorm_le_eLpNorm_top_mul_eLpNorm (hp := hp) φ hf (· • ·) 1
     (.of_forall fun _ => by simpa using nnnorm_smul_le _ _) :)
 
-theorem eLpNorm_smul_le_eLpNorm_mul_eLpNorm_top {p : ℝ≥0∞} (f : α → E) {φ : α → 𝕜}
-    (hφ : AEStronglyMeasurable φ μ) (hp : p ≠ 0) :
+theorem eLpNorm_smul_le_eLpNorm_mul_eLpNorm_top {p : ℝ≥0∞} (hp : p ≠ 0) (f : α → E) {φ : α → 𝕜}
+    (hφ : AEStronglyMeasurable φ μ) :
     eLpNorm (φ • f) p μ ≤ eLpNorm φ p μ * eLpNorm f ∞ μ := by
   simpa using (eLpNorm_le_eLpNorm_mul_eLpNorm_top hp hφ f (· • ·) 1
     (.of_forall fun _ => by simpa using nnnorm_smul_le _ _) :)
