@@ -7653,6 +7653,7 @@ public import Mathlib.Topology.Constructible
 public import Mathlib.Topology.Constructions
 public import Mathlib.Topology.Constructions.SumProd
 public import Mathlib.Topology.Continuous
+public import Mathlib.Topology.ContinuousGerm
 public import Mathlib.Topology.ContinuousMap.Algebra
 public import Mathlib.Topology.ContinuousMap.Basic
 public import Mathlib.Topology.ContinuousMap.Bounded.ArzelaAscoli

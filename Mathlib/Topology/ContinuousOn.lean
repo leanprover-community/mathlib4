@@ -351,6 +351,12 @@ theorem Continuous.continuousWithinAt (h : Continuous f) :
     ContinuousWithinAt f s x :=
   h.continuousAt.continuousWithinAt
 
+/-- A function is continuous at all points close enough to `x` iff it is continuous on a
+neighbourhood of `x`. -/
+lemma eventually_continuousAt_iff :
+    (∀ᶠ x' in 𝓝 x, ContinuousAt f x') ↔ ∃ u ∈ 𝓝 x, ContinuousOn f u :=
+  ⟨fun h ↦ ⟨_, h, fun _ hx ↦ hx.continuousWithinAt⟩, fun ⟨_, hu, hu'⟩ ↦ mem_of_superset
+    (interior_mem_nhds.2 hu) fun _ hx ↦ hu'.continuousAt <| mem_interior_iff_mem_nhds.1 hx⟩
 
 /-!
 ## Congruence properties with respect to functions

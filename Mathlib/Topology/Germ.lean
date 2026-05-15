@@ -49,6 +49,17 @@ shared by all representatives at the given point. -/
 def value {X α : Type*} [TopologicalSpace X] {x : X} (φ : Germ (𝓝 x) α) : α :=
   Quotient.liftOn' φ (fun f ↦ f x) fun f g h ↦ by dsimp only; rw [Eventually.self_of_nhds h]
 
+@[simp]
+lemma value_coe {X α : Type*} [TopologicalSpace X] {x : X} (φ : X → α) :
+    (φ : Germ (𝓝 x) α).value = φ x :=
+  rfl
+
+@[simp]
+lemma value_map {X α β : Type*} [TopologicalSpace X] {x : X} (φ : Germ (𝓝 x) α) (f : α → β) :
+    (φ.map f).value = f φ.value :=
+  φ.inductionOn (by simp)
+
+
 theorem value_smul {α β : Type*} [SMul α β] (φ : Germ (𝓝 x) α)
     (ψ : Germ (𝓝 x) β) : (φ • ψ).value = φ.value • ψ.value :=
   Germ.inductionOn φ fun _ ↦ Germ.inductionOn ψ fun _ ↦ rfl
@@ -121,6 +132,34 @@ theorem forall_restrictGermPredicate_of_forall
     {P : ∀ x : X, Germ (𝓝 x) Y → Prop} (h : ∀ x, P x f) :
     ∀ x, RestrictGermPredicate P A x f :=
   forall_restrictGermPredicate_iff.mpr (Eventually.of_forall h)
+
+/-- A germ `f` fulfills `RestrictGermPredicate P A x f` iff all functions `f'` representing it
+fulfill `x ∈ A → ∀ᶠ y in 𝓝 x, P y f'`. -/
+lemma restrictGermPredicate_iff_forall {P : ∀ x : X, Germ (𝓝 x) Y → Prop} (f : Germ (𝓝 x) Y) :
+    RestrictGermPredicate P A x f ↔ ∀ f' : X → Y, f = f' → x ∈ A → ∀ᶠ y in 𝓝 x, P y f' := by
+  refine ⟨fun h f' hf ↦ (hf ▸ h:), fun h ↦ ?_⟩
+  obtain ⟨f', rfl⟩ := Quotient.exists_rep f
+  exact h f' rfl
+
+/-- A germ `f` fulfills `RestrictGermPredicate P A x f` iff at least one function `f'` representing
+it fulfills `x ∈ A → ∀ᶠ y in 𝓝 x, P y f'`. -/
+lemma restrictGermPredicate_iff_exists {P : ∀ x : X, Germ (𝓝 x) Y → Prop} (f : Germ (𝓝 x) Y) :
+    RestrictGermPredicate P A x f ↔ ∃ f' : X → Y, f = f' ∧ (x ∈ A → ∀ᶠ y in 𝓝 x, P y f') := by
+  rw [restrictGermPredicate_iff_forall]
+  refine ⟨fun h ↦ ?_, fun ⟨f', hf, hf'⟩ f'' hf'' hx ↦ ?_⟩
+  · obtain ⟨f', rfl⟩ := Quotient.exists_rep f
+    exact ⟨f', rfl, h f' rfl⟩
+  · apply ((hf' hx).and <| Eventually.eventually_nhds (Germ.coe_eq.1 (hf.symm.trans hf''))).mono
+    intro x' ⟨hx', hx''⟩
+    rwa [Germ.coe_eq.mpr (EventuallyEq.symm hx'')]
+
+/-- The germ of a function `f` fulfills `RestrictGermPredicate P A x f` iff `f` fulfills
+`x ∈ A → ∀ᶠ y in 𝓝 x, P y f`. -/
+@[simp]
+lemma restrictGermPredicate_coe_iff {P : ∀ x : X, Germ (𝓝 x) Y → Prop} (f : X → Y) :
+    RestrictGermPredicate P A x f ↔ x ∈ A → ∀ᶠ y in 𝓝 x, P y f :=
+  Iff.rfl
+
 end RestrictGermPredicate
 
 namespace Filter.Germ
