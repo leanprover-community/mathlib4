@@ -194,10 +194,16 @@ theorem IntegrableOn.inter_of_restrict (h : IntegrableOn f s (μ.restrict t)) :
   rwa [IntegrableOn, μ.restrict_restrict_of_subset inter_subset_right] at this
 
 @[fun_prop]
+theorem IntegrableOn.left_inter (h : IntegrableOn f s μ) : IntegrableOn f (s ∩ t) μ :=
+  h.mono_set inter_subset_left
+
+@[fun_prop]
+theorem IntegrableOn.right_inter (h : IntegrableOn f t μ) : IntegrableOn f (s ∩ t) μ :=
+  h.mono_set inter_subset_right
+
 theorem IntegrableOn.left_of_union (h : IntegrableOn f (s ∪ t) μ) : IntegrableOn f s μ :=
   h.mono_set subset_union_left
 
-@[fun_prop]
 theorem IntegrableOn.right_of_union (h : IntegrableOn f (s ∪ t) μ) : IntegrableOn f t μ :=
   h.mono_set subset_union_right
 
@@ -390,6 +396,12 @@ theorem Integrable.indicator₀ (h : Integrable f μ) (hs : NullMeasurableSet s 
 theorem IntegrableOn.indicator (h : IntegrableOn f s μ) (ht : MeasurableSet t) :
     IntegrableOn (indicator t f) s μ :=
   Integrable.indicator h ht
+
+@[fun_prop]
+theorem IntegrableOn.indicator₀ {t : Set α} {f : α → ε'} (h : IntegrableOn f s μ)
+    (ht : NullMeasurableSet t <| μ.restrict s) :
+    IntegrableOn (t.indicator f) s μ :=
+  Integrable.indicator₀ h ht
 
 theorem integrable_indicatorConstLp {E} [NormedAddCommGroup E] {p : ℝ≥0∞} {s : Set α}
     (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : E) :
