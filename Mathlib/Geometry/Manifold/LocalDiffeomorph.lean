@@ -130,6 +130,7 @@ protected theorem mdifferentiableAt (hn : n ≠ 0) {x : M} (hx : x ∈ Φ.source
 such as
 * further continuity and differentiability lemmas
 * refl and trans instances; lemmas between them.
+
 As this declaration is meant for internal use only, we keep it simple. -/
 end PartialDiffeomorph
 end PartialDiffeomorph
