@@ -417,7 +417,7 @@ On an open set not containing `p₀`, the value of skyscraper sheaf supported at
 object.
 -/
 noncomputable
-def skyscraper_terminal_of_not_mem {U : (Opens X)ᵒᵖ} (h : p₀ ∉ unop U) :
+def isTerminalSkyscraperSheafObjObjOfNotMem {U : (Opens X)ᵒᵖ} (h : p₀ ∉ unop U) :
     IsTerminal ((skyscraperSheaf p₀ A).obj.obj U) := by
   dsimp
   rw [if_neg h]
