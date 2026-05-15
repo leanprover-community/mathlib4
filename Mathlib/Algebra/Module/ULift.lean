@@ -9,7 +9,7 @@ public import Mathlib.Algebra.GroupWithZero.ULift
 public import Mathlib.Algebra.Ring.ULift
 public import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.Tactic.Basic
-import Mathlib.Data.ULift
+public import Mathlib.Data.ULift
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Util.CompileInductive

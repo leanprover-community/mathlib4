@@ -9,7 +9,7 @@ module
 public import Mathlib.Algebra.Group.Subsemigroup.Defs
 public import Mathlib.Data.Set.BooleanAlgebra
 import Mathlib.Data.Set.Image
-import Mathlib.Data.Set.Lattice
+public import Mathlib.Data.Set.Lattice
 import Mathlib.Data.Set.Lattice.Image
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.GCongr.Core

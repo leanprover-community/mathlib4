@@ -9,7 +9,7 @@ public import Mathlib.Order.Hom.Set
 public import Mathlib.Data.Finset.Insert
 public import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.Finset.Attr
-import Mathlib.Order.Fin.Tuple
+public import Mathlib.Order.Fin.Tuple
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SetLike

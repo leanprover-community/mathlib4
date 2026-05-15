@@ -24,6 +24,7 @@ import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.Monotonicity.Attr
 import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.FBinop
 
 /-!
 # `NonUnitalSubring`s

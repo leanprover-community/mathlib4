@@ -19,6 +19,7 @@ public import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Util.CompileInductive
+public import Mathlib.Tactic.TermCongr
 
 /-!
 # Further results on (semi)linear equivalences.

@@ -17,6 +17,7 @@ import Mathlib.Tactic.Choose
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SimpRw
 import Mathlib.Util.CompileInductive
+import Mathlib.Tactic.FBinop
 
 /-!
 # Frames, completely distributive lattices and complete Boolean algebras

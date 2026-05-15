@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Algebra.Order.Sub.Defs
 import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Algebra.Order.Pi
-import Mathlib.Algebra.Order.Sub.Basic
+public import Mathlib.Algebra.Order.Sub.Basic
 import Mathlib.Algebra.Order.Sub.Unbundled.Basic
 import Mathlib.Data.Finset.Attr
 import Mathlib.Tactic.Bound.Init

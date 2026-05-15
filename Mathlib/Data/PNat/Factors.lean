@@ -12,7 +12,7 @@ public import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
 public import Mathlib.Algebra.Order.Group.Multiset
 import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
 import Mathlib.Algebra.Order.Sub.Unbundled.Basic
-import Mathlib.Data.Multiset.OrderedMonoid
+public import Mathlib.Data.Multiset.OrderedMonoid
 import Mathlib.Tactic.Bound.Init
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr

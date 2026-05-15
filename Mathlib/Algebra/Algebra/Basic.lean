@@ -19,7 +19,7 @@ import Mathlib.Algebra.Module.Equiv.Basic
 import Mathlib.Algebra.Ring.CharZero
 import Mathlib.Data.Finset.Attr
 import Mathlib.Data.Int.CharZero
-import Mathlib.Data.Nat.Cast.Commute
+public import Mathlib.Data.Nat.Cast.Commute
 import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.Common

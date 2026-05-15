@@ -16,6 +16,7 @@ import Mathlib.Order.GaloisConnection.Basic
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SetLike
 import Mathlib.Util.CompileInductive
+import Mathlib.Tactic.FBinop
 
 /-!
 # Operations on `Subsemigroup`s

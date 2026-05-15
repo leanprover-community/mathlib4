@@ -38,7 +38,11 @@ inductive SignType
   | zero
   | neg
   | pos
-  deriving DecidableEq, Inhabited, Fintype
+  deriving DecidableEq, Inhabited --, Fintype
+
+instance : Fintype SignType where
+  elems := {.zero, .neg, .pos}
+  complete x := by cases x <;> simp
 
 namespace SignType
 

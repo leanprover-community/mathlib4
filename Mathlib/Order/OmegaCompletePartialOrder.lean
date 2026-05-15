@@ -12,7 +12,7 @@ public import Mathlib.Dynamics.FixedPoints.Defs
 public import Mathlib.Tactic.Attr.Core
 import Mathlib.Control.Monad.Basic
 import Mathlib.Data.Set.Image
-import Mathlib.Order.Iterate
+public import Mathlib.Order.Iterate
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.Monotonicity.Attr

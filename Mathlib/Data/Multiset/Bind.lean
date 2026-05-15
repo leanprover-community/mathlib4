@@ -13,6 +13,7 @@ import Mathlib.Data.List.Lattice
 import Mathlib.Data.List.Nodup
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.FBinop
 
 /-!
 # Bind operation for multisets

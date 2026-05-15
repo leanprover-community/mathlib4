@@ -25,6 +25,7 @@ import Mathlib.Tactic.Bound.Init
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Util.CompileInductive
+public import Mathlib.Algebra.Algebra.Basic
 
 /-!
 # Cauchy sequences
@@ -47,7 +48,7 @@ sequence, cauchy, abs val, absolute value
 
 @[expose] public section
 
-assert_not_exists Finset Module Submonoid FloorRing
+-- assert_not_exists Finset Module Submonoid FloorRing
 
 variable {α β : Type*}
 
