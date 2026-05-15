@@ -40,5 +40,5 @@ theorem FloorSemiring.eventually_mul_pow_lt_factorial_sub (a c : K) (d : ℕ) :
     _ = ↑(⌈|a|⌉₊ * ⌈|c|⌉₊ ^ n) := ?_
     _ < (n - d)! := Nat.cast_lt.mpr h
   · rw [abs_mul, abs_pow]
-    gcongr <;> try first | positivity | apply Nat.le_ceil
+    gcongr <;> try first | apply Nat.cast_nonneg' | apply Nat.le_ceil
   · simp_rw [Nat.cast_mul, Nat.cast_pow]

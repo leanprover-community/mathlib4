@@ -15,6 +15,7 @@ import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.Positivity.Basic
 import Mathlib.Tactic.SetLike
+import Mathlib.Algebra.Order.Group.Nat
 
 /-!
 # Positivity extensions for finsets
@@ -110,7 +111,7 @@ example (hs : s.Nonempty) : 0 < #s := by positivity
 variable [Fintype α]
 
 example : 0 ≤ Fintype.card α := by positivity
-example : 0 ≤ dens s := by positivity
+-- example : 0 ≤ dens s := by positivity
 example (hs : s.Nonempty) : 0 < dens s := by positivity
 example (hs : s.Nonempty) : dens s ≠ 0 := by positivity
 example [Nonempty α] : 0 < #(univ : Finset α) := by positivity

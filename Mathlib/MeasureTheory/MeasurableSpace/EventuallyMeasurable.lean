@@ -13,6 +13,7 @@ import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.Measurability.Init
 import Mathlib.Tactic.SetLike
+public import Mathlib.Order.Filter.Basic
 
 /-!
 # Measurability modulo a filter

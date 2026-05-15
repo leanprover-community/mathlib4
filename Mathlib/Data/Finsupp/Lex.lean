@@ -10,7 +10,7 @@ public import Mathlib.Data.Finsupp.ToDFinsupp
 public import Mathlib.Order.Preorder.Finsupp
 import Mathlib.Algebra.Order.Group.PiLex
 import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Finsupp.Order
+public import Mathlib.Data.Finsupp.Order
 import Mathlib.Tactic.Bound.Init
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr

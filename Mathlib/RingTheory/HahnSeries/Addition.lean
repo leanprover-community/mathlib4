@@ -10,8 +10,8 @@ public import Mathlib.Data.Finsupp.SMul
 public import Mathlib.RingTheory.HahnSeries.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.Algebra.Group.Support
-import Mathlib.Algebra.Module.Basic
+public import Mathlib.Algebra.Group.Support
+public import Mathlib.Algebra.Module.Basic
 import Mathlib.Data.Finset.Attr
 import Mathlib.Tactic.Bound.Init
 import Mathlib.Tactic.Common

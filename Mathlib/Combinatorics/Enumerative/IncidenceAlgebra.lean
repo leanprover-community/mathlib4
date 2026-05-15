@@ -18,7 +18,7 @@ import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
 import Mathlib.Data.Finset.Attr
-import Mathlib.Order.Cover
+public import Mathlib.Order.Cover
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.Bound.Init
 import Mathlib.Tactic.Common
