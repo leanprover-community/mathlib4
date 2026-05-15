@@ -296,6 +296,7 @@ jobs:
     timeout-minutes: 60
     continue-on-error: true
     env:
+      LAKE_CACHE_DIR: .lake/cache
       LAKE_CACHE_ARTIFACT_ENDPOINT: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT }}
       LAKE_CACHE_REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_REVISION_ENDPOINT }}
     steps:
@@ -346,6 +347,28 @@ jobs:
             --scope="$SHADOW_SCOPE" \
             --rev="${{ needs.build_and_stage.outputs.sha }}"
           echo "ltar count after get: $(find .lake/cache -name '*.ltar' | wc -l)"
+
+      # `lake cache get` writes every entry from the bundle (mathlib's own
+      # + every dep's that we included in --no-build -o outputs.jsonl) into
+      # outputs/<root-scope>/ on the local side. But `lake build` queries
+      # outputs/<pkg-scope>/ for each dep separately. The JSON entries are
+      # scope-agnostic (just `inputHash -> contentHash.ltar`), so hardlinking
+      # the root scope's contents into each dep's scope dir makes dep
+      # lookups hit. Unrelated entries in a scope just don't match anyone's
+      # inputHash, so this is safe.
+      - name: Distribute root mappings to dep scopes
+        run: |
+          cd pr-branch
+          read -ra DEPS <<< "$STAGE_DEP_TARGETS"
+          ROOT=mathlib
+          for pkg in "${DEPS[@]}"; do
+            mkdir -p ".lake/cache/outputs/$pkg"
+            cp -al ".lake/cache/outputs/$ROOT"/* ".lake/cache/outputs/$pkg/" 2>/dev/null || true
+          done
+          for pkg in $ROOT "${DEPS[@]}"; do
+            n=$(find ".lake/cache/outputs/$pkg" -maxdepth 1 -type f 2>/dev/null | wc -l | tr -d ' ')
+            echo "  outputs/$pkg/: $n entries"
+          done
 
       - name: lake build
         run: |
