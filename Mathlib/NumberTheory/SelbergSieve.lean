@@ -20,6 +20,7 @@ We mostly follow the treatment outlined by Heath-Brown in the notes to an old gr
 minor notational difference is that we write $\nu(n)$ in place of $\frac{\omega(n)}{n}$.
 
 ## Results
+
 * `siftedSum_le_mainSum_errSum_of_UpperBoundSieve` - Every upper bound sieve gives an upper bound
   on the size of the sifted set in terms of `mainSum` and `errSum`
 

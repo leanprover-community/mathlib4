@@ -13,6 +13,7 @@ public import Mathlib.Tactic.SuppressCompilation
 # Abelian categories with enough projectives have projective resolutions
 
 ## Main results
+
 When the underlying category is abelian:
 * `CategoryTheory.ProjectiveResolution.lift`: Given `P : ProjectiveResolution X` and
   `Q : ProjectiveResolution Y`, any morphism `X ⟶ Y` admits a lifting to a chain map

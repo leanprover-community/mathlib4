@@ -24,6 +24,7 @@ section Real
 
 /-!
 ### Results over `ℝ` or `ℂ`
+
   The results in this section rely on the Mean Value Theorem, and therefore hold only over `ℝ` (and
   its extension fields such as `ℂ`).
 -/

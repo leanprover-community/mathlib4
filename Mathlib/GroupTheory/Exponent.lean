@@ -41,6 +41,7 @@ it is equal to the lowest common multiple of the order of all elements of the gr
   exponent of `M₁`.
 
 ## TODO
+
 * Refactor the characteristic of a ring to be the exponent of its underlying additive group.
 -/
 

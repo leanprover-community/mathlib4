@@ -17,6 +17,7 @@ A commutative ring is said to have finite quotients if, for any nonzero ideal `I
 quotient `R ⧸ I` is finite.
 
 ## Main results
+
 - `Ring.HasFiniteQuotients.instDimensionLEOne`: A ring with finite quotients has dimension `≤ 1`.
 - `Ring.HasFiniteQuotients.instIsNoetherianRing` : A ring with finite quotients is noetherian.
 - `Ring.HasFiniteQuotients.of_module_finite`: Assume that `R` has finite quotients and that `S` is

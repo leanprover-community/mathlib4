@@ -16,6 +16,7 @@ public import Mathlib.AlgebraicGeometry.ValuativeCriterion
 We show that `Proj 𝒜` is proper over `Spec 𝒜₀`.
 
 ## Notes
+
 This contribution was created as part of the Durham Computational Algebraic Geometry Workshop
 
 -/

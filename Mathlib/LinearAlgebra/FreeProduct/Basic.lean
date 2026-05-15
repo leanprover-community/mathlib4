@@ -40,6 +40,7 @@ general $R$-algebras.
 * `FreeProduct` is the coproduct in the category of `R`-algebras.
 
 ## TODO
+
 - Induction principle for `FreeProduct`
 
 -/

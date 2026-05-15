@@ -57,6 +57,7 @@ We prove the main properties of the Jacobi symbol, including the following.
 We define the notation `J(a | b)` for `jacobiSym a b`, localized to `NumberTheorySymbols`.
 
 ## Tags
+
 Jacobi symbol, quadratic reciprocity
 -/
 
@@ -494,6 +495,7 @@ section FastJacobi
 
 /-!
 ### Fast computation of the Jacobi symbol
+
 We follow the implementation as in `Mathlib/Tactic/NormNum/LegendreSymbol.lean`.
 -/
 

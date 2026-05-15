@@ -31,6 +31,7 @@ Similar definitions are done for left resolutions.
 * formalize dual results
 
 ## References
+
 * [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
 
 -/

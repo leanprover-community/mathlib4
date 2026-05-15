@@ -14,6 +14,7 @@ public import Mathlib.GroupTheory.Subgroup.Center
 These are just copies of the definitions about `Submonoid` starting from `Submonoid.mulAction`.
 
 ## Tags
+
 subgroup, subgroups
 
 -/

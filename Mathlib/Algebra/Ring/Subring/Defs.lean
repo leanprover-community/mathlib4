@@ -60,6 +60,7 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 `∈` is defined as membership of a subring's underlying set.
 
 ## Tags
+
 subring, subrings
 -/
 

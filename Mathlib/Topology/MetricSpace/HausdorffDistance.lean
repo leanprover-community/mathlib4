@@ -28,6 +28,7 @@ This file introduces:
   and `Metric.hausdorffDist`
 
 ## Main results
+
 * `infEDist_closure`: the edistance to a set and its closure coincide
 * `Metric.mem_closure_iff_infEDist_zero`: a point `x` belongs to the closure of `s` iff
   `infEDist x s = 0`
@@ -48,6 +49,7 @@ This file introduces:
   are nonempty and bounded in a metric space, they are at finite Hausdorff edistance.
 
 ## Tags
+
 metric space, Hausdorff distance
 -/
 

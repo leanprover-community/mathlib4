@@ -19,6 +19,7 @@ public import Mathlib.RingTheory.TensorProduct.Finite
 # Indices of ideals
 
 ## Main result
+
 - `Submodule.finite_quotient_smul`:
   Let `N` be a finite index f.g. `R`-submodule, and `I` be a finite index ideal.
   Then `I • N` also has finite index.

@@ -116,6 +116,7 @@ TODO: dualise all of this as `CosimplicialObject A ⥤ CochainComplex A ℕ`. (I
 what is the best way to do this. The exact design may be decided when it is needed.)
 
 ## References
+
 * [Albrecht Dold, Homology of Symmetric Products and Other Functors of Complexes][dold1958]
 * [Paul G. Goerss, John F. Jardine, Simplicial Homotopy Theory][goerss-jardine-2009]
 

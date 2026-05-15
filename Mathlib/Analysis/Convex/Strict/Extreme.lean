@@ -15,6 +15,7 @@ import Mathlib.Algebra.CharP.Invertible
 This file collects some results of extreme points of (strictly convex) sets.
 
 ## Main results
+
 * `disjoint_interior_extremePoints`: the interior and extreme points of a set in a
   nontrivial topological vector space are disjoint.
 * `StrictConvex.diff_interior_subset_extremePoints`:

@@ -67,6 +67,7 @@ Currently, the simp lemmas don't rewrite `𝟙 X ⊗ₘ f` and `f ⊗ₘ 𝟙 Y`
 respectively, since it requires a huge refactoring. We hope to add these simp lemmas soon.
 
 ## References
+
 * Tensor categories, Etingof, Gelaki, Nikshych, Ostrik,
   http://www-math.mit.edu/~etingof/egnobookfinal.pdf
 * <https://stacks.math.columbia.edu/tag/0FFK>.

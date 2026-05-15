@@ -44,9 +44,11 @@ Given a functor `F : C ⥤ D`, we also show construct an isomorphism
 show that it makes `F.op.lan` a left Kan extension of `F ⋙ uliftYoneda`.
 
 ## Tags
+
 colimit, representable, presheaf, free cocompletion
 
 ## References
+
 * [S. MacLane, I. Moerdijk, *Sheaves in Geometry and Logic*][MM92]
 * https://ncatlab.org/nlab/show/Yoneda+extension
 -/

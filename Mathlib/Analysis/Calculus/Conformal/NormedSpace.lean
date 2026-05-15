@@ -21,6 +21,7 @@ if it is real differentiable at that point and its differential is a conformal l
 * `Conformal`: maps that are conformal at every point
 
 ## Main results
+
 * The conformality of the composition of two conformal maps, the identity map
   and multiplications by nonzero constants
 * `conformalAt_iff_isConformalMap_fderiv`: an equivalent definition of the conformality of a map

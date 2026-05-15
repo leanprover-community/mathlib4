@@ -14,6 +14,7 @@ public import Mathlib.Combinatorics.Graph.Basic
 In this file we define the 1-skeleton of a CW complex as a graph.
 
 ## Main definitions
+
 * `CWComplex.OneSkeletonGraph`: the 1-skeleton of a CW complex as a graph.
 
 -/

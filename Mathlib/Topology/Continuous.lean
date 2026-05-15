@@ -337,6 +337,7 @@ Note: for the most part this note also applies to other properties
 (`Measurable`, `Differentiable`, `ContinuousOn`, ...).
 
 ### The traditional way
+
 As an example, let's look at addition `(+) : M → M → M`. We can state that this is continuous
 in different definitionally equal ways (omitting some typing information)
 * `Continuous (fun p ↦ p.1 + p.2)`;
@@ -399,6 +400,7 @@ argument `s` that arises since `Path x x` has a coercion to `I → F`. The paths
 are unary functions from `I`) become binary functions in the continuity lemma.
 
 ### Summary
+
 * Make sure that your continuity lemmas are stated in the most general way, and in a convenient
   form. That means that:
   - The conclusion has a variable `X` as domain (not something like `Y × Z`);

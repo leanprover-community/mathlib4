@@ -24,6 +24,7 @@ When `C` is also braided/symmetric, the full monoidal subcategory also inherits 
 braided/symmetric structure.
 
 ## TODO
+
 * Add monoidal/braided versions of `ObjectProperty.Lift`
 -/
 

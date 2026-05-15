@@ -19,6 +19,7 @@ property: for any collection of sets `s ∈ l` with cardinality strictly less th
 their intersection belongs to `l` as well.
 
 ## Main results
+
 * `Filter.cardinalInterFilter_aleph0` establishes that every filter `l` is a
     `CardinalInterFilter l ℵ₀`
 * `CardinalInterFilter.toCountableInterFilter` establishes that every `CardinalInterFilter l c` with
@@ -29,6 +30,7 @@ their intersection belongs to `l` as well.
   `CardinalInterFilter l c` → `CardinalInterFilter l a` for all `a < c`.
 
 ## Tags
+
 filter, cardinal
 -/
 

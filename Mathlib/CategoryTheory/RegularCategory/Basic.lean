@@ -27,10 +27,12 @@ semantics for regular logic.
   depending on `x`.
 
 ## Future work
+
 * Show that every topos is regular
 * Show that regular logic has an interpretation in regular categories
 
 ## References
+
 * [Marino Gran, An Introduction to Regular Categories][Gran2021]
 * <https://ncatlab.org/nlab/show/regular+category>
 -/

@@ -25,6 +25,7 @@ This file contains several standard constructions on vector bundles:
   pullback `f *ᵖ E` by a map `f : B' → B` (the notation is a type synonym for `E ∘ f`).
 
 ## Tags
+
 Vector bundle, direct sum, pullback
 -/
 

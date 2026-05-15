@@ -28,6 +28,7 @@ shall allow a very nice construction of a cartesian monoidal closed
 structure on `GeneratedByTopCat X` under suitable assumptions (TODO @joelriou).
 
 ## References
+
 * [Martín Escardó, Jimmie Lawson and Alex Simpson, *Comparing Cartesian closed
   categories of (core) compactly generated spaces*][escardo-lawson-simpson-2004]
 

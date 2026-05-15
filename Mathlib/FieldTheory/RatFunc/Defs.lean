@@ -19,6 +19,7 @@ the basic definition.
 For connections with Laurent Series, see `Mathlib/RingTheory/LaurentSeries.lean`.
 
 ## Main definitions
+
 We provide a set of recursion and induction principles:
 - `RatFunc.liftOn`: define a function by mapping a fraction of polynomials `p/q` to `f p q`,
   if `f` is well-defined in the sense that `p/q = p'/q' → f p q = f p' q'`.

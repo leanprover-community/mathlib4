@@ -15,6 +15,7 @@ public import Mathlib.RingTheory.Noetherian.Basic
 # Ring-theoretic supplement of Algebra.Polynomial.
 
 ## Main results
+
 * `MvPolynomial.isDomain`:
   If a ring is an integral domain, then so is its polynomial ring over finitely many variables.
 * `Polynomial.isNoetherianRing`:

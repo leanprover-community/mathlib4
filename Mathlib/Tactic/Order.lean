@@ -30,6 +30,7 @@ Below, we describe the algorithm for each type of order. All algorithms begin wi
 set of facts.
 
 ### Preorder
+
 3. **Preprocessing**.
 We replace some facts as follows:
 * Replace `x < y` with two equivalent facts: `x ≤ y` and `¬(y ≤ x)`.
@@ -48,6 +49,7 @@ For each fact `¬(x ≤ y)`, we check if `y` is reachable from `x` in the `≤`-
 the desired contradiction.
 
 #### Why is this a decision procedure?
+
 Technically, it is not, because it cannot prove `(x = y) → (y ≠ z) → (x ≠ z)`. Goals involving
 only `=` and `≠` can be handled by the `cc` tactic. Assume, then, that a set `T` of facts is
 contradictory, but there is no chain `x₁ = x₂ = ... = xₖ` in `T` along with the fact `x₁ ≠ xₖ`. Then
@@ -82,6 +84,7 @@ fact in `T'` is satisfied:
   which would have caused an edge `(y, x)` to be added at step 5, leading to a contradiction.
 
 ### Partial Order
+
 3. **Preprocessing**.
 We replace some facts as follows:
 * Replace `x < y` with `x ≤ y` and `x ≠ y`.
@@ -95,6 +98,7 @@ fact `x ≠ y`, we check whether `x` and `y` belong to the same component. If th
 provable, contradicting `x ≠ y`.
 
 #### Why is this a decision procedure?
+
 Assume that a set `T` of facts is contradictory. We must show that the described algorithm can
 derive a contradiction. Let `T'` be the set of facts after preprocessing. By construction, `T'` is
 also contradictory (they are equisatisfiable). If, at step 6, no contradictory `≠`-facts were found,
@@ -109,6 +113,7 @@ we verify that each fact in `T'` is satisfied:
   would have merged them into the same component at step 5.
 
 ### Linear Order
+
 3. **Preprocessing**.
 We replace some facts as follows:
 * Replace `x < y` with `x ≤ y` and `x ≠ y`.
@@ -122,6 +127,7 @@ Note that the algorithm for linear orders is simply the algorithm for partial or
 additional preprocessing step. It also skips the growing step because there is no `≮`-facts.
 
 #### Why is this a decision procedure?
+
 We need to slightly modify the proof for partial orders. In this case, `T` and `T'` are again
 equisatisfiable. Suppose the algorithm cannot find a contradiction, and construct the model of `T'`.
 The carrier of the model is once again the set of strongly connected components in the `≤`-graph,
@@ -132,6 +138,7 @@ linear order where `C₁ R C₂` whenever `C₂` is reachable from `C₁`. It is
 in `T'` are satisfied by the model.
 
 ### Lattice
+
 The algorithm for lattices is similar to that for partial orders, with two differences:
 1. During the preprocessing step, we add the facts `x ≤ x ⊔ y` and `y ≤ x ⊔ y` if `x ⊔ y` is present
 in the context, and similarly for `⊓`.
@@ -142,6 +149,7 @@ using `sup_le`, and similarly for `⊓`.
 One can show that this algorithm also serves as a decision procedure for the theory of lattices.
 
 ### `⊤` and `⊥`
+
 For `⊤` and `⊥`, we add the edges `(x, ⊤)` and `(⊥, x)` for all vertices `x`, using `le_top`
 and `bot_le`, respectively.
 -/

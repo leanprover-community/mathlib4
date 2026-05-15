@@ -12,14 +12,17 @@ public import Mathlib.NumberTheory.NumberField.EquivReindex
 /-!
 
 # House of an algebraic number
+
 This file defines the house of an algebraic number `α`, which is
 the largest of the modulus of its conjugates.
 
 ## References
+
 * [D. Marcus, *Number Fields*][marcus1977number]
 * [Hua, L.-K., *Introduction to number theory*][hua1982house]
 
 ## Tags
+
 number field, algebraic number, house
 -/
 

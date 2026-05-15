@@ -20,6 +20,7 @@ The following notions are defined in `Topology/Defs/Sequences`.
 We build theory about these definitions here, so we remind the definitions.
 
 ### Set operation
+
 * `seqClosure s`: sequential closure of a set, the set of limits of sequences of points of `s`;
 
 ### Predicates

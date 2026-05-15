@@ -13,10 +13,12 @@ We define a Fourier multiplier as continuous linear maps on Schwartz functions a
 distributions. The multiplier function is throughout assumed to have temperate growth.
 
 ## Main definitions
+
 * `SchwartzMap.fourierMultiplierCLM`: Fourier multiplier on Schwartz functions
 * `TemperedDistribution.fourierMultiplierCLM`: Fourier multiplier on tempered distribution
 
 ## Main statements
+
 * `SchwartzMap.lineDeriv_eq_fourierMultiplierCLM`: the directional derivative is equal to the
   Fourier multiplier with `inner ℝ . m`.
 * `SchwartzMap.laplacian_eq_fourierMultiplierCLM`: the Laplacian is equal to the Fourier multiplier

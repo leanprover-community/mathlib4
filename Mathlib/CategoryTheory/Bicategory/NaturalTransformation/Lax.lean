@@ -46,6 +46,7 @@ We also provide API for going between lax transformations and strong transformat
   2-morphism is an isomorphism, `mkOfLax` gives the corresponding strong transformation.
 
 ## References
+
 * [Niles Johnson, Donald Yau, *2-Dimensional Categories*](https://arxiv.org/abs/2002.06055),
   section 4.2.
 

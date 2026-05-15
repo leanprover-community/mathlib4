@@ -17,6 +17,7 @@ Under certain conditions, a morphism on stalks `Spec 𝒪_{X, x} ⟶ Spec 𝒪_{
 out into a neighborhood of `x`.
 
 ## Main result
+
 Given `S`-schemes `X Y` and points `x : X` `y : Y` over `s : S`.
 Suppose we have the following diagram of `S`-schemes
 ```

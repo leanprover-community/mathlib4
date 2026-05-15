@@ -15,6 +15,7 @@ public import Mathlib.RingTheory.LocalRing.Basic
 In this file, we prove several approximation lemmas on a normed field.
 
 ## Main results
+
 - `Polynomial.exists_roots_norm_sub_lt_of_norm_coeff_sub_lt` :  **Continuity of Roots.**
 Let `f` and `g` be two monic polynomials such that `g` splits. If the coefficients of two
 polynomials `f` and `g` are sufficiently close, then every root of `f` has a corresponding root
@@ -25,12 +26,14 @@ dense subfield of a normed field `L`. Every monic polynomial in `L` can be appro
 a monic polynomial in `K` of the same degree.
 
 ## TODO
+
 Use the fact that `f.discr` is polynomial of the coefficients of `f` to show that
 every polynomial `f` can be approximated by a *separable* polynomial. This result can be used
 to show that the completion a separably closed field is algebraically closed, upgrading the
 current theorem `IsAlgClosed.of_denseRange`.
 
 ## Tags
+
 Approximation, polynomial, normed field, continuity of roots
 -/
 

@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
 
 /-!
 # seminormFromBounded
+
 In this file, we prove [BGR, Proposition 1.2.1/2][bosch-guntzer-remmert] : given a nonzero
 additive group seminorm on a commutative ring `R` such that for some `c : ℝ` and every `x y : R`,
 the inequality `f (x * y) ≤ c * f x * f y)` is satisfied, we create a ring seminorm on `R`.
@@ -36,6 +37,7 @@ this condition holds.
   `seminormFromBounded' f`.
 
 ## References
+
 * [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*][bosch-guntzer-remmert]
 
 ## Tags

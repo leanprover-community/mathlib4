@@ -37,6 +37,7 @@ There are three attributes being defined here
   [this is not correctly implemented in Lean 4 yet]
 
 ### Possible Future Improvements
+
 * If multiple declarations are generated from a `simps` without explicit projection names, then
   only the first one is shown when mousing over `simps`.
 

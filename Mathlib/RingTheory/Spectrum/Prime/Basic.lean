@@ -37,6 +37,7 @@ which has contributions from Ramon Fernandez Mir, Kevin Buzzard, Kenny Lau,
 and Chris Hughes (on an earlier repository).
 
 ## References
+
 * [M. F. Atiyah and I. G. Macdonald, *Introduction to commutative algebra*][atiyah-macdonald]
 * [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
 -/

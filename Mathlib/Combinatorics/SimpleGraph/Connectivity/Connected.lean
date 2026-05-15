@@ -35,6 +35,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Operations
 See https://github.com/leanprover-community/mathlib4/issues/31690.
 
 ## Tags
+
 trails, paths, cycles, bridge edges
 -/
 

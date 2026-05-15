@@ -16,6 +16,7 @@ In this file, we define continuous affine equivalences, affine equivalences
 which are continuous with continuous inverse.
 
 ## Main definitions
+
 * `ContinuousAffineEquiv.refl k P`: the identity map as a `ContinuousAffineEquiv`;
 * `e.symm`: the inverse map of a `ContinuousAffineEquiv` as a `ContinuousAffineEquiv`;
 * `e.trans e'`: composition of two `ContinuousAffineEquiv`s; note that the order
@@ -29,6 +30,7 @@ which are continuous with continuous inverse.
 * `ContinuousAffineEquiv.constVAdd`: `AffineEquiv.constVAdd` as a continuous affine equivalence
 
 ## TODO
+
 - equip `ContinuousAffineEquiv k P P` with a `Group` structure,
   with multiplication corresponding to composition in `AffineEquiv.group`.
 

@@ -32,6 +32,7 @@ We also provide a constructor `X.liftCycles` for morphisms
 to cycles and `X.descOpcycles` for morphisms from opcycles.
 
 ## References
+
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*, II.4][verdier1996]
 -/
 

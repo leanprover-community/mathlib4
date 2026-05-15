@@ -16,6 +16,7 @@ public import Mathlib.CategoryTheory.Adjunction.Opposites
 We construct the subscheme associated to an ideal sheaf.
 
 ## Main definition
+
 * `AlgebraicGeometry.Scheme.IdealSheafData.subscheme`: The subscheme associated to an ideal sheaf.
 * `AlgebraicGeometry.Scheme.IdealSheafData.subschemeι`: The inclusion from the subscheme.
 * `AlgebraicGeometry.Scheme.Hom.image`: The scheme-theoretic image of a morphism.

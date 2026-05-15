@@ -14,6 +14,7 @@ public import Mathlib.CategoryTheory.Subobject.Lattice
 # Subobjects in adhesive categories
 
 ## Main Results
+
 - Subobjects in adhesive categories have binary coproducts
 
 -/

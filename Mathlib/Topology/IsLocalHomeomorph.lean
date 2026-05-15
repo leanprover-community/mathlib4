@@ -25,6 +25,7 @@ Note that `IsLocalHomeomorph` is a global condition. This is in contrast to
 `OpenPartialHomeomorph`, which is a homeomorphism between specific open subsets.
 
 ## Main results
+
 * local homeomorphisms are locally injective open maps
 * more!
 

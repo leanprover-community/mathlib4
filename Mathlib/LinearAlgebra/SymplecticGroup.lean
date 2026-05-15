@@ -18,6 +18,7 @@ This file defines the symplectic group and proves elementary properties.
 * `symplecticGroup`: the group of symplectic matrices
 
 ## TODO
+
 * Every symplectic matrix has determinant 1.
 * For `n = 1` the symplectic group coincides with the special linear group.
 -/

@@ -25,6 +25,7 @@ decided to maintain some distinction by using the symbol `T`, rather than `X`, a
 Laurent polynomials.
 
 ## Notation
+
 The symbol `R[T;T⁻¹]` stands for `LaurentPolynomial R`.  We also define
 
 * `C : R →+* R[T;T⁻¹]` the inclusion of constant polynomials, analogous to the one for `R[X]`;
@@ -49,6 +50,7 @@ I made a *heavy* use of `simp` lemmas, aiming to bring Laurent polynomials to th
 Any comments or suggestions for improvements is greatly appreciated!
 
 ## Future work
+
 Lots is missing!
 -- (Riccardo) add inclusion into Laurent series.
 -- A "better" definition of `trunc` would be as an `R`-linear map.  This works:

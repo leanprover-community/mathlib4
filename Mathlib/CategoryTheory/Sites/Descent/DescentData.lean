@@ -27,6 +27,7 @@ to `R` is respectively fully faithful or an equivalence. We show that
 satisfies `F.IsPrestackFor R.arrows` for all covering sieves `R`.
 
 ## TODO (@joelriou, @chrisflav)
+
 * Introduce multiple variants of `DescentData` (when `C` has pullbacks,
   when `F` also has a covariant functoriality, etc.).
 

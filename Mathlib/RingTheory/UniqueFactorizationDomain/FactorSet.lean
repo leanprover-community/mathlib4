@@ -12,10 +12,12 @@ public import Mathlib.Tactic.Ring
 # Set of factors
 
 ## Main definitions
+
 * `Associates.FactorSet`: multiset of factors of an element, unique up to propositional equality.
 * `Associates.factors`: determine the `FactorSet` for a given element.
 
 ## TODO
+
 * set up the complete lattice structure on `FactorSet`.
 
 -/

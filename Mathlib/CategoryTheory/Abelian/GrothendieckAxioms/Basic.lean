@@ -45,6 +45,7 @@ individual axioms. An `AB4` category is an _abelian_ category satisfying `AB4`, 
 `AB5`.
 
 ## References
+
 * [Stacks: Grothendieck's AB conditions](https://stacks.math.columbia.edu/tag/079A)
 
 -/

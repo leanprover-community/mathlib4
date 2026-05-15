@@ -35,6 +35,7 @@ for example, the subcategory of bounded below complexes in the homotopy category
 of an additive category is not closed under isomorphisms.
 
 ## References
+
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 
 -/

@@ -17,6 +17,7 @@ public import Mathlib.RingTheory.Localization.Away.Basic
 # Homogeneous Localization
 
 ## Notation
+
 - `ι` is a commutative monoid;
 - `A` is a commutative ring;
 - `σ` is a class of additive subgroups of `A`;

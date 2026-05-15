@@ -41,6 +41,7 @@ Suppose `0 → K → M → N → 0` is an exact sequence of `R`-modules.
 Also the instances finite + free => f.p. => finite are also provided
 
 ## TODO
+
 Suppose `S` is an `R`-algebra, `M` is an `S`-module. Then
 1. If `S` is f.p., then `M` is `R`-f.p. implies `M` is `S`-f.p.
 2. If `S` is both f.p. (as an algebra) and finite (as a module),

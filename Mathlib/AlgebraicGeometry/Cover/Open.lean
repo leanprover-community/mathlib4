@@ -13,6 +13,7 @@ public import Mathlib.AlgebraicGeometry.Cover.MorphismProperty
 This file provides the basic API for open covers of schemes.
 
 ## Main definition
+
 - `AlgebraicGeometry.Scheme.OpenCover`: The type of open covers of a scheme `X`,
   consisting of a family of open immersions into `X`,
   and for each `x : X` an open immersion (indexed by `f x`) that covers `x`.

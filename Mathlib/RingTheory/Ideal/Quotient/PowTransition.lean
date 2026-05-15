@@ -22,6 +22,7 @@ We also include results about the relation between quotients of submodules and q
 ideals here.
 
 ## Main definitions
+
 - `Submodule.factorPow`: the linear map from `M ⧸ I ^ m • ⊤` to `M ⧸ I ^ n • ⊤` induced by
   the natural inclusion `I ^ n • ⊤ → I ^ m • ⊤`.
 - `Ideal.Quotient.factorPow`: the ring homomorphism from `R ⧸ I ^ m`

@@ -30,11 +30,13 @@ over `K` if they have the same minimal polynomial over `K`.
   there exists a different conjugate root of `x` in `L` over `K`.
 
 ## TODO
+
 * Move `IsConjRoot` to earlier files and refactor the theorems in field theory using `IsConjRoot`.
 
 * Prove `IsConjRoot.smul`, if `x` and `y` are conjugate roots, then so are `r • x` and `r • y`.
 
 ## Tags
+
 conjugate root, minimal polynomial
 -/
 

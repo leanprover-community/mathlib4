@@ -11,9 +11,11 @@ public import Mathlib.LinearAlgebra.Projectivization.Constructions
 
 /-!
 # Configurations of Points and lines
+
 This file introduces abstract configurations of points and lines, and proves some basic properties.
 
 ## Main definitions
+
 * `Configuration.Nondegenerate`: Excludes certain degenerate configurations,
   and imposes uniqueness of intersection points.
 * `Configuration.HasPoints`: A nondegenerate configuration in which
@@ -24,6 +26,7 @@ This file introduces abstract configurations of points and lines, and proves som
 * `Configuration.pointCount`: The number of lines through a given line.
 
 ## Main statements
+
 * `Configuration.HasLines.card_le`: `HasLines` implies `|P| ≤ |L|`.
 * `Configuration.HasPoints.card_le`: `HasPoints` implies `|L| ≤ |P|`.
 * `Configuration.HasLines.hasPoints`: `HasLines` and `|P| = |L|` implies `HasPoints`.

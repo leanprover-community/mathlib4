@@ -16,6 +16,7 @@ public import Mathlib.Tactic.AdaptationNote
 # Abelian categories with enough injectives have injective resolutions
 
 ## Main results
+
 When the underlying category is abelian:
 * `CategoryTheory.InjectiveResolution.desc`: Given `I : InjectiveResolution X` and
   `J : InjectiveResolution Y`, any morphism `X ⟶ Y` admits a descent to a cochain map

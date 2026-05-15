@@ -15,6 +15,7 @@ This file proves various trivial lemmas about Booleans and their
 relation to decidable propositions.
 
 ## Tags
+
 bool, boolean, Bool, De Morgan
 
 -/

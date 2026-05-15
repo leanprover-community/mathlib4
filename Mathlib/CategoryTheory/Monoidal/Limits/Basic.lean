@@ -19,6 +19,7 @@ i.e. there are morphisms
 satisfying the laws of a lax monoidal functor.
 
 ## TODO
+
 Now that we have oplax monoidal functors, assemble `Limits.colim` into an oplax monoidal functor.
 -/
 

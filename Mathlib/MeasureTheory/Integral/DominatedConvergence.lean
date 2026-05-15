@@ -16,6 +16,7 @@ This file collects various results related to the Lebesgue dominated convergence
 for the Bochner integral.
 
 ## Main results
+
 - `MeasureTheory.tendsto_integral_of_dominated_convergence`:
   the Lebesgue dominated convergence theorem for the Bochner integral
 - `MeasureTheory.hasSum_integral_of_dominated_convergence`:
@@ -200,6 +201,7 @@ end TendstoMono
 
 /-!
 ## The Lebesgue dominated convergence theorem for interval integrals
+
 As an application, we show continuity of parametric integrals.
 -/
 namespace intervalIntegral

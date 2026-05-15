@@ -12,9 +12,11 @@ import Mathlib.Analysis.LocallyConvex.Separation
 
 /-!
 # Interior and boundary of a manifold
+
 Define the interior and boundary of a manifold.
 
 ## Main definitions
+
 - **IsInteriorPoint x**: `x ∈ M` is an interior point if, with `φ` being the preferred chart at `x`,
   `φ x` is an interior point of `φ.target`.
 - **IsBoundaryPoint x**: `x ∈ M` is a boundary point if `(extChartAt I x) x ∈ frontier (range I)`.
@@ -22,6 +24,7 @@ Define the interior and boundary of a manifold.
 - **boundary I M** is the **boundary** of `M`, the set of its boundary points.
 
 ## Main results
+
 - `ModelWithCorners.univ_eq_interior_union_boundary`: `M` is the union of its interior and boundary
 - `ModelWithCorners.interior_boundary_disjoint`: interior and boundary of `M` are disjoint
 - `BoundarylessManifold.isInteriorPoint`: if `M` is boundaryless, every point is an interior point
@@ -58,9 +61,11 @@ Define the interior and boundary of a manifold.
   so is their disjoint union `M ⊔ M'`
 
 ## Tags
+
 manifold, interior, boundary
 
 ## TODO
+
 - the interior of `M` is dense, the boundary nowhere dense
 - the interior of `M` is a boundaryless manifold
 - `boundary M` is a submanifold (possibly with boundary and corners):

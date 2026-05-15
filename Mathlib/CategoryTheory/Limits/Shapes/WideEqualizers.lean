@@ -34,6 +34,7 @@ Each of these has a dual.
 * `wideEqualizer.ι_mono` states that every wideEqualizer map is a monomorphism
 
 ## Implementation notes
+
 As with the other special shapes in the limits library, all the definitions here are given as
 `abbrev`s of the general statements for limits, so all the `simp` lemmas and theorems about
 general limits can be used.

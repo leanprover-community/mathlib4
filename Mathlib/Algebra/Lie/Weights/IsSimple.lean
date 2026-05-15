@@ -19,6 +19,7 @@ and `LieAlgebra.IsKilling.invtSubmoduleToLieIdeal`, which constructs the ideal a
 invariant submodule.
 
 ## Main definitions
+
 * `LieIdeal.rootSet`: the set of roots whose root space is contained in a given Lie ideal.
 * `LieIdeal.rootSpan`: the submodule of `Dual K H` spanned by `LieIdeal.rootSet`.
 * `LieIdeal.toInvtRootSubmodule`: the invariant root submodule associated to an ideal.
@@ -28,6 +29,7 @@ invariant submodule.
   invariant root submodules.
 
 ## Main results
+
 * `LieAlgebra.IsKilling.restr_inf_cartan_eq_iSup_corootSubmodule`: the intersection of a Lie ideal
   and a Cartan subalgebra is the span of the coroots whose roots have root spaces in the ideal.
 * `LieAlgebra.IsKilling.isSimple_iff_isIrreducible`: a Killing Lie algebra is simple if and only

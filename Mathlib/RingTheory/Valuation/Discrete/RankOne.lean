@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.Valuation.RankOne
 # Discrete valuations have rank one
 
 ## Main Definitions and Results
+
 * `Valuation.IsRankOneDiscrete.generator_eq_exp_neg_one_of_mem_range` : the generator of
 a discrete valuation in `ℤᵐ⁰` that contains `exp (-1)` in its range is equal to `exp (-1)`.
 * `Valuation.IsRankOneDiscrete.generator_eq_exp_neg_one_of_surjective` : the generator of
@@ -21,6 +22,7 @@ a surjective discrete valuation in `ℤᵐ⁰` is equal to `exp (-1)`.
 * `Valuation.IsRankOneDiscrete.rankOne` : a discrete valuation has rank one.
 
 ## Tags
+
 valuation, discrete, rank one
 -/
 

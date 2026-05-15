@@ -283,6 +283,7 @@ For subset `s ⊆ S` and submodule `N ≤ M`, we define `s • N` to be the smal
 all `r • n` where `r ∈ s` and `n ∈ N`.
 
 #### Results
+
 For arbitrary monoids `S` acting distributively on `M`, there is an induction principle for `s • N`:
 To prove `P` holds for all `s • N`, it is enough
 to prove:
@@ -295,6 +296,7 @@ To invoke this induction principle, use `induction x, hx using Submodule.set_smu
 `x : M` and `hx : x ∈ s • N`
 
 #### Notes
+
 - If we assume the addition on subsets of `R` is the `⊔` and subtraction `⊓` i.e. use `SetSemiring`,
   then this action actually gives a module structure on submodules of `M` over subsets of `R`.
 - If we generalize so that `r • N` makes sense for all `r : S`, then `Submodule.singleton_set_smul`

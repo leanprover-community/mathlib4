@@ -52,6 +52,7 @@ Note that:
 * the functor `C ⥤ Ind C` preserves finite colimits, but not infinite colimits in general.
 
 ## References
+
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Chapter 6
 -/
 

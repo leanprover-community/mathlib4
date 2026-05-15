@@ -9,9 +9,11 @@ public import Mathlib.CategoryTheory.Quotient
 
 /-!
 # The category paths on a quiver.
+
 When `C` is a quiver, `paths C` is the category of paths.
 
 ## When the quiver is itself a category
+
 We provide `path_composition : paths C ⥤ C`.
 
 We check that the quotient of the path category of a category by the canonical relation

@@ -11,11 +11,13 @@ public import Mathlib.Topology.MetricSpace.HausdorffDistance
 # Thickenings in pseudo-metric spaces
 
 ## Main definitions
+
 * `Metric.thickening δ s`, the open thickening by radius `δ` of a set `s` in a pseudo emetric space.
 * `Metric.cthickening δ s`, the closed thickening by radius `δ` of a set `s` in a pseudo emetric
   space.
 
 ## Main results
+
 * `Disjoint.exists_thickenings`: two disjoint sets admit disjoint thickenings
 * `Disjoint.exists_cthickenings`: two disjoint sets admit disjoint closed thickenings
 * `IsCompact.exists_cthickening_subset_open`: if `s` is compact, `t` is open and `s ⊆ t`,

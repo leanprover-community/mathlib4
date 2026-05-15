@@ -16,6 +16,7 @@ public import Mathlib.Order.Minimal
 We provide various results concerning the minimal primes above an ideal.
 
 ## Main results
+
 - `Ideal.minimalPrimes`: `I.minimalPrimes` is the set of ideals that are minimal primes over `I`.
 - `minimalPrimes`: `minimalPrimes R` is the set of minimal primes of `R`.
 - `Ideal.exists_minimalPrimes_le`: Every prime ideal over `I` contains a minimal prime over `I`.

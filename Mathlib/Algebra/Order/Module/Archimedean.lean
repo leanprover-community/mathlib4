@@ -14,6 +14,7 @@ public import Mathlib.Algebra.Order.Module.Basic
 # Archimedean classes for ordered module
 
 ## Main definitions
+
 * `ArchimedeanClass.ball` are `ArchimedeanClass.ballAddSubgroup` as a submodules.
 * `ArchimedeanClass.closedBall` are `ArchimedeanClass.closedBallAddSubgroup` as a submodules.
 -/

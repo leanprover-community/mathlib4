@@ -15,6 +15,7 @@ This file is a collection of results on the complete atomic Boolean algebra stru
 Notation for the complete lattice operations can be found in `Mathlib/Order/SetNotation.lean`.
 
 ## Main declarations
+
 * `Set.sInter_eq_biInter`, `Set.sUnion_eq_biInter`: Shows that `⋂₀ s = ⋂ x ∈ s, x` and
   `⋃₀ s = ⋃ x ∈ s, x`.
 * `Set.completeAtomicBooleanAlgebra`: `Set α` is a `CompleteAtomicBooleanAlgebra` with `≤ = ⊆`,

@@ -88,9 +88,11 @@ is the almost everywhere limit of a sequence of measurable functions (which are 
 pieces of the good discretization), and is therefore almost everywhere measurable.
 
 ## Tags
+
 Change of variables in integrals
 
 ## References
+
 [Fremlin, *Measure Theory* (volume 2)][fremlin_vol2]
 -/
 
