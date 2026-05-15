@@ -202,8 +202,8 @@ theorem isFlasque_skyscraperSheaf_of_epi_from {X : TopCat} (p₀ : ↑X)
       · simp
         grind
     · have h2 : p₀ ∉ unop V := fun hV => h1 (r.unop.le hV)
-      have := isIso_of_isTerminal (skyscraper_terminal_of_not_mem h1)
-        (skyscraper_terminal_of_not_mem h2) ((skyscraperSheaf p₀ A).obj.map r)
+      have := isIso_of_isTerminal (isTerminalSkyscraperSheafObjObjOfNotMem h1)
+        (isTerminalSkyscraperSheafObjObjOfNotMem h2) ((skyscraperSheaf p₀ A).obj.map r)
       infer_instance
 
 /--
