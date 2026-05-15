@@ -1,0 +1,406 @@
+name: Lake cache shadow (master)
+
+# Shadow pipeline that exercises Lake's built-in artifact cache against
+# the live mathlib4 master branch, alongside (and independent of) the
+# regular master CI. Uploads to an isolated `mathlib4-master-shadow`
+# scope so no other consumer reads from it.
+#
+# Required repository configuration (Settings → Secrets and variables → Actions):
+#   Secrets:
+#     LAKE_CACHE_KEY                  — SigV4 secret for the cache bucket
+#   Variables:
+#     LAKE_CACHE_ARTIFACT_ENDPOINT    — e.g. https://<bucket>/<prefix>/artifacts
+#     LAKE_CACHE_REVISION_ENDPOINT    — e.g. https://<bucket>/<prefix>/revisions
+#
+# Jobs:
+#   build_and_stage  Build mathlib + deps with Lake's artifact cache
+#                    enabled, then stage the resulting .ltar files.
+#   upload           Push staged artifacts to the cache bucket via
+#                    `lake cache put-staged`.
+#   consume          Fresh checkout, fetch from the cache bucket via
+#                    `lake cache get`, run `lake build` against the
+#                    rehydrated cache, then verify with `--rehash`.
+#   report           Post a per-run summary to the `CI admins` Zulip
+#                    stream (topic `Lake cache shadow`).
+
+on:
+  schedule:
+    - cron: '0 6 * * *'  # 06:00 UTC daily, off-peak
+  workflow_dispatch:
+    inputs:
+      mathlib_ref:
+        description: ref to test (defaults to master)
+        required: false
+        type: string
+        default: master
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lake-cache-shadow-${{ inputs.mathlib_ref || 'master' }}
+  cancel-in-progress: false
+
+env:
+  # Scope prefix for all puts and gets in this workflow. Namespaces the
+  # workflow's artifacts within the cache bucket.
+  SHADOW_SCOPE: mathlib4-master-shadow
+  STAGE_TARGETS: "Mathlib Archive Counterexamples"
+
+jobs:
+  build_and_stage:
+    name: Build + stage
+    if: ${{ github.repository == 'leanprover-community/mathlib4' }}
+    runs-on: pr
+    timeout-minutes: 90
+    continue-on-error: true
+    outputs:
+      sha: ${{ steps.resolve.outputs.sha }}
+      toolchain: ${{ steps.resolve.outputs.toolchain }}
+    env:
+      LAKE_CACHE_DIR: .lake/cache
+      LAKE_NO_CACHE: true
+    defaults:
+      run:
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LAKE_CACHE_DIR --env LAKE_NO_CACHE --env STAGE_TARGETS --env SHADOW_SCOPE -- bash -euxo pipefail {0}
+    steps:
+      - name: job info
+        shell: bash
+        run: echo "::notice::Lake cache shadow on ref ${{ inputs.mathlib_ref || 'master' }} run ${{ github.run_id }}"
+
+      - name: Setup jq
+        uses: dcarbone/install-jq-action@b7ef57d46ece78760b4019dbc4080a1ba2a40b45 # v3.2.0
+
+      - name: Checkout tools branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: master
+          path: tools-branch
+
+      - name: Checkout mathlib (pr-branch)
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ inputs.mathlib_ref || 'master' }}
+          fetch-depth: 2
+          path: pr-branch
+
+      - name: Resolve sha & toolchain
+        id: resolve
+        shell: bash
+        run: |
+          cd pr-branch
+          SHA="$(git rev-parse HEAD)"
+          TC="$(cat lean-toolchain)"
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+          echo "toolchain=$TC" >> "$GITHUB_OUTPUT"
+
+      - name: Create empty directories (landrun prerequisites)
+        shell: bash
+        run: |
+          mkdir -p pr-branch/.lake/
+          mkdir -p .cache/mathlib/
+          mkdir -p _work
+
+      - name: install elan
+        shell: bash
+        run: |
+          set -o pipefail
+          curl -o elan-init.sh -sSfL https://elan.lean-lang.org/elan-init.sh
+          chmod +x elan-init.sh
+          ./elan-init.sh -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
+
+      - name: set toolchain directory
+        shell: bash
+        run: |
+          cd pr-branch
+          LAKE_PATH=$(elan which lake)
+          TOOLCHAIN_DIR=$(dirname "$(dirname "$LAKE_PATH")")
+          echo "TOOLCHAIN_DIR=$TOOLCHAIN_DIR" >> "$GITHUB_ENV"
+
+      - name: set LEAN_SRC_PATH
+        shell: bash
+        run: |
+          cd pr-branch
+          LEAN_SRC_PATH=".:$TOOLCHAIN_DIR/src/lean/lake"
+          PACKAGE_NAMES=$(jq -r '.packages[].name' lake-manifest.json)
+          for pkg in $PACKAGE_NAMES; do
+            if [[ "$pkg" =~ ^[A-Za-z0-9_-]+$ ]]; then
+              LEAN_SRC_PATH="$LEAN_SRC_PATH:.lake/packages/$pkg"
+            fi
+          done
+          echo "LEAN_SRC_PATH=$LEAN_SRC_PATH" >> "$GITHUB_ENV"
+
+      - name: build tools-branch tools
+        shell: bash
+        run: |
+          cd tools-branch
+          lake build cache
+
+      - name: download dependencies
+        shell: landrun --unrestricted-network --rox /etc --rox /usr --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
+        run: |
+          cd pr-branch
+          lake env
+
+      - name: Hydrate .lake/build via legacy cache
+        shell: bash
+        run: |
+          cd pr-branch
+          ../tools-branch/.lake/build/bin/cache get
+
+      - name: Patch lakefile to enable Lake's artifact cache
+        shell: bash
+        run: |
+          cd pr-branch
+          if grep -q 'enableArtifactCache' lakefile.lean; then
+            echo "lakefile.lean already declares enableArtifactCache; nothing to patch"
+            exit 0
+          fi
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("lakefile.lean")
+          src = p.read_text()
+          marker = '  testDriver := "MathlibTest"'
+          inject = (
+              '  testDriver := "MathlibTest"\n'
+              '  fixedToolchain := true\n'
+              '  enableArtifactCache := true\n'
+              '  restoreAllArtifacts := true'
+          )
+          if marker not in src:
+              raise SystemExit("lakefile.lean shape changed; update the shadow patch in lake_cache_shadow.yml")
+          p.write_text(src.replace(marker, inject, 1))
+          PY
+          echo "::group::patched package block"
+          awk '/^package mathlib where/,/^$/' lakefile.lean
+          echo "::endgroup::"
+
+      # Incremental build: with the legacy cache having hydrated .lake/build/
+      # and the lakefile patched, Lake's pipeline runs to pack/cache any
+      # modules whose .ltar+mapping aren't yet in Lake's cache. Module
+      # source compilation is skipped where per-module traces match (which
+      # they do for the 3 knobs we set), so the "work" here is bounded to
+      # cache population, not lean recompilation. Deps build transitively
+      # but their mappings don't end up in the bundle (Lake's `-o` only
+      # writes root-package outputs).
+      - name: Incremental build (populate Lake's cache)
+        run: |
+          cd pr-branch
+          lake build $STAGE_TARGETS 2>&1 | tee .lake/lake-build.log
+          echo "::group::build summary"
+          echo "Built (pipeline ran):    $(grep -cE '^✔.*Built '    .lake/lake-build.log || true)"
+          echo "Replayed (from cache):   $(grep -cE '^✔.*Replayed ' .lake/lake-build.log || true)"
+          echo "::endgroup::"
+
+      - name: Emit root-package mappings
+        run: |
+          cd pr-branch
+          lake build --no-build $STAGE_TARGETS -o .lake/outputs.jsonl
+          echo "mappings entries: $(wc -l < .lake/outputs.jsonl)"
+          head -3 .lake/outputs.jsonl
+
+      # Pre-create the staging dir outside landrun so the stage step can
+      # write to it. Same pattern as build_template.yml uses for the legacy
+      # cache-staging dir.
+      - name: Create staging directory
+        shell: bash
+        run: mkdir -p lake-cache-staging
+
+      - name: Stage cache for upload
+        # Override default landrun shell to add the staging dir as writable.
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw lake-cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LAKE_CACHE_DIR --env LAKE_NO_CACHE -- bash -euxo pipefail {0}
+        run: |
+          cd pr-branch
+          lake cache stage .lake/outputs.jsonl ../lake-cache-staging
+          du -sh ../lake-cache-staging | awk '{print "staging total:", $1}'
+          echo "ltar count: $(find ../lake-cache-staging -name '*.ltar' | wc -l)"
+
+      - name: Upload staging artifact for the next job
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: lake-cache-staging-${{ github.run_id }}
+          path: lake-cache-staging/
+          retention-days: 3
+          if-no-files-found: error
+
+      - name: Surface failure in workflow notices
+        if: failure()
+        shell: bash
+        run: echo "::warning::Lake cache shadow build_and_stage failed on ${{ steps.resolve.outputs.sha }} — workflow stays green (continue-on-error) but this run needs attention."
+
+  upload:
+    name: Upload to cache bucket
+    needs: build_and_stage
+    if: ${{ github.repository == 'leanprover-community/mathlib4' && needs.build_and_stage.outputs.sha != '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      LAKE_CACHE_ARTIFACT_ENDPOINT: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT }}
+      LAKE_CACHE_REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_REVISION_ENDPOINT }}
+    steps:
+      - name: Checkout mathlib (for lean-toolchain pin)
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ needs.build_and_stage.outputs.sha }}
+          path: pr-branch
+          fetch-depth: 1
+
+      - name: install elan + matching lake
+        shell: bash
+        run: |
+          set -o pipefail
+          curl -o elan-init.sh -sSfL https://elan.lean-lang.org/elan-init.sh
+          chmod +x elan-init.sh
+          ./elan-init.sh -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
+
+      - name: Download staging artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v6.0.0
+        with:
+          name: lake-cache-staging-${{ github.run_id }}
+          path: lake-cache-staging
+
+      - name: Resolve LAKE_CACHE_KEY (trim whitespace)
+        env:
+          LAKE_CACHE_KEY_RAW: ${{ secrets.LAKE_CACHE_KEY }}
+        run: |
+          KEY="$(printf %s "$LAKE_CACHE_KEY_RAW" | sed -e 's/[[:space:]]*$//')"
+          echo "::add-mask::$KEY"
+          echo "LAKE_CACHE_KEY=$KEY" >> "$GITHUB_ENV"
+
+      - name: lake cache put-staged
+        run: |
+          cd pr-branch
+          # --toolchain is a no-op with the current `--scope=<string>` form
+          # (Lake's revisionUrl ignores it for `.str` scopes), but stays
+          # wired so the eventual migration to `--repo=` is a one-line
+          # change rather than re-plumbing outputs.
+          lake cache put-staged ../lake-cache-staging \
+            --scope="${{ env.SHADOW_SCOPE }}" \
+            --rev="${{ needs.build_and_stage.outputs.sha }}" \
+            --toolchain="${{ needs.build_and_stage.outputs.toolchain }}"
+
+  consume:
+    name: Build from Lake cache (no legacy hydration)
+    needs: [build_and_stage, upload]
+    if: ${{ github.repository == 'leanprover-community/mathlib4' && needs.upload.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    continue-on-error: true
+    env:
+      LAKE_CACHE_ARTIFACT_ENDPOINT: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT }}
+      LAKE_CACHE_REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_REVISION_ENDPOINT }}
+    steps:
+      - name: Checkout mathlib
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ needs.build_and_stage.outputs.sha }}
+          path: pr-branch
+          fetch-depth: 1
+
+      - name: install elan
+        run: |
+          set -o pipefail
+          curl -o elan-init.sh -sSfL https://elan.lean-lang.org/elan-init.sh
+          chmod +x elan-init.sh
+          ./elan-init.sh -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
+
+      - name: download dependencies
+        run: |
+          cd pr-branch
+          lake env
+
+      - name: Patch lakefile (same shape as build_and_stage)
+        run: |
+          cd pr-branch
+          if grep -q 'enableArtifactCache' lakefile.lean; then exit 0; fi
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("lakefile.lean")
+          src = p.read_text()
+          marker = '  testDriver := "MathlibTest"'
+          inject = (
+              '  testDriver := "MathlibTest"\n'
+              '  fixedToolchain := true\n'
+              '  enableArtifactCache := true\n'
+              '  restoreAllArtifacts := true'
+          )
+          if marker not in src:
+              raise SystemExit("lakefile.lean shape changed")
+          p.write_text(src.replace(marker, inject, 1))
+          PY
+
+      - name: lake cache get
+        run: |
+          cd pr-branch
+          lake cache get \
+            --scope="$SHADOW_SCOPE" \
+            --rev="${{ needs.build_and_stage.outputs.sha }}"
+          echo "ltar count after get: $(find ~/.elan/toolchains -name '*.ltar' 2>/dev/null | wc -l)"
+
+      - name: lake build
+        run: |
+          cd pr-branch
+          read -ra TARGETS <<< "$STAGE_TARGETS"
+          lake build "${TARGETS[@]}" 2>&1 | tee .lake/consume-build.log
+          echo "Built (pipeline ran):    $(grep -cE '^✔.*Built '    .lake/consume-build.log || true)"
+          echo "Replayed (from cache):   $(grep -cE '^✔.*Replayed ' .lake/consume-build.log || true)"
+
+      - name: Verify with --rehash
+        run: |
+          cd pr-branch
+          read -ra TARGETS <<< "$STAGE_TARGETS"
+          lake build --no-build --rehash -v "${TARGETS[@]}"
+
+      - name: Surface failure in workflow notices
+        if: failure()
+        shell: bash
+        run: echo "::warning::Lake cache shadow consume job failed for ${{ needs.build_and_stage.outputs.sha }} — workflow stays green (continue-on-error) but this run needs attention."
+
+  report:
+    name: Post run summary to Zulip
+    needs: [build_and_stage, upload, consume]
+    if: ${{ always() && github.repository == 'leanprover-community/mathlib4' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Compose Zulip message
+        id: compose
+        shell: bash
+        env:
+          BUILD: ${{ needs.build_and_stage.result }}
+          UPLOAD: ${{ needs.upload.result }}
+          CONSUME: ${{ needs.consume.result }}
+          SHA: ${{ needs.build_and_stage.outputs.sha }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          emoji() {
+            case "$1" in
+              success) echo "✅" ;;
+              skipped) echo "⏭️" ;;
+              cancelled) echo "🟡" ;;
+              *) echo "❌" ;;
+            esac
+          }
+          {
+            echo "msg<<MSG_EOF"
+            echo "**Lake cache shadow** ([run](${RUN_URL}), rev \`${SHA:0:12}\`)"
+            echo ""
+            echo "- $(emoji "$BUILD") build_and_stage: \`$BUILD\`"
+            echo "- $(emoji "$UPLOAD") upload: \`$UPLOAD\`"
+            echo "- $(emoji "$CONSUME") consume: \`$CONSUME\`"
+            echo "MSG_EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Send to Zulip
+        uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+        with:
+          api-key: ${{ secrets.ZULIP_API_KEY }}
+          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+          organization-url: 'https://leanprover.zulipchat.com'
+          to: 'CI admins'
+          type: 'stream'
+          topic: 'Lake cache shadow'
+          content: ${{ steps.compose.outputs.msg }}
