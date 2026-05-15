@@ -45,11 +45,6 @@ metric `g` if and only if the differentiated metric tensor `∇ g` (defined by
 open Bundle NormedSpace
 open scoped Manifold ContDiff
 
-@[expose] public section
-
--- TODO: revisit and fix this once the dust has settled
-set_option backward.isDefEq.respectTransparency false
-
 variable
   -- Let `M` be a `C^k` real manifold modeled on `(E, H)`
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -77,9 +72,6 @@ differentiable at `x`.
 variable {σ σ' σ'' τ τ' τ'' : Π x : M, V x}
 
 local notation "⟪" σ ", " τ "⟫" => fun x ↦ inner ℝ (σ x) (τ x)
-
--- set_option trace.profiler true
--- set_option profiler.threshold 500
 
 namespace CovariantDerivative
 
@@ -137,7 +129,7 @@ theorem compatibilityTensorAux_tensorial₂ (σ : Π x, V x) (hσ : MDiffAt (T% 
 variable {I} [ContMDiffVectorBundle 1 F V I] in
 /-- The tensor `(X, σ, τ) ↦ X g(σ, τ) - g(∇_X σ, τ) - g(σ, ∇_X τ)` defining when a connection
 `∇` on a Riemannian bundle `(M, V)` is compatible with the metric `g`. -/
-@[no_expose] noncomputable def compatibilityTensor [FiniteDimensional ℝ F] (x : M) :
+@[no_expose] public noncomputable def compatibilityTensor [FiniteDimensional ℝ F] (x : M) :
     V x →L[ℝ] V x →L[ℝ] (TangentSpace I x →L[ℝ] ℝ) :=
   TensorialAt.mkHom₂ (compatibilityTensorAux I cov · · x) _
     (compatibilityTensorAux_tensorial₁ I cov) (compatibilityTensorAux_tensorial₂ I cov)
@@ -145,7 +137,7 @@ variable {I} [ContMDiffVectorBundle 1 F V I] in
 variable {X : Π x : M, TangentSpace I x}
 
 variable {I} [ContMDiffVectorBundle 1 F V I] in
-theorem compatibilityTensor_apply [FiniteDimensional ℝ F] (x : M)
+public theorem compatibilityTensor_apply [FiniteDimensional ℝ F] (x : M)
     (hσ : MDiffAt (T% σ) x) (hτ : MDiffAt (T% τ) x) :
     cov.compatibilityTensor x (σ x) (τ x) (X x) =
     extDerivFun% ⟪σ, τ⟫ x (X x) - ⟪∇ X σ, τ⟫ x - ⟪σ, ∇ X τ⟫ x := by
@@ -153,7 +145,7 @@ theorem compatibilityTensor_apply [FiniteDimensional ℝ F] (x : M)
   rw [TensorialAt.mkHom₂_apply _ _ hσ hτ, compatibilityTensorAux_apply]
 
 variable {I} [ContMDiffVectorBundle 1 F V I] in
-theorem compatibilityTensor_apply_eq_extend [FiniteDimensional ℝ F] (X₀ : TangentSpace I x)
+public theorem compatibilityTensor_apply_eq_extend [FiniteDimensional ℝ F] (X₀ : TangentSpace I x)
     (σ₀ τ₀ : V x) :
     cov.compatibilityTensor x σ₀ τ₀ X₀ =
       extDerivFun% ⟪(FiberBundle.extend F σ₀), (FiberBundle.extend F τ₀)⟫ x X₀
@@ -165,11 +157,11 @@ variable {I} [ContMDiffVectorBundle 1 F V I] in
 /-- Predicate saying that a connection `∇` on a Riemannian bundle `(V, g)` is compatible with the
 ambient metric, i.e. for all differentiable vector fields `X` on `M` and sections `σ` and `τ` of
 `V`, we have `X ⟨σ, τ⟩ = ⟨∇_X σ, τ⟩ + ⟨σ, ∇_X τ⟩`. -/
-def IsCompatible [FiniteDimensional ℝ F] : Prop := compatibilityTensor cov = 0
+public def IsCompatible [FiniteDimensional ℝ F] : Prop := compatibilityTensor cov = 0
 
 variable {I} [IsManifold I 1 M] [ContMDiffVectorBundle 1 F V I]
 
-lemma isCompatible_iff [FiniteDimensional ℝ F] :
+public lemma isCompatible_iff [FiniteDimensional ℝ F] :
     cov.IsCompatible ↔ ∀ {x : M} {X : Π x, TangentSpace I x} {σ τ : (x : M) → V x},
       MDiffAt (T% X) x → MDiffAt (T% σ) x → MDiffAt (T% τ) x →
       extDerivFun% ⟪σ, τ⟫ x (X x) = ⟪∇ X σ, τ⟫ x + ⟪σ, ∇ X τ⟫ x := by
