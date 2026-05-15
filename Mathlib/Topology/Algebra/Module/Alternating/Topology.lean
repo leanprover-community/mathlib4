@@ -212,7 +212,7 @@ theorem continuous_restrictScalars :
   isEmbedding_restrictScalars.continuous
 
 variable (𝕜') in
-/-- `ContinuousMultilinearMap.restrictScalars` as a `ContinuousLinearMap`. -/
+/-- `ContinuousAlternatingMap.restrictScalars` as a `ContinuousLinearMap`. -/
 @[simps -fullyApplied apply]
 def restrictScalarsCLM [ContinuousConstSMul 𝕜' F] :
     E [⋀^ι]→L[𝕜] F →L[𝕜'] E [⋀^ι]→L[𝕜'] F where
@@ -247,7 +247,6 @@ lemma liftCLM_apply (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 (fun _ : ι 
 section CompContinuousLinearMap
 
 variable {E' : Type*} [AddCommGroup E'] [Module 𝕜 E'] [TopologicalSpace E']
-    [ContinuousConstSMul 𝕜 F]
 
 /-- Composition of a continuous alternating map and a continuous linear map
 as a bundled continuous linear map.
@@ -384,5 +383,11 @@ generate a continuous linear equivalence between the spaces of continuous altern
 def continuousAlternatingMapCongr (e : E ≃L[𝕜] E') (e' : F ≃L[𝕜] G) :
     (E [⋀^ι]→L[𝕜] F) ≃L[𝕜] (E' [⋀^ι]→L[𝕜] G) :=
   e.continuousAlternatingMapCongrLeft.trans <| e'.continuousAlternatingMapCongrRight
+
+lemma coe_continuousAlternatingMapCongr (e : E ≃L[𝕜] E') (e' : F ≃L[𝕜] G) :
+    (e.continuousAlternatingMapCongr e' (ι := ι) : (E [⋀^ι]→L[𝕜] F) →L[𝕜] (E' [⋀^ι]→L[𝕜] G)) =
+      ContinuousLinearMap.compContinuousAlternatingMapCLM 𝕜 E' F G ι (e' : F →L[𝕜] G) ∘L
+        ContinuousAlternatingMap.compContinuousLinearMapCLM e.symm :=
+  rfl
 
 end ContinuousLinearEquiv

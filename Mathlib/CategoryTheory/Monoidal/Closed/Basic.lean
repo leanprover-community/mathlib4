@@ -84,6 +84,9 @@ def adjunction : tensorLeft A ⊣ ihom A :=
 instance : (tensorLeft A).IsLeftAdjoint :=
   (ihom.adjunction A).isLeftAdjoint
 
+instance : (ihom A).IsRightAdjoint :=
+  (ihom.adjunction A).isRightAdjoint
+
 /-- The evaluation natural transformation. -/
 def ev : ihom A ⋙ tensorLeft A ⟶ 𝟭 C :=
   (ihom.adjunction A).counit
@@ -395,8 +398,8 @@ lemma comp_eq (x y z : C) [Closed x] [Closed y] : comp x y z = curry (compTransp
 
 /-!
 The proofs of associativity and unitality use the following outline:
-  1. Take adjoint transpose on each side of the equality (uncurry_injective)
-  2. Do whatever rewrites/simps are necessary to apply uncurry_curry
+  1. Take adjoint transpose on each side of the equality (`uncurry_injective`)
+  2. Do whatever rewrites/simps are necessary to apply `uncurry_curry`
   3. Conclude with simp
 -/
 

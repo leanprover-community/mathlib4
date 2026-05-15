@@ -5,6 +5,7 @@ Authors: Patrick Massot, Kim Morrison, Mario Carneiro
 -/
 module
 
+public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Elementwise
 public import Mathlib.Topology.ContinuousMap.Basic
 
@@ -66,15 +67,19 @@ variable {X} in
 /-- The type of morphisms in `TopCat`. -/
 @[ext]
 structure Hom (X Y : TopCat.{u}) where
-  --private mk ::
+  private mk ::
   /-- The underlying `ContinuousMap`. -/
   hom' : C(X, Y)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category TopCat where
   Hom X Y := Hom X Y
   id X := ⟨ContinuousMap.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory.{u} TopCat (fun X Y => C(X, Y)) where
   hom := Hom.hom'
   ofHom f := ⟨f⟩
@@ -117,11 +122,11 @@ theorem comp_app {X Y Z : TopCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
     (f ≫ g : X → Z) = g ∘ f := rfl
 
 @[ext]
-lemma hom_ext {X Y : TopCat} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
+lemma hom_ext {X Y : TopCat.{u}} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
 @[ext]
-lemma ext {X Y : TopCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
+lemma ext {X Y : TopCat.{u}} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
   ConcreteCategory.hom_ext _ _ w
 
 @[simp]
@@ -129,7 +134,7 @@ lemma hom_ofHom {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y] (f : C(
     (ofHom f).hom = f := rfl
 
 @[simp]
-lemma ofHom_hom {X Y : TopCat} (f : X ⟶ Y) :
+lemma ofHom_hom {X Y : TopCat.{u}} (f : X ⟶ Y) :
     ofHom (Hom.hom f) = f := rfl
 
 @[simp]
@@ -144,10 +149,10 @@ lemma ofHom_comp {X Y Z : Type u} [TopologicalSpace X] [TopologicalSpace Y] [Top
 lemma ofHom_apply {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y] (f : C(X, Y)) (x : X) :
     (ofHom f) x = f x := rfl
 
-lemma hom_inv_id_apply {X Y : TopCat} (f : X ≅ Y) (x : X) : f.inv (f.hom x) = x := by
+lemma hom_inv_id_apply {X Y : TopCat.{u}} (f : X ≅ Y) (x : X) : f.inv (f.hom x) = x := by
   simp
 
-lemma inv_hom_id_apply {X Y : TopCat} (f : X ≅ Y) (y : Y) : f.hom (f.inv y) = y := by
+lemma inv_hom_id_apply {X Y : TopCat.{u}} (f : X ≅ Y) (y : Y) : f.hom (f.inv y) = y := by
   simp
 
 /-- Morphisms in `TopCat` are equivalent to continuous maps. -/
@@ -156,14 +161,16 @@ def Hom.equivContinuousMap (X Y : TopCat.{u}) : (X ⟶ Y) ≃ C(X, Y) where
   toFun f := f.hom
   invFun f := ofHom f
 
+set_option linter.deprecated false in
 /--
 Replace a function coercion for a morphism `TopCat.of X ⟶ TopCat.of Y` with the definitionally
 equal function coercion for a continuous map `C(X, Y)`.
 -/
-@[simp] theorem coe_of_of {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y]
+@[deprecated "No replacement" (since := "2026-04-23")]
+theorem coe_of_of {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y]
     {f : C(X, Y)} {x} :
     @DFunLike.coe (TopCat.of X ⟶ TopCat.of Y) ((CategoryTheory.forget TopCat).obj (TopCat.of X))
-      (fun _ ↦ (CategoryTheory.forget TopCat).obj (TopCat.of Y)) HasForget.instFunLike
+      (fun _ ↦ (CategoryTheory.forget TopCat).obj (TopCat.of Y)) ConcreteCategory.instFunLike
       (ofHom f) x =
     @DFunLike.coe C(X, Y) X
       (fun _ ↦ Y) _
@@ -229,17 +236,17 @@ lemma isIso_iff_isHomeomorph {X Y : TopCat.{u}} (f : X ⟶ Y) :
   ⟨fun _ ↦ (homeoOfIso (asIso f)).isHomeomorph,
     fun H ↦ isIso_of_bijective_of_isOpenMap _ H.bijective H.isOpenMap⟩
 
-theorem isOpenEmbedding_iff_comp_isIso {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
+theorem isOpenEmbedding_iff_comp_isIso {X Y Z : TopCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
     IsOpenEmbedding (f ≫ g) ↔ IsOpenEmbedding f :=
   (TopCat.homeoOfIso (asIso g)).isOpenEmbedding.of_comp_iff f
 
 @[simp]
-theorem isOpenEmbedding_iff_comp_isIso' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
+theorem isOpenEmbedding_iff_comp_isIso' {X Y Z : TopCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
     IsOpenEmbedding (g ∘ f) ↔ IsOpenEmbedding f := by
   simp only
   exact isOpenEmbedding_iff_comp_isIso f g
 
-theorem isOpenEmbedding_iff_isIso_comp {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :
+theorem isOpenEmbedding_iff_isIso_comp {X Y Z : TopCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :
     IsOpenEmbedding (f ≫ g) ↔ IsOpenEmbedding g := by
   constructor
   · intro h
@@ -248,10 +255,18 @@ theorem isOpenEmbedding_iff_isIso_comp {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶
   · exact fun h => h.comp (TopCat.homeoOfIso (asIso f)).isOpenEmbedding
 
 @[simp]
-theorem isOpenEmbedding_iff_isIso_comp' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :
+theorem isOpenEmbedding_iff_isIso_comp' {X Y Z : TopCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :
     IsOpenEmbedding (g ∘ f) ↔ IsOpenEmbedding g := by
   simp only
   exact isOpenEmbedding_iff_isIso_comp f g
+
+/-- The `MorphismProperty` in `TopCat` of a morphism being an embedding. -/
+abbrev isEmbedding : MorphismProperty TopCat :=
+  fun ⦃A X : TopCat⦄ (f : A ⟶ X) ↦ Topology.IsEmbedding f.hom
+
+@[simp]
+lemma isEmbedding_iff ⦃A X : TopCat⦄ (f : A ⟶ X) : isEmbedding f ↔ Topology.IsEmbedding f.hom :=
+  .rfl
 
 /-- The constant morphism `X ⟶ Y` in `TopCat` given by `y : Y`. -/
 def const {X Y : TopCat.{u}} (y : Y) : X ⟶ Y :=

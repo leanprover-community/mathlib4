@@ -101,7 +101,7 @@ include Γ -- can't be inferred from statements
 exponentially rapid decay at infinity. -/
 lemma petersson_exp_decay_left {f : F} (h_bd : IsZeroAtImInfty f) (f' : F') :
     ∃ a > 0, petersson k f f' =O[atImInfty] fun τ ↦ Real.exp (-a * im τ) := by
-  obtain ⟨b, hb, hbf⟩ := h_bd.exp_decay_atImInfty'
+  obtain ⟨b, hb, hbf⟩ := ModularFormClass.exp_decay_atImInfty' f h_bd
   obtain ⟨a, ha, ha'⟩ := exists_between hb
   use a, ha
   apply IsBigO.of_norm_left

@@ -679,6 +679,7 @@ theorem C_mul_X_eq_monomial : C a * X = monomial 1 a := by rw [← C_mul_X_pow_e
 theorem toFinsupp_C_mul_X (a : R) : (C a * X).toFinsupp = .single 1 a := by
   rw [C_mul_X_eq_monomial, toFinsupp_monomial]
 
+@[grind inj]
 theorem C_injective : Injective (C : R → R[X]) :=
   monomial_injective 0
 
@@ -747,7 +748,7 @@ theorem eq_zero_of_eq_zero (h : (0 : R) = (1 : R)) (p : R[X]) : p = 0 := by
 section Fewnomials
 
 theorem support_monomial (n) {a : R} (H : a ≠ 0) : (monomial n a).support = singleton n := by
-  rw [← ofFinsupp_single, support]; exact Finsupp.support_single_ne_zero _ H
+  rw [← ofFinsupp_single, support]; exact Finsupp.support_single _ H
 
 theorem support_monomial' (n) (a : R) : (monomial n a).support ⊆ singleton n := by
   rw [← ofFinsupp_single, support]
