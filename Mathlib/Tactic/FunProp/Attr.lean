@@ -47,13 +47,13 @@ initialize
     applicationTime := AttributeApplicationTime.afterCompilation
     add   := fun declName stx attrKind =>
        discard <| MetaM.run do
-       let eagerTransition :=
+       let alwaysTryTransition :=
          match stx with
          | `(attr| fun_prop always_try_transition) => true | _ => false
        let info ← getConstInfo declName
        forallTelescope info.type fun _ b => do
          if b.isProp then
-           addFunPropDecl declName eagerTransition
+           addFunPropDecl declName alwaysTryTransition
          else
            addTheorem declName attrKind
     erase := fun _declName =>
