@@ -213,7 +213,7 @@ lemma monomial_eq_monomial_iff {m n : ℕ} {a b : R} :
     monomial m a = monomial n b ↔ m = n ∧ a = b ∨ a = 0 ∧ b = 0 := by
   rw [← Finsupp.single_eq_single_iff m n a b]
   simp only [monomial_def, ← toFinsupp_single, toFinsupp_inj]
-  simp only [single, SkewMonoidAlgebra.ofFinsupp_inj, Finsupp.single_eq_single_iff,
+  simp only [← ofFinsupp_single, SkewMonoidAlgebra.ofFinsupp_inj, Finsupp.single_eq_single_iff,
     EmbeddingLike.apply_eq_iff_eq]
 
 end Monomial
@@ -243,8 +243,9 @@ lemma monomial_mul_monomial [MulSemiringAction (Multiplicative ℕ) R] (n m : �
 
 lemma mul_def {f g : SkewPolynomial R} [MulSemiringAction (Multiplicative ℕ) R] : f * g =
     f.sum fun (a₁ : ℕ) b₁ => g.sum fun (a₂ : ℕ) b₂ => monomial (a₁ + a₂) (b₁ * (φ^[a₁] b₂)) := by
+  ext
   simp_rw [φ_iterate_apply]
-  rfl
+  erw [coeff_sum]
 
 section Constant
 
