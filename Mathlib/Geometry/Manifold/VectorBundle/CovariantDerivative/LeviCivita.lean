@@ -48,7 +48,7 @@ open Bundle FiberBundle Function NormedSpace VectorField
 
 open scoped Manifold ContDiff
 
-@[expose] public section -- TODO: think if we want to expose all definitions!
+public section
 
 -- Let `(M, g)` be a `C^k` real manifold modeled on `(E, H)`, endowed with a Riemannian metric `g`.
 variable {n : WithTop ℕ∞}
@@ -73,7 +73,8 @@ iff it is torsion-free and compatible with `g`.
 Note that the bundle metric on `TM` is implicitly hidden in this definition. See `TODO` for a
 version depending on a choice of Riemannian metric on `M`.
 -/
-def IsLeviCivitaConnection [FiniteDimensional ℝ E] : Prop := cov.IsCompatible ∧ cov.torsion = 0
+@[expose] def IsLeviCivitaConnection [FiniteDimensional ℝ E] : Prop :=
+  cov.IsCompatible ∧ cov.torsion = 0
 
 local notation "⟪" X ", " Y "⟫" => fun x ↦ inner ℝ (X x) (Y x)
 
@@ -354,7 +355,7 @@ private theorem leviCivitaRhs_tensorial₂ [FiniteDimensional ℝ E]
 open Classical in
 /-- Auxiliary definition for the definition of the Levi-Civita connection:
 this the right hand side `leviCivitaRhs`, as a `(2,0)`-tensor ?! -/
-@[no_expose] private noncomputable def lcAux₀ [FiniteDimensional ℝ E]
+private noncomputable def lcAux₀ [FiniteDimensional ℝ E]
     {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) :
     TangentSpace I x →L[ℝ] TangentSpace I x →L[ℝ] ℝ :=
   TensorialAt.mkHom₂ _ (x := x)
@@ -372,7 +373,7 @@ private theorem lcAux₀_apply [FiniteDimensional ℝ E] {x : M}
 /-- Almost the underlying function underlying our construction of the Levi-Civita connection:
 this is the desired `(1,1)`-tensor, but without considerations to the junk value when
 applied to non-differentiable vector fields. -/
-@[no_expose] noncomputable def lcAux₁ [FiniteDimensional ℝ E]
+noncomputable def lcAux₁ [FiniteDimensional ℝ E]
     {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) :
     TangentSpace I x →L[ℝ] TangentSpace I x :=
   -- Use the musical isomorphism to produce a candidate `∇ Y` as a `(1,1)`-tensor
@@ -464,7 +465,7 @@ variable (M) in
 /-- A choice of Levi-Civita connection on the tangent bundle `TM` of a Riemannian manifold `(M, g)`:
 this is unique up to the value on non-differentiable vector fields.
 If you know the Levi-Civita connection already, you can use `IsLeviCivitaConnection` instead. -/
-@[no_expose] noncomputable def LeviCivitaConnection [FiniteDimensional ℝ E] :
+noncomputable def LeviCivitaConnection [FiniteDimensional ℝ E] :
     CovariantDerivative I E (TangentSpace I : M → Type _) where
   toFun := lcAux I
   isCovariantDerivativeOnUniv := isCovariantDerivativeOn_lcAux I
