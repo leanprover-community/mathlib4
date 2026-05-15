@@ -112,6 +112,9 @@ Let X be a C^k vector field on M.
 explain TotalSpace.mk' somewhere in here...
 
 
+-- Let `cov` be a covariant derivative on `V`.
+
+
 
 **Basic API lemmas**
 - testing smoothness of a map in charts: the standard charts; any charts

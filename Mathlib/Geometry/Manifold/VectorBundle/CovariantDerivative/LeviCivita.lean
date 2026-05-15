@@ -64,7 +64,6 @@ variable {n : WithTop ℕ∞}
 namespace CovariantDerivative
 
 -- Let `cov` be a covariant derivative on `TM`.
--- TODO: include in cheat sheet!
 variable (cov : CovariantDerivative I E (TangentSpace I : M → Type _))
 
 /-- Local notation for a connection. Caution: `∇ Y, X` corresponds to `∇ₓ Y` in textbooks -/

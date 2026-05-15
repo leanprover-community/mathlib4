@@ -84,9 +84,7 @@ local notation "⟪" σ ", " τ "⟫" => fun x ↦ inner ℝ (σ x) (τ x)
 namespace CovariantDerivative
 
 -- Let `cov` be a covariant derivative on `V`.
--- TODO: include in cheat sheet!
 variable (cov : CovariantDerivative I F V)
-
 
 /-- Local notation for a covariant derivative on a vector bundle acting on a vector field and a
 section. -/
