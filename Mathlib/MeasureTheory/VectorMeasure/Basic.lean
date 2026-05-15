@@ -642,17 +642,21 @@ end ContinuousAdd
 section Module
 
 variable {R : Type*} [Semiring R] [Module R M] [Module R N]
-variable [ContinuousAdd M] [ContinuousAdd N] [ContinuousConstSMul R M] [ContinuousConstSMul R N]
+
+variable [ContinuousConstSMul R M] [ContinuousConstSMul R N]
+
+theorem mapRange_smul {v : VectorMeasure α M} {f : M →ₗ[R] N} (hf : Continuous f) {c : R} :
+    (c • v).mapRange f.toAddMonoidHom hf = c • (v.mapRange f.toAddMonoidHom hf) := by
+  ext; simp
+
+variable [ContinuousAdd M] [ContinuousAdd N]
 
 /-- Given a continuous linear map `f : M → N`, `mapRangeₗ` is the linear map mapping the
 vector measure `v` on `M` to the vector measure `f ∘ v` on `N`. -/
 def mapRangeₗ (f : M →ₗ[R] N) (hf : Continuous f) : VectorMeasure α M →ₗ[R] VectorMeasure α N where
   toFun v := v.mapRange f.toAddMonoidHom hf
   map_add' _ _ := mapRange_add hf
-  map_smul' := by
-    intros
-    ext
-    simp
+  map_smul' _ _ := mapRange_smul hf
 
 end Module
 

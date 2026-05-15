@@ -62,7 +62,7 @@ unconditionally convergent.
 public section
 
 open Set MeasureTheory VectorMeasure ContinuousLinearMap Filter Topology
-open scoped ENNReal
+open scoped ENNReal NNReal
 
 variable {X E F G : Type*} {mX : MeasurableSpace X}
   [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -129,6 +129,10 @@ lemma restrict_transpose (μ : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G
 lemma transpose_add (μ ν : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) :
     (μ + ν).transpose B = μ.transpose B + ν.transpose B := by
   simp [transpose]
+
+lemma transpose_smul (μ : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) (c : ℝ) :
+    (c • μ).transpose B = c • μ.transpose B := by
+  simp [transpose, mapRange_smul]
 
 lemma variation_transpose_le (μ : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) :
     (μ.transpose B).variation ≤ ‖B‖₊ • μ.variation := by
@@ -489,36 +493,26 @@ theorem nndist_integral_add_vectorMeasure_le_lintegral
   rw [integral_add_vectorMeasure h₁ h₂, nndist_comm, nndist_eq_nnnorm, add_sub_cancel_left]
   exact enorm_integral_le_lintegral_enorm _
 
-#check setToFun_congr_smul_measure
-
-instance glou {R : Type*} [Ring R] : SMul R R := by infer_instance
-
-#print  instSMulOfMul
-
 @[simp]
 theorem integral_smul_measure (f : X → E) (c : ℝ) :
     ∫ᵛ x, f x ∂[B; c • μ] = c • ∫ᵛ x, f x ∂[B; μ] := by
   by_cases hG : CompleteSpace G; swap
   · simp [integral, setToFun, hG]
   simp_rw [integral, ← setToFun_smul_left]
-  have : ((c • μ).transpose B).variation = (ENNReal.ofReal |c|) • (μ.transpose B).variation := by
-
-  simp only [transpose, mapRange_apply, LinearMap.toAddMonoidHom_coe, coe_coe, Real.norm_eq_abs,
-    mul_one]
-
-  have hdfma : DominatedFinMeasAdditive μ (weightedSMul (c • μ) : Set X → G →L[ℝ] G) c.toReal :=
-    mul_one c.toReal ▸ (dominatedFinMeasAdditive_weightedSMul (c • μ)).of_smul_measure hc
-  have hdfma_smul := dominatedFinMeasAdditive_weightedSMul (F := G) (c • μ)
-  rw [← setToFun_congr_smul_measure c hc hdfma hdfma_smul f]
-  exact setToFun_congr_left' _ _ (fun s _ _ => weightedSMul_smul_measure μ c) f
-
-#exit
-
+  have : ((c • μ).transpose B).variation = ‖c‖₊ • (μ.transpose B).variation := by
+    simp [transpose, mapRange_smul, variation_smul]
+  simp only [this, mul_one]
+  have : DominatedFinMeasAdditive (μ.transpose B).variation ((c • μ).transpose B) ‖c‖ := by
+    simp only [transpose_smul, coe_smul, Real.norm_eq_abs]
+    simpa [← transpose_eq_cbmApplyMeasure] using
+      (dominatedFinMeasAdditive_cbmApplyMeasure μ B).smul c
+  rw! [← setToFun_congr_smul_measure' _ this, transpose_smul]
+  rfl
 
 @[simp]
 theorem integral_smul_nnreal_measure (f : X → E) (c : ℝ≥0) :
-    ∫ᵛ x, f x ∂(c • μ) = c • ∫ᵛ x, f x ∂[B; μ] :=
-  integral_smul_measure f (c : ℝ≥0∞)
+    ∫ᵛ x, f x ∂[B; c • μ] = c • ∫ᵛ x, f x ∂[B; μ] :=
+  integral_smul_measure f (c : ℝ)
 
 theorem integral_map_of_stronglyMeasurable {β} [MeasurableSpace β] {φ : X → β} (hφ : Measurable φ)
     {f : β → G} (hfm : StronglyMeasurable f) : ∫ᵛ y, f y ∂Measure.map φ μ = ∫ᵛ x, f (φ x) ∂[B; μ] := by

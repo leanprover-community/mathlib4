@@ -1050,6 +1050,12 @@ theorem setToFun_congr_smul_measure (c : ℝ≥0∞) (hc_ne_top : c ≠ ∞)
   · simp [hc0]
   · rw [smul_smul, ENNReal.inv_mul_cancel hc0 hc_ne_top, one_smul]
 
+theorem setToFun_congr_smul_measure' (c : ℝ≥0)
+    (hT : DominatedFinMeasAdditive μ T C) (hT_smul : DominatedFinMeasAdditive (c • μ) T C')
+    (f : α → E) : setToFun μ T hT f = setToFun (c • μ) T hT_smul f := by
+  rw! [ENNReal.smul_def]
+  apply setToFun_congr_smul_measure _ (by simp)
+
 theorem norm_setToFun_le_mul_norm (hT : DominatedFinMeasAdditive μ T C) (f : α →₁[μ] E)
     (hC : 0 ≤ C) : ‖setToFun μ T hT f‖ ≤ C * ‖f‖ := by
   by_cases hF : CompleteSpace F; swap
