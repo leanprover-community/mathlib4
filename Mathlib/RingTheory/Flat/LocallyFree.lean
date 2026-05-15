@@ -38,7 +38,7 @@ lemma localizedMap_bijective_of_surjective_of_rankAtStalk_eq (a : R) {φ : M →
   rw [rankAtStalk_isBaseChange (LocalizedModule.isBaseChange (Submonoid.powers a) N)]
   obtain ⟨𝔪, _, hm𝔪⟩ : ∃ 𝔪 : Ideal R, 𝔪.IsMaximal ∧ PrimeSpectrum.comap
       (algebraMap R (Localization (Submonoid.powers a))) ⟨m, inferInstance⟩ ≤ 𝔪 :=
-    Ideal.exists_le_maximal (m.comap (algebraMap R (Localization.Away a))) Ideal.IsPrime.ne_top'
+    (m.comap (algebraMap R (Localization.Away a))).exists_le_maximal Ideal.IsPrime.ne_top'
   simp [rankAtStalk_eq_of_le_of_finite_of_flat' _ hm𝔪, h 𝔪]
 
 variable (M) in
@@ -58,7 +58,7 @@ theorem Free.away_of_finite_of_flat_of_rankAtStalk_constant (p : Ideal R) [p.IsP
     obtain ⟨φ, hφps⟩ := exists_localizedMap_surjective_of_surjective p.primeCompl f g
       ((finBasis Rₚ (LocalizedModule.AtPrime p M)).repr.restrictScalars R).symm.surjective
     obtain ⟨a, hap, hφas⟩ := by
-      refine exists_localizedMap_away_surjective_of_map_atPrime_surjective p φ ?_
+      refine exists_localizedMap_away_surjective_of_localizedMap_atPrime_surjective p φ ?_
       simpa [LocalizedModule.coe_map_eq f g]
     have : Module.Free (Localization.Away a) (LocalizedModule.Away a (Fin n →₀ R)) :=
       free_of_isLocalizedModule (Submonoid.powers a) (mkLinearMap (Submonoid.powers a) (Fin n →₀ R))
