@@ -293,7 +293,7 @@ namespace LinearMap
 
 open Module
 
-variable (k : Type*) [Field k] [Module k E] [Module k F] (f : E →ₗ[k] F)
+variable {k : Type*} [Field k] [Module k E] [Module k F] (f : E →ₗ[k] F)
 
 /-- The index of a linear map.
 
@@ -327,14 +327,19 @@ lemma index_smul (t : k) (ht : t ≠ 0) :
     (-f).index = f.index := by
   rw [index, index, ker_neg, range_neg]
 
+-- TODO Move to `Mathlib/LinearAlgebra/FiniteDimensional/Lemmas.lean` I guess
+instance (p : Submodule k E) [FiniteDimensional k (E ⧸ p)] [FiniteDimensional k (F ⧸ f.range)] :
+    FiniteDimensional k (F ⧸ map f p) := by
+  sorry
+
 open Function in
 lemma index_comp {G : Type*} [AddCommGroup G] [Module k G] (g : F →ₗ[k] G)
     [FiniteDimensional k f.ker] [FiniteDimensional k g.ker]
     [FiniteDimensional k (F ⧸ f.range)] [FiniteDimensional k (G ⧸ g.range)] :
     (g ∘ₗ f).index = g.index + f.index := by
   -- 0 → f.ker → (g ∘ₗ f).ker → g.ker → f.coker → (g ∘ₗ f).coker → g.coker → 0
-  have : FiniteDimensional k (g ∘ₗ f).ker := by sorry
-  have : FiniteDimensional k (G ⧸ (g ∘ₗ f).range) := by sorry
+  have : FiniteDimensional k (g ∘ₗ f).ker := by rw [ker_comp]; infer_instance
+  have : FiniteDimensional k (G ⧸ (g ∘ₗ f).range) := by rw [range_comp]; infer_instance
   let f₀ : f.ker →ₗ[k] (g ∘ₗ f).ker := Submodule.inclusion <| ker_le_ker_comp f g
   let f₁ : (g ∘ₗ f).ker →ₗ[k] g.ker := f.restrict <| by simp
   let f₂ : g.ker →ₗ[k] F ⧸ f.range := f.range.mkQ ∘ₗ g.ker.subtype
@@ -344,12 +349,8 @@ lemma index_comp {G : Type*} [AddCommGroup G] [Module k G] (g : F →ₗ[k] G)
   have h₀ : Injective f₀ := Submodule.inclusion_injective _
   have h₁ : Exact f₀ f₁ := fun ⟨x, hx⟩ ↦ by simp [f₀, f₁, restrict_apply, Submodule.inclusion_apply]
   have h₂ : Exact f₁ f₂ := fun ⟨x, hx⟩ ↦ by aesop (add simp restrict_apply)
-  have h₃ : Exact f₂ f₃ := by
-    rw [LinearMap.exact_iff]
-    simp [f₂, f₃, range_comp, ker_mapQ, comap_map_eq]
-  have h₄ : Exact f₃ f₄ := by
-    rw [LinearMap.exact_iff]
-    simp [f₃, f₄, factor, ker_mapQ, range_mapQ]
+  have h₃ : Exact f₂ f₃ := by rw [exact_iff]; simp [f₂, f₃, range_comp, ker_mapQ, comap_map_eq]
+  have h₄ : Exact f₃ f₄ := by rw [exact_iff]; simp [f₃, f₄, factor, ker_mapQ, range_mapQ]
   have h₅ : Surjective f₄ := factor_surjective _
   grind [index, sum_neg_one_pow_finrank_eq_zero_of_exact_six f₀ f₁ f₂ f₃ f₄ h₀ h₁ h₂ h₃ h₄ h₅]
 
@@ -738,7 +739,25 @@ theorem isFredholmTFAE (u : E →L[𝕜] F) : List.TFAE
   tfae_have 2 → 4 := by
     sorry -- Filippo
   tfae_have 4 → 1 := by
-    sorry -- should be easy
+    rintro ⟨E₁, E₂, F₁, F₂, E₂_FG, F₂_FG, E_compl, F_compl, u', h⟩
+    refine ⟨(E₁.subtypeL ∘L u'.symm.toContinuousLinearMap).ofIsTopCompl F_compl 0, ?_, ?_⟩
+    <;> simp only [QuotFiniteSubmodules.eqv_iff, ContinuousLinearMap.coe_comp,
+      ContinuousLinearMap.toLinearMap_ofIsTopCompl, toLinearMap_subtypeL,
+      ContinuousLinearMap.coe_zero, ContinuousLinearMap.coe_id, QuotFiniteRank.eqv_iff,
+      LinearMap.HasFiniteRank, ← Submodule.fg_iff_finiteDimensional]
+    · have : (u ∘ₗ LinearMap.ofIsCompl F_compl.isCompl
+        (E₁.subtype ∘ₗ u'.symm) 0 - LinearMap.id).range = F₂ := by
+        have : u ∘ₗ LinearMap.ofIsCompl F_compl.isCompl
+          (E₁.subtype ∘ₗ u'.symm) 0 = F₁.projection F₂ F_compl.isCompl := by
+          ext; simp [LinearMap.ofIsCompl, h]
+        simp [this, F₂.projection_eq_id_sub_projection F_compl.isCompl.symm]
+      rwa [this]
+    · have : (LinearMap.ofIsCompl F_compl.isCompl (E₁.subtype ∘ₗ u'.symm) 0 ∘ₗ u -
+        LinearMap.id).range = E₂ := by
+        have : LinearMap.ofIsCompl F_compl.isCompl
+          (E₁.subtype ∘ₗ u'.symm) 0 ∘ₗ u = E₁.projection E₂ E_compl.isCompl := by ext; simp [h]
+        simp [this, E₂.projection_eq_id_sub_projection E_compl.isCompl.symm]
+      rwa [this]
   tfae_finish
 
 /- ## Simpler criterion for `IsFredholmStruct` between RCLike Banach spaces
@@ -831,7 +850,7 @@ variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] 
 theorem key_fact {u₀ : E →L[𝕜] F} {v₀ : F →L[𝕜] E} (h : u₀.QuasiInverse v₀) :
     ∃ φ : (E →L[𝕜] F) → (F →L[𝕜] E), φ u₀ = v₀ ∧
       ∀ᶠ u in 𝓝 u₀, u.QuasiInverse (φ u) ∧
-      ∀ᶠ u in 𝓝 u₀, u.index 𝕜 = u₀.index 𝕜 := by
+      ∀ᶠ u in 𝓝 u₀, u.index = u₀.index := by
   sorry
 
 end NormPerturbation
