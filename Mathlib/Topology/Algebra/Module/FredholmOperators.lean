@@ -829,7 +829,7 @@ variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E
 theorem key_fact {u₀ : E →L[𝕜] F} {v₀ : F →L[𝕜] E} (h : u₀.QuasiInverse v₀) :
     ∃ φ : (E →L[𝕜] F) → (F →L[𝕜] E), φ u₀ = v₀ ∧
       ∀ᶠ u in 𝓝 u₀, u.QuasiInverse (φ u) ∧
-      ∀ᶠ u in 𝓝 u₀, u.index 𝕜 = u₀.index 𝕜 := by
+      ∀ᶠ u in 𝓝 u₀, u.index = u₀.index := by
   sorry
 
 end NormPerturbation
