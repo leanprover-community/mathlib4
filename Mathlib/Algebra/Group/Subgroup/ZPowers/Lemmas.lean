@@ -83,7 +83,6 @@ theorem closure_eq_zmultiples (a b : ℤ) :
     · rw [h1]
       exact Int.mem_zmultiples_iff.mpr (Int.gcd_dvd_right a b)
   · rw [AddSubgroup.zmultiples_le, AddSubgroup.mem_closure_pair, Int.gcd_eq_gcd_ab]
-    use a.gcdA b,  a.gcdB b
     simp [mul_comm]
 
 end Int
