@@ -8,10 +8,10 @@ name: ci dev (lake cache shadow)
 #
 # Required repository configuration (Settings → Secrets and variables → Actions):
 #   Secrets:
-#     LAKE_CACHE_SHADOW_KEY                  — SigV4 secret for the shadow bucket
+#     LAKE_CACHE_KEY                  — SigV4 secret for the cache bucket
 #   Variables:
-#     LAKE_CACHE_SHADOW_ARTIFACT_ENDPOINT    — e.g. https://<bucket>/<prefix>/artifacts
-#     LAKE_CACHE_SHADOW_REVISION_ENDPOINT    — e.g. https://<bucket>/<prefix>/revisions
+#     LAKE_CACHE_ARTIFACT_ENDPOINT    — e.g. https://<bucket>/<prefix>/artifacts
+#     LAKE_CACHE_REVISION_ENDPOINT    — e.g. https://<bucket>/<prefix>/revisions
 
 on:
   workflow_dispatch:
@@ -228,7 +228,7 @@ jobs:
           echo "ltar count: $(find ../lake-cache-staging -name '*.ltar' | wc -l)"
 
       - name: Upload staging artifact for the next job
-        if: ${{ vars.LAKE_CACHE_SHADOW_ARTIFACT_ENDPOINT != '' }}
+        if: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT != '' }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: lake-cache-staging-${{ github.run_id }}
@@ -237,24 +237,24 @@ jobs:
           if-no-files-found: error
 
       - name: DRY-RUN summary (when R2 not configured)
-        if: ${{ vars.LAKE_CACHE_SHADOW_ARTIFACT_ENDPOINT == '' }}
+        if: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT == '' }}
         shell: bash
         run: |
           echo "::notice::DRY-RUN complete. Build + stage worked end-to-end."
           echo "::notice::To exercise upload + consume, set repo vars"
-          echo "::notice::  LAKE_CACHE_SHADOW_ARTIFACT_ENDPOINT"
-          echo "::notice::  LAKE_CACHE_SHADOW_REVISION_ENDPOINT"
-          echo "::notice::and secret LAKE_CACHE_SHADOW_KEY, then re-run."
+          echo "::notice::  LAKE_CACHE_ARTIFACT_ENDPOINT"
+          echo "::notice::  LAKE_CACHE_REVISION_ENDPOINT"
+          echo "::notice::and secret LAKE_CACHE_KEY, then re-run."
 
   upload:
     name: Upload to shadow bucket
     needs: build_and_stage
-    if: ${{ github.repository == 'leanprover-community/mathlib4' && vars.LAKE_CACHE_SHADOW_ARTIFACT_ENDPOINT != '' && needs.build_and_stage.outputs.sha != '' }}
+    if: ${{ github.repository == 'leanprover-community/mathlib4' && vars.LAKE_CACHE_ARTIFACT_ENDPOINT != '' && needs.build_and_stage.outputs.sha != '' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
-      LAKE_CACHE_ARTIFACT_ENDPOINT: ${{ vars.LAKE_CACHE_SHADOW_ARTIFACT_ENDPOINT }}
-      LAKE_CACHE_REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_SHADOW_REVISION_ENDPOINT }}
+      LAKE_CACHE_ARTIFACT_ENDPOINT: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT }}
+      LAKE_CACHE_REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_REVISION_ENDPOINT }}
     steps:
       - name: Checkout mathlib (for lean-toolchain pin)
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -280,7 +280,7 @@ jobs:
 
       - name: Resolve LAKE_CACHE_KEY (trim whitespace)
         env:
-          LAKE_CACHE_KEY_RAW: ${{ secrets.LAKE_CACHE_SHADOW_KEY }}
+          LAKE_CACHE_KEY_RAW: ${{ secrets.LAKE_CACHE_KEY }}
         run: |
           KEY="$(printf %s "$LAKE_CACHE_KEY_RAW" | sed -e 's/[[:space:]]*$//')"
           echo "::add-mask::$KEY"
@@ -303,8 +303,8 @@ jobs:
     continue-on-error: true
     env:
       LAKE_CACHE_DIR: .lake/cache
-      LAKE_CACHE_ARTIFACT_ENDPOINT: ${{ vars.LAKE_CACHE_SHADOW_ARTIFACT_ENDPOINT }}
-      LAKE_CACHE_REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_SHADOW_REVISION_ENDPOINT }}
+      LAKE_CACHE_ARTIFACT_ENDPOINT: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT }}
+      LAKE_CACHE_REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_REVISION_ENDPOINT }}
     defaults:
       run:
         shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LAKE_CACHE_DIR --env LAKE_CACHE_ARTIFACT_ENDPOINT --env LAKE_CACHE_REVISION_ENDPOINT --env STAGE_TARGETS --env STAGE_DEP_TARGETS --env SHADOW_SCOPE -- bash -euxo pipefail {0}
