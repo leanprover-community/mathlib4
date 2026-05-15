@@ -132,75 +132,6 @@ example (hf : MDiffAt f x) (hg : MDiffAt g x) : MDiffAt (f + g) x := by
 
 end funpropsetup
 
-variable (X Y Z) in
-/-- The first term in the definition of the candidate Levi-Civita connection:
-`rhs_aux I X Y Z = X ⟨Y, Z⟩ = x ↦ d(⟨Y, Z⟩)_x (X x)`.
-
-This definition contains mild defeq abuse, which is invisible on paper:
-The function `⟨Y, Z⟩` maps `M` into `ℝ`, hence its differential at a point `x` maps `T_p M`
-to an element of the tangent space of `ℝ` --- as a summand `⟨Y, [X, Z]⟩` yields an honest
-real number, we apply the identification of the real numbers' tangent space with itself.
--/
-noncomputable abbrev rhs_aux : M → ℝ := fun x ↦ mvfderiv% ⟪Y, Z⟫ x (X x)
-
-section rhs_aux
-
-variable (Y Z) in
-omit [IsManifold I 2 M] in
-lemma rhs_aux_swap_apply (x : M) : rhs_aux I X Y Z x = rhs_aux I X Z Y x := by
-  simp [rhs_aux, real_inner_comm]
-
-variable (Y Z) in
-omit [IsManifold I 2 M] in
-lemma rhs_aux_swap : rhs_aux I X Y Z = rhs_aux I X Z Y := by
-  ext x
-  apply rhs_aux_swap_apply
-
-omit [IsManifold I 2 M] in
-variable (X X' Y Z) in
-lemma rhs_aux_addX_apply {x : M} :
-    rhs_aux I (X + X') Y Z x = rhs_aux I X Y Z x + rhs_aux I X' Y Z x := by
-  simp [rhs_aux]
-
-variable {x : M}
-
-variable (X) in
-@[simp]
-lemma rhs_aux_addY_apply (hY : MDiffAt (T% Y) x) (hY' : MDiffAt (T% Y') x) (hZ : MDiffAt (T% Z) x) :
-    rhs_aux I X (Y + Y') Z x = rhs_aux I X Y Z x + rhs_aux I X Y' Z x := by
-  simp (disch := fun_prop) [rhs_aux, inner_add_left, mvfderiv_fun_add]
-
-variable (X) in
-@[simp]
-lemma rhs_aux_addZ_apply (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) (hZ' : MDiffAt (T% Z') x) :
-    rhs_aux I X Y (Z + Z') x = rhs_aux I X Y Z x + rhs_aux I X Y Z' x := by
-  simp (disch := fun_prop) [rhs_aux, inner_add_right, mvfderiv_fun_add]
-
-omit [IsManifold I 2 M] in
-variable (X Y Z) in
-lemma rhs_aux_smulX_apply (f : M → ℝ) (x) : rhs_aux I (f • X) Y Z x = f x * rhs_aux I X Y Z x := by
-  simp [rhs_aux]
-
-variable (X) in
-lemma rhs_aux_smulY_apply {f : M → ℝ}
-    (hf : MDiffAt f x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
-    letI A (x) := ((mvfderiv% f x) (X x))
-    rhs_aux I X (f • Y) Z x = f x * rhs_aux I X Y Z x + A x * ⟪Y, Z⟫ x := by
-  simp (disch := fun_prop) [rhs_aux, inner_smul_left, mvfderiv_fun_mul]
-  ring
-
-variable (X) in
-lemma rhs_aux_smulZ_apply {f : M → ℝ}
-    (hf : MDiffAt f x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
-    letI A (x) := ((mvfderiv% f x) (X x))
-    rhs_aux I X Y (f • Z) x = f x * rhs_aux I X Y Z x + A x * ⟪Y, Z⟫ x := by
-  -- TODO: why doesn't this work?
-  -- simp_rw [rhs_aux_swap _ Y (f • Z)]
-  simp (disch := assumption) [rhs_aux_swap_apply _ Y (f • Z), rhs_aux_smulY_apply,
-    rhs_aux_swap_apply _ Z Y, real_inner_comm]
-
-end rhs_aux
-
 variable {x : M}
 
 variable (X Y Z) in
@@ -209,7 +140,8 @@ If `∇` is a Levi-Civita connection on `TM`, then
 `⟨∇ X Y, Z⟩ = leviCivitaRhs I X Y Z` for all smooth vector fields `X`, `Y` and `Z`. -/
 public noncomputable def leviCivitaRhs : M → ℝ :=
   letI leviCivitaRhs' :=
-    rhs_aux I X Y Z + rhs_aux I Y Z X - rhs_aux I Z X Y
+    (fun x ↦ mvfderiv% ⟪Y, Z⟫ x (X x)) + (fun x ↦ mvfderiv% ⟪Z, X⟫ x (Y x)) -
+    (fun x ↦ mvfderiv% ⟪X, Y⟫ x (Z x)) --rhs_aux I Z X Y
     - ⟪Y ,(VectorField.mlieBracket I X Z)⟫
     - ⟪Z, (VectorField.mlieBracket I Y X)⟫
     + ⟪X, (VectorField.mlieBracket I Z Y)⟫
@@ -223,9 +155,9 @@ public lemma leviCivitaRhs_addX_apply [CompleteSpace E]
     (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     leviCivitaRhs I (X + X') Y Z x =
       leviCivitaRhs I X Y Z x + leviCivitaRhs I X' Y Z x := by
-  simp (disch := assumption) [leviCivitaRhs,
+  simp (disch := fun_prop) [leviCivitaRhs,
     mlieBracket_add_right, mlieBracket_add_left,
-    rhs_aux_addX_apply, rhs_aux_addY_apply, rhs_aux_addZ_apply,
+    mvfderiv_fun_add,
     inner_add_left, inner_add_right]
   ring
 
@@ -233,8 +165,8 @@ variable {I} in
 public lemma leviCivitaRhs_smulX_apply [CompleteSpace E] {f : M → ℝ}
     (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     leviCivitaRhs I (f • X) Y Z x = f x * leviCivitaRhs I X Y Z x := by
-  simp (disch := assumption) [leviCivitaRhs,
-    rhs_aux_smulX_apply, rhs_aux_smulY_apply, rhs_aux_smulZ_apply,
+  simp (disch := fun_prop) [leviCivitaRhs,
+    mvfderiv_fun_mul,
     mlieBracket_smul_left, mlieBracket_smul_right,
     inner_add_right, inner_smul_left, inner_smul_right, real_inner_comm]
   ring
@@ -243,8 +175,8 @@ public lemma leviCivitaRhs_addY_apply [CompleteSpace E]
     (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x)
     (hY' : MDiffAt (T% Y') x) (hZ : MDiffAt (T% Z) x) :
     leviCivitaRhs I X (Y + Y') Z x = leviCivitaRhs I X Y Z x + leviCivitaRhs I X Y' Z x := by
-  simp (disch := assumption) [leviCivitaRhs,
-    rhs_aux_addX_apply, rhs_aux_addY_apply, rhs_aux_addZ_apply,
+  simp (disch := fun_prop) [leviCivitaRhs,
+    mvfderiv_fun_add,
     mlieBracket_add_left, mlieBracket_add_right,
     inner_add_left, inner_add_right]
   ring
@@ -253,9 +185,9 @@ public lemma leviCivitaRhs_smulY_apply [CompleteSpace E] {f : M → ℝ}
     (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     leviCivitaRhs I X (f • Y) Z x =
       f x * leviCivitaRhs I X Y Z x + mvfderiv% f x (X x) * ⟪Y, Z⟫ x := by
-  simp (disch := assumption) [leviCivitaRhs,
+  simp (disch := fun_prop) [leviCivitaRhs,
     mlieBracket_smul_left, mlieBracket_smul_right,
-    rhs_aux_smulX_apply, rhs_aux_smulY_apply, rhs_aux_smulZ_apply,
+    mvfderiv_fun_mul,
     inner_smul_left, inner_add_right, inner_smul_right, real_inner_comm]
   ring
 
@@ -264,18 +196,18 @@ public lemma leviCivitaRhs_addZ_apply [CompleteSpace E]
     (hZ : MDiffAt (T% Z) x) (hZ' : MDiffAt (T% Z') x) :
     leviCivitaRhs I X Y (Z + Z') x =
       leviCivitaRhs I X Y Z x + leviCivitaRhs I X Y Z' x := by
-  simp (disch := assumption) [leviCivitaRhs,
+  simp (disch := fun_prop) [leviCivitaRhs,
     mlieBracket_add_right, mlieBracket_add_left,
-    rhs_aux_addX_apply, rhs_aux_addY_apply, rhs_aux_addZ_apply,
+    mvfderiv_fun_add,
     inner_add_left, inner_add_right]
   ring
 
 public lemma leviCivitaRhs_smulZ_apply [CompleteSpace E] {f : M → ℝ}
     (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     leviCivitaRhs I X Y (f • Z) x = f x * leviCivitaRhs I X Y Z x := by
-  simp (disch := assumption) [leviCivitaRhs,
+  simp (disch := fun_prop) [leviCivitaRhs,
     mlieBracket_smul_right, mlieBracket_smul_left,
-    rhs_aux_smulX_apply, rhs_aux_smulY_apply, rhs_aux_smulZ_apply,
+    mvfderiv_fun_mul,
     inner_smul_left, inner_smul_right, inner_add_right, real_inner_comm]
   ring
 
@@ -284,7 +216,8 @@ end leviCivitaRhs
 variable [FiniteDimensional ℝ E] in
 lemma aux (h : cov.IsLeviCivitaConnection)
     (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
-    rhs_aux I X Y Z x = ⟪∇ Y, X, Z⟫ x + ⟪Y, ∇ X, Z⟫ x + ⟪Y, VectorField.mlieBracket I X Z⟫ x := by
+    mvfderiv% ⟪Y, Z⟫ x (X x)
+    = ⟪∇ Y, X, Z⟫ x + ⟪Y, ∇ X, Z⟫ x + ⟪Y, VectorField.mlieBracket I X Z⟫ x := by
   trans ⟪∇ Y, X, Z⟫ x + ⟪Y, ∇ Z, X⟫ x
   · exact cov.isCompatible_iff.mp h.1 hX hY hZ
   · simp [← cov.torsion_eq_zero_iff.mp h.2 hX hZ, inner_sub_right]
@@ -422,20 +355,25 @@ public theorem leviCivitaConnection_apply [FiniteDimensional ℝ E] {x : M}
     inner ℝ (LeviCivitaConnection I M Y x (X x)) (Z x) = leviCivitaRhs I X Y Z x :=
   lcAux_apply _ hX hY hZ
 
+public theorem leviCivitaConnection_apply_right [FiniteDimensional ℝ E] {x : M}
+    {X : Π x : M, TangentSpace I x} (hX : MDiffAt (T% X) x)
+    {Y : Π x : M, TangentSpace I x} (hY : MDiffAt (T% Y) x)
+    {Z : Π x : M, TangentSpace I x} (hZ : MDiffAt (T% Z) x) :
+    inner ℝ (X x) (LeviCivitaConnection I M Y x (Z x)) = leviCivitaRhs I Z Y X x := by
+  rw [real_inner_comm]
+  exact lcAux_apply _ hZ hY hX
+
 public lemma leviCivitaConnection_isCompatible [FiniteDimensional ℝ E] :
     (LeviCivitaConnection I M).IsCompatible := by
   rw [isCompatible_iff]
   intro x X Y Z hX hY hZ
   -- Normalise the expressions by swapping arguments for rhs_aux and mlieBracket,
   -- until the swappable arguments are in order X < Y < Z.
-  simp (disch := assumption) [leviCivitaConnection_apply, leviCivitaRhs,
-    real_inner_comm _ (Y x),
-    rhs_aux_swap I Z Y, rhs_aux_swap I Z X, rhs_aux_swap I Y X,
-    mlieBracket_swap (V := Z) (W := Y),
-    mlieBracket_swap (V := Y) (W := X),
-    mlieBracket_swap (V := Z) (W := X)]
-  -- Observe that the right hand side is `rhx_aux X Y Z`;
-  -- then we just need to simplify and rearrange.
+  simp (disch := assumption) [leviCivitaRhs, leviCivitaConnection_apply_right,
+    fun x ↦ real_inner_comm (Z x),
+    fun x ↦ real_inner_comm (Y x) (X x),
+    mlieBracket_swap (V := Z),
+    mlieBracket_swap (V := Y) (W := X)]
   ring
 
 public lemma leviCivitaConnection_torsion_eq_zero [FiniteDimensional ℝ E] :
@@ -446,7 +384,7 @@ public lemma leviCivitaConnection_torsion_eq_zero [FiniteDimensional ℝ E] :
   simp (disch := assumption) [leviCivitaConnection_apply I, leviCivitaRhs,
     mlieBracket_swap (V := Y) (W := X), mlieBracket_swap (V := Z) (W := X),
     mlieBracket_swap (V := Z) (W := Y),
-    rhs_aux_swap (Y := Z), rhs_aux_swap (X := Z),
+    real_inner_comm,
     real_inner_comm, inner_sub_left]
   ring
 
