@@ -431,19 +431,41 @@ protected theorem isSuccLimit_iff {c : Cardinal} : IsSuccLimit c ↔ c ≠ 0 ∧
 protected theorem not_isSuccLimit_zero : ¬ IsSuccLimit (0 : Cardinal) :=
   not_isSuccLimit_bot
 
+/-- A cardinal is a strong pre-limit if it's closed under powersets.
+
+See `IsStrongLimit` for a version excluding `0`. -/
+def IsStrongPrelimit (c : Cardinal) : Prop :=
+  ∀ ⦃x⦄, x < c → 2 ^ x < c
+
 /-- A cardinal is a strong limit if it is not zero and it is closed under powersets.
-Note that `ℵ₀` is a strong limit by this definition. -/
+Note that `ℵ₀` is a strong limit by this definition.
+
+See `IsStrongPrelimit` for a version including `0`. -/
+@[mk_iff]
 structure IsStrongLimit (c : Cardinal) : Prop where
   ne_zero : c ≠ 0
-  two_power_lt ⦃x⦄ : x < c → 2 ^ x < c
+  protected isStrongPrelimit : IsStrongPrelimit c
 
-protected theorem IsStrongLimit.isSuccLimit {c} (H : IsStrongLimit c) : IsSuccLimit c := by
+@[deprecated (since := "2026-03-31")]
+alias IsStrongLimit.two_power_lt := IsStrongLimit.isStrongPrelimit
+
+protected theorem IsStrongPrelimit.isSuccPrelimit {c} (hc : IsStrongPrelimit c) :
+    IsSuccPrelimit c :=
+  isSuccPrelimit_of_succ_lt fun x hx ↦ (succ_le_of_lt <| cantor x).trans_lt (hc hx)
+
+protected theorem IsStrongLimit.isSuccLimit {c} (hc : IsStrongLimit c) : IsSuccLimit c := by
   rw [Cardinal.isSuccLimit_iff]
-  exact ⟨H.ne_zero, isSuccPrelimit_of_succ_lt fun x h ↦
-    (succ_le_of_lt <| cantor x).trans_lt (H.two_power_lt h)⟩
+  exact ⟨hc.ne_zero, hc.isStrongPrelimit.isSuccPrelimit⟩
 
 protected theorem IsStrongLimit.isSuccPrelimit {c} (H : IsStrongLimit c) : IsSuccPrelimit c :=
   H.isSuccLimit.isSuccPrelimit
+
+theorem not_isStrongPrelimit_iff {c} : ¬ IsStrongPrelimit c ↔ ∃ x < c, c ≤ 2 ^ x := by
+  simp [IsStrongPrelimit]
+
+@[simp]
+theorem IsStrongPrelimit.zero : IsStrongPrelimit 0 := by
+  simp [IsStrongPrelimit]
 
 @[simp]
 theorem not_isStrongLimit_zero : ¬ IsStrongLimit (0 : Cardinal) :=
