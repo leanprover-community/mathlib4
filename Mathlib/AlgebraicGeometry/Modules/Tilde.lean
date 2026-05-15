@@ -484,22 +484,28 @@ def sheafComposePushforwardComp :
     · cat_disch
   · cat_disch
 
+abbrev oT {X : Scheme} : (IsInitial (op (⊤ : Opens X))) := initialOpOfTerminal isTerminalTop
+
+abbrev gT {R : CommRingCat} := Opens.grothendieckTopology (Spec R)
+
 /-- `Scheme.Modules.pushforward` and `modulesSpecToSheaf` commute -/
-def pushforward_modulesSpecToSheaf_iso :
+def pushforwardCompModulesSpecToSheafIso :
     Scheme.Modules.pushforward (Spec.map φ) ⋙ modulesSpecToSheaf ≅
     modulesSpecToSheaf ⋙ TopCat.Sheaf.pushforward (ModuleCat S) (Spec.map φ).base ⋙
-    sheafCompose _ (ModuleCat.restrictScalars φ.hom) :=
-  Functor.isoWhiskerRight (SheafOfModules.pushforwardCompForgetToSheafModuleCat
-    (Spec.map φ).toRingCatSheafHom _ _ _) (sheafCompose _ _) ≪≫
-  (Functor.isoWhiskerLeft (SheafOfModules.forgetToSheafModuleCat (Spec S).ringCatSheaf _
-    (initialOpOfTerminal isTerminalTop)) (sheafComposePushforwardComp φ))
+    sheafCompose _ (ModuleCat.restrictScalars φ.hom) := by
+  refine (Functor.associator _ _ _).symm ≪≫ ?_
+  refine Functor.isoWhiskerRight (SheafOfModules.pushforwardCompForgetToSheafModuleCat
+    (Spec.map φ).toRingCatSheafHom (op ⊤) _ oT) _ ≪≫ ?_
+  refine Functor.associator _ _ _ ≪≫ ?_
+  refine (Functor.isoWhiskerLeft _ (Functor.associator _ _ _)) ≪≫ ?_
+  exact (Functor.isoWhiskerLeft _ (sheafComposePushforwardComp φ))
 
 open scoped ModuleCat.Algebra in
 theorem isLocalizing_pushforward_of_isLocalizing {M : (Spec S).Modules}
     (h : IsLocalizing (modulesSpecToSheaf.obj M)) :
   IsLocalizing (modulesSpecToSheaf.obj ((Scheme.Modules.pushforward (Spec.map φ)).obj M)) := by
   rw [← Functor.comp_obj,
-  isLocalizing_iff_of_iso ((pushforward_modulesSpecToSheaf_iso φ).app M)]
+  isLocalizing_iff_of_iso ((pushforwardCompModulesSpecToSheafIso φ).app M)]
   have : CommRing ((Spec S).ringCatSheaf.obj.obj ((Opens.map (Spec.map φ).base).op.obj (op ⊤))) :=
     inferInstanceAs (CommRing Γ(Spec S, ⊤))
   algebraize [φ.hom]
