@@ -19,8 +19,8 @@ name: ci dev (lake cache shadow)
 #   upload           Push staged artifacts to the cache bucket via
 #                    `lake cache put-staged`.
 #   consume          Fresh checkout, fetch from the cache bucket via
-#                    `lake cache get`, run `lake build` as a drop-in
-#                    test, then verify with `--rehash`.
+#                    `lake cache get`, run `lake build` against the
+#                    rehydrated cache, then verify with `--rehash`.
 
 on:
   workflow_dispatch:
@@ -298,7 +298,7 @@ jobs:
             --toolchain="${{ needs.build_and_stage.outputs.toolchain }}"
 
   consume:
-    name: Drop-in consume test (no legacy cache)
+    name: Build from Lake cache (no legacy hydration)
     needs: [build_and_stage, upload]
     if: ${{ github.repository == 'leanprover-community/mathlib4' && needs.upload.result == 'success' }}
     runs-on: pr
@@ -391,7 +391,7 @@ jobs:
             --rev="${{ needs.build_and_stage.outputs.sha }}"
           echo "ltar count after get: $(find .lake/cache -name '*.ltar' | wc -l)"
 
-      - name: lake build (drop-in test)
+      - name: lake build
         run: |
           cd pr-branch
           lake build $STAGE_TARGETS 2>&1 | tee .lake/consume-build.log
