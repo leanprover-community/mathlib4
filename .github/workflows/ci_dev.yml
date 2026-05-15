@@ -35,6 +35,15 @@ on:
         required: false
         type: string
         default: marcelo/2026/05/DownstreamPrValidation
+      downstream_reports_ref:
+        description: >-
+          downstream-reports ref to dispatch `mathlib-pr-validation.yml`
+          on.  Defaults to the open feature branch so the dispatch picks
+          up the matching workflow shape (e.g. the `triggered_by` input
+          that's not yet on master).
+        required: false
+        type: string
+        default: PullRequestOnDemandValidation
       post_results:
         description: "Forward `post_results` to the dispatched downstream-reports workflow."
         required: false
@@ -100,9 +109,11 @@ jobs:
           DOWNSTREAMS:  ${{ steps.validate.outputs.resolved_names }}
           POST_RESULTS: ${{ inputs.post_results }}
           TRIGGERED_BY: ${{ github.actor }}
+          REPORTS_REF:  ${{ inputs.downstream_reports_ref }}
         run: |
           gh workflow run mathlib-pr-validation.yml \
             -R leanprover-community/downstream-reports \
+            --ref "$REPORTS_REF" \
             -f pr_number="$PR_NUMBER" \
             -f merge_sha="$MERGE_SHA" \
             -f downstreams="$DOWNSTREAMS" \
