@@ -75,7 +75,6 @@ theorem closure_eq_zmultiples (a b : ℤ) :
   apply le_antisymm
   · apply (AddSubgroup.closure_le (AddSubgroup.zmultiples (a.gcd b : ℤ))).mpr
     intro x hx
-    simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hx
     rcases hx with h1 | h1
     · rw [h1]
       exact Int.mem_zmultiples_iff.mpr (Int.gcd_dvd_left a b)
