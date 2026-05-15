@@ -32,7 +32,9 @@ structure FunPropDecl where
   /-- argument index of a function this function property talks about.
   For example, this would be 4 for `@Continuous α β _ _ f` -/
   funArgId : Nat
-  deriving Inhabited, BEq
+  /-- output argument indices and names -/
+  outArgIds : List (Nat × Name)
+  deriving Inhabited, BEq, Hashable
 
 /-- Discrimination tree for function properties. -/
 structure FunPropDecls where
@@ -40,8 +42,7 @@ structure FunPropDecls where
   decls : DiscrTree FunPropDecl := {}
   deriving Inhabited
 
-set_option linter.style.docString.empty false in
-/-- -/
+/-- Extension storing function properties. -/
 abbrev FunPropDeclsExt := SimpleScopedEnvExtension FunPropDecl FunPropDecls
 
 /-- Extension storing function properties tracked and used by the `fun_prop` attribute and tactic,
@@ -55,7 +56,7 @@ initialize funPropDeclsExt : FunPropDeclsExt ←
   }
 
 /-- Register new function property. -/
-def addFunPropDecl (declName : Name) : MetaM Unit := do
+def addFunPropDecl (declName : Name) (outArgNames : Array Name) : MetaM Unit := do
 
   let info ← getConstInfo declName
 
@@ -76,10 +77,27 @@ def addFunPropDecl (declName : Name) : MetaM Unit := do
       return false
     | throwError "invalid fun_prop declaration, can't find argument of type `α → β`"
 
+  -- find output argument ids
+  let finfo ← getFunInfo (← mkConstWithFreshMVarLevels declName)
+  let outArgIds ←
+    forallTelescope info.type fun xs _ => do
+    outArgNames.mapM fun name => do
+      let some i ← xs.findIdxM? fun x => do
+        let pname ← x.fvarId!.getUserName
+        return pname == name
+        | throwError m!"Can't find output argument {name}!"
+      let x := xs[i]!
+      let pname ← x.fvarId!.getUserName
+      let pinfo := finfo.paramInfo[i]!
+      if pinfo.hasFwdDeps then
+        throwError m!"Output argument {name} can't have forward dependencies in {declName}!"
+      pure (i, pname)
+
   let decl : FunPropDecl := {
     funPropName := declName
     path := path
     funArgId := funArgId
+    outArgIds := outArgIds.toList
   }
 
   modifyEnv fun env => funPropDeclsExt.addEntry env decl

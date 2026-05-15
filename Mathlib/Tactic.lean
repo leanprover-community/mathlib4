@@ -116,6 +116,7 @@ public import Mathlib.Tactic.FunProp.Decl
 public import Mathlib.Tactic.FunProp.Elab
 public import Mathlib.Tactic.FunProp.FunctionData
 public import Mathlib.Tactic.FunProp.Mor
+public import Mathlib.Tactic.FunProp.Simproc
 public import Mathlib.Tactic.FunProp.Theorems
 public import Mathlib.Tactic.FunProp.ToBatteries
 public import Mathlib.Tactic.FunProp.Types

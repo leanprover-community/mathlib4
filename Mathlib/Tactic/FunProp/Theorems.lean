@@ -64,7 +64,7 @@ def LambdaTheoremArgs.type (t : LambdaTheoremArgs) : LambdaTheoremType :=
   | .id => .id
   | .const => .const
   | .comp .. => .comp
-  | .apply  => .apply
+  | .apply => .apply
   | .pi => .pi
 
 /-- Decides whether `f` is a function corresponding to one of the lambda theorems. -/
@@ -80,7 +80,7 @@ def detectLambdaTheoremArgs (f : Expr) (ctxVars : Array Expr) :
     unless xBody.hasLooseBVars do return some .const
     match xBody with
     | .bvar 0 => return some .id
-    | .app (.bvar 0) (.fvar _) =>  return some .apply
+    | .app (.bvar 0) (.fvar _) => return some .apply
     | .app (.fvar fId) (.app (.fvar gId) (.bvar 0)) =>
       -- fun x => f (g x)
       let some argId_f := ctxVars.findIdx? (fun x => x == (.fvar fId)) | return none
@@ -240,7 +240,8 @@ For example calling on `e` equal to `Continuous f` might return theorems implyin
 from linearity over finite-dimensional spaces or differentiability. -/
 def getTransitionTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
   let thms := (← get).transitionTheorems.theorems
-  let (candidates, thms) ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) <|
+  let (candidates, thms) ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) do
+    trace[Debug.Meta.Tactic.fun_prop] m!"look up key {← RefinedDiscrTree.encodeExpr e true}"
     thms.getMatch e false true
   modify ({ · with transitionTheorems := ⟨thms⟩ })
   return candidates.toArray
@@ -262,7 +263,8 @@ For example calling on `e` equal to `Continuous f` for `f : X→L[ℝ] Y` would 
 inferring continuity from the bundled morphism. -/
 def getMorphismTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
   let thms := (← get).morTheorems.theorems
-  let (candidates, thms) ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) <|
+  let (candidates, thms) ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) do
+    trace[Debug.Meta.Tactic.fun_prop] m!"look up key {← RefinedDiscrTree.encodeExpr e true}"
     thms.getMatch e false true
   modify ({ · with morTheorems := ⟨thms⟩ })
   return candidates.toArray
@@ -349,6 +351,10 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
       }
     | .fvar .. =>
       let (_,_,b') ← forallMetaTelescope info.type
+
+      let b' ← abstractAppArgs b' decl.outArgIds
+      let (_,_,b') ← lambdaMetaTelescope b'
+
       let keys ← RefinedDiscrTree.initializeLazyEntryWithEta b'
       let thm : GeneralTheorem := {
         funPropName := funPropName
@@ -393,12 +399,14 @@ form: {toString thm.form} form"
   | .mor thm =>
     trace[Meta.Tactic.fun_prop.attr] "\
 morphism theorem: {thm.thmName}
-function property: {thm.funPropName}"
+function property: {thm.funPropName}
+keys: {← thm.keys.mapM (fun (k, l) => do return (k, (← l.toList)))}"
     morTheoremsExt.add thm attrKind
   | .transition thm =>
     trace[Meta.Tactic.fun_prop.attr] "\
 transition theorem: {thm.thmName}
-function property: {thm.funPropName}"
+function property: {thm.funPropName}
+keys: {← thm.keys.mapM (fun (k, l) => do return (k, (← l.toList)))}"
     transitionTheoremsExt.add thm attrKind
 
 end Meta.FunProp
