@@ -243,6 +243,10 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict (u : 
 
 end FiniteCodimSubspace
 
+/-!
+## Consequences
+-/
+
 section FiniteRank
 
 -- TODO: state in terms of "equality modulo finite rank" relation
