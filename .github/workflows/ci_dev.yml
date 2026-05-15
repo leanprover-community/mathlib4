@@ -12,6 +12,15 @@ name: ci dev (lake cache shadow)
 #   Variables:
 #     LAKE_CACHE_ARTIFACT_ENDPOINT    — e.g. https://<bucket>/<prefix>/artifacts
 #     LAKE_CACHE_REVISION_ENDPOINT    — e.g. https://<bucket>/<prefix>/revisions
+#
+# Jobs:
+#   build_and_stage  Build mathlib + deps with Lake's artifact cache
+#                    enabled, then stage the resulting .ltar files.
+#   upload           Push staged artifacts to the cache bucket via
+#                    `lake cache put-staged`.
+#   consume          Fresh checkout, fetch from the cache bucket via
+#                    `lake cache get`, run `lake build` as a drop-in
+#                    test, then verify with `--rehash`.
 
 on:
   workflow_dispatch:
