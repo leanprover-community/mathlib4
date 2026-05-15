@@ -39,21 +39,13 @@ Almost no monoid is actually present in this file: most assumptions have been ge
 -- after the `ordered`-refactor is done.
 open Function
 
-section Nat
-
 instance Nat.instMulLeftMono : MulLeftMono ℕ where
   elim := fun _ _ _ h => mul_le_mul_left _ h
-
-end Nat
-
-section Int
 
 instance Int.instAddLeftMono : AddLeftMono ℤ where
   elim := fun _ _ _ h => Int.add_le_add_left h _
 
-end Int
-
-variable {α β : Type*}
+variable {α β : Type*} {a b c d e f : α}
 
 section Mul
 
@@ -67,25 +59,25 @@ variable [LE α]
 -- lemmas like `mul_le_mul_of_nonneg_left`, which have an extra side condition.
 
 @[to_additive (attr := gcongr high)]
-theorem mul_le_mul_right [MulLeftMono α] {b c : α} (bc : b ≤ c) (a : α) : a * b ≤ a * c :=
+theorem mul_le_mul_right [MulLeftMono α] (bc : b ≤ c) (a : α) : a * b ≤ a * c :=
   CovariantClass.elim _ bc
 
 @[deprecated (since := "2025-11-27")]
 alias mul_le_mul_left' := mul_le_mul_right
 
 @[to_additive le_of_add_le_add_left]
-theorem le_of_mul_le_mul_left' [MulLeftReflectLE α] {a b c : α} (bc : a * b ≤ a * c) : b ≤ c :=
+theorem le_of_mul_le_mul_left' [MulLeftReflectLE α] (bc : a * b ≤ a * c) : b ≤ c :=
   MulLeftReflectLE.le_of_mul_le_mul_left' bc
 
 @[to_additive (attr := gcongr high)]
-theorem mul_le_mul_left [i : MulRightMono α] {b c : α} (bc : b ≤ c) (a : α) : b * a ≤ c * a :=
+theorem mul_le_mul_left [i : MulRightMono α] (bc : b ≤ c) (a : α) : b * a ≤ c * a :=
   i.elim a bc
 
 @[deprecated (since := "2025-11-27")]
 alias mul_le_mul_right' := mul_le_mul_left
 
 @[to_additive le_of_add_le_add_right]
-theorem le_of_mul_le_mul_right' [MulRightReflectLE α] {a b c : α} (bc : b * a ≤ c * a) :
+theorem le_of_mul_le_mul_right' [MulRightReflectLE α] (bc : b * a ≤ c * a) :
     b ≤ c :=
   MulRightReflectLE.le_of_mul_le_mul_right' bc
 
@@ -95,7 +87,7 @@ theorem mul_le_mul_iff_left [MulLeftMono α] [MulLeftReflectLE α] (a : α) {b c
   rel_iff_cov' ‹MulLeftMono α›.elim fun _ ↦ MulLeftReflectLE.le_of_mul_le_mul_left'
 
 @[to_additive (attr := simp)]
-theorem mul_le_mul_iff_right [MulRightMono α] [MulRightReflectLE α] (a : α) {b c : α} :
+theorem mul_le_mul_iff_right [MulRightMono α] [MulRightReflectLE α] (a : α) :
     b * a ≤ c * a ↔ b ≤ c :=
   rel_iff_cov' ‹MulRightMono α›.elim fun _ ↦ MulRightReflectLE.le_of_mul_le_mul_right'
 
@@ -106,14 +98,12 @@ section LT
 variable [LT α]
 
 @[to_additive (attr := simp)]
-theorem mul_lt_mul_iff_left [MulLeftStrictMono α]
-    [MulLeftReflectLT α] (a : α) {b c : α} :
+theorem mul_lt_mul_iff_left [MulLeftStrictMono α] [MulLeftReflectLT α] (a : α) :
     a * b < a * c ↔ b < c :=
   rel_iff_cov α α (· * ·) (· < ·) a
 
 @[to_additive (attr := simp)]
-theorem mul_lt_mul_iff_right [MulRightStrictMono α]
-    [MulRightReflectLT α] (a : α) {b c : α} :
+theorem mul_lt_mul_iff_right [MulRightStrictMono α] [MulRightReflectLT α] (a : α) :
     b * a < c * a ↔ b < c :=
   rel_iff_cov α α (swap (· * ·)) (· < ·) a
 
@@ -121,26 +111,20 @@ theorem mul_lt_mul_iff_right [MulRightStrictMono α]
 -- lemmas like `mul_lt_mul_of_pos_left`, which have an extra side condition.
 
 @[to_additive (attr := gcongr high)]
-theorem mul_lt_mul_right [MulLeftStrictMono α] {b c : α} (bc : b < c) (a : α) :
+theorem mul_lt_mul_right [MulLeftStrictMono α] (bc : b < c) (a : α) :
     a * b < a * c :=
   CovariantClass.elim _ bc
 
 @[to_additive lt_of_add_lt_add_left]
-theorem lt_of_mul_lt_mul_left' [MulLeftReflectLT α] {a b c : α}
-    (bc : a * b < a * c) :
-    b < c :=
+theorem lt_of_mul_lt_mul_left' [MulLeftReflectLT α] (bc : a * b < a * c) : b < c :=
   ContravariantClass.elim _ bc
 
 @[to_additive (attr := gcongr high)]
-theorem mul_lt_mul_left [i : MulRightStrictMono α] {b c : α} (bc : b < c)
-    (a : α) :
-    b * a < c * a :=
+theorem mul_lt_mul_left [i : MulRightStrictMono α] (bc : b < c) (a : α) : b * a < c * a :=
   i.elim a bc
 
 @[to_additive lt_of_add_lt_add_right]
-theorem lt_of_mul_lt_mul_right' [i : MulRightReflectLT α] {a b c : α}
-    (bc : b * a < c * a) :
-    b < c :=
+theorem lt_of_mul_lt_mul_right' [i : MulRightReflectLT α] (bc : b * a < c * a) : b < c :=
   i.elim a bc
 
 end LT
@@ -150,119 +134,93 @@ section Preorder
 variable [Preorder α]
 
 @[to_additive]
-lemma mul_right_mono [MulLeftMono α] {a : α} : Monotone (a * ·) :=
+lemma mul_right_mono [MulLeftMono α] : Monotone (a * ·) :=
   fun _ _ h ↦ mul_le_mul_right h _
 
 @[to_additive]
-lemma mul_left_mono [MulRightMono α] {a : α} : Monotone (· * a) :=
+lemma mul_left_mono [MulRightMono α] : Monotone (· * a) :=
   fun _ _ h ↦ mul_le_mul_left h _
 
 @[to_additive]
-lemma mul_right_strictMono [MulLeftStrictMono α] {a : α} : StrictMono (a * ·) :=
+lemma mul_right_strictMono [MulLeftStrictMono α] : StrictMono (a * ·) :=
   fun _ _ h ↦ mul_lt_mul_right h _
 
 @[to_additive]
-lemma mul_left_strictMono [MulRightStrictMono α] {a : α} : StrictMono (· * a) :=
+lemma mul_left_strictMono [MulRightStrictMono α] : StrictMono (· * a) :=
   fun _ _ h ↦ mul_lt_mul_left h _
 
 -- Note: in this section, we use `@[gcongr high]` so that these lemmas have a higher priority than
 -- lemmas like `mul_le_mul_of_nonneg`, which have an extra side condition.
 
 @[to_additive (attr := gcongr high)]
-theorem mul_lt_mul_of_lt_of_lt [MulLeftStrictMono α]
-    [MulRightStrictMono α]
-    {a b c d : α} (h₁ : a < b) (h₂ : c < d) : a * c < b * d :=
-  calc
-    a * c < a * d := mul_lt_mul_right h₂ a
-    _ < b * d := mul_lt_mul_left h₁ d
+theorem mul_lt_mul_of_lt_of_lt [MulLeftStrictMono α] [MulRightStrictMono α]
+    (h₁ : a < b) (h₂ : c < d) : a * c < b * d :=
+  (mul_lt_mul_right h₂ a).trans (mul_lt_mul_left h₁ d)
 
 alias add_lt_add := add_lt_add_of_lt_of_lt
 
 @[to_additive]
-theorem mul_lt_mul_of_le_of_lt [MulLeftStrictMono α]
-    [MulRightMono α] {a b c d : α} (h₁ : a ≤ b) (h₂ : c < d) :
-    a * c < b * d :=
+theorem mul_lt_mul_of_le_of_lt [MulLeftStrictMono α] [MulRightMono α]
+    (h₁ : a ≤ b) (h₂ : c < d) : a * c < b * d :=
   (mul_le_mul_left h₁ _).trans_lt (mul_lt_mul_right h₂ b)
 
 @[to_additive]
-theorem mul_lt_mul_of_lt_of_le [MulLeftMono α]
-    [MulRightStrictMono α] {a b c d : α} (h₁ : a < b) (h₂ : c ≤ d) :
-    a * c < b * d :=
+theorem mul_lt_mul_of_lt_of_le [MulLeftMono α] [MulRightStrictMono α]
+    (h₁ : a < b) (h₂ : c ≤ d) : a * c < b * d :=
   (mul_le_mul_right h₂ _).trans_lt (mul_lt_mul_left h₁ d)
 
 /-- Only assumes left strict covariance. -/
 @[to_additive /-- Only assumes left strict covariance -/]
-theorem Left.mul_lt_mul [MulLeftStrictMono α]
-    [MulRightMono α] {a b c d : α} (h₁ : a < b) (h₂ : c < d) :
-    a * c < b * d :=
+theorem Left.mul_lt_mul [MulLeftStrictMono α] [MulRightMono α]
+    (h₁ : a < b) (h₂ : c < d) : a * c < b * d :=
   mul_lt_mul_of_le_of_lt h₁.le h₂
 
 /-- Only assumes right strict covariance. -/
 @[to_additive /-- Only assumes right strict covariance -/]
-theorem Right.mul_lt_mul [MulLeftMono α]
-    [MulRightStrictMono α] {a b c d : α}
-    (h₁ : a < b) (h₂ : c < d) :
-    a * c < b * d :=
+theorem Right.mul_lt_mul [MulLeftMono α] [MulRightStrictMono α]
+    (h₁ : a < b) (h₂ : c < d) : a * c < b * d :=
   mul_lt_mul_of_lt_of_le h₁ h₂.le
 
 @[to_additive (attr := gcongr high) add_le_add]
 theorem mul_le_mul' [MulLeftMono α] [MulRightMono α]
-    {a b c d : α} (h₁ : a ≤ b) (h₂ : c ≤ d) :
-    a * c ≤ b * d := by grw [h₁, h₂]
+    (h₁ : a ≤ b) (h₂ : c ≤ d) : a * c ≤ b * d := by
+  grw [h₁, h₂]
 
 @[to_additive]
-theorem mul_le_mul_three [MulLeftMono α]
-    [MulRightMono α] {a b c d e f : α} (h₁ : a ≤ d) (h₂ : b ≤ e)
-    (h₃ : c ≤ f) :
-    a * b * c ≤ d * e * f :=
+theorem mul_le_mul_three [MulLeftMono α] [MulRightMono α]
+    (h₁ : a ≤ d) (h₂ : b ≤ e) (h₃ : c ≤ f) : a * b * c ≤ d * e * f :=
   mul_le_mul' (mul_le_mul' h₁ h₂) h₃
 
 @[to_additive]
-theorem mul_lt_of_mul_lt_left [MulLeftMono α] {a b c d : α} (h : a * b < c)
-    (hle : d ≤ b) :
-    a * d < c :=
+theorem mul_lt_of_mul_lt_left [MulLeftMono α] (h : a * b < c) (hle : d ≤ b) : a * d < c :=
   (mul_le_mul_right hle a).trans_lt h
 
 @[to_additive]
-theorem mul_le_of_mul_le_left [MulLeftMono α] {a b c d : α} (h : a * b ≤ c)
-    (hle : d ≤ b) :
-    a * d ≤ c :=
+theorem mul_le_of_mul_le_left [MulLeftMono α] (h : a * b ≤ c) (hle : d ≤ b) : a * d ≤ c :=
   @act_rel_of_rel_of_act_rel _ _ _ (· ≤ ·) _ _ a _ _ _ hle h
 
 @[to_additive]
-theorem mul_lt_of_mul_lt_right [MulRightMono α] {a b c d : α}
-    (h : a * b < c) (hle : d ≤ a) :
-    d * b < c :=
+theorem mul_lt_of_mul_lt_right [MulRightMono α] (h : a * b < c) (hle : d ≤ a) : d * b < c :=
   (mul_le_mul_left hle b).trans_lt h
 
 @[to_additive]
-theorem mul_le_of_mul_le_right [MulRightMono α] {a b c d : α}
-    (h : a * b ≤ c) (hle : d ≤ a) :
-    d * b ≤ c :=
+theorem mul_le_of_mul_le_right [MulRightMono α] (h : a * b ≤ c) (hle : d ≤ a) : d * b ≤ c :=
   (mul_le_mul_left hle b).trans h
 
 @[to_additive]
-theorem lt_mul_of_lt_mul_left [MulLeftMono α] {a b c d : α} (h : a < b * c)
-    (hle : c ≤ d) :
-    a < b * d :=
+theorem lt_mul_of_lt_mul_left [MulLeftMono α] (h : a < b * c) (hle : c ≤ d) : a < b * d :=
   h.trans_le (mul_le_mul_right hle b)
 
 @[to_additive]
-theorem le_mul_of_le_mul_left [MulLeftMono α] {a b c d : α} (h : a ≤ b * c)
-    (hle : c ≤ d) :
-    a ≤ b * d :=
+theorem le_mul_of_le_mul_left [MulLeftMono α] (h : a ≤ b * c) (hle : c ≤ d) : a ≤ b * d :=
   @rel_act_of_rel_of_rel_act _ _ _ (· ≤ ·) _ _ b _ _ _ hle h
 
 @[to_additive]
-theorem lt_mul_of_lt_mul_right [MulRightMono α] {a b c d : α}
-    (h : a < b * c) (hle : b ≤ d) :
-    a < d * c :=
+theorem lt_mul_of_lt_mul_right [MulRightMono α] (h : a < b * c) (hle : b ≤ d) : a < d * c :=
   h.trans_le (mul_le_mul_left hle c)
 
 @[to_additive]
-theorem le_mul_of_le_mul_right [MulRightMono α] {a b c d : α}
-    (h : a ≤ b * c) (hle : b ≤ d) :
-    a ≤ d * c :=
+theorem le_mul_of_le_mul_right [MulRightMono α] (h : a ≤ b * c) (hle : b ≤ d) : a ≤ d * c :=
   h.trans (mul_le_mul_left hle c)
 
 end Preorder
@@ -300,14 +258,14 @@ alias mul_right_cancel'' := mul_right_cancel
   exacts [mul_lt_mul_of_lt_of_le ha hb, mul_lt_mul_of_le_of_lt ha hb]
 
 @[to_additive] theorem mul_eq_mul_iff_eq_and_eq [MulLeftStrictMono α]
-    [MulRightStrictMono α] {a b c d : α} (hac : a ≤ c) (hbd : b ≤ d) :
+    [MulRightStrictMono α] (hac : a ≤ c) (hbd : b ≤ d) :
     a * b = c * d ↔ a = c ∧ b = d := by
   haveI := mulLeftMono_of_mulLeftStrictMono α
   haveI := mulRightMono_of_mulRightStrictMono α
   rw [le_antisymm_iff, eq_true (mul_le_mul' hac hbd), true_and, mul_le_mul_iff_of_ge hac hbd]
 
 @[to_additive]
-lemma mul_left_inj_of_comparable [MulRightStrictMono α] {a b c : α} (h : b ≤ c ∨ c ≤ b) :
+lemma mul_left_inj_of_comparable [MulRightStrictMono α] (h : b ≤ c ∨ c ≤ b) :
     c * a = b * a ↔ c = b := by
   refine ⟨fun h' => ?_, (· ▸ rfl)⟩
   contrapose h'
@@ -316,7 +274,7 @@ lemma mul_left_inj_of_comparable [MulRightStrictMono α] {a b c : α} (h : b ≤
   · exact mul_lt_mul_left (h.lt_of_ne h') a |>.ne
 
 @[to_additive]
-lemma mul_right_inj_of_comparable [MulLeftStrictMono α] {a b c : α} (h : b ≤ c ∨ c ≤ b) :
+lemma mul_right_inj_of_comparable [MulLeftStrictMono α] (h : b ≤ c ∨ c ≤ b) :
     a * c = a * b ↔ c = b := by
   refine ⟨fun h' => ?_, (· ▸ rfl)⟩
   contrapose h'
@@ -327,11 +285,10 @@ lemma mul_right_inj_of_comparable [MulLeftStrictMono α] {a b c : α} (h : b ≤
 end PartialOrder
 
 section LinearOrder
-variable [LinearOrder α] {a b c d : α}
+variable [LinearOrder α]
 
 @[to_additive]
-theorem trichotomy_of_mul_eq_mul
-    [MulLeftStrictMono α] [MulRightStrictMono α]
+theorem trichotomy_of_mul_eq_mul [MulLeftStrictMono α] [MulRightStrictMono α]
     (h : a * b = c * d) : (a = c ∧ b = d) ∨ a < c ∨ b < d := by
   obtain hac | rfl | hca := lt_trichotomy a c
   · grind
@@ -342,38 +299,34 @@ theorem trichotomy_of_mul_eq_mul
     · exact False.elim <| ne_of_lt (mul_lt_mul_of_lt_of_lt hca hdb) h.symm
 
 @[to_additive]
-lemma mul_max [MulLeftMono α] (a b c : α) :
-    a * max b c = max (a * b) (a * c) := mul_right_mono.map_max
+lemma mul_max [MulLeftMono α] (a b c : α) : a * max b c = max (a * b) (a * c) :=
+  mul_right_mono.map_max
 
 @[to_additive]
-lemma max_mul [MulRightMono α] (a b c : α) :
-    max a b * c = max (a * c) (b * c) := mul_left_mono.map_max
+lemma max_mul [MulRightMono α] (a b c : α) : max a b * c = max (a * c) (b * c) :=
+  mul_left_mono.map_max
 
 @[to_additive]
-lemma mul_min [MulLeftMono α] (a b c : α) :
-    a * min b c = min (a * b) (a * c) := mul_right_mono.map_min
+lemma mul_min [MulLeftMono α] (a b c : α) : a * min b c = min (a * b) (a * c) :=
+  mul_right_mono.map_min
 
 @[to_additive]
-lemma min_mul [MulRightMono α] (a b c : α) :
-    min a b * c = min (a * c) (b * c) := mul_left_mono.map_min
+lemma min_mul [MulRightMono α] (a b c : α) : min a b * c = min (a * c) (b * c) :=
+  mul_left_mono.map_min
 
-@[to_additive] lemma min_lt_max_of_mul_lt_mul
-    [MulLeftMono α] [MulRightMono α]
+@[to_additive] lemma min_lt_max_of_mul_lt_mul [MulLeftMono α] [MulRightMono α]
     (h : a * b < c * d) : min a b < max c d := by
   simp_rw [min_lt_iff, lt_max_iff]; contrapose! h; exact mul_le_mul' h.1.1 h.2.2
 
-@[to_additive] lemma Left.min_le_max_of_mul_le_mul
-    [MulLeftStrictMono α] [MulRightMono α]
+@[to_additive] lemma Left.min_le_max_of_mul_le_mul [MulLeftStrictMono α] [MulRightMono α]
     (h : a * b ≤ c * d) : min a b ≤ max c d := by
   simp_rw [min_le_iff, le_max_iff]; contrapose! h; exact mul_lt_mul_of_le_of_lt h.1.1.le h.2.2
 
-@[to_additive] lemma Right.min_le_max_of_mul_le_mul
-    [MulLeftMono α] [MulRightStrictMono α]
+@[to_additive] lemma Right.min_le_max_of_mul_le_mul [MulLeftMono α] [MulRightStrictMono α]
     (h : a * b ≤ c * d) : min a b ≤ max c d := by
   simp_rw [min_le_iff, le_max_iff]; contrapose! h; exact mul_lt_mul_of_lt_of_le h.1.1 h.2.2.le
 
-@[to_additive] lemma min_le_max_of_mul_le_mul
-    [MulLeftStrictMono α] [MulRightStrictMono α]
+@[to_additive] lemma min_le_max_of_mul_le_mul [MulLeftStrictMono α] [MulRightStrictMono α]
     (h : a * b ≤ c * d) : min a b ≤ max c d :=
   haveI := mulRightMono_of_mulRightStrictMono α
   Left.min_le_max_of_mul_le_mul h
@@ -391,7 +344,7 @@ theorem MulRightStrictMono.toIsRightCancelMul [MulRightStrictMono α] : IsRightC
 end LinearOrder
 
 section LinearOrder
-variable [LinearOrder α] [MulLeftMono α] [MulRightMono α] {a b c d : α}
+variable [LinearOrder α] [MulLeftMono α] [MulRightMono α]
 
 @[to_additive max_add_add_le_max_add_max]
 theorem max_mul_mul_le_max_mul_max' : max (a * b) (c * d) ≤ max a c * max b d :=
