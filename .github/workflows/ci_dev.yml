@@ -43,7 +43,6 @@ env:
   # workflow's artifacts within the cache bucket.
   SHADOW_SCOPE: mathlib4-shadow-ci-dev
   STAGE_TARGETS: "Mathlib Archive Counterexamples"
-  STAGE_DEP_TARGETS: "batteries Qq aesop proofwidgets importGraph LeanSearchClient plausible"
 
 jobs:
   build_and_stage:
@@ -60,7 +59,7 @@ jobs:
       LAKE_NO_CACHE: true
     defaults:
       run:
-        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LAKE_CACHE_DIR --env LAKE_NO_CACHE --env STAGE_TARGETS --env STAGE_DEP_TARGETS --env SHADOW_SCOPE -- bash -euxo pipefail {0}
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LAKE_CACHE_DIR --env LAKE_NO_CACHE --env STAGE_TARGETS --env SHADOW_SCOPE -- bash -euxo pipefail {0}
     steps:
       - name: job info
         shell: bash
@@ -179,20 +178,22 @@ jobs:
       # modules whose .ltar+mapping aren't yet in Lake's cache. Module
       # source compilation is skipped where per-module traces match (which
       # they do for the 3 knobs we set), so the "work" here is bounded to
-      # cache population, not lean recompilation.
+      # cache population, not lean recompilation. Deps build transitively
+      # but their mappings don't end up in the bundle (Lake's `-o` only
+      # writes root-package outputs).
       - name: Incremental build (populate Lake's cache)
         run: |
           cd pr-branch
-          lake build $STAGE_TARGETS $STAGE_DEP_TARGETS 2>&1 | tee .lake/lake-build.log
+          lake build $STAGE_TARGETS 2>&1 | tee .lake/lake-build.log
           echo "::group::build summary"
           echo "Built (pipeline ran):    $(grep -cE '^✔.*Built '    .lake/lake-build.log || true)"
           echo "Replayed (from cache):   $(grep -cE '^✔.*Replayed ' .lake/lake-build.log || true)"
           echo "::endgroup::"
 
-      - name: Emit mappings for stage targets + deps
+      - name: Emit root-package mappings
         run: |
           cd pr-branch
-          lake build --no-build $STAGE_TARGETS $STAGE_DEP_TARGETS -o .lake/outputs.jsonl
+          lake build --no-build $STAGE_TARGETS -o .lake/outputs.jsonl
           echo "mappings entries: $(wc -l < .lake/outputs.jsonl)"
           head -3 .lake/outputs.jsonl
 
@@ -296,7 +297,6 @@ jobs:
     timeout-minutes: 60
     continue-on-error: true
     env:
-      LAKE_CACHE_DIR: .lake/cache
       LAKE_CACHE_ARTIFACT_ENDPOINT: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT }}
       LAKE_CACHE_REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_REVISION_ENDPOINT }}
     steps:
@@ -346,29 +346,7 @@ jobs:
           lake cache get \
             --scope="$SHADOW_SCOPE" \
             --rev="${{ needs.build_and_stage.outputs.sha }}"
-          echo "ltar count after get: $(find .lake/cache -name '*.ltar' | wc -l)"
-
-      # `lake cache get` writes every entry from the bundle (mathlib's own
-      # + every dep's that we included in --no-build -o outputs.jsonl) into
-      # outputs/<root-scope>/ on the local side. But `lake build` queries
-      # outputs/<pkg-scope>/ for each dep separately. The JSON entries are
-      # scope-agnostic (just `inputHash -> contentHash.ltar`), so hardlinking
-      # the root scope's contents into each dep's scope dir makes dep
-      # lookups hit. Unrelated entries in a scope just don't match anyone's
-      # inputHash, so this is safe.
-      - name: Distribute root mappings to dep scopes
-        run: |
-          cd pr-branch
-          read -ra DEPS <<< "$STAGE_DEP_TARGETS"
-          ROOT=mathlib
-          for pkg in "${DEPS[@]}"; do
-            mkdir -p ".lake/cache/outputs/$pkg"
-            cp -al ".lake/cache/outputs/$ROOT"/* ".lake/cache/outputs/$pkg/" 2>/dev/null || true
-          done
-          for pkg in $ROOT "${DEPS[@]}"; do
-            n=$(find ".lake/cache/outputs/$pkg" -maxdepth 1 -type f 2>/dev/null | wc -l | tr -d ' ')
-            echo "  outputs/$pkg/: $n entries"
-          done
+          echo "ltar count after get: $(find ~/.elan/toolchains -name '*.ltar' 2>/dev/null | wc -l)"
 
       - name: lake build
         run: |
