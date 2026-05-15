@@ -11,8 +11,8 @@ public import Mathlib.SetTheory.Ordinal.FixedPoint
 # Principal ordinals
 
 If `op` is a binary operation on ordinals, we say that an ordinal `o` is `op`-principal (or
-`op`-indecomposable) when the set `Iio o` is closed under the operation `op`. Most commonly, one
-talks of additive and multiplicative principal ordinals.
+`op`-indecomposable) whenever `a < o` and `b < o` imply `op a b < o`. Most commonly, one talks of
+additive and multiplicative principal ordinals.
 
 Additive principal ordinals were originally called "gamma numbers" by Cantor, but this term now more
 commonly refers to the values given by `Ordinal.gamma`. Likewise, multiplicative principal ordinals
