@@ -213,14 +213,18 @@ lemma comm_comp_comulBialgHom [IsCocomm R A] :
 
 variable (R A) in
 /-- Multiplication on a bialgebra as a coalgebra hom. -/
-@[expose, simps toLinearMap]
+@[expose]
 def mulCoalgHom : A ⊗[R] A →ₗc[R] A where
-  __ := LinearMap.mul' R A
+  toLinearMap := .mul' R A
   counit_comp := by ext; simp [mul_comm]
   map_comp_comul := by
     ext a b
     simp [← (ℛ R a).eq, ← (ℛ R b).eq, TensorProduct.sum_tmul]
     simp [TensorProduct.tmul_sum, Finset.sum_mul_sum]
+
+-- TODO: Generate this using `simps` once the coercion from `LinearMapClass` is gone.
+@[simp]
+lemma mulCoalgHom_toLinearHom : mulCoalgHom R A = LinearMap.mul' R A := rfl
 
 @[simp] lemma coe_mulCoalgHom : ⇑(mulCoalgHom R A) = LinearMap.mul' R A := rfl
 
