@@ -53,8 +53,29 @@ variable {n : WithTop ℕ∞}
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
   {M : Type*} [EMetricSpace M] [ChartedSpace H M] [IsManifold I 2 M]
+
+-- move this
+lemma injective_eval_vectorField (V : Type*) [NormedAddCommGroup V] [NormedSpace ℝ V] (x : M) :
+    Function.Injective
+      (fun A : TangentSpace I x →L[ℝ] V ↦
+        fun (Z : Π x, TangentSpace I x) (_ : MDiffAt (T% Z) x) ↦ A (Z x)) :=
+  VectorBundle.injective_eval_sec ..
+
+variable
   [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
   {X X' X'' Y Y' Y'' Z Z' : Π x : M, TangentSpace I x}
+
+-- move this, also perhaps generalize to general Riemannian vector bundles
+lemma injective_inner_vectorField [CompleteSpace E] (x : M) :
+    Function.Injective
+      (fun X₀ : TangentSpace I x ↦
+        fun (Z : Π x, TangentSpace I x) (_ : MDiffAt (T% Z) x) ↦ inner ℝ X₀ (Z x)) := by
+  let e := VectorBundle.continuousLinearEquivAt ℝ E (TangentSpace I) x
+  have : CompleteSpace (TangentSpace I x) := by
+    rw [completeSpace_congr (e := e.toEquiv) e.isUniformEmbedding]
+    infer_instance
+  set Φ := InnerProductSpace.toDual ℝ (TangentSpace I x)
+  exact (injective_eval_vectorField I ℝ x).comp Φ.injective
 
 namespace CovariantDerivative
 
@@ -80,7 +101,7 @@ local notation "⟪" X ", " Y "⟫" => fun x ↦ inner ℝ (X x) (Y x)
 yields an error
 synthesized type class instance is not definitionally equal to expression inferred by typing rules,
 synthesized
-  fun x ↦ instNormedAddCommGroupOfRiemannianBundle x
+  fun x ↦ instNormedAddCommGroupOfRiemannianBundleOfIsTopologicalAddGroupOfContinuousConstSMulReal x
 inferred
   fun b ↦ inst✝⁷
 Diagnose and fix this, and then replace the below by `MDifferentiable(At).inner_bundle! -/
@@ -263,29 +284,6 @@ public lemma IsLeviCivitaConnection.eq_leviCivitaRhs [FiniteDimensional ℝ E]
 
 section
 
-omit [IsManifold I 2 M] [IsContMDiffRiemannianBundle I 1 E (TangentSpace I (M := M))] in
-variable {I} in
-lemma congr_of_forall_product_apply [FiniteDimensional ℝ E] {Y Y' : TangentSpace I x}
-    (h : ∀ Z : TangentSpace I x, inner ℝ Y Z = inner ℝ Y' Z) : Y = Y' := by
-  have : FiniteDimensional ℝ (TangentSpace I x) := inferInstanceAs (FiniteDimensional ℝ E)
-  have : CompleteSpace (TangentSpace I x) := FiniteDimensional.complete ℝ _
-  set Φ := InnerProductSpace.toDual ℝ (TangentSpace I x)
-  apply Φ.injective
-  ext Z₀
-  simpa [Φ] using h Z₀
-
-omit [IsContMDiffRiemannianBundle I 1 E (TangentSpace I (M := M))] in
-variable {I} in
-/-- If two vector fields `X` and `X'` on `M` satisfy the relation `⟨X, Z⟩ = ⟨X', Z⟩` for all
-vector fields `Z`, then `X = X'`. XXX up to differentiability? -/
--- TODO: is this true if E is infinite-dimensional? trace the origin of the `Fintype` assumptions!
-lemma congr_of_forall_product [FiniteDimensional ℝ E]
-    (h : ∀ Z : Π x : M, TangentSpace I x, ⟪X, Z⟫ = ⟪X', Z⟫) : X = X' := by
-  ext1 x
-  apply congr_of_forall_product_apply
-  intro Z₀
-  simpa using congr($(h (extend E Z₀)) x)
-
 /-- The Levi-Civita connection on `(M, g)` is uniquely determined
 on differentiable vector fields.
 Note that the differentiability hypotheses are required, as the Lie bracket summand in the
@@ -295,16 +293,11 @@ public theorem IsLeviCivitaConnection.uniqueness [FiniteDimensional ℝ E]
     (hcov : cov.IsLeviCivitaConnection) (hcov' : cov'.IsLeviCivitaConnection)
     (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) :
     cov Y x (X x) = cov' Y x (X x) := by
-  have : FiniteDimensional ℝ (TangentSpace I x) := inferInstanceAs (FiniteDimensional ℝ E)
-  have : CompleteSpace (TangentSpace I x) := FiniteDimensional.complete ℝ _
-  set Φ := InnerProductSpace.toDual ℝ (TangentSpace I x)
-  apply Φ.injective
-  ext Z₀
-  let Z := extend E Z₀
-  suffices inner ℝ (cov Y x (X x)) (Z x) = inner ℝ (cov' Y x (X x)) (Z x) by simpa [Φ, Z]
+  apply injective_inner_vectorField
+  ext Z hZ
   trans leviCivitaRhs I X Y Z x
-  · rw [← hcov.eq_leviCivitaRhs I hX hY (mdifferentiableAt_extend I E Z₀)]
-  · rw [← hcov'.eq_leviCivitaRhs I hX hY (mdifferentiableAt_extend I E Z₀)]
+  · rw [← hcov.eq_leviCivitaRhs I hX hY hZ]
+  · rw [← hcov'.eq_leviCivitaRhs I hX hY hZ]
 
 open scoped Classical in
 /-- Auxiliary definition for the definition of the Levi-Civita connection:
@@ -400,42 +393,28 @@ set_option backward.isDefEq.respectTransparency false in
 lemma isCovariantDerivativeOn_lcAux [FiniteDimensional ℝ E] :
     IsCovariantDerivativeOn E (lcAux I (M := M)) where
   add {Y Y'} x hY hY' _ := by
+    apply injective_eval_vectorField
+    ext1 X
+    ext1 hX
+    apply injective_inner_vectorField
+    ext1 Z
+    ext1 hZ
     unfold lcAux
     rw [dif_pos hY, dif_pos hY', dif_pos (mdifferentiableAt_add_section hY hY')]
-    unfold lcAux₁
-    dsimp
-    rw [← ContinuousLinearMap.comp_add]
-    congr! 1
-    simp only [lcAux₀]
-    ext X₀ Y₀
-    simp only [TensorialAt.mkHom₂_apply_eq_extend, ContinuousLinearMap.add_apply, lcAux₀']
-    simp (discharger := exact FiberBundle.mdifferentiableAt_extend ..) only [if_pos]
-    exact leviCivitaRhs_addY_apply _ (FiberBundle.mdifferentiableAt_extend ..)
-      hY hY' (FiberBundle.mdifferentiableAt_extend ..)
+    simp (disch := assumption) [TensorialAt.mkHom₂_apply, lcAux₁, lcAux₀, lcAux₀', if_pos,
+      leviCivitaRhs_addY_apply, inner_add_left]
   leibniz {Y f x} hY hf _ := by
-    dsimp [lcAux]
+    apply injective_eval_vectorField
+    ext1 X
+    ext1 hX
+    apply injective_inner_vectorField
+    ext1 Z
+    ext1 hZ
+    unfold lcAux
     rw [dif_pos hY, dif_pos]
-    · unfold lcAux₁
-      dsimp
-      rw [← ContinuousLinearMap.comp_smul]
-      have : FiniteDimensional ℝ (TangentSpace I x) := inferInstanceAs (FiniteDimensional ℝ E)
-      have : CompleteSpace (TangentSpace I x) := FiniteDimensional.complete ℝ _
-      set Φ := InnerProductSpace.toDual ℝ (TangentSpace I x)
-      ext X₀
-      apply Φ.injective
-      simp only [ContinuousLinearMap.coe_comp', ContinuousLinearEquiv.coe_coe,
-        LinearIsometryEquiv.coe_symm_toContinuousLinearEquiv, comp_apply,
-        LinearIsometryEquiv.apply_symm_apply, ContinuousLinearMap.comp_smulₛₗ, RingHom.id_apply,
-        ContinuousLinearMap.add_apply, ContinuousLinearMap.coe_smul', Pi.smul_apply,
-        map_add, map_smul]
-      ext Z₀
-      simp only [lcAux₀, lcAux₀', TensorialAt.mkHom₂_apply_eq_extend,
-        ContinuousLinearMap.add_apply, ContinuousLinearMap.coe_smul', Pi.smul_apply, smul_eq_mul]
-      simp (discharger := exact FiberBundle.mdifferentiableAt_extend ..) only [if_pos]
-      convert leviCivitaRhs_smulY_apply I hf (FiberBundle.mdifferentiableAt_extend I E X₀) hY
-        (FiberBundle.mdifferentiableAt_extend I E Z₀)
-      simp [Φ]
-    exact MDifferentiableAt.smul_section hf hY
+    · simp (disch := assumption) [lcAux₁, lcAux₀, lcAux₀', TensorialAt.mkHom₂_apply, inner_add_left,
+        inner_smul_left, if_pos, leviCivitaRhs_smulY_apply]
+    exact hf.smul_section hY
 
 end
 
@@ -475,21 +454,15 @@ public lemma leviCivitaConnection_isCompatible [FiniteDimensional ℝ E] :
 
 public lemma leviCivitaConnection_torsion_eq_zero [FiniteDimensional ℝ E] :
     (LeviCivitaConnection I M).torsion = 0 := by
-  have a := (LeviCivitaConnection I M).isCovariantDerivativeOnUniv
   rw [CovariantDerivative.torsion_eq_zero_iff]
   intro X Y x hX hY
-  apply congr_of_forall_product_apply
-  intro Z₀
-  rw [inner_sub_left]
-  rw [← extend_apply_self E Z₀]
-  rw [leviCivitaConnection_apply I hY hX (mdifferentiableAt_extend ..)]
-  rw [leviCivitaConnection_apply I hX hY (mdifferentiableAt_extend ..)]
-  set Z := extend E Z₀
-  simp [leviCivitaRhs,
+  apply injective_inner_vectorField
+  ext Z hZ
+  simp (disch := assumption) [leviCivitaConnection_apply I, leviCivitaRhs,
     mlieBracket_swap (V := Y) (W := X), mlieBracket_swap (V := Z) (W := X),
     mlieBracket_swap (V := Z) (W := Y),
     rhs_aux_swap (Y := Z), rhs_aux_swap (X := Z),
-    real_inner_comm]
+    real_inner_comm, inner_sub_left]
   ring
 
 /-- `LeviCivitaConnection` is a Levi-Civita connection (i.e., compatible and torsion-free) -/

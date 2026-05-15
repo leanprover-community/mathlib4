@@ -714,5 +714,16 @@ lemma mdifferentiableAt_extend {x : M} (σ₀ : V x) :
     MDiffAt (T% (extend F σ₀)) x :=
   (contMDiffAt_extend' (k := 1) I F σ₀).mdifferentiableAt one_ne_zero
 
+variable (V) in
+lemma _root_.VectorBundle.injective_eval_sec [∀ x, Module 𝕜 (V x)] [VectorBundle 𝕜 F V]
+    [ContMDiffVectorBundle 1 F V I]
+    (W : Type*) [NormedAddCommGroup W] [NormedSpace 𝕜 W] (x : M) :
+    Function.Injective
+      (fun A : V x →L[𝕜] W ↦
+        fun (Z : Π x, V x) (_ : MDiffAt (T% Z) x) ↦ A (Z x)) := by
+  intro X X' h
+  ext σ₀
+  simpa using congr($h (extend F σ₀) (mdifferentiableAt_extend ..))
+
 end FiberBundle
 end extend
