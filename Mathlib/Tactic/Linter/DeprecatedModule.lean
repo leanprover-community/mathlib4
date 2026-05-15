@@ -46,6 +46,19 @@ public register_option linter.deprecated.module : Bool := {
 }
 
 /--
+The `deprecated.module.exclude_root` controls whether the `deprecated.module` linter will run
+on root modules. The default value is `false`; this option has no effect if the `deprecated.module`
+linter is disabled.
+
+Some root modules (e.g. `Mathlib`) are designed to import every module regardless of deprecation
+status. This option allows to exclude deprecated import checking in such cases.
+-/
+public register_option linter.deprecated.module.exclude_root : Bool := {
+  defValue := false
+  descr := "disable the `deprecated.module` linter on project roots"
+}
+
+/--
 Defines the `deprecatedModuleExt` extension for adding a `HashSet` of triples of
 * a module `Name` that has been deprecated and
 * an array of `Name`s of modules that should be imported instead
@@ -135,9 +148,9 @@ def deprecated.moduleLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   if (← get).messages.hasErrors then
     return
-  -- Exempt Mathlib.lean since it's auto-generated and imports all modules
-  -- for backwards compatibility
-  if (← getFileName).endsWith "Mathlib.lean" then
+  -- Exempt root module?
+  if (← getBoolOption `linter.deprecated.module.exempt_root)
+      && (← getMainModule).getNumParts == 1 then
     return
   let laterCommand ← IsLaterCommand.get
   -- If `laterCommand` is `true`, then the linter already did what it was supposed to do.
