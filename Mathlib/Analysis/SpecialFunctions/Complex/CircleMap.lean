@@ -24,7 +24,7 @@ This file defines the circle map $θ ↦ c + R e^{θi}$, a parametrization of a 
 @[expose] public section
 noncomputable section circleMap
 
-open Complex Function Metric Real
+open Complex ComplexConjugate Function Metric Real
 
 /-- The exponential map $θ ↦ c + R e^{θi}$. The range of this map is the circle in `ℂ` with center
 `c` and radius `|R|`. -/
@@ -87,6 +87,20 @@ lemma circleMap_zero_pow (n : ℕ) (R θ : ℝ) :
 lemma circleMap_zero_zpow (n : ℤ) (R θ : ℝ) :
     (circleMap 0 R θ) ^ n = circleMap 0 (R ^ n) (n * θ) := by
   simp [circleMap_zero, mul_zpow, ← exp_int_mul, ← mul_assoc]
+
+lemma conj_circleMap_zero (r θ : ℝ) :
+    conj (circleMap 0 r θ) = circleMap 0 r (-θ) := by
+  simp [circleMap_zero, ← exp_conj]
+
+lemma conj_circleMap (c : ℂ) (r θ : ℝ) :
+    conj (circleMap c r θ) = circleMap (conj c) r (-θ) :=
+  sub_left_injective (b := conj c) <| by simp [← map_sub, conj_circleMap_zero]
+
+lemma circleMap_zero_re (r θ : ℝ) : (circleMap 0 r θ).re = r * Real.cos θ := by
+  simp [circleMap_zero]
+
+lemma circleMap_zero_im (r θ : ℝ) : (circleMap 0 r θ).im = r * Real.sin θ := by
+  simp [circleMap_zero]
 
 lemma circleMap_pi_div_two (c : ℂ) (R : ℝ) : circleMap c R (π / 2) = c + R * I := by
   simp only [circleMap, ofReal_div, ofReal_ofNat, exp_pi_div_two_mul_I]

@@ -17,7 +17,7 @@ which expresses that `¬ c.Rel i i` for all `i : ι`.
 
 -/
 
-@[expose] public section
+public section
 
 namespace ComplexShape
 

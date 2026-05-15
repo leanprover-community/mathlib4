@@ -41,11 +41,13 @@ The first interesting cases of such structures are `W₁,₀` and `W₂,₁`: `W
 while `W₂,₁` is a 5-cycle with an extra central hub vertex adjacent to all other vertices
 (i.e. `W₂,₁` resembles a wheel with five spokes).
 
+```
                  `W₁,₀`       v                 `W₂,₁`      v
                            /     \                       /  |  \
                           s       t                     s ─ u ─ t
                            \     /                       \ / \ /
                            w₁ ─ w₂                       w₁ ─ w₂
+```
 
 ## Main definitions
 
@@ -273,8 +275,8 @@ include hw hcf
 
 /--
 If `G` is `Kᵣ₊₂`-free and contains a `Wᵣ,ₖ` together with a vertex `x` adjacent to all of its common
- clique vertices then there exist (not necessarily distinct) vertices `a, b, c, d`, one from each of
- the four `r + 1`-cliques of `Wᵣ,ₖ`, none of which are adjacent to `x`.
+clique vertices then there exist (not necessarily distinct) vertices `a, b, c, d`, one from each of
+the four `r + 1`-cliques of `Wᵣ,ₖ`, none of which are adjacent to `x`.
 -/
 private lemma exist_not_adj_of_adj_inter (hW : ∀ ⦃y⦄, y ∈ s ∩ t → G.Adj x y) :
     ∃ a b c d, a ∈ insert w₁ s ∧ ¬ G.Adj x a ∧ b ∈ insert w₂ t ∧ ¬ G.Adj x b ∧ c ∈ insert v s ∧
