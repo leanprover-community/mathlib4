@@ -11,6 +11,7 @@ public meta import Lean.Linter.Basic
 public meta import Lean.Elab.AssertExists
 public import Lean.Message
 -- This file is imported by the Header linter, hence has no mathlib imports.
+public import Mathlib.Tactic.Linter.DeprecatedModule
 
 /-! # The `directoryDependency` linter
 
@@ -640,6 +641,9 @@ public def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array Me
   unless Linter.getLinterValue linter.directoryDependency (← Linter.getLinterOptions) do
     return #[]
   let env ← getEnv
+  -- Exclude deprecated modules
+  if deprecatedModuleExt.getState env |>.contains mainModule then
+    return #[]
   let imports := env.allImportedModuleNames
 
   -- If this module is in the allow-list, we only allow imports from directories specified there.

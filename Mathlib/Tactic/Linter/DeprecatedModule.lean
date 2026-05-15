@@ -73,10 +73,10 @@ to the environment.
 -/
 public initialize deprecatedModuleExt :
     SimplePersistentEnvExtension
-      (Name × Array Name × Option String) (Std.HashSet (Name × Array Name × Option String)) ←
+      (Name × Array Name × Option String) (Std.HashMap Name (Array Name × Option String)) ←
   registerSimplePersistentEnvExtension {
-    addImportedFn := (·.foldl Std.HashSet.insertMany {})
-    addEntryFn := .insert
+    addImportedFn := (·.foldl Std.HashMap.insertMany {})
+    addEntryFn := (Function.uncurry ·.insert)
   }
 
 /--
@@ -126,7 +126,7 @@ with message 'We can also give more details about the deprecation'
 elab "#show_deprecated_modules" : command => do
   let directImports := deprecatedModuleExt.getState (← getEnv)
   logInfo <| "\n".intercalate <|
-    directImports.fold (init := ["Deprecated modules\n"]) fun nms (i, deps, msg?) ↦
+    directImports.fold (init := ["Deprecated modules\n"]) fun nms i (deps, msg?) ↦
       let msg := match msg? with | some str => s!"message '{str}'" | none => "no message"
       nms ++ [s!"'{i}' deprecates to\n{deps}\nwith {msg}\n"]
 
