@@ -475,7 +475,7 @@ lemma exists_bijective_map_powers [Module.Finite R M] [Module.FinitePresentation
     ext x
     have : s₁.1 • l (l' x) = s₁.1 • s₀.1 • x := congr($hs₁ x)
     simp [lₛ, lₛ', LocalizedModule.smul'_mk, this]
-  let eₛ : LocalizedModule (.powers t) M ≃ₗ[Rₛ] LocalizedModule (.powers t) N :=
+  let eₛ : LocalizedModule.Away t M ≃ₗ[Rₛ] LocalizedModule.Away t N :=
     { __ := lₛ,
       invFun := ((hu₀.unit⁻¹).1 • lₛ'),
       left_inv := fun x ↦ congr($H_left x),
@@ -505,8 +505,8 @@ lemma Module.FinitePresentation.exists_lift_equiv_of_isLocalizedModule
     [Module.FinitePresentation R M] [Module.FinitePresentation R N]
     (l : M' ≃ₗ[R] N') :
     ∃ (r : R) (hr : r ∈ S)
-      (l' : LocalizedModule (.powers r) M ≃ₗ[Localization (.powers r)]
-        LocalizedModule (.powers r) N),
+      (l' : LocalizedModule.Away r M ≃ₗ[Localization (.powers r)]
+        LocalizedModule.Away r N),
       (LocalizedModule.lift (.powers r) g fun s ↦ map_units g ⟨s.1, SetLike.le_def.mp
         (Submonoid.powers_le.mpr hr) s.2⟩) ∘ₗ l'.toLinearMap =
         l ∘ₗ (LocalizedModule.lift (.powers r) f fun s ↦ map_units f ⟨s.1, SetLike.le_def.mp
@@ -581,7 +581,7 @@ instance [Module.FinitePresentation R M] :
 is finitely presented, then `Mₛ = M[1/r]` for some `r ∈ S`. -/
 lemma IsLocalizedModule.exists_isLocalizedModule_powers_of_finitePresentation
     [Module.Finite R M] [Module.FinitePresentation R M'] :
-    ∃ r ∈ S, IsLocalizedModule (.powers r) f := by
+    ∃ r ∈ S, IsLocalizedModule.Away r f := by
   have : IsLocalizedModule S (.id (R := R) (M := M')) :=
     ⟨IsLocalizedModule.map_units f, fun y ↦ ⟨⟨y, 1⟩, by simp⟩, by simpa using ⟨1, S.one_mem⟩⟩
   obtain ⟨r, hrp, H⟩ := exists_bijective_map_powers S
