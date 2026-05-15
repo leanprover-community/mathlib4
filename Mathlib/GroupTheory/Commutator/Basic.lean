@@ -92,7 +92,7 @@ theorem commutator_def (H₁ H₂ : Subgroup G) :
     ⁅H₁, H₂⁆ = closure { g | ∃ g₁ ∈ H₁, ∃ g₂ ∈ H₂, ⁅g₁, g₂⁆ = g } :=
   rfl
 
-variable {g₁ g₂ g₃} {H H₁ H₂ H₃ K₁ K₂ : Subgroup G}
+variable {g₁ g₂ g₃} {H H₁ H₂ H₃ K K₁ K₂ : Subgroup G}
 
 @[to_additive]
 theorem commutator_mem_commutator (h₁ : g₁ ∈ H₁) (h₂ : g₂ ∈ H₂) : ⁅g₁, g₂⁆ ∈ ⁅H₁, H₂⁆ :=
@@ -174,6 +174,16 @@ theorem commutator_top_left_le_iff : ⁅(⊤ : Subgroup G), H⁆ ≤ H ↔ H.Nor
 @[to_additive]
 theorem commutator_top_right_le_iff : ⁅H, ⊤⁆ ≤ H ↔ H.Normal :=
   commutator_comm H ⊤ ▸ commutator_top_left_le_iff
+
+@[to_additive]
+theorem le_normalizer_iff_commutator_le_right : H ≤ normalizer K ↔ ⁅H, K⁆ ≤ K := by
+  refine le_normalizer_iff.trans ⟨fun hH ↦ ?_, fun hH h hh k hk ↦ ?_⟩
+  · exact commutator_le.mpr fun h hh k hk ↦ mul_mem (hH h hh k hk) (inv_mem hk)
+  · exact (mul_mem_cancel_right <| inv_mem hk).mp <| hH <| commutator_mem_commutator hh hk
+
+@[to_additive]
+theorem le_normalizer_iff_commutator_le_left : H ≤ normalizer K ↔ ⁅K, H⁆ ≤ K :=
+  commutator_comm H K ▸ le_normalizer_iff_commutator_le_right
 
 @[to_additive (attr := simp)]
 theorem commutator_bot_left : ⁅(⊥ : Subgroup G), H₁⁆ = ⊥ :=
