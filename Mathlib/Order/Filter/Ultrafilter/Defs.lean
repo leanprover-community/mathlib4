@@ -8,7 +8,7 @@ module
 public import Mathlib.Order.Atoms
 public import Mathlib.Order.Filter.Basic
 public import Mathlib.Tactic.Attr.Core
-import Mathlib.Order.Filter.Map
+public import Mathlib.Order.Filter.Map
 import Mathlib.Order.ZornAtoms
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr

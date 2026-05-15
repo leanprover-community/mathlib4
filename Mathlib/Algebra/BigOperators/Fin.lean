@@ -14,11 +14,11 @@ public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Data.Fintype.Pi
 public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.Order.Interval.Finset.Fin
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
 import Mathlib.Algebra.BigOperators.Group.List.Basic
 import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
-import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Ring.Parity
 import Mathlib.Data.Finset.Attr
 import Mathlib.Data.Fintype.BigOperators
@@ -27,6 +27,7 @@ import Mathlib.Data.List.OfFn
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SetLike
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
 
 /-!
 # Big operators and `Fin`

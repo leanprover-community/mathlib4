@@ -17,6 +17,7 @@ import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.FBinop
 
 /-!
 # `Filter.atTop` and `Filter.atBot` filters on products

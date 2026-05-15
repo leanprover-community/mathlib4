@@ -12,12 +12,13 @@ public import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Finset.Attr
 import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Fintype.Prod
-import Mathlib.Data.Set.NAry
+public import Mathlib.Data.Set.NAry
 import Mathlib.Data.Set.Prod
 import Mathlib.Data.ULift
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.FBinop
 
 /-!
 # Finiteness of products

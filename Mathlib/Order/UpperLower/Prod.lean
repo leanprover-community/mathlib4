@@ -12,6 +12,7 @@ import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.Monotonicity.Attr
 import Mathlib.Tactic.SetLike
 import Mathlib.Util.CompileInductive
+import Mathlib.Tactic.FBinop
 
 /-!
 # Upper and lower set product

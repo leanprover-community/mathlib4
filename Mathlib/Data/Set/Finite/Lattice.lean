@@ -17,7 +17,7 @@ import Mathlib.Data.Set.Disjoint
 import Mathlib.Data.Set.Finite.Basic
 import Mathlib.Data.Set.Finite.Powerset
 import Mathlib.Data.Set.Finite.Range
-import Mathlib.Data.Set.Lattice
+public import Mathlib.Data.Set.Lattice
 import Mathlib.Data.Set.Lattice.Image
 import Mathlib.Data.ULift
 import Mathlib.Order.Bounds.Basic

@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Field.Basic
 public import Mathlib.Algebra.Order.Nonneg.Ring
 public import Mathlib.Algebra.Order.Positive.Ring
-import Mathlib.Algebra.Order.Field.Canonical
+public import Mathlib.Algebra.Order.Field.Canonical
 import Mathlib.Data.Nat.Cast.Order.Ring
 import Mathlib.Tactic.Bound.Init
 import Mathlib.Tactic.Common

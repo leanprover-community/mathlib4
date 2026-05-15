@@ -8,7 +8,7 @@ module
 public import Mathlib.Order.Closure
 import Mathlib.Data.Set.Disjoint
 import Mathlib.Data.Set.Insert
-import Mathlib.Data.Set.Lattice
+public import Mathlib.Data.Set.Lattice
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SetLike
 import Mathlib.Tactic.SimpRw

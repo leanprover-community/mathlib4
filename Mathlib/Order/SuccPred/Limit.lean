@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Order.SuccPred.Archimedean
 public import Mathlib.Algebra.Order.IsBotOne
-import Mathlib.Order.Cover
+public import Mathlib.Order.Cover
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SetLike

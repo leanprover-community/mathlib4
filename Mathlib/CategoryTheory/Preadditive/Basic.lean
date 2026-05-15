@@ -22,6 +22,7 @@ import Mathlib.Tactic.Common
 import Mathlib.Tactic.CrossRefAttribute
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SetLike
+import Mathlib.Algebra.Ring.Basic
 
 /-!
 # Preadditive categories

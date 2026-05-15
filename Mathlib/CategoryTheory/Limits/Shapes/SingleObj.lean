@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.SingleObj
 public import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.CategoryTheory.Category.Init
 import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Setoid.Basic
+public import Mathlib.Data.Setoid.Basic
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SetLike

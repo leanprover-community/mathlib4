@@ -14,9 +14,9 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Algebra.GroupWithZero.InjSurj
 public import Mathlib.Algebra.Order.Group.Unbundled.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Group.Defs
-import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-import Mathlib.Algebra.Ring.InjSurj
+public import Mathlib.Algebra.Order.Group.Defs
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+public import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.Data.Finset.Attr
 import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Tactic.Bound.Init

@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Field.Subfield.Defs
 public import Mathlib.Algebra.Ring.Subring.Basic
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Algebra.Group.Submonoid.BigOperators
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Data.Finset.Attr
 import Mathlib.Data.Set.Lattice
 import Mathlib.Data.Set.Lattice.Image

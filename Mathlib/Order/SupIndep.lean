@@ -20,6 +20,7 @@ import Mathlib.Tactic.Common
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.FBinop
 
 /-!
 # Supremum independence

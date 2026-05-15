@@ -7,7 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
-import Mathlib.CategoryTheory.Adjunction.Limits
+public import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Category.Init
 import Mathlib.CategoryTheory.Limits.Shapes.Equivalence
 import Mathlib.Tactic.CategoryTheory.CategoryStar

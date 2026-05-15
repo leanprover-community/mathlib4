@@ -25,6 +25,7 @@ import Mathlib.Tactic.Common
 import Mathlib.Tactic.FastInstance
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.FBinop
 
 /-!
 # Monoid algebras

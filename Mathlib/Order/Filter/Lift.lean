@@ -18,6 +18,7 @@ import Mathlib.Order.Filter.Tendsto
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.Inhabit
 import Mathlib.Util.CompileInductive
+import Mathlib.Tactic.FBinop
 
 /-!
 # Lift filters along filter and set functions

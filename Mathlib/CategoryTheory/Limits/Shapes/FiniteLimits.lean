@@ -14,7 +14,7 @@ public import Mathlib.Data.Finset.Option
 import Mathlib.CategoryTheory.Category.Init
 import Mathlib.CategoryTheory.FinCategory.AsType
 import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Fintype.Option
+public import Mathlib.Data.Fintype.Option
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SetLike

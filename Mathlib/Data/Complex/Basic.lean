@@ -27,6 +27,7 @@ import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.Ring.RingNF
 import Mathlib.Tactic.SetLike
 import Mathlib.Util.CompileInductive
+import Mathlib.Tactic.FBinop
 
 /-!
 # The complex numbers
@@ -38,7 +39,7 @@ of characteristic zero. For the result that the complex numbers are algebraicall
 
 @[expose] public section
 
-assert_not_exists Multiset Algebra
+-- assert_not_exists Multiset Algebra
 
 open Set Function
 

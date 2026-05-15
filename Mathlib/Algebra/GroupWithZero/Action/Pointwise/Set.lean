@@ -10,7 +10,7 @@ public import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.GroupWithZero.Action.Basic
 import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Basic
-import Mathlib.Data.Set.Image
+public import Mathlib.Data.Set.Image
 import Mathlib.Data.Set.NAry
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr

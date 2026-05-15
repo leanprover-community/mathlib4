@@ -14,7 +14,7 @@ import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Pi
-import Mathlib.Algebra.Order.Sub.Basic
+public import Mathlib.Algebra.Order.Sub.Basic
 import Mathlib.Algebra.Order.Sub.Unbundled.Basic
 import Mathlib.Data.Finset.Attr
 import Mathlib.Tactic.Bound.Init

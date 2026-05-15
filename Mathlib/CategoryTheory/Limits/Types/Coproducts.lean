@@ -14,6 +14,7 @@ import Mathlib.Tactic.CategoryTheory.Elementwise
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Util.CompileInductive
+public import Mathlib.Data.Set.Image
 
 /-!
 # Coproducts in `Type`

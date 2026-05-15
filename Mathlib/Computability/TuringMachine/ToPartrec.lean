@@ -169,7 +169,11 @@ inductive Γ'
   | cons
   | bit0
   | bit1
-  deriving DecidableEq, Inhabited, Fintype
+  deriving DecidableEq, Inhabited --, Fintype
+
+instance : Fintype Γ' where
+  elems := {.consₗ, .cons, .bit0, .bit1}
+  complete x := by cases x <;> simp
 
 -- A proof below relies on the value of that `deriving Inhabited` picks here.
 @[simp] theorem default_Γ' : (default : Γ') = .consₗ := rfl

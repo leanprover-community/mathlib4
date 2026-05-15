@@ -19,6 +19,7 @@ import Mathlib.Data.Finset.Lattice.Prod
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.FBinop
 
 /-!
 # `Finset.sup` in a group

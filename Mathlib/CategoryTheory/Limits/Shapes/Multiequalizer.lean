@@ -8,7 +8,7 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Limits.ConeCategory
-import Mathlib.CategoryTheory.Adjunction.Limits
+public import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Category.Init
 import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
 import Mathlib.Logic.Small.Basic

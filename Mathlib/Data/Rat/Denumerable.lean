@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Data.Rat.Encodable
 public import Mathlib.Logic.Denumerable
-import Mathlib.Algebra.CharZero.Infinite
-import Mathlib.Algebra.Ring.Rat
+public import Mathlib.Algebra.CharZero.Infinite
+public import Mathlib.Algebra.Ring.Rat
 import Mathlib.Data.Finset.Attr
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
