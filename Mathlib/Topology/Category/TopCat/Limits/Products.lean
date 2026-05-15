@@ -75,7 +75,8 @@ abbrev sigmaι {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) : α i ⟶ 
   refine ofHom (ContinuousMap.mk ?_ ?_)
   · dsimp
     apply Sigma.mk i
-  · dsimp; sorry -- XXX continuity
+  · dsimp -- TODO: make fun_prop after the compositional form bug is fixed!
+    exact continuous_sigmaMk
 
 /-- The explicit cofan of a family of topological spaces given by the sigma type. -/
 @[simps! pt ι_app]
