@@ -11,6 +11,30 @@ public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-!
 # Strict linear maps with closed range are closed under finite-rank perturbation
+
+Fix `𝕜` a complete nontrivially normed field, and `E`, `F` two topological vector spaces
+over `𝕜`. This file contains various results expressing that the set of continuous
+linear maps `u : E →L[𝕜] F` which are **strict** and have **closed range** is
+"stable under finite-rank perturbations".
+
+More precisely, we prove the following statements:
+* `ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict`: given a closed
+  subspace `A` of `E` of finite codimension, we have that `u` is strict with closed range
+  if and only if `u.domRestrict A` is strict with closed range.
+* `ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict`: if `u, v : E →L[𝕜] F`
+  differ by a finite rank continuous linear map, then `u` is strict with closed range if and only
+  if `v` is strict with closed range.
+* `ContinuousLinearMap.isStrictMap_isClosed_range_iff_quotient`: given a *complemented*
+  finite dimensional subspace `B` of `F`, we have that `u` is strict with closed range
+  if and only if `B.mkQL ∘L u` is strict with closed range.
+
+These three results show up crucially when developping the theory of Fredholm operators
+between topological vector spaces. Note that none of the results here use the Hahn-Banach
+theorem, so there is no significant restriction on the field.
+
+## References
+
+* [N. Bourbaki, *Théories Spectrales*, Chapitre III, § 3, n° 1][bourbaki2023]
 -/
 
 open Topology Set Submodule Function
@@ -176,6 +200,11 @@ theorem step2 (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : IsClosed (
 We now deduce from the two previous step the full strength of the theorem.
 -/
 
+/-- Consider `u : E →L[𝕜] F` and `A` a closed subspace of `E` of finite codimension.
+We have that `u` is strict with closed range if and only if `u.domRestrict A` is strict with
+closed range.
+
+This is [N. Bourbaki, *Théories Spectrales*, Chapitre III, § 3, n° 1, Prop. 1][bourbaki2023]. -/
 public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict (u : E →L[𝕜] F)
     (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E))
     [codim_A : FiniteDimensional 𝕜 (E ⧸ A)] :
@@ -217,6 +246,10 @@ end FiniteCodimSubspace
 section FiniteRank
 
 -- TODO: state in terms of "equality modulo finite rank" relation
+/-- If `u, v : E →L[𝕜] F` differ by a finite rank continuous linear map, then `u` is strict with
+closed range if and only if `v` is strict with closed range.
+
+This is [N. Bourbaki, *Théories Spectrales*, Chapitre III, § 3, n° 1, Cor. 1][bourbaki2023]. -/
 public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_of_finiteDimensional [T1Space F]
     (u v : E →L[𝕜] F) (h_finite_rank : FiniteDimensional 𝕜 (u - v).range) :
     (IsStrictMap u ∧ IsClosed (range u)) ↔ (IsStrictMap v ∧ IsClosed (range v)) := by
@@ -234,6 +267,10 @@ section FiniteDimQuotient
 
 -- TODO: better name
 -- TODO: use ∘ or ∘L ? The simp NF is ∘
+/-- Consider `u : E →L[𝕜] F` and `B` a *complemented* finite dimensional subspace `F`. We have
+that `u` is strict with closed range if and only if `B.mkQL ∘L u` is strict with closed range.
+
+This is [N. Bourbaki, *Théories Spectrales*, Chapitre III, § 3, n° 1, Cor. 2][bourbaki2023]. -/
 public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_quotient [T1Space F]
     (u : E →L[𝕜] F) (A : Submodule 𝕜 F) [dim_A : FiniteDimensional 𝕜 A]
     (A_compl : ClosedComplemented A) :
