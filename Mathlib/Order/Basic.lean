@@ -527,7 +527,7 @@ theorem compl_gt [LinearOrder α] : (· > · : α → α → _)ᶜ = (· ≤ ·)
 theorem compl_ge [LinearOrder α] : (· ≥ · : α → α → _)ᶜ = (· < ·) := by simp [compl]
 
 instance Ne.instIsEquiv_compl : IsEquiv α (· ≠ ·)ᶜ := by
-  convert eq_isEquiv α
+  convert! eq_isEquiv α
   simp [compl]
 
 /-! ### Order instances on the function space -/

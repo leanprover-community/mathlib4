@@ -58,7 +58,7 @@ lemma natAbs_surjective : natAbs.Surjective := fun n => ⟨n, natAbs_natCast n�
 
 lemma pow_right_injective (h : 1 < a.natAbs) : ((a ^ ·) : ℕ → ℤ).Injective := by
   refine (?_ : (natAbs ∘ (a ^ · : ℕ → ℤ)).Injective).of_comp
-  convert Nat.pow_right_injective h using 2
+  convert! Nat.pow_right_injective h using 2
   rw [Function.comp_apply, natAbs_pow]
 
 /-! ### dvd -/

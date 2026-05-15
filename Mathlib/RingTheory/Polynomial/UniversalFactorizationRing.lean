@@ -192,7 +192,7 @@ lemma ker_eval₂Hom_universalFactorizationMap :
   have H (i : _) : tensorEquivSum _ _ _ _ (f (.X i)) = .X i := by aesop
   apply le_antisymm
   · intro x hx
-    convert_to x - (tensorEquivSum _ _ _ _ (f x)).map C ∈ Ideal.span _ using 1
+    convert_to! x - (tensorEquivSum _ _ _ _ (f x)).map C ∈ Ideal.span _ using 1
     · simp_all only [RingHom.mem_ker, map_zero, sub_zero]
     clear hx
     induction x using MvPolynomial.induction_on with

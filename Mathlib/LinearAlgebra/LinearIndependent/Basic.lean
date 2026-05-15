@@ -462,7 +462,7 @@ theorem LinearIndepOn.union {t : Set ι} (hs : LinearIndepOn R v s) (ht : Linear
   have hli := LinearIndependent.sum_type hs ht (by rwa [← image_eq_range, ← image_eq_range])
   have hdj := (hdj.of_span₀ hs.zero_notMem_image).of_image
   rw [LinearIndepOn]
-  convert (hli.comp _ (Equiv.Set.union hdj).injective) with ⟨x, hx | hx⟩
+  convert! (hli.comp _ (Equiv.Set.union hdj).injective) with ⟨x, hx | hx⟩
   · rw [comp_apply, Equiv.Set.union_apply_left _ hx, Sum.elim_inl]
   rw [comp_apply, Equiv.Set.union_apply_right _ hx, Sum.elim_inr]
 

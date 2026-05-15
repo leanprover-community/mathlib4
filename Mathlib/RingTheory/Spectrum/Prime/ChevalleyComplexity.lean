@@ -357,7 +357,7 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
       _ = ⋃ C ∈ S₁ ∪ S₂, C.toSet := by
         simpa using (Set.biUnion_union (SetLike.coe S₁) S₂ _).symm
     congr 1
-    · convert congr(comap q₁.toRingHom '' $hT₁)
+    · convert! congr(comap q₁.toRingHom '' $hT₁)
       · dsimp only [e₁]
         rw [Set.preimage_diff, preimage_comap_zeroLocus, preimage_comap_zeroLocus,
           Set.image_singleton, Pi.smul_def, ← Set.smul_set_range, Set.range_comp]
@@ -384,7 +384,7 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
             ← pow_succ']
           simp only [← smul_eq_mul, ← Set.smul_set_range, ← Set.smul_set_singleton,
             zeroLocus_smul_of_isUnit ((isUnit_of_invertible (q₁ c)).pow _)]
-    · convert congr(comap q₂.toRingHom '' $hT₂)
+    · convert! congr(comap q₂.toRingHom '' $hT₂)
       · rw [Set.preimage_diff, preimage_comap_zeroLocus, preimage_comap_zeroLocus,
           Set.image_singleton, Set.range_comp, AlgHom.toRingHom_eq_coe]
       · rw [ConstructibleSetData.toSet, Set.image_iUnion₂]
@@ -535,7 +535,8 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
       · intro l m
         rw [update_apply]
         split_ifs with hlj
-        · convert coeff_modByMonic_mem_pow_natDegree_mul _ _ _ (fun _ ↦ coeff_mem_coeffSubmodule)
+        · convert
+          coeff_modByMonic_mem_pow_natDegree_mul _ _ _ (fun _ ↦ coeff_mem_coeffSubmodule)
             one_mem_coeffSubmodule _ (fun _ ↦ coeff_mem_coeffSubmodule) one_mem_coeffSubmodule _
           rw [← pow_succ, Polynomial.degree_eq_natDegree, WithBot.succ_natCast, Nat.cast_id]
           intro e

@@ -70,9 +70,10 @@ theorem irreducible_toPolynomialAdjoinImageCompl {F : MvPolynomial ι k} (hF : I
     Irreducible (toPolynomialAdjoinImageCompl F a i) := by
   have : a '' {i}ᶜ = Set.range (fun x : {j | j ≠ i} ↦ a x) := by ext; simp
   delta toPolynomialAdjoinImageCompl
-  convert hF.map (renameEquiv k (Equiv.optionSubtypeNe i).symm) |>.map (optionEquivLeft k _) |>.map
-    (Polynomial.mapAlgEquiv (H.aevalEquiv.trans
-      (Subalgebra.equivOfEq _ _ congr(Algebra.adjoin k $this.symm))))
+  convert
+    hF.map (renameEquiv k (Equiv.optionSubtypeNe i).symm) |>.map (optionEquivLeft k _) |>.map
+      (Polynomial.mapAlgEquiv
+        (H.aevalEquiv.trans (Subalgebra.equivOfEq _ _ congr(Algebra.adjoin k $this.symm))))
   rw [← AlgEquiv.coe_algHom]
   congr
   aesop
@@ -316,7 +317,7 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_perfectField
     obtain ⟨t, hts, ht⟩ := exists_isTranscendenceBasis_subset (R := k) (s : Set K)
     lift t to Finset K using s.finite_toSet.subset hts
     have : Algebra.IsAlgebraic (IntermediateField.adjoin k (t : Set K)) K := by
-      convert ht.isAlgebraic_field <;> simp
+      convert! ht.isAlgebraic_field <;> simp
     exact ⟨t, ht, inferInstance⟩
   have : ExpChar k p := .prime hp.out
   have : CharP K p := .of_ringHom_of_ne_zero (algebraMap k K) p hp.out.ne_zero

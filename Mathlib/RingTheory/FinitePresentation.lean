@@ -543,8 +543,8 @@ theorem comp_surjective {f : A →ₐ[R] B} {g : B →ₐ[R] C} (hf : f.FinitePr
 
 theorem of_surjective (f : A →ₐ[R] B) (hf : Surjective f) (hker : (RingHom.ker f.toRingHom).FG) :
     f.FinitePresentation := by
-  -- Porting note: added `convert`
-  convert RingHom.FinitePresentation.of_surjective f hf hker
+  -- Porting note: added `convert!`
+  convert! RingHom.FinitePresentation.of_surjective f hf hker
 
 theorem of_finiteType [IsNoetherianRing A] {f : A →ₐ[R] B} : f.FiniteType ↔ f.FinitePresentation :=
   RingHom.FinitePresentation.of_finiteType

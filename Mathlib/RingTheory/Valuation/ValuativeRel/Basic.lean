@@ -1149,7 +1149,7 @@ where the first row is the map `v` factored through its image group (with zero) 
 @[simp]
 lemma embed_valuation_eq_restrict₀ [v.Compatible] (x : R) :
     embed v (valuation R x) = ValueGroup₀.restrict₀ v x := by
-  convert embed_mk v x 1
+  convert! embed_mk v x 1
   simp
 
 /--

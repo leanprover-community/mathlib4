@@ -62,7 +62,7 @@ theorem isAddQuotientCoveringMap_zsmul {n : ℤ} (hn : IsUnit (n : 𝕜)) :
 theorem isAddQuotientCoveringMap_nsmul {n : ℕ} (hn : IsUnit (n : 𝕜)) :
     IsAddQuotientCoveringMap (n • · : AddCircle p → _)
       (nsmulAddMonoidHom (α := AddCircle p) n).ker := by
-  convert isAddQuotientCoveringMap_zsmul p (n := n) (mod_cast hn)
+  convert! isAddQuotientCoveringMap_zsmul p (n := n) (mod_cast hn)
   all_goals ext; simp
 
 theorem isAddQuotientCoveringMap_zsmul_of_ne_zero [Algebra ℚ 𝕜] (n : ℤ) [NeZero n] :

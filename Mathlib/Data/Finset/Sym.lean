@@ -206,7 +206,7 @@ lemma sym_map [DecidableEq β] {n : ℕ} (g : α ↪ β) (s : Finset α) :
       rw [← hi]
       exact (hd e he).choose_spec.1
     · simp only [Sym.map_map, Function.comp_apply, g']
-      convert Sym.attach_map_coe d with ⟨x, hx⟩ hx'
+      convert! Sym.attach_map_coe d with ⟨x, hx⟩ hx'
       exact (hd x hx).choose_spec.2
   · rw [← hd', Sym.mem_map] at hd
     obtain ⟨a, ha, rfl⟩ := hd

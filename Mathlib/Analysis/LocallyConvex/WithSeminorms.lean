@@ -545,7 +545,7 @@ theorem WithSeminorms.isVonNBounded_iff_seminorm_bounded {s : Set E} (hp : WithS
   rw [hp.isVonNBounded_iff_finset_seminorm_bounded]
   constructor
   · intro hI i
-    convert hI {i}
+    convert! hI {i}
     rw [Finset.sup_singleton]
   intro hi I
   by_cases! hI : I.Nonempty
@@ -654,7 +654,7 @@ theorem continuous_of_continuous_comp {q : SeminormFamily 𝕝₂ F ι'} [Topolo
   simp_rw [ContinuousAt, f.map_zero, q.withSeminorms_iff_nhds_eq_iInf.mp hq, Filter.tendsto_iInf,
     Filter.tendsto_comap_iff]
   intro i
-  convert (hf i).continuousAt.tendsto
+  convert! (hf i).continuousAt.tendsto
   exact (map_zero _).symm
 
 @[deprecated (since := "2026-03-09")]

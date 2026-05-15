@@ -46,7 +46,7 @@ lemma lift_awayMapₐ_awayMapₐ_surjective {d e : ℕ} {f : A} (hf : f ∈ 𝒜
     exact this.elim _ _
   have : n = j * (d + e) := by
     apply DirectSum.degree_eq_of_mem_mem 𝒜 hb'
-    · convert SetLike.pow_mem_graded _ _ using 2
+    · convert! SetLike.pow_mem_graded _ _ using 2
       · infer_instance
       · exact hx ▸ SetLike.mul_mem_graded hf hg
     · exact hx ▸ hfg
@@ -101,8 +101,10 @@ instance isSeparated : IsSeparated (toSpecZero 𝒜) := by
     (Algebra.TensorProduct.lift (awayMapₐ 𝒜 j.2.2 rfl) (awayMapₐ 𝒜 i.2.2 (mul_comm _ _))
       (fun _ _ ↦ .all _ _)).toRingHom
   have : Function.Surjective F := lift_awayMapₐ_awayMapₐ_surjective 𝒜 i.2.2 j.2.2 rfl i.1.2
-  convert IsClosedImmersion.spec_of_surjective
-    (CommRingCat.ofHom (R := Away 𝒜 i.2.1 ⊗[𝒜 0] Away 𝒜 j.2.1) F) this using 1
+  convert
+    IsClosedImmersion.spec_of_surjective
+      (CommRingCat.ofHom (R := Away 𝒜 i.2.1 ⊗[𝒜 0] Away 𝒜 j.2.1) F) this using
+    1
   rw [← cancel_mono (pullbackSpecIso ..).inv]
   apply pullback.hom_ext
   · simp only [Iso.trans_hom, congrHom_hom, Category.assoc, Iso.hom_inv_id, Category.comp_id,
@@ -244,15 +246,17 @@ theorem valuativeCriterion_existence_aux
     obtain ⟨a, ai, hai, rfl⟩ := h
     simp only [smul_eq_mul] at hai
     have H : (∏ i, x i ^ ai i) * x i₀ ^ (a * (d j - 1)) ∈ 𝒜 ((a * d i₀) • d j) := by
-      convert SetLike.mul_mem_graded (SetLike.prod_pow_mem_graded 𝒜 d x ai fun _ _ ↦ hxdi _)
-        (SetLike.pow_mem_graded (a * (d j - 1)) (hxdi i₀)) using 2
+      convert
+        SetLike.mul_mem_graded (SetLike.prod_pow_mem_graded 𝒜 d x ai fun _ _ ↦ hxdi _)
+          (SetLike.pow_mem_graded (a * (d j - 1)) (hxdi i₀)) using
+        2
       simp only [smul_eq_mul, hai]
       cases h : d j
       · cases (hdi j).ne' h
       · simp only [add_tsub_cancel_right]; ring
     suffices valuation O K (φ (Away.mk 𝒜 (hxdi j) _ _ H) /
           φ (Away.isLocalizationElem (hxdi j) (hxdi i₀)) ^ a) ≤ 1 by
-      convert this
+      convert! this
       rw [eq_div_iff (pow_ne_zero _ hunit.ne_zero), ← hφ'1, ← hφ'1, RingHom.comp_apply,
         ← map_pow, ← map_mul]
       congr

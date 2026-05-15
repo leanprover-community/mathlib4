@@ -192,7 +192,7 @@ private theorem primeFactorsPiBij_inj (d n : ℕ)
   dsimp only [Nat.primeFactorsPiBij]
   apply ne_of_mem_of_not_mem (s := {x | p ∣ x}) <;> simp_rw [Set.mem_setOf_eq]
   · rw [Finset.prod_filter]
-    convert Finset.dvd_prod_of_mem _ (mem_attach (n.primeFactors) ⟨p, hp⟩)
+    convert! Finset.dvd_prod_of_mem _ (mem_attach (n.primeFactors) ⟨p, hp⟩)
     rw [if_pos rfl]
   · rw [mem_primeFactors] at hp
     rw [Prime.dvd_finsetProd_iff hp.1.prime]

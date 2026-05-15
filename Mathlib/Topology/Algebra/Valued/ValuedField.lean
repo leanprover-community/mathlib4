@@ -416,7 +416,7 @@ theorem closure_coe_completion_v_mul_v_lt {r s : K} (hr : r ≠ 0) (hs : s ≠ 0
     closure ((↑) '' { x : K | v x * v r < v s }) =
     { x : hat K | extensionValuation x * v r < v s } := by
   have hrs : v s / v r ≠ 0 := by simp [hr, hs]
-  convert closure_coe_completion_v_lt (γ := .mk0 _ hrs) using 3
+  convert! closure_coe_completion_v_lt (γ := .mk0 _ hrs) using 3
   all_goals simp [← lt_div_iff₀, zero_lt_iff, hr]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -561,14 +561,14 @@ noncomputable instance valuedCompletion : Valued (hat K) Γ₀ where
               simp
       refine ⟨fun ⟨γ, h⟩ ↦ ?_, fun ⟨γ, h⟩ ↦ ?_⟩
       · use Units.map valueGroup₀_equiv_extensionValuation.toMonoidHom γ
-        convert h
+        convert! h
         apply this
       · use Units.map valueGroup₀_equiv_extensionValuation.symm.toMonoidHom γ
-        convert h
+        convert! h
         rw [← this]
         simp [Valuation.restrict_def, restrict₀_apply]
     simp_rw [← closure_coe_completion_v_lt, Units.coe_map]
-    convert (hasBasis_nhds_zero K Γ₀).hasBasis_of_isDenseInducing Completion.isDenseInducing_coe
+    convert! (hasBasis_nhds_zero K Γ₀).hasBasis_of_isDenseInducing Completion.isDenseInducing_coe
     rw [Valuation.restrict_lt_iff_lt_embedding]; rfl
 
 @[simp]

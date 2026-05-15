@@ -180,7 +180,7 @@ lemma levyProkhorovDist_triangle [OpensMeasurableSpace Ω] (μ ν κ : Measure �
     levyProkhorovDist μ κ ≤ levyProkhorovDist μ ν + levyProkhorovDist ν κ := by
   have dμν_finite := (levyProkhorovEDist_lt_top μ ν).ne
   have dνκ_finite := (levyProkhorovEDist_lt_top ν κ).ne
-  convert ENNReal.toReal_mono ?_ <| levyProkhorovEDist_triangle μ ν κ
+  convert! ENNReal.toReal_mono ?_ <| levyProkhorovEDist_triangle μ ν κ
   · simp only [levyProkhorovDist, ENNReal.toReal_add dμν_finite dνκ_finite]
   · exact ENNReal.add_ne_top.mpr ⟨dμν_finite, dνκ_finite⟩
 
@@ -393,8 +393,10 @@ lemma BoundedContinuousFunction.integral_le_of_levyProkhorovEDist_lt (μ ν : Me
               ≤ (fun (t : ℝ) ↦ ν.real (thickening ε {a | t ≤ f a}) + ε) := by
     intro t
     simp only [measureReal_def]
-    convert ENNReal.toReal_mono ?_ <| left_measure_le_of_levyProkhorovEDist_lt hμν
-      (B := {a | t ≤ f a}) (f.continuous.measurable measurableSet_Ici)
+    convert
+      ENNReal.toReal_mono ?_ <|
+        left_measure_le_of_levyProkhorovEDist_lt hμν (B := {a | t ≤ f a})
+          (f.continuous.measurable measurableSet_Ici)
     · rw [ENNReal.toReal_add (measure_ne_top ν _) ofReal_ne_top, ENNReal.toReal_ofReal ε_pos.le]
     · exact ENNReal.add_ne_top.mpr ⟨measure_ne_top ν _, ofReal_ne_top⟩
   have intble₁ : IntegrableOn (fun t ↦ μ.real {a | t ≤ f a}) (Ioc 0 ‖f‖) := by
@@ -567,10 +569,10 @@ lemma SeparableSpace.exists_measurable_partition_diam_le {ε : ℝ} (ε_pos : 0 
   · exact fun n ↦ Bornology.IsBounded.subset isBounded_ball <| disjointed_subset Bs n
   · intro n
     apply (diam_mono (disjointed_subset Bs n) isBounded_ball).trans
-    convert diam_ball half_ε_pos.le
+    convert! diam_ball half_ε_pos.le
     ring
   · have aux : ⋃ n, Bs n = univ := by
-      convert DenseRange.iUnion_uniformity_ball xs_dense <| Metric.dist_mem_uniformity half_ε_pos
+      convert! DenseRange.iUnion_uniformity_ball xs_dense <| Metric.dist_mem_uniformity half_ε_pos
       exact (ball_eq_ball' _ _).symm
     simpa only [← aux] using iUnion_disjointed
   · exact disjoint_disjointed Bs

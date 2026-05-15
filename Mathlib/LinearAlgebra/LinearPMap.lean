@@ -901,7 +901,7 @@ theorem existsUnique_from_graph {g : Submodule R (E × F)}
     simp
   intro y₁ y₂ hy₁ hy₂
   have hy : ((0 : E), y₁ - y₂) ∈ g := by
-    convert g.sub_mem hy₁ hy₂
+    convert! g.sub_mem hy₁ hy₂
     exact (sub_self _).symm
   exact sub_eq_zero.mp (hg hy (by simp))
 

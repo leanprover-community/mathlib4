@@ -104,7 +104,7 @@ theorem frequently_smallSets_mem (l : Filter α) : ∃ᶠ s in l.smallSets, s �
 theorem frequently_smallSets' {α : Type*} {l : Filter α} {p : Set α → Prop}
     (hp : ∀ ⦃s t : Set α⦄, s ⊆ t → p s → p t) :
     (∃ᶠ s in l.smallSets, p s) ↔ ∀ t ∈ l, p t := by
-  convert not_iff_not.mpr <| l.eventually_smallSets' (p := (¬ p ·)) (by tauto)
+  convert! not_iff_not.mpr <| l.eventually_smallSets' (p := (¬ p ·)) (by tauto)
   simp
 
 theorem HasBasis.frequently_smallSets {α : Type*} {ι : Sort*} {p : ι → Prop} {l : Filter α}

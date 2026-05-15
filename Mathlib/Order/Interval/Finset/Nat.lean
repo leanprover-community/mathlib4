@@ -197,7 +197,7 @@ open Multiset
 
 theorem multiset_Ico_map_mod (n a : ℕ) :
     (Multiset.Ico n (n + a)).map (· % a) = Multiset.range a := by
-  convert congr_arg Finset.val (image_Ico_mod n a)
+  convert! congr_arg Finset.val (image_Ico_mod n a)
   refine ((nodup_map_iff_inj_on (Finset.Ico _ _).nodup).2 <| ?_).dedup.symm
   exact mod_injOn_Ico _ _
 

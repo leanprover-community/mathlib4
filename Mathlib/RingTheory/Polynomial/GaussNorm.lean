@@ -125,8 +125,9 @@ only if the polynomial is zero. -/
 theorem gaussNorm_eq_zero_iff (h_eq_zero : ∀ x : R, v x = 0 → x = 0) (hc : 0 < c) :
     p.gaussNorm v c = 0 ↔ p = 0 := by
   rw [← gaussNorm_coe_powerSeries _ _ (le_of_lt hc)]
-  convert PowerSeries.gaussNorm_eq_zero_iff v c p (by grind) (by simp) h_eq_zero hc
-    (by simpa [PowerSeries.HasGaussNorm] using aux_bdd v p)
+  convert
+    PowerSeries.gaussNorm_eq_zero_iff v c p (by grind) (by simp) h_eq_zero hc
+      (by simpa [PowerSeries.HasGaussNorm] using aux_bdd v p)
   exact Iff.symm coe_eq_zero_iff
 
 omit [ZeroHomClass F R ℝ] in
@@ -242,7 +243,7 @@ private theorem mul_gaussNorm_le_gaussNorm_mul (p q : R[X]) :
   intro x hx hneq
   apply lt_of_mul_lt_mul_right _ <| pow_nonneg hc0 (i + j)
   have : x + (i + j - x) = i + j := by simp_all
-  convert_to v (p.coeff x) * c ^ x * (v (q.coeff (i + j - x)) * c ^ (i + j - x)) <
+  convert_to! v (p.coeff x) * c ^ x * (v (q.coeff (i + j - x)) * c ^ (i + j - x)) <
     v (p.coeff i) * c ^ i * (v (q.coeff j) * c ^ j)
   · grind
   · grind

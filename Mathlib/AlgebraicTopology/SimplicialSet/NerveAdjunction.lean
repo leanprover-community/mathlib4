@@ -449,7 +449,7 @@ lemma isIso_prodComparison_of_stdSimplex {D : SSet.{u}} (X : SSet.{u})
 set_option backward.isDefEq.respectTransparency false in
 instance isIso_prodComparison (X Y : SSet) :
     IsIso (prodComparison hoFunctor.{u} X Y) := isIso_prodComparison_of_stdSimplex _ fun m ↦ by
-  convert_to IsIso (hoFunctor.map (prod.braiding _ _).hom ≫
+  convert_to! IsIso (hoFunctor.map (prod.braiding _ _).hom ≫
     prodComparison hoFunctor Δ[m] X ≫ (prod.braiding _ _).hom)
   · ext <;> simp [← Functor.map_comp]
   suffices IsIso (prodComparison hoFunctor Δ[m] X) by infer_instance

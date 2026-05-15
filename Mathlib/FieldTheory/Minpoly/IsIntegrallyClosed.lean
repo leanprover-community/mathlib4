@@ -150,7 +150,7 @@ theorem IsIntegrallyClosed.isIntegral_iff_leadingCoeff_dvd {s : S} {p : R[X]} (h
     have ⟨q, hMul⟩ := isIntegrallyClosed_dvd hInt hp
     suffices q.degree ≤ 0 by simp [degree_le_zero_iff.mp this ▸ hMul, minpoly.monic hInt, mul_comm]
     apply WithBot.le_of_add_le_add_left <| Polynomial.degree_ne_bot.mpr <| minpoly.ne_zero hInt
-    convert pmin _ (minpoly.monic hInt) (minpoly.aeval ..)
+    convert! pmin _ (minpoly.monic hInt) (minpoly.aeval ..)
     · rw [hMul, degree_mul]
     · rw [add_zero]
   · convert right_ne_zero_of_mul <| hMul ▸ h₀

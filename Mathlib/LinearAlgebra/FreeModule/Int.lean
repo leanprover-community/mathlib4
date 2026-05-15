@@ -49,7 +49,7 @@ lemma toAddSubgroup_index_eq_pow_mul_prod [Module R M] {N : Submodule R M}
     set e : (ι → R) ≃+ M := ↑bM.equivFun.symm with he
     let e' : (ι → R) →+ M := e
     have he' : Function.Surjective e' := e.surjective
-    convert (AddSubgroup.index_comap_of_surjective N.toAddSubgroup he').symm using 2
+    convert! (AddSubgroup.index_comap_of_surjective N.toAddSubgroup he').symm using 2
     rw [AddSubgroup.comap_equiv_eq_map_symm, he, hN', LinearEquiv.coe_toAddEquiv_symm,
     AddEquiv.symm_symm]
     exact Submodule.map_toAddSubgroup ..
@@ -73,7 +73,7 @@ lemma toAddSubgroup_index_eq_pow_mul_prod [Module R M] {N : Submodule R M}
               simp [hinj.symm]
           _ = c h.choose * a h.choose := by simp [h.choose_spec]
       · convert dvd_refl (0 : R)
-        convert Finset.sum_const_zero with j
+        convert! Finset.sum_const_zero with j
         rw [not_exists] at h
         specialize h j
         rw [eq_comm] at h
@@ -86,7 +86,7 @@ lemma toAddSubgroup_index_eq_pow_mul_prod [Module R M] {N : Submodule R M}
       by_cases! hj : ∃ j, f j = i
       · calc ∑ x : Fin n, _ =
             if i = f hj.choose then (h (f hj.choose)).choose * a hj.choose else 0 := by
-              convert Finset.sum_eq_single (M := R) hj.choose ?_ ?_
+              convert! Finset.sum_eq_single (M := R) hj.choose ?_ ?_
               · simp
               · rintro j - h
                 have hinj := f.injective.ne h
@@ -102,7 +102,7 @@ lemma toAddSubgroup_index_eq_pow_mul_prod [Module R M] {N : Submodule R M}
               congr!
               · exact hj.choose_spec.symm
               · simp [hj]
-      · convert Finset.sum_const_zero with x
+      · convert! Finset.sum_const_zero with x
         · specialize hj x
           rw [ne_comm] at hj
           simp [hj]
@@ -194,7 +194,7 @@ lemma submodule_toAddSubgroup_index_ne_zero_iff {N : Submodule ℤ (ι → ℤ)}
 
 lemma addSubgroup_index_ne_zero_iff {H : AddSubgroup (ι → ℤ)} :
     H.index ≠ 0 ↔ Nonempty (H ≃+ (ι → ℤ)) := by
-  convert submodule_toAddSubgroup_index_ne_zero_iff (N := AddSubgroup.toIntSubmodule H) using 1
+  convert! submodule_toAddSubgroup_index_ne_zero_iff (N := AddSubgroup.toIntSubmodule H) using 1
   exact ⟨fun ⟨e⟩ ↦ ⟨e.toIntLinearEquiv⟩, fun ⟨e⟩ ↦ ⟨e.toAddEquiv⟩⟩
 
 set_option backward.isDefEq.respectTransparency false in

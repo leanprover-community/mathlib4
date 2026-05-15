@@ -79,7 +79,7 @@ theorem log_stirlingSeq_diff_hasSum (m : ℕ) :
   let f (k : ℕ) := (1 : ℝ) / (2 * k + 1) * ((1 / (2 * ↑(m + 1) + 1)) ^ 2) ^ k
   change HasSum (fun k => f (k + 1)) _
   rw [hasSum_nat_add_iff]
-  convert (hasSum_log_one_add_inv m.cast_add_one_pos).mul_left ((↑(m + 1) : ℝ) + 1 / 2) using 1
+  convert! (hasSum_log_one_add_inv m.cast_add_one_pos).mul_left ((↑(m + 1) : ℝ) + 1 / 2) using 1
   · ext k
     dsimp only [f]
     rw [← pow_mul, pow_add]

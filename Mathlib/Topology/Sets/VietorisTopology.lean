@@ -468,9 +468,10 @@ theorem _root_.Topology.IsClosedEmbedding.compacts_map (hf : IsClosedEmbedding f
 instance [DiscreteTopology α] : DiscreteTopology (Compacts α) := by
   rw [discreteTopology_iff_isOpen_singleton]
   intro K
-  convert (isOpen_subsets_of_isOpen (isOpen_discrete (K : Set α))).inter
-    (K.isCompact.finite_of_discrete.isOpen_biInter fun x hx =>
-      isOpen_inter_nonempty_of_isOpen (isOpen_discrete {x}))
+  convert
+    (isOpen_subsets_of_isOpen (isOpen_discrete (K : Set α))).inter
+      (K.isCompact.finite_of_discrete.isOpen_biInter fun x hx =>
+        isOpen_inter_nonempty_of_isOpen (isOpen_discrete { x }))
   simp_rw [← setOf_forall, inter_singleton_nonempty, ← Set.subset_def, ← setOf_and,
     ← subset_antisymm_iff, SetLike.coe_set_eq, setOf_eq_eq_singleton]
 

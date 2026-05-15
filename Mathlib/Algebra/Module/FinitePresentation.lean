@@ -380,7 +380,7 @@ lemma Module.FinitePresentation.exists_lift_of_isLocalizedModule
     exact j.prop
   have : ∀ x : τ, ∃ s : S, s • (Finsupp.linearCombination R i x) = 0 := by
     intro x
-    convert_to ∃ s : S, s • (Finsupp.linearCombination R i x) = s • 0
+    convert_to! ∃ s : S, s • (Finsupp.linearCombination R i x) = s • 0
     · simp only [smul_zero]
     apply IsLocalizedModule.exists_of_eq (S := S) (f := f)
     rw [← LinearMap.comp_apply, map_zero, hi, LinearMap.comp_apply]

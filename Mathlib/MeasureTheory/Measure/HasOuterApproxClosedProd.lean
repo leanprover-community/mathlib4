@@ -180,11 +180,11 @@ lemma ext_of_integral_prod_mul_prod_boundedContinuousFunction
     simp_rw [this]
     exact h (fun i ↦ ⟨⟨fun x ↦ (f i x), by fun_prop⟩, (f i).map_bounded'⟩)
       (fun j ↦ ⟨⟨fun y ↦ (g j y), by fun_prop⟩, (g j).map_bounded'⟩)
-  · convert (lintegral_lt_top_of_nnreal μ
+  · convert! (lintegral_lt_top_of_nnreal μ
       ((∏ i, (f i).compContinuous ⟨Function.eval i ∘ Prod.fst, by fun_prop⟩) *
       (∏ j, (g j).compContinuous ⟨Function.eval j ∘ Prod.snd, by fun_prop⟩))).ne
     simp
-  · convert (lintegral_lt_top_of_nnreal ν
+  · convert! (lintegral_lt_top_of_nnreal ν
       ((∏ i, (f i).compContinuous ⟨Function.eval i ∘ Prod.fst, by fun_prop⟩) *
       (∏ j, (g j).compContinuous ⟨Function.eval j ∘ Prod.snd, by fun_prop⟩))).ne
     simp
@@ -282,7 +282,7 @@ lemma ext_of_integral_prod_mul_prod_boundedContinuousFunction'
     μ = ν := by
   have := Fintype.ofFinite ι; have := Fintype.ofFinite κ
   refine ext_of_integral_prod_mul_prod_boundedContinuousFunction fun f g ↦ ?_
-  convert h (∏ i, (f i).compContinuous ⟨Function.eval i, by fun_prop⟩)
+  convert! h (∏ i, (f i).compContinuous ⟨Function.eval i, by fun_prop⟩)
     (∏ j, (g j).compContinuous ⟨Function.eval j, by fun_prop⟩) <;> simp
 
 lemma eq_prod_of_integral_prod_mul_prod_boundedContinuousFunction' {μ : Measure (Π i, X i)}
@@ -300,7 +300,7 @@ lemma ext_of_integral_prod_mul_boundedContinuousFunction' {μ ν : Measure ((Π 
     μ = ν := by
   have := Fintype.ofFinite ι
   refine ext_of_integral_prod_mul_boundedContinuousFunction fun f g ↦ ?_
-  convert h (∏ i, (f i).compContinuous ⟨Function.eval i, by fun_prop⟩) g <;> simp
+  convert! h (∏ i, (f i).compContinuous ⟨Function.eval i, by fun_prop⟩) g <;> simp
 
 lemma eq_prod_of_integral_prod_mul_boundedContinuousFunction' {μ : Measure (Π i, X i)}
     {ν : Measure T} {ξ : Measure ((Π i, X i) × T)}
@@ -316,7 +316,7 @@ lemma ext_of_integral_mul_prod_boundedContinuousFunction' {μ ν : Measure (Z ×
     μ = ν := by
   have := Fintype.ofFinite κ
   refine ext_of_integral_mul_prod_boundedContinuousFunction fun f g ↦ ?_
-  convert h f (∏ j, (g j).compContinuous ⟨Function.eval j, by fun_prop⟩) <;> simp
+  convert! h f (∏ j, (g j).compContinuous ⟨Function.eval j, by fun_prop⟩) <;> simp
 
 lemma eq_prod_of_integral_mul_prod_boundedContinuousFunction' {μ : Measure Z}
     {ν : Measure (Π j, Y j)} {ξ : Measure (Z × (Π j, Y j))}

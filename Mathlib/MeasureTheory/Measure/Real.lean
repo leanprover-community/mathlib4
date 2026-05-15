@@ -157,7 +157,7 @@ theorem measureReal_biUnion_finset_le (s : Finset β) (f : β → Set α) :
 
 theorem measureReal_iUnion_fintype_le [Fintype β] (f : β → Set α) :
     μ.real (⋃ b, f b) ≤ ∑ p, μ.real (f p) := by
-  convert measureReal_biUnion_finset_le Finset.univ f
+  convert! measureReal_biUnion_finset_le Finset.univ f
   simp
 
 theorem measureReal_iUnion_fintype [Fintype β] {f : β → Set α} (hn : Pairwise (Disjoint on f))

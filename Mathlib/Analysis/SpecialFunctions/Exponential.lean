@@ -71,7 +71,7 @@ variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [NormedRing 𝔸] [C
 `1 : 𝔸 →L[𝕂] 𝔸` at zero, as long as it converges on a neighborhood of zero. -/
 theorem hasStrictFDerivAt_exp_zero_of_radius_pos (h : 0 < (expSeries 𝕂 𝔸).radius) :
     HasStrictFDerivAt exp (1 : 𝔸 →L[𝕂] 𝔸) 0 := by
-  convert (hasFPowerSeriesAt_exp_zero_of_radius_pos h).hasStrictFDerivAt
+  convert! (hasFPowerSeriesAt_exp_zero_of_radius_pos h).hasStrictFDerivAt
   ext x
   change x = expSeries 𝕂 𝔸 1 fun _ => x
   simp [expSeries_apply_eq, Nat.factorial]

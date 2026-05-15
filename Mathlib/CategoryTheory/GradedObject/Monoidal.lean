@@ -558,7 +558,7 @@ variable [DecidableEq I] [HasInitial C]
 lemma triangle :
     (associator X₁ tensorUnit X₃).hom ≫ tensorHom (𝟙 X₁) (leftUnitor X₃).hom =
       tensorHom (rightUnitor X₁).hom (𝟙 X₃) := by
-  convert mapBifunctor_triangle (curriedAssociatorNatIso C) (𝟙_ C)
+  convert! mapBifunctor_triangle (curriedAssociatorNatIso C) (𝟙_ C)
     (rightUnitorNatIso C) (leftUnitorNatIso C) (triangleIndexData I) X₁ X₃ (by simp)
   all_goals assumption
 

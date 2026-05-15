@@ -82,7 +82,8 @@ def degrees (p : MvPolynomial σ R) : Multiset σ :=
   p.support.sup fun s : σ →₀ ℕ => toMultiset s
 
 theorem degrees_def [DecidableEq σ] (p : MvPolynomial σ R) :
-    p.degrees = p.support.sup fun s : σ →₀ ℕ => Finsupp.toMultiset s := by rw [degrees]; convert rfl
+    p.degrees = p.support.sup fun s : σ →₀ ℕ => Finsupp.toMultiset s := by rw [degrees]; convert
+      rfl
 
 theorem degrees_monomial (s : σ →₀ ℕ) (a : R) : degrees (monomial s a) ≤ toMultiset s := by
   classical
@@ -335,7 +336,7 @@ theorem degreeOf_mul_X_self (j : σ) (f : MvPolynomial σ R) :
   simp only [degreeOf]
   apply (Multiset.count_le_of_le j degrees_mul_le).trans
   simp only [Multiset.count_add, add_le_add_iff_left]
-  convert Multiset.count_le_of_le j <| degrees_X' j
+  convert! Multiset.count_le_of_le j <| degrees_X' j
   rw [Multiset.count_singleton_self]
 
 theorem degreeOf_X_pow_of_ne {i j : σ} (k : ℕ) (h : i ≠ j) :

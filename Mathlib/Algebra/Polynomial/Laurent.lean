@@ -189,7 +189,7 @@ theorem _root_.Polynomial.toLaurent_C_mul_T (n : ℕ) (r : R) :
 
 @[simp]
 theorem _root_.Polynomial.toLaurent_C (r : R) : toLaurent (Polynomial.C r) = C r := by
-  convert Polynomial.toLaurent_C_mul_T 0 r
+  convert! Polynomial.toLaurent_C_mul_T 0 r
   simp only [Int.ofNat_zero, T_zero, mul_one]
 
 @[simp]
@@ -542,7 +542,7 @@ theorem mk'_one_X_pow (n : ℕ) :
 @[simp]
 theorem mk'_one_X :
     IsLocalization.mk' R[T;T⁻¹] 1 (⟨X, 1, pow_one X⟩ : Submonoid.powers (X : R[X])) = T (-1) := by
-  convert mk'_one_X_pow 1
+  convert! mk'_one_X_pow 1
   exact (pow_one X).symm
 
 /-- Given a ring homomorphism `f : R →+* S` and a unit `x` in `S`, the induced homomorphism

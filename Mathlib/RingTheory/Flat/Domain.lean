@@ -62,8 +62,9 @@ See `LinearIndependent.tmul_of_flat_left`. -/
 lemma LinearIndependent.tmul_of_isDomain (hv : LinearIndependent R v) (hw : LinearIndependent R w) :
     LinearIndependent R fun i : ι × κ ↦ v i.1 ⊗ₜ[R] w i.2 := by
   rw [LinearIndependent]
-  convert (TensorProduct.map_injective_of_flat_flat_of_isDomain _ _ hv hw).comp
-    (finsuppTensorFinsupp' _ _ _).symm.injective
+  convert
+    (TensorProduct.map_injective_of_flat_flat_of_isDomain _ _ hv hw).comp
+      (finsuppTensorFinsupp' _ _ _).symm.injective
   rw [← LinearEquiv.coe_toLinearMap, ← LinearMap.coe_comp]
   congr!
   ext i

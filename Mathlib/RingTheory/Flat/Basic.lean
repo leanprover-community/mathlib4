@@ -409,14 +409,16 @@ namespace Algebra.TensorProduct
 
 theorem includeLeft_injective [Module.Flat R A] (hb : Function.Injective (algebraMap R B)) :
     Function.Injective (includeLeft : A →ₐ[S] A ⊗[R] B) := by
-  convert Module.Flat.lTensor_preserves_injective_linearMap (M := A) (Algebra.linearMap R B) hb
-    |>.comp (_root_.TensorProduct.rid R A).symm.injective
+  convert
+    Module.Flat.lTensor_preserves_injective_linearMap (M := A) (Algebra.linearMap R B) hb |>.comp
+      (_root_.TensorProduct.rid R A).symm.injective
   ext; simp
 
 theorem includeRight_injective [Module.Flat R B] (ha : Function.Injective (algebraMap R A)) :
     Function.Injective (includeRight : B →ₐ[R] A ⊗[R] B) := by
-  convert Module.Flat.rTensor_preserves_injective_linearMap (M := B) (Algebra.linearMap R A) ha
-    |>.comp (_root_.TensorProduct.lid R B).symm.injective
+  convert
+    Module.Flat.rTensor_preserves_injective_linearMap (M := B) (Algebra.linearMap R A) ha |>.comp
+      (_root_.TensorProduct.lid R B).symm.injective
   ext; simp
 
 end Algebra.TensorProduct
@@ -501,8 +503,9 @@ See `LinearIndependent.tmul_of_isDomain`. -/
 lemma _root_.LinearIndependent.tmul_of_flat_left [Module.Flat R M] (hv : LinearIndependent R v)
     (hw : LinearIndependent R w) : LinearIndependent R fun i : ι × κ ↦ v i.1 ⊗ₜ[R] w i.2 := by
   rw [LinearIndependent]
-  convert (TensorProduct.map_injective_of_flat_flat _ _ hv hw).comp
-    (finsuppTensorFinsupp' _ _ _).symm.injective
+  convert
+    (TensorProduct.map_injective_of_flat_flat _ _ hv hw).comp
+      (finsuppTensorFinsupp' _ _ _).symm.injective
   rw [← LinearEquiv.coe_toLinearMap, ← LinearMap.coe_comp]
   congr!
   ext i

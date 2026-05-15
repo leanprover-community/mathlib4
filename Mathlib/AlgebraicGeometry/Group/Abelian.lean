@@ -111,8 +111,9 @@ theorem isCommMonObj_of_isProper_of_isIntegral_tensorObj_of_isAlgClosed [IsAlgCl
         γ.left.isClosedMap ((H ⟨_, hyU⟩).subset (Set.image_subset_iff.mpr fun _ ↦ by
           simp [← Scheme.Hom.comp_apply, -Scheme.Hom.comp_base, γ])) ?_ ?_
       · let α : G ⊗ G ⟶ G ⊗ G := toUnit _ ≫ x ⊗ₘ 𝟙 _
-        convert ((IrreducibleSpace.isIrreducible_univ _).image α.left
-          α.left.continuous.continuousOn).isPreirreducible
+        convert
+          ((IrreducibleSpace.isIrreducible_univ _).image α.left
+              α.left.continuous.continuousOn).isPreirreducible
         rw [Over.tensorHom_left]
         simp [Set.range_comp, Scheme.Pullback.range_map, x]
       · exact ⟨y, subset_closure (by simp), rfl⟩

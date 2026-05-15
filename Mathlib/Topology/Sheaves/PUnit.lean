@@ -42,7 +42,7 @@ theorem isSheaf_of_isTerminal_of_indiscrete {X : TopCat.{w}} (hind : X.str = ⊤
     obtain ⟨U, f, hf, hm⟩ := hs x _root_.trivial
     obtain rfl | rfl := U.eq_bot_or_top
     · cases hm
-    · convert hf
+    · convert! hf
 
 theorem isSheaf_iff_isTerminal_of_indiscrete {X : TopCat.{w}} (hind : X.str = ⊤)
     (F : Presheaf C X) : F.IsSheaf ↔ Nonempty (IsTerminal <| F.obj <| op ⊥) :=

@@ -191,7 +191,7 @@ lemma sigPos_weightedSumSquares :
   classical
   let p : Set ι := {i | 0 < w i}
   let m : Set ι := {i | w i ≤ 0}
-  convert_to sigPos _ = p.ncard
+  convert_to! sigPos _ = p.ncard
   have : p.ncard + m.ncard = Nat.card ι := by
     convert Set.ncard_add_ncard_compl p
     ext

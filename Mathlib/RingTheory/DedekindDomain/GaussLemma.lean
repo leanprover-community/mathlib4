@@ -55,7 +55,7 @@ theorem gaussNorm_lt_one_iff_contentIdeal_le :
 if and only if the `v`-adic Gauss norms of `p` are equal to 1 for all `v`. -/
 theorem contentIdeal_eq_top_iff_forall_gaussNorm_eq_one (hR : ¬IsField R) :
     p.contentIdeal = ⊤ ↔ ∀ v : HeightOneSpectrum R, p.gaussNorm (v.intAdicAbv hb) 1 = 1 := by
-  convert_to _ ↔ ∀ (x : HeightOneSpectrum R), 1 ≤ gaussNorm (x.intAdicAbv hb) 1 p
+  convert_to! _ ↔ ∀ (x : HeightOneSpectrum R), 1 ≤ gaussNorm (x.intAdicAbv hb) 1 p
   · grind [gaussNorm_intAdicAbv_le_one]
   simp [← not_iff_not, gaussNorm_lt_one_iff_contentIdeal_le, ideal_ne_top_iff_exists hR]
 

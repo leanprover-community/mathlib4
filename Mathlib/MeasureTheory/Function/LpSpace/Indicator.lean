@@ -180,7 +180,7 @@ theorem tendsto_indicatorConstLp_set [hp₁ : Fact (1 ≤ p)] {β : Type*} {l : 
   rw [tendsto_iff_dist_tendsto_zero]
   have hp₀ : p ≠ 0 := (one_pos.trans_le hp₁.out).ne'
   simp only [dist_indicatorConstLp_eq_norm, norm_indicatorConstLp hp₀ hp]
-  convert tendsto_const_nhds.mul
+  convert! tendsto_const_nhds.mul
     (((ENNReal.tendsto_toReal ENNReal.zero_ne_top).comp h).rpow_const _)
   · simp [ENNReal.toReal_eq_zero_iff, hp, hp₀]
   · simp

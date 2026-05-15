@@ -450,13 +450,13 @@ lemma iSupIndep_rootSpace :
     simpa using this.2
   have key := LieModule.iSupIndep_genWeightSpace R b.cartan L
   have h₀ : Disjoint (rootSpace b.cartan 0) (U ⊔ V) := by
-    convert key.disjoint_biSup_biSup (hU0.union_right hV0)
+    convert! key.disjoint_biSup_biSup (hU0.union_right hV0)
     rw [iSup_union, hsU', hsV']
   have h₁ : Disjoint U (V ⊔ rootSpace b.cartan 0) := by
-    convert key.disjoint_biSup_biSup (hUV.union_right hU0.symm)
+    convert! key.disjoint_biSup_biSup (hUV.union_right hU0.symm)
     rw [iSup_union, hs0', hsV']
   have h₂ : Disjoint V (rootSpace b.cartan 0 ⊔ U) := by
-    convert key.disjoint_biSup_biSup (Disjoint.union_left hV0 hUV).symm
+    convert! key.disjoint_biSup_biSup (Disjoint.union_left hV0 hUV).symm
     rw [iSup_union, hs0', hsU']
   simp [iSupIndep_fin_three, h₀, h₁, h₂]
 

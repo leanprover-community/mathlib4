@@ -144,7 +144,7 @@ lemma totallyBounded_iff_finite_residueField [(Valued.v : Valuation K Γ₀).Ran
     simp only [Submodule.Quotient.quot_mk_eq_mk, Ideal.Quotient.mk_eq_mk, Set.mem_univ,
       IsLocalRing.residue, Set.mem_image, true_implies]
     refine ⟨y, hy, ?_⟩
-    convert (Ideal.Quotient.mk_eq_mk_iff_sub_mem (I := 𝓂[K]) y x).mpr _
+    convert! (Ideal.Quotient.mk_eq_mk_iff_sub_mem (I := 𝓂[K]) y x).mpr _
     -- TODO: make Valued.maximalIdeal abbreviations instead of def
     rw [Valued.maximalIdeal, hp.maximalIdeal_eq, ← SetLike.mem_coe,
       (Valuation.integer.integers _).coe_span_singleton_eq_setOf_le_v_algebraMap]

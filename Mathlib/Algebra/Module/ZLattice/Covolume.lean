@@ -354,7 +354,7 @@ theorem tendsto_card_div_pow' {s : Set E} (hs₁ : IsBounded s) (hs₂ : Measura
     Tendsto (fun n : ℕ ↦ (Nat.card (s ∩ (n : ℝ)⁻¹ • L : Set E) : ℝ) / n ^ finrank ℝ E)
       atTop (𝓝 (volume.real s / covolume L)) := by
   let b := Module.Free.chooseBasis ℤ L
-  convert tendsto_card_div_pow'' b hs₁ hs₂ ?_
+  convert! tendsto_card_div_pow'' b hs₁ hs₂ ?_
   · rw [← finrank_eq_card_chooseBasisIndex, ZLattice.rank ℝ L]
   · simp only [measureReal_def]
     rw [volume_image_eq_volume_div_covolume' L b hs₂.nullMeasurableSet, ENNReal.toReal_div,

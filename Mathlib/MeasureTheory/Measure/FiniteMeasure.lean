@@ -775,7 +775,7 @@ instance : ContinuousAdd (FiniteMeasure Ω) := by
       (𝓝 (∫⁻ x, g x ∂p.2)) := by
     rw [nhds_prod_eq]
     exact (tendsto_iff_forall_lintegral_tendsto.1 tendsto_id g).comp tendsto_snd
-  convert A.add B with q <;> simp
+  convert! A.add B with q <;> simp
 
 instance : ContinuousSMul ℝ≥0 (FiniteMeasure Ω) := by
   refine ⟨continuous_iff_continuousAt.2 (fun p ↦ ?_)⟩
@@ -787,7 +787,7 @@ instance : ContinuousSMul ℝ≥0 (FiniteMeasure Ω) := by
       (𝓝 (∫ x, g x ∂p.2)) := by
     rw [nhds_prod_eq]
     exact (tendsto_iff_forall_integral_tendsto.1 tendsto_id g).comp tendsto_snd
-  convert A.smul B with q <;> simp
+  convert! A.smul B with q <;> simp
 
 variable {X : Type*} [TopologicalSpace X] {μs : X → FiniteMeasure Ω}
 
@@ -960,7 +960,7 @@ lemma tendsto_map_of_tendsto_of_continuous {ι : Type*} {L : Filter ι}
     Tendsto (fun i ↦ (νs i).map f) L (𝓝 (ν.map f)) := by
   rw [FiniteMeasure.tendsto_iff_forall_lintegral_tendsto] at lim ⊢
   intro g
-  convert lim (g.compContinuous ⟨f, f_cont⟩) <;>
+  convert! lim (g.compContinuous ⟨f, f_cont⟩) <;>
   · simp only [map, compContinuous_apply, ContinuousMap.coe_mk]
     refine lintegral_map ?_ f_cont.measurable
     exact (ENNReal.continuous_coe.comp g.continuous).measurable

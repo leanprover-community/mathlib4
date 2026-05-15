@@ -110,13 +110,13 @@ theorem le_rank_iff_exists_linearIndependent {c : Cardinal} {f : V →ₗ[K] V'}
     refine ⟨g '' s, Cardinal.mk_image_eq_lift _ _ fg.injective, ?_⟩
     replace fg : ∀ x, f (g x) = x := by
       intro x
-      convert congr_arg Subtype.val (fg x)
+      convert! congr_arg Subtype.val (fg x)
     replace si : LinearIndepOn K (fun x => f (g x)) s := by
       simpa only [fg] using si.map' _ (ker_subtype _)
     exact si.image_of_comp
   · rintro ⟨s, hsc, si⟩
     have : LinearIndepOn K f.rangeRestrict s :=
-      LinearIndependent.of_comp (LinearMap.range f).subtype (by convert si)
+      LinearIndependent.of_comp (LinearMap.range f).subtype (by convert! si)
     convert this.id_image.cardinal_le_rank
     rw [← Cardinal.lift_inj, ← hsc, Cardinal.mk_image_eq_of_injOn_lift]
     exact injOn_iff_injective.2 this.injective

@@ -70,7 +70,7 @@ lemma CompactIccSpace.mk'' [TopologicalSpace α] [PartialOrder α]
 instance [TopologicalSpace α] [Preorder α] [CompactIccSpace α] : CompactIccSpace (αᵒᵈ) where
   isCompact_Icc := by
     intro a b
-    convert isCompact_Icc (α := α) (a := b) (b := a) using 1
+    convert! isCompact_Icc (α := α) (a := b) (b := a) using 1
     exact Icc_toDual (α := α)
 
 /-- A closed interval in a conditionally complete linear order is compact. -/

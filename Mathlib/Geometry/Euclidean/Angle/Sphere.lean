@@ -438,7 +438,7 @@ theorem dist_div_sin_angle_div_two_eq_circumradius (t : Triangle ℝ P) {i₁ i�
     simp⟩
   have : Module.Oriented ℝ S.direction (Fin 2) :=
     ⟨Basis.orientation (finBasisOfFinrankEq _ _ hf2.out)⟩
-  convert t'.dist_div_sin_oangle_div_two_eq_circumradius h₁₂ h₁₃ h₂₃ using 3
+  convert! t'.dist_div_sin_oangle_div_two_eq_circumradius h₁₂ h₁₃ h₂₃ using 3
   · rw [← Real.Angle.sin_toReal,
       Real.abs_sin_eq_sin_abs_of_abs_le_pi (Real.Angle.abs_toReal_le_pi _),
       ← angle_eq_abs_oangle_toReal (t'.independent.injective.ne h₁₂)

@@ -70,7 +70,7 @@ lemma Scalene.dist_ne {s : Simplex R P n} (hs : s.Scalene) {i₁ i₂ i₃ i₄ 
      by grind,
      by grind⟩
   simp_rw [Scalene]
-  convert (Injective.of_comp_iff' _ (Equiv.bijective f)).symm
+  convert! (Injective.of_comp_iff' _ (Equiv.bijective f)).symm
   #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
   (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
   It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
@@ -93,7 +93,7 @@ lemma Equilateral.dist_eq {s : Simplex R P n} (he : s.Equilateral) {i₁ i₂ i�
     (s.reindex e).Equilateral ↔ s.Equilateral := by
   refine ⟨fun ⟨r, hr⟩ ↦ ⟨r, fun i j hij ↦ ?_⟩, fun ⟨r, hr⟩ ↦ ⟨r, fun i j hij ↦ ?_⟩⟩
   · convert hr (e i) (e j) (e.injective.ne hij) using 2 <;> simp
-  · convert hr (e.symm i) (e.symm j) (e.symm.injective.ne hij) using 2
+  · convert! hr (e.symm i) (e.symm j) (e.symm.injective.ne hij) using 2
 
 /-- A simplex is regular if it is equivalent under an isometry to any reindexing. -/
 def Regular (s : Simplex R P n) : Prop :=

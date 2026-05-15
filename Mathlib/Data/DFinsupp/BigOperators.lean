@@ -316,7 +316,7 @@ theorem sumAddHom_single [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (φ : �
 theorem sumAddHom_piSingle [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (i) (φ : β i →+ γ) :
     sumAddHom (Pi.single i φ) = φ.comp (evalAddMonoidHom i) :=
   AddMonoidHom.toZeroHom_injective <| by
-    convert sumZeroHom_piSingle i φ.toZeroHom using 1
+    convert! sumZeroHom_piSingle i φ.toZeroHom using 1
     rw [DFinsupp.sumAddHom_toZeroHom]
     conv_lhs =>
       enter [1, i]

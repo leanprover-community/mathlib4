@@ -219,7 +219,7 @@ theorem isIso_of_mono (h : IsKernelPair f a b) [Mono f] : IsIso a := by
 
 theorem of_isIso_of_mono [IsIso a] [Mono f] : IsKernelPair f a a := by
   change IsPullback _ _ _ _
-  convert (IsPullback.of_horiz_isIso ⟨(rfl : a ≫ 𝟙 X = _ )⟩).paste_vert (IsKernelPair.id_of_mono f)
+  convert (IsPullback.of_horiz_isIso ⟨(rfl : a ≫ 𝟙 X = _)⟩).paste_vert (IsKernelPair.id_of_mono f)
   all_goals { simp }
 
 /-- The kernel pair provided by `HasPullback f f` fits into an `IsKernelPair`. -/

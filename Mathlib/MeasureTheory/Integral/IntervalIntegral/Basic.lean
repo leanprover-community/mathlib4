@@ -429,7 +429,7 @@ theorem comp_add_right (hf : IntervalIntegrable f volume a b) (c : ℝ)
   have A : MeasurableEmbedding fun x => x + c :=
     (Homeomorph.addRight c).isClosedEmbedding.measurableEmbedding
   rw [← map_add_right_eq_self volume c] at hf
-  convert (MeasurableEmbedding.integrableOn_map_iff A).mp hf using 1
+  convert! (MeasurableEmbedding.integrableOn_map_iff A).mp hf using 1
   rw [preimage_add_const_uIcc]
 
 theorem comp_add_right_iff {c : ℝ} (h : ‖f (min a b + c)‖ₑ ≠ ⊤ := by finiteness) :

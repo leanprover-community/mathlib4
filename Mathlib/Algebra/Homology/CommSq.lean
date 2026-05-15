@@ -98,7 +98,7 @@ noncomputable def CommSq.isColimitEquivIsColimitCokernelCofork (sq : CommSq f g 
                   (by simp [s.condition])) .one)
       (fun s m hm₁ hm₂ ↦ by
         apply Cofork.IsColimit.hom_ext h
-        convert (h.fac (CokernelCofork.ofπ (biprod.desc s.inl s.inr)
+        convert! (h.fac (CokernelCofork.ofπ (biprod.desc s.inl s.inr)
           (by simp [s.condition])) .one).symm
         cat_disch)
   left_inv _ := Subsingleton.elim _ _
@@ -176,7 +176,7 @@ noncomputable def CommSq.isLimitEquivIsLimitKernelFork (sq : CommSq fst snd f g)
         (by simp [s.condition])) .zero =≫ biprod.snd)
       (fun s m hm₁ hm₂ ↦ by
         apply Fork.IsLimit.hom_ext h
-        convert (h.fac (KernelFork.ofι (biprod.lift s.fst s.snd)
+        convert! (h.fac (KernelFork.ofι (biprod.lift s.fst s.snd)
           (by simp [s.condition])) .zero).symm
         cat_disch)
   left_inv _ := Subsingleton.elim _ _

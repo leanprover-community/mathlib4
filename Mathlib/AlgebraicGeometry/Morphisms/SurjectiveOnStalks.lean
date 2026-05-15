@@ -121,7 +121,7 @@ lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [Sur
     obtain ⟨ψ, rfl⟩ : ∃ ψ, Spec.map ψ = g' := ⟨_, Spec.map_preimage _⟩
     algebraize [φ.hom, ψ.hom]
     rw [HasRingHomProperty.Spec_iff (P := @SurjectiveOnStalks)] at H
-    convert ((iX.isOpenEmbedding.prodMap iY.isOpenEmbedding).isEmbedding.comp
+    convert! ((iX.isOpenEmbedding.prodMap iY.isOpenEmbedding).isEmbedding.comp
       (PrimeSpectrum.isEmbedding_tensorProductTo_of_surjectiveOnStalks R A B H)).comp
       (Scheme.homeoOfIso (pullbackSpecIso R A B)).isEmbedding
     ext1 x
@@ -194,7 +194,7 @@ lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [Sur
         ((𝒲 i.1).f i.2.2 ≫ (𝒰.pullback₁ g).f i.1)
         (𝒰.f i.1) (by simp [pullback.condition]) (by simp [pullback.condition])
         inferInstance inferInstance inferInstance
-    convert this using 7
+    convert! this using 7
     apply pullback.hom_ext <;>
       simp [𝓤, Scheme.Cover.pullbackHom]
 

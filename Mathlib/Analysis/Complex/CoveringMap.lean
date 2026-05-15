@@ -62,7 +62,7 @@ theorem Polynomial.isCoveringMapOn_eval (p : 𝕜[X]) :
 
 theorem isCoveringMapOn_npow (n : ℕ) (hn : (n : 𝕜) ≠ 0) :
     IsCoveringMapOn (fun x : 𝕜 ↦ x ^ n) {0}ᶜ := by
-  convert (X ^ n).isCoveringMapOn_eval.mono fun x' h ↦ _ with x
+  convert! (X ^ n).isCoveringMapOn_eval.mono fun x' h ↦ _ with x
   · simp
   · assumption
   · simpa [derivative_X_pow, hn, show n ≠ 0 by aesop] using fun _ ↦ Ne.symm h
@@ -70,7 +70,7 @@ theorem isCoveringMapOn_npow (n : ℕ) (hn : (n : 𝕜) ≠ 0) :
 /-- `(· ^ n) : 𝕜 \ {0} → 𝕜 \ {0}` is a covering map (if `n ≠ 0` in `𝕜`). -/
 theorem isCoveringMap_npow (n : ℕ) (hn : (n : 𝕜) ≠ 0) :
     IsCoveringMap fun x : {x : 𝕜 // x ≠ 0} ↦ (⟨x ^ n, pow_ne_zero n x.2⟩ : {x : 𝕜 // x ≠ 0}) := by
-  convert (isCoveringMapOn_npow n hn).isCoveringMap_restrictPreimage.comp_homeomorph
+  convert! (isCoveringMapOn_npow n hn).isCoveringMap_restrictPreimage.comp_homeomorph
     (.setCongr (s := {x | x ≠ 0}) _) using 1
   ext; simp [show n ≠ 0 by aesop]
 
@@ -78,8 +78,8 @@ theorem isCoveringMap_npow (n : ℕ) (hn : (n : 𝕜) ≠ 0) :
 theorem isCoveringMap_zpow (n : ℤ) (hn : (n : 𝕜) ≠ 0) :
     IsCoveringMap fun x : {x : 𝕜 // x ≠ 0} ↦ (⟨x ^ n, zpow_ne_zero n x.2⟩ : {x : 𝕜 // x ≠ 0}) := by
   obtain ⟨n, rfl | rfl⟩ := n.eq_nat_or_neg
-  · convert isCoveringMap_npow n _ <;> aesop
-  · convert (isCoveringMap_npow n _).comp_homeomorph (.inv₀ 𝕜)
+  · convert! isCoveringMap_npow n _ <;> aesop
+  · convert! (isCoveringMap_npow n _).comp_homeomorph (.inv₀ 𝕜)
     · simp [Homeomorph.inv₀]
     · simpa using hn
 
@@ -89,7 +89,7 @@ theorem isCoveringMapOn_zpow (n : ℤ) (hn : (n : 𝕜) ≠ 0) :
   refine .of_isCoveringMap_restrictPreimage _ (by simp) ?_ ?_
   · convert isClosed_singleton (x := (0 : 𝕜)).isOpen_compl using 1
     ext; simp [this]
-  · convert (isCoveringMap_zpow n hn).comp_homeomorph (.ofEqSubtypes _) using 1
+  · convert! (isCoveringMap_zpow n hn).comp_homeomorph (.ofEqSubtypes _) using 1
     ext; simpa using (this _).not
 
 attribute [-instance] Units.mulAction'
@@ -103,7 +103,7 @@ theorem isQuotientCoveringMap_npow (n : ℕ) (hn : (n : 𝕜) ≠ 0)
     (by fun_prop) (.restrictPreimage _ surj)
   have : IsQuotientMap fun x : 𝕜ˣ ↦ x ^ n := by
     let e := unitsHomeomorphNeZero (G₀ := 𝕜)
-    convert (e.symm.isQuotientMap.comp this).comp (e.trans (.ofEqSubtypes _)).isQuotientMap
+    convert! (e.symm.isQuotientMap.comp this).comp (e.trans (.ofEqSubtypes _)).isQuotientMap
     · exact (e.left_inv _).symm
     · ext; simp [NeZero.ne]
   refine this.isQuotientCoveringMap_of_subgroup _
@@ -122,6 +122,6 @@ theorem isQuotientCoveringMap_zpow (n : ℤ) (hn : (n : 𝕜) ≠ 0)
   rw [show (zpowGroupHom (α := 𝕜ˣ) (-n)).ker = (powMonoidHom n).ker by ext; simp]
   convert (isQuotientCoveringMap_npow n (by aesop) _).homeomorph_comp (.inv 𝕜ˣ) using 1
   · ext; simp
-  convert inv_involutive.surjective.comp surj; simp
+  convert! inv_involutive.surjective.comp surj; simp
 
 end

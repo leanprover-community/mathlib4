@@ -83,7 +83,7 @@ instance preservesLimitsOfShape_colim_grothendieck [HasColimitsOfShape C H] [Has
       HasLimit.isoOfNatIso
        (associator _ _ _ ≪≫ isoWhiskerLeft _ fiberwiseColimCompColimIso)
   haveI : IsIso (limit.post K colim) := by
-    convert Iso.isIso_hom i₂
+    convert! Iso.isIso_hom i₂
     ext
     simp only [colim_obj, Functor.comp_obj, limit.post_π, colim_map, Iso.trans_def,
       Iso.trans_assoc, Iso.trans_hom, Category.assoc, HasLimit.isoOfNatIso_hom_π,

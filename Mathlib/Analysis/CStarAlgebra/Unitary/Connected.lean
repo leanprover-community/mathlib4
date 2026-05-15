@@ -67,7 +67,7 @@ lemma Unitary.two_mul_one_sub_le_norm_sub_one_sq {u : A} (hu : u ∈ unitary A)
   have := spectrum.subset_circle_of_unitary hu hz
   simp only [mem_sphere_iff_norm, sub_zero] at this
   rw [← cfc_id' ℂ u, ← cfc_one ℂ u, ← cfc_sub ..]
-  convert norm_apply_le_norm_cfc (fun z ↦ z - 1) u hz
+  convert! norm_apply_le_norm_cfc (fun z ↦ z - 1) u hz
   simpa using congr(Real.sqrt $(norm_sub_one_sq_eq_of_norm_eq_one this)).symm
 
 @[deprecated (since := "2025-10-29")] alias unitary.two_mul_one_sub_le_norm_sub_one_sq :=

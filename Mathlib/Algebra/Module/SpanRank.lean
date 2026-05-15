@@ -210,7 +210,7 @@ lemma lift_spanRank_le_iff_exists_span_set_card_le (p : Submodule R M) {a : Card
   if and only if there is a generating subset with cardinality less than or equal to `a`. -/
 lemma FG.spanRank_le_iff_exists_span_set_card_le (p : Submodule R M) {a : Cardinal} :
     p.spanRank ≤ a ↔ ∃ s : Set M, #s ≤ a ∧ span R s = p := by
-  convert lift_spanRank_le_iff_exists_span_set_card_le p (a := a) <;> simp
+  convert! lift_spanRank_le_iff_exists_span_set_card_le p (a := a) <;> simp
 
 @[simp]
 lemma spanRank_eq_zero_iff_eq_bot {I : Submodule R M} : I.spanRank = 0 ↔ I = ⊥ := by

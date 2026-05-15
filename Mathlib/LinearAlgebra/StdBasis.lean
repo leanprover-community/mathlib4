@@ -47,7 +47,7 @@ variable {η : Type*} {ιs : η → Type*} {Ms : η → Type*}
 theorem linearIndependent_single [Semiring R] [∀ i, AddCommMonoid (Ms i)] [∀ i, Module R (Ms i)]
     [DecidableEq η] (v : ∀ j, ιs j → Ms j) (hs : ∀ i, LinearIndependent R (v i)) :
     LinearIndependent R fun ji : Σ j, ιs j ↦ Pi.single ji.1 (v ji.1 ji.2) := by
-  convert (DFinsupp.linearIndependent_single _ hs).map_injOn _ DFinsupp.injective_pi_lapply.injOn
+  convert! (DFinsupp.linearIndependent_single _ hs).map_injOn _ DFinsupp.injective_pi_lapply.injOn
 
 theorem linearIndependent_single_one (ι R : Type*) [Semiring R] [DecidableEq ι] :
     LinearIndependent R (fun i : ι ↦ Pi.single i (1 : R)) := by

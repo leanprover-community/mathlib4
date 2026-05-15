@@ -219,13 +219,13 @@ theorem HasPeriod.gcd {w : List α} {p q : ℕ} (per_p : HasPeriod w p) (per_q :
         lia
       have take_eq : take q (drop q w) = take q w := by
           let ⟨z, hz⟩ := per_q.drop_prefix
-          convert_to take q (drop q w) = take q (drop q w ++ z)
+          convert_to! take q (drop q w) = take q (drop q w ++ z)
           · rw [hz]
           exact (take_append_of_le_length drop_len).symm
       -- the induction step
       have IH : HasPeriod (drop q w) ((p - q).gcd q) :=
         per_diff.gcd per_q' (by simp; lia)
-      convert_to HasPeriod (take q (drop q w) ++ drop q w) (p.gcd q)
+      convert_to! HasPeriod (take q (drop q w) ++ drop q w) (p.gcd q)
       · rw [take_eq, take_append_drop q w]
       · exact (gcd_stable ▸ IH).take_append (p.gcd q) q (drop q w)
           (gcd_dvd_right p q) drop_len

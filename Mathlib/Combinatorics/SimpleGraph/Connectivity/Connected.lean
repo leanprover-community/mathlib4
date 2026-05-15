@@ -709,7 +709,7 @@ def homOfConnectedComponents (G : SimpleGraph V) {H : SimpleGraph V'}
   map_rel' := fun hab ↦ by
     have h : (G.connectedComponentMk _).toSimpleGraph.Adj ⟨_, rfl⟩
         ⟨_, ((G.connectedComponentMk _).mem_supp_congr_adj hab).1 rfl⟩ := by simpa using hab
-    convert (C (G.connectedComponentMk _)).map_rel h using 3 <;>
+    convert! (C (G.connectedComponentMk _)).map_rel h using 3 <;>
       rw [ConnectedComponent.connectedComponentMk_eq_of_adj hab]
 
 -- TODO: Extract as lemma about general equivalence relation

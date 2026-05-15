@@ -72,7 +72,7 @@ theorem Polynomial.isPeriodicPt_eval_two {P : Polynomial ℤ} {t : ℤ}
   have Hdvd : C.Chain (· ∣ ·) := by
     rw [Cycle.chain_map, periodicOrbit_chain' _ ht]
     intro n
-    convert sub_dvd_eval_sub ((fun x => P.eval x)^[n + 1] t) ((fun x => P.eval x)^[n] t) P <;>
+    convert! sub_dvd_eval_sub ((fun x => P.eval x)^[n + 1] t) ((fun x => P.eval x)^[n] t) P <;>
       rw [Function.iterate_succ_apply']
   -- Any two entries in C have the same absolute value.
   have Habs :

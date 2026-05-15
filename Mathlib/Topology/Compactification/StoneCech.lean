@@ -252,7 +252,7 @@ theorem continuous_preStoneCechUnit : Continuous (preStoneCechUnit : α → PreS
       rfl
     have : (map preStoneCechUnit g : Filter (PreStoneCech α)) ≤ 𝓝 (Quot.mk _ g) :=
       (map_mono this).trans (continuous_quot_mk.tendsto _)
-    convert this
+    convert! this
     exact Quot.sound ⟨x, pure_le_nhds x, gx⟩
 
 theorem denseRange_preStoneCechUnit : DenseRange (preStoneCechUnit : α → PreStoneCech α) :=

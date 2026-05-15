@@ -73,7 +73,7 @@ def Equiv.Perm.viaFintypeEmbedding : Equiv.Perm β :=
 theorem Equiv.Perm.viaFintypeEmbedding_apply_image (a : α) :
     e.viaFintypeEmbedding f (f a) = f (e a) := by
   rw [Equiv.Perm.viaFintypeEmbedding]
-  convert Equiv.Perm.extendDomain_apply_image e (Function.Embedding.toEquivRange f) a
+  convert! Equiv.Perm.extendDomain_apply_image e (Function.Embedding.toEquivRange f) a
 
 theorem Equiv.Perm.viaFintypeEmbedding_apply_mem_range {b : β} (h : b ∈ Set.range f) :
     e.viaFintypeEmbedding f b = f (e (f.invOfMemRange ⟨b, h⟩)) := by

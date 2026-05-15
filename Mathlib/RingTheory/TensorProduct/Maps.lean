@@ -643,7 +643,7 @@ lemma includeLeft_bijective (h : Function.Bijective (algebraMap R B)) :
   have : (includeLeft : A →ₐ[S] A ⊗[R] B).comp (TensorProduct.rid R S A).toAlgHom =
       map (.id S A) (Algebra.ofId R B) := by ext; simp
   rw [← Function.Bijective.of_comp_iff _ (TensorProduct.rid R S A).bijective]
-  convert_to Function.Bijective (map (.id R A) (Algebra.ofId R B))
+  convert_to! Function.Bijective (map (.id R A) (Algebra.ofId R B))
   · exact DFunLike.coe_fn_eq.mpr this
   · exact Algebra.TensorProduct.map_bijective Function.bijective_id h
 

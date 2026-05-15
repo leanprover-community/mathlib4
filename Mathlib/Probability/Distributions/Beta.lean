@@ -121,7 +121,7 @@ lemma lintegral_betaPDF_eq_one {α β : ℝ} (hα : 0 < α) (hβ : 0 < β) :
     convert betaIntegral_convergent (u := α) (v := β) (by simpa) (by simpa)
     rw [intervalIntegrable_iff_integrableOn_Ioc_of_le (by simp), IntegrableOn]
   · refine ae_restrict_of_forall_mem measurableSet_Ioo (fun x hx ↦ ?_)
-    convert betaPDFReal_pos hx.1 hx.2 hα hβ |>.le using 1
+    convert! betaPDFReal_pos hx.1 hx.2 hα hβ |>.le using 1
     rw [betaPDFReal, if_pos ⟨hx.1, hx.2⟩]
   · exact Measurable.aestronglyMeasurable (by fun_prop)
 

@@ -122,7 +122,7 @@ open FreeAbelianGroup
 -- Porting note: needed to add `(β := Multiplicative β)`
 @[simp]
 theorem lift_apply_of (x : α) : lift f (of x) = f x := by
-  convert Abelianization.lift_apply_of
+  convert! Abelianization.lift_apply_of
      (FreeGroup.lift f (β := Multiplicative β)) (FreeGroup.of x)
   exact (FreeGroup.lift_apply_of (β := Multiplicative β)).symm
 

@@ -58,7 +58,7 @@ theorem WfDvdMonoid.of_wellFoundedLT_associates [CommMonoidWithZero α] [IsCance
     (h : WellFoundedLT (Associates α)) : WfDvdMonoid α :=
   WfDvdMonoid.of_wfDvdMonoid_associates
     ⟨by
-      convert h.wf
+      convert! h.wf
       ext
       exact Associates.dvdNotUnit_iff_lt⟩
 
@@ -418,7 +418,7 @@ theorem of_existsUnique_irreducible_factors [CommMonoidWithZero α] [IsCancelMul
     UniqueFactorizationMonoid α :=
   UniqueFactorizationMonoid.of_exists_prime_factors
     (by
-      convert eif using 7
+      convert! eif using 7
       simp_rw [irreducible_iff_prime_of_existsUnique_irreducible_factors eif uif])
 
 variable {R : Type*} [CommMonoidWithZero R] [UniqueFactorizationMonoid R]

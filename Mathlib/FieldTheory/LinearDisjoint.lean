@@ -211,7 +211,7 @@ theorem map' (H : A.LinearDisjoint L) (K : Type*) [Field K] [Algebra F K] [Algeb
   rw [linearDisjoint_iff] at H ⊢
   have := H.map (IsScalarTower.toAlgHom F E K) (RingHom.injective _)
   rw [← AlgHom.range_comp] at this
-  convert this
+  convert! this
   ext; exact IsScalarTower.algebraMap_apply L E K _
 
 /-- Linear disjointness is preserved by algebra homomorphism. -/

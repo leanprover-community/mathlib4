@@ -37,7 +37,7 @@ private theorem funext_fin {n : ℕ} {p : MvPolynomial (Fin n) R}
   | zero =>
     apply (MvPolynomial.isEmptyRingEquiv R (Fin 0)).injective
     rw [map_zero]
-    convert h _ finZeroElim
+    convert! h _ finZeroElim
   | succ n ih =>
     apply (finSuccEquiv R n).injective
     rw [map_zero]

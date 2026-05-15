@@ -55,7 +55,7 @@ variable [Nontrivial R]
 theorem degree_Phi : (Φ R a b).degree = ((5 : ℕ) : WithBot ℕ) := by
   suffices degree (X ^ 5 - C (a : R) * X) = ((5 : ℕ) : WithBot ℕ) by
     rwa [Φ, degree_add_eq_left_of_degree_lt]
-    convert (degree_C_le (R := R)).trans_lt (WithBot.coe_lt_coe.mpr (show 0 < 5 by simp))
+    convert! (degree_C_le (R := R)).trans_lt (WithBot.coe_lt_coe.mpr (show 0 < 5 by simp))
   rw [degree_sub_eq_left_of_degree_lt] <;> rw [degree_X_pow]
   exact (degree_C_mul_X_le (a : R)).trans_lt (WithBot.coe_lt_coe.mpr (show 1 < 5 by simp))
 

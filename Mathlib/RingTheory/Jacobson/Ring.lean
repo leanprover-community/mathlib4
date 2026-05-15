@@ -173,7 +173,7 @@ theorem IsLocalization.isMaximal_iff_isMaximal_disjoint [H : IsJacobsonRing R] (
     rw [← H.out hJ.left.isRadical, jacobson, Submodule.mem_toAddSubmonoid, Ideal.mem_sInf] at this
     push Not at this
     rcases this with ⟨I, ⟨hJI, hIm⟩, hI'⟩
-    convert hIm
+    convert! hIm
     by_cases hJ : J = I.map (algebraMap R S)
     · rw [hJ, under_map_of_isPrime_disjoint (powers y) S hIm.isPrime]
       rwa [disjoint_powers_iff_notMem_of_isPrime]
@@ -502,8 +502,8 @@ private theorem quotient_mk_comp_C_isIntegral_of_jacobson' [Nontrivial R] (hR : 
       · exact (algebraMap (R ⧸ P') (Localization M)).isIntegral_of_surjective
           (IsField.localization_map_bijective hM ((Quotient.maximal_ideal_iff_isField_quotient _).mp
             (isMaximal_comap_C_of_isMaximal P hP'))).2
-      · -- `convert` here is faster than `exact`, and this proof is near the time limit.
-        -- convert isIntegral_isLocalization_polynomial_quotient P pX hpX
+      · -- `convert!` here is faster than `exact`, and this proof is near the time limit.
+        -- convert! isIntegral_isLocalization_polynomial_quotient P pX hpX
         have isloc : IsLocalization M' (Localization M') := by infer_instance
         exact @isIntegral_isLocalization_polynomial_quotient R _
           (Localization M) (Localization M') _ _ P pX hpX _ _ _ isloc

@@ -75,7 +75,7 @@ lemma smul (r : R) (x y : ⨂[R] _, M) (h : addConGen (Rel R ι M) x y) :
       · convert addConGen (Rel R ι M) |>.refl _
       · let i := Nonempty.some h
         classical
-        convert AddConGen.Rel.of _ _ <| SymmetricPower.Rel.perm (R := R) (ι := ι) e
+        convert! AddConGen.Rel.of _ _ <| SymmetricPower.Rel.perm (R := R) (ι := ι) e
           <| Function.update f i (r • f i)
         · rw [MultilinearMap.map_update_smul, Function.update_eq_self]
         · simp_rw [Function.update_apply_equiv_apply, MultilinearMap.map_update_smul,

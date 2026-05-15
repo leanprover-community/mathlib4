@@ -275,8 +275,9 @@ nonrec lemma locallyQuasiFinite_iff_isDiscrete_preimage_singleton
   wlog hY : ∃ R, Y = Spec R
   · refine (IsZariskiLocalAtTarget.iff_of_openCover Y.affineCover).mpr fun i ↦
       this (f := pullback.snd _ _) (fun x ↦ ?_) ⟨_, rfl⟩
-    convert (H (Y.affineCover.f i x)).preimage ((pullback.fst f _).continuous.continuousOn)
-      (pullback.fst f (Y.affineCover.f i)).isOpenEmbedding.injective
+    convert
+      (H (Y.affineCover.f i x)).preimage ((pullback.fst f _).continuous.continuousOn)
+        (pullback.fst f (Y.affineCover.f i)).isOpenEmbedding.injective
     ext
     simp [← (Y.affineCover.f i).isOpenEmbedding.injective.eq_iff, ← Scheme.Hom.comp_apply,
       -Hom.comp_base, pullback.condition]
@@ -298,8 +299,9 @@ nonrec lemma LocallyQuasiFinite.of_finite_preimage_singleton
   wlog hY : ∃ R, Y = Spec R
   · refine (IsZariskiLocalAtTarget.iff_of_openCover Y.affineCover).mpr fun i ↦
       this (f := pullback.snd _ _) (fun x ↦ ?_) ⟨_, rfl⟩
-    convert (hf (Y.affineCover.f i x)).preimage
-      (pullback.fst f (Y.affineCover.f i)).isOpenEmbedding.injective.injOn
+    convert
+      (hf (Y.affineCover.f i x)).preimage
+        (pullback.fst f (Y.affineCover.f i)).isOpenEmbedding.injective.injOn
     ext
     simp [← (Y.affineCover.f i).isOpenEmbedding.injective.eq_iff, ← Scheme.Hom.comp_apply,
       -Hom.comp_base, pullback.condition]
@@ -358,8 +360,9 @@ lemma Scheme.Hom.quasiFiniteAt [LocallyQuasiFinite f] (x : X) :
   introv hf
   algebraize [f]
   refine .of_comp (g := algebraMap R _) ?_
-  convert RingHom.quasiFinite_algebraMap.mpr (inferInstance :
-    Algebra.QuasiFinite R (Localization.AtPrime J))
+  convert
+    RingHom.quasiFinite_algebraMap.mpr
+      (inferInstance : Algebra.QuasiFinite R (Localization.AtPrime J))
   ext; simp; rfl
 
 set_option backward.isDefEq.respectTransparency false in
@@ -401,8 +404,10 @@ nonrec lemma Scheme.Hom.quasiFiniteAt_iff_isOpen_singleton_asFiber
     let f' : pullback.snd f ι ⁻¹' {pullback.snd f ι x} → f ⁻¹' {f (pullback.fst f ι x)} :=
       Set.MapsTo.restrict (pullback.fst f ι) _ _ fun a ha ↦ H.le ha
     have : Topology.IsOpenEmbedding f' := by
-      convert (f ⁻¹' {f (pullback.fst f ι x)}).restrictPreimage_isOpenEmbedding
-        (pullback.fst f ι).isOpenEmbedding using 0
+      convert
+        (f ⁻¹' {f (pullback.fst f ι x)}).restrictPreimage_isOpenEmbedding
+          (pullback.fst f ι).isOpenEmbedding using
+        0
       dsimp [f', Set.restrictPreimage]
       congr!
     rw [this.isOpen_iff_image_isOpen, Set.image_singleton]; rfl

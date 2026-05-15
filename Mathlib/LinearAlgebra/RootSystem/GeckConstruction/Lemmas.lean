@@ -74,7 +74,7 @@ lemma root_sub_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
   have : P.pairingIn ℤ l i = 1 - P.pairingIn ℤ j i := by
     apply algebraMap_injective ℤ R
     simp only [algebraMap_pairingIn, map_sub, map_one, algebraMap_pairingIn]
-    convert (P.coroot' i : M →ₗ[R] R).congr_arg hl using 1
+    convert! (P.coroot' i : M →ₗ[R] R).congr_arg hl using 1
     simp only [map_sub, map_add, LinearMap.flip_apply, root_coroot_eq_pairing, hki, pairing_same,
       sub_left_inj]
     ring
@@ -92,8 +92,10 @@ lemma root_add_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
     simp only [indexNeg_neg, root_reflectionPerm, reflection_apply_self]
     module
   rw [← neg_mem_range_root_iff]
-  convert b.root_sub_root_mem_of_mem_of_mem j i (-k) hij.symm hj hi hk (by contrapose hkj; aesop)
-    (by convert P.neg_mem_range_root_iff.mpr hk' using 1; simp [neg_add_eq_sub]) using 1
+  convert
+    b.root_sub_root_mem_of_mem_of_mem j i (-k) hij.symm hj hi hk (by contrapose hkj; aesop)
+      (by convert P.neg_mem_range_root_iff.mpr hk' using 1; simp [neg_add_eq_sub])
+    using 1
   simp only [indexNeg_neg, root_reflectionPerm, reflection_apply_self]
   module
 

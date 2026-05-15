@@ -174,8 +174,8 @@ of `f` at `y`.
 -/
 theorem shift_eq_sum_fwdDiff_iter (f : M → G) (n : ℕ) (y : M) :
     f (y + n • h) = ∑ k ∈ range (n + 1), n.choose k • Δ_[h]^[k] f y := by
-  convert congr_fun (LinearMap.congr_fun
-      ((Commute.one_right (fwdDiffₗ M G h)).add_pow n) f) y using 1
+  convert congr_fun (LinearMap.congr_fun ((Commute.one_right (fwdDiffₗ M G h)).add_pow n) f) y using
+    1
   · rw [← shiftₗ_pow_apply h f, shiftₗ]
   · simp [Module.End.pow_apply, coe_fwdDiffₗ]
 

@@ -667,7 +667,7 @@ def recOnAppendSingle {motive : ∀ n, Composition n → Sort*} {n : ℕ} (c : C
       motive (n + (k + 1)) (append c (single (k + 1) k.succ_pos))) :
     motive n c :=
   reverse_reverse c ▸ c.reverse.recOnSingleAppend zero fun k n c ih ↦ by
-    convert append_single k n c.reverse ih using 1
+    convert! append_single k n c.reverse ih using 1
     · apply add_comm
     · rw [reverse_append, reverse_single]
       apply cast_heq
@@ -888,7 +888,7 @@ theorem boundary_zero : (c.boundary ⟨0, c.card_boundaries_pos⟩ : Fin (n + 1)
 
 @[simp]
 theorem boundary_length : c.boundary ⟨c.length, c.length_lt_card_boundaries⟩ = Fin.last n := by
-  convert Finset.orderEmbOfFin_last rfl c.card_boundaries_pos
+  convert! Finset.orderEmbOfFin_last rfl c.card_boundaries_pos
   exact le_antisymm (Finset.le_max' _ _ c.getLast_mem) (Fin.le_last _)
 
 /-- Size of the `i`-th block in a `CompositionAsSet`, seen as a function on `Fin c.length`. -/

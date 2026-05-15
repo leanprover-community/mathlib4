@@ -206,8 +206,10 @@ def KaehlerDifferential.D : Derivation R S Ω[S⁄R] :=
       rw [← LinearMap.map_smul_of_tower (ideal R S).toCotangent,
         ← LinearMap.map_smul_of_tower (ideal R S).toCotangent,
         ← map_add (ideal R S).toCotangent, Ideal.toCotangent_eq, pow_two]
-      convert Submodule.mul_mem_mul (KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R a :)
-        (KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R b :) using 1
+      convert
+        Submodule.mul_mem_mul (KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R a :)
+          (KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R b :) using
+        1
       simp only [Submodule.coe_add,
         TensorProduct.tmul_mul_tmul, mul_sub, sub_mul, mul_comm b, Submodule.coe_smul_of_tower,
         smul_sub, TensorProduct.smul_tmul', smul_eq_mul, mul_one]
@@ -572,7 +574,7 @@ theorem KaehlerDifferential.quotKerTotalEquiv_symm_comp_D :
     (KaehlerDifferential.quotKerTotalEquiv R S).symm.toLinearMap.compDer
         (KaehlerDifferential.D R S) =
       KaehlerDifferential.derivationQuotKerTotal R S := by
-  convert (KaehlerDifferential.derivationQuotKerTotal R S).liftKaehlerDifferential_comp
+  convert! (KaehlerDifferential.derivationQuotKerTotal R S).liftKaehlerDifferential_comp
 
 end Presentation
 
@@ -737,10 +739,10 @@ lemma KaehlerDifferential.range_mapBaseChange :
       · simp [smul_add, *]
       · simp
     | add => rw [map_add]; exact add_mem ‹_› ‹_›
-  · convert_to (kerTotal A B).map (Finsupp.linearCombination B (D R B)) ≤ _
+  · convert_to! (kerTotal A B).map (Finsupp.linearCombination B (D R B)) ≤ _
     · rw [KaehlerDifferential.ker_map]
       congr 1
-      convert Submodule.comap_id _
+      convert! Submodule.comap_id _
       · ext; simp
     rw [Submodule.map_le_iff_le_comap, kerTotal, Submodule.span_le]
     rintro f ((⟨⟨x, y⟩, rfl⟩ | ⟨⟨x, y⟩, rfl⟩) | ⟨x, rfl⟩)

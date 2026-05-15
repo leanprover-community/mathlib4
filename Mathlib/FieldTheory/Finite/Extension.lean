@@ -54,7 +54,7 @@ theorem finrank_zmod_extension [Algebra (ZMod p) k] :
     Module.finrank (ZMod p) (Extension k p n) = Module.finrank (ZMod p) k * n := by
   letI := ZMod.algebra k p
   unfold Extension
-  convert GaloisField.finrank p (n := Module.finrank (ZMod p) k * n) <|
+  convert! GaloisField.finrank p (n := Module.finrank (ZMod p) k * n) <|
     mul_ne_zero Module.finrank_pos.ne' <| NeZero.ne n
   subsingleton
 

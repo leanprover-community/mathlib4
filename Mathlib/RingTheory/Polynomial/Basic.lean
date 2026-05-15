@@ -721,7 +721,7 @@ private theorem prime_C_iff_of_fintype {R : Type u} (σ : Type v) {r : R} [CommR
     Prime (C r : MvPolynomial σ R) ↔ Prime r := by
   have := Fintype.ofFinite σ
   rw [← MulEquiv.prime_iff (renameEquiv R (Fintype.equivFin σ))]
-  convert_to Prime (C r) ↔ _
+  convert_to! Prime (C r) ↔ _
   · congr!
     simp only [renameEquiv_apply, algHom_C, algebraMap_eq]
   · induction Fintype.card σ with

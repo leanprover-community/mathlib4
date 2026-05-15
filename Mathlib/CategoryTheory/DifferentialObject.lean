@@ -311,16 +311,16 @@ instance : HasShift (DifferentialObject S C) S :=
       add := shiftFunctorAdd C
       assoc_hom_app := fun m₁ m₂ m₃ X => by
         ext1
-        convert shiftFunctorAdd_assoc_hom_app m₁ m₂ m₃ X.obj
+        convert! shiftFunctorAdd_assoc_hom_app m₁ m₂ m₃ X.obj
         dsimp [shiftFunctorAdd']
         simp
       zero_add_hom_app := fun n X => by
         ext1
-        convert shiftFunctorAdd_zero_add_hom_app n X.obj
+        convert! shiftFunctorAdd_zero_add_hom_app n X.obj
         simp
       add_zero_hom_app := fun n X => by
         ext1
-        convert shiftFunctorAdd_add_zero_hom_app n X.obj
+        convert! shiftFunctorAdd_add_zero_hom_app n X.obj
         simp }
 
 end

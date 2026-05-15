@@ -42,7 +42,7 @@ open intervalIntegral in
 /-- Represent `log (1 + z)` as an integral over the unit interval -/
 lemma log_eq_integral {z : ℂ} (hz : 1 + z ∈ slitPlane) :
     log (1 + z) = z * ∫ (t : ℝ) in (0 : ℝ)..1, (1 + t • z)⁻¹ := by
-  convert (integral_unitInterval_deriv_eq_sub (continuousOn_one_add_mul_inv hz)
+  convert! (integral_unitInterval_deriv_eq_sub (continuousOn_one_add_mul_inv hz)
     (fun _ ht ↦ hasDerivAt_log <|
       StarConvex.add_smul_mem starConvex_one_slitPlane hz ht.1 ht.2)).symm using 1
   simp only [log_one, sub_zero]
@@ -52,7 +52,7 @@ lemma log_inv_eq_integral {z : ℂ} (hz : 1 - z ∈ slitPlane) :
     log (1 - z)⁻¹ = z * ∫ (t : ℝ) in (0 : ℝ)..1, (1 - t • z)⁻¹ := by
   rw [sub_eq_add_neg 1 z] at hz ⊢
   rw [log_inv _ <| slitPlane_arg_ne_pi hz, neg_eq_iff_eq_neg, ← neg_mul]
-  convert log_eq_integral hz using 5
+  convert! log_eq_integral hz using 5
   rw [sub_eq_add_neg, smul_neg]
 
 /-!
@@ -90,9 +90,9 @@ lemma hasDerivAt_logTaylor (n : ℕ) (z : ℂ) :
     simp only [mul_div_assoc]
     have : HasDerivAt (fun x : ℂ ↦ (x ^ (n + 1) / (n + 1))) (z ^ n) z := by
       simp_rw [div_eq_mul_inv]
-      convert HasDerivAt.mul_const (hasDerivAt_pow (n + 1) z) (((n : ℂ) + 1)⁻¹) using 1
+      convert! HasDerivAt.mul_const (hasDerivAt_pow (n + 1) z) (((n : ℂ) + 1)⁻¹) using 1
       simp [field]
-    convert HasDerivAt.const_mul _ this using 2
+    convert! HasDerivAt.const_mul _ this using 2
     ring
 
 /-!
@@ -101,7 +101,7 @@ lemma hasDerivAt_logTaylor (n : ℕ) (z : ℂ) :
 
 lemma hasDerivAt_log_sub_logTaylor (n : ℕ) {z : ℂ} (hz : 1 + z ∈ slitPlane) :
     HasDerivAt (fun z : ℂ ↦ log (1 + z) - logTaylor (n + 1) z) ((-z) ^ n * (1 + z)⁻¹) z := by
-  convert ((hasDerivAt_log hz).comp_const_add 1 z).sub (hasDerivAt_logTaylor n z) using 1
+  convert! ((hasDerivAt_log hz).comp_const_add 1 z).sub (hasDerivAt_logTaylor n z) using 1
   have hz' : -z ≠ 1 := by
     intro H
     rw [neg_eq_iff_eq_neg] at H
@@ -197,7 +197,7 @@ lemma log_sub_logTaylor_isBigO (n : ℕ) :
 open scoped Topology in
 lemma log_sub_self_isBigO :
     (fun z ↦ log (1 + z) - z) =O[𝓝 0] fun z ↦ z ^ 2 := by
-  convert log_sub_logTaylor_isBigO 1
+  convert! log_sub_logTaylor_isBigO 1
   simp [logTaylor_succ, logTaylor_zero]
 
 lemma norm_log_one_add_le {z : ℂ} (hz : ‖z‖ < 1) :
@@ -270,7 +270,7 @@ lemma hasSum_taylorSeries_log {z : ℂ} (hz : ‖z‖ < 1) :
             · linarith
       exact (isBigOWith_of_le' atTop this).isBigO
     refine IsBigO.trans_isLittleO H ?_
-    convert isLittleO_pow_pow_of_lt_left (norm_nonneg z) hz
+    convert! isLittleO_pow_pow_of_lt_left (norm_nonneg z) hz
     exact (one_pow _).symm
 
 /-- The series `∑ z^n/n` converges to `-log (1-z)` on the open unit disk. -/
@@ -278,7 +278,7 @@ lemma hasSum_taylorSeries_neg_log {z : ℂ} (hz : ‖z‖ < 1) :
     HasSum (fun n : ℕ ↦ z ^ n / n) (-log (1 - z)) := by
   conv => enter [1, n]; rw [← neg_neg (z ^ n / n)]
   refine HasSum.neg ?_
-  convert hasSum_taylorSeries_log (z := -z) (norm_neg z ▸ hz) using 2 with n
+  convert! hasSum_taylorSeries_log (z := -z) (norm_neg z ▸ hz) using 2 with n
   rcases n.eq_zero_or_pos with rfl | hn
   · simp
   simp [field, pow_add, ← mul_pow]

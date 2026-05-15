@@ -59,7 +59,7 @@ variable (R M N) {f}
 
 theorem TensorProduct.isTensorProduct : IsTensorProduct (TensorProduct.mk R M N) := by
   delta IsTensorProduct
-  convert_to Function.Bijective (LinearMap.id : M ⊗[R] N →ₗ[R] M ⊗[R] N) using 2
+  convert_to! Function.Bijective (LinearMap.id : M ⊗[R] N →ₗ[R] M ⊗[R] N) using 2
   · apply TensorProduct.ext'
     simp
   · exact Function.bijective_id
@@ -687,7 +687,7 @@ lemma Algebra.IsPushout.tensorProduct_tensorProduct
       Algebra.TensorProduct.includeRight.toRingHom) :
     Algebra.IsPushout A B (A ⊗[R] S) (B ⊗[R] S) := by
   constructor
-  convert isBaseChange_tensorProduct_map (R := R) (P := S) _ (IsBaseChange.linearMap A B)
+  convert! isBaseChange_tensorProduct_map (R := R) (P := S) _ (IsBaseChange.linearMap A B)
   ext s
   simpa using congr($H s)
 

@@ -454,7 +454,7 @@ lemma contMDiff_snd_tangentBundle_modelSpace :
   change ContMDiff I.tangent 𝓘(𝕜, E) n
     ((id Prod.snd : ModelProd H E → E) ∘ (tangentBundleModelSpaceHomeomorph I))
   apply ContMDiff.comp (I' := I.prod 𝓘(𝕜, E))
-  · convert contMDiff_snd
+  · convert! contMDiff_snd
     rw [chartedSpaceSelf_prod]
     rfl
   · exact contMDiff_tangentBundleModelSpaceHomeomorph
@@ -469,7 +469,7 @@ lemma contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt
       (contMDiff_snd_tangentBundle_modelSpace E 𝓘(𝕜, E)).contMDiffAt.comp_contMDiffWithinAt _ h
   · apply Bundle.contMDiffWithinAt_totalSpace.2
     refine ⟨contMDiffWithinAt_id, ?_⟩
-    convert h.contMDiffWithinAt with y
+    convert! h.contMDiffWithinAt with y
     simp
 
 /-- A vector field on a vector space is `C^n` in the manifold sense iff it is `C^n` in the vector

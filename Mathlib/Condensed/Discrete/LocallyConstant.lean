@@ -188,7 +188,7 @@ noncomputable def componentHom (a : Fiber (f.comap g.hom.hom)) :
   ConcreteCategory.ofHom
   { toFun x := ⟨g x.val, by
       simp only [Fiber.mk, Set.mem_preimage, Set.mem_singleton_iff]
-      convert map_eq_image _ _ x
+      convert! map_eq_image _ _ x
       exact map_preimage_eq_image_map _ _ a⟩
     continuous_toFun := by
       -- term mode gives "unknown free variable" error.

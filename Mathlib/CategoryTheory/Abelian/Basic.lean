@@ -208,7 +208,7 @@ lemma isNormalMonoCategory : IsNormalMonoCategory C where
           rw [KernelFork.ι_ofι] at hg
           rw [← cancel_mono f, hg, ← aux, KernelFork.ι_ofι]
         · simp only [KernelFork.ι_ofι, Category.assoc]
-          convert limit.lift_π s WalkingParallelPair.zero using 2
+          convert! limit.lift_π s WalkingParallelPair.zero using 2
           rw [IsIso.inv_comp_eq, eq_comm]
           exact (imageMonoFactorisation f).fac }⟩
 
@@ -235,7 +235,7 @@ lemma isNormalEpiCategory : IsNormalEpiCategory C where
           rw [CokernelCofork.π_ofπ] at hg
           rw [← cancel_epi f, hg, ← aux, CokernelCofork.π_ofπ]
         · simp only [CokernelCofork.π_ofπ, ← Category.assoc]
-          convert colimit.ι_desc s WalkingParallelPair.one using 2
+          convert! colimit.ι_desc s WalkingParallelPair.one using 2
           rw [IsIso.comp_inv_eq, IsIso.comp_inv_eq, eq_comm, ← imageMonoFactorisation_e']
           exact (imageMonoFactorisation f).fac }⟩
 
@@ -380,7 +380,7 @@ set_option backward.isDefEq.respectTransparency false in
 See `CategoryTheory.Abelian.ofCoimageImageComparisonIsIso` for the converse.
 -/
 instance : IsIso (coimageImageComparison f) := by
-  convert
+  convert!
     Iso.isIso_hom
       (IsImage.isoExt (coimageStrongEpiMonoFactorisation f).toMonoIsImage
         (imageStrongEpiMonoFactorisation f).toMonoIsImage)

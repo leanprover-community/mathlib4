@@ -67,9 +67,9 @@ theorem integral_cos_mul_cos_pow_aux (hn : 2 ≤ n) (hz : z ≠ 0) :
     intro x _
     have b : HasDerivAt (fun y : ℝ => (cos y : ℂ)) (-sin x) x := by
       simpa using (hasDerivAt_cos x).ofReal_comp
-    convert HasDerivAt.comp x (hasDerivAt_pow _ _) b using 1
+    convert! HasDerivAt.comp x (hasDerivAt_pow _ _) b using 1
     ring
-  convert (config := { sameFun := true })
+  convert! (config := { sameFun := true })
     integral_mul_deriv_eq_deriv_mul der1 (fun x _ => antideriv_cos_comp_const_mul hz x) _ _ using 2
   · ext1 x; rw [mul_comm]
   · rw [Complex.ofReal_zero, mul_zero, Complex.sin_zero, zero_div, mul_zero, sub_zero,
@@ -147,7 +147,7 @@ theorem integral_cos_mul_cos_pow_even (n : ℕ) (hz : z ≠ 0) :
         ∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ (2 * n + 2)) =
       (2 * n + 1 : ℂ) / (2 * n + 2) *
         ∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ (2 * n) := by
-  convert integral_cos_mul_cos_pow (by lia : 2 ≤ 2 * n + 2) hz using 3
+  convert! integral_cos_mul_cos_pow (by lia : 2 ≤ 2 * n + 2) hz using 3
   · simp only [Nat.cast_add, Nat.cast_mul, Nat.cast_two]
     nth_rw 2 [← mul_one (2 : ℂ)]
     rw [← mul_add, mul_pow, ← div_div]

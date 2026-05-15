@@ -198,7 +198,7 @@ noncomputable def glueDataT (U V : X.affineOpens) :
   · intro x hx
     simp only [Hom.comp_app, Hom.comp_base, TopologicalSpace.Opens.map_comp_obj,
       TopologicalSpace.Opens.map_top, homOfLE_app, homOfLE_leOfHom, Category.assoc, RingHom.mem_ker]
-    convert_to (U.1.ι.app V.1 ≫ (F ≫ X.homOfLE inf_le_left).appLE (U.1.ι ⁻¹ᵁ V.1) ⊤
+    convert_to! (U.1.ι.app V.1 ≫ (F ≫ X.homOfLE inf_le_left).appLE (U.1.ι ⁻¹ᵁ V.1) ⊤
       (by rw [← Scheme.Hom.comp_preimage, Category.assoc, X.homOfLE_ι]
           exact fun x _ ↦ by simpa using (F x).2.2)).hom x = 0 using 3
     · simp only [homOfLE_leOfHom, Opens.ι_app, Hom.comp_appLE, homOfLE_app]
@@ -538,7 +538,7 @@ lemma subschemeι_app (U : X.affineOpens) : I.subschemeι.app U =
     Functor.op_obj, Functor.op_map, unop_comp, unop_inv, Quiver.Hom.unop_op,
     Hom.app_appIso_inv_assoc, TopologicalSpace.Opens.carrier_eq_coe, TopologicalSpace.Opens.map_coe,
     homOfLE_leOfHom]
-  convert (Category.comp_id _).symm
+  convert! (Category.comp_id _).symm
   exact CategoryTheory.Functor.map_id _ _
 
 lemma subschemeι_app_surjective (U : X.affineOpens) :

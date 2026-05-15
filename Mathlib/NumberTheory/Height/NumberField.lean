@@ -121,7 +121,7 @@ lemma mulHeight_eq {ι : Type*} {x : ι → K} (hx : x ≠ 0) :
 variable (K) in
 lemma totalWeight_eq_sum_mult : totalWeight K = ∑ v : InfinitePlace K, v.mult := by
   simp only [totalWeight]
-  convert sum_archAbsVal_eq (fun _ ↦ (1 : ℕ))
+  convert! sum_archAbsVal_eq (fun _ ↦ (1 : ℕ))
   · rw [← Multiset.sum_map_toList, ← Fin.sum_univ_fun_getElem, ← Multiset.length_toList,
       Fin.sum_const, Multiset.length_toList, smul_eq_mul, mul_one]
   · simp

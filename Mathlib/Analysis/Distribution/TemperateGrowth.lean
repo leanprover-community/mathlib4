@@ -252,7 +252,7 @@ theorem _root_.ContinuousLinearMap.bilinear_hasTemperateGrowth [NormedSpace 𝕜
 
 lemma HasTemperateGrowth.id : Function.HasTemperateGrowth (id : E → E) := by
   apply Function.HasTemperateGrowth.of_fderiv (k := 1) (C := 1)
-  · convert Function.HasTemperateGrowth.const (ContinuousLinearMap.id ℝ E)
+  · convert! Function.HasTemperateGrowth.const (ContinuousLinearMap.id ℝ E)
     exact fderiv_id'
   · apply differentiable_id
   · simp
@@ -323,7 +323,7 @@ variable (H) in
 theorem hasTemperateGrowth_norm_sq : (fun (x : H) ↦ ‖x‖ ^ 2).HasTemperateGrowth := by
   apply _root_.Function.HasTemperateGrowth.of_fderiv (C := 1) (k := 2)
   · rw [fderiv_norm_sq]
-    convert (2 • innerSL ℝ).hasTemperateGrowth
+    convert! (2 • innerSL ℝ).hasTemperateGrowth
   · exact .norm_sq ℝ differentiable_id
   · intro x
     rw [norm_pow, norm_norm, one_mul, add_pow_two]

@@ -664,7 +664,7 @@ theorem TermDefinable₁.definable₂_graph {f : M → M} (h : A.TermDefinable�
   obtain ⟨t, h⟩ := h.termDefinable.definable_tupleGraph A L
   use t.relabel (Option.elim · 1 (fun _ ↦ 0))
   ext v
-  convert Set.ext_iff.1 h (v ∘ (Option.elim · 1 (fun _ ↦ 0)))
+  convert! Set.ext_iff.1 h (v ∘ (Option.elim · 1 (fun _ ↦ 0)))
   simp
 
 /-- The identity function is `TermDefinable₁` -/

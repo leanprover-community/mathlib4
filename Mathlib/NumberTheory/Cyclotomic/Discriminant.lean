@@ -162,7 +162,7 @@ theorem discr_prime_pow [hcycl : IsCyclotomicExtension {p ^ k} K L] [hp : Fact p
         zero_add, pow_one, totient_two, reduceDiv, pow_zero, cast_ofNat, tsub_self,
         Nat.add_one_sub_one, mul_one, mul_zero]
       simp_rw [hζ.eq_neg_one_of_two_right, show (-1 : L) = algebraMap K L (-1) by simp]
-      convert_to (discr K fun i : Fin 1 ↦ (algebraMap K L) (-1) ^ ↑i) = _
+      convert_to! (discr K fun i : Fin 1 ↦ (algebraMap K L) (-1) ^ ↑i) = _
       · congr 1
         ext i
         simp only [map_neg, map_one, Function.comp_apply, Fin.val_eq_zero, _root_.pow_zero]
@@ -198,7 +198,7 @@ theorem discr_odd_prime [IsCyclotomicExtension {p} K L] [hp : Fact p.Prime]
     rw [zero_add, pow_one]
     infer_instance
   have hζ' : IsPrimitiveRoot ζ (p ^ (0 + 1)) := by simpa using hζ
-  convert discr_prime_pow_ne_two hζ' (by simpa [hirr]) (by simp [hodd]) using 2
+  convert! discr_prime_pow_ne_two hζ' (by simpa [hirr]) (by simp [hodd]) using 2
   · rw [zero_add, pow_one, totient_prime hp.out]
   · rw [_root_.pow_zero, one_mul, zero_add, mul_one, Nat.sub_sub]
 

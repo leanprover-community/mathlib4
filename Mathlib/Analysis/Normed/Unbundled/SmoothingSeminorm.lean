@@ -366,7 +366,7 @@ private theorem μ_limsup_le_one {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s n ≤
           (mul_nonneg (cast_nonneg _) (one_div_nonneg.mpr (cast_nonneg _)))
     · have hμ_lim : Tendsto (fun n : ℕ => μ x ^ (↑(s (ψ n)) * (1 / (ψ n : ℝ)))) atTop (𝓝 1) := by
         nth_rw 1 [← rpow_zero (μ x)]
-        convert Tendsto.rpow tendsto_const_nhds hψ_lim
+        convert! Tendsto.rpow tendsto_const_nhds hψ_lim
             (Or.inl (ne_of_gt (lt_of_lt_of_le zero_lt_one (not_lt.mp hμx))))
         · simp only [rpow_zero, mul_one_div, Function.comp_apply]
         · rw [rpow_zero]

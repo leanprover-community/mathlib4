@@ -287,7 +287,7 @@ theorem integrable_prod_iff' [SFinite μ] ⦃f : α × β → E⦄
     (h1f : AEStronglyMeasurable f (μ.prod ν)) :
     Integrable f (μ.prod ν) ↔
       (∀ᵐ y ∂ν, Integrable (fun x => f (x, y)) μ) ∧ Integrable (fun y => ∫ x, ‖f (x, y)‖ ∂μ) ν := by
-  convert integrable_prod_iff h1f.prod_swap using 1
+  convert! integrable_prod_iff h1f.prod_swap using 1
   rw [funext fun _ => Function.comp_apply.symm, integrable_swap_iff]
 
 theorem Integrable.prod_left_ae [SFinite μ] ⦃f : α × β → E⦄ (hf : Integrable f (μ.prod ν)) :

@@ -78,14 +78,14 @@ theorem HasAffineProperty.diagonal_of_openCover (P) {Q} [HasAffineProperty P Q]
   apply of_openCover 𝒱
   rintro ⟨i, j, k⟩
   dsimp [𝒱]
-  convert (Q.cancel_left_of_respectsIso
+  convert! (Q.cancel_left_of_respectsIso
     ((pullbackDiagonalMapIso _ _ ((𝒰' i).f j) ((𝒰' i).f k)).inv ≫
       pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) _ _) (pullback.snd _ _)).mp _ using 1
   · simp
   · ext1 <;> simp
   · simp only [Category.assoc, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
       Category.comp_id]
-    convert h𝒰' i j k
+    convert! h𝒰' i j k
     ext1 <;> simp [Scheme.Cover.pullbackHom]
 
 theorem HasAffineProperty.diagonal_of_openCover_diagonal
@@ -108,9 +108,8 @@ theorem HasAffineProperty.diagonal_of_diagonal_of_isPullback
     h.isoPullback_inv_snd]
   rintro U V f₁ f₂ hU hV hf₁ hf₂
   rw [← Q.cancel_left_of_respectsIso (pullbackDiagonalMapIso f _ f₁ f₂).hom]
-  convert HasAffineProperty.of_isPullback (P := P) (.of_hasPullback _ _) H
+  convert! HasAffineProperty.of_isPullback (P := P) (.of_hasPullback _ _) H
   · apply pullback.hom_ext <;> simp
-  · infer_instance
   · infer_instance
 
 theorem HasAffineProperty.diagonal_iff

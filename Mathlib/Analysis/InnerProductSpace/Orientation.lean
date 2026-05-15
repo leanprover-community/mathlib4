@@ -253,7 +253,7 @@ theorem abs_volumeForm_apply_le (v : Fin n → E) : |o.volumeForm v| ≤ ∏ i :
   · intro i _
     positivity
   intro i _
-  convert abs_real_inner_le_norm (b i) (v i)
+  convert! abs_real_inner_le_norm (b i) (v i)
   simp [b.orthonormal.1 i]
 
 theorem volumeForm_apply_le (v : Fin n → E) : o.volumeForm v ≤ ∏ i : Fin n, ‖v i‖ :=

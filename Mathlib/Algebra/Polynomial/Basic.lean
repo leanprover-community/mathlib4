@@ -637,7 +637,7 @@ theorem notMem_support_iff : n ∉ p.support ↔ p.coeff n = 0 := by simp
 
 @[aesop simp]
 theorem coeff_C : coeff (C a) n = ite (n = 0) a 0 := by
-  convert coeff_monomial (a := a) (m := n) (n := 0) using 2
+  convert! coeff_monomial (a := a) (m := n) (n := 0) using 2
   simp [eq_comm]
 
 @[simp]

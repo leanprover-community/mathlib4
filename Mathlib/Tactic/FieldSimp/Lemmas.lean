@@ -316,7 +316,7 @@ instance : Inv (NF M) where
 
 theorem eval_inv [CommGroupWithZero M] (l : NF M) : (l⁻¹).eval = l.eval⁻¹ := by
   simp +instances only [NF.eval, List.map_map, NF.instInv, List.prod_inv]
-  congr! 2
+  congr! (config := { postTransparency := .default }) 2
   ext p
   simp [zpow'_neg]
 

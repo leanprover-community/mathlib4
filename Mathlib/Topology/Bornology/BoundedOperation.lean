@@ -177,7 +177,7 @@ lemma tendsto_add_const_cobounded (x : R) :
   rw [mem_map]
   rw [← isCobounded_def, ← isBounded_compl_iff] at hs ⊢
   rw [← Set.preimage_compl]
-  convert isBounded_sub hs (t := {x}) isBounded_singleton using 1
+  convert isBounded_sub hs (t := { x }) isBounded_singleton using 1
   ext y
   simp [sub_eq_iff_eq_add]
 

@@ -169,7 +169,7 @@ lemma hasDerivAt_integral_pow_mul_exp (hz : z.re ∈ interior (integrableExpSet 
 `complexMGF X μ` is differentiable at `z` with derivative `μ[X * exp (z * X)]`. -/
 theorem hasDerivAt_complexMGF (hz : z.re ∈ interior (integrableExpSet X μ)) :
     HasDerivAt (complexMGF X μ) μ[fun ω ↦ X ω * cexp (z * X ω)] z := by
-  convert hasDerivAt_integral_pow_mul_exp hz 0
+  convert! hasDerivAt_integral_pow_mul_exp hz 0
   · simp [complexMGF]
   · simp
 

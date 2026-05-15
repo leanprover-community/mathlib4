@@ -74,7 +74,7 @@ lemma IsGreatest.norm_cfc [Nontrivial A] (f : 𝕜 → 𝕜) (a : A)
     |>.image_of_continuousOn hf.norm |>.exists_isGreatest <|
     (ContinuousFunctionalCalculus.spectrum_nonempty a ha).image _
   obtain ⟨x, hx', rfl⟩ := hx.1
-  convert hx
+  convert! hx
   rw [cfc_apply f a, norm_cfcHom a _]
   apply le_antisymm
   · apply ContinuousMap.norm_le _ (norm_nonneg _) |>.mpr
@@ -264,7 +264,7 @@ lemma IsGreatest.norm_cfcₙ (f : 𝕜 → 𝕜) (a : A)
       |>.image_of_continuousOn hf.norm |>.exists_isGreatest <|
       (quasispectrum.nonempty 𝕜 a).image _
   obtain ⟨x, hx', rfl⟩ := hx.1
-  convert hx
+  convert! hx
   rw [cfcₙ_apply f a, norm_cfcₙHom a _]
   apply le_antisymm
   · apply ContinuousMap.norm_le _ (norm_nonneg _) |>.mpr

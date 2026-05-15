@@ -111,7 +111,7 @@ theorem rootMultiplicity_eq_rootMultiplicity {p : R[X]} {t : R} :
   simp_rw [rootMultiplicity_eq_multiplicity, comp_X_add_C_eq_zero_iff]
   congr 1
   rw [C_0, sub_zero]
-  convert (multiplicity_map_eq <| algEquivAevalXAddC t).symm using 2
+  convert! (multiplicity_map_eq <| algEquivAevalXAddC t).symm using 2
   simp [C_eq_algebraMap]
 
 /-- See `Polynomial.rootMultiplicity_eq_natTrailingDegree'` for the special case of `t = 0`. -/

@@ -203,7 +203,7 @@ lemma overEquiv_functorPullback_post {D : Type*} [Category* D] (F : C ⥤ D) {X 
   · intro Z g hg
     rw [Sieve.overEquiv_iff]
     dsimp [Presieve.functorPullback]
-    convert (Sieve.overEquiv_iff _ _).mp hg
+    convert! (Sieve.overEquiv_iff _ _).mp hg
     simp
 
 set_option backward.isDefEq.respectTransparency false in
@@ -282,8 +282,10 @@ lemma over_map_compatiblePreserving {X Y : C} (f : X ⟶ Y) :
       (by simpa using (Over.forget _).congr_map h.symm =≫ Z.hom)
     let e : (Over.map f).obj W' ≅ W := Over.isoMk (Iso.refl _)
       (by simpa [W'] using (Over.w f₁).symm)
-    convert congr_arg (F.obj.map e.inv.op)
-      (hx g₁' g₂' hg₁ hg₂ (by ext; exact (Over.forget _).congr_map h)) using 1
+    convert
+      congr_arg (F.obj.map e.inv.op)
+        (hx g₁' g₂' hg₁ hg₂ (by ext; exact (Over.forget _).congr_map h)) using
+      1
     all_goals
       dsimp [e, W', g₁', g₂']
       rw [← Functor.map_comp_apply]

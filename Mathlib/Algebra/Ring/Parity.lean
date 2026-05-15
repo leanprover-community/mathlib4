@@ -228,11 +228,11 @@ lemma even_sub_one : Even (a - 1) ↔ Odd a :=
 
 @[simp]
 lemma even_add_two : Even (a + 2) ↔ Even a :=
-  ⟨(by convert ·.sub even_two; rw [eq_sub_iff_add_eq]), (·.add even_two)⟩
+  ⟨(by convert! ·.sub even_two; rw [eq_sub_iff_add_eq]), (·.add even_two)⟩
 
 @[simp]
 lemma even_sub_two : Even (a - 2) ↔ Even a :=
-  ⟨(by convert ·.add even_two; rw [sub_add_cancel]), (·.sub even_two)⟩
+  ⟨(by convert! ·.add even_two; rw [sub_add_cancel]), (·.sub even_two)⟩
 
 @[simp]
 lemma odd_add_one : Odd (a + 1) ↔ Even a :=

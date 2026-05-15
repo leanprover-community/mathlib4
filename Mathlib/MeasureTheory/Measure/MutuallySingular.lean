@@ -203,7 +203,7 @@ lemma exists_null_set_measure_lt_of_disjoint (h : Disjoint μ ν) {ε : ℝ≥0}
 
 lemma mutuallySingular_of_disjoint (h : Disjoint μ ν) : μ ⟂ₘ ν := by
   have h' (n : ℕ) : ∃ s, μ s = 0 ∧ ν sᶜ ≤ (1 / 2) ^ n := by
-    convert exists_null_set_measure_lt_of_disjoint h (ε := (1 / 2) ^ (n + 1))
+    convert! exists_null_set_measure_lt_of_disjoint h (ε := (1 / 2) ^ (n + 1))
       <| pow_pos (by simp) (n + 1)
     conv =>
       -- this tweak is needed due to the known issue of `norm_cast` with numeric fractions

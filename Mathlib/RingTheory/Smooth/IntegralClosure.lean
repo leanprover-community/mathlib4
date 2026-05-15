@@ -44,7 +44,7 @@ def TensorProduct.toIntegralClosure
   | zero => simp
   | add x y _ _ => rw [map_add]; exact add_mem ‹_› ‹_›
   | tmul x y =>
-    convert ((y.2.map (Algebra.TensorProduct.includeRight
+    convert! ((y.2.map (Algebra.TensorProduct.includeRight
       (R := R) (A := S))).tower_top (A := S)).smul x
     simp [smul_tmul']
 
@@ -109,8 +109,10 @@ lemma TensorProduct.toIntegralClosure_bijective_of_isLocalizationAway
     (fun r ↦ (Algebra.TensorProduct.map (Algebra.ofId _ _) (.id _ _)).toLinearMap)
     (fun r ↦ integralClosure (Sᵣ r) ((Sᵣ r) ⊗[R] B))
     (fun r ↦ (φ r).toLinearMap) fun r ↦ ?_
-  convert show Function.Bijective ((toIntegralClosure R (Sᵣ r) B).toLinearMap.restrictScalars S)
-    from H r using 1
+  convert
+    show Function.Bijective ((toIntegralClosure R (Sᵣ r) B).toLinearMap.restrictScalars S) from
+      H r using
+    1
   congr!
   refine IsLocalizedModule.ext (.powers r.1) (Algebra.TensorProduct.map (Algebra.ofId S (Sᵣ r))
     (AlgHom.id R (integralClosure R B))).toLinearMap
@@ -162,7 +164,7 @@ lemma TensorProduct.toIntegralClosure_bijective_of_isLocalization
     AlgHom.codRestrict (Algebra.TensorProduct.includeRight.comp (integralClosure R B).val)
       ((integralClosure S (S ⊗[R] B)).restrictScalars R) fun ⟨x, hx⟩ ↦ by
     refine .of_comp (f := algebraMap R S) ?_
-    convert RingHom.IsIntegralElem.map hx
+    convert! RingHom.IsIntegralElem.map hx
       (Algebra.TensorProduct.includeRight : B →ₐ[R] S ⊗[R] B).toRingHom
     simp [← IsScalarTower.algebraMap_eq]
   let := φ.toAlgebra
@@ -170,8 +172,9 @@ lemma TensorProduct.toIntegralClosure_bijective_of_isLocalization
   have : IsScalarTower (integralClosure R B) (integralClosure S (S ⊗[R] B)) (S ⊗[R] B) :=
     .of_algebraMap_eq' rfl
   have := IsLocalization.integralClosure (S := B) M (Rf := S) (Sf := S ⊗[R] B)
-  convert (IsLocalization.algEquiv (Algebra.algebraMapSubmonoid (integralClosure R B) M)
-    (S ⊗[R] integralClosure R B) (integralClosure S (S ⊗[R] B))).bijective
+  convert
+    (IsLocalization.algEquiv (Algebra.algebraMapSubmonoid (integralClosure R B) M)
+        (S ⊗[R] integralClosure R B) (integralClosure S (S ⊗[R] B))).bijective
   rw [← AlgHom.coe_restrictScalars' R, ← AlgEquiv.coe_restrictScalars' R, ← AlgEquiv.coe_algHom]
   congr 1
   ext1
@@ -342,7 +345,7 @@ theorem mem_adjoin_map_integralClosure_of_isStandardEtale [Algebra.IsStandardEta
   -- integral closure of `R` in `B`), it suffices to show that `y ∈ S ⊗ B'`,
   rw [← Subalgebra.mem_toSubmodule, ← Submodule.smul_mem_iff_of_isUnit _
     (𝓟.hasMap.isUnit_derivative_f.mul <| (𝓟.hasMap.2.pow k).mul (𝓟.hasMap.2.pow m))]
-  convert_to eval₂ Algebra.TensorProduct.includeRight.toRingHom (𝓟.x ⊗ₜ[R] 1) y ∈ _ using 1
+  convert_to! eval₂ Algebra.TensorProduct.includeRight.toRingHom (𝓟.x ⊗ₜ[R] 1) y ∈ _ using 1
   · convert congr(Algebra.TensorProduct.comm _ _ _ <| e.symm (algebraMap _ _ $hy))
     · apply (Algebra.TensorProduct.comm R B S).symm.injective
       apply e.injective

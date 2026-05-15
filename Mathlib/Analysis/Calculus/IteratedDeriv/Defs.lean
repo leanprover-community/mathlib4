@@ -312,7 +312,7 @@ differentiation operation. -/
 theorem iteratedDeriv_eq_iterate : iteratedDeriv n f = deriv^[n] f := by
   ext x
   rw [← iteratedDerivWithin_univ]
-  convert iteratedDerivWithin_eq_iterate (F := F)
+  convert! iteratedDerivWithin_eq_iterate (F := F)
   simp [derivWithin_univ]
 
 theorem iteratedDerivWithin_of_isOpen (hs : IsOpen s) :

@@ -980,8 +980,10 @@ theorem tendsto_cos_pi_div_two : Tendsto cos (𝓝[<] (π / 2)) (𝓝[>] 0) := b
     exact cos_pos_of_mem_Ioo hx
 
 theorem tendsto_tan_pi_div_two : Tendsto tan (𝓝[<] (π / 2)) atTop := by
-  convert tendsto_cos_pi_div_two.inv_tendsto_nhdsGT_zero.atTop_mul_pos zero_lt_one
-    tendsto_sin_pi_div_two using 1
+  convert
+    tendsto_cos_pi_div_two.inv_tendsto_nhdsGT_zero.atTop_mul_pos zero_lt_one
+      tendsto_sin_pi_div_two using
+    1
   simp only [Pi.inv_apply, ← div_eq_inv_mul, ← tan_eq_sin_div_cos]
 
 theorem tendsto_sin_neg_pi_div_two : Tendsto sin (𝓝[>] (-(π / 2))) (𝓝 (-1)) := by
@@ -996,8 +998,10 @@ theorem tendsto_cos_neg_pi_div_two : Tendsto cos (𝓝[>] (-(π / 2))) (𝓝[>] 
     exact cos_pos_of_mem_Ioo hx
 
 theorem tendsto_tan_neg_pi_div_two : Tendsto tan (𝓝[>] (-(π / 2))) atBot := by
-  convert tendsto_cos_neg_pi_div_two.inv_tendsto_nhdsGT_zero.atTop_mul_neg (by simp)
-      tendsto_sin_neg_pi_div_two using 1
+  convert
+    tendsto_cos_neg_pi_div_two.inv_tendsto_nhdsGT_zero.atTop_mul_neg (by simp)
+      tendsto_sin_neg_pi_div_two using
+    1
   simp only [Pi.inv_apply, ← div_eq_inv_mul, ← tan_eq_sin_div_cos]
 
 end Real
@@ -1268,7 +1272,7 @@ theorem sinh_add_pi_mul_I (z : ℂ) : sinh (z + π * I) = -sinh z :=
   sinh_antiperiodic z
 
 theorem sinh_periodic : Function.Periodic sinh (2 * π * I) := by
-  convert sinh_antiperiodic.periodic_two_mul using 1
+  convert! sinh_antiperiodic.periodic_two_mul using 1
   ring
 
 @[simp]
@@ -1283,7 +1287,7 @@ theorem cosh_add_pi_mul_I (z : ℂ) : cosh (z + π * I) = -cosh z :=
   cosh_antiperiodic z
 
 theorem cosh_periodic : Function.Periodic cosh (2 * π * I) := by
-  convert cosh_antiperiodic.periodic_two_mul using 1
+  convert! cosh_antiperiodic.periodic_two_mul using 1
   ring
 
 @[simp]

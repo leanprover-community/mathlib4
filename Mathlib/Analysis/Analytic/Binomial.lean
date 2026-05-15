@@ -102,7 +102,7 @@ theorem one_add_cpow_hasFPowerSeriesOnBall_zero {a : ℂ} :
     HasFPowerSeriesOnBall (fun x ↦ (1 + x) ^ a) (binomialSeries ℂ a) 0 1 := by
   suffices (binomialSeries ℂ a = FormalMultilinearSeries.ofScalars ℂ
       fun n ↦ iteratedDeriv n (fun (x : ℂ) ↦ (1 + x) ^ a) 0 / n !) by
-    convert AnalyticOn.hasFPowerSeriesOnSubball _ _ _
+    convert! AnalyticOn.hasFPowerSeriesOnSubball _ _ _
     · norm_num
     · -- TODO: use `fun_prop` for this subgoal
       apply AnalyticOn.cpow (analyticOn_const.add analyticOn_id) analyticOn_const
@@ -171,7 +171,7 @@ theorem one_div_one_sub_cpow_hasFPowerSeriesOnBall_zero (a : ℂ) :
 theorem one_div_one_sub_pow_hasFPowerSeriesOnBall_zero (a : ℕ) :
     HasFPowerSeriesOnBall (fun x ↦ 1 / (1 - x) ^ (a + 1))
       (.ofScalars ℂ (𝕜 := ℂ) fun n ↦ ↑(Nat.choose (a + n) a)) 0 1 := by
-  convert one_div_one_sub_cpow_hasFPowerSeriesOnBall_zero (a + 1) using 3 with z n
+  convert! one_div_one_sub_cpow_hasFPowerSeriesOnBall_zero (a + 1) using 3 with z n
   · norm_cast
   · rw [eq_comm, add_right_comm, add_sub_cancel_right, ← Nat.cast_add,
       Ring.choose_natCast, Nat.choose_symm_add]
@@ -213,7 +213,7 @@ theorem one_div_one_sub_sq_hasFPowerSeriesOnBall_zero :
 theorem hasFPowerSeriesOnBall_ofScalars_mul_add_zero (a b : ℂ) :
     HasFPowerSeriesOnBall (fun x ↦ (b - a) / (1 - x) + a / (1 - x) ^ 2)
       (.ofScalars ℂ fun n ↦ a * n + b) 0 1 := by
-  convert (one_div_one_sub_hasFPowerSeriesOnBall_zero.const_smul (c := b - a)).add
+  convert! (one_div_one_sub_hasFPowerSeriesOnBall_zero.const_smul (c := b - a)).add
     (one_div_one_sub_sq_hasFPowerSeriesOnBall_zero.const_smul (c := a)) using 2
   · simp [div_eq_mul_inv]
   · ext; simp; ring
@@ -280,7 +280,7 @@ theorem one_div_sub_pow_hasFPowerSeriesOnBall_zero (a : ℕ) {r : ℝ} (hr : r �
   have := (Complex.one_div_sub_pow_hasFPowerSeriesOnBall_zero a (z := r)
     (by simpa)).restrictScalars (𝕜 := ℝ)
   rw [← Complex.ofRealCLM.map_zero] at this
-  convert (Complex.reCLM.comp_hasFPowerSeriesOnBall this.compContinuousLinearMap) using 2
+  convert! (Complex.reCLM.comp_hasFPowerSeriesOnBall this.compContinuousLinearMap) using 2
   · simp [-Complex.inv_re, ← Complex.ofReal_pow, ← Complex.ofReal_inv, ← Complex.ofReal_sub]
   · ext n
     simp only [ContinuousLinearMap.compFormalMultilinearSeries_apply,
@@ -310,7 +310,7 @@ theorem one_div_one_sub_sq_hasFPowerSeriesOnBall_zero :
 theorem hasFPowerSeriesOnBall_ofScalars_mul_add_zero (a b : ℝ) :
     HasFPowerSeriesOnBall (fun x ↦ (b - a) / (1 - x) + a / (1 - x) ^ 2)
       (.ofScalars ℝ (a * · + b)) 0 1 := by
-  convert (one_div_one_sub_hasFPowerSeriesOnBall_zero.const_smul (c := b - a)).add
+  convert! (one_div_one_sub_hasFPowerSeriesOnBall_zero.const_smul (c := b - a)).add
     (one_div_one_sub_sq_hasFPowerSeriesOnBall_zero.const_smul (c := a)) using 2
   · simp [div_eq_mul_inv]
   · ext; simp; ring

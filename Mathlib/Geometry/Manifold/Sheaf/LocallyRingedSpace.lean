@@ -75,7 +75,7 @@ theorem smoothSheafCommRing.isUnit_stalk_iff {x : M}
     let V : Opens M := ⟨Subtype.val '' V₀, U.2.isOpenMap_subtype_val V₀ hV₀⟩
     have hUV : V ≤ U := Subtype.coe_image_subset (U : Set M) V₀
     have hV : V₀ = Set.range (Set.inclusion hUV) := by
-      convert (Set.range_inclusion hUV).symm
+      convert! (Set.range_inclusion hUV).symm
       ext y
       change _ ↔ y ∈ Subtype.val ⁻¹' Subtype.val '' V₀
       rw [Set.preimage_image_eq _ Subtype.coe_injective]

@@ -1197,7 +1197,7 @@ theorem IsClosed.exists_minimal_nonempty_closed_subset [CompactSpace X] {S : Set
         refine ⟨⟨?_, ?_, ?_⟩, fun U hU _ hx => ⟨U, hU, hx⟩⟩
         · exact fun _ hx => ⟨U₀, hU₀, U₀compl hx⟩
         · exact isOpen_sUnion fun _ h => (hc h).2.1
-        · convert_to (⋂ U : { U // U ∈ c }, U.1ᶜ).Nonempty
+        · convert_to! (⋂ U : { U // U ∈ c }, U.1ᶜ).Nonempty
           · ext
             simp only [not_exists, not_and, Set.mem_iInter, Subtype.forall,
               mem_compl_iff, mem_sUnion]

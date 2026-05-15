@@ -724,7 +724,7 @@ theorem setToFun_finsetSum' (hT : DominatedFinMeasAdditive μ T C) {ι} (s : Fin
     simp only [his, Finset.sum_insert, not_false_iff]
     rw [setToFun_add hT (hf i (Finset.mem_insert_self i s)) _]
     · rw [ih fun i hi => hf i (Finset.mem_insert_of_mem hi)]
-    · convert integrable_finsetSum s fun i hi => hf i (Finset.mem_insert_of_mem hi) with x
+    · convert! integrable_finsetSum s fun i hi => hf i (Finset.mem_insert_of_mem hi) with x
       simp
 
 @[deprecated (since := "2026-04-08")] alias setToFun_finset_sum' := setToFun_finsetSum'
@@ -732,7 +732,7 @@ theorem setToFun_finsetSum' (hT : DominatedFinMeasAdditive μ T C) {ι} (s : Fin
 theorem setToFun_finsetSum (hT : DominatedFinMeasAdditive μ T C) {ι} (s : Finset ι) {f : ι → α → E}
     (hf : ∀ i ∈ s, Integrable (f i) μ) :
     (setToFun μ T hT fun a => ∑ i ∈ s, f i a) = ∑ i ∈ s, setToFun μ T hT (f i) := by
-  convert setToFun_finsetSum' hT s hf with a; simp
+  convert! setToFun_finsetSum' hT s hf with a; simp
 
 @[deprecated (since := "2026-04-08")] alias setToFun_finset_sum := setToFun_finsetSum
 
@@ -1042,7 +1042,7 @@ theorem tendsto_setToFun_of_dominated_convergence (hT : DominatedFinMeasAdditive
   suffices
     Tendsto (fun n => L1.setToL1 hT ((fs_int n).toL1 (fs n))) atTop
       (𝓝 (L1.setToL1 hT (f_int.toL1 f))) by
-    convert this with n
+    convert! this with n
     · exact setToFun_eq hT (fs_int n)
     · exact setToFun_eq hT f_int
   -- the convergence of setToL1 follows from the convergence of the L1 functions
@@ -1054,7 +1054,7 @@ theorem tendsto_setToFun_of_dominated_convergence (hT : DominatedFinMeasAdditive
     (tendsto_toReal zero_ne_top).comp
       (tendsto_lintegral_norm_of_dominated_convergence fs_measurable
         bound_integrable.hasFiniteIntegral h_bound h_lim)
-  convert lintegral_norm_tendsto_zero with n
+  convert! lintegral_norm_tendsto_zero with n
   rw [L1.norm_def]
   congr 1
   refine lintegral_congr_ae ?_

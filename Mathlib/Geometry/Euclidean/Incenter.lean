@@ -230,7 +230,7 @@ lemma sum_inv_height_sq_smul_vsub_eq_zero :
   rw [← Finset.add_sum_erase _ _ (Finset.mem_univ 0),
     ← Finset.add_sum_erase _ _ (Finset.mem_erase.2 ⟨hi, Finset.mem_univ _⟩), ← add_assoc]
   convert add_zero _
-  · convert Finset.sum_const_zero with j hj
+  · convert! Finset.sum_const_zero with j hj
     rw [real_inner_smul_right]
     convert mul_zero _
     rw [← Submodule.mem_orthogonal_singleton_iff_inner_right]
@@ -270,7 +270,7 @@ lemma inv_height_eq_sum_mul_inv_dist (i : Fin (n + 1)) :
   apply_fun fun v ↦ (s.height i)⁻¹ * ⟪s.points i -ᵥ s.altitudeFoot i, v⟫ at h
   rw [inner_sum, Finset.mul_sum] at h
   simp only [inner_zero_right, mul_zero, inner_smul_right, height] at h
-  convert h using 2 with j
+  convert! h using 2 with j
   ring
 
 /-- The inverse of the distance from one vertex to the opposite face is less than the sum of that
@@ -296,7 +296,7 @@ lemma sum_excenterWeightsUnnorm_singleton_pos [Nat.AtLeastTwo n] (i : Fin (n + 1
   rw [← Finset.sum_add_sum_compl {i}, Finset.sum_singleton]
   nth_rw 1 [excenterWeightsUnnorm]
   simp only [Finset.mem_singleton, ↓reduceIte, neg_mul, one_mul, lt_neg_add_iff_add_lt, add_zero]
-  convert s.inv_height_lt_sum_inv_height i using 2 with j h
+  convert! s.inv_height_lt_sum_inv_height i using 2 with j h
   · ext j
     simp
   · rw [Finset.mem_filter_univ] at h
@@ -573,7 +573,7 @@ lemma ExcenterExists.sign_signedInfDist_excenter {signs : Finset (Fin (n + 1))}
 
 lemma sign_signedInfDist_incenter (i : Fin (n + 1)) :
     SignType.sign (s.signedInfDist i s.incenter) = 1 := by
-  convert s.excenterExists_empty.sign_signedInfDist_excenter i
+  convert! s.excenterExists_empty.sign_signedInfDist_excenter i
   simp
 
 variable {s} in
@@ -639,7 +639,8 @@ lemma ExcenterExists.excenter_notMem_affineSpan_pair [Nat.AtLeastTwo n]
   · simp only [hij, Set.mem_singleton_iff, Set.insert_eq_of_mem,
       AffineSubspace.mem_affineSpan_singleton]
     exact h.excenter_ne_point j
-  · convert h.excenter_notMem_affineSpan_face (fs := {i, j}) (m := 1) (by simp_all)
+  · convert
+    h.excenter_notMem_affineSpan_face (fs := { i, j }) (m := 1) (by simp_all)
       Nat.AtLeastTwo.ne_one.symm
     simp [Set.image_insert_eq]
 
@@ -959,7 +960,7 @@ lemma exists_forall_signedInfDist_eq_iff_excenterExists_and_eq_excenter {p : P}
 lemma exists_forall_signedInfDist_eq_iff_eq_incenter {p : P}
     (hp : p ∈ affineSpan ℝ (Set.range s.points)) :
     (∃ r : ℝ, ∀ i, s.signedInfDist i p = r) ↔ p = s.incenter := by
-  convert s.exists_forall_signedInfDist_eq_iff_excenterExists_and_eq_excenter hp (signs := ∅)
+  convert! s.exists_forall_signedInfDist_eq_iff_excenterExists_and_eq_excenter hp (signs := ∅)
   · simp
   · simp [excenterExists_empty]
 

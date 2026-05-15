@@ -150,7 +150,7 @@ theorem SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge (f : α →ₛ ℝ
     simp only [SimpleFunc.coe_add, ENNReal.coe_add, Pi.add_apply]
     rw [lintegral_add_left f₁.measurable.coe_nnreal_ennreal,
       lintegral_add_left g₁cont.measurable.coe_nnreal_ennreal]
-    convert add_le_add g₁int g₂int using 1
+    convert! add_le_add g₁int g₂int using 1
     conv_lhs => rw [← ENNReal.add_halves ε]
     abel
 
@@ -246,9 +246,9 @@ theorem exists_lt_lowerSemicontinuous_lintegral_ge_of_aemeasurable [SigmaFinite 
         lintegral_add_left g0_cont.measurable _
       _ ≤ (∫⁻ x, f x ∂μ) + ε / 2 + (0 + ε / 2) := by
         refine add_le_add ?_ ?_
-        · convert g0_int using 2
+        · convert! g0_int using 2
           exact lintegral_congr_ae (fmeas.ae_eq_mk.fun_comp _)
-        · convert g1_int
+        · convert! g1_int
           simp only [smeas, μs, lintegral_const, Set.univ_inter, MeasurableSet.univ,
             lintegral_indicator, mul_zero, restrict_apply]
       _ = (∫⁻ x, f x ∂μ) + ε := by simp only [add_assoc, ENNReal.add_halves, zero_add]
@@ -267,7 +267,7 @@ theorem exists_lt_lowerSemicontinuous_integral_gt_nnreal [SigmaFinite μ] (f : �
       (∀ᵐ x ∂μ, g x < ⊤) ∧
       Integrable (fun x => (g x).toReal) μ ∧ (∫ x, (g x).toReal ∂μ) < (∫ x, ↑(f x) ∂μ) + ε := by
   have fmeas : AEMeasurable f μ := by
-    convert fint.aestronglyMeasurable.real_toNNReal.aemeasurable
+    convert! fint.aestronglyMeasurable.real_toNNReal.aemeasurable
     simp only [Real.toNNReal_coe]
   lift ε to ℝ≥0 using εpos.le
   obtain ⟨δ, δpos, hδε⟩ : ∃ δ : ℝ≥0, 0 < δ ∧ δ < ε := exists_between εpos
@@ -351,7 +351,7 @@ theorem SimpleFunc.exists_upperSemicontinuous_le_lintegral_le (f : α →ₛ ℝ
     simp only [SimpleFunc.coe_add, ENNReal.coe_add, Pi.add_apply]
     rw [lintegral_add_left f₁.measurable.coe_nnreal_ennreal,
       lintegral_add_left g₁cont.measurable.coe_nnreal_ennreal]
-    convert add_le_add g₁int g₂int using 1
+    convert! add_le_add g₁int g₂int using 1
     conv_lhs => rw [← ENNReal.add_halves ε]
     abel
 
@@ -371,7 +371,7 @@ theorem exists_upperSemicontinuous_le_lintegral_le (f : α → ℝ≥0) (int_f :
     simp only [lt_iSup_iff] at this
     rcases this with ⟨fs, fs_le_f, int_fs⟩
     refine ⟨fs, fun x => by simpa only [ENNReal.coe_le_coe] using fs_le_f x, ?_⟩
-    convert int_fs.le
+    convert! int_fs.le
     rw [← SimpleFunc.lintegral_eq_lintegral]
     simp only [SimpleFunc.coe_map, Function.comp_apply]
   have int_fs_lt_top : (∫⁻ x, fs x ∂μ) ≠ ∞ := by
@@ -410,7 +410,7 @@ theorem exists_upperSemicontinuous_le_integral_le (f : α → ℝ≥0)
     exact Filter.Eventually.of_forall fun x => by simp [gf x]
   · rw [integral_eq_lintegral_of_nonneg_ae, integral_eq_lintegral_of_nonneg_ae]
     · rw [sub_le_iff_le_add]
-      convert ENNReal.toReal_mono _ gint
+      convert! ENNReal.toReal_mono _ gint
       · simp
       · rw [ENNReal.toReal_add Ig.ne ENNReal.coe_ne_top]; simp
       · simpa using Ig.ne
@@ -450,7 +450,7 @@ theorem exists_lt_lowerSemicontinuous_integral_lt [SigmaFinite μ] (f : α → �
   case int =>
     show Integrable (fun x => EReal.toReal (g x)) μ
     rw [integrable_congr ae_g]
-    convert gp_integrable.sub gm_integrable
+    convert! gp_integrable.sub gm_integrable
     simp
   case intlt =>
     show (∫ x : α, (g x).toReal ∂μ) < (∫ x : α, f x ∂μ) + ε
@@ -463,7 +463,7 @@ theorem exists_lt_lowerSemicontinuous_integral_lt [SigmaFinite μ] (f : α → �
           exact integral_sub gp_integrable gm_integrable
         _ < (∫ x : α, ↑(fp x) ∂μ) + ↑δ - ∫ x : α, ↑(gm x) ∂μ := by
           apply sub_lt_sub_right
-          convert gpint
+          convert! gpint
           simp only [EReal.toReal_coe_ennreal]
         _ ≤ (∫ x : α, ↑(fp x) ∂μ) + ↑δ - ((∫ x : α, ↑(fm x) ∂μ) - δ) := sub_le_sub_left gmint _
         _ = (∫ x : α, f x ∂μ) + 2 * δ := by
@@ -517,7 +517,7 @@ theorem exists_upperSemicontinuous_lt_integral_gt [SigmaFinite μ] (f : α → �
   · exact
       continuous_neg.comp_lowerSemicontinuous_antitone gcont fun x y hxy =>
         EReal.neg_le_neg_iff.2 hxy
-  · convert g_integrable.neg
+  · convert! g_integrable.neg
     simp
   · simpa [bot_lt_iff_ne_bot, lt_top_iff_ne_top] using g_lt_top
   · simp_rw [integral_neg, lt_neg_add_iff_add_lt] at gint

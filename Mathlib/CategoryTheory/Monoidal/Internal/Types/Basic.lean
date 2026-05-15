@@ -31,9 +31,9 @@ namespace MonTypeEquivalenceMon
 instance monMonoid (A : Type u) [MonObj A] : Monoid A where
   one := η[A] PUnit.unit
   mul x y := μ[A] (x, y)
-  one_mul x := by convert congr_hom (CC := fun X ↦ X) (one_mul A) (PUnit.unit, x)
-  mul_one x := by convert congr_hom (CC := fun X ↦ X) (mul_one A) (x, PUnit.unit)
-  mul_assoc x y z := by convert congr_hom (CC := fun X ↦ X) (mul_assoc A) ((x, y), z)
+  one_mul x := by convert! congr_hom (CC := fun X ↦ X) (one_mul A) (PUnit.unit, x)
+  mul_one x := by convert! congr_hom (CC := fun X ↦ X) (mul_one A) (x, PUnit.unit)
+  mul_assoc x y z := by convert! congr_hom (CC := fun X ↦ X) (mul_assoc A) ((x, y), z)
 
 /-- Converting a monoid object in `Type` to a bundled monoid.
 -/
@@ -97,7 +97,7 @@ namespace CommMonTypeEquivalenceCommMon
 
 instance commMonCommMonoid (A : Type u) [MonObj A] [IsCommMonObj A] : CommMonoid A :=
   { MonTypeEquivalenceMon.monMonoid A with
-    mul_comm := fun x y => by convert congr_hom (CC := fun X ↦ X) (IsCommMonObj.mul_comm A) (y, x) }
+    mul_comm x y := by convert! congr_hom (CC := fun X ↦ X) (IsCommMonObj.mul_comm A) (y, x) }
 
 /-- Converting a commutative monoid object in `Type` to a bundled commutative monoid.
 -/

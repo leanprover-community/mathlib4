@@ -56,10 +56,10 @@ theorem Presieve.isSheaf_yoneda' {α : Type u} :
   fun β _ hs x hx =>
   ⟨↾fun y => (x _ (hs y)).hom PUnit.unit , fun γ f h =>
     ConcreteCategory.hom_ext _ _ fun z => by
-      convert ConcreteCategory.congr_hom (hx (𝟙 _) (↾fun _ => z)
+      convert! ConcreteCategory.congr_hom (hx (𝟙 _) (↾fun _ => z)
         (hs <| f z) h rfl) PUnit.unit using 1,
       fun f hf => ConcreteCategory.hom_ext _ _ fun y => by
-        convert ConcreteCategory.congr_hom (hf _ (hs y)) PUnit.unit⟩
+        convert! ConcreteCategory.congr_hom (hf _ (hs y)) PUnit.unit⟩
 
 /-- The sheaf condition for `yoneda'`. -/
 theorem Presheaf.isSheaf_yoneda' {α : Type u} :
@@ -105,7 +105,7 @@ noncomputable def typesGlue (S : Type uᵒᵖ ⥤ Type u)
 theorem eval_typesGlue {S hs α} (f) : eval.{u} S α (typesGlue S hs α f) = f := by
   funext x
   apply (IsSheafFor.valid_glue _ _ _ <| ⟨PUnit.unit, fun _ => Subsingleton.elim _ _⟩).trans
-  convert ConcreteCategory.congr_hom (S.map_id _) _
+  convert! ConcreteCategory.congr_hom (S.map_id _) _
 
 theorem typesGlue_eval {S hs α} (s) : typesGlue.{u} S hs α (eval S α s) = s := by
   apply (hs.isSheafFor _ (generate_discretePresieve_mem α)).isSeparatedFor.ext

@@ -551,7 +551,7 @@ lemma orthogonalProjection_subtype (s : AffineSubspace 𝕜 P) [Nonempty s] (s' 
   have : (s'.map s.subtypeₐᵢ.toAffineMap).direction.HasOrthogonalProjection := by
     rw [subtypeₐᵢ_toAffineMap]
     infer_instance
-  convert orthogonalProjection_map s' s.subtypeₐᵢ p
+  convert! orthogonalProjection_map s' s.subtypeₐᵢ p
 
 @[simp] lemma reflection_map (s : AffineSubspace 𝕜 P) [Nonempty s]
     [s.direction.HasOrthogonalProjection] (f : P →ᵃⁱ[𝕜] P₂)
@@ -640,7 +640,7 @@ lemma orthogonalProjectionSpan_map {n : ℕ} (s : Simplex 𝕜 P n) (f : P →�
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     ((s.restrict S hS).orthogonalProjectionSpan p : P) = s.orthogonalProjectionSpan p := by
   rw [eq_comm]
-  convert (s.restrict S hS).orthogonalProjectionSpan_map S.subtypeₐᵢ p
+  convert! (s.restrict S hS).orthogonalProjectionSpan_map S.subtypeₐᵢ p
 
 end Simplex
 

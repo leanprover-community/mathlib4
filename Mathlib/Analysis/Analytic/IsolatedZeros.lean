@@ -66,7 +66,7 @@ theorem exists_hasSum_smul_of_apply_eq_zero (hs : HasSum (fun m => z ^ m • a m
       Finset.sum_eq_zero fun k hk => by simp [ha k (Finset.mem_range.mp hk)]
     have h2 : HasSum (fun m => z ^ (m + n) • a (m + n)) s := by
       simpa [h1] using (hasSum_nat_add_iff' n).mpr hs
-    convert h2.const_smul (z⁻¹ ^ n) using 2 with x
+    convert! h2.const_smul (z⁻¹ ^ n) using 2 with x
     · match_scalars
       simp [field, pow_add]
     · simp only [inv_pow]

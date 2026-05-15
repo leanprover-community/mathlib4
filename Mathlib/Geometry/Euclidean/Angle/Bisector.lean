@@ -300,7 +300,7 @@ lemma two_zsmul_oangle_eq_of_dist_orthogonalProjection_line_eq {p p₁ p₂ p₃
         simp
     have hsup : line[ℝ, p₁, p₂] ⊔ line[ℝ, p₁, p₃] = ⊤ := by
       rw [← AffineSubspace.span_union]
-      convert ha.affineSpan_eq_top_iff_card_eq_finrank_add_one.2 ?_
+      convert! ha.affineSpan_eq_top_iff_card_eq_finrank_add_one.2 ?_
       · simp
         grind
       · simpa using Fact.out

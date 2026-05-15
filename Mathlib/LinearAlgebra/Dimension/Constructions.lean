@@ -492,7 +492,7 @@ lemma finrank_le_of_span_eq_top {ι : Type*} [Fintype ι] {v : ι → M}
     (hv : Submodule.span R (Set.range v) = ⊤) : finrank R M ≤ Fintype.card ι := by
   classical
   rw [← finrank_top, ← hv]
-  exact (finrank_span_le_card _).trans (by convert Fintype.card_range_le v; rw [Set.toFinset_card])
+  exact (finrank_span_le_card _).trans (by convert! Fintype.card_range_le v; rw [Set.toFinset_card])
 
 @[simp]
 lemma Pi.dim_spanSubset [Finite ι] [Nontrivial R] {s : Set ι} :
@@ -579,7 +579,7 @@ noncomputable def sumQuot :
   apply Basis.mk (v := b)
   · apply LinearIndependent.sumElim_of_quotient
     · exact bW.linearIndependent
-    · convert bQ.linearIndependent
+    · convert! bQ.linearIndependent
   · unfold b
     rw [Set.Sum.elim_range, Submodule.span_union,
       show Set.range (fun i ↦ (bW i : V)) = W.subtype '' (Set.range (fun i ↦ bW i)) by aesop,

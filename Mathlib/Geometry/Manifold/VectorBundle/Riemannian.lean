@@ -101,7 +101,7 @@ is a Riemannian bundle. -/
 instance : IsContMDiffRiemannianBundle IB n F₁ (Bundle.Trivial B F₁) := by
   refine ⟨fun x ↦ innerSL ℝ, fun x ↦ ?_, fun x v w ↦ rfl⟩
   simp only [contMDiffAt_section]
-  convert contMDiffAt_const (c := innerSL ℝ)
+  convert! contMDiffAt_const (c := innerSL ℝ)
   ext v w
   simp [hom_trivializationAt_apply, inCoordinates]
 

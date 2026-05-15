@@ -889,7 +889,7 @@ theorem T_iterate_derivative_mem_span_T (n k : ℕ) :
     suffices Submodule.span ℕ ((fun m : ℕ => derivative (T R m)) '' Set.Icc 0 (n - k)) ≤
       Submodule.span ℕ ((fun m : ℕ => T R m) '' Set.Icc 0 (n - (k + 1))) by
       apply this
-      convert Submodule.apply_mem_span_image_of_mem_span (derivative.restrictScalars ℕ) ih using 2
+      convert! Submodule.apply_mem_span_image_of_mem_span (derivative.restrictScalars ℕ) ih using 2
       simp [Set.image]
     refine Submodule.span_le.mpr (fun x hx => ?_)
     obtain ⟨m, hm, rfl⟩ := hx

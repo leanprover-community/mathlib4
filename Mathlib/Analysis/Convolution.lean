@@ -143,7 +143,7 @@ theorem _root_.HasCompactSupport.convolution_integrand_bound_left (hcf : HasComp
     (hf : Continuous f) {x t : G} {s : Set G} (hx : x ∈ s) :
     ‖L (f (x - t)) (g t)‖ ≤
       (-tsupport f + s).indicator (fun t => (‖L‖ * ⨆ i, ‖f i‖) * ‖g t‖) t := by
-  convert hcf.convolution_integrand_bound_right L.flip hf hx using 1
+  convert! hcf.convolution_integrand_bound_right L.flip hf hx using 1
   simp_rw [L.opNorm_flip, mul_right_comm]
 
 end NoMeasurability
@@ -307,7 +307,7 @@ theorem _root_.HasCompactSupport.convolutionExistsAt {x₀ : G}
       (μ.restrict (tsupport fun t : G => L (f t) (g (x₀ - t)))) := by
     apply (hg.comp v.continuous).continuousOn.aestronglyMeasurable_of_isCompact h
     exact (isClosed_tsupport _).measurableSet
-  convert ((v.continuous.measurable.measurePreserving
+  convert! ((v.continuous.measurable.measurePreserving
       (μ.restrict (tsupport fun t => L (f t) (g (x₀ - t))))).aestronglyMeasurable_comp_iff
     v.measurableEmbedding).1 A
   ext x
@@ -368,7 +368,7 @@ theorem convolutionExistsAt_flip :
 
 theorem ConvolutionExistsAt.integrable_swap (h : ConvolutionExistsAt f g x L μ) :
     Integrable (fun t => L (f (x - t)) (g t)) μ := by
-  convert h.comp_sub_left x
+  convert! h.comp_sub_left x
   simp_rw [sub_sub_self]
 
 theorem convolutionExistsAt_iff_integrable_swap :
@@ -770,7 +770,7 @@ theorem dist_convolution_le {f : G → ℝ} {x₀ : G} {R ε : ℝ} {z₀ : E'} 
     (hmg : AEStronglyMeasurable g μ) (hg : ∀ x ∈ ball x₀ R, dist (g x) z₀ ≤ ε) :
     dist ((f ⋆[lsmul ℝ ℝ, μ] g : G → E') x₀) z₀ ≤ ε := by
   have hif : Integrable f μ := integrable_of_integral_eq_one hintf
-  convert (dist_convolution_le' (lsmul ℝ ℝ) hε hif hf hmg hg).trans _
+  convert! (dist_convolution_le' (lsmul ℝ ℝ) hε hif hf hmg hg).trans _
   · simp_rw [lsmul_apply, integral_smul_const, hintf, one_smul]
   · simp_rw [Real.norm_of_nonneg (hnf _), hintf, mul_one]
     exact (mul_le_mul_of_nonneg_right opNorm_lsmul_le hε).trans_eq (one_mul ε)
@@ -964,7 +964,7 @@ theorem posConvolution_eq_convolution_indicator (f : ℝ → E) (g : ℝ → E')
           indicator_of_mem (mem_Ioi.mpr <| sub_pos.mpr ht.2)]
     · rw [indicator_of_notMem (notMem_Ioo_of_ge ht),
           indicator_of_notMem (notMem_Ioi.mpr (sub_nonpos_of_le ht)), map_zero]
-  · convert (integral_zero ℝ F).symm with t
+  · convert! (integral_zero ℝ F).symm with t
     by_cases ht : 0 < t
     · rw [indicator_of_notMem (_ : x - t ∉ Ioi 0), map_zero]
       rw [notMem_Ioi] at h ⊢
@@ -989,7 +989,7 @@ theorem integral_posConvolution [CompleteSpace E] [CompleteSpace E'] [CompleteSp
       L (∫ x : ℝ in Ioi 0, f x ∂ν) (∫ x : ℝ in Ioi 0, g x ∂μ) := by
   rw [← integrable_indicator_iff measurableSet_Ioi] at hf hg
   simp_rw [← integral_indicator measurableSet_Ioi]
-  convert integral_convolution L hf hg using 4 with x
+  convert! integral_convolution L hf hg using 4 with x
   apply posConvolution_eq_convolution_indicator
 
 end Nonneg

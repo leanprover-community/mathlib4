@@ -881,7 +881,7 @@ instance restrict [h : InnerRegularCompactLTTop μ] (A : Set α) :
 instance (priority := 50) [h : InnerRegularCompactLTTop μ] [IsFiniteMeasure μ] :
     InnerRegular μ := by
   constructor
-  convert h.innerRegular with s
+  convert! h.innerRegular with s
   simp [measure_ne_top μ s]
 
 instance (priority := 50) [BorelSpace α] [R1Space α] [InnerRegularCompactLTTop μ]
@@ -970,7 +970,7 @@ instance smul [h : InnerRegularCompactLTTop μ] (c : ℝ≥0∞) : InnerRegularC
     · simp [h's] at hr
     · simp [h'c, h's] at hs
   · constructor
-    convert InnerRegularWRT.smul h.innerRegular c using 2 with s
+    convert! InnerRegularWRT.smul h.innerRegular c using 2 with s
     have : (c • μ) s ≠ ∞ ↔ μ s ≠ ∞ := by simp [ENNReal.mul_eq_top, hc, h'c]
     simp only [this]
 

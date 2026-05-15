@@ -120,7 +120,7 @@ theorem cramer_row_self (i : n) (h : ∀ j, b j = A j i) : A.cramer b = Pi.singl
 @[simp]
 theorem cramer_one : cramer (1 : Matrix n n α) = 1 := by
   ext i j
-  convert congr_fun (cramer_row_self (1 : Matrix n n α) (Pi.single i 1) i _) j
+  convert! congr_fun (cramer_row_self (1 : Matrix n n α) (Pi.single i 1) i _) j
   · simp
   · intro j
     rw [Matrix.one_eq_pi_single, Pi.single_comm]

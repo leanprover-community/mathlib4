@@ -183,9 +183,9 @@ theorem opNorm_comp_linearIsometryEquiv (f : F →SL[σ₂₃] G) (g : F' ≃ₛ
   · haveI := g.symm.toLinearEquiv.toEquiv.subsingleton
     simp
   refine le_antisymm ?_ ?_
-  · convert f.opNorm_comp_le g.toLinearIsometry.toContinuousLinearMap
+  · convert! f.opNorm_comp_le g.toLinearIsometry.toContinuousLinearMap
     simp [g.toLinearIsometry.norm_toContinuousLinearMap]
-  · convert (f.comp g.toLinearIsometry.toContinuousLinearMap).opNorm_comp_le
+  · convert! (f.comp g.toLinearIsometry.toContinuousLinearMap).opNorm_comp_le
         g.symm.toLinearIsometry.toContinuousLinearMap
     · ext
       simp

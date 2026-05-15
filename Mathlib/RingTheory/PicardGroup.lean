@@ -683,8 +683,9 @@ set_option backward.privateInPublic.warn false in
 `I ⊗[R] J` to `I * J` induced by multiplication is an isomorphism. -/
 noncomputable def tensorEquivMul : I ⊗[R] J ≃ₗ[R] I * J := by
   refine .ofBijective _ ⟨.of_comp (f := Submodule.subtype _) ?_, mulMap'_surjective _ _⟩
-  convert (projective_units_and_mul'_comp_lTensor_bijective J).2.1.comp
-    (Flat.rTensor_preserves_injective_linearMap _ I.1.subtype_injective)
+  convert
+    (projective_units_and_mul'_comp_lTensor_bijective J).2.1.comp
+      (Flat.rTensor_preserves_injective_linearMap _ I.1.subtype_injective)
   simp_rw [← LinearMap.coe_comp]
   congr 1; ext; rfl
 
@@ -793,8 +794,9 @@ we have `I ⊗[R] M ≃ₗ[R] I * M` for any `R`-submodule `I` of `A`. -/
 noncomputable def tensorSubmoduleAlgebraEquivMul (I : Submodule R A) :
     I ⊗[R] submoduleAlgebra e ≃ₗ[R] I * submoduleAlgebra e := by
   refine .ofBijective _ ⟨.of_comp (f := Submodule.subtype _) ?_, Submodule.mulMap'_surjective _ _⟩
-  convert ((tensorSubmoduleAlgebraEquiv e).restrictScalars R).injective.comp
-    (Flat.rTensor_preserves_injective_linearMap _ I.subtype_injective)
+  convert
+    ((tensorSubmoduleAlgebraEquiv e).restrictScalars R).injective.comp
+      (Flat.rTensor_preserves_injective_linearMap _ I.subtype_injective)
   simp_rw [← LinearEquiv.coe_toLinearMap, ← LinearMap.coe_comp]
   congr 1; ext; rfl
 
@@ -900,7 +902,7 @@ theorem Ideal.eq_top_of_mk_tensor_eq_one [IsFractionRing R R] (I J : Ideal R)
   have : IsUnit (e 1 : R) := IsFractionRing.self_iff_nonZeroDivisors_le_isUnit.mp ‹_› <|
       IsRegular.mem_nonZeroDivisors <| isRightRegular_iff_isRegular.mp <| by
     rw [IsRightRegular]
-    convert Subtype.val_injective.comp e.injective using 2
+    convert! Subtype.val_injective.comp e.injective using 2
     rw [← smul_eq_mul, ← Submodule.coe_smul, ← map_smul, smul_eq_mul, mul_one, Function.comp_apply]
   constructor <;> refine eq_top_of_isUnit_mem _ ?_ this
   exacts [mul_le_right (e 1).2, mul_le_left (e 1).2]

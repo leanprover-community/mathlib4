@@ -93,7 +93,7 @@ def overPretopology : Pretopology (Over S) where
     rintro X _ T ⟨𝒰, h, rfl⟩ H
     choose V h hV using H
     refine ⟨𝒰.bind (fun j => V ((𝒰.f j).asOver S) ⟨j⟩), inferInstance, ?_⟩
-    convert Presieve.ofArrows_bind _ (fun j ↦ (𝒰.f j).asOver S) _
+    convert! Presieve.ofArrows_bind _ (fun j ↦ (𝒰.f j).asOver S) _
       (fun Y f H j ↦ ((V f H).X j).asOver S) (fun Y f H j ↦ ((V f H).f j).asOver S)
     apply hV
 
@@ -196,7 +196,7 @@ def smallPretopology : Pretopology (Q.Over ⊤ S) where
     let 𝒱j (j : 𝒰.I₀) : (Cover (precoverage P) ((𝒰.X j).asOverProp S (p j)).left) :=
       V ((𝒰.f j).asOverProp S) ⟨j⟩
     refine ⟨𝒰.bind (fun j ↦ 𝒱j j), inferInstance, fun j ↦ pV _ _ _, ?_⟩
-    convert Presieve.ofArrows_bind _ (fun j ↦ ((𝒰.f j).asOverProp S)) _
+    convert! Presieve.ofArrows_bind _ (fun j ↦ ((𝒰.f j).asOverProp S)) _
       (fun Y f H j ↦ ((V f H).X j).asOverProp S (pV _ _ _))
       (fun Y f H j ↦ ((V f H).f j).asOverProp S)
     apply hV

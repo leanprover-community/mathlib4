@@ -244,7 +244,7 @@ lemma semilength_eq_count_D : p.semilength = p.toList.count D := by
 @[simp]
 lemma two_mul_semilength_eq_length : 2 * p.semilength = p.toList.length := by
   nth_rw 1 [two_mul, semilength, p.count_U_eq_count_D, semilength]
-  convert (p.toList.length_eq_countP_add_countP (· == D)).symm
+  convert! (p.toList.length_eq_countP_add_countP (· == D)).symm
   rw [count]; congr!; rename_i s; cases s <;> tauto
 
 end Semilength

@@ -334,7 +334,7 @@ theorem tprod_one_add_ordered [ContinuousAdd α]
   rw [ha.tsum_eq]
   refine (tendsto_nhds_unique (hx.comp tendsto_finset_Iic_atTop_atTop) ?_).symm
   apply Tendsto.const_add
-  convert ha.comp tendsto_finset_Iic_atTop_atTop using 2 with s
+  convert! ha.comp tendsto_finset_Iic_atTop_atTop using 2 with s
   refine sum_congr rfl (fun i hi ↦ ?_)
   congr
   grind

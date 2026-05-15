@@ -418,7 +418,7 @@ lemma even_nat_card_aut_of_not_isUnramified [IsGalois k K] (hw : ¬ IsUnramified
   · cases nonempty_fintype Gal(K/k)
     rw [even_iff_two_dvd, ← not_isUnramified_iff_card_stabilizer_eq_two.mp hw]
     exact Subgroup.card_subgroup_dvd_card (Stab w)
-  · convert Even.zero
+  · convert! Even.zero
     by_contra e
     exact H (Nat.finite_of_card_ne_zero e)
 

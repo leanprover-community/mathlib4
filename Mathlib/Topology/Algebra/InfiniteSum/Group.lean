@@ -73,7 +73,7 @@ theorem multipliable_iff_of_multipliable_div (hfg : Multipliable (fun b ↦ f b 
 @[to_additive]
 theorem HasProd.update [L.LeAtTop] (hf : HasProd f a₁ L) (b : β) [DecidableEq β] (a : α) :
     HasProd (update f b a) (a / f b * a₁) L := by
-  convert (hasProd_ite_eq b (a / f b) (L := L)).mul hf with b'
+  convert! (hasProd_ite_eq b (a / f b) (L := L)).mul hf with b'
   by_cases h : b' = b
   · rw [h, update_self]
     simp

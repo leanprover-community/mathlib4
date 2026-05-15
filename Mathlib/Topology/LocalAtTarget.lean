@@ -132,7 +132,7 @@ theorem isOpenMap_iff_restrictPreimage :
   refine ⟨fun h i ↦ h.restrictPreimage _, fun H s hs ↦ ?_⟩
   rw [hU.isOpen_iff_coe_preimage]
   intro i
-  convert H i _ (hs.preimage continuous_subtype_val)
+  convert! H i _ (hs.preimage continuous_subtype_val)
   ext ⟨x, hx⟩
   suffices (∃ y, y ∈ s ∧ f y = x) ↔ ∃ y, y ∈ s ∧ f y ∈ U i ∧ f y = x by simpa [← Subtype.coe_inj]
   exact ⟨fun ⟨a, b, c⟩ ↦ ⟨a, b, c.symm ▸ hx, c⟩, by tauto⟩
@@ -142,7 +142,7 @@ theorem isClosedMap_iff_restrictPreimage :
   refine ⟨fun h i => h.restrictPreimage _, fun H s hs ↦ ?_⟩
   rw [hU.isClosed_iff_coe_preimage]
   intro i
-  convert H i _ ⟨⟨_, hs.1, eq_compl_comm.mpr rfl⟩⟩
+  convert! H i _ ⟨⟨_, hs.1, eq_compl_comm.mpr rfl⟩⟩
   ext ⟨x, hx⟩
   suffices (∃ y, y ∈ s ∧ f y = x) ↔ ∃ y, y ∈ s ∧ f y ∈ U i ∧ f y = x by simpa [← Subtype.coe_inj]
   exact ⟨fun ⟨a, b, c⟩ => ⟨a, b, c.symm ▸ hx, c⟩, by tauto⟩
@@ -274,7 +274,7 @@ theorem isEmbedding_of_iSup_eq_top_of_preimage_subset_range
     simpa [f', Set.range_comp, Set.range_restrictPreimage] using hV i
   let e := this.toHomeomorph.trans (Homeomorph.setCongr hf')
   refine IsEmbedding.of_comp (by fun_prop) continuous_subtype_val ?_
-  convert ((hV' i).comp IsEmbedding.subtypeVal).comp e.symm.isEmbedding
+  convert! ((hV' i).comp IsEmbedding.subtypeVal).comp e.symm.isEmbedding
   ext x
   obtain ⟨x, rfl⟩ := e.surjective x
   simp

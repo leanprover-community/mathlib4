@@ -112,7 +112,7 @@ The following is the second equivalent characterization of linear disjointness:
   have h := H.not_linearIndependent_pair_of_commute_of_flat hf ⟨a, ha⟩ ⟨b, hb⟩ hc
   contrapose! h
   refine .of_comp (M ⊓ N).subtype ?_
-  convert h
+  convert! h
   exact (FinVec.map_eq _ _).symm
   ```
 

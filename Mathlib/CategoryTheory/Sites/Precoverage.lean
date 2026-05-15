@@ -137,7 +137,7 @@ lemma mem_coverings_of_isPullback {J : Precoverage C} [IsStableUnderBaseChange J
   -- Because `f` needs not be injective, the indexing type is a sum.
   let a (i : (Presieve.ofArrows X f).uncurry ⊕ (Presieve.ofArrows P p₁).uncurry) : ι :=
     i.elim (fun i ↦ i.2.idx) (fun i ↦ i.2.idx)
-  convert_to Presieve.ofArrows (P ∘ a) (fun i ↦ p₁ (a i)) ∈ _
+  convert_to! Presieve.ofArrows (P ∘ a) (fun i ↦ p₁ (a i)) ∈ _
   · refine le_antisymm (fun Z g hg ↦ ?_) fun Z g ⟨i⟩ ↦ ⟨a i⟩
     exact .mk' (Sum.inr ⟨⟨_, _⟩, hg⟩) (by cat_disch) (by cat_disch)
   · refine IsStableUnderBaseChange.mem_coverings_of_isPullback (fun i ↦ f (a i)) ?_ g _
@@ -164,7 +164,7 @@ lemma comp_mem_coverings {J : Precoverage C} [IsStableUnderComposition J] {ι : 
   let fibincl (i : ι' ⊕ α) (j : fib i) : σ (incl i) := match i with
     | .inl i => j.2.idx
     | .inr i => j.elim (fun _ ↦ i.2.idx.2) (fun i ↦ i.2.idx)
-  convert_to Presieve.ofArrows _
+  convert_to! Presieve.ofArrows _
       (fun p : Σ (i : ι' ⊕ α), fib i ↦ g (incl p.1) (fibincl _ p.2) ≫ f (incl p.1)) ∈ J.coverings S
   · refine le_antisymm (fun T u hu ↦ ?_) fun T u ⟨p⟩ ↦ .mk (Sigma.mk (incl p.1) (fibincl p.1 p.2))
     exact .mk' ⟨Sum.inr ⟨⟨_, _⟩, hu⟩, .inl ⟨⟩⟩ hu.obj_idx.symm hu.eq_eqToHom_comp_hom_idx

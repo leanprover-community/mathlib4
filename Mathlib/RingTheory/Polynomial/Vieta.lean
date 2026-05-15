@@ -161,7 +161,7 @@ theorem MvPolynomial.prod_X_add_C_coeff (k : ℕ) (h : k ≤ card σ) :
     rw [Multiset.card_map, ← Finset.card_univ, Finset.card_def]
   rw [this] at h ⊢
   rw [MvPolynomial.esymm_eq_multiset_esymm σ R, Finset.prod_eq_multiset_prod]
-  convert Multiset.prod_X_add_C_coeff s h
+  convert! Multiset.prod_X_add_C_coeff s h
   dsimp
   simp_rw [s, Multiset.map_map, Function.comp_apply]
 

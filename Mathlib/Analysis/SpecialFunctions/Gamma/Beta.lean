@@ -170,9 +170,9 @@ theorem betaIntegral_recurrence {u v : ℂ} (hu : 0 < re u) (hv : 0 < re v) :
       simp_rw [id] at A
       have B : HasDerivAt (fun y : ℂ => 1 - y) (-1) ↑x := by
         apply HasDerivAt.const_sub; apply hasDerivAt_id
-      convert HasDerivAt.comp (↑x) A B using 1
+      convert! HasDerivAt.comp (↑x) A B using 1
       ring
-    convert (U.mul V).comp_ofReal using 1
+    convert! (U.mul V).comp_ofReal using 1
     ring
   have h_int := ((betaIntegral_convergent hu hv').const_mul u).sub
     ((betaIntegral_convergent hu' hv).const_mul v)
@@ -189,11 +189,11 @@ theorem betaIntegral_recurrence {u v : ℂ} (hu : 0 < re u) (hv : 0 < re v) :
   rw [hF0, hF1, sub_zero, intervalIntegral.integral_sub, intervalIntegral.integral_const_mul,
     intervalIntegral.integral_const_mul] at int_ev
   · rw [betaIntegral, betaIntegral, ← sub_eq_zero]
-    convert int_ev <;> ring
+    convert! int_ev <;> ring
   · apply IntervalIntegrable.const_mul
-    convert betaIntegral_convergent hu hv'; ring
+    convert! betaIntegral_convergent hu hv'; ring
   · apply IntervalIntegrable.const_mul
-    convert betaIntegral_convergent hu' hv; ring
+    convert! betaIntegral_convergent hu' hv; ring
 
 /-- Explicit formula for the Beta function when second argument is a positive integer. -/
 theorem betaIntegral_eval_nat_add_one_right {u : ℂ} (hu : 0 < re u) (n : ℕ) :
@@ -306,8 +306,8 @@ theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
       convert Real.tendsto_one_add_div_pow_exp (-x) using 1
       ext1 n
       rw [neg_div, ← sub_eq_add_neg]
-  -- let `convert` identify the remaining goals
-  convert tendsto_integral_of_dominated_convergence _ (fun n => (f_ible n).1)
+  -- let `convert!` identify the remaining goals
+  convert! tendsto_integral_of_dominated_convergence _ (fun n => (f_ible n).1)
     (Real.GammaIntegral_convergent hs) _
     ((ae_restrict_iff' measurableSet_Ioi).mpr (ae_of_all _ f_tends)) using 1
   -- limit of f is the integrand we want
@@ -410,11 +410,13 @@ theorem Gamma_mul_Gamma_one_sub (z : ℂ) : Gamma z * Gamma (1 - z) = π / sin (
         Complex.Gamma_neg_nat_eq_zero, mul_zero]
   refine tendsto_nhds_unique ((GammaSeq_tendsto_Gamma z).mul (GammaSeq_tendsto_Gamma <| 1 - z)) ?_
   have : ↑π / sin (↑π * z) = 1 * (π / sin (π * z)) := by rw [one_mul]
-  convert Tendsto.congr' ((eventually_ne_atTop 0).mp (Eventually.of_forall fun n hn =>
-    (GammaSeq_mul z hn).symm)) (Tendsto.mul _ _)
+  convert
+    Tendsto.congr'
+      ((eventually_ne_atTop 0).mp (Eventually.of_forall fun n hn => (GammaSeq_mul z hn).symm))
+      (Tendsto.mul _ _)
   · convert tendsto_natCast_div_add_atTop (1 - z) using 1; ext1 n; rw [add_sub_assoc]
   · have : ↑π / sin (↑π * z) = 1 / (sin (π * z) / π) := by simp
-    convert tendsto_const_nhds.div _ (div_ne_zero hs pi_ne)
+    convert! tendsto_const_nhds.div _ (div_ne_zero hs pi_ne)
     rw [← tendsto_mul_iff_of_ne_zero tendsto_const_nhds pi_ne, div_mul_cancel₀ _ pi_ne]
     convert tendsto_euler_sin_prod z using 1
     ext1 n; rw [mul_comm, ← mul_assoc]

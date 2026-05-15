@@ -196,8 +196,10 @@ def isLimitOpensLeEquivGenerate₂ (R : Presieve Y)
     (hR : Sieve.generate R ∈ Opens.grothendieckTopology X Y) :
     IsLimit (F.mapCone (opensLeCoverCocone (coveringOfPresieve Y R)).op) ≃
       IsLimit (F.mapCone (Sieve.generate R).arrows.cocone.op) := by
-  convert isLimitOpensLeEquivGenerate₁ F (coveringOfPresieve Y R)
-      (coveringOfPresieve.iSup_eq_of_mem_grothendieck Y R hR).symm using 1
+  convert
+    isLimitOpensLeEquivGenerate₁ F (coveringOfPresieve Y R)
+      (coveringOfPresieve.iSup_eq_of_mem_grothendieck Y R hR).symm using
+    1
   rw [covering_presieve_eq_self R]
 
 variable {F} in

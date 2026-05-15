@@ -130,7 +130,7 @@ lemma isClosedEmbedding_hom [IsTopologicalRing R] [T1Space R] :
   let f : CommRingCat.of (MvPolynomial A (⊥_ CommRingCat)) ⟶ A :=
     CommRingCat.ofHom (MvPolynomial.eval₂Hom (initial.to A).hom id)
   have : Function.Surjective f := Function.LeftInverse.surjective (g := .X) fun x ↦ by simp [f]
-  convert ((mvPolynomialHomeomorph A R (.of _)).trans
+  convert! ((mvPolynomialHomeomorph A R (.of _)).trans
     (.uniqueProd (⊥_ CommRingCat ⟶ R) _)).isClosedEmbedding.comp
     (isClosedEmbedding_precomp_of_surjective f this) using 2 with g
   ext x
@@ -177,8 +177,9 @@ lemma isEmbedding_pushout [IsTopologicalRing R] (φ : A ⟶ B) (ψ : A ⟶ C) :
     ((isEmbedding_graph continuous_id).prodMap Homeomorph.sumArrowHomeomorphProdArrow.isEmbedding)
   have H := (mvPolynomialHomeomorph B R A).symm.isEmbedding.prodMap
     (mvPolynomialHomeomorph C R A).symm.isEmbedding
-  convert ((H.comp hF).comp (mvPolynomialHomeomorph _ R A).isEmbedding).comp
-    (isEmbedding_precomp_of_surjective (R := R) fBC hfBC)
+  convert
+    ((H.comp hF).comp (mvPolynomialHomeomorph _ R A).isEmbedding).comp
+      (isEmbedding_precomp_of_surjective (R := R) fBC hfBC)
   have (s : _) : (pushout.inr φ ψ).hom (ψ.hom s) = (pushout.inl φ ψ).hom (φ.hom s) :=
     congr($(pushout.condition (f := φ)).hom s).symm
   ext f s <;> simp [fB, fC, fBC, PB, PC, PBC, F, this]

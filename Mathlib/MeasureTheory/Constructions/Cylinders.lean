@@ -123,7 +123,7 @@ theorem comap_eval_le_generateFrom_squareCylinders_singleton
   refine ⟨fun j ↦ if hji : j = i then by convert t else univ, fun j ↦ ?_, ?_⟩
   · by_cases hji : j = i
     · simp only [hji, eq_mpr_eq_cast, dif_pos]
-      convert ht
+      convert! ht
       simp only [cast_heq]
     · simp only [hji, not_false_iff, dif_neg, MeasurableSet.univ]
   · #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166

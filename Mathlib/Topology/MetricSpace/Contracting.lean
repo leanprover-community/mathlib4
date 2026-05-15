@@ -125,7 +125,7 @@ theorem apriori_edist_iterate_efixedPoint_le (hf : ContractingWith K f) {x : α}
 
 theorem edist_efixedPoint_le (hf : ContractingWith K f) {x : α} (hx : edist x (f x) ≠ ∞) :
     edist x (efixedPoint f hf x hx) ≤ edist x (f x) / (1 - K) := by
-  convert hf.apriori_edist_iterate_efixedPoint_le hx 0
+  convert! hf.apriori_edist_iterate_efixedPoint_le hx 0
   simp only [pow_zero, mul_one]
 
 theorem edist_efixedPoint_lt_top (hf : ContractingWith K f) {x : α} (hx : edist x (f x) ≠ ∞) :
@@ -155,9 +155,9 @@ theorem exists_fixedPoint' {s : Set α} (hsc : IsComplete s) (hsf : MapsTo f s s
   haveI := hsc.completeSpace_coe
   rcases hf.exists_fixedPoint ⟨x, hxs⟩ hx with ⟨y, hfy, h_tendsto, hle⟩
   refine ⟨y, y.2, Subtype.ext_iff.1 hfy, ?_, fun n ↦ ?_⟩
-  · convert (continuous_subtype_val.tendsto _).comp h_tendsto
+  · convert! (continuous_subtype_val.tendsto _).comp h_tendsto
     simp only [(· ∘ ·), MapsTo.iterate_restrict, MapsTo.val_restrict_apply]
-  · convert hle n
+  · convert! hle n
     rw [MapsTo.iterate_restrict]
     rfl
 
@@ -196,7 +196,7 @@ theorem apriori_edist_iterate_efixedPoint_le' {s : Set α} (hsc : IsComplete s) 
 theorem edist_efixedPoint_le' {s : Set α} (hsc : IsComplete s) (hsf : MapsTo f s s)
     (hf : ContractingWith K <| hsf.restrict f s s) {x : α} (hxs : x ∈ s) (hx : edist x (f x) ≠ ∞) :
     edist x (efixedPoint' f hsc hsf hf x hxs hx) ≤ edist x (f x) / (1 - K) := by
-  convert hf.apriori_edist_iterate_efixedPoint_le' hsc hsf hxs hx 0
+  convert! hf.apriori_edist_iterate_efixedPoint_le' hsc hsf hxs hx 0
   rw [pow_zero, mul_one]
 
 theorem edist_efixedPoint_lt_top' {s : Set α} (hsc : IsComplete s) (hsf : MapsTo f s s)

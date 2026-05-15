@@ -152,9 +152,10 @@ theorem exists_mem_span_nat_finset_of_ge :
   obtain ⟨rx, hrx⟩ : setGcd s ∣ r := (dvd_mod_iff (setGcd_dvd_of_mem hxs)).mpr <|
     (Nat.dvd_add_right <| dvd_mul_of_dvd_right (Finset.dvd_sum fun i _ ↦
       dvd_mul_of_dvd_right (setGcd_dvd_of_mem (hts i.2)) _) _).mp dvd
-  convert (sum_mem fun i _ ↦ mul_mem_left _ _ (subset_span i.2) :
-    -- an explicit ℕ-linear combination of elements of `t` that is equal to `r + n`
-    ∑ i : t, (if 0 ≤ a i then rx else x / setGcd s - rx) * (a i).natAbs * i ∈ span t)
+  convert
+    (sum_mem fun i _ ↦ mul_mem_left _ _ (subset_span i.2) :
+      -- an explicit ℕ-linear combination of elements of `t` that is equal to `r + n`
+       ∑ i : t, (if 0 ≤ a i then rx else x / setGcd s - rx) * (a i).natAbs * i ∈ span t)
   simp_rw [← Int.natCast_inj, hrx, n, Finset.mul_sum, mul_comm _ rx, cast_add, cast_sum, cast_mul,
     ← eq, Finset.mul_sum, smul_eq_mul, ← mul_assoc, ← Finset.sum_add_distrib, ← add_mul]
   congr! 2 with i

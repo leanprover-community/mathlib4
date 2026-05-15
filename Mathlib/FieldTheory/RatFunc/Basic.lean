@@ -680,7 +680,7 @@ instance : IsFractionRing K[X] K⟮X⟯ where
     exact fun h ↦ IsLocalization.exists_of_eq ((toFractionRingRingEquiv K).symm.injective h)
   surj := by
     rintro ⟨z⟩
-    convert IsLocalization.surj K[X]⁰ z
+    convert! IsLocalization.surj K[X]⁰ z
     simp only [← ofFractionRing_algebraMap, ← ofFractionRing_mul,
       ofFractionRing.injEq]
 

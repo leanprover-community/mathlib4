@@ -398,7 +398,7 @@ def rootSystem :
       rintro ⟨α, hα⟩ - ⟨⟨β, hβ⟩, rfl⟩
       simpa using
         ⟨reflectRoot α β, by simpa using reflectRoot_isNonZero α β <| by simpa using hβ, rfl⟩)
-    (by convert span_weight_isNonZero_eq_top K L H; ext; simp)
+    (by convert! span_weight_isNonZero_eq_top K L H; ext; simp)
 
 instance : (rootSystem H).IsRootSystem :=
   RootPairing.isRootSystem_mk'' fun α β ↦

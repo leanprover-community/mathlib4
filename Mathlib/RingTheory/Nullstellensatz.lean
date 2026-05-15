@@ -106,7 +106,7 @@ instance {x : σ → K} : (vanishingIdeal k {x} : Ideal (MvPolynomial σ k)).IsP
   ext; simp
 
 instance {x : σ → K} : (vanishingIdeal K {x} : Ideal (MvPolynomial σ K)).IsMaximal := by
-  convert RingHom.ker_isMaximal_of_surjective (aeval (R := K) x) ?_
+  convert! RingHom.ker_isMaximal_of_surjective (aeval (R := K) x) ?_
   · ext; simp
   · intro z; use C z; simp
 

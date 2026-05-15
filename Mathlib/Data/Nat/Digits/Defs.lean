@@ -275,7 +275,7 @@ theorem digits_eq_nil_iff_eq_zero {b n : ℕ} : digits b n = [] ↔ n = 0 := by
   constructor
   · intro h
     have : ofDigits b (digits b n) = ofDigits b [] := by rw [h]
-    convert this
+    convert! this
     rw [ofDigits_digits]
   · rintro rfl
     simp
@@ -455,8 +455,9 @@ lemma ofDigits_div_pow_eq_ofDigits_drop
 -/
 lemma self_div_pow_eq_ofDigits_drop {p : ℕ} (i n : ℕ) (h : 2 ≤ p) :
     n / p ^ i = ofDigits p ((p.digits n).drop i) := by
-  convert ofDigits_div_pow_eq_ofDigits_drop i (zero_lt_of_lt h) (p.digits n)
-    (fun l hl ↦ digits_lt_base h hl)
+  convert
+    ofDigits_div_pow_eq_ofDigits_drop i (zero_lt_of_lt h) (p.digits n)
+      (fun l hl ↦ digits_lt_base h hl)
   exact (ofDigits_digits p n).symm
 
 /-- Interpreting as a base `p` number and modulo `p^i` is the same as taking the first `i` digits.
@@ -484,8 +485,9 @@ lemma ofDigits_mod_pow_eq_ofDigits_take
 -/
 lemma self_mod_pow_eq_ofDigits_take {p : ℕ} (i n : ℕ) (h : 2 ≤ p) :
     n % p ^ i = ofDigits p ((p.digits n).take i) := by
-  convert ofDigits_mod_pow_eq_ofDigits_take i (zero_lt_of_lt h) (p.digits n)
-    (fun l hl ↦ digits_lt_base h hl)
+  convert
+    ofDigits_mod_pow_eq_ofDigits_take i (zero_lt_of_lt h) (p.digits n)
+      (fun l hl ↦ digits_lt_base h hl)
   exact (ofDigits_digits p n).symm
 
 /-! ### `Nat.toDigits` length -/

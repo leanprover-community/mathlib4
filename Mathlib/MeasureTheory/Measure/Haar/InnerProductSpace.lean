@@ -103,7 +103,7 @@ noncomputable def OrthonormalBasis.measurableEquiv (b : OrthonormalBasis ι ℝ 
 /-- The measurable equivalence defined by an orthonormal basis is volume preserving. -/
 theorem OrthonormalBasis.measurePreserving_measurableEquiv (b : OrthonormalBasis ι ℝ F) :
     MeasurePreserving b.measurableEquiv volume volume := by
-  convert (b.measurableEquiv.symm.measurable.measurePreserving _).symm
+  convert! (b.measurableEquiv.symm.measurable.measurePreserving _).symm
   rw [← (EuclideanSpace.basisFun ι ℝ).addHaar_eq_volume]
   erw [MeasurableEquiv.coe_toEquiv_symm, Basis.map_addHaar _ b.repr.symm.toContinuousLinearEquiv]
   exact b.addHaar_eq_volume.symm
@@ -244,7 +244,7 @@ theorem MeasureTheory.volume_eq_of_finrank_eq_one (h : Module.finrank ℝ E = 1)
     let f : ℝ ≃ₗᵢ[ℝ] E := (LinearIsometryEquiv.toSpanUnitSingleton (‖v‖⁻¹ • v)
       (by simp [norm_smul, hv])).trans (LinearIsometryEquiv.ofTop E _ hv')
     rw [map_map (by fun_prop) (by fun_prop)]
-    convert f.measurePreserving.map_eq.symm
+    convert! f.measurePreserving.map_eq.symm
     ext x
     simp [f, mul_comm, smul_smul]
   _ = ‖v‖ₑ • (volume : Measure ℝ).map (· • v) := by

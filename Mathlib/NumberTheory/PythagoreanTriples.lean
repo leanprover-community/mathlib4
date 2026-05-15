@@ -181,8 +181,9 @@ theorem isClassified_of_isPrimitiveClassified (hp : h.IsPrimitiveClassified) : h
 
 theorem isClassified_of_normalize_isPrimitiveClassified (hc : h.normalize.IsPrimitiveClassified) :
     h.IsClassified := by
-  convert h.normalize.mul_isClassified (Int.gcd x y)
-        (isClassified_of_isPrimitiveClassified h.normalize hc) <;>
+  convert
+    h.normalize.mul_isClassified (Int.gcd x y)
+      (isClassified_of_isPrimitiveClassified h.normalize hc) <;>
     rw [Int.mul_ediv_cancel']
   · exact Int.gcd_dvd_left ..
   · exact Int.gcd_dvd_right ..
@@ -291,10 +292,10 @@ private theorem coprime_sq_sub_sq_add_of_even_odd {m n : ℤ} (h : Int.gcd m n =
   obtain ⟨p, hp, hp1, hp2⟩ := Nat.Prime.not_coprime_iff_dvd.mp H
   rw [← Int.natCast_dvd] at hp1 hp2
   have h2m : (p : ℤ) ∣ 2 * m ^ 2 := by
-    convert dvd_add hp2 hp1 using 1
+    convert! dvd_add hp2 hp1 using 1
     ring
   have h2n : (p : ℤ) ∣ 2 * n ^ 2 := by
-    convert dvd_sub hp2 hp1 using 1
+    convert! dvd_sub hp2 hp1 using 1
     ring
   have hmc : p = 2 ∨ p ∣ Int.natAbs m := prime_two_or_dvd_of_dvd_two_mul_pow_self_two hp h2m
   have hnc : p = 2 ∨ p ∣ Int.natAbs n := prime_two_or_dvd_of_dvd_two_mul_pow_self_two hp h2n
@@ -388,10 +389,10 @@ private theorem coprime_sq_sub_sq_sum_of_odd_odd {m n : ℤ} (h : Int.gcd m n = 
   rw [← Int.natCast_dvd] at hp1 hp2
   apply Nat.dvd_gcd
   · apply Int.Prime.dvd_natAbs_of_coe_dvd_sq hp
-    convert dvd_add hp1 hp2
+    convert! dvd_add hp1 hp2
     ring
   · apply Int.Prime.dvd_natAbs_of_coe_dvd_sq hp
-    convert dvd_sub hp2 hp1
+    convert! dvd_sub hp2 hp1
     ring
 
 namespace PythagoreanTriple

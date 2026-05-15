@@ -74,7 +74,7 @@ lemma δ_naturality {i j k : ι} (f : i ⟶ j) (g : j ⟶ k)
     (homMk₂ (α.app 0) (α.app 1) (β.app 1) (naturality' α 0 1)
       (by simpa only [hαβ] using naturality' β 0 1) : mk₂ f g ⟶ mk₂ f' g')
   dsimp at h
-  convert h <;> cat_disch
+  convert! h <;> cat_disch
 
 end
 

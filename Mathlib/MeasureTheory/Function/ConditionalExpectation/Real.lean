@@ -195,7 +195,7 @@ theorem Integrable.uniformIntegrable_condExp {ι : Type*} [IsFiniteMeasure μ] {
     have : C ^ ENNReal.toReal 1 * μ {x | ENNReal.ofNNReal C ≤ ‖μ[g|ℱ n] x‖₊} ≤
         eLpNorm μ[g | ℱ n] 1 μ ^ ENNReal.toReal 1 := by
       rw [ENNReal.toReal_one, ENNReal.rpow_one]
-      convert mul_meas_ge_le_pow_eLpNorm μ one_ne_zero ENNReal.one_ne_top
+      convert! mul_meas_ge_le_pow_eLpNorm μ one_ne_zero ENNReal.one_ne_top
         (stronglyMeasurable_condExp.mono (hℱ n)).aestronglyMeasurable C
       · rw [ENNReal.toReal_one, ENNReal.rpow_one, enorm_eq_nnnorm]
     rw [ENNReal.toReal_one, ENNReal.rpow_one, mul_comm, ←

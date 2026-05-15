@@ -177,8 +177,8 @@ def changeInv (f : X ≃ₜ Y) (g : Y → X) (hg : Function.RightInverse g f) : 
   haveI : g = f.symm := (f.left_inv.eq_rightInverse hg).symm
   { toFun := f
     invFun := g
-    left_inv := by convert f.left_inv
-    right_inv := by convert f.right_inv using 1
+    left_inv := by convert! f.left_inv
+    right_inv := by convert! f.right_inv using 1
     continuous_toFun := f.continuous
     continuous_invFun := by convert f.symm.continuous }
 

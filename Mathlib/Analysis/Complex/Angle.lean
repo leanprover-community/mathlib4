@@ -104,7 +104,7 @@ lemma norm_sub_mem_Icc_angle (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
         _ = 2 * (1 - θ.cos) := by linear_combination θ.cos_sq_add_sin_sq
         _ ≤ 2 * (1 - (1 - θ ^ 2 / 2)) := by gcongr; exact Real.one_sub_sq_div_two_le_cos
         _ = _ := by ring
-  · convert hθ
+  · convert! hθ
     ring
 
 /-- Chord-length is always less than arc-length. -/

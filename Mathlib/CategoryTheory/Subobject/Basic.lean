@@ -529,12 +529,12 @@ def lowerEquivalence {A : C} {B : D} (e : MonoOver A ≌ MonoOver B) : Subobject
   inverse := lower e.inverse
   unitIso := by
     apply eqToIso
-    convert ThinSkeleton.map_iso_eq e.unitIso
+    convert! ThinSkeleton.map_iso_eq e.unitIso
     · exact ThinSkeleton.map_id_eq.symm
     · exact (ThinSkeleton.map_comp_eq _ _).symm
   counitIso := by
     apply eqToIso
-    convert ThinSkeleton.map_iso_eq e.counitIso
+    convert! ThinSkeleton.map_iso_eq e.counitIso
     · exact (ThinSkeleton.map_comp_eq _ _).symm
     · exact ThinSkeleton.map_id_eq.symm
 

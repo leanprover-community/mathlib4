@@ -141,11 +141,11 @@ theorem ext {f g : A →ₜ* B} (h : ∀ x, f x = g x) : f = g :=
 
 @[to_additive]
 theorem toContinuousMap_injective : Injective (toContinuousMap : _ → C(A, B)) := fun f g h =>
-  ext <| by convert DFunLike.ext_iff.1 h
+  ext <| by convert! DFunLike.ext_iff.1 h
 
 @[to_additive]
 theorem toMonoidHom_injective : Injective (toMonoidHom : _ → A →* B) := fun f g h =>
-  ext <| by convert DFunLike.ext_iff.1 h
+  ext <| by convert! DFunLike.ext_iff.1 h
 
 /-- Composition of two continuous homomorphisms. -/
 @[to_additive (attr := simps!) /-- Composition of two continuous homomorphisms. -/]
@@ -524,8 +524,8 @@ variable {L : Type*} [Mul L] [TopologicalSpace L]
 @[to_additive /-- The composition of two ContinuousAddEquiv. -/]
 def trans (cme1 : M ≃ₜ* N) (cme2 : N ≃ₜ* L) : M ≃ₜ* L where
   __ := cme1.toMulEquiv.trans cme2.toMulEquiv
-  continuous_toFun := by convert Continuous.comp cme2.continuous_toFun cme1.continuous_toFun
-  continuous_invFun := by convert Continuous.comp cme1.continuous_invFun cme2.continuous_invFun
+  continuous_toFun := by convert! Continuous.comp cme2.continuous_toFun cme1.continuous_toFun
+  continuous_invFun := by convert! Continuous.comp cme1.continuous_invFun cme2.continuous_invFun
 
 @[to_additive (attr := simp)]
 theorem coe_trans (e₁ : M ≃ₜ* N) (e₂ : N ≃ₜ* L) : ↑(e₁.trans e₂) = e₂ ∘ e₁ := rfl

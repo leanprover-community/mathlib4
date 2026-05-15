@@ -151,7 +151,7 @@ lemma taylorWithinEval_charFun_two_zero' (hX : AEMeasurable X P)
 lemma taylor_charFun_two (hX : AEMeasurable X P) (h0 : P[X] = 0) (h1 : P[X ^ 2] = 1) :
     (fun t ↦ charFun (P.map X) t - (1 - t ^ 2 / 2)) =o[𝓝 0] fun t ↦ t ^ 2 := by
   simp_rw [← taylorWithinEval_charFun_two_zero' (by fun_prop) h0 h1]
-  convert taylor_isLittleO_univ ?_
+  convert! taylor_isLittleO_univ ?_
   · simp
   refine contDiff_charFun <|
     (memLp_two_iff_integrable_sq (by fun_prop)).2 (.of_integral_ne_zero ?_)

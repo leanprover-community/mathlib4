@@ -197,7 +197,7 @@ theorem singularPart_add_withDensity_rnDeriv_eq [s.HaveLebesgueDecomposition μ]
     ← toSignedMeasure_add, add_comm, ← add_assoc, ← neg_add, ← toSignedMeasure_add, add_comm,
     ← sub_eq_add_neg]
   · convert rfl
-    -- `convert rfl` much faster than `congr`
+    -- `convert! rfl` much faster than `congr`
     · exact s.toJordanDecomposition.posPart.haveLebesgueDecomposition_add μ
     · rw [add_comm]
       exact s.toJordanDecomposition.negPart.haveLebesgueDecomposition_add μ

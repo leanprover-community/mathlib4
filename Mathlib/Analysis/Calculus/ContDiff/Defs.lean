@@ -731,7 +731,7 @@ theorem contDiffOn_of_continuousOn_differentiableOn {n : ℕ∞}
     simp only [ftaylorSeriesWithin, ContinuousMultilinearMap.curry0_apply,
       iteratedFDerivWithin_zero_apply]
   · intro k hk y hy
-    convert (Hdiff k (lt_of_lt_of_le (mod_cast hk) (mod_cast hm)) y hy).hasFDerivWithinAt
+    convert! (Hdiff k (lt_of_lt_of_le (mod_cast hk) (mod_cast hm)) y hy).hasFDerivWithinAt
   · intro k hk
     exact Hcont k (le_trans (mod_cast hk) (mod_cast hm))
 
@@ -1168,7 +1168,7 @@ theorem contDiff_succ_iff_hasFDerivAt {n : ℕ} :
 
 theorem contDiff_one_iff_hasFDerivAt : ContDiff 𝕜 1 f ↔
     ∃ f' : E → E →L[𝕜] F, Continuous f' ∧ ∀ x, HasFDerivAt f (f' x) x := by
-  convert contDiff_succ_iff_hasFDerivAt using 4; simp
+  convert! contDiff_succ_iff_hasFDerivAt using 4; simp
 
 theorem AnalyticOn.contDiff (hf : AnalyticOn 𝕜 f univ) : ContDiff 𝕜 n f := by
   rw [← contDiffOn_univ]

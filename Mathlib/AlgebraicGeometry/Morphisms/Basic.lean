@@ -207,11 +207,11 @@ lemma coprodMap {X Y X' Y' : Scheme.{u}} (f : X ⟶ X') (g : Y ⟶ Y') (hf : P f
   rintro (⟨⟨⟩⟩ | ⟨⟨⟩⟩)
   · rw [← MorphismProperty.cancel_left_of_respectsIso P
       (isPullback_inl_inl_coprodMap f g).flip.isoPullback.hom]
-    convert hf
+    convert! hf
     simp [Scheme.Cover.pullbackHom, coprodOpenCover]
   · rw [← MorphismProperty.cancel_left_of_respectsIso P
       (isPullback_inr_inr_coprodMap f g).flip.isoPullback.hom]
-    convert hg
+    convert! hg
     simp [Scheme.Cover.pullbackHom, coprodOpenCover]
 
 end IsZariskiLocalAtTarget

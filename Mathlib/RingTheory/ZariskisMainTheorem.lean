@@ -122,7 +122,7 @@ lemma ZariskisMainProperty.trans [Algebra S T] [IsScalarTower R S T] (p : Ideal 
   obtain ⟨_, ⟨n, rfl⟩, a, ha⟩ := Ht.ge (Set.mem_univ x)
   obtain ⟨k, hk⟩ := Hs a
   refine ⟨k + n, ?_⟩
-  convert_to IsIntegral R (algebraMap S T ((s ^ ((m + 1) * n) * (s ^ m * t) ^ k * (s ^ k * a))))
+  convert_to! IsIntegral R (algebraMap S T ((s ^ ((m + 1) * n) * (s ^ m * t) ^ k * (s ^ k * a))))
   · simp only [AlgHom.toRingHom_eq_coe, Algebra.toRingHom_ofId] at ha
     simp only [map_pow, map_mul, ha, pow_add, mul_pow]
     ring
@@ -384,9 +384,12 @@ private lemma not_isStronglyTranscendental_of_weaklyQuasiFiniteAt_of_isDomain_au
     rw [show algebraMap S' L (f x) = algebraMap _ _ x from congr($hf₂ x)]
     exact ((hx.of_isLocalization S⁰).of_isLocalization_left R⁰).restrictScalars (S := K)
   have H₂ : (aeval (R := R') (f x)).toRingHom.Finite := by
-    convert ((RingHom.Finite.of_surjective g.toRingHom hf₁).comp
-      (RingHom.Finite.tensorProductMap (f := AlgHom.id R R') (RingEquiv.refl _).finite hx')).comp
-      (polyEquivTensor R R').toRingEquiv.finite using 1
+    convert
+      ((RingHom.Finite.of_surjective g.toRingHom hf₁).comp
+            (RingHom.Finite.tensorProductMap (f := AlgHom.id R R') (RingEquiv.refl _).finite
+              hx')).comp
+        (polyEquivTensor R R').toRingEquiv.finite using
+      1
     ext <;> simp [g]
   obtain ⟨⟨Q, _⟩, hQ⟩ := hf₄.comap_surjective hf₃ ⟨P, ‹_›⟩
   suffices WeaklyQuasiFiniteAt R' Q from

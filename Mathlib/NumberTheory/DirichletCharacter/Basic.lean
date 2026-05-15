@@ -421,7 +421,7 @@ def Odd : Prop := ψ (-1) = -1
 def Even : Prop := ψ (-1) = 1
 
 lemma even_or_odd [NoZeroDivisors S] : ψ.Even ∨ ψ.Odd := by
-  suffices ψ (-1) ^ 2 = 1 by convert sq_eq_one_iff.mp this
+  suffices ψ (-1) ^ 2 = 1 by convert! sq_eq_one_iff.mp this
   rw [← map_pow _, neg_one_sq, map_one]
 
 lemma not_even_and_odd [NeZero (2 : S)] : ¬(ψ.Even ∧ ψ.Odd) := by

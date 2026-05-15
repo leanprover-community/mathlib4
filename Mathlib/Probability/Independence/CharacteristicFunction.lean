@@ -145,9 +145,10 @@ lemma iIndepFun.charFunDual_map_finsetSum_eq_prod [NormedSpace ℝ E]
     · exact mX i (mem_insert_self i s)
     · exact Finset.aemeasurable_sum s (fun i hi ↦ (mX i (mem_insert_of_mem hi)))
     symm
-    convert iIndepFun.indepFun_finsetSum_of_notMem₀ (i := ⟨i, mem_insert_self i s⟩)
-      (f := fun (x : (insert i s : Finset ι)) ↦ X x.1) (s := {x | x.1 ∈ s}) hX
-      (fun i ↦ (mX i.1 i.2)) (by simpa)
+    convert
+      iIndepFun.indepFun_finsetSum_of_notMem₀ (i := ⟨i, mem_insert_self i s⟩) (f :=
+        fun (x : (insert i s : Finset ι)) ↦ X x.1) (s := {x | x.1 ∈ s}) hX (fun i ↦ (mX i.1 i.2))
+        (by simpa)
     let e : ((insert i s) : Finset ι) → ι := Subtype.val
     convert (Finset.sum_of_injOn Subtype.val ?_ ?_ ?_ ?_).symm
     · simp
@@ -166,7 +167,7 @@ lemma iIndepFun.charFunDual_map_sum_eq_prod [Fintype ι] [NormedSpace ℝ E]
 lemma iIndepFun.charFunDual_map_fun_finsetSum_eq_prod [NormedSpace ℝ E]
     (mX : ∀ i ∈ s, AEMeasurable (X i) P) (hX : iIndepFun (s.restrict X) P) :
     charFunDual (P.map (fun ω ↦ ∑ i ∈ s, X i ω)) = ∏ i ∈ s, charFunDual (P.map (X i)) := by
-  convert hX.charFunDual_map_finsetSum_eq_prod mX
+  convert! hX.charFunDual_map_finsetSum_eq_prod mX
   simp
 
 @[deprecated (since := "2026-04-08")]
@@ -204,7 +205,7 @@ lemma iIndepFun.charFun_map_sum_eq_prod [Fintype ι] [InnerProductSpace ℝ E]
 lemma iIndepFun.charFun_map_fun_finsetSum_eq_prod [InnerProductSpace ℝ E]
     (mX : ∀ i ∈ s, AEMeasurable (X i) P) (hX : iIndepFun (s.restrict X) P) :
     charFun (P.map (fun ω ↦ ∑ i ∈ s, X i ω)) = ∏ i ∈ s, charFun (P.map (X i)) := by
-  convert hX.charFun_map_finsetSum_eq_prod mX
+  convert! hX.charFun_map_finsetSum_eq_prod mX
   simp
 
 @[deprecated (since := "2026-04-08")]

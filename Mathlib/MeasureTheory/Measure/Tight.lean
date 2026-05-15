@@ -123,7 +123,7 @@ protected lemma subset (hT : IsTightMeasureSet T) (hST : S ⊆ T) :
 protected lemma union (hS : IsTightMeasureSet S) (hT : IsTightMeasureSet T) :
     IsTightMeasureSet (S ∪ T) := by
   rw [IsTightMeasureSet, iSup_union]
-  convert Tendsto.sup_nhds hS hT
+  convert! Tendsto.sup_nhds hS hT
   simp
 
 protected lemma inter (hS : IsTightMeasureSet S) (T : Set (Measure 𝓧)) :

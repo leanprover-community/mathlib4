@@ -49,7 +49,7 @@ variable [PseudoMetricSpace E]
 lemma tendsto_measure_compl_closedBall_of_isTightMeasureSet (hS : IsTightMeasureSet S) (x : E) :
     Tendsto (fun r : ℝ ↦ ⨆ μ ∈ S, μ (Metric.closedBall x r)ᶜ) atTop (𝓝 0) := by
   suffices Tendsto ((⨆ μ ∈ S, μ) ∘ (fun r ↦ (Metric.closedBall x r)ᶜ)) atTop (𝓝 0) by
-    convert this with r
+    convert! this with r
     simp
   refine hS.comp <| .mono_right ?_ <| monotone_smallSets Metric.cobounded_le_cocompact
   exact (Metric.hasAntitoneBasis_cobounded_compl_closedBall _).tendsto_smallSets
@@ -78,7 +78,7 @@ variable [NormedAddCommGroup E]
 lemma tendsto_measure_norm_gt_of_isTightMeasureSet (hS : IsTightMeasureSet S) :
     Tendsto (fun r : ℝ ↦ ⨆ μ ∈ S, μ {x | r < ‖x‖}) atTop (𝓝 0) := by
   have h := tendsto_measure_compl_closedBall_of_isTightMeasureSet hS 0
-  convert h using 6 with r
+  convert! h using 6 with r
   ext
   simp
 
@@ -86,7 +86,7 @@ lemma isTightMeasureSet_of_tendsto_measure_norm_gt [ProperSpace E]
     (h : Tendsto (fun r : ℝ ↦ ⨆ μ ∈ S, μ {x | r < ‖x‖}) atTop (𝓝 0)) :
     IsTightMeasureSet S := by
   refine isTightMeasureSet_of_tendsto_measure_compl_closedBall (x := 0) ?_
-  convert h using 6 with r
+  convert! h using 6 with r
   ext
   simp
 
@@ -252,7 +252,7 @@ lemma isTightMeasureSet_range_of_tendsto_limsup_inner_of_norm_eq_one
     · simp only [norm_smul, norm_inv, norm_algebraMap', Real.norm_eq_abs, abs_norm]
       rw [inv_mul_cancel₀ (by positivity)]
     exact h.comp <| (tendsto_const_mul_atTop_of_pos (by positivity)).mpr tendsto_id
-  convert h' using 7 with r n x
+  convert! h' using 7 with r n x
   rw [inner_smul_left]
   simp only [map_inv₀, RCLike.conj_ofReal, norm_mul, norm_inv, norm_algebraMap', norm_norm]
   rw [mul_lt_mul_iff_right₀]

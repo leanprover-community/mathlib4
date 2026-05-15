@@ -298,7 +298,7 @@ theorem tsum_geometric_le_of_norm_lt_one (x : R) (h : ‖x‖ < 1) :
     refine le_trans (norm_add_le _ _) ?_
     have : ‖∑' b : ℕ, (fun n ↦ x ^ (n + 1)) b‖ ≤ (1 - ‖x‖)⁻¹ - 1 := by
       refine tsum_of_norm_bounded ?_ fun b ↦ norm_pow_le' _ (Nat.succ_pos b)
-      convert (hasSum_nat_add_iff' 1).mpr (hasSum_geometric_of_lt_one (norm_nonneg x) h)
+      convert! (hasSum_nat_add_iff' 1).mpr (hasSum_geometric_of_lt_one (norm_nonneg x) h)
       simp
     linarith
   · simp only [tsum_eq_zero_of_not_summable hx, norm_zero]
@@ -448,7 +448,7 @@ lemma hasSum_choose_mul_geometric_of_norm_lt_one'
           _ ≤ (2 * n).choose k := choose_le_choose k (by lia)
           _ ≤ (2 * n) ^ k := Nat.choose_le_pow _ _
           _ = 2 ^ k * n ^ k := Nat.mul_pow 2 n k
-      convert hasSum_sum_range_mul_of_summable_norm' I1 ih.summable
+      convert! hasSum_sum_range_mul_of_summable_norm' I1 ih.summable
         (summable_norm_geometric_of_norm_lt_one hr) (summable_geometric_of_norm_lt_one hr) with n
       · have : ∑ i ∈ Finset.range (n + 1), ↑((i + k).choose k) * r ^ i * r ^ (n - i) =
             ∑ i ∈ Finset.range (n + 1), ↑((i + k).choose k) * r ^ n := by
@@ -478,7 +478,7 @@ lemma tsum_choose_mul_geometric_of_norm_lt_one (k : ℕ) {r : 𝕜} (hr : ‖r�
 
 lemma summable_descFactorial_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr : ‖r‖ < 1) :
     Summable (fun n ↦ (n + k).descFactorial k * r ^ n) := by
-  convert (summable_choose_mul_geometric_of_norm_lt_one k hr).mul_left (k.factorial : R)
+  convert! (summable_choose_mul_geometric_of_norm_lt_one k hr).mul_left (k.factorial : R)
     using 2 with n
   simp [← mul_assoc, descFactorial_eq_factorial_mul_choose (n + k) k]
 
@@ -516,10 +516,10 @@ theorem hasSum_coe_mul_geometric_of_norm_lt_one'
     {x : R} (h : ‖x‖ < 1) :
     HasSum (fun n ↦ n * x ^ n : ℕ → R) (x * ((1 - x)⁻¹ʳ) ^ 2) := by
   have A : HasSum (fun (n : ℕ) ↦ (n + 1) * x ^ n) ((1 - x)⁻¹ʳ ^ 2) := by
-    convert hasSum_choose_mul_geometric_of_norm_lt_one' 1 h with n
+    convert! hasSum_choose_mul_geometric_of_norm_lt_one' 1 h with n
     simp
   have B : HasSum (fun (n : ℕ) ↦ x ^ n) ((1 - x)⁻¹ʳ) := hasSum_geom_series_inverse x h
-  convert A.sub B using 1
+  convert! A.sub B using 1
   · ext n
     simp [add_mul]
   · symm
@@ -744,7 +744,7 @@ theorem Antitone.cauchySeq_series_mul_of_tendsto_zero_of_bounded (hfa : Antitone
   have hf0' : Tendsto (fun n ↦ -f n) atTop (𝓝 0) := by
     convert hf0.neg
     simp
-  convert (hfa'.cauchySeq_series_mul_of_tendsto_zero_of_bounded hf0' hzb).neg
+  convert! (hfa'.cauchySeq_series_mul_of_tendsto_zero_of_bounded hf0' hzb).neg
   simp
 
 theorem norm_sum_neg_one_pow_le (n : ℕ) : ‖∑ i ∈ range n, (-1 : ℝ) ^ i‖ ≤ 1 := by

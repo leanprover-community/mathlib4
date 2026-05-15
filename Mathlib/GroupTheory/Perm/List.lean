@@ -263,7 +263,7 @@ theorem formPerm_pow_apply_getElem (l : List α) (w : Nodup l) (n : ℕ) (i : �
 theorem formPerm_pow_apply_head (x : α) (l : List α) (h : Nodup (x :: l)) (n : ℕ) :
     (formPerm (x :: l) ^ n) x =
       (x :: l)[(n % (x :: l).length)]'(Nat.mod_lt _ (Nat.zero_lt_succ _)) := by
-  convert formPerm_pow_apply_getElem _ h n 0 (Nat.succ_pos _)
+  convert! formPerm_pow_apply_getElem _ h n 0 (Nat.succ_pos _)
   simp
 
 theorem formPerm_ext_iff {x y x' y' : α} {l l' : List α} (hd : Nodup (x :: y :: l))

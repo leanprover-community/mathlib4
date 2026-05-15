@@ -489,7 +489,7 @@ lemma Indep.closure_sInter_eq_biInter_closure_of_forall_subset {Js : Set (Set α
 
 lemma closure_iInter_eq_iInter_closure_of_iUnion_indep [hι : Nonempty ι] (Is : ι → Set α)
     (h : M.Indep (⋃ i, Is i)) : M.closure (⋂ i, Is i) = (⋂ i, M.closure (Is i)) := by
-  convert h.closure_sInter_eq_biInter_closure_of_forall_subset (range_nonempty Is)
+  convert! h.closure_sInter_eq_biInter_closure_of_forall_subset (range_nonempty Is)
     (by simp [subset_iUnion])
   simp
 
@@ -525,8 +525,9 @@ lemma Indep.inter_isBasis_biInter {ι : Type*} (hI : M.Indep I) {X : ι → Set 
 
 lemma Indep.inter_isBasis_iInter [Nonempty ι] {X : ι → Set α} (hI : M.Indep I)
     (h : ∀ i, M.IsBasis ((X i) ∩ I) (X i)) : M.IsBasis ((⋂ i, X i) ∩ I) (⋂ i, X i) := by
-  convert hI.inter_isBasis_biInter (ι := PLift ι) univ_nonempty (X := fun i ↦ X i.down)
-    (by simpa using fun (i : PLift ι) ↦ h i.down) <;>
+  convert
+    hI.inter_isBasis_biInter (ι := PLift ι) univ_nonempty (X := fun i ↦ X i.down)
+      (by simpa using fun (i : PLift ι) ↦ h i.down) <;>
   · simp only [mem_univ, iInter_true]
     exact (iInter_plift_down X).symm
 

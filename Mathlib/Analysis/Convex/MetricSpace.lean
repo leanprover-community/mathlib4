@@ -59,8 +59,7 @@ lemma dist_convexCombination_map_le {ι : Type*} (f : StdSimplex ℝ ι) (x y : 
       Function.Injective.extend_apply Subtype.val_injective _ _ ⟨x, hx⟩
   let einv : ℕ → ι := Function.extend (↑) (f.support.equivFin.symm ·) (fun _ ↦ f.nonempty.some)
   have H (x : _) (hx : x ∈ f.support) : einv (e x) = x := by simp [he, hx, einv, Fin.val_injective]
-  convert IsConvexMetricSpace.dist_convexCombination_map_le' (f.map e) (x ∘ einv) (y ∘ einv)
-    using 3
+  convert IsConvexMetricSpace.dist_convexCombination_map_le' (f.map e) (x ∘ einv) (y ∘ einv) using 3
   · ext1
     simp only [StdSimplex.map, ← Finsupp.mapDomain_comp]
     exact Finsupp.mapDomain_congr fun x hx ↦ by simp [H, hx]

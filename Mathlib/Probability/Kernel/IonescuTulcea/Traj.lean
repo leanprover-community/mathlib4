@@ -329,7 +329,7 @@ theorem le_lmarginalPartialTraj_succ {f : ℕ → (Π n, X n) → ℝ≥0∞} {a
   have := le_trans hx ((anti _).le_of_tendsto (tendstoF _) n)
   -- This part below is just to say that this is true for any `x : (i : ι) → X i`,
   -- as `Fₙ` technically depends on all the variables, but really depends only on the first `k + 1`.
-  convert this using 1
+  convert! this using 1
   refine (hcte n).dependsOn_lmarginalPartialTraj _ (mf n) fun i hi ↦ ?_
   simp only [update, updateFinset, mem_Iic]
   split_ifs with h1 h2 <;> try rfl
@@ -699,7 +699,7 @@ theorem setIntegral_traj_partialTraj' {a b : ℕ} (hab : a ≤ b) {u : (Π i : I
   rw [← integral_integral_indicator _ _ _ hA, integral_traj_partialTraj' hab]
   · simp_rw [← Set.indicator_comp_right, ← integral_indicator (measurable_frestrictLe b hA)]
     rfl
-  convert hf.indicator (hA.prod .univ)
+  convert! hf.indicator (hA.prod .univ)
   ext ⟨x, y⟩
   by_cases hx : x ∈ A <;> simp [uncurry_def, hx]
 

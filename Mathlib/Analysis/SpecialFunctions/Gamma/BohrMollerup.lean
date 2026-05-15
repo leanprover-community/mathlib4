@@ -235,7 +235,7 @@ theorem tendsto_logGammaSeq_of_le_one (hf_conv : ConvexOn ℝ (Ioi 0) f)
     exact Tendsto.sub tendsto_const_nhds (tendsto_log_nat_add_one_sub_log.const_mul _)
   · filter_upwards with n
     rw [sub_le_iff_le_add', sub_le_iff_le_add']
-    convert le_logGammaSeq hf_conv (@hf_feq) hx hx' n using 1
+    convert! le_logGammaSeq hf_conv (@hf_feq) hx hx' n using 1
     ring
   · change ∀ᶠ n : ℕ in atTop, logGammaSeq x n ≤ f x - f 1
     filter_upwards [eventually_ne_atTop 0] with n hn using
@@ -248,7 +248,7 @@ theorem tendsto_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
     refine this ⌈x - 1⌉₊ ?_ ?_
     · rcases lt_or_ge x 1 with ⟨⟩
       · rwa [Nat.ceil_eq_zero.mpr (by linarith : x - 1 ≤ 0), Nat.cast_zero]
-      · convert Nat.ceil_lt_add_one (by linarith : 0 ≤ x - 1)
+      · convert! Nat.ceil_lt_add_one (by linarith : 0 ≤ x - 1)
         abel
     · rw [← sub_le_iff_le_add]; exact Nat.le_ceil _
   intro m
@@ -286,7 +286,7 @@ theorem tendsto_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
       dsimp only [Function.comp_apply]
       rw [sub_add_cancel, Nat.add_sub_cancel]
     rw [this] at hm
-    convert hm.sub (tendsto_log_nat_add_one_sub_log.const_mul x) using 2
+    convert! hm.sub (tendsto_log_nat_add_one_sub_log.const_mul x) using 2
     · ring
     · have := hf_feq ((Nat.cast_nonneg m).trans_lt hy)
       rw [sub_add_cancel] at this
@@ -354,7 +354,7 @@ theorem Gamma_strictAntiOn_Ioc : StrictAntiOn Gamma (Ioc 0 1) :=
     Gamma_one.symm ▸ Gamma_three_div_two_lt_one
 
 theorem Gamma_strictMonoOn_Ici : StrictMonoOn Gamma (Ici 2) := by
-  convert
+  convert!
     convexOn_Gamma.strictMonoOn (by simp : (0 : ℝ) < 3 / 2)
       (by norm_num : (3 / 2 : ℝ) < 2) (Gamma_two.symm ▸ Gamma_three_div_two_lt_one)
   symm
@@ -416,7 +416,7 @@ theorem log_doublingGamma_eq :
 
 theorem doublingGamma_log_convex_Ioi : ConvexOn ℝ (Ioi (0 : ℝ)) (log ∘ doublingGamma) := by
   refine (((ConvexOn.add ?_ ?_).add ?_).add_const _).congr log_doublingGamma_eq.symm
-  · convert
+  · convert!
       convexOn_log_Gamma.comp_affineMap (DistribSMul.toLinearMap ℝ ℝ (1 / 2 : ℝ)).toAffineMap
       using 1
     · simpa only [zero_div] using (preimage_const_mul_Ioi₀ (0 : ℝ) one_half_pos).symm
@@ -424,7 +424,7 @@ theorem doublingGamma_log_convex_Ioi : ConvexOn ℝ (Ioi (0 : ℝ)) (log ∘ dou
       simp only [LinearMap.coe_toAffineMap, Function.comp_apply, DistribSMul.toLinearMap_apply]
       rw [smul_eq_mul, mul_comm, mul_one_div]
   · refine ConvexOn.subset ?_ (Ioi_subset_Ioi <| neg_one_lt_zero.le) (convex_Ioi _)
-    convert
+    convert!
       convexOn_log_Gamma.comp_affineMap
         ((DistribSMul.toLinearMap ℝ ℝ (1 / 2 : ℝ)).toAffineMap +
           AffineMap.const ℝ ℝ (1 / 2 : ℝ)) using 1

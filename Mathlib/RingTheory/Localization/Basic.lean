@@ -327,7 +327,7 @@ theorem isLocalization_of_algEquiv [Algebra R P] [IsLocalization M S] (h : S ≃
     IsLocalization M P := by
   constructor; constructor
   · intro y
-    convert (IsLocalization.map_units S y).map h.toAlgHom.toRingHom.toMonoidHom
+    convert! (IsLocalization.map_units S y).map h.toAlgHom.toRingHom.toMonoidHom
     exact (h.commutes y).symm
   · intro y
     obtain ⟨⟨x, s⟩, e⟩ := IsLocalization.surj M (h.symm y)
@@ -392,7 +392,7 @@ lemma commutes (S₁ S₂ T : Type*) [CommSemiring S₁]
     rw [map_mul, ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply R S₂ T]
     conv_rhs => rw [← IsScalarTower.algebraMap_apply]
     rw [IsScalarTower.algebraMap_apply R S₂ T, ← hz, map_mul, ← hy]
-    convert_to _ = a * (algebraMap S₂ T) ((algebraMap R S₂) n) *
+    convert_to! _ = a * (algebraMap S₂ T) ((algebraMap R S₂) n) *
         (algebraMap S₁ T) (((algebraMap R S₁) m) * hunit.unit⁻¹.val)
     · rw [map_mul]
       ring

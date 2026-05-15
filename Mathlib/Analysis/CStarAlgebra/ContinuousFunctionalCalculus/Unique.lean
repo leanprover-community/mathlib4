@@ -156,7 +156,7 @@ lemma realContinuousMapOfNNReal_apply_comp_toReal (φ : C(X, ℝ≥0) →⋆ₐ[
     (f : C(X, ℝ≥0)) :
     φ.realContinuousMapOfNNReal ((ContinuousMap.mk toReal continuous_coe).comp f) = φ f := by
   simp only [realContinuousMapOfNNReal_apply]
-  convert_to φ f - φ 0 = φ f using 2
+  convert_to! φ f - φ 0 = φ f using 2
   on_goal -1 => rw [map_zero, sub_zero]
   all_goals
     congr
@@ -238,7 +238,7 @@ lemma toNNReal_apply (f : C(X, ℝ)₀) (x : X) : f.toNNReal x = Real.toNNReal (
 @[fun_prop]
 lemma continuous_toNNReal : Continuous (toNNReal (X := X)) := by
   rw [continuous_induced_rng]
-  convert_to Continuous (ContinuousMap.toNNReal ∘ ((↑) : C(X, ℝ)₀ → C(X, ℝ))) using 1
+  convert_to! Continuous (ContinuousMap.toNNReal ∘ ((↑) : C(X, ℝ)₀ → C(X, ℝ))) using 1
   exact ContinuousMap.continuous_postcomp _ |>.comp continuous_induced_dom
 
 lemma toContinuousMapHom_toNNReal (f : C(X, ℝ)₀) :
@@ -334,7 +334,7 @@ lemma realContinuousMapZeroOfNNReal_apply_comp_toReal (φ : C(X, ℝ≥0)₀ →
     φ.realContinuousMapZeroOfNNReal ((ContinuousMapZero.mk ⟨toReal, continuous_coe⟩ rfl).comp f) =
       φ f := by
   simp only [realContinuousMapZeroOfNNReal_apply]
-  convert_to φ f - φ 0 = φ f using 2
+  convert_to! φ f - φ 0 = φ f using 2
   on_goal -1 => rw [map_zero, sub_zero]
   all_goals
     congr

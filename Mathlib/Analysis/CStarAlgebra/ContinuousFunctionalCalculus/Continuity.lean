@@ -236,7 +236,7 @@ theorem continuousOn_cfc {s : Set 𝕜} (hs : IsCompact s) (f : 𝕜 → 𝕜)
     (hf : ContinuousOn f s := by cfc_cont_tac) :
     ContinuousOn (cfc f) {a | p a ∧ spectrum 𝕜 a ⊆ s} :=
   continuousOn_iff_continuous_restrict.mpr <| by
-    convert continuous_cfcHomSuperset_left hs ⟨_, hf.restrict⟩
+    convert! continuous_cfcHomSuperset_left hs ⟨_, hf.restrict⟩
       ((↑) : {a | p a ∧ spectrum 𝕜 a ⊆ s} → A) continuous_subtype_val (fun x ↦ x.2.2) with x
     rw [cfcHomSuperset_apply, Set.restrict_apply, cfc_apply _ _ x.2.1 (hf.mono x.2.2)]
     congr!
@@ -736,7 +736,7 @@ theorem continuousOn_cfcₙ {s : Set 𝕜} (hs : IsCompact s) (f : 𝕜 → 𝕜
     ContinuousOn (cfcₙ f · : A → A) {a | p a ∧ quasispectrum 𝕜 a ⊆ s} := by
   by_cases hs0 : 0 ∈ s
   · rw [continuousOn_iff_continuous_restrict]
-    convert continuous_cfcₙHomSuperset_left hs (hs0 := ⟨hs0⟩) ⟨⟨_, hf.restrict⟩, hf0⟩
+    convert! continuous_cfcₙHomSuperset_left hs (hs0 := ⟨hs0⟩) ⟨⟨_, hf.restrict⟩, hf0⟩
       (X := {a : A | p a ∧ quasispectrum 𝕜 a ⊆ s}) continuous_subtype_val (fun x ↦ x.2.2) with x
     rw [cfcₙHomSuperset_apply, Set.restrict_apply, cfcₙ_apply _ _ (hf.mono x.2.2) hf0 x.2.1]
     congr!

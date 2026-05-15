@@ -230,7 +230,7 @@ theorem hasStrictFDerivAt_implicitFunction_fderiv :
       (fderiv 𝕜 (φ.implicitFunction (φ.leftFun φ.pt)) (φ.rightFun φ.pt)) (φ.rightFun φ.pt) := by
   have := φ.hasStrictFDerivAt.to_localInverse.comp (φ.rightFun φ.pt)
     ((hasStrictFDerivAt_const _ _).prodMk (hasStrictFDerivAt_id _))
-  convert this
+  convert! this
   exact this.hasFDerivAt.fderiv
 
 theorem differentiableAt_implicitFunction (φ : ImplicitFunctionData 𝕜 E F G) :
@@ -423,7 +423,7 @@ theorem to_implicitFunctionOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' :
     (hker : f'.ker.ClosedComplemented) :
     HasStrictFDerivAt (hf.implicitFunctionOfComplemented f f' hf' hker (f a))
       f'.ker.subtypeL 0 := by
-  convert (implicitFunctionDataOfComplemented f f' hf hf' hker).hasStrictFDerivAt_implicitFunction
+  convert! (implicitFunctionDataOfComplemented f f' hf hf' hker).hasStrictFDerivAt_implicitFunction
     f'.ker.subtypeL _ _
   swap
   · ext

@@ -478,7 +478,7 @@ noncomputable def shrinkFunctorHomEquiv [LocallySmall.{w} C] {F : Cᵒᵖ ⥤ Ty
       naturality Y Z g := by
         ext ⟨f, hf⟩
         dsimp
-        convert t.2.to_sieveCompatible _ _ _
+        convert! t.2.to_sieveCompatible _ _ _
         simp only [Opposite.op_unop, shrinkYonedaObjObjEquiv_obj_map]
         rfl }
   left_inv t := by cat_disch
@@ -501,7 +501,7 @@ lemma shrinkFunctor_ι_comp_eq_iff_isAmalgamation [LocallySmall.{w} C] (F : Cᵒ
   · rintro rfl Y f hf
     simp [shrinkYonedaEquiv_naturality, shrinkYonedaEquiv_comp, shrinkYonedaEquiv_shrinkYoneda_map]
   · ext Y ⟨u, hu⟩
-    convert h (shrinkYonedaObjObjEquiv u) hu
+    convert! h (shrinkYonedaObjObjEquiv u) hu
     · rw [shrinkYonedaEquiv_naturality, shrinkYonedaEquiv_comp, shrinkYonedaEquiv_shrinkYoneda_map]
       simp
     · rw! [Equiv.symm_apply_apply]

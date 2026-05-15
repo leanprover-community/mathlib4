@@ -171,7 +171,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
       not_lt.1 fun h => (hMs.2 h.le).not_gt M.lt_succ_self
     rw [← sum_take_add_sum_drop L (M + 1), two_mul, add_le_add_iff_left, ← add_le_add_iff_right,
       sum_take_add_sum_drop, ← two_mul] at hMs'
-    convert hMs'
+    convert! hMs'
     rwa [drop_zipWith, drop, drop_append_of_le_length]
 
 end PseudoMetricSpace

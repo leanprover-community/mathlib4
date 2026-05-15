@@ -118,7 +118,7 @@ lemma ae_compProd_of_ae_ae {p : α × β → Prop}
 lemma ae_ae_of_ae_compProd [SFinite μ] [IsSFiniteKernel κ] {p : α × β → Prop}
     (h : ∀ᵐ x ∂(μ ⊗ₘ κ), p x) :
     ∀ᵐ a ∂μ, ∀ᵐ b ∂κ a, p (a, b) := by
-  convert Kernel.ae_ae_of_ae_compProd h -- Much faster with `convert`
+  convert! Kernel.ae_ae_of_ae_compProd h -- Much faster with `convert!`
 
 lemma ae_compProd_iff [SFinite μ] [IsSFiniteKernel κ] {p : α × β → Prop}
     (hp : MeasurableSet {x | p x}) :

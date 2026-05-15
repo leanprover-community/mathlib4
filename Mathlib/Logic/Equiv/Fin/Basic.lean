@@ -316,12 +316,12 @@ theorem finAddFlip_apply_natAdd (k : Fin n) (m : ℕ) :
 theorem finAddFlip_apply_mk_left {k : ℕ} (h : k < m) (hk : k < m + n := Nat.lt_add_right n h)
     (hnk : n + k < n + m := Nat.add_lt_add_left h n) :
     finAddFlip (⟨k, hk⟩ : Fin (m + n)) = ⟨n + k, hnk⟩ := by
-  convert finAddFlip_apply_castAdd ⟨k, h⟩ n
+  convert! finAddFlip_apply_castAdd ⟨k, h⟩ n
 
 @[simp]
 theorem finAddFlip_apply_mk_right {k : ℕ} (h₁ : m ≤ k) (h₂ : k < m + n) :
     finAddFlip (⟨k, h₂⟩ : Fin (m + n)) = ⟨k - m, by lia⟩ := by
-  convert @finAddFlip_apply_natAdd n ⟨k - m, by lia⟩ m
+  convert! @finAddFlip_apply_natAdd n ⟨k - m, by lia⟩ m
   simp [Nat.add_sub_cancel' h₁]
 
 /-- Equivalence between `Fin m × Fin n` and `Fin (m * n)` -/

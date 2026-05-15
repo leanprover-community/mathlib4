@@ -533,7 +533,7 @@ theorem count_finprod (exps : HeightOneSpectrum R → ℤ)
     (h_exps : ∀ᶠ v : HeightOneSpectrum R in Filter.cofinite, exps v = 0) :
     count K v (∏ᶠ v : HeightOneSpectrum R,
       (v.asIdeal : FractionalIdeal R⁰ K) ^ exps v) = exps v := by
-  convert count_finsuppProd K v (Finsupp.mk h_exps.toFinset exps (fun _ ↦ h_exps.mem_toFinset))
+  convert! count_finsuppProd K v (Finsupp.mk h_exps.toFinset exps (fun _ ↦ h_exps.mem_toFinset))
   rw [finprod_eq_finsetProd_of_mulSupport_subset (s := h_exps.toFinset), Finsupp.prod]
   · rfl
   · rw [Finite.coe_toFinset]
@@ -610,7 +610,7 @@ theorem finite_factors (I : FractionalIdeal R⁰ K) :
   by_cases hI : I = 0
   · simp only [hI, count_zero, Filter.eventually_cofinite, not_true_eq_false, setOf_false,
       finite_empty]
-  · convert finite_factors' hI (choose_spec (choose_spec (exists_eq_spanSingleton_mul I))).2
+  · convert! finite_factors' hI (choose_spec (choose_spec (exists_eq_spanSingleton_mul I))).2
     rw [count_ne_zero K _ hI]
 
 end FractionalIdeal
@@ -786,7 +786,7 @@ def quotientEquiv (I J I' J' : FractionalIdeal R⁰ K)
     refine inf_le_inf ?_ le_rfl
     intro x hx
     rw [spanSingleton_inv]
-    convert mul_mem_mul (mem_spanSingleton_self _ _) hx
+    convert! mul_mem_mul (mem_spanSingleton_self _ _) hx
     simp [H']
   · have H : Submodule.map (Algebra.lsmul R R K (I'.divMod I J')) ↑I =
         (spanSingleton R⁰ (I'.divMod I J') * I) := by

@@ -82,7 +82,7 @@ theorem funMap_cast {n : ℕ} (f : L.Functions n) (x : Fin n → ∀ a, M a) :
 theorem term_realize_cast {β : Type*} (x : β → ∀ a, M a) (t : L.Term β) :
     (t.realize fun i => (x i : (u : Filter α).Product M)) =
       (fun a => t.realize fun i => x i a : (u : Filter α).Product M) := by
-  convert @Term.realize_quotient_mk' L _ ((u : Filter α).productSetoid M)
+  convert! @Term.realize_quotient_mk' L _ ((u : Filter α).productSetoid M)
       (Ultraproduct.setoidPrestructure M u) _ t x using 2
   ext a
   induction t with

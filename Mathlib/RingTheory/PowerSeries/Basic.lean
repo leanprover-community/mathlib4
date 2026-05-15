@@ -266,13 +266,13 @@ theorem smul_eq_C_mul (f : R⟦X⟧) (a : R) : a • f = C a * f := by
 @[simp]
 theorem coeff_succ_mul_X (n : ℕ) (φ : R⟦X⟧) : coeff (n + 1) (φ * X) = coeff n φ := by
   simp only [coeff, Finsupp.single_add]
-  convert φ.coeff_add_mul_monomial (single () n) (single () 1) _
+  convert! φ.coeff_add_mul_monomial (single () n) (single () 1) _
   rw [mul_one]
 
 @[simp]
 theorem coeff_succ_X_mul (n : ℕ) (φ : R⟦X⟧) : coeff (n + 1) (X * φ) = coeff n φ := by
   simp only [coeff, Finsupp.single_add, add_comm n 1]
-  convert φ.coeff_add_monomial_mul (single () 1) (single () n) _
+  convert! φ.coeff_add_monomial_mul (single () 1) (single () n) _
   rw [one_mul]
 
 theorem mul_X_cancel {φ ψ : R⟦X⟧} (h : φ * X = ψ * X) : φ = ψ := by
@@ -483,10 +483,10 @@ theorem map_eq_zero {R S : Type*} [DivisionSemiring R] [Semiring S] [Nontrivial 
 
 theorem X_pow_dvd_iff {n : ℕ} {φ : R⟦X⟧} :
     (X : R⟦X⟧) ^ n ∣ φ ↔ ∀ m, m < n → coeff m φ = 0 := by
-  convert @MvPowerSeries.X_pow_dvd_iff Unit R _ () n φ
+  convert! @MvPowerSeries.X_pow_dvd_iff Unit R _ () n φ
   constructor <;> intro h m hm
   · rw [Finsupp.unique_single m]
-    convert h _ hm
+    convert! h _ hm
   · apply h
     simpa only [Finsupp.single_eq_same] using hm
 

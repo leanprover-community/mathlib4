@@ -366,7 +366,7 @@ instance finiteDimensional_vectorSpan_insert (s : AffineSubspace k P)
   rcases (s : Set P).eq_empty_or_nonempty with (hs | ⟨p₀, hp₀⟩)
   · rw [coe_eq_bot_iff] at hs
     rw [hs, bot_coe, span_empty, bot_coe, direction_affineSpan]
-    convert finiteDimensional_bot k V <;> simp
+    convert! finiteDimensional_bot k V <;> simp
   · rw [affineSpan_coe, direction_affineSpan_insert hp₀]
     infer_instance
 
@@ -755,7 +755,7 @@ theorem finrank_vectorSpan_insert_le (s : AffineSubspace k P) (p : P) :
       zero_add]
     convert zero_le_one' ℕ
     rw [← finrank_bot k V]
-    convert rfl <;> simp
+    convert! rfl <;> simp
   · rw [affineSpan_coe, direction_affineSpan_insert hp₀, add_comm]
     refine (Submodule.finrank_add_le_finrank_add_finrank _ _).trans ?_
     gcongr

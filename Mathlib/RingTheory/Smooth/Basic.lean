@@ -296,8 +296,11 @@ theorem iff_split_injection
   rw [formallySmooth_iff, and_comm,
     Module.Projective.iff_split_of_projective (KaehlerDifferential.mapBaseChange R P A)
       (mapBaseChange_surjective R P A hf), ← kerCotangentToTensor_injective_iff hf]
-  convert (((exact_kerCotangentToTensor_mapBaseChange R _ _ hf).split_tfae'
-    (g := (KaehlerDifferential.mapBaseChange R P A).restrictScalars P)).out 0 1) using 2
+  convert
+    (((exact_kerCotangentToTensor_mapBaseChange R _ _ hf).split_tfae' (g :=
+          (KaehlerDifferential.mapBaseChange R P A).restrictScalars P)).out
+      0 1) using
+    2
   · rw [← (LinearMap.extendScalarsOfSurjectiveEquiv hf).exists_congr_right]
     simp [LinearMap.ext_iff]
   · rw [and_iff_right (by exact mapBaseChange_surjective R P A hf)]

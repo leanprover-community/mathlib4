@@ -91,7 +91,7 @@ theorem Set.Countable.isPathConnected_compl_of_one_lt_rank
     rw [sub_eq_add_neg _ x]
     apply Eq.subset
     apply segment_inter_eq_endpoint_of_linearIndependent_of_ne _ htt'.symm
-    convert hy.units_smul ![-1, 1]
+    convert! hy.units_smul ![-1, 1]
     simp [← List.ofFn_inj]
   obtain ⟨t, ht⟩ : Set.Nonempty ({t : ℝ | ([c + x -[ℝ] c + t • y] ∩ s).Nonempty}
       ∪ {t : ℝ | ([c - x -[ℝ] c + t • y] ∩ s).Nonempty})ᶜ := ((A.union B).dense_compl ℝ).nonempty

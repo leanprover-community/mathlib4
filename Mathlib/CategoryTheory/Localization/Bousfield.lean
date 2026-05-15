@@ -162,17 +162,17 @@ lemma isoClosure_isColocal : P.isoClosure.isColocal = P.isColocal := by
 instance : P.isColocal.IsMultiplicative where
   id_mem _ _ _ := by simpa [id_comp] using Function.bijective_id
   comp_mem f g hf hg X hX := by
-    convert Function.Bijective.comp (hg X hX) (hf X hX)
+    convert! Function.Bijective.comp (hg X hX) (hf X hX)
     cat_disch
 
 instance : P.isColocal.HasTwoOutOfThreeProperty where
   of_postcomp f g hg hfg X hX := by
     rw [← Function.Bijective.of_comp_iff' (hg X hX)]
-    convert hfg X hX
+    convert! hfg X hX
     cat_disch
   of_precomp f g hf hfg X hX := by
     rw [← Function.Bijective.of_comp_iff _ (hf X hX)]
-    convert hfg X hX
+    convert! hfg X hX
     cat_disch
 
 lemma isColocal_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] : P.isColocal f := fun Z _ => by
@@ -215,7 +215,7 @@ include adj
 
 lemma isLocal_adj_unit_app (X : D) : isLocal (· ∈ Set.range F.obj) (adj.unit.app X) := by
   rintro _ ⟨Y, rfl⟩
-  convert ((Functor.FullyFaithful.ofFullyFaithful F).homEquiv.symm.trans
+  convert! ((Functor.FullyFaithful.ofFullyFaithful F).homEquiv.symm.trans
     (adj.homEquiv X Y)).bijective using 1
   dsimp [Adjunction.homEquiv]
   aesop
@@ -249,7 +249,7 @@ include adj
 
 lemma isColocal_adj_counit_app (X : C) : isColocal (· ∈ Set.range G.obj) (adj.counit.app X) := by
   rintro _ ⟨Y, rfl⟩
-  convert ((Functor.FullyFaithful.ofFullyFaithful G).homEquiv.symm.trans
+  convert! ((Functor.FullyFaithful.ofFullyFaithful G).homEquiv.symm.trans
     (adj.homEquiv Y X).symm).bijective using 1
   dsimp [Adjunction.homEquiv]
   cat_disch

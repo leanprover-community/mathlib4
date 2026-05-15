@@ -191,7 +191,7 @@ def parallelepiped (b : Basis ι ℝ E) : PositiveCompacts E where
   interior_nonempty' := by
     suffices H : Set.Nonempty (interior (b.equivFunL.symm.toHomeomorph '' Icc 0 1)) by
       dsimp only [_root_.parallelepiped]
-      convert H
+      convert! H
       exact (b.equivFun_symm_apply _).symm
     have A : Set.Nonempty (interior (Icc (0 : ι → ℝ) 1)) := by
       rw [← pi_univ_Icc, interior_pi_set (@finite_univ ι _)]

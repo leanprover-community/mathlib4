@@ -421,7 +421,7 @@ lemma isIso_pushoutSection_of_iSup_eq
     · rintro ⟨i | ⟨i, j⟩⟩
       · simp [f₁, f₂]
       · simpa [f₁, f₂] using c'.w (Quiver.Hom.op <| Pairwise.Hom.left i j)
-  convert e.isIso_hom using 1
+  convert! e.isIso_hom using 1
   · refine hc'.hom_ext fun i ↦ ?_
     rw [hc'.fac]
     ext1

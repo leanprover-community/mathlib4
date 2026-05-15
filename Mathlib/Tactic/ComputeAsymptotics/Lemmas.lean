@@ -45,7 +45,7 @@ theorem tendsto_nhdsGT_of_tendsto_atTop (h : Tendsto (fun x ↦ f (c + x⁻¹)) 
 
 theorem tendsto_nhdsLT_of_tendsto_atTop (h : Tendsto (fun x ↦ f (c - x⁻¹)) atTop l) :
     Tendsto f (𝓝[<] c) l := by
-  convert_to Tendsto (f ∘ (fun x ↦ c + x) ∘ Neg.neg ∘ Inv.inv) atTop l at h
+  convert_to! Tendsto (f ∘ (fun x ↦ c + x) ∘ Neg.neg ∘ Inv.inv) atTop l at h
   · ext
     simp [AddGroupWithOne.sub_eq_add_neg]
   simpa [Tendsto, ← Filter.map_map] using h

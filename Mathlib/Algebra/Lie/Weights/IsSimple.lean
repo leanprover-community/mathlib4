@@ -259,7 +259,7 @@ private theorem chi_in_q_aux (h_chi_in_q : ↑χ ∈ q) :
     have h_zero_weight : H.toLieSubmodule.incl y ∈ genWeightSpace L (0 : H → K) := by
       apply toLieSubmodule_le_rootSpace_zero
       exact y.property
-    convert lie_mem_genWeightSpace_of_mem_genWeightSpace hx_χ h_zero_weight
+    convert! lie_mem_genWeightSpace_of_mem_genWeightSpace hx_χ h_zero_weight
     ext h; simp
   have h_bracket_decomp : ⁅x_χ, m_α⁆ ∈
       genWeightSpace L (χ.toLinear + α.toLinear) ⊔

@@ -126,7 +126,7 @@ lemma linearMap_eq_iff_of_eq_span {V : Submodule R M} (f g : V →ₗ[R] N)
 lemma linearMap_eq_iff_of_span_eq_top (f g : M →ₗ[R] N)
     {S : Set M} (hM : span R S = ⊤) :
     f = g ↔ ∀ (s : S), f s = g s := by
-  convert linearMap_eq_iff_of_eq_span (f.comp (Submodule.subtype _))
+  convert! linearMap_eq_iff_of_eq_span (f.comp (Submodule.subtype _))
     (g.comp (Submodule.subtype _)) hM.symm
   constructor
   · rintro rfl

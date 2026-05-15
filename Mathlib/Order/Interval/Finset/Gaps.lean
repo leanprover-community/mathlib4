@@ -101,7 +101,7 @@ theorem intervalGapsWithin_mapsTo : (Set.Iio k).MapsTo
   rw [mem_Iio] at hj
   simp only [intervalGapsWithin_snd_of_lt, intervalGapsWithin_succ_fst_of_lt,
     Prod.mk.eta, SetLike.mem_coe, hj]
-  convert F.orderEmbOfFin_mem h ⟨j, hj⟩ using 1
+  convert! F.orderEmbOfFin_mem h ⟨j, hj⟩ using 1
 
 theorem intervalGapsWithin_injOn : (Set.Iio k).InjOn
     (fun (j : ℕ) ↦ ((F.intervalGapsWithin h a b j).2, (F.intervalGapsWithin h a b j.succ).1)) := by
@@ -157,8 +157,7 @@ theorem intervalGapsWithin_fst_le_snd {a b : α} (hab : a ≤ b)
   have hk : k - 1 + 1 = k := by omega
   by_cases hj₂ : j = k
   · simp only [hj₂, natCast_eq_last, intervalGapsWithin_last_snd, ge_iff_le]
-    convert hFab (F.intervalGapsWithin_mapsTo h a b (x := j - 1) (by grind)) |>.right.right
-      using 1
+    convert hFab (F.intervalGapsWithin_mapsTo h a b (x := j - 1) (by grind)) |>.right.right using 1
     simp [hj₂, hk]
   rw [intervalGapsWithin_fst_of_lt_lt (hj₁ := by omega) (hj₂ := by omega),
       intervalGapsWithin_snd_of_lt (hj := by omega)]

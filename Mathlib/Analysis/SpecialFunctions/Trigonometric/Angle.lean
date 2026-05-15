@@ -463,7 +463,7 @@ theorem neg_pi_lt_toReal (θ : Angle) : -π < θ.toReal := by
 
 theorem toReal_le_pi (θ : Angle) : θ.toReal ≤ π := by
   induction θ using Real.Angle.induction_on
-  convert toIocMod_le_right two_pi_pos _ _
+  convert! toIocMod_le_right two_pi_pos _ _
   ring
 
 theorem abs_toReal_le_pi (θ : Angle) : |θ.toReal| ≤ π :=

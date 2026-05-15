@@ -305,7 +305,7 @@ theorem log_zero_right (b : Ordinal) : log b 0 = 0 := by
   obtain rfl | hb := eq_or_ne b 0
   · exact log_zero_left 0
   · rw [log]
-    convert csSup_empty
+    convert! csSup_empty
     aesop
 
 /-- `opow b` and `log b` (almost) form a Galois connection.

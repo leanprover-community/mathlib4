@@ -265,7 +265,7 @@ lemma Scheme.Hom.exists_isIso_morphismRestrict_toNormalization
     have := (inferInstance : IsIso ((toNormalization f ∣_ V y).app
       (Scheme.homOfLE _ hrV).opensRange))
     simp only [Opens.toScheme_presheaf_obj, app_eq_appLE, morphismRestrict_appLE] at this ⊢
-    convert this <;>
+    convert! this <;>
       simp [Scheme.Hom.image_preimage_eq_opensRange_inf, -Scheme.preimage_basicOpen,
         f.toNormalization.preimage_mono, hrV, H]
   have : (f.appLE U W H).hom.QuasiFinite := by
@@ -321,8 +321,12 @@ lemma Scheme.Hom.mem_quasiFiniteLocus [LocallyOfFiniteType f]
 instance [LocallyOfFiniteType f] [IsSeparated f] [QuasiCompact f] :
     IsOpenImmersion (f.quasiFiniteLocus.ι ≫ f.toNormalization) := by
   obtain ⟨U, hU, e⟩ := Scheme.Hom.exists_isIso_morphismRestrict_toNormalization f
-  convert (inferInstance : IsOpenImmersion ((X.isoOfEq (U := f.quasiFiniteLocus)
-    (SetLike.coe_injective e.symm)).hom ≫ f.toNormalization ∣_ U ≫ U.ι)) using 1
+  convert
+    (inferInstance :
+      IsOpenImmersion
+        ((X.isoOfEq (U := f.quasiFiniteLocus) (SetLike.coe_injective e.symm)).hom ≫
+          f.toNormalization ∣_ U ≫ U.ι)) using
+    1
   simp
 
 lemma Scheme.Hom.quasiFiniteLocus_eq_top [LocallyQuasiFinite f] [LocallyOfFiniteType f] :
@@ -351,8 +355,13 @@ instance [LocallyOfFiniteType f] :
 
 instance [LocallyQuasiFinite f] [LocallyOfFiniteType f] [IsSeparated f] [QuasiCompact f] :
     IsOpenImmersion f.toNormalization := by
-  convert (inferInstance : IsOpenImmersion (X.topIso.inv ≫ (X.isoOfEq
-    f.quasiFiniteLocus_eq_top).inv ≫ f.quasiFiniteLocus.ι ≫ f.toNormalization)) using 1
+  convert
+    (inferInstance :
+      IsOpenImmersion
+        (X.topIso.inv ≫
+          (X.isoOfEq f.quasiFiniteLocus_eq_top).inv ≫
+            f.quasiFiniteLocus.ι ≫ f.toNormalization)) using
+    1
   simp
 
 -- In particular it is surjective (by infer_instance), since it is a priori dominant.

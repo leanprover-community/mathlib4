@@ -92,7 +92,7 @@ def ProdTree.pack (ts : List Expr) : ProdTree → MetaM Expr
 /-- Converts a term `e` in an iterated product `P1` into a term of an iterated product `P2`.
 Here `e` is an `Expr` representing the term, and the iterated products are represented
 by terms of `ProdTree`. -/
-def ProdTree.convertTo (P1 P2 : ProdTree) (e : Expr) : MetaM Expr :=
+def ProdTree.convert!To (P1 P2 : ProdTree) (e : Expr) : MetaM Expr :=
   return ← P2.pack <| ← P1.unpack e
 
 /-- Given two expressions corresponding to iterated products of the same types, associated in
@@ -106,7 +106,7 @@ def mkProdFun (a b : Expr) : MetaM Expr := do
     unless ← isDefEq x y do
       throwError "Component{indentD x}\nis not definitionally equal to component{indentD y}."
   withLocalDeclD `t a fun fvar => do
-    mkLambdaFVars #[fvar] (← pa.convertTo pb fvar)
+    mkLambdaFVars #[fvar] (← pa.convert!To pb fvar)
 
 /-- Construct the equivalence between iterated products of the same type, associated
 in possibly different ways. -/

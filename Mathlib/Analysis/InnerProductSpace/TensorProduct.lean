@@ -469,7 +469,7 @@ theorem Orthonormal.tmul
 theorem Orthonormal.basisTensorProduct
     {b₁ : Basis ι₁ 𝕜 E} {b₂ : Basis ι₂ 𝕜 F} (hb₁ : Orthonormal 𝕜 b₁) (hb₂ : Orthonormal 𝕜 b₂) :
     Orthonormal 𝕜 (b₁.tensorProduct b₂) := by
-  convert hb₁.tmul hb₂
+  convert! hb₁.tmul hb₂
   exact b₁.tensorProduct_apply' b₂ _
 
 namespace OrthonormalBasis

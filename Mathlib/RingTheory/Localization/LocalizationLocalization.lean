@@ -196,7 +196,7 @@ theorem isLocalization_of_submonoid_le (M N : Submonoid R) (h : M ≤ N) [IsLoca
     IsLocalization (N.map (algebraMap R S)) T where
   map_units := by
     rintro ⟨_, ⟨y, hy, rfl⟩⟩
-    convert IsLocalization.map_units T ⟨y, hy⟩
+    convert! IsLocalization.map_units T ⟨y, hy⟩
     exact (IsScalarTower.algebraMap_apply _ _ _ _).symm
   surj y := by
     obtain ⟨⟨x, s⟩, e⟩ := IsLocalization.surj N y

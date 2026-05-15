@@ -124,7 +124,7 @@ lemma isOpenMap_of_generalizingMap [LocallyOfFinitePresentation f]
   obtain ⟨S, rfl⟩ := hX
   obtain ⟨φ, rfl⟩ := Spec.map_surjective f
   algebraize [φ.hom]
-  convert PrimeSpectrum.isOpenMap_comap_of_hasGoingDown_of_finitePresentation
+  convert! PrimeSpectrum.isOpenMap_comap_of_hasGoingDown_of_finitePresentation
   · rwa [Algebra.HasGoingDown.iff_generalizingMap_primeSpectrumComap]
   · apply (HasRingHomProperty.Spec_iff (P := @LocallyOfFinitePresentation)).mp inferInstance
 
@@ -167,7 +167,7 @@ nonrec instance (priority := low) [IsIntegral Y] [Subsingleton Y] :
   obtain ⟨ψ, rfl⟩ := Spec.map_surjective g
   algebraize [φ.hom, ψ.hom]
   refine (MorphismProperty.cancel_left_of_respectsIso _ (pullbackSpecIso K R S).inv _).mp ?_
-  convert_to topologically _ (Spec.map <| CommRingCat.ofHom (algebraMap R (TensorProduct K R S)))
+  convert_to! topologically _ (Spec.map <| CommRingCat.ofHom (algebraMap R (TensorProduct K R S)))
   · exact pullbackSpecIso_inv_fst ..
   let := hK.toField
   exact PrimeSpectrum.isOpenMap_comap_algebraMap_tensorProduct_of_field

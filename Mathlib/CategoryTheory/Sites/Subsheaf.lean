@@ -207,7 +207,7 @@ theorem Subfunctor.sheafify_le (h : G ≤ G') (hF : Presieve.IsSheaf J F)
   have :=
     congr_arg (fun f : G.toFunctor ⟶ G'.toFunctor => (NatTrans.app f (op V) ⟨_, hi⟩).1)
       (G.to_sheafifyLift (Subfunctor.homOfLe h) hG')
-  convert this.symm
+  convert! this.symm
   rw [← Subfunctor.nat_trans_naturality]
   rfl
 

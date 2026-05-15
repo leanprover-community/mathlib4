@@ -198,7 +198,7 @@ theorem iUnion_def' : π.iUnion = ⋃ J ∈ π.boxes, ↑J := rfl
 
 @[simp]
 theorem mem_iUnion : x ∈ π.iUnion ↔ ∃ J ∈ π, x ∈ J := by
-  convert Set.mem_iUnion₂
+  convert! Set.mem_iUnion₂
   rw [Box.mem_coe, exists_prop]
 
 @[simp]
@@ -329,7 +329,7 @@ theorem biUnionIndex_le (πi : ∀ J, Prepartition J) (J : Box ι) : π.biUnionI
   · rw [biUnionIndex, dif_neg hJ]
 
 theorem mem_biUnionIndex (hJ : J ∈ π.biUnion πi) : J ∈ πi (π.biUnionIndex πi J) := by
-  convert (π.mem_biUnion.1 hJ).choose_spec.2 <;> exact dif_pos hJ
+  convert! (π.mem_biUnion.1 hJ).choose_spec.2 <;> exact dif_pos hJ
 
 theorem le_biUnionIndex (hJ : J ∈ π.biUnion πi) : J ≤ π.biUnionIndex πi J :=
   le_of_mem _ (π.mem_biUnionIndex hJ)
@@ -548,7 +548,7 @@ theorem filter_true : (π.filter fun _ => True) = π :=
 theorem iUnion_filter_not (π : Prepartition I) (p : Box ι → Prop) :
     (π.filter fun J => ¬p J).iUnion = π.iUnion \ (π.filter p).iUnion := by
   simp only [Prepartition.iUnion]
-  convert
+  convert!
     (@Set.biUnion_diff_biUnion_eq (ι → ℝ) (Box ι) π.boxes (π.filter p).boxes (↑) _).symm using 4
   · simp +contextual
   · rw [Set.PairwiseDisjoint]
@@ -560,7 +560,7 @@ open scoped Classical in
 theorem sum_fiberwise {α M} [AddCommMonoid M] (π : Prepartition I) (f : Box ι → α) (g : Box ι → M) :
     (∑ y ∈ π.boxes.image f, ∑ J ∈ (π.filter fun J => f J = y).boxes, g J) =
       ∑ J ∈ π.boxes, g J := by
-  convert sum_fiberwise_of_maps_to (fun _ => Finset.mem_image_of_mem f) g
+  convert! sum_fiberwise_of_maps_to (fun _ => Finset.mem_image_of_mem f) g
 
 open scoped Classical in
 /-- Union of two disjoint prepartitions. -/

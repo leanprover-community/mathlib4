@@ -588,8 +588,8 @@ lemma affineCombination_apply_eq_lineMap_sum [DecidableEq ι] (w : ι → k) (p 
   rw [s.affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one w p h p₁,
     weightedVSubOfPoint_apply, ← s.sum_inter_add_sum_diff s', AffineMap.lineMap_apply,
     vadd_right_cancel_iff, sum_smul]
-  convert add_zero _ with i hi
-  · convert Finset.sum_const_zero with i hi
+  convert! add_zero _ with i hi
+  · convert! Finset.sum_const_zero with i hi
     simp [hp₁ i hi]
   · exact (hp₂ i hi).symm
 

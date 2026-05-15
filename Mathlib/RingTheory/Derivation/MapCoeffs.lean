@@ -144,7 +144,7 @@ variable {R : Type*} [CommRing R] [Differential R] [Algebra A R] [DifferentialAl
 
 theorem deriv_aeval_eq (x : R) (p : A[X]) :
     (aeval x p)′ = aeval x (mapCoeffs p) + aeval x (derivative p) * x′ := by
-  convert Derivation.apply_aeval_eq' Differential.deriv _ (Algebra.linearMap A R) ..
+  convert! Derivation.apply_aeval_eq' Differential.deriv _ (Algebra.linearMap A R) ..
   · simp [mapCoeffs]
   · simp [deriv_algebraMap]
 

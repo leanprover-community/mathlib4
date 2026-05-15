@@ -72,7 +72,7 @@ theorem iUnion_toPrepartition : π.toPrepartition.iUnion = π.iUnion := rfl
 
 @[simp]
 theorem mem_iUnion : x ∈ π.iUnion ↔ ∃ J ∈ π, x ∈ J := by
-  convert Set.mem_iUnion₂
+  convert! Set.mem_iUnion₂
   rw [Box.mem_coe, mem_toPrepartition, exists_prop]
 
 theorem subset_iUnion (h : J ∈ π) : ↑J ⊆ π.iUnion :=

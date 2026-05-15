@@ -190,7 +190,7 @@ lemma degree_eq_card_sub_part_card [DecidableEq V] :
       eq_tsub_of_add_eq (card_filter_add_card_filter_not _)
     _ = _ := by
       congr; ext; rw [mem_filter]
-      convert Finpartition.mem_part_ofSetoid_iff_rel.symm
+      convert! Finpartition.mem_part_ofSetoid_iff_rel.symm
       simp +instances [setoid]
 
 /-- The parts of a Turán-maximal graph form an equipartition. -/
@@ -243,7 +243,7 @@ theorem card_parts [DecidableEq V] : #h.finpartition.parts = min (card V) r := b
     exact exists_ne_map_eq_of_card_lt_of_maps_to (zc.symm ▸ l.2) fun a _ ↦
       fp.part_mem.2 (mem_univ a)
   use G ⊔ edge x y, inferInstance, cf.sup_edge x y
-  convert Nat.lt_add_one #G.edgeFinset
+  convert! Nat.lt_add_one #G.edgeFinset
   convert G.card_edgeFinset_sup_edge _ hn
   rwa [h.not_adj_iff_part_eq]
 

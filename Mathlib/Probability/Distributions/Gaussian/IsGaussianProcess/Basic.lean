@@ -101,7 +101,7 @@ lemma hasGaussianLaw_sum (hX : IsGaussianProcess X P) {I : Finset T} :
 
 lemma hasGaussianLaw_fun_sum (hX : IsGaussianProcess X P) {I : Finset T} :
     HasGaussianLaw (fun ω ↦ ∑ i ∈ I, X i ω) P := by
-  convert hX.hasGaussianLaw_sum (I := I)
+  convert! hX.hasGaussianLaw_sum (I := I)
   simp
 
 /-- The increments of a Gaussian process are Gaussian. -/

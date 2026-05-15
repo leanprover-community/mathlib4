@@ -44,7 +44,7 @@ theorem hasStrictDerivAt_log_of_pos (hx : 0 < x) : HasStrictDerivAt log x⁻¹ x
 
 theorem hasStrictDerivAt_log (hx : x ≠ 0) : HasStrictDerivAt log x⁻¹ x := by
   rcases hx.lt_or_gt with hx | hx
-  · convert (hasStrictDerivAt_log_of_pos (neg_pos.mpr hx)).comp x (hasStrictDerivAt_neg x) using 1
+  · convert! (hasStrictDerivAt_log_of_pos (neg_pos.mpr hx)).comp x (hasStrictDerivAt_neg x) using 1
     · ext y; exact (log_neg_eq_log y).symm
     · ring
   · exact hasStrictDerivAt_log_of_pos hx
@@ -75,7 +75,7 @@ theorem contDiffAt_log {n : ℕ∞ω} {x : ℝ} : ContDiffAt ℝ n log x ↔ x �
   refine ⟨fun h ↦ continuousAt_log_iff.1 h.continuousAt, fun hx ↦ ?_⟩
   have A y (hy : 0 < y) : ContDiffAt ℝ n log y := by
     apply expPartialHomeomorph.contDiffAt_symm_deriv (f₀' := y) hy.ne' (by simpa)
-    · convert hasDerivAt_exp (log y)
+    · convert! hasDerivAt_exp (log y)
       rw [exp_log hy]
     · exact analyticAt_rexp.contDiffAt
   rcases hx.lt_or_gt with hx | hx
@@ -387,7 +387,7 @@ theorem hasSum_log_sub_log_of_abs_lt_one {x : ℝ} (h : |x| < 1) :
     ring_nf
   rw [← h_term_eq_goal, (mul_right_injective₀ (two_ne_zero' ℕ)).hasSum_iff]
   · have h₁ := (hasSum_pow_div_log_of_abs_lt_one (Eq.trans_lt (abs_neg x) h)).mul_left (-1)
-    convert h₁.add (hasSum_pow_div_log_of_abs_lt_one h) using 1
+    convert! h₁.add (hasSum_pow_div_log_of_abs_lt_one h) using 1
     ring_nf
   · intro m hm
     rw [range_two_mul, Set.mem_setOf_eq, ← Nat.even_add_one] at hm
@@ -420,15 +420,15 @@ theorem hasSum_log_one_add {a : ℝ} (h : 0 ≤ a) :
       (log (1 + a)) := by
   obtain (rfl | ha0) := eq_or_ne a 0
   · simp [hasSum_zero]
-  · convert hasSum_log_one_add_inv (inv_pos.mpr (lt_of_le_of_ne h ha0.symm)) using 4
+  · convert! hasSum_log_one_add_inv (inv_pos.mpr (lt_of_le_of_ne h ha0.symm)) using 4
     all_goals simp [field, add_comm]
 
 lemma le_log_one_add_of_nonneg {x : ℝ} (hx : 0 ≤ x) : 2 * x / (x + 2) ≤ log (1 + x) := by
-  convert le_hasSum (hasSum_log_one_add hx) 0 (by intros; positivity) using 1
+  convert! le_hasSum (hasSum_log_one_add hx) 0 (by intros; positivity) using 1
   simp [field]
 
 lemma lt_log_one_add_of_pos {x : ℝ} (hx : 0 < x) : 2 * x / (x + 2) < log (1 + x) := by
-  convert lt_hasSum (hasSum_log_one_add hx.le) 0 (by intros; positivity)
+  convert! lt_hasSum (hasSum_log_one_add hx.le) 0 (by intros; positivity)
     1 (by positivity) (by positivity) using 1
   simp [field]
 

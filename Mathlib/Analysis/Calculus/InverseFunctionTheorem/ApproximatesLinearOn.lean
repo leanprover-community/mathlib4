@@ -313,7 +313,7 @@ protected theorem antilipschitz (hf : ApproximatesLinearOn f (f' : E →L[𝕜] 
     (hc : Subsingleton E ∨ c < N⁻¹) : AntilipschitzWith (N⁻¹ - c)⁻¹ (s.restrict f) := by
   rcases hc with hE | hc
   · exact AntilipschitzWith.of_subsingleton
-  convert (f'.antilipschitz.restrict s).add_lipschitzWith hf.lipschitz_sub hc
+  convert! (f'.antilipschitz.restrict s).add_lipschitzWith hf.lipschitz_sub hc
   simp [restrict]
 
 protected theorem injective (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)

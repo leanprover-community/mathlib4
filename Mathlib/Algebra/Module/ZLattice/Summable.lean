@@ -194,7 +194,7 @@ lemma exists_finsetSum_norm_rpow_le_tsum :
     refine (Finset.sum_le_sum_of_subset_of_nonneg hn (by intros; positivity)).trans ?_
     dsimp
     simp only [Submodule.norm_coe]
-    convert sum_piFinset_Icc_rpow_le b rfl n r hr with x
+    convert! sum_piFinset_Icc_rpow_le b rfl n r hr with x
     simp [e, Finsupp.linearCombination]
   by_cases hA' : A ≤ 1
   · refine ⟨B, hB, fun r hr s ↦ (H r hr s).trans ?_⟩

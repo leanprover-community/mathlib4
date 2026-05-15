@@ -251,7 +251,7 @@ instance countablySeparated_of_separatesPoints [MeasurableSpace α]
   rcases h with ⟨b, hbc, hb⟩
   refine ⟨⟨b, hbc, fun t ht ↦ hb.symm ▸ .basic t ht, ?_⟩⟩
   rw [hb] at ‹SeparatesPoints _›
-  convert separating_of_generateFrom b
+  convert! separating_of_generateFrom b
   simp
 
 variable (α)

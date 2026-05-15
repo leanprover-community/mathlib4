@@ -207,7 +207,7 @@ theorem frobenius_frobeniusRotation {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 �
       succNthVal_spec' p n a₁ a₂ (fun i : Fin (n + 1) => frobeniusRotationCoeff p ha₁ ha₂ i.val)
         ha₁ ha₂
     simp only [frobeniusRotationCoeff, Fin.val_zero] at this
-    convert this using 3; clear this
+    convert! this using 3; clear this
     apply TruncatedWittVector.ext
     intro i
     simp only [WittVector.coeff_truncateFun, WittVector.coeff_frobenius_charP]

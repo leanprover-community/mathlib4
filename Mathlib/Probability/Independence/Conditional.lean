@@ -690,7 +690,7 @@ theorem iCondIndepFun_iff_condExp_inter_preimage_eq_mul {β : ι → Type*}
         intro i hi
         rw [(h_sets i hi).choose_spec.2.symm]
         simp only [g, dif_pos hi]
-      convert h with i hi i hi <;> exact hg i hi
+      convert! h with i hi i hi <;> exact hg i hi
 
 theorem condIndepFun_iff_condIndepSet_preimage {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     (hf : Measurable f) (hg : Measurable g) :

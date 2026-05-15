@@ -116,7 +116,7 @@ def plusObj : Cᵒᵖ ⥤ D where
     let e := S.unop.pullbackId
     dsimp only [Functor.op, pullback_obj]
     rw [← colimit.w _ e.inv.op, ← Category.assoc]
-    convert Category.id_comp (colimit.ι (diagram J P (unop X)) S)
+    convert! Category.id_comp (colimit.ι (diagram J P (unop X)) S)
     refine Multiequalizer.hom_ext _ _ _ (fun I => ?_)
     dsimp
     simp only [Multiequalizer.lift_ι, Category.id_comp, Category.assoc]
@@ -243,7 +243,7 @@ theorem plusMap_toPlus : J.plusMap (J.toPlus P) = J.toPlus (J.plusObj P) := by
     ← Category.assoc, ← Category.assoc]
   congr 1
   refine Multiequalizer.hom_ext _ _ _ (fun II => ?_)
-  convert Multiequalizer.condition (S.unop.index P)
+  convert! Multiequalizer.condition (S.unop.index P)
     { fst := I, snd := II.base, r.Z := II.Y, r.g₁ := II.f, r.g₂ := 𝟙 II.Y } using 1
   all_goals simp
 

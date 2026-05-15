@@ -52,7 +52,7 @@ lemma condition_sub_two_mul_int_iff {α : ℝ} (m : ℤ) : Condition (α - 2 * m
   simp_rw [← Finset.sum_sub_distrib, mul_sub]
   norm_cast
   simp_rw [Int.floor_sub_intCast, sub_sub_cancel_left]
-  convert condition_two_mul_int (-m) n hn
+  convert! condition_two_mul_int (-m) n hn
   norm_cast
   rw [Int.floor_intCast]
   simp
@@ -76,7 +76,7 @@ lemma mem_Ico_one_of_mem_Ioo (h : α ∈ Set.Ioo 0 2) : α ∈ Set.Ico 1 2 := by
   apply hr.ne'
   suffices ⌈α⁻¹⌉₊ = (1 : ℤ) from mod_cast this
   apply Int.eq_one_of_dvd_one (Int.zero_le_ofNat _)
-  convert hc ⌈α⁻¹⌉₊ (zero_lt_one.trans hr)
+  convert! hc ⌈α⁻¹⌉₊ (zero_lt_one.trans hr)
   rw [← Finset.add_sum_Ico_eq_sum_Icc hr.le]
   convert (add_zero _).symm
   · rw [Int.floor_eq_iff]
@@ -153,7 +153,7 @@ lemma not_condition_of_mem_Ioo {α : ℝ} (h : α ∈ Set.Ioo 0 2) : ¬Condition
   have hna := (hc.mem_Ico_n_of_mem_Ioo h hn).1
   rcases h with ⟨-, h2⟩
   have hna' : 2 - (n : ℝ)⁻¹ ≤ α := by
-    convert hna using 1
+    convert! hna using 1
     field
   rw [sub_eq_add_neg, ← le_sub_iff_add_le', neg_le, neg_sub] at hna'
   rw [le_inv_comm₀ (by linarith) (mod_cast hn), ← not_lt] at hna'

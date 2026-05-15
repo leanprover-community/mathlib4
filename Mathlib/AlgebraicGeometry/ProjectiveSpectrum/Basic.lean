@@ -79,7 +79,7 @@ theorem basicOpen_eq_iSup_proj (f : A) :
 theorem isBasis_basicOpen :
     TopologicalSpace.Opens.IsBasis (Set.range (basicOpen 𝒜)) := by
   delta TopologicalSpace.Opens.IsBasis
-  convert ProjectiveSpectrum.isTopologicalBasis_basic_opens 𝒜
+  convert! ProjectiveSpectrum.isTopologicalBasis_basic_opens 𝒜
   exact (Set.range_comp _ _).symm
 
 /-- If `{ xᵢ }` spans the irrelevant ideal of `A`, then `D₊(xᵢ)` covers `Proj A`. -/
@@ -101,7 +101,7 @@ lemma iSup_basicOpen_eq_top' {ι : Type*} (f : ι → A)
   classical
   apply Proj.iSup_basicOpen_eq_top
   intro x hx
-  convert_to x - GradedRing.projZeroRingHom 𝒜 x ∈ _
+  convert_to! x - GradedRing.projZeroRingHom 𝒜 x ∈ _
   · rw [GradedRing.projZeroRingHom_apply, ← GradedRing.proj_apply,
       (HomogeneousIdeal.mem_irrelevant_iff _ _).mp hx, sub_zero]
   clear hx
@@ -124,8 +124,10 @@ lemma iSup_basicOpen_eq_top' {ι : Type*} (f : ι → A)
     rw [map_add, add_sub_add_comm]
     exact add_mem ‹_› ‹_›
   | mul x y hx hy hx' hy' =>
-    convert add_mem (Ideal.mul_mem_left _ x hy')
-      (Ideal.mul_mem_right (GradedRing.projZeroRingHom 𝒜 y) _ hx') using 1
+    convert
+      add_mem (Ideal.mul_mem_left _ x hy')
+        (Ideal.mul_mem_right (GradedRing.projZeroRingHom 𝒜 y) _ hx') using
+      1
     rw [map_mul]
     ring
 
@@ -164,7 +166,7 @@ noncomputable
 def basicOpenIsoSpec : (basicOpen 𝒜 f).toScheme ≅ Spec (.of <| Away 𝒜 f) :=
   have : IsIso (basicOpenToSpec 𝒜 f) := by
     apply (isIso_iff_of_reflects_iso _ Scheme.forgetToLocallyRingedSpace).mp ?_
-    convert ProjectiveSpectrum.Proj.isIso_toSpec 𝒜 f f_deg hm using 1
+    convert! ProjectiveSpectrum.Proj.isIso_toSpec 𝒜 f f_deg hm using 1
     refine Eq.trans ?_ (ΓSpec.locallyRingedSpaceAdjunction.homEquiv_apply _ _ _).symm
     dsimp [basicOpenToSpec, Scheme.Opens.toSpecΓ]
     simp only [eqToHom_op, Category.assoc, ← Spec.map_comp]

@@ -531,7 +531,7 @@ theorem IsClosedMap.isEvenlyCovered_of_openPartialHomeomorph [T2Space E] {x : X}
   let U' := U ∩ ⋂ e : f ⁻¹' {x}, f '' (V' e)
   have : Finite (f ⁻¹' {x}) := fin
   have hU' : IsOpen U' := hU.inter <| isOpen_iInter_of_finite fun e ↦ by
-    convert ← (φ e).isOpen_image_of_subset_source (hV' _) inter_subset_right; exact (hφ e).2
+    convert! ← (φ e).isOpen_image_of_subset_source (hV' _) inter_subset_right; exact (hφ e).2
   have hUV e : U' ⊆ f '' V' e := inter_subset_right.trans (iInter_subset ..)
   have : Nonempty E := ⟨Classical.arbitrary (f ⁻¹' {x})⟩
   refine .of_trivialization (t := hU'.trivializationDiscrete _ _

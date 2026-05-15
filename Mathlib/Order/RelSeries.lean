@@ -210,7 +210,7 @@ theorem length_ne_zero [r.IsIrrefl] : s.length ≠ 0 ↔ {x | x ∈ s}.Nontrivia
   refine ⟨fun h ↦ ⟨s 0, by simp [mem_def], s 1, by simp [mem_def],
     fun rid ↦ r.irrefl (s 0) ?_⟩, length_ne_zero_of_nontrivial⟩
   nth_rw 2 [rid]
-  convert s.step ⟨0, by lia⟩
+  convert! s.step ⟨0, by lia⟩
   ext
   simpa [Nat.pos_iff_ne_zero]
 
@@ -296,10 +296,10 @@ def append (p q : RelSeries r) (connect : p.last ~[r] q.head) : RelSeries r wher
   step i := by
     obtain hi | rfl | hi :=
       lt_trichotomy i (Fin.castLE (by lia) (Fin.last _ : Fin (p.length + 1)))
-    · convert p.step ⟨i.1, hi⟩ <;> convert Fin.append_left p q _ <;> rfl
+    · convert p.step ⟨i.1, hi⟩ <;> convert! Fin.append_left p q _
     · convert connect
-      · convert Fin.append_left p q _
-      · convert Fin.append_right p q _; rfl
+      · convert! Fin.append_left p q _
+      · convert! Fin.append_right p q _; rfl
     · set x := _; set y := _
       change Fin.append p q x ~[r] Fin.append p q y
       have hx : x = Fin.natAdd _ ⟨i - (p.length + 1), Nat.sub_lt_left_of_lt_add hi <|
@@ -313,7 +313,7 @@ def append (p q : RelSeries r) (connect : p.last ~[r] q.head) : RelSeries r wher
           Nat.add_sub_cancel' <| le_of_lt (show p.length < i.1 from hi), add_comm]
         rfl
       rw [hx, Fin.append_right, hy, Fin.append_right]
-      convert q.step ⟨i - (p.length + 1), Nat.sub_lt_left_of_lt_add hi <| by lia⟩
+      convert! q.step ⟨i - (p.length + 1), Nat.sub_lt_left_of_lt_add hi <| by lia⟩
       rw [Fin.succ_mk, Nat.sub_eq_iff_eq_add (le_of_lt hi : p.length ≤ i),
         Nat.add_assoc _ 1, add_comm 1, Nat.sub_add_cancel]
       exact hi
@@ -325,7 +325,7 @@ lemma append_apply_left (p q : RelSeries r) (connect : p.last ~[r] q.head)
         = p i := by
   delta append
   simp only [Function.comp_apply]
-  convert Fin.append_left _ _ _
+  convert! Fin.append_left _ _ _
 
 lemma append_apply_right (p q : RelSeries r) (connect : p.last ~[r] q.head)
     (i : Fin (q.length + 1)) :
@@ -617,8 +617,9 @@ def inductionOn (motive : RelSeries r → Sort*)
     | succ d hd =>
       have lq := p.tail_length (heq ▸ d.zero_ne_add_one.symm)
       nth_rw 3 [heq] at lq
-      convert cons (p.tail (heq ▸ d.zero_ne_add_one.symm)) p.head
-        (p.3 ⟨0, heq ▸ d.zero_lt_succ⟩) (hd _ lq)
+      convert
+        cons (p.tail (heq ▸ d.zero_ne_add_one.symm)) p.head (p.3 ⟨0, heq ▸ d.zero_lt_succ⟩)
+          (hd _ lq)
       exact (p.cons_self_tail (heq ▸ d.zero_ne_add_one.symm)).symm
   exact this rfl
 
@@ -645,7 +646,7 @@ def eraseLast (p : RelSeries r) : RelSeries r where
 lemma eraseLast_last_rel_last (p : RelSeries r) (h : p.length ≠ 0) :
     p.eraseLast.last ~[r] p.last := by
   simp only [last, Fin.last, eraseLast_length, eraseLast_toFun]
-  convert p.step ⟨p.length - 1, by lia⟩
+  convert! p.step ⟨p.length - 1, by lia⟩
   simp only [Fin.succ_mk]; lia
 
 @[simp]
@@ -681,8 +682,7 @@ def inductionOn' (motive : RelSeries r → Sort*)
     | succ d hd =>
       have ne0 : p.length ≠ 0 := by simp [heq]
       have len : p.eraseLast.length = d := by simp [heq]
-      convert snoc p.eraseLast p.last (p.eraseLast_last_rel_last ne0)
-        (hd _ len)
+      convert snoc p.eraseLast p.last (p.eraseLast_last_rel_last ne0) (hd _ len)
       exact (p.snoc_self_eraseLast ne0).symm
   exact this rfl
 
@@ -697,7 +697,7 @@ def smash (p q : RelSeries r) (connect : p.last = q.head) : RelSeries r where
   step := by
     apply Fin.addCases <;> intro i
     · simp_rw [Fin.castSucc_castAdd, Fin.addCases_left, Fin.succ_castAdd]
-      convert p.step i
+      convert! p.step i
       split_ifs with h
       · rw [Fin.addCases_right, h, ← last, connect, head]
       · apply Fin.addCases_left
@@ -760,7 +760,7 @@ def drop (p : RelSeries r) (i : Fin (p.length + 1)) : RelSeries r where
   length := p.length - i
   toFun := fun ⟨j, h⟩ => p.toFun ⟨j+i, by lia⟩
   step := fun ⟨j, h⟩ => by
-    convert p.step ⟨j+i.1, by lia⟩
+    convert! p.step ⟨j+i.1, by lia⟩
     simp only [Fin.succ_mk]; lia
 
 @[simp]
@@ -987,8 +987,8 @@ theorem exists_relSeries_covBy
         obtain rfl : m = 0 := by simpa [t₃] using (congr_arg Fin.val eq).trans_lt (i j).2
         cases (h (.last _)).ne' (h₂.symm.trans h₁)
     · refine funext (Fin.lastCases ?_ fun j ↦ ?_)
-      · convert h₂; simpa using RelSeries.last_smash ..
-      convert congr_fun ht j using 1
+      · convert! h₂; simpa using RelSeries.last_smash ..
+      convert! congr_fun ht j using 1
       simp [RelSeries.smash_castLE]
     all_goals simp [Fin.snoc, Fin.castPred_zero, hi₁]
 

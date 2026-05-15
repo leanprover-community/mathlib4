@@ -412,7 +412,7 @@ lemma dualBasis_flip_dualBasis (hB : B.Nondegenerate) (b : Basis ι K V) :
 lemma dualBasis_dualBasis (hB : B.Nondegenerate) (hB' : B.IsSymm)
     (b : Basis ι K V) :
     B.dualBasis hB (B.dualBasis hB b) = b := by
-  convert dualBasis_dualBasis_flip hB.flip b
+  convert! dualBasis_dualBasis_flip hB.flip b
   rwa [eq_comm, ← isSymm_iff_flip]
 
 lemma dualBasis_involutive (hB : B.Nondegenerate) (hB' : B.IsSymm) :

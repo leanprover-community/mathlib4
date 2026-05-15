@@ -187,7 +187,7 @@ theorem coe_fib_eq' :
   · exact fib_isSol_fibRec
   · suffices LinearRecurrence.IsSolution fibRec
         ((fun n ↦ (√5)⁻¹ * φ ^ n) - (fun n ↦ (√5)⁻¹ * ψ ^ n)) by
-      convert this
+      convert! this
       rw [Pi.sub_apply]
       ring
     apply (@fibRec ℝ _).solSpace.sub_mem

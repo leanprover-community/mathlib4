@@ -250,7 +250,7 @@ private theorem exists_subset_restrict_nonpos' (hi₁ : MeasurableSet i) (hi₂ 
       exact lt_of_lt_of_le hi₂ this
     refine tsum_nonneg ?_
     intro l; by_cases h : l < k
-    · convert h₁ _ h
+    · convert! h₁ _ h
       ext x
       rw [Set.mem_iUnion, exists_prop, and_iff_right_iff_imp]
       exact fun _ => h
@@ -304,7 +304,7 @@ theorem exists_subset_restrict_nonpos (hi : s i < 0) :
     simp only [one_div] at h₃'
     exact Summable.tendsto_atTop_of_pos h₃' fun n => Nat.cast_add_one_pos (bdd n)
   have h₄ : Tendsto (fun n => (bdd n : ℝ)) atTop atTop := by
-    convert atTop.tendsto_atTop_add_const_right (-1) h₃; simp
+    convert! atTop.tendsto_atTop_add_const_right (-1) h₃; simp
   have A_meas : MeasurableSet A :=
     hi₁.diff (MeasurableSet.iUnion fun _ => restrictNonposSeq_measurableSet _)
   refine ⟨A, A_meas, Set.diff_subset, ?_, h₂.trans_lt hi⟩

@@ -46,11 +46,11 @@ variable [Preorder α]
 
 -- `to_dual` cannot yet reorder arguments of arguments
 instance [SuccOrder α] [IsSuccArchimedean α] : IsPredArchimedean αᵒᵈ :=
-  ⟨fun {a b} h => by convert exists_succ_iterate_of_le h.ofDual⟩
+  ⟨fun {a b} h => by convert! exists_succ_iterate_of_le h.ofDual⟩
 
 @[to_dual existing]
 instance [PredOrder α] [IsPredArchimedean α] : IsSuccArchimedean αᵒᵈ :=
-  ⟨fun {a b} h => by convert exists_pred_iterate_of_le h.ofDual⟩
+  ⟨fun {a b} h => by convert! exists_pred_iterate_of_le h.ofDual⟩
 
 section SuccOrder
 

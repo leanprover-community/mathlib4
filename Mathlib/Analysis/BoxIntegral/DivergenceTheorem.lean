@@ -99,7 +99,7 @@ theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : (Fin (n + 1) 
     set g := fun y => f y - a - f' (y - x) with hg
     change ∀ y ∈ (Box.Icc I), ‖g y‖ ≤ ε * ‖y - x‖ at hε
     clear_value g; obtain rfl : f = fun y => a + f' (y - x) + g y := by simp [hg]
-    convert_to ‖g (e (I.lower i) y) - g (e (I.upper i) y)‖ ≤ _
+    convert_to! ‖g (e (I.lower i) y) - g (e (I.upper i) y)‖ ≤ _
     · congr 1
       have := Fin.insertNth_sub_same (α := fun _ ↦ ℝ) i (I.upper i) (I.lower i) y
       simp only [← this, f'.map_sub]; abel

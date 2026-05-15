@@ -362,7 +362,7 @@ set_option linter.deprecated false in
   (since := "2026-04-30")]
 theorem Measurable.ennreal_tsum' {ι} [Countable ι] {f : ι → α → ℝ≥0∞} (h : ∀ i, Measurable (f i)) :
     Measurable (∑' i, f i) := by
-  convert Measurable.ennreal_tsum h with x
+  convert! Measurable.ennreal_tsum h with x
   exact tsum_apply (Pi.summable.2 fun _ => ENNReal.summable)
 
 set_option linter.deprecated false in

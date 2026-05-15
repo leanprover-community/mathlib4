@@ -300,7 +300,7 @@ private lemma of_eval_descPochhammer_eq_mul_of_choose {n : ℕ} (v : Fin n → �
     (of fun i j : Fin n => (descPochhammer ℤ j).eval (v i : ℤ)).det =
     (∏ i : Fin n, Nat.factorial i) *
       (of fun i j : Fin n => (Nat.choose (v i) j : ℤ)).det := by
-  convert det_mul_row (fun (i : Fin n) => ((Nat.factorial (i : ℕ)) : ℤ)) _
+  convert! det_mul_row (fun (i : Fin n) => ((Nat.factorial (i : ℕ)) : ℤ)) _
   · rw [of_apply, descPochhammer_eval_eq_descFactorial ℤ _ _]
     congr
     exact Nat.descFactorial_eq_factorial_mul_choose _ _

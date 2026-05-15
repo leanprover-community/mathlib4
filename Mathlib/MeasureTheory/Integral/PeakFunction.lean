@@ -335,7 +335,7 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_n
     exact tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto hs.measurableSet
       hs.measurableSet (Subset.rfl) (self_mem_nhdsWithin)
       hs.measure_lt_top.ne (Eventually.of_forall hnφ) A B C hmg hcg
-  convert this
+  convert! this
   simp_rw [φ, ← smul_smul, integral_smul]
 
 /-- If a continuous function `c` realizes its maximum at a unique point `x₀` in a compact set `s`,
@@ -463,7 +463,7 @@ theorem tendsto_integral_comp_smul_smul_of_integrable'
     have A : ContinuousAt g (x₀ - 0) := by simpa using h'g
     exact A.comp <| by fun_prop
   simp only [f, sub_zero] at this
-  convert this using 2 with c
+  convert! this using 2 with c
   conv_rhs => rw [← integral_add_left_eq_self x₀ (μ := μ)
     (f := fun x ↦ (c ^ finrank ℝ F * φ (c • x)) • g (x₀ - x)), ← integral_neg_eq_self]
   simp [sub_eq_add_neg]

@@ -41,7 +41,7 @@ lemma UniqueFactorizationMonoid.primeFactors_eq_natPrimeFactors :
     primeFactors = Nat.primeFactors := by
   ext n : 1
   rw [primeFactors, Nat.factors_eq, Nat.primeFactors]
-  -- this convert is necessary because of the different DecidableEq instances
+  -- this convert! is necessary because of the different DecidableEq instances
   convert List.toFinset_coe _
 
 namespace Nat

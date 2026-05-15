@@ -127,7 +127,7 @@ lemma coheight_eq (a : α) :
     coheight a = ⨆ (p : LTSeries α) (_ : a ≤ p.head), (p.length : ℕ∞) := by
   apply Equiv.iSup_congr ⟨RelSeries.reverse, RelSeries.reverse, fun _ ↦ RelSeries.reverse_reverse _,
     fun _ ↦ RelSeries.reverse_reverse _⟩
-  congr! 1
+  congr! (config := { postTransparency := .default }) 1
 
 lemma height_le_iff {a : α} {n : ℕ∞} :
     height a ≤ n ↔ ∀ ⦃p : LTSeries α⦄, p.last ≤ a → p.length ≤ n := by
@@ -456,7 +456,7 @@ element.
 -/
 lemma coheight_eq_top_iff {x : α} :
     coheight x = ⊤ ↔ ∀ n, ∃ p : LTSeries α, p.head = x ∧ p.length = n := by
-  convert height_eq_top_iff (α := αᵒᵈ) (x := x) using 2 with n
+  convert! height_eq_top_iff (α := αᵒᵈ) (x := x) using 2 with n
   constructor <;> (intro ⟨p, hp, hl⟩; use p.reverse; constructor <;> simpa)
 
 /-- The elements of height zero are the minimal elements. -/
@@ -541,7 +541,7 @@ lemma height_eq_coe_iff {x : α} {n : ℕ} :
     simp only [Nat.cast_add, Nat.cast_one, add_eq_zero, one_ne_zero, and_false, false_or]
     rw [height_eq_coe_add_one_iff]
     simp only [hfin, true_and]
-    congr! 3
+    congr! (config := { postTransparency := .default }) 3
     rename_i y _
     cases height y <;> simp; norm_cast; lia
 

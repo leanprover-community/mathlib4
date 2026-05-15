@@ -80,7 +80,7 @@ theorem Submodule.isInternal_prime_power_torsion_of_pid [Module.Finite R M]
       torsionBy R M
         (IsPrincipal.generator (p : Ideal R) ^
           (factors (⊤ : Submodule R M).annihilator).count ↑p) := by
-  convert isInternal_prime_power_torsion hM
+  convert! isInternal_prime_power_torsion hM
   rw [← torsionBySet_span_singleton_eq, Ideal.submodule_span_eq, ← Ideal.span_singleton_pow,
     Ideal.span_singleton_generator]
 
@@ -120,8 +120,9 @@ theorem _root_.Ideal.torsionOf_eq_span_pow_pOrder (x : M) :
       (Associates.mk <| generator <| torsionOf R M x) ∣ Associates.mk p ^ n := by
     ext n; rw [← Associates.mk_pow, Associates.mk_dvd_mk, ← mem_iff_generator_dvd]; rfl
   have := (isTorsion'_powers_iff p).mp hM x; rw [prop] at this
-  convert Associates.eq_pow_find_of_dvd_irreducible_pow (Associates.irreducible_mk.mpr hp)
-    this.choose_spec
+  convert
+    Associates.eq_pow_find_of_dvd_irreducible_pow (Associates.irreducible_mk.mpr hp)
+      this.choose_spec
 
 theorem p_pow_smul_lift {x y : M} {k : ℕ} (hM' : Module.IsTorsionBy R M (p ^ pOrder hM y))
     (h : p ^ k • x ∈ R ∙ y) : ∃ a : R, p ^ k • x = p ^ k • a • y := by

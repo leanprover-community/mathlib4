@@ -1068,7 +1068,7 @@ def ofCmpEqCmp {α β} [LinearOrder α] [LinearOrder β] (f : α → β) (g : β
     map_rel_iff' := by
       intro a b
       apply le_iff_le_of_cmp_eq_cmp
-      convert (h a (f b)).symm
+      convert! (h a (f b)).symm
       apply gf }
 
 /-- To show that `f : α →o β` and `g : β →o α` make up an order isomorphism it is enough to show

@@ -90,7 +90,7 @@ lemma preservesSheafification_of_adjunction (adj : G ⊣ F) :
     dsimp
     intro R hR
     rw [← ((adj.whiskerRight Cᵒᵖ).homEquiv P R).comp_bijective]
-    convert (((adj.whiskerRight Cᵒᵖ).homEquiv Q R).trans
+    convert! (((adj.whiskerRight Cᵒᵖ).homEquiv Q R).trans
       (hf.homEquiv (R ⋙ F) ((sheafCompose J F).obj ⟨R, hR⟩).property)).bijective
     ext g X
     -- The rest of this proof was

@@ -303,7 +303,7 @@ def Pregroupoid.groupoid (PG : Pregroupoid H) : StructureGroupoid H where
     · refine PG.locality e.open_source fun x xu ↦ ?_
       rcases he x xu with ⟨s, s_open, xs, hs⟩
       refine ⟨s, s_open, xs, ?_⟩
-      convert hs.1 using 1
+      convert! hs.1 using 1
       dsimp [OpenPartialHomeomorph.restr]
       rw [s_open.interior_eq]
     · refine PG.locality e.open_target fun x xu ↦ ?_
@@ -311,7 +311,7 @@ def Pregroupoid.groupoid (PG : Pregroupoid H) : StructureGroupoid H where
       refine ⟨e.target ∩ e.symm ⁻¹' s, ?_, ⟨xu, xs⟩, ?_⟩
       · exact ContinuousOn.isOpen_inter_preimage e.continuousOn_invFun e.open_target s_open
       · rw [← inter_assoc, inter_self]
-        convert hs.2 using 1
+        convert! hs.2 using 1
         dsimp [OpenPartialHomeomorph.restr]
         rw [s_open.interior_eq]
   mem_of_eqOnSource' e e' he ee' := by

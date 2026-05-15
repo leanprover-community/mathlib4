@@ -382,15 +382,15 @@ theorem integral_mul_cpow_one_add_sq {t : ℂ} (ht : t ≠ -1) :
   apply integral_eq_sub_of_hasDerivAt
   · intro x _
     have f : HasDerivAt (fun y : ℂ => 1 + y ^ 2) (2 * x : ℂ) x := by
-      convert (hasDerivAt_pow 2 (x : ℂ)).const_add 1
+      convert! (hasDerivAt_pow 2 (x : ℂ)).const_add 1
       simp
     have g :
       ∀ {z : ℂ}, 0 < z.re → HasDerivAt (fun z => z ^ (t + 1) / (2 * (t + 1))) (z ^ t / 2) z := by
       intro z hz
-      convert (HasDerivAt.cpow_const (c := t + 1) (hasDerivAt_id _)
+      convert! (HasDerivAt.cpow_const (c := t + 1) (hasDerivAt_id _)
         (Or.inl hz)).div_const (2 * (t + 1)) using 1
       simp [field]
-    convert (HasDerivAt.comp (↑x) (g _) f).comp_ofReal using 1
+    convert! (HasDerivAt.comp (↑x) (g _) f).comp_ofReal using 1
     · ring
     · exact mod_cast add_pos_of_pos_of_nonneg zero_lt_one (sq_nonneg x)
   · apply Continuous.intervalIntegrable

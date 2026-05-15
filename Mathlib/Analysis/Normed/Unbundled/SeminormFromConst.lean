@@ -190,7 +190,7 @@ theorem seminormFromConst_isPowMul : IsPowMul (seminormFromConst' c f) := fun x 
       (tendsto_atTop_atTop_of_monotone (fun _ _ hnk ↦ mul_le_mul_right hnk m) _)
     rintro n; use n; exact le_mul_of_one_le_left' hm
   apply tendsto_nhds_unique hlim
-  convert (tendsto_seminormFromConst_seq_atTop hf1 hc hpm x).pow m using 1
+  convert! (tendsto_seminormFromConst_seq_atTop hf1 hc hpm x).pow m using 1
   ext n
   simp only [seminormFromConst_seq, div_pow, ← hpm _ hm, ← pow_mul, mul_pow, mul_comm m n]
 

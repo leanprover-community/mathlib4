@@ -296,7 +296,7 @@ lemma iIndepFun.integral_fun_prod_comp (hX : iIndepFun X μ)
 lemma iIndepFun.integral_prod_comp (hX : iIndepFun X μ)
     (mX : ∀ i, AEMeasurable (X i) μ) (hf : ∀ i, AEStronglyMeasurable (f i) (μ.map (X i))) :
     μ[∏ i, (f i) ∘ (X i)] = ∏ i, μ[(f i) ∘ (X i)] := by
-  convert hX.integral_fun_prod_comp mX hf
+  convert! hX.integral_fun_prod_comp mX hf
   simp
 
 variable {X : (i : ι) → Ω → 𝕜}

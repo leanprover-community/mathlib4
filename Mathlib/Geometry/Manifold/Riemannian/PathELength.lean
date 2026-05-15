@@ -355,11 +355,11 @@ lemma riemannianEDist_triangle :
   apply this.trans_lt (lt_trans ?_ huv)
   rw [← pathELength_add zero_le_one one_le_two]
   gcongr
-  · convert hγ₁ using 1
+  · convert! hγ₁ using 1
     apply pathELength_congr
     intro t ht
     simp [γ, ht.2]
-  · convert hγ₂ using 1
+  · convert! hγ₂ using 1
     apply pathELength_congr_Ioo
     intro t ht
     simp [γ, ht.1]

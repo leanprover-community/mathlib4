@@ -39,9 +39,9 @@ lemma ScottContinuousOn.fromProd [Preorder α] [Preorder β] [Preorder γ]
       rw [singleton_prod, image_image f (fun b ↦ (a, b))]
       exact h₁ _ (mem_image_of_mem (fun d ↦ Prod.snd '' d) hX) (Nonempty.image Prod.snd hd₁)
         (DirectedOn.snd hd₂) (isLUB_prod.mp hdp).2) _, Set.range]
-  convert (h₂ _
-    (mem_image_of_mem (fun d ↦ Prod.fst '' d) hX) (Nonempty.image Prod.fst hd₁) (DirectedOn.fst hd₂)
-    (isLUB_prod.mp hdp).1)
+  convert
+    (h₂ _ (mem_image_of_mem (fun d ↦ Prod.fst '' d) hX) (Nonempty.image Prod.fst hd₁)
+      (DirectedOn.fst hd₂) (isLUB_prod.mp hdp).1)
   ext : 1
   simp_all only [Subtype.exists, mem_image, Prod.exists,
     exists_and_right, exists_eq_right, exists_prop, mem_setOf_eq]

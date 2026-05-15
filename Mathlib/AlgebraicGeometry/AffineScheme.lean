@@ -321,7 +321,7 @@ theorem Scheme.map_PrimeSpectrum_basicOpen_of_affine
 
 theorem isBasis_basicOpen (X : Scheme) [IsAffine X] :
     Opens.IsBasis (Set.range (X.basicOpen : Γ(X, ⊤) → X.Opens)) := by
-  convert PrimeSpectrum.isBasis_basic_opens.of_isInducing
+  convert! PrimeSpectrum.isBasis_basic_opens.of_isInducing
     (TopCat.homeoOfIso (Scheme.forgetToTop.mapIso X.isoSpec)).isInducing using 1
   ext V
   simp only [Set.mem_range, exists_exists_eq_and, Set.mem_setOf,
@@ -496,8 +496,7 @@ lemma fromSpec_app_of_le (V : X.Opens) (h : U ≤ V) :
 include hU in
 protected theorem isCompact :
     IsCompact (U : Set X) := by
-  convert @IsCompact.image _ _ _ _ Set.univ hU.fromSpec PrimeSpectrum.compactSpace.1
-    (by fun_prop)
+  convert @IsCompact.image _ _ _ _ Set.univ hU.fromSpec PrimeSpectrum.compactSpace.1 (by fun_prop)
   convert hU.range_fromSpec.symm
   exact Set.image_univ
 
@@ -594,7 +593,7 @@ include hU in
 theorem basicOpen :
     IsAffineOpen (X.basicOpen f) := by
   rw [← hU.fromSpec_image_basicOpen, Scheme.Hom.isAffineOpen_iff_of_isOpenImmersion]
-  convert isAffineOpen_opensRange
+  convert! isAffineOpen_opensRange
     (Spec.map (CommRingCat.ofHom <| algebraMap Γ(X, U) (Localization.Away f)))
   exact Opens.ext (PrimeSpectrum.localization_away_comap_range (Localization.Away f) f).symm
 
@@ -657,7 +656,7 @@ theorem isLocalization_basicOpen :
   apply
     (IsLocalization.isLocalization_iff_of_ringEquiv (Submonoid.powers f)
       (asIso <| basicOpenSectionsToAffine hU f).commRingCatIsoToRingEquiv).mpr
-  convert StructureSheaf.IsLocalization.to_basicOpen _ f using 1
+  convert! StructureSheaf.IsLocalization.to_basicOpen _ f using 1
   apply Algebra.algebra_ext
   intro _
   congr 1

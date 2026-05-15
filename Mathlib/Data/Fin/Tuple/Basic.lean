@@ -511,12 +511,12 @@ def snoc (p : ∀ i : Fin n, α i.castSucc) (x : α (last n)) (i : Fin (n + 1)) 
 theorem init_snoc : init (snoc p x) = p := by
   ext i
   simp only [init, snoc, val_castSucc, is_lt, dite_true]
-  convert cast_eq rfl (p i)
+  convert! cast_eq rfl (p i)
 
 @[simp]
 theorem snoc_castSucc : snoc p x i.castSucc = p i := by
   simp only [snoc, val_castSucc, is_lt, dite_true]
-  convert cast_eq rfl (p i)
+  convert! cast_eq rfl (p i)
 
 @[simp]
 theorem snoc_apply_zero [NeZero n] : snoc p x 0 = p 0 := snoc_castSucc x p 0
@@ -802,7 +802,7 @@ theorem forall_fin_add_pi {γ : Fin (m + n) → Sort*} {P : (∀ i, γ i) → Pr
       (∀ (vₘ : ∀ i, γ (castAdd n i)) (vₙ : ∀ j, γ (natAdd m j)), P (addCases vₘ vₙ)) where
   mp hv vm vn := hv (addCases vm vn)
   mpr h v := by
-    convert h (fun i => v (castAdd n i)) (fun j => v (natAdd m j))
+    convert! h (fun i => v (castAdd n i)) (fun j => v (natAdd m j))
     exact (addCases_castAdd_natAdd v).symm
 
 lemma exists_iff_castSucc {P : Fin (n + 1) → Prop} :
@@ -926,7 +926,7 @@ theorem insertNth_zero (x : α 0) (p : ∀ j : Fin n, α (succAbove 0 j)) :
       cons x fun j ↦ _root_.cast (congr_arg α (congr_fun succAbove_zero j)) (p j) := by
   refine insertNth_eq_iff.2 ⟨by simp, ?_⟩
   ext j
-  convert (cons_succ x p j).symm
+  convert! (cons_succ x p j).symm
 
 @[simp]
 theorem insertNth_zero' (x : β) (p : Fin n → β) : @insertNth _ (fun _ ↦ β) 0 x p = cons x p := by

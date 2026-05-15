@@ -139,7 +139,7 @@ theorem pow_length_le_mul_ofDigits {b : ℕ} {l : List ℕ} (hl : l ≠ []) (hl2
   apply Nat.mul_le_mul_left
   refine le_trans ?_ (Nat.le_add_left _ _)
   have : 0 < l.getLast hl := by rwa [pos_iff_ne_zero]
-  convert Nat.mul_le_mul_left ((b + 2) ^ (l.length - 1)) this using 1
+  convert! Nat.mul_le_mul_left ((b + 2) ^ (l.length - 1)) this using 1
   rw [Nat.mul_one]
 
 /-- Any non-zero natural number `m` is greater than
@@ -148,8 +148,7 @@ theorem pow_length_le_mul_ofDigits {b : ℕ} {l : List ℕ} (hl : l ≠ []) (hl2
 theorem base_pow_length_digits_le' (b m : ℕ) (hm : m ≠ 0) :
     (b + 2) ^ (digits (b + 2) m).length ≤ (b + 2) * m := by
   have : digits (b + 2) m ≠ [] := digits_ne_nil_iff_ne_zero.mpr hm
-  convert @pow_length_le_mul_ofDigits b (digits (b + 2) m)
-    this (getLast_digit_ne_zero _ hm)
+  convert @pow_length_le_mul_ofDigits b (digits (b + 2) m) this (getLast_digit_ne_zero _ hm)
   rw [ofDigits_digits]
 
 /-- Any non-zero natural number `m` is greater than
@@ -201,8 +200,8 @@ theorem sub_one_mul_sum_log_div_pow_eq_sub_sum_digits {p : ℕ} (n : ℕ) :
   obtain h | rfl | h : 1 < p ∨ 1 = p ∨ p < 1 := trichotomous 1 p
   · rcases eq_or_ne n 0 with rfl | hn
     · simp
-    · convert sub_one_mul_sum_div_pow_eq_sub_sum_digits (p.digits n) (getLast_digit_ne_zero p hn) <|
-          (fun l a ↦ digits_lt_base h a)
+    · convert! sub_one_mul_sum_div_pow_eq_sub_sum_digits (p.digits n) (getLast_digit_ne_zero p hn)
+        fun l a ↦ digits_lt_base h a
       · refine (length_digits p n h hn).symm
       all_goals exact (ofDigits_digits p n).symm
   · simp

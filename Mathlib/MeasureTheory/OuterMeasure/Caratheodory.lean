@@ -214,7 +214,7 @@ theorem boundedBy_caratheodory {m : Set α → ℝ≥0∞} {s : Set α}
   apply ofFunction_caratheodory; intro t
   rcases t.eq_empty_or_nonempty with rfl | h
   · simp [Set.not_nonempty_empty]
-  · convert le_trans _ (hs t)
+  · convert! le_trans _ (hs t)
     · simp [h]
     exact add_le_add iSup_const_le iSup_const_le
 

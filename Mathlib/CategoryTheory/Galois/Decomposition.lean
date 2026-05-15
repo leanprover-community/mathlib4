@@ -251,11 +251,11 @@ private lemma selfProdTermIncl_fib_eq (b : F.obj A) :
     F.map u b = F.map (selfProdPermIncl h b) a := by
   apply Concrete.Pi.map_ext _ F
   intro (t : F.obj X)
-  convert_to F.map (selfProdProj u t) b = _
+  convert_to! F.map (selfProdProj u t) b = _
   · simp only [selfProdProj, map_comp, FintypeCat.comp_apply]; rfl
   · dsimp only [selfProdPermIncl, Pi.whiskerEquiv]
     rw [map_comp, FintypeCat.comp_apply, h]
-    convert_to F.map (selfProdProj u t) b =
+    convert_to! F.map (selfProdProj u t) b =
       (F.map (Pi.map' (fiberPerm h b) fun _ ↦ 𝟙 X) ≫
       F.map (Pi.π (fun _ ↦ X) t)) (mkSelfProdFib F X)
     rw [← map_comp, Pi.map'_comp_π, Category.comp_id, mkSelfProdFib_map_π F X (fiberPerm h b t)]

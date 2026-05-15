@@ -76,7 +76,7 @@ def iterate (f : α → α) (a : α) : Stream' α
 /-- Given functions `f : α → β` and `g : α → α`, `corec f g` creates a stream by:
 1. Starting with an initial value `a : α`
 2. Applying `g` repeatedly to get a stream of α values
-3. Applying `f` to each value to convert them to β
+3. Applying `f` to each value to convert! them to β
 -/
 def corec (f : α → β) (g : α → α) : α → Stream' β := fun a => map f (iterate g a)
 

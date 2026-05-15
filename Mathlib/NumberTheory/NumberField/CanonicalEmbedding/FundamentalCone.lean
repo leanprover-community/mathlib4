@@ -545,7 +545,7 @@ def idealSetEquivNorm (n : ℕ) :
   calc
     _ ≃ {a : {a : integerSet K // (preimageOfMemIntegerSet a).1 ∈ J.1} //
             mixedEmbedding.norm a.1.1 = n} := by
-        convert (Equiv.subtypeEquivOfSubtype (idealSetEquiv K J).symm).symm using 3
+        convert! (Equiv.subtypeEquivOfSubtype (idealSetEquiv K J).symm).symm using 3
         rw [idealSetEquiv_symm_apply]
     _ ≃ {a : integerSet K // (preimageOfMemIntegerSet a).1 ∈ J.1 ∧
           mixedEmbedding.norm a.1 = n} := Equiv.subtypeSubtypeEquivSubtypeInter
@@ -558,7 +558,7 @@ def idealSetEquivNorm (n : ℕ) :
         (Equiv.subtypeEquivRight (fun _ ↦ by simp [and_comm]))).symm
     _ ≃ {I : {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.1 ∧ absNorm I.1 = n} × (torsion K) //
           J.1 ∣ I.1.1} := by
-      convert Equiv.subtypeEquivOfSubtype (p := fun I ↦ J.1 ∣ I.1) (integerSetEquivNorm K n)
+      convert! Equiv.subtypeEquivOfSubtype (p := fun I ↦ J.1 ∣ I.1) (integerSetEquivNorm K n)
       rw [integerSetEquivNorm_apply_fst, dvd_span_singleton]
     _ ≃ {I : {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.1 ∧ absNorm I.1 = n} // J.1 ∣ I.1} ×
         (torsion K) := Equiv.prodSubtypeFstEquivSubtypeProd

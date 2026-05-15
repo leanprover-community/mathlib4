@@ -252,7 +252,7 @@ theorem MemSobolev.fourier_memL1 {s : ℝ} (hs : Module.finrank ℝ E < 2 * s) {
         norm_cast
         simp_rw [ofReal_norm] at h
         simp_rw [← enorm_pow]
-        convert h using 4
+        convert! h using 4
         rw [← Real.rpow_mul_natCast (by positivity)]
         simp
       apply ((integrable_rpow_neg_one_add_norm_sq hs).congr _).lintegral_lt_top

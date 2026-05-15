@@ -75,7 +75,7 @@ lemma integral_le_sum_Ico_of_le
     (hab : a ≤ b) (h : ∀ i ∈ Ico a b, ∀ x ∈ Ico (i : ℝ) (i + 1 : ℕ), g x ≤ f i)
     (hg : IntegrableOn g (Set.Ico a b)) :
     ∫ x in a..b, g x ≤ ∑ i ∈ Finset.Ico a b, f i := by
-  convert neg_le_neg (sum_Ico_le_integral_of_le (f := -f) (g := -g) hab
+  convert! neg_le_neg (sum_Ico_le_integral_of_le (f := -f) (g := -g) hab
     (fun i hi x hx ↦ neg_le_neg (h i hi x hx)) hg.neg) <;> simp
 
 theorem AntitoneOn.integral_le_sum (hf : AntitoneOn f (Icc x₀ (x₀ + a))) :

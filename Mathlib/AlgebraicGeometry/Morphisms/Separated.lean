@@ -274,7 +274,7 @@ instance isClosedImmersion_equalizer_ι_left {S : Scheme} {X Y : Over S} [IsSepa
     ((Limits.isPullback_equalizer_prod f g).map (Over.forget _)).flip ?_
   rw [← MorphismProperty.cancel_right_of_respectsIso @IsClosedImmersion _
     (Over.prodLeftIsoPullback Y Y).hom]
-  convert (inferInstance : IsClosedImmersion (pullback.diagonal Y.hom))
+  convert! (inferInstance : IsClosedImmersion (pullback.diagonal Y.hom))
   ext1 <;> simp [← Over.comp_left]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -358,7 +358,7 @@ end Scheme
 
 instance IsSeparated.hasAffineProperty :
     HasAffineProperty @IsSeparated fun X _ _ _ ↦ X.IsSeparated := by
-  convert HasAffineProperty.of_isZariskiLocalAtTarget @IsSeparated with X Y f hY
+  convert! HasAffineProperty.of_isZariskiLocalAtTarget @IsSeparated with X Y f hY
   rw [Scheme.isSeparated_iff, ← terminal.comp_from f, IsSeparated.comp_iff]
   rfl
 

@@ -148,7 +148,7 @@ theorem LinearIndepOn.injOn [Nontrivial R] (hv : LinearIndepOn R v s) : InjOn v 
   injOn_iff_injective.2 <| LinearIndependent.injective hv
 
 theorem LinearIndependent.smul_left_injective (hv : LinearIndependent R v) (i : ι) :
-    Injective fun r : R ↦ r • v i := by convert hv.comp (Finsupp.single_injective i); simp
+    Injective fun r : R ↦ r • v i := by convert! hv.comp (Finsupp.single_injective i); simp
 
 theorem LinearIndependent.ne_zero [Nontrivial R] (i : ι) (hv : LinearIndependent R v) :
     v i ≠ 0 := by
@@ -648,7 +648,7 @@ nonrec theorem Fintype.linearIndependent_iffₒₛ [DecidableEq ι] [Fintype ι]
     · exact h.2 i (Finset.mem_compl.2 hi)
   · specialize h t₁ (fun i => if i ∈ t₁ ∨ i ∈ t₂ then f i else 0) ?_
     · rw [← Finset.sum_subset ht₁t₂.le_compl_left]
-      · convert heq using 2 with i hi i hi <;> simp [hi]
+      · convert! heq using 2 with i hi i hi <;> simp [hi]
       · intro i hi hi'
         simp [Finset.mem_compl.1 hi, hi']
     refine ⟨fun i hi => ?_, fun i hi => ?_⟩ <;> simpa [hi] using h i

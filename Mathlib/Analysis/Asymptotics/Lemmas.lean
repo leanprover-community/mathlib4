@@ -437,13 +437,13 @@ theorem IsLittleO.of_tendsto_div_atTop (h : Tendsto (fun x ↦ g x / f x) l atTo
     intro x h h0
     simp only [h0, zero_div] at h
     grind
-  · convert Tendsto.comp tendsto_inv_atTop_zero h
+  · convert! Tendsto.comp tendsto_inv_atTop_zero h
     simp
 
 theorem IsLittleO.of_tendsto_div_atBot (h : Tendsto (fun x ↦ g x / f x) l atBot) : f =o[l] g := by
   refine IsLittleO.of_neg_left (IsLittleO.of_tendsto_div_atTop ?_)
   rw [← tendsto_neg_atBot_iff]
-  convert h using 2
+  convert! h using 2
   simp [div_neg_eq_neg_div]
 
 end div_tendsto_infty
@@ -570,7 +570,7 @@ theorem isLittleO_norm_pow_norm_pow {m n : ℕ} (h : m < n) :
   (isLittleO_pow_pow h).comp_tendsto tendsto_norm_zero
 
 theorem isLittleO_pow_id {n : ℕ} (h : 1 < n) : (fun x : 𝕜 => x ^ n) =o[𝓝 0] fun x => x := by
-  convert isLittleO_pow_pow h (𝕜 := 𝕜)
+  convert! isLittleO_pow_pow h (𝕜 := 𝕜)
   simp only [pow_one]
 
 theorem isLittleO_norm_pow_id {n : ℕ} (h : 1 < n) :

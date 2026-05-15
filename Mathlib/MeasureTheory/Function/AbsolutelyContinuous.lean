@@ -81,7 +81,7 @@ def totalLengthFilter : Filter (ℕ × (ℕ → X × X)) := Filter.comap
 lemma hasBasis_totalLengthFilter : totalLengthFilter.HasBasis (fun (ε : ℝ) => 0 < ε)
     (fun (ε : ℝ) =>
       {E : ℕ × (ℕ → X × X) | ∑ i ∈ Finset.range E.1, dist (E.2 i).1 (E.2 i).2 < ε}) := by
-  convert Filter.HasBasis.comap (α := ℝ) _ (nhds_basis_Ioo_pos _) using 1
+  convert! Filter.HasBasis.comap (α := ℝ) _ (nhds_basis_Ioo_pos _) using 1
   ext ε E
   simp only [mem_setOf_eq, zero_sub, zero_add, mem_preimage, mem_Ioo, iff_and_self]
   suffices 0 ≤ ∑ i ∈ Finset.range E.1, dist (E.2 i).1 (E.2 i).2 by grind
@@ -119,7 +119,7 @@ lemma tendsto_volume_totalLengthFilter_nhds_zero :
     totalLengthFilter (𝓝 0) := by
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
     (h := fun E ↦ ENNReal.ofReal (∑ i ∈ Finset.range E.1, (dist (E.2 i).1 (E.2 i).2)))
-  · convert ENNReal.tendsto_ofReal (Filter.tendsto_comap)
+  · convert! ENNReal.tendsto_ofReal (Filter.tendsto_comap)
     simp
   · intro; simp
   · intro E
@@ -220,7 +220,7 @@ theorem const_mul {f : ℝ → ℝ} (α : ℝ) (hf : AbsolutelyContinuousOnInter
 lemma uniformity_eq_comap_totalLengthFilter :
     uniformity X = comap (fun x ↦ (1, fun _ ↦ x)) totalLengthFilter := by
   refine Filter.HasBasis.eq_of_same_basis Metric.uniformity_basis_dist ?_
-  convert hasBasis_totalLengthFilter.comap _
+  convert! hasBasis_totalLengthFilter.comap _
   simp
 
 /-- If `f` is absolutely continuous on `uIcc a b`, then `f` is uniformly continuous on `uIcc a b`.
@@ -339,7 +339,7 @@ theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
   set δ' := (b - a) / (n + 1)
   have hδ₃ : δ' < δ := by
     dsimp only [δ']
-    convert mul_lt_mul_of_pos_right hn hab₁ using 1 <;> field
+    convert! mul_lt_mul_of_pos_right hn hab₁ using 1 <;> field
   have h_mono : Monotone fun (i : ℕ) ↦ a + ↑i * δ' := by
     apply Monotone.const_add
     apply Monotone.mul_const Nat.mono_cast
@@ -348,7 +348,7 @@ theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
   -- The variation of `f` on `[a, b]` is the sum of the variations on these subintervals.
   have v_sum : eVariationOn f (Icc a b) =
       ∑ i ∈ Finset.range (n + 1), eVariationOn f (Icc (a + i * δ') (a + (i + 1) * δ')) := by
-    convert eVariationOn.sum' f (I := fun i ↦ a + i * δ') h_mono |>.symm
+    convert! eVariationOn.sum' f (I := fun i ↦ a + i * δ') h_mono |>.symm
     · simp
     · simp only [Nat.cast_add, Nat.cast_one, δ']; field
     · norm_cast
@@ -366,7 +366,7 @@ theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
           intro i hi
           constructor <;> exact this (hp₂ _)
         · rw [PairwiseDisjoint]
-          convert hp₁.pairwise_disjoint_on_Ioc_succ.set_pairwise (Finset.range p.1) using 3
+          convert! hp₁.pairwise_disjoint_on_Ioc_succ.set_pairwise (Finset.range p.1) using 3
           rw [uIoc_of_le (hp₁ (by lia)), Nat.succ_eq_succ]
       · suffices p.2.val p.1 - p.2.val 0 < δ by
           convert this
@@ -383,7 +383,7 @@ theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
     have not_top : ∑ i ∈ Finset.range p.1, edist (f (p.2.val (i + 1))) (f (p.2.val i)) ≠ ⊤ := by
       simp [edist_ne_top]
     rw [← ENNReal.ofReal_toReal not_top]
-    convert ENNReal.ofReal_le_ofReal (veq.symm ▸ vf.le)
+    convert! ENNReal.ofReal_le_ofReal (veq.symm ▸ vf.le)
     simp
   -- Reduce to goal that the variation of `f` on each of these subintervals is finite.
   simp only [BoundedVariationOn, v_sum, ne_eq, ENNReal.sum_eq_top, Finset.mem_range, not_exists,
@@ -394,10 +394,10 @@ theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
     fun hC ↦ by simp [hC] at this
   -- Verify that `[a + i * δ', a + (i + 1) * δ']` is indeed a subinterval of `[a, b]`
   apply v_each
-  · convert h_mono (show 0 ≤ i by lia); simp
-  · convert h_mono (show i ≤ i + 1 by lia); norm_cast
+  · convert! h_mono (show 0 ≤ i by lia); simp
+  · convert! h_mono (show i ≤ i + 1 by lia); norm_cast
   · rw [add_mul, ← add_assoc]; simpa
-  · convert h_mono (show i + 1 ≤ n + 1 by lia)
+  · convert! h_mono (show i + 1 ≤ n + 1 by lia)
     · norm_cast
     · simp only [Nat.cast_add, Nat.cast_one, δ']; field
 

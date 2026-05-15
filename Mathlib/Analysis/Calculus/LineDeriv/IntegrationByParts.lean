@@ -72,12 +72,12 @@ lemma integral_bilinear_hasLineDerivAt_right_eq_neg_left_of_integrable_aux1 [Sig
     · intro t ht
       have : (x, t) ∈ tsupport g :=
         tsupport_comp_subset_preimage (f := fun y ↦ (x, y)) g (by fun_prop) ht
-      convert (hf (x, t) this).scomp_of_eq t ((hasDerivAt_id t).add (hasDerivAt_const t (-t)))
+      convert! (hf (x, t) this).scomp_of_eq t ((hasDerivAt_id t).add (hasDerivAt_const t (-t)))
         (by simp) <;> simp
     · intro t ht
       have : (x, t) ∈ tsupport f :=
         tsupport_comp_subset_preimage (f := fun y ↦ (x, y)) f (by fun_prop) ht
-      convert (hg (x, t) this).scomp_of_eq t ((hasDerivAt_id t).add (hasDerivAt_const t (-t)))
+      convert! (hg (x, t) this).scomp_of_eq t ((hasDerivAt_id t).add (hasDerivAt_const t (-t)))
         (by simp) <;> simp
   _ = - ∫ x, B (f' x) (g x) ∂(μ.prod volume) := by rw [integral_neg, integral_prod _ hf'g]
 
@@ -158,7 +158,7 @@ theorem integral_bilinear_hasLineDerivAt_right_eq_neg_left_of_integrable
       (Set.ext_iff.mp (tsupport_comp_eq_preimage g L.symm.toHomeomorph) x).mp hx
     specialize hf (L.symm x) h2x
     rw [this] at hf
-    convert hf.of_comp using 1
+    convert! hf.of_comp using 1
     · simp
     · simp [← hL]
   · intro x hx
@@ -167,7 +167,7 @@ theorem integral_bilinear_hasLineDerivAt_right_eq_neg_left_of_integrable
       (Set.ext_iff.mp (tsupport_comp_eq_preimage f L.symm.toHomeomorph) x).mp hx
     specialize hg (L.symm x) h2x
     rw [this] at hg
-    convert hg.of_comp using 1
+    convert! hg.of_comp using 1
     · simp
     · simp [← hL]
 

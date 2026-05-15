@@ -358,7 +358,7 @@ The order of a constant function is `⊤` if the constant is zero and `0` otherw
 -/
 @[simp] theorem meromorphicOrderAt_const_ofNat (z₀ : 𝕜) (n : ℕ) [Decidable ((n : 𝕜) = 0)] :
     meromorphicOrderAt (ofNat(n) : 𝕜 → 𝕜) z₀ = if (n : 𝕜) = 0 then ⊤ else (0 : WithTop ℤ) := by
-  convert meromorphicOrderAt_const z₀ (n : 𝕜)
+  convert! meromorphicOrderAt_const z₀ (n : 𝕜)
   simp [Semiring.toGrindSemiring_ofNat 𝕜 n]
 
 /-- The order of `(· - x) ^ n` at `x` is `n`. -/
@@ -370,7 +370,7 @@ The order of a constant function is `⊤` if the constant is zero and `0` otherw
 /-- The order of `(· - x) ^ n` at `x` is `n`. -/
 @[simp, to_fun] theorem meromorphicOrderAt_pow_id_sub_const {n : ℕ} :
     meromorphicOrderAt ((· - x) ^ n) x = n := by
-  convert meromorphicOrderAt_zpow_id_sub_const
+  convert! meromorphicOrderAt_zpow_id_sub_const
   simp only [zpow_natCast]
 
 /-- The order of `· - x` at `x` is `1`. -/
@@ -456,7 +456,7 @@ The order is additive in products of meromorphic functions.
 theorem meromorphicOrderAt_fun_prod {x : 𝕜} {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜}
     (hf : ∀ i ∈ s, MeromorphicAt (f i) x) :
     meromorphicOrderAt (fun a ↦ ∏ i ∈ s, f i a) x = ∑ i ∈ s, meromorphicOrderAt (f i) x := by
-  convert meromorphicOrderAt_prod hf
+  convert! meromorphicOrderAt_prod hf
   exact (Finset.prod_apply _ s f).symm
 
 /-- The order multiplies by `n` when taking a meromorphic function to its `n`th power. -/

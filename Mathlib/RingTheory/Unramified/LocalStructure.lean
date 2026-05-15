@@ -90,7 +90,7 @@ private theorem exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_e
       P.ResidueField[X] ⧸ I.map (mapRingHom (algebraMap _ P.ResidueField)) :=
     Polynomial.fiberEquivQuotient (aeval (R := R) x) hx' _
   rw [← RingHom.ker_comp_of_injective _ (f := e.toRingHom) e.injective]
-  convert Ideal.mk_ker.symm
+  convert! Ideal.mk_ker.symm
   ext a
   · dsimp [-TensorProduct.algebraMap_apply]
     rw [aeval_C, AlgEquiv.commutes]

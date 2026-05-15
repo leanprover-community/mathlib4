@@ -121,8 +121,10 @@ theorem AntivaryOn.sum_smul_le_sum_smul_comp_perm (hfg : AntivaryOn f g s)
 `f` and `g` monovary together on `s`. Stated by permuting the entries of `f`. -/
 theorem MonovaryOn.sum_comp_perm_smul_le_sum_smul (hfg : MonovaryOn f g s)
     (hσ : {x | σ x ≠ x} ⊆ s) : ∑ i ∈ s, f (σ i) • g i ≤ ∑ i ∈ s, f i • g i := by
-  convert hfg.sum_smul_comp_perm_le_sum_smul
-    (show { x | σ⁻¹ x ≠ x } ⊆ s by simp [set_support_symm_eq, hσ]) using 1
+  convert
+    hfg.sum_smul_comp_perm_le_sum_smul
+      (show {x | σ⁻¹ x ≠ x} ⊆ s by simp [set_support_symm_eq, hσ]) using
+    1
   exact σ.sum_comp' s (fun i j ↦ f i • g j) hσ
 
 /-- **Rearrangement Inequality**: Pointwise scalar multiplication of `f` and `g` is minimized when
@@ -214,7 +216,7 @@ theorem MonovaryOn.sum_comp_perm_smul_eq_sum_smul_iff (hfg : MonovaryOn f g s)
   · convert h.comp_right σ
     · rw [comp_assoc, inv_def, symm_comp_self, comp_id]
     · rw [σ.eq_preimage_iff_image_eq, Set.image_perm hσ]
-  · convert h.comp_right σ.symm
+  · convert! h.comp_right σ.symm
     · rw [comp_assoc, self_comp_symm, comp_id]
     · rw [σ.symm.eq_preimage_iff_image_eq]
       exact Set.image_perm hσinv

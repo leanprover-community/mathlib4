@@ -276,7 +276,7 @@ theorem outerMeasure_preimage (f : G ≃ₜ G) (h : ∀ ⦃K : Compacts G⦄, μ
   refine inducedOuterMeasure_preimage _ μ.innerContent_iUnion_nat μ.innerContent_mono _
     (fun _ => f.isOpen_preimage) ?_
   intro s hs
-  convert μ.innerContent_comap f h ⟨s, hs⟩
+  convert! μ.innerContent_comap f h ⟨s, hs⟩
 
 theorem outerMeasure_lt_top_of_isCompact [WeaklyLocallyCompactSpace G]
     {K : Set G} (hK : IsCompact K) :
@@ -292,7 +292,7 @@ theorem outerMeasure_lt_top_of_isCompact [WeaklyLocallyCompactSpace G]
 theorem is_mul_left_invariant_outerMeasure [Group G] [SeparatelyContinuousMul G]
     (h : ∀ (g : G) {K : Compacts G}, μ (K.map _ <| continuous_const_mul g) = μ K) (g : G)
     (A : Set G) : μ.outerMeasure ((g * ·) ⁻¹' A) = μ.outerMeasure A := by
-  convert μ.outerMeasure_preimage (Homeomorph.mulLeft g) (fun K => h g) A
+  convert! μ.outerMeasure_preimage (Homeomorph.mulLeft g) (fun K => h g) A
 
 theorem outerMeasure_caratheodory (A : Set G) :
     MeasurableSet[μ.outerMeasure.caratheodory] A ↔

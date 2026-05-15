@@ -178,7 +178,7 @@ lemma IsTangent.infDist_eq_radius {s : Sphere P} {as : AffineSubspace ℝ P} (h 
     Metric.infDist s.center as = s.radius := by
   obtain ⟨p, h⟩ := h
   refine le_antisymm ?_ ?_
-  · convert Metric.infDist_le_dist_of_mem h.mem_space
+  · convert! Metric.infDist_le_dist_of_mem h.mem_space
     rw [mem_sphere'.1 h.mem_sphere]
   · rw [Metric.infDist_eq_iInf]
     have : Nonempty as := ⟨⟨p, h.mem_space⟩⟩

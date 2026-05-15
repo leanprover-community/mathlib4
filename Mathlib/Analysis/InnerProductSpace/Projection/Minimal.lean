@@ -130,7 +130,7 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
   use v, hv
   have h_cont : Continuous fun v => ‖u - v‖ := by fun_prop
   have : Tendsto (fun n => ‖u - w n‖) atTop (𝓝 ‖u - v‖) := by
-    convert Tendsto.comp h_cont.continuousAt w_tendsto
+    convert! Tendsto.comp h_cont.continuousAt w_tendsto
   exact tendsto_nhds_unique this norm_tendsto
 
 /-- Characterization of minimizers for the projection on a convex set in a real inner product

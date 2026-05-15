@@ -304,7 +304,7 @@ lemma orderEmbOfFin_compl_singleton {n : ℕ} {i : Fin (n + 1)} {k : ℕ}
         (Fin.succAboveOrderEmb i) := by
   apply DFunLike.coe_injective
   rw [eq_comm]
-  convert orderEmbOfFin_unique _ (fun x ↦ ?_)
+  convert! orderEmbOfFin_unique _ (fun x ↦ ?_)
     ((Fin.strictMono_succAbove _).comp (Fin.cast_strictMono _))
   · simp
   · simp [← h, card_compl]

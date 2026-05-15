@@ -658,10 +658,10 @@ lemma closedInterior_face_eq_affineSegment {n : ℕ} (s : Simplex R P n) {i j : 
       simp [max_eq_left hji.le, min_eq_right hji.le]
   rw [h', (s.face (Finset.card_pair h)).closedInterior_eq_affineSegment, face_points, face_points]
   congr 2
-  · convert Finset.orderEmbOfFin_zero _ _
+  · convert! Finset.orderEmbOfFin_zero _ _
     · exact (Finset.min'_pair i j).symm
     · lia
-  · convert Finset.orderEmbOfFin_last _ _
+  · convert! Finset.orderEmbOfFin_last _ _
     · exact (Finset.max'_pair i j).symm
     · lia
 
@@ -712,10 +712,10 @@ lemma mem_interior_face_iff_sbtw [IsDomain R] [IsTorsionFree R V] {n : ℕ}
       simp [max_eq_left hji.le, min_eq_right hji.le]
   rw [h', mem_interior_iff_sbtw, face_points, face_points]
   congr! 4
-  · convert Finset.orderEmbOfFin_zero _ _
+  · convert! Finset.orderEmbOfFin_zero _ _
     · exact (Finset.min'_pair i j).symm
     · lia
-  · convert Finset.orderEmbOfFin_last _ _
+  · convert! Finset.orderEmbOfFin_last _ _
     · exact (Finset.max'_pair i j).symm
     · lia
 
@@ -941,8 +941,10 @@ theorem wbtw_or_wbtw_smul_vadd_of_nonneg (x : P) (v : V) {r₁ r₂ : R} (hr₁ 
 
 theorem wbtw_smul_vadd_smul_vadd_of_nonpos_of_le (x : P) (v : V) {r₁ r₂ : R} (hr₁ : r₁ ≤ 0)
     (hr₂ : r₂ ≤ r₁) : Wbtw R x (r₁ • v +ᵥ x) (r₂ • v +ᵥ x) := by
-  convert wbtw_smul_vadd_smul_vadd_of_nonneg_of_le x (-v) (Left.nonneg_neg_iff.2 hr₁)
-      (neg_le_neg_iff.2 hr₂) using 1 <;>
+  convert
+    wbtw_smul_vadd_smul_vadd_of_nonneg_of_le x (-v) (Left.nonneg_neg_iff.2 hr₁)
+      (neg_le_neg_iff.2 hr₂) using
+    1 <;>
     rw [neg_smul_neg]
 
 theorem wbtw_or_wbtw_smul_vadd_of_nonpos (x : P) (v : V) {r₁ r₂ : R} (hr₁ : r₁ ≤ 0) (hr₂ : r₂ ≤ 0) :
@@ -953,8 +955,10 @@ theorem wbtw_or_wbtw_smul_vadd_of_nonpos (x : P) (v : V) {r₁ r₂ : R} (hr₁ 
 
 theorem wbtw_smul_vadd_smul_vadd_of_nonpos_of_nonneg (x : P) (v : V) {r₁ r₂ : R} (hr₁ : r₁ ≤ 0)
     (hr₂ : 0 ≤ r₂) : Wbtw R (r₁ • v +ᵥ x) x (r₂ • v +ᵥ x) := by
-  convert wbtw_smul_vadd_smul_vadd_of_nonneg_of_le (r₁ • v +ᵥ x) v (Left.nonneg_neg_iff.2 hr₁)
-      (neg_le_sub_iff_le_add.2 ((le_add_iff_nonneg_left r₁).2 hr₂)) using 1 <;>
+  convert
+    wbtw_smul_vadd_smul_vadd_of_nonneg_of_le (r₁ • v +ᵥ x) v (Left.nonneg_neg_iff.2 hr₁)
+      (neg_le_sub_iff_le_add.2 ((le_add_iff_nonneg_left r₁).2 hr₂)) using
+    1 <;>
     simp [sub_smul, ← add_vadd]
 
 theorem wbtw_smul_vadd_smul_vadd_of_nonneg_of_nonpos (x : P) (v : V) {r₁ r₂ : R} (hr₁ : 0 ≤ r₁)

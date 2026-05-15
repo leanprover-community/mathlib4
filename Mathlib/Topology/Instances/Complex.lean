@@ -101,11 +101,11 @@ theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ :
       rcases ringHom_eq_id_or_conj_of_continuous hψ₁ with h | h
       · left
         ext1 z
-        convert RingHom.congr_fun h z using 1
+        convert! RingHom.congr_fun h z using 1
         exact (IsDenseInducing.extend_eq di hc.continuous z).symm
       · right
         ext1 z
-        convert RingHom.congr_fun h z using 1
+        convert! RingHom.congr_fun h z using 1
         exact (IsDenseInducing.extend_eq di hc.continuous z).symm
   · let j : { x // x ∈ closure (id '' K) } → (K.topologicalClosure : Set ℂ) :=
       fun x =>
@@ -113,7 +113,7 @@ theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ :
         convert x.prop
         simp only [id, Set.image_id']
         rfl ⟩
-    convert DenseRange.comp (Function.Surjective.denseRange _)
+    convert! DenseRange.comp (Function.Surjective.denseRange _)
       (IsDenseEmbedding.id.subtype (· ∈ K)).dense (by fun_prop : Continuous j)
     rintro ⟨y, hy⟩
     use

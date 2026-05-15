@@ -54,8 +54,8 @@ theorem isPrimitiveRoot_exp_of_coprime (i n : ℕ) (h0 : n ≠ 0) (hi : i.Coprim
   isPrimitiveRoot_exp_of_isCoprime _ _ h0 hi.isCoprime
 
 theorem isPrimitiveRoot_exp_rat (q : ℚ) : IsPrimitiveRoot (exp (2 * π * I * q)) q.den := by
-  convert isPrimitiveRoot_exp_of_isCoprime _ _ q.den_nz <|
-    Int.isCoprime_iff_nat_coprime.mpr q.reduced
+  convert
+    isPrimitiveRoot_exp_of_isCoprime _ _ q.den_nz <| Int.isCoprime_iff_nat_coprime.mpr q.reduced
   nth_rw 1 [← Rat.num_div_den q]
   simp
 
@@ -163,7 +163,7 @@ theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn 
     replace hin := Nat.isCoprime_iff_coprime.mpr hin
     split_ifs
     · exact hin
-    · convert hin.add_mul_left_left (-1) using 1
+    · convert! hin.add_mul_left_left (-1) using 1
       rw [mul_neg_one, sub_eq_add_neg]
   split_ifs with h₂
   · convert Complex.arg_cos_add_sin_mul_I _

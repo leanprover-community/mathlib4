@@ -71,7 +71,7 @@ lemma differentiableAt_hurwitzZeta (a : UnitAddCircle) {s : ℂ} (hs : s ≠ 1) 
 restrict to `a ∈ Icc 0 1` to simplify the statement. -/
 lemma hasSum_hurwitzZeta_of_one_lt_re {a : ℝ} (ha : a ∈ Icc 0 1) {s : ℂ} (hs : 1 < re s) :
     HasSum (fun n : ℕ ↦ 1 / (n + a : ℂ) ^ s) (hurwitzZeta a s) := by
-  convert (hasSum_nat_hurwitzZetaEven_of_mem_Icc ha hs).add
+  convert! (hasSum_nat_hurwitzZetaEven_of_mem_Icc ha hs).add
       (hasSum_nat_hurwitzZetaOdd_of_mem_Icc ha hs) using 1
   ext1 n
   -- plain `ring_nf` works here, but the following is faster:
@@ -126,7 +126,7 @@ lemma sinZeta_eq (a : UnitAddCircle) (s : ℂ) :
 
 lemma hasSum_expZeta_of_one_lt_re (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     HasSum (fun n : ℕ ↦ cexp (2 * π * I * a * n) / n ^ s) (expZeta a s) := by
-  convert (hasSum_nat_cosZeta a hs).add ((hasSum_nat_sinZeta a hs).mul_left I) using 1
+  convert! (hasSum_nat_cosZeta a hs).add ((hasSum_nat_sinZeta a hs).mul_left I) using 1
   ext1 n
   simp only [mul_right_comm _ I, ← cos_add_sin_I, push_cast]
   rw [add_div, mul_div, mul_comm _ I]

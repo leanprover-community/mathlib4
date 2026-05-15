@@ -84,7 +84,7 @@ lemma IsQuasiAffine.of_forall_exists_mem_basicOpen (X : Scheme.{u}) [CompactSpac
   obtain ⟨r, hr, hxr⟩ := H x
   refine ⟨PrimeSpectrum.basicOpen r, (X.toSpecΓ_preimage_basicOpen r).ge hxr, ?_⟩
   suffices IsOpenImmersion ((X.basicOpen r).ι ≫ X.toSpecΓ) by
-    convert this <;> rw [toSpecΓ_preimage_basicOpen]
+    convert! this <;> rw [toSpecΓ_preimage_basicOpen]
   rw [← Opens.toSpecΓ_SpecMap_presheaf_map_top]
   have := isLocalization_basicOpen_of_qcqs isCompact_univ isQuasiSeparated_univ r
   exact MorphismProperty.comp_mem _ hr.isoSpec.hom _ inferInstance (.of_isLocalization r)

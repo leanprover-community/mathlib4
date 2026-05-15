@@ -164,7 +164,7 @@ theorem vanishesTrivially_of_sum_tmul_eq_zero (hm : Submodule.span R (Set.range 
       Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte, rTensor_tmul, coe_subtype, Finsupp.sum_apply,
       Finsupp.sum_ite_eq', Finsupp.mem_support_iff, ne_eq, ite_not, en] at hkn
     simp only [Finset.univ_eq_attach, Finset.sum_attach ma (fun x ↦ (x.1 : ι →₀ R) i • x.2)]
-    convert hkn using 2 with x _
+    convert! hkn using 2 with x _
     split
     · next h'x => rw [h'x, zero_smul]
     · rfl
@@ -203,7 +203,7 @@ theorem vanishesTrivially_of_sum_tmul_eq_zero_of_rTensor_injective
     simp only [m'_eq, map_sum, rTensor_tmul, coe_subtype, Subtype.coind_coe, map_zero, hmn]
   have : VanishesTrivially R m' n := vanishesTrivially_of_sum_tmul_eq_zero R hm' hm'n
   unfold VanishesTrivially at this ⊢
-  convert this with κ _ a y j
+  convert! this with κ _ a y j
   convert (injective_iff_map_eq_zero' _).mp (injective_subtype (span R (Set.range m))) _
   simp [m'_eq]
 
@@ -239,7 +239,7 @@ theorem rTensor_injective_of_forall_vanishesTrivially
   have := hMN hx
   rw [← e.vanishesTrivially_comp]
   unfold VanishesTrivially at this ⊢
-  convert this
+  convert! this
   symm
   convert (injective_iff_map_eq_zero' _).mp (injective_subtype M') _
   simp

@@ -160,7 +160,7 @@ protected def sum' (M : ι → Matroid α) : Matroid (ι × α) :=
 @[simp] lemma sum'_indep_iff {I} :
     (Matroid.sum' M).Indep I ↔ ∀ i, (M i).Indep (Prod.mk i ⁻¹' I) := by
   simp only [Matroid.sum', mapEquiv_indep_iff, Equiv.sigmaEquivProd_symm_apply, sigma_indep_iff]
-  convert Iff.rfl
+  convert! Iff.rfl
   ext
   simp
 
@@ -172,14 +172,14 @@ protected def sum' (M : ι → Matroid α) : Matroid (ι × α) :=
 @[simp] lemma sum'_isBase_iff {B} :
     (Matroid.sum' M).IsBase B ↔ ∀ i, (M i).IsBase (Prod.mk i ⁻¹' B) := by
   simp only [Matroid.sum', mapEquiv_isBase_iff, Equiv.sigmaEquivProd_symm_apply, sigma_isBase_iff]
-  convert Iff.rfl
+  convert! Iff.rfl
   ext
   simp
 
 @[simp] lemma sum'_isBasis_iff {I X} :
     (Matroid.sum' M).IsBasis I X ↔ ∀ i, (M i).IsBasis (Prod.mk i ⁻¹' I) (Prod.mk i ⁻¹' X) := by
   simp only [Matroid.sum', mapEquiv_isBasis_iff, Equiv.sigmaEquivProd_symm_apply, sigma_isBasis_iff]
-  convert Iff.rfl <;>
+  convert! Iff.rfl <;>
   exact ext <| by simp
 
 lemma Finitary.sum' (h : ∀ i, (M i).Finitary) : (Matroid.sum' M).Finitary := by

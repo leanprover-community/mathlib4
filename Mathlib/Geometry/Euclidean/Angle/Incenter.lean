@@ -90,9 +90,11 @@ lemma dist_orthogonalProjectionSpan_faceOpposite_eq_iff_two_zsmul_oangle_eq {p :
       dist p ((t.faceOpposite i₂).orthogonalProjectionSpan p) ↔
         (2 : ℤ) • ∡ (t.points i₂) (t.points i₁) p = (2 : ℤ) • ∡ p (t.points i₁) (t.points i₃) := by
   have ha : AffineIndependent ℝ ![t.points i₁, t.points i₂, t.points i₃] := by
-    convert t.independent.comp_embedding ⟨![i₁, i₂, i₃], by
-      intro i j hij
-      fin_cases i <;> fin_cases j <;> simp_all⟩
+    convert
+      t.independent.comp_embedding
+        ⟨![i₁, i₂, i₃], by
+          intro i j hij
+          fin_cases i <;> fin_cases j <;> simp_all⟩
     ext i
     fin_cases i <;> rfl
   rw [orthogonalProjectionSpan, orthogonalProjectionSpan,

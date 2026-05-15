@@ -53,8 +53,9 @@ theorem conj_basisMatrix :
 
 theorem det_of_basisMatrix_non_zero [DecidableEq (K →+* ℂ)] : (basisMatrix K).det ≠ 0 := by
   rw [basisMatrix_eq_embeddingsMatrixReindex, ← pow_ne_zero_iff two_ne_zero]
-  convert (map_ne_zero_iff _ (algebraMap ℚ ℂ).injective).mpr
-    (Algebra.discr_not_zero_of_basis ℚ (integralBasis K))
+  convert
+    (map_ne_zero_iff _ (algebraMap ℚ ℂ).injective).mpr
+      (Algebra.discr_not_zero_of_basis ℚ (integralBasis K))
   rw [← Algebra.discr_reindex ℚ (integralBasis K) (equivReindex K).symm]
   exact (Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two ℚ ℂ
     (integralBasis K ∘ (equivReindex K)) RingHom.equivRatAlgHom).symm

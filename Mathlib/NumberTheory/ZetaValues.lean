@@ -85,7 +85,7 @@ section Calculus
 
 theorem hasDerivAt_bernoulliFun (k : ℕ) (x : ℝ) :
     HasDerivAt (bernoulliFun k) (k * bernoulliFun (k - 1) x) x := by
-  convert ((Polynomial.bernoulli k).map <| algebraMap ℚ ℝ).hasDerivAt x using 1
+  convert! ((Polynomial.bernoulli k).map <| algebraMap ℚ ℝ).hasDerivAt x using 1
   simp only [bernoulliFun, Polynomial.derivative_map, Polynomial.derivative_bernoulli k,
     Polynomial.map_mul, Polynomial.map_natCast, Polynomial.eval_mul, Polynomial.eval_natCast]
 
@@ -109,7 +109,7 @@ theorem deriv_bernoulliFun :
 
 theorem antideriv_bernoulliFun (k : ℕ) (x : ℝ) :
     HasDerivAt (fun x => bernoulliFun (k + 1) x / (k + 1)) (bernoulliFun k x) x := by
-  convert (hasDerivAt_bernoulliFun (k + 1) x).div_const _ using 1
+  convert! (hasDerivAt_bernoulliFun (k + 1) x).div_const _ using 1
   simp [Nat.cast_add_one_ne_zero k]
 
 theorem integral_bernoulliFun : ∫ x : ℝ in 0..1, bernoulliFun k x = if k = 0 then 1 else 0 := by
@@ -322,7 +322,7 @@ theorem hasSum_one_div_pow_mul_fourier_mul_bernoulliFun {k : ℕ} (hk : 2 ≤ k)
     has_pointwise_sum_fourier_series_of_summable
       ((summable_bernoulli_fourier hk).congr fun n => (step1 n).symm) y
   simp_rw [step1] at step2
-  convert step2.mul_left (-(2 * ↑π * I) ^ k / (k ! : ℂ)) using 2 with n
+  convert! step2.mul_left (-(2 * ↑π * I) ^ k / (k ! : ℂ)) using 2 with n
   · rw [smul_eq_mul, ← mul_assoc, mul_div, mul_neg, div_mul_cancel₀, neg_neg, mul_pow _ (n : ℂ),
       ← div_div, div_self]
     · rw [Ne, pow_eq_zero_iff', not_and_or]
@@ -372,7 +372,7 @@ theorem hasSum_one_div_nat_pow_mul_cos {k : ℕ} (hk : k ≠ 0) {x : ℝ} (hx : 
         · rw [pow_mul, I_sq]
       ring
   have ofReal_two : ((2 : ℝ) : ℂ) = 2 := by norm_cast
-  convert ((hasSum_iff _ _).mp (this.div_const 2)).1 with n
+  convert! ((hasSum_iff _ _).mp (this.div_const 2)).1 with n
   · convert (ofReal_re _).symm
     rw [ofReal_mul]; rw [← mul_div]; congr
     · rw [ofReal_div, ofReal_one, ofReal_pow]; rfl
@@ -412,7 +412,7 @@ theorem hasSum_one_div_nat_pow_mul_sin {k : ℕ} (hk : k ≠ 0) {x : ℝ} (hx : 
         · rw [pow_add, pow_one, pow_mul, I_sq]
       ring
   have ofReal_two : ((2 : ℝ) : ℂ) = 2 := by norm_cast
-  convert ((hasSum_iff _ _).mp (this.div_const (2 * I))).1
+  convert! ((hasSum_iff _ _).mp (this.div_const (2 * I))).1
   · convert (ofReal_re _).symm
     rw [ofReal_mul]; rw [← mul_div]; congr
     · rw [ofReal_div, ofReal_one, ofReal_pow]; rfl
@@ -454,7 +454,7 @@ end Cleanup
 section Examples
 
 theorem hasSum_zeta_two : HasSum (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 2) (π ^ 2 / 6) := by
-  convert hasSum_zeta_nat one_ne_zero using 1; rw [mul_one]
+  convert! hasSum_zeta_nat one_ne_zero using 1; rw [mul_one]
   rw [bernoulli_eq_bernoulli'_of_ne_one (by decide : 2 ≠ 1), bernoulli'_two]
   simp [Nat.factorial]; ring
 

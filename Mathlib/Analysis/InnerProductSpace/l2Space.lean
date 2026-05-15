@@ -177,7 +177,7 @@ include hV
 protected theorem summable_of_lp (f : lp G 2) :
     Summable fun i => V i (f i) := by
   rw [hV.summable_iff_norm_sq_summable]
-  convert (lp.memℓp f).summable _
+  convert! (lp.memℓp f).summable _
   · norm_cast
   · norm_num
 
@@ -456,7 +456,7 @@ protected theorem dense_span (b : HilbertBasis ι 𝕜 E) :
 
 protected theorem hasSum_inner_mul_inner (b : HilbertBasis ι 𝕜 E) (x y : E) :
     HasSum (fun i => ⟪x, b i⟫ * ⟪b i, y⟫) ⟪x, y⟫ := by
-  convert (b.hasSum_repr y).mapL (innerSL 𝕜 x) using 1
+  convert! (b.hasSum_repr y).mapL (innerSL 𝕜 x) using 1
   ext i
   rw [innerSL_apply_apply, b.repr_apply_apply, inner_smul_right, mul_comm]
 

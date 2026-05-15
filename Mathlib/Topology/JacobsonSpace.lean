@@ -60,7 +60,7 @@ lemma closedPoints_eq_univ [T1Space X] :
 
 lemma Set.Finite.isDiscrete_of_subset_closedPoints
     {s : Set X} (hs : s.Finite) (hs' : s ⊆ closedPoints X) : IsDiscrete s := by
-  have : T1Space s := ⟨fun x ↦ by convert (hs' x.2).preimage continuous_subtype_val; aesop⟩
+  have : T1Space s := ⟨fun x ↦ by convert! (hs' x.2).preimage continuous_subtype_val; aesop⟩
   have : Finite s := hs
   exact ⟨inferInstance⟩
 
@@ -179,12 +179,13 @@ lemma TopologicalSpace.IsOpenCover.jacobsonSpace_iff {ι : Type*} {U : ι → Op
     (hZ'.preimage continuous_subtype_val)
   refine ⟨y, hy, hU.isClosed_iff_coe_preimage.mpr fun j ↦ ?_⟩
   by_cases h : (y : X) ∈ U j
-  · convert_to IsClosed {(⟨y, h⟩ : U j)}
+  · convert_to! IsClosed {(⟨y, h⟩ : U j)}
     · ext; simp [← Subtype.coe_inj]
     apply isClosed_singleton_of_isLocallyClosed_singleton
-    convert (hy'.isLocallyClosed.image IsEmbedding.subtypeVal.isInducing
-      (U i).2.isOpenEmbedding_subtypeVal.isOpen_range.isLocallyClosed).preimage
-      continuous_subtype_val
+    convert
+      (hy'.isLocallyClosed.image IsEmbedding.subtypeVal.isInducing
+            (U i).2.isOpenEmbedding_subtypeVal.isOpen_range.isLocallyClosed).preimage
+        continuous_subtype_val
     ext
     simp [← Subtype.coe_inj]
   · convert isClosed_empty

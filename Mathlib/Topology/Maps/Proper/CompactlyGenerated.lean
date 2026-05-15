@@ -34,7 +34,7 @@ theorem isProperMap_iff_isCompact_preimage :
   mp hf := ⟨hf.continuous, fun _ ↦ hf.isCompact_preimage⟩
   mpr := fun ⟨hf, h⟩ ↦ isProperMap_iff_isClosedMap_and_compact_fibers.2
     ⟨hf, fun s hs ↦ (CompactlyCoherentSpace.isClosed_iff _).mpr fun K hK ↦ by
-        convert (((h hK).inter_left hs).image hf).isClosed.preimage continuous_subtype_val using 1
+        convert! (((h hK).inter_left hs).image hf).isClosed.preimage continuous_subtype_val using 1
         aesop, fun _ ↦ h isCompact_singleton⟩
 
 /-- Version of `isProperMap_iff_isCompact_preimage` in terms of `cocompact`.

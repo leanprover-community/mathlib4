@@ -154,7 +154,7 @@ theorem tan_sub {x y : ℂ}
       push_cast
       ring
   rw [tan_neg] at this
-  convert this using 2
+  convert! this using 2
   ring
 
 theorem tan_sub' {x y : ℂ}

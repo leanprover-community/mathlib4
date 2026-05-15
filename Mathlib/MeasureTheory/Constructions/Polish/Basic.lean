@@ -716,7 +716,7 @@ theorem MeasureTheory.measurableSet_range_of_continuous_injective {β : Type*} [
       exact ball_mem_nhds _ (half_pos (u_pos n))
     have diam_s : diam s ≤ u n := by
       apply (diam_mono hs isBounded_ball).trans
-      convert diam_ball (x := y) (half_pos (u_pos n)).le
+      convert! diam_ball (x := y) (half_pos (u_pos n)).le
       ring
     refine mem_iUnion.2 ⟨⟨s, sb⟩, ?_⟩
     refine mem_iUnion.2 ⟨⟨isBounded_ball.subset hs, diam_s⟩, ?_⟩

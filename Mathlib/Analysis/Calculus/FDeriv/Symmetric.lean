@@ -358,7 +358,7 @@ theorem Convex.isLittleO_alternate_sum_square {v w : E} (h4v : x + (4 : ℝ) •
     module
   have TA1 := s_conv.taylor_approx_two_segment hf xs hx h2vw h2vww
   have TA2 := s_conv.taylor_approx_two_segment hf xs hx hvw hvww
-  convert TA1.sub TA2 using 1
+  convert! TA1.sub TA2 using 1
   ext h
   simp only [two_smul, smul_add, ← add_assoc, map_add,
     ContinuousLinearMap.add_apply]
@@ -372,7 +372,7 @@ theorem Convex.second_derivative_within_at_symmetric_of_mem_interior {v w : E}
     (h4v : x + (4 : ℝ) • v ∈ interior s) (h4w : x + (4 : ℝ) • w ∈ interior s) :
     f'' w v = f'' v w := by
   have A : (fun h : ℝ => h ^ 2 • (f'' w v - f'' v w)) =o[𝓝[>] 0] fun h => h ^ 2 := by
-    convert (s_conv.isLittleO_alternate_sum_square hf xs hx h4v h4w).sub
+    convert! (s_conv.isLittleO_alternate_sum_square hf xs hx h4v h4w).sub
       (s_conv.isLittleO_alternate_sum_square hf xs hx h4w h4v) using 1
     ext h
     simp only [add_comm, smul_add, smul_sub]

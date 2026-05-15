@@ -90,7 +90,7 @@ lemma goursat_surjective : ∃ e : (M ⧸ L.goursatFst) ≃ₗ[R] N ⧸ L.goursa
   -- define the map as an R-linear equiv
   use { e with map_smul' := this }
   rw [← toAddSubgroup_injective.eq_iff]
-  convert he using 1
+  convert! he using 1
   ext v
   rw [mem_toAddSubgroup, mem_graph_iff, Eq.comm]
   rfl

@@ -247,7 +247,7 @@ theorem isClosed_setOf_totallyBounded : IsClosed {s : Set α | TotallyBounded s}
 
 instance [DiscreteUniformity α] : DiscreteUniformity (Set α) := by
   rw [discreteUniformity_iff_setRelId_mem_uniformity]
-  convert Filter.mem_lift' (DiscreteUniformity.relId_mem_uniformity α)
+  convert! Filter.mem_lift' (DiscreteUniformity.relId_mem_uniformity α)
   rw [hausdorffEntourage_id]
 
 end UniformSpace.hausdorff
@@ -372,8 +372,7 @@ theorem isClosed_subsets_of_isClosed {s : Set α} (hs : IsClosed s) :
   isClosed_induced hs.powerset_hausdorff
 
 theorem isClopen_singleton_bot : IsClopen {(⊥ : Closeds α)} := by
-  convert UniformSpace.hausdorff.isClopen_singleton_empty.preimage
-    uniformContinuous_coe.continuous
+  convert UniformSpace.hausdorff.isClopen_singleton_empty.preimage uniformContinuous_coe.continuous
   ext; simp
 
 theorem totallyBounded_subsets_of_totallyBounded {t : Set α} (ht : TotallyBounded t) :

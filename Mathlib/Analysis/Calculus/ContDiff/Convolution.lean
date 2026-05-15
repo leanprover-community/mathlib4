@@ -322,7 +322,7 @@ theorem contDiffOn_convolution_right_with_param_aux {G : Type uP} {E' : Type uP}
         rintro ⟨p, y⟩ ⟨hp, hy⟩
         exact hgs p y hp hy
       apply ih (L.precompR (P × G) :) B
-      convert hg.2.2
+      convert! hg.2.2
   | top ih =>
     rw [contDiffOn_infty] at hg ⊢
     exact fun n ↦ ih n L hgs (hg n)

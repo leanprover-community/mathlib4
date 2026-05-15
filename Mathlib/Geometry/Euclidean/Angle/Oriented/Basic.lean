@@ -77,7 +77,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem oangle_self (x : V) : o.oangle x x = 0 := by
   rw [oangle, kahler_apply_self, ← ofReal_pow]
-  convert QuotientAddGroup.mk_zero (AddSubgroup.zmultiples (2 * π))
+  convert! QuotientAddGroup.mk_zero (AddSubgroup.zmultiples (2 * π))
   apply arg_ofReal_of_nonneg
   positivity
 
@@ -180,7 +180,7 @@ theorem oangle_add_oangle_rev (x y : V) : o.oangle x y + o.oangle y x = 0 := by
 theorem oangle_neg_left {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
     o.oangle (-x) y = o.oangle x y + π := by
   simp only [oangle, map_neg]
-  convert Complex.arg_neg_coe_angle _
+  convert! Complex.arg_neg_coe_angle _
   exact o.kahler_ne_zero hx hy
 
 /-- Negating the second vector passed to `oangle` adds `π` to the angle. -/

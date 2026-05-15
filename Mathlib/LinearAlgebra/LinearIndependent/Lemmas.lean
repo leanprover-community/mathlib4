@@ -155,7 +155,7 @@ variable (hv : LinearIndependent R v)
 /-- See also `iSupIndep_iff_linearIndependent_of_ne_zero`. -/
 theorem LinearIndependent.iSupIndep_span_singleton (hv : LinearIndependent R v) :
     iSupIndep fun i => R ∙ v i := by
-  convert LinearMap.iSupIndep_map _ hv (iSupIndep_range_lsingle ι R R)
+  convert! LinearMap.iSupIndep_map _ hv (iSupIndep_range_lsingle ι R R)
   ext; simp [mem_span_singleton]
 
 end repr
@@ -631,7 +631,7 @@ theorem linearIndepOn_id_pair {x y : V} (hx : x ≠ 0) (hy : ∀ a : K, a • x 
 theorem linearIndepOn_pair_iff {i j : ι} (v : ι → V) (hij : i ≠ j) (hi : v i ≠ 0) :
     LinearIndepOn K v {i, j} ↔ ∀ (c : K), c • v i ≠ v j := by
   rw [pair_comm]
-  convert linearIndepOn_insert (s := {i}) (a := j) hij.symm
+  convert linearIndepOn_insert (s := { i }) (a := j) hij.symm
   simp [hi, mem_span_singleton]
 
 /-- Also see `LinearIndependent.pair_iff` for the version over arbitrary rings. -/
@@ -749,7 +749,7 @@ theorem exists_linearIndepOn_extension {s t : Set ι} (hs : LinearIndepOn K v s)
 
 theorem exists_linearIndepOn_id_extension (hs : LinearIndepOn K id s) (hst : s ⊆ t) :
     ∃ b ⊆ t, s ⊆ b ∧ t ⊆ span K b ∧ LinearIndepOn K id b := by
-  convert exists_linearIndepOn_extension hs hst <;> simp
+  convert! exists_linearIndepOn_extension hs hst <;> simp
 
 variable (K t)
 

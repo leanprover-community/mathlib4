@@ -237,7 +237,7 @@ instance [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)] {i : I}
     (U : (D.obj i).Opens) {j k : Over i} (f : j ⟶ k) :
     IsAffineHom ((opensDiagram D i U).map f) := by
   refine ⟨fun V hV ↦ ?_⟩
-  convert ((hV.image_of_isOpenImmersion (D.map k.hom ⁻¹ᵁ U).ι).preimage
+  convert! ((hV.image_of_isOpenImmersion (D.map k.hom ⁻¹ᵁ U).ι).preimage
     (D.map f.left)).preimage_of_isOpenImmersion (D.map j.hom ⁻¹ᵁ U).ι ?_
   · ext x
     change _ ∈ V ↔ _
@@ -245,10 +245,10 @@ instance [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)] {i : I}
     · change (D.map f.left ≫ D.map k.hom).base x.1 ∈ U
       rw [← D.map_comp, Over.w f]
       exact x.2
-    · convert h
+    · convert! h
       exact Subtype.ext (by simp)
     · rintro ⟨⟨_, hU⟩, hV, rfl⟩
-      convert hV
+      convert! hV
       exact Subtype.ext (by simp)
   · simp only [opensDiagram_obj, Scheme.Opens.opensRange_ι]
     rintro x ⟨⟨y, h₁ : (D.map k.hom).base y ∈ U⟩, h₂, e⟩
@@ -314,7 +314,7 @@ lemma isBasis_preimage_isAffineOpen [IsCofiltered I] [∀ {i j} (f : i ⟶ j), I
   obtain ⟨s, rfl⟩ := (D.map j.hom ⁻¹ᵁ V).topIso.symm.commRingCatIsoToRingEquiv.surjective s
   have h : c.π.app j.left ⁻¹ᵁ D.map j.hom ⁻¹ᵁ V = c.π.app i ⁻¹ᵁ V := congr($(c.w j.hom) ⁻¹ᵁ V)
   have : r = (c.π.app j.left).appLE (D.map j.hom ⁻¹ᵁ V) (c.π.app i ⁻¹ᵁ V) h.ge s := by
-    convert show r = ((topIso _).inv ≫ ((opensCone D c i V).π.app j).appTop ≫ (topIso _).hom) s
+    convert! show r = ((topIso _).inv ≫ ((opensCone D c i V).π.app j).appTop ≫ (topIso _).hom) s
       from (c.π.app i ⁻¹ᵁ V).topIso.commRingCatIsoToRingEquiv.symm_apply_eq.mp hs.symm using 3
     simp [Scheme.Hom.app_eq_appLE, Scheme.Hom.resLE_appLE]
   refine ⟨_, ⟨j.left, _, (hV.preimage _).basicOpen s, rfl⟩, ?_⟩
@@ -788,8 +788,9 @@ lemma exists_app_map_eq_zero_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D
   dsimp at hf
   refine ⟨j.left, f.left, ?_⟩
   have hf' : f.left = j.hom := by simpa using Over.w f
-  convert congr((D.obj j.left).presheaf.map (homOfLE
-    (show D.map f.left ⁻¹ᵁ U ≤ (D.map j.hom ⁻¹ᵁ U).ι ''ᵁ ⊤ by simp [hf'])).op $hf)
+  convert
+    congr((D.obj j.left).presheaf.map
+      (homOfLE (show D.map f.left ⁻¹ᵁ U ≤ (D.map j.hom ⁻¹ᵁ U).ι ''ᵁ ⊤ by simp [hf'])).op $hf)
   · dsimp [Scheme.Opens.toScheme_presheaf_obj]
     rw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply]
     congr! 2
@@ -834,8 +835,8 @@ lemma exists_appTop_π_eq_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D.ma
       rwa [Cone.w]
     · have H : c.π.app j.left ⁻¹ᵁ (D.map j.hom ⁻¹ᵁ U).ι ''ᵁ ⊤ ≤ (c.π.app i ⁻¹ᵁ U).ι ''ᵁ ⊤ := by
         simp [← Scheme.Hom.comp_preimage]
-      convert congr(c.pt.presheaf.map (homOfLE H).op $hj)
-      · convert ConcreteCategory.comp_apply _ _ _
+      convert! congr(c.pt.presheaf.map (homOfLE H).op $hj)
+      · convert! ConcreteCategory.comp_apply _ _ _
         congr
         simp [Scheme.Hom.app_eq_appLE, Scheme.Hom.resLE_appLE]
       · dsimp [TopCat.Presheaf.restrictOpen, TopCat.Presheaf.restrict]
@@ -903,7 +904,7 @@ lemma exists_appTop_π_eq_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D.ma
       rw [← Functor.map_comp, ← Functor.map_comp, Category.assoc, Category.assoc,
         hk₁ x.2 y.2, hk₂ x.2 y.2, le_inf_iff]
       exact ⟨fVx.le, fVy.le⟩
-    convert congr(((D.map (fk'k ≫ fk (hjS x.2 y.2))).app _ ≫
+    convert! congr(((D.map (fk'k ≫ fk (hjS x.2 y.2))).app _ ≫
       (D.obj k').presheaf.map (homOfLE H).op) $(hj x y)) using 1
     · dsimp [TopCat.Presheaf.restrictOpen, TopCat.Presheaf.restrict]
       simp only [← ConcreteCategory.comp_apply]
@@ -979,8 +980,10 @@ lemma Scheme.exists_isQuasiAffine_of_isLimit [IsCofiltered I]
         rwa [← preimage_basicOpen_top, ← Hom.comp_preimage, ← Hom.comp_preimage,
           c.w, c.w, preimage_basicOpen_top])
     refine ⟨l, (D.map (flk ≫ fkj)).appTop r, ?_, ?_⟩
-    · convert (hU.preimage (D.map (flk ≫ fki))).basicOpen
-        ((D.obj _).presheaf.map (homOfLE le_top).op ((D.map (flk ≫ fkj)).appTop r)) using 1
+    · convert
+      (hU.preimage (D.map (flk ≫ fki))).basicOpen
+        ((D.obj _).presheaf.map (homOfLE le_top).op ((D.map (flk ≫ fkj)).appTop r)) using
+      1
       rwa [Scheme.basicOpen_res, eq_comm, inf_eq_right, Functor.map_comp,
         elementwise_of% Scheme.Hom.comp_appTop, ← Scheme.preimage_basicOpen_top, Functor.map_comp,
         Scheme.Hom.comp_preimage]

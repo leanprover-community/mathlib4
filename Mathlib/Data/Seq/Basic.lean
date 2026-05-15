@@ -622,12 +622,12 @@ theorem zipWith_map (s₁ : Seq α) (s₂ : Seq β) (f₁ : α → α') (f₂ : 
 
 theorem zipWith_map_left (s₁ : Seq α) (s₂ : Seq β) (f : α → α') (g : α' → β → γ) :
     zipWith g (s₁.map f) s₂ = zipWith (fun a b ↦ g (f a) b) s₁ s₂ := by
-  convert zipWith_map _ _ _ (@id β) _
+  convert! zipWith_map _ _ _ (@id β) _
   simp
 
 theorem zipWith_map_right (s₁ : Seq α) (s₂ : Seq β) (f : β → β') (g : α → β' → γ) :
     zipWith g s₁ (s₂.map f) = zipWith (fun a b ↦ g a (f b)) s₁ s₂ := by
-  convert zipWith_map _ _ (@id α) _ _
+  convert! zipWith_map _ _ (@id α) _ _
   simp
 
 theorem zip_map (s₁ : Seq α) (s₂ : Seq β) (f₁ : α → α') (f₂ : β → β') :

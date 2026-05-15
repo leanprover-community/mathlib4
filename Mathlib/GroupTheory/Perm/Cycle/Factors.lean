@@ -101,12 +101,12 @@ theorem cycleOf_apply_apply_zpow_self (f : Perm α) [DecidableRel f.SameCycle] (
 @[simp]
 theorem cycleOf_apply_apply_pow_self (f : Perm α) [DecidableRel f.SameCycle] (x : α) (k : ℕ) :
     cycleOf f x ((f ^ k) x) = (f ^ (k + 1) : Perm α) x := by
-  convert cycleOf_apply_apply_zpow_self f x k using 1
+  convert! cycleOf_apply_apply_zpow_self f x k using 1
 
 @[simp]
 theorem cycleOf_apply_apply_self (f : Perm α) [DecidableRel f.SameCycle] (x : α) :
     cycleOf f x (f x) = f (f x) := by
-  convert cycleOf_apply_apply_pow_self f x 1 using 1
+  convert! cycleOf_apply_apply_pow_self f x 1 using 1
 
 @[simp]
 theorem cycleOf_apply_self (f : Perm α) [DecidableRel f.SameCycle] (x : α) : cycleOf f x x = f x :=

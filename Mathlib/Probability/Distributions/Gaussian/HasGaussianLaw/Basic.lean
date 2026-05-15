@@ -236,7 +236,7 @@ lemma fun_sum {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [Measurable
     [BorelSpace E] [SecondCountableTopology E]
     {X : ι → Ω → E} (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) :
     HasGaussianLaw (fun ω ↦ ∑ i, X i ω) P := by
-  convert hX.sum
+  convert! hX.sum
   simp
 
 end Pi

@@ -381,7 +381,7 @@ theorem erdos_ko_rado {𝒜 : Finset (Finset (Fin n))} {r : ℕ}
     _ < #𝒜 + #(∂^[n - 2 * r] 𝒜ᶜˢ) := add_lt_add_of_lt_of_le size kk
     _ = #(𝒜 ∪ ∂^[n - 2 * r] 𝒜ᶜˢ) := by rw [card_union_of_disjoint ‹_›]
   apply this.not_ge
-  convert Set.Sized.card_le _
+  convert! Set.Sized.card_le _
   · rw [Fintype.card_fin]
   rw [coe_union, Set.sized_union]
   refine ⟨‹_›, ?_⟩

@@ -213,8 +213,10 @@ def mapCotangent (I₁ : Ideal A) (I₂ : Ideal B) (f : A →ₐ[R] B) (h : I₁
     refine Submodule.smul_induction_on hx ?_ (fun _ _ ↦ add_mem)
     rintro a ha ⟨b, hb⟩ -
     simp only [SetLike.mk_smul_mk, smul_eq_mul, Submodule.mem_comap, Submodule.restrictScalars_mem]
-    convert (Submodule.smul_mem_smul (M := I₂) (r := f a)
-      (n := ⟨f b, h hb⟩) (h ha) (Submodule.mem_top)) using 1
+    convert
+      (Submodule.smul_mem_smul (M := I₂) (r := f a) (n := ⟨f b, h hb⟩) (h ha)
+        (Submodule.mem_top)) using
+      1
     ext
     exact map_mul f a b
 

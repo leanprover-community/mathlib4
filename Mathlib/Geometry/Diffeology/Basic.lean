@@ -336,7 +336,7 @@ def ofCorePlotsOn {X : Type*} (d : DiffeologicalSpace.CorePlotsOn X) :
     refine ⟨_, Metric.isOpen_ball, Metric.mem_ball_self hε, (d.isPlotOn_congr _ ?_).mp h'⟩
     rw [Function.comp_assoc, ← OpenPartialHomeomorph.coe_trans]
     apply Set.EqOn.comp_left
-    convert (OpenPartialHomeomorph.symm_trans_self (OpenPartialHomeomorph.univBall x ε)).2
+    convert! (OpenPartialHomeomorph.symm_trans_self (OpenPartialHomeomorph.univBall x ε)).2
     simp [OpenPartialHomeomorph.univBall_target x hε]
   dTopology := d.dTopology
   isOpen_iff_preimages_plots := d.isOpen_iff_preimages_plots

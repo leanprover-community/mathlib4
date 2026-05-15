@@ -282,7 +282,7 @@ lemma of_isIntegrallyClosedIn
     (FaithfulSMul.algebraMap_injective R K)
   rw [isIntegrallyClosed_iff (K := FractionRing R)]
   intro x hx
-  convert (IsIntegralClosure.isIntegral_iff (A := R)).mp (hx.map f)
+  convert! (IsIntegralClosure.isIntegral_iff (A := R)).mp (hx.map f)
   simp [← f.toRingHom.injective.eq_iff]
 
 lemma _root_.IsIntegralClosure.of_isIntegralClosure_of_isIntegrallyClosedIn

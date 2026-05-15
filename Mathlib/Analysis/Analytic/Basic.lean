@@ -798,8 +798,10 @@ theorem HasFPowerSeriesWithinOnBall.isBigO_image_sub_image_sub_deriv_principal
       exact Metric.eball_subset_eball hr.le hy'
     set A : ℕ → F := fun n => (p n fun _ => y.1 - x) - p n fun _ => y.2 - x
     have hA : HasSum (fun n => A (n + 2)) (f y.1 - f y.2 - p 1 fun _ => y.1 - y.2) := by
-      convert (hasSum_nat_add_iff' 2).2
-        ((hf.hasSum_sub ⟨ys.1, hy.1⟩).sub (hf.hasSum_sub ⟨ys.2, hy.2⟩)) using 1
+      convert
+        (hasSum_nat_add_iff' 2).2
+          ((hf.hasSum_sub ⟨ys.1, hy.1⟩).sub (hf.hasSum_sub ⟨ys.2, hy.2⟩)) using
+        1
       rw [Finset.sum_range_succ, Finset.sum_range_one, hf.coeff_zero, hf.coeff_zero, sub_self,
         zero_add, ← Subsingleton.pi_single_eq (0 : Fin 1) (y.1 - x), Pi.single,
         ← Subsingleton.pi_single_eq (0 : Fin 1) (y.2 - x), Pi.single, ← (p 1).map_update_sub,
@@ -953,7 +955,7 @@ theorem HasFPowerSeriesWithinOnBall.tendstoUniformlyOn' {r' : ℝ≥0}
     (hf : HasFPowerSeriesWithinOnBall f p s x r) (h : (r' : ℝ≥0∞) < r) :
     TendstoUniformlyOn (fun n y => p.partialSum n (y - x)) f atTop
       (insert x s ∩ Metric.ball (x : E) r') := by
-  convert (hf.tendstoUniformlyOn h).comp fun y => y - x using 1
+  convert! (hf.tendstoUniformlyOn h).comp fun y => y - x using 1
   · simp [Function.comp_def]
   · ext z
     simp [dist_eq_norm]
@@ -975,7 +977,7 @@ theorem HasFPowerSeriesWithinOnBall.tendstoLocallyUniformlyOn'
     TendstoLocallyUniformlyOn (fun n y => p.partialSum n (y - x)) f atTop
       (insert x s ∩ Metric.eball (x : E) r) := by
   have A : ContinuousOn (fun y : E => y - x) (insert x s ∩ Metric.eball (x : E) r) := by fun_prop
-  convert hf.tendstoLocallyUniformlyOn.comp (fun y : E => y - x) _ A using 1
+  convert! hf.tendstoLocallyUniformlyOn.comp (fun y : E => y - x) _ A using 1
   · ext z
     simp
   · intro z
@@ -1115,7 +1117,7 @@ theorem hasFPowerSeriesAt_iff :
     have : (‖z‖₊ : ENNReal) ≤ p.radius := by
       simp only [dist_zero_right] at h
       apply FormalMultilinearSeries.le_radius_of_tendsto
-      convert tendsto_norm.comp (h le_z).summable.tendsto_atTop_zero
+      convert! tendsto_norm.comp (h le_z).summable.tendsto_atTop_zero
       simp [norm_smul, mul_comm]
     refine lt_of_lt_of_le ?_ this
     simp only [ENNReal.coe_pos]

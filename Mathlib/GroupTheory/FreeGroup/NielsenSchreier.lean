@@ -128,8 +128,7 @@ instance actionGroupoidIsFree {G A : Type u} [Group G] [IsFreeGroup G] [MulActio
         apply uF'
         intro e
         ext
-        · convert hE _ _ _
-          rfl
+        · convert! hE _ _ _
         · rfl
       apply Functor.hext
       · intro

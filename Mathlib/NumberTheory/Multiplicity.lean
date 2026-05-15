@@ -347,7 +347,7 @@ theorem Nat.two_pow_sub_pow {x y : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n 
       Int.natCast_pow]
     rw [← Int.natCast_dvd_natCast] at hx
     rw [← Int.natCast_dvd_natCast, Int.ofNat_sub hyx] at hxy
-    convert Int.two_pow_sub_pow hxy hx hn using 2
+    convert! Int.two_pow_sub_pow hxy hx hn using 2
     rw [← Int.natCast_emultiplicity]
     rfl
   · simp only [Nat.sub_eq_zero_iff_le.mpr hyx,

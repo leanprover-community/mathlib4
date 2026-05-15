@@ -75,7 +75,7 @@ end NonTriviallyNormedField
 theorem hasDerivAt_resolvent_const_right [NontriviallyNormedField 𝕜] [NontriviallyNormedField A]
     [NormedAlgebra 𝕜 A] [CompleteSpace A] {a : A} {k : 𝕜} (hk : k ∈ resolventSet 𝕜 a) :
     HasDerivAt (resolvent · k) (resolvent a k ^ 2) a := by
-  convert hasFDerivAt_resolvent (𝕜 := A) hk |>.hasDerivAt
+  convert! hasFDerivAt_resolvent (𝕜 := A) hk |>.hasDerivAt
   simp [resolvent, pow_two]
 
 open ENNReal in

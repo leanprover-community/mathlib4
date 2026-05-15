@@ -683,7 +683,7 @@ theorem fderiv_inverse (x : Rˣ) : fderiv 𝕜 (@Ring.inverse R _) x = -mulLeftR
 
 theorem hasStrictFDerivAt_ringInverse (x : Rˣ) :
     HasStrictFDerivAt Ring.inverse (-mulLeftRight 𝕜 R ↑x⁻¹ ↑x⁻¹) x := by
-  convert (analyticAt_inverse (𝕜 := 𝕜) x).hasStrictFDerivAt
+  convert! (analyticAt_inverse (𝕜 := 𝕜) x).hasStrictFDerivAt
   exact (fderiv_inverse x).symm
 
 variable {h : E → R} {z : E} {S : Set E}

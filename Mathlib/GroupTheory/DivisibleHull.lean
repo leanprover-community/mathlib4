@@ -143,7 +143,7 @@ theorem nsmul_mk (a : ℕ) (m : M) (s : ℕ+) : a • mk m s = mk (a • m) s :=
 
 theorem nnqsmul_mk (a : ℚ≥0) (m : M) (s : ℕ+) :
     a • mk m s = mk (a.num • m) (⟨a.den, a.den_pos⟩ * s) := by
-  convert LocalizedModule.mk'_smul_mk ℚ≥0 a.num m ⟨a.den, by simp⟩ (↑ⁿ s)
+  convert! LocalizedModule.mk'_smul_mk ℚ≥0 a.num m ⟨a.den, by simp⟩ (↑ⁿ s)
   simp [IsLocalization.eq_mk'_iff_mul_eq]
 
 section TorsionFree

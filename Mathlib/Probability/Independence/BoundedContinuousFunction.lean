@@ -107,7 +107,7 @@ lemma pi_indepFun_pi_of_prod_bcf (mX : ∀ s, AEMeasurable (X s) P)
     (aemeasurable_pi_lambda _ mY)]
   refine eq_prod_of_integral_prod_mul_prod_boundedContinuousFunction fun f g ↦ ?_
   rw [integral_map, integral_map, integral_map]
-  · convert h f g <;> simp
+  · convert! h f g <;> simp
   any_goals fun_prop
   all_goals exact Measurable.aestronglyMeasurable (by fun_prop)
 
@@ -122,7 +122,7 @@ lemma pi_indepFun_pi_of_bcf (mX : ∀ s, AEMeasurable (X s) P)
     IndepFun (fun ω s ↦ X s ω) (fun ω t ↦ Y t ω) P := by
   have := Fintype.ofFinite S; have := Fintype.ofFinite T
   refine pi_indepFun_pi_of_prod_bcf mX mY fun f g ↦ ?_
-  convert h (∏ s, (f s).compContinuous ⟨Function.eval s, by fun_prop⟩)
+  convert! h (∏ s, (f s).compContinuous ⟨Function.eval s, by fun_prop⟩)
     (∏ t, (g t).compContinuous ⟨Function.eval t, by fun_prop⟩) <;> simp
 
 lemma indepFun_pi_of_prod_bcf (mZ : AEMeasurable Z P)
@@ -133,7 +133,7 @@ lemma indepFun_pi_of_prod_bcf (mZ : AEMeasurable Z P)
   rw [indepFun_iff_map_prod_eq_prod_map_map mZ (aemeasurable_pi_lambda _ mY)]
   refine eq_prod_of_integral_mul_prod_boundedContinuousFunction fun f g ↦ ?_
   rw [integral_map, integral_map, integral_map]
-  · convert h f g <;> simp
+  · convert! h f g <;> simp
   any_goals fun_prop
   all_goals exact Measurable.aestronglyMeasurable (by fun_prop)
 
@@ -145,7 +145,7 @@ lemma indepFun_pi_of_bcf (mZ : AEMeasurable Z P)
     IndepFun Z (fun ω t ↦ Y t ω) P := by
   have := Fintype.ofFinite T
   refine indepFun_pi_of_prod_bcf mZ mY fun f g ↦ ?_
-  convert h f (∏ t, (g t).compContinuous ⟨Function.eval t, by fun_prop⟩) <;> simp
+  convert! h f (∏ t, (g t).compContinuous ⟨Function.eval t, by fun_prop⟩) <;> simp
 
 lemma pi_indepFun_of_prod_bcf (mX : ∀ s, AEMeasurable (X s) P)
     (mU : AEMeasurable U P)
@@ -155,7 +155,7 @@ lemma pi_indepFun_of_prod_bcf (mX : ∀ s, AEMeasurable (X s) P)
   rw [indepFun_iff_map_prod_eq_prod_map_map (aemeasurable_pi_lambda _ mX) mU]
   refine eq_prod_of_integral_prod_mul_boundedContinuousFunction fun f g ↦ ?_
   rw [integral_map, integral_map, integral_map]
-  · convert h f g <;> simp
+  · convert! h f g <;> simp
   any_goals fun_prop
   all_goals exact Measurable.aestronglyMeasurable (by fun_prop)
 
@@ -167,7 +167,7 @@ lemma pi_indepFun_of_bcf (mX : ∀ s, AEMeasurable (X s) P)
     IndepFun (fun ω s ↦ X s ω) U P := by
   have := Fintype.ofFinite S
   refine pi_indepFun_of_prod_bcf mX mU fun f g ↦ ?_
-  convert h (∏ s, (f s).compContinuous ⟨Function.eval s, by fun_prop⟩) g <;> simp
+  convert! h (∏ s, (f s).compContinuous ⟨Function.eval s, by fun_prop⟩) g <;> simp
 
 /-- Two random variables $X$ and $Y$ are independent if
 for all real bounded continuous functions $f$ and $g$,
@@ -236,7 +236,7 @@ lemma indicator_indepFun_pi_of_bcf
     (A.indicator (1 : Ω → ℝ)) ⟂ᵢ[P] (fun ω s ↦ X s ω) := by
   have := Fintype.ofFinite S
   refine indicator_indepFun_pi_of_prod_bcf mA mX fun f ↦ ?_
-  convert h (∏ s, (f s).compContinuous ⟨Function.eval s, by fun_prop⟩) <;> simp
+  convert! h (∏ s, (f s).compContinuous ⟨Function.eval s, by fun_prop⟩) <;> simp
 
 /-- The indicator of a set $A$ and a random variable $X$ are independent
 if for all real bounded continuous function $f$,
@@ -248,7 +248,7 @@ lemma indicator_indepFun_of_bcf
   suffices (A.indicator (1 : Ω → ℝ)) ⟂ᵢ[P] (fun ω (_ : Unit) ↦ Z ω) from
     this.comp (measurable_id) (measurable_pi_apply ())
   refine indicator_indepFun_pi_of_prod_bcf mA (fun _ ↦ mZ) fun f ↦ ?_
-  convert h (f ()) <;> simp
+  convert! h (f ()) <;> simp
 
 end Indicator
 

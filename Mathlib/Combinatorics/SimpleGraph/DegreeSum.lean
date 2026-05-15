@@ -82,7 +82,7 @@ theorem dart_edge_fiber_card [DecidableEq V] (e : Sym2 V) (h : e ∈ G.edgeSet) 
     #{d : G.Dart | d.edge = e} = 2 := by
   obtain ⟨v, w⟩ := e
   let d : G.Dart := ⟨(v, w), h⟩
-  convert congr_arg card d.edge_fiber
+  convert! congr_arg card d.edge_fiber
   rw [card_insert_of_notMem, card_singleton]
   rw [mem_singleton]
   exact d.symm_ne.symm
@@ -132,7 +132,7 @@ theorem even_card_odd_degree_vertices [Fintype V] [DecidableRel G.Adj] :
     rw [sum_congr (g := fun _v ↦ (1 : ZMod 2)) rfl] at h
     · simp only [mul_one, nsmul_eq_mul, sum_const, Ne] at h
       rw [← ZMod.natCast_eq_zero_iff_even]
-      convert h
+      convert! h
       exact ZMod.natCast_ne_zero_iff_odd.symm
     · intro v
       rw [mem_filter_univ, Ne, ZMod.natCast_eq_zero_iff_even, ZMod.natCast_eq_one_iff_odd,

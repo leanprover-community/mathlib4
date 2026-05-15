@@ -612,8 +612,8 @@ theorem discr_prime_pow [IsCyclotomicExtension {p ^ k} ℚ K] :
   let pB₁ := integralPowerBasisOfPrimePow hζ
   apply (algebraMap ℤ ℚ).injective_int
   rw [← NumberField.discr_eq_discr _ pB₁.basis, ← Algebra.discr_localizationLocalization ℤ ℤ⁰ K]
-  convert IsCyclotomicExtension.discr_prime_pow hζ
-    (cyclotomic.irreducible_rat (NeZero.pos _)) using 1
+  convert IsCyclotomicExtension.discr_prime_pow hζ (cyclotomic.irreducible_rat (NeZero.pos _)) using
+    1
   · have : pB₁.dim = (IsPrimitiveRoot.powerBasis ℚ hζ).dim := by
       rw [← PowerBasis.finrank, ← PowerBasis.finrank]
       exact RingOfIntegers.rank K
@@ -622,7 +622,7 @@ theorem discr_prime_pow [IsCyclotomicExtension {p ^ k} ℚ K] :
     ext i
     simp_rw [Function.comp_apply, Module.Basis.localizationLocalization_apply, powerBasis_dim,
       PowerBasis.coe_basis, pB₁, integralPowerBasisOfPrimePow_gen]
-    convert ← ((IsPrimitiveRoot.powerBasis ℚ hζ).basis_eq_pow i).symm using 1
+    convert! ← ((IsPrimitiveRoot.powerBasis ℚ hζ).basis_eq_pow i).symm using 1
   · simp_rw [algebraMap_int_eq, map_mul, map_pow, map_neg, map_one, map_natCast]
 
 @[deprecated (since := "2025-11-24")] alias absdiscr_prime_pow := discr_prime_pow

@@ -143,7 +143,7 @@ def join (f : StdSimplex R (StdSimplex R M)) : StdSimplex R M where
   nonneg := f.sum_nonneg fun d _ ↦ smul_nonneg (f.nonneg d) d.nonneg
   total := by
     rw [Finsupp.sum_sum_index (fun _ ↦ rfl) (fun _ _ _ ↦ rfl)]
-    convert f.total
+    convert! f.total
     rw [Finsupp.sum_smul_index (fun _ ↦ rfl), ← Finsupp.mul_sum, StdSimplex.total, mul_one]
 
 end StdSimplex

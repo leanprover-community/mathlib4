@@ -209,7 +209,7 @@ lemma nonempty_compStruct_iff {x₀ x₁ x₂ : C}
   refine ⟨fun ⟨h⟩ ↦ ?_, fun h ↦ ⟨by rwa [← h]⟩⟩
   rw [← Arrow.mk_inj]
   apply ComposableArrows.arrowEquiv.symm.injective
-  convert_to (nerve C).δ 1 h'.simplex = (nerve C).δ 1 h.simplex
+  convert_to! (nerve C).δ 1 h'.simplex = (nerve C).δ 1 h.simplex
   · exact (h'.d₁).symm
   · exact (h.d₁).symm
   · have h₀ := h.d₀
@@ -234,7 +234,7 @@ lemma homEquiv_comp {x₀ x₁ x₂ : ComposableArrows C 0}
   obtain ⟨f₀₁, rfl⟩ := edgeMk_surjective e₀₁
   obtain ⟨f₁₂, rfl⟩ := edgeMk_surjective e₁₂
   obtain ⟨f₀₂, rfl⟩ := edgeMk_surjective e₀₂
-  convert (nerve.nonempty_compStruct_iff _ _ _).1 ⟨h⟩ <;> apply homEquiv_edgeMk
+  convert! (nerve.nonempty_compStruct_iff _ _ _).1 ⟨h⟩ <;> apply homEquiv_edgeMk
 
 set_option backward.isDefEq.respectTransparency false in
 lemma σ_zero_nerveEquiv_symm (x : C) :

@@ -712,7 +712,7 @@ instance fiberBundle : FiberBundle F Z.Fiber where
       comap_principal, comap_comap]
     simp only [Function.comp_def, localTrivAt_apply_mk, Trivialization.coe_coe,
       ← (isEmbedding_prodMkRight b).nhds_eq_comap]
-    convert_to 𝓝 x = 𝓝 x ⊓ 𝓟 univ
+    convert_to! 𝓝 x = 𝓝 x ⊓ 𝓟 univ
     · congr
       exact eq_univ_of_forall (mk_mem_localTrivAt_source Z _)
     · rw [principal_univ, inf_top_eq]

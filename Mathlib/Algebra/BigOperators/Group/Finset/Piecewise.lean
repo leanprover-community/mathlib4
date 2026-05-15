@@ -184,14 +184,14 @@ theorem prod_piecewise [DecidableEq ι] (s t : Finset ι) (f g : ι → M) :
 @[to_additive]
 theorem prod_inter_mul_prod_diff [DecidableEq ι] (s t : Finset ι) (f : ι → M) :
     (∏ x ∈ s ∩ t, f x) * ∏ x ∈ s \ t, f x = ∏ x ∈ s, f x := by
-  convert (s.prod_piecewise t f f).symm
+  convert! (s.prod_piecewise t f f).symm
   simp +unfoldPartialApp [Finset.piecewise]
 
 @[to_additive]
 theorem prod_eq_mul_prod_diff_singleton [DecidableEq ι] {s : Finset ι} (i : ι) (f : ι → M)
     (h : i ∉ s → f i = 1) : ∏ x ∈ s, f x = f i * ∏ x ∈ s \ {i}, f x := by
   by_cases hs : i ∈ s
-  · convert (s.prod_inter_mul_prod_diff {i} f).symm
+  · convert (s.prod_inter_mul_prod_diff { i } f).symm
     simp [hs]
   · simp_all only [not_false_eq_true, forall_const, one_mul]
     apply Finset.prod_congr <;> aesop

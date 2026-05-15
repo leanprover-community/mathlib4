@@ -129,7 +129,7 @@ lemma Localization.exists_finite_awayMapₐ_of_surjective_awayMapₐ
       simp_rw [← hs, map_pow, AlgHom.commutes, ← pow_mul] at this
       refine ⟨s ^ m * b, (n + m' * m), 0, this ▸ ?_⟩
       simp [pow_add, mul_assoc]
-    convert h₁.trans _ _ (RingHom.IsIntegral.of_finite (.of_surjective _ h₂)) using 1
+    convert! h₁.trans _ _ (RingHom.IsIntegral.of_finite (.of_surjective _ h₂)) using 1
     refine IsLocalization.ringHom_ext (.powers r) (RingHom.ext fun x ↦ ?_)
     simp [Localization.awayMap, IsLocalization.Away.map, ← IsScalarTower.algebraMap_apply R T]
   · algebraize [(Localization.awayMapₐ (Algebra.ofId R T) r).toRingHom]

@@ -92,7 +92,7 @@ instance [IsImmersion f] : IsClosedImmersion f.liftCoborder := by
     simp only [Scheme.Hom.liftCoborder_ι]; infer_instance
   have : IsPreimmersion f.liftCoborder := .of_comp f.liftCoborder f.coborderRange.ι
   refine .of_isPreimmersion _ ?_
-  convert isClosed_preimage_val_coborder
+  convert! isClosed_preimage_val_coborder
   apply Set.image_injective.mpr f.coborderRange.ι.isEmbedding.injective
   rw [← Set.range_comp, ← TopCat.coe_comp, ← Scheme.Hom.comp_base, f.liftCoborder_ι]
   exact (Set.image_preimage_eq_of_subset (by simpa using subset_coborder)).symm

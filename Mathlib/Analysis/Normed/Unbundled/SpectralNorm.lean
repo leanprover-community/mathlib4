@@ -162,7 +162,7 @@ theorem spectralValue_X_pow (n : ℕ) : spectralValue (X ^ n : R[X]) = 0 := by
   rw [spectralValue]
   unfold spectralValueTerms
   simp_rw [coeff_X_pow n, natDegree_X_pow]
-  convert ciSup_const using 2
+  convert! ciSup_const using 2
   · ext m
     by_cases hmn : m < n
     · rw [if_pos hmn, rpow_eq_zero_iff_of_nonneg (norm_nonneg _), if_neg (_root_.ne_of_lt hmn),

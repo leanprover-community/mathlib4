@@ -67,7 +67,7 @@ theorem le_sum_schlomilch' (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f 
 
 theorem le_sum_condensed' (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
     (∑ k ∈ Ico 1 (2 ^ n), f k) ≤ ∑ k ∈ range n, 2 ^ k • f (2 ^ k) := by
-  convert le_sum_schlomilch' hf (fun n => pow_pos zero_lt_two n)
+  convert! le_sum_schlomilch' hf (fun n => pow_pos zero_lt_two n)
     (fun m n hm => pow_right_mono₀ one_le_two hm) n using 2
   simp [pow_succ, mul_two]
 
@@ -101,7 +101,7 @@ theorem sum_schlomilch_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f 
 
 theorem sum_condensed_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
     (∑ k ∈ range n, 2 ^ k • f (2 ^ (k + 1))) ≤ ∑ k ∈ Ico 2 (2 ^ n + 1), f k := by
-  convert sum_schlomilch_le' hf (fun n => pow_pos zero_lt_two n)
+  convert! sum_schlomilch_le' hf (fun n => pow_pos zero_lt_two n)
     (fun m n hm => pow_right_mono₀ one_le_two hm) n using 2
   simp [pow_succ, mul_two]
 
@@ -204,8 +204,10 @@ theorem summable_condensed_iff {f : ℕ → ℝ≥0} (hf : ∀ ⦃m n⦄, 0 < m 
   have h_succ_diff : SuccDiffBounded 2 (2 ^ ·) := by
     intro n
     simp [pow_succ, mul_two, two_mul]
-  convert summable_schlomilch_iff hf (pow_pos zero_lt_two) (pow_right_strictMono₀ _root_.one_lt_two)
-    two_ne_zero h_succ_diff
+  convert! summable_schlomilch_iff hf (pow_pos zero_lt_two)
+    (pow_right_strictMono₀ _root_.one_lt_two)
+    two_ne_zero
+    h_succ_diff
   simp [pow_succ, mul_two]
 
 end NNReal
@@ -231,7 +233,7 @@ theorem summable_condensed_iff_of_nonneg {f : ℕ → ℝ} (h_nonneg : ∀ n, 0 
   have h_succ_diff : SuccDiffBounded 2 (2 ^ ·) := by
     intro n
     simp [pow_succ, mul_two, two_mul]
-  convert summable_schlomilch_iff_of_nonneg h_nonneg h_mono (pow_pos zero_lt_two)
+  convert! summable_schlomilch_iff_of_nonneg h_nonneg h_mono (pow_pos zero_lt_two)
     (pow_right_strictMono₀ one_lt_two) two_ne_zero h_succ_diff
   simp [pow_succ, mul_two]
 

@@ -245,7 +245,7 @@ theorem coequalizer_π_stalk_isLocalHom (x : Y) :
     ← isUnit_map_iff (Y.presheaf.map (eqToHom hV').op).hom]
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): change `rw` to `erw`
   erw [← CommRingCat.comp_apply, ← CommRingCat.comp_apply, ← Y.presheaf.map_comp]
-  convert @RingedSpace.isUnit_res_basicOpen Y.toRingedSpace (unop _)
+  convert! @RingedSpace.isUnit_res_basicOpen Y.toRingedSpace (unop _)
       (((coequalizer.π f.toShHom g.toShHom).hom.c.app (op U)) s)
 
 end HasCoequalizer

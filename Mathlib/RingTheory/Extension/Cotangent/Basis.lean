@@ -318,7 +318,7 @@ public lemma exists_presentation_of_basis_cotangent [Algebra.FinitePresentation 
     Function.comp_def, ← Submodule.restrictScalars_span P.Ring S P.algebraMap_surjective]
   refine le_trans le_top (top_le_iff.mpr ?_)
   rw [Submodule.restrictScalars_eq_top_iff]
-  convert b₀.span_eq
+  convert! b₀.span_eq
   exact hf _
 
 open PresentationOfFreeCotangent in

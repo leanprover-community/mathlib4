@@ -210,7 +210,7 @@ theorem convexOn_rpow {p : ℝ} (hp : 1 ≤ p) : ConvexOn ℝ (Ici 0) fun x : �
   exact (strictConvexOn_rpow hp).convexOn
 
 theorem convexOn_rpow_left {b : ℝ} (hb : 0 < b) : ConvexOn ℝ Set.univ (fun (x : ℝ) => b ^ x) := by
-  convert convexOn_exp.comp_linearMap (LinearMap.mul ℝ ℝ (Real.log b)) using 1
+  convert! convexOn_exp.comp_linearMap (LinearMap.mul ℝ ℝ (Real.log b)) using 1
   ext x
   simp [Real.rpow_def_of_pos hb]
 

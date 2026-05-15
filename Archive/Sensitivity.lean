@@ -90,7 +90,7 @@ theorem succ_n_eq (p q : Q n.succ) : p = q ↔ p 0 = q 0 ∧ π p = π q := by
     by_cases hx : x = 0
     · rwa [hx]
     · rw [← Fin.succ_pred x hx]
-      convert congr_fun h (Fin.pred x hx)
+      convert! congr_fun h (Fin.pred x hx)
 
 /-- The adjacency relation defining the graph structure on `Q n`:
 `p.adjacent q` if there is an edge from `p` to `q` in `Q n`. -/
@@ -392,7 +392,7 @@ theorem exists_eigenvalue (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
     apply dim_V
   have dimW : dim W = card H := by
     have li : LinearIndependent ℝ (H.restrict e) := by
-      convert (dualBases_e_ε m.succ).basis.linearIndependent.comp _ Subtype.val_injective
+      convert! (dualBases_e_ε m.succ).basis.linearIndependent.comp _ Subtype.val_injective
       rw [(dualBases_e_ε _).coe_basis]
       rfl
     have hdW := rank_span li

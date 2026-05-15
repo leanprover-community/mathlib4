@@ -301,7 +301,7 @@ lemma XYIdeal_neg_mul {x y : F} (h : W.Nonsingular x y) :
   simp_rw [XYIdeal, XClass, YClass, span_pair_mul_span_pair, mul_comm, ← map_mul,
     AdjoinRoot.mk_eq_mk.mpr ⟨1, Y_rw⟩, map_mul, span_insert, ← span_singleton_mul_span_singleton,
     ← Ideal.mul_sup, ← span_insert]
-  convert mul_top (_ : Ideal W.CoordinateRing) using 2
+  convert! mul_top (_ : Ideal W.CoordinateRing) using 2
   on_goal 2 => infer_instance
   simp_rw [← Set.image_singleton (f := mk W), ← Set.image_insert_eq, ← map_span]
   convert map_top (R := F[X][Y]) (mk W) using 1
@@ -435,12 +435,12 @@ lemma degree_norm_smul_basis [IsDomain R] (p q : R[X]) :
         · exact (hq hq').elim -- `hq'` should be `rfl`
         · rw [hq'] at hdpq hdq -- line should be redundant
           rcases le_or_gt dp (dq + 1) with hpq | hpq
-          · convert (degree_sub_eq_right_of_degree_lt <| (degree_sub_le _ _).trans_lt <|
+          · convert! (degree_sub_eq_right_of_degree_lt <| (degree_sub_le _ _).trans_lt <|
                       max_lt_iff.mpr ⟨hdp.trans_lt _, hdpq.trans_lt _⟩).trans
               (max_eq_right_of_lt _).symm <;> rw [hdq] <;>
                 exact WithBot.coe_lt_coe.mpr <| by dsimp; linarith only [hpq]
           · rw [sub_sub]
-            convert (degree_sub_eq_left_of_degree_lt <| (degree_add_le _ _).trans_lt <|
+            convert! (degree_sub_eq_left_of_degree_lt <| (degree_add_le _ _).trans_lt <|
                       max_lt_iff.mpr ⟨hdpq.trans_lt _, hdq.trans_lt _⟩).trans
               (max_eq_left_of_lt _).symm <;> rw [hdp] <;>
                 exact WithBot.coe_lt_coe.mpr <| by dsimp; linarith only [hpq]
