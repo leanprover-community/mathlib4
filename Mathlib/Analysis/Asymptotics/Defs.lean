@@ -561,9 +561,11 @@ theorem isBigO_of_le (hfg : ∀ x, ‖f x‖ ≤ ‖g x‖) : f =O[l] g :=
 
 end
 
+@[refl]
 theorem isBigOWith_refl (f : α → E) (l : Filter α) : IsBigOWith 1 l f f :=
   isBigOWith_of_le l fun _ => le_rfl
 
+@[refl]
 theorem isBigO_refl (f : α → E) (l : Filter α) : f =O[l] f :=
   (isBigOWith_refl f l).isBigO
 
@@ -1461,7 +1463,7 @@ theorem IsLittleO.sum_congr (hAB : ∀ i ∈ s, A i =o[l] B i) :
       =o[l] fun H => ‖B i H‖ + ‖∑ j ∈ s, ‖B j H‖‖ :=
           (hAB i (by simp)).add_add (h (fun j hj => hAB j (by simp [hj])))
     _ =ᶠ[l] fun H => ‖B i H‖ + ∑ j ∈ s, ‖B j H‖ := by
-        refine Eventually.of_forall fun H ↦ congr_arg (‖B i H‖ + · ) ?_
+        refine Eventually.of_forall fun H ↦ congr_arg (‖B i H‖ + ·) ?_
         exact Real.norm_of_nonneg (Finset.sum_nonneg fun _ _ => norm_nonneg _)
 
 /-- Similar to `IsBigOWith.sum_congr` except the index set can change in the sum. This requires the
