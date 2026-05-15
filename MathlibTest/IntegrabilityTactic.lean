@@ -5,7 +5,6 @@ import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.MeasureTheory.Function.LocallyIntegrable
 import Mathlib.NumberTheory.Chebyshev
-import Mathlib.MeasureTheory.Integral.IntegrabilityLemmas
 
 /-!
 # Integrability tactic examples
