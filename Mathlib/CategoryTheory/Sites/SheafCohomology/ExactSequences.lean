@@ -42,6 +42,66 @@ universe w' w v u
 
 namespace CategoryTheory
 
+--LKSJDKLSDJLKFDS
+section
+
+open ComposableArrows
+
+variable {C : Type u} [Category.{v} C]
+
+@[simp] lemma obj₁₂ (F : ComposableArrows C 1) (X : C) : Precomp.obj F X 2 = F.obj 1 := rfl
+
+@[simp] lemma obj₂₂ (F : ComposableArrows C 2) (X : C) : Precomp.obj F X 2 = F.obj 1 := rfl
+
+@[simp] lemma obj₂₃ (F : ComposableArrows C 2) (X : C) : Precomp.obj F X 3 = F.obj 2 := rfl
+
+@[simp] lemma obj₃₂ (F : ComposableArrows C 3) (X : C) : Precomp.obj F X 2 = F.obj 1 := rfl
+
+@[simp] lemma obj₃₃ (F : ComposableArrows C 3) (X : C) : Precomp.obj F X 3 = F.obj 2 := rfl
+
+@[simp] lemma obj₃₄ (F : ComposableArrows C 3) (X : C) : Precomp.obj F X 4 = F.obj 3 := rfl
+
+@[simp] lemma obj₄₂ (F : ComposableArrows C 4) (X : C) : Precomp.obj F X 2 = F.obj 1 := rfl
+
+@[simp] lemma obj₄₃ (F : ComposableArrows C 4) (X : C) : Precomp.obj F X 3 = F.obj 2 := rfl
+
+@[simp] lemma obj₄₄ (F : ComposableArrows C 4) (X : C) : Precomp.obj F X 4 = F.obj 3 := rfl
+
+@[simp] lemma obj₄₅ (F : ComposableArrows C 4) (X : C) : Precomp.obj F X 5 = F.obj 4 := rfl
+
+@[simp] lemma map₁₁₂ (F : ComposableArrows C 1) {X : C} (f : X ⟶ F.left) :
+    Precomp.map F f 1 2 (Nat.le_add_right 1 1) = F.map' 0 1 := rfl
+
+@[simp] lemma map₂₁₂ (F : ComposableArrows C 2) {X : C} (f : X ⟶ F.left) :
+    Precomp.map F f 1 2 (Nat.le_add_right 1 1) = F.map' 0 1 := rfl
+
+@[simp] lemma map₂₂₃ (F : ComposableArrows C 2) {X : C} (f : X ⟶ F.left) :
+    Precomp.map F f 2 3 (Nat.le_add_right 2 1) = F.map' 1 2 := rfl
+
+@[simp] lemma map₃₁₂ (F : ComposableArrows C 3) {X : C} (f : X ⟶ F.left) :
+    Precomp.map F f 1 2 (Nat.le_add_right 1 1) = F.map' 0 1 := rfl
+
+@[simp] lemma map₃₂₃ (F : ComposableArrows C 3) {X : C} (f : X ⟶ F.left) :
+    Precomp.map F f 2 3 (Nat.le_add_right 2 1) = F.map' 1 2 := rfl
+
+@[simp] lemma map₃₃₄ (F : ComposableArrows C 3) {X : C} (f : X ⟶ F.left) :
+    Precomp.map F f 3 4 (Nat.le_add_right 3 1) = F.map' 2 3 := rfl
+
+@[simp] lemma map₄₁₂ (F : ComposableArrows C 4) {X : C} (f : X ⟶ F.left) :
+    Precomp.map F f 1 2 (Nat.le_add_right 1 1) = F.map' 0 1 := rfl
+
+@[simp] lemma map₄₂₃ (F : ComposableArrows C 4) {X : C} (f : X ⟶ F.left) :
+    Precomp.map F f 2 3 (Nat.le_add_right 2 1) = F.map' 1 2 := rfl
+
+@[simp] lemma map₄₃₄ (F : ComposableArrows C 4) {X : C} (f : X ⟶ F.left) :
+    Precomp.map F f 3 4 (Nat.le_add_right 3 1) = F.map' 2 3 := rfl
+
+@[simp] lemma map₄₄₅ (F : ComposableArrows C 4) {X : C} (f : X ⟶ F.left) :
+    Precomp.map F f 4 5 (Nat.le_add_right 4 1) = F.map' 3 4 := rfl
+
+end
+--SLK:DJFLKSJDLF
+
 open Abelian AddCommGrpCat
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
@@ -63,7 +123,6 @@ noncomputable def δ : H S.X₃ n₀ →+ H S.X₁ n₁ :=
 variable {S₁ S₂ : ShortComplex (Sheaf J AddCommGrpCat.{w})}
     (h₁ : S₁.ShortExact) (h₂ : S₂.ShortExact) (f : S₁ ⟶ S₂)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem δ_naturality (x : H S₁.X₃ n₀) :
     δ h₂ n₀ n₁ h (map f.τ₃ n₀ x) = map f.τ₁ n₁ (δ h₁ n₀ n₁ h x) := by
   delta δ H map
@@ -71,50 +130,12 @@ theorem δ_naturality (x : H S₁.X₃ n₀) :
 
 /-- This is the long exact sequence:
 `Hⁿ(S.X₁) ⟶ Hⁿ(S.X₂) ⟶ Hⁿ(S.X₃) ⟶ Hⁿ⁺¹(S.X₁) ⟶ Hⁿ⁺¹(S.X₂) ⟶ Hⁿ⁺¹(S.X₃)`. -/
-noncomputable def longSequence (h : n₀ + 1 = n₁ := by lia) :
+noncomputable abbrev longSequence (h : n₀ + 1 = n₁ := by lia) :
     ComposableArrows AddCommGrpCat.{w'} 5 := ComposableArrows.mk₅
   (ofHom (map S.f n₀)) (ofHom (map S.g n₀)) (ofHom (δ hS n₀ n₁ h))
   (ofHom (map S.f n₁)) (ofHom (map S.g n₁))
 
 open ComposableArrows
-
-@[simp]
-lemma longSequence_obj₀ : (longSequence hS n₀ n₁ h).obj 0 = of (S.X₁.H n₀) := rfl
-
-@[simp]
-lemma longSequence_obj₁ : (longSequence hS n₀ n₁ h).obj 1 = of (S.X₂.H n₀) := rfl
-
-@[simp]
-lemma longSequence_obj₂ : (longSequence hS n₀ n₁ h).obj 2 = of (S.X₃.H n₀) := rfl
-
-@[simp]
-lemma longSequence_obj₃ : (longSequence hS n₀ n₁ h).obj 3 = of (S.X₁.H n₁) := rfl
-
-@[simp]
-lemma longSequence_obj₄ : (longSequence hS n₀ n₁ h).obj 4 = of (S.X₂.H n₁) := rfl
-
-@[simp]
-lemma longSequence_obj₅ : (longSequence hS n₀ n₁ h).obj 5 = of (S.X₃.H n₁) := rfl
-
-@[simp]
-lemma longSequence_map₀₁ (i : (0 : Fin 6) ⟶ 1) :
-    (longSequence hS n₀ n₁ h).map i = ofHom (map S.f n₀) := rfl
-
-@[simp]
-lemma longSequence_map₁₂ (i : (1 : Fin 6) ⟶ 2) :
-    (longSequence hS n₀ n₁ h).map i = ofHom (map S.g n₀) := rfl
-
-@[simp]
-lemma longSequence_map₂₃ (i : (2 : Fin 6) ⟶ 3) :
-    (longSequence hS n₀ n₁ h).map i = ofHom (δ hS n₀ n₁ h) := rfl
-
-@[simp]
-lemma longSequence_map₃₄ (i : (3 : Fin 6) ⟶ 4) :
-    (longSequence hS n₀ n₁ h).map i = ofHom (map S.f n₁) := rfl
-
-@[simp]
-lemma longSequence_map₄₅ (i : (4 : Fin 6) ⟶ 5) :
-    (longSequence hS n₀ n₁ h).map i = ofHom (map S.g n₁) := rfl
 
 theorem longSequence_exact : (longSequence hS n₀ n₁ h).Exact :=
   Ext.covariantSequence_exact _ hS n₀ n₁ h
@@ -129,8 +150,19 @@ noncomputable abbrev longSequenceHom (h : n₀ + 1 = n₁ := by lia) :
     ext
     simp [← H.map_comp_apply, f.4, f.5, ← δ_naturality n₀ n₁ h h₁ h₂ f]
 
-set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma longSequenceHom_id (h : n₀ + 1 = n₁ := by lia) :
+    longSequenceHom n₀ n₁ h₁ h₁ (𝟙 _) h = 𝟙 _ := by
+  ext1 <;> cat_disch
+
 attribute [local simp] H.map_comp_apply in
+@[simp]
+lemma longSequenceHom_comp {S₃ : ShortComplex (Sheaf J AddCommGrpCat)} (h₃ : S₃.ShortExact)
+    (g : S₂ ⟶ S₃) (h : n₀ + 1 = n₁ := by lia) :
+      longSequenceHom n₀ n₁ h₁ h₂ f h ≫ longSequenceHom n₀ n₁ h₂ h₃ g h =
+        longSequenceHom n₀ n₁ h₁ h₃ (f ≫ g) h := by
+  ext1 <;> cat_disch
+
 /-- The long exact sequence of cohomology is functorial -/
 @[simps]
 noncomputable def longSequenceFunctor :
