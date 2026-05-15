@@ -64,8 +64,8 @@ def LambdaTheoremArgs.type (t : LambdaTheoremArgs) : LambdaTheoremType :=
   | .id => .id
   | .const => .const
   | .comp .. => .comp
-  | .apply ..  => .apply
-  | .pi .. => .pi
+  | .apply => .apply
+  | .pi => .pi
 
 /-- Decides whether `f` is a function corresponding to one of the lambda theorems. -/
 def detectLambdaTheoremArgs (f : Expr) (ctxVars : Array Expr) :
@@ -80,14 +80,13 @@ def detectLambdaTheoremArgs (f : Expr) (ctxVars : Array Expr) :
     unless xBody.hasLooseBVars do return some .const
     match xBody with
     | .bvar 0 => return some .id
-    | .app (.bvar 0) (.fvar _iId) =>
-      return some .apply
+    | .app (.bvar 0) (.fvar _) => return some .apply
     | .app (.fvar fId) (.app (.fvar gId) (.bvar 0)) =>
       -- fun x => f (g x)
       let some argId_f := ctxVars.findIdx? (fun x => x == (.fvar fId)) | return none
       let some argId_g := ctxVars.findIdx? (fun x => x == (.fvar gId)) | return none
       return some <| .comp argId_f argId_g
-    | .lam _ _ (.app (.app (.fvar _fId) (.bvar 1)) (.bvar 0)) _ =>
+    | .lam _ _ (.app (.app (.fvar _) (.bvar 1)) (.bvar 0)) _ =>
       return some .pi
     | _ => return none
   | _ => return none
