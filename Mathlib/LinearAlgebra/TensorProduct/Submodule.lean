@@ -312,7 +312,7 @@ open TensorProduct
 
 variable (R M N) in
 theorem top_top : TensorProduct (⊤ : Submodule R M) (⊤ : Submodule R N) = ⊤ := by
-  simp [ -mapIncl, TensorProduct, range_mapIncl, map₂_mk_top_top_eq_top, ← span_tmul_eq_top]
+  simp [TensorProduct, range_mapIncl, map₂_mk_top_top_eq_top, ← span_tmul_eq_top]
 
 variable (q) in
 lemma mono_left (h : p ≤ p') : TensorProduct p q ≤ TensorProduct p' q :=
