@@ -65,10 +65,7 @@ lemma Rep.norm_comp_d_eq_zero (M : Rep R G) : M.norm.toModuleCatHom ≫ d₀₁ 
   ext; simp [Pi.zero_apply _]
 
 lemma Rep.tateNorm_comp_d (M : Rep R G) : tateNorm M ≫ (inhomogeneousCochains M).d 0 1 = 0 := by
-  unfold tateNorm
-  rw [Category.assoc, Category.assoc, eq_d₀₁_comp_inv M,
-    ← Category.assoc M.norm.toModuleCatHom, M.norm_comp_d_eq_zero, Limits.zero_comp,
-    Limits.comp_zero]
+  simp [tateNorm, eq_d₀₁_comp_inv M]
 
 @[simp]
 lemma Rep.comp_eq_zero (M : Rep R G) : d₁₀ M ≫ M.norm.toModuleCatHom = 0 := by
