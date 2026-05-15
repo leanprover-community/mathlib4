@@ -345,7 +345,7 @@ lemma map_vertex [DecidableEq X] [DecidableEq Y] (f : X → Y) (x : X) :
     map (S := S) f (vertex x) = vertex (f x) := by
   aesop
 
-@[continuity]
+@[continuity, fun_prop]
 lemma continuous_map [TopologicalSpace S] [IsTopologicalSemiring S] (f : X → Y) :
     Continuous (map (S := S) f) :=
   Continuous.subtype_mk ((FunOnFinite.continuous_linearMap S S f).comp continuous_induced_dom) _
