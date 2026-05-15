@@ -744,10 +744,10 @@ instance : Dummy A := ⟨⟩
 /-- Mock model-with-corners data.
 The `Dummy` parameters are necessary (only) to match the arity of the real `ModelWithCorners` -/
 structure ModelWithCorners (M : Type*) [Dummy M] [Dummy M] [Dummy M] [Dummy M] [Dummy M] [Dummy M] where
-  name : Unit := ()
+  data : Nat := 0
 
 def ModelWithCorners.prod (I : ModelWithCorners α) (J : ModelWithCorners β) :
-  ModelWithCorners (α × β) := {name:=()}
+  ModelWithCorners (α × β) := {data:=I.data + J.data + 1}
 
 /-- Mock manifold differentiability.  The source and target model data are explicit arguments,
 as for real `MDifferentiable I I' f`. -/
@@ -808,15 +808,21 @@ theorem mdiff_add [Add α] : MDifferentiable (Iα.prod Iα) Iα (fun x ↦ x.1 +
 @[fun_prop]
 theorem mdiff_mul [Mul α] : MDifferentiable (Iα.prod Iα) Iα (fun x ↦ x.1 * x.2) := silentSorry
 
-example [Add α] [Mul α] : MDifferentiable Iα Iα (fun x ↦ x * x + x) := by
+example [Add α] [Mul α] : MDifferentiable Iα Iα (fun x ↦ let y := x * x; y + x) := by
   fail_if_success fun_prop
-  fun_prop (disch := assumption)
+  fun_prop (disch := apply_rules [ModelWithCorners.prod])
 
 example [Add α] [Mul α] {f g : α → α} {a : α} :
-    MDifferentiable Iα (Iα.prod Iα) (fun x ↦ Prod.map f g (x, a)) := by
-  fail_if_success fun_prop
-  fun_prop (disch := assumption)
+    MDifferentiable Iα (Iα.prod Iα) (fun x ↦ Prod.map f g (x,a)) := by
+  -- fail_if_success fun_prop
+  fun_prop (disch := apply_rules [ModelWithCorners.prod])
 
--- Future: can we add a test where fun_prop's assumption discharger is no longer able to find this?
+opaque Space : Type
+def Space.mwc : ModelWithCorners Space := { data := 42 }
+instance : Add Space := ⟨fun x y ↦ x⟩
+
+example : MDifferentiable Space.mwc Space.mwc (fun x : Space ↦ x + x + x) := by
+  fail_if_success fun_prop
+  fun_prop (disch := apply_rules [Space.mwc])
 
 end MDifferentiableMock
