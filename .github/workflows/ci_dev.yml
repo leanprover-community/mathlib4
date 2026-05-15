@@ -12,9 +12,6 @@ name: ci dev (lake cache shadow)
 #   Variables:
 #     LAKE_CACHE_ARTIFACT_ENDPOINT    — e.g. https://<bucket>/<prefix>/artifacts
 #     LAKE_CACHE_REVISION_ENDPOINT    — e.g. https://<bucket>/<prefix>/revisions
-#
-# This bucket should be dedicated to the Lake cache and distinct from
-# mathlib's legacy `lake exe cache` storage on Azure.
 
 on:
   workflow_dispatch:
