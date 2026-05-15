@@ -40,12 +40,13 @@ concurrency:
 
 env:
   # Scope prefix under which all uploads and downloads in this workflow
-  # are namespaced inside the cache bucket. Combined with using a
-  # dedicated bucket (see LAKE_CACHE_*_ENDPOINT repo vars in the header
-  # comment), this guarantees the shadow can't read from, write to, or
-  # collide with mathlib's legacy `lake exe cache` storage. The
-  # ci-dev variant uses a different scope value from the master-side
-  # workflow so the two can coexist in the same bucket without overlap.
+  # are namespaced inside the cache bucket. Used to avoid collisions
+  # *within* the bucket — specifically, this value differs from the
+  # master-side lake_cache_shadow.yml's scope so the two can coexist
+  # in the same bucket without overlap. Isolation from the legacy
+  # `lake exe cache` storage is a separate concern, handled by the
+  # bucket itself being different infra (see LAKE_CACHE_*_ENDPOINT in
+  # the header comment).
   SHADOW_SCOPE: mathlib4-shadow-ci-dev
   STAGE_TARGETS: "Mathlib Archive Counterexamples"
   STAGE_DEP_TARGETS: "batteries Qq aesop proofwidgets importGraph LeanSearchClient plausible"
