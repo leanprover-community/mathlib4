@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.ULift
 public import Mathlib.Algebra.Ring.Equiv
-import Mathlib.Data.Int.Cast.Basic
+public import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Tactic.PPWithUniv
+public import Mathlib.Tactic.PPWithUniv
 import Mathlib.Util.CompileInductive
 
 /-!

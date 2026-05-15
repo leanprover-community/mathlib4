@@ -11,10 +11,10 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 public import Mathlib.Algebra.Ring.Basic
 public import Mathlib.Data.Set.Restrict
 public import Mathlib.Tactic.Widget.Calc
-import Mathlib.Algebra.Order.Group.Unbundled.Basic
-import Mathlib.Algebra.Order.Monoid.NatCast
-import Mathlib.Data.Set.Monotone
-import Mathlib.Order.Monotone.Odd
+public import Mathlib.Algebra.Order.Group.Unbundled.Basic
+public import Mathlib.Algebra.Order.Monoid.NatCast
+public import Mathlib.Data.Set.Monotone
+public import Mathlib.Order.Monotone.Odd
 import Mathlib.Tactic.Bound.Init
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr

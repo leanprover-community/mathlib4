@@ -20,6 +20,7 @@ import Mathlib.Tactic.Attr.Register
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Util.CompileInductive
+public import Mathlib.Algebra.Order.Group.Nat
 
 /-!
 # Additional theorems and definitions about the `Vector` type

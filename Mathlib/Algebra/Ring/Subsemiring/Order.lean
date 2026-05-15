@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Order.Monoid.Submonoid
 public import Mathlib.Algebra.Ring.Subsemiring.Defs
 public import Mathlib.Order.Interval.Set.Defs
 public import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 import Mathlib.Algebra.Order.Ring.InjSurj
 import Mathlib.Tactic.Bound.Init
 import Mathlib.Tactic.Finiteness.Attr

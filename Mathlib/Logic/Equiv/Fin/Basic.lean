@@ -13,6 +13,7 @@ public import Batteries.Data.Fin.Lemmas
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Util.CompileInductive
+import Mathlib.Tactic.FBinop
 
 /-!
 # Equivalences for `Fin n`

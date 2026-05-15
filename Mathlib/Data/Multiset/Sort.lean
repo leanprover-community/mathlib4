@@ -9,7 +9,7 @@ public import Mathlib.Data.Multiset.Range
 public import Mathlib.Util.Qq
 public meta import Mathlib.Data.Multiset.Defs
 public meta import Mathlib.Tactic.ToLevel
-import Mathlib.Data.List.Sort
+public import Mathlib.Data.List.Sort
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 

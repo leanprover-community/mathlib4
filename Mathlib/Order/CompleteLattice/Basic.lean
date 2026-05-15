@@ -16,7 +16,7 @@ import Mathlib.Data.Set.Prod
 import Mathlib.Data.ULift
 import Mathlib.Order.BoundedOrder.Lattice
 import Mathlib.Order.Bounds.Basic
-import Mathlib.Order.Bounds.Image
+public import Mathlib.Order.Bounds.Image
 import Mathlib.Order.Hom.Set
 import Mathlib.Tactic.Coe
 import Mathlib.Tactic.Convert
@@ -25,6 +25,7 @@ import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Util.CompileInductive
+import Mathlib.Tactic.FBinop
 
 /-!
 # Theory of complete lattices

@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Algebra.Regular.SMul
 public import Mathlib.Data.Set.Operations
-import Mathlib.Algebra.Module.Pi
+public import Mathlib.Algebra.Module.Pi
 import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr

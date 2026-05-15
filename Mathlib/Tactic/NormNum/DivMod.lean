@@ -6,7 +6,7 @@ Authors: Anne Baanen, Mario Carneiro
 module -- shake: keep-all
 
 public import Mathlib.Tactic.NormNum.Ineq
-meta import Mathlib.Data.Int.Init
+public meta import Mathlib.Data.Int.Init
 import Mathlib.Data.Nat.Cast.Order.Ring
 import Mathlib.Tactic.Bound.Init
 import Mathlib.Tactic.Common

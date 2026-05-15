@@ -8,7 +8,7 @@ module
 import Mathlib.Order.Bounds.Image
 public import Mathlib.Order.Bounds.Defs
 public import Mathlib.Order.Directed
-import Mathlib.Data.Set.Image
+public import Mathlib.Data.Set.Image
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Tactic.Finiteness.Attr

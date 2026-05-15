@@ -19,6 +19,10 @@ import Mathlib.Tactic.Bound.Init
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Util.CompileInductive
+import Mathlib.Order.MinMax
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Data.Nat.Sqrt
 
 /-!
 ## `positivity` core extensions

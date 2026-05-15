@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Order.Hom.Basic
-import Mathlib.Algebra.Order.Group.Unbundled.Basic
+public import Mathlib.Algebra.Order.Group.Unbundled.Basic
 import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.ContinuousFunctionalCalculus

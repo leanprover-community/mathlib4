@@ -9,7 +9,7 @@ module
 public import Mathlib.Algebra.Group.Center
 public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.Algebra.Module.LinearMap.Defs
-import Mathlib.Algebra.Module.Equiv.Opposite
+public import Mathlib.Algebra.Module.Equiv.Opposite
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Util.CompileInductive
