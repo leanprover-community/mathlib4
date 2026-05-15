@@ -572,4 +572,10 @@ instance IsRightCancelMul.mulRightReflectLE_of_mulRightReflectLT
   le_of_mul_le_mul_right' := contravariant_le_iff_contravariant_lt_and_eq N N _ |>.mpr
     ⟨‹MulRightReflectLT N›.elim, fun _ ↦ mul_right_cancel⟩ _
 
+instance [Mul M] [LE M] [h : MulLeftMono M] :
+    CovariantClass M M (· • ·) (· ≤ ·) := h
+
+instance [Mul M] [LE M] [h : MulRightMono M] :
+  CovariantClass M M (swap (· • ·)) (· ≤ ·) := h
+
 end Variants

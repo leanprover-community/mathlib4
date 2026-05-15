@@ -6,6 +6,7 @@ Authors: Oliver Butterley, Yoh Tanimoto
 module
 
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Defs
+public import Mathlib.Analysis.Normed.Module.Basic
 
 /-!
 # Properties of variation
@@ -160,6 +161,15 @@ lemma variation_restrict_le (μ : VectorMeasure X V) (s : Set X) :
   · simp [variation_restrict μ hs]
   · simp only [restrict_not_measurable _ hs, variation_zero, Measure.zero_le]
 
+@[simp] lemma variation_eq_zero {μ : VectorMeasure X V} :
+    μ.variation = 0 ↔ μ = 0 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
+  ext s hs
+  apply enorm_eq_zero.1
+  apply le_antisymm ?_ (by simp)
+  grw [enorm_measure_le_variation]
+  simp [h]
+
 end Basic
 
 section NormedAddCommGroup
@@ -177,6 +187,34 @@ lemma variation_neg : (-μ).variation = μ.variation := by simp [variation]
 
 lemma variation_sub_le : (μ - ν).variation ≤ μ.variation + ν.variation := by
   grw [sub_eq_add_neg, variation_add_le, variation_neg]
+
+private lemma variation_smul_le {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 V] {c : 𝕜} :
+    (c • μ).variation ≤ ‖c‖₊ • μ.variation := by
+  apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
+  simp only [coe_smul, Pi.smul_apply, enorm_smul, Measure.smul_apply, Measure.nnreal_smul_coe_apply]
+  grw [enorm_measure_le_variation]
+  exact le_rfl
+
+open scoped NNReal
+lemma foo (u v : Measure X) (c : ℝ≥0) (h : u ≤ v) : c • u ≤ c • v := by
+  apply smul_mono_right
+
+lemma variation_smul {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 V] {c : 𝕜} :
+    (c • μ).variation = ‖c‖₊ • μ.variation := by
+  apply le_antisymm variation_smul_le ?_
+  rcases eq_or_ne c 0 with rfl | hc
+  · simp
+  calc ‖c‖₊ • μ.variation
+  _ = ‖c‖₊ • (c⁻¹ • (c • μ)).variation := by simp [smul_smul, inv_mul_cancel₀ hc]
+  _ ≤ ‖c‖₊ • ‖c⁻¹‖₊ • (c • μ).variation := by
+    apply Measure.smul_mono
+
+
+  --rw [show μ = c⁻¹ • (c • μ) by simp [smul_smul, inv_mul_cancel₀ hc]]
+  --calc
+
+#exit
+
 
 end NormedAddCommGroup
 
