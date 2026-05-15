@@ -98,9 +98,27 @@ jobs:
             echo "__EOF__"
           } >> "$GITHUB_OUTPUT"
 
+      # Pull mathlib4's own `.github/actions/` (just `get-mathlib-ci`)
+      # via a sparse checkout so we can run it; we never need the
+      # rest of the mathlib4 working tree on this runner.
+      - name: Checkout local actions
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 1
+          sparse-checkout: .github/actions
+          path: workflow-actions
+
+      # Checks out leanprover-community/mathlib-ci at the canonical
+      # pinned SHA (see `.github/actions/get-mathlib-ci/action.yml`,
+      # auto-bumped by `update_dependencies.yml`).  Lands the checkout
+      # at `ci-tools/`, including the composite actions we use below.
+      - name: Get mathlib-ci
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+
       - name: Validate downstream entries
         id: validate
-        uses: leanprover-community/mathlib-ci/.github/actions/check-downstream-validate@marcelo/2026/05/DownstreamPrValidation
+        uses: ./ci-tools/.github/actions/check-downstream-validate
         with:
           names: ${{ steps.parse.outputs.downstreams || inputs.downstreams }}
           pr-number: ${{ github.event.issue.number || inputs.pr_number }}
@@ -110,7 +128,7 @@ jobs:
 
       - name: Mint App token (for downstream-reports)
         id: app_token
-        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
+        uses: ./ci-tools/.github/actions/azure-create-github-app-token
         with:
           app-id: ${{ secrets.DOWNSTREAM_REPORTS_AUTOMATION_APP_ID }}
           key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
@@ -140,7 +158,7 @@ jobs:
             -f triggered_by="$TRIGGERED_BY"
 
       - name: Post ack comment
-        uses: leanprover-community/mathlib-ci/.github/actions/check-downstream-ack@marcelo/2026/05/DownstreamPrValidation
+        uses: ./ci-tools/.github/actions/check-downstream-ack
         with:
           repo: ${{ github.repository }}
           pr-number: ${{ github.event.issue.number || inputs.pr_number }}
