@@ -166,7 +166,7 @@ instance : (tateComplexFunctor R G).PreservesZeroMorphisms where
 
 lemma map_tateComplexFunctor_shortExact {S : ShortComplex (Rep R G)} (hS : S.ShortExact) :
     (S.map (tateComplexFunctor R G)).ShortExact := by
-  simp_rw [HomologicalComplex.shortExact_iff_degreewise_shortExact , ← ShortComplex.map_comp]
+  simp_only [HomologicalComplex.shortExact_iff_degreewise_shortExact , ← ShortComplex.map_comp]
   rintro (_ | _)
   · exact ShortComplex.shortExact_of_iso (ShortComplex.mapNatIso _ (tateComplex.eval_nonneg _).symm)
       <| map_cochainsFunctor_eval_shortExact hS _
