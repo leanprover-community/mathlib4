@@ -56,7 +56,7 @@ protected lemma finsetSum {ι S : Type*} [AddCommMonoid S] [Mul S] (t : RingCon 
 protected lemma finsuppProd {ι : Type*} {β : Type*} {M : Type*}
     [Add M] [CommMonoid M] [Zero β]
     (c : RingCon M) (h : ι → β → M) (h' : ι → β → M)
-    {f g : ι →₀ β} (hf : ∀ i, h i 0 = 1) (hf' : ∀ i, h' i 0 = 1)
+    {f g : ι →₀ β} (hf : ∀ i, c (h i 0) 1) (hf' : ∀ i, c (h' i 0) 1)
     (H : ∀ i, c (h i (f i)) (h' i (g i))) :
     c (f.prod h) (g.prod h') :=
   c.toCon.finsuppProd h h' hf hf' H
@@ -64,7 +64,7 @@ protected lemma finsuppProd {ι : Type*} {β : Type*} {M : Type*}
 protected lemma finsuppSum {ι : Type*} {β : Type*} {M : Type*}
     [AddCommMonoid M] [Mul M] [Zero β]
     (c : RingCon M) (h : ι → β → M) (h' : ι → β → M)
-    {f g : ι →₀ β} (hf : ∀ i, h i 0 = 0) (hf' : ∀ i, h' i 0 = 0)
+    {f g : ι →₀ β} (hf : ∀ i, c (h i 0) 0) (hf' : ∀ i, c (h' i 0) 0)
     (H : ∀ i, c (h i (f i)) (h' i (g i))) :
     c (f.sum h) (g.sum h') :=
   c.toAddCon.finsuppSum h h' hf hf' H
@@ -72,7 +72,7 @@ protected lemma finsuppSum {ι : Type*} {β : Type*} {M : Type*}
 protected lemma dfinsuppProd {ι : Type*} {β : ι → Type*} {M : Type*}
     [DecidableEq ι] [Add M] [CommMonoid M] [∀ i, Zero (β i)] [∀ i (y : β i), Decidable (y ≠ 0)]
     (c : RingCon M) (h : (i : ι) → β i → M) (h' : (i : ι) → β i → M)
-    {f g : Π₀ i, β i} (hf : ∀ i, h i 0 = 1) (hf' : ∀ i, h' i 0 = 1)
+    {f g : Π₀ i, β i} (hf : ∀ i, c (h i 0) 1) (hf' : ∀ i, c (h' i 0) 1)
     (H : ∀ i, c (h i (f i)) (h' i (g i))) :
     c (f.prod h) (g.prod h') :=
   c.toCon.dfinsuppProd h h' hf hf' H
@@ -80,7 +80,7 @@ protected lemma dfinsuppProd {ι : Type*} {β : ι → Type*} {M : Type*}
 protected lemma dfinsuppSum {ι : Type*} {β : ι → Type*} {M : Type*}
     [DecidableEq ι] [AddCommMonoid M] [Mul M] [∀ i, Zero (β i)] [∀ i (y : β i), Decidable (y ≠ 0)]
     (c : RingCon M) (h : (i : ι) → β i → M) (h' : (i : ι) → β i → M)
-    {f g : Π₀ i, β i} (hf : ∀ i, h i 0 = 0) (hf' : ∀ i, h' i 0 = 0)
+    {f g : Π₀ i, β i} (hf : ∀ i, c (h i 0) 0) (hf' : ∀ i, c (h' i 0) 0)
     (H : ∀ i, c (h i (f i)) (h' i (g i))) :
     c (f.sum h) (g.sum h') :=
   c.toAddCon.dfinsuppSum h h' hf hf' H

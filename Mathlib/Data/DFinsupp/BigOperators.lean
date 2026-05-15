@@ -96,6 +96,24 @@ theorem prod_of_support_subset [∀ i, Zero (β i)]
   rw [hi', map_zero]
   exact hi
 
+/-- The product over two dfinsupps agree if the functions agree and are well-behaved within the
+shared support. -/
+@[to_additive (attr := gcongr)
+/-- The sum over two dfinsupps agree if the functions agree and are well-behaved within the
+shared support. -/]
+theorem prod_congr_of_eq_on_union
+    [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMonoid γ]
+    {f1 f2 : Π₀ i, β i} {g1 g2 : (i : ι) → β i → γ}
+    (h : ∀ x ∈ f1.support ∪ f2.support, g1 x (f1 x) = g2 x (f2 x))
+    (h1 : ∀ x ∈ f1.support ∪ f2.support, g1 x 0 = 1)
+    (h2 : ∀ x ∈ f1.support ∪ f2.support, g2 x 0 = 1) :
+    f1.prod g1 = f2.prod g2 := by
+  rw [DFinsupp.prod_of_support_subset h1
+      (Finset.subset_union_left (s₁ := f1.support) (s₂ := f2.support)),
+    DFinsupp.prod_of_support_subset h2
+      (Finset.subset_union_right (s₁ := f1.support) (s₂ := f2.support))]
+  exact Finset.prod_congr rfl h
+
 @[to_additive (attr := simp)]
 theorem _root_.map_dfinsuppProd
     {R S H : Type*} [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]

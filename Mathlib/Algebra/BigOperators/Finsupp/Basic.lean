@@ -180,6 +180,22 @@ theorem prod_congr {f : α →₀ M} {g1 g2 : α → M → N} (h : ∀ x ∈ f.s
     f.prod g1 = f.prod g2 :=
   Finset.prod_congr rfl h
 
+/-- The product over two finsupps agree if the functions agree and are well-behaved within the
+shared support. -/
+@[to_additive (attr := gcongr)
+/-- The sum over two finsupps agree if the functions agree and are well-behaved within the
+shared support. -/]
+theorem prod_congr_of_eq_on_union [DecidableEq α] {f1 f2 : α →₀ M} {g1 g2 : α → M → N}
+    (h : ∀ x ∈ f1.support ∪ f2.support, g1 x (f1 x) = g2 x (f2 x))
+    (h1 : ∀ x ∈ f1.support ∪ f2.support, g1 x 0 = 1)
+    (h2 : ∀ x ∈ f1.support ∪ f2.support, g2 x 0 = 1) :
+    f1.prod g1 = f2.prod g2 := by
+  rw [Finsupp.prod_of_support_subset f1
+      (Finset.subset_union_left (s₁ := f1.support) (s₂ := f2.support)) _ h1,
+    Finsupp.prod_of_support_subset f2
+      (Finset.subset_union_right (s₁ := f1.support) (s₂ := f2.support)) _ h2]
+  exact Finset.prod_congr rfl h
+
 @[to_additive]
 theorem prod_eq_single {f : α →₀ M} (a : α) {g : α → M → N}
     (h₀ : ∀ b, f b ≠ 0 → b ≠ a → g b (f b) = 1) (h₁ : f a = 0 → g a 0 = 1) :
