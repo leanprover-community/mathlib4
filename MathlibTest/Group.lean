@@ -41,15 +41,46 @@ example (a b c d : G) (h : c = (a * b ^ 2) * ((b * b)⁻¹ * a⁻¹) * d) : a*c*
   rw [h]
   group
 
+-- Test left cancellation
+example (a b c : G) (h : a * b = a * c) : b = c := by
+  group at h
+  guard_hyp h :ₛ b = c
+  exact h
+
+-- Test right cancellation
+example (a b c : G) (h : b * a = c * a) : b = c := by
+  group at h
+  guard_hyp h :ₛ b = c
+  exact h
+
+-- Tests left and right cancellation in the hypothesis
+example (a b c : G) (h : a * b * a = a * c * a) : b = c := by
+  group at h
+  guard_hyp h :ₛ b = c
+  exact h
+
+-- Test converting ( · )^(-1) to ( · )⁻¹ after simplifications and cancellations
+example (a b c : G) (h :  b * c * a ^ (- (3 : ℤ)) * a = b * b * a ^ (- (1 : ℤ))) :
+    c * a ^ (- (3 : ℤ)) * a = b * a^2 * a ^ (- (3 : ℤ)) := by
+  group at h ⊢
+  guard_hyp h : c * a ^ (-2 : ℤ) = b * a⁻¹
+  exact h
+
+-- Test left and right cancellation and checks that the simplifier does not loop
+-- when using associativity in both directions
+example (a b c : G) (h : a * (b * a * c) * c = a * (b⁻¹ * (c * a)) * c) :  b * a * c = b⁻¹ * c * a := by
+  group at h
+  guard_hyp h : b * a * c = b⁻¹ * c * a
+  exact h
+
+
 -- The next example can be expanded to require an arbitrarily high number of alternations
 -- between simp and ring
-
 example (n m : ℤ) (a b : G) : a^(m-n)*b^(m-n)*b^(n-m)*a^(n-m) = 1 := by group
 
-example (n : ℤ) (a b : G) : a^n*b^n*a^n*a^n*a^(-n)*a^(-n)*b^(-n)*a^(-n) = 1 := by group
+example (n : ℤ) (a b : G) : a^n*b^n*a^n*a^(n + 1)*a^(-n - 1)*a^(-n)*b^(-n)*a^(-n) = 1 := by group
 
 -- Test that group deals with `1⁻¹` properly
-
 example (x y : G) : (x⁻¹ * (x * y) * y⁻¹)⁻¹ = 1 := by group
 
 set_option linter.unusedTactic false in
