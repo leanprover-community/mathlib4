@@ -122,6 +122,14 @@ theorem step1_backward (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : I
         h_range]
   replace uS_compl_uA : IsTopCompl (map u.toLinearMap S) (map u.toLinearMap A) :=
       uS_compl_uA.symm.isTopCompl_of_isClosed_of_finiteDimensional uA_closed |>.symm
+  set Φ : (S × A) ≃L[𝕜] E := prodEquivOfIsTopCompl S A S_compl_A
+  set Ψ : (map u.toLinearMap S × map u.toLinearMap A) ≃L[𝕜] F :=
+    prodEquivOfIsTopCompl _ _ uS_compl_uA
+  set u₁ : A →L[𝕜] map u.toLinearMap A := u.restrict (fun _ ↦ mem_map_of_mem)
+  --have eq : u = Ψ ∘ ((u.restrict))
+  -- suffices IsQuotientMap (Ψ.symm ∘ u ∘ Φ) by
+  --   simpa [Function.comp_assoc] using Ψ.toHomeomorph.isQuotientMap.comp
+  --     (this.comp Φ.symm.toHomeomorph.isQuotientMap)
   sorry
 
 /-!
