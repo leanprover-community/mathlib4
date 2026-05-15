@@ -248,18 +248,45 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict [T2Sp
     [codim_A : FiniteDimensional 𝕜 (E ⧸ A)] :
     (IsStrictMap u ∧ IsClosed (range u)) ↔
       (IsStrictMap (Set.restrict A u) ∧ IsClosed (u '' A)) := by
+  -- To reduce to step 2, we quotient by `N := A ⊓ u.ker`. Denoting by `π : E → E ⧸ N`
+  -- the (automatically open) quotient map, `u` factors as `v ∘ π` with `v : E ⧸ N → F`.
   set N : Submodule 𝕜 E := A ⊓ u.ker
   set π : E →L[𝕜] E ⧸ N := N.mkQL
   set v : E ⧸ N →L[𝕜] F := N.liftQL u inf_le_right
   have π_quot : IsOpenQuotientMap π := N.isOpenQuotientMap_mkQL
   have v_comp_π_eq_u : v ∘ π = u := rfl
+  -- We also consider the submodule `B := map π A` of `E ⧸ N`. It has finite codimension and,
+  -- by construction, it is disjoint from the kernel of `v`.
   set B : Submodule 𝕜 (E ⧸ N) := map N.mkQ A
+  have codim_B : FiniteDimensional 𝕜 ((E ⧸ N) ⧸ B) :=
+    quotientQuotientEquivQuotient N A inf_le_left |>.symm.finiteDimensional
+  have v_ker : Disjoint v.ker B := by
+    simp [disjoint_iff, v, B, toLinearMap_liftQL, ker_liftQ,
+      map_inf_eq_map_inf_comap, comap_map_mkQ, N, inf_comm]
+  have v_restr_inj : Injective (Set.restrict B v) :=
+    injOn_iff_injective.mp <| LinearMap.injOn_of_disjoint_ker subset_rfl v_ker.symm
+  -- Because `A` contains `N`, we have `A = comap π B`. In particular, `B` is closed.
   have comap_B : comap π.toLinearMap B = A := by simp [B, N, π]
   have A_mapsTo_B : MapsTo π A B := fun _ ↦ by simp [← comap_B]
   have B_closed : IsClosed (B : Set <| E ⧸ N) := by
     rwa [← π_quot.isQuotientMap.isClosed_preimage, ← π.coe_coe, ← comap_coe, comap_B]
-  have codim_B : FiniteDimensional 𝕜 ((E ⧸ N) ⧸ B) :=
-    quotientQuotientEquivQuotient N A inf_le_left |>.symm.finiteDimensional
+  -- Thus, we can apply step 2 to `v`: we get that `v` is strict with closed range if
+  -- and only if `v.restrict B` is strict with closed range.
+  have step2_output : (IsStrictMap v ∧ IsClosed (range v)) ↔
+      (IsStrictMap (Set.restrict B v) ∧ IsClosed (v '' B)) := by
+    simp [step2 v B B_closed v_ker, isClosedEmbedding_iff, ← range_restrict,
+      isEmbedding_iff_isStrictMap_injective, v_restr_inj]
+  -- Now, we wish to reduce our statement about `u` and `u.restrict A`
+  -- to what we know about `v` and `v.restrict B`.
+  -- First, it is clear that `range u = range v` and `u '' A = v '' B`.
+  have range_eq : range v = range u := range_quot_lift _
+  have image_eq : v '' B = u '' A := by simp [B, ← v_comp_π_eq_u, π, ← image_comp]
+  -- Furthermore, since `π` is a quotient map and `u = v ∘ π`, we have that `u` is strict
+  -- if and only if `v` is strict.
+  have strict_iff : IsStrictMap u ↔ IsStrictMap v := by
+    rw [← v_comp_π_eq_u, ← π_quot.isQuotientMap.isStrictMap_iff]
+  -- Now, recall the equality `A = comap π B`; it ensures that the restriction
+  -- `π' : A → B` of the open quotient map `π` is *still* an (open quotient map).
   set π' : A →L[𝕜] B :=
     ⟨π.restrict A_mapsTo_B, π.continuous.restrict A_mapsTo_B⟩
   have π'_quot : IsOpenQuotientMap π' := by
@@ -267,17 +294,13 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict [T2Sp
     exact N.isOpenQuotientMap_mkQL.restrictPreimage B |>.comp
       φ.symm.isOpenQuotientMap
   have v_comp_π'_eq_u : Set.restrict B v ∘ π' = Set.restrict A u := rfl
-  have v_ker : Disjoint v.ker B := by
-    simp [disjoint_iff, v, B, toLinearMap_liftQL, ker_liftQ,
-      map_inf_eq_map_inf_comap, comap_map_mkQ, N, inf_comm]
-  have v_restr_inj : Injective (Set.restrict B v) :=
-    injOn_iff_injective.mp <| LinearMap.injOn_of_disjoint_ker subset_rfl v_ker.symm
-  have range_eq : range v = range u := range_quot_lift _
-  have image_eq : v '' B = u '' A := by simp [B, ← v_comp_π_eq_u, π, ← image_comp]
-  rw [← range_eq, ← image_eq, ← v_comp_π'_eq_u, ← v_comp_π_eq_u,
-    ← π_quot.isQuotientMap.isStrictMap_iff, ← π'_quot.isQuotientMap.isStrictMap_iff]
-  simp [step2 v B B_closed v_ker, isClosedEmbedding_iff, range_restrict v,
-    isEmbedding_iff_isStrictMap_injective, v_restr_inj]
+  -- Because `v.restrict B ∘ π' = u.restrict A`, it follows that `u.restrict A`
+  -- is strict if and only if `v.restrict B` is strict.
+  have strict_iff_restrict : IsStrictMap (Set.restrict A u) ↔ IsStrictMap (Set.restrict B v) := by
+    rw [← v_comp_π'_eq_u, ← π'_quot.isQuotientMap.isStrictMap_iff]
+  -- Thus, we are done!
+  rw [strict_iff, strict_iff_restrict, ← range_eq, ← image_eq]
+  exact step2_output
 
 -- TODO: state in terms of "equality modulo finite rank" relation
 /-- If `u, v : E →L[𝕜] F` agree on a closed subspace `A` of `E` with finite codimension,
