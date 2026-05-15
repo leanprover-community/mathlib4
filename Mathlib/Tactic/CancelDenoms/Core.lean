@@ -15,7 +15,7 @@ public import Mathlib.Tactic.NormNum.Core
 public import Mathlib.Util.SynthesizeUsing
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 import Mathlib.Algebra.Ring.Basic
-meta import Mathlib.Lean.Meta
+public meta import Mathlib.Lean.Meta
 import Mathlib.Tactic.Bound.Init
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Util.CompileInductive

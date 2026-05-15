@@ -10,7 +10,7 @@ public import Mathlib.Order.Interval.Set.Defs
 public import Mathlib.Algebra.GroupWithZero.Defs
 public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
 public import Mathlib.Algebra.Order.ZeroLEOne
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 import Mathlib.Tactic.Bound.Init
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SetLike

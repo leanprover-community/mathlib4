@@ -16,6 +16,7 @@ import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.Monotonicity.Attr
 import Mathlib.Util.CompileInductive
+import Mathlib.Tactic.FBinop
 
 /-!
 # Pointwise scalar operations of sets

@@ -10,12 +10,12 @@ public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Data.Set.Basic
 public import Mathlib.Order.Interval.Set.Defs
-import Mathlib.Algebra.GroupWithZero.InjSurj
+public import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Group.Unbundled.Basic
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 import Mathlib.Algebra.Ring.Regular
-import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Tactic.Bound.Init
 import Mathlib.Tactic.Coe
 import Mathlib.Tactic.FastInstance

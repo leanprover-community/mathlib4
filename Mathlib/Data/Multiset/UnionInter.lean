@@ -9,7 +9,7 @@ public import Mathlib.Data.Multiset.Filter
 public import Mathlib.Logic.Pairwise
 import Mathlib.Data.List.Basic
 import Mathlib.Data.List.Lattice
-import Mathlib.Data.List.Perm.Lattice
+public import Mathlib.Data.List.Perm.Lattice
 import Mathlib.Order.MinMax
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr

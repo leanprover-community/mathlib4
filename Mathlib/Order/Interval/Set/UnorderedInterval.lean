@@ -19,6 +19,7 @@ import Mathlib.Order.MinMax
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Util.CompileInductive
+import Mathlib.Tactic.FBinop
 
 /-!
 # Intervals without endpoints ordering

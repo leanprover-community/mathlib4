@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Group.Submonoid.Defs
 public import Mathlib.Order.Interval.Set.Defs
 public import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Order.Monoid.Basic
-import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SetLike
 import Mathlib.Util.CompileInductive

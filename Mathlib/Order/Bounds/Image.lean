@@ -14,6 +14,7 @@ import Mathlib.Order.Bounds.Basic
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.Use
 import Mathlib.Util.CompileInductive
+import Mathlib.Tactic.FBinop
 
 /-!
 

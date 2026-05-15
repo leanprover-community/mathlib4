@@ -10,9 +10,10 @@ import Mathlib.Data.Finset.Attr
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.SetLike
 public import Mathlib.Tactic.Attr.Core
-import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Util.CompileInductive
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 
 /-!
 # State Transition Systems

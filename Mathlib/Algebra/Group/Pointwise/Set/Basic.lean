@@ -18,13 +18,14 @@ import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Data.Set.Disjoint
 import Mathlib.Data.Set.Image
-import Mathlib.Data.Set.NAry
+public import Mathlib.Data.Set.NAry
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.Monotonicity.Attr
 import Mathlib.Tactic.SimpRw
 import Mathlib.Util.CompileInductive
+import Mathlib.Tactic.FBinop
 
 /-!
 # Pointwise operations of sets

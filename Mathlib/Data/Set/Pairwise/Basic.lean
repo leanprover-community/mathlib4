@@ -14,6 +14,7 @@ import Mathlib.Data.Set.Function
 import Mathlib.Data.Set.Image
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Util.CompileInductive
+import Mathlib.Tactic.FBinop
 
 /-!
 # Relations holding pairwise

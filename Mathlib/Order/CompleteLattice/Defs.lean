@@ -9,8 +9,9 @@ public import Mathlib.Order.SetNotation
 public import Aesop
 public import Mathlib.Order.Bounds.Defs
 public import Mathlib.Order.Heyting.Basic
+public import Mathlib.Data.Set.Insert
 import Mathlib.Data.Set.Image
-import Mathlib.Order.Bounds.Basic
+public import Mathlib.Order.Bounds.Basic
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.SplitIfs

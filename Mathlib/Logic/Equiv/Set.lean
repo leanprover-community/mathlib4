@@ -12,9 +12,10 @@ public import Mathlib.Data.Set.Image
 public import Mathlib.Data.Set.Restrict
 public import Mathlib.Logic.IsEmpty.Basic
 import Mathlib.Data.Prod.Basic
-import Mathlib.Data.Set.Disjoint
+public import Mathlib.Data.Set.Disjoint
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Util.CompileInductive
+import Mathlib.Tactic.FBinop
 
 /-!
 # Equivalences and sets

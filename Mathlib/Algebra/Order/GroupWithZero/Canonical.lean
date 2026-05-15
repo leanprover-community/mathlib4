@@ -16,13 +16,13 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.TypeTags
 public import Mathlib.Algebra.Order.Monoid.Units
 import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Algebra.GroupWithZero.Regular
-import Mathlib.Algebra.Order.Group.Defs
+public import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Group.Int
 import Mathlib.Algebra.Order.Group.Unbundled.Basic
 import Mathlib.Algebra.Order.Group.Units
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
-import Mathlib.Algebra.Order.Monoid.OrderDual
-import Mathlib.Algebra.Order.Monoid.TypeTags
+public import Mathlib.Algebra.Order.Monoid.OrderDual
+public import Mathlib.Algebra.Order.Monoid.TypeTags
 import Mathlib.Data.Set.Function
 import Mathlib.Order.MinMax
 import Mathlib.Tactic.Bound.Init

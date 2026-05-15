@@ -10,8 +10,8 @@ public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 public import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Group.Units.Basic
-import Mathlib.Algebra.GroupWithZero.NeZero
-import Mathlib.Algebra.NeZero
+public import Mathlib.Algebra.GroupWithZero.NeZero
+public import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Order.GroupWithZero.Synonym
 import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Algebra.Order.Ring.Canonical
