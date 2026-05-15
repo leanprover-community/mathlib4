@@ -1,6 +1,24 @@
 import Mathlib.Tactic.ToFun
 import Mathlib.Analysis.Normed.Ring.Basic
 
+variable {R : Type*}
+
+/-
+@[to_fun baz] -- should generate Foo.baz
+def Foo.bar (f g : R → R) : f * g = g * f := sorry
+
+@[to_fun Bars.baz] -- should generate Foo.Bars.baz
+def Foo.Bar.baz (f g : R → R) : f * g = g * f := sorry
+
+@[to_fun Baz.Bars.baz] -- should generate Baz.Bars.baz
+def Foo.Bar.baz' (f g : R → R) : f * g = g * f := sorry
+
+-- specifying more components than the original lemma is fine
+-- TODO: does to_additive have an analogous test? if not, add it!
+@[to_fun Bar.Bars.Bazzz.baz] -- should generate Bar.Bars.Bazzz.baz
+def Foo.Bar.baz'' (f g : R → R) : f * g = g * f := sorry
+-/
+
 @[to_fun]
 theorem Function.mul_comm (f g : ℝ → ℝ) : f * g = g * f := _root_.mul_comm f g
 

@@ -33,6 +33,9 @@ will generate a new lemma `Differentiable.fun_mul` with conclusion
 `Differentiable 𝕜 fun x => f x * g x`.
 
 You can specify the name of the new declaration manually, as in `@[to_fun Differentiable.fun_mul]`.
+If you do so, the newly generated name is namespaced to match the original declaration's name:
+tagging `Foo.bar` with `to_fun baz` generates `Foo.baz`;
+tagging `Foo.Bar.baz` with `Bars.baz` generates `Foo.Bars.baz`, etc.
 
 Use the `to_fun (attr := ...)` (or `to_fun (attr := ...) new_name`) syntax
 to add the same attribute to both declarations.
@@ -44,7 +47,8 @@ def toFunImpl (src : Name) (stx : Syntax) (kind : AttributeKind) : AttrM Name :=
   if (kind != AttributeKind.global) then
     throwError "`to_fun` can only be used as a global attribute"
   let name := match id with
-    | some name => name.getId
+    | some name =>
+      (src.splitAt name.getId.getNumParts).1 ++ name.getId
     | none => src.appendBefore "fun_"
   MetaM.run' <| addRelatedDecl src name tk optAttr
     (docstringPrefix? := s!"Eta-expanded form of `{src}`") (hoverInfo := true)
