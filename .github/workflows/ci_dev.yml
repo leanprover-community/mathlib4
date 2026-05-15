@@ -54,7 +54,6 @@ jobs:
     continue-on-error: true
     outputs:
       sha: ${{ steps.resolve.outputs.sha }}
-      toolchain: ${{ steps.resolve.outputs.toolchain }}
     env:
       LAKE_CACHE_DIR: .lake/cache
       LAKE_NO_CACHE: true
@@ -82,15 +81,13 @@ jobs:
           fetch-depth: 2
           path: pr-branch
 
-      - name: Resolve sha & toolchain
+      - name: Resolve sha
         id: resolve
         shell: bash
         run: |
           cd pr-branch
           SHA="$(git rev-parse HEAD)"
-          TC="$(cat lean-toolchain)"
           echo "sha=$SHA" >> "$GITHUB_OUTPUT"
-          echo "toolchain=$TC" >> "$GITHUB_OUTPUT"
 
       - name: Create empty directories (landrun prerequisites)
         shell: bash
@@ -231,6 +228,11 @@ jobs:
           echo "::notice::  LAKE_CACHE_REVISION_ENDPOINT"
           echo "::notice::and secret LAKE_CACHE_KEY, then re-run."
 
+      - name: Surface failure in workflow notices
+        if: failure()
+        shell: bash
+        run: echo "::warning::ci-dev lake cache shadow build_and_stage failed on ${{ steps.resolve.outputs.sha }} — workflow stays green (continue-on-error) but this run needs attention."
+
   upload:
     name: Upload to cache bucket
     needs: build_and_stage
@@ -276,8 +278,7 @@ jobs:
           cd pr-branch
           lake cache put-staged ../lake-cache-staging \
             --scope="${{ env.SHADOW_SCOPE }}" \
-            --rev="${{ needs.build_and_stage.outputs.sha }}" \
-            --toolchain="${{ needs.build_and_stage.outputs.toolchain }}"
+            --rev="${{ needs.build_and_stage.outputs.sha }}"
 
   consume:
     name: Build from Lake cache (no legacy hydration)
@@ -351,3 +352,8 @@ jobs:
           cd pr-branch
           read -ra TARGETS <<< "$STAGE_TARGETS"
           lake build --no-build --rehash -v "${TARGETS[@]}"
+
+      - name: Surface failure in workflow notices
+        if: failure()
+        shell: bash
+        run: echo "::warning::ci-dev lake cache shadow consume job failed for ${{ needs.build_and_stage.outputs.sha }} — workflow stays green (continue-on-error) but this run needs attention."
