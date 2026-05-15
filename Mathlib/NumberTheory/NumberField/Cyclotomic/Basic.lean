@@ -19,6 +19,7 @@ We gather results about cyclotomic extensions of `ℚ`. In particular, we comput
 integers of a cyclotomic extension of `ℚ`.
 
 ## Main results
+
 * `IsCyclotomicExtension.Rat.isIntegralClosure_adjoin_singleton`: if `K` is a cyclotomic
   extension of `ℚ`, then `adjoin ℤ {ζ}` is the integral closure of `ℤ` in `K`.
 * `IsCyclotomicExtension.Rat.cyclotomicRing_isIntegralClosure`: the integral

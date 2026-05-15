@@ -12,6 +12,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Immersion
 # Quasi-affine schemes
 
 ## Main results
+
 - `IsQuasiAffine`:
   A scheme `X` is quasi-affine if it is quasi-compact and `X ⟶ Spec Γ(X, ⊤)` is an immersion.
   This actually implies that `X ⟶ Spec Γ(X, ⊤)` is an open immersion.

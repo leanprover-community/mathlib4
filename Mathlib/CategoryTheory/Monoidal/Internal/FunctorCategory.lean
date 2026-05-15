@@ -23,6 +23,7 @@ we have `presheaf Ring X ≌ presheaf (Mon Ab) X ≌ Mon (presheaf Ab X)`,
 and we can model a module over a presheaf of rings as a module object in `presheaf Ab X`.
 
 ## Future work
+
 Presumably this statement is not specific to monoids,
 and could be generalised to any internal algebraic objects,
 if the appropriate framework was available.

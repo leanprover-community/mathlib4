@@ -14,6 +14,7 @@ The slice category `Over B` inherits the property of being adhesive from the
 base category.
 
 ## TODO
+
 - The dual result for `Under B`.
 -/
 

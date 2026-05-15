@@ -44,6 +44,7 @@ counterparts in [Chou1994].
   given an (injective) graph homomorphism.
 
 ## Tags
+
 trails, paths, circuits, cycles
 -/
 

@@ -26,6 +26,7 @@ Another application is to the faithfulness of the Weyl group action on roots, an
 Weyl group.
 
 ## Main results:
+
 * `RootPairing.IsAnisotropic`: We say a finite root pairing is anisotropic if there are no roots /
   coroots which have length zero w.r.t. the root / coroot forms.
 * `RootPairing.rootForm_pos_of_nonzero`: `RootForm` is strictly positive on non-zero linear
@@ -38,10 +39,12 @@ Weyl group.
   non-degenerate if the coefficients are a field and the pairing is crystallographic.
 
 ## References:
+
 * [N. Bourbaki, *Lie groups and Lie algebras. Chapters 4--6*][bourbaki1968]
 * [M. Demazure, *SGA III, Exposé XXI, Données Radicielles*][demazure1970]
 
 ## Todo
+
 * Weyl-invariance of `RootForm` and `CorootForm`
 * Faithfulness of Weyl group perm action, and finiteness of Weyl group, over ordered rings.
 * Relation to Coxeter weight.

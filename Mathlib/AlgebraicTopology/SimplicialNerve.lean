@@ -34,6 +34,7 @@ the linear order `Fin (n + 1)` to `C`, in other words
 * Define the functor from topological spaces to anima.
 
 ## References
+
 * [Jacob Lurie, *Higher Topos Theory*, Section 1.1.5][LurieHTT]
 -/
 

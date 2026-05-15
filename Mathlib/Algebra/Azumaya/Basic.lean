@@ -26,6 +26,7 @@ over itself where `R` is a commutative ring.
   as an `R`-algebra, then `B` is an Azumaya algebra over `R`.
 
 ## Tags
+
 Noncommutative algebra, Azumaya algebra, Brauer Group
 
 -/

@@ -12,14 +12,17 @@ public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 # Dirac deltas as probability measures and embedding of a space into probability measures on it
 
 ## Main definitions
+
 * `diracProba`: The Dirac delta mass at a point as a probability measure.
 
 ## Main results
+
 * `isEmbedding_diracProba`: If `X` is a completely regular T0 space with its Borel sigma algebra,
   then the mapping that takes a point `x : X` to the delta-measure `diracProba x` is an embedding
   `X ↪ ProbabilityMeasure X`.
 
 ## Tags
+
 probability measure, Dirac delta, embedding
 -/
 

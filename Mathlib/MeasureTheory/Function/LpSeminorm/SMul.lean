@@ -26,6 +26,7 @@ section Lp
 
 /-!
 ### Bounded actions by normed rings
+
 In this section we show inequalities on the norm.
 -/
 
@@ -85,6 +86,7 @@ end ENormSMulClass
 
 /-!
 ### Bounded actions by normed division rings
+
 The inequalities in the previous section are now tight.
 
 TODO: do these results hold for any `NormedRing` assuming `NormSMulClass`?

@@ -15,14 +15,17 @@ and `Γ = ℤ`, then this is the usual notion of "meromorphic left-moving 2D fie
 here allows us to consider composites and scalar-multiply by multivariable Laurent series.
 
 ## Definitions
+
 * `HVertexOperator` : An `R`-linear map from an `R`-module `V` to `HahnModule Γ W`.
 * The coefficient function as an `R`-linear map.
 * Composition of heterogeneous vertex operators - values are Hahn series on lex order product.
 
 ## Main results
+
 * Ext
 
 ## TODO
+
 * curry for tensor product inputs
 * more API to make ext comparisons easier.
 * formal variable API, e.g., like the `T` function for Laurent polynomials.

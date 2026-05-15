@@ -21,6 +21,7 @@ In case `f` is a polynomial, `v` is a non-negative function with `v 0 = 0` and `
 `Mathlib/RingTheory/Polynomial/GaussNorm.lean`, see `Polynomial.gaussNorm_coe_powerSeries`.
 
 ## Main Definitions and Results
+
 * Using `PowerSeries.gaussNorm_eq`, `PowerSeries.gaussNorm` is the supremum of the set of all values
   of `v (f.coeff i) * c ^ i` for all `i : ℕ`, where `f` is a power series in `R⟦X⟧`, `v : R → ℝ` is
   a function and `c` is a real number.

@@ -15,14 +15,17 @@ If `Γ` is a linearly ordered cancellative monoid and `R` is a domain, then the 
 admits an additive valuation given by `orderTop`.
 
 ## Main Definitions
+
 * `HahnSeries.addVal Γ R` defines an `AddValuation` on `R⟦Γ⟧` when `Γ` is linearly
   ordered.
 
 ## TODO
+
 * Multiplicative valuations
 * Add any API for Laurent series valuations that do not depend on `Γ = ℤ`.
 
 ## References
+
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
 -/
 

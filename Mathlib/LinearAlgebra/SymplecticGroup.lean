@@ -38,6 +38,7 @@ construct the desired `X` in step 1 at the residue field level, and lift back to
 keeping the upper-left block invertible.
 
 ## TODO
+
 * For `n = 1` the symplectic group coincides with the special linear group.
 -/
 

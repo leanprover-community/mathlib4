@@ -26,6 +26,7 @@ algebra and `B, C` nontrivial, then both `B` and `C` are central algebras.
   central algebra over `K`.
 
 ## Tags
+
 Central Algebras, Central Simple Algebras, Noncommutative Algebra
 -/
 

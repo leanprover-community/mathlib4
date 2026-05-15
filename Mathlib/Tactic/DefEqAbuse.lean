@@ -29,6 +29,7 @@ application that triggered them.
 ## Usage
 
 ### Tactic mode
+
 ```
 #defeq_abuse in rw [Set.disjoint_singleton_right]
 ```
@@ -41,6 +42,7 @@ The following isDefEq checks are the root causes of the failure:
 ```
 
 ### Command mode
+
 ```
 #defeq_abuse in
 instance {V : Type} [AddCommGroup V] [Module ℝ V] {l : Submodule ℝ V} :

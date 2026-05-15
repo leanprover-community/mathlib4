@@ -20,6 +20,7 @@ and the subtype of morphisms `φ : K.restriction e ⟶ L` which satisfy a certai
 condition `e.HasLift φ`.
 
 ## TODO
+
 * obtain dual results for morphisms `L.extend e ⟶ K`.
 
 -/

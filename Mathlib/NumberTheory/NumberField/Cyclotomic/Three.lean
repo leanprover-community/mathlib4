@@ -19,6 +19,7 @@ root of unity in `K`, `η` is the element in the units of the ring of integers c
 and `λ = η - 1`.
 
 ## Main results
+
 * `IsCyclotomicExtension.Rat.Three.Units.mem`: Given a unit `u : (𝓞 K)ˣ`, we have that
   `u ∈ {1, -1, η, -η, η^2, -η^2}`.
 

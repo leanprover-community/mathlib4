@@ -26,6 +26,7 @@ Suppose an open partial homeomorphism `e` is differentiable. This file shows
 In particular, (extended) charts have bijective differential.
 
 ## Tags
+
 charts, differentiable, bijective
 -/
 

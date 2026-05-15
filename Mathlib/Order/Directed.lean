@@ -27,6 +27,7 @@ Define connected orders (the transitive symmetric closure of `≤` is everything
 (co)directed orders are connected.
 
 ## References
+
 * [Gierz et al, *A Compendium of Continuous Lattices*][GierzEtAl1980]
 -/
 

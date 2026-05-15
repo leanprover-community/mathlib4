@@ -22,6 +22,7 @@ Then to check the sheaf condition it suffices
 to check it on the underlying sheaf of types.
 
 ## References
+
 * https://stacks.math.columbia.edu/tag/0073
 -/
 

@@ -38,6 +38,7 @@ absolute values; see `Mathlib/Algebra/Order/AbsoluteValue/Basic.lean` for the bu
 * [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*][bosch-guntzer-remmert]
 
 ## Tags
+
 ring_seminorm, ring_norm
 -/
 

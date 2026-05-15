@@ -30,6 +30,7 @@ We also construct the natural transformation
 when `A` is an abelian category.
 
 ## References
+
 * https://stacks.math.columbia.edu/tag/0194
 * https://ncatlab.org/nlab/show/Moore+complex
 

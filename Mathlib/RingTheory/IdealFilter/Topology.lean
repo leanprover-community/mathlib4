@@ -16,6 +16,7 @@ This file constructs topological structures on a ring from an `IdealFilter` and 
 uniform ideal filters in terms of ring filter bases.
 
 ## Main definitions
+
 * `WithIdealFilter`: Type synonym for a ring that depends on a choice of ideal filter. This can be
   used to assign and infer instances on a ring that depend on an ideal filter.
 * `IdealFilter.addGroupFilterBasis`: the `AddGroupFilterBasis` with sets the ideals of `F`.

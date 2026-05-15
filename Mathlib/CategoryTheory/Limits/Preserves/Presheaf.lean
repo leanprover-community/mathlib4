@@ -37,6 +37,7 @@ undertaking. Since the application to the category of Ind-objects only require t
 is small, we leave this as a TODO.
 
 ## References
+
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Proposition 3.3.13
 * [F. Borceux, *Handbook of Categorical Algebra 1*][borceux-vol1], Proposition 6.1.2
 -/

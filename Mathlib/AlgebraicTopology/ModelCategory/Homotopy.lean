@@ -23,6 +23,7 @@ which assert that when both `X` and `Y` are fibrant and cofibrant,
 then any weak equivalence `X ⟶ Y` is a homotopy equivalence.
 
 ## References
+
 * [Daniel G. Quillen, Homotopical algebra, section I.1][Quillen1967]
 
 -/

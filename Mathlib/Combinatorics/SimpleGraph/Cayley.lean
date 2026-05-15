@@ -22,6 +22,7 @@ The elements of `s` are called generators.
 * `SimpleGraph.addCayley s`: the Cayley graph over `M` induced by `[Add M]` with generators `s`.
 
 ## TODOS
+
 * Add API describing behaviour w/r/t `MulOpposite`.
 * Add lemma showing this graph is the same as `SimpleGraph.circulantGraph` in appropriate settings.
 

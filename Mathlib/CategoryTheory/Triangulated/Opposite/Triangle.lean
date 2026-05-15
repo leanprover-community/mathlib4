@@ -21,6 +21,7 @@ between `(Triangle C)ᵒᵖ` and `Triangle Cᵒᵖ`, called
 (without introducing signs).
 
 ## References
+
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 
 -/

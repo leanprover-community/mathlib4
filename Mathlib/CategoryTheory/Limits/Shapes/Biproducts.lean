@@ -26,6 +26,7 @@ and morphisms `π j : X ⟶ F j` and `ι j : F j ⟶ X` for each `j`,
 such that `ι j ≫ π j'` is the identity when `j = j'` and zero otherwise.
 
 ## Notation
+
 As `⊕` is already taken for the sum of types, we introduce the notation `X ⊞ Y` for
 a binary biproduct. We introduce `⨁ f` for the indexed biproduct.
 

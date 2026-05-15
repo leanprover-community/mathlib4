@@ -19,6 +19,7 @@ cardinal `κ` is asserted in the typeclasses `IsLocallyPresentable` and
 accessible category, any object is presentable.
 
 ## References
+
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
 -/

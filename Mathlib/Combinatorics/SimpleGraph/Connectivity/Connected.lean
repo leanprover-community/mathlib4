@@ -30,6 +30,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Operations
   contained in any cycle.
 
 ## Tags
+
 trails, paths, cycles, bridge edges
 -/
 

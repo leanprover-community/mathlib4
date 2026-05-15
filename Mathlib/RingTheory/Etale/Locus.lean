@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.Unramified.Locus
 # Etale locus of an algebra
 
 ## Main results
+
 Let `A` be a `R`-algebra.
 - `Algebra.etaleLocus` : The set of primes of `A` where it is étale over `R`.
 - `Algebra.basicOpen_subset_etaleLocus_iff` :

@@ -25,6 +25,7 @@ We also provide various adjunctions:
   the free-forgetful adjunction between `TopModuleCat R` and `TopCat`.
 
 ## Future projects
+
 Show that the forgetful functor to `TopCat` preserves filtered colimits.
 -/
 

@@ -10,6 +10,7 @@ import Mathlib.LinearAlgebra.Matrix.Charpoly.FiniteField
 # The Friendship Theorem
 
 ## Definitions and Statement
+
 - A `Friendship` graph is one in which any two distinct vertices have exactly one neighbor in common
 - A `Politician`, at least in the context of this problem, is a vertex in a graph which is adjacent
   to every other vertex.
@@ -17,6 +18,7 @@ import Mathlib.LinearAlgebra.Matrix.Charpoly.FiniteField
   politician.
 
 ## Proof outline
+
 The proof revolves around the theory of adjacency matrices, although some steps could equivalently
 be phrased in terms of counting walks.
 - Assume `G` is a finite friendship graph.
@@ -30,6 +32,7 @@ be phrased in terms of counting walks.
 - This gives a contradiction, as `A` has trace `0`, and thus `A ^ p` has trace `0`.
 
 ## References
+
 - [P. Erdős, A. Rényi, V. Sós, *On A Problem of Graph Theory*][erdosrenyisos]
 - [C. Huneke, *The Friendship Theorem*][huneke2002]
 

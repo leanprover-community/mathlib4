@@ -16,6 +16,7 @@ We prove that `ℤ [ζₚ]` is a PID for specific values of `p`. The result hold
 but the proof is more and more involved.
 
 ## Main results
+
 * `three_pid`: If `IsCyclotomicExtension {3} ℚ K` then `𝓞 K` is a principal ideal domain.
 * `five_pid`: If `IsCyclotomicExtension {5} ℚ K` then `𝓞 K` is a principal ideal domain.
 -/

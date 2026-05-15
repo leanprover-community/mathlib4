@@ -28,6 +28,7 @@ a number field, then this characterises `R` as being isomorphic to `𝓞 K` with
 requiring `𝓞 K`. This is so that `ℤ` and `𝓞 ℚ` can be used interchangeably.
 
 ## Main Definitions and Results
+
 * `NumberField.adicAbv`: a `v`-adic absolute value on `K`.
 * `NumberField.FinitePlace`: the type of finite places of a number field `K`.
 * `NumberField.FinitePlace.embedding`: the canonical embedding of a number field `K` to the
@@ -42,6 +43,7 @@ requiring `𝓞 K`. This is so that `ℤ` and `𝓞 ℚ` can be used interchange
    discrete valuation rings.
 
 ## Tags
+
 number field, places, finite places
 -/
 

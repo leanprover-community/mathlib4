@@ -16,6 +16,7 @@ public import Mathlib.Tactic.Field
 # More operations on fractional ideals
 
 ## Main definitions
+
 * `map` is the pushforward of a fractional ideal along an algebra morphism
 
 Let `K` be the localization of `R` at `R⁰ = R \ {0}` (i.e. the field of fractions).

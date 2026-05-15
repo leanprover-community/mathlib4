@@ -32,9 +32,11 @@ $$
 * `Matrix.ToLieAlgebra` : The Lie algebra constructed from a Cartan matrix via Serre relations
 
 ### Exceptional Lie algebras
+
 * `LieAlgebra.e₆`, `LieAlgebra.e₇`, `LieAlgebra.e₈`, `LieAlgebra.f₄`, `LieAlgebra.g₂`
 
 ### Classical Lie algebras
+
 * `CartanMatrix.aₙ`, `CartanMatrix.bₙ`, `CartanMatrix.cₙ`, `CartanMatrix.dₙ`
 
 ## Alternative construction

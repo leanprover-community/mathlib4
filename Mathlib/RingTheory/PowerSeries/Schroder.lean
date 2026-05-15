@@ -14,10 +14,12 @@ public import Mathlib.RingTheory.PowerSeries.Basic
 This file defines lemmas and theorems about the power series for large and small Schröder numbers.
 
 ## Main Definitions
+
 * `PowerSeries.largeSchroderSeries`: The power series for large Schröder numbers.
 * `PowerSeries.smallSchroderSeries`: The power series for small Schröder numbers.
 
 ## Main Results
+
 * `largeSchroderSeries_eq_one_add_X_mul_largeSchroderSeries_add_X_mul_largeSchroderSeries_sq`:
   The functional equation for the large Schröder numbers power series.
 

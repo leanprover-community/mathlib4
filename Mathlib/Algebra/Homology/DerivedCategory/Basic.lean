@@ -53,6 +53,7 @@ instance should be obtained at the beginning of the proof, using the term
   with the one defined in `Algebra.Homology.HomologySequence`.
 
 ## References
+
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 * [Mark Hovey, *Model category structures on chain complexes of sheaves*][hovey-2001]
 

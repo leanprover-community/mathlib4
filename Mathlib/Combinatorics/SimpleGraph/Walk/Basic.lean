@@ -33,6 +33,7 @@ counterparts in [Chou1994].
 * `SimpleGraph.Walk.edgeSet`: The set of edges of a walk visits
 
 ## Tags
+
 walks
 -/
 

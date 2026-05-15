@@ -25,11 +25,13 @@ more convenient API. We prove the equivalence in
 `CategoryTheory.CategoryOfElements.structuredArrowEquivalence`.
 
 ## References
+
 * [Emily Riehl, *Category Theory in Context*, Section 2.4][riehl2017]
 * <https://en.wikipedia.org/wiki/Category_of_elements>
 * <https://ncatlab.org/nlab/show/category+of+elements>
 
 ## Tags
+
 category of elements, Grothendieck construction, comma category
 -/
 

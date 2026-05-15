@@ -13,6 +13,7 @@ public import Mathlib.Data.Rat.Floor
 # Termination of Continued Fraction Computations (`GenContFract.of`)
 
 ## Summary
+
 We show that the continued fraction for a value `v`, as defined in
 `Mathlib/Algebra/ContinuedFractions/Basic.lean`, terminates if and only if `v` corresponds to a
 rational number, that is `↑v = q` for some `q : ℚ`.

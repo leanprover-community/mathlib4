@@ -33,6 +33,7 @@ Let `Semiring R`, `Algebra R S` and `Module R N`.
   is algebraically equivalent to a polynomial algebra
 
 ## TODO :
+
 * `MvPolynomial.rTensor` could be phrased in terms of `AddMonoidAlgebra`, and
   `MvPolynomial.rTensor` then has `smul` by the polynomial algebra.
 * `MvPolynomial.rTensorAlgHom` and `MvPolynomial.scalarRTensorAlgEquiv`

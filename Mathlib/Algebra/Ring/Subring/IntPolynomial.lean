@@ -16,6 +16,7 @@ coefficients, degree, and evaluation of `Polynomial.int`.
 This is useful when dealing with integral elements in an extension of fields.
 
 ## Main Definitions
+
 * `Polynomial.int` : given a polynomial `P` in `K[X]` whose coefficients all belong to a subring `R`
   of the field `K`, `P.int R` is the corresponding polynomial in `R[X]`.
 -/

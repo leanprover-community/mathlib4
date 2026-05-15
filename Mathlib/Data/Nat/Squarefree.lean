@@ -17,10 +17,12 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
 A number is squarefree when it is not divisible by any squares except the squares of units.
 
 ## Main Results
+
 - `Nat.squarefree_iff_nodup_primeFactorsList`: A positive natural number `x` is squarefree iff
   the list `factors x` has no duplicate factors.
 
 ## Tags
+
 squarefree, multiplicity
 
 -/

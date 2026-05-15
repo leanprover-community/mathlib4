@@ -25,6 +25,7 @@ in terms of this homology `X.E`: the objects in all pages, including
 the page at infinity.
 
 ## References
+
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*, II.4][verdier1996]
 
 -/

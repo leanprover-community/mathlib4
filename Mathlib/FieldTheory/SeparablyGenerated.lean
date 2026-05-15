@@ -28,6 +28,7 @@ Let `K/k` be a finitely generated field extension with characteristic `p > 0`, t
 5. `k` and `Kᵖ` are linearly disjoint over `kᵖ` in `K`.
 
 ## Main result
+
 - `exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow`: (2) ⇒ (1)
 
 -/

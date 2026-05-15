@@ -15,6 +15,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
 # Unique factorization for univariate and multivariate polynomials
 
 ## Main results
+
 * `Polynomial.wfDvdMonoid`:
   If an integral domain is a `WFDvdMonoid`, then so is its polynomial ring.
 * `Polynomial.uniqueFactorizationMonoid`, `MvPolynomial.uniqueFactorizationMonoid`:

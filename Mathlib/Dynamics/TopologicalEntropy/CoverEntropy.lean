@@ -30,6 +30,7 @@ keep the possibility for the entropy to be infinite. Hence, the entropy takes va
 reals `[-∞, +∞]`. The consequence is that we use `ℕ∞`, `ℝ≥0∞` and `EReal` numbers.
 
 ## Main definitions
+
 - `IsDynCoverOf`: property that dynamical balls centered on a subset `s` cover a subset `F`.
 - `coverMincard`: minimal cardinality of a dynamical cover. Takes values in `ℕ∞`.
 - `coverEntropyInfEntourage`/`coverEntropyEntourage`: exponential growth of `coverMincard`.
@@ -39,6 +40,7 @@ reals `[-∞, +∞]`. The consequence is that we use `ℕ∞`, `ℝ≥0∞` and 
   versions of the topological entropy with covers. Take values in `EReal`.
 
 ## Implementation notes
+
 There are two competing definitions of topological entropy in this file: one uses a `liminf`,
 the other a `limsup`. These two topological entropies are equal as soon as they are applied to an
 invariant subset by theorem `coverEntropyInf_eq_coverEntropy`. We choose the default definition
@@ -47,6 +49,7 @@ to be the definition using a `limsup`, and give it the simpler name `coverEntrop
 using only `coverEntropy`.
 
 ## Main results
+
 - `IsDynCoverOf.iterate_le_pow`: given a dynamical cover at time `n`, creates dynamical covers
   at all iterates `n * m` with controlled cardinality.
 - `IsDynCoverOf.coverEntropyEntourage_le_log_card_div`: upper bound on `coverEntropyEntourage`
@@ -55,9 +58,11 @@ using only `coverEntropy`.
   with a `liminf` and a `limsup`.
 
 ## Tags
+
 cover, entropy
 
 ## TODO
+
 Get versions of the topological entropy on (pseudo-e)metric spaces.
 -/
 

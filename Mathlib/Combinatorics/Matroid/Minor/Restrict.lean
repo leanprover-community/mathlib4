@@ -397,6 +397,7 @@ end IsRestriction
 
 /-!
 ### `IsBasis` and `Base`
+
 The lemmas below exploit the fact that `(M ↾ X).Base I ↔ M.IsBasis I X` to transfer facts about
 `Matroid.Base` to facts about `Matroid.IsBasis`.
 Their statements thematically belong in `Data.Matroid.Basic`, but they appear here because their

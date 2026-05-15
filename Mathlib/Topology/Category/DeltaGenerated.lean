@@ -20,11 +20,11 @@ This is a particular case of the construction in the file
 for all `n : ℕ`.
 
 ## TODO
+
 * `DeltaGenerated` is Cartesian closed (@joelriou).
 
 ## References
 * https://ncatlab.org/nlab/show/Delta-generated+topological+space
-
 -/
 
 @[expose] public section

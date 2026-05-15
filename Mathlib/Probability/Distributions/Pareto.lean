@@ -13,6 +13,7 @@ public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 Define the Pareto measure over the reals.
 
 ## Main definitions
+
 * `paretoPDFReal`: the function `t r x ↦ r * t ^ r * x ^ -(r + 1)`
   for `t ≤ x` or `0` else, which is the probability density function of a Pareto distribution with
   scale `t` and shape `r` (when `ht : 0 < t` and `hr : 0 < r`).

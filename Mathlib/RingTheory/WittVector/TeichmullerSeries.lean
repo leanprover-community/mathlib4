@@ -26,6 +26,7 @@ every element `x` of the Witt vectors `𝕎 R` can be written as the
   then they are equal.
 
 ## TODO
+
 Show that the Teichmuller series is unique.
 -/
 

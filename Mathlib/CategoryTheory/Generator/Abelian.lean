@@ -15,10 +15,12 @@ public import Mathlib.CategoryTheory.Abelian.Opposite
 # A complete abelian category with enough injectives and a separator has an injective coseparator
 
 ## Future work
+
 * Once we know that Grothendieck categories have enough injectives, we can use this to conclude
   that Grothendieck categories have an injective coseparator.
 
 ## References
+
 * [Peter J Freyd, *Abelian Categories* (Theorem 3.37)][freyd1964abelian]
 
 -/

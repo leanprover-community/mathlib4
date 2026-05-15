@@ -17,6 +17,7 @@ public import Mathlib.Topology.Algebra.Valued.ValuedField
 # Necessary and sufficient conditions for a locally compact valued field
 
 ## Main Definitions
+
 * `totallyBounded_iff_finite_residueField`: when the valuation ring is a DVR,
   it is totally bounded iff the residue field is finite.
 

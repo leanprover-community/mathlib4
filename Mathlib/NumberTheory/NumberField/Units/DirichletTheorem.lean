@@ -36,6 +36,7 @@ subgroup is a free `ℤ`-module of rank `card (InfinitePlace K) - 1`.
   fundamental system `fundSystem`.
 
 ## Tags
+
 number field, units, Dirichlet unit theorem
 -/
 

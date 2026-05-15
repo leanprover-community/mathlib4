@@ -21,6 +21,7 @@ In this file we construct the transfer homomorphism.
 - `transferCenterPow`: The transfer homomorphism `G →* center G`.
 
 ## Main results
+
 - `transferCenterPow_apply`:
   The transfer homomorphism `G →* center G` is given by `g ↦ g ^ (center G).index`.
 - `ker_transferSylow_isComplement'`: Burnside's transfer (or normal `p`-complement) theorem:

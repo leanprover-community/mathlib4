@@ -16,6 +16,7 @@ as comonoid objects in the category of monoid objects in `C`.
 We verify that this is equivalent to the monoid objects in the category of comonoid objects.
 
 ## TODO
+
 * Construct the category of modules, and show that it is monoidal with a monoidal forgetful functor
   to `C`.
 * Some form of Tannaka reconstruction:

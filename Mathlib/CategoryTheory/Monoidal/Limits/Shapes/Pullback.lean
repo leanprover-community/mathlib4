@@ -17,6 +17,7 @@ For numerous simp lemmas of the form `f ≫ g = h`, we add accompanying simp lem
 structure in `Mathlib.CategoryTheory.Monoidal.Arrow`.
 
 ## TODO
+
 An attribute should be developed to automatically generate lemmas of this form.
 -/
 

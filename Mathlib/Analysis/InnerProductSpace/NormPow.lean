@@ -15,6 +15,7 @@ In this file we prove that `x ↦ ‖x‖ ^ p` is continuously differentiable fo
 an inner product space and for a real number `p > 1`.
 
 ## TODO
+
 * `x ↦ ‖x‖ ^ p` should be `C^n` for `p > n`.
 
 -/

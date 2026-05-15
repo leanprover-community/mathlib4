@@ -16,6 +16,7 @@ In this file, we introduce the category `SpectralObject C ι` of spectral
 objects in an abelian category `C` indexed by the category `ι`.
 
 ## References
+
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*, II.4][verdier1996]
 
 -/

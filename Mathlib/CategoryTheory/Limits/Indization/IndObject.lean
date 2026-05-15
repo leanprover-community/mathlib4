@@ -39,6 +39,7 @@ as a property of presheaves `C ⥤ Type max v w`. This comes with significant te
 The recommended alternative is to consider ind-objects over `ULiftHom.{w} C` instead.
 
 ## References
+
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Chapter 6
 -/
 

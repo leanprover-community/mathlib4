@@ -16,6 +16,7 @@ This file contains constructions to relate adjunctions of functors to adjunction
 opposites.
 
 ## Tags
+
 adjunction, opposite, uniqueness
 -/
 

@@ -21,6 +21,7 @@ In this file we prove various facts about membership in a submonoid:
   to an additive submonoid, then so does their sum;
 
 ## Tags
+
 submonoid, submonoids
 -/
 

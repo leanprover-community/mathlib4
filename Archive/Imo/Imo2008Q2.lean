@@ -23,6 +23,7 @@ for all real numbers `x`,`y`, `z`, each different from 1, and satisfying `xyz = 
 each different from 1, and satisfying `xyz = 1`.
 
 ## Solution
+
 (a) Since `xyz = 1`, we can apply the substitution `x = a/b`, `y = b/c`, `z = c/a`.
 Then we define `m = c-b`, `n = b-a` and rewrite the inequality as `LHS - 1 ≥ 0`
 using `c`, `m` and `n`. We factor `LHS - 1` as a square, which finishes the proof.

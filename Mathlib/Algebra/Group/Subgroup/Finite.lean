@@ -17,6 +17,7 @@ public import Mathlib.SetTheory.Cardinal.NatCard
 This file provides some result on multiplicative and additive subgroups in the finite context.
 
 ## Tags
+
 subgroup, subgroups
 -/
 

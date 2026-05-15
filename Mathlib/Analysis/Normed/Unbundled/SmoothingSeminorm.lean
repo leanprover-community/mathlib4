@@ -21,6 +21,7 @@ nonarchimedean seminorm on a commutative ring `R`, then
 seminorm on `R`.
 
 ## Main Definitions
+
 * `smoothingSeminormSeq` : the `ℝ`-valued sequence sending `n` to `((f( (x ^ n)) ^ (1 / n : ℝ)`.
 * `smoothingFun` : the iInf of the sequence `n ↦ f(x ^ (n : ℕ))) ^ (1 / (n : ℝ)`.
 * `smoothingSeminorm` : if `μ 1 ≤ 1` and `μ` is nonarchimedean, then `smoothingFun`
@@ -36,6 +37,7 @@ seminorm on `R`.
   `smoothingFun μ` is power-multiplicative.
 
 ## References
+
 * [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*][bosch-guntzer-remmert]
 
 ## Tags

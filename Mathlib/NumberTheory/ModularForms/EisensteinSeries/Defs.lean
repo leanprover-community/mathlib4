@@ -24,6 +24,7 @@ public import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 * We show that they define a slash invariant form of level `Γ(N)` and weight `k`.
 
 ## References
+
 * [F. Diamond and J. Shurman, *A First Course in Modular Forms*][diamondshurman2005]
 -/
 

@@ -46,6 +46,7 @@ conditions are equivalent in this case).
   the space.
 
 ## Implementation Notes
+
 For our applications we are interested in the existence of a countable basis, but we do not need the
 concrete basis itself. This allows us to declare these type classes as `Prop` to use them as mixins.
 
