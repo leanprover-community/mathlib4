@@ -19,7 +19,7 @@ This file shows that every affine space is a convex space.
 * `AddTorsor.instConvexSpace`: An affine space over a module is a convex space.
 * `AddTorsor.convexCombination_eq_affineCombination`: The convex combination equals the affine
   combination.
-* `AddTorsor.convexComboPair_eq_lineMap`: Binary convex combinations are given by `lineMap`.
+* `AddTorsor.convexCombPair_eq_lineMap`: Binary convex combinations are given by `lineMap`.
 -/
 
 public noncomputable section
@@ -99,22 +99,22 @@ theorem convexCombination_assoc (f : StdSimplex R (StdSimplex R P)) :
         not_true_eq_false] at hp
 
 instance instConvexSpace : ConvexSpace R P where
-  sConvexCombo := convexCombination
-  sConvexCombo_single := convexCombination_single
+  sConvexComb := convexCombination
+  sConvexComb_single := convexCombination_single
   assoc := convexCombination_assoc
 
-/-- `ConvexSpace.sConvexCombo` in an affine space is the affine combination. -/
-theorem sConvexCombo_eq_affineCombination (s : StdSimplex R P) :
-    s.sConvexCombo = s.weights.support.affineCombination R id s.weights := by
+/-- `ConvexSpace.sConvexComb` in an affine space is the affine combination. -/
+theorem sConvexComb_eq_affineCombination (s : StdSimplex R P) :
+    s.sConvexComb = s.weights.support.affineCombination R id s.weights := by
   rfl
 
 @[deprecated (since := "2026-05-04")]
-alias convexCombination_eq_affineCombination := sConvexCombo_eq_affineCombination
+alias convexCombination_eq_affineCombination := sConvexComb_eq_affineCombination
 
-theorem iConvexCombo_eq_affineCombination (s : StdSimplex R I) (f : I → P) :
-    s.iConvexCombo f = s.weights.support.affineCombination R f s.weights := by
+theorem iConvexComb_eq_affineCombination (s : StdSimplex R I) (f : I → P) :
+    s.iConvexComb f = s.weights.support.affineCombination R f s.weights := by
   let p : P := Nonempty.some inferInstance
-  simp only [iConvexCombo, sConvexCombo_eq_affineCombination]
+  simp only [iConvexComb, sConvexComb_eq_affineCombination]
   rw [Finset.affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one
     (b := p) (h := (s.map f).total),
     Finset.affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one
@@ -123,11 +123,11 @@ theorem iConvexCombo_eq_affineCombination (s : StdSimplex R I) (f : I → P) :
     s.weights.sum fun x r ↦ r • (f x -ᵥ p) by simpa
   simp [Finsupp.sum_mapDomain_index, add_smul]
 
-/-- `convexComboPair` in an affine space is the affine line map. -/
-theorem convexComboPair_eq_lineMap (s t : R) (hs : 0 ≤ s) (ht : 0 ≤ t)
+/-- `convexCombPair` in an affine space is the affine line map. -/
+theorem convexCombPair_eq_lineMap (s t : R) (hs : 0 ≤ s) (ht : 0 ≤ t)
     (h : s + t = 1) (x y : P) :
-    convexComboPair s t hs ht h x y = AffineMap.lineMap y x s := by
-  simp only [convexComboPair, AddTorsor.sConvexCombo_eq_affineCombination, StdSimplex.duple,
+    convexCombPair s t hs ht h x y = AffineMap.lineMap y x s := by
+  simp only [convexCombPair, AddTorsor.sConvexComb_eq_affineCombination, StdSimplex.duple,
     AffineMap.lineMap_apply]
   classical
   -- Use weighted subtraction with base point y
@@ -156,26 +156,26 @@ open Finsupp
 
 namespace Convexity
 
-theorem sConvexCombo_eq_sum (f : StdSimplex R V) :
-    f.sConvexCombo = f.weights.sum fun i r ↦ r • i := by
-  simp [AddTorsor.sConvexCombo_eq_affineCombination,
+theorem sConvexComb_eq_sum (f : StdSimplex R V) :
+    f.sConvexComb = f.weights.sum fun i r ↦ r • i := by
+  simp [AddTorsor.sConvexComb_eq_affineCombination,
     Finset.affineCombination_eq_linear_combination _ _ _ f.total, Finsupp.sum]
 
 @[deprecated (since := "2026-04-03")]
-alias _root_.convexCombination_eq_sum := sConvexCombo_eq_sum
+alias _root_.convexCombination_eq_sum := sConvexComb_eq_sum
 
-theorem iConvexCombo_eq_sum (f : StdSimplex R I) (g : I → V) :
-    f.iConvexCombo g = f.weights.sum fun i r ↦ r • g i := by
-  simp [iConvexCombo, sConvexCombo_eq_sum, add_smul, sum_mapDomain_index]
+theorem iConvexComb_eq_sum (f : StdSimplex R I) (g : I → V) :
+    f.iConvexComb g = f.weights.sum fun i r ↦ r • g i := by
+  simp [iConvexComb, sConvexComb_eq_sum, add_smul, sum_mapDomain_index]
 
-theorem convexComboPair_eq_add
+theorem convexCombPair_eq_add
     {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) (x y : V) :
-    convexComboPair s t hs ht h x y = s • x + t • y := by
+    convexCombPair s t hs ht h x y = s • x + t • y := by
   classical
-  simp [convexComboPair, sConvexCombo_eq_sum, sum_add_index, add_smul]
+  simp [convexCombPair, sConvexComb_eq_sum, sum_add_index, add_smul]
 
 variable (R I) in
 lemma StdSimplex.isAffineMap_weights : IsAffineMap R (weights (R := R) (M := I)) where
-  map_sConvexCombo s := by simp [sConvexCombo_eq_sum, StdSimplex.map, sum_mapDomain_index, add_smul]
+  map_sConvexComb s := by simp [sConvexComb_eq_sum, StdSimplex.map, sum_mapDomain_index, add_smul]
 
 end Convexity
