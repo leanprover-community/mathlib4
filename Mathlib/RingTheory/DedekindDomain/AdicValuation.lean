@@ -686,6 +686,10 @@ theorem coe_smul_adicCompletionIntegers (r : R) (x : v.adicCompletionIntegers K)
 
 instance : Module.IsTorsionFree R (v.adicCompletionIntegers K) := .of_smul_eq_zero <| by simp
 
+-- a shortcut instancefor `SMul` to avoid timeout in `adicCompletion.instIsScalarTower'`
+instance adicCompletionIntegers.smul : SMul (v.adicCompletionIntegers K) (v.adicCompletion K) :=
+  (adicCompletionIntegers K v).instAlgebraSubtypeMem.toSMul
+
 instance adicCompletion.instIsScalarTower' :
     IsScalarTower R (v.adicCompletionIntegers K) (v.adicCompletion K) where
   smul_assoc x y z := by simp only [Algebra.smul_def]; apply mul_assoc

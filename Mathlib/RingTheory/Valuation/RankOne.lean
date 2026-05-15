@@ -136,7 +136,7 @@ instance isNontrivial_restrict [v.IsNontrivial] : (v.restrict).IsNontrivial wher
     obtain ⟨x, ⟨hx0, hx1⟩⟩ := IsNontrivial.exists_val_nontrivial (v := v)
     exact ⟨x, by simp [hx0], by grind [restrict_eq_one_iff]⟩
 
-variable (K : Type*) [Field K] (v : Valuation K Γ₀) [RankOne v]
+variable (K : Type*) [DivisionRing K] (v : Valuation K Γ₀) [RankOne v]
 
 instance restrict_RankOne : RankOne (v.restrict) where
   hom' := (RankOne.hom v).comp embedding
@@ -197,7 +197,7 @@ def rankOne_of_nontrivial (H : Nontrivial (ValueGroup₀ v)ˣ) : RankOne v where
       simp [hx]
     exact h1 (H' k h0)
 
-theorem exists_val_lt {K : Type*} [Field K] (v : Valuation K Γ₀) [RankLeOne v] :
+theorem exists_val_lt {K : Type*} [DivisionRing K] (v : Valuation K Γ₀) [RankLeOne v] :
     Subsingleton ((ValueGroup₀ v)ˣ) ∨
       ∀ {γ : ℝ≥0} (_ : γ ≠ 0), ∃ (x : K), x ≠ 0 ∧ (RankLeOne.hom' v) (v.restrict x) < γ := by
   simp only [ne_eq, or_iff_not_imp_left, not_subsingleton_iff_nontrivial]
@@ -211,7 +211,7 @@ section ValuativeRel
 
 open ValuativeRel
 
-variable {R : Type*} [CommRing R] [ValuativeRel R]
+variable {R : Type*} [Ring R] [ValuativeRel R]
 
 /-- A valuative relation has a rank one valuation when it is both nontrivial
 and the rank is at most one. -/

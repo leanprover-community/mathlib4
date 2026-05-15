@@ -39,7 +39,7 @@ open Set Filter Valuation ValuativeRel MonoidWithZeroHom ValueGroup₀ ValueGrou
 
 noncomputable section
 
-variable (R : Type*) [CommRing R] [ValuativeRel R]
+variable (R : Type*) [Ring R] [ValuativeRel R]
 
 variable {R} in
 lemma Valuation.exists_setOf_restrict_le_iff {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
@@ -86,7 +86,8 @@ end ValuativeRel
 
 variable {R}
 
-variable {K : Type*} [Field K] [ValuativeRel K] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+variable {K : Type*} [DivisionRing K] [ValuativeRel K] {Γ₀ : Type*}
+  [LinearOrderedCommGroupWithZero Γ₀]
 
 section TopologicalSpace
 
@@ -359,6 +360,10 @@ around zero `{x | v x ≤ 1}` is clopen in the valuative topology. -/
 theorem isClopen_integer : IsClopen (v.integer : Set R) :=
   ⟨isClosed_integer, isOpen_integer⟩
 
+section Field
+
+variable {K : Type*} [Field K] [ValuativeRel K] [TopologicalSpace K] [IsValuativeTopology K]
+
 /-- For any valuation `v` compatible with the valuative relation on a field `K`, the valuation
 subring defined by `v` is open in the valuative topology. -/
 theorem isOpen_valuationSubring (v : Valuation K Γ₀) [v.Compatible] :
@@ -376,6 +381,8 @@ subring defined by `v` is clopen in the valuative topology. -/
 theorem isClopen_valuationSubring (v : Valuation K Γ₀) [v.Compatible] :
     IsClopen (v.valuationSubring : Set K) :=
   isClopen_integer
+
+end Field
 
 end TopologicalSpace
 
