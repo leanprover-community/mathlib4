@@ -26,27 +26,41 @@ criteria for establishing it.
 
 - `FirstOrder.Language.Theory.isQFEquivalent_iff_realize_iff_of_embeddings` characterizes
   quantifier-free definability by invariance under embeddings from a common substructure. This
-  corresponds to Marker, Theorem 3.1.4.
+  corresponds to [Theorem 3.1.4][marker2002].
 - `FirstOrder.Language.Theory.hasQuantifierElimination_of_ex_isQFEquivalent_of_isQF` shows that it
   suffices to eliminate one existential quantifier from quantifier-free formulas. This corresponds
-  to Marker, Theorem 3.1.5.
+  to [Theorem 3.1.5][marker2002].
 - `FirstOrder.Language.Theory.hasQuantifierElimination_of_exists_realize_of_embeddings` is a
-  witness-transfer criterion for quantifier elimination. This corresponds to Marker,
-  Theorem 3.1.6.
+  witness-transfer criterion for quantifier elimination. This corresponds to
+  [Theorem 3.1.6][marker2002].
 - `FirstOrder.Language.Theory.hasQuantifierElimination_of_isElementaryExtensionPair` and
   `FirstOrder.Language.Theory.hasQuantifierElimination_of_isElementaryExtensionPairFG` prove
-  quantifier elimination from the extension property appearing in van den Dries--Henson,
-  Theorem 7.11, and from a finitely generated variant.
+  quantifier elimination from the extension property appearing in
+  [Theorem 7.11][vandendries_henson_2016] and from a finitely generated variant. The theorem
+  `hasQuantifierElimination_of_isElementaryExtensionPairCardinalLTGenerated`
+  gives the corresponding `< κ`-generated version.
+
+## References
+
+- [D. Marker, *Model Theory: An Introduction*][marker2002]
+- [L. van den Dries and C. W. Henson, *Lecture Notes for Mathematics 571 Fall 2016 Model
+  Theory*][vandendries_henson_2016]
 
 ## TODO
 
-- Add bibliography entries for Marker's *Model Theory: An Introduction* and the van den
-  Dries--Henson lecture notes cited above.
+- Drop the `[Finite α]` constraint from `HasQuantifierElimination` (and from the upstream
+  hypotheses that propagate it). The all-`α` version is mathematically equivalent — formulas
+  have finitary syntax, so QE for finite `α` implies QE for any `α` — but bridging the two
+  requires a `BoundedFormula.freeVarsFinset` (or similar) infrastructure together with a
+  realize-invariance-under-restriction lemma, neither of which is in mathlib yet. The single
+  load-bearing use of `[Finite α]` is `Set.finite_range (f ∘ a)` in
+  `hasQuantifierElimination_of_isElementaryExtensionPairCardinalLTGenerated`; everything else
+  just propagates the constraint.
 -/
 
 @[expose] public section
 
-universe u v w
+universe u v w u'
 
 namespace FirstOrder
 
@@ -55,36 +69,35 @@ namespace Language
 namespace Theory
 
 open Structure
---TODO: generalize Fin m to alpha
 variable {L : Language.{u, v}}
 variable {M : Type w} {N A : Type*} [L.Structure M] [L.Structure N] [L.Structure A]
 
 /-- A formula is equivalent to a quantifier-free formula over a theory. -/
-def IsQFEquivalent (T : L.Theory) {m : ℕ} (φ : L.Formula (Fin m)) : Prop :=
-  ∃ ψ : L.Formula (Fin m), ψ.IsQF ∧ φ ⇔[T] ψ
+def IsQFEquivalent (T : L.Theory) {α : Type*} (φ : L.Formula α) : Prop :=
+  ∃ ψ : L.Formula α, ψ.IsQF ∧ φ ⇔[T] ψ
 
 /-- A theory has quantifier elimination if every formula in finitely many free variables is
 equivalent, over the theory, to a quantifier-free formula. -/
 def HasQuantifierElimination (T : L.Theory) : Prop :=
-  ∀ {m : ℕ} (φ : L.Formula (Fin m)), T.IsQFEquivalent φ
+  ∀ {α : Type} [Finite α] (φ : L.Formula α), T.IsQFEquivalent φ
 
 /-- Finite conjunction of a list of quantifier-free formulas bundled with an auxiliary property. -/
-private def qfConj {m : ℕ} {P : L.Formula (Fin m) → Prop}
-    (l : List {ψ : L.Formula (Fin m) // ψ.IsQF ∧ P ψ}) : L.Formula (Fin m) :=
+private def qfConj {α : Type*} {P : L.Formula α → Prop}
+    (l : List {ψ : L.Formula α // ψ.IsQF ∧ P ψ}) : L.Formula α :=
   (l.map Subtype.val).foldr (· ⊓ ·) ⊤
 
 /-- A finite conjunction of quantifier-free formulas is quantifier-free. -/
-private theorem qfConj_isQF {m : ℕ} {P : L.Formula (Fin m) → Prop}
-    (l : List {ψ : L.Formula (Fin m) // ψ.IsQF ∧ P ψ}) :
+private theorem qfConj_isQF {α : Type*} {P : L.Formula α → Prop}
+    (l : List {ψ : L.Formula α // ψ.IsQF ∧ P ψ}) :
     (qfConj (L := L) l).IsQF := by
   induction l with
   | nil => exact BoundedFormula.IsQF.top
   | cons ψ _ ih => simpa [qfConj] using ψ.2.1.inf ih
 
 /-- Realizing a finite conjunction is the same as realizing every formula in the list. -/
-private theorem realize_qfConj {m : ℕ} {P : L.Formula (Fin m) → Prop}
-    (l : List {ψ : L.Formula (Fin m) // ψ.IsQF ∧ P ψ}) {M : Type*} [L.Structure M]
-    (v : Fin m → M) (xs : Fin 0 → M) :
+private theorem realize_qfConj {α : Type*} {P : L.Formula α → Prop}
+    (l : List {ψ : L.Formula α // ψ.IsQF ∧ P ψ}) {M : Type*} [L.Structure M]
+    (v : α → M) (xs : Fin 0 → M) :
     BoundedFormula.Realize (qfConj (L := L) l) v xs ↔
       ∀ ψ ∈ l, BoundedFormula.Realize ψ.1 v xs := by
   induction l with
@@ -92,25 +105,25 @@ private theorem realize_qfConj {m : ℕ} {P : L.Formula (Fin m) → Prop}
   | cons ψ l ih => simp [qfConj]
 
 private theorem exists_substructure_embedding_of_agree_qf
-    {m : ℕ} {M N : Type*} [L.Structure M] [L.Structure N]
-    (v : Fin m → M) (w : Fin m → N)
-    (hQF : ∀ ψ : L.Formula (Fin m), ψ.IsQF → (ψ.Realize v ↔ ψ.Realize w)) :
-    ∃ S : L.Substructure M, ∃ g : S ↪[L] N, ∃ a : Fin m → S,
+    {α : Type*} {M N : Type*} [L.Structure M] [L.Structure N]
+    (v : α → M) (w : α → N)
+    (hQF : ∀ ψ : L.Formula α, ψ.IsQF → (ψ.Realize v ↔ ψ.Realize w)) :
+    ∃ S : L.Substructure M, ∃ g : S ↪[L] N, ∃ a : α → S,
       ((↑) ∘ a = v) ∧ g ∘ a = w := by
   classical
   let S : L.Substructure M := Substructure.closure L (Set.range v)
   choose idx hidx using fun x : Set.range v => x.2
-  have hQFeq : ∀ {t u : L.Term (Fin m)},
-      ((t.equal u : L.Formula (Fin m)).Realize v ↔ (t.equal u).Realize w) := fun {t u} =>
+  have hQFeq : ∀ {t u : L.Term α},
+      ((t.equal u : L.Formula α).Realize v ↔ (t.equal u).Realize w) := fun {t u} =>
     hQF _ <| by
       simpa [Term.equal] using
         (BoundedFormula.IsAtomic.equal (t.relabel Sum.inl) (u.relabel Sum.inl)).isQF
-  have hQFrel : ∀ {k} (R : L.Relations k) (ts : Fin k → L.Term (Fin m)),
-      ((R.formula ts : L.Formula (Fin m)).Realize v ↔ (R.formula ts).Realize w) :=
+  have hQFrel : ∀ {k} (R : L.Relations k) (ts : Fin k → L.Term α),
+      ((R.formula ts : L.Formula α).Realize v ↔ (R.formula ts).Realize w) :=
     fun R ts => hQF _ <| by
       simpa [Relations.formula] using
         (BoundedFormula.IsAtomic.rel R fun i => (ts i).relabel Sum.inl).isQF
-  have hvar : ∀ {i j : Fin m}, v i = v j → w i = w j := fun {i j} hij => by
+  have hvar : ∀ {i j : α}, v i = v j → w i = w j := fun {i j} hij => by
     have hv : (Term.equal (L := L) (Term.var i) (Term.var j)).Realize v := by
       simpa [Formula.realize_equal] using hij
     simpa [Formula.realize_equal] using hQFeq.mp hv
@@ -122,7 +135,7 @@ private theorem exists_substructure_embedding_of_agree_qf
   have hterm_eq : ∀ {t u : L.Term (Set.range v)},
       t.realize ((↑) : Set.range v → M) = u.realize ((↑) : Set.range v → M) →
         (t.relabel idx).realize w = (u.relabel idx).realize w := fun {t u} htu => by
-    have hv : (Term.equal (t.relabel idx) (u.relabel idx) : L.Formula (Fin m)).Realize v := by
+    have hv : (Term.equal (t.relabel idx) (u.relabel idx) : L.Formula α).Realize v := by
       simpa [Formula.realize_equal, hterm_realize t, hterm_realize u] using htu
     simpa [Formula.realize_equal] using hQFeq.mp hv
   choose repr hrepr using fun x : S =>
@@ -133,7 +146,7 @@ private theorem exists_substructure_embedding_of_agree_qf
       intro x y hxy
       apply Subtype.ext
       have hw : (Term.equal ((repr x).relabel idx) ((repr y).relabel idx) :
-          L.Formula (Fin m)).Realize w := by
+          L.Formula α).Realize w := by
         simpa [Formula.realize_equal] using hxy
       simpa [hterm_realize (repr x), hterm_realize (repr y), hrepr x, hrepr y]
         using (Formula.realize_equal.mp (hQFeq.mpr hw))
@@ -150,8 +163,8 @@ private theorem exists_substructure_embedding_of_agree_qf
       intro n R x
       simpa [hterm_realize, hrepr] using (hQFrel R fun i => (repr (x i)).relabel idx).symm
   }
-  let a : Fin m → S := fun i => ⟨v i, Substructure.subset_closure ⟨i, rfl⟩⟩
-  have ha : ((↑) ∘ a : Fin m → M) = v := rfl
+  let a : α → S := fun i => ⟨v i, Substructure.subset_closure ⟨i, rfl⟩⟩
+  have ha : ((↑) ∘ a : α → M) = v := rfl
   have hg : g ∘ a = w := by
     funext i
     let xi : Set.range v := ⟨v i, ⟨i, rfl⟩⟩
@@ -164,14 +177,14 @@ private theorem exists_substructure_embedding_of_agree_qf
 /-- A formula is equivalent over `T` to a quantifier-free formula iff its truth is invariant under
 pairs of embeddings from a common structure into nonempty models of `T`.
 
-This corresponds to Marker, Theorem 3.1.4. -/
+This corresponds to [Theorem 3.1.4][marker2002]. -/
 theorem isQFEquivalent_iff_realize_iff_of_embeddings
-    {T : L.Theory} {m : ℕ} (φ : L.Formula (Fin m)) :
+    {T : L.Theory} {α : Type u'} (φ : L.Formula α) :
     T.IsQFEquivalent φ ↔
-      (∀ {M N A : Type (max u v)} [L.Structure M] [L.Structure N] [L.Structure A]
+      (∀ {M N A : Type (max u v u')} [L.Structure M] [L.Structure N] [L.Structure A]
         [T.Model M] [T.Model N] [Nonempty M] [Nonempty N]
         (f : A ↪[L] M) (g : A ↪[L] N)
-        (a : Fin m → A), φ.Realize (f ∘ a) ↔ φ.Realize (g ∘ a)) := by
+        (a : α → A), φ.Realize (f ∘ a) ↔ φ.Realize (g ∘ a)) := by
   constructor
   · rintro ⟨ψ, hψ, hiff⟩ M N A _ _ _ _ _ _ _ f g a
     have hf : ψ.Realize (f ∘ a) ↔ ψ.Realize a := by
@@ -183,10 +196,10 @@ theorem isQFEquivalent_iff_realize_iff_of_embeddings
     rw [hiff.realize_iff (M := M) (v := f ∘ a), hiff.realize_iff (M := N) (v := g ∘ a), hf, hg]
   · intro hcommon
     by_contra hqe
-    let Q1 : Type _ := {ψ : L.Formula (Fin m) // ψ.IsQF ∧ φ ⟹[T] ψ}
-    let base1 : L[[Fin m]].Theory :=
-      (L.lhomWithConstants (Fin m)).onTheory T ∪ {Formula.equivSentence φ.not}
-    let U1 : Option Q1 → L[[Fin m]].Theory
+    let Q1 : Type _ := {ψ : L.Formula α // ψ.IsQF ∧ φ ⟹[T] ψ}
+    let base1 : L[[α]].Theory :=
+      (L.lhomWithConstants α).onTheory T ∪ {Formula.equivSentence φ.not}
+    let U1 : Option Q1 → L[[α]].Theory
       | none => base1
       | some ψ => base1 ∪ {Formula.equivSentence ψ.1}
     have hsat1 : Theory.IsSatisfiable (⋃ i, U1 i) := by
@@ -199,7 +212,7 @@ theorem isQFEquivalent_iff_realize_iff_of_embeddings
           intro a a' b ha ha'
           simpa using ha.trans ha'.symm)
       let lqfs : List Q1 := qfs.toList
-      let θ : L.Formula (Fin m) := qfConj lqfs
+      let θ : L.Formula α := qfConj lqfs
       have hθQF : θ.IsQF := qfConj_isQF lqfs
       have hφθ : φ ⟹[T] θ := fun M v xs hφ => by
         change BoundedFormula.Realize (qfConj lqfs) v xs
@@ -208,7 +221,7 @@ theorem isQFEquivalent_iff_realize_iff_of_embeddings
       have hθφ : θ ⟹[T] φ := by
         intro M v xs hθ
         by_contra hφ
-        letI : (constantsOn (Fin m)).Structure M := constantsOn.structure v
+        letI : (constantsOn α).Structure M := constantsOn.structure v
         have hθall : ∀ q ∈ lqfs, BoundedFormula.Realize q.1 v xs := by
           change BoundedFormula.Realize (qfConj lqfs) v xs at hθ
           exact (realize_qfConj lqfs v xs).mp hθ
@@ -235,11 +248,11 @@ theorem isQFEquivalent_iff_realize_iff_of_embeddings
         exact hs (Theory.Model.isSatisfiable M)
       exact hqe ⟨θ, hθQF, Theory.imp_antisymm hφθ hθφ⟩
     obtain ⟨M1⟩ := hsat1
-    letI : L.Structure M1 := (L.lhomWithConstants (Fin m)).reduct M1
+    letI : L.Structure M1 := (L.lhomWithConstants α).reduct M1
     haveI : T.Model M1 := (LHom.onTheory_model _ _).mp <| M1.is_model.mono fun _ hσ =>
       Set.mem_iUnion.mpr ⟨none, .inl hσ⟩
-    haveI : (L.lhomWithConstants (Fin m)).IsExpansionOn M1 := LHom.isExpansionOn_reduct _ _
-    let v0 : Fin m → M1 := fun i => (L.con i : M1)
+    haveI : (L.lhomWithConstants α).IsExpansionOn M1 := LHom.isExpansionOn_reduct _ _
+    let v0 : α → M1 := fun i => (L.con i : M1)
     have hnotφv0 : ¬ φ.Realize v0 := by
       have := (Formula.realize_equivSentence (M := M1) φ.not).mp
         (M1.is_model.realize_of_mem _ (Set.mem_iUnion.mpr ⟨none, by simp [U1, base1]⟩))
@@ -247,10 +260,10 @@ theorem isQFEquivalent_iff_realize_iff_of_embeddings
     have hqfConseq : ∀ q : Q1, q.1.Realize v0 := fun q =>
       (Formula.realize_equivSentence (M := M1) q.1).mp
         (M1.is_model.realize_of_mem _ (Set.mem_iUnion.mpr ⟨some q, by simp [U1, base1]⟩))
-    let P : Type _ := {ψ : L.Formula (Fin m) // ψ.IsQF ∧ ψ.Realize v0}
-    let base2 : L[[Fin m]].Theory :=
-      (L.lhomWithConstants (Fin m)).onTheory T ∪ {Formula.equivSentence φ}
-    let U2 : Option P → L[[Fin m]].Theory
+    let P : Type _ := {ψ : L.Formula α // ψ.IsQF ∧ ψ.Realize v0}
+    let base2 : L[[α]].Theory :=
+      (L.lhomWithConstants α).onTheory T ∪ {Formula.equivSentence φ}
+    let U2 : Option P → L[[α]].Theory
       | none => base2
       | some ψ => base2 ∪ {Formula.equivSentence ψ.1}
     have hsat2 : Theory.IsSatisfiable (⋃ i, U2 i) := by
@@ -261,14 +274,14 @@ theorem isQFEquivalent_iff_realize_iff_of_embeddings
       let qfs : Finset P :=
         s.filterMap id (by intro a a' b ha ha'; simpa using ha.trans ha'.symm)
       let lqfs : List P := qfs.toList
-      let θ : L.Formula (Fin m) := qfConj lqfs
+      let θ : L.Formula α := qfConj lqfs
       have hθQF : θ.IsQF := qfConj_isQF lqfs
       have hφnotθ : φ ⟹[T] θ.not := by
         intro M v xs hφ
         by_contra hnotθ
         have hθ : BoundedFormula.Realize θ v xs := by
           simpa [BoundedFormula.realize_not] using hnotθ
-        letI : (constantsOn (Fin m)).Structure M := constantsOn.structure v
+        letI : (constantsOn α).Structure M := constantsOn.structure v
         have hθall : ∀ q ∈ lqfs, BoundedFormula.Realize q.1 v xs := by
           change BoundedFormula.Realize (qfConj lqfs) v xs at hθ
           exact (realize_qfConj lqfs v xs).mp hθ
@@ -299,19 +312,19 @@ theorem isQFEquivalent_iff_realize_iff_of_embeddings
         exact fun q _ => q.2.2
       exact hqfConseq ⟨θ.not, hθQF.not, hφnotθ⟩ hθv0
     obtain ⟨N1⟩ := hsat2
-    letI : L.Structure N1 := (L.lhomWithConstants (Fin m)).reduct N1
+    letI : L.Structure N1 := (L.lhomWithConstants α).reduct N1
     haveI : T.Model N1 := (LHom.onTheory_model _ _).mp <| N1.is_model.mono fun _ hσ =>
       Set.mem_iUnion.mpr ⟨none, .inl hσ⟩
-    haveI : (L.lhomWithConstants (Fin m)).IsExpansionOn N1 := LHom.isExpansionOn_reduct _ _
-    let w : Fin m → N1 := fun i => (L.con i : N1)
+    haveI : (L.lhomWithConstants α).IsExpansionOn N1 := LHom.isExpansionOn_reduct _ _
+    let w : α → N1 := fun i => (L.con i : N1)
     have hφw : φ.Realize w :=
       (Formula.realize_equivSentence (M := N1) φ).mp
         (N1.is_model.realize_of_mem _ (Set.mem_iUnion.mpr ⟨none, by simp [U2, base2]⟩))
-    have hqfIncl : ∀ ψ : L.Formula (Fin m), ψ.IsQF → ψ.Realize v0 → ψ.Realize w :=
+    have hqfIncl : ∀ ψ : L.Formula α, ψ.IsQF → ψ.Realize v0 → ψ.Realize w :=
       fun ψ hψ hψv0 => (Formula.realize_equivSentence (M := N1) ψ).mp
         (N1.is_model.realize_of_mem _
           (Set.mem_iUnion.mpr ⟨some ⟨ψ, hψ, hψv0⟩, .inr rfl⟩))
-    have hqfEq : ∀ ψ : L.Formula (Fin m), ψ.IsQF → (ψ.Realize v0 ↔ ψ.Realize w) := fun ψ hψ =>
+    have hqfEq : ∀ ψ : L.Formula α, ψ.IsQF → (ψ.Realize v0 ↔ ψ.Realize w) := fun ψ hψ =>
       ⟨hqfIncl ψ hψ, fun hψw => by
         by_contra hψv0
         exact hqfIncl ψ.not hψ.not (by simpa [Formula.realize_not] using hψv0) hψw⟩
@@ -323,20 +336,22 @@ theorem isQFEquivalent_iff_realize_iff_of_embeddings
 private theorem exists_qf_equiv_ex_of_isQF
     {T : L.Theory}
     (h :
-      ∀ {m : ℕ} (θ : L.BoundedFormula (Fin m) 1), θ.IsQF →
-        ∃ ψ : L.Formula (Fin m), ψ.IsQF ∧ θ.ex ⇔[T] ψ)
-    {m n : ℕ} {θ : L.BoundedFormula (Fin m) (n + 1)} (hθ : θ.IsQF) :
-    ∃ ψ : L.BoundedFormula (Fin m) n, ψ.IsQF ∧ θ.ex ⇔[T] ψ := by
-  let toOne : Fin m ⊕ Fin (n + 1) → Fin (m + n) ⊕ Fin 1 :=
-    Sum.elim (fun i => Sum.inl (Fin.castAdd n i))
-      (Fin.lastCases (Sum.inr 0) fun i => Sum.inl (Fin.natAdd m i))
-  let θ' : L.BoundedFormula (Fin (m + n)) 1 := BoundedFormula.relabel toOne θ.toFormula
+      ∀ {α : Type u'} [Finite α] (θ : L.BoundedFormula α 1), θ.IsQF →
+        ∃ ψ : L.Formula α, ψ.IsQF ∧ θ.ex ⇔[T] ψ)
+    {α : Type u'} [Finite α] {n : ℕ} {θ : L.BoundedFormula α (n + 1)} (hθ : θ.IsQF) :
+    ∃ ψ : L.BoundedFormula α n, ψ.IsQF ∧ θ.ex ⇔[T] ψ := by
+  let toOne : α ⊕ Fin (n + 1) → (α ⊕ Fin n) ⊕ Fin 1 :=
+    Sum.elim (fun i => Sum.inl (Sum.inl i))
+      (Fin.lastCases (Sum.inr 0) fun i => Sum.inl (Sum.inr i))
+  let θ' : L.BoundedFormula (α ⊕ Fin n) 1 := BoundedFormula.relabel toOne θ.toFormula
   obtain ⟨ψ', hψ', hθψ'⟩ := h θ' (hθ.toFormula.relabel _)
-  refine ⟨BoundedFormula.relabel (fun i : Fin (m + n) => finSumFinEquiv.symm i) ψ',
+  refine ⟨BoundedFormula.relabel (id : α ⊕ Fin n → α ⊕ Fin n) ψ',
     hψ'.relabel _, fun M v xs => ?_⟩
-  let v' : Fin (m + n) → M := fun i => Sum.elim v xs (finSumFinEquiv.symm i)
-  rw [BoundedFormula.realize_iff, BoundedFormula.realize_ex,
-    Formula.realize_relabel_finSumFinEquiv_symm]
+  let v' : α ⊕ Fin n → M := Sum.elim v xs
+  rw [BoundedFormula.realize_iff, BoundedFormula.realize_ex]
+  simp only [BoundedFormula.realize_relabel, Function.comp_id,
+    Fin.castAdd_zero, Fin.cast_refl]
+  rw [Subsingleton.elim (xs ∘ Fin.natAdd n : Fin 0 → M) default]
   refine (exists_congr fun a => ?_).trans
     (BoundedFormula.realize_ex.symm.trans (BoundedFormula.realize_iff.mp (hθψ' M v' default)))
   change θ.Realize v (Fin.snoc xs a) ↔
@@ -355,12 +370,12 @@ private theorem exists_qf_equiv_ex_of_isQF
 /-- To prove quantifier elimination, it suffices to eliminate one existential quantifier from
 every quantifier-free formula with one bound variable.
 
-This corresponds to Marker, Theorem 3.1.5. -/
+This corresponds to [Theorem 3.1.5][marker2002]. -/
 theorem hasQuantifierElimination_of_ex_isQFEquivalent_of_isQF
     {T : L.Theory} :
-    (∀ {m : ℕ} (θ : L.BoundedFormula (Fin m) 1), θ.IsQF → T.IsQFEquivalent θ.ex) →
+    (∀ {α : Type} [Finite α] (θ : L.BoundedFormula α 1), θ.IsQF → T.IsQFEquivalent θ.ex) →
     HasQuantifierElimination T := by
-  intro h m φ
+  intro h α _ φ
   refine φ.induction_on_exists_not
     (P := fun {_} φ => ∃ ψ, ψ.IsQF ∧ φ ⇔[T] ψ)
     (fun hψ => ⟨_, hψ, Theory.Iff.refl _⟩) ?_ ?_ ?_
@@ -379,33 +394,29 @@ theorem hasQuantifierElimination_of_ex_isQFEquivalent_of_isQF
 quantifier-free formulas over tuples from a common embedded structure can be transferred between
 nonempty models of `T`, then `T` has quantifier elimination.
 
-This corresponds to Marker, Theorem 3.1.6. -/
+This corresponds to [Theorem 3.1.6][marker2002]. -/
 theorem hasQuantifierElimination_of_exists_realize_of_embeddings {T : L.Theory} :
-    (∀ {m : ℕ} (φ : L.Formula (Fin m.succ)) (_ : φ.IsQF)
+    (∀ {α : Type} [Finite α] (φ : L.Formula (α ⊕ Fin 1)) (_ : φ.IsQF)
       {M N A : Type (max u v)} [L.Structure M] [L.Structure N] [L.Structure A]
       [T.Model M] [T.Model N] [Nonempty M] [Nonempty N]
-      (f : A ↪[L] M) (g : A ↪[L] N) (a : Fin m → A),
-      (∃ (b : M), φ.Realize (Fin.snoc (f ∘ a) b)) →
-      (∃ (c : N), φ.Realize (Fin.snoc (g ∘ a) c))) →
+      (f : A ↪[L] M) (g : A ↪[L] N) (a : α → A),
+      (∃ (b : M), φ.Realize (Sum.elim (f ∘ a) (Fin.snoc default b))) →
+      (∃ (c : N), φ.Realize (Sum.elim (g ∘ a) (Fin.snoc default c)))) →
     T.HasQuantifierElimination := by
   intro h
   apply hasQuantifierElimination_of_ex_isQFEquivalent_of_isQF
-  intro m θ hθ
+  intro α _ θ hθ
   refine (isQFEquivalent_iff_realize_iff_of_embeddings (T := T) (φ := θ.ex)).mpr ?_
   intro M N A _ _ _ _ _ _ _ f g a
-  let φ : L.Formula (Fin m.succ) := θ.toFormula.relabel finSumFinEquiv
-  have hφQF : φ.IsQF := hθ.toFormula.relabel _
-  have hreal : ∀ {X : Type (max u v)} [L.Structure X] (x : Fin m → X) (b : X),
-      φ.Realize (Fin.snoc x b) ↔ θ.Realize x (Fin.snoc default b) := by
+  let φ : L.Formula (α ⊕ Fin 1) := θ.toFormula
+  have hφQF : φ.IsQF := hθ.toFormula
+  have hreal : ∀ {X : Type (max u v)} [L.Structure X] (x : α → X) (b : X),
+      φ.Realize (Sum.elim x (Fin.snoc default b)) ↔ θ.Realize x (Fin.snoc default b) := by
     intro X _ x b
-    rw [Formula.realize_relabel, BoundedFormula.realize_toFormula]
-    refine iff_of_eq <| congrArg₂ _ (funext fun i => ?_) (funext fun j => ?_)
-    · change (Fin.snoc x b : Fin (m + 1) → X) i.castSucc = x i
-      rw [Fin.snoc_castSucc]
-    · rw [Subsingleton.elim j 0]
-      change (Fin.snoc x b : Fin (m + 1) → X) (Fin.last m) =
-        (Fin.snoc default b : Fin 1 → X) (Fin.last 0)
-      rw [Fin.snoc_last, Fin.snoc_last]
+    rw [BoundedFormula.realize_toFormula]
+    refine iff_of_eq <| congrArg₂ _ ?_ ?_
+    · exact Sum.elim_comp_inl x (Fin.snoc default b)
+    · exact Sum.elim_comp_inr x (Fin.snoc default b)
   simp only [Formula.Realize, BoundedFormula.realize_ex]
   refine ⟨fun ⟨b, hb⟩ => ?_, fun ⟨c, hc⟩ => ?_⟩
   · obtain ⟨c, hc⟩ := h φ hφQF f g a ⟨b, (hreal (f ∘ a) b).mpr hb⟩
@@ -429,26 +440,34 @@ private theorem isQF_realize_partialEquiv
       hφ.realize_embedding (f := p.toEmbedding) (v := vdom) (xs := default)
   exact hcod.trans hdom.symm
 
-/-- If a theory has the finitely generated elementary extension-pair property, then it has
-quantifier elimination.
+/-- If, for every pair of nonempty models of `T`, the `< κ`-generated elementary extension-pair
+property holds for an infinite `κ`, then `T` has quantifier elimination.
 
-The hypothesis is a finitely generated variant of the extension property appearing as condition
-(2) in van den Dries--Henson, Theorem 7.11. -/
-theorem hasQuantifierElimination_of_isElementaryExtensionPairFG
-    {T : L.Theory} (h : T.IsElementaryExtensionPairFG) :
+The hypothesis is a `< κ`-generated variant of the extension property appearing as condition (2)
+in [Theorem 7.11][vandendries_henson_2016]. -/
+theorem hasQuantifierElimination_of_isElementaryExtensionPairCardinalLTGenerated
+    {T : L.Theory} {κ : Cardinal} (hκ : Cardinal.aleph0 ≤ κ)
+    (h : ∀ ⦃M N : Type (max u v)⦄ [L.Structure M] [L.Structure N]
+      [T.Model M] [T.Model N] [Nonempty M] [Nonempty N],
+      T.IsElementaryExtensionPairCardinalLTGenerated κ M N) :
     T.HasQuantifierElimination := by
   refine hasQuantifierElimination_of_exists_realize_of_embeddings (T := T) ?_
-  intro m φ hφ M N A _ _ _ _ _ _ _ f g a hM
+  intro α _ φ hφ M N A _ _ _ _ _ _ _ f g a hM
   obtain ⟨b, hb⟩ := hM
   let S : L.Substructure M := Substructure.closure L (Set.range (f ∘ a))
   have hSrange : S ≤ f.toHom.range :=
     Substructure.closure_le.mpr <| Set.range_subset_iff.mpr fun i => f.toHom.mem_range_self (a i)
   let k : S ↪[L] N := g.comp (f.equivRange.symm.toEmbedding.comp (Substructure.inclusion hSrange))
-  let p₀ : L.FGEquiv M N :=
+  have hS_cardinal : S.CardinalLTGenerated κ := by
+    have hS_finite : (Set.range (f ∘ a)).Finite := Set.finite_range (f ∘ a)
+    haveI : Finite (Set.range (f ∘ a)) := hS_finite.to_subtype
+    exact Substructure.cardinalLTGenerated_closure
+      (hasCardinalLT_of_finite (Set.range (f ∘ a)) κ hκ)
+  let p₀ : L.CardinalLTEquiv M N κ :=
     ⟨{ dom := S, cod := k.toHom.range, toEquiv := k.equivRange },
-      Substructure.fg_closure (Set.finite_range (f ∘ a))⟩
-  have hp_dom (i : Fin m) : f (a i) ∈ (p₀ : M ≃ₚ[L] N).dom := Substructure.subset_closure ⟨i, rfl⟩
-  have hp_apply (i : Fin m) : ((p₀ : M ≃ₚ[L] N).toEquiv ⟨f (a i), hp_dom i⟩ : N) = g (a i) := by
+      hS_cardinal⟩
+  have hp_dom (i : α) : f (a i) ∈ (p₀ : M ≃ₚ[L] N).dom := Substructure.subset_closure ⟨i, rfl⟩
+  have hp_apply (i : α) : ((p₀ : M ≃ₚ[L] N).toEquiv ⟨f (a i), hp_dom i⟩ : N) = g (a i) := by
     change g (f.equivRange.symm (Substructure.inclusion hSrange ⟨f (a i), hp_dom i⟩)) = g (a i)
     congr 1
     exact f.equivRange.injective (Subtype.ext (by simp))
@@ -457,43 +476,70 @@ theorem hasQuantifierElimination_of_isElementaryExtensionPairFG
   let q : M ≃ₚ[L] N' := q₀
   let r : M ≃ₚ[L] N' := PartialEquiv.codMap (p₀ : M ≃ₚ[L] N) e.toEmbedding
   have hrq : r ≤ q := by simpa [PartialEquiv.ExtendsAlong, r, q] using hpq
-  have hqa_dom (i : Fin m) : f (a i) ∈ q.dom := PartialEquiv.dom_le_dom hrq (hp_dom i)
-  have hqa_apply (i : Fin m) : (q.toEquiv ⟨f (a i), hqa_dom i⟩ : N') = e (g (a i)) := by
+  have hqa_dom (i : α) : f (a i) ∈ q.dom := PartialEquiv.dom_le_dom hrq (hp_dom i)
+  have hqa_apply (i : α) : (q.toEquiv ⟨f (a i), hqa_dom i⟩ : N') = e (g (a i)) := by
     have hx' := congr_arg (fun y : q.cod => (y : N'))
       (PartialEquiv.toEquiv_inclusion_apply hrq (⟨f (a i), hp_dom i⟩ : r.dom))
     change (q.toEquiv ⟨f (a i), hqa_dom i⟩ : N') =
       e (((p₀ : M ≃ₚ[L] N).toEquiv ⟨f (a i), hp_dom i⟩ : N)) at hx'
     rw [hx', hp_apply]
-  let vM : Fin m.succ → M := Fin.snoc (f ∘ a) b
-  have hvM (i : Fin m.succ) : vM i ∈ q.dom :=
-    Fin.lastCases (by simpa [vM, q] using hbq)
-      (fun i => by simpa [vM, Function.comp_def] using hqa_dom i) i
+  let vM : α ⊕ Fin 1 → M := Sum.elim (f ∘ a) (Fin.snoc default b)
+  have hvM (i : α ⊕ Fin 1) : vM i ∈ q.dom := by
+    cases i with
+    | inl x => simpa [vM, Function.comp_def] using hqa_dom x
+    | inr _ => simpa [vM, Fin.snoc, q] using hbq
   let b' : N' := q.toEquiv ⟨b, by simpa [q] using hbq⟩
-  have hqreal : φ.Realize (fun i : Fin m.succ => (q.toEquiv ⟨vM i, hvM i⟩ : N')) :=
+  have hqreal : φ.Realize (fun i : α ⊕ Fin 1 => (q.toEquiv ⟨vM i, hvM i⟩ : N')) :=
     (isQF_realize_partialEquiv hφ q hvM).mpr (by simpa [vM] using hb)
-  have htarget : φ.Realize (Fin.snoc ((e.toEmbedding ∘ g) ∘ a) b') := by
+  have htarget : φ.Realize (Sum.elim ((e.toEmbedding ∘ g) ∘ a) (Fin.snoc default b')) := by
     convert hqreal using 1
     funext i
-    refine Fin.lastCases (by simp [vM, b']) (fun i => ?_) i
-    simpa [vM, b', Function.comp_def] using (hqa_apply i).symm
-  let θ : L.BoundedFormula (Fin m) 1 :=
-    BoundedFormula.relabel (L := L) (β := Fin m) (n := 1) finSumFinEquiv.symm φ
+    cases i with
+    | inl x => simpa [vM, Function.comp_def] using (hqa_apply x).symm
+    | inr j => simp [vM, b', Fin.snoc, Subsingleton.elim j 0]
+  let θ : L.BoundedFormula α 1 :=
+    BoundedFormula.relabel (id : α ⊕ Fin 1 → α ⊕ Fin 1) φ
+  have hrelabel : ∀ {X : Type (max u v)} [L.Structure X] (x : α → X) (w : X),
+      θ.Realize x (Fin.snoc default w) ↔ φ.Realize (Sum.elim x (Fin.snoc default w)) := by
+    intro X _ x w
+    rw [BoundedFormula.realize_relabel]
+    simp only [Function.comp_id, Fin.castAdd_zero, Fin.cast_refl]
+    rw [Subsingleton.elim (Fin.snoc (default : Fin 0 → X) w ∘ Fin.natAdd 1 : Fin 0 → X) default]
+    rfl
   have hθN' : θ.ex.Realize ((e.toEmbedding ∘ g) ∘ a) default :=
-    BoundedFormula.realize_ex.mpr
-      ⟨b', (Formula.realize_relabel_finSumFinEquiv_symm_snoc φ).mpr htarget⟩
+    BoundedFormula.realize_ex.mpr ⟨b', (hrelabel _ b').mpr htarget⟩
   have hθN : θ.ex.Realize (g ∘ a) default :=
     (e.map_boundedFormula θ.ex (g ∘ a) default).mp (by simpa [Function.comp_def] using hθN')
   obtain ⟨c, hc⟩ := BoundedFormula.realize_ex.mp hθN
-  exact ⟨c, (Formula.realize_relabel_finSumFinEquiv_symm_snoc φ).mp hc⟩
+  exact ⟨c, (hrelabel _ c).mp hc⟩
 
-/-- If a theory has the elementary extension-pair property, then it has quantifier elimination.
+/-- If every pair of nonempty models of `T` has the finitely generated elementary extension-pair
+property, then `T` has quantifier elimination.
 
-The hypothesis is condition (2) in van den Dries--Henson, Theorem 7.11; this theorem proves the
-implication from that extension property to condition (1). -/
-theorem hasQuantifierElimination_of_isElementaryExtensionPair
-    {T : L.Theory} (h : T.IsElementaryExtensionPair) :
+The hypothesis is a finitely generated variant of the extension property appearing as condition
+(2) in [Theorem 7.11][vandendries_henson_2016]. -/
+theorem hasQuantifierElimination_of_isElementaryExtensionPairFG
+    {T : L.Theory}
+    (h : ∀ ⦃M N : Type (max u v)⦄ [L.Structure M] [L.Structure N]
+      [T.Model M] [T.Model N] [Nonempty M] [Nonempty N],
+      T.IsElementaryExtensionPairFG M N) :
     T.HasQuantifierElimination :=
-  hasQuantifierElimination_of_isElementaryExtensionPairFG h.FG
+  hasQuantifierElimination_of_isElementaryExtensionPairCardinalLTGenerated le_rfl
+    fun ⦃M N⦄ _ _ _ _ _ _ => (@h M N _ _ _ _ _ _).toCardinalLTGenerated_aleph0
+
+/-- If every pair of nonempty models of `T` has the elementary extension-pair property, then `T`
+has quantifier elimination.
+
+The hypothesis is condition (2) in [Theorem 7.11][vandendries_henson_2016]; this theorem proves
+the implication from that extension property to condition (1). -/
+theorem hasQuantifierElimination_of_isElementaryExtensionPair
+    {T : L.Theory}
+    (h : ∀ ⦃M N : Type (max u v)⦄ [L.Structure M] [L.Structure N]
+      [T.Model M] [T.Model N] [Nonempty M] [Nonempty N],
+      T.IsElementaryExtensionPair M N) :
+    T.HasQuantifierElimination :=
+  hasQuantifierElimination_of_isElementaryExtensionPairFG
+    fun ⦃M N⦄ _ _ _ _ _ _ => (@h M N _ _ _ _ _ _).FG
 
 end Theory
 
