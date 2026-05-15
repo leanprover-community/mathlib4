@@ -51,8 +51,8 @@ syntax reifiedSimpleOpenHidingStx := &"@" noWs ident " hiding " ident*
 syntax reifiedOpenDecl := ppSpace colGt
   (reifiedSimpleOpenIdent <|> ("(" reifiedSimpleOpenHidingStx <|> reifiedExplicitOpenStx ")"))
 /-- Renders the result of `open` by prefixing identifiers with `@` to indicate that this syntax
-only renders fully-resolved namespaces. Surrounded by `()` when `hiding` is present. Uses `→` to
-render the mappings produced by `open ns renaming from → to, ...` and
+only renders fully-resolved namespaces. Surrounded by `()` when `hiding` is present.
+Uses `(... → ...)` to render the mappings produced by `open ns renaming from → to, ...` and
 `open ns (id₁ id₂ ...)`. -/
 syntax reifiedOpenStx := withPosition(
   atomic("open" notFollowedBy("scoped")) ppIndent(reifiedOpenDecl*))
