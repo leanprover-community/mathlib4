@@ -97,7 +97,7 @@ def dualProd : QuadraticForm R (Module.Dual R M × M) where
 
 @[simp]
 theorem _root_.LinearMap.dualProd.toQuadraticForm :
-    (LinearMap.dualProd R M).toQuadraticMap = 2 • dualProd R M := by
+    (LinearMap.dualProd R M).toQuadraticMap = 2 • dualProd R M :=
   ext fun _a => (two_nsmul _).symm
 
 variable {R M N}
