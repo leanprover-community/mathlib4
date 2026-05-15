@@ -450,6 +450,19 @@ theorem surjective_rangeRestrict : Surjective f.rangeRestrict := by
 
 end rangeRestrict
 
+section restrict
+
+open Submodule
+
+variable [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) {p : Submodule R M} {q : Submodule R₂ M₂}
+
+@[simp]
+theorem range_restrict (h : ∀ x ∈ p, f x ∈ q) :
+    range (f.restrict h) = comap q.subtype (map f p) := by
+  rw [← Submodule.map_top, map_restrict, Submodule.map_top, p.range_subtype]
+
+end restrict
+
 end Semiring
 
 end LinearMap
