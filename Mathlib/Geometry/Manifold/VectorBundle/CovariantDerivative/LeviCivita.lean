@@ -117,6 +117,21 @@ lemma _root_.MDifferentiableAt.inner_bundle' {x : M} {X Y : Π x : M, TangentSpa
     MDiffAt ⟪X, Y⟫ x :=
   MDifferentiableAt.inner_bundle hX hY
 
+section funpropsetup
+
+attribute [fun_prop] MDifferentiable MDifferentiableAt
+  MDifferentiable.add MDifferentiableAt.add
+  MDifferentiable.inner_bundle' MDifferentiableAt.inner_bundle'
+
+
+variable {f g : M → ℝ} {x : M}
+
+example (hf : MDiffAt f x) (hg : MDiffAt g x) : MDiffAt (f + g) x := by
+  fun_prop
+
+
+end funpropsetup
+
 variable (X Y Z) in
 /-- The first term in the definition of the candidate Levi-Civita connection:
 `rhs_aux I X Y Z = X ⟨Y, Z⟩ = x ↦ d(⟨Y, Z⟩)_x (X x)`.
@@ -149,13 +164,13 @@ variable (X) in
 @[simp]
 lemma rhs_aux_addY_apply (hY : MDiffAt (T% Y) x) (hY' : MDiffAt (T% Y') x) (hZ : MDiffAt (T% Z) x) :
     rhs_aux I X (Y + Y') Z x = rhs_aux I X Y Z x + rhs_aux I X Y' Z x := by
-  simp [rhs_aux, inner_add_left, mvfderiv_fun_add (hY.inner_bundle' hZ) (hY'.inner_bundle' hZ)]
+  simp (disch := fun_prop) [rhs_aux, inner_add_left, mvfderiv_fun_add]
 
 variable (X) in
 @[simp]
 lemma rhs_aux_addZ_apply (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) (hZ' : MDiffAt (T% Z') x) :
     rhs_aux I X Y (Z + Z') x = rhs_aux I X Y Z x + rhs_aux I X Y Z' x := by
-  simp [rhs_aux, inner_add_right, mvfderiv_fun_add (hY.inner_bundle' hZ) (hY.inner_bundle' hZ')]
+  simp (disch := fun_prop) [rhs_aux, inner_add_right, mvfderiv_fun_add]
 
 omit [IsManifold I 2 M] in
 variable (X Y Z) in
@@ -167,7 +182,7 @@ lemma rhs_aux_smulY_apply {f : M → ℝ}
     (hf : MDiffAt f x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     letI A (x) := ((mvfderiv% f x) (X x))
     rhs_aux I X (f • Y) Z x = f x * rhs_aux I X Y Z x + A x * ⟪Y, Z⟫ x := by
-  simp [rhs_aux, inner_smul_left, mvfderiv_fun_mul hf (hY.inner_bundle' hZ)]
+  simp (disch := fun_prop) [rhs_aux, inner_smul_left, mvfderiv_fun_mul]
   ring
 
 variable (X) in
