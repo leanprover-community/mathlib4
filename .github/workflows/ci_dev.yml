@@ -54,6 +54,7 @@ jobs:
     continue-on-error: true
     outputs:
       sha: ${{ steps.resolve.outputs.sha }}
+      toolchain: ${{ steps.resolve.outputs.toolchain }}
     env:
       LAKE_CACHE_DIR: .lake/cache
       LAKE_NO_CACHE: true
@@ -81,13 +82,15 @@ jobs:
           fetch-depth: 2
           path: pr-branch
 
-      - name: Resolve sha
+      - name: Resolve sha & toolchain
         id: resolve
         shell: bash
         run: |
           cd pr-branch
           SHA="$(git rev-parse HEAD)"
+          TC="$(cat lean-toolchain)"
           echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+          echo "toolchain=$TC" >> "$GITHUB_OUTPUT"
 
       - name: Create empty directories (landrun prerequisites)
         shell: bash
@@ -276,9 +279,14 @@ jobs:
       - name: lake cache put-staged
         run: |
           cd pr-branch
+          # --toolchain is a no-op with the current `--scope=<string>` form
+          # (Lake's revisionUrl ignores it for `.str` scopes), but stays
+          # wired so the eventual migration to `--repo=` is a one-line
+          # change rather than re-plumbing outputs.
           lake cache put-staged ../lake-cache-staging \
             --scope="${{ env.SHADOW_SCOPE }}" \
-            --rev="${{ needs.build_and_stage.outputs.sha }}"
+            --rev="${{ needs.build_and_stage.outputs.sha }}" \
+            --toolchain="${{ needs.build_and_stage.outputs.toolchain }}"
 
   consume:
     name: Build from Lake cache (no legacy hydration)
