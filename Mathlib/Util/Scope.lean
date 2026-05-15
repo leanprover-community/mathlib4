@@ -42,10 +42,10 @@ public section parsers
 /-! The "inlinable" parsers in this section exist to enable syntax quotations, which help with
 constructing and processing these later. -/
 
-/-- `open (from → @fullyResolvedName)` in reified syntax represents the results of ordinary
-Lean syntax of the form `open ns renaming from → to, ...` and `open ns (id₁ id₂ ...)`. Internally,
-both of these produce the same kind of effect: they record mapping(s) from an unresolved identifier
-to a fully resolved name. (`ns` is not directly recorded in this mapping.) -/
+/-- `(from → @fullyResolvedName)` in reified `open` syntax unambiguously represents the result of
+ordinary Lean syntax of the form `open ns renaming from → to, ...` and `open ns (id₁ id₂ ...)`.
+Internally, both of these produce the same kind of effect: they record mapping(s) from an
+unresolved identifier to a fully resolved name. (`ns` is not directly recorded in this mapping.) -/
 syntax reifiedExplicitOpenStx := ident " → " &"@" noWs ident
 syntax reifiedSimpleOpenIdent := &"@" noWs ident
 syntax reifiedSimpleOpenHidingStx := &"@" noWs ident " hiding " ident*
