@@ -12,7 +12,6 @@ public import Mathlib.Analysis.Normed.Operator.Perturbation.StrictByFinite
 public import Mathlib.RingTheory.Finiteness.Cofinite
 public import Mathlib.Topology.Algebra.Module.Complement
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
-public import Mathlib.Topology.Maps.Strict.Basic
 
 section FindHome
 
@@ -630,6 +629,35 @@ theorem LinearMap.injective_restrict_iff_disjoint' {R M N : Type*}
   rw [← ker_eq_bot, ker_restrict hf, ← ker_domRestrict, ker_eq_bot, injective_domRestrict_iff,
     disjoint_iff]
 
+namespace ContinuousLinearMap
+-- some helper lemmas about the range of ContinuousLinearMap.restrict
+
+lemma map_eq_of_surjective_restrict {𝕜 E F : Type*} [Semiring 𝕜] [AddCommMonoid E]
+    [AddCommMonoid F] [TopologicalSpace E] [TopologicalSpace F] [Module 𝕜 E]
+    [Module 𝕜 F] {u : E →L[𝕜] F} {E₁ : Submodule 𝕜 E}
+    {F₁ : Submodule 𝕜 F} (h_mapsto : Set.MapsTo u E₁ F₁)
+    (h_surj : Function.Surjective (u.restrict h_mapsto)) :
+    E₁.map u.toLinearMap = F₁ :=
+  calc
+    E₁.map u.toLinearMap = (u.toLinearMap.domRestrict E₁).range := by
+      rw [LinearMap.range_domRestrict]
+    _ = (F₁.subtype.comp (u.restrict h_mapsto).toLinearMap).range := by
+      rw [ContinuousLinearMap.toLinearMap_restrict, LinearMap.subtype_comp_restrict]
+    _ = F₁ := by
+      rw [LinearMap.range_comp, LinearMap.range_eq_top.2 h_surj, Submodule.map_top,
+        Submodule.range_subtype]
+
+lemma image_eq_of_surjective_restrict {𝕜 E F : Type*} [Semiring 𝕜] [AddCommMonoid E]
+    [AddCommMonoid F] [TopologicalSpace E] [TopologicalSpace F] [Module 𝕜 E]
+    [Module 𝕜 F] {u : E →L[𝕜] F} {E₁ : Submodule 𝕜 E}
+    {F₁ : Submodule 𝕜 F} (h_mapsto : Set.MapsTo u E₁ F₁)
+    (h_surj : Function.Surjective (u.restrict h_mapsto)) :
+    u '' E₁ = F₁ := by
+  simpa [Submodule.map_coe] using
+    congr_arg (fun S => S.carrier) (u.map_eq_of_surjective_restrict h_mapsto h_surj)
+
+end ContinuousLinearMap
+
 open Set in
 lemma ContinuousLinearMap.ker_closedComplemented_of_isInvertible_restrict
     {u : E →L[𝕜] F} (E₁ : Submodule 𝕜 E) (F₁ : Submodule 𝕜 F)
@@ -648,13 +676,45 @@ lemma ContinuousLinearMap.ker_closedComplemented_of_isInvertible_restrict
   · exact toAddSubmonoid_le.mp fun ⦃x⦄ a ↦ a
 
 open Set in
-lemma bar {u : E →L[𝕜] F} (E₁ : Submodule 𝕜 E) (F₁ : Submodule 𝕜 F)
+lemma fooo {u : E →L[𝕜] F} (E₁ : Submodule 𝕜 E) (F₁ : Submodule 𝕜 F)
+    (E₁_closed : IsClosed (E₁ : Set E)) (F₁_closed : IsClosed (F₁ : Set F))
+    (E₁_coFG : E₁.CoFG) (F₁_coFG : F₁.CoFG) (h_mapsto : MapsTo u E₁ F₁)
+    (h_inv : (u.restrict h_mapsto).IsInvertible) :
+    u.ker.ClosedComplemented := by
+  sorry
+
+open Set in
+lemma bar [ContinuousSMul 𝕜 F] {u : E →L[𝕜] F} (E₁ : Submodule 𝕜 E) (F₁ : Submodule 𝕜 F)
     (E₁_closed : IsClosed (E₁ : Set E)) (F₁_closed : IsClosed (F₁ : Set F))
     (E₁_coFG : E₁.CoFG) (F₁_coFG : F₁.CoFG) (h_mapsto : MapsTo u E₁ F₁)
     (h_inv : (u.restrict h_mapsto).IsInvertible) :
     IsFredholmStruct u := by
-  -- uses foo + `ContinousLinearMap.isStrictMap_isClosed_range_iff_restrict`
-  sorry
+  have h : Topology.IsStrictMap u ∧ IsClosed (range u) := by
+    refine u.isStrictMap_isClosed_range_iff_restrict E₁ E₁_closed |>.2 ⟨?_, ?_⟩
+    · obtain ⟨e, he⟩ := h_inv
+      have h_emb : Topology.IsEmbedding (Subtype.val ∘ (u.restrict h_mapsto)) :=
+        Topology.IsEmbedding.subtypeVal.comp <| he ▸ e.toHomeomorph.isEmbedding
+      simpa using h_emb.isStrictMap
+    · exact (u.image_eq_of_surjective_restrict h_mapsto h_inv.surjective) ▸ F₁_closed
+  constructor
+  · exact h.1
+  · exact h.2
+  · obtain ⟨G, hc⟩ := E₁.exists_isCompl
+    have : FiniteDimensional 𝕜 G := G.fg_iff_finiteDimensional.1 (E₁_coFG.fg_of_isCompl hc)
+    refine FiniteDimensional.of_injective
+      ((G.projectionOnto E₁ hc.symm).domRestrict u.ker) (LinearMap.ker_eq_bot.1 ?_)
+    ext z
+    -- The following argument can probably be simplified
+    simp only [LinearMap.mem_ker, LinearMap.domRestrict_apply, projectionOnto_apply_eq_zero_iff,
+      mem_bot]
+    refine ⟨fun h => ?_, fun h => by simp_all⟩
+    have : (u.restrict h_mapsto) ⟨z, h⟩ = (u.restrict h_mapsto) 0 := by
+      simp [ContinuousLinearMap.restrict_apply]
+    simpa using h_inv.injective this
+  · refine F₁_coFG.of_le fun x hx => ⟨(u.restrict h_mapsto).inverse ⟨x, hx⟩, ?_⟩
+    rw [ContinuousLinearMap.coe_coe, ← ContinuousLinearMap.coe_restrict_apply
+      h_mapsto ((u.restrict h_mapsto).inverse ⟨x, hx⟩), h_inv.self_apply_inverse]
+  · exact fooo E₁ F₁ E₁_closed F₁_closed E₁_coFG F₁_coFG h_mapsto h_inv
 
 /- ## Glue together the equivalence (Anatole) -/
 
