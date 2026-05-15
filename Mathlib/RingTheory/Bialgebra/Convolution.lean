@@ -69,15 +69,8 @@ lemma toLinearMap_convPow (f : WithConv <| C →ₐ[R] A) :
 
 lemma convMul_distrib_comp [Bialgebra R B] (f g : WithConv <| C →ₐ A) (h : B →ₐc[R] C) :
     AlgHom.comp (f * g).ofConv (h : B →ₐ[R] C) =
-      ofConv (toConv (f.ofConv.comp h) * toConv (g.ofConv.comp h)) := calc
-  _ = (.comp (lmul' R) <| .comp (map f.ofConv g.ofConv) <|
-      .comp (map (h : B →ₐ[R] C) (h : B →ₐ[R] C)) (comulAlgHom R B)) := by
-    simp [convMul_def, comp_assoc]
-  _ = (.comp (lmul' R) <|
-      .comp (map (f.ofConv.comp h) (g.ofConv.comp h)) (comulAlgHom R B)) := by
-    rw [Algebra.TensorProduct.map_comp]
-    simp [comp_assoc]
-  _ = _ := by simp [convMul_def]
+      ofConv (toConv (f.ofConv.comp h) * toConv (g.ofConv.comp h)) := by
+  simp [convMul_def, comp_assoc, Algebra.TensorProduct.map_comp]
 
 lemma comp_convMul_distrib [Algebra R B] (f g : WithConv <| C →ₐ[R] A) (h : A →ₐ[R] B) :
     h.comp (f * g).ofConv = ofConv (toConv (h.comp f.ofConv) * toConv (h.comp g.ofConv)) := by
