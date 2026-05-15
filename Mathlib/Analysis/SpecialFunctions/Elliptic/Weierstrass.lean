@@ -1045,7 +1045,7 @@ private lemma analyticAt_relation (x : ℂ) : AnalyticAt ℂ L.relation x := by
   · have : AnalyticAt ℂ (fun z ↦ ℘'[L] z ^ 2 - 4 * ℘[L] z ^ 3 + L.g₂ * ℘[L] z + L.g₃) x := by
       have := L.analyticOnNhd_derivWeierstrassP _ hx
       have := L.analyticOnNhd_weierstrassP _ hx
-      fun_prop (disch := assumption)
+      fun_prop
     apply this.congr
     filter_upwards [L.isClosed_lattice.isOpen_compl.mem_nhds hx] with x hx
     simp_all [relation]
