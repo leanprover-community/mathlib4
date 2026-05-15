@@ -129,7 +129,7 @@ theorem compatibilityTensorAux_tensorial₂ (σ : Π x, V x) (hσ : MDiffAt (T% 
 variable {I} [ContMDiffVectorBundle 1 F V I] in
 /-- The tensor `(X, σ, τ) ↦ X g(σ, τ) - g(∇_X σ, τ) - g(σ, ∇_X τ)` defining when a connection
 `∇` on a Riemannian bundle `(M, V)` is compatible with the metric `g`. -/
-@[no_expose] public noncomputable def compatibilityTensor [FiniteDimensional ℝ F] (x : M) :
+public noncomputable def compatibilityTensor [FiniteDimensional ℝ F] (x : M) :
     V x →L[ℝ] V x →L[ℝ] (TangentSpace I x →L[ℝ] ℝ) :=
   TensorialAt.mkHom₂ (compatibilityTensorAux I cov · · x) _
     (compatibilityTensorAux_tensorial₁ I cov) (compatibilityTensorAux_tensorial₂ I cov)

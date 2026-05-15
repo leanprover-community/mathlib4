@@ -394,22 +394,18 @@ lemma isCovariantDerivativeOn_lcAux [FiniteDimensional ℝ E] :
     IsCovariantDerivativeOn E (lcAux I (M := M)) where
   add {Y Y'} x hY hY' _ := by
     apply injective_eval_vectorField
-    ext1 X
-    ext1 hX
+    ext X hX
     apply injective_inner_vectorField
-    ext1 Z
-    ext1 hZ
+    ext Z hZ
     unfold lcAux
     rw [dif_pos hY, dif_pos hY', dif_pos (mdifferentiableAt_add_section hY hY')]
     simp (disch := assumption) [TensorialAt.mkHom₂_apply, lcAux₁, lcAux₀, lcAux₀', if_pos,
       leviCivitaRhs_addY_apply, inner_add_left]
   leibniz {Y f x} hY hf _ := by
     apply injective_eval_vectorField
-    ext1 X
-    ext1 hX
+    ext X hX
     apply injective_inner_vectorField
-    ext1 Z
-    ext1 hZ
+    ext Z hZ
     unfold lcAux
     rw [dif_pos hY, dif_pos]
     · simp (disch := assumption) [lcAux₁, lcAux₀, lcAux₀', TensorialAt.mkHom₂_apply, inner_add_left,
