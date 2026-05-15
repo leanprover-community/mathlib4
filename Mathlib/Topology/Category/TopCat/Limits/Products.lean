@@ -75,7 +75,8 @@ theorem piIsoPi_hom_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι)
 abbrev sigmaι {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) : α i ⟶ TopCat.of (Σ i, α i) := by
   refine ofHom (ContinuousMap.mk ?_ ?_)
   · apply Sigma.mk i
-  · sorry -- XXX continuity
+  · dsimp -- TODO: make fun_prop after the compositional form bug is fixed!
+    exact continuous_sigmaMk
 
 /-- The explicit cofan of a family of topological spaces given by the sigma type. -/
 @[simps! pt ι_app]
