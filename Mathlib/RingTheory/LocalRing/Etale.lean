@@ -103,7 +103,7 @@ theorem exists_adjoin_eq_top [Algebra.FormallyUnramified R S] :
 lemma finrank_eq_finrank_residueField [Algebra.Etale R S] :
     Module.finrank R S =
       Module.finrank (ResidueField R) (ResidueField S) := by
-  haveI : Module.Free R S := Module.free_of_flat_of_isLocalRing
+  have : Module.Free R S := Module.free_of_flat_of_isLocalRing
   have e := AddEquiv.toLinearEquiv (R := R ⧸ maximalIdeal R) (Ideal.quotEquivOfEq <|
       Algebra.FormallyUnramified.map_maximalIdeal (R := R) (S := S)).toAddEquiv
     ?_
