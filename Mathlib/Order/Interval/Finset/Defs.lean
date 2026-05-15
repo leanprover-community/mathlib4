@@ -9,6 +9,7 @@ public import Mathlib.Data.Finset.Preimage
 public import Mathlib.Data.Finset.Prod
 public import Mathlib.Order.Hom.WithTopBot
 public import Mathlib.Order.Interval.Set.UnorderedInterval
+public import Mathlib.Order.Preorder.Finite
 
 /-!
 # Locally finite orders
@@ -1088,6 +1089,16 @@ instance [LocallyFiniteOrderBot α] : Finite { x : α // x ≤ y } := by
 @[to_dual]
 instance [LocallyFiniteOrderBot α] : Finite { x : α // x < y } := by
   simpa only [coe_Iio] using (Finset.Iio y).finite_toSet
+
+@[to_dual]
+instance [LocallyFiniteOrderBot α] : WellFoundedLT α := by
+  rw [WellFounded.wellFoundedLT_iff_exists_minimal]
+  intro s ⟨a, ha⟩
+  obtain ⟨a', ha'⟩ := Set.Finite.exists_minimal (s := Set.Iic a ∩ s)
+    (Set.finite_Iic _ |>.inter_of_left _) ⟨a, by simp [ha]⟩
+  use a'
+  simp only [Minimal, Set.mem_inter_iff, Set.mem_Iic, and_imp] at ha' ⊢
+  exact ⟨ha'.1.2, fun _ h hle ↦ ha'.2 (le_trans hle ha'.1.1) h hle⟩
 
 namespace Set
 variable {α : Type*} [Preorder α]
