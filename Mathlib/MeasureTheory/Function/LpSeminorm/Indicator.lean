@@ -235,7 +235,7 @@ theorem MemLp.exists_eLpNorm_indicator_compl_lt {β : Type*} [NormedAddCommGroup
     · exact hf.left.stronglyMeasurable_mk.measurableSet_support
     · apply lt_of_eq_of_lt ?_ hf.2
       simp_rw [Function.support_enorm]
-      exact measure_congr <| Function.support_congr_of_ae_eq hf.1.ae_eq_mk.symm
+      exact measure_congr <| support_congr_of_ae_eq hf.1.ae_eq_mk.symm
     · apply lt_of_eq_of_lt ?_ <| Ne.pos hε
       refine (Measure.measure_support_eq_zero_iff μ).mpr ?_
       filter_upwards [hf.1.ae_eq_mk] with x

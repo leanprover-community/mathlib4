@@ -64,6 +64,14 @@ end Top
 
 section Zero
 
+lemma _root_.support_congr_of_ae_eq {α β : Type*} [MeasurableSpace α] [Zero β]
+    {μ : Measure α} {f g : α → β} (h : f =ᵐ[μ] g) :
+    Function.support f =ᵐ[μ] Function.support g := by
+  filter_upwards [h] with x fg
+  simp only [Function.support, ne_eq, eq_iff_iff]
+  change f x ≠ 0 ↔ g x ≠ 0
+  rw [fg]
+
 @[simp]
 theorem eLpNorm'_exponent_zero {f : α → ε} : eLpNorm' f 0 μ = 1 := by
   rw [eLpNorm', div_zero, ENNReal.rpow_zero]
