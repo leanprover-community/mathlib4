@@ -44,6 +44,8 @@ auxiliary lemmas, then apply `algHom_ext`.
 * Langer, R., *Determinantal bases and the symmetric group*, arXiv:0907.3950, §1.2
 -/
 
+public section
+
 noncomputable section
 
 open Polynomial TensorProduct
@@ -171,10 +173,9 @@ instance instCoalgebra : Coalgebra R R[X] :=
               (comulAdditiveAlgHom R)).toLinearMap
       congr 1
       apply Polynomial.algHom_ext
-      simp only [comulAdditiveAlgHom, AlgHom.comp_apply, AlgEquiv.toAlgHom_eq_coe,
-            AlgHom.coe_coe, Algebra.TensorProduct.map_tmul, AlgHom.id_apply, aeval_X,
+      simp only [comulAdditiveAlgHom, AlgHom.comp_apply,
+            Algebra.TensorProduct.map_tmul, AlgHom.id_apply, aeval_X,
             map_add, map_one, Algebra.TensorProduct.one_def,
-            Algebra.TensorProduct.assoc_tmul,
             TensorProduct.add_tmul, TensorProduct.tmul_add]
       abel }
 
