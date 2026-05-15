@@ -44,6 +44,7 @@ theorem of_one_ne_zero_of_two_eq_zero (h₁ : (1 : R) ≠ 0) (h₂ : (2 : R) = 0
 
 variable [CharP R 2]
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 theorem two_eq_zero : (2 : R) = 0 := by
   rw [← Nat.cast_two, CharP.cast_eq_zero]
@@ -64,6 +65,7 @@ theorem natCast_cases (n : ℕ) : (n : R) = 0 ∨ (n : R) = 1 :=
 theorem natCast_eq_mod (n : ℕ) : (n : R) = (n % 2 : ℕ) := by
   simp [natCast_eq_ite, Nat.even_iff]
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 theorem ofNat_eq_mod (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : R) = (ofNat(n) % 2 : ℕ) :=
   natCast_eq_mod n
@@ -80,13 +82,16 @@ variable [Semiring R] [CharP R 2]
 @[scoped simp]
 theorem add_self_eq_zero (x : R) : x + x = 0 := by rw [← two_mul x, two_eq_zero, zero_mul]
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 protected theorem two_nsmul (x : R) : 2 • x = 0 := by rw [two_nsmul, add_self_eq_zero]
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 protected theorem add_cancel_left (a b : R) : a + (a + b) = b := by
   rw [← add_assoc, add_self_eq_zero, zero_add]
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 protected theorem add_cancel_right (a b : R) : a + b + b = a := by
   rw [add_assoc, add_self_eq_zero, add_zero]
@@ -115,6 +120,7 @@ theorem add_eq_iff_eq_add {a b c : R} : a + b = c ↔ a = c + b := by
 theorem eq_add_iff_add_eq {a b c : R} : a = b + c ↔ a + c = b := by
   rw [← eq_sub_iff_add_eq, sub_eq_add]
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 protected theorem two_zsmul (x : R) : (2 : ℤ) • x = 0 := by
   rw [two_zsmul, add_self_eq_zero]
@@ -184,6 +190,7 @@ theorem sq_injective : Function.Injective fun x : R ↦ x ^ 2 := by
   intro x y h
   rwa [← CharTwo.add_eq_zero, ← add_sq, pow_eq_zero_iff two_ne_zero, CharTwo.add_eq_zero] at h
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 theorem sq_inj {x y : R} : x ^ 2 = y ^ 2 ↔ x = y :=
   sq_injective.eq_iff
