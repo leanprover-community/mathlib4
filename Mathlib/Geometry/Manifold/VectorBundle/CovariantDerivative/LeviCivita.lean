@@ -237,13 +237,10 @@ lemma leviCivitaRhs'_addY_apply [CompleteSpace E]
     (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x)
     (hY' : MDiffAt (T% Y') x) (hZ : MDiffAt (T% Z) x) :
     leviCivitaRhs' I X (Y + Y') Z x = leviCivitaRhs' I X Y Z x + leviCivitaRhs' I X Y' Z x := by
-  simp only [leviCivitaRhs', Pi.add_apply, Pi.sub_apply, inner_add_left]
-  rw [rhs_aux_addX_apply, rhs_aux_addY_apply, rhs_aux_addZ_apply] <;> try assumption
-  -- We have to rewrite back and forth: the Lie bracket is only additive at x,
-  -- as we are only asking for differentiability at x.
-  rw [(mlieBracket_add_left (W := X) hY hY')]
-  rw [(VectorField.mlieBracket_add_right (V := Z) hY hY')]
-  simp [inner_add_right]
+  simp [leviCivitaRhs',
+    rhs_aux_addX_apply, rhs_aux_addY_apply _ _ hY hY' hZ, rhs_aux_addZ_apply _ _ hX hY hY',
+    mlieBracket_add_left (W := X) hY hY', VectorField.mlieBracket_add_right (V := Z) hY hY',
+    inner_add_left, inner_add_right]
   abel
 
 lemma leviCivitaRhs_addY_apply [CompleteSpace E]
