@@ -148,7 +148,7 @@ theorem norm_integral_exp_mul_I_le_of_order_one'
     (hL : L ≠ 0) :
     ‖∫ x in a..b, exp (L * φ x * I)‖ ≤ c 1 * |L|⁻¹ := by
   wlog! hab : a ≠ b
-  · simp [hab]; positivity
+  · simp only [hab, integral_same, norm_zero]; positivity
   have hud_ab : UniqueDiffOn ℝ [[a, b]] := uniqueDiffOn_Icc <| min_lt_max.mpr hab
   have := hφ.continuousOn
   let φ' := fun x ↦ derivWithin φ [[a, b]] x
@@ -178,7 +178,8 @@ theorem norm_integral_exp_mul_I_le_of_order_one'
       (.mul (.mul (hasDerivWithinAt_const ..)
         (.ofReal_comp <| hasDerivAt_φ' _ hx))
         (hasDerivWithinAt_const ..)) (hnz1 hx) using 1
-    simp [mul_pow, u']
+    simp only [Pi.mul_apply, zero_mul, zero_add, mul_zero, add_zero, one_mul, zero_sub, mul_pow,
+      I_sq, mul_neg, mul_one, neg_div_neg_eq, u']
     have := hφ'_nz hx
     have : ofReal L ^ 2 * (φ' x) ^ 2 ≠ 0 := by norm_cast; positivity
     field_simp
@@ -454,7 +455,8 @@ private theorem norm_integral_exp_mul_I_smul_le_of_norm_integral_exp_mul_I {A : 
     ‖∫ x in a..b, exp (L * φ x * I) • ψ x‖ ≤
       A * (‖ψ b‖ + |∫ x in a..b, ‖derivWithin ψ [[a, b]] x‖|) := by
   by_cases hab : a = b
-  · simp [hab]; positivity
+  · simp only [hab, integral_same, norm_zero, Std.le_refl, uIcc_of_le, Icc_self, abs_zero,
+    add_zero]; positivity
   have hψ'_cont := hψ.continuousOn_derivWithin (uniqueDiffOn_Icc <| min_lt_max.mpr hab)
     (by norm_num)
   let F := fun x ↦ ∫ t in a..x, exp (L * φ t * I)
@@ -505,7 +507,7 @@ theorem norm_integral_exp_mul_I_le_of_order_one
     (by positivity) ?_ hφ.continuousOn hψ
   intro x hx
   wlog hxa : x ≠ a
-  · simp [not_not.mp hxa]; positivity
+  · simp only [not_not.mp hxa, integral_same, norm_zero]; positivity
   have hsubset := uIcc_subset_uIcc_left hx
   have haux : ∀ y ∈ [[a, x]], derivWithin φ [[a, x]] y = derivWithin φ [[a, b]] y := by
     intro y hy
