@@ -54,7 +54,7 @@ namespace MeasureTheory
 
 /-- `Integrable f μ` means that `f` is measurable and that the integral `∫⁻ a, ‖f a‖ ∂μ` is finite.
   `Integrable f` means `Integrable f volume`. -/
-@[fun_prop]
+@[fun_prop always_try_transition]
 def Integrable {α} {_ : MeasurableSpace α} (f : α → ε)
     (μ : Measure α := by volume_tac) : Prop :=
   AEStronglyMeasurable f μ ∧ HasFiniteIntegral f μ
@@ -1038,6 +1038,7 @@ theorem Integrable.const_mul {f : α → 𝕜} (h : Integrable f μ) (c : 𝕜) 
     Integrable (fun x => c * f x) μ :=
   h.smul c
 
+@[fun_prop]
 theorem Integrable.const_mul' {f : α → 𝕜} (h : Integrable f μ) (c : 𝕜) :
     Integrable ((fun _ : α => c) * f) μ :=
   Integrable.const_mul h c
@@ -1047,6 +1048,7 @@ theorem Integrable.mul_const {f : α → 𝕜} (h : Integrable f μ) (c : 𝕜) 
     Integrable (fun x => f x * c) μ :=
   h.smul (MulOpposite.op c)
 
+@[fun_prop]
 theorem Integrable.mul_const' {f : α → 𝕜} (h : Integrable f μ) (c : 𝕜) :
     Integrable (f * fun _ : α => c) μ :=
   Integrable.mul_const h c

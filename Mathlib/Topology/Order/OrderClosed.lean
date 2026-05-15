@@ -110,7 +110,7 @@ section Preorder
 
 variable [TopologicalSpace α] [Preorder α] [ClosedIicTopology α] {f : β → α} {a b : α} {s : Set α}
 
-@[to_dual]
+@[to_dual (attr := closedness .)]
 theorem isClosed_Iic : IsClosed (Iic a) :=
   ClosedIicTopology.isClosed_Iic a
 
@@ -118,7 +118,7 @@ theorem isClosed_Iic : IsClosed (Iic a) :=
 instance : ClosedIciTopology αᵒᵈ where
   isClosed_Ici _ := isClosed_Iic (α := α)
 
-@[to_dual (attr := simp)]
+@[to_dual (attr := simp, closedness =)]
 theorem closure_Iic (a : α) : closure (Iic a) = Iic a :=
   isClosed_Iic.closure_eq
 
@@ -433,10 +433,11 @@ end Subtype
 
 -- The binder info on both theorems is slightly different, see
 -- https://github.com/leanprover/lean4/issues/9727
+@[closedness .]
 theorem isClosed_le_prod : IsClosed { p : α × α | p.1 ≤ p.2 } :=
   t.isClosed_le'
 
-@[to_dual existing isClosed_le_prod]
+@[to_dual existing isClosed_le_prod, closedness .]
 theorem isClosed_le_prod' : IsClosed { p : α × α | p.2 ≤ p.1 } :=
   (isClosed_le_prod (α := α)).preimage continuous_swap
 
@@ -452,11 +453,11 @@ instance : ClosedIicTopology α where
 instance : OrderClosedTopology αᵒᵈ :=
   ⟨isClosed_le_prod' (α := α)⟩
 
-@[to_dual self]
+@[to_dual self, closedness .]
 theorem isClosed_Icc {a b : α} : IsClosed (Icc a b) :=
   IsClosed.inter isClosed_Ici isClosed_Iic
 
-@[to_dual self, simp]
+@[to_dual self, simp, closedness =]
 theorem closure_Icc (a b : α) : closure (Icc a b) = Icc a b :=
   isClosed_Icc.closure_eq
 
@@ -547,6 +548,20 @@ instance (priority := 90) OrderClosedTopology.to_t2Space : T2Space α :=
       t.isClosed_le'.inter (isClosed_le continuous_snd continuous_fst)
 
 end PartialOrder
+
+section Lattice
+
+variable [TopologicalSpace α] [Lattice α] [OrderClosedTopology α]
+
+@[closedness .]
+theorem isClosed_uIcc {a b : α} : IsClosed (uIcc a b) :=
+  isClosed_Icc
+
+@[simp, closedness =]
+lemma closure_uIcc {a b : α} : closure (uIcc a b) = uIcc a b :=
+  isClosed_uIcc.closure_eq
+
+end Lattice
 
 section LinearOrder
 
