@@ -577,4 +577,5 @@ lemma isAffineMap_convexCombPair (m : M) :
   ⟨fun f ↦ by simpa using (iConvexComb_convexCombPair_comm_right hs ht h f m id).symm⟩
 
 end CommSemiring
+
 end Convexity
