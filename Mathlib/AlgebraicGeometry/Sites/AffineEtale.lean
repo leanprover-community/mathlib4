@@ -121,10 +121,8 @@ instance : S.smallEtaleTopology.WEqualsLocallyBijective A :=
 
 -- The `IsGrothendieckAbelian` instances defined below would fail
 -- without the next two instances
-@[implicit_reducible]
 instance [Abelian A] : Abelian (Sheaf (AffineEtale.topology S) A) := inferInstance
 
-@[implicit_reducible]
 instance [Abelian A] : Abelian (Sheaf S.smallEtaleTopology A) := inferInstance
 
 variable (S A)
