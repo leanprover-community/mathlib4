@@ -208,7 +208,6 @@ theorem IndepFun.integrable_left_of_integrable_op
     simpa using hω
   refine hasFiniteIntegral_iff_enorm.mpr <| lt_top_iff_ne_top.2 fun H => ?_
   have J : (‖X ·‖ₑ) ⟂ᵢ[μ] (‖Y ·‖ₑ) := hXY.comp measurable_enorm measurable_enorm
-  have A : ∫⁻ ω, ‖B (X ω) (Y ω)‖ₑ ∂μ < ∞ := h'XY.2
   have : ∞ < ∞ := calc
     ∞ = c * ((∫⁻ ω, ‖X ω‖ₑ ∂μ) * (∫⁻ ω, ‖Y ω‖ₑ ∂μ)) := by
       rw [H, top_mul I, mul_top (by simpa)]
@@ -217,7 +216,7 @@ theorem IndepFun.integrable_left_of_integrable_op
         ← lintegral_const_mul'' _ (by fun_prop)]
       gcongr with ω
       simp [hB, ← mul_assoc]
-    _ < ∞ := A
+    _ < ∞ := h'XY.2
   contradiction
 
 /-- If `X` and `Y` are two independent random variables, `B X Y` is integrable, `X` is not
