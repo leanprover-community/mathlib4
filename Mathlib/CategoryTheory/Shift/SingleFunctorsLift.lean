@@ -56,7 +56,6 @@ private lemma map_shiftIso_hom_app (n a a' : A) (h : n + a = a') (X : C) :
 end lift
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `C`, `D` and `E` be categories. Let `A` be an additive monoid.
 Assume that `D` and `E` have shifts by `A` and that we have
 a fully faithful functor `G : D ⥤ A` which commutes with shifts.

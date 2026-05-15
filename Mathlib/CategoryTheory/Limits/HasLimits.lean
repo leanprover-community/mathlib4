@@ -511,7 +511,6 @@ theorem limit.map_pre' [HasLimitsOfShape K C] (F : J ⥤ C) {E₁ E₂ : K ⥤ J
     limit.pre F E₂ = limit.pre F E₁ ≫ lim.map (whiskerRight α F) := by
   ext1; simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem limit.id_pre (F : J ⥤ C) : limit.pre F (𝟭 _) = lim.map (Functor.leftUnitor F).inv := by
   cat_disch
 
@@ -1105,7 +1104,6 @@ theorem colimit.pre_map' [HasColimitsOfShape K C] (F : J ⥤ C) {E₁ E₂ : K �
   simp
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 theorem colimit.pre_id (F : J ⥤ C) :
     colimit.pre F (𝟭 _) = colim.map (Functor.leftUnitor F).hom := by cat_disch
 

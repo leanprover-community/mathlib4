@@ -371,7 +371,6 @@ instance [PreservesLimitOfIsCoreflexivePair F] : ∀ X : Coalgebra adj.toComonad
 
 variable [PreservesLimitOfIsCoreflexivePair F]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Coreflexive (crude) comonadicity theorem. If `F` has a right adjoint, `C` has and `F` preserves
 coreflexive equalizers and `F` reflects isomorphisms, then `F` is comonadic.
 -/

@@ -154,7 +154,6 @@ def vInv (_ : CatCommSq T L.functor R.functor B) : CatCommSq B L.inverse R.inver
       (associator _ _ _).symm ≪≫ isoWhiskerLeft _ R.unitIso.symm ≪≫
       rightUnitor _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma vInv_vInv (h : CatCommSq T L.functor R.functor B) :
     vInv B L.symm R.symm T (vInv T L R B h) = h := by
   ext X

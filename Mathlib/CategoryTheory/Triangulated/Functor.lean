@@ -61,7 +61,6 @@ instance [Faithful F] : Faithful F.mapTriangle where
     · exact congr_arg TriangleMorphism.hom₃ h
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance [Full F] [Faithful F] : Full F.mapTriangle where
   map_surjective {X Y} f :=
     ⟨{hom₁ := F.preimage f.hom₁

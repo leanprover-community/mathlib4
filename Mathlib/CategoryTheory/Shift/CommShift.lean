@@ -105,7 +105,6 @@ lemma isoAdd_inv_app {a b : A}
         F.map ((shiftFunctorAdd C a b).inv.app X) := by
   simp only [isoAdd, isoAdd'_inv_app, shiftFunctorAdd'_eq_shiftFunctorAdd]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isoAdd'_isoZero {a : A}
     (e : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a) :
     isoAdd' (add_zero a) e (isoZero F A) = e := by
@@ -113,7 +112,6 @@ lemma isoAdd'_isoZero {a : A}
   simp [shiftFunctorAdd'_add_zero_hom_app, ← Functor.map_comp_assoc,
     shiftFunctorAdd'_add_zero_inv_app]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isoZero_isoAdd'_ {a : A}
     (e : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a) :
     isoAdd' (zero_add a) (isoZero F A) e = e := by
@@ -197,13 +195,11 @@ end
 
 namespace CommShift
 
-set_option backward.isDefEq.respectTransparency false in
 variable (C) in
 @[simps! -isSimp commShiftIso_hom_app commShiftIso_inv_app]
 instance id : CommShift (𝟭 C) A where
   commShiftIso := fun _ => rightUnitor _ ≪≫ (leftUnitor _).symm
 
-set_option backward.isDefEq.respectTransparency false in
 @[simps! -isSimp commShiftIso_hom_app commShiftIso_inv_app]
 instance comp [F.CommShift A] [G.CommShift A] : (F ⋙ G).CommShift A where
   commShiftIso a := (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight (F.commShiftIso a) _ ≪≫
@@ -252,7 +248,6 @@ lemma map_shiftFunctorComm_hom_app [F.CommShift B] (X : C) (a b : B) :
     ← Functor.map_comp_assoc, Iso.hom_inv_id_app,
     Functor.map_id, Category.id_comp, comp_obj, Category.comp_id]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
 lemma map_shiftFunctorCompIsoId_hom_app [F.CommShift A] (X : C) (a b : A) (h : a + b = 0) :
     F.map ((shiftFunctorCompIsoId C a b h).hom.app X) =
@@ -266,7 +261,6 @@ lemma map_shiftFunctorCompIsoId_hom_app [F.CommShift A] (X : C) (a b : A) (h : a
   simp only [Iso.inv_hom_id_app, id_obj, Category.comp_id, ← F.map_comp_assoc, Iso.hom_inv_id_app,
     F.map_id, Category.id_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
 lemma map_shiftFunctorCompIsoId_inv_app [F.CommShift A] (X : C) (a b : A) (h : a + b = 0) :
     F.map ((shiftFunctorCompIsoId C a b h).inv.app X) =
@@ -329,7 +323,6 @@ end
 
 variable {τ}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma zero : CommShiftCore τ (0 : A) where
   shift_comm := by
     ext X
@@ -452,7 +445,6 @@ variable {C D E : Type*} [Category* C] [Category* D]
   (A : Type*) [AddMonoid A] [HasShift C A] [HasShift D A]
   [F.CommShift A]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `e : F ≅ G` is an isomorphism of functors and if `F` commutes with the
 shift, then `G` also commutes with the shift. -/
 @[simps! -isSimp commShiftIso_hom_app commShiftIso_inv_app, instance_reducible]
@@ -569,7 +561,6 @@ attribute [irreducible] iso
 
 end OfComp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an isomorphism `e : F ⋙ G ≅ H` where `G` is fully faithful,
 the functor `F` commutes with shifts by `A` if `G` and `H` do. -/
 @[instance_reducible]

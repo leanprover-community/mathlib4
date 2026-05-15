@@ -246,13 +246,11 @@ theorem id_tensor_pre_app_comp_ev (f : B ⟶ A) (X : C) :
     B ◁ (pre f).app X ≫ (ihom.ev B).app X = f ▷ (A ⟶[C] X) ≫ (ihom.ev A).app X :=
   conjugateEquiv_counit _ _ ((tensoringLeft C).map f) X
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem uncurry_pre (f : B ⟶ A) (X : C) :
     MonoidalClosed.uncurry ((pre f).app X) = f ▷ _ ≫ (ihom.ev A).app X := by
   simp [uncurry_eq]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma curry_pre_app (f : B ⟶ A) {X Y : C} (g : A ⊗ Y ⟶ X) :
     curry g ≫ (pre f).app X = curry (f ▷ _ ≫ g) := uncurry_injective (by
@@ -491,7 +489,6 @@ lemma curry'_id (X : C) [Closed X] : curry' (𝟙 X) = id X := by
   rw [Category.comp_id]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma whiskerLeft_curry'_ihom_ev_app {X Y : C} [Closed X] (f : X ⟶ Y) :
     X ◁ curry' f ≫ (ihom.ev X).app Y = (ρ_ _).hom ≫ f := by

@@ -191,7 +191,6 @@ lemma sieve₁'_cylinder (i j : Σ (i : E.I₀), F.I₁ (f.s₀ i) (g.s₀ i)) :
     convert Sieve.ofArrows_mk _ _ (ULift.up k)
     simp [toPullback_cylinder f g ⟨k⟩]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation): The refinement morphism `cylinder f g ⟶ E`. -/
 @[simps]
 noncomputable def cylinderHom : (cylinder f g).Hom E where

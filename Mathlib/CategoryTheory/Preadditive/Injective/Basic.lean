@@ -285,7 +285,6 @@ theorem map_injective (adj : F ⊣ G) [F.PreservesMonomorphisms] (I : D) (hI : I
     rw [← unit_naturality_assoc, ← G.map_comp, h]
     simp⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem injective_of_map_injective (adj : F ⊣ G) [G.Full] [G.Faithful] (I : D)
     (hI : Injective (G.obj I)) : Injective I :=
   ⟨fun {X} {Y} f g => by

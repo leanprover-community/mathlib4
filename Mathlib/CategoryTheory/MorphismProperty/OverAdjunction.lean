@@ -77,11 +77,9 @@ end Map
 
 section Pullback
 
-set_option backward.isDefEq.respectTransparency false in
 instance (f : X ⟶ Y) [P.HasPullbacksAlong f] (A : P.Over Q Y) : HasPullback A.hom f :=
   HasPullbacksAlong.hasPullback A.hom A.prop
 
-set_option backward.isDefEq.respectTransparency false in
 instance {X Y Z} (f : X ⟶ Y) (g : Y ⟶ Z)
     [P.HasPullbacksAlong f] [P.HasPullbacksAlong g] [P.IsStableUnderBaseChangeAlong g]
     (A : P.Over Q Z) : HasPullback (pullback.snd A.hom g) f :=
@@ -89,7 +87,6 @@ instance {X Y Z} (f : X ⟶ Y) (g : Y ⟶ Z)
   (IsStableUnderBaseChangeAlong.of_isPullback (IsPullback.of_hasPullback A.hom g) A.prop)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- If `P` and `Q` are stable under base change and pullbacks along `f` exist for morphisms in `P`,
 this is the functor `P.Over Q Y ⥤ P.Over Q X` given by base change along `f`. -/
 @[simps! obj_left obj_hom map_left]
@@ -105,7 +102,6 @@ noncomputable def Over.pullback (f : X ⟶ Y) [P.HasPullbacksAlong f]
 variable {P} {Q}
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- `Over.pullback` commutes with composition. -/
 @[simps! hom_app_left inv_app_left]
 noncomputable def Over.pullbackComp (f : X ⟶ Y) (g : Y ⟶ Z)
@@ -129,7 +125,6 @@ lemma Over.pullbackComp_left_fst_fst (f : X ⟶ Y) (g : Y ⟶ Z) [P.IsStableUnde
   simp
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f = g`, then base change along `f` is naturally isomorphic to base change along `g`. -/
 noncomputable def Over.pullbackCongr {f : X ⟶ Y} [P.HasPullbacksAlong f]
     [P.IsStableUnderBaseChangeAlong f] [Q.IsStableUnderBaseChange] {g : X ⟶ Y} (h : f = g) :
@@ -151,7 +146,6 @@ lemma Over.pullbackCongr_hom_app_left_fst {f : X ⟶ Y} [P.HasPullbacksAlong f] 
   simp [pullbackCongr]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural map between pullback functors induced by `pullback.map`. -/
 @[simps]
 noncomputable def Over.pullbackMapHomPullback [P.IsStableUnderComposition]
@@ -173,7 +167,6 @@ section Adjunction
 variable [P.IsStableUnderComposition] [Q.IsStableUnderBaseChange]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- `P.Over.map` is left adjoint to `P.Over.pullback` if pullbacks of morphisms satisfying `P`
 exist along `f` and are also in `P`, and `f` is in both `P` and `Q`. -/
 @[simps! unit_app counit_app]
@@ -247,18 +240,15 @@ end Map
 
 section Pushout
 
-set_option backward.isDefEq.respectTransparency false in
 instance (f : X ⟶ Y) [P.HasPushoutsAlong f] (A : P.Under Q X) : HasPushout A.hom f :=
   HasPushoutsAlong.hasPushout A.hom A.prop
 
-set_option backward.isDefEq.respectTransparency false in
 instance {X Y Z} (f : Y ⟶ X) (g : Z ⟶ Y)
     [P.HasPushoutsAlong f] [P.HasPushoutsAlong g] [P.IsStableUnderCobaseChangeAlong g]
     (A : P.Under Q Z) : HasPushout (pushout.inr A.hom g) f :=
   HasPushoutsAlong.hasPushout (pushout.inr A.hom g)
   (IsStableUnderCobaseChangeAlong.of_isPushout (IsPushout.of_hasPushout A.hom g).flip A.prop)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `P` and `Q` are stable under cobase change and pushouts along `f` exist for morphisms in `P`,
 this is the functor `P.Under Q X ⥤ P.Under Q Y` given by cobase change along `f`. -/
 @[simps! obj_right obj_hom map_right]
@@ -275,7 +265,6 @@ noncomputable def Under.pushout (f : X ⟶ Y) [P.HasPushoutsAlong f]
 variable {P} {Q}
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- `Under.pushout` commutes with composition. -/
 @[simps! hom_app_right inv_app_right]
 noncomputable def Under.pushoutComp (f : X ⟶ Y) (g : Y ⟶ Z)
@@ -291,7 +280,6 @@ noncomputable def Under.pushoutComp (f : X ⟶ Y) (g : Y ⟶ Z)
     Under.isoMk (pushout.congrHom rfl hfg ≪≫ (pushoutLeftPushoutInrIso X.hom f g).symm) (by simp)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f = g`, then cobase change along `f` is naturally isomorphic to cobase change along `g`. -/
 noncomputable def Under.pushoutCongr {f : X ⟶ Y} [P.HasPushoutsAlong f]
     [P.IsStableUnderCobaseChangeAlong f] [Q.IsStableUnderCobaseChange] {g : X ⟶ Y} (h : f = g) :
@@ -321,7 +309,6 @@ variable [P.IsStableUnderComposition] [Q.IsStableUnderCobaseChange]
 
 set_option backward.defeqAttrib.useBackward true in
 attribute [local instance] hasPushouts_symmetry_of_hasPushoutsAlong in
-set_option backward.isDefEq.respectTransparency false in
 /-- `P.Under.pushout` is left adjoint to `P.Under.map` if pushouts of morphisms satisfying `P`
 exist along `f` and are also in `P`, and `f` is in both `P` and `Q`. -/
 @[simps! unit_app counit_app]

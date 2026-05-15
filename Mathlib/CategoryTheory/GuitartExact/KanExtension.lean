@@ -185,7 +185,6 @@ lemma isIso_lanBaseChange_app_iff (F : C₂ ⥤ D) :
   rw [lanBaseChange_app, isIso_lanAdjunction_homEquiv_symm_iff]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 instance isIso_lanBaseChange_app (F : C₂ ⥤ D)
     [R.HasPointwiseLeftKanExtension F] [w.GuitartExact] :
     IsIso (w.lanBaseChange.app F) := by

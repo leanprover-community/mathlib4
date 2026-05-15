@@ -45,7 +45,6 @@ namespace coherentTopology
 variable [F.PreservesFiniteEffectiveEpiFamilies] [F.ReflectsFiniteEffectiveEpiFamilies]
   [F.Full] [F.Faithful] [F.EffectivelyEnough] [Precoherent D]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : F.IsCoverDense (coherentTopology _) := by
   refine F.isCoverDense_of_generate_singleton_functor_π_mem _ fun B ↦ ⟨_, F.effectiveEpiOver B, ?_⟩
   apply Coverage.Saturate.of

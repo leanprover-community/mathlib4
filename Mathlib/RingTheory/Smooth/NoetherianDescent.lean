@@ -109,7 +109,6 @@ lemma coeffs_h_subset (i) : ↑(D.h i).coeffs ⊆ Set.range ⇑(algebraMap (D.su
   rw [Subalgebra.setRange_algebraMap]
   grind [subalgebra, Algebra.subset_adjoin]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma coeffs_p_subset (i) :
     ↑(D.p i).coeffs ⊆
       Set.range (MvPolynomial.map (σ := D.vars) (algebraMap (D.subalgebra R) A)) := by

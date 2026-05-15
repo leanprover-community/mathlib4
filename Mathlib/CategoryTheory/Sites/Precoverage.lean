@@ -233,7 +233,6 @@ lemma mem_comap_iff {X : C} {R : Presieve X} :
 
 lemma comap_inf : (J ⊓ K).comap F = J.comap F ⊓ K.comap F := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma comap_id (K : Precoverage C) : K.comap (𝟭 C) = K := by
   ext

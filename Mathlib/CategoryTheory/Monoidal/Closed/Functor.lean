@@ -62,7 +62,6 @@ def frobeniusMorphism (h : L ⊣ F) (A : C) : TwoSquare (tensorLeft (F.obj A)) L
   prodComparisonNatTrans L (F.obj A) ≫
     Functor.whiskerLeft _ ((curriedTensor C).map (h.counit.app _))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `F` is full and faithful and has a left adjoint `L` which preserves binary products, then the
 Frobenius morphism is an isomorphism.
 -/

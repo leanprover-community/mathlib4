@@ -58,7 +58,6 @@ apply this with `M := ℤ` and `m₀` the coercion of `0 : ℕ`. -/
 noncomputable def mk₀ (m₀ : M) (hm₀ : m₀ = 0) (f : X ⟶ Y) : ShiftedHom X Y m₀ :=
   f ≫ (shiftFunctorZero' C m₀ hm₀).inv.app Y
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The bijection `(X ⟶ Y) ≃ ShiftedHom X Y m₀` when `m₀ = 0`. -/
 @[simps apply]
 noncomputable def homEquiv (m₀ : M) (hm₀ : m₀ = 0) : (X ⟶ Y) ≃ ShiftedHom X Y m₀ where
@@ -67,7 +66,6 @@ noncomputable def homEquiv (m₀ : M) (hm₀ : m₀ = 0) : (X ⟶ Y) ≃ Shifted
   left_inv f := by simp [mk₀]
   right_inv g := by simp [mk₀]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mk₀_comp (m₀ : M) (hm₀ : m₀ = 0) (f : X ⟶ Y) {a : M} (g : ShiftedHom Y Z a) :
     (mk₀ m₀ hm₀ f).comp g (by rw [hm₀, add_zero]) = f ≫ g := by
   subst hm₀
@@ -78,7 +76,6 @@ lemma mk₀_id_comp (m₀ : M) (hm₀ : m₀ = 0) {a : M} (f : ShiftedHom X Y a)
     (mk₀ m₀ hm₀ (𝟙 X)).comp f (by rw [hm₀, add_zero]) = f := by
   simp [mk₀_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma comp_mk₀ {a : M} (f : ShiftedHom X Y a) (m₀ : M) (hm₀ : m₀ = 0) (g : Y ⟶ Z) :
     f.comp (mk₀ m₀ hm₀ g) (by rw [hm₀, zero_add]) = f ≫ g⟦a⟧' := by
   subst hm₀
@@ -169,7 +166,6 @@ def map {a : M} (f : ShiftedHom X Y a) (F : C ⥤ D) [F.CommShift M] :
     ShiftedHom (F.obj X) (F.obj Y) a :=
   F.map f ≫ (F.commShiftIso a).hom.app Y
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma map_mk₀ (m₀ : M) (hm₀ : m₀ = 0) (f : X ⟶ Y) (F : C ⥤ D) [F.CommShift M] :
     (ShiftedHom.mk₀ m₀ hm₀ f).map F = .mk₀ _ hm₀ (F.map f) := by

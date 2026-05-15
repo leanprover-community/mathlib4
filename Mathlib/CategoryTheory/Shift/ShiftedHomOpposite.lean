@@ -116,7 +116,6 @@ lemma opEquiv'_symm_comp (f : Y ⟶ X) {n a : ℤ} (x : Opposite.op (Z⟦a⟧) �
   Quiver.Hom.op_inj (by simp [opEquiv'_symm_apply, opEquiv_symm_apply])
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma opEquiv'_zero_add_symm (a : ℤ) (f : Opposite.op (Y⟦a⟧) ⟶ (Opposite.op X)⟦(0 : ℤ)⟧) :
     (opEquiv' 0 a a (zero_add a)).symm f =
       ((shiftFunctorZero Cᵒᵖ ℤ).hom.app _).unop ≫ f.unop := by

@@ -85,7 +85,6 @@ noncomputable def chainComplexXIso (n : ℕ) :
     (Λ.chainComplex X).X (n + 2) ≅ Λ.F.obj (kernel (ι.map ((Λ.chainComplex X).d (n + 1) n))) := by
   apply ChainComplex.mk'XIso
 
-set_option backward.isDefEq.respectTransparency false in
 lemma map_chainComplex_d (n : ℕ) :
     ι.map ((Λ.chainComplex X).d (n + 2) (n + 1)) =
     ι.map (Λ.chainComplexXIso X n).hom ≫ Λ.π.app (kernel (ι.map ((Λ.chainComplex X).d (n + 1) n))) ≫

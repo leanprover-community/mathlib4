@@ -171,7 +171,6 @@ lemma iso_inv_app (a : A) (X : C) :
 end commShiftOfLocalization
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- In the context of localization of categories, if a functor
 is induced by a functor which commutes with the shift, then
 this functor commutes with the shift. -/

@@ -96,7 +96,6 @@ end Induced
 variable (A)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- When `F : C ⥤ D` is a functor satisfying suitable technical assumptions,
 this is the induced term of type `HasShift D A` deduced from `[HasShift C A]`. -/
 @[instance_reducible]

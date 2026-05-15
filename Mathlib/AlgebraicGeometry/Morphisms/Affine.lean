@@ -214,7 +214,6 @@ lemma isPushout_appTop_of_isPullback {P : Scheme.{u}} {fst : P ⟶ X} {snd : P �
     IsPullback.of_map_of_faithful AffineScheme.forgetToScheme.{u} h
   exact (IsPullback.map AffineScheme.Γ.rightOp this).unop.flip
 
-set_option backward.isDefEq.respectTransparency false in
 instance {U V X : Scheme.{u}} (f : U ⟶ X) (g : V ⟶ X) [IsAffineHom f] [IsAffineHom g] :
     IsAffineHom (coprod.desc f g) := by
   refine ⟨fun W hW ↦ ?_⟩

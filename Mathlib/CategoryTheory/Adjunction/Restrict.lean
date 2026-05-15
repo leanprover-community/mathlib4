@@ -73,7 +73,6 @@ lemma map_restrictFullyFaithful_counit_app (X : D) :
   dsimp [restrictFullyFaithful]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma restrictFullyFaithful_homEquiv_apply {X : C} {Y : D} (f : L.obj X ⟶ Y) :
     (adj.restrictFullyFaithful hiC hiD comm1 comm2).homEquiv X Y f =
       hiC.preimage (adj.unit.app (iC.obj X) ≫ R'.map (comm1.hom.app X) ≫
