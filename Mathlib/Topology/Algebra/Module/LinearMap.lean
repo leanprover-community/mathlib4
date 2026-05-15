@@ -1306,10 +1306,9 @@ theorem coe_codRestrict_apply (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R�
     (f.codRestrict p h x : M₂) = f x :=
   rfl
 
-@[simp]
 theorem ker_codRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₂ M₂) (h : ∀ x, f x ∈ p) :
     ker (f.codRestrict p h : M₁ →ₛₗ[σ₁₂] p) = ker (f : M₁ →ₛₗ[σ₁₂] M₂) :=
-  (f : M₁ →ₛₗ[σ₁₂] M₂).ker_codRestrict p h
+  f.toLinearMap.ker_codRestrict p h
 
 @[simp]
 theorem domRestrict_comp_codRestrict (g : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂)
@@ -1321,11 +1320,12 @@ theorem domRestrict_comp_codRestrict (g : M₂ →SL[σ₂₃] M₃) (f : M₁ �
 abbrev rangeRestrict [RingHomSurjective σ₁₂] (f : M₁ →SL[σ₁₂] M₂) :=
   f.codRestrict (LinearMap.range (f : M₁ →ₛₗ[σ₁₂] M₂)) (LinearMap.mem_range_self _)
 
+theorem toLinearMap_rangeRestrict [RingHomSurjective σ₁₂] (f : M₁ →SL[σ₁₂] M₂) :
+    f.rangeRestrict.toLinearMap = f.toLinearMap.rangeRestrict := by simp
+
 @[simp]
 theorem coe_rangeRestrict [RingHomSurjective σ₁₂] (f : M₁ →SL[σ₁₂] M₂) :
-    (f.rangeRestrict : M₁ →ₛₗ[σ₁₂] LinearMap.range (f : M₁ →ₛₗ[σ₁₂] M₂)) =
-      (f : M₁ →ₛₗ[σ₁₂] M₂).rangeRestrict :=
-  rfl
+    (f.rangeRestrict : M₁ → f.range) = Set.rangeFactorization f := rfl
 
 /-- Restrict codomain of a continuous linear map. -/
 def restrict (f : M₁ →SL[σ₁₂] M₂) {p : Submodule R₁ M₁} {q : Submodule R₂ M₂}
