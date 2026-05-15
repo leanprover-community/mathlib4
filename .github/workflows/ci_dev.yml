@@ -1,50 +1,383 @@
-name: ci dev
+name: ci dev (lake cache shadow)
+
+# Drop-in replacement for ci_dev.yml when working on a ci-dev/* branch that
+# wants to exercise Lake's built-in artifact cache. The original ci_dev.yml
+# (which delegates to build_template.yml) is preserved on master and other
+# branches; this version takes over on ci-dev/* branches that include this
+# file.
+#
+# Behavior:
+#   - workflow_dispatch only; gated to ci-dev/* branches.
+#   - Always exercises the build + stage half of the shadow (no R2 needed).
+#   - If LAKE_CACHE_SHADOW_ARTIFACT_ENDPOINT / LAKE_CACHE_SHADOW_REVISION_ENDPOINT
+#     repo vars and LAKE_CACHE_SHADOW_KEY repo secret are set, ALSO runs the
+#     upload and the consume drop-in test. Otherwise those steps are skipped
+#     and the workflow exits success after the stage step.
+#
+# Once we're happy with the results, move this file's content into the
+# permanent .github/workflows/lake_cache_shadow.yml on master (which is the
+# committed sibling here), and restore the original ci_dev.yml.
 
 on:
   workflow_dispatch:
     inputs:
-      tools_branch_ref:
-        description: ref for tools checkout (defaults to 'this commit')
+      mathlib_ref:
+        description: ref to test (defaults to current branch's commit)
         required: false
         type: string
         default: ''
-      pr_branch_ref:
-        description: ref for building-branch checkout (defaults to 'this commit')
-        required: false
-        type: string
-        default: ''
-      run_post_ci:
-        description: Run the post-CI job?
+      force_upload:
+        description: 'force upload + consume even if vars look unset (debug)'
         required: false
         type: boolean
-        default: false # We shouldn't need this job in typical experiments
-      mathlib_ci_ref:
-        description: ref for mathlib-ci checkout (defaults to 'master')
-        required: false
-        type: string
-        default: 'master'
+        default: false
 
-# Limit permissions for GITHUB_TOKEN for the entire workflow
 permissions:
   contents: read
-  id-token: write
-  # By default let's remove this permission (which is present in the other build pipelines)
-  # from the CI experimentation runs to avoid unwitting side effects
-  # pull-requests: write
+
+concurrency:
+  group: ci-dev-shadow-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  SHADOW_SCOPE: mathlib4-shadow-ci-dev
+  STAGE_TARGETS: "Mathlib Archive Counterexamples"
+  STAGE_DEP_TARGETS: "batteries Qq aesop proofwidgets importGraph LeanSearchClient plausible"
 
 jobs:
-  build:
-    name: ci (dev branch)
-    # For sanity and intentionality, let's only trigger this from branches ci-dev/*
+  build_stage_upload:
+    name: Build + stage (+ upload if R2 configured)
+    # Same safety gate as the original ci_dev.yml: only runs on upstream and
+    # only on ci-dev/* branches, so a fork can't accidentally trigger this.
     if: ${{ github.repository == 'leanprover-community/mathlib4' && github.ref_type == 'branch' && startsWith(github.ref_name, 'ci-dev/') }}
-    uses: ./.github/workflows/build_template.yml
-    with:
-      concurrency_group: ${{ github.workflow }}-${{ github.ref }}
-      # Use the tools from 'this branch', as our changes in the tools might be relevant for experiments
-      tools_branch_ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || github.sha }}
-      pr_branch_ref: ${{ inputs.pr_branch_ref != '' && inputs.pr_branch_ref || github.sha }}
-      run_post_ci: ${{ inputs.run_post_ci }}
-      mathlib_ci_ref: ${{ inputs.mathlib_ci_ref }}
-      cache_application_id: ${{ vars.CACHE_NON_MASTER_WRITER_AZURE_APP_ID }}
-      runs_on: pr
-    secrets: inherit
+    runs-on: pr
+    timeout-minutes: 90
+    continue-on-error: true
+    outputs:
+      sha: ${{ steps.resolve.outputs.sha }}
+      toolchain: ${{ steps.resolve.outputs.toolchain }}
+      uploaded: ${{ steps.upload.outputs.uploaded }}
+    env:
+      LAKE_CACHE_DIR: .lake/cache
+      LAKE_NO_CACHE: true
+    defaults:
+      run:
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LAKE_CACHE_DIR --env LAKE_NO_CACHE -- bash -euxo pipefail {0}
+    steps:
+      - name: job info
+        shell: bash
+        run: |
+          echo "::notice::ci-dev lake cache shadow on ${{ github.ref_name }} run ${{ github.run_id }}"
+          if [[ -n "${{ vars.LAKE_CACHE_SHADOW_ARTIFACT_ENDPOINT }}" ]]; then
+            echo "::notice::R2 endpoint configured — will run full upload + consume"
+          else
+            echo "::notice::R2 endpoint not configured — DRY-RUN (build + stage only)"
+          fi
+
+      - name: cleanup
+        shell: bash
+        run: |
+          if ! find . -mindepth 1 -exec rm -rf -- {} +; then
+            sleep 5
+            find . -mindepth 1 -exec rm -rf -- {} +
+          fi
+
+      - name: Setup jq
+        uses: dcarbone/install-jq-action@b7ef57d46ece78760b4019dbc4080a1ba2a40b45 # v3.2.0
+
+      - name: Checkout tools branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          # Tools come from this same ci-dev branch (consistent with how
+          # the original ci_dev.yml uses 'this commit' by default).
+          ref: ${{ github.sha }}
+          path: tools-branch
+
+      - name: Checkout local actions
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 1
+          sparse-checkout: .github/actions
+          path: workflow-actions
+
+      - name: Get mathlib-ci
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+
+      - name: Checkout mathlib (pr-branch)
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ inputs.mathlib_ref != '' && inputs.mathlib_ref || github.sha }}
+          fetch-depth: 2
+          path: pr-branch
+
+      - name: Resolve sha & toolchain
+        id: resolve
+        shell: bash
+        run: |
+          cd pr-branch
+          SHA="$(git rev-parse HEAD)"
+          TC="$(cat lean-toolchain)"
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+          echo "toolchain=$TC" >> "$GITHUB_OUTPUT"
+
+      # --- The next 5 steps mirror the setup that build_template.yml does ---
+      - name: Prepare DownstreamTest directory
+        shell: bash
+        run: |
+          cd pr-branch
+          mkdir -p DownstreamTest/.lake/
+          cp lean-toolchain DownstreamTest/
+
+      - name: Create empty directories (landrun prerequisites)
+        shell: bash
+        run: |
+          mkdir -p pr-branch/.lake/
+          mkdir -p .cache/mathlib/
+          mkdir -p _work
+
+      - name: install elan
+        shell: bash
+        run: |
+          set -o pipefail
+          curl -o elan-init.sh -sSfL https://elan.lean-lang.org/elan-init.sh
+          chmod +x elan-init.sh
+          ./elan-init.sh -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
+
+      - name: set toolchain directory
+        shell: bash
+        run: |
+          cd pr-branch
+          LAKE_PATH=$(elan which lake)
+          TOOLCHAIN_DIR=$(dirname "$(dirname "$LAKE_PATH")")
+          echo "TOOLCHAIN_DIR=$TOOLCHAIN_DIR" >> "$GITHUB_ENV"
+
+      - name: set LEAN_SRC_PATH
+        shell: bash
+        run: |
+          cd pr-branch
+          LEAN_SRC_PATH=".:$TOOLCHAIN_DIR/src/lean/lake"
+          PACKAGE_NAMES=$(jq -r '.packages[].name' lake-manifest.json)
+          for pkg in $PACKAGE_NAMES; do
+            if [[ "$pkg" =~ ^[A-Za-z0-9_-]+$ ]]; then
+              LEAN_SRC_PATH="$LEAN_SRC_PATH:.lake/packages/$pkg"
+            fi
+          done
+          echo "LEAN_SRC_PATH=$LEAN_SRC_PATH" >> "$GITHUB_ENV"
+
+      - name: build tools-branch tools
+        shell: bash
+        run: |
+          cd tools-branch
+          lake build cache
+
+      - name: download dependencies
+        shell: landrun --unrestricted-network --rox /etc --rox /usr --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
+        run: |
+          cd pr-branch
+          lake env
+
+      - name: Hydrate .lake/build via legacy cache
+        shell: bash
+        run: |
+          cd pr-branch
+          ../tools-branch/.lake/build/bin/cache get
+
+      - name: Patch lakefile to enable Lake's artifact cache
+        shell: bash
+        run: |
+          cd pr-branch
+          if grep -q 'enableArtifactCache' lakefile.lean; then
+            echo "lakefile.lean already declares enableArtifactCache; nothing to patch"
+            exit 0
+          fi
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("lakefile.lean")
+          src = p.read_text()
+          marker = '  testDriver := "MathlibTest"'
+          inject = (
+              '  testDriver := "MathlibTest"\n'
+              '  fixedToolchain := true\n'
+              '  enableArtifactCache := true\n'
+              '  restoreAllArtifacts := true'
+          )
+          if marker not in src:
+              raise SystemExit("lakefile.lean shape changed; update the shadow patch in ci_dev.yml")
+          p.write_text(src.replace(marker, inject, 1))
+          PY
+          echo "::group::patched lakefile snippet"
+          sed -n '49,62p' lakefile.lean
+          echo "::endgroup::"
+
+      - name: No-op build to populate Lake's cache
+        run: |
+          cd pr-branch
+          lake build $STAGE_TARGETS $STAGE_DEP_TARGETS 2>&1 | tee /tmp/dryrun-build.log
+          echo "::group::build summary"
+          echo "Built (compiled fresh):   $(grep -cE '^✔.*Built '    /tmp/dryrun-build.log || true)"
+          echo "Replayed (from cache):    $(grep -cE '^✔.*Replayed ' /tmp/dryrun-build.log || true)"
+          echo "::endgroup::"
+
+      - name: Emit mappings
+        run: |
+          cd pr-branch
+          lake build --no-build $STAGE_TARGETS $STAGE_DEP_TARGETS -o .lake/outputs.jsonl
+          echo "mappings entries: $(wc -l < .lake/outputs.jsonl)"
+          head -3 .lake/outputs.jsonl
+
+      - name: Stage cache
+        run: |
+          cd pr-branch
+          lake cache stage .lake/outputs.jsonl ../lake-cache-staging
+          echo "::group::staging report"
+          echo "staging dir total: $(du -sh ../lake-cache-staging | cut -f1)"
+          echo "ltar count:        $(find ../lake-cache-staging -name '*.ltar' | wc -l)"
+          echo "biggest 5 ltars:"
+          find ../lake-cache-staging -name '*.ltar' -printf '%s\t%p\n' 2>/dev/null | sort -rn | head -5
+          echo "::endgroup::"
+
+      # Upload — only runs if R2 was configured. The id+output lets the
+      # consume job decide whether to fire.
+      - name: lake cache put-staged (upload to R2)
+        id: upload
+        if: ${{ vars.LAKE_CACHE_SHADOW_ARTIFACT_ENDPOINT != '' || inputs.force_upload }}
+        shell: bash
+        env:
+          LAKE_CACHE_ARTIFACT_ENDPOINT: ${{ vars.LAKE_CACHE_SHADOW_ARTIFACT_ENDPOINT }}
+          LAKE_CACHE_REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_SHADOW_REVISION_ENDPOINT }}
+          LAKE_CACHE_KEY_RAW: ${{ secrets.LAKE_CACHE_SHADOW_KEY }}
+        run: |
+          cd pr-branch
+          LAKE_CACHE_KEY="$(printf %s "$LAKE_CACHE_KEY_RAW" | sed -e 's/[[:space:]]*$//')"
+          export LAKE_CACHE_KEY
+          echo "::add-mask::$LAKE_CACHE_KEY"
+          lake cache put-staged ../lake-cache-staging \
+            --scope="$SHADOW_SCOPE" \
+            --rev="${{ steps.resolve.outputs.sha }}" \
+            --toolchain="${{ steps.resolve.outputs.toolchain }}"
+          echo "uploaded=true" >> "$GITHUB_OUTPUT"
+
+      - name: DRY-RUN summary (when no upload)
+        if: ${{ steps.upload.outcome == 'skipped' }}
+        shell: bash
+        run: |
+          echo "::notice::DRY-RUN complete. Build + stage worked end-to-end."
+          echo "::notice::To exercise upload + consume, set repo vars LAKE_CACHE_SHADOW_ARTIFACT_ENDPOINT,"
+          echo "::notice::LAKE_CACHE_SHADOW_REVISION_ENDPOINT and secret LAKE_CACHE_SHADOW_KEY,"
+          echo "::notice::then re-run this workflow."
+
+  consume:
+    name: Drop-in consume test
+    needs: build_stage_upload
+    if: ${{ github.repository == 'leanprover-community/mathlib4' && needs.build_stage_upload.outputs.uploaded == 'true' }}
+    runs-on: pr
+    timeout-minutes: 120
+    continue-on-error: true
+    env:
+      LAKE_CACHE_DIR: .lake/cache
+      LAKE_CACHE_ARTIFACT_ENDPOINT: ${{ vars.LAKE_CACHE_SHADOW_ARTIFACT_ENDPOINT }}
+      LAKE_CACHE_REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_SHADOW_REVISION_ENDPOINT }}
+    defaults:
+      run:
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LAKE_CACHE_DIR --env LAKE_CACHE_ARTIFACT_ENDPOINT --env LAKE_CACHE_REVISION_ENDPOINT -- bash -euxo pipefail {0}
+    steps:
+      - name: cleanup
+        shell: bash
+        run: |
+          if ! find . -mindepth 1 -exec rm -rf -- {} +; then
+            sleep 5
+            find . -mindepth 1 -exec rm -rf -- {} +
+          fi
+
+      - name: Setup jq
+        uses: dcarbone/install-jq-action@b7ef57d46ece78760b4019dbc4080a1ba2a40b45 # v3.2.0
+
+      - name: Checkout local actions
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 1
+          sparse-checkout: .github/actions
+          path: workflow-actions
+
+      - name: Get mathlib-ci
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+
+      - name: Fresh checkout of mathlib
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ inputs.mathlib_ref != '' && inputs.mathlib_ref || github.sha }}
+          path: pr-branch
+          fetch-depth: 1
+
+      - name: Prepare DownstreamTest directory
+        shell: bash
+        run: |
+          cd pr-branch
+          mkdir -p DownstreamTest/.lake/
+          cp lean-toolchain DownstreamTest/
+
+      - name: Create empty directories
+        shell: bash
+        run: |
+          mkdir -p pr-branch/.lake/
+          mkdir -p .cache/mathlib/
+          mkdir -p _work
+
+      - name: install elan
+        shell: bash
+        run: |
+          set -o pipefail
+          curl -o elan-init.sh -sSfL https://elan.lean-lang.org/elan-init.sh
+          chmod +x elan-init.sh
+          ./elan-init.sh -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
+
+      - name: download dependencies
+        shell: landrun --unrestricted-network --rox /etc --rox /usr --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
+        run: |
+          cd pr-branch
+          lake env
+
+      - name: Patch lakefile (same shape as build_stage_upload)
+        shell: bash
+        run: |
+          cd pr-branch
+          if grep -q 'enableArtifactCache' lakefile.lean; then exit 0; fi
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("lakefile.lean")
+          src = p.read_text()
+          marker = '  testDriver := "MathlibTest"'
+          inject = (
+              '  testDriver := "MathlibTest"\n'
+              '  fixedToolchain := true\n'
+              '  enableArtifactCache := true\n'
+              '  restoreAllArtifacts := true'
+          )
+          if marker not in src:
+              raise SystemExit("lakefile.lean shape changed")
+          p.write_text(src.replace(marker, inject, 1))
+          PY
+
+      - name: lake cache get
+        run: |
+          cd pr-branch
+          lake cache get \
+            --scope="$SHADOW_SCOPE" \
+            --rev="${{ needs.build_stage_upload.outputs.sha }}"
+          echo "ltar count after get: $(find .lake/cache -name '*.ltar' | wc -l)"
+
+      - name: lake build (drop-in test)
+        run: |
+          cd pr-branch
+          lake build $STAGE_TARGETS 2>&1 | tee /tmp/consume-build.log
+          echo "Built (compiled fresh):  $(grep -cE '^✔.*Built '    /tmp/consume-build.log || true)"
+          echo "Replayed (from cache):   $(grep -cE '^✔.*Replayed ' /tmp/consume-build.log || true)"
+
+      - name: Verify with --rehash
+        run: |
+          cd pr-branch
+          lake build --no-build --rehash -v $STAGE_TARGETS
