@@ -293,8 +293,7 @@ public theorem IsLeviCivitaConnection.uniqueness [FiniteDimensional ℝ E]
     (hcov : cov.IsLeviCivitaConnection) (hcov' : cov'.IsLeviCivitaConnection)
     (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) :
     cov Y x (X x) = cov' Y x (X x) := by
-  apply injective_inner_vectorField
-  ext Z hZ
+  apply injective_inner_vectorField; ext Z hZ
   trans leviCivitaRhs I X Y Z x
   · rw [← hcov.eq_leviCivitaRhs I hX hY hZ]
   · rw [← hcov'.eq_leviCivitaRhs I hX hY hZ]
@@ -372,19 +371,15 @@ set_option backward.isDefEq.respectTransparency false in
 lemma isCovariantDerivativeOn_lcAux [FiniteDimensional ℝ E] :
     IsCovariantDerivativeOn E (lcAux I (M := M)) where
   add {Y Y'} x hY hY' _ := by
-    apply injective_eval_vectorField
-    ext X hX
-    apply injective_inner_vectorField
-    ext Z hZ
+    apply injective_eval_vectorField; ext X hX
+    apply injective_inner_vectorField; ext Z hZ
     unfold lcAux
     rw [dif_pos hY, dif_pos hY', dif_pos (mdifferentiableAt_add_section hY hY')]
     simp (disch := assumption) [TensorialAt.mkHom₂_apply, lcAux₁, lcAux₀,
       leviCivitaRhs_addY_apply, inner_add_left]
   leibniz {Y f x} hY hf _ := by
-    apply injective_eval_vectorField
-    ext X hX
-    apply injective_inner_vectorField
-    ext Z hZ
+    apply injective_eval_vectorField; ext X hX
+    apply injective_inner_vectorField; ext Z hZ
     unfold lcAux
     rw [dif_pos hY, dif_pos]
     · simp (disch := assumption) [lcAux₁, lcAux₀, TensorialAt.mkHom₂_apply, inner_add_left,
@@ -393,7 +388,6 @@ lemma isCovariantDerivativeOn_lcAux [FiniteDimensional ℝ E] :
 
 end
 
--- TODO: make g part of the notation!
 variable (M) in
 /-- A choice of Levi-Civita connection on the tangent bundle `TM` of a Riemannian manifold `(M, g)`:
 this is unique up to the value on non-differentiable vector fields.
@@ -410,7 +404,6 @@ public theorem leviCivitaConnection_apply [FiniteDimensional ℝ E] {x : M}
     inner ℝ (LeviCivitaConnection I M Y x (X x)) (Z x) = leviCivitaRhs I X Y Z x :=
   lcAux_apply _ hX hY hZ
 
--- Why is everything so slow?
 public lemma leviCivitaConnection_isCompatible [FiniteDimensional ℝ E] :
     (LeviCivitaConnection I M).IsCompatible := by
   rw [isCompatible_iff]
@@ -431,8 +424,7 @@ public lemma leviCivitaConnection_torsion_eq_zero [FiniteDimensional ℝ E] :
     (LeviCivitaConnection I M).torsion = 0 := by
   rw [CovariantDerivative.torsion_eq_zero_iff]
   intro X Y x hX hY
-  apply injective_inner_vectorField
-  ext Z hZ
+  apply injective_inner_vectorField; ext Z hZ
   simp (disch := assumption) [leviCivitaConnection_apply I, leviCivitaRhs,
     mlieBracket_swap (V := Y) (W := X), mlieBracket_swap (V := Z) (W := X),
     mlieBracket_swap (V := Z) (W := Y),
