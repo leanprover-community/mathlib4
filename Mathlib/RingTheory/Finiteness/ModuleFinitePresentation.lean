@@ -26,13 +26,12 @@ finitely presented as a module.
 - [Grothendieck, EGA IV₁ 1.4.7][ega-iv-1]
 -/
 
-@[expose] public section
+public section
 
 universe u
 
 variable (R : Type u) (S : Type*) [CommRing R] [CommRing S] [Algebra R S]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- EGA IV₁, 1.4.7.1 -/
 lemma Module.Finite.exists_free_surjective [Module.Finite R S] :
     ∃ (S' : Type u) (_ : CommRing S') (_ : Algebra R S') (_ : Module.Finite R S')

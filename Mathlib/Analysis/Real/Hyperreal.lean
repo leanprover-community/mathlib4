@@ -33,16 +33,13 @@ principle on `Hyperreal`.
 
 open ArchimedeanClass Filter Germ Topology
 
+noncomputable section
+
 /-- Hyperreal numbers on the ultrafilter extending the cofinite filter. -/
 def Hyperreal : Type :=
   Germ (hyperfilter ℕ : Filter ℕ) ℝ
+deriving Inhabited
 
-noncomputable section
-
-#adaptation_note
-/-- After nightly-2025-05-07 we had to remove `deriving Inhabited` on `Hyperreal` above,
-as there is a new error about this instance having to be noncomputable, and `deriving` doesn't allow
-for adding this! -/
 namespace Hyperreal
 
 @[inherit_doc] notation "ℝ*" => Hyperreal
@@ -404,7 +401,7 @@ theorem st_eq (x : ℝ*) : st x = stdPart x := by
   split_ifs with h
   · exact (isSt_iff.1 (Classical.choose_spec h)).2.symm
   · simp_rw [isSt_iff] at h
-    push_neg at h
+    push Not at h
     rw [eq_comm, stdPart_eq_zero]
     apply ne_of_lt
     by_contra! hx

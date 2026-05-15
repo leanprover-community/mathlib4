@@ -43,7 +43,7 @@ lemma Submodule.iUnion_ssubset_of_forall_ne_top_of_card_lt (s : Finset ι) (p : 
     · simpa using h₁ j
     replace h₂ : s.card + 1 < ENat.card K := by simpa [Finset.card_insert_of_notMem hj] using h₂
     specialize hj' (lt_trans ENat.natCast_lt_succ h₂)
-    contrapose! hj'
+    contrapose hj'
     replace hj' : (p j : Set M) ∪ (⋃ i ∈ s, p i) = univ := by
       simpa only [Finset.mem_insert, iUnion_iUnion_eq_or_left] using hj'
     suffices (p j : Set M) ⊆ ⋃ i ∈ s, p i by rwa [union_eq_right.mpr this] at hj'

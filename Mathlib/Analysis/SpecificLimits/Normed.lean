@@ -497,7 +497,7 @@ theorem summable_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr : ‖r�
       have : n + 1 + k - 1 = n + k := by lia
       simp [P, ascPochhammer_nat_eq_descFactorial, this]
     conv_lhs => rw [A, mP.as_sum, dP]
-    simp [eval_finset_sum]
+    simp [eval_finsetSum]
   have : Summable (fun n ↦ (n + k).descFactorial k * r ^ n
       - ∑ i ∈ range k, a i * n ^ (i : ℕ) * r ^ n) := by
     apply (summable_descFactorial_mul_geometric_of_norm_lt_one k hr).sub
@@ -612,7 +612,7 @@ theorem NormedAddCommGroup.cauchy_series_of_le_geometric'' {C : ℝ} {u : ℕ �
   split_ifs with H
   · rw [norm_zero]
     exact mul_nonneg hC (pow_nonneg hr₀.le _)
-  · push_neg at H
+  · push Not at H
     exact h _ H
 
 /-- The term norms of any convergent series are bounded by a constant. -/
@@ -620,7 +620,7 @@ lemma exists_norm_le_of_cauchySeq (h : CauchySeq fun n ↦ ∑ k ∈ range n, f 
     ∃ C, ∀ n, ‖f n‖ ≤ C := by
   obtain ⟨b, ⟨_, key, _⟩⟩ := cauchySeq_iff_le_tendsto_0.mp h
   refine ⟨b 0, fun n ↦ ?_⟩
-  simpa only [dist_partial_sum'] using key n (n + 1) 0 (_root_.zero_le _) (_root_.zero_le _)
+  simpa only [dist_partial_sum'] using key n (n + 1) 0 zero_le zero_le
 
 end SummableLeGeometric
 
@@ -698,7 +698,8 @@ theorem summable_powerSeries_of_norm_lt {w z : α}
     (fun n ↦ ?_)
   rw [norm_mul, norm_pow, div_pow, ← mul_comm_div]
   conv at hC => enter [n]; rw [norm_mul, norm_pow, ← _root_.le_div_iff₀ (by positivity)]
-  exact mul_le_mul_of_nonneg_right (hC n) (pow_nonneg (norm_nonneg z) n)
+  gcongr
+  exact hC n
 
 /-- If a power series converges at 1, it converges absolutely at all `z` of smaller norm. -/
 theorem summable_powerSeries_of_norm_lt_one {z : α}

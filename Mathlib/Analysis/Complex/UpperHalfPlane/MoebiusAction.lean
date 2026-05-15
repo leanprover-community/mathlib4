@@ -6,8 +6,8 @@ Authors: Alex Kontorovich, Heather Macbeth, Marc Masdeu
 module
 
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
-public import Mathlib.Data.Fintype.Parity
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
+public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Projective
 
 /-!
 # Group action on the upper half-plane
@@ -42,7 +42,7 @@ lemma denom_neg (g : GL (Fin 2) ℝ) (z : ℂ) : denom (-g) z = -(denom g z) := 
 
 theorem linear_ne_zero_of_im {cd : Fin 2 → ℝ} {z : ℂ} (hz : z.im ≠ 0) (h : cd ≠ 0) :
     (cd 0 : ℂ) * z + cd 1 ≠ 0 := by
-  contrapose! h
+  contrapose h
   have : cd 0 = 0 := by
     -- we will need this twice
     apply_fun Complex.im at h
@@ -60,6 +60,7 @@ theorem denom_ne_zero_of_im (g : GL (Fin 2) ℝ) {z : ℂ} (hz : z.im ≠ 0) : d
   refine linear_ne_zero_of_im hz fun H ↦ g.det.ne_zero ?_
   simp [Matrix.det_fin_two, H]
 
+@[simp]
 theorem denom_ne_zero (g : GL (Fin 2) ℝ) (z : ℍ) : denom g z ≠ 0 :=
   denom_ne_zero_of_im g z.im_ne_zero
 
@@ -207,6 +208,7 @@ lemma glPos_smul_def {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) (z : ℍ) :
     g • z = ⟨num g z / denom g z, coe_smul_of_det_pos hg z ▸ (g • z).im_pos⟩ := by
   ext; simp [coe_smul_of_det_pos hg]
 
+section GLAction
 variable (g : GL (Fin 2) ℝ) (z : ℍ)
 
 theorem re_smul : (g • z).re = (num g z / denom g z).re := by
@@ -229,15 +231,58 @@ theorem c_mul_im_sq_le_normSq_denom : (g 1 0 * z.im) ^ 2 ≤ Complex.normSq (den
   set d := g 1 1
   calc
     (c * z.im) ^ 2 ≤ (c * z.im) ^ 2 + (c * z.re + d) ^ 2 := by nlinarith
-    _ = Complex.normSq (denom g z) := by dsimp [c, d, denom, Complex.normSq]; ring
+    _ = Complex.normSq (denom g z) := by simp [denom, Complex.normSq]; ring
 
 @[simp]
 theorem neg_smul : -g • z = g • z := by
   ext1
   simp [coe_smul]
 
+@[simp]
+lemma num_one : num 1 z = z := by simp [num]
+
+@[simp]
 lemma denom_one : denom 1 z = 1 := by
   simp [denom]
+
+@[simp]
+theorem num_scalar (u : ℝˣ) (z : ℍ) : num (.scalar (Fin 2) u) z = u * z := by
+  simp [num]
+
+@[simp]
+theorem denom_scalar (u : ℝˣ) (z : ℍ) : denom (.scalar (Fin 2) u) z = u := by
+  simp [denom]
+
+@[simp]
+theorem glScalar_smul (u : ℝˣ) (z : ℍ) :
+    GeneralLinearGroup.scalar (Fin 2) u • z = z := by
+  rw [glPos_smul_def]
+  · simp
+  · simp [sq_pos_iff]
+
+instance : MulAction.IsPretransitive (GL (Fin 2) ℝ) ℍ where
+  exists_smul_eq z w := by
+    set m : Matrix (Fin 2) (Fin 2) ℝ := !![w.im, z.im * w.re - w.im * z.re; 0, z.im]
+    refine ⟨.mkOfDetNeZero m <| by simp [m, im_ne_zero], ?_⟩
+    ext
+    simp [coe_smul_of_det_pos, im_pos, num, denom, m, Complex.ext_iff, im_ne_zero]
+
+end GLAction
+
+section PGLAction
+
+instance : MulAction PGL(2, ℝ) ℍ :=
+  Matrix.ProjGenLinGroup.mulActionOfGL glScalar_smul
+
+@[simp]
+theorem pglMk_smul (g : GL (Fin 2) ℝ) (z : ℍ) :
+    ProjGenLinGroup.mk g • z = g • z :=
+  ProjGenLinGroup.mk_smul ..
+
+instance : MulAction.IsPretransitive PGL(2, ℝ) ℍ :=
+  .of_smul_eq .mk <| pglMk_smul _ _
+
+end PGLAction
 
 section SLAction
 
@@ -300,6 +345,38 @@ theorem exists_SL2_smul_eq_of_apply_zero_one_ne_zero (g : SL(2, ℝ)) (hc : g 1 
 
 end SLAction
 
+section toSL2R
+
+/-- Map from `ℍ` to `SL(2, ℝ)`, giving a continuous section of the map `g ↦ g • I`. -/
+noncomputable def toSL2R (z : ℍ) : SL(2, ℝ) :=
+  ⟨!![√z.im, z.re / √z.im; 0, 1 / √z.im], by
+    simp [mul_inv_cancel₀ (Real.sqrt_ne_zero'.mpr z.im_pos)]⟩
+
+lemma toSL2R_apply (z : ℍ) : z.toSL2R =
+  ⟨!![√z.im, z.re / √z.im; 0, 1 / √z.im], by
+    simp [mul_inv_cancel₀ (Real.sqrt_ne_zero'.mpr z.im_pos)]⟩ := (rfl)
+
+@[simp] lemma coe_toSL2R (z : ℍ) : z.toSL2R = !![√z.im, z.re / √z.im; 0, 1 / √z.im] := (rfl)
+
+@[simp] lemma toSL2R_smul_I (z : ℍ) : z.toSL2R • I = z := by
+  have : √z.im ≠ (0 : ℂ) := by simpa [Real.sqrt_ne_zero'] using z.im_pos
+  ext
+  suffices z.re / √z.im + √z.im * Complex.I = z * (↑√z.im)⁻¹ by
+    rw [coe_specialLinearGroup_apply, div_eq_iff (mod_cast denom_ne_zero z.toSL2R I)]
+    simpa [add_comm]
+  rw [div_add' (hc := this), mul_right_comm, ← Complex.ofReal_mul, ← Real.sqrt_mul z.im_pos.le,
+    Real.sqrt_mul_self z.im_pos.le, re_add_im, div_eq_mul_inv]
+
+/-- `SL(2, ℝ)` acts transitively on the upper half-plane. -/
+instance isPretransitiveSL2R : MulAction.IsPretransitive SL(2, ℝ) ℍ :=
+  .of_orbit fun z ↦ ⟨_, toSL2R_smul_I z⟩
+
+/-- `GL(2, ℝ)` acts transitively on the upper half-plane. -/
+instance isPretransitiveGL2R : MulAction.IsPretransitive (GL (Fin 2) ℝ) ℍ :=
+  .of_smul_eq ((↑) : SL(2, ℝ) → _) fun {g z} ↦ (MulAction.compHom_smul_def _ g z).symm
+
+end toSL2R
+
 section J
 
 /-- The matrix `[-1, 0; 0, 1]`, which defines an anti-holomorphic involution of `ℍ` via
@@ -333,43 +410,55 @@ namespace ModularGroup -- results specific to `SL(2, ℤ)`
 section ModularScalarTowers
 
 /-- Canonical embedding of `SL(2, ℤ)` into `GL(2, ℝ)⁺`. -/
-@[coe]
+@[deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
 def coe (g : SL(2, ℤ)) : GL(2, ℝ)⁺ := ((g : SL(2, ℝ)) : GL(2, ℝ)⁺)
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
 lemma coe_inj (a b : SL(2, ℤ)) : coe a = coe b ↔ a = b := by
   refine ⟨fun h ↦ a.ext b fun i j ↦ ?_, congr_arg _⟩
   simp only [Subtype.ext_iff, GeneralLinearGroup.ext_iff] at h
   simpa [coe] using h i j
 
-instance : Coe SL(2, ℤ) GL(2, ℝ)⁺ :=
-  ⟨coe⟩
-
 /-- Canonical embedding of `SL(2, ℤ)` into `GL(2, ℝ)⁺`, bundled as a group hom. -/
+@[deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
 def coeHom : SL(2, ℤ) →* GL(2, ℝ)⁺ := toGLPos.comp <| map <| Int.castRingHom _
 
-@[simp] lemma coeHom_apply (g : SL(2, ℤ)) : coeHom g = coe g := rfl
+set_option linter.deprecated false in
+@[deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
+lemma coeHom_apply (g : SL(2, ℤ)) : coeHom g = coe g := rfl
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
 theorem coe_apply_complex {g : SL(2, ℤ)} {i j : Fin 2} :
     (Units.val <| Subtype.val <| coe g) i j = (Subtype.val g i j : ℂ) :=
   rfl
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
 theorem det_coe {g : SL(2, ℤ)} : det (Units.val <| Subtype.val <| coe g) = 1 := by
   simp only [SpecialLinearGroup.coe_GLPos_coe_GL_coe_matrix, SpecialLinearGroup.det_coe, coe]
 
+set_option linter.deprecated false in
+@[deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
 lemma coe_one : coe 1 = 1 := by
   simp only [coe, map_one]
 
-instance SLOnGLPos : SMul SL(2, ℤ) GL(2, ℝ)⁺ :=
+/-- Multiplication action of `SL(2, ℤ)` on `GL(2, ℝ)⁺`. -/
+@[reducible, deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
+def SLOnGLPos : SMul SL(2, ℤ) GL(2, ℝ)⁺ :=
   ⟨fun s g => s * g⟩
 
+attribute [local instance] SLOnGLPos
+
+@[deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
 theorem SLOnGLPos_smul_apply (s : SL(2, ℤ)) (g : GL(2, ℝ)⁺) (z : ℍ) :
     (s • g) • z = ((s : GL(2, ℝ)⁺) * g) • z :=
   rfl
 
-instance SL_to_GL_tower : IsScalarTower SL(2, ℤ) GL(2, ℝ)⁺ ℍ where
+set_option linter.deprecated false in
+@[deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
+lemma SL_to_GL_tower : IsScalarTower SL(2, ℤ) GL(2, ℝ)⁺ ℍ where
   smul_assoc s g z := by
     simp only [SLOnGLPos_smul_apply]
     apply mul_smul'

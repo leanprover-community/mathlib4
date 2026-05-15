@@ -299,7 +299,7 @@ theorem IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
     rwa [inter_eq_right.mpr (iInter_subset _ i₀)] at this
   simp only [nonempty_iff_ne_empty] at htn ⊢
   apply mt ((htc i₀).elim_directed_family_closed t htcl)
-  push_neg
+  push Not
   simp only [← nonempty_iff_ne_empty] at htn ⊢
   refine ⟨htd, fun i => ?_⟩
   rcases htd i₀ i with ⟨j, hji₀, hji⟩
@@ -1085,7 +1085,7 @@ lemma Set.isCompact_sigma {X : ι → Type*} [∀ i, TopologicalSpace (X i)] {s 
 lemma IsCompact.sigma_exists_finite_sigma_eq {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
     (u : Set (Σ i, X i)) (hu : IsCompact u) :
     ∃ (s : Set ι) (t : ∀ i, Set (X i)), s.Finite ∧ (∀ i, IsCompact (t i)) ∧ s.sigma t = u := by
-  obtain ⟨s, hs⟩ := hu.elim_finite_subcover (fun i : ι ↦ Sigma.mk i '' (Sigma.mk i ⁻¹' Set.univ))
+  obtain ⟨s, hs⟩ := hu.elim_finite_subcover (fun i : ι ↦ Sigma.mk i '' Sigma.mk i ⁻¹' Set.univ)
     (fun i ↦ isOpenMap_sigmaMk _ <| isOpen_univ.preimage continuous_sigmaMk)
     fun x hx ↦ (by simp)
   use s, fun i ↦ Sigma.mk i ⁻¹' u, s.finite_toSet, fun i ↦ ?_, ?_

@@ -49,9 +49,7 @@ Most constructions involving `Finset`s have been split off to their own files.
 * `Finset`: Defines a type for the finite subsets of `α`.
   Constructing a `Finset` requires two pieces of data: `val`, a `Multiset α` of elements,
   and `nodup`, a proof that `val` has no duplicates.
-* `Finset.instMembershipFinset`: Defines membership `a ∈ (s : Finset α)`.
-* `Finset.instSetLike`: Provides a coercion `s : Finset α` to `s : Set α`.
-* `Finset.instCoeSortFinsetType`: Coerce `s : Finset α` to the type of all `x ∈ s`.
+* `a ∈ (s : Finset α)` is defined through coercion to `Set α`.
 
 ## Tags
 
@@ -73,6 +71,7 @@ variable {α : Type*} {β : Type*} {γ : Type*}
 
 /-- `Finset α` is the type of finite sets of elements of `α`. It is implemented
   as a multiset (a list up to permutation) which has no duplicate elements. -/
+@[to_dual_dont_translate]
 structure Finset (α : Type*) where
   /-- The underlying multiset -/
   val : Multiset α

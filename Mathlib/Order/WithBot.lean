@@ -35,10 +35,11 @@ variable {a b : α}
 
 @[to_dual]
 instance nontrivial [Nonempty α] : Nontrivial (WithBot α) :=
-  Option.nontrivial
+  inferInstanceAs <| Nontrivial (Option α)
 
 @[to_dual]
-instance [IsEmpty α] : Unique (WithBot α) := Option.instUniqueOfIsEmpty
+instance [IsEmpty α] : Unique (WithBot α) :=
+  inferInstanceAs <| Unique (Option α)
 
 open Function
 
@@ -808,11 +809,13 @@ instance _root_.WithTop.IsWellOrder.lt [Preorder α] [IsWellOrder α (· < ·)] 
 
 instance trichotomous.gt [Preorder α] [@Std.Trichotomous α (· > ·)] :
     @Std.Trichotomous (WithBot α) (· > ·) :=
-  have : @Std.Trichotomous α (· < ·) := .swap _; .swap _
+  have : @Std.Trichotomous α (· < ·) := inferInstanceAs <| Std.Trichotomous <| Function.swap _
+  inferInstance
 
 instance _root_.WithTop.trichotomous.gt [Preorder α] [@Std.Trichotomous α (· > ·)] :
     @Std.Trichotomous (WithTop α) (· > ·) :=
-  have : @Std.Trichotomous α (· < ·) := .swap _; .swap _
+  have : @Std.Trichotomous α (· < ·) := inferInstanceAs <| Std.Trichotomous <| Function.swap _
+  inferInstance
 
 -- TODO: the hypotheses are equivalent to `LinearOrder` + `WellFoundedGT`, remove this.
 instance IsWellOrder.gt [Preorder α] [IsWellOrder α (· > ·)] :
