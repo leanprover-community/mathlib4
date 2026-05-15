@@ -9,25 +9,25 @@ namespace vizing
 variable {V : Type*} {G : SimpleGraph V} {α : Type*}
 
 /-!
-# Infrastructure of Kempe Chain for the proof of Vizing's Theorem 
+# Kempe Chain Infrastructure for Vizing's Theorem
 
 ## Main definitions and results
 
-### Coloring Observables: 
+### Coloring observables
 
-* `incidentEdges`, `incidentColors`, `missingColors` — edges/colors at a vertex.
-* Cardinality lemmas relating these to `G.degree v`.
+* `incidentEdges`, `incidentColors`, `missingColors` — edges and colors at a vertex.
+* Cardinality lemmas relating these sets to `G.degree v`.
 
 ### The αβ-Kempe subgraph
 
-* `kempeSubgraph c a b` — edges colored `a` or `b` under `c`.
+* `kempeSubgraph c a b` — the subgraph of edges colored `a` or `b` under `c`.
 * Every vertex has degree ≤ 2 in the Kempe subgraph.
 
 ### Kempe chain swap
 
-* `swapKempe c a b v` — swap `a ↔ b` on the αβ-component of `v`.
-* The result is a valid coloring; non-swap colors are preserved.
-* Single-edge recoloring and extension helpers.
+* `swapKempe c a b v` — swap colors `a ↔ b` on the αβ-component of `v`.
+* The swap yields a valid coloring; colors outside `{a, b}` are unchanged.
+* Single-edge recoloring and coloring-extension helpers.
 
 -/
 
@@ -43,7 +43,7 @@ def incidentEdges (G : SimpleGraph V) (v : V) : Set G.edgeSet :=
 def incidentColors (c : G.lineGraph.Coloring α) (v : V) : Set α :=
   c.toFun '' incidentEdges G v
 
-/-- Colors not used at `v`. -/
+/-- Colors not appearing on any edge incident to `v`. -/
 def missingColors (c : G.lineGraph.Coloring α) (v : V) : Set α :=
   (incidentColors c v)ᶜ
 
@@ -190,7 +190,8 @@ lemma kempeSubgraph_neighborSet_ncard_le_one_of_missing_left
   have hNb_sub : N_b.Subsingleton := neighbors_via_color_subsingleton c v b
   exact (Set.ncard_le_ncard h_sub hNb_sub.finite).trans (subsingleton_ncard_le_one hNb_sub)
 
-/-- Symmetric Property: if `b` is missing at `v`, degree ≤ 1 in the Kempe subgraph. -/
+/-- If color `b` is missing at `v`, then `v` has at most one neighbor
+    in the αβ-Kempe subgraph (only `a`-edges contribute). -/
 lemma kempeSubgraph_neighborSet_ncard_le_one_of_missing_right
     (c : G.lineGraph.Coloring α) (a b : α) (v : V)
     (hb : b ∈ missingColors c v) :

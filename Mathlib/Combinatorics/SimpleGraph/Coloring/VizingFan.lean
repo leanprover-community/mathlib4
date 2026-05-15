@@ -8,17 +8,17 @@ import Mathlib.Data.List.Basic
 import Mathlib.Data.Set.Card
 
 /-!
-# Vizing's adjacency lemma via fan rotation:
+# Vizing's Adjacency Lemma via Fan Rotation
 
 This file develops the inductive "fan" argument for the upper bound in
-Vizing's theorem, building on the αβ-Kempe machinery from `Kempe.lean`.
+Vizing's theorem, building on the αβ-Kempe machinery from `KempeChain.lean`.
 
 ## Main definitions and results
 
-* `IsFan c u v l` — a Vizing fan from apex `u` rooted at `v`.
-* `IsFan.rotate_termA` — fan rotation when a free color exists (Term-A).
-* `vizingAdjacencyLemma_aux` — the full Term-A/Term-B case analysis.
-* `vizingAdjacencyLemma` — the operational form used in `Basic.lean`.
+* `IsFan c u v l` — a Vizing fan with apex `u` rooted at `v`.
+* `IsFan.rotate_termA` — fan rotation when a shared free color exists (Term-A).
+* `vizingAdjacencyLemma_aux` — the full Term-A / Term-B case analysis.
+* `vizingAdjacencyLemma` — the public form used in `VizingTheorem.lean`.
 -/
 
 namespace vizing
@@ -28,8 +28,7 @@ variable {V : Type*} {G : SimpleGraph V} {α : Type*}
 /-! ### Cardinality bound on missing colors -/
 
 set_option linter.unusedDecidableInType false in
-/-- Pigeonhole: the number of colors missing at `v` is at least
-    `Fintype.card α − G.degree v`. -/
+/-- The number of colors missing at `v` is at least `Fintype.card α − G.degree v`. -/
 lemma missingColors_ncard_ge
     [Fintype α] [Fintype V] [DecidableEq V] [DecidableRel G.Adj]
     (c : G.lineGraph.Coloring α) (v : V) :
@@ -43,9 +42,8 @@ lemma missingColors_ncard_ge
   omega
 
 set_option linter.unusedDecidableInType false in
-/-- Case-B specific corollary: if the coloring uses `G.degree v + 2`
-    colors (i.e. `Δ + 1` colors and `v` has degree at most `Δ − 1`),
-    then at least two colors are missing at `v`. -/
+/-- If at least `G.degree v + 2` colors are available, then at least two colors
+    are missing at `v`. -/
 lemma missingColors_ncard_ge_two
     [Fintype α] [Fintype V] [DecidableEq V] [DecidableRel G.Adj]
     (c : G.lineGraph.Coloring α) (v : V)
@@ -56,9 +54,9 @@ lemma missingColors_ncard_ge_two
 
 /-! ### Fan structure -/
 
-/-- A **Vizing fan** `[v₀, v₁, …, v_k]` from apex `u` rooted at `v = v₀`:
-    the list starts with `v`, is duplicate-free, and consecutive pairs
-    satisfy `c(u, v_i) ∈ missingColors c v_{i-1}`. -/
+/-- A **Vizing fan** `[v₀, v₁, …, v_k]` with apex `u` rooted at `v = v₀`:
+    the list begins with `v`, has no repeated vertices, and for each
+    consecutive pair the color of `u v_i` is missing at `v_{i-1}`. -/
 def IsFan (c : G.lineGraph.Coloring α) (u v : V) (l : List V) : Prop :=
   l.head? = some v ∧
   l.Nodup ∧
@@ -86,8 +84,9 @@ lemma IsFan.length_le_card
 def IsFanExtension (c : G.lineGraph.Coloring α) (u vk w : V) : Prop :=
   ∃ e : G.edgeSet, e.val = s(u, w) ∧ c.toFun e ∈ missingColors c vk
 
-/-- A maximal fan satisfies Term-A (free color at `u` and `vk`) or
-    Term-B (every missing color at `vk` comes from a fan edge). -/
+/-- A maximal fan satisfies exactly one of two terminal conditions:
+    - **Term-A**: some color is missing at both `u` and the last vertex `vk`.
+    - **Term-B**: every color missing at `vk` is the color of some fan edge from `u`. -/
 lemma IsFan.dichotomy
     {c : G.lineGraph.Coloring α} {u v : V} {l : List V}
     (_h : IsFan c u v l) (h_ne : l ≠ [])
@@ -366,15 +365,10 @@ private lemma exists_max_fan_of_fan
     · push Not at h_ext
       exact ⟨l, h_ne, h_fan, h_ext⟩
 
-/-! ### The public adjacency lemma
+/-! ### Vizing's adjacency lemma -/
 
-The operational form of Vizing's adjacency lemma. Given a proper edge
-coloring of `G - {e_uv}` with non-empty missing-colour sets at both
-endpoints of `e_uv`, the coloring extends to all of `G`. -/
-
-/-- Auxiliary for `vizingAdjacencyLemma`. The fan `l` (plus its
-    maximality witness `h_max`) is passed as an explicit parameter so
-    that the Term-B body can work with a pre-built maximal fan. -/
+/-- Core case analysis for `vizingAdjacencyLemma`. Accepts a pre-built maximal fan `l`
+    and its maximality witness `h_max`, then dispatches on Term-A / Term-B. -/
 private lemma vizingAdjacencyLemma_aux
     [Fintype V] [Fintype α] [DecidableRel G.Adj]
     {u v : V} (e_uv : G.edgeSet) (he_uv : e_uv.val = s(u, v))
@@ -989,8 +983,9 @@ by_cases h_common : ∃ γ : α, γ ∈ missingColors c u ∧ γ ∈ missingColo
         exact IsFan.rotate_termA e_uv he_uv h_l_pre_fan_c' h_l_pre_ne b
           h_b_missing_u h_b_missing_vjm1_c'
 
-/-- **Vizing's adjacency lemma.** A proper edge coloring of `G - {e_uv}`
-    extends to all of `G` when both endpoints have missing colors. -/
+/-- **Vizing's adjacency lemma.** A proper `(Δ+1)`-edge-coloring of `G − {e_uv}`
+    extends to all of `G`, provided both endpoints of `e_uv` have missing colors
+    and `u` has at least two missing colors. -/
 lemma vizingAdjacencyLemma
     [Fintype V] [Fintype α] [DecidableRel G.Adj]
     {u v : V} (e_uv : G.edgeSet) (he_uv : e_uv.val = s(u, v))

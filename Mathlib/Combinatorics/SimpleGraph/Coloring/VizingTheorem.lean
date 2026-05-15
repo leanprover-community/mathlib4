@@ -9,6 +9,8 @@ variable (G : SimpleGraph (Fin n)) [DecidableRel G.Adj] [DecidableEq (Fin n)]
 
 set_option linter.unusedDecidableInType false in
 set_option linter.unusedFintypeInType false in
+/-- In a proper edge coloring, two edges sharing vertex `v` that receive the same
+    color must be the same edge. -/
 lemma eq_color_imply_eq_edge {V : Type*} {G : SimpleGraph V} {α : Type*}
     {c : G.lineGraph.Coloring α} {e1 e2 : G.edgeSet} (v : V)
     (h1 : v ∈ e1.val) (h2 : v ∈ e2.val) (h_col : c.toFun e1 = c.toFun e2) :
@@ -16,9 +18,11 @@ lemma eq_color_imply_eq_edge {V : Type*} {G : SimpleGraph V} {α : Type*}
       by_contra h_ne
       exact absurd h_col (c.valid ⟨h_ne, v, h1, h2⟩)
 
--- **Lower bound of Vizing's theorem**: the chromatic index is at least the maximum degree.
 set_option linter.unusedDecidableInType false in
 omit [Fact (0 < n)] in
+/-- **Lower bound**: the chromatic index is at least the maximum degree.
+    The edges incident to a max-degree vertex form a clique in the line graph,
+    forcing that many colors. -/
 lemma chromatic_index_geq_max_degree : vizing.chromaticIndex G ≥ G.maxDegree := by
   by_contra h_contra
   push Not at h_contra
@@ -59,7 +63,7 @@ lemma chromatic_index_geq_max_degree : vizing.chromaticIndex G ≥ G.maxDegree :
   omega
 
 omit [Fact (0 < n)] [DecidableEq (Fin n)] [Nonempty (Fin n)] in
--- The empty graph has chromatic index 0.
+/-- The empty graph has chromatic index 0. -/
 lemma empty_graph_colorable :
     let G_empty : SimpleGraph (Fin n) := ⊥
     vizing.chromaticIndex G_empty = 0 := by
@@ -70,7 +74,8 @@ lemma empty_graph_colorable :
   rw [SimpleGraph.chromaticNumber_eq_zero_of_isEmpty]; rfl
 
 omit [Fact (0 < n)] [Nonempty (Fin n)] [DecidableEq (Fin n)] in
-/-- Extend an edge-coloring of `G \ {e}` to `G` by assigning a free color to `e`. -/
+/-- Extend an edge-coloring of `G \ {e}` to all of `G` by assigning `color` to `e`,
+    given that `color` is unused at both endpoints of `e`. -/
 lemma extend_coloring_one_edge (e : G.edgeSet)
     {u v : Fin n} (huv : e.val = s(u, v))
     (c' : vizing.edgeColoring (G.deleteEdges {e.val}) (Fin (G.maxDegree + 1)))
@@ -261,8 +266,9 @@ private lemma vizing_upper_aux : ∀ (k : ℕ) {m : ℕ} (H : SimpleGraph (Fin m
         change H.lineGraph.chromaticNumber.toNat ≤ H.maxDegree + 1
         exact ENat.toNat_le_of_le_coe h_col.chromaticNumber_le
 
--- **Vizing's theorem**: the chromatic index equals either Δ or Δ + 1.
 omit [Fact (0 < n)] [DecidableEq (Fin n)] in
+/-- **Vizing's theorem**: the chromatic index of a simple graph equals either
+    its maximum degree Δ or Δ + 1. -/
 theorem vizingTheorem :
     (vizing.chromaticIndex G = G.maxDegree) ∨ (vizing.chromaticIndex G = G.maxDegree + 1) := by
   have h_lower : vizing.chromaticIndex G ≥ G.maxDegree :=
