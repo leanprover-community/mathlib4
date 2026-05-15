@@ -201,7 +201,7 @@ def unreifyOpenDecl (openDecl : TSyntax ``reifiedOpenDecl) (activateScopes := tr
   | `(reifiedOpenDecl| (@$id hiding $hidden*)) => do
     if activateScopes then activateScoped id.getId
     return .simple id.getId <| (hidden.map (·.getId)).toList
-  | `(reifiedOpenDecl| ($id → $decl)) =>
+  | `(reifiedOpenDecl| ($id → @$decl)) =>
     -- `open` never activates scopes in these cases. See `elabOpenDecl`.
     return .explicit id.getId decl.getId
   | _ => throwUnsupportedSyntax
