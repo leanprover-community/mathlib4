@@ -58,6 +58,12 @@ def runAutoParam : Tactic := fun _ => do
   let goal ← getMainGoal
   let type ← goal.getType
 
+  -- discharge `optParam`
+  if let some defaultValue := type.getOptParamDefault? then
+    goal.assign defaultValue
+    return ()
+
+  -- discharge `autoParam`
   let some (.const tacticDecl _) := type.getAutoParamTactic?
     | return ()
   let type := type.appFn!.appArg!
