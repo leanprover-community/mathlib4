@@ -229,10 +229,10 @@ public lemma IsLeviCivitaConnection.eq_leviCivitaRhs [FiniteDimensional ℝ E]
 
 section
 
-/-- The Levi-Civita connection on `(M, g)` is uniquely determined
-on differentiable vector fields.
-Note that the differentiability hypotheses are required, as the Lie bracket summand in the
-definition of the Levi-Civita connection is only additive for differentiable vector fields. -/
+/-- The Levi-Civita connection on `(M, g)` is uniquely determined on differentiable vector fields.
+
+Note that the differentiability hypotheses are required, since `CovariantDerivative` objects are
+unconstrained in their behaviour on non-differentiable vector fields. -/
 public theorem IsLeviCivitaConnection.uniqueness [FiniteDimensional ℝ E]
     {cov cov' : CovariantDerivative I E (TangentSpace I : M → Type _)}
     (hcov : cov.IsLeviCivitaConnection) (hcov' : cov'.IsLeviCivitaConnection)
