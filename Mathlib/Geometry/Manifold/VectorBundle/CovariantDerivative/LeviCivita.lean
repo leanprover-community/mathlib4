@@ -44,7 +44,8 @@ connection.
 
 -/
 
-open Bundle FiberBundle Function NormedSpace
+open Bundle FiberBundle Function NormedSpace VectorField
+
 open scoped Manifold ContDiff
 
 @[expose] public section -- TODO: think if we want to expose all definitions!
@@ -195,15 +196,12 @@ lemma leviCivitaRhs'_addX_apply [CompleteSpace E]
     (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     leviCivitaRhs' I (X + X') Y Z x =
       leviCivitaRhs' I X Y Z x + leviCivitaRhs' I X' Y Z x := by
-  simp only [leviCivitaRhs', rhs_aux_addX_apply, Pi.add_apply, Pi.sub_apply]
-  -- We have to rewrite back and forth: the Lie bracket is only additive at x,
-  -- as we are only asking for differentiability at x.
-  -- Fortunately, the `product_congr_right₂` lemma abstracts this very well.
-  rw [(VectorField.mlieBracket_add_right (V := Y) hX hX'),
-    (VectorField.mlieBracket_add_left (W := Z) hX hX'),
-    inner_add_left, rhs_aux_addY_apply, rhs_aux_addZ_apply] <;> try assumption
-  simp [inner_add_right]
+  simp (disch := assumption) [leviCivitaRhs',
+    mlieBracket_add_right, mlieBracket_add_left,
+    rhs_aux_addX_apply, rhs_aux_addY_apply, rhs_aux_addZ_apply,
+    inner_add_left, inner_add_right]
   abel
+
 lemma leviCivitaRhs_addX_apply [CompleteSpace E]
     (hX : MDiffAt (T% X) x) (hX' : MDiffAt (T% X') x)
     (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
@@ -211,19 +209,14 @@ lemma leviCivitaRhs_addX_apply [CompleteSpace E]
   simp [leviCivitaRhs, leviCivitaRhs'_addX_apply I hX hX' hY hZ]
   ring
 
-open VectorField NormedSpace
-
 variable {I} in
 lemma leviCivitaRhs'_smulX_apply [CompleteSpace E] {f : M → ℝ}
     (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     leviCivitaRhs' I (f • X) Y Z x = f x * leviCivitaRhs' I X Y Z x := by
-  unfold leviCivitaRhs'
-  simp only [Pi.add_apply, Pi.sub_apply]
-  rw [rhs_aux_smulX_apply, rhs_aux_smulY_apply, rhs_aux_smulZ_apply] <;> try assumption
-  simp [mlieBracket_smul_left (W := Z) hf hX,
-    mlieBracket_smul_right (V := Y) hf hX, inner_add_right,
-    inner_smul_left, inner_smul_right, real_inner_comm]
-  -- Push all applications of `x` inwards, then it's indeed obvious.
+  simp (disch := assumption) [leviCivitaRhs',
+    rhs_aux_smulX_apply, rhs_aux_smulY_apply, rhs_aux_smulZ_apply,
+    mlieBracket_smul_left, mlieBracket_smul_right,
+    inner_add_right, inner_smul_left, inner_smul_right, real_inner_comm]
   ring
 
 variable {I} in
@@ -237,9 +230,9 @@ lemma leviCivitaRhs'_addY_apply [CompleteSpace E]
     (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x)
     (hY' : MDiffAt (T% Y') x) (hZ : MDiffAt (T% Z) x) :
     leviCivitaRhs' I X (Y + Y') Z x = leviCivitaRhs' I X Y Z x + leviCivitaRhs' I X Y' Z x := by
-  simp [leviCivitaRhs',
-    rhs_aux_addX_apply, rhs_aux_addY_apply _ _ hY hY' hZ, rhs_aux_addZ_apply _ _ hX hY hY',
-    mlieBracket_add_left (W := X) hY hY', VectorField.mlieBracket_add_right (V := Z) hY hY',
+  simp (disch := assumption) [leviCivitaRhs',
+    rhs_aux_addX_apply, rhs_aux_addY_apply, rhs_aux_addZ_apply,
+    mlieBracket_add_left, mlieBracket_add_right,
     inner_add_left, inner_add_right]
   abel
 
@@ -254,17 +247,11 @@ lemma leviCivitaRhs'_smulY_apply [CompleteSpace E] {f : M → ℝ}
     (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     leviCivitaRhs' I X (f • Y) Z x =
       f x * leviCivitaRhs' I X Y Z x + extDerivFun% f x (X x) * 2 * ⟪Y, Z⟫ x := by
-  -- TODO: is there a better abstraction for this kind of "Lie bracket conv mode"?
-  have h1 : ⟪Z, mlieBracket I (f • Y) X⟫ x =
-      - extDerivFun% f x (X x) * ⟪Y, Z⟫ x + f x * ⟪Z, mlieBracket I Y X⟫ x := by
-    simp [mlieBracket_smul_left (W := X) hf hY, inner_add_right, inner_smul_right,
-      real_inner_comm (Y x) (Z x)]
-  have h2 : ⟪X, mlieBracket I Z (f • Y)⟫ x =
-      extDerivFun% f x (Z x) * ⟪X, Y⟫ x + f x * ⟪X, mlieBracket I Z Y⟫ x := by
-    simp [mlieBracket_smul_right (V := Z) hf hY, inner_add_right, inner_smul_right]
-  simp [leviCivitaRhs', rhs_aux_smulX_apply I Y Z X f, inner_smul_left,
-    rhs_aux_smulY_apply I X hf hY hZ, rhs_aux_smulZ_apply I Z hf hX hY]
-  linear_combination -h1 + h2
+  simp (disch := assumption) [leviCivitaRhs',
+    mlieBracket_smul_left, mlieBracket_smul_right,
+    rhs_aux_smulX_apply, rhs_aux_smulY_apply, rhs_aux_smulZ_apply,
+    inner_smul_left, inner_add_right, inner_smul_right, real_inner_comm]
+  ring
 
 lemma leviCivitaRhs_smulY_apply [CompleteSpace E] {f : M → ℝ}
     (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
@@ -278,10 +265,9 @@ lemma leviCivitaRhs'_addZ_apply [CompleteSpace E]
     (hZ : MDiffAt (T% Z) x) (hZ' : MDiffAt (T% Z') x) :
     leviCivitaRhs' I X Y (Z + Z') x =
       leviCivitaRhs' I X Y Z x + leviCivitaRhs' I X Y Z' x := by
-  simp [leviCivitaRhs', rhs_aux_addX_apply,
-    (VectorField.mlieBracket_add_right (V := X) hZ hZ'),
-    (VectorField.mlieBracket_add_left (W := Y) hZ hZ'),
-    rhs_aux_addY_apply _ _ hZ hZ' hX, rhs_aux_addZ_apply _ _ hY hZ hZ',
+  simp (disch := assumption) [leviCivitaRhs',
+    mlieBracket_add_right, mlieBracket_add_left,
+    rhs_aux_addX_apply, rhs_aux_addY_apply, rhs_aux_addZ_apply,
     inner_add_left, inner_add_right]
   abel
 
@@ -295,19 +281,11 @@ lemma leviCivitaRhs_addZ_apply [CompleteSpace E]
 lemma leviCivitaRhs'_smulZ_apply [CompleteSpace E] {f : M → ℝ}
     (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     leviCivitaRhs' I X Y (f • Z) x = f x * leviCivitaRhs' I X Y Z x := by
-  -- Apply the product rule for the lie bracket.
-  -- Let's encapsulate the going into the product and back out again.
-  have h1 : ⟪Y, mlieBracket I X (f • Z)⟫ x =
-      extDerivFun% f x (X x) * ⟪Y, Z⟫ x + f x * ⟪Y, mlieBracket I X Z⟫ x := by
-    simp [VectorField.mlieBracket_smul_right hf hZ, inner_add_right,
-      inner_smul_right]
-  have h2 : ⟪X, mlieBracket I (f • Z) Y⟫ x =
-      - extDerivFun% f x (Y x) * ⟪X, Z⟫ x + f x • ⟪X, mlieBracket I Z Y⟫ x := by
-    simp [VectorField.mlieBracket_smul_left hf hZ, inner_add_right, inner_smul_right]
-  simp only [leviCivitaRhs', rhs_aux_smulX_apply, Pi.add_apply, Pi.sub_apply]
-  rw [rhs_aux_smulY_apply _ _ hf hZ hX, rhs_aux_smulZ_apply _ _ hf hY hZ]
-  simp [inner_smul_left, real_inner_comm (X x) (Z x)]
-  linear_combination -h1 + h2
+  simp (disch := assumption) [leviCivitaRhs',
+    mlieBracket_smul_right, mlieBracket_smul_left,
+    rhs_aux_smulX_apply, rhs_aux_smulY_apply, rhs_aux_smulZ_apply,
+    inner_smul_left, inner_smul_right, inner_add_right, real_inner_comm]
+  ring
 
 lemma leviCivitaRhs_smulZ_apply [CompleteSpace E] {f : M → ℝ}
     (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
@@ -551,9 +529,9 @@ lemma leviCivitaConnection_isCompatible_aux
   -- until the swappable arguments are in order X < Y < Z.
   simp [leviCivitaRhs, leviCivitaRhs',
     rhs_aux_swap I Z Y, rhs_aux_swap I Z X, rhs_aux_swap I Y X,
-    VectorField.mlieBracket_swap (V := Z) (W := Y),
-    VectorField.mlieBracket_swap (V := Y) (W := X),
-    VectorField.mlieBracket_swap (V := Z) (W := X)]
+    mlieBracket_swap (V := Z) (W := Y),
+    mlieBracket_swap (V := Y) (W := X),
+    mlieBracket_swap (V := Z) (W := X)]
   -- Observe that the right hand side is rhx_aux X Y Z; then we just need to simplify and rearrange.
   ring
 
@@ -592,12 +570,12 @@ lemma leviCivitaConnection_torsion_eq_zero [FiniteDimensional ℝ E] :
   simp only [leviCivitaRhs_apply]
   -- XXX: should there be leviCivitaRhs'_apply?
   simp only [leviCivitaRhs', Pi.add_apply, Pi.sub_apply]
-  simp only [VectorField.mlieBracket_swap (V := Y) (W := X)]
+  simp only [mlieBracket_swap (V := Y) (W := X)]
   simp only [Pi.neg_apply, inner_neg_right, sub_neg_eq_add]
   set C := inner ℝ Z (VectorField.mlieBracket I X Y x)
   set Z' := extend E Z
-  simp only [VectorField.mlieBracket_swap (V := Z') (W := X)]
-  simp only [VectorField.mlieBracket_swap (V := Z') (W := Y)]
+  simp only [mlieBracket_swap (V := Z') (W := X)]
+  simp only [mlieBracket_swap (V := Z') (W := Y)]
   simp only [Pi.neg_apply, inner_neg_right]
   rw [rhs_aux_swap (Y := Z'), rhs_aux_swap (Y := Z'), rhs_aux_swap (X := Z')]
   rw [real_inner_comm (Z' x) (VectorField.mlieBracket I X Y x)]
