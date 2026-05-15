@@ -739,7 +739,7 @@ namespace EagerTransition
 
 
 @[fun_prop] opaque Triv {α β} (f : α → β) : Prop
-@[fun_prop eager_transition] opaque Eager {α β} (f : α → β) : Prop
+@[fun_prop always_try_transition] opaque Eager {α β} (f : α → β) : Prop
 @[fun_prop] opaque NonEager {α β} (f : α → β) : Prop
 
 @[fun_prop]
