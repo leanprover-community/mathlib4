@@ -140,29 +140,30 @@ theorem step2_backward (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : I
     [codim_A : FiniteDimensional 𝕜 (E ⧸ A)] (h_ker : Disjoint u.ker A)
     (h_clemb : IsClosedEmbedding (restrict A u)) :
     IsStrictMap u ∧ IsClosed (range u) := by
-  -- Fix `S` an algebraic complement of `A` containing `K`. Note that `S` has finite
+  -- Fix `S` an algebraic complement of `A` containing `u.ker`. Note that `S` has finite
   -- dimension.
   rcases A.exists_isCompl with ⟨S, A_compl_S⟩
   have : FiniteDimensional 𝕜 S :=
     quotientEquivOfIsCompl A S A_compl_S |>.finiteDimensional
-  -- Because `map u A` is closed by assumption, it follows that `u.range = map u A ⊔ map u S`
-  -- is closed.
+  -- Because `map u A` is closed and `map u S` is finite dimensional, we know that
+  -- `u.range = map u A ⊔ map u S` is closed.
   have range_u_closed : IsClosed (u.range : Set F) := by
     rw [isClosedEmbedding_iff, range_restrict] at h_clemb
     have : u.range = (map u.toLinearMap A ⊔ map u.toLinearMap S) := by
       rw [← Submodule.map_sup, A_compl_S.sup_eq_top, Submodule.map_top]
     exact this ▸ Submodule.isClosed_sup_finiteDimensional _ _ h_clemb.2
+  refine ⟨?_, range_u_closed⟩
   -- It remains to show that `u` is strict, which means precisely that the co-restriction
   -- `u' : E → u.range` is a quotient map. By step 1, it is enough to show that
-  -- `restrict A u'` is a closed embedding. This follows from the fact that
-  -- `restrict A u = u.range.subtype ∘ restrict A u'`, since both
-  -- `restrict A u` and `u.range.subtype` are closed embeddings.
-  refine ⟨?_, range_u_closed⟩
+  -- `restrict A u'` is a closed embedding.
   set u' : E →L[𝕜] u.range := u.rangeRestrict
-  have h_clemb' : IsClosedEmbedding (restrict A u') := by
-    rw [← range_u_closed.isClosedEmbedding_subtypeVal.of_comp_iff]
-    exact h_clemb
-  exact step1_backward u' A A_closed (by simpa [u']) (by simp [u']) h_clemb'
+  change IsQuotientMap u'
+  suffices IsClosedEmbedding (restrict A u') from
+    step1_backward u' A A_closed (by simpa [u']) (by simp [u']) this
+  -- This follows from the equality `restrict A u = u.range.subtype ∘ restrict A u'`,
+  -- and the fact that both `restrict A u` and `u.range.subtype` are closed embeddings.
+  rw [← range_u_closed.isClosedEmbedding_subtypeVal.of_comp_iff]
+  exact h_clemb
 
 theorem step2 (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E))
     [codim_A : FiniteDimensional 𝕜 (E ⧸ A)] (h_ker : Disjoint u.ker A) :
