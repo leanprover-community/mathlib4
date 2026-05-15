@@ -443,7 +443,7 @@ variable [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂)
 theorem surjective_rangeRestrict : Surjective f.rangeRestrict := by
   rw [← range_eq_top, range_rangeRestrict]
 
-@[simp] theorem ker_rangeRestrict : ker f.rangeRestrict = ker f := LinearMap.ker_codRestrict _ _ _
+theorem ker_rangeRestrict : ker f.rangeRestrict = ker f := LinearMap.ker_codRestrict _ _ _
 
 @[simp] theorem injective_rangeRestrict_iff : Injective f.rangeRestrict ↔ Injective f :=
   Set.injective_codRestrict _
