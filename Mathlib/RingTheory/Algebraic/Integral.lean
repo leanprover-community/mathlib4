@@ -123,7 +123,7 @@ theorem transcendental_aeval_iff {r : A} {f : K[X]} :
     Transcendental K (Polynomial.aeval r f) ↔ Transcendental K r ∧ Transcendental K f := by
   refine ⟨fun h ↦ ⟨?_, h.of_aeval⟩, fun ⟨h1, h2⟩ ↦ h1.aeval_of_transcendental h2⟩
   rw [Transcendental] at h ⊢
-  contrapose! h
+  contrapose h
   rw [isAlgebraic_iff_isIntegral] at h ⊢
   exact .of_mem_of_fg _ h.fg_adjoin_singleton _ (aeval_mem_adjoin_singleton _ _)
 
@@ -551,10 +551,6 @@ variable (R S) [NoZeroDivisors R]
 -- TODO: `PolynomialModule` version
 theorem rank_polynomial_polynomial : Module.rank R[X] S[X] = Module.rank R S :=
   ((Algebra.isPushout_iff ..).mp inferInstance).rank_eq
-
-#adaptation_note /-- Needed after leanprover/lean4#12564 -/
-noncomputable instance (σ : Type u) [Algebra R S] : Module R (MvPolynomial σ S) :=
-  inferInstanceAs <| Module R (AddMonoidAlgebra S (σ →₀ ℕ))
 
 theorem rank_mvPolynomial_mvPolynomial (σ : Type u) :
     Module.rank (MvPolynomial σ R) (MvPolynomial σ S) = Cardinal.lift.{u} (Module.rank R S) := by

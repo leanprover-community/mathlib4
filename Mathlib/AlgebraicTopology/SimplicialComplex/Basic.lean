@@ -242,7 +242,7 @@ instance : InfSet (AbstractSimplicialComplex ι) where
         grind [IsRelLowerSet.mem_of_le, PreAbstractSimplicialComplex.isRelLowerSet_faces,
           mem_iInter]
       singleton_mem v := by
-        grind [Set.mem_iInter, Finset.singleton_nonempty, singleton_mem]  }
+        grind [Set.mem_iInter, Finset.singleton_nonempty, singleton_mem] }
 
 instance : Top (AbstractSimplicialComplex ι) where
   top :=
