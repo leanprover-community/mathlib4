@@ -130,31 +130,33 @@ def LinearMap.FiniteRank : Submodule K (V →ₗ[K] V₂) where
   zero_mem' := by simp
   smul_mem' c hu := by simp_all
 
-namespace QuotFiniteRank
-scoped instance : Setoid (V →ₗ[K] V₂) := (LinearMap.FiniteRank K V V₂).quotientRel
+namespace LinearMap.FiniteRankSetoid
 
-lemma eqv_iff {u v : V →ₗ[K] V₂} : u ≈ v ↔ (u - v).HasFiniteRank := by
+scoped instance setoid : Setoid (V →ₗ[K] V₂) := (LinearMap.FiniteRank K V V₂).quotientRel
+
+lemma equiv_iff {u v : V →ₗ[K] V₂} : u ≈ v ↔ (u - v).HasFiniteRank := by
   erw [← @Quotient.eq_iff_equiv, Submodule.Quotient.eq]
   rfl
 
-lemma rel_comp {u v : V →ₗ[K] V₂} {u' v' : V₂ →ₗ[K] V₃} (h : u ≈ v) (h' : u' ≈ v') :
+lemma equiv_comp {u v : V →ₗ[K] V₂} {u' v' : V₂ →ₗ[K] V₃} (h : u ≈ v) (h' : u' ≈ v') :
     u' ∘ₗ u ≈ v' ∘ₗ v := by
-  rw [eqv_iff] at *
+  rw [equiv_iff] at *
   exact h.comp_sub_comp h'
 
 @[gcongr]
-lemma rel_comp_right {u : V →ₗ[K] V₂} {u' v' : V₂ →ₗ[K] V₃} (h' : u' ≈ v') :
+lemma equiv_comp_right {u : V →ₗ[K] V₂} {u' v' : V₂ →ₗ[K] V₃} (h' : u' ≈ v') :
     u' ∘ₗ u ≈ v' ∘ₗ u :=
-  rel_comp (Quotient.exact rfl) h'
+  equiv_comp (Quotient.exact rfl) h'
 
 @[gcongr]
-lemma rel_comp_left {u v : V →ₗ[K] V₂} {u' : V₂ →ₗ[K] V₃} (h : u ≈ v) :
+lemma equiv_comp_left {u v : V →ₗ[K] V₂} {u' : V₂ →ₗ[K] V₃} (h : u ≈ v) :
     u' ∘ₗ u ≈ u' ∘ₗ v :=
-  rel_comp h (Quotient.exact rfl)
-end QuotFiniteRank
+  equiv_comp h (Quotient.exact rfl)
+
+end LinearMap.FiniteRankSetoid
 
 section
-open scoped QuotFiniteRank
+open scoped LinearMap.FiniteRankSetoid
 
 def LinearMap.LeftQuasiInverse (u : V →ₗ[K] V₂) (v : V₂ →ₗ[K] V) := u ∘ₗ v ≈ .id
 
@@ -168,10 +170,10 @@ lemma LinearMap.QuasiInverse.symm {u : V₃ →ₗ[K] V₂} {v : V₂ →ₗ[K] 
     (h : u.QuasiInverse v) : v.QuasiInverse u :=
   And.symm h
 
-lemma LinearMap.QuasiInverse_congr {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ →ₗ[K] V₃}
+lemma LinearMap.QuasiInverse.congr {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ →ₗ[K] V₃}
     (h : u.QuasiInverse v) (hu : u' ≈ u) (hv : v' ≈ v) :
     u'.QuasiInverse v' := by
-  simp only [QuasiInverse, LeftQuasiInverse, RightQuasiInverse, QuotFiniteRank.eqv_iff] at *
+  simp only [QuasiInverse, LeftQuasiInverse, RightQuasiInverse, FiniteRankSetoid.equiv_iff] at *
   constructor
   · rw [show u' ∘ₗ v' - id = (u' ∘ₗ v' - u ∘ₗ v) + (u ∘ₗ v - id) by simp]
     exact (hv.comp_sub_comp hu).add h.1
@@ -183,9 +185,9 @@ lemma LinearMap.equiv_of_quasiInverse {u : V₃ →ₗ[K] V₂} {v v' : V₂ →
     v ≈ v' :=
   calc
     v = v ∘ₗ .id := by simp
-    _ ≈ v ∘ₗ (u ∘ₗ v') := by apply QuotFiniteRank.rel_comp_left; symm; exact h'.1
+    _ ≈ v ∘ₗ (u ∘ₗ v') := by apply FiniteRankSetoid.equiv_comp_left; symm; exact h'.1
     _ = (v ∘ₗ u) ∘ₗ v' := by rw [comp_assoc]
-    _ ≈ (.id) ∘ₗ v' := by apply QuotFiniteRank.rel_comp_right; exact h.2
+    _ ≈ (.id) ∘ₗ v' := by apply FiniteRankSetoid.equiv_comp_right; exact h.2
     _ = v' := by simp
 
 lemma LinearMap.equiv_of_quasiInverse' {u u' : V₃ →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
@@ -231,33 +233,35 @@ variable [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F]
 variable {G : Type*} [AddCommGroup G] [TopologicalSpace G] [IsTopologicalAddGroup G]
   [Module 𝕜 G] [ContinuousConstSMul 𝕜 G] [ContinuousAdd G]
 
-namespace QuotFiniteSubmodules
-
 variable (𝕜 E F) in
-def FiniteRank : Submodule 𝕜 (E →L[𝕜] F) :=
+def ContinuouisLinearMap.FiniteRank : Submodule 𝕜 (E →L[𝕜] F) :=
   Submodule.comap (coeLM 𝕜) (LinearMap.FiniteRank 𝕜 E F)
 
-scoped instance : Setoid (E →L[𝕜] F) :=
-  Setoid.comap ContinuousLinearMap.toLinearMap QuotFiniteRank.instSetoidLinearMapId
+namespace ContinuousLinearMap.FiniteRankSetoid
 
-omit [IsTopologicalAddGroup
-  E] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F] in
-open scoped QuotFiniteRank in
-lemma eqv_iff {u v : E →L[𝕜] F} : (u ≈ v) ↔ u.toLinearMap ≈ v.toLinearMap :=
+scoped instance setoid : Setoid (E →L[𝕜] F) :=
+  Setoid.comap ContinuousLinearMap.toLinearMap LinearMap.FiniteRankSetoid.setoid
+
+omit [IsTopologicalAddGroup E] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 E]
+  [ContinuousConstSMul 𝕜 F] in
+open scoped LinearMap.FiniteRankSetoid in
+lemma equiv_iff {u v : E →L[𝕜] F} : (u ≈ v) ↔ u.toLinearMap ≈ v.toLinearMap :=
   Iff.rfl
 
 omit [IsTopologicalAddGroup E] [IsTopologicalAddGroup F]
     [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F] [IsTopologicalAddGroup G]
     [ContinuousConstSMul 𝕜 G] [ContinuousAdd G] in
-lemma rel_comp {u v : E →L[𝕜] F} {u' v' : F →L[𝕜] G} (h : u ≈ v) (h' : u' ≈ v') :
+lemma equiv_comp {u v : E →L[𝕜] F} {u' v' : F →L[𝕜] G} (h : u ≈ v) (h' : u' ≈ v') :
     u' ∘L u ≈ v' ∘L v := by
-  rw [eqv_iff] at *
+  rw [equiv_iff] at *
   push_cast
-  exact QuotFiniteRank.rel_comp h h'
+  exact LinearMap.FiniteRankSetoid.equiv_comp h h'
 
-end QuotFiniteSubmodules
+end ContinuousLinearMap.FiniteRankSetoid
 
-open scoped QuotFiniteSubmodules
+section IsFredholmQuot
+
+open scoped ContinuousLinearMap.FiniteRankSetoid
 
 /-FAE: I don't like this definition that seems to fix `g` (making it a structure would be even more
   disgusting). -/
@@ -279,17 +283,9 @@ lemma IsFredholmQuot.comp {f : E →L[𝕜] F} {f' : F →L[𝕜] G} (hf : IsFre
   push_cast
   exact LinearMap.QuasiInverse_comp hg hg'
 
-theorem AnatoleDream_1 (hf : IsFredholmStruct f) : IsFredholmQuot f:= sorry
+theorem AnatoleDream (hf : IsFredholmStruct f) : IsFredholmQuot f:= sorry
 
-def AnatoleDream_1_symm (hf : IsFredholmQuot f) : IsFredholmStruct f := sorry
-
-open QuotFiniteSubmodules in
-theorem AnatoleDream_2 [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F] [ContinuousAdd E]
-    [ContinuousAdd F] (hf : IsFredholmStruct f) : IsFredholmQuot f := sorry
-
-open QuotFiniteSubmodules in
-def AnatoleDream_2_symm [ContinuousConstSMul 𝕜 E] [ContinuousConstSMul 𝕜 F] [ContinuousAdd E]
-    [ContinuousAdd F] (hf : IsFredholmQuot f) : (IsFredholmStruct f) := sorry
+def AnatoleDream_symm (hf : IsFredholmQuot f) : IsFredholmStruct f := sorry
 
 /- ## API -/
 
@@ -406,7 +402,7 @@ lemma CokernelFG_of_isFredholm' (hu : IsFredholm_existsₗ u) : (u.range).CoFG :
 
 /- ## Fredholm operator is an isomorphism on a finite codim space -/
 
-open QuotFiniteSubmodules
+open ContinuousLinearMap.FiniteRankSetoid
 
 section
 
@@ -419,13 +415,13 @@ theorem ContinuousLinearMap.coFG_eqLocus (hgf : v ∘L u ≈ .id 𝕜 E) :
     (LinearMap.eqLocus (.id 𝕜 E) (v ∘L u)).CoFG := by
   change (LinearMap.eqLocus (LinearMap.id) (v ∘L u).toLinearMap).CoFG
   rw [LinearMap.eqLocus_eq_ker_sub, ← range_fg_iff_ker_cofg, Submodule.fg_iff_finiteDimensional]
-  simpa [eqv_iff, QuotFiniteRank.eqv_iff] using Setoid.symm hgf
+  simpa [equiv_iff, LinearMap.FiniteRankSetoid.equiv_iff] using Setoid.symm hgf
 
 omit [IsTopologicalAddGroup F] in
 theorem ContinuousLinearMap.id_sub_comp_ker_coFG (hgf : v ∘L u ≈ .id 𝕜 E) :
     (.id 𝕜 E - v ∘L u).ker.CoFG := by
   rw [← range_fg_iff_ker_cofg, Submodule.fg_iff_finiteDimensional]
-  simpa [eqv_iff, QuotFiniteRank.eqv_iff] using Setoid.symm hgf
+  simpa [equiv_iff, LinearMap.FiniteRankSetoid.equiv_iff] using Setoid.symm hgf
 
 variable [T1Space E] [T1Space F] [ContinuousConstSMul 𝕜 F]
 
@@ -524,6 +520,8 @@ F₁ = u.range
 The others are arbitrary complements
 
 -/
+end IsFredholmQuot
+
 end FredholmOperators
 
 public noncomputable section Filippo
@@ -825,7 +823,7 @@ section NormPerturbation
 
 open Topology
 
-variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
+variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [NormedAddCommGroup E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] [CompleteSpace E]
   [CompleteSpace F]
 
