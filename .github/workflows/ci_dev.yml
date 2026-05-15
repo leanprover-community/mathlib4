@@ -1,36 +1,37 @@
 name: ci dev (lake cache shadow)
 
-# Drop-in replacement for ci_dev.yml when working on a ci-dev/* branch that
-# wants to exercise Lake's built-in artifact cache. The original ci_dev.yml
-# (which delegates to build_template.yml) is preserved on master and other
-# branches; this version takes over on ci-dev/* branches that include this
-# file.
+# DROP-IN REPLACEMENT for ci_dev.yml on this ci-dev/* branch. The
+# original ci_dev.yml (which delegates to build_template.yml) is
+# preserved on master and other branches.
 #
-# Behavior:
-#   - workflow_dispatch only; gated to ci-dev/* branches.
-#   - Always exercises the build + stage half of the shadow (no R2 needed).
-#   - If LAKE_CACHE_SHADOW_ARTIFACT_ENDPOINT / LAKE_CACHE_SHADOW_REVISION_ENDPOINT
-#     repo vars and LAKE_CACHE_SHADOW_KEY repo secret are set, ALSO runs the
-#     upload and the consume drop-in test. Otherwise those steps are skipped
-#     and the workflow exits success after the stage step.
+# This file mirrors .github/workflows/lake_cache_shadow.yml (the
+# eventual master-side scheduled workflow) so we can exercise the
+# shadow end-to-end via `gh workflow run ci_dev.yml --ref ci-dev/...`
+# before merging the canonical workflow to master.
 #
-# Once we're happy with the results, move this file's content into the
-# permanent .github/workflows/lake_cache_shadow.yml on master (which is the
-# committed sibling here), and restore the original ci_dev.yml.
+# Tracks leanprover-community/mathlib4-nightly-testing#203, which is the
+# eventual home of this functionality on the real CI path.
+#
+# Required repository configuration (Settings → Secrets and variables → Actions):
+#   Secrets:
+#     LAKE_CACHE_SHADOW_KEY                  — SigV4 secret for the shadow bucket
+#   Variables:
+#     LAKE_CACHE_SHADOW_ARTIFACT_ENDPOINT    — e.g. https://<bucket>/<prefix>/artifacts
+#     LAKE_CACHE_SHADOW_REVISION_ENDPOINT    — e.g. https://<bucket>/<prefix>/revisions
+#
+# Security model: the secret is referenced ONLY in the `upload` job, which
+# runs on `ubuntu-latest` (no untrusted Lean code). The `build_and_stage`
+# job that compiles Lean modules from master never gets the secret in its
+# environment, even via accident, because it lives in a different job.
 
 on:
   workflow_dispatch:
     inputs:
       mathlib_ref:
-        description: ref to test (defaults to current branch's commit)
+        description: ref to test (defaults to this commit on the ci-dev branch)
         required: false
         type: string
         default: ''
-      force_upload:
-        description: 'force upload + consume even if vars look unset (debug)'
-        required: false
-        type: boolean
-        default: false
 
 permissions:
   contents: read
@@ -45,10 +46,8 @@ env:
   STAGE_DEP_TARGETS: "batteries Qq aesop proofwidgets importGraph LeanSearchClient plausible"
 
 jobs:
-  build_stage_upload:
-    name: Build + stage (+ upload if R2 configured)
-    # Same safety gate as the original ci_dev.yml: only runs on upstream and
-    # only on ci-dev/* branches, so a fork can't accidentally trigger this.
+  build_and_stage:
+    name: Build + stage (NO secrets in env)
     if: ${{ github.repository == 'leanprover-community/mathlib4' && github.ref_type == 'branch' && startsWith(github.ref_name, 'ci-dev/') }}
     runs-on: pr
     timeout-minutes: 90
@@ -56,23 +55,16 @@ jobs:
     outputs:
       sha: ${{ steps.resolve.outputs.sha }}
       toolchain: ${{ steps.resolve.outputs.toolchain }}
-      uploaded: ${{ steps.upload.outputs.uploaded }}
     env:
       LAKE_CACHE_DIR: .lake/cache
       LAKE_NO_CACHE: true
     defaults:
       run:
-        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LAKE_CACHE_DIR --env LAKE_NO_CACHE -- bash -euxo pipefail {0}
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LAKE_CACHE_DIR --env LAKE_NO_CACHE --env STAGE_TARGETS --env STAGE_DEP_TARGETS --env SHADOW_SCOPE -- bash -euxo pipefail {0}
     steps:
       - name: job info
         shell: bash
-        run: |
-          echo "::notice::ci-dev lake cache shadow on ${{ github.ref_name }} run ${{ github.run_id }}"
-          if [[ -n "${{ vars.LAKE_CACHE_SHADOW_ARTIFACT_ENDPOINT }}" ]]; then
-            echo "::notice::R2 endpoint configured — will run full upload + consume"
-          else
-            echo "::notice::R2 endpoint not configured — DRY-RUN (build + stage only)"
-          fi
+        run: echo "::notice::ci-dev lake cache shadow on ${{ github.ref_name }} run ${{ github.run_id }}"
 
       - name: cleanup
         shell: bash
@@ -88,8 +80,6 @@ jobs:
       - name: Checkout tools branch
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          # Tools come from this same ci-dev branch (consistent with how
-          # the original ci_dev.yml uses 'this commit' by default).
           ref: ${{ github.sha }}
           path: tools-branch
 
@@ -121,7 +111,6 @@ jobs:
           echo "sha=$SHA" >> "$GITHUB_OUTPUT"
           echo "toolchain=$TC" >> "$GITHUB_OUTPUT"
 
-      # --- The next 5 steps mirror the setup that build_template.yml does ---
       - name: Prepare DownstreamTest directory
         shell: bash
         run: |
@@ -204,74 +193,110 @@ jobs:
               '  restoreAllArtifacts := true'
           )
           if marker not in src:
-              raise SystemExit("lakefile.lean shape changed; update the shadow patch in ci_dev.yml")
+              raise SystemExit("lakefile.lean shape changed; update the shadow patch in lake_cache_shadow.yml")
           p.write_text(src.replace(marker, inject, 1))
           PY
           echo "::group::patched lakefile snippet"
           sed -n '49,62p' lakefile.lean
           echo "::endgroup::"
 
-      - name: No-op build to populate Lake's cache
+      - name: No-op build to populate Lake's cache from .lake/build/
         run: |
           cd pr-branch
-          lake build $STAGE_TARGETS $STAGE_DEP_TARGETS 2>&1 | tee /tmp/dryrun-build.log
+          lake build $STAGE_TARGETS $STAGE_DEP_TARGETS 2>&1 | tee .lake/dryrun-build.log
           echo "::group::build summary"
-          echo "Built (compiled fresh):   $(grep -cE '^✔.*Built '    /tmp/dryrun-build.log || true)"
-          echo "Replayed (from cache):    $(grep -cE '^✔.*Replayed ' /tmp/dryrun-build.log || true)"
+          echo "Built (compiled fresh):   $(grep -cE '^✔.*Built '    .lake/dryrun-build.log || true)"
+          echo "Replayed (from cache):    $(grep -cE '^✔.*Replayed ' .lake/dryrun-build.log || true)"
           echo "::endgroup::"
 
-      - name: Emit mappings
+      - name: Emit mappings for stage targets + deps
         run: |
           cd pr-branch
           lake build --no-build $STAGE_TARGETS $STAGE_DEP_TARGETS -o .lake/outputs.jsonl
           echo "mappings entries: $(wc -l < .lake/outputs.jsonl)"
           head -3 .lake/outputs.jsonl
 
-      - name: Stage cache
+      - name: Stage cache for upload
         run: |
           cd pr-branch
           lake cache stage .lake/outputs.jsonl ../lake-cache-staging
-          echo "::group::staging report"
-          echo "staging dir total: $(du -sh ../lake-cache-staging | cut -f1)"
-          echo "ltar count:        $(find ../lake-cache-staging -name '*.ltar' | wc -l)"
-          echo "biggest 5 ltars:"
-          find ../lake-cache-staging -name '*.ltar' -printf '%s\t%p\n' 2>/dev/null | sort -rn | head -5
-          echo "::endgroup::"
+          du -sh ../lake-cache-staging | awk '{print "staging total:", $1}'
+          echo "ltar count: $(find ../lake-cache-staging -name '*.ltar' | wc -l)"
 
-      # Upload — only runs if R2 was configured. The id+output lets the
-      # consume job decide whether to fire.
-      - name: lake cache put-staged (upload to R2)
-        id: upload
-        if: ${{ vars.LAKE_CACHE_SHADOW_ARTIFACT_ENDPOINT != '' || inputs.force_upload }}
-        shell: bash
-        env:
-          LAKE_CACHE_ARTIFACT_ENDPOINT: ${{ vars.LAKE_CACHE_SHADOW_ARTIFACT_ENDPOINT }}
-          LAKE_CACHE_REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_SHADOW_REVISION_ENDPOINT }}
-          LAKE_CACHE_KEY_RAW: ${{ secrets.LAKE_CACHE_SHADOW_KEY }}
-        run: |
-          cd pr-branch
-          LAKE_CACHE_KEY="$(printf %s "$LAKE_CACHE_KEY_RAW" | sed -e 's/[[:space:]]*$//')"
-          export LAKE_CACHE_KEY
-          echo "::add-mask::$LAKE_CACHE_KEY"
-          lake cache put-staged ../lake-cache-staging \
-            --scope="$SHADOW_SCOPE" \
-            --rev="${{ steps.resolve.outputs.sha }}" \
-            --toolchain="${{ steps.resolve.outputs.toolchain }}"
-          echo "uploaded=true" >> "$GITHUB_OUTPUT"
+      # Hand the staging dir off to the upload job via a workflow artifact.
+      # Keeps the cache key (in the upload job) isolated from any Lean code
+      # that ran in this job.
+      - name: Upload staging artifact for the next job
+        if: ${{ vars.LAKE_CACHE_SHADOW_ARTIFACT_ENDPOINT != '' }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: lake-cache-staging-${{ github.run_id }}
+          path: lake-cache-staging/
+          retention-days: 3
+          if-no-files-found: error
 
-      - name: DRY-RUN summary (when no upload)
-        if: ${{ steps.upload.outcome == 'skipped' }}
+      - name: DRY-RUN summary (when R2 not configured)
+        if: ${{ vars.LAKE_CACHE_SHADOW_ARTIFACT_ENDPOINT == '' }}
         shell: bash
         run: |
           echo "::notice::DRY-RUN complete. Build + stage worked end-to-end."
-          echo "::notice::To exercise upload + consume, set repo vars LAKE_CACHE_SHADOW_ARTIFACT_ENDPOINT,"
-          echo "::notice::LAKE_CACHE_SHADOW_REVISION_ENDPOINT and secret LAKE_CACHE_SHADOW_KEY,"
-          echo "::notice::then re-run this workflow."
+          echo "::notice::To exercise upload + consume, set repo vars"
+          echo "::notice::  LAKE_CACHE_SHADOW_ARTIFACT_ENDPOINT"
+          echo "::notice::  LAKE_CACHE_SHADOW_REVISION_ENDPOINT"
+          echo "::notice::and secret LAKE_CACHE_SHADOW_KEY, then re-run."
+
+  upload:
+    name: Upload to shadow bucket (has secret)
+    needs: build_and_stage
+    if: ${{ github.repository == 'leanprover-community/mathlib4' && vars.LAKE_CACHE_SHADOW_ARTIFACT_ENDPOINT != '' && needs.build_and_stage.outputs.sha != '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      LAKE_CACHE_ARTIFACT_ENDPOINT: ${{ vars.LAKE_CACHE_SHADOW_ARTIFACT_ENDPOINT }}
+      LAKE_CACHE_REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_SHADOW_REVISION_ENDPOINT }}
+    steps:
+      - name: Checkout mathlib (for lean-toolchain pin)
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ needs.build_and_stage.outputs.sha }}
+          path: pr-branch
+          fetch-depth: 1
+
+      - name: install elan + matching lake
+        shell: bash
+        run: |
+          set -o pipefail
+          curl -o elan-init.sh -sSfL https://elan.lean-lang.org/elan-init.sh
+          chmod +x elan-init.sh
+          ./elan-init.sh -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
+
+      - name: Download staging artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v6.0.0
+        with:
+          name: lake-cache-staging-${{ github.run_id }}
+          path: lake-cache-staging
+
+      - name: Resolve LAKE_CACHE_KEY (trim whitespace)
+        env:
+          LAKE_CACHE_KEY_RAW: ${{ secrets.LAKE_CACHE_SHADOW_KEY }}
+        run: |
+          KEY="$(printf %s "$LAKE_CACHE_KEY_RAW" | sed -e 's/[[:space:]]*$//')"
+          echo "::add-mask::$KEY"
+          echo "LAKE_CACHE_KEY=$KEY" >> "$GITHUB_ENV"
+
+      - name: lake cache put-staged
+        run: |
+          cd pr-branch
+          lake cache put-staged ../lake-cache-staging \
+            --scope="${{ env.SHADOW_SCOPE }}" \
+            --rev="${{ needs.build_and_stage.outputs.sha }}" \
+            --toolchain="${{ needs.build_and_stage.outputs.toolchain }}"
 
   consume:
-    name: Drop-in consume test
-    needs: build_stage_upload
-    if: ${{ github.repository == 'leanprover-community/mathlib4' && needs.build_stage_upload.outputs.uploaded == 'true' }}
+    name: Drop-in consume test (no legacy cache)
+    needs: [build_and_stage, upload]
+    if: ${{ github.repository == 'leanprover-community/mathlib4' && needs.upload.result == 'success' }}
     runs-on: pr
     timeout-minutes: 120
     continue-on-error: true
@@ -281,7 +306,7 @@ jobs:
       LAKE_CACHE_REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_SHADOW_REVISION_ENDPOINT }}
     defaults:
       run:
-        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LAKE_CACHE_DIR --env LAKE_CACHE_ARTIFACT_ENDPOINT --env LAKE_CACHE_REVISION_ENDPOINT -- bash -euxo pipefail {0}
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LAKE_CACHE_DIR --env LAKE_CACHE_ARTIFACT_ENDPOINT --env LAKE_CACHE_REVISION_ENDPOINT --env STAGE_TARGETS --env STAGE_DEP_TARGETS --env SHADOW_SCOPE -- bash -euxo pipefail {0}
     steps:
       - name: cleanup
         shell: bash
@@ -308,7 +333,7 @@ jobs:
       - name: Fresh checkout of mathlib
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          ref: ${{ inputs.mathlib_ref != '' && inputs.mathlib_ref || github.sha }}
+          ref: ${{ needs.build_and_stage.outputs.sha }}
           path: pr-branch
           fetch-depth: 1
 
@@ -341,7 +366,7 @@ jobs:
           cd pr-branch
           lake env
 
-      - name: Patch lakefile (same shape as build_stage_upload)
+      - name: Patch lakefile (same shape as build_and_stage)
         shell: bash
         run: |
           cd pr-branch
@@ -367,15 +392,15 @@ jobs:
           cd pr-branch
           lake cache get \
             --scope="$SHADOW_SCOPE" \
-            --rev="${{ needs.build_stage_upload.outputs.sha }}"
+            --rev="${{ needs.build_and_stage.outputs.sha }}"
           echo "ltar count after get: $(find .lake/cache -name '*.ltar' | wc -l)"
 
       - name: lake build (drop-in test)
         run: |
           cd pr-branch
-          lake build $STAGE_TARGETS 2>&1 | tee /tmp/consume-build.log
-          echo "Built (compiled fresh):  $(grep -cE '^✔.*Built '    /tmp/consume-build.log || true)"
-          echo "Replayed (from cache):   $(grep -cE '^✔.*Replayed ' /tmp/consume-build.log || true)"
+          lake build $STAGE_TARGETS 2>&1 | tee .lake/consume-build.log
+          echo "Built (compiled fresh):  $(grep -cE '^✔.*Built '    .lake/consume-build.log || true)"
+          echo "Replayed (from cache):   $(grep -cE '^✔.*Replayed ' .lake/consume-build.log || true)"
 
       - name: Verify with --rehash
         run: |
