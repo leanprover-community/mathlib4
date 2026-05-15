@@ -149,8 +149,7 @@ variable (Y Z) in
 omit [IsManifold I 2 M] in
 lemma rhs_aux_swap : rhs_aux I X Y Z = rhs_aux I X Z Y := by
   ext x
-  unfold rhs_aux
-  simp [real_inner_comm]
+  simp [rhs_aux, real_inner_comm]
 
 omit [IsManifold I 2 M] in
 variable (X X' Y Z) in
@@ -190,7 +189,7 @@ lemma rhs_aux_smulZ_apply {f : M → ℝ}
     (hf : MDiffAt f x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     letI A (x) := ((mvfderiv% f x) (X x))
     rhs_aux I X Y (f • Z) x = f x * rhs_aux I X Y Z x + A x * ⟪Y, Z⟫ x := by
-  rw [rhs_aux_swap, rhs_aux_smulY_apply, rhs_aux_swap]
+  rw [rhs_aux_swap _ Y, rhs_aux_smulY_apply, rhs_aux_swap]
   · simp_rw [real_inner_comm]
   exacts [hf, hZ, hY]
 
@@ -317,10 +316,8 @@ theorem leviCivitaRhs_tensorial₁ [FiniteDimensional ℝ E]
     {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) {Z : Π x, TangentSpace I x}
     (hZ : MDiffAt (T% Z) x) :
     TensorialAt I E (leviCivitaRhs I · Y Z x) x where
-  smul {f X} hf hX := by
-    · exact leviCivitaRhs_smulX_apply hf hX hY hZ
-  add hX₁ hX₂ := by
-    · exact leviCivitaRhs_addX_apply I hX₁ hX₂ hY hZ
+  smul hf hX := leviCivitaRhs_smulX_apply hf hX hY hZ
+  add hX₁ hX₂ := leviCivitaRhs_addX_apply I hX₁ hX₂ hY hZ
 
 theorem leviCivitaRhs_tensorial₂ [FiniteDimensional ℝ E]
     {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) {X : Π x, TangentSpace I x}
