@@ -368,7 +368,8 @@ lemma leviCivitaRhs_addX_apply [CompleteSpace E]
     (hX : MDiffAt (T% X) x) (hX' : MDiffAt (T% X') x)
     (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     leviCivitaRhs I (X + X') Y Z x = leviCivitaRhs I X Y Z x + leviCivitaRhs I X' Y Z x := by
-  simp [leviCivitaRhs, leviCivitaRhs'_addX_apply I hX hX' hY hZ, left_distrib]
+  simp [leviCivitaRhs, leviCivitaRhs'_addX_apply I hX hX' hY hZ]
+  ring
 
 open VectorField NormedSpace
 
@@ -410,9 +411,7 @@ variable {I} in
 lemma leviCivitaRhs_smulX_apply [CompleteSpace E] {f : M → ℝ}
     (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     leviCivitaRhs I (f • X) Y Z x = f x • leviCivitaRhs I X Y Z x := by
-  simp only [leviCivitaRhs, one_div, Pi.smul_apply, smul_eq_mul]
-  simp_rw [leviCivitaRhs'_smulX_apply (I := I) hf hX hY hZ]
-  rw [← mul_assoc, mul_comm (f x), smul_eq_mul]
+  simp [leviCivitaRhs, leviCivitaRhs'_smulX_apply hf hX hY hZ]
   ring
 
 lemma leviCivitaRhs'_addY_apply [CompleteSpace E]
@@ -432,7 +431,8 @@ lemma leviCivitaRhs_addY_apply [CompleteSpace E]
     (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x)
     (hY' : MDiffAt (T% Y') x) (hZ : MDiffAt (T% Z) x) :
     leviCivitaRhs I X (Y + Y') Z x = leviCivitaRhs I X Y Z x + leviCivitaRhs I X Y' Z x := by
-  simp [leviCivitaRhs, leviCivitaRhs'_addY_apply I hX hY hY' hZ, left_distrib]
+  simp [leviCivitaRhs, leviCivitaRhs'_addY_apply I hX hY hY' hZ]
+  ring
 
 lemma leviCivitaRhs'_smulY_apply [CompleteSpace E] {f : M → ℝ}
     (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
