@@ -561,6 +561,14 @@ def toProd : Homogenization k V ≃ₗ[k] V × k where
     simp
   right_inv x := by simp
 
+@[simp]
+theorem toProd_ofPoint {v : V} : toProd (ofPoint (k := k) v) = (v, 1) := by
+  simp [toProd_apply]
+
+@[simp]
+theorem toProd_ofVector {v : V} : toProd (ofVector (k := k) v) = (v, 0) := by
+  simp [toProd_apply]
+
 instance [Module.Finite k V] : Module.Finite k (Homogenization k P) :=
   have ⟨x⟩ : Nonempty P := inferInstance
   .equiv (toProd.symm ≪≫ₗ congr (AffineEquiv.vaddConst k x))
