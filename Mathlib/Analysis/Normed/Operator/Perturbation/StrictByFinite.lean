@@ -110,6 +110,7 @@ The statement becomes: `u` is strict with closed range if and only if `Set.restr
 a closed embedding.
 -/
 
+omit [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F] in
 theorem step2_forward (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E))
     [codim_A : FiniteDimensional 𝕜 (E ⧸ A)] (h_ker : Disjoint u.ker A) (h_strict : IsStrictMap u)
     (h_closed : IsClosed (range u)) : IsClosedEmbedding (restrict A u) := by
@@ -123,11 +124,14 @@ theorem step2_forward (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : Is
   let u' : E ⧸ u.ker →L[𝕜] F := u.ker.liftQL u le_rfl
   have eq : restrict A u = u' ∘ restrict A π := by ext x; simp [π, u']
   have u'_clemb : IsClosedEmbedding u' := by
-  -- But strictness of `u` means precisely that `u'` is an embedding,
-  -- and we assumed that `u` (hence `u'`) has closed range.
+  -- By assumption, `range u' = range u` is closed.
+  -- We also assumed that `u` is strict, which precisely means that `u'` is an embedding.
   -- Hence, we are done.
     constructor
-    · have : Injective u' := by simp [u', ← LinearMap.ker_eq_bot, ker_liftQ_eq_bot]
+    · -- Note: this should be simpler with more API on strict group homs;
+      -- the issue is that the quotients associated to `LinearMap.ker` and `Setoid.ker`
+      -- are not defeq...
+      have : Injective u' := by simp [u', ← LinearMap.ker_eq_bot, ker_liftQ_eq_bot]
       simpa [isEmbedding_iff_isStrictMap_injective, this, and_true,
         u.ker.isQuotientMap_mkQL.isStrictMap_iff]
     · simpa [u', ← LinearMap.coe_range, Submodule.range_liftQ]
@@ -230,12 +234,25 @@ section FiniteDimQuotient
 
 -- TODO: better name
 -- TODO: use ∘ or ∘L ? The simp NF is ∘
-public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_quotient
+public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_quotient [T1Space F]
     (u : E →L[𝕜] F) (A : Submodule 𝕜 F) [dim_A : FiniteDimensional 𝕜 A]
     (A_compl : ClosedComplemented A) :
     (IsStrictMap u ∧ IsClosed (range u)) ↔
       (IsStrictMap (A.mkQ ∘ u) ∧ IsClosed (range (A.mkQ ∘ u))) := by
   obtain ⟨S, A_compl_S⟩ := A_compl.exists_isTopCompl
+  let Φ : (F ⧸ A) ≃L[𝕜] S := A.quotientEquivOfIsTopCompl S A_compl_S
+  let i : S →L[𝕜] F := S.subtypeL
+  have i_clemb : IsClosedEmbedding i := S.isClosedEmbedding_subtypeL A_compl_S.symm.isClosed
+  let p : F →L[𝕜] F := S.projectionL A A_compl_S.symm
+  have eq : i ∘ Φ ∘ A.mkQ = p := rfl
+  simp_rw [Φ.toHomeomorph.isEmbedding.isStrictMap_iff, ← Φ.toHomeomorph.isClosed_image,
+    i_clemb.isStrictMap_iff, i_clemb.isClosed_iff_image_isClosed, ← range_comp, Φ.coe_toHomeomorph]
+  -- simp_rw [Φ.toHomeomorph.isEmbedding.isStrictMap_iff, ← Φ.toHomeomorph.isClosed_image,
+  --   ← range_comp, ← Function.comp_assoc, Φ.coe_toHomeomorph, eq,
+  --   S.isEmbedding_subtypeL.isStrictMap_iff,
+  --   S.isClosedEmbedding_subtypeL A_compl_S.symm.isClosed |>.isClosed_iff_image_isClosed,
+  --   ← range_comp, ← ContinuousLinearMap.coe_comp']
+  -- simp
   sorry
 
 end FiniteDimQuotient
