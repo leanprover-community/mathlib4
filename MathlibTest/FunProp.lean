@@ -120,3 +120,46 @@ example {α : Type*} [MeasurableSpace α] {p q : α → Prop} (hp : Measurable p
 example {α ι : Type*} [MeasurableSpace α] [Countable ι] {p : ι → α → Prop}
     (hp : ∀ i, Measurable (p i)) : Measurable fun x => ∀ i, p i x := by
   fun_prop
+
+
+variable
+  (x₀ : ℝ) (y : ℝ)
+  (f : ℝ → ℝ) {f' : ℝ → _} (hf : ∀ x, HasFDerivAt (𝕜:=ℝ) f (f' x) x)
+  (g : ℝ → ℝ) {g' : ℝ → _} (hg : ∀ x, HasFDerivAt (𝕜:=ℝ) g (g' x) x)
+
+example : HasFDerivAt (𝕜:=ℝ) (fun x : ℝ => x) (ContinuousLinearMap.id ℝ ℝ) x₀ := by
+  apply HasFDerivAt.congr_fderiv
+  · fun_prop
+  · rfl
+
+example : HasFDerivAt (𝕜:=ℝ) (fun _ : ℝ => y) 0 x₀ := by
+  fun_prop
+
+example : HasFDerivAt (𝕜:=ℝ) (fun x : ℝ => f (g x)) ((f' (g x₀)).comp (g' x₀)) x₀ := by
+  fun_prop
+
+example : HasFDerivAt (𝕜:=ℝ) (fun x : ℝ => f (f (f (f x))))
+    ((f' (f (f (f x₀)))).comp ((f' (f (f x₀))).comp ((f' (f x₀)).comp (f' x₀)))) x₀ := by
+  fun_prop
+
+example {t x : ℝ} (n : ℕ) :
+    HasDerivAt (fun t ↦ x ^ n * Real.exp (t * x)) (x ^ (n + 1) * Real.exp (t * x)) t := by
+  apply HasDerivAt.congr_deriv
+  · apply HasFDerivAt.hasDerivAt
+    fun_prop
+  · simp; ring
+
+example : HasFDerivAt (𝕜:=ℝ) (fun x : ℝ => Real.exp (f x)) (Real.exp (f x₀) • f' x₀) x₀ := by
+  fun_prop
+
+variable {t x : ℝ} (n : ℕ)
+
+example : HasFDerivAt (fun t ↦ x ^ n * Real.exp (t * x))
+    (x ^ n • Real.exp (t * x) • MulOpposite.op x • ContinuousLinearMap.id ℝ ℝ) t := by
+  fun_prop
+
+example (t₀) : fderiv ℝ (fun t ↦ x ^ n * Real.exp (t * x)) t₀ 1
+               =
+               x ^ (n + 1) * Real.exp (x * t₀) := by
+  simp [deriv_simproc]
+  ring_nf

@@ -227,14 +227,17 @@ section fderiv
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {s : Set E} {a : E}
   {f' : StrongDual ℝ E} {n : ℕ∞}
 
+@[fun_prop]
 theorem HasStrictFDerivAt.arsinh (hf : HasStrictFDerivAt f f' a) :
     HasStrictFDerivAt (fun x => arsinh (f x)) ((√(1 + f a ^ 2))⁻¹ • f') a :=
   (hasStrictDerivAt_arsinh _).comp_hasStrictFDerivAt a hf
 
+@[fun_prop]
 theorem HasFDerivAt.arsinh (hf : HasFDerivAt f f' a) :
     HasFDerivAt (fun x => arsinh (f x)) ((√(1 + f a ^ 2))⁻¹ • f') a :=
   (hasDerivAt_arsinh _).comp_hasFDerivAt a hf
 
+@[fun_prop]
 theorem HasFDerivWithinAt.arsinh (hf : HasFDerivWithinAt f f' s a) :
     HasFDerivWithinAt (fun x => arsinh (f x)) ((√(1 + f a ^ 2))⁻¹ • f') s a :=
   (hasDerivAt_arsinh _).comp_hasFDerivWithinAt a hf

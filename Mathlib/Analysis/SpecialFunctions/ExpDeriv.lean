@@ -155,14 +155,17 @@ section
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 ℂ] {E : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] {f : E → ℂ} {f' : E →L[𝕜] ℂ} {x : E} {s : Set E}
 
+@[fun_prop]
 theorem HasStrictFDerivAt.cexp (hf : HasStrictFDerivAt f f' x) :
     HasStrictFDerivAt (fun x => Complex.exp (f x)) (Complex.exp (f x) • f') x :=
   (Complex.hasStrictDerivAt_exp (f x)).comp_hasStrictFDerivAt x hf
 
+@[fun_prop]
 theorem HasFDerivWithinAt.cexp (hf : HasFDerivWithinAt f f' s x) :
     HasFDerivWithinAt (fun x => Complex.exp (f x)) (Complex.exp (f x) • f') s x :=
   (Complex.hasDerivAt_exp (f x)).comp_hasFDerivWithinAt x hf
 
+@[fun_prop]
 theorem HasFDerivAt.cexp (hf : HasFDerivAt f f' x) :
     HasFDerivAt (fun x => Complex.exp (f x)) (Complex.exp (f x) • f') x :=
   hasFDerivWithinAt_univ.1 <| hf.hasFDerivWithinAt.cexp
@@ -346,14 +349,17 @@ theorem ContDiffWithinAt.exp {n} (hf : ContDiffWithinAt ℝ n f s x) :
     ContDiffWithinAt ℝ n (fun x => Real.exp (f x)) s x :=
   Real.contDiff_exp.contDiffAt.comp_contDiffWithinAt x hf
 
+@[fun_prop]
 theorem HasFDerivWithinAt.exp (hf : HasFDerivWithinAt f f' s x) :
     HasFDerivWithinAt (fun x => Real.exp (f x)) (Real.exp (f x) • f') s x :=
   (Real.hasDerivAt_exp (f x)).comp_hasFDerivWithinAt x hf
 
+@[fun_prop]
 theorem HasFDerivAt.exp (hf : HasFDerivAt f f' x) :
     HasFDerivAt (fun x => Real.exp (f x)) (Real.exp (f x) • f') x :=
   (Real.hasDerivAt_exp (f x)).comp_hasFDerivAt x hf
 
+@[fun_prop]
 theorem HasStrictFDerivAt.exp (hf : HasStrictFDerivAt f f' x) :
     HasStrictFDerivAt (fun x => Real.exp (f x)) (Real.exp (f x) • f') x :=
   (Real.hasStrictDerivAt_exp (f x)).comp_hasStrictFDerivAt x hf

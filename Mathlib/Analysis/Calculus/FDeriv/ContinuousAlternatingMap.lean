@@ -74,6 +74,7 @@ theorem ContinuousAlternatingMap.hasStrictFDerivAt_compContinuousLinearMap
   have H₃ := hasStrictFDerivAt_pi.mpr fun i : ι ↦ hasStrictFDerivAt_id (𝕜 := 𝕜) fg.2
   exact H₁.comp fg (H₂.prodMap fg H₃)
 
+@[fun_prop]
 theorem HasStrictFDerivAt.continuousAlternatingMapCompContinuousLinearMap
     (hf : HasStrictFDerivAt f f' x) (hg : HasStrictFDerivAt g g' x) :
     HasStrictFDerivAt (fun x ↦ (f x).compContinuousLinearMap (g x))
@@ -81,6 +82,7 @@ theorem HasStrictFDerivAt.continuousAlternatingMapCompContinuousLinearMap
         (f x).fderivCompContinuousLinearMap (g x) ∘L g') x :=
   hasStrictFDerivAt_compContinuousLinearMap (f x, g x) |>.comp x (hf.prodMk hg)
 
+@[fun_prop]
 theorem HasFDerivAt.continuousAlternatingMapCompContinuousLinearMap
     (hf : HasFDerivAt f f' x) (hg : HasFDerivAt g g' x) :
     HasFDerivAt (fun x ↦ (f x).compContinuousLinearMap (g x))
@@ -89,6 +91,7 @@ theorem HasFDerivAt.continuousAlternatingMapCompContinuousLinearMap
   convert hasStrictFDerivAt_compContinuousLinearMap (f x, (g x)) |>.hasFDerivAt
     |>.comp x (hf.prodMk hg)
 
+@[fun_prop]
 theorem HasFDerivWithinAt.continuousAlternatingMapCompContinuousLinearMap
     (hf : HasFDerivWithinAt f f' s x) (hg : HasFDerivWithinAt g g' s x) :
     HasFDerivWithinAt (fun x ↦ (f x).compContinuousLinearMap (g x))
@@ -174,6 +177,7 @@ theorem hasFDerivWithinAt (f : E [⋀^ι]→L[𝕜] F) (s : Set (ι → E)) (x :
 
 end ContinuousAlternatingMap
 
+@[fun_prop]
 theorem HasStrictFDerivAt.continuousAlternatingMap_apply (hf : HasStrictFDerivAt f f' x)
     (hg : ∀ i, HasStrictFDerivAt (g i) (g' i) x) :
     HasStrictFDerivAt
@@ -183,6 +187,7 @@ theorem HasStrictFDerivAt.continuousAlternatingMap_apply (hf : HasStrictFDerivAt
   (toContinuousMultilinearMapCLM 𝕜).hasStrictFDerivAt.comp x hf
     |>.continuousMultilinearMap_apply hg
 
+@[fun_prop]
 theorem HasFDerivAt.continuousAlternatingMap_apply (hf : HasFDerivAt f f' x)
     (hg : ∀ i, HasFDerivAt (g i) (g' i) x) :
     HasFDerivAt
@@ -192,6 +197,7 @@ theorem HasFDerivAt.continuousAlternatingMap_apply (hf : HasFDerivAt f f' x)
   (toContinuousMultilinearMapCLM 𝕜).hasFDerivAt.comp x hf
     |>.continuousMultilinearMap_apply hg
 
+@[fun_prop]
 theorem HasFDerivWithinAt.continuousAlternatingMap_apply (hf : HasFDerivWithinAt f f' s x)
     (hg : ∀ i, HasFDerivWithinAt (g i) (g' i) s x) :
     HasFDerivWithinAt
