@@ -128,11 +128,8 @@ def tateComplexFunctor : Rep R G ⥤ CochainComplex (ModuleCat R) ℤ where
   obj M := tateComplex M
   map := tateComplex.map
   map_comp f g := by
-    unfold tateComplex.map
-    rw [CochainComplex.ConnectData.map_comp_map]
-    congr 1
-    rw [← chainsMap_comp]
-    congr 1
+    simp [tateComplex.map, CochainComplex.ConnectData.map_comp_map, ← chainsMap_comp]
+    rfl
 
 /-- The functor taking a representation of `G` to its `n`-th Tate cohomology group. -/
 def tateCohomologyFunctor (n : ℤ) : Rep R G ⥤ ModuleCat R :=
