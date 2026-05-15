@@ -492,12 +492,19 @@ noncomputable def weakRankFunction {m : ℕ} (k : Fin (m + 1)) (n : ℕ) :
     (pairingCore.{u} k n).WeakRankFunction ℕ where
   rank s := (finset s.x rfl).card
   lt := by
-    intro s t ⟨h₁, h₂⟩ h₃
-    dsimp at s t h₃
-    generalize hd : s.d = d
-    have hds : s.x.dim = d + 1 := by simpa [s.hd]
-    have hdt : t.x.dim = d + 1 := by simpa [t.hd, ← h₃]
-    suffices (finset s.x hds).card < (finset t.x hdt).card by convert this
+    intro ⟨s, d, hds, is, hs⟩ ⟨t, d', hdt, it, ht⟩ ⟨h₁, h₂⟩ h₃
+    obtain ⟨ds, s, hs₁, hs₂, rfl⟩ := Subcomplex.N.mk_surjective s
+    obtain ⟨dt, t, ht₁, ht₂, rfl⟩ := Subcomplex.N.mk_surjective t
+    obtain rfl : d = d' := h₃
+    obtain rfl : ds = d + 1 := hds
+    obtain rfl : dt = d + 1 := hdt
+    simp only [ne_eq, pairingCore_ι, Type₁.ext_iff] at h₁
+    change N.mk ((Δ[m + 1] ⊗ Δ[n]).δ is.castSucc s) _ < N.mk t _ at h₂
+    obtain ⟨f, hf, h⟩ := N.le_iff_exists_mono.1 h₂.le
+    dsimp at f hf
+    obtain ⟨i, rfl⟩ := SimplexCategory.eq_δ_of_mono f
+    dsimp at h ⊢
+    have := hs.isType₂_δ
     sorry
 
 instance {m : ℕ} (k : Fin (m + 1)) (n : ℕ) :
