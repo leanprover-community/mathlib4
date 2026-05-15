@@ -60,107 +60,6 @@ variable {n : WithTop ℕ∞}
   [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
   {X X' X'' Y Y' Y'' Z Z' : Π x : M, TangentSpace I x}
 
-section
-
-omit [IsManifold I 2 M]
-
-variable {σ σ' σ'' τ τ' τ'' : Π x : M, TangentSpace I x}
-
-variable {I}
-
-/-- The scalar product of two sections. -/
-noncomputable abbrev product (σ τ : Π x : M, TangentSpace I x) : M → ℝ :=
-  fun x ↦ inner ℝ (σ x) (τ x)
-
--- `product` is C^k if σ and τ are: this is shown in `Riemannian.lean`
-
-local notation "⟪" σ ", " τ "⟫" => product σ τ
-
--- Basic API for the product of two sections.
-section product
-
-lemma product_apply (x) : ⟪σ, τ⟫ x = inner ℝ (σ x) (τ x) := rfl
-
-variable (σ σ' τ)
-
-lemma product_swap : ⟪τ, σ⟫ = ⟪σ, τ⟫ := by
-  ext x
-  apply real_inner_comm
-
-@[simp]
-lemma product_zero_left : ⟪0, σ⟫ = 0 := by
-  ext x
-  simp only [product, Pi.zero_apply, inner_zero_left]
-
-@[simp]
-lemma product_zero_right : ⟪σ, 0⟫ = 0 := by rw [product_swap, product_zero_left]
-
-lemma product_add_left : ⟪σ + σ', τ⟫ = ⟪σ, τ⟫ + ⟪σ', τ⟫ := by
-  ext x
-  simp [product, InnerProductSpace.add_left]
-
-@[simp]
-lemma product_add_left_apply (x) : ⟪σ + σ', τ⟫ x = ⟪σ, τ⟫ x + ⟪σ', τ⟫ x := by
-  simp [product, InnerProductSpace.add_left]
-
-lemma product_add_right : ⟪σ, τ + τ'⟫ = ⟪σ, τ⟫ + ⟪σ, τ'⟫ := by
-  rw [product_swap, product_swap τ, product_swap τ', product_add_left]
-
-@[simp]
-lemma product_add_right_apply (x) : ⟪σ, τ + τ'⟫ x = ⟪σ, τ⟫ x + ⟪σ, τ'⟫ x := by
-  rw [product_swap, product_swap τ, product_swap τ', product_add_left_apply]
-
-@[simp] lemma product_neg_left : ⟪-σ, τ⟫ = -⟪σ, τ⟫ := by ext x; simp [product]
-
-@[simp] lemma product_neg_right : ⟪σ, -τ⟫ = -⟪σ, τ⟫ := by ext x; simp [product]
-
-lemma product_sub_left : ⟪σ - σ', τ⟫ = ⟪σ, τ⟫ - ⟪σ', τ⟫ := by
-  ext x
-  simp [product, inner_sub_left]
-
-lemma product_sub_right : ⟪σ, τ - τ'⟫ = ⟪σ, τ⟫ - ⟪σ, τ'⟫ := by
-  ext x
-  simp [product, inner_sub_right]
-
-lemma product_smul_left (f : M → ℝ) : product (f • σ) τ = f • product σ τ := by
-  ext x
-  simp [product, real_inner_smul_left]
-
-@[simp]
-lemma product_smul_const_left (a : ℝ) : product (a • σ) τ = a • product σ τ := by
-  ext x
-  simp [product, real_inner_smul_left]
-
-lemma product_smul_right (f : M → ℝ) : product σ (f • τ) = f • product σ τ := by
-  ext x
-  simp [product, real_inner_smul_right]
-
-@[simp]
-lemma product_smul_const_right (a : ℝ) : product σ (a • τ) = a • product σ τ := by
-  ext x
-  simp [product, real_inner_smul_right]
-
-end product
-
--- These lemmas are necessary as my Lie bracket identities (assuming minimal differentiability)
--- only hold point-wise. They abstract the expanding and unexpanding of `product`.
-
-lemma product_congr_left {x} (h : σ x = σ' x) : product σ τ x = product σ' τ x := by
-  rw [product_apply, h, ← product_apply]
-
-lemma product_congr_left₂ {x} (h : σ x = σ' x + σ'' x) :
-    product σ τ x = product σ' τ x + product σ'' τ x := by
-  rw [product_apply, h, inner_add_left, ← product_apply]
-
-lemma product_congr_right {x} (h : τ x = τ' x) : product σ τ x = product σ τ' x := by
-  rw [product_apply, h, ← product_apply]
-
-lemma product_congr_right₂ {x} (h : τ x = τ' x + τ'' x) :
-    product σ τ x = product σ τ' x + product σ τ'' x := by
-  rw [product_apply, h, inner_add_right, ← product_apply]
-
-end
-
 namespace CovariantDerivative
 
 -- Let `cov` be a covariant derivative on `TM`.
@@ -179,7 +78,7 @@ version depending on a choice of Riemannian metric on `M`.
 -/
 def IsLeviCivitaConnection [FiniteDimensional ℝ E] : Prop := cov.IsCompatible ∧ cov.torsion = 0
 
-local notation "⟪" X ", " Y "⟫" => product X Y
+local notation "⟪" X ", " Y "⟫" => fun x ↦ inner ℝ (X x) (Y x)
 
 /- TODO: writing `hσ.inner_bundle hτ` or writing `by apply MDifferentiable.inner_bundle hσ hτ`
 yields an error
@@ -220,7 +119,7 @@ omit [IsManifold I 2 M] in
 lemma rhs_aux_swap : rhs_aux I X Y Z = rhs_aux I X Z Y := by
   ext x
   unfold rhs_aux
-  rw [product_swap Z Y]
+  simp [real_inner_comm]
 
 omit [IsManifold I 2 M] in
 variable (X X' Y Z) in
@@ -234,13 +133,13 @@ variable (X) in
 @[simp]
 lemma rhs_aux_addY_apply (hY : MDiffAt (T% Y) x) (hY' : MDiffAt (T% Y') x) (hZ : MDiffAt (T% Z) x) :
     rhs_aux I X (Y + Y') Z x = rhs_aux I X Y Z x + rhs_aux I X Y' Z x := by
-  simp [rhs_aux, product_add_left, extDerivFun_add (hY.inner_bundle' hZ) (hY'.inner_bundle' hZ)]
+  simp [rhs_aux, inner_add_left, extDerivFun_fun_add (hY.inner_bundle' hZ) (hY'.inner_bundle' hZ)]
 
 variable (X) in
 @[simp]
 lemma rhs_aux_addZ_apply (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) (hZ' : MDiffAt (T% Z') x) :
     rhs_aux I X Y (Z + Z') x = rhs_aux I X Y Z x + rhs_aux I X Y Z' x := by
-  simp [rhs_aux, product_add_right, extDerivFun_add (hY.inner_bundle' hZ) (hY.inner_bundle' hZ')]
+  simp [rhs_aux, inner_add_right, extDerivFun_fun_add (hY.inner_bundle' hZ) (hY.inner_bundle' hZ')]
 
 omit [IsManifold I 2 M] in
 variable (X Y Z) in
@@ -252,7 +151,7 @@ lemma rhs_aux_smulY_apply {f : M → ℝ}
     (hf : MDiffAt f x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     letI A (x) := ((extDerivFun% f x) (X x))
     rhs_aux I X (f • Y) Z x = f x * rhs_aux I X Y Z x + A x * ⟪Y, Z⟫ x := by
-  simp [rhs_aux, product_smul_left, extDerivFun_mul hf (hY.inner_bundle' hZ)]
+  simp [rhs_aux, inner_smul_left, extDerivFun_fun_mul hf (hY.inner_bundle' hZ)]
   ring
 
 variable (X) in
@@ -260,7 +159,8 @@ lemma rhs_aux_smulZ_apply {f : M → ℝ}
     (hf : MDiffAt f x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     letI A (x) := ((extDerivFun% f x) (X x))
     rhs_aux I X Y (f • Z) x = f x * rhs_aux I X Y Z x + A x * ⟪Y, Z⟫ x := by
-  rw [rhs_aux_swap, rhs_aux_smulY_apply, rhs_aux_swap, product_swap]
+  rw [rhs_aux_swap, rhs_aux_smulY_apply, rhs_aux_swap]
+  · simp_rw [real_inner_comm]
   exacts [hf, hZ, hY]
 
 end rhs_aux
@@ -299,11 +199,11 @@ lemma leviCivitaRhs'_addX_apply [CompleteSpace E]
   -- We have to rewrite back and forth: the Lie bracket is only additive at x,
   -- as we are only asking for differentiability at x.
   -- Fortunately, the `product_congr_right₂` lemma abstracts this very well.
-  rw [product_congr_right₂ (VectorField.mlieBracket_add_right (V := Y) hX hX'),
-    product_congr_right₂ (VectorField.mlieBracket_add_left (W := Z) hX hX'),
-    product_add_left_apply, rhs_aux_addY_apply, rhs_aux_addZ_apply] <;> try assumption
+  rw [(VectorField.mlieBracket_add_right (V := Y) hX hX'),
+    (VectorField.mlieBracket_add_left (W := Z) hX hX'),
+    inner_add_left, rhs_aux_addY_apply, rhs_aux_addZ_apply] <;> try assumption
+  simp [inner_add_right]
   abel
-
 lemma leviCivitaRhs_addX_apply [CompleteSpace E]
     (hX : MDiffAt (T% X) x) (hX' : MDiffAt (T% X') x)
     (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
@@ -320,29 +220,9 @@ lemma leviCivitaRhs'_smulX_apply [CompleteSpace E] {f : M → ℝ}
   unfold leviCivitaRhs'
   simp only [Pi.add_apply, Pi.sub_apply]
   rw [rhs_aux_smulX_apply, rhs_aux_smulY_apply, rhs_aux_smulZ_apply] <;> try assumption
-  -- TODO: add the right congr_right lemma to avoid the product_apply, ← product_apply dance!
-  simp only [product_apply, mlieBracket_smul_left (W := Z) hf hX,
-    mlieBracket_smul_right (V := Y) hf hX, inner_add_right]
-  -- Combining this line with the previous one fails.
-  simp only [← product_apply, neg_smul, inner_neg_right]
-  have h1 :
-      inner ℝ (Y x) (((extDerivFun% f x (Z x))) • X x) =
-        (extDerivFun% f x (Z x)) * ⟪X, Y⟫ x := by
-    simp only [product]
-    rw [← real_inner_smul_left, real_inner_smul_right, real_inner_smul_left, real_inner_comm]
-  have h2 :
-      inner ℝ (Z x) (((extDerivFun% f x (Y x))) • X x) =
-        ((extDerivFun% f x (Y x))) * ⟪Z, X⟫ x := by
-    simp only [product]
-    rw [← real_inner_smul_left, real_inner_smul_right, real_inner_smul_left]
-  rw [h1, h2]
-  --set dfY := fromTangentSpace (f x) ((mfderiv% f x (Y x)))--(mfderiv% f x) (Y x)
-  --set dfZ : ℝ := (mfderiv% f x) (Z x)
-  have h3 : ⟪f • X, mlieBracket I Z Y⟫ x = f x * ⟪X, mlieBracket I Z Y⟫ x := by
-    rw [product_apply, Pi.smul_apply', real_inner_smul_left]
-  have h4 : inner ℝ (Z x) (f x • mlieBracket I Y X x) = f x * ⟪Z, mlieBracket I Y X⟫ x := by
-    rw [product_apply, real_inner_smul_right]
-  rw [real_inner_smul_right (Y x), h3, h4]
+  simp [mlieBracket_smul_left (W := Z) hf hX,
+    mlieBracket_smul_right (V := Y) hf hX, inner_add_right,
+    inner_smul_left, inner_smul_right, real_inner_comm]
   -- Push all applications of `x` inwards, then it's indeed obvious.
   ring
 
@@ -357,12 +237,13 @@ lemma leviCivitaRhs'_addY_apply [CompleteSpace E]
     (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x)
     (hY' : MDiffAt (T% Y') x) (hZ : MDiffAt (T% Z) x) :
     leviCivitaRhs' I X (Y + Y') Z x = leviCivitaRhs' I X Y Z x + leviCivitaRhs' I X Y' Z x := by
-  simp only [leviCivitaRhs', Pi.add_apply, Pi.sub_apply, product_add_left_apply]
+  simp only [leviCivitaRhs', Pi.add_apply, Pi.sub_apply, inner_add_left]
   rw [rhs_aux_addX_apply, rhs_aux_addY_apply, rhs_aux_addZ_apply] <;> try assumption
   -- We have to rewrite back and forth: the Lie bracket is only additive at x,
   -- as we are only asking for differentiability at x.
-  rw [product_congr_right₂ (mlieBracket_add_left (W := X) hY hY')]
-  rw [product_congr_right₂ (VectorField.mlieBracket_add_right (V := Z) hY hY')]
+  rw [(mlieBracket_add_left (W := X) hY hY')]
+  rw [(VectorField.mlieBracket_add_right (V := Z) hY hY')]
+  simp [inner_add_right]
   abel
 
 lemma leviCivitaRhs_addY_apply [CompleteSpace E]
@@ -378,13 +259,13 @@ lemma leviCivitaRhs'_smulY_apply [CompleteSpace E] {f : M → ℝ}
       f x * leviCivitaRhs' I X Y Z x + extDerivFun% f x (X x) * 2 * ⟪Y, Z⟫ x := by
   -- TODO: is there a better abstraction for this kind of "Lie bracket conv mode"?
   have h1 : ⟪Z, mlieBracket I (f • Y) X⟫ x =
-      - extDerivFun% f x (X x) * ⟪Z, Y⟫ x + f x * ⟪Z, mlieBracket I Y X⟫ x := by
-    simp [product_apply, mlieBracket_smul_left (W := X) hf hY, inner_add_right, inner_smul_right]
+      - extDerivFun% f x (X x) * ⟪Y, Z⟫ x + f x * ⟪Z, mlieBracket I Y X⟫ x := by
+    simp [mlieBracket_smul_left (W := X) hf hY, inner_add_right, inner_smul_right,
+      real_inner_comm (Y x) (Z x)]
   have h2 : ⟪X, mlieBracket I Z (f • Y)⟫ x =
       extDerivFun% f x (Z x) * ⟪X, Y⟫ x + f x * ⟪X, mlieBracket I Z Y⟫ x := by
-    simp [product_apply, mlieBracket_smul_right (V := Z) hf hY, inner_add_right, inner_smul_right]
-  rw [product_swap Y Z] at h1
-  simp [leviCivitaRhs', rhs_aux_smulX_apply I Y Z X f, product_smul_left,
+    simp [mlieBracket_smul_right (V := Z) hf hY, inner_add_right, inner_smul_right]
+  simp [leviCivitaRhs', rhs_aux_smulX_apply I Y Z X f, inner_smul_left,
     rhs_aux_smulY_apply I X hf hY hZ, rhs_aux_smulZ_apply I Z hf hX hY]
   linear_combination -h1 + h2
 
@@ -401,16 +282,18 @@ lemma leviCivitaRhs'_addZ_apply [CompleteSpace E]
     leviCivitaRhs' I X Y (Z + Z') x =
       leviCivitaRhs' I X Y Z x + leviCivitaRhs' I X Y Z' x := by
   simp [leviCivitaRhs', rhs_aux_addX_apply,
-    product_congr_right₂ (VectorField.mlieBracket_add_right (V := X) hZ hZ'),
-    product_congr_right₂ (VectorField.mlieBracket_add_left (W := Y) hZ hZ'),
-    rhs_aux_addY_apply _ _ hZ hZ' hX, rhs_aux_addZ_apply _ _ hY hZ hZ']
+    (VectorField.mlieBracket_add_right (V := X) hZ hZ'),
+    (VectorField.mlieBracket_add_left (W := Y) hZ hZ'),
+    rhs_aux_addY_apply _ _ hZ hZ' hX, rhs_aux_addZ_apply _ _ hY hZ hZ',
+    inner_add_left, inner_add_right]
   abel
 
 lemma leviCivitaRhs_addZ_apply [CompleteSpace E]
     (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x)
     (hZ : MDiffAt (T% Z) x) (hZ' : MDiffAt (T% Z') x) :
     leviCivitaRhs I X Y (Z + Z') x = leviCivitaRhs I X Y Z x + leviCivitaRhs I X Y Z' x := by
-  simp [leviCivitaRhs, leviCivitaRhs'_addZ_apply I hX hY hZ hZ', left_distrib]
+  simp [leviCivitaRhs, leviCivitaRhs'_addZ_apply I hX hY hZ hZ']
+  ring
 
 lemma leviCivitaRhs'_smulZ_apply [CompleteSpace E] {f : M → ℝ}
     (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
@@ -419,15 +302,14 @@ lemma leviCivitaRhs'_smulZ_apply [CompleteSpace E] {f : M → ℝ}
   -- Let's encapsulate the going into the product and back out again.
   have h1 : ⟪Y, mlieBracket I X (f • Z)⟫ x =
       extDerivFun% f x (X x) * ⟪Y, Z⟫ x + f x * ⟪Y, mlieBracket I X Z⟫ x := by
-    simp [product_apply, VectorField.mlieBracket_smul_right hf hZ, inner_add_right,
+    simp [VectorField.mlieBracket_smul_right hf hZ, inner_add_right,
       inner_smul_right]
   have h2 : ⟪X, mlieBracket I (f • Z) Y⟫ x =
       - extDerivFun% f x (Y x) * ⟪X, Z⟫ x + f x • ⟪X, mlieBracket I Z Y⟫ x := by
-    simp [product_apply, VectorField.mlieBracket_smul_left hf hZ, inner_add_right, inner_smul_right]
+    simp [VectorField.mlieBracket_smul_left hf hZ, inner_add_right, inner_smul_right]
   simp only [leviCivitaRhs', rhs_aux_smulX_apply, Pi.add_apply, Pi.sub_apply]
   rw [rhs_aux_smulY_apply _ _ hf hZ hX, rhs_aux_smulZ_apply _ _ hf hY hZ]
-  rw [product_smul_left, ]
-  simp [real_inner_comm (X x) (Z x)]
+  simp [inner_smul_left, real_inner_comm (X x) (Z x)]
   linear_combination -h1 + h2
 
 lemma leviCivitaRhs_smulZ_apply [CompleteSpace E] {f : M → ℝ}
@@ -444,7 +326,7 @@ lemma aux (h : cov.IsLeviCivitaConnection) {x : M}
     ⟪∇ Y, X, Z⟫ x + ⟪Y, ∇ X, Z⟫ x + ⟪Y, VectorField.mlieBracket I X Z⟫ x := by
   trans ⟪∇ Y, X, Z⟫ x + ⟪Y, ∇ Z, X⟫ x
   · exact cov.isCompatible_iff.mp h.1 hX hY hZ
-  · simp [← cov.torsion_eq_zero_iff.mp h.2 hX hZ, product, inner_sub_right]
+  · simp [← cov.torsion_eq_zero_iff.mp h.2 hX hZ, inner_sub_right]
 
 variable {cov} in
 /-- Auxiliary lemma towards the uniquness of the Levi-Civita connection: expressing the term
@@ -470,7 +352,7 @@ lemma congr_of_forall_product_apply [FiniteDimensional ℝ E] {Y Y' : TangentSpa
   set Φ := InnerProductSpace.toDual ℝ (TangentSpace I x)
   apply Φ.injective
   ext Z₀
-  simpa [Φ, product] using h Z₀
+  simpa [Φ] using h Z₀
 
 omit [IsContMDiffRiemannianBundle I 1 E (TangentSpace I (M := M))] in
 variable {I} in
@@ -482,7 +364,7 @@ lemma congr_of_forall_product [FiniteDimensional ℝ E]
   ext1 x
   apply congr_of_forall_product_apply
   intro Z₀
-  simpa [product] using congr($(h (extend E Z₀)) x)
+  simpa using congr($(h (extend E Z₀)) x)
 
 /-- The Levi-Civita connection on `(M, g)` is uniquely determined,
 at least on differentiable vector fields. -/
@@ -636,7 +518,7 @@ lemma isCovariantDerivativeOn_lcAux [FiniteDimensional ℝ E] :
       rw [if_pos, if_pos, if_pos, if_pos]
       · convert leviCivitaRhs_smulY_apply I hf (FiberBundle.mdifferentiableAt_extend I E X₀) hY
           (FiberBundle.mdifferentiableAt_extend I E Z₀)
-        simp [Φ, product]
+        simp [Φ]
       · exact FiberBundle.mdifferentiableAt_extend ..
       · exact FiberBundle.mdifferentiableAt_extend ..
       · exact FiberBundle.mdifferentiableAt_extend ..
@@ -712,7 +594,7 @@ lemma leviCivitaConnection_torsion_eq_zero [FiniteDimensional ℝ E] :
   rw [leviCivitaConnection_apply I hX hY (mdifferentiableAt_extend ..)]
   simp only [leviCivitaRhs_apply]
   -- XXX: should there be leviCivitaRhs'_apply?
-  simp only [leviCivitaRhs', Pi.add_apply, Pi.sub_apply, product_apply]
+  simp only [leviCivitaRhs', Pi.add_apply, Pi.sub_apply]
   simp only [VectorField.mlieBracket_swap (V := Y) (W := X)]
   simp only [Pi.neg_apply, inner_neg_right, sub_neg_eq_add]
   set C := inner ℝ Z (VectorField.mlieBracket I X Y x)
