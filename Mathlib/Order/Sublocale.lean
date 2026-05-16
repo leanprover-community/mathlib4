@@ -166,13 +166,51 @@ def giRestrict (S : Sublocale X) : GaloisInsertion S.restrict Subtype.val := S.g
 
 @[simp] lemma restrict_of_mem (ha : a ∈ S) : S.restrict a = ⟨a, ha⟩ := S.giRestrict.l_u_eq ⟨a, ha⟩
 
+end Sublocale
+
+/-- The nuclei on a frame corresponds exactly to the sublocales on this frame.
+The sublocales are ordered dually to the nuclei. -/
+def nucleusIsoSublocale : (Nucleus X)ᵒᵈ ≃o Sublocale X where
+  --- The range of a nucleus is a sublocale.
+  toFun n := {
+    carrier := range n.ofDual,
+    sInf_mem' a h := (by
+    rw [Nucleus.mem_range]
+    refine le_antisymm (le_sInf_iff.mpr (fun b h1 ↦ ?_)) Nucleus.le_apply
+    simp_rw [subset_def, Nucleus.mem_range] at h
+    rw [← h b h1]
+    exact n.monotone (sInf_le h1)),
+    himp_mem' a b h := by rw [Nucleus.mem_range, ← h, Nucleus.map_himp_apply] at *
+  }
+  --- The restriction from the locale X into a sublocale is a nucleus.
+  invFun s := .toDual {
+    toFun x := s.restrict x
+    map_inf' _ _ := by simp [s.giRestrict.gc.u_inf]
+    idempotent' _ := by rw [s.giRestrict.gc.l_u_l_eq_l]
+    le_apply' _ := s.giRestrict.gc.le_u_l _
+  }
+  left_inv n := by
+    simp only [OrderDual.ext_iff, OrderDual.ofDual_toDual, Nucleus.ext_iff, Nucleus.coe_mk,
+      InfHom.coe_mk]
+    intro x
+    simpa [Sublocale.restrict, sInf_image, le_antisymm_iff (a := iInf _)] using
+      ⟨iInf₂_le_of_le ⟨n.ofDual x, x, rfl⟩ n.ofDual.le_apply le_rfl,
+        fun y hxy ↦ by simpa using n.ofDual.monotone hxy⟩
+  right_inv S := by ext x; simpa using ⟨by simp +contextual [eq_comm], fun hx ↦ ⟨x, by simp [hx]⟩⟩
+  map_rel_iff' := by simp
+
+@[simp] lemma nucleusIsoSublocale.apply_carrier {n : Nucleus X} :
+  ((nucleusIsoSublocale n) : Set X) = range n := by rfl
+
+namespace Sublocale
+
 /-- The restriction from the locale X into a sublocale is a nucleus. -/
-@[simps]
-def toNucleus (S : Sublocale X) : Nucleus X where
-  toFun x := S.restrict x
-  map_inf' _ _ := by simp [S.giRestrict.gc.u_inf]
-  idempotent' _ := by rw [S.giRestrict.gc.l_u_l_eq_l]
-  le_apply' _ := S.giRestrict.gc.le_u_l _
+abbrev toNucleus (S : Sublocale X) : Nucleus X := (nucleusIsoSublocale.symm S).ofDual
+
+variable {S T : Sublocale X}
+
+@[simp] lemma coe_nucleusIsoSublocale_apply {i : X} :
+  (nucleusIsoSublocale.symm S).ofDual i = S.restrict i := rfl
 
 @[simp] lemma range_toNucleus : range S.toNucleus = S := by
   ext x
@@ -181,30 +219,21 @@ def toNucleus (S : Sublocale X) : Nucleus X where
   · intro hx
     exact ⟨x, by simp_all⟩
 
-@[simp] lemma toNucleus_le_toNucleus : S.toNucleus ≤ T.toNucleus ↔ T ≤ S := by
-  simp [← Nucleus.range_subset_range]
+@[simp↓] lemma toNucleus_le_toNucleus : S.toNucleus ≤ T.toNucleus ↔ T ≤ S := by
+  simp [↓← Nucleus.range_subset_range]
 
 end Sublocale
 
 namespace Nucleus
 
 /-- The range of a nucleus is a sublocale. -/
-@[simps]
-def toSublocale (n : Nucleus X) : Sublocale X where
-  carrier := range n
-  sInf_mem' a h := by
-    rw [mem_range]
-    refine le_antisymm (le_sInf_iff.mpr (fun b h1 ↦ ?_)) le_apply
-    simp_rw [subset_def, mem_range] at h
-    rw [← h b h1]
-    exact n.monotone (sInf_le h1)
-  himp_mem' a b h := by rw [mem_range, ← h, map_himp_apply] at *
+abbrev toSublocale (n : Nucleus X) : Sublocale X := nucleusIsoSublocale (OrderDual.toDual n)
 
 @[simp]
 lemma mem_toSublocale {n : Nucleus X} {x : X} : x ∈ n.toSublocale ↔ ∃ y, n y = x := .rfl
 
 @[simp, gcongr] lemma toSublocale_le_toSublocale {m n : Nucleus X} :
-    m.toSublocale ≤ n.toSublocale ↔ n ≤ m := by simp [← SetLike.coe_subset_coe]
+    m.toSublocale ≤ n.toSublocale ↔ n ≤ m := by simp
 
 @[simp] lemma restrict_toSublocale (n : Nucleus X) (x : X) :
     n.toSublocale.restrict x = ⟨n x, x, rfl⟩ := by
@@ -214,26 +243,114 @@ lemma mem_toSublocale {n : Nucleus X} {x : X} : x ∈ n.toSublocale ↔ ∃ y, n
 
 end Nucleus
 
-/-- The nuclei on a frame corresponds exactly to the sublocales on this frame.
-The sublocales are ordered dually to the nuclei. -/
-def nucleusIsoSublocale : (Nucleus X)ᵒᵈ ≃o Sublocale X where
-  toFun n := n.ofDual.toSublocale
-  invFun s := .toDual s.toNucleus
-  left_inv := by simp [Function.LeftInverse, Nucleus.ext_iff]
-  right_inv S := by ext x; simpa using ⟨by simp +contextual [eq_comm], fun hx ↦ ⟨x, by simp [hx]⟩⟩
-  map_rel_iff' := by simp
+instance Sublocale.instCompleteLattice : CompleteLattice (Sublocale X) where
+  top := ⟨univ, fun _ _ ↦ mem_univ _, fun _ _ a ↦ a⟩
+  le_top x := (mk_le_mk _ _ _ _ _ _).mpr <| subset_univ x.carrier
+  bot := ⟨{⊤}, by simp , by simp⟩
+  bot_le x := (mk_le_mk _ _ _ _ _ _).mpr <| singleton_subset_iff.mpr <| mem_carrier.mpr top_mem
+  __ := nucleusIsoSublocale.toGaloisInsertion.liftCompleteLattice
 
-lemma nucleusIsoSublocale.eq_toSublocale : Nucleus.toSublocale = @nucleusIsoSublocale X _ := rfl
-lemma nucleusIsoSublocale.symm_eq_toNucleus :
-  Sublocale.toNucleus = (@nucleusIsoSublocale X _).symm := rfl
+lemma Sublocale.univ_eq_top :
+  (⟨univ, fun _ _ ↦ mem_univ _, fun _ _ a ↦ a⟩ : Sublocale X) = ⊤ := rfl
 
-instance Sublocale.instCompleteLattice : CompleteLattice (Sublocale X) :=
-  nucleusIsoSublocale.toGaloisInsertion.liftCompleteLattice
+lemma Sublocale.singleton_top_eq_bot : (⟨{⊤}, by simp, by simp⟩ : Sublocale X) = ⊥ := rfl
 
 instance Sublocale.instCoframeMinimalAxioms : Order.Coframe.MinimalAxioms (Sublocale X) where
-  iInf_sup_le_sup_sInf a s := by simp [← toNucleus_le_toNucleus,
-    nucleusIsoSublocale.symm_eq_toNucleus, nucleusIsoSublocale.symm.map_sup,
-    nucleusIsoSublocale.symm.map_sInf, sup_iInf_eq, nucleusIsoSublocale.symm.map_iInf]
+  iInf_sup_le_sup_sInf a s := by
+    rw [← toNucleus_le_toNucleus]
+    simp [-toNucleus_le_toNucleus, sup_sInf_eq, ↓iInf_image]
 
 instance Sublocale.instCoframe : Order.Coframe (Sublocale X) :=
-  .ofMinimalAxioms instCoframeMinimalAxioms
+  .ofMinimalAxioms Sublocale.instCoframeMinimalAxioms
+
+
+section Open
+
+abbrev Nucleus.Open (U : X) : Nucleus X where
+  toFun x := U ⇨ x
+  map_inf' _ _ := himp_inf_distrib _ _ _
+  idempotent' _ := le_of_eq himp_idem
+  le_apply' _ := le_himp
+
+def Sublocale.Open : FrameHom X (Sublocale X) where
+  toFun U := Nucleus.Open U |>.toSublocale
+  map_inf' a b := by
+    apply nucleusIsoSublocale.symm.injective
+    simp only [OrderIso.symm_apply_apply, map_inf, ← toDual_sup]
+    congr
+    refine le_antisymm (fun i ↦ ?_) ?_
+    · rw [← sSup_pair, ← sInf_upperBounds_eq_sSup, Nucleus.sInf_apply]
+      simp only [Nucleus.coe_mk, InfHom.coe_mk, upperBounds_insert, upperBounds_singleton,
+        Ici_inter_Ici, mem_Ici, sup_le_iff, le_iInf_iff, and_imp]
+      intro n h1 h2
+      rw [← himp_himp, ← @n.idempotent _ _ i]
+      exact le_trans (h1 _) (le_trans Nucleus.map_himp_le (h2 (n i)))
+    · have h {x y : X} : Nucleus.Open x ≤ Nucleus.Open (x ⊓ y) := fun i ↦ by
+        simpa using le_trans (inf_le_inf (by rfl) inf_le_left) himp_inf_le
+      exact sup_le h (by rw [inf_comm]; exact h)
+  map_top' := by simpa [Nucleus.Open] using by rfl
+  map_sSup' s := by
+    apply nucleusIsoSublocale.symm.injective
+    apply OrderDual.ofDual_inj.mp
+    simp
+    ext i
+    apply le_antisymm
+    · simp
+      sorry
+    · simp only [Nucleus.sInf_apply, mem_preimage, mem_image, exists_exists_and_eq_and,
+      OrderIso.symm_apply_apply, EmbeddingLike.apply_eq_iff_eq, iInf_exists, Nucleus.coe_mk,
+      InfHom.coe_mk, le_himp_iff]
+      simp [inf_sSup_eq]
+      intro a ha
+      simp [iInf_inf, iInf_le_iff]
+      intro x h
+      sorry
+
+
+
+
+
+set_option backward.isDefEq.respectTransparency false in
+/--
+The map from open sublocales to their corresponding sublocale is a `FrameHom`. It preserves finite
+meets and arbitrary joins.
+-/
+def toSublocale : FrameHom (Open X) (Sublocale X) where
+  toFun U := U.toNucleus.toSublocale
+  map_sSup' s := by
+    simp only [Nucleus.toSublocale, ← image_image, ← map_sSup, EmbeddingLike.apply_eq_iff_eq]
+    ext x
+    simp only [toNucleus, map_sSup, OrderDual.ofDual_toDual, Nucleus.coe_mk, InfHom.coe_mk,
+      ofDual_sSup, Equiv.preimage_image, Nucleus.sInf_apply, mem_image, iInf_exists]
+    apply le_antisymm
+    · simp only [le_iInf_iff, and_imp, forall_apply_eq_imp_iff₂, Nucleus.coe_mk, InfHom.coe_mk]
+      exact fun _ h ↦ himp_le_himp (le_sSup (by simp [h])) (le_refl _)
+    · simp [↓iInf_le_iff, inf_sSup_eq]
+  map_inf' a b := by
+    rw [Nucleus.toSublocale, ← map_inf]
+    congr
+    ext x
+    simp only [OrderDual.ofDual_toDual, ofDual_inf, ← sSup_pair, ← sInf_upperBounds_eq_sSup,
+      toNucleus, map_inf, Nucleus.coe_mk, InfHom.coe_mk, upperBounds_insert, Nucleus.sInf_apply,
+      mem_inter_iff, mem_Ici]
+    apply le_antisymm
+    · simp only [upperBounds_singleton, mem_Ici, le_iInf_iff, and_imp]
+      intro i h1 h2
+      rw [← himp_himp, ← @i.idempotent _ _ x]
+      exact le_trans (h1 (getElement b ⇨ x)) (le_trans Nucleus.map_himp_le (h2 (i x)))
+    · simp only [← Nucleus.coe_le_coe, Nucleus.coe_mk, InfHom.coe_mk, Pi.le_def,
+        upperBounds_singleton, mem_Ici, le_himp_iff, iInf_inf, iInf_le_iff, le_inf_iff, le_iInf_iff,
+        and_imp]
+      intro y h
+      specialize h (a ⊓ b).toNucleus
+      simp only [toNucleus, map_inf, Nucleus.coe_mk, InfHom.coe_mk, le_himp_iff] at h
+      refine le_trans' (h.left (fun _ ↦ ?_) ?_) (le_inf (by rfl) (le_inf_iff.mpr h.right))
+      · rw [← inf_assoc]
+        exact inf_le_of_left_le himp_inf_le
+      · rw [inf_comm]
+        intro _
+        rw [← inf_assoc]
+        exact inf_le_of_left_le himp_inf_le
+  map_top' := by simpa [Open.toNucleus] using by rfl
+
+end Open
