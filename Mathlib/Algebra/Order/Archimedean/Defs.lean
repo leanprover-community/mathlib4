@@ -23,7 +23,7 @@ This file defines the archimedean property for ordered monoids.
   property" where for `x` and `y > 1`, there exists a natural number `n` such that `x ≤ y ^ n`.
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*}
 

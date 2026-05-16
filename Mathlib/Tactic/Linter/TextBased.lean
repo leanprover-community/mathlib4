@@ -290,9 +290,9 @@ def adaptationNoteLinter : TextbasedLinter := fun opts lines ↦ Id.run do
     -- (e.g. "-- Adaptation note:" or "-- adaptation note:"), but not lines that
     -- merely reference the concept (e.g. "-- see adaptation note") or that
     -- use the correct #adaptation_note command.
-    if line.containsSubstr "daptation note" &&
-        !line.containsSubstr "#adaptation_note" &&
-        !line.containsSubstr "see adaptation note" then
+    if line.contains "daptation note" &&
+        !line.contains "#adaptation_note" &&
+        !line.contains "see adaptation note" then
       errors := errors.push (StyleError.adaptationNote, idx + 1)
   return (errors, none)
 
@@ -590,7 +590,8 @@ COM6, COM7, COM8, COM9, COM¹, COM², COM³, LPT1, LPT2, LPT3, LPT4, LPT5, LPT6,
 LPT¹, LPT² or LPT³ in its filename, as these are forbidden on Windows.
 
 Also verify that module names contain no forbidden characters such as `*`, `?` (Windows),
-`!` (forbidden on Nix OS) or `.` (might result from confusion with a module name).
+`!` (forbidden on Nix OS), `.` (might result from confusion with a module name)
+or `'` (causes shell escaping issues in scripts).
 
 Source: https://learn.microsoft.com/en-gb/windows/win32/fileio/naming-a-file.
 Return the number of module names violating this rule. -/
@@ -622,6 +623,10 @@ public def modulesOSForbidden (opts : LinterOptions) (modules : Array Lean.Name)
         else if s.contains '.' then
           isBad := true
           IO.eprintln s!"error: module name '{name}' contains forbidden character '.'"
+        else if s.contains '\'' then
+          isBad := true
+          IO.eprintln s!"error: module name '{name}' contains a prime ('), \
+            which causes shell escaping issues"
         else if s.contains ' ' || s.contains '\t' || s.contains '\n' then
           isBad := true
           IO.eprintln s!"error: module name '{name}' contains a whitespace character"

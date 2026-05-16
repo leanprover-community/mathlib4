@@ -143,10 +143,8 @@ def invariants : Action (TopModuleCat R) G ⥤ TopModuleCat R where
       add_mem' hx hy g := by simp [hx g, hy g]
       zero_mem' := by simp
       smul_mem' r x hx g := by simp [hx g] : Submodule R M.V }
-  map f := TopModuleCat.ofHom
-    { toLinearMap := f.hom.hom.restrict fun x hx g ↦
-        congr($(f.comm g) x).symm.trans congr(f.hom.hom $(hx g))
-      cont := continuous_induced_rng.mpr (f.hom.hom.2.comp continuous_subtype_val) }
+  map f := TopModuleCat.ofHom <| f.hom.hom.restrict fun x hx g ↦
+    congr($(f.comm g) x).symm.trans congr(f.hom.hom $(hx g))
 
 instance : (invariants R G).Linear R where
 instance : (invariants R G).Additive where
@@ -199,7 +197,6 @@ def kerHomogeneousCochainsZeroEquiv
   continuous_invFun := continuous_induced_rng.mpr
     (continuous_induced_rng.mpr ((ContinuousLinearMap.const R G).cont.comp continuous_subtype_val))
 
-#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
 set_option backward.isDefEq.respectTransparency false in
 open ShortComplex HomologyData in
 /-- `H⁰_cont(G, X) ≅ Xᴳ`. -/

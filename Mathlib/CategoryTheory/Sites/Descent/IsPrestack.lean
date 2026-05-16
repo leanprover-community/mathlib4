@@ -116,7 +116,6 @@ section
 
 variable (F) {S : C} (M N : F.obj (.mk (op S)))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `F` is a pseudofunctor from `Cᵒᵖ` to `Cat`, and `M` and `N` are objects in
 `F.obj (.mk (op S))`, this is the presheaf of morphisms from `M` to `N`: it sends
 an object `T : Over S` corresponding to a morphism `p : X ⟶ S` to the type
@@ -125,7 +124,7 @@ of morphisms $p^* M ⟶ p^* N$. -/
 def presheafHom : (Over S)ᵒᵖ ⥤ Type v' where
   obj T := (F.map (.toLoc T.unop.hom.op)).toFunctor.obj M ⟶
     (F.map (.toLoc T.unop.hom.op)).toFunctor.obj N
-  map {T₁ T₂} p := TypeCat.ofHom (fun f ↦ pullHom f p.unop.left T₂.unop.hom T₂.unop.hom)
+  map {T₁ T₂} p := ↾fun f ↦ pullHom f p.unop.left T₂.unop.hom T₂.unop.hom
 
 /-- The bijection `(M ⟶ N) ≃ (F.presheafHom M N).obj (op (Over.mk (𝟙 S)))`. -/
 @[simps! -isSimp]
