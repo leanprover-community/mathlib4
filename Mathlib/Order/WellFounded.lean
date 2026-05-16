@@ -103,6 +103,11 @@ If you're working with a nonempty linear order, consider defining a
 noncomputable def min {r : α → α → Prop} (H : WellFounded r) (s : Set α) (h : s.Nonempty) : α :=
   Classical.choose (H.has_min s h)
 
+@[to_dual]
+noncomputable abbrev _root_.WellFoundedLT.min [LT α] [WellFoundedLT α] (s : Set α)
+    (h : s.Nonempty) : α :=
+  wellFounded_lt.min s h
+
 theorem min_mem {r : α → α → Prop} (H : WellFounded r) (s : Set α) (h : s.Nonempty) :
     H.min s h ∈ s :=
   let ⟨h, _⟩ := Classical.choose_spec (H.has_min s h)
@@ -183,11 +188,17 @@ section LinearOrder
 
 variable [LinearOrder β] [Preorder γ]
 
--- TODO: the name `WellFounded.min` is incorrect when the assumption is that `>` is well-founded.
-@[to_dual le_min]
+-- TODO: the name `WellFounded.min` is incorrect when the assumption is that `>` is well-founded,
+--       so deprecate in favor of `WellFoundedLT.min_le`
+@[to_dual none]
 theorem WellFounded.min_le (h : WellFounded ((· < ·) : β → β → Prop))
     {x : β} {s : Set β} (hx : x ∈ s) : h.min s ⟨x, hx⟩ ≤ x :=
   not_lt.1 <| h.not_lt_min _ hx
+
+@[to_dual le_max]
+theorem WellFoundedLT.min_le [WellFoundedLT β] {x : β} {s : Set β} (hx : x ∈ s) :
+    WellFoundedLT.min s ⟨x, hx⟩ ≤ x :=
+  wellFounded_lt.min_le hx
 
 @[to_dual]
 theorem Set.range_injOn_strictMono_of_wellFoundedLT [WellFoundedLT β] :
@@ -387,8 +398,8 @@ end Induction
 /-- A nonempty linear order with well-founded `>` has a top element. -/]
 noncomputable def WellFoundedLT.toOrderBot (α) [LinearOrder α] [Nonempty α] [h : WellFoundedLT α] :
     OrderBot α where
-  bot := h.wf.min _ Set.univ_nonempty
-  bot_le a := h.wf.min_le (Set.mem_univ a)
+  bot := h.min _ Set.univ_nonempty
+  bot_le a := h.min_le (Set.mem_univ a)
 
 @[to_dual]
 instance [LT α] [h : WellFoundedLT α] : WellFoundedLT (ULift α) where
