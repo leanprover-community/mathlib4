@@ -147,7 +147,7 @@ theorem eval_append_singleton (x : List α) (a : α) : M.eval (x ++ [a]) = M.ste
 
 /-- `M.accepts` is the language of `x` such that there is an accept state in `M.eval x`. -/
 def accepts : Language α :=
-  { x | ∃ S ∈ M.accept, S ∈ M.eval x }
+  ⟨{x | ∃ S ∈ M.accept, S ∈ M.eval x}⟩
 
 /-- `M.IsPath` represents a traversal in `M` from a start state to an end state by following a list
 of transitions in order. -/

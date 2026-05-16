@@ -112,10 +112,9 @@ theorem evalFrom_of_append (start : σ) (x y : List α) :
     M.evalFrom start (x ++ y) = M.evalFrom (M.evalFrom start x) y :=
   List.foldl_append
 
-/--
-`M.acceptsFrom s` is the language of `x` such that `M.evalFrom s x` is an accept state.
--/
-def acceptsFrom (s : σ) : Language α := {x | M.evalFrom s x ∈ M.accept}
+/-- `M.acceptsFrom s` is the language of `x` such that `M.evalFrom s x` is an accept state. -/
+@[simps]
+def acceptsFrom (s : σ) : Language α := ⟨{x | M.evalFrom s x ∈ M.accept}⟩
 
 theorem mem_acceptsFrom {s : σ} {x : List α} :
     x ∈ M.acceptsFrom s ↔ M.evalFrom s x ∈ M.accept := by rfl
@@ -154,7 +153,6 @@ theorem evalFrom_split [Fintype σ] {x : List α} {s t : σ} (hlen : Fintype.car
   rwa [← hq, ← evalFrom_of_append, ← evalFrom_of_append, ← List.append_assoc,
     List.take_append_drop, List.take_append_drop]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem evalFrom_of_pow {x y : List α} {s : σ} (hx : M.evalFrom s x = s)
     (hy : y ∈ ({x} : Language α)∗) : M.evalFrom s y = s := by
   rw [Language.mem_kstar] at hy
@@ -163,13 +161,12 @@ theorem evalFrom_of_pow {x y : List α} {s : σ} (hx : M.evalFrom s x = s)
   | nil => rfl
   | cons a S ih =>
     have ha := hS a List.mem_cons_self
-    rw [Set.mem_singleton_iff] at ha
+    rw [Language.mem_singleton_iff] at ha
     rw [List.flatten_cons, evalFrom_of_append, ha, hx]
     apply ih
     intro z hz
     exact hS z (List.mem_cons_of_mem a hz)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
     (hlen : Fintype.card σ ≤ List.length x) :
     ∃ a b c,
@@ -178,14 +175,14 @@ theorem pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
   obtain ⟨_, a, b, c, hx, hlen, hnil, rfl, hb, hc⟩ := M.evalFrom_split (s := M.start) hlen rfl
   use a, b, c, hx, hlen, hnil
   intro y hy
-  rw [Language.mem_mul] at hy
+  rw [← Language.mem_def, Language.mem_mul] at hy
   rcases hy with ⟨ab, hab, c', hc', rfl⟩
   rw [Language.mem_mul] at hab
   rcases hab with ⟨a', ha', b', hb', rfl⟩
-  rw [Set.mem_singleton_iff] at ha' hc'
+  rw [Language.mem_singleton_iff] at ha' hc'
   substs ha' hc'
   have h := M.evalFrom_of_pow hb hb'
-  rwa [mem_accepts, eval, evalFrom_of_append, evalFrom_of_append, h, hc]
+  rwa [← Language.mem_def, mem_accepts, eval, evalFrom_of_append, evalFrom_of_append, h, hc]
 
 section Maps
 
@@ -215,14 +212,14 @@ theorem evalFrom_comap (f : α' → α) (s : σ) (x : List α') :
 theorem eval_comap (f : α' → α) (x : List α') : (M.comap f).eval x = M.eval (x.map f) := by
   simp [eval]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem accepts_comap (f : α' → α) : (M.comap f).accepts = List.map f ⁻¹' M.accepts := by
+theorem toSet_accepts_comap (f : α' → α) :
+    (M.comap f).accepts.toSet = List.map f ⁻¹' M.accepts.toSet := by
   ext x
   conv =>
     rhs
-    rw [Set.mem_preimage, mem_accepts]
-  simp [mem_accepts]
+    rw [Set.mem_preimage, ← Language.mem_def, mem_accepts]
+  simp [← Language.mem_def, mem_accepts]
 
 /-- Lifts an equivalence on states to an equivalence on DFAs. -/
 @[simps apply_step apply_start apply_accept]
@@ -260,7 +257,7 @@ theorem eval_reindex (g : σ ≃ σ') (x : List α) : (reindex g M).eval x = g (
 @[simp]
 theorem accepts_reindex (g : σ ≃ σ') : (reindex g M).accepts = M.accepts := by
   ext x
-  simp [mem_accepts]
+  simp [← Language.mem_def, mem_accepts]
 
 theorem comap_reindex (f : α' → α) (g : σ ≃ σ') :
     (reindex g M).comap f = reindex g (M.comap f) := by
@@ -299,13 +296,12 @@ def union (M1 : DFA α σ1) (M2 : DFA α σ2) : DFA α (σ1 × σ2) where
   start := (M1.start, M2.start)
   accept := {s : σ1 × σ2 | s.1 ∈ M1.accept ∨ s.2 ∈ M2.accept}
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem acceptsFrom_union (M1 : DFA α σ1) (M2 : DFA α σ2) (s1 : σ1) (s2 : σ2) :
     (M1.union M2).acceptsFrom (s1, s2) = M1.acceptsFrom s1 + M2.acceptsFrom s2 := by
   ext x
   simp only [acceptsFrom]
-  rw [Language.add_def, Set.mem_union]
+  rw [Language.add_def, Language.sup_def, Set.mem_union]
   simp_rw [↑Set.mem_setOf]
   induction x generalizing s1 s2 with
   | nil => simp
@@ -329,12 +325,11 @@ def inter : DFA α (σ1 × σ2) where
   start := (M1.start, M2.start)
   accept := {s : σ1 × σ2 | s.1 ∈ M1.accept ∧ s.2 ∈ M2.accept}
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem acceptsFrom_inter (s1 : σ1) (s2 : σ2) :
     (M1.inter M2).acceptsFrom (s1, s2) = M1.acceptsFrom s1 ⊓ M2.acceptsFrom s2 := by
   ext x
-  simp only [acceptsFrom, Language.mem_inf]
+  simp only [acceptsFrom, Language.inf_def, Set.mem_inter_iff]
   simp_rw [↑Set.mem_setOf]
   induction x generalizing s1 s2 with
   | nil => simp
