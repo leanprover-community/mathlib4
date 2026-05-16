@@ -809,6 +809,87 @@ end AffineSubspace
 
 end MapComap
 
+section Prod
+
+namespace AffineSubspace
+
+variable {k V₁ V₂ P₁ P₂ : Type*} [Ring k] [AddCommGroup V₁] [Module k V₁] [AffineSpace V₁ P₁]
+  [AddCommGroup V₂] [Module k V₂] [AffineSpace V₂ P₂]
+
+/-- The product of two affine subspaces is an affine subspace. -/
+def prod (s : AffineSubspace k P₁) (t : AffineSubspace k P₂) : AffineSubspace k (P₁ × P₂) where
+  carrier := (s : Set P₁) ×ˢ (t : Set P₂)
+  smul_vsub_vadd_mem c _ _ _ hp₁ hp₂ hp₃ :=
+    ⟨s.smul_vsub_vadd_mem c hp₁.1 hp₂.1 hp₃.1, t.smul_vsub_vadd_mem c hp₁.2 hp₂.2 hp₃.2⟩
+
+@[simp]
+theorem prod_coe (s : AffineSubspace k P₁) (t : AffineSubspace k P₂) :
+    (s.prod t : Set (P₁ × P₂)) = (s : Set P₁) ×ˢ (t : Set P₂) :=
+  rfl
+
+@[simp]
+theorem mem_prod (s : AffineSubspace k P₁) (t : AffineSubspace k P₂) (x : P₁ × P₂) :
+    x ∈ s.prod t ↔ x.1 ∈ s ∧ x.2 ∈ t :=
+  Set.mem_prod
+
+@[gcongr]
+theorem prod_mono (s₁ s₂ : AffineSubspace k P₁) (t₁ t₂ : AffineSubspace k P₂)
+    (hs : s₁ ≤ s₂) (ht : t₁ ≤ t₂) : s₁.prod t₁ ≤ s₂.prod t₂ :=
+  Set.prod_mono hs ht
+
+@[simp]
+theorem prod_top : (⊤ : AffineSubspace k P₁).prod (⊤ : AffineSubspace k P₂) = ⊤ := by
+  ext; simp
+
+@[simp]
+theorem bot_prod (s : AffineSubspace k P₁) : s.prod (⊥ : AffineSubspace k P₂) = ⊥ := by
+  rw [AffineSubspace.ext_iff, prod_coe, bot_coe, bot_coe, Set.prod_empty]
+
+@[simp]
+theorem prod_bot (t : AffineSubspace k P₂) : (⊥ : AffineSubspace k P₁).prod t = ⊥ := by
+  rw [AffineSubspace.ext_iff, prod_coe, bot_coe, bot_coe, Set.empty_prod]
+
+@[simp]
+theorem prod_inf_prod (s₁ s₂ : AffineSubspace k P₁) (t₁ t₂ : AffineSubspace k P₂) :
+    s₁.prod t₁ ⊓ s₂.prod t₂ = (s₁ ⊓ s₂).prod (t₁ ⊓ t₂) :=
+  SetLike.coe_injective Set.prod_inter_prod
+
+theorem _root_.vectorSpan_prod {s : Set P₁} {t : Set P₂} (hs : s.Nonempty) (ht : t.Nonempty) :
+    vectorSpan k (s ×ˢ t) = (vectorSpan k s).prod (vectorSpan k t) := by
+  simpa only [vectorSpan_def, Set.prod_vsub_prod]
+    using Submodule.span_prod_eq hs.zero_mem_vsub ht.zero_mem_vsub
+
+theorem direction_prod {s : AffineSubspace k P₁} {t : AffineSubspace k P₂}
+    (hs : s ≠ ⊥) (ht : t ≠ ⊥) :
+    (s.prod t).direction = s.direction.prod t.direction := by
+  simp [direction, prod_coe, vectorSpan_prod ((nonempty_iff_ne_bot _).mpr hs)
+    ((nonempty_iff_ne_bot _).mpr ht)]
+
+theorem _root_.affineSpan_prod (s : Set P₁) (t : Set P₂) :
+    affineSpan k (s ×ˢ t) = (affineSpan k s).prod (affineSpan k t) := by
+  rcases s.eq_empty_or_nonempty with rfl | hs
+  · simp [Set.empty_prod]
+  rcases t.eq_empty_or_nonempty with rfl | ht
+  · simp [Set.prod_empty]
+  apply AffineSubspace.ext_of_direction_eq
+  · rw [direction_prod (by simpa [Set.nonempty_iff_ne_empty] using hs)
+      (by simpa [Set.nonempty_iff_ne_empty] using ht)]
+    simp_rw [direction_affineSpan]
+    rw [vectorSpan_prod hs ht]
+  · obtain ⟨x, hx⟩ := hs
+    obtain ⟨y, hy⟩ := ht
+    use ⟨x, y⟩
+    simp only [coe_affineSpan, prod_coe, mem_inter_iff, Set.mem_prod]
+    refine ⟨?_, ?_, ?_⟩ <;> apply mem_spanPoints <;> trivial
+
+theorem _root_.coe_affineSpan_prod (s : Set P₁) (t : Set P₂) :
+    (affineSpan k (s ×ˢ t) : Set (P₁ × P₂)) =
+      (affineSpan k s : Set P₁) ×ˢ (affineSpan k t : Set P₂) := by
+  simpa only [AffineSubspace.ext_iff, prod_coe] using (affineSpan_prod s t)
+
+end AffineSubspace
+end Prod
+
 namespace AffineSubspace
 
 open AffineEquiv

@@ -32,6 +32,13 @@ namespace Set
 theorem singleton_vsub_self (p : P) : ({p} : Set P) -ᵥ {p} = {(0 : G)} := by
   rw [Set.singleton_vsub_singleton, vsub_self]
 
+@[simp]
+theorem zero_mem_vsub_iff {s t : Set P} : (0 : G) ∈ s -ᵥ t ↔ ¬Disjoint s t := by
+  simp [not_disjoint_iff_nonempty_inter, mem_vsub, Set.Nonempty]
+
+theorem Nonempty.zero_mem_vsub {s : Set P} (h : s.Nonempty) : (0 : G) ∈ s -ᵥ s :=
+  let ⟨p, hp⟩ := h; ⟨p, hp, p, hp, vsub_self _⟩
+
 end Set
 
 /-- If the same point subtracted from two points produces equal
@@ -147,6 +154,21 @@ theorem mk_vsub_mk (p₁ p₂ : P) (p₁' p₂' : P') :
   rfl
 
 end Prod
+
+namespace Set
+
+variable {G G' P P' : Type*} [AddGroup G] [AddGroup G'] [AddTorsor G P] [AddTorsor G' P']
+
+theorem prod_vsub_prod (s₁ s₂ : Set P) (t₁ t₂ : Set P') :
+    (s₁ ×ˢ t₁) -ᵥ (s₂ ×ˢ t₂) = (s₁ -ᵥ s₂) ×ˢ (t₁ -ᵥ t₂) := by
+  ext ⟨v₁, v₂⟩; simp only [mem_vsub, mem_prod]; constructor
+  · rintro ⟨⟨a₁, b₁⟩, ⟨ha₁, hb₁⟩, ⟨a₂, b₂⟩, ⟨ha₂, hb₂⟩, h⟩
+    obtain ⟨rfl, rfl⟩ := Prod.mk.inj h
+    exact ⟨⟨a₁, ha₁, a₂, ha₂, rfl⟩, ⟨b₁, hb₁, b₂, hb₂, rfl⟩⟩
+  · rintro ⟨⟨a₁, ha₁, a₂, ha₂, rfl⟩, ⟨b₁, hb₁, b₂, hb₂, rfl⟩⟩
+    exact ⟨(a₁, b₁), ⟨ha₁, hb₁⟩, (a₂, b₂), ⟨ha₂, hb₂⟩, rfl⟩
+
+end Set
 
 namespace Pi
 
