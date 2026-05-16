@@ -14,7 +14,41 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.ProdStdSimplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.WeaklyPolyhedralLike
 
 /-!
-# ...
+# A pairing for the pushout-product of a horn inclusion and a boundary inclusion
+
+Let `l : Fin (m + 2)` and `n : ℕ`. In this file, we construct a regular pairing
+for the subcomplex `unionProd Λ[m + 1, l] ∂Δ[n]` of `Δ[m + 1] ⊗ Δ[n]`. It follows
+immediately that the inclusion of the union of `Λ[m + 1, l] ⊗ Δ[n]` and
+`Δ[m + 1] ⊗ ∂Δ[n]` in `Δ[m + 1] ⊗ Δ[n]` is a (strong) anodyne extension
+(which is inner when `l ≠ 0` and `l ≠ Fin.last _`).
+
+The main construction works only when `l ≠ Fin.last _`, i.e. `l = k.castSucc`
+for `k : Fin (m + 1)`: the remaining case is obtained using symmetries and
+the case `k = 0`.
+
+In order to do the case of `unionProd Λ[m + 1, k.castSucc] ∂Δ[n]` for `k : Fin (m + 1)`,
+we follow the proof by Sean Moss. Let us consider a nondegenerate `d`-simplex `x` of
+`Δ[m + 1] ⊗ Δ[n]` which does not belong to `unionProd Λ[m + 1, k.castSucc] ∂Δ[n]`.
+`x` can be thought as a "walk" on the vertices `{0, ..., m + 1} × {0, ..., n}`
+of `Δ[m + 1] ⊗ Δ[n]` (this is actually a strictly monotone map
+`Fin (d + 1) → Fin (m + 2) × Fin (n + 1)`).
+The condition that `x` does not belong to `unionProd Λ[m + 1, k.castSucc] ∂Δ[n]`
+translates by saying that `x` reaches all the rows
+(see the lemma `prodStdSimplex.pairingCore.mem_range_right`)
+and all the columns expect the `k.castSucc`-th
+(see the lemma `prodStdSimplex.pairingCore.mem_range_left`). This puts
+constraints for each `i` on the vector from `x i` to `x (i + 1)`:
+it has to be `(0, 1)`, `(1,0)`, `(1,1)`, `(2, 0)` or `(2, 1)` (the last two
+cases may appear only if the `k.castSucc`-th column is skipped).
+We introduce a predicate `IsIndex` taking `x` and `l : Fin (d + 1)` as arguments
+and which is satisfied if `l` is the smallest `i` such that `x l` is
+in the `k.succ` column, `l ≠ 0`, and the vector from `x (l.pred _)` to `x l`
+is exactly `(1, 0)`.
+
+The type (I) simplices for the pairing are those `x` such that there exists `l`
+such that the predicate `IsIndex` hold. The corresponding type (II) simplex
+is obtained by removing `x (l.pred _)` from the walk.
+
 
 ## References
 * [Sean Moss, *Another approach to the Kan-Quillen model structure*][moss-2020]
@@ -170,9 +204,10 @@ variable {x} {hd : x.dim = d + 1} {l : Fin (d + 1)} (hl : IsIndex x hd l.succ)
 
 include hl
 
+/-- The type (II) simplex obtained as a face of a type (I) simplex. -/
 @[simps]
 noncomputable def δ :
-    ((horn.{u} (m + 1) k.castSucc).unionProd (boundary n)).N where
+    (Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] ∂Δ[n]).N where
   dim := d
   simplex := (Δ[m + 1] ⊗ Δ[n]).δ l.castSucc (x.cast hd).simplex
   nonDegenerate := nonDegenerate_δ (x.cast hd).nonDegenerate _
@@ -200,14 +235,19 @@ end
 end IsIndex
 
 variable (k n) in
+/-- The type of type (I) simplices for the pairing -/
 structure Type₁ where
-  x : ((horn.{u} (m + 1) k.castSucc).unionProd (boundary n)).N
+  /-- the nondegenerate simplex -/
+  x : (Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] ∂Δ[n]).N
+  /-- the dimension of the 1-codimensional face -/
   d : ℕ
   hd : x.dim = d + 1
+  /-- the index attached to the type (II) simplex -/
   index : Fin (d + 1)
   isIndex : IsIndex x hd index.succ
 
 variable {x} in
+/-- Constructor for `Type₁ k n`. -/
 @[simps]
 def IsIndex.type₁ {hd : x.dim = d + 1} {i : Fin (d + 1)}
     (h : IsIndex x hd i.succ) : Type₁.{u} k n where
@@ -231,6 +271,7 @@ lemma ext_iff {s t : Type₁.{u} k n} :
   obtain rfl : l = l' := by grind
   rfl
 
+/-- The type (II) simplex obtained as a face of a type (I) simplex. -/
 noncomputable abbrev δ (s : Type₁.{u} k n) :
     (Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] ∂Δ[n]).N :=
   s.isIndex.δ
@@ -248,6 +289,8 @@ namespace IsType₂
 
 variable (hx : IsType₂ x) {d : ℕ} (hd : x.dim = d)
 
+/-- Auxiliary definition for `IsType₂.simplex`. This gives the underlying
+data of the type (I) simplex reconstructed from a type (II) simplex. -/
 noncomputable def φ (i : Fin (d + 2)) : Fin (m + 2) × Fin (n + 1) :=
   if i = (min x hd).castSucc
   then ⟨k.castSucc, (x.cast hd).simplex.2 (min x hd)⟩
@@ -329,6 +372,7 @@ lemma strictMono_φ : StrictMono (φ x hd) := by
   · rw [φ_of_gt _ _ _ (by grind), φ_of_gt _ _ _ (by grind)]
     exact hx' (by grind)
 
+/-- The type (I) simplex reconstructed from a type (II) simplex. -/
 noncomputable abbrev simplex : (Δ[m + 1] ⊗ Δ[n]) _⦋d + 1⦌ :=
   (objEquiv.{u}.symm ⟨φ x hd, (hx.strictMono_φ hd).monotone⟩)
 
@@ -362,6 +406,7 @@ lemma notMem_simplex :
     (SimplexCategory.δ (min x hd).castSucc).op h
 
 set_option backward.isDefEq.respectTransparency false in
+/-- The type (I) simplex reconstructed from a type (II) simplex. -/
 @[simps]
 noncomputable def type₁ : Type₁ k n where
   x :=
@@ -484,6 +529,9 @@ end pairingCore
 
 open pairingCore
 
+/-- The underlying structure which gives a pairing for
+`Subcomplex.unionProd Λ[m + 1, k.castSucc] ∂Δ[n]`
+when `k : Fin (m + 1)` and `n : ℕ`. -/
 @[simps]
 noncomputable def pairingCore {m : ℕ} (k : Fin (m + 1)) (n : ℕ) :
     (Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] ∂Δ[n]).PairingCore where
@@ -539,6 +587,7 @@ lemma type₁_pairingCore {m : ℕ} (k : Fin (m + 1)) {n : ℕ}
   Subcomplex.N.cast_eq_self _ s.hd
 
 set_option backward.isDefEq.respectTransparency false in
+/-- A weak rank function for `pairingCore k n`. -/
 noncomputable def weakRankFunction {m : ℕ} (k : Fin (m + 1)) (n : ℕ) :
     (pairingCore.{u} k n).WeakRankFunction ℕ where
   rank s := (finset s.x rfl).card
@@ -611,6 +660,8 @@ instance {m : ℕ} (k : Fin m) (n : ℕ) :
     simp [dsimp% hs.simplex_fst_castSucc, dsimp% hi] at this
   ne_last := by simp
 
+/-- A regular pairing for `Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] ∂Δ[n]`
+when `k : Fin (m + 1)` and `n : ℕ`. -/
 noncomputable def pairing {m : ℕ} (k : Fin (m + 2)) (n : ℕ) :
     (Subcomplex.unionProd.{u} Λ[m + 1, k] ∂Δ[n]).Pairing :=
   if hk : k = Fin.last (m + 1) then

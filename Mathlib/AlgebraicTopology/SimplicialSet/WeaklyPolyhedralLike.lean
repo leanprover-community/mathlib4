@@ -37,6 +37,9 @@ namespace SSet
 variable {X Y : SSet.{u}}
 
 variable (X) in
+/-- A simplicial set `X` is weakly polyhedral like if for any
+nondegenerate simplex `x` (of dimension `n`), the corresponding
+morphism `Δ[n] ⟶ X` is a monomorphism. -/
 class IsWeaklyPolyhedralLike where
   mono {n : ℕ} (x : X.nonDegenerate n) : Mono (yonedaEquiv.symm x.val)
 
