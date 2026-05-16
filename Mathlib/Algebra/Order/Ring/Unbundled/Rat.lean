@@ -24,7 +24,7 @@ For the bundled `LinearOrderedCommRing` instance on `ℚ`, see `Algebra.Order.Ri
 rat, rationals, field, ℚ, numerator, denominator, num, denom, order, ordering
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsOrderedMonoid Field Finset Set.Icc GaloisConnection
 

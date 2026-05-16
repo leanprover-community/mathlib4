@@ -26,7 +26,7 @@ is also an inner product space, with inner product defined as `inner f g := ∫ 
 * `L2.innerProductSpace` : `Lp E 2 μ` is an inner product space.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

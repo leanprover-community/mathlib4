@@ -36,7 +36,7 @@ which is mathematically distinct from this product, we provide this instance on
 `WithConv (C →ₗ[R] A)`.
 -/
 
-@[expose] public section
+public section
 
 suppress_compilation
 

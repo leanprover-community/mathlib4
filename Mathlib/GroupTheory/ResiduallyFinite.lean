@@ -19,7 +19,7 @@ In this file we define residually finite groups and prove some basic properties.
 
 -/
 
-@[expose] public section
+public section
 
 /-- An additive group `G` is residually finite if the intersection of all finite index normal
 additive subgroups is trivial. -/

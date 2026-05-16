@@ -12,7 +12,7 @@ public import Mathlib.Data.ZMod.Basic
 # `ZMod p` is a field
 -/
 
-@[expose] public section
+public section
 
 namespace ZMod
 variable (p : ℕ) [hp : Fact p.Prime]
