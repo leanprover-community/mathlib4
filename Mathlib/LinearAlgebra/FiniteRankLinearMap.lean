@@ -20,6 +20,8 @@ In this file, we define:
   relation if and only if they agree on a co-finitely generated subspace of the domain.
   This is an instance in the scope `LinearMap.FiniteRankSetoid`,
   so opening this scope allows this relation to be denoted by `≈`.
+* `LinearMap.QuasiInverse`: two linear maps `u` and `v` are **quasi-inverses** if we have
+  `u ∘ₗ v ≈ id` and `v ∘ₗ u ≈ id` modulo finite rank linear maps.
 -/
 
 @[expose] public section
@@ -156,5 +158,90 @@ lemma equiv_comp {u v : V →ₗ[K] V₂} {u' v' : V₂ →ₗ[K] V₃} (h : u �
 end FiniteRankSetoid
 
 end Setoid
+
+section QuasiInverse
+
+variable [CommRing K] [IsNoetherianRing K]
+  [AddCommGroup V] [Module K V]
+  [AddCommGroup V₂] [Module K V₂]
+  [AddCommGroup V₃] [Module K V₃]
+
+open scoped LinearMap.FiniteRankSetoid
+
+/-- `u` is a **left quasi-inverse** to `v` if `u ∘ₗ v ≈ id` modulo
+finite rank linear maps. -/
+def LeftQuasiInverse (u : V →ₗ[K] V₂) (v : V₂ →ₗ[K] V) := u ∘ₗ v ≈ .id
+
+/-- `u` is a **right quasi-inverse** to `v` if `v ∘ₗ u ≈ id` modulo
+finite rank linear maps. -/
+def RightQuasiInverse (u : V₃ →ₗ[K] V₂) (v : V₂ →ₗ[K] V₃) := v ∘ₗ u ≈ .id
+
+/-- `u` is a **quasi-inverse** to `v` if `u ∘ₗ v ≈ id` and `v ∘ₗ u ≈ id` modulo
+finite rank linear maps. -/
+def QuasiInverse (u : V₃ →ₗ[K] V₂) (v : V₂ →ₗ[K] V₃) :=
+  u.LeftQuasiInverse v ∧ u.RightQuasiInverse v
+
+lemma LeftQuasiInverse.equiv {u : V₃ →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
+    (h : u.LeftQuasiInverse v) : u ∘ₗ v ≈ .id := h
+
+lemma RightQuasiInverse.equiv {u : V₃ →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
+    (h : u.RightQuasiInverse v) : v ∘ₗ u ≈ .id := h
+
+@[symm]
+lemma QuasiInverse.symm {u : V₃ →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
+    (h : u.QuasiInverse v) : v.QuasiInverse u :=
+  And.symm h
+
+lemma LeftQuasiInverse.congr {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ →ₗ[K] V₃}
+    (h : u.LeftQuasiInverse v) (hu : u' ≈ u) (hv : v' ≈ v) :
+    u'.LeftQuasiInverse v' := by
+  unfold LeftQuasiInverse at *
+  grw [hu, hv]
+  assumption
+
+lemma leftQuasiInverse_congr {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ →ₗ[K] V₃}
+    (hu : u' ≈ u) (hv : v' ≈ v) :
+    u.LeftQuasiInverse v ↔ u'.LeftQuasiInverse v' :=
+  ⟨fun H ↦ H.congr hu hv, fun H ↦ H.congr (Setoid.symm hu) (Setoid.symm hv)⟩
+
+lemma RightQuasiInverse.congr {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ →ₗ[K] V₃}
+    (h : u.RightQuasiInverse v) (hu : u' ≈ u) (hv : v' ≈ v) :
+    u'.RightQuasiInverse v' := by
+  unfold RightQuasiInverse at *
+  grw [hu, hv]
+  assumption
+
+lemma rightQuasiInverse_congr {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ →ₗ[K] V₃}
+    (hu : u' ≈ u) (hv : v' ≈ v) :
+    u.RightQuasiInverse v ↔ u'.RightQuasiInverse v' :=
+  ⟨fun H ↦ H.congr hu hv, fun H ↦ H.congr (Setoid.symm hu) (Setoid.symm hv)⟩
+
+lemma QuasiInverse.congr {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ →ₗ[K] V₃}
+    (h : u.QuasiInverse v) (hu : u' ≈ u) (hv : v' ≈ v) :
+    u'.QuasiInverse v' :=
+  ⟨h.1.congr hu hv, h.2.congr hu hv⟩
+
+lemma quasiInverse_congr {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ →ₗ[K] V₃}
+    (hu : u' ≈ u) (hv : v' ≈ v) :
+    u.QuasiInverse v ↔ u'.QuasiInverse v' := by
+  simp [QuasiInverse, leftQuasiInverse_congr hu hv, rightQuasiInverse_congr hu hv]
+
+lemma QuasiInverse.equiv_of_left {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ →ₗ[K] V₃}
+    (h : u.QuasiInverse v) (h' : u'.QuasiInverse v') (hu : u ≈ u') :
+    v ≈ v' :=
+  calc
+    v = v ∘ₗ .id := by simp
+    _ ≈ v ∘ₗ (u' ∘ₗ v') := by grw [h'.1.equiv]
+    _ ≈ v ∘ₗ (u ∘ₗ v') := by grw [hu]
+    _ = (v ∘ₗ u) ∘ₗ v' := by rw [comp_assoc]
+    _ ≈ .id ∘ₗ v' := by grw [h.2.equiv]
+    _ = v' := by simp
+
+lemma QuasiInverse.equiv_of_right {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ →ₗ[K] V₃}
+    (h : u.QuasiInverse v) (h' : u'.QuasiInverse v') (hv : v ≈ v') :
+    u ≈ u' :=
+  h.symm.equiv_of_left h'.symm hv
+
+end QuasiInverse
 
 end LinearMap
