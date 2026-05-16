@@ -11,8 +11,26 @@ public import Mathlib.Topology.Algebra.Module.LinearMapPiProd
 /-!
 # Continuous linear equivalences
 
+## Notation
 Continuous semilinear / linear / star-linear equivalences between topological modules are denoted
 by `M ≃SL[σ] M₂`, `M ≃L[R] M₂` and `M ≃L⋆[R] M₂`.
+
+## Main Definitions
+* `toHomeomorph` is the homeomorphism induced by a continuous (semi)linear map.
+* `symm` is the inverse of a continuous linear equivalence as a continuous linear equivalence.
+* `equivOfInverse` creates a `ContinuousLinearEquiv` from two `ContinuousLinearMap`s that are
+  inverse of each other (as functions). See also `equivOfInverse'` when they're inverse to each
+  other as continuous linear maps.
+* `ofUnit` is the `ContinuousLinearEquiv` corresponding to a unit in the ring of continuous
+  endomorphisms. See `toUnit` for the inverse direction.
+* `IsInvertible`: a continuous linear map is invertible if it is the forward direction of a
+  continuous linear equivalence.
+* `ofIsHomeomorph`: a linear equivalence that is a homeomorphism is a continuous linear equivalence.
+
+## Main Results
+* `prodComm`: the product of topological modules is commutative up to continuous linear isomorphism.
+* `LinearEquiv.isHomeomorph_iff`: A linear equivalence between topological modules is a
+  homeomorphism if and only if it is continuous in both directions.
 -/
 
 @[expose] public section
@@ -24,8 +42,6 @@ open Topology Filter Pointwise
 open scoped Ring
 
 universe u v w u'
-
-section
 
 /-- Continuous linear equivalences between modules. We only put the type classes that are necessary
 for the definition, although in applications `M` and `M₂` will be topological modules over the
@@ -217,7 +233,6 @@ theorem isClosed_image (e : M₁ ≃SL[σ₁₂] M₂) {s : Set M₁} : IsClosed
 theorem map_nhds_eq (e : M₁ ≃SL[σ₁₂] M₂) (x : M₁) : map e (𝓝 x) = 𝓝 (e x) :=
   e.toHomeomorph.map_nhds_eq x
 
--- Make some straightforward lemmas available to `simp`.
 theorem map_zero (e : M₁ ≃SL[σ₁₂] M₂) : e (0 : M₁) = 0 :=
   (e : M₁ →SL[σ₁₂] M₂).map_zero
 
@@ -273,10 +288,6 @@ def toContinuousAddEquiv (e : M₁ ≃L[R₁] M) : M₁ ≃ₜ+ M :=
 
 @[simp]
 lemma toContinuousAddEquiv_coe (e : M₁ ≃L[R₁] M) : ⇑e.toContinuousAddEquiv = e := rfl
-
-end
-
-section
 
 variable (R₁ M₁)
 
@@ -375,7 +386,7 @@ theorem prodCongr_symm [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] 
 
 variable (R₁ M₁ M₂)
 
-/-- Product of modules is commutative up to continuous linear isomorphism. -/
+/-- Product of topological modules is commutative up to continuous linear isomorphism. -/
 @[simps! apply toLinearEquiv]
 def prodComm [Module R₁ M₂] : (M₁ × M₂) ≃L[R₁] M₂ × M₁ :=
   { LinearEquiv.prodComm R₁ M₁ M₂ with
@@ -1289,29 +1300,6 @@ theorem _root_.ContinuousLinearMap.isInvertible_inverse_iff :
 
 end IsInvertible
 
-section IsHomeomorph
-
-variable {S M₁ : Type*} [Semiring S] {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ']
-  [RingHomInvPair σ' σ] [TopologicalSpace M₁] [AddCommMonoid M₁] [Module S M₁]
-
-def ofIsHomeomorph (f : M ≃ₛₗ[σ] M₁) (hf : IsHomeomorph f.toEquiv) : M ≃SL[σ] M₁ where
-  __ := f
-  continuous_toFun := hf.continuous
-  continuous_invFun := by
-    rw [Equiv.isHomeomorph_iff] at hf
-    exact hf.2 -- nice?
-
-variable {f : M ≃ₛₗ[σ] M₁} (hf : IsHomeomorph f)
-
-@[simp]
-lemma ofIsHomeomorph_coe : (ofIsHomeomorph f hf).toLinearEquiv = f := by
-  dsimp only [ofIsHomeomorph]
-
-@[simp]
-lemma ofIsHomeomorph_apply (x : M) : (ofIsHomeomorph f hf) x = f x := by dsimp [ofIsHomeomorph]
-
-end IsHomeomorph
-
 /-- Composition of a map on a product with the exchange of the product factors -/
 theorem coprod_comp_prodComm [ContinuousAdd M] (f : M₂ →L[R] M) (g : M₃ →L[R] M) :
     f.coprod g ∘L ContinuousLinearEquiv.prodComm R M₃ M₂ = g.coprod f := by
@@ -1455,15 +1443,34 @@ theorem smul_trans [SMulCommClass R S V] [IsScalarTower S R G] (α : Sˣ) (e : G
 theorem trans_smul [IsScalarTower S R G] (α : Sˣ) (e : G ≃L[R] V) (f : V ≃L[R] W) :
     e.trans (α • f) = α • (e.trans f) := by ext; simp
 
-end ContinuousLinearEquiv
+section IsHomeomorph
 
+variable {S₁ M M₁ : Type*} [Semiring S₁] {σ : S →+* S₁} {σ' : S₁ →+* S}
+  [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] [TopologicalSpace M] [AddCommMonoid M] [Module S M]
+  [TopologicalSpace M₁] [AddCommMonoid M₁] [Module S₁ M₁]
+
+/-- A linear equivalence that is a homeomorphism is a continuous linear equivalence. -/
+def ofIsHomeomorph (f : M ≃ₛₗ[σ] M₁) (hf : IsHomeomorph f.toEquiv) : M ≃SL[σ] M₁ where
+  __ := f
+  continuous_toFun := hf.continuous
+  continuous_invFun := by
+    rw [Equiv.isHomeomorph_iff, f.coe_symm_toEquiv, ← f.invFun_eq_symm] at hf
+    exact hf.2
+
+variable {f : M ≃ₛₗ[σ] M₁} (hf : IsHomeomorph f)
+
+@[simp]
+lemma ofIsHomeomorph_coe : (ofIsHomeomorph f hf).toLinearEquiv = f := by
+  dsimp only [ofIsHomeomorph]
+
+@[simp]
+lemma ofIsHomeomorph_apply (x : M) : (ofIsHomeomorph f hf) x = f x := by dsimp [ofIsHomeomorph]
+#where
 /-- A linear equivalence between topological modules is a homeomorphism if and only if it is
 continuous in both directions. -/
-theorem LinearEquiv.isHomeomorph_iff {R S : Type*} [Semiring R] [Semiring S]
-    {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-    {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [Module R M]
-    {N : Type*} [TopologicalSpace N] [AddCommMonoid N] [Module S N]
-    (e : M ≃ₛₗ[σ] N) : IsHomeomorph e ↔ Continuous e ∧ Continuous e.symm :=
-  e.toEquiv.isHomeomorph_iff
+theorem LinearEquiv.isHomeomorph_iff  (e : M ≃ₛₗ[σ] M₁) :
+    IsHomeomorph e ↔ Continuous e ∧ Continuous e.symm := e.toEquiv.isHomeomorph_iff
 
-end
+end IsHomeomorph
+
+end ContinuousLinearEquiv
