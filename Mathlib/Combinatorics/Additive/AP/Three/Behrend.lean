@@ -241,6 +241,7 @@ theorem exists_large_sphere_aux (n d : ℕ) : ∃ k ∈ range (n * (d - 1) ^ 2 +
   · rw [card_range, nsmul_eq_mul, mul_div_assoc', cast_add_one, mul_div_cancel_left₀, card_box]
     exact (cast_add_one_pos _).ne'
 
+set_option linter.flexible false in -- TODO: fix non-terminal norm_num
 theorem exists_large_sphere (n d : ℕ) :
     ∃ k, ((d ^ n :) / (n * d ^ 2 :) : ℝ) ≤ #(sphere n d k) := by
   obtain ⟨k, -, hk⟩ := exists_large_sphere_aux n d

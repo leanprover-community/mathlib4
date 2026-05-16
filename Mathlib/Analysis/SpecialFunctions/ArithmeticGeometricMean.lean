@@ -27,6 +27,7 @@ This file defines the AGM in the `NNReal` namespace and proves some of its basic
 
 namespace NNReal
 
+set_option linter.flexible false in -- TODO: fix non-terminal norm_num
 /-- The AM–GM inequality for two `NNReal`s, with means in canonical form. -/
 lemma sqrt_mul_le_half_add (x y : ℝ≥0) : sqrt (x * y) ≤ (x + y) / 2 := by
   rw [sqrt_le_iff_le_sq, div_pow, le_div_iff₀' (by positivity), ← mul_assoc]

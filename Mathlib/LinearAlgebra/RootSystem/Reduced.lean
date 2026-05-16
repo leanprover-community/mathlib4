@@ -230,6 +230,7 @@ lemma pairing_neg_two_neg_two_iff :
 
 variable [Module.IsTorsionFree R N]
 
+set_option linter.flexible false in -- TODO: fix non-terminal norm_num
 lemma pairing_one_four_iff' (h2 : IsSMulRegular R (2 : R)) :
     P.pairing i j = 1 ∧ P.pairing j i = 4 ↔ P.root j = (2 : R) • P.root i := by
   have : IsAddTorsionFree M := .of_isTorsionFree R M
