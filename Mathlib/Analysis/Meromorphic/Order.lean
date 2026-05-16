@@ -459,6 +459,17 @@ theorem meromorphicOrderAt_fun_prod {x : 𝕜} {ι : Type*} {s : Finset ι} {f :
   convert meromorphicOrderAt_prod hf
   exact (Finset.prod_apply _ s f).symm
 
+/--
+A finprod of functions that do not vanish locally does not vanish locally.
+-/
+lemma meromorphicOrderAt_finprod_ne_top {x : 𝕜} {ι : Type*} {F : ι → 𝕜 → 𝕜}
+    (h₁ : ∀ c, MeromorphicAt (F c) x) (h₂ : ∀ c, meromorphicOrderAt (F c) x ≠ ⊤) :
+    meromorphicOrderAt (∏ᶠ c, F c) x ≠ ⊤ := by
+  classical
+  by_cases hF : F.HasFiniteMulSupport
+  · simpa [finprod_eq_prod F hF, meromorphicOrderAt_prod (fun x _ ↦ h₁ x)] using fun x _ ↦ h₂ x
+  simp [finprod_of_not_hasFiniteMulSupport hF]
+
 /-- The order multiplies by `n` when taking a meromorphic function to its `n`th power. -/
 @[to_fun] theorem meromorphicOrderAt_pow {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) {n : ℕ} :
     meromorphicOrderAt (f ^ n) x = n * meromorphicOrderAt f x := by
@@ -700,8 +711,14 @@ theorem isClopen_setOf_meromorphicOrderAt_eq_top (hf : MeromorphicOn f U) :
     · apply (mem_diff w).1
       exact ⟨hw, mem_singleton_iff.not.1 (Subtype.coe_ne_coe.2 h₁w)⟩
 
-/-- On a connected set, there exists a point where a meromorphic function `f` has finite order iff
-`f` has finite order at every point. -/
+/--
+On a connected set, there exists a point where a meromorphic function `f` has finite order iff `f`
+has finite order at every point.
+
+See `Meromorphic.exists_meromorphicOrderAt_ne_top_iff_forall` in file
+`Mathlib/Analysis/Meromorphic/RCLike` for a related result assuming that `f` is meromorphic on all
+of `𝕜`.
+-/
 theorem exists_meromorphicOrderAt_ne_top_iff_forall (hf : MeromorphicOn f U) (hU : IsConnected U) :
     (∃ u : U, meromorphicOrderAt f u ≠ ⊤) ↔ (∀ u : U, meromorphicOrderAt f u ≠ ⊤) := by
   constructor
@@ -719,6 +736,16 @@ theorem exists_meromorphicOrderAt_ne_top_iff_forall (hf : MeromorphicOn f U) (hU
   · intro h₂f
     obtain ⟨v, hv⟩ := hU.nonempty
     use ⟨v, hv⟩, h₂f ⟨v, hv⟩
+
+/--
+Variant of `MeromorphicOn.exists_meromorphicOrderAt_ne_top_iff_forall`, with membership in lieu of
+subtypes.
+-/
+theorem exists_meromorphicOrderAt_ne_top_iff_forall_mem (hf : MeromorphicOn f U)
+    (hU : IsConnected U) :
+    (∃ u ∈ U, meromorphicOrderAt f u ≠ ⊤) ↔ (∀ u ∈ U, meromorphicOrderAt f u ≠ ⊤) := by
+  convert exists_meromorphicOrderAt_ne_top_iff_forall hf hU
+  <;> simp
 
 /-- On a preconnected set, a meromorphic function has finite order at one point if it has finite
 order at another point. -/
