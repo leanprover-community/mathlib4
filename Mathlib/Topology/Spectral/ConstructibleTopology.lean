@@ -8,6 +8,7 @@ module
 public import Mathlib.Topology.Spectral.Basic
 public import Mathlib.Topology.JacobsonSpace
 public import Mathlib.Data.Set.Card
+public import Mathlib.Topology.Constructible
 
 /-!
 # Constructible topology
@@ -154,3 +155,104 @@ instance compactSpace_withConstructibleTopology [CompactSpace X] [QuasiSober X]
     · rw [← Set.sInter_union]
       refine hB.prop.2.1 (_ ∪ F) ?_ <| (hA₁'.diff.union hA₂'.diff).union hF
       grind [Set.diff_singleton_subset_iff, Set.union_subset_iff]
+
+instance [PrespectralSpace X] [T0Space X] [QuasiSober X] :
+    T2Space <| WithConstructibleTopology X := by
+    constructor
+    intro x y hxy
+    wlog h : ∃ (U : Set X), IsOpen U ∧ x ∈ U ∧ y ∉ U
+    · have o : ∃ (U : Set X), IsOpen U ∧ y ∈ U ∧ x ∉ U := by
+        obtain ⟨U, hU1, (o | o)⟩ := exists_isOpen_xor_mem (X := X) hxy <;> use U
+        · simp only [not_exists, not_and, not_not] at h
+          exact (o.2 (h U hU1 o.1)).elim
+        · exact ⟨hU1, o⟩
+      obtain ⟨U, V, a, b, c, d, e⟩ := @this X _ _ _ _ y x hxy.symm o
+      exact ⟨V, U, b, a, d, c, e.symm⟩
+    obtain ⟨U, hU1, hU2, hU3⟩ := h
+    obtain ⟨V, ⟨hVo, hVc⟩, hV, hVU⟩ :=
+        PrespectralSpace.isTopologicalBasis.mem_nhds_iff.mp (hU1.mem_nhds ‹_›)
+    · exact ⟨V, Vᶜ,
+        TopologicalSpace.isOpen_generateFrom_of_mem (.inl ⟨hVo, hVc⟩),
+        TopologicalSpace.isOpen_generateFrom_of_mem
+          (Or.inr ⟨hVo.isClosed_compl, (compl_compl V).symm ▸ hVc⟩),
+        hV, Set.mem_compl (fun h ↦ hU3 (hVU h)), disjoint_compl_right⟩
+
+/--
+Canonical map from a space `X` to `WithConstructibleTopology X`
+-/
+def toConstructibleTopology (X) [TopologicalSpace X] : X ≃ WithConstructibleTopology X :=
+  Equiv.refl _
+
+/--
+Canonical map from a space `WithConstructibleTopology X` to `X`
+-/
+def WithConstructibleTopology.equiv (X) [TopologicalSpace X] : WithConstructibleTopology X ≃ X :=
+  Equiv.refl _
+
+variable {Y : Type*} [TopologicalSpace Y]
+/--
+Induced map `lift f : WithConstructibleTopology X → WithConstructibleTopology Y` by a map
+`f : X → Y`
+-/
+def WithConstructibleTopology.map (f : X → Y) :
+    WithConstructibleTopology X → WithConstructibleTopology Y :=
+  (equiv Y).symm ∘ f ∘ equiv X
+
+@[simp]
+lemma WithConstructibleTopology.map_id (x : WithConstructibleTopology X) :
+    WithConstructibleTopology.map id x = x := rfl
+
+@[simp]
+lemma WithConstructibleTopology.map_comp {Z : Type*} [TopologicalSpace Z] (f : X → Y) (g : Y → Z) :
+    WithConstructibleTopology.map (g ∘ f) =
+    WithConstructibleTopology.map g ∘ WithConstructibleTopology.map f := rfl
+
+lemma isOpen_ofConstructibleTopology_preimage_iff (s : Set X) :
+    IsOpen (WithConstructibleTopology.equiv X ⁻¹' s) ↔ IsOpen[constructibleTopology X] s := .rfl
+
+/--
+The map from `X` with the constructible topology to `X` is continuous if `X` is prespectral.
+-/
+lemma WithConstructibleTopology.continuous_equiv [PrespectralSpace X] :
+    Continuous <| equiv X := by
+  rw [TopologicalSpace.IsTopologicalBasis.continuous_iff (PrespectralSpace.isBasis_opens X)]
+  simp only [Set.mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+  intro U hU
+  rw [isOpen_ofConstructibleTopology_preimage_iff]
+  exact hU.isOpen_constructibleTopology_of_isOpen U.2
+
+lemma WithConstructibleTopology.map_continuous {f : X → Y} (hf : IsSpectralMap f) :
+    Continuous <| WithConstructibleTopology.map f := by
+  apply continuous_generateFrom_iff.mpr
+  intro s hs
+  obtain ⟨hso, hsc⟩ | ⟨hscl, hsc⟩ := hs
+  · exact (hf.isCompact_preimage_of_isOpen hso hsc).isOpen_constructibleTopology_of_isOpen
+      (hso.preimage hf.continuous)
+  · exact
+    (hf.isCompact_preimage_of_isOpen hscl.isOpen_compl hsc).isOpen_constructibleTopology_of_isClosed
+      (hscl.preimage hf.continuous)
+
+/--
+A spectral map between *quasi-separated* pre-spectral, sober spaces has compact fibers.
+Note that any quasi-compact morphism of schemes has compact fibers, although the underlying
+topological space of a schemes is not necessarily quasi-separated.
+-/
+lemma IsSpectralMap.hasCompactFibers [PrespectralSpace X] [T0Space X] [QuasiSeparatedSpace X]
+    [QuasiSober X] [PrespectralSpace Y] [T0Space Y] [QuasiSeparatedSpace Y] [QuasiSober Y]
+    {f : X → Y} (hf : IsSpectralMap f) : HasCompactFibers f := by
+  intro y
+  -- Take a compact open neighbourhood U of y (exists since Y is prespectral)
+  obtain ⟨U, ⟨hUo, hUc⟩, (hyU : y ∈ U), -⟩ :=
+    (PrespectralSpace.isTopologicalBasis (X := Y)).mem_nhds_iff.mp (isOpen_univ.mem_nhds trivial)
+  have hfUo : IsOpen (f ⁻¹' U) := hUo.preimage hf.continuous
+  have hfUc : IsCompact (f ⁻¹' U) := hf.isCompact_preimage_of_isOpen hUo hUc
+  have : CompactSpace (f ⁻¹' U) := isCompact_iff_compactSpace.mp hfUc
+  have : PrespectralSpace (f ⁻¹' U) := hfUo.isOpenEmbedding_subtypeVal.prespectralSpace
+  have : QuasiSeparatedSpace (f ⁻¹' U) := hfUo.isOpenEmbedding_subtypeVal.quasiSeparatedSpace
+  have : QuasiSober (f ⁻¹' U) := hfUo.isOpenEmbedding_subtypeVal.quasiSober
+  let g := f ∘ (Subtype.val : f ⁻¹' U → X)
+  have hg : IsSpectralMap g := hf.comp hfUo.isOpenEmbedding_subtypeVal.isSpectralMap_of_compactSpace
+  have heq : f ⁻¹' {y} = Subtype.val '' (g ⁻¹' {y}) := by grind [Subtype.exists]
+  rw [heq]
+  exact (isClosed_singleton.preimage (WithConstructibleTopology.map_continuous hg)).isCompact.image
+    (continuous_subtype_val.comp WithConstructibleTopology.continuous_equiv)
