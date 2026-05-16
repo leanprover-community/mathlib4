@@ -358,7 +358,7 @@ theorem to_reflTransGen : ReflGen r ≤ ReflTransGen r
 
 theorem mono {p : α → α → Prop} (hp : r ≤ p) : ReflGen r ≤ ReflGen p
   | a, _, ReflGen.refl => by rfl
-  | a, b, single h => single <| hp _ _ h
+  | a, b, single h => single (hp a b h)
 
 instance : Std.Refl (ReflGen r) :=
   ⟨@refl α r⟩
@@ -642,8 +642,8 @@ theorem transGen_idem : TransGen (TransGen r) = TransGen r :=
 theorem TransGen.lift {p : β → β → Prop} (f : α → β) (h : r ≤ (p on f)) :
     TransGen r ≤ (TransGen p on f) := fun _ _ hab ↦ by
   induction hab with
-  | single hac => exact TransGen.single <| h _ _ hac
-  | tail _ hcd hac => exact TransGen.tail hac <| h _ _ hcd
+  | single hac => exact TransGen.single (h a _ hac)
+  | tail _ hcd hac => exact TransGen.tail hac (h _ _ hcd)
 
 theorem TransGen.lift' {p : β → β → Prop} (f : α → β) (h : r ≤ (TransGen p on f)) :
     TransGen r ≤ (TransGen p on f) := fun _ _ hab ↦ by
@@ -797,7 +797,7 @@ def setoid : Setoid α :=
 
 theorem mono {r p : α → α → Prop} (hrp : r ≤ p) : EqvGen r ≤ EqvGen p := fun _ _ h ↦ by
   induction h with
-  | rel a b h => exact EqvGen.rel _ _ <| hrp _ _ h
+  | rel a b h => exact EqvGen.rel _ _ (hrp _ _ h)
   | refl => exact EqvGen.refl _
   | symm a b _ ih => exact EqvGen.symm _ _ ih
   | trans a b c _ _ hab hbc => exact EqvGen.trans _ _ _ hab hbc
