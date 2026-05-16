@@ -1087,6 +1087,22 @@ theorem compContinuousLinearMapLRight_apply (g : ContinuousMultilinearMap 𝕜 E
     (f : ∀ i, E i →L[𝕜] E₁ i) : compContinuousLinearMapLRight g f = g.compContinuousLinearMap f :=
   rfl
 
+@[fun_prop]
+theorem _root_.ContinuousOn.const_compContinuousLinearMap [TopologicalSpace α]
+    {g : ContinuousMultilinearMap 𝕜 E₁ G} {f : α → ∀ i, E i →L[𝕜] E₁ i}
+    {s} (hf : ContinuousOn f s) :
+    ContinuousOn (fun x => g.compContinuousLinearMap (f x)) s := by
+  simp_rw [← compContinuousLinearMapLRight_apply]
+  fun_prop
+
+@[fun_prop]
+theorem _root_.Continuous.const_compContinuousLinearMap [TopologicalSpace α]
+    {g : ContinuousMultilinearMap 𝕜 E₁ G} {f : α → ∀ i, E i →L[𝕜] E₁ i}
+    (hf : Continuous f) :
+    Continuous (fun x => g.compContinuousLinearMap (f x)) := by
+  simp_rw [← compContinuousLinearMapLRight_apply]
+  fun_prop
+
 variable (E) in
 theorem norm_compContinuousLinearMapLRight_le (g : ContinuousMultilinearMap 𝕜 E₁ G) :
     ‖compContinuousLinearMapLRight (E := E) g‖ ≤ ‖g‖ :=
@@ -1128,6 +1144,36 @@ noncomputable def compContinuousLinearMapContinuousMultilinear :
     (compContinuousLinearMapMultilinear 𝕜 E E₁ G) 1 fun f ↦ by
       rw [one_mul]
       apply norm_compContinuousLinearMapL_le
+
+@[fun_prop]
+theorem _root_.ContinuousOn.compContinuousLinearMap_const [TopologicalSpace α]
+    {g : α → ContinuousMultilinearMap 𝕜 E₁ G} {f : ∀ i, E i →L[𝕜] E₁ i}
+    {s} (hg : ContinuousOn g s) :
+    ContinuousOn (fun x => (g x).compContinuousLinearMap f) s := by
+  simp_rw [← compContinuousLinearMapContinuousMultilinear_apply_apply]
+  fun_prop
+
+@[fun_prop]
+theorem _root_.Continuous.compContinuousLinearMap_const [TopologicalSpace α]
+    {g : α → ContinuousMultilinearMap 𝕜 E₁ G} {f : ∀ i, E i →L[𝕜] E₁ i}
+    (hg : Continuous g) :
+    Continuous (fun x => (g x).compContinuousLinearMap f) := by
+  simp_rw [← compContinuousLinearMapContinuousMultilinear_apply_apply]
+  fun_prop
+
+omit [Fintype ι] in
+-- probably needs `ContinuousMultilinearMap.uncurrySum_apply` from later files
+proof_wanted _root_.ContinuousOn.compContinuousLinearMap [TopologicalSpace α]
+    {g : α → ContinuousMultilinearMap 𝕜 E₁ G} {f : α → ∀ i, E i →L[𝕜] E₁ i}
+    {s} (hg : ContinuousOn g s) (hf : ContinuousOn f s) :
+    ContinuousOn (fun x => (g x).compContinuousLinearMap (f x)) s
+
+omit [Fintype ι] in
+-- probably needs `ContinuousMultilinearMap.uncurrySum_apply` from later files
+proof_wanted _root_.Continuous.compContinuousLinearMap [TopologicalSpace α]
+    {g : α → ContinuousMultilinearMap 𝕜 E₁ G} {f : α → ∀ i, E i →L[𝕜] E₁ i}
+    (hg : Continuous g) (hf : Continuous f) :
+    Continuous (fun x => (g x).compContinuousLinearMap (f x))
 
 variable {𝕜 E E₁ G}
 
