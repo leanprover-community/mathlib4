@@ -303,6 +303,36 @@ end IsReflexive
 
 end Module
 
+namespace LinearMap
+
+variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
+
+/-- The identitiy pairing is right-separating. -/
+theorem SeparatingRight.id [Module.Projective R M] : (.id : (M →ₗ[R] R) →ₛₗ[_] _).SeparatingRight :=
+  fun _ hx => by simpa using (Module.forall_dual_apply_eq_zero_iff R _).mp hx
+
+/-- The identitiy pairing is non-degenerate. -/
+theorem Nondegenerate.id [Module.Projective R M] :
+    (.id : (M →ₗ[R] R) →ₛₗ[_] _).Nondegenerate := ⟨.id, .id⟩
+
+instance [Module.Projective R M] : Fact (.id : (M →ₗ[R] R) →ₛₗ[_] _).SeparatingRight := ⟨.id⟩
+
+instance [Module.Projective R M] : Fact (.id : (M →ₗ[R] R) →ₛₗ[_] _).Nondegenerate := ⟨.id⟩
+
+/-- The pairing `Dual.eval` is left-separating. -/
+theorem SeparatingLeft.eval [Module.Projective R M] : (Dual.eval R M).SeparatingLeft := by
+  simp only [Dual.eval, flip_separatingLeft, SeparatingRight.id]
+
+/-- The pairing `Dual.eval` is non-degenerate. -/
+theorem Nondegenerate.eval [Module.Projective R M] : (Dual.eval R M).Nondegenerate :=
+  ⟨.eval, .eval⟩
+
+instance [Module.Projective R M] : Fact (Dual.eval R M).SeparatingLeft := ⟨.eval⟩
+
+instance [Module.Projective R M] : Fact (Dual.eval R M).Nondegenerate := ⟨.eval⟩
+
+end LinearMap
+
 namespace Submodule
 
 open Module
