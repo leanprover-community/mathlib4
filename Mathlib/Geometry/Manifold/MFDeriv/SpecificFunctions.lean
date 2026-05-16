@@ -892,7 +892,7 @@ theorem mdifferentiableAt_neg : MDiffAt (-f) z ↔ MDiffAt f z :=
 theorem MDifferentiable.neg (hf : MDiff f) : MDiff (-f) := fun x ↦ (hf x).neg
 
 set_option backward.isDefEq.respectTransparency false in
-theorem mfderivWithin_neg (hs : UniqueMDiffWithinAt I s x) (f : M → E') :
+theorem mfderivWithin_neg (hs : UniqueMDiffWithinAt I s x) :
     mfderiv[s] (-f) x = -mfderiv[s] f x := by
   simp_rw [mfderivWithin]
   by_cases hf : MDiffAt[s] f x
