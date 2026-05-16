@@ -363,10 +363,8 @@ theorem convs_eq_convs' [Field K] [LinearOrder K] [IsStrictOrderedRing K]
       -- now the result follows from the fact that the convergents coincide at the squashed position
       -- as established in `succ_nth_conv_eq_squashGCF_nth_conv`.
       have : ∀ ⦃b⦄, g.partDens.get? n = some b → b ≠ 0 := by
-        intro b nth_partDen_eq
-        obtain ⟨gp, s_nth_eq, ⟨refl⟩⟩ : ∃ gp, g.s.get? n = some gp ∧ gp.b = b :=
-          exists_s_b_of_partDen nth_partDen_eq
-        exact (ne_of_lt (s_pos (lt_add_one n) s_nth_eq).right).symm
+        intro _ nth_partDen_eq
+        grind [exists_s_b_of_partDen nth_partDen_eq]
       exact succ_nth_conv_eq_squashGCF_nth_conv @this
 
 end GenContFract

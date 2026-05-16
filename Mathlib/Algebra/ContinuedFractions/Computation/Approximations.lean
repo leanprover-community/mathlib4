@@ -73,12 +73,10 @@ theorem nth_stream_fr_nonneg_lt_one {ifp_n : IntFractPair K}
     (nth_stream_eq : IntFractPair.stream v n = some ifp_n) : 0 ≤ ifp_n.fr ∧ ifp_n.fr < 1 := by
   cases n with
   | zero =>
-    have : IntFractPair.of v = ifp_n := by injection nth_stream_eq
-    rw [← this, IntFractPair.of]
+    obtain rfl : IntFractPair.of v = ifp_n := by injection nth_stream_eq
     exact ⟨fract_nonneg _, fract_lt_one _⟩
   | succ =>
-    rcases succ_nth_stream_eq_some_iff.1 nth_stream_eq with ⟨_, _, _, ifp_of_eq_ifp_n⟩
-    rw [← ifp_of_eq_ifp_n, IntFractPair.of]
+    rcases succ_nth_stream_eq_some_iff.1 nth_stream_eq with ⟨_, _, _, rfl⟩
     exact ⟨fract_nonneg _, fract_lt_one _⟩
 
 /-- Shows that the fractional parts of the stream are nonnegative. -/
@@ -167,10 +165,9 @@ theorem of_partNum_eq_one {a : K} (nth_partNum_eq : (of v).partNums.get? n = som
 /-- Shows that the partial denominators `bᵢ` correspond to an integer. -/
 theorem exists_int_eq_of_partDen {b : K}
     (nth_partDen_eq : (of v).partDens.get? n = some b) : ∃ z : ℤ, b = (z : K) := by
-  obtain ⟨gp, nth_s_eq, gp_b_eq_b_n⟩ : ∃ gp, (of v).s.get? n = some gp ∧ gp.b = b :=
+  obtain ⟨_, nth_s_eq, rfl⟩ : ∃ gp, (of v).s.get? n = some gp ∧ gp.b = b :=
     exists_s_b_of_partDen nth_partDen_eq
-  have : ∃ z : ℤ, gp.b = (z : K) := (of_partNum_eq_one_and_exists_int_partDen_eq nth_s_eq).right
-  rwa [gp_b_eq_b_n] at this
+  exact (of_partNum_eq_one_and_exists_int_partDen_eq nth_s_eq).right
 
 end GenContFract
 
@@ -231,7 +228,7 @@ theorem fib_le_of_contsAux_b :
         have not_terminatedAt_pred_n : ¬g.TerminatedAt (n - 1) :=
           mt (terminated_stable <| Nat.sub_le n 1) not_terminatedAt_n
         have not_terminatedAt_ppred_n : ¬TerminatedAt g (n - 2) :=
-          mt (terminated_stable (n - 1).pred_le) not_terminatedAt_pred_n
+          mt (terminated_stable <| Nat.sub_le n 2) not_terminatedAt_n
         -- use the IH to get the inequalities for `pconts` and `ppconts`
         have ppred_nth_fib_le_ppconts_B : (fib n : K) ≤ ppconts.b :=
           IH n (lt_trans (Nat.lt_add_one n) <| Nat.lt_add_one <| n + 1)
@@ -266,7 +263,7 @@ theorem zero_le_of_contsAux_b : 0 ≤ ((of v).contsAux n).b := by
     rcases Decidable.em <| g.TerminatedAt (n - 1) with terminated | not_terminated
     · -- terminating case
       rcases n with - | n
-      · simp [zero_le_one]
+      · simp
       · have : g.contsAux (n + 2) = g.contsAux (n + 1) :=
           contsAux_stable_step_of_terminated terminated
         simp only [g, this, IH]
@@ -299,8 +296,7 @@ theorem le_of_succ_get?_den {b : K}
 theorem of_den_mono : (of v).dens n ≤ (of v).dens (n + 1) := by
   let g := of v
   rcases Decidable.em <| g.partDens.TerminatedAt n with terminated | not_terminated
-  · have : g.partDens.get? n = none := by rwa [Stream'.Seq.TerminatedAt] at terminated
-    have : g.TerminatedAt n :=
+  · have : g.TerminatedAt n :=
       terminatedAt_iff_partDen_none.2 (by rwa [Stream'.Seq.TerminatedAt] at terminated)
     have : g.dens (n + 1) = g.dens n :=
       dens_stable_of_terminated n.le_succ this
@@ -336,7 +332,7 @@ theorem sub_convs_eq {ifp : IntFractPair K}
   let conts := g.contsAux (n + 1)
   let pred_conts := g.contsAux n
   have g_finite_correctness :
-    v = GenContFract.compExactValue pred_conts conts ifp.fr :=
+      v = GenContFract.compExactValue pred_conts conts ifp.fr :=
     compExactValue_correctness_of_stream_eq_some stream_nth_eq
   obtain (ifp_fr_eq_zero | ifp_fr_ne_zero) := eq_or_ne ifp.fr 0
   · suffices v - g.convs n = 0 by simpa [ifp_fr_eq_zero]
