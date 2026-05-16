@@ -7,6 +7,8 @@ module -- shake: keep-all
 
 public meta import Lean.Elab.Tactic.Rewrite
 public import Mathlib.Tactic.GRewrite.Core
+import Lean.Elab.Tactic.Config
+meta import Mathlib.Tactic.GRewrite.Core
 
 /-!
 

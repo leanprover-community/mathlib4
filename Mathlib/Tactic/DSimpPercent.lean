@@ -6,6 +6,7 @@ Authors: Robin Carlier, Jovan Gerbscheid
 module -- shake: keep-all
 
 public import Mathlib.Init
+import Lean.Elab.Tactic.Simp
 
 /-!
 `dsimp% […] t` runs `dsimp […]` on term `t`.
