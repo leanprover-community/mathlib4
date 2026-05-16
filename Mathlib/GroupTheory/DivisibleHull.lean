@@ -247,7 +247,6 @@ end Group
 section LinearOrder
 variable {M : Type*} [AddCommMonoid M] [LinearOrder M] [IsOrderedCancelAddMonoid M]
 
-set_option backward.privateInPublic true in
 private theorem lift_aux (m n m' n' : M) (s t s' t' : ℕ+)
     (h : mk m s = mk m' s') (h' : mk n t = mk n' t') :
     (t.val • m ≤ s.val • n) = (t'.val • m' ≤ s'.val • n') := by
@@ -259,10 +258,8 @@ private theorem lift_aux (m n m' n' : M) (s t s' t' : ℕ+)
   · simp_rw [smul_smul, ← mul_rotate s'.val, ← smul_smul, ← h', smul_smul]
     ring_nf
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : LE (DivisibleHull M) where
-  le x y := liftOn₂ x y (fun m s n t ↦ t.val • m ≤ s.val • n) lift_aux
+  le x y := liftOn₂ x y (fun m s n t ↦ t.val • m ≤ s.val • n) (by exact lift_aux)
 
 @[simp]
 theorem mk_le_mk {m m' : M} {s s' : ℕ+} :
@@ -360,14 +357,12 @@ theorem archimedeanClassMk_mk_eq (m : M) (s s' : ℕ+) :
     exact this
   simp_rw [zsmul_mk, mk_eq_mk_iff_smul_eq_smul, natCast_zsmul, smul_smul, mul_comm s'.val]
 
-set_option backward.privateInPublic true in
 variable (M) in
-/-- Forward direction of `archimedeanClassOrderIso`. -/
-private noncomputable
+/-- Forward direction of `DivisibleHull.archimedeanClassOrderIso`. -/
+noncomputable
 def archimedeanClassOrderHom : ArchimedeanClass M →o ArchimedeanClass (DivisibleHull M) :=
   ArchimedeanClass.orderHom (coeOrderAddMonoidHom M)
 
-set_option backward.privateInPublic true in
 /-- See `archimedeanClassOrderIso_symm_apply` for public API. -/
 private theorem aux_archimedeanClassMk_mk (m : M) (s : ℕ+) :
     ArchimedeanClass.mk (mk m s) = archimedeanClassOrderHom M (ArchimedeanClass.mk m) := by
@@ -379,10 +374,9 @@ private theorem aux_archimedeanClassOrderHom_injective :
     Function.Injective (archimedeanClassOrderHom M) :=
   ArchimedeanClass.orderHom_injective coe_injective
 
-set_option backward.privateInPublic true in
 variable (M) in
-/-- Backward direction of `archimedeanClassOrderIso`. -/
-private noncomputable
+/-- Backward direction of `DivisibleHull.archimedeanClassOrderIso`. -/
+noncomputable
 def archimedeanClassOrderHomInv : ArchimedeanClass (DivisibleHull M) →o ArchimedeanClass M :=
   ArchimedeanClass.liftOrderHom (fun x ↦ x.liftOn (fun m s ↦ ArchimedeanClass.mk m)
     (fun _ _ _ _ h ↦ by
@@ -396,30 +390,29 @@ def archimedeanClassOrderHomInv : ArchimedeanClass (DivisibleHull M) →o Archim
       simpa using ((archimedeanClassOrderHom M).monotone.strictMono_of_injective
         aux_archimedeanClassOrderHom_injective).le_iff_le.mp h)
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 variable (M) in
 /-- The Archimedean classes of `DivisibleHull M` are the same as those of `M`. -/
 noncomputable
-def archimedeanClassOrderIso : ArchimedeanClass M ≃o ArchimedeanClass (DivisibleHull M) := by
-  apply OrderIso.ofHomInv (archimedeanClassOrderHom M) (archimedeanClassOrderHomInv M)
+def archimedeanClassOrderIso : ArchimedeanClass M ≃o ArchimedeanClass (DivisibleHull M) :=
+  OrderIso.ofHomInv (archimedeanClassOrderHom M) (archimedeanClassOrderHomInv M) (by
   · ext a
     induction a with | mk a
     induction a with | mk m s
     suffices ArchimedeanClass.mk (mk m 1) = ArchimedeanClass.mk (mk m s) by
       simpa [archimedeanClassOrderHom, archimedeanClassOrderHomInv]
-    simp_rw [aux_archimedeanClassMk_mk]
+    simp_rw [aux_archimedeanClassMk_mk]) (by
   · ext a
     induction a with | mk _
-    simp [archimedeanClassOrderHom, archimedeanClassOrderHomInv]
+    simp [archimedeanClassOrderHom, archimedeanClassOrderHomInv])
 
 @[simp]
 theorem archimedeanClassOrderIso_apply (a : ArchimedeanClass M) :
-    archimedeanClassOrderIso M a = ArchimedeanClass.orderHom (coeOrderAddMonoidHom M) a := rfl
+    archimedeanClassOrderIso M a = ArchimedeanClass.orderHom (coeOrderAddMonoidHom M) a := (rfl)
 
 @[simp]
 theorem archimedeanClassOrderIso_symm_apply (m : M) (s : ℕ+) :
-    (archimedeanClassOrderIso M).symm (ArchimedeanClass.mk (mk m s)) = ArchimedeanClass.mk m := rfl
+    (archimedeanClassOrderIso M).symm (ArchimedeanClass.mk (mk m s)) = ArchimedeanClass.mk m :=
+  (rfl)
 
 end OrderedGroup
 
