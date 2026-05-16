@@ -173,6 +173,11 @@ lemma contmdiffOn_localInverse (hf : IsLocalDiffeomorphAt I J n f x) :
     CMDiff[hf.localInverse.source] n hf.localInverse :=
   hf.localInverse.contMDiffOn_toFun
 
+lemma continuousAt_localInverse (hf : IsLocalDiffeomorphAt I J n f x) :
+    ContinuousAt hf.localInverse (f x) :=
+  hf.contmdiffOn_localInverse.continuousOn.continuousAt <|
+    hf.localInverse_open_source.mem_nhds hf.localInverse_mem_source
+
 lemma localInverse_right_inv (hf : IsLocalDiffeomorphAt I J n f x) {y : N}
     (hy : y ∈ hf.localInverse.source) : f (hf.localInverse y) = y := by
   have : hf.localInverse y ∈ hf.choose.source := by
@@ -399,6 +404,10 @@ lemma IsLocalDiffeomorphAt.mfderivToContinuousLinearEquiv_coe
     (hf : IsLocalDiffeomorphAt I J n f x) (hn : n ≠ 0) :
     hf.mfderivToContinuousLinearEquiv hn = mfderiv% f x := rfl
 
+lemma IsLocalDiffeomorphAt.isInvertible_mfderiv (hf : IsLocalDiffeomorphAt I J n f x) (hn : n ≠ 0) :
+    (mfderiv I J f x).IsInvertible :=
+  ⟨hf.mfderivToContinuousLinearEquiv hn, by simp⟩
+
 /-- Each differential of a `C^n` diffeomorphism of Banach manifolds (`n ≠ 0`)
 is a linear equivalence. -/
 def Diffeomorph.mfderivToContinuousLinearEquiv
@@ -408,6 +417,10 @@ def Diffeomorph.mfderivToContinuousLinearEquiv
 
 lemma Diffeomorph.mfderivToContinuousLinearEquiv_coe (Φ : M ≃ₘ^n⟮I, J⟯ N) (hn : n ≠ 0) :
     Φ.mfderivToContinuousLinearEquiv hn x = mfderiv% Φ x := by rfl
+
+lemma Diffeomorph.isInvertible_mfderiv (Φ : M ≃ₘ^n⟮I, J⟯ N) (hn : n ≠ 0) :
+    (mfderiv I J Φ x).IsInvertible :=
+  (Φ.isLocalDiffeomorph x).isInvertible_mfderiv hn
 
 /-- If `f` is a `C^n` local diffeomorphism of Banach manifolds (`n ≠ 0`),
 each differential is a linear equivalence. -/
@@ -420,5 +433,9 @@ lemma IsLocalDiffeomorph.mfderivToContinuousLinearEquiv_coe
     (hf : IsLocalDiffeomorph I J n f) (hn : n ≠ 0) (x : M) :
     hf.mfderivToContinuousLinearEquiv hn x = mfderiv% f x :=
   (hf x).mfderivToContinuousLinearEquiv_coe hn
+
+lemma IsLocalDiffeomorph.isInvertible_mfderiv (hf : IsLocalDiffeomorph I J n f) (hn : n ≠ 0) (x) :
+    (mfderiv I J f x).IsInvertible :=
+  (hf x).isInvertible_mfderiv hn
 
 end Differential
