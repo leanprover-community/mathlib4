@@ -65,7 +65,6 @@ theorem Free.away_of_finite_of_flat_of_rankAtStalk_constant (p : Ideal R) [p.IsP
     let φₐ : LocalizedModule.Away a (Fin n →₀ R) →ₗ[Localization.Away a] LocalizedModule.Away a M :=
       LocalizedModule.map (Submonoid.powers a) φ
     exact ⟨a, hap, Module.Free.of_equiv <| LinearEquiv.ofBijective φₐ <|
-      localizedMap_bijective_of_surjective_of_rankAtStalk_eq a hφas <| fun m _ ↦ by
-        simp [Module.rankAtStalk_eq_finrank_of_free, n, h m]⟩
+      localizedMap_bijective_of_surjective_of_rankAtStalk_eq a hφas <| fun m _ ↦ by simp [n, h m]⟩
 
 end Module
