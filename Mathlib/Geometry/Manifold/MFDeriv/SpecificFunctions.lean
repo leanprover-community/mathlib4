@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Mul
 public import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
-import Mathlib.Geometry.Manifold.Notation
+public import Mathlib.Geometry.Manifold.Notation
 
 /-!
 # Differentiability of specific functions
@@ -160,10 +160,10 @@ theorem mfderivWithin_id (hxs : UniqueMDiffWithinAt I s x) :
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp, mfld_simps]
-theorem tangentMap_id : tangentMap I I (id : M → M) = id := by ext1 ⟨x, v⟩; simp [tangentMap]
+theorem tangentMap_id : tangentMap% (@id M) = id := by ext1 ⟨x, v⟩; simp [tangentMap]
 
 theorem tangentMapWithin_id {p : TangentBundle I M} (hs : UniqueMDiffWithinAt I s p.proj) :
-    tangentMapWithin I I (id : M → M) s p = p := by
+    tangentMap[s] (id : M → M) p = p := by
   simp only [tangentMapWithin, id]
   rw [mfderivWithin_id]
   · rcases p with ⟨⟩; rfl
@@ -323,12 +323,12 @@ theorem mfderivWithin_fst {s : Set (M × M')} {x : M × M'}
 
 @[simp, mfld_simps]
 theorem tangentMap_prodFst {p : TangentBundle (I.prod I') (M × M')} :
-    tangentMap (I.prod I') I Prod.fst p = ⟨p.proj.1, p.2.1⟩ := by
+    tangentMap% (@Prod.fst M M') p = ⟨p.proj.1, p.2.1⟩ := by
   simp [tangentMap]; rfl
 
 theorem tangentMapWithin_prodFst {s : Set (M × M')} {p : TangentBundle (I.prod I') (M × M')}
     (hs : UniqueMDiffWithinAt (I.prod I') s p.proj) :
-    tangentMapWithin (I.prod I') I Prod.fst s p = ⟨p.proj.1, p.2.1⟩ := by
+    tangentMap[s] (@Prod.fst M M') p = ⟨p.proj.1, p.2.1⟩ := by
   simp only [tangentMapWithin]
   rw [mfderivWithin_fst]
   · rcases p with ⟨⟩; rfl
@@ -535,12 +535,12 @@ end prodMap
 
 @[simp, mfld_simps]
 theorem tangentMap_prodSnd {p : TangentBundle (I.prod I') (M × M')} :
-    tangentMap (I.prod I') I' Prod.snd p = ⟨p.proj.2, p.2.2⟩ := by
+    tangentMap% (@Prod.snd M M') p = ⟨p.proj.2, p.2.2⟩ := by
   simp [tangentMap]; rfl
 
 theorem tangentMapWithin_prodSnd {s : Set (M × M')} {p : TangentBundle (I.prod I') (M × M')}
     (hs : UniqueMDiffWithinAt (I.prod I') s p.proj) :
-    tangentMapWithin (I.prod I') I' Prod.snd s p = ⟨p.proj.2, p.2.2⟩ := by
+    tangentMap[s] (@Prod.snd M M') p = ⟨p.proj.2, p.2.2⟩ := by
   simp only [tangentMapWithin]
   rw [mfderivWithin_snd hs]
   rcases p with ⟨⟩; rfl
@@ -555,8 +555,9 @@ theorem mfderiv_prod_left {x₀ : M} {y₀ : M'} :
   refine (mdifferentiableAt_id.mfderiv_prod mdifferentiableAt_const).trans ?_
   rw [mfderiv_id, mfderiv_const, ContinuousLinearMap.inl]
 
+-- TODO: better error when the type of x is left open
 theorem tangentMap_prod_left {p : TangentBundle I M} {y₀ : M'} :
-    tangentMap I (I.prod I') (fun x ↦ (x, y₀)) p = ⟨(p.1, y₀), (p.2, 0)⟩ := by
+    tangentMap% (fun (x : M) ↦ (x, y₀)) p = ⟨(p.1, y₀), (p.2, 0)⟩ := by
   simp only [tangentMap, mfderiv_prod_left, TotalSpace.mk_inj]
   rfl
 
@@ -568,7 +569,7 @@ theorem mfderiv_prod_right {x₀ : M} {y₀ : M'} :
   rw [mfderiv_id, mfderiv_const, ContinuousLinearMap.inr]
 
 theorem tangentMap_prod_right {p : TangentBundle I' M'} {x₀ : M} :
-    tangentMap I' (I.prod I') (fun y ↦ (x₀, y)) p = ⟨(x₀, p.1), (0, p.2)⟩ := by
+    tangentMap% (fun (y : M') ↦ (x₀, y)) p = ⟨(x₀, p.1), (0, p.2)⟩ := by
   simp only [tangentMap, mfderiv_prod_right, TotalSpace.mk_inj]
   rfl
 
