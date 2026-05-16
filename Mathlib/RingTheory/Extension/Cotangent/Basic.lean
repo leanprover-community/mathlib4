@@ -383,6 +383,12 @@ lemma exact_hCotangentι_cotangentComplex : Function.Exact h1Cotangentι P.cotan
   rw [LinearMap.exact_iff]
   exact (Submodule.range_subtype _).symm
 
+lemma h1Cotangentι_surjective_of_subsingleton {P : Extension R S} [Subsingleton Ω[P.Ring⁄R]] :
+    Function.Surjective P.h1Cotangentι := by
+  rw [← LinearMap.range_eq_top, ← P.exact_hCotangentι_cotangentComplex.linearMap_ker_eq,
+    LinearMap.ker_eq_top]
+  exact Subsingleton.eq_zero P.cotangentComplex
+
 /--
 The induced map on the first homology of the (naive) cotangent complex.
 -/
