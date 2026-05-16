@@ -160,6 +160,8 @@ public import Mathlib.Tactic.LinearCombination
 public import Mathlib.Tactic.LinearCombination.Lemmas
 public import Mathlib.Tactic.LinearCombinationPrime
 public import Mathlib.Tactic.Linter
+public import Mathlib.Tactic.Linter
+public import Mathlib.Tactic.Linter
 public import Mathlib.Tactic.Linter.CommandRanges
 public import Mathlib.Tactic.Linter.CommandStart
 public import Mathlib.Tactic.Linter.DeprecatedModule
@@ -184,6 +186,7 @@ public import Mathlib.Tactic.Linter.Style
 public import Mathlib.Tactic.Linter.TacticDocumentation
 public import Mathlib.Tactic.Linter.TextBased
 public import Mathlib.Tactic.Linter.TextBased.UnicodeLinter
+public import Mathlib.Tactic.Linter.UnnecessarySetOptionIn
 public import Mathlib.Tactic.Linter.UnusedInstancesInType
 public import Mathlib.Tactic.Linter.UnusedTactic
 public import Mathlib.Tactic.Linter.UnusedTacticExtension
