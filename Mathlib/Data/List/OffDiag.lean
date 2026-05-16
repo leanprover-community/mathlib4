@@ -10,6 +10,13 @@ import Mathlib.Data.List.Enum
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.Perm.Basic
 public import Mathlib.Data.Nat.Notation
+import Mathlib.Data.List.Basic
+import Mathlib.Data.List.InsertIdx
+import Mathlib.Tactic.Contrapose
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.SplitIfs
+import Mathlib.Tactic.Widget.Calc
 
 /-!
 # Definition and basic properties of `List.offDiag`
