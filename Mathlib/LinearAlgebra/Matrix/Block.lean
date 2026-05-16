@@ -61,6 +61,15 @@ variable [Zero R]
 def BlockTriangular (M : Matrix m m R) (b : m → α) : Prop :=
   ∀ ⦃i j⦄, b j < b i → M i j = 0
 
+/-- The property of a matrix being upper triangular. For a linear order this is the usual
+upper-triangular condition; for a more general `<`, this is `Matrix.BlockTriangular id`.
+See also `Matrix.det_of_upperTriangular`. -/
+abbrev IsUpperTriangular [LT m] (M : Matrix m m R) : Prop := M.BlockTriangular id
+
+/-- The subtype of upper triangular matrices. -/
+abbrev UpperTriangular (m R) [LT m] [Zero R] : Type _ :=
+  { M : Matrix m m R // M.IsUpperTriangular }
+
 @[simp]
 protected theorem BlockTriangular.submatrix {f : n → m} (h : M.BlockTriangular b) :
     (M.submatrix f f).BlockTriangular (b ∘ f) := fun _ _ hij => h hij
@@ -277,7 +286,7 @@ theorem BlockTriangular.det_fintype [DecidableEq α] [Fintype α] [LinearOrder �
   have : IsEmpty { i // b i = a } := ⟨fun i => ha <| mem_image.2 ⟨i, mem_univ _, i.2⟩⟩
   exact det_isEmpty
 
-theorem det_of_upperTriangular [LinearOrder m] (h : M.BlockTriangular id) :
+theorem det_of_upperTriangular [LinearOrder m] (h : M.IsUpperTriangular) :
     M.det = ∏ i : m, M i i := by
   haveI : DecidableEq R := Classical.decEq _
   simp_rw [h.det, image_id, det_toSquareBlock_id]

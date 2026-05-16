@@ -6,7 +6,7 @@ Authors: Yury Kudryashov, Patrick Massot
 module
 
 public import Mathlib.Data.Fin.FlagRange
-public import Mathlib.LinearAlgebra.Basis.Basic
+public import Mathlib.LinearAlgebra.Basis.Fin
 public import Mathlib.LinearAlgebra.Dual.Basis
 public import Mathlib.RingTheory.SimpleRing.Basic
 
@@ -50,6 +50,11 @@ theorem flag_succ (b : Basis (Fin n) R M) (k : Fin n) :
   simp only [flag, Fin.castSucc_lt_castSucc_iff]
   simp [Fin.castSucc_lt_iff_succ_le, le_iff_eq_or_lt, setOf_or, image_insert_eq, span_insert]
 
+theorem flag_map {M₂ : Type*} [AddCommMonoid M₂] [Module R M₂]
+    (b : Basis (Fin n) R M) (e : M ≃ₗ[R] M₂) (k : Fin (n + 1)) :
+    (b.map e).flag k = (b.flag k).map (e : M →ₗ[R] M₂) := by
+  simp [flag, Submodule.map_span, Set.image_image]
+
 theorem self_mem_flag (b : Basis (Fin n) R M) {i : Fin n} {k : Fin (n + 1)} (h : i.castSucc < k) :
     b i ∈ b.flag k :=
   subset_span <| mem_image_of_mem _ h
@@ -78,6 +83,30 @@ lemma flag_lt_flag [Nontrivial R] (hij : i < j) : b.flag i < b.flag j := flag_st
 
 end Semiring
 
+section Ring
+
+variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] {n : ℕ}
+
+theorem span_singleton_le_mkFinCons_flag_succ {v : M} {W : Submodule R M}
+    {bW : Basis (Fin n) R W} {hli hsp} (k : Fin (n + 1)) :
+    R ∙ v ≤ (Basis.mkFinCons v bW hli hsp).flag k.succ := by
+  rw [Submodule.span_singleton_le_iff_mem]
+  convert (Basis.mkFinCons v bW hli hsp).self_mem_flag (i := 0) (k := k.succ) ?_
+  · simp
+  · simp
+
+theorem map_flag_le_mkFinCons_flag_succ {v : M} {W : Submodule R M}
+    {bW : Basis (Fin n) R W} {hli hsp} (k : Fin (n + 1)) :
+    (bW.flag k).map W.subtype ≤ (Basis.mkFinCons v bW hli hsp).flag k.succ := by
+  rw [Submodule.map_le_iff_le_comap]
+  exact bW.flag_le_iff.2 fun i hi => by
+    change (bW i : M) ∈ (Basis.mkFinCons v bW hli hsp).flag k.succ
+    convert (Basis.mkFinCons v bW hli hsp).self_mem_flag (i := i.succ)
+      (k := k.succ) (Fin.succ_lt_succ_iff.mpr hi)
+    simp
+
+end Ring
+
 section CommRing
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] {n : ℕ}
@@ -98,6 +127,26 @@ theorem flag_le_ker_dual (b : Basis (Fin n) R M) (k : Fin n) :
   rw [coe_dualBasis, b.flag_le_ker_coord_iff]
 
 end CommRing
+
+section Field
+
+variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V] {n : ℕ}
+
+theorem mem_flag_iff_repr_eq_zero (b : Basis (Fin n) K V) {k : Fin (n + 1)} {x : V} :
+    x ∈ b.flag k ↔ ∀ i : Fin n, k ≤ i.castSucc → b.repr x i = 0 := by
+  constructor
+  · intro hx i hi
+    have hmem : x ∈ LinearMap.ker (b.coord i) := b.flag_le_ker_coord hi hx
+    simpa [Module.Basis.coord_apply] using (LinearMap.mem_ker.mp hmem)
+  · intro h
+    rw [← b.sum_repr x]
+    exact Submodule.sum_mem _ fun i _ => by
+      by_cases hi : i.castSucc < k
+      · exact Submodule.smul_mem _ _ (b.self_mem_flag hi)
+      · rw [h i (le_of_not_gt hi), zero_smul]
+        exact Submodule.zero_mem _
+
+end Field
 
 section DivisionRing
 
