@@ -125,6 +125,39 @@ lemma isEdgeConnected_add_one (hk : k ≠ 0) :
 /-- An edge is a bridge iff its endpoints are adjacent and not 2-edge-reachable. -/
 lemma isBridge_iff_adj_and_not_isEdgeConnected_two {u v : V} :
     G.IsBridge s(u, v) ↔ G.Adj u v ∧ ¬G.IsEdgeReachable 2 u v := by
+  refine ⟨fun h ↦ ?_, fun ⟨hadj, hc⟩ ↦ ?_⟩
+  · have h1 : G.Adj u v ∧ ∀ (p : G.Walk u v), s(u, v) ∈ p.edges :=
+      isBridge_iff_adj_and_forall_walk_mem_edges.mp h
+    rcases h1 with ⟨hadj, hall⟩
+    refine ⟨hadj, fun h2 ↦ ?_⟩
+    have h3 : (G \ fromEdgeSet {s(u, v)}).Reachable u v := by
+      simpa [IsEdgeReachable] using h2 (s := {s(u, v)}) (by simp)
+    have h5 : ∃ (p : G.Walk u v), s(u, v) ∉ p.edges := by
+      rw [reachable_delete_edges_iff_exists_walk] at h3
+      exact h3
+    rcases h5 with ⟨p, hnp⟩
+    exact hnp (hall p)
+  · have hall : ∀ (p : G.Walk u v), s(u, v) ∈ p.edges := by
+      by_contra h
+      have h' : ∃ (p : G.Walk u v), s(u, v) ∉ p.edges := by
+        exact not_forall.mp h
+      rcases h' with ⟨p, hnp⟩
+      have h1 : (G \ fromEdgeSet {s(u, v)}).Reachable u v := by
+        rw [reachable_delete_edges_iff_exists_walk]
+        exact ⟨p, hnp⟩
+      have h2 : G.IsEdgeReachable 2 u v := by
+        apply isEdgeReachable_two.mpr
+        intro e
+        by_cases hx : e = s(u, v)
+        · rw [hx]
+          exact h1
+        · have h3 : (G.deleteEdges {e}).Adj u v := by
+            exact deleteEdges_adj.mpr ⟨hadj, hx⟩
+          exact h3.reachable
+      exact hc h2
+    rw [isBridge_iff_adj_and_forall_walk_mem_edges]
+    exact ⟨hadj, hall⟩
+
   refine ⟨fun h ↦ ⟨h.left, fun hc ↦ ?_⟩, fun ⟨hadj, hc⟩ ↦ ?_⟩
   · exact isBridge_iff.mp h |>.right <| hc <| Set.encard_singleton _ |>.trans_lt Nat.one_lt_ofNat
   · refine isBridge_iff.mpr ⟨hadj, fun hr ↦ hc fun s hs₂ ↦ ?_⟩

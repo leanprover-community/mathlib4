@@ -323,3 +323,93 @@ lemma pow_mem_range_pow_of_coprime (hmn : m.Coprime n) (a : α) :
   simp [pow_eq_pow_iff_of_coprime hmn.symm]; aesop
 
 end CommGroupWithZero
+/-- If `m` and `n` are coprime integers of opposite parity, then
+`Int.gcd (m + n) (m - n) = 1`. -/
+theorem Int.gcd_add_sub_eq_one_of_gcd_eq_one_of_parity_opposite
+    (m n : ℤ)
+    (h_coprime : Int.gcd m n = 1)
+    (h_parity : (m % 2 = 0 ∧ n % 2 ≠ 0) ∨ (m % 2 ≠ 0 ∧ n % 2 = 0)) :
+    Int.gcd (m + n) (m - n) = 1 := by
+  let d : ℕ := Int.gcd (m + n) (m - n)
+  let k : ℤ := (d : ℤ)
+
+  have h_dvd_left : (k : ℤ) ∣ (m + n) := by
+    exact Int.gcd_dvd_left (m + n) (m - n)
+
+  have h_dvd_right : (k : ℤ) ∣ (m - n) := by
+    exact Int.gcd_dvd_right (m + n) (m - n)
+
+  have h_dvd_two_mul_m : (k : ℤ) ∣ 2 * m := by
+    have htmp : (k : ℤ) ∣ (m + n) + (m - n) := Int.dvd_add h_dvd_left h_dvd_right
+    have hsimp : (m + n) + (m - n) = 2 * m := by
+      ring
+    rw [hsimp] at htmp
+    exact htmp
+
+  have h_dvd_two_mul_n : (k : ℤ) ∣ 2 * n := by
+    have htmp : (k : ℤ) ∣ (m + n) - (m - n) := Int.dvd_sub h_dvd_left h_dvd_right
+    have hsimp : (m + n) - (m - n) = 2 * n := by
+      ring
+    rw [hsimp] at htmp
+    exact htmp
+
+  have h_bezout : ∃ x y : ℤ, (1 : ℤ) = m * x + n * y := by
+    have h := Int.gcd_eq_gcd_ab m n
+    rw [h_coprime] at h
+    refine ⟨Int.gcdA m n, Int.gcdB m n, ?_⟩
+    simpa using h
+
+  rcases h_bezout with ⟨x, y, h_eq⟩
+  rcases h_dvd_two_mul_m with ⟨a, ha⟩
+  rcases h_dvd_two_mul_n with ⟨b, hb⟩
+
+  have h_two_eq : (2 : ℤ) = k * (a * x + b * y) := by
+    have htmp : (2 : ℤ) = 2 * m * x + 2 * n * y := by
+      calc
+        (2 : ℤ) = 2 * (1 : ℤ) := by ring
+        _ = 2 * (m * x + n * y) := by rw [h_eq]
+        _ = 2 * m * x + 2 * n * y := by ring
+    rw [htmp, ha, hb]
+    ring
+
+  have h_dvd_two_int : k ∣ (2 : ℤ) := by
+    rw [h_two_eq]
+    exact dvd_mul_right k _
+
+  have h_dvd_two : d ∣ 2 := by
+    exact Int.ofNat_dvd.mp h_dvd_two_int
+
+  have hd_ne_zero : d ≠ 0 := by
+    intro hd0
+    rw [hd0] at h_dvd_two
+    norm_num at h_dvd_two
+
+  have h_cases : d = 1 ∨ d = 2 := by
+    have h_le : d ≤ 2 := Nat.le_of_dvd (by norm_num) h_dvd_two
+    have h_small : d = 0 ∨ d = 1 ∨ d = 2 := by
+      omega
+    rcases h_small with h0 | h1 | h2
+    · exfalso
+      exact hd_ne_zero h0
+    · exact Or.inl h1
+    · exact Or.inr h2
+
+  rcases h_cases with hd1 | hd2
+  · simpa [d] using hd1
+  · exfalso
+    have h_even_sum : (2 : ℤ) ∣ (m + n) := by
+      rw [hd2] at h_dvd_left
+      exact h_dvd_left
+    have h_sum_mod_zero : (m + n) % 2 = 0 := by
+      omega
+    rcases h_parity with hpar | hpar
+    · have hm_even : m % 2 = 0 := hpar.1
+      have hn_odd : n % 2 ≠ 0 := hpar.2
+      have h_sum_mod_one : (m + n) % 2 = 1 := by
+        omega
+      omega
+    · have hm_odd : m % 2 ≠ 0 := hpar.1
+      have hn_even : n % 2 = 0 := hpar.2
+      have h_sum_mod_one : (m + n) % 2 = 1 := by
+        omega
+      omega
